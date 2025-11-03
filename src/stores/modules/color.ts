@@ -9,7 +9,6 @@ import {
 import store from '@/stores'
 import { env } from '@/utils'
 import { defineStore } from 'pinia'
-
 export const useColorStore = defineStore('color', {
   state: (): ColorState => ({
     mode: 'light',
@@ -667,19 +666,37 @@ export const useColorStore = defineStore('color', {
   },
 
   actions: {
+    // 🔧 修复：更新 darkMode 状态并同步 DOM
+    updateDarkMode(isDark: boolean) {
+      if (env.debug) {
+        console.log('updateDarkMode: 更新 darkMode 状态并同步 DOM 和 CSS 变量')
+      }
+      this.darkMode = isDark
+      document.documentElement.classList.toggle('dark', isDark)
+      this.setCssVariables()
+    },
+
     // 自动跟随系统主题
     setupAutoModeListener() {
+      if (env.debug) {
+        console.log('setupAutoModeListener: 设置系统颜色模式监听器')
+      }
       try {
         this.mediaQuery = window.matchMedia('(prefers-color-scheme: dark)')
 
         // 创建监听器函数
-        this.mediaQueryListener = (_e: MediaQueryListEvent) => {
-          this.darkMode = _e.matches
-          this.setTheme(this.getThemeValue)
+        this.mediaQueryListener = (e: MediaQueryListEvent) => {
+          // 🔧 修复：使用新的 updateDarkMode 方法
+          console.log('mediaQueryListener: 系统颜色模式发生变化', e.matches)
+
+          this.updateDarkMode(e.matches)
         }
 
         // 添加监听器
         this.mediaQuery.addEventListener('change', this.mediaQueryListener)
+
+        // 🎯 关键修复：初始化时立即同步一次系统主题状态
+        this.updateDarkMode(this.mediaQuery.matches)
       } catch (error) {
         console.error('设置自动模式监听器失败:', error)
       }
@@ -687,6 +704,9 @@ export const useColorStore = defineStore('color', {
 
     // 清理监听器
     cleanupMediaQueryListener() {
+      if (env.debug) {
+        console.log('cleanupMediaQueryListener: 清理系统颜色模式监听器')
+      }
       try {
         if (this.mediaQuery && this.mediaQueryListener) {
           this.mediaQuery.removeEventListener('change', this.mediaQueryListener)
@@ -699,35 +719,52 @@ export const useColorStore = defineStore('color', {
     },
 
     // 设置主题模式
-    setMode(mode: Mode) {
-      try {
-        this.cleanupMediaQueryListener()
+    setMode(mode: Mode, isInit: boolean = false) {
+      if (env.debug) {
+        console.log('setMode: ', mode, 'isInit:', isInit)
+        console.log('getSystemColorMode: ', getSystemColorMode())
+      }
 
+      // 如果是 auto 模式，直接设置并监听系统
+      if (mode === 'auto') {
         this.mode = mode
-        this.darkMode = mode === 'auto' ? getSystemColorMode() === 'dark' : mode === 'dark'
+        this.setupAutoModeListener()
+        return
+      }
 
-        document.documentElement.classList.toggle('dark', this.darkMode)
+      // 🎯 关键修复：初始化时不做智能切换，直接应用
+      if (isInit) {
+        this.mode = mode
+        const isDark = mode === 'dark'
+        this.cleanupMediaQueryListener()
+        this.updateDarkMode(isDark)
+        return
+      }
 
-        if (mode === 'auto') {
-          this.setupAutoModeListener()
+      // 如果是 light 或 dark 模式，需要智能切换（仅在用户主动切换时）
+      const currentIsDark = this.darkMode
+
+      // 目标模式
+      const targetIsDark = mode === 'dark'
+
+      // 🎯 关键逻辑：避免切换到相同的模式
+      // 如果当前是浅色，要切换到浅色 → 改为切换到深色
+      // 如果当前是深色，要切换到深色 → 改为切换到浅色
+      let finalMode: Mode = mode
+      if (currentIsDark === targetIsDark) {
+        finalMode = targetIsDark ? 'light' : 'dark'
+        if (env.debug) {
+          console.log(
+            `智能切换：避免 ${currentIsDark ? '深色' : '浅色'} → ${mode}，改为 ${finalMode}`
+          )
         }
-
-        // 设置完模式后重新设置 CSS 变量
-        this.setCssVariables()
-      } catch (error) {
-        console.error('设置主题模式失败:', error)
       }
-    },
 
-    // 切换主题模式（在 light 和 dark 之间切换）
-    toggleMode() {
-      try {
-        const isDark = this.darkMode
-        const newMode = isDark ? 'light' : 'dark'
-        this.setMode(newMode)
-      } catch (error) {
-        console.error('切换主题模式失败:', error)
-      }
+      this.mode = finalMode
+      const isDark = finalMode === 'dark'
+
+      this.cleanupMediaQueryListener()
+      this.updateDarkMode(isDark)
     },
 
     // 修改主题色
@@ -798,7 +835,7 @@ export const useColorStore = defineStore('color', {
     /* 初始化方法 */
     init() {
       try {
-        this.setMode(this.mode)
+        this.setMode(this.mode, true) // 🎯 标记为初始化调用
       } catch (error) {
         console.error('初始化颜色状态失败:', error)
       }

@@ -103,6 +103,7 @@ const enUS = {
       forgotPassword: 'Forgot password?',
       recoverAccount: 'Recover account?',
       loginInProgress: 'Logging in...',
+      enterSystem: 'Enter System',
     },
     pagination: {
       page: 'Page',

@@ -103,6 +103,7 @@ const zhCN = {
       forgotPassword: '忘记密码？',
       recoverAccount: '立即找回？',
       loginInProgress: '登录中...',
+      enterSystem: '进入系统',
     },
     pagination: {
       page: '第',

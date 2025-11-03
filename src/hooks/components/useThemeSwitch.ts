@@ -45,17 +45,25 @@ export const useThemeSwitch = () => {
 
   // 获取下一个模式（排除 auto 自动模式）
   const getNextMode = (): Mode => {
-    const newModeOptions = modeOptions.value.filter(item => item.value !== 'auto')
-    const currentIndex = newModeOptions.findIndex(item => item.value === mode.value)
-    const nextIndex = (currentIndex + 1) % newModeOptions.length
-    return newModeOptions[nextIndex].value as Mode
+    // 🎯 直接切换到相反模式，不需要循环逻辑
+    const currentIsDark = isDark.value
+    return currentIsDark ? 'light' : 'dark'
   }
 
   // 获取下一个模式（包含 auto 自动模式）
   const getNextModeWithAuto = (): Mode => {
-    const currentIndex = modeOptions.value.findIndex(item => item.value === mode.value)
-    const nextIndex = (currentIndex + 1) % modeOptions.value.length
-    return modeOptions.value[nextIndex].value as Mode
+    const currentMode = mode.value
+
+    // 如果当前是 auto，根据实际显示的模式切换到相反的固定模式
+    if (currentMode === 'auto') {
+      return isDark.value ? 'light' : 'dark'
+    }
+
+    // 如果是固定模式，循环切换：light -> dark -> auto -> light
+    const modeSequence: Mode[] = ['light', 'dark', 'auto']
+    const currentIndex = modeSequence.indexOf(currentMode)
+    const nextIndex = (currentIndex + 1) % modeSequence.length
+    return modeSequence[nextIndex]
   }
 
   // 切换模式（排除 auto）

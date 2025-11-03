@@ -103,6 +103,7 @@ const zhTW = {
       forgotPassword: '忘記密碼？',
       recoverAccount: '立即找回？',
       loginInProgress: '登入中...',
+      enterSystem: '進入系統',
     },
     pagination: {
       page: '第',
