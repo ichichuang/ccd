@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { ExtendedColDef } from '@/components/modules/grid-table'
 import { GridTable } from '@/components/modules/grid-table'
-import { ref } from 'vue'
+import { onMounted, onUnmounted, ref } from 'vue'
 
 // ==================== 列定义 ====================
 
@@ -14,7 +14,6 @@ const columnDefs = ref<ExtendedColDef[]>([
   {
     field: 'name',
     headerName: '姓名',
-    minWidth: 120,
   },
   {
     field: 'age',
@@ -24,7 +23,7 @@ const columnDefs = ref<ExtendedColDef[]>([
   {
     field: 'email',
     headerName: '邮箱',
-    minWidth: 200,
+    width: 240,
   },
   {
     field: 'department',
@@ -357,6 +356,70 @@ const dynamicData = () => {
     age: item.age + Math.floor(Math.random() * 50) + 1,
   }))
 }
+
+// ==================== 实时数据源（示例4） ====================
+
+// 创建新的模拟实时数据源
+const rowDataRealtime = ref<any[]>([])
+let realtimeTimer: number | null = null
+
+const createRealtimeBaseData = (count = 30) => {
+  const baseId = 1000
+  return Array.from({ length: count }).map((_, i) => ({
+    id: baseId + i,
+    name: `实时-${baseId + i}`,
+    age: 20 + ((baseId + i) % 15),
+    email: `realtime${baseId + i}@example.com`,
+    department: ['技术部', '产品部', '设计部', '运营部'][i % 4],
+    position: ['工程师', '测试', '经理', '专员'][i % 4],
+    salary: 9000 + (i % 10) * 800,
+    status: ['active', 'inactive', 'pending'][i % 3],
+    joinDate: '2024-01-01',
+    phone: '13800138000',
+    address: `实时地址-${i}`,
+  }))
+}
+
+// 每 1s 模拟实时更新部分字段，替换数组引用，触发无感知更新
+const startRealtime = () => {
+  if (realtimeTimer) {
+    return
+  }
+  // 初始化基础数据
+  rowDataRealtime.value = createRealtimeBaseData(30)
+  realtimeTimer = window.setInterval(() => {
+    const next = rowDataRealtime.value.map(item => {
+      // 轻量字段抖动：年龄、薪资、状态
+      const ageDelta = Math.floor(Math.random() * 3) - 1 // -1 ~ 1
+      const salaryDelta = (Math.floor(Math.random() * 5) - 2) * 200 // -400 ~ 400
+      const statuses = ['active', 'inactive', 'pending']
+      const status = Math.random() < 0.15 ? statuses[Math.floor(Math.random() * 3)] : item.status
+      return {
+        ...item,
+        age: Math.max(18, item.age + ageDelta),
+        salary: Math.max(3000, item.salary + salaryDelta),
+        status,
+      }
+    })
+    // 替换引用以触发 GridTable 的行数据监听
+    rowDataRealtime.value = next
+  }, 1000)
+}
+
+const stopRealtime = () => {
+  if (realtimeTimer) {
+    clearInterval(realtimeTimer)
+    realtimeTimer = null
+  }
+}
+
+onMounted(() => {
+  startRealtime()
+})
+
+onUnmounted(() => {
+  stopRealtime()
+})
 </script>
 
 <template lang="pug">
@@ -404,5 +467,21 @@ div
     Button(label='清空数据', @click='clearData')
     Button(label='动态年龄数据', @click='dynamicData')
   // 表格示例 3：动态数据源（空数据开始）
-  GridTable(:column-defs='columnDefs', :row-data='rowDataDynamic2')
+  GridTable(
+    :column-defs='columnDefs',
+    :row-data='rowDataDynamic2',
+    :size-config='{ heightMode: "fixed", height: 300, defaultColumnWidth: 140 }',
+    :fit-columns-to-viewport='false'
+  )
+
+  .c-accent100.mb-gaps.mt-gap 实时数据源 {{ rowDataRealtime.length }}
+  // 表格示例 4：实时数据源
+  GridTable(
+    :column-defs='columnDefs',
+    :row-data='rowDataRealtime',
+    :size-config='{ heightMode: "fixed", height: 300, defaultColumnWidth: 140 }',
+    :fit-columns-to-viewport='false',
+    :enable-sorting='true',
+    :enable-column-drag='true'
+  )
 </template>

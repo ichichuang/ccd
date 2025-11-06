@@ -8,6 +8,8 @@
  */
 
 import { debounce } from '@#/index'
+import { INTERVAL } from '@/constants/modules/layout'
+import { useElementSize } from '@/hooks'
 import { useRevoGrid } from '@/hooks/components/useGridTable'
 import { t } from '@/locales'
 import { AgGridVue } from 'ag-grid-vue3'
@@ -53,7 +55,7 @@ const emit = defineEmits<GridTableEmits>()
 
 // 用于强制重新渲染 AgGridVue 组件的 key
 const gridKey = ref(0)
-
+const tableContainerRef = ref<HTMLElement | HTMLDivElement | null>(null)
 // 当系统语言切换时，强制重建组件，兜底确保分页/过滤等全部应用新文案
 const handleLocaleChanged = () => {
   gridKey.value++
@@ -64,6 +66,7 @@ const {
   rowData,
   selectedRows,
   gridContainer,
+  layoutReady,
   mergedGridOptions,
   columnDefs,
   gridStyle,
@@ -90,6 +93,61 @@ const {
   showNoRowsOverlay,
   setLoading,
 } = useRevoGrid(mergedProps, emit)
+
+// ==================== 容器样式和类名计算 ====================
+
+// 容器样式计算属性
+const containerStyle = computed(() => {
+  const widthMode = mergedSizeConfig.value.widthMode || 'fill'
+  const { width, minWidth, maxWidth } = mergedSizeConfig.value
+
+  const baseStyle: Record<string, string> = {
+    opacity: layoutReady.value ? '1' : '0',
+    visibility: layoutReady.value ? 'visible' : 'hidden',
+  }
+
+  if (widthMode === 'fixed' && width) {
+    baseStyle.width = `${width}px`
+  }
+
+  if (minWidth) {
+    baseStyle.minWidth = `${minWidth}px`
+  }
+  if (maxWidth) {
+    baseStyle.maxWidth = `${maxWidth}px`
+  }
+
+  return baseStyle
+})
+
+// 容器类名计算属性
+const containerClass = computed(() => {
+  const classes: string[] = []
+
+  // 高度类
+  if (mergedSizeConfig.value.heightMode === 'fixed') {
+    classes.push(`h-${mergedSizeConfig.value.height}`)
+  } else {
+    classes.push('h-full')
+  }
+
+  // 宽度类
+  const widthMode = mergedSizeConfig.value.widthMode || 'fill'
+  if (widthMode === 'fill') {
+    classes.push('w-full')
+  }
+
+  return classes
+})
+
+// ==================== 无感知更新模式：条件绑定 rowData ====================
+
+/**
+ * 在 transaction 模式下，不将 rowData 直接绑定到 AgGridVue
+ * 而是通过 api.setGridOption('rowData', ...) 在 gridReady 时初始化
+ * 后续通过 applyTransaction 进行增量更新，避免 AgGridVue 响应式系统触发全量重绘
+ */
+const bindRowData = computed(() => props.seamlessDataUpdateMode !== 'transaction')
 
 // 注意：enableCellSpan 是 AG Grid 企业版功能，社区版不支持
 // 已移除 enableCellSpan 相关的监听和重新渲染逻辑
@@ -171,8 +229,17 @@ const unbindScrollListener = () => {
 // 组件挂载时注入样式与绑定滚动
 onMounted(() => {
   injectScrollbarStyles()
-  window.addEventListener('locale-changed', handleLocaleChanged)
   bindScrollListener()
+  // 监听容器尺寸变化,按策略触发图表自适应
+  useElementSize(
+    tableContainerRef,
+    () => {
+      console.log('=1111111')
+
+      handleLocaleChanged()
+    },
+    { mode: 'none', delay: INTERVAL }
+  )
 })
 
 // 组件卸载时清理样式
@@ -181,7 +248,6 @@ onUnmounted(() => {
     document.head.removeChild(styleElement)
     styleElement = null
   }
-  window.removeEventListener('locale-changed', handleLocaleChanged)
   // 卸载滚动监听
   unbindScrollListener()
 })
@@ -192,7 +258,8 @@ watch(
   async () => {
     await nextTick()
     bindScrollListener()
-  }
+  },
+  { deep: true, immediate: true }
 )
 
 // ==================== 事件处理 ====================
@@ -224,8 +291,10 @@ defineExpose({
 </script>
 
 <template lang="pug">
-.between-col.w-full.bg-bg100.border.border-bg300.rounded-rounded.overflow-hidden(
-  :class='props.sizeConfig.heightMode === "fixed" ? "h-" + props.sizeConfig.height : "h-full"'
+.between-col.bg-bg100.border.border-bg300.rounded-rounded.overflow-hidden(
+  :class='containerClass',
+  :style='containerStyle',
+  ref='tableContainerRef'
 )
   // 工具栏区域
   .between.items-center.justify-between.border-b.border-bg300.rounded-rounded.px-padding.py-paddings(
@@ -263,7 +332,7 @@ defineExpose({
       :class='gridClass',
       :style='gridStyle',
       :column-defs='columnDefs',
-      :row-data='rowData',
+      :row-data='bindRowData ? rowData : undefined',
       :grid-options='mergedGridOptions',
       :locale-text='mergedGridOptions.localeText'
     )
@@ -417,7 +486,16 @@ defineExpose({
   + .ag-row {
   border-top: 1px solid var(--bg300) !important;
 }
-:deep(.ag-overlay) {
-  z-index: 99999 !important;
+/* ==================== 合并单元格覆盖与隐藏 ==================== */
+/* 主跨行/跨列单元格：提高层级并覆盖背景 */
+::deep(.ag-theme-alpine .ag-cell.ag-span-master) {
+  position: relative !important;
+  z-index: 2 !important;
+  overflow: hidden;
+}
+/* 被跨行覆盖的下方同列单元格：隐藏并移除边框 */
+::deep(.ag-theme-alpine .ag-cell.ag-cell-hidden-by-span) {
+  visibility: hidden !important;
+  border: none !important;
 }
 </style>

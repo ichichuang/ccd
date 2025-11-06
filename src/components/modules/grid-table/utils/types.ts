@@ -17,8 +17,11 @@ import type { ComputedRef, Ref } from 'vue'
 
 // ==================== 基础类型 ====================
 
-/** 表格尺寸单位 */
+/** 表格高度模式 */
 export type HeightMode = 'auto' | 'fixed' | 'fill'
+
+/** 表格宽度模式 */
+export type WidthMode = 'fixed' | 'fill'
 
 // ==================== 配色配置 ====================
 
@@ -172,6 +175,14 @@ export interface GridSizeConfig {
   height?: number
   /** 高度模式：auto(内容撑开)、fixed(固定高度)、fill(撑满容器) */
   heightMode?: HeightMode
+  /** 表格最小宽度 */
+  minWidth?: number
+  /** 表格最大宽度 */
+  maxWidth?: number
+  /** 表格宽度 */
+  width?: number
+  /** 宽度模式：fixed(固定宽度)、fill(撑满容器) */
+  widthMode?: WidthMode
   /** 滚动条尺寸（px） */
   scrollbarSize?: number
   /** 全局单元格水平对齐方式 */
@@ -321,6 +332,8 @@ export interface GridTableProps {
   overlayLoadingTemplate?: string
   /** 自定义无数据遮罩层模板 */
   overlayNoRowsTemplate?: string
+  /** 无感知数据更新模式：'off' | 'transaction' | 'delta' */
+  seamlessDataUpdateMode?: 'off' | 'transaction' | 'delta'
   // 注意：enableCellSpan 是 AG Grid 企业版功能，社区版不支持
   // enableCellSpan?: boolean
 }
@@ -394,6 +407,8 @@ export interface UseRevoGridReturn {
   selectedRows: Ref<any[]>
   /** 表格容器引用 */
   gridContainer: Ref<any>
+  /** 布局是否就绪（用于防止初始渲染闪烁） */
+  layoutReady: Ref<boolean>
   /** 表格样式 */
   gridStyle: ComputedRef<Record<string, string>>
   /** 表格类名 */

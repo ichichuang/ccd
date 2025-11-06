@@ -143,7 +143,15 @@ export const COMPACT_GRID_SIZE_CONFIG: GridSizeConfig = {
   /** 表格高度 - 控制表格的默认高度 */
   height: 0,
   /** 高度模式：auto | fixed | fill */
-  heightMode: 'auto',
+  heightMode: 'fill',
+  /** 表格最小宽度 - 控制表格的最小宽度 */
+  minWidth: 0,
+  /** 表格最大宽度 - 控制表格的最大宽度 */
+  maxWidth: 0,
+  /** 表格宽度 - 控制表格的默认宽度 */
+  width: 0,
+  /** 宽度模式：fixed | fill */
+  widthMode: 'fill',
   /** 滚动条尺寸（与生成样式联动） */
   scrollbarSize: 6,
   /** 全局单元格水平对齐方式 */
@@ -177,7 +185,15 @@ export const COMFORTABLE_GRID_SIZE_CONFIG: GridSizeConfig = {
   /** 表格高度 - 控制表格的默认高度 */
   height: 0,
   /** 高度模式：auto | fixed | fill */
-  heightMode: 'auto',
+  heightMode: 'fill',
+  /** 表格最小宽度 - 控制表格的最小宽度 */
+  minWidth: 0,
+  /** 表格最大宽度 - 控制表格的最大宽度 */
+  maxWidth: 0,
+  /** 表格宽度 - 控制表格的默认宽度 */
+  width: 0,
+  /** 宽度模式：fixed | fill */
+  widthMode: 'fill',
   /** 滚动条尺寸（与生成样式联动） */
   scrollbarSize: 8,
   /** 全局单元格水平对齐方式 */
@@ -211,7 +227,15 @@ export const LOOSE_GRID_SIZE_CONFIG: GridSizeConfig = {
   /** 表格高度 - 控制表格的默认高度 */
   height: 0,
   /** 高度模式：auto | fixed | fill */
-  heightMode: 'auto',
+  heightMode: 'fill',
+  /** 表格最小宽度 - 控制表格的最小宽度 */
+  minWidth: 0,
+  /** 表格最大宽度 - 控制表格的最大宽度 */
+  maxWidth: 0,
+  /** 表格宽度 - 控制表格的默认宽度 */
+  width: 0,
+  /** 宽度模式：fixed | fill */
+  widthMode: 'fill',
   /** 滚动条尺寸（与生成样式联动） */
   scrollbarSize: 12,
   /** 全局单元格水平对齐方式 */
@@ -419,4 +443,6 @@ export const createDefaultGridTableProps = () => ({
   // overlay 模板默认由 i18n 在运行时注入，保留自定义入口以便业务侧覆盖
   overlayLoadingTemplate: undefined as unknown as string,
   overlayNoRowsTemplate: undefined as unknown as string,
+  /** 无感知数据更新模式 */
+  seamlessDataUpdateMode: 'transaction' as 'off' | 'transaction' | 'delta',
 })
