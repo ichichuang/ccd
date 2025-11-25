@@ -248,15 +248,38 @@
         border-color: var(--bg300);
       }
       // 校验失败
-      &.form-item-content-invalid, // 校验失败
-      &.form-item-content-invalid>input {
-        border-color: var(--danger-color);
-        &:hover,
-        &:active,
-        &:focus {
+      &.form-item-content-invalid {
+        // 校验失败 - 应用到所有子元素
+        &,
+        & > *,
+        & input,
+        & textarea,
+        & select,
+        & .p-inputtext,
+        & .p-inputtextarea,
+        & .p-dropdown,
+        & .p-multiselect,
+        & .p-cascadeselect,
+        & .p-treeselect,
+        & .p-listbox,
+        & .p-autocomplete,
+        & .p-inputmask,
+        & .p-inputnumber,
+        & .p-password,
+        & .p-colorpicker,
+        & .p-slider,
+        & .p-rating {
           border-color: var(--danger-color) !important;
+          &:hover,
+          &:active,
+          &:focus,
+          &:focus-visible {
+            border-color: var(--danger-color) !important;
+          }
         }
-        &::placeholder {
+        &::placeholder,
+        & input::placeholder,
+        & textarea::placeholder {
           color: var(--text200) !important;
         }
       }

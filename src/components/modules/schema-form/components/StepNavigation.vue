@@ -14,6 +14,7 @@
         type="button"
         severity="primary"
         label="下一步"
+        :disabled="nextEnabled === false"
         @click="() => $emit('next', form)"
       />
       <Button
@@ -33,6 +34,7 @@ defineProps<{
   activeStep: number
   totalSteps: number
   form: any
+  nextEnabled?: boolean
 }>()
 
 defineEmits<{

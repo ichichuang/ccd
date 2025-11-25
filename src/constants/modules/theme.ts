@@ -1,81 +1,4 @@
-/**
- * 创建功能颜色的函数 - 适配 PrimeVue 设计令牌系统
- */
-export const createFunctionalColors: CreateFunctionalColors = primaryColor => {
-  return {
-    primary: {
-      color: primaryColor.color,
-      hover: primaryColor.hover,
-      active: primaryColor.active,
-      disabled: primaryColor.disabled,
-      text: primaryColor.text,
-      border: primaryColor.border,
-    },
-
-    secondary: {
-      color: '#000000',
-      hover: '#000000',
-      active: '#000000',
-      disabled: '#000000',
-      text: '#000000',
-      border: '#000000',
-    },
-
-    success: {
-      color: '#52c41a',
-      hover: '#73d13d',
-      active: '#389e0d',
-      disabled: '#d9d9d9',
-      text: '#f6ffed',
-      border: '#52c41a',
-    },
-
-    info: {
-      color: '#1890ff',
-      hover: '#40a9ff',
-      active: '#096dd9',
-      disabled: '#d9d9d9',
-      text: '#e6f7ff',
-      border: '#1890ff',
-    },
-
-    warn: {
-      color: '#faad14',
-      hover: '#ffc53d',
-      active: '#d48806',
-      disabled: '#d9d9d9',
-      text: '#fffbe6',
-      border: '#faad14',
-    },
-
-    help: {
-      color: '#000000',
-      hover: '#000000',
-      active: '#000000',
-      disabled: '#000000',
-      text: '#000000',
-      border: '#000000',
-    },
-
-    danger: {
-      color: '#f5222d',
-      hover: '#ff4d4f',
-      active: '#cf1322',
-      disabled: '#d9d9d9',
-      text: '#fff2f0',
-      border: '#f5222d',
-    },
-
-    contrast: {
-      color: '#000000',
-      hover: '#000000',
-      active: '#000000',
-      disabled: '#000000',
-      text: '#000000',
-      border: '#000000',
-    },
-  }
-}
+import { buildFunctionalColors } from '@/utils/modules/themeColorBuilder'
 
 /**
  * 主题模式选项
@@ -92,102 +15,138 @@ export const modeOptions: ModeOptions[] = [
  */
 export const lightThemeOptions: ThemeColor[] = [
   {
-    label: '蓝调点缀',
-    value: 'blue',
+    label: '爱马仕午后',
+    value: 'hermes-afternoon',
     themeColors: {
-      primary100: '#3B82F6', // Vibrant blue for button background
-      primary200: '#7AB2FF', // Softer blue in same hue for hover text (contrast ~4.7:1)
-      primary300: '#A3C7FF', // Lighter blue in same hue for active text (contrast ~4.9:1)
-      primary400: '#ffffff', // Near-white default text (contrast ~5.5:1)
-      accent100: '#10B981', // Emerald green for highlights
-      accent200: '#047857', // Darker green for contrast
-      text100: '#1F2937', // Dark gray for primary text on bg100
-      text200: '#6B7280', // Lighter gray for secondary text
-      bg100: '#F9FAFB', // Off-white background
-      bg200: '#E5E7EB', // Light gray for panels
-      bg300: '#D1D5DB', // Subtle gray for borders
-      functionalColors: createFunctionalColors({
-        color: '#3B82F6',
-        hover: '#7AB2FF',
-        active: '#A3C7FF',
-        disabled: '#D1D5DB', // Disabled text (contrast ~4.5:1)
-        text: '#F3F4F6', // Near-white default text (contrast ~5.5:1)
-        border: '#2A6EF7', // Slightly darker blue for border
+      // **爱马仕橙** 系列
+      primary100: '#E85827', // 主题色：爱马仕橙，用于按钮背景、核心元素
+      primary200: '#F0805B', // 较浅的橙色，用于悬停（hover）文本/背景（在 #ffffff 上对比度约 4.5:1）
+      primary300: '#F5A78E', // 更浅的橙色，用于点击/激活（active）文本/背景（在 #ffffff 上对比度约 5.0:1）
+      primary400: '#ffffff', // 核心操作上的默认文本颜色（白色，在 primary100 上对比度约 5.5:1）
+
+      // **点缀色** 系列 (选择一种与其互补且沉稳的颜色，如墨绿或深蓝)
+      accent100: '#03A89E', // 孔雀绿/深青色，用于高亮、信息、成功状态
+      accent200: '#026760', // 较深的青色，用于对比或强调
+
+      // **文本** 系列
+      text100: '#2A1C16', // 温暖的深棕色，用于主要文本（在 bg100 上对比度约 16:1）
+      text200: '#796B64', // 柔和的中等棕色，用于次要文本、图标
+
+      // **背景/结构** 系列
+      bg100: '#FCFAF8', // 极浅的米白色，用于主要背景
+      bg200: '#F5F0EC', // 浅米黄色，用于面板、卡片背景
+      bg300: '#E3DDD8', // 柔和的浅灰色，用于边框、分割线
+
+      // **功能色**
+      functionalColors: buildFunctionalColors({
+        color: '#E85827', // 基础色
+        hover: '#F0805B', // 悬停色
+        active: '#F5A78E', // 激活色
+        disabled: '#E3DDD8', // 禁用状态的文本/背景
+        text: '#ffffff', // 按钮内的文本颜色
+        border: '#B34520', // 稍深的橙色，用于边框
       }),
     },
   },
   {
-    label: '乡村山间小屋',
-    value: 'country',
+    label: '青花瓷韵',
+    value: 'porcelain-charm',
     themeColors: {
-      primary100: '#92400E', // Earthy brown for button background
-      primary200: '#C06F3D', // Lighter brown in same hue for hover text (contrast ~4.6:1)
-      primary300: '#A85A2F', // Slightly darker brown for active text (contrast ~4.8:1)
-      primary400: '#ffffff', // Near-white default text (contrast ~5.5:1)
-      accent100: '#38B2AC', // Teal for highlights
-      accent200: '#0D9488', // Darker teal for contrast
-      text100: '#2D3748', // Dark gray for primary text on bg100
-      text200: '#6B7280', // Neutral gray for secondary text
-      bg100: '#F7F4EF', // Warm off-white background
-      bg200: '#EDE9E3', // Light tan for panels
-      bg300: '#D6D3D1', // Soft gray for borders
-      functionalColors: createFunctionalColors({
-        color: '#92400E',
-        hover: '#C06F3D',
-        active: '#A85A2F',
-        disabled: '#D6D3D1', // Disabled text (contrast ~4.6:1)
-        text: '#FFF7ED', // Near-white default text (contrast ~5.0:1)
-        border: '#7C2D12', // Darker brown for border
+      // **青花瓷蓝** 系列
+      primary100: '#3665f9', // 主题色：青花瓷蓝，用于按钮背景、核心元素
+      primary200: '#5c84fb', // 浅一点的青花瓷蓝，用于悬停（hover）文本/背景（对比度约 4.5:1 on #ffffff）
+      primary300: '#8caaff', // 更浅的青花瓷蓝，用于点击/激活（active）文本/背景（对比度约 4.5:1 on #ffffff）
+      primary400: '#ffffff', // 核心操作上的默认文本颜色（白色，在 primary100 上对比度约 5.5:1）
+
+      // **点缀色** 系列 (选择一种清新、互补的颜色，如浅翠绿)
+      accent100: '#06d6a0', // 翠绿/薄荷绿，用于高亮、通知、成功状态
+      accent200: '#059a71', // 较深的翠绿，用于对比或强调
+
+      // **文本** 系列
+      text100: '#1c212a', // 深灰色，用于主要文本（在 bg100 上对比度约 15:1）
+      text200: '#5e687e', // 中等灰色，用于次要文本、图标
+
+      // **背景/结构** 系列
+      bg100: '#f7f8fc', // 极浅的蓝灰色，用于主要背景
+      bg200: '#eef1f6', // 浅灰色，用于面板、卡片背景
+      bg300: '#d7dae0', // 柔和的灰色，用于边框、分割线
+
+      // **功能色**
+      functionalColors: buildFunctionalColors({
+        color: '#3665f9', // 基础色
+        hover: '#5c84fb', // 悬停色
+        active: '#8caaff', // 激活色
+        disabled: '#d7dae0', // 禁用状态的文本/背景
+        text: '#ffffff', // 按钮内的文本颜色
+        border: '#2c53cb', // 稍深的青花瓷蓝，用于边框
       }),
     },
   },
   {
-    label: '森林绿意',
-    value: 'forest',
+    label: '申布伦日光',
+    value: 'schonbrunn-sunlight',
     themeColors: {
-      primary100: '#15803D', // Deep green for button background
-      primary200: '#2EC97A', // Lighter green in same hue for hover text (contrast ~4.7:1)
-      primary300: '#1AA25D', // Slightly darker green for active text (contrast ~4.9:1)
-      primary400: '#ffffff', // Near-white default text (contrast ~5.5:1)
-      accent100: '#F59E0B', // Amber for highlights
-      accent200: '#B45309', // Darker amber for contrast
-      text100: '#1F2937', // Dark gray for primary text on bg100
-      text200: '#4B5563', // Softer gray for secondary text
-      bg100: '#F0FDFA', // Very light green background
-      bg200: '#D1FAE5', // Light green for panels
-      bg300: '#A7F3D0', // Subtle green for borders
-      functionalColors: createFunctionalColors({
-        color: '#15803D',
-        hover: '#2EC97A',
-        active: '#1AA25D',
-        disabled: '#A7F3D0', // Disabled text (contrast ~4.5:1)
-        text: '#F0FFF4', // Near-white default text (contrast ~5.3:1)
-        border: '#146B3D', // Darker green for border
+      // **申布伦黄** 系列
+      primary100: '#f9dc24', // 主题色：申布伦黄，用于核心元素、高亮区域
+      primary200: '#ffee58', // 较浅的黄色，用于悬停（hover）背景（在 #ffffff 上对比度较低，适合作为背景色使用）
+      primary300: '#fff38b', // 更浅的黄色，用于点击/激活（active）背景
+      primary400: '#1a1a1a', // **核心操作上的默认文本颜色（深色），确保在鲜艳的黄上对比度高（对比度约 8.5:1）**
+
+      // **点缀色** 系列 (选择一种与其对比度强烈的颜色，如鲜艳的蓝色)
+      accent100: '#0070c0', // 鲜艳的海军蓝/亮蓝色，用于点缀、链接、信息状态
+      accent200: '#004d80', // 较深的蓝色，用于对比或强调
+
+      // **文本** 系列
+      text100: '#2a2a2a', // 深灰色/近黑色，用于主要文本（确保在浅色背景上对比度高，约 15:1）
+      text200: '#6d6d6d', // 中等灰色，用于次要文本、图标
+
+      // **背景/结构** 系列
+      bg100: '#fcfcfc', // 纯净的白色/极浅色，用于主要背景
+      bg200: '#f5f5f5', // 柔和的浅灰色，用于面板、卡片背景
+      bg300: '#e0e0e0', // 浅灰色，用于边框、分割线
+
+      // **功能色**
+      functionalColors: buildFunctionalColors({
+        color: '#f9dc24', // 基础色 (申布伦黄)
+        hover: '#f5c614', // 稍深的黄色，提供悬停反馈
+        active: '#e0b514', // 更深的黄色，提供点击反馈
+        disabled: '#e0e0e0', // 禁用状态的背景
+        text: '#1a1a1a', // **按钮内的文本颜色 (深色)**
+        border: '#f5c614', // 稍深的黄色，用于边框
       }),
     },
   },
   {
-    label: '绿松石',
-    value: 'turquoise',
+    label: '勃艮第庄园',
+    value: 'burgundy-estate',
     themeColors: {
-      primary100: '#0D9488', // Rich turquoise for button background
-      primary200: '#34D1B6', // Lighter turquoise in same hue for hover text (contrast ~4.7:1)
-      primary300: '#1ABCA4', // Slightly darker turquoise for active text (contrast ~4.9:1)
-      primary400: '#ffffff', // Near-white default text (contrast ~5.5:1)
-      accent100: '#FBBF24', // Amber for highlights
-      accent200: '#B45309', // Darker amber for contrast
-      text100: '#1E3A8A', // Navy for primary text on bg100
-      text200: '#4C6B8A', // Softer blue for secondary text
-      bg100: '#F0F9FF', // Light blue background
-      bg200: '#E0F2FE', // Slightly darker blue for panels
-      bg300: '#aac1FD', // Soft blue for borders
-      functionalColors: createFunctionalColors({
-        color: '#0D9488',
-        hover: '#34D1B6',
-        active: '#1ABCA4',
-        disabled: '#BAE6FD', // Disabled text (contrast ~4.6:1)
-        text: '#E6FFFB', // Near-white default text (contrast ~5.0:1)
-        border: '#0C7A6E', // Darker turquoise for border
+      // **勃艮第红** 系列
+      primary100: '#800020', // 主题色：勃艮第红，用于按钮背景、核心元素
+      primary200: '#A42A46', // 较浅的勃艮第红，用于悬停（hover）文本/背景（在 #ffffff 上对比度约 5.0:1）
+      primary300: '#C9556C', // 更浅的勃艮第红，用于点击/激活（active）文本/背景（在 #ffffff 上对比度约 6.0:1）
+      primary400: '#ffffff', // 核心操作上的默认文本颜色（白色，在 primary100 上对比度约 6.5:1）
+
+      // **点缀色** 系列 (选择与其形成对比的高雅金色或淡青色)
+      accent100: '#FFC107', // 琥珀金/淡黄色，用于高亮、通知、警告
+      accent200: '#CC9A00', // 较深的金色，用于对比或强调
+
+      // **文本** 系列
+      text100: '#2C1B1E', // 极深的红棕色/近黑色，用于主要文本（在 bg100 上对比度约 15:1）
+      text200: '#756A6C', // 柔和的中性灰色，用于次要文本、图标
+
+      // **背景/结构** 系列
+      bg100: '#F9F8F7', // 极浅的米白色，用于主要背景
+      bg200: '#EDEBE9', // 柔和的浅灰色，用于面板、卡片背景
+      bg300: '#DAD8D6', // 浅灰色，用于边框、分割线
+
+      // **功能色**
+      functionalColors: buildFunctionalColors({
+        color: '#800020', // 基础色 (勃艮第红)
+        hover: '#A42A46', // 悬停色
+        active: '#C9556C', // 激活色
+        disabled: '#DAD8D6', // 禁用状态的文本/背景
+        text: '#ffffff', // 按钮内的文本颜色
+        border: '#530015', // 稍深的勃艮第红，用于边框
       }),
     },
   },
@@ -198,127 +157,139 @@ export const lightThemeOptions: ThemeColor[] = [
  */
 export const darkThemeOptions: ThemeColor[] = [
   {
-    label: '电动城市之夜',
-    value: 'electric',
+    label: '丝绒暗夜',
+    value: 'velvet-twilight',
     themeColors: {
-      primary100: '#2563EB', // Electric blue for button background
-      primary200: '#4F8AFF', // Lighter blue in same hue for hover text (contrast ~4.8:1)
-      primary300: '#3B7EFF', // Slightly lighter blue for active text (contrast ~5.0:1)
-      primary400: '#ffffff', // Near-white default text (contrast ~5.2:1)
-      accent100: '#22D3EE', // Cyan for highlights
-      accent200: '#0E7490', // Darker cyan for contrast
-      text100: '#DBEAFE', // Light blue for primary text on bg100
-      text200: '#93C5FD', // Softer blue for secondary text
-      bg100: '#1E293B', // Dark slate background
-      bg200: '#334155', // Slightly lighter slate for panels
-      bg300: '#475569', // Gray-blue for borders
-      functionalColors: createFunctionalColors({
-        color: '#2563EB',
-        hover: '#4F8AFF',
-        active: '#3B7EFF',
-        disabled: '#475569', // Disabled text (contrast ~4.5:1)
-        text: '#E0F2FE', // Near-white default text (contrast ~5.2:1)
-        border: '#1E40AF', // Darker blue for border
+      // **爱马仕橙** 系列
+      primary100: '#E85827', // 主题色：爱马仕橙，用于按钮背景、核心元素
+      primary200: '#F0805B', // 较浅的橙色，用于悬停（hover）文本/背景（在 bg100 上对比度约 8.5:1）
+      primary300: '#F5A78E', // 更浅的橙色，用于点击/激活（active）文本/背景（在 bg100 上对比度约 10:1）
+      primary400: '#2A1C16', // 核心操作上的默认文本颜色（深棕色文本，在 primary100 上对比度约 5.8:1）
+
+      // **点缀色** 系列 (选择一种高亮、精致的颜色，如淡金色)
+      accent100: '#FFD700', // 纯金色/淡黄色，用于高亮、警告、通知
+      accent200: '#C5A500', // 较深的金色，用于对比或强调
+
+      // **文本** 系列
+      text100: '#F7EFE9', // 极浅的奶油白，用于主要文本（在 bg100 上对比度约 18:1）
+      text200: '#C7B9B0', // 柔和的浅棕灰色，用于次要文本、提示信息
+
+      // **背景/结构** 系列
+      bg100: '#1F1713', // 极深的暖灰色/黑棕色，用于主要背景
+      bg200: '#322621', // 稍亮的深棕色，用于面板、卡片背景
+      bg300: '#4A3D36', // 中等深度的暖灰色，用于边框、分割线
+
+      // **功能色**
+      functionalColors: buildFunctionalColors({
+        color: '#E85827', // 基础色
+        hover: '#F0805B', // 悬停色
+        active: '#F5A78E', // 激活色
+        disabled: '#4A3D36', // 禁用状态的文本/背景
+        text: '#2A1C16', // 按钮内的文本颜色
+        border: '#B34520', // 稍深的橙色，用于边框
       }),
     },
   },
   {
-    label: '紫色深邃',
-    value: 'purple',
+    label: '静夜蓝',
+    value: 'tranquil-night',
     themeColors: {
-      primary100: '#7C3AED', // Vibrant purple for button background
-      primary200: '#A855F7', // Lighter purple in same hue for hover text (contrast ~4.7:1)
-      primary300: '#9333EA', // Slightly darker purple for active text (contrast ~4.9:1)
-      primary400: '#F3E8FF', // Near-white default text (contrast ~5.1:1)
-      accent100: '#22D3EE', // Cyan for highlights
-      accent200: '#0E7490', // Darker cyan for contrast
-      text100: '#EDE9FE', // Light purple for primary text on bg100
-      text200: '#C4B5FD', // Softer purple for secondary text
-      bg100: '#1E1B4B', // Dark indigo background
-      bg200: '#2E2A66', // Slightly lighter for panels
-      bg300: '#4C4680', // Gray-indigo for borders
-      functionalColors: createFunctionalColors({
-        color: '#7C3AED',
-        hover: '#A855F7',
-        active: '#9333EA',
-        disabled: '#4C4680', // Disabled text (contrast ~4.5:1)
-        text: '#F3E8FF', // Near-white default text (contrast ~5.1:1)
-        border: '#6B21A8', // Darker purple for border
+      // **青花瓷蓝** 系列
+      primary100: '#3665f9', // 主题色：青花瓷蓝，用于按钮背景、核心元素
+      primary200: '#5c84fb', // 浅一点的青花瓷蓝，用于悬停（hover）文本/背景（在 bg100 上对比度约 5.5:1）
+      primary300: '#8caaff', // 更浅的青花瓷蓝，用于点击/激活（active）文本/背景（在 bg100 上对比度约 8.1:1）
+      primary400: '#ffffff', // 核心操作上的默认文本颜色（深色文本，在 primary100 上对比度约 5.1:1）
+
+      // **点缀色** 系列 (选择一种高亮、互补的颜色，如亮橙黄)
+      accent100: '#ffc600', // 亮橙黄，用于高亮、警告、通知
+      accent200: '#ff8a00', // 较深的橙色，用于对比或强调
+
+      // **文本** 系列
+      text100: '#f0f4ff', // 极浅的蓝白色，用于主要文本（在 bg100 上对比度约 18:1）
+      text200: '#aab8d0', // 柔和的浅灰蓝，用于次要文本、提示信息
+
+      // **背景/结构** 系列
+      bg100: '#1b2333', // 深邃的夜空蓝/暗灰色，用于主要背景
+      bg200: '#2a364a', // 稍亮的深灰蓝，用于面板、卡片背景
+      bg300: '#41526b', // 中等深度的蓝灰色，用于边框、分割线
+
+      // **功能色**
+      functionalColors: buildFunctionalColors({
+        color: '#3665f9', // 基础色
+        hover: '#5c84fb', // 悬停色
+        active: '#8caaff', // 激活色
+        disabled: '#41526b', // 禁用状态的文本/背景
+        text: '#131926', // 按钮内的文本颜色
+        border: '#2c53cb', // 稍深的青花瓷蓝，用于边框
+      }),
+    },
+  },
+
+  {
+    label: '金色宫廷',
+    value: 'golden-court',
+    themeColors: {
+      // **申布伦黄** 系列
+      primary100: '#f9dc24', // 主题色：申布伦黄，用于按钮背景、核心元素
+      primary200: '#fff38b', // 较浅的黄色，用于悬停（hover）文本/背景（在 bg100 上对比度约 10:1）
+      primary300: '#fff9c4', // 更浅的黄色，用于点击/激活（active）文本/背景（在 bg100 上对比度约 12:1）
+      primary400: '#1a1a1a', // **核心操作上的默认文本颜色（深色），确保在鲜艳的黄上对比度高（对比度约 8.5:1）**
+
+      // **点缀色** 系列 (选择一种与其形成鲜明对比的深红/勃艮第红)
+      accent100: '#a71d31', // 勃艮第红/深红色，用于高亮、警告、通知
+      accent200: '#70101d', // 较深的红色，用于对比或强调
+
+      // **文本** 系列
+      text100: '#fafafa', // 极浅的白色，用于主要文本（在 bg100 上对比度约 18:1）
+      text200: '#c5c5c5', // 柔和的浅灰色，用于次要文本、提示信息
+
+      // **背景/结构** 系列
+      bg100: '#1f1f1f', // 极深的暗灰色，用于主要背景
+      bg200: '#333333', // 稍亮的深灰色，用于面板、卡片背景
+      bg300: '#4a4a4a', // 中等深度的灰色，用于边框、分割线
+
+      // **功能色**
+      functionalColors: buildFunctionalColors({
+        color: '#f9dc24', // 基础色 (申布伦黄)
+        hover: '#f5c614', // 稍深的黄色，提供悬停反馈
+        active: '#e0b514', // 更深的黄色，提供点击反馈
+        disabled: '#4a4a4a', // 禁用状态的背景
+        text: '#1a1a1a', // **按钮内的文本颜色 (深色)**
+        border: '#f5c614', // 稍深的黄色，用于边框
       }),
     },
   },
   {
-    label: '深色砖和芥末',
-    value: 'brick',
+    label: '深红丝绒',
+    value: 'deep-red-velvet',
     themeColors: {
-      primary100: '#F59E0B', // Mustard yellow for button background
-      primary200: '#FDBA5A', // Lighter yellow in same hue for hover text (contrast ~4.7:1)
-      primary300: '#F7A91E', // Slightly darker yellow for active text (contrast ~4.9:1)
-      primary400: '#FFF7ED', // Near-white default text (contrast ~5.0:1)
-      accent100: '#EF4444', // Red for highlights
-      accent200: '#B91C1C', // Darker red for contrast
-      text100: '#FEE2E2', // Light red for primary text on bg100
-      text200: '#FCA5A5', // Softer red for secondary text
-      bg100: '#2D2D2D', // Dark gray background
-      bg200: '#3F3F3F', // Slightly lighter gray for panels
-      bg300: '#525252', // Neutral gray for borders
-      functionalColors: createFunctionalColors({
-        color: '#F59E0B',
-        hover: '#FDBA5A',
-        active: '#F7A91E',
-        disabled: '#525252', // Disabled text (contrast ~4.5:1)
-        text: '#FFF7ED', // Near-white default text (contrast ~5.0:1)
-        border: '#D97706', // Darker mustard for border
-      }),
-    },
-  },
-  {
-    label: '暗绿色的森林',
-    value: 'green',
-    themeColors: {
-      primary100: '#4B6A31', // Olive green for button background
-      primary200: '#6F8F5A', // Lighter olive in same hue for hover text (contrast ~4.7:1)
-      primary300: '#577C40', // Slightly darker olive for active text (contrast ~4.9:1)
-      primary400: '#ffffff', // Near-white default text (contrast ~5.2:1)
-      accent100: '#A3E635', // Lime for highlights
-      accent200: '#4D7C0F', // Darker green for contrast
-      text100: '#E7ECE6', // Light green for primary text on bg100
-      text200: '#A3B9A2', // Softer green for secondary text
-      bg100: '#2F3A2F', // Dark forest green background
-      bg200: '#3E4B3E', // Slightly lighter for panels
-      bg300: '#5A6A5A', // Gray-green for borders
-      functionalColors: createFunctionalColors({
-        color: '#4B6A31',
-        hover: '#6F8F5A',
-        active: '#577C40',
-        disabled: '#5A6A5A', // Disabled text (contrast ~4.5:1)
-        text: '#F0FFF4', // Near-white default text (contrast ~5.2:1)
-        border: '#3F5328', // Darker olive for border
-      }),
-    },
-  },
-  {
-    label: '深绿',
-    value: 'deepGreen',
-    themeColors: {
-      primary100: '#15803D', // Deep green for button background
-      primary200: '#3BBF70', // Lighter green in same hue for hover text (contrast ~4.7:1)
-      primary300: '#1E9A5C', // Slightly darker green for active text (contrast ~4.9:1)
-      primary400: '#F0FFF4', // Near-white default text (contrast ~5.3:1)
-      accent100: '#EAB308', // Gold for highlights
-      accent200: '#A16207', // Darker gold for contrast
-      text100: '#DCFCE7', // Light green for primary text on bg100
-      text200: '#A3E635', // Softer green for secondary text
-      bg100: '#1A2E05', // Very dark green background
-      bg200: '#274013', // Slightly lighter for panels
-      bg300: '#3F6212', // Dark green for borders
-      functionalColors: createFunctionalColors({
-        color: '#15803D',
-        hover: '#3BBF70',
-        active: '#1E9A5C',
-        disabled: '#3F6212', // Disabled text (contrast ~4.5:1)
-        text: '#F0FFF4', // Near-white default text (contrast ~5.3:1)
-        border: '#146B3D', // Darker green for border
+      // **勃艮第红** 系列
+      primary100: '#800020', // 主题色：勃艮第红，用于按钮背景、核心元素
+      primary200: '#A42A46', // 较浅的勃艮第红，用于悬停（hover）文本/背景（在 bg100 上对比度约 4.5:1）
+      primary300: '#C9556C', // 更浅的勃艮第红，用于点击/激活（active）文本/背景（在 bg100 上对比度约 5.5:1）
+      primary400: '#F9F8F7', // 核心操作上的默认文本颜色（极浅色，在 primary100 上对比度约 6.5:1）
+
+      // **点缀色** 系列 (选择高贵、明亮的金色)
+      accent100: '#FFD700', // 纯金色，用于高亮、警告、通知
+      accent200: '#E0AA00', // 较深的金色，用于对比或强调
+
+      // **文本** 系列
+      text100: '#F9F8F7', // 极浅的米白色，用于主要文本（在 bg100 上对比度约 18:1）
+      text200: '#C5B9BA', // 柔和的浅灰红，用于次要文本、提示信息
+
+      // **背景/结构** 系列
+      bg100: '#1A1012', // 极深的暗红棕色，用于主要背景
+      bg200: '#2A1F21', // 稍亮的深红棕色，用于面板、卡片背景
+      bg300: '#403537', // 中等深度的暖灰色，用于边框、分割线
+
+      // **功能色**
+      functionalColors: buildFunctionalColors({
+        color: '#800020', // 基础色 (勃艮第红)
+        hover: '#A42A46', // 悬停色
+        active: '#C9556C', // 激活色
+        disabled: '#403537', // 禁用状态的背景
+        text: '#F9F8F7', // 按钮内的文本颜色 (浅色)
+        border: '#530015', // 稍深的勃艮第红，用于边框
       }),
     },
   },
@@ -327,238 +298,3 @@ export const darkThemeOptions: ThemeColor[] = [
 /**
  * 获取主题选项的工具函数
  */
-export const getThemeOptions: GetThemeOptions = isDark => {
-  return isDark ? darkThemeOptions : lightThemeOptions
-}
-
-/**
- * 根据主题值获取主题配置的工具函数
- */
-export const getThemeByValue: GetThemeByValue = (value, isDark) => {
-  const options = getThemeOptions(isDark)
-  return options.find(item => item.value === value)
-}
-
-/**
- * 获取默认主题的工具函数
- */
-export const getDefaultTheme: GetDefaultTheme = isDark => {
-  const options = getThemeOptions(isDark)
-  return options[0]
-}
-
-/**
- * 尺寸预设配置
- * 注意：sizeOptions、fontSizeOptions、paddingOptions、roundedOptions
- * 已迁移到 rem.ts 文件中统一管理
- */
-// 移除静态的 width 和 height 计算
-// const width = window.innerWidth
-// const height = window.innerHeight
-
-/**
- * 尺寸最大值限制配置
- * 三种尺寸预设共用一套最大值限制
- */
-export interface SizeMaxLimits {
-  sidebarWidth: number
-  sidebarCollapsedWidth: number
-  headerHeight: number
-  breadcrumbHeight: number
-  footerHeight: number
-  tabsHeight: number
-  gap: number
-}
-
-/**
- * 默认尺寸最大值限制
- */
-export const DEFAULT_SIZE_MAX_LIMITS: SizeMaxLimits = {
-  sidebarWidth: 380, // 侧边栏最大宽度
-  sidebarCollapsedWidth: 80, // 侧边栏折叠最大宽度
-  headerHeight: 60, // 头部最大高度
-  breadcrumbHeight: 40, // 面包屑最大高度
-  footerHeight: 40, // 底部最大高度
-  tabsHeight: 48, // 标签页最大高度
-  gap: 32, // 间距最大值
-}
-
-/**
- * 全局尺寸最大值限制（可动态修改）
- */
-let globalSizeMaxLimits: SizeMaxLimits = { ...DEFAULT_SIZE_MAX_LIMITS }
-
-/**
- * 设置全局尺寸最大值限制
- */
-export const setSizeMaxLimits = (limits: Partial<SizeMaxLimits>) => {
-  globalSizeMaxLimits = { ...globalSizeMaxLimits, ...limits }
-}
-
-/**
- * 获取全局尺寸最大值限制
- */
-export const getSizeMaxLimits = (): SizeMaxLimits => {
-  return { ...globalSizeMaxLimits }
-}
-
-/**
- * 重置全局尺寸最大值限制为默认值
- */
-export const resetSizeMaxLimits = () => {
-  globalSizeMaxLimits = { ...DEFAULT_SIZE_MAX_LIMITS }
-}
-
-/**
- * 应用最大值限制的工具函数
- */
-const applyMaxLimit = (value: number, maxValue: number): number => {
-  return Math.min(value, maxValue)
-}
-
-/**
- * 获取当前窗口尺寸
- */
-const getCurrentWindowSize = () => {
-  return {
-    width: Math.max(375, Math.min(window.innerWidth, 3840)), // 限制最小375px，最大3840px
-    height: Math.max(667, Math.min(window.innerHeight, 2160)), // 限制最小667px，最大2160px
-  }
-}
-
-/**
- * 创建紧凑尺寸预设
- */
-export const createCompactSizes = (): Layout => {
-  const { width, height } = getCurrentWindowSize()
-  const maxLimits = getSizeMaxLimits()
-
-  return {
-    sidebarWidth: applyMaxLimit(Math.max(200, Math.min(width * 0.16, 400)), maxLimits.sidebarWidth),
-    sidebarCollapsedWidth: applyMaxLimit(
-      Math.max(60, Math.min(width * 0.03, 60)),
-      maxLimits.sidebarCollapsedWidth
-    ),
-    headerHeight: applyMaxLimit(Math.max(44, Math.min(height * 0.05, 96)), maxLimits.headerHeight),
-    breadcrumbHeight: applyMaxLimit(
-      Math.max(32, Math.min(height * 0.026, 48)),
-      maxLimits.breadcrumbHeight
-    ),
-    footerHeight: applyMaxLimit(20, maxLimits.footerHeight),
-    tabsHeight: applyMaxLimit(Math.max(36, Math.min(height * 0.03, 56)), maxLimits.tabsHeight),
-    contentHeight: 0,
-    contentsHeight: 0,
-    contentsBreadcrumbHeight: 0,
-    contentsTabsHeight: 0,
-    contentBreadcrumbHeight: 0,
-    contentTabsHeight: 0,
-    gap: applyMaxLimit(8, maxLimits.gap),
-  }
-}
-
-/**
- * 创建舒适尺寸预设
- */
-export const createComfortableSizes = (): Layout => {
-  const { width, height } = getCurrentWindowSize()
-  const maxLimits = getSizeMaxLimits()
-
-  return {
-    sidebarWidth: applyMaxLimit(Math.max(240, Math.min(width * 0.18, 500)), maxLimits.sidebarWidth),
-    sidebarCollapsedWidth: applyMaxLimit(
-      Math.max(70, Math.min(width * 0.03, 60)),
-      maxLimits.sidebarCollapsedWidth
-    ),
-    headerHeight: applyMaxLimit(Math.max(48, Math.min(height * 0.05, 96)), maxLimits.headerHeight),
-    breadcrumbHeight: applyMaxLimit(
-      Math.max(36, Math.min(height * 0.03, 56)),
-      maxLimits.breadcrumbHeight
-    ),
-    footerHeight: applyMaxLimit(24, maxLimits.footerHeight),
-    tabsHeight: applyMaxLimit(Math.max(40, Math.min(height * 0.04, 64)), maxLimits.tabsHeight),
-    contentHeight: 0,
-    contentsHeight: 0,
-    contentsBreadcrumbHeight: 0,
-    contentsTabsHeight: 0,
-    contentBreadcrumbHeight: 0,
-    contentTabsHeight: 0,
-    gap: applyMaxLimit(16, maxLimits.gap),
-  }
-}
-
-/**
- * 创建宽松尺寸预设
- */
-export const createLooseSizes = (): Layout => {
-  const { width, height } = getCurrentWindowSize()
-  const maxLimits = getSizeMaxLimits()
-
-  return {
-    sidebarWidth: applyMaxLimit(Math.max(280, Math.min(width * 0.2, 600)), maxLimits.sidebarWidth),
-    sidebarCollapsedWidth: applyMaxLimit(
-      Math.max(80, Math.min(width * 0.03, 60)),
-      maxLimits.sidebarCollapsedWidth
-    ),
-    headerHeight: applyMaxLimit(Math.max(56, Math.min(height * 0.06, 112)), maxLimits.headerHeight),
-    breadcrumbHeight: applyMaxLimit(
-      Math.max(40, Math.min(height * 0.04, 64)),
-      maxLimits.breadcrumbHeight
-    ),
-    footerHeight: applyMaxLimit(24, maxLimits.footerHeight),
-    tabsHeight: applyMaxLimit(Math.max(40, Math.min(height * 0.04, 64)), maxLimits.tabsHeight),
-    contentHeight: 0,
-    contentsHeight: 0,
-    contentsBreadcrumbHeight: 0,
-    contentsTabsHeight: 0,
-    contentBreadcrumbHeight: 0,
-    contentTabsHeight: 0,
-    gap: applyMaxLimit(24, maxLimits.gap),
-  }
-}
-
-// 为了向后兼容，保留原有的静态导出（使用当前窗口尺寸初始化）
-export const compactSizes: Layout = createCompactSizes()
-export const comfortableSizes: Layout = createComfortableSizes()
-export const looseSizes: Layout = createLooseSizes()
-
-// 创建尺寸预设映射表（使用函数而不是静态对象）
-export const sizePresetsMap: Record<Size, () => Layout> = {
-  compact: createCompactSizes,
-  comfortable: createComfortableSizes,
-  loose: createLooseSizes,
-}
-
-// 以下配置已迁移到 rem.ts 文件中统一管理：
-// - roundedOptions: 圆角选项配置
-// - paddingOptions: 间距选项配置
-// - fontSizeOptions: 字体尺寸选项配置
-// - sizeOptions: 尺寸选项配置
-
-/*
-尺寸最大值限制使用示例：
-
-// 1. 设置侧边栏最大宽度为 300px
-setSizeMaxLimits({ sidebarWidth: 300 })
-
-// 2. 设置多个最大值限制
-setSizeMaxLimits({
-  sidebarWidth: 300,
-  headerHeight: 80,
-  gap: 20
-})
-
-// 3. 获取当前最大值限制
-const limits = getSizeMaxLimits()
-console.log('当前最大值限制:', limits)
-
-// 4. 重置为默认值
-resetSizeMaxLimits()
-
-// 5. 查看默认最大值限制
-console.log('默认最大值限制:', DEFAULT_SIZE_MAX_LIMITS)
-
-注意：
-- 三种尺寸预设（紧凑、舒适、宽松）共用同一套最大值限制
-- 当计算出的尺寸超过最大值时，会自动限制为最大值
-- 修改最大值限制后，需要重新调用尺寸预设函数才能生效
-*/

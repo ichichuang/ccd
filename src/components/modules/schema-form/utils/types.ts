@@ -204,6 +204,8 @@ export interface SchemaFormProps {
   disabled?: boolean
   /** 提交转换 */
   submitTransform?: (values: any) => any
+  /** 是否开启内容记忆（IndexedDB 存储，layout 仅保存指针） */
+  remember?: boolean
 }
 
 /** 持久化配置 */

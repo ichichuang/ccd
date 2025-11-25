@@ -1,7 +1,6 @@
 <script setup lang="ts">
-import { debounce, throttle } from '@/common'
+import { debounce } from '@/common'
 import type { AnimateName } from '@/components/modules/animate-wrapper/utils/types'
-import { INTERVAL, STRATEGY } from '@/constants/modules/layout'
 import AdminLayout from '@/layouts/components/LayoutAdmin.vue'
 import FullScreenLayout from '@/layouts/components/LayoutFullScreen.vue'
 import RatioLayout from '@/layouts/components/LayoutRatio.vue'
@@ -124,16 +123,21 @@ const handleWindowResize = () => {
   emit('windowResize')
 }
 
+// 保存防抖后的函数引用，以便在卸载时正确移除
+const debouncedResizeHandler = debounce(handleWindowResize, 500)
+
 onMounted(() => {
-  // 监听窗口大小变化事件
-  if (STRATEGY === 'debounce') {
-    window.addEventListener('resize', debounce(handleWindowResize, INTERVAL))
-  } else {
-    window.addEventListener('resize', throttle(handleWindowResize, INTERVAL))
-  }
+  window.addEventListener('resize', debouncedResizeHandler)
 })
 
 onUnmounted(() => {
+  // 移除 DOM 事件监听器
+  window.removeEventListener('resize', debouncedResizeHandler)
+  // 取消防抖函数中可能存在的待执行任务
+  if (typeof (debouncedResizeHandler as any).cancel === 'function') {
+    ;(debouncedResizeHandler as any).cancel()
+  }
+  // 移除 mitt 事件监听（虽然这里没有注册监听，但保持一致性）
   off('windowResize')
 })
 </script>

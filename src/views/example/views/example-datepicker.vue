@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import { DateUtils } from '@#/index'
-import { DatePicker, COMMON_PRESET_RANGES, type DateValue } from '@/components/modules/date-picker'
+import { COMMON_PRESET_RANGES, DatePicker, type DateValue } from '@/components/modules/date-picker'
 import { computed, ref } from 'vue'
 
 // 单选/范围/不同模式：统一使用 DateValue 以兼容组件的 emits 类型
-const dateSingleBasic = ref<DateValue>(null)
+const dateSingleBasic = ref<DateValue>(Date.now())
 const dateSingleLimited = ref<DateValue>(null)
 const dateSingleControlled = ref<DateValue>(null)
 const dateRange = ref<DateValue>(null)

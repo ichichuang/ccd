@@ -7,12 +7,13 @@
  * - colClass：col 配置 -> UnoCSS 类（基于 12 栅格）
  */
 import * as yup from 'yup'
+import { DEFAULT_OPTIONS_CACHE_TTL, getResponsiveSpan } from './constants'
 import type { EvalCtx, LayoutConfig, OptionItem, SchemaColumnsItem } from './types'
 
 /** 简单内存缓存：Map<key, {expires,data}> */
 const memoryCache = new Map<string, { expires: number; data: OptionItem[] }>()
 
-export function cacheSet(key: string, data: OptionItem[], ttl = 1000 * 60 * 5) {
+export function cacheSet(key: string, data: OptionItem[], ttl = DEFAULT_OPTIONS_CACHE_TTL) {
   memoryCache.set(key, { expires: Date.now() + ttl, data })
 }
 export function cacheGet(key: string) {
@@ -93,7 +94,7 @@ export function buildYupFromRuleString(
 export async function loadOptions(
   field: SchemaColumnsItem,
   ctx: EvalCtx,
-  cacheTTL = 1000 * 60 * 5
+  cacheTTL = DEFAULT_OPTIONS_CACHE_TTL
 ) {
   const options = field.props?.options
   if (!options) {
@@ -115,28 +116,7 @@ export async function loadOptions(
 
 /** col -> 内联样式（12 栅格） */
 export function colStyle(layout: LayoutConfig, width: number): Record<string, string> {
-  // 优先使用布局配置中的 cols
-  const col = layout?.cols
-  if (col && col > 0) {
-    const span = Math.min(12, Math.max(1, col))
-    return { gridColumn: `span ${span} / span ${span}` }
-  }
-
-  // 如果没有配置 cols，则根据容器宽度动态计算
-  // 但确保不会超出12列的限制
-  let span = 12
-  if (width >= 2560) {
-    span = 2
-  } else if (width >= 1920) {
-    span = 3
-  } else if (width >= 1080) {
-    span = 4
-  } else if (width >= 768) {
-    span = 6
-  } else {
-    span = 12
-  }
-
+  const span = getResponsiveSpan(width, layout?.cols)
   return { gridColumn: `span ${span} / span ${span}` }
 }
 

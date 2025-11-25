@@ -1,7 +1,7 @@
 import { spawn } from 'child_process'
 import { logFile, logInfo, logTitle, logWarning } from './utils/logger.js'
 
-logTitle('启动 cc-admin 开发环境')
+logTitle('启动 CCD 开发环境')
 logInfo('启动命名规范监听...')
 
 // 启动 Vite 开发服务器 - 保持完整的输出

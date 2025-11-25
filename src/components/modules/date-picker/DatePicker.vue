@@ -14,12 +14,22 @@ import type {
 
 // 放宽模板类型校验，避免严格模板下对 ref/属性的限制
 const datePickerComp: any = VueDatePicker
+// 调试日志禁用
+const debugDatePicker = (..._args: any[]) => {}
 
 type Props = DatePickerProps
 
 const props = withDefaults(defineProps<Props>(), datePickerDefaultPropsFactory())
 
 const emit = defineEmits<DatePickerEmits>()
+
+// 调试：检查 props 中是否有事件处理器
+debugDatePicker('[SchemaForm][DatePicker] props received', {
+  modelValue: props.modelValue,
+  valueFormat: props.valueFormat,
+  // 注意：在 Vue 3 中，事件处理器不会出现在 props 中
+  // 它们是通过 $attrs 或直接绑定到组件上的
+})
 
 // 主题切换支持
 const { isDark } = useThemeSwitch()
@@ -80,11 +90,8 @@ const modelType = computed(() => {
   if (vf === 'timestamp') {
     return 'timestamp'
   }
-  if (vf === 'date') {
-    return 'date'
-  }
-  // 'iso' | 'string' 统一使用 format 输出
-  return 'format'
+  // 其余场景（date/iso/string）统一用 Date 作为内部模型，避免格式字符串与 format 不一致导致不回显
+  return 'date'
 })
 
 // 选择器模式映射到 vue-datepicker 的特性开关
@@ -145,7 +152,7 @@ const presetDates = computed(() => {
 
       // 验证预设值有效性
       if (!start || !end) {
-        console.warn(`[DatePicker] Invalid preset range: ${p.label}`)
+        // 无效预设范围时静默跳过
         return null
       }
 
@@ -178,10 +185,6 @@ const normalizeForModelType = (
     return [a as any, b as any]
   }
 
-  if (vf === 'date') {
-    return toDate(value as any)
-  }
-
   if (vf === 'timestamp') {
     if (typeof value === 'number') {
       return value
@@ -190,12 +193,8 @@ const normalizeForModelType = (
     return d ? d.getTime() : null
   }
 
-  // 'iso' | 'string' 显示字符串，尽量返回合适格式
-  if (typeof value === 'string') {
-    return value
-  }
-  const d = toDate(value as any)
-  return d ? d.toISOString() : null
+  // 其余（date/iso/string）一律转为 Date，确保内部模型与 :model-type="date" 匹配
+  return toDate(value as any)
 }
 
 // 比较两个值是否相等（深度比较）
@@ -246,8 +245,23 @@ const handleUpdate = (val: any) => {
     out = single === null || single === undefined ? null : (single as any)
   }
 
+  debugDatePicker('[SchemaForm][DatePicker] handleUpdate', {
+    raw: val,
+    formatted: out,
+    valueFormat: inferredValueFormat.value,
+  })
+
+  debugDatePicker('[SchemaForm][DatePicker] emitting update:modelValue', {
+    value: out,
+    hasListeners: true, // Vue 会自动处理事件监听器
+  })
+
   emit('update:modelValue', out)
   emit('change', out)
+
+  debugDatePicker('[SchemaForm][DatePicker] after emit', {
+    value: out,
+  })
 
   // 使用 nextTick 确保外部更新完成后再解除锁定
   nextTick(() => {
@@ -264,6 +278,11 @@ watch(
       return
     }
 
+    debugDatePicker('[SchemaForm][DatePicker] props.modelValue watcher', {
+      incoming: next,
+      valueFormat: vf,
+    })
+
     // 若外部未提供值，保持为空
     if (next === null || next === undefined) {
       // 对于范围模式，使用 null 而非 [null, null]，避免组件内部默认化为起始时间
@@ -272,6 +291,7 @@ watch(
     }
 
     const normalized = normalizeForModelType(next, vf)
+    debugDatePicker('[SchemaForm][DatePicker] normalizeForModelType result', normalized)
 
     // 只在值真正变化时更新，避免不必要的重渲染
     if (!isValueEqual(innerValue.value, normalized)) {

@@ -1,36 +1,16 @@
 import { debounce, throttle } from '@/common'
-import { INTERVAL, STRATEGY } from '@/constants/modules/layout'
-import {
-  breakpoints,
-  deviceConfigs,
-  deviceTypes,
-  getDeviceConfig,
-  getDeviceType,
-} from '@/constants/modules/rem'
+import { DEFAULT_CONFIG, INTERVAL, STRATEGY } from '@/constants/modules/layout'
+import { autoAdaptConfig, breakpoints } from '@/constants/modules/rem'
 import { useSizeStoreWithOut } from '@/stores'
 import { env } from '@/utils'
+import {
+  getDeviceConfig,
+  getDeviceType,
+  getRecommendedFontSize,
+  getRecommendedSize,
+} from '@/utils/modules/remHelpers'
 
 // 使用统一断点/设备配置（来源于 '@/constants/modules/rem'）
-
-// 设备类型与尺寸模式的映射
-const deviceSizeMap = {
-  mobile: 'compact', // 移动端默认紧凑模式
-  tablet: 'comfortable', // 平板端默认舒适模式
-  desktop: 'comfortable', // 桌面端默认舒适模式
-  largeScreen: 'loose', // 大屏端默认宽松模式
-  ultraWide: 'loose', // 超宽屏端默认宽松模式
-  fourK: 'loose', // 4K屏端默认宽松模式
-} as const
-
-// 工具函数改为使用常量模块的实现（已在顶部导入）
-
-const getRecommendedSize = (deviceType: keyof typeof deviceTypes): Size => {
-  const recommendedSize = deviceSizeMap[deviceType as keyof typeof deviceSizeMap] || 'comfortable'
-  if (env.debug) {
-    console.log(`📐 尺寸推荐: ${deviceType} -> ${recommendedSize}`)
-  }
-  return recommendedSize
-}
 
 // 调试函数：打印设备类型检测的详细信息
 const _debugDeviceTypeDetection = (width: number) => {
@@ -42,8 +22,9 @@ const _debugDeviceTypeDetection = (width: number) => {
   console.log(`📐 断点配置:`, breakpoints)
 
   const deviceType = getDeviceType(width)
-  const deviceConfig = deviceConfigs[deviceType]
+  const deviceConfig = getDeviceConfig(width) // 使用函数获取，确保动态响应
   const recommendedSize = getRecommendedSize(deviceType)
+  const recommendedFontSize = getRecommendedFontSize(deviceType)
 
   console.log(`📐 检测结果:`, {
     deviceType,
@@ -52,8 +33,10 @@ const _debugDeviceTypeDetection = (width: number) => {
       minWidth: deviceConfig.minWidth,
       maxWidth: deviceConfig.maxWidth,
       designWidth: deviceConfig.designWidth,
+      baseFontSize: deviceConfig.baseFontSize,
     },
     recommendedSize,
+    recommendedFontSize,
   })
 }
 
@@ -65,30 +48,33 @@ export interface RemAdapterConfig {
   breakpoints: typeof breakpoints
 }
 
-// 默认配置
-const DEFAULT_CONFIG: RemAdapterConfig = {
+// 默认配置（使用统一配置常量）
+const DEFAULT_REM_ADAPTER_CONFIG: RemAdapterConfig = {
   strategy: 'adaptive',
   mobileFirst: false,
-  postcssRootValue: 16,
+  postcssRootValue: DEFAULT_CONFIG.fontSize,
   breakpoints,
 }
 
 export class RemAdapter {
   private config: RemAdapterConfig
-  private currentFontSize: number = 16
+  private currentFontSize: number = DEFAULT_CONFIG.fontSize
   private currentDeviceConfig: any
   private isInitialized: boolean = false
 
   constructor(config?: Partial<RemAdapterConfig>) {
     try {
-      this.config = { ...DEFAULT_CONFIG, ...config }
+      this.config = { ...DEFAULT_REM_ADAPTER_CONFIG, ...config }
       this.currentFontSize = this.config.postcssRootValue
-      this.currentDeviceConfig = getDeviceConfig(1440)
+      // 使用桌面端默认设计宽度作为初始值（通过函数获取，确保动态响应）
+      const desktopConfig = getDeviceConfig(breakpoints.md + 1) // 使用桌面端断点获取桌面配置
+      this.currentDeviceConfig = getDeviceConfig(desktopConfig.designWidth)
     } catch (error) {
       console.error('RemAdapter 初始化失败:', error)
-      this.config = DEFAULT_CONFIG
-      this.currentFontSize = 16
-      this.currentDeviceConfig = getDeviceConfig(1440)
+      this.config = DEFAULT_REM_ADAPTER_CONFIG
+      this.currentFontSize = DEFAULT_CONFIG.fontSize
+      const desktopConfig = getDeviceConfig(breakpoints.md + 1) // 使用桌面端断点获取桌面配置
+      this.currentDeviceConfig = getDeviceConfig(desktopConfig.designWidth)
     }
   }
 
@@ -134,67 +120,48 @@ export class RemAdapter {
   }
 
   /**
-   * 移动端优先计算策略
+   * 通用字体大小计算方法
+   * 所有策略使用相同的计算逻辑，因为 deviceConfig 已经根据设备类型提供了合适的配置
+   */
+  private calculateFontSize(viewportWidth: number): number {
+    try {
+      const deviceConfig = getDeviceConfig(viewportWidth)
+      const scale = viewportWidth / deviceConfig.designWidth
+      let fontSize = deviceConfig.baseFontSize * scale
+      fontSize = Math.max(deviceConfig.minFontSize, Math.min(deviceConfig.maxFontSize, fontSize))
+      return Math.round(fontSize * 100) / 100
+    } catch (error) {
+      console.error('字体大小计算失败:', error)
+      return this.config.postcssRootValue
+    }
+  }
+
+  /**
+   * 移动端优先计算策略（已合并为通用方法）
    */
   private calculateMobileFirstSize(viewportWidth: number): number {
-    try {
-      const deviceConfig = getDeviceConfig(viewportWidth)
-      const scale = viewportWidth / deviceConfig.designWidth
-      let fontSize = deviceConfig.baseFontSize * scale
-      fontSize = Math.max(deviceConfig.minFontSize, Math.min(deviceConfig.maxFontSize, fontSize))
-      return Math.round(fontSize * 100) / 100
-    } catch (error) {
-      console.error('移动端优先计算失败:', error)
-      return this.config.postcssRootValue
-    }
+    return this.calculateFontSize(viewportWidth)
   }
 
   /**
-   * 桌面端优先计算策略
+   * 桌面端优先计算策略（已合并为通用方法）
    */
   private calculateDesktopFirstSize(viewportWidth: number): number {
-    try {
-      const deviceConfig = getDeviceConfig(viewportWidth)
-      const scale = viewportWidth / deviceConfig.designWidth
-      let fontSize = deviceConfig.baseFontSize * scale
-      fontSize = Math.max(deviceConfig.minFontSize, Math.min(deviceConfig.maxFontSize, fontSize))
-      return Math.round(fontSize * 100) / 100
-    } catch (error) {
-      console.error('桌面端优先计算失败:', error)
-      return this.config.postcssRootValue
-    }
+    return this.calculateFontSize(viewportWidth)
   }
 
   /**
-   * 大屏优先计算策略
+   * 大屏优先计算策略（已合并为通用方法）
    */
   private calculateLargeScreenFirstSize(viewportWidth: number): number {
-    try {
-      const deviceConfig = getDeviceConfig(viewportWidth)
-      const scale = viewportWidth / deviceConfig.designWidth
-      let fontSize = deviceConfig.baseFontSize * scale
-      fontSize = Math.max(deviceConfig.minFontSize, Math.min(deviceConfig.maxFontSize, fontSize))
-      return Math.round(fontSize * 100) / 100
-    } catch (error) {
-      console.error('大屏优先计算失败:', error)
-      return this.config.postcssRootValue
-    }
+    return this.calculateFontSize(viewportWidth)
   }
 
   /**
-   * 自适应计算策略（推荐）
+   * 自适应计算策略（推荐，已合并为通用方法）
    */
   private calculateAdaptiveSize(viewportWidth: number): number {
-    try {
-      const deviceConfig = getDeviceConfig(viewportWidth)
-      const scale = viewportWidth / deviceConfig.designWidth
-      let fontSize = deviceConfig.baseFontSize * scale
-      fontSize = Math.max(deviceConfig.minFontSize, Math.min(deviceConfig.maxFontSize, fontSize))
-      return Math.round(fontSize * 100) / 100
-    } catch (error) {
-      console.error('自适应计算失败:', error)
-      return this.config.postcssRootValue
-    }
+    return this.calculateFontSize(viewportWidth)
   }
 
   /**
@@ -242,7 +209,7 @@ export class RemAdapter {
   }
 
   /**
-   * 根据设备类型更新尺寸模式
+   * 根据设备类型更新尺寸模式和字体大小选项
    */
   private updateSizeByDevice(width: number): void {
     try {
@@ -250,19 +217,33 @@ export class RemAdapter {
       _debugDeviceTypeDetection(width)
 
       const sizeStore = useSizeStoreWithOut()
+      if (!sizeStore) {
+        return
+      }
+
       const deviceType = getDeviceType(width)
-      const recommendedSize = getRecommendedSize(deviceType)
 
-      // 注意：最大尺寸限制在 theme.ts 中通过 setSizeMaxLimits 实现
-      // 这里只负责根据设备类型推荐合适的尺寸模式
-
-      if (sizeStore && typeof sizeStore.setSize === 'function') {
+      // 自动切换尺寸模式
+      if (autoAdaptConfig.autoSizeMode) {
+        const recommendedSize = getRecommendedSize(deviceType)
         const currentSize = (sizeStore as any).getSize
         if (currentSize !== recommendedSize) {
           if (env.debug) {
             console.log('📐 更新尺寸模式:', recommendedSize)
           }
           sizeStore.setSize(recommendedSize)
+        }
+      }
+
+      // 自动切换字体大小选项
+      if (autoAdaptConfig.autoFontSize) {
+        const recommendedFontSize = getRecommendedFontSize(deviceType) as FontSizeOptions['key']
+        const currentFontSize = (sizeStore as any).getFontSize
+        if (currentFontSize !== recommendedFontSize) {
+          if (env.debug) {
+            console.log('📐 更新字体大小选项:', recommendedFontSize)
+          }
+          sizeStore.setFontSize(recommendedFontSize)
         }
       }
     } catch (error) {
@@ -298,7 +279,7 @@ export class RemAdapter {
       return rem * this.currentFontSize
     } catch (error) {
       console.error('rem转px失败:', error)
-      return rem * 16
+      return rem * DEFAULT_CONFIG.fontSize
     }
   }
 
@@ -346,6 +327,7 @@ export class RemAdapter {
         deviceType: _deviceType,
         screenSize: `${deviceInfo.screen.width}x${deviceInfo.screen.height}`,
         recommendedSize: getRecommendedSize(_deviceType),
+        recommendedFontSize: getRecommendedFontSize(_deviceType),
       }
       if (env.debug) {
         console.log(`📐 ✅ rem 适配器初始化完成:`, initInfo)
@@ -391,7 +373,7 @@ export class RemAdapter {
       }
 
       const wrapper = STRATEGY === 'throttle' ? throttle : debounce
-      const handleResize = wrapper(processResize, INTERVAL || debounceTime)
+      const handleResize = wrapper(processResize, debounceTime || INTERVAL)
 
       window.addEventListener('resize', handleResize, { passive: true })
       window.addEventListener('orientationchange', handleResize, { passive: true })
@@ -434,10 +416,10 @@ export const createLargeScreenAdapter = (config?: Partial<RemAdapterConfig>) => 
 export const getRemBase = (): number => {
   try {
     const fontSize = parseFloat(getComputedStyle(document.documentElement).fontSize)
-    return isNaN(fontSize) ? 16 : fontSize
+    return isNaN(fontSize) ? DEFAULT_CONFIG.fontSize : fontSize
   } catch (error) {
     console.error('获取 rem 基准值失败:', error)
-    return 16
+    return DEFAULT_CONFIG.fontSize
   }
 }
 
@@ -463,6 +445,6 @@ export const toPx = (rem: number): number => {
     return rem * remBase
   } catch (error) {
     console.error('toPx 转换失败:', error)
-    return rem * 16
+    return rem * DEFAULT_CONFIG.fontSize
   }
 }

@@ -382,27 +382,27 @@ const tieredMenuItems = ref([
 <template lang="pug">
 .full.grid.gap-gap.grid-cols-1(class='md:grid-cols-2 xl:grid-cols-3 xxl:grid-cols-4')
   //- Mune
-  .c-card.full.between-start.flex-col
+  .c-border.full.between-start.flex-col
     b.fs-appFontSizex.centent Menu
     PrimeMenu(:items='menuItems')
 
   //-Menubar
-  .c-card.full.between-start.flex-col
+  .c-border.full.between-start.flex-col
     b.fs-appFontSizex.centent Menubar
     PrimeMenu(:items='menubarItems', type='bar')
 
   //- MegaMenu
-  .c-card.full.between-start.flex-col
+  .c-border.full.between-start.flex-col
     b.fs-appFontSizex.centent MegaMenu
     PrimeMenu(:items='megaMenuItems', type='mega')
 
   //- PanelMenu
-  .c-card.full.between-start.flex-col
+  .c-border.full.between-start.flex-col
     b.fs-appFontSizex.centent PanelMenu
     PrimeMenu(:items='panelMenuItems', type='panel')
 
   //- TieredMenu
-  .c-card.full.between-start.flex-col
+  .c-border.full.between-start.flex-col
     b.fs-appFontSizex.centent TieredMenu
     PrimeMenu(:items='tieredMenuItems', type='tier')
 </template>

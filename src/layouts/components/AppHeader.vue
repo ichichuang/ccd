@@ -23,7 +23,7 @@ template(v-else-if='currentLayoutMode === "screen"')
       AppBreadcrumb(v-if='showBreadcrumb')
     .h-full.center.py-paddings.gap-gap(class='sm:hidden')
       .h-full.size-1-1.c-cp.p-paddings(@click='goToRoute("")')
-        Image.full(src='/face.png')
+        Image.full(src='./face.png')
     AppTopMenu
 template(v-else-if='currentLayoutMode === "admin"')
   .full.between
@@ -33,6 +33,6 @@ template(v-else-if='currentLayoutMode === "admin"')
       .h-full.c-card-primary.shadow-none.size-1-1.center(@click='toggleMobileMenu')
         .fs-appFontSizex(class='icon-line-md:grid-3-filled')
       .h-full.size-1-1.c-cp.p-paddings(@click='goToRoute("")')
-        Image.full(src='/face.png')
+        Image.full(src='./face.png')
     AppTopMenu
 </template>

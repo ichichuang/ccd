@@ -3,6 +3,6 @@ import { t } from '@/locales'
 </script>
 <template lang="pug">
 div
-  p {{ t('permission.page.title') }}
+  p {{ t('router.permission.page.title') }}
 </template>
 <style lang="scss" scope></style>

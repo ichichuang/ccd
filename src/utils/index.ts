@@ -6,14 +6,19 @@ const utilModules = import.meta.glob('./modules/**/*.ts', { eager: true })
 const importedUtils = autoImportModulesSync(utilModules)
 
 // 导出所有工具模块
-export * from '@/utils/modules/colorUtils'
 export * from '@/utils/modules/deviceInfo'
 export * from '@/utils/modules/env'
 export * from '@/utils/modules/http'
 export * from '@/utils/modules/i18nOptions'
 export * from '@/utils/modules/mitt'
 export * from '@/utils/modules/moduleLoader'
+export * from '@/utils/modules/primevuepreset'
+export * from '@/utils/modules/primevuetheme'
 export * from '@/utils/modules/remAdapter'
+export * from '@/utils/modules/remHelpers'
+export * from '@/utils/modules/themeColorBuilder'
+export * from '@/utils/modules/themeHelpers'
+export * from '@/utils/modules/themeLayout'
 
 // 导出所有工具
 export default importedUtils

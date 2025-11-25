@@ -1,8 +1,8 @@
 <script setup lang="ts">
+import { debounce, throttle } from '@/common'
 import { INTERVAL, REMEMBER_SCROLLBAR_TOP, STRATEGY } from '@/constants/modules/layout'
 import { useElementSize } from '@/hooks'
 import { useLayoutStore } from '@/stores'
-import { debounce, throttle } from 'lodash-es'
 import { computed, nextTick, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 
@@ -16,8 +16,8 @@ const layoutScrollbarTop = computed(() => layoutStore.getLayoutScrollbarTop)
 
 // 直接使用 useElementSize 返回的响应式高度，避免手动 nextTick 和 DOM 读取
 const { height: containerHeight } = useElementSize(containerRef, undefined, {
-  mode: 'debounce',
-  delay: 100,
+  mode: STRATEGY,
+  delay: INTERVAL,
 })
 
 // 将 setLayoutScrollbarTop 包装为节流/防抖（依据全局策略）
@@ -66,11 +66,12 @@ watch(
   template(v-if='containerHeight && containerHeight > 0')
     ScrollbarWrapper(
       ref='scrollbarRef',
-      :wrapper-class='currentLayoutMode !== "fullscreen" && currentLayoutMode !== "ratio" ? "px-12 sm:px-16  lg:px-18 xxl:px-24" : ""',
+      :wrapper-class='currentLayoutMode !== "fullscreen" && currentLayoutMode !== "ratio" ? "bg-bg100 rounded-rounded" : ""',
       :style='{ height: containerHeight + "px" }',
       @scroll='handleScroll',
       @initialized='handleInitialized',
       :remember-scroll-position='true'
     )
-      AnimateRouterView(:style='{ minHeight: containerHeight + "px" }')
+      .p-paddingx
+        AnimateRouterView(:style='{ minHeight: containerHeight + "px" }')
 </template>

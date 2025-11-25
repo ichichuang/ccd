@@ -4,6 +4,8 @@
  * 基于 OverlayScrollbars v2 的滚动条包装器组件
  * 完全使用 CSS 变量来控制滚动条样式，避免直接操作 DOM
  */
+import { debounce, throttle } from '@/common'
+import { INTERVAL, STRATEGY } from '@/constants/modules/layout'
 import { useColorStore, useLayoutStore } from '@/stores'
 import { OverlayScrollbars } from 'overlayscrollbars'
 import { OverlayScrollbarsComponent } from 'overlayscrollbars-vue'
@@ -348,47 +350,17 @@ const clearScrollPosition = () => {
   }
 }
 
-// ==================== 工具函数 ====================
-
-// 节流函数
-const throttle = (func: (...args: any[]) => void, wait: number) => {
-  let timeout: NodeJS.Timeout | null = null
-  return function (...args: any[]) {
-    if (!timeout) {
-      timeout = setTimeout(() => {
-        timeout = null
-        func(...args)
-      }, wait)
-    }
-  }
-}
-
-// 防抖函数
-const debounce = (func: (...args: any[]) => void, wait: number) => {
-  let timeout: NodeJS.Timeout | null = null
-  return function (...args: any[]) {
-    if (timeout) {
-      clearTimeout(timeout)
-    }
-    timeout = setTimeout(() => {
-      timeout = null
-      func(...args)
-    }, wait)
-  }
-}
-
-// 获取节流/防抖函数
+// 获取节流/防抖函数（统一使用全局策略与间隔）
 const getThrottleFunction = () => {
-  const wait = props.throttleWait || 16
-  switch (props.throttleType) {
-    case 'throttle':
-      return (func: (...args: any[]) => void) => throttle(func, wait)
-    case 'debounce':
-      return (func: (...args: any[]) => void) => debounce(func, wait)
-    case 'none':
-    default:
-      return (func: (...args: any[]) => void) => func
+  const wait = INTERVAL
+  const mode = STRATEGY
+  if (mode === 'throttle') {
+    return (func: (...args: any[]) => void) => throttle(func, wait)
   }
+  if (mode === 'debounce') {
+    return (func: (...args: any[]) => void) => debounce(func, wait)
+  }
+  return (func: (...args: any[]) => void) => func
 }
 
 // ==================== 自动滚动到底部 ====================
@@ -499,13 +471,13 @@ const handleScroll = getThrottleFunction()((event: Event) => {
     emit('scroll-vertical', scrollEventData)
   }
 
-  // 设置滚动结束检测定时器（150ms 后认为滚动结束）
+  // 设置滚动结束检测定时器（使用全局间隔）
   scrollTimer = setTimeout(() => {
     if (isScrolling) {
       isScrolling = false
       emit('scroll-end')
     }
-  }, 150)
+  }, INTERVAL)
 
   // 更新上次滚动位置
   lastScrollLeft = scrollLeft
@@ -518,7 +490,7 @@ const handleScroll = getThrottleFunction()((event: Event) => {
     }
     saveScrollTimer = setTimeout(() => {
       saveScrollPosition()
-    }, 300) // 300ms 后保存，避免频繁操作
+    }, INTERVAL) // 使用全局间隔，避免频繁操作
   }
 })
 

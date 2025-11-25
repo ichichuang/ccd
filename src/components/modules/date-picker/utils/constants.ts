@@ -222,7 +222,7 @@ export const datePickerDefaultPropsFactory = () =>
 
     // 展示/值格式（displayFormat 未传时会基于 mode 使用默认格式）
     displayFormat: undefined, // 展示格式：undefined 时按不同 mode 采用内置默认格式
-    valueFormat: 'date', // v-model 值格式：'date' | 'timestamp' | 'iso' | 'string'
+    valueFormat: 'timestamp', // v-model 值格式：'date' | 'timestamp' | 'iso' | 'string'
 
     // 文案与占位（可配合 i18n 使用）
     localeTexts: undefined, // 自定义按钮/文案：优先于 i18n 内置文案

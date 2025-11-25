@@ -5,8 +5,12 @@
       <Button
         v-for="(step, index) in steps"
         :key="index"
-        @click="$emit('step-change', index)"
-        :severity="index === activeStep ? 'primary' : 'secondary'"
+        :disabled="!(accessibleSteps?.[index] ?? false)"
+        :outlined="index !== activeStep && !(accessibleSteps?.[index] ?? false)"
+        :severity="
+          index === activeStep ? 'primary' : accessibleSteps?.[index] ? 'primary' : 'secondary'
+        "
+        @click="() => (accessibleSteps?.[index] ? $emit('step-change', index) : undefined)"
       >
         <span class="fs-appFontSizes">{{ index + 1 }}. {{ step.title }}</span>
       </Button>
@@ -20,6 +24,7 @@ import type { StepConfig } from '../utils/types'
 defineProps<{
   steps: StepConfig[]
   activeStep: number
+  accessibleSteps: boolean[]
 }>()
 
 defineEmits<{

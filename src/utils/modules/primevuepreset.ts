@@ -1,5 +1,3 @@
-// 文件：primevue-theme.ts
-
 import { useColorStore, useSizeStore } from '@/stores'
 
 // 分配按钮颜色

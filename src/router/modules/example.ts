@@ -120,13 +120,25 @@ const exampleRoutes: RouteConfig[] = [
                 },
               },
               {
+                path: 'remember',
+                name: 'ExampleComponentsSchemaFormRemember',
+                component: () =>
+                  import(
+                    '@/views/example/views/example-shema-form/example-schema-form-remember.vue'
+                  ),
+                meta: {
+                  titleKey: 'router.example.components.schemaForm.remember',
+                  rank: 2,
+                },
+              },
+              {
                 path: 'step',
                 name: 'ExampleComponentsSchemaFormStep',
                 component: () =>
                   import('@/views/example/views/example-shema-form/example-schema-form-step.vue'),
                 meta: {
                   titleKey: 'router.example.components.schemaForm.step',
-                  rank: 2,
+                  rank: 3,
                 },
               },
               {
@@ -138,59 +150,27 @@ const exampleRoutes: RouteConfig[] = [
                   ),
                 meta: {
                   titleKey: 'router.example.components.schemaForm.section',
-                  rank: 3,
+                  rank: 4,
                 },
               },
             ],
           },
           {
-            path: 'grid-table',
-            name: 'ExampleComponentsGridTable',
+            path: 'vxe-table',
+            name: 'ExampleComponentsVxeTable',
             meta: {
-              titleKey: 'router.example.components.gridTable.title',
+              titleKey: 'router.example.components.vxetable.title',
               rank: 5,
             },
             children: [
               {
                 path: 'default',
-                name: 'ExampleComponentsGridTableDefault',
+                name: 'ExampleComponentsVxeTableDefault',
                 component: () =>
-                  import('@/views/example/views/example-grid-table/example-grid-table-default.vue'),
+                  import('@/views/example/views/example-vxe-table/example-vxe-table-default.vue'),
                 meta: {
-                  titleKey: 'router.example.components.gridTable.default',
+                  titleKey: 'router.example.components.vxetable.default',
                   rank: 1,
-                },
-              },
-              {
-                path: 'basic',
-                name: 'ExampleComponentsGridTableBasic',
-                component: () =>
-                  import('@/views/example/views/example-grid-table/example-grid-table-basic.vue'),
-                meta: {
-                  titleKey: 'router.example.components.gridTable.basic',
-                  rank: 2,
-                },
-              },
-              {
-                path: 'advanced',
-                name: 'ExampleComponentsGridTableAdvanced',
-                component: () =>
-                  import(
-                    '@/views/example/views/example-grid-table/example-grid-table-advanced.vue'
-                  ),
-                meta: {
-                  titleKey: 'router.example.components.gridTable.advanced',
-                  rank: 3,
-                },
-              },
-              {
-                path: 'service',
-                name: 'ExampleComponentsGridTableService',
-                component: () =>
-                  import('@/views/example/views/example-grid-table/example-grid-table-service.vue'),
-                meta: {
-                  titleKey: 'router.example.components.gridTable.service',
-                  rank: 4,
                 },
               },
             ],

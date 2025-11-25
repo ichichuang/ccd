@@ -1765,8 +1765,8 @@ export const useChartTheme = (option: any, opacityConfig?: ChartOpacityConfig) =
     mergedOption.grid = {
       left: `${themeConfig.paddings}%`,
       right: `${themeConfig.paddings}%`,
-      top: '20%',
-      bottom: `${themeConfig.gap}%`,
+      top: '30%',
+      bottom: `2%`,
       backgroundColor: 'transparent',
       containLabel: true,
     }

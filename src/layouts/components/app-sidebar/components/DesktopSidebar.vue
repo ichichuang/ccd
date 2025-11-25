@@ -138,7 +138,11 @@ onUnmounted(() => {
     leave='slideOutLeft',
     duration='120ms'
   )
-    ScrollbarWrapper(:style='{ height: (observedHeight || containerHeight) + "px" }', :size='6')
+    ScrollbarWrapper(
+      :style='{ height: (observedHeight || containerHeight) + "px" }',
+      :size='1',
+      :color-scheme='{ thumbColor: "transparent", thumbHoverColor: "transparent", thumbActiveColor: "transparent", trackColor: "transparent", trackHoverColor: "transparent", trackActiveColor: "transparent" }'
+    )
       PrimeMenu(
         v-if='!expandedDelay',
         :type='"panel"',

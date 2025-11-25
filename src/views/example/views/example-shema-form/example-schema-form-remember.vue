@@ -891,7 +891,7 @@ div
         Button(@click='handleGetFieldIndex') 获取字段索引
   .c-border.p-padding.my-gapl
     // 表单组件
-    SchemaForm(:schema='schema', @submit='handleSubmit', ref='schemaFormRef')
+    SchemaForm(:schema='schema', @submit='handleSubmit', ref='schemaFormRef', :remember='true')
   .full.c-card-accent.fs-appFontSizes.between-col.gap-gap
     span.fs-appFontSizex 表单数据实时预览：
     pre.c-border-primary.p-paddings.full {{ JSON.stringify(formValues, null, 2) }}

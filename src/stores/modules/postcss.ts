@@ -1,7 +1,11 @@
+import { DEFAULT_CONFIG } from '@/constants/modules/layout'
 import { breakpoints } from '@/constants/modules/rem'
 import store from '@/stores'
 import { useLayoutStoreWithOut } from '@/stores/modules/layout'
-import { RemAdapter, type RemAdapterConfig, env, useMitt } from '@/utils'
+import { env } from '@/utils'
+import { useMitt } from '@/utils/modules/mitt'
+import { RemAdapter, type RemAdapterConfig } from '@/utils/modules/remAdapter'
+import { getDeviceConfig, getDeviceType } from '@/utils/modules/remHelpers'
 import { defineStore } from 'pinia'
 import { computed, nextTick, ref } from 'vue'
 
@@ -11,11 +15,11 @@ const { on } = useMitt()
 export const usePostcssStore = defineStore(
   'postcss',
   () => {
-    // State - 使用默认配置
+    // State - 使用默认配置（使用统一配置常量）
     const remConfig = ref<RemAdapterConfig>({
       strategy: 'adaptive',
       mobileFirst: false,
-      postcssRootValue: 16,
+      postcssRootValue: DEFAULT_CONFIG.fontSize,
       breakpoints,
     })
 
@@ -30,80 +34,26 @@ export const usePostcssStore = defineStore(
       const deviceInfo = layoutStore.deviceInfo
       const screenWidth = deviceInfo.screen.width
 
-      // 根据策略计算当前设计稿信息
+      // 根据策略计算当前设计稿信息（使用 deviceConfigs 替代硬编码）
+      const deviceConfig = getDeviceConfig(screenWidth)
       let currentDesignInfo = {
-        width: remConfig.value.postcssRootValue,
-        description: '桌面端',
+        width: deviceConfig.designWidth,
+        description: deviceConfig.name,
       }
 
+      // 策略主要影响计算方式，设计稿信息统一从 deviceConfigs 获取
       switch (remConfig.value.strategy) {
         case 'mobile-first':
-          currentDesignInfo = {
-            width: 768,
-            description: '移动端',
-          }
-          break
+        case 'desktop-first':
         case 'large-screen-first':
-          if (screenWidth > 3840) {
-            currentDesignInfo = {
-              width: 3840,
-              description: '4K屏',
-            }
-          } else if (screenWidth > 2560) {
-            currentDesignInfo = {
-              width: 3200,
-              description: '超大屏',
-            }
-          } else if (screenWidth > 1920) {
-            currentDesignInfo = {
-              width: 2560,
-              description: '大屏',
-            }
-          } else {
-            currentDesignInfo = {
-              width: remConfig.value.postcssRootValue,
-              description: '桌面端',
-            }
-          }
-          break
         case 'adaptive':
-          if (screenWidth <= 768) {
-            currentDesignInfo = {
-              width: 768,
-              description: '移动端',
-            }
-          } else if (screenWidth <= 1024) {
-            currentDesignInfo = {
-              width: 1024,
-              description: '平板',
-            }
-          } else if (screenWidth <= 1920) {
-            currentDesignInfo = {
-              width: 1800,
-              description: '桌面端',
-            }
-          } else if (screenWidth <= 2560) {
-            currentDesignInfo = {
-              width: 2560,
-              description: '大屏',
-            }
-          } else if (screenWidth <= 3840) {
-            currentDesignInfo = {
-              width: 3200,
-              description: '超大屏',
-            }
-          } else {
-            currentDesignInfo = {
-              width: 3840,
-              description: '4K屏',
-            }
+        default:
+          // 所有策略都使用当前设备对应的设计稿配置
+          currentDesignInfo = {
+            width: deviceConfig.designWidth,
+            description: deviceConfig.name,
           }
           break
-        default:
-          currentDesignInfo = {
-            width: remConfig.value.postcssRootValue,
-            description: '桌面端',
-          }
       }
 
       return {
@@ -119,24 +69,19 @@ export const usePostcssStore = defineStore(
       }
     })
 
-    // 获取屏幕类型的辅助函数
+    // 获取屏幕类型的辅助函数（使用统一的 getDeviceType）
     const getScreenType = (width: number): string => {
-      if (width > 3840) {
-        return '4K'
+      const deviceType = getDeviceType(width)
+      // 映射到显示名称
+      const typeMap: Record<string, string> = {
+        mobile: 'Mobile',
+        tablet: 'Tablet',
+        desktop: 'Desktop',
+        largeScreen: 'LargeScreen',
+        ultraWide: 'UltraWide',
+        fourK: '4K',
       }
-      if (width > 2560) {
-        return 'UltraWide'
-      }
-      if (width > 1920) {
-        return 'LargeScreen'
-      }
-      if (width > 1024) {
-        return 'Desktop'
-      }
-      if (width > 768) {
-        return 'Tablet'
-      }
-      return 'Mobile'
+      return typeMap[deviceType] || 'Desktop'
     }
     const getCurrentRemBase = computed(() => currentRemBase.value)
     const getRemAdapterAvailable = computed(() => !!remAdapter.value)
@@ -253,7 +198,7 @@ export const usePostcssStore = defineStore(
             currentRemBase.value = remAdapter.value.getCurrentFontSize()
           }
           return latestDeviceInfo
-        }, 300) // 使用 300ms 防抖延迟
+        }, DEFAULT_CONFIG.debounceTime) // 使用统一配置的防抖延迟
 
         // 添加自定义事件监听，用于同步状态
         const handleFontSizeChange = (_event: CustomEvent) => {
@@ -389,14 +334,14 @@ export const usePostcssStore = defineStore(
       if (remAdapter.value && typeof remAdapter.value.pxToRem === 'function') {
         return remAdapter.value.pxToRem(px)
       }
-      return `${px / 16}rem` // 默认基准
+      return `${px / DEFAULT_CONFIG.fontSize}rem` // 使用统一配置的默认基准
     }
 
     const remToPx = (rem: number): number => {
       if (remAdapter.value && typeof remAdapter.value.remToPx === 'function') {
         return remAdapter.value.remToPx(rem)
       }
-      return rem * 16 // 默认基准
+      return rem * DEFAULT_CONFIG.fontSize // 使用统一配置的默认基准
     }
 
     const getRemAdapterInfoAsync = async () => {

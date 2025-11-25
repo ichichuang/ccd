@@ -1,9 +1,18 @@
 <script setup lang="ts">
-import { getCurrentRoute, getCurrentRouteMeta, getMenuTree, goToRoute } from '@/common'
+import {
+  debounce,
+  getCurrentRoute,
+  getCurrentRouteMeta,
+  getMenuTree,
+  goToRoute,
+  throttle,
+} from '@/common'
+import { INTERVAL, STRATEGY } from '@/constants/modules/layout'
 import { useLocale } from '@/hooks'
 import { useLayoutStore } from '@/stores'
 import type { MenuItem } from 'primevue/menuitem'
 import { computed, nextTick, onMounted, onUnmounted, ref, watch } from 'vue'
+import { useRoute } from 'vue-router'
 
 const { $t } = useLocale()
 
@@ -45,6 +54,7 @@ const setupGlobalErrorHandler = () => {
 }
 
 const layoutStore = useLayoutStore()
+const route = useRoute()
 // 折叠状态
 const isCollapsed = computed(() => {
   try {
@@ -180,32 +190,60 @@ const items = computed(() => {
   }
 })
 
+const syncExpandedKeysWithCurrentRoute = () => {
+  try {
+    const parentPaths = Array.isArray(route.meta?.parentPaths) ? route.meta.parentPaths : []
+    if (!parentPaths.length) {
+      return
+    }
+
+    const currentExpanded = { ...(layoutStore.getExpandedMenuKeys || {}) }
+    const uniqueParentPaths = [...new Set(parentPaths.filter(Boolean))]
+    let updated = false
+
+    uniqueParentPaths.forEach(path => {
+      if (!currentExpanded[path]) {
+        currentExpanded[path] = true
+        updated = true
+      }
+    })
+
+    if (updated) {
+      layoutStore.setExpandedMenuKeys(currentExpanded)
+    }
+  } catch (error) {
+    console.warn('AppSidebar: 同步当前路由展开状态失败', error)
+  }
+}
+
+watch(
+  () => route.fullPath,
+  () => {
+    syncExpandedKeysWithCurrentRoute()
+  },
+  {
+    immediate: true,
+  }
+)
+
 /* 折叠状态 */
 const isCollapsedRef = ref(isCollapsed.value)
 let collapseTimeout: NodeJS.Timeout | null = null
 let lastCollapsedState = isCollapsed.value
 
-// 防抖函数
-const debounce = <T extends (...args: any[]) => any>(func: T, wait: number) => {
-  let timeout: NodeJS.Timeout | null = null
-  return function executedFunction(...args: Parameters<T>) {
-    const later = () => {
-      clearTimeout(timeout!)
-      func(...args)
-    }
-    clearTimeout(timeout!)
-    timeout = setTimeout(later, wait)
-  }
-}
-
-// 防抖的折叠状态更新函数
-const debouncedUpdateCollapsed = debounce((bool: boolean) => {
+// 折叠状态更新函数（根据全局策略包装）
+const updateCollapsed = (bool: boolean) => {
   try {
     isCollapsedRef.value = bool
   } catch (error) {
     console.warn('AppSidebar: 设置折叠状态失败', error)
   }
-}, 300)
+}
+
+const debouncedUpdateCollapsed =
+  STRATEGY === 'debounce'
+    ? debounce(updateCollapsed, INTERVAL)
+    : throttle(updateCollapsed, INTERVAL)
 
 watch(
   isCollapsed,
@@ -232,7 +270,7 @@ watch(
         nextTick(() => {
           collapseTimeout = setTimeout(() => {
             debouncedUpdateCollapsed(bool)
-          }, 200)
+          }, INTERVAL)
         })
       }
     } catch (error) {
@@ -264,7 +302,7 @@ onUnmounted(() => {
 })
 </script>
 <template lang="pug">
-.full.pb-footerHeight.hidden.z-999(class='md:block', :class='{ "px-padding": !isCollapsed }')
+.full.hidden.z-999(class='md:block')
   DesktopSidebar(:items='items', :components-props='componentsProps')
 .full.z-999(class='md:hidden')
   MobileSidebar(:items='items', :components-props='componentsProps')

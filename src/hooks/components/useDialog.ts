@@ -124,7 +124,7 @@ export function useDialog() {
       header: title,
       hideHeader: false,
       ...options,
-      contentRenderer: () => h('div', { class: 'text-center py-4' }, message),
+      contentRenderer: () => h('div', { class: 'text-center text-infoColor' }, message),
       footerButtons: [
         {
           label: '确定',
@@ -148,7 +148,7 @@ export function useDialog() {
       header: title,
       hideHeader: false,
       ...options,
-      contentRenderer: () => h('div', { class: 'text-center py-4 text-green-600' }, message),
+      contentRenderer: () => h('div', { class: 'text-center text-successColor' }, message),
       footerButtons: [
         {
           label: '确定',
@@ -172,7 +172,7 @@ export function useDialog() {
       header: title,
       hideHeader: false,
       ...options,
-      contentRenderer: () => h('div', { class: 'text-center py-4 text-orange-600' }, message),
+      contentRenderer: () => h('div', { class: 'text-center text-warnColor' }, message),
       footerButtons: [
         {
           label: '确定',
@@ -196,7 +196,7 @@ export function useDialog() {
       header: title,
       hideHeader: false,
       ...options,
-      contentRenderer: () => h('div', { class: 'text-center py-4 text-red-600' }, message),
+      contentRenderer: () => h('div', { class: 'text-center text-dangerColor' }, message),
       footerButtons: [
         {
           label: '确定',
@@ -223,7 +223,7 @@ export function useDialog() {
       header: title,
       hideHeader: false,
       ...options,
-      contentRenderer: () => h('div', { class: 'text-center py-4' }, message),
+      contentRenderer: () => h('div', { class: 'text-center text-primaryColor' }, message),
       footerButtons: [
         {
           label: '取消',
@@ -259,7 +259,7 @@ export function useDialog() {
       header: title,
       hideHeader: false,
       ...options,
-      contentRenderer: () => h('div', { class: 'text-center py-4 text-red-600' }, message),
+      contentRenderer: () => h('div', { class: 'text-center text-dangerColor' }, message),
       footerButtons: [
         {
           label: '取消',

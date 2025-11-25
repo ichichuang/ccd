@@ -82,7 +82,7 @@ const initialSchema: Schema = {
       help: '请选择您的生日',
       props: {
         mode: 'date',
-        valueFormat: 'iso',
+        valueFormat: 'timestamp',
         clearable: true,
         maxDate: new Date(), // 不能选择未来日期
       },
@@ -95,7 +95,7 @@ const initialSchema: Schema = {
       help: '选择预约的日期和时间',
       props: {
         mode: 'datetime',
-        valueFormat: 'iso',
+        valueFormat: 'timestamp',
         enableSeconds: false,
         clearable: true,
         is24: true,

@@ -1,3 +1,5 @@
+import { INTERVAL } from '@/constants/modules/layout'
+import { breakpoints } from '@/constants/modules/rem'
 import store from '@/stores'
 import { env, getDeviceInfo } from '@/utils'
 import { debounce } from 'lodash-es'
@@ -53,7 +55,7 @@ const layoutConfig: LayoutConfig = {
   showMenu: true,
   showSidebar: true,
   showBreadcrumb: true,
-  showFooter: true,
+  showFooter: false,
   showTabs: true,
 }
 
@@ -243,24 +245,25 @@ export const useLayoutStore = defineStore('layout', {
     // 初始化设备信息
     initDeviceInfo() {
       this.deviceInfo = getDeviceInfo()
-      // 根据屏幕宽度更新当前断点
+      // 根据屏幕宽度更新当前断点（使用统一的断点判断逻辑）
       const width = this.deviceInfo.screen.width
-      this.currentBreakpoint =
-        width >= 3840
-          ? 'xxxl'
-          : width >= 2560
-            ? 'xxl'
-            : width >= 1920
-              ? 'xls'
-              : width >= 1660
-                ? 'xl'
-                : width >= 1400
-                  ? 'lg'
-                  : width >= 1024
-                    ? 'md'
-                    : width >= 768
-                      ? 'sm'
-                      : 'xs'
+      if (width >= breakpoints.xxxl) {
+        this.currentBreakpoint = 'xxxl'
+      } else if (width >= breakpoints.xxl) {
+        this.currentBreakpoint = 'xxl'
+      } else if (width >= breakpoints.xls) {
+        this.currentBreakpoint = 'xls'
+      } else if (width >= breakpoints.xl) {
+        this.currentBreakpoint = 'xl'
+      } else if (width >= breakpoints.lg) {
+        this.currentBreakpoint = 'lg'
+      } else if (width >= breakpoints.md) {
+        this.currentBreakpoint = 'md'
+      } else if (width >= breakpoints.sm) {
+        this.currentBreakpoint = 'sm'
+      } else {
+        this.currentBreakpoint = 'xs'
+      }
     },
 
     init() {
@@ -268,7 +271,8 @@ export const useLayoutStore = defineStore('layout', {
       this.initDeviceInfo()
 
       // resize 等事件触发频繁，建议加防抖（debounce）避免连续高频触发影响性能。
-      const handler = debounce(this.initDeviceInfo.bind(this), 200)
+      // 使用统一配置的防抖时间
+      const handler = debounce(this.initDeviceInfo.bind(this), INTERVAL)
 
       const events = [
         'resize', // 浏览器窗口尺寸变化

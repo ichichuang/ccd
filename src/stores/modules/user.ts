@@ -1,4 +1,5 @@
 import { getUserInfo } from '@/api'
+import { FORM_MEMORY_LOCAL_STORAGE_PREFIX } from '@/components/modules/schema-form/hooks/useFormMemory'
 import router from '@/router'
 import store from '@/stores'
 import { env } from '@/utils'
@@ -39,31 +40,43 @@ export const useUserStore = defineStore('user', {
         this.setUserInfo(res.data)
       })
     },
-    resetToken() {
-      this.token = ''
-    },
     setUserInfo(userInfo: UserInfo) {
       this.userInfo = userInfo
       this.isLogin = true
       router.push((router.currentRoute.value.query.redirect as string) || env.rootRedirect)
     },
-    resetUserInfo() {
-      this.userInfo = {
-        userId: '',
-        username: '',
-        roles: [],
-        permissions: [],
-      }
-      this.isLogin = false
-    },
     async logout() {
-      const key = `${env.piniaKeyPrefix}-`
-      Object.keys(localStorage).forEach(item => {
-        console.log(item)
-        if (item.startsWith(key)) {
-          localStorage.removeItem(item)
+      router.push(env.rootRedirect)
+      await new Promise(resolve => setTimeout(resolve, 100)) // 等待路由跳转完成
+      const basePrefix = `${env.piniaKeyPrefix}-`
+      const schemaFormLegacyPrefix = '__form_cache__:'
+      const schemaFormPlainPrefix = 'schemaform:'
+      const schemaFormPrefixed = `${env.piniaKeyPrefix}-__form_cache__:`
+
+      const prefixes: string[] = [
+        basePrefix,
+        schemaFormPrefixed,
+        FORM_MEMORY_LOCAL_STORAGE_PREFIX,
+        schemaFormLegacyPrefix,
+        schemaFormPlainPrefix,
+      ]
+
+      const keysToRemove = new Set<string>()
+
+      for (let i = localStorage.length - 1; i >= 0; i -= 1) {
+        const key = localStorage.key(i)
+        if (!key) {
+          continue
         }
+        if (prefixes.some(prefix => key.startsWith(prefix))) {
+          keysToRemove.add(key)
+        }
+      }
+
+      keysToRemove.forEach(key => {
+        localStorage.removeItem(key)
       })
+
       window.location.reload()
     },
   },

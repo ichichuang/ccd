@@ -6,16 +6,9 @@ export const routeWhitePathList: string[] = [
   '/login',
   '/register',
   '/example',
-  '/exampleAnimate',
   '/example/layout/ratio',
 ]
-export const routeWhiteNameList: string[] = [
-  'Login',
-  'Register',
-  'Example',
-  'ExampleAnimate',
-  'ExampleRatio',
-]
+export const routeWhiteNameList: string[] = ['Login', 'Register', 'Example', 'ExampleRatio']
 
 /**
  * 错误页面配置

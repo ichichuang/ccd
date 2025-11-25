@@ -23,11 +23,11 @@ watch(
 )
 </script>
 <template lang="pug">
-.select-none.h-full.between-start.color-primary400
+.select-none.h-full.between-start
   template(v-if='isCollapsed')
     AnimateWrapper(:show='flag', enter='fadeInLeft', leave='fadeOutLeft', duration='1s')
       .h-full.w-auto.p-padding.center
-        Image.full(src='/face.png')
+        Image.full(src='./face.png')
   template(v-else)
     AnimateWrapper(:show='flag', enter='fadeInLeft', leave='fadeOutLeft', duration='1s')
       span {{ title }}

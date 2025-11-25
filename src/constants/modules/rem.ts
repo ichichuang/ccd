@@ -1,3 +1,5 @@
+// 常量定义（无函数逻辑）
+
 /**
  * 断点配置（与 UnoCSS 保持一致）
  * 注意：这里使用数字格式，UnoCSS theme.ts 会自动转换为字符串格式
@@ -49,89 +51,42 @@ export interface DeviceConfig {
 }
 
 /**
- * 统一的设备配置映射
- * 基于断点值精确匹配，确保与 getDeviceType 逻辑一致
+ * 设备字体大小比例配置
+ * 基于 DEFAULT_CONFIG.fontSize 的相对比例，便于统一调整全局字体大小
  */
-export const deviceConfigs: Record<string, DeviceConfig> = {
+export const DEVICE_FONT_SIZE_RATIOS = {
   mobile: {
-    minWidth: 0,
-    maxWidth: breakpoints.sm, // 768
-    designWidth: 375, // 基于iPhone设计稿
-    baseFontSize: 12,
-    minFontSize: 12,
-    maxFontSize: 16,
-    name: '移动端',
+    base: 0.75, // 12/16 = 0.75
+    min: 0.75, // 12/16 = 0.75
+    max: 1.0, // 16/16 = 1.0
   },
   tablet: {
-    minWidth: breakpoints.sm, // 768
-    maxWidth: breakpoints.md, // 1024
-    designWidth: 768, // 基于iPad设计稿
-    baseFontSize: 15,
-    minFontSize: 12,
-    maxFontSize: 17,
-    name: '平板端',
+    base: 0.9375, // 15/16 = 0.9375
+    min: 0.75, // 12/16 = 0.75
+    max: 1.0625, // 17/16 = 1.0625
   },
   desktop: {
-    minWidth: breakpoints.md, // 1024
-    maxWidth: breakpoints.xls, // 1920
-    designWidth: 1440, // 基于主流桌面设计稿
-    baseFontSize: 14,
-    minFontSize: 14,
-    maxFontSize: 16,
-    name: '桌面端',
+    base: 0.875, // 14/16 = 0.875
+    min: 0.875, // 14/16 = 0.875
+    max: 1.0, // 16/16 = 1.0
   },
   largeScreen: {
-    minWidth: breakpoints.xls, // 1920
-    maxWidth: breakpoints.xxl, // 2560
-    designWidth: 1920, // 基于全高清设计稿
-    baseFontSize: 16,
-    minFontSize: 12,
-    maxFontSize: 18,
-    name: '大屏显示器',
+    base: 1.0, // 16/16 = 1.0
+    min: 0.75, // 12/16 = 0.75
+    max: 1.125, // 18/16 = 1.125
   },
   ultraWide: {
-    minWidth: breakpoints.xxl, // 2560
-    maxWidth: breakpoints.xxxl, // 3840
-    designWidth: 2560, // 基于2K设计稿
-    baseFontSize: 16,
-    minFontSize: 14,
-    maxFontSize: 24,
-    name: '超宽屏',
+    base: 1.25, // 20/16 = 1.25 (调整为更大，适配超宽屏)
+    min: 1.0, // 16/16 = 1.0 (最小字体相应增大)
+    max: 1.75, // 28/16 = 1.75 (最大字体增大)
   },
   fourK: {
-    minWidth: breakpoints.xxxl, // 3840
-    designWidth: 3840, // 基于4K设计稿
-    baseFontSize: 18,
-    minFontSize: 16,
-    maxFontSize: 28,
-    name: '4K屏',
+    base: 1.6, // 24/16 = 1.6 (调整为更大，适配 4K 屏)
+    min: 1.4, // 20/16 = 1.4 (最小字体也相应增大)
+    max: 2.5, // 32/16 = 2.5 (最大字体增大，提供更多缩放空间)
   },
 } as const
 
-/**
- * REM 适配系统配置
- */
-export const remConfig = {
-  // 默认策略
-  strategy: 'adaptive' as keyof typeof adapterStrategies,
-
-  // 是否启用移动端优先策略（兼容性）
-  mobileFirst: false,
-
-  // PostCSS root 值（与基准字体大小保持一致）
-  postcssRootValue: 16,
-
-  // 设备配置
-  deviceConfigs,
-
-  // 断点配置
-  breakpoints,
-} as const
-
-/**
- * 调试配置
- * 🎯 优化：提供更丰富的调试选项
- */
 export const debugConfig = {
   // 是否启用调试模式
   enabled: false,
@@ -156,59 +111,17 @@ export const debugConfig = {
 } as const
 
 /**
- * 工具函数：根据屏幕宽度获取设备配置
- * 优化后的算法，直接匹配设备类型
+ * 自动适配配置
+ * 控制是否启用自动适配功能
  */
-export const getDeviceConfig = (width: number): DeviceConfig => {
-  const deviceType = getDeviceType(width)
-
-  // 直接根据设备类型返回配置
-  switch (deviceType) {
-    case 'mobile':
-      return deviceConfigs.mobile
-    case 'tablet':
-      return deviceConfigs.tablet
-    case 'desktop':
-      return deviceConfigs.desktop
-    case 'largeScreen':
-      return deviceConfigs.largeScreen
-    case 'ultraWide':
-      return deviceConfigs.ultraWide
-    case 'fourK':
-      return deviceConfigs.fourK
-    default:
-      return deviceConfigs.desktop // 默认返回桌面端配置
-  }
-}
-
-/**
- * 工具函数：根据屏幕宽度获取设备类型
- * 优化后的逻辑，与 deviceConfigs 配置保持一致
- */
-export const getDeviceType = (width: number): keyof typeof deviceTypes => {
-  // 按照从大到小的顺序判断，确保精确匹配
-  if (width >= breakpoints.xxxl) {
-    // >= 3840
-    return 'fourK'
-  }
-  if (width >= breakpoints.xxl) {
-    // >= 2560
-    return 'ultraWide'
-  }
-  if (width >= breakpoints.xls) {
-    // >= 1920
-    return 'largeScreen'
-  }
-  if (width >= breakpoints.md) {
-    // >= 1024
-    return 'desktop'
-  }
-  if (width >= breakpoints.sm) {
-    // >= 768
-    return 'tablet'
-  }
-  return 'mobile' // < 768
-}
+export const autoAdaptConfig = {
+  // 是否自动切换尺寸模式
+  autoSizeMode: true,
+  // 是否自动切换字体大小选项
+  autoFontSize: true,
+  // 是否自动切换适配策略
+  autoStrategy: true,
+} as const
 
 /**
  * 尺寸选项配置
@@ -258,8 +171,22 @@ export const fontSizeOptions = [
 ] as const
 
 /**
+ * 设备类型到尺寸模式的映射
+ * 用于根据设备类型自动推荐尺寸模式
+ */
+export const deviceSizeMap = {
+  mobile: 'compact', // 移动端默认紧凑模式
+  tablet: 'comfortable', // 平板端默认舒适模式
+  desktop: 'comfortable', // 桌面端默认舒适模式
+  largeScreen: 'loose', // 大屏端默认宽松模式
+  ultraWide: 'loose', // 超宽屏端默认宽松模式
+  fourK: 'loose', // 4K屏端默认宽松模式
+} as const
+
+/**
  * 断点与字体大小的映射关系
- * 用于自动设置字体大小
+ * 用于自动设置字体大小选项
+ * 注意：此映射影响字体大小选项（xs/sm/md/lg/xl等），实际根字体大小由 deviceConfigs 计算
  */
 export const breakpointFontSizeMap = {
   mobile: 'xs', // < 768px 使用迷你字体
@@ -267,28 +194,9 @@ export const breakpointFontSizeMap = {
   desktop: 'md', // 1024-1919px 使用中等字体
   largeScreen: 'lg', // 1920-2559px 使用大字体
   ultraWide: 'xl', // 2560-3839px 使用特大字体
-  fourK: 'xxl', // >= 3840px 使用超大字体
+  fourK: 'xxxl', // >= 3840px 使用超超大字体（调整为最大选项，适配 4K 屏）
 } as const
 
 /**
- * 工具函数：根据设备类型获取推荐的字体大小
+ * 工具函数：根据设备类型获取推荐的尺寸模式
  */
-export const getRecommendedFontSize = (deviceType: keyof typeof deviceTypes): string => {
-  return breakpointFontSizeMap[deviceType] || 'md'
-}
-
-/**
- * 注意：布局相关配置（compactSizes, comfortableSizes, looseSizes, sizePresetsMap）
- * 仍在 theme.ts 中定义，因为它们依赖浏览器环境（window对象）
- * 如需使用这些配置，请直接从 '@/constants/modules/theme' 导入
- */
-
-// 向后兼容的导出
-export const mobileConfig = deviceConfigs.mobile
-export const desktopConfig = deviceConfigs.desktop
-export const largeScreenConfig = deviceConfigs.largeScreen
-export const ultraWideConfig = deviceConfigs.ultraWide
-export const fourKConfig = deviceConfigs.fourK
-export const adaptiveConfig = {
-  strategies: deviceConfigs,
-}

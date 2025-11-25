@@ -17,8 +17,7 @@ const handleLogin = async () => {
     userStore.setToken(token)
   } catch (error) {
     console.error(`❌ ${t('common.messages.loginFailed')}:`, error)
-    userStore.resetToken()
-    userStore.resetUserInfo()
+    userStore.logout()
   } finally {
     loading.value = false
   }
@@ -31,7 +30,7 @@ const handleLogin = async () => {
     .fs-appFontSizel.font-bold.color-accent100 ccd
     .c-shadow.p-padding.rounded-xl.wfull.c-border.p-paddingl.bg-bg100.center-col.gap-gap.c-gradient-primary-bottom-right
       .h-100.w-100.center
-        Image.full(src='/face.png')
+        Image.full(src='./face.png')
 
       Button.full(:disabled='loading', severity='help', @click='handleLogin') {{ loading ? t('common.actions.loginInProgress') : t('common.actions.enterSystem') }}
 </template>

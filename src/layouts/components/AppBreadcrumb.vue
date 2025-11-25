@@ -13,7 +13,7 @@ const currentRouteTitle = computed(() => {
 
 // 首页配置
 const home = ref({
-  icon: 'icon-line-md:home',
+  icon: 'icon-line-md:mushroom-filled',
   route: '/',
 })
 
@@ -58,7 +58,7 @@ Breadcrumb(:home='home', :model='items')
   template(#item='{ item }')
     template(v-if='item.route')
       div(
-        :class='[item.icon, "c-cp w-appFontSizex h-appFontSizex"]',
+        :class='[item.icon, "c-cp w-appFontSizex h-appFontSizex mb1"]',
         @click='goToRoute(item.route)'
       )
     template(v-else)

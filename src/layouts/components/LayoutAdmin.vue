@@ -19,12 +19,19 @@ const sidebarCollapsed = computed(() => layoutStore.getSidebarCollapsed)
   aside.h-full.relative.z-999.c-transitions(
     :class='showSidebar ? (sidebarCollapsed ? "md:block md:w-sidebarCollapsedWidth" : "md:block md:w-sidebarWidth") : "hidden md:w-0"'
   )
-    .full.bg-primary100
+    .full.bg-bg300.color-accent100
       .h-headerHeight.center.hidden(class='md:block')
         AppTitle
-      div(class='h-[calc(100%-var(--header-height))]')
+      div(
+        class='h-[calc(100%-var(--header-height)-var(--footer-height))]',
+        :class='showFooter ? (sidebarCollapsed ? "h-[calc(100%-var(--header-height)-var(--footer-height))] px0" : "h-[calc(100%-var(--header-height)-var(--footer-height))] px-padding") : sidebarCollapsed ? "h-[calc(100%-var(--header-height))] px0" : "h-[calc(100%-var(--header-height))] px-padding"'
+      )
         .full
           AppSidebar
+      // 底部占位
+      template(v-if='showFooter')
+        footer.h-footerHeight
+          AppFooter
 
   // 主体
   main.h-full.w-375.flex-1
@@ -34,12 +41,12 @@ const sidebarCollapsed = computed(() => layoutStore.getSidebarCollapsed)
         AppHeader
     // 标签页
     template(v-if='showTabs')
-      section.h-tabsHeight.bg-bg200
+      section.h-tabsHeight
         AppTabs
 
     // 内容区域
-    .w-full.h-contentBreadcrumbHeight.relative.py-12(class='sm:py-16 lg:py-18 xxl:py-24')
-      AppContainer
+    .w-full.h-contentBreadcrumbHeight.relative.bg-bg200
+      AppContainer.p-paddingx
       template(v-if='isPageLoading')
         .absolute.t-0.r-0.l-0.b-0.z-1.center
           Loading
@@ -47,6 +54,6 @@ const sidebarCollapsed = computed(() => layoutStore.getSidebarCollapsed)
 
     // 底部
     template(v-if='showFooter')
-      footer.h-footerHeight.bg-bg200
+      footer.h-footerHeight.bg-bg300
         AppFooter
 </template>

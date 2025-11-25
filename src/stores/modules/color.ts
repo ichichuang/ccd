@@ -1,13 +1,7 @@
 import { getSystemColorMode, toKebabCase } from '@/common'
-import {
-  darkThemeOptions,
-  getDefaultTheme,
-  getThemeOptions,
-  lightThemeOptions,
-  modeOptions,
-} from '@/constants'
+import { darkThemeOptions, lightThemeOptions, modeOptions } from '@/constants'
 import store from '@/stores'
-import { env } from '@/utils'
+import { env, getDefaultTheme, getThemeOptions } from '@/utils'
 import { defineStore } from 'pinia'
 export const useColorStore = defineStore('color', {
   state: (): ColorState => ({

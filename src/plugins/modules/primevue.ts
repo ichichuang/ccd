@@ -1,4 +1,4 @@
-import { createCustomPreset, customPreset } from '@/constants'
+import { createCustomPreset, customPreset } from '@/utils'
 import { getCurrentLocale, i18n } from '@/locales'
 import { useColorStore, useSizeStore } from '@/stores'
 import { definePreset, usePreset } from '@primevue/themes'

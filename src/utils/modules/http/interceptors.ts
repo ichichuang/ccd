@@ -309,9 +309,7 @@ const handleHttpError = (status: number, data: any) => {
   switch (status) {
     case 401:
       // 处理未授权错误
-      useUserStoreWithOut().resetUserInfo()
-      useUserStoreWithOut().resetToken()
-      window.location.href = '/login'
+      useUserStoreWithOut().logout()
       break
     case 403:
       // 处理权限不足错误

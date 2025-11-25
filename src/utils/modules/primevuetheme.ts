@@ -1,5 +1,7 @@
 import { useColorStore, useSizeStore } from '@/stores'
 import { env } from '@/utils'
+import { getDeviceLayoutSizeRatios, getDeviceType } from '@/utils/modules/remHelpers'
+
 /**
  * 主题配置缓存
  */
@@ -506,20 +508,47 @@ export const createCustomPreset = (preset: any, { colorStore, sizeStore }: Prime
       fontSize: `${sizeStore.getFontSizeValue}px`,
     }
 
-    // 路径样式，用于深度匹配
+    // 获取设备类型和布局尺寸比例（用于组件尺寸缩放）
+    let deviceRatios = {
+      sidebarWidth: 1,
+      headerHeight: 1,
+      footerHeight: 1,
+      breadcrumbHeight: 1,
+      tabsHeight: 1,
+      gap: 1,
+    }
+
+    try {
+      if (typeof window !== 'undefined') {
+        const width = window.innerWidth
+        const deviceType = getDeviceType(width)
+        deviceRatios = getDeviceLayoutSizeRatios(deviceType)
+      }
+    } catch (error) {
+      console.error('Failed to get device layout ratios:', error)
+    }
+
+    // 计算缩放后的组件尺寸值
+    const scaleGap = deviceRatios.gap
+    const scalePadding = deviceRatios.gap // 使用 gap 比例作为 padding 的缩放比例
+    const basePadding = sizeStore.getPaddingValue || 12
+    const basePaddings = sizeStore.getPaddingsValue || 8
+    const baseGaps = sizeStore.getGaps || 8
+
+    // 路径样式，用于深度匹配（使用缩放后的值）
     const pathStyles: Record<string, any> = {
       // 弹出框
-      ['popover.padding']: `${sizeStore.getPaddingValue}px`,
-      ['popover.content.padding']: `${sizeStore.getPaddingValue}px`,
-      ['popover.root.borderRadius']: `6px`,
-      ['popover.root.arrowOffset']: `12px`,
+      ['popover.padding']: `${Math.round(basePadding * scalePadding)}px`,
+      ['popover.content.padding']: `${Math.round(basePadding * scalePadding)}px`,
+      ['popover.root.borderRadius']: `${Math.round(6 * scalePadding)}px`,
+      ['popover.root.arrowOffset']: `${Math.round(12 * scalePadding)}px`,
       ['mask.background']: `${colorStore.getBg300}80`,
       // 抽屉
       ['drawer.root.borderColor']: `${colorStore.getBg300}`,
       ['drawer.title.fontSize']: `${sizeStore.getFontSizexValue}px`,
-      ['drawer.header.padding']: `12px`,
-      ['drawer.content.padding']: `18px`,
-      ['drawer.footer.padding']: `12px`,
+      ['drawer.header.padding']: `${Math.round(12 * scalePadding)}px`,
+      ['drawer.content.padding']: `${Math.round(18 * scalePadding)}px`,
+      ['drawer.footer.padding']: `${Math.round(12 * scalePadding)}px`,
     }
 
     const customPreset = {
@@ -538,35 +567,36 @@ export const createCustomPreset = (preset: any, { colorStore, sizeStore }: Prime
       override: true,
     })
 
-    // 固定尺寸（大）
+    // 组件尺寸配置（基于全局变量和缩放比例）
+    // 大尺寸组件样式（使用 basePadding 和 baseGap 的较大比例）
     const customComponentsStyle1 = {
-      padding: `6px 8px`,
-      paddingY: `6px`,
-      paddingX: `8px`,
-      margin: `6px`,
-      marginY: `6px`,
-      marginX: `6px`,
-      gap: `6px`,
+      padding: `${Math.round(basePaddings * scalePadding)}px ${Math.round(basePadding * scalePadding)}px`,
+      paddingY: `${Math.round(basePaddings * scalePadding)}px`,
+      paddingX: `${Math.round(basePadding * scalePadding)}px`,
+      margin: `${Math.round(baseGaps * scaleGap)}px`,
+      marginY: `${Math.round(baseGaps * scaleGap)}px`,
+      marginX: `${Math.round(baseGaps * scaleGap)}px`,
+      gap: `${Math.round(baseGaps * scaleGap)}px`,
     }
-    // 固定尺寸（中）
+    // 中等尺寸组件样式（使用较小的 margin 和 gap）
     const customComponentsStyle1m = {
-      padding: `6px 8px`,
-      paddingY: `6px`,
-      paddingX: `8px`,
-      margin: `2px`,
-      marginY: `2px`,
-      marginX: `2px`,
-      gap: `2px`,
+      padding: `${Math.round(basePaddings * scalePadding)}px ${Math.round(basePadding * scalePadding)}px`,
+      paddingY: `${Math.round(basePaddings * scalePadding)}px`,
+      paddingX: `${Math.round(basePadding * scalePadding)}px`,
+      margin: `${Math.round(baseGaps * 0.25 * scaleGap)}px`, // 使用 gap 的 25%
+      marginY: `${Math.round(baseGaps * 0.25 * scaleGap)}px`,
+      marginX: `${Math.round(baseGaps * 0.25 * scaleGap)}px`,
+      gap: `${Math.round(baseGaps * 0.25 * scaleGap)}px`,
     }
-    // 固定尺寸（小）
+    // 小尺寸组件样式（使用更小的 padding 和 margin）
     const customComponentsStyle1s = {
-      padding: `4px 6px`,
-      paddingY: `4px`,
-      paddingX: `6px`,
-      margin: `2px`,
-      marginY: `2px`,
-      marginX: `2px`,
-      gap: `2px`,
+      padding: `${Math.round(basePaddings * 0.5 * scalePadding)}px ${Math.round(basePadding * 0.5 * scalePadding)}px`,
+      paddingY: `${Math.round(basePaddings * 0.5 * scalePadding)}px`,
+      paddingX: `${Math.round(basePadding * 0.5 * scalePadding)}px`,
+      margin: `${Math.round(baseGaps * 0.25 * scaleGap)}px`,
+      marginY: `${Math.round(baseGaps * 0.25 * scaleGap)}px`,
+      marginX: `${Math.round(baseGaps * 0.25 * scaleGap)}px`,
+      gap: `${Math.round(baseGaps * 0.25 * scaleGap)}px`,
     }
     // 动态尺寸
     const customComponentsStyle2 = {
@@ -577,6 +607,10 @@ export const createCustomPreset = (preset: any, { colorStore, sizeStore }: Prime
       marginY: `${sizeStore.getGaps}px`,
       marginX: `${sizeStore.getGaps}px`,
       gap: `${sizeStore.getGap}px`,
+    }
+    // 0尺寸组件样式
+    const customComponentsStyle0 = {
+      padding: '6px',
     }
     initToastColor(newPreset, colorStore)
     deepMergeStylesAdvancedInPlace(newPreset.components.toast, {
@@ -589,30 +623,38 @@ export const createCustomPreset = (preset: any, { colorStore, sizeStore }: Prime
       ...customComponentsStyle1,
     })
     // dialog 组件单独处理
-    deepMergeStylesAdvancedInPlace(newPreset.components.dialog, {})
+    deepMergeStylesAdvancedInPlace(newPreset.components.dialog, {
+      padding: `${sizeStore.getPaddingValue}px ${sizeStore.getPaddinglValue}px`,
+    })
     // menu 组件单独处理
     deepMergeStylesAdvancedInPlace(newPreset.components.menu, {
       ...customComponentsStyle1,
+      ...customComponentsStyle0,
     })
     // megamenu 组件单独处理
     deepMergeStylesAdvancedInPlace(newPreset.components.megamenu, {
       ...customComponentsStyle1,
+      ...customComponentsStyle0,
     })
     // menubar 组件单独处理
     deepMergeStylesAdvancedInPlace(newPreset.components.menubar, {
       ...customComponentsStyle1,
+      ...customComponentsStyle0,
     })
     // panelmenu 组件单独处理
     deepMergeStylesAdvancedInPlace(newPreset.components.panelmenu, {
       ...customComponentsStyle1,
+      ...customComponentsStyle0,
     })
     // tieredmenu 组件单独处理
     deepMergeStylesAdvancedInPlace(newPreset.components.tieredmenu, {
       ...customComponentsStyle1,
+      ...customComponentsStyle0,
     })
     // 面包屑
     deepMergeStylesAdvancedInPlace(newPreset.components.breadcrumb, {
       ...customComponentsStyle1,
+      ...customComponentsStyle0,
     })
     // contextmenu 右键菜单
     deepMergeStylesAdvancedInPlace(newPreset.components.contextmenu, {
@@ -637,12 +679,12 @@ export const createCustomPreset = (preset: any, { colorStore, sizeStore }: Prime
     // 多选列表框
     deepMergeStylesAdvancedInPlace(newPreset.components.multiselect, {
       ...customComponentsStyle1m,
-      margin: `6px`,
-      marginY: `6px`,
-      marginX: `12px`,
-      gap: `6px`,
-      ['option.gap']: `12px`,
-      ['list.header.padding']: `12px 16px 0 16px`,
+      margin: `${Math.round(baseGaps * scaleGap)}px`,
+      marginY: `${Math.round(baseGaps * scaleGap)}px`,
+      marginX: `${Math.round(basePadding * scalePadding)}px`,
+      gap: `${Math.round(baseGaps * scaleGap)}px`,
+      ['option.gap']: `${Math.round(basePadding * scalePadding)}px`,
+      ['list.header.padding']: `${Math.round(basePadding * scalePadding)}px ${Math.round(basePadding * 1.33 * scalePadding)}px 0 ${Math.round(basePadding * 1.33 * scalePadding)}px`,
     })
     // 级联选择
     deepMergeStylesAdvancedInPlace(newPreset.components.cascadeselect, {
@@ -654,10 +696,10 @@ export const createCustomPreset = (preset: any, { colorStore, sizeStore }: Prime
       padding: `0`,
       paddingY: `0px`,
       paddingX: `0px`,
-      margin: `2px`,
-      marginY: `2px`,
-      marginX: `2px`,
-      gap: `2px`,
+      margin: `${Math.round(baseGaps * 0.25 * scaleGap)}px`,
+      marginY: `${Math.round(baseGaps * 0.25 * scaleGap)}px`,
+      marginX: `${Math.round(baseGaps * 0.25 * scaleGap)}px`,
+      gap: `${Math.round(baseGaps * 0.25 * scaleGap)}px`,
     })
     // 颜色选择器
     deepMergeStylesAdvancedInPlace(newPreset.components.colorpicker, {
@@ -670,13 +712,13 @@ export const createCustomPreset = (preset: any, { colorStore, sizeStore }: Prime
     // 日期选择器
     deepMergeStylesAdvancedInPlace(newPreset.components.datepicker, {
       ...customComponentsStyle1s,
-      padding: `2px`,
-      paddingY: `2px`,
-      paddingX: `2px`,
-      margin: `2px`,
-      marginY: `2px`,
-      marginX: `2px`,
-      gap: `2px`,
+      padding: `${Math.round(baseGaps * 0.25 * scalePadding)}px`,
+      paddingY: `${Math.round(baseGaps * 0.25 * scalePadding)}px`,
+      paddingX: `${Math.round(baseGaps * 0.25 * scalePadding)}px`,
+      margin: `${Math.round(baseGaps * 0.25 * scaleGap)}px`,
+      marginY: `${Math.round(baseGaps * 0.25 * scaleGap)}px`,
+      marginX: `${Math.round(baseGaps * 0.25 * scaleGap)}px`,
+      gap: `${Math.round(baseGaps * 0.25 * scaleGap)}px`,
     })
     // 日期选择器
     deepMergeStylesAdvancedInPlace(newPreset.components.tabs, {

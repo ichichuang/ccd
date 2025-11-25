@@ -4,7 +4,8 @@
 
 import { cloneDeep, toKebabCase } from '@/common'
 import { fontSizeOptions, paddingOptions, roundedOptions, sizeOptions } from '@/constants'
-import { comfortableSizes, sizePresetsMap } from '@/constants/modules/theme'
+import { DEFAULT_CONFIG } from '@/constants/modules/layout'
+import { comfortableSizes, sizePresetsMap } from '@/utils'
 import store, { useLayoutStoreWithOut } from '@/stores'
 import { env, useMitt } from '@/utils'
 import { defineStore } from 'pinia'
@@ -88,10 +89,16 @@ export const useSizeStore = defineStore<'size', SizeState, SizeGetters, SizeActi
     fontSize: 'md',
     fontSizeOptions: [...fontSizeOptions], // 创建可变副本
 
-    // 添加窗口尺寸状态，用于触发 getter 重新计算
+    // 添加窗口尺寸状态，用于触发 getter 重新计算（使用统一配置）
     windowSize: {
-      width: Math.max(375, Math.min(window.innerWidth, 3840)),
-      height: Math.max(667, Math.min(window.innerHeight, 2160)),
+      width: Math.max(
+        DEFAULT_CONFIG.windowSize.minWidth,
+        Math.min(window.innerWidth, DEFAULT_CONFIG.windowSize.maxWidth)
+      ),
+      height: Math.max(
+        DEFAULT_CONFIG.windowSize.minHeight,
+        Math.min(window.innerHeight, DEFAULT_CONFIG.windowSize.maxHeight)
+      ),
     },
   }),
 
@@ -433,8 +440,8 @@ export const useSizeStore = defineStore<'size', SizeState, SizeGetters, SizeActi
       } catch (error) {
         console.error('获取 fontSizeValue 失败，使用回退值:', error)
       }
-      // 回退：保持一个合理的默认值
-      return 16
+      // 回退：使用统一配置的默认值
+      return DEFAULT_CONFIG.fontSize
     },
     getFontSizeLabel: (state: SizeState) => {
       try {
@@ -572,19 +579,31 @@ export const useSizeStore = defineStore<'size', SizeState, SizeGetters, SizeActi
       this.setSize(this.size)
       const { on } = useMitt()
       on('windowResize', async () => {
-        // 更新窗口尺寸状态，触发 getter 重新计算
+        // 更新窗口尺寸状态，触发 getter 重新计算（使用统一配置）
         this.windowSize = {
-          width: Math.max(375, Math.min(window.innerWidth, 3840)),
-          height: Math.max(667, Math.min(window.innerHeight, 2160)),
+          width: Math.max(
+            DEFAULT_CONFIG.windowSize.minWidth,
+            Math.min(window.innerWidth, DEFAULT_CONFIG.windowSize.maxWidth)
+          ),
+          height: Math.max(
+            DEFAULT_CONFIG.windowSize.minHeight,
+            Math.min(window.innerHeight, DEFAULT_CONFIG.windowSize.maxHeight)
+          ),
         }
         await nextTick()
         this.setCssVariables()
       })
 
-      // 首次初始化时也根据当前窗口尺寸驱动一次，确保字体变量同步
+      // 首次初始化时也根据当前窗口尺寸驱动一次，确保字体变量同步（使用统一配置）
       this.windowSize = {
-        width: Math.max(375, Math.min(window.innerWidth, 3840)),
-        height: Math.max(667, Math.min(window.innerHeight, 2160)),
+        width: Math.max(
+          DEFAULT_CONFIG.windowSize.minWidth,
+          Math.min(window.innerWidth, DEFAULT_CONFIG.windowSize.maxWidth)
+        ),
+        height: Math.max(
+          DEFAULT_CONFIG.windowSize.minHeight,
+          Math.min(window.innerHeight, DEFAULT_CONFIG.windowSize.maxHeight)
+        ),
       }
       this.setCssVariables()
     },
@@ -594,10 +613,16 @@ export const useSizeStore = defineStore<'size', SizeState, SizeGetters, SizeActi
       this.padding = 'md'
       this.rounded = 'smooth'
       this.sizes = cloneDeep(comfortableSizes)
-      // 重置窗口尺寸状态
+      // 重置窗口尺寸状态（使用统一配置）
       this.windowSize = {
-        width: Math.max(375, Math.min(window.innerWidth, 3840)),
-        height: Math.max(667, Math.min(window.innerHeight, 2160)),
+        width: Math.max(
+          DEFAULT_CONFIG.windowSize.minWidth,
+          Math.min(window.innerWidth, DEFAULT_CONFIG.windowSize.maxWidth)
+        ),
+        height: Math.max(
+          DEFAULT_CONFIG.windowSize.minHeight,
+          Math.min(window.innerHeight, DEFAULT_CONFIG.windowSize.maxHeight)
+        ),
       }
       this.setCssVariables()
     },
