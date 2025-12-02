@@ -168,9 +168,12 @@ export default ({ mode }: ConfigEnv): UserConfigExport => {
       drop: esbuildDrop.length ? esbuildDrop : undefined,
     },
     build: {
-      target: 'es2015',
+      // 使用 esnext，减少对第三方 ESM 包的降级转换，避免运行时 TDZ 问题
+      target: 'esnext',
       sourcemap: VITE_BUILD_SOURCEMAP,
-      minify: isDev ? false : 'esbuild',
+      // 为彻底规避 "Cannot access 'xxx' before initialization" 这类压缩重排问题，
+      // 暂时关闭 JS 压缩，仅依赖 gzip/brotli 等传输压缩
+      minify: false,
       chunkSizeWarningLimit: 8000, // 降低警告阈值以优化包大小
       cssCodeSplit: true, // 启用 CSS 代码分割
       assetsInlineLimit: 4096, // 小于 4kb 的资源内联

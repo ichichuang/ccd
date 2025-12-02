@@ -100,7 +100,7 @@ import {
 } from './components'
 import { useFormMemory } from './hooks/useFormMemory'
 import { DEFAULT_SCHEMA_FORM_PROPS } from './utils/constants'
-import { getResetValues } from './utils/emptyValues'
+import { getEmptyValues, getResetValues } from './utils/emptyValues'
 import { colStyle as helperColStyle } from './utils/helper'
 import type {
   LayoutConfig,
@@ -1762,7 +1762,6 @@ defineExpose({
 
     // 🔥 关键修复：为所有字段构建完整的重置值对象
     // 有 defaultValue 的字段用默认值，没有的字段用空值
-    const { getEmptyValues } = await import('./utils/emptyValues')
     const emptyValues = getEmptyValues(props.schema.columns)
     const allResetValues: Record<string, any> = {}
 
@@ -1854,7 +1853,6 @@ defineExpose({
 
     // 🔥 关键修复：为所有字段生成空值对象（包括有 defaultValue 的字段）
     // 使用 getEmptyValues 确保所有字段都被设置为合适的空值
-    const { getEmptyValues } = await import('./utils/emptyValues')
     const emptyValues = getEmptyValues(props.schema.columns)
 
     // 设置表单所有字段为空值（数据层面的清空）

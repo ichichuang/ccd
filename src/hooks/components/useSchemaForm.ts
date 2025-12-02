@@ -6,6 +6,7 @@
  */
 
 import type { Schema, SchemaColumnsItem } from '@/components/modules/schema-form/utils/types'
+import { getEmptyValues, getResetValues } from '@/components/modules/schema-form/utils/emptyValues'
 import {
   computed,
   isRef,
@@ -309,29 +310,11 @@ export const useSchemaForm = ({
   // ========== 表单整体操作方法 ==========
 
   /**
-   * 动态导入工具函数
-   * @description 避免循环依赖，在需要时才导入
-   */
-  let getEmptyValuesFunc: ((columns: SchemaColumnsItem[]) => Record<string, any>) | null = null
-  let getResetValuesFunc: ((columns: SchemaColumnsItem[]) => Record<string, any>) | null = null
-
-  const loadUtilFunctions = async () => {
-    if (!getEmptyValuesFunc || !getResetValuesFunc) {
-      const { getEmptyValues, getResetValues } = await import(
-        '@/components/modules/schema-form/utils/emptyValues'
-      )
-      getEmptyValuesFunc = getEmptyValues
-      getResetValuesFunc = getResetValues
-    }
-  }
-
-  /**
    * 获取空白值（根据组件类型设置合适的空值）
    * @description 用于 clearForm 的降级处理
    */
   const getBlankValues = async (): Promise<Record<string, any>> => {
-    await loadUtilFunctions()
-    return getEmptyValuesFunc!(schema.columns || [])
+    return getEmptyValues(schema.columns || [])
   }
 
   /**
@@ -339,8 +322,7 @@ export const useSchemaForm = ({
    * @description 用于 resetForm 的降级处理
    */
   const getResetValuesInternal = async (): Promise<Record<string, any>> => {
-    await loadUtilFunctions()
-    return getResetValuesFunc!(schema.columns || [])
+    return getResetValues(schema.columns || [])
   }
 
   /**
