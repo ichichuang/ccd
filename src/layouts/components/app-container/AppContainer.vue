@@ -66,12 +66,14 @@ watch(
   template(v-if='containerHeight && containerHeight > 0')
     ScrollbarWrapper(
       ref='scrollbarRef',
-      :wrapper-class='currentLayoutMode !== "fullscreen" && currentLayoutMode !== "ratio" ? "bg-bg100 rounded-rounded" : ""',
+      :wrapper-class='currentLayoutMode !== "fullscreen" && currentLayoutMode !== "ratio" ? "bg-bg100 rounded-rounded c-shadow-primary dark:c-shadow" : ""',
       :style='{ height: containerHeight + "px" }',
       @scroll='handleScroll',
       @initialized='handleInitialized',
       :remember-scroll-position='true'
     )
-      .p-paddingx
-        AnimateRouterView(:style='{ minHeight: containerHeight + "px" }')
+      AnimateRouterView(
+        :style='{ minHeight: containerHeight + "px" }',
+        :class='currentLayoutMode !== "fullscreen" && currentLayoutMode !== "ratio" ? "p-padding" : ""'
+      )
 </template>

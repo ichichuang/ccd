@@ -2,6 +2,7 @@
 import { PrimeVueDialog, closeDialog, dialogStore } from '@/components/modules/prime-dialog'
 import { onMounted, onUnmounted } from 'vue'
 
+import LayoutManager from '@/layouts/index.vue'
 // 处理对话框关闭事件（包括 ESC 键和点击遮罩关闭）
 const handleDialogClose = (options: any, index: number, args?: any) => {
   // 调用 closeDialog 函数来清理索引

@@ -1,47 +1,48 @@
 <script setup lang="ts">
-import { useLayoutStore } from '@/stores'
+import { ref, watch } from 'vue'
+import { useRoute } from 'vue-router'
+import Popover from 'primevue/popover'
 import type { MenuItem } from 'primevue/menuitem'
-import { computed } from 'vue'
-import { useRouter } from 'vue-router'
+import AppBreadcrumb from '@/layouts/components/app-breadcrumb/AppBreadcrumb'
 
 const props = defineProps<{
   items: MenuItem[]
   componentsProps: Record<string, any>
 }>()
 
-const router = useRouter()
+type PopoverInstance = InstanceType<typeof Popover>
+const menuPopoverRef = ref<PopoverInstance | null>(null)
+const triggerRef = ref<HTMLElement | null>(null)
+const route = useRoute()
 
-const layoutStore = useLayoutStore()
+const handleToggle = (event: MouseEvent) => {
+  menuPopoverRef.value?.toggle(event)
+}
 
-const mobileSidebarVisible = computed(() => layoutStore.getMobileSidebarVisible)
+const handleHide = () => {
+  menuPopoverRef.value?.hide()
+}
 
-// 监听路由跳转则关闭移动端菜单
-router.beforeEach(() => {
-  layoutStore.setMobileSidebarVisible(false)
-})
+watch(
+  () => route.fullPath,
+  () => {
+    handleHide()
+  }
+)
 </script>
 <template lang="pug">
-.full.relative.z-999
-  //- 移动端菜单
-  AnimateWrapper.fixed.t-gapl.l-gapl.z-999.wa.ha(
-    :show='mobileSidebarVisible',
-    enter='slideInLeft',
-    leave='fadeOutLeft',
-    duration='400ms'
-  )
-    .bg-primary100.py-paddingl.px-padding.rounded-rounded
-      ScrollbarWrapper(
-        :color-scheme='{ thumbColor: "var(--primary100)", thumbHoverColor: "var(--primary200)" }',
-        :size='6'
-      )
-        .rounded-rounded.max-w-60vw.min-w-44vw.h-contentHeight.select-none
-          PrimeMenu(
-            :type='"panel"',
-            :items='props.items',
-            :components-props='props.componentsProps'
-          )
-  //- 遮罩
-  AnimateWrapper.fixed.t-0.l-0.z-998(:show='mobileSidebarVisible', enter='fadeIn', leave='fadeOut')
-    .full.opacity-50(@click='layoutStore.setMobileSidebarVisible(false)')
+//- 使用 AppBreadcrumb 作为触发容器
+div(ref='triggerRef', role='button', tabindex='0', @click='handleToggle')
+  AppBreadcrumb
+
+//- Popover 面板
+Popover.overflow-hidden.rounded-rounded(ref='menuPopoverRef', :dismissable='true')
+  .full.w-80vw.h-80vh.p-0.rounded-rounded.overflow-hidden(class='sm:w-60vw', @click.self='handleHide')
+    ScrollbarWrapper(
+      style='background: transparent; height: 100%',
+      :color-scheme='{ thumbColor: "transparent", thumbHoverColor: "transparent", thumbActiveColor: "transparent", trackColor: "transparent", trackHoverColor: "transparent", trackActiveColor: "transparent" }',
+      @container-click='handleHide'
+    )
+      .rounded-rounded
+        PrimeMenu(:type='"panel"', :items='props.items', :components-props='props.componentsProps')
 </template>
-<style lang="scss" scope></style>

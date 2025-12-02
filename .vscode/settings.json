@@ -71,6 +71,9 @@
     },
     "unocss.autocomplete.enabled": true
   },
+  "[pug]": {
+    "unocss.autocomplete.enabled": true
+  },
   "[javascript]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode",
     "editor.codeActionsOnSave": {
@@ -171,7 +174,8 @@
 
   // === UnoCSS 相关配置 ===
   "unocss.root": "./",
-  "unocss.configFile": "uno.config.ts",
+  "unocss.configFile": "unocss/index.ts",
+  "unocss.trace.server": "verbose",
   "unocss.remToPxPreview": true,
   "unocss.colorPreview": true,
   "unocss.enableIntelliSense": true,
@@ -179,6 +183,11 @@
   "unocss.intelliSense.matchHighlight": true,
   "unocss.intelliSense.remToPxHover": true,
   "unocss.intelliSense.strictDetection": false,
+  // 明确指定扫描的文件模式，确保 layouts 目录也被扫描
+  "unocss.content": [
+    "src/**/*.{vue,js,ts,jsx,tsx,md,mdx,html}",
+    "src/**/*.{css,scss,sass,less,styl,stylus}"
+  ],
 
   // === 包管理器配置 ===
   "npm.packageManager": "pnpm",

@@ -1,12 +1,12 @@
 <script setup lang="ts">
 import { useSizeStore } from '@/stores'
 import { useI18nRoundedOptions } from '@/utils'
-import { computed } from 'vue'
+import { computed, type ComputedRef } from 'vue'
 
 const sizeStore = useSizeStore()
 
 /* 尺寸变量配置相关 rounded */
-const roundedOptions = useI18nRoundedOptions()
+const roundedOptions = useI18nRoundedOptions() as ComputedRef<RoundedOptions[]>
 const rounded = computed(() => sizeStore.getRounded)
 
 const setRounded = (value: RoundedOptions['key']) => {

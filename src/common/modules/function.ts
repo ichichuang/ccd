@@ -80,13 +80,18 @@ export function toKebabCase(str: string, start: string = '', end: string = ''): 
 }
 
 import { v4 as uuidv4, v5 as uuidv5 } from 'uuid'
-/* 使用 uuid 生成唯一id */
+/* 使用 uuid 生成唯一id
+ * @returns 唯一id
+ */
 export function generateUniqueId(): string {
   const uniqueId = uuidv4()
   return uniqueId
 }
 
-/* 传入字符串，根据字符串使用固定的命名空间生成稳定的 UUID */
+/* 传入字符串，根据字符串使用固定的命名空间生成稳定的 UUID
+ * @param key 字符串
+ * @returns 唯一id
+ */
 export function generateIdFromKey(key: string | number | boolean | null | undefined): string {
   // 确保输入是有效的字符串
   const stringKey = String(key || '')
@@ -100,9 +105,8 @@ export function generateIdFromKey(key: string | number | boolean | null | undefi
     const NAMESPACE = uuidv5.DNS
     const uniqueId = uuidv5(stringKey, NAMESPACE) // 基于输入的键值生成 ID
     return uniqueId
-  } catch (error) {
+  } catch {
     // 如果 uuidv5 失败，回退到 uuidv4
-    console.warn('generateIdFromKey failed, falling back to uuidv4:', error)
     return generateUniqueId()
   }
 }

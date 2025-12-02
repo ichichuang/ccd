@@ -9,7 +9,6 @@ export const include = [
   'pinia',
   'alova',
   'dayjs',
-  'crypto-js',
   'lodash-es',
   'echarts',
   'vue-echarts',
@@ -22,4 +21,4 @@ export const include = [
  * 在预构建中强制排除的依赖项
  * 这些依赖项应该在运行时按需加载
  */
-export const exclude = ['@iconify/json', 'vite-plugin-compression', 'rollup-plugin-visualizer']
+export const exclude = ['vite-plugin-compression', 'rollup-plugin-visualizer', 'oh-vue-icons/icons']

@@ -6,7 +6,7 @@ const exampleRoutes: RouteConfig[] = [
     meta: {
       titleKey: 'router.example.title',
       rank: 1,
-      icon: 'icon-line-md:marker-filled',
+      icon: 'fc-bookmark',
     },
     children: [
       {
@@ -15,20 +15,9 @@ const exampleRoutes: RouteConfig[] = [
         meta: {
           titleKey: 'router.example.layout.title',
           rank: 3,
-          icon: 'icon-line-md:folder-filled',
+          icon: 'fc-folder',
         },
         children: [
-          {
-            path: 'screen',
-            name: 'ExampleLayoutScreen',
-            component: () => import('@/views/example/layout/example-screen.vue'),
-            meta: {
-              titleKey: 'router.example.layout.screen',
-              rank: 1,
-              parent: 'screen',
-              icon: 'icon-line-md:monitor-screenshot-twotone',
-            },
-          },
           {
             path: 'fullscreen',
             name: 'ExampleLayoutFullscreen',
@@ -37,7 +26,7 @@ const exampleRoutes: RouteConfig[] = [
               titleKey: 'router.example.layout.fullscreen',
               rank: 1,
               parent: 'fullscreen',
-              icon: 'icon-line-md:monitor-twotone',
+              icon: 'fc-display',
             },
           },
           {
@@ -48,7 +37,7 @@ const exampleRoutes: RouteConfig[] = [
               titleKey: 'router.example.layout.test',
               rank: 3,
               parent: 'fullscreen',
-              icon: 'icon-line-md:clipboard-check-twotone-to-clipboard-twotone-transition',
+              icon: 'fc-approval',
             },
           },
           {
@@ -59,7 +48,7 @@ const exampleRoutes: RouteConfig[] = [
               titleKey: 'router.example.layout.ratio',
               rank: 4,
               parent: 'ratio',
-              icon: 'icon-line-md:monitor-twotone',
+              icon: 'fc-display',
               ratio: '16:9',
             },
           },
@@ -71,7 +60,7 @@ const exampleRoutes: RouteConfig[] = [
         meta: {
           titleKey: 'router.example.components.title',
           rank: 1,
-          icon: 'icon-line-md:beer-alt-filled-loop',
+          icon: 'fc-approval',
         },
         children: [
           {
@@ -81,6 +70,7 @@ const exampleRoutes: RouteConfig[] = [
             meta: {
               titleKey: 'router.example.components.menu',
               rank: 1,
+              icon: 'fc-menu',
             },
           },
           {
@@ -90,6 +80,7 @@ const exampleRoutes: RouteConfig[] = [
             meta: {
               titleKey: 'router.example.components.dialog',
               rank: 2,
+              icon: 'fc-display',
             },
           },
           {
@@ -99,6 +90,7 @@ const exampleRoutes: RouteConfig[] = [
             meta: {
               titleKey: 'router.example.components.toast',
               rank: 3,
+              icon: 'fc-info',
             },
           },
           {
@@ -107,6 +99,7 @@ const exampleRoutes: RouteConfig[] = [
             meta: {
               rank: 4,
               titleKey: 'router.example.components.schemaForm.title',
+              icon: 'fc-edit-image',
             },
             children: [
               {
@@ -117,6 +110,7 @@ const exampleRoutes: RouteConfig[] = [
                 meta: {
                   titleKey: 'router.example.components.schemaForm.basic',
                   rank: 1,
+                  icon: 'fc-edit-image',
                 },
               },
               {
@@ -129,6 +123,7 @@ const exampleRoutes: RouteConfig[] = [
                 meta: {
                   titleKey: 'router.example.components.schemaForm.remember',
                   rank: 2,
+                  icon: 'fc-bookmark',
                 },
               },
               {
@@ -139,6 +134,7 @@ const exampleRoutes: RouteConfig[] = [
                 meta: {
                   titleKey: 'router.example.components.schemaForm.step',
                   rank: 3,
+                  icon: 'fc-stack-of-photos',
                 },
               },
               {
@@ -151,6 +147,7 @@ const exampleRoutes: RouteConfig[] = [
                 meta: {
                   titleKey: 'router.example.components.schemaForm.section',
                   rank: 4,
+                  icon: 'fc-list',
                 },
               },
             ],
@@ -161,6 +158,7 @@ const exampleRoutes: RouteConfig[] = [
             meta: {
               titleKey: 'router.example.components.vxetable.title',
               rank: 5,
+              icon: 'fc-list',
             },
             children: [
               {
@@ -171,6 +169,7 @@ const exampleRoutes: RouteConfig[] = [
                 meta: {
                   titleKey: 'router.example.components.vxetable.default',
                   rank: 1,
+                  icon: 'fc-list',
                 },
               },
             ],
@@ -181,6 +180,7 @@ const exampleRoutes: RouteConfig[] = [
             meta: {
               titleKey: 'router.example.components.echarts.title',
               rank: 6,
+              icon: 'fc-bar-chart',
             },
             children: [
               {
@@ -191,7 +191,8 @@ const exampleRoutes: RouteConfig[] = [
                 meta: {
                   titleKey: 'router.example.components.echarts.default',
                   rank: 1,
-                  parent: 'screen',
+                  parent: 'fullscreen',
+                  icon: 'fc-bar-chart',
                 },
               },
               {
@@ -202,6 +203,7 @@ const exampleRoutes: RouteConfig[] = [
                 meta: {
                   titleKey: 'router.example.components.echarts.static',
                   rank: 2,
+                  icon: 'fc-line-chart',
                 },
               },
               {
@@ -212,6 +214,7 @@ const exampleRoutes: RouteConfig[] = [
                 meta: {
                   titleKey: 'router.example.components.echarts.event',
                   rank: 3,
+                  icon: 'fc-approval',
                 },
               },
               {
@@ -223,6 +226,7 @@ const exampleRoutes: RouteConfig[] = [
                   titleKey: 'router.example.components.echarts.dynamic',
                   rank: 4,
                   parent: 'fullscreen',
+                  icon: 'fc-refresh',
                 },
               },
               {
@@ -233,6 +237,7 @@ const exampleRoutes: RouteConfig[] = [
                 meta: {
                   titleKey: 'router.example.components.echarts.linkage',
                   rank: 5,
+                  icon: 'fc-link',
                 },
               },
             ],
@@ -244,6 +249,7 @@ const exampleRoutes: RouteConfig[] = [
             meta: {
               titleKey: 'router.example.components.datepicker.title',
               rank: 7,
+              icon: 'fc-calendar',
             },
           },
         ],
@@ -253,7 +259,7 @@ const exampleRoutes: RouteConfig[] = [
         name: 'ExampleFunction',
         meta: {
           titleKey: 'router.example.function.title',
-          icon: 'icon-line-md:calendar',
+          icon: 'fc-calendar',
           rank: 2,
         },
         children: [
@@ -264,7 +270,45 @@ const exampleRoutes: RouteConfig[] = [
             meta: {
               titleKey: 'router.example.function.date',
               rank: 1,
-              icon: 'icon-line-md:calendar',
+              icon: 'fc-calendar',
+            },
+          },
+        ],
+      },
+      // 重定向空页面
+      {
+        path: 'error',
+        name: 'ExampleError',
+        meta: {
+          titleKey: 'router.error.title',
+          icon: 'fc-cancel',
+        },
+        children: [
+          {
+            path: '404',
+            name: 'ExampleError404',
+            component: () => import('@/views/notfound/not-found-page.vue'),
+            meta: {
+              titleKey: 'router.error.notFound',
+              icon: 'fc-cancel',
+            },
+          },
+          {
+            path: '403',
+            name: 'ExampleError403',
+            component: () => import('@/views/notfound/forbidden-page.vue'),
+            meta: {
+              titleKey: 'router.error.forbidden',
+              icon: 'fc-cancel',
+            },
+          },
+          {
+            path: '500',
+            name: 'ExampleError500',
+            component: () => import('@/views/notfound/server-error-page.vue'),
+            meta: {
+              titleKey: 'router.error.serverError',
+              icon: 'fc-cancel',
             },
           },
         ],

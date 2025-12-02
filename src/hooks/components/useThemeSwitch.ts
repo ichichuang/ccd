@@ -39,8 +39,8 @@ export const useThemeSwitch = () => {
   const isDark = computed(() => colorStore.isDark)
 
   // 设置模式
-  const setMode = (value: Mode) => {
-    colorStore.setMode(value)
+  const setMode = (value: Mode, force: boolean = false) => {
+    colorStore.setMode(value, force)
   }
 
   // 获取下一个模式（排除 auto 自动模式）
@@ -81,9 +81,30 @@ export const useThemeSwitch = () => {
   // 主题切换核心函数（带动画）
   const toggleThemeWithAnimation = async (
     event: MouseEvent,
-    includeAuto: boolean = false,
-    duration: number = 400
+    modeOrOptions?:
+      | boolean
+      | Mode
+      | { targetMode?: Mode; includeAuto?: boolean; duration?: number },
+    maybeDuration?: number
   ) => {
+    let includeAuto = false
+    let duration = 400
+    let explicitTargetMode: Mode | undefined
+
+    if (typeof modeOrOptions === 'boolean') {
+      includeAuto = modeOrOptions
+      duration = typeof maybeDuration === 'number' ? maybeDuration : duration
+    } else if (typeof modeOrOptions === 'string') {
+      explicitTargetMode = modeOrOptions
+      duration = typeof maybeDuration === 'number' ? maybeDuration : duration
+    } else if (modeOrOptions && typeof modeOrOptions === 'object') {
+      explicitTargetMode = modeOrOptions.targetMode
+      includeAuto = modeOrOptions.includeAuto ?? false
+      duration = modeOrOptions.duration ?? duration
+    } else if (typeof maybeDuration === 'number') {
+      duration = maybeDuration
+    }
+
     // 防止动画期间重复点击
     if (isAnimating.value) {
       return
@@ -92,26 +113,42 @@ export const useThemeSwitch = () => {
 
     // 获取当前状态（在 DOM 变化之前）
     const currentIsDark = isDark.value
+    const currentMode = mode.value
 
-    // 根据是否包含自适应模式，选择不同的切换函数
-    const toggleFunction = includeAuto ? toggleModeWithAuto : toggleMode
+    const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches
 
-    // 计算切换后的模式
-    const nextMode = includeAuto ? getNextModeWithAuto() : getNextMode()
-    const willBeDark =
-      nextMode === 'dark' ||
-      (nextMode === 'auto' && window.matchMedia('(prefers-color-scheme: dark)').matches)
+    const resolveNextMode = (): Mode => {
+      if (explicitTargetMode) {
+        return explicitTargetMode
+      }
+      return includeAuto ? getNextModeWithAuto() : getNextMode()
+    }
+
+    const nextMode = resolveNextMode()
+    // 如果显式指定了目标模式，只有当当前固定模式与目标模式完全相同时才跳过
+    // 注意：即使当前是 auto 模式且显示效果匹配，也要切换到固定模式
+    if (explicitTargetMode && nextMode === currentMode && currentMode !== 'auto') {
+      isAnimating.value = false
+      return
+    }
+    const willBeDark = nextMode === 'dark' || (nextMode === 'auto' && systemPrefersDark)
 
     // 检查是否需要跳过动画
     // 当切换到自适应模式时，如果当前是深色且系统也是深色，则跳过动画
-    const shouldSkipAnimation =
-      nextMode === 'auto' &&
-      currentIsDark &&
-      window.matchMedia('(prefers-color-scheme: dark)').matches
+    const shouldSkipAnimation = nextMode === 'auto' && currentIsDark && systemPrefersDark
+
+    const applyModeChange = () => {
+      if (explicitTargetMode) {
+        setMode(nextMode, true)
+        return
+      }
+      const toggleFunction = includeAuto ? toggleModeWithAuto : toggleMode
+      toggleFunction()
+    }
 
     // 如果需要跳过动画，直接切换模式
     if (shouldSkipAnimation) {
-      toggleFunction()
+      applyModeChange()
       isAnimating.value = false
       return
     }
@@ -124,7 +161,7 @@ export const useThemeSwitch = () => {
 
     // 如果浏览器不支持 startViewTransition，降级处理
     if (!document?.startViewTransition) {
-      toggleFunction()
+      applyModeChange()
       isAnimating.value = false
       return
     }
@@ -139,7 +176,7 @@ export const useThemeSwitch = () => {
 
       const transition = document.startViewTransition(async () => {
         // 确保在快照阶段同步根元素的深浅色类，避免外部异步更新导致的层错位
-        toggleFunction()
+        applyModeChange()
         document.documentElement.classList.toggle('dark', willBeDark)
 
         // 🎯 关键修复：切换后缓存新背景色
@@ -185,7 +222,7 @@ export const useThemeSwitch = () => {
       document.documentElement.style.removeProperty('--bg100-new')
     } catch (error) {
       console.error('Theme transition failed:', error)
-      toggleFunction()
+      applyModeChange()
       document.documentElement.classList.remove('theme-transition')
       // 清理临时变量
       document.documentElement.style.removeProperty('--bg100-old')

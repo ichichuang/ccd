@@ -8,6 +8,7 @@ const enUS = {
     settings: {
       title: 'Settings',
       theme: 'Theme',
+      color: 'Color',
       language: 'Language',
       size: 'Size',
       rounded: 'Rounded',
@@ -15,6 +16,7 @@ const enUS = {
       fontSize: 'Font Size',
       systemManagement: 'System Management',
       logout: 'Logout',
+      moreSettings: 'More Settings',
     },
     systemOptions: {
       // Theme mode options
@@ -98,7 +100,6 @@ const enUS = {
       title: 'Example',
       layout: {
         title: 'Layout',
-        screen: 'Screen',
         fullscreen: 'Fullscreen',
         test: 'Test',
         ratio: 'Ratio',
@@ -137,6 +138,7 @@ const enUS = {
       },
     },
     error: {
+      title: 'Error',
       notFound: 'Page Not Found',
       forbidden: 'Forbidden',
       serverError: 'Server Error',
@@ -169,6 +171,9 @@ const enUS = {
       closeRight: 'Close Right',
       fixed: 'Fixed',
       unFixed: 'UnFixed',
+    },
+    breadcrumb: {
+      backToHome: 'Back to Home',
     },
   },
   primevue: {

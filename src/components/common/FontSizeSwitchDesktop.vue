@@ -1,12 +1,12 @@
 <script setup lang="ts">
 import { useSizeStore } from '@/stores'
 import { useI18nFontSizeOptions } from '@/utils'
-import { computed } from 'vue'
+import { computed, type ComputedRef } from 'vue'
 
 const sizeStore = useSizeStore()
 
 /* 尺寸变量配置相关 fontSize */
-const fontSizeOptions = useI18nFontSizeOptions()
+const fontSizeOptions = useI18nFontSizeOptions() as ComputedRef<FontSizeOptions[]>
 const fontSize = computed(() => sizeStore.getFontSize)
 
 const setFontSize = (value: FontSizeOptions['key']) => {

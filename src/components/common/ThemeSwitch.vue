@@ -38,19 +38,16 @@ const contentClass = computed(() => {
   :class='[contentClass, isAnimating ? "pointer-events-none opacity-90" : ""]'
 )
   .w-appFontSizex.h-appFontSizex.center.rounded-full.c-transitions.relative.z-2.p-3.box-content.c-cp
-    .w-appFontSize.h-appFontSize(
-      class='icon-line-md:sunny-outline-twotone',
-      :class='{ "bg-accent100": mode === "light" }'
-    )
+    .w-appFontSize.h-appFontSize(:class='{ "bg-accent100": mode === "light" }')
+      OhVueIcon.w-appFontSize.h-appFontSize(name='ri-sun-line')
 
   .w-appFontSizex.h-appFontSizex.center.rounded-full.c-transitions.relative.z-2.p-3.box-content.c-cp
-    .w-appFontSize.h-appFontSize(
-      class='icon-line-md:moon-twotone-alt-loop',
-      :class='{ "bg-accent100": mode === "dark" }'
-    )
+    .w-appFontSize.h-appFontSize(:class='{ "bg-accent100": mode === "dark" }')
+      OhVueIcon.w-appFontSize.h-appFontSize(name='ri-moon-clear-line')
 
   .w-appFontSizex.h-appFontSizex.center.rounded-full.c-transitions.relative.z-2.p-3.box-content.c-cp
-    .w-appFontSize.h-appFontSize(class='icon-line-md:monitor', :class='{ "bg-accent100": mode === "auto" }')
+    .w-appFontSize.h-appFontSize(:class='{ "bg-accent100": mode === "auto" }')
+      OhVueIcon.w-appFontSize.h-appFontSize(name='ri-computer-line')
 
   .w-appFontSizex.h-appFontSizex.center.rounded-full.c-transitions.active-blob.absolute.p-3.box-content
 </template>

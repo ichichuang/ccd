@@ -1,11 +1,11 @@
 <script setup lang="ts">
 import { useSizeStore } from '@/stores'
 import { useI18nSizeOptions } from '@/utils'
-import { computed } from 'vue'
+import { computed, type ComputedRef } from 'vue'
 
 const sizeStore = useSizeStore()
 
-const sizeOptions = useI18nSizeOptions()
+const sizeOptions = useI18nSizeOptions() as ComputedRef<SizeOptions[]>
 const size = computed(() => sizeStore.getSize)
 
 const setSize = (value: SizeOptions['value']) => {

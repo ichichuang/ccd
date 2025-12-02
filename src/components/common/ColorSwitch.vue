@@ -32,7 +32,7 @@ SpeedDial.select-none(:model='items', type='quarter-circle', direction='up-left'
   // 按钮插槽
   template(#button='{ toggleCallback }')
     .c-card-accent.size-1-1(@click='toggleCallback')
-      .fs-appFontSizel(class='icon-line-md:cookie-filled')
+      OhVueIcon.w-appFontSizel.h-appFontSizel(name='ri-cake-line')
 
   // 列表项插槽
   template(#item='{ item, toggleCallback }')

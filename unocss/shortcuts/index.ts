@@ -4,18 +4,18 @@ import { styleShortcuts } from './modules/style'
 import { textShortcuts } from './modules/text'
 
 /**
- * 合并所有快捷方式
+ * 合并所有快捷方式 - 使用对象格式，确保 VSCode 插件能识别
  */
-export const shortcuts = [
+export const shortcuts = {
   // 布局快捷方式
-  layoutShortcuts,
+  ...layoutShortcuts,
 
   // 文本快捷方式
-  textShortcuts,
+  ...textShortcuts,
 
   // 尺寸快捷方式
-  sizeShortcuts,
+  ...sizeShortcuts,
 
   // 样式快捷方式
-  styleShortcuts,
-]
+  ...styleShortcuts,
+}

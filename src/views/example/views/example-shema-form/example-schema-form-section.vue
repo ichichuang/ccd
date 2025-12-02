@@ -151,18 +151,18 @@ const handlePreviewValues = () => {
 <template lang="pug">
 div
   // 操作按钮区域（吸顶区域）
-  .c-card.rounded-0.px-padding.between-col.items-start.sticky.top-0.z-2.gap-gaps.items-start.gap-gap
-    .fs-appFontSizex SchemaForm 分组表单示例
-    .color-text200 使用 sections 配置将字段分组展示
+  .bg-bg200.p-padding.rounded-rounded.px-padding.between-col.items-start.sticky.top-0.z-2.gap-gaps.items-start.gap-gap
+    b.fs-appFontSize SchemaForm 分组表单示例
+    .fs-appFontSizes 使用 sections 配置将字段分组展示
     .between-start.gap-gap
-      Button(@click='handleSubmitForm') 校验并提交
-      Button(@click='handlePreviewValues') 打印当前值
+      Button.py-2.px-4(@click='handleSubmitForm') 校验并提交
+      Button.py-2.px-4(@click='handlePreviewValues') 打印当前值
 
-  .c-border.p-padding.my-gapl
+  .p-padding
     // 分组表单组件
     SchemaForm(:schema='schema', @submit='handleSubmit', ref='schemaFormRef')
 
-  .full.c-card-accent.fs-appFontSizes.between-col.gap-gap
+  .full.c-card.fs-appFontSizes.between-col.gap-gap
     span.fs-appFontSizex 表单数据实时预览：
     pre.c-border-primary.p-paddings.full {{ JSON.stringify(formValues, null, 2) }}
 </template>

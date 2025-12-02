@@ -1,6 +1,6 @@
-import { createCustomPreset, customPreset } from '@/utils'
 import { getCurrentLocale, i18n } from '@/locales'
 import { useColorStore, useSizeStore } from '@/stores'
+import { createCustomPreset, customPreset } from '@/utils'
 import { definePreset, usePreset } from '@primevue/themes'
 import Aura from '@primevue/themes/aura'
 import PrimeVue from 'primevue/config'
@@ -110,6 +110,7 @@ export function setupPrimeVue(app: App, config: Partial<PrimeVueConfig> = {}) {
     },
     // 初始化时设置 locale
     locale: getPrimeVueLocale(),
+    // 全局 pt：替换所有菜单的 icon 元素为 PrimeIcon 组件
   })
 
   // 注册 PrimeVue 服务

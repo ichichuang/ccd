@@ -1,10 +1,9 @@
 <script setup lang="ts">
 import { debounce } from '@/common'
 import type { AnimateName } from '@/components/modules/animate-wrapper/utils/types'
-import AdminLayout from '@/layouts/components/LayoutAdmin.vue'
-import FullScreenLayout from '@/layouts/components/LayoutFullScreen.vue'
-import RatioLayout from '@/layouts/components/LayoutRatio.vue'
-import ScreenLayout from '@/layouts/components/LayoutScreen.vue'
+import AdminLayout from '@/layouts/modules/LayoutAdmin.vue'
+import FullScreenLayout from '@/layouts/modules/LayoutFullScreen.vue'
+import RatioLayout from '@/layouts/modules/LayoutRatio.vue'
 import { useLayoutStore } from '@/stores'
 import { useMitt } from '@/utils'
 import { computed, nextTick, onMounted, onUnmounted, ref, watch } from 'vue'
@@ -68,11 +67,6 @@ const layoutAnimations = {
     leave: 'fadeOut',
     duration: '1s',
   },
-  screen: {
-    enter: 'fadeIn',
-    leave: 'fadeOut',
-    duration: '1s',
-  },
   admin: {
     enter: 'fadeIn',
     leave: 'fadeOut',
@@ -98,7 +92,7 @@ const getLayoutLeaveAnimation = (fromLayout: string, toLayout: string) => {
   }
 
   // 根据布局层级决定动画方向
-  const layoutLevels = { fullscreen: 0, screen: 1, admin: 2, ratio: 3 }
+  const layoutLevels = { fullscreen: 0, admin: 1, ratio: 2 }
   const fromLevel = layoutLevels[fromLayout as LayoutMode] || 1
   const toLevel = layoutLevels[toLayout as LayoutMode] || 1
 
@@ -160,10 +154,6 @@ AnimateWrapper(:show='isLoadingRef', enter='fadeIn', leave='fadeOut', duration='
     //- 全屏布局
     template(v-if='currentLayoutMode === "fullscreen"')
       component(:is='FullScreenLayout')
-
-    //- 屏幕布局
-    template(v-if='currentLayoutMode === "screen"')
-      component(:is='ScreenLayout')
 
     //- 管理布局
     template(v-if='currentLayoutMode === "admin"')

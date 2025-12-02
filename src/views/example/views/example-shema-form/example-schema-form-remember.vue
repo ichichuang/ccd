@@ -858,41 +858,41 @@ const handleGetFieldIndex = () => {
 <template lang="pug">
 div
   // 操作按钮区域（吸顶区域）
-  .c-card.rounded-0.px-padding.between-col.items-start.sticky.top-0.z-2.gap-gap.z-9999
-    .fs-appFontSizex SchemaForm 组件类型示例 + useSchemaForm Hook 演示
-    .color-text200 展示所有支持的组件类型及其配置，以及 useSchemaForm hook 的各种功能
+  .bg-bg200.p-padding.rounded-rounded.px-padding.between-col.items-start.sticky.top-0.z-2.gap-gaps.z-9999
+    b.fs-appFontSize SchemaForm 组件类型示例 + useSchemaForm Hook 演示
+    .fs-appFontSizes 展示所有支持的组件类型及其配置，以及 useSchemaForm hook 的各种功能
     div
       .fs-appFontSizes.color-accent100 表单整体操作
       .between-start.gap-gap
-        Button(@click='handleGetFormData') 获取表单数据（校验后）
-        Button(@click='handleGetFormValues') 获取表单值
-        Button(@click='handleResetForm') 重置表单
-        Button(@click='handleClearForm') 清空表单
-        Button(@click='handleSubmitForm') 提交表单
+        Button.py-2.px-4(@click='handleGetFormData') 获取表单数据（校验后）
+        Button.py-2.px-4(@click='handleGetFormValues') 获取表单值
+        Button.py-2.px-4(@click='handleResetForm') 重置表单
+        Button.py-2.px-4(@click='handleClearForm') 清空表单
+        Button.py-2.px-4(@click='handleSubmitForm') 提交表单
     div
       .fs-appFontSizes.color-accent100 表单项操作
       .between-start.gap-gap
-        Button(@click='handleAddField') 添加字段
-        Button(@click='handleRemoveField') 删除字段
-        Button(@click='handleUpdateField') 更新字段
-        Button(@click='handleGetField') 获取字段配置
-        Button(@click='handleGetFieldValue') 获取字段值
-        Button(@click='handleSetFieldValue') 设置字段值
-        Button(@click='handleMoveField') 移动字段
-        Button(@click='handleHiddenField') 隐藏/显示字段
+        Button.py-2.px-4(@click='handleAddField') 添加字段
+        Button.py-2.px-4(@click='handleRemoveField') 删除字段
+        Button.py-2.px-4(@click='handleUpdateField') 更新字段
+        Button.py-2.px-4(@click='handleGetField') 获取字段配置
+        Button.py-2.px-4(@click='handleGetFieldValue') 获取字段值
+        Button.py-2.px-4(@click='handleSetFieldValue') 设置字段值
+        Button.py-2.px-4(@click='handleMoveField') 移动字段
+        Button.py-2.px-4(@click='handleHiddenField') 隐藏/显示字段
     div
       .fs-appFontSizes.color-accent100 批量操作
       .between-start.gap-gap
-        Button(@click='handleSetValues') 批量设置值
+        Button.py-2.px-4(@click='handleSetValues') 批量设置值
     div
       .fs-appFontSizes.color-accent100 工具方法
       .between-start.gap-gap
-        Button(@click='handleHasField') 检查字段存在
-        Button(@click='handleGetFieldIndex') 获取字段索引
-  .c-border.p-padding.my-gapl
+        Button.py-2.px-4(@click='handleHasField') 检查字段存在
+        Button.py-2.px-4(@click='handleGetFieldIndex') 获取字段索引
+  .p-padding
     // 表单组件
     SchemaForm(:schema='schema', @submit='handleSubmit', ref='schemaFormRef', :remember='true')
-  .full.c-card-accent.fs-appFontSizes.between-col.gap-gap
+  .full.c-card.fs-appFontSizes.between-col.gap-gap
     span.fs-appFontSizex 表单数据实时预览：
     pre.c-border-primary.p-paddings.full {{ JSON.stringify(formValues, null, 2) }}
 </template>

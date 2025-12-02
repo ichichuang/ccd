@@ -64,6 +64,20 @@
   aspect-ratio: 4/3;
 }
 
+.oh-vue-icons {
+  font-size: inherit;
+}
+
+.p-menuitem-icon,
+.p-panelmenu-item-icon,
+.p-menubar-item-icon,
+.p-megamenu-item-icon,
+.p-tieredmenu-item-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
 .background {
   // background-image: url('@/assets/images/background.jpeg');
   background-size: cover;

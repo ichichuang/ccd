@@ -9,13 +9,52 @@
  * - 支持自定义头部、内容、底部渲染器
  * - 支持确认对话框和动态对话框
  * - 支持拖拽、最大化、最小化等操作
+ * - 支持响应式多语言：header 和 footerButtons[].label 可以是函数
  */
-import { computed, ref } from 'vue'
+import { computed, onMounted, onUnmounted, ref } from 'vue'
 import type { ButtonProps, DialogOptions, EventType } from './utils/types'
 
 // 简单的 isFunction 工具函数
 const isFunction = (value: any): value is (...args: any[]) => any => {
   return typeof value === 'function'
+}
+
+// 语言变化响应式触发器
+const localeTrigger = ref(0)
+
+// 监听语言变化
+const handleLocaleChange = () => {
+  localeTrigger.value++
+}
+
+onMounted(() => {
+  window.addEventListener('locale-changed', handleLocaleChange)
+  window.addEventListener('locale-store-changed', handleLocaleChange)
+})
+
+onUnmounted(() => {
+  window.removeEventListener('locale-changed', handleLocaleChange)
+  window.removeEventListener('locale-store-changed', handleLocaleChange)
+})
+
+// 获取响应式的 header 文本
+const getHeaderText = (options: DialogOptions): string => {
+  if (isFunction(options.header)) {
+    // 访问 localeTrigger 以建立响应式依赖
+    void localeTrigger.value
+    return options.header()
+  }
+  return options.header || ''
+}
+
+// 获取响应式的按钮 label 文本
+const getButtonLabel = (btn: ButtonProps): string => {
+  if (isFunction(btn.label)) {
+    // 访问 localeTrigger 以建立响应式依赖
+    void localeTrigger.value
+    return btn.label()
+  }
+  return btn.label
 }
 
 const props = withDefaults(
@@ -43,6 +82,9 @@ const defaultButtons = computed(() => {
     if (options.footerButtons && options.footerButtons.length > 0) {
       return options.footerButtons
     }
+
+    // 访问 localeTrigger 以建立响应式依赖
+    void localeTrigger.value
 
     return [
       {
@@ -140,7 +182,7 @@ Dialog(
   v-for='(options, index) in standardDialogs',
   :key='`dialog-${index}`',
   v-model:visible='options.visible',
-  :header='options.hideHeader ? undefined : options.header',
+  :header='options.hideHeader ? undefined : getHeaderText(options)',
   :style='options.style',
   :class='options.class',
   :maximizable='options.maximizable',
@@ -165,7 +207,7 @@ Dialog(
 
   // 默认头部（当没有自定义头部且不隐藏头部时显示）
   template(v-else-if='!options?.hideHeader', #header)
-    span {{ options.header }}
+    span {{ getHeaderText(options) }}
 
   // 自定义内容（当有内容渲染器时显示）
   component(
@@ -183,10 +225,18 @@ Dialog(
       .flex.gap-gap.justify-end
         template(v-for='(btn, key) in defaultButtons(options)', :key='key')
           Button(
-            v-bind='btn',
-            :loading='key === 1 && sureBtnMap[getDialogStoreIndex(options)]?.loading',
+            :severity='btn.severity',
+            :loading='(key === 1 && sureBtnMap[getDialogStoreIndex(options)]?.loading) || btn.loading',
+            :disabled='btn.disabled',
+            :icon='btn.icon',
+            :text='btn.text',
+            :outlined='btn.outlined',
+            :rounded='btn.rounded',
+            :size='btn.size',
+            :class='btn.class',
+            :style='btn.style',
             @click='btn.btnClick?.({ dialog: { options, index: getDialogStoreIndex(options) }, button: { btn, index: key } })'
-          ) {{ btn.label }}
+          ) {{ getButtonLabel(btn) }}
 
 // 确认对话框
 ConfirmDialog(

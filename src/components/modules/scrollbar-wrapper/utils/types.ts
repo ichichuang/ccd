@@ -117,6 +117,8 @@ export interface ScrollbarEmits {
   wrapperResize: (rect: Rect) => void
   /** 内容大小改变事件，当内容尺寸发生变化时触发 */
   contentResize: (rect: Rect) => void
+  /** 容器点击事件，仅在点击容器空白区域时触发 */
+  containerClick: (event: MouseEvent) => void
   /** 通用滚动事件，每次滚动时都会触发 */
   scroll: (event: ScrollEvent) => void
   /** 水平滚动事件，仅在水平方向滚动时触发 */

@@ -4,6 +4,68 @@ import { exclude, include } from './build/optimize'
 import { getPluginsList } from './build/plugins'
 import { __APP_INFO__, alias, pathResolve, root, wrapperEnv } from './build/utils'
 
+const PX_TO_REM_SELECTOR_BLACKLIST: (string | RegExp)[] = [
+  // ✅ 排除传统 UnoCSS 工具类（非数字值）
+  /^\.w-(full|auto|screen|min|max|fit)/,
+  /^\.h-(full|auto|screen|min|max|fit)/,
+  /^\.text-(xs|sm|base|lg|xl|2xl|3xl|4xl|5xl|6xl|7xl|8xl|9xl)/,
+  /^\.p-(auto|px|py)/,
+  /^\.m-(auto|px|py)/,
+  /^\.bg-/,
+  /^\.border-(?![\d])/,
+  /^\.rounded-(?![\d])/,
+  /^\.flex/,
+  /^\.grid/,
+  /^\.absolute|\.relative|\.fixed|\.sticky/,
+  /^\.justify-|\.items-|\.content-/,
+  /^\.overflow-|\.cursor-|\.select-/,
+  // ✅ 排除响应式前缀
+  /^\.([0-9]+|xs|sm|md|lg|xl|2xl|3xl|4xl|5xl|6xl|7xl|8xl|9xl):/,
+  // ✅ 排除系统类
+  /^html$/,
+  /^:root$/,
+  // ✅ 排除第三方组件
+  /^\.el-/,
+  /^\.ant-/,
+  /^\.van-/,
+  // ✅ 排除明确标记的类
+  /no-rem/,
+  // ✅ 排除媒体查询
+  /^@media.*\.(xs|sm|md|lg|xl|2xl):/,
+]
+
+const VENDOR_CHUNK_GROUPS: Array<{ name: string; pattern: RegExp }> = [
+  { name: 'vue-core', pattern: /node_modules\/(vue|vue-router)\// },
+  { name: 'state-management', pattern: /node_modules\/(pinia|pinia-plugin-persistedstate)\// },
+  { name: 'ui-library', pattern: /node_modules\/(@primevue|primevue|@primevue\/themes)\// },
+  { name: 'utilities', pattern: /node_modules\/(lodash-es|dayjs|@vueuse\/core)\// },
+  { name: 'echarts-core', pattern: /node_modules\/(echarts|vue-echarts)\// },
+  { name: 'ag-grid-core', pattern: /node_modules\/(ag-grid-community|ag-grid-vue3)\// },
+  { name: 'http-client', pattern: /node_modules\/alova\// },
+  { name: 'i18n', pattern: /node_modules\/(vue-i18n)\// },
+]
+
+const VIEW_CHUNK_PREFIX = 'view-'
+
+function resolveViewChunk(id: string): string | null {
+  const normalized = id.replace(/\\/g, '/')
+  if (!normalized.includes('/src/views/')) {
+    return null
+  }
+
+  const relative = normalized.split('/src/views/')[1]
+  if (!relative) {
+    return null
+  }
+
+  const topLevel = relative.split('/')[0]
+  if (!topLevel) {
+    return null
+  }
+
+  return `${VIEW_CHUNK_PREFIX}${topLevel.replace(/[^a-zA-Z0-9-]/g, '-')}`
+}
+
 // 移除本地ViteEnv类型声明
 
 export default ({ mode }: ConfigEnv): UserConfigExport => {
@@ -96,7 +158,7 @@ export default ({ mode }: ConfigEnv): UserConfigExport => {
       target: 'es2015',
       sourcemap: VITE_BUILD_SOURCEMAP,
       minify: isDev ? false : 'terser',
-      chunkSizeWarningLimit: 3000, // 降低警告阈值以优化包大小
+      chunkSizeWarningLimit: 8000, // 降低警告阈值以优化包大小
       cssCodeSplit: true, // 启用 CSS 代码分割
       assetsInlineLimit: 4096, // 小于 4kb 的资源内联
       terserOptions: {
@@ -124,22 +186,25 @@ export default ({ mode }: ConfigEnv): UserConfigExport => {
           entryFileNames: 'static/js/[name]-[hash:8].js',
           assetFileNames: 'static/[ext]/[name]-[hash:8].[ext]',
           // 优化代码分割策略
-          manualChunks: {
-            // 核心库
-            'vue-core': ['vue', 'vue-router'],
-            'state-management': ['pinia', 'pinia-plugin-persistedstate'],
-            // UI 库 (primeicons 是纯 CSS 库，不需要在 JS 打包中处理)
-            'ui-library': ['primevue', '@primevue/themes'],
-            // 工具库
-            utilities: ['lodash-es', 'crypto-js', 'dayjs', '@vueuse/core'],
-            // 图表库
-            'echarts-core': ['echarts', 'vue-echarts'],
-            // 表格库
-            'ag-grid-core': ['ag-grid-community', 'ag-grid-vue3'],
-            // HTTP 库
-            'http-client': ['alova'],
-            // 国际化
-            i18n: ['vue-i18n'],
+          manualChunks: id => {
+            const normalizedId = id.replace(/\\/g, '/')
+
+            if (normalizedId.includes('node_modules')) {
+              const vendorGroup = VENDOR_CHUNK_GROUPS.find(group =>
+                group.pattern.test(normalizedId)
+              )
+              if (vendorGroup) {
+                return vendorGroup.name
+              }
+              return 'vendor'
+            }
+
+            const viewChunk = resolveViewChunk(normalizedId)
+            if (viewChunk) {
+              return viewChunk
+            }
+
+            return undefined
           },
           // 优化 chunk 分割 - 智能命名
           chunkFileNames: chunkInfo => {
@@ -206,42 +271,7 @@ export default ({ mode }: ConfigEnv): UserConfigExport => {
               '!border-left-width',
             ],
             // 过滤不需要转换的选择器 - 修复设计稿映射兼容性
-            selectorBlackList: [
-              // ✅ 排除传统 UnoCSS 工具类（非数字值）
-              /^\.w-(full|auto|screen|min|max|fit)/, // w-full, w-auto 等
-              /^\.h-(full|auto|screen|min|max|fit)/, // h-full, h-auto 等
-              /^\.text-(xs|sm|base|lg|xl|2xl|3xl|4xl|5xl|6xl|7xl|8xl|9xl)/, // text-sm, text-lg 等
-              /^\.p-(auto|px|py)/, // p-auto, px-4 等
-              /^\.m-(auto|px|py)/, // m-auto, mx-4 等
-
-              // ✅ 排除其他 UnoCSS 工具类
-              /^\.bg-/, // 背景颜色类
-              /^\.border-(?![\d])/, // 边框类（排除 border-2 等数字）
-              /^\.rounded-(?![\d])/, // 圆角类（排除 rounded-8 等数字）
-              /^\.flex/, // 布局类
-              /^\.grid/, // 网格类
-              /^\.absolute|\.relative|\.fixed|\.sticky/, // 定位类
-              /^\.justify-|\.items-|\.content-/, // 对齐类
-              /^\.overflow-|\.cursor-|\.select-/, // 其他工具类
-
-              // ✅ 排除响应式前缀
-              /^\.([0-9]+|xs|sm|md|lg|xl|2xl|3xl|4xl|5xl|6xl|7xl|8xl|9xl):/,
-
-              // ✅ 排除系统类
-              /^html$/, // HTML 根元素
-              /^:root$/, // CSS 根变量
-
-              // ✅ 排除第三方组件
-              /^\.el-/, // Element Plus
-              /^\.ant-/, // Ant Design
-              /^\.van-/, // Vant
-
-              // ✅ 排除明确标记的类
-              /no-rem/, // 明确不转换的类
-
-              // ✅ 排除媒体查询
-              /^@media.*\.(xs|sm|md|lg|xl|2xl):/,
-            ],
+            selectorBlackList: PX_TO_REM_SELECTOR_BLACKLIST,
             // 替换规则
             replace: true,
             // 允许在媒体查询中转换px

@@ -1,5 +1,5 @@
 <script setup lang="ts"></script>
-<template lang="pug">
-.full
+<template>
+  <div></div>
 </template>
 <style lang="scss" scope></style>

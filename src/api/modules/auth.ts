@@ -39,7 +39,7 @@ const routes: BackendRouteConfig[] = [
     component: 'user/index',
     meta: {
       titleKey: 'router.user.title',
-      icon: 'icon-line-md:account',
+      icon: 'ri-user-3-line',
       rank: 1,
     },
     children: [
@@ -49,7 +49,7 @@ const routes: BackendRouteConfig[] = [
         component: 'user/views/user-list',
         meta: {
           titleKey: 'router.user.list.title',
-          icon: 'icon-line-md:account',
+          icon: 'ri-user-3-line',
           rank: 1,
         },
       },
@@ -59,7 +59,7 @@ const routes: BackendRouteConfig[] = [
         component: 'user/views/user-permission',
         meta: {
           titleKey: 'router.user.permission.title',
-          icon: 'icon-line-md:account',
+          icon: 'ri-user-3-line',
           rank: 2,
         },
       },
@@ -71,7 +71,7 @@ const routes: BackendRouteConfig[] = [
     component: 'permission/index',
     meta: {
       titleKey: 'router.permission.title',
-      icon: 'icon-line-md:construction',
+      icon: 'ri-building-2-line',
       rank: 2,
     },
     children: [
@@ -82,7 +82,7 @@ const routes: BackendRouteConfig[] = [
         meta: {
           titleKey: 'router.permission.page.title',
           roles: ['admin', 'common'],
-          icon: 'icon-line-md:construction',
+          icon: 'ri-building-2-line',
         },
       },
       {
@@ -93,7 +93,7 @@ const routes: BackendRouteConfig[] = [
           titleKey: 'router.permission.button.title',
           roles: ['admin'],
           auths: ['permission:btn:add', 'permission:btn:edit', 'permission:btn:delete'],
-          icon: 'icon-line-md:construction',
+          icon: 'ri-building-2-line',
         },
       },
     ],

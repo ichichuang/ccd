@@ -52,7 +52,19 @@ const contextMenuTarget = ref<TabItem | null>(null)
 const dragCleanupMap = new Map<string, () => void>()
 const dropCleanupMap = new Map<string, () => void>()
 const isDragging = ref(false)
-const dragOverIndex = ref(-1)
+const draggingTabKey = ref<string | null>(null)
+const insertionIndex = ref(-1)
+const layoutVersion = ref(0)
+const draggingTab = ref<TabItem | null>(null)
+const lastPositions = new Map<string, DOMRect>()
+let isDropHandled = false
+const resetDragState = () => {
+  isDragging.value = false
+  draggingTabKey.value = null
+  insertionIndex.value = -1
+  draggingTab.value = null
+  isDropHandled = false
+}
 
 // 用于测量单个 tab 的元素集合
 const itemRefs = new Map<string, HTMLElement>()
@@ -99,11 +111,16 @@ const setupDragAndDrop = (key: string, el: HTMLElement, tab: TabItem, index: num
     }),
     onDragStart: () => {
       isDragging.value = true
+      draggingTabKey.value = key
+      draggingTab.value = tab
+      isDropHandled = false
     },
     // 兜底复位：拖拽在无目标处结束
     onDrop: () => {
-      isDragging.value = false
-      dragOverIndex.value = -1
+      if (!isDropHandled && insertionIndex.value !== -1 && draggingTab.value) {
+        reorderByInsertionIndex(draggingTab.value)
+      }
+      resetDragState()
     },
   })
 
@@ -114,43 +131,18 @@ const setupDragAndDrop = (key: string, el: HTMLElement, tab: TabItem, index: num
       type: 'tab-drop-target',
       index,
     }),
-    onDragEnter: () => {
-      dragOverIndex.value = index
+    onDragEnter: ({ location }) => {
+      updateInsertionIndexForElement(el, index, location.current.input?.clientX)
     },
-    onDragLeave: () => {
-      dragOverIndex.value = -1
+    onDrag: ({ location }) => {
+      updateInsertionIndexForElement(el, index, location.current.input?.clientX)
     },
-    onDrop: ({ source, location: _location }) => {
-      isDragging.value = false
-      dragOverIndex.value = -1
-
-      if (source.data.type === 'tab') {
-        // 类型安全检查
-        const sourceTab = source.data.tab
-        if (!sourceTab || typeof sourceTab !== 'object' || !('name' in sourceTab)) {
-          return
-        }
-
-        const typedSourceTab = sourceTab as TabItem
-        const targetTab = dynamicTabs.value[index]
-
-        if (
-          typedSourceTab &&
-          targetTab &&
-          typedSourceTab.name &&
-          targetTab.name &&
-          typedSourceTab.name !== targetTab.name
-        ) {
-          // 使用 tab 的唯一标识查找索引，避免索引不准确的问题
-          const sourceIndex = dynamicTabs.value.findIndex(t => t.name === typedSourceTab.name)
-          const targetIndex = dynamicTabs.value.findIndex(t => t.name === targetTab.name)
-
-          if (sourceIndex !== -1 && targetIndex !== -1 && sourceIndex !== targetIndex) {
-            // 调用 store 方法重新排序标签
-            permissionStore.reorderTabs(sourceIndex, targetIndex)
-          }
-        }
+    onDrop: ({ source }) => {
+      if (source.data.type === 'tab' && insertionIndex.value !== -1) {
+        isDropHandled = true
+        reorderByInsertionIndex(source.data.tab as TabItem)
       }
+      resetDragState()
     },
   })
 
@@ -203,23 +195,163 @@ const setItemRef = (
 }
 
 const getKey = (tab: TabItem) => String(tab?.name ?? tab?.path ?? '')
+const capturePositions = () => {
+  itemRefs.forEach((el, key) => {
+    lastPositions.set(key, el.getBoundingClientRect())
+  })
+}
+
+const animateToNewPositions = () => {
+  nextTick(() => {
+    requestAnimationFrame(() => {
+      itemRefs.forEach((el, key) => {
+        const previous = lastPositions.get(key)
+        if (!previous) {
+          return
+        }
+        const rect = el.getBoundingClientRect()
+        const deltaX = previous.left - rect.left
+        if (!deltaX) {
+          lastPositions.delete(key)
+          return
+        }
+        el.style.transition = 'none'
+        el.style.transform = `translateX(${deltaX}px)`
+        requestAnimationFrame(() => {
+          el.style.transition = 'transform 0.25s cubic-bezier(0.22, 0.61, 0.36, 1)'
+          el.style.transform = ''
+          const handleTransitionEnd = () => {
+            el.style.transition = ''
+            el.removeEventListener('transitionend', handleTransitionEnd)
+          }
+          el.addEventListener('transitionend', handleTransitionEnd, { once: true })
+        })
+        lastPositions.delete(key)
+      })
+    })
+  })
+}
+const updateInsertionIndexForElement = (el: HTMLElement, tabIndex: number, clientX?: number) => {
+  const rect = el.getBoundingClientRect()
+  const threshold = rect.left + rect.width / 2
+  const position = clientX ?? threshold
+  insertionIndex.value = position <= threshold ? tabIndex : tabIndex + 1
+}
+
+const reorderByInsertionIndex = (sourceTab: TabItem | undefined | null) => {
+  if (!sourceTab) {
+    return
+  }
+  const sourceKey = sourceTab.name ?? sourceTab.path
+  if (!sourceKey) {
+    return
+  }
+  const sourceIndex = dynamicTabs.value.findIndex(
+    tab => tab.name === sourceKey || tab.path === sourceKey
+  )
+  const targetIndex = insertionIndex.value
+
+  if (sourceIndex === -1 || targetIndex === -1) {
+    return
+  }
+
+  let finalIndex = targetIndex
+  if (sourceIndex < targetIndex) {
+    finalIndex -= 1
+  }
+
+  finalIndex = Math.max(0, Math.min(finalIndex, dynamicTabs.value.length - 1))
+
+  if (finalIndex === sourceIndex) {
+    return
+  }
+
+  capturePositions()
+  permissionStore.reorderTabs(sourceIndex, finalIndex)
+  animateToNewPositions()
+}
 
 // 供模板使用的 ref 回调工厂
 const createItemRef = (tab: TabItem, index: number) => (el: any) => {
   setItemRef(getKey(tab), el as HTMLElement | null, tab, index)
-  // 当元素被设置时，延迟更新指示器
+  // 当元素被设置时，延迟更新指示器（不检查所有 ref，由 onMounted 统一处理）
   if (el) {
-    scheduleLayoutUpdate()
+    // 延迟更新，确保元素已完全渲染
+    nextTick(() => {
+      scheduleLayoutUpdate(false, false)
+    })
   }
 }
 
-// 指示器位置信息
-const indicatorLeft = ref(0)
-const indicatorWidth = ref(0)
-const indicatorHeight = ref(0)
-const containerHeight = ref(0)
+// 容器尺寸信息
+const containerHeight = ref(sizeStore.getTabsHeight ?? 0)
 const containerWidth = ref(0)
-const showIndicator = ref(false)
+const dropLineStyle = computed(() => {
+  const _layoutVersion = layoutVersion.value
+  void _layoutVersion
+
+  const index = insertionIndex.value
+  const track = trackRef.value
+  if (index === -1 || !track) {
+    return null
+  }
+
+  const tabsList = dynamicTabs.value
+  const trackRect = track.getBoundingClientRect()
+  if (!trackRect.width) {
+    return null
+  }
+
+  const getTabRectWithMargins = (tabIndex: number) => {
+    const tab = tabsList[tabIndex]
+    if (!tab) {
+      return null
+    }
+    const el = itemRefs.get(getKey(tab))
+    if (!el) {
+      return null
+    }
+    const rect = el.getBoundingClientRect()
+    const styles = getComputedStyle(el)
+    const marginLeft = Number.parseFloat(styles.marginLeft) || 0
+    const marginRight = Number.parseFloat(styles.marginRight) || 0
+    return {
+      left: rect.left - marginLeft,
+      right: rect.right + marginRight,
+    }
+  }
+
+  let absoluteLeft = trackRect.left
+
+  if (!tabsList.length) {
+    absoluteLeft = trackRect.left
+  } else if (index <= 0) {
+    const rect = getTabRectWithMargins(0)
+    if (!rect) {
+      return null
+    }
+    absoluteLeft = rect.left
+  } else if (index >= tabsList.length) {
+    const rect = getTabRectWithMargins(tabsList.length - 1)
+    if (!rect) {
+      return null
+    }
+    absoluteLeft = rect.right
+  } else {
+    const rect = getTabRectWithMargins(index)
+    if (!rect) {
+      return null
+    }
+    absoluteLeft = rect.left
+  }
+
+  const relativeLeft = absoluteLeft - trackRect.left
+
+  return {
+    left: `${relativeLeft}px`,
+    height: `${trackRect.height}px`,
+  }
+})
 
 // 水平滚动距离
 const scrollLeft = ref(0)
@@ -232,8 +364,14 @@ let isProgrammaticScroll = false // 标记是否是程序触发的滚动
 
 // 统一的 rAF 调度器，合并同一帧内的多次测量与滚动
 let rafId: number | null = null
-const scheduleLayoutUpdate = (shouldAutoScroll = true) => {
-  if (rafId !== null) {
+const scheduleLayoutUpdate = (shouldAutoScroll = true, force = false) => {
+  // 如果强制更新，取消之前的调度
+  if (force && rafId !== null) {
+    cancelAnimationFrame(rafId)
+    rafId = null
+  }
+
+  if (rafId !== null && !force) {
     return
   }
   rafId = requestAnimationFrame(async () => {
@@ -241,11 +379,11 @@ const scheduleLayoutUpdate = (shouldAutoScroll = true) => {
     await nextTick()
     // 再等待一帧，确保样式计算完成
     await new Promise(resolve => requestAnimationFrame(resolve))
-    updateIndicator()
     // 只有在非用户滚动时才自动滚动
     if (shouldAutoScroll && !isUserScrolling.value) {
       scrollToActiveTabCenter()
     }
+    layoutVersion.value += 1
   })
 }
 
@@ -276,31 +414,31 @@ const contextMenuItems = computed(() => {
   return [
     {
       label: $t('layout.tabs.close'),
-      icon: 'icon-line-md:close-small',
+      icon: 'ri-close-line',
       command: () => closeTab(target),
       disabled: target.fixed, // 固定的标签不可删除
     },
     {
       label: $t('layout.tabs.closeAll'),
-      icon: 'icon-line-md:close-circle-filled',
+      icon: 'ri-close-circle-fill',
       command: () => closeAllTabs(),
       disabled: !hasOtherTabs,
     },
     {
       label: $t('layout.tabs.closeOther'),
-      icon: 'icon-line-md:close',
+      icon: 'ri-close-line',
       command: () => closeOtherTabs(target),
       disabled: !hasOtherTabs,
     },
     {
       label: $t('layout.tabs.closeLeft'),
-      icon: 'icon-line-md:close',
+      icon: 'ri-close-line',
       command: () => closeLeftTabs(target),
       disabled: !canCloseLeft,
     },
     {
       label: $t('layout.tabs.closeRight'),
-      icon: 'icon-line-md:close',
+      icon: 'ri-close-line',
       command: () => closeRightTabs(target),
       disabled: !canCloseRight,
     },
@@ -309,7 +447,7 @@ const contextMenuItems = computed(() => {
     },
     {
       label: target.fixed ? $t('layout.tabs.unFixed') : $t('layout.tabs.fixed'),
-      icon: target.fixed ? 'icon-line-md:filter-minus-filled' : 'icon-line-md:filter-filled',
+      icon: target.fixed ? 'ri-filter-off-line' : 'ri-filter-fill',
       command: () => toggleFixedTab(target),
     },
   ]
@@ -419,55 +557,6 @@ const toggleFixedTab = (tab: TabItem) => {
   permissionStore.updateTabMeta(tab.name || tab.path, {
     fixed: !tab.fixed,
   })
-}
-
-// 指示器更新逻辑
-const updateIndicator = async (maxRetries = 10) => {
-  const active = activeTab.value
-  const track = trackRef.value
-
-  if (!active || !track) {
-    showIndicator.value = false
-    return
-  }
-
-  const el = itemRefs.get(getKey(active))
-  if (!el) {
-    showIndicator.value = false
-    return
-  }
-
-  // 等待样式计算完成
-  await new Promise(resolve => requestAnimationFrame(resolve))
-
-  // 确保元素已经完全渲染
-  if (maxRetries > 0 && (el.offsetWidth === 0 || el.offsetHeight === 0)) {
-    setTimeout(() => updateIndicator(maxRetries - 1), 20)
-    return
-  }
-
-  const trackRect = track.getBoundingClientRect()
-  const elRect = el.getBoundingClientRect()
-
-  if (!elRect.width || !elRect.height) {
-    if (maxRetries > 0) {
-      setTimeout(() => updateIndicator(maxRetries - 1), 20)
-    }
-    return
-  }
-
-  // 如果仍然获取不到合理尺寸，隐藏指示器
-  if (elRect.width === 0 || elRect.height === 0) {
-    showIndicator.value = false
-    return
-  }
-
-  indicatorLeft.value = elRect.left - trackRect.left
-  indicatorWidth.value = elRect.width
-  indicatorHeight.value = elRect.height
-  containerHeight.value = containerRef.value?.clientHeight ?? elRect.height
-  containerWidth.value = containerRef.value?.clientWidth ?? elRect.width
-  showIndicator.value = true
 }
 
 // 自动滚动到选中tab项的中心
@@ -590,6 +679,11 @@ onBeforeUnmount(() => {
     clearTimeout(userScrollTimer)
     userScrollTimer = null
   }
+  // 清理 rAF
+  if (rafId !== null) {
+    cancelAnimationFrame(rafId)
+    rafId = null
+  }
 })
 
 // 路由初始化和监听
@@ -599,9 +693,54 @@ permissionStore.updateTabActive(currentRoute.name || currentRoute.path)
 
 // 组件挂载后初始化
 onMounted(() => {
-  // 延迟初始化，确保所有元素都已渲染
-  scheduleLayoutUpdate()
-  // 浏览器窗口尺寸变化（包含 DPR/缩放触发）时，统一做一次稳态重算
+  // 延迟初始化,确保所有元素都已渲染
+  // 使用轮询方式检查所有 ref 是否都已设置完成
+  const checkRefsReady = (attempts = 0) => {
+    const active = activeTab.value
+    if (!active) {
+      // 如果没有激活的 tab,继续等待
+      if (attempts < 30) {
+        setTimeout(() => checkRefsReady(attempts + 1), 50)
+      }
+      return
+    }
+
+    const activeKey = getKey(active)
+    const activeEl = itemRefs.get(activeKey)
+
+    // 检查激活的 tab 的 ref 是否已设置,并且确保元素有尺寸
+    if (activeEl && activeEl.offsetWidth > 0 && activeEl.offsetHeight > 0) {
+      // 激活的 tab 已完全渲染,延迟一帧确保所有样式计算完成
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          scheduleLayoutUpdate(true, true)
+        })
+      })
+    } else {
+      // 如果激活的 tab 的 ref 还没设置或尺寸为0,继续等待
+      if (attempts < 50) {
+        // 增加重试次数,缩短重试间隔
+        setTimeout(() => checkRefsReady(attempts + 1), 30)
+      } else {
+        // 超时后仍然尝试更新一次
+        requestAnimationFrame(() => {
+          requestAnimationFrame(() => {
+            scheduleLayoutUpdate(true, true)
+          })
+        })
+      }
+    }
+  }
+
+  // 延迟开始检查,给 Vue 一些时间渲染
+  nextTick(() => {
+    // 增加初始延迟,确保所有子组件都已挂载
+    setTimeout(() => {
+      checkRefsReady()
+    }, 200)
+  })
+
+  // 浏览器窗口尺寸变化(包含 DPR/缩放触发)时,统一做一次稳态重算
   window.addEventListener('resize', handleResize)
 })
 
@@ -629,9 +768,16 @@ watch(
     () => sizeStore.getPaddingsValue,
     () => sizeStore.getPaddingxValue,
     () => sizeStore.getPaddinglValue,
+    // 添加对 activeTab 的监听，确保在 activeTab 变化时更新指示器
+    () => activeTab.value?.name,
+    // 添加对 dynamicTabs 长度的监听，确保在 tabs 变化时更新
+    () => dynamicTabs.value.length,
   ],
   () => {
-    scheduleLayoutUpdate()
+    // 延迟更新，确保 DOM 已更新
+    nextTick(() => {
+      scheduleLayoutUpdate()
+    })
   },
   { deep: true }
 )
@@ -661,160 +807,208 @@ watch(
     @scroll-horizontal='handleScrollHorizontal',
     :color-scheme='{ thumbColor: "transparent", thumbHoverColor: "transparent", thumbActiveColor: "transparent", trackColor: "transparent", trackHoverColor: "transparent", trackActiveColor: "transparent" }'
   )
-    .py-4.center.full(class='sm:py-6 md:py-paddings')
-      .full.between-start(ref='trackRef', role='tablist', aria-label='App Tabs')
-        //- 活动背景 - 只有在确认有合理尺寸时才渲染
-        Transition(name='indicator', mode='out-in')
-          .active-blob(
-            v-if='showIndicator && indicatorWidth > 0 && indicatorHeight > 0',
-            :style='{ "--left": indicatorLeft + "px", "--width": indicatorWidth + "px", "--height": indicatorHeight + "px" }'
-          )
-
+    .py-4.center.full(class='sm:py-6 md:py-7 xl:py-8')
+      .full.between-start.relative.tabs-track(
+        ref='trackRef',
+        role='tablist',
+        aria-label='App Tabs',
+        :class='{ "tabs-track--dragging": isDragging, "tabs-track--hover": insertionIndex !== -1 }'
+      )
         //- 标签列表 - 直接使用 store 中的 tabs
         template(v-for='(tab, index) in dynamicTabs', :key='tab.name || tab.path')
-          .center.relative.z-1.h-full.mr-padding.px-padding.bg-tm.border-none.color-text200.select-none.tab-item(
+          .center.relative.z-1.h-full.mx-paddings.px-padding.select-none.rounded-rounded.tabs-item(
             :ref='createItemRef(tab, index)',
-            :class='[tab.active ? "active color-accent100" : "color-text200 hover:color-text100", { "cursor-move": !tab.fixed, "c-cp": tab.fixed, dragging: isDragging && dragOverIndex === index, "drag-over": dragOverIndex === index && !isDragging }]',
+            :class='tab.active ? "active c-border bg-primary100 color-primary400 dark:bg-tm dark:c-border-primary dark:color-primary100" : "c-card-primary py-paddings hover:color-text100! focus:color-text100! active:color-text100! color-text200 border-tm!"',
             @click='goToRoute(String(tab?.name))',
             @contextmenu='handleContextMenu($event, tab)',
             :aria-haspopup='true',
             role='tab',
-            :aria-selected='tab.active'
+            :aria-selected='tab.active',
+            :aria-grabbed='draggingTabKey === getKey(tab)'
           )
             .between.gap-gaps
-              .bg-text200.fs-appFontSizes(class='icon-line-md:hash-small', v-if='tab.fixed')
-              p.truncate.c-cp {{ tab.label }}
-              .bg-text200.fs-appFontSizes.c-cp(
-                class='icon-line-md:remove hover:bg-dangerColor',
+              OhVueIcon.w-appFontSizes.h-appFontSizes(
+                v-if='tab.fixed',
+                name='ri-hashtag',
+                :class='tab.active ? "color-primary400 dark:color-text100" : "color-text200"',
+                animation='wrench',
+                hover,
+                speed='fast'
+              )
+              p.truncate(:class='!tab.fixed ? "cursor-move" : "c-cp"') {{ tab.label }}
+              OhVueIcon.w-appFontSize.h-appFontSize.c-cp.c-transitions(
                 v-if='tab.deletable && !tab.fixed',
+                name='ri-close-fill',
+                :class='[tab.active ? "color-primary400 dark:color-text100" : "color-text200", "hover:color-dangerColor"]',
                 @click.stop='closeTab(tab)'
               )
-          //- 分隔线
-          .w-1.h-full.py-paddings(v-if='index !== dynamicTabs.length - 1')
-            .full.bg-bg300
-  //- 右键菜单
+        .tabs-drop-line(v-if='insertionIndex !== -1 && dropLineStyle', :style='dropLineStyle')
+    //- 右键菜单
   ContextMenu(ref='contextMenuRef', :model='contextMenuItems', @hide='contextMenuTarget = null')
+    template(#itemicon='{ item, class: className }')
+      OhVueIcon(v-if='item.icon', :name='item.icon', :class='className')
 </template>
-
-<style lang="scss" scoped>
-/* 使用主题色变量的玻璃背景效果 Active Blob 样式 */
-.active-blob {
-  position: absolute;
-  left: 0;
-  top: 50%;
-  transform: translateX(var(--left)) translateY(-50%);
-  width: var(--width);
-  height: var(--height);
-
-  background:
-    linear-gradient(
-      135deg,
-      color-mix(in srgb, var(--accent100) 20%, transparent),
-      color-mix(in srgb, var(--accent100) 5%, transparent)
-    ),
-    color-mix(in srgb, var(--bg100) 80%, transparent);
-
-  /* 玻璃背景效果 - 使用主背景色的半透明版本 */
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-
-  /* 多层渐变背景 - 基于主题色创建玻璃效果 */
-
-  /* 玻璃边框 - 使用主色调的半透明 */
-  border: 1px solid color-mix(in srgb, var(--accent100) 20%, transparent);
-  border-top: 1px solid transparent;
-  border-bottom: 1px solid color-mix(in srgb, var(--accent200) 30%, transparent);
-  border-left: 1px solid color-mix(in srgb, var(--accent100) 30%, transparent);
-
-  /* 圆角 */
-  border-radius: var(--rounded);
-  /* 阴影增强立体感 - 使用强调色和主色 */
-  box-shadow:
-    0 8px 32px color-mix(in srgb, var(--accent100) 8%, transparent),
-    0 4px 16px color-mix(in srgb, var(--accent100) 6%, transparent),
-    0 1px 0 color-mix(in srgb, var(--accent100) 40%, transparent);
-
-  /* 保留原有的滤镜和过渡效果 */
-  filter: url(#app-tabs-goo);
-  transition:
-    transform 0.14s cubic-bezier(0.2, 0.8, 0.2, 1),
-    width 0.35s cubic-bezier(0.2, 0.8, 0.2, 1),
-    height 0.35s cubic-bezier(0.2, 0.8, 0.2, 1),
-    background 0.3s ease,
-    border 0.3s ease,
-    box-shadow 0.3s ease;
-
-  z-index: 1;
-}
-
-/* 悬停时增强玻璃效果 */
-.tab-item {
-  background:
-    linear-gradient(
-      135deg,
-      color-mix(in srgb, var(--bg200) 20%, transparent),
-      color-mix(in srgb, var(--bg300) 5%, transparent)
-    ),
-    color-mix(in srgb, var(--bg100) 80%, transparent);
-
-  border-radius: var(--rounded);
-
-  box-shadow:
-    0 8px 32px color-mix(in srgb, var(--primary200) 8%, transparent),
-    0 4px 16px color-mix(in srgb, var(--primary200) 6%, transparent),
-    inset 0 1px 0 color-mix(in srgb, var(--primary200) 40%, transparent);
-  &.active {
-    background: transparent;
+<style lang="scss">
+/* ============================================
+   标签项基础样式
+   ============================================ */
+.tabs-item {
+  /* 首尾标签去除外边距，避免轨道两端留白 */
+  &:first-child {
+    margin-left: 0 !important;
+  }
+  &:last-child {
+    margin-right: 0 !important;
   }
 }
 
-.dark .tab-item {
-  background:
-    linear-gradient(
-      135deg,
-      color-mix(in srgb, var(--primary200) 20%, transparent),
-      color-mix(in srgb, var(--primary300) 5%, transparent)
-    ),
-    color-mix(in srgb, var(--bg300) 80%, transparent);
+/* ============================================
+   标签轨道容器样式
+   ============================================ */
+.tabs-track {
+  /* 轨道背景和阴影的过渡动画
+     - 可调整: transition 时长和缓动函数
+     - 示例: 0.25s ease 可改为 0.3s cubic-bezier(0.4, 0, 0.2, 1) */
+  transition:
+    background 0.25s ease,
+    box-shadow 0.25s ease;
+  /* 使用主题圆角变量，可在主题配置中统一调整 */
+  border-radius: var(--rounded);
 }
 
-// 指示器淡入淡出动画
-.indicator-enter-active,
-.indicator-leave-active {
-  transition: opacity 0.25s ease;
+/* 拖拽状态下的轨道样式
+   - background: 拖拽时的背景色透明度（35% 可调整为 20-50%）
+   - box-shadow: 拖拽时的阴影强度和颜色（24% 可调整为 15-35%） */
+.tabs-track--dragging {
+  box-shadow: 0 4px 30px color-mix(in srgb, var(--primary100) 35%, transparent);
 }
 
-.indicator-enter-from,
-.indicator-leave-to {
-  opacity: 0;
+/* 悬停状态下的轨道样式（当插入线显示时）
+   - background: 悬停时的背景色透明度（20% 可调整为 10-30%） */
+.tabs-track--hover {
+  background: color-mix(in srgb, var(--bg200) 20%, transparent);
 }
 
-/* 拖拽相关样式 */
-.cursor-move {
-  cursor: move;
-}
-
-.dragging {
-  opacity: 0.5;
-  transform: scale(0.95);
-  transition: all 0.25s ease;
-}
-
-.drag-over {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px color-mix(in srgb, var(--accent100) 20%, transparent);
-  transition: all 0.25s ease;
-}
-
-/* 拖拽时的指示器 */
-.drag-over::before {
-  content: '';
+/* ============================================
+   拖拽插入线样式（着陆点指示器）
+   ============================================ */
+.tabs-drop-line {
+  /* 绝对定位，相对于 .tabs-track */
   position: absolute;
-  top: -2px;
-  left: 0;
-  right: 0;
-  height: 2px;
-  background: var(--accent100);
-  border-radius: 1px;
+  top: 50%;
+  left: 0; /* 通过 JS 动态设置，此处为初始值 */
+
+  /* 线条尺寸
+     - width: 线条宽度（1px 可调整为 2-4px）
+     - height: 线条高度（100% 可调整为 80-100%） */
+  width: 1px;
+  height: 100%;
+
+  /* 线条颜色和发光效果
+     - background: 主色（var(--primary100) 可改为 var(--accent100) 或其他主题色）
+     - box-shadow: 发光效果，第一个为内层光晕，第二个为外层光晕
+       - 60% 和 40% 可调整发光强度（30-80%）
+       - 10px 和 20px 可调整光晕扩散范围（5-30px） */
+  background: var(--primary100);
+  box-shadow:
+    0 0 10px color-mix(in srgb, var(--primary100) 60%, transparent),
+    0 0 20px color-mix(in srgb, var(--primary200) 40%, transparent);
+
+  /* 圆角，999px 实现完全圆形端点 */
+  border-radius: 999px;
+
+  /* 居中定位（相对于 left 值）
+     - translate(-50%, -50%): 向左上偏移自身宽高的 50%，实现完美居中 */
+  transform: translate(-50%, -50%);
+
+  /* 禁用鼠标事件，避免阻挡拖拽交互 */
+  pointer-events: none;
+
+  /* 插入线出现/消失的动画
+     - transform: 位置变化动画（0.12s 可调整为 0.1-0.2s）
+     - opacity: 透明度变化动画
+     - ease: 缓动函数（可改为 ease-in-out、cubic-bezier 等） */
+  transition:
+    transform 0.12s ease,
+    opacity 0.12s ease;
+
+  /* 线条透明度（0.9 可调整为 0.7-1.0） */
+  opacity: 0.9;
+
+  /* 上端圆圈指示器
+     - 使用 ::before 伪元素创建上端圆圈
+     - 位置：top: 0（线条顶部）
+     - 尺寸：6px 可调整为 4-10px
+     - 颜色：与线条一致
+     - 发光：与线条相同的发光效果 */
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 50%;
+    width: 6px; /* 圆圈直径（可调整为 4-10px） */
+    height: 6px; /* 圆圈直径（可调整为 4-10px） */
+    background: var(--primary100);
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    box-shadow:
+      0 0 8px color-mix(in srgb, var(--primary100) 70%, transparent),
+      0 0 16px color-mix(in srgb, var(--primary200) 50%, transparent);
+    transition:
+      transform 0.12s ease,
+      opacity 0.12s ease;
+  }
+
+  /* 下端圆圈指示器
+     - 使用 ::after 伪元素创建下端圆圈
+     - 位置：bottom: 0（线条底部）
+     - 尺寸：与上端圆圈一致
+     - 颜色和发光：与上端圆圈一致 */
+  &::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    width: 6px; /* 圆圈直径（可调整为 4-10px） */
+    height: 6px; /* 圆圈直径（可调整为 4-10px） */
+    background: var(--primary100);
+    border-radius: 50%;
+    transform: translate(-50%, 50%);
+    box-shadow:
+      0 0 8px color-mix(in srgb, var(--primary100) 70%, transparent),
+      0 0 16px color-mix(in srgb, var(--primary200) 50%, transparent);
+    transition:
+      transform 0.12s ease,
+      opacity 0.12s ease;
+  }
+}
+
+/* ============================================
+   标签项交互样式
+   ============================================ */
+.tabs-item {
+  /* 标签项状态变化的过渡动画
+     - box-shadow: 阴影变化（0.2s 可调整为 0.15-0.3s）
+     - background: 背景色变化
+     - color: 文字颜色变化
+     - cubic-bezier(0.2, 0.8, 0.2, 1): 自定义缓动曲线，可改为 ease、ease-in-out 等 */
+  transition:
+    box-shadow 0.2s cubic-bezier(0.2, 0.8, 0.2, 1),
+    background 0.2s ease,
+    color 0.2s ease;
+
+  /* 性能优化：提前告知浏览器该属性会变化，启用硬件加速 */
+  will-change: box-shadow;
+}
+
+/* ============================================
+   无障碍：减少动画偏好设置
+   ============================================ */
+@media (prefers-reduced-motion: reduce) {
+  /* 当用户系统设置偏好减少动画时，禁用所有过渡效果
+     确保对动画敏感的用户获得更好的体验 */
+  .tabs-item {
+    transition: none;
+  }
 }
 </style>

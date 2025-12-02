@@ -7,11 +7,11 @@ const menuItems = ref([
     items: [
       {
         label: 'New',
-        icon: 'pi pi-plus',
+        icon: 'ri-add-line',
       },
       {
         label: 'Search',
-        icon: 'pi pi-search',
+        icon: 'ri-search-line',
       },
     ],
   },
@@ -20,11 +20,11 @@ const menuItems = ref([
     items: [
       {
         label: 'Settings',
-        icon: 'pi pi-cog',
+        icon: 'ri-settings-3-line',
       },
       {
         label: 'Logout',
-        icon: 'pi pi-sign-out',
+        icon: 'ri-logout-box-line',
       },
     ],
   },
@@ -33,39 +33,39 @@ const menuItems = ref([
 const menubarItems = ref([
   {
     label: 'Home',
-    icon: 'pi pi-home',
+    icon: 'ri-home-line',
   },
   {
     label: 'Features',
-    icon: 'pi pi-star',
+    icon: 'ri-star-line',
   },
   {
     label: 'Projects',
-    icon: 'pi pi-search',
+    icon: 'ri-search-line',
     items: [
       {
         label: 'Components',
-        icon: 'pi pi-bolt',
+        icon: 'ri-flashlight-line',
       },
       {
         label: 'Blocks',
-        icon: 'pi pi-server',
+        icon: 'ri-server-line',
       },
       {
         label: 'UI Kit',
-        icon: 'pi pi-pencil',
+        icon: 'ri-pencil-line',
       },
       {
         label: 'Templates',
-        icon: 'pi pi-palette',
+        icon: 'ri-palette-line',
         items: [
           {
             label: 'Apollo',
-            icon: 'pi pi-palette',
+            icon: 'ri-palette-line',
           },
           {
             label: 'Ultima',
-            icon: 'pi pi-palette',
+            icon: 'ri-palette-line',
           },
         ],
       },
@@ -73,14 +73,14 @@ const menubarItems = ref([
   },
   {
     label: 'Contact',
-    icon: 'pi pi-envelope',
+    icon: 'ri-mail-line',
   },
 ])
 
 const megaMenuItems = ref([
   {
     label: 'Furniture',
-    icon: 'pi pi-box',
+    icon: 'ri-cactus-line',
     items: [
       [
         {
@@ -132,7 +132,7 @@ const megaMenuItems = ref([
   },
   {
     label: 'Electronics',
-    icon: 'pi pi-mobile',
+    icon: 'ri-smartphone-line',
     items: [
       [
         {
@@ -180,7 +180,7 @@ const megaMenuItems = ref([
   },
   {
     label: 'Sports',
-    icon: 'pi pi-clock',
+    icon: 'ri-time-line',
     items: [
       [
         {
@@ -233,39 +233,39 @@ const megaMenuItems = ref([
 const panelMenuItems = ref([
   {
     label: 'Files',
-    icon: 'pi pi-file',
+    icon: 'ri-file-line',
     items: [
       {
         label: 'Documents',
-        icon: 'pi pi-file',
+        icon: 'ri-file-line',
         items: [
           {
             label: 'Invoices',
-            icon: 'pi pi-file-pdf',
+            icon: 'ri-file-pdf-line',
             items: [
               {
                 label: 'Pending',
-                icon: 'pi pi-stop',
+                icon: 'ri-stop-circle-line',
               },
               {
                 label: 'Paid',
-                icon: 'pi pi-check-circle',
+                icon: 'ri-checkbox-circle-line',
               },
             ],
           },
           {
             label: 'Clients',
-            icon: 'pi pi-users',
+            icon: 'ri-group-line',
           },
         ],
       },
       {
         label: 'Images',
-        icon: 'pi pi-image',
+        icon: 'ri-image-line',
         items: [
           {
             label: 'Logos',
-            icon: 'pi pi-image',
+            icon: 'ri-image-line',
           },
         ],
       },
@@ -273,37 +273,37 @@ const panelMenuItems = ref([
   },
   {
     label: 'Cloud',
-    icon: 'pi pi-cloud',
+    icon: 'ri-cloud-line',
     items: [
       {
         label: 'Upload',
-        icon: 'pi pi-cloud-upload',
+        icon: 'ri-upload-cloud-line',
       },
       {
         label: 'Download',
-        icon: 'pi pi-cloud-download',
+        icon: 'ri-download-cloud-line',
       },
       {
         label: 'Sync',
-        icon: 'pi pi-refresh',
+        icon: 'ri-refresh-line',
       },
     ],
   },
   {
     label: 'Devices',
-    icon: 'pi pi-desktop',
+    icon: 'ri-computer-line',
     items: [
       {
         label: 'Phone',
-        icon: 'pi pi-mobile',
+        icon: 'ri-smartphone-line',
       },
       {
         label: 'Desktop',
-        icon: 'pi pi-desktop',
+        icon: 'ri-computer-line',
       },
       {
         label: 'Tablet',
-        icon: 'pi pi-tablet',
+        icon: 'ri-tablet-line',
       },
     ],
   },
@@ -312,98 +312,102 @@ const panelMenuItems = ref([
 const tieredMenuItems = ref([
   {
     label: 'File',
-    icon: 'pi pi-file',
+    icon: 'ri-file-line',
     items: [
       {
         label: 'New',
-        icon: 'pi pi-plus',
+        icon: 'ri-add-line',
         items: [
           {
             label: 'Document',
-            icon: 'pi pi-file',
+            icon: 'ri-file-line',
           },
           {
             label: 'Image',
-            icon: 'pi pi-image',
+            icon: 'ri-image-line',
           },
           {
             label: 'Video',
-            icon: 'pi pi-video',
+            icon: 'ri-video-line',
           },
         ],
       },
       {
         label: 'Open',
-        icon: 'pi pi-folder-open',
+        icon: 'ri-folder-open-line',
       },
       {
         label: 'Print',
-        icon: 'pi pi-print',
+        icon: 'ri-printer-line',
       },
     ],
   },
   {
     label: 'Edit',
-    icon: 'pi pi-file-edit',
+    icon: 'ri-edit-line',
     items: [
       {
         label: 'Copy',
-        icon: 'pi pi-copy',
+        icon: 'ri-file-copy-line',
       },
       {
         label: 'Delete',
-        icon: 'pi pi-times',
+        icon: 'ri-delete-bin-line',
       },
     ],
   },
   {
     label: 'Search',
-    icon: 'pi pi-search',
+    icon: 'ri-search-line',
   },
   {
     separator: true,
   },
   {
     label: 'Share',
-    icon: 'pi pi-share-alt',
+    icon: 'ri-share-line',
     items: [
       {
         label: 'Slack',
-        icon: 'pi pi-slack',
+        icon: 'ri-slack-line',
       },
       {
         label: 'Whatsapp',
-        icon: 'pi pi-whatsapp',
+        icon: 'ri-whatsapp-line',
       },
     ],
   },
 ])
 </script>
 <template lang="pug">
-.full.grid.gap-gap.grid-cols-1(class='md:grid-cols-2 xl:grid-cols-3 xxl:grid-cols-4')
+.full.grid.gap-gap.grid-cols-1(class='sm:grid-cols-2 lg:grid-cols-3 xxl:grid-cols-4 lg:h-140%')
   //- Mune
-  .c-border.full.between-start.flex-col
-    b.fs-appFontSizex.centent Menu
-    PrimeMenu(:items='menuItems')
+  .c-card-primary.between-col
+    b.fs-appFontSizex.h-40 Menu
+    .full(class='h-[calc(100%-40px)]')
+      PrimeMenu(:items='menuItems')
 
   //-Menubar
-  .c-border.full.between-start.flex-col
-    b.fs-appFontSizex.centent Menubar
-    PrimeMenu(:items='menubarItems', type='bar')
+  .c-card-primary.between-col
+    b.fs-appFontSizex.h-40 Menubar
+    .full(class='h-[calc(100%-40px)]')
+      PrimeMenu(:items='menubarItems', type='bar')
 
   //- MegaMenu
-  .c-border.full.between-start.flex-col
-    b.fs-appFontSizex.centent MegaMenu
-    PrimeMenu(:items='megaMenuItems', type='mega')
+  .c-card-primary.between-col
+    b.fs-appFontSizex.h-40 MegaMenu
+    .full(class='h-[calc(100%-40px)]')
+      PrimeMenu(:items='megaMenuItems', type='mega')
 
   //- PanelMenu
-  .c-border.full.between-start.flex-col
-    b.fs-appFontSizex.centent PanelMenu
-    PrimeMenu(:items='panelMenuItems', type='panel')
+  .c-card-primary.between-col
+    b.fs-appFontSizex.h-40 PanelMenu
+    .full(class='h-[calc(100%-40px)]')
+      PrimeMenu(:items='panelMenuItems', type='panel')
 
   //- TieredMenu
-  .c-border.full.between-start.flex-col
-    b.fs-appFontSizex.centent TieredMenu
-    PrimeMenu(:items='tieredMenuItems', type='tier')
+  .c-card-primary.between-col
+    b.fs-appFontSizex.h-40 TieredMenu
+    .full(class='h-[calc(100%-40px)]')
+      PrimeMenu(:items='tieredMenuItems', type='tier')
 </template>
-<style lang="scss" scope></style>

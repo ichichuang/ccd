@@ -1,7 +1,9 @@
 <script setup lang="ts">
 import { useLayoutStore } from '@/stores'
 import type { MenuItem } from 'primevue/menuitem'
+import Popover from 'primevue/popover'
 import { computed, nextTick, onMounted, onUnmounted, ref, watch } from 'vue'
+import { useRoute } from 'vue-router'
 
 const props = defineProps<{
   items: MenuItem[]
@@ -11,6 +13,22 @@ const props = defineProps<{
 const layoutStore = useLayoutStore()
 // 折叠状态
 const isCollapsed = computed(() => layoutStore.sidebarCollapsed)
+
+// Popover 引用
+type PopoverInstance = InstanceType<typeof Popover>
+const menuPopoverRef = ref<PopoverInstance | null>(null)
+// 触发器容器引用
+const triggerRef = ref<HTMLElement | null>(null)
+const route = useRoute()
+
+// 切换 Popover 显示/隐藏
+const handleToggle = (event: MouseEvent) => {
+  menuPopoverRef.value?.toggle(event)
+}
+
+const handleHide = () => {
+  menuPopoverRef.value?.hide()
+}
 
 // 展开延迟
 const expandedDelay = ref<boolean>(false)
@@ -60,6 +78,13 @@ watch(
     }
   },
   { immediate: true, deep: true }
+)
+
+watch(
+  () => route.fullPath,
+  () => {
+    handleHide()
+  }
 )
 
 const containerRef = ref<HTMLElement>()
@@ -115,7 +140,27 @@ onUnmounted(() => {
 })
 </script>
 <template lang="pug">
-.full.relative.z-999(ref='containerRef')
+.center(class='md:hidden')
+  //- 触发器容器
+  .full.center.c-cp(ref='triggerRef', role='button', tabindex='0', @click='handleToggle')
+    OhVueIcon.w-appFontSizel.h-appFontSizel.color-primary100(name='ri-apps-line')
+
+  //- Popover 面板
+  Popover.bg-tm.border-none.overflow-hidden(ref='menuPopoverRef', :dismissable='true')
+    .full.w-80vw.h-80vh.p-0.overflow-hidden(class='sm:w-60vw sm:h-60vh', @click.self='handleHide')
+      ScrollbarWrapper(
+        style='background: transparent; height: 100%',
+        :color-scheme='{ thumbColor: "transparent", thumbHoverColor: "transparent", thumbActiveColor: "transparent", trackColor: "transparent", trackHoverColor: "transparent", trackActiveColor: "transparent" }',
+        @container-click='handleHide'
+      )
+        .c-border.p-padding.bg-bg200.rounded-rounded.pt-0
+          PrimeMenu(
+            :type='"panel"',
+            :items='props.items',
+            :components-props='props.componentsProps'
+          )
+
+.full.relative.z-999.hidden(class='md:block', ref='containerRef')
   //- 折叠状态菜单
   AnimateWrapper(
     :show='collapsedDelay',

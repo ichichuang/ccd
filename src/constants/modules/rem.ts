@@ -7,11 +7,11 @@
 export const breakpoints = {
   xs: 375, // 超小屏幕 - 手机端 (375px+)
   sm: 768, // 小屏幕 - 平板竖屏 (768px+)
-  md: 1024, // 中等屏幕 - 平板横屏/小笔记本 (1024px+)
+  md: 950, // 中等屏幕 - 平板横屏/小笔记本 (950wwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwpx+)
   lg: 1400, // 大屏幕 - 桌面端 (1400px+)
   xl: 1660, // 超大屏幕 - 大桌面 (1660px+)
   xls: 1920, // 特大屏幕 - 全高清显示器 (1920px+)
-  xxl: 2560, // 超宽屏 - 2K显示器 (2560px+)
+  xxl: 2560, // 超宽屏 - 2K显示器 (2560px+)w
   xxxl: 3840, // 4K屏 - 4K显示器 (3840px+)
 } as const
 

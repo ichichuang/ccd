@@ -1,6 +1,6 @@
 import Menubar from 'primevue/menubar'
 import type { MenuItem } from 'primevue/menuitem'
-import { defineComponent } from 'vue'
+import { defineComponent, h } from 'vue'
 
 export default defineComponent({
   name: 'Menubar',
@@ -18,12 +18,15 @@ export default defineComponent({
       default: () => ({}),
     },
   },
-  setup(props) {
-    return () => (
-      <Menubar
-        model={props.items}
-        {...props.componentsProps}
-      />
-    )
+  setup(props, { slots }) {
+    return () =>
+      h(
+        Menubar,
+        {
+          model: props.items,
+          ...(props.componentsProps || {}),
+        },
+        slots
+      )
   },
 })

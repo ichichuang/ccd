@@ -8,6 +8,7 @@ const zhCN = {
     settings: {
       title: '设置',
       theme: '主题',
+      color: '配色',
       language: '语言',
       size: '尺寸',
       rounded: '棱角',
@@ -15,6 +16,7 @@ const zhCN = {
       fontSize: '字体大小',
       systemManagement: '管理系统',
       logout: '退出系统',
+      moreSettings: '更多设置',
     },
     systemOptions: {
       // 主题模式选项
@@ -98,7 +100,6 @@ const zhCN = {
       title: '示例',
       layout: {
         title: '布局',
-        screen: '屏幕',
         fullscreen: '全屏',
         test: '测试',
         ratio: '比例',
@@ -137,6 +138,7 @@ const zhCN = {
       },
     },
     error: {
+      title: '错误',
       notFound: '页面未找到',
       forbidden: '访问被拒绝',
       serverError: '服务器错误',
@@ -169,6 +171,9 @@ const zhCN = {
       closeRight: '关闭右侧',
       fixed: '固定',
       unFixed: '取消固定',
+    },
+    breadcrumb: {
+      backToHome: '回到主页',
     },
   },
   primevue: {

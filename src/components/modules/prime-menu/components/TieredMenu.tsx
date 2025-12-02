@@ -1,6 +1,6 @@
 import type { MenuItem } from 'primevue/menuitem'
 import TieredMenu from 'primevue/tieredmenu'
-import { defineComponent } from 'vue'
+import { defineComponent, h } from 'vue'
 
 export default defineComponent({
   name: 'TieredMenu',
@@ -18,12 +18,15 @@ export default defineComponent({
       default: () => ({}),
     },
   },
-  setup(props) {
-    return () => (
-      <TieredMenu
-        model={props.items}
-        {...props.componentsProps}
-      />
-    )
+  setup(props, { slots }) {
+    return () =>
+      h(
+        TieredMenu,
+        {
+          model: props.items,
+          ...(props.componentsProps || {}),
+        },
+        slots
+      )
   },
 })

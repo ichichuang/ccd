@@ -1,6 +1,6 @@
 import MegaMenu from 'primevue/megamenu'
 import type { MenuItem } from 'primevue/menuitem'
-import { defineComponent } from 'vue'
+import { defineComponent, h } from 'vue'
 
 export default defineComponent({
   name: 'MegaMenu',
@@ -18,12 +18,15 @@ export default defineComponent({
       default: () => ({}),
     },
   },
-  setup(props) {
-    return () => (
-      <MegaMenu
-        model={props.items}
-        {...props.componentsProps}
-      />
-    )
+  setup(props, { slots }) {
+    return () =>
+      h(
+        MegaMenu,
+        {
+          model: props.items,
+          ...(props.componentsProps || {}),
+        },
+        slots
+      )
   },
 })

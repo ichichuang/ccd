@@ -1,6 +1,6 @@
 // 声明全局类型
 declare global {
-  type LayoutMode = 'admin' | 'screen' | 'fullscreen' | 'ratio'
+  type LayoutMode = 'admin' | 'fullscreen' | 'ratio'
   /** 设备信息接口 */
   interface DeviceInfo {
     // 设备类型 PC 端 Mobile 端

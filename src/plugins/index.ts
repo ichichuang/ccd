@@ -3,6 +3,7 @@ import { setupDateUtils } from '@/plugins/modules/date'
 import { setupDatepicker } from '@/plugins/modules/datepicker'
 import { setupEcharts } from '@/plugins/modules/echarts'
 import { setupGridTable } from '@/plugins/modules/gridtable'
+import { setupIcons } from '@/plugins/modules/icons'
 import { setupLocales } from '@/plugins/modules/locales'
 import { setupPrimeVue } from '@/plugins/modules/primevue'
 import { setupRouter } from '@/plugins/modules/router'
@@ -25,6 +26,7 @@ export const setupPlugins = async (app: App) => {
   await setupDateUtils(app)
 
   setupPrimeVue(app)
+  setupIcons(app)
   setupEcharts(app)
   setupGridTable(app)
   setupDatepicker(app)

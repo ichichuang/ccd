@@ -8,6 +8,7 @@ const zhTW = {
     settings: {
       title: '設定',
       theme: '主題',
+      color: '配色',
       language: '語言',
       size: '尺寸',
       rounded: '稜角',
@@ -15,6 +16,7 @@ const zhTW = {
       fontSize: '字體大小',
       systemManagement: '系統管理',
       logout: '登出系統',
+      moreSettings: '更多設定',
     },
     systemOptions: {
       // 主題模式選項
@@ -98,7 +100,6 @@ const zhTW = {
       title: '示例',
       layout: {
         title: '布局',
-        screen: '屏幕',
         fullscreen: '全屏',
         test: '測試',
         ratio: '比例',
@@ -137,6 +138,7 @@ const zhTW = {
       },
     },
     error: {
+      title: '錯誤',
       notFound: '頁面未找到',
       forbidden: '訪問被拒絕',
       serverError: '服務器錯誤',
@@ -169,6 +171,9 @@ const zhTW = {
       closeRight: '關閉右側',
       fixed: '固定',
       unFixed: '取消固定',
+    },
+    breadcrumb: {
+      backToHome: '回到主頁',
     },
   },
   primevue: {

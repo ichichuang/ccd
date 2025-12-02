@@ -479,7 +479,7 @@ export const createCustomPreset = (preset: any, { colorStore, sizeStore }: Prime
       icon: {
         color: colorStore.getText100, // 默认
         focusColor: colorStore.getPrimary100, // 悬停/聚焦
-        activeColor: colorStore.getAccent100, // 激活
+        activeColor: colorStore.getPrimary100, // 激活
       },
       submenuIcon: {
         color: colorStore.getText100, // 默认

@@ -1320,7 +1320,7 @@ const linesChartOption = ref({
     .h-100.between-start.gap-gap
       | 事件日志
       Button(@click='clearLogs', severity='danger', outlined) 清空日志
-    .full(class='h[calc(100%-100px)]')
+    .full(class='h-[calc(100%-100px)]')
       ScrollbarWrapper(:size='2', :track-size='4')
         .mb-gap.fs-appFontSizes(v-for='(log, index) in eventLogs', :key='index') {{ log }}
 

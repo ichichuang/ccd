@@ -154,8 +154,8 @@ export const goToRoute = (
     // 获取路由的 parent 属性，默认为 'admin'
     const parent = (targetRoute.meta?.parent as LayoutMode) || 'admin'
 
-    // screen 和 fullscreen 模式需要新窗口打开
-    shouldOpenNewWindow = parent === 'screen' || parent === 'fullscreen' || parent === 'ratio'
+    // ratio 和 fullscreen 模式需要新窗口打开
+    shouldOpenNewWindow = parent === 'fullscreen' || parent === 'ratio'
   }
 
   if (shouldOpenNewWindow) {

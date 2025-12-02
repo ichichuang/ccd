@@ -55,7 +55,7 @@ const layoutConfig: LayoutConfig = {
   showMenu: true,
   showSidebar: true,
   showBreadcrumb: true,
-  showFooter: false,
+  showFooter: true,
   showTabs: true,
 }
 

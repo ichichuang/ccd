@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import { debounce, throttle } from '@/common'
-import { INTERVAL, STRATEGY } from '@/constants/modules/layout'
 import { useThemeSwitch } from '@/hooks'
 import { useFull } from '@/hooks/layout/useFull'
 import { t } from '@/locales'
@@ -29,16 +27,6 @@ const handleLogout = () => {
   userStore.logout()
 }
 
-/* 控制侧边栏折叠 */
-const sidebarCollapsed = computed(() => layoutStore.getSidebarCollapsed)
-const _toggleSidebarCollapsed = () => {
-  layoutStore.setSidebarCollapsed(!sidebarCollapsed.value)
-}
-const toggleSidebarCollapsed =
-  STRATEGY === 'debounce'
-    ? debounce(_toggleSidebarCollapsed, INTERVAL)
-    : throttle(_toggleSidebarCollapsed, INTERVAL)
-
 /* 控制移动端菜单显示 */
 const mobileSidebarVisible = computed(() => layoutStore.getMobileSidebarVisible)
 const toggleMobileMenu = () => {
@@ -51,56 +39,43 @@ const toggleMobileMenu = () => {
 template(v-if='!isLoggedIn')
   .c-card-accent.c-border-accent.size-1-1.center(@click='toggleThemeWithAnimation($event)')
     template(v-if='isDark')
-      .fs-appFontSizex(class='icon-line-md:moon-twotone-alt-loop')
+      OhVueIcon.w-appFontSizex.h-appFontSizex(name='ri-moon-clear-line')
     template(v-else)
-      .fs-appFontSizex(class='icon-line-md:sunny-outline-twotone')
+      OhVueIcon.w-appFontSizex.h-appFontSizex(name='ri-sun-line')
   ColorSwitch.fixed.b-gap.r-gap
 template(v-else)
   //- 全屏布局
   template(v-if='currentLayoutMode === "ratio"')
   template(v-else-if='currentLayoutMode === "fullscreen"')
-  template(v-else-if='currentLayoutMode === "screen"')
-    .c-card-accent.shadow-none.size-1-1.center(@click='toggleThemeWithAnimation($event)')
-      template(v-if='isDark')
-        .fs-appFontSizex(class='icon-line-md:moon-twotone-alt-loop')
-      template(v-else)
-        .fs-appFontSizex(class='icon-line-md:sunny-outline-twotone')
   template(v-else-if='currentLayoutMode === "admin"')
     .between.gap-gap(class='h100%')
       .c-card-accent.shadow-none.size-1-1.center(@click='toggle')
         template(v-if='fullscreen')
-          .fs-appFontSizex(class='icon-line-md:arrows-vertical-alt')
+          OhVueIcon.w-appFontSizex.h-appFontSizex(name='ri-fullscreen-exit-line')
         template(v-else)
-          .fs-appFontSizex(class='icon-line-md:arrows-vertical')
+          OhVueIcon.w-appFontSizex.h-appFontSizex(name='ri-fullscreen-line')
       //- 桌面端
-      .hidden.c-card-accent.shadow-none.size-1-1.center(
-        class='md:block',
-        @click='toggleSidebarCollapsed',
-        v-if='currentLayoutMode === "admin"'
-      )
-        .fs-appFontSizex(v-if='layoutStore.getSidebarCollapsed', class='icon-line-md:arrow-open-right')
-        .fs-appFontSizex(v-else, class='icon-line-md:arrow-open-left')
       .c-card-accent.shadow-none.size-1-1.center.hidden(
         class='md:block',
         @click='toggleSetting("desktop", $event)'
       )
-        .text-ellipsis.fs-appFontSizex(class='icon-line-md:cog-filled')
+        OhVueIcon.text-ellipsis.w-appFontSizex.h-appFontSizex(name='ri-settings-3-line')
       //- 移动端
       .c-card-accent.shadow-none.size-1-1.center.hidden(
         class='sm:block md:hidden',
         @click='toggleMobileMenu'
       )
-        .fs-appFontSizex(class='icon-line-md:grid-3-filled')
+        OhVueIcon.w-appFontSizex.h-appFontSizex(name='ri-grid-fill')
       .c-card-accent.shadow-none.size-1-1.center(
         class='md:hidden',
         @click='toggleSetting("mobile", $event)'
       )
-        .fs-appFontSizex(class='icon-line-md:cog-filled')
+        OhVueIcon.w-appFontSizex.h-appFontSizex(name='ri-settings-3-line')
       .c-card-accent.shadow-none.size-1-1.center(@click='toggleThemeWithAnimation($event)')
         template(v-if='isDark')
-          .fs-appFontSizex(class='icon-line-md:moon-twotone-alt-loop')
+          OhVueIcon.w-appFontSizex.h-appFontSizex(name='ri-moon-clear-line')
         template(v-else)
-          .fs-appFontSizex(class='icon-line-md:sunny-outline-twotone')
+          OhVueIcon.w-appFontSizex.h-appFontSizex(name='ri-sun-line')
 
 //- 桌面端设置面板抽屉
 Drawer(v-model:visible='desktopSettingVisible', position='right', class='w32% lg:w28% xl:w24% xls:w22%')

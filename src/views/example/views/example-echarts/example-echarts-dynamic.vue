@@ -544,11 +544,11 @@ function toggleLegendVisible() {
       .items-center.gap-gap
         .icon-carbon-renew
         span 刷新频率 1s/3s/5s/2s
-    .c-card-primary.shadow-none.size-1-1.center(@click='toggleThemeWithAnimation($event)')
-      template(v-if='isDark')
-        .fs-appFontSizex(class='icon-line-md:moon-twotone-alt-loop')
-      template(v-else)
-        .fs-appFontSizex(class='icon-line-md:sunny-outline-twotone')
+      .c-card-primary.shadow-none.size-1-1.center(@click='toggleThemeWithAnimation($event)')
+        template(v-if='isDark')
+          OhVueIcon.w-appFontSizex.h-appFontSizex(name='ri-moon-clear-line')
+        template(v-else)
+          OhVueIcon.w-appFontSizex.h-appFontSizex(name='ri-sun-line')
   // 主体布局 - 左右分栏
   .w-full.h-contentsHeight.p-padding.between.gap-gap
     // 左侧图表区域 (80%)

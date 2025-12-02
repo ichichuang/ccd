@@ -9,7 +9,9 @@ const {
   success,
   warning,
   error,
+
   confirm,
+
   confirmDelete,
   update,
   closeDialog,
@@ -20,6 +22,12 @@ const {
 
 // PrimeVue 的确认对话框
 const confirmDialog = useConfirm()
+
+// 确认操作统一走 Toast 提示，复用示例中的信息交互体验
+
+const showConfirmSuccessToast = () => window.$toast.success('操作已确认', '已根据指示完成当前操作')
+
+const showConfirmCancelToast = () => window.$toast.warn('操作已取消', '已取消本次操作请求')
 
 // 打开标准对话框
 const openStandardDialog = () => {
@@ -533,82 +541,82 @@ const testThreeLayerNestedDialog = () => {
 </script>
 
 <template lang="pug">
-.grid.grid-cols-1.gap-gapx(class='sm:grid-cols-2 xl:grid-cols-3 xxl:grid-cols-4')
+.grid.grid-cols-1.gap-gapl(class='sm:grid-cols-2 xl:grid-cols-3 xxl:grid-cols-4')
   // 基础对话框
   .full.c-card.p-padding.rounded-rounded.between-col.center-start
-    .fs-16.font-semibold.center 基础对话框
+    .center 基础对话框
     p.color-text200 标准对话框，支持自定义内容和按钮
     Button(label='打开标准对话框', severity='primary', @click='openStandardDialog')
 
   // 可最大化对话框
   .full.c-card.p-padding.rounded-rounded.between-col.center-start
-    .fs-16.font-semibold.center 可最大化对话框
+    .center 可最大化对话框
     p.color-text200 支持最大化、最小化操作的对话框
     Button(label='打开可最大化对话框', severity='secondary', @click='openMaximizableDialog')
 
   // 确认对话框
   .full.c-card.p-padding.rounded-rounded.between-col.center-start
-    .fs-16.font-semibold.center 确认对话框
+    .center 确认对话框
     p.color-text200 基于 PrimeVue ConfirmDialog 的确认对话框
     Button(label='打开确认对话框', severity='info', @click='openConfirmDialog')
 
   // 删除确认对话框
   .full.c-card.p-padding.rounded-rounded.between-col.center-start
-    .fs-16.font-semibold.center 删除确认对话框
+    .center 删除确认对话框
     p.color-text200 专门用于删除操作的确认对话框
     Button(label='打开删除确认对话框', severity='danger', @click='openDeleteConfirmDialog')
 
   // 动态对话框
   .full.c-card.p-padding.rounded-rounded.between-col.center-start
-    .fs-16.font-semibold.center 动态对话框
+    .center 动态对话框
     p.color-text200 基于 PrimeVue DynamicDialog 的动态组件对话框
     Button(label='打开动态对话框', severity='success', @click='openDynamicDialog')
 
   // 自定义头部对话框
   .full.c-card.p-padding.rounded-rounded.between-col.center-start
-    .fs-16.font-semibold.center 自定义头部对话框
+    .center 自定义头部对话框
     p.color-text200 支持自定义头部渲染的对话框
     Button(label='打开自定义头部对话框', severity='warning', @click='openCustomHeaderDialog')
 
   // 加载状态对话框
   .full.c-card.p-padding.rounded-rounded.between-col.center-start
-    .fs-16.font-semibold.center 加载状态对话框
+    .center 加载状态对话框
     p.color-text200 支持按钮加载状态的对话框
     Button(label='打开加载状态对话框', severity='help', @click='openLoadingDialog')
 
   // 不可点击遮罩关闭的对话框
   .full.c-card.p-padding.rounded-rounded.between-col.center-start
-    .fs-16.font-semibold.center 不可点击遮罩关闭的对话框
+    .center 不可点击遮罩关闭的对话框
     p.color-text200 不能通过点击遮罩或按ESC键关闭的对话框
     Button(label='打开不可点击遮罩关闭的对话框', severity='warning', @click='openNonDismissableDialog')
 
   // 可拖拽对话框
   .full.c-card.p-padding.rounded-rounded.between-col.center-start
-    .fs-16.font-semibold.center 可拖拽对话框
+    .center 可拖拽对话框
     p.color-text200 可以通过拖拽标题栏移动位置的对话框
     Button(label='打开可拖拽对话框', severity='info', @click='openDraggableDialog')
 
   // 无遮罩对话框
   .full.c-card.p-padding.rounded-rounded.between-col.center-start
-    .fs-16.font-semibold.center 无遮罩对话框
+    .center 无遮罩对话框
     p.color-text200 没有背景遮罩，后面元素可点击的对话框
     Button(label='打开无遮罩对话框', severity='secondary', @click='openNoModalDialog')
 
   // 自定义位置对话框
   .full.c-card.p-padding.rounded-rounded.between-col.center-start
-    .fs-16.font-semibold.center 自定义位置对话框
+    .center 自定义位置对话框
     p.color-text200 显示在页面顶部的对话框
     Button(label='打开自定义位置对话框', severity='success', @click='openCustomPositionDialog')
 
   // 可更新属性对话框
   .full.c-card.p-padding.rounded-rounded.between-col.center-start
-    .fs-16.font-semibold.center 可更新属性对话框
+    .center 可更新属性对话框
     p.color-text200 支持动态更新对话框属性的对话框
     Button(label='打开可更新属性对话框', severity='help', @click='openUpdatableDialog')
 
   // 便捷方法
   .full.c-card.p-padding.rounded-rounded.between-col.center-start
-    .fs-16.font-semibold.center 便捷方法
+    .center 便捷方法
     p.color-text200 快速打开各种类型的对话框
     .between
       Button(label='信息提示', severity='info', text, @click='() => info("这是一条信息提示")')
@@ -618,7 +626,7 @@ const testThreeLayerNestedDialog = () => {
 
   // 高级便捷方法
   .full.c-card.p-padding.rounded-rounded.between-col.center-start
-    .fs-16.font-semibold.center 高级便捷方法
+    .center 高级便捷方法
     p.color-text200 快速打开各种类型的对话框并自定义
     .between
       Button(label='信息提示', severity='info', text, @click='() => info("这是一条信息提示")')
@@ -628,25 +636,25 @@ const testThreeLayerNestedDialog = () => {
 
   // 确认操作
   .full.c-card.p-padding.rounded-rounded.between-col.center-start
-    .fs-16.font-semibold.center 确认操作
+    .center 确认操作
     p.color-text200 快速确认操作
     .between.gap-gap
       Button(
         label='确认操作',
         severity='primary',
         outlined,
-        @click='() => confirm("确定要执行此操作吗？", "确认", { onConfirm: () => success("操作已确认"), onCancel: () => info("操作已取消") })'
+        @click='() => confirm("确定要执行此操作吗？", "确认", { onConfirm: showConfirmSuccessToast, onCancel: showConfirmCancelToast })'
       )
       Button(
         label='删除确认操作',
         severity='danger',
         outlined,
-        @click='() => confirmDelete("确定要执行此操作吗？", "确认", { onConfirm: () => success("操作已确认"), onCancel: () => info("操作已取消") })'
+        @click='() => confirmDelete("确定要执行此操作吗？", "确认", { onConfirm: showConfirmSuccessToast, onCancel: showConfirmCancelToast })'
       )
 
   // 对话框管理
   .full.c-card.p-padding.rounded-rounded.between-col.center-start
-    .fs-16.font-semibold.center 对话框管理
+    .center 对话框管理
     p.color-text200 管理已打开的对话框
     .between
       Button(label='显示状态', severity='info', text, @click='showDialogStatus')
@@ -655,13 +663,13 @@ const testThreeLayerNestedDialog = () => {
 
   // 测试 ESC 关闭
   .full.c-card.p-padding.rounded-rounded.between-col.center-start
-    .fs-16.font-semibold.center 测试 ESC 关闭
+    .center 测试 ESC 关闭
     p.color-text200 测试 ESC 键关闭对话框时索引是否正确清理
     Button(label='测试 ESC 关闭', severity='info', @click='testEscClose')
 
   // 测试3层嵌套对话框
   .full.c-card.p-padding.rounded-rounded.between-col.center-start
-    .fs-16.font-semibold.center 测试3层嵌套对话框
+    .center 测试3层嵌套对话框
     p.color-text200 测试多层嵌套对话框的独立关闭和索引管理
     Button(label='测试3层嵌套', severity='success', @click='testThreeLayerNestedDialog')
 </template>

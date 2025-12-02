@@ -26,8 +26,8 @@ export type DialogType = 'dialog' | 'confirm' | 'dynamic'
 
 // 基础按钮属性
 export interface ButtonProps extends Partial<PrimeButtonProps> {
-  /** 按钮文字 */
-  label: string
+  /** 按钮文字（支持函数形式以实现响应式多语言） */
+  label: string | (() => string)
   /** 按钮类型 */
   severity?: ButtonType
   /** 是否为加载中状态 */
@@ -110,8 +110,8 @@ export interface DialogOptions extends Partial<PrimeDialogProps> {
   type?: DialogType
   /** 对话框的显示与隐藏 */
   visible?: boolean
-  /** 对话框的标题 */
-  header?: string
+  /** 对话框的标题（支持函数形式以实现响应式多语言） */
+  header?: string | (() => string)
   /** 对话框的宽度 */
   width?: string | number
   /** 对话框的高度 */

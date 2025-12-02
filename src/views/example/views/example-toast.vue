@@ -142,7 +142,7 @@ const showCustomMessage = () => {
 </script>
 
 <template lang="pug">
-.between-col.gap-gap
+.between-col.gap-gapl
   // 基础示例
   .full.c-card.p-padding.rounded-rounded.between-col.center-start
     .fs-16.font-semibold.center 基础 Toast

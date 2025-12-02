@@ -13,9 +13,10 @@ import { useLayoutStore } from '@/stores'
 import type { MenuItem } from 'primevue/menuitem'
 import { computed, nextTick, onMounted, onUnmounted, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
+import DesktopSidebar from './components/DesktopSidebar.vue'
+import MobileSidebar from './components/MobileSidebar.vue'
 
 const { $t } = useLocale()
-
 // 安全的国际化函数
 const safeT = (key: string, fallback?: string) => {
   try {
@@ -54,6 +55,7 @@ const setupGlobalErrorHandler = () => {
 }
 
 const layoutStore = useLayoutStore()
+const isMobile = computed(() => layoutStore.getIsMobile)
 const route = useRoute()
 // 折叠状态
 const isCollapsed = computed(() => {
@@ -302,8 +304,8 @@ onUnmounted(() => {
 })
 </script>
 <template lang="pug">
-.full.hidden.z-999(class='md:block')
+.full.z-999(v-if='!isMobile')
   DesktopSidebar(:items='items', :components-props='componentsProps')
-.full.z-999(class='md:hidden')
+.full.z-999(v-else)
   MobileSidebar(:items='items', :components-props='componentsProps')
 </template>

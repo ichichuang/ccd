@@ -22,16 +22,32 @@ const menuComponents = {
   tier: TieredMenu,
 } as const
 
-const menuComponent = menuComponents[props.type]
+const childProps = computed(() => {
+  // 如果 componentsProps 是空对象，不传递它，让子组件使用默认值
+  const componentsProps = props.componentsProps
+  const isEmpty = !componentsProps || Object.keys(componentsProps).length === 0
 
-// 构建传递给子组件的 props
-const childProps = computed(() => ({
-  type: props.type,
-  items: props.items,
-  componentsProps: props.componentsProps,
-}))
+  return {
+    type: props.type,
+    items: props.items,
+    // 只有当 componentsProps 有值时才传递
+    ...(isEmpty ? {} : { componentsProps }),
+  }
+})
 </script>
 
 <template lang="pug">
-component(:is='menuComponent', v-bind='childProps')
+component(:is='menuComponents[props.type]', v-bind='childProps')
+  template(#headericon='{ item, class: iconClass }')
+    OhVueIcon(
+      v-if='item?.icon',
+      :name='item.icon',
+      :class='[iconClass, "w-appFontSize h-appFontSize"]'
+    )
+  template(#itemicon='{ item, class: iconClass }')
+    OhVueIcon(
+      v-if='item?.icon',
+      :name='item.icon',
+      :class='[iconClass, "w-appFontSizes h-appFontSizes"]'
+    )
 </template>

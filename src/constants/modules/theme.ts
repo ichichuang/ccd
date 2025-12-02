@@ -11,285 +11,376 @@ export const modeOptions: ModeOptions[] = [
 ]
 
 /**
- * 浅色主题选项
+ * 浅色主题选项 (Light Theme Options) - 红、橙、黄、绿、青、蓝、紫 7色系
  */
 export const lightThemeOptions: ThemeColor[] = [
+  // 1. 红色系: 经典红 (Classic Red) - #D32F2F
+  {
+    label: '经典红',
+    value: 'classic-red',
+    themeColors: {
+      primary100: '#D32F2F',
+      primary200: '#E57373',
+      primary300: '#FFCDD2',
+      primary400: '#ffffff', // 白色文本
+      accent100: '#00B8D4', // 亮青色点缀
+      accent200: '#00838F',
+      text100: '#212121', // 深灰色
+      text200: '#757575',
+      bg100: '#FAFAFA',
+      bg200: '#F5F5F5',
+      bg300: '#E0E0E0',
+      functionalColors: buildFunctionalColors({
+        color: '#D32F2F',
+        hover: '#E57373',
+        active: '#FFCDD2',
+        disabled: '#E0E0E0',
+        text: '#ffffff',
+        border: '#B71C1C',
+      }),
+    },
+  },
+  // 2. 橙色系: 爱马仕午后 (Hermès Afternoon) - #E85827 (您原有的方案)
   {
     label: '爱马仕午后',
     value: 'hermes-afternoon',
     themeColors: {
-      // **爱马仕橙** 系列
-      primary100: '#E85827', // 主题色：爱马仕橙，用于按钮背景、核心元素
-      primary200: '#F0805B', // 较浅的橙色，用于悬停（hover）文本/背景（在 #ffffff 上对比度约 4.5:1）
-      primary300: '#F5A78E', // 更浅的橙色，用于点击/激活（active）文本/背景（在 #ffffff 上对比度约 5.0:1）
-      primary400: '#ffffff', // 核心操作上的默认文本颜色（白色，在 primary100 上对比度约 5.5:1）
-
-      // **点缀色** 系列 (选择一种与其互补且沉稳的颜色，如墨绿或深蓝)
-      accent100: '#03A89E', // 孔雀绿/深青色，用于高亮、信息、成功状态
-      accent200: '#026760', // 较深的青色，用于对比或强调
-
-      // **文本** 系列
-      text100: '#2A1C16', // 温暖的深棕色，用于主要文本（在 bg100 上对比度约 16:1）
-      text200: '#796B64', // 柔和的中等棕色，用于次要文本、图标
-
-      // **背景/结构** 系列
-      bg100: '#FCFAF8', // 极浅的米白色，用于主要背景
-      bg200: '#F5F0EC', // 浅米黄色，用于面板、卡片背景
-      bg300: '#E3DDD8', // 柔和的浅灰色，用于边框、分割线
-
-      // **功能色**
+      primary100: '#E85827',
+      primary200: '#F0805B',
+      primary300: '#F5A78E',
+      primary400: '#ffffff',
+      accent100: '#03A89E',
+      accent200: '#026760',
+      text100: '#2A1C16',
+      text200: '#796B64',
+      bg100: '#FCFAF8',
+      bg200: '#F5F0EC',
+      bg300: '#E3DDD8',
       functionalColors: buildFunctionalColors({
-        color: '#E85827', // 基础色
-        hover: '#F0805B', // 悬停色
-        active: '#F5A78E', // 激活色
-        disabled: '#E3DDD8', // 禁用状态的文本/背景
-        text: '#ffffff', // 按钮内的文本颜色
-        border: '#B34520', // 稍深的橙色，用于边框
+        color: '#E85827',
+        hover: '#F0805B',
+        active: '#F5A78E',
+        disabled: '#E3DDD8',
+        text: '#ffffff',
+        border: '#B34520',
       }),
     },
   },
-  {
-    label: '青花瓷韵',
-    value: 'porcelain-charm',
-    themeColors: {
-      // **青花瓷蓝** 系列
-      primary100: '#3665f9', // 主题色：青花瓷蓝，用于按钮背景、核心元素
-      primary200: '#5c84fb', // 浅一点的青花瓷蓝，用于悬停（hover）文本/背景（对比度约 4.5:1 on #ffffff）
-      primary300: '#8caaff', // 更浅的青花瓷蓝，用于点击/激活（active）文本/背景（对比度约 4.5:1 on #ffffff）
-      primary400: '#ffffff', // 核心操作上的默认文本颜色（白色，在 primary100 上对比度约 5.5:1）
-
-      // **点缀色** 系列 (选择一种清新、互补的颜色，如浅翠绿)
-      accent100: '#06d6a0', // 翠绿/薄荷绿，用于高亮、通知、成功状态
-      accent200: '#059a71', // 较深的翠绿，用于对比或强调
-
-      // **文本** 系列
-      text100: '#1c212a', // 深灰色，用于主要文本（在 bg100 上对比度约 15:1）
-      text200: '#5e687e', // 中等灰色，用于次要文本、图标
-
-      // **背景/结构** 系列
-      bg100: '#f7f8fc', // 极浅的蓝灰色，用于主要背景
-      bg200: '#eef1f6', // 浅灰色，用于面板、卡片背景
-      bg300: '#d7dae0', // 柔和的灰色，用于边框、分割线
-
-      // **功能色**
-      functionalColors: buildFunctionalColors({
-        color: '#3665f9', // 基础色
-        hover: '#5c84fb', // 悬停色
-        active: '#8caaff', // 激活色
-        disabled: '#d7dae0', // 禁用状态的文本/背景
-        text: '#ffffff', // 按钮内的文本颜色
-        border: '#2c53cb', // 稍深的青花瓷蓝，用于边框
-      }),
-    },
-  },
+  // 3. 黄色系: 申布伦日光 (Schönbrunn Sunlight) - #f9dc24 (您原有的方案)
   {
     label: '申布伦日光',
     value: 'schonbrunn-sunlight',
     themeColors: {
-      // **申布伦黄** 系列
-      primary100: '#f9dc24', // 主题色：申布伦黄，用于核心元素、高亮区域
-      primary200: '#ffee58', // 较浅的黄色，用于悬停（hover）背景（在 #ffffff 上对比度较低，适合作为背景色使用）
-      primary300: '#fff38b', // 更浅的黄色，用于点击/激活（active）背景
-      primary400: '#1a1a1a', // **核心操作上的默认文本颜色（深色），确保在鲜艳的黄上对比度高（对比度约 8.5:1）**
-
-      // **点缀色** 系列 (选择一种与其对比度强烈的颜色，如鲜艳的蓝色)
-      accent100: '#0070c0', // 鲜艳的海军蓝/亮蓝色，用于点缀、链接、信息状态
-      accent200: '#004d80', // 较深的蓝色，用于对比或强调
-
-      // **文本** 系列
-      text100: '#2a2a2a', // 深灰色/近黑色，用于主要文本（确保在浅色背景上对比度高，约 15:1）
-      text200: '#6d6d6d', // 中等灰色，用于次要文本、图标
-
-      // **背景/结构** 系列
-      bg100: '#fcfcfc', // 纯净的白色/极浅色，用于主要背景
-      bg200: '#f5f5f5', // 柔和的浅灰色，用于面板、卡片背景
-      bg300: '#e0e0e0', // 浅灰色，用于边框、分割线
-
-      // **功能色**
+      primary100: '#f9dc24',
+      primary200: '#ffee58',
+      primary300: '#fff38b',
+      primary400: '#1a1a1a', // 核心操作上的深色文本
+      accent100: '#0070c0',
+      accent200: '#004d80',
+      text100: '#2a2a2a',
+      text200: '#6d6d6d',
+      bg100: '#fcfcfc',
+      bg200: '#f5f5f5',
+      bg300: '#e0e0e0',
       functionalColors: buildFunctionalColors({
-        color: '#f9dc24', // 基础色 (申布伦黄)
-        hover: '#f5c614', // 稍深的黄色，提供悬停反馈
-        active: '#e0b514', // 更深的黄色，提供点击反馈
-        disabled: '#e0e0e0', // 禁用状态的背景
-        text: '#1a1a1a', // **按钮内的文本颜色 (深色)**
-        border: '#f5c614', // 稍深的黄色，用于边框
+        color: '#f9dc24',
+        hover: '#f5c614',
+        active: '#e0b514',
+        disabled: '#e0e0e0',
+        text: '#1a1a1a', // 按钮内的深色文本
+        border: '#f5c614',
       }),
     },
   },
+  // 4. 绿色系: 翡翠绿 (Emerald Green) - #009688
   {
-    label: '勃艮第庄园',
-    value: 'burgundy-estate',
+    label: '翡翠绿',
+    value: 'emerald-green',
     themeColors: {
-      // **勃艮第红** 系列
-      primary100: '#800020', // 主题色：勃艮第红，用于按钮背景、核心元素
-      primary200: '#A42A46', // 较浅的勃艮第红，用于悬停（hover）文本/背景（在 #ffffff 上对比度约 5.0:1）
-      primary300: '#C9556C', // 更浅的勃艮第红，用于点击/激活（active）文本/背景（在 #ffffff 上对比度约 6.0:1）
-      primary400: '#ffffff', // 核心操作上的默认文本颜色（白色，在 primary100 上对比度约 6.5:1）
-
-      // **点缀色** 系列 (选择与其形成对比的高雅金色或淡青色)
-      accent100: '#FFC107', // 琥珀金/淡黄色，用于高亮、通知、警告
-      accent200: '#CC9A00', // 较深的金色，用于对比或强调
-
-      // **文本** 系列
-      text100: '#2C1B1E', // 极深的红棕色/近黑色，用于主要文本（在 bg100 上对比度约 15:1）
-      text200: '#756A6C', // 柔和的中性灰色，用于次要文本、图标
-
-      // **背景/结构** 系列
-      bg100: '#F9F8F7', // 极浅的米白色，用于主要背景
-      bg200: '#EDEBE9', // 柔和的浅灰色，用于面板、卡片背景
-      bg300: '#DAD8D6', // 浅灰色，用于边框、分割线
-
-      // **功能色**
+      primary100: '#009688',
+      primary200: '#4DB6AC',
+      primary300: '#B2DFDB',
+      primary400: '#ffffff', // 白色文本
+      accent100: '#FF9800', // 琥珀色点缀
+      accent200: '#FB8C00',
+      text100: '#212121',
+      text200: '#757575',
+      bg100: '#FAFAFA',
+      bg200: '#F5F5F5',
+      bg300: '#E0E0E0',
       functionalColors: buildFunctionalColors({
-        color: '#800020', // 基础色 (勃艮第红)
-        hover: '#A42A46', // 悬停色
-        active: '#C9556C', // 激活色
-        disabled: '#DAD8D6', // 禁用状态的文本/背景
-        text: '#ffffff', // 按钮内的文本颜色
-        border: '#530015', // 稍深的勃艮第红，用于边框
+        color: '#009688',
+        hover: '#4DB6AC',
+        active: '#B2DFDB',
+        disabled: '#E0E0E0',
+        text: '#ffffff',
+        border: '#00695C',
+      }),
+    },
+  },
+  // 5. 青色系: 邦迪海岸 (Bondi Coast) - #0897b4
+  {
+    label: '邦迪海岸',
+    value: 'bondi-coast',
+    themeColors: {
+      primary100: '#0897b4',
+      primary200: '#34b2cd',
+      primary300: '#64d0e6',
+      primary400: '#ffffff',
+      accent100: '#ff8a5c', // 珊瑚橙点缀
+      accent200: '#e64e20',
+      text100: '#142833',
+      text200: '#5a7385',
+      bg100: '#f8fcfe',
+      bg200: '#eef5f8',
+      bg300: '#d9e3e9',
+      functionalColors: buildFunctionalColors({
+        color: '#0897b4',
+        hover: '#34b2cd',
+        active: '#64d0e6',
+        disabled: '#d9e3e9',
+        text: '#ffffff',
+        border: '#057991',
+      }),
+    },
+  },
+  // 6. 蓝色系: 青花瓷韵 (Porcelain Charm) - #3665f9 (您原有的方案)
+  {
+    label: '青花瓷韵',
+    value: 'porcelain-charm',
+    themeColors: {
+      primary100: '#3665f9',
+      primary200: '#5c84fb',
+      primary300: '#8caaff',
+      primary400: '#ffffff',
+      accent100: '#06d6a0',
+      accent200: '#059a71',
+      text100: '#1c212a',
+      text200: '#5e687e',
+      bg100: '#f7f8fc',
+      bg200: '#eef1f6',
+      bg300: '#d7dae0',
+      functionalColors: buildFunctionalColors({
+        color: '#3665f9',
+        hover: '#5c84fb',
+        active: '#8caaff',
+        disabled: '#d7dae0',
+        text: '#ffffff',
+        border: '#2c53cb',
+      }),
+    },
+  },
+  // 7. 紫色系: 薰衣草紫 (Lavender Violet) - #673AB7
+  {
+    label: '薰衣草紫',
+    value: 'lavender-violet',
+    themeColors: {
+      primary100: '#673AB7',
+      primary200: '#9575CD',
+      primary300: '#D1C4E9',
+      primary400: '#ffffff', // 白色文本
+      accent100: '#FFB300', // 橙色点缀
+      accent200: '#FF8F00',
+      text100: '#212121',
+      text200: '#757575',
+      bg100: '#FAFAFA',
+      bg200: '#F5F5F5',
+      bg300: '#E0E0E0',
+      functionalColors: buildFunctionalColors({
+        color: '#673AB7',
+        hover: '#9575CD',
+        active: '#D1C4E9',
+        disabled: '#E0E0E0',
+        text: '#ffffff',
+        border: '#512DA8',
       }),
     },
   },
 ]
 
 /**
- * 深色主题选项
+ * 深色主题选项 (Dark Theme Options) - 红、橙、黄、绿、青、蓝、紫 7色系
  */
 export const darkThemeOptions: ThemeColor[] = [
-  {
-    label: '丝绒暗夜',
-    value: 'velvet-twilight',
-    themeColors: {
-      // **爱马仕橙** 系列
-      primary100: '#E85827', // 主题色：爱马仕橙，用于按钮背景、核心元素
-      primary200: '#F0805B', // 较浅的橙色，用于悬停（hover）文本/背景（在 bg100 上对比度约 8.5:1）
-      primary300: '#F5A78E', // 更浅的橙色，用于点击/激活（active）文本/背景（在 bg100 上对比度约 10:1）
-      primary400: '#2A1C16', // 核心操作上的默认文本颜色（深棕色文本，在 primary100 上对比度约 5.8:1）
-
-      // **点缀色** 系列 (选择一种高亮、精致的颜色，如淡金色)
-      accent100: '#FFD700', // 纯金色/淡黄色，用于高亮、警告、通知
-      accent200: '#C5A500', // 较深的金色，用于对比或强调
-
-      // **文本** 系列
-      text100: '#F7EFE9', // 极浅的奶油白，用于主要文本（在 bg100 上对比度约 18:1）
-      text200: '#C7B9B0', // 柔和的浅棕灰色，用于次要文本、提示信息
-
-      // **背景/结构** 系列
-      bg100: '#1F1713', // 极深的暖灰色/黑棕色，用于主要背景
-      bg200: '#322621', // 稍亮的深棕色，用于面板、卡片背景
-      bg300: '#4A3D36', // 中等深度的暖灰色，用于边框、分割线
-
-      // **功能色**
-      functionalColors: buildFunctionalColors({
-        color: '#E85827', // 基础色
-        hover: '#F0805B', // 悬停色
-        active: '#F5A78E', // 激活色
-        disabled: '#4A3D36', // 禁用状态的文本/背景
-        text: '#2A1C16', // 按钮内的文本颜色
-        border: '#B34520', // 稍深的橙色，用于边框
-      }),
-    },
-  },
-  {
-    label: '静夜蓝',
-    value: 'tranquil-night',
-    themeColors: {
-      // **青花瓷蓝** 系列
-      primary100: '#3665f9', // 主题色：青花瓷蓝，用于按钮背景、核心元素
-      primary200: '#5c84fb', // 浅一点的青花瓷蓝，用于悬停（hover）文本/背景（在 bg100 上对比度约 5.5:1）
-      primary300: '#8caaff', // 更浅的青花瓷蓝，用于点击/激活（active）文本/背景（在 bg100 上对比度约 8.1:1）
-      primary400: '#ffffff', // 核心操作上的默认文本颜色（深色文本，在 primary100 上对比度约 5.1:1）
-
-      // **点缀色** 系列 (选择一种高亮、互补的颜色，如亮橙黄)
-      accent100: '#ffc600', // 亮橙黄，用于高亮、警告、通知
-      accent200: '#ff8a00', // 较深的橙色，用于对比或强调
-
-      // **文本** 系列
-      text100: '#f0f4ff', // 极浅的蓝白色，用于主要文本（在 bg100 上对比度约 18:1）
-      text200: '#aab8d0', // 柔和的浅灰蓝，用于次要文本、提示信息
-
-      // **背景/结构** 系列
-      bg100: '#1b2333', // 深邃的夜空蓝/暗灰色，用于主要背景
-      bg200: '#2a364a', // 稍亮的深灰蓝，用于面板、卡片背景
-      bg300: '#41526b', // 中等深度的蓝灰色，用于边框、分割线
-
-      // **功能色**
-      functionalColors: buildFunctionalColors({
-        color: '#3665f9', // 基础色
-        hover: '#5c84fb', // 悬停色
-        active: '#8caaff', // 激活色
-        disabled: '#41526b', // 禁用状态的文本/背景
-        text: '#131926', // 按钮内的文本颜色
-        border: '#2c53cb', // 稍深的青花瓷蓝，用于边框
-      }),
-    },
-  },
-
-  {
-    label: '金色宫廷',
-    value: 'golden-court',
-    themeColors: {
-      // **申布伦黄** 系列
-      primary100: '#f9dc24', // 主题色：申布伦黄，用于按钮背景、核心元素
-      primary200: '#fff38b', // 较浅的黄色，用于悬停（hover）文本/背景（在 bg100 上对比度约 10:1）
-      primary300: '#fff9c4', // 更浅的黄色，用于点击/激活（active）文本/背景（在 bg100 上对比度约 12:1）
-      primary400: '#1a1a1a', // **核心操作上的默认文本颜色（深色），确保在鲜艳的黄上对比度高（对比度约 8.5:1）**
-
-      // **点缀色** 系列 (选择一种与其形成鲜明对比的深红/勃艮第红)
-      accent100: '#a71d31', // 勃艮第红/深红色，用于高亮、警告、通知
-      accent200: '#70101d', // 较深的红色，用于对比或强调
-
-      // **文本** 系列
-      text100: '#fafafa', // 极浅的白色，用于主要文本（在 bg100 上对比度约 18:1）
-      text200: '#c5c5c5', // 柔和的浅灰色，用于次要文本、提示信息
-
-      // **背景/结构** 系列
-      bg100: '#1f1f1f', // 极深的暗灰色，用于主要背景
-      bg200: '#333333', // 稍亮的深灰色，用于面板、卡片背景
-      bg300: '#4a4a4a', // 中等深度的灰色，用于边框、分割线
-
-      // **功能色**
-      functionalColors: buildFunctionalColors({
-        color: '#f9dc24', // 基础色 (申布伦黄)
-        hover: '#f5c614', // 稍深的黄色，提供悬停反馈
-        active: '#e0b514', // 更深的黄色，提供点击反馈
-        disabled: '#4a4a4a', // 禁用状态的背景
-        text: '#1a1a1a', // **按钮内的文本颜色 (深色)**
-        border: '#f5c614', // 稍深的黄色，用于边框
-      }),
-    },
-  },
+  // 1. 红色系: 深红丝绒 (Deep Red Velvet) - #800020 (您原有的方案)
   {
     label: '深红丝绒',
     value: 'deep-red-velvet',
     themeColors: {
-      // **勃艮第红** 系列
-      primary100: '#800020', // 主题色：勃艮第红，用于按钮背景、核心元素
-      primary200: '#A42A46', // 较浅的勃艮第红，用于悬停（hover）文本/背景（在 bg100 上对比度约 4.5:1）
-      primary300: '#C9556C', // 更浅的勃艮第红，用于点击/激活（active）文本/背景（在 bg100 上对比度约 5.5:1）
-      primary400: '#F9F8F7', // 核心操作上的默认文本颜色（极浅色，在 primary100 上对比度约 6.5:1）
-
-      // **点缀色** 系列 (选择高贵、明亮的金色)
-      accent100: '#FFD700', // 纯金色，用于高亮、警告、通知
-      accent200: '#E0AA00', // 较深的金色，用于对比或强调
-
-      // **文本** 系列
-      text100: '#F9F8F7', // 极浅的米白色，用于主要文本（在 bg100 上对比度约 18:1）
-      text200: '#C5B9BA', // 柔和的浅灰红，用于次要文本、提示信息
-
-      // **背景/结构** 系列
-      bg100: '#1A1012', // 极深的暗红棕色，用于主要背景
-      bg200: '#2A1F21', // 稍亮的深红棕色，用于面板、卡片背景
-      bg300: '#403537', // 中等深度的暖灰色，用于边框、分割线
-
-      // **功能色**
+      primary100: '#800020',
+      primary200: '#A42A46',
+      primary300: '#C9556C',
+      primary400: '#F9F8F7', // 极浅色文本
+      accent100: '#FFD700',
+      accent200: '#E0AA00',
+      text100: '#F9F8F7',
+      text200: '#C5B9BA',
+      bg100: '#1A1012',
+      bg200: '#2A1F21',
+      bg300: '#403537',
       functionalColors: buildFunctionalColors({
-        color: '#800020', // 基础色 (勃艮第红)
-        hover: '#A42A46', // 悬停色
-        active: '#C9556C', // 激活色
-        disabled: '#403537', // 禁用状态的背景
-        text: '#F9F8F7', // 按钮内的文本颜色 (浅色)
-        border: '#530015', // 稍深的勃艮第红，用于边框
+        color: '#800020',
+        hover: '#A42A46',
+        active: '#C9556C',
+        disabled: '#403537',
+        text: '#F9F8F7',
+        border: '#530015',
+      }),
+    },
+  },
+  // 2. 橙色系: 燃木之光 (Burnt Wood Glow) - #FF7043
+  {
+    label: '燃木之光',
+    value: 'burnt-wood-glow',
+    themeColors: {
+      primary100: '#FF7043',
+      primary200: '#FFAA85',
+      primary300: '#FFDAB9',
+      primary400: '#1F1F1F', // 深色文本
+      accent100: '#00BCD4', // 青色点缀
+      accent200: '#00838F',
+      text100: '#FAFAFA',
+      text200: '#BDBDBD',
+      bg100: '#1F1F1F',
+      bg200: '#333333',
+      bg300: '#4A4A4A',
+      functionalColors: buildFunctionalColors({
+        color: '#FF7043',
+        hover: '#FFAA85',
+        active: '#FFDAB9',
+        disabled: '#4A4A4A',
+        text: '#1F1F1F',
+        border: '#F4511E',
+      }),
+    },
+  },
+  // 3. 黄色系: 金色宫廷 (Golden Court) - #f9dc24 (您原有的方案)
+  {
+    label: '金色宫廷',
+    value: 'golden-court',
+    themeColors: {
+      primary100: '#f9dc24',
+      primary200: '#fff38b',
+      primary300: '#fff9c4',
+      primary400: '#1a1a1a',
+      accent100: '#a71d31',
+      accent200: '#70101d',
+      text100: '#fafafa',
+      text200: '#c5c5c5',
+      bg100: '#1f1f1f',
+      bg200: '#333333',
+      bg300: '#4a4a4a',
+      functionalColors: buildFunctionalColors({
+        color: '#f9dc24',
+        hover: '#f5c614',
+        active: '#e0b514',
+        disabled: '#4a4a4a',
+        text: '#1a1a1a',
+        border: '#f5c614',
+      }),
+    },
+  },
+  // 4. 绿色系: 森林夜语 (Forest Night) - #4CAF50
+  {
+    label: '森林夜语',
+    value: 'forest-night',
+    themeColors: {
+      primary100: '#4CAF50',
+      primary200: '#81C784',
+      primary300: '#C8E6C9',
+      primary400: '#1F1F1F', // 深色文本
+      accent100: '#FF9800', // 琥珀色点缀
+      accent200: '#FB8C00',
+      text100: '#FAFAFA',
+      text200: '#BDBDBD',
+      bg100: '#1F1F1F',
+      bg200: '#333333',
+      bg300: '#4A4A4A',
+      functionalColors: buildFunctionalColors({
+        color: '#4CAF50',
+        hover: '#81C784',
+        active: '#C8E6C9',
+        disabled: '#4A4A4A',
+        text: '#1F1F1F',
+        border: '#388E3C',
+      }),
+    },
+  },
+  // 5. 青色系: 深海潜影 (Deep Dive Shadow) - #00BCD4
+  {
+    label: '深海潜影',
+    value: 'deep-dive-shadow',
+    themeColors: {
+      primary100: '#00BCD4',
+      primary200: '#4DD0E1',
+      primary300: '#B2EBF2',
+      primary400: '#1F1F1F', // 深色文本
+      accent100: '#FFEB3B', // 黄色点缀
+      accent200: '#FFC107',
+      text100: '#E0F7FA', // 极浅青色文本
+      text200: '#80DEEA',
+      bg100: '#1A237E', // 深蓝色背景
+      bg200: '#303F9F',
+      bg300: '#5C6BC0',
+      functionalColors: buildFunctionalColors({
+        color: '#00BCD4',
+        hover: '#4DD0E1',
+        active: '#B2EBF2',
+        disabled: '#5C6BC0',
+        text: '#1F1F1F',
+        border: '#0097A7',
+      }),
+    },
+  },
+  // 6. 蓝色系: 静夜蓝 (Tranquil Night) - #3665f9 (您原有的方案，Primary100为青花瓷蓝)
+  {
+    label: '静夜蓝',
+    value: 'tranquil-night',
+    themeColors: {
+      primary100: '#3665f9',
+      primary200: '#5c84fb',
+      primary300: '#8caaff',
+      primary400: '#ffffff', // 白色文本
+      accent100: '#ffc600',
+      accent200: '#ff8a00',
+      text100: '#f0f4ff',
+      text200: '#aab8d0',
+      bg100: '#1b2333',
+      bg200: '#2a364a',
+      bg300: '#41526b',
+      functionalColors: buildFunctionalColors({
+        color: '#3665f9',
+        hover: '#5c84fb',
+        active: '#8caaff',
+        disabled: '#41526b',
+        text: '#131926',
+        border: '#2c53cb',
+      }),
+    },
+  },
+  // 7. 紫色系: 皇家紫 (Royal Purple) - #9C27B0
+  {
+    label: '皇家紫',
+    value: 'royal-purple',
+    themeColors: {
+      primary100: '#9C27B0',
+      primary200: '#CE93D8',
+      primary300: '#E1BEE7',
+      primary400: '#1F1F1F', // 深色文本
+      accent100: '#FFD700', // 金色点缀
+      accent200: '#FFC107',
+      text100: '#FAFAFA',
+      text200: '#BDBDBD',
+      bg100: '#1F1F1F',
+      bg200: '#333333',
+      bg300: '#4A4A4A',
+      functionalColors: buildFunctionalColors({
+        color: '#9C27B0',
+        hover: '#CE93D8',
+        active: '#E1BEE7',
+        disabled: '#4A4A4A',
+        text: '#1F1F1F',
+        border: '#7B1FA2',
       }),
     },
   },

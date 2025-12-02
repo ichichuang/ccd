@@ -1,10 +1,12 @@
 import { PrimeVueResolver } from '@primevue/auto-import-resolver'
 import vue from '@vitejs/plugin-vue'
 import vueJsx from '@vitejs/plugin-vue-jsx'
+import path from 'node:path'
 import UnoCSS from 'unocss/vite'
 import AutoImport from 'unplugin-auto-import/vite'
 import Components from 'unplugin-vue-components/vite'
-import type { PluginOption } from 'vite'
+import type { PluginOption, ViteDevServer } from 'vite'
+import { invalidateIconCaches } from '../unocss/utils/icons'
 import { name, version } from '../package.json'
 import type { ViteEnv } from './utils'
 
@@ -47,16 +49,16 @@ function startupInfoPlugin(): PluginOption {
  */
 function createCustomComponentResolver() {
   return (name: string) => {
-    // LayoutManager 特殊处理
-    if (name === 'LayoutManager') {
+    // Layout* 组件映射到 modules 目录
+    if (name.startsWith('Layout')) {
       return {
         name: 'default',
-        from: '@/layouts/index.vue',
+        from: `@/layouts/modules/${name}.vue`,
       }
     }
 
-    // Layout* 和 App* 组件映射
-    if (name.startsWith('Layout') || name.startsWith('App')) {
+    // App* 组件映射到 components 目录
+    if (name.startsWith('App')) {
       return {
         name: 'default',
         from: `@/layouts/components/${name}.vue`,
@@ -75,6 +77,9 @@ export function getPluginsList(env: ViteEnv): PluginOption[] {
   const plugins: PluginOption[] = [
     // 启动信息插件 - 重新启用，优化显示时机
     isDev && startupInfoPlugin(),
+
+    // 图标变更监听，驱动 UnoCSS safelist 热更新
+    isDev && createIconsWatcherPlugin(),
 
     // UnoCSS 原子化 CSS - 必须在 Vue 插件之前
     UnoCSS(),
@@ -104,22 +109,33 @@ export function getPluginsList(env: ViteEnv): PluginOption[] {
       },
     }),
 
-    // 组件自动导入 - 优化扫描配置
     Components({
-      dirs: ['src/components', 'src/layouts/components'],
-      extensions: ['vue'],
+      // ✅ 修复 1：将 dirs 改回简单的相对路径，这是最稳定的方式
+      // 确保组件（包括 Loading, PrimeMenu 等）能被扫描到
+      dirs: ['src/components'],
+
+      extensions: ['vue', 'tsx'],
+
       deep: true,
       dts: 'components.d.ts',
+
+      // 保持 resolvers 不变，确保 PrimeVue 组件能被解析
       resolvers: [PrimeVueResolver(), createCustomComponentResolver()],
-      // 优化性能：缓存组件解析结果
+
+      // ✅ 修复 2：优化 exclude 规则，确保它只排除 layouts 目录
+      // 使用更精确的排除规则，且确保不干扰 node_modules 和 git 目录
+      exclude: [
+        /[\\/]node_modules[\\/]/,
+        /[\\/]\.git[\\/]/,
+        // 排除所有位于 src/layouts/ 目录下的 .vue 和 .tsx 文件
+        /src[\\/]layouts[\\/].*\.(vue|tsx)$/,
+      ],
+
       transformer: 'vue3',
       version: 3,
-      // 🔥 新增：实时更新配置
-      include: [/\.vue$/, /\.vue\?vue/],
-      exclude: [/[\\/]node_modules[\\/]/, /[\\/]\.git[\\/]/],
-      // 开发环境优化
+      include: [/\.vue$/, /\.vue\?vue/, /\.tsx$/],
+
       ...(isDev && {
-        // 调试模式
         debug: env.VITE_DEBUG,
       }),
     }),
@@ -230,6 +246,56 @@ function createAnalyzerPlugin(): PluginOption {
         const errorMessage = error instanceof Error ? error.message : String(error)
         console.warn('⚠️ 构建分析插件执行失败:', errorMessage)
       }
+    },
+  }
+}
+
+function createIconsWatcherPlugin(): PluginOption {
+  const cwd = process.cwd()
+  const routeDir = path.resolve(cwd, 'src/router/modules')
+  const apiDir = path.resolve(cwd, 'src/api/modules')
+  let reloadTimer: NodeJS.Timeout | null = null
+
+  const normalize = (value: string) => value.replace(/\\/g, '/')
+  const directories = [routeDir, apiDir].map(normalize)
+
+  const scheduleReload = (server: ViteDevServer, reason: string) => {
+    if (process.env.VITE_DEBUG === 'true') {
+      console.log(`♻️  Icon watcher detected change in ${reason}, reloading...`)
+    }
+
+    if (reloadTimer) {
+      clearTimeout(reloadTimer)
+    }
+
+    reloadTimer = setTimeout(() => {
+      invalidateIconCaches('all')
+      server.ws.send({ type: 'full-reload' })
+      reloadTimer = null
+    }, 150)
+  }
+
+  const shouldHandle = (file: string) => {
+    const normalizedFile = normalize(file)
+    return directories.some(dir => normalizedFile.startsWith(dir))
+  }
+
+  return {
+    name: 'icon-watcher',
+    apply: 'serve',
+    configureServer(server) {
+      const watcher = server.watcher
+      watcher.add([`${normalize(routeDir)}/**/*.{ts,vue}`, `${normalize(apiDir)}/**/*.{ts,vue}`])
+
+      const handle = (file: string) => {
+        if (shouldHandle(file)) {
+          scheduleReload(server, file)
+        }
+      }
+
+      watcher.on('add', handle)
+      watcher.on('change', handle)
+      watcher.on('unlink', handle)
     },
   }
 }

@@ -1,69 +1,22 @@
-import { FileSystemIconLoader } from '@iconify/utils/lib/loader/node-loaders'
 import fs from 'fs'
 import path from 'node:path'
 
-// 类型定义
-interface IconCollection {
-  [key: string]: string[]
+type IconCacheTarget = 'route'
+
+interface CacheEntry<T> {
+  key: string
+  value: T
 }
 
-/**
- * 获取自定义图标集合
- * 优化：使用缓存和错误处理
- */
-export function getCustomIcons(): IconCollection {
-  const icons: IconCollection = {}
-  const iconFiles = getSvgFiles('src/assets/icons')
-
-  iconFiles.forEach(filePath => {
-    try {
-      const fileName = path.basename(filePath)
-      const fileNameWithoutExt = path.parse(fileName).name
-      const folderName = path.basename(path.dirname(filePath))
-
-      if (!icons[folderName]) {
-        icons[folderName] = []
-      }
-      icons[folderName].push(`i-${folderName}:${fileNameWithoutExt}`)
-    } catch (error) {
-      console.warn(`Failed to process icon file: ${filePath}`, error)
-    }
-  })
-
-  return icons
-}
+let routeIconsCache: CacheEntry<string[]> | null = null
 
 /**
- * 递归获取SVG文件
- * 优化：添加性能优化和错误处理
+ * 失效缓存（供 Vite 插件调用，或在需要时手动清理）
  */
-function getSvgFiles(dir: string): string[] {
-  const files: string[] = []
-
-  if (!fs.existsSync(dir)) {
-    return files
+export function invalidateIconCaches(target: IconCacheTarget | 'all' = 'all') {
+  if (target === 'route' || target === 'all') {
+    routeIconsCache = null
   }
-
-  function traverse(currentPath: string) {
-    try {
-      const items = fs.readdirSync(currentPath, { withFileTypes: true })
-
-      items.forEach(item => {
-        const fullPath = path.join(currentPath, item.name)
-
-        if (item.isDirectory()) {
-          traverse(fullPath)
-        } else if (item.isFile() && item.name.endsWith('.svg')) {
-          files.push(fullPath)
-        }
-      })
-    } catch (error) {
-      console.warn(`Failed to read directory: ${currentPath}`, error)
-    }
-  }
-
-  traverse(dir)
-  return files
 }
 
 /**
@@ -71,8 +24,14 @@ function getSvgFiles(dir: string): string[] {
  * 优化：更严格的图标名称验证和过滤
  */
 export function getRouteMetaIcons(): string[] {
-  const icons = new Set<string>()
   const files = [...getTsFiles('src/router/modules'), ...getTsFiles('src/api/modules')]
+  const cacheKey = createCacheKey(files)
+
+  if (routeIconsCache && routeIconsCache.key === cacheKey) {
+    return routeIconsCache.value
+  }
+
+  const icons = new Set<string>()
 
   // 更精确的正则表达式匹配图标
   const iconPatterns = [
@@ -291,15 +250,6 @@ export function getRouteMetaIcons(): string[] {
       return false
     }
 
-    // 检查是否包含常见的图标前缀模式
-    const commonIconPrefixes = ['i-', 'icon-', 'mdi-', 'fa-', 'ant-', 'el-']
-    const hasValidPrefix = commonIconPrefixes.some(prefix => iconName.startsWith(prefix))
-
-    // 如果没有常见前缀，检查是否是合理的图标名称（至少2个字符，包含字母）
-    if (!hasValidPrefix && (iconName.length < 2 || !/[a-zA-Z]/.test(iconName))) {
-      return false
-    }
-
     return true
   }
 
@@ -341,7 +291,12 @@ export function getRouteMetaIcons(): string[] {
     )
   }
 
-  return result
+  routeIconsCache = {
+    key: cacheKey,
+    value: result,
+  }
+
+  return routeIconsCache.value
 }
 
 /**
@@ -376,24 +331,30 @@ function getTsFiles(dir: string): string[] {
   return files
 }
 
+function createCacheKey(files: string[]): string {
+  if (files.length === 0) {
+    return 'empty'
+  }
+
+  const latestMtime = files.reduce((latest, filePath) => {
+    try {
+      const stats = fs.statSync(filePath)
+      return Math.max(latest, stats.mtimeMs)
+    } catch {
+      return latest
+    }
+  }, 0)
+
+  return `${files.length}-${latestMtime}`
+}
+
 /**
  * 生成自定义图标加载器
  */
-export function getCustomCollections() {
-  const customIcons = getCustomIcons()
-  return Object.fromEntries(
-    Object.keys(customIcons).map(folderName => [
-      folderName,
-      FileSystemIconLoader(`src/assets/icons/${folderName}`),
-    ])
-  )
-}
-
 /**
  * 获取动态安全列表
  */
 export function getDynamicSafelist() {
-  const customIcons = getCustomIcons()
   const routeMetaIcons = getRouteMetaIcons()
 
   return [
@@ -478,8 +439,118 @@ export function getDynamicSafelist() {
     'disabled:bg-dangerDisabledColor',
     'disabled:bg-contrastDisabledColor',
 
-    // 动态图标类
-    ...Object.values(customIcons).flat(),
+    // 布局快捷方式 - 确保 VSCode 插件能识别
+    'full',
+    'container',
+    'screen',
+    'center',
+    'between',
+    'around',
+    'evenly',
+    'start',
+    'end',
+    'center-col',
+    'between-col',
+    'evenly-col',
+    'around-col',
+    'start-col',
+    'end-col',
+    'center-start',
+    'between-start',
+    'center-end',
+    'between-end',
+    'grid-center',
+
+    // 样式快捷方式 - 确保 VSCode 插件能识别
+    'c-cp',
+    'c-border',
+    'c-border-primary',
+    'c-border-accent',
+    'c-border-danger',
+    'c-border-success',
+    'c-border-warning',
+    'c-shadow',
+    'c-shadow-primary',
+    'c-shadow-accent',
+    'c-shadow-danger',
+    'c-shadow-success',
+    'c-shadow-warning',
+    'c-transitions',
+    'c-transition',
+    'c-transitionx',
+    'c-transitionl',
+    'c-card',
+    'c-card-accent',
+    'c-card-accent-active',
+    'c-card-primary',
+    'c-card-primary-active',
+    'c-card-danger',
+    'c-card-danger-active',
+    'c-card-success',
+    'c-card-success-active',
+    'c-card-warning',
+    'c-card-warning-active',
+
+    // 文本快捷方式 - 确保 VSCode 插件能识别
+    'text-ellipsis',
+    'text-primary',
+    'text-success',
+    'text-warn',
+    'text-danger',
+    'text-info',
+    'text-contrast',
+
+    // 主题变量规则 - 常用尺寸类名（从 themeRules.ts 生成）
+    'w-sidebarWidth',
+    'w-sidebarCollapsedWidth',
+    'h-headerHeight',
+    'h-breadcrumbHeight',
+    'h-footerHeight',
+    'h-tabsHeight',
+    'h-contentHeight',
+    'h-contentBreadcrumbHeight',
+    'h-contentTabsHeight',
+    'h-contentsHeight',
+    'h-contentsBreadcrumbHeight',
+    'h-contentsTabsHeight',
+    'p-padding',
+    'p-paddings',
+    'px-paddingx',
+    'px-padding',
+    'py-paddings',
+    'py-padding',
+    'p-paddingl',
+    'gap-gap',
+    'gap-gaps',
+    'gap-gapx',
+    'gap-gapl',
+    'rounded-rounded',
+    'fs-appFontSize',
+    'fs-appFontSizes',
+    'fs-appFontSizex',
+    'fs-appFontSizel',
+
+    // 响应式类名
+    'md:block',
+    'md:w-sidebarWidth',
+    'md:w-sidebarCollapsedWidth',
+    'md:px-padding',
+    'md:px0',
+    'sm:hidden',
+
+    // 颜色相关
+    'color-text100',
+    'color-text200',
+    'color-primary100',
+    'color-primary200',
+    'color-primary300',
+    'color-primary400',
+    'color-accent100',
+    'color-accent200',
+    'border-tm',
+    'border-color-accent100',
+    'border-color-primary100',
+
     ...routeMetaIcons,
   ]
 }

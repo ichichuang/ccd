@@ -47,7 +47,7 @@ const initScrollPositionKey = () => {
 // ==================== 配置计算 ====================
 
 // 动态计算滚动条配置
-const computedScrollbarConfig = computed(() => {
+const computedScrollbarConfig: any = computed(() => {
   const baseConfig: any = {
     scrollbars: {
       autoHide: props.autoHide === true ? 'leave' : props.autoHide || 'leave',
@@ -74,6 +74,7 @@ const emit = defineEmits<{
   'scroll-vertical': [event: ScrollEvent]
   'scroll-start': []
   'scroll-end': []
+  'container-click': [event: MouseEvent]
   initialized: [instance: OverlayScrollbars]
   updated: [instance: OverlayScrollbars]
   destroyed: []
@@ -597,6 +598,10 @@ const cleanupContentChangeListeners = () => {
   }
 }
 
+const handleClickSelf = (event: MouseEvent) => {
+  emit('container-click', event)
+}
+
 // ==================== OverlayScrollbars 事件处理 ====================
 
 const handleInitialized = (instance: OverlayScrollbars) => {
@@ -844,7 +849,7 @@ defineExpose<ScrollbarExposed>({
     <OverlayScrollbarsComponent
       class="full"
       ref="overlayScrollbarsRef"
-      :options="computedScrollbarConfig as any"
+      :options="computedScrollbarConfig"
       :class="props.wrapperClass"
       :style="{
         // OverlayScrollbars 官方 CSS 变量（动态适配系统主题）
@@ -861,6 +866,7 @@ defineExpose<ScrollbarExposed>({
         class="full"
         :class="props.contentClass"
         :style="props.contentStyle"
+        @click.self="handleClickSelf"
       >
         <slot />
       </div>
