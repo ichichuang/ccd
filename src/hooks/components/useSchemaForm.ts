@@ -5,8 +5,8 @@
  * - 例如：addField / removeField / updateField / setValues / reset / submitProgrammatic
  */
 
-import type { Schema, SchemaColumnsItem } from '@/components/modules/schema-form/utils/types'
 import { getEmptyValues, getResetValues } from '@/components/modules/schema-form/utils/emptyValues'
+import type { Schema, SchemaColumnsItem } from '@/components/modules/schema-form/utils/types'
 import {
   computed,
   isRef,

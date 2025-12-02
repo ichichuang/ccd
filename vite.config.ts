@@ -34,38 +34,6 @@ const PX_TO_REM_SELECTOR_BLACKLIST: (string | RegExp)[] = [
   /^@media.*\.(xs|sm|md|lg|xl|2xl):/,
 ]
 
-const VENDOR_CHUNK_GROUPS: Array<{ name: string; pattern: RegExp }> = [
-  { name: 'vue-core', pattern: /node_modules\/(vue|vue-router)\// },
-  { name: 'state-management', pattern: /node_modules\/(pinia|pinia-plugin-persistedstate)\// },
-  { name: 'ui-library', pattern: /node_modules\/(@primevue|primevue|@primevue\/themes)\// },
-  { name: 'utilities', pattern: /node_modules\/(lodash-es|dayjs|@vueuse\/core)\// },
-  { name: 'echarts-core', pattern: /node_modules\/(echarts|vue-echarts)\// },
-  { name: 'ag-grid-core', pattern: /node_modules\/(ag-grid-community|ag-grid-vue3)\// },
-  { name: 'http-client', pattern: /node_modules\/alova\// },
-  { name: 'i18n', pattern: /node_modules\/(vue-i18n)\// },
-]
-
-const VIEW_CHUNK_PREFIX = 'view-'
-
-function resolveViewChunk(id: string): string | null {
-  const normalized = id.replace(/\\/g, '/')
-  if (!normalized.includes('/src/views/')) {
-    return null
-  }
-
-  const relative = normalized.split('/src/views/')[1]
-  if (!relative) {
-    return null
-  }
-
-  const topLevel = relative.split('/')[0]
-  if (!topLevel) {
-    return null
-  }
-
-  return `${VIEW_CHUNK_PREFIX}${topLevel.replace(/[^a-zA-Z0-9-]/g, '-')}`
-}
-
 // 移除本地ViteEnv类型声明
 
 export default ({ mode }: ConfigEnv): UserConfigExport => {
@@ -169,7 +137,8 @@ export default ({ mode }: ConfigEnv): UserConfigExport => {
     },
     build: {
       // 使用 esnext，减少对第三方 ESM 包的降级转换，避免运行时 TDZ 问题
-      target: 'esnext',
+      // target: 'esnext',
+      target: 'es2020', // <--- 尝试更改为更稳定的 ES 版本
       sourcemap: VITE_BUILD_SOURCEMAP,
       // 为彻底规避 "Cannot access 'xxx' before initialization" 这类压缩重排问题，
       // 暂时关闭 JS 压缩，仅依赖 gzip/brotli 等传输压缩
@@ -181,45 +150,51 @@ export default ({ mode }: ConfigEnv): UserConfigExport => {
         input: {
           index: pathResolve('./index.html', import.meta.url),
         },
-        output: {
-          entryFileNames: 'static/js/[name]-[hash:8].js',
-          assetFileNames: 'static/[ext]/[name]-[hash:8].[ext]',
-          // 优化代码分割策略
-          manualChunks: id => {
-            const normalizedId = id.replace(/\\/g, '/')
+        // output: {
+        //   entryFileNames: 'static/js/[name]-[hash:8].js',
+        //   assetFileNames: 'static/[ext]/[name]-[hash:8].[ext]',
+        //   // 优化代码分割策略
+        //   manualChunks: id => {
+        //     const normalizedId = id.replace(/\\/g, '/')
 
-            if (normalizedId.includes('node_modules')) {
-              const vendorGroup = VENDOR_CHUNK_GROUPS.find(group =>
-                group.pattern.test(normalizedId)
-              )
-              if (vendorGroup) {
-                return vendorGroup.name
-              }
-              return 'vendor'
-            }
+        //     if (normalizedId.includes('node_modules')) {
+        //       const vendorGroup = VENDOR_CHUNK_GROUPS.find(group =>
+        //         group.pattern.test(normalizedId)
+        //       )
+        //       if (vendorGroup) {
+        //         return vendorGroup.name
+        //       }
+        //       return 'vendor'
+        //     }
 
-            const viewChunk = resolveViewChunk(normalizedId)
-            if (viewChunk) {
-              return viewChunk
-            }
+        //     const viewChunk = resolveViewChunk(normalizedId)
+        //     if (viewChunk) {
+        //       return viewChunk
+        //     }
 
-            return undefined
-          },
-          // 优化 chunk 分割 - 智能命名
-          chunkFileNames: chunkInfo => {
-            const { name } = chunkInfo
-            if (name.includes('node_modules')) {
-              return 'static/vendor/[name]-[hash:8].js'
-            }
-            return 'static/js/[name]-[hash:8].js'
-          },
-        },
+        //     return undefined
+        //   },
+        //   // 优化 chunk 分割 - 智能命名
+        //   chunkFileNames: chunkInfo => {
+        //     const { name } = chunkInfo
+        //     if (name.includes('node_modules')) {
+        //       return 'static/vendor/[name]-[hash:8].js'
+        //     }
+        //     return 'static/js/[name]-[hash:8].js'
+        //   },
+        // },
+        // 为避免 Rollup 对某些第三方 ESM 包进行激进的 tree-shaking/重排，
+        // 这里关闭 treeshake，确保执行顺序与源码尽可能一致，规避
+        // "Cannot access 'isClient' before initialization" 这类 TDZ 问题
+        treeshake: false,
         // 外部依赖优化
         external: isDev ? [] : undefined,
       },
+      // ⚠️ 注意：不要对纯 ESM 包做 CommonJS 混合转换，否则可能打乱变量声明顺序，
+      // 导致 "Cannot access 'xxx' before initialization" 这类 TDZ 运行时错误
       commonjsOptions: {
         include: [/node_modules/],
-        transformMixedEsModules: true, // 转换混合 ES 模块
+        transformMixedEsModules: false,
       },
       // 启用实验性功能提升构建性能
       reportCompressedSize: !isDev, // 仅生产环境报告压缩大小
