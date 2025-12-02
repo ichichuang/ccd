@@ -92,6 +92,15 @@ export default ({ mode }: ConfigEnv): UserConfigExport => {
 
   const isDev = mode === 'development'
 
+  // 根据环境变量动态控制 esbuild 的 drop 选项
+  const esbuildDrop: Array<'console' | 'debugger'> = []
+  if (VITE_DROP_CONSOLE) {
+    esbuildDrop.push('console')
+  }
+  if (VITE_DROP_DEBUGGER) {
+    esbuildDrop.push('debugger')
+  }
+
   return defineConfig({
     base: VITE_PUBLIC_PATH,
     root,
@@ -154,30 +163,17 @@ export default ({ mode }: ConfigEnv): UserConfigExport => {
         keepNames: isDev,
       },
     },
+    esbuild: {
+      // 生产环境按需移除 console / debugger（由 VITE_DROP_CONSOLE / VITE_DROP_DEBUGGER 控制）
+      drop: esbuildDrop.length ? esbuildDrop : undefined,
+    },
     build: {
       target: 'es2015',
       sourcemap: VITE_BUILD_SOURCEMAP,
-      minify: isDev ? false : 'terser',
+      minify: isDev ? false : 'esbuild',
       chunkSizeWarningLimit: 8000, // 降低警告阈值以优化包大小
       cssCodeSplit: true, // 启用 CSS 代码分割
       assetsInlineLimit: 4096, // 小于 4kb 的资源内联
-      terserOptions: {
-        compress: {
-          drop_console: VITE_DROP_CONSOLE,
-          drop_debugger: VITE_DROP_DEBUGGER,
-          // eslint-disable-next-line @typescript-eslint/naming-convention
-          pure_funcs: VITE_DROP_CONSOLE ? ['console.log', 'console.info', 'console.debug'] : [],
-          // 移除无用代码
-          /* eslint-disable-next-line @typescript-eslint/naming-convention */
-          dead_code: true,
-          // 移除未使用的变量
-          unused: true,
-        },
-        mangle: {
-          // 保持 PrimeVue 组件名称
-          reserved: ['PrimeVue', 'ToastService', 'ConfirmationService'],
-        },
-      },
       rollupOptions: {
         input: {
           index: pathResolve('./index.html', import.meta.url),
