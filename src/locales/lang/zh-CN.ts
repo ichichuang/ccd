@@ -15,6 +15,7 @@ const zhCN = {
       padding: '间距',
       fontSize: '字体大小',
       systemManagement: '管理系统',
+      personalCenter: '个人中心',
       logout: '退出系统',
       moreSettings: '更多设置',
     },

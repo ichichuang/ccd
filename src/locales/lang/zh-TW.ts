@@ -15,6 +15,7 @@ const zhTW = {
       padding: '間距',
       fontSize: '字體大小',
       systemManagement: '系統管理',
+      personalCenter: '個人中心',
       logout: '登出系統',
       moreSettings: '更多設定',
     },

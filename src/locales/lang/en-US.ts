@@ -15,6 +15,7 @@ const enUS = {
       padding: 'Padding',
       fontSize: 'Font Size',
       systemManagement: 'System Management',
+      personalCenter: 'Personal Center',
       logout: 'Logout',
       moreSettings: 'More Settings',
     },

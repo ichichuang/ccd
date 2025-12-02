@@ -7,6 +7,7 @@ import { t, type SupportedLocale } from '@/locales'
 import { useColorStore, useLocaleStore, useSizeStore, useUserStore } from '@/stores'
 import { useI18nPaddingOptions, useI18nRoundedOptions, useI18nSizeOptions } from '@/utils'
 import { OhVueIcon } from 'oh-vue-icons'
+import Button from 'primevue/button'
 import Image from 'primevue/image'
 import Popover from 'primevue/popover'
 import { computed, defineComponent, ref, type ComputedRef } from 'vue'
@@ -268,8 +269,8 @@ const openMoreSettingsDialog = () => {
   ) {{ userName }}
 
 //- 用户面板
-Popover.w-60vw(ref='userPopoverRef', class='sm:w-46vw md:w-30vw lg:w-28vw xl:w-24vw xxl:w-20vw')
-  .gap-gap.between-col.start-col
+Popover.w-80vw(ref='userPopoverRef', class='sm:w-60vw md:w-40vw lg:w-30vw xl:w-28vw xxl:w-24vw')
+  .gap-gap.between-col.start-col.p-padding(class='sm:p-paddingl')
     //- 系统颜色模式切换(浅色/深色/自动)
     .grid.grid-cols-5.gap-gaps
       .c-card.grid-col-span-2.gap-gaps.c-cp.center.between-col.py-paddings.c-transitions(
@@ -308,14 +309,19 @@ Popover.w-60vw(ref='userPopoverRef', class='sm:w-46vw md:w-30vw lg:w-28vw xl:w-2
 
     //- 个人中心
     .grid.grid-cols-2.gap-gap
-      Button(severity='info') 个人中心
+      Button(:label='t("common.settings.personalCenter")', severity='info')
       .full.hidden(class='dark:block')
-        Button.full.c-transitions(severity='danger', @click='userStore.logout') {{ t('common.settings.logout') }}
+        Button.full.c-transitions(
+          severity='danger',
+          :label='t("common.settings.logout")',
+          @click='userStore.logout'
+        )
       .full.block(class='dark:hidden')
         Button.full.c-transitions(
           severity='danger',
           variant='text',
           raised,
+          :label='t("common.settings.logout")',
           @click='userStore.logout'
-        ) {{ t('common.settings.logout') }}
+        )
 </template>

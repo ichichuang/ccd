@@ -269,7 +269,7 @@ const openMoreSettingsDialog = () => {
 
 //- 用户面板
 Popover.w-80vw(ref='userPopoverRef', class='sm:w-60vw md:w-40vw lg:w-30vw xl:w-28vw xxl:w-24vw')
-  .gap-gap.between-col.start-col.fs-appFontSizes.p-paddingl
+  .gap-gap.between-col.start-col.fs-appFontSizes.p-padding(class='sm:p-paddingl')
     //- 系统颜色模式切换(浅色/深色/自动)
     .grid.grid-cols-5.gap-gaps
       .c-card.grid-col-span-2.gap-gaps.c-cp.center.between-col.py-paddings.c-transitions(
