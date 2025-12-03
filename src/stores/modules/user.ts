@@ -1,9 +1,12 @@
 import { getUserInfo } from '@/api'
 import { FORM_MEMORY_LOCAL_STORAGE_PREFIX } from '@/components/modules/schema-form/hooks/useFormMemory'
+import { useLoading } from '@/hooks'
 import router from '@/router'
 import store from '@/stores'
 import { env } from '@/utils'
 import { defineStore } from 'pinia'
+
+const { loadingStart, loadingDone } = useLoading()
 
 interface UserState {
   token: string
@@ -46,8 +49,7 @@ export const useUserStore = defineStore('user', {
       router.push((router.currentRoute.value.query.redirect as string) || env.rootRedirect)
     },
     async logout() {
-      router.push(env.rootRedirect)
-      await new Promise(resolve => setTimeout(resolve, 100)) // 等待路由跳转完成
+      loadingStart()
       const basePrefix = `${env.piniaKeyPrefix}-`
       const schemaFormLegacyPrefix = '__form_cache__:'
       const schemaFormPlainPrefix = 'schemaform:'
@@ -76,7 +78,9 @@ export const useUserStore = defineStore('user', {
       keysToRemove.forEach(key => {
         localStorage.removeItem(key)
       })
-
+      loadingDone()
+      router.push(env.rootRedirect)
+      await new Promise(resolve => setTimeout(resolve, 100)) // 等待路由跳转完成
       window.location.reload()
     },
   },

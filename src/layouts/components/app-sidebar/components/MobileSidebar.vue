@@ -15,8 +15,8 @@ const menuPopoverRef = ref<PopoverInstance | null>(null)
 const triggerRef = ref<HTMLElement | null>(null)
 const route = useRoute()
 
-const handleToggle = (event: MouseEvent) => {
-  menuPopoverRef.value?.toggle(event)
+const handleToggle = (event: MouseEvent | TouchEvent) => {
+  menuPopoverRef.value?.toggle(event as MouseEvent)
 }
 
 const handleHide = () => {
@@ -32,12 +32,16 @@ watch(
 </script>
 <template lang="pug">
 //- 使用 AppBreadcrumb 作为触发容器
-div(ref='triggerRef', role='button', tabindex='0', @click='handleToggle')
+div(ref='triggerRef', role='button', tabindex='0', @click='handleToggle', @touch='handleToggle')
   AppBreadcrumb
 
 //- Popover 面板
-Popover.overflow-hidden.rounded-rounded(ref='menuPopoverRef', :dismissable='true')
-  .full.w-80vw.h-80vh.p-0.rounded-rounded.overflow-hidden(class='sm:w-60vw', @click.self='handleHide')
+Popover.overflow-hidden.rounded-rounded.bg-bg300(ref='menuPopoverRef', :dismissable='true')
+  .full.w-80vw.h-80vh.p-0.rounded-rounded.overflow-hidden(
+    class='sm:w-60vw',
+    @click.self='handleHide',
+    @touch.self='handleHide'
+  )
     ScrollbarWrapper(
       style='background: transparent; height: 100%',
       :color-scheme='{ thumbColor: "transparent", thumbHoverColor: "transparent", thumbActiveColor: "transparent", trackColor: "transparent", trackHoverColor: "transparent", trackActiveColor: "transparent" }',

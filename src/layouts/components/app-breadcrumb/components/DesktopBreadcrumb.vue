@@ -35,7 +35,7 @@ Breadcrumb.fs-appFontSizes.hidden(class='md:block', :home='props.home', :model='
       .center(v-tooltip.bottom='$t("layout.breadcrumb.backToHome")')
         OhVueIcon.c-cp.w-appFontSizex.h-appFontSizex(
           v-if='item.icon',
-          @click='goToRoute(item.route)',
+          @click='goToRoute()',
           :name='item.icon',
           animation='spin',
           speed='slow',

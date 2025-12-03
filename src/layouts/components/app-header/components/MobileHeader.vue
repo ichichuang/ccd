@@ -7,7 +7,7 @@ import Image from 'primevue/image'
 <template lang="pug">
 .full.between.gap-gap
   .center.py-paddings.gap-gap
-    .w-appFontSizel.h-appFontSizel(@touch='goToRoute("")')
+    .w-appFontSizel.h-appFontSizel(@touch='goToRoute("")', @click='goToRoute("")')
       Image.full(src='./face.png')
   .center.flex-1
     AppSidebar

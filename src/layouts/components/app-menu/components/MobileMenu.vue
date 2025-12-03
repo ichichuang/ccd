@@ -19,7 +19,10 @@ const rotateSum = ref<number>(sidebarCollapsed.value ? 180 : 0)
 
 <template lang="pug">
 .center.gap-gap
-  .c-card-primary.p-paddings.c-transitions.size-1-1(@click='toggleThemeWithAnimation($event)')
+  .c-card-primary.p-paddings.c-transitions.size-1-1(
+    @click='toggleThemeWithAnimation($event)',
+    @touch='toggleThemeWithAnimation($event)'
+  )
     template(v-if='isDark')
       OhVueIcon.w-appFontSize.h-appFontSize(name='ri-moon-clear-line')
     template(v-else)
