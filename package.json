@@ -26,6 +26,7 @@
     "build": "vue-tsc --noEmit && vite build",
     "build:analyze": "vue-tsc --noEmit && vite build --mode analyze",
     "preview": "vite preview",
+    "preview:dist": "pnpm build && pnpm dlx serve dist",
     "report": "npx vite-bundle-analyzer dist/stats.html",
     "type-check": "vue-tsc --noEmit",
     "lint": "eslint . --fix",
