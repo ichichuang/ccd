@@ -4,7 +4,7 @@
 import enUS from '@/locales/lang/en-US'
 import zhCN from '@/locales/lang/zh-CN'
 import zhTW from '@/locales/lang/zh-TW'
-import { env } from '@/utils'
+import { isDev } from '@/utils'
 import type { App } from 'vue'
 import { createI18n } from 'vue-i18n'
 
@@ -42,7 +42,7 @@ export const supportedLocales: LocaleInfo[] = [
   {
     key: 'zh-TW',
     name: '繁體中文',
-    flag: '🇹🇼',
+    flag: '🇭🇰',
     direction: 'ltr',
   },
 ]
@@ -187,8 +187,8 @@ export const i18n = createI18n({
   globalInjection: true,
   silentTranslationWarn: true,
   silentFallbackWarn: true,
-  missingWarn: env.devTools,
-  fallbackWarn: env.devTools,
+  missingWarn: isDev(),
+  fallbackWarn: isDev(),
 })
 
 // 安装插件

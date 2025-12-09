@@ -423,3 +423,8 @@
     font-size: var(--app-font-sizes) !important;
   }
 }
+
+/* .p-slider-handle::before  */
+.p-slider-handle::before {
+  background: var(--accent200) !important;
+}

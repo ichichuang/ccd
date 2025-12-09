@@ -117,9 +117,7 @@ const exampleRoutes: RouteConfig[] = [
                 path: 'remember',
                 name: 'ExampleComponentsSchemaFormRemember',
                 component: () =>
-                  import(
-                    '@/views/example/views/example-shema-form/example-schema-form-remember.vue'
-                  ),
+                  import('@/views/example/views/example-shema-form/example-schema-form-remember.vue'),
                 meta: {
                   titleKey: 'router.example.components.schemaForm.remember',
                   rank: 2,
@@ -141,9 +139,7 @@ const exampleRoutes: RouteConfig[] = [
                 path: 'section',
                 name: 'ExampleComponentsSchemaFormSection',
                 component: () =>
-                  import(
-                    '@/views/example/views/example-shema-form/example-schema-form-section.vue'
-                  ),
+                  import('@/views/example/views/example-shema-form/example-schema-form-section.vue'),
                 meta: {
                   titleKey: 'router.example.components.schemaForm.section',
                   rank: 4,
@@ -204,6 +200,7 @@ const exampleRoutes: RouteConfig[] = [
                   titleKey: 'router.example.components.echarts.static',
                   rank: 2,
                   icon: 'fc-line-chart',
+                  parent: 'fullscreen',
                 },
               },
               {
@@ -215,6 +212,7 @@ const exampleRoutes: RouteConfig[] = [
                   titleKey: 'router.example.components.echarts.event',
                   rank: 3,
                   icon: 'fc-approval',
+                  parent: 'fullscreen',
                 },
               },
               {
@@ -275,6 +273,17 @@ const exampleRoutes: RouteConfig[] = [
           },
         ],
       },
+      // afeStorage
+      {
+        path: 'afeStorage',
+        name: 'ExampleAfeStorage',
+        component: () => import('@/views/example/views/example-afeStorage.vue'),
+        meta: {
+          titleKey: 'router.example.afeStorage.title',
+          rank: 3,
+          icon: 'fc-alarm-clock',
+        },
+      },
       // 重定向空页面
       {
         path: 'error',
@@ -291,6 +300,7 @@ const exampleRoutes: RouteConfig[] = [
             meta: {
               titleKey: 'router.error.notFound',
               icon: 'fc-cancel',
+              parent: 'fullscreen',
             },
           },
           {
@@ -300,6 +310,7 @@ const exampleRoutes: RouteConfig[] = [
             meta: {
               titleKey: 'router.error.forbidden',
               icon: 'fc-cancel',
+              parent: 'fullscreen',
             },
           },
           {
@@ -309,6 +320,7 @@ const exampleRoutes: RouteConfig[] = [
             meta: {
               titleKey: 'router.error.serverError',
               icon: 'fc-cancel',
+              parent: 'fullscreen',
             },
           },
         ],

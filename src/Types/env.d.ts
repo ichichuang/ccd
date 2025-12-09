@@ -69,6 +69,9 @@ declare interface ImportMetaEnv {
   /** 应用 pinia 持久化存储 关键 key 前缀 */
   readonly VITE_PINIA_PERSIST_KEY_PREFIX: string
 
+  /** 应用 secret 密钥 */
+  readonly VITE_APP_SECRET: string
+
   /** 当前运行环境 - 用于区分不同的部署环境 */
   readonly VITE_APP_ENV: AppEnvironment
 

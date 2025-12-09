@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { DateUtils } from '@#/index'
 import { COMMON_PRESET_RANGES, DatePicker, type DateValue } from '@/components/modules/date-picker'
+import { i18n } from '@/locales'
 import { computed, ref } from 'vue'
 
 // 单选/范围/不同模式：统一使用 DateValue 以兼容组件的 emits 类型
@@ -113,7 +114,7 @@ const localizedRangeExample = ref<DateValue>(null)
 
 // 计算本地化显示格式
 const localizedDisplayFormat = computed(() => {
-  const currentLocale = DateUtils.getCurrentLocale()
+  const currentLocale = (i18n.global.locale as any).value
   switch (currentLocale) {
     case 'zh-CN':
       return 'yyyy年MM月dd日'
@@ -126,7 +127,7 @@ const localizedDisplayFormat = computed(() => {
 })
 
 const localizedDateTimeFormat = computed(() => {
-  const currentLocale = DateUtils.getCurrentLocale()
+  const currentLocale = (i18n.global.locale as any).value
   switch (currentLocale) {
     case 'zh-CN':
       return 'yyyy年MM月dd日 HH:mm:ss'
@@ -139,7 +140,7 @@ const localizedDateTimeFormat = computed(() => {
 })
 
 const localizedTimeFormat = computed(() => {
-  const currentLocale = DateUtils.getCurrentLocale()
+  const currentLocale = (i18n.global.locale as any).value
   switch (currentLocale) {
     case 'zh-CN':
       return 'HH时mm分ss秒'
@@ -197,82 +198,96 @@ const formatLocalizedRange = (range: DateValue) => {
   }
   return `${DateUtils.format(startDate, localizedDisplayFormat.value)} - ${DateUtils.format(endDate, localizedDisplayFormat.value)}`
 }
+
+// 响应式的当前语言（用于模板显示）
+const currentLocaleDisplay = computed(() => (i18n.global.locale as any).value)
 </script>
 <template lang="pug">
-.between-col.p-padding.gap-gap
+.between-col.p-paddingl.gap-gapl
   .c-card.between-col.gap-gaps.p-padding
-    .w-full.color-accent100.between-start.mb-gap 单选（Date）
-    .full.grid.gap-gap.grid-cols-2(class='sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-5 xxl:grid-cols-6')
+    .w-full.color-accent100.between-start.fs-appFontSizes 单选（Date）
+    .full.between-start.gap-gap
       DatePicker(v-model='dateSingleBasic', mode='date', value-format='timestamp')
-    .fs-appFontSizes 当前值： {{ String(dateSingleBasic) }}
+    .w-full.between-start.fs-appFontSizes.color-text200 当前值： {{ String(dateSingleBasic) }}
 
   .c-card.between-col.gap-gaps.p-padding
-    .w-full.color-accent100.between-start.mb-gap 范围选择（Date[]）
-    .full.grid.gap-gap.grid-cols-2(class='sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-5 xxl:grid-cols-6')
-      DatePicker(v-model='dateRange', :range='true', :presets='presets', value-format='timestamp')
-    .fs-appFontSizes 当前值： {{ JSON.stringify(dateRange) }}
-
-  .c-card.between-col.gap-gaps.p-padding
-    .w-full.color-accent100.between-start.mb-gap 禁用日期（disabledDates）
-    .full.between-start
-      .pr-padding(class='w-50%') 禁用固定日期（元旦）
+    .w-full.color-accent100.between-start.fs-appFontSizes 范围选择（Date[]）
+    .full.grid.gap-gap(class='sm:grid-cols-2 md:grid-cols-4 xxl:grid-cols-6')
       DatePicker(
-        v-model='disabledDatesSingle',
-        mode='date',
-        :disabled-dates='[new Date(new Date().getFullYear(), 0, 1)]',
-        value-format='timestamp'
-      )
-    .fs-appFontSizes 当前值： {{ String(disabledDatesSingle) }}
-    .full.between-start
-      .pr-padding(class='w-50%') 禁用最近 5 天（区间）
-      DatePicker(
-        v-model='disabledDatesRange',
+        v-model='dateRange',
         :range='true',
-        mode='date',
-        :disabled-dates='isDisabledDate',
-        value-format='timestamp'
+        :presets='presets',
+        value-format='timestamp',
+        placement='right'
       )
-    .fs-appFontSizes 当前值： {{ String(disabledDatesRange) }}
+    .w-full.between-start.fs-appFontSizes.color-text200 当前值： {{ JSON.stringify(dateRange) }}
 
   .c-card.between-col.gap-gaps.p-padding
-    .w-full.color-accent100.between-start.mb-gap 禁用星期（disabledWeekDays）
-    .full.between-start
-      .pr-padding(class='w-50%') 禁用周末（六/日）
-      DatePicker(
-        v-model='disabledWeekends',
-        mode='date',
-        :disabled-week-days='[0, 6]',
-        value-format='timestamp'
-      )
-    .fs-appFontSizes 当前值： {{ String(disabledWeekends) }}
+    .w-full.color-accent100.between-start.fs-appFontSizes 禁用日期（disabledDates）
+    .full.between-start.gap-gap
+      b.fs-appFontSizes 禁用固定日期（元旦）
+      .flex-1
+        DatePicker(
+          v-model='disabledDatesSingle',
+          mode='date',
+          :disabled-dates='[new Date(new Date().getFullYear(), 0, 1)]',
+          value-format='timestamp'
+        )
+    .w-full.between-start.fs-appFontSizes.color-text200 当前值： {{ String(disabledDatesSingle) }}
+    .full.between-start.gap-gap
+      b.fs-appFontSizes 禁用最近 5 天（区间）
+      .flex-1
+        DatePicker(
+          v-model='disabledDatesRange',
+          :range='true',
+          mode='date',
+          :disabled-dates='isDisabledDate',
+          value-format='timestamp'
+        )
+    .w-full.between-start.fs-appFontSizes.color-text200 当前值： {{ String(disabledDatesRange) }}
 
   .c-card.between-col.gap-gaps.p-padding
-    .w-full.color-accent100.between-start.mb-gap 最小/最大日期限制（最近30天）
-    .full.between-start
-      .pr-padding(class='w-50%') 最小日期限制
-      DatePicker(
-        v-model='dateSingleLimited',
-        mode='date',
-        :min-date='minDateVal',
-        :max-date='maxDateVal',
-        value-format='timestamp'
-      )
-    .fs-appFontSizes 当前值： {{ String(dateSingleLimited) }}
-  .c-card.between-col.gap-gaps.p-padding
-    .w-full.color-accent100.between-start.mb-gap 年份范围（yearRange）
-    .full.between-start
-      .pr-padding(class='w-50%') 仅可选 2020-2025 年
-      DatePicker(
-        v-model='limitedYear',
-        mode='year',
-        :year-range='[2020, 2025]',
-        value-format='timestamp'
-      )
-    .fs-appFontSizes 当前值： {{ String(limitedYear) }}
+    .w-full.color-accent100.between-start.fs-appFontSizes 禁用星期（disabledWeekDays）
+    .full.between-start.gap-gap
+      b.fs-appFontSizes 禁用周末（六/日）
+      .flex-1
+        DatePicker(
+          v-model='disabledWeekends',
+          mode='date',
+          :disabled-week-days='[0, 6]',
+          value-format='timestamp'
+        )
+    .w-full.between-start.fs-appFontSizes.color-text200 当前值： {{ String(disabledWeekends) }}
 
   .c-card.between-col.gap-gaps.p-padding
-    .w-full.color-accent100.between-start.mb-gap 时间范围（Time[]）
-    .full.grid.gap-gap.grid-cols-2(class='sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-5 xxl:grid-cols-6')
+    .w-full.color-accent100.between-start.fs-appFontSizes 最小/最大日期限制（最近30天）
+    .full.between-start.gap-gap
+      b.fs-appFontSizes 最小日期限制
+      .flex-1
+        DatePicker(
+          v-model='dateSingleLimited',
+          mode='date',
+          :min-date='minDateVal',
+          :max-date='maxDateVal',
+          value-format='timestamp'
+        )
+    .w-full.between-start.fs-appFontSizes.color-text200 当前值： {{ String(dateSingleLimited) }}
+  .c-card.between-col.gap-gaps.p-padding
+    .w-full.color-accent100.between-start.fs-appFontSizes 年份范围（yearRange）
+    .full.between-start.gap-gap
+      b.fs-appFontSizes 仅可选 2020-2025 年
+      .flex-1
+        DatePicker(
+          v-model='limitedYear',
+          mode='year',
+          :year-range='[2020, 2025]',
+          value-format='timestamp'
+        )
+    .w-full.between-start.fs-appFontSizes.color-text200 当前值： {{ String(limitedYear) }}
+
+  .c-card.between-col.gap-gaps.p-padding
+    .w-full.color-accent100.between-start.fs-appFontSizes 时间范围（Time[]）
+    .full.grid.gap-gap(class='sm:grid-cols-2 md:grid-cols-4 xxl:grid-cols-6')
       DatePicker(
         v-model='timeRange',
         :range='true',
@@ -281,11 +296,11 @@ const formatLocalizedRange = (range: DateValue) => {
         :enable-seconds='false',
         value-format='timestamp'
       )
-    .fs-appFontSizes 当前值： {{ JSON.stringify(timeRange) }}
+    .w-full.between-start.fs-appFontSizes.color-text200 当前值： {{ JSON.stringify(timeRange) }}
 
   .c-card.between-col.gap-gaps.p-padding
-    .w-full.color-accent100.between-start.mb-gap 不同模式
-    .full.grid.gap-gap.grid-cols-2(class='sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-5 xxl:grid-cols-6')
+    .w-full.color-accent100.between-start.fs-appFontSizes 不同模式
+    .full.grid.gap-gap(class='sm:grid-cols-2 md:grid-cols-4 xxl:grid-cols-6')
       //- 日期时间
       DatePicker(
         v-model='dateTime',
@@ -319,8 +334,8 @@ const formatLocalizedRange = (range: DateValue) => {
       DatePicker(v-model='quarterOnly', mode='quarter', value-format='timestamp')
 
   .c-card.between-col.gap-gaps.p-padding
-    .w-full.color-accent100.between-start.mb-gap 不同值格式（valueFormat）
-    .full.grid.gap-gap.grid-cols-2(class='sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-5 xxl:grid-cols-6')
+    .w-full.color-accent100.between-start.fs-appFontSizes 不同值格式（valueFormat）
+    .full.grid.gap-gap(class='sm:grid-cols-2 md:grid-cols-4 xxl:grid-cols-6')
       //- 时间戳
       DatePicker(
         v-model='tsValue',
@@ -330,11 +345,11 @@ const formatLocalizedRange = (range: DateValue) => {
       )
       //- ISO 字符串
       DatePicker(v-model='isoValue', mode='datetime', value-format='iso', :enable-seconds='true')
-    .fs-appFontSizes 时间戳： {{ String(tsValue) }}
-    .fs-appFontSizes ISO： {{ String(isoValue) }}
+    .w-full.between-start.fs-appFontSizes.color-text200 时间戳： {{ String(tsValue) }}
+    .w-full.between-start.fs-appFontSizes.color-text200 ISO： {{ String(isoValue) }}
 
   .c-card.between-col.gap-gaps.p-padding
-    .w-full.color-accent100.between-start.mb-gap 调用组件方法
+    .w-full.color-accent100.between-start.fs-appFontSizes 调用组件方法
     .full.flex.between-start.gap-gap.mb-gap
       Button(severity='primary', @click='openPanel') 打开
       Button(severity='danger', @click='closePanel') 关闭
@@ -342,18 +357,18 @@ const formatLocalizedRange = (range: DateValue) => {
     DatePicker(ref='dpRef', v-model='dateSingleControlled', mode='date', value-format='timestamp')
 
   .c-card.between-col.gap-gaps.p-padding
-    .w-full.color-accent100.between-start.mb-gap 禁用状态
-    .full.grid.gap-gap.grid-cols-2(class='sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-5 xxl:grid-cols-6')
+    .w-full.color-accent100.between-start.fs-appFontSizes 禁用状态
+    .full.grid.gap-gap(class='sm:grid-cols-2 md:grid-cols-4 xxl:grid-cols-6')
       DatePicker(
         v-model='disabledExample',
         mode='date',
         :disabled='true',
         value-format='timestamp'
       )
-    .fs-appFontSizes 当前值： {{ String(disabledExample) }}
+    .w-full.between-start.fs-appFontSizes.color-text200 当前值： {{ String(disabledExample) }}
 
   .c-card.between-col.gap-gaps.p-padding
-    .w-full.color-accent100.between-start.mb-gap 自定义样式和类名
+    .w-full.color-accent100.between-start.fs-appFontSizes 自定义样式和类名
     .full.between-start
       DatePicker(
         v-model='customClassExample',
@@ -367,53 +382,56 @@ const formatLocalizedRange = (range: DateValue) => {
         :input-style='{ width: "400px", border: "2px solid #007bff" }',
         value-format='timestamp'
       )
-    .fs-appFontSizes 自定义类名： {{ String(customClassExample) }}
-    .fs-appFontSizes 自定义样式： {{ String(customStyleExample) }}
+    .w-full.between-start.fs-appFontSizes.color-text200 自定义类名： {{ String(customClassExample) }}
+    .w-full.between-start.fs-appFontSizes.color-text200 自定义样式： {{ String(customStyleExample) }}
 
   .c-card.between-col.gap-gaps.p-padding
-    .w-full.color-accent100.between-start.mb-gap 弹层定位
-    .full.between-start
-      .pr-padding(class='w-50%') 左侧弹层
-      DatePicker(
-        v-model='placementExample',
-        mode='date',
-        placement='left',
-        value-format='timestamp'
-      )
-    .fs-appFontSizes 当前值： {{ String(placementExample) }}
-    .full.between-start
-      .pr-padding(class='w-50%') 中间弹层
-      DatePicker(
-        v-model='placementExample',
-        mode='date',
-        placement='bottom',
-        value-format='timestamp'
-      )
-    .fs-appFontSizes 当前值： {{ String(placementExample) }}
-    .full.between-start
-      .pr-padding(class='w-50%') 右侧弹层
-      DatePicker(
-        v-model='placementExample',
-        mode='date',
-        placement='right',
-        value-format='timestamp'
-      )
-    .fs-appFontSizes 当前值： {{ String(placementExample) }}
+    .w-full.color-accent100.between-start.fs-appFontSizes 弹层定位
+    .full.between-start.gap-gap
+      b.fs-appFontSizes 左侧弹层
+      .flex-1
+        DatePicker(
+          v-model='placementExample',
+          mode='date',
+          placement='left',
+          value-format='timestamp'
+        )
+    .w-full.between-start.fs-appFontSizes.color-text200 当前值： {{ String(placementExample) }}
+    .full.between-start.gap-gap
+      b.fs-appFontSizes 中间弹层
+      .flex-1
+        DatePicker(
+          v-model='placementExample',
+          mode='date',
+          placement='bottom',
+          value-format='timestamp'
+        )
+    .w-full.between-start.fs-appFontSizes.color-text200 当前值： {{ String(placementExample) }}
+    .full.between-start.gap-gap
+      b.fs-appFontSizes 右侧弹层
+      .flex-1
+        DatePicker(
+          v-model='placementExample',
+          mode='date',
+          placement='right',
+          value-format='timestamp'
+        )
+    .w-full.between-start.fs-appFontSizes.color-text200 当前值： {{ String(placementExample) }}
 
   .c-card.between-col.gap-gaps.p-padding
-    .w-full.color-accent100.between-start.mb-gap 自定义文案
-    .full.grid.gap-gap.grid-cols-2(class='sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-5 xxl:grid-cols-6')
+    .w-full.color-accent100.between-start.fs-appFontSizes 自定义文案
+    .full.grid.gap-gap(class='sm:grid-cols-2 md:grid-cols-4 xxl:grid-cols-6')
       DatePicker(
         v-model='localeTextsExample',
         mode='date',
         :locale-texts='{ placeholder: "自定义占位符", clearLabel: "清除" }',
         value-format='timestamp'
       )
-    .fs-appFontSizes 当前值： {{ String(localeTextsExample) }}
+    .w-full.between-start.fs-appFontSizes.color-text200 当前值： {{ String(localeTextsExample) }}
 
   .c-card.between-col.gap-gaps.p-padding
-    .w-full.color-accent100.between-start.mb-gap 占位符与清空/事件回调
-    .full.grid.gap-gap.grid-cols-2(class='sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-5 xxl:grid-cols-6')
+    .w-full.color-accent100.between-start.fs-appFontSizes 占位符与清空/事件回调
+    .full.grid.gap-gap(class='sm:grid-cols-2 md:grid-cols-4 xxl:grid-cols-6')
       //- 占位符
       DatePicker(
         v-model='placeholderExample',
@@ -437,17 +455,17 @@ const formatLocalizedRange = (range: DateValue) => {
         @close='onClose',
         value-format='timestamp'
       )
-    .fs-appFontSizes 事件： {{ eventLog.join(' | ') }}
+    .w-full.between-start.fs-appFontSizes.color-text200 事件： {{ eventLog.join(' | ') }}
 
   .c-card.between-col.gap-gaps.p-padding
-    .w-full.color-accent100.between-start.mb-gap 内联模式
+    .w-full.color-accent100.between-start.fs-appFontSizes 内联模式
     .grid.gap-gap.grid-cols-1
       DatePicker(v-model='inlineExample', mode='date', :inline='true', value-format='timestamp')
-    .fs-appFontSizes 当前值： {{ String(inlineExample) }}
+    .w-full.between-start.fs-appFontSizes.color-text200 当前值： {{ String(inlineExample) }}
 
   .c-card.between-col.gap-gaps.p-padding
-    .w-full.color-accent100.between-start.mb-gap 自定义显示格式
-    .full.grid.gap-gap.grid-cols-2(class='sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-5 xxl:grid-cols-6')
+    .w-full.color-accent100.between-start.fs-appFontSizes 自定义显示格式
+    .full.grid.gap-gap(class='sm:grid-cols-2 md:grid-cols-4 xxl:grid-cols-6')
       DatePicker(
         v-model='displayFormatExample',
         mode='datetime',
@@ -477,18 +495,18 @@ const formatLocalizedRange = (range: DateValue) => {
         display-format='MM/dd/yyyy',
         value-format='timestamp'
       )
-    .fs-appFontSizes 当前值： {{ String(displayFormatExample) }}
-    .fs-appFontSizes 当前值（日期）： {{ String(displayFormatDate) }}
-    .fs-appFontSizes 当前值（时间）： {{ String(displayFormatTime) }}
-    .fs-appFontSizes 当前值（范围）： {{ JSON.stringify(displayFormatRange) }}
+    .w-full.between-start.fs-appFontSizes.color-text200 当前值： {{ String(displayFormatExample) }}
+    .w-full.between-start.fs-appFontSizes.color-text200 当前值（日期）： {{ String(displayFormatDate) }}
+    .w-full.between-start.fs-appFontSizes.color-text200 当前值（时间）： {{ String(displayFormatTime) }}
+    .w-full.between-start.fs-appFontSizes.color-text200 当前值（范围）： {{ JSON.stringify(displayFormatRange) }}
 
   .c-card.between-col.gap-gaps.p-padding
-    .w-full.color-accent100.between-start.mb-gap 本地化日期格式
+    .w-full.color-accent100.between-start.fs-appFontSizes 本地化日期格式
     .fs-appFontSizes.mb-gap.color-accent100
       | 根据当前语言自动显示对应的日期格式
       br
-      | 当前语言：{{ DateUtils.getCurrentLocale() }}
-    .full.grid.gap-gap.grid-cols-2(class='sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-5 xxl:grid-cols-6')
+      | 当前语言：{{ currentLocaleDisplay }}
+    .full.grid.gap-gap(class='sm:grid-cols-2 md:grid-cols-4 xxl:grid-cols-6')
       //- 本地化日期格式
       DatePicker(
         v-model='localizedDateExample',
@@ -518,12 +536,9 @@ const formatLocalizedRange = (range: DateValue) => {
         :display-format='localizedDisplayFormat',
         value-format='timestamp'
       )
-    .fs-appFontSizes
-      | 日期格式：{{ formatLocalizedDate(localizedDateExample) }}
-    .fs-appFontSizes.mt-gaps
-      | 日期时间格式：{{ formatLocalizedDateTime(localizedDateTimeExample) }}
-    .fs-appFontSizes.mt-gaps
-      | 时间格式：{{ formatLocalizedTime(localizedTimeExample) }}
-    .fs-appFontSizes.mt-gaps
-      | 范围格式：{{ formatLocalizedRange(localizedRangeExample) }}
+    .w-full.between-col.justify-start.gap-gap.fs-appFontSizes
+      b 日期格式：{{ formatLocalizedDate(localizedDateExample) }}
+      b 日期时间格式：{{ formatLocalizedDateTime(localizedDateTimeExample) }}
+      b 时间格式：{{ formatLocalizedTime(localizedTimeExample) }}
+      b 范围格式：{{ formatLocalizedRange(localizedRangeExample) }}
 </template>

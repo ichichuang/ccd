@@ -1,14 +1,15 @@
 <script setup lang="ts">
 import AppContainer from '@/layouts/components/app-container/AppContainer.vue'
 import AppFooter from '@/layouts/components/app-footer/AppFooter.vue'
-import AppHeader from '@/layouts/components/app-header/AppHeader'
+import AppHeader from '@/layouts/components/app-header/AppHeader.tsx'
 import AppSidebar from '@/layouts/components/app-sidebar/AppSidebar.vue'
 import AppTabs from '@/layouts/components/app-tabs/AppTabs.vue'
-import AppTitle from '@/layouts/components/app-title/AppTitle'
+import AppTitle from '@/layouts/components/app-title/AppTitle.tsx'
 import { useLayoutStore } from '@/stores'
 import { computed } from 'vue'
 
 const layoutStore = useLayoutStore()
+const currentBreakpoint = computed(() => layoutStore.getCurrentBreakpoint)
 const isPageLoading = computed(() => layoutStore.isPageLoading)
 const showHeader = computed(() => layoutStore.getShowHeader)
 const showSidebar = computed(() => layoutStore.getShowSidebar)
@@ -40,21 +41,23 @@ const sidebarClass = computed(() => {
 
   return 'hidden md:block w-0  md:w-sidebarWidth'
 })
+const appHeaderComponent = AppHeader
+const appTitleComponent = AppTitle
 </script>
 
 <template lang="pug">
 .full.between
   // 菜单栏目
   aside.h-full.relative.z-999.c-transitions(:class='sidebarClass')
-    .full.bg-primary100.color-primary400(class='dark:bg-bg300 dark:color-primary100')
+    .full.bg-primary100.color-primary400(class='dark:bg-bg300')
       .h-headerHeight.center(v-if='!isMobile')
-        AppTitle
+        component(:is='appTitleComponent')
       div(
         :class='[sidebarContentClass, sidebarCollapsed ? "px0" : "px-paddings lg:px-padding xxl:px-paddingx"]',
         v-if='!isMobile'
       )
         .full
-          AppSidebar
+          AppSidebar(v-if='currentBreakpoint !== "xs" && currentBreakpoint !== "sm"')
       // 底部占位
       template(v-if='showFooter')
         footer.h-footerHeight
@@ -65,7 +68,7 @@ const sidebarClass = computed(() => {
     // 头部
     template(v-if='showHeader')
       header.h-headerHeight.px-padding
-        AppHeader
+        component(:is='appHeaderComponent')
     // 标签页
     template(v-if='showTabs && !isMobile')
       section.h-tabsHeight
@@ -87,3 +90,4 @@ const sidebarClass = computed(() => {
       footer.h-footerHeight.bg-bg200(class='dark:bg-bg200')
         AppFooter
 </template>
+go

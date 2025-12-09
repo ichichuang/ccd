@@ -236,7 +236,7 @@ export const darkThemeOptions: ThemeColor[] = [
       primary100: '#FF7043',
       primary200: '#FFAA85',
       primary300: '#FFDAB9',
-      primary400: '#1F1F1F', // 深色文本
+      primary400: '#ffffff', // 深色文本
       accent100: '#00BCD4', // 青色点缀
       accent200: '#00838F',
       text100: '#FAFAFA',
@@ -269,7 +269,7 @@ export const darkThemeOptions: ThemeColor[] = [
       text200: '#c5c5c5',
       bg100: '#1f1f1f',
       bg200: '#333333',
-      bg300: '#4a4a4a',
+      bg300: '#999666',
       functionalColors: buildFunctionalColors({
         color: '#f9dc24',
         hover: '#f5c614',
@@ -314,14 +314,14 @@ export const darkThemeOptions: ThemeColor[] = [
       primary100: '#00BCD4',
       primary200: '#4DD0E1',
       primary300: '#B2EBF2',
-      primary400: '#1F1F1F', // 深色文本
+      primary400: '#ffffff', // 深色文本
       accent100: '#FFEB3B', // 黄色点缀
       accent200: '#FFC107',
       text100: '#E0F7FA', // 极浅青色文本
       text200: '#80DEEA',
-      bg100: '#1A237E', // 深蓝色背景
-      bg200: '#303F9F',
-      bg300: '#5C6BC0',
+      bg100: '#1A1A1A', // 深蓝色背景
+      bg200: '#333666',
+      bg300: '#4a4a4a',
       functionalColors: buildFunctionalColors({
         color: '#00BCD4',
         hover: '#4DD0E1',
@@ -366,7 +366,7 @@ export const darkThemeOptions: ThemeColor[] = [
       primary100: '#9C27B0',
       primary200: '#CE93D8',
       primary300: '#E1BEE7',
-      primary400: '#1F1F1F', // 深色文本
+      primary400: '#ffffff', // 深色文本
       accent100: '#FFD700', // 金色点缀
       accent200: '#FFC107',
       text100: '#FAFAFA',
@@ -379,7 +379,7 @@ export const darkThemeOptions: ThemeColor[] = [
         hover: '#CE93D8',
         active: '#E1BEE7',
         disabled: '#4A4A4A',
-        text: '#1F1F1F',
+        text: '#ffffff',
         border: '#7B1FA2',
       }),
     },

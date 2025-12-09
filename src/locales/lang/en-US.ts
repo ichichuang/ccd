@@ -1,94 +1,7 @@
 /**
  * 英文语言包 (en-US)
  */
-
-// 直接定义翻译内容，便于 i18n-ally 插件识别
 const enUS = {
-  common: {
-    settings: {
-      title: 'Settings',
-      theme: 'Theme',
-      color: 'Color',
-      language: 'Language',
-      size: 'Size',
-      rounded: 'Rounded',
-      padding: 'Padding',
-      fontSize: 'Font Size',
-      systemManagement: 'System Management',
-      personalCenter: 'Personal Center',
-      logout: 'Logout',
-      moreSettings: 'More Settings',
-    },
-    systemOptions: {
-      // Theme mode options
-      themeMode: {
-        light: 'Light',
-        dark: 'Dark',
-        auto: 'Auto',
-      },
-      // Size options
-      size: {
-        compact: 'Compact',
-        comfortable: 'Comfortable',
-        loose: 'Loose',
-      },
-      // Rounded options
-      rounded: {
-        sharp: 'Sharp',
-        smooth: 'Smooth',
-        round: 'Round',
-        soft: 'Soft',
-      },
-      // Padding options
-      padding: {
-        sm: 'Small',
-        md: 'Medium',
-        lg: 'Large',
-      },
-      // Font size options
-      fontSize: {
-        xs: 'Mini',
-        sm: 'Small',
-        md: 'Medium',
-        lg: 'Large',
-        xl: 'Extra Large',
-        xls: 'Super Large',
-        xxl: 'Ultra Large',
-        xxxl: 'Mega Large',
-      },
-    },
-    error: {
-      notFound: 'Page Not Found',
-      forbidden: 'Forbidden',
-      serverError: 'Server Error',
-      notFoundTitle: '404',
-      forbiddenTitle: '403',
-      serverErrorTitle: '500',
-    },
-    actions: {
-      register: 'No account yet? Click to register',
-      forgotPassword: 'Forgot password?',
-      recoverAccount: 'Recover account?',
-      loginInProgress: 'Logging in...',
-      enterSystem: 'Enter System',
-    },
-    social: {
-      qq: 'QQ',
-      wechat: 'WeChat',
-      alipay: 'Alipay',
-    },
-    auth: {
-      accountPasswordLogin: 'Account Password Login',
-      login: {
-        title: 'User Login',
-        loginButton: 'Login',
-      },
-    },
-    messages: {
-      loginFailed: 'Login failed',
-    },
-  },
-
   router: {
     core: {
       root: 'Home',
@@ -137,6 +50,9 @@ const enUS = {
         title: 'Function',
         date: 'Date',
       },
+      afeStorage: {
+        title: 'Afe Storage',
+      },
     },
     error: {
       title: 'Error',
@@ -161,6 +77,87 @@ const enUS = {
       button: {
         title: 'Button Permission',
       },
+    },
+  },
+  common: {
+    settings: {
+      title: 'Settings',
+      theme: 'Theme',
+      color: 'Color',
+      language: 'Language',
+      size: 'Size',
+      rounded: 'Rounded',
+      padding: 'Padding',
+      fontSize: 'Font Size',
+      systemManagement: 'System Management',
+      personalCenter: 'Personal Center',
+      logout: 'Logout',
+      moreSettings: 'More Settings',
+    },
+    systemOptions: {
+      themeMode: {
+        light: 'Day',
+        dark: 'Night',
+        auto: 'Auto',
+      },
+      size: {
+        compact: 'Compact',
+        comfortable: 'Comfortable',
+        loose: 'Loose',
+      },
+      rounded: {
+        sharp: 'Sharp',
+        smooth: 'Smooth',
+        round: 'Round',
+        soft: 'Soft',
+      },
+      padding: {
+        sm: 'Small',
+        md: 'Medium',
+        lg: 'Large',
+      },
+      fontSize: {
+        xs: 'Mini',
+        sm: 'Small',
+        md: 'Medium',
+        lg: 'Large',
+        xl: 'Extra Large',
+        xls: 'Super Large',
+        xxl: 'Ultra Large',
+        xxxl: 'Mega Large',
+      },
+    },
+    error: {
+      notFound: 'Page Not Found',
+      forbidden: 'Forbidden',
+      serverError: 'Server Error',
+      notFoundTitle: '404',
+      forbiddenTitle: '403',
+      serverErrorTitle: '500',
+    },
+    actions: {
+      register: 'No account yet? Click to register',
+      forgotPassword: 'Forgot password?',
+      recoverAccount: 'Recover account?',
+      loginInProgress: 'Logging in...',
+      enterSystem: 'Enter System',
+      welcome: 'Welcome to use',
+      backToHome: 'Back to Home',
+    },
+    social: {
+      qq: 'QQ',
+      wechat: 'WeChat',
+      alipay: 'Alipay',
+    },
+    auth: {
+      accountPasswordLogin: 'Account Password Login',
+      login: {
+        title: 'User Login',
+        loginButton: 'Login',
+      },
+    },
+    messages: {
+      loginFailed: 'Login failed',
     },
   },
   layout: {
@@ -337,7 +334,6 @@ const enUS = {
       endDate: 'End Date',
       startTime: 'Start Time',
       endTime: 'End Time',
-      // Different mode placeholders
       placeholders: {
         date: 'Select date',
         datetime: 'Select date and time',
@@ -358,8 +354,5 @@ const enUS = {
   },
 }
 
-// 为了保持向后兼容，同时导出具名导出和默认导出
 export { enUS }
-
-// i18n Ally 期望的默认导出
 export default enUS

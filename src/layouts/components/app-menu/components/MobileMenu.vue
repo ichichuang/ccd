@@ -4,7 +4,7 @@ import AppUser from '@/layouts/components/app-user/AppUser'
 import { useLayoutStore } from '@/stores'
 import { computed, ref } from 'vue'
 const { toggleThemeWithAnimation, isDark } = useThemeSwitch()
-
+const appUserComponent = AppUser
 const layoutStore = useLayoutStore()
 
 /* 菜单栏折叠控制逻辑 */
@@ -29,6 +29,6 @@ const rotateSum = ref<number>(sidebarCollapsed.value ? 180 : 0)
       OhVueIcon.w-appFontSize.h-appFontSize(name='ri-sun-line')
 
   //- 用户信息
-  AppUser
+  component(:is='appUserComponent')
 </template>
 <style lang="scss" scope></style>

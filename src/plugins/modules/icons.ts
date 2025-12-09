@@ -1,5 +1,6 @@
 import { OhVueIcon, addIcons } from 'oh-vue-icons'
 import * as FcIcons from 'oh-vue-icons/icons/fc'
+import * as HiIcons from 'oh-vue-icons/icons/hi'
 import * as RiIcons from 'oh-vue-icons/icons/ri'
 import * as ViIcons from 'oh-vue-icons/icons/vi'
 // import {
@@ -64,7 +65,7 @@ import type { App } from 'vue'
 //   RiCloseFill,
 //   RiArrowRightSFill,
 // ]
-const icons = { ...RiIcons, ...FcIcons, ...ViIcons }
+const icons = { ...RiIcons, ...FcIcons, ...ViIcons, ...HiIcons }
 
 export const setupIcons = (app: App) => {
   addIcons(...Object.values(icons))

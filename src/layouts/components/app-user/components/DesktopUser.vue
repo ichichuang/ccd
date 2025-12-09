@@ -277,7 +277,10 @@ Popover.w-80vw(ref='userPopoverRef', class='sm:w-60vw md:w-40vw lg:w-30vw xl:w-2
         @click='toggleThemeWithAnimation($event, "light")',
         :class='{ "bg-primary100 color-primary400": mode === "light" }'
       )
-        OhVueIcon.w-appFontSizel.h-appFontSizel(name='ri-sun-line')
+        OhVueIcon.c-transition(
+          name='hi-solid-light-bulb',
+          :class='!isDark ? "color-accent100 w-appFontSizel h-appFontSizel" : "color-primary100 w-appFontSizex h-appFontSizex"'
+        )
         .center.text-center {{ t('common.systemOptions.themeMode.light') }}
       .c-card.grid-col-span-1.gap-gaps.c-cp.center.between-col.py-paddings.c-transitions(
         @click='toggleThemeWithAnimation($event, "auto")',
@@ -289,7 +292,11 @@ Popover.w-80vw(ref='userPopoverRef', class='sm:w-60vw md:w-40vw lg:w-30vw xl:w-2
         @click='toggleThemeWithAnimation($event, "dark")',
         :class='{ "bg-primary100 color-primary400": mode === "dark" }'
       )
-        OhVueIcon.w-appFontSizel.h-appFontSizel(name='ri-moon-clear-line')
+        OhVueIcon.c-transition(
+          name='hi-solid-light-bulb',
+          flip='vertical',
+          :class='isDark ? "color-accent100 w-appFontSizel h-appFontSizel" : "color-primary100 w-appFontSizex h-appFontSizex"'
+        )
         .center.text-center {{ t('common.systemOptions.themeMode.dark') }}
 
     //- 语言设置
@@ -304,7 +311,7 @@ Popover.w-80vw(ref='userPopoverRef', class='sm:w-60vw md:w-40vw lg:w-30vw xl:w-2
 
     //- 更多设置按钮
     .c-card.gap-gaps.c-cp.center.py-paddings.c-transitions(@click='openMoreSettingsDialog')
-      OhVueIcon.w-appFontSizex.h-appFontSizex(name='ri-settings-3-line')
+      OhVueIcon.w-appFontSizex.h-appFontSizex(name='hi-solid-cog', animation='spin', speed='slow')
       .center.text-center {{ t('common.settings.moreSettings') }}
 
     //- 个人中心

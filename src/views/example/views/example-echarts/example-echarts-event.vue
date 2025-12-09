@@ -1106,10 +1106,10 @@ const linesChartOption = ref({
 </script>
 
 <template lang="pug">
-.full.between.gap-gap
+.full.between
   // 左侧图表区域
-  ScrollbarWrapper.h-full(style='flex: 2', :size='4')
-    .grid.grid-cols-1.gap-gap(class='lg:grid-cols-2 xxl:grid-cols-3')
+  ScrollbarWrapper.h-full(:size='1', class='w-80%')
+    .grid.grid-cols-1.gap-gap.p-paddingl(class='lg:grid-cols-2 xxl:grid-cols-3')
       // 柱状图 - 数据缩放事件
       UseEcharts(
         :option='barChartOption',
@@ -1315,14 +1315,14 @@ const linesChartOption = ref({
         :on-downplay='handleDownplay'
       )
 
-  .flex-1.h-full
-    // 右侧事件日志区域
-    .h-100.between-start.gap-gap
+  // 右侧事件日志区域
+  .h-full.p-padding(class='w-20%')
+    .h-100.between.gap-gap
       | 事件日志
       Button(@click='clearLogs', severity='danger', outlined) 清空日志
     .full(class='h-[calc(100%-100px)]')
-      ScrollbarWrapper(:size='2', :track-size='4')
-        .mb-gap.fs-appFontSizes(v-for='(log, index) in eventLogs', :key='index') {{ log }}
+      ScrollbarWrapper(:size='1')
+        .mb-gapl.fs-appFontSizes(v-for='(log, index) in eventLogs', :key='index') {{ log }}
 
         .center-col(v-if='eventLogs.length === 0')
           p 暂无事件日志

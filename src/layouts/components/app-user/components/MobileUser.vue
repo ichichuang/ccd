@@ -92,7 +92,7 @@ const settingsDialogContent = defineComponent({
                     size.value === item.value ? 'bg-primary100 color-primary400' : ''
                   }`}
                   onClick={() => setSize(item.value)}
-                  ontouch={() => setSize(item.value)}
+                  onTouchend={() => setSize(item.value)}
                 >
                   <OhVueIcon
                     class="w-appFontSizel h-appFontSizel"
@@ -121,7 +121,7 @@ const settingsDialogContent = defineComponent({
                     rounded.value === item.key ? 'bg-primary100 color-primary400' : ''
                   }`}
                   onClick={() => setRounded(item.key)}
-                  ontouch={() => setRounded(item.key)}
+                  onTouchend={() => setRounded(item.key)}
                 >
                   <OhVueIcon
                     class="w-appFontSizel h-appFontSizel"
@@ -152,7 +152,7 @@ const settingsDialogContent = defineComponent({
                     padding.value === item.key ? 'bg-primary100 color-primary400' : ''
                   }`}
                   onClick={() => setPadding(item.key)}
-                  ontouch={() => setPadding(item.key)}
+                  onTouchend={() => setPadding(item.key)}
                 >
                   <OhVueIcon
                     class="w-appFontSizel h-appFontSizel"
@@ -183,14 +183,14 @@ const settingsDialogContent = defineComponent({
                   name="ri-moon-clear-line"
                   class="w-appFontSizex h-appFontSizex c-cp"
                   onClick={(e: MouseEvent) => toggleThemeWithAnimation(e)}
-                  ontouch={(e: TouchEvent) => toggleThemeWithAnimation(e as any)}
+                  onTouch={(e: TouchEvent) => toggleThemeWithAnimation(e as any)}
                 />
               ) : (
                 <OhVueIcon
                   name="ri-sun-line"
                   class="w-appFontSizex h-appFontSizex c-cp"
                   onClick={(e: MouseEvent) => toggleThemeWithAnimation(e)}
-                  ontouch={(e: TouchEvent) => toggleThemeWithAnimation(e as any)}
+                  onTouch={(e: TouchEvent) => toggleThemeWithAnimation(e as any)}
                 />
               )}
             </div>
@@ -221,7 +221,7 @@ const settingsDialogContent = defineComponent({
                     }`}
                     style={{ background: item.themeColors.primary100 }}
                     onClick={() => setTheme(item.value)}
-                    ontouch={() => setTheme(item.value)}
+                    onTouchend={() => setTheme(item.value)}
                   ></div>
                 ))}
               </div>
@@ -282,24 +282,28 @@ Popover.w-80vw(ref='userPopoverRef', class='sm:w-60vw md:w-40vw lg:w-30vw xl:w-2
     .grid.grid-cols-5.gap-gaps
       .c-card.grid-col-span-2.gap-gaps.c-cp.center.between-col.py-paddings.c-transitions(
         @click='toggleThemeWithAnimation($event, "light")',
-        @touch='toggleThemeWithAnimation($event, "light")',
         :class='{ "bg-primary100 color-primary400": mode === "light" }'
       )
-        OhVueIcon.w-appFontSizel.h-appFontSizel(name='ri-sun-line')
+        OhVueIcon(
+          name='hi-solid-light-bulb',
+          :class='!isDark ? "color-accent100 w-appFontSizel h-appFontSizel" : "color-primary100 w-appFontSizex h-appFontSizex"'
+        )
         .center.text-center {{ t('common.systemOptions.themeMode.light') }}
       .c-card.grid-col-span-1.gap-gaps.c-cp.center.between-col.py-paddings.c-transitions(
         @click='toggleThemeWithAnimation($event, "auto")',
-        @touch='toggleThemeWithAnimation($event, "auto")',
         :class='{ "bg-primary100 color-primary400": mode === "auto" }'
       )
-        OhVueIcon.w-appFontSizel.h-appFontSizel(name='fc-flash-auto')
+        OhVueIcon.w-appFontSizex.h-appFontSizex(name='fc-flash-auto')
         .center.text-center {{ t('common.systemOptions.themeMode.auto') }}
       .c-card.grid-col-span-2.gap-gaps.c-cp.center.between-col.py-paddings.c-transitions(
         @click='toggleThemeWithAnimation($event, "dark")',
-        @touch='toggleThemeWithAnimation($event, "dark")',
         :class='{ "bg-primary100 color-primary400": mode === "dark" }'
       )
-        OhVueIcon.w-appFontSizel.h-appFontSizel(name='ri-moon-clear-line')
+        OhVueIcon(
+          name='hi-solid-light-bulb',
+          flip='vertical',
+          :class='isDark ? "color-accent100 w-appFontSizel h-appFontSizel" : "color-primary100 w-appFontSizex h-appFontSizex"'
+        )
         .center.text-center {{ t('common.systemOptions.themeMode.dark') }}
 
     //- 语言设置
@@ -318,7 +322,7 @@ Popover.w-80vw(ref='userPopoverRef', class='sm:w-60vw md:w-40vw lg:w-30vw xl:w-2
       @click='openMoreSettingsDialog',
       @touch='openMoreSettingsDialog'
     )
-      OhVueIcon.w-appFontSizex.h-appFontSizex(name='ri-settings-3-line')
+      OhVueIcon.w-appFontSizex.h-appFontSizex(name='hi-solid-cog', animation='spin', speed='slow')
       .center.text-center {{ t('common.settings.moreSettings') }}
 
     //- 个人中心
@@ -329,7 +333,7 @@ Popover.w-80vw(ref='userPopoverRef', class='sm:w-60vw md:w-40vw lg:w-30vw xl:w-2
           severity='danger',
           :label='t("common.settings.logout")',
           @click='userStore.logout',
-          @touch='userStore.logout'
+          @touchend='userStore.logout'
         )
       .full.block(class='dark:hidden')
         Button.full.c-transitions(
@@ -338,6 +342,6 @@ Popover.w-80vw(ref='userPopoverRef', class='sm:w-60vw md:w-40vw lg:w-30vw xl:w-2
           raised,
           :label='t("common.settings.logout")',
           @click='userStore.logout',
-          @touch='userStore.logout'
+          @touchend='userStore.logout'
         )
 </template>

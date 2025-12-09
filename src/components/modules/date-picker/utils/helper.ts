@@ -41,6 +41,32 @@ export function toDate(value: DatePrimitive | null | undefined): Date | null {
   return null
 }
 
+const padNumber = (value: number, length: number = 2): string => {
+  return String(Math.trunc(Math.abs(value))).padStart(length, '0')
+}
+
+/** 生成带时区偏移的 ISO 字符串，避免 Date.prototype.toISOString() 强制转换为 UTC */
+const formatIsoWithTimezone = (date: Date): string => {
+  const year = date.getFullYear()
+  const month = padNumber(date.getMonth() + 1)
+  const day = padNumber(date.getDate())
+  const hours = padNumber(date.getHours())
+  const minutes = padNumber(date.getMinutes())
+  const seconds = padNumber(date.getSeconds())
+  const milliseconds = String(date.getMilliseconds()).padStart(3, '0')
+
+  const offsetMinutesTotal = -date.getTimezoneOffset() // 本地相对于 UTC 的偏移（分钟）
+  if (offsetMinutesTotal === 0) {
+    return `${year}-${month}-${day}T${hours}:${minutes}:${seconds}.${milliseconds}Z`
+  }
+
+  const offsetSign = offsetMinutesTotal >= 0 ? '+' : '-'
+  const offsetHours = padNumber(Math.floor(Math.abs(offsetMinutesTotal) / 60))
+  const offsetMinutes = padNumber(Math.abs(offsetMinutesTotal) % 60)
+
+  return `${year}-${month}-${day}T${hours}:${minutes}:${seconds}.${milliseconds}${offsetSign}${offsetHours}:${offsetMinutes}`
+}
+
 /** 将 Date 转为期望的 v-model 值格式 */
 export function formatModelValue(
   value: Date | number | string | null | undefined,
@@ -60,16 +86,32 @@ export function formatModelValue(
     case 'timestamp': {
       return date.getTime()
     }
-    case 'iso': {
-      return date.toISOString()
-    }
-    case 'string': {
-      return date.toISOString()
-    }
+    case 'iso':
+    case 'string':
+      return formatIsoWithTimezone(date)
     case 'date':
     default:
       return date
   }
+}
+
+// helper.ts (新增一个用于内部传递的简化 ISO 格式函数)
+
+/**
+ * 格式化为简化 ISO 8601 格式（不带时区，不带毫秒）
+ * 专供 vue-datepicker 内部解析使用，以避免时区解析问题。
+ * 格式：YYYY-MM-DDTHH:mm:ss
+ */
+export const formatSimpleIso = (date: Date): string => {
+  const year = date.getFullYear()
+  const month = padNumber(date.getMonth() + 1)
+  const day = padNumber(date.getDate())
+  const hours = padNumber(date.getHours())
+  const minutes = padNumber(date.getMinutes())
+  const seconds = padNumber(date.getSeconds())
+
+  // 不包含毫秒和时区偏移
+  return `${year}-${month}-${day}T${hours}:${minutes}:${seconds}`
 }
 
 /** 从 v-model 值解析为 Date（支持范围） */

@@ -1,6 +1,6 @@
 import { useLayoutStore } from '@/stores'
 import { computed, defineComponent } from 'vue'
-import DesktopMenu from './components/DesktopMenu.vue'
+import DeskMenu from './components/DeskMenu.vue'
 import MobileMenu from './components/MobileMenu.vue'
 
 export default defineComponent({
@@ -10,7 +10,7 @@ export default defineComponent({
     const isMobile = computed(() => layoutStore.getIsMobile)
     return () => (
       <div class="select-none h-full between-start">
-        {isMobile.value ? <MobileMenu /> : <DesktopMenu />}
+        {isMobile.value ? <MobileMenu /> : <DeskMenu />}
       </div>
     )
   },

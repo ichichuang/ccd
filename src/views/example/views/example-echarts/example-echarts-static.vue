@@ -15,7 +15,6 @@ const barChartOption = computed(() => ({
     text: '月度销售数据（柱状图）',
     left: 'center',
     textStyle: {
-      fontSize: 18,
       fontWeight: 'bold' as const,
       color: accent100.value,
     },
@@ -44,7 +43,7 @@ const barChartOption = computed(() => ({
   grid: {
     left: '3%',
     right: '4%',
-    bottom: '3%',
+    bottom: '36%',
     top: '15%',
     containLabel: true,
   },
@@ -53,19 +52,14 @@ const barChartOption = computed(() => ({
     data: ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月'],
     axisLine: {
       lineStyle: {
-        color: '#ffa726',
         width: 2,
       },
     },
     axisTick: {
       alignWithLabel: true,
-      lineStyle: {
-        color: '#ffa726',
-      },
     },
     axisLabel: {
       color: textColor200.value,
-      fontSize: 11,
       rotate: 0,
     },
   },
@@ -203,7 +197,6 @@ const lineChartOption = computed(() => ({
     text: '用户增长趋势（折线图）',
     left: 'center',
     textStyle: {
-      fontSize: 18,
       fontWeight: 'bold' as const,
       color: accent100.value,
     },
@@ -235,7 +228,7 @@ const lineChartOption = computed(() => ({
   grid: {
     left: '3%',
     right: '4%',
-    bottom: '3%',
+    bottom: '36%',
     top: '15%',
     containLabel: true,
   },
@@ -502,7 +495,6 @@ const pieChartOption = computed(() => ({
     text: '产品市场份额（饼图）',
     left: 'center',
     textStyle: {
-      fontSize: 18,
       fontWeight: 'bold' as const,
       color: accent100.value,
     },
@@ -675,7 +667,6 @@ const scatterChartOption = computed(() => ({
     text: '身高体重分布（散点图）',
     left: 'center',
     textStyle: {
-      fontSize: 18,
       fontWeight: 'bold' as const,
       color: accent100.value,
     },
@@ -703,8 +694,8 @@ const scatterChartOption = computed(() => ({
   },
   grid: {
     left: '3%',
-    right: '4%',
-    bottom: '3%',
+    right: '10%',
+    bottom: '12%',
     top: '15%',
     containLabel: true,
   },
@@ -928,7 +919,6 @@ const radarChartOption = computed(() => ({
     text: '产品性能评估（雷达图）',
     left: 'center',
     textStyle: {
-      fontSize: 18,
       fontWeight: 'bold' as const,
       color: accent100.value,
     },
@@ -1081,7 +1071,6 @@ const funnelChartOption = computed(() => ({
     text: '销售转化漏斗（漏斗图）',
     left: 'center',
     textStyle: {
-      fontSize: 18,
       fontWeight: 'bold' as const,
       color: accent100.value,
     },
@@ -1247,7 +1236,6 @@ const gaugeChartOption = computed(() => ({
     text: '任务完成度（仪表盘）',
     left: 'center',
     textStyle: {
-      fontSize: 18,
       fontWeight: 'bold' as const,
       color: accent100.value,
     },
@@ -1356,7 +1344,6 @@ const candlestickChartOption = computed(() => ({
     text: '股票价格走势（K线图）',
     left: 'center',
     textStyle: {
-      fontSize: 18,
       fontWeight: 'bold' as const,
       color: accent100.value,
     },
@@ -1389,7 +1376,7 @@ const candlestickChartOption = computed(() => ({
   grid: {
     left: '3%',
     right: '4%',
-    bottom: '3%',
+    bottom: '12%',
     top: '15%',
     containLabel: true,
   },
@@ -1531,7 +1518,6 @@ const heatmapChartOption = computed(() => ({
     text: '每周活跃时段（热力图）',
     left: 'center',
     textStyle: {
-      fontSize: 18,
       fontWeight: 'bold' as const,
       color: accent100.value,
     },
@@ -1740,7 +1726,6 @@ const sankeyChartOption = computed(() => ({
     text: '能量流向图（桑基图）',
     left: 'center',
     textStyle: {
-      fontSize: 18,
       fontWeight: 'bold' as const,
       color: accent100.value,
     },
@@ -1919,7 +1904,6 @@ const boxplotChartOption = computed(() => ({
     text: '数据分布情况（箱型图）',
     left: 'center',
     textStyle: {
-      fontSize: 18,
       fontWeight: 'bold' as const,
       color: accent100.value,
     },
@@ -2073,7 +2057,6 @@ const sunburstChartOption = computed(() => ({
     text: '层级数据结构（旭日图）',
     left: 'center',
     textStyle: {
-      fontSize: 18,
       fontWeight: 'bold' as const,
       color: accent100.value,
     },
@@ -2250,7 +2233,6 @@ const themeRiverChartOption = computed(() => ({
     text: '时序数据演变（主题河流图）',
     left: 'center',
     textStyle: {
-      fontSize: 18,
       fontWeight: 'bold' as const,
       color: accent100.value,
     },
@@ -2374,19 +2356,18 @@ const themeRiverChartOption = computed(() => ({
 </script>
 
 <template lang="pug">
-.full.p-4
-  .grid.grid-cols-1.gap-gap(class='lg:grid-cols-2 xl:grid-cols-3')
-    UseEcharts(:option='barChartOption')
-    UseEcharts(:option='lineChartOption')
-    UseEcharts(:option='pieChartOption')
-    UseEcharts(:option='scatterChartOption')
-    UseEcharts(:option='radarChartOption')
-    UseEcharts(:option='funnelChartOption')
-    UseEcharts(:option='gaugeChartOption')
-    UseEcharts(:option='candlestickChartOption')
-    UseEcharts(:option='heatmapChartOption')
-    UseEcharts(:option='sankeyChartOption')
-    UseEcharts(:option='boxplotChartOption')
-    UseEcharts(:option='sunburstChartOption')
-    UseEcharts(:option='themeRiverChartOption')
+.grid.grid-cols-1.gap-gapl.p-paddingl(class='lg:grid-cols-2 xl:grid-cols-3')
+  UseEcharts.c-card(:option='barChartOption')
+  UseEcharts.c-card(:option='lineChartOption')
+  UseEcharts.c-card(:option='pieChartOption')
+  UseEcharts.c-card(:option='scatterChartOption')
+  UseEcharts.c-card(:option='radarChartOption')
+  UseEcharts.c-card(:option='funnelChartOption')
+  UseEcharts.c-card(:option='gaugeChartOption')
+  UseEcharts.c-card(:option='candlestickChartOption')
+  UseEcharts.c-card(:option='heatmapChartOption')
+  UseEcharts.c-card(:option='sankeyChartOption')
+  UseEcharts.c-card(:option='boxplotChartOption')
+  UseEcharts.c-card(:option='sunburstChartOption')
+  UseEcharts.c-card(:option='themeRiverChartOption')
 </template>

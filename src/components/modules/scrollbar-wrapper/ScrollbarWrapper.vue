@@ -7,6 +7,7 @@
 import { debounce, throttle } from '@/common'
 import { INTERVAL, STRATEGY } from '@/constants/modules/layout'
 import { useColorStore, useLayoutStore } from '@/stores'
+import { env } from '@/utils/modules/env'
 import { OverlayScrollbars } from 'overlayscrollbars'
 import { OverlayScrollbarsComponent } from 'overlayscrollbars-vue'
 import { computed, nextTick, onMounted, onUnmounted, ref, watch } from 'vue'
@@ -32,17 +33,24 @@ const scrollbarInstance = ref<OverlayScrollbars | null>(null)
 
 // 滚动位置记忆相关
 const scrollPositionKey = ref<string>('')
+// 新增状态：标记是否正在执行滚动位置恢复
+const isRestoringScroll = ref(false)
 
 // 初始化滚动位置 key
 const initScrollPositionKey = () => {
+  const prefix = env.piniaKeyPrefix || ''
+
   if (props.scrollPositionKey) {
-    scrollPositionKey.value = props.scrollPositionKey
+    scrollPositionKey.value = `${prefix}-${props.scrollPositionKey}`
   } else {
     // 生成一个稳定的 key，基于当前路由
     const route = window.location.pathname
-    scrollPositionKey.value = `scroll-${route.replace(/\//g, '-')}-default`
+    const baseKey = `scroll-${route.replace(/\//g, '-')}-default`
+    scrollPositionKey.value = `${prefix} -${baseKey}`
   }
 }
+
+// ==================== 配置计算 ====================
 
 // ==================== 配置计算 ====================
 
@@ -50,12 +58,20 @@ const initScrollPositionKey = () => {
 const computedScrollbarConfig: any = computed(() => {
   const baseConfig: any = {
     scrollbars: {
-      autoHide: props.autoHide === true ? 'leave' : props.autoHide || 'leave',
+      // ✅ 修正后的逻辑：
+      autoHide:
+        props.autoHide === false
+          ? 'never' // 当传入 false 时，设置为 'never'（永不隐藏）
+          : props.autoHide === true
+            ? 'leave' // 当传入 true 时，使用默认的 'leave'
+            : props.autoHide || 'leave', // 否则，使用传入的字符串或默认 'leave'
+
       autoHideDelay: props.autoHideDelay || 0,
       clickScroll: props.clickScroll !== false,
       dragScroll: true,
       pointers: ['mouse', 'touch', 'pen'],
     },
+    // ... 其他配置保持不变
     overflow: {
       x: props.direction === 'vertical' ? 'hidden' : 'scroll',
       y: props.direction === 'horizontal' ? 'hidden' : 'scroll',
@@ -287,9 +303,13 @@ let lastContentHeight = 0
 let isUserScrolling = false
 let userScrollTimer: NodeJS.Timeout | null = null
 
-// ==================== 滚动位置记忆 ====================
+// 恢复后内容增长监听相关状态
+let restoreAfterGrowthObserver: ResizeObserver | null = null
+let restoreAfterGrowthTimer: NodeJS.Timeout | null = null
 
-// 保存滚动位置
+// ==================== 滚动位置记忆 (持久化存储) ====================
+
+// ✅ 修改 1：使用 localStorage 保存滚动位置
 const saveScrollPosition = () => {
   if (!props.rememberScrollPosition) {
     return
@@ -298,18 +318,26 @@ const saveScrollPosition = () => {
   const scrollEl = getScrollEl()
   if (scrollEl) {
     const { scrollLeft, scrollTop } = scrollEl
-    layoutStore.setScrollPosition(scrollPositionKey.value, scrollLeft, scrollTop)
+    try {
+      const position = { scrollLeft, scrollTop }
+      localStorage.setItem(scrollPositionKey.value, JSON.stringify(position))
+    } catch (e) {
+      console.error('❌ [ScrollbarWrapper] 存储滚动位置失败:', e)
+    }
   }
 }
 
-// 恢复滚动位置
-const restoreScrollPosition = (retryCount = 0) => {
+// ✅ 修改 2：从 localStorage 读取恢复滚动位置
+const restoreScrollPosition = (onFinished?: () => void, retryCount = 0) => {
   if (!props.rememberScrollPosition) {
+    onFinished?.()
     return
   }
 
-  const savedPosition = layoutStore.getScrollPosition(scrollPositionKey.value)
+  const savedPosition = getSavedScrollPosition()
+
   if (!savedPosition) {
+    onFinished?.()
     return
   }
 
@@ -318,36 +346,58 @@ const restoreScrollPosition = (retryCount = 0) => {
     // 如果滚动元素还没有准备好，重试
     if (retryCount < 10) {
       setTimeout(() => {
-        restoreScrollPosition(retryCount + 1)
+        restoreScrollPosition(onFinished, retryCount + 1)
       }, 100)
+    } else {
+      onFinished?.()
     }
     return
   }
 
-  // 检查内容是否已经渲染完成
+  // 强制更新，确保 scrollHeight 等尺寸为最新值
+  scrollbarInstance.value?.update(true)
+
+  // 检查内容是否已经渲染完成（防止内容尺寸为 0）
   const { scrollHeight, clientHeight } = scrollEl
   if (scrollHeight <= clientHeight && retryCount < 5) {
-    // 内容还没有完全渲染，重试
     setTimeout(() => {
-      restoreScrollPosition(retryCount + 1)
+      restoreScrollPosition(onFinished, retryCount + 1)
     }, 200)
     return
   }
 
   // 执行滚动恢复
-  nextTick(() => {
-    scrollEl.scrollTo({
-      left: savedPosition.scrollLeft,
-      top: savedPosition.scrollTop,
-      behavior: 'instant', // 立即跳转，不使用动画
-    })
+  scrollEl.scrollTo({
+    left: savedPosition.scrollLeft,
+    top: savedPosition.scrollTop,
+    behavior: 'instant',
   })
+
+  // ✅ 瞬间跳转后，立即执行回调（不再需要冗长的 rAF + setTimeout）
+  // 注意：onFinished 的回调逻辑现在由 handleInitialized 中的 checkStability 控制，
+  // 确保它在内容稳定时才被调用。
+  onFinished?.()
 }
 
-// 清除滚动位置记忆
+// ✅ 读取已保存的滚动位置（复用逻辑，避免重复解析）
+const getSavedScrollPosition = (): { scrollLeft: number; scrollTop: number } | null => {
+  try {
+    const savedData = localStorage.getItem(scrollPositionKey.value)
+    return savedData ? JSON.parse(savedData) : null
+  } catch (error) {
+    console.error('❌ [ScrollbarWrapper] 读取滚动位置失败:', error)
+    return null
+  }
+}
+
+// ✅ 修改 3：清除 localStorage 中的滚动位置记忆
 const clearScrollPosition = () => {
   if (props.rememberScrollPosition) {
-    layoutStore.clearScrollPosition(scrollPositionKey.value)
+    try {
+      localStorage.removeItem(scrollPositionKey.value)
+    } catch (e) {
+      console.error('❌ [ScrollbarWrapper] 清除滚动位置失败:', e)
+    }
   }
 }
 
@@ -480,12 +530,19 @@ const handleScroll = getThrottleFunction()((event: Event) => {
     }
   }, INTERVAL)
 
-  // 更新上次滚动位置
+  // 更新上次滚动位置（即使在恢复状态也要更新，用于计算 delta）
   lastScrollLeft = scrollLeft
   lastScrollTop = scrollTop
 
   // 保存滚动位置（防抖处理，避免频繁保存）
   if (props.rememberScrollPosition) {
+    // ✅ 关键检查：如果在恢复状态，则不保存滚动位置
+    if (isRestoringScroll.value) {
+      // 在恢复期间，禁止任何保存操作覆盖正确的记忆位置
+      // 但不影响其他滚动事件处理（如 emit 事件、更新位置等）
+      return
+    }
+
     if (saveScrollTimer) {
       clearTimeout(saveScrollTimer)
     }
@@ -610,9 +667,6 @@ const handleInitialized = (instance: OverlayScrollbars) => {
 
   emit('initialized', instance)
 
-  // 添加滚动监听器
-  nextTick(() => addScrollListener())
-
   // 初始化滚动位置
   const viewport = instance.elements().viewport
   if (viewport) {
@@ -626,12 +680,92 @@ const handleInitialized = (instance: OverlayScrollbars) => {
   // 设置内容变化监听器
   setupContentChangeListeners(instance)
 
-  // 恢复滚动位置 - 使用更长的延迟确保内容完全渲染
+  // 添加滚动监听器 (必须在 restore 之前添加，才能接收到 scrollTo 触发的事件)
+  nextTick(() => addScrollListener())
+
+  // ✅ 容器始终可见，仅在需要时执行非阻塞的滚动恢复
   nextTick(() => {
-    setTimeout(() => {
-      restoreScrollPosition()
-    }, 300) // 延迟 300ms 确保内容完全渲染
+    if (props.rememberScrollPosition) {
+      isRestoringScroll.value = true
+      restoreScrollPosition(() => {
+        setupRestoreAfterContentGrowth(instance)
+        isRestoringScroll.value = false
+      })
+    } else {
+      setupRestoreAfterContentGrowth(instance)
+    }
   })
+
+  // ✅ 新增：恢复后继续监听内容增长，如果内容继续增长则重新恢复位置
+  const setupRestoreAfterContentGrowth = (instance: OverlayScrollbars) => {
+    if (!props.rememberScrollPosition) {
+      return
+    }
+
+    const viewport = instance.elements().viewport
+    const contentEl = instance.elements().content
+    if (!viewport || !contentEl) {
+      return
+    }
+
+    // 清理之前的监听器
+    if (restoreAfterGrowthObserver) {
+      restoreAfterGrowthObserver.disconnect()
+      restoreAfterGrowthObserver = null
+    }
+    if (restoreAfterGrowthTimer) {
+      clearTimeout(restoreAfterGrowthTimer)
+      restoreAfterGrowthTimer = null
+    }
+
+    let lastScrollHeight = viewport.scrollHeight
+
+    // 使用 ResizeObserver 监听内容高度变化
+    if (typeof ResizeObserver !== 'undefined') {
+      restoreAfterGrowthObserver = new ResizeObserver(() => {
+        const currentScrollHeight = viewport.scrollHeight
+
+        // 如果内容高度增加，延迟恢复位置（避免频繁恢复）
+        if (currentScrollHeight > lastScrollHeight) {
+          lastScrollHeight = currentScrollHeight
+
+          // 清除之前的定时器
+          if (restoreAfterGrowthTimer) {
+            clearTimeout(restoreAfterGrowthTimer)
+          }
+
+          // 延迟恢复，等待内容稳定
+          restoreAfterGrowthTimer = setTimeout(() => {
+            // 检查是否还在恢复状态，如果不在则重新恢复位置
+            if (!isRestoringScroll.value) {
+              const savedPosition = (() => {
+                try {
+                  const savedData = localStorage.getItem(scrollPositionKey.value)
+                  return savedData ? JSON.parse(savedData) : null
+                } catch {
+                  return null
+                }
+              })()
+
+              if (
+                savedPosition &&
+                viewport.scrollHeight >= savedPosition.scrollTop + viewport.clientHeight
+              ) {
+                // 内容高度足够，可以恢复到记忆位置
+                viewport.scrollTo({
+                  left: savedPosition.scrollLeft,
+                  top: savedPosition.scrollTop,
+                  behavior: 'instant',
+                })
+              }
+            }
+          }, 300) // 延迟 300ms 等待内容稳定
+        }
+      })
+
+      restoreAfterGrowthObserver.observe(contentEl)
+    }
+  }
 
   // 添加尺寸监听器
   if (typeof ResizeObserver !== 'undefined') {
@@ -801,10 +935,13 @@ watch(
   },
   { deep: true }
 )
-
+// 控制容器是否已挂载并准备好显示
+const isContainerReady = ref(false)
 // ==================== 生命周期 ====================
 
 onMounted(() => {
+  // 确保在组件挂载到 DOM 后才渲染内容
+  isContainerReady.value = true
   // 初始化滚动位置 key
   initScrollPositionKey()
 })
@@ -813,6 +950,16 @@ onUnmounted(() => {
   removeScrollListener()
   cleanupContentChangeListeners()
   destroy()
+
+  // 清理恢复后内容增长监听器
+  if (restoreAfterGrowthObserver) {
+    restoreAfterGrowthObserver.disconnect()
+    restoreAfterGrowthObserver = null
+  }
+  if (restoreAfterGrowthTimer) {
+    clearTimeout(restoreAfterGrowthTimer)
+    restoreAfterGrowthTimer = null
+  }
 })
 
 // 暴露给父组件的方法和属性
@@ -841,6 +988,7 @@ defineExpose<ScrollbarExposed>({
 
 <template>
   <div
+    v-if="isContainerReady"
     class="overlay-scrollbar-wrapper"
     :class="[props.direction === 'vertical' ? 'is-vertical' : 'is-horizontal', props.class]"
     :style="props.style"

@@ -1,94 +1,7 @@
 /**
  * 中文语言包 (zh-CN)
  */
-
-// 直接定义翻译内容，便于 i18n-ally 插件识别
 const zhCN = {
-  common: {
-    settings: {
-      title: '设置',
-      theme: '主题',
-      color: '配色',
-      language: '语言',
-      size: '尺寸',
-      rounded: '棱角',
-      padding: '间距',
-      fontSize: '字体大小',
-      systemManagement: '管理系统',
-      personalCenter: '个人中心',
-      logout: '退出系统',
-      moreSettings: '更多设置',
-    },
-    systemOptions: {
-      // 主题模式选项
-      themeMode: {
-        light: '明亮',
-        dark: '暗色',
-        auto: '自动',
-      },
-      // 尺寸选项
-      size: {
-        compact: '紧凑',
-        comfortable: '舒适',
-        loose: '宽松',
-      },
-      // 圆角选项
-      rounded: {
-        sharp: '尖锐',
-        smooth: '平滑',
-        round: '圆滑',
-        soft: '圆润',
-      },
-      // 间距选项
-      padding: {
-        sm: '小',
-        md: '中',
-        lg: '大',
-      },
-      // 字体大小选项
-      fontSize: {
-        xs: '迷你',
-        sm: '小号',
-        md: '中号',
-        lg: '大号',
-        xl: '特大号',
-        xls: '超特大号',
-        xxl: '超超特大号',
-        xxxl: '超超超特大号',
-      },
-    },
-    error: {
-      notFound: '页面未找到',
-      forbidden: '访问被拒绝',
-      serverError: '服务器错误',
-      notFoundTitle: '404',
-      forbiddenTitle: '403',
-      serverErrorTitle: '500',
-    },
-    actions: {
-      register: '还没有账号？点我注册',
-      forgotPassword: '忘记密码？',
-      recoverAccount: '立即找回？',
-      loginInProgress: '登录中...',
-      enterSystem: '进入系统',
-    },
-    social: {
-      qq: 'QQ',
-      wechat: '微信',
-      alipay: '支付宝',
-    },
-    auth: {
-      accountPasswordLogin: '账号密码登录',
-      login: {
-        title: '用户登录',
-        loginButton: '登录',
-      },
-    },
-    messages: {
-      loginFailed: '登录失败',
-    },
-  },
-
   router: {
     core: {
       root: '首页',
@@ -137,6 +50,9 @@ const zhCN = {
         title: '函数',
         date: '日期',
       },
+      afeStorage: {
+        title: '安全存储',
+      },
     },
     error: {
       title: '错误',
@@ -161,6 +77,87 @@ const zhCN = {
       button: {
         title: '按钮权限',
       },
+    },
+  },
+  common: {
+    settings: {
+      title: '设置',
+      theme: '主题',
+      color: '配色',
+      language: '语言',
+      size: '尺寸',
+      rounded: '棱角',
+      padding: '间距',
+      fontSize: '字体大小',
+      systemManagement: '管理系统',
+      personalCenter: '个人中心',
+      logout: '退出系统',
+      moreSettings: '更多设置',
+    },
+    systemOptions: {
+      themeMode: {
+        light: '日间',
+        dark: '夜间',
+        auto: '自动',
+      },
+      size: {
+        compact: '紧凑',
+        comfortable: '舒适',
+        loose: '宽松',
+      },
+      rounded: {
+        sharp: '尖锐',
+        smooth: '平滑',
+        round: '圆滑',
+        soft: '圆润',
+      },
+      padding: {
+        sm: '小',
+        md: '中',
+        lg: '大',
+      },
+      fontSize: {
+        xs: '迷你',
+        sm: '小号',
+        md: '中号',
+        lg: '大号',
+        xl: '特大号',
+        xls: '超特大号',
+        xxl: '超超特大号',
+        xxxl: '超超超特大号',
+      },
+    },
+    error: {
+      notFound: '页面未找到',
+      forbidden: '访问被拒绝',
+      serverError: '服务器错误',
+      notFoundTitle: '404',
+      forbiddenTitle: '403',
+      serverErrorTitle: '500',
+    },
+    actions: {
+      register: '还没有账号？点我注册',
+      forgotPassword: '忘记密码？',
+      recoverAccount: '立即找回？',
+      loginInProgress: '登录中...',
+      enterSystem: '进入系统',
+      welcome: '欢迎使用',
+      backToHome: '回到主页',
+    },
+    social: {
+      qq: 'QQ',
+      wechat: '微信',
+      alipay: '支付宝',
+    },
+    auth: {
+      accountPasswordLogin: '账号密码登录',
+      login: {
+        title: '用户登录',
+        loginButton: '登录',
+      },
+    },
+    messages: {
+      loginFailed: '登录失败',
     },
   },
   layout: {
@@ -337,7 +334,6 @@ const zhCN = {
       endDate: '结束日期',
       startTime: '开始时间',
       endTime: '结束时间',
-      // 不同模式的 placeholder
       placeholders: {
         date: '请选择日期',
         datetime: '请选择日期时间',
@@ -358,8 +354,5 @@ const zhCN = {
   },
 }
 
-// 为了保持向后兼容，同时导出具名导出和默认导出
 export { zhCN }
-
-// i18n Ally 期望的默认导出
 export default zhCN

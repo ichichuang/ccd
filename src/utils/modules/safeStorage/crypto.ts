@@ -1,5 +1,5 @@
 // src/utils/modules/crypto.ts
-import { AES, Base64, CBC, Pkcs7, Utf8, WordArray } from 'crypto-es'
+import { AES, Base64, CBC, CipherParams, Latin1, Pkcs7, Utf8, WordArray } from 'crypto-es'
 
 /**
  * 2025 年最完美的前端 AES 加密工具（基于 crypto-es v2+ 官方最新文档）
@@ -87,13 +87,9 @@ const crypto = {
       padding: Pkcs7,
     })
 
-    const cipherText = encrypted.ciphertext?.toString(Base64)
-    if (!cipherText) {
-      return ''
-    }
-
-    // IV(Base64) + ':' + 密文(Base64)
-    return `${Base64.stringify(iv)}:${cipherText}`
+    // 使用 encrypted.toString() 返回 OpenSSL 格式（包含 salt 和 IV）
+    // 这个格式可以直接用 AES.decrypt 解密
+    return encrypted.toString()
   },
 
   /**
@@ -105,22 +101,81 @@ const crypto = {
     }
 
     try {
+      // 检查是否是 OpenSSL 格式（以 U2FsdGVkX1 开头）
+      if (encryptedWithIv.startsWith('U2FsdGVkX1')) {
+        // OpenSSL 格式：直接解密
+        const bytes = AES.decrypt(encryptedWithIv, secret)
+
+        // AES.encrypt 默认使用 UTF8 编码字符串，所以解密时也应该用 UTF8 解码
+        try {
+          const result = bytes.toString(Utf8)
+          if (result && result.length > 0) {
+            return result
+          }
+        } catch (_error) {
+          // UTF-8 解码失败，继续尝试其他方式
+        }
+
+        // 降级：尝试 Latin1（某些情况下可能有效）
+        try {
+          const result = bytes.toString(Latin1)
+          if (result && result.length > 0) {
+            return result
+          }
+        } catch (_error) {
+          // Latin1 解码失败
+        }
+
+        console.warn('[Crypto] 解密失败: 所有解码方式都失败')
+        return null
+      }
+
+      // 兼容旧格式：IV:密文（自定义格式）
       const [ivStr, ciphertext] = encryptedWithIv.split(':')
       if (!ivStr || !ciphertext) {
+        console.warn('[Crypto] 解密失败: 数据格式不正确，缺少 IV 或密文')
         return null
       }
 
       // 从 Base64 字符串恢复 IV 为 WordArray
       const iv = Base64.parse(ivStr)
 
-      const bytes = AES.decrypt(ciphertext, secret, {
+      // 构造 CipherParams 对象（包含密文）
+      const cipherParams = CipherParams.create({
+        ciphertext: Base64.parse(ciphertext),
+      })
+
+      const bytes = AES.decrypt(cipherParams, secret, {
         iv,
         mode: CBC,
         padding: Pkcs7,
       })
 
-      return bytes.toString(Utf8) || null
-    } catch {
+      // AES.encrypt 默认使用 UTF8 编码字符串，所以解密时也应该用 UTF8 解码
+      // 即使 Base64 字符串是 ASCII 子集，也应该用 UTF8 解码（因为加密时用的是 UTF8）
+      try {
+        const result = bytes.toString(Utf8)
+        if (result && result.length > 0) {
+          return result
+        }
+      } catch (_error) {
+        // UTF-8 解码失败，继续尝试其他方式
+      }
+
+      // 降级：尝试 Latin1（某些情况下可能有效）
+      try {
+        const result = bytes.toString(Latin1)
+        if (result && result.length > 0) {
+          return result
+        }
+      } catch (_error) {
+        // Latin1 解码失败
+      }
+
+      console.warn('[Crypto] 解密失败: 所有解码方式都失败')
+      return null
+    } catch (error) {
+      console.error('[Crypto] 解密异常:', error)
       return null
     }
   },

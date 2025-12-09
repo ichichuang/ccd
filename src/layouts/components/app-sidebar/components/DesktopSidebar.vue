@@ -18,7 +18,6 @@ const isCollapsed = computed(() => layoutStore.sidebarCollapsed)
 type PopoverInstance = InstanceType<typeof Popover>
 const menuPopoverRef = ref<PopoverInstance | null>(null)
 // 触发器容器引用
-const triggerRef = ref<HTMLElement | null>(null)
 const route = useRoute()
 
 // 切换 Popover 显示/隐藏
@@ -142,14 +141,14 @@ onUnmounted(() => {
 <template lang="pug">
 .center(class='md:hidden')
   //- 触发器容器
-  .full.center.c-cp(ref='triggerRef', role='button', tabindex='0', @click='handleToggle')
+  .full.center.c-cp(role='button', tabindex='0', @click='handleToggle')
     OhVueIcon.w-appFontSizel.h-appFontSizel.color-primary100(name='ri-apps-line')
 
   //- Popover 面板
   Popover.bg-tm.border-none.overflow-hidden(ref='menuPopoverRef', :dismissable='true')
     .full.w-80vw.h-80vh.p-0.overflow-hidden(class='sm:w-60vw sm:h-60vh', @click.self='handleHide')
       ScrollbarWrapper(
-        style='background: transparent; height: 100%',
+        :style='{ background: "transparent", height: "100%" }',
         :color-scheme='{ thumbColor: "transparent", thumbHoverColor: "transparent", thumbActiveColor: "transparent", trackColor: "transparent", trackHoverColor: "transparent", trackActiveColor: "transparent" }',
         @container-click='handleHide'
       )
@@ -186,7 +185,9 @@ onUnmounted(() => {
     ScrollbarWrapper(
       :style='{ height: (observedHeight || containerHeight) + "px" }',
       :size='1',
-      :color-scheme='{ thumbColor: "transparent", thumbHoverColor: "transparent", thumbActiveColor: "transparent", trackColor: "transparent", trackHoverColor: "transparent", trackActiveColor: "transparent" }'
+      :color-scheme='{ thumbColor: "transparent", thumbHoverColor: "transparent", thumbActiveColor: "transparent", trackColor: "transparent", trackHoverColor: "transparent", trackActiveColor: "transparent" }',
+      :remember-scroll-position='true',
+      :scroll-position-key='"app-sidebar"'
     )
       PrimeMenu(
         v-if='!expandedDelay',

@@ -1,94 +1,7 @@
 /**
  * 繁体中文语言包 (zh-TW)
  */
-
-// 直接定义翻译内容，便于 i18n-ally 插件识别
 const zhTW = {
-  common: {
-    settings: {
-      title: '設定',
-      theme: '主題',
-      color: '配色',
-      language: '語言',
-      size: '尺寸',
-      rounded: '稜角',
-      padding: '間距',
-      fontSize: '字體大小',
-      systemManagement: '系統管理',
-      personalCenter: '個人中心',
-      logout: '登出系統',
-      moreSettings: '更多設定',
-    },
-    systemOptions: {
-      // 主題模式選項
-      themeMode: {
-        light: '明亮',
-        dark: '暗色',
-        auto: '自動',
-      },
-      // 尺寸選項
-      size: {
-        compact: '緊湊',
-        comfortable: '舒適',
-        loose: '寬鬆',
-      },
-      // 圓角選項
-      rounded: {
-        sharp: '尖銳',
-        smooth: '平滑',
-        round: '圓滑',
-        soft: '圓潤',
-      },
-      // 間距選項
-      padding: {
-        sm: '小',
-        md: '中',
-        lg: '大',
-      },
-      // 字體大小選項
-      fontSize: {
-        xs: '迷你',
-        sm: '小號',
-        md: '中號',
-        lg: '大號',
-        xl: '特大號',
-        xls: '超特大號',
-        xxl: '超超特大號',
-        xxxl: '超超超特大號',
-      },
-    },
-    error: {
-      notFound: '頁面未找到',
-      forbidden: '訪問被拒絕',
-      serverError: '伺服器錯誤',
-      notFoundTitle: '404',
-      forbiddenTitle: '403',
-      serverErrorTitle: '500',
-    },
-    actions: {
-      register: '還沒有帳號？點我註冊',
-      forgotPassword: '忘記密碼？',
-      recoverAccount: '立即找回？',
-      loginInProgress: '登入中...',
-      enterSystem: '進入系統',
-    },
-    social: {
-      qq: 'QQ',
-      wechat: '微信',
-      alipay: '支付寶',
-    },
-    auth: {
-      accountPasswordLogin: '帳號密碼登入',
-      login: {
-        title: '用戶登入',
-        loginButton: '登入',
-      },
-    },
-    messages: {
-      loginFailed: '登入失敗',
-    },
-  },
-
   router: {
     core: {
       root: '首頁',
@@ -137,6 +50,9 @@ const zhTW = {
         title: '函數',
         date: '日期',
       },
+      afeStorage: {
+        title: '安全存储',
+      },
     },
     error: {
       title: '錯誤',
@@ -161,6 +77,87 @@ const zhTW = {
       button: {
         title: '按鈕權限',
       },
+    },
+  },
+  common: {
+    settings: {
+      title: '設定',
+      theme: '主題',
+      color: '配色',
+      language: '語言',
+      size: '尺寸',
+      rounded: '稜角',
+      padding: '間距',
+      fontSize: '字體大小',
+      systemManagement: '系統管理',
+      personalCenter: '個人中心',
+      logout: '登出系統',
+      moreSettings: '更多設定',
+    },
+    systemOptions: {
+      themeMode: {
+        light: '日間',
+        dark: '夜間',
+        auto: '自動',
+      },
+      size: {
+        compact: '緊湊',
+        comfortable: '舒適',
+        loose: '寬鬆',
+      },
+      rounded: {
+        sharp: '尖銳',
+        smooth: '平滑',
+        round: '圓滑',
+        soft: '圓潤',
+      },
+      padding: {
+        sm: '小',
+        md: '中',
+        lg: '大',
+      },
+      fontSize: {
+        xs: '迷你',
+        sm: '小號',
+        md: '中號',
+        lg: '大號',
+        xl: '特大號',
+        xls: '超特大號',
+        xxl: '超超特大號',
+        xxxl: '超超超特大號',
+      },
+    },
+    error: {
+      notFound: '頁面未找到',
+      forbidden: '訪問被拒絕',
+      serverError: '伺服器錯誤',
+      notFoundTitle: '404',
+      forbiddenTitle: '403',
+      serverErrorTitle: '500',
+    },
+    actions: {
+      register: '還沒有帳號？點我註冊',
+      forgotPassword: '忘記密碼？',
+      recoverAccount: '立即找回？',
+      loginInProgress: '登入中...',
+      enterSystem: '進入系統',
+      welcome: '歡迎使用',
+      backToHome: '回到主頁',
+    },
+    social: {
+      qq: 'QQ',
+      wechat: '微信',
+      alipay: '支付寶',
+    },
+    auth: {
+      accountPasswordLogin: '帳號密碼登入',
+      login: {
+        title: '用戶登入',
+        loginButton: '登入',
+      },
+    },
+    messages: {
+      loginFailed: '登入失敗',
     },
   },
   layout: {
@@ -337,7 +334,6 @@ const zhTW = {
       endDate: '結束日期',
       startTime: '開始時間',
       endTime: '結束時間',
-      // 不同模式的 placeholder
       placeholders: {
         date: '請選擇日期',
         datetime: '請選擇日期時間',
@@ -358,8 +354,5 @@ const zhTW = {
   },
 }
 
-// 为了保持向后兼容，同时导出具名导出和默认导出
 export { zhTW }
-
-// i18n Ally 期望的默认导出
 export default zhTW

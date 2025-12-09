@@ -1,5 +1,4 @@
 import { getUserInfo } from '@/api'
-import { goToRoute } from '@/common'
 import { FORM_MEMORY_LOCAL_STORAGE_PREFIX } from '@/components/modules/schema-form/hooks/useFormMemory'
 import { INTERVAL } from '@/constants'
 import { useLoading } from '@/hooks'
@@ -8,7 +7,7 @@ import store from '@/stores'
 import { env } from '@/utils'
 import { defineStore } from 'pinia'
 
-const { loadingStart, loadingDone } = useLoading()
+const { loadingStart } = useLoading()
 
 interface UserState {
   token: string
@@ -92,9 +91,7 @@ export const useUserStore = defineStore('user', {
         localStorage.removeItem(key)
       })
       await new Promise(resolve => setTimeout(resolve, INTERVAL)) // 等待路由跳转完成
-      loadingDone()
-      goToRoute('/login')
-      // window.location.reload()
+      window.location.reload()
     },
   },
 

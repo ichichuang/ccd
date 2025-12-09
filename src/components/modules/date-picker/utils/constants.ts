@@ -59,9 +59,9 @@ export const US_FORMATS: Record<DatePickerMode, string> = {
  * ISO 8601 标准格式
  */
 export const ISO_FORMATS: Record<DatePickerMode, string> = {
-  date: 'yyyy-MM-dd',
-  datetime: "yyyy-MM-dd'T'HH:mm:ss",
-  time: 'HH:mm:ss',
+  date: 'yyyy-MM-dd', // 此处与默认一致，不需要修改
+  datetime: "yyyy-MM-dd'T'HH:mm:ss", // 👈 核心格式
+  time: 'HH:mm:ss', // 此处与默认一致，不需要修改
   month: 'yyyy-MM',
   year: 'yyyy',
   week: "yyyy-'W'ww",

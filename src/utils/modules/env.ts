@@ -75,6 +75,10 @@ export const env = {
     return import.meta.env.VITE_PINIA_PERSIST_KEY_PREFIX
   },
 
+  get appSecret(): string {
+    return import.meta.env.VITE_APP_SECRET
+  },
+
   get rootRedirect(): string {
     return import.meta.env.VITE_ROOT_REDIRECT
   },

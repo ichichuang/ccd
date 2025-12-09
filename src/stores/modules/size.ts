@@ -629,21 +629,12 @@ export const useSizeStore = defineStore<'size', SizeState, SizeGetters, SizeActi
   },
 
   // pinia-plugin-persistedstate
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  // @ts-ignore
   persist: {
     key: `${env.piniaKeyPrefix}-size`,
     storage: localStorage,
-    serializer: {
-      deserialize: (value: string) => {
-        try {
-          return JSON.parse(value)
-        } catch {
-          return {}
-        }
-      },
-      serialize: (value: any) => JSON.stringify(value),
-    },
+    // 使用全局加密序列化器（已在 stores/index.ts 中配置）
+    // 如果需要单独配置，可以取消下面的注释：
+    // serializer: createPiniaEncryptedSerializer(),
   },
 })
 

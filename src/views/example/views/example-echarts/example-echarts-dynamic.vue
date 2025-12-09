@@ -62,6 +62,9 @@ const stackMode = ref<'share' | 'mom'>('share')
 const gaugeValue = ref(55)
 const gaugeTargetFromHover = ref<number | null>(null)
 
+// 记录折线图 dataZoom 区间（百分比）
+const lineZoomRange = ref<{ start: number; end: number } | null>(null)
+
 // 定时器
 let tLine: number | null = null
 let tBubble: number | null = null
@@ -221,6 +224,17 @@ function handleLineMouseOut() {
   gaugeTargetFromHover.value = null
 }
 
+// 折线图 dataZoom 事件处理，记录用户缩放区间
+function handleLineDataZoom(params: any) {
+  const source = Array.isArray(params?.batch) && params.batch.length > 0 ? params.batch[0] : params
+
+  const start = typeof source.start === 'number' ? source.start : (lineZoomRange.value?.start ?? 0)
+
+  const end = typeof source.end === 'number' ? source.end : (lineZoomRange.value?.end ?? 100)
+
+  lineZoomRange.value = { start, end }
+}
+
 // 联动：气泡点击 → 聚焦对应行业
 function handleBubbleClick(params: any) {
   if (!controls.linkage) {
@@ -300,14 +314,25 @@ const lineOption = computed(() => {
       }
     }),
   ]
+
+  // 默认视图：若没有用户缩放，则显示“最后 20 个点”
+  const defaultStart =
+    lineSeries.composite.length > 20
+      ? ((lineSeries.composite.length - 20) / lineSeries.composite.length) * 100
+      : 0
+
+  const start = lineZoomRange.value?.start ?? defaultStart
+  const end = lineZoomRange.value?.end ?? 100
+
   return {
     title: {
       text: focusedIndustry.value
         ? `实时指数（聚焦：${focusedIndustry.value}）`
         : '实时指数（核心）',
+      subtext: '显示 AI 能源指数及各子行业实时走势，支持图例切换和悬停查看详细数值',
       left: 10,
     },
-    grid: { left: 40, right: 12, top: 36, bottom: 28, height: '60%' },
+    grid: { left: '8%', right: '6%', top: '28%', bottom: '24%' },
     tooltip: {
       trigger: 'axis' as const,
       formatter: (params: any) => {
@@ -346,6 +371,18 @@ const lineOption = computed(() => {
       nameLocation: 'middle' as const,
       nameGap: 35,
     },
+    dataZoom: [
+      {
+        type: 'inside' as const,
+        start,
+        end,
+      },
+      {
+        type: 'slider' as const,
+        start,
+        end,
+      },
+    ],
     series,
   } as any
 })
@@ -367,8 +404,12 @@ const bubbleOption = computed(() => {
       }
     })
   return {
-    title: { text: '行业活跃气泡图', left: 10 },
-    grid: { left: 30, right: 10, top: 36, bottom: 28 },
+    title: {
+      text: '行业活跃气泡图',
+      subtext: '颜色表示活跃趋势，气泡大小代表交易量，位置表示活跃度分布',
+      left: 10,
+    },
+    grid: { left: '8%', right: '6%', top: '28%', bottom: '12%' },
     tooltip: {
       trigger: 'item' as const,
       formatter: (p: any) => {
@@ -428,9 +469,10 @@ const barOption = computed(() => {
   return {
     title: {
       text: `行业占比柱图（${stackMode.value === 'share' ? '当前占比' : '环比变化'}）`,
+      subtext: '柱高代表行业在总指数中的占比，实时更新反映市场结构变化，点击柱条可聚焦对应行业',
       left: 10,
     },
-    grid: { left: 40, right: 12, top: 36, bottom: 28, height: '60%' },
+    grid: { left: '8%', right: '6%', top: '28%', bottom: '12%' },
     tooltip: {
       trigger: 'axis' as const,
       formatter: (params: any) => {
@@ -475,6 +517,7 @@ const gaugeOption = computed(() => {
   return {
     title: {
       text: `市场情绪仪表盘（${status}）`,
+      subtext: '实时监测市场情绪指数，影响整体图表色调，悬停可暂停全局动画',
       left: 'center' as const,
       top: 6,
     },
@@ -524,9 +567,8 @@ function resetFocus() {
 }
 
 // 图例显示控制
-function toggleLegendVisible() {
-  controls.legendVisible = !controls.legendVisible
-}
+// 保留通过控件或其他交互扩展的可能，如需从外部控制可在此基础上继续封装
+// 当前示例不再在模板中直接调用该方法
 </script>
 
 <template lang="pug">
@@ -534,145 +576,104 @@ function toggleLegendVisible() {
 .between-col
   // 顶栏
   .w-full.h-headerHeight.between.px-gap
-    .center.gap-gap
-      .icon-carbon-ai-status.fs-appFontSizex.color-primary100
-      .fs-appFontSizex.color-text100.tracking-wide.font-600 AInergy 实时监控中心
-    .items-center.gap-gap.color-text200
-      .items-center.gap-gap
-        .icon-carbon-time
-        span {{ new Date().toLocaleTimeString() }}
-      .items-center.gap-gap
-        .icon-carbon-renew
-        span 刷新频率 1s/3s/5s/2s
-      .c-card-primary.shadow-none.size-1-1.center(@click='toggleThemeWithAnimation($event)')
+    b.fs-appFontSizex.color-primary100 AInergy 实时监控中心
+    .center.gap-gap.color-text200
+      .center.gap-gap
+        .fs-appFontSizes {{ new Date().toLocaleTimeString() }}
+        div 刷新频率 1s/3s/5s/2s
+      .c-card-primary.p-paddings(@click='toggleThemeWithAnimation($event)')
         template(v-if='isDark')
           OhVueIcon.w-appFontSizex.h-appFontSizex(name='ri-moon-clear-line')
         template(v-else)
           OhVueIcon.w-appFontSizex.h-appFontSizex(name='ri-sun-line')
   // 主体布局 - 左右分栏
-  .w-full.h-contentsHeight.p-padding.between.gap-gap
+  .w-full.h-contentsHeight.p-padding.between.gap-gapl
     // 左侧图表区域 (80%)
-    .full.c-border-primary.grid.gap-gap.grid-cols-2.rounded-rounded.p-gap(class='w-4/5')
+    .full.between.flex-wrap.gap-gap(class='w-4/5')
       // 第一行：实时指数折线图
-      .c-card.between-col.relative
+      .c-border-primary.between-col.p-padding.rounded-rounded(
+        class='w-[calc(50%-var(--gaps))] h-[calc(50%-var(--gaps))]'
+      )
         .full
           UseEcharts(
             :option='lineOption',
             :on-mouse-over='handleLineMouseOver',
-            :on-mouse-out='handleLineMouseOut'
+            :on-mouse-out='handleLineMouseOut',
+            :on-data-zoom='handleLineDataZoom',
+            :height='"100%"'
           )
-        .between.absolute.bottom-0.left-0.right-0.p-padding
-          .icon-carbon-view.fs-appFontSizex.color-text200.c-cp(@click='toggleLegendVisible')
-          | 实时指数走势
-          .fs-appFontSizes.color-text200
-            | 📈 显示 AI 能源指数及各子行业实时走势，支持图例切换和悬停查看详细数值
-
       // 第二行：行业活跃气泡图
-      .c-card.between-col.relative
+      .c-border-primary.between-col.p-padding.rounded-rounded(
+        class='w-[calc(50%-var(--gaps))] h-[calc(50%-var(--gaps))]'
+      )
         .full
-          UseEcharts(:option='bubbleOption', :on-click='handleBubbleClick')
-        .between.absolute.bottom-0.left-0.right-0.p-padding
-          .icon-carbon-chart-scatter.fs-appFontSizex.color-text200
-          | 行业活跃气泡图
-          .fs-appFontSizes.color-text200
-            | 📊 颜色表示活跃趋势，气泡大小 = 交易量，位置表示活跃度分布
-
+          UseEcharts(:option='bubbleOption', :on-click='handleBubbleClick', :height='"100%"')
       // 第三行：行业占比柱状图
-      .c-card.between-col.relative
+      .c-border-primary.between-col.p-padding.rounded-rounded(
+        class='w-[calc(50%-var(--gaps))] h-[calc(50%-var(--gaps))]'
+      )
         .full
-          UseEcharts(:option='barOption', :on-click='handleBarClick')
-        .between.absolute.bottom-0.left-0.right-0.p-padding
-          .icon-carbon-chart-bar.fs-appFontSizex.color-text200
-          | 行业占比分析
-          .fs-appFontSizes.color-text200
-            | 📊 柱高代表行业在总指数中的占比，实时更新反映市场结构变化，点击柱条可聚焦对应行业
-
+          UseEcharts(:option='barOption', :on-click='handleBarClick', :height='"100%"')
       // 第四行：市场情绪仪表盘
-      .c-card.between-col.relative
+      .c-border-primary.between-col.p-padding.rounded-rounded(
+        class='w-[calc(50%-var(--gaps))] h-[calc(50%-var(--gaps))]'
+      )
         .full
           UseEcharts(
             :option='gaugeOption',
             :on-mouse-over='handleGaugeMouseOver',
-            :on-mouse-out='handleGaugeMouseOut'
+            :on-mouse-out='handleGaugeMouseOut',
+            :height='"100%"'
           )
-        .between.absolute.bottom-0.left-0.right-0.p-padding
-          .icon-carbon-dashboard.fs-appFontSizex.color-text200
-          | 市场情绪仪表盘
-          .fs-appFontSizes.color-text200
-            | 🎯 实时监测市场情绪指数，影响整体图表色调，悬停可暂停全局动画
-
     // 右侧控制面板 (20%)
-    .full.c-border-primary.between-col.gap-gap.p-padding.rounded-rounded(class='w-1/5')
-      .flex.items-center.gap-gap.mb-gap
-        .icon-carbon-settings.fs-appFontSizes.color-primary100
-        .fs-appFontSizex.color-text100 控制面板
-
-      .rounded-rounded.bg-bg300.p-paddings.mb-gap
-        .fs-appFontSizes.color-text200
-          | ⚙️ 全局控制中心，管理图表显示、刷新频率和联动效果
+    .full.c-card.between-col.justify-start.p-padding.rounded-rounded.gap-gap(class='w-1/5')
+      .fs-appFontSizex.color-text100 控制面板
 
       // 主要控制按钮
-      .flex.flex-col.gap-gap.mb-gap
-        Button(
-          :outlined='!controls.paused',
-          :severity='controls.paused ? "success" : "warning"',
-          @click='togglePause'
-        )
-          .icon-carbon-play(v-if='controls.paused')
-          .icon-carbon-pause(v-else)
-          span.ml-gap {{ controls.paused ? '恢复' : '暂停' }}
+      .w-full
+        .fs-appFontSizes.color-text200.mb-gaps 主要控制按钮
+        .between-col.justify-start.gap-gap.px-padding
+          Button(
+            :outlined='!controls.paused',
+            :severity='controls.paused ? "danger" : "primary"',
+            @click='togglePause'
+          )
+            OhVueIcon(name='ri-play-fill', v-if='controls.paused')
+            OhVueIcon(name='ri-pause-fill', v-else)
+            | {{ controls.paused ? '恢复' : '暂停' }}
 
-        Button(outlined, @click='togglePredict')
-          .icon-carbon-magic-wand
-          span.ml-gap {{ controls.predictMode ? '预测模式' : '实时模式' }}
+          Button(outlined, @click='togglePredict')
+            | {{ controls.predictMode ? '预测模式' : '实时模式' }}
 
-        Button(outlined, severity='secondary', @click='toggleLinkage')
-          .icon-carbon-link
-          span.ml-gap {{ controls.linkage ? '联动：开' : '联动：关' }}
+          Button(outlined, severity='info', @click='toggleLinkage')
+            | {{ controls.linkage ? '联动：开' : '联动：关' }}
 
-        Button(outlined, severity='help', @click='resetFocus')
-          .icon-carbon-reset
-          span.ml-gap 取消聚焦
+          Button(outlined, severity='secondary', @click='resetFocus')
+            | 取消聚焦
 
       // 行业显示控制
-      .mb-gap
-        .fs-appFontSizes.color-text200.mb-gap 行业显示
-        .flex.flex-col.gap-gap
+      .w-full
+        .fs-appFontSizes.color-text200.mb-gaps 行业显示
+        .between-col.justify-start.gap-gap.px-padding
           template(v-for='ind in industries', :key='ind')
             Button(
               :outlined='!controls.show[ind]',
-              :severity='controls.show[ind] ? "success" : "secondary"',
+              :severity='controls.show[ind] ? "success" : "primary"',
               @click='toggleIndustry(ind)'
             ) {{ ind }}
 
       // 时间范围控制
-      .mb-gap
-        .fs-appFontSizes.color-text200.mb-gap 时间范围
-        .flex.flex-col.gap-gap
+      .w-full
+        .fs-appFontSizes.color-text200.mb-gaps 时间范围
+        .between-col.justify-start.gap-gap.px-padding
           Button(:outlined='controls.timeRange !== "m1"', @click='setTimeRange("m1")') 1min
           Button(:outlined='controls.timeRange !== "m5"', @click='setTimeRange("m5")') 5min
           Button(:outlined='controls.timeRange !== "m15"', @click='setTimeRange("m15")') 15min
 
   // 页脚信息
-  .w-full.h-footerHeight.between.bg-bg300
-    .flex.items-center.justify-between
-      .flex.items-center.gap-gap
-        .icon-carbon-time.fs-appFontSizes.color-text200
-        .fs-appFontSizes.color-text200
-          | 最后更新：{{ new Date().toLocaleString() }}
-      .flex.items-center.gap-gap
-        .icon-carbon-ai-status.fs-appFontSizes.color-primary100
-        .fs-appFontSizes.color-text200
-          | AInergy Dashboard v1.0 - 实时智能分析中枢
+  .w-full.h-footerHeight.between.bg-bg300.px-paddingl.fs-appFontSizes
+    .color-accent100
+      | 最后更新：{{ new Date().toLocaleString() }}
+    .color-text200
+      | AInergy Dashboard - 实时智能分析中枢
 </template>
-<style lang="scss" scope>
-@keyframes glow {
-  0%,
-  100% {
-    opacity: 0.4;
-  }
-  50% {
-    opacity: 0.7;
-  }
-}
-</style>

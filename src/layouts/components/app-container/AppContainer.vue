@@ -70,7 +70,9 @@ watch(
       :style='{ height: containerHeight + "px" }',
       @scroll='handleScroll',
       @initialized='handleInitialized',
-      :remember-scroll-position='true'
+      :remember-scroll-position='true',
+      :scroll-position-key='"app-container"',
+      :auto-hide='false'
     )
       AnimateRouterView(
         :style='{ minHeight: containerHeight + "px" }',

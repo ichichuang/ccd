@@ -3,17 +3,6 @@ import { ref } from 'vue'
 
 // 柱状图配置
 const barChartOption = ref({
-  color: [
-    '#1890FF',
-    '#91CB74',
-    '#FAC858',
-    '#EE6666',
-    '#73C0DE',
-    '#3CA272',
-    '#FC8452',
-    '#9A60B4',
-    '#ea7ccc',
-  ],
   title: {
     text: '月度销售数据（柱状图）',
   },
@@ -918,26 +907,26 @@ const linesChartOption = ref({
 </script>
 
 <template lang="pug">
-.full.p-4
+.p-paddingl.bg-bg200
   .grid.grid-cols-1.gap-gap(class='lg:grid-cols-2 xl:grid-cols-3')
-    UseEcharts(:option='barChartOption')
-    UseEcharts(:option='lineChartOption')
-    UseEcharts(:option='pieChartOption')
-    UseEcharts(:option='scatterChartOption')
-    UseEcharts(:option='radarChartOption')
-    UseEcharts(:option='funnelChartOption')
-    UseEcharts(:option='gaugeChartOption')
-    UseEcharts(:option='candlestickChartOption')
-    UseEcharts(:option='heatmapChartOption')
-    UseEcharts(:option='sankeyChartOption')
-    UseEcharts(:option='boxplotChartOption')
-    UseEcharts(:option='sunburstChartOption')
-    UseEcharts(:option='themeRiverChartOption')
-    UseEcharts(:option='effectScatterChartOption')
-    UseEcharts(:option='pictorialBarChartOption')
-    UseEcharts(:option='graphChartOption')
-    UseEcharts(:option='treeChartOption')
-    UseEcharts(:option='treemapChartOption')
-    UseEcharts(:option='parallelChartOption')
-    UseEcharts(:option='linesChartOption')
+    UseEcharts.bg-bg100.rounded-rounded.p-padding(:option='barChartOption')
+    UseEcharts.bg-bg100.rounded-rounded.p-padding(:option='lineChartOption')
+    UseEcharts.bg-bg100.rounded-rounded.p-padding(:option='pieChartOption')
+    UseEcharts.bg-bg100.rounded-rounded.p-padding(:option='scatterChartOption')
+    UseEcharts.bg-bg100.rounded-rounded.p-padding(:option='radarChartOption')
+    UseEcharts.bg-bg100.rounded-rounded.p-padding(:option='funnelChartOption')
+    UseEcharts.bg-bg100.rounded-rounded.p-padding(:option='gaugeChartOption')
+    UseEcharts.bg-bg100.rounded-rounded.p-padding(:option='candlestickChartOption')
+    UseEcharts.bg-bg100.rounded-rounded.p-padding(:option='heatmapChartOption')
+    UseEcharts.bg-bg100.rounded-rounded.p-padding(:option='sankeyChartOption')
+    UseEcharts.bg-bg100.rounded-rounded.p-padding(:option='boxplotChartOption')
+    UseEcharts.bg-bg100.rounded-rounded.p-padding(:option='sunburstChartOption')
+    UseEcharts.bg-bg100.rounded-rounded.p-padding(:option='themeRiverChartOption')
+    UseEcharts.bg-bg100.rounded-rounded.p-padding(:option='effectScatterChartOption')
+    UseEcharts.bg-bg100.rounded-rounded.p-padding(:option='pictorialBarChartOption')
+    UseEcharts.bg-bg100.rounded-rounded.p-padding(:option='graphChartOption')
+    UseEcharts.bg-bg100.rounded-rounded.p-padding(:option='treeChartOption')
+    UseEcharts.bg-bg100.rounded-rounded.p-padding(:option='treemapChartOption')
+    UseEcharts.bg-bg100.rounded-rounded.p-padding(:option='parallelChartOption')
+    UseEcharts.bg-bg100.rounded-rounded.p-padding(:option='linesChartOption')
 </template>

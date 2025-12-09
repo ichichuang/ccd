@@ -3,6 +3,7 @@ import { goToRoute } from '@/common'
 import AppTopMenu from '@/layouts/components/app-menu/AppMenu'
 import AppSidebar from '@/layouts/components/app-sidebar/AppSidebar.vue'
 import Image from 'primevue/image'
+const appTopMenuComponent = AppTopMenu
 </script>
 <template lang="pug">
 .full.between.gap-gap
@@ -11,6 +12,6 @@ import Image from 'primevue/image'
       Image.full(src='./face.png')
   .center.flex-1
     AppSidebar
-  AppTopMenu
+  component(:is='appTopMenuComponent')
 </template>
 <style lang="scss" scoped></style>

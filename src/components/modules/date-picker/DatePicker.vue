@@ -3,8 +3,8 @@ import { useThemeSwitch } from '@/hooks'
 import { getCurrentLocale, t } from '@/locales'
 import VueDatePicker from '@vuepic/vue-datepicker'
 import { computed, nextTick, onMounted, ref, watch } from 'vue'
-import { datePickerDefaultPropsFactory } from './utils/constants'
-import { formatModelValue, getDefaultDisplayFormat, toDate } from './utils/helper'
+import { datePickerDefaultPropsFactory, ISO_FORMATS } from './utils/constants'
+import { formatModelValue, formatSimpleIso, getDefaultDisplayFormat, toDate } from './utils/helper'
 import type {
   DatePickerEmits,
   DatePickerProps,
@@ -43,9 +43,30 @@ const innerValue = ref<any>(null)
 // 标记是否正在内部更新，防止循环触发
 const isInternalUpdate = ref(false)
 
+// DatePicker.vue (约 105 行)
 // 有效展示格式（未传时随模式提供默认）
 const effectiveDisplayFormat = computed(() => {
-  return props.displayFormat || getDefaultDisplayFormat(props.mode)
+  // 1. 如果用户手动传入了 displayFormat，优先使用
+  if (props.displayFormat) {
+    return props.displayFormat
+  }
+
+  const vf = inferredValueFormat.value
+  const mode = props.mode
+
+  // 2. 【核心修复】如果 valueFormat 是 'iso' 或 'string'，
+  //    必须使用 ISO 格式作为默认显示格式，确保底层组件能解析输入的 ISO 字符串。
+  //    注意：我们只对 datetime 模式做此覆盖，因为 date/time/month/year 等ISO格式与默认格式是相同的。
+  if (
+    (vf === 'iso' || vf === 'string') &&
+    (mode === 'datetime' || mode === 'time' || mode === 'date')
+  ) {
+    // 使用 ISO_FORMATS 中对应的格式，确保与传入的 innerValue 字符串格式兼容
+    return ISO_FORMATS[mode] || ISO_FORMATS.datetime // 使用 ISO_FORMATS 里的对应格式
+  }
+
+  // 3. 否则，使用 mode 默认格式
+  return getDefaultDisplayFormat(mode)
 })
 
 // 根据初始 modelValue 智能推断输出类型（未显式指定时）
@@ -84,13 +105,20 @@ const inferredValueFormat = computed<'date' | 'timestamp' | 'iso' | 'string'>(()
   return 'date'
 })
 
+// DatePicker.vue (约 132 行)
 // modelType 映射（控制内部组件输出格式）
 const modelType = computed(() => {
   const vf = inferredValueFormat.value
   if (vf === 'timestamp') {
     return 'timestamp'
   }
-  // 其余场景（date/iso/string）统一用 Date 作为内部模型，避免格式字符串与 format 不一致导致不回显
+  // 【新逻辑】如果外部期望的是 'iso' 或 'string' 格式，
+  // 我们应该让 vue-datepicker 直接输出格式化后的值（字符串），
+  // 这样可以避免内部的 Date 对象转换失败。
+  if (vf === 'iso' || vf === 'string') {
+    return 'format' // 👈 关键更改：让底层组件输出字符串
+  }
+  // 其余场景（date）使用 Date 作为内部模型
   return 'date'
 })
 
@@ -179,6 +207,7 @@ const normalizeForModelType = (
     return null
   }
 
+  // 处理数组（范围选择）
   if (Array.isArray(value)) {
     const a = normalizeForModelType(value[0] as any, vf)
     const b = normalizeForModelType(value[1] as any, vf)
@@ -193,7 +222,22 @@ const normalizeForModelType = (
     return d ? d.getTime() : null
   }
 
-  // 其余（date/iso/string）一律转为 Date，确保内部模型与 :model-type="date" 匹配
+  // 【核心修改】对于 'iso' 或 'string' 格式，底层组件需要格式化字符串
+  if (vf === 'iso' || vf === 'string') {
+    // 此时底层 modelType 是 'format'
+    const d = toDate(value as any)
+
+    if (!d) {
+      return null
+    }
+
+    // 【使用简化 ISO 格式】
+    // 我们强制 innerValue 使用简化格式 (YYYY-MM-DDTHH:mm:ss)
+    // 来匹配 effectiveDisplayFormat = "yyyy-MM-dd'T'HH:mm:ss" 的解析要求。
+    return formatSimpleIso(d)
+  }
+
+  // 其余（date）一律转为 Date
   return toDate(value as any)
 }
 
@@ -202,6 +246,7 @@ const isValueEqual = (a: any, b: any): boolean => {
   if (a === b) {
     return true
   }
+
   if (a === null || b === null || a === undefined || b === undefined) {
     return false
   }
@@ -217,17 +262,65 @@ const isValueEqual = (a: any, b: any): boolean => {
     })
   }
 
+  // 【新增逻辑】如果 a 和 b 都是字符串，进行严格比较
+  if (typeof a === 'string' && typeof b === 'string') {
+    return a === b
+  }
+
   if (a instanceof Date && b instanceof Date) {
     return a.getTime() === b.getTime()
   }
 
-  return false
+  // Fallback to strict comparison for primitives or unhandled types
+  return a === b
 }
 
 // 内部值变化 -> 派发给外部（按 valueFormat 输出）
 const handleUpdate = (val: any) => {
-  // 设置内部更新标志
-  isInternalUpdate.value = true
+  // 对于 date/iso/string 格式，确保 val 是 Date 对象
+  // 如果 val 是字符串或其他类型，尝试转换为 Date 对象
+  if (modelType.value === 'date') {
+    if (!(val instanceof Date)) {
+      // 如果是数组（范围选择），检查每个元素
+      if (Array.isArray(val)) {
+        const convertedArray = val.map(item => {
+          if (item instanceof Date) {
+            return item
+          }
+          const converted = toDate(item)
+          return converted || null
+        })
+
+        // 如果所有元素都转换成功，使用转换后的数组
+        if (convertedArray.every(item => item !== null || val.includes(null))) {
+          val = convertedArray as any
+          innerValue.value = val
+        } else {
+          innerValue.value = null
+          // 强制触发组件重新渲染，清除 vue-datepicker 内部的无效缓存
+          renderKey.value += 1
+          emit('update:modelValue', null)
+          emit('change', null)
+          return
+        }
+      } else {
+        // 单值选择
+        const convertedDate = toDate(val)
+        if (convertedDate) {
+          val = convertedDate
+          // 更新 innerValue 为正确的 Date 对象
+          innerValue.value = val
+        } else {
+          // 如果转换失败，强制清空值并触发重新渲染
+          innerValue.value = null
+          renderKey.value += 1
+          emit('update:modelValue', null)
+          emit('change', null)
+          return
+        }
+      }
+    }
+  }
 
   let out: DateValue
   if (Array.isArray(val)) {
@@ -245,28 +338,22 @@ const handleUpdate = (val: any) => {
     out = single === null || single === undefined ? null : (single as any)
   }
 
-  debugDatePicker('[SchemaForm][DatePicker] handleUpdate', {
-    raw: val,
-    formatted: out,
-    valueFormat: inferredValueFormat.value,
-  })
-
-  debugDatePicker('[SchemaForm][DatePicker] emitting update:modelValue', {
-    value: out,
-    hasListeners: true, // Vue 会自动处理事件监听器
-  })
+  // 对于 iso/string 格式，不设置 isInternalUpdate 标志
+  // 因为需要让 watch 能够处理外部更新，确保 innerValue 与外部值同步
+  // 由于 isValueEqual 会检查值是否真的变化，所以不会造成循环更新
+  if (inferredValueFormat.value !== 'iso' && inferredValueFormat.value !== 'string') {
+    isInternalUpdate.value = true
+  }
 
   emit('update:modelValue', out)
   emit('change', out)
 
-  debugDatePicker('[SchemaForm][DatePicker] after emit', {
-    value: out,
-  })
-
   // 使用 nextTick 确保外部更新完成后再解除锁定
-  nextTick(() => {
-    isInternalUpdate.value = false
-  })
+  if (inferredValueFormat.value !== 'iso' && inferredValueFormat.value !== 'string') {
+    nextTick(() => {
+      isInternalUpdate.value = false
+    })
+  }
 }
 
 // 外部值或推断格式变化 -> 同步内部值为正确类型
@@ -278,11 +365,6 @@ watch(
       return
     }
 
-    debugDatePicker('[SchemaForm][DatePicker] props.modelValue watcher', {
-      incoming: next,
-      valueFormat: vf,
-    })
-
     // 若外部未提供值，保持为空
     if (next === null || next === undefined) {
       // 对于范围模式，使用 null 而非 [null, null]，避免组件内部默认化为起始时间
@@ -291,10 +373,48 @@ watch(
     }
 
     const normalized = normalizeForModelType(next, vf)
-    debugDatePicker('[SchemaForm][DatePicker] normalizeForModelType result', normalized)
+
+    // 对于 date/iso/string 格式，确保 normalized 是 Date 对象或 null
+    // 如果 normalizeForModelType 返回了无效值，应该设置为 null
+    if (modelType.value === 'date') {
+      if (modelType.value === 'date') {
+        if (Array.isArray(normalized)) {
+          // Range mode validation: Check if any item in the array is invalid (not Date or null)
+          const hasInvalidItem = normalized.some(item => item !== null && !(item instanceof Date))
+          if (hasInvalidItem) {
+            console.warn(
+              '[DatePicker] watch: normalized array has invalid items for modelType="date", setting to null',
+              normalized
+            )
+            innerValue.value = null
+            return
+          }
+        } else if (normalized !== null && !(normalized instanceof Date)) {
+          // Single mode validation: Check if it is a single invalid value
+          console.warn(
+            '[DatePicker] watch: normalized is not Date or null for modelType="date", setting to null',
+            {
+              normalized,
+            }
+          )
+          innerValue.value = null
+          return
+        }
+      }
+      // 对于数组类型（范围选择），检查每个元素
+      if (Array.isArray(normalized)) {
+        const hasInvalidItem = normalized.some(item => item !== null && !(item instanceof Date))
+        if (hasInvalidItem) {
+          innerValue.value = null
+          return
+        }
+      }
+    }
+
+    const isEqual = isValueEqual(innerValue.value, normalized)
 
     // 只在值真正变化时更新，避免不必要的重渲染
-    if (!isValueEqual(innerValue.value, normalized)) {
+    if (!isEqual) {
       innerValue.value = normalized
     }
   },
@@ -345,6 +465,31 @@ const maxDateResolved = computed<Date | undefined>(() => {
 // 首屏渲染稳定性：强制在 mounted 后刷新一次组件，避免某些环境初始不可交互
 const renderKey = ref(0)
 const isInitialized = ref(false)
+
+// 监听 innerValue，确保它始终是有效的类型（当 modelType='date' 时必须是 Date 或 null）
+watch(
+  () => innerValue.value,
+  newVal => {
+    if (modelType.value === 'date') {
+      // 如果 innerValue 是字符串或其他无效类型，立即清理
+      if (newVal !== null && !(newVal instanceof Date)) {
+        if (Array.isArray(newVal)) {
+          // 范围选择：检查每个元素
+          const hasInvalidItem = newVal.some(item => item !== null && !(item instanceof Date))
+          if (hasInvalidItem) {
+            innerValue.value = null
+            renderKey.value += 1
+          }
+        } else {
+          // 单值选择：如果不是 Date 也不是 null，清理
+          innerValue.value = null
+          renderKey.value += 1
+        }
+      }
+    }
+  },
+  { immediate: true, deep: true }
+)
 
 // 主题模式计算属性
 const themeMode = computed(() => (isDark.value ? 'dark' : 'light'))
@@ -409,6 +554,29 @@ watch(
   newLocale => {
     currentLocale.value = newLocale
   }
+)
+
+// 监听 innerValue，确保它始终是有效的类型（当 modelType='date' 时必须是 Date 或 null）
+watch(
+  () => innerValue.value,
+  newVal => {
+    if (modelType.value === 'date') {
+      // 如果 innerValue 是字符串或其他无效类型，立即清理
+      if (newVal !== null && !(newVal instanceof Date)) {
+        if (Array.isArray(newVal)) {
+          // 范围选择：检查每个元素
+          const hasInvalidItem = newVal.some(item => item !== null && !(item instanceof Date))
+          if (hasInvalidItem) {
+            innerValue.value = null
+          }
+        } else {
+          // 单值选择：如果不是 Date 也不是 null，清理
+          innerValue.value = null
+        }
+      }
+    }
+  },
+  { immediate: true, deep: true }
 )
 
 onMounted(() => {

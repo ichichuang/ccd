@@ -864,31 +864,31 @@ div
     div
       .fs-appFontSizes.color-accent100 表单整体操作
       .between-start.gap-gap
-        Button.py-2.px-4(@click='handleGetFormData') 获取表单数据（校验后）
-        Button.py-2.px-4(@click='handleGetFormValues') 获取表单值
-        Button.py-2.px-4(@click='handleResetForm') 重置表单
-        Button.py-2.px-4(@click='handleClearForm') 清空表单
-        Button.py-2.px-4(@click='handleSubmitForm') 提交表单
+        Button(size='small', @click='handleGetFormData') 获取表单数据（校验后）
+        Button(size='small', @click='handleGetFormValues') 获取表单值
+        Button(size='small', @click='handleResetForm') 重置表单
+        Button(size='small', @click='handleClearForm') 清空表单
+        Button(size='small', @click='handleSubmitForm') 提交表单
     div
       .fs-appFontSizes.color-accent100 表单项操作
       .between-start.gap-gap
-        Button.py-2.px-4(@click='handleAddField') 添加字段
-        Button.py-2.px-4(@click='handleRemoveField') 删除字段
-        Button.py-2.px-4(@click='handleUpdateField') 更新字段
-        Button.py-2.px-4(@click='handleGetField') 获取字段配置
-        Button.py-2.px-4(@click='handleGetFieldValue') 获取字段值
-        Button.py-2.px-4(@click='handleSetFieldValue') 设置字段值
-        Button.py-2.px-4(@click='handleMoveField') 移动字段
-        Button.py-2.px-4(@click='handleHiddenField') 隐藏/显示字段
+        Button(size='small', @click='handleAddField') 添加字段
+        Button(size='small', @click='handleRemoveField') 删除字段
+        Button(size='small', @click='handleUpdateField') 更新字段
+        Button(size='small', @click='handleGetField') 获取字段配置
+        Button(size='small', @click='handleGetFieldValue') 获取字段值
+        Button(size='small', @click='handleSetFieldValue') 设置字段值
+        Button(size='small', @click='handleMoveField') 移动字段
+        Button(size='small', @click='handleHiddenField') 隐藏/显示字段
     div
       .fs-appFontSizes.color-accent100 批量操作
       .between-start.gap-gap
-        Button.py-2.px-4(@click='handleSetValues') 批量设置值
+        Button(size='small', @click='handleSetValues') 批量设置值
     div
       .fs-appFontSizes.color-accent100 工具方法
       .between-start.gap-gap
-        Button.py-2.px-4(@click='handleHasField') 检查字段存在
-        Button.py-2.px-4(@click='handleGetFieldIndex') 获取字段索引
+        Button(size='small', @click='handleHasField') 检查字段存在
+        Button(size='small', @click='handleGetFieldIndex') 获取字段索引
   .p-padding
     // 表单组件
     SchemaForm(:schema='schema', @submit='handleSubmit', ref='schemaFormRef', :remember='true')

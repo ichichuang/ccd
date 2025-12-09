@@ -56,14 +56,14 @@ export interface DeviceConfig {
  */
 export const DEVICE_FONT_SIZE_RATIOS = {
   mobile: {
-    base: 0.75, // 12/16 = 0.75
-    min: 0.75, // 12/16 = 0.75
-    max: 1.0, // 16/16 = 1.0
+    base: 0.6, // 12/16 = 0.75
+    min: 0.4, // 12/16 = 0.75
+    max: 0.8, // 16/16 = 1.0
   },
   tablet: {
-    base: 0.9375, // 15/16 = 0.9375
-    min: 0.75, // 12/16 = 0.75
-    max: 1.0625, // 17/16 = 1.0625
+    base: 0.8, // 15/16 = 0.9375
+    min: 0.6, // 12/16 = 0.75
+    max: 0.9, // 17/16 = 1.0625
   },
   desktop: {
     base: 0.875, // 14/16 = 0.875
@@ -160,9 +160,9 @@ export const roundedOptions = [
  * 注意：label 现在通过国际化系统动态获取
  */
 export const fontSizeOptions = [
-  { labelKey: 'common.systemOptions.fontSize.xs', key: 'xs', value: 14 }, // 适用于紧凑模式
+  { labelKey: 'common.systemOptions.fontSize.xs', key: 'xs', value: 12 }, // 适用于紧凑模式
   { labelKey: 'common.systemOptions.fontSize.sm', key: 'sm', value: 14 },
-  { labelKey: 'common.systemOptions.fontSize.md', key: 'md', value: 15 }, // 移动端默认
+  { labelKey: 'common.systemOptions.fontSize.md', key: 'md', value: 14 }, // 移动端默认
   { labelKey: 'common.systemOptions.fontSize.lg', key: 'lg', value: 16 }, // 桌面端默认
   { labelKey: 'common.systemOptions.fontSize.xl', key: 'xl', value: 18 }, // 大屏默认
   { labelKey: 'common.systemOptions.fontSize.xls', key: 'xls', value: 20 }, // 超宽屏默认
