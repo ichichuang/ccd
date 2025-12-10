@@ -343,7 +343,7 @@ export const downloadFile = async (url: string, filename?: string) => {
     const response = await fetch(fullUrl, {
       method: 'GET',
       headers: {
-        authorization: `Bearer ${useUserStoreWithOut().getToken}`,
+        authorization: `Bearer ${useUserStoreWithOut().getSafeStorageToken}`,
       },
     })
 

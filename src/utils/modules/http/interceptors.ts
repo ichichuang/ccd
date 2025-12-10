@@ -91,7 +91,7 @@ export const beforeRequest = (method: Method) => {
 
   // 添加认证头
   const userStore = useUserStoreWithOut()
-  const token = userStore.getToken
+  const token = userStore.getSafeStorageToken
 
   if (token && token.trim()) {
     method.config.headers['Authorization'] = `Bearer ${token}`

@@ -5,12 +5,14 @@ import { useLoading } from '@/hooks'
 import router from '@/router'
 import store from '@/stores'
 import { env } from '@/utils'
+import { encryptAndCompressSync } from '@/utils/modules/safeStorage/safeStorage'
 import { defineStore } from 'pinia'
 
 const { loadingStart } = useLoading()
 
 interface UserState {
   token: string
+  safeStorageToken: string
   userInfo: UserInfo
   isLogin: boolean
 }
@@ -18,6 +20,7 @@ interface UserState {
 export const useUserStore = defineStore('user', {
   state: (): UserState => ({
     token: '',
+    safeStorageToken: '',
     userInfo: {
       userId: '', // 用户ID
       username: '', // 用户名
@@ -32,6 +35,7 @@ export const useUserStore = defineStore('user', {
 
   getters: {
     getToken: (state: UserState) => state.token,
+    getSafeStorageToken: (state: UserState) => state.safeStorageToken,
     getUserInfo: (state: UserState) => state.userInfo,
     // 获取页面权限
     getUserRoles: (state: UserState) => state.userInfo.roles,
@@ -43,6 +47,7 @@ export const useUserStore = defineStore('user', {
   actions: {
     async setToken(token: string) {
       this.token = token
+      this.safeStorageToken = encryptAndCompressSync(token, env.appSecret)
       try {
         // 响应拦截器已经返回了 data 字段，所以 res 就是 UserInfo
         const userInfo = await getUserInfo()
@@ -61,6 +66,7 @@ export const useUserStore = defineStore('user', {
     },
     clearUserInfo() {
       this.token = ''
+      this.safeStorageToken = ''
       this.userInfo = {
         userId: '',
         username: '',
