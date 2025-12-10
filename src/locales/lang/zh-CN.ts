@@ -143,6 +143,8 @@ const zhCN = {
       serverErrorTitle: '500',
     },
     actions: {
+      admin: '管理员',
+      user: '用户',
       register: '还没有账号？点我注册',
       forgotPassword: '忘记密码？',
       recoverAccount: '立即找回？',
@@ -150,6 +152,7 @@ const zhCN = {
       enterSystem: '进入系统',
       welcome: '欢迎使用',
       backToHome: '回到主页',
+      otherLogin: '其他账号登录',
     },
     social: {
       qq: 'QQ',
@@ -157,6 +160,8 @@ const zhCN = {
       alipay: '支付宝',
     },
     auth: {
+      username: '用户名',
+      password: '密码',
       accountPasswordLogin: '账号密码登录',
       login: {
         title: '用户登录',

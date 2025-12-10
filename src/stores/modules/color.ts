@@ -5,7 +5,7 @@ import { env, getDefaultTheme, getThemeOptions } from '@/utils'
 import { defineStore } from 'pinia'
 export const useColorStore = defineStore('color', {
   state: (): ColorState => ({
-    mode: 'dark',
+    mode: 'light',
     modeOptions,
     darkMode: false,
 

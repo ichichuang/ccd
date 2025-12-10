@@ -142,6 +142,9 @@ const enUS = {
       serverErrorTitle: '500',
     },
     actions: {
+      admin: 'Admin',
+      user: 'User',
+      otherLogin: 'Other Account Login',
       register: 'No account yet? Click to register',
       forgotPassword: 'Forgot password?',
       recoverAccount: 'Recover account?',
@@ -157,6 +160,8 @@ const enUS = {
     },
     auth: {
       accountPasswordLogin: 'Account Password Login',
+      username: 'Username',
+      password: 'Password',
       login: {
         title: 'User Login',
         loginButton: 'Login',

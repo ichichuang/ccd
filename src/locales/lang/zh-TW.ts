@@ -143,6 +143,9 @@ const zhTW = {
       serverErrorTitle: '500',
     },
     actions: {
+      admin: '管理員',
+      user: '用戶',
+      otherLogin: '其他帳號登入',
       register: '還沒有帳號？點我註冊',
       forgotPassword: '忘記密碼？',
       recoverAccount: '立即找回？',
@@ -158,6 +161,8 @@ const zhTW = {
     },
     auth: {
       accountPasswordLogin: '帳號密碼登入',
+      username: '用戶名',
+      password: '密碼',
       login: {
         title: '用戶登入',
         loginButton: '登入',
