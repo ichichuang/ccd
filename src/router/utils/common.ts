@@ -123,7 +123,8 @@ export function addParentPathsToBackendRoutes(
  * 修改后的处理动态路由函数，自动添加parentPaths
  */
 export function processAsyncRoutes(backendRoutes: BackendRouteConfig[]): RouteConfig[] {
-  if (!backendRoutes || backendRoutes.length === 0) {
+  if (!Array.isArray(backendRoutes) || backendRoutes.length === 0) {
+    console.warn('🪒-Router: 后端返回的路由数据不是数组或为空，已跳过处理', backendRoutes)
     return []
   }
 

@@ -71,7 +71,16 @@ export const registerRouterGuards = ({
 
       try {
         // 响应拦截器已经返回了 data 字段，所以返回的就是路由数组
-        const routes = await getAuthRoutes()
+        const routeResponse = await getAuthRoutes()
+        const routes = Array.isArray(routeResponse)
+          ? routeResponse
+          : Array.isArray((routeResponse as any)?.routes)
+            ? (routeResponse as any).routes
+            : []
+
+        if (!Array.isArray(routes)) {
+          throw new Error('动态路由数据格式不正确，预期为数组或包含 routes 字段的对象')
+        }
 
         // 保存到 store
         permissionStore.setDynamicRoutes(routes)
