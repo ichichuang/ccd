@@ -4,18 +4,6 @@ import { env } from '@/utils'
 import { defineStore } from 'pinia'
 import { toRaw } from 'vue'
 
-/* 设置 tab 渲染数据 */
-export interface TabItem {
-  name: string // 路由名称（索引）
-  path: string // 路由路径
-  titleKey?: string // 国际化标题键（首选）
-  title?: string // 静态标题（备选）
-  label: string // 标签文本（展示）- 动态计算
-  active: boolean // 是否为当前路由（高亮显示）
-  icon?: string // 图标
-  fixed: boolean // 是否固定(固定标签不可删除)
-  deletable: boolean // 是否可删除(默认 true 可删除)
-}
 interface PermissionState {
   // 静态路由
   staticRoutes: RouteConfig[]

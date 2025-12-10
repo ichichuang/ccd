@@ -23,6 +23,9 @@ export const useUserStore = defineStore('user', {
       username: '', // 用户名
       roles: [], // 用户角色
       permissions: [], // 用户权限
+      avatar: undefined, // 用户头像
+      email: undefined, // 用户邮箱
+      phone: undefined, // 用户手机号
     },
     isLogin: false, // 是否登录
   }),
@@ -38,11 +41,18 @@ export const useUserStore = defineStore('user', {
   },
 
   actions: {
-    setToken(token: string) {
+    async setToken(token: string) {
       this.token = token
-      getUserInfo().then(res => {
-        this.setUserInfo(res.data)
-      })
+      try {
+        // 响应拦截器已经返回了 data 字段，所以 res 就是 UserInfo
+        const userInfo = await getUserInfo()
+        this.setUserInfo(userInfo)
+      } catch (error) {
+        console.error('获取用户信息失败:', error)
+        // 如果获取用户信息失败，清除 token
+        this.clearUserInfo()
+        throw error
+      }
     },
     setUserInfo(userInfo: UserInfo) {
       this.userInfo = userInfo
@@ -56,6 +66,9 @@ export const useUserStore = defineStore('user', {
         username: '',
         roles: [],
         permissions: [],
+        avatar: undefined,
+        email: undefined,
+        phone: undefined,
       }
       this.isLogin = false
     },

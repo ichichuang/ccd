@@ -50,10 +50,17 @@ const zhCN = {
         title: '函数',
         date: '日期',
       },
-      afeStorage: {
+      safeStorage: {
         title: '安全存储',
+        crypto: '加密存储',
+        lzstring: '压缩存储',
+      },
+      http: {
+        title: 'HTTP',
+        basic: '基础HTTP',
       },
     },
+
     error: {
       title: '错误',
       notFound: '页面未找到',
@@ -158,6 +165,8 @@ const zhCN = {
     },
     messages: {
       loginFailed: '登录失败',
+      loginSuccess: '登录成功',
+      welcomeMessage: '欢迎使用系统',
     },
   },
   layout: {

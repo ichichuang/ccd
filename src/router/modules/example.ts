@@ -10,51 +10,6 @@ const exampleRoutes: RouteConfig[] = [
     },
     children: [
       {
-        path: 'layout',
-        name: 'ExampleLayout',
-        meta: {
-          titleKey: 'router.example.layout.title',
-          rank: 3,
-          icon: 'fc-folder',
-        },
-        children: [
-          {
-            path: 'fullscreen',
-            name: 'ExampleLayoutFullscreen',
-            component: () => import('@/views/example/layout/example-fullscreen.vue'),
-            meta: {
-              titleKey: 'router.example.layout.fullscreen',
-              rank: 1,
-              parent: 'fullscreen',
-              icon: 'fc-display',
-            },
-          },
-          {
-            path: 'test',
-            name: 'ExampleLayoutTest',
-            component: () => import('@/views/example/layout/example-test.vue'),
-            meta: {
-              titleKey: 'router.example.layout.test',
-              rank: 3,
-              parent: 'fullscreen',
-              icon: 'fc-approval',
-            },
-          },
-          {
-            path: 'ratio',
-            name: 'ExampleLayoutRatio',
-            component: () => import('@/views/example/layout/example-ratio.vue'),
-            meta: {
-              titleKey: 'router.example.layout.ratio',
-              rank: 4,
-              parent: 'ratio',
-              icon: 'fc-display',
-              ratio: '16:9',
-            },
-          },
-        ],
-      },
-      {
         path: 'components',
         name: 'ExampleComponents',
         meta: {
@@ -271,18 +226,118 @@ const exampleRoutes: RouteConfig[] = [
               icon: 'fc-calendar',
             },
           },
+          // afeStorage
+          {
+            path: 'safeStorage',
+            name: 'ExampleSafeStorage',
+            meta: {
+              titleKey: 'router.example.safeStorage.title',
+              rank: 2,
+              icon: 'fc-alarm-clock',
+            },
+            children: [
+              {
+                path: 'safe-storage',
+                name: 'ExampleSafeStorageSafeStorage',
+                component: () =>
+                  import('@/views/example/views/example-safe-storage/example-safe-storage.vue'),
+                meta: {
+                  titleKey: 'router.example.safeStorage.title',
+                  rank: 1,
+                  icon: 'fc-alarm-clock',
+                },
+              },
+              {
+                path: 'crypto',
+                name: 'ExampleSafeStorageCrypto',
+                component: () =>
+                  import('@/views/example/views/example-safe-storage/example-safe-storage-crypto.vue'),
+                meta: {
+                  titleKey: 'router.example.safeStorage.crypto',
+                  rank: 1,
+                  icon: 'fc-bookmark',
+                },
+              },
+              {
+                path: 'lzstring',
+                name: 'ExampleSafeStorageLzstring',
+                component: () =>
+                  import('@/views/example/views/example-safe-storage/example-safe-storage-lzstring.vue'),
+                meta: {
+                  titleKey: 'router.example.safeStorage.lzstring',
+                  rank: 2,
+                  icon: 'fc-bookmark',
+                },
+              },
+            ],
+          },
         ],
       },
-      // afeStorage
       {
-        path: 'afeStorage',
-        name: 'ExampleAfeStorage',
-        component: () => import('@/views/example/views/example-afeStorage.vue'),
+        path: 'http',
+        name: 'ExampleHttp',
         meta: {
-          titleKey: 'router.example.afeStorage.title',
+          titleKey: 'router.example.http.title',
+          icon: 'fc-mind-map',
           rank: 3,
-          icon: 'fc-alarm-clock',
         },
+        children: [
+          {
+            path: 'basic',
+            name: 'ExampleHttpBasic',
+            component: () => import('@/views/example/views/example-http/example-http-basic.vue'),
+            meta: {
+              titleKey: 'router.example.http.basic',
+              rank: 1,
+              icon: 'fc-mind-map',
+            },
+          },
+        ],
+      },
+      {
+        path: 'layout',
+        name: 'ExampleLayout',
+        meta: {
+          titleKey: 'router.example.layout.title',
+          rank: 4,
+          icon: 'fc-folder',
+        },
+        children: [
+          {
+            path: 'fullscreen',
+            name: 'ExampleLayoutFullscreen',
+            component: () => import('@/views/example/layout/example-fullscreen.vue'),
+            meta: {
+              titleKey: 'router.example.layout.fullscreen',
+              rank: 1,
+              parent: 'fullscreen',
+              icon: 'fc-display',
+            },
+          },
+          {
+            path: 'test',
+            name: 'ExampleLayoutTest',
+            component: () => import('@/views/example/layout/example-test.vue'),
+            meta: {
+              titleKey: 'router.example.layout.test',
+              rank: 2,
+              parent: 'fullscreen',
+              icon: 'fc-approval',
+            },
+          },
+          {
+            path: 'ratio',
+            name: 'ExampleLayoutRatio',
+            component: () => import('@/views/example/layout/example-ratio.vue'),
+            meta: {
+              titleKey: 'router.example.layout.ratio',
+              rank: 3,
+              parent: 'ratio',
+              icon: 'fc-display',
+              ratio: '16:9',
+            },
+          },
+        ],
       },
       // 重定向空页面
       {

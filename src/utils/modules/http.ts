@@ -7,4 +7,3 @@ export { HTTP_CONFIG } from '@/constants'
 
 // 导出所有HTTP相关功能
 export * from './http/index'
-export { default } from './http/index'

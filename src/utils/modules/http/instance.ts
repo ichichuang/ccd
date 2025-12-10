@@ -48,7 +48,7 @@ const validateAlovaConfig = () => {
  * 创建全局 Alova 实例
  */
 export const alovaInstance = createAlova({
-  // 连接到本地 cc-server
+  // 连接到本地 server
   baseURL: env.appEnv === 'development' ? '/api' : env.apiBaseUrl,
 
   // 使用 fetch 作为请求适配器

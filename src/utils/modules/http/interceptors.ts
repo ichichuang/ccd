@@ -1,6 +1,7 @@
 import { HTTP_CONFIG } from '@/constants'
 import { useUserStoreWithOut } from '@/stores'
 import { env } from '@/utils'
+import { decompressAndDecryptSync } from '@/utils/modules/safeStorage'
 import type { Method } from 'alova'
 
 /**
@@ -83,49 +84,10 @@ function sanitizeData(
 }
 
 /**
- * 生成 CSRF Token
- */
-function generateCSRFToken(): string {
-  return `csrf_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
-}
-
-/**
- * 生成请求签名
- */
-function generateRequestSignature(url: string, data: any, timestamp: number): string {
-  const content = `${url}${JSON.stringify(data)}${timestamp}`
-  // 简单的哈希算法，生产环境应使用更安全的算法
-  let hash = 0
-  for (let i = 0; i < content.length; i++) {
-    const char = content.charCodeAt(i)
-    hash = ((hash << 5) - hash + char) & 0xffffffff
-  }
-  return hash.toString(16)
-}
-
-/**
  * 全局请求拦截器
  */
 export const beforeRequest = (method: Method) => {
-  // 添加请求ID
   method.config.headers = method.config.headers || {}
-  method.config.headers['X-Request-ID'] = generateRequestId()
-
-  // 添加时间戳
-  const timestamp = Date.now()
-  method.config.headers['X-Timestamp'] = timestamp.toString()
-
-  // 添加CSRF保护
-  if (HTTP_CONFIG.enableCsrf) {
-    const csrfToken = generateCSRFToken()
-    method.config.headers['X-CSRF-Token'] = csrfToken
-  }
-
-  // 添加请求签名
-  if (HTTP_CONFIG.enableSignature) {
-    const signature = generateRequestSignature(method.url, method.data, timestamp)
-    method.config.headers['X-Signature'] = signature
-  }
 
   // 添加认证头
   const userStore = useUserStoreWithOut()
@@ -148,7 +110,7 @@ export const beforeRequest = (method: Method) => {
 }
 
 /**
- * 全局响应拦截器 - 适配 cc-server 的响应格式
+ * 全局响应拦截器 - 适配 server 的响应格式
  */
 export const responseHandler = async (response: Response, _method: Method) => {
   try {
@@ -196,7 +158,7 @@ export const responseHandler = async (response: Response, _method: Method) => {
       )
     }
 
-    // cc-server 使用 success 字段而不是 code
+    // server 使用 success 字段而不是 code
     if (json.success === false) {
       throw new HttpRequestError(
         json.message || '请求失败',
@@ -211,7 +173,26 @@ export const responseHandler = async (response: Response, _method: Method) => {
     // 如果有 success 字段且为 true，返回 data 字段（如果存在）或整个响应对象
     // 如果没有 success 字段，说明是根路径等简单响应，直接返回
     if (json.success === true) {
-      return json.data !== undefined ? json.data : json
+      let responseData = json.data !== undefined ? json.data : json
+
+      // 检查响应数据是否需要解密
+      if (responseData && typeof responseData === 'object' && responseData.isSafeStorage === true) {
+        try {
+          // 如果存在 encrypted 字段，则解密
+          if (responseData.encrypted && typeof responseData.encrypted === 'string') {
+            const decrypted = decompressAndDecryptSync<any>(responseData.encrypted)
+            if (decrypted) {
+              // 返回解密后的原始数据（不包含 isSafeStorage 和 encrypted 字段）
+              responseData = decrypted
+            }
+          }
+        } catch (error) {
+          console.error('[ResponseHandler] 解密响应数据失败:', error)
+          // 解密失败时返回原始数据
+        }
+      }
+
+      return responseData
     }
 
     // 如果没有 success 字段，返回整个响应对象
@@ -347,11 +328,4 @@ const handleRequestError = (error: Error) => {
   } else if (error.message.includes('Failed to fetch')) {
     console.warn('网络连接失败')
   }
-}
-
-/**
- * 生成请求追踪 ID
- */
-function generateRequestId(): string {
-  return `req_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
 }

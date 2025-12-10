@@ -19,6 +19,7 @@ const mode = computed(() => colorStore.mode)
 const userStore = useUserStore()
 const userInfo = computed(() => userStore.getUserInfo)
 const userName = computed(() => userInfo.value?.username ?? '')
+const userAvatar = computed(() => userInfo.value?.avatar || defaultAvatar)
 
 // 尺寸相关
 const sizeStore = useSizeStore()
@@ -270,7 +271,7 @@ const openMoreSettingsDialog = () => {
   @click='handleToggle',
   @touch='handleToggle'
 )
-  Image.w-appFontSizel.h-appFontSizel.rounded-rounded.overflow-hidden(:src='defaultAvatar')
+  Image.w-appFontSizel.h-appFontSizel.rounded-rounded.overflow-hidden(:src='userAvatar')
   .h-appFontSizel.center.between-start.px-padding.c-transitions(
     class='hover:color-primary100 rounded-l-none!'
   ) {{ userName }}

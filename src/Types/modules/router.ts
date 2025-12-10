@@ -103,6 +103,28 @@ declare global {
     meta?: import('vue-router').RouteMeta // 菜单元信息
   }
 
+  /** 标签页项类型（用于标签页渲染） */
+  interface TabItem {
+    /** 路由名称（索引） */
+    name: string
+    /** 路由路径 */
+    path: string
+    /** 国际化标题键（首选） */
+    titleKey?: string
+    /** 静态标题（备选） */
+    title?: string
+    /** 标签文本（展示）- 动态计算 */
+    label: string
+    /** 是否为当前路由（高亮显示） */
+    active: boolean
+    /** 图标 */
+    icon?: string
+    /** 是否固定(固定标签不可删除) */
+    fixed: boolean
+    /** 是否可删除(默认 true 可删除) */
+    deletable: boolean
+  }
+
   /** 路由工具类型 */
   interface RouteUtils {
     /** 扁平化路由 */

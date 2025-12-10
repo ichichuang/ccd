@@ -1,7 +1,7 @@
 // Pinia 持久化加密序列化器适配器
+import { env } from '@/utils'
 import crypto from '@/utils/modules/safeStorage/crypto'
 import lzstring from '@/utils/modules/safeStorage/lzstring'
-import { env } from '../env'
 
 /**
  * Pinia Plugin Persistedstate 加密序列化器

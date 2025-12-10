@@ -50,10 +50,17 @@ const zhTW = {
         title: '函數',
         date: '日期',
       },
-      afeStorage: {
+      safeStorage: {
         title: '安全存储',
+        crypto: '加密存储',
+        lzstring: '压缩存储',
+      },
+      http: {
+        title: 'HTTP',
+        basic: '基礎HTTP',
       },
     },
+
     error: {
       title: '錯誤',
       notFound: '頁面未找到',
@@ -158,6 +165,8 @@ const zhTW = {
     },
     messages: {
       loginFailed: '登入失敗',
+      loginSuccess: '登入成功',
+      welcomeMessage: '歡迎使用系統',
     },
   },
   layout: {

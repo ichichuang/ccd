@@ -14,13 +14,31 @@ const handleLogin = async () => {
   loading.value = true
 
   try {
-    const {
-      data: { token },
-    } = await login({ username: 'admin', password: '123456' })
-    userStore.setToken(token)
+    // 响应拦截器已经返回了 data 字段，所以返回的就是 { token: string }
+    const { token } = await login({ username: 'admin', password: '123456' })
+
+    if (!token) {
+      throw new Error(t('common.messages.loginFailed'))
+    }
+
+    // setToken 会异步获取用户信息并设置，如果失败会抛出错误
+    await userStore.setToken(token)
+
+    // 登录成功提示
+    if (window.$toast) {
+      window.$toast.success(t('common.messages.loginSuccess'), t('common.messages.welcomeMessage'))
+    }
   } catch (error) {
     console.error(`❌ ${t('common.messages.loginFailed')}:`, error)
-    userStore.logout()
+
+    // 显示错误提示
+    const errorMessage = error instanceof Error ? error.message : t('common.messages.loginFailed')
+    if (window.$toast) {
+      window.$toast.error(t('common.messages.loginFailed'), errorMessage)
+    }
+
+    // 登录失败时，清除用户信息（但不刷新页面，让用户看到错误信息）
+    userStore.clearUserInfo()
   } finally {
     loading.value = false
   }

@@ -10,6 +10,12 @@ declare global {
     roles: string[]
     /** 用户权限 */
     permissions: string[]
+    /** 用户头像 */
+    avatar?: string
+    /** 用户邮箱 */
+    email?: string
+    /** 用户手机号 */
+    phone?: string
     /** 其他用户信息 */
     [key: string]: any
   }

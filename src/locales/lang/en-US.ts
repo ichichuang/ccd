@@ -50,8 +50,14 @@ const enUS = {
         title: 'Function',
         date: 'Date',
       },
-      afeStorage: {
-        title: 'Afe Storage',
+      safeStorage: {
+        title: 'Safe Storage',
+        crypto: 'Crypto Storage',
+        lzstring: 'LZString Storage',
+      },
+      http: {
+        title: 'HTTP',
+        basic: 'Basic HTTP',
       },
     },
     error: {
@@ -158,6 +164,8 @@ const enUS = {
     },
     messages: {
       loginFailed: 'Login failed',
+      loginSuccess: 'Login successful',
+      welcomeMessage: 'Welcome to the system',
     },
   },
   layout: {

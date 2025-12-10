@@ -38,6 +38,9 @@ export const registerRouterGuards = ({
       const cloneDynamicRoutes = cloneDeep(dynamicRoutes.value) as BackendRouteConfig[]
       asyncRoutes = processAsyncRoutes(cloneDynamicRoutes)
 
+      // 设置动态路由已加载状态
+      permissionStore.setDynamicRoutesLoaded(true)
+
       // 同步处理，直接添加路由
       dynamicRouteManager.addRoutes([...asyncRoutes])
       dynamicRouteManager.addRoutes([...rootRedirect])
@@ -67,13 +70,15 @@ export const registerRouterGuards = ({
       }
 
       try {
-        const { data } = await getAuthRoutes()
+        // 响应拦截器已经返回了 data 字段，所以返回的就是路由数组
+        const routes = await getAuthRoutes()
 
         // 保存到 store
-        permissionStore.setDynamicRoutes(data)
+        permissionStore.setDynamicRoutes(routes)
+        permissionStore.setDynamicRoutesLoaded(true)
 
         // 处理路由配置
-        asyncRoutes = processAsyncRoutes(data)
+        asyncRoutes = processAsyncRoutes(routes)
 
         // 添加路由
         dynamicRouteManager.addRoutes([...asyncRoutes])

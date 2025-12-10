@@ -5,7 +5,7 @@ import type { ScrollEvent } from '@/components/modules/scrollbar-wrapper/utils/t
 import { INTERVAL, STRATEGY } from '@/constants/modules/layout'
 import { useElementSize, useLocale } from '@/hooks'
 import { getCurrentLocale } from '@/locales'
-import { usePermissionStore, useSizeStore, type TabItem } from '@/stores'
+import { usePermissionStore, useSizeStore } from '@/stores'
 import { draggable, dropTargetForElements } from '@atlaskit/pragmatic-drag-and-drop/element/adapter'
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch, type Ref } from 'vue'
 import { useRouter } from 'vue-router'

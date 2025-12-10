@@ -19,6 +19,7 @@ const mode = computed(() => colorStore.mode)
 const userStore = useUserStore()
 const userInfo = computed(() => userStore.getUserInfo)
 const userName = computed(() => userInfo.value?.username ?? '')
+const userAvatar = computed(() => userInfo.value?.avatar || defaultAvatar)
 
 // 尺寸相关
 const sizeStore = useSizeStore()
@@ -263,16 +264,40 @@ const openMoreSettingsDialog = () => {
   tabindex='0',
   @click='handleToggle'
 )
-  Image.w-appFontSizel.h-appFontSizel.rounded-rounded.overflow-hidden(:src='defaultAvatar')
+  Image.w-appFontSizel.h-appFontSizel.rounded-rounded.overflow-hidden(:src='userAvatar')
   .h-appFontSizel.center.between-start.px-padding.c-transitions(
     class='hover:color-primary100 rounded-l-none!'
   ) {{ userName }}
 
 //- 用户面板
-Popover.w-80vw(ref='userPopoverRef', class='sm:w-60vw md:w-40vw lg:w-30vw xl:w-28vw xxl:w-24vw')
-  .gap-gap.between-col.start-col.p-padding(class='sm:p-paddingl')
+Popover.w-80vw(ref='userPopoverRef', class='sm:w-56vw md:w-36vw lg:w-30vw xl:w-26vw xxl:w-24vw')
+  .gap-gap.between-col.start-col.p-padding
+    //- 用户信息
+    .between-start
+      Image.c-card-primary.p-0.w-100.h-100.rounded-rounded.overflow-hidden(:src='userAvatar')
+      .h-100.px-paddingx.between-col(class='w-[calc(100%-100px)]')
+        .between
+          .between-start.gap-gaps.pt-paddings
+            OhVueIcon.w-appFontSizex.h-appFontSizex(name='hi-solid-user')
+            b.fs-appFontSizex {{ userName }}
+          .h-full
+            OhVueIcon.w-appFontSizel.h-appFontSizel.c-cp(
+              name='fc-settings',
+              animation='wrench',
+              speed='fast',
+              hover,
+              @click='openMoreSettingsDialog'
+            )
+        .between-col.gap-gaps
+          .between-start.gap-gaps
+            OhVueIcon.w-appFontSizes.h-appFontSizes(name='hi-solid-phone')
+            p.fs-appFontSizes {{ userInfo.phone }}
+          .between-start.gap-gaps
+            OhVueIcon.w-appFontSizes.h-appFontSizes(name='hi-solid-mail')
+            p.fs-appFontSizes {{ userInfo.email }}
+
     //- 系统颜色模式切换(浅色/深色/自动)
-    .grid.grid-cols-5.gap-gaps
+    .grid.grid-cols-5.gap-gap
       .c-card.grid-col-span-2.gap-gaps.c-cp.center.between-col.py-paddings.c-transitions(
         @click='toggleThemeWithAnimation($event, "light")',
         :class='{ "bg-primary100 color-primary400": mode === "light" }'
@@ -309,26 +334,26 @@ Popover.w-80vw(ref='userPopoverRef', class='sm:w-60vw md:w-40vw lg:w-30vw xl:w-2
           .text-2xl {{ item.flag }}
           div {{ item.name }}
 
-    //- 更多设置按钮
-    .c-card.gap-gaps.c-cp.center.py-paddings.c-transitions(@click='openMoreSettingsDialog')
-      OhVueIcon.w-appFontSizex.h-appFontSizex(name='hi-solid-cog', animation='spin', speed='slow')
-      .center.text-center {{ t('common.settings.moreSettings') }}
+    //- 更多按钮
+    .between-end.gap-gap
+      .c-card-primary.gap-gaps.c-cp.center.py-paddings.c-transitions(
+        @click='openMoreSettingsDialog'
+      )
+        OhVueIcon.w-appFontSizex.h-appFontSizex(name='fc-support')
+        .center.text-center {{ t('common.settings.moreSettings') }}
 
-    //- 个人中心
-    .grid.grid-cols-2.gap-gap
-      Button(:label='t("common.settings.personalCenter")', severity='info')
-      .full.hidden(class='dark:block')
-        Button.full.c-transitions(
-          severity='danger',
-          :label='t("common.settings.logout")',
-          @click='userStore.logout'
-        )
-      .full.block(class='dark:hidden')
-        Button.full.c-transitions(
+      //- Button(:label='t("common.settings.personalCenter")', severity='info')
+      .hidden(class='dark:block')
+        Button.full.c-transitions.gap-gaps(severity='danger', @click='userStore.logout')
+          OhVueIcon.w-appFontSizex.h-appFontSizex(name='fc-sports-mode')
+          span {{ t('common.settings.logout') }}
+      .block(class='dark:hidden')
+        Button.full.c-transitions.gap-gaps(
           severity='danger',
           variant='text',
           raised,
-          :label='t("common.settings.logout")',
           @click='userStore.logout'
         )
+          OhVueIcon.w-appFontSizex.h-appFontSizex(name='fc-sports-mode')
+          span {{ t('common.settings.logout') }}
 </template>

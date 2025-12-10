@@ -7,6 +7,7 @@ const importedAPIs = autoImportModulesSync(apiModules)
 
 // 导出所有 API 模块
 export * from '@!/modules/auth'
+export * from '@!/modules/test'
 
 // 导出所有 API
 export default importedAPIs
