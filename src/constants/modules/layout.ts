@@ -61,28 +61,28 @@ export const DEVICE_LAYOUT_SIZE_RATIOS = {
     gap: 1.0,
   },
   largeScreen: {
-    sidebarWidth: 1.2, // 大屏侧边栏增大 20%
-    headerHeight: 1.1, // 大屏头部增大 20%
-    footerHeight: 1.1, // 大屏底部增大 20%
-    breadcrumbHeight: 1.0,
-    tabsHeight: 1.1,
-    gap: 1.1,
+    sidebarWidth: 1.1, // 大屏侧边栏增大 20%
+    headerHeight: 1.05, // 大屏头部增大 20%
+    footerHeight: 1.05, // 大屏底部增大 20%
+    breadcrumbHeight: 1.05,
+    tabsHeight: 1.05,
+    gap: 1.05,
   },
   ultraWide: {
-    sidebarWidth: 1.8, // 超宽屏侧边栏增大 50%
-    headerHeight: 1.6, // 超宽屏头部增大 50%
-    footerHeight: 1.6, // 超宽屏底部增大 50%
-    breadcrumbHeight: 1.2,
-    tabsHeight: 1.4,
-    gap: 1.2, // 超宽屏 gap 缩小（从 1.5 调整为 1.0）
+    sidebarWidth: 1.2, // 超宽屏侧边栏增大 50%
+    headerHeight: 1.1, // 超宽屏头部增大 50%
+    footerHeight: 1.1, // 超宽屏底部增大 50%
+    breadcrumbHeight: 1.1,
+    tabsHeight: 1.1,
+    gap: 1.1, // 超宽屏 gap 缩小（从 1.5 调整为 1.0）
   },
   fourK: {
-    sidebarWidth: 2.0, // 4K 屏侧边栏增大 50%（从 2.0 调整为 2.0）
-    headerHeight: 1.6, // 4K 屏头部增大 50%（从 2.0 调整为 2.0）
-    footerHeight: 1.6, // 4K 屏底部增大 50%（从 2.0 调整为 2.0）
-    breadcrumbHeight: 1.4,
-    tabsHeight: 1.4,
-    gap: 1.5, // 4K 屏 gap 大幅缩小（从 2.0 调整为 1.2）
+    sidebarWidth: 1.5, // 4K 屏侧边栏增大 50%（从 2.0 调整为 2.0）
+    headerHeight: 1.25, // 4K 屏头部增大 50%（从 2.0 调整为 2.0）
+    footerHeight: 1.25, // 4K 屏底部增大 50%（从 2.0 调整为 2.0）
+    breadcrumbHeight: 1.25,
+    tabsHeight: 1.25,
+    gap: 1.25, // 4K 屏 gap 大幅缩小（从 2.0 调整为 1.2）
   },
 } as const
 

@@ -4,16 +4,22 @@ import { logFile, logInfo, logTitle, logWarning } from './utils/logger.js'
 logTitle('启动开发环境')
 logInfo('启动命名规范监听...')
 
+// 兼容 Windows：使用 pnpm.cmd，否则使用 pnpm
+const pnpmCommand = process.platform === 'win32' ? 'pnpm.cmd' : 'pnpm'
+
+// Windows 下使用 shell 以避免 spawn EINVAL
+const isWindows = process.platform === 'win32'
+
 // 启动 Vite 开发服务器 - 保持完整的输出
-const viteProcess = spawn('pnpm', ['exec', 'vite'], {
+const viteProcess = spawn(pnpmCommand, ['exec', 'vite'], {
   stdio: 'inherit',
-  shell: false,
+  shell: isWindows,
 })
 
 // 启动命名规范监听 - 完全静默，避免干扰 Vite 输出
-const namingWatchProcess = spawn('pnpm', ['naming-watch'], {
+const namingWatchProcess = spawn(pnpmCommand, ['naming-watch'], {
   stdio: 'pipe',
-  shell: false,
+  shell: isWindows,
 })
 
 // 处理命名规范监听的输出 - 完全静默，除非有错误

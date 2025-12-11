@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import PrimeVueMessage from '@/components/layout/PrimeVueMessage.vue'
 import { Button } from 'primevue'
 
 const showBasic = () =>
@@ -13,7 +12,7 @@ const showBasic = () =>
 const showConvenient = {
   info: () => window.$message.info('信息提示', '这是一条信息提示', 3000, { iconName: 'fc-info' }),
   success: () => window.$message.success('操作成功', '数据已保存', 3000, { iconName: 'fc-ok' }),
-  warn: () => window.$message.warn('警告提示', '请注意相关风险', 3000, { iconName: 'fc-warning' }),
+  warn: () => window.$message.warn('警告提示', '请注意相关风险', 3000, { iconName: 'fc-idea' }),
   error: () =>
     window.$message.error('操作失败', '网络异常，请稍后重试', 3000, {
       iconName: 'fc-high-priority',
@@ -33,39 +32,69 @@ const showSticky = () =>
     iconName: 'fc-ok',
   })
 
-const showNoClose = () =>
+const showClosable = () =>
   window.$message.add({
-    severity: 'warn',
-    summary: '不可手动关闭',
-    detail: 'closable = false',
-    closable: false,
-    life: 2500,
-    iconName: 'fc-about',
+    severity: 'info',
+    summary: '可手动关闭',
+    detail: 'closable = true + life = 5000',
+    closable: true,
+    life: 5000,
+    iconName: 'fc-timer',
   })
 
+const showSmallVariants = () => {
+  window.$message.add({
+    severity: 'success',
+    content: 'Outlined + small',
+    variant: 'outlined',
+    iconName: 'fc-info',
+    size: 'small',
+  })
+  window.$message.add({
+    severity: 'success',
+    content: 'Simple + small',
+    variant: 'simple',
+    iconName: 'fc-idea',
+    size: 'small',
+  })
+}
 const showVariants = () => {
   window.$message.add({
     severity: 'info',
-    content: 'Outlined + large',
+    content: 'Outlined',
     variant: 'outlined',
-    size: 'large',
     iconName: 'fc-info',
   })
   window.$message.add({
-    severity: 'contrast',
-    content: 'Simple + small',
+    severity: 'info',
+    content: 'Simple',
     variant: 'simple',
-    size: 'small',
     iconName: 'fc-idea',
+  })
+}
+const showLargeVariants = () => {
+  window.$message.add({
+    severity: 'warn',
+    content: 'Outlined + large',
+    variant: 'outlined',
+    iconName: 'fc-info',
+    size: 'large',
+  })
+  window.$message.add({
+    severity: 'warn',
+    content: 'Simple + large',
+    variant: 'simple',
+    iconName: 'fc-idea',
+    size: 'large',
   })
 }
 
 const showCallback = () =>
   window.$message.add({
-    severity: 'secondary',
     summary: '带关闭回调',
     detail: '关闭后再弹出一条成功消息',
     onClose: () => window.$message.success('回调已执行', '', 1500, { iconName: 'fc-ok' }),
+    closable: true,
     iconName: 'fc-info',
   })
 
@@ -73,22 +102,21 @@ const clearAll = () => window.$message.clear()
 </script>
 
 <template lang="pug">
-div
-  PrimeVueMessage
+.between-col.justify-start.gap-gap
   .between-col.gap-gapl
   // 基础
   .full.c-card.p-padding.rounded-rounded.between-col.center-start
-    .fs-16.font-semibold.center 基础 Message
-    p.color-text200 最基础的消息展示
-    .between
+    .color-accent100.center 基础 Message
+    p.color-text200.fs-appFontSizes 最基础的消息展示
+    .between.gap-gap
       Button(label='基础', severity='primary', @click='showBasic')
-      Button(label='粘性（life=0）', severity='info', text, @click='showSticky')
-      Button(label='不可关闭', severity='warn', text, @click='showNoClose')
+      Button(label='粘性（life=0）', severity='info', @click='showSticky')
+      Button(label='可关闭 + 自定义时长', severity='warn', @click='showClosable')
 
   // 便捷方法（严重级别）
   .full.c-card.p-padding.rounded-rounded.between-col.center-start
-    .fs-16.font-semibold.center 严重级别
-    p.color-text200 通过便捷方法快速显示
+    .color-accent100.center 严重级别
+    p.color-text200.fs-appFontSizes 通过便捷方法快速显示
     .between.gap-gap
       Button(label='信息', severity='info', text, @click='showConvenient.info')
       Button(label='成功', severity='success', text, @click='showConvenient.success')
@@ -99,22 +127,34 @@ div
 
   // 变体与尺寸
   .full.c-card.p-padding.rounded-rounded.between-col.center-start
-    .fs-16.font-semibold.center 变体与尺寸
-    p.color-text200 variant + size 示例，带自定义图标
+    .color-accent100.center 变体与尺寸
+    p.color-text200.fs-appFontSizes variant + size 示例，带自定义图标
     .between.gap-gap
-      Button(label='Outlined + large', severity='primary', @click='showVariants')
+      Button.fs-appFontSizes(
+        label='Outlined + small',
+        severity='success',
+        size='small',
+        @click='showSmallVariants'
+      )
+      Button(label='Outlined', severity='info', @click='showVariants')
+      Button.fs-appFontSizex(
+        label='Outlined + large',
+        severity='warn',
+        size='large',
+        @click='showLargeVariants'
+      )
 
   // 回调
   .full.c-card.p-padding.rounded-rounded.between-col.center-start
-    .fs-16.font-semibold.center 关闭回调
-    p.color-text200 关闭后再弹出成功提示
+    .color-accent100.center 关闭回调
+    p.color-text200.fs-appFontSizes 关闭后再弹出成功提示
     .between
       Button(label='带回调', severity='secondary', @click='showCallback')
 
   // 管理
   .full.c-card.p-padding.rounded-rounded.between-col.center-start
-    .fs-16.font-semibold.center 管理
-    p.color-text200 清理所有消息
+    .color-accent100.center 管理
+    p.color-text200.fs-appFontSizes 清理所有消息
     .between.gap-gap
       Button(label='清除所有', severity='danger', text, @click='clearAll')
 </template>

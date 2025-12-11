@@ -496,7 +496,7 @@ const initToastColor = (preset: any, colorStore: ReturnType<typeof useColorStore
 }
 
 const initMessageColor = (preset: any, colorStore: ReturnType<typeof useColorStore>) => {
-  const lightTint = (base: string) => `color-mix(in srgb, ${base}, transparent 76%)`
+  const lightTint = (base: string) => `color-mix(in srgb, ${base}, transparent 74%)`
   const darkTint = (base: string) => `color-mix(in srgb, ${base}, transparent 84%)`
 
   deepMergeStylesAdvancedInPlace(preset.components.message, {

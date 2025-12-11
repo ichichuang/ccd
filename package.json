@@ -67,6 +67,9 @@
       "@parcel/watcher",
       "core-js",
       "esbuild"
+    ],
+    "ignoredBuiltDependencies": [
+      "vue-demi"
     ]
   },
   "dependencies": {
