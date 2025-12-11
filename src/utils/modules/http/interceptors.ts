@@ -1,4 +1,5 @@
 import { HTTP_CONFIG } from '@/constants'
+import { t } from '@/locales'
 import { useUserStoreWithOut } from '@/stores'
 import { env } from '@/utils'
 import { decompressAndDecryptSync } from '@/utils/modules/safeStorage'
@@ -161,7 +162,7 @@ export const responseHandler = async (response: Response, _method: Method) => {
     // server 使用 success 字段而不是 code
     if (json.success === false) {
       throw new HttpRequestError(
-        json.message || '请求失败',
+        json.message || t('http.error.requestFailed'),
         ErrorType.SERVER,
         response.status,
         response.statusText,
@@ -202,7 +203,7 @@ export const responseHandler = async (response: Response, _method: Method) => {
     if (error instanceof TypeError && error.message.includes('fetch')) {
       console.error('❌ 网络连接错误:', error.message)
       throw new HttpRequestError(
-        '网络连接失败，请检查网络设置',
+        t('http.error.networkConnectionFailed'),
         ErrorType.NETWORK,
         undefined,
         undefined,
@@ -215,7 +216,7 @@ export const responseHandler = async (response: Response, _method: Method) => {
     if (error instanceof TypeError && error.message.includes('CORS')) {
       console.error('❌ CORS 错误:', error.message)
       throw new HttpRequestError(
-        '跨域请求被阻止，请联系管理员',
+        t('http.error.corsBlocked'),
         ErrorType.CLIENT,
         undefined,
         undefined,
@@ -227,7 +228,7 @@ export const responseHandler = async (response: Response, _method: Method) => {
     // 处理超时错误
     if (error instanceof TypeError && error.message.includes('timeout')) {
       throw new HttpRequestError(
-        '请求超时，请稍后重试',
+        t('http.error.requestTimeout'),
         ErrorType.TIMEOUT,
         undefined,
         undefined,
@@ -239,7 +240,7 @@ export const responseHandler = async (response: Response, _method: Method) => {
     // 处理安全错误
     if (error instanceof TypeError && error.message.includes('security')) {
       throw new HttpRequestError(
-        '安全验证失败',
+        t('http.error.securityVerificationFailed'),
         ErrorType.SECURITY,
         undefined,
         undefined,
@@ -255,7 +256,7 @@ export const responseHandler = async (response: Response, _method: Method) => {
 
     handleRequestError(error as Error)
     throw new HttpRequestError(
-      (error as Error).message || '未知错误',
+      (error as Error).message || t('http.error.unknownError'),
       ErrorType.UNKNOWN,
       undefined,
       undefined,
@@ -286,29 +287,50 @@ const handleHttpError = (status: number, data: any) => {
   if (env.debug) {
     console.error(`❌ HTTP ${status} 错误:`, data)
   }
+  const errorMessage = data?.message || t('http.error.httpError', { status })
+  let statusMessage = `HTTP ${status}`
 
   switch (status) {
+    case 400:
+      // 处理请求错误
+      statusMessage = t('http.error.badRequest')
+      console.warn('请求错误')
+      break
     case 401:
       // 处理未授权错误
+      statusMessage = t('http.error.unauthorized')
       useUserStoreWithOut().logout()
       break
     case 403:
       // 处理权限不足错误
+      statusMessage = t('http.error.forbidden')
       console.warn('权限不足')
       break
     case 404:
+      // 处理资源不存在错误
+      statusMessage = t('http.error.notFound')
       console.warn('请求的资源不存在')
       break
     case 500:
+      // 处理服务器内部错误
+      statusMessage = t('http.error.internalServerError')
       console.error('服务器内部错误')
       break
     case 502:
     case 503:
     case 504:
+      statusMessage = t('http.error.serviceUnavailable')
       console.error('服务器暂时不可用')
       break
     default:
+      statusMessage = t('http.error.httpError', { status })
       console.error(`HTTP ${status} 错误`)
+  }
+
+  try {
+    window.$toast.errorIn('top-left', statusMessage, errorMessage)
+  } catch (error) {
+    console.error('❌ 显示错误提示失败:', error)
   }
 }
 

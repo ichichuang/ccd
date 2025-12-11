@@ -1,4 +1,5 @@
 import { HTTP_CONFIG } from '@/constants'
+import { t } from '@/locales'
 import { env } from '@/utils'
 import { post } from './methods'
 import type {
@@ -34,12 +35,12 @@ async function calculateFileHash(file: File): Promise<string> {
         const hashString = hash.toString(16).padStart(8, '0')
         resolve(`${file.name}_${file.size}_${hashString}`)
       } catch (_error) {
-        reject(new Error('文件哈希计算失败'))
+        reject(new Error(t('http.upload.hashCalculationFailed')))
       }
     }
 
     reader.onerror = _error => {
-      reject(new Error('文件读取失败'))
+      reject(new Error(t('http.upload.fileReadFailed')))
     }
 
     reader.readAsArrayBuffer(chunk)
@@ -370,7 +371,13 @@ export class UploadManager implements IUploadManager {
       task.failedChunks.add(chunk.chunkIndex)
 
       if (env.debug) {
-        console.error(`❌ 分片上传失败: ${chunk.chunkIndex + 1}/${chunk.totalChunks}`, error)
+        console.error(
+          `❌ ${t('http.upload.chunkUploadFailed', {
+            chunk: chunk.chunkIndex + 1,
+            total: chunk.totalChunks,
+          })}`,
+          error
+        )
       }
 
       throw error
@@ -403,7 +410,7 @@ export class UploadManager implements IUploadManager {
       task.status = 'failed'
 
       if (env.debug) {
-        console.error(`❌ 文件合并失败: ${task.file.name}`, error)
+        console.error(`❌ ${t('http.upload.fileMergeFailed', { fileName: task.file.name })}`, error)
       }
 
       throw error

@@ -1,5 +1,6 @@
 // src/utils/http/instance.ts
 import { HTTP_CONFIG } from '@/constants'
+import { t } from '@/locales'
 import { env } from '@/utils'
 import { createAlova } from 'alova'
 import adapterFetch from 'alova/fetch'
@@ -17,18 +18,18 @@ const validateAlovaConfig = () => {
   // 检查超时配置
   const timeout = HTTP_CONFIG.timeout
   if (timeout < 1000) {
-    errors.push('请求超时时间不能小于 1 秒')
+    errors.push(t('http.config.timeoutTooShort'))
   }
 
   // 检查环境配置
   if (env.appEnv !== 'development' && env.appEnv !== 'production') {
-    errors.push(`无效的应用环境: ${env.appEnv}`)
+    errors.push(t('http.config.invalidAppEnv', { env: env.appEnv }))
   }
 
   // 输出错误和警告
   if (errors.length > 0) {
     console.error('❌ Alova 配置错误:', errors)
-    throw new Error(`Alova 配置错误: ${errors.join(', ')}`)
+    throw new Error(t('http.config.alovaConfigError', { errors: errors.join(', ') }))
   }
 
   if (warnings.length > 0) {

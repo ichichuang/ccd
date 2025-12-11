@@ -1,5 +1,6 @@
 // src/utils/http/methods.ts
 import { HTTP_CONFIG } from '@/constants'
+import { t } from '@/locales'
 import { useUserStoreWithOut } from '@/stores'
 import { env } from '@/utils'
 import { alovaInstance } from './instance'
@@ -369,7 +370,16 @@ export const downloadFile = async (url: string, filename?: string) => {
     return filename
   } catch (error) {
     console.error('❌ 文件下载失败:', error)
-    throw error
+    const errorMessage =
+      error instanceof Error ? error.message : t('http.upload.fileDownloadFailed')
+    throw new HttpRequestError(
+      errorMessage,
+      ErrorType.SERVER,
+      undefined,
+      undefined,
+      undefined,
+      false
+    )
   }
 }
 

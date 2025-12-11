@@ -336,12 +336,19 @@ Popover.w-80vw(ref='userPopoverRef', class='sm:w-56vw md:w-36vw lg:w-30vw xl:w-2
 
     //- 更多按钮
     .between-end.gap-gap
-      .c-card-primary.gap-gaps.c-cp.center.py-paddings.c-transitions(
-        @click='openMoreSettingsDialog'
-      )
-        OhVueIcon.w-appFontSizex.h-appFontSizex(name='fc-support')
-        .center.text-center {{ t('common.settings.moreSettings') }}
-
+      .hidden(class='dark:block')
+        Button.c-transitions.gap-gaps(severity='info', raised, @click='openMoreSettingsDialog')
+          OhVueIcon.w-appFontSizex.h-appFontSizex(name='fc-support')
+          span {{ t('common.settings.moreSettings') }}
+      .block(class='dark:hidden')
+        Button.c-transitions.gap-gaps(
+          severity='info',
+          variant='text',
+          raised,
+          @click='openMoreSettingsDialog'
+        )
+          OhVueIcon.w-appFontSizex.h-appFontSizex(name='fc-support')
+          span {{ t('common.settings.moreSettings') }}
       //- Button(:label='t("common.settings.personalCenter")', severity='info')
       .hidden(class='dark:block')
         Button.full.c-transitions.gap-gaps(severity='danger', @click='userStore.logout')

@@ -1,4 +1,5 @@
 import { HTTP_CONFIG } from '@/constants'
+import { t } from '@/locales'
 import type { ConnectionConfig, ConnectionState } from './types'
 
 /**
@@ -36,7 +37,7 @@ export class ConnectionManager {
       isConnected: navigator.onLine,
       isReconnecting: false,
       lastConnectedAt: navigator.onLine ? new Date() : undefined,
-      disconnectReason: navigator.onLine ? undefined : '网络不可用',
+      disconnectReason: navigator.onLine ? undefined : t('http.connection.networkUnavailable'),
       reconnectAttempts: 0,
       maxReconnectAttempts: this.config.maxReconnectAttempts,
     }
@@ -76,7 +77,7 @@ export class ConnectionManager {
     }
 
     this.state.isConnected = false
-    this.state.disconnectReason = reason || '手动断开'
+    this.state.disconnectReason = reason || t('http.connection.manualDisconnect')
     this.state.lastConnectedAt = undefined
 
     this.stopHealthCheck()
@@ -92,7 +93,7 @@ export class ConnectionManager {
     }
 
     if (this.state.reconnectAttempts >= this.config.maxReconnectAttempts) {
-      this.state.disconnectReason = '重连次数已达上限'
+      this.state.disconnectReason = t('http.connection.maxReconnectAttemptsReached')
       this.notifyListeners()
       return false
     }
@@ -160,7 +161,7 @@ export class ConnectionManager {
    */
   private onReconnectFailed(): void {
     this.state.isReconnecting = false
-    this.state.disconnectReason = '重连失败'
+    this.state.disconnectReason = t('http.connection.reconnectFailed')
 
     this.notifyListeners()
 
@@ -210,7 +211,7 @@ export class ConnectionManager {
       const isHealthy = await this.performHealthCheck()
       if (!isHealthy && this.state.isConnected) {
         this.state.isConnected = false
-        this.state.disconnectReason = '健康检查失败'
+        this.state.disconnectReason = t('http.connection.healthCheckFailed')
         this.notifyListeners()
 
         // 如果启用了自动重连，尝试重连
@@ -257,7 +258,7 @@ export class ConnectionManager {
       }
 
       this.state.isConnected = false
-      this.state.disconnectReason = '网络断开'
+      this.state.disconnectReason = t('http.connection.networkDisconnected')
       this.state.lastConnectedAt = undefined
 
       this.stopHealthCheck()
