@@ -230,15 +230,9 @@ const handleUserSchemaForm = () => {
           .mt-gapl.full
             .center.color-accent100.fs-appFontSizes
               span {{ t('common.actions.otherLogin') }}
-            .between.fs-appFontSizes
-              Button(
-                size='small',
-                severity='success',
-                text,
-                outlined,
-                @click='handleAdminSchemaForm'
-              ) {{ t('common.actions.admin') }}
-              Button(size='small', severity='warn', text, outlined, @click='handleUserSchemaForm') {{ t('common.actions.user') }}
+            .between-end.gap-gap.fs-appFontSizes
+              Button(size='small', severity='success', @click='handleAdminSchemaForm') {{ t('common.actions.admin') }}
+              Button(size='small', severity='warn', @click='handleUserSchemaForm') {{ t('common.actions.user') }}
 </template>
 
 <style scoped lang="scss">
