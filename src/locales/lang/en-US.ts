@@ -23,6 +23,7 @@ const enUS = {
         menu: 'Menu',
         dialog: 'Dialog',
         toast: 'Toast',
+        message: 'Message',
         schemaForm: {
           title: 'Form',
           basic: 'Basic Form',
@@ -144,7 +145,7 @@ const enUS = {
     actions: {
       admin: 'Admin',
       user: 'User',
-      otherLogin: 'Other Account Login',
+      otherLogin: 'Experience Account Login',
       register: 'No account yet? Click to register',
       forgotPassword: 'Forgot password?',
       recoverAccount: 'Recover account?',

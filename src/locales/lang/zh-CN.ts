@@ -23,6 +23,7 @@ const zhCN = {
         menu: '菜单',
         dialog: '对话框',
         toast: '即时通知',
+        message: '消息提示',
         schemaForm: {
           title: '表单',
           basic: '基础表单',
@@ -152,7 +153,7 @@ const zhCN = {
       enterSystem: '进入系统',
       welcome: '欢迎使用',
       backToHome: '回到主页',
-      otherLogin: '其他账号登录',
+      otherLogin: '体验账号登录',
     },
     social: {
       qq: 'QQ',

@@ -1,23 +1,121 @@
 <script setup lang="ts">
-import PvButton from './components/PvButton.vue'
-import PvCascadeSelect from './components/PvCascadeSelect.vue'
-import PvCheckbox from './components/PvCheckbox.vue'
-import PvInput from './components/PvInput.vue'
-
-// 设置组件名称，用于 keep-alive 匹配
-defineOptions({
-  name: 'Dashboard',
-})
+import Message from 'primevue/message'
 </script>
-<template lang="pug">
-.container.between-col.justify-start.gap-gapl
-  .grid.grid-cols-4.center
-    b.center component
-    b.center.fs-appFontSizes small
-    b.center default
-    b.center.fs-appFontSizex large
-  PvButton
-  PvCascadeSelect
-  PvCheckbox
-  PvInput
+<template>
+  <div class="between-col justify-start gap-gapl">
+    <div class="center gap-gap">
+      <Message severity="success">Success Message </Message>
+      <Message severity="info">Info Message </Message>
+      <Message severity="warn">Warn Message </Message>
+      <Message severity="error">Error Message </Message>
+      <Message severity="secondary">Secondary Message </Message>
+      <Message severity="contrast">Contrast Message </Message>
+    </div>
+    <div class="center gap-gap">
+      <Message severity="info">Info Message </Message>
+      <Message severity="success">
+        <template #icon>
+          <Avatar
+            image="./face.png"
+            shape="circle"
+          />
+        </template>
+        <span class="ml-2">How may I help you?</span>
+      </Message>
+    </div>
+    <div class="center gap-gap">
+      <Message
+        severity="success"
+        variant="outlined"
+        >Success Message
+      </Message>
+      <Message
+        severity="info"
+        variant="outlined"
+        >Info Message
+      </Message>
+      <Message
+        severity="warn"
+        variant="outlined"
+        >Warn Message
+      </Message>
+      <Message
+        severity="error"
+        variant="outlined"
+        >Error Message
+      </Message>
+      <Message
+        severity="secondary"
+        variant="outlined"
+        >Secondary Message
+      </Message>
+      <Message
+        severity="contrast"
+        variant="outlined"
+        >Contrast Message
+      </Message>
+    </div>
+    <div class="center gap-gap">
+      <Message
+        severity="success"
+        variant="simple"
+        >Success Message
+      </Message>
+      <Message
+        severity="info"
+        variant="simple"
+        >Info Message
+      </Message>
+      <Message
+        severity="warn"
+        variant="simple"
+        >Warn Message
+      </Message>
+      <Message
+        severity="error"
+        variant="simple"
+        >Error Message
+      </Message>
+      <Message
+        severity="secondary"
+        variant="simple"
+        >Secondary Message
+      </Message>
+      <Message
+        severity="contrast"
+        variant="simple"
+        >Contrast Message
+      </Message>
+    </div>
+    <div class="center gap-gap">
+      <Message size="small">
+        <div class="center gap-gaps">
+          <OhVueIcon
+            name="fc-info"
+            class="w-appFontSizes h-appFontSizes"
+          ></OhVueIcon>
+          Small Message
+        </div>
+      </Message>
+      <Message>
+        <div class="center gap-gaps">
+          <OhVueIcon name="fc-info"></OhVueIcon>
+          Normal Message
+        </div>
+      </Message>
+      <Message size="large">
+        <div class="center gap-gaps">
+          <OhVueIcon
+            name="fc-info"
+            class="w-appFontSizex h-appFontSizex"
+          ></OhVueIcon>
+          Large Message
+        </div>
+      </Message>
+    </div>
+    <div class="center gap-gap">
+      <Message closable>Closable Message </Message>
+    </div>
+  </div>
 </template>
+<style lang="scss" scope></style>

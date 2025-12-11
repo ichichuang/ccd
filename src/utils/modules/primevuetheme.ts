@@ -494,6 +494,134 @@ const initToastColor = (preset: any, colorStore: ReturnType<typeof useColorStore
     },
   })
 }
+
+const initMessageColor = (preset: any, colorStore: ReturnType<typeof useColorStore>) => {
+  const lightTint = (base: string) => `color-mix(in srgb, ${base}, transparent 76%)`
+  const darkTint = (base: string) => `color-mix(in srgb, ${base}, transparent 84%)`
+
+  deepMergeStylesAdvancedInPlace(preset.components.message, {
+    root: {
+      blur: colorStore.isDark ? '10px' : '1.5px',
+    },
+    info: {
+      background: colorStore.isDark
+        ? darkTint(colorStore.getInfoColor)
+        : lightTint(colorStore.getInfoColor),
+      borderColor: colorStore.isDark ? colorStore.getInfoColorActive : colorStore.getInfoColorHover,
+      color: colorStore.getInfoColor,
+      detailColor: colorStore.getText100,
+      shadow: `0px 4px 8px 0px color-mix(in srgb, ${colorStore.getInfoColorText}, transparent 96%)`,
+      closeButton: {
+        hoverBackground: colorStore.getBg100,
+        focusRing: {
+          color: colorStore.getText100,
+          shadow: 'none',
+        },
+      },
+      simple: {
+        color: colorStore.getInfoColor,
+      },
+    },
+    success: {
+      background: colorStore.isDark
+        ? darkTint(colorStore.getSuccessColor)
+        : lightTint(colorStore.getSuccessColor),
+      borderColor: colorStore.isDark
+        ? colorStore.getSuccessColorActive
+        : colorStore.getSuccessColorHover,
+      color: colorStore.getSuccessColor,
+      detailColor: colorStore.getText100,
+      shadow: `0px 4px 8px 0px color-mix(in srgb, ${colorStore.getSuccessColorText}, transparent 96%)`,
+      closeButton: {
+        hoverBackground: colorStore.getBg100,
+        focusRing: {
+          color: colorStore.getText100,
+          shadow: 'none',
+        },
+      },
+      simple: {
+        color: colorStore.getSuccessColor,
+      },
+    },
+    warn: {
+      background: colorStore.isDark
+        ? darkTint(colorStore.getWarnColor)
+        : lightTint(colorStore.getWarnColor),
+      borderColor: colorStore.isDark ? colorStore.getWarnColorActive : colorStore.getWarnColorHover,
+      color: colorStore.getWarnColor,
+      detailColor: colorStore.getText100,
+      shadow: `0px 4px 8px 0px color-mix(in srgb, ${colorStore.getWarnColorText}, transparent 96%)`,
+      closeButton: {
+        hoverBackground: colorStore.getBg100,
+        focusRing: {
+          color: colorStore.getText100,
+          shadow: 'none',
+        },
+      },
+      simple: {
+        color: colorStore.getWarnColor,
+      },
+    },
+    error: {
+      background: colorStore.isDark
+        ? darkTint(colorStore.getDangerColor)
+        : lightTint(colorStore.getDangerColor),
+      borderColor: colorStore.isDark
+        ? colorStore.getDangerColorActive
+        : colorStore.getDangerColorHover,
+      color: colorStore.getDangerColor,
+      detailColor: colorStore.getText100,
+      shadow: `0px 4px 8px 0px color-mix(in srgb, ${colorStore.getDangerColorText}, transparent 96%)`,
+      closeButton: {
+        hoverBackground: colorStore.getBg100,
+        focusRing: {
+          color: colorStore.getText100,
+          shadow: 'none',
+        },
+      },
+      simple: {
+        color: colorStore.getDangerColor,
+      },
+    },
+    secondary: {
+      background: colorStore.isDark
+        ? darkTint(colorStore.getBg300)
+        : lightTint(colorStore.getBg200),
+      borderColor: colorStore.isDark ? colorStore.getBg300 : colorStore.getBg300,
+      color: colorStore.getSecondaryColorText,
+      detailColor: colorStore.getSecondaryColorText,
+      shadow: `0px 4px 8px 0px color-mix(in srgb, ${colorStore.getSecondaryColorText}, transparent 96%)`,
+      closeButton: {
+        hoverBackground: colorStore.getBg200,
+        focusRing: {
+          color: colorStore.getSecondaryColorText,
+          shadow: 'none',
+        },
+      },
+      simple: {
+        color: colorStore.getSecondaryColorText,
+      },
+    },
+    contrast: {
+      background: colorStore.getContrastColor,
+      borderColor: colorStore.getContrastColorActive,
+      color: colorStore.getContrastColorText,
+      detailColor: colorStore.getContrastColorText,
+      shadow: `0px 4px 8px 0px color-mix(in srgb, ${colorStore.getContrastColorText}, transparent 96%)`,
+      closeButton: {
+        hoverBackground: colorStore.isDark ? colorStore.getContrastColorHover : colorStore.getBg200,
+        focusRing: {
+          color: colorStore.getContrastColorText,
+          shadow: 'none',
+        },
+      },
+      simple: {
+        color: colorStore.getContrastColorText,
+      },
+    },
+  })
+}
+
 /**
  * 创建自定义主题预设
  * @param preset 原始预设
@@ -730,6 +858,45 @@ export const createCustomPreset = (preset: any, { colorStore, sizeStore }: Prime
       marginX: `${sizeStore.getGaps}px`,
       padding: `${sizeStore.getPaddingValue}px`,
       gap: `${sizeStore.getGaps}px`,
+    })
+    // message 组件单独处理
+    initMessageColor(newPreset, colorStore)
+    deepMergeStylesAdvancedInPlace(newPreset.components.message, {
+      content: {
+        padding: `${Math.round(basePadding * 0.67)}px ${Math.round(basePadding)}px`,
+        gap: `${Math.round(baseGaps * scaleGap)}px`,
+        sm: {
+          padding: `${Math.round(basePadding * 0.5)}px ${Math.round(basePadding * 0.83)}px`,
+        },
+        lg: {
+          padding: `${Math.round(basePadding * 0.83)}px ${Math.round(basePadding * 1.17)}px`,
+        },
+      },
+      text: {
+        sm: {
+          fontSize: `${Math.round(sizeStore.getFontSizeValue * 0.875)}px`,
+        },
+        lg: {
+          fontSize: `${Math.round(sizeStore.getFontSizeValue * 1.125)}px`,
+        },
+      },
+      icon: {
+        sm: {
+          size: `${Math.round(sizeStore.getFontSizeValue)}px`,
+        },
+        lg: {
+          size: `${Math.round(sizeStore.getFontSizeValue * 1.25)}px`,
+        },
+      },
+
+      closeIcon: {
+        sm: {
+          size: `${Math.round(sizeStore.getFontSizeValue * 0.875)}px`,
+        },
+        lg: {
+          size: `${Math.round(sizeStore.getFontSizeValue * 1.125)}px`,
+        },
+      },
     })
     // dialog 组件单独处理
     deepMergeStylesAdvancedInPlace(newPreset.components.dialog, {

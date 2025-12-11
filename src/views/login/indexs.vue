@@ -168,10 +168,10 @@ const handleUserSchemaForm = () => {
   .absolute.w-8vw.h-8vw.rounded-full.blur-3xl.bg-accent100.r-gapl.b-gapl.animate-bubble-medium
   AnimateWrapper.fixed(:show='true', enter='lightSpeedInLeft', duration='1s')
     // 大气泡 1 (快速/长周期)
-    .absolute.w-50vw.h-50vw.rounded-full.bg-primary200.left--10vw.bottom--10vw.c-shadow-primary.animate-bubble-fast
+    .absolute.w-50vw.h-50vw.rounded-full.rounded-lb-none.bg-primary200.left--10vw.bottom--10vw.c-shadow-primary.animate-bubble-fast
   AnimateWrapper.fixed(:show='true', enter='lightSpeedInRight', duration='2s')
     // 大气泡 2 (中速)
-    .absolute.w-50vw.h-50vw.rounded-full.bg-accent200.right--10vw.top--10vw.c-shadow-accent.animate-bubble-medium
+    .absolute.w-50vw.h-50vw.rounded-full.rounded-rt-none.bg-accent200.right--10vw.top--10vw.c-shadow-accent.animate-bubble-medium
 
   // 语言切换
   .fixed.t-gap.r-gapl.grid.grid-cols-3.gap-gaps
@@ -179,60 +179,47 @@ const handleUserSchemaForm = () => {
       .c-cp.c-card.p-paddings(@click='setLocale(item.key)')
         .fs-appFontSizex.w-appFontSizex.h-appFontSizex.center.c-transitions(class='hover:scale-110') {{ item.flag }}
   // 登录卡片
-  AnimateWrapper(:show='true', enter='zoomIn', duration='800ms', enter-delay='1s')
-    .relative.bg-bg100.rounded-rounded.backdrop-blur-xl.c-shadow-primary.p-paddingl.gap-gap.between-col(
-      class='w-90% sm:w-80% md:w-46% lg:w-30% xl:w-28% xxl:w-26%'
-    )
-      .between-start.gap-gap
-        Image.w-appFontSizel.h-appFontSizel(src='./face.png')
-        .flex-1.between.gap-gap.items-end
-          b {{ t('common.auth.login.title') }}
-          .between.gap-gaps
-            .color-text200.fs-appFontSizes {{ t('common.actions.welcome') }}
-            .center.gap-gaps
-              Button.p-paddings.rounded-rounded.bg-bg200(
-                text,
-                @click='toggleThemeWithAnimation($event)'
+  .relative.rounded-xl.backdrop-blur-xl.c-shadow-primary.p-paddingl.gap-gap.between-col(
+    class='w-90% sm:w-80% md:w-46% lg:w-30% xl:w-28% xxl:w-26%'
+  )
+    .full.absolute.z-1.bg-bg100.t-0.l-0.r-0.b-0.rounded-xl.opacity-50
+    .between-start.gap-gap.relative.z-2
+      Image.w-appFontSizel.h-appFontSizel(src='./face.png')
+      .flex-1.between.gap-gap.items-end
+        b {{ t('common.auth.login.title') }}
+        .between.gap-gaps
+          .color-text200.fs-appFontSizes {{ t('common.actions.welcome') }}
+          .center.gap-gaps
+            Button.p-paddings.rounded-xl.bg-bg200(text, @click='toggleThemeWithAnimation($event)')
+              OhVueIcon.w-appFontSize.h-appFontSize(
+                :name='isDark ? "ri-sun-line" : "ri-moon-clear-line"'
               )
-                OhVueIcon.w-appFontSize.h-appFontSize(
-                  :name='isDark ? "ri-sun-line" : "ri-moon-clear-line"'
-                )
 
-      //- 分割线
-      .w-full.h-1.my-gaps.bg-primary100.opacity-80
+    //- 分割线
+    .w-full.h-1.my-gaps.bg-primary100.opacity-80.relative.z-2
 
-      .px-paddingl.between-col.gap-gaps
-        //- 表单
-        .fs-appFontSize {{ t('common.auth.accountPasswordLogin') }}
-        SchemaForm(ref='schemaFormRef', :schema='schema')
+    .px-paddingl.between-col.gap-gaps.relative.z-2
+      //- 表单
+      .fs-appFontSize {{ t('common.auth.accountPasswordLogin') }}
+      SchemaForm(ref='schemaFormRef', :schema='schema')
 
-        .between-col.color-text200.fs-appFontSizes
-          AnimateWrapper.w-full(
-            :show='true',
-            enter='zoomInLeft',
-            duration='1400ms',
-            enter-delay='1400ms'
-          )
-            .between-start.full
-              .c-cp.c-transitions(class='hover:text-primary100') {{ t('common.actions.register') }}
-          AnimateWrapper.w-full(
-            :show='true',
-            enter='zoomInRight',
-            duration='1400ms',
-            enter-delay='1400ms'
-          )
-            .between-end.gap-gaps.full
-              span.c-cp.c-transitions(class='hover:text-primary100') {{ t('common.actions.forgotPassword') }}
-              span.c-cp.c-transitions(class='hover:text-primary100') {{ t('common.actions.recoverAccount') }}
+      .between-col.color-text200.fs-appFontSizes
+        AnimateWrapper.w-full(:show='true', enter='zoomInLeft')
+          .between-start.full
+            .c-cp.c-transitions(class='hover:text-primary100') {{ t('common.actions.register') }}
+        AnimateWrapper.w-full(:show='true', enter='zoomInRight')
+          .between-end.gap-gaps.full
+            span.c-cp.c-transitions(class='hover:text-primary100') {{ t('common.actions.forgotPassword') }}
+            span.c-cp.c-transitions(class='hover:text-primary100') {{ t('common.actions.recoverAccount') }}
 
-        Button.fw-bold(:loading='loading', @click='doLogin') {{ loading ? t('common.actions.loginInProgress') : t('common.auth.login.loginButton') }}
-        AnimateWrapper.w-full(:show='true', enter='fadeIn', enter-delay='2400ms')
-          .mt-gapl.full
-            .center.color-accent100.fs-appFontSizes
-              span {{ t('common.actions.otherLogin') }}
-            .between-end.gap-gap.fs-appFontSizes
-              Button(size='small', severity='success', @click='handleAdminSchemaForm') {{ t('common.actions.admin') }}
-              Button(size='small', severity='warn', @click='handleUserSchemaForm') {{ t('common.actions.user') }}
+      Button.fw-bold(:loading='loading', @click='doLogin') {{ loading ? t('common.actions.loginInProgress') : t('common.auth.login.loginButton') }}
+      AnimateWrapper.w-full(:show='true', enter='fadeIn', enter-delay='1s')
+        .mt-gapl.full
+          .center.color-accent100.fs-appFontSizes
+            span {{ t('common.actions.otherLogin') }}
+          .between-end.gap-gap.fs-appFontSizes
+            Button(size='small', @click='handleAdminSchemaForm') {{ t('common.actions.admin') }}
+            Button(size='small', severity='info', @click='handleUserSchemaForm') {{ t('common.actions.user') }}
 </template>
 
 <style scoped lang="scss">
@@ -253,9 +240,26 @@ const handleUserSchemaForm = () => {
   // 50% 达到最大的“呼吸”状态
   50% {
     // 稍微缩小，并增加模糊感 (如果需要)
-    transform: scale(0.92);
+    transform: scale(0.8);
     // 降低透明度，营造气泡在背景中“淡入淡出”的呼吸效果
     opacity: 0.6;
+  }
+}
+.dark {
+  @keyframes bubblePulse {
+    // 0% 和 100% 保持默认样式 (与 Vue 过渡终点对齐)
+    0%,
+    100% {
+      transform: scale(1);
+      opacity: 1;
+    }
+    // 50% 达到最大的“呼吸”状态
+    50% {
+      // 稍微缩小，并增加模糊感 (如果需要)
+      transform: scale(0.8);
+      // 降低透明度，营造气泡在背景中“淡入淡出”的呼吸效果
+      opacity: 0.4;
+    }
   }
 }
 

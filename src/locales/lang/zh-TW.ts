@@ -23,6 +23,7 @@ const zhTW = {
         menu: '菜单',
         dialog: '对话框',
         toast: '即时通知',
+        message: '消息提示',
         schemaForm: {
           title: '表单',
           basic: '基础表单',
@@ -145,7 +146,7 @@ const zhTW = {
     actions: {
       admin: '管理員',
       user: '用戶',
-      otherLogin: '其他帳號登入',
+      otherLogin: '體驗帳號登入',
       register: '還沒有帳號？點我註冊',
       forgotPassword: '忘記密碼？',
       recoverAccount: '立即找回？',

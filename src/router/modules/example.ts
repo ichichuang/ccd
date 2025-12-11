@@ -49,10 +49,20 @@ const exampleRoutes: RouteConfig[] = [
             },
           },
           {
+            path: 'message',
+            name: 'ExampleComponentsMessage',
+            component: () => import('@/views/example/views/example-message.vue'),
+            meta: {
+              titleKey: 'router.example.components.message',
+              rank: 4,
+              icon: 'fc-info',
+            },
+          },
+          {
             path: 'schema-form',
             name: 'ExampleComponentsSchemaForm',
             meta: {
-              rank: 4,
+              rank: 5,
               titleKey: 'router.example.components.schemaForm.title',
               icon: 'fc-edit-image',
             },
@@ -108,7 +118,7 @@ const exampleRoutes: RouteConfig[] = [
             name: 'ExampleComponentsVxeTable',
             meta: {
               titleKey: 'router.example.components.vxetable.title',
-              rank: 5,
+              rank: 6,
               icon: 'fc-list',
             },
             children: [
@@ -130,7 +140,7 @@ const exampleRoutes: RouteConfig[] = [
             name: 'ExampleComponentsEcharts',
             meta: {
               titleKey: 'router.example.components.echarts.title',
-              rank: 6,
+              rank: 7,
               icon: 'fc-bar-chart',
             },
             children: [
@@ -201,7 +211,7 @@ const exampleRoutes: RouteConfig[] = [
             component: () => import('@/views/example/views/example-datepicker.vue'),
             meta: {
               titleKey: 'router.example.components.datepicker.title',
-              rank: 7,
+              rank: 8,
               icon: 'fc-calendar',
             },
           },
