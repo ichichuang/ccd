@@ -2,8 +2,16 @@ import { HTTP_CONFIG } from '@/constants'
 import { t } from '@/locales'
 import { useUserStoreWithOut } from '@/stores'
 import { env } from '@/utils'
-import { decompressAndDecryptSync } from '@/utils/modules/safeStorage'
+import { decompressAndDecryptSync, encryptAndCompressSync } from '@/utils/modules/safeStorage'
 import type { Method } from 'alova'
+
+/**
+ * 为请求参数添加可选的 isSafeStorage 字段
+ * 允许所有 HTTP 请求参数都可以有可选的 isSafeStorage 字段
+ */
+export type WithSafeStorage<T> = T & {
+  isSafeStorage?: boolean
+}
 
 /**
  * 错误类型枚举
@@ -85,6 +93,46 @@ function sanitizeData(
 }
 
 /**
+ * 处理请求数据加密
+ * 如果 data 中存在 isSafeStorage: true，则加密其他字段的值（保持key不变）
+ * @param data 请求数据对象
+ * @returns 处理后的数据对象
+ */
+export const processRequestData = <T extends Record<string, any>>(data: T): T => {
+  // 检查是否存在 isSafeStorage 且为 true
+  if (data && typeof data === 'object' && data.isSafeStorage === true) {
+    try {
+      // 创建新对象，保持原有key，只加密value
+      const encryptedData: Record<string, any> = {
+        isSafeStorage: true,
+      }
+
+      // 遍历所有字段，加密每个字段的值（除了 isSafeStorage）
+      for (const key in data) {
+        if (key !== 'isSafeStorage' && Object.prototype.hasOwnProperty.call(data, key)) {
+          const value = data[key]
+          // 加密每个字段的值
+          const encrypted = encryptAndCompressSync(value)
+          if (encrypted) {
+            encryptedData[key] = encrypted
+          } else {
+            // 如果加密失败，保留原始值
+            encryptedData[key] = value
+          }
+        }
+      }
+
+      return encryptedData as unknown as T
+    } catch (error) {
+      console.error('[RequestEncrypt] 加密请求数据失败:', error)
+    }
+  }
+
+  // 如果没有 isSafeStorage 或加密失败，返回原始数据
+  return data
+}
+
+/**
  * 全局请求拦截器
  */
 export const beforeRequest = (method: Method) => {
@@ -100,13 +148,18 @@ export const beforeRequest = (method: Method) => {
     delete method.config.headers['Authorization']
   }
 
-  // 数据脱敏处理
+  // 数据脱敏处理（在加密之前进行，因为加密后的数据不需要脱敏）
   if (!method.url.startsWith('/')) {
     if (method.config.security?.sensitiveFields) {
       method.data = sanitizeData(method.data, method.config.security.sensitiveFields)
     } else {
       method.data = sanitizeData(method.data, [...HTTP_CONFIG.sensitiveFields])
     }
+  }
+
+  // 检查请求数据是否需要加密（在脱敏之后进行）
+  if (method.data && typeof method.data === 'object') {
+    method.data = processRequestData(method.data)
   }
 }
 
@@ -179,14 +232,34 @@ export const responseHandler = async (response: Response, _method: Method) => {
       // 检查响应数据是否需要解密
       if (responseData && typeof responseData === 'object' && responseData.isSafeStorage === true) {
         try {
-          // 如果存在 encrypted 字段，则解密
-          if (responseData.encrypted && typeof responseData.encrypted === 'string') {
-            const decrypted = decompressAndDecryptSync<any>(responseData.encrypted)
-            if (decrypted) {
-              // 返回解密后的原始数据（不包含 isSafeStorage 和 encrypted 字段）
-              responseData = decrypted
+          // 创建新对象，保持原有key，只解密value
+          const decryptedData: Record<string, any> = {}
+
+          // 遍历所有字段，解密每个字段的值（除了 isSafeStorage）
+          for (const key in responseData) {
+            if (
+              key !== 'isSafeStorage' &&
+              Object.prototype.hasOwnProperty.call(responseData, key)
+            ) {
+              const value = responseData[key]
+              // 如果值是字符串，尝试解密
+              if (typeof value === 'string' && value) {
+                const decrypted = decompressAndDecryptSync<any>(value)
+                if (decrypted !== null) {
+                  decryptedData[key] = decrypted
+                } else {
+                  // 如果解密失败，保留原始值
+                  decryptedData[key] = value
+                }
+              } else {
+                // 如果不是字符串，直接保留
+                decryptedData[key] = value
+              }
             }
           }
+
+          // 使用解密后的数据替换原始数据
+          responseData = decryptedData
         } catch (error) {
           console.error('[ResponseHandler] 解密响应数据失败:', error)
           // 解密失败时返回原始数据

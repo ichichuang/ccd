@@ -347,6 +347,72 @@ const exampleRoutes: RouteConfig[] = [
               ratio: '16:9',
             },
           },
+          {
+            path: 'loading',
+            name: 'ExampleLayoutLoading',
+            meta: {
+              titleKey: 'router.example.layout.loading.title',
+              rank: 4,
+              icon: 'fc-close-up-mode',
+            },
+            children: [
+              {
+                path: 'basic',
+                name: 'ExampleLayoutLoadingBasic',
+                component: () =>
+                  import('@/views/example/layout/example-loading/example-loading-basic.vue'),
+                meta: {
+                  titleKey: 'router.example.layout.loading.basic',
+                  rank: 1,
+                  icon: 'fc-close-up-mode',
+                },
+              },
+              {
+                path: 'cube',
+                name: 'ExampleLayoutLoadingCube',
+                component: () =>
+                  import('@/views/example/layout/example-loading/example-loading-cube.vue'),
+                meta: {
+                  titleKey: 'router.example.layout.loading.cube',
+                  rank: 2,
+                  icon: 'fc-close-up-mode',
+                },
+              },
+              {
+                path: 'pulse',
+                name: 'ExampleLayoutLoadingPulse',
+                component: () =>
+                  import('@/views/example/layout/example-loading/example-loading-pulse.vue'),
+                meta: {
+                  titleKey: 'router.example.layout.loading.pulse',
+                  rank: 3,
+                  icon: 'fc-close-up-mode',
+                },
+              },
+              {
+                path: 'dots',
+                name: 'ExampleLayoutLoadingDots',
+                component: () =>
+                  import('@/views/example/layout/example-loading/example-loading-dots.vue'),
+                meta: {
+                  titleKey: 'router.example.layout.loading.dots',
+                  rank: 4,
+                  icon: 'fc-close-up-mode',
+                },
+              },
+              {
+                path: 'wave',
+                name: 'ExampleLayoutLoadingWave',
+                component: () =>
+                  import('@/views/example/layout/example-loading/example-loading-wave.vue'),
+                meta: {
+                  titleKey: 'router.example.layout.loading.wave',
+                  rank: 5,
+                  icon: 'fc-close-up-mode',
+                },
+              },
+            ],
+          },
         ],
       },
       // 重定向空页面

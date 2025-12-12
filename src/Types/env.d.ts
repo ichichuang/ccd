@@ -87,9 +87,6 @@ declare interface ImportMetaEnv {
   /** rootRedirect 重定向路径 */
   readonly VITE_ROOT_REDIRECT: string
 
-  /** loading 组件大小 - 控制 loading 组件的大小 (屏幕最小宽度 / VITE_LOADING_SIZE) */
-  readonly VITE_LOADING_SIZE: NumberString
-
   /**
    * ==========================================
    * API 接口配置

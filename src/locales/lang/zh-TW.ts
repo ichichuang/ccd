@@ -17,6 +17,14 @@ const zhTW = {
         fullscreen: '全屏',
         test: '測試',
         ratio: '比例',
+        loading: {
+          title: '加載中',
+          basic: '基礎加載',
+          cube: '3D立方體',
+          pulse: '脈衝波紋',
+          dots: '旋轉圓點',
+          wave: '波形加載',
+        },
       },
       components: {
         title: '组件',

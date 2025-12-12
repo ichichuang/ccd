@@ -46,7 +46,6 @@ export interface ViteEnv {
   VITE_APP_ENV: 'development' | 'production'
   VITE_PINIA_PERSIST_KEY_PREFIX: string
   VITE_ROOT_REDIRECT: string
-  VITE_LOADING_SIZE: number
   VITE_DEBUG: boolean
   VITE_DROP_DEBUGGER: boolean
   VITE_DROP_CONSOLE: boolean
@@ -68,7 +67,7 @@ export const wrapperEnv = (envConf: Record<string, any>): ViteEnv => {
     'VITE_DEV_TOOLS',
   ]
 
-  const numberKeys = ['VITE_PORT', 'VITE_LOADING_SIZE']
+  const numberKeys = ['VITE_PORT']
 
   const ret: Record<string, any> = {}
 
@@ -102,7 +101,6 @@ export const wrapperEnv = (envConf: Record<string, any>): ViteEnv => {
     VITE_APP_ENV: ret.VITE_APP_ENV || 'development',
     VITE_PINIA_PERSIST_KEY_PREFIX: ret.VITE_PINIA_PERSIST_KEY_PREFIX,
     VITE_ROOT_REDIRECT: ret.VITE_ROOT_REDIRECT,
-    VITE_LOADING_SIZE: ret.VITE_LOADING_SIZE,
     VITE_DEBUG: ret.VITE_DEBUG,
     VITE_DROP_DEBUGGER: ret.VITE_DROP_DEBUGGER,
     VITE_DROP_CONSOLE: ret.VITE_DROP_CONSOLE,

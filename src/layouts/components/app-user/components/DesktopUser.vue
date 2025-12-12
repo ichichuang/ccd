@@ -10,7 +10,7 @@ import { OhVueIcon } from 'oh-vue-icons'
 import Button from 'primevue/button'
 import Image from 'primevue/image'
 import Popover from 'primevue/popover'
-import { computed, defineComponent, ref, type ComputedRef } from 'vue'
+import { computed, defineComponent, ref, watch, type ComputedRef } from 'vue'
 const { toggleThemeWithAnimation, isDark } = useThemeSwitch()
 const { openDialog, closeDialog } = useDialog()
 
@@ -20,6 +20,23 @@ const userStore = useUserStore()
 const userInfo = computed(() => userStore.getUserInfo)
 const userName = computed(() => userInfo.value?.username ?? '')
 const userAvatar = computed(() => userInfo.value?.avatar || defaultAvatar)
+
+// 头像加载失败处理
+const displayAvatar = ref<string>(userAvatar.value)
+const handleAvatarError = () => {
+  if (displayAvatar.value !== defaultAvatar) {
+    displayAvatar.value = defaultAvatar
+  }
+}
+
+// 监听 userAvatar 变化，更新 displayAvatar
+watch(
+  userAvatar,
+  newAvatar => {
+    displayAvatar.value = newAvatar || defaultAvatar
+  },
+  { immediate: true }
+)
 
 // 尺寸相关
 const sizeStore = useSizeStore()
@@ -264,7 +281,10 @@ const openMoreSettingsDialog = () => {
   tabindex='0',
   @click='handleToggle'
 )
-  Image.w-appFontSizel.h-appFontSizel.rounded-rounded.overflow-hidden(:src='userAvatar')
+  Image.w-appFontSizel.h-appFontSizel.rounded-rounded.overflow-hidden(
+    :src='displayAvatar',
+    @error='handleAvatarError'
+  )
   .h-appFontSizel.center.between-start.px-padding.c-transitions(
     class='hover:color-primary100 rounded-l-none!'
   ) {{ userName }}
@@ -274,7 +294,10 @@ Popover.w-80vw(ref='userPopoverRef', class='sm:w-56vw md:w-36vw lg:w-30vw xl:w-2
   .gap-gap.between-col.start-col.p-padding
     //- 用户信息
     .between-start
-      Image.c-card-primary.p-0.w-100.h-100.rounded-rounded.overflow-hidden(:src='userAvatar')
+      Image.c-card-primary.p-0.w-100.h-100.rounded-rounded.overflow-hidden(
+        :src='displayAvatar',
+        @error='handleAvatarError'
+      )
       .h-100.px-paddingx.between-col(class='w-[calc(100%-100px)]')
         .between
           .between-start.gap-gaps.pt-paddings

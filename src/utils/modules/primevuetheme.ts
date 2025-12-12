@@ -496,8 +496,8 @@ const initToastColor = (preset: any, colorStore: ReturnType<typeof useColorStore
 }
 
 const initMessageColor = (preset: any, colorStore: ReturnType<typeof useColorStore>) => {
-  const lightTint = (base: string) => `color-mix(in srgb, ${base}, transparent 74%)`
-  const darkTint = (base: string) => `color-mix(in srgb, ${base}, transparent 84%)`
+  const lightTint = (base: string) => `color-mix(in srgb, ${base}, transparent 12%)`
+  const darkTint = (base: string) => `color-mix(in srgb, ${base}, transparent 28%)`
 
   deepMergeStylesAdvancedInPlace(preset.components.message, {
     root: {
@@ -508,9 +508,9 @@ const initMessageColor = (preset: any, colorStore: ReturnType<typeof useColorSto
         ? darkTint(colorStore.getInfoColor)
         : lightTint(colorStore.getInfoColor),
       borderColor: colorStore.isDark ? colorStore.getInfoColorActive : colorStore.getInfoColorHover,
-      color: colorStore.getInfoColor,
+      color: colorStore.getInfoColorText,
       detailColor: colorStore.getText100,
-      shadow: `0px 4px 8px 0px color-mix(in srgb, ${colorStore.getInfoColorText}, transparent 96%)`,
+      shadow: `0px 4px 8px 0px color-mix(in srgb, ${colorStore.getInfoColorText}, transparent 88%)`,
       closeButton: {
         hoverBackground: colorStore.getBg100,
         focusRing: {
@@ -519,7 +519,7 @@ const initMessageColor = (preset: any, colorStore: ReturnType<typeof useColorSto
         },
       },
       simple: {
-        color: colorStore.getInfoColor,
+        color: colorStore.getInfoColorText,
       },
     },
     success: {
@@ -529,9 +529,9 @@ const initMessageColor = (preset: any, colorStore: ReturnType<typeof useColorSto
       borderColor: colorStore.isDark
         ? colorStore.getSuccessColorActive
         : colorStore.getSuccessColorHover,
-      color: colorStore.getSuccessColor,
+      color: colorStore.getSuccessColorText,
       detailColor: colorStore.getText100,
-      shadow: `0px 4px 8px 0px color-mix(in srgb, ${colorStore.getSuccessColorText}, transparent 96%)`,
+      shadow: `0px 4px 8px 0px color-mix(in srgb, ${colorStore.getSuccessColorText}, transparent 88%)`,
       closeButton: {
         hoverBackground: colorStore.getBg100,
         focusRing: {
@@ -540,7 +540,7 @@ const initMessageColor = (preset: any, colorStore: ReturnType<typeof useColorSto
         },
       },
       simple: {
-        color: colorStore.getSuccessColor,
+        color: colorStore.getSuccessColorText,
       },
     },
     warn: {
@@ -548,9 +548,9 @@ const initMessageColor = (preset: any, colorStore: ReturnType<typeof useColorSto
         ? darkTint(colorStore.getWarnColor)
         : lightTint(colorStore.getWarnColor),
       borderColor: colorStore.isDark ? colorStore.getWarnColorActive : colorStore.getWarnColorHover,
-      color: colorStore.getWarnColor,
+      color: colorStore.getWarnColorText,
       detailColor: colorStore.getText100,
-      shadow: `0px 4px 8px 0px color-mix(in srgb, ${colorStore.getWarnColorText}, transparent 96%)`,
+      shadow: `0px 4px 8px 0px color-mix(in srgb, ${colorStore.getWarnColorText}, transparent 88%)`,
       closeButton: {
         hoverBackground: colorStore.getBg100,
         focusRing: {
@@ -559,7 +559,7 @@ const initMessageColor = (preset: any, colorStore: ReturnType<typeof useColorSto
         },
       },
       simple: {
-        color: colorStore.getWarnColor,
+        color: colorStore.getWarnColorText,
       },
     },
     error: {
@@ -569,9 +569,9 @@ const initMessageColor = (preset: any, colorStore: ReturnType<typeof useColorSto
       borderColor: colorStore.isDark
         ? colorStore.getDangerColorActive
         : colorStore.getDangerColorHover,
-      color: colorStore.getDangerColor,
+      color: colorStore.getDangerColorText,
       detailColor: colorStore.getText100,
-      shadow: `0px 4px 8px 0px color-mix(in srgb, ${colorStore.getDangerColorText}, transparent 96%)`,
+      shadow: `0px 4px 8px 0px color-mix(in srgb, ${colorStore.getDangerColorText}, transparent 88%)`,
       closeButton: {
         hoverBackground: colorStore.getBg100,
         focusRing: {
@@ -580,7 +580,7 @@ const initMessageColor = (preset: any, colorStore: ReturnType<typeof useColorSto
         },
       },
       simple: {
-        color: colorStore.getDangerColor,
+        color: colorStore.getDangerColorText,
       },
     },
     secondary: {
@@ -590,7 +590,7 @@ const initMessageColor = (preset: any, colorStore: ReturnType<typeof useColorSto
       borderColor: colorStore.isDark ? colorStore.getBg300 : colorStore.getBg300,
       color: colorStore.getSecondaryColorText,
       detailColor: colorStore.getSecondaryColorText,
-      shadow: `0px 4px 8px 0px color-mix(in srgb, ${colorStore.getSecondaryColorText}, transparent 96%)`,
+      shadow: `0px 4px 8px 0px color-mix(in srgb, ${colorStore.getSecondaryColorText}, transparent 88%)`,
       closeButton: {
         hoverBackground: colorStore.getBg200,
         focusRing: {
@@ -607,7 +607,7 @@ const initMessageColor = (preset: any, colorStore: ReturnType<typeof useColorSto
       borderColor: colorStore.getContrastColorActive,
       color: colorStore.getContrastColorText,
       detailColor: colorStore.getContrastColorText,
-      shadow: `0px 4px 8px 0px color-mix(in srgb, ${colorStore.getContrastColorText}, transparent 96%)`,
+      shadow: `0px 4px 8px 0px color-mix(in srgb, ${colorStore.getContrastColorText}, transparent 88%)`,
       closeButton: {
         hoverBackground: colorStore.isDark ? colorStore.getContrastColorHover : colorStore.getBg200,
         focusRing: {

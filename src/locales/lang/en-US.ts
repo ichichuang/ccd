@@ -17,6 +17,14 @@ const enUS = {
         fullscreen: 'Fullscreen',
         test: 'Test',
         ratio: 'Ratio',
+        loading: {
+          title: 'Loading',
+          basic: 'Basic Loading',
+          cube: '3D Cube',
+          pulse: 'Pulse Ripple',
+          dots: 'Rotating Dots',
+          wave: 'Wave Loading',
+        },
       },
       components: {
         title: 'Components',

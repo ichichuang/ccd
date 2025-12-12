@@ -10,7 +10,7 @@ import { OhVueIcon } from 'oh-vue-icons'
 import Button from 'primevue/button'
 import Image from 'primevue/image'
 import Popover from 'primevue/popover'
-import { computed, defineComponent, ref, type ComputedRef } from 'vue'
+import { computed, defineComponent, ref, watch, type ComputedRef } from 'vue'
 const { toggleThemeWithAnimation, isDark } = useThemeSwitch()
 const { openDialog, closeDialog } = useDialog()
 
@@ -20,6 +20,23 @@ const userStore = useUserStore()
 const userInfo = computed(() => userStore.getUserInfo)
 const userName = computed(() => userInfo.value?.username ?? '')
 const userAvatar = computed(() => userInfo.value?.avatar || defaultAvatar)
+
+// 头像加载失败处理
+const displayAvatar = ref<string>(userAvatar.value)
+const handleAvatarError = () => {
+  if (displayAvatar.value !== defaultAvatar) {
+    displayAvatar.value = defaultAvatar
+  }
+}
+
+// 监听 userAvatar 变化，更新 displayAvatar
+watch(
+  userAvatar,
+  newAvatar => {
+    displayAvatar.value = newAvatar || defaultAvatar
+  },
+  { immediate: true }
+)
 
 // 尺寸相关
 const sizeStore = useSizeStore()
@@ -271,36 +288,70 @@ const openMoreSettingsDialog = () => {
   @click='handleToggle',
   @touch='handleToggle'
 )
-  Image.w-appFontSizel.h-appFontSizel.rounded-rounded.overflow-hidden(:src='userAvatar')
+  Image.w-appFontSizel.h-appFontSizel.rounded-rounded.overflow-hidden(
+    :src='displayAvatar',
+    @error='handleAvatarError'
+  )
   .h-appFontSizel.center.between-start.px-padding.c-transitions(
     class='hover:color-primary100 rounded-l-none!'
   ) {{ userName }}
 
 //- 用户面板
-Popover.w-80vw(ref='userPopoverRef', class='sm:w-60vw md:w-40vw lg:w-30vw xl:w-28vw xxl:w-24vw')
-  .gap-gap.between-col.start-col.fs-appFontSizes.p-padding(class='sm:p-paddingl')
+Popover.w-80vw(ref='userPopoverRef', class='sm:w-56vw md:w-36vw lg:w-30vw xl:w-26vw xxl:w-24vw')
+  .gap-gap.between-col.start-col.p-padding
+    //- 用户信息
+    .between-start
+      Image.c-card-primary.p-0.w-100.h-100.rounded-rounded.overflow-hidden(
+        :src='displayAvatar',
+        @error='handleAvatarError'
+      )
+      .h-100.px-paddingx.between-col(class='w-[calc(100%-100px)]')
+        .between
+          .between-start.gap-gaps.pt-paddings
+            OhVueIcon.w-appFontSizex.h-appFontSizex(name='hi-solid-user')
+            b.fs-appFontSizex {{ userName }}
+          .h-full
+            OhVueIcon.w-appFontSizel.h-appFontSizel.c-cp(
+              name='fc-settings',
+              animation='wrench',
+              speed='fast',
+              hover,
+              @click='openMoreSettingsDialog',
+              @touch='openMoreSettingsDialog'
+            )
+        .between-col.gap-gaps
+          .between-start.gap-gaps
+            OhVueIcon.w-appFontSizes.h-appFontSizes(name='hi-solid-phone')
+            p.fs-appFontSizes {{ userInfo.phone }}
+          .between-start.gap-gaps
+            OhVueIcon.w-appFontSizes.h-appFontSizes(name='hi-solid-mail')
+            p.fs-appFontSizes {{ userInfo.email }}
+
     //- 系统颜色模式切换(浅色/深色/自动)
-    .grid.grid-cols-5.gap-gaps
+    .grid.grid-cols-5.gap-gap
       .c-card.grid-col-span-2.gap-gaps.c-cp.center.between-col.py-paddings.c-transitions(
         @click='toggleThemeWithAnimation($event, "light")',
+        @touch='toggleThemeWithAnimation($event, "light")',
         :class='{ "bg-primary100 color-primary400": mode === "light" }'
       )
-        OhVueIcon(
+        OhVueIcon.c-transition(
           name='hi-solid-light-bulb',
           :class='!isDark ? "color-accent100 w-appFontSizel h-appFontSizel" : "color-primary100 w-appFontSizex h-appFontSizex"'
         )
         .center.text-center {{ t('common.systemOptions.themeMode.light') }}
       .c-card.grid-col-span-1.gap-gaps.c-cp.center.between-col.py-paddings.c-transitions(
         @click='toggleThemeWithAnimation($event, "auto")',
+        @touch='toggleThemeWithAnimation($event, "auto")',
         :class='{ "bg-primary100 color-primary400": mode === "auto" }'
       )
-        OhVueIcon.w-appFontSizex.h-appFontSizex(name='fc-flash-auto')
+        OhVueIcon.w-appFontSizel.h-appFontSizel(name='fc-flash-auto')
         .center.text-center {{ t('common.systemOptions.themeMode.auto') }}
       .c-card.grid-col-span-2.gap-gaps.c-cp.center.between-col.py-paddings.c-transitions(
         @click='toggleThemeWithAnimation($event, "dark")',
+        @touch='toggleThemeWithAnimation($event, "dark")',
         :class='{ "bg-primary100 color-primary400": mode === "dark" }'
       )
-        OhVueIcon(
+        OhVueIcon.c-transition(
           name='hi-solid-light-bulb',
           flip='vertical',
           :class='isDark ? "color-accent100 w-appFontSizel h-appFontSizel" : "color-primary100 w-appFontSizex h-appFontSizex"'
@@ -318,31 +369,44 @@ Popover.w-80vw(ref='userPopoverRef', class='sm:w-60vw md:w-40vw lg:w-30vw xl:w-2
           .text-2xl {{ item.flag }}
           div {{ item.name }}
 
-    //- 更多设置按钮
-    .c-card.gap-gaps.c-cp.center.py-paddings.c-transitions(
-      @click='openMoreSettingsDialog',
-      @touch='openMoreSettingsDialog'
-    )
-      OhVueIcon.w-appFontSizex.h-appFontSizex(name='hi-solid-cog', animation='spin', speed='slow')
-      .center.text-center {{ t('common.settings.moreSettings') }}
-
-    //- 个人中心
-    .grid.grid-cols-2.gap-gap
-      Button(:label='t("common.settings.personalCenter")', severity='info')
-      .full.hidden(class='dark:block')
-        Button.full.c-transitions(
-          severity='danger',
-          :label='t("common.settings.logout")',
-          @click='userStore.logout',
-          @touchend='userStore.logout'
+    //- 更多按钮
+    .between-end.gap-gap
+      .hidden(class='dark:block')
+        Button.c-transitions.gap-gaps(
+          severity='info',
+          raised,
+          @click='openMoreSettingsDialog',
+          @touch='openMoreSettingsDialog'
         )
-      .full.block(class='dark:hidden')
-        Button.full.c-transitions(
+          OhVueIcon.w-appFontSizex.h-appFontSizex(name='fc-support')
+          span {{ t('common.settings.moreSettings') }}
+      .block(class='dark:hidden')
+        Button.c-transitions.gap-gaps(
+          severity='info',
+          variant='text',
+          raised,
+          @click='openMoreSettingsDialog',
+          @touch='openMoreSettingsDialog'
+        )
+          OhVueIcon.w-appFontSizex.h-appFontSizex(name='fc-support')
+          span {{ t('common.settings.moreSettings') }}
+      //- Button(:label='t("common.settings.personalCenter")', severity='info')
+      .hidden(class='dark:block')
+        Button.full.c-transitions.gap-gaps(
+          severity='danger',
+          @click='userStore.logout',
+          @touch='userStore.logout'
+        )
+          OhVueIcon.w-appFontSizex.h-appFontSizex(name='fc-sports-mode')
+          span {{ t('common.settings.logout') }}
+      .block(class='dark:hidden')
+        Button.full.c-transitions.gap-gaps(
           severity='danger',
           variant='text',
           raised,
-          :label='t("common.settings.logout")',
           @click='userStore.logout',
-          @touchend='userStore.logout'
+          @touch='userStore.logout'
         )
+          OhVueIcon.w-appFontSizex.h-appFontSizex(name='fc-sports-mode')
+          span {{ t('common.settings.logout') }}
 </template>

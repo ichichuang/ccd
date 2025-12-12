@@ -140,7 +140,7 @@ onUnmounted(() => {
 //- 加载动画层
 AnimateWrapper(:show='isLoadingRef', enter='fadeIn', leave='fadeOut', duration='500ms', delay='0s')
   .container.fixed.center.t-0.r-0.l-0.b-0.z-999
-    Loading
+    Loading-Wave(:loading-size='3')
 
 //- 主布局切换层 - 使用单一AnimateWrapper避免冲突
 .fixed.t-0.r-0.l-0.b-0.z-2

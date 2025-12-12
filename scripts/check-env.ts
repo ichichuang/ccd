@@ -46,7 +46,6 @@ const validationRules: ValidationRules = {
   // 类型验证规则
   types: {
     VITE_PORT: 'number',
-    VITE_LOADING_SIZE: 'number',
     VITE_DEBUG: 'boolean',
     VITE_DROP_DEBUGGER: 'boolean',
     VITE_DROP_CONSOLE: 'boolean',
@@ -68,7 +67,6 @@ const validationRules: ValidationRules = {
   // 值范围验证
   ranges: {
     VITE_PORT: { min: 1024, max: 65535 },
-    VITE_LOADING_SIZE: { min: 1, max: 20 },
   },
 }
 

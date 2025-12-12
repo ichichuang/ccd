@@ -429,27 +429,27 @@
 }
 .dark {
   .p-message.p-message-success.p-message-outlined {
-    border: 1px solid color-mix(in srgb, var(--success-color), transparent 64%) !important;
+    border: 1px solid color-mix(in srgb, var(--success-color), transparent 8%) !important;
     color: var(--success-color) !important;
   }
   .p-message.p-message-info.p-message-outlined {
-    border: 1px solid color-mix(in srgb, var(--info-color), transparent 64%) !important;
+    border: 1px solid color-mix(in srgb, var(--info-color), transparent 8%) !important;
     color: var(--info-color) !important;
   }
   .p-message.p-message-warn.p-message-outlined {
-    border: 1px solid color-mix(in srgb, var(--warn-color), transparent 64%) !important;
+    border: 1px solid color-mix(in srgb, var(--warn-color), transparent 8%) !important;
     color: var(--warn-color) !important;
   }
   .p-message.p-message-error.p-message-outlined {
-    border: 1px solid color-mix(in srgb, var(--danger-color), transparent 64%) !important;
+    border: 1px solid color-mix(in srgb, var(--danger-color), transparent 8%) !important;
     color: var(--danger-color) !important;
   }
   .p-message.p-message-secondary.p-message-outlined {
-    border: 1px solid color-mix(in srgb, var(--bg300), transparent 64%) !important;
+    border: 1px solid color-mix(in srgb, var(--bg300), transparent 8%) !important;
     color: var(--text100) !important;
   }
   .p-message.p-message-contrast.p-message-outlined {
-    border: 1px solid color-mix(in srgb, var(--contrast-color), transparent 64%) !important;
+    border: 1px solid color-mix(in srgb, var(--contrast-color), transparent 8%) !important;
     color: var(--contrast-color) !important;
   }
 }

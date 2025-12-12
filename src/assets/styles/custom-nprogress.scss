@@ -5,9 +5,10 @@
   .bar {
     background: linear-gradient(
       90deg,
-      var(--primary100) 0%,
-      var(--accent200) 50%,
-      var(--accent100) 100%
+      var(--accent100) 0%,
+      var(--accent200) 18%,
+      var(--primary200) 22%,
+      var(--primary100) 100%
     ) !important;
     position: fixed;
     z-index: 1031;

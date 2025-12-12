@@ -83,10 +83,6 @@ export const env = {
     return import.meta.env.VITE_ROOT_REDIRECT
   },
 
-  get loadingSize(): number {
-    return toNumber(import.meta.env.VITE_LOADING_SIZE)
-  },
-
   // API 配置
   get apiBaseUrl(): string {
     return import.meta.env.VITE_API_BASE_URL
@@ -150,11 +146,6 @@ export class EnvValidator {
     // 验证端口范围
     if (env.port < 1024 || env.port > 65535) {
       throw new Error(`VITE_PORT 超出有效范围 (1024-65535): ${env.port}`)
-    }
-
-    // 验证 loading 大小
-    if (env.loadingSize < 1 || env.loadingSize > 20) {
-      throw new Error(`VITE_LOADING_SIZE 超出有效范围 (1-20): ${env.loadingSize}`)
     }
   }
 

@@ -56,9 +56,9 @@ export interface DeviceConfig {
  */
 export const DEVICE_FONT_SIZE_RATIOS = {
   mobile: {
-    base: 0.6, // 12/16 = 0.75
-    min: 0.4, // 12/16 = 0.75
-    max: 0.8, // 16/16 = 1.0
+    base: 0.8, // 12/16 = 0.75
+    min: 0.6, // 12/16 = 0.75
+    max: 0.9, // 16/16 = 1.0
   },
   tablet: {
     base: 0.8, // 15/16 = 0.9375

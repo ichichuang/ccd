@@ -17,6 +17,14 @@ const zhCN = {
         fullscreen: '全屏',
         test: '测试',
         ratio: '比例',
+        loading: {
+          title: '加载中',
+          basic: '基础加载',
+          cube: '3D立方体',
+          pulse: '脉冲波纹',
+          dots: '旋转圆点',
+          wave: '波形加载',
+        },
       },
       components: {
         title: '组件',

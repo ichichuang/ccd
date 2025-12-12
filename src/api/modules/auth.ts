@@ -1,9 +1,10 @@
 import { get, post } from '@/utils'
+import type { WithSafeStorage } from '@/utils/modules/http/interceptors'
 
 /**
  * 用户登录
  */
-export const login = (params: { username: string; password: string }) =>
+export const login = (params: WithSafeStorage<{ username: string; password: string }>) =>
   post<{ token: string }>('/auth/login', params)
 
 /**

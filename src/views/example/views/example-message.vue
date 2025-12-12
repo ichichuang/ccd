@@ -39,7 +39,7 @@ const showClosable = () =>
     detail: 'closable = true + life = 5000',
     closable: true,
     life: 5000,
-    iconName: 'fc-timer',
+    iconName: 'ri-time-fill',
   })
 
 const showSmallVariants = () => {

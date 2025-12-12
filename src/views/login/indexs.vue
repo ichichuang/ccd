@@ -118,6 +118,7 @@ const doLoginOriginal = async () => {
   login({
     username: values.username,
     password: values.password,
+    isSafeStorage: true,
   })
     .then(({ token }) => {
       userStore.setToken(token)
