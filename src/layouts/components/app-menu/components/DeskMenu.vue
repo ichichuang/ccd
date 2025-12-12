@@ -29,31 +29,20 @@ const rotateSum = ref<number>(sidebarCollapsed.value ? 180 : 0)
 .center.gap-gap
   //- 折叠按钮
   .c-card-primary.p-paddings.c-transitions.size-1-1.hidden(class='md:flex', @click='toggleSidebarCollapsed')
-    OhVueIcon.w-appFontSize.h-appFontSize.c-transitions(
-      name='ri-flutter-fill',
-      :style='{ transform: `rotate(${rotateSum}deg)` }'
-    )
+    Icons.c-transitions(name='ri-flutter-fill', :style='{ transform: `rotate(${rotateSum}deg)` }')
   //- 全屏按钮
   .c-card-primary.p-paddings.c-transitions.size-1-1(@click='toggle')
     template(v-if='fullscreen')
-      OhVueIcon.w-appFontSize.h-appFontSize.c-transitions.fw-bold(
-        name='ri-fullscreen-exit-line',
-        animation='ring',
-        hover
-      )
+      Icons.c-transitions.fw-bold(name='ri-fullscreen-exit-line', animation='ring', hover)
     template(v-else)
-      OhVueIcon.w-appFontSize.h-appFontSize.c-transitions.fw-bold(
-        name='ri-fullscreen-line',
-        animation='ring',
-        hover
-      )
+      Icons.c-transitions.fw-bold(name='ri-fullscreen-line', animation='ring', hover)
   //- <md : 颜色模式切换
   .block(class='md:hidden')
     .c-card-primary.p-paddings.c-transitions.size-1-1(@click='toggleThemeWithAnimation($event)')
       template(v-if='isDark')
-        OhVueIcon.w-appFontSize.h-appFontSize(name='ri-moon-clear-line')
+        Icons(name='ri-moon-clear-line', size='s')
       template(v-else)
-        OhVueIcon.w-appFontSize.h-appFontSize(name='ri-sun-line')
+        Icons(name='ri-sun-line', size='s')
 
   //- 用户信息
   component(:is='appUserComponent')

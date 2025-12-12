@@ -210,10 +210,43 @@ const exampleRoutes: RouteConfig[] = [
             name: 'ExampleComponentsDatepicker',
             component: () => import('@/views/example/views/example-datepicker.vue'),
             meta: {
-              titleKey: 'router.example.components.datepicker.title',
+              titleKey: 'router.example.components.datepicker',
               rank: 8,
               icon: 'fc-calendar',
             },
+          },
+          {
+            path: 'icons',
+            name: 'ExampleComponentsIcons',
+            meta: {
+              titleKey: 'router.example.components.icons.title',
+              rank: 9,
+              icon: 'fc-edit-image',
+            },
+            children: [
+              {
+                path: 'custom',
+                name: 'ExampleComponentsIconsCustom',
+                component: () =>
+                  import('@/views/example/views/example-icons/example-icons-custom.vue'),
+                meta: {
+                  titleKey: 'router.example.components.icons.custom',
+                  rank: 1,
+                  icon: 'fc-edit-image',
+                },
+              },
+              {
+                path: 'component',
+                name: 'ExampleComponentsIconsComponent',
+                component: () =>
+                  import('@/views/example/views/example-icons/example-icons-component.vue'),
+                meta: {
+                  titleKey: 'router.example.components.icons.component',
+                  rank: 2,
+                  icon: 'fc-edit-image',
+                },
+              },
+            ],
           },
         ],
       },

@@ -51,8 +51,19 @@ const enUS = {
           dynamic: 'Dynamic Echarts',
           linkage: 'Linkage Echarts',
         },
-        datepicker: {
-          title: 'Date Picker',
+        datepicker: 'Date Picker',
+        icons: {
+          title: 'Icons',
+          custom: 'Custom Icons',
+          component: 'Icon Component',
+        },
+      },
+      icons: {
+        custom: {
+          basic: 'Basic Usage',
+          colored: 'Colored Icons',
+          sizes: 'Different Sizes',
+          dynamic: 'Dynamic Loading',
         },
       },
       function: {

@@ -178,7 +178,7 @@ const handleUserSchemaForm = () => {
   .fixed.t-gap.r-gapl.grid.grid-cols-3.gap-gaps
     template(v-for='item in localesOptions', :key='item.key')
       .c-cp.c-card.p-paddings(@click='setLocale(item.key)')
-        .fs-appFontSizex.w-appFontSizex.h-appFontSizex.center.c-transitions(class='hover:scale-110') {{ item.flag }}
+        Image.w-appFontSizex.h-appFontSizex.rounded-rounded.overflow-hidden(:src='item.image')
   // 登录卡片
   .relative.rounded-xl.backdrop-blur-xl.c-shadow-primary.p-paddingl.gap-gap.between-col(
     class='w-90% sm:w-80% md:w-46% lg:w-30% xl:w-28% xxl:w-26%'
@@ -192,9 +192,7 @@ const handleUserSchemaForm = () => {
           .color-text200.fs-appFontSizes {{ t('common.actions.welcome') }}
           .center.gap-gaps
             Button.p-paddings.rounded-xl.bg-bg200(text, @click='toggleThemeWithAnimation($event)')
-              OhVueIcon.w-appFontSize.h-appFontSize(
-                :name='isDark ? "ri-sun-line" : "ri-moon-clear-line"'
-              )
+              Icons(:name='isDark ? "ri-sun-line" : "ri-moon-clear-line"', size='s')
 
     //- 分割线
     .w-full.h-1.my-gaps.bg-primary100.opacity-80.relative.z-2

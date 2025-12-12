@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { useSizeStore } from '@/stores/modules/size'
-import { OhVueIcon } from 'oh-vue-icons'
 import { computed, onBeforeUnmount, reactive } from 'vue'
 
 const sizeStore = useSizeStore()
@@ -181,7 +180,7 @@ onBeforeUnmount(() => {
           v-if="item.iconName"
           #icon
         >
-          <OhVueIcon
+          <Icons
             :name="item.iconName"
             :class="getIconSizeClass(item.size)"
           />

@@ -51,8 +51,19 @@ const zhCN = {
           dynamic: '动态图表',
           linkage: '联动图表',
         },
-        datepicker: {
-          title: '日期选择器',
+        datepicker: '日期选择器',
+        icons: {
+          title: '图标',
+          custom: '自定义图标',
+          component: '图标组件',
+        },
+      },
+      icons: {
+        custom: {
+          basic: '基础使用',
+          colored: '带颜色的图标',
+          sizes: '不同尺寸',
+          dynamic: '动态加载',
         },
       },
       function: {

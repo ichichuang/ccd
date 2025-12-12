@@ -24,9 +24,9 @@ const rotateSum = ref<number>(sidebarCollapsed.value ? 180 : 0)
     @touch='toggleThemeWithAnimation($event)'
   )
     template(v-if='isDark')
-      OhVueIcon.w-appFontSize.h-appFontSize(name='ri-moon-clear-line')
+      Icons(name='ri-moon-clear-line', size='s')
     template(v-else)
-      OhVueIcon.w-appFontSize.h-appFontSize(name='ri-sun-line')
+      Icons(name='ri-sun-line', size='s')
 
   //- 用户信息
   component(:is='appUserComponent')

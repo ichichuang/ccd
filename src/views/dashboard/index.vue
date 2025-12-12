@@ -90,25 +90,28 @@ import Message from 'primevue/message'
     <div class="center gap-gap">
       <Message size="small">
         <div class="center gap-gaps">
-          <OhVueIcon
+          <Icons
             name="fc-info"
-            class="w-appFontSizes h-appFontSizes"
-          ></OhVueIcon>
+            size="s"
+          ></Icons>
           Small Message
         </div>
       </Message>
       <Message>
         <div class="center gap-gaps">
-          <OhVueIcon name="fc-info"></OhVueIcon>
+          <Icons
+            name="fc-info"
+            size="m"
+          ></Icons>
           Normal Message
         </div>
       </Message>
       <Message size="large">
         <div class="center gap-gaps">
-          <OhVueIcon
+          <Icons
             name="fc-info"
-            class="w-appFontSizex h-appFontSizex"
-          ></OhVueIcon>
+            size="l"
+          ></Icons>
           Large Message
         </div>
       </Message>

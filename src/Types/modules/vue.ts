@@ -14,6 +14,8 @@ declare module '@vue/runtime-core' {
   interface GlobalComponents {
     // eslint-disable-next-line @typescript-eslint/naming-convention
     OhVueIcon: Component
+
+    Icons: Component // eslint-disable-line @typescript-eslint/naming-convention
   }
 }
 
@@ -26,5 +28,7 @@ declare module 'vue' {
   interface GlobalComponents {
     // eslint-disable-next-line @typescript-eslint/naming-convention
     OhVueIcon: Component
+
+    Icons: Component // eslint-disable-line @typescript-eslint/naming-convention
   }
 }

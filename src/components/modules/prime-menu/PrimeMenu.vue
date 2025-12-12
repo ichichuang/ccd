@@ -39,15 +39,7 @@ const childProps = computed(() => {
 <template lang="pug">
 component(:is='menuComponents[props.type]', v-bind='childProps')
   template(#headericon='{ item, class: iconClass }')
-    OhVueIcon(
-      v-if='item?.icon',
-      :name='item.icon',
-      :class='[iconClass, "w-appFontSize h-appFontSize"]'
-    )
+    Icons(v-if='item?.icon', :name='item.icon', :class='[iconClass]')
   template(#itemicon='{ item, class: iconClass }')
-    OhVueIcon(
-      v-if='item?.icon',
-      :name='item.icon',
-      :class='[iconClass, "w-appFontSizes h-appFontSizes"]'
-    )
+    Icons(v-if='item?.icon', :name='item.icon', :class='[iconClass]', :size='"s"')
 </template>

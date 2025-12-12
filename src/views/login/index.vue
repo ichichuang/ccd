@@ -54,9 +54,9 @@ const handleLogin = async () => {
       @touch='toggleThemeWithAnimation($event)'
     )
       template(v-if='isDark')
-        OhVueIcon.w-appFontSizex.h-appFontSizex(name='ri-moon-clear-line')
+        Icons(name='ri-moon-clear-line', size='m')
       template(v-else)
-        OhVueIcon.w-appFontSizex.h-appFontSizex(name='ri-sun-line')
+        Icons(name='ri-sun-line', size='m')
 
   // 动态背景色块
   .bg-blob.bg-1

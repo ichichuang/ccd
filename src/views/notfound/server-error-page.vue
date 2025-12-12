@@ -184,7 +184,7 @@ onUnmounted(() => {
       // 操作按钮
       .error-actions
         Button(@click='handleBackHome', @touchend='handleBackHome')
-          OhVueIcon(name='fc-binoculars')
+          Icons(name='fc-binoculars')
           span {{ t('common.actions.backToHome') }}
 
     // 装饰性元素 - 增强版

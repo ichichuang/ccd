@@ -33,13 +33,14 @@ Breadcrumb.fs-appFontSizes.hidden(class='md:block', :home='props.home', :model='
   template(#item='{ item }')
     template(v-if='item.route')
       .center(v-tooltip.bottom='$t("layout.breadcrumb.backToHome")')
-        OhVueIcon.c-cp.w-appFontSizex.h-appFontSizex(
+        Icons.c-cp(
           v-if='item.icon',
           @click='goToRoute("")',
           :name='item.icon',
           animation='spin',
           speed='slow',
-          hover
+          hover,
+          size='m'
         )
     template(v-else)
       template(v-if='item.label === props.currentRouteTitle')

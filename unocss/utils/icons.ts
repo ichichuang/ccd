@@ -1,7 +1,8 @@
 import fs from 'fs'
+import { globSync } from 'glob'
 import path from 'node:path'
 
-type IconCacheTarget = 'route'
+type IconCacheTarget = 'route' | 'custom'
 
 interface CacheEntry<T> {
   key: string
@@ -9,6 +10,7 @@ interface CacheEntry<T> {
 }
 
 let routeIconsCache: CacheEntry<string[]> | null = null
+let customIconsCache: CacheEntry<Record<string, string[]>> | null = null
 
 /**
  * 失效缓存（供 Vite 插件调用，或在需要时手动清理）
@@ -16,6 +18,9 @@ let routeIconsCache: CacheEntry<string[]> | null = null
 export function invalidateIconCaches(target: IconCacheTarget | 'all' = 'all') {
   if (target === 'route' || target === 'all') {
     routeIconsCache = null
+  }
+  if (target === 'custom' || target === 'all') {
+    customIconsCache = null
   }
 }
 
@@ -349,13 +354,58 @@ function createCacheKey(files: string[]): string {
 }
 
 /**
- * 生成自定义图标加载器
+ * 获取自定义图标配置
+ * 自动扫描 src/assets/icons 文件夹下的所有图标集
+ * @returns 返回图标集名称和对应的图标类名列表
  */
+export function getCustomIcons(): Record<string, string[]> {
+  // 检查缓存
+  if (customIconsCache) {
+    return customIconsCache.value
+  }
+
+  const icons: Record<string, string[]> = {}
+
+  try {
+    const files = globSync('src/assets/icons/**/*.svg', { nodir: true })
+
+    files.forEach(filePath => {
+      const fileName = path.basename(filePath) // 获取文件名，包括后缀
+      const fileNameWithoutExt = path.parse(fileName).name // 获取去除后缀的文件名
+      const folderName = path.basename(path.dirname(filePath)) // 获取文件夹名
+
+      if (!icons[folderName]) {
+        icons[folderName] = []
+      }
+      icons[folderName].push(`i-${folderName}:${fileNameWithoutExt}`)
+    })
+
+    // 缓存结果
+    customIconsCache = {
+      key: `${files.length}-${Date.now()}`,
+      value: icons,
+    }
+  } catch (error) {
+    console.warn('[UnoCSS] Failed to scan custom icons:', error)
+  }
+
+  return icons
+}
+
+/**
+ * 获取自定义图标的类名列表（用于 safelist）
+ */
+export function getCustomIconClasses(): string[] {
+  const icons = getCustomIcons()
+  return Object.values(icons).flat()
+}
+
 /**
  * 获取动态安全列表
  */
 export function getDynamicSafelist() {
   const routeMetaIcons = getRouteMetaIcons()
+  const customIconClasses = getCustomIconClasses()
 
   return [
     // 功能色相关 - 基础主题色
@@ -552,5 +602,6 @@ export function getDynamicSafelist() {
     'border-color-primary100',
 
     ...routeMetaIcons,
+    ...customIconClasses,
   ]
 }

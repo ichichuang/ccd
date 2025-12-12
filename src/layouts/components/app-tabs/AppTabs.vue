@@ -827,16 +827,17 @@ watch(
             :aria-grabbed='draggingTabKey === getKey(tab)'
           )
             .between.gap-gaps
-              OhVueIcon.w-appFontSizes.h-appFontSizes(
+              Icons(
                 v-if='tab.fixed',
                 name='ri-hashtag',
                 :class='tab.active ? "color-primary400 dark:color-text100" : "color-text200"',
                 animation='wrench',
                 hover,
-                speed='fast'
+                speed='fast',
+                size='s'
               )
               p.truncate(:class='!tab.fixed ? "cursor-move" : "c-cp"') {{ tab.label }}
-              OhVueIcon.w-appFontSize.h-appFontSize.c-cp.c-transitions(
+              Icons.c-cp.c-transitions(
                 v-if='tab.deletable && !tab.fixed',
                 name='ri-close-fill',
                 :class='[tab.active ? "color-primary400 dark:color-text100" : "color-text200", "hover:color-dangerColor"]',
@@ -846,7 +847,7 @@ watch(
     //- 右键菜单
   ContextMenu(ref='contextMenuRef', :model='contextMenuItems', @hide='contextMenuTarget = null')
     template(#itemicon='{ item, class: className }')
-      OhVueIcon(v-if='item.icon', :name='item.icon', :class='className')
+      Icons(v-if='item.icon', :name='item.icon', :class='className')
 </template>
 <style lang="scss">
 /* ============================================

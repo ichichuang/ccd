@@ -309,7 +309,7 @@ let restoreAfterGrowthTimer: NodeJS.Timeout | null = null
 
 // ==================== 滚动位置记忆 (持久化存储) ====================
 
-// ✅ 修改 1：使用 localStorage 保存滚动位置
+// ✅ 修改 1：使用 layout store 保存滚动位置
 const saveScrollPosition = () => {
   if (!props.rememberScrollPosition) {
     return
@@ -317,10 +317,30 @@ const saveScrollPosition = () => {
 
   const scrollEl = getScrollEl()
   if (scrollEl) {
-    const { scrollLeft, scrollTop } = scrollEl
+    const { scrollLeft, scrollTop, scrollHeight, clientHeight, scrollWidth, clientWidth } = scrollEl
     try {
-      const position = { scrollLeft, scrollTop }
-      localStorage.setItem(scrollPositionKey.value, JSON.stringify(position))
+      // ✅ 关键修复：检测是否在底部/右侧，保存标记
+      const maxScrollTop = scrollHeight - clientHeight
+      const maxScrollLeft = scrollWidth - clientWidth
+      const isAtBottom = scrollTop >= maxScrollTop - 5 // 5px 容差
+      const isAtRight = scrollLeft >= maxScrollLeft - 5 // 5px 容差
+
+      // ✅ 计算距离底部的距离（用于恢复时精确定位）
+      const distanceFromBottom = maxScrollTop - scrollTop
+      const distanceFromRight = maxScrollLeft - scrollLeft
+
+      const position = {
+        scrollLeft,
+        scrollTop,
+        isAtBottom, // 标记是否在底部
+        isAtRight, // 标记是否在右侧
+        scrollHeight, // 保存时的内容高度，用于参考
+        clientHeight, // 保存时的可视高度，用于参考
+        distanceFromBottom, // 距离底部的距离（像素）
+        distanceFromRight, // 距离右侧的距离（像素）
+      }
+      // ✅ 使用 layout store 存储滚动位置
+      layoutStore.setScrollPosition(scrollPositionKey.value, position)
     } catch (e) {
       console.error('❌ [ScrollbarWrapper] 存储滚动位置失败:', e)
     }
@@ -358,7 +378,7 @@ const restoreScrollPosition = (onFinished?: () => void, retryCount = 0) => {
   scrollbarInstance.value?.update(true)
 
   // 检查内容是否已经渲染完成（防止内容尺寸为 0）
-  const { scrollHeight, clientHeight } = scrollEl
+  const { scrollHeight, clientHeight, scrollWidth, clientWidth } = scrollEl
   if (scrollHeight <= clientHeight && retryCount < 5) {
     setTimeout(() => {
       restoreScrollPosition(onFinished, retryCount + 1)
@@ -366,35 +386,140 @@ const restoreScrollPosition = (onFinished?: () => void, retryCount = 0) => {
     return
   }
 
+  // ✅ 关键修复：使用保存时的底部标记来判断
+  const savedScrollTop = savedPosition.scrollTop || 0
+  const savedScrollLeft = savedPosition.scrollLeft || 0
+  const savedIsAtBottom = savedPosition.isAtBottom === true // 保存时是否在底部
+  const savedIsAtRight = savedPosition.isAtRight === true // 保存时是否在右侧
+  const savedScrollHeight = savedPosition.scrollHeight // 保存时的内容高度
+  const savedDistanceFromBottom = savedPosition.distanceFromBottom ?? 0 // 保存时距离底部的距离
+  const savedDistanceFromRight = savedPosition.distanceFromRight ?? 0 // 保存时距离右侧的距离
+
+  // ✅ 如果保存了内容高度，且当前内容高度小于保存时的高度，继续等待内容加载
+  // 这样可以确保内容完全加载后再恢复位置
+  if (savedScrollHeight && scrollHeight < savedScrollHeight && retryCount < 15) {
+    setTimeout(() => {
+      restoreScrollPosition(onFinished, retryCount + 1)
+    }, 200)
+    return
+  }
+
+  const maxScrollTop = scrollHeight - clientHeight
+  const maxScrollLeft = scrollWidth - clientWidth
+
+  // 计算恢复位置
+  let restoreScrollTop = savedScrollTop
+  let restoreScrollLeft = savedScrollLeft
+
+  // ✅ 如果保存时在底部，恢复时也滚动到当前的最大位置（底部）
+  if (savedIsAtBottom && maxScrollTop >= 0) {
+    restoreScrollTop = maxScrollTop
+  } else if (savedDistanceFromBottom !== undefined && savedDistanceFromBottom >= 0) {
+    // ✅ 关键修复：如果保存了距离底部的距离，使用相对位置恢复
+    // 这样可以确保即使内容高度变化，也能保持相同的相对位置
+    const calculatedScrollTop = maxScrollTop - savedDistanceFromBottom
+    if (calculatedScrollTop >= 0 && calculatedScrollTop <= maxScrollTop) {
+      restoreScrollTop = calculatedScrollTop
+    } else if (restoreScrollTop > maxScrollTop) {
+      // 如果计算的位置无效，限制为最大值
+      restoreScrollTop = maxScrollTop
+    }
+  } else if (restoreScrollTop > maxScrollTop) {
+    // 如果保存的位置超过了当前最大滚动位置，限制为最大值
+    restoreScrollTop = maxScrollTop
+  }
+
+  // ✅ 如果保存时在右侧，恢复时也滚动到当前的最大位置（右侧）
+  if (savedIsAtRight && maxScrollLeft >= 0) {
+    restoreScrollLeft = maxScrollLeft
+  } else if (savedDistanceFromRight !== undefined && savedDistanceFromRight >= 0) {
+    // ✅ 关键修复：如果保存了距离右侧的距离，使用相对位置恢复
+    const calculatedScrollLeft = maxScrollLeft - savedDistanceFromRight
+    if (calculatedScrollLeft >= 0 && calculatedScrollLeft <= maxScrollLeft) {
+      restoreScrollLeft = calculatedScrollLeft
+    } else if (restoreScrollLeft > maxScrollLeft) {
+      restoreScrollLeft = maxScrollLeft
+    }
+  } else if (restoreScrollLeft > maxScrollLeft) {
+    // 如果保存的位置超过了当前最大滚动位置，限制为最大值
+    restoreScrollLeft = maxScrollLeft
+  }
+
   // 执行滚动恢复
   scrollEl.scrollTo({
-    left: savedPosition.scrollLeft,
-    top: savedPosition.scrollTop,
+    left: restoreScrollLeft,
+    top: restoreScrollTop,
     behavior: 'instant',
   })
 
-  // ✅ 瞬间跳转后，立即执行回调（不再需要冗长的 rAF + setTimeout）
-  // 注意：onFinished 的回调逻辑现在由 handleInitialized 中的 checkStability 控制，
-  // 确保它在内容稳定时才被调用。
-  onFinished?.()
+  // ✅ 关键修复：等待滚动真正完成后再执行回调
+  // 使用 requestAnimationFrame 确保 DOM 更新完成
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      // 再次检查实际滚动位置，确保恢复成功
+      const actualScrollTop = scrollEl.scrollTop
+      const currentMaxScrollTop = scrollEl.scrollHeight - scrollEl.clientHeight
+
+      // ✅ 如果保存时在底部，确保实际滚动到了底部
+      if (savedIsAtBottom) {
+        if (actualScrollTop < currentMaxScrollTop - 5) {
+          // 如果还没到底部，再次滚动到底部
+          scrollEl.scrollTo({
+            left: restoreScrollLeft,
+            top: currentMaxScrollTop,
+            behavior: 'instant',
+          })
+        }
+      } else if (savedDistanceFromBottom !== undefined && savedDistanceFromBottom >= 0) {
+        // ✅ 关键修复：对于非底部情况，验证实际位置是否正确
+        // 计算应该恢复到的位置
+        const expectedScrollTop = currentMaxScrollTop - savedDistanceFromBottom
+        const tolerance = 5 // 5px 容差
+
+        // 如果实际位置与期望位置差距较大，重新滚动
+        if (Math.abs(actualScrollTop - expectedScrollTop) > tolerance) {
+          scrollEl.scrollTo({
+            left: restoreScrollLeft,
+            top: expectedScrollTop,
+            behavior: 'instant',
+          })
+        }
+      }
+
+      // ✅ 延迟取消恢复标记，确保所有滚动事件都处理完成
+      // 增加延迟时间，确保恢复操作完全完成
+      setTimeout(() => {
+        onFinished?.()
+      }, 150)
+    })
+  })
 }
 
-// ✅ 读取已保存的滚动位置（复用逻辑，避免重复解析）
-const getSavedScrollPosition = (): { scrollLeft: number; scrollTop: number } | null => {
+// ✅ 读取已保存的滚动位置（从 layout store 读取）
+const getSavedScrollPosition = (): {
+  scrollLeft: number
+  scrollTop: number
+  isAtBottom?: boolean
+  isAtRight?: boolean
+  scrollHeight?: number
+  clientHeight?: number
+  distanceFromBottom?: number
+  distanceFromRight?: number
+} | null => {
   try {
-    const savedData = localStorage.getItem(scrollPositionKey.value)
-    return savedData ? JSON.parse(savedData) : null
+    // ✅ 使用 layout store 读取滚动位置
+    return layoutStore.getScrollPosition(scrollPositionKey.value)
   } catch (error) {
     console.error('❌ [ScrollbarWrapper] 读取滚动位置失败:', error)
     return null
   }
 }
 
-// ✅ 修改 3：清除 localStorage 中的滚动位置记忆
+// ✅ 修改 3：清除 layout store 中的滚动位置记忆
 const clearScrollPosition = () => {
   if (props.rememberScrollPosition) {
     try {
-      localStorage.removeItem(scrollPositionKey.value)
+      layoutStore.clearScrollPosition(scrollPositionKey.value)
     } catch (e) {
       console.error('❌ [ScrollbarWrapper] 清除滚动位置失败:', e)
     }
@@ -688,8 +813,16 @@ const handleInitialized = (instance: OverlayScrollbars) => {
     if (props.rememberScrollPosition) {
       isRestoringScroll.value = true
       restoreScrollPosition(() => {
-        setupRestoreAfterContentGrowth(instance)
-        isRestoringScroll.value = false
+        // ✅ 关键修复：恢复完成后，延迟取消恢复标记
+        // 确保所有滚动事件处理完成，避免恢复过程中的滚动事件覆盖正确的底部标记
+        setTimeout(() => {
+          setupRestoreAfterContentGrowth(instance)
+          // ✅ 增加延迟时间，确保恢复操作和所有后续滚动事件都处理完成
+          // 总延迟时间：150ms (恢复回调) + 200ms (setup) + 300ms (取消标记) = 650ms
+          setTimeout(() => {
+            isRestoringScroll.value = false
+          }, 300)
+        }, 200)
       })
     } else {
       setupRestoreAfterContentGrowth(instance)
@@ -738,25 +871,96 @@ const handleInitialized = (instance: OverlayScrollbars) => {
           restoreAfterGrowthTimer = setTimeout(() => {
             // 检查是否还在恢复状态，如果不在则重新恢复位置
             if (!isRestoringScroll.value) {
-              const savedPosition = (() => {
-                try {
-                  const savedData = localStorage.getItem(scrollPositionKey.value)
-                  return savedData ? JSON.parse(savedData) : null
-                } catch {
-                  return null
-                }
-              })()
+              // ✅ 使用 layout store 读取滚动位置
+              const savedPosition = layoutStore.getScrollPosition(scrollPositionKey.value)
 
-              if (
-                savedPosition &&
-                viewport.scrollHeight >= savedPosition.scrollTop + viewport.clientHeight
-              ) {
+              if (savedPosition) {
+                const { scrollHeight, clientHeight, scrollWidth, clientWidth } = viewport
+                const maxScrollTop = scrollHeight - clientHeight
+                const maxScrollLeft = scrollWidth - clientWidth
+
+                // ✅ 关键修复：使用保存时的底部标记来判断
+                const savedScrollTop = savedPosition.scrollTop || 0
+                const savedScrollLeft = savedPosition.scrollLeft || 0
+                const savedIsAtBottom = savedPosition.isAtBottom === true
+                const savedIsAtRight = savedPosition.isAtRight === true
+                const savedDistanceFromBottom = savedPosition.distanceFromBottom ?? 0
+                const savedDistanceFromRight = savedPosition.distanceFromRight ?? 0
+
+                // 计算恢复位置
+                let restoreScrollTop = savedScrollTop
+                let restoreScrollLeft = savedScrollLeft
+
+                // ✅ 如果保存时在底部，恢复时也滚动到当前的最大位置（底部）
+                if (savedIsAtBottom && maxScrollTop >= 0) {
+                  restoreScrollTop = maxScrollTop
+                } else if (savedDistanceFromBottom !== undefined && savedDistanceFromBottom >= 0) {
+                  // ✅ 关键修复：如果保存了距离底部的距离，使用相对位置恢复
+                  const calculatedScrollTop = maxScrollTop - savedDistanceFromBottom
+                  if (calculatedScrollTop >= 0 && calculatedScrollTop <= maxScrollTop) {
+                    restoreScrollTop = calculatedScrollTop
+                  } else if (restoreScrollTop > maxScrollTop) {
+                    restoreScrollTop = maxScrollTop
+                  }
+                } else if (restoreScrollTop > maxScrollTop) {
+                  restoreScrollTop = maxScrollTop
+                }
+
+                // ✅ 如果保存时在右侧，恢复时也滚动到当前的最大位置（右侧）
+                if (savedIsAtRight && maxScrollLeft >= 0) {
+                  restoreScrollLeft = maxScrollLeft
+                } else if (savedDistanceFromRight !== undefined && savedDistanceFromRight >= 0) {
+                  // ✅ 关键修复：如果保存了距离右侧的距离，使用相对位置恢复
+                  const calculatedScrollLeft = maxScrollLeft - savedDistanceFromRight
+                  if (calculatedScrollLeft >= 0 && calculatedScrollLeft <= maxScrollLeft) {
+                    restoreScrollLeft = calculatedScrollLeft
+                  } else if (restoreScrollLeft > maxScrollLeft) {
+                    restoreScrollLeft = maxScrollLeft
+                  }
+                } else if (restoreScrollLeft > maxScrollLeft) {
+                  restoreScrollLeft = maxScrollLeft
+                }
+
                 // 内容高度足够，可以恢复到记忆位置
-                viewport.scrollTo({
-                  left: savedPosition.scrollLeft,
-                  top: savedPosition.scrollTop,
-                  behavior: 'instant',
-                })
+                if (scrollHeight >= restoreScrollTop + clientHeight) {
+                  // ✅ 关键修复：设置恢复标记，避免恢复过程中的滚动事件触发保存
+                  isRestoringScroll.value = true
+                  viewport.scrollTo({
+                    left: restoreScrollLeft,
+                    top: restoreScrollTop,
+                    behavior: 'instant',
+                  })
+
+                  // ✅ 验证恢复位置是否正确
+                  requestAnimationFrame(() => {
+                    requestAnimationFrame(() => {
+                      const actualScrollTop = viewport.scrollTop
+                      const currentMaxScrollTop = viewport.scrollHeight - viewport.clientHeight
+
+                      // 如果保存时不在底部，验证相对位置
+                      if (
+                        !savedIsAtBottom &&
+                        savedDistanceFromBottom !== undefined &&
+                        savedDistanceFromBottom >= 0
+                      ) {
+                        const expectedScrollTop = currentMaxScrollTop - savedDistanceFromBottom
+                        if (Math.abs(actualScrollTop - expectedScrollTop) > 5) {
+                          // 位置不正确，重新滚动
+                          viewport.scrollTo({
+                            left: restoreScrollLeft,
+                            top: expectedScrollTop,
+                            behavior: 'instant',
+                          })
+                        }
+                      }
+
+                      // 延迟取消恢复标记
+                      setTimeout(() => {
+                        isRestoringScroll.value = false
+                      }, 300)
+                    })
+                  })
+                }
               }
             }
           }, 300) // 延迟 300ms 等待内容稳定

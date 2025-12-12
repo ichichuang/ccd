@@ -42,8 +42,20 @@ interface LayoutState {
   // 记住的滚动条距离
   layoutScrollbarTop: number
 
-  // 滚动位置记忆存储
-  scrollPositions: Record<string, { scrollLeft: number; scrollTop: number }>
+  // 滚动位置记忆存储（支持完整的滚动位置信息，包括底部/右侧标记）
+  scrollPositions: Record<
+    string,
+    {
+      scrollLeft: number
+      scrollTop: number
+      isAtBottom?: boolean // 是否在底部
+      isAtRight?: boolean // 是否在右侧
+      scrollHeight?: number // 保存时的内容高度
+      clientHeight?: number // 保存时的可视高度
+      distanceFromBottom?: number // 距离底部的距离（像素），用于相对位置恢复
+      distanceFromRight?: number // 距离右侧的距离（像素），用于相对位置恢复
+    }
+  >
 
   // 表单内容记忆指针：仅保存指向 IndexedDB 的键
   formMemoryPointers: Record<string, string>
@@ -206,13 +218,34 @@ export const useLayoutStore = defineStore('layout', {
       this.layoutScrollbarTop = top
     },
 
-    // 设置滚动位置
-    setScrollPosition(key: string, scrollLeft: number, scrollTop: number) {
-      this.scrollPositions[key] = { scrollLeft, scrollTop }
+    // 设置滚动位置（支持完整的滚动位置信息）
+    setScrollPosition(
+      key: string,
+      position: {
+        scrollLeft: number
+        scrollTop: number
+        isAtBottom?: boolean
+        isAtRight?: boolean
+        scrollHeight?: number
+        clientHeight?: number
+        distanceFromBottom?: number
+        distanceFromRight?: number
+      }
+    ) {
+      this.scrollPositions[key] = position
     },
 
     // 获取滚动位置
-    getScrollPosition(key: string): { scrollLeft: number; scrollTop: number } | null {
+    getScrollPosition(key: string): {
+      scrollLeft: number
+      scrollTop: number
+      isAtBottom?: boolean
+      isAtRight?: boolean
+      scrollHeight?: number
+      clientHeight?: number
+      distanceFromBottom?: number
+      distanceFromRight?: number
+    } | null {
       return this.scrollPositions[key] || null
     },
 

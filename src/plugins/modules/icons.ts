@@ -1,3 +1,4 @@
+import { Icons } from '@/components/modules/icons'
 import { OhVueIcon, addIcons } from 'oh-vue-icons'
 import * as FcIcons from 'oh-vue-icons/icons/fc'
 import * as HiIcons from 'oh-vue-icons/icons/hi'
@@ -71,4 +72,5 @@ export const setupIcons = (app: App) => {
   addIcons(...Object.values(icons))
   app.component('VIcon', OhVueIcon)
   app.component('OhVueIcon', OhVueIcon)
+  app.component('Icons', Icons)
 }

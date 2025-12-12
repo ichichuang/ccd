@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { t } from '@/locales'
+import { env } from '@/utils'
 import { computed, onMounted, onUnmounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
-import { env } from '@/utils'
 const router = useRouter()
 const title = env.appTitle
 
@@ -184,7 +184,7 @@ onUnmounted(() => {
       // 操作按钮
       .error-actions
         Button(@click='handleBackHome', @touchend='handleBackHome')
-          OhVueIcon(name='fc-binoculars')
+          Icons(name='fc-binoculars')
           span {{ t('common.actions.backToHome') }}
 
     // 装饰性元素 - 增强版

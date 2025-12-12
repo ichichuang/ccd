@@ -583,9 +583,9 @@ function resetFocus() {
         div 刷新频率 1s/3s/5s/2s
       .c-card-primary.p-paddings(@click='toggleThemeWithAnimation($event)')
         template(v-if='isDark')
-          OhVueIcon.w-appFontSizex.h-appFontSizex(name='ri-moon-clear-line')
+          Icons(name='ri-moon-clear-line', size='m')
         template(v-else)
-          OhVueIcon.w-appFontSizex.h-appFontSizex(name='ri-sun-line')
+          Icons(name='ri-sun-line', size='m')
   // 主体布局 - 左右分栏
   .w-full.h-contentsHeight.p-padding.between.gap-gapl
     // 左侧图表区域 (80%)
@@ -638,8 +638,8 @@ function resetFocus() {
             :severity='controls.paused ? "danger" : "primary"',
             @click='togglePause'
           )
-            OhVueIcon(name='ri-play-fill', v-if='controls.paused')
-            OhVueIcon(name='ri-pause-fill', v-else)
+            Icons(name='ri-play-fill', v-if='controls.paused', size='m')
+            Icons(name='ri-pause-fill', v-else, size='m')
             | {{ controls.paused ? '恢复' : '暂停' }}
 
           Button(outlined, @click='togglePredict')

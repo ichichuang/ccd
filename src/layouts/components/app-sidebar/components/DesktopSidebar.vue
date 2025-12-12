@@ -142,7 +142,7 @@ onUnmounted(() => {
 .center(class='md:hidden')
   //- 触发器容器
   .full.center.c-cp(role='button', tabindex='0', @click='handleToggle')
-    OhVueIcon.w-appFontSizel.h-appFontSizel.color-primary100(name='ri-apps-line')
+    Icons.color-primary100(name='ri-apps-line', size='l')
 
   //- Popover 面板
   Popover.bg-tm.border-none.overflow-hidden(ref='menuPopoverRef', :dismissable='true')

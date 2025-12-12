@@ -51,8 +51,19 @@ const zhTW = {
           dynamic: '動態圖表',
           linkage: '聯動圖表',
         },
-        datepicker: {
-          title: '日期選擇器',
+        datepicker: '日期選擇器',
+        icons: {
+          title: '圖標',
+          custom: '自定義圖標',
+          component: '圖標組件',
+        },
+      },
+      icons: {
+        custom: {
+          basic: '基礎使用',
+          colored: '帶顏色的圖標',
+          sizes: '不同尺寸',
+          dynamic: '動態加載',
         },
       },
       function: {

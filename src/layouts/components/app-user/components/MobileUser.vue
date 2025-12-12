@@ -1,12 +1,12 @@
 <script setup lang="tsx">
 import defaultAvatar from '@/assets/images/default-avatar.jpeg'
+import Icons from '@/components/modules/icons/Icons.vue'
 import { ScrollbarWrapper } from '@/components/modules/scrollbar-wrapper'
 import { useElementSize, useThemeSwitch } from '@/hooks'
 import { useDialog } from '@/hooks/components/useDialog'
 import { t, type SupportedLocale } from '@/locales'
 import { useColorStore, useLocaleStore, useSizeStore, useUserStore } from '@/stores'
 import { useI18nPaddingOptions, useI18nRoundedOptions, useI18nSizeOptions } from '@/utils'
-import { OhVueIcon } from 'oh-vue-icons'
 import Button from 'primevue/button'
 import Image from 'primevue/image'
 import Popover from 'primevue/popover'
@@ -112,8 +112,8 @@ const settingsDialogContent = defineComponent({
                   onClick={() => setSize(item.value)}
                   onTouchend={() => setSize(item.value)}
                 >
-                  <OhVueIcon
-                    class="w-appFontSizel h-appFontSizel"
+                  <Icons
+                    size="l"
                     name={
                       item.value === 'compact'
                         ? 'ri-layout-column-line'
@@ -141,8 +141,8 @@ const settingsDialogContent = defineComponent({
                   onClick={() => setRounded(item.key)}
                   onTouchend={() => setRounded(item.key)}
                 >
-                  <OhVueIcon
-                    class="w-appFontSizel h-appFontSizel"
+                  <Icons
+                    size="l"
                     name={
                       item.key === 'sharp'
                         ? 'ri-stop-line'
@@ -172,8 +172,8 @@ const settingsDialogContent = defineComponent({
                   onClick={() => setPadding(item.key)}
                   onTouchend={() => setPadding(item.key)}
                 >
-                  <OhVueIcon
-                    class="w-appFontSizel h-appFontSizel"
+                  <Icons
+                    size="l"
                     name={
                       item.key === 'sm'
                         ? 'ri-arrow-left-right-line'
@@ -197,19 +197,27 @@ const settingsDialogContent = defineComponent({
           >
             <div class="mb-gaps center">
               {isDark.value ? (
-                <OhVueIcon
-                  name="ri-moon-clear-line"
-                  class="w-appFontSizex h-appFontSizex c-cp"
+                <div
                   onClick={(e: MouseEvent) => toggleThemeWithAnimation(e)}
-                  onTouch={(e: TouchEvent) => toggleThemeWithAnimation(e as any)}
-                />
+                  onTouchend={(e: TouchEvent) => toggleThemeWithAnimation(e as any)}
+                >
+                  <Icons
+                    name="ri-moon-clear-line"
+                    size="m"
+                    class="c-cp"
+                  />
+                </div>
               ) : (
-                <OhVueIcon
-                  name="ri-sun-line"
-                  class="w-appFontSizex h-appFontSizex c-cp"
+                <div
                   onClick={(e: MouseEvent) => toggleThemeWithAnimation(e)}
-                  onTouch={(e: TouchEvent) => toggleThemeWithAnimation(e as any)}
-                />
+                  onTouchend={(e: TouchEvent) => toggleThemeWithAnimation(e as any)}
+                >
+                  <Icons
+                    name="ri-sun-line"
+                    size="m"
+                    class="c-cp"
+                  />
+                </div>
               )}
             </div>
             <ScrollbarWrapper
@@ -308,23 +316,17 @@ Popover.w-80vw(ref='userPopoverRef', class='sm:w-56vw md:w-36vw lg:w-30vw xl:w-2
       .h-100.px-paddingx.between-col(class='w-[calc(100%-100px)]')
         .between
           .between-start.gap-gaps.pt-paddings
-            OhVueIcon.w-appFontSizex.h-appFontSizex(name='hi-solid-user')
+            Icons(name='hi-solid-user', size='m')
             b.fs-appFontSizex {{ userName }}
           .h-full
-            OhVueIcon.w-appFontSizel.h-appFontSizel.c-cp(
-              name='fc-settings',
-              animation='wrench',
-              speed='fast',
-              hover,
-              @click='openMoreSettingsDialog',
-              @touch='openMoreSettingsDialog'
-            )
+            div(@click='openMoreSettingsDialog', @touch='openMoreSettingsDialog')
+              Icons.c-cp(size='l', name='fc-settings', animation='wrench', speed='fast', hover)
         .between-col.gap-gaps
           .between-start.gap-gaps
-            OhVueIcon.w-appFontSizes.h-appFontSizes(name='hi-solid-phone')
+            Icons(name='hi-solid-phone', size='s')
             p.fs-appFontSizes {{ userInfo.phone }}
           .between-start.gap-gaps
-            OhVueIcon.w-appFontSizes.h-appFontSizes(name='hi-solid-mail')
+            Icons(name='hi-solid-mail', size='s')
             p.fs-appFontSizes {{ userInfo.email }}
 
     //- 系统颜色模式切换(浅色/深色/自动)
@@ -334,7 +336,7 @@ Popover.w-80vw(ref='userPopoverRef', class='sm:w-56vw md:w-36vw lg:w-30vw xl:w-2
         @touch='toggleThemeWithAnimation($event, "light")',
         :class='{ "bg-primary100 color-primary400": mode === "light" }'
       )
-        OhVueIcon.c-transition(
+        Icons.c-transition(
           name='hi-solid-light-bulb',
           :class='!isDark ? "color-accent100 w-appFontSizel h-appFontSizel" : "color-primary100 w-appFontSizex h-appFontSizex"'
         )
@@ -344,14 +346,14 @@ Popover.w-80vw(ref='userPopoverRef', class='sm:w-56vw md:w-36vw lg:w-30vw xl:w-2
         @touch='toggleThemeWithAnimation($event, "auto")',
         :class='{ "bg-primary100 color-primary400": mode === "auto" }'
       )
-        OhVueIcon.w-appFontSizel.h-appFontSizel(name='fc-flash-auto')
+        Icons(name='fc-flash-auto', size='l')
         .center.text-center {{ t('common.systemOptions.themeMode.auto') }}
       .c-card.grid-col-span-2.gap-gaps.c-cp.center.between-col.py-paddings.c-transitions(
         @click='toggleThemeWithAnimation($event, "dark")',
         @touch='toggleThemeWithAnimation($event, "dark")',
         :class='{ "bg-primary100 color-primary400": mode === "dark" }'
       )
-        OhVueIcon.c-transition(
+        Icons.c-transition(
           name='hi-solid-light-bulb',
           flip='vertical',
           :class='isDark ? "color-accent100 w-appFontSizel h-appFontSizel" : "color-primary100 w-appFontSizex h-appFontSizex"'
@@ -366,7 +368,7 @@ Popover.w-80vw(ref='userPopoverRef', class='sm:w-56vw md:w-36vw lg:w-30vw xl:w-2
           @touch='setLocale(item.key)',
           :class='{ "bg-primary100 color-primary400": locale === item.key }'
         )
-          .text-2xl {{ item.flag }}
+          Image.w-appFontSizel.h-appFontSizel.rounded-rounded.overflow-hidden(:src='item.image')
           div {{ item.name }}
 
     //- 更多按钮
@@ -376,9 +378,9 @@ Popover.w-80vw(ref='userPopoverRef', class='sm:w-56vw md:w-36vw lg:w-30vw xl:w-2
           severity='info',
           raised,
           @click='openMoreSettingsDialog',
-          @touch='openMoreSettingsDialog'
+          @touchend='openMoreSettingsDialog'
         )
-          OhVueIcon.w-appFontSizex.h-appFontSizex(name='fc-support')
+          Icons(name='fc-support', size='m')
           span {{ t('common.settings.moreSettings') }}
       .block(class='dark:hidden')
         Button.c-transitions.gap-gaps(
@@ -386,18 +388,18 @@ Popover.w-80vw(ref='userPopoverRef', class='sm:w-56vw md:w-36vw lg:w-30vw xl:w-2
           variant='text',
           raised,
           @click='openMoreSettingsDialog',
-          @touch='openMoreSettingsDialog'
+          @touchend='openMoreSettingsDialog'
         )
-          OhVueIcon.w-appFontSizex.h-appFontSizex(name='fc-support')
+          Icons(name='fc-support', size='m')
           span {{ t('common.settings.moreSettings') }}
       //- Button(:label='t("common.settings.personalCenter")', severity='info')
       .hidden(class='dark:block')
         Button.full.c-transitions.gap-gaps(
           severity='danger',
           @click='userStore.logout',
-          @touch='userStore.logout'
+          @touchend='userStore.logout'
         )
-          OhVueIcon.w-appFontSizex.h-appFontSizex(name='fc-sports-mode')
+          Icons(name='fc-sports-mode', size='m')
           span {{ t('common.settings.logout') }}
       .block(class='dark:hidden')
         Button.full.c-transitions.gap-gaps(
@@ -405,8 +407,8 @@ Popover.w-80vw(ref='userPopoverRef', class='sm:w-56vw md:w-36vw lg:w-30vw xl:w-2
           variant='text',
           raised,
           @click='userStore.logout',
-          @touch='userStore.logout'
+          @touchend='userStore.logout'
         )
-          OhVueIcon.w-appFontSizex.h-appFontSizex(name='fc-sports-mode')
+          Icons(name='fc-sports-mode', size='m')
           span {{ t('common.settings.logout') }}
 </template>
