@@ -322,7 +322,7 @@ export class UploadManager implements IUploadManager {
    */
   private async checkUploadedChunks(task: UploadTask): Promise<number[]> {
     try {
-      const response = await post<{ uploadedChunks: number[] }>('/api/upload/check', {
+      const response = await post<{ uploadedChunks: number[] }>(HTTP_CONFIG.uploadEndpoints.check, {
         fileId: task.id,
         fileName: task.file.name,
         fileHash: task.chunks[0].fileHash,
@@ -357,7 +357,7 @@ export class UploadManager implements IUploadManager {
       formData.append('chunkSize', chunk.chunkSize.toString())
       formData.append('fileSize', chunk.fileSize.toString())
 
-      await post('/api/upload/chunk', formData, {
+      await post(HTTP_CONFIG.uploadEndpoints.chunk, formData, {
         signal: task.cancelToken?.signal,
       })
 
@@ -395,7 +395,7 @@ export class UploadManager implements IUploadManager {
     task.status = 'merging'
 
     try {
-      await post('/api/upload/merge', {
+      await post(HTTP_CONFIG.uploadEndpoints.merge, {
         fileId: task.id,
         fileName: task.file.name,
         fileHash: task.chunks[0].fileHash,
@@ -446,3 +446,4 @@ export const pauseUploadTask = (taskId: string) => uploadManager.pauseTask(taskI
 export const resumeUploadTask = (taskId: string) => uploadManager.resumeTask(taskId)
 export const getUploadTask = (taskId: string) => uploadManager.getTask(taskId)
 export const getAllUploadTasks = () => uploadManager.getAllTasks()
+export type { UploadTask } from './types'

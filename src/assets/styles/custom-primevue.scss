@@ -25,24 +25,7 @@
 .p-megamenu {
   min-width: 100%;
 }
-// menu 菜单
-/* .p-menu {
-  min-width: 100%;
-  .p-menu-list {
-    .p-menu-submenu-label {
-      font-size: var(--app-font-sizex);
-    }
-    .p-menu-item {
-      .p-menu-item-link {
-        .p-menu-item-icon {
-          font-size: var(--app-font-sizex);
-        }
-        .p-menu-item-label {
-        }
-      }
-    }
-  }
-} */
+
 // panelmenu 菜单
 .p-panelmenu {
   * {
@@ -479,4 +462,15 @@
 /* .p-slider-handle::before  */
 .p-slider-handle::before {
   background: var(--accent200) !important;
+}
+
+/* paginator 分页器 */
+.p-paginator {
+  padding: var(--paddings) !important;
+  .p-paginator-content {
+    gap: var(--gaps) !important;
+    .p-paginator-pages {
+      gap: 0 !important;
+    }
+  }
 }

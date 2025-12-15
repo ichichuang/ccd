@@ -1,0 +1,494 @@
+/**
+ * VxeTable 类型定义
+ */
+
+import type { ColumnProps } from 'primevue/column'
+import type { DataTableProps } from 'primevue/datatable'
+import type { Component, CSSProperties, VNode } from 'vue'
+
+/**
+ * 排序元数据
+ */
+export interface SortMeta {
+  field: string
+  order: 1 | -1 | 0
+}
+
+/**
+ * 分页状态
+ */
+export interface PageState {
+  first: number
+  rows: number
+  page: number
+  pageCount: number
+}
+
+/**
+ * 排序事件
+ */
+export interface SortEvent {
+  sortField: string | null
+  sortOrder: 1 | -1 | 0 | null
+  multiSortMeta: SortMeta[] | null
+}
+
+/**
+ * 筛选事件
+ */
+export interface FilterEvent {
+  filters: Record<string, any>
+  globalFilterValue: string | null
+}
+
+/**
+ * 行选择事件
+ */
+export interface RowSelectEvent<T = any> {
+  originalEvent: Event
+  data: T | T[]
+  type: 'row' | 'checkbox' | 'radio'
+  index?: number
+}
+
+/**
+ * 行取消选择事件
+ */
+export interface RowUnselectEvent<T = any> {
+  originalEvent: Event
+  data: T
+  type: 'row' | 'checkbox' | 'radio'
+  index?: number
+}
+
+/**
+ * 全选事件
+ */
+export interface SelectAllEvent<T = any> {
+  originalEvent: Event
+  checked: boolean
+  data: T[]
+}
+
+/**
+ * 行展开事件
+ */
+export interface RowExpandEvent<T = any> {
+  originalEvent: Event
+  data: T
+}
+
+/**
+ * 行收起事件
+ */
+export interface RowCollapseEvent<T = any> {
+  originalEvent: Event
+  data: T
+}
+
+/**
+ * 单元格编辑完成事件
+ */
+export interface CellEditCompleteEvent<T = any> {
+  originalEvent: Event
+  data: T
+  newValue: any
+  field: string
+  index: number
+}
+
+/**
+ * 行编辑保存事件
+ */
+export interface RowEditSaveEvent<T = any> {
+  originalEvent: Event
+  data: T
+  index: number
+}
+
+/**
+ * 行编辑取消事件
+ */
+export interface RowEditCancelEvent<T = any> {
+  originalEvent: Event
+  data: T
+  index: number
+}
+
+/**
+ * 行点击事件
+ */
+export interface RowClickEvent<T = any> {
+  originalEvent: Event
+  data: T
+  index: number
+}
+
+/**
+ * 行双击事件
+ */
+export interface RowDblClickEvent<T = any> {
+  originalEvent: Event
+  data: T
+  index: number
+}
+
+/**
+ * 右键菜单事件
+ */
+export interface ContextMenuEvent<T = any> {
+  originalEvent: Event
+  data: T
+  index: number
+}
+
+/**
+ * TSX 渲染函数类型（用于 customFooter）
+ */
+export type TSXRenderFunction = (params?: any) => VNode | VNode[]
+
+/**
+ * 底部模式
+ */
+export type FooterMode = 'custom' | 'column-aligned'
+
+/**
+ * 容器尺寸模式
+ */
+export type ContainerSizeMode = 'fill' | 'auto' | 'fixed'
+
+/**
+ * 列宽模式
+ */
+export type ColumnWidthMode = 'auto' | 'fixed' | 'equal'
+
+/**
+ * 表格尺寸配置
+ */
+export interface TableSizeConfig {
+  /** 宽度模式：'auto' 自适应 | 'fixed' 固定宽度 */
+  widthMode?: 'auto' | 'fixed'
+  /** 高度模式：'fill' 撑满父容器 | 'auto' 自适应 | 'fixed' 固定高度 */
+  heightMode?: ContainerSizeMode
+  /** 固定宽度（当 widthMode 为 'fixed' 时生效） */
+  width?: string | number
+  /** 固定高度（当 heightMode 为 'fixed' 时生效） */
+  height?: string | number
+  /** 列宽模式：'auto' 自适应内容 | 'fixed' 使用列配置的宽度 | 'equal' 等宽 */
+  columnWidthMode?: ColumnWidthMode
+  /** 最小表格宽度（当 widthMode 为 'auto' 时生效） */
+  minWidth?: string | number
+  /** 最小表格高度（当 heightMode 为 'auto' 时生效） */
+  minHeight?: string | number
+  /** 最大表格宽度（当 widthMode 为 'auto' 时生效） */
+  maxWidth?: string | number
+  /** 最大表格高度（当 widthMode 为 'auto' 时生效） */
+  maxHeight?: string | number
+}
+
+/**
+ * 列宽度信息
+ */
+export interface ColumnWidthInfo {
+  /** 字段名 */
+  field: string
+  /** 列宽度（像素） */
+  width: number
+  /** 最小宽度 */
+  minWidth?: number
+  /** 最大宽度 */
+  maxWidth?: number
+}
+
+/**
+ * 分页状态
+ */
+export interface PaginationState {
+  /** 当前页码 */
+  page: number
+  /** 每页显示数量 */
+  rows: number
+  /** 第一条记录的索引 */
+  first: number
+  /** 总记录数 */
+  totalRecords?: number
+}
+
+/**
+ * 排序状态
+ */
+export interface SortState {
+  /** 排序字段 */
+  sortField?: string
+  /** 排序方向：1 升序，-1 降序，0 无排序 */
+  sortOrder?: 1 | -1 | 0
+  /** 多字段排序 */
+  multiSortMeta?: SortMeta[]
+}
+
+/**
+ * 筛选状态
+ */
+export interface FilterState {
+  /** 字段筛选 */
+  filters?: Record<string, any>
+  /** 全局筛选值 */
+  globalFilterValue?: string
+}
+
+/**
+ * 列配置（扩展 PrimeVue Column）
+ */
+export interface VxeTableColumn<T = any> extends Omit<Partial<ColumnProps>, 'field' | 'header'> {
+  /** 字段名 */
+  field: string
+  /** 列标题 */
+  header: string | (() => string)
+  /** 列宽度 */
+  width?: string | number
+  /** 最小宽度 */
+  minWidth?: string | number
+  /** 最大宽度 */
+  maxWidth?: string | number
+  /** 是否可排序 */
+  sortable?: boolean
+  /** 是否可筛选 */
+  filterable?: boolean
+  /** 筛选类型 */
+  filterType?: 'text' | 'numeric' | 'date' | 'boolean'
+  /** 是否可调整大小 */
+  resizable?: boolean
+  /** 是否可重新排序 */
+  reorderable?: boolean
+  /** 是否可导出 */
+  exportable?: boolean
+  /** 对齐方式 */
+  align?: 'left' | 'center' | 'right'
+  /** 自定义渲染函数 */
+  body?: (rowData: T, column: VxeTableColumn<T>) => VNode | string
+  /** 自定义头部渲染 */
+  headerRenderer?: () => VNode
+  /** 自定义筛选器 */
+  filterElement?: VNode | Component
+  /**
+   * 自定义底部渲染（仅底部模式为 column-aligned 时生效）
+   * @param params - 渲染参数，包含该列对应的所有行数据
+   * @returns TSX 渲染内容
+   */
+  customFooter?: (params: {
+    /** 该列对应的所有行数据 */
+    rows: Array<{ value: any; row: T; column: VxeTableColumn<T>; columnIndex: number }>
+    /** 列配置 */
+    column: VxeTableColumn<T>
+    /** 列索引 */
+    columnIndex: number
+  }) => VNode | VNode[]
+  /** 是否可编辑（配合 editable、editMode 使用） */
+  editable?: boolean
+  /** 单元格编辑器渲染（仅 editable 为 true 时生效） */
+  editorRenderer?: (params: { data: T; value: any; field: string }) => VNode | string
+}
+
+/**
+ * 分页配置
+ */
+export interface PaginatorConfig {
+  /** 每页显示数量 */
+  rows?: number
+  /** 每页数量选项 */
+  rowsPerPageOptions?: number[]
+  /** 是否显示总记录数 */
+  showTotalRecords?: boolean
+  /** 是否显示当前页信息 */
+  showCurrentPageReport?: boolean
+  /** 当前页报告模板 */
+  currentPageReportTemplate?: string
+}
+
+/**
+ * 导出配置
+ */
+export interface ExportConfig {
+  /** 导出格式 */
+  formats?: ('csv' | 'xlsx' | 'json')[]
+  /** 导出文件名 */
+  filename?: string
+  /** 是否包含表头 */
+  includeHeader?: boolean
+}
+
+/**
+ * VxeTable Props
+ */
+export interface VxeTableProps<T = any> extends Omit<Partial<DataTableProps>, 'selectionMode'> {
+  // ========== 数据相关 ==========
+  /** 表格数据 */
+  data: T[]
+  /** 列配置 */
+  columns: VxeTableColumn<T>[]
+  /** 加载状态 */
+  loading?: boolean
+
+  // ========== HeaderSetting 头部设置 ==========
+  /** 是否显示头部 */
+  showHeader?: boolean
+  /** 全局搜索 */
+  globalFilter?: boolean
+  /** 是否显示导出按钮 */
+  exportable?: boolean
+  /** 导出配置 */
+  exportConfig?: ExportConfig
+
+  // ========== FooterSetting 底部设置 ==========
+  /** 是否显示底部 */
+  showFooter?: boolean
+  /** 底部模式：'custom' 完全自定义 | 'column-aligned' 列对齐模式 */
+  footerMode?: FooterMode
+
+  // ========== PaginationSetting 分页设置 ==========
+  /** 是否显示分页 */
+  pagination?: boolean
+  /** 分页配置 */
+  paginatorConfig?: PaginatorConfig
+  /** 分页器位置：'left' | 'center' | 'right' */
+  paginatorPosition?: 'left' | 'center' | 'right'
+
+  // ========== SortSetting 排序设置 ==========
+  /** 是否启用排序 */
+  sortable?: boolean
+  /** 默认排序 */
+  defaultSort?: SortMeta[]
+
+  // ========== FilterSetting 筛选设置 ==========
+  /** 是否启用筛选 */
+  filterable?: boolean
+
+  // ========== SelectionSetting 选择设置 ==========
+  /** 是否启用选择功能（默认 false） */
+  selectable?: boolean
+  /** 行选择模式：'single'(单选) | 'multiple'(多选)（默认 'multiple'） */
+  selectionMode?: 'single' | 'multiple' | null | undefined
+  /** 是否可以通过点击行选择（默认 true） */
+  rowSelectable?: boolean
+  /** 已选择的行 */
+  selectedRows?: T[]
+  /** 选择列是否冻结（默认 false） */
+  selectionFrozen?: boolean
+  /** 选择列冻结方向（默认 left） */
+  selectionAlignFrozen?: 'left' | 'right'
+
+  // ========== ScrollSetting 滚动设置 ==========
+  /** 滚动配置 */
+  scrollable?: boolean
+  /** 是否启用编辑 */
+  editable?: boolean
+  /** 编辑模式：cell | row（当前仅推荐 cell） */
+  editMode?: 'cell' | 'row'
+
+  // ========== SizeSetting 尺寸设置 ==========
+  /** 表格尺寸配置 */
+  sizeConfig?: TableSizeConfig
+
+  // ========== UISetting UI 设置 ==========
+  /** 表格大小 */
+  size?: 'small' | 'normal' | 'large'
+  /** 显示网格线 */
+  showGridlines?: boolean
+  /** 斑马纹 */
+  stripedRows?: boolean
+  /** 响应式布局 */
+  responsiveLayout?: 'scroll' | 'stack'
+
+  // ========== OtherSetting 其他设置 ==========
+  /** 行类名函数 */
+  rowClass?: (data: T) => string | string[]
+  /** 行样式函数 */
+  rowStyle?: (data: T) => CSSProperties
+  /** 空数据提示 */
+  emptyMessage?: string
+}
+
+/**
+ * VxeTable Emits
+ */
+export type VxeTableEmits<T = any> = {
+  // 数据更新（使用函数签名格式避免 ESLint 错误）
+  (e: 'update:selectedRows', rows: T[]): void
+
+  // 分页
+  (e: 'page-change', event: PageState): void
+
+  // 排序
+  (e: 'sort-change', event: SortEvent): void
+
+  // 筛选
+  (e: 'filter-change', event: FilterEvent): void
+
+  // 选择
+  (e: 'row-select', event: RowSelectEvent<T>): void
+  (e: 'row-unselect', event: RowUnselectEvent<T>): void
+  (e: 'select-all', event: SelectAllEvent<T>): void
+
+  // 编辑
+  (e: 'cell-edit-complete', event: CellEditCompleteEvent<T>): void
+  (e: 'row-edit-save', event: RowEditSaveEvent<T>): void
+  (e: 'row-edit-cancel', event: RowEditCancelEvent<T>): void
+
+  // 其他
+  (e: 'row-click', event: RowClickEvent<T>): void
+  (e: 'row-dblclick', event: RowDblClickEvent<T>): void
+  (e: 'context-menu', event: ContextMenuEvent<T>): void
+
+  // 列宽度变化
+  (e: 'column-widths-change', widths: ColumnWidthInfo[]): void
+}
+
+/**
+ * VxeTable 组件暴露的 API
+ */
+export interface VxeTableExpose<T = any> {
+  /** 表格数据 */
+  data: T[]
+  /** 选中的行 */
+  selectedRows?: T[]
+  /** 分页状态 */
+  paginationState?: PaginationState
+  /** 排序状态 */
+  sortState?: SortState
+  /** 筛选状态 */
+  filterState?: FilterState
+  /** 列宽度信息 */
+  columnWidths: ColumnWidthInfo[]
+  /** 刷新数据 */
+  refresh: () => void
+  /** 导出数据 */
+  exportData: (format?: 'csv' | 'xlsx' | 'json') => void
+  /** 清除筛选 */
+  clearFilters: () => void
+  /** 清除排序 */
+  clearSort: () => void
+  /** 设置排序 */
+  setSort?: (field: string, order: 1 | -1 | 0) => void
+  /** 设置筛选 */
+  setFilter?: (field: string, value: any, matchMode?: string) => void
+  /** 清除选择 */
+  clearSelection: () => void
+  /** 全选 */
+  selectAll: () => void
+  /** 选择单行 */
+  selectRow: (row: T) => boolean
+  /** 取消选择单行 */
+  unselectRow: (row: T) => boolean
+  /** 跳转到指定页面 */
+  goToPage?: (page: number) => void
+  /** 设置每页显示数量 */
+  setPageSize?: (size: number) => void
+  /** 设置全局搜索 */
+  setGlobalFilter?: (value: string) => void
+  /** 获取表格实例 */
+  getTableInstance: () => any
+  /** 获取列宽度 */
+  getColumnWidths: () => ColumnWidthInfo[]
+  /** 更新列宽度 */
+  updateColumnWidths: () => void
+}

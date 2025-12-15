@@ -1,6 +1,8 @@
 import fs from 'fs'
-import { globSync } from 'glob'
+import * as glob from 'glob'
 import path from 'node:path'
+
+const { globSync } = glob
 
 type IconCacheTarget = 'route' | 'custom'
 
@@ -258,7 +260,7 @@ export function getRouteMetaIcons(): string[] {
     return true
   }
 
-  files.forEach(filePath => {
+  files.forEach((filePath: string) => {
     try {
       const content = fs.readFileSync(filePath, 'utf-8')
 
@@ -369,7 +371,7 @@ export function getCustomIcons(): Record<string, string[]> {
   try {
     const files = globSync('src/assets/icons/**/*.svg', { nodir: true })
 
-    files.forEach(filePath => {
+    files.forEach((filePath: string) => {
       const fileName = path.basename(filePath) // 获取文件名，包括后缀
       const fileNameWithoutExt = path.parse(fileName).name // 获取去除后缀的文件名
       const folderName = path.basename(path.dirname(filePath)) // 获取文件夹名

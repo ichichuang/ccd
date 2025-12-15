@@ -1,8 +1,6 @@
 // src/utils/http/methods.ts
 import { HTTP_CONFIG } from '@/constants'
 import { t } from '@/locales'
-import { useUserStoreWithOut } from '@/stores'
-import { env } from '@/utils'
 import { alovaInstance } from './instance'
 import { ErrorType, HttpRequestError, isRetryableError } from './interceptors'
 import type { AlovaRequestConfig, RequestConfig, RetryConfig, UploadConfig } from './types'
@@ -296,6 +294,18 @@ export const patch = <T = any>(url: string, data?: any, config?: RequestConfig) 
 }
 
 /**
+ * HEAD 请求
+ * 用于检查资源是否存在，不返回响应体
+ */
+export const head = <T = any>(url: string, config?: RequestConfig) => {
+  const requestKey = `HEAD:${url}`
+  const alovaConfig = convertRequestConfig(config)
+  const requestFn = () => alovaInstance.Head<T>(url, alovaConfig)
+
+  return requestManager.execute(requestKey, () => executeWithRetry(requestFn, config?.retry))
+}
+
+/**
  * 文件上传
  */
 export const uploadFile = <T = any>(url: string, file: File, config?: UploadConfig) => {
@@ -335,41 +345,50 @@ export const uploadFiles = <T = any>(url: string, files: File[], config?: Upload
 
 /**
  * 下载文件
+ * 使用 Alova 实例确保经过拦截器处理，错误会被正确捕获和处理
+ * 拦截器会根据 Content-Type 自动识别 blob 响应
  */
 export const downloadFile = async (url: string, filename?: string) => {
   try {
-    // 构建完整的下载 URL
-    const fullUrl = url.startsWith('http') ? url : `${env.apiBaseUrl}${url}`
-
-    const response = await fetch(fullUrl, {
-      method: 'GET',
-      headers: {
-        authorization: `Bearer ${useUserStoreWithOut().getSafeStorageToken}`,
-      },
+    // 使用 Alova 实例发送请求，确保经过拦截器
+    // 拦截器会根据 Content-Type (application/octet-stream) 自动返回 Blob
+    const blob = await alovaInstance.Get<Blob>(url, {
+      // 通过配置标记这是文件下载请求，拦截器会识别并返回 blob
+      // @ts-expect-error - Alova 可能不支持 responseType，但拦截器会根据 Content-Type 处理
+      responseType: 'blob',
     })
 
-    if (!response.ok) {
-      throw new HttpRequestError(
-        `HTTP ${response.status}: ${response.statusText}`,
-        ErrorType.SERVER,
-        response.status,
-        response.statusText
-      )
+    // 如果响应是 Blob，直接使用
+    if (blob instanceof Blob) {
+      const downloadUrl = window.URL.createObjectURL(blob)
+      const link = document.createElement('a')
+      link.href = downloadUrl
+      link.download = filename || 'download'
+      document.body.appendChild(link)
+      link.click()
+      document.body.removeChild(link)
+      window.URL.revokeObjectURL(downloadUrl)
+
+      return filename
     }
 
-    const blob = await response.blob()
-    const downloadUrl = window.URL.createObjectURL(blob)
-    const link = document.createElement('a')
-    link.href = downloadUrl
-    link.download = filename || 'download'
-    document.body.appendChild(link)
-    link.click()
-    document.body.removeChild(link)
-    window.URL.revokeObjectURL(downloadUrl)
-
-    return filename
+    // 如果不是 Blob，说明响应格式错误
+    throw new HttpRequestError(
+      '文件下载失败：响应格式错误',
+      ErrorType.SERVER,
+      undefined,
+      undefined,
+      undefined,
+      false
+    )
   } catch (error) {
-    console.error('❌ 文件下载失败:', error)
+    // 错误会被拦截器处理，这里只需要重新抛出
+    // 拦截器会处理错误提示和错误类型判断（包括调用 handleHttpError）
+    if (error instanceof HttpRequestError) {
+      throw error
+    }
+
+    // 如果是其他类型的错误，转换为 HttpRequestError
     const errorMessage =
       error instanceof Error ? error.message : t('http.upload.fileDownloadFailed')
     throw new HttpRequestError(

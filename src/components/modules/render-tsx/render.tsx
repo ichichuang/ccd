@@ -90,7 +90,7 @@ export default defineComponent({
       h(
         'div',
         {
-          class: ['render-tsx-container', props.class].filter(Boolean).join(' '),
+          class: ['full', props.class].filter(Boolean).join(' '),
           style: props.style,
         },
         [renderContent()]

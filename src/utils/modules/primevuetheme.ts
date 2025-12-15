@@ -898,6 +898,99 @@ export const createCustomPreset = (preset: any, { colorStore, sizeStore }: Prime
         },
       },
     })
+    // DataTable 组件单独处理
+    deepMergeStylesAdvancedInPlace(newPreset.components.datatable, {
+      /* header: {
+        padding: `${sizeStore.getPaddingValue * 0.96}px ${sizeStore.getPaddingValue}px`,
+        sm: {
+          padding: `${sizeStore.getPaddingsValue * 0.6}px ${sizeStore.getPaddingValue}px`,
+        },
+        lg: {
+          padding: `${sizeStore.getPaddingxValue * 0.8}px ${sizeStore.getPaddingValue}px`,
+        },
+      },
+      headerCell: {
+        padding: `${sizeStore.getPaddingValue * 0.96}px ${sizeStore.getPaddingValue}px`,
+        sm: {
+          padding: `${sizeStore.getPaddingsValue * 0.6}px ${sizeStore.getPaddingValue}px`,
+        },
+        lg: {
+          padding: `${sizeStore.getPaddingxValue * 0.8}px ${sizeStore.getPaddingValue}px`,
+        },
+      },
+      bodyCell: {
+        padding: `${sizeStore.getPaddingValue * 0.96}px ${sizeStore.getPaddingValue}px`,
+        sm: {
+          padding: `${sizeStore.getPaddingsValue * 0.6}px ${sizeStore.getPaddingValue}px`,
+        },
+        lg: {
+          padding: `${sizeStore.getPaddingxValue * 0.8}px ${sizeStore.getPaddingValue}px`,
+        },
+      },
+      footerCell: {
+        padding: `${sizeStore.getPaddingValue * 0.96}px ${sizeStore.getPaddingValue}px`,
+        sm: {
+          padding: `${sizeStore.getPaddingsValue * 0.6}px ${sizeStore.getPaddingValue}px`,
+        },
+        lg: {
+          padding: `${sizeStore.getPaddingxValue * 0.8}px ${sizeStore.getPaddingValue}px`,
+        },
+      },
+      columnFooter: {
+        padding: `${sizeStore.getPaddingValue * 0.96}px ${sizeStore.getPaddingValue}px`,
+        sm: {
+          padding: `${sizeStore.getPaddingsValue * 0.6}px ${sizeStore.getPaddingValue}px`,
+        },
+        lg: {
+          padding: `${sizeStore.getPaddingxValue * 0.8}px ${sizeStore.getPaddingValue}px`,
+        },
+      }, */
+      header: {
+        padding: `0 ${sizeStore.getPaddingValue}px`,
+        sm: {
+          padding: `0 ${sizeStore.getPaddingValue}px`,
+        },
+        lg: {
+          padding: `0 ${sizeStore.getPaddingValue}px`,
+        },
+      },
+      headerCell: {
+        padding: `0 ${sizeStore.getPaddingValue}px`,
+        sm: {
+          padding: `0 ${sizeStore.getPaddingValue}px`,
+        },
+        lg: {
+          padding: `0 ${sizeStore.getPaddingValue}px`,
+        },
+      },
+      bodyCell: {
+        padding: `0 ${sizeStore.getPaddingValue}px`,
+        sm: {
+          padding: `0 ${sizeStore.getPaddingValue}px`,
+        },
+        lg: {
+          padding: `0 ${sizeStore.getPaddingValue}px`,
+        },
+      },
+      footerCell: {
+        padding: `0 ${sizeStore.getPaddingValue}px`,
+        sm: {
+          padding: `0 ${sizeStore.getPaddingValue}px`,
+        },
+        lg: {
+          padding: `0 ${sizeStore.getPaddingValue}px`,
+        },
+      },
+      columnFooter: {
+        padding: `0 ${sizeStore.getPaddingValue}px`,
+        sm: {
+          padding: `0 ${sizeStore.getPaddingValue}px`,
+        },
+        lg: {
+          padding: `0 ${sizeStore.getPaddingValue}px`,
+        },
+      },
+    })
     // dialog 组件单独处理
     deepMergeStylesAdvancedInPlace(newPreset.components.dialog, {
       padding: `${sizeStore.getPaddingValue}px ${sizeStore.getPaddinglValue}px`,

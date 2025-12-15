@@ -54,26 +54,3 @@ img {
 ::-webkit-scrollbar-corner   //边角
 ::-webkit-resizer   ///定义右下角拖动块的样式
 */
-
-/* 滚动条轨道及按钮 */
-* {
-  &::-webkit-scrollbar,
-  &::-webkit-scrollbar-button,
-  &::-webkit-scrollbar-track {
-    width: 8px;
-    height: 8px;
-    background: var(--bg200);
-  }
-
-  /* 滚动条滑块 */
-  &::-webkit-scrollbar-thumb {
-    background: var(--bg300);
-    border-radius: var(--rounded);
-  }
-  &::-webkit-scrollbar-thumb:hover {
-    background: var(--primary200);
-  }
-  &::-webkit-scrollbar-thumb:active {
-    background: var(--primary100);
-  }
-}

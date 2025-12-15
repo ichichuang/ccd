@@ -15,6 +15,7 @@ const importedHookComponents = autoImportModulesSync(hookComponentsModules)
 export * from '@/hooks/components/useDialog'
 export * from '@/hooks/components/useSchemaForm'
 export * from '@/hooks/components/useThemeSwitch'
+export * from '@/hooks/components/useVxeTable'
 export * from '@/hooks/layout/useLoading'
 export * from '@/hooks/layout/useNprogress'
 export * from '@/hooks/layout/usePageTitle'

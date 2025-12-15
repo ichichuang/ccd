@@ -47,9 +47,19 @@ export interface UploadConfig extends RequestConfig {
 export interface DownloadConfig {
   filename?: string
   headers?: Record<string, string>
+  timeout?: number
+  signal?: AbortSignal
   onProgress?: (progress: number) => void
   onSuccess?: () => void
   onError?: (error: Error) => void
+}
+
+export interface HeadConfig extends RequestConfig {
+  // HEAD 请求特定配置
+  /** 是否检查资源是否存在 */
+  checkExists?: boolean
+  /** 是否获取资源元信息（如文件大小、修改时间等） */
+  getMetadata?: boolean
 }
 
 export interface RetryConfig {

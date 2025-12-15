@@ -126,10 +126,76 @@ const exampleRoutes: RouteConfig[] = [
                 path: 'default',
                 name: 'ExampleComponentsVxeTableDefault',
                 component: () =>
-                  import('@/views/example/views/example-vxe-table/example-vxe-table-default.vue'),
+                  import('@/views/example/views/example-vxe-table/example-vxe-table-basic.vue'),
                 meta: {
                   titleKey: 'router.example.components.vxetable.default',
                   rank: 1,
+                  icon: 'fc-list',
+                },
+              },
+              {
+                path: 'size',
+                name: 'ExampleComponentsVxeTableSize',
+                component: () =>
+                  import('@/views/example/views/example-vxe-table/example-vxe-table-size.vue'),
+                meta: {
+                  titleKey: 'router.example.components.vxetable.size',
+                  rank: 2,
+                  icon: 'fc-list',
+                },
+              },
+              {
+                path: 'layout',
+                name: 'ExampleComponentsVxeTableLayout',
+                component: () =>
+                  import('@/views/example/views/example-vxe-table/example-vxe-table-layout.vue'),
+                meta: {
+                  titleKey: 'router.example.components.vxetable.layout',
+                  rank: 3,
+                  icon: 'fc-list',
+                },
+              },
+              {
+                path: 'style',
+                name: 'ExampleComponentsVxeTableStyle',
+                component: () =>
+                  import('@/views/example/views/example-vxe-table/example-vxe-table-style.vue'),
+                meta: {
+                  titleKey: 'router.example.components.vxetable.style',
+                  rank: 4,
+                  icon: 'fc-list',
+                },
+              },
+              {
+                path: 'merge',
+                name: 'ExampleComponentsVxeTableMerge',
+                component: () =>
+                  import('@/views/example/views/example-vxe-table/example-vxe-table-merge.vue'),
+                meta: {
+                  titleKey: 'router.example.components.vxetable.merge',
+                  rank: 5,
+                  icon: 'fc-list',
+                },
+              },
+              {
+                path: 'advanced',
+                name: 'ExampleComponentsVxeTableAdvanced',
+                component: () =>
+                  import('@/views/example/views/example-vxe-table/example-vxe-table-advanced.vue'),
+                meta: {
+                  titleKey: 'router.example.components.vxetable.advanced',
+                  rank: 6,
+                  icon: 'fc-list',
+                },
+              },
+              {
+                path: 'dynamic',
+                name: 'ExampleComponentsVxeTableDynamic',
+                component: () =>
+                  import('@/views/example/views/example-vxe-table/example-vxe-table-dynamic.vue'),
+                meta: {
+                  titleKey: 'router.example.components.vxetable.dynamic',
+                  rank: 7,
                   icon: 'fc-list',
                 },
               },
@@ -333,6 +399,98 @@ const exampleRoutes: RouteConfig[] = [
               titleKey: 'router.example.http.basic',
               rank: 1,
               icon: 'fc-mind-map',
+            },
+          },
+          {
+            path: 'crud',
+            name: 'ExampleHttpCrud',
+            component: () => import('@/views/example/views/example-http/example-http-crud.vue'),
+            meta: {
+              titleKey: 'router.example.http.crud',
+              rank: 2,
+              icon: 'fc-edit-image',
+            },
+          },
+          {
+            path: 'upload',
+            name: 'ExampleHttpUpload',
+            component: () => import('@/views/example/views/example-http/example-http-upload.vue'),
+            meta: {
+              titleKey: 'router.example.http.upload',
+              rank: 3,
+              icon: 'fc-upload',
+            },
+          },
+          {
+            path: 'upload-chunk',
+            name: 'ExampleHttpUploadChunk',
+            component: () =>
+              import('@/views/example/views/example-http/example-http-upload-chunk.vue'),
+            meta: {
+              titleKey: 'router.example.http.uploadChunk',
+              rank: 4,
+              icon: 'fc-stack-of-photos',
+            },
+          },
+          {
+            path: 'download',
+            name: 'ExampleHttpDownload',
+            component: () => import('@/views/example/views/example-http/example-http-download.vue'),
+            meta: {
+              titleKey: 'router.example.http.download',
+              rank: 5,
+              icon: 'fc-download',
+            },
+          },
+          {
+            path: 'health',
+            name: 'ExampleHttpHealth',
+            component: () => import('@/views/example/views/example-http/example-http-health.vue'),
+            meta: {
+              titleKey: 'router.example.http.health',
+              rank: 6,
+              icon: 'fc-approval',
+            },
+          },
+          {
+            path: 'patch',
+            name: 'ExampleHttpPatch',
+            component: () => import('@/views/example/views/example-http/example-http-patch.vue'),
+            meta: {
+              titleKey: 'router.example.http.patch',
+              rank: 7,
+              icon: 'fc-edit-image',
+            },
+          },
+          {
+            path: 'cache',
+            name: 'ExampleHttpCache',
+            component: () => import('@/views/example/views/example-http/example-http-cache.vue'),
+            meta: {
+              titleKey: 'router.example.http.cache',
+              rank: 8,
+              icon: 'fc-bookmark',
+            },
+          },
+          {
+            path: 'connection',
+            name: 'ExampleHttpConnection',
+            component: () =>
+              import('@/views/example/views/example-http/example-http-connection.vue'),
+            meta: {
+              titleKey: 'router.example.http.connection',
+              rank: 9,
+              icon: 'fc-link',
+            },
+          },
+          {
+            path: 'stats',
+            name: 'ExampleHttpStats',
+            component: () => import('@/views/example/views/example-http/example-http-stats.vue'),
+            meta: {
+              titleKey: 'router.example.http.stats',
+              rank: 10,
+              icon: 'fc-bar-chart',
             },
           },
         ],

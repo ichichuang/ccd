@@ -15,6 +15,13 @@ export const HTTP_CONFIG = {
   defaultConcurrentChunks: 3, // 默认并发分片数
   maxFileSize: 100 * 1024 * 1024, // 最大文件大小（100MB）
 
+  // 上传端点配置
+  uploadEndpoints: {
+    check: '/api/upload/check', // 检查已上传分片
+    chunk: '/api/upload/chunk', // 上传分片
+    merge: '/api/upload/merge', // 合并分片
+  },
+
   // 连接管理配置
   maxReconnectAttempts: 5, // 最大重连次数
   reconnectDelay: 2000, // 重连延迟（毫秒）

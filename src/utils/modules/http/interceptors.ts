@@ -166,10 +166,77 @@ export const beforeRequest = (method: Method) => {
 /**
  * 全局响应拦截器 - 适配 server 的响应格式
  */
-export const responseHandler = async (response: Response, _method: Method) => {
+export const responseHandler = async (response: Response, method: Method) => {
   try {
+    // 检查是否是 HEAD 请求
+    // HEAD 请求不返回响应体，只返回响应头
+    if (method.type === 'HEAD') {
+      // HEAD 请求只检查状态码
+      if (!response.ok) {
+        const errorType = getErrorTypeByStatus(response.status)
+        const retryable = response.status >= 500
+
+        handleHttpError(response.status, { message: response.statusText })
+        throw new HttpRequestError(
+          response.statusText || `HTTP ${response.status}`,
+          errorType,
+          response.status,
+          response.statusText,
+          undefined,
+          retryable
+        )
+      }
+
+      // HEAD 请求成功，返回 void 或空对象
+      return undefined
+    }
+
     // 检查响应类型
     const contentType = response.headers.get('content-type')
+
+    // 检查是否是 blob 响应（文件下载）
+    // 通过 Content-Type 或配置中的 responseType 判断
+    const isBlobResponse =
+      method.config?.responseType === 'blob' ||
+      contentType?.includes('application/octet-stream') ||
+      contentType?.includes('application/force-download') ||
+      method.config?.['responseType'] === 'blob' // 兼容不同的配置方式
+
+    // 如果是 blob 响应，直接返回 blob
+    if (isBlobResponse) {
+      // 先检查 HTTP 状态码错误
+      if (!response.ok) {
+        // 尝试读取错误信息（可能是 JSON）
+        let errorData: any
+        try {
+          const text = await response.text()
+          try {
+            errorData = JSON.parse(text)
+          } catch {
+            errorData = { message: text || response.statusText }
+          }
+        } catch {
+          errorData = { message: response.statusText }
+        }
+
+        const errorType = getErrorTypeByStatus(response.status)
+        const retryable = response.status >= 500
+
+        handleHttpError(response.status, errorData)
+        throw new HttpRequestError(
+          errorData?.message || `HTTP ${response.status}`,
+          errorType,
+          response.status,
+          response.statusText,
+          errorData,
+          retryable
+        )
+      }
+
+      // 状态码正常，返回 blob
+      return await response.blob()
+    }
+
     let json: any
 
     if (contentType && contentType.includes('application/json')) {
@@ -400,6 +467,8 @@ const handleHttpError = (status: number, data: any) => {
       console.error(`HTTP ${status} 错误`)
   }
 
+  console.log('statusMessage', statusMessage)
+  console.log('errorMessage', errorMessage)
   try {
     window.$toast.errorIn('top-left', statusMessage, errorMessage)
   } catch (error) {
