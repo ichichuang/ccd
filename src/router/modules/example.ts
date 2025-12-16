@@ -199,6 +199,28 @@ const exampleRoutes: RouteConfig[] = [
                   icon: 'fc-list',
                 },
               },
+              {
+                path: 'scroll',
+                name: 'ExampleComponentsVxeTableScroll',
+                component: () =>
+                  import('@/views/example/views/example-vxe-table/example-vxe-table-scroll.vue'),
+                meta: {
+                  titleKey: 'router.example.components.vxetable.scroll',
+                  rank: 8,
+                  icon: 'fc-list',
+                },
+              },
+              {
+                path: 'pagination',
+                name: 'ExampleComponentsVxeTablePagination',
+                component: () =>
+                  import('@/views/example/views/example-vxe-table/example-vxe-table-pagination.vue'),
+                meta: {
+                  titleKey: 'router.example.components.vxetable.pagination',
+                  rank: 9,
+                  icon: 'fc-list',
+                },
+              },
             ],
           },
           {

@@ -11,6 +11,7 @@ import IconField from 'primevue/iconfield'
 import InputIcon from 'primevue/inputicon'
 import InputText from 'primevue/inputtext'
 import { computed, defineComponent, h, nextTick, onMounted, onUnmounted, ref, watch } from 'vue'
+import { executeVxeTableApi } from './utils/api'
 import { DEFAULT_PAGINATOR_CONFIG, DEFAULT_TABLE_SIZE_CONFIG } from './utils/constants'
 import {
   exportToCSV,
@@ -106,6 +107,7 @@ const tableRef = ref<InstanceType<typeof DataTable>>()
 const tableWrapperRef = ref<HTMLElement>()
 const tableWrapperFullRef = ref<HTMLElement>()
 const footerColumnsWrapperRef = ref<HTMLElement | null>(null)
+const scrollWrapperRef = ref<HTMLElement | null>(null)
 
 // 响应式数据
 const selectedRows = ref<any[]>(props.selectedRows || [])
@@ -124,11 +126,184 @@ const editModeComputed = computed(() => {
   return props.editMode || 'cell'
 })
 
+// 源数据：如果传入 api，则优先使用 api 返回的数据
+const apiData = ref<any[]>([])
+const apiLoading = ref(false)
+const apiError = ref<string | null>(null)
+
+// 无限滚动模式状态
+const infinitePage = ref(1)
+const infiniteHasNext = ref(true)
+const infiniteTotal = ref(0)
+const isTriggeringInfiniteLoad = ref(false) // 防止重复触发触底加载
+
+const sourceData = computed<any[]>(() => {
+  if (props.api) {
+    return apiData.value
+  }
+  return props.data || []
+})
+
+// 合并 loading 状态：外部传入的 loading 或内部 API 请求的 loading
+const loading = computed(() => {
+  if (props.api) {
+    return apiLoading.value || props.loading || false
+  }
+  return props.loading || false
+})
+
+/**
+ * 当传入 api 时，自动请求数据
+ * api 和 data 可以同时传入，但 api 优先（控制台会给出提示）
+ */
+const loadApiData = async (isInfiniteNext = false) => {
+  if (!props.api) {
+    return
+  }
+
+  // 无限滚动模式：检查是否还有下一页
+  if (props.api.mode === 'infinite' && isInfiniteNext && !infiniteHasNext.value) {
+    return
+  }
+
+  // 防止重复请求
+  if (apiLoading.value) {
+    return
+  }
+
+  apiLoading.value = true
+  apiError.value = null
+
+  try {
+    let pageSize: number | undefined
+    let currentPage: number | undefined
+
+    if (props.api.mode === 'infinite') {
+      pageSize = props.api.infinite?.pageSize || 20
+      currentPage = isInfiniteNext ? infinitePage.value : 1
+    } else if (props.api.mode === 'pagination') {
+      pageSize = props.api.pagination?.pageSize || paginationState.value.rows || 10
+      currentPage = paginationState.value.page || 1
+    }
+
+    const result = await executeVxeTableApi(props.api, currentPage, pageSize)
+
+    if (props.api.mode === 'infinite' && isInfiniteNext) {
+      // 无限滚动模式：追加数据
+      console.log('[VxeTable] loadApiData: appending data for infinite scroll', {
+        currentPage: infinitePage.value,
+        newDataCount: result.list.length,
+        hasNext: result.hasNext,
+        currentDataCount: apiData.value.length,
+      })
+
+      apiData.value = [...apiData.value, ...result.list]
+      infiniteHasNext.value = result.hasNext ?? false
+      infiniteTotal.value = typeof result.total === 'number' ? result.total : apiData.value.length
+
+      if (result.hasNext) {
+        infinitePage.value += 1
+        console.log('[VxeTable] loadApiData: next page will be', infinitePage.value)
+      } else {
+        console.log('[VxeTable] loadApiData: no more pages, hasNext is false')
+      }
+    } else {
+      // 分页模式或首次加载：替换数据
+      apiData.value = result.list
+
+      if (props.api.mode === 'infinite') {
+        console.log('[VxeTable] loadApiData: initial load for infinite scroll', {
+          dataCount: result.list.length,
+          hasNext: result.hasNext,
+          total: result.total,
+        })
+
+        infinitePage.value = 1
+        // 首次加载：如果返回了 hasNext，使用它；否则根据数据量判断
+        if (typeof result.hasNext === 'boolean') {
+          infiniteHasNext.value = result.hasNext
+        } else {
+          // 如果没有 hasNext 字段，根据返回的数据量判断
+          const pageSize = props.api.infinite?.pageSize || 20
+          infiniteHasNext.value = result.list.length >= pageSize
+        }
+        infiniteTotal.value = typeof result.total === 'number' ? result.total : result.list.length
+        infinitePage.value = 2 // 下次加载第 2 页
+
+        console.log('[VxeTable] loadApiData: infinite scroll initialized', {
+          infiniteHasNext: infiniteHasNext.value,
+          nextPage: infinitePage.value,
+        })
+      } else if (props.api.mode === 'pagination') {
+        // 分页模式：更新总数
+        paginationState.value.totalRecords =
+          typeof result.total === 'number' ? result.total : result.list.length
+      } else {
+        // 默认模式：更新总数
+        paginationState.value.totalRecords =
+          typeof result.total === 'number' ? result.total : apiData.value.length
+      }
+    }
+  } catch (error) {
+    apiError.value = error instanceof Error ? error.message : '加载数据失败'
+    console.error('[VxeTable] loadApiData error', error)
+  } finally {
+    apiLoading.value = false
+  }
+}
+
+/**
+ * 无限滚动模式：处理触底事件
+ */
+const handleInfiniteScrollBottom = () => {
+  console.log('[VxeTable] handleInfiniteScrollBottom', {
+    mode: props.api?.mode,
+    infiniteHasNext: infiniteHasNext.value,
+    apiLoading: apiLoading.value,
+    infinitePage: infinitePage.value,
+    isTriggering: isTriggeringInfiniteLoad.value,
+  })
+
+  // 防止重复触发
+  if (isTriggeringInfiniteLoad.value) {
+    console.log('[VxeTable] handleInfiniteScrollBottom: already triggering, skip')
+    return
+  }
+
+  if (props.api?.mode === 'infinite' && infiniteHasNext.value && !apiLoading.value) {
+    isTriggeringInfiniteLoad.value = true
+    console.log('[VxeTable] calling loadApiData(true) for next page', {
+      currentPage: infinitePage.value,
+    })
+
+    loadApiData(true)
+      .then(() => {
+        console.log('[VxeTable] loadApiData completed, reset trigger flag')
+      })
+      .catch(error => {
+        console.error('[VxeTable] loadApiData failed', error)
+      })
+      .finally(() => {
+        // 延迟重置标志，防止快速连续触发
+        setTimeout(() => {
+          isTriggeringInfiniteLoad.value = false
+        }, 500)
+      })
+  } else {
+    console.warn('[VxeTable] handleInfiniteScrollBottom: conditions not met', {
+      hasApi: !!props.api,
+      isInfiniteMode: props.api?.mode === 'infinite',
+      hasNext: infiniteHasNext.value,
+      notLoading: !apiLoading.value,
+    })
+  }
+}
+
 // ID 字段（用于行选择）
 const idField = computed(() => {
   // 尝试从第一行数据中获取 ID 字段
-  if (props.data.length > 0) {
-    const firstRow = props.data[0]
+  if (sourceData.value.length > 0) {
+    const firstRow = sourceData.value[0]
     if ('id' in firstRow) {
       return 'id'
     }
@@ -163,7 +338,7 @@ const paginationState = ref<PaginationState>({
   page: 1,
   rows: props.paginatorConfig?.rows || DEFAULT_PAGINATOR_CONFIG.rows || 10,
   first: 0,
-  totalRecords: props.data.length,
+  totalRecords: sourceData.value.length,
 })
 
 // 排序状态
@@ -261,12 +436,12 @@ const paginatorJustifyContent = computed(() => {
  */
 const filteredData = computed(() => {
   if (!props.globalFilter || !globalFilterValue.value || globalFilterValue.value.trim() === '') {
-    return props.data
+    return sourceData.value
   }
 
   const searchText = globalFilterValue.value.toLowerCase().trim()
 
-  return props.data.filter((row: any) => {
+  return sourceData.value.filter((row: any) => {
     // 遍历所有列，检查是否有任何列包含搜索文本
     return props.columns.some((col: VxeTableColumn) => {
       const fieldValue = (row as any)[col.field]
@@ -286,7 +461,7 @@ const filteredData = computed(() => {
  */
 const getColumnFooterParams = (column: VxeTableColumn, columnIndex: number) => {
   return {
-    rows: props.data.map(row => {
+    rows: sourceData.value.map(row => {
       return {
         value: (row as any)[column.field],
         row,
@@ -729,7 +904,7 @@ const refresh = () => {
  */
 const handleExport = (format: 'csv' | 'xlsx' | 'json' = 'csv') => {
   const filename = props.exportConfig?.filename || 'table-export'
-  const exportData = selectedRows.value.length > 0 ? selectedRows.value : props.data
+  const exportData = selectedRows.value.length > 0 ? selectedRows.value : sourceData.value
 
   try {
     if (format === 'csv') {
@@ -822,10 +997,10 @@ const isRowSelected = (row: any): boolean => {
  * 检查是否全选
  */
 const isAllSelected = computed(() => {
-  if (props.data.length === 0) {
+  if (sourceData.value.length === 0) {
     return false
   }
-  return props.data.every(row => isRowSelected(row))
+  return sourceData.value.every(row => isRowSelected(row))
 })
 
 /**
@@ -861,7 +1036,7 @@ const handleCheckboxChange = (checked: boolean, row: any) => {
 const handleSelectAllChange = (checked: boolean) => {
   if (checked) {
     // 全选
-    selectedRows.value = [...props.data]
+    selectedRows.value = [...sourceData.value]
   } else {
     // 取消全选
     selectedRows.value = []
@@ -951,8 +1126,15 @@ const handlePageChange = (event: any) => {
     rows: event.rows,
     first: event.first,
     totalRecords:
-      event.totalRecords || (props.globalFilter ? filteredData.value.length : props.data.length),
+      event.totalRecords ||
+      (props.globalFilter ? filteredData.value.length : sourceData.value.length),
   }
+
+  // 分页模式：切换分页时自动调用 API 加载数据
+  if (props.api?.mode === 'pagination') {
+    void loadApiData()
+  }
+
   emit('page-change', event)
 }
 
@@ -999,6 +1181,12 @@ const setPageSize = (size: number): void => {
     first: 0,
     totalRecords,
   }
+
+  // 分页模式：切换每页数量时自动调用 API 加载数据
+  if (props.api?.mode === 'pagination') {
+    void loadApiData()
+  }
+
   emit('page-change', pageEvent as any)
 }
 
@@ -1115,7 +1303,7 @@ const handleRowSelect = (event: any) => {
   if (
     event.type === 'checkbox' &&
     Array.isArray(event.data) &&
-    event.data.length === props.data.length
+    event.data.length === sourceData.value.length
   ) {
     emit('select-all', { originalEvent: event.originalEvent, checked: true, data: event.data })
   }
@@ -1132,13 +1320,13 @@ const handleRowUnselect = (event: any) => {
 
 // 监听数据变化，更新分页总数
 watch(
-  () => props.data.length,
+  () => sourceData.value.length,
   () => {
     // 如果启用了搜索，使用筛选后的数据长度
     if (props.globalFilter && globalFilterValue.value) {
       paginationState.value.totalRecords = filteredData.value.length
     } else {
-      paginationState.value.totalRecords = props.data.length
+      paginationState.value.totalRecords = sourceData.value.length
     }
     if (footerMode.value === 'column-aligned') {
       updateColumnWidths()
@@ -1262,30 +1450,107 @@ const handleResize = throttle(() => {
   }
 }, 600)
 
-// 监听表格横向滚动，同步底部容器滚动
-const handleTableScroll = () => {
-  // 获取表格的滚动容器
-  const tableElement = tableWrapperRef.value?.querySelector('.p-datatable')
-  const tableWrapper = tableElement?.querySelector('.p-datatable-wrapper') as HTMLElement
+// 监听表格滚动：同步底部容器滚动，并在接近底部时触发 scroll-bottom 事件
+const handleTableScroll = (event: Event) => {
+  const target = (event.target as HTMLElement) || scrollWrapperRef.value
+  if (!target) {
+    return
+  }
 
-  if (tableWrapper) {
-    // 同步底部容器滚动（如果存在）
-    if (footerMode.value === 'column-aligned' && footerColumnsWrapperRef.value) {
-      footerColumnsWrapperRef.value.scrollLeft = tableWrapper.scrollLeft
+  // 调试：打印滚动位置
+
+  console.log('[VxeTable] scroll', {
+    scrollTop: target.scrollTop,
+    scrollHeight: target.scrollHeight,
+    clientHeight: target.clientHeight,
+  })
+
+  // 同步底部容器横向滚动（如果存在）
+  if (footerMode.value === 'column-aligned' && footerColumnsWrapperRef.value) {
+    footerColumnsWrapperRef.value.scrollLeft = target.scrollLeft
+  }
+
+  // 触底检测（用于无限滚动场景）
+  const distanceToBottom = target.scrollHeight - target.scrollTop - target.clientHeight
+  const threshold = 40 // 触发阈值，单位：px
+
+  if (distanceToBottom <= threshold) {
+    console.log('[VxeTable] scroll-bottom detected', {
+      distanceToBottom,
+      scrollTop: target.scrollTop,
+      scrollHeight: target.scrollHeight,
+      clientHeight: target.clientHeight,
+      mode: props.api?.mode,
+      infiniteHasNext: infiniteHasNext.value,
+      apiLoading: apiLoading.value,
+    })
+
+    const scrollBottomEvent = {
+      originalEvent: event,
+      distanceToBottom,
+      scrollTop: target.scrollTop,
+      scrollHeight: target.scrollHeight,
+      clientHeight: target.clientHeight,
     }
+
+    // 如果配置了无限滚动模式，自动处理
+    if (props.api?.mode === 'infinite') {
+      console.log('[VxeTable] infinite mode detected, calling handleInfiniteScrollBottom')
+      handleInfiniteScrollBottom()
+    }
+
+    // 始终派发事件，让外部也可以监听
+    emit('scroll-bottom', scrollBottomEvent)
   }
 }
 
-// 设置滚动监听的辅助函数
+// 设置滚动监听的辅助函数（PrimeVue 可滚动表格实际滚动容器为 .p-datatable-scrollable-body）
 const setupScrollListener = () => {
   const tableElement = tableWrapperRef.value?.querySelector('.p-datatable')
-  const tableWrapper = tableElement?.querySelector('.p-datatable-wrapper') as HTMLElement
-  if (tableWrapper) {
-    // 移除旧的监听（避免重复添加）
-    tableWrapper.removeEventListener('scroll', handleTableScroll)
-    // 添加新的监听
-    tableWrapper.addEventListener('scroll', handleTableScroll)
+  if (!tableElement) {
+    return
   }
+
+  // 1. 优先按类名查找 PrimeVue 定义的滚动容器
+  let scrollBody =
+    (tableElement.querySelector('.p-datatable-scrollable-body') as HTMLElement | null) ??
+    (tableElement.querySelector('.p-datatable-wrapper') as HTMLElement | null)
+
+  // 2. 如果按类名没找到，兜底：在表格内部查找第一个“具备纵向滚动能力”的元素
+  if (!scrollBody) {
+    const allElements = tableElement.querySelectorAll<HTMLElement>('*')
+    for (const el of Array.from(allElements)) {
+      const style = window.getComputedStyle(el)
+      const hasScrollY =
+        (style.overflowY === 'auto' || style.overflowY === 'scroll') &&
+        el.clientHeight > 0 &&
+        el.scrollHeight > el.clientHeight
+
+      if (hasScrollY) {
+        scrollBody = el
+        break
+      }
+    }
+  }
+
+  if (!scrollBody) {
+    console.log('[VxeTable] setupScrollListener: no scroll body found')
+    return
+  }
+
+  // 移除旧的监听（避免重复添加）
+  if (scrollWrapperRef.value) {
+    scrollWrapperRef.value.removeEventListener('scroll', handleTableScroll)
+  }
+
+  scrollWrapperRef.value = scrollBody
+  scrollBody.addEventListener('scroll', handleTableScroll)
+
+  console.log('[VxeTable] setupScrollListener attached', {
+    hasScrollableBody: !!tableElement.querySelector('.p-datatable-scrollable-body'),
+    tag: scrollBody.tagName,
+    className: scrollBody.className,
+  })
 }
 
 onMounted(() => {
@@ -1313,22 +1578,36 @@ onMounted(() => {
       calculateFixedHeight()
     }, 200)
   }
+
+  // 如果配置了 api，自动加载一次数据
+  if (props.api?.immediate !== false) {
+    if (props.data && props.data.length > 0) {
+      console.warn('[VxeTable] both api and data are provided, api will override data')
+    }
+
+    // 分页模式：初始化分页配置
+    if (props.api && props.api.mode === 'pagination' && props.api.pagination?.pageSize) {
+      paginationState.value.rows = props.api.pagination.pageSize
+    }
+
+    void loadApiData()
+  } else if (!props.api && (!props.data || props.data.length === 0)) {
+    console.warn('[VxeTable] neither api nor data is provided, table will be empty')
+  }
 })
 
 onUnmounted(() => {
   window.removeEventListener('resize', handleResize)
   // 移除滚动监听
-  const tableElement = tableWrapperRef.value?.querySelector('.p-datatable')
-  const tableWrapper = tableElement?.querySelector('.p-datatable-wrapper') as HTMLElement
-  if (tableWrapper) {
-    tableWrapper.removeEventListener('scroll', handleTableScroll)
+  if (scrollWrapperRef.value) {
+    scrollWrapperRef.value.removeEventListener('scroll', handleTableScroll)
   }
 })
 
 // 暴露 API
 defineExpose<VxeTableExpose>({
   get data() {
-    return props.data
+    return sourceData.value
   },
   get selectedRows() {
     return selectedRows.value

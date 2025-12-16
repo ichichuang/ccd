@@ -48,6 +48,8 @@ const enUS = {
           merge: 'Merge',
           advanced: 'Advanced Features',
           dynamic: 'Dynamic Table',
+          scroll: 'Scroll Table',
+          pagination: 'Pagination Table',
         },
         echarts: {
           title: 'Echarts',

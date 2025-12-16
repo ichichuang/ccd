@@ -41,13 +41,15 @@ const zhTW = {
         },
         vxetable: {
           title: '表格',
-          default: '默认表格',
+          default: '默認表格',
           size: '尺寸',
           layout: '布局',
           style: '樣式',
           merge: '合併',
           advanced: '高級功能',
           dynamic: '動態表格',
+          scroll: '滾動表格',
+          pagination: '分頁表格',
         },
         echarts: {
           title: '圖表',

@@ -48,6 +48,8 @@ const zhCN = {
           merge: '合并',
           advanced: '高级功能',
           dynamic: '动态表格',
+          scroll: '滚动表格',
+          pagination: '分页表格',
         },
         echarts: {
           title: '图表',

@@ -143,6 +143,22 @@ export interface ContextMenuEvent<T = any> {
 }
 
 /**
+ * 滚动触底事件
+ */
+export interface ScrollBottomEvent {
+  /** 原始滚动事件 */
+  originalEvent: Event
+  /** 距离底部的距离（像素） */
+  distanceToBottom: number
+  /** 当前滚动条位置 */
+  scrollTop: number
+  /** 可滚动区域总高度 */
+  scrollHeight: number
+  /** 可视区域高度 */
+  clientHeight: number
+}
+
+/**
  * TSX 渲染函数类型（用于 customFooter）
  */
 export type TSXRenderFunction = (params?: any) => VNode | VNode[]
@@ -318,12 +334,65 @@ export interface ExportConfig {
 }
 
 /**
- * VxeTable Props
+ * VxeTable API 配置
  */
+export interface VxeTableApiConfig<T = any> {
+  /**
+   * API 接口路径（如 '/list'）
+   */
+  api: string
+  /**
+   * 请求参数对象
+   */
+  params?: Record<string, any>
+  /**
+   * 请求方法类型，默认 'post'
+   */
+  type?: 'get' | 'post' | 'put' | 'patch' | 'delete' | 'head'
+  /** 是否在组件挂载时自动请求，默认 true */
+  immediate?: boolean
+  /**
+   * API 模式
+   * - 'infinite': 无限滚动模式，自动监听 scroll-bottom 事件加载下一页并追加数据
+   * - 'pagination': 分页模式，用户切换分页时调用接口更新数据
+   */
+  mode?: 'infinite' | 'pagination'
+  /**
+   * 无限滚动模式配置（仅 mode='infinite' 时生效）
+   */
+  infinite?: {
+    /** 每页数量，默认 20 */
+    pageSize?: number
+    /** 页码参数名，默认 'page' */
+    pageParam?: string
+    /** 每页数量参数名，默认 'pageSize' */
+    pageSizeParam?: string
+    /** 是否还有下一页的判断字段名，默认 'hasNext'，如果返回结果中没有此字段，则根据 list.length < pageSize 判断 */
+    hasNextField?: string
+  }
+  /**
+   * 分页模式配置（仅 mode='pagination' 时生效）
+   */
+  pagination?: {
+    /** 每页数量，默认 10 */
+    pageSize?: number
+    /** 页码参数名，默认 'page' */
+    pageParam?: string
+    /** 每页数量参数名，默认 'pageSize' */
+    pageSizeParam?: string
+  }
+}
+
 export interface VxeTableProps<T = any> extends Omit<Partial<DataTableProps>, 'selectionMode'> {
   // ========== 数据相关 ==========
-  /** 表格数据 */
-  data: T[]
+  /**
+   * 表格数据（当传入 api 时，data 可选；否则 data 必填）
+   */
+  data?: T[]
+  /**
+   * 表格数据 API 配置（与 data 同时存在时，api 优先）
+   */
+  api?: VxeTableApiConfig<T>
   /** 列配置 */
   columns: VxeTableColumn<T>[]
   /** 加载状态 */
@@ -438,6 +507,9 @@ export type VxeTableEmits<T = any> = {
   (e: 'row-click', event: RowClickEvent<T>): void
   (e: 'row-dblclick', event: RowDblClickEvent<T>): void
   (e: 'context-menu', event: ContextMenuEvent<T>): void
+
+  // 滚动触底（用于无限滚动加载场景）
+  (e: 'scroll-bottom', event: ScrollBottomEvent): void
 
   // 列宽度变化
   (e: 'column-widths-change', widths: ColumnWidthInfo[]): void

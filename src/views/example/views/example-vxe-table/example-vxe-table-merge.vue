@@ -28,7 +28,7 @@ const fmtCurrency = (val: number) => `¥${val.toLocaleString()}`
 </script>
 
 <template lang="pug">
-.between-col.gap-gapl
+.between-col.justify-start.gap-gapl
   // 行合并示例（rowspan）
   .c-card.p-paddings.rounded-rounded.between-col.gap-gap
     b.fs-appFontSizex 行合并（按城市分组，rowGroupMode="rowspan"）
