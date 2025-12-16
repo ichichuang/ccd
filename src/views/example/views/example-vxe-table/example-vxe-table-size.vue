@@ -142,8 +142,8 @@ const setSize = (size: 'small' | 'normal' | 'large') => {
 
 <template lang="pug">
 .between-col.justify-start.gap-gapl
-  // 操作按钮区域（吸顶区域）
-  .bg-bg200.p-padding.rounded-rounded.px-padding.between-col.items-start.sticky.top-0.z-2.gap-gaps.z-9999
+  // 尺寸控制示例（主容器，与 basic 保持一致结构）
+  .between-col.justify-start.gap-gaps.c-border-primary.p-padding
     b VxeTable 尺寸控制示例
     .fs-appFontSizes 展示 VxeTable 组件的各种尺寸控制配置
     .between.items-start.gap-gap.w-full
@@ -227,30 +227,30 @@ const setSize = (size: 'small' | 'normal' | 'large') => {
               span 表格尺寸:
               b {{ currentSize }}
 
-  // 表格容器
-  .c-border-accent.p-paddingl.h-400
-    VxeTable(
-      :data='tableData',
-      :columns='columns',
-      :loading='loading',
-      :pagination='true',
-      :sortable='true',
-      :scrollable='true',
-      :size-config='currentSizeConfig',
-      :size='currentSize',
-      :show-gridlines='true',
-      :striped-rows='true'
-    )
-      template(#header-left='{ data }')
-        .between-start.gap-gap
-          span.fs-appFontSizes 共 {{ data.length }} 条数据
-          span.fs-appFontSizes
-            | 配置: {{ currentSizeConfig.widthMode }}/{{ currentSizeConfig.heightMode }}/{{ currentSizeConfig.columnWidthMode }}
+    // 表格
+    .h-400
+      VxeTable(
+        :data='tableData',
+        :columns='columns',
+        :loading='loading',
+        :pagination='true',
+        :sortable='true',
+        :scrollable='true',
+        :size-config='currentSizeConfig',
+        :size='currentSize',
+        :show-gridlines='true',
+        :striped-rows='true'
+      )
+        template(#header-left='{ data }')
+          .between-start.gap-gap
+            span.fs-appFontSizes 共 {{ data?.length ?? 0 }} 条数据
+            span.fs-appFontSizes
+              | 配置: {{ currentSizeConfig.widthMode }}/{{ currentSizeConfig.heightMode }}/{{ currentSizeConfig.columnWidthMode }}
 
-  // 说明文档
-  .c-card-accent.fs-appFontSizes.between-col.justify-start.items-start.gap-gap
+  // 说明文档（独立说明卡片）
+  .c-border-accent.p-padding.fs-appFontSizes.between-col.justify-start.items-start.gap-gap
     b.fs-appFontSizex 尺寸控制说明
-    .between-col.gap-gap
+    .between-col.gap-gaps
       div
         b 容器尺寸模式：
         ul

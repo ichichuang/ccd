@@ -41,7 +41,7 @@ const zhTW = {
         },
         vxetable: {
           title: '表格',
-          default: '默認表格',
+          basic: '基礎表格',
           size: '尺寸',
           layout: '布局',
           style: '樣式',
@@ -410,6 +410,7 @@ const zhTW = {
       refresh: '刷新',
       emptyMessage: '暫無數據',
       loading: '加載中...',
+      noMoreData: '沒有更多數據了',
       noRecordsFound: '未找到記錄',
       selectAll: '全選',
       clearSelection: '清除選擇',

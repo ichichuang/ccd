@@ -4,6 +4,7 @@
  * - 参考 useSchemaForm 的设计模式
  */
 
+import { cloneDeep } from '@/common'
 import type {
   ColumnWidthInfo,
   FilterState,
@@ -12,29 +13,11 @@ import type {
   VxeTableExpose,
 } from '@/components/modules/vxe-table'
 import { isRef, nextTick, onUnmounted, ref, unref, watchEffect, type Ref } from 'vue'
-
 /**
  * 深度克隆工具函数
  */
 const deepClone = <T>(value: T): T => {
-  if (value === null || typeof value !== 'object') {
-    return value
-  }
-  if (typeof structuredClone === 'function') {
-    try {
-      return structuredClone(value)
-    } catch {
-      // ignore
-    }
-  }
-  try {
-    return JSON.parse(JSON.stringify(value)) as T
-  } catch {
-    if (Array.isArray(value)) {
-      return [...value] as unknown as T
-    }
-    return { ...(value as Record<string, any>) } as T
-  }
+  return cloneDeep(value)
 }
 
 /**
@@ -228,7 +211,7 @@ export const useVxeTable = <T = any>({
       expandedRowsRef.value = []
       return
     }
-    const expanded = table.expandedRows || []
+    const expanded = (table as any).expandedRows || []
     expandedRowsRef.value = deepClone(expanded)
   }
 

@@ -575,60 +575,61 @@ const handlePageChange = (event: any) => {
 
 <template lang="pug">
 .between-col.justify-start.gap-gapl
-  // 操作按钮区域（吸顶区域）
-  .bg-bg200.p-padding.rounded-rounded.px-padding.between-col.items-start.sticky.top-0.z-2.gap-gaps.z-9999
-    b VxeTable 组件基础示例 + useVxeTable Hook 演示
-    .fs-appFontSizes 展示 VxeTable 组件的基本功能和使用 useVxeTable hook 的各种操作方法
-    div
-      .fs-appFontSizes.color-accent100 数据操作
-      .between-start.gap-gap
-        Button(size='small', @click='handleRefresh') 刷新数据
-        Button(size='small', @click='handleLoadData') 加载新数据
-        Button(size='small', @click='handleUpdateRow') 更新第一行
-        Button(size='small', @click='handleUpdateRows') 批量更新
-        Button(size='small', @click='handleDeleteRow') 删除第一行
-        Button(size='small', @click='handleDeleteRows') 批量删除
-        Button(size='small', @click='handleAddRow') 添加新行
-    div
-      .fs-appFontSizes.color-accent100 选择操作
-      .between-start.gap-gap
-        Button(size='small', @click='handleSelectRow') 选择第一行
-        Button(size='small', @click='handleUnselectRow') 取消选择第一行
-        Button(size='small', @click='handleSelectAll') 全选
-        Button(size='small', @click='handleToggleRowSelection') 切换选择状态
-        Button(size='small', @click='handleIsRowSelected') 检查是否选中
-        Button(size='small', @click='handleClearSelection') 清除选择
-        Button(size='small', @click='handleGetSelectedRowIds') 获取选中ID
-    div
-      .fs-appFontSizes.color-accent100 分页操作
-      .between-start.gap-gap
-        Button(size='small', @click='handlePreviousPage') 上一页
-        Button(size='small', @click='handleNextPage') 下一页
-        Button(size='small', @click='handleGoToPage') 跳转页面
-        Button(size='small', @click='handleSetPageSize') 设置每页数量
-    div
-      .fs-appFontSizes.color-accent100 排序操作
-      .between-start.gap-gap
-        Button(size='small', @click='handleSetSort') 设置排序
-        Button(size='small', @click='handleClearSort') 清除排序
-        Button(size='small', @click='handleGetCurrentSort') 获取当前排序
-    div
-      .fs-appFontSizes.color-accent100 搜索操作
-      .between-start.gap-gap
-        Button(size='small', @click='handleSetGlobalFilter') 设置全局搜索
-        Button(size='small', @click='handleGetCurrentFilters') 获取当前筛选
-    div
-      .fs-appFontSizes.color-accent100 其他操作
-      .between-start.gap-gap
-        Button(size='small', @click='handleExportData') 导出数据
-        Button(size='small', @click='handleFindRows') 查找行
-        Button(size='small', @click='handleGetRowById') 获取行信息
-        Button(size='small', @click='handleGetRowIndex') 获取行索引
-        Button(size='small', @click='handleGetColumnWidths') 获取列宽度
-        Button(size='small', @click='handleUpdateColumnWidths') 更新列宽度
-        Button(size='small', @click='handleGetTableInfo') 获取表格信息
+  .between-col.justify-start.gap-gaps.c-border-primary.p-padding
+    // 操作按钮区域（吸顶区域）
+    .h-200.bg-bg200.c-card
+      ScrollbarWrapper(:auto-hide='false')
+        b VxeTable 组件基础示例 + useVxeTable Hook 演示
+        .fs-appFontSizes 展示 VxeTable 组件的基本功能和使用 useVxeTable hook 的各种操作方法
+        div
+          .fs-appFontSizes.color-accent100 数据操作
+          .between-start.gap-gap
+            Button(size='small', @click='handleRefresh') 刷新样式
+            Button(size='small', @click='handleLoadData') 加载新数据
+            Button(size='small', @click='handleUpdateRow') 更新第一行
+            Button(size='small', @click='handleUpdateRows') 批量更新
+            Button(size='small', @click='handleDeleteRow') 删除第一行
+            Button(size='small', @click='handleDeleteRows') 批量删除
+            Button(size='small', @click='handleAddRow') 添加新行
+        div
+          .fs-appFontSizes.color-accent100 选择操作
+          .between-start.gap-gap
+            Button(size='small', @click='handleSelectRow') 选择第一行
+            Button(size='small', @click='handleUnselectRow') 取消选择第一行
+            Button(size='small', @click='handleSelectAll') 全选
+            Button(size='small', @click='handleToggleRowSelection') 切换选择状态
+            Button(size='small', @click='handleIsRowSelected') 检查是否选中
+            Button(size='small', @click='handleClearSelection') 清除选择
+            Button(size='small', @click='handleGetSelectedRowIds') 获取选中ID
+        div
+          .fs-appFontSizes.color-accent100 分页操作
+          .between-start.gap-gap
+            Button(size='small', @click='handlePreviousPage') 上一页
+            Button(size='small', @click='handleNextPage') 下一页
+            Button(size='small', @click='handleGoToPage') 跳转页面
+            Button(size='small', @click='handleSetPageSize') 设置每页数量
+        div
+          .fs-appFontSizes.color-accent100 排序操作
+          .between-start.gap-gap
+            Button(size='small', @click='handleSetSort') 设置排序
+            Button(size='small', @click='handleClearSort') 清除排序
+            Button(size='small', @click='handleGetCurrentSort') 获取当前排序
+        div
+          .fs-appFontSizes.color-accent100 搜索操作
+          .between-start.gap-gap
+            Button(size='small', @click='handleSetGlobalFilter') 设置全局搜索
+            Button(size='small', @click='handleGetCurrentFilters') 获取当前筛选
+        div
+          .fs-appFontSizes.color-accent100 其他操作
+          .between-start.gap-gap
+            Button(size='small', @click='handleExportData') 导出数据
+            Button(size='small', @click='handleFindRows') 查找行
+            Button(size='small', @click='handleGetRowById') 获取行信息
+            Button(size='small', @click='handleGetRowIndex') 获取行索引
+            Button(size='small', @click='handleGetColumnWidths') 获取列宽度
+            Button(size='small', @click='handleUpdateColumnWidths') 更新列宽度
+            Button(size='small', @click='handleGetTableInfo') 获取表格信息
 
-  .p-padding
     // 表格组件
     VxeTable(
       ref='tableRef',
@@ -645,6 +646,8 @@ const handlePageChange = (event: any) => {
       :paginator-position='"left"',
       :show-gridlines='true',
       :striped-rows='true',
+      :scrollable='true',
+      :size-config='{ heightMode: "fixed", height: 400 }',
       @row-click='handleRowClick',
       @row-select='handleRowSelect',
       @page-change='handlePageChange'
@@ -654,47 +657,50 @@ const handlePageChange = (event: any) => {
           span.fs-appFontSizes 共 {{ data.length }} 条数据
           span.fs-appFontSizes(v-if='selected && selected.length > 0') 已选择 {{ selected.length }} 条
 
+    .h-200.c-card.fs-appFontSizes
+      ScrollbarWrapper(:auto-hide='false')
+        b 表格状态实时预览：
+        .full.between-col.justify-start.gap-gap
+          div
+            b 选中行：
+            pre.c-border-primary.p-paddings {{ JSON.stringify(selectedRows, null, 2) }}
+          div
+            b 分页状态：
+            pre.c-border-primary.p-paddings {{ JSON.stringify(paginationState, null, 2) }}
+          div
+            b 排序状态：
+            pre.c-border-primary.p-paddings {{ JSON.stringify(sortState, null, 2) }}
+          div
+            b 筛选状态：
+            pre.c-border-primary.p-paddings {{ JSON.stringify(filterState, null, 2) }}
+
   // 行样式 / 自定义状态渲染示例
-  .p-padding
-    .bg-bg200.p-padding.rounded-rounded.between-col.gap-gap
-      b.fs-appFontSizex 行样式 / 自定义状态渲染
-      .fs-appFontSizes.color-text200 使用 rowStyle/rowClass 高亮状态与角色
-      VxeTable(
-        :data='tableData',
-        :columns='columns',
-        :show-gridlines='true',
-        :striped-rows='true',
-        :row-style='rowStyleHighlight',
-        :row-class='rowClassHighlight'
-      )
+  .between-col.justify-start.gap-gaps.c-border-primary.p-padding
+    b.fs-appFontSizex 行样式 / 自定义状态渲染
+    .fs-appFontSizes.color-text200 使用 rowStyle/rowClass 高亮状态与角色
+    VxeTable(
+      :data='tableData',
+      :columns='columns',
+      :show-gridlines='true',
+      :striped-rows='true',
+      :row-style='rowStyleHighlight',
+      :row-class='rowClassHighlight',
+      :scrollable='true',
+      :size-config='{ heightMode: "fixed", height: 400 }'
+    )
 
   // 列对齐示例
-  .p-padding
-    .bg-bg200.p-padding.rounded-rounded.between-col.gap-gap
-      b.fs-appFontSizex 列对齐示例（居左/居中/居右）
-      .fs-appFontSizes.color-text200 使用列的 align 设置不同对齐方式
-      VxeTable(
-        :data='tableData',
-        :columns='alignedColumns',
-        :show-gridlines='true',
-        :striped-rows='true'
-      )
-
-  .full.c-card.fs-appFontSizes.between-col.gap-gap
-    span.fs-appFontSizex 表格状态实时预览：
-    .full.between-col.justify-start.gap-gap
-      div
-        b 选中行：
-        pre.c-border-primary.p-paddings {{ JSON.stringify(selectedRows, null, 2) }}
-      div
-        b 分页状态：
-        pre.c-border-primary.p-paddings {{ JSON.stringify(paginationState, null, 2) }}
-      div
-        b 排序状态：
-        pre.c-border-primary.p-paddings {{ JSON.stringify(sortState, null, 2) }}
-      div
-        b 筛选状态：
-        pre.c-border-primary.p-paddings {{ JSON.stringify(filterState, null, 2) }}
+  .between-col.justify-start.gap-gaps.c-border-primary.p-padding
+    b.fs-appFontSizex 列对齐示例（居左/居中/居右）
+    .fs-appFontSizes.color-text200 使用列的 align 设置不同对齐方式
+    VxeTable(
+      :data='tableData',
+      :columns='alignedColumns',
+      :show-gridlines='true',
+      :striped-rows='true',
+      :scrollable='true',
+      :size-config='{ heightMode: "fixed", height: 400 }'
+    )
 </template>
 
 <style lang="scss" scoped>

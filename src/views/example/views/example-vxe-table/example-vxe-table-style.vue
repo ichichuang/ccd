@@ -117,9 +117,9 @@ const selectionAlignFrozen = computed(() => (freezeSelectionRight.value ? 'right
 </script>
 
 <template lang="pug">
-.between-col.gap-gapl
-  // 控制面板
-  .bg-bg200.p-padding.rounded-rounded.between-col.gap-gap
+.between-col.justify-start.gap-gapl
+  // 样式控制示例（主容器，与 basic 保持一致结构）
+  .between-col.justify-start.gap-gaps.c-border-primary.p-padding
     b.fs-appFontSizex 表格样式控制示例
     .fs-appFontSizes 展示边框、分割线、自定义颜色以及冻结列
     .grid.gap-gap.grid-cols-1(class='md:grid-cols-2 lg:grid-cols-3')
@@ -148,34 +148,51 @@ const selectionAlignFrozen = computed(() => (freezeSelectionRight.value ? 'right
         Checkbox(v-model='freezeSelectionRight', :binary='true', input-id='freezeSelRight')
         label.fs-appFontSizes.cursor-pointer(for='freezeSelRight') 固定复选列在右侧
 
-  // 表格展示
-  .p-padding.c-border.rounded-rounded
-    VxeTable(
-      ref='tableRef',
-      :data='data',
-      :columns='columns',
-      :show-gridlines='showGridlines',
-      :striped-rows='stripedRows',
-      :selectable='true',
-      selection-mode='multiple',
-      :selection-frozen='selectionFrozen',
-      :selection-align-frozen='selectionAlignFrozen',
-      :show-header='true',
-      :class='tableClass',
-      :pagination='false'
-    )
-      template(#header-left='{ selectedRows }')
-        .between-start.gap-gap
-          span.fs-appFontSizes 总行数: {{ data.length }}
-          span.fs-appFontSizes(v-if='selectedRows?.length') 已选 {{ selectedRows.length }} 行
+    // 表格展示
+    .p-padding.c-border.rounded-rounded
+      VxeTable(
+        ref='tableRef',
+        :data='data',
+        :columns='columns',
+        :show-gridlines='showGridlines',
+        :striped-rows='stripedRows',
+        :selectable='true',
+        selection-mode='multiple',
+        :selection-frozen='selectionFrozen',
+        :selection-align-frozen='selectionAlignFrozen',
+        :show-header='true',
+        :class='tableClass',
+        :pagination='false'
+      )
+        template(#header-left='{ selectedRows }')
+          .between-start.gap-gap
+            span.fs-appFontSizes 总行数: {{ data.length }}
+            span.fs-appFontSizes(v-if='selectedRows?.length') 已选 {{ selectedRows.length }} 行
 
-  // 说明
-  .c-card-accent.between-col.gap-gap.fs-appFontSizes
+  // 说明文档（独立说明卡片）
+  .c-border-accent.p-padding.fs-appFontSizes.between-col.justify-start.items-start.gap-gap
     b.fs-appFontSizex 使用说明
-    .between-col.gap-gap
-      span 边框: 通过 toggles 控制容器是否应用 UnoCSS 边框类
-      span 分割线: 对应 PrimeVue DataTable 的 showGridlines
-      span 斑马纹: 对应 stripedRows
-      span 自定义颜色: 应用自定义背景/边框色类
-      span 冻结列: 利用 Column 的 frozen 和 alignFrozen 支持左右固定
+    .between-col.gap-gaps
+      div
+        b 基础样式：
+        ul
+          li
+            strong 边框：
+            | 通过控制 bordered 开关，决定容器是否应用 UnoCSS 边框类。
+          li
+            strong 分割线：
+            | 对应 PrimeVue DataTable 的 showGridlines。
+          li
+            strong 斑马纹：
+            | 对应 stripedRows，控制行交替背景。
+
+      div
+        b 颜色与冻结：
+        ul
+          li
+            strong 自定义颜色：
+            | 应用自定义背景/边框色类，突出表格区域。
+          li
+            strong 冻结列：
+            | 利用 Column 的 frozen 和 alignFrozen 支持左右固定。
 </template>

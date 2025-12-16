@@ -41,7 +41,7 @@ const enUS = {
         },
         vxetable: {
           title: 'Table',
-          default: 'Default Table',
+          basic: 'Basic Table',
           size: 'Size',
           layout: 'Layout',
           style: 'Style',
@@ -409,6 +409,7 @@ const enUS = {
       refresh: 'Refresh',
       emptyMessage: 'No data available',
       loading: 'Loading...',
+      noMoreData: 'No more data',
       noRecordsFound: 'No records found',
       selectAll: 'Select All',
       clearSelection: 'Clear Selection',

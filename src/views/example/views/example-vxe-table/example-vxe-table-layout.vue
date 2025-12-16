@@ -209,8 +209,8 @@ const totalCount = computed(() => getTotalRecords())
 
 <template lang="pug">
 .between-col.justify-start.gap-gapl
-  // 控制面板（吸顶区域）
-  .bg-bg200.p-padding.rounded-rounded.px-padding.between-col.items-start.sticky.top-0.z-2.gap-gaps.z-9999
+  // 布局控制示例（主容器，与 basic 保持一致结构）
+  .between-col.justify-start.gap-gaps.c-border-primary.p-padding
     b VxeTable 布局控制示例
     .fs-appFontSizes 展示表格头部、底部、分页器等组件的使用和显示控制
     .between.items-start.gap-gap.w-full
@@ -260,8 +260,7 @@ const totalCount = computed(() => getTotalRecords())
                 option(value='center') 居中
                 option(value='right') 右侧
 
-  // 表格容器
-  .c-border-accent.p-paddingl
+    // 表格
     VxeTable(
       ref='tableRef',
       :data='tableData',
@@ -292,7 +291,7 @@ const totalCount = computed(() => getTotalRecords())
             @click='() => handleShowAlert(`已选择 ${selectedRows?.length || 0} 条数据`)'
           )
 
-      template(v-if='footerMode === "custom"', #footer='{ data, selectedRows }')
+      template(v-if='footerMode === "custom"', #footer='{ selectedRows }')
         .between.bg-bg200.gap-gaps.fs-appFontSizes
           Button(
             label='批量操作',
@@ -301,44 +300,64 @@ const totalCount = computed(() => getTotalRecords())
             :disabled='!selectedRows || selectedRows.length === 0',
             @click='() => handleShowAlert(`已选择 ${selectedRows?.length || 0} 条数据`)'
           )
-          b.color-primary100 {{ data?.length ?? 0 }} 条数据
+          b.color-primary100 底部数据统计
 
-  // 说明文档
-  .c-card-accent.fs-appFontSizes.between-col.justify-start.items-start.gap-gap
+  // 说明文档（独立说明卡片）
+  .c-border-accent.p-padding.fs-appFontSizes.between-col.justify-start.items-start.gap-gap
     b.fs-appFontSizex 使用说明
-    .between-col.gap-gap
+    .between-col.gap-gaps
       div
-        b 头部组件 (HeaderSetting):
-        .fs-appFontSizes
-          | showHeader: 控制头部显示/隐藏
-        .fs-appFontSizes
-          | globalFilter: 控制全局搜索功能
-        .fs-appFontSizes
-          | exportable: 控制导出按钮显示
-        .fs-appFontSizes
-          | #header-left: 头部左侧自定义插槽，可接收 data、selectedRows、columnWidths 参数
+        b 头部组件 (HeaderSetting)：
+        ul
+          li
+            strong showHeader:
+            | 控制头部显示/隐藏
+          li
+            strong globalFilter:
+            | 控制全局搜索功能
+          li
+            strong exportable:
+            | 控制导出按钮显示
+          li
+            strong #header-left:
+            | 头部左侧自定义插槽，可接收 data、selectedRows、columnWidths 参数
 
       div
-        b 底部组件 (FooterSetting):
-        .fs-appFontSizes
-          | showFooter: 控制底部显示/隐藏
-        .fs-appFontSizes
-          | footerMode: 底部模式，支持 'custom'（完全自定义）和 'column-aligned'（列对齐）
-        .fs-appFontSizes
-          | #footer: 完全自定义模式下的插槽，可接收 data、selectedRows、columnWidths 参数
-        .fs-appFontSizes
-          | column.customFooter: 列对齐模式下，每列可配置 customFooter 函数来渲染底部内容
+        b 底部组件 (FooterSetting)：
+        ul
+          li
+            strong showFooter:
+            | 控制底部显示/隐藏
+          li
+            strong footerMode:
+            | 底部模式，支持 'custom'（完全自定义）和 'column-aligned'（列对齐）
+          li
+            strong #footer:
+            | 完全自定义模式下的插槽，可接收 data、selectedRows、columnWidths 参数
+          li
+            strong column.customFooter:
+            | 列对齐模式下，每列可配置 customFooter 函数来渲染底部内容
 
       div
-        b 分页器 (PaginationSetting):
-        .fs-appFontSizes
-          | pagination: 控制分页器显示/隐藏
-        .fs-appFontSizes
-          | paginatorPosition: 控制分页器位置，支持 'left'、'center'、'right'
+        b 分页器 (PaginationSetting)：
+        ul
+          li
+            strong pagination:
+            | 控制分页器显示/隐藏
+          li
+            strong paginatorPosition:
+            | 控制分页器位置，支持 'left'、'center'、'right'
 
       div
-        b 内容部分:
-        .fs-appFontSizes 表格主体使用 PrimeVue DataTable 组件
-        .fs-appFontSizes 支持选择、排序、筛选等功能
-        .fs-appFontSizes 数据通过 :data 和 :columns 属性传入
+        b 内容部分：
+        ul
+          li
+            strong 表格主体：
+            | 使用 PrimeVue DataTable 组件渲染表格内容。
+          li
+            strong 功能支持：
+            | 支持选择、排序、筛选等功能。
+          li
+            strong 数据来源：
+            | 通过 :data 和 :columns 属性传入。
 </template>

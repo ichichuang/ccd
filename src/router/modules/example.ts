@@ -123,12 +123,12 @@ const exampleRoutes: RouteConfig[] = [
             },
             children: [
               {
-                path: 'default',
-                name: 'ExampleComponentsVxeTableDefault',
+                path: 'basic',
+                name: 'ExampleComponentsVxeTableBasic',
                 component: () =>
                   import('@/views/example/views/example-vxe-table/example-vxe-table-basic.vue'),
                 meta: {
-                  titleKey: 'router.example.components.vxetable.default',
+                  titleKey: 'router.example.components.vxetable.basic',
                   rank: 1,
                   icon: 'fc-list',
                 },

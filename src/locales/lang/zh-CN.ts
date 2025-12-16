@@ -41,7 +41,7 @@ const zhCN = {
         },
         vxetable: {
           title: '表格',
-          default: '默认表格',
+          basic: '基础表格',
           size: '尺寸',
           layout: '布局',
           style: '样式',
@@ -410,6 +410,7 @@ const zhCN = {
       refresh: '刷新',
       emptyMessage: '暂无数据',
       loading: '加载中...',
+      noMoreData: '没有更多数据了',
       noRecordsFound: '未找到记录',
       selectAll: '全选',
       clearSelection: '清除选择',

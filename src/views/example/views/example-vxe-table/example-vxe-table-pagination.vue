@@ -58,7 +58,7 @@ const apiConfig = {
   params: {},
   mode: 'pagination' as const,
   pagination: {
-    pageSize: 20,
+    pageSize: 10,
   },
   immediate: true,
 }
@@ -66,8 +66,8 @@ const apiConfig = {
 
 <template lang="pug">
 .between-col.justify-start.gap-gapl
-  // 吸顶说明区域
-  .bg-bg200.p-padding.rounded-rounded.px-padding.between-col.items-start.sticky.top-0.z-2.gap-gaps.z-9999
+  // 分页加载示例（主容器，与 basic 保持一致结构）
+  .between-col.justify-start.gap-gaps.c-border-primary.p-padding
     b.fs-appFontSizex VxeTable 分页加载示例（API 模式）
     .fs-appFontSizes.color-text2
       | 使用 api 配置的分页模式（mode: "pagination"），组件内部自动处理分页切换和数据加载。
@@ -78,32 +78,51 @@ const apiConfig = {
     .fs-appFontSizes.color-text2
       | 后端接口：GET /table/list?page=1&pageSize=20，返回常规分页结构（list / page / pageSize / total / hasNext）。
 
-  // 表格容器
-  .p-padding
-    .c-border-accent.rounded-rounded.p-paddingl
-      VxeTable(
-        :columns='columns',
-        :size-config='sizeConfig',
-        :size='"normal"',
-        :pagination='true',
-        :scrollable='false',
-        :show-gridlines='true',
-        :striped-rows='true',
-        :api='apiConfig'
-      )
-        template(#header-left='{ data }')
-          .between-start.gap-gap
-            span.fs-appFontSizes 当前页数据：{{ data?.length ?? 0 }} 条
+    VxeTable(
+      :columns='columns',
+      :size-config='sizeConfig',
+      :size='"normal"',
+      :pagination='true',
+      :scrollable='false',
+      :show-gridlines='true',
+      :striped-rows='true',
+      :api='apiConfig'
+    )
+      template(#header-left='{ data, pagination }')
+        .between-start.gap-gap
+          span.fs-appFontSizes 当前页数据：{{ data?.length ?? 0 }} 条
+          // 使用 pagination 对象获取 API 相关信息
+          span.fs-appFontSizes(v-if='pagination')
+            | 第 {{ pagination.page }} 页 |
+            | 每页 {{ pagination.rows }} 条 |
+            | 共 {{ pagination.totalRecords }} 条
 
-  // 说明文档
-  .c-card-accent.fs-appFontSizes.between-col.justify-start.items-start.gap-gap
+  // 说明文档（独立说明卡片）
+  .c-border-accent.p-padding.fs-appFontSizes.between-col.justify-start.items-start.gap-gap
     b.fs-appFontSizex 使用说明
-    .between-col.gap-gap
-      span 分页模式：使用 api 配置，传入 api（接口路径）、type（请求方法，默认 post）、params（请求参数）、mode（设置为 "pagination"）。
-      span 请求方法：组件内部根据 type 自动调用对应的 HTTP 方法（get/post/put/patch/delete/head）。
-      span 自动分页：用户切换分页或修改每页数量时，组件自动调用接口加载对应页数据。
-      span 后端分页：接口返回 list / page / pageSize / total / hasNext 等常规分页字段。
-      span 分页配置：通过 pagination.pageSize 设置每页数量，通过 pagination.pageParam 和 pagination.pageSizeParam 自定义参数名。
+    .between-col.gap-gaps
+      div
+        b 分页模式与请求方式：
+        ul
+          li
+            strong 分页模式：
+            | 使用 api 配置，传入 api（接口路径）、type（请求方法，默认 post）、params（请求参数）、mode（设置为 "pagination"）。
+          li
+            strong 请求方法：
+            | 组件内部根据 type 自动调用对应的 HTTP 方法（get/post/put/patch/delete/head）。
+
+      div
+        b 分页行为：
+        ul
+          li
+            strong 自动分页：
+            | 用户切换分页或修改每页数量时，组件自动调用接口加载对应页数据。
+          li
+            strong 后端分页：
+            | 接口返回 list / page / pageSize / total / hasNext 等常规分页字段。
+          li
+            strong 分页配置：
+            | 通过 pagination.pageSize 设置每页数量，通过 pagination.pageParam 和 pagination.pageSizeParam 自定义参数名。
 </template>
 
 <style lang="scss" scoped></style>

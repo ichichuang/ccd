@@ -7,6 +7,13 @@ import type { DataTableProps } from 'primevue/datatable'
 import type { Component, CSSProperties, VNode } from 'vue'
 
 /**
+ * 字段 Key 类型
+ * - 使用 keyof T 提供智能提示
+ * - 同时保留 string 兼容 'user.name' 等路径写法
+ */
+export type FieldKey<T> = keyof T | (string & {})
+
+/**
  * 排序元数据
  */
 export interface SortMeta {
@@ -257,7 +264,7 @@ export interface FilterState {
  */
 export interface VxeTableColumn<T = any> extends Omit<Partial<ColumnProps>, 'field' | 'header'> {
   /** 字段名 */
-  field: string
+  field: FieldKey<T>
   /** 列标题 */
   header: string | (() => string)
   /** 列宽度 */
@@ -303,6 +310,16 @@ export interface VxeTableColumn<T = any> extends Omit<Partial<ColumnProps>, 'fie
   editable?: boolean
   /** 单元格编辑器渲染（仅 editable 为 true 时生效） */
   editorRenderer?: (params: { data: T; value: any; field: string }) => VNode | string
+
+  /**
+   * 透传给底层 Column 组件的额外属性（官方未封装的原生 props）
+   */
+  componentsProps?: Record<string, any>
+
+  /**
+   * 允许额外扩展字段，支持未来 PrimeVue Column 新增的属性
+   */
+  [key: string]: any
 }
 
 /**
@@ -475,6 +492,41 @@ export interface VxeTableProps<T = any> extends Omit<Partial<DataTableProps>, 's
   rowStyle?: (data: T) => CSSProperties
   /** 空数据提示 */
   emptyMessage?: string
+
+  // ========== RowGrouping 行合并/分组配置 ==========
+
+  /**
+   * 行分组模式
+   * - 'rowspan': 自动合并相同数据的行（行合并）
+   * - 'subheader': 插入分组标题行
+   */
+  rowGroupMode?: 'rowspan' | 'subheader'
+
+  /**
+   * 用于分组的字段名
+   * - 对应 data 中的 key
+   * - 如果是数组，则支持多级分组
+   */
+  groupRowsBy?: string | string[]
+
+  /**
+   * 是否允许触发展开/收起分组（仅当 rowGroupMode='subheader' 时生效）
+   */
+  expandableRowGroups?: boolean
+
+  /**
+   * 已展开的分组（支持 v-model:expandedRowGroups）
+   */
+  expandedRowGroups?: any[]
+}
+
+/**
+ * 组件内部使用的扩展 Props（用于 withDefaults）
+ * - 为 VxeTable 组件整体增加一个通用的 componentsProps，用于透传 DataTable 的原生属性
+ */
+export type VxeTableExtendedProps<T = any> = VxeTableProps<T> & {
+  /** 传递给底层 DataTable 组件的额外 props（透传官方未封装的属性） */
+  componentsProps?: Record<string, any>
 }
 
 /**
@@ -510,6 +562,12 @@ export type VxeTableEmits<T = any> = {
 
   // 滚动触底（用于无限滚动加载场景）
   (e: 'scroll-bottom', event: ScrollBottomEvent): void
+
+  // 分组展开状态更新
+  (e: 'update:expandedRowGroups', groups: any[]): void
+  // 分组展开/收起事件
+  (e: 'rowgroup-expand', event: { originalEvent: Event; data: any }): void
+  (e: 'rowgroup-collapse', event: { originalEvent: Event; data: any }): void
 
   // 列宽度变化
   (e: 'column-widths-change', widths: ColumnWidthInfo[]): void

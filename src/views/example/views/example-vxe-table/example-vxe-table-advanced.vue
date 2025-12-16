@@ -84,11 +84,14 @@ const editableColumns: VxeTableColumn<AdvancedRow>[] = [
 </script>
 
 <template lang="pug">
-.between-col.gap-gapl
-  // 单元格编辑（列级控制）
-  .p-paddings.rounded-rounded.between-col.gap-gap
-    b.fs-appFontSizex 单元格编辑（列可编辑）
-    .fs-appFontSizes.color-text2 设置 editMode="cell" 并在列上用 editable + editorRenderer 定义编辑器
+.between-col.justify-start.gap-gapl
+  // 单元格编辑示例（主容器，与 basic 保持一致结构）
+  .between-col.justify-start.gap-gaps.c-border-primary.p-padding
+    b.fs-appFontSizex VxeTable 高级编辑示例（列级单元格编辑）
+    .fs-appFontSizes.color-text2
+      | 通过列上的 editable 与 editorRenderer 配置，实现基于列的单元格编辑能力。
+    .fs-appFontSizes.color-text2
+      | 表格设置 editMode="cell"，在 editorRenderer 中可自由使用任意表单控件（input/select 等）。
     VxeTable(
       :data='editableData',
       :columns='editableColumns',
@@ -97,4 +100,21 @@ const editableColumns: VxeTableColumn<AdvancedRow>[] = [
       :show-gridlines='true',
       :striped-rows='true'
     )
+
+  // 说明文档（独立说明卡片）
+  .c-border-accent.p-padding.fs-appFontSizes.between-col.justify-start.items-start.gap-gap
+    b.fs-appFontSizex 使用说明
+    .between-col.gap-gaps
+      div
+        b 基本概念：
+        ul
+          li
+            strong 列可编辑：
+            | 在列配置中开启 editable，并通过 editorRenderer 渲染自定义编辑器内容。
+          li
+            strong 编辑模式：
+            | 表格层面设置 editMode="cell"，即可启用单元格级编辑交互。
+          li
+            strong 交互行为：
+            | 点击单元格进入编辑态，失焦或确认后提交到当前行数据（示例中直接使用 v-model 绑定到 data）。
 </template>

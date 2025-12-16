@@ -13,72 +13,98 @@ export interface VxeTableApiResult<T = any> {
 export const executeVxeTableApi = async <T = any>(
   config: VxeTableApiConfig<T>,
   currentPage?: number,
-  pageSize?: number
+  pageSize?: number,
+  requestOptions?: Record<string, any> // 新增：允许传入额外的请求配置（如 { enableCache: false }）
 ): Promise<VxeTableApiResult<T>> => {
   const { api, params = {}, type = 'post', infinite, pagination } = config
 
-  // 构建请求参数
+  // 1. 构建基础请求参数（克隆 params 防止污染源对象）
   const requestParams: Record<string, any> = { ...params }
 
-  // 无限滚动模式：自动添加分页参数
-  if (config.mode === 'infinite' && currentPage !== undefined && pageSize !== undefined) {
-    const pageParam = infinite?.pageParam || 'page'
-    const pageSizeParam = infinite?.pageSizeParam || 'pageSize'
+  // 2. 注入分页参数
+  // 只要传入了分页信息（currentPage/pageSize），就强制注入
+  if (currentPage !== undefined && pageSize !== undefined) {
+    let pageParam = 'page'
+    let pageSizeParam = 'pageSize'
+
+    // 根据模式获取自定义参数名
+    if (config.mode === 'infinite') {
+      pageParam = infinite?.pageParam || 'page'
+      pageSizeParam = infinite?.pageSizeParam || 'pageSize'
+    } else if (config.mode === 'pagination') {
+      pageParam = pagination?.pageParam || 'page'
+      pageSizeParam = pagination?.pageSizeParam || 'pageSize'
+    }
+
+    // 写入参数
     requestParams[pageParam] = currentPage
     requestParams[pageSizeParam] = pageSize
   }
 
-  // 分页模式：自动添加分页参数
-  if (config.mode === 'pagination' && currentPage !== undefined && pageSize !== undefined) {
-    const pageParam = pagination?.pageParam || 'page'
-    const pageSizeParam = pagination?.pageSizeParam || 'pageSize'
-    requestParams[pageParam] = currentPage
-    requestParams[pageSizeParam] = pageSize
-  }
+  // 🔍 调试日志：确认最终发送的参数
+  // console.log('[VxeTableApi] Executing request:', {
+  //   api,
+  //   type,
+  //   mode: config.mode,
+  //   currentPage,
+  //   pageSize,
+  //   finalParams: requestParams,
+  // })
 
-  // 根据请求方法类型调用对应的 HTTP 方法
+  // 3. 发送请求
   let res: any
-
   try {
-    switch (type.toLowerCase()) {
-      case 'get':
+    const method = type.toLowerCase()
+
+    // GET / DELETE / HEAD：使用 params 传参
+    if (['get', 'delete', 'head'].includes(method)) {
+      // 对于 GET/DELETE/HEAD，配置项放在第二个参数中
+      if (method === 'get') {
         res = await get<T[] | { list: T[]; total?: number; hasNext?: boolean }>(api, {
           params: requestParams,
+          ...requestOptions, // 注入额外配置
         })
-        break
-      case 'post':
-        res = await post<T[] | { list: T[]; total?: number; hasNext?: boolean }>(api, requestParams)
-        break
-      case 'put':
-        res = await put<T[] | { list: T[]; total?: number; hasNext?: boolean }>(api, requestParams)
-        break
-      case 'patch':
-        res = await patch<T[] | { list: T[]; total?: number; hasNext?: boolean }>(
-          api,
-          requestParams
-        )
-        break
-      case 'delete':
+      } else if (method === 'delete') {
         res = await del<T[] | { list: T[]; total?: number; hasNext?: boolean }>(api, {
           params: requestParams,
+          ...requestOptions, // 注入额外配置
         })
-        break
-      case 'head':
+      } else {
         res = await head<T[] | { list: T[]; total?: number; hasNext?: boolean }>(api, {
           params: requestParams,
+          ...requestOptions, // 注入额外配置
         })
-        break
-      default:
-        console.warn(
-          `[VxeTable] executeVxeTableApi: unsupported request type "${type}", fallback to POST`
+      }
+    } else {
+      // POST / PUT / PATCH：直接把分页和业务参数放到 body 中
+      // 对于 POST/PUT/PATCH，配置项是第三个参数
+      if (method === 'put') {
+        res = await put<T[] | { list: T[]; total?: number; hasNext?: boolean }>(
+          api,
+          requestParams,
+          requestOptions // 注入额外配置
         )
-        res = await post<T[] | { list: T[]; total?: number; hasNext?: boolean }>(api, requestParams)
+      } else if (method === 'patch') {
+        res = await patch<T[] | { list: T[]; total?: number; hasNext?: boolean }>(
+          api,
+          requestParams,
+          requestOptions // 注入额外配置
+        )
+      } else {
+        // 默认 POST
+        res = await post<T[] | { list: T[]; total?: number; hasNext?: boolean }>(
+          api,
+          requestParams,
+          requestOptions // 注入额外配置
+        )
+      }
     }
   } catch (error) {
     console.error('[VxeTable] executeVxeTableApi: request failed', error)
     throw error
   }
 
+  // 4. 处理返回结果
   // 如果直接返回数组
   if (Array.isArray(res)) {
     return {
@@ -109,8 +135,6 @@ export const executeVxeTableApi = async <T = any>(
       hasNext,
     }
   }
-
-  console.warn('[VxeTable] executeVxeTableApi: unexpected api response, fallback to empty list')
 
   return {
     list: [],

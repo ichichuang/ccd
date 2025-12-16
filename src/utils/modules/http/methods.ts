@@ -172,6 +172,7 @@ function convertRequestConfig(config?: RequestConfig): AlovaRequestConfig {
     return {}
   }
 
+  // 移除之前的 _t 和 cacheFor 逻辑，只做简单的配置分离
   const { enableCache: _enableCache, cacheTTL: _cacheTTL, retry: _retry, ...alovaConfig } = config
   return alovaConfig
 }
@@ -222,7 +223,9 @@ async function executeWithRetry<T>(
  * GET 请求
  */
 export const get = <T = any>(url: string, config?: RequestConfig) => {
-  const cacheKey = `GET:${url}`
+  // 缓存键必须包含查询参数，否则不同分页/条件会命中同一缓存
+  const paramStr = config?.params ? JSON.stringify(config.params) : ''
+  const cacheKey = `GET:${url}:${paramStr}`
   const cacheEnabled = config?.enableCache !== false
   const deduplicate = config?.deduplicate !== false
 
@@ -235,7 +238,20 @@ export const get = <T = any>(url: string, config?: RequestConfig) => {
   }
 
   const alovaConfig = convertRequestConfig(config)
-  const requestFn = () => alovaInstance.Get<T>(url, alovaConfig)
+
+  const requestFn = () => {
+    // 创建 Method 实例
+    const method = alovaInstance.Get<T>(url, alovaConfig)
+
+    // FIX: 使用 Alova 原生 API 控制缓存
+    // 如果明确禁用了缓存 (enableCache: false)，调用 send(true) 强制刷新
+    if (config?.enableCache === false) {
+      return method.send(true)
+    }
+
+    // 否则直接返回 method (它会自动处理默认缓存逻辑)
+    return method
+  }
 
   return requestManager
     .execute(cacheKey, () => executeWithRetry(requestFn, config?.retry), deduplicate)
