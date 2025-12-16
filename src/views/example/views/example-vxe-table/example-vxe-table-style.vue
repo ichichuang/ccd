@@ -33,6 +33,7 @@ const bordered = ref(true)
 const showGridlines = ref(true) // 横纵分割线
 const stripedRows = ref(true) // 斑马纹
 const customColor = ref(true) // 自定义颜色方案
+
 const freezeLeft = ref(true)
 const freezeRight = ref(true)
 const freezeSelectionLeft = ref(false)
@@ -118,38 +119,47 @@ const selectionAlignFrozen = computed(() => (freezeSelectionRight.value ? 'right
 
 <template lang="pug">
 .between-col.justify-start.gap-gapl
-  // 样式控制示例（主容器，与 basic 保持一致结构）
+  // 样式控制示例
   .between-col.justify-start.gap-gaps.c-border-primary.p-padding
     b.fs-appFontSizex 表格样式控制示例
     .fs-appFontSizes 展示边框、分割线、自定义颜色以及冻结列
+
     .grid.gap-gap.grid-cols-1(class='md:grid-cols-2 lg:grid-cols-3')
       .between-start.gap-gap
         Checkbox(v-model='bordered', :binary='true', input-id='bordered')
         label.fs-appFontSizes.cursor-pointer(for='bordered') 显示外边框
+
       .between-start.gap-gap
         Checkbox(v-model='showGridlines', :binary='true', input-id='gridlines')
         label.fs-appFontSizes.cursor-pointer(for='gridlines') 显示纵向分割线
+
       .between-start.gap-gap
         Checkbox(v-model='stripedRows', :binary='true', input-id='striped')
         label.fs-appFontSizes.cursor-pointer(for='striped') 显示斑马纹
+
       .between-start.gap-gap
         Checkbox(v-model='customColor', :binary='true', input-id='customColor')
         label.fs-appFontSizes.cursor-pointer(for='customColor') 自定义背景/边框色
+
       .between-start.gap-gap
         Checkbox(v-model='freezeLeft', :binary='true', input-id='freezeLeft')
         label.fs-appFontSizes.cursor-pointer(for='freezeLeft') 固定首列在最左侧
+
       .between-start.gap-gap
         Checkbox(v-model='freezeRight', :binary='true', input-id='freezeRight')
         label.fs-appFontSizes.cursor-pointer(for='freezeRight') 固定操作列在最右侧
+
       .between-start.gap-gap
         Checkbox(v-model='freezeSelectionLeft', :binary='true', input-id='freezeSelLeft')
         label.fs-appFontSizes.cursor-pointer(for='freezeSelLeft') 固定复选列在左侧
+
       .between-start.gap-gap
         Checkbox(v-model='freezeSelectionRight', :binary='true', input-id='freezeSelRight')
         label.fs-appFontSizes.cursor-pointer(for='freezeSelRight') 固定复选列在右侧
 
     // 表格展示
-    .p-padding.c-border.rounded-rounded
+    // 关键修正 1: 添加 .h-400 给容器一个固定高度
+    .p-padding.c-border.rounded-rounded.h-400
       VxeTable(
         ref='tableRef',
         :data='data',
@@ -162,37 +172,23 @@ const selectionAlignFrozen = computed(() => (freezeSelectionRight.value ? 'right
         :selection-align-frozen='selectionAlignFrozen',
         :show-header='true',
         :class='tableClass',
-        :pagination='false'
+        :pagination='false',
+        :scrollable='true',
+        scroll-height='100%'
       )
         template(#header-left='{ selectedRows }')
           .between-start.gap-gap
             span.fs-appFontSizes 总行数: {{ data.length }}
             span.fs-appFontSizes(v-if='selectedRows?.length') 已选 {{ selectedRows.length }} 行
 
-  // 说明文档（独立说明卡片）
+  // 说明文档
   .c-border-accent.p-padding.fs-appFontSizes.between-col.justify-start.items-start.gap-gap
     b.fs-appFontSizex 使用说明
     .between-col.gap-gaps
       div
-        b 基础样式：
-        ul
-          li
-            strong 边框：
-            | 通过控制 bordered 开关，决定容器是否应用 UnoCSS 边框类。
-          li
-            strong 分割线：
-            | 对应 PrimeVue DataTable 的 showGridlines。
-          li
-            strong 斑马纹：
-            | 对应 stripedRows，控制行交替背景。
-
-      div
         b 颜色与冻结：
         ul
           li
-            strong 自定义颜色：
-            | 应用自定义背景/边框色类，突出表格区域。
-          li
-            strong 冻结列：
-            | 利用 Column 的 frozen 和 alignFrozen 支持左右固定。
+            strong 冻结列前提：
+            | 必须开启 scrollable 并设置 scrollHeight，否则 sticky 布局无法生效。
 </template>

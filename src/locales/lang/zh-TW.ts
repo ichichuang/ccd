@@ -50,6 +50,10 @@ const zhTW = {
           dynamic: '動態表格',
           scroll: '滾動表格',
           pagination: '分頁表格',
+          columnCapabilities: '列功能',
+          persistence: '持久化',
+          virtualScroll: '虛擬滾動',
+          filter: '篩選',
         },
         echarts: {
           title: '圖表',

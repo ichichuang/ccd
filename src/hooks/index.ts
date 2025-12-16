@@ -14,6 +14,7 @@ const importedHookComponents = autoImportModulesSync(hookComponentsModules)
 // 导出所有 Hook 模块
 export * from '@/hooks/components/useDialog'
 export * from '@/hooks/components/useSchemaForm'
+export * from '@/hooks/components/useTablePersistence'
 export * from '@/hooks/components/useThemeSwitch'
 export * from '@/hooks/components/useVxeTable'
 export * from '@/hooks/layout/useLoading'

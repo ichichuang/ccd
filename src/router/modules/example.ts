@@ -221,6 +221,50 @@ const exampleRoutes: RouteConfig[] = [
                   icon: 'fc-list',
                 },
               },
+              {
+                path: 'column-capabilities',
+                name: 'ExampleComponentsVxeTableColumnCapabilities',
+                component: () =>
+                  import('@/views/example/views/example-vxe-table/example-vxe-table-column-capabilities.vue'),
+                meta: {
+                  titleKey: 'router.example.components.vxetable.columnCapabilities',
+                  rank: 10,
+                  icon: 'fc-list',
+                },
+              },
+              {
+                path: 'persistence',
+                name: 'ExampleComponentsVxeTablePersistence',
+                component: () =>
+                  import('@/views/example/views/example-vxe-table/example-vxe-table-persistence.vue'),
+                meta: {
+                  titleKey: 'router.example.components.vxetable.persistence',
+                  rank: 11,
+                  icon: 'fc-list',
+                },
+              },
+              {
+                path: 'virtual-scroll',
+                name: 'ExampleComponentsVxeTableVirtualScroll',
+                component: () =>
+                  import('@/views/example/views/example-vxe-table/example-vxe-table-virtual-scroll.vue'),
+                meta: {
+                  titleKey: 'router.example.components.vxetable.virtualScroll',
+                  rank: 12,
+                  icon: 'fc-list',
+                },
+              },
+              {
+                path: 'filter',
+                name: 'ExampleComponentsVxeTableFilter',
+                component: () =>
+                  import('@/views/example/views/example-vxe-table/example-vxe-table-filter.vue'),
+                meta: {
+                  titleKey: 'router.example.components.vxetable.filter',
+                  rank: 13,
+                  icon: 'fc-list',
+                },
+              },
             ],
           },
           {

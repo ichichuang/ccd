@@ -24,6 +24,7 @@ export * from '@/stores/modules/permission'
 export * from '@/stores/modules/postcss'
 export * from '@/stores/modules/size'
 export * from '@/stores/modules/user'
+export * from '@/stores/modules/vxetable'
 
 // 导出默认store实例
 export default store

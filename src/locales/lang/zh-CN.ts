@@ -50,6 +50,10 @@ const zhCN = {
           dynamic: '动态表格',
           scroll: '滚动表格',
           pagination: '分页表格',
+          columnCapabilities: '列功能',
+          persistence: '持久化',
+          virtualScroll: '虚拟滚动',
+          filter: '筛选',
         },
         echarts: {
           title: '图表',

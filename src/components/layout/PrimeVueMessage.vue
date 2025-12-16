@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { useSizeStore } from '@/stores/modules/size'
+import { OhVueIcon } from 'oh-vue-icons'
 import { computed, onBeforeUnmount, reactive } from 'vue'
 
 const sizeStore = useSizeStore()
@@ -114,16 +115,6 @@ function getIconSizeClass(size?: Size): string {
   return 'w-appFontSize h-appFontSize'
 }
 
-function getTextSizeClass(size?: Size): string {
-  if (size === 'small') {
-    return 'fs-appFontSizes'
-  }
-  if (size === 'large') {
-    return 'fs-appFontSizex'
-  }
-  return 'fs-appFontSize'
-}
-
 const messageService = {
   add: addMessage,
   success: (content: string, detail?: string, life = 3000, options: AddOptions = {}) =>
@@ -180,16 +171,13 @@ onBeforeUnmount(() => {
           v-if="item.iconName"
           #icon
         >
-          <Icons
+          <OhVueIcon
             :name="item.iconName"
             :class="getIconSizeClass(item.size)"
           />
         </template>
 
-        <div
-          class="pv-message-body"
-          :class="getTextSizeClass(item.size)"
-        >
+        <div class="pv-message-body">
           <div
             v-if="item.summary"
             class="pv-message-summary"

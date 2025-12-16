@@ -686,7 +686,8 @@ const handlePageChange = (event: any) => {
       :row-style='rowStyleHighlight',
       :row-class='rowClassHighlight',
       :scrollable='true',
-      :size-config='{ heightMode: "fixed", height: 400 }'
+      :size-config='{ heightMode: "fixed", height: 400 }',
+      :row-hover='false'
     )
 
   // 列对齐示例
@@ -702,11 +703,3 @@ const handlePageChange = (event: any) => {
       :size-config='{ heightMode: "fixed", height: 400 }'
     )
 </template>
-
-<style lang="scss" scoped>
-pre {
-  margin: 0;
-  max-height: 200px;
-  overflow: auto;
-}
-</style>

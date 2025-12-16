@@ -50,6 +50,10 @@ const enUS = {
           dynamic: 'Dynamic Table',
           scroll: 'Scroll Table',
           pagination: 'Pagination Table',
+          columnCapabilities: 'Column Capabilities',
+          persistence: 'Persistence',
+          virtualScroll: 'Virtual Scroll',
+          filter: 'Filter',
         },
         echarts: {
           title: 'Echarts',

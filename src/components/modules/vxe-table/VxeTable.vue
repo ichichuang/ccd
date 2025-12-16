@@ -2,6 +2,7 @@
 import { throttle } from '@#/index'
 import { RenderTSX } from '@/components/modules/render-tsx'
 import { useLocale } from '@/hooks'
+import { useTablePersistence } from '@/hooks/components/useTablePersistence'
 import { useElementSize } from '@/hooks/modules/useElementSize'
 import { useSizeStore } from '@/stores'
 import Button from 'primevue/button'
@@ -95,6 +96,14 @@ const props = withDefaults(defineProps<VxeTableExtendedProps<T>>(), {
   exportable: false,
   showGridlines: false,
   stripedRows: false,
+  // 默认开启行悬停高亮，提升非选择模式下的交互体验
+  rowHover: true,
+  // 【新增】列功能配置默认值
+  reorderableColumns: false,
+  resizableColumns: false,
+  columnResizeMode: 'fit',
+  // 【新增】虚拟滚动配置默认值
+  virtualScrollerOptions: undefined,
   componentsProps: () => ({}) as Record<string, any>,
 })
 
@@ -108,6 +117,18 @@ const emit = defineEmits<VxeTableEmits<T>>()
 
 // 国际化
 const { $t: t } = useLocale()
+
+// ==================== 表格持久化 ====================
+// 将 props 转为 computed 传给 hook
+const tableIdRef = computed(() => props.tableId)
+const originalColumnsRef = computed(() => props.columns)
+
+// 初始化持久化逻辑
+const {
+  effectiveColumns, // 使用这个代替 props.columns 渲染
+  handleColumnResize: handlePersistenceColumnResize,
+  handleColumnReorder: handlePersistenceColumnReorder,
+} = useTablePersistence(tableIdRef, originalColumnsRef)
 
 // 表格引用
 const tableRef = ref<InstanceType<typeof DataTable>>()
@@ -379,6 +400,28 @@ const onRowGroupCollapse = (event: any) => {
   emit('rowgroup-collapse', event)
 }
 
+// 列顺序变更事件处理
+const onColumnReorder = (event: any) => {
+  // 先处理持久化
+  handlePersistenceColumnReorder(event)
+  // 然后抛出事件
+  emit('column-reorder', event)
+}
+
+// 列宽调整事件处理
+const onColumnResizeEnd = (event: any) => {
+  // 先处理持久化
+  handlePersistenceColumnResize(event)
+  // 然后抛出事件
+  emit('column-resize-end', event)
+  // 延迟更新列宽度（用于底部对齐模式等）
+  if (footerMode.value === 'column-aligned') {
+    setTimeout(() => {
+      updateColumnWidths()
+    }, 100)
+  }
+}
+
 /**
  * Selection 计算属性拦截器
  * - 解决 PrimeVue 在 single 模式下使用「单对象」而组件内部统一维护「数组」的问题
@@ -541,7 +584,7 @@ const filteredData = computed(() => {
 
   return sourceData.value.filter((row: any) => {
     // 遍历所有列，检查是否有任何列包含搜索文本
-    return props.columns.some((col: VxeTableColumn) => {
+    return computedColumns.value.some((col: VxeTableColumn) => {
       const fieldValue = (row as any)[col.field]
       if (fieldValue === null || fieldValue === undefined) {
         return false
@@ -822,14 +865,14 @@ const columnWidthPercentages = computed(() => {
     return null
   }
 
-  const totalColumns = props.columns.length
+  const totalColumns = computedColumns.value.length
   if (totalColumns === 0) {
     return null
   }
 
   // 计算每列的百分比
   const percentage = 100 / totalColumns
-  return props.columns.map(() => `${percentage}%`)
+  return computedColumns.value.map(() => `${percentage}%`)
 })
 
 /**
@@ -952,7 +995,7 @@ const getColumnWidths = (): ColumnWidthInfo[] => {
   const hasSelectionColumn = props.selectable && selectionModeComputed.value !== null
   const { widths, selectionWidth } = getColumnWidthsFromTable(
     tableElement as HTMLElement,
-    props.columns,
+    computedColumns.value,
     hasSelectionColumn,
     selectionAlignFrozenValue.value
   )
@@ -983,7 +1026,7 @@ const updateColumnWidths = () => {
       const hasSelectionColumn = props.selectable && selectionModeComputed.value !== null
       const { widths, selectionWidth } = getColumnWidthsFromTable(
         tableElement as HTMLElement,
-        props.columns,
+        computedColumns.value,
         hasSelectionColumn,
         selectionAlignFrozenValue.value
       )
@@ -993,6 +1036,9 @@ const updateColumnWidths = () => {
       if (widths.length > 0) {
         columnWidths.value = widths
         emit('column-widths-change', widths)
+
+        // 注意：列宽持久化已由 useTablePersistence hook 处理
+        // 这里不再需要手动保存
       }
     })
   }, 200)
@@ -1044,7 +1090,7 @@ const handleExport = (format: 'csv' | 'xlsx' | 'json' = 'csv') => {
 
   try {
     if (format === 'csv') {
-      exportToCSV(exportData, props.columns, `${filename}.csv`)
+      exportToCSV(exportData, computedColumns.value, `${filename}.csv`)
       if (window.$toast) {
         window.$toast.success(exportSuccessText.value)
       }
@@ -1501,6 +1547,12 @@ watch(
   }
 )
 
+// ==================== 列持久化处理 ====================
+// 注意：列持久化逻辑已迁移到 useTablePersistence hook
+// 这里保留 computedColumns 作为 effectiveColumns 的别名，以保持向后兼容
+// effectiveColumns 已经在 useTablePersistence 中定义
+const computedColumns = effectiveColumns
+
 // 监听列配置变化，更新列宽度
 watch(
   () => props.columns,
@@ -1691,6 +1743,18 @@ const setupScrollListener = () => {
 }
 
 onMounted(() => {
+  // 注意：列配置恢复已由 useTablePersistence hook 在 watch 中自动处理
+  // 这里只需要确保表格渲染完成后更新列宽度（用于底部对齐模式等）
+  if (props.tableId) {
+    nextTick(() => {
+      setTimeout(() => {
+        if (footerMode.value === 'column-aligned') {
+          updateColumnWidths()
+        }
+      }, 300)
+    })
+  }
+
   // 添加滚动监听（用于滚动条自动隐藏和底部同步）
   setTimeout(() => {
     setupScrollListener()
@@ -1836,12 +1900,17 @@ defineExpose<VxeTableExpose>({
       :size='size',
       :scrollable='scrollableComputed',
       :scroll-height='scrollHeightComputed',
+      :virtual-scroller-options='props.virtualScrollerOptions',
       :row-class='rowClass',
       :row-style='rowStyle',
+      :row-hover='props.rowHover',
       :row-group-mode='props.rowGroupMode',
       :group-rows-by='props.groupRowsBy',
       :expandable-row-groups='props.expandableRowGroups',
       v-model:expanded-row-groups='expandedRowGroupsComputed',
+      :reorderable-columns='props.reorderableColumns',
+      :resizable-columns='props.resizableColumns',
+      :column-resize-mode='props.columnResizeMode',
       @page='handlePageChange',
       @sort='handleSortChange',
       @row-select='handleRowSelect',
@@ -1851,6 +1920,8 @@ defineExpose<VxeTableExpose>({
       @cell-edit-complete='handleCellEditComplete',
       @rowgroup-expand='onRowGroupExpand',
       @rowgroup-collapse='onRowGroupCollapse',
+      @column-reorder='onColumnReorder',
+      @column-resize-end='onColumnResizeEnd',
       v-bind='componentsProps'
     )
       // 选择列（当启用选择功能时显示，位置可左右）
@@ -1881,7 +1952,7 @@ defineExpose<VxeTableExpose>({
 
       // 动态列渲染
       Column(
-        v-for='(col, colIndex) in columns',
+        v-for='(col, colIndex) in computedColumns',
         :key='col.field',
         :field='String(col.field)',
         :header='getColumnHeader(col)',
@@ -1980,7 +2051,7 @@ defineExpose<VxeTableExpose>({
                   :style='{ width: selectionColumnWidth ? `${selectionColumnWidth}px` : "48px" }'
                 )
             // 数据列容器
-            template(v-for='(column, index) in columns', :key='column.field')
+            template(v-for='(column, index) in computedColumns', :key='column.field')
               .vxe-table-footer-column.c-border.border-y-none.border-r-none(
                 class='p-0!',
                 :style='getColumnFooterStyle(column)'

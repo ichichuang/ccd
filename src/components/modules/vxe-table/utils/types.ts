@@ -186,6 +186,39 @@ export type ContainerSizeMode = 'fill' | 'auto' | 'fixed'
 export type ColumnWidthMode = 'auto' | 'fixed' | 'equal'
 
 /**
+ * 虚拟滚动配置选项
+ * 兼容 PrimeVue VirtualScroller 的配置
+ */
+export interface VxeVirtualScrollerOptions {
+  /** 每项的高度（像素），必需 */
+  itemSize?: number
+  /** 滚动方向：'vertical' | 'horizontal' | 'both' */
+  orientation?: 'vertical' | 'horizontal' | 'both'
+  /** 延迟时间（毫秒） */
+  delay?: number
+  /** 调整大小延迟（毫秒） */
+  resizeDelay?: number
+  /** 是否懒加载 */
+  lazy?: boolean
+  /** 是否显示加载器 */
+  showLoader?: boolean
+  /** 是否正在加载 */
+  loading?: boolean
+  /** 容差项目数 */
+  numToleratedItems?: number
+  /** 是否自动调整大小 */
+  autoSize?: boolean
+  /** 步进值 */
+  step?: number
+  /** 滚动到索引 */
+  scrollToIndex?: number
+  /** 是否禁用 */
+  disabled?: boolean
+  /** 其他扩展属性 */
+  [key: string]: any
+}
+
+/**
  * 表格尺寸配置
  */
 export interface TableSizeConfig {
@@ -414,6 +447,12 @@ export interface VxeTableProps<T = any> extends Omit<Partial<DataTableProps>, 's
   columns: VxeTableColumn<T>[]
   /** 加载状态 */
   loading?: boolean
+  /**
+   * 表格唯一标识（用于持久化存储列顺序和列宽）
+   * - 如果提供，将自动保存和恢复用户的列顺序和列宽偏好
+   * - 建议使用有意义的唯一标识，如 'user-list-table'、'order-management-table' 等
+   */
+  tableId?: string
 
   // ========== HeaderSetting 头部设置 ==========
   /** 是否显示头部 */
@@ -471,6 +510,28 @@ export interface VxeTableProps<T = any> extends Omit<Partial<DataTableProps>, 's
   /** 编辑模式：cell | row（当前仅推荐 cell） */
   editMode?: 'cell' | 'row'
 
+  // ========== VirtualScroll 虚拟滚动配置 ==========
+  /**
+   * 虚拟滚动配置
+   * - 开启条件：设置 scrollable=true 且 scrollHeight 为固定值
+   * - 核心参数：itemSize (行高，必需)
+   * - 示例：{ itemSize: 50 }
+   * - 适用于大数据量场景，提升渲染性能
+   */
+  virtualScrollerOptions?: VxeVirtualScrollerOptions
+
+  // ========== Column Capabilities 列功能配置 ==========
+  /** 是否允许拖拽调整列顺序 */
+  reorderableColumns?: boolean
+  /** 是否允许调整列宽 */
+  resizableColumns?: boolean
+  /**
+   * 列宽调整模式
+   * - 'fit': 调整列宽时，表格总宽度不变，其他列会自动伸缩 (推荐)
+   * - 'expand': 调整列宽时，表格总宽度会变化
+   */
+  columnResizeMode?: 'fit' | 'expand'
+
   // ========== SizeSetting 尺寸设置 ==========
   /** 表格尺寸配置 */
   sizeConfig?: TableSizeConfig
@@ -482,6 +543,12 @@ export interface VxeTableProps<T = any> extends Omit<Partial<DataTableProps>, 's
   showGridlines?: boolean
   /** 斑马纹 */
   stripedRows?: boolean
+  /**
+   * 是否开启行悬停高亮（默认 true）
+   * - PrimeVue 默认不开启，除非启用了 selection
+   * - 在封装层默认开启，提升交互体验
+   */
+  rowHover?: boolean
   /** 响应式布局 */
   responsiveLayout?: 'scroll' | 'stack'
 
@@ -530,6 +597,18 @@ export type VxeTableExtendedProps<T = any> = VxeTableProps<T> & {
 }
 
 /**
+ * 用户偏好设置结构
+ */
+export interface VxeTableUserPreferences {
+  /** 列顺序（存放 field 字段名） */
+  columnOrder?: string[]
+  /** 列宽设置（field -> width） */
+  columnWidths?: Record<string, number | string>
+  /** 隐藏的列（field 数组） */
+  hiddenColumns?: string[]
+}
+
+/**
  * VxeTable Emits
  */
 export type VxeTableEmits<T = any> = {
@@ -571,6 +650,12 @@ export type VxeTableEmits<T = any> = {
 
   // 列宽度变化
   (e: 'column-widths-change', widths: ColumnWidthInfo[]): void
+
+  // 列顺序变更事件
+  (e: 'column-reorder', event: { originalEvent: Event; dragIndex: number; dropIndex: number }): void
+
+  // 列宽调整事件
+  (e: 'column-resize-end', event: { element: HTMLElement; column: any; delta: number }): void
 }
 
 /**
