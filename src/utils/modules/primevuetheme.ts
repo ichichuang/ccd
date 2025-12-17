@@ -900,51 +900,6 @@ export const createCustomPreset = (preset: any, { colorStore, sizeStore }: Prime
     })
     // DataTable 组件单独处理
     deepMergeStylesAdvancedInPlace(newPreset.components.datatable, {
-      /* header: {
-        padding: `${sizeStore.getPaddingValue * 0.96}px ${sizeStore.getPaddingValue}px`,
-        sm: {
-          padding: `${sizeStore.getPaddingsValue * 0.6}px ${sizeStore.getPaddingValue}px`,
-        },
-        lg: {
-          padding: `${sizeStore.getPaddingxValue * 0.8}px ${sizeStore.getPaddingValue}px`,
-        },
-      },
-      headerCell: {
-        padding: `${sizeStore.getPaddingValue * 0.96}px ${sizeStore.getPaddingValue}px`,
-        sm: {
-          padding: `${sizeStore.getPaddingsValue * 0.6}px ${sizeStore.getPaddingValue}px`,
-        },
-        lg: {
-          padding: `${sizeStore.getPaddingxValue * 0.8}px ${sizeStore.getPaddingValue}px`,
-        },
-      },
-      bodyCell: {
-        padding: `${sizeStore.getPaddingValue * 0.96}px ${sizeStore.getPaddingValue}px`,
-        sm: {
-          padding: `${sizeStore.getPaddingsValue * 0.6}px ${sizeStore.getPaddingValue}px`,
-        },
-        lg: {
-          padding: `${sizeStore.getPaddingxValue * 0.8}px ${sizeStore.getPaddingValue}px`,
-        },
-      },
-      footerCell: {
-        padding: `${sizeStore.getPaddingValue * 0.96}px ${sizeStore.getPaddingValue}px`,
-        sm: {
-          padding: `${sizeStore.getPaddingsValue * 0.6}px ${sizeStore.getPaddingValue}px`,
-        },
-        lg: {
-          padding: `${sizeStore.getPaddingxValue * 0.8}px ${sizeStore.getPaddingValue}px`,
-        },
-      },
-      columnFooter: {
-        padding: `${sizeStore.getPaddingValue * 0.96}px ${sizeStore.getPaddingValue}px`,
-        sm: {
-          padding: `${sizeStore.getPaddingsValue * 0.6}px ${sizeStore.getPaddingValue}px`,
-        },
-        lg: {
-          padding: `${sizeStore.getPaddingxValue * 0.8}px ${sizeStore.getPaddingValue}px`,
-        },
-      }, */
       header: {
         padding: `0 ${sizeStore.getPaddingValue}px`,
         sm: {
@@ -1091,6 +1046,27 @@ export const createCustomPreset = (preset: any, { colorStore, sizeStore }: Prime
       ['tree.marginY']: `${Math.round(baseGaps * 0.8 * scaleGap)}px`,
       ['tree.marginX']: `${Math.round(baseGaps * 0.8 * scaleGap)}px`,
       ['tree.gap']: `${Math.round(baseGaps * 0.8 * scaleGap)}px`,
+      // datatable
+      // filter: {
+      //   inlineGap: `${sizeStore.getGaps * 0.5}px`,
+      //   overlayPopover: {
+      //     padding: `${sizeStore.getPaddingsValue}px ${sizeStore.getPaddingValue}px`,
+      //     gap: `${sizeStore.getGaps * 0.5}px`,
+      //   },
+      //   constraintList: {
+      //     padding: `${sizeStore.getPaddingsValue}px ${sizeStore.getPaddingValue}px`,
+      //     gap: `${sizeStore.getGaps * 0.5}px`,
+      //   },
+      //   constraint: {
+      //     padding: `${sizeStore.getPaddingsValue}px ${sizeStore.getPaddingValue}px`,
+      //   },
+      // },
+      ['filter.inlineGap']: `${sizeStore.getGaps * 0.5}px`,
+      ['filter.overlayPopover.padding']: `${sizeStore.getPaddingsValue}px ${sizeStore.getPaddingValue}px`,
+      ['filter.overlayPopover.gap']: `${sizeStore.getGaps * 0.5}px`,
+      ['filter.constraintList.padding']: `${sizeStore.getPaddingsValue}px ${sizeStore.getPaddingValue}px`,
+      ['filter.constraintList.gap']: `${sizeStore.getGaps * 0.5}px`,
+      ['filter.constraint.padding']: `${sizeStore.getPaddingsValue}px ${sizeStore.getPaddingValue}px`,
     }
     // select 组件单独处理
     deepMergeStylesAdvancedInPlace(newPreset.components.select, {
@@ -1127,6 +1103,10 @@ export const createCustomPreset = (preset: any, { colorStore, sizeStore }: Prime
     })
     // 日期选择器
     deepMergeStylesAdvancedInPlace(newPreset.components.datepicker, {
+      ...customComponentsStyleSm,
+    })
+    // DataTable
+    deepMergeStylesAdvancedInPlace(newPreset.components.datatable, {
       ...customComponentsStyleSm,
     })
 

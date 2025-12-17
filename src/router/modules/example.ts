@@ -470,7 +470,8 @@ const exampleRoutes: RouteConfig[] = [
           {
             path: 'crud',
             name: 'ExampleHttpCrud',
-            component: () => import('@/views/example/views/example-http/example-http-crud.vue'),
+            component: () =>
+              import('@/views/example/views/example-http/example-http-crud/example-http-crud.vue'),
             meta: {
               titleKey: 'router.example.http.crud',
               rank: 2,

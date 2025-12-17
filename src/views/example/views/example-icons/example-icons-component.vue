@@ -188,19 +188,6 @@ const goToLink = () => {
         .icon-label inverse
 
   .between-col.justify-start.gap-gaps
-    b.fs-appFontSizex 无障碍属性 (label & title)
-    .between-start.flex-wrap.gap-gap
-      .c-card-primary.between-col
-        Icons(name='ri-home-line', size='l', label='首页')
-        .icon-label label="首页"
-      .c-card-primary.between-col
-        Icons(name='ri-settings-line', size='l', title='设置')
-        .icon-label title="设置"
-      .c-card-primary.between-col
-        Icons(name='ri-user-line', size='l', label='用户', title='用户信息')
-        .icon-label label + title
-
-  .between-col.justify-start.gap-gaps
     b.fs-appFontSizex 动态加载
     .between-start.flex-wrap.gap-gap
       .c-card-primary.between-col(class='hover:transform-translate-y-[calc(0px-var(--gaps))]')

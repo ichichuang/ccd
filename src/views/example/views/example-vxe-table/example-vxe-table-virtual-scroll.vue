@@ -122,14 +122,6 @@ const columns: VxeTableColumn<UserData>[] = [
   },
 ]
 
-// ==================== 尺寸配置 ====================
-const sizeConfig = ref<TableSizeConfig>({
-  widthMode: 'auto',
-  heightMode: 'fixed',
-  height: '500px',
-  columnWidthMode: 'fixed',
-})
-
 // ==================== 虚拟滚动配置 ====================
 const virtualScrollerOptions = ref<VxeVirtualScrollerOptions>({
   itemSize: 50, // 行高（必需）
@@ -141,25 +133,24 @@ const virtualScrollerOptions = ref<VxeVirtualScrollerOptions>({
 
 // ==================== 功能配置状态 ====================
 const enableVirtualScroll = ref<boolean>(true)
-const itemSize = ref<number>(50)
 
 // 更新虚拟滚动配置
 const updateVirtualScrollOptions = () => {
   if (enableVirtualScroll.value) {
     virtualScrollerOptions.value = {
-      itemSize: itemSize.value,
+      itemSize: 50, // 固定行高
       orientation: 'vertical',
       lazy: false,
       showLoader: false,
       numToleratedItems: 3,
     }
   } else {
-    virtualScrollerOptions.value = undefined
+    virtualScrollerOptions.value = {}
   }
 }
 
 // 监听配置变化
-watch([enableVirtualScroll, itemSize], () => {
+watch(enableVirtualScroll, () => {
   updateVirtualScrollOptions()
 })
 </script>
@@ -182,20 +173,6 @@ watch([enableVirtualScroll, itemSize], () => {
             ) {{ enableVirtualScroll ? '已启用' : '已禁用' }}
 
         .between-col
-          .fs-appFontSizes.color-accent100 行高 (itemSize)
-          .between-start.gap-gap
-            input(
-              type='number',
-              v-model.number='itemSize',
-              min='30',
-              max='100',
-              step='5',
-              :disabled='!enableVirtualScroll',
-              style='width: 80px; padding: 4px 8px; border: 1px solid var(--border-color); border-radius: 4px'
-            )
-            span.fs-appFontSizes px
-
-        .between-col
           .fs-appFontSizes.color-accent100 数据量
           .between-start.gap-gap
             span.fs-appFontSizes {{ tableData.length.toLocaleString() }} 条
@@ -207,12 +184,9 @@ watch([enableVirtualScroll, itemSize], () => {
             div
               span 虚拟滚动:
               b.ml-1 {{ enableVirtualScroll ? '启用' : '禁用' }}
-            .mt-1(v-if='enableVirtualScroll')
-              span 行高:
-              b.ml-1 {{ itemSize }}px
             .mt-1
               span 表格高度:
-              b.ml-1 {{ sizeConfig.height }}
+              b.ml-1 500px
             .mt-1
               span 数据量:
               b.ml-1 {{ tableData.length.toLocaleString() }} 条
@@ -250,7 +224,6 @@ watch([enableVirtualScroll, itemSize], () => {
         :pagination='false',
         :sortable='true',
         :scrollable='true',
-        :size-config='sizeConfig',
         :virtual-scroller-options='virtualScrollerOptions',
         :show-gridlines='true',
         :striped-rows='true'

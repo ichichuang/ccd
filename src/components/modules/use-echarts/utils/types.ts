@@ -268,53 +268,280 @@ export interface ChartAxisPointerConfig {
   animationEasing?: string
 }
 
-// UseEcharts 组件 Props 类型
+/**
+ * UseEcharts 组件 Props 接口
+ *
+ * 定义 ECharts 图表组件的所有属性
+ * 继承 ChartEventHandlers，支持所有 ECharts 事件
+ *
+ * @example
+ * ```vue
+ * <template>
+ *   <UseEcharts
+ *     :option="chartOption"
+ *     :width="800"
+ *     :height="600"
+ *     theme="dark"
+ *     :auto-resize="true"
+ *     @click="handleChartClick"
+ *   />
+ * </template>
+ *
+ * <script setup lang="ts">
+ * import { ref } from 'vue'
+ * import type { EChartsOption } from 'echarts'
+ *
+ * const chartOption = ref<EChartsOption>({
+ *   xAxis: { type: 'category', data: ['Mon', 'Tue', 'Wed'] },
+ *   yAxis: { type: 'value' },
+ *   series: [{ data: [120, 200, 150], type: 'line' }]
+ * })
+ * </script>
+ * ```
+ */
 export interface UseEchartsProps extends ChartEventHandlers {
-  /** ECharts 配置选项 */
+  /**
+   * ECharts 配置选项
+   *
+   * ECharts 的完整配置对象，包含图表的所有配置项
+   *
+   * @default undefined
+   * @example
+   * ```typescript
+   * const option: EChartsOption = {
+   *   title: { text: '图表标题' },
+   *   xAxis: { type: 'category', data: ['A', 'B', 'C'] },
+   *   yAxis: { type: 'value' },
+   *   series: [{ data: [1, 2, 3], type: 'bar' }]
+   * }
+   * ```
+   */
   option?: EChartsOption
-  /** 图表宽度 */
+
+  /**
+   * 图表宽度
+   *
+   * 支持字符串（如 '800px', '100%'）或数字（像素值）
+   *
+   * @default undefined（自适应容器）
+   * @example
+   * - :width="800" - 800px
+   * - width="100%" - 100% 宽度
+   */
   width?: string | number
-  /** 图表高度 */
+
+  /**
+   * 图表高度
+   *
+   * 支持字符串（如 '600px', '80vh'）或数字（像素值）
+   *
+   * @default undefined（自适应容器）
+   * @example
+   * - :height="600" - 600px
+   * - height="80vh" - 80% 视口高度
+   */
   height?: string | number
-  /** 图表主题 */
+
+  /**
+   * 图表主题
+   *
+   * 使用 ECharts 的主题配置，可以是内置主题或自定义主题名称
+   *
+   * @default undefined（使用默认主题）
+   * @example
+   * - theme="dark" - 暗色主题
+   * - theme="light" - 亮色主题
+   * - theme="custom-theme" - 自定义主题
+   */
   theme?: string
-  /** 渲染方式 */
+
+  /**
+   * 渲染方式
+   *
+   * 选择使用 Canvas 还是 SVG 进行渲染
+   *
+   * @default 'canvas'
+   * @example
+   * - renderer="canvas" - Canvas 渲染（性能更好）
+   * - renderer="svg" - SVG 渲染（支持更多交互）
+   */
   renderer?: ChartRenderer
-  /** 是否自动调整大小 */
+
+  /**
+   * 是否自动调整大小
+   *
+   * 启用后，图表会监听容器尺寸变化并自动调整大小
+   *
+   * @default true
+   * @example
+   * - :auto-resize="true" - 自动调整大小（推荐）
+   */
   autoResize?: boolean
-  /** 自定义样式 */
+
+  /**
+   * 自定义样式
+   *
+   * 应用于图表容器的样式对象
+   *
+   * @default undefined
+   * @example
+   * - :style="{ padding: '16px', borderRadius: '8px' }"
+   */
   style?: Record<string, any>
-  /** 背景颜色 */
+
+  /**
+   * 背景颜色
+   *
+   * 图表的背景颜色，支持所有 CSS 颜色值
+   *
+   * @default undefined（使用主题背景色）
+   * @example
+   * - backgroundColor="#ffffff" - 白色背景
+   * - backgroundColor="transparent" - 透明背景
+   */
   backgroundColor?: string
-  /** 是否懒加载 */
+
+  /**
+   * 是否懒加载
+   *
+   * 启用后，图表会在容器进入视口时才初始化
+   *
+   * @default false
+   * @example
+   * - :lazy-load="true" - 启用懒加载
+   */
   lazyLoad?: boolean
-  /** 是否显示加载状态 */
+
+  /**
+   * 是否显示加载状态
+   *
+   * 显示图表加载中的遮罩和动画
+   *
+   * @default false
+   * @example
+   * - :loading="isLoading" - 根据加载状态显示
+   */
   loading?: boolean
-  /** 加载配置选项 */
+
+  /**
+   * 加载配置选项
+   *
+   * 自定义加载遮罩的样式和文本
+   *
+   * @default undefined
+   */
   loadingOptions?: any
-  /** 是否手动更新 */
+
+  /**
+   * 是否手动更新
+   *
+   * 启用后，需要手动调用更新方法才会更新图表
+   *
+   * @default false
+   * @example
+   * - :manual-update="true" - 手动更新模式
+   */
   manualUpdate?: boolean
-  /** 图表主题配置 */
+
+  /**
+   * 图表主题配置
+   *
+   * 包含透明度等主题相关的配置
+   *
+   * @default undefined
+   */
   themeConfig?: ChartThemeConfig
-  /** 图表联动配置 */
+
+  /**
+   * 图表联动配置
+   *
+   * 配置多个图表之间的联动行为
+   *
+   * @default undefined
+   */
   connectConfig?: ChartConnectConfig
-  /** 动画配置 */
+
+  /**
+   * 动画配置
+   *
+   * 控制图表的动画效果
+   *
+   * @default undefined
+   */
   animationConfig?: ChartAnimationConfig
-  /** 事件映射配置 */
+
+  /**
+   * 事件映射配置
+   *
+   * 自定义 ECharts 事件的监听和处理
+   *
+   * @default undefined
+   */
   onEvents?: ChartOnEvents
-  /** 工具箱配置 */
+
+  /**
+   * 工具箱配置
+   *
+   * 配置图表工具栏（保存图片、数据视图等）
+   *
+   * @default undefined
+   */
   toolboxConfig?: ChartToolboxConfig
-  /** 标记点配置 */
+
+  /**
+   * 标记点配置
+   *
+   * 配置图表中的标记点
+   *
+   * @default undefined
+   */
   markPointConfig?: ChartMarkPointConfig
-  /** 标记线配置 */
+
+  /**
+   * 标记线配置
+   *
+   * 配置图表中的标记线
+   *
+   * @default undefined
+   */
   markLineConfig?: ChartMarkLineConfig
-  /** 可视化映射配置 */
+
+  /**
+   * 可视化映射配置
+   *
+   * 配置数据的可视化映射（颜色映射等）
+   *
+   * @default undefined
+   */
   visualMapConfig?: ChartVisualMapConfig
-  /** 画刷配置 */
+
+  /**
+   * 画刷配置
+   *
+   * 配置图表的画刷功能
+   *
+   * @default undefined
+   */
   brushConfig?: ChartBrushConfig
-  /** 坐标轴指示器配置 */
+
+  /**
+   * 坐标轴指示器配置
+   *
+   * 配置坐标轴的指示器样式和行为
+   *
+   * @default undefined
+   */
   axisPointerConfig?: ChartAxisPointerConfig
-  /** 是否开启图例悬停联动 */
+
+  /**
+   * 是否开启图例悬停联动
+   *
+   * 鼠标悬停图例时，是否高亮对应的数据系列
+   *
+   * @default true
+   * @example
+   * - :legend-hover-link="true" - 启用图例悬停联动
+   */
   legendHoverLink?: boolean
 }
 

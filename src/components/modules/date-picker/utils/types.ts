@@ -33,13 +33,69 @@ export interface DatePickerLocaleTexts {
   todayLabel?: string
 }
 
-/** 组件 Props(对外暴露) */
+/**
+ * DatePicker 组件 Props 接口
+ *
+ * 定义日期选择器组件的所有属性
+ *
+ * @example
+ * ```vue
+ * <template>
+ *   <DatePicker
+ *     v-model="date"
+ *     mode="datetime"
+ *     :range="false"
+ *     display-format="yyyy-MM-dd HH:mm:ss"
+ *   />
+ * </template>
+ *
+ * <script setup lang="ts">
+ * import { ref } from 'vue'
+ * import type { DateValue } from '@/components/modules/date-picker'
+ *
+ * const date = ref<DateValue>(null)
+ * </script>
+ * ```
+ */
 export interface DatePickerProps {
-  /** v-model 值 */
+  /**
+   * v-model 值
+   *
+   * 支持单个日期、日期范围或 null
+   *
+   * @default undefined
+   * @example
+   * - v-model="date" - 单个日期
+   * - v-model="dateRange" - 日期范围 [start, end]
+   */
   modelValue?: DateValue
-  /** 选择器模式 */
+
+  /**
+   * 选择器模式
+   *
+   * 指定日期选择器的显示和选择模式
+   *
+   * @default 'date'
+   * @example
+   * - mode="date" - 日期选择
+   * - mode="datetime" - 日期时间选择
+   * - mode="time" - 时间选择
+   * - mode="month" - 月份选择
+   * - mode="year" - 年份选择
+   * - mode="week" - 周选择
+   * - mode="quarter" - 季度选择
+   */
   mode?: DatePickerMode
-  /** 是否范围选择 */
+
+  /**
+   * 是否范围选择
+   *
+   * 启用后，可以选择日期范围而不是单个日期
+   *
+   * @default false
+   * @example
+   * - :range="true" - 启用范围选择
+   */
   range?: boolean
   /**
    * 范围模式下可选择的最大跨度
@@ -87,7 +143,17 @@ export interface DatePickerProps {
   presets?: PresetRange[]
   /** 面板是否内联展示 */
   inline?: boolean
-  /** 弹层定位(透传 @vuepic/vue-datepicker) */
+  /**
+   * 弹层定位
+   *
+   * 指定日期选择器弹层的显示位置（透传 @vuepic/vue-datepicker）
+   *
+   * @default undefined
+   * @example
+   * - placement="bottom" - 底部
+   * - placement="top-start" - 顶部左侧对齐
+   * - placement="bottom-end" - 底部右侧对齐
+   */
   placement?:
     | 'left'
     | 'right'

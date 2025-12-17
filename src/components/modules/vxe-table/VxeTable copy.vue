@@ -3,6 +3,7 @@ import { throttle } from '@#/index'
 import { RenderTSX } from '@/components/modules/render-tsx'
 import { useLocale } from '@/hooks'
 import { useTablePersistence } from '@/hooks/components/useTablePersistence'
+import { useElementSize } from '@/hooks/modules/useElementSize'
 import { useSizeStore } from '@/stores'
 import Button from 'primevue/button'
 import Checkbox from 'primevue/checkbox'
@@ -11,17 +12,7 @@ import DataTable from 'primevue/datatable'
 import IconField from 'primevue/iconfield'
 import InputIcon from 'primevue/inputicon'
 import InputText from 'primevue/inputtext'
-import {
-  computed,
-  defineComponent,
-  h,
-  nextTick,
-  onMounted,
-  onUnmounted,
-  ref,
-  useSlots,
-  watch,
-} from 'vue'
+import { computed, defineComponent, h, nextTick, onMounted, onUnmounted, ref, watch } from 'vue'
 import { executeVxeTableApi } from './utils/api'
 import { DEFAULT_PAGINATOR_CONFIG, DEFAULT_TABLE_SIZE_CONFIG } from './utils/constants'
 import {
@@ -42,14 +33,6 @@ import type {
   VxeTableExpose,
   VxeTableExtendedProps,
 } from './utils/types'
-
-// 插槽访问（用于判断是否声明列级 filter 插槽）
-const slots = useSlots()
-
-const hasColumnFilterSlot = (column: VxeTableColumn) => {
-  const fieldName = String(column.field)
-  return Boolean(slots[`filter_${fieldName}`] || slots.filter)
-}
 const sizeStore = useSizeStore()
 const appFontSizes = computed(() => sizeStore.getFontSizesValue)
 const appFontSize = computed(() => sizeStore.getFontSizeValue)
@@ -133,88 +116,21 @@ const componentsProps = computed(() => props.componentsProps ?? {})
  * 从 componentsProps 中提取筛选相关配置
  * 注意：filters 需要支持双向绑定
  * 由于 componentsProps 是 computed，filters 可能是 ref，需要正确处理
- * 重要：使用防重入锁和深度比较避免递归更新
  */
-// 防重入锁，防止递归更新
-let isUpdatingFilters = false
-
-// 内部 filters 状态，用于响应式追踪
-const internalFilters = ref<Record<string, any>>({})
-
-// 保存 filters ref 的引用，用于更新
-let filtersRef: any = null
-
-// 监听外部 filters 的变化，同步到内部状态
-watch(
-  () => componentsProps.value.filters,
-  filters => {
-    filtersRef = filters
-    if (filters && typeof filters === 'object') {
-      // 如果 filters 是 ref，读取它的 value
-      if ('value' in filters && typeof (filters as any).value !== 'undefined') {
-        const filtersValue = (filters as any).value
-        internalFilters.value =
-          filtersValue !== null && filtersValue !== undefined ? filtersValue : {}
-      } else {
-        // 如果不是 ref，直接使用
-        internalFilters.value = filters !== null && filters !== undefined ? filters : {}
-      }
-    } else {
-      internalFilters.value = {}
-    }
-  },
-  { immediate: true, deep: true }
-)
-
 const filtersModel = computed({
   get: () => {
-    // 直接返回内部状态，确保响应式追踪
-    return internalFilters.value
+    const filters = componentsProps.value.filters
+    // 如果 filters 是 ref，返回它的 value；否则直接返回
+    if (filters && typeof filters === 'object' && 'value' in filters) {
+      return (filters as any).value
+    }
+    return filters
   },
   set: (value: any) => {
-    // 防重入锁
-    if (isUpdatingFilters) {
-      return
-    }
-
-    // 深度比较，避免不必要的更新
-    try {
-      const currentValue = JSON.stringify(internalFilters.value)
-      const newValue = JSON.stringify(value)
-      // 如果值完全相同，且不是空对象，则跳过更新（避免不必要的触发）
-      if (currentValue === newValue && currentValue !== '{}' && newValue !== '{}') {
-        return
-      }
-    } catch {
-      // JSON.stringify 可能失败（循环引用等），忽略比较，允许更新
-    }
-
-    isUpdatingFilters = true
-
-    try {
-      // 更新内部状态
-      internalFilters.value = value
-
-      // 同步更新外部 filters ref
-      if (filtersRef && typeof filtersRef === 'object') {
-        // 检查是否是 ref（有 value 属性且不是普通对象）
-        if ('value' in filtersRef && typeof (filtersRef as any).value !== 'undefined') {
-          // 是 ref，更新 value
-          ;(filtersRef as any).value = value
-        } else {
-          // 不是 ref，直接更新对象属性
-          Object.keys(value).forEach(key => {
-            if (value[key] !== undefined) {
-              ;(filtersRef as any)[key] = value[key]
-            }
-          })
-        }
-      }
-    } finally {
-      // 使用 nextTick 确保更新完成后再解锁
-      nextTick(() => {
-        isUpdatingFilters = false
-      })
+    const filters = componentsProps.value.filters
+    // 如果 filters 是 ref，更新它的 value
+    if (filters && typeof filters === 'object' && 'value' in filters) {
+      ;(filters as any).value = value
     }
   },
 })
@@ -699,99 +615,29 @@ const paginatorJustifyContent = computed(() => {
 })
 
 /**
- * 根据 filters 筛选单列数据
- */
-const matchFilter = (row: any, field: string, filter: any): boolean => {
-  if (!filter || filter.value === null || filter.value === undefined || filter.value === '') {
-    return true // 没有筛选条件，返回 true
-  }
-
-  const fieldValue = (row as any)[field]
-  if (fieldValue === null || fieldValue === undefined) {
-    return false
-  }
-
-  const filterValue = String(filter.value).toLowerCase()
-  const rowValue = String(fieldValue).toLowerCase()
-  const matchMode = filter.matchMode || 'contains'
-
-  switch (matchMode) {
-    case 'startsWith':
-      return rowValue.startsWith(filterValue)
-    case 'contains':
-      return rowValue.includes(filterValue)
-    case 'notContains':
-      return !rowValue.includes(filterValue)
-    case 'endsWith':
-      return rowValue.endsWith(filterValue)
-    case 'equals':
-      return rowValue === filterValue
-    case 'notEquals':
-      return rowValue !== filterValue
-    default:
-      return rowValue.includes(filterValue)
-  }
-}
-
-/**
- * 筛选数据（客户端搜索 + 列筛选）
- * 根据全局搜索关键词和列筛选条件筛选数据
- *
- * 注意：
- * - 当使用 PrimeVue 内置的 filterDisplay="menu" 高级筛选时，
- *   交给 DataTable 自己处理筛选逻辑，这里直接返回原始数据。
- * - 当使用行内筛选（filterDisplay="row" 或未设置）时，
- *   由本地逻辑进行客户端过滤。
+ * 筛选数据（客户端搜索）
+ * 根据搜索关键词筛选数据，匹配所有列
  */
 const filteredData = computed(() => {
-  // 高级筛选（menu 模式）完全交给 PrimeVue 处理，这里不做二次过滤
-  if (filterDisplayComputed.value === 'menu') {
+  if (!props.globalFilter || !globalFilterValue.value || globalFilterValue.value.trim() === '') {
     return sourceData.value
   }
 
-  let data = sourceData.value
+  const searchText = globalFilterValue.value.toLowerCase().trim()
 
-  // 1. 先应用全局搜索（如果启用）
-  if (props.globalFilter && globalFilterValue.value && globalFilterValue.value.trim() !== '') {
-    const searchText = globalFilterValue.value.toLowerCase().trim()
-    data = data.filter((row: any) => {
-      return computedColumns.value.some((col: VxeTableColumn) => {
-        const fieldValue = (row as any)[col.field]
-        if (fieldValue === null || fieldValue === undefined) {
-          return false
-        }
-        const valueStr = String(fieldValue).toLowerCase()
-        return valueStr.includes(searchText)
-      })
-    })
-  }
-
-  // 2. 再应用列筛选（如果 filters 存在）
-  const filters = filtersModel.value
-  if (filters && typeof filters === 'object' && Object.keys(filters).length > 0) {
-    data = data.filter((row: any) => {
-      // 遍历所有筛选条件
-      for (const field in filters) {
-        // 跳过 global 字段（全局搜索已处理）
-        if (field === 'global') {
-          continue
-        }
-
-        const filter = filters[field]
-        if (!filter) {
-          continue
-        }
-
-        // 如果筛选条件有值，进行匹配
-        if (!matchFilter(row, field, filter)) {
-          return false
-        }
+  return sourceData.value.filter((row: any) => {
+    // 遍历所有列，检查是否有任何列包含搜索文本
+    return computedColumns.value.some((col: VxeTableColumn) => {
+      const fieldValue = (row as any)[col.field]
+      if (fieldValue === null || fieldValue === undefined) {
+        return false
       }
-      return true
-    })
-  }
 
-  return data
+      // 将值转换为字符串并转为小写进行匹配
+      const valueStr = String(fieldValue).toLowerCase()
+      return valueStr.includes(searchText)
+    })
+  })
 })
 
 /**
@@ -953,14 +799,7 @@ const calculatedHeight = ref<string | undefined>(undefined)
 // 计算实际可用高度（用于 fixed 模式）
 const calculatedFixedHeight = ref<string | undefined>(undefined)
 
-// 防重入锁，防止布局计算死循环
-let isLayoutCalculating = false
-// 记录上次的尺寸，用于差值比对
-let lastWidth = 0
-let lastHeight = 0
-
 // 计算表格可用高度（父容器高度 - 头部高度 - 底部高度）
-// 使用 requestAnimationFrame + 差值比对防止死循环
 const calculateAvailableHeight = () => {
   if (!tableWrapperFullRef.value || !tableWrapperRef.value) {
     calculatedHeight.value = undefined
@@ -973,12 +812,11 @@ const calculateAvailableHeight = () => {
     return
   }
 
-  // 使用 requestAnimationFrame 降低优先级，避免死循环
-  requestAnimationFrame(() => {
+  // 使用 nextTick 确保 DOM 已完全渲染
+  nextTick(() => {
     // 获取父容器的实际高度
-    const fullHeight = tableWrapperFullRef.value?.offsetHeight || 0
-    if (fullHeight < 10) {
-      // 忽略无效高度
+    const fullHeight = tableWrapperFullRef.value?.offsetHeight
+    if (!fullHeight || fullHeight === 0) {
       calculatedHeight.value = undefined
       return
     }
@@ -999,16 +837,7 @@ const calculateAvailableHeight = () => {
     const availableHeight = fullHeight - headerHeight - footerHeight - paginatorHeight
 
     if (availableHeight > 0) {
-      const newValue = `${availableHeight}px`
-      // 【关键】值比对，防止死循环
-      if (calculatedHeight.value !== newValue) {
-        const oldHeight = parseFloat(calculatedHeight.value || '0')
-        const diff = Math.abs(oldHeight - availableHeight)
-        // 只有差值超过 1.5px 才更新，避免微小变化导致死循环
-        if (diff > 1.5) {
-          calculatedHeight.value = newValue
-        }
-      }
+      calculatedHeight.value = `${availableHeight}px`
     } else {
       calculatedHeight.value = undefined
     }
@@ -1016,7 +845,6 @@ const calculateAvailableHeight = () => {
 }
 
 // 计算固定高度模式下的可用高度（配置高度 - 头部 - 底部 - 分页器）
-// 使用 requestAnimationFrame + 差值比对防止死循环
 const calculateFixedHeight = () => {
   const config = sizeConfig.value
   if (config.heightMode !== 'fixed' || !config.height) {
@@ -1024,7 +852,7 @@ const calculateFixedHeight = () => {
     return
   }
 
-  requestAnimationFrame(() => {
+  nextTick(() => {
     const totalHeight = parseWidth(config.height)
     if (!totalHeight || totalHeight <= 0) {
       calculatedFixedHeight.value = undefined
@@ -1041,21 +869,7 @@ const calculateFixedHeight = () => {
     const paginatorHeight = paginatorElement ? (paginatorElement as HTMLElement).offsetHeight : 0
 
     const availableHeight = totalHeight - headerHeight - footerHeight - paginatorHeight
-
-    if (availableHeight > 0) {
-      const newValue = `${availableHeight}px`
-      // 【关键】值比对，防止死循环
-      if (calculatedFixedHeight.value !== newValue) {
-        const oldHeight = parseFloat(calculatedFixedHeight.value || '0')
-        const diff = Math.abs(oldHeight - availableHeight)
-        // 只有差值超过 1.5px 才更新
-        if (diff > 1.5) {
-          calculatedFixedHeight.value = newValue
-        }
-      }
-    } else {
-      calculatedFixedHeight.value = undefined
-    }
+    calculatedFixedHeight.value = availableHeight > 0 ? `${availableHeight}px` : undefined
   })
 }
 
@@ -1197,12 +1011,8 @@ const getColumnComponentsProps = (column: VxeTableColumn<T>) => {
 
   // 如果 componentsProps 中有 filter，确保它被正确传递
   // PrimeVue Column 的 filter 属性支持 boolean 或对象
-  // 重要：filter 属性必须显式传递，否则 PrimeVue 不会显示筛选 UI
   if (column.componentsProps?.filter !== undefined) {
     props.filter = column.componentsProps.filter
-  } else if (column.filterable !== undefined) {
-    // 兼容性：如果列配置中直接有 filterable 属性，也传递 filter
-    props.filter = column.filterable
   }
 
   // 如果列配置中直接有 filter 属性（兼容性处理）
@@ -1888,64 +1698,27 @@ watch([() => footerMode.value, () => props.selectable, () => selectionModeComput
 /**
  * 统一处理布局更新
  * 包含：列宽同步(底部对齐模式)、高度计算(Fill/Fixed模式)
- * 使用防重入锁防止死循环
  */
 const updateLayout = () => {
-  // 防重入锁
-  if (isLayoutCalculating) {
-    return
+  if (footerMode.value === 'column-aligned') {
+    updateColumnWidths()
   }
 
-  isLayoutCalculating = true
-
-  requestAnimationFrame(() => {
-    try {
-      if (footerMode.value === 'column-aligned') {
-        updateColumnWidths()
-      }
-
-      if (sizeConfig.value.heightMode === 'fill') {
-        calculateAvailableHeight()
-      } else if (sizeConfig.value.heightMode === 'fixed') {
-        calculateFixedHeight()
-      }
-    } finally {
-      isLayoutCalculating = false
-    }
-  })
+  if (sizeConfig.value.heightMode === 'fill') {
+    calculateAvailableHeight()
+  } else if (sizeConfig.value.heightMode === 'fixed') {
+    calculateFixedHeight()
+  }
 }
 
-// 使用原生 ResizeObserver 监听容器尺寸变化
-let resizeObserver: ResizeObserver | null = null
-
-const setupResizeObserver = () => {
-  // 清理旧的观察器
-  if (resizeObserver) {
-    resizeObserver.disconnect()
-    resizeObserver = null
-  }
-
-  if (!tableWrapperFullRef.value) {
-    return
-  }
-
-  // 创建新的 ResizeObserver
-  resizeObserver = new ResizeObserver(entries => {
-    for (const entry of entries) {
-      const { width, height } = entry.contentRect
-
-      // 只有尺寸变化超过 1px 才触发布局更新
-      if (Math.abs(width - lastWidth) > 1 || Math.abs(height - lastHeight) > 1) {
-        lastWidth = width
-        lastHeight = height
-        requestAnimationFrame(updateLayout)
-      }
-    }
-  })
-
-  // 开始观察
-  resizeObserver.observe(tableWrapperFullRef.value)
-}
+// 监听容器尺寸变化，自动更新布局（节流避免高频计算）
+useElementSize(
+  tableWrapperFullRef,
+  () => {
+    updateLayout()
+  },
+  { mode: 'throttle', delay: 200 }
+)
 
 // 监听表格滚动：同步底部容器滚动，并在接近底部时触发 scroll-bottom 事件
 const handleTableScroll = (event: Event) => {
@@ -2044,11 +1817,6 @@ onMounted(() => {
     })
   }
 
-  // 设置 ResizeObserver 监听容器尺寸变化
-  nextTick(() => {
-    setupResizeObserver()
-  })
-
   // 添加滚动监听（用于滚动条自动隐藏和底部同步）
   setTimeout(() => {
     setupScrollListener()
@@ -2087,12 +1855,6 @@ onUnmounted(() => {
   // 移除滚动监听
   if (scrollWrapperRef.value) {
     scrollWrapperRef.value.removeEventListener('scroll', handleTableScroll)
-  }
-
-  // 清理 ResizeObserver
-  if (resizeObserver) {
-    resizeObserver.disconnect()
-    resizeObserver = null
   }
 })
 
@@ -2179,9 +1941,6 @@ defineExpose<VxeTableExpose>({
           span {{ refreshLabel }}
 
     // 表格主体
-    // 注意：PrimeVue 的筛选功能会自动筛选 :value 绑定的数据
-    // 如果同时有全局搜索和列筛选，需要先应用全局搜索，然后让 PrimeVue 应用列筛选
-    // 如果只有列筛选（通过 filters），则直接绑定 sourceData，让 PrimeVue 自动筛选
     DataTable(
       ref='tableRef',
       :value='filteredData',
@@ -2228,7 +1987,7 @@ defineExpose<VxeTableExpose>({
       v-model:filters='filtersModel',
       :filter-display='filterDisplayComputed',
       :global-filter-fields='globalFilterFieldsComputed',
-      @filter='(event: any) => { if (onFilterHandler.value) { onFilterHandler.value(event) } }',
+      @filter='onFilterHandler',
       v-bind='otherComponentsProps'
     )
       // 选择列（当启用选择功能时显示，位置可左右）
@@ -2289,32 +2048,12 @@ defineExpose<VxeTableExpose>({
             :row-data='data',
             :column='col'
           )
-        // 筛选插槽透传
-        // 关键：PrimeVue Column 的筛选插槽名称是固定的 #filter
-        // 规则：
-        // - 如果父组件提供了 filter_xxx / filter 插槽，则始终透传（row / menu 都支持）
-        // - 如果父组件没有提供插槽，则仅在 row 模式下声明 #filter，并渲染默认 InputText
-        //   在 menu 模式下不声明 #filter，让 PrimeVue 渲染内置高级筛选 UI
+        // 筛选插槽透传（支持 #filter_字段名 格式）
         template(
-          v-if='(col.componentsProps?.filter || col.filterable) && (hasColumnFilterSlot(col) || filterDisplayComputed === "row")',
-          #filter='slotProps'
+          v-if='$slots[`filter_${String(col.field)}`]',
+          #[`filter_${String(col.field)}`]='slotProps'
         )
-          // 1. 优先使用外部传入的具名插槽 filter_字段名
-          slot(
-            v-if='hasColumnFilterSlot(col)',
-            :name='"filter_" + String(col.field)',
-            v-bind='slotProps'
-          )
-          // 2. 其次使用外部传入的通用 filter 插槽
-          slot(v-else-if='$slots.filter', name='filter', v-bind='slotProps')
-          // 3. 如果没有自定义插槽，在 row 模式下提供默认输入框
-          //    由于 v-if 条件已保证只有在 row 模式且无插槽时才会进入这里，因此无需再次判断模式
-          template(v-else)
-            InputText(
-              :model-value='slotProps.filterModel?.value || ""',
-              @update:model-value='(val: string | undefined) => { if (slotProps.filterModel) { slotProps.filterModel.value = val || null || "" } if (slotProps.filterCallback) { slotProps.filterCallback() } }',
-              :placeholder='`Search by ${getColumnHeader(col)}`'
-            )
+          slot(:name='`filter_${String(col.field)}`', v-bind='slotProps')
 
       // 分组插槽透传（Row Grouping）
       template(#groupheader='slotProps')

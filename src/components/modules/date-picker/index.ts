@@ -1,4 +1,5 @@
 export { default as DatePicker } from './DatePicker.vue'
+export * from './utils/types'
 
 // 导出类型定义
 export type {

@@ -70,7 +70,17 @@ const customIconStyle = computed(() => {
   if (!isCustomIcon.value) {
     return undefined
   }
-  return getCustomIconSizeStyle(props.size)
+  const sizeStyle = getCustomIconSizeStyle(props.size)
+  const scaleStyle = props.scale !== undefined ? { transform: `scale(${props.scale})` } : undefined
+
+  if (!sizeStyle && !scaleStyle) {
+    return undefined
+  }
+
+  return {
+    ...sizeStyle,
+    ...scaleStyle,
+  }
 })
 
 /**
@@ -80,7 +90,17 @@ const ohVueIconStyle = computed(() => {
   if (isCustomIcon.value) {
     return undefined
   }
-  return getOhVueIconSizeStyle(props.size)
+  const sizeStyle = getOhVueIconSizeStyle(props.size)
+  const scaleStyle = props.scale !== undefined ? { transform: `scale(${props.scale})` } : undefined
+
+  if (!sizeStyle && !scaleStyle) {
+    return undefined
+  }
+
+  return {
+    ...sizeStyle,
+    ...scaleStyle,
+  }
 })
 
 /**
@@ -113,7 +133,6 @@ OhVueIcon(
   :animation='animation',
   :speed='speed',
   :hover='hover',
-  :scale='scale',
   :flip='flip',
   :rotate='rotate',
   :inverse='inverse',
