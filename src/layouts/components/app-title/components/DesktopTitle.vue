@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { AnimateWrapper } from '@/components/modules/animate-wrapper'
+import { AnimateWrapper } from '@/components/layout/animate-wrapper'
 import { useLayoutStore } from '@/stores'
 import { env } from '@/utils'
 import Image from 'primevue/image'

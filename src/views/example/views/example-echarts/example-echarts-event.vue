@@ -178,6 +178,9 @@ const barChartOption = ref({
     trigger: 'axis' as const,
   },
   legend: {},
+  grid: {
+    bottom: '26%',
+  },
   dataZoom: [
     {
       type: 'slider' as const,

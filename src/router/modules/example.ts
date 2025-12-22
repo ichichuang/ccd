@@ -284,7 +284,6 @@ const exampleRoutes: RouteConfig[] = [
                 meta: {
                   titleKey: 'router.example.components.echarts.default',
                   rank: 1,
-                  parent: 'fullscreen',
                   icon: 'fc-bar-chart',
                 },
               },
@@ -295,7 +294,7 @@ const exampleRoutes: RouteConfig[] = [
                   import('@/views/example/views/example-echarts/example-echarts-static.vue'),
                 meta: {
                   titleKey: 'router.example.components.echarts.static',
-                  rank: 2,
+                  rank: 5,
                   icon: 'fc-line-chart',
                   parent: 'fullscreen',
                 },
@@ -331,8 +330,20 @@ const exampleRoutes: RouteConfig[] = [
                   import('@/views/example/views/example-echarts/example-echarts-linkage.vue'),
                 meta: {
                   titleKey: 'router.example.components.echarts.linkage',
-                  rank: 5,
+                  rank: 2,
                   icon: 'fc-link',
+                },
+              },
+              {
+                path: 'theme-test',
+                name: 'ExampleComponentsEchartsThemeTest',
+                component: () =>
+                  import('@/views/example/views/example-echarts/example-echarts-theme-test.vue'),
+                meta: {
+                  titleKey: 'router.example.components.echarts.themeTest',
+                  rank: 6,
+                  icon: 'fc-refresh',
+                  parent: 'fullscreen',
                 },
               },
             ],

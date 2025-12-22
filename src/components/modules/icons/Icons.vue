@@ -22,7 +22,6 @@ const props = withDefaults(defineProps<IconsProps>(), {
   inverse: false,
   label: undefined,
   title: undefined,
-  class: undefined,
 })
 
 /**
@@ -31,86 +30,41 @@ const props = withDefaults(defineProps<IconsProps>(), {
 const isCustomIcon = computed(() => props.name.startsWith('i-'))
 
 /**
- * 转换后的图标名称（用于 OhVueIcon）
+ * UnoCSS 自定义图标相关属性
  */
-const iconName = computed(() => {
-  if (isCustomIcon.value) {
-    return props.name
-  }
-  return toIconName(props.name)
-})
-
-/**
- * 合并的类名
- */
-const mergedClass = computed(() => {
-  const classes: string[] = []
-
-  // 添加用户自定义类名
-  if (typeof props.class === 'string') {
-    classes.push(props.class)
-  } else if (Array.isArray(props.class)) {
-    classes.push(...props.class)
-  }
-
-  // 添加尺寸相关类名
-  if (isCustomIcon.value) {
-    classes.push(...getCustomIconSizeClass(props.size))
-  } else {
-    classes.push(...getOhVueIconSizeClass(props.size))
-  }
-
-  return classes
-})
-
-/**
- * 自定义图标的样式
- */
-const customIconStyle = computed(() => {
+const customIconAttrs = computed(() => {
   if (!isCustomIcon.value) {
-    return undefined
+    return null
   }
+
+  const sizeClass = getCustomIconSizeClass(props.size)
   const sizeStyle = getCustomIconSizeStyle(props.size)
   const scaleStyle = props.scale !== undefined ? { transform: `scale(${props.scale})` } : undefined
 
-  if (!sizeStyle && !scaleStyle) {
-    return undefined
-  }
-
   return {
-    ...sizeStyle,
-    ...scaleStyle,
+    class: sizeClass,
+    style: sizeStyle || scaleStyle ? { ...sizeStyle, ...scaleStyle } : undefined,
   }
 })
 
 /**
- * OhVueIcon 的样式
+ * OhVueIcon 相关属性
  */
-const ohVueIconStyle = computed(() => {
+const ohVueIconAttrs = computed(() => {
   if (isCustomIcon.value) {
-    return undefined
+    return null
   }
+
+  const sizeClass = getOhVueIconSizeClass(props.size)
   const sizeStyle = getOhVueIconSizeStyle(props.size)
   const scaleStyle = props.scale !== undefined ? { transform: `scale(${props.scale})` } : undefined
 
-  if (!sizeStyle && !scaleStyle) {
-    return undefined
-  }
-
   return {
-    ...sizeStyle,
-    ...scaleStyle,
+    name: toIconName(props.name),
+    size: getOhVueIconSizeProp(props.size),
+    class: sizeClass,
+    style: sizeStyle || scaleStyle ? { ...sizeStyle, ...scaleStyle } : undefined,
   }
-})
-
-/**
- * OhVueIcon 的 size prop
- */
-const ohVueIconSize = computed(() => {
-  if (isCustomIcon.value) {
-    return undefined
-  }
-  return getOhVueIconSizeProp(props.size)
 })
 </script>
 
@@ -118,8 +72,8 @@ const ohVueIconSize = computed(() => {
 // UnoCSS 自定义图标
 div(
   v-if='isCustomIcon',
-  :class='[iconName, ...mergedClass]',
-  :style='customIconStyle',
+  :class='[props.name, ...(customIconAttrs?.class ?? [])]',
+  :style='customIconAttrs?.style',
   :aria-label='label',
   :title='title'
 )
@@ -127,8 +81,8 @@ div(
 // OhVueIcon 图标
 OhVueIcon(
   v-else,
-  :name='iconName',
-  :size='ohVueIconSize',
+  :name='ohVueIconAttrs?.name',
+  :size='ohVueIconAttrs?.size',
   :color='color',
   :animation='animation',
   :speed='speed',
@@ -138,8 +92,8 @@ OhVueIcon(
   :inverse='inverse',
   :label='label',
   :title='title',
-  :class='mergedClass',
-  :style='ohVueIconStyle'
+  :class='ohVueIconAttrs?.class',
+  :style='ohVueIconAttrs?.style'
 )
 </template>
 

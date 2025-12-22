@@ -1,5 +1,5 @@
 <script setup lang="tsx">
-import { ALL_TIMEZONES, DATE_FORMATS, DateUtils, holidaysApi } from '@#/index'
+import { ALL_TIMEZONES, DATE_FORMATS, DateUtils } from '@#/index'
 import { useDateUtils } from '@/hooks'
 import { computed, onMounted, onUnmounted, ref } from 'vue'
 
@@ -26,7 +26,7 @@ const selectedCountry = ref<string>('CN')
 // 节假日相关状态
 const selectedYear = ref<number>(new Date().getFullYear())
 const countryHolidays = ref<any[]>([])
-const supportedCountries = computed(() => getSupportedHolidayCountries().value)
+const supportedCountries = computed(() => getSupportedHolidayCountries())
 
 // 根据国家获取节假日
 const fetchCountryHolidays = (country: string, year: number) => {
@@ -56,8 +56,6 @@ onMounted(() => {
   // 导入2024年中国节假日和调休日
   DateUtils.importPresetHolidays(2024, 'CN')
 
-  // 初始化国际节假日
-  holidaysApi.init('CN')
   fetchCountryHolidays('CN', selectedYear.value)
 })
 
@@ -167,15 +165,15 @@ const timezoneExamples = computed(() => {
 // 时区库示例
 const tzdbExamples = computed(() => {
   const tzInfo = ALL_TIMEZONES.find(tz => tz.name === currentTz.value)
-  const groupedZones = getAvailableTimezones(true).value as Record<string, typeof ALL_TIMEZONES>
+  const groupedZones = getAvailableTimezones(true) as Record<string, typeof ALL_TIMEZONES>
 
   return {
     currentZone: tzInfo,
     totalTimezones: ALL_TIMEZONES.length,
     continents: Object.keys(groupedZones).length,
     countriesWithTimezones: [...new Set(ALL_TIMEZONES.map(tz => tz.countryCode))].length,
-    chinaTimezones: getTimezonesByCountry('CN').value.length,
-    usTimezones: getTimezonesByCountry('US').value.length,
+    chinaTimezones: getTimezonesByCountry('CN').length,
+    usTimezones: getTimezonesByCountry('US').length,
   }
 })
 
@@ -192,10 +190,7 @@ const holidayExamples = computed(() => {
 
 // 获取@vvo/tzdb中的大洲
 const continents = computed(() => {
-  const groupedByContinent = getAvailableTimezones(true).value as Record<
-    string,
-    typeof ALL_TIMEZONES
-  >
+  const groupedByContinent = getAvailableTimezones(true) as Record<string, typeof ALL_TIMEZONES>
   return Object.keys(groupedByContinent).map(continent => ({
     name: continent,
     count: Array.isArray(groupedByContinent[continent]) ? groupedByContinent[continent].length : 0,

@@ -5,6 +5,45 @@
 import type { IconSize } from './types'
 
 /**
+ * 尺寸映射表（单一数据源）
+ */
+const sizeMap = {
+  s: {
+    customClass: ['fs-appFontSizes'],
+    ohVueClass: ['w-appFontSizes', 'h-appFontSizes'],
+  },
+  m: {
+    customClass: ['fs-appFontSizex'],
+    ohVueClass: ['w-appFontSizex', 'h-appFontSizex'],
+  },
+  l: {
+    customClass: ['fs-appFontSizel'],
+    ohVueClass: ['w-appFontSizel', 'h-appFontSizel'],
+  },
+} as const
+
+/**
+ * 检查字符串是否包含单位
+ */
+function hasUnit(value: string): boolean {
+  return /%(?:$|[\s,])|px|vw|vh|em|rem|ex|ch|cm|mm|in|pt|pc/i.test(value)
+}
+
+/**
+ * 格式化尺寸值为 CSS 值
+ */
+function formatSizeValue(size: number | string): string {
+  if (typeof size === 'number') {
+    return `${size}px`
+  }
+  // 如果是字符串且没有单位，默认添加 px
+  if (!hasUnit(size)) {
+    return `${size}px`
+  }
+  return size
+}
+
+/**
  * 将 PascalCase 或 camelCase 转换为 kebab-case
  * @param str 输入字符串，如 'FcIcon' 或 'RiArrowLeftSLine'
  * @returns kebab-case 字符串，如 'fc-icon' 或 'ri-arrow-left-s-line'
@@ -41,18 +80,11 @@ export function getCustomIconSizeClass(size?: IconSize): string[] {
     return ['fs-appFontSize']
   }
 
-  if (size === 's') {
-    return ['fs-appFontSizes']
+  if (size === 's' || size === 'm' || size === 'l') {
+    return sizeMap[size].customClass
   }
 
-  if (size === 'm') {
-    return ['fs-appFontSizex']
-  }
-
-  if (size === 'l') {
-    return ['fs-appFontSizel']
-  }
-
+  // 数字或字符串类型的 size 不需要类名（使用 style 控制）
   return []
 }
 
@@ -62,31 +94,15 @@ export function getCustomIconSizeClass(size?: IconSize): string[] {
  * @returns 样式对象
  */
 export function getCustomIconSizeStyle(size?: IconSize): Record<string, string> | undefined {
+  // 未指定尺寸或使用固定尺寸（s/m/l）时，使用类名控制，不需要样式
   if (!size || size === 's' || size === 'm' || size === 'l') {
     return undefined
   }
 
-  if (typeof size === 'number') {
-    return {
-      fontSize: `${size}px`,
-    }
+  // 数字或字符串类型的 size 使用样式控制
+  return {
+    fontSize: formatSizeValue(size),
   }
-
-  if (typeof size === 'string') {
-    // 检查是否包含 %、vw、vh 等单位
-    if (size.includes('%') || size.includes('vw') || size.includes('vh') || size.includes('px')) {
-      return {
-        fontSize: size,
-      }
-    }
-
-    // 如果没有单位，默认添加 px
-    return {
-      fontSize: `${size}px`,
-    }
-  }
-
-  return undefined
 }
 
 /**
@@ -99,18 +115,11 @@ export function getOhVueIconSizeClass(size?: IconSize): string[] {
     return ['w-appFontSize', 'h-appFontSize']
   }
 
-  if (size === 's') {
-    return ['w-appFontSizes', 'h-appFontSizes']
+  if (size === 's' || size === 'm' || size === 'l') {
+    return sizeMap[size].ohVueClass
   }
 
-  if (size === 'm') {
-    return ['w-appFontSizex', 'h-appFontSizex']
-  }
-
-  if (size === 'l') {
-    return ['w-appFontSizel', 'h-appFontSizel']
-  }
-
+  // 数字或字符串类型的 size 不需要类名（使用 style 控制）
   return []
 }
 
@@ -120,34 +129,17 @@ export function getOhVueIconSizeClass(size?: IconSize): string[] {
  * @returns 样式对象
  */
 export function getOhVueIconSizeStyle(size?: IconSize): Record<string, string> | undefined {
+  // 未指定尺寸或使用固定尺寸（s/m/l）时，使用类名控制，不需要样式
   if (!size || size === 's' || size === 'm' || size === 'l') {
     return undefined
   }
 
-  if (typeof size === 'number') {
-    return {
-      width: `${size}px`,
-      height: `${size}px`,
-    }
+  // 数字或字符串类型的 size 使用样式控制
+  const sizeValue = formatSizeValue(size)
+  return {
+    width: sizeValue,
+    height: sizeValue,
   }
-
-  if (typeof size === 'string') {
-    // 检查是否包含 %、vw、vh 等单位
-    if (size.includes('%') || size.includes('vw') || size.includes('vh') || size.includes('px')) {
-      return {
-        width: size,
-        height: size,
-      }
-    }
-
-    // 如果没有单位，默认添加 px
-    return {
-      width: `${size}px`,
-      height: `${size}px`,
-    }
-  }
-
-  return undefined
 }
 
 /**

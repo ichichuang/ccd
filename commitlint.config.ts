@@ -60,10 +60,10 @@ export default {
     // 正文规则
     'body-leading-blank': [2, 'always'],
     'body-max-line-length': [2, 'always', 100],
-    'body-min-length': [1, 'always', 10],
+    // 'body-min-length': [1, 'always', 10],
 
     // 页脚规则
-    'footer-leading-blank': [1, 'always'],
+    'footer-leading-blank': [2, 'always'],
     'footer-max-line-length': [2, 'always', 100],
 
     // 类型规则

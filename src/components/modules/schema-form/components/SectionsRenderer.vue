@@ -20,6 +20,7 @@
         :global-layout="globalLayout"
         :global-style="globalStyle"
         :style="colStyle(columnByField(fieldName)?.layout)"
+        :preview="preview"
       />
     </template>
   </template>
@@ -39,5 +40,6 @@ defineProps<{
   globalStyle?: StyleConfig
   columnByField: (field: string) => SchemaColumnsItem | undefined
   colStyle: (layout?: LayoutConfig) => Record<string, string>
+  preview?: boolean
 }>()
 </script>

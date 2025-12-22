@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { Schema } from '@/components/modules/schema-form/utils/types'
-import { useSchemaForm } from '@/hooks/components/useSchemaForm'
+import { useSchemaForm, type SchemaFormExpose } from '@/hooks/components/useSchemaForm'
 import { ref, watch } from 'vue'
 
 // ==================== 分步 Schema 定义 ====================
@@ -176,32 +176,27 @@ const initialSchema: Schema = {
   gapY: 24,
 }
 
-// ==================== 表单 Ref & Hook ====================
-const schemaFormRef = ref<any>(null)
-const { formValues, schema, submitForm, getFormValues, updateField, setFieldValue } = useSchemaForm(
-  {
-    formRef: schemaFormRef,
-    initialSchema,
-  }
-)
+// ==================== 表单 Ref & Hook (P2 重构后) ====================
+const schemaFormRef = ref<SchemaFormExpose | null>(null)
+const { formValues, schema, getFormValues, updateField, setFieldValue } = useSchemaForm({
+  initialSchema,
+})
 
 // ==================== 处理函数 ====================
 const handleSubmit = async (_values: Record<string, any>) => {
-  const { valid } = await submitForm()
-  if (valid) {
-    window.$toast?.success?.('表单校验通过并已提交！')
-  } else {
-    window.$toast?.error?.('当前步骤校验未通过，请检查必填项或格式')
-  }
+  // 🔥 P2 重构：handleSubmit 由 SchemaForm 的 @submit 事件触发，已经验证通过
+  window.$toast?.success?.('表单校验通过并已提交！')
 }
 
 const handleSubmitForm = async () => {
-  const { valid } = await submitForm()
-  if (valid) {
-    window.$toast?.success?.('表单校验通过并已提交！')
-  } else {
-    window.$toast?.error?.('当前步骤校验未通过，请检查必填项或格式')
+  if (!schemaFormRef.value) {
+    window.$toast?.error?.('表单组件未就绪')
+    return
   }
+
+  // 🔥 P2 重构：通过 ref 调用组件的 submit 方法
+  schemaFormRef.value.submit()
+  // 注意：submit 方法会触发 @submit 事件，实际的验证和提交逻辑在 handleSubmit 中处理
 }
 
 const handlePreviewValues = () => {
@@ -247,7 +242,8 @@ const isSameValue = (a: any, b: any) => {
 }
 
 const patchDateFieldProps = (field: string, patch: Record<string, any>) => {
-  const target = schema.columns.find(column => column.field === field)
+  // 🔥 P2 重构：schema 现在是 Readonly<Ref<Schema>>，需要通过 .value 访问
+  const target = schema.value.columns.find((column: any) => column.field === field)
   if (!target) {
     return
   }
@@ -281,11 +277,19 @@ const syncDateFieldConstraints = (rawStart: any, rawEnd: any) => {
   let normalizedStart = toDateValue(rawStart)
   let normalizedEnd = toDateValue(rawEnd)
 
+  // 规范化日期：只保留日期部分，忽略时间
+  const normalizeDateOnly = (date: Date) => {
+    const normalized = new Date(date)
+    normalized.setHours(0, 0, 0, 0)
+    return normalized
+  }
+
   const minEndDate = (() => {
     if (!normalizedStart) {
       return today
     }
-    const dayAfterStart = addDays(normalizedStart, 1)
+    const normalizedStartDate = normalizeDateOnly(normalizedStart)
+    const dayAfterStart = addDays(normalizedStartDate, 1)
     return dayAfterStart.getTime() > today.getTime() ? dayAfterStart : today
   })()
 
@@ -293,9 +297,14 @@ const syncDateFieldConstraints = (rawStart: any, rawEnd: any) => {
     minDate: minEndDate,
   })
 
-  if (normalizedEnd && normalizedEnd.getTime() <= minEndDate.getTime()) {
-    setFieldValue('endDate', null)
-    normalizedEnd = null
+  // 🔥 修复：只有当结束日期严格小于最小结束日期时才清空
+  // 如果结束日期等于或大于 minEndDate（即开始日期的下一天），这是合法的，不应该清空
+  if (normalizedEnd) {
+    const normalizedEndDate = normalizeDateOnly(normalizedEnd)
+    if (normalizedEndDate.getTime() < minEndDate.getTime()) {
+      setFieldValue('endDate', null)
+      normalizedEnd = null
+    }
   }
 
   patchDateFieldProps('startDate', {
@@ -320,10 +329,21 @@ const syncDateFieldConstraints = (rawStart: any, rawEnd: any) => {
     return
   }
 
-  const minMeeting = new Date(Math.max(normalizedStart.getTime(), today.getTime()))
-  const maxMeeting = addDays(normalizedEnd, -1)
+  // 🔥 修复：会议时间可以选择开始日期到结束日期之间的任何时间（包括结束日期）
+  // 规范化日期，只比较日期部分
+  const normalizedStartDate = normalizeDateOnly(normalizedStart)
+  const normalizedEndDate = normalizeDateOnly(normalizedEnd)
 
-  if (maxMeeting.getTime() <= minMeeting.getTime()) {
+  // 最小会议时间：开始日期（或今天，取较大者）的 00:00:00
+  const minMeeting = new Date(Math.max(normalizedStartDate.getTime(), today.getTime()))
+  minMeeting.setHours(0, 0, 0, 0)
+
+  // 最大会议时间：结束日期的 23:59:59
+  const maxMeeting = new Date(normalizedEndDate)
+  maxMeeting.setHours(23, 59, 59, 999)
+
+  // 如果开始日期和结束日期是同一天，或者开始日期大于结束日期，禁用会议时间
+  if (normalizedStartDate.getTime() > normalizedEndDate.getTime()) {
     patchDateFieldProps('meetingTime', {
       minDate: minMeeting,
       maxDate: undefined,
@@ -335,12 +355,14 @@ const syncDateFieldConstraints = (rawStart: any, rawEnd: any) => {
     return
   }
 
+  // 启用会议时间选择，范围是开始日期到结束日期
   patchDateFieldProps('meetingTime', {
     minDate: minMeeting,
     maxDate: maxMeeting,
     disabled: false,
   })
 
+  // 验证已选择的会议时间是否在有效范围内
   const meetingValue = toDateValue(formValues.value.meetingTime)
   if (
     meetingValue &&
@@ -385,7 +407,13 @@ div
 
   .p-padding
     // 分步表单组件
-    SchemaForm(:schema='schema', @submit='handleSubmit', ref='schemaFormRef', :remember='true')
+    SchemaForm(
+      :schema='schema',
+      v-model='formValues',
+      @submit='handleSubmit',
+      ref='schemaFormRef',
+      :remember='true'
+    )
 
   .full.c-card.fs-appFontSizes.between-col.gap-gap
     span.fs-appFontSizex 表单数据实时预览：

@@ -1,4 +1,3 @@
-import Holidays from 'date-holidays'
 import dayjs from 'dayjs'
 
 // 导入插件
@@ -318,6 +317,9 @@ export interface CacheOptions {
   enabled?: boolean // 是否启用缓存
 }
 
+const DEFAULT_LOCALE: Locale = 'zh-CN'
+const DEFAULT_TIMEZONE = 'Asia/Shanghai'
+
 // ===== 枚举类型 =====
 // 日期格式枚举
 export enum DateFormatEnum {
@@ -404,6 +406,8 @@ export const CACHE_DEFAULTS = {
   maxSize: 1000,
   enabled: true,
 } as const
+
+let timezoneState = DEFAULT_TIMEZONE
 
 // 日期范围常量
 export const DATE_RANGES = {
@@ -508,12 +512,6 @@ export class DateUtils {
   private static cache = new Map<string, { value: any; timestamp: number }>()
   private static readonly cacheTtl = CACHE_DEFAULTS.ttl
 
-  // 当前语言环境
-  private static currentLocale: Locale = 'zh-CN' // 框架默认中文
-
-  // 当前时区
-  private static currentTimezone: string = 'Asia/Shanghai'
-
   // 语言切换监听器
   private static localeChangeListeners = new Set<(locale: Locale) => void>()
 
@@ -557,7 +555,7 @@ export class DateUtils {
     if (typeof window !== 'undefined') {
       window.addEventListener('locale-changed', (event: any) => {
         const { locale } = event.detail
-        if (locale && locale !== this.currentLocale) {
+        if (locale) {
           this.syncWithFrameworkLocale(locale)
         }
       })
@@ -567,7 +565,7 @@ export class DateUtils {
       // 监听时区切换事件
       window.addEventListener('timezone-changed', (event: any) => {
         const { timezone } = event.detail
-        if (timezone && timezone !== this.currentTimezone) {
+        if (timezone) {
           this.syncWithFrameworkTimezone(timezone)
         }
       })
@@ -584,7 +582,6 @@ export class DateUtils {
   private static async syncWithFrameworkLocale(frameworkLocale: Locale): Promise<void> {
     try {
       await this.setLocale(frameworkLocale)
-      this.currentLocale = frameworkLocale
 
       // 通知所有监听器
       this.localeChangeListeners.forEach(listener => {
@@ -606,7 +603,7 @@ export class DateUtils {
    */
   private static syncWithFrameworkTimezone(frameworkTimezone: string): void {
     try {
-      this.currentTimezone = frameworkTimezone
+      this.setTimezone(frameworkTimezone)
 
       // 通知所有监听器
       this.timezoneChangeListeners.forEach(listener => {
@@ -743,7 +740,6 @@ export class DateUtils {
     await this.loadLocale(locale)
     const dayjsLocale = this.getDayjsLocaleCode(locale)
     dayjs.locale(dayjsLocale)
-    this.currentLocale = locale
   }
 
   /**
@@ -766,8 +762,8 @@ export class DateUtils {
       mode = 'auto',
       format = DATE_FORMATS.datetime,
       formatKey = 'datetime',
-      locale = this.currentLocale,
-      timezone = this.currentTimezone,
+      locale = DEFAULT_LOCALE,
+      timezone = timezoneState,
       intlOptions,
       fallback = 'Invalid Date',
     } = params
@@ -811,7 +807,7 @@ export class DateUtils {
         day = day.tz(timezone)
       }
 
-      if (locale && locale !== this.currentLocale) {
+      if (locale) {
         const currentDayjsLocale = dayjs.locale()
         const targetDayjsLocale = this.getDayjsLocaleCode(locale)
         try {
@@ -839,7 +835,6 @@ export class DateUtils {
     }
     const dayjsLocale = this.getDayjsLocaleCode(locale)
     dayjs.locale(dayjsLocale)
-    this.currentLocale = locale
   }
 
   /**
@@ -855,7 +850,7 @@ export class DateUtils {
    * @returns 当前框架语言环境标识
    */
   static getCurrentLocale(): Locale {
-    return this.currentLocale
+    return dayjs.locale() as Locale
   }
 
   /**
@@ -902,7 +897,7 @@ export class DateUtils {
    * @param timezone - 时区代码
    */
   static setTimezone(timezone: string): void {
-    this.currentTimezone = timezone
+    timezoneState = timezone
   }
 
   /**
@@ -910,7 +905,7 @@ export class DateUtils {
    * @returns 当前时区代码
    */
   static getCurrentTimezone(): string {
-    return this.currentTimezone
+    return timezoneState
   }
 
   /**
@@ -1018,7 +1013,13 @@ export class DateUtils {
     options: TimestampFormatOptions = {}
   ): string {
     try {
-      const { precision = 'second', locale, customFormat, timezone, truncate = false } = options
+      const {
+        precision = 'second',
+        locale = DEFAULT_LOCALE,
+        customFormat,
+        timezone = timezoneState,
+        truncate = false,
+      } = options
       const ms = this.normalizeTimestamp(timestamp)
       let date = dayjs(ms)
       if (!date.isValid()) {
@@ -1046,8 +1047,8 @@ export class DateUtils {
    */
   static formatIntl(
     date: DateInput,
-    locale?: Locale,
-    timezone?: string,
+    locale: Locale = DEFAULT_LOCALE,
+    timezone: string = timezoneState,
     options: Intl.DateTimeFormatOptions = {}
   ): string {
     return this.coreFormat(date, {
@@ -1078,7 +1079,12 @@ export class DateUtils {
     formatStyle: 'system' | 'dayjs' | 'auto' = 'auto',
     options: FormatOptions & { intlOptions?: Intl.DateTimeFormatOptions } = {}
   ): string {
-    const { locale, timezone, fallback = 'Invalid Date', intlOptions } = options
+    const {
+      locale = DEFAULT_LOCALE,
+      timezone = timezoneState,
+      fallback = 'Invalid Date',
+      intlOptions,
+    } = options
     if (formatStyle === 'system') {
       return this.coreFormat(date, { mode: 'intl', locale, timezone, intlOptions, fallback })
     }
@@ -1112,8 +1118,8 @@ export class DateUtils {
   static formatI18n(
     date: DateInput,
     formatKey: 'short' | 'long' | 'datetime' | 'time' | 'dateOnly' | 'timeOnly' = 'datetime',
-    locale?: Locale,
-    timezone?: string
+    locale: Locale = DEFAULT_LOCALE,
+    timezone: string = timezoneState
   ): string {
     return this.coreFormat(date, {
       mode: 'i18n',
@@ -1199,7 +1205,13 @@ export class DateUtils {
     options: TimestampFormatOptions = {}
   ): Promise<string> {
     try {
-      const { precision = 'second', locale, customFormat, timezone, truncate = false } = options
+      const {
+        precision = 'second',
+        locale = DEFAULT_LOCALE,
+        customFormat,
+        timezone = timezoneState,
+        truncate = false,
+      } = options
 
       const ms = this.normalizeTimestamp(timestamp)
       let date = dayjs(ms)
@@ -1636,6 +1648,10 @@ export class DateUtils {
    */
   static initCountryHolidays(countryCode: string, state?: string, region?: string): boolean {
     try {
+      const api = getHolidaysApi()
+      if (!api) {
+        return false
+      }
       const args: string[] = [countryCode]
       if (state) {
         args.push(state)
@@ -1644,7 +1660,7 @@ export class DateUtils {
         args.push(region)
       }
 
-      const result = holidaysApi.init(...args)
+      const result = api.init(...args)
       return result !== undefined ? true : false
     } catch (error) {
       console.error('Failed to initialize country holidays:', error)
@@ -1665,8 +1681,13 @@ export class DateUtils {
     importToDateUtils: boolean = false
   ): HolidayInfo[] | null {
     try {
-      holidaysApi.init(countryCode)
-      const holidays = holidaysApi.getHolidays(year) as HolidayInfo[]
+      const api = getHolidaysApi()
+      if (!api) {
+        return null
+      }
+
+      api.init(countryCode)
+      const holidays = api.getHolidays(year) as HolidayInfo[]
 
       if (importToDateUtils && holidays && Array.isArray(holidays)) {
         // 转换为DateUtils的Holiday格式并导入
@@ -1695,7 +1716,11 @@ export class DateUtils {
    */
   static getSupportedCountries(): Record<string, string> {
     try {
-      return holidaysApi.getCountries()
+      const api = getHolidaysApi()
+      if (!api) {
+        return {}
+      }
+      return api.getCountries()
     } catch (error) {
       console.error('Failed to get supported countries:', error)
       return {}
@@ -1710,9 +1735,13 @@ export class DateUtils {
    */
   static isCountryHoliday(date: DateInput, countryCode: string = 'CN'): boolean {
     try {
-      holidaysApi.init(countryCode)
+      const api = getHolidaysApi()
+      if (!api) {
+        return false
+      }
+      api.init(countryCode)
       const d = this.validateDateInput(date, 'isCountryHoliday')
-      const result = holidaysApi.isHoliday(d.toDate())
+      const result = api.isHoliday(d.toDate())
       return result !== false
     } catch (error) {
       console.error('Failed to check country holiday:', error)
@@ -1728,9 +1757,13 @@ export class DateUtils {
    */
   static getCountryHolidayInfo(date: DateInput, countryCode: string = 'CN'): HolidayInfo | null {
     try {
-      holidaysApi.init(countryCode)
+      const api = getHolidaysApi()
+      if (!api) {
+        return null
+      }
+      api.init(countryCode)
       const d = this.validateDateInput(date, 'getCountryHolidayInfo')
-      const result = holidaysApi.isHoliday(d.toDate())
+      const result = api.isHoliday(d.toDate())
       return result === false ? null : (result as unknown as HolidayInfo)
     } catch (error) {
       console.error('Failed to get holiday info:', error)
@@ -2236,7 +2269,7 @@ export interface TimeZoneMinimal {
 }
 
 // 内部缓存与动态加载器（避免 Vite 对 @vvo/tzdb 的预编译解析报错）
-const _ALL_TIMEZONES_INTERNAL: TimeZoneMinimal[] = [
+let _ALL_TIMEZONES_INTERNAL: TimeZoneMinimal[] = [
   { name: 'UTC', countryCode: 'UN', currentTimeOffsetInMinutes: 0 },
   { name: 'Asia/Shanghai', countryCode: 'CN', currentTimeOffsetInMinutes: 480 },
   { name: 'Asia/Tokyo', countryCode: 'JP', currentTimeOffsetInMinutes: 540 },
@@ -2297,14 +2330,46 @@ const _ALL_TIMEZONES_INTERNAL: TimeZoneMinimal[] = [
 // 对外导出可变的时区数组引用（异步加载成功后会被更新）
 export let ALL_TIMEZONES: TimeZoneMinimal[] = _ALL_TIMEZONES_INTERNAL
 
-// 同步 ALL_TIMEZONES 引用到内部缓存（在动态加载完成后）
-;(async () => {
-  // await loadTzdbSafely()
-  ALL_TIMEZONES = _ALL_TIMEZONES_INTERNAL
-})()
+let loadTzdbPromise: Promise<void> | null = null
 
-// 创建 date-holidays 实例
-export const holidaysApi = new Holidays()
+export const loadTzdbSafely = async (): Promise<void> => {
+  if (loadTzdbPromise) {
+    return loadTzdbPromise
+  }
+
+  if (typeof window === 'undefined' || typeof fetch === 'undefined') {
+    return
+  }
+
+  const cdnUrls = [
+    '/time-zones.json',
+    '/static/time-zones.json',
+    'https://raw.githubusercontent.com/vvo/tzdb/main/dist/time-zones.json',
+    'https://cdn.jsdelivr.net/gh/vvo/tzdb@main/dist/time-zones.json',
+    'https://cdn.jsdelivr.net/npm/@vvo/tzdb@latest/dist/time-zones.json',
+  ]
+
+  loadTzdbPromise = (async () => {
+    for (const url of cdnUrls) {
+      try {
+        const res = await fetch(url, { cache: 'force-cache' as RequestCache })
+        if (!res.ok) {
+          continue
+        }
+        const zones = (await res.json()) as TimeZoneMinimal[]
+        if (Array.isArray(zones) && zones.length > 0 && zones[0].name) {
+          _ALL_TIMEZONES_INTERNAL = zones
+          ALL_TIMEZONES = _ALL_TIMEZONES_INTERNAL
+          break
+        }
+      } catch (error) {
+        console.warn('[tzdb] load failed from', url, error)
+      }
+    }
+  })()
+
+  return loadTzdbPromise
+}
 
 // 节假日信息接口
 export interface HolidayInfo {
@@ -2316,8 +2381,38 @@ export interface HolidayInfo {
   [key: string]: any
 }
 
-// 初始化全局节假日API
-holidaysApi.init('CN') // 默认使用中国节假日
+let holidaysApi: any | null = null
+let holidaysApiReady = false
+let holidaysApiLoader: Promise<void> | null = null
+
+const ensureHolidaysApi = async (): Promise<void> => {
+  if (holidaysApiReady && holidaysApi) {
+    return
+  }
+  if (!holidaysApiLoader) {
+    holidaysApiLoader = import('date-holidays')
+      .then(module => {
+        const holidaysCtor = module.default
+        holidaysApi = new holidaysCtor()
+        holidaysApi.init('CN')
+        holidaysApiReady = true
+      })
+      .catch(error => {
+        console.error('Failed to load date-holidays:', error)
+        holidaysApiReady = false
+        holidaysApi = null
+      })
+  }
+  await holidaysApiLoader
+}
+
+const getHolidaysApi = () => {
+  if (holidaysApiReady && holidaysApi) {
+    return holidaysApi
+  }
+  void ensureHolidaysApi()
+  return null
+}
 
 // 导出 dayjs 实例，方便直接使用
 export { dayjs }

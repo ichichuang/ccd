@@ -1,19 +1,11 @@
 <script setup lang="ts">
 import { debounce, throttle } from '@/common'
 import { INTERVAL, STRATEGY } from '@/constants/modules/layout'
-import { useChartTheme, useElementSize } from '@/hooks'
+import { useElementSize } from '@/hooks'
+import { useChartTheme } from '@/hooks/modules/useChartTheme/index'
 import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
 import VECharts from 'vue-echarts'
-import {
-  createDefaultUseEchartsProps,
-  DEFAULT_ANIMATION_CONFIG,
-  getDefaultAxisPointerConfig,
-  getDefaultBrushConfig,
-  getDefaultMarkLineConfig,
-  getDefaultMarkPointConfig,
-  getDefaultToolboxConfig,
-  getDefaultVisualMapConfig,
-} from './utils/constants'
+import { createDefaultUseEchartsProps } from './utils/constants'
 import type { ChartConnectState, UseEchartsProps } from './utils/types'
 
 const props = withDefaults(defineProps<UseEchartsProps & { group?: string }>(), {
@@ -60,133 +52,35 @@ useElementSize(
   { mode: 'none', delay: INTERVAL }
 )
 
-// 合并高级配置到 ECharts 选项
-const mergeAdvancedConfigs = (option: any) => {
-  const mergedOption = { ...option }
-
-  // 合并动画配置
-  if (props.animationConfig) {
-    const animationConfig =
-      typeof props.animationConfig === 'function'
-        ? (props.animationConfig as any)()
-        : { ...DEFAULT_ANIMATION_CONFIG, ...props.animationConfig }
-    mergedOption.animation = animationConfig.animation
-    mergedOption.animationDuration = animationConfig.duration
-    mergedOption.animationEasing = animationConfig.easing
-    mergedOption.animationDelay = animationConfig.delay
-    mergedOption.animationDurationUpdate = animationConfig.animationDurationUpdate
-    mergedOption.animationEasingUpdate = animationConfig.animationEasingUpdate
-  }
-
-  // 合并工具箱配置
-  if (props.toolboxConfig) {
-    const toolboxConfig =
-      typeof props.toolboxConfig === 'function'
-        ? (props.toolboxConfig as any)()
-        : props.toolboxConfig
-    if (toolboxConfig && toolboxConfig.show) {
-      mergedOption.toolbox = { ...getDefaultToolboxConfig(), ...toolboxConfig }
-    }
-  }
-
-  // 合并标记点配置
-  if (props.markPointConfig) {
-    const markPointConfig =
-      typeof props.markPointConfig === 'function'
-        ? (props.markPointConfig as any)()
-        : props.markPointConfig
-    if (markPointConfig && markPointConfig.show) {
-      const finalMarkPointConfig = { ...getDefaultMarkPointConfig(), ...markPointConfig }
-      if (mergedOption.series && Array.isArray(mergedOption.series)) {
-        mergedOption.series.forEach((series: any) => {
-          if (!series.markPoint) {
-            series.markPoint = finalMarkPointConfig
-          }
-        })
-      }
-    }
-  }
-
-  // 合并标记线配置
-  if (props.markLineConfig) {
-    const markLineConfig =
-      typeof props.markLineConfig === 'function'
-        ? (props.markLineConfig as any)()
-        : props.markLineConfig
-    if (markLineConfig && markLineConfig.show) {
-      const finalMarkLineConfig = { ...getDefaultMarkLineConfig(), ...markLineConfig }
-      if (mergedOption.series && Array.isArray(mergedOption.series)) {
-        mergedOption.series.forEach((series: any) => {
-          if (!series.markLine) {
-            series.markLine = finalMarkLineConfig
-          }
-        })
-      }
-    }
-  }
-
-  // 合并可视化映射配置
-  if (props.visualMapConfig) {
-    const visualMapConfig =
-      typeof props.visualMapConfig === 'function'
-        ? (props.visualMapConfig as any)()
-        : props.visualMapConfig
-    if (visualMapConfig && visualMapConfig.show) {
-      mergedOption.visualMap = { ...getDefaultVisualMapConfig(), ...visualMapConfig }
-    }
-  }
-
-  // 合并画刷配置
-  if (props.brushConfig) {
-    const brushConfig =
-      typeof props.brushConfig === 'function' ? (props.brushConfig as any)() : props.brushConfig
-    if (brushConfig && brushConfig.show) {
-      mergedOption.brush = { ...getDefaultBrushConfig(), ...brushConfig }
-    }
-  }
-
-  // 合并坐标轴指示器配置
-  if (props.axisPointerConfig) {
-    const axisPointerConfig =
-      typeof props.axisPointerConfig === 'function'
-        ? (props.axisPointerConfig as any)()
-        : { ...getDefaultAxisPointerConfig(), ...props.axisPointerConfig }
-    if (!mergedOption.tooltip) {
-      mergedOption.tooltip = {}
-    }
-    mergedOption.tooltip.axisPointer = axisPointerConfig
-  }
-
-  // 合并图例悬停联动配置
-  if (props.legendHoverLink !== undefined) {
-    mergedOption.legendHoverLink = props.legendHoverLink
-  }
-
-  // 合并背景颜色
-  if (props.backgroundColor) {
-    mergedOption.backgroundColor = props.backgroundColor
-  }
-
-  return mergedOption
-}
-
 // 使用主题合并后的配置
+const optionRef = computed(() => props.option)
+const opacityConfigRef = computed(() => props.themeConfig?.opacity)
+const advancedConfigRef = computed(() => ({
+  animationConfig: props.animationConfig,
+  toolboxConfig: props.toolboxConfig,
+  markPointConfig: props.markPointConfig,
+  markLineConfig: props.markLineConfig,
+  visualMapConfig: props.visualMapConfig,
+  brushConfig: props.brushConfig,
+  axisPointerConfig: props.axisPointerConfig,
+  legendHoverLink: props.legendHoverLink,
+  backgroundColor: props.backgroundColor,
+}))
+
+// 使用响应式 Hook
+const { themedOption } = useChartTheme(optionRef, opacityConfigRef as any, advancedConfigRef as any)
+
+// 如果未启用主题，直接返回原始配置
 const mergedOption = computed(() => {
   if (!props.option || Object.keys(props.option).length === 0) {
     return {}
   }
 
-  let finalOption = props.option
-
-  // 如果启用了主题,应用主题配置
-  if (props.themeConfig?.enableTheme !== false) {
-    finalOption = useChartTheme(props.option, props.themeConfig?.opacity)
+  if (props.themeConfig?.enableTheme === false) {
+    return props.option
   }
 
-  // 合并高级配置
-  finalOption = mergeAdvancedConfigs(finalOption)
-
-  return finalOption
+  return themedOption.value
 })
 
 // 监听配置变化,手动更新图表
@@ -200,256 +94,101 @@ watch(
   { deep: true }
 )
 
-// 事件处理器 - 简化版本,依赖 ECharts 原生 connect
-const createEventHandler = (originalHandler: any, _eventType: string) => {
+/**
+ * 将驼峰命名的事件处理器 prop 名转换为 ECharts 事件名
+ * 例如: onClick -> click, onDblClick -> dblclick, onLegendSelectChanged -> legendselectchanged
+ */
+const convertPropNameToEventName = (propName: string): string => {
+  // 移除 'on' 前缀
+  const nameWithoutOn = propName.substring(2)
+  // ECharts 事件名都是小写，直接转换为小写即可
+  return nameWithoutOn.toLowerCase()
+}
+
+/**
+ * 创建事件处理器包装函数
+ */
+const createEventHandler = (originalHandler: any) => {
   return (params: any) => {
-    // 调用原始事件处理器
     if (originalHandler && typeof originalHandler === 'function') {
       originalHandler(params)
     }
   }
 }
 
-// 处理 onEvents 事件映射
-const processOnEvents = (handlers: Record<string, any>) => {
-  if (props.onEvents) {
-    const onEvents =
-      typeof props.onEvents === 'function' ? (props.onEvents as any)() : props.onEvents
-    if (onEvents && typeof onEvents === 'object') {
-      Object.entries(onEvents).forEach(([eventName, handler]) => {
-        if (typeof handler === 'function') {
-          handlers[eventName] = createEventHandler(handler, eventName)
-        }
-      })
-    }
-  }
-  return handlers
-}
-
-// 事件处理器映射
+/**
+ * 事件处理器映射 - 使用循环自动识别所有 on... 开头的 props
+ */
 const eventHandlers = computed(() => {
   const handlers: Record<string, any> = {}
 
-  // 鼠标事件
-  if (props.onClick) {
-    handlers.click = createEventHandler(props.onClick, 'click')
-  }
-  if (props.onDblClick) {
-    handlers.dblclick = createEventHandler(props.onDblClick, 'dblclick')
-  }
-  if (props.onMouseDown) {
-    handlers.mousedown = createEventHandler(props.onMouseDown, 'mousedown')
-  }
-  if (props.onMouseMove) {
-    handlers.mousemove = createEventHandler(props.onMouseMove, 'mousemove')
-  }
-  if (props.onMouseUp) {
-    handlers.mouseup = createEventHandler(props.onMouseUp, 'mouseup')
-  }
-  if (props.onMouseOver) {
-    handlers.mouseover = createEventHandler(props.onMouseOver, 'mouseover')
-  }
-  if (props.onMouseOut) {
-    handlers.mouseout = createEventHandler(props.onMouseOut, 'mouseout')
-  }
-  if (props.onGlobalOut) {
-    handlers.globalout = createEventHandler(props.onGlobalOut, 'globalout')
-  }
-  if (props.onContextMenu) {
-    handlers.contextmenu = createEventHandler(props.onContextMenu, 'contextmenu')
+  // 遍历所有 props，自动识别 on... 开头的 prop
+  for (const key in props) {
+    // 跳过非事件处理器 prop
+    if (!key.startsWith('on') || key === 'onEvents') {
+      continue
+    }
+
+    const handler = props[key as keyof typeof props]
+    if (typeof handler === 'function') {
+      const eventName = convertPropNameToEventName(key)
+      handlers[eventName] = createEventHandler(handler)
+    }
   }
 
-  // 图例事件
-  if (props.onLegendSelectChanged) {
-    handlers.legendselectchanged = createEventHandler(
-      props.onLegendSelectChanged,
-      'legendselectchanged'
-    )
-  }
-  if (props.onLegendSelected) {
-    handlers.legendselected = createEventHandler(props.onLegendSelected, 'legendselected')
-  }
-  if (props.onLegendUnSelected) {
-    handlers.legendunselected = createEventHandler(props.onLegendUnSelected, 'legendunselected')
-  }
-  if (props.onLegendSelectAll) {
-    handlers.legendselectall = createEventHandler(props.onLegendSelectAll, 'legendselectall')
-  }
-  if (props.onLegendInverseSelect) {
-    handlers.legendinverseselect = createEventHandler(
-      props.onLegendInverseSelect,
-      'legendinverseselect'
-    )
-  }
-  if (props.onLegendScroll) {
-    handlers.legendscroll = createEventHandler(props.onLegendScroll, 'legendscroll')
-  }
-
-  // 数据区域缩放事件
-  if (props.onDataZoom) {
-    handlers.datazoom = createEventHandler(props.onDataZoom, 'datazoom')
-  }
-  if (props.onDataRangeSelected) {
-    handlers.datarangeselected = createEventHandler(props.onDataRangeSelected, 'datarangeselected')
-  }
-
-  // 时间轴事件
-  if (props.onTimelineChanged) {
-    handlers.timelinechanged = createEventHandler(props.onTimelineChanged, 'timelinechanged')
-  }
-  if (props.onTimelinePlayChanged) {
-    handlers.timelineplaychanged = createEventHandler(
-      props.onTimelinePlayChanged,
-      'timelineplaychanged'
-    )
-  }
-
-  // 画刷事件
-  if (props.onBrush) {
-    handlers.brush = createEventHandler(props.onBrush, 'brush')
-  }
-  if (props.onBrushEnd) {
-    handlers.brushend = createEventHandler(props.onBrushEnd, 'brushend')
-  }
-  if (props.onBrushSelected) {
-    handlers.brushselected = createEventHandler(props.onBrushSelected, 'brushselected')
-  }
-
-  // 地图事件
-  if (props.onGeoSelectChanged) {
-    handlers.geoselectchanged = createEventHandler(props.onGeoSelectChanged, 'geoselectchanged')
-  }
-  if (props.onGeoSelected) {
-    handlers.geoselected = createEventHandler(props.onGeoSelected, 'geoselected')
-  }
-  if (props.onGeoUnSelected) {
-    handlers.geounselected = createEventHandler(props.onGeoUnSelected, 'geounselected')
-  }
-  if (props.onGeoRoam) {
-    handlers.georoam = createEventHandler(props.onGeoRoam, 'georoam')
-  }
-
-  // 图形元素事件
-  if (props.onSelectChanged) {
-    handlers.selectchanged = createEventHandler(props.onSelectChanged, 'selectchanged')
-  }
-  if (props.onHighlight) {
-    handlers.highlight = createEventHandler(props.onHighlight, 'highlight')
-  }
-  if (props.onDownplay) {
-    handlers.downplay = createEventHandler(props.onDownplay, 'downplay')
-  }
-
-  // 动画事件
+  // 特殊处理 onFinished: 即使没有传入，也要触发 emit
   if (props.onFinished) {
     handlers.finished = () => {
       props.onFinished?.()
       emit('finished')
     }
   } else {
-    // 即使没有传入 onFinished,也要触发 emit
     handlers.finished = () => {
       emit('finished')
     }
   }
 
+  // 处理 onRendered: 直接使用，不需要包装
   if (props.onRendered) {
     handlers.rendered = props.onRendered
   }
 
-  // 图表生命周期事件
-  if (props.onRestore) {
-    handlers.restore = createEventHandler(props.onRestore, 'restore')
+  // 处理 onEvents prop: 合并自定义事件映射
+  if (props.onEvents) {
+    const onEvents =
+      typeof props.onEvents === 'function' ? (props.onEvents as any)() : props.onEvents
+    if (onEvents && typeof onEvents === 'object') {
+      Object.entries(onEvents).forEach(([eventName, handler]) => {
+        if (typeof handler === 'function') {
+          handlers[eventName] = createEventHandler(handler)
+        }
+      })
+    }
   }
-  if (props.onMagicTypeChanged) {
-    handlers.magictypechanged = createEventHandler(props.onMagicTypeChanged, 'magictypechanged')
-  }
-  if (props.onDataViewChanged) {
-    handlers.dataviewchanged = createEventHandler(props.onDataViewChanged, 'dataviewchanged')
-  }
-
-  // 坐标轴事件
-  if (props.onAxisAreaSelected) {
-    handlers.axisareaselected = createEventHandler(props.onAxisAreaSelected, 'axisareaselected')
-  }
-
-  // 焦点/失焦事件
-  if (props.onFocusNodeAdjacency) {
-    handlers.focusnodeadjacency = createEventHandler(
-      props.onFocusNodeAdjacency,
-      'focusnodeadjacency'
-    )
-  }
-  if (props.onUnfocusNodeAdjacency) {
-    handlers.unfocusnodeadjacency = createEventHandler(
-      props.onUnfocusNodeAdjacency,
-      'unfocusnodeadjacency'
-    )
-  }
-
-  // 特殊图表事件
-  if (props.onTreeExpand) {
-    handlers.treeexpand = createEventHandler(props.onTreeExpand, 'treeexpand')
-  }
-  if (props.onTreeCollapse) {
-    handlers.treecollapse = createEventHandler(props.onTreeCollapse, 'treecollapse')
-  }
-  if (props.onTreemapZoom) {
-    handlers.treemapzoom = createEventHandler(props.onTreemapZoom, 'treemapzoom')
-  }
-  if (props.onParallelAxisSelected) {
-    handlers.parallelaxisselected = createEventHandler(
-      props.onParallelAxisSelected,
-      'parallelaxisselected'
-    )
-  }
-
-  // 图表加载事件
-  if (props.onLoad) {
-    handlers.load = createEventHandler(props.onLoad, 'load')
-  }
-
-  // 处理 onEvents 事件映射
-  processOnEvents(handlers)
 
   return handlers
 })
 
-// 获取 ECharts 实例
+/**
+ * 获取 ECharts 实例
+ * 使用 vue-echarts 官方推荐的方式获取实例
+ */
 const getEchartsInstance = () => {
   if (!chartRef.value) {
     return null
   }
 
-  // 尝试多种方式获取 ECharts 实例
-  let chartInstance = null
-
-  // 方法1: 通过 chart 属性访问 (vue-echarts 5.x)
-  if (chartRef.value && chartRef.value.chart) {
-    chartInstance = chartRef.value.chart
-  }
-  // 方法2: 直接访问 (vue-echarts 5.x)
-  else if (chartRef.value && typeof chartRef.value.on === 'function') {
-    chartInstance = chartRef.value
-  }
-  // 方法3: 通过 $refs.chart 访问
-  else if (chartRef.value && chartRef.value.$refs && chartRef.value.$refs.chart) {
-    chartInstance = chartRef.value.$refs.chart
-  }
-  // 方法4: 通过 getEchartsInstance 方法访问
-  else if (chartRef.value && typeof chartRef.value.getEchartsInstance === 'function') {
-    chartInstance = chartRef.value.getEchartsInstance()
-  }
-  // 方法5: 通过 echartsInstance 属性访问
-  else if (chartRef.value && chartRef.value.echartsInstance) {
-    chartInstance = chartRef.value.echartsInstance
-  }
-  // 方法6: 通过 DOM 元素访问
-  else if (chartRef.value && chartRef.value.$el && chartRef.value.$el.__echarts_instance__) {
-    chartInstance = chartRef.value.$el.__echarts_instance__
+  // 优先使用 chart 属性（vue-echarts 8.x 推荐方式）
+  if (chartRef.value.chart) {
+    return chartRef.value.chart
   }
 
-  return chartInstance
+  // 回退到 getEchartsInstance 方法（兼容旧版本）
+  if (typeof chartRef.value.getEchartsInstance === 'function') {
+    return chartRef.value.getEchartsInstance()
+  }
+
+  return null
 }
 
 // 图表初始化标志
@@ -469,14 +208,6 @@ onMounted(() => {
         const currentOption = chartInstance.getOption()
         chartInstance.setOption(currentOption, true)
       }
-
-      console.log('UseEcharts: 图表实例已创建', {
-        groupId: connectGroupId.value,
-        chartId: chartInstance.id,
-        renderer: props.renderer,
-        autoResize: props.autoResize,
-        lazyLoad: props.lazyLoad,
-      })
 
       // 通知父组件图表已就绪
       emit('chartReady', chartInstance)
@@ -549,42 +280,6 @@ defineExpose({
     :loading-options='loadingOptions',
     :manual-update='manualUpdate',
     :group='connectGroupId',
-    @click='eventHandlers.click',
-    @dblclick='eventHandlers.dblclick',
-    @mousedown='eventHandlers.mousedown',
-    @mousemove='eventHandlers.mousemove',
-    @mouseup='eventHandlers.mouseup',
-    @mouseover='eventHandlers.mouseover',
-    @mouseout='eventHandlers.mouseout',
-    @globalout='eventHandlers.globalout',
-    @contextmenu='eventHandlers.contextmenu',
-    @legendselectchanged='eventHandlers.legendselectchanged',
-    @legendselected='eventHandlers.legendselected',
-    @legendunselected='eventHandlers.legendunselected',
-    @legendselectall='eventHandlers.legendselectall',
-    @legendinverseselect='eventHandlers.legendinverseselect',
-    @legendscroll='eventHandlers.legendscroll',
-    @datazoom='eventHandlers.datazoom',
-    @datarangeselected='eventHandlers.datarangeselected',
-    @timelinechanged='eventHandlers.timelinechanged',
-    @timelineplaychanged='eventHandlers.timelineplaychanged',
-    @brush='eventHandlers.brush',
-    @brushend='eventHandlers.brushend',
-    @brushselected='eventHandlers.brushselected',
-    @geoselectchanged='eventHandlers.geoselectchanged',
-    @geoselected='eventHandlers.geoselected',
-    @geounselected='eventHandlers.geounselected',
-    @georoam='eventHandlers.georoam',
-    @selectchanged='eventHandlers.selectchanged',
-    @highlight='eventHandlers.highlight',
-    @downplay='eventHandlers.downplay',
-    @restore='eventHandlers.restore',
-    @magictypechanged='eventHandlers.magictypechanged',
-    @dataviewchanged='eventHandlers.dataviewchanged',
-    @axisareaselected='eventHandlers.axisareaselected',
-    @focusnodeadjacency='eventHandlers.focusnodeadjacency',
-    @unfocusnodeadjacency='eventHandlers.unfocusnodeadjacency',
-    @finished='eventHandlers.finished',
-    @load='eventHandlers.load'
+    v-on='eventHandlers'
   )
 </template>

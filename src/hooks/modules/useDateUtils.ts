@@ -12,7 +12,7 @@ import {
 } from '@#/index'
 import type { SupportedLocale } from '@/locales'
 import { getCurrentLocale } from '@/locales'
-import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
+import { onMounted, onUnmounted, readonly, ref, watch } from 'vue'
 
 export function useDateUtils() {
   // 当前语言状态
@@ -99,124 +99,108 @@ export function useDateUtils() {
     date: DateInput,
     format: DateFormat = 'YYYY-MM-DD HH:mm:ss',
     options: Omit<FormatOptions, 'locale'> = {}
-  ) => {
-    return computed(() => {
-      if (!isInitialized.value) {
-        return 'Loading...'
-      }
-      return DateUtils.format(date, format, {
-        ...options,
-        locale: currentLocale.value,
-      })
+  ): string => {
+    if (!isInitialized.value) {
+      return 'Loading...'
+    }
+    return DateUtils.format(date, format, {
+      ...options,
+      locale: currentLocale.value,
     })
   }
 
   /**
    * 获取相对时间 - 自动使用当前语言
    */
-  const fromNow = (date: DateInput) => {
-    return computed(() => {
-      if (!isInitialized.value) {
-        return 'Loading...'
-      }
-      return DateUtils.fromNow(date, { fallback: 'Invalid Date' })
-    })
+  const fromNow = (date: DateInput): string => {
+    if (!isInitialized.value) {
+      return 'Loading...'
+    }
+    return DateUtils.fromNow(date, { fallback: 'Invalid Date' })
   }
 
   /**
    * 批量格式化日期
    */
-  const batchFormat = (dates: DateInput[], format: DateFormat = 'YYYY-MM-DD HH:mm:ss') => {
-    return computed(() => {
-      if (!isInitialized.value) {
-        return []
-      }
-      return DateUtils.batchFormat(dates, format)
-    })
+  const batchFormat = (
+    dates: DateInput[],
+    format: DateFormat = 'YYYY-MM-DD HH:mm:ss',
+    options?: Parameters<typeof DateUtils.batchFormat>[2]
+  ) => {
+    if (!isInitialized.value) {
+      return []
+    }
+    return DateUtils.batchFormat(dates, format, options)
   }
 
   /**
    * 智能解析日期
    */
   const smartParse = (input: string) => {
-    return computed(() => {
-      if (!isInitialized.value) {
-        return null
-      }
-      return DateUtils.smartParse(input)
-    })
+    if (!isInitialized.value) {
+      return null
+    }
+    return DateUtils.smartParse(input)
   }
 
   /**
    * 获取当前时间
    */
   const now = () => {
-    return computed(() => {
-      if (!isInitialized.value) {
-        return null
-      }
-      return DateUtils.now()
-    })
+    if (!isInitialized.value) {
+      return null
+    }
+    return DateUtils.now()
   }
 
   /**
    * 检查是否为工作日（考虑调休）
    */
-  const isWorkingDay = (date: DateInput) => {
-    return computed(() => {
-      if (!isInitialized.value) {
-        return false
-      }
-      return DateUtils.isWorkingDay(date)
-    })
+  const isWorkingDay = (date: DateInput): boolean => {
+    if (!isInitialized.value) {
+      return false
+    }
+    return DateUtils.isWorkingDay(date)
   }
 
   /**
    * 检查是否为非工作日（节假日或周末，排除调休工作日）
    */
-  const isNonWorkingDay = (date: DateInput) => {
-    return computed(() => {
-      if (!isInitialized.value) {
-        return false
-      }
-      return DateUtils.isNonWorkingDay(date)
-    })
+  const isNonWorkingDay = (date: DateInput): boolean => {
+    if (!isInitialized.value) {
+      return false
+    }
+    return DateUtils.isNonWorkingDay(date)
   }
 
   /**
    * 检查是否为节假日
    */
-  const isHoliday = (date: DateInput) => {
-    return computed(() => {
-      if (!isInitialized.value) {
-        return false
-      }
-      return DateUtils.isHoliday(date)
-    })
+  const isHoliday = (date: DateInput): boolean => {
+    if (!isInitialized.value) {
+      return false
+    }
+    return DateUtils.isHoliday(date)
   }
 
   /**
    * 获取下一个工作日
    */
   const nextWorkingDay = (date: DateInput) => {
-    return computed(() => {
-      if (!isInitialized.value) {
-        return null
-      }
-      return DateUtils.nextWorkingDay(date)
-    })
+    if (!isInitialized.value) {
+      return null
+    }
+    return DateUtils.nextWorkingDay(date)
   }
 
   /**
    * 使用 Intl API 格式化日期 - 更接近系统本地化
    */
-  const formatIntl = (date: DateInput, options: Intl.DateTimeFormatOptions = {}) => {
-    return computed(() => {
-      if (!isInitialized.value) {
-        return 'Loading...'
-      }
-      return DateUtils.formatIntl(date, currentLocale.value, currentTimezone.value, options)
-    })
+  const formatIntl = (date: DateInput, options: Intl.DateTimeFormatOptions = {}): string => {
+    if (!isInitialized.value) {
+      return 'Loading...'
+    }
+    return DateUtils.formatIntl(date, currentLocale.value, currentTimezone.value, options)
   }
 
   /**
@@ -226,16 +210,14 @@ export function useDateUtils() {
     date: DateInput,
     formatStyle: 'system' | 'dayjs' | 'auto' = 'auto',
     options: { intlOptions?: Intl.DateTimeFormatOptions } = {}
-  ) => {
-    return computed(() => {
-      if (!isInitialized.value) {
-        return 'Loading...'
-      }
-      return DateUtils.formatSmart(date, formatStyle, {
-        locale: currentLocale.value,
-        timezone: currentTimezone.value,
-        ...options,
-      })
+  ): string => {
+    if (!isInitialized.value) {
+      return 'Loading...'
+    }
+    return DateUtils.formatSmart(date, formatStyle, {
+      locale: currentLocale.value,
+      timezone: currentTimezone.value,
+      ...options,
     })
   }
 
@@ -245,13 +227,11 @@ export function useDateUtils() {
   const formatI18n = (
     date: DateInput,
     formatKey: 'short' | 'long' | 'datetime' | 'time' | 'dateOnly' | 'timeOnly' = 'datetime'
-  ) => {
-    return computed(() => {
-      if (!isInitialized.value) {
-        return 'Loading...'
-      }
-      return DateUtils.formatI18n(date, formatKey, currentLocale.value, currentTimezone.value)
-    })
+  ): string => {
+    if (!isInitialized.value) {
+      return 'Loading...'
+    }
+    return DateUtils.formatI18n(date, formatKey, currentLocale.value, currentTimezone.value)
   }
 
   // ===== 语言相关的预设格式 =====
@@ -260,36 +240,34 @@ export function useDateUtils() {
    * 根据当前语言获取本地化格式
    */
   const getLocalizedFormats = () => {
-    return computed(() => {
-      const locale = currentLocale.value
-      switch (locale) {
-        case 'zh-CN':
-          return {
-            date: 'YYYY年MM月DD日',
-            datetime: 'YYYY年MM月DD日 HH:mm:ss',
-            time: 'HH:mm:ss',
-            shortDate: 'MM-DD',
-            longDate: 'YYYY年MM月DD日 dddd',
-          }
-        case 'zh-TW':
-          return {
-            date: 'YYYY年MM月DD日',
-            datetime: 'YYYY年MM月DD日 HH:mm:ss',
-            time: 'HH:mm:ss',
-            shortDate: 'MM-DD',
-            longDate: 'YYYY年MM月DD日 dddd',
-          }
-        case 'en-US':
-        default:
-          return {
-            date: 'YYYY-MM-DD',
-            datetime: 'YYYY-MM-DD HH:mm:ss',
-            time: 'HH:mm:ss',
-            shortDate: 'MM/DD',
-            longDate: 'dddd, MMMM D, YYYY',
-          }
-      }
-    })
+    const locale = currentLocale.value
+    switch (locale) {
+      case 'zh-CN':
+        return {
+          date: 'YYYY年MM月DD日',
+          datetime: 'YYYY年MM月DD日 HH:mm:ss',
+          time: 'HH:mm:ss',
+          shortDate: 'MM-DD',
+          longDate: 'YYYY年MM月DD日 dddd',
+        }
+      case 'zh-TW':
+        return {
+          date: 'YYYY年MM月DD日',
+          datetime: 'YYYY年MM月DD日 HH:mm:ss',
+          time: 'HH:mm:ss',
+          shortDate: 'MM-DD',
+          longDate: 'YYYY年MM月DD日 dddd',
+        }
+      case 'en-US':
+      default:
+        return {
+          date: 'YYYY-MM-DD',
+          datetime: 'YYYY-MM-DD HH:mm:ss',
+          time: 'HH:mm:ss',
+          shortDate: 'MM/DD',
+          longDate: 'dddd, MMMM D, YYYY',
+        }
+    }
   }
 
   /**
@@ -298,14 +276,12 @@ export function useDateUtils() {
   const formatWithLocale = (
     date: DateInput,
     formatType: 'date' | 'datetime' | 'time' | 'shortDate' | 'longDate' = 'datetime'
-  ) => {
-    return computed(() => {
-      if (!isInitialized.value) {
-        return 'Loading...'
-      }
-      const formats = getLocalizedFormats().value
-      return DateUtils.format(date, formats[formatType])
-    })
+  ): string => {
+    if (!isInitialized.value) {
+      return 'Loading...'
+    }
+    const formats = getLocalizedFormats()
+    return DateUtils.format(date, formats[formatType])
   }
 
   // ===== 工具方法 =====
@@ -350,36 +326,30 @@ export function useDateUtils() {
    * 获取指定年份的节假日
    */
   const getHolidays = (year: number) => {
-    return computed(() => {
-      if (!isInitialized.value) {
-        return []
-      }
-      return DateUtils.getHolidays(year)
-    })
+    if (!isInitialized.value) {
+      return []
+    }
+    return DateUtils.getHolidays(year)
   }
 
   /**
    * 获取所有可用时区
    */
   const getAvailableTimezones = (groupByContinent: boolean = false) => {
-    return computed(() => {
-      if (!isInitialized.value) {
-        return groupByContinent ? {} : []
-      }
-      return DateUtils.getAvailableTimezones(groupByContinent)
-    })
+    if (!isInitialized.value) {
+      return groupByContinent ? {} : []
+    }
+    return DateUtils.getAvailableTimezones(groupByContinent)
   }
 
   /**
    * 获取特定国家可用的时区
    */
   const getTimezonesByCountry = (countryCode: string) => {
-    return computed(() => {
-      if (!isInitialized.value) {
-        return []
-      }
-      return DateUtils.getTimezonesByCountry(countryCode)
-    })
+    if (!isInitialized.value) {
+      return []
+    }
+    return DateUtils.getTimezonesByCountry(countryCode)
   }
 
   /**
@@ -390,48 +360,40 @@ export function useDateUtils() {
     year: number,
     importToDateUtils: boolean = false
   ) => {
-    return computed(() => {
-      if (!isInitialized.value) {
-        return null
-      }
-      return DateUtils.getCountryHolidays(countryCode, year, importToDateUtils)
-    })
+    if (!isInitialized.value) {
+      return null
+    }
+    return DateUtils.getCountryHolidays(countryCode, year, importToDateUtils)
   }
 
   /**
    * 检查特定日期是否为指定国家的节假日
    */
   const isCountryHoliday = (date: DateInput, countryCode: string = 'CN') => {
-    return computed(() => {
-      if (!isInitialized.value) {
-        return false
-      }
-      return DateUtils.isCountryHoliday(date, countryCode)
-    })
+    if (!isInitialized.value) {
+      return false
+    }
+    return DateUtils.isCountryHoliday(date, countryCode)
   }
 
   /**
    * 获取特定日期的节假日详情
    */
   const getCountryHolidayInfo = (date: DateInput, countryCode: string = 'CN') => {
-    return computed(() => {
-      if (!isInitialized.value) {
-        return null
-      }
-      return DateUtils.getCountryHolidayInfo(date, countryCode)
-    })
+    if (!isInitialized.value) {
+      return null
+    }
+    return DateUtils.getCountryHolidayInfo(date, countryCode)
   }
 
   /**
    * 获取支持的节假日国家列表
    */
   const getSupportedHolidayCountries = () => {
-    return computed(() => {
-      if (!isInitialized.value) {
-        return {}
-      }
-      return DateUtils.getSupportedCountries()
-    })
+    if (!isInitialized.value) {
+      return {}
+    }
+    return DateUtils.getSupportedCountries()
   }
 
   /**
@@ -448,9 +410,9 @@ export function useDateUtils() {
 
   return {
     // 状态
-    currentLocale: computed(() => currentLocale.value),
-    currentTimezone: computed(() => currentTimezone.value),
-    isInitialized: computed(() => isInitialized.value),
+    currentLocale: readonly(currentLocale),
+    currentTimezone: readonly(currentTimezone),
+    isInitialized: readonly(isInitialized),
 
     // 格式化方法
     formatDate,

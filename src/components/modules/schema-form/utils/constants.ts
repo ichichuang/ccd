@@ -148,6 +148,7 @@ export const DEFAULT_SCHEMA_FORM_PROPS = {
   optionsCacheTTL: DEFAULT_OPTIONS_CACHE_TTL,
   disabled: false,
   remember: false,
+  preview: false,
 } as const
 
 /** 创建默认 SchemaForm Props（兼容函数形式） */

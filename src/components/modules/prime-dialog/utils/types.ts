@@ -80,8 +80,9 @@ export type DialogPosition =
  * 基础按钮属性接口
  *
  * 继承 PrimeVue Button 组件的所有属性，并添加自定义属性
+ * 使用 Omit 移除冲突的 label 属性，然后添加自定义的 label 类型定义
  */
-export interface ButtonProps extends Partial<PrimeButtonProps> {
+export interface ButtonProps extends Omit<Partial<PrimeButtonProps>, 'label'> {
   /**
    * 按钮文字（必填）
    *
@@ -387,6 +388,7 @@ export interface DynamicDialogOptions {
  * 对话框选项接口
  *
  * 定义对话框组件的所有配置选项，继承 PrimeVue Dialog 组件的所有属性
+ * 使用 Omit 移除冲突的 header 属性，然后添加自定义的 header 类型定义
  *
  * @example
  * ```typescript
@@ -404,7 +406,7 @@ export interface DynamicDialogOptions {
  * }
  * ```
  */
-export interface DialogOptions extends Partial<PrimeDialogProps> {
+export interface DialogOptions extends Omit<Partial<PrimeDialogProps>, 'header'> {
   /**
    * 对话框类型
    *

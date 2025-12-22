@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { Schema } from '@/components/modules/schema-form/utils/types'
-import { useSchemaForm } from '@/hooks/components/useSchemaForm'
+import { useSchemaForm, type SchemaFormExpose } from '@/hooks/components/useSchemaForm'
 import { ref } from 'vue'
 
 // ==================== 分组 Schema 定义 ====================
@@ -120,10 +120,9 @@ const initialSchema: Schema = {
   gapY: 24,
 }
 
-// ==================== 表单 Ref & Hook ====================
-const schemaFormRef = ref<any>(null)
-const { formValues, schema, submitForm, getFormValues } = useSchemaForm({
-  formRef: schemaFormRef,
+// ==================== 表单 Ref & Hook (P2 重构后) ====================
+const schemaFormRef = ref<SchemaFormExpose | null>(null)
+const { formValues, schema, getFormValues } = useSchemaForm({
   initialSchema,
 })
 
@@ -134,12 +133,14 @@ const handleSubmit = (values: Record<string, any>) => {
 }
 
 const handleSubmitForm = async () => {
-  const { valid } = await submitForm()
-  if (valid) {
-    window.$toast?.success?.('表单校验通过并已提交！')
-  } else {
-    window.$toast?.error?.('请检查必填项或格式')
+  if (!schemaFormRef.value) {
+    window.$toast?.error?.('表单组件未就绪')
+    return
   }
+
+  // 🔥 P2 重构：通过 ref 调用组件的 submit 方法
+  schemaFormRef.value.submit()
+  // 注意：submit 方法会触发 @submit 事件，实际的验证和提交逻辑在 handleSubmit 中处理
 }
 
 const handlePreviewValues = () => {
@@ -160,7 +161,7 @@ div
 
   .p-padding
     // 分组表单组件
-    SchemaForm(:schema='schema', @submit='handleSubmit', ref='schemaFormRef')
+    SchemaForm(:schema='schema', v-model='formValues', @submit='handleSubmit', ref='schemaFormRef')
 
   .full.c-card.fs-appFontSizes.between-col.gap-gap
     span.fs-appFontSizex 表单数据实时预览：

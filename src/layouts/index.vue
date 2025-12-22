@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { debounce } from '@/common'
-import type { AnimateName } from '@/components/modules/animate-wrapper/utils/types'
+import type { AnimateName } from '@/components/layout/animate-wrapper/utils/types'
 import AdminLayout from '@/layouts/modules/LayoutAdmin.vue'
 import FullScreenLayout from '@/layouts/modules/LayoutFullScreen.vue'
 import RatioLayout from '@/layouts/modules/LayoutRatio.vue'

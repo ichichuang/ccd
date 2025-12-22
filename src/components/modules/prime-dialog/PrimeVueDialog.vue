@@ -132,11 +132,6 @@ const defaultButtons = computed(() => {
   }
 })
 
-// 获取对话框在 dialogStore 中的真实索引
-function getDialogStoreIndex(options: DialogOptions): number {
-  return props.dialogStore.findIndex(item => item === options)
-}
-
 // 事件回调处理
 function eventsCallBack(event: EventType, options: DialogOptions, index: number) {
   const eventHandler = (options as any)[event]
@@ -166,90 +161,169 @@ function handleMaximize(options: DialogOptions, index: number) {
   eventsCallBack('maximize', options, index)
 }
 
-// 过滤不同类型的对话框
+// 过滤不同类型的对话框，并绑定原始索引
 const standardDialogs = computed(() =>
-  props.dialogStore.filter(item => item.type === 'dialog' || !item.type)
+  props.dialogStore
+    .map((options, originalIndex) => ({ options, originalIndex }))
+    .filter(({ options }) => options.type === 'dialog' || !options.type)
 )
 
-const confirmDialogs = computed(() => props.dialogStore.filter(item => item.type === 'confirm'))
+// 🔥 关键修复：为每个对话框缓存渲染器组件定义，避免每次渲染都创建新对象
+const dialogContentRenderers = computed(() => {
+  const renderers: Record<number, any> = {}
+  props.dialogStore.forEach((options, originalIndex) => {
+    if (options.contentRenderer) {
+      // 缓存渲染器组件定义，避免每次渲染都创建新对象
+      renderers[originalIndex] = {
+        render: () => options.contentRenderer({ options, index: originalIndex }),
+      }
+    }
+  })
+  return renderers
+})
 
-const dynamicDialogs = computed(() => props.dialogStore.filter(item => item.type === 'dynamic'))
+const dialogHeaderRenderers = computed(() => {
+  const renderers: Record<number, any> = {}
+  props.dialogStore.forEach((options, originalIndex) => {
+    if (options.headerRenderer && !options.hideHeader) {
+      // 缓存渲染器组件定义，避免每次渲染都创建新对象
+      renderers[originalIndex] = {
+        render: () =>
+          options.headerRenderer({ close: () => {}, maximize: () => {}, minimize: () => {} }),
+      }
+    }
+  })
+  return renderers
+})
+
+const dialogFooterRenderers = computed(() => {
+  const renderers: Record<number, any> = {}
+  props.dialogStore.forEach((options, originalIndex) => {
+    if (options.footerRenderer) {
+      // 缓存渲染器组件定义，避免每次渲染都创建新对象
+      renderers[originalIndex] = {
+        render: () => options.footerRenderer({ options, index: originalIndex }),
+      }
+    }
+  })
+  return renderers
+})
+
+const confirmDialogs = computed(() =>
+  props.dialogStore
+    .map((options, originalIndex) => ({ options, originalIndex }))
+    .filter(({ options }) => options.type === 'confirm')
+)
+
+const dynamicDialogs = computed(() =>
+  props.dialogStore
+    .map((options, originalIndex) => ({ options, originalIndex }))
+    .filter(({ options }) => options.type === 'dynamic')
+)
 </script>
 
-<template lang="pug">
-// 标准对话框
-Dialog(
-  v-for='(options, index) in standardDialogs',
-  :key='`dialog-${index}`',
-  v-model:visible='options.visible',
-  :header='options.hideHeader ? undefined : getHeaderText(options)',
-  :style='options.style',
-  :class='options.class',
-  :maximizable='options.maximizable',
-  :close-on-escape='options.closeOnEscape',
-  :dismissable-mask='options.closeOnMask',
-  :closable='options.hideClose ? false : options.closable',
-  :modal='options.modal',
-  :append-to='options.appendTo',
-  :position='options.position',
-  :draggable='options.draggable',
-  :keep-in-viewport='options.keepInViewport',
-  :breakpoints='options.breakpoints',
-  @show='handleOpen(options, getDialogStoreIndex(options))',
-  @hide='handleClose(options, getDialogStoreIndex(options))',
-  @maximize='handleMaximize(options, getDialogStoreIndex(options))'
-)
-  // 自定义头部（当有自定义头部渲染器且不隐藏头部时显示）
-  template(v-if='options?.headerRenderer && !options?.hideHeader', #header)
-    component(
-      :is='options.headerRenderer({ close: () => {}, maximize: () => {}, minimize: () => {} })'
-    )
+<template>
+  <!-- 标准对话框 -->
+  <Dialog
+    v-for="{ options, originalIndex } in standardDialogs"
+    :key="`dialog-${originalIndex}`"
+    v-model:visible="options.visible"
+    :header="options.hideHeader ? undefined : getHeaderText(options)"
+    :style="options.style"
+    :class="options.class"
+    :maximizable="options.maximizable"
+    :close-on-escape="options.closeOnEscape"
+    :dismissable-mask="options.closeOnMask"
+    :closable="options.hideClose ? false : options.closable"
+    :modal="options.modal"
+    :append-to="options.appendTo"
+    :position="options.position"
+    :draggable="options.draggable"
+    :keep-in-viewport="options.keepInViewport"
+    :breakpoints="options.breakpoints"
+    @show="handleOpen(options, originalIndex)"
+    @hide="handleClose(options, originalIndex)"
+    @maximize="handleMaximize(options, originalIndex)"
+  >
+    <!-- 自定义头部（当有自定义头部渲染器且不隐藏头部时显示） -->
+    <template
+      v-if="options?.headerRenderer && !options?.hideHeader"
+      #header
+    >
+      <!-- 🔥 关键修复：使用缓存的渲染器组件定义，避免每次渲染都创建新对象 -->
+      <component :is="dialogHeaderRenderers[originalIndex]" />
+    </template>
 
-  // 默认头部（当没有自定义头部且不隐藏头部时显示）
-  template(v-else-if='!options?.hideHeader', #header)
-    span {{ getHeaderText(options) }}
+    <!-- 默认头部（当没有自定义头部且不隐藏头部时显示） -->
+    <template
+      v-else-if="!options?.hideHeader"
+      #header
+    >
+      <span>{{ getHeaderText(options) }}</span>
+    </template>
 
-  // 自定义内容（当有内容渲染器时显示）
-  component(
-    v-if='options?.contentRenderer',
-    :is='options.contentRenderer({ options, index: getDialogStoreIndex(options) })',
-    v-bind='options?.props',
-    @close='(args: any) => handleClose(options, getDialogStoreIndex(options), args)'
-  )
+    <!-- 自定义内容（当有内容渲染器时显示） -->
+    <!-- 🔥 关键修复：使用缓存的渲染器组件定义，避免每次渲染都创建新对象 -->
+    <component
+      v-if="options?.contentRenderer"
+      :is="dialogContentRenderers[originalIndex]"
+      v-bind="options?.props"
+      @close="(args: any) => handleClose(options, originalIndex, args)"
+    />
 
-  // 自定义底部（当不隐藏底部时显示）
-  template(v-if='!options?.hideFooter', #footer)
-    template(v-if='options?.footerRenderer')
-      component(:is='options.footerRenderer({ options, index: getDialogStoreIndex(options) })')
-    template(v-else)
-      .flex.gap-gap.justify-end
-        template(v-for='(btn, key) in defaultButtons(options)', :key='key')
-          Button(
-            :severity='btn.severity',
-            :loading='(key === 1 && sureBtnMap[getDialogStoreIndex(options)]?.loading) || btn.loading',
-            :disabled='btn.disabled',
-            :icon='btn.icon',
-            :text='btn.text',
-            :outlined='btn.outlined',
-            :rounded='btn.rounded',
-            :size='btn.size',
-            :class='btn.class',
-            :style='btn.style',
-            @click='btn.btnClick?.({ dialog: { options, index: getDialogStoreIndex(options) }, button: { btn, index: key } })'
-          ) {{ getButtonLabel(btn) }}
+    <!-- 自定义底部（当不隐藏底部时显示） -->
+    <template
+      v-if="!options?.hideFooter"
+      #footer
+    >
+      <template v-if="options?.footerRenderer">
+        <!-- 🔥 关键修复：使用缓存的渲染器组件定义，避免每次渲染都创建新对象 -->
+        <component :is="dialogFooterRenderers[originalIndex]" />
+      </template>
+      <template v-else>
+        <div class="flex gap-gap justify-end">
+          <template
+            v-for="(btn, key) in defaultButtons(options)"
+            :key="key"
+          >
+            <Button
+              :severity="btn.severity"
+              :loading="(key === 1 && sureBtnMap[originalIndex]?.loading) || btn.loading"
+              :disabled="btn.disabled"
+              :icon="btn.icon"
+              :text="btn.text"
+              :outlined="btn.outlined"
+              :rounded="btn.rounded"
+              :size="btn.size"
+              :class="btn.class"
+              :style="btn.style"
+              @click="
+                btn.btnClick?.({
+                  dialog: { options, index: originalIndex },
+                  button: { btn, index: key },
+                })
+              "
+            >
+              {{ getButtonLabel(btn) }}
+            </Button>
+          </template>
+        </div>
+      </template>
+    </template>
+  </Dialog>
 
-// 确认对话框
-ConfirmDialog(
-  v-for='(options, index) in confirmDialogs',
-  :key='`confirm-${index}`',
-  :group='options.confirmOptions?.group'
-)
+  <!-- 确认对话框 -->
+  <ConfirmDialog
+    v-for="{ options, originalIndex } in confirmDialogs"
+    :key="`confirm-${originalIndex}`"
+    :group="options.confirmOptions?.group"
+  />
 
-// 动态对话框
-DynamicDialog(
-  v-for='(options, index) in dynamicDialogs',
-  :key='`dynamic-${index}`',
-  :style='options.style',
-  :class='options.class'
-)
+  <!-- 动态对话框 -->
+  <DynamicDialog
+    v-for="{ options, originalIndex } in dynamicDialogs"
+    :key="`dynamic-${originalIndex}`"
+    :style="options.style"
+    :class="options.class"
+  />
 </template>

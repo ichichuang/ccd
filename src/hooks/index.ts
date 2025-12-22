@@ -20,7 +20,10 @@ export * from '@/hooks/components/useVxeTable'
 export * from '@/hooks/layout/useLoading'
 export * from '@/hooks/layout/useNprogress'
 export * from '@/hooks/layout/usePageTitle'
-export * from '@/hooks/modules/useChartTheme'
+// 优先导出新的模块化版本
+export * from '@/hooks/modules/useChartTheme/index'
+// 保留旧版本作为后备（待完全迁移后删除）
+// export * from '@/hooks/modules/useChartTheme'
 export * from '@/hooks/modules/useDateUtils'
 export * from '@/hooks/modules/useElementSize'
 export * from '@/hooks/modules/useLocale'

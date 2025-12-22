@@ -175,6 +175,9 @@ export interface Schema {
   gapY?: number
 }
 
+/** Schema 配置类型别名（兼容旧代码） */
+export type SchemaConfig = Schema
+
 // ==================== 上下文类型 ====================
 
 /** 评估上下文 */
@@ -206,6 +209,8 @@ export interface SchemaFormProps {
   submitTransform?: (values: any) => any
   /** 是否开启内容记忆（IndexedDB 存储，layout 仅保存指针） */
   remember?: boolean
+  /** 预览模式（只显示值，不显示输入控件） */
+  preview?: boolean
 }
 
 /** 持久化配置 */
@@ -221,7 +226,8 @@ export interface PersistConfig {
 /** SchemaForm 组件事件 */
 export interface SchemaFormEmits {
   /** 更新模型值 */
-  updateModelValue: [value: Record<string, any>]
+  // eslint-disable-next-line @typescript-eslint/naming-convention
+  'update:modelValue': [value: Record<string, any>]
   /** 提交成功 */
   submit: [values: Record<string, any>]
   /** 验证错误 */

@@ -2,7 +2,7 @@
 import { useThemeSwitch } from '@/hooks'
 import { getCurrentLocale, t } from '@/locales'
 import VueDatePicker from '@vuepic/vue-datepicker'
-import { computed, nextTick, onMounted, ref, watch } from 'vue'
+import { computed, nextTick, ref, watch } from 'vue'
 import { datePickerDefaultPropsFactory, ISO_FORMATS } from './utils/constants'
 import { formatModelValue, formatSimpleIso, getDefaultDisplayFormat, toDate } from './utils/helper'
 import type {
@@ -12,24 +12,14 @@ import type {
   UseDatePickerExpose,
 } from './utils/types'
 
-// 放宽模板类型校验，避免严格模板下对 ref/属性的限制
-const datePickerComp: any = VueDatePicker
-// 调试日志禁用
-const debugDatePicker = (..._args: any[]) => {}
+// 组件引用（用于动态组件 :is）
+const datePickerComp = VueDatePicker
 
 type Props = DatePickerProps
 
 const props = withDefaults(defineProps<Props>(), datePickerDefaultPropsFactory())
 
 const emit = defineEmits<DatePickerEmits>()
-
-// 调试：检查 props 中是否有事件处理器
-debugDatePicker('[SchemaForm][DatePicker] props received', {
-  modelValue: props.modelValue,
-  valueFormat: props.valueFormat,
-  // 注意：在 Vue 3 中，事件处理器不会出现在 props 中
-  // 它们是通过 $attrs 或直接绑定到组件上的
-})
 
 // 主题切换支持
 const { isDark } = useThemeSwitch()
@@ -297,8 +287,6 @@ const handleUpdate = (val: any) => {
           innerValue.value = val
         } else {
           innerValue.value = null
-          // 强制触发组件重新渲染，清除 vue-datepicker 内部的无效缓存
-          renderKey.value += 1
           emit('update:modelValue', null)
           emit('change', null)
           return
@@ -311,9 +299,8 @@ const handleUpdate = (val: any) => {
           // 更新 innerValue 为正确的 Date 对象
           innerValue.value = val
         } else {
-          // 如果转换失败，强制清空值并触发重新渲染
+          // 如果转换失败，强制清空值
           innerValue.value = null
-          renderKey.value += 1
           emit('update:modelValue', null)
           emit('change', null)
           return
@@ -432,7 +419,13 @@ const handleClose = () => {
 }
 
 // 暴露方法
-const dpRef = ref<any>(null)
+// 定义 DatePicker 组件实例类型，包含可能的方法
+type DatePickerInstance = {
+  openMenu?: () => void
+  closeMenu?: () => void
+  clearValue?: () => void
+}
+const dpRef = ref<DatePickerInstance | null>(null)
 const open = () => {
   dpRef.value?.openMenu?.()
 }
@@ -462,10 +455,6 @@ const maxDateResolved = computed<Date | undefined>(() => {
   return d || undefined
 })
 
-// 首屏渲染稳定性：强制在 mounted 后刷新一次组件，避免某些环境初始不可交互
-const renderKey = ref(0)
-const isInitialized = ref(false)
-
 // 监听 innerValue，确保它始终是有效的类型（当 modelType='date' 时必须是 Date 或 null）
 watch(
   () => innerValue.value,
@@ -478,21 +467,16 @@ watch(
           const hasInvalidItem = newVal.some(item => item !== null && !(item instanceof Date))
           if (hasInvalidItem) {
             innerValue.value = null
-            renderKey.value += 1
           }
         } else {
           // 单值选择：如果不是 Date 也不是 null，清理
           innerValue.value = null
-          renderKey.value += 1
         }
       }
     }
   },
   { immediate: true, deep: true }
 )
-
-// 主题模式计算属性
-const themeMode = computed(() => (isDark.value ? 'dark' : 'light'))
 
 // vue-datepicker 语言配置
 const datePickerLocale = computed(() => {
@@ -555,69 +539,10 @@ watch(
     currentLocale.value = newLocale
   }
 )
-
-// 监听 innerValue，确保它始终是有效的类型（当 modelType='date' 时必须是 Date 或 null）
-watch(
-  () => innerValue.value,
-  newVal => {
-    if (modelType.value === 'date') {
-      // 如果 innerValue 是字符串或其他无效类型，立即清理
-      if (newVal !== null && !(newVal instanceof Date)) {
-        if (Array.isArray(newVal)) {
-          // 范围选择：检查每个元素
-          const hasInvalidItem = newVal.some(item => item !== null && !(item instanceof Date))
-          if (hasInvalidItem) {
-            innerValue.value = null
-          }
-        } else {
-          // 单值选择：如果不是 Date 也不是 null，清理
-          innerValue.value = null
-        }
-      }
-    }
-  },
-  { immediate: true, deep: true }
-)
-
-onMounted(() => {
-  nextTick(() => {
-    renderKey.value += 1
-
-    // 延迟初始化，确保所有样式和DOM完全就绪
-    setTimeout(() => {
-      // 1. 强制触发页面重绘
-      window.dispatchEvent(new Event('resize'))
-
-      // 2. 手动修复所有日期选择器元素
-      const elements = document.querySelectorAll(
-        '.dp__input_wrap, .dp__input, .dp__menu, .dp__menu_wrap'
-      )
-      elements.forEach(el => {
-        if (el instanceof HTMLElement) {
-          el.style.pointerEvents = 'auto'
-          el.style.zIndex = '1000'
-          el.style.cursor = 'pointer'
-        }
-      })
-
-      // 3. 强制重新计算样式
-      void document.body.offsetHeight
-
-      // 4. 标记为已初始化
-      isInitialized.value = true
-
-      // 5. 再次触发重绘确保所有修复生效
-      setTimeout(() => {
-        window.dispatchEvent(new Event('resize'))
-      }, 50)
-    }, 200)
-  })
-})
 </script>
 
 <template>
   <component
-    :key="`${renderKey}-${isInitialized}-${themeMode}-${currentLocale}`"
     :is="datePickerComp"
     ref="dpRef"
     v-model="innerValue"
@@ -644,7 +569,7 @@ onMounted(() => {
     :position="positionAlign"
     :open-on-top="openOnTop"
     :aria-labels="ariaLabels"
-    :class="[props.customClass, { 'dp-initialized': isInitialized }]"
+    :class="props.customClass"
     :style="props.inputStyle"
     :enable-time-picker="isDateTime"
     :time-picker="isTimeOnly"

@@ -200,16 +200,4 @@ export interface IconsProps {
    * - title="点击关闭" - 设置标题提示
    */
   title?: string
-
-  /**
-   * 自定义类名
-   *
-   * 支持字符串或字符串数组，可以传入多个类名
-   *
-   * @default undefined
-   * @example
-   * - class="my-icon" - 单个类名
-   * - :class="['class1', 'class2']" - 多个类名
-   */
-  class?: string | string[]
 }

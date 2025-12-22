@@ -12,6 +12,7 @@
       :global-layout="globalLayout"
       :global-style="globalStyle"
       :style="colStyle(column.layout)"
+      :preview="preview"
     />
   </template>
 </template>
@@ -28,5 +29,6 @@ defineProps<{
   globalLayout: LayoutConfig
   globalStyle?: StyleConfig
   colStyle: (layout?: LayoutConfig) => Record<string, string>
+  preview?: boolean
 }>()
 </script>

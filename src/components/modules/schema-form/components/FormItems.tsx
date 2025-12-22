@@ -1,6 +1,7 @@
 // @/components/schema-form/components/FormItems.tsx
-import { AnimateWrapper } from '@/components/modules/animate-wrapper'
-import { computed, defineComponent, onMounted, ref, watch } from 'vue'
+import { AnimateWrapper } from '@/components/layout/animate-wrapper'
+import { useColorStore, useSizeStore } from '@/stores'
+import { computed, defineComponent, h, onMounted, ref, toRaw, watch } from 'vue'
 import { evalBoolish, isFieldRequired, loadOptions } from '../utils/helper'
 import type {
   EvalCtx,
@@ -10,33 +11,13 @@ import type {
   StyleConfig,
 } from '../utils/types'
 
-// PrimeVue Components
-import AutoComplete from 'primevue/autocomplete'
-import CascadeSelect from 'primevue/cascadeselect'
-import Checkbox from 'primevue/checkbox'
-import ColorPicker from 'primevue/colorpicker'
-import InputGroup from 'primevue/inputgroup'
-import InputGroupAddon from 'primevue/inputgroupaddon'
-import InputMask from 'primevue/inputmask'
-import InputNumber from 'primevue/inputnumber'
-import InputText from 'primevue/inputtext'
-import Listbox from 'primevue/listbox'
-import MultiSelect from 'primevue/multiselect'
-import Password from 'primevue/password'
+// PrimeVue Components (保留用于特殊处理)
 import ProgressSpinner from 'primevue/progressspinner'
-import RadioButton from 'primevue/radiobutton'
-import RadioButtonGroup from 'primevue/radiobuttongroup'
-import Rating from 'primevue/rating'
-import Select from 'primevue/select'
-import SelectButton from 'primevue/selectbutton'
-import Slider from 'primevue/slider'
-import Textarea from 'primevue/textarea'
-import ToggleButton from 'primevue/togglebutton'
-import ToggleSwitch from 'primevue/toggleswitch'
-import TreeSelect from 'primevue/treeselect'
 
-// Custom Components
-import { DatePicker } from '@/components/modules/date-picker'
+// 组件映射表和工具函数
+import { getComponentFromMap } from './componentMap'
+import { buildComponentProps } from './utils/buildComponentProps'
+
 // 直接打印调试信息（等最终修复后统一清理）
 const debugFormItems = (..._args: any[]) => {}
 
@@ -50,6 +31,7 @@ interface SchemaFormItemProps {
   globalLayout: LayoutConfig
   globalStyle?: StyleConfig
   style?: Record<string, string>
+  preview?: boolean
 }
 
 // ==================== Component Definition ====================
@@ -64,8 +46,13 @@ export default defineComponent({
     globalLayout: { type: Object as () => LayoutConfig, default: () => ({}) },
     globalStyle: { type: Object as () => StyleConfig, default: () => ({}) },
     style: { type: Object as () => Record<string, string>, default: () => ({}) },
+    preview: { type: Boolean, default: false },
   },
   setup(props: SchemaFormItemProps) {
+    // ==================== Stores ====================
+    const colorStore = useColorStore()
+    const sizeStore = useSizeStore()
+
     // ==================== Reactive State ====================
     const visible = ref(true)
     const fieldDisabled = ref(!!props.disabled)
@@ -73,85 +60,44 @@ export default defineComponent({
 
     const options = ref<OptionItem[]>([])
     const loading = ref(false)
-    const autoCompleteSuggestions = ref<OptionItem[]>([])
 
-    // 为 DatePicker 创建响应式的 modelValue 引用
-    // 这样当 form.values 变化时，DatePicker 能自动更新
-    const datePickerModelValue = computed(() => {
-      if (props.form && props.form.values && typeof props.form.values === 'object') {
-        return props.form.values[props.column.field]
-      }
-      if (props.form && props.form[props.column.field]) {
-        const fieldRef = props.form[props.column.field]
-        if (fieldRef && typeof fieldRef === 'object' && 'value' in fieldRef) {
-          return fieldRef.value
-        }
-        return props.form[props.column.field]
-      }
-      return undefined
-    })
-
-    // 为 ColorPicker 创建响应式的 modelValue 引用
-    // 这样当 form.values 变化时，ColorPicker 能自动更新
-    const colorPickerModelValue = computed(() => {
-      if (props.form && props.form.values && typeof props.form.values === 'object') {
-        const value = props.form.values[props.column.field]
-        // 如果值是字符串且没有 # 前缀，添加 # 前缀（PrimeVue ColorPicker 需要 # 前缀）
-        if (typeof value === 'string' && value && !value.startsWith('#')) {
-          return `#${value}`
-        }
-        return value
-      }
-      if (props.form && props.form[props.column.field]) {
-        const fieldRef = props.form[props.column.field]
-        if (fieldRef && typeof fieldRef === 'object' && 'value' in fieldRef) {
-          const value = fieldRef.value
-          if (typeof value === 'string' && value && !value.startsWith('#')) {
-            return `#${value}`
-          }
+    // 🔥 核心修复：彻底简化 fieldModelValue，只从 form.values 中获取值
+    // 移除对 props.form[props.column.field] 的访问，避免昂贵的计算和循环依赖
+    const fieldModelValue = computed(() => {
+      // 预览模式下，优先从 form.modelValue 获取（如果 SchemaForm 传递了的话）
+      if (
+        props.preview &&
+        props.form &&
+        props.form.modelValue &&
+        typeof props.form.modelValue === 'object'
+      ) {
+        const value = props.form.modelValue[props.column.field]
+        // 预览模式下，只有 undefined 和 null 才返回 undefined，其他值（包括空字符串、0、false）都应该显示
+        if (value !== undefined && value !== null) {
           return value
         }
-        const value = props.form[props.column.field]
-        if (typeof value === 'string' && value && !value.startsWith('#')) {
-          return `#${value}`
-        }
-        return value
       }
-      return undefined
-    })
 
-    // 监听 form.values 的变化，确保 DatePicker 能响应式更新
-    watch(
-      () => {
-        if (props.form && props.form.values && typeof props.form.values === 'object') {
-          return props.form.values[props.column.field]
-        }
-        return undefined
-      },
-      newValue => {
-        if (props.column.component === 'DatePicker') {
-          debugFormItems('[SchemaForm][FormItems] DatePicker form.values watcher', {
-            field: props.column.field,
-            newValue,
-            hasFormValues: !!(props.form && props.form.values),
-            formValuesKeys: props.form && props.form.values ? Object.keys(props.form.values) : [],
-          })
-        }
-      },
-      { immediate: true, deep: true }
-    )
-
-    const fieldModelValue = computed(() => {
+      // 🔥 核心修改：只从 form.values 中获取值！
+      // form.values 是 PrimeVue Form 提供的、专门用于表示当前所有字段值的响应式对象。
+      // 这是最直接、最正确的来源。
       if (props.form && props.form.values && typeof props.form.values === 'object') {
-        return props.form.values[props.column.field]
+        const value = props.form.values[props.column.field]
+        // 在预览模式下，即使值为空字符串或0，也应该显示
+        if (props.preview) {
+          // 预览模式下，只有 undefined 和 null 才返回 undefined
+          if (value !== undefined && value !== null) {
+            return value
+          }
+        } else {
+          // 非预览模式下，正常处理
+          if (value !== undefined) {
+            return value
+          }
+        }
       }
-      const fieldRef = props.form?.[props.column.field]
-      if (fieldRef && typeof fieldRef === 'object' && 'value' in fieldRef) {
-        return fieldRef.value
-      }
-      if (fieldRef !== undefined) {
-        return fieldRef
-      }
+
+      // 如果 form.values 不存在，返回 undefined
       return undefined
     })
 
@@ -285,7 +231,6 @@ export default defineComponent({
           loading.value = false
         }
       }
-      refreshAutoCompleteSuggestions()
     }
 
     // ==================== Lifecycle & Watchers ====================
@@ -326,42 +271,337 @@ export default defineComponent({
       }
     )
 
-    function getAutoCompleteBaseOptions(): OptionItem[] {
-      if (Array.isArray(props.column.props?.options)) {
-        return [...(props.column.props?.options as OptionItem[])]
+    // ==================== Preview Render ====================
+    /** 格式化预览值（返回字符串） */
+    function formatPreviewValue(value: any, component: string, options: OptionItem[]): string {
+      if (value === null || value === undefined || value === '') {
+        return '-'
       }
-      return [...options.value]
+
+      switch (component) {
+        case 'Checkbox':
+        case 'ToggleSwitch':
+          return value ? '是' : '否'
+
+        case 'Select':
+        case 'Listbox':
+        case 'RadioButton': {
+          const option = options.find(opt => opt.value === value)
+          return option ? option.label : String(value)
+        }
+
+        case 'MultiSelect':
+        case 'SelectButton':
+          if (Array.isArray(value)) {
+            return value
+              .map(v => {
+                const option = options.find(opt => opt.value === v)
+                return option ? option.label : String(v)
+              })
+              .join(', ')
+          }
+          return String(value)
+
+        case 'DatePicker': {
+          if (Array.isArray(value)) {
+            return value
+              .map(v => {
+                if (v instanceof Date) {
+                  return v.toLocaleDateString('zh-CN')
+                }
+                if (typeof v === 'number') {
+                  return new Date(v).toLocaleDateString('zh-CN')
+                }
+                if (typeof v === 'string') {
+                  return new Date(v).toLocaleDateString('zh-CN')
+                }
+                return String(v)
+              })
+              .join(' ~ ')
+          }
+          if (value instanceof Date) {
+            return value.toLocaleDateString('zh-CN')
+          }
+          if (typeof value === 'number') {
+            return new Date(value).toLocaleDateString('zh-CN')
+          }
+          if (typeof value === 'string') {
+            try {
+              return new Date(value).toLocaleDateString('zh-CN')
+            } catch {
+              return String(value)
+            }
+          }
+          return String(value)
+        }
+
+        case 'ColorPicker': {
+          const colorValue = typeof value === 'string' ? value : String(value)
+          return colorValue.startsWith('#')
+            ? colorValue.toUpperCase()
+            : `#${colorValue.toUpperCase()}`
+        }
+
+        case 'Rating': {
+          const rating = typeof value === 'number' ? value : 0
+          return '★'.repeat(rating) + '☆'.repeat(5 - rating)
+        }
+
+        case 'Slider': {
+          return typeof value === 'number' ? String(value) : String(value)
+        }
+
+        case 'Textarea': {
+          return String(value).replace(/\n/g, '<br />')
+        }
+
+        case 'InputNumber': {
+          // 预览模式下，直接显示数字，不添加千位分隔符
+          return typeof value === 'number' ? String(value) : String(value)
+        }
+
+        default:
+          return String(value)
+      }
     }
 
-    function refreshAutoCompleteSuggestions() {
-      if (props.column.component !== 'AutoComplete') {
-        return
-      }
-      autoCompleteSuggestions.value = getAutoCompleteBaseOptions()
-    }
+    /** 预览模式渲染 */
+    function renderPreview() {
+      const column = props.column
+      const value = fieldModelValue.value
 
-    function filterAutoCompleteSuggestions(query: string) {
-      const baseOptions = getAutoCompleteBaseOptions()
-      if (!query) {
-        autoCompleteSuggestions.value = baseOptions
-        return
+      // 加载选项（如果需要）
+      const displayOptions = column.props?.options || options.value
+
+      const previewText = formatPreviewValue(value, column.component, displayOptions)
+
+      // ColorPicker 特殊处理：显示颜色块和颜色值
+      if (column.component === 'ColorPicker' && value) {
+        const colorValue = typeof value === 'string' ? value : String(value)
+        const hexColor = colorValue.startsWith('#') ? colorValue : `#${colorValue}`
+        return (
+          <div
+            class={[
+              'form-item-content',
+              'form-item-preview',
+              mergedColumnStyle.value.contentClass || '',
+            ].filter(Boolean)}
+            style={{
+              ...componentStyle.value,
+              ...(mergedColumnStyle.value.contentStyle || {}),
+              padding: `${sizeStore.getPaddingsValue}px ${sizeStore.getPaddingsValue}px`,
+              minHeight: `${sizeStore.getFontSizeValue}px`,
+              display: 'flex',
+              alignItems: 'center',
+              color: colorStore.getText100,
+            }}
+          >
+            <div class="flex items-center gap-gaps w-full">
+              <div
+                style={{
+                  width: `${sizeStore.getFontSizeValue}px`,
+                  height: `${sizeStore.getFontSizeValue}px`,
+                  backgroundColor: hexColor,
+                  border: `1px solid ${colorStore.getBg300}`,
+                  borderRadius: `${sizeStore.getRoundedValue}px`,
+                  flexShrink: 0,
+                }}
+              />
+              <span>{hexColor.toUpperCase()}</span>
+            </div>
+          </div>
+        )
       }
-      const lower = query.toLowerCase()
-      autoCompleteSuggestions.value = baseOptions.filter(item =>
-        String(item.label ?? '')
-          .toLowerCase()
-          .includes(lower)
+
+      // Textarea 特殊处理：支持换行
+      if (column.component === 'Textarea') {
+        return (
+          <div
+            class={[
+              'form-item-content',
+              'form-item-preview',
+              mergedColumnStyle.value.contentClass || '',
+            ].filter(Boolean)}
+            style={{
+              ...componentStyle.value,
+              ...(mergedColumnStyle.value.contentStyle || {}),
+              padding: `${sizeStore.getPaddingsValue}px ${sizeStore.getPaddingsValue}px`,
+              minHeight: `${sizeStore.getFontSizeValue}px`,
+              color: colorStore.getText100,
+            }}
+          >
+            <div
+              class="w-full"
+              innerHTML={previewText}
+            />
+          </div>
+        )
+      }
+
+      // 默认文本显示
+      return (
+        <div
+          class={[
+            'form-item-content',
+            'form-item-preview',
+            mergedColumnStyle.value.contentClass || '',
+          ].filter(Boolean)}
+          style={{
+            ...componentStyle.value,
+            ...(mergedColumnStyle.value.contentStyle || {}),
+            padding: `${sizeStore.getPaddingsValue}px ${sizeStore.getPaddingsValue}px`,
+            minHeight: `${sizeStore.getFontSizeValue}px`,
+            display: 'flex',
+            alignItems: 'center',
+            color: colorStore.getText100,
+          }}
+        >
+          <span class="w-full">{previewText}</span>
+        </div>
       )
     }
 
     // ==================== Render Component ====================
     function renderComponent() {
+      // 如果是预览模式，直接返回预览渲染
+      if (props.preview) {
+        return renderPreview()
+      }
+
       const column = props.column
+
+      // 处理自定义组件
+      if (column.component === 'Custom') {
+        // 🔥 关键修复：使用 toRaw 获取原始的 render 函数，避免响应式包装问题
+        const rawProps = column.props ? toRaw(column.props) : null
+        const renderFn = rawProps?.render
+
+        // 检查 render 函数是否存在且为函数类型
+        if (!renderFn || typeof renderFn !== 'function') {
+          if (process.env.NODE_ENV === 'development') {
+            console.warn(
+              `[FormItems] Custom 组件 "${column.field}" 缺少 render 函数或 render 不是函数`,
+              {
+                column: toRaw(column),
+                props: rawProps,
+                renderType: typeof renderFn,
+                hasRender: 'render' in (rawProps || {}),
+              }
+            )
+          }
+          return (
+            <div
+              class="form-item-content form-item-error"
+              style={componentStyle.value}
+            >
+              自定义组件缺少 render 函数
+            </div>
+          )
+        }
+
+        // 自定义渲染
+        const fieldState = props.form[column.field]
+        const hasError = !!(
+          fieldState?.error ||
+          (fieldState?.errors && fieldState.errors.length > 0)
+        )
+        const isInvalid = !!(
+          fieldState?.invalid &&
+          (fieldState?.touched || fieldState?.dirty || hasError)
+        )
+
+        const baseProps: Record<string, any> = {
+          class: ['form-item-content', isInvalid ? 'form-item-content-invalid' : ''].filter(
+            Boolean
+          ),
+          style: {
+            ...componentStyle.value,
+          },
+          disabled: fieldDisabled.value,
+          readonly: readonly.value,
+          placeholder: column.placeholder,
+          modelValue: fieldModelValue.value,
+          name: column.field,
+        }
+
+        // 🔥 关键修复：保留 render 函数，不被过滤
+        const safeProps = column.props
+          ? Object.fromEntries(
+              Object.entries(column.props).filter(([key]) => {
+                // 保留 render 函数
+                if (key === 'render') {
+                  return true
+                }
+                if (key.startsWith('on')) {
+                  return false
+                }
+                if (
+                  key === 'value' ||
+                  key === 'modelValue' ||
+                  key === 'model-value' ||
+                  key === 'checked'
+                ) {
+                  return false
+                }
+                return true
+              })
+            )
+          : {}
+
+        const componentProps = {
+          ...baseProps,
+          ...safeProps,
+          class: [...baseProps.class, mergedColumnStyle.value.contentClass || ''].filter(Boolean),
+          style: {
+            ...baseProps.style,
+            ...(mergedColumnStyle.value.contentStyle || {}),
+          },
+        }
+
+        // 🔥 关键修复：使用保存的 renderFn，确保它是函数
+        try {
+          return (
+            <div
+              class={componentProps.class}
+              style={componentProps.style}
+            >
+              {renderFn(componentProps)}
+            </div>
+          )
+        } catch (error) {
+          if (process.env.NODE_ENV === 'development') {
+            console.error(`[FormItems] Custom 组件 "${column.field}" render 函数执行失败:`, error)
+          }
+          return (
+            <div
+              class="form-item-content form-item-error"
+              style={componentStyle.value}
+            >
+              自定义组件渲染失败
+            </div>
+          )
+        }
+      }
+
+      // 从组件映射表获取组件
+      const component = getComponentFromMap(column.component)
+
+      // 🔥 关键修复：确保 component 不为 null/undefined，防止 Vue 渲染错误
+      if (!component) {
+        if (process.env.NODE_ENV === 'development') {
+          console.warn(`[FormItems] 组件 "${column.component}" 未在 componentMap 中找到`)
+        }
+        return (
+          <div
+            class="form-item-content form-item-error"
+            style={componentStyle.value}
+          >
+            不支持的组件类型: {column.component}
+          </div>
+        )
+      }
+
       // 是否校验失败
-      // 显示错误的条件：
-      // 1. 字段状态为 invalid
-      // 2. 且字段已被 touched 或 dirty（用户交互过）
-      // 3. 或者字段有错误信息（提交失败时，即使未 touched 也应该显示）
       const fieldState = props.form[column.field]
       const hasError = !!(fieldState?.error || (fieldState?.errors && fieldState.errors.length > 0))
       const isInvalid = !!(
@@ -404,536 +644,45 @@ export default defineComponent({
           )
         : {}
 
-      // 使用 PrimeVue Form 的 name 属性绑定
-      const componentProps = {
-        ...baseProps,
-        ...safeProps,
-        name: column.field, // PrimeVue Form 使用 name 属性绑定字段
-        class: [
-          ...baseProps.class,
-          mergedColumnStyle.value.contentClass || '', // 自定义内容类名（第一优先级）
-        ].filter(Boolean),
-        style: {
-          ...baseProps.style,
-          ...(mergedColumnStyle.value.contentStyle || {}), // 自定义内容样式（第一优先级）
-        },
-      }
-
-      // 选项属性 - 只从 props 中获取
+      // 选项属性
       const optionsProps = column.props?.options || options.value
 
-      switch (column.component) {
-        case 'AutoComplete': {
-          const autoCompleteProps: Record<string, any> = { ...componentProps }
+      // 构建组件 props
+      const componentProps = buildComponentProps({
+        column,
+        baseProps,
+        safeProps,
+        mergedColumnStyle,
+        componentStyle,
+        options: optionsProps,
+      })
 
-          if (autoCompleteProps.optionLabel === undefined) {
-            autoCompleteProps.optionLabel = 'label'
-          }
-          if (autoCompleteProps.optionValue === undefined) {
-            autoCompleteProps.optionValue = 'value'
-          }
-
-          const userCompleteMethod = autoCompleteProps.completeMethod
-          const userOnFocus = autoCompleteProps.onFocus
-          const hasCustomComplete = typeof userCompleteMethod === 'function'
-
-          if (!hasCustomComplete) {
-            if (autoCompleteSuggestions.value.length === 0) {
-              autoCompleteSuggestions.value = getAutoCompleteBaseOptions()
-            }
-            autoCompleteProps.suggestions = autoCompleteSuggestions.value
-            autoCompleteProps.completeMethod = (event: { query?: string }) => {
-              filterAutoCompleteSuggestions((event?.query ?? '').toString())
-            }
-            autoCompleteProps.onFocus = (event: any) => {
-              filterAutoCompleteSuggestions('')
-              if (typeof userOnFocus === 'function') {
-                userOnFocus(event)
-              }
-            }
-          } else {
-            autoCompleteProps.completeMethod = (event: any) => {
-              userCompleteMethod(event)
-            }
-            if (autoCompleteProps.suggestions === undefined) {
-              autoCompleteProps.suggestions = getAutoCompleteBaseOptions()
-            }
-            if (typeof userOnFocus === 'function') {
-              autoCompleteProps.onFocus = (event: any) => {
-                userOnFocus(event)
-              }
-            }
-          }
-
-          return <AutoComplete {...autoCompleteProps} />
+      // ToggleButton 特殊处理：需要明确绑定 onLabel、offLabel 等属性
+      if (column.component === 'ToggleButton') {
+        const toggleButtonProps: Record<string, any> = {
+          ...componentProps,
         }
-        case 'CascadeSelect':
-          return (
-            <CascadeSelect
-              {...componentProps}
-              options={optionsProps}
-              optionGroupLabel="label"
-              optionGroupChildren="children"
-              class={[
-                ...baseProps.class,
-                mergedColumnStyle.value.contentClass || '', // 自定义内容类名（第一优先级）
-              ].filter(Boolean)}
-              style={{
-                ...baseProps.style,
-                ...(mergedColumnStyle.value.contentStyle || {}), // 自定义内容样式（第一优先级）
-              }}
-            />
-          )
-
-        case 'Checkbox':
-          return <Checkbox {...componentProps} />
-
-        case 'ColorPicker': {
-          // ColorPicker 使用 v-model，需要手动同步值到 form.values
-          const format = (componentProps as any).format ?? 'hex'
-
-          // 定义更新回调函数
-          const handleColorPickerUpdate = (value: any) => {
-            let normalizedValue = value
-            if (format === 'hex' && typeof value === 'string') {
-              normalizedValue = value.replace(/^#/, '').toLowerCase()
-            }
-            syncFieldValue(normalizedValue)
-          }
-
-          // 构建 props，排除可能冲突的事件处理器和值相关属性
-          const restComponentProps: Record<string, any> = {}
-          for (const key in componentProps) {
-            if (
-              key !== 'onUpdateModelValue' &&
-              key !== 'onUpdate:modelValue' &&
-              key !== 'onChange' &&
-              key !== 'modelValue' &&
-              key !== 'format' &&
-              !key.startsWith('on')
-            ) {
-              restComponentProps[key] = (componentProps as any)[key]
-            }
-          }
-
-          const colorPickerProps = {
-            ...restComponentProps,
-            // 保留 name 属性，确保 PrimeVue Form 能识别并管理此字段
-            name: column.field,
-            format,
-          }
-
-          // 在 Vue 3 JSX 中，update:modelValue 事件需要使用对象形式绑定
-          const colorPickerEventHandlers: Record<string, any> = {}
-          colorPickerEventHandlers['onUpdate:modelValue'] = handleColorPickerUpdate
-
-          // 在 JSX 中直接使用 computed 的值，确保响应式更新
-          return (
-            <ColorPicker
-              {...colorPickerProps}
-              {...colorPickerEventHandlers}
-              modelValue={colorPickerModelValue.value}
-              class={[
-                ...baseProps.class,
-                mergedColumnStyle.value.contentClass || '', // 自定义内容类名（第一优先级）
-              ].filter(Boolean)}
-              style={{
-                ...baseProps.style,
-                ...(mergedColumnStyle.value.contentStyle || {}), // 自定义内容样式（第一优先级）
-              }}
-            />
-          )
+        // 明确绑定这些属性，避免被当作事件处理器
+        if (column.props?.onLabel) {
+          toggleButtonProps.onLabel = column.props.onLabel
         }
-
-        case 'DatePicker': {
-          // DatePicker 使用 v-model，需要手动同步值到 form.values
-          const valueFormat = (componentProps as any).valueFormat ?? 'timestamp'
-
-          // 定义更新回调函数
-          debugFormItems('[SchemaForm][FormItems] DatePicker initial check', {
-            field: column.field,
-            datePickerModelValue: datePickerModelValue.value,
-            formValues: props.form?.values,
-            formField: props.form?.[column.field],
-            hasValue:
-              datePickerModelValue.value !== undefined && datePickerModelValue.value !== null,
-          })
-          const handleDatePickerUpdate = (value: any) => {
-            debugFormItems('[SchemaForm][FormItems] onUpdateModelValue CALLED', {
-              field: column.field,
-              value,
-              valueType: typeof value,
-              isArray: Array.isArray(value),
-              formKeys: props.form ? Object.keys(props.form) : [],
-              hasFormValues: !!(props.form && props.form.values),
-            })
-            syncFieldValue(value)
-          }
-
-          // 构建 props，排除可能冲突的事件处理器和值相关属性
-          // 注意：在 TypeScript 中，我们需要明确类型以避免解构错误
-          const restComponentProps: Record<string, any> = {}
-          for (const key in componentProps) {
-            if (
-              key !== 'onUpdateModelValue' &&
-              key !== 'onUpdate:modelValue' &&
-              key !== 'onChange' &&
-              key !== 'modelValue' &&
-              key !== 'valueFormat' &&
-              !key.startsWith('on')
-            ) {
-              restComponentProps[key] = (componentProps as any)[key]
-            }
-          }
-
-          const datePickerProps = {
-            ...restComponentProps,
-            // 保留 name 属性，确保 PrimeVue Form 能识别并管理此字段
-            name: column.field,
-            valueFormat,
-          }
-
-          debugFormItems('[SchemaForm][FormItems] DatePicker render', {
-            field: column.field,
-            currentModelValue: datePickerModelValue.value,
-            hasHandler: typeof handleDatePickerUpdate === 'function',
-            datePickerPropsKeys: Object.keys(datePickerProps),
-            handlerType: typeof handleDatePickerUpdate,
-            hasFormValues: !!(props.form && props.form.values),
-            formValuesKeys: props.form && props.form.values ? Object.keys(props.form.values) : [],
-            formFieldValue: props.form ? props.form[column.field] : undefined,
-          })
-
-          // 在 Vue 3 JSX 中，update:modelValue 事件需要使用对象形式绑定
-          // 使用方括号语法来避免 ESLint 错误
-          const datePickerEventHandlers: Record<string, any> = {}
-          datePickerEventHandlers['onUpdate:modelValue'] = handleDatePickerUpdate
-
-          // 在 JSX 中直接使用 computed 的值，确保响应式更新
-          return (
-            <DatePicker
-              {...datePickerProps}
-              {...datePickerEventHandlers}
-              modelValue={datePickerModelValue.value}
-              class={[
-                ...baseProps.class,
-                mergedColumnStyle.value.contentClass || '', // 自定义内容类名（第一优先级）
-              ].filter(Boolean)}
-              style={{
-                ...baseProps.style,
-                ...(mergedColumnStyle.value.contentStyle || {}), // 自定义内容样式（第一优先级）
-              }}
-            />
-          )
+        if (column.props?.offLabel) {
+          toggleButtonProps.offLabel = column.props.offLabel
         }
-
-        case 'Editor':
-          return <div>不支持的组件类型: {column.component}</div>
-        case 'InputGroup': {
-          // InputGroup 需要特殊处理，因为它需要包含 InputGroupAddon 和实际的输入组件
-          const { addonBefore, addonAfter, ...otherProps } = column.props || {}
-          return (
-            <InputGroup
-              {...otherProps}
-              class={[
-                ...baseProps.class,
-                mergedColumnStyle.value.contentClass || '', // 自定义内容类名（第一优先级）
-              ].filter(Boolean)}
-              style={{
-                ...baseProps.style,
-                ...(mergedColumnStyle.value.contentStyle || {}), // 自定义内容样式（第一优先级）
-              }}
-            >
-              {addonBefore && <InputGroupAddon>{addonBefore}</InputGroupAddon>}
-              <InputText
-                {...baseProps}
-                name={column.field}
-                placeholder={column.placeholder}
-              />
-              {addonAfter && <InputGroupAddon>{addonAfter}</InputGroupAddon>}
-            </InputGroup>
-          )
+        if (column.props?.onIcon) {
+          toggleButtonProps.onIcon = column.props.onIcon
         }
-
-        case 'InputMask':
-          return <InputMask {...componentProps} />
-
-        case 'InputNumber':
-          return <InputNumber {...componentProps} />
-
-        case 'InputText':
-          return <InputText {...componentProps} />
-
-        /* case 'KeyFilter':
-          return <KeyFilter {...componentProps} /> */
-
-        case 'Listbox':
-          return (
-            <Listbox
-              {...componentProps}
-              options={optionsProps}
-              optionLabel="label"
-              optionValue="value"
-              class={[
-                ...baseProps.class,
-                mergedColumnStyle.value.contentClass || '', // 自定义内容类名（第一优先级）
-              ].filter(Boolean)}
-              style={{
-                ...baseProps.style,
-                ...(mergedColumnStyle.value.contentStyle || {}), // 自定义内容样式（第一优先级）
-              }}
-            />
-          )
-
-        case 'MultiSelect':
-          return (
-            <MultiSelect
-              {...componentProps}
-              options={optionsProps}
-              optionLabel="label"
-              optionValue="value"
-              class={[
-                ...baseProps.class,
-                mergedColumnStyle.value.contentClass || '', // 自定义内容类名（第一优先级）
-              ].filter(Boolean)}
-              style={{
-                ...baseProps.style,
-                ...(mergedColumnStyle.value.contentStyle || {}), // 自定义内容样式（第一优先级）
-              }}
-            />
-          )
-
-        case 'Password':
-          return <Password {...componentProps} />
-
-        case 'RadioButton': {
-          // RadioButton 需要特殊处理，使用 RadioButtonGroup 包装多个选项
-          return (
-            <RadioButtonGroup
-              name={column.field}
-              class={[
-                ...baseProps.class,
-                mergedColumnStyle.value.contentClass || '', // 自定义内容类名（第一优先级）
-              ].filter(Boolean)}
-              style={{
-                ...baseProps.style,
-                ...(mergedColumnStyle.value.contentStyle || {}), // 自定义内容样式（第一优先级）
-              }}
-            >
-              {optionsProps.map((option: any, index: number) => (
-                <div
-                  key={option.value}
-                  class="flex items-center gap-2"
-                >
-                  <RadioButton
-                    inputId={`${column.field}_${index}`}
-                    value={option.value}
-                    disabled={fieldDisabled.value}
-                  />
-                  <label for={`${column.field}_${index}`}>{option.label}</label>
-                </div>
-              ))}
-            </RadioButtonGroup>
-          )
+        if (column.props?.offIcon) {
+          toggleButtonProps.offIcon = column.props.offIcon
         }
-
-        case 'Rating':
-          return <Rating {...componentProps} />
-
-        case 'Select':
-          return (
-            <Select
-              {...componentProps}
-              options={optionsProps}
-              optionLabel="label"
-              optionValue="value"
-              class={[
-                ...baseProps.class,
-                mergedColumnStyle.value.contentClass || '', // 自定义内容类名（第一优先级）
-              ].filter(Boolean)}
-              style={{
-                ...baseProps.style,
-                ...(mergedColumnStyle.value.contentStyle || {}), // 自定义内容样式（第一优先级）
-              }}
-            />
-          )
-
-        case 'SelectButton':
-          return (
-            <SelectButton
-              {...componentProps}
-              options={optionsProps}
-              optionLabel="label"
-              optionValue="value"
-              class={[
-                ...baseProps.class,
-                mergedColumnStyle.value.contentClass || '', // 自定义内容类名（第一优先级）
-              ].filter(Boolean)}
-              style={{
-                ...baseProps.style,
-                ...(mergedColumnStyle.value.contentStyle || {}), // 自定义内容样式（第一优先级）
-              }}
-            />
-          )
-
-        case 'Slider': {
-          // Slider 需要单独处理事件绑定，避免 JSX 中的事件名解析问题
-          const sliderValue = fieldModelValue.value
-
-          // 定义更新回调函数
-          const handleSliderUpdate = (value: any) => {
-            syncFieldValue(value)
-          }
-
-          // 构建 props，排除事件处理器
-          const restComponentProps: Record<string, any> = {}
-          for (const key in componentProps) {
-            if (
-              key !== 'onUpdateModelValue' &&
-              key !== 'onUpdate:modelValue' &&
-              key !== 'onChange' &&
-              key !== 'onValueChange' &&
-              key !== 'onSlideend' &&
-              key !== 'modelValue' &&
-              !key.startsWith('on')
-            ) {
-              restComponentProps[key] = (componentProps as any)[key]
-            }
-          }
-
-          const sliderProps = {
-            ...restComponentProps,
-            name: column.field,
-          }
-
-          // 🔥 关键：监听多个事件以确保实时更新
-          // - change: 拖动过程中实时触发（实时更新的关键）
-          // - update:modelValue: 标准 v-model 事件（拖动结束或值变化）
-          // - slideend: 拖动结束时触发（确保最终值）
-          const sliderEventHandlers: Record<string, any> = {}
-          sliderEventHandlers['onUpdate:modelValue'] = handleSliderUpdate
-          sliderEventHandlers['onChange'] = handleSliderUpdate // 实时更新的关键
-          sliderEventHandlers['onSlideend'] = (event: any) => {
-            // slideend 事件携带 { originalEvent, value }
-            if (event && typeof event === 'object' && 'value' in event) {
-              handleSliderUpdate(event.value)
-            }
-          }
-
-          return (
-            <Slider
-              {...sliderProps}
-              {...sliderEventHandlers}
-              modelValue={sliderValue}
-              class={[...baseProps.class, mergedColumnStyle.value.contentClass || ''].filter(
-                Boolean
-              )}
-              style={{
-                ...baseProps.style,
-                ...(mergedColumnStyle.value.contentStyle || {}),
-              }}
-            />
-          )
+        if (column.props?.ariaLabelledBy) {
+          toggleButtonProps.ariaLabelledBy = column.props.ariaLabelledBy
         }
-
-        case 'Textarea':
-          return <Textarea {...componentProps} />
-
-        case 'ToggleButton': {
-          // 为 ToggleButton 单独处理属性，避免 onLabel 等被当作事件处理器
-          const toggleButtonProps: any = {
-            class: [
-              ...baseProps.class,
-              mergedColumnStyle.value.contentClass || '', // 自定义内容类名（第一优先级）
-            ].filter(Boolean),
-            style: {
-              ...baseProps.style,
-              ...(mergedColumnStyle.value.contentStyle || {}), // 自定义内容样式（第一优先级）
-            },
-            disabled: baseProps.disabled,
-            readonly: baseProps.readonly,
-            placeholder: baseProps.placeholder,
-            name: column.field,
-          }
-          // 明确绑定这些属性，避免被当作事件处理器
-          if (column.props?.onLabel) {
-            toggleButtonProps.onLabel = column.props.onLabel
-          }
-          if (column.props?.offLabel) {
-            toggleButtonProps.offLabel = column.props.offLabel
-          }
-          if (column.props?.onIcon) {
-            toggleButtonProps.onIcon = column.props.onIcon
-          }
-          if (column.props?.offIcon) {
-            toggleButtonProps.offIcon = column.props.offIcon
-          }
-          if (column.props?.ariaLabelledBy) {
-            toggleButtonProps.ariaLabelledBy = column.props.ariaLabelledBy
-          }
-          return <ToggleButton {...toggleButtonProps} />
-        }
-
-        case 'ToggleSwitch':
-          return <ToggleSwitch {...componentProps} />
-
-        case 'TreeSelect': {
-          // TreeSelect 需要 TreeNode 格式的数据，需要转换
-          const treeNodes = optionsProps.map((item: any) => ({
-            key: item.value,
-            label: item.label,
-            data: item.value,
-            children:
-              item.children?.map((child: any) => ({
-                key: child.value,
-                label: child.label,
-                data: child.value,
-                children:
-                  child.children?.map((grandChild: any) => ({
-                    key: grandChild.value,
-                    label: grandChild.label,
-                    data: grandChild.value,
-                  })) || [],
-              })) || [],
-          }))
-
-          return (
-            <TreeSelect
-              {...componentProps}
-              modelValue={props.form.values?.[column.field]}
-              options={treeNodes}
-              class={[
-                ...baseProps.class,
-                mergedColumnStyle.value.contentClass || '', // 自定义内容类名（第一优先级）
-              ].filter(Boolean)}
-              style={{
-                ...baseProps.style,
-                ...(mergedColumnStyle.value.contentStyle || {}), // 自定义内容样式（第一优先级）
-              }}
-            />
-          )
-        }
-
-        /* 自定义渲染 */
-        case 'Custom':
-          return (
-            <div
-              class={[
-                ...baseProps.class,
-                mergedColumnStyle.value.contentClass || '', // 自定义内容类名（第一优先级）
-              ].filter(Boolean)}
-              style={{
-                ...baseProps.style,
-                ...(mergedColumnStyle.value.contentStyle || {}), // 自定义内容样式（第一优先级）
-              }}
-            >
-              {column.props?.render(componentProps)}
-            </div>
-          )
-
-        default:
-          return <div>不支持的组件类型: {column.component}</div>
+        return h(component, toggleButtonProps)
       }
+
+      // 使用 h 函数渲染组件
+      return h(component, componentProps)
     }
 
     // ==================== Render ====================
@@ -1038,7 +787,8 @@ export default defineComponent({
               ].filter(Boolean)}
             >
               {column.label}
-              {isRequired && (
+              {props.preview && '：'}
+              {!props.preview && isRequired && (
                 <div
                   class={[
                     'fs-appFontSizes mb-6',
@@ -1059,11 +809,11 @@ export default defineComponent({
             {/* Component Container */}
             {renderComponent()}
             {/* Loading Spinner */}
-            {loading.value && (
+            {!props.preview && loading.value && (
               <ProgressSpinner class="w-appFontSizex h-appFontSizex absolute right-2 top-1/2 -translate-y-1/2" />
             )}
             {/* Help Text */}
-            {!isInvalid && column.help && (
+            {!props.preview && !isInvalid && column.help && (
               <div
                 class={[
                   'absolute top-[calc(100%+2px)] left-0 z-1 color-bg300 select-none pl-paddings pointer-events-none',
@@ -1074,40 +824,42 @@ export default defineComponent({
               </div>
             )}
             {/* Validation Error */}
-            <AnimateWrapper
-              class="absolute top-[calc(100%+2px)] min-w-full z-1 color-dangerColor between-start! select-none pointer-events-none"
-              show={isInvalid}
-              enter="fadeIn"
-              leave="fadeOut"
-              duration="500ms"
-            >
-              {isInvalid && (
-                <div
-                  class={['full rounded-rounded pl-paddings', 'fs-10 sm:fs-12 md:fs-14 lg:fs-12']}
-                >
-                  {(() => {
-                    const fieldState = props.form[column.field]
-                    // 优先使用 error.message（单个错误）
-                    if (fieldState?.error?.message) {
-                      return fieldState.error.message
-                    }
-                    // 其次使用 errors[0].message（多个错误中的第一个）
-                    if (
-                      fieldState?.errors &&
-                      Array.isArray(fieldState.errors) &&
-                      fieldState.errors.length > 0
-                    ) {
-                      return fieldState.errors[0]?.message || '验证失败'
-                    }
-                    // 最后使用 error（字符串格式）
-                    if (fieldState?.error && typeof fieldState.error === 'string') {
-                      return fieldState.error
-                    }
-                    return '验证失败'
-                  })()}
-                </div>
-              )}
-            </AnimateWrapper>
+            {!props.preview && (
+              <AnimateWrapper
+                class="absolute top-[calc(100%+2px)] min-w-full z-1 color-dangerColor between-start! select-none pointer-events-none"
+                show={isInvalid}
+                enter="fadeIn"
+                leave="fadeOut"
+                duration="500ms"
+              >
+                {isInvalid && (
+                  <div
+                    class={['full rounded-rounded pl-paddings', 'fs-10 sm:fs-12 md:fs-14 lg:fs-12']}
+                  >
+                    {(() => {
+                      const fieldState = props.form[column.field]
+                      // 优先使用 error.message（单个错误）
+                      if (fieldState?.error?.message) {
+                        return fieldState.error.message
+                      }
+                      // 其次使用 errors[0].message（多个错误中的第一个）
+                      if (
+                        fieldState?.errors &&
+                        Array.isArray(fieldState.errors) &&
+                        fieldState.errors.length > 0
+                      ) {
+                        return fieldState.errors[0]?.message || '验证失败'
+                      }
+                      // 最后使用 error（字符串格式）
+                      if (fieldState?.error && typeof fieldState.error === 'string') {
+                        return fieldState.error
+                      }
+                      return '验证失败'
+                    })()}
+                  </div>
+                )}
+              </AnimateWrapper>
+            )}
           </div>
         </div>
       )

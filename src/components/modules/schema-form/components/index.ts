@@ -10,3 +10,11 @@ export { default as SectionsRenderer } from './SectionsRenderer.vue'
 export { default as StepNavigation } from './StepNavigation.vue'
 export { default as StepsHeader } from './StepsHeader.vue'
 export { default as StepsRenderer } from './StepsRenderer.vue'
+
+// 组件映射表
+export {
+  componentMap,
+  getComponentFromMap,
+  hasComponentInMap,
+  type ComponentMap,
+} from './componentMap'

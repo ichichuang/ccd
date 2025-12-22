@@ -7,7 +7,7 @@
 import type { VxeTableColumn, VxeTableUserPreferences } from '@/components/modules/vxe-table'
 import { useVxeTableStore } from '@/stores/modules/vxetable'
 import { debounce } from 'lodash-es'
-import { computed, ref, watch, type MaybeRef, type Ref } from 'vue'
+import { computed, ref, unref, watch, type MaybeRef, type Ref } from 'vue'
 
 /**
  * useTablePersistence 返回值接口
@@ -39,10 +39,9 @@ export function useTablePersistence<T>(
 ): UseTablePersistenceReturn<T> {
   const vxeTableStore = useVxeTableStore()
 
-  // 将参数转换为 Ref（如果还不是 Ref）
-  const tableIdRef = typeof tableId === 'function' ? tableId : ref(tableId)
-  const originalColumnsRef =
-    typeof originalColumns === 'function' ? originalColumns : ref(originalColumns)
+  // 将参数统一为只读计算 Ref，避免重复包装 Ref 或处理函数类型
+  const tableIdRef = computed(() => unref(tableId))
+  const originalColumnsRef = computed(() => unref(originalColumns))
 
   // 内部维护的偏好状态（从 Store 加载）
   const preferences = ref<VxeTableUserPreferences>({})

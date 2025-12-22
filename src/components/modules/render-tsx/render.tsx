@@ -1,18 +1,17 @@
-import type { ComponentPublicInstance, VNode } from 'vue'
+import type { ComponentPublicInstance, PropType, VNode } from 'vue'
 import { defineComponent, Fragment, h, onErrorCaptured, ref } from 'vue'
-import { createErrorFallback, isDevelopment, safeRender } from './utils/helpers'
+import { createErrorFallback, isDevelopment } from './utils/helpers'
 import type { TSXRenderFunction } from './utils/types'
 
 export default defineComponent({
   name: 'RenderTSX',
   props: {
     dom: {
-      type: Function as unknown as () => TSXRenderFunction,
+      type: Function as PropType<TSXRenderFunction>,
       required: true,
-      validator: (value: any) => typeof value === 'function',
     },
     params: {
-      type: [Object, Array, String, Number, Boolean] as unknown as () => any,
+      type: [Object, Array, String, Number, Boolean],
       default: null,
     },
     errorBoundary: {
@@ -20,16 +19,8 @@ export default defineComponent({
       default: true,
     },
     fallback: {
-      type: [Object, Function] as unknown as () => VNode | (() => VNode),
+      type: [Object, Function] as PropType<VNode | (() => VNode)>,
       default: () => h('div', { class: 'render-tsx-error' }, '渲染失败'),
-    },
-    class: {
-      type: String,
-      default: '',
-    },
-    style: {
-      type: Object as unknown as () => Record<string, any>,
-      default: () => ({}),
     },
   },
   setup(props) {
@@ -54,46 +45,37 @@ export default defineComponent({
       return false
     }
 
-    /** 渲染内容 */
-    const renderContent = (): VNode => {
+    // 注册错误捕获
+    if (props.errorBoundary) {
+      onErrorCaptured(handleError)
+    }
+
+    // 直接返回渲染函数，合并所有逻辑
+    return () => {
+      // 1. 首先检查是否有已捕获的错误
+      if (hasError.value) {
+        const fallbackContent =
+          typeof props.fallback === 'function' ? props.fallback() : props.fallback
+        return fallbackContent || createErrorFallback(error.value || undefined, isDevelopment())
+      }
+
+      // 2. 尝试渲染内容
       try {
-        if (hasError.value) {
-          // 显示错误回退内容
-          const fallbackContent =
-            typeof props.fallback === 'function' ? props.fallback() : props.fallback
+        const result = props.dom(props.params)
 
-          return fallbackContent || createErrorFallback(error.value || undefined, isDevelopment())
-        }
-
-        // 安全渲染 TSX 内容
-        const result = safeRender(props.dom, props.params)
-
-        // 确保返回的是 VNode 或 VNode 数组
+        // 3. 处理数组结果（Fragment）
         if (Array.isArray(result)) {
           return h(Fragment, {}, result)
         }
 
         return result
       } catch (err) {
-        // 捕获同步错误
+        // 4. 捕获同步错误
         handleError(err as Error, null, 'render')
-        return createErrorFallback(err as Error, isDevelopment())
+        const fallbackContent =
+          typeof props.fallback === 'function' ? props.fallback() : props.fallback
+        return fallbackContent || createErrorFallback(err as Error, isDevelopment())
       }
     }
-
-    // 注册错误捕获
-    if (props.errorBoundary) {
-      onErrorCaptured(handleError)
-    }
-
-    return () =>
-      h(
-        'div',
-        {
-          class: ['full', props.class].filter(Boolean).join(' '),
-          style: props.style,
-        },
-        [renderContent()]
-      )
   },
 })

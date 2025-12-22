@@ -329,8 +329,23 @@ const loadApiData = async (isInfiniteNext = false, forceRefresh = false) => {
     return
   }
 
-  apiLoading.value = true
-  apiError.value = null
+  // 优化 loading 显示：延迟显示和最小显示时间
+  // 延迟显示：如果请求很快完成（< 100ms），不显示 loading
+  // 最小显示时间：如果显示了 loading，至少显示 200ms，避免闪烁
+  let loadingTimer: NodeJS.Timeout | null = null
+  let loadingShown = false
+  const startTime = Date.now()
+  const LOADING_DELAY = 100 // 延迟显示时间（毫秒）
+  const MIN_DISPLAY_TIME = 200 // 最小显示时间（毫秒）
+
+  // 延迟显示 loading
+  loadingTimer = setTimeout(() => {
+    if (!apiLoading.value) {
+      apiLoading.value = true
+      loadingShown = true
+      apiError.value = null
+    }
+  }, LOADING_DELAY)
 
   try {
     let pageSize: number | undefined
@@ -396,7 +411,30 @@ const loadApiData = async (isInfiniteNext = false, forceRefresh = false) => {
   } catch (error) {
     apiError.value = error instanceof Error ? error.message : '加载数据失败'
   } finally {
-    apiLoading.value = false
+    // 清除延迟显示定时器
+    if (loadingTimer) {
+      clearTimeout(loadingTimer)
+      loadingTimer = null
+    }
+
+    // 如果显示了 loading，确保最小显示时间
+    if (loadingShown) {
+      const elapsed = Date.now() - startTime
+      const remaining = Math.max(0, MIN_DISPLAY_TIME - elapsed)
+
+      if (remaining > 0) {
+        // 如果还没达到最小显示时间，延迟关闭
+        setTimeout(() => {
+          apiLoading.value = false
+        }, remaining)
+      } else {
+        // 已经超过最小显示时间，立即关闭
+        apiLoading.value = false
+      }
+    } else {
+      // 如果请求很快完成，loading 还没显示，直接关闭（虽然此时应该是 false）
+      apiLoading.value = false
+    }
   }
 }
 
@@ -620,13 +658,13 @@ const exportFailedText = computed(() => {
   return (t('components.table.exportFailed') as string) || '导出失败'
 })
 
-const refreshSuccessText = computed(() => {
-  return (t('components.table.refreshSuccess') as string) || '刷新成功'
-})
+// const refreshSuccessText = computed(() => {
+//   return (t('components.table.refreshSuccess') as string) || '刷新成功'
+// })
 
-const refreshFailedText = computed(() => {
-  return (t('components.table.refreshFailed') as string) || '刷新失败'
-})
+// const refreshFailedText = computed(() => {
+//   return (t('components.table.refreshFailed') as string) || '刷新失败'
+// })
 
 const exportXLSXWarningText = computed(() => {
   return (t('components.table.exportXLSX') as string) || 'XLSX 导出功能需要安装 xlsx 库'
@@ -1315,14 +1353,14 @@ const _refresh = async () => {
     updateColumnWidths()
 
     // 显示刷新成功提示
-    if (window.$toast) {
-      window.$toast.success(refreshSuccessText.value)
-    }
+    // if (window.$message) {
+    //   window.$message.success(refreshSuccessText.value)
+    // }
   } catch (error) {
     // 显示刷新失败提示
-    if (window.$toast) {
-      window.$toast.error(refreshFailedText.value)
-    }
+    // if (window.$message) {
+    //   window.$message.error(refreshFailedText.value)
+    // }
     console.error('刷新失败:', error)
   }
 }
@@ -1566,8 +1604,9 @@ const handlePageChange = (event: any) => {
   }
 
   // 分页模式：切换分页时自动调用 API 加载数据
+  // FIX: 分页模式下强制刷新，禁用缓存，确保获取最新数据
   if (props.api?.mode === 'pagination') {
-    void loadApiData()
+    void loadApiData(false, true) // 第二个参数 forceRefresh 设为 true
   }
 
   emit('page-change', event)
@@ -1595,6 +1634,13 @@ const goToPage = (page: number): void => {
     first: paginationState.value.first,
     totalRecords,
   }
+
+  // 分页模式：跳转页面时自动调用 API 加载数据
+  // FIX: 分页模式下强制刷新，禁用缓存，确保获取最新数据
+  if (props.api?.mode === 'pagination') {
+    void loadApiData(false, true) // 第二个参数 forceRefresh 设为 true
+  }
+
   emit('page-change', pageEvent as any)
 }
 
@@ -1618,8 +1664,9 @@ const setPageSize = (size: number): void => {
   }
 
   // 分页模式：切换每页数量时自动调用 API 加载数据
+  // FIX: 分页模式下强制刷新，禁用缓存，确保获取最新数据
   if (props.api?.mode === 'pagination') {
-    void loadApiData()
+    void loadApiData(false, true) // 第二个参数 forceRefresh 设为 true
   }
 
   emit('page-change', pageEvent as any)
@@ -1684,38 +1731,24 @@ const setGlobalFilter = (value: string) => {
 }
 
 // 行点击处理（根据 rowSelectable 决定是否选择）
+// 注意：在多选模式下，选择逻辑由 handleRowSelect 处理，这里只触发 row-click 事件
+// 这样可以避免 handleRowClick 和 handleRowSelect 重复处理选择逻辑
 const handleRowClick = (event: any) => {
   emit('row-click', event)
 
-  // 如果启用了选择且允许通过点击行选择
-  if (props.selectable !== false && rowSelectableComputed.value && selectionModeComputed.value) {
+  // 如果启用了选择且允许通过点击行选择，且是单选模式
+  // 多选模式的选择逻辑由 handleRowSelect 统一处理，避免重复执行
+  if (
+    props.selectable !== false &&
+    rowSelectableComputed.value &&
+    selectionModeComputed.value === 'single'
+  ) {
     const row = event.data
-    const isSelected = selectedRows.value.some((selected: any) => {
-      if (idField.value) {
-        return (selected as any)[idField.value] === (row as any)[idField.value]
-      }
-      return selected === row
-    })
-
-    if (selectionModeComputed.value === 'single') {
-      // 单选模式：直接选择当前行
-      selectedRows.value = [row]
-      emit('update:selectedRows', selectedRows.value)
-    } else if (selectionModeComputed.value === 'multiple') {
-      // 多选模式：切换选择状态
-      if (isSelected) {
-        selectedRows.value = selectedRows.value.filter((selected: any) => {
-          if (idField.value) {
-            return (selected as any)[idField.value] !== (row as any)[idField.value]
-          }
-          return selected !== row
-        })
-      } else {
-        selectedRows.value = [...selectedRows.value, row]
-      }
-      emit('update:selectedRows', selectedRows.value)
-    }
+    // 单选模式：直接选择当前行
+    selectedRows.value = [row]
+    emit('update:selectedRows', selectedRows.value)
   }
+  // 多选模式下的选择逻辑在 handleRowSelect 中处理
 }
 
 const handleCellEditComplete = (event: any) => {
@@ -1731,6 +1764,51 @@ const handleCellEditComplete = (event: any) => {
 }
 
 const handleRowSelect = (event: any) => {
+  // 如果禁用了通过点击行选择，且事件不是通过 checkbox 触发的，则不处理
+  if (
+    props.selectable !== false &&
+    rowSelectableComputed.value === false &&
+    event.type !== 'checkbox'
+  ) {
+    emit('row-select', event)
+    return
+  }
+
+  // 多选模式下，如果事件类型不是 checkbox（即通过点击行触发），
+  // 应该采用切换逻辑，而不是直接替换选中列表（这会取消其他已选中的行）
+  if (selectionModeComputed.value === 'multiple' && event.type !== 'checkbox') {
+    const row = event.data
+    const field = idField.value
+
+    // 检查行是否已选中
+    const isSelected = selectedRows.value.some((selected: any) => {
+      if (field) {
+        return (selected as any)[field] === (row as any)[field]
+      }
+      return selected === row
+    })
+
+    // 切换选中状态：已选中则取消，未选中则添加
+    if (isSelected) {
+      // 取消选中
+      if (field) {
+        selectedRows.value = selectedRows.value.filter(
+          (selected: any) => (selected as any)[field] !== (row as any)[field]
+        )
+      } else {
+        selectedRows.value = selectedRows.value.filter(selected => selected !== row)
+      }
+    } else {
+      // 添加到选中列表
+      selectedRows.value = [...selectedRows.value, row]
+    }
+
+    emit('row-select', event)
+    emit('update:selectedRows', selectedRows.value)
+    return
+  }
+
+  // 单选模式或 checkbox 触发的选择：直接设置选中列表
   selectedRows.value = Array.isArray(event.data) ? event.data : [event.data]
   emit('row-select', event)
   emit('update:selectedRows', selectedRows.value)
@@ -2143,7 +2221,7 @@ defineExpose<VxeTableExpose>({
     .vxe-table-header(v-if='showHeader')
       .vxe-table-header-left
         slot(name='header-left', v-bind='slotProps')
-      .vxe-table-header-right
+      .vxe-table-header-right.fs-appFontSizes
         // 全局搜索
         IconField.center(v-if='globalFilter')
           InputIcon

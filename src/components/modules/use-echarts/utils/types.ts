@@ -28,6 +28,28 @@ export interface ChartThemeConfig {
   opacity?: ChartOpacityConfig
 }
 
+// 图表高级配置类型（用于合并到 useChartTheme）
+export interface ChartAdvancedConfig {
+  /** 动画配置 */
+  animationConfig?: ChartAnimationConfig
+  /** 工具箱配置 */
+  toolboxConfig?: ChartToolboxConfig
+  /** 标记点配置 */
+  markPointConfig?: ChartMarkPointConfig
+  /** 标记线配置 */
+  markLineConfig?: ChartMarkLineConfig
+  /** 可视化映射配置 */
+  visualMapConfig?: ChartVisualMapConfig
+  /** 画刷配置 */
+  brushConfig?: ChartBrushConfig
+  /** 坐标轴指示器配置 */
+  axisPointerConfig?: ChartAxisPointerConfig
+  /** 是否开启图例悬停联动 */
+  legendHoverLink?: boolean
+  /** 背景颜色 */
+  backgroundColor?: string
+}
+
 // 图表联动配置类型
 export interface ChartConnectConfig {
   /** 是否启用联动 */

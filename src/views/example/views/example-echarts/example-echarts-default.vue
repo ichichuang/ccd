@@ -143,7 +143,6 @@ const scatterChartOption = ref({
 
 // 雷达图配置
 const radarChartOption = ref({
-  color: ['#ec70f8', '#7b7cf9'],
   title: {
     text: '产品性能评估（雷达图）',
   },

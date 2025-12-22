@@ -111,28 +111,6 @@ export interface ScrollEvent {
  */
 export interface ScrollbarWrapperProps {
   /**
-   * 容器类名
-   *
-   * @default undefined
-   * @example
-   * - class="my-container"
-   * - :class="['class1', 'class2']"
-   */
-  class?: string | string[]
-
-  /**
-   * 容器样式对象
-   *
-   * 支持 Vue 的 StyleValue 类型（对象、字符串或数组）
-   *
-   * @default undefined
-   * @example
-   * - :style="{ height: '100vh' }"
-   * - :style="{ height: containerHeight + 'px' }"
-   */
-  style?: StyleValue
-
-  /**
    * 包装器类名
    *
    * 应用于 OverlayScrollbarsComponent 的类名

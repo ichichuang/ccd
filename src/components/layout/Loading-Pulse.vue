@@ -11,6 +11,7 @@ const props = withDefaults(
     loadingSize?: number
   }>(),
   {
+    size: undefined,
     loadingSize: 5,
   }
 )

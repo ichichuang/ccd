@@ -53,8 +53,8 @@ const loginSchema: Schema = {
   },
 }
 
-const { schema, submitForm, getFormValues, setValues, updateField } = useSchemaForm({
-  formRef: schemaFormRef,
+// 🔥 P2 重构：使用新的 useSchemaForm API，Hook 成为状态的所有者
+const { schema, formValues, setValues, updateField } = useSchemaForm({
   initialSchema: loginSchema,
 })
 
@@ -106,14 +106,22 @@ const checkClickTooFast = (): boolean => {
   return false
 }
 
-// 原始登录函数（不包含快速点击检测，因为检测在外部）
+// 🔥 P2 重构：原始登录函数，使用 schemaFormRef 调用组件的 validate 和 submit
 const doLoginOriginal = async () => {
-  const { valid } = await submitForm()
+  if (!schemaFormRef.value) {
+    loading.value = false
+    return
+  }
+
+  // 先验证表单
+  const { valid } = await schemaFormRef.value.validate()
   if (!valid) {
     loading.value = false
     return
   }
-  const values = getFormValues()
+
+  // 🔥 关键：formValues 现在直接从 hook 获取，不需要调用 getFormValues()
+  const values = formValues.value
   loading.value = true
   login({
     username: values.username,
@@ -200,7 +208,7 @@ const handleUserSchemaForm = () => {
     .px-paddingl.between-col.gap-gaps.relative.z-2
       //- 表单
       .fs-appFontSize {{ t('common.auth.accountPasswordLogin') }}
-      SchemaForm(ref='schemaFormRef', :schema='schema')
+      SchemaForm(ref='schemaFormRef', :schema='schema', v-model='formValues')
 
       .between-col.color-text200.fs-appFontSizes
         AnimateWrapper.w-full(:show='true', enter='zoomInLeft')

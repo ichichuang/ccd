@@ -62,6 +62,7 @@ const enUS = {
           event: 'Event Echarts',
           dynamic: 'Dynamic Echarts',
           linkage: 'Linkage Echarts',
+          themeTest: 'Theme Test', // Responsive theme switching test page
         },
         datepicker: 'Date Picker',
         icons: {
@@ -127,6 +128,9 @@ const enUS = {
     },
   },
   common: {
+    confirm: 'OK',
+    cancel: 'Cancel',
+    delete: 'Delete',
     settings: {
       title: 'Settings',
       theme: 'Theme',
@@ -374,6 +378,15 @@ const enUS = {
       rotateRight: 'Rotate Right',
       rotateLeft: 'Rotate Left',
     },
+  },
+  dialog: {
+    infoTitle: 'Information',
+    successTitle: 'Success',
+    warningTitle: 'Warning',
+    errorTitle: 'Error',
+    confirmTitle: 'Confirm',
+    deleteTitle: 'Confirm Deletion',
+    deleteMessage: 'Are you sure you want to delete this?',
   },
   components: {
     datePicker: {

@@ -43,7 +43,7 @@ const barChartOption = computed(() => ({
   grid: {
     left: '3%',
     right: '4%',
-    bottom: '36%',
+    bottom: '16%',
     top: '15%',
     containLabel: true,
   },
@@ -228,7 +228,7 @@ const lineChartOption = computed(() => ({
   grid: {
     left: '3%',
     right: '4%',
-    bottom: '36%',
+    bottom: '16%',
     top: '15%',
     containLabel: true,
   },
@@ -695,7 +695,7 @@ const scatterChartOption = computed(() => ({
   grid: {
     left: '3%',
     right: '10%',
-    bottom: '12%',
+    bottom: '24%',
     top: '15%',
     containLabel: true,
   },

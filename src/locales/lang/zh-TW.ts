@@ -62,6 +62,7 @@ const zhTW = {
           event: '事件圖表',
           dynamic: '動態圖表',
           linkage: '聯動圖表',
+          themeTest: '主題測試', // 響應式主題切換測試頁面
         },
         datepicker: '日期選擇器',
         icons: {
@@ -128,6 +129,9 @@ const zhTW = {
     },
   },
   common: {
+    confirm: '確定',
+    cancel: '取消',
+    delete: '刪除',
     settings: {
       title: '設定',
       theme: '主題',
@@ -375,6 +379,15 @@ const zhTW = {
       rotateRight: '向右旋轉',
       rotateLeft: '向左旋轉',
     },
+  },
+  dialog: {
+    infoTitle: '提示',
+    successTitle: '成功',
+    warningTitle: '警告',
+    errorTitle: '錯誤',
+    confirmTitle: '確認',
+    deleteTitle: '刪除確認',
+    deleteMessage: '確定要刪除嗎？',
   },
   components: {
     datePicker: {

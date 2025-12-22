@@ -1,4 +1,4 @@
-import type { StyleValue, VNode } from 'vue'
+import type { VNode } from 'vue'
 
 /**
  * TSX 渲染函数类型
@@ -20,15 +20,20 @@ export type TSXRenderFunction = (params?: any) => VNode | VNode[]
  *
  * 用于动态渲染 TSX/JSX 内容的组件属性
  *
+ * 这是一个 "headless" 组件，专注于渲染逻辑和错误处理，不包含布局相关的属性。
+ * 父组件可以通过外层包装元素来控制样式和布局。
+ *
  * @example
  * ```vue
  * <template>
- *   <RenderTSX
- *     :dom="renderFunction"
- *     :params="{ name: 'World' }"
- *     :error-boundary="true"
- *     @error="handleError"
- *   />
+ *   <!-- 父组件控制样式和布局 -->
+ *   <div class="my-wrapper" :style="{ padding: '16px' }">
+ *     <RenderTSX
+ *       :dom="renderFunction"
+ *       :params="{ name: 'World' }"
+ *       :error-boundary="true"
+ *     />
+ *   </div>
  * </template>
  *
  * <script setup lang="ts">
@@ -101,30 +106,6 @@ export interface RenderTSXProps {
    * ```
    */
   fallback?: VNode | (() => VNode)
-
-  /**
-   * 组件类名
-   *
-   * 应用于组件根元素的 CSS 类名
-   *
-   * @default undefined
-   * @example
-   * - class="my-component"
-   * - :class="['class1', 'class2']"
-   */
-  class?: string | string[]
-
-  /**
-   * 组件样式
-   *
-   * 支持 Vue 的 StyleValue 类型（对象、字符串或数组）
-   *
-   * @default undefined
-   * @example
-   * - :style="{ padding: '16px', color: '#333' }"
-   * - :style="'padding: 16px;'"
-   */
-  style?: StyleValue
 }
 
 /**

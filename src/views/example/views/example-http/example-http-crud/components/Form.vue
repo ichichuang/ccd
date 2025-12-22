@@ -1,49 +1,38 @@
 <script setup lang="tsx">
 import type { Schema } from '@/components/modules/schema-form/utils/types'
-// import { useDialog } from '@/hooks/components/useDialog'
-import { useSchemaForm } from '@/hooks/components/useSchemaForm'
+import { useSchemaForm, type SchemaFormExpose } from '@/hooks/components/useSchemaForm'
 import { Button } from 'primevue'
-import { ref } from 'vue'
-// const { openDialog } = useDialog()
+import { nextTick, onMounted, ref } from 'vue'
+
 // ==================== 表单 Schema 定义 ====================
 const initialSchema: Schema = {
   columns: [
-    // 基础输入组件
     {
-      field: 'inputText',
-      label: '文本输入',
+      field: 'keyword',
+      label: '搜索关键词',
       component: 'InputText',
-      placeholder: '请输入文本',
-      rules: 'required|min:3|max:20',
-      help: '文本长度为3-20个字符',
-      defaultValue: '默认初始文本',
-    },
-    {
-      field: 'inputNumber',
-      label: '数字输入',
-      component: 'InputNumber',
-      placeholder: '请输入数字',
-      rules: 'required|min:1|max:1000',
-      help: '数字范围为1-100',
+      placeholder: '请输入搜索关键词',
+      defaultValue: '',
       props: {
-        min: 1,
-        max: 1000,
-        step: 1,
+        clearable: true,
       },
     },
-    // Button
     {
-      field: 'customButton',
+      field: 'searchButton',
       component: 'Custom',
       props: {
-        renderer: () => {
+        render: () => {
           return (
-            <Button
-              severity="primary"
-              size="size"
-            >
-              提交
-            </Button>
+            <div class="w-100%! px-paddingl">
+              <Button
+                severity="primary"
+                onClick={() => {
+                  handleSearch()
+                }}
+              >
+                查询
+              </Button>
+            </div>
           )
         },
       },
@@ -55,53 +44,58 @@ const initialSchema: Schema = {
 }
 
 // ==================== 表单 Ref 管理 ====================
-const schemaFormRef = ref<any>(null)
+const schemaFormRef = ref<SchemaFormExpose | null>(null)
 
-// ==================== 表单数据响应式状态 ====================
-// 由 useSchemaForm 提供稳定的响应式表单值
-
-// ==================== 使用 useSchemaForm Hook ====================
-// const { formValues, schema, getFormData } = useSchemaForm({
-//   formRef: schemaFormRef,
-//   initialSchema,
-//   remember: true,
-// })
-const { formValues, schema } = useSchemaForm({
-  formRef: schemaFormRef,
+// ==================== 使用 useSchemaForm Hook (P2 重构后) ====================
+const { schema, formValues, getFormValues, setFieldValue } = useSchemaForm({
   initialSchema,
-  remember: true,
 })
-// 从 hook 解构实时表单值（重置/清空后仍会持续更新）
+
+// ==================== 组件挂载时修复错误值 ====================
+onMounted(async () => {
+  // 等待表单初始化完成
+  await nextTick()
+  // 检查 keyword 字段，如果是对象则修复为空字符串
+  const formValues = getFormValues()
+  if (formValues.keyword && typeof formValues.keyword === 'object' && formValues.keyword !== null) {
+    console.warn('[Form] 检测到 keyword 字段包含对象值，已修复为空字符串:', formValues.keyword)
+    setFieldValue('keyword', '')
+  }
+})
+
+// ==================== 事件定义 ====================
+const emit = defineEmits<{
+  search: [params: { keyword?: string }]
+}>()
 
 // ==================== 表单操作函数 ====================
-
-const handleSubmit = (values: Record<string, any>) => {
-  console.log('表单提交:', values)
+const handleSearch = async () => {
+  // 等待表单值更新完成，确保获取到最新的输入值
+  await nextTick()
+  const formValues = getFormValues()
+  // 确保 keyword 是字符串类型，过滤掉对象类型
+  let keyword: string | undefined
+  if (formValues.keyword) {
+    if (typeof formValues.keyword === 'string') {
+      keyword = formValues.keyword.trim() || undefined
+    } else if (typeof formValues.keyword === 'object' && formValues.keyword !== null) {
+      // 如果是对象，修复为空字符串并返回 undefined
+      console.warn('[Form] keyword 字段包含对象值，已修复:', formValues.keyword)
+      setFieldValue('keyword', '')
+      keyword = undefined
+    }
+  }
+  emit('search', {
+    keyword,
+  })
 }
 
-// ==================== 演示操作函数 ====================
-
-// 获取表单数据
-// const handleGetFormData = async () => {
-//   const formData = await getFormData()
-//   if (formData) {
-//     console.log('表单值:', formData)
-//     openDialog({
-//       header: '表单数据',
-//       contentRenderer: () => {
-//         return <pre>{JSON.stringify(formData, null, 2)}</pre>
-//       },
-//       hideClose: true,
-//       hideFooter: true,
-//     })
-//   } else {
-//     window.$toast.error('表单校验未通过')
-//   }
-// }
+// ==================== 暴露方法 ====================
+defineExpose({
+  getFormValues,
+})
 </script>
 
 <template lang="pug">
-div
-  SchemaForm(:schema='schema', @submit='handleSubmit', ref='schemaFormRef')
-  pre.c-border-primary.p-paddings.full {{ JSON.stringify(formValues, null, 2) }}
+SchemaForm(:schema='schema', v-model='formValues', ref='schemaFormRef')
 </template>

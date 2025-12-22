@@ -2,7 +2,7 @@
  * DateUtils 插件配置
  * 初始化日期工具并与框架语言系统集成
  */
-import { DateUtils } from '@#/index'
+import { DateUtils, loadTzdbSafely } from '@#/index'
 import type { SupportedLocale } from '@/locales'
 import { getCurrentLocale } from '@/locales'
 import type { App } from 'vue'
@@ -26,6 +26,9 @@ export const setupDateUtils = async (app: App) => {
 
     // 初始化 DateUtils 并设置语言
     await DateUtils.initWithFramework(dateUtilsLocale)
+
+    // 加载完整时区数据（使用 public/time-zones.json 或远程兜底）
+    await loadTzdbSafely()
 
     app.config.globalProperties.$dateUtils = DateUtils
   } catch (error) {

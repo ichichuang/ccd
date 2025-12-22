@@ -62,6 +62,7 @@ const zhCN = {
           event: '事件图表',
           dynamic: '动态图表',
           linkage: '联动图表',
+          themeTest: '主题测试', // 响应式主题切换测试页面
         },
         datepicker: '日期选择器',
         icons: {
@@ -128,6 +129,9 @@ const zhCN = {
     },
   },
   common: {
+    confirm: '确定',
+    cancel: '取消',
+    delete: '删除',
     settings: {
       title: '设置',
       theme: '主题',
@@ -375,6 +379,15 @@ const zhCN = {
       rotateRight: '向右旋转',
       rotateLeft: '向左旋转',
     },
+  },
+  dialog: {
+    infoTitle: '提示',
+    successTitle: '成功',
+    warningTitle: '警告',
+    errorTitle: '错误',
+    confirmTitle: '确认',
+    deleteTitle: '删除确认',
+    deleteMessage: '确定要删除吗？',
   },
   components: {
     datePicker: {

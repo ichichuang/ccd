@@ -1,7 +1,7 @@
 <script setup lang="tsx">
 import type { Schema, SchemaColumnsItem } from '@/components/modules/schema-form/utils/types'
 import { useDialog } from '@/hooks/components/useDialog'
-import { useSchemaForm } from '@/hooks/components/useSchemaForm'
+import { useSchemaForm, type SchemaFormExpose } from '@/hooks/components/useSchemaForm'
 import { ref } from 'vue'
 const { openDialog, info, success, error } = useDialog()
 // ==================== 表单 Schema 定义 ====================
@@ -587,20 +587,15 @@ const initialSchema: Schema = {
 }
 
 // ==================== 表单 Ref 管理 ====================
-const schemaFormRef = ref<any>(null)
+const schemaFormRef = ref<SchemaFormExpose | null>(null)
 
-// ==================== 表单数据响应式状态 ====================
-// 由 useSchemaForm 提供稳定的响应式表单值
-
-// ==================== 使用 useSchemaForm Hook ====================
+// ==================== 使用 useSchemaForm Hook (P2 重构后) ====================
 const {
-  formValues,
+  formValues, // 🔥 绑定到 v-model
   schema,
-  getFormData,
   getFormValues,
   resetForm,
   clearForm,
-  submitForm,
   addField,
   removeField,
   updateField,
@@ -611,8 +606,7 @@ const {
   setValues,
   hasField,
   getFieldIndex,
-} = useSchemaForm({ formRef: schemaFormRef, initialSchema, remember: true })
-// 从 hook 解构实时表单值（重置/清空后仍会持续更新）
+} = useSchemaForm({ initialSchema })
 
 // ==================== 表单操作函数 ====================
 
@@ -622,10 +616,17 @@ const handleSubmit = (values: Record<string, any>) => {
 
 // ==================== 演示操作函数 ====================
 
-// 获取表单数据
+// 获取表单数据（校验后）
 const handleGetFormData = async () => {
-  const formData = await getFormData()
-  if (formData) {
+  if (!schemaFormRef.value) {
+    window.$toast.error('表单组件未就绪')
+    return
+  }
+
+  // 🔥 P2 重构：通过 ref 调用组件的 validate 方法
+  const { valid } = await schemaFormRef.value.validate()
+  if (valid) {
+    const formData = getFormValues() // 从 hook 获取表单值
     console.log('表单值:', formData)
     openDialog({
       header: '表单数据',
@@ -665,12 +666,14 @@ const handleClearForm = () => {
 }
 
 const handleSubmitForm = async () => {
-  const { valid } = await submitForm()
-  if (valid) {
-    success('表单提交成功！')
-  } else {
-    error('表单校验未通过，请检查必填项或格式')
+  if (!schemaFormRef.value) {
+    error('表单组件未就绪')
+    return
   }
+
+  // 🔥 P2 重构：通过 ref 调用组件的 submit 方法
+  schemaFormRef.value.submit()
+  // 注意：submit 方法会触发 @submit 事件，实际的验证和提交逻辑在 handleSubmit 中处理
 }
 
 // 表单项操作
@@ -891,7 +894,13 @@ div
         Button(size='small', @click='handleGetFieldIndex') 获取字段索引
   .p-padding
     // 表单组件
-    SchemaForm(:schema='schema', @submit='handleSubmit', ref='schemaFormRef', :remember='true')
+    SchemaForm(
+      :schema='schema',
+      v-model='formValues',
+      @submit='handleSubmit',
+      ref='schemaFormRef',
+      :remember='true'
+    )
   .full.c-card.fs-appFontSizes.between-col.gap-gap
     span.fs-appFontSizex 表单数据实时预览：
     pre.c-border-primary.p-paddings.full {{ JSON.stringify(formValues, null, 2) }}
