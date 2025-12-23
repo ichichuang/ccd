@@ -153,13 +153,88 @@ export interface ButtonProps extends Omit<Partial<PrimeButtonProps>, 'label'> {
 
 // 按钮点击参数类型
 export type BtnClickDialog = {
-  options: DialogOptions
+  options: DialogOptionsBase
   index: number
 }
 
 export type BtnClickButton = {
   btn?: ButtonProps
   index: number
+}
+
+/**
+ * 对话框基础选项（移除渲染器以避免类型递归）
+ */
+export interface DialogOptionsBase extends Omit<Partial<PrimeDialogProps>, 'header'> {
+  type?: DialogType
+  visible?: boolean
+  header?: string | (() => string)
+  width?: string | number
+  height?: string | number
+  fullscreen?: boolean
+  fullscreenIcon?: boolean
+  draggable?: boolean
+  modal?: boolean
+  position?: DialogPosition | string
+  appendTo?: string
+  maximizable?: boolean
+  minimizable?: boolean
+  class?: string
+  style?: CSSProperties
+  openDelay?: number
+  closeDelay?: number
+  closeOnEscape?: boolean
+  closeOnMask?: boolean
+  closable?: boolean
+  beforeClose?: (done: () => void) => void
+  center?: boolean
+  destroyOnClose?: boolean
+  props?: any
+  hideFooter?: boolean
+  hideHeader?: boolean
+  hideClose?: boolean
+  confirmOptions?: ConfirmOptions
+  sureBtnLoading?: boolean
+  footerButtons?: Array<ButtonProps>
+  open?: ({ options, index }: { options: DialogOptionsBase; index: number }) => void
+  close?: ({ options, index }: { options: DialogOptionsBase; index: number }) => void
+  closeCallBack?: ({
+    options,
+    index,
+    args,
+  }: {
+    options: DialogOptionsBase
+    index: number
+    args: any
+  }) => void
+  fullscreenCallBack?: ({ options, index }: { options: DialogOptionsBase; index: number }) => void
+  maximizeCallBack?: ({ options, index }: { options: DialogOptionsBase; index: number }) => void
+  minimizeCallBack?: ({ options, index }: { options: DialogOptionsBase; index: number }) => void
+  beforeCancel?: (
+    done: () => void,
+    {
+      options,
+      index,
+    }: {
+      options: DialogOptionsBase
+      index: number
+    }
+  ) => void
+  beforeSure?: (
+    done: () => void,
+    {
+      options,
+      index,
+      closeLoading,
+    }: {
+      options: DialogOptionsBase
+      index: number
+      closeLoading: () => void
+    }
+  ) => void
+  component?: any
+  data?: any
+  listeners?: any
 }
 
 /**
@@ -406,180 +481,7 @@ export interface DynamicDialogOptions {
  * }
  * ```
  */
-export interface DialogOptions extends Omit<Partial<PrimeDialogProps>, 'header'> {
-  /**
-   * 对话框类型
-   *
-   * @default 'dialog'
-   * @example
-   * - type="dialog" - 标准对话框
-   * - type="confirm" - 确认对话框
-   * - type="dynamic" - 动态对话框
-   */
-  type?: DialogType
-
-  /**
-   * 对话框的显示与隐藏
-   *
-   * 控制对话框的可见性，通常由组件内部管理
-   *
-   * @default false
-   * @example
-   * - visible: true - 显示对话框
-   */
-  visible?: boolean
-
-  /**
-   * 对话框的标题
-   *
-   * 支持字符串或函数形式，函数形式可用于实现响应式多语言
-   *
-   * @default undefined
-   * @example
-   * ```typescript
-   * // 字符串形式
-   * header: '对话框标题'
-   *
-   * // 函数形式（支持多语言）
-   * header: () => t('dialog.title')
-   * ```
-   */
-  header?: string | (() => string)
-
-  /**
-   * 对话框的宽度
-   *
-   * 支持字符串（如 '800px', '50%'）或数字（像素值）
-   *
-   * @default '50%'
-   * @example
-   * - width: '800px'
-   * - width: '50%'
-   * - width: 800
-   */
-  width?: string | number
-
-  /**
-   * 对话框的高度
-   *
-   * 支持字符串（如 '600px', '80vh'）或数字（像素值）
-   *
-   * @default 'auto'
-   * @example
-   * - height: '600px'
-   * - height: '80vh'
-   * - height: 600
-   */
-  height?: string | number
-
-  /**
-   * 是否为全屏对话框
-   *
-   * 设置为 true 时，对话框会占据整个屏幕
-   *
-   * @default false
-   * @example
-   * - fullscreen: true - 全屏显示
-   */
-  fullscreen?: boolean
-
-  /**
-   * 是否显示全屏操作图标
-   *
-   * 在对话框头部显示全屏切换按钮
-   *
-   * @default false
-   */
-  fullscreenIcon?: boolean
-
-  /**
-   * 是否可拖拽
-   *
-   * 启用后，可以通过拖拽头部来移动对话框
-   *
-   * @default false
-   * @example
-   * - draggable: true - 允许拖拽
-   */
-  draggable?: boolean
-
-  /**
-   * 是否显示遮罩
-   *
-   * 遮罩层会阻止用户与背景内容的交互
-   *
-   * @default true
-   * @example
-   * - modal: true - 显示遮罩（默认）
-   * - modal: false - 不显示遮罩
-   */
-  modal?: boolean
-
-  /**
-   * 对话框位置
-   *
-   * 指定对话框在屏幕上的初始位置
-   *
-   * @default 'center'
-   * @example
-   * - position: 'center' - 居中（默认）
-   * - position: 'top' - 顶部居中
-   * - position: 'topleft' - 左上角
-   */
-  position?: DialogPosition | string
-  /** 附加到指定元素 */
-  appendTo?: string
-  /** 是否显示最大化按钮 */
-  maximizable?: boolean
-  /** 是否显示最小化按钮 */
-  minimizable?: boolean
-  /** 对话框的自定义类名 */
-  class?: string
-  /** 对话框的自定义样式 */
-  style?: CSSProperties
-  /** 对话框打开的延时时间，单位毫秒 */
-  openDelay?: number
-  /** 对话框关闭的延时时间，单位毫秒 */
-  closeDelay?: number
-  /**
-   * 是否可以通过按下 ESC 键关闭对话框
-   *
-   * @default true
-   * @example
-   * - closeOnEscape: true - 按 ESC 键关闭（默认）
-   * - closeOnEscape: false - 禁用 ESC 键关闭
-   */
-  closeOnEscape?: boolean
-
-  /**
-   * 是否可以通过点击遮罩关闭对话框
-   *
-   * @default true
-   * @example
-   * - closeOnMask: true - 点击遮罩关闭（默认）
-   * - closeOnMask: false - 禁用点击遮罩关闭
-   */
-  closeOnMask?: boolean
-  /** 是否显示关闭按钮 */
-  closable?: boolean
-  /** 关闭前的回调 */
-  beforeClose?: (done: () => void) => void
-  /** 是否让对话框的 header 和 footer 部分居中排列 */
-  center?: boolean
-  /** 当关闭对话框时，销毁其中的元素 */
-  destroyOnClose?: boolean
-  /** 内容区组件的 props */
-  props?: any
-  /** 是否隐藏对话框按钮操作区的内容 */
-  hideFooter?: boolean
-  /** 是否隐藏对话框头部（包括头部内容和关闭按钮） */
-  hideHeader?: boolean
-  /** 是否隐藏关闭按钮 */
-  hideClose?: boolean
-  /** 确认对话框相关配置 */
-  confirmOptions?: ConfirmOptions
-  /** 点击确定按钮后是否开启 loading 加载动画 */
-  sureBtnLoading?: boolean
+export interface DialogOptions extends DialogOptionsBase {
   /**
    * 自定义对话框标题的内容渲染器
    */
@@ -597,7 +499,7 @@ export interface DialogOptions extends Omit<Partial<PrimeDialogProps>, 'header'>
     options,
     index,
   }: {
-    options: DialogOptions
+    options: DialogOptionsBase
     index: number
   }) => VNode | Component
   /** 自定义按钮操作区的内容渲染器 */
@@ -605,58 +507,7 @@ export interface DialogOptions extends Omit<Partial<PrimeDialogProps>, 'header'>
     options,
     index,
   }: {
-    options: DialogOptions
+    options: DialogOptionsBase
     index: number
   }) => VNode | Component
-  /** 自定义底部按钮操作 */
-  footerButtons?: Array<ButtonProps>
-  /** 对话框打开后的回调 */
-  open?: ({ options, index }: { options: DialogOptions; index: number }) => void
-  /** 对话框关闭后的回调 */
-  close?: ({ options, index }: { options: DialogOptions; index: number }) => void
-  /** 对话框关闭后的回调 */
-  closeCallBack?: ({
-    options,
-    index,
-    args,
-  }: {
-    options: DialogOptions
-    index: number
-    args: any
-  }) => void
-  /** 点击全屏按钮时的回调 */
-  fullscreenCallBack?: ({ options, index }: { options: DialogOptions; index: number }) => void
-  /** 点击最大化按钮时的回调 */
-  maximizeCallBack?: ({ options, index }: { options: DialogOptions; index: number }) => void
-  /** 点击最小化按钮时的回调 */
-  minimizeCallBack?: ({ options, index }: { options: DialogOptions; index: number }) => void
-  /** 点击底部取消按钮的回调 */
-  beforeCancel?: (
-    done: () => void,
-    {
-      options,
-      index,
-    }: {
-      options: DialogOptions
-      index: number
-    }
-  ) => void
-  /** 点击底部确定按钮的回调 */
-  beforeSure?: (
-    done: () => void,
-    {
-      options,
-      index,
-      closeLoading,
-    }: {
-      options: DialogOptions
-      index: number
-      /** 关闭确定按钮的 loading 加载动画 */
-      closeLoading: () => void
-    }
-  ) => void
-  /** 动态对话框相关配置 */
-  component?: any
-  data?: any
-  listeners?: any
 }

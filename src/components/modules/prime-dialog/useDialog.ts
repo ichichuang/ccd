@@ -54,11 +54,11 @@ export function useDialog(): UseDialogReturn {
    * @returns 返回新创建的对话框的索引
    */
   function addDialog(options: DialogOptions): number {
-    const mergedOptions = {
-      ...defaultDialogProps,
+    const mergedOptions: DialogOptions = {
+      ...(defaultDialogProps as DialogOptions),
       ...options,
       visible: true,
-      type: 'dialog' as const,
+      type: 'dialog',
     }
     _dialogStore.value.push(mergedOptions)
     const index = _dialogStore.value.length - 1
