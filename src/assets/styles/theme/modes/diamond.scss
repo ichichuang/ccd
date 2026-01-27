@@ -1,0 +1,16 @@
+/**
+ * 菱形过渡模式
+ */
+
+[data-transition='diamond'] {
+  ::view-transition-new(root) {
+    clip-path: polygon(50% 50%, 50% 50%, 50% 50%, 50% 50%);
+    animation: diamond-expand 400ms cubic-bezier(0.4, 0, 0.2, 1);
+  }
+}
+
+@keyframes diamond-expand {
+  to {
+    clip-path: polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%);
+  }
+}

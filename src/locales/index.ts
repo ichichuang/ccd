@@ -4,12 +4,7 @@
 import enUS from '@/locales/lang/en-US'
 import zhCN from '@/locales/lang/zh-CN'
 import zhTW from '@/locales/lang/zh-TW'
-import { isDev } from '@/utils'
-import type { App } from 'vue'
 import { createI18n } from 'vue-i18n'
-import cnImage from '@/assets/images/language/cn.svg'
-import enImage from '@/assets/images/language/en.svg'
-import twImage from '@/assets/images/language/tw.svg'
 
 // 类型定义
 /** 支持的语言类型 */
@@ -21,7 +16,6 @@ export interface LocaleInfo {
   name: string
   flag: string
   direction: 'ltr' | 'rtl'
-  image: string
 }
 /** 语言包类型 */
 export interface LocaleMessages {
@@ -35,21 +29,18 @@ export const supportedLocales: LocaleInfo[] = [
     name: '简体中文',
     flag: '🇨🇳',
     direction: 'ltr',
-    image: cnImage,
   },
   {
     key: 'en-US',
     name: 'English',
     flag: '🇺🇸',
     direction: 'ltr',
-    image: enImage,
   },
   {
     key: 'zh-TW',
     name: '繁體中文',
     flag: '🇭🇰',
     direction: 'ltr',
-    image: twImage,
   },
 ]
 
@@ -193,8 +184,9 @@ export const i18n = createI18n({
   globalInjection: true,
   silentTranslationWarn: true,
   silentFallbackWarn: true,
-  missingWarn: isDev(),
-  fallbackWarn: isDev(),
+  // 开发环境下启用警告
+  missingWarn: import.meta.env.VITE_APP_ENV === 'development',
+  fallbackWarn: import.meta.env.VITE_APP_ENV === 'development',
 })
 
 // 安装插件

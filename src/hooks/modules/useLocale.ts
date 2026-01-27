@@ -4,7 +4,6 @@
 import type { SupportedLocale } from '@/locales'
 import { getCurrentLocale, setLocale, supportedLocales } from '@/locales'
 import router from '@/router'
-import { computed, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 export function useLocale() {
@@ -76,7 +75,7 @@ export function useLocale() {
         } else if (currentRoute.meta?.title) {
           pageTitle = `${currentRoute.meta.title} - ${title}`
         }
-        document.title = pageTitle
+        document.title = pageTitle || ''
       }
     },
     { immediate: true }

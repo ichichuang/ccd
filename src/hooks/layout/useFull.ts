@@ -2,8 +2,6 @@
  * 页面全屏控制的Composable函数
  */
 import { useFullscreen } from '@vueuse/core'
-import { ref } from 'vue'
-
 /**
  * useFull 用于管理页面或指定元素的全屏状态
  * @param target 可选目标元素，默认 document.body

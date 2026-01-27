@@ -1,5 +1,0 @@
-export * from './instance'
-export * from './interceptors'
-export * from './methods'
-export * from './connection'
-export * from './uploadManager'

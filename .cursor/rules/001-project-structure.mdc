@@ -1,0 +1,54 @@
+---
+description: 项目目录职责定义、文件存放规则与路径别名规范，当创建、移动文件或编写导入逻辑时触发
+globs: '**/*'
+alwaysApply: true
+---
+
+# CCD Project Structure & Filing Strategy
+
+你必须严格遵守 CCD 项目的目录架构。本项目采用「职责高度解耦」模式，严禁将逻辑、类型或样式随意堆放。
+
+## Directory Map（项目骨架）
+
+```text
+ccd/
+├── build/                    # 构建脚本与配置层 (Node 环境)
+│                             # 包含：Vite 插件收敛、路径别名定义、构建优化、压缩配置、UnoIcons 扫描等
+├── src/
+│   ├── api/                  # API 定义层：仅存放接口请求函数 (基于 @/utils/http 封装)
+│   ├── assets/               # 静态资源层：SVG 图标、图片、全局样式 (SCSS)
+│   ├── common/               # 公共方法层：低复杂度、无库依赖的纯函数 (如 lodash 替代品、日期格式化)
+│   ├── components/           # 通用组件层 (Auto-imported，严禁手动 import)
+│   │   ├── ui/               # 原子设计基座 (Shadcn-vue 源码)，使用别名 @$/ 访问
+│   │   └── ...               # 其他业务公共组件，跨页面复用
+│   ├── constants/            # 公共变量层 (SSOT)：主题 theme.ts、尺寸 size.ts、尺寸阶梯倍率 sizeScale.ts、布局默认配置 layout.ts、断点 breakpoints.ts、枚举、路由常量
+│   ├── hooks/                # 组合式函数层：复杂业务逻辑抽离 (Composables)
+│   ├── layouts/              # 布局层 (禁止自动导入，必须使用 @&/ 显式引入)
+│   │   ├── components/       # 布局专用组件 (如 Sidebar, Navbar，仅在布局内部使用)
+│   │   └── modules/          # 布局模版 (如 AdminLayout, FullScreenLayout)
+│   ├── locales/              # 多语言配置层
+│   ├── plugins/              # 第三方插件初始化层 (如 Echarts, Router, Stores 的 setup)
+│   ├── router/               # 路由配置层
+│   ├── stores/               # Pinia 状态管理层
+│   ├── types/                # TS 类型定义层 (含 env.d.ts 及自动生成的类型声明)
+│   ├── utils/                # 核心方法层：Http 封装、主题与尺寸引擎 utils/theme/(engine.ts, sizeEngine.ts, colors.ts)、加密存储等
+│   ├── views/                # 业务页面层：对应路由的页面级组件
+│   ├── App.vue               # 根组件
+│   └── main.ts               # 入口文件
+├── .env* # 环境变量配置文件
+├── vite.config.ts            # Vite 主配置
+└── tsconfig*.json            # TypeScript 配置族
+```
+
+## 新文件放置原则
+
+| 内容类型 | 正确位置 | 错误示例 |
+|----------|----------|----------|
+| 接口请求函数 | `src/api/` 或 `src/api/modules/` | 放在 `src/utils/` 或页面内 |
+| 纯函数、日期/格式工具 | `src/common/` | 放在 `src/utils/`（留给 Http、主题等地基能力） |
+| 主题/枚举/路由常量 | `src/constants/` | 散落在组件或 utils |
+| 组合式逻辑 | `src/hooks/` | 写在页面或组件内部 |
+| 布局用组件 | `src/layouts/components/`，用 `@&/` 引入 | 放在 `src/components/` 或手动 import 布局组件 |
+| 尺寸预设（圆角、间距、布局数值） | `src/constants/size.ts` | 写在 store 内或散落在 layout 配置 |
+| 布局默认配置（显隐、模式、动画、缓存等） | `src/constants/layout.ts` | 在 store 里写死默认值或散落在布局组件内 |
+| 断点定义（xs-5xl，移动端到 4K） | `src/constants/breakpoints.ts` | 散落在 UnoCSS 配置或组件内 |

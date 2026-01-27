@@ -1,165 +1,99 @@
 <script setup lang="ts">
-import { debounce } from '@/common'
-import type { AnimateName } from '@/components/layout/animate-wrapper/utils/types'
+/**
+ * 核心布局入口：根据路由 meta.parent 在 Admin / FullScreen / Ratio 间切换
+ * 页面布局模式仅由路由决定，不再写入 store
+ */
+import type { AnimateName } from '@&/animate-wrapper/utils/types'
+import AnimateWrapper from '@&/animate-wrapper/AnimateWrapper.vue'
+import LoadingWave from '@&/Loading-Wave.vue'
 import AdminLayout from '@/layouts/modules/LayoutAdmin.vue'
 import FullScreenLayout from '@/layouts/modules/LayoutFullScreen.vue'
 import RatioLayout from '@/layouts/modules/LayoutRatio.vue'
-import { useLayoutStore } from '@/stores'
-import { useMitt } from '@/utils'
-import { computed, nextTick, onMounted, onUnmounted, ref, watch } from 'vue'
-import { useRoute } from 'vue-router'
+import { useLayoutStore } from '@/stores/modules/layout'
 
-const { emit, off } = useMitt()
+defineOptions({ name: 'LayoutIndex' })
 
 const layoutStore = useLayoutStore()
-const isLoading = computed(() => layoutStore.getIsLoading)
-
-// 使用响应式路由对象，直接基于 meta.parent 计算布局，避免首屏/刷新时竞态
+const isLoading = computed(() => layoutStore.isLoading)
 const route = useRoute()
-const currentLayoutMode = computed<LayoutMode>(() => {
-  return (route.meta?.parent as LayoutMode) || 'admin'
-})
-
-// 记录上一次布局，用于离场动画方向判断
+const currentLayoutMode = computed<LayoutMode>(() => (route.meta?.parent as LayoutMode) || 'admin')
 const previousLayout = ref<LayoutMode>(currentLayoutMode.value)
-
-// 同步当前布局到 store，并在路由变化时刷新
-watch(
-  currentLayoutMode,
-  val => {
-    layoutStore.setCurrentLayout(val)
-  },
-  { immediate: true }
-)
 
 watch(
   () => route.fullPath,
   () => {
     previousLayout.value = currentLayoutMode.value
-    nextTick(() => layoutStore.setCurrentLayout(currentLayoutMode.value))
   }
 )
 
-// 保证动画可用
 const isLoadingRef = ref(true)
 watch(
   () => isLoading.value,
-  loading => {
-    if (loading) {
-      nextTick(() => {
-        isLoadingRef.value = true
-      })
-    } else {
-      nextTick(() => {
-        isLoadingRef.value = false
-      })
-    }
-  },
-  {
-    immediate: true,
-  }
+  loading =>
+    nextTick(() => {
+      isLoadingRef.value = loading
+    }),
+  { immediate: true }
 )
 
-// 动画配置
-const layoutAnimations = {
-  fullscreen: {
-    enter: 'fadeIn',
-    leave: 'fadeOut',
-    duration: '1s',
-  },
-  admin: {
-    enter: 'fadeIn',
-    leave: 'fadeOut',
-    duration: '1s',
-  },
-  ratio: {
-    enter: 'fadeIn',
-    leave: 'fadeOut',
-    duration: '1s',
-  },
+const layoutAnimations: Record<
+  LayoutMode,
+  { enter: AnimateName; leave: AnimateName; duration: string }
+> = {
+  fullscreen: { enter: 'fadeIn', leave: 'fadeOut', duration: '1s' },
+  admin: { enter: 'fadeIn', leave: 'fadeOut', duration: '1s' },
+  ratio: { enter: 'fadeIn', leave: 'fadeOut', duration: '1s' },
 }
 
-// 根据布局类型获取进入动画
-const getLayoutEnterAnimation = (layoutMode: LayoutMode) => {
-  return (layoutAnimations[layoutMode]?.enter || 'fadeIn') as AnimateName
+const getLayoutEnterAnimation = (mode: LayoutMode): AnimateName =>
+  layoutAnimations[mode]?.enter ?? 'fadeIn'
+
+const getLayoutLeaveAnimation = (from: LayoutMode, to: LayoutMode): AnimateName => {
+  if (from === to) return layoutAnimations[from]?.leave ?? 'fadeOut'
+  const levels: Record<LayoutMode, number> = { fullscreen: 0, admin: 1, ratio: 2 }
+  const fromLevel = levels[from] ?? 1
+  const toLevel = levels[to] ?? 1
+  if (toLevel < fromLevel) return 'fadeOutUp'
+  if (toLevel > fromLevel) return 'fadeOutDown'
+  return layoutAnimations[from]?.leave ?? 'fadeOut'
 }
 
-// 根据切换方向获取离开动画
-const getLayoutLeaveAnimation = (fromLayout: string, toLayout: string) => {
-  // 如果是相同布局，使用默认离开动画
-  if (fromLayout === toLayout) {
-    return (layoutAnimations[fromLayout as LayoutMode]?.leave || 'fadeOut') as AnimateName
-  }
-
-  // 根据布局层级决定动画方向
-  const layoutLevels = { fullscreen: 0, admin: 1, ratio: 2 }
-  const fromLevel = layoutLevels[fromLayout as LayoutMode] || 1
-  const toLevel = layoutLevels[toLayout as LayoutMode] || 1
-
-  // 向上层级切换（如admin->fullscreen）使用向上动画
-  if (toLevel < fromLevel) {
-    return 'fadeOutUp'
-  }
-  // 向下层级切换（如fullscreen->admin）使用向下动画
-  else if (toLevel > fromLevel) {
-    return 'fadeOutDown'
-  }
-
-  return (layoutAnimations[fromLayout as LayoutMode]?.leave || 'fadeOut') as AnimateName
-}
-
-// 获取动画时长
-const getAnimationDuration = () => {
-  return layoutAnimations[currentLayoutMode.value]?.duration || '1s'
-}
-
-const handleWindowResize = () => {
-  emit('windowResize')
-}
-
-// 保存防抖后的函数引用，以便在卸载时正确移除
-const debouncedResizeHandler = debounce(handleWindowResize, 500)
-
-onMounted(() => {
-  window.addEventListener('resize', debouncedResizeHandler)
-})
-
-onUnmounted(() => {
-  // 移除 DOM 事件监听器
-  window.removeEventListener('resize', debouncedResizeHandler)
-  // 取消防抖函数中可能存在的待执行任务
-  if (typeof (debouncedResizeHandler as any).cancel === 'function') {
-    ;(debouncedResizeHandler as any).cancel()
-  }
-  // 移除 mitt 事件监听（虽然这里没有注册监听，但保持一致性）
-  off('windowResize')
-})
+const getAnimationDuration = (): string =>
+  layoutAnimations[currentLayoutMode.value]?.duration ?? '1s'
 </script>
 
-<template lang="pug">
-//- 加载动画层
-AnimateWrapper(:show='isLoadingRef', enter='fadeIn', leave='fadeOut', duration='500ms', delay='0s')
-  .container.fixed.center.t-0.r-0.l-0.b-0.z-999
-    Loading-Wave(:loading-size='3')
+<template>
+  <!-- 1. 加载层 -->
+  <AnimateWrapper
+    :show="isLoadingRef"
+    enter="fadeIn"
+    leave="fadeOut"
+    duration="500ms"
+    delay="0s"
+  >
+    <div class="container fixed center top-0 right-0 left-0 bottom-0 z-999">
+      <LoadingWave :loading-size="3" />
+    </div>
+  </AnimateWrapper>
 
-//- 主布局切换层 - 使用单一AnimateWrapper避免冲突
-.fixed.t-0.r-0.l-0.b-0.z-2
-  AnimateWrapper(
-    :show='!isLoadingRef',
-    :enter='getLayoutEnterAnimation(currentLayoutMode)',
-    :leave='getLayoutLeaveAnimation(previousLayout, currentLayoutMode)',
-    :duration='getAnimationDuration()',
-    delay='0s'
-  )
-    //- 全屏布局
-    template(v-if='currentLayoutMode === "fullscreen"')
-      component(:is='FullScreenLayout')
-
-    //- 管理布局
-    template(v-if='currentLayoutMode === "admin"')
-      component(:is='AdminLayout')
-
-    //- 比例布局
-    template(v-if='currentLayoutMode === "ratio"')
-      component(:is='RatioLayout')
+  <!-- 2. 主布局层 -->
+  <div class="fixed top-0 right-0 left-0 bottom-0 z-2">
+    <AnimateWrapper
+      :show="!isLoadingRef"
+      :enter="getLayoutEnterAnimation(currentLayoutMode)"
+      :leave="getLayoutLeaveAnimation(previousLayout, currentLayoutMode)"
+      :duration="getAnimationDuration()"
+      delay="0s"
+    >
+      <template v-if="currentLayoutMode === 'fullscreen'">
+        <component :is="FullScreenLayout" />
+      </template>
+      <template v-if="currentLayoutMode === 'admin'">
+        <component :is="AdminLayout" />
+      </template>
+      <template v-if="currentLayoutMode === 'ratio'">
+        <component :is="RatioLayout" />
+      </template>
+    </AnimateWrapper>
+  </div>
 </template>

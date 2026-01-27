@@ -1,24 +1,20 @@
-import { useLayoutStoreWithOut } from '@/stores'
+import { useLayoutStoreWithOut } from '@/stores/modules/layout'
 
 export const useLoading = () => {
   const loadingStart = () => {
-    const layoutStore = useLayoutStoreWithOut()
-    layoutStore.setIsLoading(true)
+    useLayoutStoreWithOut().setIsLoading(true)
   }
 
   const loadingDone = () => {
-    const layoutStore = useLayoutStoreWithOut()
-    layoutStore.setIsLoading(false)
+    useLayoutStoreWithOut().setIsLoading(false)
   }
 
   const pageLoadingStart = () => {
-    const layoutStore = useLayoutStoreWithOut()
-    layoutStore.setIsPageLoading(true)
+    useLayoutStoreWithOut().setIsPageLoading(true)
   }
 
   const pageLoadingDone = () => {
-    const layoutStore = useLayoutStoreWithOut()
-    layoutStore.setIsPageLoading(false)
+    useLayoutStoreWithOut().setIsPageLoading(false)
   }
 
   return {

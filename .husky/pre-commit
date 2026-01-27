@@ -1,7 +1,11 @@
-# 运行lint-staged检查暂存文件
-pnpm dlx lint-staged
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
 
-# 检查命名规范
+# 1. 使用本地安装的 lint-staged (速度快)
+pnpm exec lint-staged
+
+# 2. 全量类型检查 (确保没有 TS 错误)
+# 注意：随着项目变大，这步可能会变慢。如果太慢，后续可以考虑只在 CI 里跑。
 pnpm check
 
-echo "✅ 代码检查和命名规范检查通过！"
+echo "✅ 本地检查通过，准备提交..."

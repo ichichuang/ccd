@@ -1,7 +1,5 @@
 // src/composables/useElementSize.ts
-import { debounce, throttle } from '@/common'
-import { onBeforeUnmount, onMounted, ref, type Ref, watch } from 'vue'
-
+import { debounce, throttle } from '@/common/modules/lodashes'
 export interface UseElementSizeOptions {
   mode?: 'throttle' | 'debounce' | 'none'
   delay?: number

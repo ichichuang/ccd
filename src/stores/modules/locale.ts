@@ -1,7 +1,6 @@
 import type { LocaleInfo, SupportedLocale } from '@/locales'
 import { getCurrentLocale, setLocale, supportedLocales } from '@/locales'
 import store from '@/stores'
-import { env } from '@/utils'
 import { defineStore } from 'pinia'
 
 interface LocaleState {
@@ -133,7 +132,7 @@ export const useLocaleStore = defineStore('locale', {
   },
 
   persist: {
-    key: `${env.piniaKeyPrefix}-locale`,
+    key: `${import.meta.env.VITE_PINIA_PERSIST_KEY_PREFIX}-locale`,
     storage: localStorage,
   },
 })

@@ -1,96 +1,79 @@
 {
+  // === 文件嵌套 (保持原样，非常好) ===
   "explorer.fileNesting.enabled": true,
   "explorer.fileNesting.expand": false,
   "explorer.fileNesting.patterns": {
-    "package.json": "pnpm-lock.yaml,.npmrc,.nvmrc,pnpm-workspace.yaml,.editorconfig,.gitattributes,.gitignore,.prettierrc.json",
-    "vite.config.ts": "vite.config.*.ts,vitest.config.ts",
+    "package.json": "pnpm-lock.yaml,.npmrc,.nvmrc,pnpm-workspace.yaml,.editorconfig,.gitattributes,.gitignore,.prettierrc.json,README.md,LICENSE,CHANGELOG.md",
+    "vite.config.ts": "vite.config.*.ts,vitest.config.ts,index.html",
     "tsconfig.json": "tsconfig.*.json",
-    "eslint.config.ts": ".eslintignore,eslint.config.js,eslint.config.mjs",
-    ".prettierrc.json": ".prettierignore,.prettierrc.*",
-    "commitlint.config.ts": ".gitmessage,.czrc,.cz-config.js",
-    "README.md": "CHANGELOG.md,LICENSE,CONTRIBUTING.md",
-    ".env": "$(capture).env.*",
-    "index.vue": "components,views,utils,types,README.md"
+    "eslint.config.ts": ".eslintignore,eslint.config.js,eslint.config.mjs,.eslintrc-auto-import.json",
+    "uno.config.ts": "uno.config.*.ts",
+    ".env": ".env.*"
   },
-  "editor.codeActionsOnSave": {
-    "source.fixAll": "explicit",
-    "source.fixAll.eslint": "explicit",
-    "source.organizeImports": "explicit"
-  },
-  "editor.formatOnSave": true,
-  "editor.formatOnPaste": true,
-  "editor.formatOnType": true,
-  "editor.defaultFormatter": "esbenp.prettier-vscode",
+
+  // === 编辑器基础行为 ===
   "editor.tabSize": 2,
+  "editor.indentSize": 2,
   "editor.insertSpaces": true,
   "editor.detectIndentation": false,
-  "editor.trimAutoWhitespace": true,
-  "editor.wordWrap": "off",
-  "editor.lineNumbers": "on",
-  "editor.minimap.enabled": true,
-  "editor.fontSize": 14,
-  "editor.fontFamily": "'JetBrains Mono', 'Fira Code', Monaco, 'Courier New', monospace",
+  "editor.renderWhitespace": "selection",
+  "editor.fontFamily": "'JetBrains Mono', 'Fira Code', Consolas, 'Courier New', monospace",
   "editor.fontLigatures": true,
+  "editor.fontSize": 14,
+  "editor.lineHeight": 1.5,
+  "editor.formatOnSave": true,
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "explicit", // 保存时自动修复 ESLint 错误
+    "source.organizeImports": "never" // 交给 ESLint 处理，防止冲突
+  },
   "files.eol": "\n",
-  "files.insertFinalNewline": true,
   "files.trimTrailingWhitespace": true,
-  "files.trimFinalNewlines": true,
-  "eslint.enable": true,
-  "eslint.format.enable": true,
-  "eslint.lintTask.enable": true,
+  "files.insertFinalNewline": true,
+
+  // === ESLint (Flat Config 适配) ===
+  "eslint.validate": [
+    "javascript",
+    "javascriptreact",
+    "typescript",
+    "typescriptreact",
+    "vue",
+    "html",
+    "markdown"
+  ],
+  "eslint.useFlatConfig": true, // 显式开启 Flat Config 支持
   "eslint.run": "onType",
-  "eslint.workingDirectories": ["."],
-  "eslint.validate": ["javascript", "javascriptreact", "typescript", "typescriptreact", "vue"],
-  "prettier.enable": true,
+  "eslint.codeAction.showDocumentation": {
+    "enable": true
+  },
+
+  // === Prettier ===
   "prettier.requireConfig": true,
-  "prettier.prettierPath": "./node_modules/prettier",
-  "vetur.format.enable": false,
-  "vetur.validation.template": false,
-  "vetur.validation.script": false,
-  "vetur.validation.style": false,
-  "vue.codeActions.enabled": true,
-  "vue.complete.casing.tags": "pascal",
-  "vue.complete.casing.props": "camel",
-  "vue.updateImportsOnFileMove.enabled": true,
-  "typescript.format.enable": false,
-  "typescript.validate.enable": true,
-  "typescript.updateImportsOnFileMove.enabled": "always",
-  "typescript.suggest.autoImports": true,
-  "typescript.suggest.completeFunctionCalls": true,
-  "typescript.preferences.importModuleSpecifier": "relative",
-  "typescript.preferences.rename.enabled": true,
-  "typescript.inlayHints.functionLikeReturnTypes.enabled": true,
-  "typescript.inlayHints.parameterNames.enabled": "all",
-  "typescript.inlayHints.parameterTypes.enabled": true,
-  "typescript.inlayHints.variableTypes.enabled": true,
-  "typescript.preferences.includePackageJsonAutoImports": "auto",
+  "prettier.enable": true,
+
+  // === UnoCSS (核心配置) ===
+  "unocss.root": "./", // 确保扫描根目录
+  "unocss.enableIntelliSense": true, // 启用智能提示
+  "unocss.remToPxPreview": true, // Hover 显示 px 值
+  "unocss.colorPreview": true, // 显示颜色块
+
+  // === 语言特定配置 ===
   "[vue]": {
-    "editor.defaultFormatter": "esbenp.prettier-vscode",
-    "editor.codeActionsOnSave": {
-      "source.fixAll.eslint": "explicit"
-    },
-    "unocss.autocomplete.enabled": true
-  },
-  "[pug]": {
-    "unocss.autocomplete.enabled": true
-  },
-  "[javascript]": {
-    "editor.defaultFormatter": "esbenp.prettier-vscode",
-    "editor.codeActionsOnSave": {
-      "source.fixAll.eslint": "explicit"
-    }
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
   "[typescript]": {
-    "editor.defaultFormatter": "esbenp.prettier-vscode",
-    "editor.codeActionsOnSave": {
-      "source.fixAll.eslint": "explicit",
-      "source.organizeImports": "explicit"
-    }
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[javascript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
   "[json]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
   "[jsonc]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[html]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
   "[css]": {
@@ -99,135 +82,38 @@
   "[scss]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
-  "[html]": {
-    "editor.defaultFormatter": "esbenp.prettier-vscode",
-    "unocss.autocomplete.enabled": true
-  },
-  "[markdown]": {
-    "editor.defaultFormatter": "esbenp.prettier-vscode",
-    "editor.wordWrap": "on",
-    "editor.quickSuggestions": {
-      "comments": "off",
-      "strings": "off",
-      "other": "off"
-    }
-  },
-  "explorer.compactFolders": false,
-  "explorer.sortOrder": "type",
-  "explorer.decorations.badges": true,
-  "explorer.decorations.colors": true,
+
+  // === TypeScript 配置 ===
+  "typescript.tsdk": "node_modules/typescript/lib", // 使用项目内的 TS 版本
+  "typescript.preferences.importModuleSpecifier": "non-relative", // 优先使用别名 (@/...)
+  "typescript.updateImportsOnFileMove.enabled": "always",
+  "typescript.suggest.autoImports": true,
+
+  // === i18n Ally (国际化插件) ===
+  "i18n-ally.localesPaths": ["src/locales/lang"],
+  "i18n-ally.keystyle": "nested",
+  "i18n-ally.sortKeys": true,
+  "i18n-ally.namespace": true,
+  "i18n-ally.enabledParsers": ["ts", "json"],
+  "i18n-ally.sourceLanguage": "zh-CN",
+  "i18n-ally.displayLanguage": "zh-CN",
+  "i18n-ally.enabledFrameworks": ["vue", "vue-i18n"],
+
+  // === 其他优化 ===
   "search.exclude": {
     "**/node_modules": true,
     "**/dist": true,
-    "**/coverage": true,
     "**/.git": true,
     "**/pnpm-lock.yaml": true
   },
   "files.watcherExclude": {
     "**/node_modules/**": true,
-    "**/dist/**": true,
-    "**/.git/**": true
+    "**/dist/**": true
   },
   "files.associations": {
-    "*.vue": "vue",
-    "*.ts": "typescript",
-    "*.json": "jsonc",
-    "uno.config.ts": "typescript"
+    "*.css": "postcss",
+    "*.mdc": "markdown" // 让 .mdc 文件高亮显示为 Markdown
   },
-  "workbench.iconTheme": "material-icon-theme",
-  "editor.suggest.showKeywords": true,
-  "editor.suggest.showSnippets": true,
-  "editor.suggest.showFiles": true,
-  "editor.suggest.showReferences": true,
-  "editor.suggest.showFunctions": true,
-  "editor.suggest.showVariables": true,
-  "editor.suggest.showClasses": true,
-  "editor.suggest.showModules": true,
-  "editor.suggest.showProperties": true,
-  "editor.quickSuggestions": {
-    "other": true,
-    "comments": false,
-    "strings": true
-  },
-  "editor.suggest.filterGraceful": true,
-  "editor.acceptSuggestionOnEnter": "on",
-  "editor.tabCompletion": "on",
-  "editor.wordBasedSuggestions": "matchingDocuments",
-  "editor.semanticHighlighting.enabled": true,
   "git.autofetch": true,
-  "git.confirmSync": false,
-  "git.enableSmartCommit": true,
-  "git.suggestSmartCommit": true,
-  "terminal.integrated.defaultProfile.osx": "zsh",
-  "terminal.integrated.fontFamily": "'JetBrains Mono', Monaco, 'Courier New', monospace",
-  "terminal.integrated.fontSize": 13,
-  "files.autoSave": "onFocusChange",
-  "files.hotExit": "onExitAndWindowClose",
-  "cursor.chat.showInEditor": true,
-  "cursor.cpp.enableIntelliSense": true,
-  "cursor.general.enableCodeActions": true,
-  "problems.showCurrentInStatus": true,
-  "problems.sortOrder": "severity",
-  "editor.rulers": [100],
-  "editor.bracketPairColorization.enabled": true,
-  "editor.guides.bracketPairs": true,
-
-  // === UnoCSS 相关配置 ===
-  "unocss.root": "./",
-  "unocss.configFile": "unocss/index.ts",
-  "unocss.trace.server": "verbose",
-  "unocss.remToPxPreview": true,
-  "unocss.colorPreview": true,
-  "unocss.enableIntelliSense": true,
-  "unocss.intelliSense.autocomplete": true,
-  "unocss.intelliSense.matchHighlight": true,
-  "unocss.intelliSense.remToPxHover": true,
-  "unocss.intelliSense.strictDetection": false,
-  // 明确指定扫描的文件模式，确保 layouts 目录也被扫描
-  "unocss.content": [
-    "src/**/*.{vue,js,ts,jsx,tsx,md,mdx,html}",
-    "src/**/*.{css,scss,sass,less,styl,stylus}"
-  ],
-
-  // === 包管理器配置 ===
-  "npm.packageManager": "pnpm",
-
-  // CSS 类名智能提示增强（UnoCSS 支持）
-  "css.validate": false,
-
-  // === i18n Ally 国际化插件配置 ===
-  "i18n-ally.localesPaths": ["src/locales/lang"],
-  "i18n-ally.keystyle": "nested",
-  "i18n-ally.sortKeys": true,
-  "i18n-ally.namespace": false,
-  "i18n-ally.pathMatcher": "{locale}.{ext}",
-  "i18n-ally.dirStructure": "file",
-  "i18n-ally.enabledParsers": ["ts", "js"],
-  "i18n-ally.sourceLanguage": "zh-CN",
-  "i18n-ally.displayLanguage": "zh-CN",
-  "i18n-ally.enabledFrameworks": ["vue", "vue-i18n"],
-  "i18n-ally.parserOptions": {
-    "ts": {
-      "strictObjectKeyAsString": false
-    }
-  },
-  "i18n-ally.extract.keyPrefix": "",
-  "i18n-ally.extract.keyMaxLength": 100,
-  "i18n-ally.extract.parsers.html.attributes": ["alt", "title", "placeholder"],
-  "i18n-ally.extract.parsers.html.ignoredTags": ["script", "style"],
-  "i18n-ally.review.enabled": true,
-  "i18n-ally.review.gutters": true,
-  "i18n-ally.annotationInPlace": true,
-  "i18n-ally.annotationMaxLength": 50,
-  "i18n-ally.editor.preferEditor": true,
-  "i18n-ally.readonly": false,
-  "i18n-ally.refactor.templates": [
-    {
-      "name": "vue-i18n",
-      "find": "\\$t\\('([^']*)'\\)",
-      "replace": "{{ \\$t('$1') }}"
-    }
-  ],
-  "i18n-ally.usage.scanningDirs": ["src"],
-  "i18n-ally.usage.ignoredFiles": ["**/*.d.ts", "**/node_modules/**", "**/dist/**"]
+  "npm.packageManager": "pnpm"
 }

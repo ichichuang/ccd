@@ -1,0 +1,14 @@
+# 依赖与锁文件
+node_modules/
+pnpm-lock.yaml
+
+# 构建产物
+dist/
+dist-ssr/
+
+# 自动生成的类型与导入声明
+src/components.d.ts
+src/auto-imports.d.ts
+
+# UniApp 打包目录（若启用再取消注释）
+# unpackage/

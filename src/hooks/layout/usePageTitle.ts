@@ -1,8 +1,6 @@
 /**
  * 页面标题管理的Composable函数
  */
-import { t } from '@/locales'
-import { computed, watch } from 'vue'
 import type { Router } from 'vue-router'
 import { useRoute } from 'vue-router'
 
@@ -18,7 +16,9 @@ export function usePageTitle(_router?: Router) {
     const isNoAppTitle = String(appTitle).trim() === '/'
     if (route.meta?.titleKey) {
       // 使用 titleKey 获取多语言标题
-      return isNoAppTitle ? `${t(route.meta.titleKey)}` : `${t(route.meta.titleKey)} - ${appTitle}`
+      return isNoAppTitle
+        ? `${$t(route.meta.titleKey)}`
+        : `${$t(route.meta.titleKey)} - ${appTitle}`
     } else if (route.meta?.title) {
       // 兼容直接设置 title 的情况
       return isNoAppTitle ? `${route.meta.title}` : `${route.meta.title} - ${appTitle}`
@@ -55,7 +55,7 @@ export function usePageTitle(_router?: Router) {
    * 监听语言变化，更新标题
    */
   watch(
-    () => t('router.dashboard.dashboard'), // 监听任意翻译键的变化
+    () => $t('router.dashboard.dashboard'), // 监听任意翻译键的变化
     () => {
       updatePageTitle()
     }

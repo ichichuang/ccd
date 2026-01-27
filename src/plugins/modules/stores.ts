@@ -1,25 +1,18 @@
-import store, {
-  useColorStore,
-  useLayoutStore,
-  useLocaleStore,
-  usePostcssStore,
-  useSizeStore,
-} from '@/stores'
-import type { App } from 'vue'
+import store from '@/stores'
+import { useThemeStore } from '@/stores/modules/theme'
+import { useSizeStore } from '@/stores/modules/size'
+import { useDeviceStore } from '@/stores/modules/device'
+import { useLocaleStore } from '@/stores/modules/locale'
 
 export const setupStores = (app: App) => {
   app.use(store)
 
-  // 在 Pinia 实例创建并安装后再初始化 stores
-  const colorStore = useColorStore()
-  const layoutStore = useLayoutStore()
-  const localeStore = useLocaleStore()
-  const postcssStore = usePostcssStore()
+  const themeStore = useThemeStore()
   const sizeStore = useSizeStore()
-
-  colorStore.init()
-  layoutStore.init()
-  localeStore.initLocale()
-  postcssStore.initRemAdapter()
+  const deviceStore = useDeviceStore()
+  const localeStore = useLocaleStore()
+  themeStore.init()
   sizeStore.init()
+  deviceStore.init()
+  localeStore.initLocale()
 }

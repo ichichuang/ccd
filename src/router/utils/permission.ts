@@ -1,23 +1,20 @@
 /* 守卫 */
 import { routeWhitePathList } from '@/constants/modules/router'
-import { useLoading, useNprogress, usePageTitle } from '@/hooks'
-import { usePermissionStore, useUserStoreWithOut } from '@/stores'
-import { computed } from 'vue'
+import { usePermissionStore } from '@/stores/modules/permission'
+import { useUserStoreWithOut } from '@/stores/modules/user'
 import type { Router } from 'vue-router'
 
 export const usePermissionGuard = ({
   router,
-  debug = false,
   initDynamicRoutes,
 }: {
   router: Router
-  debug?: boolean
   initDynamicRoutes: () => Promise<any>
 }) => {
   // 全局前置守卫
   router.beforeEach(async (to, from, next) => {
-    const { loadingStart, pageLoadingStart } = useLoading()
-    const { startProgress } = useNprogress()
+    const { loadingStart, pageLoadingStart, loadingDone, pageLoadingDone } = useLoading()
+    const { startProgress, doneProgress } = useNprogress()
     const { updatePageTitle } = usePageTitle()
     startProgress()
     updatePageTitle()
@@ -39,28 +36,35 @@ export const usePermissionGuard = ({
           return
         }
         loadingStart()
-        await initDynamicRoutes()
-        // loadingDone()
-        const redirectPath = from.query.redirect || to.path
-        const redirect = decodeURIComponent(redirectPath as string)
-        const nextData = to.path === redirect ? { ...to, replace: true } : { path: redirect }
-        permissionStore.setDynamicRoutesLoaded(true)
-        next(nextData)
+        try {
+          await initDynamicRoutes()
+          // loadingDone()
+          const redirectPath = from.query.redirect || to.path
+          const redirect = decodeURIComponent(redirectPath as string)
+          const nextData = to.path === redirect ? { ...to, replace: true } : { path: redirect }
+          permissionStore.setDynamicRoutesLoaded(true)
+          next(nextData)
+        } catch (error) {
+          // 错误日志
+          console.error('🪒 Router: 初始化动态路由失败:', error)
+          // 状态重置：强制标记为未加载，防止后续重试
+          permissionStore.setDynamicRoutesLoaded(false)
+          // 清理 UI 状态（因为 next(false) 会跳过全局后置守卫，需要手动清理）
+          doneProgress()
+          updatePageTitle()
+          loadingDone()
+          pageLoadingDone()
+          // 阻断当前导航
+          next(false)
+          // 核心修复：清除登录状态并刷新页面，彻底打破循环
+          await userStore.logout()
+        }
       }
     } else {
-      if (debug) {
-        console.log('🪒 Router: 未登录')
-      }
       if (whiteList.includes(to.path)) {
-        if (debug) {
-          console.log('🪒 Router: 白名单页面，直接放行->', to.path)
-        }
         // loadingDone()
         next()
       } else {
-        if (debug) {
-          console.log('🪒 Router: 跳转至登录页并重定向到目标->', to.path)
-        }
         // loadingDone()
         next(`/login?redirect=${to.path}`)
       }

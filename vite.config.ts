@@ -1,9 +1,12 @@
 import postcssPxToRem from 'postcss-pxtorem'
-import { type ConfigEnv, defineConfig, loadEnv, type UserConfigExport } from 'vite'
+import { defineConfig, loadEnv, type ConfigEnv, type UserConfigExport } from 'vite'
 import { exclude, include } from './build/optimize'
 import { getPluginsList } from './build/plugins'
 import { __APP_INFO__, alias, pathResolve, root, wrapperEnv } from './build/utils'
 
+// ----------------------------------------------------------------------
+// PostCSS PxToRem 忽略选择器配置
+// ----------------------------------------------------------------------
 const PX_TO_REM_SELECTOR_BLACKLIST: (string | RegExp)[] = [
   // ✅ 排除传统 UnoCSS 工具类（非数字值）
   /^\.w-(full|auto|screen|min|max|fit)/,
@@ -34,10 +37,8 @@ const PX_TO_REM_SELECTOR_BLACKLIST: (string | RegExp)[] = [
   /^@media.*\.(xs|sm|md|lg|xl|2xl):/,
 ]
 
-// 移除本地ViteEnv类型声明
-
 export default ({ mode }: ConfigEnv): UserConfigExport => {
-  // 直接使用全局@env.d.ts类型
+  // 1. 加载环境变量 (wrapperEnv 已自动处理类型转换)
   const env = wrapperEnv(loadEnv(mode, root))
   const {
     VITE_PORT,
@@ -45,11 +46,9 @@ export default ({ mode }: ConfigEnv): UserConfigExport => {
     VITE_BUILD_SOURCEMAP,
     VITE_API_BASE_URL,
     VITE_APP_TITLE,
-    VITE_APP_VERSION,
     VITE_APP_ENV,
     VITE_PINIA_PERSIST_KEY_PREFIX,
     VITE_ROOT_REDIRECT,
-    VITE_DEBUG,
     VITE_DROP_DEBUGGER,
     VITE_DROP_CONSOLE,
     VITE_COMPRESSION,
@@ -59,25 +58,24 @@ export default ({ mode }: ConfigEnv): UserConfigExport => {
 
   const isDev = mode === 'development'
 
-  // 根据环境变量动态控制 esbuild 的 drop 选项
+  // 2. 动态控制 esbuild 的 drop 选项
   const esbuildDrop: Array<'console' | 'debugger'> = []
-  if (VITE_DROP_CONSOLE) {
-    esbuildDrop.push('console')
-  }
-  if (VITE_DROP_DEBUGGER) {
-    esbuildDrop.push('debugger')
-  }
+  if (VITE_DROP_CONSOLE) esbuildDrop.push('console')
+  if (VITE_DROP_DEBUGGER) esbuildDrop.push('debugger')
 
   return defineConfig({
     base: VITE_PUBLIC_PATH,
     root,
-    logLevel: isDev ? 'info' : 'info',
+    logLevel: isDev ? 'info' : 'warn', // 生产环境减少噪音
+
     resolve: {
       alias,
-      extensions: ['.mjs', '.ts', '.tsx', '.json', '.vue'],
+      // 默认扩展名已包含 .mjs, .js, .ts, .jsx, .tsx, .json
+      // 除非有特殊需求，否则建议使用默认值
     },
+
     server: {
-      port: Number(VITE_PORT),
+      port: VITE_PORT, // wrapperEnv 已转为 number
       host: '0.0.0.0',
       open: true,
       cors: true,
@@ -85,136 +83,107 @@ export default ({ mode }: ConfigEnv): UserConfigExport => {
       warmup: {
         clientFiles: ['./index.html', './src/{views,components}/*'],
       },
+      // 优化 HMR
       hmr: {
         overlay: isDev,
-        // 优化HMR连接，减少扩展冲突
         timeout: 30000,
       },
-      // 🔥 新增：增强文件监听配置
+      // 文件监听优化
       watch: {
-        // 监听所有相关文件类型
         ignored: ['**/node_modules/**', '**/.git/**', '**/dist/**'],
-        // 增加轮询间隔，提高响应速度
-        usePolling: false,
-        // 监听深度
-        depth: 10,
       },
       proxy: isDev
         ? {
-            ['/api']: {
+            '/api': {
               target: VITE_API_BASE_URL,
               changeOrigin: true,
               rewrite: path => path.replace(/^\/api/, ''),
-              timeout: 10000,
+              timeout: env.VITE_PROXY_TIMEOUT ?? 15000,
             },
           }
         : {},
     },
+
+    // 3. 插件配置 (来自于 build/plugins.ts)
     plugins: getPluginsList({
       ...env,
-      VITE_PORT: Number(env.VITE_PORT),
-      VITE_CDN: env.VITE_CDN,
-      VITE_LEGACY: env.VITE_LEGACY,
-      VITE_COMPRESSION: (['none', 'gzip', 'brotli', 'both'].includes(env.VITE_COMPRESSION)
-        ? env.VITE_COMPRESSION
+      // 确保类型匹配
+      VITE_COMPRESSION: (['none', 'gzip', 'brotli', 'both'].includes(VITE_COMPRESSION)
+        ? VITE_COMPRESSION
         : 'none') as 'none' | 'gzip' | 'brotli' | 'both',
     }),
+
+    // 4. 依赖优化
     optimizeDeps: {
       include,
       exclude,
       force: false,
-      // 开发环境性能优化
       esbuildOptions: {
         target: 'esnext',
-        // 保持类名用于调试
         keepNames: isDev,
       },
     },
+
     esbuild: {
-      // 生产环境按需移除 console / debugger（由 VITE_DROP_CONSOLE / VITE_DROP_DEBUGGER 控制）
       drop: esbuildDrop.length ? esbuildDrop : undefined,
     },
+
+    // 5. 构建配置
     build: {
-      // 使用 esnext，减少对第三方 ESM 包的降级转换，避免运行时 TDZ 问题
-      // target: 'esnext',
-      target: 'es2020', // <--- 尝试更改为更稳定的 ES 版本
+      // 生产环境建议使用 es2020 或更高，避免 babel 转译过多
+      target: 'es2020',
       sourcemap: VITE_BUILD_SOURCEMAP,
-      // 为彻底规避 "Cannot access 'xxx' before initialization" 这类压缩重排问题，
-      // 暂时关闭 JS 压缩，仅依赖 gzip/brotli 等传输压缩
-      minify: false,
-      chunkSizeWarningLimit: 8000, // 降低警告阈值以优化包大小
-      cssCodeSplit: true, // 启用 CSS 代码分割
-      assetsInlineLimit: 4096, // 小于 4kb 的资源内联
+      chunkSizeWarningLimit: 2000,
+      cssCodeSplit: true,
+      assetsInlineLimit: 4096,
+
       rollupOptions: {
         input: {
           index: pathResolve('./index.html', import.meta.url),
         },
-        // output: {
-        //   entryFileNames: 'static/js/[name]-[hash:8].js',
-        //   assetFileNames: 'static/[ext]/[name]-[hash:8].[ext]',
-        //   // 优化代码分割策略
-        //   manualChunks: id => {
-        //     const normalizedId = id.replace(/\\/g, '/')
-
-        //     if (normalizedId.includes('node_modules')) {
-        //       const vendorGroup = VENDOR_CHUNK_GROUPS.find(group =>
-        //         group.pattern.test(normalizedId)
-        //       )
-        //       if (vendorGroup) {
-        //         return vendorGroup.name
-        //       }
-        //       return 'vendor'
-        //     }
-
-        //     const viewChunk = resolveViewChunk(normalizedId)
-        //     if (viewChunk) {
-        //       return viewChunk
-        //     }
-
-        //     return undefined
-        //   },
-        //   // 优化 chunk 分割 - 智能命名
-        //   chunkFileNames: chunkInfo => {
-        //     const { name } = chunkInfo
-        //     if (name.includes('node_modules')) {
-        //       return 'static/vendor/[name]-[hash:8].js'
-        //     }
-        //     return 'static/js/[name]-[hash:8].js'
-        //   },
-        // },
-        // 为避免 Rollup 对某些第三方 ESM 包进行激进的 tree-shaking/重排，
-        // 这里关闭 treeshake，确保执行顺序与源码尽可能一致，规避
-        // "Cannot access 'isClient' before initialization" 这类 TDZ 问题
-        treeshake: false,
-        // 外部依赖优化
+        output: {
+          // 手动分包策略
+          manualChunks: (id: string) => {
+            if (id.includes('node_modules')) {
+              if (id.includes('echarts') || id.includes('zrender')) return 'vendor-echarts'
+              if (id.includes('lodash') || id.includes('dayjs')) return 'vendor-utils'
+              // 其他依赖统一打包
+              return 'vendor-libs'
+            }
+          },
+        },
         external: isDev ? [] : undefined,
       },
-      // ⚠️ 注意：不要对纯 ESM 包做 CommonJS 混合转换，否则可能打乱变量声明顺序，
-      // 导致 "Cannot access 'xxx' before initialization" 这类 TDZ 运行时错误
+
+      // 防止 CommonJS 转换时的 TDZ 问题
       commonjsOptions: {
         include: [/node_modules/],
         transformMixedEsModules: false,
       },
-      // 启用实验性功能提升构建性能
-      reportCompressedSize: !isDev, // 仅生产环境报告压缩大小
+
+      reportCompressedSize: !isDev,
       copyPublicDir: true,
     },
+
+    // 6. 全局常量注入
     define: {
       __APP_INFO__: JSON.stringify(__APP_INFO__),
       processEnv: env,
       __VITE_APP_TITLE__: JSON.stringify(VITE_APP_TITLE),
-      __VITE_APP_VERSION__: JSON.stringify(VITE_APP_VERSION),
+      __VITE_APP_VERSION__: JSON.stringify(__APP_INFO__.pkg.version),
       __VITE_APP_ENV__: JSON.stringify(VITE_APP_ENV),
       __VITE_PINIA_PERSIST_KEY_PREFIX__: JSON.stringify(VITE_PINIA_PERSIST_KEY_PREFIX),
       __VITE_ROOT_REDIRECT__: JSON.stringify(VITE_ROOT_REDIRECT),
-      __VITE_DEBUG__: JSON.stringify(VITE_DEBUG),
       __VITE_COMPRESSION__: JSON.stringify(VITE_COMPRESSION),
       __VITE_LEGACY__: JSON.stringify(VITE_LEGACY),
       __VITE_CDN__: JSON.stringify(VITE_CDN),
     },
+
+    // 7. CSS 配置
     css: {
       postcss: {
         plugins: [
+          // 移除 charset 警告
           {
             postcssPlugin: 'internal:charset-removal',
             AtRule: {
@@ -225,16 +194,11 @@ export default ({ mode }: ConfigEnv): UserConfigExport => {
               },
             },
           },
-          // postcss-pxtorem 配置
+          // Px 转 Rem
           postcssPxToRem({
-            // 基准字体大小，从环境变量读取
-            // 注意：这里使用桌面端基准值 16px
-            // 移动端适配通过 JavaScript 动态调整根字体大小实现
-            rootValue: 16,
-            // 需要转换的CSS属性，* 表示所有属性
+            rootValue: 16, // 基准大小
             propList: [
               '*',
-              // 不转换边框相关，避免出现 0.5px 等问题
               '!border',
               '!border-width',
               '!border-top-width',
@@ -242,25 +206,21 @@ export default ({ mode }: ConfigEnv): UserConfigExport => {
               '!border-bottom-width',
               '!border-left-width',
             ],
-            // 过滤不需要转换的选择器 - 修复设计稿映射兼容性
             selectorBlackList: PX_TO_REM_SELECTOR_BLACKLIST,
-            // 替换规则
             replace: true,
-            // 允许在媒体查询中转换px
             mediaQuery: true,
-            // 设置要转换的最小像素值
             minPixelValue: 1,
-            // 保留单位精度
             unitPrecision: 4,
-            // 排除文件或文件夹
             exclude: /node_modules/i,
           }),
         ],
       },
       preprocessorOptions: {
         scss: {
+          // ✅ 修复：将整个对象断言为 any，彻底解决 "api 不在类型中" 的报错
+          api: 'modern-compiler',
           charset: false,
-        },
+        } as any,
       },
     },
   })

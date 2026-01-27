@@ -2341,30 +2341,72 @@ export const loadTzdbSafely = async (): Promise<void> => {
     return
   }
 
-  const cdnUrls = [
-    '/time-zones.json',
-    '/static/time-zones.json',
-    'https://raw.githubusercontent.com/vvo/tzdb/main/dist/time-zones.json',
-    'https://cdn.jsdelivr.net/gh/vvo/tzdb@main/dist/time-zones.json',
-    'https://cdn.jsdelivr.net/npm/@vvo/tzdb@latest/dist/time-zones.json',
-  ]
+  // 优先使用本地静态资源，如需完整时区数据请将 time-zones.json 放到 public/ 目录
+  // 如果本地文件不存在，将使用内置的默认时区数据
+  const cdnUrls = ['/time-zones.json', '/static/time-zones.json']
+
+  // 带超时的 fetch 辅助函数
+  const fetchWithTimeout = async (url: string, timeout = 5000): Promise<Response> => {
+    const controller = new AbortController()
+    const timeoutId = setTimeout(() => controller.abort(), timeout)
+
+    try {
+      const response = await fetch(url, {
+        cache: 'force-cache' as RequestCache,
+        signal: controller.signal,
+      })
+      clearTimeout(timeoutId)
+      return response
+    } catch (error) {
+      clearTimeout(timeoutId)
+      throw error
+    }
+  }
 
   loadTzdbPromise = (async () => {
-    for (const url of cdnUrls) {
-      try {
-        const res = await fetch(url, { cache: 'force-cache' as RequestCache })
-        if (!res.ok) {
+    try {
+      for (const url of cdnUrls) {
+        try {
+          const res = await fetchWithTimeout(url, 5000)
+          if (!res.ok) {
+            continue
+          }
+
+          // 检查 Content-Type，确保是 JSON 格式
+          const contentType = res.headers.get('content-type') || ''
+          if (!contentType.includes('application/json') && !contentType.includes('text/json')) {
+            // 如果返回的是 HTML（如 404 页面），静默跳过
+            continue
+          }
+
+          const zones = (await res.json()) as TimeZoneMinimal[]
+          if (Array.isArray(zones) && zones.length > 0 && zones[0].name) {
+            _ALL_TIMEZONES_INTERNAL = zones
+            ALL_TIMEZONES = _ALL_TIMEZONES_INTERNAL
+            return
+          }
+        } catch (error) {
+          // 静默处理单个 URL 的失败，继续尝试下一个
+          // 对于文件不存在的情况（返回 HTML），不输出警告
+          if (error instanceof Error && error.name !== 'AbortError') {
+            const errorMessage = error.message.toLowerCase()
+            // 如果错误是 JSON 解析错误且包含 HTML 标记，说明文件不存在，静默跳过
+            if (errorMessage.includes('json') && errorMessage.includes('<!doctype')) {
+              continue
+            }
+            // 其他错误才输出警告
+            console.warn('[tzdb] load failed from', url, error.message)
+          }
           continue
         }
-        const zones = (await res.json()) as TimeZoneMinimal[]
-        if (Array.isArray(zones) && zones.length > 0 && zones[0].name) {
-          _ALL_TIMEZONES_INTERNAL = zones
-          ALL_TIMEZONES = _ALL_TIMEZONES_INTERNAL
-          break
-        }
-      } catch (error) {
-        console.warn('[tzdb] load failed from', url, error)
       }
+      // 所有 URL 都失败时，静默失败，使用默认时区数据
+      console.info(
+        '[tzdb] 本地时区数据文件未找到，使用内置默认时区数据。如需完整时区列表，请将 time-zones.json 放到 public/ 目录'
+      )
+    } catch (error) {
+      // 确保最外层错误也被捕获
+      console.warn('[tzdb] 加载时区数据时发生未知错误:', error)
     }
   })()
 

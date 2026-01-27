@@ -1,15 +1,10 @@
 /**
- * NProgress 进度条管理的Composable函数
+ * NProgress 进度条工具库
+ * 仅提供 start/done 等方法，不监听路由；路由变化时的控制权由 src/router/utils/permission.ts 接管
  */
 import NProgress from 'nprogress'
 import 'nprogress/nprogress.css'
-import { computed, watch } from 'vue'
-import type { Router } from 'vue-router'
-import { useRoute } from 'vue-router'
-
-export function useNprogress(_router?: Router) {
-  const route = useRoute()
-
+export function useNprogress() {
   /**
    * NProgress 配置
    */
@@ -76,37 +71,10 @@ export function useNprogress(_router?: Router) {
   })
 
   /**
-   * 监听路由变化，自动管理进度条
-   */
-  const setupRouteProgress = () => {
-    // 路由开始时启动进度条
-    watch(
-      () => route.path,
-      () => {
-        startProgress()
-      },
-      { immediate: false }
-    )
-
-    // 路由完成时结束进度条
-    watch(
-      () => route.path,
-      () => {
-        // 延迟结束进度条，确保页面内容加载完成
-        setTimeout(() => {
-          doneProgress()
-        }, 100)
-      },
-      { immediate: false }
-    )
-  }
-
-  /**
-   * 初始化 NProgress
+   * 初始化 NProgress（仅做配置，不注册任何路由监听）
    */
   const initNProgress = () => {
     configureNProgress()
-    setupRouteProgress()
   }
 
   return {
@@ -124,8 +92,5 @@ export function useNprogress(_router?: Router) {
     // 状态查询
     getCurrentProgress,
     isProgressRunning,
-
-    // 路由集成
-    setupRouteProgress,
   }
 }

@@ -1,7 +1,10 @@
-// HTTP 公共配置变量
+// HTTP 公共配置变量（客户端超时由环境变量配置；vite.config 代理超时单独从 env 读取，解耦 src 与构建配置）
+const timeout = Number(import.meta.env.VITE_API_TIMEOUT) || 10000
 export const HTTP_CONFIG = {
   // 基础配置
-  timeout: 10000, // 默认超时时间（毫秒）
+  timeout,
+  // 代理超时（仅用于配置一致性说明；vite.config 使用 VITE_PROXY_TIMEOUT，不依赖此处）
+  proxyTimeout: Number(import.meta.env.VITE_PROXY_TIMEOUT) || 15000,
   maxConcurrentRequests: 10, // 最大并发请求数
   maxCacheSize: 1000, // 最大缓存条目数
   defaultCacheTtl: 5 * 60 * 1000, // 默认缓存时间（5分钟）

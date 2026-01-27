@@ -1,6 +1,5 @@
 {
   "$schema": "https://json.schemastore.org/prettierrc",
-  "plugins": ["@prettier/plugin-pug"],
   "semi": false,
   "singleQuote": true,
   "printWidth": 100,

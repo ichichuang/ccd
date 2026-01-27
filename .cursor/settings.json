@@ -1,40 +1,28 @@
 {
+  // === 基础环境配置 ===
   "npm.packageManager": "pnpm",
   "terminal.integrated.defaultProfile.osx": "zsh",
-  "terminal.integrated.profiles.osx": {
-    "zsh": {
-      "path": "zsh",
-      "args": ["-l"]
-    }
-  },
   "terminal.integrated.env.osx": {
     "FORCE_COLOR": "1"
   },
-  "python.defaultInterpreterPath": "/usr/bin/python3",
-  "extensions.ignoreRecommendations": false,
-  "editor.suggest.showStatusBar": true,
-  "editor.inlineSuggest.enabled": true,
-  "github.copilot.enable": {
-    "*": true,
-    "yaml": true,
-    "plaintext": true,
-    "markdown": true,
-    "vue": true,
-    "typescript": true,
-    "javascript": true
+
+  // === 编辑器外观与行为 ===
+  "editor.fontFamily": "'JetBrains Mono', 'Fira Code', Monaco, 'Courier New', monospace",
+  "editor.fontLigatures": true,
+  "editor.fontSize": 14,
+  "editor.lineHeight": 1.5,
+  "editor.tabSize": 2,
+  "editor.insertSpaces": true,
+  "editor.formatOnSave": true,
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "explicit",
+    "source.organizeImports": "explicit"
   },
-  "scm.inputFontFamily": "JetBrains Mono",
-  "debug.console.fontFamily": "JetBrains Mono",
-  "editor.fontFamily": "JetBrains Mono, Monaco, 'Courier New', monospace",
-  "terminal.integrated.fontFamily": "JetBrains Mono, Monaco, 'Courier New', monospace",
-  "workbench.startupEditor": "welcomePage",
-  "git.openRepositoryInParentFolders": "always",
-  "extensions.autoUpdate": true,
-  "update.mode": "start",
-  "telemetry.telemetryLevel": "off",
-  "workbench.settings.enableNaturalLanguageSearch": false,
-  "search.useIgnoreFiles": true,
-  "search.smartCase": true,
+  "editor.bracketPairColorization.enabled": true,
+  "editor.guides.bracketPairs": true,
+
+  // === 文件与搜索排除 ===
   "files.exclude": {
     "**/node_modules": true,
     "**/dist": true,
@@ -48,30 +36,18 @@
     "**/build/**": true,
     "**/.git/**": true
   },
-  "task.allowAutomaticTasks": "on",
-  "task.quickOpen.detail": false,
-  "task.quickOpen.skip": false,
+  "search.useIgnoreFiles": true,
+  "search.smartCase": true,
+
+  // === ESLint & Prettier ===
+  "eslint.workingDirectories": ["./"],
+  "eslint.validate": ["javascript", "javascriptreact", "typescript", "typescriptreact", "vue"],
+  "prettier.requireConfig": true,
+
+  // === TypeScript 智能增强 ===
   "typescript.preferences.importModuleSpecifier": "relative",
   "typescript.suggest.autoImports": true,
   "typescript.updateImportsOnFileMove.enabled": "always",
-  "editor.codeActionsOnSave": {
-    "source.fixAll.eslint": "explicit",
-    "source.organizeImports": "explicit"
-  },
-  "eslint.workingDirectories": ["./"],
-  "eslint.validate": ["javascript", "javascriptreact", "typescript", "typescriptreact", "vue"],
-  "vue.updateImportsOnFileMove.enabled": true,
-  "unocss.root": "./",
-  "unocss.configFile": "unocss/index.ts",
-  "unocss.trace.server": "verbose",
-
-  // === Vue 开发配置 ===
-  "vue.codeActions.enabled": true,
-  "vue.complete.casing.tags": "pascal",
-  "vue.complete.casing.props": "camel",
-  "vue.updateImportsOnFileMove.enabled": true,
-
-  // === TypeScript 增强配置 ===
   "typescript.preferences.includePackageJsonAutoImports": "auto",
   "typescript.suggest.completeFunctionCalls": true,
   "typescript.inlayHints.functionLikeReturnTypes.enabled": true,
@@ -79,121 +55,56 @@
   "typescript.inlayHints.parameterTypes.enabled": true,
   "typescript.inlayHints.variableTypes.enabled": true,
 
-  // === 项目特定配置 ===
+  // === Vue ===
   "files.associations": {
     "*.vue": "vue",
-    "uno.config.ts": "typescript"
+    "uno.config.ts": "typescript",
+    "*.css": "postcss"
   },
+  "vue.codeActions.enabled": true,
+  "vue.complete.casing.tags": "pascal",
+  "vue.complete.casing.props": "camel",
+  "vue.updateImportsOnFileMove.enabled": true,
 
-  // === Pug 语法和 UnoCSS 配置 ===
-  "pug.unocss": {
-    "enableAutoComplete": true,
-    "enableSyntaxCheck": true,
-    "enableAutoFix": true,
-    "preferDotSyntax": true,
-    "specialChars": [":", "%", "!", "/", "[", "]"],
-    "responsivePrefixes": ["sm:", "md:", "lg:", "xl:", "2xl:"],
-    "stateVariants": ["hover:", "focus:", "active:", "disabled:"],
-    "darkModePrefix": "dark:"
-  },
-  "pug.format.enable": true,
-  "pug.format.semi": false,
-  "pug.format.singleQuote": true,
-  "pug.format.tabWidth": 2,
-  "pug.format.useTabs": false,
-  "editor.snippetSuggestions": "top",
-  "editor.tabCompletion": "on",
+  // === UnoCSS 核心配置 ===
+  "unocss.root": "./",
+  "unocss.configFile": "uno.config.ts",
+  "unocss.enableIntelliSense": true,
+  "unocss.remToPxPreview": true,
+  "unocss.colorPreview": true,
+  "unocss.languageIds": [
+    "javascript",
+    "typescript",
+    "javascriptreact",
+    "typescriptreact",
+    "vue",
+    "html",
+    "markdown",
+    "json"
+  ],
 
-  // === 性能优化配置 ===
-  "typescript.preferences.includePackageJsonAutoImports": "auto",
-  "search.useIgnoreFiles": true,
-  "search.smartCase": true,
-
-  // === i18n Ally 国际化插件配置 ===
+  // === i18n Ally (国际化) ===
   "i18n-ally.localesPaths": ["src/locales/lang"],
   "i18n-ally.keystyle": "nested",
   "i18n-ally.sortKeys": true,
   "i18n-ally.namespace": false,
   "i18n-ally.pathMatcher": "{locale}.{ext}",
-  "i18n-ally.dirStructure": "file",
-  "i18n-ally.enabledParsers": ["ts", "js"],
+  "i18n-ally.enabledParsers": ["ts", "js", "json"],
   "i18n-ally.sourceLanguage": "zh-CN",
   "i18n-ally.displayLanguage": "zh-CN",
   "i18n-ally.enabledFrameworks": ["vue", "vue-i18n"],
   "i18n-ally.parserOptions": {
-    "ts": {
-      "strictObjectKeyAsString": false
-    }
+    "ts": { "strictObjectKeyAsString": false }
   },
   "i18n-ally.extract.keyPrefix": "",
-  "i18n-ally.extract.keyMaxLength": 100,
-  "i18n-ally.extract.parsers.html.attributes": ["alt", "title", "placeholder"],
-  "i18n-ally.extract.parsers.html.ignoredTags": ["script", "style"],
-  "i18n-ally.review.enabled": true,
-  "i18n-ally.review.gutters": true,
-  "i18n-ally.annotationInPlace": true,
-  "i18n-ally.annotationMaxLength": 50,
-  "i18n-ally.editor.preferEditor": true,
-  "i18n-ally.readonly": false,
-  "i18n-ally.refactor.templates": [
-    {
-      "name": "vue-i18n",
-      "find": "\\$t\\('([^']*)'\\)",
-      "replace": "{{ \\$t('$1') }}"
-    }
-  ],
   "i18n-ally.usage.scanningDirs": ["src"],
-  "i18n-ally.usage.ignoredFiles": ["**/*.d.ts", "**/node_modules/**", "**/dist/**"],
 
-  // === Cursor 自动编码配置 ===
-  "cursor.general.enableAutoCompletion": true,
-  "cursor.general.enableSmartSuggestions": true,
-  "cursor.general.enableContextAwareCompletion": true,
-  "cursor.general.enableTypeInference": true,
-  "cursor.general.enableImportOptimization": true,
-  "cursor.general.enableNamingConvention": true,
-  "cursor.general.enableErrorHandling": true,
-  "cursor.general.enablePerformanceOptimization": true,
-
-  // === 编码规范配置 ===
-  "cursor.coding.forceCamelCase": true,
-  "cursor.coding.forcePascalCase": true,
-  "cursor.coding.forceKebabCase": true,
-  "cursor.coding.forceScreamingSnakeCase": true,
-  "cursor.coding.enablePathAliases": true,
-  "cursor.coding.enableTypeSafety": true,
-  "cursor.coding.enableErrorHandling": true,
-  "cursor.coding.enablePerformanceOptimization": true,
-
-  // === 自动补全配置 ===
-  "cursor.autocomplete.enableVariableCompletion": true,
-  "cursor.autocomplete.enableFunctionCompletion": true,
-  "cursor.autocomplete.enableTypeCompletion": true,
-  "cursor.autocomplete.enableImportCompletion": true,
-  "cursor.autocomplete.enableVueCompletion": true,
-  "cursor.autocomplete.enableApiCompletion": true,
-  "cursor.autocomplete.enableStoreCompletion": true,
-  "cursor.autocomplete.enableComposableCompletion": true,
-
-  // === 智能重构配置 ===
-  "cursor.refactor.enableAutoRename": true,
-  "cursor.refactor.enableImportOptimization": true,
-  "cursor.refactor.enableTypeOptimization": true,
-  "cursor.refactor.enableErrorHandlingOptimization": true,
-  "cursor.refactor.enablePerformanceOptimization": true,
-
-  // === 代码质量配置 ===
-  "cursor.quality.enableNamingCheck": true,
-  "cursor.quality.enableImportPathCheck": true,
-  "cursor.quality.enableTypeSafetyCheck": true,
-  "cursor.quality.enableErrorHandlingCheck": true,
-  "cursor.quality.enablePerformanceCheck": true,
-
-  // === 项目特定规则 ===
-  "cursor.project.enableVueCompositionAPI": true,
-  "cursor.project.enableTypeScriptStrict": true,
-  "cursor.project.enableESLintRules": true,
-  "cursor.project.enableUnocssIntegration": true,
-  "cursor.project.enableI18nIntegration": true,
-  "cursor.project.enablePathAliasSupport": true
+  // === Cursor 真实有效的配置 ===
+  // 这些是 Cursor 确实支持的配置项
+  "cursor.chat.showInEditor": true,
+  "cursor.cpp.enableIntelliSense": true, // CPP 指的是 Cursor Prediction Protocol (代码预测)
+  "cursor.general.enableCodeActions": true,
+  "github.copilot.enable": {
+    "*": true
+  }
 }

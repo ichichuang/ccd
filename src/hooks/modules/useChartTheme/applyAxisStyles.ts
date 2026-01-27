@@ -1,6 +1,6 @@
 // 坐标轴样式应用函数
 
-import type { FontConfig, ThemeConfig } from './types'
+import type { ThemeConfig } from './types'
 import { applyFontStyles } from './applyFontStyles'
 
 /**

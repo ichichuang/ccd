@@ -1,0 +1,156 @@
+---
+description: Shadcn-vue 组件使用、UnoCSS 语义化样式、主题与尺寸引擎管线、布局配置 LayoutSetting、设备检测与断点配置、阶梯规则、配色/圆角/布局变量与 UnoCSS 融合，当涉及 UI 开发或修改主题/尺寸/布局/设备配置时触发
+globs:
+  - '**/*.vue'
+  - '**/*.tsx'
+  - 'uno.config.ts'
+  - 'src/constants/theme.ts'
+  - 'src/constants/layout.ts'
+  - 'src/utils/theme/**'
+  - 'src/hooks/modules/useThemeSwitch.ts'
+  - 'src/assets/styles/theme/transitions.scss'
+  - 'src/assets/styles/theme/modes/*.scss'
+  - 'src/assets/styles/custom.scss'
+  - 'src/main.ts'
+  - 'src/plugins/modules/stores.ts'
+  - 'src/stores/modules/theme.ts'
+  - 'src/stores/modules/layout.ts'
+  - 'src/stores/modules/size.ts'
+  - 'src/constants/size.ts'
+  - 'src/constants/sizeScale.ts'
+  - 'src/types/systems/theme.d.ts'
+  - 'src/types/systems/size.d.ts'
+  - 'src/types/systems/layout.d.ts'
+  - 'src/types/systems/device.d.ts'
+  - 'src/constants/breakpoints.ts'
+  - 'src/stores/modules/device.ts'
+alwaysApply: false
+---
+
+# Design System: Shadcn-vue & UnoCSS RGB Engine
+
+## 1. 组件使用规范 (Shadcn-vue)
+
+- **源码所有权**: 组件存在于 `src/components/ui/`。严禁通过 npm 安装其他 UI 库（如 Element Plus / PrimeVue）。
+- **导入规范**: 原子组件通过自动导入使用；布局特有组件使用 `@&/` 手动引入。
+
+## 2. 样式与主题 (UnoCSS)
+
+### 语义化令牌 (Semantic Tokens)
+
+**严禁** 使用硬编码颜色或 `bg-primary100` 等旧命名。必须使用以下语义类名：
+
+- `bg-background`: 页面底色
+- `bg-card`: 卡片/面板背景
+- `bg-primary`: 主色（Action/Active）
+- `text-foreground`: 主文本
+- `text-muted-foreground`: 次要/弱化文本
+
+更多语义类名（如 `bg-primary-light`、`bg-sidebar`、`text-primary-light-foreground`、`bg-warn`、`bg-success`、`bg-accent-hover`、`bg-destructive-light`、`text-sidebar-primary-foreground`）以 `src/types/systems/theme.d.ts` 与 `uno.config.ts` 的 `theme.colors` 为准。图表色（chart）已从设计系统移除，语义色仅以当前类型与配置为准。
+
+### RGB 引擎透明度 (Alpha Modifiers)
+
+所有颜色通过 `/` 支持透明度调节：
+
+- ✅ `bg-primary/20` (20% 透明度主色)
+- ✅ `bg-background/80.backdrop-blur-sm` (高斯模糊背景遮罩)
+
+## 3. 布局变量 (Layout Variables)
+
+- **侧边栏**: `w-sidebarWidth`, `w-sidebarCollapsedWidth`。
+- **头部**: `h-headerHeight`。
+- **间距**: 统一使用 `p-padding`, `p-paddingx`、`gap-unit` 等预设变量。
+
+## 4. 主题与尺寸引擎管线 (Theme & Size Engine)
+
+编辑主题/配色/尺寸或 `uno.config.ts` 时，必须遵守以下数据流与约定。
+
+### 配色管线 (Color Pipeline)
+
+1. **数据源**: `src/constants/theme.ts` — 仅定义 `THEME_PRESETS`（`ThemePreset`: **primary 必填**；可选 **backgroundDark**、**backgroundLight**（深/浅模式自定义背景）、neutral、**accent**（constants 中定义，未提供时由引擎回退）、**warn**、**success**（未提供时用引擎默认））与默认名。
+2. **类型**: `src/types/systems/theme.d.ts` — 全局 `ThemePreset`、`ThemeCssVars`；CSS 变量值**必须为 RGB 三通道串**（如 `"255 10 20"`）以支持 Uno 的 `/ <alpha-value>`。`ThemeCssVars` 包含 accent、destructive、warn、success 的 **hover、light、light-foreground** 等衍生变量；已**删除** `--chart-1`～`--chart-5`。
+3. **计算**: `src/utils/theme/engine.ts` — `generateThemeVars(preset, isDark)` 生成完整 `ThemeCssVars`，依赖 `colors.ts`（`hexToRgb`、`adjustBrightness`、`isDarkColor`、**`mixHex`**）；可调参数集中在 **`THEME_ENGINE`** 常量对象中。
+4. **应用**: `stores/modules/theme.ts` 的 `refreshTheme()` 直接调用 `generateThemeVars(preset, isDark)` → `applyTheme(vars)` 写入 `document.documentElement`（由引擎根据 isDark 使用 backgroundDark / backgroundLight）。
+5. **消费**: `uno.config.ts` 的 `theme.colors` 全部使用 `rgb(var(--xxx) / <alpha-value>)`，变量名与 `ThemeCssVars` 一一对应（含 primary、accent、destructive、warn、success 及其 **hover、light、light-foreground**，以及 sidebar 含 **primary-foreground**；**不包含 chart**）。
+
+**约定**: 新增主题预设只改 `constants/theme.ts` 并满足 `ThemePreset`。新增语义色须同步改 `theme.d.ts` → `engine.ts` 生成逻辑 → `uno.config.ts` 的 `theme.colors`（若页面用动态类名展示配色，需在 `themeDemoSafelist` 中加入对应类名）。
+
+### 主题切换（View Transition Multi-mode）
+
+本项目的主题切换动画为 **CSS-driven**（动画在 CSS 执行），由 Hook 负责“协议注入/包装/清理”，由 utils 负责“策略元数据与计算”。
+
+#### 文件职责边界（强约束）
+
+- **动画执行只能在 CSS**：`src/assets/styles/theme/modes/*.scss`（以及入口聚合 `src/assets/styles/theme/transitions.scss`）。  
+  禁止在 JS/TS 中用 Web Animations API 或手写 `element.animate()` 来实现这些模式动画。
+- **策略工具只做计算/读值**：`src/utils/theme/transitions.ts` 仅允许：
+  - 计算：`calculateCircleRadius()`、`calculateDiamondRadius()`
+  - 读取背景色：`getBackgroundColor(cssVar)`（允许 `getComputedStyle(document.documentElement)` 读取 CSS 变量并转 Hex）
+  - 产出策略：`getTransitionConfig(mode, event)` 返回 `{ duration, easing, overlay? }`
+  - **禁止**：在该文件中修改 `documentElement` 的 `class/dataset/style`，或创建/移除 DOM。
+- **Hook 是唯一执行器**：`src/hooks/modules/useThemeSwitch.ts` 只做：
+  - View Transition 包裹（存在 `document.startViewTransition` 时）与降级（不支持时直接切换）
+  - 注入/清理 CSS 动画变量：`--transition-x` / `--transition-y` / `--transition-radius`
+  - 标记/清理模式：`data-transition="<mode>"`
+  - 写入/清理背景色快照：`--bg100-old` / `--bg100-new`
+  - 可选创建/清理蒙层：`.theme-fade-overlay`（仅由 `getTransitionConfig().overlay` 驱动）
+
+#### 关键 DOM 协议（必须稳定）
+
+以下协议被 `transitions.scss` 与各 mode 样式依赖，**禁止随意更名**：
+
+- `data-transition`
+- `--transition-x` / `--transition-y` / `--transition-radius`
+- `--bg100-old` / `--bg100-new`
+- `.theme-fade-overlay`
+
+### 尺寸管线 (Size Pipeline)
+
+1. **数据源**: `src/constants/size.ts` — 仅定义 `SIZE_PRESETS`（`SizePreset`：radius、spacingBase、**fontSizeBase**（用于计算字体阶梯）、sidebarWidth 等布局数值；**不包含 contentHeight**，contentHeight 需在页面中根据布局模式动态计算）与 `DEFAULT_SIZE_NAME`（SizeMode）。
+2. **类型**: `src/types/systems/size.d.ts` — 全局 `SizeMode`、`SizePreset`、`SizeCssVars`（含 `--radius`、`--spacing-unit`、**`--container-padding`**（`spacingBase * 5`）、`--sidebar-width` 等布局变量；**字体阶梯变量** `--font-size-xs` 到 `--font-size-5xl`（9 级）；**间距阶梯变量** `--spacing-xs` 到 `--spacing-5xl`（9 级）；kebab-case）、`SizeStoreState`（state 接口）。
+3. **阶梯倍率表**: `src/constants/sizeScale.ts` — `SIZE_SCALE_KEYS`（xs-5xl，9 级键名数组）、`FONT_SCALE_RATIOS`、`SPACING_SCALE_RATIOS`（xs-5xl，9 级倍率表 SSOT）。`sizeEngine.ts` 使用 `SIZE_SCALE_KEYS` 遍历生成所有阶梯变量。
+4. **状态与应用**: `src/stores/modules/size.ts` — state 类型为 `SizeStoreState`（`sizeName`）；getter `currentPreset`；动态 getters（`getGap()`、`getGapl()`、`getPaddingsValue()`、`getFontSizeValue()`、`getFontSizesValue()`，用于图表等业务场景）；`setSize(name)` 校验预设并调用 `generateSizeVars` + `applySizeTheme` 写入根元素；`init()` 在应用启动时应用当前预设；persist 持久化。
+5. **计算与注入**: `src/utils/theme/sizeEngine.ts` — `generateSizeVars(preset)` 生成 `SizeCssVars`（使用 `SIZE_SCALE_KEYS` 遍历，基于 `fontSizeBase × FONT_SCALE_RATIOS[key]` 生成 `--font-size-xs` 到 `--font-size-5xl`；基于 `spacingBase × SPACING_SCALE_RATIOS[key]` 生成 `--spacing-xs` 到 `--spacing-5xl`；`--container-padding` = `spacingBase * 5`；含布局变量），`applySizeTheme(vars)` 写入 `document.documentElement`。
+6. **消费**: `uno.config.ts` 中 `theme.borderRadius.lg/md/sm` 使用 `var(--radius)`；`theme.spacing.unit` 使用 `var(--spacing-unit)`；`createLayoutVariableRules()` 根据 `LAYOUT_SIZES`（camelCase）生成类名如 `w-sidebarWidth`、`h-headerHeight`，对应 CSS 变量为 kebab-case（`--sidebar-width`、`--header-height`）；`createSemanticSizeRules()` 生成 `p-padding`、`gap-unit` 等；`createScaleRules()` 基于 `sizeScale.ts` 的倍率表生成 `fs-xl`、`p-scale-lg`、`gap-scale-md` 等阶梯类名（xs-5xl，9 级）。
+
+**约定**: 新增尺寸预设只改 `constants/size.ts` 并满足 `SizePreset`。新增布局变量（新类名如 `h-xxxHeight`）须同步：(1) `types/systems/size.d.ts` 的 `SizePreset` 与 `SizeCssVars`，(2) `sizeEngine.ts` 的生成逻辑（使用 `SIZE_SCALE_KEYS` 遍历生成阶梯变量），(3) `uno.config.ts` 的 `LAYOUT_SIZES`。若涉及阶梯类名（如 `fs-xl`），需同步 `constants/sizeScale.ts` 的倍率表（`SIZE_SCALE_KEYS`、`FONT_SCALE_RATIOS`、`SPACING_SCALE_RATIOS`）。圆角与间距由尺寸引擎唯一控制；配色引擎不写入 `--radius`。主题与尺寸 store 均在 `src/plugins/modules/stores.ts` 的 setupStores 中 init，排错时可先确认该处已执行。
+
+## 5. 布局配置 (Layout Config)
+
+布局配置只管**显隐、模式、固定、动画、缓存**等结构与行为，不包含具体尺寸（交给 size）和颜色（交给 theme）；无 CSS 变量与 Uno 管线。
+
+- **数据源**: `src/constants/layout.ts` — `DEFAULT_LAYOUT_SETTING`（与 `LayoutSetting` 对齐）、`LAYOUT_PERSIST_PICK`（持久化字段，目前由 DEFAULT 的 key 推导）。
+- **类型**: `src/types/systems/layout.d.ts` — `LayoutMode`（选壳 admin/fullscreen/ratio）、`AdminLayoutMode`（vertical/horizontal/mix）、`LayoutSetting`（所有可持久化开关与选项）、`LayoutStoreState`（含 `userAdjusted` 标记）。
+- **状态**: `src/stores/modules/layout.ts` — state 类型为 `LayoutStoreState`（源于 DEFAULT + `isLoading`、`isPageLoading`、`userAdjusted`），persist 使用 `LAYOUT_PERSIST_PICK`；提供 `adaptToMobile(isMobile, force)`、`adaptToTablet(isTablet, force)` 响应式适配方法（**PC 端 `adaptToMobile(false)` 不做任何修改，完全信任持久化数据**；移动端强制适配：收起侧边栏、垂直布局、隐藏 Tabs）；`userAdjusted` 机制防止自动适配覆盖用户设置；辅助方法 `markUserAdjusted()`、`closeSidebarWithUserMark()`；在 setup 外（如 router guard、useLoading）使用 `useLayoutStoreWithOut()`。
+- **响应式适配**: `src/layouts/modules/LayoutAdmin.vue` — watch `deviceStore.isMobileLayout` / `isTabletLayout`（`immediate: true`）→ 调用 `adaptToMobile()` / `adaptToTablet()`；平板切换逻辑：进入平板时调用 `adaptToTablet(true)`，退出时由 `adaptToMobile(false)` 处理恢复。
+- **约定**: 新增配置项须同步 (1) `types/systems/layout.d.ts` 的 `LayoutSetting`，(2) `constants/layout.ts` 的 `DEFAULT_LAYOUT_SETTING`；若该字段不需持久化，再从 `LAYOUT_PERSIST_PICK` 中排除。布局 store 无 init，依赖 Pinia 持久化恢复。
+
+## 6. 设备系统 (Device System)
+
+设备检测与断点配置，用于响应式适配与布局切换。
+
+- **数据源**: `src/constants/breakpoints.ts` — `BREAKPOINTS`（xs → 5xl，覆盖移动端到 4K）SSOT。
+- **类型**: `src/types/systems/device.d.ts` — `DeviceType`、`OsType`、`Orientation`、`DeviceState`（扁平化结构，符合 Pinia 最佳实践）。
+- **检测与应用**: `src/stores/modules/device.ts` — `detectDeviceInfo()`（UA + Screen + 视口信息）、`init()`（事件监听：resize、orientationchange、pageshow、visibilitychange，防抖 300ms，返回清理函数）、兼容性 Getters（`isMobile`、`isTablet`、`getDefinitely` 等）。
+- **消费**: `uno.config.ts` 的 `theme.breakpoints` 从 `BREAKPOINTS` 导入；`src/layouts/modules/LayoutAdmin.vue` watch `deviceStore.isMobileLayout` / `isTabletLayout` → 触发布局响应式适配（`adaptToMobile()`、`adaptToTablet()`）。
+
+**约定**: 新增断点须同步 (1) `constants/breakpoints.ts` 的 `BREAKPOINTS`，(2) `types/systems/device.d.ts` 的 `BreakpointKey`，(3) `uno.config.ts` 的 `theme.breakpoints`。设备 store 在 `src/plugins/modules/stores.ts` 的 setupStores 中 init，排错时可先确认该处已执行。
+
+## 7. UnoCSS 规则优先级与配置
+
+UnoCSS 规则按以下优先级匹配（从高到低）：
+
+1. **语义化尺寸规则**：`createSemanticSizeRules()` → `p-padding`、`m-gap`、`gap-unit`（基于 `--spacing-unit`）。
+2. **布局变量规则**：`createLayoutVariableRules()` → `w-sidebarWidth`、`h-headerHeight`（基于 `LAYOUT_SIZES`，camelCase → kebab-case CSS 变量）。
+3. **阶梯规则**：`createScaleRules()` → `fs-xl`、`p-scale-lg`、`gap-scale-md`（基于 `sizeScale.ts` 的倍率表，xs-5xl，9 级）。
+4. **像素规则**：`createPixelRules()` → `w-20`、`h-100`（兜底，所有数值自动转 px）。
+
+**主题映射**：
+- `theme.colors`：全部使用 `rgb(var(--xxx) / <alpha-value>)`，变量名与 `ThemeCssVars` 一一对应。
+- `theme.borderRadius`：使用 `var(--radius)`。
+- `theme.spacing`：使用 `var(--spacing-unit)`。
+- `theme.breakpoints`：从 `BREAKPOINTS` 导入。
+
+**Safelist**：
+- `themeDemoSafelist`：主题展示页动态类名（如 `bg-warn`、`bg-warn-hover`）。
+- `getDynamicSafelist()`：图标动态类名。

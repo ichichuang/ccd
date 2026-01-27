@@ -7,7 +7,6 @@ import {
   sortRoutes,
   transformToVueRoutes,
 } from '@/router/utils/common'
-import { autoImportModulesSync, env } from '@/utils'
 import type { RouteRecordRaw } from 'vue-router'
 import { createRouter, createWebHashHistory, createWebHistory } from 'vue-router'
 import { registerRouterGuards } from './utils/helper'
@@ -71,11 +70,11 @@ const initialRoutes: RouteRecordRaw[] = createInitialRoutes(normalizedStaticRout
 const router = createRouter({
   // history 模式
   history:
-    env.routerMode === 'hash'
-      ? createWebHashHistory(env.publicPath)
-      : createWebHistory(env.publicPath),
+    import.meta.env.VITE_ROUTER_MODE === 'hash'
+      ? createWebHashHistory(import.meta.env.VITE_PUBLIC_PATH)
+      : createWebHistory(import.meta.env.VITE_PUBLIC_PATH),
   routes: initialRoutes,
-  scrollBehavior(to, from, savedPosition) {
+  scrollBehavior(_to, _from, savedPosition) {
     if (savedPosition) {
       return savedPosition
     } else {
@@ -88,6 +87,6 @@ const router = createRouter({
 export const dynamicRouteManager = createDynamicRouteManager(router)
 
 // 注册路由
-registerRouterGuards({ router, debug: env.debug, routeUtils, staticRoutes: initialRoutes })
+registerRouterGuards({ router, routeUtils, staticRoutes: initialRoutes })
 
 export default router

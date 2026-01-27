@@ -3,17 +3,9 @@
  * 自动同步框架语言设置，提供响应式的日期处理功能
  * 支持时区管理和 Intl API 集成
  */
-import {
-  DateUtils,
-  type DateFormat,
-  type DateInput,
-  type FormatOptions,
-  type Locale,
-} from '@#/index'
+import type { DateFormat, DateInput, FormatOptions, Locale } from '@/common/modules/date'
 import type { SupportedLocale } from '@/locales'
 import { getCurrentLocale } from '@/locales'
-import { onMounted, onUnmounted, readonly, ref, watch } from 'vue'
-
 export function useDateUtils() {
   // 当前语言状态
   const currentLocale = ref<Locale>('zh-CN')

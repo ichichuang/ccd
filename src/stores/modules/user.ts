@@ -1,11 +1,7 @@
-import { getUserInfo } from '@/api'
-import { FORM_MEMORY_LOCAL_STORAGE_PREFIX } from '@/components/modules/schema-form/hooks/useFormMemory'
-import { INTERVAL } from '@/constants'
-import { useLoading } from '@/hooks'
 import router from '@/router'
 import store from '@/stores'
-import { env } from '@/utils'
-import { encryptAndCompressSync } from '@/utils/modules/safeStorage/safeStorage'
+import { createPiniaEncryptedSerializer } from '@/utils/safeStorage/piniaSerializer'
+import { encryptAndCompressSync } from '@/utils/safeStorage/safeStorage'
 import { defineStore } from 'pinia'
 
 const { loadingStart } = useLoading()
@@ -47,10 +43,16 @@ export const useUserStore = defineStore('user', {
   actions: {
     async setToken(token: string) {
       this.token = token
-      this.safeStorageToken = encryptAndCompressSync(token, env.appSecret)
+      this.safeStorageToken = encryptAndCompressSync(token, import.meta.env.VITE_APP_SECRET)
       try {
         // 响应拦截器已经返回了 data 字段，所以 res 就是 UserInfo
-        const userInfo = await getUserInfo()
+        // const userInfo = await getUserInfo()
+        const userInfo: UserInfo = {
+          userId: '123',
+          username: 'admin',
+          roles: ['admin'],
+          permissions: ['admin'],
+        }
         this.setUserInfo(userInfo)
       } catch (error) {
         console.error('获取用户信息失败:', error)
@@ -62,7 +64,9 @@ export const useUserStore = defineStore('user', {
     setUserInfo(userInfo: UserInfo) {
       this.userInfo = userInfo
       this.isLogin = true
-      router.push((router.currentRoute.value.query.redirect as string) || env.rootRedirect)
+      router.push(
+        (router.currentRoute.value.query.redirect as string) || import.meta.env.VITE_ROOT_REDIRECT
+      )
     },
     clearUserInfo() {
       this.token = ''
@@ -81,19 +85,8 @@ export const useUserStore = defineStore('user', {
     async logout() {
       loadingStart()
       this.clearUserInfo()
-      const basePrefix = `${env.piniaKeyPrefix}-`
-      const schemaFormLegacyPrefix = '__form_cache__:'
-      const schemaFormPlainPrefix = 'schemaform:'
-      const schemaFormPrefixed = `${env.piniaKeyPrefix}-__form_cache__:`
-
-      const prefixes: string[] = [
-        basePrefix,
-        schemaFormPrefixed,
-        FORM_MEMORY_LOCAL_STORAGE_PREFIX,
-        schemaFormLegacyPrefix,
-        schemaFormPlainPrefix,
-      ]
-
+      const basePrefix = `${import.meta.env.VITE_PINIA_PERSIST_KEY_PREFIX}-`
+      const prefixes: string[] = [basePrefix]
       const keysToRemove = new Set<string>()
 
       for (let i = localStorage.length - 1; i >= 0; i -= 1) {
@@ -106,17 +99,18 @@ export const useUserStore = defineStore('user', {
         }
       }
 
-      keysToRemove.forEach(key => {
+      keysToRemove.forEach(async (key: string) => {
         localStorage.removeItem(key)
+        await new Promise(resolve => setTimeout(resolve, 300)) // 等待路由跳转完成
+        window.location.reload()
       })
-      await new Promise(resolve => setTimeout(resolve, INTERVAL)) // 等待路由跳转完成
-      window.location.reload()
     },
   },
 
   persist: {
-    key: `${env.piniaKeyPrefix}-user`,
+    key: `${import.meta.env.VITE_PINIA_PERSIST_KEY_PREFIX}-user`,
     storage: localStorage,
+    serializer: createPiniaEncryptedSerializer(), // 用户信息需要加密存储
   },
 })
 

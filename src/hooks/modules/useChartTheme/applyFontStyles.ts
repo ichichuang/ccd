@@ -1,6 +1,6 @@
 // 字体样式应用函数
 
-import type { FontConfig, ThemeConfig } from './types'
+import type { FontConfig } from './types'
 
 /**
  * 字体样式应用函数（函数式版本）

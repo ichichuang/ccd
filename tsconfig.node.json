@@ -1,14 +1,24 @@
 {
   "extends": "@tsconfig/node22/tsconfig.json",
   "include": [
-    "vite.config.*",
-    "vitest.config.*",
-    "cypress.config.*",
-    "nightwatch.conf.*",
-    "playwright.config.*",
-    "eslint.config.*"
+    // ✅ 核心配置文件
+    "vite.config.ts",
+    "uno.config.ts",
+    "eslint.config.ts",
+    "vitest.config.ts",
+    "cypress.config.ts",
+    "playwright.config.ts",
+    "commitlint.config.ts",
+
+    // ✅ 接管构建脚本 (这是重点！)
+    // 之前从 tsconfig.app.json 移出来的，必须放在这里
+    "build/**/*",
+
+    // ✅ 断点常量 (uno.config.ts 引用，SSOT 在 src)
+    "src/constants/breakpoints.ts"
   ],
   "compilerOptions": {
+    "composite": true,
     "noEmit": true,
     "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.node.tsbuildinfo",
 

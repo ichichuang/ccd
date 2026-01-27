@@ -1,13 +1,9 @@
 // useChartTheme 主函数 - 响应式版本
 
-import type { Ref } from 'vue'
-import { computed, type ComputedRef } from 'vue'
-import type {
-  ChartAdvancedConfig,
-  ChartOpacityConfig,
-} from '@/components/modules/use-echarts/utils/types'
-import { DEFAULT_OPACITY_VALUES } from '@/components/modules/use-echarts/utils/constants'
-import { useColorStore, useSizeStore } from '@/stores'
+import type { ChartAdvancedConfig, ChartOpacityConfig } from '@/components/use-echarts/utils/types'
+import { DEFAULT_OPACITY_VALUES } from '@/components/use-echarts/utils/constants'
+import { useColorStore } from '@/stores/modules/color'
+import { useSizeStore } from '@/stores/modules/size'
 import { deepCloneWithFunctions } from './utils'
 import type { ThemeConfig } from './types'
 import { applyFontStylesToTargets } from './applyFontStyles'

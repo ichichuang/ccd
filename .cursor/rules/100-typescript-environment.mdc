@@ -1,0 +1,33 @@
+---
+description: TypeScript 环境隔离与类型定义规则，当修改 tsconfig、遇到类型错误或编写构建脚本时触发
+globs: ['tsconfig*.json', '**/*.ts', '**/*.vue', '**/*.tsx']
+alwaysApply: false
+---
+
+# TypeScript Environment Isolation Strategy
+
+## 配置体系 (Configuration Hierarchy)
+
+- **`tsconfig.app.json`**: 作用于 `src/`。严禁引入 `@types/node`。支持 JSX (`jsxImportSource: vue`)。
+- **`tsconfig.node.json`**: 作用于 `build/` 及配置文件。必须包含 `@types/node`。
+
+## 编码规则
+
+1. **类型安全**: 严禁使用 `any`。所有 API 请求与响应必须定义 `interface`。
+2. **全局类型应用**:
+   - `LayoutMode`: 已注入全局，直接使用无需导入。
+   - `$t`: 多语言函数已注入全局。
+3. **变量规范**:
+   - 允许 `_` 开头作为未使用变量占位符。
+   - 局部变量如 `keepAliveNames` 若仅模板引用，应更名为 `_keepAliveNames` 以规避 Lint。
+4. **TSX 使用**: 针对具有复杂递归逻辑或多重条件判断的 UI 节点，优先使用 `.tsx` 替代 `.vue`。
+
+## 示例 (Correct / Incorrect)
+
+**类型安全**
+- ❌ `const data: any = await fetchUser();`
+- ✅ `interface User { id: number; name: string }` 且 `const data: User = await fetchUser();`
+
+**环境隔离**
+- ❌ 在 `src/` 下的文件中 `import ... from 'node:path'` 或依赖 `@types/node`（仅 build/ 与配置文件可引入）。
+- ✅ 应用代码仅使用 `tsconfig.app.json` 的编译范围；Node 相关逻辑放在 `build/` 并受 `tsconfig.node.json` 约束。

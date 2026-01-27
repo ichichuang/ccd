@@ -1,4 +1,3 @@
-import type { App } from 'vue'
 import ECharts from 'vue-echarts'
 
 // ECharts 核心模块

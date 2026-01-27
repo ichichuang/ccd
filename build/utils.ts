@@ -1,6 +1,5 @@
-// import dayjs from 'dayjs'
-import { readdir, stat } from 'node:fs'
-import { dirname, resolve } from 'node:path'
+import { readdirSync, statSync } from 'node:fs'
+import { dirname, join, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { dependencies, devDependencies, engines, name, version } from '../package.json'
 
@@ -9,25 +8,31 @@ export const root: string = process.cwd()
 
 /**
  * @description 根据可选的路径片段生成一个新的绝对路径
- * @param dir 路径片段，默认当前目录
- * @param metaUrl 模块的完整 url
  */
 export const pathResolve = (dir = '.', metaUrl = import.meta.url): string => {
   const currentFileDir = dirname(fileURLToPath(metaUrl))
   return resolve(currentFileDir, dir)
 }
 
-/** 设置别名 */
+/** * ✅ 设置别名系统 (符合 v3.0 架构规范)
+ * 1. @ -> 源码根目录
+ * 2. @$ -> Shadcn UI 核心目录，支持快速引用原子组件
+ * 3. @& -> 布局专用组件目录，支持显式引入布局相关组件
+ */
 export const alias: Record<string, string> = {
   '@': pathResolve('../src'),
   '@!': pathResolve('../src/api'),
   '@#': pathResolve('../src/common'),
+  /** ✅ Shadcn 组件目录，便于 @$/button 等引入 */
+  '@$': pathResolve('../src/components/ui'),
+  /** ✅ 布局专用组件目录，用于在 Layouts 中显式手动引入 */
+  '@&': pathResolve('../src/layouts/components'),
 }
 
 /** 应用信息 */
 export const __APP_INFO__ = {
   pkg: { name, version, engines, dependencies, devDependencies },
-  lastBuildTime: new Date().toLocaleString('zh-CN'),
+  lastBuildTime: new Date().toLocaleString(),
 }
 
 /** 环境变量类型定义 */
@@ -42,34 +47,38 @@ export interface ViteEnv {
   VITE_LEGACY: boolean
   VITE_API_BASE_URL: string
   VITE_APP_TITLE: string
-  VITE_APP_VERSION: string
   VITE_APP_ENV: 'development' | 'production'
   VITE_PINIA_PERSIST_KEY_PREFIX: string
   VITE_ROOT_REDIRECT: string
-  VITE_DEBUG: boolean
   VITE_DROP_DEBUGGER: boolean
   VITE_DROP_CONSOLE: boolean
   VITE_DEV_TOOLS?: boolean
+  /** ✅ 开发环境下是否输出主题 RGB 变量解析日志 */
+  VITE_THEME_DEBUG?: boolean
+  /** 客户端请求超时（毫秒） */
+  VITE_API_TIMEOUT: number
+  /** 开发环境代理超时（毫秒） */
+  VITE_PROXY_TIMEOUT: number
+  [key: string]: any
 }
 
 /**
- * @description 将 Vite 加载的 env 对象包装为带类型的 ViteEnv
+ * @description 自动识别并转换环境变量类型
  */
 export const wrapperEnv = (envConf: Record<string, any>): ViteEnv => {
+  const ret: Record<string, any> = {}
+
+  const numberKeys = ['VITE_PORT', 'VITE_API_TIMEOUT', 'VITE_PROXY_TIMEOUT']
   const booleanKeys = [
     'VITE_CDN',
     'VITE_BUILD_SOURCEMAP',
     'VITE_BUILD_ANALYZE',
     'VITE_LEGACY',
-    'VITE_DEBUG',
     'VITE_DROP_DEBUGGER',
     'VITE_DROP_CONSOLE',
     'VITE_DEV_TOOLS',
+    'VITE_THEME_DEBUG', // ✅ 加入布尔转换列表
   ]
-
-  const numberKeys = ['VITE_PORT']
-
-  const ret: Record<string, any> = {}
 
   Object.keys(envConf).forEach(key => {
     let value = envConf[key]?.replace(/\\n/g, '\n') ?? ''
@@ -82,29 +91,29 @@ export const wrapperEnv = (envConf: Record<string, any>): ViteEnv => {
     }
 
     ret[key] = value
-    // 同步写入 process.env
     process.env[key] = typeof value === 'object' ? JSON.stringify(value) : String(value)
   })
 
   return {
-    VITE_PORT: ret.VITE_PORT,
-    VITE_PUBLIC_PATH: ret.VITE_PUBLIC_PATH || '/',
-    VITE_ROUTER_MODE: ret.VITE_ROUTER_MODE || 'history',
-    VITE_CDN: ret.VITE_CDN,
-    VITE_COMPRESSION: ret.VITE_COMPRESSION || 'none',
-    VITE_BUILD_SOURCEMAP: ret.VITE_BUILD_SOURCEMAP,
-    VITE_BUILD_ANALYZE: ret.VITE_BUILD_ANALYZE,
-    VITE_LEGACY: ret.VITE_LEGACY,
-    VITE_API_BASE_URL: ret.VITE_API_BASE_URL,
-    VITE_APP_TITLE: ret.VITE_APP_TITLE,
-    VITE_APP_VERSION: ret.VITE_APP_VERSION,
-    VITE_APP_ENV: ret.VITE_APP_ENV || 'development',
-    VITE_PINIA_PERSIST_KEY_PREFIX: ret.VITE_PINIA_PERSIST_KEY_PREFIX,
-    VITE_ROOT_REDIRECT: ret.VITE_ROOT_REDIRECT,
-    VITE_DEBUG: ret.VITE_DEBUG,
-    VITE_DROP_DEBUGGER: ret.VITE_DROP_DEBUGGER,
-    VITE_DROP_CONSOLE: ret.VITE_DROP_CONSOLE,
+    VITE_PORT: ret.VITE_PORT ?? 8888,
+    VITE_PUBLIC_PATH: ret.VITE_PUBLIC_PATH ?? '/',
+    VITE_ROUTER_MODE: ret.VITE_ROUTER_MODE ?? 'history',
+    VITE_CDN: ret.VITE_CDN ?? false,
+    VITE_COMPRESSION: ret.VITE_COMPRESSION ?? 'none',
+    VITE_BUILD_SOURCEMAP: ret.VITE_BUILD_SOURCEMAP ?? false,
+    VITE_BUILD_ANALYZE: ret.VITE_BUILD_ANALYZE ?? false,
+    VITE_LEGACY: ret.VITE_LEGACY ?? false,
+    VITE_API_BASE_URL: ret.VITE_API_BASE_URL ?? '',
+    VITE_APP_TITLE: ret.VITE_APP_TITLE ?? '',
+    VITE_APP_ENV: ret.VITE_APP_ENV ?? 'development',
+    VITE_PINIA_PERSIST_KEY_PREFIX: ret.VITE_PINIA_PERSIST_KEY_PREFIX ?? '',
+    VITE_ROOT_REDIRECT: ret.VITE_ROOT_REDIRECT ?? '',
+    VITE_DROP_DEBUGGER: ret.VITE_DROP_DEBUGGER ?? false,
+    VITE_DROP_CONSOLE: ret.VITE_DROP_CONSOLE ?? false,
     VITE_DEV_TOOLS: ret.VITE_DEV_TOOLS,
+    VITE_API_TIMEOUT: ret.VITE_API_TIMEOUT ?? 10000,
+    VITE_PROXY_TIMEOUT: ret.VITE_PROXY_TIMEOUT ?? 15000,
+    ...ret,
   }
 }
 
@@ -117,12 +126,9 @@ export const getPackageSize = (options: {
   format?: boolean
 }): void => {
   const { folder = 'dist', callback, format = true } = options
-  const fileListTotal: number[] = []
 
   const formatBytes = (bytes: number, decimals = 2) => {
-    if (bytes === 0) {
-      return '0 Bytes'
-    }
+    if (bytes === 0) return '0 Bytes'
     const k = 1024
     const dm = decimals < 0 ? 0 : decimals
     const sizes = ['Bytes', 'KB', 'MB', 'GB']
@@ -130,40 +136,25 @@ export const getPackageSize = (options: {
     return `${parseFloat((bytes / Math.pow(k, i)).toFixed(dm))} ${sizes[i]}`
   }
 
-  const sum = (arr: number[]) => arr.reduce((prev, curr) => prev + curr, 0)
-
-  readdir(folder, (err, files: string[]) => {
-    if (err) {
-      throw err
-    }
-    if (files.length === 0) {
-      callback('0 Bytes')
-      return
-    }
-
-    let processed = 0
-    const checkEnd = () => {
-      processed++
-      if (processed === files.length) {
-        callback(format ? formatBytes(sum(fileListTotal)) : String(sum(fileListTotal)))
-      }
-    }
-
-    files.forEach(item => {
-      stat(`${folder}/${item}`, (err, stats) => {
-        if (err) {
-          throw err
-        }
-        if (stats.isFile()) {
-          fileListTotal.push(stats.size)
-          checkEnd()
-        } else if (stats.isDirectory()) {
-          getPackageSize({
-            folder: `${folder}/${item}/`,
-            callback: checkEnd,
-          })
+  const getDirSize = (dir: string): number => {
+    let size = 0
+    try {
+      const files = readdirSync(dir)
+      files.forEach(file => {
+        const filePath = join(dir, file)
+        const stats = statSync(filePath)
+        if (stats.isDirectory()) {
+          size += getDirSize(filePath)
+        } else {
+          size += stats.size
         }
       })
-    })
-  })
+    } catch (_error) {
+      return 0
+    }
+    return size
+  }
+
+  const totalSize = getDirSize(folder)
+  callback(format ? formatBytes(totalSize) : String(totalSize))
 }

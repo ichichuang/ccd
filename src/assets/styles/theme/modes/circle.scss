@@ -1,0 +1,18 @@
+/**
+ * 圆形扩散过渡模式
+ */
+
+[data-transition='circle'] {
+  ::view-transition-new(root) {
+    clip-path: circle(0px at var(--transition-x, 50%) var(--transition-y, 50%));
+    animation: circle-expand 400ms cubic-bezier(0.4, 0, 0.2, 1);
+  }
+}
+
+@keyframes circle-expand {
+  to {
+    clip-path: circle(
+      var(--transition-radius, 100%) at var(--transition-x, 50%) var(--transition-y, 50%)
+    );
+  }
+}

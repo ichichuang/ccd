@@ -53,13 +53,16 @@ coverage
 
 # Auto-generated type declaration files
 # 这些文件由 Vite 插件自动生成，不应提交到版本控制
+# 根目录的自动生成文件（旧配置遗留）
 auto-imports.d.ts
 components.d.ts
+# src/types 目录下的自动生成文件（当前配置）
+src/types/auto-imports.d.ts
+src/types/components.d.ts
 
 # Package manager lock files
 package-lock.json
 yarn.lock
-pnpm-lock.yaml
 
 # Testing
 /tests/e2e/videos/

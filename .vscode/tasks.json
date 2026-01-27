@@ -2,9 +2,30 @@
   "version": "2.0.0",
   "tasks": [
     {
-      "label": "UnoCSS: 诊断配置",
-      "type": "shell",
-      "command": "echo '检查 UnoCSS 配置...' && cat uno.config.ts && echo '\n检查 unocss/index.ts...' && head -20 unocss/index.ts"
+      "label": "dev",
+      "type": "npm",
+      "script": "dev",
+      "problemMatcher": [],
+      "detail": "启动开发服务器",
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      }
+    },
+    {
+      "label": "build",
+      "type": "npm",
+      "script": "build",
+      "problemMatcher": [],
+      "detail": "构建生产版本",
+      "group": "build"
+    },
+    {
+      "label": "lint",
+      "type": "npm",
+      "script": "lint:eslint",
+      "problemMatcher": ["$eslint-stylish"],
+      "detail": "执行代码检查"
     }
   ]
 }

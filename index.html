@@ -1,80 +1,80 @@
 <!doctype html>
-<html lang="">
+<html lang="zh-CN">
   <head>
     <meta charset="UTF-8" />
     <link
       rel="icon"
-      href="./face.png"
+      href="/face.png"
     />
     <meta
       name="viewport"
       content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"
     />
-    <title>ccd</title>
 
-    <!-- Open Graph / Facebook -->
+    <title>%VITE_APP_TITLE%</title>
+
+    <meta
+      name="theme-color"
+      content="#ffffff"
+    />
+
+    <meta
+      name="mobile-web-app-capable"
+      content="yes"
+    />
+
+    <meta
+      name="apple-mobile-web-app-capable"
+      content="yes"
+    />
+    <meta
+      name="apple-mobile-web-app-status-bar-style"
+      content="black-translucent"
+    />
+
+    <link
+      rel="apple-touch-icon"
+      href="/face.png"
+    />
+
     <meta
       property="og:type"
       content="website"
     />
     <meta
-      property="og:url"
-      content=""
-    />
-    <meta
       property="og:title"
-      content="This is a good thing."
+      content="%VITE_APP_TITLE%"
     />
     <meta
       property="og:description"
-      content="This is a good thing."
+      content="现代化的 Vue3 管理后台"
     />
     <meta
       property="og:image"
-      content="https://s2.loli.net/2025/08/21/7PV4qxGLSNOys8X.png"
+      content="/face.png"
     />
 
-    <!-- Twitter -->
-    <meta
-      property="twitter:card"
-      content="summary_large_image"
-    />
-    <meta
-      property="twitter:url"
-      content=""
-    />
-    <meta
-      property="twitter:title"
-      content="This is a good thing."
-    />
-    <meta
-      property="twitter:description"
-      content="This is a good thing."
-    />
-    <meta
-      property="twitter:image"
-      content="https://s2.loli.net/2025/08/21/7PV4qxGLSNOys8X.png"
-    />
-
-    <!-- 通用 meta 标签 -->
-    <meta
-      name="description"
-      content="This is a good thing."
-    />
-    <meta
-      name="keywords"
-      content="This is a good thing."
-    />
     <meta
       name="author"
       content="cc"
     />
   </head>
+
   <body class="fs-appFontSize">
     <div id="app"></div>
+
     <script
       type="module"
       src="/src/main.ts"
     ></script>
+
+    <script>
+      const setVh = () => {
+        const vh = window.innerHeight * 0.01
+        document.documentElement.style.setProperty('--vh', `${vh}px`)
+      }
+      window.addEventListener('resize', setVh)
+      setVh()
+    </script>
   </body>
 </html>

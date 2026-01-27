@@ -1,0 +1,45 @@
+/**
+ * 主题切换动画样式入口
+ * 引入所有过渡模式样式
+ */
+
+@use './modes/circle';
+@use './modes/curtain';
+@use './modes/diamond';
+@use './modes/implosion';
+@use './modes/glitch';
+@use './modes/fade';
+
+/* View Transitions API 基础样式 - 固定分层优先级避免闪白 */
+::view-transition-old(root) {
+  animation: none;
+  background: var(--bg100-old);
+  will-change: clip-path, opacity;
+  mix-blend-mode: normal;
+  z-index: 1; /* 永远在底层 */
+}
+
+::view-transition-new(root) {
+  animation: none;
+  background: var(--bg100-new);
+  will-change: clip-path, opacity;
+  mix-blend-mode: normal;
+  z-index: 2; /* 永远在上层，避免白屏 */
+}
+
+/* 主题切换渐隐渐现蒙层样式 */
+.theme-fade-overlay {
+  pointer-events: none;
+  position: fixed;
+  inset: 0;
+  z-index: 2000;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+
+/* 浏览器兼容性处理 */
+@supports not (view-transition-name: root) {
+  .theme-transition {
+    transition: all 0.3s ease;
+  }
+}

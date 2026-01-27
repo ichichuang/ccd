@@ -1,0 +1,62 @@
+---
+description: 项目核心架构地图与目录职责说明，当询问项目结构、创建新文件或添加依赖时触发
+globs: '*'
+alwaysApply: true
+---
+
+# CCD Project Architecture Map
+
+本项目采用 **"工具与源码分离"** 及 **"Shadcn 代码所有权"** 架构，并严格区分 **通用组件** 与 **布局系统**。
+
+## 目录职责 (Directory Responsibilities)
+
+### 1. 组件与布局层 (UI Layer)
+
+- **`src/components/`**: **通用组件库 (全自动导入)**
+  - **`ui/`**: **原子设计基座 (Shadcn-vue)**。使用别名 `@$/` 访问。AI 拥有读写权，保持纯净。
+  - **`modules/`**: **业务通用组件**。存放跨页面复用的业务块。
+- **`src/layouts/`**: **架构布局层 (严禁自动导入，必须手动引入)** — 布局**组件壳**
+  - **`modules/`**: 存放布局模式（`LayoutAdmin.vue`, `LayoutFullScreen.vue`, `LayoutRatio.vue`）。
+  - **`components/`**: 布局专用组件（如 `Sidebar`, `AnimateWrapper`）。使用别名 `@&/` 访问。
+  - **`index.vue`**: 布局调度核心，负责根据路由 `meta.parent` 切换 Layout。
+- **布局配置（显隐、模式、动画）**：默认值在 `src/constants/layout.ts`，类型在 `src/types/systems/layout.d.ts`（`LayoutMode`、`AdminLayoutMode`、`LayoutSetting`、`LayoutStoreState`），状态在 `src/stores/modules/layout.ts`；与主题、尺寸分离，不写 CSS 变量。
+
+### 2. 样式与常量 (Styling & SSOT)
+
+- **主题配色**：`src/constants/theme.ts` 为预设唯一事实来源；`src/utils/theme/engine.ts`（及 `colors.ts`）为 RGB 引擎，将 Hex 转为支持透明度的 CSS 变量。预设可包含 backgroundDark / backgroundLight、accent、warn、success 等，由引擎统一生成 CSS 变量。
+- **尺寸（圆角、间距、布局变量）**：`src/constants/size.ts` 为预设唯一事实来源；`src/constants/sizeScale.ts` 为阶梯倍率表 SSOT；`src/utils/theme/sizeEngine.ts` 生成并注入对应 CSS 变量。
+- **设备与响应式**：断点定义在 `src/constants/breakpoints.ts`（BREAKPOINTS SSOT，xs → 5xl），设备检测在 `src/stores/modules/device.ts`（detectDeviceInfo、事件监听），消费在 Uno breakpoints 与 LayoutAdmin 响应式适配。
+
+### 3. 构建工具 (`build/`) - Node.js 环境
+
+- **核心逻辑**: Vite 插件收敛 (`plugins.ts`)、环境变量解析 (`utils.ts`) 及图标扫描 (`uno-icons.ts`)。
+
+## 技术栈 (Technical Stack)
+
+- **框架**: Vue 3，仅使用 **Composition API**，禁止 Options API。
+- **构建**: Vite。
+- **语言**: TypeScript (Strict)。对象定义优先 `interface`。
+- **状态**: Pinia，优先 setup 语法。
+- **样式**: UnoCSS (Atomic CSS)，避免在 `<style>` 中写原始 CSS（复杂动效除外）。
+- **单文件**: 使用 `<script setup lang="ts">`；路径别名 `@/` 仅指向 `src/`。
+
+## 关键行为准则
+
+1. **Pug 弃用原则**: 严禁使用 `lang="pug"`。统一使用 **Standard HTML** 或 **TSX**。
+2. **模板与渲染范式（Standard HTML + TSX）**:
+   - `.vue` 的 `<template>` **必须**使用标准 HTML 模板语法（Standard HTML）。禁止在 `.vue` 中混用 JSX/TSX 作为 template，禁止引入 pug。
+   - 仅当 UI 渲染存在复杂递归/多重条件分支/需要高阶渲染能力时，才使用 `.tsx`（与 `100-typescript-environment.mdc` 的 TSX 规则一致）。
+3. **导入控制**:
+   - 引用 `src/components` 下的组件严禁手动 `import`。
+   - 引用 `src/layouts` 下的组件 **必须** 使用 `@&/` 显式手动 `import`。
+4. **样式流向**：**主题** `constants/theme.ts` → `engine.ts` → DOM CSS Vars → UnoCSS → UI；**尺寸** `constants/size.ts` → `sizeEngine.ts` → DOM CSS Vars → UnoCSS → UI。
+
+## 系统间关系 (System Relationships)
+
+各系统配置的协作关系：
+
+- **Device Store** 检测设备信息（UA + Screen + 视口）→ **Layout Store** 响应式适配（`adaptToMobile()`、`adaptToTablet()`，受 `userAdjusted` 保护）。
+- **Size Store** → `sizeEngine.ts` 生成 CSS 变量（含字体/间距阶梯 `--font-size-xs` 到 `--font-size-5xl`、`--spacing-xs` 到 `--spacing-5xl`）→ DOM → UnoCSS。
+- **Theme Store** → `engine.ts` 生成 CSS 变量（RGB 三通道串）→ DOM → UnoCSS。
+- **Layout Store** 仅管理状态（显隐、模式、动画），不生成 CSS 变量。
+- 最终所有 CSS 变量流向 **UnoCSS Config**，由 UnoCSS 规则（语义化尺寸、布局变量、阶梯规则、像素规则）生成类名供 UI 使用。

@@ -1,25 +1,27 @@
 {
   "recommendations": [
-    "Vue.volar",
-    "Vue.vscode-typescript-vue-plugin",
-    "ms-vscode.vscode-typescript-next",
-    "esbenp.prettier-vscode",
-    "dbaeumer.vscode-eslint",
-    "lokalise.i18n-ally",
-    "eamodio.gitlens",
-    "GitHub.vscode-github-actions",
-    "vscode-icons-team.vscode-icons",
-    "PKief.material-icon-theme",
-    "streetsidesoftware.code-spell-checker",
-    "wayou.vscode-todo-highlight",
-    "formulahendry.auto-rename-tag",
-    "antfu.unocss",
+    // --- 核心框架支持 ---
+    "Vue.volar", // Vue 3 核心支持
+    "esbenp.prettier-vscode", // 格式化
+    "dbaeumer.vscode-eslint", // 代码规范
+    "antfu.unocss", // UnoCSS 智能提示与图标预览 (必须!)
+
+    // --- 开发体验增强 ---
+    "lokalise.i18n-ally", // 国际化可视化
+    "eamodio.gitlens", // Git 增强
+    "PKief.material-icon-theme", // 文件图标主题
+    "streetsidesoftware.code-spell-checker", // 拼写检查 (防 Typos)
+    "usernamehw.errorlens", // 行内错误提示 (强推!)
+    "formulahendry.auto-rename-tag", // 自动重命名标签
+    "aaron-bond.better-comments", // 彩色注释
+    "christian-kohler.path-intellisense", // 路径补全
+
+    // --- 文档支持 ---
     "yzhang.markdown-all-in-one",
-    "DavidAnson.vscode-markdownlint",
-    "christian-kohler.path-intellisense",
-    "ms-vscode.sublime-keybindings",
-    "usernamehw.errorlens",
-    "aaron-bond.better-comments"
+    "DavidAnson.vscode-markdownlint"
   ],
-  "unwantedRecommendations": ["ms-vscode.vscode-typescript", "octref.vetur"]
+  "unwantedRecommendations": [
+    "octref.vetur", // Vue 2 插件，严禁与 Volar 混用
+    "hookyqr.beautify" // 与 Prettier 冲突
+  ]
 }

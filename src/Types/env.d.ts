@@ -1,172 +1,74 @@
 /**
- * Vite 环境变量类型定义
- *
- * 此文件为项目中使用的所有环境变量提供 TypeScript 类型支持
- * 所有以 VITE_ 开头的环境变量都会在客户端代码中可用
- *
- * 变量加载优先级：
- * 1. .env.production/.env.development（环境特定）
- * 2. .env（通用配置）
- * 3. build/utils.ts 中的默认值（兜底）
- *
- * @see https://cn.vitejs.dev/guide/env-and-mode.html
+ * 核心类型与环境定义
+ * * 职责：
+ * 1. 注入 Vue/Vue-Router 全局类型，解决 App/Component 识别问题
+ * 2. 扩展 Vite 环境变量声明 (ImportMetaEnv)
+ * 3. 注入项目全局工具函数类型 (如 $t)
  */
 
 /// <reference types="vite/client" />
 
-/**
- * 应用环境类型
- */
-type AppEnvironment = 'development' | 'production'
+// 1. 核心依赖引入：确保 TS 编译器加载 Vue 的类型定义
+import 'vue'
+import 'vue-router'
 
-/**
- * 压缩方式类型
- */
-type CompressionType = 'none' | 'gzip' | 'brotli' | 'both'
+// 2. 扩展 Vue 模块定义
+declare module 'vue' {
+  interface ComponentCustomProperties {
+    /** 全局多语言转换函数 */
+    $t: typeof import('@/locales').t
+  }
+}
 
-/**
- * 布尔值字符串类型（环境变量中的布尔值以字符串形式存储）
- */
-type BooleanString = 'true' | 'false'
+// 3. 注入全局命名空间
+declare global {
+  // 基础类型映射：解决 setupLocales 等文件中 App 找不到的问题
+  type App<T = any> = import('vue').App<T>
+  type Component = import('vue').Component
 
-/**
- * 数字字符串类型（环境变量中的数字以字符串形式存储）
- */
-type NumberString = string
+  /** 全局多语言工具 (由 AutoImport 自动注入，此处提供 TS 支持) */
+  const $t: typeof import('@/locales').t
 
-/**
- * URL 字符串类型
- */
-type UrlString = string
-
-/**
- * 路径字符串类型
- */
-type PathString = string
-
-/**
- * 路由模式类型
- */
-type RouterMode = 'history' | 'hash'
-
-/**
- * 扩展 Vite 的环境变量接口
- * 定义项目中使用的所有自定义环境变量及其类型
- */
-declare interface ImportMetaEnv {
-  /**
-   * ==========================================
-   * 应用基础配置
-   * ==========================================
-   */
-
-  /** 应用标题 - 显示在浏览器标题栏和页面中 */
-  readonly VITE_APP_TITLE: string
-
-  /** 应用版本号 - 用于版本控制和显示 */
-  readonly VITE_APP_VERSION: string
-
-  /** 应用 pinia 持久化存储 关键 key 前缀 */
-  readonly VITE_PINIA_PERSIST_KEY_PREFIX: string
-
-  /** 应用 secret 密钥 */
-  readonly VITE_APP_SECRET: string
-
-  /** 当前运行环境 - 用于区分不同的部署环境 */
-  readonly VITE_APP_ENV: AppEnvironment
-
-  /** 应用根路径 */
-  readonly VITE_PUBLIC_PATH: PathString
-
-  /** 路由模式 history | hash */
-  readonly VITE_ROUTER_MODE: RouterMode
-
-  /** 开发服务器端口 */
-  readonly VITE_PORT: NumberString
-
-  /** rootRedirect 重定向路径 */
-  readonly VITE_ROOT_REDIRECT: string
-
-  /**
-   * ==========================================
-   * API 接口配置
-   * ==========================================
-   */
-
-  /** API 服务器基础地址 - 所有 API 请求的根路径 */
-  readonly VITE_API_BASE_URL: UrlString
-
-  /**
-   * ==========================================
-   * 开发环境配置
-   * ==========================================
-   */
-
-  /** 是否启用 debug 模式 - 控制调试信息 */
-  readonly VITE_DEBUG: BooleanString
-
-  /**
-   * ==========================================
-   * 构建优化配置
-   * ==========================================
-   */
-
-  /** 生产构建时是否移除 debugger 语句 - 提升生产环境性能 */
-  readonly VITE_DROP_DEBUGGER: BooleanString
-
-  /** 生产构建时是否移除 console 语句 - 减少生产包大小 */
-  readonly VITE_DROP_CONSOLE: BooleanString
-
-  /** 是否启用构建分析 - 生成打包分析报告 */
-  readonly VITE_BUILD_ANALYZE: BooleanString
-
-  /** 是否生成 sourcemap */
-  readonly VITE_BUILD_SOURCEMAP: BooleanString
-
-  /** 压缩方式 none | gzip | brotli | both */
-  readonly VITE_COMPRESSION: CompressionType
-
-  /** 是否启用 legacy 浏览器支持 */
-  readonly VITE_LEGACY: BooleanString
-
-  /** 是否启用 CDN */
-  readonly VITE_CDN: BooleanString
+  // 布局与主题相关全局类型
+  type LayoutMode = import('./systems/layout').LayoutMode
 }
 
 /**
- * 扩展 ImportMeta 接口
- * 为 import.meta.env 提供类型支持
+ * 扩展 Vite 的环境变量接口
  */
+declare interface ImportMetaEnv {
+  // ========== 应用基础配置 ==========
+  readonly VITE_APP_TITLE?: string
+  readonly VITE_APP_ENV: 'development' | 'production'
+  readonly VITE_API_BASE_URL: string
+  readonly VITE_PORT?: string
+  readonly VITE_ROUTER_MODE: 'history' | 'hash'
+  readonly VITE_PUBLIC_PATH?: string
+  readonly VITE_PINIA_PERSIST_KEY_PREFIX?: string
+  readonly VITE_APP_SECRET: string
+  readonly VITE_ROOT_REDIRECT: string
+
+  // ========== API 超时（字符串形式） ==========
+  readonly VITE_API_TIMEOUT?: string
+  readonly VITE_PROXY_TIMEOUT?: string
+
+  // ========== 布尔型配置（值为字符串 'true' | 'false'） ==========
+  readonly VITE_DROP_DEBUGGER: 'true' | 'false'
+  readonly VITE_DROP_CONSOLE: 'true' | 'false'
+  readonly VITE_BUILD_ANALYZE: 'true' | 'false'
+  readonly VITE_BUILD_SOURCEMAP: 'true' | 'false'
+  readonly VITE_LEGACY: 'true' | 'false'
+  readonly VITE_CDN: 'true' | 'false'
+
+  // ========== 主题相关调试 ==========
+  readonly VITE_THEME_DEBUG?: 'true' | 'false'
+
+  // ========== 索引签名 ==========
+  readonly [key: `VITE_${string}`]: string | undefined
+}
+
 declare interface ImportMeta {
   readonly env: ImportMetaEnv
 }
 
-/**
- * 类型辅助工具 - 在运行时将字符串转换为对应类型
- */
-declare namespace EnvUtils {
-  /**
-   * 将布尔值字符串转换为布尔值
-   */
-  function toBool(value: BooleanString): boolean
-
-  /**
-   * 将数字字符串转换为数字
-   */
-  function toNumber(value: NumberString): number
-
-  /**
-   * 获取应用环境
-   */
-  function getAppEnv(): AppEnvironment
-
-  /**
-   * 检查是否为开发环境
-   */
-  function isDev(): boolean
-
-  /**
-   * 检查是否为生产环境
-   */
-  function isProd(): boolean
-}
+export {}

@@ -1,0 +1,16 @@
+/**
+ * 窗帘过渡模式（从一侧展开）
+ */
+
+[data-transition='curtain'] {
+  ::view-transition-new(root) {
+    clip-path: inset(0 100% 0 0);
+    animation: curtain-expand 400ms cubic-bezier(0.4, 0, 0.2, 1);
+  }
+}
+
+@keyframes curtain-expand {
+  to {
+    clip-path: inset(0 0% 0 0);
+  }
+}

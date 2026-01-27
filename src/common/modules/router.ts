@@ -3,11 +3,115 @@ import {
   errorPagesPathList,
   routeWhiteNameList,
   routeWhitePathList,
-} from '@/constants'
+} from '@/constants/modules/router'
 import router, { routeUtils } from '@/router'
-import { usePermissionStore } from '@/stores'
-import { env } from '@/utils'
+import { usePermissionStore } from '@/stores/modules/permission'
 import type { LocationQueryRaw, RouteLocationNormalized } from 'vue-router'
+
+// ================= 窗口管理 =================
+
+/**
+ * 运行时窗口引用表
+ * ⚠️ 判断窗口是否存在的唯一可信来源
+ */
+const routeWindowRefMap = new Map<string, Window>()
+
+/**
+ * 仅用于通知窗口关闭
+ */
+let windowChannel: BroadcastChannel | null = null
+
+function initWindowChannel() {
+  if (!windowChannel && typeof BroadcastChannel !== 'undefined') {
+    windowChannel = new BroadcastChannel('route-window-channel')
+    windowChannel.addEventListener('message', e => {
+      if (e.data?.type === 'window-closed') {
+        const { key } = e.data
+        routeWindowRefMap.delete(key)
+        const permissionStore = usePermissionStore() as any
+        permissionStore.markWindowClosed(key)
+      }
+    })
+  }
+}
+
+function generateWindowKey(routeName: string, query?: LocationQueryRaw): string {
+  return generateIdFromKey(`${routeName}:${JSON.stringify(query ?? {})}`)
+}
+
+/**
+ * 获取窗口引用（唯一可信）
+ */
+function getRouteWindowRef(key: string): Window | null {
+  const win = routeWindowRefMap.get(key)
+  if (!win) {
+    return null
+  }
+
+  if (win.closed) {
+    routeWindowRefMap.delete(key)
+    const permissionStore = usePermissionStore() as any
+    permissionStore.markWindowClosed(key)
+    windowChannel?.postMessage({ type: 'window-closed', key })
+    return null
+  }
+
+  return win
+}
+
+/**
+ * 注册窗口引用
+ */
+function setRouteWindowRef(key: string, win: Window): void {
+  routeWindowRefMap.set(key, win)
+
+  try {
+    win.addEventListener('beforeunload', () => {
+      routeWindowRefMap.delete(key)
+      const permissionStore = usePermissionStore() as any
+      permissionStore.markWindowClosed(key)
+      windowChannel?.postMessage({ type: 'window-closed', key })
+    })
+  } catch {
+    // 跨域限制，忽略
+  }
+}
+
+if (typeof window !== 'undefined') {
+  initWindowChannel()
+}
+
+/**
+ * 构建路由 URL（包含窗口标识）
+ */
+function buildRouteUrl(
+  targetRoute: any,
+  query: LocationQueryRaw | undefined,
+  windowKey: string
+): string {
+  let url = ''
+
+  if (import.meta.env.VITE_ROUTER_MODE === 'hash') {
+    const location = window.location
+    const publicPath = import.meta.env.VITE_PUBLIC_PATH
+    url = location.origin + publicPath + '#' + targetRoute.path
+    if (query && Object.keys(query).length > 0) {
+      const queryString = new URLSearchParams(query as Record<string, string>).toString()
+      url += (url.includes('?') ? '&' : '?') + queryString
+    }
+    url += (url.includes('?') ? '&' : '?') + `_windowKey=${encodeURIComponent(windowKey)}`
+  } else {
+    const publicPath = import.meta.env.VITE_PUBLIC_PATH
+    url = publicPath + targetRoute.path.replace(/^\//, '')
+    if (query && Object.keys(query).length > 0) {
+      const queryString = new URLSearchParams(query as Record<string, string>).toString()
+      url += (url.includes('?') ? '&' : '?') + queryString
+    }
+    url += (url.includes('?') ? '&' : '?') + `_windowKey=${encodeURIComponent(windowKey)}`
+  }
+
+  return url
+}
 
 // ================= 默认变量 =================
 export { errorPagesNameList, errorPagesPathList, routeWhiteNameList, routeWhitePathList }
@@ -100,7 +204,7 @@ export const goToRoute = (
   checkPermission = false
 ): void => {
   if (!name) {
-    router.push(env.rootRedirect)
+    router.push(import.meta.env.VITE_ROOT_REDIRECT)
     return
   }
   // 当传入的是以 '/' 开头的路径时，直接按路径跳转
@@ -159,15 +263,32 @@ export const goToRoute = (
   }
 
   if (shouldOpenNewWindow) {
-    if (env.routerMode === 'hash') {
-      const location = window.location
-      const publicPath = env.publicPath
-      const path = location.origin + publicPath + '#' + targetRoute.path
-      window.open(path, '_blank')
+    const permissionStore = usePermissionStore() as any
+    const windowKey = generateWindowKey(String(targetRoute.name), query)
+    const shouldReuse = targetRoute.meta?.reuseWindow === true
+
+    if (shouldReuse) {
+      const existed = getRouteWindowRef(windowKey)
+      if (existed) {
+        existed.focus()
+        return
+      }
+    }
+
+    // === 新开窗口 ===
+    const url = buildRouteUrl(targetRoute, query, windowKey)
+    const win = window.open(url, '_blank')
+
+    if (win) {
+      try {
+        win.name = windowKey
+      } catch {
+        // 跨域限制，忽略
+      }
+      setRouteWindowRef(windowKey, win)
+      permissionStore.registerWindow(String(targetRoute.name), query, url)
     } else {
-      const publicPath = env.publicPath
-      const fullPath = publicPath + targetRoute.path.replace(/^\//, '')
-      window.open(fullPath, '_blank')
+      console.warn('新窗口打开失败，可能被浏览器阻止')
     }
   } else {
     router.push({ path: targetRoute.path, query })

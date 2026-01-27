@@ -8,8 +8,8 @@ import {
   getDefaultMarkPointConfig,
   getDefaultToolboxConfig,
   getDefaultVisualMapConfig,
-} from '@/components/modules/use-echarts/utils/constants'
-import type { ChartAdvancedConfig } from '@/components/modules/use-echarts/utils/types'
+} from '@/components/use-echarts/utils/constants'
+import type { ChartAdvancedConfig } from '@/components/use-echarts/utils/types'
 
 /**
  * 合并高级配置到 ECharts 选项

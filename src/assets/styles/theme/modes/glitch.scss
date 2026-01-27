@@ -1,0 +1,16 @@
+/**
+ * 故障过渡模式（阶梯动画）
+ */
+
+[data-transition='glitch'] {
+  ::view-transition-new(root) {
+    clip-path: inset(0 0 100% 0);
+    animation: glitch-slide 320ms steps(4, end);
+  }
+}
+
+@keyframes glitch-slide {
+  to {
+    clip-path: inset(0 0 0% 0);
+  }
+}

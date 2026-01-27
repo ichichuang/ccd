@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import { getCurrentRouteMeta } from '@/common'
-import { useLayoutStore } from '@/stores'
-import { computed, nextTick, onMounted, onUnmounted, reactive, ref, watch } from 'vue'
+import { getCurrentRouteMeta } from '@/common/modules/router'
+import { useDeviceStore } from '@/stores/modules/device'
+import AnimateRouterView from '@&/AnimateRouterView.vue'
 
-const layoutStore = useLayoutStore()
-const width = computed(() => layoutStore.getWidth)
-const height = computed(() => layoutStore.getHeight)
+const deviceStore = useDeviceStore()
+const width = computed(() => deviceStore.getWidth)
+const height = computed(() => deviceStore.getHeight)
 
 const routeMeta = getCurrentRouteMeta()
 
@@ -123,10 +123,19 @@ watch(
   { immediate: false }
 )
 </script>
-<template lang="pug">
-.ratio-wrapper(ref='wrapperRef', :style='{ position: "relative", width: "100%", height: "100%" }')
-  .ratio-box(ref='ratioRef', :style='boxStyle')
-    //- AppContainer
-    AnimateRouterView
+<template>
+  <div
+    ref="wrapperRef"
+    class="ratio-wrapper"
+    :style="{ position: 'relative', width: '100%', height: '100%' }"
+  >
+    <div
+      ref="ratioRef"
+      class="ratio-box"
+      :style="boxStyle"
+    >
+      <AnimateRouterView />
+    </div>
+  </div>
 </template>
 <style lang="scss" scoped></style>
