@@ -4,8 +4,6 @@ import { createPiniaEncryptedSerializer } from '@/utils/safeStorage/piniaSeriali
 import { encryptAndCompressSync } from '@/utils/safeStorage/safeStorage'
 import { defineStore } from 'pinia'
 
-const { loadingStart } = useLoading()
-
 interface UserState {
   token: string
   safeStorageToken: string
@@ -83,6 +81,7 @@ export const useUserStore = defineStore('user', {
       this.isLogin = false
     },
     async logout() {
+      const { loadingStart } = useLoading()
       loadingStart()
       this.clearUserInfo()
       const basePrefix = `${import.meta.env.VITE_PINIA_PERSIST_KEY_PREFIX}-`
@@ -99,11 +98,12 @@ export const useUserStore = defineStore('user', {
         }
       }
 
-      keysToRemove.forEach(async (key: string) => {
+      // 统一清理后仅触发一次 reload，避免潜在的多次刷新风险
+      for (const key of keysToRemove) {
         localStorage.removeItem(key)
-        await new Promise(resolve => setTimeout(resolve, 300)) // 等待路由跳转完成
-        window.location.reload()
-      })
+      }
+      await new Promise(resolve => setTimeout(resolve, 300)) // 等待路由跳转完成
+      window.location.reload()
     },
   },
 

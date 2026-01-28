@@ -1,6 +1,6 @@
 // import { getAuthRoutes } from '@/api/auth'
-import { cloneDeep } from '@/common/modules/lodashes'
-import { getFlatMenuTree, getFlatRouteList } from '@/common/modules/router'
+import { deepClone } from '@/utils/lodashes'
+import { getFlatMenuTree, getFlatRouteList } from '@/router/utils/helper'
 import store from '@/stores'
 import { createPiniaEncryptedSerializer } from '@/utils/safeStorage/piniaSerializer'
 import { defineStore } from 'pinia'
@@ -49,9 +49,6 @@ export const usePermissionStore = defineStore('permission', {
     getDynamicRoutes: (state: PermissionState) => state.dynamicRoutes,
     // 获取动态路由加载状态
     getIsDynamicRoutesLoaded: (state: PermissionState) => state.isDynamicRoutesLoaded,
-    // 获取所有路由（静态 + 动态）
-    getAllRoutes: (state: PermissionState) =>
-      [...toRaw(state.staticRoutes), ...toRaw(state.dynamicRoutes)] as RouteConfig[],
     // 获取标签页 - 动态计算label
     getTabs: (state: PermissionState) => {
       return state.tabs
@@ -104,7 +101,7 @@ export const usePermissionStore = defineStore('permission', {
         if (this.dynamicRoutes.length === 0) {
           throw error
         }
-        const cached = cloneDeep(this.dynamicRoutes) as BackendRouteConfig[]
+        const cached = deepClone(this.dynamicRoutes) as BackendRouteConfig[]
         this.isDynamicRoutesLoaded = true
         return cached
       }
@@ -270,8 +267,8 @@ export const usePermissionStore = defineStore('permission', {
     serializer: {
       serialize: (value: any) => {
         try {
-          // 使用 cloneDeep 替代低效的 JSON.parse(JSON.stringify())
-          const stateToStore = cloneDeep(value)
+          // 使用 deepClone 替代低效的 JSON.parse(JSON.stringify())
+          const stateToStore = deepClone(value)
 
           // 优化数据清洗：使用解构赋值剔除 isOpen 字段
           if (stateToStore?.state?.windows) {

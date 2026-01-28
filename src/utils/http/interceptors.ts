@@ -1,4 +1,4 @@
-import { HTTP_CONFIG } from '@/constants/modules/http'
+import { HTTP_CONFIG } from '@/constants/http'
 import { useUserStoreWithOut } from '@/stores/modules/user'
 import { decompressAndDecryptSync, encryptAndCompressSync } from '@/utils/safeStorage'
 import type { Method } from 'alova'

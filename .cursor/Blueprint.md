@@ -17,7 +17,11 @@
 │   ├── theme-system/               # 主题配色：新增预设、新增语义色、排错步骤
 │   ├── size-system/                # 尺寸系统：新增预设、新增布局变量、阶梯规则、排错步骤
 │   ├── layout-system/              # 布局配置：新增配置项、默认值、持久化、响应式适配、排错步骤
-│   └── device-system/              # 设备系统：新增断点、设备检测、响应式适配、排错步骤
+│   ├── device-system/              # 设备系统：新增断点、设备检测、响应式适配、排错步骤
+│   ├── event-bus/                  # 事件总线：基于 mitt 的全局 Event Bus（useMitt），新增事件/使用/排错
+│   ├── safe-storage/               # 安全存储：safeStorage 压缩 + 加密流水线，Pinia 加密持久化、通用安全存储/传输
+│   ├── http-client/                # HTTP 请求：核心请求工具 src/utils/http，配置 SSOT src/constants/http.ts，API 定义层 src/api/**
+│   └── core-utils/                 # 通用工具：日期时间、ID、字符串转换、lodash 防腐层、浏览器能力检测等核心 utils 的选用与扩展
 ├── mcp.json                        # 【手脚区】MCP 动态工具，按需创建
 ├── .cursorignore                   # 【注意力区】忽略 node_modules、dist、自动生成文件等（项目根目录）
 ├── settings.json                   # Cursor 工作区设置
@@ -38,9 +42,13 @@
 
 ## 技能 (Skills)
 
-| 技能                     | 何时使用                                                                                                                                                                                                    |
-| ------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **skills/theme-system**  | 新增主题预设、新增语义色（如状态色 warn/success 或衍生 hover/light）、或排查主题/深色模式不生效时，按 SKILL.md 中的步骤操作。主题与尺寸 store 均在 `src/plugins/modules/stores.ts` 的 setupStores 中 init。 |
-| **skills/size-system**   | 新增尺寸模式、修改圆角/间距、新增布局变量（如 h-xxxHeight）、或排查尺寸/圆角/间距不生效时，按 SKILL.md 中的步骤操作。                                                                                       |
-| **skills/layout-system** | 新增/修改布局配置项、修改默认显隐或模式、排查布局状态或持久化异常时，按 SKILL.md 中的步骤操作。布局 store 无 init，依赖 Pinia 持久化恢复。                                                                  |
-| **skills/device-system** | 新增断点、修改设备检测逻辑、或排查响应式不生效时，按 SKILL.md 中的步骤操作。设备 store 在 `src/plugins/modules/stores.ts` 的 setupStores 中 init。                                                          |
+| 技能                     | 何时使用                                                                                                                                                                                                                                                             |
+| ------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **skills/theme-system**  | 新增主题预设、新增语义色（如状态色 warn/success 或衍生 hover/light）、或排查主题/深色模式不生效时，按 SKILL.md 中的步骤操作。主题与尺寸 store 均在 `src/plugins/modules/stores.ts` 的 setupStores 中 init。                                                          |
+| **skills/size-system**   | 新增尺寸模式、修改圆角/间距、新增布局变量（如 h-xxxHeight）、或排查尺寸/圆角/间距不生效时，按 SKILL.md 中的步骤操作。                                                                                                                                                |
+| **skills/layout-system** | 新增/修改布局配置项、修改默认显隐或模式、排查布局状态或持久化异常时，按 SKILL.md 中的步骤操作。布局 store 无 init，依赖 Pinia 持久化恢复。                                                                                                                           |
+| **skills/device-system** | 新增断点、修改设备检测逻辑、或排查响应式不生效时，按 SKILL.md 中的步骤操作。设备 store 在 `src/plugins/modules/stores.ts` 的 setupStores 中 init。                                                                                                                   |
+| **skills/event-bus**     | 需要在不同组件/模块间进行事件传递/发布订阅，或判断使用全局 Event Bus（mitt + useMitt）是最佳方案时，按 SKILL.md 中步骤集中在 `src/utils/mitt.ts` 的 `Events` 中声明事件并通过 `useMitt()` 使用。                                                                     |
+| **skills/safe-storage**  | 需要对数据进行加密存储/读取、压缩 + 加密/解压 + 解密，或实现 Pinia 持久化加密、安全本地存储/HTTP 安全传输时，按 SKILL.md 中步骤优先使用 `@/utils/safeStorage` 暴露的方法（encryptAndCompress\*、createPiniaEncryptedSerializer 等）。                                |
+| **skills/http-client**   | 需要请求接口/新增或调整 API、定制鉴权/签名/重试/超时/安全字段、上传等 HTTP 行为时使用。核心请求工具在 `src/utils/http/`；配置 SSOT 在 `src/constants/http.ts` 的 `HTTP_CONFIG`；API 定义必须放在 `src/api/**`，特殊拦截逻辑集中在 `src/utils/http/interceptors.ts`。 |
+| **skills/core-utils**    | 需要实现或复用通用工具函数（日期时间、ID/UUID、字符串命名转换、深拷贝/合并/比较/摘字段、防抖/节流、浏览器能力检测等）时，按 SKILL.md 中策略优先从 `src/utils/` 现有模块选择或扩展，必要时新建对应 domain 的 utils 模块。                                             |

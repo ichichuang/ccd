@@ -1,8 +1,23 @@
 /* 守卫 */
-import { routeWhitePathList } from '@/constants/modules/router'
+import { routeWhitePathList } from '@/constants/router'
 import { usePermissionStore } from '@/stores/modules/permission'
 import { useUserStoreWithOut } from '@/stores/modules/user'
-import type { Router } from 'vue-router'
+import { t } from '@/locales'
+import { calculatePageTitle } from '@/hooks/layout/usePageTitle'
+import type { RouteLocationNormalized, Router } from 'vue-router'
+
+/**
+ * 使用纯函数与全局 i18n 更新页面标题
+ * 避免在守卫中调用 useI18n/useRoute 等 Composition API
+ */
+function updatePageTitle(to: RouteLocationNormalized) {
+  const appTitle = import.meta.env.VITE_APP_TITLE || ''
+  const finalTitle = calculatePageTitle(to, appTitle, t)
+  // 直接操作 document.title，保持守卫层的纯 JS 特性
+  if (typeof document !== 'undefined') {
+    document.title = finalTitle
+  }
+}
 
 export const usePermissionGuard = ({
   router,
@@ -15,9 +30,8 @@ export const usePermissionGuard = ({
   router.beforeEach(async (to, from, next) => {
     const { loadingStart, pageLoadingStart, loadingDone, pageLoadingDone } = useLoading()
     const { startProgress, doneProgress } = useNprogress()
-    const { updatePageTitle } = usePageTitle()
     startProgress()
-    updatePageTitle()
+    updatePageTitle(to)
     pageLoadingStart()
     const whiteList = routeWhitePathList
     const permissionStore = usePermissionStore()
@@ -27,18 +41,15 @@ export const usePermissionGuard = ({
 
     if (isLogin.value) {
       if (to.path === '/login') {
-        // loadingDone()
         next({ path: '/' })
       } else {
         if (isDynamicRoutesLoaded.value) {
-          // loadingDone()
           next()
           return
         }
         loadingStart()
         try {
           await initDynamicRoutes()
-          // loadingDone()
           const redirectPath = from.query.redirect || to.path
           const redirect = decodeURIComponent(redirectPath as string)
           const nextData = to.path === redirect ? { ...to, replace: true } : { path: redirect }
@@ -51,7 +62,7 @@ export const usePermissionGuard = ({
           permissionStore.setDynamicRoutesLoaded(false)
           // 清理 UI 状态（因为 next(false) 会跳过全局后置守卫，需要手动清理）
           doneProgress()
-          updatePageTitle()
+          updatePageTitle(to)
           loadingDone()
           pageLoadingDone()
           // 阻断当前导航
@@ -62,22 +73,19 @@ export const usePermissionGuard = ({
       }
     } else {
       if (whiteList.includes(to.path)) {
-        // loadingDone()
         next()
       } else {
-        // loadingDone()
         next(`/login?redirect=${to.path}`)
       }
     }
   })
 
   // 全局后置守卫
-  router.afterEach((_to, _from) => {
+  router.afterEach((to, _from) => {
     const { loadingDone, pageLoadingDone } = useLoading()
     const { doneProgress } = useNprogress()
-    const { updatePageTitle } = usePageTitle()
     doneProgress()
-    updatePageTitle()
+    updatePageTitle(to)
     loadingDone()
     pageLoadingDone()
   })

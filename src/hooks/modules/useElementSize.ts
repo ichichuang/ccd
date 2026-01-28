@@ -1,5 +1,6 @@
 // src/composables/useElementSize.ts
-import { debounce, throttle } from '@/common/modules/lodashes'
+import type { Ref } from 'vue'
+import { debounceFn, throttleFn } from '@/utils/lodashes'
 export interface UseElementSizeOptions {
   mode?: 'throttle' | 'debounce' | 'none'
   delay?: number
@@ -7,10 +8,12 @@ export interface UseElementSizeOptions {
 
 /**
  * 监听容器尺寸变化，返回 reactive 的 width/height，同时可选 callback
- * - targetRef 为 false 时，默认监听 document.documentElement 尺寸
+ *
+ * - targetRef 为 `ref<HTMLElement | null>` / `ref<HTMLElement | undefined>` 时：监听该元素
+ * - targetRef 为 `false` 时：默认监听 `document.documentElement` 尺寸（全局视口）
  */
 export function useElementSize(
-  targetRef: Ref<HTMLElement | HTMLDivElement | null> | false,
+  targetRef: Ref<HTMLElement | null | undefined> | false,
   callback?: (entry: DOMRectReadOnly) => void,
   options: UseElementSizeOptions = {}
 ) {
@@ -32,10 +35,10 @@ export function useElementSize(
 
   const createHandler = () => {
     if (mode === 'debounce') {
-      return debounce(run, delay) as typeof handler
+      return debounceFn(run, delay) as typeof handler
     }
     if (mode === 'throttle') {
-      return throttle(run, delay) as typeof handler
+      return throttleFn(run, delay) as typeof handler
     }
     return ((e: DOMRectReadOnly) => run(e)) as typeof handler
   }
@@ -46,6 +49,14 @@ export function useElementSize(
   }
 
   const setupObserver = (el: HTMLElement) => {
+    if (typeof ResizeObserver === 'undefined') {
+      // 环境不支持 ResizeObserver，仅初始化一次宽高，不做后续监听
+      const rect = el.getBoundingClientRect()
+      width.value = rect.width
+      height.value = rect.height
+      return
+    }
+
     const rect = el.getBoundingClientRect()
     width.value = rect.width
     height.value = rect.height
@@ -76,7 +87,7 @@ export function useElementSize(
         targetRef,
         el => {
           teardownObserver()
-          if (el) {
+          if (el instanceof HTMLElement) {
             setupObserver(el)
           }
         },

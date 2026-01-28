@@ -133,9 +133,15 @@ export function processAsyncRoutes(backendRoutes: BackendRouteConfig[]): RouteCo
 
   // 然后使用原有的处理逻辑
   return routesWithParentPaths.map(route => {
+    // 确保每个路由都拥有稳定的 name，避免 hasRoute(undefined) 等未定义行为
+    let routeName = route.name
+    if (!routeName) {
+      routeName = generateNameByPath(route.path)
+    }
+
     const processedRoute: RouteConfig = {
       path: route.path,
-      name: route.name,
+      name: routeName,
       redirect: route.redirect,
       meta: {
         ...route.meta,
@@ -697,6 +703,34 @@ export function createDynamicRouteManager(router: any) {
 }
 
 const modules = import.meta.glob('@/views/**/*.{vue,tsx}')
+
+/**
+ * 根据路由 path 生成稳定的名称
+ * 例如：
+ * - '/'              -> 'Index'
+ * - '/system/user'   -> 'SystemUser'
+ * - '/user/:id/edit' -> 'UserIdEdit'
+ */
+function generateNameByPath(path: string): string {
+  if (!path || path === '/') return 'Index'
+
+  // 移除开头的 '/'
+  let name = path.replace(/^\//, '')
+  // 将 '/:id' 形式的动态段落转为 '-id'
+  name = name.replace(/\/:/g, '-')
+  // 其余 '/' 统一替换为 '-'
+  name = name.replace(/\//g, '-')
+
+  // 将 'system-user' 转为 'SystemUser'
+  const pascal = name
+    .split('-')
+    .filter(Boolean)
+    .map(part => part.charAt(0).toUpperCase() + part.slice(1))
+    .join('')
+
+  return pascal || 'Unknown'
+}
+
 /**import { log } from '../../../scripts/utils/logger';
 
  * 根据后端 component 字符串获取实际组件

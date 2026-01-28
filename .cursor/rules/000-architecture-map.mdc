@@ -27,6 +27,12 @@ alwaysApply: true
 - **尺寸（圆角、间距、布局变量）**：`src/constants/size.ts` 为预设唯一事实来源；`src/constants/sizeScale.ts` 为阶梯倍率表 SSOT；`src/utils/theme/sizeEngine.ts` 生成并注入对应 CSS 变量。
 - **设备与响应式**：断点定义在 `src/constants/breakpoints.ts`（BREAKPOINTS SSOT，xs → 5xl），设备检测在 `src/stores/modules/device.ts`（detectDeviceInfo、事件监听），消费在 Uno breakpoints 与 LayoutAdmin 响应式适配。
 
+### 3. 安全存储与加密 (Safe Storage & Encryption)
+
+- **安全存储流水线**：`src/utils/safeStorage/core.ts` 作为单一事实来源 (SSOT)，统一负责编排「JSON.stringify → LZ-String(Base64) 压缩 → AES 加密」以及反向流程（含默认密钥、异常处理与开发环境日志）。
+- **底层依赖封装**：`src/utils/safeStorage/crypto.ts`（基于 `crypto-es` 的 AES-CBC 加/解密）、`src/utils/safeStorage/lzstring.ts`（基于 `lz-string` 的 Base64 压缩/解压），**禁止在业务代码中直接依赖第三方包实现同样逻辑**。
+- **业务入口与适配层**：`src/utils/safeStorage/safeStorage.ts` 提供语义化方法（`encryptAndCompress*` / `decompressAndDecrypt*`），`src/utils/safeStorage/piniaSerializer.ts` 提供 Pinia 持久化专用加密 serializer（含旧数据兼容与降级）。
+
 ### 3. 构建工具 (`build/`) - Node.js 环境
 
 - **核心逻辑**: Vite 插件收敛 (`plugins.ts`)、环境变量解析 (`utils.ts`) 及图标扫描 (`uno-icons.ts`)。
@@ -46,10 +52,22 @@ alwaysApply: true
 2. **模板与渲染范式（Standard HTML + TSX）**:
    - `.vue` 的 `<template>` **必须**使用标准 HTML 模板语法（Standard HTML）。禁止在 `.vue` 中混用 JSX/TSX 作为 template，禁止引入 pug。
    - 仅当 UI 渲染存在复杂递归/多重条件分支/需要高阶渲染能力时，才使用 `.tsx`（与 `100-typescript-environment.mdc` 的 TSX 规则一致）。
-3. **导入控制**:
+3. **事件通信（全局 Event Bus）**:
+   - 全局事件总线统一使用 `src/utils/mitt.ts` 中的单例 emitter 与 `useMitt()` 封装。禁止在其他位置直接 `mitt()` 新建实例或引入其他事件总线库，所有跨组件/跨模块的事件传递应优先通过 `useMitt()` 实现。
+   - 所有事件名与载荷类型集中在 `src/utils/mitt.ts` 的 `Events` 类型中声明，避免在调用点使用裸字符串或 `any`。
+4. **HTTP 请求（核心请求工具 + API 分层）**:
+   - 核心请求工具统一使用 `src/utils/http/`（全局实例、拦截器、连接管理、上传等）。禁止在业务代码中直接 `fetch`/自行封装 httpClient，避免重复处理鉴权、签名、重试、错误包装与安全策略。
+   - HTTP 配置单一事实来源 (SSOT) 为 `src/constants/http.ts` 的 `HTTP_CONFIG`（timeout、retry、敏感字段、安全开关等）。
+   - 允许开发者在 `src/utils/http/interceptors.ts` 里实现“发出请求/收到响应”的特殊操作（如 token 注入、签名、敏感字段处理、统一错误、重试判定、响应解密等），禁止把这类横切逻辑散落在 API 层或页面组件中。
+   - 所有 API 定义（接口函数）必须放在 `src/api/**`（或 `src/api/modules/**`）。API 层只负责“定义请求函数与类型”，不负责全局拦截器/鉴权/重试策略；这些由 `src/utils/http` 统一提供。
+5. **通用工具使用与扩展约定（Utils）**:
+   - 在实现「日期时间处理、ID 生成、字符串命名转换、深拷贝/比较/合并、防抖/节流、浏览器能力检测、加密存储/安全传输」等通用功能时，**优先复用 `src/utils/` 下现有工具**（如 `date`、`ids`、`strings`、`lodashes`、`browser`、`safeStorage`、`mitt`），禁止在业务代码中重复引入第三方库并手写等价逻辑。
+   - 如判断某个工具函数将被多个模块/文件复用，且属于通用逻辑，应优先添加到对应的 utils 模块中（如日期相关放 `date.ts`、ID 放 `ids.ts`、命名转换放 `strings.ts`、集合/深拷贝放 `lodashes.ts`、浏览器环境判断放 `browser.ts`、安全存储放 `safeStorage`）。
+   - 若现有 utils 模块均不适合承载该功能，但该功能又明显属于通用工具（非某个业务页面专用），则**允许新建 `src/utils/<domain>.ts`**，并遵循“防腐层 + 单一职责”风格（集中封装第三方库，对外暴露稳定 API）。
+6. **导入控制**:
    - 引用 `src/components` 下的组件严禁手动 `import`。
    - 引用 `src/layouts` 下的组件 **必须** 使用 `@&/` 显式手动 `import`。
-4. **样式流向**：**主题** `constants/theme.ts` → `engine.ts` → DOM CSS Vars → UnoCSS → UI；**尺寸** `constants/size.ts` → `sizeEngine.ts` → DOM CSS Vars → UnoCSS → UI。
+7. **样式流向**：**主题** `constants/theme.ts` → `engine.ts` → DOM CSS Vars → UnoCSS → UI；**尺寸** `constants/size.ts` → `sizeEngine.ts` → DOM CSS Vars → UnoCSS → UI。
 
 ## 系统间关系 (System Relationships)
 

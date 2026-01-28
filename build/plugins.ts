@@ -47,10 +47,9 @@ export function getPluginsList(env: ViteEnv): PluginOption[] {
       dirs: [
         'src/stores/modules',
         'src/hooks/**/*',
-        'src/api/modules',
+        'src/api/*',
         'src/utils/**/*',
-        'src/common/modules',
-        'src/constants/modules',
+        'src/constants/*',
       ],
       dts: 'src/types/auto-imports.d.ts',
       eslintrc: {

@@ -1,37 +1,45 @@
 /**
  * 多语言切换的Composable函数
+ *
+ * v7.1 架构对齐：
+ * - Store 作为唯一数据源 (SSOT)
+ * - useLocale 作为 Store 的代理/快捷方式
+ * - 消除状态不同步和事件重复派发问题
+ *
+ * v7.2 优化：
+ * - 移除重复的标题更新逻辑，标题更新统一由全局 usePageTitle 实例负责
  */
+import { computed } from 'vue'
 import type { SupportedLocale } from '@/locales'
-import { getCurrentLocale, setLocale, supportedLocales } from '@/locales'
-import router from '@/router'
+import { supportedLocales } from '@/locales'
 import { useI18n } from 'vue-i18n'
+import { useLocaleStore } from '@/stores/modules/locale'
 
 export function useLocale() {
   const { t, d, n } = useI18n()
+  const localeStore = useLocaleStore()
 
-  // 当前语言信息
+  // ✅ 直接映射 store 的 state，保持响应式一致
+  const locale = computed(() => localeStore.locale)
+
+  // ✅ 从 store 获取语言信息，保持一致性
   const currentLocale = computed(() =>
-    supportedLocales.find(item => item.key === getCurrentLocale())
+    supportedLocales.find(item => item.key === localeStore.locale)
   )
 
-  // 是否为中文
-  const isChineseLang = computed(() => getCurrentLocale().startsWith('zh'))
+  // ✅ 基于 store 状态计算
+  const isChineseLang = computed(() => localeStore.locale.startsWith('zh'))
 
-  // 是否为RTL语言
   const isRTL = computed(() => currentLocale.value?.direction === 'rtl')
 
-  // 切换语言
+  // ✅ 直接调用 Store action，确保状态、持久化、事件派发三位一体
   const switchLocale = async (newLocale: SupportedLocale) => {
-    const current = getCurrentLocale()
-    if (current === newLocale) {
+    if (localeStore.locale === newLocale) {
       return
     }
-
     try {
-      setLocale(newLocale)
-
-      // 通知其他模块语言已切换
-      console.log(`🌐 语言切换为: ${newLocale}`)
+      await localeStore.switchLocale(newLocale)
+      // 标题更新会由 usePageTitle 自动处理（监听 localeStore.locale）
     } catch (error) {
       console.error('Failed to switch locale:', error)
     }
@@ -52,38 +60,9 @@ export function useLocale() {
     return format ? n(number, format) : n(number)
   }
 
-  // 监听语言变化，更新相关状态
-  watch(
-    () => getCurrentLocale(),
-    newLocale => {
-      // 语言切换时触发标题更新
-      window.dispatchEvent(
-        new CustomEvent('locale-changed', {
-          detail: { locale: newLocale },
-        })
-      )
-
-      // 直接更新当前页面标题
-      const currentRoute = router?.currentRoute?.value
-      if (currentRoute) {
-        const env = import.meta.env
-        const title = env.VITE_APP_TITLE
-
-        let pageTitle = title
-        if (currentRoute.meta?.titleKey) {
-          pageTitle = `${t(currentRoute.meta.titleKey)} - ${title}`
-        } else if (currentRoute.meta?.title) {
-          pageTitle = `${currentRoute.meta.title} - ${title}`
-        }
-        document.title = pageTitle || ''
-      }
-    },
-    { immediate: true }
-  )
-
   return {
     // 响应式数据
-    locale: computed(() => getCurrentLocale()),
+    locale,
     currentLocale,
     isChineseLang,
     isRTL,

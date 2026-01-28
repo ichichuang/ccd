@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { throttle } from '@/common/modules/lodashes'
+import { throttleFn } from '@/utils/lodashes'
 import { useChartTheme } from '@/hooks/modules/useChartTheme/index'
 import VECharts from 'vue-echarts'
 import { createDefaultUseEchartsProps } from './utils/constants'
@@ -33,7 +33,7 @@ const baseResize = () => {
   }
 }
 
-const resizeHandler = throttle(baseResize, 300)
+const resizeHandler = throttleFn(baseResize, 300)
 
 // 使用主题合并后的配置
 const optionRef = computed(() => props.option)

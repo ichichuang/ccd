@@ -8,11 +8,7 @@ declare global {
   export type LayoutMode = 'admin' | 'fullscreen' | 'ratio'
 
   /** 管理布局结构模式：侧边栏在左 / 顶 / 混合 (仅对 admin 壳有效) */
-  export enum AdminLayoutMode {
-    VERTICAL = 'vertical',
-    HORIZONTAL = 'horizontal',
-    MIX = 'mix',
-  }
+  export type AdminLayoutMode = 'vertical' | 'horizontal' | 'mix'
 
   /** 布局配置：显隐、固定、动画等 (不包含具体尺寸像素) */
   export interface LayoutSetting {
@@ -51,6 +47,18 @@ declare global {
    * - 运行时状态: isLoading, isPageLoading, userAdjusted（不持久化）
    */
   export interface LayoutStoreState extends LayoutSetting {
+    /**
+     * 全局 Loading 计数器（运行时，不持久化）
+     * 并发安全：isLoading 由该计数器推导（并同步到 state 字段）
+     */
+    loadingCount: number
+
+    /**
+     * 内容区 Loading 计数器（运行时，不持久化）
+     * 并发安全：isPageLoading 由该计数器推导（并同步到 state 字段）
+     */
+    pageLoadingCount: number
+
     /** 全局加载状态 */
     isLoading: boolean
     /** 页面加载状态 */

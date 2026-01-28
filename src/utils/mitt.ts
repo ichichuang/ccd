@@ -1,94 +1,82 @@
-import mitt, { type Emitter, type EventType } from 'mitt'
+import mitt, { type Emitter, type Handler, type WildcardHandler } from 'mitt'
 
-// 定义事件类型
-type Events = {
-  // 全局事件
-  appLoading: boolean
-  appError: string
-  appSuccess: string
-  appNotification: { type: 'success' | 'error' | 'warning' | 'info'; message: string }
+/**
+ * 全局事件类型定义
+ * 仅定义实际使用的事件，避免 YAGNI
+ */
+export type Events = {
+  // 窗口尺寸变化 (由 Device Store 触发)
+  windowResize: { width: number; height: number }
 
-  // 用户相关事件
-  userLogin: any
-  userLogout: void
-  userProfileUpdate: any
-
-  // 路由相关事件
-  routerBeforeRoute: string
-  routerAfterRoute: string
-
-  // 组件间通信事件
-  componentRefresh: string
-  componentClose: string
-  componentOpen: string
-
-  // 数据相关事件
-  dataRefresh: string
-  dataUpdate: { key: string; data: any }
-  dataDelete: string
-
-  // 主题相关事件
-  themeChange: 'light' | 'dark'
-  themeToggle: void
-
-  // 语言相关事件
+  // ===== 多语言与时区相关事件 =====
+  /**
+   * 语言变更事件
+   * 由 Locale Store 等模块在语言切换后触发
+   * 例如 'zh-CN' | 'en-US' | 'zh-TW'
+   */
   localeChange: string
-  localeReload: void
 
-  // 布局相关事件
-  layoutSidebarToggle: void
-  layoutSidebarCollapse: boolean
-  layoutFullscreen: boolean
-
-  // 通用事件
-  [key: string]: any
+  /**
+   * 时区变更事件
+   * 由 Locale Store 或其他与时区策略相关的模块触发
+   * 例如 'Asia/Shanghai' | 'UTC'
+   */
+  timezoneChange: string
 }
 
-// 创建全局事件发射器实例
+// 创建全局单例
 const emitter: Emitter<Events> = mitt<Events>()
 
-// 导出事件发射器实例
 export default emitter
 
-// 导出类型
-export type { Emitter, Events, EventType }
-
-// 导出便捷方法
+/**
+ * useMitt Hook
+ * 重新封装以提供更好的类型提示和开发体验
+ */
 export const useMitt = () => {
   return {
-    // 监听事件
-    on: <T extends keyof Events>(type: T, handler: any) => {
+    /**
+     * 监听特定事件
+     */
+    on: <T extends keyof Events>(type: T, handler: Handler<Events[T]>) => {
       emitter.on(type, handler)
     },
 
-    // 移除事件监听
-    off: <T extends keyof Events>(type: T, handler?: any) => {
+    /**
+     * 移除特定事件监听
+     */
+    off: <T extends keyof Events>(type: T, handler?: Handler<Events[T]>) => {
       emitter.off(type, handler)
     },
 
-    // 触发事件
-    emit: <T extends keyof Events>(type: T, data?: any) => {
-      emitter.emit(type, data)
+    /**
+     * 触发事件
+     */
+    emit: <T extends keyof Events>(type: T, event: Events[T]) => {
+      emitter.emit(type, event)
     },
 
-    // 监听所有事件
-    onAll: (handler: (type: string, data?: any) => void) => {
+    /**
+     * 监听所有事件
+     * [FIX] 直接传递 handler，避免包装函数导致 off 失效
+     */
+    onAll: (handler: WildcardHandler<Events>) => {
       emitter.on('*', handler)
     },
 
-    // 移除所有事件监听
-    offAll: (handler?: any) => {
-      emitter.off('*', handler)
+    /**
+     * 移除所有事件监听
+     * [FIX] 直接传递 handler，确保引用一致；未传 handler 时 no-op
+     */
+    offAll: (handler?: WildcardHandler<Events>) => {
+      if (handler != null) emitter.off('*', handler)
     },
 
-    // 清空所有事件
+    /**
+     * 清空所有事件监听
+     */
     clear: () => {
       emitter.all.clear()
-    },
-
-    // 获取所有事件监听器
-    getAll: () => {
-      return emitter.all
     },
   }
 }

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { routeWhitePathList } from '@/common/modules/router'
+import { routeWhitePathList } from '@/router/utils/helper'
 import { routeUtils } from '@/router'
 import { useRoute } from 'vue-router'
 

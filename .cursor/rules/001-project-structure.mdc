@@ -31,7 +31,7 @@ ccd/
 │   ├── router/               # 路由配置层
 │   ├── stores/               # Pinia 状态管理层
 │   ├── types/                # TS 类型定义层 (含 env.d.ts 及自动生成的类型声明)
-│   ├── utils/                # 核心方法层：Http 封装、主题与尺寸引擎 utils/theme/(engine.ts, sizeEngine.ts, colors.ts)、加密存储等
+│   ├── utils/                # 核心方法层：Http 封装、主题与尺寸引擎 utils/theme/(engine.ts, sizeEngine.ts, colors.ts)、加密存储 safeStorage、通用工具 (mitt、lodashes、strings) 等
 │   ├── views/                # 业务页面层：对应路由的页面级组件
 │   ├── App.vue               # 根组件
 │   └── main.ts               # 入口文件
@@ -44,7 +44,7 @@ ccd/
 
 | 内容类型 | 正确位置 | 错误示例 |
 |----------|----------|----------|
-| 接口请求函数 | `src/api/` 或 `src/api/modules/` | 放在 `src/utils/` 或页面内 |
+| 接口请求函数（API 定义层） | `src/api/` 或 `src/api/modules/`（仅定义接口函数与类型；统一调用 `src/utils/http`） | 放在 `src/utils/`、store 或页面内；在 API 层手写鉴权/拦截器逻辑 |
 | 纯函数、日期/格式工具 | `src/common/` | 放在 `src/utils/`（留给 Http、主题等地基能力） |
 | 主题/枚举/路由常量 | `src/constants/` | 散落在组件或 utils |
 | 组合式逻辑 | `src/hooks/` | 写在页面或组件内部 |
@@ -52,3 +52,11 @@ ccd/
 | 尺寸预设（圆角、间距、布局数值） | `src/constants/size.ts` | 写在 store 内或散落在 layout 配置 |
 | 布局默认配置（显隐、模式、动画、缓存等） | `src/constants/layout.ts` | 在 store 里写死默认值或散落在布局组件内 |
 | 断点定义（xs-5xl，移动端到 4K） | `src/constants/breakpoints.ts` | 散落在 UnoCSS 配置或组件内 |
+| 安全存储 / 压缩 + 加密流水线 | `src/utils/safeStorage/*`（底层 crypto/lzstring 封装 + core 编解码 SSOT + safeStorage 别名层 + Pinia serializer） | 在 store、HTTP、组件中直接 new `crypto-es` 或 `lz-string`，手写 JSON + 压缩 + 加密流程 |
+| 全局事件总线 / 事件工具 | `src/utils/mitt.ts`（集中定义 `Events`，导出 `useMitt()`；全局唯一 mitt 实例） | 在任意组件/页面内新建 mitt 实例或散落事件类型与事件名定义 |
+| HTTP 核心请求封装（实例/拦截器/连接/上传） | `src/utils/http/*`（配置 SSOT 在 `src/constants/http.ts` 的 `HTTP_CONFIG`；特殊行为在 `interceptors.ts`） | 在 API 层、store、页面中自行封装 httpClient；把鉴权/签名/重试/错误处理散落到业务代码 |
+| 日期时间处理（格式化、解析、节假日/工作日、时区等） | `src/utils/date.ts`（`DateUtils` 与 `dayjs` 封装） | 在各处直接 `import dayjs` 手写日期逻辑或自建 DateUtils |
+| 唯一 ID / 稳定 ID 生成 | `src/utils/ids.ts`（`generateUniqueId`、`generateIdFromKey` 等） | 在组件/store 内使用 `Math.random`、时间戳拼接或重复封装 uuid |
+| 字符串命名/格式转换 | `src/utils/strings.ts`（如 `toKebabCase` 用于生成 CSS 变量名/class 名） | 在多个地方手写正则进行命名风格转换 |
+| 集合/对象工具 & 防腐层 | `src/utils/lodashes.ts`（`deepClone`、`deepEqual`、`deepMerge`、`objectPick`、`objectOmit`、以及 store/TS 逻辑层使用的 `debounceFn` / `throttleFn`） | 在业务代码中直接 `import { cloneDeep } from 'lodash-es'` 或在组件内大量使用 lodash 的防抖/节流而非 VueUse |
+| 浏览器/环境能力检测 | `src/utils/browser.ts`（如 `getSystemColorMode`，未来可扩展 UA/feature detect 等） | 在组件内到处手写 `matchMedia` 或检测逻辑 |

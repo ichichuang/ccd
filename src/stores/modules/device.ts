@@ -105,12 +105,7 @@ export const useDeviceStore = defineStore('device', {
 
       this.updateBreakpoint()
 
-      // 触发事件总线 (使用类型断言兼容 mitt 类型定义)
-      try {
-        ;(useMitt().emit as any)('windowResize', { width: pageW, height: pageH })
-      } catch (_e) {
-        // ignore
-      }
+      useMitt().emit('windowResize', { width: pageW, height: pageH })
     },
 
     /**

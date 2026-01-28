@@ -1,7 +1,9 @@
 import type { LocaleInfo, SupportedLocale } from '@/locales'
 import { getCurrentLocale, setLocale, supportedLocales } from '@/locales'
+import { DEFAULT_LOCALE, LOCALE_TO_TIMEZONE_MAP } from '@/constants/locale'
 import store from '@/stores'
 import { defineStore } from 'pinia'
+import { useMitt } from '@/utils/mitt'
 
 interface LocaleState {
   locale: SupportedLocale
@@ -9,17 +11,10 @@ interface LocaleState {
   followTimezone: boolean
 }
 
-// 语言到默认时区映射（可按需补充）
-const localeToTimezoneMap: Record<SupportedLocale, string> = {
-  ['zh-CN']: 'Asia/Shanghai',
-  ['en-US']: 'America/New_York',
-  ['zh-TW']: 'Asia/Taipei',
-}
-
 export const useLocaleStore = defineStore('locale', {
   state: (): LocaleState => ({
     // 默认语言固定为中文
-    locale: 'zh-CN',
+    locale: DEFAULT_LOCALE,
     loading: false,
     // 控制是否跟随语言自动切换时区
     followTimezone: true,
@@ -52,34 +47,41 @@ export const useLocaleStore = defineStore('locale', {
       }
 
       this.loading = true
+      const emitter = useMitt()
 
       try {
         setLocale(newLocale)
         this.locale = newLocale
 
-        // 标准事件，供 DateUtils 监听
-        window.dispatchEvent(
-          new CustomEvent('locale-changed', {
-            detail: { locale: newLocale },
-          })
-        )
+        // ===== v7.0 事件总线对齐 =====
+        // 1. 通过 mitt 作为新的全局事件总线
+        emitter.emit('localeChange', newLocale)
 
-        // 兼容现有事件
-        window.dispatchEvent(
-          new CustomEvent('locale-store-changed', {
-            detail: { locale: newLocale },
-          })
-        )
-
-        // 若开启跟随时区，则根据语言派发时区变更
+        // 2. 若开启跟随时区，则根据语言派发时区变更
         if (this.followTimezone) {
-          const tz = localeToTimezoneMap[newLocale] || 'UTC'
+          const tz = LOCALE_TO_TIMEZONE_MAP[newLocale] || 'UTC'
+          emitter.emit('timezoneChange', tz)
+
+          // 仍保留 window 事件作为过渡兼容层（供旧代码监听）
           window.dispatchEvent(
             new CustomEvent('timezone-changed', {
               detail: { timezone: tz },
             })
           )
         }
+
+        // 3. 保留原有的 window 事件，确保过渡期间旧逻辑仍然可用
+        window.dispatchEvent(
+          new CustomEvent('locale-changed', {
+            detail: { locale: newLocale },
+          })
+        )
+
+        window.dispatchEvent(
+          new CustomEvent('locale-store-changed', {
+            detail: { locale: newLocale },
+          })
+        )
       } catch (error) {
         console.error('Failed to switch locale:', error)
         throw error
@@ -90,11 +92,16 @@ export const useLocaleStore = defineStore('locale', {
 
     // 初始化语言：根据 store 的值应用到 i18n
     initLocale() {
-      const target = this.locale || 'zh-CN'
+      // [v7.1 FIX] 使用常量替代硬编码，确保单一事实来源
+      const target = this.locale || DEFAULT_LOCALE
       setLocale(target)
       this.locale = getCurrentLocale()
 
-      // 初始化时，按策略同步 locale 与 timezone
+      const emitter = useMitt()
+
+      // 初始化时，通过 mitt 与 window 双通道同步 locale 与 timezone
+      emitter.emit('localeChange', this.locale)
+
       window.dispatchEvent(
         new CustomEvent('locale-changed', {
           detail: { locale: this.locale },
@@ -102,7 +109,9 @@ export const useLocaleStore = defineStore('locale', {
       )
 
       if (this.followTimezone) {
-        const tz = localeToTimezoneMap[this.locale] || 'UTC'
+        const tz = LOCALE_TO_TIMEZONE_MAP[this.locale] || 'UTC'
+        emitter.emit('timezoneChange', tz)
+
         window.dispatchEvent(
           new CustomEvent('timezone-changed', {
             detail: { timezone: tz },
@@ -121,7 +130,12 @@ export const useLocaleStore = defineStore('locale', {
       this.followTimezone = value
       // 切换策略后，立即按需应用当前语言对应时区
       if (this.followTimezone) {
-        const tz = localeToTimezoneMap[this.locale] || 'UTC'
+        const tz = LOCALE_TO_TIMEZONE_MAP[this.locale] || 'UTC'
+        const emitter = useMitt()
+
+        emitter.emit('timezoneChange', tz)
+
+        // 保留 window 事件作为兼容
         window.dispatchEvent(
           new CustomEvent('timezone-changed', {
             detail: { timezone: tz },

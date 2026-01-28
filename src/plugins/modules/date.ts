@@ -2,7 +2,7 @@
  * DateUtils 插件配置
  * 初始化日期工具并与框架语言系统集成
  */
-import type { Locale } from '@/common/modules/date'
+import DateUtils, { type Locale } from '@/utils/date'
 import type { SupportedLocale } from '@/locales'
 import { getCurrentLocale } from '@/locales'
 // 框架语言到 DateUtils 语言的映射

@@ -9,11 +9,11 @@ import {
 } from '@/router/utils/common'
 import type { RouteRecordRaw } from 'vue-router'
 import { createRouter, createWebHashHistory, createWebHistory } from 'vue-router'
-import { registerRouterGuards } from './utils/helper'
+import { autoImportModulesSync } from '@/router/utils/moduleLoader'
+import { registerRouterGuards } from './utils/guards'
 
-// 自动导入所有路由模块
 const routeModules = import.meta.glob('./modules/**/*.ts', { eager: true })
-const importedRoutes = autoImportModulesSync<RouteModule>(routeModules)
+const importedRoutes = autoImportModulesSync<RouteModule>(routeModules, './modules/')
 
 // 类型安全的路由模块处理函数
 function processRouteModules(modules: Record<string, RouteModule>): RouteConfig[] {
@@ -87,6 +87,6 @@ const router = createRouter({
 export const dynamicRouteManager = createDynamicRouteManager(router)
 
 // 注册路由
-registerRouterGuards({ router, routeUtils, staticRoutes: initialRoutes })
+registerRouterGuards({ router, routeUtils, staticRoutes: initialRoutes, dynamicRouteManager })
 
 export default router

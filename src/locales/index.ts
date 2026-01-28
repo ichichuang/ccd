@@ -4,6 +4,8 @@
 import enUS from '@/locales/lang/en-US'
 import zhCN from '@/locales/lang/zh-CN'
 import zhTW from '@/locales/lang/zh-TW'
+import { DEFAULT_LOCALE, FALLBACK_LOCALE } from '@/constants/locale'
+import type { App } from 'vue'
 import { createI18n } from 'vue-i18n'
 
 // 类型定义
@@ -51,9 +53,9 @@ const messages: Record<SupportedLocale, LocaleMessages> = {
   ['zh-TW']: zhTW,
 }
 
-// 获取默认语言（框架默认中文）
+// 获取默认语言（框架默认中文），从 constants 统一读取
 function getDefaultLocale(): SupportedLocale {
-  return 'zh-CN'
+  return DEFAULT_LOCALE
 }
 
 // 日期时间格式配置
@@ -177,8 +179,9 @@ const datetimeFormats = {
 // 创建 i18n 实例
 export const i18n = createI18n({
   legacy: false,
+  // 默认语言与回退语言均从 constants 中读取，确保单一事实来源
   locale: getDefaultLocale(),
-  fallbackLocale: 'zh-CN',
+  fallbackLocale: FALLBACK_LOCALE,
   messages: messages as any,
   datetimeFormats,
   globalInjection: true,

@@ -115,3 +115,60 @@ export function rgbToHex(rgb: string): string {
 
   return `#${hex(r)}${hex(g)}${hex(b)}`
 }
+
+/**
+ * 将颜色叠加透明度，输出为 rgba/hsla 字符串
+ * - 支持：#rgb/#rrggbb、rgb/rgba、hsl/hsla
+ * - opacity: 0~100
+ */
+export function applyOpacityToColor(color: string, opacity: number): string {
+  // 限定透明度为 0~100
+  const alpha = Math.max(0, Math.min(100, opacity)) / 100
+
+  // 移除空格并转小写
+  color = color.trim().toLowerCase()
+
+  // 1. rgba(...) / rgb(...)：直接替换/补齐 alpha
+  const rgbaMatch = color.match(/^rgba?\(([^)]+)\)$/)
+  if (rgbaMatch) {
+    const parts = rgbaMatch[1].split(',').map(p => p.trim())
+    const [r, g, b] = parts.map(Number)
+    return `rgba(${r}, ${g}, ${b}, ${alpha})`
+  }
+
+  // 2. HEX #rrggbb or #rgb
+  if (color.startsWith('#')) {
+    let r = 0
+    let g = 0
+    let b = 0
+    if (color.length === 4) {
+      // #rgb
+      r = parseInt(color[1] + color[1], 16)
+      g = parseInt(color[2] + color[2], 16)
+      b = parseInt(color[3] + color[3], 16)
+    } else if (color.length === 7) {
+      // #rrggbb
+      r = parseInt(color.slice(1, 3), 16)
+      g = parseInt(color.slice(3, 5), 16)
+      b = parseInt(color.slice(5, 7), 16)
+    }
+    return `rgba(${r}, ${g}, ${b}, ${alpha})`
+  }
+
+  // 3. hsl(...) -> hsla(...)
+  const hslMatch = color.match(/^hsl\(([^)]+)\)$/)
+  if (hslMatch) {
+    return color.replace(/^hsl\(([^)]+)\)$/, `hsla($1, ${alpha})`)
+  }
+
+  // 4. hsla(...)：替换 alpha（保留 h/s/l）
+  const hslaMatch = color.match(/^hsla\(([^,]+),([^,]+),([^,]+),[^)]+\)$/)
+  if (hslaMatch) {
+    const [h, s, l] = [hslaMatch[1], hslaMatch[2], hslaMatch[3]]
+    return `hsla(${h}, ${s}, ${l}, ${alpha})`
+  }
+
+  // 5. 不支持的格式：回退黑色
+  console.warn(`Unsupported color format: "${color}"`)
+  return `rgba(0, 0, 0, ${alpha})`
+}

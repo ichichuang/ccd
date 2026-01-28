@@ -1,13 +1,88 @@
 <script setup lang="ts">
-import { computed, watch } from 'vue'
+import { computed, onBeforeUnmount, ref, watch } from 'vue'
 import { useDeviceStore } from '@/stores/modules/device'
 import { useLayoutStore } from '@/stores/modules/layout'
 import AppContainer from '@&/AppContainer.vue'
+import AnimateWrapper from '@&/animate-wrapper/AnimateWrapper.vue'
+import LoadingWave from '@&/Loading-Wave.vue'
 
 defineOptions({ name: 'LayoutAdmin' })
 
 const deviceStore = useDeviceStore()
 const layoutStore = useLayoutStore()
+
+// 页面内容加载状态（用于内容区域加载动画）
+const isPageLoading = computed(() => layoutStore.isPageLoading)
+
+// ===== 不闪烁策略（延迟显示 + 最小展示时长）=====
+const PAGE_LOADING_SHOW_DELAY_MS = 120
+const PAGE_LOADING_MIN_DURATION_MS = 200
+
+const pageLoadingVisible = ref(false)
+const pageLoadingShownAt = ref(0)
+let showTimer: number | null = null
+let hideTimer: number | null = null
+
+const clearTimers = () => {
+  if (showTimer) {
+    window.clearTimeout(showTimer)
+    showTimer = null
+  }
+  if (hideTimer) {
+    window.clearTimeout(hideTimer)
+    hideTimer = null
+  }
+}
+
+watch(
+  isPageLoading,
+  loading => {
+    // 正在加载：延迟显示（避免短闪）
+    if (loading) {
+      if (hideTimer) {
+        window.clearTimeout(hideTimer)
+        hideTimer = null
+      }
+      if (pageLoadingVisible.value) {
+        return
+      }
+      if (!showTimer) {
+        showTimer = window.setTimeout(() => {
+          showTimer = null
+          if (!isPageLoading.value) return
+          pageLoadingVisible.value = true
+          pageLoadingShownAt.value = Date.now()
+        }, PAGE_LOADING_SHOW_DELAY_MS)
+      }
+      return
+    }
+
+    // 结束加载：若还没显示过，直接取消延迟即可
+    if (showTimer) {
+      window.clearTimeout(showTimer)
+      showTimer = null
+    }
+    if (!pageLoadingVisible.value) {
+      return
+    }
+
+    // 已显示：保证最小展示时长，避免一闪而过
+    const elapsed = Date.now() - pageLoadingShownAt.value
+    const remaining = Math.max(0, PAGE_LOADING_MIN_DURATION_MS - elapsed)
+    if (hideTimer) {
+      window.clearTimeout(hideTimer)
+    }
+    hideTimer = window.setTimeout(() => {
+      hideTimer = null
+      pageLoadingVisible.value = false
+    }, remaining)
+  },
+  { immediate: true }
+)
+
+onBeforeUnmount(() => {
+  clearTimers()
+})
 
 // --- 响应式联动逻辑 (The Bridge) ---
 // 1. 移动端适配
@@ -86,7 +161,20 @@ const layoutClasses = computed(() => ({
       </header>
 
       <!-- Content 区域 -->
-      <main class="content-container">
+      <main class="content-container relative">
+        <!-- 页面内容加载遮罩层 -->
+        <AnimateWrapper
+          :show="pageLoadingVisible"
+          enter="fadeIn"
+          leave="fadeOut"
+          duration="300ms"
+          class="absolute inset-0 z-50 bg-background/80 backdrop-blur-sm"
+        >
+          <div class="full center">
+            <LoadingWave :loading-size="3" />
+          </div>
+        </AnimateWrapper>
+
         <AppContainer />
       </main>
     </div>

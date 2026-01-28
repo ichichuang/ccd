@@ -56,6 +56,16 @@ const coreRoutes: RouteConfig[] = [
           parent: 'fullscreen',
         },
       },
+      {
+        path: '/system-configuration/layout',
+        name: 'layout',
+        component: () => import('@/views/system-configuration/layout.vue'),
+        meta: {
+          title: '布局系统',
+          rank: 4,
+          parent: 'fullscreen',
+        },
+      },
     ],
   },
 ]

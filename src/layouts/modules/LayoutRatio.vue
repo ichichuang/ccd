@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { getCurrentRouteMeta } from '@/common/modules/router'
+import { getCurrentRouteMeta } from '@/router/utils/helper'
 import { useDeviceStore } from '@/stores/modules/device'
 import AnimateRouterView from '@&/AnimateRouterView.vue'
 

@@ -1,8 +1,15 @@
 // src/utils/http/methods.ts
-import { HTTP_CONFIG } from '@/constants/modules/http'
+import { HTTP_CONFIG } from '@/constants/http'
 import { alovaInstance } from './instance'
 import { ErrorType, HttpRequestError, isRetryableError } from './interceptors'
-import type { AlovaRequestConfig, RequestConfig, RetryConfig, UploadConfig } from './types'
+import type {
+  AlovaRequestConfig,
+  CacheStats,
+  RequestConfig,
+  RequestStats,
+  RetryConfig,
+  UploadConfig,
+} from './types'
 
 /**
  * 请求管理器 - 处理去重和并发控制
@@ -10,25 +17,25 @@ import type { AlovaRequestConfig, RequestConfig, RetryConfig, UploadConfig } fro
 class RequestManager {
   private pendingRequests = new Map<string, Promise<any>>()
   private requestQueue: Array<() => Promise<any>> = []
-  private maxConcurrent = HTTP_CONFIG.maxConcurrentRequests
+  private readonly maxConcurrent = HTTP_CONFIG.maxConcurrentRequests
   private runningCount = 0
 
   /**
    * 执行请求，支持去重
    */
-  async execute<T>(key: string, requestFn: () => Promise<T>, deduplicate = true): Promise<T> {
-    // 如果启用去重且请求已存在，返回现有请求
+  async execute<T>(
+    key: string,
+    requestFn: () => Promise<T>,
+    deduplicate: boolean = true
+  ): Promise<T> {
     if (deduplicate && this.pendingRequests.has(key)) {
-      return this.pendingRequests.get(key)!
+      return this.pendingRequests.get(key) as Promise<T>
     }
 
-    // 创建新请求
-    const requestPromise = this.queueRequest(() => requestFn())
+    const requestPromise = this.queueRequest(requestFn)
 
     if (deduplicate) {
       this.pendingRequests.set(key, requestPromise)
-
-      // 请求完成后清理
       requestPromise.finally(() => {
         this.pendingRequests.delete(key)
       })
@@ -37,9 +44,6 @@ class RequestManager {
     return requestPromise
   }
 
-  /**
-   * 将请求加入队列
-   */
   private async queueRequest<T>(requestFn: () => Promise<T>): Promise<T> {
     return new Promise((resolve, reject) => {
       this.requestQueue.push(async () => {
@@ -55,9 +59,6 @@ class RequestManager {
     })
   }
 
-  /**
-   * 处理请求队列
-   */
   private async processQueue(): Promise<void> {
     if (this.runningCount >= this.maxConcurrent || this.requestQueue.length === 0) {
       return
@@ -74,19 +75,13 @@ class RequestManager {
     }
   }
 
-  /**
-   * 清理所有待处理请求
-   */
   clear(): void {
     this.pendingRequests.clear()
     this.requestQueue = []
     this.runningCount = 0
   }
 
-  /**
-   * 获取统计信息
-   */
-  getStats() {
+  getStats(): RequestStats {
     return {
       pendingRequests: this.pendingRequests.size,
       queueLength: this.requestQueue.length,
@@ -101,7 +96,7 @@ class RequestManager {
  */
 class EnhancedCache {
   private cache = new Map<string, { data: any; timestamp: number; ttl: number }>()
-  private maxSize = HTTP_CONFIG.maxCacheSize
+  private readonly maxSize = HTTP_CONFIG.maxCacheSize
   private hitCount = 0
   private missCount = 0
 
@@ -145,11 +140,7 @@ class EnhancedCache {
     this.missCount = 0
   }
 
-  getSize(): number {
-    return this.cache.size
-  }
-
-  getStats() {
+  getStats(): CacheStats {
     const total = this.hitCount + this.missCount
     return {
       size: this.cache.size,
@@ -164,14 +155,15 @@ const cache = new EnhancedCache()
 const requestManager = new RequestManager()
 
 /**
- * 转换请求配置
+ * 转换请求配置：
+ * - 剥离 RequestConfig 中仅供本模块使用的字段（enableCache/cacheTTL/retry）
+ * - 其余字段透传给 alova 作为 AlovaRequestConfig
  */
 function convertRequestConfig(config?: RequestConfig): AlovaRequestConfig {
   if (!config) {
     return {}
   }
 
-  // 移除之前的 _t 和 cacheFor 逻辑，只做简单的配置分离
   const { enableCache: _enableCache, cacheTTL: _cacheTTL, retry: _retry, ...alovaConfig } = config
   return alovaConfig
 }
@@ -183,35 +175,31 @@ async function executeWithRetry<T>(
   requestFn: () => Promise<T>,
   retryConfig?: RetryConfig
 ): Promise<T> {
-  const config = {
+  const config: RetryConfig = {
     retries: HTTP_CONFIG.defaultRetryTimes,
     retryDelay: HTTP_CONFIG.defaultRetryDelay,
     ...retryConfig,
   }
 
-  let lastError: HttpRequestError
+  let lastError: HttpRequestError | undefined
 
   for (let attempt = 0; attempt <= config.retries; attempt++) {
     try {
       return await requestFn()
     } catch (error) {
-      lastError = error as HttpRequestError
+      const httpError = error as HttpRequestError
+      lastError = httpError
 
-      // 如果不是可重试的错误，或者已达到最大重试次数，直接抛出
-      if (!isRetryableError(lastError) || attempt === config.retries) {
-        throw lastError
+      if (!isRetryableError(httpError) || attempt === config.retries) {
+        throw httpError
       }
 
-      // 如果配置了重试条件，检查是否满足
-      if (config.retryCondition && !config.retryCondition(lastError)) {
-        throw lastError
+      if (config.retryCondition && !config.retryCondition(httpError)) {
+        throw httpError
       }
 
-      // 等待后重试
-      if (attempt < config.retries) {
-        const delay = config.retryDelay * Math.pow(2, attempt) // 指数退避
-        await new Promise(resolve => setTimeout(resolve, delay))
-      }
+      const delay = config.retryDelay * Math.pow(2, attempt)
+      await new Promise(resolve => setTimeout(resolve, delay))
     }
   }
 
@@ -220,114 +208,124 @@ async function executeWithRetry<T>(
 
 /**
  * GET 请求
+ * - 显式 .send(true)
+ * - 只缓存数据，不缓存 Method
  */
-export const get = <T = any>(url: string, config?: RequestConfig) => {
+export const get = async <T = any>(url: string, config?: RequestConfig): Promise<T> => {
   // 缓存键必须包含查询参数，否则不同分页/条件会命中同一缓存
   const paramStr = config?.params ? JSON.stringify(config.params) : ''
   const cacheKey = `GET:${url}:${paramStr}`
   const cacheEnabled = config?.enableCache !== false
   const deduplicate = config?.deduplicate !== false
 
-  // 如果启用缓存且是 GET 请求，尝试从缓存获取
   if (cacheEnabled) {
     const cachedData = cache.get(cacheKey)
-    if (cachedData) {
-      return Promise.resolve(cachedData)
+    if (cachedData !== null) {
+      return cachedData as T
     }
   }
 
   const alovaConfig = convertRequestConfig(config)
+  const requestFn = () => alovaInstance.Get<T>(url, alovaConfig).send(true)
 
-  const requestFn = () => {
-    // 创建 Method 实例
-    const method = alovaInstance.Get<T>(url, alovaConfig)
+  const result = await requestManager.execute(
+    cacheKey,
+    () => executeWithRetry(requestFn, config?.retry),
+    deduplicate
+  )
 
-    // FIX: 使用 Alova 原生 API 控制缓存
-    // 如果明确禁用了缓存 (enableCache: false)，调用 send(true) 强制刷新
-    if (config?.enableCache === false) {
-      return method.send(true)
-    }
-
-    // 否则直接返回 method (它会自动处理默认缓存逻辑)
-    return method
+  if (cacheEnabled) {
+    const ttl = config?.cacheTTL || HTTP_CONFIG.defaultCacheTtl
+    cache.set(cacheKey, result, ttl)
   }
 
-  return requestManager
-    .execute(cacheKey, () => executeWithRetry(requestFn, config?.retry), deduplicate)
-    .then(result => {
-      // 如果启用缓存，将结果存入缓存
-      if (cacheEnabled) {
-        const ttl = config?.cacheTTL || HTTP_CONFIG.defaultCacheTtl
-        cache.set(cacheKey, result, ttl)
-      }
-      return result
-    })
+  return result
 }
 
 /**
  * POST 请求
  */
-export const post = <T = any>(url: string, data?: any, config?: RequestConfig) => {
+export const post = <T = any>(url: string, data?: any, config?: RequestConfig): Promise<T> => {
   const requestKey = `POST:${url}:${JSON.stringify(data)}`
   const alovaConfig = convertRequestConfig(config)
-  const requestFn = () => alovaInstance.Post<T>(url, data, alovaConfig)
+  const requestFn = () => alovaInstance.Post<T>(url, data, alovaConfig).send(true)
 
-  return requestManager.execute(requestKey, () => executeWithRetry(requestFn, config?.retry))
+  return requestManager.execute(
+    requestKey,
+    () => executeWithRetry(requestFn, config?.retry),
+    config?.deduplicate !== false
+  )
 }
 
 /**
  * PUT 请求
  */
-export const put = <T = any>(url: string, data?: any, config?: RequestConfig) => {
+export const put = <T = any>(url: string, data?: any, config?: RequestConfig): Promise<T> => {
   const requestKey = `PUT:${url}:${JSON.stringify(data)}`
   const alovaConfig = convertRequestConfig(config)
-  const requestFn = () => alovaInstance.Put<T>(url, data, alovaConfig)
+  const requestFn = () => alovaInstance.Put<T>(url, data, alovaConfig).send(true)
 
-  return requestManager.execute(requestKey, () => executeWithRetry(requestFn, config?.retry))
+  return requestManager.execute(
+    requestKey,
+    () => executeWithRetry(requestFn, config?.retry),
+    config?.deduplicate !== false
+  )
 }
 
 /**
  * DELETE 请求
  */
-export const del = <T = any>(url: string, config?: RequestConfig) => {
-  const requestKey = `DELETE:${url}`
+export const del = <T = any>(url: string, config?: RequestConfig): Promise<T> => {
+  const requestKey = `DELETE:${url}:${JSON.stringify(config?.params ?? {})}`
   const alovaConfig = convertRequestConfig(config)
-  const requestFn = () => alovaInstance.Delete<T>(url, alovaConfig)
+  const requestFn = () => alovaInstance.Delete<T>(url, alovaConfig).send(true)
 
-  return requestManager.execute(requestKey, () => executeWithRetry(requestFn, config?.retry))
+  return requestManager.execute(
+    requestKey,
+    () => executeWithRetry(requestFn, config?.retry),
+    config?.deduplicate !== false
+  )
 }
 
 /**
  * PATCH 请求
  */
-export const patch = <T = any>(url: string, data?: any, config?: RequestConfig) => {
+export const patch = <T = any>(url: string, data?: any, config?: RequestConfig): Promise<T> => {
   const requestKey = `PATCH:${url}:${JSON.stringify(data)}`
   const alovaConfig = convertRequestConfig(config)
-  const requestFn = () => alovaInstance.Patch<T>(url, data, alovaConfig)
+  const requestFn = () => alovaInstance.Patch<T>(url, data, alovaConfig).send(true)
 
-  return requestManager.execute(requestKey, () => executeWithRetry(requestFn, config?.retry))
+  return requestManager.execute(
+    requestKey,
+    () => executeWithRetry(requestFn, config?.retry),
+    config?.deduplicate !== false
+  )
 }
 
 /**
  * HEAD 请求
  * 用于检查资源是否存在，不返回响应体
  */
-export const head = <T = any>(url: string, config?: RequestConfig) => {
-  const requestKey = `HEAD:${url}`
+export const head = (url: string, config?: RequestConfig): Promise<void> => {
+  const requestKey = `HEAD:${url}:${JSON.stringify(config?.params ?? {})}`
   const alovaConfig = convertRequestConfig(config)
-  const requestFn = () => alovaInstance.Head<T>(url, alovaConfig)
+  const requestFn = () => alovaInstance.Head(url, alovaConfig).send(true)
 
-  return requestManager.execute(requestKey, () => executeWithRetry(requestFn, config?.retry))
+  return requestManager.execute(
+    requestKey,
+    () => executeWithRetry(requestFn, config?.retry),
+    config?.deduplicate !== false
+  )
 }
 
 /**
  * 文件上传
  */
-export const uploadFile = <T = any>(url: string, file: File, config?: UploadConfig) => {
+export const uploadFile = <T = any>(url: string, file: File, config?: UploadConfig): Promise<T> => {
   const formData = new FormData()
   formData.append('file', file)
 
-  const uploadConfig = {
+  const uploadConfig: UploadConfig = {
     ...config,
     headers: {
       ...config?.headers,
@@ -342,13 +340,17 @@ export const uploadFile = <T = any>(url: string, file: File, config?: UploadConf
 /**
  * 多文件上传
  */
-export const uploadFiles = <T = any>(url: string, files: File[], config?: UploadConfig) => {
+export const uploadFiles = <T = any>(
+  url: string,
+  files: File[],
+  config?: UploadConfig
+): Promise<T> => {
   const formData = new FormData()
   files.forEach((file, index) => {
     formData.append(`files[${index}]`, file)
   })
 
-  const uploadConfig = {
+  const uploadConfig: UploadConfig = {
     ...config,
     headers: {
       ...config?.headers,
@@ -363,31 +365,22 @@ export const uploadFiles = <T = any>(url: string, files: File[], config?: Upload
  * 使用 Alova 实例确保经过拦截器处理，错误会被正确捕获和处理
  * 拦截器会根据 Content-Type 自动识别 blob 响应
  */
-export const downloadFile = async (url: string, filename?: string) => {
-  try {
-    // 使用 Alova 实例发送请求，确保经过拦截器
-    // 拦截器会根据 Content-Type (application/octet-stream) 自动返回 Blob
-    const blob = await alovaInstance.Get<Blob>(url, {
-      // 通过配置标记这是文件下载请求，拦截器会识别并返回 blob
-      // @ts-expect-error - Alova 可能不支持 responseType，但拦截器会根据 Content-Type 处理
-      responseType: 'blob',
-    })
+export const downloadFile = async (
+  url: string,
+  filename?: string,
+  config?: RequestConfig
+): Promise<void> => {
+  const alovaConfig = convertRequestConfig({
+    ...(config || {}),
+    // 标记为 blob 响应，拦截器会据此识别
+    // @ts-expect-error: Alova 类型未必声明 responseType，但运行时会透传
+    responseType: 'blob',
+  })
 
-    // 如果响应是 Blob，直接使用
-    if (blob instanceof Blob) {
-      const downloadUrl = window.URL.createObjectURL(blob)
-      const link = document.createElement('a')
-      link.href = downloadUrl
-      link.download = filename || 'download'
-      document.body.appendChild(link)
-      link.click()
-      document.body.removeChild(link)
-      window.URL.revokeObjectURL(downloadUrl)
+  const requestFn = () => alovaInstance.Get<Blob>(url, alovaConfig).send(true)
+  const blob = await executeWithRetry(requestFn, config?.retry)
 
-      return filename
-    }
-
-    // 如果不是 Blob，说明响应格式错误
+  if (!(blob instanceof Blob)) {
     throw new HttpRequestError(
       '文件下载失败：响应格式错误',
       ErrorType.SERVER,
@@ -396,25 +389,16 @@ export const downloadFile = async (url: string, filename?: string) => {
       undefined,
       false
     )
-  } catch (error) {
-    // 错误会被拦截器处理，这里只需要重新抛出
-    // 拦截器会处理错误提示和错误类型判断（包括调用 handleHttpError）
-    if (error instanceof HttpRequestError) {
-      throw error
-    }
-
-    // 如果是其他类型的错误，转换为 HttpRequestError
-    const errorMessage =
-      error instanceof Error ? error.message : $t('http.upload.fileDownloadFailed')
-    throw new HttpRequestError(
-      errorMessage,
-      ErrorType.SERVER,
-      undefined,
-      undefined,
-      undefined,
-      false
-    )
   }
+
+  const downloadUrl = window.URL.createObjectURL(blob)
+  const link = document.createElement('a')
+  link.href = downloadUrl
+  link.download = filename || 'download'
+  document.body.appendChild(link)
+  link.click()
+  document.body.removeChild(link)
+  window.URL.revokeObjectURL(downloadUrl)
 }
 
 /**

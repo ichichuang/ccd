@@ -1,5 +1,5 @@
 // src/utils/http/instance.ts
-import { HTTP_CONFIG } from '@/constants/modules/http'
+import { HTTP_CONFIG } from '@/constants/http'
 import { createAlova } from 'alova'
 import adapterFetch from 'alova/fetch'
 import VueHook from 'alova/vue'

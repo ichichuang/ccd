@@ -11,13 +11,18 @@ import { setupStores } from '@/plugins/modules/stores'
 export const setupPlugins = async (app: App) => {
   // 先安装并初始化 Pinia Stores，确保持久化状态已就绪，再使用依赖 Store 的逻辑
   setupStores(app)
-  const { loadingStart } = useLoading()
-  loadingStart()
-  setupRouter(app)
-  setupLocales(app)
+  const { loadingDone } = useLoading()
+  try {
+    // loadingStart()
+    setupRouter(app)
+    setupLocales(app)
 
-  // 在语言系统之后初始化 DateUtils，确保语言设置已就绪
-  await setupDateUtils(app)
+    // 在语言系统之后初始化 DateUtils，确保语言设置已就绪
+    await setupDateUtils(app)
 
-  setupEcharts(app)
+    setupEcharts(app)
+  } finally {
+    // 无论初始化成功与否，都要确保全局 loading 可关闭，避免页面卡在加载层
+    loadingDone()
+  }
 }

@@ -1,15 +1,15 @@
 // 声明全局类型
 declare global {
   /** 用户信息接口 */
-  interface UserInfo {
+  export interface UserInfo {
     /** 用户ID */
     userId: string
     /** 用户名 */
     username: string
     /** 用户角色 */
-    roles: string[]
+    roles?: string[]
     /** 用户权限 */
-    permissions: string[]
+    permissions?: string[]
     /** 用户头像 */
     avatar?: string
     /** 用户邮箱 */
@@ -20,3 +20,5 @@ declare global {
     [key: string]: any
   }
 }
+
+export {}

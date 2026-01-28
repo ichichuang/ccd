@@ -13,6 +13,7 @@ import timezone from 'dayjs/plugin/timezone.js'
 import utc from 'dayjs/plugin/utc.js'
 import weekday from 'dayjs/plugin/weekday.js'
 import weekOfYear from 'dayjs/plugin/weekOfYear.js'
+import { useMitt } from '@/utils/mitt'
 
 // 扩展插件
 dayjs.extend(relativeTime)
@@ -551,25 +552,20 @@ export class DateUtils {
       return
     }
 
-    // 监听框架语言切换事件
-    if (typeof window !== 'undefined') {
-      window.addEventListener('locale-changed', (event: any) => {
-        const { locale } = event.detail
-        if (locale) {
-          this.syncWithFrameworkLocale(locale)
-        }
-      })
+    // v7.0：通过 mitt 统一监听框架语言与时区事件
+    const emitter = useMitt()
 
-      // 精简：统一仅监听 locale-changed 与 timezone-changed
+    emitter.on('localeChange', locale => {
+      if (locale) {
+        this.syncWithFrameworkLocale(locale as Locale)
+      }
+    })
 
-      // 监听时区切换事件
-      window.addEventListener('timezone-changed', (event: any) => {
-        const { timezone } = event.detail
-        if (timezone) {
-          this.syncWithFrameworkTimezone(timezone)
-        }
-      })
-    }
+    emitter.on('timezoneChange', timezoneCode => {
+      if (timezoneCode) {
+        this.syncWithFrameworkTimezone(timezoneCode)
+      }
+    })
 
     this.frameworkIntegrated = true
   }
@@ -859,7 +855,7 @@ export class DateUtils {
    * @returns Promise<void>
    */
   static async initWithFramework(initialLocale?: Locale): Promise<void> {
-    // 初始化框架集成
+    // 初始化框架集成（注册 mitt 监听）
     this.initFrameworkIntegration()
 
     // 设置初始语言

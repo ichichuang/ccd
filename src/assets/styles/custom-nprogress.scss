@@ -5,10 +5,10 @@
   .bar {
     background: linear-gradient(
       90deg,
-      var(--accent100) 0%,
-      var(--accent200) 18%,
-      var(--primary200) 22%,
-      var(--primary100) 100%
+      rgb(var(--accent-light) / 1) 0%,
+      rgb(var(--accent) / 1) 18%,
+      rgb(var(--primary) / 1) 60%,
+      rgb(var(--primary-light) / 1) 100%
     ) !important;
     position: fixed;
     z-index: 1031;
@@ -20,8 +20,8 @@
 
     // 发光效果
     box-shadow:
-      0 0 10px var(--primary100),
-      0 0 20px var(--accent100);
+      0 0 10px rgb(var(--primary) / 0.45),
+      0 0 20px rgb(var(--accent) / 0.35);
 
     // 冲击波动画
     animation: nprogressPulse 1.2s ease-in-out infinite;
@@ -35,8 +35,8 @@
     width: 100px;
     height: 100%;
     box-shadow:
-      0 0 10px var(--accent100),
-      0 0 5px var(--accent100);
+      0 0 10px rgb(var(--accent) / 0.35),
+      0 0 5px rgb(var(--accent) / 0.25);
     opacity: 1;
     transform: rotate(3deg) translate(0px, -4px);
   }
@@ -50,17 +50,17 @@
 @keyframes nprogressPulse {
   0% {
     box-shadow:
-      0 0 8px var(--primary100),
-      0 0 16px var(--accent100);
+      0 0 8px rgb(var(--primary) / 0.35),
+      0 0 16px rgb(var(--accent) / 0.25);
   }
   50% {
     box-shadow:
-      0 0 16px var(--accent100),
-      0 0 32px var(--primary100);
+      0 0 16px rgb(var(--accent) / 0.4),
+      0 0 32px rgb(var(--primary) / 0.3);
   }
   100% {
     box-shadow:
-      0 0 8px var(--primary100),
-      0 0 16px var(--accent100);
+      0 0 8px rgb(var(--primary) / 0.35),
+      0 0 16px rgb(var(--accent) / 0.25);
   }
 }
