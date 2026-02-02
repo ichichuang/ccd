@@ -145,8 +145,10 @@ export const usePermissionGuard = ({
 
     // 精确控制：只有在 beforeEach 中调用了 loadingStart() 的情况下才调用 loadingDone()
     // 这样可以确保 loadingStart/Done 的精确配对，避免不必要的计数器操作
+    let hasCalledLoadingDone = false
     if (currentNavigationHasLoadingStart) {
       loadingDone()
+      hasCalledLoadingDone = true
       // 重置状态标记，为下一次导航做准备
       currentNavigationHasLoadingStart = false
     }
@@ -156,9 +158,17 @@ export const usePermissionGuard = ({
     // 为了确保初始 loading 能够关闭，这里也处理一下
     if (isFirstNavigation && layoutStore.loadingCount > 0) {
       loadingDone()
+      hasCalledLoadingDone = true
       isFirstNavigation = false
     } else if (isFirstNavigation) {
       isFirstNavigation = false
+    }
+
+    // 🔥 兜底逻辑：如果 loadingCount > 0 且前面没有调用过 loadingDone()，确保关闭 loading
+    // 这可以处理动态路由已加载时，但 loadingCount 仍然 > 0 的情况
+    // 例如：登录后跳转时，如果动态路由已加载，不会调用 loadingStart()，但可能仍有遗留的 loading
+    if (!hasCalledLoadingDone && layoutStore.loadingCount > 0) {
+      loadingDone()
     }
   })
 }
