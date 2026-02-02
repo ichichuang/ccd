@@ -1,16 +1,39 @@
 /**
- * 菱形过渡模式
+ * 菱形过渡模式（从点击位置扩散）
+ * v3.0 - 简化动画，使用 inset() 代替复杂的 polygon calc() 以提升性能
  */
 
-[data-transition='diamond'] {
-  ::view-transition-new(root) {
+:root[data-transition='diamond'] {
+  &::view-transition-group(root) {
+    animation-timing-function: cubic-bezier(0.25, 0, 0.25, 1);
+  }
+
+  &::view-transition-new(root) {
+    z-index: 9999;
+    animation: diamond-expand 0.4s cubic-bezier(0.25, 0, 0.25, 1) forwards;
+    // 使用简化的起始状态
     clip-path: polygon(50% 50%, 50% 50%, 50% 50%, 50% 50%);
-    animation: diamond-expand 400ms cubic-bezier(0.4, 0, 0.2, 1);
+    mix-blend-mode: normal;
+  }
+
+  &::view-transition-old(root) {
+    z-index: 1;
+    animation: none;
+    animation-fill-mode: forwards;
   }
 }
 
 @keyframes diamond-expand {
-  to {
-    clip-path: polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%);
+  0% {
+    clip-path: polygon(
+      var(--transition-x, 50%) var(--transition-y, 50%),
+      var(--transition-x, 50%) var(--transition-y, 50%),
+      var(--transition-x, 50%) var(--transition-y, 50%),
+      var(--transition-x, 50%) var(--transition-y, 50%)
+    );
+  }
+  100% {
+    // 使用固定的大值确保完全覆盖，避免复杂的 calc()
+    clip-path: polygon(50% -100%, 200% 50%, 50% 200%, -100% 50%);
   }
 }

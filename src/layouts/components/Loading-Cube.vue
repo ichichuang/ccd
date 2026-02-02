@@ -89,8 +89,8 @@ onMounted(() => {
   position: absolute;
   width: 100%;
   height: 100%;
-  border: 2px solid var(--primary200);
-  background: linear-gradient(135deg, var(--primary100), var(--primary200));
+  border: 2px solid rgb(var(--primary));
+  background: linear-gradient(135deg, rgb(var(--primary-light)), rgb(var(--primary)));
   opacity: 0.8;
   backface-visibility: hidden;
   -webkit-backface-visibility: hidden;

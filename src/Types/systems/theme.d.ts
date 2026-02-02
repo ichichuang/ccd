@@ -13,10 +13,65 @@ declare global {
     | 'glitch'
     | 'fade'
 
+  /**
+   * 单个颜色 Token 的完整状态定义
+   * 用于精确控制 Default / Light / Dark / Hover 等状态
+   */
+  export interface ColorTokenState {
+    default: string // e.g. blue-600
+    foreground: string // e.g. white
+    hover?: string // e.g. blue-700
+    active?: string
+    light?: string // 背景色 tint (e.g. blue-50)
+    lightForeground?: string // light 变体上的文字色
+  }
+
+  /**
+   * 单一模式（Light/Dark）下的完整配色配置
+   */
+  export interface ThemeModeConfig {
+    /* 品牌色系 */
+    primary?: Partial<ColorTokenState>
+    accent?: Partial<ColorTokenState>
+    destructive?: Partial<ColorTokenState>
+    warn?: Partial<ColorTokenState>
+    success?: Partial<ColorTokenState>
+
+    /* 基础色 */
+    background?: string
+    foreground?: string
+
+    /* 中性色系统 (Border, Input, Ring, Secondary, Muted) */
+    neutral?: {
+      base?: string // 用于 border, input, ring
+      bg?: string // 用于 card, popover, secondary, muted
+      foreground?: string // 用于 card-foreground, popover-foreground
+      secondaryForeground?: string
+      mutedForeground?: string
+    }
+
+    /* 侧边栏专用 */
+    sidebar?: {
+      background?: string
+      foreground?: string
+      primary?: string
+      primaryForeground?: string
+      accent?: string
+      accentForeground?: string
+      border?: string
+      ring?: string
+    }
+  }
+
   export interface ThemePreset {
     name: string
     label: string
-    primary: string
+
+    /* =========================================================
+       1. 简易模式 (Legacy / Simple Mode)
+       仅需定义核心色，其余由引擎自动计算
+       ========================================================= */
+    primary?: string
     /** 深色模式下的自定义背景色，未提供时使用引擎默认 */
     backgroundDark?: string
     /** 浅色模式下的自定义背景色，未提供时使用引擎默认 */
@@ -28,6 +83,15 @@ declare global {
     warn?: string
     /** 成功色，绿色系；未提供时使用引擎默认 */
     success?: string
+
+    /* =========================================================
+       2. 专业配置模式 (Configuration Mode) [NEW]
+       精确定义每种模式下的颜色值，优先级高于简易模式
+       ========================================================= */
+    colors?: {
+      light?: ThemeModeConfig
+      dark?: ThemeModeConfig
+    }
   }
 
   /**
@@ -50,8 +114,9 @@ declare global {
     '--primary-foreground': string
     /* [NEW] 衍生色及其文本色 (修复文字看不清的问题) */
     '--primary-hover': string
+    '--primary-hover-foreground': string
     '--primary-light': string
-    '--primary-light-foreground': string // <--- 新增：专门用于浅色背景上的文字
+    '--primary-light-foreground': string
 
     /* ==================== 辅助层 ==================== */
     '--secondary': string
@@ -61,6 +126,7 @@ declare global {
     '--accent': string
     '--accent-foreground': string
     '--accent-hover': string
+    '--accent-hover-foreground': string
     '--accent-light': string
     '--accent-light-foreground': string
 
@@ -68,16 +134,19 @@ declare global {
     '--destructive': string
     '--destructive-foreground': string
     '--destructive-hover': string
+    '--destructive-hover-foreground': string
     '--destructive-light': string
     '--destructive-light-foreground': string
     '--warn': string
     '--warn-foreground': string
     '--warn-hover': string
+    '--warn-hover-foreground': string
     '--warn-light': string
     '--warn-light-foreground': string
     '--success': string
     '--success-foreground': string
     '--success-hover': string
+    '--success-hover-foreground': string
     '--success-light': string
     '--success-light-foreground': string
 

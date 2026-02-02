@@ -10,11 +10,11 @@ const homeRoutes: RouteConfig[] = [
       icon: 'fc-share',
       fixedTag: true, // 固定标签，不可拖拽和删w
       keepAlive: true,
-      transition: {
-        name: 'fade',
-        enterTransition: 'animate__animated animate__fadeInTopRight enter-active-class',
-        leaveTransition: 'animate__animated animate__fadeOutBottomRight leave-active-class',
-      },
+      // transition: {
+      //   name: 'fade',
+      //   enterTransition: 'animate__animated animate__fadeInTopRight enter-active-class',
+      //   leaveTransition: 'animate__animated animate__fadeOutBottomRight leave-active-class',
+      // },
     },
   },
 ]

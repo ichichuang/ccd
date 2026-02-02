@@ -1,37 +1,14 @@
 /* 清除系统默认无用样式 */
-body,
-html {
-  margin: 0;
-  padding: 0;
-  background: var(--bg100);
-}
-
 * {
   box-sizing: border-box; // 盒模型
   outline: none; // 去除默认的轮廓线
+  margin: 0;
+  padding: 0;
   -webkit-tap-highlight-color: transparent; // 去除点击时的默认高亮
   -webkit-overflow-scrolling: touch; // 移动端滚动优化
   -webkit-text-size-adjust: 100%; // 禁止用户缩放
   -webkit-font-smoothing: antialiased; // 抗锯齿
   -moz-osx-font-smoothing: grayscale; // 抗锯齿
-}
-
-p,
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
-  margin: 0;
-  padding: 0;
-  border: 0;
-  font-size: 100%;
-  font: inherit;
-}
-ul,
-ol {
-  list-style: none;
 }
 
 a {
@@ -44,13 +21,3 @@ img {
   height: 100%;
   vertical-align: middle;
 }
-
-/* 系统默认滚动条设置 （兼容性）
-::-webkit-scrollbar    //滚动条整体部分
-::-webkit-scrollbar-button   //滚动条两端的按钮
-::-webkit-scrollbar-track   // 外层轨道
-::-webkit-scrollbar-track-piece    //内层轨道，滚动条中间部分（除去）
-::-webkit-scrollbar-thumb //滚动条里面可以拖动的那个
-::-webkit-scrollbar-corner   //边角
-::-webkit-resizer   ///定义右下角拖动块的样式
-*/

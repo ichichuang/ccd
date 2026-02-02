@@ -73,7 +73,7 @@ onMounted(() => {
 
 .pulse-ring {
   position: absolute;
-  border: 3px solid var(--primary200);
+  border: 3px solid red;
   border-radius: 50%;
   width: 100%;
   height: 100%;
@@ -102,7 +102,7 @@ onMounted(() => {
 .pulse-core {
   width: calc(var(--pulse-size) * 0.3);
   height: calc(var(--pulse-size) * 0.3);
-  background: var(--primary100);
+  background: red;
   border-radius: 50%;
   position: relative;
   z-index: 1;

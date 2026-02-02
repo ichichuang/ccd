@@ -1,54 +1,12 @@
 import type { EChartsOption } from 'echarts'
+import type { ChartThemeConfig } from '@/hooks/modules/useChartTheme/types'
 
-// 图表透明度配置类型
-export interface ChartOpacityConfig {
-  /** 折线图区域填充透明度 (0-1) */
-  lineArea?: number
-  /** 面积图透明度 (0-1) */
-  area?: number
-  /** 柱状图透明度 (0-1) */
-  bar?: number
-  /** 散点图透明度 (0-1) */
-  scatter?: number
-  /** 特效散点图透明度 (0-1) */
-  effectScatter?: number
-  /** 雷达图透明度 (0-1) */
-  radar?: number
-  /** 漏斗图透明度 (0-1) */
-  funnel?: number
-  /** 仪表盘透明度 (0-1) */
-  gauge?: number
-}
-
-// 图表主题配置类型
-export interface ChartThemeConfig {
-  /** 是否启用主题合并 */
-  enableTheme?: boolean
-  /** 透明度配置 */
-  opacity?: ChartOpacityConfig
-}
-
-// 图表高级配置类型（用于合并到 useChartTheme）
-export interface ChartAdvancedConfig {
-  /** 动画配置 */
-  animationConfig?: ChartAnimationConfig
-  /** 工具箱配置 */
-  toolboxConfig?: ChartToolboxConfig
-  /** 标记点配置 */
-  markPointConfig?: ChartMarkPointConfig
-  /** 标记线配置 */
-  markLineConfig?: ChartMarkLineConfig
-  /** 可视化映射配置 */
-  visualMapConfig?: ChartVisualMapConfig
-  /** 画刷配置 */
-  brushConfig?: ChartBrushConfig
-  /** 坐标轴指示器配置 */
-  axisPointerConfig?: ChartAxisPointerConfig
-  /** 是否开启图例悬停联动 */
-  legendHoverLink?: boolean
-  /** 背景颜色 */
-  backgroundColor?: string
-}
+export type {
+  ChartAdvancedConfig,
+  ChartOpacityConfig,
+  ChartThemeConfig,
+  DefaultOpacityValues,
+} from '@/hooks/modules/useChartTheme/types'
 
 // 图表联动配置类型
 export interface ChartConnectConfig {
@@ -586,9 +544,6 @@ export interface ChartInstance {
   /** 触发联动事件 */
   triggerConnect: (eventType: string, params: any) => void
 }
-
-// 透明度默认值类型
-export type DefaultOpacityValues = Required<ChartOpacityConfig>
 
 // ECharts 事件参数类型
 export interface ChartEventParams {

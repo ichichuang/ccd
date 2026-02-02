@@ -56,14 +56,32 @@ const coreRoutes: RouteConfig[] = [
           parent: 'fullscreen',
         },
       },
+      // scrollbar
       {
-        path: '/system-configuration/layout',
-        name: 'layout',
-        component: () => import('@/views/system-configuration/layout.vue'),
+        path: '/system-configuration/scrollbar',
+        name: 'scrollbar',
+        component: () => import('@/views/system-configuration/scrollbar.vue'),
         meta: {
-          title: '布局系统',
+          title: '滚动条系统',
           rank: 4,
           parent: 'fullscreen',
+        },
+      },
+    ],
+  },
+  // example
+  {
+    path: '/example',
+    name: 'Example',
+    children: [
+      // primevue
+      {
+        path: '/example/primevue',
+        name: 'ExamplePrimeVue',
+        component: () => import('@/views/example/primevue.vue'),
+        meta: {
+          title: 'PrimeVue',
+          rank: 1,
         },
       },
     ],

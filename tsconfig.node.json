@@ -14,8 +14,9 @@
     // 之前从 tsconfig.app.json 移出来的，必须放在这里
     "build/**/*",
 
-    // ✅ 断点常量 (uno.config.ts 引用，SSOT 在 src)
-    "src/constants/breakpoints.ts"
+    // ✅ 断点常量 & 主题颜色家族元数据 (uno.config.ts 引用，SSOT 在 src)
+    "src/constants/breakpoints.ts",
+    "src/utils/theme/metadata.ts"
   ],
   "compilerOptions": {
     "composite": true,

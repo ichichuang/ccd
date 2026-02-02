@@ -120,6 +120,46 @@ declare global {
     '--spacing-4xl': string
     /** 间距：5xl (最大) */
     '--spacing-5xl': string
+
+    // --- 圆角阶梯 (xs-5xl) ---
+    /** 圆角：xs (最小) */
+    '--radius-xs': string
+    /** 圆角：sm (小) */
+    '--radius-sm': string
+    /** 圆角：md (中，基准) */
+    '--radius-md': string
+    /** 圆角：lg (大) */
+    '--radius-lg': string
+    /** 圆角：xl (超大) */
+    '--radius-xl': string
+    /** 圆角：2xl */
+    '--radius-2xl': string
+    /** 圆角：3xl */
+    '--radius-3xl': string
+    /** 圆角：4xl */
+    '--radius-4xl': string
+    /** 圆角：5xl (最大) */
+    '--radius-5xl': string
+
+    // --- 过渡时长阶梯 (xs-5xl) ---
+    /** 过渡时长：xs (微交互) */
+    '--transition-xs': string
+    /** 过渡时长：sm (快速反馈) */
+    '--transition-sm': string
+    /** 过渡时长：md (标准过渡) */
+    '--transition-md': string
+    /** 过渡时长：lg (展开/收起) */
+    '--transition-lg': string
+    /** 过渡时长：xl (页面过渡) */
+    '--transition-xl': string
+    /** 过渡时长：2xl */
+    '--transition-2xl': string
+    /** 过渡时长：3xl */
+    '--transition-3xl': string
+    /** 过渡时长：4xl */
+    '--transition-4xl': string
+    /** 过渡时长：5xl (戏剧效果) */
+    '--transition-5xl': string
   }
   /* eslint-enable @typescript-eslint/naming-convention */
 

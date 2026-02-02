@@ -76,7 +76,7 @@ onMounted(() => {
 }
 
 .spinner > div {
-  background-color: var(--primary100);
+  background-color: red;
   height: 100%;
   width: var(--bar-width);
   display: inline-block;

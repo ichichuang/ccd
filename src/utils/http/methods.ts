@@ -1,7 +1,7 @@
 // src/utils/http/methods.ts
 import { HTTP_CONFIG } from '@/constants/http'
 import { alovaInstance } from './instance'
-import { ErrorType, HttpRequestError, isRetryableError } from './interceptors'
+import { HttpRequestError, isRetryableError, ErrorType } from './errors'
 import type {
   AlovaRequestConfig,
   CacheStats,

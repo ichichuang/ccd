@@ -10,13 +10,6 @@ export const include = [
   'alova',
   '@vueuse/core',
 
-  // Shadcn-vue 与底层原语：radix-vue 是 Shadcn 的底层原语库，预构建可显著提升 UI 组件加载速度
-  'radix-vue',
-  'class-variance-authority',
-  'clsx',
-  'tailwind-merge',
-  'lucide-vue-next',
-
   // 工具库 (强烈建议保留)
   'dayjs',
   'lodash-es', // 关键：lodash-es 文件极多，预构建能显著减少 dev 请求数

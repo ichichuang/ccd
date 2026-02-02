@@ -2,62 +2,7 @@ import { HTTP_CONFIG } from '@/constants/http'
 import { useUserStoreWithOut } from '@/stores/modules/user'
 import { decompressAndDecryptSync, encryptAndCompressSync } from '@/utils/safeStorage'
 import type { Method } from 'alova'
-
-/**
- * 错误类型枚举
- */
-export enum ErrorType {
-  NETWORK = 'NETWORK',
-  TIMEOUT = 'TIMEOUT',
-  AUTH = 'AUTH',
-  SERVER = 'SERVER',
-  CLIENT = 'CLIENT',
-  SECURITY = 'SECURITY',
-  UNKNOWN = 'UNKNOWN',
-}
-
-/**
- * 自定义 HTTP 错误类
- */
-export class HttpRequestError extends Error {
-  public type: ErrorType
-  public status?: number
-  public statusText?: string
-  public data?: any
-  public retryable: boolean
-
-  constructor(
-    message: string,
-    type: ErrorType = ErrorType.UNKNOWN,
-    status?: number,
-    statusText?: string,
-    data?: any,
-    retryable: boolean = false
-  ) {
-    super(message)
-    this.name = 'HttpRequestError'
-    this.type = type
-    this.status = status
-    this.statusText = statusText
-    this.data = data
-    this.retryable = retryable
-  }
-}
-
-/**
- * 判断错误是否可重试
- */
-function isRetryableError(error: HttpRequestError): boolean {
-  // 网络错误、超时错误、5xx 服务器错误可以重试
-  return (
-    error.type === ErrorType.NETWORK ||
-    error.type === ErrorType.TIMEOUT ||
-    (error.status !== undefined && error.status >= 500 && error.status < 600)
-  )
-}
-
-// 导出供外部使用
-export { isRetryableError }
+import { ErrorType, HttpRequestError } from './errors'
 
 /**
  * 安全检查和数据清理

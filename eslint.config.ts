@@ -177,7 +177,7 @@ export default tseslint.config(
       'vue/script-setup-uses-vars': 'error',
 
       // ✅ 核心修改：放宽组件命名限制
-      // 理由：shadcn 模式下，index.vue 或单单词组件很常见
+      // 理由：设计系统和自动生成组件中，index.vue 或单词组件名很常见
       'vue/multi-word-component-names': 'off',
     },
   },

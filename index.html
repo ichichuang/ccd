@@ -10,13 +10,20 @@
       name="viewport"
       content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"
     />
-
+    <script>
+      ;(function () {
+        var mode = localStorage.getItem('theme-mode')
+        var isDark = false
+        if (mode === 'dark') isDark = true
+        else if (mode === 'light') isDark = false
+        else if (mode !== 'auto') mode = 'auto'
+        if (mode === 'auto') isDark = window.matchMedia('(prefers-color-scheme: dark)').matches
+        document.documentElement.classList.toggle('dark', isDark)
+        var meta = document.querySelector('meta[name="theme-color"]')
+        if (meta) meta.setAttribute('content', isDark ? '#09090b' : '#ffffff')
+      })()
+    </script>
     <title>%VITE_APP_TITLE%</title>
-
-    <meta
-      name="theme-color"
-      content="#ffffff"
-    />
 
     <meta
       name="mobile-web-app-capable"
@@ -60,7 +67,7 @@
     />
   </head>
 
-  <body class="fs-appFontSize">
+  <body class="fs-md">
     <div id="app"></div>
 
     <script

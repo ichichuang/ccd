@@ -2,15 +2,30 @@
  * 窗帘过渡模式（从一侧展开）
  */
 
-[data-transition='curtain'] {
-  ::view-transition-new(root) {
+:root[data-transition='curtain'] {
+  &::view-transition-group(root) {
+    animation-timing-function: cubic-bezier(0.25, 0, 0.25, 1);
+  }
+
+  &::view-transition-new(root) {
+    z-index: 9999;
+    animation: curtain-expand 0.4s cubic-bezier(0.25, 0, 0.25, 1) forwards;
     clip-path: inset(0 100% 0 0);
-    animation: curtain-expand 400ms cubic-bezier(0.4, 0, 0.2, 1);
+    mix-blend-mode: normal;
+  }
+
+  &::view-transition-old(root) {
+    z-index: 1;
+    animation: none;
+    animation-fill-mode: forwards;
   }
 }
 
 @keyframes curtain-expand {
-  to {
+  0% {
+    clip-path: inset(0 100% 0 0);
+  }
+  100% {
     clip-path: inset(0 0% 0 0);
   }
 }

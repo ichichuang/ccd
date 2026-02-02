@@ -27,7 +27,8 @@ export function calculateCircleRadius(x: number, y: number): number {
 }
 
 /**
- * 计算菱形扩散半径
+ * 计算菱形扩散半径（用于 diamond 模式）
+ * 使用对角线长度确保完全覆盖屏幕
  */
 export function calculateDiamondRadius(x: number, y: number): number {
   const maxX = Math.max(x, window.innerWidth - x)
@@ -37,16 +38,23 @@ export function calculateDiamondRadius(x: number, y: number): number {
 
 /**
  * 从 CSS 变量获取背景色（RGB 格式转换为 Hex）
+ * 优化：避免重复获取同一变量
  */
 export function getBackgroundColor(cssVar: string = '--background'): string {
   const rgbValue = getComputedStyle(document.documentElement).getPropertyValue(cssVar).trim()
+
   if (!rgbValue) {
-    // 回退到默认背景色
+    // 如果 cssVar 就是 '--background'，直接返回默认值，避免重复获取
+    if (cssVar === '--background') {
+      return '#ffffff'
+    }
+    // 否则尝试获取默认背景色
     const fallback = getComputedStyle(document.documentElement)
       .getPropertyValue('--background')
       .trim()
     return fallback ? rgbToHex(fallback) : '#ffffff'
   }
+
   return rgbToHex(rgbValue)
 }
 
@@ -62,10 +70,7 @@ export function getTransitionConfig(
       return {
         duration: ANIMATION_DURATION,
         easing: DEFAULT_EASING,
-        overlay: {
-          opacity: 0.15,
-          blur: 2,
-        },
+        overlay: { opacity: 0, blur: 0 },
       }
     }
 
@@ -73,9 +78,7 @@ export function getTransitionConfig(
       return {
         duration: ANIMATION_DURATION,
         easing: DEFAULT_EASING,
-        overlay: {
-          opacity: 0.1,
-        },
+        overlay: { opacity: 0, blur: 0 },
       }
     }
 
@@ -83,9 +86,7 @@ export function getTransitionConfig(
       return {
         duration: ANIMATION_DURATION,
         easing: DEFAULT_EASING,
-        overlay: {
-          opacity: 0.12,
-        },
+        overlay: { opacity: 0, blur: 0 },
       }
     }
 
@@ -93,9 +94,7 @@ export function getTransitionConfig(
       return {
         duration: ANIMATION_DURATION,
         easing: DEFAULT_EASING,
-        overlay: {
-          opacity: 0.2,
-        },
+        overlay: { opacity: 0, blur: 0 },
       }
     }
 
@@ -103,9 +102,7 @@ export function getTransitionConfig(
       return {
         duration: ANIMATION_DURATION * 0.8,
         easing: 'steps(4, end)',
-        overlay: {
-          opacity: 0.05,
-        },
+        overlay: { opacity: 0, blur: 0 },
       }
     }
 
@@ -114,9 +111,7 @@ export function getTransitionConfig(
       return {
         duration: ANIMATION_DURATION,
         easing: DEFAULT_EASING,
-        overlay: {
-          opacity: 0.3,
-        },
+        overlay: { opacity: 0, blur: 0 },
       }
     }
   }

@@ -1,11 +1,11 @@
 // useChartTheme 主函数 - 响应式版本
 
-import type { ChartAdvancedConfig, ChartOpacityConfig } from '@/components/use-echarts/utils/types'
-import { DEFAULT_OPACITY_VALUES } from '@/components/use-echarts/utils/constants'
-import { useColorStore } from '@/stores/modules/color'
-import { useSizeStore } from '@/stores/modules/size'
+import { computed } from 'vue'
+import type { Ref, ComputedRef } from 'vue'
+import type { ChartAdvancedConfig, ChartOpacityConfig, ThemeConfig } from './types'
+import { DEFAULT_OPACITY_VALUES } from './constants'
+import { getChartSystemVariables, generateChartPalette } from '@/utils/theme/chartUtils'
 import { deepCloneWithFunctions } from './utils'
-import type { ThemeConfig } from './types'
 import { applyFontStylesToTargets } from './applyFontStyles'
 import { applySeriesStyles } from './applySeriesStyles'
 import { applyAxisStyles } from './applyAxisStyles'
@@ -59,107 +59,40 @@ const withAlpha = (color: string | undefined, alpha: number): string | undefined
  * 构建主题配置对象
  */
 function buildThemeConfig(): ThemeConfig {
-  const colorStore = useColorStore()
-  const sizeStore = useSizeStore()
+  const {
+    textColor100,
+    textColor200,
+    bgColor200,
+    bgColor300,
+    accent100,
+    primaryColor,
+    successColor,
+    infoColor,
+    warnColor,
+    dangerColor,
+    helpColor,
+    contrastColor,
+    secondaryColor,
+    paddings,
+    gap,
+    gapl,
+    fontSize,
+    fontSizeSmall,
+  } = getChartSystemVariables()
 
-  // 获取主题颜色
-  const textColor100 = colorStore.getText100
-  const textColor200 = colorStore.getText200
-  const bgColor200 = colorStore.getBg200
-  const bgColor300 = colorStore.getBg300
-  const accent100 = colorStore.getAccent100
+  // 家族色仍然保留，供各图表模块做语义化使用
+  const primaryColors = [primaryColor, primaryColor, primaryColor, primaryColor]
+  const successColors = [successColor, successColor, successColor, successColor]
+  const infoColors = [infoColor, infoColor, infoColor, infoColor]
+  const warnColors = [warnColor, warnColor, warnColor, warnColor]
+  const dangerColors = [dangerColor, dangerColor, dangerColor, dangerColor]
+  const helpColors = [helpColor, helpColor, helpColor, helpColor]
+  const contrastColors = [contrastColor, contrastColor, contrastColor, contrastColor]
+  const secondaryColors = [secondaryColor, secondaryColor, secondaryColor, secondaryColor]
 
-  // 获取主题尺寸
-  const paddings = sizeStore.getPaddingsValue
-  const gap = sizeStore.getGap
-  const gapl = sizeStore.getGapl
-  const fontSize = sizeStore.getFontSizeValue
-  const fontSizeSmall = sizeStore.getFontSizesValue
-
-  // 获取颜色数组
-  const primaryColors = [
-    colorStore.getPrimaryColor,
-    colorStore.getPrimaryColorHover,
-    colorStore.getPrimaryColorActive,
-    colorStore.getPrimaryColorBorder,
-  ]
-  const successColors = [
-    colorStore.getSuccessColor,
-    colorStore.getSuccessColorHover,
-    colorStore.getSuccessColorActive,
-    colorStore.getSuccessColorBorder,
-  ]
-  const infoColors = [
-    colorStore.getInfoColor,
-    colorStore.getInfoColorHover,
-    colorStore.getInfoColorActive,
-    colorStore.getInfoColorBorder,
-  ]
-  const warnColors = [
-    colorStore.getWarnColor,
-    colorStore.getWarnColorHover,
-    colorStore.getWarnColorActive,
-    colorStore.getWarnColorBorder,
-  ]
-  const dangerColors = [
-    colorStore.getDangerColor,
-    colorStore.getDangerColorHover,
-    colorStore.getDangerColorActive,
-    colorStore.getDangerColorBorder,
-  ]
-  const helpColors = [
-    colorStore.getHelpColor,
-    colorStore.getHelpColorHover,
-    colorStore.getHelpColorActive,
-    colorStore.getHelpColorBorder,
-  ]
-  const contrastColors = [
-    colorStore.getContrastColor,
-    colorStore.getContrastColorHover,
-    colorStore.getContrastColorActive,
-    colorStore.getContrastColorBorder,
-  ]
-  const secondaryColors = [
-    colorStore.getSecondaryColor,
-    colorStore.getSecondaryColorHover,
-    colorStore.getSecondaryColorActive,
-    colorStore.getSecondaryColorBorder,
-  ]
-
-  const colors = [
-    primaryColors[0],
-    successColors[0],
-    infoColors[0],
-    warnColors[0],
-    dangerColors[0],
-    helpColors[0],
-    contrastColors[0],
-    secondaryColors[0],
-    primaryColors[1],
-    secondaryColors[1],
-    successColors[1],
-    infoColors[1],
-    warnColors[1],
-    dangerColors[1],
-    helpColors[1],
-    contrastColors[1],
-    primaryColors[2],
-    successColors[2],
-    infoColors[2],
-    warnColors[2],
-    dangerColors[2],
-    helpColors[2],
-    contrastColors[2],
-    secondaryColors[2],
-    primaryColors[3],
-    successColors[3],
-    infoColors[3],
-    warnColors[3],
-    dangerColors[3],
-    helpColors[3],
-    contrastColors[3],
-    secondaryColors[3],
-  ]
+  // 智能调色盘：基于语义颜色 + Light 变体生成具有层次感的颜色数组
+  // count 取 24，既保证足够的系列区分度，又不会过多重复
+  const colors = generateChartPalette(primaryColor, 24)
 
   return {
     font: {

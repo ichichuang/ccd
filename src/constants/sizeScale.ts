@@ -41,3 +41,37 @@ export const SPACING_SCALE_RATIOS: Record<SizeScaleKey, number> = {
   '4xl': 24, // 96px
   '5xl': 32, // 128px
 }
+
+/**
+ * 圆角倍率表 (相对于 --radius)
+ * 假设 base (md) = 0.5rem (8px)
+ * 从微圆角到全圆角的完整阶梯
+ */
+export const RADIUS_SCALE_RATIOS: Record<SizeScaleKey, number> = {
+  xs: 0.25, // 2px
+  sm: 0.5, // 4px
+  md: 1, // 8px (Base)
+  lg: 1.5, // 12px
+  xl: 2, // 16px
+  '2xl': 3, // 24px
+  '3xl': 4, // 32px
+  '4xl': 5, // 40px
+  '5xl': 6, // 48px (接近全圆)
+}
+
+/**
+ * 过渡时长表 (毫秒)
+ * 从微交互到慢动画的完整阶梯
+ * 遵循 Material Design 动效时长指南
+ */
+export const TRANSITION_SCALE_VALUES: Record<SizeScaleKey, number> = {
+  xs: 75, // 微交互 (hover 高亮)
+  sm: 150, // 快速反馈
+  md: 200, // 标准过渡
+  lg: 300, // 展开/收起
+  xl: 400, // 页面过渡
+  '2xl': 500, // 复杂动画
+  '3xl': 700, // 慢动画
+  '4xl': 1000, // 强调动画
+  '5xl': 1500, // 戏剧效果
+}

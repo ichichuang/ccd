@@ -6,21 +6,19 @@ import type { IconSize } from './types'
 
 /**
  * 尺寸映射表（单一数据源）
+ * 使用响应式字体阶梯系统（fs-sm/md/lg/xl），联动 SizeStore
  */
-const sizeMap = {
+const sizeMap: Record<'s' | 'm' | 'l', { customClass: string[] }> = {
   s: {
-    customClass: ['fs-appFontSizes'],
-    ohVueClass: ['w-appFontSizes', 'h-appFontSizes'],
+    customClass: ['fs-sm'],
   },
   m: {
-    customClass: ['fs-appFontSizex'],
-    ohVueClass: ['w-appFontSizex', 'h-appFontSizex'],
+    customClass: ['fs-md'],
   },
   l: {
-    customClass: ['fs-appFontSizel'],
-    ohVueClass: ['w-appFontSizel', 'h-appFontSizel'],
+    customClass: ['fs-xl'],
   },
-} as const
+}
 
 /**
  * 检查字符串是否包含单位
@@ -77,11 +75,11 @@ export function toIconName(str: string): string {
  */
 export function getCustomIconSizeClass(size?: IconSize): string[] {
   if (!size) {
-    return ['fs-appFontSize']
+    return ['fs-md']
   }
 
   if (size === 's' || size === 'm' || size === 'l') {
-    return sizeMap[size].customClass
+    return [...sizeMap[size].customClass]
   }
 
   // 数字或字符串类型的 size 不需要类名（使用 style 控制）
@@ -105,52 +103,4 @@ export function getCustomIconSizeStyle(size?: IconSize): Record<string, string> 
   }
 }
 
-/**
- * 获取 OhVueIcon 的尺寸类名
- * @param size 尺寸值
- * @returns 类名数组
- */
-export function getOhVueIconSizeClass(size?: IconSize): string[] {
-  if (!size) {
-    return ['w-appFontSize', 'h-appFontSize']
-  }
-
-  if (size === 's' || size === 'm' || size === 'l') {
-    return sizeMap[size].ohVueClass
-  }
-
-  // 数字或字符串类型的 size 不需要类名（使用 style 控制）
-  return []
-}
-
-/**
- * 获取 OhVueIcon 的尺寸样式
- * @param size 尺寸值
- * @returns 样式对象
- */
-export function getOhVueIconSizeStyle(size?: IconSize): Record<string, string> | undefined {
-  // 未指定尺寸或使用固定尺寸（s/m/l）时，使用类名控制，不需要样式
-  if (!size || size === 's' || size === 'm' || size === 'l') {
-    return undefined
-  }
-
-  // 数字或字符串类型的 size 使用样式控制
-  const sizeValue = formatSizeValue(size)
-  return {
-    width: sizeValue,
-    height: sizeValue,
-  }
-}
-
-/**
- * 获取 OhVueIcon 的 size prop 值（用于传递给 OhVueIcon 组件）
- * @param size 尺寸值
- * @returns size prop 值
- */
-export function getOhVueIconSizeProp(size?: IconSize): string | number | undefined {
-  if (!size || size === 's' || size === 'm' || size === 'l') {
-    return undefined
-  }
-
-  return size
-}
+// 旧版 OhVueIcon 相关辅助函数已移除，改由 UnoCSS Icons 统一实现

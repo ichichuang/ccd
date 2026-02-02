@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia'
 import { THEME_PRESETS, DEFAULT_THEME_NAME } from '@/constants/theme'
 import { generateThemeVars, applyTheme } from '@/utils/theme/engine'
-import { createPiniaEncryptedSerializer } from '@/utils/safeStorage/piniaSerializer'
+import { isThemeLocked } from '@/hooks/modules/useThemeSwitch'
 
 interface ThemeState {
   mode: ThemeMode
@@ -15,6 +15,15 @@ export const useThemeStore = defineStore('theme', {
     themeName: DEFAULT_THEME_NAME,
     transitionMode: 'circle',
   }),
+
+  getters: {
+    isDark(state): boolean {
+      if (state.mode === 'auto') {
+        return window.matchMedia('(prefers-color-scheme: dark)').matches
+      }
+      return state.mode === 'dark'
+    },
+  },
 
   actions: {
     setMode(mode: ThemeMode) {
@@ -37,6 +46,11 @@ export const useThemeStore = defineStore('theme', {
      * 核心刷新逻辑 (修复持久化数据不一致)
      */
     refreshTheme() {
+      // CRITICAL: Skip if theme is locked during transition
+      if (isThemeLocked && isThemeLocked()) {
+        return
+      }
+
       // 1. 获取当前系统/模式
       const isDark =
         this.mode === 'auto'
@@ -56,6 +70,13 @@ export const useThemeStore = defineStore('theme', {
       // 3. 应用样式变量（引擎按 isDark 取 backgroundDark/backgroundLight）
       const vars = generateThemeVars(preset, isDark)
       applyTheme(vars)
+
+      // 4. 写入明文 theme-mode 供 index.html 首帧脚本读取，避免首屏闪屏
+      try {
+        localStorage.setItem('theme-mode', this.mode)
+      } catch (_) {
+        /* ignore */
+      }
     },
 
     init() {
@@ -70,6 +91,6 @@ export const useThemeStore = defineStore('theme', {
   persist: {
     key: `${import.meta.env.VITE_PINIA_PERSIST_KEY_PREFIX}-theme`,
     storage: localStorage,
-    serializer: createPiniaEncryptedSerializer(),
+    // serializer: createPiniaEncryptedSerializer(),
   },
 })

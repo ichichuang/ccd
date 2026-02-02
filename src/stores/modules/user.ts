@@ -3,6 +3,7 @@ import store from '@/stores'
 import { createPiniaEncryptedSerializer } from '@/utils/safeStorage/piniaSerializer'
 import { encryptAndCompressSync } from '@/utils/safeStorage/safeStorage'
 import { defineStore } from 'pinia'
+import type { UserInfo } from '@/api/user/types'
 
 interface UserState {
   token: string

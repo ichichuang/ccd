@@ -93,7 +93,7 @@ onMounted(() => {
 }
 
 .flower-spinner .smaller-dot {
-  background: var(--primary100);
+  background: red;
   height: 100%;
   width: 100%;
   border-radius: 50%;
@@ -106,7 +106,7 @@ onMounted(() => {
 }
 
 .flower-spinner .bigger-dot {
-  background: var(--primary100);
+  background: red;
   height: 100%;
   width: 100%;
   padding: 10%;
@@ -122,14 +122,14 @@ onMounted(() => {
 @keyframes flower-spinner-bigger-dot-animation {
   0% {
     box-shadow:
-      var(--primary100) 0px 0px 0px,
-      var(--primary100) 0px 0px 0px,
-      var(--primary100) 0px 0px 0px,
-      var(--primary100) 0px 0px 0px,
-      var(--primary100) 0px 0px 0px,
-      var(--primary100) 0px 0px 0px,
-      var(--primary100) 0px 0px 0px,
-      var(--primary100) 0px 0px 0px;
+      red 0px 0px 0px,
+      red 0px 0px 0px,
+      red 0px 0px 0px,
+      red 0px 0px 0px,
+      red 0px 0px 0px,
+      red 0px 0px 0px,
+      red 0px 0px 0px,
+      red 0px 0px 0px;
   }
   50% {
     transform: translateZ(0) rotate(180deg);
@@ -137,40 +137,40 @@ onMounted(() => {
   25%,
   75% {
     box-shadow:
-      var(--primary100) var(--bigger-offset) 0px 0px,
-      var(--primary100) calc(var(--bigger-offset) * -1) 0px 0px,
-      var(--primary100) 0px var(--bigger-offset) 0px,
-      var(--primary100) 0px calc(var(--bigger-offset) * -1) 0px,
-      var(--primary100) var(--diagonal-offset) calc(var(--diagonal-offset) * -1) 0px,
-      var(--primary100) var(--diagonal-offset) var(--diagonal-offset) 0px,
-      var(--primary100) calc(var(--diagonal-offset) * -1) calc(var(--diagonal-offset) * -1) 0px,
-      var(--primary100) calc(var(--diagonal-offset) * -1) var(--diagonal-offset) 0px;
+      red var(--bigger-offset) 0px 0px,
+      red calc(var(--bigger-offset) * -1) 0px 0px,
+      red 0px var(--bigger-offset) 0px,
+      red 0px calc(var(--bigger-offset) * -1) 0px,
+      red var(--diagonal-offset) calc(var(--diagonal-offset) * -1) 0px,
+      red var(--diagonal-offset) var(--diagonal-offset) 0px,
+      red calc(var(--diagonal-offset) * -1) calc(var(--diagonal-offset) * -1) 0px,
+      red calc(var(--diagonal-offset) * -1) var(--diagonal-offset) 0px;
   }
   100% {
     transform: translateZ(0) rotate(360deg);
     box-shadow:
-      var(--primary100) 0px 0px 0px,
-      var(--primary100) 0px 0px 0px,
-      var(--primary100) 0px 0px 0px,
-      var(--primary100) 0px 0px 0px,
-      var(--primary100) 0px 0px 0px,
-      var(--primary100) 0px 0px 0px,
-      var(--primary100) 0px 0px 0px,
-      var(--primary100) 0px 0px 0px;
+      red 0px 0px 0px,
+      red 0px 0px 0px,
+      red 0px 0px 0px,
+      red 0px 0px 0px,
+      red 0px 0px 0px,
+      red 0px 0px 0px,
+      red 0px 0px 0px,
+      red 0px 0px 0px;
   }
 }
 
 @-webkit-keyframes flower-spinner-bigger-dot-animation {
   0% {
     box-shadow:
-      var(--primary100) 0px 0px 0px,
-      var(--primary100) 0px 0px 0px,
-      var(--primary100) 0px 0px 0px,
-      var(--primary100) 0px 0px 0px,
-      var(--primary100) 0px 0px 0px,
-      var(--primary100) 0px 0px 0px,
-      var(--primary100) 0px 0px 0px,
-      var(--primary100) 0px 0px 0px;
+      red 0px 0px 0px,
+      red 0px 0px 0px,
+      red 0px 0px 0px,
+      red 0px 0px 0px,
+      red 0px 0px 0px,
+      red 0px 0px 0px,
+      red 0px 0px 0px,
+      red 0px 0px 0px;
   }
   50% {
     -webkit-transform: translateZ(0) rotate(180deg);
@@ -178,102 +178,106 @@ onMounted(() => {
   25%,
   75% {
     box-shadow:
-      var(--primary100) var(--bigger-offset) 0px 0px,
-      var(--primary100) calc(var(--bigger-offset) * -1) 0px 0px,
-      var(--primary100) 0px var(--bigger-offset) 0px,
-      var(--primary100) 0px calc(var(--bigger-offset) * -1) 0px,
-      var(--primary100) var(--diagonal-offset) calc(var(--diagonal-offset) * -1) 0px,
-      var(--primary100) var(--diagonal-offset) var(--diagonal-offset) 0px,
-      var(--primary100) calc(var(--diagonal-offset) * -1) calc(var(--diagonal-offset) * -1) 0px,
-      var(--primary100) calc(var(--diagonal-offset) * -1) var(--diagonal-offset) 0px;
+      red var(--bigger-offset) 0px 0px,
+      red calc(var(--bigger-offset) * -1) 0px 0px,
+      red 0px var(--bigger-offset) 0px,
+      red 0px calc(var(--bigger-offset) * -1) 0px,
+      red var(--diagonal-offset) calc(var(--diagonal-offset) * -1) 0px,
+      red var(--diagonal-offset) var(--diagonal-offset) 0px,
+      red calc(var(--diagonal-offset) * -1) calc(var(--diagonal-offset) * -1) 0px,
+      red calc(var(--diagonal-offset) * -1) var(--diagonal-offset) 0px;
   }
   100% {
     -webkit-transform: translateZ(0) rotate(360deg);
     box-shadow:
-      var(--primary100) 0px 0px 0px,
-      var(--primary100) 0px 0px 0px,
-      var(--primary100) 0px 0px 0px,
-      var(--primary100) 0px 0px 0px,
-      var(--primary100) 0px 0px 0px,
-      var(--primary100) 0px 0px 0px,
-      var(--primary100) 0px 0px 0px,
-      var(--primary100) 0px 0px 0px;
+      red 0px 0px 0px,
+      red 0px 0px 0px,
+      red 0px 0px 0px,
+      red 0px 0px 0px,
+      red 0px 0px 0px,
+      red 0px 0px 0px,
+      red 0px 0px 0px,
+      red 0px 0px 0px;
   }
 }
 
 @keyframes flower-spinner-smaller-dot-animation {
   0% {
     box-shadow:
-      var(--primary100) 0px 0px 0px,
-      var(--primary100) 0px 0px 0px,
-      var(--primary100) 0px 0px 0px,
-      var(--primary100) 0px 0px 0px,
-      var(--primary100) 0px 0px 0px,
-      var(--primary100) 0px 0px 0px,
-      var(--primary100) 0px 0px 0px,
-      var(--primary100) 0px 0px 0px;
+      red 0px 0px 0px,
+      red 0px 0px 0px,
+      red 0px 0px 0px,
+      red 0px 0px 0px,
+      red 0px 0px 0px,
+      red 0px 0px 0px,
+      red 0px 0px 0px,
+      red 0px 0px 0px;
   }
   25%,
   75% {
     box-shadow:
-      var(--primary200) var(--smaller-offset) 0px 0px,
-      var(--primary200) calc(var(--smaller-offset) * -1) 0px 0px,
-      var(--primary200) 0px var(--smaller-offset) 0px,
-      var(--primary200) 0px calc(var(--smaller-offset) * -1) 0px,
-      var(--primary200) var(--smaller-diagonal-offset) calc(var(--smaller-diagonal-offset) * -1) 0px,
-      var(--primary200) var(--smaller-diagonal-offset) var(--smaller-diagonal-offset) 0px,
-      var(--primary200) calc(var(--smaller-diagonal-offset) * -1)
+      rgb(var(--primary)) var(--smaller-offset) 0px 0px,
+      rgb(var(--primary)) calc(var(--smaller-offset) * -1) 0px 0px,
+      rgb(var(--primary)) 0px var(--smaller-offset) 0px,
+      rgb(var(--primary)) 0px calc(var(--smaller-offset) * -1) 0px,
+      rgb(var(--primary)) var(--smaller-diagonal-offset) calc(var(--smaller-diagonal-offset) * -1)
+        0px,
+      rgb(var(--primary)) var(--smaller-diagonal-offset) var(--smaller-diagonal-offset) 0px,
+      rgb(var(--primary)) calc(var(--smaller-diagonal-offset) * -1)
         calc(var(--smaller-diagonal-offset) * -1) 0px,
-      var(--primary200) calc(var(--smaller-diagonal-offset) * -1) var(--smaller-diagonal-offset) 0px;
+      rgb(var(--primary)) calc(var(--smaller-diagonal-offset) * -1) var(--smaller-diagonal-offset)
+        0px;
   }
   100% {
     box-shadow:
-      var(--primary100) 0px 0px 0px,
-      var(--primary100) 0px 0px 0px,
-      var(--primary100) 0px 0px 0px,
-      var(--primary100) 0px 0px 0px,
-      var(--primary100) 0px 0px 0px,
-      var(--primary100) 0px 0px 0px,
-      var(--primary100) 0px 0px 0px,
-      var(--primary100) 0px 0px 0px;
+      red 0px 0px 0px,
+      red 0px 0px 0px,
+      red 0px 0px 0px,
+      red 0px 0px 0px,
+      red 0px 0px 0px,
+      red 0px 0px 0px,
+      red 0px 0px 0px,
+      red 0px 0px 0px;
   }
 }
 
 @-webkit-keyframes flower-spinner-smaller-dot-animation {
   0% {
     box-shadow:
-      var(--primary100) 0px 0px 0px,
-      var(--primary100) 0px 0px 0px,
-      var(--primary100) 0px 0px 0px,
-      var(--primary100) 0px 0px 0px,
-      var(--primary100) 0px 0px 0px,
-      var(--primary100) 0px 0px 0px,
-      var(--primary100) 0px 0px 0px,
-      var(--primary100) 0px 0px 0px;
+      red 0px 0px 0px,
+      red 0px 0px 0px,
+      red 0px 0px 0px,
+      red 0px 0px 0px,
+      red 0px 0px 0px,
+      red 0px 0px 0px,
+      red 0px 0px 0px,
+      red 0px 0px 0px;
   }
   25%,
   75% {
     box-shadow:
-      var(--primary200) var(--smaller-offset) 0px 0px,
-      var(--primary200) calc(var(--smaller-offset) * -1) 0px 0px,
-      var(--primary200) 0px var(--smaller-offset) 0px,
-      var(--primary200) 0px calc(var(--smaller-offset) * -1) 0px,
-      var(--primary200) var(--smaller-diagonal-offset) calc(var(--smaller-diagonal-offset) * -1) 0px,
-      var(--primary200) var(--smaller-diagonal-offset) var(--smaller-diagonal-offset) 0px,
-      var(--primary200) calc(var(--smaller-diagonal-offset) * -1)
+      rgb(var(--primary)) var(--smaller-offset) 0px 0px,
+      rgb(var(--primary)) calc(var(--smaller-offset) * -1) 0px 0px,
+      rgb(var(--primary)) 0px var(--smaller-offset) 0px,
+      rgb(var(--primary)) 0px calc(var(--smaller-offset) * -1) 0px,
+      rgb(var(--primary)) var(--smaller-diagonal-offset) calc(var(--smaller-diagonal-offset) * -1)
+        0px,
+      rgb(var(--primary)) var(--smaller-diagonal-offset) var(--smaller-diagonal-offset) 0px,
+      rgb(var(--primary)) calc(var(--smaller-diagonal-offset) * -1)
         calc(var(--smaller-diagonal-offset) * -1) 0px,
-      var(--primary200) calc(var(--smaller-diagonal-offset) * -1) var(--smaller-diagonal-offset) 0px;
+      rgb(var(--primary)) calc(var(--smaller-diagonal-offset) * -1) var(--smaller-diagonal-offset)
+        0px;
   }
   100% {
     box-shadow:
-      var(--primary100) 0px 0px 0px,
-      var(--primary100) 0px 0px 0px,
-      var(--primary100) 0px 0px 0px,
-      var(--primary100) 0px 0px 0px,
-      var(--primary100) 0px 0px 0px,
-      var(--primary100) 0px 0px 0px,
-      var(--primary100) 0px 0px 0px,
-      var(--primary100) 0px 0px 0px;
+      red 0px 0px 0px,
+      red 0px 0px 0px,
+      red 0px 0px 0px,
+      red 0px 0px 0px,
+      red 0px 0px 0px,
+      red 0px 0px 0px,
+      red 0px 0px 0px,
+      red 0px 0px 0px;
   }
 }
 </style>

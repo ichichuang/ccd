@@ -1,13 +1,13 @@
 <script setup lang="ts">
-import { useElementSize } from '@/hooks/modules/useElementSize'
+import { useAppElementSize } from '@/hooks/modules/useAppElementSize'
 import { ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import AnimateRouterView from '@&/AnimateRouterView.vue'
 
 const containerRef = ref<HTMLElement | null>(null)
-const scrollbarRef = ref()
+const scrollbarRef = ref<InstanceType<typeof CScrollbar> | null>(null)
 
-const { height: containerHeight } = useElementSize(containerRef, undefined, {
+const { height: containerHeight } = useAppElementSize(containerRef, undefined, {
   mode: 'throttle',
   delay: 300,
 })
@@ -16,21 +16,24 @@ const route = useRoute()
 watch(
   () => route.fullPath,
   () => {
-    const api = scrollbarRef.value
-    if (api?.scrollTo) {
-      api.scrollTo({ top: 0, behavior: 'auto' })
-    }
+    // 路由切换时滚动到顶部
+    scrollbarRef.value?.scrollTo({ top: 0, behavior: 'auto' })
   }
 )
 </script>
 
 <template>
-  <div
-    ref="containerRef"
-    class="full relative"
+  <CScrollbar
+    ref="scrollbarRef"
+    class="full"
   >
-    <template v-if="containerHeight && containerHeight > 0">
-      <AnimateRouterView :style="{ minHeight: containerHeight + 'px' }" />
-    </template>
-  </div>
+    <div
+      ref="containerRef"
+      class="full relative"
+    >
+      <template v-if="containerHeight && containerHeight > 0">
+        <AnimateRouterView :style="{ minHeight: containerHeight + 'px' }" />
+      </template>
+    </div>
+  </CScrollbar>
 </template>

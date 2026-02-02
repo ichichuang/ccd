@@ -1,10 +1,13 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 
+import type { SizeScaleKey } from './sizeScale'
+
 /**
  * 全站响应式断点定义 (v2.0 Standard · Single Source of Truth)
  * 覆盖：移动端 -> 平板 -> 笔记本 -> 桌面 -> 2K -> 4K
+ * 键与 SIZE_SCALE_KEYS 强一致，类型贯通尺寸系统
  */
-export const BREAKPOINTS = {
+export const BREAKPOINTS: Record<SizeScaleKey, number> = {
   // --- 移动端细分 ---
   xs: 480, // 超小屏 / 折叠屏外屏
   sm: 640, // 大屏手机横屏 / 小平板
@@ -23,5 +26,5 @@ export const BREAKPOINTS = {
   '5xl': 3840, // 4K UHD
 } as const
 
-/** 断点键名，供 TS 与 Store 使用 */
-export type BreakpointKey = keyof typeof BREAKPOINTS
+/** 断点键名，与尺寸阶梯键统一 (SizeScaleKey) */
+export type BreakpointKey = SizeScaleKey

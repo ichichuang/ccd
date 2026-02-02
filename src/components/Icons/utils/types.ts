@@ -2,32 +2,24 @@
  * 图标组件类型定义
  */
 
+import type { SizeScaleKey } from '@/constants/sizeScale'
+
 /**
  * 图标尺寸类型
- * - 's' | 'm' | 'l': 固定尺寸
+ * - 's' | 'm' | 'l': 向后兼容的固定尺寸（映射到标准尺寸）
+ * - SizeScaleKey: 标准尺寸键（xs, sm, md, lg, xl, 2xl, 3xl, 4xl, 5xl）
  * - number: 数字，单位为 px
  * - string: 字符串，支持 px、%、vw、vh 等单位
  */
-export type IconSize = 's' | 'm' | 'l' | number | string
+export type IconSize = 's' | 'm' | 'l' | SizeScaleKey | number | string
 
 /**
- * 图标动画类型
+ * 图标动画类型（与 Icons.vue 实现严格一致）
  * - 'spin': 旋转动画
- * - 'spin-pulse': 旋转脉冲动画
- * - 'wrench': 扳手动画
- * - 'ring': 环形动画
  * - 'pulse': 脉冲动画
- * - 'flash': 闪烁动画
- * - 'float': 浮动动画
+ * - 'spin-pulse': 旋转 + 脉冲组合动画
  */
-export type IconAnimation = 'spin' | 'spin-pulse' | 'wrench' | 'ring' | 'pulse' | 'flash' | 'float'
-
-/**
- * 动画速度类型
- * - 'slow': 慢速
- * - 'fast': 快速
- */
-export type AnimationSpeed = 'slow' | 'fast'
+export type IconAnimation = 'spin' | 'pulse' | 'spin-pulse'
 
 /**
  * 翻转方向类型
@@ -49,7 +41,7 @@ export type FlipDirection = 'horizontal' | 'vertical' | 'both'
  * <Icons name="i-custom:juejin" size="l" />
  *
  * <!-- 带动画 -->
- * <Icons name="FcVip" animation="spin" speed="fast" />
+ * <Icons name="FcVip" animation="spin" />
  *
  * <!-- 缩放和旋转 -->
  * <Icons name="ri-arrow-right-line" scale="1.5" rotate="90" />
@@ -72,36 +64,36 @@ export interface IconsProps {
   /**
    * 图标大小（可选）
    *
-   * **固定尺寸**：'s' | 'm' | 'l'
-   * - 自定义图标映射：'s' -> fs-appFontSizes, 'm' -> fs-appFontSizesx, 'l' -> fs-appFontSizel, 默认 -> fs-appFontSize
-   * - OhVueIcon 映射：'s' -> w-appFontSizes h-appFontSizes, 'm' -> w-appFontSizesx h-appFontSizesx, 'l' -> w-appFontSizel h-appFontSizel, 默认 -> w-appFontSize h-appFontSize
+   * **兼容尺寸**：'s' | 'm' | 'l'（向后兼容）
+   * - 's' -> fs-sm
+   * - 'm' -> fs-md（默认）
+   * - 'l' -> fs-xl
+   *
+   * **标准尺寸**：xs | sm | md | lg | xl | 2xl | 3xl | 4xl | 5xl
+   * - 所有字体类均联动 SizeStore，响应式适配当前尺寸模式（compact/comfortable/loose）
    *
    * **数字类型**：单位为 px（如 100 表示 100px）
    *
    * **字符串类型**：支持各种单位（如 '100%', '100vw', '100vh', '100px'）
    *
-   * @default undefined
+   * @default 'm'
    * @example
-   * - size="s" - 小尺寸
+   * - size="s" - 小尺寸（兼容）
+   * - size="xl" - 超大尺寸（标准）
    * - :size="24" - 24px
    * - size="100%" - 100% 宽度/高度
    */
   size?: IconSize
 
   /**
-   * 图标颜色（仅对 OhVueIcon 有效）
+   * 图标颜色
    *
    * 支持任何 CSS 颜色值（如 '#ff0000', 'red', 'rgb(255,0,0)', 'var(--primary-color)' 等）
-   *
-   * @default undefined
-   * @example
-   * - color="#ff0000" - 红色
-   * - color="var(--primary-color)" - CSS 变量
    */
   color?: string
 
   /**
-   * 图标动画（仅对 OhVueIcon 有效）
+   * 图标动画
    *
    * @default undefined
    * @example
@@ -109,26 +101,6 @@ export interface IconsProps {
    * - animation="pulse" - 脉冲动画
    */
   animation?: IconAnimation
-
-  /**
-   * 动画速度（仅对 OhVueIcon 有效，需配合 animation 使用）
-   *
-   * @default undefined
-   * @example
-   * - speed="slow" - 慢速动画
-   * - speed="fast" - 快速动画
-   */
-  speed?: AnimationSpeed
-
-  /**
-   * 是否显示悬停效果（仅对 OhVueIcon 有效）
-   *
-   * @default false
-   * @example
-   * - hover - 启用悬停效果
-   * - :hover="true" - 启用悬停效果
-   */
-  hover?: boolean
 
   /**
    * 缩放比例（对所有图标类型有效，通过 CSS transform: scale() 实现）
@@ -155,29 +127,11 @@ export interface IconsProps {
   flip?: FlipDirection
 
   /**
-   * 旋转角度（仅对 OhVueIcon 有效）
+   * 旋转角度（单位：deg）
    *
-   * 数字类型，单位为度（degree），支持 0-360 度
-   *
-   * @default undefined
-   * @example
-   * - :rotate="90" - 旋转 90 度
-   * - :rotate="180" - 旋转 180 度
-   * - :rotate="270" - 旋转 270 度
+   * 数字或字符串类型，最终会拼接为 transform: rotate(xxdeg)
    */
-  rotate?: number
-
-  /**
-   * 是否反色（仅对 OhVueIcon 有效）
-   *
-   * 当设置为 true 时，图标颜色会反转
-   *
-   * @default false
-   * @example
-   * - inverse - 启用反色
-   * - :inverse="true" - 启用反色
-   */
-  inverse?: boolean
+  rotate?: string | number
 
   /**
    * 无障碍标签（对所有图标类型有效）

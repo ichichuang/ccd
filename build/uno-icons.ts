@@ -318,6 +318,7 @@ function createCustomIconLoader(): CustomIconLoader {
 // Layout/theme safelist classes (used by UnoCSS)
 // ---------------------------------------------------------------------------
 
+// 布局/尺寸类：与 uno.config LAYOUT_SIZES 一致，不含 contentHeight（由布局模式动态计算）
 const LAYOUT_SAFELIST_CLASSES: string[] = [
   'w-sidebarWidth',
   'w-sidebarCollapsedWidth',
@@ -325,30 +326,17 @@ const LAYOUT_SAFELIST_CLASSES: string[] = [
   'h-breadcrumbHeight',
   'h-footerHeight',
   'h-tabsHeight',
-  'h-contentHeight',
-  'h-contentBreadcrumbHeight',
-  'h-contentTabsHeight',
-  'h-contentsBreadcrumbHeight',
-  'h-contentsTabsHeight',
-  'p-padding',
-  'p-paddings',
-  'px-paddingx',
-  'px-padding',
-  'py-paddings',
-  'py-padding',
-  'p-paddingl',
-  'gap-gap',
-  'gap-gaps',
-  'gap-gapx',
-  'gap-gapl',
+  'p-padding-xs',
+  'p-padding-sm',
+  'p-padding-md',
+  'p-padding-lg',
+  'p-padding-xl',
+  'gap-gap-md',
+  'm-margin-md',
   'rounded-rounded',
-  'fs-appFontSize',
-  'fs-appFontSizes',
-  'fs-appFontSizex',
-  'fs-appFontSizel',
   'md:w-sidebarWidth',
   'md:w-sidebarCollapsedWidth',
-  'md:px-padding',
+  'md:px-padding-md',
 ]
 
 // ---------------------------------------------------------------------------

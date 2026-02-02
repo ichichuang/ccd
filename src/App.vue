@@ -1,9 +1,15 @@
 <script setup lang="ts">
+import Toast from 'primevue/toast'
 import { usePermissionStore } from '@/stores/modules/permission'
+import { useSizeStore } from '@/stores/modules/size'
 import LayoutManager from '@/layouts/index.vue'
 
 // 组件挂载时添加全局事件监听器
 onMounted(() => {
+  // 初始化尺寸系统 CSS 变量
+  const sizeStore = useSizeStore()
+  sizeStore.init()
+
   // 窗口管理初始化：当前窗口向系统声明"我活着"
   const permissionStore = usePermissionStore() as any
   const key = new URLSearchParams(location.search).get('_windowKey')
@@ -23,8 +29,9 @@ onUnmounted(() => {})
 </script>
 
 <template>
-  <div class="fixed left-0 top-0 bottom-0 right-0 z-0 container fs-appFontSize">
+  <div class="full bg-background color-foreground">
     <LayoutManager />
+    <Toast />
   </div>
 </template>
 

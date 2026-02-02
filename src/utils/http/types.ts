@@ -1,7 +1,9 @@
 // src/utils/http/types.ts
+import type { HttpRequestError } from './errors'
+
 /**
- * 纯类型文件：仅包含 type/interface 声明，无导入、无运行时代码。
- * 禁止导入 ./index、./instance、./interceptors、./methods 等，避免循环引用。
+ * 纯类型文件：仅包含 type/interface 声明，无运行时代码。
+ * 仅允许使用 type-only import，禁止导入 ./index、./instance、./interceptors、./methods 等，避免循环引用。
  */
 /** 为请求参数添加可选的 isSafeStorage 字段，允许 HTTP 请求参数携带 isSafeStorage */
 export type WithSafeStorage<T> = T & {
@@ -82,6 +84,9 @@ export interface HttpError extends Error {
   statusText?: string
   data?: any
 }
+
+// 供业务侧与 hooks 显式使用的错误类型别名
+export type { HttpRequestError }
 
 // 连接状态管理
 export interface ConnectionState {

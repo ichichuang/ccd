@@ -1,377 +1,563 @@
 <script setup lang="ts">
+import { computed } from 'vue'
 import { useSizeStore } from '@/stores/modules/size'
+import { useDeviceStore } from '@/stores/modules/device'
 import { SIZE_PRESETS } from '@/constants/size'
-import { SIZE_SCALE_KEYS } from '@/constants/sizeScale'
+import { SIZE_SCALE_KEYS, FONT_SCALE_RATIOS, SPACING_SCALE_RATIOS } from '@/constants/sizeScale'
+import { BREAKPOINTS } from '@/constants/breakpoints'
+import { useToast } from 'primevue/usetoast'
 
 const sizeStore = useSizeStore()
+const deviceStore = useDeviceStore()
+const toast = useToast()
 
-// 获取当前 CSS 变量值（从 DOM 读取）
-function getCssVar(name: string): string {
-  if (typeof window === 'undefined') return ''
-  return getComputedStyle(document.documentElement).getPropertyValue(name).trim()
+/** 当前预设 */
+const currentPreset = computed(() => sizeStore.currentPreset)
+
+/** 布局变量展示配置 */
+const LAYOUT_VARS = [
+  {
+    key: 'sidebarWidth',
+    label: '侧边栏宽度',
+    cssVar: '--sidebar-width',
+    icon: 'i-lucide-panel-left',
+  },
+  {
+    key: 'sidebarCollapsedWidth',
+    label: '侧边栏收起',
+    cssVar: '--sidebar-collapsed-width',
+    icon: 'i-lucide-panel-left-close',
+  },
+  { key: 'headerHeight', label: '头部高度', cssVar: '--header-height', icon: 'i-lucide-panel-top' },
+  {
+    key: 'breadcrumbHeight',
+    label: '面包屑高度',
+    cssVar: '--breadcrumb-height',
+    icon: 'i-lucide-navigation',
+  },
+  {
+    key: 'footerHeight',
+    label: '底部高度',
+    cssVar: '--footer-height',
+    icon: 'i-lucide-panel-bottom',
+  },
+  { key: 'tabsHeight', label: '标签页高度', cssVar: '--tabs-height', icon: 'i-lucide-app-window' },
+] as const
+
+/** 设备信息展示 */
+const deviceInfo = computed(() => [
+  { label: '视口宽度', value: `${deviceStore.width}px`, icon: 'i-lucide-move-horizontal' },
+  { label: '视口高度', value: `${deviceStore.height}px`, icon: 'i-lucide-move-vertical' },
+  { label: '当前断点', value: deviceStore.currentBreakpoint.toUpperCase(), icon: 'i-lucide-ruler' },
+  { label: '设备类型', value: deviceStore.type, icon: 'i-lucide-monitor-smartphone' },
+  { label: '操作系统', value: deviceStore.os, icon: 'i-lucide-laptop' },
+  {
+    label: '屏幕方向',
+    value: deviceStore.orientation === 'horizontal' ? '横屏' : '竖屏',
+    icon: 'i-lucide-rotate-3d',
+  },
+])
+
+/** 布局判断展示 */
+const layoutFlags = computed(() => [
+  { label: 'isMobileLayout', value: deviceStore.isMobileLayout, desc: 'width < lg (1024px)' },
+  { label: 'isTabletLayout', value: deviceStore.isTabletLayout, desc: 'md <= width < lg' },
+  { label: 'isPCLayout', value: deviceStore.isPCLayout, desc: 'width >= lg' },
+  { label: 'isTouchDevice', value: deviceStore.isTouchDevice, desc: 'UA + ontouchstart' },
+])
+
+/** 计算字体实际值 */
+function getFontSize(key: string): string {
+  const ratio = FONT_SCALE_RATIOS[key as keyof typeof FONT_SCALE_RATIOS]
+  return `${(currentPreset.value.fontSizeBase * ratio).toFixed(1)}px`
 }
 
-// 计算当前预设的所有变量
-const currentVars = computed(() => {
-  const preset = sizeStore.currentPreset
-  return {
-    radius: getCssVar('--radius'),
-    spacingUnit: getCssVar('--spacing-unit'),
-    containerPadding: getCssVar('--container-padding'),
-    fontSizeBase: preset.fontSizeBase,
-    fontSizes: SIZE_SCALE_KEYS.map(key => ({
-      key,
-      value: getCssVar(`--font-size-${key}`),
-    })),
-    spacings: SIZE_SCALE_KEYS.map(key => ({
-      key,
-      value: getCssVar(`--spacing-${key}`),
-    })),
-  }
-})
+/** 计算间距实际值 */
+function getSpacing(key: string): string {
+  const ratio = SPACING_SCALE_RATIOS[key as keyof typeof SPACING_SCALE_RATIOS]
+  return `${currentPreset.value.spacingBase * ratio}px`
+}
 
-// 方向控制示例（用于阶梯系统）
-const paddingDirections = [
-  { key: '', label: '全方向', example: 'p-scale-md' },
-  { key: 't', label: 'Top', example: 'pt-scale-md' },
-  { key: 'b', label: 'Bottom', example: 'pb-scale-lg' },
-  { key: 'l', label: 'Left', example: 'pl-scale-sm' },
-  { key: 'r', label: 'Right', example: 'pr-scale-xl' },
-  { key: 'x', label: 'X轴', example: 'px-scale-2xl' },
-  { key: 'y', label: 'Y轴', example: 'py-scale-3xl' },
-]
-
-const marginDirections = [
-  { key: '', label: '全方向', example: 'm-scale-md' },
-  { key: 't', label: 'Top', example: 'mt-scale-md' },
-  { key: 'b', label: 'Bottom', example: 'mb-scale-lg' },
-  { key: 'l', label: 'Left', example: 'ml-scale-sm' },
-  { key: 'r', label: 'Right', example: 'mr-scale-xl' },
-  { key: 'x', label: 'X轴', example: 'mx-scale-2xl' },
-  { key: 'y', label: 'Y轴', example: 'my-scale-3xl' },
-]
+/** 复制到剪贴板 */
+function copyToClipboard(text: string, description = '') {
+  navigator.clipboard.writeText(text).then(() => {
+    toast.add({
+      severity: 'success',
+      summary: '已复制',
+      detail: description || text,
+      life: 2000,
+    })
+  })
+}
 </script>
 
 <template>
-  <div
-    class="h-screen max-h-screen w-full overflow-y-auto overflow-x-hidden bg-background text-foreground transition-colors duration-300"
-  >
-    <div class="max-w-7xl mx-auto p-padding pb-paddingl flex flex-col gap-unitl">
-      <!-- 1. 头部：标题 + 模式切换 -->
-      <header
-        class="flex flex-col xl:flex-row justify-between items-start xl:items-center gap-unit pb-padding border-b border-border"
-      >
-        <div>
-          <h1 class="text-2xl font-bold flex items-center gap-unit">
-            <span class="i-lucide-ruler w-7 h-7 text-primary" />
-            CCD 尺寸系统实验室
-          </h1>
-          <p class="text-muted-foreground text-sm mt-1">
-            当前模式:
-            <span class="text-primary font-mono font-bold">{{ sizeStore.sizeName }}</span>
-            · 基准字体:
-            <span class="text-foreground font-mono font-bold"
-              >{{ currentVars.fontSizeBase }}px</span
-            >
-            · 间距基数:
-            <span class="text-foreground font-mono font-bold"
-              >{{ sizeStore.currentPreset.spacingBase }}px</span
-            >
-          </p>
-        </div>
-        <div class="flex gap-unit">
-          <button
-            v-for="preset in SIZE_PRESETS"
-            :key="preset.name"
-            type="button"
-            class="px-padding py-paddings rounded-md text-sm font-medium border transition-all"
-            :class="
-              sizeStore.sizeName === preset.name
-                ? 'bg-primary text-primary-foreground border-primary'
-                : 'bg-background text-foreground border-border hover:border-primary/50'
-            "
-            @click="sizeStore.setSize(preset.name)"
-          >
-            {{ preset.label }}
-          </button>
-        </div>
-      </header>
+  <div class="container min-h-screen p-padding-lg gap-gap-xl flex flex-col">
+    <header class="border-b border-border pb-padding-md">
+      <h1 class="text-2xl font-semibold text-foreground">尺寸系统全览</h1>
+      <p class="text-muted-foreground mt-1 text-sm">
+        CCD 设计系统尺寸指南 — 开发者参考手册，点击任意项可复制类名或变量
+      </p>
+    </header>
 
-      <!-- 2. 当前预设信息 -->
-      <section class="rounded-lg border border-border bg-card p-padding">
-        <h2 class="text-lg font-semibold mb-padding">当前预设变量 (CSS Variables)</h2>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-unit">
-          <div class="p-padding rounded-md border border-border bg-muted/30">
-            <div class="text-xs text-muted-foreground mb-paddings">基础变量</div>
-            <div class="space-y-1 text-xs font-mono">
-              <div class="flex justify-between">
-                <span class="text-muted-foreground">--radius:</span>
-                <span class="text-foreground">{{ currentVars.radius }}</span>
-              </div>
-              <div class="flex justify-between">
-                <span class="text-muted-foreground">--spacing-unit:</span>
-                <span class="text-foreground">{{ currentVars.spacingUnit }}</span>
-              </div>
-              <div class="flex justify-between">
-                <span class="text-muted-foreground">--container-padding:</span>
-                <span class="text-foreground">{{ currentVars.containerPadding }}</span>
-              </div>
+    <!-- Section 1: Size Mode Switcher -->
+    <section class="rounded-xl border border-border bg-card p-padding-lg shadow-sm">
+      <h2 class="text-lg font-medium text-card-foreground mb-padding-md flex items-center gap-2">
+        <i class="i-lucide-ruler w-5 h-5" />
+        尺寸模式切换
+      </h2>
+      <p class="text-sm text-muted-foreground mb-padding-lg">
+        系统提供三种尺寸模式：<strong>紧凑 (Compact)</strong>、<strong>舒适 (Comfortable)</strong
+        >、<strong>宽松 (Loose)</strong>，影响全局间距、字体和布局尺寸。
+      </p>
+      <div class="grid grid-cols-1 gap-gap-md md:grid-cols-3">
+        <button
+          v-for="preset in SIZE_PRESETS"
+          :key="preset.name"
+          type="button"
+          class="flex flex-col items-start gap-2 rounded-xl border p-padding-lg transition-all cursor-pointer"
+          :class="
+            sizeStore.sizeName === preset.name
+              ? 'border-primary bg-primary/10 shadow-md'
+              : 'border-border bg-background hover:bg-muted hover:border-primary/30'
+          "
+          @click="sizeStore.setSize(preset.name)"
+        >
+          <div class="flex items-center gap-2 w-full justify-between">
+            <span class="font-semibold text-foreground">{{ preset.label }}</span>
+            <span
+              v-if="sizeStore.sizeName === preset.name"
+              class="text-xs bg-primary text-primary-foreground px-2 py-0.5 rounded-full"
+            >
+              当前
+            </span>
+          </div>
+          <div class="text-xs text-muted-foreground space-y-1 w-full">
+            <div class="flex justify-between">
+              <span>圆角</span>
+              <code class="bg-muted px-1 rounded">{{ preset.radius }}rem</code>
+            </div>
+            <div class="flex justify-between">
+              <span>间距基数</span>
+              <code class="bg-muted px-1 rounded">{{ preset.spacingBase }}px</code>
+            </div>
+            <div class="flex justify-between">
+              <span>字体基数</span>
+              <code class="bg-muted px-1 rounded">{{ preset.fontSizeBase }}px</code>
             </div>
           </div>
-          <div class="p-padding rounded-md border border-border bg-muted/30">
-            <div class="text-xs text-muted-foreground mb-paddings">Store Getters (JS)</div>
-            <div class="space-y-1 text-xs font-mono">
-              <div class="flex justify-between">
-                <span class="text-muted-foreground">getFontSizeValue:</span>
-                <span class="text-foreground">{{ sizeStore.getFontSizeValue }}px</span>
-              </div>
-              <div class="flex justify-between">
-                <span class="text-muted-foreground">getFontSizesValue:</span>
-                <span class="text-foreground">{{ sizeStore.getFontSizesValue }}px</span>
-              </div>
-              <div class="flex justify-between">
-                <span class="text-muted-foreground">getGap:</span>
-                <span class="text-foreground">{{ sizeStore.getGap }}px</span>
-              </div>
-              <div class="flex justify-between">
-                <span class="text-muted-foreground">getPaddingsValue:</span>
-                <span class="text-foreground">{{ sizeStore.getPaddingsValue }}px</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
+        </button>
+      </div>
+    </section>
 
-      <!-- 3. 圆角系统 -->
-      <section class="rounded-lg border border-border bg-card p-padding">
-        <h2 class="text-lg font-semibold mb-padding">圆角系统 (Border Radius)</h2>
-        <p class="text-sm text-muted-foreground mb-padding">
-          使用 <code class="bg-muted px-1 rounded-sm text-xs">rounded-lg</code>、
-          <code class="bg-muted px-1 rounded-sm text-xs">rounded-md</code>、
-          <code class="bg-muted px-1 rounded-sm text-xs">rounded-sm</code>，基于
-          <code class="bg-muted px-1 rounded-sm text-xs">var(--radius)</code>
-        </p>
-        <div class="flex gap-unit items-center">
-          <div class="flex flex-col items-center gap-paddings">
-            <div class="w-20 h-20 rounded-sm bg-primary/20 border-2 border-primary" />
-            <span class="text-xs font-mono text-muted-foreground">rounded-sm</span>
+    <!-- Section 2: Font Scale -->
+    <section class="rounded-xl border border-border bg-card p-padding-lg shadow-sm">
+      <h2 class="text-lg font-medium text-card-foreground mb-padding-md flex items-center gap-2">
+        <i class="i-lucide-type w-5 h-5" />
+        字体阶梯 (Font Scale)
+      </h2>
+      <p class="text-sm text-muted-foreground mb-padding-lg">
+        基于 <code class="bg-muted px-1 rounded">fontSizeBase × 倍率</code> 生成 9 级字体大小。
+        使用类名 <code class="bg-muted px-1 rounded">fs-{scale}</code> 或
+        <code class="bg-muted px-1 rounded">text-{scale}</code>。
+      </p>
+      <div class="grid gap-3">
+        <div
+          v-for="key in SIZE_SCALE_KEYS"
+          :key="key"
+          role="button"
+          class="flex items-center gap-4 p-3 rounded-lg border border-border/50 bg-background hover:bg-muted/50 cursor-pointer transition-colors"
+          @click="copyToClipboard(`fs-${key}`, `--font-size-${key}`)"
+        >
+          <div class="w-16 text-center">
+            <code class="text-xs text-primary font-mono">{{ key }}</code>
           </div>
-          <div class="flex flex-col items-center gap-paddings">
-            <div class="w-20 h-20 rounded-md bg-primary/20 border-2 border-primary" />
-            <span class="text-xs font-mono text-muted-foreground">rounded-md</span>
+          <div class="flex-1 flex items-baseline gap-4">
+            <span
+              :style="{ fontSize: `var(--font-size-${key})` }"
+              class="text-foreground font-medium"
+            >
+              示例文本 Aa
+            </span>
           </div>
-          <div class="flex flex-col items-center gap-paddings">
-            <div class="w-20 h-20 rounded-lg bg-primary/20 border-2 border-primary" />
-            <span class="text-xs font-mono text-muted-foreground">rounded-lg</span>
+          <div class="text-right space-x-3 text-xs text-muted-foreground">
+            <span>倍率: {{ FONT_SCALE_RATIOS[key] }}</span>
+            <span class="text-primary font-mono">{{ getFontSize(key) }}</span>
           </div>
         </div>
-      </section>
+      </div>
+    </section>
 
-      <!-- 4. 字体阶梯 -->
-      <section class="rounded-lg border border-border bg-card p-padding">
-        <h2 class="text-lg font-semibold mb-padding">字体阶梯 (Font Scale: xs → 5xl)</h2>
-        <p class="text-sm text-muted-foreground mb-padding">
-          使用 <code class="bg-muted px-1 rounded-sm text-xs">fs-xs</code> 到
-          <code class="bg-muted px-1 rounded-sm text-xs">fs-5xl</code>，基于
-          <code class="bg-muted px-1 rounded-sm text-xs">var(--font-size-*)</code>
-        </p>
-        <div class="space-y-unit">
-          <div
-            v-for="item in currentVars.fontSizes"
-            :key="item.key"
-            class="flex items-center gap-unit p-padding rounded-md border border-border bg-muted/30"
-          >
-            <span class="w-16 text-xs font-mono text-muted-foreground text-right"
-              >fs-{{ item.key }}</span
-            >
-            <div
-              :class="`fs-${item.key}`"
-              class="flex-1 font-bold text-primary overflow-hidden text-ellipsis whitespace-nowrap"
-            >
-              The quick brown fox jumps over the lazy dog
-            </div>
-            <span class="w-20 text-xs font-mono text-muted-foreground text-right">{{
-              item.value
-            }}</span>
+    <!-- Section 3: Spacing Scale -->
+    <section class="rounded-xl border border-border bg-card p-padding-lg shadow-sm">
+      <h2 class="text-lg font-medium text-card-foreground mb-padding-md flex items-center gap-2">
+        <i class="i-lucide-space w-5 h-5" />
+        间距阶梯 (Spacing Scale)
+      </h2>
+      <p class="text-sm text-muted-foreground mb-padding-lg">
+        基于 <code class="bg-muted px-1 rounded">spacingBase × 倍率</code> 生成 9 级间距。
+        支持类名：<code class="bg-muted px-1 rounded">p-scale-{s}</code>、
+        <code class="bg-muted px-1 rounded">m-scale-{s}</code>、
+        <code class="bg-muted px-1 rounded">gap-scale-{s}</code>。
+      </p>
+      <div class="grid gap-3">
+        <div
+          v-for="key in SIZE_SCALE_KEYS"
+          :key="key"
+          role="button"
+          class="flex items-center gap-4 p-3 rounded-lg border border-border/50 bg-background hover:bg-muted/50 cursor-pointer transition-colors"
+          @click="copyToClipboard(`p-scale-${key}`, `--spacing-${key}`)"
+        >
+          <div class="w-16 text-center">
+            <code class="text-xs text-primary font-mono">{{ key }}</code>
           </div>
-        </div>
-      </section>
-
-      <!-- 5. 间距阶梯：Padding -->
-      <section class="rounded-lg border border-border bg-card p-padding">
-        <h2 class="text-lg font-semibold mb-padding">间距阶梯：Padding (p-scale-*)</h2>
-        <p class="text-sm text-muted-foreground mb-padding">
-          使用 <code class="bg-muted px-1 rounded-sm text-xs">p-scale-xs</code> 到
-          <code class="bg-muted px-1 rounded-sm text-xs">p-scale-5xl</code>，基于
-          <code class="bg-muted px-1 rounded-sm text-xs">var(--spacing-*)</code>
-        </p>
-        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-unit mb-unitl">
-          <div
-            v-for="item in currentVars.spacings"
-            :key="item.key"
-            class="p-padding rounded-md border border-border bg-muted/30"
-          >
-            <div class="text-xs text-muted-foreground mb-paddings">p-scale-{{ item.key }}</div>
-            <div
-              :class="`p-scale-${item.key}`"
-              class="rounded bg-primary/20 border border-primary/30 min-h-12"
-            />
-            <div class="text-xs font-mono text-muted-foreground mt-paddings">{{ item.value }}</div>
-          </div>
-        </div>
-        <div>
-          <h3 class="text-sm font-semibold mb-padding">方向控制 (Directional Padding)</h3>
-          <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-unit">
-            <div
-              v-for="dir in paddingDirections"
-              :key="dir.key"
-              class="p-padding rounded-md border border-border bg-muted/30"
-            >
-              <div class="text-xs text-muted-foreground mb-paddings">{{ dir.label }}</div>
+          <div class="flex-1 flex items-center gap-4">
+            <!-- 可视化间距 -->
+            <div class="relative h-8 bg-muted/30 rounded overflow-hidden flex items-center">
               <div
-                :class="dir.example"
-                class="rounded bg-primary/20 border border-primary/30 min-h-12"
+                class="h-full bg-primary/60 rounded"
+                :style="{ width: `var(--spacing-${key})` }"
+              ></div>
+              <span class="absolute left-2 text-[10px] text-foreground/70 font-mono">
+                {{ getSpacing(key) }}
+              </span>
+            </div>
+          </div>
+          <div class="text-right space-x-3 text-xs text-muted-foreground">
+            <span>倍率: {{ SPACING_SCALE_RATIOS[key] }}</span>
+            <code class="text-primary font-mono">--spacing-{{ key }}</code>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 4: Layout Variables -->
+    <section class="rounded-xl border border-border bg-card p-padding-lg shadow-sm">
+      <h2 class="text-lg font-medium text-card-foreground mb-padding-md flex items-center gap-2">
+        <i class="i-lucide-layout w-5 h-5" />
+        布局变量 (Layout Variables)
+      </h2>
+      <p class="text-sm text-muted-foreground mb-padding-lg">
+        预设中定义的固定布局尺寸，随尺寸模式自动调整。 支持类名：<code class="bg-muted px-1 rounded"
+          >w-sidebarWidth</code
+        >、 <code class="bg-muted px-1 rounded">h-headerHeight</code> 等。
+      </p>
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-gap-md">
+        <div
+          v-for="item in LAYOUT_VARS"
+          :key="item.key"
+          role="button"
+          class="flex items-center gap-3 p-4 rounded-lg border border-border bg-background hover:bg-muted/50 cursor-pointer transition-colors"
+          @click="copyToClipboard(item.cssVar)"
+        >
+          <div
+            class="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center text-primary"
+          >
+            <i :class="[item.icon, 'w-5 h-5']" />
+          </div>
+          <div class="flex-1">
+            <div class="font-medium text-foreground text-sm">{{ item.label }}</div>
+            <code class="text-xs text-muted-foreground">{{ item.cssVar }}</code>
+          </div>
+          <div class="text-right">
+            <span class="text-lg font-bold text-primary">
+              {{ currentPreset[item.key] }}
+            </span>
+            <span class="text-xs text-muted-foreground">px</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 5: Breakpoints -->
+    <section class="rounded-xl border border-border bg-card p-padding-lg shadow-sm">
+      <h2 class="text-lg font-medium text-card-foreground mb-padding-md flex items-center gap-2">
+        <i class="i-lucide-monitor w-5 h-5" />
+        响应式断点 (Breakpoints)
+      </h2>
+      <p class="text-sm text-muted-foreground mb-padding-lg">
+        断点键名与尺寸阶梯统一 (xs → 5xl)，支持响应式前缀如
+        <code class="bg-muted px-1 rounded">md:flex</code>、
+        <code class="bg-muted px-1 rounded">lg:hidden</code>。
+      </p>
+      <div class="grid grid-cols-3 md:grid-cols-5 lg:grid-cols-9 gap-3">
+        <div
+          v-for="key in SIZE_SCALE_KEYS"
+          :key="key"
+          role="button"
+          class="flex flex-col items-center gap-2 p-3 rounded-lg border transition-all cursor-pointer"
+          :class="
+            deviceStore.currentBreakpoint === key
+              ? 'border-primary bg-primary/10 shadow-md'
+              : 'border-border bg-background hover:bg-muted/50'
+          "
+          @click="copyToClipboard(`${key}:`)"
+        >
+          <code
+            class="text-sm font-bold"
+            :class="deviceStore.currentBreakpoint === key ? 'text-primary' : 'text-foreground'"
+          >
+            {{ key }}
+          </code>
+          <span class="text-xs text-muted-foreground">≥{{ BREAKPOINTS[key] }}px</span>
+          <div
+            v-if="deviceStore.currentBreakpoint === key"
+            class="w-2 h-2 rounded-full bg-primary animate-pulse"
+          />
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 6: Device Store Info -->
+    <section class="grid grid-cols-1 lg:grid-cols-2 gap-gap-lg">
+      <div class="rounded-xl border border-border bg-card p-padding-lg shadow-sm">
+        <h2 class="text-lg font-medium text-card-foreground mb-padding-md flex items-center gap-2">
+          <i class="i-lucide-smartphone w-5 h-5" />
+          设备状态 (Device State)
+        </h2>
+        <p class="text-sm text-muted-foreground mb-padding-lg">
+          实时设备信息，响应 resize / orientationchange 自动更新。
+        </p>
+        <div class="grid grid-cols-2 gap-3">
+          <div
+            v-for="item in deviceInfo"
+            :key="item.label"
+            class="flex items-center gap-3 p-3 rounded-lg border border-border/50 bg-background"
+          >
+            <i :class="[item.icon, 'w-4 h-4 text-muted-foreground']" />
+            <div class="flex-1">
+              <div class="text-xs text-muted-foreground">{{ item.label }}</div>
+              <div class="font-medium text-foreground">{{ item.value }}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="rounded-xl border border-border bg-card p-padding-lg shadow-sm">
+        <h2 class="text-lg font-medium text-card-foreground mb-padding-md flex items-center gap-2">
+          <i class="i-lucide-toggle-left w-5 h-5" />
+          布局判断 Getters
+        </h2>
+        <p class="text-sm text-muted-foreground mb-padding-lg">
+          Device Store 提供的布局判断 getters，可直接在组件中使用。
+        </p>
+        <div class="space-y-3">
+          <div
+            v-for="item in layoutFlags"
+            :key="item.label"
+            class="flex items-center gap-3 p-3 rounded-lg border border-border/50 bg-background"
+          >
+            <div
+              class="w-8 h-8 rounded-full flex items-center justify-center"
+              :class="item.value ? 'bg-success/20 text-success' : 'bg-muted text-muted-foreground'"
+            >
+              <i
+                :class="item.value ? 'i-lucide-check' : 'i-lucide-x'"
+                class="w-4 h-4"
               />
-              <div
-                class="text-xs font-mono text-muted-foreground mt-paddings text-center break-all"
-              >
-                {{ dir.example }}
-              </div>
             </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- 6. 间距阶梯：Margin -->
-      <section class="rounded-lg border border-border bg-card p-padding">
-        <h2 class="text-lg font-semibold mb-padding">间距阶梯：Margin (m-scale-*)</h2>
-        <p class="text-sm text-muted-foreground mb-padding">
-          使用 <code class="bg-muted px-1 rounded-sm text-xs">m-scale-xs</code> 到
-          <code class="bg-muted px-1 rounded-sm text-xs">m-scale-5xl</code>，基于
-          <code class="bg-muted px-1 rounded-sm text-xs">var(--spacing-*)</code>
-        </p>
-        <div class="flex flex-col gap-unit mb-unitl">
-          <div
-            v-for="item in currentVars.spacings"
-            :key="item.key"
-            class="p-padding rounded-md border border-border bg-muted/30"
-          >
-            <div class="flex items-center justify-between mb-paddings">
-              <div class="text-sm font-semibold">m-scale-{{ item.key }}</div>
-              <div class="text-xs font-mono text-muted-foreground">{{ item.value }}</div>
+            <div class="flex-1">
+              <code class="text-sm text-foreground font-mono">{{ item.label }}</code>
+              <div class="text-xs text-muted-foreground">{{ item.desc }}</div>
             </div>
-            <div class="rounded bg-muted/50 border border-border overflow-visible">
-              <div
-                :class="`mx-scale-${item.key}`"
-                class="rounded bg-primary/20 border border-primary/30 h-16 flex items-center justify-center"
-              >
-                <span class="text-xs font-mono text-primary">内容区域</span>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div>
-          <h3 class="text-sm font-semibold mb-padding">方向控制 (Directional Margin)</h3>
-          <div class="flex flex-col gap-unit">
-            <div
-              v-for="dir in marginDirections"
-              :key="dir.key"
-              class="p-padding rounded-md border border-border bg-muted/30"
+            <span
+              class="text-sm font-bold"
+              :class="item.value ? 'text-success' : 'text-muted-foreground'"
             >
-              <div class="flex items-center justify-between mb-paddings">
-                <div class="text-sm font-semibold">{{ dir.label }}</div>
-                <div class="text-xs font-mono text-muted-foreground">{{ dir.example }}</div>
-              </div>
-              <div class="rounded bg-muted/50 border border-border overflow-visible">
-                <div
-                  :class="dir.example"
-                  class="rounded bg-primary/20 border border-primary/30 h-16 flex items-center justify-center"
-                >
-                  <span class="text-xs font-mono text-primary">内容区域</span>
-                </div>
-              </div>
+              {{ item.value }}
+            </span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 7: UnoCSS Usage Examples -->
+    <section class="rounded-xl border border-border bg-card p-padding-lg shadow-sm">
+      <h2 class="text-lg font-medium text-card-foreground mb-padding-md flex items-center gap-2">
+        <i class="i-lucide-code w-5 h-5" />
+        UnoCSS 类名速查
+      </h2>
+      <p class="text-sm text-muted-foreground mb-padding-lg">
+        常用尺寸系统类名及其对应 CSS 变量映射。
+      </p>
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-gap-md">
+        <!-- Font Size -->
+        <div class="p-4 rounded-lg border border-border bg-background">
+          <h3 class="font-medium text-foreground mb-3 flex items-center gap-2">
+            <i class="i-lucide-type w-4 h-4 text-primary" />
+            字体大小
+          </h3>
+          <div class="space-y-2 text-sm">
+            <div
+              v-for="key in ['xs', 'sm', 'md', 'lg', 'xl', '2xl']"
+              :key="key"
+              class="flex justify-between items-center cursor-pointer hover:bg-muted/50 px-2 py-1 rounded"
+              @click="copyToClipboard(`fs-${key}`)"
+            >
+              <code class="text-primary">fs-{{ key }}</code>
+              <span class="text-muted-foreground text-xs">→ --font-size-{{ key }}</span>
             </div>
           </div>
         </div>
-      </section>
 
-      <!-- 7. 间距阶梯：Gap -->
-      <section class="rounded-lg border border-border bg-card p-padding">
-        <h2 class="text-lg font-semibold mb-padding">间距阶梯：Gap (gap-scale-*)</h2>
-        <p class="text-sm text-muted-foreground mb-padding">
-          使用 <code class="bg-muted px-1 rounded-sm text-xs">gap-scale-xs</code> 到
-          <code class="bg-muted px-1 rounded-sm text-xs">gap-scale-5xl</code>，基于
-          <code class="bg-muted px-1 rounded-sm text-xs">var(--spacing-*)</code>
-        </p>
-        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-unit mb-unitl">
-          <div
-            v-for="item in currentVars.spacings"
-            :key="item.key"
-            class="p-padding rounded-md border border-border bg-muted/30"
+        <!-- Padding / Margin -->
+        <div class="p-4 rounded-lg border border-border bg-background">
+          <h3 class="font-medium text-foreground mb-3 flex items-center gap-2">
+            <i class="i-lucide-box w-4 h-4 text-primary" />
+            间距 (Padding / Margin)
+          </h3>
+          <div class="space-y-2 text-sm">
+            <div
+              class="flex justify-between items-center cursor-pointer hover:bg-muted/50 px-2 py-1 rounded"
+              @click="copyToClipboard('p-scale-md')"
+            >
+              <code class="text-primary">p-scale-md</code>
+              <span class="text-muted-foreground text-xs">padding all</span>
+            </div>
+            <div
+              class="flex justify-between items-center cursor-pointer hover:bg-muted/50 px-2 py-1 rounded"
+              @click="copyToClipboard('px-scale-lg')"
+            >
+              <code class="text-primary">px-scale-lg</code>
+              <span class="text-muted-foreground text-xs">padding x-axis</span>
+            </div>
+            <div
+              class="flex justify-between items-center cursor-pointer hover:bg-muted/50 px-2 py-1 rounded"
+              @click="copyToClipboard('mt-scale-sm')"
+            >
+              <code class="text-primary">mt-scale-sm</code>
+              <span class="text-muted-foreground text-xs">margin-top</span>
+            </div>
+            <div
+              class="flex justify-between items-center cursor-pointer hover:bg-muted/50 px-2 py-1 rounded"
+              @click="copyToClipboard('gap-scale-xl')"
+            >
+              <code class="text-primary">gap-scale-xl</code>
+              <span class="text-muted-foreground text-xs">gap</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Layout Variables -->
+        <div class="p-4 rounded-lg border border-border bg-background">
+          <h3 class="font-medium text-foreground mb-3 flex items-center gap-2">
+            <i class="i-lucide-layout w-4 h-4 text-primary" />
+            布局变量
+          </h3>
+          <div class="space-y-2 text-sm">
+            <div
+              class="flex justify-between items-center cursor-pointer hover:bg-muted/50 px-2 py-1 rounded"
+              @click="copyToClipboard('w-sidebarWidth')"
+            >
+              <code class="text-primary">w-sidebarWidth</code>
+              <span class="text-muted-foreground text-xs">width</span>
+            </div>
+            <div
+              class="flex justify-between items-center cursor-pointer hover:bg-muted/50 px-2 py-1 rounded"
+              @click="copyToClipboard('h-headerHeight')"
+            >
+              <code class="text-primary">h-headerHeight</code>
+              <span class="text-muted-foreground text-xs">height</span>
+            </div>
+            <div
+              class="flex justify-between items-center cursor-pointer hover:bg-muted/50 px-2 py-1 rounded"
+              @click="copyToClipboard('min-h-footerHeight')"
+            >
+              <code class="text-primary">min-h-footerHeight</code>
+              <span class="text-muted-foreground text-xs">min-height</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 8: Live CSS Variables -->
+    <section class="rounded-xl border border-border bg-card p-padding-lg shadow-sm">
+      <h2 class="text-lg font-medium text-card-foreground mb-padding-md flex items-center gap-2">
+        <i class="i-lucide-variable w-5 h-5" />
+        当前 CSS 变量值
+      </h2>
+      <p class="text-sm text-muted-foreground mb-padding-lg">
+        实时展示当前尺寸模式下所有 CSS 变量的计算值。
+      </p>
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <!-- Base Variables -->
+        <div class="p-4 rounded-lg border border-border bg-background">
+          <h3 class="text-sm font-medium text-foreground mb-3">基础变量</h3>
+          <div class="space-y-2 text-xs font-mono">
+            <div class="flex justify-between">
+              <span class="text-muted-foreground">--radius</span>
+              <span class="text-primary">{{ currentPreset.radius }}rem</span>
+            </div>
+            <div class="flex justify-between">
+              <span class="text-muted-foreground">--spacing-unit</span>
+              <span class="text-primary">{{ currentPreset.spacingBase }}px</span>
+            </div>
+            <div class="flex justify-between">
+              <span class="text-muted-foreground">--container-padding</span>
+              <span class="text-primary">{{ currentPreset.spacingBase * 5 }}px</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Font Size Variables -->
+        <div class="p-4 rounded-lg border border-border bg-background">
+          <h3 class="text-sm font-medium text-foreground mb-3">字体阶梯</h3>
+          <CScrollbar
+            class="max-h-40"
+            :options="{ scrollbars: { autoHide: 'leave' } }"
           >
-            <div class="text-xs text-muted-foreground mb-paddings">gap-scale-{{ item.key }}</div>
-            <div :class="`flex gap-scale-${item.key} min-h-20 flex-wrap`">
-              <div class="w-8 h-8 rounded bg-primary/30 flex-shrink-0" />
-              <div class="w-8 h-8 rounded bg-primary/30 flex-shrink-0" />
-              <div class="w-8 h-8 rounded bg-primary/30 flex-shrink-0" />
-            </div>
-            <div class="text-xs font-mono text-muted-foreground mt-paddings">{{ item.value }}</div>
-          </div>
-        </div>
-        <div>
-          <h3 class="text-sm font-semibold mb-padding">方向控制 (Directional Gap)</h3>
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-unit">
-            <div class="p-padding rounded-md border border-border bg-muted/30">
-              <div class="text-xs text-muted-foreground mb-paddings">
-                gap-x-scale-md (column-gap)
-              </div>
-              <div class="flex gap-x-scale-md">
-                <div class="w-8 h-8 rounded bg-primary/30" />
-                <div class="w-8 h-8 rounded bg-primary/30" />
-                <div class="w-8 h-8 rounded bg-primary/30" />
+            <div class="space-y-2 text-xs font-mono pr-2">
+              <div
+                v-for="key in SIZE_SCALE_KEYS"
+                :key="key"
+                class="flex justify-between"
+              >
+                <span class="text-muted-foreground">--font-size-{{ key }}</span>
+                <span class="text-primary">{{ getFontSize(key) }}</span>
               </div>
             </div>
-            <div class="p-padding rounded-md border border-border bg-muted/30">
-              <div class="text-xs text-muted-foreground mb-paddings">gap-y-scale-lg (row-gap)</div>
-              <div class="flex flex-col gap-y-scale-lg">
-                <div class="w-full h-8 rounded bg-primary/30" />
-                <div class="w-full h-8 rounded bg-primary/30" />
-                <div class="w-full h-8 rounded bg-primary/30" />
+          </CScrollbar>
+        </div>
+
+        <!-- Spacing Variables -->
+        <div class="p-4 rounded-lg border border-border bg-background">
+          <h3 class="text-sm font-medium text-foreground mb-3">间距阶梯</h3>
+          <CScrollbar
+            class="max-h-40"
+            :options="{ scrollbars: { autoHide: 'leave' } }"
+          >
+            <div class="space-y-2 text-xs font-mono pr-2">
+              <div
+                v-for="key in SIZE_SCALE_KEYS"
+                :key="key"
+                class="flex justify-between"
+              >
+                <span class="text-muted-foreground">--spacing-{{ key }}</span>
+                <span class="text-primary">{{ getSpacing(key) }}</span>
               </div>
             </div>
-          </div>
+          </CScrollbar>
         </div>
-      </section>
-
-      <!-- 8. Script 使用示例 -->
-      <section class="rounded-lg border border-border bg-card p-padding">
-        <h2 class="text-lg font-semibold mb-padding">Script 中使用 (Store API)</h2>
-        <div class="p-padding rounded-md border border-border bg-muted/30">
-          <pre
-            class="text-xs font-mono text-foreground overflow-x-auto"
-          ><code>import { useSizeStore } from '@/stores/modules/size'
-
-const sizeStore = useSizeStore()
-
-// 切换尺寸模式
-sizeStore.setSize('compact')  // 或 'comfortable' | 'loose'
-
-// 获取当前预设
-const preset = sizeStore.currentPreset
-console.log(preset.fontSizeBase)  // 14 | 16 | 18
-console.log(preset.spacingBase)   // 3 | 4 | 6
-
-// 使用 Getters
-const fontSize = sizeStore.getFontSizeValue      // 当前基准字体
-const titleSize = sizeStore.getFontSizesValue    // 标题字体 (+2px)
-const gap = sizeStore.getGap                     // 间距 (spacingBase × 4)
-const padding = sizeStore.getPaddingsValue       // 内边距 (spacingBase × 4)</code></pre>
-        </div>
-      </section>
-    </div>
+      </div>
+    </section>
   </div>
 </template>
 
-<style scoped>
-/* 仅用 UnoCSS 语义类 */
+<style lang="scss" scoped>
+/* 确保点击区域有适当的手型反馈 */
+[role='button'] {
+  @apply select-none;
+}
+
+/* 滚动条美化 */
+.overflow-y-auto {
+  &::-webkit-scrollbar {
+    width: 4px;
+  }
+  &::-webkit-scrollbar-thumb {
+    background: hsl(var(--muted));
+    border-radius: 2px;
+  }
+}
 </style>

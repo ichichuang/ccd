@@ -2,15 +2,30 @@
  * 故障过渡模式（阶梯动画）
  */
 
-[data-transition='glitch'] {
-  ::view-transition-new(root) {
+:root[data-transition='glitch'] {
+  &::view-transition-group(root) {
+    animation-timing-function: steps(4, end);
+  }
+
+  &::view-transition-new(root) {
+    z-index: 9999;
     clip-path: inset(0 0 100% 0);
-    animation: glitch-slide 320ms steps(4, end);
+    animation: glitch-slide 0.32s steps(4, end) forwards;
+    mix-blend-mode: normal;
+  }
+
+  &::view-transition-old(root) {
+    z-index: 1;
+    animation: none;
+    animation-fill-mode: forwards;
   }
 }
 
 @keyframes glitch-slide {
-  to {
+  0% {
+    clip-path: inset(0 0 100% 0);
+  }
+  100% {
     clip-path: inset(0 0 0% 0);
   }
 }

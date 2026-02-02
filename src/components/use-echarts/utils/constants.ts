@@ -1,5 +1,4 @@
-import { useColorStore } from '@/stores/modules/color'
-import { useSizeStore } from '@/stores/modules/size'
+import { getChartSystemVariables } from '@/utils/theme/chartUtils'
 import type {
   ChartAnimationConfig,
   ChartAxisPointerConfig,
@@ -8,50 +7,8 @@ import type {
   ChartMarkPointConfig,
   ChartToolboxConfig,
   ChartVisualMapConfig,
-  DefaultOpacityValues,
 } from './types'
-
-// 默认透明度配置
-export const DEFAULT_OPACITY_VALUES: DefaultOpacityValues = {
-  lineArea: 0.3, // 折线图区域填充透明度
-  area: 0.3, // 面积图透明度
-  bar: 1, // 柱状图透明度（实色）
-  scatter: 0.6, // 散点图透明度
-  effectScatter: 0.6, // 特效散点图透明度
-  radar: 0.2, // 雷达图透明度
-  funnel: 0.8, // 漏斗图透明度
-  gauge: 1, // 仪表盘透明度（实色）
-}
-
-// 获取系统变量的函数
-const getSystemVariables = () => {
-  const colorStore = useColorStore()
-  const sizeStore = useSizeStore()
-
-  return {
-    // 颜色变量
-    textColor100: colorStore.getText100,
-    textColor200: colorStore.getText200,
-    bgColor200: colorStore.getBg200,
-    bgColor300: colorStore.getBg300,
-    accent100: colorStore.getAccent100,
-    primaryColor: colorStore.getPrimaryColor,
-    successColor: colorStore.getSuccessColor,
-    infoColor: colorStore.getInfoColor,
-    warnColor: colorStore.getWarnColor,
-    dangerColor: colorStore.getDangerColor,
-    helpColor: colorStore.getHelpColor,
-    contrastColor: colorStore.getContrastColor,
-    secondaryColor: colorStore.getSecondaryColor,
-
-    // 尺寸变量
-    fontSize: sizeStore.getFontSizeValue,
-    fontSizeSmall: sizeStore.getFontSizesValue,
-    paddings: sizeStore.getPaddingsValue,
-    gap: sizeStore.getGap,
-    gapl: sizeStore.getGapl,
-  }
-}
+import { DEFAULT_OPACITY_VALUES } from '@/hooks/modules/useChartTheme/constants'
 
 // 默认动画配置
 export const DEFAULT_ANIMATION_CONFIG: ChartAnimationConfig = {
@@ -66,7 +23,7 @@ export const DEFAULT_ANIMATION_CONFIG: ChartAnimationConfig = {
 
 // 默认工具箱配置
 export const getDefaultToolboxConfig = (): ChartToolboxConfig => {
-  const systemVars = getSystemVariables()
+  const systemVars = getChartSystemVariables()
 
   return {
     show: false,
@@ -108,7 +65,7 @@ export const getDefaultToolboxConfig = (): ChartToolboxConfig => {
 
 // 默认标记点配置
 export const getDefaultMarkPointConfig = (): ChartMarkPointConfig => {
-  const systemVars = getSystemVariables()
+  const systemVars = getChartSystemVariables()
 
   return {
     show: false,
@@ -134,7 +91,7 @@ export const getDefaultMarkPointConfig = (): ChartMarkPointConfig => {
 
 // 默认标记线配置
 export const getDefaultMarkLineConfig = (): ChartMarkLineConfig => {
-  const systemVars = getSystemVariables()
+  const systemVars = getChartSystemVariables()
 
   return {
     show: false,
@@ -161,7 +118,7 @@ export const getDefaultMarkLineConfig = (): ChartMarkLineConfig => {
 
 // 默认可视化映射配置
 export const getDefaultVisualMapConfig = (): ChartVisualMapConfig => {
-  const systemVars = getSystemVariables()
+  const systemVars = getChartSystemVariables()
 
   return {
     show: false,
@@ -187,7 +144,7 @@ export const getDefaultVisualMapConfig = (): ChartVisualMapConfig => {
 
 // 默认画刷配置
 export const getDefaultBrushConfig = (): ChartBrushConfig => {
-  const systemVars = getSystemVariables()
+  const systemVars = getChartSystemVariables()
 
   return {
     show: false,
@@ -207,7 +164,7 @@ export const getDefaultBrushConfig = (): ChartBrushConfig => {
 
 // 默认坐标轴指示器配置
 export const getDefaultAxisPointerConfig = (): ChartAxisPointerConfig => {
-  const systemVars = getSystemVariables()
+  const systemVars = getChartSystemVariables()
 
   return {
     show: true,

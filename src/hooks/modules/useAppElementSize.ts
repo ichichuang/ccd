@@ -1,6 +1,7 @@
-// src/composables/useElementSize.ts
+// src/composables/useAppElementSize.ts
 import type { Ref } from 'vue'
 import { debounceFn, throttleFn } from '@/utils/lodashes'
+
 export interface UseElementSizeOptions {
   mode?: 'throttle' | 'debounce' | 'none'
   delay?: number
@@ -12,7 +13,7 @@ export interface UseElementSizeOptions {
  * - targetRef 为 `ref<HTMLElement | null>` / `ref<HTMLElement | undefined>` 时：监听该元素
  * - targetRef 为 `false` 时：默认监听 `document.documentElement` 尺寸（全局视口）
  */
-export function useElementSize(
+export function useAppElementSize(
   targetRef: Ref<HTMLElement | null | undefined> | false,
   callback?: (entry: DOMRectReadOnly) => void,
   options: UseElementSizeOptions = {}
@@ -62,14 +63,15 @@ export function useElementSize(
     height.value = rect.height
 
     handler = createHandler()
-    observer = new ResizeObserver(entries => {
+    const ro = new ResizeObserver(entries => {
       for (const entry of entries) {
         if (entry.target === el) {
           handler!(entry.contentRect)
         }
       }
     })
-    observer.observe(el)
+    observer = ro
+    ro.observe(el)
   }
 
   const teardownObserver = () => {

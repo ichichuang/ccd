@@ -1,7 +1,7 @@
 /**
  * 标准化 Hex 颜色值 (修复 3 位 hex 并进行非法校验)
  */
-function normalizeHex(hex: string): string {
+export function normalizeHex(hex: string): string {
   // 基础校验：必须以 # 开头
   if (!hex || !hex.startsWith('#')) {
     console.error(`[Theme Engine] 非法颜色值: ${hex}，已回退为 #000000`)

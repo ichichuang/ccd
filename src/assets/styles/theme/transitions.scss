@@ -1,6 +1,6 @@
 /**
  * 主题切换动画样式入口
- * 引入所有过渡模式样式
+ * v3.0 - 统一 z-index + fallback 值
  */
 
 @use './modes/circle';
@@ -10,21 +10,57 @@
 @use './modes/glitch';
 @use './modes/fade';
 
-/* View Transitions API 基础样式 - 固定分层优先级避免闪白 */
+/* ═══════════════════════════════════════════════════════════════
+   Color Scheme 基础设置 - 稳定浏览器原生渲染
+   ═══════════════════════════════════════════════════════════════ */
+:root {
+  color-scheme: light;
+}
+
+:root.dark {
+  color-scheme: dark;
+}
+
+/* 防御：View Transition 期间禁用所有原生 CSS 过渡 */
+html.is-view-transitioning,
+html.is-view-transitioning *,
+html.is-view-transitioning *::before,
+html.is-view-transitioning *::after,
+html.is-view-transitioning body {
+  transition: none !important;
+  animation-delay: -1ms !important;
+  animation-duration: 1ms !important;
+  animation-iteration-count: 1 !important;
+}
+
+/* 过渡恢复期：防止动画结束后元素跳变 */
+html.theme-transition-recovery,
+html.theme-transition-recovery *,
+html.theme-transition-recovery *::before,
+html.theme-transition-recovery *::after {
+  transition: none !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   View Transitions API 基础样式 - 统一分层 + fallback
+   z-index: old=1, new=9999（与各模式保持一致）
+   animation-fill-mode: forwards 确保动画结束状态保持
+   ═══════════════════════════════════════════════════════════════ */
+
 ::view-transition-old(root) {
   animation: none;
-  background: var(--bg100-old);
+  animation-fill-mode: forwards;
   will-change: clip-path, opacity;
   mix-blend-mode: normal;
-  z-index: 1; /* 永远在底层 */
+  z-index: 1;
 }
 
 ::view-transition-new(root) {
   animation: none;
-  background: var(--bg100-new);
+  animation-fill-mode: forwards;
   will-change: clip-path, opacity;
   mix-blend-mode: normal;
-  z-index: 2; /* 永远在上层，避免白屏 */
+  z-index: 9999;
 }
 
 /* 主题切换渐隐渐现蒙层样式 */
@@ -42,4 +78,10 @@
   .theme-transition {
     transition: all 0.3s ease;
   }
+}
+
+/* 根节点永久禁用 CSS 过渡 */
+html,
+body {
+  transition: none !important;
 }
