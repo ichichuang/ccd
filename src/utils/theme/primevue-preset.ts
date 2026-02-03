@@ -1,93 +1,149 @@
 import { definePreset } from '@primevue/themes'
 import Aura from '@primevue/themes/aura'
 import type { useSizeStore } from '@/stores/modules/size'
-import { deepMergeStylesAdvanced } from './primevue-theme-engine'
+import {
+  deepMergeStylesAdvanced,
+  deepMergeStylesAdvancedInPlace,
+  deepFindAndReplaceProperty,
+} from './primevue-theme-engine'
 import { generateColorScale, generateBorderRadiusScale } from './primevue-theme-helpers'
 
 // -----------------------------------------------------------------------------
-// 🎨 Color Palette Adapter
-// Adapts the Hex-based ColorStore interface from the reference implementation
-// to CCD's CSS Variable system.
+// 🧱 PrimeVue Preset 架构说明
+// -----------------------------------------------------------------------------
+//
+// 1. 本文件是 PrimeVue @primevue/themes Aura 的“适配层”。
+//    - 只复用 Aura 的 primitive / semantic / components 结构，
+//      不再直接依赖 semantic.json / primitive.json / components.json 里的色值。
+//    - 真正的数据源是：
+//      - ThemeCssVars (见 src/types/systems/theme.d.ts, 由 generateThemeVars 计算并写入 :root)
+//      - SizeCssVars  (见 src/types/systems/size.d.ts, 尺寸系统负责写入 :root)
+//
+// 2. 约定：
+//    - 不在这里硬编码 Tailwind 色板 (emerald / slate 等)，
+//      统一通过 CSS 变量 + color-mix 生成 PrimeVue 所需的 token。
+//    - JSON 文件 (semantic.json / primitive.json / components.json) 只作为
+//      “参考结构 & 默认键名” 使用；如需修改设计，应优先改本文件中的 TS 逻辑。
 // -----------------------------------------------------------------------------
 
-const getVar = (name: string) => `var(--${name})`
+// -----------------------------------------------------------------------------
+// 🎨 Color Palette Adapter
+// 完全对齐架构的配色系统（theme.d.ts ThemeCssVars）
+//
+// 命名规则：ThemeCssVars 的 key（去掉 '--'）转为驼峰命名
+// 例如：'--background' → getBackground, '--primary-foreground' → getPrimaryForeground
+//
+// 参考：src/types/systems/theme.d.ts ThemeCssVars
+// -----------------------------------------------------------------------------
+
 const getRgbVar = (name: string) => `rgb(var(--${name}))`
 
 /**
- * Creates a "Virtual Color Store" that returns CSS variable references
- * matching the interface expected by the ported preset logic.
+ * 创建颜色适配器
+ *
+ * 所有 getter 名称与 ThemeCssVars 完全对齐，符合架构的配色系统定义
  */
 const createColorAdapter = () => {
   return {
-    // Basic backgrounds
-    getBg100: getRgbVar('background'), // Default bg
-    getBg200: getRgbVar('muted'), // Secondary/Hover bg
-    getBg300: getVar('border'), // Border color equivalent
+    // === 基础层 ===
+    getBackground: getRgbVar('background'),
+    getForeground: getRgbVar('foreground'),
+    getMuted: getRgbVar('muted'),
+    getMutedForeground: getRgbVar('muted-foreground'),
+    getBorder: getRgbVar('border'),
+    getInput: getRgbVar('input'),
+    getRing: getRgbVar('ring'),
 
-    // Text colors
-    getText100: getRgbVar('foreground'),
-    getText200: getRgbVar('muted-foreground'),
+    // === 容器层 ===
+    getCard: getRgbVar('card'),
+    getCardForeground: getRgbVar('card-foreground'),
+    getPopover: getRgbVar('popover'),
+    getPopoverForeground: getRgbVar('popover-foreground'),
 
-    // Primary
-    getPrimaryColor: getRgbVar('primary'),
-    getPrimaryColorText: getRgbVar('primary-foreground'),
-    getPrimaryColorHover: getRgbVar('primary-hover'),
-    getPrimaryColorActive: getRgbVar('primary-hover'), // Mapping active to hover for simplicity if no dedicated var
-    getPrimaryColorBorder: getRgbVar('primary'),
+    // === 品牌层 ===
+    getPrimary: getRgbVar('primary'),
+    getPrimaryForeground: getRgbVar('primary-foreground'),
+    getPrimaryHover: getRgbVar('primary-hover'),
 
-    // Secondary (Muted/Secondary in CCD)
-    getSecondaryColor: getRgbVar('secondary'),
-    getSecondaryColorText: getRgbVar('secondary-foreground'),
-    getSecondaryColorHover: getRgbVar('secondary'), // Secondary usually static
-    getSecondaryColorActive: getRgbVar('secondary'),
+    // === 辅助层 ===
+    getSecondary: getRgbVar('secondary'),
+    getSecondaryForeground: getRgbVar('secondary-foreground'),
+    getAccent: getRgbVar('accent'),
+    getAccentForeground: getRgbVar('accent-foreground'),
 
-    // Accent
-    getAccentColor: getRgbVar('accent'),
-    getAccentColorText: getRgbVar('accent-foreground'),
-
-    // Status: Info (Mapped to Primary for CCD as simpler system)
-    getInfoColor: getRgbVar('primary'),
-    getInfoColorText: getRgbVar('primary-foreground'),
-    getInfoColorHover: getRgbVar('primary-hover'),
-    getInfoColorActive: getRgbVar('primary-hover'),
-
-    // Status: Success
-    getSuccessColor: getRgbVar('success'),
-    getSuccessColorText: getRgbVar('success-foreground'),
-    getSuccessColorHover: getRgbVar('success-hover'),
-    getSuccessColorActive: getRgbVar('success-hover'),
-
-    // Status: Warn
-    getWarnColor: getRgbVar('warn'),
-    getWarnColorText: getRgbVar('warn-foreground'),
-    getWarnColorHover: getRgbVar('warn-hover'),
-    getWarnColorActive: getRgbVar('warn-hover'),
-
-    // Status: Danger/Destructive
-    getDangerColor: getRgbVar('destructive'),
-    getDangerColorText: getRgbVar('destructive-foreground'),
-    getDangerColorHover: getRgbVar('destructive-hover'),
-    getDangerColorActive: getRgbVar('destructive-hover'),
-
-    // Contrast
-    getContrastColor: getRgbVar('foreground'),
-    getContrastColorText: getRgbVar('background'),
-    getContrastColorHover: getRgbVar('foreground'),
-    getContrastColorActive: getRgbVar('foreground'),
-
-    // Utility 100/200 placeholders if needed
-    getPrimary100: getRgbVar('primary'),
-    getAccent100: getRgbVar('accent'),
-    getAccent200: getRgbVar('accent'),
+    // === 状态层 ===
+    getSuccess: getRgbVar('success'),
+    getSuccessForeground: getRgbVar('success-foreground'),
+    getSuccessHover: getRgbVar('success-hover'),
+    getWarn: getRgbVar('warn'),
+    getWarnForeground: getRgbVar('warn-foreground'),
+    getWarnHover: getRgbVar('warn-hover'),
+    getDestructive: getRgbVar('destructive'),
+    getDestructiveForeground: getRgbVar('destructive-foreground'),
+    getDestructiveHover: getRgbVar('destructive-hover'),
   }
 }
 
 // -----------------------------------------------------------------------------
 // 🧩 Component Color Scheme Logic
-// Ported from AUDS-new/utils/modules/primevuepreset.ts
 // -----------------------------------------------------------------------------
 
 type ColorAdapter = ReturnType<typeof createColorAdapter>
+
+/**
+ * 将 Aura 的 (colorType, suffix) 映射到架构对齐的适配器 getter
+ *
+ * 映射规则：
+ * - Primary/Info: '' → getPrimary, 'Text' → getPrimaryForeground, 'Hover'/'Active' → getPrimaryHover, 'Border' → getPrimary
+ * - Secondary: '' → getSecondary, 'Text' → getSecondaryForeground, 'Hover'/'Active' → getSecondary, 'Border' → getSecondary
+ * - Success: '' → getSuccess, 'Text' → getSuccessForeground, 'Hover'/'Active' → getSuccessHover, 'Border' → getSuccess
+ * - Warn/Help: '' → getWarn, 'Text' → getWarnForeground, 'Hover'/'Active' → getWarnHover, 'Border' → getWarn
+ * - Danger: '' → getDestructive, 'Text' → getDestructiveForeground, 'Hover'/'Active' → getDestructiveHover, 'Border' → getDestructive
+ * - Contrast: '' → getForeground, 'Text' → getBackground, 'Hover'/'Active' → getForeground, 'Border' → getForeground
+ */
+const getAdapterKey = (
+  colorType: 'Primary' | 'Secondary' | 'Info' | 'Success' | 'Warn' | 'Help' | 'Danger' | 'Contrast',
+  suffix: string
+): keyof ColorAdapter => {
+  // Contrast 特殊处理
+  if (colorType === 'Contrast') {
+    if (suffix === 'Text') return 'getBackground'
+    return 'getForeground'
+  }
+
+  // 映射 Aura colorType 到架构命名
+  let mappedType: 'Primary' | 'Secondary' | 'Success' | 'Warn' | 'Destructive'
+  if (colorType === 'Info' || colorType === 'Primary') {
+    mappedType = 'Primary'
+  } else if (colorType === 'Help' || colorType === 'Warn') {
+    mappedType = 'Warn'
+  } else if (colorType === 'Danger') {
+    mappedType = 'Destructive'
+  } else {
+    mappedType = colorType as 'Primary' | 'Secondary' | 'Success' | 'Warn' | 'Destructive'
+  }
+
+  // 映射 suffix 到架构命名
+  if (suffix === '') {
+    return `get${mappedType}` as keyof ColorAdapter
+  }
+  if (suffix === 'Text') {
+    return `get${mappedType}Foreground` as keyof ColorAdapter
+  }
+  if (suffix === 'Hover' || suffix === 'Active') {
+    // Secondary 没有 hover，返回自身
+    if (mappedType === 'Secondary') {
+      return `get${mappedType}` as keyof ColorAdapter
+    }
+    return `get${mappedType}Hover` as keyof ColorAdapter
+  }
+  if (suffix === 'Border') {
+    return `get${mappedType}` as keyof ColorAdapter
+  }
+
+  // 兜底：返回基础色
+  return `get${mappedType}` as keyof ColorAdapter
+}
 
 const initComponentButtonColorSchemeOptionsItems = (
   colors: ColorAdapter,
@@ -104,20 +160,19 @@ const initComponentButtonColorSchemeOptionsItems = (
       | 'Danger'
       | 'Contrast'
   ) => {
-    // Dynamic key access for adapter
+    // 使用架构对齐的映射函数
     const get = (suffix: string) => {
-      const key = `get${colorType}Color${suffix}` as keyof ColorAdapter
-      return colors[key] || colors[`get${colorType}Color` as keyof ColorAdapter]
+      const key = getAdapterKey(colorType, suffix)
+      return colors[key] || colors[getAdapterKey(colorType, '')]
     }
 
     switch (type) {
       case 'outlined':
         return {
-          hoverBackground: colorType === 'Secondary' ? get('') : get('Text'), // Inverted logic for compatibility
+          hoverBackground: colorType === 'Secondary' ? get('') : get('Text'),
           activeBackground: colorType === 'Secondary' ? get('') : get('Active'),
           borderColor: colorType === 'Secondary' ? get('Text') : get(''),
           color: colorType === 'Secondary' ? get('Text') : get(''),
-          // Background is transparent by default in Aura for outlined
         }
       case 'text':
         return {
@@ -162,7 +217,86 @@ const initComponentButtonColorSchemeOptionsItems = (
 // 🛠 Custom Preset Factory
 // -----------------------------------------------------------------------------
 
-export const createCustomPreset = (_sizeStore: ReturnType<typeof useSizeStore>) => {
+type RootSizeTokens = {
+  sm: Record<string, string>
+  lg: Record<string, string>
+}
+
+const getRootSizeTokensByMode = (mode: SizeMode): RootSizeTokens => {
+  switch (mode) {
+    case 'compact':
+      return {
+        sm: {
+          gap: 'var(--spacing-xs)',
+          padding: 'var(--spacing-xs)',
+          paddingX: 'var(--spacing-xs)',
+          paddingY: 'var(--spacing-xs)',
+          margin: 'var(--spacing-xs)',
+          marginX: 'var(--spacing-xs)',
+          marginY: 'var(--spacing-xs)',
+          fontSize: 'var(--font-size-xs)',
+        },
+        lg: {
+          gap: 'var(--spacing-sm)',
+          padding: 'var(--spacing-sm)',
+          paddingX: 'var(--spacing-sm)',
+          paddingY: 'var(--spacing-sm)',
+          margin: 'var(--spacing-sm)',
+          marginX: 'var(--spacing-sm)',
+          marginY: 'var(--spacing-sm)',
+          fontSize: 'var(--font-size-sm)',
+        },
+      }
+    case 'loose':
+      return {
+        sm: {
+          gap: 'var(--spacing-md)',
+          padding: 'var(--spacing-md)',
+          paddingX: 'var(--spacing-md)',
+          paddingY: 'var(--spacing-sm)',
+          margin: 'var(--spacing-md)',
+          marginX: 'var(--spacing-md)',
+          marginY: 'var(--spacing-sm)',
+          fontSize: 'var(--font-size-md)',
+        },
+        lg: {
+          gap: 'var(--spacing-lg)',
+          padding: 'var(--spacing-lg)',
+          paddingX: 'var(--spacing-lg)',
+          paddingY: 'var(--spacing-lg)',
+          margin: 'var(--spacing-lg)',
+          marginX: 'var(--spacing-lg)',
+          marginY: 'var(--spacing-lg)',
+          fontSize: 'var(--font-size-xl)',
+        },
+      }
+    default: // 'comfortable'
+      return {
+        sm: {
+          gap: 'var(--spacing-sm)',
+          padding: 'var(--spacing-sm)',
+          paddingX: 'var(--spacing-sm)',
+          paddingY: 'var(--spacing-xs)',
+          margin: 'var(--spacing-sm)',
+          marginX: 'var(--spacing-sm)',
+          marginY: 'var(--spacing-xs)',
+          fontSize: 'var(--font-size-sm)',
+        },
+        lg: {
+          gap: 'var(--spacing-lg)',
+          padding: 'var(--spacing-lg)',
+          paddingX: 'var(--spacing-lg)',
+          paddingY: 'var(--spacing-md)',
+          margin: 'var(--spacing-lg)',
+          marginX: 'var(--spacing-lg)',
+          marginY: 'var(--spacing-md)',
+          fontSize: 'var(--font-size-lg)',
+        },
+      }
+  }
+}
+
+export const createCustomPreset = (sizeStore: ReturnType<typeof useSizeStore>) => {
   const colors = createColorAdapter()
 
   // ──────────────────────────────────────────────────────────────────────────
@@ -223,17 +357,92 @@ export const createCustomPreset = (_sizeStore: ReturnType<typeof useSizeStore>) 
   // ──────────────────────────────────────────────────────────────────────────
   const semanticColors = {
     // 全局配置
-    transitionDuration: '0.2s',
+    transitionDuration: 'var(--transition-md)',
     focusRing: {
-      width: '2px',
+      width: 'calc(var(--spacing-xs) / 2)',
       style: 'solid',
       color: '{brand.500}', // 使用Token引用
-      offset: '2px',
+      offset: 'calc(var(--spacing-xs) / 2)',
       shadow: 'none',
     },
     disabledOpacity: '0.6',
-    iconSize: '1rem',
+    iconSize: 'var(--font-size-md)',
     anchorGutter: '0',
+
+    // ────────────────────────────────────────────────────────────────────────
+    // ✅ 尺寸系统融合 (Size System Integration)
+    // ────────────────────────────────────────────────────────────────────────
+
+    // 表单控件尺寸 (Input, Button, Dropdown...) - Aura 使用 form.field.sm.font.size 路径
+    formField: {
+      // 默认（md）：取 sm 与 md 的中值，避免横向偏大，同时完全跟随 Size 系统
+      paddingX: 'calc((var(--spacing-sm) + var(--spacing-md)) / 2)',
+      // 默认（md）：更接近舒适模式的控件高度
+      paddingY: 'var(--spacing-sm)',
+      borderRadius: 'var(--radius-md)',
+      fontSize: 'var(--font-size-md)', // Base font size
+      focusRing: {
+        width: '0', // Native focus ring handled by focusRing global above or individually
+        style: 'none',
+        color: 'transparent',
+        offset: '0',
+        shadow: 'none',
+      },
+      transitionDuration: 'var(--transition-md)',
+      // 响应式尺寸 (sm/lg) - 与 Aura form.field.sm.font.size 路径一致
+      sm: {
+        fontSize: 'var(--font-size-sm)',
+        paddingX: 'var(--spacing-sm)',
+        paddingY: 'calc(var(--spacing-sm) / 2)',
+      },
+      lg: {
+        fontSize: 'var(--font-size-lg)',
+        paddingX: 'calc((var(--spacing-sm) + var(--spacing-md)) / 2)', // 介于 sm 和 md 之间
+        paddingY: 'var(--spacing-md)',
+      },
+    },
+
+    // 列表项尺寸 (Menu, Select Option...)
+    list: {
+      padding: 'var(--spacing-xs)', // Container padding
+      gap: 'var(--spacing-xs)', // Item gap
+      header: {
+        padding: 'var(--spacing-sm) var(--spacing-md)', // Py Px
+      },
+      option: {
+        padding: 'var(--spacing-sm) var(--spacing-md)', // Py Px
+        borderRadius: 'var(--radius-sm)', // Items usually have smaller radius
+      },
+      optionGroup: {
+        padding: 'var(--spacing-sm) var(--spacing-md)',
+        fontWeight: '600',
+      },
+    },
+
+    // 浮层尺寸 (Dialog, Popover, Tooltip...)
+    overlay: {
+      select: {
+        borderRadius: 'var(--radius-md)',
+        shadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1)',
+      },
+      popover: {
+        borderRadius: 'var(--radius-md)',
+        padding: 'var(--spacing-md)',
+        shadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1)',
+      },
+      modal: {
+        borderRadius: 'var(--radius-xl)',
+        padding: 'var(--spacing-xl)',
+        shadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1)',
+      },
+      navigation: {
+        shadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1)',
+      },
+    },
+
+    content: {
+      borderRadius: 'var(--radius-md)',
+    },
 
     // ✅ 关键: 在colorScheme下定义Primary (Aura要求的结构)
     primary: {
@@ -378,19 +587,19 @@ export const createCustomPreset = (_sizeStore: ReturnType<typeof useSizeStore>) 
   }
 
   // ──────────────────────────────────────────────────────────────────────────
-  // 3. SIZE CONFIGURATION: 全局尺寸配置
-  // ──────────────────────────────────────────────────────────────────────────
-  const customSize = {
-    borderRadius: 'var(--radius)',
-    gap: 'var(--spacing-sm)',
-    padding: 'var(--spacing-sm)',
-  }
-
-  // ──────────────────────────────────────────────────────────────────────────
   // 4. COMPONENT LAYER: 仅保留必要的组件特定覆盖
   //    大部分组件现在通过Token引用自动继承样式
   // ──────────────────────────────────────────────────────────────────────────
   const componentColors = {
+    scrollpanel: {
+      colorScheme: {
+        light: {
+          bar: {
+            background: 'rgb(var(--muted))',
+          },
+        },
+      },
+    },
     button: {
       colorScheme: {
         light: {
@@ -412,28 +621,28 @@ export const createCustomPreset = (_sizeStore: ReturnType<typeof useSizeStore>) 
       colorScheme: {
         light: {
           root: {
-            background: colors.getBg100, // Dynamic background
+            background: colors.getBackground,
             borderColor: 'rgb(var(--input))', // Consistent with input border
-            hoverBorderColor: colors.getPrimaryColor,
-            checkedBackground: colors.getPrimaryColor,
-            checkedBorderColor: colors.getPrimaryColor,
-            checkedHoverBackground: colors.getPrimaryColorHover,
+            hoverBorderColor: colors.getPrimary,
+            checkedBackground: colors.getPrimary,
+            checkedBorderColor: colors.getPrimary,
+            checkedHoverBackground: colors.getPrimaryHover,
           },
           icon: {
-            color: colors.getPrimaryColorText,
+            color: colors.getPrimaryForeground,
           },
         },
         dark: {
           root: {
-            background: colors.getBg100, // Matches background in dark mode
+            background: colors.getBackground,
             borderColor: 'rgb(var(--input))',
-            hoverBorderColor: colors.getPrimaryColor,
-            checkedBackground: colors.getPrimaryColor,
-            checkedBorderColor: colors.getPrimaryColor,
-            checkedHoverBackground: colors.getPrimaryColorHover,
+            hoverBorderColor: colors.getPrimary,
+            checkedBackground: colors.getPrimary,
+            checkedBorderColor: colors.getPrimary,
+            checkedHoverBackground: colors.getPrimaryHover,
           },
           icon: {
-            color: colors.getPrimaryColorText,
+            color: colors.getPrimaryForeground,
           },
         },
       },
@@ -443,28 +652,28 @@ export const createCustomPreset = (_sizeStore: ReturnType<typeof useSizeStore>) 
       colorScheme: {
         light: {
           root: {
-            background: colors.getBg100,
+            background: colors.getBackground,
             borderColor: 'rgb(var(--input))',
-            hoverBorderColor: colors.getPrimaryColor,
-            checkedBackground: colors.getPrimaryColor,
-            checkedBorderColor: colors.getPrimaryColor,
+            hoverBorderColor: colors.getPrimary,
+            checkedBackground: colors.getPrimary,
+            checkedBorderColor: colors.getPrimary,
           },
           icon: {
-            background: colors.getPrimaryColor,
-            checkedHoverBackground: colors.getPrimaryColorHover,
+            background: colors.getPrimary,
+            checkedHoverBackground: colors.getPrimaryHover,
           },
         },
         dark: {
           root: {
-            background: colors.getBg100,
+            background: colors.getBackground,
             borderColor: 'rgb(var(--input))',
-            hoverBorderColor: colors.getPrimaryColor,
-            checkedBackground: colors.getPrimaryColor,
-            checkedBorderColor: colors.getPrimaryColor,
+            hoverBorderColor: colors.getPrimary,
+            checkedBackground: colors.getPrimary,
+            checkedBorderColor: colors.getPrimary,
           },
           icon: {
-            background: colors.getPrimaryColor,
-            checkedHoverBackground: colors.getPrimaryColorHover,
+            background: colors.getPrimary,
+            checkedHoverBackground: colors.getPrimaryHover,
           },
         },
       },
@@ -560,17 +769,19 @@ export const createCustomPreset = (_sizeStore: ReturnType<typeof useSizeStore>) 
         },
       },
     },
-    // Tabs - use colorScheme for proper dark mode
+    // Tabs - 圆角系统融合 + colorScheme
     tabs: {
       colorScheme: {
         light: {
           tablist: {
             borderColor: 'rgb(var(--muted))',
+            borderRadius: 'var(--radius-md)',
           },
           tab: {
             color: 'rgb(var(--muted-foreground))',
             hoverColor: 'rgb(var(--foreground))',
             activeColor: 'rgb(var(--primary))',
+            borderRadius: 'var(--radius-sm)',
           },
           activeBar: {
             background: 'rgb(var(--primary))',
@@ -578,16 +789,19 @@ export const createCustomPreset = (_sizeStore: ReturnType<typeof useSizeStore>) 
           tabpanel: {
             background: 'rgb(var(--background))',
             color: 'rgb(var(--foreground))',
+            borderRadius: 'var(--radius-md)',
           },
         },
         dark: {
           tablist: {
             borderColor: 'rgb(var(--muted))',
+            borderRadius: 'var(--radius-md)',
           },
           tab: {
             color: 'rgb(var(--muted-foreground))',
             hoverColor: 'rgb(var(--foreground))',
             activeColor: 'rgb(var(--primary))',
+            borderRadius: 'var(--radius-sm)',
           },
           activeBar: {
             background: 'rgb(var(--primary))',
@@ -595,12 +809,19 @@ export const createCustomPreset = (_sizeStore: ReturnType<typeof useSizeStore>) 
           tabpanel: {
             background: 'rgb(var(--background))',
             color: 'rgb(var(--foreground))',
+            borderRadius: 'var(--radius-md)',
           },
         },
       },
     },
-    // Accordion - use colorScheme for proper dark mode
+    // Accordion - 圆角系统融合 + colorScheme
     accordion: {
+      root: {
+        borderRadius: 'var(--radius-md)',
+      },
+      panel: {
+        borderRadius: 'var(--radius-md)',
+      },
       colorScheme: {
         light: {
           header: {
@@ -608,11 +829,15 @@ export const createCustomPreset = (_sizeStore: ReturnType<typeof useSizeStore>) 
             borderColor: 'rgb(var(--muted))',
             color: 'rgb(var(--foreground))',
             hoverBackground: 'rgb(var(--muted))',
+            borderRadius: 'var(--radius-sm)',
+            first: { topBorderRadius: 'var(--radius-md)' },
+            last: { bottomBorderRadius: 'var(--radius-md)' },
           },
           content: {
             background: 'rgb(var(--background))',
             borderColor: 'rgb(var(--muted))',
             color: 'rgb(var(--foreground))',
+            borderRadius: 'var(--radius-sm)',
           },
         },
         dark: {
@@ -621,11 +846,15 @@ export const createCustomPreset = (_sizeStore: ReturnType<typeof useSizeStore>) 
             borderColor: 'rgb(var(--muted))',
             color: 'rgb(var(--foreground))',
             hoverBackground: 'rgb(var(--muted))',
+            borderRadius: 'var(--radius-sm)',
+            first: { topBorderRadius: 'var(--radius-md)' },
+            last: { bottomBorderRadius: 'var(--radius-md)' },
           },
           content: {
             background: 'rgb(var(--background))',
             borderColor: 'rgb(var(--muted))',
             color: 'rgb(var(--foreground))',
+            borderRadius: 'var(--radius-sm)',
           },
         },
       },
@@ -731,7 +960,7 @@ export const createCustomPreset = (_sizeStore: ReturnType<typeof useSizeStore>) 
     },
     // Divider - soft
     divider: {
-      borderColor: colors.getBg200,
+      borderColor: colors.getMuted,
     },
     // Stepper - softer styling
     stepper: {
@@ -829,7 +1058,7 @@ export const createCustomPreset = (_sizeStore: ReturnType<typeof useSizeStore>) 
         },
       },
       chip: {
-        borderRadius: 'var(--radius)',
+        borderRadius: 'var(--radius-md)',
       },
     },
     // ColorPicker
@@ -908,7 +1137,7 @@ export const createCustomPreset = (_sizeStore: ReturnType<typeof useSizeStore>) 
         background: 'rgb(var(--popover))',
         borderColor: 'rgb(var(--border))',
         color: 'rgb(var(--popover-foreground))',
-        borderRadius: 'var(--radius)',
+        borderRadius: 'var(--radius-md)',
       },
       option: {
         color: 'rgb(var(--popover-foreground))',
@@ -1030,7 +1259,7 @@ export const createCustomPreset = (_sizeStore: ReturnType<typeof useSizeStore>) 
         background: 'rgb(var(--popover))',
         borderColor: 'rgb(var(--border))',
         color: 'rgb(var(--popover-foreground))',
-        borderRadius: 'var(--radius)', // 与其他卡片、Popover 保持一致
+        borderRadius: 'var(--radius-md)', // 与其他卡片、Popover 保持一致
         // 阴影可以继续使用 Popover 的标准阴影
         // 如果想更轻一些，也可以用 card 的 shadow
       },
@@ -1056,7 +1285,7 @@ export const createCustomPreset = (_sizeStore: ReturnType<typeof useSizeStore>) 
         background: 'rgb(var(--popover))',
         borderColor: 'rgb(var(--border))',
         color: 'rgb(var(--popover-foreground))',
-        borderRadius: 'var(--radius)',
+        borderRadius: 'var(--radius-md)',
       },
       item: {
         color: 'rgb(var(--popover-foreground))',
@@ -1076,7 +1305,7 @@ export const createCustomPreset = (_sizeStore: ReturnType<typeof useSizeStore>) 
         focusColor: 'rgb(var(--accent-foreground))',
         activeBackground: 'rgb(var(--accent))',
         activeColor: 'rgb(var(--accent-foreground))',
-        borderRadius: 'var(--radius)',
+        borderRadius: 'var(--radius-md)',
         overflow: 'hidden', // Fix ripple overflow
       },
     },
@@ -1141,7 +1370,7 @@ export const createCustomPreset = (_sizeStore: ReturnType<typeof useSizeStore>) 
         background: 'rgb(var(--popover))',
         borderColor: 'rgb(var(--border))',
         color: 'rgb(var(--popover-foreground))',
-        borderRadius: 'var(--radius)',
+        borderRadius: 'var(--radius-md)',
       },
       option: {
         color: 'rgb(var(--popover-foreground))',
@@ -1168,7 +1397,7 @@ export const createCustomPreset = (_sizeStore: ReturnType<typeof useSizeStore>) 
         background: 'rgb(var(--popover))',
         borderColor: 'rgb(var(--border))',
         color: 'rgb(var(--popover-foreground))',
-        borderRadius: 'var(--radius)',
+        borderRadius: 'var(--radius-md)',
       },
       list: {
         background: 'rgb(var(--popover))',
@@ -1193,7 +1422,7 @@ export const createCustomPreset = (_sizeStore: ReturnType<typeof useSizeStore>) 
         background: 'rgb(var(--popover))',
         borderColor: 'rgb(var(--border))',
         color: 'rgb(var(--popover-foreground))',
-        borderRadius: 'var(--radius)',
+        borderRadius: 'var(--radius-md)',
       },
       tree: {
         root: {
@@ -1220,7 +1449,7 @@ export const createCustomPreset = (_sizeStore: ReturnType<typeof useSizeStore>) 
         background: 'rgb(var(--popover))',
         borderColor: 'rgb(var(--border))',
         color: 'rgb(var(--popover-foreground))',
-        borderRadius: 'var(--radius)',
+        borderRadius: 'var(--radius-md)',
       },
       list: {
         background: 'rgb(var(--popover))',
@@ -1375,57 +1604,8 @@ export const createCustomPreset = (_sizeStore: ReturnType<typeof useSizeStore>) 
       icon: {
         color: 'rgb(var(--foreground))',
       },
-      // 修补 Aura 在暗色模式下彩色文字对比度不足的问题
-      colorScheme: {
-        dark: {
-          // 信息提示：保持蓝色背景，只提升文字为浅色
-          info: {
-            color: 'rgb(var(--foreground))',
-          },
-          // 成功提示：绿色背景 + 浅色文字
-          success: {
-            color: 'rgb(var(--foreground))',
-          },
-          // 警告提示：黄色背景 + 浅色文字
-          warn: {
-            color: 'rgb(var(--foreground))',
-          },
-          // 错误提示：红色背景 + 浅色文字
-          error: {
-            color: 'rgb(var(--foreground))',
-          },
-          // 次要提示：灰色背景 + 浅色文字
-          secondary: {
-            color: 'rgb(var(--foreground))',
-          },
-          // contrast 在暗色模式下本身就是浅底深字，一般不需要强制覆盖；
-          // 如需统一风格，可在此再增加 contrast 配置。
-        },
-      },
     },
-    // Toast
-    // 在 components 对象中，紧跟在 message 旁边增加一个 toast 配置
-
-    toast: {
-      // 不改 root/icon/summary/detail 等结构，只修补暗色配色
-      colorScheme: {
-        dark: {
-          info: {
-            // 正文：同样用前景色，或者保留 surface.0 也可以
-            detailColor: 'rgb(var(--foreground))',
-          },
-          success: {
-            detailColor: 'rgb(var(--foreground))',
-          },
-          warn: {
-            detailColor: 'rgb(var(--foreground))',
-          },
-          error: {
-            detailColor: 'rgb(var(--foreground))',
-          },
-        },
-      },
-    },
+    // Toast - 深色模式使用语义色统一配置 (toastDarkSemantic)
     // Tag
     tag: {
       root: {
@@ -1526,7 +1706,7 @@ export const createCustomPreset = (_sizeStore: ReturnType<typeof useSizeStore>) 
     selectbutton: {
       // 基础外观（主要针对浅色模式）
       root: {
-        borderRadius: 'var(--radius)',
+        borderRadius: 'var(--radius-md)',
         background: 'rgb(var(--secondary))',
         borderColor: 'rgb(var(--input))',
         color: 'rgb(var(--secondary-foreground))',
@@ -1561,7 +1741,7 @@ export const createCustomPreset = (_sizeStore: ReturnType<typeof useSizeStore>) 
     // SplitButton
     splitbutton: {
       root: {
-        borderRadius: 'var(--radius)',
+        borderRadius: 'var(--radius-md)',
       },
       button: {
         // Inherits from regular Button, generally fine
@@ -1576,7 +1756,7 @@ export const createCustomPreset = (_sizeStore: ReturnType<typeof useSizeStore>) 
         background: 'rgb(var(--popover))',
         borderColor: 'rgb(var(--border))',
         color: 'rgb(var(--popover-foreground))',
-        borderRadius: 'var(--radius)',
+        borderRadius: 'var(--radius-md)',
       },
       item: {
         color: 'rgb(var(--popover-foreground))',
@@ -1604,7 +1784,7 @@ export const createCustomPreset = (_sizeStore: ReturnType<typeof useSizeStore>) 
         hoverColor: 'rgb(var(--accent-foreground))',
         focusBackground: 'rgb(var(--accent))',
         activeBackground: 'transparent', // Usually keep transparent and jsut rotate icon
-        borderRadius: 'var(--radius)',
+        borderRadius: 'var(--radius-md)',
       },
       content: {
         background: 'transparent',
@@ -1618,11 +1798,14 @@ export const createCustomPreset = (_sizeStore: ReturnType<typeof useSizeStore>) 
         focusColor: 'rgb(var(--accent-foreground))',
       },
     },
-    // TabMenu
+    // TabMenu - 圆角系统融合
     tabmenu: {
       root: {
         background: 'transparent',
         borderColor: 'rgb(var(--border))',
+      },
+      tablist: {
+        borderRadius: 'var(--radius-md)',
       },
       item: {
         background: 'transparent',
@@ -1633,12 +1816,14 @@ export const createCustomPreset = (_sizeStore: ReturnType<typeof useSizeStore>) 
         activeBackground: 'transparent',
         activeBorderColor: 'rgb(var(--primary))',
         activeColor: 'rgb(var(--primary))',
+        borderRadius: 'var(--radius-sm)',
       },
     },
-    // Steps
+    // Steps - 圆角系统融合
     steps: {
       root: {
         background: 'transparent',
+        borderRadius: 'var(--radius-md)',
       },
       item: {
         // Number/Icon
@@ -1653,7 +1838,7 @@ export const createCustomPreset = (_sizeStore: ReturnType<typeof useSizeStore>) 
         background: 'rgb(var(--popover))',
         borderColor: 'rgb(var(--border))',
         color: 'rgb(var(--popover-foreground))',
-        borderRadius: 'var(--radius)',
+        borderRadius: 'var(--radius-md)',
       },
     },
   }
@@ -1661,16 +1846,227 @@ export const createCustomPreset = (_sizeStore: ReturnType<typeof useSizeStore>) 
   // ──────────────────────────────────────────────────────────────────────────
   // 5. FINAL ASSEMBLY: 通过definePreset合并所有层级
   // ──────────────────────────────────────────────────────────────────────────
-  console.log('Aura Original: ', Aura)
   const basePreset = definePreset(Aura, {
     primitive: primitiveColors,
     semantic: semanticColors,
     components: componentColors,
   })
 
-  // 应用全局尺寸配置
-  return deepMergeStylesAdvanced(basePreset, customSize, {
+  // ──────────────────────────────────────────────────────────────────────────
+  // 6. 全局圆角覆盖 (仅 borderRadius): 避免整树强制 padding/gap/margin 导致列表/菜单/日期格等过松
+  //    间距与字号由 Aura 默认 + semantic (formField/list/overlay) + 组件覆盖 分层控制
+  // ──────────────────────────────────────────────────────────────────────────
+  const globalSizeTokens: Record<string, string> = {
+    borderRadius: 'var(--radius-md)',
+  }
+  const resultPreset = deepMergeStylesAdvanced(basePreset, globalSizeTokens, {
     deepMerge: true,
     override: true,
-  })
+  }) as Record<string, any>
+
+  const SIZE_AWARE_COMPONENTS = new Set<string>([
+    'button',
+    'checkbox',
+    'radiobutton',
+    'toggleswitch',
+    'datatable',
+    'tabs',
+    'accordion',
+    'panel',
+    'card',
+    'fieldset',
+    'inputtext',
+    'inputnumber',
+    'inputchips',
+    'colorpicker',
+    'slider',
+    'select',
+    'dialog',
+    'drawer',
+    'popover',
+    'menu',
+    'menubar',
+    'paginator',
+    'listbox',
+    'multiselect',
+    'cascadeselect',
+    'treeselect',
+    'autocomplete',
+    'password',
+    'datepicker',
+    'orderlist',
+    'picklist',
+    'togglebutton',
+    'selectbutton',
+    'splitbutton',
+  ])
+
+  // 7. 遮罩统一：全 preset 内 mask.background 与架构变量一致
+  deepFindAndReplaceProperty(
+    resultPreset,
+    'mask',
+    'background',
+    'rgb(var(--muted-foreground) / 0.25)'
+  )
+
+  // 8. root.sm / root.lg 扩散到需要尺寸模式的组件（大/中/小尺寸模式）
+  const { sm: rootSm, lg: rootLg } = getRootSizeTokensByMode(sizeStore.sizeName)
+  const components = resultPreset.components
+  if (components && typeof components === 'object') {
+    for (const [name, config] of Object.entries(components)) {
+      if (!SIZE_AWARE_COMPONENTS.has(name)) continue
+      if (config && typeof config === 'object') {
+        const c = config as Record<string, any>
+        c.root = c.root || {}
+        c.root.sm = c.root.sm || {}
+        c.root.lg = c.root.lg || {}
+
+        // 仅在组件未定义对应字段时补充，避免覆盖 Aura/组件自身的精细配置
+        for (const [key, value] of Object.entries(rootSm)) {
+          if (!(key in c.root.sm)) {
+            c.root.sm[key] = value
+          }
+        }
+        for (const [key, value] of Object.entries(rootLg)) {
+          if (!(key in c.root.lg)) {
+            c.root.lg[key] = value
+          }
+        }
+      }
+    }
+  }
+
+  // 9. Message 深色：与架构语义色完全对齐（background / border / color / closeButton）
+  const messageDarkSemantic = {
+    info: {
+      background: 'rgb(var(--primary))',
+      borderColor: 'rgb(var(--primary))',
+      color: 'rgb(var(--primary-foreground))',
+      closeButton: {
+        hoverBackground: 'rgb(var(--muted-foreground) / 0.1)',
+        focusRing: { color: 'rgb(var(--primary))' },
+      },
+    },
+    success: {
+      background: 'rgb(var(--success))',
+      borderColor: 'rgb(var(--success))',
+      color: 'rgb(var(--success-foreground))',
+      closeButton: {
+        hoverBackground: 'rgb(var(--muted-foreground) / 0.1)',
+        focusRing: { color: 'rgb(var(--success))' },
+      },
+    },
+    warn: {
+      background: 'rgb(var(--warn))',
+      borderColor: 'rgb(var(--warn))',
+      color: 'rgb(var(--warn-foreground))',
+      closeButton: {
+        hoverBackground: 'rgb(var(--muted-foreground) / 0.1)',
+        focusRing: { color: 'rgb(var(--warn))' },
+      },
+    },
+    error: {
+      background: 'rgb(var(--destructive))',
+      borderColor: 'rgb(var(--destructive))',
+      color: 'rgb(var(--destructive-foreground))',
+      closeButton: {
+        hoverBackground: 'rgb(var(--muted-foreground) / 0.1)',
+        focusRing: { color: 'rgb(var(--destructive))' },
+      },
+    },
+    secondary: {
+      background: 'rgb(var(--secondary))',
+      borderColor: 'rgb(var(--secondary))',
+      color: 'rgb(var(--secondary-foreground))',
+      closeButton: {
+        hoverBackground: 'rgb(var(--muted-foreground) / 0.1)',
+        focusRing: { color: 'rgb(var(--secondary))' },
+      },
+    },
+    contrast: {
+      background: 'rgb(var(--foreground))',
+      borderColor: 'rgb(var(--foreground))',
+      color: 'rgb(var(--background))',
+      closeButton: {
+        hoverBackground: 'rgb(var(--background) / 0.15)',
+        focusRing: { color: 'rgb(var(--foreground))' },
+      },
+    },
+  }
+  if (components?.message) {
+    deepMergeStylesAdvancedInPlace(components.message, {
+      colorScheme: { dark: messageDarkSemantic },
+    })
+  }
+
+  // 10. Toast 深色：与架构语义色完全对齐（background / border / color / detailColor / closeButton）
+  const toastDarkSemantic = {
+    info: {
+      background: 'rgb(var(--primary))',
+      borderColor: 'rgb(var(--primary))',
+      color: 'rgb(var(--primary-foreground))',
+      detailColor: 'rgb(var(--primary-foreground))',
+      closeButton: {
+        hoverBackground: 'rgb(var(--muted-foreground) / 0.1)',
+        focusRing: { color: 'rgb(var(--primary))' },
+      },
+    },
+    success: {
+      background: 'rgb(var(--success))',
+      borderColor: 'rgb(var(--success))',
+      color: 'rgb(var(--success-foreground))',
+      detailColor: 'rgb(var(--success-foreground))',
+      closeButton: {
+        hoverBackground: 'rgb(var(--muted-foreground) / 0.1)',
+        focusRing: { color: 'rgb(var(--success))' },
+      },
+    },
+    warn: {
+      background: 'rgb(var(--warn))',
+      borderColor: 'rgb(var(--warn))',
+      color: 'rgb(var(--warn-foreground))',
+      detailColor: 'rgb(var(--warn-foreground))',
+      closeButton: {
+        hoverBackground: 'rgb(var(--muted-foreground) / 0.1)',
+        focusRing: { color: 'rgb(var(--warn))' },
+      },
+    },
+    error: {
+      background: 'rgb(var(--destructive))',
+      borderColor: 'rgb(var(--destructive))',
+      color: 'rgb(var(--destructive-foreground))',
+      detailColor: 'rgb(var(--destructive-foreground))',
+      closeButton: {
+        hoverBackground: 'rgb(var(--muted-foreground) / 0.1)',
+        focusRing: { color: 'rgb(var(--destructive))' },
+      },
+    },
+    secondary: {
+      background: 'rgb(var(--secondary))',
+      borderColor: 'rgb(var(--secondary))',
+      color: 'rgb(var(--secondary-foreground))',
+      detailColor: 'rgb(var(--secondary-foreground))',
+      closeButton: {
+        hoverBackground: 'rgb(var(--muted-foreground) / 0.1)',
+        focusRing: { color: 'rgb(var(--secondary))' },
+      },
+    },
+    contrast: {
+      background: 'rgb(var(--foreground))',
+      borderColor: 'rgb(var(--foreground))',
+      color: 'rgb(var(--background))',
+      detailColor: 'rgb(var(--background))',
+      closeButton: {
+        hoverBackground: 'rgb(var(--background) / 0.15)',
+        focusRing: { color: 'rgb(var(--foreground))' },
+      },
+    },
+  }
+  if (components?.toast) {
+    deepMergeStylesAdvancedInPlace(components.toast, {
+      colorScheme: { dark: toastDarkSemantic },
+    })
+  }
+
+  return resultPreset
 }

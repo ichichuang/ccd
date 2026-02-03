@@ -24,7 +24,6 @@ export function generateSizeVars(preset: SizePreset): SizeCssVars {
   // 使用 Partial<SizeCssVars> 构建，最后类型断言为完整类型
   const vars: Partial<SizeCssVars> = {
     // --- 基础变量 ---
-    '--radius': `${preset.radius}rem`,
     '--spacing-unit': `${preset.spacingBase}px`,
     '--container-padding': `${preset.spacingBase * 5}px`,
 

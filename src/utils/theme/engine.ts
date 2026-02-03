@@ -5,7 +5,6 @@ export { COLOR_FAMILIES, THEME_ENGINE }
 
 /**
  * 生成 Shadcn 兼容的 CSS 变量 (Final v3.5)
- * ⚠️ 已彻底移除 --radius，圆角控制权已移交至 SizeEngine
  */
 export function generateThemeVars(preset: ThemePreset, isDark: boolean): ThemeCssVars {
   const E = THEME_ENGINE

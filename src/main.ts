@@ -1,7 +1,6 @@
 // 导入功能样式
 import '@/assets/styles/reset.scss'
 import 'primeicons/primeicons.css'
-import '@/assets/styles/custom.scss'
 import 'animate.css'
 import 'uno.css'
 

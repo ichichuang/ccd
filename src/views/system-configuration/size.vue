@@ -486,10 +486,6 @@ function copyToClipboard(text: string, description = '') {
           <h3 class="text-sm font-medium text-foreground mb-3">基础变量</h3>
           <div class="space-y-2 text-xs font-mono">
             <div class="flex justify-between">
-              <span class="text-muted-foreground">--radius</span>
-              <span class="text-primary">{{ currentPreset.radius }}rem</span>
-            </div>
-            <div class="flex justify-between">
               <span class="text-muted-foreground">--spacing-unit</span>
               <span class="text-primary">{{ currentPreset.spacingBase }}px</span>
             </div>

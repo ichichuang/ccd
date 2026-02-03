@@ -60,8 +60,6 @@ declare global {
    */
   export interface SizeCssVars {
     // --- 基础变量 ---
-    /** 圆角基数 */
-    '--radius': string
     /** 间距单位基数 */
     '--spacing-unit': string
     /** 容器内边距 */

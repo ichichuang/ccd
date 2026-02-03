@@ -4,7 +4,7 @@
  *
  * 基于 OverlayScrollbars，完美融合主题系统和尺寸系统：
  * - 滚动条颜色：使用 --muted / --primary CSS 变量
- * - 滚动条圆角：使用 --radius CSS 变量
+ * - 滚动条圆角：使用尺寸系统圆角阶梯变量 (如 --radius-md)
  * - 自动适配深色/浅色模式
  *
  * @example

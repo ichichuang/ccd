@@ -43,7 +43,7 @@ export const SPACING_SCALE_RATIOS: Record<SizeScaleKey, number> = {
 }
 
 /**
- * 圆角倍率表 (相对于 --radius)
+ * 圆角倍率表 (相对于 SizePreset.radius，对应 --radius-md 的基准值)
  * 假设 base (md) = 0.5rem (8px)
  * 从微圆角到全圆角的完整阶梯
  */

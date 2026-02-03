@@ -103,7 +103,23 @@ export function deepMergeStylesAdvanced<T = any>(
     }
   }
 
-  // 3. Traverse existing object
+  // 3. 遍历目标对象，应用「键名级」和「完整路径级」的合并规则
+  //
+  //   - processedStyles：仅按「当前 key 名」匹配，例如：
+  //       styles = { color: 'red' }
+  //       → 任何层级的 `color` 属性都会被匹配（可配合 matcher 精细控制）
+  //
+  //   - pathStyles：按「完整路径字符串」匹配，例如：
+  //       styles = { 'components.button.root.background': 'red' }
+  //       → 只有完整路径等于 'components.button.root.background' 的节点会在遍历时命中
+  //
+  //   处理顺序：
+  //   1）遍历时，如果当前节点路径与 pathStyles 中的 key 完全相等：
+  //        - 立即应用该值
+  //        - 从 pathStyles 中 delete 掉该路径（避免后面重复创建）
+  //   2）遍历结束后：
+  //        - 对于尚未命中的 pathStyles（即遍历过程中根本不存在的路径），
+  //          统一通过 setValueByPath 自动创建中间对象并写入最终值。
   function traverse(obj: any, path: string[] = []): void {
     if (obj === null || typeof obj !== 'object') {
       return
@@ -134,19 +150,7 @@ export function deepMergeStylesAdvanced<T = any>(
           if (pathKey.startsWith(`${key}.`)) {
             const subPath = pathKey.substring(key.length + 1)
             if (subPath) {
-              // Try to set deeply nested existing path
-              // Note: This helper modifies 'obj' in place (which is part of 'result')
-              // It's safe because 'result' is a deep clone
               setIfExistsByPath(obj, key, subPath, pathStyles[pathKey], override)
-              // We don't delete from pathStyles here because complex sub-paths might need
-              // creation later if they don't fully exist.
-              // Actually, reference impl deletes it inside setIfExists wrapper or we manage usage.
-              // To keep it simple and consistent with reference logic:
-              // The reference `deepMergeStylesAdvancedInPlace` logic deletes it.
-              // We will manually delete if successfully set?
-              // The reference implementation actually relies on `pathStyles` remaining populated
-              // for the final connection step if not fully found?
-              // Let's stick to the cleaner "Create all remaining paths" at the end.
             }
           }
         }
@@ -197,6 +201,34 @@ export function deepMergeStylesAdvanced<T = any>(
 }
 
 /**
+ * Recursively find all nodes with a given key and subKey (e.g. mask + background)
+ * and set that property to newValue. Modifies target in place.
+ */
+export function deepFindAndReplaceProperty(
+  target: any,
+  keyToFind: string,
+  subKeyToModify: string,
+  newValue: any
+): void {
+  if (target === null || typeof target !== 'object') {
+    return
+  }
+  if (
+    Object.prototype.hasOwnProperty.call(target, keyToFind) &&
+    target[keyToFind] != null &&
+    typeof target[keyToFind] === 'object' &&
+    Object.prototype.hasOwnProperty.call(target[keyToFind], subKeyToModify)
+  ) {
+    target[keyToFind][subKeyToModify] = newValue
+  }
+  for (const value of Object.values(target)) {
+    if (typeof value === 'object' && value !== null) {
+      deepFindAndReplaceProperty(value, keyToFind, subKeyToModify, newValue)
+    }
+  }
+}
+
+/**
  * In-place version of deep merge (modifies target directly)
  */
 export function deepMergeStylesAdvancedInPlace<T = any>(
@@ -233,27 +265,6 @@ export function deepMergeStylesAdvancedInPlace<T = any>(
         matchedPathStyle = true
         pathStyleValue = pathStyles[currentPathString]
         delete pathStyles[currentPathString]
-      }
-
-      // Dynamic sub-path handling for in-place modification
-      if (typeof value === 'object' && value !== null) {
-        const pathKeys = Object.keys(pathStyles)
-        for (const pathKey of pathKeys) {
-          // If we are at 'components', and path is 'components.button.color'
-          // key='components', pathKey='components.button.color'
-          // We strictly check relative path match from current object root?
-          // No, 'pathStyles' keys are absolute from root.
-          // The reference implementation's "key" in traverse is relative to "obj", but logic uses relative?
-          // Wait, reference implementation `setIfExistsByPath(obj, key, subPath...)` implies `obj[key]` is the base.
-
-          // If we're verifying "full path so far", we need to reconstruct.
-          // However, to follow the reference exactly:
-          if (pathKey.startsWith(`${key}.`)) {
-            // This logic assumes we are at the ROOT level of the generic object if 'key' matches?
-            // Actually, this block inside traverse is problematic if not at root.
-            // But for PrimeVue presets, we usually usually only need this for 'components.XYZ'.
-          }
-        }
       }
 
       const shouldMatch = matcher

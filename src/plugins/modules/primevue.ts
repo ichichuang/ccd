@@ -15,9 +15,8 @@ import { createCustomPreset } from '@/utils/theme/primevue-preset'
 export function setupPrimeVue(app: App) {
   const sizeStore = useSizeStore()
 
-  // Generate the dynamic preset linked to our stores
+  // Generate the dynamic preset adapted to our design & size system
   const dynamicPreset = createCustomPreset(sizeStore)
-  console.log('dynamicPreset: ', dynamicPreset)
 
   app.use(PrimeVue, {
     theme: {

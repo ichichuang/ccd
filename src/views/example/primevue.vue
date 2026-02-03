@@ -201,7 +201,7 @@ const timelineEvents = ref([
 const organizationData = ref({
   key: '0',
   type: 'person',
-  styleClass: 'bg-primary text-primary-foreground rounded-xl p-2',
+  styleClass: 'bg-primary text-primary-foreground rounded-scale-lg p-padding-sm',
   data: {
     label: 'CEO',
     name: 'Walter White',
@@ -211,7 +211,7 @@ const organizationData = ref({
     {
       key: '0_0',
       type: 'person',
-      styleClass: 'bg-secondary text-secondary-foreground rounded-xl p-2',
+      styleClass: 'bg-secondary text-secondary-foreground rounded-scale-lg p-padding-sm',
       data: {
         label: 'CFO',
         name: 'Saul Goodman',
@@ -221,7 +221,7 @@ const organizationData = ref({
     {
       key: '0_1',
       type: 'person',
-      styleClass: 'bg-secondary text-secondary-foreground rounded-xl p-2',
+      styleClass: 'bg-secondary text-secondary-foreground rounded-scale-lg p-padding-sm',
       data: {
         label: 'CTO',
         name: 'Jesse Pinkman',
@@ -418,48 +418,53 @@ const onUpload = () => {
   <div class="h-full flex flex-col overflow-hidden bg-background">
     <!-- Sticky Header with Theme Switcher -->
     <header
-      class="sticky top-0 z-50 border-b border-border bg-background/95 backdrop-blur px-6 py-4 flex items-center justify-between"
+      class="sticky top-0 z-50 border-b border-border bg-background/95 backdrop-blur px-padding-lg py-padding-md flex items-center justify-between"
     >
       <div>
         <h1 class="text-2xl font-bold text-foreground">PrimeVue Showcase</h1>
         <p class="text-sm text-muted-foreground">Comprehensive component demonstration</p>
       </div>
-      <div class="flex items-center gap-2 rounded-full border border-border bg-card p-1 shadow-sm">
-        <button
+      <div
+        class="flex items-center gap-gap-sm rounded-full border border-border bg-card p-padding-xs shadow-sm"
+      >
+        <Button
           v-for="opt in MODE_OPTIONS"
           :key="opt.value"
-          class="flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-medium transition-all"
-          :class="
-            themeStore.mode === opt.value
-              ? 'bg-primary text-primary-foreground shadow'
-              : 'text-muted-foreground hover:text-foreground'
-          "
+          :label="opt.label"
+          :icon="opt.icon"
+          icon-pos="left"
+          :severity="themeStore.mode === opt.value ? 'primary' : 'secondary'"
+          :variant="themeStore.mode === opt.value ? undefined : 'text'"
           :disabled="isAnimating"
+          rounded
+          size="small"
+          class="rounded-full gap-gap-sm px-padding-sm py-padding-xs text-xs font-medium"
           @click="e => setThemeWithAnimation(opt.value, e)"
-        >
-          <i :class="[opt.icon, 'w-3.5 h-3.5']" />
-          {{ opt.label }}
-        </button>
+        />
       </div>
     </header>
 
     <CScrollbar>
-      <div class="p-6 max-w-7xl mx-auto w-full space-y-12">
+      <div class="p-padding-lg max-w-7xl mx-auto w-full flex flex-col gap-gap-xl">
         <!-- 1. Form Inputs -->
-        <section class="space-y-6">
-          <div class="flex items-center gap-2 text-primary border-b border-border pb-2">
+        <section class="flex flex-col gap-gap-lg">
+          <div
+            class="flex items-center gap-gap-sm text-primary border-b border-border pb-padding-sm"
+          >
             <i class="pi pi-check-square text-xl"></i>
             <h2 class="text-xl font-semibold">1. Form Inputs</h2>
           </div>
 
-          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-gap-xl">
             <!-- Text Inputs Group -->
-            <div class="space-y-4">
+            <div class="flex flex-col gap-gap-md">
               <span class="text-sm font-medium text-muted-foreground uppercase tracking-wider"
                 >Text Inputs</span
               >
 
-              <div class="space-y-4 p-4 border border-border rounded-xl bg-card/50">
+              <div
+                class="flex flex-col gap-gap-md p-padding-md border border-border rounded-scale-lg bg-card/50"
+              >
                 <InputText
                   v-model="textValue"
                   placeholder="Standard Input"
@@ -521,12 +526,14 @@ const onUpload = () => {
             </div>
 
             <!-- Selection Group -->
-            <div class="space-y-4">
+            <div class="flex flex-col gap-gap-md">
               <span class="text-sm font-medium text-muted-foreground uppercase tracking-wider"
                 >Selection Inputs</span
               >
 
-              <div class="space-y-4 p-4 border border-border rounded-xl bg-card/50">
+              <div
+                class="flex flex-col gap-gap-md p-padding-md border border-border rounded-scale-lg bg-card/50"
+              >
                 <Select
                   v-model="selectValue"
                   :options="cities"
@@ -542,7 +549,7 @@ const onUpload = () => {
                   class="w-full"
                 />
 
-                <div class="grid grid-cols-2 gap-2">
+                <div class="grid grid-cols-2 gap-gap-sm">
                   <CascadeSelect
                     v-model="cascadeValue"
                     :options="cascadeOptions"
@@ -580,12 +587,14 @@ const onUpload = () => {
             </div>
 
             <!-- Masks & Pickers -->
-            <div class="space-y-4">
+            <div class="flex flex-col gap-gap-md">
               <span class="text-sm font-medium text-muted-foreground uppercase tracking-wider"
                 >Masks & Pickers</span
               >
 
-              <div class="space-y-4 p-4 border border-border rounded-xl bg-card/50">
+              <div
+                class="flex flex-col gap-gap-md p-padding-md border border-border rounded-scale-lg bg-card/50"
+              >
                 <InputNumber
                   v-model="numberValue"
                   show-buttons
@@ -611,14 +620,14 @@ const onUpload = () => {
                   class="w-full"
                 />
 
-                <div class="flex items-center gap-4">
+                <div class="flex items-center gap-gap-md">
                   <ColorPicker v-model="colorValue" />
                   <span class="text-sm font-mono text-muted-foreground">#{{ colorValue }}</span>
                 </div>
 
                 <Slider
                   v-model="sliderValue"
-                  class="w-full mt-2"
+                  class="w-full mt-margin-sm"
                 />
 
                 <div class="flex items-center justify-between">
@@ -632,14 +641,16 @@ const onUpload = () => {
             </div>
 
             <!-- Checks & Radios -->
-            <div class="space-y-4">
+            <div class="flex flex-col gap-gap-md">
               <span class="text-sm font-medium text-muted-foreground uppercase tracking-wider"
                 >Checks, Radios & Switches</span
               >
 
-              <div class="grid grid-cols-2 gap-4 p-4 border border-border rounded-xl bg-card/50">
-                <div class="space-y-3">
-                  <div class="flex items-center gap-2">
+              <div
+                class="grid grid-cols-2 gap-gap-md p-padding-md border border-border rounded-scale-lg bg-card/50"
+              >
+                <div class="flex flex-col gap-gap-sm">
+                  <div class="flex items-center gap-gap-sm">
                     <Checkbox
                       v-model="checkboxValue"
                       :binary="true"
@@ -647,7 +658,7 @@ const onUpload = () => {
                     />
                     <label for="check1">Checkbox</label>
                   </div>
-                  <div class="flex items-center gap-2">
+                  <div class="flex items-center gap-gap-sm">
                     <RadioButton
                       v-model="radioValue"
                       input-id="radio1"
@@ -655,7 +666,7 @@ const onUpload = () => {
                     />
                     <label for="radio1">Radio 1</label>
                   </div>
-                  <div class="flex items-center gap-2">
+                  <div class="flex items-center gap-gap-sm">
                     <RadioButton
                       v-model="radioValue"
                       input-id="radio2"
@@ -665,8 +676,8 @@ const onUpload = () => {
                   </div>
                 </div>
 
-                <div class="space-y-3">
-                  <div class="flex items-center gap-2">
+                <div class="flex flex-col gap-gap-sm">
+                  <div class="flex items-center gap-gap-sm">
                     <ToggleSwitch v-model="switchValue" />
                     <span>Switch</span>
                   </div>
@@ -693,11 +704,13 @@ const onUpload = () => {
             </div>
 
             <!-- Rich Input -->
-            <div class="space-y-4 md:col-span-2 lg:col-span-2">
+            <div class="flex flex-col gap-gap-md md:col-span-2 lg:col-span-2">
               <span class="text-sm font-medium text-muted-foreground uppercase tracking-wider"
                 >Rich Text & List Box</span
               >
-              <div class="grid grid-cols-2 gap-4 p-4 border border-border rounded-xl bg-card/50">
+              <div
+                class="grid grid-cols-2 gap-gap-md p-padding-md border border-border rounded-scale-lg bg-card/50"
+              >
                 <Textarea
                   v-model="textareaValue"
                   rows="5"
@@ -717,22 +730,25 @@ const onUpload = () => {
         </section>
 
         <!-- 2. Buttons -->
-        <section class="space-y-6">
-          <div class="flex items-center gap-2 text-primary border-b border-border pb-2">
+        <section class="flex flex-col gap-gap-lg">
+          <div
+            class="flex items-center gap-gap-sm text-primary border-b border-border pb-padding-sm"
+          >
             <i class="pi pi-box text-xl"></i>
             <h2 class="text-xl font-semibold">2. Buttons</h2>
           </div>
 
-          <div class="grid grid-cols-1 gap-6">
+          <div class="grid grid-cols-1 gap-gap-lg">
             <!-- Basic Severities -->
-            <div class="card space-y-3">
+            <div class="c-card flex flex-col gap-gap-sm">
               <span class="font-medium block text-sm text-muted-foreground uppercase tracking-wider"
                 >Severities</span
               >
-              <div class="flex flex-wrap gap-2">
+              <div class="center">
                 <Button
                   label="Primary"
                   severity="primary"
+                  size="small"
                 />
                 <Button
                   label="Secondary"
@@ -741,10 +757,12 @@ const onUpload = () => {
                 <Button
                   label="Success"
                   severity="success"
+                  size="large"
                 />
                 <Button
                   label="Info"
                   severity="info"
+                  size="small"
                 />
                 <Button
                   label="Warn"
@@ -762,11 +780,11 @@ const onUpload = () => {
             </div>
 
             <!-- Variants -->
-            <div class="card space-y-3">
+            <div class="c-card flex flex-col gap-gap-sm">
               <span class="font-medium block text-sm text-muted-foreground uppercase tracking-wider"
                 >Variants (Outlined / Text / Icon)</span
               >
-              <div class="flex flex-wrap gap-2">
+              <div class="cluster gap-gap-sm">
                 <Button
                   label="Outlined"
                   severity="primary"
@@ -811,11 +829,11 @@ const onUpload = () => {
             </div>
 
             <!-- Groups & Complex Buttons -->
-            <div class="card space-y-3">
+            <div class="c-card flex flex-col gap-gap-sm">
               <span class="font-medium block text-sm text-muted-foreground uppercase tracking-wider"
                 >Groups & Complex</span
               >
-              <div class="flex flex-wrap gap-4 items-center h-20">
+              <div class="cluster gap-gap-md items-center h-20">
                 <!-- Added height for SpeedDial absolute positioning demo if needed, but here relative -->
                 <ButtonGroup>
                   <Button
@@ -855,17 +873,19 @@ const onUpload = () => {
         </section>
 
         <!-- 3. Data -->
-        <section class="space-y-6">
-          <div class="flex items-center gap-2 text-primary border-b border-border pb-2">
+        <section class="flex flex-col gap-gap-lg">
+          <div
+            class="flex items-center gap-gap-sm text-primary border-b border-border pb-padding-sm"
+          >
             <i class="pi pi-list text-xl"></i>
             <h2 class="text-xl font-semibold">3. Data</h2>
           </div>
 
-          <div class="space-y-8">
+          <div class="flex flex-col gap-gap-xl">
             <!-- DataTable -->
-            <div class="card">
+            <div class="c-card">
               <span
-                class="font-medium block mb-4 text-sm text-muted-foreground uppercase tracking-wider"
+                class="font-medium block mb-padding-md text-sm text-muted-foreground uppercase tracking-wider"
                 >DataTable</span
               >
               <DataTable
@@ -921,8 +941,8 @@ const onUpload = () => {
             </div>
 
             <!-- DataView & PickList -->
-            <div class="grid grid-cols-1 xl:grid-cols-2 gap-8">
-              <div class="card space-y-3">
+            <div class="grid grid-cols-1 xl:grid-cols-2 gap-gap-xl">
+              <div class="c-card flex flex-col gap-gap-sm">
                 <span
                   class="font-medium block text-sm text-muted-foreground uppercase tracking-wider"
                   >PickList</span
@@ -936,14 +956,14 @@ const onUpload = () => {
                   <template #sourceheader> Available </template>
                   <template #targetheader> Selected </template>
                   <template #item="slotProps">
-                    <div class="flex flex-wrap p-2 align-items-center gap-3">
+                    <div class="flex flex-wrap p-padding-sm align-items-center gap-gap-sm">
                       <span class="font-bold">{{ slotProps.item.label }}</span>
                     </div>
                   </template>
                 </PickList>
               </div>
 
-              <div class="card space-y-3">
+              <div class="c-card flex flex-col gap-gap-sm">
                 <span
                   class="font-medium block text-sm text-muted-foreground uppercase tracking-wider"
                 >
@@ -956,7 +976,7 @@ const onUpload = () => {
                 >
                   <template #header> Cities </template>
                   <template #option="slotProps">
-                    <div class="flex align-items-center p-2 w-full flex-wrap">
+                    <div class="flex align-items-center p-padding-sm w-full flex-wrap">
                       <span class="font-bold">{{ slotProps.option.label }}</span>
                     </div>
                   </template>
@@ -965,10 +985,10 @@ const onUpload = () => {
             </div>
 
             <!-- Tree & Timeline -->
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-              <div class="card">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-gap-xl">
+              <div class="c-card">
                 <span
-                  class="font-medium block mb-4 text-sm text-muted-foreground uppercase tracking-wider"
+                  class="font-medium block mb-padding-md text-sm text-muted-foreground uppercase tracking-wider"
                   >Tree</span
                 >
                 <Tree
@@ -977,9 +997,9 @@ const onUpload = () => {
                 />
               </div>
 
-              <div class="card">
+              <div class="c-card">
                 <span
-                  class="font-medium block mb-4 text-sm text-muted-foreground uppercase tracking-wider"
+                  class="font-medium block mb-padding-md text-sm text-muted-foreground uppercase tracking-wider"
                   >Timeline</span
                 >
                 <Timeline :value="timelineEvents">
@@ -994,9 +1014,9 @@ const onUpload = () => {
             </div>
 
             <!-- Org Chart -->
-            <div class="card overflow-x-auto">
+            <div class="c-card overflow-x-auto">
               <span
-                class="font-medium block mb-4 text-sm text-muted-foreground uppercase tracking-wider"
+                class="font-medium block mb-padding-md text-sm text-muted-foreground uppercase tracking-wider"
                 >Organization Chart</span
               >
               <OrganizationChart
@@ -1008,9 +1028,9 @@ const onUpload = () => {
                     <div class="flex flex-col items-center">
                       <img
                         :src="slotProps.node.data.avatar"
-                        class="mb-3 w-12 h-12 rounded-full"
+                        class="mb-padding-sm w-12 h-12 rounded-full"
                       />
-                      <span class="font-bold mb-2">{{ slotProps.node.data.name }}</span>
+                      <span class="font-bold mb-padding-sm">{{ slotProps.node.data.name }}</span>
                       <span>{{ slotProps.node.data.label }}</span>
                     </div>
                   </div>
@@ -1021,13 +1041,15 @@ const onUpload = () => {
         </section>
 
         <!-- 4. Panels -->
-        <section class="space-y-6">
-          <div class="flex items-center gap-2 text-primary border-b border-border pb-2">
+        <section class="flex flex-col gap-gap-lg">
+          <div
+            class="flex items-center gap-gap-sm text-primary border-b border-border pb-padding-sm"
+          >
             <i class="pi pi-clone text-xl"></i>
             <h2 class="text-xl font-semibold">4. Panels</h2>
           </div>
 
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-gap-lg">
             <!-- Card -->
             <Card>
               <template #title>Card Title</template>
@@ -1036,7 +1058,7 @@ const onUpload = () => {
                 <p class="m-0">Lorem ipsum dolor sit amet, consectetur adipisicing elit.</p>
               </template>
               <template #footer>
-                <div class="flex gap-4 mt-1">
+                <div class="flex gap-gap-md mt-margin-xs">
                   <Button
                     label="Cancel"
                     severity="secondary"
@@ -1052,7 +1074,7 @@ const onUpload = () => {
             </Card>
 
             <!-- Panel & Fieldset -->
-            <div class="space-y-6">
+            <div class="flex flex-col gap-gap-lg">
               <Panel
                 header="Panel Header"
                 toggleable
@@ -1084,7 +1106,7 @@ const onUpload = () => {
             </Accordion>
 
             <!-- Tabs -->
-            <div class="card md:col-span-2">
+            <div class="c-card md:col-span-2">
               <Tabs value="0">
                 <TabList>
                   <Tab value="0">Header I</Tab>
@@ -1106,15 +1128,15 @@ const onUpload = () => {
             </div>
 
             <!-- Splitter & Toolbar -->
-            <div class="md:col-span-2 space-y-6">
+            <div class="md:col-span-2 flex flex-col gap-gap-lg">
               <Splitter
                 style="height: 200px"
-                class="mb-5"
+                class="mb-padding-lg"
               >
-                <SplitterPanel class="flex align-items-center justify-content-center p-4">
+                <SplitterPanel class="flex align-items-center justify-content-center p-padding-md">
                   Panel 1
                 </SplitterPanel>
-                <SplitterPanel class="flex align-items-center justify-content-center p-4">
+                <SplitterPanel class="flex align-items-center justify-content-center p-padding-md">
                   Panel 2
                 </SplitterPanel>
               </Splitter>
@@ -1123,13 +1145,13 @@ const onUpload = () => {
                 <template #start>
                   <Button
                     icon="pi pi-plus"
-                    class="mr-2"
+                    class="mr-padding-sm"
                     severity="secondary"
                     text
                   />
                   <Button
                     icon="pi pi-print"
-                    class="mr-2"
+                    class="mr-padding-sm"
                     severity="secondary"
                     text
                   />
@@ -1160,13 +1182,15 @@ const onUpload = () => {
         </section>
 
         <!-- 5. Overlays -->
-        <section class="space-y-6">
-          <div class="flex items-center gap-2 text-primary border-b border-border pb-2">
+        <section class="flex flex-col gap-gap-lg">
+          <div
+            class="flex items-center gap-gap-sm text-primary border-b border-border pb-padding-sm"
+          >
             <i class="pi pi-window-maximize text-xl"></i>
             <h2 class="text-xl font-semibold">5. Overlays</h2>
           </div>
 
-          <div class="flex flex-wrap gap-4 card">
+          <div class="cluster gap-gap-md c-card">
             <Button
               label="Show Dialog"
               icon="pi pi-external-link"
@@ -1178,8 +1202,8 @@ const onUpload = () => {
               header="Header"
               :style="{ width: '50rem' }"
             >
-              <p class="mb-5">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
-              <div class="flex justify-end gap-2">
+              <p class="mb-padding-lg">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+              <div class="flex justify-end gap-gap-sm">
                 <Button
                   type="button"
                   label="Cancel"
@@ -1212,10 +1236,10 @@ const onUpload = () => {
               @click="togglePopover"
             />
             <Popover ref="op">
-              <div class="flex flex-col gap-4 w-[25rem]">
+              <div class="flex flex-col gap-gap-md w-[25rem]">
                 <div>
-                  <span class="font-medium block mb-2">Popover Content</span>
-                  <InputText class="w-full mb-2" />
+                  <span class="font-medium block mb-padding-sm">Popover Content</span>
+                  <InputText class="w-full mb-padding-sm" />
                   <Button
                     label="Save"
                     class="w-full"
@@ -1240,12 +1264,14 @@ const onUpload = () => {
         </section>
 
         <!-- 6. File -->
-        <section class="space-y-6">
-          <div class="flex items-center gap-2 text-primary border-b border-border pb-2">
+        <section class="flex flex-col gap-gap-lg">
+          <div
+            class="flex items-center gap-gap-sm text-primary border-b border-border pb-padding-sm"
+          >
             <i class="pi pi-upload text-xl"></i>
             <h2 class="text-xl font-semibold">6. File</h2>
           </div>
-          <div class="card">
+          <div class="c-card">
             <FileUpload
               name="demo[]"
               url="/api/upload"
@@ -1261,13 +1287,15 @@ const onUpload = () => {
         </section>
 
         <!-- 7. Menu -->
-        <section class="space-y-6">
-          <div class="flex items-center gap-2 text-primary border-b border-border pb-2">
+        <section class="flex flex-col gap-gap-lg">
+          <div
+            class="flex items-center gap-gap-sm text-primary border-b border-border pb-padding-sm"
+          >
             <i class="pi pi-bars text-xl"></i>
             <h2 class="text-xl font-semibold">7. Menu</h2>
           </div>
-          <div class="space-y-8">
-            <div class="card space-y-4">
+          <div class="flex flex-col gap-gap-xl">
+            <div class="c-card flex flex-col gap-gap-md">
               <span class="font-medium block text-sm text-muted-foreground uppercase tracking-wider"
                 >Menubar & Breadcrumb</span
               >
@@ -1277,8 +1305,8 @@ const onUpload = () => {
               />
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div class="card space-y-4">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-gap-lg">
+              <div class="c-card flex flex-col gap-gap-md">
                 <span
                   class="font-medium block text-sm text-muted-foreground uppercase tracking-wider"
                   >Steps</span
@@ -1288,7 +1316,7 @@ const onUpload = () => {
                   :active-step="1"
                 />
               </div>
-              <div class="card space-y-4">
+              <div class="c-card flex flex-col gap-gap-md">
                 <span
                   class="font-medium block text-sm text-muted-foreground uppercase tracking-wider"
                   >TabMenu</span
@@ -1297,14 +1325,14 @@ const onUpload = () => {
               </div>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <div class="card flex justify-center">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-gap-lg">
+              <div class="c-card flex justify-center">
                 <Menu :model="menuItems" />
               </div>
-              <div class="card flex justify-center">
+              <div class="c-card flex justify-center">
                 <TieredMenu :model="tieredItems" />
               </div>
-              <div class="card flex justify-center">
+              <div class="c-card flex justify-center">
                 <PanelMenu
                   :model="panelMenuItems"
                   class="w-full md:w-20rem"
@@ -1313,25 +1341,36 @@ const onUpload = () => {
             </div>
 
             <div
-              class="card h-[200px] relative overflow-hidden bg-muted/20 rounded-xl flex items-end justify-center"
+              class="c-card h-[200px] relative overflow-hidden bg-muted/20 rounded-scale-lg flex items-end justify-center"
             >
               <span class="absolute top-2 left-2 text-sm text-muted-foreground">Dock Demo</span>
               <Dock
                 :model="dockItems"
                 position="bottom"
-              />
+              >
+                <template #itemicon="{ item }">
+                  <img
+                    :alt="String(item?.label ?? '')"
+                    :src="String(item?.icon ?? '')"
+                    :title="String(item?.label ?? '')"
+                    style="width: 100%"
+                  />
+                </template>
+              </Dock>
             </div>
           </div>
         </section>
 
         <!-- 9. Messages -->
-        <section class="space-y-6">
-          <div class="flex items-center gap-2 text-primary border-b border-border pb-2">
+        <section class="flex flex-col gap-gap-lg">
+          <div
+            class="flex items-center gap-gap-sm text-primary border-b border-border pb-padding-sm"
+          >
             <i class="pi pi-bell text-xl"></i>
             <h2 class="text-xl font-semibold">9. Messages</h2>
           </div>
-          <div class="card space-y-6">
-            <div class="flex flex-wrap gap-2">
+          <div class="c-card flex flex-col gap-gap-lg">
+            <div class="cluster gap-gap-sm">
               <Button
                 label="Success"
                 severity="success"
@@ -1364,8 +1403,8 @@ const onUpload = () => {
               />
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div class="space-y-2">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-gap-md">
+              <div class="flex flex-col gap-gap-sm">
                 <Message severity="success">Success Message</Message>
                 <Message severity="info">Info Message</Message>
                 <Message severity="warn">Warn Message</Message>
@@ -1373,7 +1412,7 @@ const onUpload = () => {
                 <Message severity="secondary">Secondary Message</Message>
                 <Message severity="contrast">Contrast Message</Message>
               </div>
-              <div class="space-y-2">
+              <div class="flex flex-col gap-gap-sm">
                 <InlineMessage severity="success">Inline Success</InlineMessage>
                 <InlineMessage severity="info">Inline Info</InlineMessage>
                 <InlineMessage severity="warn">Inline Warn</InlineMessage>
@@ -1386,13 +1425,15 @@ const onUpload = () => {
         </section>
 
         <!-- 10. Media -->
-        <section class="space-y-6">
-          <div class="flex items-center gap-2 text-primary border-b border-border pb-2">
+        <section class="flex flex-col gap-gap-lg">
+          <div
+            class="flex items-center gap-gap-sm text-primary border-b border-border pb-padding-sm"
+          >
             <i class="pi pi-images text-xl"></i>
             <h2 class="text-xl font-semibold">10. Media</h2>
           </div>
-          <div class="grid grid-cols-1 gap-6">
-            <div class="card space-y-4">
+          <div class="grid grid-cols-1 gap-gap-lg">
+            <div class="c-card flex flex-col gap-gap-md">
               <span class="font-medium block text-sm text-muted-foreground uppercase tracking-wider"
                 >Galleria</span
               >
@@ -1422,9 +1463,9 @@ const onUpload = () => {
               </Galleria>
             </div>
 
-            <div class="card">
+            <div class="c-card">
               <span
-                class="font-medium block text-sm text-muted-foreground uppercase tracking-wider mb-4"
+                class="font-medium block text-sm text-muted-foreground uppercase tracking-wider mb-padding-md"
                 >Avatar Group</span
               >
               <AvatarGroup>
@@ -1455,13 +1496,15 @@ const onUpload = () => {
         </section>
 
         <!-- 11. Misc -->
-        <section class="space-y-6">
-          <div class="flex items-center gap-2 text-primary border-b border-border pb-2">
+        <section class="flex flex-col gap-gap-lg">
+          <div
+            class="flex items-center gap-gap-sm text-primary border-b border-border pb-padding-sm"
+          >
             <i class="pi pi-cog text-xl"></i>
             <h2 class="text-xl font-semibold">11. Misc</h2>
           </div>
-          <div class="card space-y-6">
-            <div class="flex flex-wrap gap-2 align-items-end">
+          <div class="c-card flex flex-col gap-gap-lg">
+            <div class="cluster gap-gap-sm align-items-end">
               <Tag value="Primary" />
               <Tag
                 severity="success"
@@ -1483,7 +1526,7 @@ const onUpload = () => {
               />
             </div>
 
-            <div class="space-y-3">
+            <div class="flex flex-col gap-gap-sm">
               <span class="font-medium block text-sm text-muted-foreground uppercase tracking-wider"
                 >Loading</span
               >
@@ -1491,19 +1534,19 @@ const onUpload = () => {
                 mode="indeterminate"
                 style="height: 6px"
               ></ProgressBar>
-              <div class="flex gap-2">
+              <div class="flex gap-gap-sm">
                 <Skeleton
                   shape="circle"
                   size="4rem"
                 />
-                <div class="flex-1 space-y-2">
+                <div class="flex-1 flex flex-col gap-gap-sm">
                   <Skeleton width="100%" />
                   <Skeleton width="75%" />
                 </div>
               </div>
             </div>
 
-            <div class="space-y-3">
+            <div class="flex flex-col gap-gap-sm">
               <span class="font-medium block text-sm text-muted-foreground uppercase tracking-wider"
                 >ScrollTop (Scroll down to see)</span
               >
@@ -1522,7 +1565,8 @@ const onUpload = () => {
 </template>
 
 <style scoped>
+/* 卡片样式与 uno.config.ts 中 c-card 一致，使用设计系统尺寸 */
 .card {
-  @apply p-4 border border-border rounded-lg bg-card text-card-foreground shadow-sm;
+  @apply p-padding-md border border-border rounded-scale-md bg-card text-card-foreground shadow-sm;
 }
 </style>
