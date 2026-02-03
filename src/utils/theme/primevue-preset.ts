@@ -357,7 +357,7 @@ export const createCustomPreset = (sizeStore: ReturnType<typeof useSizeStore>) =
   // ──────────────────────────────────────────────────────────────────────────
   const semanticColors = {
     // 全局配置
-    transitionDuration: 'var(--transition-md)',
+    transitionDuration: '0.32s',
     focusRing: {
       width: 'calc(var(--spacing-xs) / 2)',
       style: 'solid',
@@ -388,7 +388,7 @@ export const createCustomPreset = (sizeStore: ReturnType<typeof useSizeStore>) =
         offset: '0',
         shadow: 'none',
       },
-      transitionDuration: 'var(--transition-md)',
+      transitionDuration: '0.32s',
       // 响应式尺寸 (sm/lg) - 与 Aura form.field.sm.font.size 路径一致
       sm: {
         fontSize: 'var(--font-size-sm)',
