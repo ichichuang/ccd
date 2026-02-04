@@ -24,6 +24,8 @@ import { generateColorScale, generateBorderRadiusScale } from './primevue-theme-
 //      统一通过 CSS 变量 + color-mix 生成 PrimeVue 所需的 token。
 //    - JSON 文件 (semantic.json / primitive.json / components.json) 只作为
 //      “参考结构 & 默认键名” 使用；如需修改设计，应优先改本文件中的 TS 逻辑。
+// 3. 融合范围：仅对架构的配色系统（ThemeCssVars）与尺寸系统（SizeCssVars）做融合；
+//    highlight / mask / floatLabel 等保持 Aura 原始，由已覆盖的 primary / surface 等解析。
 // -----------------------------------------------------------------------------
 
 // -----------------------------------------------------------------------------
@@ -34,14 +36,17 @@ import { generateColorScale, generateBorderRadiusScale } from './primevue-theme-
 // 例如：'--background' → getBackground, '--primary-foreground' → getPrimaryForeground
 //
 // 参考：src/types/systems/theme.d.ts ThemeCssVars
+// 唯一实现：将 CSS 变量名转为 rgb(var(--xxx))；下面 createColorAdapter 里所有 getXxx 均由此生成，无另一套实现。
+//
+// Adapter 范围：仅覆盖 button/checkbox 等组件 colorScheme 所需语义（primary/secondary/state 的 default/foreground/hover）。
+// 其余 ThemeCssVars（如 primary-light、accent-hover、*-hover-foreground 等）由组件直接使用 rgb(var(--xxx))，与 ThemeCssVars 一致。
 // -----------------------------------------------------------------------------
 
 const getRgbVar = (name: string) => `rgb(var(--${name}))`
 
 /**
  * 创建颜色适配器
- *
- * 所有 getter 名称与 ThemeCssVars 完全对齐，符合架构的配色系统定义
+ * 返回的 getBackground、getPrimaryForeground 等均为 getRgbVar 的调用结果，与 ThemeCssVars 键一一对应。
  */
 const createColorAdapter = () => {
   return {
@@ -222,6 +227,7 @@ type RootSizeTokens = {
   lg: Record<string, string>
 }
 
+// 与 Aura 参考（components.json）中 root.sm/root.lg 实际使用的键一致：fontSize、paddingX、paddingY、padding、gap；已移除未被引用的 margin*。
 const getRootSizeTokensByMode = (mode: SizeMode): RootSizeTokens => {
   switch (mode) {
     case 'compact':
@@ -231,9 +237,6 @@ const getRootSizeTokensByMode = (mode: SizeMode): RootSizeTokens => {
           padding: 'var(--spacing-xs)',
           paddingX: 'var(--spacing-xs)',
           paddingY: 'var(--spacing-xs)',
-          margin: 'var(--spacing-xs)',
-          marginX: 'var(--spacing-xs)',
-          marginY: 'var(--spacing-xs)',
           fontSize: 'var(--font-size-xs)',
         },
         lg: {
@@ -241,9 +244,6 @@ const getRootSizeTokensByMode = (mode: SizeMode): RootSizeTokens => {
           padding: 'var(--spacing-sm)',
           paddingX: 'var(--spacing-sm)',
           paddingY: 'var(--spacing-sm)',
-          margin: 'var(--spacing-sm)',
-          marginX: 'var(--spacing-sm)',
-          marginY: 'var(--spacing-sm)',
           fontSize: 'var(--font-size-sm)',
         },
       }
@@ -254,9 +254,6 @@ const getRootSizeTokensByMode = (mode: SizeMode): RootSizeTokens => {
           padding: 'var(--spacing-md)',
           paddingX: 'var(--spacing-md)',
           paddingY: 'var(--spacing-sm)',
-          margin: 'var(--spacing-md)',
-          marginX: 'var(--spacing-md)',
-          marginY: 'var(--spacing-sm)',
           fontSize: 'var(--font-size-md)',
         },
         lg: {
@@ -264,9 +261,6 @@ const getRootSizeTokensByMode = (mode: SizeMode): RootSizeTokens => {
           padding: 'var(--spacing-lg)',
           paddingX: 'var(--spacing-lg)',
           paddingY: 'var(--spacing-lg)',
-          margin: 'var(--spacing-lg)',
-          marginX: 'var(--spacing-lg)',
-          marginY: 'var(--spacing-lg)',
           fontSize: 'var(--font-size-xl)',
         },
       }
@@ -277,9 +271,6 @@ const getRootSizeTokensByMode = (mode: SizeMode): RootSizeTokens => {
           padding: 'var(--spacing-sm)',
           paddingX: 'var(--spacing-sm)',
           paddingY: 'var(--spacing-xs)',
-          margin: 'var(--spacing-sm)',
-          marginX: 'var(--spacing-sm)',
-          marginY: 'var(--spacing-xs)',
           fontSize: 'var(--font-size-sm)',
         },
         lg: {
@@ -287,9 +278,6 @@ const getRootSizeTokensByMode = (mode: SizeMode): RootSizeTokens => {
           padding: 'var(--spacing-lg)',
           paddingX: 'var(--spacing-lg)',
           paddingY: 'var(--spacing-md)',
-          margin: 'var(--spacing-lg)',
-          marginX: 'var(--spacing-lg)',
-          marginY: 'var(--spacing-md)',
           fontSize: 'var(--font-size-lg)',
         },
       }
@@ -301,6 +289,8 @@ export const createCustomPreset = (sizeStore: ReturnType<typeof useSizeStore>) =
 
   // ──────────────────────────────────────────────────────────────────────────
   // 1. PRIMITIVE LAYER: 建立CSS变量 → Token的映射
+  // definePreset 与 Aura 为深合并，Aura 自带的 primitive（red/green/sky/emerald/slate 等）会保留，
+  // 此处仅补充/覆盖 brand、neutral、success、warning、error、accent、borderRadius，与架构 ThemeCssVars 通过 semantic 引用 rgb(var(--xxx)) 对齐。
   // ──────────────────────────────────────────────────────────────────────────
   const primitiveColors = {
     // 主品牌色 - 从 --primary 映射
@@ -356,8 +346,8 @@ export const createCustomPreset = (sizeStore: ReturnType<typeof useSizeStore>) =
   // 2. SEMANTIC LAYER: 使用colorScheme结构,用Token引用代替硬编码CSS变量
   // ──────────────────────────────────────────────────────────────────────────
   const semanticColors = {
-    // 全局配置
-    transitionDuration: '0.32s',
+    // 全局配置（与 SizeCssVars 过渡阶梯统一，尺寸模式切换时过渡时长一致）
+    transitionDuration: 'var(--transition-md)',
     focusRing: {
       width: 'calc(var(--spacing-xs) / 2)',
       style: 'solid',
@@ -388,7 +378,7 @@ export const createCustomPreset = (sizeStore: ReturnType<typeof useSizeStore>) =
         offset: '0',
         shadow: 'none',
       },
-      transitionDuration: '0.32s',
+      transitionDuration: 'var(--transition-md)',
       // 响应式尺寸 (sm/lg) - 与 Aura form.field.sm.font.size 路径一致
       sm: {
         fontSize: 'var(--font-size-sm)',
@@ -431,8 +421,7 @@ export const createCustomPreset = (sizeStore: ReturnType<typeof useSizeStore>) =
         shadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1)',
       },
       modal: {
-        borderRadius: 'var(--radius-xl)',
-        padding: 'var(--spacing-xl)',
+        padding: 'var(--spacing-md)',
         shadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1)',
       },
       navigation: {
@@ -497,6 +486,7 @@ export const createCustomPreset = (sizeStore: ReturnType<typeof useSizeStore>) =
           hoverBorderColor: '{surface.400}',
           focusBorderColor: '{brand.500}',
           invalidBorderColor: '{error.500}',
+          invalidPlaceholderColor: '{error.600}',
           color: '{surface.700}',
           disabledColor: '{surface.500}',
           placeholderColor: '{surface.500}',
@@ -559,6 +549,7 @@ export const createCustomPreset = (sizeStore: ReturnType<typeof useSizeStore>) =
           hoverBorderColor: '{brand.400}',
           focusBorderColor: '{brand.400}',
           invalidBorderColor: '{error.400}',
+          invalidPlaceholderColor: '{error.600}',
           color: 'rgb(var(--foreground))',
           disabledColor: '{surface.400}',
           placeholderColor: '{surface.400}',
@@ -1853,7 +1844,7 @@ export const createCustomPreset = (sizeStore: ReturnType<typeof useSizeStore>) =
   })
 
   // ──────────────────────────────────────────────────────────────────────────
-  // 6. 全局圆角覆盖 (仅 borderRadius): 避免整树强制 padding/gap/margin 导致列表/菜单/日期格等过松
+  // 6. 全局圆角统一为 md (仅 borderRadius)：全站一致，含 overlay.modal；避免整树强制 padding/gap 等过松
   //    间距与字号由 Aura 默认 + semantic (formField/list/overlay) + 组件覆盖 分层控制
   // ──────────────────────────────────────────────────────────────────────────
   const globalSizeTokens: Record<string, string> = {
@@ -1864,41 +1855,21 @@ export const createCustomPreset = (sizeStore: ReturnType<typeof useSizeStore>) =
     override: true,
   }) as Record<string, any>
 
-  const SIZE_AWARE_COMPONENTS = new Set<string>([
-    'button',
-    'checkbox',
-    'radiobutton',
-    'toggleswitch',
-    'datatable',
-    'tabs',
-    'accordion',
-    'panel',
-    'card',
-    'fieldset',
-    'inputtext',
-    'inputnumber',
-    'inputchips',
-    'colorpicker',
-    'slider',
-    'select',
-    'dialog',
-    'drawer',
-    'popover',
-    'menu',
-    'menubar',
+  // 不对 root.sm/root.lg 注入的组件（无尺寸模式或完全自定义尺寸）
+  const ROOT_SIZE_EXCLUDE = new Set<string>([
+    'scrollpanel',
+    'tag',
+    'badge',
+    'divider',
+    'stepper',
+    'breadcrumb',
     'paginator',
-    'listbox',
-    'multiselect',
-    'cascadeselect',
-    'treeselect',
-    'autocomplete',
-    'password',
-    'datepicker',
-    'orderlist',
-    'picklist',
-    'togglebutton',
-    'selectbutton',
-    'splitbutton',
+    'confirmpopup',
+    'overlaypanel',
+    'tooltip',
+    'message',
+    'toast',
+    'colorpicker',
   ])
 
   // 7. 遮罩统一：全 preset 内 mask.background 与架构变量一致
@@ -1909,14 +1880,14 @@ export const createCustomPreset = (sizeStore: ReturnType<typeof useSizeStore>) =
     'rgb(var(--muted-foreground) / 0.25)'
   )
 
-  // 8. root.sm / root.lg 扩散到需要尺寸模式的组件（大/中/小尺寸模式）
+  // 8. root.sm / root.lg 默认对所有有 root 的组件补全，仅排除 ROOT_SIZE_EXCLUDE
   const { sm: rootSm, lg: rootLg } = getRootSizeTokensByMode(sizeStore.sizeName)
   const components = resultPreset.components
   if (components && typeof components === 'object') {
     for (const [name, config] of Object.entries(components)) {
-      if (!SIZE_AWARE_COMPONENTS.has(name)) continue
-      if (config && typeof config === 'object') {
-        const c = config as Record<string, any>
+      if (ROOT_SIZE_EXCLUDE.has(name)) continue
+      const c = config as Record<string, any> | null
+      if (c && typeof c === 'object' && c.root != null) {
         c.root = c.root || {}
         c.root.sm = c.root.sm || {}
         c.root.lg = c.root.lg || {}

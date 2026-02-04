@@ -6,9 +6,13 @@ import { useDeviceStore } from '@/stores/modules/device'
 import { useThemeStore } from '@/stores/modules/theme'
 import { useThemeSwitch } from '@/hooks/modules/useThemeSwitch'
 import { useSizeStore } from '@/stores/modules/size'
+import { useLocale } from '@/hooks/modules/useLocale'
+import { useDateUtils } from '@/hooks/modules/useDateUtils'
+import type { SupportedLocale } from '@/locales'
 import { SIZE_PRESETS } from '@/constants/size'
 import Button from 'primevue/button'
 import Select from 'primevue/select'
+import { Icons } from '@/components/Icons'
 
 defineOptions({ name: 'LayoutAdmin' })
 
@@ -17,6 +21,33 @@ const deviceStore = useDeviceStore()
 const themeStore = useThemeStore()
 const { setThemeWithAnimation, isAnimating } = useThemeSwitch()
 const sizeStore = useSizeStore()
+const { locale, supportedLocales, switchLocale } = useLocale()
+const localeStore = useLocaleStore()
+const { currentTimezone, setTimezone, getAvailableTimezones, isInitialized } = useDateUtils()
+
+// 语言选项：使用 Lucide 图标（i-custom:language-* 的 cn/en.svg 在 preset-icons 下渲染异常，改用稳定图标）
+const LOCALE_ICON_MAP: Record<SupportedLocale, string> = {
+  'zh-CN': 'i-lucide-languages',
+  'en-US': 'i-lucide-globe',
+}
+const localeOptions = computed(() =>
+  supportedLocales.map(l => ({
+    ...l,
+    icon: LOCALE_ICON_MAP[l.key] ?? 'i-lucide-languages',
+  }))
+)
+
+// 时区选项：DateUtils 初始化后从 getAvailableTimezones 加载
+const timezoneOptions = ref<
+  { name: string; countryCode: string; currentTimeOffsetInMinutes: number }[]
+>([])
+watch(
+  isInitialized,
+  v => {
+    if (v) timezoneOptions.value = getAvailableTimezones(false) as typeof timezoneOptions.value
+  },
+  { immediate: true }
+)
 
 // --- 响应式适配：逻辑下沉在 store，这里只负责触发 ---
 function runAdaptive(force = false) {
@@ -89,6 +120,18 @@ function handleSizeModeChange(mode: SizeMode) {
 function handleAdminLayoutModeChange(mode: AdminLayoutMode) {
   layoutStore.updateSetting('mode', mode)
 }
+
+function handleLocaleChange(newLocale: SupportedLocale) {
+  switchLocale(newLocale)
+}
+
+function handleTimezoneChange(tz: string) {
+  setTimezone(tz)
+}
+
+function getLocaleIcon(key: string): string {
+  return LOCALE_ICON_MAP[key as SupportedLocale] ?? 'i-lucide-languages'
+}
 </script>
 <template>
   <div class="container min-h-screen flex flex-col overflow-hidden">
@@ -131,9 +174,60 @@ function handleAdminLayoutModeChange(mode: AdminLayoutMode) {
         </div>
       </nav>
 
-      <!-- 右侧：主题 / 尺寸 / 布局 模式切换 + 侧栏收起 -->
+      <!-- 右侧：语言 / 时区 / 主题 / 尺寸 / 布局 模式切换 + 侧栏收起 -->
       <div class="flex items-center gap-gap-sm">
-        <!-- 1. 主题模式切换（light / dark / auto） -->
+        <!-- 1. 系统语言切换 -->
+        <Select
+          class="hidden sm:inline-flex w-36 text-xs"
+          :options="localeOptions"
+          option-label="name"
+          option-value="key"
+          :model-value="locale"
+          :loading="localeStore.loading"
+          :disabled="localeStore.loading"
+          @update:model-value="handleLocaleChange"
+        >
+          <template #option="{ option }">
+            <div class="flex items-center gap-scale-sm">
+              <Icons
+                :name="option.icon"
+                size="sm"
+                class="shrink-0"
+              />
+              <span>{{ option.name }}</span>
+            </div>
+          </template>
+          <template #value="{ value }">
+            <template v-if="value">
+              <div class="flex items-center gap-scale-sm">
+                <Icons
+                  :name="getLocaleIcon(value)"
+                  size="sm"
+                  class="shrink-0"
+                />
+                <span>{{ supportedLocales.find(l => l.key === value)?.name ?? value }}</span>
+              </div>
+            </template>
+            <template v-else>
+              <span class="text-muted-foreground">语言</span>
+            </template>
+          </template>
+        </Select>
+
+        <!-- 2. 系统时区切换 -->
+        <Select
+          class="hidden sm:inline-flex w-44 text-xs"
+          :options="timezoneOptions"
+          option-label="name"
+          option-value="name"
+          :model-value="currentTimezone"
+          :loading="!isInitialized"
+          :disabled="!isInitialized"
+          placeholder="时区"
+          @update:model-value="handleTimezoneChange"
+        />
+
+        <!-- 3. 主题模式切换（light / dark / auto） -->
         <div
           class="hidden md:flex items-center gap-gap-sm rounded-full border border-border bg-card p-padding-xs shadow-sm"
         >
@@ -151,7 +245,7 @@ function handleAdminLayoutModeChange(mode: AdminLayoutMode) {
           </Button>
         </div>
 
-        <!-- 2. 尺寸模式切换（compact / comfortable / loose） -->
+        <!-- 4. 尺寸模式切换（compact / comfortable / loose） -->
         <Select
           class="hidden sm:inline-flex w-40 text-xs"
           :options="SIZE_MODE_OPTIONS"
@@ -161,7 +255,7 @@ function handleAdminLayoutModeChange(mode: AdminLayoutMode) {
           @update:model-value="val => handleSizeModeChange(val as SizeMode)"
         />
 
-        <!-- 3. Admin 布局模式切换（vertical / horizontal / mix） -->
+        <!-- 5. Admin 布局模式切换（vertical / horizontal / mix） -->
         <Select
           class="hidden sm:inline-flex w-32 text-xs"
           :options="ADMIN_LAYOUT_OPTIONS"
@@ -171,7 +265,7 @@ function handleAdminLayoutModeChange(mode: AdminLayoutMode) {
           @update:model-value="val => handleAdminLayoutModeChange(val as AdminLayoutMode)"
         />
 
-        <!-- 4. 侧栏收起/展开 -->
+        <!-- 6. 侧栏收起/展开 -->
         <Button
           type="button"
           size="small"

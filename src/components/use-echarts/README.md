@@ -13,7 +13,7 @@
 | `option`          | `EChartsOption`       | -               | ECharts 配置对象 |
 | `theme`           | `string`              | `'default'`     | 主题名称         |
 | `width`           | `string \| number`    | `'100%'`        | 图表宽度         |
-| `height`          | `string \| number`    | `'400px'`       | 图表高度         |
+| `height`          | `string \| number`    | `'30vh'`        | 图表高度         |
 | `renderer`        | `'canvas' \| 'svg'`   | `'canvas'`      | 渲染方式         |
 | `autoResize`      | `boolean`             | `true`          | 自动调整大小     |
 | `style`           | `Record<string, any>` | `{}`            | 自定义样式       |

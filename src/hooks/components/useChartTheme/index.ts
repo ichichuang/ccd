@@ -1,7 +1,10 @@
 // useChartTheme 主函数 - 响应式版本
 
 import { computed } from 'vue'
+import { storeToRefs } from 'pinia'
 import type { Ref, ComputedRef } from 'vue'
+import { useThemeStore } from '@/stores/modules/theme'
+import { useSizeStore } from '@/stores/modules/size'
 import type { ChartAdvancedConfig, ChartOpacityConfig, ThemeConfig } from './types'
 import { DEFAULT_OPACITY_VALUES } from './constants'
 import { getChartSystemVariables, generateChartPalette } from '@/utils/theme/chartUtils'
@@ -398,8 +401,16 @@ export function useChartTheme(
   const advancedConfigRef =
     advancedConfig && 'value' in advancedConfig ? advancedConfig : computed(() => advancedConfig)
 
+  // 显式依赖主题/尺寸 Store，使切换主题或尺寸时 themedOption 自动重新计算
+  const themeStore = useThemeStore()
+  const sizeStore = useSizeStore()
+  const { themeName } = storeToRefs(themeStore)
+  const { sizeName } = storeToRefs(sizeStore)
+
   // 返回响应式的 computed option
   const themedOption = computed(() => {
+    void themeName.value
+    void sizeName.value
     const option = optionRef.value
     const opacity = opacityConfigRef?.value
     const advanced = advancedConfigRef?.value

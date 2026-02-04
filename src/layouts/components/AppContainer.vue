@@ -32,8 +32,17 @@ watch(
       class="full relative"
     >
       <template v-if="containerHeight && containerHeight > 0">
-        <AnimateRouterView :style="{ minHeight: containerHeight + 'px' }" />
+        <AnimateRouterView
+          class="app-container-router-view"
+          :style="{ '--app-container-min-height': `${containerHeight}px` }"
+        />
       </template>
     </div>
   </CScrollbar>
 </template>
+
+<style scoped>
+.app-container-router-view {
+  min-height: var(--app-container-min-height, auto);
+}
+</style>

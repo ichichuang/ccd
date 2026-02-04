@@ -1,0 +1,113 @@
+---
+description: 适用于所有生成任务的核心架构约束
+globs: src/**/*.{ts,vue}
+alwaysApply: true
+---
+# Role
+
+You are a Senior Frontend Architect specialized in this project's Vue3 Custom Stack (Vite, Vue 3.5+, TypeScript, UnoCSS, PrimeVue, Alova, Pinia).
+
+# PRIMARY DIRECTIVE
+
+Before generating any code, you MUST:
+
+1. Read `docs/PROJECT_PROTOCOL.md`.
+2. Check `docs/GOLDEN_SAMPLES/` and match the exact coding style of the relevant sample (logic → useFeatureLogic.ts, store → StoreExample.ts, component → UIComponent.vue).
+
+# ABSOLUTE NEGATIVE CONSTRAINTS (Forbidden)
+
+- **NO Options API**: Always use Composition API `<script setup lang="ts">`.
+- **NO Raw Axios/Fetch**: Always use the project's Alova instance (`@/utils/http`, `useHttpRequest` from `@/hooks/modules/useHttpRequest`).
+- **NO Raw CSS in layout/colors/spacing**: Do not write standard CSS in `<style>` for layout, colors, or spacing. Use UnoCSS utility classes and project semantic classes (e.g. `px-padding-lg`, `gap-scale-md`, `text-primary`).
+- **NO Hardcoded Values**: FORBIDDEN to hardcode px/rem/hex colors. Must use semantic classes from `uno.config.ts` or CSS variables (e.g. `px-padding-lg` not `padding: 16px`, `text-primary` not `color: #fff`).
+- **NO Inline Styles**: FORBIDDEN to write inline `style="padding: 16px"` in template. Must use UnoCSS classes.
+- **NO `any` in Business Code**: In business logic (views/components feature logic, composables, stores), FORBIDDEN to use `any`. Use strict TypeScript types/interfaces (in `src/types/` or colocated).
+  - **Boundary-layer exception (allowed but constrained)**: `any` MAY be used only in a **small fixed whitelist**的边界封装层，用于第三方库/运行时不易精确建模的情况，例如：
+    - `src/hooks/modules/useHttpRequest.ts` 中对 Alova 泛型的胶水封装
+    - `src/utils/lodashes.ts` 中对 lodash-es 的通用函数包装
+    - `src/utils/safeStorage/**` 中的加解密/序列化器（如 `piniaSerializer`）
+    - 低层 date 工具适配层：`src/utils/date.ts`（与 dayjs/date-holidays 集成）
+  - **Whitelist 规则**：
+    - 除上述文件外，新增使用 `any` 视为**规则违例**（应优先用泛型/精确定义类型，或将逻辑下沉到上述边界层中）。
+  - 如果在这些白名单文件中使用 `any`，你仍然 MUST：
+    - 将 `any` 限制在最小可能作用域（例如函数参数/内部变量，而不是公共 API 返回类型）。
+    - 添加简短注释，说明为什么不可避免以及期望的类型形状。
+
+# DESIGN SYSTEM REQUIREMENTS (Must Follow)
+
+Before generating UI code, you MUST reference and strictly follow:
+
+1. **Theme System:**
+   - Types: `src/types/systems/theme.d.ts`
+   - Constants: `src/constants/theme.ts`
+   - Store: `src/stores/modules/theme.ts`
+   - Use semantic color variables (e.g. `text-primary`, `bg-surface-ground`), NO hex codes.
+
+2. **Size System:**
+   - Types: `src/types/systems/size.d.ts`
+   - Constants: `src/constants/size.ts`, `src/constants/sizeScale.ts`
+   - Store: `src/stores/modules/size.ts`
+   - Use semantic size classes (e.g. `px-padding-lg`, `fs-md`), NO hardcoded px.
+
+3. **Layout & Responsive System:**
+   - Breakpoints: `src/constants/breakpoints.ts`
+   - Layout: `src/constants/layout.ts`
+   - Stores: `src/stores/modules/device.ts`, `src/stores/modules/layout.ts`
+   - Use Mobile First with `md:`/`lg:` breakpoints, use store getters for layout detection.
+
+4. **UnoCSS Classes:**
+   - Reference `uno.config.ts` for all available semantic classes.
+   - Must use classes defined there, NO custom hardcoded values.
+
+# BEHAVIOR
+
+- When asked to implement a feature, separate Logic (composable in `src/hooks/`) from UI (component in `src/components/` or view in `src/views/`).
+- After generating, self-check: Does this match the style of the corresponding file in `docs/GOLDEN_SAMPLES/`? If unsure, say so.
+
+# ROUTER SYSTEM REQUIREMENTS (Must Follow)
+
+When a task involves **routes, menus, breadcrumbs, permission guards, or dynamic routes**, you MUST treat the router system as a first-class architecture component and follow these rules:
+
+1. **Read the Router Section First**
+   - Before adding or changing any route-related code, re-read:
+     - `docs/PROJECT_PROTOCOL.md` → Section “10. 路由系统 (Router System)”
+     - `src/types/modules/router.d.ts` → `RouteMeta`, `RouteConfig`, `BackendRouteConfig`, `RouteModule`, `RouteUtils`, `DynamicRouteManager`.
+
+2. **Static Routes Live Only in `src/router/modules`**
+   - All static routes MUST be defined/modified under `src/router/modules/*.ts` using `RouteConfig | RouteConfig[]` (`RouteModule`).
+   - DO NOT create ad-hoc routes inside views/components or directly in `router/index.ts`.
+   - Always set proper `meta` on routes (titleKey/title, parent, rank, roles/auths, keepAlive, hiddenTag/fixedTag, isLink/linkUrl, etc.).
+
+3. **Dynamic Routes MUST Use BackendRouteConfig + processAsyncRoutes**
+   - Any backend-provided route MUST follow `BackendRouteConfig` and be converted via `processAsyncRoutes` in `src/router/utils/common.ts`.
+   - DO NOT manually transform backend routes in random places – use `processAsyncRoutes` + `createDynamicRouteManager(router)` only.
+
+4. **Use RouteUtils & Common Helpers Instead of Re‑implementing Logic**
+   - For menus, breadcrumbs, flat routes, keepAlive names, or permission-based filtering:
+     - ALWAYS use `routeUtils` (from `src/router/index.ts`) and helpers from `src/router/utils/common.ts`.
+   - Forbidden anti-patterns:
+     - Re-implementing flattening, menu trees, breadcrumbs, or keepAlive logic inside views/components/stores.
+
+5. **Guards and Permission Flow Only in `src/router/utils/guards.ts`**
+   - Global `beforeEach/afterEach` MUST be defined/extended ONLY in `src/router/utils/guards.ts` via `usePermissionGuard` + `registerRouterGuards`.
+   - Any change to login flow, dynamic route initialization, or route-level loading MUST go through this file.
+   - DO NOT register new global guards from views/components/hooks.
+
+6. **Dynamic Route Management Only via DynamicRouteManager**
+   - At runtime you MUST use `DynamicRouteManager` (`createDynamicRouteManager(router)`) for adding/removing/clearing dynamic routes.
+   - DO NOT call `router.addRoute/removeRoute` directly – route lifecycle must be tracked through `DynamicRouteManager`.
+
+7. **Navigation and Multi‑Window Behavior Uses Helper APIs**
+   - For navigation/back/refresh/new-window, ALWAYS use helpers from `src/router/utils/helper.ts`:
+     - `goBack`, `goToRoute`, `replaceRoute`, `refreshCurrentRoute`, `getActiveMenuPath`, etc.
+   - New window & window reuse MUST respect:
+     - `meta.parent` (`admin/fullscreen/ratio`) and `meta.reuseWindow`
+     - Window key generation & `permission` store window metadata.
+
+8. **Router Constants and Meta Fields Are SSOT**
+   - Whitelists and error routes MUST come from `src/constants/router.ts`.
+   - All route meta semantics MUST come from `RouteMeta` in `src/types/modules/router.d.ts` – DO NOT invent new ad-hoc fields in business code.
+
+If you are unsure how to wire a new route-related feature, STOP and:
+1. Inspect existing code under `src/router/**` and `src/stores/modules/permission.ts`.
+2. Mirror the existing patterns (modules → types → utils → guards → helpers) instead of creating a parallel mechanism.

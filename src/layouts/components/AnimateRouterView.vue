@@ -2,6 +2,7 @@
 import { routeWhitePathList } from '@/router/utils/helper'
 import { routeUtils } from '@/router'
 import { useRoute } from 'vue-router'
+import { useLayoutStore } from '@/stores/modules/layout'
 
 // 定义局部接口，让 AI 和 Lint 明白 transition 的结构
 interface RouteTransition {
@@ -11,6 +12,7 @@ interface RouteTransition {
 }
 
 const route = useRoute()
+const layoutStore = useLayoutStore()
 // 检查当前路由是否在白名单中
 const isWhiteListRoute = computed(() => routeWhitePathList.includes(route.path as any))
 
@@ -44,22 +46,52 @@ watch(
   { immediate: true }
 )
 
-// 动态过渡：若提供 enter/leave 类名则优先使用；否则回退到 name；再回退到默认值
+// Layout 核心开关：是否启用路由过渡 & KeepAlive
+const enableTransition = computed(() => layoutStore.enableTransition)
+const enableKeepAlive = computed(() => layoutStore.enableKeepAlive)
+const globalTransitionName = computed(() => layoutStore.transitionName)
+
+// 动态过渡：若提供 enter/leave 类名则优先使用；否则回退到 name；再回退到全局配置
 const rawTransition = computed(() => (route.meta?.transition as RouteTransition) || {})
 const hasCustomClass = computed(() =>
   Boolean(rawTransition.value.enterTransition || rawTransition.value.leaveTransition)
 )
-const transitionName = computed(() => (!hasCustomClass.value ? rawTransition.value.name || '' : ''))
-const enterActiveClass = computed(
-  () =>
+
+const transitionName = computed(() => {
+  // 关闭全局过渡时，直接禁用 name（不再应用任何 transition 类）
+  if (!enableTransition.value) {
+    return ''
+  }
+
+  // 提供了自定义类名时，完全依赖 enter/leave-active-class，不再使用 name
+  if (hasCustomClass.value) {
+    return ''
+  }
+
+  return rawTransition.value.name || globalTransitionName.value || ''
+})
+
+const enterActiveClass = computed(() => {
+  if (!enableTransition.value) {
+    return ''
+  }
+
+  return (
     rawTransition.value.enterTransition ||
     'animate__animated animate__fadeIn animate__fast enter-active-class'
-)
-const leaveActiveClass = computed(
-  () =>
+  )
+})
+
+const leaveActiveClass = computed(() => {
+  if (!enableTransition.value) {
+    return ''
+  }
+
+  return (
     rawTransition.value.leaveTransition ||
     'animate__animated animate__slideOutLeft animate__fast leave-active-class'
-)
+  )
+})
 </script>
 <template>
   <router-view v-slot="{ Component }">
@@ -77,7 +109,12 @@ const leaveActiveClass = computed(
         hasCustomClass ? leaveActiveClass : !transitionName ? leaveActiveClass : undefined
       "
     >
+      <component
+        :is="Component"
+        v-if="!enableKeepAlive"
+      />
       <keep-alive
+        v-else
         :include="keepAliveNames"
         :max="10"
       >

@@ -65,3 +65,16 @@ export const SIZE_PRESETS: SizePreset[] = [
 
 /** 默认尺寸模式 */
 export const DEFAULT_SIZE_NAME: SizeMode = 'comfortable'
+
+/** 布局尺寸字段名（与 SizePreset / SizeCssVars 布局变量一一对应，SSOT for UnoCSS） */
+export const LAYOUT_DIMENSION_KEYS = [
+  'sidebarWidth',
+  'sidebarCollapsedWidth',
+  'headerHeight',
+  'breadcrumbHeight',
+  'footerHeight',
+  'tabsHeight',
+] as const satisfies readonly (keyof SizePreset)[]
+
+/** 基础尺寸变量名（对应 SizeCssVars 非阶梯基础变量） */
+export const SIZE_BASE_VAR_KEYS = ['containerPadding'] as const

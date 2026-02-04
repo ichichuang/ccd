@@ -6,6 +6,8 @@ import {
   SIZE_SCALE_KEYS,
 } from '@/constants/sizeScale'
 
+type ScaleKey = (typeof SIZE_SCALE_KEYS)[number]
+
 /**
  * 生成系统尺寸 CSS 变量 (含阶梯系统)
  *
@@ -78,4 +80,100 @@ export function applySizeTheme(vars: SizeCssVars) {
   Object.entries(vars).forEach(([key, value]) => {
     root.style.setProperty(key, value)
   })
+}
+
+interface RootFontSizeContext {
+  deviceType: 'Mobile' | 'Tablet' | 'PC'
+  breakpoint: ScaleKey
+  preset: SizePreset
+}
+
+interface RootFontSizeDecision {
+  scaleKey: ScaleKey
+  pixelValue: number
+}
+
+/**
+ * 根字号决策：根据设备类型 + 断点 + 尺寸预设，计算合适的字体阶梯与像素值
+ *
+ * 规则：
+ * - Mobile：忽略断点，统一使用 md 档，并且不小于 15px
+ * - Tablet：xs/sm -> md，md/lg -> lg，其余 -> xl
+ * - PC：xs -> sm，sm -> md，md/lg/xl -> 自身，2xl 及以上统一 capped 为 2xl
+ */
+export function decideRootFontSize(ctx: RootFontSizeContext): RootFontSizeDecision {
+  const { deviceType, breakpoint, preset } = ctx
+
+  // 移动端：保持稳定阅读体验，不随断点缩小
+  if (deviceType === 'Mobile') {
+    const scaleKey: ScaleKey = 'md'
+    const base = preset.fontSizeBase
+    const ratio = FONT_SCALE_RATIOS[scaleKey]
+    const pixelValue = Math.max(15, base * ratio)
+    return { scaleKey, pixelValue }
+  }
+
+  // 平板：适度随断点放大，但限制在 md~xl 范围
+  if (deviceType === 'Tablet') {
+    let scaleKey: ScaleKey
+    switch (breakpoint) {
+      case 'xs':
+      case 'sm':
+        scaleKey = 'md'
+        break
+      case 'md':
+      case 'lg':
+        scaleKey = 'lg'
+        break
+      default:
+        scaleKey = 'xl'
+        break
+    }
+    const base = preset.fontSizeBase
+    const ratio = FONT_SCALE_RATIOS[scaleKey]
+    const pixelValue = base * ratio
+    return { scaleKey, pixelValue }
+  }
+
+  // PC：大致跟随断点梯度，但在极小/极大两端做夹逼处理
+  let scaleKey: ScaleKey
+  switch (breakpoint) {
+    case 'xs':
+      scaleKey = 'sm'
+      break
+    case 'sm':
+    case 'md':
+    case 'lg':
+    case 'xl':
+      scaleKey = 'md'
+      break
+    case '2xl':
+    case '3xl':
+      scaleKey = 'xl'
+      break
+    case '4xl':
+      scaleKey = '2xl'
+      break
+    case '5xl':
+      scaleKey = '3xl'
+      break
+    default:
+      scaleKey = 'md'
+      break
+  }
+
+  const base = preset.fontSizeBase
+  const ratio = FONT_SCALE_RATIOS[scaleKey]
+  const pixelValue = base * ratio
+
+  return { scaleKey, pixelValue }
+}
+
+/**
+ * 将根字号决策结果应用到文档根元素
+ */
+export function applyRootFontSize(decision: RootFontSizeDecision) {
+  const root = document.documentElement
+  root.style.setProperty('--font-size-root', `${decision.pixelValue}px`)
+  root.dataset.fontScale = decision.scaleKey
 }

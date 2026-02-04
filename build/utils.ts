@@ -16,16 +16,12 @@ export const pathResolve = (dir = '.', metaUrl = import.meta.url): string => {
 
 /** * ✅ 设置别名系统 (符合 v3.0 架构规范)
  * 1. @ -> 源码根目录
- * 2. @$ -> Shadcn UI 核心目录，支持快速引用原子组件
+ * 2. @! -> api 目录
  * 3. @& -> 布局专用组件目录，支持显式引入布局相关组件
  */
 export const alias: Record<string, string> = {
   '@': pathResolve('../src'),
   '@!': pathResolve('../src/api'),
-  '@#': pathResolve('../src/common'),
-  /** ✅ Shadcn 组件目录，便于 @$/button 等引入 */
-  '@$': pathResolve('../src/components/ui'),
-  /** ✅ 布局专用组件目录，用于在 Layouts 中显式手动引入 */
   '@&': pathResolve('../src/layouts/components'),
 }
 

@@ -87,6 +87,11 @@ const router = createRouter({
 export const dynamicRouteManager = createDynamicRouteManager(router)
 
 // 注册路由
-registerRouterGuards({ router, routeUtils, staticRoutes: initialRoutes, dynamicRouteManager })
+registerRouterGuards({
+  router,
+  routeUtils,
+  staticRoutes: normalizedStaticRoutes,
+  dynamicRouteManager,
+})
 
 export default router

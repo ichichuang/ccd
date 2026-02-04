@@ -14,14 +14,20 @@
     // 之前从 tsconfig.app.json 移出来的，必须放在这里
     "build/**/*",
 
-    // ✅ 断点常量 & 主题颜色家族元数据 (uno.config.ts 引用，SSOT 在 src)
-    "src/constants/breakpoints.ts",
-    "src/utils/theme/metadata.ts"
+    // ✅ 允许构建侧(uno.config/build/*)通过 @ 引用 src 内 SSOT
+    // composite 项目要求：凡被导入的文件必须属于 include/files
+    "src/constants/**/*.ts",
+    "src/utils/theme/**/*.ts"
   ],
   "compilerOptions": {
     "composite": true,
     "noEmit": true,
     "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.node.tsbuildinfo",
+
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["src/*"]
+    },
 
     "module": "ESNext",
     "moduleResolution": "Bundler",

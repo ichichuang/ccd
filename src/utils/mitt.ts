@@ -12,7 +12,7 @@ export type Events = {
   /**
    * 语言变更事件
    * 由 Locale Store 等模块在语言切换后触发
-   * 例如 'zh-CN' | 'en-US' | 'zh-TW'
+   * 例如 'zh-CN' | 'en-US'
    */
   localeChange: string
 

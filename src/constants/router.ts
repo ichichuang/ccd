@@ -2,20 +2,8 @@
  * 路由白名单配置
  * 不需要登录验证的页面路径
  */
-export const routeWhitePathList: string[] = [
-  '/login',
-  '/register',
-  '/example',
-  '/example/layout/ratio',
-  '/interesting/christmas',
-]
-export const routeWhiteNameList: string[] = [
-  'Login',
-  'Register',
-  'Example',
-  'ExampleRatio',
-  'Christmas',
-]
+export const routeWhitePathList: string[] = ['/login', '/register', '/example']
+export const routeWhiteNameList: string[] = ['Login', 'Register', 'Example']
 
 /**
  * 错误页面配置
@@ -32,7 +20,7 @@ export const rootRedirect: RouteConfig[] = [
   {
     path: '/404',
     name: '404',
-    component: () => import('@/views/notfound/not-found-page.vue'),
+    component: () => import('@/views/notfound/404.vue'),
     meta: {
       titleKey: 'router.error.notFound',
       showLink: false,
@@ -42,7 +30,7 @@ export const rootRedirect: RouteConfig[] = [
   {
     path: '/403',
     name: '403',
-    component: () => import('@/views/notfound/forbidden-page.vue'),
+    component: () => import('@/views/notfound/403.vue'),
     meta: {
       titleKey: 'router.error.forbidden',
       showLink: false,
@@ -52,7 +40,7 @@ export const rootRedirect: RouteConfig[] = [
   {
     path: '/500',
     name: '500',
-    component: () => import('@/views/notfound/server-error-page.vue'),
+    component: () => import('@/views/notfound/500.vue'),
     meta: {
       titleKey: 'router.error.serverError',
       showLink: false,

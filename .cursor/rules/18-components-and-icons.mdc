@@ -1,0 +1,75 @@
+---
+description: 组件与图标使用规范：优先复用 src/components（Icons/CScrollbar/UseEcharts），图标必须走 Icons + iconify/custom
+globs: src/**/*.vue
+alwaysApply: true
+---
+# Components & Icons Policy (UI Must Follow)
+
+## 1. Primary Directive
+
+When generating or editing UI pages/components, you MUST:
+
+1. Prefer using existing components in `src/components/` over re-implementing UI patterns.
+2. Use the project's `Icons` component for ALL icons.
+3. Follow the design system rules (UnoCSS semantic classes, no hardcoding).
+
+## 2. Component Reuse Map (Must Use First)
+
+### Scroll container
+- Use `CScrollbar` (`src/components/CScrollbar`)
+- Do NOT replace it with ad-hoc `overflow-auto` containers unless explicitly requested.
+
+### Icons
+- Use `Icons` (`src/components/Icons`)
+- FORBIDDEN: writing raw `<svg>` icons, external icon URLs, base64 icon images.
+
+### Charts
+- Use `UseEcharts` (`src/components/use-echarts/UseEcharts.vue`)
+- FORBIDDEN: manually instantiating ECharts directly in a page if `UseEcharts` fits.
+
+### PrimeVue UI Components
+- For **forms & inputs** (text, password, number, checkbox, radio, select, multi-select, date, switch):
+  - MUST prefer PrimeVue components such as `<InputText>`, `<Password>`, `<InputNumber>`, `<Checkbox>`, `<RadioButton>`, `<Dropdown>`, `<MultiSelect>`, `<Calendar>`, `<InputSwitch>`, etc.
+- For **actions/buttons**:
+  - MUST use `<Button>` for primary/secondary actions instead of styling raw `<button>` or `<a>`.
+- For **tables/lists**:
+  - SHOULD use `<DataTable>` (or project-wrapped table components) for interactive data tables instead of hand-written `<table>` when possible.
+- For **dialogs/overlays**:
+  - MUST use `<Dialog>` / `<Sidebar>` instead of ad-hoc fixed-position modals when they fit the use case.
+
+Styling PrimeVue components:
+- MUST style them using UnoCSS classes on the component and/or `pt` (PassThrough) configuration.
+- FORBIDDEN: adding custom CSS rules to control layout/spacing/colors for PrimeVue components when the same can be achieved by UnoCSS semantic classes and design system variables.
+
+## 3. Auto Import Awareness
+
+This project auto-imports components/functions and generates:
+- `src/types/auto-imports.d.ts`
+- `src/types/components.d.ts`
+
+Rules:
+- Prefer relying on auto-imports (avoid redundant manual imports) unless the file requires explicit imports.
+
+## 4. Icons: Smart Selection Rules
+
+### 4.1 Default preference order
+
+1. **Lucide** (recommended default): `i-lucide-...`
+2. **MDI** (fallback for missing lucide): `i-mdi-...`
+3. **Logos** (brands): `i-logos-...`
+4. **Custom SVG** (when no suitable icon exists):
+   - Place SVG under `src/assets/icons/**`
+   - Use `i-custom:...` naming (custom collection)
+   - Custom icon loading/safelist is handled by `build/uno-icons.ts` + `uno.config.ts`
+
+### 4.2 Usage requirements
+
+- Always render icons via `<Icons name=\"...\" />`.
+- Prefer semantic sizing (`size=\"xs|sm|md|lg|xl|2xl|3xl|4xl|5xl\"`) over hardcoded pixel sizes.
+- Prefer semantic colors via classes/variables; avoid hex colors.
+
+## 5. Forbidden Patterns
+
+- FORBIDDEN: raw `<svg>` icon markup in templates.
+- FORBIDDEN: adding custom CSS for icon sizing/colors; use UnoCSS + `Icons` props/classes.
+- FORBIDDEN: bypassing `UseEcharts` for charts when it can be used.

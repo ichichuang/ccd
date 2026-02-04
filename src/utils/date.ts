@@ -36,7 +36,7 @@ dayjs.locale('en')
 export type DateInput = string | number | Date | dayjs.Dayjs
 export type StrictDateInput = string | Date | dayjs.Dayjs // 排除 number，更严格的类型
 export type DateFormat = string
-export type Locale = 'zh-CN' | 'en-US' | 'zh-TW' // 与框架国际化保持一致
+export type Locale = 'zh-CN' | 'en-US' // 与框架国际化保持一致
 
 // DayJS 相关类型重新导出
 export type DayjsManipulateType = dayjs.ManipulateType
@@ -435,21 +435,18 @@ export type DateRangePreset = keyof typeof DATE_RANGES
 const LOCALE_MODULES = {
   en: () => import('dayjs/locale/en.js'),
   zhCn: () => import('dayjs/locale/zh-cn.js'),
-  zhTw: () => import('dayjs/locale/zh-tw.js'),
 } as const
 
 // 语言代码映射 - 框架格式到 dayjs 格式
 const LOCALE_MAP: Record<Locale, keyof typeof LOCALE_MODULES> = {
   ['en-US']: 'en',
   ['zh-CN']: 'zhCn',
-  ['zh-TW']: 'zhTw',
 } as const
 
 // dayjs 语言代码映射 - 框架格式到 dayjs 内部格式
 const DAYJS_LOCALE_MAP: Record<Locale, string> = {
   ['en-US']: 'en',
   ['zh-CN']: 'zh-cn',
-  ['zh-TW']: 'zh-tw',
 } as const
 
 // 星期名称映射
@@ -1168,22 +1165,6 @@ export class DateUtils {
         time: { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true },
         dateOnly: { year: 'numeric', month: '2-digit', day: '2-digit' },
         timeOnly: { hour: '2-digit', minute: '2-digit', hour12: true },
-      },
-      ['zh-TW']: {
-        short: { year: 'numeric', month: '2-digit', day: '2-digit' },
-        long: { year: 'numeric', month: 'long', day: 'numeric', weekday: 'long' },
-        datetime: {
-          year: 'numeric',
-          month: '2-digit',
-          day: '2-digit',
-          hour: '2-digit',
-          minute: '2-digit',
-          second: '2-digit',
-          hour12: false,
-        },
-        time: { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false },
-        dateOnly: { year: 'numeric', month: '2-digit', day: '2-digit' },
-        timeOnly: { hour: '2-digit', minute: '2-digit', hour12: false },
       },
     }
 

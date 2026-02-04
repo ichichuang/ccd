@@ -309,7 +309,9 @@ export const patch = <T = any>(url: string, data?: any, config?: RequestConfig):
 export const head = (url: string, config?: RequestConfig): Promise<void> => {
   const requestKey = `HEAD:${url}:${JSON.stringify(config?.params ?? {})}`
   const alovaConfig = convertRequestConfig(config)
-  const requestFn = () => alovaInstance.Head(url, alovaConfig).send(true)
+  const requestFn: () => Promise<void> = async () => {
+    await alovaInstance.Head(url, alovaConfig).send(true)
+  }
 
   return requestManager.execute(
     requestKey,
@@ -373,7 +375,6 @@ export const downloadFile = async (
   const alovaConfig = convertRequestConfig({
     ...(config || {}),
     // 标记为 blob 响应，拦截器会据此识别
-    // @ts-expect-error: Alova 类型未必声明 responseType，但运行时会透传
     responseType: 'blob',
   })
 

@@ -63,9 +63,9 @@ export function getChartSystemVariables(): ChartSystemVariables {
     contrastColor: getCssRgbColor('foreground'),
     secondaryColor: getCssRgbColor('secondary'),
 
-    // 尺寸：直接来自 SizeStore
+    // 尺寸：来自 SizeStore，与全局尺寸阶梯一致（md=基准，sm=小号）
     fontSize: sizeStore.getFontSizeValue,
-    fontSizeSmall: sizeStore.getFontSizesValue,
+    fontSizeSmall: sizeStore.getFontSizeSmValue,
     paddings: sizeStore.getPaddingsValue,
     gap: sizeStore.getGap,
     gapl: sizeStore.getGapl,

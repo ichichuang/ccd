@@ -19,5 +19,4 @@ export const FALLBACK_LOCALE: SupportedLocale = 'zh-CN'
 export const LOCALE_TO_TIMEZONE_MAP: Record<SupportedLocale, string> = {
   'zh-CN': 'Asia/Shanghai',
   'en-US': 'America/New_York',
-  'zh-TW': 'Asia/Taipei',
 }

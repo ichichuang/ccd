@@ -457,8 +457,14 @@ export function getFullRoutePath(route: RouteConfig): string {
   }
 
   // 拼接父级路径和当前路径
+  // 说明：
+  // - parentPaths 中约定存放的是各级父路由的「完整路径片段」（通常以 `/` 开头）
+  // - 这里通过显式补 `/` 的方式进行拼接，以兼容后续可能引入的相对 path 写法
   const parentPath = route.meta.parentPaths.join('')
-  return `${parentPath}${route.path}`.replace(/\/+/g, '/')
+  const normalizedParent = parentPath.replace(/\/+$/u, '')
+  const normalizedCurrent = (route.path || '').replace(/^\/+/u, '')
+
+  return `${normalizedParent}/${normalizedCurrent}`.replace(/\/+/gu, '/')
 }
 
 /**
@@ -490,4 +496,15 @@ export function getLeafRoutes(routes: RouteConfig[]): RouteConfig[] {
 
   collectLeafRoutes(routes)
   return leafRoutes
+}
+
+/**
+ * 获取用于菜单高亮的有效路径
+ * - 如果当前路由设置了 meta.activeMenu，则优先使用该路径
+ * - 否则回退到当前路由自身的 path
+ */
+export function getActiveMenuPath(route: RouteLocationNormalized): string {
+  const activeMenu = (route.meta?.activeMenu as string | undefined) || ''
+  const path = route.path || '/'
+  return activeMenu || path
 }

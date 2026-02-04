@@ -18,8 +18,13 @@ export function filterShowLinkMenus(routes: RouteConfig[]): RouteConfig[] {
 }
 
 /**
- * 过滤children长度为0的目录
- * 当目录下没有菜单时，会过滤此目录
+ * 过滤 children 长度为 0 的目录
+ * 当目录下没有菜单时，会过滤此目录。
+ *
+ * 注意：
+ * - 当前实现会在递归过程中同时应用 filterShowLinkMenus，
+ *   即除了过滤「空目录」之外，还会过滤 meta.showLink === false 的子路由。
+ * - 目前项目内未直接使用该函数，如需启用请确认以上行为是否符合预期。
  */
 export function filterEmptyChildren(routes: RouteConfig[]): RouteConfig[] {
   return routes.filter(route => {
@@ -627,6 +632,28 @@ export function getAllRoutePaths(routes: RouteConfig[]): string[] {
 }
 
 /**
+ * 获取所有后端动态路由（根据 meta.backstage 标记）
+ * 仅用于调试或统计，不会修改原始路由结构
+ */
+export function getBackendRoutes(routes: RouteConfig[]): RouteConfig[] {
+  const result: RouteConfig[] = []
+
+  function traverse(routeList: RouteConfig[]) {
+    routeList.forEach(route => {
+      if (route.meta?.backstage) {
+        result.push(route)
+      }
+      if (route.children && route.children.length > 0) {
+        traverse(route.children)
+      }
+    })
+  }
+
+  traverse(routes)
+  return result
+}
+
+/**
  * 动态路由管理器
  * 提供动态路由的添加、删除、重置等功能
  */
@@ -638,6 +665,15 @@ export function createDynamicRouteManager(router: any) {
      * 添加动态路由
      */
     addRoute(route: RouteConfig) {
+      // 动态路由必须具备稳定的 name，避免 hasRoute(undefined) 等未定义行为
+      if (!route.name) {
+        console.error(
+          '🪒-Router: 动态路由缺少 name，已忽略当前路由。请为该路由配置唯一的 name。',
+          route
+        )
+        return
+      }
+
       // 防止重复添加
       const existingIndex = dynamicRoutes.findIndex(r => r.path === route.path)
       if (existingIndex !== -1) {
@@ -648,7 +684,7 @@ export function createDynamicRouteManager(router: any) {
 
       // 转换为 Vue Router 格式并添加
       const vueRoute = transformToVueRoutes([route])[0]
-      if (!router.hasRoute(vueRoute.name)) {
+      if (vueRoute.name && !router.hasRoute(vueRoute.name)) {
         router.addRoute(vueRoute)
       }
     },

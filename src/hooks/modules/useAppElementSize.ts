@@ -1,4 +1,4 @@
-// src/composables/useAppElementSize.ts
+// src/hooks/modules/useAppElementSize.ts
 import type { Ref } from 'vue'
 import { debounceFn, throttleFn } from '@/utils/lodashes'
 

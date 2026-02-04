@@ -1,21 +1,22 @@
 <script setup lang="ts"></script>
 <template>
   <div>
-    <div class="i-lucide-user" />
-    <div class="i-lucide-settings" />
-    <div class="i-lucide-home" />
+    <Icons name="i-lucide-user" />
+    <Icons name="i-lucide-settings" />
+    <Icons name="i-lucide-home" />
 
-    <div class="i-mdi-database-export" />
-    <div class="i-mdi-card-account-details" />
+    <Icons name="i-mdi-database-export" />
+    <Icons name="i-mdi-card-account-details" />
 
-    <div class="i-logos-vue" />
-    <div class="i-logos-google-icon" />
-    <div class="i-logos-typescript-icon" />
+    <Icons name="i-logos-vue" />
+    <Icons name="i-logos-google-icon" />
+    <Icons name="i-logos-typescript-icon" />
 
-    <div class="i-custom:custom-juejin" />
-    <div class="i-custom:language-chinese" />
-    <div class="i-custom:language-english" />
+    <Icons name="i-custom:custom-juejin" />
+    <Icons name="i-custom:language-cn" />
+    <Icons name="i-custom:language-en" />
     sadasdsa
+    <div>艾薇儿王企鹅期望奇沃尔期望</div>
   </div>
 </template>
 <style lang="scss" scoped></style>

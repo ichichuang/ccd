@@ -1,13 +1,20 @@
 import type { AnimateWrapperProps } from './types'
 
+/**
+ * AnimateWrapper 组件默认配置
+ *
+ * 注意：此处的默认值需要与 types.ts 中文档注释保持一致
+ */
 export const defaultAnimateConfig: AnimateWrapperProps = {
+  /** 默认是否显示 */
+  show: true,
   /** 默认进入动画 */
   enter: 'fadeIn',
   /** 默认离开动画 */
   leave: 'fadeOut',
   /** 默认动画时长 */
   duration: '1s',
-  /** 默认延迟 */
+  /** 默认通用延迟 */
   delay: '0s',
   /** 默认进入动画延迟 */
   enterDelay: '0s',
@@ -23,6 +30,4 @@ export const defaultAnimateConfig: AnimateWrapperProps = {
   group: false,
   /** 默认队列延迟（ms），group 模式队列延迟 */
   stagger: 120,
-  /** 默认是否显示 */
-  show: true,
 }

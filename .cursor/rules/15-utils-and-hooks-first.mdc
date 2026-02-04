@@ -1,0 +1,127 @@
+---
+description: 工具优先策略：遇到需求先复用 src/utils 与 src/hooks（并规定新增工具的归档）
+globs: src/**/*.{ts,vue}
+alwaysApply: true
+---
+# Utilities & Hooks First (Must Follow)
+
+## 0. Primary Directive
+
+Before writing any new logic, you MUST first look for an existing implementation in `src/utils/` or `src/hooks/` and reuse it.
+
+If you find an existing utility/hook that covers most of the need, you MUST extend it (minimal change) rather than re-implementing logic in views/components.
+
+## 1. Mandatory Lookup Map (遇到需求必须优先取用)
+
+### HTTP / Requests
+- `src/utils/http/*` (Alova instance, interceptors, methods)
+- `src/hooks/modules/useHttpRequest.ts` (typed request hook wrapper)
+
+### Secure Storage / Persistence
+- `src/utils/safeStorage/*`
+
+### Global Events
+- `src/utils/mitt.ts`
+
+### Lodash Wrappers (防腐层)
+- `src/utils/lodashes.ts`
+  - For data ops: prefer `deepClone`, `deepEqual`, `deepMerge`, `objectPick`, `objectOmit`
+  - For debounce/throttle in components: prefer `@vueuse/core` (`useDebounceFn` / `useThrottleFn`) over lodash wrappers
+
+### IDs
+- `src/utils/ids.ts` (`generateUniqueId`, `generateIdFromKey`)
+
+### Date / Timezone
+- `src/utils/date.ts`
+- `src/hooks/modules/useDateUtils.ts`
+
+### Strings
+- `src/utils/strings.ts`
+
+### Browser / Platform
+- `src/utils/browser.ts`
+
+### Element Size Observation
+- `src/hooks/modules/useAppElementSize.ts`
+
+### Core System Hooks
+- `src/hooks/modules/useThemeSwitch.ts`
+- `src/hooks/modules/useLocale.ts`
+
+## 2. Import Rules (Hard Requirements)
+
+- FORBIDDEN: scattered direct imports from `lodash-es` inside business code. Prefer `@/utils/lodashes` unless the file already follows a project-established exception.
+- FORBIDDEN: creating a new event bus instance. MUST use `@/utils/mitt`.
+- FORBIDDEN: theme switching logic outside `@/hooks/modules/useThemeSwitch`.
+- FORBIDDEN: locale switching logic outside `@/hooks/modules/useLocale`.
+- FORBIDDEN: fetch/axios in business code. MUST use `@/utils/http` / `useHttpRequest`.
+
+## 3. When you need new helpers (如何新增工具)
+
+1. Prefer extending an existing file in the map above.
+2. If no suitable file exists:
+   - You MAY create a new file under `src/utils/` (pure utilities) or `src/hooks/modules/` (Vue composables).
+   - File MUST have a clear responsibility and boundaries in a header comment.
+   - File MUST export named functions (no default export), and follow the style of neighboring files.
+
+## 4. Placement Rules (自动归档)
+
+- HTTP related → `src/utils/http/*` or a composable under `src/hooks/modules/`
+- Crypto / storage / persistence → `src/utils/safeStorage/*`
+- Strings → `src/utils/strings.ts`
+- IDs → `src/utils/ids.ts`
+- Browser / platform → `src/utils/browser.ts`
+- Date / timezone → `src/utils/date.ts` or `src/hooks/modules/useDateUtils.ts`
+- Element size observation → `src/hooks/modules/useAppElementSize.ts`
+
+## 5. Function-Level Catalog (精确到函数名)
+
+When a task matches the following needs, you MUST use the specified exports:
+
+### Lodash (src/utils/lodashes.ts)
+- Deep clone → `deepClone`
+- Deep equal → `deepEqual`
+- Deep merge → `deepMerge`
+- Pick/Omit → `objectPick` / `objectOmit`
+- Debounce/Throttle (fallback) → `debounceFn` / `throttleFn`
+  - In Vue components prefer `@vueuse/core`: `useDebounceFn` / `useThrottleFn`
+
+### IDs (src/utils/ids.ts)
+- Unique id → `generateUniqueId`
+- Stable id from key → `generateIdFromKey`
+
+### Strings (src/utils/strings.ts)
+- camelCase/PascalCase → kebab-case → `toKebabCase`
+
+### Browser (src/utils/browser.ts)
+- System color mode → `getSystemColorMode`
+
+### Global events (src/utils/mitt.ts)
+- MUST use `useMitt()` and the singleton emitter defined there.
+
+### HTTP (src/hooks/modules/useHttpRequest.ts + src/utils/http/*)
+- Prefer `useHttpRequest<TData>(buildMethod, options?)`
+- Use `alovaInstance` when you need direct Method construction.
+- Use `isHttpRequestError` / `HttpRequestError` for error narrowing.
+
+### Safe storage (src/utils/safeStorage/*)
+- Encrypt/decrypt → `encrypt` / `decrypt` / `encryptSync` / `decryptSync`
+- Pack/unpack → `packData` / `unpackData` / `packDataSync` / `unpackDataSync`
+- Pinia serializer → `createPiniaEncryptedSerializer`
+
+### Date / Timezone (src/hooks/modules/useDateUtils.ts)
+- Prefer `useDateUtils()` as the reactive gateway (do NOT reinvent timezone/locale sync).
+
+### Element size (src/hooks/modules/useAppElementSize.ts)
+- Use `useAppElementSize(...)` (do NOT re-implement ResizeObserver patterns).
+
+### Core system hooks
+- Theme switching → `useThemeSwitch()` (+ `isThemeLocked()` if needed)
+- Locale switching → `useLocale()`
+
+## 6. Explicit Anti-Patterns (Forbidden)
+
+- FORBIDDEN: Re-implementing utility logic inline inside Vue components when a utility/hook exists above.
+- FORBIDDEN: Direct `lodash-es` imports in business code (prefer `@/utils/lodashes`).
+- FORBIDDEN: Creating a new event bus (use `@/utils/mitt` singleton + `useMitt()`).
+- FORBIDDEN: `fetch`/`axios` in business code.

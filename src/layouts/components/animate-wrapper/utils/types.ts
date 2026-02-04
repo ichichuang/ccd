@@ -150,7 +150,7 @@ export interface AnimateWrapperProps {
    *
    * 元素显示时使用的动画名称（animate.css 动画类名）
    *
-   * @default undefined
+   * @default 'fadeIn'
    * @example
    * - enter="fadeIn" - 淡入动画
    * - enter="slideInDown" - 从上方滑入
@@ -163,7 +163,7 @@ export interface AnimateWrapperProps {
    *
    * 元素隐藏时使用的动画名称（animate.css 动画类名）
    *
-   * @default undefined
+   * @default 'fadeOut'
    * @example
    * - leave="fadeOut" - 淡出动画
    * - leave="slideOutUp" - 向上滑出
@@ -176,7 +176,7 @@ export interface AnimateWrapperProps {
    *
    * CSS 时间格式，例如 '1s'、'500ms'、'0.5s'
    *
-   * @default undefined（使用 animate.css 默认时长）
+   * @default '1s'
    * @example
    * - duration="0.5s" - 0.5 秒
    * - duration="1000ms" - 1000 毫秒
@@ -188,7 +188,7 @@ export interface AnimateWrapperProps {
    *
    * 应用于进入和离开动画的延迟时间
    *
-   * @default undefined
+   * @default '0s'
    * @example
    * - delay="0.2s" - 延迟 0.2 秒
    */
@@ -199,7 +199,7 @@ export interface AnimateWrapperProps {
    *
    * 仅应用于进入动画的延迟时间，优先级高于 delay
    *
-   * @default undefined
+   * @default '0s'
    * @example
    * - enter-delay="0.3s" - 进入动画延迟 0.3 秒
    */
@@ -210,7 +210,7 @@ export interface AnimateWrapperProps {
    *
    * 仅应用于离开动画的延迟时间，优先级高于 delay
    *
-   * @default undefined
+   * @default '0s'
    * @example
    * - leave-delay="0.1s" - 离开动画延迟 0.1 秒
    */
@@ -221,7 +221,7 @@ export interface AnimateWrapperProps {
    *
    * 控制动画的播放速度（对应 animate.css 的速度类）
    *
-   * @default undefined（使用默认速度）
+   * @default 'fast'
    * @example
    * - speed="slow" - 慢速
    * - speed="fast" - 快速
@@ -235,7 +235,7 @@ export interface AnimateWrapperProps {
    *
    * 动画重复播放的次数，或使用 'infinite' 无限循环
    *
-   * @default undefined（不循环）
+   * @default 1（不循环）
    * @example
    * - :repeat="3" - 循环 3 次
    * - repeat="infinite" - 无限循环
@@ -247,7 +247,7 @@ export interface AnimateWrapperProps {
    *
    * 组件首次挂载时是否执行进入动画
    *
-   * @default false
+   * @default true
    * @example
    * - :appear="true" - 初次渲染时执行动画
    */
@@ -270,7 +270,7 @@ export interface AnimateWrapperProps {
    *
    * 列表模式下，每个列表项之间的动画延迟时间（毫秒）
    *
-   * @default undefined
+   * @default 120
    * @example
    * - :stagger="100" - 每个项延迟 100ms
    * - :stagger="50" - 每个项延迟 50ms

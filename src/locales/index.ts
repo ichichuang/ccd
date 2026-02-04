@@ -3,14 +3,13 @@
  */
 import enUS from '@/locales/lang/en-US'
 import zhCN from '@/locales/lang/zh-CN'
-import zhTW from '@/locales/lang/zh-TW'
 import { DEFAULT_LOCALE, FALLBACK_LOCALE } from '@/constants/locale'
 import type { App } from 'vue'
 import { createI18n } from 'vue-i18n'
 
 // 类型定义
 /** 支持的语言类型 */
-export type SupportedLocale = 'zh-CN' | 'en-US' | 'zh-TW'
+export type SupportedLocale = 'zh-CN' | 'en-US'
 
 /** 语言配置信息 */
 export interface LocaleInfo {
@@ -38,19 +37,12 @@ export const supportedLocales: LocaleInfo[] = [
     flag: '🇺🇸',
     direction: 'ltr',
   },
-  {
-    key: 'zh-TW',
-    name: '繁體中文',
-    flag: '🇭🇰',
-    direction: 'ltr',
-  },
 ]
 
 // 语言包映射
 const messages: Record<SupportedLocale, LocaleMessages> = {
   ['zh-CN']: zhCN,
   ['en-US']: enUS,
-  ['zh-TW']: zhTW,
 }
 
 // 获取默认语言（框架默认中文），从 constants 统一读取
@@ -136,44 +128,6 @@ const datetimeFormats = {
       hour12: true,
     },
   },
-  ['zh-TW']: {
-    short: {
-      year: 'numeric',
-      month: '2-digit',
-      day: '2-digit',
-    },
-    long: {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-      weekday: 'long',
-    },
-    datetime: {
-      year: 'numeric',
-      month: '2-digit',
-      day: '2-digit',
-      hour: '2-digit',
-      minute: '2-digit',
-      second: '2-digit',
-      hour12: false,
-    },
-    time: {
-      hour: '2-digit',
-      minute: '2-digit',
-      second: '2-digit',
-      hour12: false,
-    },
-    dateOnly: {
-      year: 'numeric',
-      month: '2-digit',
-      day: '2-digit',
-    },
-    timeOnly: {
-      hour: '2-digit',
-      minute: '2-digit',
-      hour12: false,
-    },
-  },
 } as const
 
 // 创建 i18n 实例
@@ -213,13 +167,7 @@ export function setLocale(locale: SupportedLocale) {
     // 更新HTML dir属性
     const localeInfo = supportedLocales.find(item => item.key === locale)
     document.documentElement.dir = localeInfo?.direction || 'ltr'
-
-    // 触发语言变更事件
-    window.dispatchEvent(
-      new CustomEvent('locale-changed', {
-        detail: { locale },
-      })
-    )
+    // locale-changed 由 store.switchLocale / initLocale 统一派发，此处不再重复派发
   }
 }
 
@@ -241,7 +189,6 @@ export function n(number: number, format?: string): string {
 // 导出语言包
 export { enUS } from '@/locales/lang/en-US'
 export { zhCN } from '@/locales/lang/zh-CN'
-export { zhTW } from '@/locales/lang/zh-TW'
 
 // 按需导出常用国际化函数，便于使用
 export { getDefaultLocale, messages }

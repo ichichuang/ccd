@@ -12,6 +12,7 @@ import { configLegacyPlugin } from './legacy'
 
 // ✅ 引入模块化的构建插件
 import { configCompressPlugin } from './compress'
+import { configHtmlPlugin } from './html'
 import { viteBuildInfo } from './info'
 import { viteBuildPerformancePlugin } from './performance'
 
@@ -23,6 +24,9 @@ export function getPluginsList(env: ViteEnv, command: 'build' | 'serve'): Plugin
   const plugins: (PluginOption | false)[] = [
     // ✅ 构建信息看板
     viteBuildInfo(),
+
+    // ✅ HTML 注入 VITE_APP_TITLE（与 usePageTitle 初始标题一致）
+    configHtmlPlugin(env),
 
     // 图标变更监听（仅开发环境启用）
     isDev && createIconsWatcherPlugin(),
@@ -49,7 +53,9 @@ export function getPluginsList(env: ViteEnv, command: 'build' | 'serve'): Plugin
       dirs: [
         'src/stores/modules',
         'src/hooks/**/*',
-        'src/api/*',
+        // API 目录采用扁平化两级：src/api/<module>/<feature>.ts
+        // 需要递归扫描，否则无法覆盖二级文件（例如 src/api/user/login.ts）
+        'src/api/**/*',
         // 仅扫描 utils 顶层文件，避免递归扫描内部子目录（如 src/utils/http）
         // HTTP 等基础库应通过显式 import 使用，防止自动导入产生重复导出告警
         'src/utils',
@@ -115,7 +121,8 @@ function createIconsWatcherPlugin(): PluginOption {
   const cwd = process.cwd()
   const normalize = (value: string) => value.replace(/\\/g, '/')
   const routeDir = path.resolve(cwd, 'src/router/modules')
-  const apiDir = path.resolve(cwd, 'src/api/modules')
+  // API 目录已扁平化：src/api/<module>/<feature>.ts（不再使用 src/api/modules）
+  const apiDir = path.resolve(cwd, 'src/api')
   const directories = [routeDir, apiDir].map(normalize)
   let reloadTimer: NodeJS.Timeout | null = null
 

@@ -11,9 +11,13 @@ export interface MergeOptions {
   deepMerge?: boolean
   /** Should override existing values */
   override?: boolean
-  /** Custom matcher function */
+  /**
+   * 预留扩展：按路径/条件精细匹配节点。当前 preset 未使用；若需仅对部分路径应用样式可传入。
+   */
   matcher?: (key: string, value: any, path: string[]) => boolean
-  /** Custom transformer function */
+  /**
+   * 预留扩展：合并时对单节点值做转换。当前 preset 未使用；若需自定义合并逻辑可传入。
+   */
   transformer?: (key: string, oldValue: any, newValue: any) => any
 }
 
@@ -38,7 +42,8 @@ function setValueByPath(obj: any, path: string[], value: any, override: boolean 
 }
 
 /**
- * Helper: Set value only if path exists
+ * Helper: Set value only if path exists (does not create intermediate keys).
+ * Used to apply dotted-path styles into already-existing nodes during traversal.
  */
 function setIfExistsByPath(
   root: any,
@@ -81,17 +86,31 @@ function setIfExistsByPath(
   current[last] = valueToSet
 }
 
-export function deepMergeStylesAdvanced<T = any>(
+/**
+ * Internal: single implementation for deep merge.
+ * - Splits styles into key-level (processedStyles) and dotted-path (pathStyles).
+ * - Traverses the working object: exact path match writes and removes from pathStyles;
+ *   sub-path match writes into existing nested nodes via setIfExistsByPath (e.g.
+ *   "components.button.root.background" applies when at "components").
+ * - After traversal, any remaining pathStyles are applied with setValueByPath (creates
+ *   missing intermediate keys). Thus each path is applied at most once.
+ *
+ * @param target - Source object (cloned if inPlace is false)
+ * @param styles - Styles to merge (flat keys and/or dotted paths)
+ * @param options - deepMerge, override, matcher, transformer
+ * @param inPlace - If true, mutate target; if false, merge into a clone and return it
+ * @returns The merged object (clone when inPlace=false, same ref when inPlace=true)
+ */
+function applyMergeToTarget<T = any>(
   target: T,
   styles: Record<string, any>,
-  options: MergeOptions = {}
+  options: MergeOptions,
+  inPlace: boolean
 ): T {
   const { deepMerge = true, override = true, matcher, transformer } = options
 
-  // 1. Deep clone target
-  const result = JSON.parse(JSON.stringify(target))
+  const work = inPlace ? target : (JSON.parse(JSON.stringify(target)) as T)
 
-  // 2. Separate regular styles from path styles
   const processedStyles: Record<string, any> = {}
   const pathStyles: Record<string, any> = {}
 
@@ -103,23 +122,6 @@ export function deepMergeStylesAdvanced<T = any>(
     }
   }
 
-  // 3. 遍历目标对象，应用「键名级」和「完整路径级」的合并规则
-  //
-  //   - processedStyles：仅按「当前 key 名」匹配，例如：
-  //       styles = { color: 'red' }
-  //       → 任何层级的 `color` 属性都会被匹配（可配合 matcher 精细控制）
-  //
-  //   - pathStyles：按「完整路径字符串」匹配，例如：
-  //       styles = { 'components.button.root.background': 'red' }
-  //       → 只有完整路径等于 'components.button.root.background' 的节点会在遍历时命中
-  //
-  //   处理顺序：
-  //   1）遍历时，如果当前节点路径与 pathStyles 中的 key 完全相等：
-  //        - 立即应用该值
-  //        - 从 pathStyles 中 delete 掉该路径（避免后面重复创建）
-  //   2）遍历结束后：
-  //        - 对于尚未命中的 pathStyles（即遍历过程中根本不存在的路径），
-  //          统一通过 setValueByPath 自动创建中间对象并写入最终值。
   function traverse(obj: any, path: string[] = []): void {
     if (obj === null || typeof obj !== 'object') {
       return
@@ -135,15 +137,15 @@ export function deepMergeStylesAdvanced<T = any>(
       let matchedPathStyle = false
       let pathStyleValue: any = null
 
-      // A. Check for exact path match
+      // A. Exact path match: this node is the target of a dotted-path style → apply and remove from pathStyles
       if (Object.prototype.hasOwnProperty.call(pathStyles, currentPathString)) {
         matchedPathStyle = true
         pathStyleValue = pathStyles[currentPathString]
         delete pathStyles[currentPathString]
       }
 
-      // B. Check for sub-path match (dynamic deep setting)
-      // e.g. key="components", pathStyle="components.button.root..."
+      // B. Sub-path match: a dotted-path starts with current key (e.g. "components.button.root..." while at "components").
+      //    Write only into already-existing nested structure; remaining pathStyles are applied in step C via setValueByPath.
       if (typeof value === 'object' && value !== null) {
         const pathKeys = Object.keys(pathStyles)
         for (const pathKey of pathKeys) {
@@ -164,10 +166,8 @@ export function deepMergeStylesAdvanced<T = any>(
         const newValue = matchedPathStyle ? pathStyleValue : processedStyles[key]
 
         if (!override && obj[key] !== undefined) {
-          continue
-        }
-
-        if (transformer) {
+          // skip
+        } else if (transformer) {
           obj[key] = transformer(key, value, newValue)
         } else if (
           deepMerge &&
@@ -188,16 +188,24 @@ export function deepMergeStylesAdvanced<T = any>(
     }
   }
 
-  // 4. Execute traversal
-  traverse(result)
+  traverse(work)
 
-  // 5. Handle remaining path styles (creating new paths)
+  // C. Remaining pathStyles: paths that didn't exist in target (no node was visited for them).
+  //    Create intermediate keys and set the value so nothing is dropped.
   for (const [pathKey, pathValue] of Object.entries(pathStyles)) {
     const pathParts = pathKey.split('.')
-    setValueByPath(result, pathParts, pathValue, override)
+    setValueByPath(work, pathParts, pathValue, override)
   }
 
-  return result
+  return work
+}
+
+export function deepMergeStylesAdvanced<T = any>(
+  target: T,
+  styles: Record<string, any>,
+  options: MergeOptions = {}
+): T {
+  return applyMergeToTarget(target, styles, options, false)
 }
 
 /**
@@ -236,71 +244,5 @@ export function deepMergeStylesAdvancedInPlace<T = any>(
   styles: Record<string, any>,
   options: MergeOptions = {}
 ): void {
-  const { deepMerge = true, override = true, matcher, transformer } = options
-
-  const processedStyles: Record<string, any> = {}
-  const pathStyles: Record<string, any> = {}
-
-  for (const [key, value] of Object.entries(styles)) {
-    if (key.includes('.')) {
-      pathStyles[key] = value
-    } else {
-      processedStyles[key] = value
-    }
-  }
-
-  function traverse(obj: any, path: string[] = []): void {
-    if (obj === null || typeof obj !== 'object') {
-      return
-    }
-
-    for (const [key, value] of Object.entries(obj)) {
-      const currentPath = [...path, key]
-      const currentPathString = currentPath.join('.')
-
-      let matchedPathStyle = false
-      let pathStyleValue: any = null
-
-      if (Object.prototype.hasOwnProperty.call(pathStyles, currentPathString)) {
-        matchedPathStyle = true
-        pathStyleValue = pathStyles[currentPathString]
-        delete pathStyles[currentPathString]
-      }
-
-      const shouldMatch = matcher
-        ? matcher(key, value, currentPath)
-        : Object.prototype.hasOwnProperty.call(processedStyles, key) || matchedPathStyle
-
-      if (shouldMatch) {
-        const newValue = matchedPathStyle ? pathStyleValue : processedStyles[key]
-        if (!override && obj[key] !== undefined) {
-          // skip
-        } else if (transformer) {
-          obj[key] = transformer(key, value, newValue)
-        } else if (
-          deepMerge &&
-          typeof value === 'object' &&
-          value !== null &&
-          typeof newValue === 'object' &&
-          newValue !== null
-        ) {
-          obj[key] = { ...value, ...newValue }
-        } else {
-          obj[key] = newValue
-        }
-      }
-
-      if (typeof obj[key] === 'object' && obj[key] !== null) {
-        traverse(obj[key], currentPath)
-      }
-    }
-  }
-
-  traverse(target)
-
-  // Create remaining paths
-  for (const [pathKey, pathValue] of Object.entries(pathStyles)) {
-    const pathParts = pathKey.split('.')
-    setValueByPath(target, pathParts, pathValue, override)
-  }
+  applyMergeToTarget(target, styles, options, true)
 }

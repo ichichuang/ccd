@@ -77,7 +77,7 @@ const getAnimationDuration = (): string =>
   </AnimateWrapper>
 
   <!-- 2. 主布局层 -->
-  <div class="w-100vw h-100vh">
+  <div class="full">
     <AnimateWrapper
       :show="!isLoadingRef"
       :enter="getLayoutEnterAnimation(currentLayoutMode)"

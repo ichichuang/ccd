@@ -1,8 +1,6 @@
 import { computed } from 'vue'
 import type { ComputedRef, Ref } from 'vue'
-// [修复 1] Alova v3 中，useRequest 必须从 'alova/client' 导入
 import { useRequest } from 'alova/client'
-// [修复 2] 引入 alova 的核心类型，用于消除 any
 import type { AlovaGenerics, Method } from 'alova'
 import type { RequestHookConfig } from 'alova/client'
 

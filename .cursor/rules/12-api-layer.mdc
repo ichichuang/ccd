@@ -1,0 +1,84 @@
+---
+description: API Layer Policy：扁平化 src/api 二级目录（module + file），新增接口先落 src/api 再由 hooks/useHttpRequest 使用
+globs: src/**/*.{ts,vue}
+alwaysApply: true
+---
+# API Layer Policy (Must Follow)
+
+## 1. Primary Directive
+
+When the task involves **adding a new API / endpoint / request**, you MUST implement it in `src/api/<module>/` first.
+
+Do NOT implement requests directly inside `src/views/**` or `src/components/**`.
+
+## 2. Required Structure (Enforced) — Flat Only
+
+### 2.1 Directory Depth Rule (Hard)
+
+- MUST be exactly: `src/api/<module>/<feature>.ts`
+- FORBIDDEN: any deeper nesting like `src/api/<module>/<subdir>/...` (no third-level directories)
+
+`<module>` MUST be domain-based (e.g. `user`, `dashboard`, `system`), not a single giant file.
+
+### 2.2 File-Level Aggregation (Hard)
+
+Each `src/api/<module>/<feature>.ts` MUST contain:
+
+1. **Types (DTOs)** for this feature (request/response types) — NO `any`
+2. **API functions / method builders** for this feature
+
+Preferred API export shape:
+- `export interface XxxReq / XxxRes ...`
+- `export const buildXxxMethod = (client, params) => client.Get<XxxRes>(...)`
+
+Optional convenience export (allowed):
+- `export const requestXxx = (params) => buildXxxMethod(alovaInstance, params).send(true)`
+
+## 3. Standard Workflow (Enforced)
+
+1. Create/extend `src/api/<module>/<feature>.ts`
+   - Add DTO types first (NO `any`)
+   - Add `buildXxxMethod(...)` (preferred) and/or `requestXxx(...)` (optional)
+2. Implement business state in `src/hooks/modules/useXxx.ts`
+   - Use `useHttpRequest` and call the API file’s builders/functions
+3. UI consumes the composable only (no URL/DTO parsing in UI)
+
+## 4. Allowed / Forbidden
+
+### Allowed
+- In `src/api/**` and `src/hooks/**`: use `@/utils/http/*`, `alovaInstance`, and `useHttpRequest`.
+
+### Forbidden
+- FORBIDDEN: URL strings, request building, or response parsing in `src/views/**` and `src/components/**`.
+- FORBIDDEN: using `fetch` or `axios` anywhere in business code.
+- FORBIDDEN: adding a new API by only creating a composable without creating/updating `src/api/<module>/<feature>.ts`.
+- FORBIDDEN: creating any third-level directory under `src/api/<module>/`.
+
+## 5. Export Naming & Default Export Rules (AutoImport Safety)
+
+Because AutoImport scans `src/api/**/*`, API exports MUST NOT pollute the global namespace.
+
+### 5.1 Default exports are forbidden (Hard)
+
+- FORBIDDEN: `export default ...` in any `src/api/**` file.
+- Only **named exports** are allowed.
+
+### 5.2 Generic export names are forbidden (Hard)
+
+FORBIDDEN to export generic top-level names from `src/api/**`, including but not limited to:
+
+- `get`, `post`, `put`, `del`, `patch`, `head`
+- `list`, `detail`, `info`, `data`, `result`, `items`
+- `request`, `service`, `api`
+- `options`, `config`, `params`
+
+### 5.3 Required naming pattern (Hard)
+
+All exported API symbols MUST include a domain prefix:
+
+- Method builder (preferred): `build<Domain><Feature>Method`
+  - Example: `buildUserLoginMethod`, `buildUserListMethod`
+- Optional request function: `request<Domain><Feature>` / `fetch<Domain><Feature>`
+  - Example: `requestUserLogin`, `requestUserList`
+- Types: `<Domain><Feature>Req`, `<Domain><Feature>Res`, `<Domain><Feature>DTO`
+  - Example: `UserLoginReq`, `UserLoginRes`, `UserListReq`, `UserListItemDTO`

@@ -1,4 +1,4 @@
-// 高级配置合并函数
+// 高级配置合并函数（仅依赖 useChartTheme 内部，消除对 use-echarts 的循环依赖）
 
 import {
   DEFAULT_ANIMATION_CONFIG,
@@ -8,8 +8,8 @@ import {
   getDefaultMarkPointConfig,
   getDefaultToolboxConfig,
   getDefaultVisualMapConfig,
-} from '@/components/use-echarts/utils/constants'
-import type { ChartAdvancedConfig } from '@/components/use-echarts/utils/types'
+} from './defaults'
+import type { ChartAdvancedConfig } from './types'
 
 /**
  * 合并高级配置到 ECharts 选项

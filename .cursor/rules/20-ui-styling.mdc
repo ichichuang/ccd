@@ -1,0 +1,125 @@
+---
+description: UI/样式层专用规则：配色、尺寸、布局、UnoCSS、SCSS
+globs: src/**/*.vue
+---
+# UI Styling Rules
+
+## 1. Theme System (配色系统) - REQUIRED
+
+Before writing any color-related code, read:
+- `src/types/systems/theme.d.ts` - Theme types (ThemeMode, ThemePreset, ThemeCssVars)
+- `src/constants/theme.ts` - Theme presets (THEME_PRESETS)
+- `src/stores/modules/theme.ts` - Theme store (useThemeStore)
+
+**Rules:**
+- Use semantic color variables: `text-primary`, `bg-surface-ground`, `border-border`, `text-foreground`
+- Support dark mode: use `dark:` variants or CSS variables that auto-switch
+- FORBIDDEN: hex codes like `#fff`, `#000`, `#3665f9`
+- FORBIDDEN: hardcoded color values in `<style>` or inline styles
+
+## 2. Size System (尺寸系统) - REQUIRED
+
+Before writing any size-related code, read:
+- `src/types/systems/size.d.ts` - Size types (SizeMode, SizePreset, SizeCssVars)
+- `src/constants/size.ts` - Size presets (SIZE_PRESETS, LAYOUT_DIMENSION_KEYS)
+- `src/constants/sizeScale.ts` - Size scales (SIZE_SCALE_KEYS, FONT_SCALE_RATIOS, SPACING_SCALE_RATIOS)
+- `src/stores/modules/size.ts` - Size store (useSizeStore)
+
+**Rules:**
+- Spacing: Use semantic classes `px-padding-lg`, `m-margin-md`, `gap-gap-xl` (scale: xs/sm/md/lg/xl/2xl/3xl/4xl/5xl)
+- Font size: Use `fs-md`, `fs-lg`, `fs-xl` etc., NO `font-size: 14px`
+- Layout dimensions: Use CSS variables `w-sidebarWidth`, `h-headerHeight`, NO hardcoded px
+- FORBIDDEN: `padding: 16px`, `margin: 20px`, `font-size: 14px`, `width: 240px`
+
+## 3. Layout & Responsive System (布局响应式系统) - REQUIRED
+
+Before writing any layout/responsive code, read:
+- `src/constants/breakpoints.ts` - Breakpoints (BREAKPOINTS: xs/sm/md/lg/xl/2xl/3xl/4xl/5xl)
+- `src/constants/layout.ts` - Layout constants (DEFAULT_LAYOUT_SETTING)
+- `src/stores/modules/device.ts` - Device store (isMobileLayout/isTabletLayout/isPCLayout)
+- `src/stores/modules/layout.ts` - Layout store (mode, sidebarCollapse, etc.)
+
+**Rules:**
+- Mobile First: Default mobile styles, then `md:`, `lg:` for desktop
+- Use breakpoints from `breakpoints.ts`, NO custom breakpoints
+- Use `useDeviceStore` getters for layout detection, NO direct `window.innerWidth` checks
+- FORBIDDEN: `@media (min-width: 768px)`, use `md:` instead
+
+## 4. UnoCSS Class Names (UnoCSS 类名) - REQUIRED
+
+Reference `uno.config.ts` for all available semantic classes:
+
+**Semantic Size Classes:**
+- Padding: `p-padding-{scale}`, `px-padding-{scale}`, `py-padding-{scale}` (scale: xs/sm/md/lg/xl/2xl/3xl/4xl/5xl)
+- Margin: `m-margin-{scale}`, `mx-margin-{scale}`, `my-margin-{scale}`
+- Gap: `gap-gap-{scale}`, `gap-x-gap-{scale}`, `gap-y-gap-{scale}`
+
+**Layout Variable Classes:**
+- Width: `w-sidebarWidth`, `w-sidebarCollapsedWidth`
+- Height: `h-headerHeight`, `h-breadcrumbHeight`, `h-footerHeight`, `h-tabsHeight`
+
+**Font Scale Classes:**
+- `fs-xs`, `fs-sm`, `fs-md`, `fs-lg`, `fs-xl`, `fs-2xl`, `fs-3xl`, `fs-4xl`, `fs-5xl`
+
+**Radius Classes:**
+- `rounded-scale` (uses CSS variable `--radius-md`)
+
+**Color Classes:**
+- `text-primary`, `bg-surface-ground`, `border-border`, `text-foreground`, etc.
+
+**Rules:**
+- MUST use classes from `uno.config.ts`, NO hardcoded px/rem/hex
+- FORBIDDEN: inline styles `style="padding: 16px"` in template
+- If a class doesn't exist in `uno.config.ts`, extend it there rather than writing `<style>`
+
+## 5. Style Tag Usage (Style 标签使用)
+
+**FORBIDDEN in `<style>`:**
+- Layout (flex, grid, position)
+- Spacing (padding, margin, gap)
+- Colors (background, color, border-color)
+- Font size (font-size)
+- Border radius (border-radius)
+
+**ALLOWED `<style lang="scss" scoped>` for:**
+- Complex animations (keyframes, transition combinations)
+- Pseudo-elements (::before, ::after) with complex styles
+- Sticky/calc positioning that UnoCSS cannot express
+- Third-party component overrides (must use `:deep()`)
+
+**SCSS Nesting Requirements:**
+- MUST use SCSS nesting syntax
+- Use `&` for parent selector reference
+- Use `:deep()` for PrimeVue component style overrides
+- Only use CSS variables, NO hardcoded values
+
+**Example:**
+```scss
+<style lang="scss" scoped>
+.component {
+  position: sticky;
+  top: var(--header-height); // CSS variable only
+  
+  :deep(.primevue-component) {
+    // Deep selector for third-party
+  }
+  
+  &::before {
+    // Pseudo-element
+  }
+}
+</style>
+```
+
+## 6. Hardcoding Prohibition Checklist
+
+**FORBIDDEN hardcoded values:**
+- ❌ `padding: 16px` → ✅ `px-padding-lg` or `p-padding-md`
+- ❌ `margin: 20px` → ✅ `m-margin-lg`
+- ❌ `font-size: 14px` → ✅ `fs-sm`
+- ❌ `color: #fff` → ✅ `text-foreground` or `text-white`
+- ❌ `background: #000` → ✅ `bg-background` or `bg-surface-ground`
+- ❌ `width: 240px` → ✅ `w-sidebarWidth` (layout variable)
+- ❌ `height: 64px` → ✅ `h-headerHeight` (layout variable)
+- ❌ `border-radius: 8px` → ✅ `rounded-scale`
+- ❌ `@media (min-width: 768px)` → ✅ `md:` breakpoint class

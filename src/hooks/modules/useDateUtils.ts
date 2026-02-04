@@ -22,6 +22,8 @@ import DateUtils from '@/utils/date'
 import type { DateFormat, DateInput, FormatOptions, Locale } from '@/utils/date'
 import type { SupportedLocale } from '@/locales'
 import { useLocaleStore } from '@/stores/modules/locale'
+import { useMitt } from '@/utils/mitt'
+import { onScopeDispose } from 'vue'
 
 // 使用浏览器本地时区作为默认值（不强绑语言）
 const DEFAULT_TIMEZONE =
@@ -71,6 +73,14 @@ export function useDateUtils() {
       isInitialized.value = true
     }
   )
+
+  // 监听 mitt timezoneChange，保证语言切换跟随时区时下拉框与 DateUtils 一致
+  const emitter = useMitt()
+  const onTimezoneChange = (tz: string) => {
+    currentTimezone.value = tz
+  }
+  emitter.on('timezoneChange', onTimezoneChange)
+  onScopeDispose(() => emitter.off('timezoneChange', onTimezoneChange))
 
   // ===== 响应式日期处理方法 =====
 
@@ -257,14 +267,6 @@ export function useDateUtils() {
           shortDate: 'MM-DD',
           longDate: 'YYYY年MM月DD日 dddd',
         }
-      case 'zh-TW':
-        return {
-          date: 'YYYY年MM月DD日',
-          datetime: 'YYYY年MM月DD日 HH:mm:ss',
-          time: 'HH:mm:ss',
-          shortDate: 'MM-DD',
-          longDate: 'YYYY年MM月DD日 dddd',
-        }
       case 'en-US':
       default:
         return {
@@ -410,7 +412,6 @@ export function useDateUtils() {
     const mapping: Record<SupportedLocale, Locale> = {
       ['zh-CN']: 'zh-CN',
       ['en-US']: 'en-US',
-      ['zh-TW']: 'zh-TW',
     }
     return mapping
   }

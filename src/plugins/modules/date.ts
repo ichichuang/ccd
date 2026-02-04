@@ -9,7 +9,6 @@ import { getCurrentLocale } from '@/locales'
 const localeMapping: Record<SupportedLocale, Locale> = {
   ['zh-CN']: 'zh-CN',
   ['en-US']: 'en-US',
-  ['zh-TW']: 'zh-TW',
 }
 
 /**

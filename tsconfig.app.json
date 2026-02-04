@@ -5,7 +5,7 @@
     "src/types/**/*.d.ts",
     "src/types/auto-imports.d.ts",
     "src/types/components.d.ts",
-    "env.d.ts",
+    "src/types/env.d.ts",
     "src/**/*",
     "src/**/*.vue" // ✅ 必须确保 Vue 文件被包含
   ],
@@ -24,8 +24,9 @@
     "baseUrl": ".",
     "paths": {
       "@/*": ["./src/*"],
+      // API 目录为两级：src/api/<module>/<feature>.ts
+      // 需要同时支持 @!/module 与 @!/module/feature 两种引用形态
       "@!/*": ["./src/api/*"],
-      "@#/*": ["./src/common/*"],
       "@&/*": ["./src/layouts/components/*"]
     },
     "types": ["node", "vue"]

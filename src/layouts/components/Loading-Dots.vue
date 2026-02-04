@@ -93,7 +93,7 @@ onMounted(() => {
 }
 
 .flower-spinner .smaller-dot {
-  background: red;
+  background: rgb(var(--primary));
   height: 100%;
   width: 100%;
   border-radius: 50%;
@@ -106,7 +106,7 @@ onMounted(() => {
 }
 
 .flower-spinner .bigger-dot {
-  background: red;
+  background: rgb(var(--primary));
   height: 100%;
   width: 100%;
   padding: 10%;
@@ -122,14 +122,14 @@ onMounted(() => {
 @keyframes flower-spinner-bigger-dot-animation {
   0% {
     box-shadow:
-      red 0px 0px 0px,
-      red 0px 0px 0px,
-      red 0px 0px 0px,
-      red 0px 0px 0px,
-      red 0px 0px 0px,
-      red 0px 0px 0px,
-      red 0px 0px 0px,
-      red 0px 0px 0px;
+      rgb(var(--primary)) 0px 0px 0px,
+      rgb(var(--primary)) 0px 0px 0px,
+      rgb(var(--primary)) 0px 0px 0px,
+      rgb(var(--primary)) 0px 0px 0px,
+      rgb(var(--primary)) 0px 0px 0px,
+      rgb(var(--primary)) 0px 0px 0px,
+      rgb(var(--primary)) 0px 0px 0px,
+      rgb(var(--primary)) 0px 0px 0px;
   }
   50% {
     transform: translateZ(0) rotate(180deg);
@@ -137,40 +137,40 @@ onMounted(() => {
   25%,
   75% {
     box-shadow:
-      red var(--bigger-offset) 0px 0px,
-      red calc(var(--bigger-offset) * -1) 0px 0px,
-      red 0px var(--bigger-offset) 0px,
-      red 0px calc(var(--bigger-offset) * -1) 0px,
-      red var(--diagonal-offset) calc(var(--diagonal-offset) * -1) 0px,
-      red var(--diagonal-offset) var(--diagonal-offset) 0px,
-      red calc(var(--diagonal-offset) * -1) calc(var(--diagonal-offset) * -1) 0px,
-      red calc(var(--diagonal-offset) * -1) var(--diagonal-offset) 0px;
+      rgb(var(--primary)) var(--bigger-offset) 0px 0px,
+      rgb(var(--primary)) calc(var(--bigger-offset) * -1) 0px 0px,
+      rgb(var(--primary)) 0px var(--bigger-offset) 0px,
+      rgb(var(--primary)) 0px calc(var(--bigger-offset) * -1) 0px,
+      rgb(var(--primary)) var(--diagonal-offset) calc(var(--diagonal-offset) * -1) 0px,
+      rgb(var(--primary)) var(--diagonal-offset) var(--diagonal-offset) 0px,
+      rgb(var(--primary)) calc(var(--diagonal-offset) * -1) calc(var(--diagonal-offset) * -1) 0px,
+      rgb(var(--primary)) calc(var(--diagonal-offset) * -1) var(--diagonal-offset) 0px;
   }
   100% {
     transform: translateZ(0) rotate(360deg);
     box-shadow:
-      red 0px 0px 0px,
-      red 0px 0px 0px,
-      red 0px 0px 0px,
-      red 0px 0px 0px,
-      red 0px 0px 0px,
-      red 0px 0px 0px,
-      red 0px 0px 0px,
-      red 0px 0px 0px;
+      rgb(var(--primary)) 0px 0px 0px,
+      rgb(var(--primary)) 0px 0px 0px,
+      rgb(var(--primary)) 0px 0px 0px,
+      rgb(var(--primary)) 0px 0px 0px,
+      rgb(var(--primary)) 0px 0px 0px,
+      rgb(var(--primary)) 0px 0px 0px,
+      rgb(var(--primary)) 0px 0px 0px,
+      rgb(var(--primary)) 0px 0px 0px;
   }
 }
 
 @-webkit-keyframes flower-spinner-bigger-dot-animation {
   0% {
     box-shadow:
-      red 0px 0px 0px,
-      red 0px 0px 0px,
-      red 0px 0px 0px,
-      red 0px 0px 0px,
-      red 0px 0px 0px,
-      red 0px 0px 0px,
-      red 0px 0px 0px,
-      red 0px 0px 0px;
+      rgb(var(--primary)) 0px 0px 0px,
+      rgb(var(--primary)) 0px 0px 0px,
+      rgb(var(--primary)) 0px 0px 0px,
+      rgb(var(--primary)) 0px 0px 0px,
+      rgb(var(--primary)) 0px 0px 0px,
+      rgb(var(--primary)) 0px 0px 0px,
+      rgb(var(--primary)) 0px 0px 0px,
+      rgb(var(--primary)) 0px 0px 0px;
   }
   50% {
     -webkit-transform: translateZ(0) rotate(180deg);
@@ -178,40 +178,40 @@ onMounted(() => {
   25%,
   75% {
     box-shadow:
-      red var(--bigger-offset) 0px 0px,
-      red calc(var(--bigger-offset) * -1) 0px 0px,
-      red 0px var(--bigger-offset) 0px,
-      red 0px calc(var(--bigger-offset) * -1) 0px,
-      red var(--diagonal-offset) calc(var(--diagonal-offset) * -1) 0px,
-      red var(--diagonal-offset) var(--diagonal-offset) 0px,
-      red calc(var(--diagonal-offset) * -1) calc(var(--diagonal-offset) * -1) 0px,
-      red calc(var(--diagonal-offset) * -1) var(--diagonal-offset) 0px;
+      rgb(var(--primary)) var(--bigger-offset) 0px 0px,
+      rgb(var(--primary)) calc(var(--bigger-offset) * -1) 0px 0px,
+      rgb(var(--primary)) 0px var(--bigger-offset) 0px,
+      rgb(var(--primary)) 0px calc(var(--bigger-offset) * -1) 0px,
+      rgb(var(--primary)) var(--diagonal-offset) calc(var(--diagonal-offset) * -1) 0px,
+      rgb(var(--primary)) var(--diagonal-offset) var(--diagonal-offset) 0px,
+      rgb(var(--primary)) calc(var(--diagonal-offset) * -1) calc(var(--diagonal-offset) * -1) 0px,
+      rgb(var(--primary)) calc(var(--diagonal-offset) * -1) var(--diagonal-offset) 0px;
   }
   100% {
     -webkit-transform: translateZ(0) rotate(360deg);
     box-shadow:
-      red 0px 0px 0px,
-      red 0px 0px 0px,
-      red 0px 0px 0px,
-      red 0px 0px 0px,
-      red 0px 0px 0px,
-      red 0px 0px 0px,
-      red 0px 0px 0px,
-      red 0px 0px 0px;
+      rgb(var(--primary)) 0px 0px 0px,
+      rgb(var(--primary)) 0px 0px 0px,
+      rgb(var(--primary)) 0px 0px 0px,
+      rgb(var(--primary)) 0px 0px 0px,
+      rgb(var(--primary)) 0px 0px 0px,
+      rgb(var(--primary)) 0px 0px 0px,
+      rgb(var(--primary)) 0px 0px 0px,
+      rgb(var(--primary)) 0px 0px 0px;
   }
 }
 
 @keyframes flower-spinner-smaller-dot-animation {
   0% {
     box-shadow:
-      red 0px 0px 0px,
-      red 0px 0px 0px,
-      red 0px 0px 0px,
-      red 0px 0px 0px,
-      red 0px 0px 0px,
-      red 0px 0px 0px,
-      red 0px 0px 0px,
-      red 0px 0px 0px;
+      rgb(var(--primary)) 0px 0px 0px,
+      rgb(var(--primary)) 0px 0px 0px,
+      rgb(var(--primary)) 0px 0px 0px,
+      rgb(var(--primary)) 0px 0px 0px,
+      rgb(var(--primary)) 0px 0px 0px,
+      rgb(var(--primary)) 0px 0px 0px,
+      rgb(var(--primary)) 0px 0px 0px,
+      rgb(var(--primary)) 0px 0px 0px;
   }
   25%,
   75% {
@@ -230,28 +230,28 @@ onMounted(() => {
   }
   100% {
     box-shadow:
-      red 0px 0px 0px,
-      red 0px 0px 0px,
-      red 0px 0px 0px,
-      red 0px 0px 0px,
-      red 0px 0px 0px,
-      red 0px 0px 0px,
-      red 0px 0px 0px,
-      red 0px 0px 0px;
+      rgb(var(--primary)) 0px 0px 0px,
+      rgb(var(--primary)) 0px 0px 0px,
+      rgb(var(--primary)) 0px 0px 0px,
+      rgb(var(--primary)) 0px 0px 0px,
+      rgb(var(--primary)) 0px 0px 0px,
+      rgb(var(--primary)) 0px 0px 0px,
+      rgb(var(--primary)) 0px 0px 0px,
+      rgb(var(--primary)) 0px 0px 0px;
   }
 }
 
 @-webkit-keyframes flower-spinner-smaller-dot-animation {
   0% {
     box-shadow:
-      red 0px 0px 0px,
-      red 0px 0px 0px,
-      red 0px 0px 0px,
-      red 0px 0px 0px,
-      red 0px 0px 0px,
-      red 0px 0px 0px,
-      red 0px 0px 0px,
-      red 0px 0px 0px;
+      rgb(var(--primary)) 0px 0px 0px,
+      rgb(var(--primary)) 0px 0px 0px,
+      rgb(var(--primary)) 0px 0px 0px,
+      rgb(var(--primary)) 0px 0px 0px,
+      rgb(var(--primary)) 0px 0px 0px,
+      rgb(var(--primary)) 0px 0px 0px,
+      rgb(var(--primary)) 0px 0px 0px,
+      rgb(var(--primary)) 0px 0px 0px;
   }
   25%,
   75% {
@@ -270,14 +270,14 @@ onMounted(() => {
   }
   100% {
     box-shadow:
-      red 0px 0px 0px,
-      red 0px 0px 0px,
-      red 0px 0px 0px,
-      red 0px 0px 0px,
-      red 0px 0px 0px,
-      red 0px 0px 0px,
-      red 0px 0px 0px,
-      red 0px 0px 0px;
+      rgb(var(--primary)) 0px 0px 0px,
+      rgb(var(--primary)) 0px 0px 0px,
+      rgb(var(--primary)) 0px 0px 0px,
+      rgb(var(--primary)) 0px 0px 0px,
+      rgb(var(--primary)) 0px 0px 0px,
+      rgb(var(--primary)) 0px 0px 0px,
+      rgb(var(--primary)) 0px 0px 0px,
+      rgb(var(--primary)) 0px 0px 0px;
   }
 }
 </style>

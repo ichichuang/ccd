@@ -82,7 +82,7 @@ onMounted(() => {
 .atom-spinner .spinner-circle {
   display: block;
   position: absolute;
-  color: red;
+  color: rgb(var(--primary));
   font-size: 10px;
   top: 50%;
   left: 50%;
@@ -95,7 +95,7 @@ onMounted(() => {
   width: 100%;
   height: 100%;
   border-radius: 50%;
-  border-left: 1px solid red;
+  border-left: 1px solid rgb(var(--primary));
   border-top: 1px solid transparent;
   will-change: transform;
   transform: translateZ(0);

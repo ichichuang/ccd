@@ -37,6 +37,7 @@ export default tseslint.config(
       '**/node_modules',
       '**/*.min.js',
       '**/public',
+      'docs/**',
       // [NEW] 忽略自动生成的类型定义文件
       'src/types/components.d.ts',
       'src/types/auto-imports.d.ts',

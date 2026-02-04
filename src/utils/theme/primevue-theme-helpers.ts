@@ -50,16 +50,22 @@ export function generateColorScale(
 }
 
 /**
- * 生成边框半径scale (从 SizeCssVars)
- * 完全对齐架构的 size.d.ts SizeCssVars 定义
+ * 生成边框半径 scale（从 SizeCssVars）
+ * 与 size.d.ts SizeCssVars 的圆角阶梯一致，含 2xl～5xl；Aura 参考仅到 xl，多出的键供自定义或大圆角场景使用。
  */
 export function generateBorderRadiusScale(): Record<string, string> {
   return {
     none: '0',
-    xs: 'var(--radius-xs)', // SizeCssVars['--radius-xs']
-    sm: 'var(--radius-sm)', // SizeCssVars['--radius-sm']
-    md: 'var(--radius-md)', // SizeCssVars['--radius-md'] (基准)
-    lg: 'var(--radius-lg)', // SizeCssVars['--radius-lg']
-    xl: 'var(--radius-xl)', // SizeCssVars['--radius-xl']
+    xs: 'var(--radius-xs)',
+    sm: 'var(--radius-sm)',
+    md: 'var(--radius-md)',
+    lg: 'var(--radius-lg)',
+    xl: 'var(--radius-xl)',
+    /* eslint-disable @typescript-eslint/naming-convention -- 与 SizeCssVars/SIZE_SCALE_KEYS 键名一致 */
+    '2xl': 'var(--radius-2xl)',
+    '3xl': 'var(--radius-3xl)',
+    '4xl': 'var(--radius-4xl)',
+    '5xl': 'var(--radius-5xl)',
+    /* eslint-enable @typescript-eslint/naming-convention */
   }
 }

@@ -33,8 +33,6 @@ declare module 'vue-router' {
     linkUrl?: string
     /** 激活菜单路径（用于参数路由） */
     activeMenu?: string
-    /** 页面描述信息 */
-    description?: string
     /** 是否为后端动态路由 */
     backstage?: boolean
     /** 当前菜单名称或自定义信息禁止添加到标签页（默认false） */
@@ -151,23 +149,5 @@ declare global {
     getRoutes: () => RouteConfig[]
     /** 重置路由 */
     resetRouter: () => void
-  }
-
-  /** 权限检查结果 */
-  interface PermissionResult {
-    /** 是否有权限 */
-    hasPermission: boolean
-    /** 缺少的权限 */
-    missingPermissions?: string[]
-    /** 错误信息 */
-    errorMessage?: string
-  }
-
-  /** 缓存操作类型 */
-  interface CacheOperation {
-    /** 操作模式 */
-    mode: 'add' | 'delete' | 'refresh'
-    /** 路由名称 */
-    name: string
   }
 }

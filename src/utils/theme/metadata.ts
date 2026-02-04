@@ -15,6 +15,9 @@
  * 该元数据仅用于：
  * 1. 约束 generateThemeVars 返回的 CSS 变量命名规范
  * 2. 提供给 UnoCSS 配置做动态 colors 映射（避免硬编码）
+ *
+ * 与 PrimeVue 主题链的关系：本文件由 engine.ts 使用并参与生成 ThemeCssVars（写入 :root）；
+ * PrimeVue preset（primevue-preset.ts）仅消费已写入的 :root 变量，不直接引用本文件。
  */
 export const COLOR_FAMILIES = {
   singleTokens: ['border', 'input', 'ring', 'background', 'foreground'] as const,

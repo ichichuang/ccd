@@ -15,7 +15,8 @@ export const setupPlugins = async (app: App) => {
   // 全局错误兜底：优先注册，确保后续插件中的异常也能被捕获
   setupErrorHandler(app)
 
-  // 先安装并初始化 Pinia Stores，确保持久化状态已就绪，再使用依赖 Store 的逻辑
+  // 先挂载 i18n，再初始化 Stores（initLocale 依赖 i18n 已挂载）
+  setupLocales(app)
   setupStores(app)
   setupPrimeVue(app)
   setupScrollbar(app)
@@ -23,7 +24,6 @@ export const setupPlugins = async (app: App) => {
   try {
     // loadingStart()
     setupRouter(app)
-    setupLocales(app)
 
     // 在语言系统之后初始化 DateUtils，确保语言设置已就绪
     await setupDateUtils(app)

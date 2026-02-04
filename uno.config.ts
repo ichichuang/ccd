@@ -9,9 +9,10 @@ import {
   type Rule,
 } from 'unocss'
 import { getDynamicSafelist, getPresetIconsCollections } from './build/uno-icons'
-import { BREAKPOINTS } from './src/constants/breakpoints'
-import { SIZE_SCALE_KEYS } from './src/constants/sizeScale'
-import { COLOR_FAMILIES } from './src/utils/theme/metadata'
+import { BREAKPOINTS } from '@/constants/breakpoints'
+import { LAYOUT_DIMENSION_KEYS, SIZE_BASE_VAR_KEYS } from '@/constants/size'
+import { SIZE_SCALE_KEYS } from '@/constants/sizeScale'
+import { COLOR_FAMILIES } from '@/utils/theme/metadata'
 /** 阶梯正则片段 (xs|sm|md|...|5xl)，SSOT 来自 SIZE_SCALE_KEYS */
 const scaleRegex = `(${SIZE_SCALE_KEYS.join('|')})`
 
@@ -22,23 +23,8 @@ const breakpoints: Record<string, string> = Object.fromEntries(
   Object.entries(BREAKPOINTS).map(([k, v]) => [k, `${v}px`])
 )
 
-/**
- * 布局变量白名单
- *
- * 用于自动生成 UnoCSS 类名规则（w-*, h-*, min-w-*, max-h-* 等）
- * 这些变量对应 SizePreset 中的布局尺寸字段（camelCase）
- *
- * 注意：contentHeight 和 contentsHeight 已移除，因为受布局模式影响，
- * 应在页面中根据实际布局模式动态计算。
- */
-const LAYOUT_SIZES = [
-  'sidebarWidth',
-  'sidebarCollapsedWidth',
-  'headerHeight',
-  'breadcrumbHeight',
-  'footerHeight',
-  'tabsHeight',
-] as const
+/** 布局变量白名单 (SSOT: src/constants/size.ts LAYOUT_DIMENSION_KEYS) */
+const LAYOUT_SIZES = [...LAYOUT_DIMENSION_KEYS] as const
 
 // ----------------------------------------------------------------------
 // 2. 动态规则生成引擎 (The Rule Engine)
@@ -55,102 +41,51 @@ const dirMap: Record<string, string[]> = {
   default: [], // all sides
 }
 
+/** camelCase -> kebab-case，用于 CSS 变量名 */
+const toKebab = (s: string) => s.replace(/([A-Z])/g, '-$1').toLowerCase()
+
 /**
  * 生成语义化尺寸规则 (SSOT: SIZE_SCALE_KEYS)
- * 1. 新规则：p-padding-{scale}, m-margin-{scale}, gap-gap-{scale} -> var(--spacing-{scale})
- * 2. [deprecated] 旧规则：p-padding(s|x|l)? 等，基于 --spacing-unit 倍数，保留兼容
+ * p-padding-{scale}, m-margin-{scale}, gap-gap-{scale} -> var(--spacing-{scale})
  */
 function createSemanticSizeRules(): Rule[] {
-  const rules: Rule[] = []
-
-  // --- 1. 新规则：阶梯语义 (p-padding-xs ~ 5xl, m-margin-*, gap-gap-*) ---
-  // Padding: p-padding-md, pt-padding-lg, px-padding-xl ...
-  rules.push([
-    new RegExp(`^p([tblxy])?-padding-${scaleRegex}$`),
-    ([, dir, size]: string[]) => {
-      const v = `var(--spacing-${size})`
-      const suffixes = dirMap[dir || 'default']
-      if (suffixes.length === 0) return { padding: v }
-      const out: Record<string, string> = {}
-      suffixes.forEach(s => {
-        out[`padding${s}`] = v
-      })
-      return out
-    },
-  ])
-
-  // Margin: m-margin-md, mt-margin-lg, mx-margin-xl ...
-  rules.push([
-    new RegExp(`^m([tblxy])?-margin-${scaleRegex}$`),
-    ([, dir, size]: string[]) => {
-      const v = `var(--spacing-${size})`
-      const suffixes = dirMap[dir || 'default']
-      if (suffixes.length === 0) return { margin: v }
-      const out: Record<string, string> = {}
-      suffixes.forEach(s => {
-        out[`margin${s}`] = v
-      })
-      return out
-    },
-  ])
-
-  // Gap: gap-gap-md, gap-x-gap-lg, gap-y-gap-xl ...
-  rules.push([
-    new RegExp(`^gap(-[xy])?-gap-${scaleRegex}$`),
-    ([, dirStr, size]: string[]) => {
-      const v = `var(--spacing-${size})`
-      if (!dirStr) return { gap: v }
-      if (dirStr === '-x') return { 'column-gap': v }
-      return { 'row-gap': v }
-    },
-  ])
-
-  // --- 2. [deprecated] 旧规则：s/x/l 三档，基于 --spacing-unit 倍数 ---
-  const multipliers: Record<string, number> = {
-    s: 2,
-    default: 4,
-    x: 6,
-    l: 8,
-  }
-  rules.push([
-    /^p([tblxy])?-padding(s|x|l)?$/,
-    ([, dir, size]) => {
-      const m = multipliers[size || 'default']
-      const props = dirMap[dir || 'default']
-      if (props.length === 0) return { padding: `calc(var(--spacing-unit) * ${m})` }
-      const styles: Record<string, string> = {}
-      props.forEach(p => {
-        styles[`padding${p}`] = `calc(var(--spacing-unit) * ${m})`
-      })
-      return styles
-    },
-  ])
-  rules.push([
-    /^m([tblxy])?-(?:gap|margin)(s|x|l)?$/,
-    ([, dir, size]) => {
-      const m = multipliers[size || 'default']
-      const props = dirMap[dir || 'default']
-      if (props.length === 0) return { margin: `calc(var(--spacing-unit) * ${m})` }
-      const styles: Record<string, string> = {}
-      props.forEach(p => {
-        styles[`margin${p}`] = `calc(var(--spacing-unit) * ${m})`
-      })
-      return styles
-    },
-  ])
-  rules.push([
-    /^gap-([xy]-)?unit(s|x|l)?$/,
-    ([, dirStr, size]) => {
-      const m = multipliers[size || 'default']
-      const dir = dirStr ? dirStr.replace('-', '') : 'default'
-      if (dir === 'default') return { gap: `calc(var(--spacing-unit) * ${m})` }
-      if (dir === 'x') return { 'column-gap': `calc(var(--spacing-unit) * ${m})` }
-      if (dir === 'y') return { 'row-gap': `calc(var(--spacing-unit) * ${m})` }
-      return undefined
-    },
-  ])
-
-  return rules
+  return [
+    [
+      new RegExp(`^p([tblxy])?-padding-${scaleRegex}$`),
+      ([, dir, size]: string[]) => {
+        const v = `var(--spacing-${size})`
+        const suffixes = dirMap[dir || 'default']
+        if (suffixes.length === 0) return { padding: v }
+        const out: Record<string, string> = {}
+        suffixes.forEach(s => {
+          out[`padding${s}`] = v
+        })
+        return out
+      },
+    ],
+    [
+      new RegExp(`^m([tblxy])?-margin-${scaleRegex}$`),
+      ([, dir, size]: string[]) => {
+        const v = `var(--spacing-${size})`
+        const suffixes = dirMap[dir || 'default']
+        if (suffixes.length === 0) return { margin: v }
+        const out: Record<string, string> = {}
+        suffixes.forEach(s => {
+          out[`margin${s}`] = v
+        })
+        return out
+      },
+    ],
+    [
+      new RegExp(`^gap(-[xy])?-gap-${scaleRegex}$`),
+      ([, dirStr, size]: string[]) => {
+        const v = `var(--spacing-${size})`
+        if (!dirStr) return { gap: v }
+        if (dirStr === '-x') return { 'column-gap': v }
+        return { 'row-gap': v }
+      },
+    ],
+  ]
 }
 
 /** 布局变量自动映射规则 */
@@ -233,17 +168,35 @@ function createScaleRules(): Rule[] {
   return [fontRule, paddingMarginRule, gapRule, roundedRule, durationRule]
 }
 
-/** Flex 对齐快捷类：{justify}-{items} 全排列，如 between-center、end-start */
-function createFlexShortcuts(): Record<string, string> {
-  const justifies = ['start', 'end', 'center', 'between', 'around', 'evenly'] as const
-  const items = ['start', 'end', 'center', 'baseline', 'stretch'] as const
-  const out: Record<string, string> = {}
-  for (const j of justifies) {
-    for (const i of items) {
-      out[`${j}-${i}`] = `flex justify-${j} items-${i}`
-    }
+/** 从 SIZE_BASE_VAR_KEYS 生成基础变量规则 (SSOT: constants/size.ts) */
+function createBaseVarRules(): Rule[] {
+  const rules: Rule[] = []
+  for (const key of SIZE_BASE_VAR_KEYS) {
+    const cssVar = `var(--${toKebab(key)})`
+    rules.push([`p-${toKebab(key)}`, { padding: cssVar }])
+    rules.push([`px-${toKebab(key)}`, { paddingLeft: cssVar, paddingRight: cssVar }])
+    rules.push([`py-${toKebab(key)}`, { paddingTop: cssVar, paddingBottom: cssVar }])
+    rules.push([`pt-${toKebab(key)}`, { paddingTop: cssVar }])
+    rules.push([`pb-${toKebab(key)}`, { paddingBottom: cssVar }])
+    rules.push([`pl-${toKebab(key)}`, { paddingLeft: cssVar }])
+    rules.push([`pr-${toKebab(key)}`, { paddingRight: cssVar }])
   }
-  return out
+  return rules
+}
+
+/** Flex 对齐快捷类（常用组合，减少冗余） */
+function createFlexShortcuts(): Record<string, string> {
+  const pairs: [string, string][] = [
+    ['start', 'center'],
+    ['end', 'center'],
+    ['center', 'start'],
+    ['center', 'end'],
+    ['between', 'start'],
+    ['between', 'end'],
+    ['around', 'center'],
+    ['evenly', 'center'],
+  ]
+  return Object.fromEntries(pairs.map(([j, i]) => [`${j}-${i}`, `flex justify-${j} items-${i}`]))
 }
 
 // ----------------------------------------------------------------------
@@ -252,136 +205,94 @@ function createFlexShortcuts(): Record<string, string> {
 
 const iconCollections = getPresetIconsCollections()
 
-/** Theme 示例页动态类名 safelist */
-const themeDemoSafelist = [
-  // ====== 背景色（四元家族 + 基础 + 侧边栏） ======
-  'bg-primary',
-  'bg-primary-hover',
-  'bg-primary-light',
-  'bg-secondary',
-  'bg-muted',
-  'bg-accent',
-  'bg-accent-hover',
-  'bg-accent-light',
-  'bg-destructive',
-  'bg-destructive-hover',
-  'bg-destructive-light',
-  'bg-warn',
-  'bg-warn-hover',
-  'bg-warn-light',
-  'bg-success',
-  'bg-success-hover',
-  'bg-success-light',
-  'bg-card',
-  'bg-popover',
-  'bg-background',
-  'bg-foreground',
-  'bg-sidebar',
-  'bg-sidebar-foreground',
-  'bg-sidebar-primary',
-  'bg-sidebar-primary-foreground',
-  'bg-sidebar-accent',
-  'bg-sidebar-accent-foreground',
-  'bg-sidebar-border',
-  'bg-sidebar-ring',
+/** Theme 示例页动态类名 safelist (SSOT: COLOR_FAMILIES, SIZE_SCALE_KEYS) */
+function buildThemeDemoSafelist(): string[] {
+  const list: string[] = []
 
-  // ====== 文本色（四元家族 + 基础） ======
-  'text-primary',
-  'text-primary-foreground',
-  'text-primary-hover-foreground',
-  'text-primary-light-foreground',
-  'text-secondary-foreground',
-  'text-muted-foreground',
-  'text-accent',
-  'text-accent-foreground',
-  'text-accent-hover-foreground',
-  'text-accent-light-foreground',
-  'text-destructive',
-  'text-destructive-foreground',
-  'text-destructive-hover-foreground',
-  'text-destructive-light-foreground',
-  'text-warn',
-  'text-warn-foreground',
-  'text-warn-hover-foreground',
-  'text-warn-light-foreground',
-  'text-success',
-  'text-success-foreground',
-  'text-success-hover-foreground',
-  'text-success-light-foreground',
-  'text-card-foreground',
-  'text-popover-foreground',
-  'text-foreground',
-  'text-background',
-  'text-sidebar',
-  'text-sidebar-foreground',
-  'text-sidebar-primary-foreground',
-  'text-sidebar-accent-foreground',
+  // ====== 配色类（从 COLOR_FAMILIES 动态生成） ======
+  for (const token of COLOR_FAMILIES.singleTokens) {
+    list.push(`bg-${token}`, `text-${token}`)
+    if (['border', 'input', 'ring'].includes(token)) list.push(`border-${token}`)
+  }
+  for (const family of COLOR_FAMILIES.pairFamilies) {
+    list.push(`bg-${family}`, `text-${family}-foreground`, `border-${family}`)
+  }
+  for (const family of COLOR_FAMILIES.quadFamilies) {
+    list.push(
+      `bg-${family}`,
+      `bg-${family}-hover`,
+      `bg-${family}-light`,
+      `text-${family}`,
+      `text-${family}-foreground`,
+      `text-${family}-hover-foreground`,
+      `text-${family}-light-foreground`,
+      `border-${family}`,
+      `border-${family}-hover`,
+      `border-${family}-light`
+    )
+  }
+  const sidebarKeys = Object.keys(COLOR_FAMILIES.sidebar) as (keyof typeof COLOR_FAMILIES.sidebar)[]
+  for (const key of sidebarKeys) {
+    const varName = COLOR_FAMILIES.sidebar[key]
+    list.push(`bg-${varName}`, `text-${varName}`)
+    if (key === 'border' || key === 'ring') list.push(`border-${varName}`)
+  }
+  list.push(
+    'border-destructive/50',
+    'border-primary/20',
+    ...COLOR_FAMILIES.quadFamilies.flatMap(family =>
+      [10, 20, 30, 40, 50, 60, 70, 80, 90].map(v => `bg-${family}/${v}`)
+    )
+  )
 
-  // ====== 边框色（四元家族 + 基础） ======
-  'border-primary',
-  'border-primary-hover',
-  'border-primary-light',
-  'border-accent',
-  'border-accent-hover',
-  'border-accent-light',
-  'border-destructive',
-  'border-destructive-hover',
-  'border-destructive-light',
-  'border-warn',
-  'border-warn-hover',
-  'border-warn-light',
-  'border-success',
-  'border-success-hover',
-  'border-success-light',
-  'border-border',
-  'border-input',
-  'border-ring',
-  'border-sidebar-border',
-  'border-destructive/50',
-  'border-primary/20',
+  // ====== 基础变量类 (SIZE_BASE_VAR_KEYS) ======
+  for (const key of SIZE_BASE_VAR_KEYS) {
+    const kebab = toKebab(key)
+    list.push(
+      `p-${kebab}`,
+      `px-${kebab}`,
+      `py-${kebab}`,
+      `pt-${kebab}`,
+      `pb-${kebab}`,
+      `pl-${kebab}`,
+      `pr-${kebab}`
+    )
+  }
 
-  // ====== 透明度变体（四元家族） ======
-  ...COLOR_FAMILIES.quadFamilies.flatMap(family =>
-    [10, 20, 30, 40, 50, 60, 70, 80, 90].map(v => `bg-${family}/${v}`)
-  ),
-
-  // ====== 尺寸系统阶梯类名 ======
-  ...SIZE_SCALE_KEYS.flatMap(k => [
-    `fs-${k}`,
-    `p-scale-${k}`,
-    `m-scale-${k}`,
-    `gap-scale-${k}`,
-    `px-scale-${k}`,
-    `py-scale-${k}`,
-    `pl-scale-${k}`,
-    `pr-scale-${k}`,
-    `pt-scale-${k}`,
-    `pb-scale-${k}`,
-    `mx-scale-${k}`,
-    `my-scale-${k}`,
-    `ml-scale-${k}`,
-    `mr-scale-${k}`,
-    `mt-scale-${k}`,
-    `mb-scale-${k}`,
-    `p-padding-${k}`,
-    `m-margin-${k}`,
-    `gap-gap-${k}`,
-    `text-${k}`,
-    `rounded-scale-${k}`,
-    `duration-scale-${k}`,
-  ]),
-  'pt-scale-md',
-  'pb-scale-lg',
-  'px-scale-2xl',
-  'py-scale-3xl',
-  'gap-x-scale-md',
-  'gap-y-scale-lg',
+  // ====== 尺寸阶梯类（不含 p-padding/m-margin/gap-gap，已由 LAYOUT_SAFELIST 覆盖） ======
+  list.push(
+    ...SIZE_SCALE_KEYS.flatMap(k => [
+      `fs-${k}`,
+      `p-scale-${k}`,
+      `m-scale-${k}`,
+      `gap-scale-${k}`,
+      `px-scale-${k}`,
+      `py-scale-${k}`,
+      `pl-scale-${k}`,
+      `pr-scale-${k}`,
+      `pt-scale-${k}`,
+      `pb-scale-${k}`,
+      `mx-scale-${k}`,
+      `my-scale-${k}`,
+      `ml-scale-${k}`,
+      `mr-scale-${k}`,
+      `mt-scale-${k}`,
+      `mb-scale-${k}`,
+      `gap-x-scale-${k}`,
+      `gap-y-scale-${k}`,
+      `text-${k}`,
+      `rounded-scale-${k}`,
+      `duration-scale-${k}`,
+    ])
+  )
 
   // ====== PrimeVue 组件悬停态 ======
-  'hover:bg-sidebar-accent/50',
-  'bg-destructive/10',
-  'bg-primary/5',
-]
+  list.push('hover:bg-sidebar-accent/50', 'bg-destructive/10', 'bg-primary/5')
+
+  return list
+}
+
+const themeDemoSafelist = buildThemeDemoSafelist()
 
 // ----------------------------------------------------------------------
 // 4. 颜色系统动态映射 (与 ThemeEngine / COLOR_FAMILIES 对齐)
@@ -448,10 +359,7 @@ export default defineConfig({
 
   content: {
     pipeline: {
-      include: [
-        /\.(vue|svelte|[jt]sx|mdx?|astro|elm|php|phtml|html)($|\?)/,
-        'src/plugins/modules/primevue-tokens.ts',
-      ],
+      include: [/\.(vue|svelte|[jt]sx|mdx?|astro|elm|php|phtml|html)($|\?)/],
     },
   },
 
@@ -498,7 +406,7 @@ export default defineConfig({
     ...createSemanticSizeRules(), // 优先级高：语义化尺寸 (p-padding)
     ...createLayoutVariableRules(), // 优先级中：布局变量 (w-sidebarWidth)
     ...createScaleRules(), // 优先级中：阶梯尺寸 (fs-xl, p-scale-lg)
-    // REMOVED: createPixelRules (彻底移除，解决与 presetUno 的规则冲突)
+    ...createBaseVarRules(), // SizeCssVars 基础变量 (SIZE_BASE_VAR_KEYS)
     // 安全区域
     ['safe-top', { 'padding-top': 'env(safe-area-inset-top)' }],
     ['safe-bottom', { 'padding-bottom': 'env(safe-area-inset-bottom)' }],

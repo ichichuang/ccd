@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia'
 import { SIZE_PRESETS, DEFAULT_SIZE_NAME } from '@/constants/size'
+import { FONT_SCALE_RATIOS } from '@/constants/sizeScale'
 import { generateSizeVars, applySizeTheme } from '@/utils/theme/sizeEngine'
 import { createPiniaEncryptedSerializer } from '@/utils/safeStorage/piniaSerializer'
 
@@ -28,13 +29,17 @@ export const useSizeStore = defineStore('size', {
       return this.currentPreset.spacingBase * 4
     },
 
-    // 字体大小动态化：直接读取当前预设的基准值 (SSOT)
+    // 字体大小动态化：直接读取当前预设的基准值 (SSOT，对应 --font-size-md)
     getFontSizeValue(): number {
       return this.currentPreset.fontSizeBase
     },
-    // 标题字体动态化 (+2px)
+    // 小号字体：与尺寸阶梯 --font-size-sm 一致 (fontSizeBase × FONT_SCALE_RATIOS.sm)
+    getFontSizeSmValue(): number {
+      return this.currentPreset.fontSizeBase * FONT_SCALE_RATIOS.sm
+    },
+    // 标题字体动态化：保留兼容，等于 getFontSizeSmValue（原 fontSizeBase+2 语义接近 sm）
     getFontSizesValue(): number {
-      return this.currentPreset.fontSizeBase + 2
+      return this.getFontSizeSmValue
     },
   },
 

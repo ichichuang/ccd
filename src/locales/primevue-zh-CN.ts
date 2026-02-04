@@ -89,6 +89,7 @@ export const primevueZhCN = {
   emptySelectionMessage: '未选择任何项',
   emptySearchMessage: '未找到结果',
   emptyMessage: '无可用选项',
+  fileSizeTypes: ['B', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'],
   aria: {
     trueLabel: 'True',
     falseLabel: 'False',

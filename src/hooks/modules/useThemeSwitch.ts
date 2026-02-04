@@ -109,14 +109,15 @@ function cleanupTransitionState(generation?: number) {
   if (generation !== undefined && generation !== themeTransitionGeneration) return
 
   // ═══════════════════════════════════════════════════════════════
-  // 清除过渡相关的临时变量（批量清除，减少 mutation 次数）
+  // 仅清除 View Transition 临时变量（x/y/radius），保留尺寸系统 --transition-xs..5xl
   // ═══════════════════════════════════════════════════════════════
+  const VIEW_TRANSITION_VARS = ['--transition-x', '--transition-y', '--transition-radius']
   const currentCssText = root.style.cssText
   const cleanedCssText = currentCssText
     .split(';')
     .filter(part => {
       const prop = part.split(':')[0]?.trim()
-      return prop && !prop.startsWith('--transition-')
+      return prop && !VIEW_TRANSITION_VARS.includes(prop)
     })
     .join(';')
   root.style.cssText = cleanedCssText

@@ -2,12 +2,15 @@
  * UnoCSS 动态图标 safelist 与自定义图标集（供 uno.config.ts 与 build/plugins 使用）
  * - 扫描 router/api 中的 icon 字符串，纳入 safelist
  * - 本地 SVG 统一为 collection `custom`（src/assets/icons/*.svg），注入 fill="currentColor"
+ * - 布局/尺寸类从 SSOT (constants/size, constants/sizeScale) 推导
  */
 import fs from 'node:fs'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { FileSystemIconLoader } from '@iconify/utils/lib/loader/node-loaders'
 import { globSync } from 'glob'
+import { LAYOUT_DIMENSION_KEYS } from '@/constants/size'
+import { SIZE_SCALE_KEYS } from '@/constants/sizeScale'
 
 const currentDir = path.dirname(fileURLToPath(import.meta.url))
 const projectRoot = path.resolve(currentDir, '..')
@@ -47,54 +50,21 @@ const invalidIcons = new Set<string>([
   'return',
   'if',
   'else',
-  'case',
   'switch',
+  'case',
   'for',
   'while',
-  'do',
   'break',
   'continue',
   'function',
   'const',
   'let',
   'var',
-  'class',
-  'extends',
   'import',
   'export',
   'default',
-  'try',
-  'catch',
-  'finally',
-  'throw',
   'new',
   'this',
-  'super',
-  'static',
-  'async',
-  'await',
-  'interface',
-  'type',
-  'enum',
-  'namespace',
-  'module',
-  'declare',
-  'public',
-  'private',
-  'protected',
-  'readonly',
-  'abstract',
-  'implements',
-  '0',
-  '1',
-  '2',
-  '3',
-  '4',
-  '5',
-  '6',
-  '7',
-  '8',
-  '9',
   'Tab',
   'Newline',
   'Return',
@@ -102,7 +72,6 @@ const invalidIcons = new Set<string>([
   'Enter',
   'Escape',
   'Backspace',
-  'text',
   'value',
   'label',
   'name',
@@ -111,23 +80,8 @@ const invalidIcons = new Set<string>([
   'index',
   'item',
   'list',
-  'array',
-  'object',
-  'string',
-  'number',
-  'boolean',
   'data',
-  'props',
-  'methods',
-  'computed',
-  'watch',
-  'created',
-  'mounted',
-  'updated',
-  'destroyed',
-  'setup',
-  'ref',
-  'reactive',
+  'text',
   '-',
   '_',
   '.',
@@ -139,25 +93,6 @@ const invalidIcons = new Set<string>([
   '@',
   '#',
   '$',
-  '%',
-  '^',
-  '&',
-  '*',
-  '(',
-  ')',
-  '[',
-  ']',
-  '{',
-  '}',
-  '<',
-  '>',
-  '/',
-  '\\',
-  '|',
-  '`',
-  '~',
-  '+',
-  '=',
   ...'abcdefghijklmnopqrstuvwxyz'.split(''),
 ])
 
@@ -315,39 +250,42 @@ function createCustomIconLoader(): CustomIconLoader {
 }
 
 // ---------------------------------------------------------------------------
-// Layout/theme safelist classes (used by UnoCSS)
+// Layout/theme safelist classes (SSOT: constants/size, constants/sizeScale)
 // ---------------------------------------------------------------------------
 
-// 布局/尺寸类：与 uno.config LAYOUT_SIZES 一致，不含 contentHeight（由布局模式动态计算）
-const LAYOUT_SAFELIST_CLASSES: string[] = [
-  'w-sidebarWidth',
-  'w-sidebarCollapsedWidth',
-  'h-headerHeight',
-  'h-breadcrumbHeight',
-  'h-footerHeight',
-  'h-tabsHeight',
-  'p-padding-xs',
-  'p-padding-sm',
-  'p-padding-md',
-  'p-padding-lg',
-  'p-padding-xl',
-  'gap-gap-md',
-  'm-margin-md',
-  'rounded-rounded',
-  'md:w-sidebarWidth',
-  'md:w-sidebarCollapsedWidth',
-  'md:px-padding-md',
-]
+function buildLayoutSafelistClasses(): string[] {
+  const layout = LAYOUT_DIMENSION_KEYS.flatMap(k => [`w-${k}`, `h-${k}`, `md:w-${k}`])
+  const padding = SIZE_SCALE_KEYS.flatMap(s => [
+    `p-padding-${s}`,
+    `px-padding-${s}`,
+    `py-padding-${s}`,
+    `md:px-padding-${s}`,
+  ])
+  const margin = SIZE_SCALE_KEYS.map(s => `m-margin-${s}`)
+  const gap = SIZE_SCALE_KEYS.map(s => `gap-gap-${s}`)
+  return [...layout, ...padding, ...margin, ...gap]
+}
+
+const LAYOUT_SAFELIST_CLASSES = buildLayoutSafelistClasses()
+
+// ---------------------------------------------------------------------------
+// Route icon name → UnoCSS class (与 Icons.vue iconClass 规则一致)
+// ---------------------------------------------------------------------------
+
+function toUnoIconClass(name: string): string {
+  if (name.startsWith('i-')) return name
+  return `i-${name.replace(':', '-')}`
+}
 
 // ---------------------------------------------------------------------------
 // Exports for uno.config.ts
 // ---------------------------------------------------------------------------
 
 /**
- * 动态 safelist：路由/API 扫描到的图标 + 本地 i-custom:xxx + 布局/主题类
+ * 动态 safelist：路由/API 扫描到的图标（转为 UnoCSS 类名）+ 本地 i-custom:xxx + 布局/主题类
  */
 export function getDynamicSafelist(): string[] {
-  const routeIcons = getRouteMetaIcons()
+  const routeIcons = getRouteMetaIcons().map(toUnoIconClass)
   const customIcons = getCustomIconClasses()
   return [...routeIcons, ...customIcons, ...LAYOUT_SAFELIST_CLASSES]
 }

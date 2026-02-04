@@ -7,8 +7,7 @@ const homeRoutes: RouteConfig[] = [
       titleKey: 'router.dashboard.dashboard',
       rank: 1,
       roles: ['admin', 'user'],
-      icon: 'fc-share',
-      fixedTag: true, // 固定标签，不可拖拽和删w
+      fixedTag: true, // 固定标签，不可拖拽和删
       keepAlive: true,
       // transition: {
       //   name: 'fade',
