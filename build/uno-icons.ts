@@ -9,8 +9,8 @@ import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { FileSystemIconLoader } from '@iconify/utils/lib/loader/node-loaders'
 import { globSync } from 'glob'
-import { LAYOUT_DIMENSION_KEYS } from '@/constants/size'
-import { SIZE_SCALE_KEYS } from '@/constants/sizeScale'
+import { LAYOUT_DIMENSION_KEYS } from '../src/constants/size'
+import { SIZE_SCALE_KEYS } from '../src/constants/sizeScale'
 
 const currentDir = path.dirname(fileURLToPath(import.meta.url))
 const projectRoot = path.resolve(currentDir, '..')

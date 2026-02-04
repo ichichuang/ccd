@@ -9,10 +9,10 @@ import {
   type Rule,
 } from 'unocss'
 import { getDynamicSafelist, getPresetIconsCollections } from './build/uno-icons'
-import { BREAKPOINTS } from '@/constants/breakpoints'
-import { LAYOUT_DIMENSION_KEYS, SIZE_BASE_VAR_KEYS } from '@/constants/size'
-import { SIZE_SCALE_KEYS } from '@/constants/sizeScale'
-import { COLOR_FAMILIES } from '@/utils/theme/metadata'
+import { BREAKPOINTS } from './src/constants/breakpoints'
+import { LAYOUT_DIMENSION_KEYS, SIZE_BASE_VAR_KEYS } from './src/constants/size'
+import { SIZE_SCALE_KEYS } from './src/constants/sizeScale'
+import { COLOR_FAMILIES } from './src/utils/theme/metadata'
 /** 阶梯正则片段 (xs|sm|md|...|5xl)，SSOT 来自 SIZE_SCALE_KEYS */
 const scaleRegex = `(${SIZE_SCALE_KEYS.join('|')})`
 
