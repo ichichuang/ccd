@@ -1,3 +1,4 @@
+import { DIALOG_SETTINGS_WIDTH_PX } from '@/constants/size'
 import {
   FONT_SCALE_RATIOS,
   SPACING_SCALE_RATIOS,
@@ -80,6 +81,7 @@ export function applySizeTheme(vars: SizeCssVars) {
   Object.entries(vars).forEach(([key, value]) => {
     root.style.setProperty(key, value)
   })
+  root.style.setProperty('--dialog-settings-width', `${DIALOG_SETTINGS_WIDTH_PX}px`)
 }
 
 interface RootFontSizeContext {

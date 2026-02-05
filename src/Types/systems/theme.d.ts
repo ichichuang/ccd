@@ -13,6 +13,9 @@ declare global {
     | 'glitch'
     | 'fade'
 
+  /** 主题切换过渡时长 (ms) */
+  export type ThemeTransitionDuration = 400 | 600 | 800 | 1200 | 1600
+
   /**
    * 单个颜色 Token 的完整状态定义
    * 用于精确控制 Default / Light / Dark / Hover 等状态
@@ -65,7 +68,6 @@ declare global {
 
   export interface ThemePreset {
     name: string
-    label: string
 
     /* =========================================================
        1. 简易模式 (Legacy / Simple Mode)

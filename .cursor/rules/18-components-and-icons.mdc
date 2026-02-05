@@ -36,6 +36,11 @@ When generating or editing UI pages/components, you MUST:
   - SHOULD use `<DataTable>` (or project-wrapped table components) for interactive data tables instead of hand-written `<table>` when possible.
 - For **dialogs/overlays**:
   - MUST use `<Dialog>` / `<Sidebar>` instead of ad-hoc fixed-position modals when they fit the use case.
+  - **项目二次封装 prime-dialog**：当需要**自定义弹窗、反馈提示、确认对话框**时，MUST 使用 `useDialog()`（`@/hooks/modules/useDialog`）。`PrimeVueDialog` 已在 `AppPrimeVueGlobals.vue`（由 `App.vue` 引入）挂载，业务只需调用 `info`、`success`、`warning`、`error`、`confirm`、`confirmDelete`、`openDialog` 等。高级用法见 `contentRenderer`、`headerRenderer`、`footerRenderer`、`footerButtons`、`beforeSure`、`beforeCancel`、`sureBtnLoading`。详见 `docs/DIALOG_COMPONENT.md`。
+  - 简单确认用 PrimeVue `useConfirm().require()`；复杂自定义/多层弹窗用 `useDialog()`。FORBIDDEN：在业务中自行实例化 PrimeVue `<Dialog>` 管理多弹窗状态。
+- For **Toast / Message**：
+  - **组件内**轻量通知：使用 PrimeVue `useToast()`。
+  - **非组件环境**（拦截器、errorHandler、工具函数）：MUST 使用 `window.$toast` / `window.$message`，详见 `docs/TOAST_AND_MESSAGE.md`。FORBIDDEN：在业务中自建全局 Toast/Message 或通过 DOM 自造通知。
 
 Styling PrimeVue components:
 - MUST style them using UnoCSS classes on the component and/or `pt` (PassThrough) configuration.
@@ -71,5 +76,7 @@ Rules:
 ## 5. Forbidden Patterns
 
 - FORBIDDEN: raw `<svg>` icon markup in templates.
+- FORBIDDEN: 在业务代码中自行实例化 PrimeVue `<Dialog>` 管理多弹窗；必须使用 `useDialog()`（见 `docs/DIALOG_COMPONENT.md`）。
+- FORBIDDEN: 在非组件环境中自建全局 Toast/Message；必须使用 `window.$toast` / `window.$message`（见 `docs/TOAST_AND_MESSAGE.md`）。
 - FORBIDDEN: adding custom CSS for icon sizing/colors; use UnoCSS + `Icons` props/classes.
 - FORBIDDEN: bypassing `UseEcharts` for charts when it can be used.

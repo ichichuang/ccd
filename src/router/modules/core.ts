@@ -69,23 +69,6 @@ const coreRoutes: RouteConfig[] = [
       },
     ],
   },
-  // example
-  {
-    path: '/example',
-    name: 'Example',
-    children: [
-      // primevue
-      {
-        path: '/example/primevue',
-        name: 'ExamplePrimeVue',
-        component: () => import('@/views/example/primevue.vue'),
-        meta: {
-          title: 'PrimeVue',
-          rank: 1,
-        },
-      },
-    ],
-  },
 ]
 
 export default coreRoutes

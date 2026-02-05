@@ -14,7 +14,6 @@ export interface TransitionConfig {
   }
 }
 
-const ANIMATION_DURATION = 400
 const DEFAULT_EASING = 'cubic-bezier(0.4, 0, 0.2, 1)'
 
 /**
@@ -60,39 +59,27 @@ export function getBackgroundColor(cssVar: string = '--background'): string {
 
 /**
  * 获取过渡动画配置
+ * @param mode 过渡模式
+ * @param _event 鼠标事件（用于 circle/diamond 等模式计算坐标）
+ * @param durationMs 自定义过渡时长 (ms)，默认 400
  */
 export function getTransitionConfig(
   mode: ThemeTransitionMode,
-  _event: MouseEvent | null
+  _event: MouseEvent | null,
+  durationMs: number = 400
 ): TransitionConfig {
+  const duration = durationMs
+  const glitchDuration = Math.round(durationMs * 0.8)
+
   switch (mode) {
-    case 'circle': {
+    case 'circle':
+    case 'curtain':
+    case 'diamond':
+    case 'implosion':
+    case 'fade':
+    default: {
       return {
-        duration: ANIMATION_DURATION,
-        easing: DEFAULT_EASING,
-        overlay: { opacity: 0, blur: 0 },
-      }
-    }
-
-    case 'curtain': {
-      return {
-        duration: ANIMATION_DURATION,
-        easing: DEFAULT_EASING,
-        overlay: { opacity: 0, blur: 0 },
-      }
-    }
-
-    case 'diamond': {
-      return {
-        duration: ANIMATION_DURATION,
-        easing: DEFAULT_EASING,
-        overlay: { opacity: 0, blur: 0 },
-      }
-    }
-
-    case 'implosion': {
-      return {
-        duration: ANIMATION_DURATION,
+        duration,
         easing: DEFAULT_EASING,
         overlay: { opacity: 0, blur: 0 },
       }
@@ -100,17 +87,8 @@ export function getTransitionConfig(
 
     case 'glitch': {
       return {
-        duration: ANIMATION_DURATION * 0.8,
+        duration: glitchDuration,
         easing: 'steps(4, end)',
-        overlay: { opacity: 0, blur: 0 },
-      }
-    }
-
-    case 'fade':
-    default: {
-      return {
-        duration: ANIMATION_DURATION,
-        easing: DEFAULT_EASING,
         overlay: { opacity: 0, blur: 0 },
       }
     }

@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import { THEME_PRESETS, DEFAULT_THEME_NAME } from '@/constants/theme'
+import { THEME_PRESETS, DEFAULT_THEME_NAME, DEFAULT_TRANSITION_DURATION } from '@/constants/theme'
 import { generateThemeVars, applyTheme } from '@/utils/theme/engine'
 import { isThemeLocked } from '@/hooks/modules/useThemeSwitch'
 
@@ -7,6 +7,7 @@ interface ThemeState {
   mode: ThemeMode
   themeName: string
   transitionMode: ThemeTransitionMode
+  transitionDuration: ThemeTransitionDuration
 }
 
 export const useThemeStore = defineStore('theme', {
@@ -14,6 +15,7 @@ export const useThemeStore = defineStore('theme', {
     mode: 'auto',
     themeName: DEFAULT_THEME_NAME,
     transitionMode: 'circle',
+    transitionDuration: DEFAULT_TRANSITION_DURATION,
   }),
 
   getters: {
@@ -40,6 +42,10 @@ export const useThemeStore = defineStore('theme', {
 
     setTransitionMode(mode: ThemeTransitionMode) {
       this.transitionMode = mode
+    },
+
+    setTransitionDuration(duration: ThemeTransitionDuration) {
+      this.transitionDuration = duration
     },
 
     /**

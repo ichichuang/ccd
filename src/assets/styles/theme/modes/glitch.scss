@@ -4,13 +4,15 @@
 
 :root[data-transition='glitch'] {
   &::view-transition-group(root) {
+    animation-duration: calc(var(--theme-transition-duration, 400ms) * 0.8);
     animation-timing-function: steps(4, end);
   }
 
   &::view-transition-new(root) {
     z-index: 9999;
     clip-path: inset(0 0 100% 0);
-    animation: glitch-slide 0.32s steps(4, end) forwards;
+    animation: glitch-slide calc(var(--theme-transition-duration, 400ms) * 0.8) steps(4, end)
+      forwards;
     mix-blend-mode: normal;
   }
 

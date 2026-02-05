@@ -48,6 +48,12 @@ If you find an existing utility/hook that covers most of the need, you MUST exte
 - `src/hooks/modules/useThemeSwitch.ts`
 - `src/hooks/modules/useLocale.ts`
 
+### Layout / Infra Hooks
+- `src/hooks/layout/usePageTitle.ts` (标题管理、calculatePageTitle)
+- `src/hooks/layout/useLoading.ts` (loadingStart/loadingDone、pageLoadingStart/pageLoadingDone)
+- `src/hooks/layout/useNprogress.ts` (startProgress、doneProgress)
+- `src/hooks/layout/useFull.ts` (全屏控制，封装 VueUse useFullscreen)
+
 ## 2. Import Rules (Hard Requirements)
 
 - FORBIDDEN: scattered direct imports from `lodash-es` inside business code. Prefer `@/utils/lodashes` unless the file already follows a project-established exception.
@@ -73,6 +79,7 @@ If you find an existing utility/hook that covers most of the need, you MUST exte
 - Browser / platform → `src/utils/browser.ts`
 - Date / timezone → `src/utils/date.ts` or `src/hooks/modules/useDateUtils.ts`
 - Element size observation → `src/hooks/modules/useAppElementSize.ts`
+- Layout / infra hooks → `src/hooks/layout/`
 
 ## 5. Function-Level Catalog (精确到函数名)
 
@@ -118,6 +125,12 @@ When a task matches the following needs, you MUST use the specified exports:
 ### Core system hooks
 - Theme switching → `useThemeSwitch()` (+ `isThemeLocked()` if needed)
 - Locale switching → `useLocale()`
+
+### Layout / Infra hooks (src/hooks/layout/*)
+- Page title → `usePageTitle(router?)`、`calculatePageTitle(route, appTitle, t)`
+- Loading → `useLoading()` → `loadingStart`、`loadingDone`、`pageLoadingStart`、`pageLoadingDone`
+- NProgress → `useNprogress()` → `startProgress`、`doneProgress`
+- Fullscreen → `useFull(target?)` → `isFullscreen`、`enter`、`exit`、`toggle`
 
 ## 6. Explicit Anti-Patterns (Forbidden)
 

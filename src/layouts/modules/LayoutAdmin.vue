@@ -1,41 +1,15 @@
 <script setup lang="ts">
-import { computed, onMounted, watch } from 'vue'
 import AppContainer from '@&/AppContainer.vue'
 import { useLayoutStore } from '@/stores/modules/layout'
 import { useDeviceStore } from '@/stores/modules/device'
-import { useThemeStore } from '@/stores/modules/theme'
-import { useThemeSwitch } from '@/hooks/modules/useThemeSwitch'
-import { useSizeStore } from '@/stores/modules/size'
-import { useLocale } from '@/hooks/modules/useLocale'
 import { useDateUtils } from '@/hooks/modules/useDateUtils'
-import type { SupportedLocale } from '@/locales'
-import { SIZE_PRESETS } from '@/constants/size'
-import Button from 'primevue/button'
-import Select from 'primevue/select'
-import { Icons } from '@/components/Icons'
+import GlobalSetting from '@/layouts/components/GlobalSetting/index.vue'
 
 defineOptions({ name: 'LayoutAdmin' })
 
 const layoutStore = useLayoutStore()
 const deviceStore = useDeviceStore()
-const themeStore = useThemeStore()
-const { setThemeWithAnimation, isAnimating } = useThemeSwitch()
-const sizeStore = useSizeStore()
-const { locale, supportedLocales, switchLocale } = useLocale()
-const localeStore = useLocaleStore()
-const { currentTimezone, setTimezone, getAvailableTimezones, isInitialized } = useDateUtils()
-
-// 语言选项：使用 Lucide 图标（i-custom:language-* 的 cn/en.svg 在 preset-icons 下渲染异常，改用稳定图标）
-const LOCALE_ICON_MAP: Record<SupportedLocale, string> = {
-  'zh-CN': 'i-lucide-languages',
-  'en-US': 'i-lucide-globe',
-}
-const localeOptions = computed(() =>
-  supportedLocales.map(l => ({
-    ...l,
-    icon: LOCALE_ICON_MAP[l.key] ?? 'i-lucide-languages',
-  }))
-)
+const { getAvailableTimezones, isInitialized } = useDateUtils()
 
 // 时区选项：DateUtils 初始化后从 getAvailableTimezones 加载
 const timezoneOptions = ref<
@@ -66,7 +40,6 @@ watch(
 )
 
 // --- AdminLayoutMode：结构模式 ---
-const isVertical = computed(() => layoutStore.mode === 'vertical')
 const isHorizontal = computed(() => layoutStore.mode === 'horizontal')
 const isMix = computed(() => layoutStore.mode === 'mix')
 
@@ -87,51 +60,6 @@ const sidebarFixed = computed(() => layoutStore.sidebarFixed)
 const sidebarWidthClass = computed(() =>
   layoutStore.sidebarCollapse ? 'w-sidebarCollapsedWidth' : 'w-sidebarWidth'
 )
-
-// --- 主题模式选项：复用 Theme 示例的结构 ---
-const MODE_OPTIONS = [
-  { value: 'light', label: 'Light', icon: 'i-lucide-sun' },
-  { value: 'dark', label: 'Dark', icon: 'i-lucide-moon' },
-  { value: 'auto', label: 'Auto', icon: 'i-lucide-monitor' },
-] as const
-
-// --- 尺寸模式选项：从 SIZE_PRESETS 派生 ---
-const SIZE_MODE_OPTIONS = SIZE_PRESETS.map(preset => ({
-  value: preset.name,
-  label: preset.label,
-}))
-
-// --- Admin 布局模式选项：对应 AdminLayoutMode ---
-const ADMIN_LAYOUT_OPTIONS: { value: AdminLayoutMode; label: string }[] = [
-  { value: 'vertical', label: '垂直' },
-  { value: 'horizontal', label: '水平' },
-  { value: 'mix', label: '混合' },
-]
-
-function handleThemeModeChange(mode: (typeof MODE_OPTIONS)[number]['value'], e: MouseEvent) {
-  if (isAnimating.value) return
-  setThemeWithAnimation(mode, e)
-}
-
-function handleSizeModeChange(mode: SizeMode) {
-  sizeStore.setSize(mode)
-}
-
-function handleAdminLayoutModeChange(mode: AdminLayoutMode) {
-  layoutStore.updateSetting('mode', mode)
-}
-
-function handleLocaleChange(newLocale: SupportedLocale) {
-  switchLocale(newLocale)
-}
-
-function handleTimezoneChange(tz: string) {
-  setTimezone(tz)
-}
-
-function getLocaleIcon(key: string): string {
-  return LOCALE_ICON_MAP[key as SupportedLocale] ?? 'i-lucide-languages'
-}
 </script>
 <template>
   <div class="container min-h-screen flex flex-col overflow-hidden">
@@ -150,15 +78,15 @@ function getLocaleIcon(key: string): string {
           class="flex items-center gap-scale-sm min-w-0"
         >
           <div class="rounded-scale bg-primary/10 text-primary px-scale-sm py-scale-xs">
-            <span class="text-sm font-semibold">CCD</span>
+            <span class="fs-sm font-semibold">CCD</span>
           </div>
           <div class="min-w-0 text-ellipsis">
-            <span class="text-sm font-medium">Admin</span>
+            <span class="fs-sm font-medium">Admin</span>
           </div>
         </div>
         <div
           v-else
-          class="text-sm font-medium"
+          class="fs-sm font-medium"
         >
           Admin
         </div>
@@ -169,114 +97,15 @@ function getLocaleIcon(key: string): string {
         v-if="showMenu && (isHorizontal || isMix)"
         class="flex-1 min-w-0 px-padding-lg"
       >
-        <div class="h-full flex items-center gap-scale-md text-sm text-muted-foreground">
+        <div class="h-full flex items-center gap-scale-md fs-sm text-muted-foreground">
           <span class="text-ellipsis">Top Menu Slot</span>
         </div>
       </nav>
 
       <!-- 右侧：语言 / 时区 / 主题 / 尺寸 / 布局 模式切换 + 侧栏收起 -->
       <div class="flex items-center gap-gap-sm">
-        <!-- 1. 系统语言切换 -->
-        <Select
-          class="hidden sm:inline-flex w-36 text-xs"
-          :options="localeOptions"
-          option-label="name"
-          option-value="key"
-          :model-value="locale"
-          :loading="localeStore.loading"
-          :disabled="localeStore.loading"
-          @update:model-value="handleLocaleChange"
-        >
-          <template #option="{ option }">
-            <div class="flex items-center gap-scale-sm">
-              <Icons
-                :name="option.icon"
-                size="sm"
-                class="shrink-0"
-              />
-              <span>{{ option.name }}</span>
-            </div>
-          </template>
-          <template #value="{ value }">
-            <template v-if="value">
-              <div class="flex items-center gap-scale-sm">
-                <Icons
-                  :name="getLocaleIcon(value)"
-                  size="sm"
-                  class="shrink-0"
-                />
-                <span>{{ supportedLocales.find(l => l.key === value)?.name ?? value }}</span>
-              </div>
-            </template>
-            <template v-else>
-              <span class="text-muted-foreground">语言</span>
-            </template>
-          </template>
-        </Select>
-
-        <!-- 2. 系统时区切换 -->
-        <Select
-          class="hidden sm:inline-flex w-44 text-xs"
-          :options="timezoneOptions"
-          option-label="name"
-          option-value="name"
-          :model-value="currentTimezone"
-          :loading="!isInitialized"
-          :disabled="!isInitialized"
-          placeholder="时区"
-          @update:model-value="handleTimezoneChange"
-        />
-
-        <!-- 3. 主题模式切换（light / dark / auto） -->
-        <div
-          class="hidden md:flex items-center gap-gap-sm rounded-full border border-border bg-card p-padding-xs shadow-sm"
-        >
-          <Button
-            v-for="opt in MODE_OPTIONS"
-            :key="opt.value"
-            :disabled="isAnimating"
-            :severity="opt.value === themeStore.mode ? 'primary' : 'secondary'"
-            :variant="opt.value === themeStore.mode ? undefined : 'text'"
-            size="small"
-            @click="e => handleThemeModeChange(opt.value, e as MouseEvent)"
-          >
-            <i :class="[opt.icon, 'w-3.5 h-3.5']" />
-            <span class="hidden lg:inline">{{ opt.label }}</span>
-          </Button>
-        </div>
-
-        <!-- 4. 尺寸模式切换（compact / comfortable / loose） -->
-        <Select
-          class="hidden sm:inline-flex w-40 text-xs"
-          :options="SIZE_MODE_OPTIONS"
-          option-label="label"
-          option-value="value"
-          :model-value="sizeStore.sizeName"
-          @update:model-value="val => handleSizeModeChange(val as SizeMode)"
-        />
-
-        <!-- 5. Admin 布局模式切换（vertical / horizontal / mix） -->
-        <Select
-          class="hidden sm:inline-flex w-32 text-xs"
-          :options="ADMIN_LAYOUT_OPTIONS"
-          option-label="label"
-          option-value="value"
-          :model-value="layoutStore.mode"
-          @update:model-value="val => handleAdminLayoutModeChange(val as AdminLayoutMode)"
-        />
-
-        <!-- 6. 侧栏收起/展开 -->
-        <Button
-          type="button"
-          size="small"
-          text
-          class="clickable rounded-scale px-padding-sm py-padding-xs border border-border bg-card text-card-foreground"
-          @click="layoutStore.toggleCollapse()"
-        >
-          <span class="text-xs">
-            {{ layoutStore.sidebarCollapse ? '展开' : '收起' }}
-          </span>
-        </Button>
+        <!-- 全局设置悬浮入口 (Floating Settings Trigger) -->
+        <GlobalSetting />
       </div>
     </header>
 
@@ -299,12 +128,12 @@ function getLocaleIcon(key: string): string {
           <div
             class="h-breadcrumbHeight flex items-center px-padding-md border-b border-sidebar-border/60"
           >
-            <span class="text-sm text-ellipsis">
+            <span class="fs-sm text-ellipsis">
               {{ layoutStore.sidebarCollapse ? 'Menu' : 'Sidebar Menu Slot' }}
             </span>
           </div>
           <div class="flex-1 min-h-0 overflow-auto p-padding-md">
-            <div class="stack text-sm text-sidebar-foreground/80">
+            <div class="stack fs-sm text-sidebar-foreground/80">
               <div class="rounded-scale bg-sidebar-accent/30 p-scale-md">Item 1</div>
               <div class="rounded-scale bg-sidebar-accent/20 p-scale-md">Item 2</div>
               <div class="rounded-scale bg-sidebar-accent/10 p-scale-md">Item 3</div>
@@ -320,7 +149,7 @@ function getLocaleIcon(key: string): string {
           v-if="showBreadcrumb"
           class="w-full h-breadcrumbHeight flex items-center px-padding-lg border-b border-border"
         >
-          <div class="flex items-center gap-scale-sm min-w-0 text-sm text-muted-foreground">
+          <div class="flex items-center gap-scale-sm min-w-0 fs-sm text-muted-foreground">
             <span class="text-ellipsis">Breadcrumb Slot</span>
           </div>
         </div>
@@ -330,7 +159,7 @@ function getLocaleIcon(key: string): string {
           v-if="showTabs"
           class="w-full h-tabsHeight flex items-center px-padding-lg border-b border-border"
         >
-          <div class="flex items-center gap-scale-sm min-w-0 text-sm text-muted-foreground">
+          <div class="flex items-center gap-scale-sm min-w-0 fs-sm text-muted-foreground">
             <span class="text-ellipsis">Tabs Slot</span>
           </div>
         </div>
@@ -343,7 +172,7 @@ function getLocaleIcon(key: string): string {
         <!-- Footer：高度来自 h-footerHeight -->
         <footer
           v-if="showFooter"
-          class="w-full h-footerHeight flex items-center justify-center px-padding-lg border-t border-border text-sm text-muted-foreground"
+          class="w-full h-footerHeight flex items-center justify-center px-padding-lg border-t border-border fs-sm text-muted-foreground"
         >
           <span class="text-ellipsis">Footer Slot</span>
         </footer>

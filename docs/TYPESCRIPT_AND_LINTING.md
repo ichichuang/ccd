@@ -58,3 +58,11 @@
 
 - “ref/computed 等不 import 也能用”不会触发 `no-undef`
 - 自动生成的 `.d.ts` 不会被 ESLint 无意义地报错
+
+## 5. TSX/JSX 支持
+
+- `tsconfig.app.json`：`jsx: "preserve"`、`jsxImportSource: "vue"`
+- `build/plugins.ts`：`@vitejs/plugin-vue-jsx` 提供 JSX/TSX 编译
+- 程序化渲染（render 函数、动态 VNode、slot 内容等）**必须使用 TSX**，**禁止使用 `h()`**
+- **决策：** 需要程序化渲染（返回 VNode）时 → 用 TSX，不用 `h()`
+- 详见 `docs/PROJECT_PROTOCOL.md` §5.1 与 `.cursor/rules/24-tsx-rendering.mdc`

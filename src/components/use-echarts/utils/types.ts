@@ -1,12 +1,12 @@
 import type { EChartsOption } from 'echarts'
-import type { ChartThemeConfig } from '@/hooks/components/useChartTheme/types'
+import type { ChartThemeConfig } from '@/hooks/modules/useChartTheme/types'
 
 export type {
   ChartAdvancedConfig,
   ChartOpacityConfig,
   ChartThemeConfig,
   DefaultOpacityValues,
-} from '@/hooks/components/useChartTheme/types'
+} from '@/hooks/modules/useChartTheme/types'
 
 // 图表联动配置类型
 export interface ChartConnectConfig {

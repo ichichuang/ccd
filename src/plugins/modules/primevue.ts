@@ -15,7 +15,7 @@ import { createCustomPreset } from '@/utils/theme/primevue-preset'
 /**
  * Register PrimeVue v4 (Styled Mode)
  * Uses @primevue/themes with a custom preset adapted to CCD's design system.
- * Locale 按当前系统语言设置，运行时切换由 App.vue 的 watch 同步。
+ * Locale 按当前系统语言设置，运行时切换由 AppPrimeVueGlobals.vue 的 watch 同步。
  */
 export function setupPrimeVue(app: App) {
   const sizeStore = useSizeStore()

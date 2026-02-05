@@ -9,6 +9,8 @@ alwaysApply: true
 
 When the task involves **adding a new API / endpoint / request**, you MUST implement it in `src/api/<module>/` first.
 
+`src/api/` 目录已预置，参见 `src/api/README.md`。
+
 Do NOT implement requests directly inside `src/views/**` or `src/components/**`.
 
 ## 2. Required Structure (Enforced) — Flat Only

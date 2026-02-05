@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { throttleFn } from '@/utils/lodashes'
-import { useChartTheme } from '@/hooks/components/useChartTheme/index'
+import { useChartTheme } from '@/hooks/modules/useChartTheme/index'
 import VECharts from 'vue-echarts'
 import { createDefaultUseEchartsProps } from './utils/constants'
 import type { ChartConnectState, UseEchartsProps } from './utils/types'

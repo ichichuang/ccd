@@ -5,12 +5,14 @@
 
 :root[data-transition='diamond'] {
   &::view-transition-group(root) {
+    animation-duration: var(--theme-transition-duration, 0.4s);
     animation-timing-function: cubic-bezier(0.25, 0, 0.25, 1);
   }
 
   &::view-transition-new(root) {
     z-index: 9999;
-    animation: diamond-expand 0.4s cubic-bezier(0.25, 0, 0.25, 1) forwards;
+    animation: diamond-expand var(--theme-transition-duration, 0.4s) cubic-bezier(0.25, 0, 0.25, 1)
+      forwards;
     // 使用简化的起始状态
     clip-path: polygon(50% 50%, 50% 50%, 50% 50%, 50% 50%);
     mix-blend-mode: normal;

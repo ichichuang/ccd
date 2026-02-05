@@ -42,4 +42,5 @@
 3) UnoCSS Only：禁止写硬编码 px/hex；颜色/尺寸/断点/布局变量都用语义类（uno.config.ts）
 4) Mobile First：必须在 375px 下可用，再用 md:/lg: 扩展
 5) PrimeVue：交互组件优先用 PrimeVue（DataTable/Dialog/Input/Button 等），并用 class/pt 统一风格
+6) 非组件环境通知：若需在拦截器、全局错误处理等处显示提示，使用 window.$toast / window.$message，见 docs/TOAST_AND_MESSAGE.md
 ```

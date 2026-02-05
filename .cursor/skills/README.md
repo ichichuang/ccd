@@ -35,4 +35,6 @@
 - @.cursor/rules/15-utils-and-hooks-first.mdc（工具优先）
 - @.cursor/rules/18-components-and-icons.mdc（组件/图标）
 - @.cursor/rules/20-ui-styling.mdc（UI/样式）
+- @.cursor/rules/22-layouts.mdc（布局壳/Admin 子模式）
+- @.cursor/rules/24-tsx-rendering.mdc（程序化渲染用 TSX，禁止 h()）
 ```

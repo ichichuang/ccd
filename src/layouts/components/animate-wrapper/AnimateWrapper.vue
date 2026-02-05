@@ -84,7 +84,7 @@ const handleBeforeLeave = (el: Element) => {
   >
     <div
       v-if="show"
-      class="full center"
+      class="full"
     >
       <slot />
     </div>

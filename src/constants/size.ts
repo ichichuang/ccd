@@ -78,3 +78,8 @@ export const LAYOUT_DIMENSION_KEYS = [
 
 /** 基础尺寸变量名（对应 SizeCssVars 非阶梯基础变量） */
 export const SIZE_BASE_VAR_KEYS = ['containerPadding'] as const
+
+/** 全局设置弹窗宽度（px），SSOT；由 sizeEngine 注入为 --dialog-settings-width */
+export const DIALOG_SETTINGS_WIDTH_PX = 400
+/** 供 openDialog width 使用的 CSS 变量名，避免业务硬编码 px */
+export const DIALOG_SETTINGS_WIDTH = 'var(--dialog-settings-width)'

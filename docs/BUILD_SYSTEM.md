@@ -2,6 +2,13 @@
 
 本文档描述 `build/*`、`vite.config.ts`、自动导入（AutoImport/Components）与生成类型文件的**真实行为**。当你发现“为什么页面里不需要 import ref/computed？”或“为什么某个函数能直接用？”时，以此为准。
 
+## 0. 包管理工具与命令约定
+
+- **包管理器：** 本项目使用 **pnpm**（`package.json` 中已声明 `packageManager: "pnpm@10.28.2"`）
+- **命令执行顺序：** 执行任何依赖/构建/脚本命令时，**优先使用 pnpm**（如 `pnpm install`、`pnpm dev`、`pnpm build`）；若环境无 pnpm 再使用 npm
+- **应当：** AI 在生成命令、文档或 README 时，默认写 pnpm 命令（如 `pnpm install`、`pnpm dev`）
+- **禁止：** 默认写 `npm install` 或 `npm run dev`，除非明确标注「pnpm 不可用时」
+
 ## 1. 插件入口与职责分层
 
 - **入口**：`vite.config.ts` → `build/plugins.ts#getPluginsList(env, command)`
@@ -26,7 +33,7 @@
 
 - `src/stores/modules`
 - `src/hooks/**/*`
-- `src/api/**/*`
+- `src/api/**/*`：接口定义层，目录已预置（见 `src/api/README.md`）
 - `src/utils`（**仅顶层**，不递归；避免自动扫描 `src/utils/http` 产生重复导出/副作用）
 - `src/constants/*`
 - `src/components/CScrollbar`

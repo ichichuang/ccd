@@ -19,6 +19,15 @@
 - `@.cursor/rules/10-logic-layer.mdc`
 - `@.cursor/rules/15-utils-and-hooks-first.mdc`
 
+## Golden Sample 说明
+
+`docs/GOLDEN_SAMPLES/useFeatureLogic.ts` 是 `useHttpRequest` 的封装，提供 **loading/data/error/send** 的返回结构参考。
+本 Skill 要求生成的 Hook 应：
+
+1. 从 `src/api/<module>/<feature>.ts` 导入 `buildXxxMethod`
+2. 以 `useHttpRequest(buildXxxMethod)` 形式调用
+3. 返回与 useHttpRequest 一致的结构（loading/data/error/send）
+
 ## Task
 
 1. 在 `src/hooks/modules/useXxx.ts` 中实现：

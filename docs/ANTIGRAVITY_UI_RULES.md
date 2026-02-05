@@ -62,6 +62,11 @@ Before generating any UI code, you MUST reference and strictly follow:
 - If UI requires element size observation: use `src/hooks/modules/useAppElementSize.ts` (do NOT re-implement ResizeObserver).
 - If UI needs lodash helpers: use `src/utils/lodashes.ts` (prefer VueUse for component debounce/throttle where applicable).
 - If UI needs IDs: use `src/utils/ids.ts`.
+- If UI needs page title / loading / progress control:
+  - `src/hooks/layout/usePageTitle.ts`：标题管理（通常由 router 自动调用，特殊场景可手动使用）
+  - `src/hooks/layout/useLoading.ts`：全局/页面 loading（loadingStart、loadingDone、pageLoadingStart、pageLoadingDone）
+  - `src/hooks/layout/useNprogress.ts`：顶部进度条（startProgress、doneProgress）
+- **Programmatic rendering** (render functions, dynamic slots, table cell renderers, etc.): MUST use TSX (`<script setup lang="tsx">` + JSX). **FORBIDDEN: `h()` / createElement.** See `.cursor/rules/24-tsx-rendering.mdc` for details and examples.
 - If logic grows beyond trivial UI state, ask Cursor to generate/extend a composable under `src/hooks/modules/` rather than implementing business logic inside the component.
 
 ## 3. Utilities & Hooks First Policy (工具优先策略)
@@ -171,6 +176,7 @@ The project uses `unplugin-auto-import` and `unplugin-vue-components`.
   - 操作按钮：使用 `<Button>` 作为主要/次要操作按钮，而不是手写 `<button>`；
   - 数据列表/表格：优先使用 `<DataTable>`（或封装好的表格组件），而不是从零写 `<table>` + `<tr>` + `<td>` 实现复杂交互；
   - 弹窗/抽屉：优先使用 `<Dialog>` / `<Sidebar>`，而不是用 `position: fixed` 的 div 临时拼装。
+  - 全局轻量通知：组件内用 PrimeVue `useToast()`；非组件环境（拦截器、全局错误处理）用 `window.$toast` / `window.$message`，见 `docs/TOAST_AND_MESSAGE.md`。
 
 - 定制方式（必须遵守）：
   - 使用 UnoCSS 类：`<Button class="px-padding-md fs-sm text-primary" ... />`；

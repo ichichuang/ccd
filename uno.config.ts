@@ -286,6 +286,16 @@ function buildThemeDemoSafelist(): string[] {
     ])
   )
 
+  // ====== 主题切换动画图标 (Transition Effect) ======
+  list.push(
+    'i-lucide-circle-dot',
+    'i-lucide-panel-left',
+    'i-lucide-diamond',
+    'i-lucide-sun-moon',
+    'i-lucide-sparkles',
+    'i-lucide-minimize-2'
+  )
+
   // ====== PrimeVue 组件悬停态 ======
   list.push('hover:bg-sidebar-accent/50', 'bg-destructive/10', 'bg-primary/5')
 
@@ -392,6 +402,10 @@ export default defineConfig({
     'c-card-hover': 'hover:shadow-md hover:border-primary/50',
     'c-cp': 'cursor-pointer',
     'c-transition': 'transition-all duration-scale-md ease-in-out',
+    'c-theme-swatch': 'w-[var(--spacing-xl)] h-[var(--spacing-xl)] rounded-full',
+    'c-select-width': 'min-w-[var(--spacing-3xl)]',
+    'c-btn-primary-icon':
+      'bg-primary text-primary-foreground border border-primary shadow-sm hover:opacity-90',
 
     // 阶梯默认级别 (bare utilities default to md)
     'rounded-scale': 'rounded-scale-md',

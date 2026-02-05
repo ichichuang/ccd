@@ -1,4 +1,4 @@
-import { DEFAULT_OPACITY_VALUES } from '@/hooks/components/useChartTheme/constants'
+import { DEFAULT_OPACITY_VALUES } from '@/hooks/modules/useChartTheme/constants'
 import {
   DEFAULT_ANIMATION_CONFIG,
   getDefaultAxisPointerConfig,
@@ -7,7 +7,7 @@ import {
   getDefaultMarkPointConfig,
   getDefaultToolboxConfig,
   getDefaultVisualMapConfig,
-} from '@/hooks/components/useChartTheme/defaults'
+} from '@/hooks/modules/useChartTheme/defaults'
 
 // 默认组件 Props（UseEcharts 专用，默认配置由 useChartTheme/defaults 提供）
 export const createDefaultUseEchartsProps = () => ({

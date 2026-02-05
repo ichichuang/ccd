@@ -8,12 +8,19 @@
 - `docs/ENV_AND_RUNTIME.md`：环境变量与运行时行为（dev/prod 差异、proxy/timeout）
 - `docs/TYPESCRIPT_AND_LINTING.md`：TS 项目引用与 ESLint（自动导入 globals、生成 d.ts 的纳入）
 - `docs/UNOCSS_AND_ICONS.md`：UnoCSS 语义类与图标体系（iconify + custom SVG + safelist）
+- `docs/PROJECT_PROTOCOL.md` §11 + `.cursor/rules/22-layouts.mdc`：Layouts 系统（LayoutMode、AdminLayoutMode、布局壳扩展）
+- `docs/PROJECT_PROTOCOL.md` §5.1 + `.cursor/rules/24-tsx-rendering.mdc`：TSX 渲染规范（程序化渲染用 TSX，禁止 h()）
+- `docs/DIALOG_COMPONENT.md`：prime-dialog 二次封装（useDialog、便捷方法、高级用法）
+- `docs/TOAST_AND_MESSAGE.md`：全局 Toast / Message（window.$toast、window.$message，非组件环境轻量通知）
 
 ## 1. 技术栈核心 (Tech Stack)
 
 - **Framework:** Vue 3.5+（仅允许 Script Setup）
 - **Language:** TypeScript（严格模式；**业务代码禁止 `any`**，边界封装层允许受控例外）
 - **Build:** Vite 7
+- **Package Manager:** pnpm
+  - 执行 install/dev/build/lint 等命令时，**优先使用 pnpm**（如 `pnpm install`、`pnpm dev`、`pnpm build`）；若环境无 pnpm 再使用 npm
+  - AI 生成命令/文档时：默认输出 `pnpm xxx`，不要默认输出 `npm run xxx`
 - **Styling:** UnoCSS（Utility-First）。**禁止在 `<style>` 中写常规布局/间距/颜色**
 - **UI Lib:** PrimeVue（Unstyled/PassThrough 优先，样式用 UnoCSS 或 `pt`）
 - **Network:** Alova.js（通过 `@/utils/http`）。**禁止在业务代码中直接使用 axios/fetch**
@@ -34,9 +41,10 @@
   - 列表/表格：
     - 交互性数据列表优先使用 `<DataTable>`（或未来封装好的表格组件），避免从零写 `<table>`/`<tr>`/`<td>` 来实现复杂表格逻辑。
   - 弹窗/抽屉：
-    - 弹窗使用 `<Dialog>`，侧边抽屉使用 `<Sidebar>`，禁止用 `position: fixed` 的 div 临时拼装。
+    - 自定义弹窗、反馈提示、确认对话框优先使用 `useDialog()`（见 `docs/DIALOG_COMPONENT.md`）。侧边抽屉使用 `<Sidebar>`。禁止用 `position: fixed` 的 div 临时拼装。
   - 消息/确认：
-    - 统一通过 PrimeVue 的 `Toast` / `ConfirmDialog` 等机制，而不是在任意页面自造通知系统。
+    - **组件内**轻量通知：可使用 PrimeVue `useToast()`。
+    - **非组件环境**（如 HTTP 拦截器、全局错误处理）：使用 `window.$toast` / `window.$message`（见 `docs/TOAST_AND_MESSAGE.md`）。禁止在业务中自建全局通知系统。
 
 - **样式与扩展：**
   - PrimeVue 的外观定制必须通过：
@@ -69,15 +77,17 @@
 
 ## 3. 目录职责 (Directory Roles)
 
-| 目录                  | 职责                                                |
-| --------------------- | --------------------------------------------------- |
-| `src/hooks/`          | 纯逻辑（Composables），如 useHttpRequest、useLocale |
-| `src/components/`     | 纯 UI 组件                                          |
-| `src/views/`          | 页面容器，仅组合 hooks + components                 |
-| `src/stores/modules/` | Pinia 状态                                          |
-| `src/types/`          | 全局/模块类型（含 `systems/*.d.ts`）                |
-| `src/utils/http/`     | HTTP 唯一入口（Alova instance + 封装）              |
-| `src/constants/`      | 常量与 SSOT（如 breakpoints、size、theme）          |
+| 目录                  | 职责                                                  |
+| --------------------- | ----------------------------------------------------- |
+| `src/api/`            | 接口定义层 SSOT（DTO + Method 构建），扁平两级        |
+| `src/components/`     | 纯 UI 组件                                            |
+| `src/constants/`      | 常量与 SSOT（如 breakpoints、size、theme）            |
+| `src/hooks/`          | 纯逻辑（Composables），如 useHttpRequest、useLocale   |
+| `src/layouts/`        | 布局壳（Admin/FullScreen/Ratio），由 meta.parent 驱动 |
+| `src/stores/modules/` | Pinia 状态                                            |
+| `src/types/`          | 全局/模块类型（含 `systems/*.d.ts`）                  |
+| `src/utils/http/`     | HTTP 唯一入口（Alova instance + 封装）                |
+| `src/views/`          | 页面容器，仅组合 hooks + components                   |
 
 ## 4. 文件命名 (Naming)
 
@@ -92,6 +102,28 @@
 - **Props：** 使用 `withDefaults(defineProps<Props>(), { ... })`
 - **样式：** 使用 UnoCSS 工具类；若必须写 `<style>`，仅用于 sticky/calc 等 Uno 无法表达的例外，且只使用项目 CSS 变量，不写固定 px 颜色/间距
 - **语义类：** 使用项目定义的语义类（如 `px-padding-lg`、`gap-scale-md`、`rounded-scale`、`text-primary`），SSOT 在 `src/constants/` 与 `uno.config.ts`
+
+### 5.1 TSX 渲染规范（强制）
+
+**判断标准：** 凡在 script 中需要返回或构造 VNode 的场景（render 函数、动态 slot、表格单元格渲染等），一律用 TSX，禁止用 `h()`。
+
+当需要**程序化渲染**（render 函数、动态 VNode、slot 内容、复杂条件渲染等）时：
+
+- **必须**使用 TSX：`<script setup lang="tsx">`，在 script 内直接写 JSX（如 `() => <div class="text-primary">...</div>`）
+- **禁止**使用 `h()`（createElement）手写 VNode
+
+**示例：**
+
+```vue
+<script setup lang="tsx">
+const renderSlot = () => <span class="text-muted-foreground">动态内容</span>
+</script>
+<template>
+  <SomeComponent v-slot="{ default: renderSlot }" />
+</template>
+```
+
+**配置支持：** `tsconfig.app.json`（jsx: preserve, jsxImportSource: vue）、`@vitejs/plugin-vue-jsx`、独立 `.tsx` 组件。
 
 ## 6. 设计系统与样式规范 (Design System & Styling Rules)
 
@@ -131,8 +163,21 @@
 
 - **断点定义：** `src/constants/breakpoints.ts`（BREAKPOINTS，xs/sm/md/lg/xl/2xl/3xl/4xl/5xl）
 - **布局常量：** `src/constants/layout.ts`（DEFAULT_LAYOUT_SETTING）
-- **设备状态：** `src/stores/modules/device.ts`（useDeviceStore，isMobileLayout/isTabletLayout/isPCLayout）
+- **设备状态：** `src/stores/modules/device.ts`（useDeviceStore，见下方 6.3.1）
 - **布局状态：** `src/stores/modules/layout.ts`（useLayoutStore，mode/sidebarCollapse 等）
+
+#### 6.3.1 设备检测与适配能力
+
+`src/stores/modules/device.ts`（useDeviceStore）负责检测运行设备与窗口信息，供布局与平台适配使用：
+
+- **设备类型**：Mobile / Tablet / PC（基于 UA）
+- **OS**：Windows / MacOS / Android / iOS / Linux
+- **视口**：width、height、currentBreakpoint
+- **屏幕**：screenWidth、screenHeight、方向、pixelRatio
+- **移动端 UI**：navHeight、tabHeight（iOS/Android 安全区等）
+- **触摸**：isTouchDevice
+
+类型定义见 `src/types/systems/device.d.ts`（DeviceState、DeviceType、OsType）。
 
 **规则：**
 
@@ -436,6 +481,8 @@
 
 ## 9. API Layer Policy（新增接口必须先落到 src/api，且目录扁平化）
 
+`src/api/` 目录已预置，详见 `src/api/README.md`。新增接口必须落在此处。
+
 > 核心规则：当需求涉及“新增接口/对接后端/新增请求”时，**必须先在 `src/api/<module>/` 落地类型与服务层**，随后才允许在 hooks/页面中使用。  
 > 目的：接口“单一真理来源”，避免 URL/参数/响应解析散落在页面与组件中。
 
@@ -617,3 +664,22 @@
 5. **导航与多窗口：**
    - 跳转/新窗口逻辑一律通过 `goToRoute/goBack/refreshCurrentRoute/replaceRoute`；
    - 窗口复用场景必须利用 `reuseWindow`、窗口 key 与 `permissionStore` 的窗口元数据。
+
+## 11. Layouts 系统 (Layout System)
+
+> 当任务涉及「布局壳选择、Admin 子模式、新增布局」时，必须先阅读 `.cursor/rules/22-layouts.mdc` 并遵循。
+
+### 11.1 双层概念
+
+- **LayoutMode**（`meta.parent`）：`admin` | `fullscreen` | `ratio`，选择布局壳
+- **AdminLayoutMode**（`LayoutSetting.mode`）：`vertical` | `horizontal` | `mix`，仅 admin 壳有效
+
+### 11.2 类型与常量 SSOT
+
+- 类型：`src/types/systems/layout.d.ts`（LayoutMode、AdminLayoutMode、LayoutSetting）
+- 默认值：`src/constants/layout.ts`（DEFAULT_LAYOUT_SETTING）
+
+### 11.3 扩展
+
+- 新壳：扩展 LayoutMode，新建 `LayoutXxx.vue`，修改 `layouts/index.vue`
+- 新 admin 子模式：扩展 AdminLayoutMode，修改 `LayoutAdmin.vue`

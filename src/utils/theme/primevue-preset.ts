@@ -583,11 +583,41 @@ export const createCustomPreset = (sizeStore: ReturnType<typeof useSizeStore>) =
   // ──────────────────────────────────────────────────────────────────────────
   const componentColors = {
     scrollpanel: {
+      root: {
+        transitionDuration: 'var(--transition-md)',
+      },
+      bar: {
+        size: 'var(--spacing-md)',
+        borderRadius: 'var(--radius-sm)',
+        focusRing: {
+          width: 'calc(var(--spacing-xs) / 2)',
+          style: 'solid',
+          color: 'rgb(var(--brand-500))',
+          offset: 'calc(var(--spacing-xs) / 2)',
+          shadow: 'none',
+        },
+      },
       colorScheme: {
         light: {
           bar: {
             background: 'rgb(var(--muted))',
           },
+        },
+        dark: {
+          bar: {
+            background: 'rgb(var(--muted))',
+          },
+        },
+      },
+    },
+    virtualscroller: {
+      loader: {
+        mask: {
+          background: 'rgb(var(--background))',
+          color: 'rgb(var(--muted-foreground))',
+        },
+        icon: {
+          size: 'var(--font-size-md)',
         },
       },
     },
@@ -697,14 +727,16 @@ export const createCustomPreset = (sizeStore: ReturnType<typeof useSizeStore>) =
         },
         dark: {
           root: {
-            // 暗色下关闭状态：同样用 muted，较背景更亮一档，避免“隐身”
-            background: 'rgb(var(--muted))',
-            hoverBackground: 'rgb(var(--muted))',
+            // 暗色下关闭状态：用 card 较背景更亮，并加边框，保证轨道可见
+            background: 'rgb(var(--card))',
+            hoverBackground: 'rgb(var(--card))',
+            borderColor: 'rgb(var(--border))',
+            hoverBorderColor: 'rgb(var(--border))',
             checkedBackground: 'rgb(var(--primary))',
             checkedHoverBackground: 'rgb(var(--primary-hover))',
           },
           handle: {
-            // 深色模式下手柄用背景色，落在略亮的 muted 轨道上，有清晰对比
+            // 深色模式：手柄用 background，与 card 轨道形成对比
             background: 'rgb(var(--background))',
             hoverBackground: 'rgb(var(--background))',
             checkedBackground: 'rgb(var(--background))',
@@ -1076,19 +1108,28 @@ export const createCustomPreset = (sizeStore: ReturnType<typeof useSizeStore>) =
       track: {
         // 未选中轨道：使用中性色，弱化存在感
         background: 'rgb(var(--muted))',
+        size: 'var(--spacing-xs)',
+        borderRadius: 'var(--radius-md)',
       },
       range: {
         // 已选中轨道：使用主品牌色
         background: 'rgb(var(--primary))',
+        borderRadius: 'var(--radius-md)',
       },
       handle: {
         // 外圈：与背景更贴近，形成轻微浮起感
         background: 'rgb(var(--background))',
         hoverBackground: 'rgb(var(--primary-light))',
+        width: 'var(--spacing-lg)',
+        height: 'var(--spacing-lg)',
+        borderRadius: '50%',
         content: {
           // 内芯：主品牌色，作为视觉焦点
           background: 'rgb(var(--primary))',
           hoverBackground: 'rgb(var(--primary-hover))',
+          width: 'var(--spacing-md)',
+          height: 'var(--spacing-md)',
+          borderRadius: '50%',
         },
       },
       colorScheme: {
@@ -1857,7 +1898,6 @@ export const createCustomPreset = (sizeStore: ReturnType<typeof useSizeStore>) =
 
   // 不对 root.sm/root.lg 注入的组件（无尺寸模式或完全自定义尺寸）
   const ROOT_SIZE_EXCLUDE = new Set<string>([
-    'scrollpanel',
     'tag',
     'badge',
     'divider',

@@ -26,8 +26,47 @@ declare global {
     loading: boolean
   }
 
+  /** PrimeVue Toast 位置 */
+  type ToastPosition =
+    | 'top-left'
+    | 'top-center'
+    | 'top-right'
+    | 'bottom-left'
+    | 'bottom-center'
+    | 'bottom-right'
+
+  /** 全局 Toast API（基于 PrimeVue useToast） */
+  interface ToastApi {
+    add: (options: {
+      severity?: 'success' | 'info' | 'warn' | 'error' | 'secondary' | 'contrast'
+      summary?: string
+      detail?: string
+      life?: number
+      group?: string
+    }) => void
+    errorIn: (position: ToastPosition, summary: string, detail?: string) => void
+    successIn: (position: ToastPosition, summary: string, detail?: string) => void
+    infoIn: (position: ToastPosition, summary: string, detail?: string) => void
+    warnIn: (position: ToastPosition, summary: string, detail?: string) => void
+    remove?: (message: object) => void
+    removeGroup?: (group: string) => void
+    /** 清除所有 Toast，内部调用 removeAllGroups() */
+    clear?: () => void
+  }
+
+  /** 全局 Message API（Element Plus 风格） */
+  interface MessageApi {
+    success: (message: string, title?: string) => void
+    error: (message: string, title?: string) => void
+    info: (message: string, title?: string) => void
+    warning: (message: string, title?: string) => void
+  }
+
   interface Window {
-    $message: any
+    /** 全局 Toast（PrimeVue），在 App 挂载后可用 */
+    $toast?: ToastApi
+    /** 全局 Message（Element Plus 风格），在 App 挂载后可用 */
+    $message?: MessageApi
     /** 全局路由工具 */
     $routeUtils?: RouteUtils
     /** 全局权限检查函数 */

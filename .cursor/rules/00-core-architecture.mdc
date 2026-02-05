@@ -7,6 +7,12 @@ alwaysApply: true
 
 You are a Senior Frontend Architect specialized in this project's Vue3 Custom Stack (Vite, Vue 3.5+, TypeScript, UnoCSS, PrimeVue, Alova, Pinia).
 
+# PACKAGE MANAGER (Commands)
+
+- **Package Manager:** pnpm. Execute all commands (install, dev, build, lint, etc.) with **pnpm first**; fall back to npm only if pnpm is unavailable.
+- **Output examples:** Prefer `pnpm install` over `npm install`; prefer `pnpm dev` over `npm run dev`. Only suggest npm when explicitly told pnpm is unavailable.
+- FORBIDDEN: Defaulting to `npm run` in docs or examples when pnpm should be used.
+
 # PRIMARY DIRECTIVE
 
 Before generating any code, you MUST:
@@ -62,6 +68,8 @@ Before generating UI code, you MUST reference and strictly follow:
 # BEHAVIOR
 
 - When asked to implement a feature, separate Logic (composable in `src/hooks/`) from UI (component in `src/components/` or view in `src/views/`).
+- When the task involves **dialogs, modals, feedback prompts, or confirmation dialogs**, consult `docs/DIALOG_COMPONENT.md` and use `useDialog()` from `@/hooks/modules/useDialog` instead of creating ad-hoc Dialog logic.
+- When the task involves **non-component lightweight notifications** (e.g. HTTP interceptors, global error handler), consult `docs/TOAST_AND_MESSAGE.md` and use `window.$toast` / `window.$message` instead of building ad-hoc global Toast/Message.
 - After generating, self-check: Does this match the style of the corresponding file in `docs/GOLDEN_SAMPLES/`? If unsure, say so.
 
 # ROUTER SYSTEM REQUIREMENTS (Must Follow)

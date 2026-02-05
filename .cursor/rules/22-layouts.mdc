@@ -1,0 +1,77 @@
+---
+description: Layouts 系统：LayoutMode、AdminLayoutMode、布局壳、扩展方式
+globs: src/layouts/**/*.{ts,vue}
+---
+# Layouts System Rules
+
+## 1. Primary Directive
+
+布局由 `route.meta.parent`（LayoutMode）决定使用哪个布局壳；`layouts/index.vue` 据此切换。
+业务代码不得直接引用或切换布局壳。
+
+## 2. 双层布局概念
+
+### 2.1 LayoutMode（第一层：布局壳）
+
+- **admin**：管理后台壳（Header + Sidebar/Breadcrumb/Tabs/Content/Footer）
+- **fullscreen**：全屏壳（Login、错误页、配置页等）
+- **ratio**：固定比例壳（大屏、演示），需 `meta.ratio`
+
+类型：`src/types/systems/layout.d.ts` → `LayoutMode`
+
+### 2.2 AdminLayoutMode（第二层：admin 壳结构）
+
+**仅当 LayoutMode = admin 时生效**，由 `LayoutSetting.mode`（layout store）控制：
+
+- **vertical**：侧边栏在左，无顶栏菜单
+- **horizontal**：顶栏菜单，无侧边栏
+- **mix**：侧边栏 + 顶栏菜单
+
+类型：`src/types/systems/layout.d.ts` → `AdminLayoutMode`
+
+## 3. LayoutSetting 与常量
+
+- 定义：`src/types/systems/layout.d.ts` → `LayoutSetting`
+- 默认值：`src/constants/layout.ts` → `DEFAULT_LAYOUT_SETTING`
+- 持久化：`LAYOUT_PERSIST_PICK` 由 `DEFAULT_LAYOUT_SETTING` 推导
+- 新增字段：只需在 `DEFAULT_LAYOUT_SETTING` 中补全
+
+## 4. 目录与别名
+
+- 壳：`src/layouts/modules/`
+- 内部组件：`src/layouts/components/`
+- 布局内引用：`@&/*` → `src/layouts/components/*`
+- **PrimeVue 全局 UI**：Toast、Confirm、Dialog 与 `window.$toast` / `window.$message` 的挂载由 `src/layouts/components/AppPrimeVueGlobals.vue` 负责，`App.vue` 仅引用该组件，不得在 `App.vue` 内重复挂载或封装 Toast/Message。
+
+## 5. 显式引入
+
+`src/layouts` 不在 Components 自动导入范围内，必须显式 import。
+
+## 6. 扩展规则
+
+### 6.1 扩展新 LayoutMode（新壳）
+
+1. 在 `LayoutMode` 中增加新值
+2. 在 `RouteMeta.parent` 中支持该值
+3. 新建 `src/layouts/modules/LayoutXxx.vue`
+4. 在 `layouts/index.vue` 中增加分支与 `layoutAnimations` 配置
+
+### 6.2 扩展新 AdminLayoutMode（admin 子模式）
+
+1. 在 `AdminLayoutMode` 中增加新值
+2. 在 `DEFAULT_LAYOUT_SETTING.mode` 中确定默认（或保持 vertical）
+3. 在 `LayoutAdmin.vue` 中实现对应布局逻辑（sidebar / top menu / body 显示规则）
+
+注意：移动端/平板会强制 `mode = 'vertical'`，新模式在 PC 下才会生效。
+
+## 7. 路由配置
+
+- `meta.parent`：显式设置；未设置时默认 `'admin'`
+- `meta.ratio`：仅 ratio 壳有效；未设置时由 `normalizeRatioMetaOnRoutes` 默认 `'16:9'`
+
+## 8. Forbidden
+
+- 在 views/components 中直接引用布局壳
+- 绕过 `meta.parent` 自行决定布局
+- 在 `DEFAULT_LAYOUT_SETTING` 之外定义 LayoutSetting 默认值
+- 在 layout store 以外持久化 LayoutSetting 字段

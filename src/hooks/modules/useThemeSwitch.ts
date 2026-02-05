@@ -76,6 +76,11 @@ function cleanupOverlay(overlay: HTMLElement, duration: number): Promise<void> {
   })
 }
 
+/** 注入过渡时长 CSS 变量，供各 mode 的 SCSS 使用 */
+function applyTransitionDurationVariable(durationMs: number) {
+  document.documentElement.style.setProperty('--theme-transition-duration', `${durationMs}ms`)
+}
+
 /**
  * 注入用于 CSS 动画的动态坐标变量
  * 支持 circle 和 diamond 两种模式
@@ -153,6 +158,7 @@ export function useThemeSwitch() {
     return themeStore.mode === 'dark'
   })
   const transitionMode = computed(() => themeStore.transitionMode)
+  const transitionDuration = computed(() => themeStore.transitionDuration)
 
   /**
    * 设置主题模式（无动画）
@@ -213,8 +219,11 @@ export function useThemeSwitch() {
     themeTransitionGeneration++
     const myGeneration = themeTransitionGeneration
 
-    // 获取过渡模式配置
-    const config = getTransitionConfig(transitionModeToUse, event)
+    // 获取过渡模式配置（含自定义时长）
+    const config = getTransitionConfig(transitionModeToUse, event, transitionDuration.value)
+
+    // 注入过渡时长 CSS 变量，供各 mode 的 SCSS animation 使用
+    applyTransitionDurationVariable(config.duration)
 
     // 设置 data-transition 属性
     document.documentElement.setAttribute('data-transition', transitionModeToUse)
@@ -345,8 +354,11 @@ export function useThemeSwitch() {
     themeTransitionGeneration++
     const myGeneration = themeTransitionGeneration
 
-    // 获取过渡模式配置
-    const config = getTransitionConfig(transitionModeToUse, event)
+    // 获取过渡模式配置（含自定义时长）
+    const config = getTransitionConfig(transitionModeToUse, event, transitionDuration.value)
+
+    // 注入过渡时长 CSS 变量，供各 mode 的 SCSS animation 使用
+    applyTransitionDurationVariable(config.duration)
 
     // 设置 data-transition 属性
     document.documentElement.setAttribute('data-transition', transitionModeToUse)

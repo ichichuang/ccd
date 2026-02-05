@@ -3,8 +3,5 @@ import AppContainer from '@&/AppContainer.vue'
 </script>
 
 <template>
-  <main class="w-full h-full">
-    asdsad
-    <AppContainer />
-  </main>
+  <AppContainer />
 </template>

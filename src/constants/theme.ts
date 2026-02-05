@@ -5,13 +5,11 @@
 export const THEME_PRESETS: ThemePreset[] = [
   {
     name: 'zinc',
-    label: '极简锌 (默认)',
     primary: '#18181b',
     accent: '#3f3f46', // 锌灰强调，与主色协调
   },
   {
     name: 'deep-blue',
-    label: '深海潜影 (AI Colors)',
     primary: '#3665f9', // 兼容旧逻辑的兜底
     colors: {
       light: {
@@ -50,7 +48,6 @@ export const THEME_PRESETS: ThemePreset[] = [
   },
   {
     name: 'violet',
-    label: '梦幻紫 (Violet)',
     primary: '#7c3aed',
     colors: {
       light: {
@@ -89,7 +86,6 @@ export const THEME_PRESETS: ThemePreset[] = [
   },
   {
     name: 'emerald',
-    label: '森之灵 (Emerald)',
     primary: '#059669',
     colors: {
       light: {
@@ -128,7 +124,6 @@ export const THEME_PRESETS: ThemePreset[] = [
   },
   {
     name: 'ruby',
-    label: '红宝石 (Ruby)',
     primary: '#e11d48',
     colors: {
       light: {
@@ -168,3 +163,46 @@ export const THEME_PRESETS: ThemePreset[] = [
 ]
 
 export const DEFAULT_THEME_NAME = 'deep-blue'
+
+/**
+ * 获取预设的主色（用于 UI 展示，如配色选择小球）
+ * 若定义了 colors.light/dark 则根据 isDark 取对应 primary.default，否则取 preset.primary
+ */
+export function getPresetPrimaryColor(preset: ThemePreset, isDark: boolean): string {
+  const modeKey = isDark ? 'dark' : 'light'
+  const primary = preset.colors?.[modeKey]?.primary?.default ?? preset.primary
+  return primary ?? '#6b7280'
+}
+
+/** 主题切换过渡时长默认值 (ms) */
+export const DEFAULT_TRANSITION_DURATION: ThemeTransitionDuration = 600
+
+/** 过渡时长选项（主色色块从浅到深 + i18n labelKey）
+ * swatchStyle 使用 CSS 变量，随当前主题主色变化 */
+export const TRANSITION_DURATION_OPTIONS: {
+  value: ThemeTransitionDuration
+  swatchStyle: string
+  labelKey: string
+}[] = [
+  {
+    value: 400,
+    swatchStyle: 'rgb(var(--primary-hover))',
+    labelKey: 'settings.durationUltraFast',
+  },
+  { value: 600, swatchStyle: 'rgb(var(--primary))', labelKey: 'settings.durationFast' },
+  {
+    value: 800,
+    swatchStyle: 'rgb(var(--primary) / 0.5)',
+    labelKey: 'settings.durationComfortable',
+  },
+  {
+    value: 1200,
+    swatchStyle: 'rgb(var(--primary) / 0.3)',
+    labelKey: 'settings.durationSlow',
+  },
+  {
+    value: 1600,
+    swatchStyle: 'rgb(var(--primary-light))',
+    labelKey: 'settings.durationUltraSlow',
+  },
+]

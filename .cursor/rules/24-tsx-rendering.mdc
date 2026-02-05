@@ -1,0 +1,67 @@
+---
+description: TSX 渲染规范：程序化渲染必须用 TSX，禁止使用 h()
+globs: src/**/*.{vue,tsx}
+alwaysApply: true
+---
+# TSX Rendering Policy (Must Follow)
+
+## 1. Primary Directive
+
+When you need **programmatic rendering** (render functions, dynamic VNodes, slot content, complex conditional UI), you MUST use TSX, NOT `h()`.
+
+**Quick decision rule:** If you would write `h('div', ...)` or `createElement(...)`, use TSX instead.
+
+- **Use:** `<script setup lang="tsx">` + JSX (e.g. `() => <div class="text-primary">...</div>`)
+- **FORBIDDEN:** `h('div', { class: '...' }, ...)` / `createElement` / manual VNode construction
+
+## 2. When This Applies
+
+**Typical triggers:** Need to return a VNode from setup? Need dynamic slot content? Need a table cell/formatter? → Use TSX.
+
+- Render functions returned from setup or composables
+- Dynamic slot content (e.g. `v-slot="{ default: () => ... }"`)
+- Conditionally rendered complex structures
+- Table cell renderers, dropdown item templates, etc.
+- Any place where you would otherwise reach for `h()`
+
+## 3. How to Use TSX
+
+### 3.1 In Vue SFC
+
+```vue
+<script setup lang="tsx">
+const renderContent = () => (
+  <div class="text-primary fs-md">
+    <Icons name="i-lucide-check" size="sm" />
+    <span>Done</span>
+  </div>
+)
+</script>
+<template>
+  <component :is="renderContent" />
+</template>
+```
+
+### 3.2 Standalone .tsx Component
+
+```tsx
+// src/components/MyRender.tsx
+import { defineComponent } from 'vue'
+export default defineComponent({
+  setup() {
+    return () => <div class="text-primary">Hello</div>
+  }
+})
+```
+
+## 4. Forbidden
+
+- FORBIDDEN: `import { h } from 'vue'` and using `h()` for render
+- FORBIDDEN: `createElement` or manual VNode construction
+- Use TSX instead: readable, type-safe, composable
+
+## 5. Config Support
+
+- `tsconfig.app.json`: `jsx: "preserve"`, `jsxImportSource: "vue"`
+- `build/plugins.ts`: `@vitejs/plugin-vue-jsx`
+- Components auto-import supports `.tsx` files

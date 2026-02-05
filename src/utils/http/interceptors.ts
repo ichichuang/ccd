@@ -313,9 +313,11 @@ export const responseHandler = async (response: Response, method: Method) => {
 
       // 显示网络错误提示
       try {
-        // if (window.$toast) {
-        // window.$toast.errorIn('top-left', statusMessage, networkErrorMessage)
-        // }
+        if (window.$message?.error) {
+          window.$message.error(_networkErrorMessage, statusMessage)
+        } else if (window.$toast?.errorIn) {
+          window.$toast.errorIn('top-left', statusMessage, _networkErrorMessage)
+        }
       } catch (toastError) {
         console.error('❌ 显示网络错误提示失败:', toastError)
       }
@@ -437,10 +439,12 @@ const handleHttpError = (status: number, data: any) => {
       console.error(`HTTP ${status} 错误`)
   }
 
-  console.log('statusMessage', statusMessage)
-  console.log('errorMessage', errorMessage)
   try {
-    // window.$toast.errorIn('top-left', statusMessage, errorMessage)
+    if (window.$message?.error) {
+      window.$message.error(errorMessage, statusMessage)
+    } else if (window.$toast?.errorIn) {
+      window.$toast.errorIn('top-left', statusMessage, errorMessage)
+    }
   } catch (error) {
     console.error('❌ 显示错误提示失败:', error)
   }
