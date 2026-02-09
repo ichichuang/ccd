@@ -11,6 +11,11 @@ const deviceStore = useDeviceStore()
 
 let cleanupDeviceListener: (() => void) | undefined
 
+// 提前检测设备，确保 watchEffect 首帧使用正确断点，避免字体闪动
+if (typeof window !== 'undefined') {
+  deviceStore.detectDeviceInfo()
+}
+
 // 根字号自适应：根据设备类型 + 断点 + 尺寸预设动态计算
 watchEffect(() => {
   const decision = decideRootFontSize({

@@ -18,7 +18,7 @@
 window.$message?.success('操作成功')
 window.$message?.error('发生错误', '错误标题')
 window.$message?.info('提示信息')
-window.$message?.warning('请注意')
+window.$message?.warn('请注意')
 ```
 
 | 方法                       | 说明     |
@@ -26,7 +26,7 @@ window.$message?.warning('请注意')
 | `success(message, title?)` | 成功提示 |
 | `error(message, title?)`   | 错误提示 |
 | `info(message, title?)`    | 信息提示 |
-| `warning(message, title?)` | 警告提示 |
+| `warn(message, title?)`    | 警告提示 |
 
 ### 2.2 window.$toast（按位置 + severity）
 

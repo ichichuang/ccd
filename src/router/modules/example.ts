@@ -2,8 +2,12 @@ const exampleRoutes: RouteConfig[] = [
   {
     path: '/example',
     name: 'Example',
+    meta: {
+      title: '示例',
+      rank: 2,
+      icon: 'i-lucide-layout-dashboard',
+    },
     children: [
-      // primevue
       {
         path: '/example/primevue',
         name: 'ExamplePrimeVue',
@@ -11,6 +15,7 @@ const exampleRoutes: RouteConfig[] = [
         meta: {
           title: 'PrimeVue',
           rank: 1,
+          icon: 'i-lucide-layout-dashboard',
         },
       },
       {
@@ -20,7 +25,7 @@ const exampleRoutes: RouteConfig[] = [
         meta: {
           title: 'PrimeVue Dialog',
           rank: 2,
-          parent: 'fullscreen',
+          icon: 'i-lucide-layout-dashboard',
         },
       },
       {
@@ -30,7 +35,7 @@ const exampleRoutes: RouteConfig[] = [
         meta: {
           title: 'PrimeVue Toast',
           rank: 3,
-          parent: 'fullscreen',
+          icon: 'i-lucide-layout-dashboard',
         },
       },
     ],

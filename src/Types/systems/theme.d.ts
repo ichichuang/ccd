@@ -39,6 +39,7 @@ declare global {
     destructive?: Partial<ColorTokenState>
     warn?: Partial<ColorTokenState>
     success?: Partial<ColorTokenState>
+    info?: Partial<ColorTokenState>
 
     /* 基础色 */
     background?: string
@@ -85,6 +86,8 @@ declare global {
     warn?: string
     /** 成功色，绿色系；未提供时使用引擎默认 */
     success?: string
+    /** 信息色，蓝色系；未提供时使用引擎默认 */
+    info?: string
 
     /* =========================================================
        2. 专业配置模式 (Configuration Mode) [NEW]
@@ -151,6 +154,12 @@ declare global {
     '--success-hover-foreground': string
     '--success-light': string
     '--success-light-foreground': string
+    '--info': string
+    '--info-foreground': string
+    '--info-hover': string
+    '--info-hover-foreground': string
+    '--info-light': string
+    '--info-light-foreground': string
 
     /* ==================== 边框与线条 ==================== */
     '--border': string

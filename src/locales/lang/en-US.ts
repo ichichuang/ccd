@@ -95,6 +95,22 @@ const enUS = {
     durationComfortable: 'Comfortable',
     durationFast: 'Fast',
     durationUltraFast: 'Ultra fast',
+    layoutModules: 'Layout Modules',
+    showHeader: 'Show Header',
+    showMenu: 'Show Top Menu',
+    showLogo: 'Show Logo',
+    showSidebar: 'Show Sidebar',
+    showBreadcrumb: 'Show Breadcrumb',
+    showBreadcrumbIcon: 'Show Breadcrumb Icon',
+    showTabs: 'Show Tabs',
+    showFooter: 'Show Footer',
+    sidebarAccordion: 'Sidebar Accordion Mode',
+  },
+  layout: {
+    sidebar: {
+      title: 'System Menu',
+      menu: 'Menu',
+    },
   },
 }
 

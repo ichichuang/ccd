@@ -1,12 +1,11 @@
 <script setup lang="ts">
 /**
  * 布局层：PrimeVue 全局 UI 与 window.$toast / window.$message 挂载
- * 职责：Toast、ConfirmPopup、ConfirmDialog、DynamicDialog、PrimeVueDialog；
+ * 职责：Toast、ConfirmPopup、DynamicDialog、PrimeVueDialog；
  *       useToast 封装并挂到 window；PrimeVue locale 同步；useDialog + PrimeVueDialog
  */
 import Toast from 'primevue/toast'
 import ConfirmPopup from 'primevue/confirmpopup'
-import ConfirmDialog from 'primevue/confirmdialog'
 import DynamicDialog from 'primevue/dynamicdialog'
 import { useToast } from 'primevue/usetoast'
 import { usePrimeVue } from 'primevue/config'
@@ -85,7 +84,7 @@ function buildMessageApi() {
     success: (msg: string, title?: string) => show('success', msg, title),
     error: (msg: string, title?: string) => show('error', msg, title),
     info: (msg: string, title?: string) => show('info', msg, title),
-    warning: (msg: string, title?: string) => show('warn', msg, title),
+    warn: (msg: string, title?: string) => show('warn', msg, title),
   }
 }
 
@@ -132,7 +131,6 @@ onUnmounted(() => {
     group="br"
   />
   <ConfirmPopup />
-  <ConfirmDialog />
   <DynamicDialog />
   <PrimeVueDialog
     :dialog-store="dialogStore"

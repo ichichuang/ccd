@@ -36,6 +36,7 @@
     "DATE_RANGES": "readonly",
     "DEFAULT_ANIMATION_CONFIG": "readonly",
     "DEFAULT_LAYOUT_SETTING": "readonly",
+    "DEFAULT_LAYOUT_VISIBILITY_SETTINGS": "readonly",
     "DEFAULT_LOCALE": "readonly",
     "DEFAULT_OPACITY_VALUES": "readonly",
     "DEFAULT_SIZE_NAME": "readonly",

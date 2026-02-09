@@ -11,7 +11,7 @@
 - `src/constants/breakpoints.ts` → breakpoints
 - `src/constants/size.ts` → `LAYOUT_DIMENSION_KEYS`（布局变量白名单）
 - `src/constants/sizeScale.ts` → `SIZE_SCALE_KEYS`（xs→5xl 阶梯）
-- `src/utils/theme/metadata.ts` → 主题相关元数据
+- `src/utils/theme/metadata.ts` → 主题相关元数据（quadFamilies 含 primary、accent、destructive、warn、success、info，对应语义类如 `bg-primary`、`text-info` 等）
 
 结论：
 

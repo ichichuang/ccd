@@ -10,8 +10,10 @@
 
   &::view-transition-new(root) {
     z-index: 9999;
-    animation: curtain-expand var(--theme-transition-duration, 0.4s) cubic-bezier(0.25, 0, 0.25, 1)
-      forwards;
+    animation-name: curtain-expand;
+    animation-duration: var(--theme-transition-duration, 0.4s);
+    animation-timing-function: cubic-bezier(0.25, 0, 0.25, 1);
+    animation-fill-mode: forwards;
     clip-path: inset(0 100% 0 0);
     mix-blend-mode: normal;
   }

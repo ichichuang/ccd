@@ -95,6 +95,22 @@ const zhCN = {
     durationComfortable: '舒适',
     durationFast: '快',
     durationUltraFast: '超快',
+    layoutModules: '布局模块',
+    showHeader: '显示 Header',
+    showMenu: '显示顶部菜单',
+    showLogo: '显示 Logo',
+    showSidebar: '显示侧边栏',
+    showBreadcrumb: '显示面包屑',
+    showBreadcrumbIcon: '显示面包屑图标',
+    showTabs: '显示 Tabs',
+    showFooter: '显示 Footer',
+    sidebarAccordion: '侧边栏手风琴模式',
+  },
+  layout: {
+    sidebar: {
+      title: '系统菜单',
+      menu: '菜单',
+    },
   },
 }
 

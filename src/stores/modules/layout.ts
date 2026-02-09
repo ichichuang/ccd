@@ -1,11 +1,43 @@
-import { DEFAULT_LAYOUT_SETTING, LAYOUT_PERSIST_PICK } from '@/constants/layout'
+import {
+  DEFAULT_LAYOUT_SETTING,
+  DEFAULT_LAYOUT_VISIBILITY_SETTINGS,
+  LAYOUT_PERSIST_PICK,
+} from '@/constants/layout'
+import { deepClone } from '@/utils/lodashes'
 import store from '@/stores'
 import { createPiniaEncryptedSerializer } from '@/utils/safeStorage/piniaSerializer'
 import { defineStore } from 'pinia'
 
+type LayoutModuleVisibilityKey =
+  | 'showHeader'
+  | 'showMenu'
+  | 'showSidebar'
+  | 'showBreadcrumb'
+  | 'showBreadcrumbIcon'
+  | 'showTabs'
+  | 'showFooter'
+  | 'showLogo'
+
+const MODULE_DEPENDENCIES: Partial<Record<LayoutModuleVisibilityKey, LayoutModuleVisibilityKey[]>> =
+  {
+    // Header 是父模块：承载 Logo/Menu
+    showHeader: ['showLogo', 'showMenu'],
+    // Breadcrumb 是父模块：承载 Icon（当前 LayoutAdmin 还未渲染 icon，但语义上依赖存在）
+    showBreadcrumb: ['showBreadcrumbIcon'],
+  }
+
 export const useLayoutStore = defineStore('layout', {
   state: (): LayoutStoreState => ({
     ...DEFAULT_LAYOUT_SETTING,
+    visibilitySettings: deepClone(DEFAULT_LAYOUT_VISIBILITY_SETTINGS),
+    // 侧边栏多级菜单展开状态（可持久化）
+    expandedMenuKeys: {},
+    // 模块父子联动：运行时恢复缓存（不持久化）
+    moduleRestoreCache: {
+      vertical: {},
+      horizontal: {},
+      mix: {},
+    },
     // ===== 运行时 Loading（并发安全：使用计数器作为 SSOT）=====
     // 启动阶段默认处于全局 loading（由 setupPlugins finally 结束）
     loadingCount: 1,
@@ -21,9 +53,145 @@ export const useLayoutStore = defineStore('layout', {
   getters: {
     isHorizontal: state => state.mode === 'horizontal',
     isMix: state => state.mode === 'mix',
+    // --- active visibility (SSOT) ---
+    activeVisibility: state => state.visibilitySettings[state.mode],
+    // --- 兼容字段：对外仍以 showXxx 形式暴露，但实际读取 activeVisibility ---
+    showHeader(): boolean {
+      return this.activeVisibility.showHeader
+    },
+    showMenu(): boolean {
+      return this.activeVisibility.showMenu
+    },
+    showSidebar(): boolean {
+      return this.activeVisibility.showSidebar
+    },
+    showBreadcrumb(): boolean {
+      return this.activeVisibility.showBreadcrumb
+    },
+    showBreadcrumbIcon(): boolean {
+      return this.activeVisibility.showBreadcrumbIcon
+    },
+    showTabs(): boolean {
+      return this.activeVisibility.showTabs
+    },
+    showFooter(): boolean {
+      return this.activeVisibility.showFooter
+    },
+    showLogo(): boolean {
+      return this.activeVisibility.showLogo
+    },
+    getExpandedMenuKeys(): Record<string, boolean> {
+      return this.expandedMenuKeys || {}
+    },
   },
 
   actions: {
+    setExpandedMenuKeys(keys: Record<string, boolean>) {
+      this.expandedMenuKeys = keys || {}
+    },
+    /**
+     * 旧版持久化迁移：
+     * - 旧结构：showXxx 直接平铺在 root
+     * - 新结构：visibilitySettings[mode].showXxx
+     */
+    migrateLegacyVisibilityIfNeeded() {
+      const legacy = this.$state as unknown as Record<string, unknown>
+      const hasLegacy =
+        typeof legacy.showHeader === 'boolean' ||
+        typeof legacy.showMenu === 'boolean' ||
+        typeof legacy.showSidebar === 'boolean' ||
+        typeof legacy.showBreadcrumb === 'boolean' ||
+        typeof legacy.showBreadcrumbIcon === 'boolean' ||
+        typeof legacy.showTabs === 'boolean' ||
+        typeof legacy.showFooter === 'boolean' ||
+        typeof legacy.showLogo === 'boolean'
+
+      if (!hasLegacy) return
+
+      const legacyVisibility: LayoutVisibilitySetting = {
+        showHeader:
+          (legacy.showHeader as boolean) ?? DEFAULT_LAYOUT_VISIBILITY_SETTINGS.vertical.showHeader,
+        showMenu:
+          (legacy.showMenu as boolean) ?? DEFAULT_LAYOUT_VISIBILITY_SETTINGS.vertical.showMenu,
+        showSidebar:
+          (legacy.showSidebar as boolean) ??
+          DEFAULT_LAYOUT_VISIBILITY_SETTINGS.vertical.showSidebar,
+        showBreadcrumb:
+          (legacy.showBreadcrumb as boolean) ??
+          DEFAULT_LAYOUT_VISIBILITY_SETTINGS.vertical.showBreadcrumb,
+        showBreadcrumbIcon:
+          (legacy.showBreadcrumbIcon as boolean) ??
+          DEFAULT_LAYOUT_VISIBILITY_SETTINGS.vertical.showBreadcrumbIcon,
+        showTabs:
+          (legacy.showTabs as boolean) ?? DEFAULT_LAYOUT_VISIBILITY_SETTINGS.vertical.showTabs,
+        showFooter:
+          (legacy.showFooter as boolean) ?? DEFAULT_LAYOUT_VISIBILITY_SETTINGS.vertical.showFooter,
+        showLogo:
+          (legacy.showLogo as boolean) ?? DEFAULT_LAYOUT_VISIBILITY_SETTINGS.vertical.showLogo,
+      }
+
+      // 迁移策略：用旧配置快照初始化三种模式（用户升级后不会丢失习惯）
+      this.visibilitySettings = {
+        vertical: { ...legacyVisibility },
+        horizontal: { ...legacyVisibility },
+        mix: { ...legacyVisibility },
+      }
+
+      // 清理旧字段（避免继续被误用）
+      delete legacy.showHeader
+      delete legacy.showMenu
+      delete legacy.showSidebar
+      delete legacy.showBreadcrumb
+      delete legacy.showBreadcrumbIcon
+      delete legacy.showTabs
+      delete legacy.showFooter
+      delete legacy.showLogo
+    },
+
+    setLayoutMode(mode: AdminLayoutMode) {
+      this.updateSetting('mode', mode)
+      this.markUserAdjusted()
+    },
+    /**
+     * 布局模块显隐字段限定类型，避免 UI 传入任意 key
+     */
+    setModuleVisible(key: LayoutModuleVisibilityKey, visible: boolean, mode?: AdminLayoutMode) {
+      const targetMode = mode ?? this.mode
+
+      const children = MODULE_DEPENDENCIES[key]
+      if (children && children.length > 0) {
+        const modeCache = this.moduleRestoreCache[targetMode]
+
+        if (!visible) {
+          // 关闭父模块：缓存子模块当前状态并强制关闭
+          modeCache[key] = children.reduce<Partial<LayoutVisibilitySetting>>((acc, childKey) => {
+            acc[childKey] = this.visibilitySettings[targetMode][childKey]
+            return acc
+          }, {})
+          children.forEach(childKey => {
+            this.visibilitySettings[targetMode][childKey] = false
+          })
+        } else {
+          // 开启父模块：如有缓存则恢复子模块状态，并清空缓存
+          const cache = modeCache[key]
+          if (cache) {
+            children.forEach(childKey => {
+              const cached = cache[childKey]
+              if (typeof cached === 'boolean') {
+                this.visibilitySettings[targetMode][childKey] = cached
+              }
+            })
+            delete modeCache[key]
+          }
+        }
+      }
+
+      this.visibilitySettings[targetMode][key] = visible
+      this.markUserAdjusted()
+    },
+    toggleModuleVisible(key: LayoutModuleVisibilityKey) {
+      this.setModuleVisible(key, !this.visibilitySettings[this.mode][key])
+    },
     toggleCollapse() {
       this.sidebarCollapse = !this.sidebarCollapse
       this.userAdjusted = true // 标记为用户手动调整
@@ -36,6 +204,12 @@ export const useLayoutStore = defineStore('layout', {
       const { loadingCount, pageLoadingCount } = this
       Object.assign(this, {
         ...DEFAULT_LAYOUT_SETTING,
+        visibilitySettings: deepClone(DEFAULT_LAYOUT_VISIBILITY_SETTINGS),
+        moduleRestoreCache: {
+          vertical: {},
+          horizontal: {},
+          mix: {},
+        },
         loadingCount,
         pageLoadingCount,
         // 始终由计数器推导，保证 SSOT 一致性
@@ -120,7 +294,7 @@ export const useLayoutStore = defineStore('layout', {
         // 移动端：强制应用最佳配置
         this.updateSetting('sidebarCollapse', true)
         this.updateSetting('mode', 'vertical')
-        this.updateSetting('showTabs', false)
+        this.setModuleVisible('showTabs', false, 'vertical')
       } else {
         // PC 端：完全信任持久化数据，不做任何修改！
         // 彻底避免 "PC端刷新导致用户配置被覆盖" 的问题

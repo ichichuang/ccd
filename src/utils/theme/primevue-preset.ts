@@ -26,6 +26,13 @@ import { generateColorScale, generateBorderRadiusScale } from './primevue-theme-
 //      “参考结构 & 默认键名” 使用；如需修改设计，应优先改本文件中的 TS 逻辑。
 // 3. 融合范围：仅对架构的配色系统（ThemeCssVars）与尺寸系统（SizeCssVars）做融合；
 //    highlight / mask / floatLabel 等保持 Aura 原始，由已覆盖的 primary / surface 等解析。
+//
+// 4. 尺寸模式与控件/布局缩放：
+//    - 尺寸模式（compact / comfortable / loose）通过 sizeStore.setSize → generateSizeVars →
+//      applySizeTheme 将整份 SizeCssVars 写入 :root，故 --font-size-*、--spacing-*、
+//      --radius-* 及布局变量（--sidebar-width、--header-height 等）均随模式更新。
+//    - Preset 仅引用变量名（如 var(--font-size-md)），不随尺寸切换重建；控件根尺寸
+//      （按钮/输入框的 sm/md/lg）与布局均由 :root 变量值变化而缩放，无需按 mode 区分 token 名。
 // -----------------------------------------------------------------------------
 
 // -----------------------------------------------------------------------------
@@ -86,6 +93,9 @@ const createColorAdapter = () => {
     getDestructive: getRgbVar('destructive'),
     getDestructiveForeground: getRgbVar('destructive-foreground'),
     getDestructiveHover: getRgbVar('destructive-hover'),
+    getInfo: getRgbVar('info'),
+    getInfoForeground: getRgbVar('info-foreground'),
+    getInfoHover: getRgbVar('info-hover'),
   }
 }
 
@@ -99,7 +109,8 @@ type ColorAdapter = ReturnType<typeof createColorAdapter>
  * 将 Aura 的 (colorType, suffix) 映射到架构对齐的适配器 getter
  *
  * 映射规则：
- * - Primary/Info: '' → getPrimary, 'Text' → getPrimaryForeground, 'Hover'/'Active' → getPrimaryHover, 'Border' → getPrimary
+ * - Primary: '' → getPrimary, 'Text' → getPrimaryForeground, 'Hover'/'Active' → getPrimaryHover, 'Border' → getPrimary
+ * - Info: '' → getInfo, 'Text' → getInfoForeground, 'Hover'/'Active' → getInfoHover, 'Border' → getInfo
  * - Secondary: '' → getSecondary, 'Text' → getSecondaryForeground, 'Hover'/'Active' → getSecondary, 'Border' → getSecondary
  * - Success: '' → getSuccess, 'Text' → getSuccessForeground, 'Hover'/'Active' → getSuccessHover, 'Border' → getSuccess
  * - Warn/Help: '' → getWarn, 'Text' → getWarnForeground, 'Hover'/'Active' → getWarnHover, 'Border' → getWarn
@@ -117,9 +128,11 @@ const getAdapterKey = (
   }
 
   // 映射 Aura colorType 到架构命名
-  let mappedType: 'Primary' | 'Secondary' | 'Success' | 'Warn' | 'Destructive'
-  if (colorType === 'Info' || colorType === 'Primary') {
+  let mappedType: 'Primary' | 'Secondary' | 'Success' | 'Warn' | 'Destructive' | 'Info'
+  if (colorType === 'Primary') {
     mappedType = 'Primary'
+  } else if (colorType === 'Info') {
+    mappedType = 'Info'
   } else if (colorType === 'Help' || colorType === 'Warn') {
     mappedType = 'Warn'
   } else if (colorType === 'Danger') {
@@ -224,65 +237,39 @@ const initComponentButtonColorSchemeOptionsItems = (
 
 type RootSizeTokens = {
   sm: Record<string, string>
+  md: Record<string, string>
   lg: Record<string, string>
 }
 
-// 与 Aura 参考（components.json）中 root.sm/root.lg 实际使用的键一致：fontSize、paddingX、paddingY、padding、gap；已移除未被引用的 margin*。
-const getRootSizeTokensByMode = (mode: SizeMode): RootSizeTokens => {
-  switch (mode) {
-    case 'compact':
-      return {
-        sm: {
-          gap: 'var(--spacing-xs)',
-          padding: 'var(--spacing-xs)',
-          paddingX: 'var(--spacing-xs)',
-          paddingY: 'var(--spacing-xs)',
-          fontSize: 'var(--font-size-xs)',
-        },
-        lg: {
-          gap: 'var(--spacing-sm)',
-          padding: 'var(--spacing-sm)',
-          paddingX: 'var(--spacing-sm)',
-          paddingY: 'var(--spacing-sm)',
-          fontSize: 'var(--font-size-sm)',
-        },
-      }
-    case 'loose':
-      return {
-        sm: {
-          gap: 'var(--spacing-md)',
-          padding: 'var(--spacing-md)',
-          paddingX: 'var(--spacing-md)',
-          paddingY: 'var(--spacing-sm)',
-          fontSize: 'var(--font-size-md)',
-        },
-        lg: {
-          gap: 'var(--spacing-lg)',
-          padding: 'var(--spacing-lg)',
-          paddingX: 'var(--spacing-lg)',
-          paddingY: 'var(--spacing-lg)',
-          fontSize: 'var(--font-size-xl)',
-        },
-      }
-    default: // 'comfortable'
-      return {
-        sm: {
-          gap: 'var(--spacing-sm)',
-          padding: 'var(--spacing-sm)',
-          paddingX: 'var(--spacing-sm)',
-          paddingY: 'var(--spacing-xs)',
-          fontSize: 'var(--font-size-sm)',
-        },
-        lg: {
-          gap: 'var(--spacing-lg)',
-          padding: 'var(--spacing-lg)',
-          paddingX: 'var(--spacing-lg)',
-          paddingY: 'var(--spacing-md)',
-          fontSize: 'var(--font-size-lg)',
-        },
-      }
-  }
+// 控件/表单 root.sm、root.md、root.lg 统一使用同一组 Token 名（var(--font-size-*)、var(--spacing-*)）。
+// 具体数值由 :root 的 SizeCssVars 在尺寸模式切换时更新（sizeStore.setSize → generateSizeVars → applySizeTheme），
+// 故此处不按 mode 区分 token 名；mode 参数保留以兼容调用方及后续扩展。
+// 键与 Aura components.json 中 root.sm/root.lg 一致：fontSize、paddingX、paddingY、padding、gap。
+const ROOT_SIZE_TOKENS: RootSizeTokens = {
+  sm: {
+    gap: 'var(--spacing-xs)',
+    padding: 'var(--spacing-xs)',
+    paddingX: 'var(--spacing-xs)',
+    paddingY: 'calc(var(--spacing-xs) / 2)',
+    fontSize: 'var(--font-size-sm)',
+  },
+  md: {
+    gap: 'var(--spacing-sm)',
+    padding: 'var(--spacing-xs) var(--spacing-sm)',
+    paddingX: 'var(--spacing-xs)',
+    paddingY: 'var(--spacing-xs)',
+    fontSize: 'var(--font-size-md)',
+  },
+  lg: {
+    gap: 'var(--spacing-md)',
+    padding: 'var(--spacing-md)',
+    paddingX: 'var(--spacing-md)',
+    paddingY: 'var(--spacing-sm)',
+    fontSize: 'var(--font-size-md)',
+  },
 }
+
+const getRootSizeTokensByMode = (_mode: SizeMode): RootSizeTokens => ROOT_SIZE_TOKENS
 
 export const createCustomPreset = (sizeStore: ReturnType<typeof useSizeStore>) => {
   const colors = createColorAdapter()
@@ -366,9 +353,10 @@ export const createCustomPreset = (sizeStore: ReturnType<typeof useSizeStore>) =
     // 表单控件尺寸 (Input, Button, Dropdown...) - Aura 使用 form.field.sm.font.size 路径
     formField: {
       // 默认（md）：取 sm 与 md 的中值，避免横向偏大，同时完全跟随 Size 系统
-      paddingX: 'calc((var(--spacing-sm) + var(--spacing-md)) / 2)',
+      // paddingX: 'calc((var(--spacing-sm) + var(--spacing-md)) / 2)',
+      paddingX: 'var(--spacing-sm)',
       // 默认（md）：更接近舒适模式的控件高度
-      paddingY: 'var(--spacing-sm)',
+      paddingY: 'var(--spacing-xs)',
       borderRadius: 'var(--radius-md)',
       fontSize: 'var(--font-size-md)', // Base font size
       focusRing: {
@@ -382,30 +370,29 @@ export const createCustomPreset = (sizeStore: ReturnType<typeof useSizeStore>) =
       // 响应式尺寸 (sm/lg) - 与 Aura form.field.sm.font.size 路径一致
       sm: {
         fontSize: 'var(--font-size-sm)',
-        paddingX: 'var(--spacing-sm)',
-        paddingY: 'calc(var(--spacing-sm) / 2)',
+        paddingX: 'var(--spacing-xs)',
+        paddingY: 'calc(var(--spacing-xs) / 2)',
       },
       lg: {
         fontSize: 'var(--font-size-lg)',
-        paddingX: 'calc((var(--spacing-sm) + var(--spacing-md)) / 2)', // 介于 sm 和 md 之间
-        paddingY: 'var(--spacing-md)',
+        paddingX: 'var(--spacing-md)', // 介于 sm 和 md 之间
+        paddingY: 'var(--spacing-sm)',
       },
     },
 
     // 列表项尺寸 (Menu, Select Option...)
     list: {
-      padding: 'var(--spacing-xs)', // Container padding
+      padding: 'var(--spacing-xs) var(--spacing-sm)', // Container padding
       gap: 'var(--spacing-xs)', // Item gap
       header: {
-        padding: 'var(--spacing-sm) var(--spacing-md)', // Py Px
+        padding: 'var(--spacing-xs) var(--spacing-sm)', // Py Px
       },
       option: {
-        padding: 'var(--spacing-sm) var(--spacing-md)', // Py Px
+        padding: 'var(--spacing-xs) var(--spacing-sm)', // Py Px
         borderRadius: 'var(--radius-sm)', // Items usually have smaller radius
       },
       optionGroup: {
-        padding: 'var(--spacing-sm) var(--spacing-md)',
-        fontWeight: '600',
+        padding: 'var(--spacing-xs) var(--spacing-sm)',
       },
     },
 
@@ -413,24 +400,40 @@ export const createCustomPreset = (sizeStore: ReturnType<typeof useSizeStore>) =
     overlay: {
       select: {
         borderRadius: 'var(--radius-md)',
-        shadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1)',
       },
       popover: {
         borderRadius: 'var(--radius-md)',
         padding: 'var(--spacing-md)',
-        shadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1)',
       },
       modal: {
         padding: 'var(--spacing-md)',
-        shadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1)',
-      },
-      navigation: {
-        shadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1)',
       },
     },
 
     content: {
       borderRadius: 'var(--radius-md)',
+    },
+
+    // 遮罩与导航：与尺寸系统过渡/间距/圆角阶梯统一
+    mask: {
+      transitionDuration: 'var(--transition-lg)', // 与 Aura 0.3s 接近，随尺寸模式
+    },
+    navigation: {
+      list: {
+        padding: 'var(--spacing-xs) var(--spacing-sm)',
+        gap: 'var(--spacing-xs)',
+      },
+      item: {
+        padding: 'var(--spacing-xs) var(--spacing-sm)',
+        borderRadius: 'var(--radius-sm)',
+        gap: 'var(--spacing-sm)',
+      },
+      submenuLabel: {
+        padding: 'var(--spacing-xs) var(--spacing-sm)',
+      },
+      submenuIcon: {
+        size: 'var(--font-size-sm)',
+      },
     },
 
     // ✅ 关键: 在colorScheme下定义Primary (Aura要求的结构)
@@ -587,7 +590,7 @@ export const createCustomPreset = (sizeStore: ReturnType<typeof useSizeStore>) =
         transitionDuration: 'var(--transition-md)',
       },
       bar: {
-        size: 'var(--spacing-md)',
+        size: 'var(--spacing-xs)',
         borderRadius: 'var(--radius-sm)',
         focusRing: {
           width: 'calc(var(--spacing-xs) / 2)',
@@ -707,6 +710,7 @@ export const createCustomPreset = (sizeStore: ReturnType<typeof useSizeStore>) =
             // 关闭状态：使用背景色 + 边框，形成「白色胶囊」
             background: 'rgb(var(--background))',
             hoverBackground: 'rgb(var(--background))',
+            disabledBackground: 'rgb(var(--input))',
             // 浅色模式下增加边框，让 OFF 状态轮廓更清晰
             borderColor: 'rgb(var(--border))',
             hoverBorderColor: 'rgb(var(--border))',
@@ -718,8 +722,8 @@ export const createCustomPreset = (sizeStore: ReturnType<typeof useSizeStore>) =
           },
           handle: {
             // 关闭状态：用 muted 作为圆点，在白色轨道上既清晰又柔和
-            background: 'rgb(var(--card))',
-            hoverBackground: 'rgb(var(--card))',
+            background: 'rgb(var(--input))',
+            hoverBackground: 'rgb(var(--border))',
             // 开启状态：回到背景色，在主色轨道上形成浅色圆点
             checkedBackground: 'rgb(var(--background))',
             checkedHoverBackground: 'rgb(var(--background))',
@@ -730,6 +734,7 @@ export const createCustomPreset = (sizeStore: ReturnType<typeof useSizeStore>) =
             // 暗色下关闭状态：用 card 较背景更亮，并加边框，保证轨道可见
             background: 'rgb(var(--card))',
             hoverBackground: 'rgb(var(--card))',
+            disabledBackground: 'rgb(var(--input))',
             borderColor: 'rgb(var(--border))',
             hoverBorderColor: 'rgb(var(--border))',
             checkedBackground: 'rgb(var(--primary))',
@@ -737,8 +742,8 @@ export const createCustomPreset = (sizeStore: ReturnType<typeof useSizeStore>) =
           },
           handle: {
             // 深色模式：手柄用 background，与 card 轨道形成对比
-            background: 'rgb(var(--background))',
-            hoverBackground: 'rgb(var(--background))',
+            background: 'rgb(var(--input))',
+            hoverBackground: 'rgb(var(--border))',
             checkedBackground: 'rgb(var(--background))',
             checkedHoverBackground: 'rgb(var(--background))',
           },
@@ -1107,7 +1112,7 @@ export const createCustomPreset = (sizeStore: ReturnType<typeof useSizeStore>) =
     slider: {
       track: {
         // 未选中轨道：使用中性色，弱化存在感
-        background: 'rgb(var(--muted))',
+        background: 'rgb(var(--input))',
         size: 'var(--spacing-xs)',
         borderRadius: 'var(--radius-md)',
       },
@@ -1306,9 +1311,7 @@ export const createCustomPreset = (sizeStore: ReturnType<typeof useSizeStore>) =
         color: 'rgb(var(--popover-foreground))',
       },
       footer: {
-        // 布局相关依然使用原有 gap/padding（可以不覆写）
-        // gap: '0.5rem',
-        // padding: '...'
+        padding: 'var(--spacing-xs) var(--spacing-sm)',
       },
     },
     // Menu
@@ -1584,7 +1587,7 @@ export const createCustomPreset = (sizeStore: ReturnType<typeof useSizeStore>) =
         background: 'rgb(var(--muted))',
         borderColor: 'rgb(var(--border))',
         color: 'rgb(var(--foreground))',
-        padding: '0.75rem 1rem',
+        padding: 'var(--spacing-xs) var(--spacing-sm)',
       },
       option: {
         color: 'rgb(var(--foreground))',
@@ -1606,7 +1609,7 @@ export const createCustomPreset = (sizeStore: ReturnType<typeof useSizeStore>) =
         background: 'rgb(var(--muted))',
         borderColor: 'rgb(var(--border))',
         color: 'rgb(var(--foreground))',
-        padding: '0.75rem 1rem',
+        padding: 'var(--spacing-xs) var(--spacing-sm)',
       },
       option: {
         color: 'rgb(var(--foreground))',
@@ -1796,12 +1799,13 @@ export const createCustomPreset = (sizeStore: ReturnType<typeof useSizeStore>) =
         focusColor: 'rgb(var(--accent-foreground))',
         activeBackground: 'rgb(var(--accent))', // For submenu
         activeColor: 'rgb(var(--accent-foreground))',
+        padding: 'var(--spacing-sm) var(--spacing-sm) var(--spacing-sm) var(--spacing-md)',
       },
     },
-    // PanelMenu
+    // PanelMenu：rootList / submenu 统一 gap，保证多级菜单均有纵向间距
     panelmenu: {
       root: {
-        gap: '0.25rem',
+        gap: 'var(--spacing-xs)',
       },
       panel: {
         background: 'transparent',
@@ -1822,7 +1826,17 @@ export const createCustomPreset = (sizeStore: ReturnType<typeof useSizeStore>) =
         background: 'transparent',
         borderColor: 'transparent',
         color: 'rgb(var(--foreground))',
-        padding: '0 0 0 1rem',
+        padding: 'var(--spacing-xs) var(--spacing-sm)',
+      },
+      rootList: {
+        display: 'flex',
+        flexDirection: 'column',
+        gap: 'var(--spacing-xs)',
+      },
+      submenu: {
+        display: 'flex',
+        flexDirection: 'column',
+        gap: 'var(--spacing-xs)',
       },
       item: {
         color: 'rgb(var(--foreground))',
@@ -1921,7 +1935,7 @@ export const createCustomPreset = (sizeStore: ReturnType<typeof useSizeStore>) =
   )
 
   // 8. root.sm / root.lg 默认对所有有 root 的组件补全，仅排除 ROOT_SIZE_EXCLUDE
-  const { sm: rootSm, lg: rootLg } = getRootSizeTokensByMode(sizeStore.sizeName)
+  const { sm: rootSm, md: rootMd, lg: rootLg } = getRootSizeTokensByMode(sizeStore.sizeName)
   const components = resultPreset.components
   if (components && typeof components === 'object') {
     for (const [name, config] of Object.entries(components)) {
@@ -1938,6 +1952,11 @@ export const createCustomPreset = (sizeStore: ReturnType<typeof useSizeStore>) =
             c.root.sm[key] = value
           }
         }
+        for (const [key, value] of Object.entries(rootMd)) {
+          if (!(key in c.root)) {
+            c.root[key] = value
+          }
+        }
         for (const [key, value] of Object.entries(rootLg)) {
           if (!(key in c.root.lg)) {
             c.root.lg[key] = value
@@ -1950,12 +1969,12 @@ export const createCustomPreset = (sizeStore: ReturnType<typeof useSizeStore>) =
   // 9. Message 深色：与架构语义色完全对齐（background / border / color / closeButton）
   const messageDarkSemantic = {
     info: {
-      background: 'rgb(var(--primary))',
-      borderColor: 'rgb(var(--primary))',
-      color: 'rgb(var(--primary-foreground))',
+      background: 'rgb(var(--info))',
+      borderColor: 'rgb(var(--info))',
+      color: 'rgb(var(--info-foreground))',
       closeButton: {
         hoverBackground: 'rgb(var(--muted-foreground) / 0.1)',
-        focusRing: { color: 'rgb(var(--primary))' },
+        focusRing: { color: 'rgb(var(--info))' },
       },
     },
     success: {
@@ -2013,13 +2032,13 @@ export const createCustomPreset = (sizeStore: ReturnType<typeof useSizeStore>) =
   // 10. Toast 深色：与架构语义色完全对齐（background / border / color / detailColor / closeButton）
   const toastDarkSemantic = {
     info: {
-      background: 'rgb(var(--primary))',
-      borderColor: 'rgb(var(--primary))',
-      color: 'rgb(var(--primary-foreground))',
-      detailColor: 'rgb(var(--primary-foreground))',
+      background: 'rgb(var(--info))',
+      borderColor: 'rgb(var(--info))',
+      color: 'rgb(var(--info-foreground))',
+      detailColor: 'rgb(var(--info-foreground))',
       closeButton: {
         hoverBackground: 'rgb(var(--muted-foreground) / 0.1)',
-        focusRing: { color: 'rgb(var(--primary))' },
+        focusRing: { color: 'rgb(var(--info))' },
       },
     },
     success: {

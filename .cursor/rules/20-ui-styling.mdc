@@ -12,7 +12,7 @@ Before writing any color-related code, read:
 - `src/stores/modules/theme.ts` - Theme store (useThemeStore)
 
 **Rules:**
-- Use semantic color variables: `text-primary`, `bg-surface-ground`, `border-border`, `text-foreground`
+- Use semantic color variables: `text-primary`, `bg-surface-ground`, `border-border`, `text-foreground`, `text-info`, `bg-info`
 - Support dark mode: use `dark:` variants or CSS variables that auto-switch
 - FORBIDDEN: hex codes like `#fff`, `#000`, `#3665f9`
 - FORBIDDEN: hardcoded color values in `<style>` or inline styles
@@ -65,7 +65,7 @@ Reference `uno.config.ts` for all available semantic classes:
 - `rounded-scale` (uses CSS variable `--radius-md`)
 
 **Color Classes:**
-- `text-primary`, `bg-surface-ground`, `border-border`, `text-foreground`, etc.
+- `text-primary`, `bg-surface-ground`, `border-border`, `text-foreground`, `text-info`, `bg-info`, etc.
 
 **Rules:**
 - MUST use classes from `uno.config.ts`, NO hardcoded px/rem/hex

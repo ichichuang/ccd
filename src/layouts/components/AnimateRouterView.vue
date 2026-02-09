@@ -9,6 +9,7 @@ interface RouteTransition {
   name?: string
   enterTransition?: string
   leaveTransition?: string
+  duration?: string
 }
 
 const route = useRoute()
@@ -89,14 +90,25 @@ const leaveActiveClass = computed(() => {
 
   return (
     rawTransition.value.leaveTransition ||
-    'animate__animated animate__slideOutLeft animate__fast leave-active-class'
+    'animate__animated animate__fadeOut animate__fast leave-active-class'
   )
+})
+
+// 计算样式变量，支持自定义 duration
+const styleVars = computed(() => {
+  const duration = rawTransition.value.duration
+  if (duration) {
+    return {
+      '--animate-duration': duration, // for animate.css
+      '--route-transition-duration': duration, // for fade-slide fallback
+    }
+  }
+  return {}
 })
 </script>
 <template>
   <router-view v-slot="{ Component }">
     <Transition
-      mode="out-in"
       appear
       :name="transitionName || undefined"
       :appear-active-class="
@@ -108,26 +120,47 @@ const leaveActiveClass = computed(() => {
       :leave-active-class="
         hasCustomClass ? leaveActiveClass : !transitionName ? leaveActiveClass : undefined
       "
+      :style="styleVars"
     >
       <component
         :is="Component"
         v-if="!enableKeepAlive"
+        :key="route.fullPath"
       />
       <keep-alive
         v-else
         :include="keepAliveNames"
         :max="10"
       >
-        <component :is="Component" />
+        <component
+          :is="Component"
+          :key="route.fullPath"
+        />
       </keep-alive>
     </Transition>
   </router-view>
 </template>
 <style lang="scss" scoped>
+// 确保 animate.css 动画元素在路由切换时绝对定位，防止堆叠
+:deep(.animate__animated) {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+}
+
 .enter-active-class {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
   animation-duration: 800ms !important;
 }
 .leave-active-class {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
   animation-duration: 400ms !important;
   animation-timing-function: ease-in-out !important;
 }

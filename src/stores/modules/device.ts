@@ -10,8 +10,8 @@ const RESIZE_INTERVAL = 300
 
 export const useDeviceStore = defineStore('device', {
   state: (): DeviceState => ({
-    width: 0,
-    height: 0,
+    width: typeof window === 'undefined' ? 0 : window.innerWidth,
+    height: typeof window === 'undefined' ? 0 : window.innerHeight,
     currentBreakpoint: 'xs' as BreakpointKey, // [修正] 明确类型断言
     type: 'PC',
     os: 'Unknown',
@@ -37,6 +37,8 @@ export const useDeviceStore = defineStore('device', {
     // 物理判定：基于 UA 和 触摸能力
     isTouchDevice: state =>
       state.type === 'Mobile' || state.type === 'Tablet' || 'ontouchstart' in window,
+    isMobileTerminal: state => state.type === 'Mobile',
+    isTabletTerminal: state => state.type === 'Tablet',
 
     /* ==============================================
      * v1.0 兼容性 Getters (确保旧代码不报错)

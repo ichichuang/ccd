@@ -252,10 +252,10 @@ export const goToRoute = (
 
   // 判断是否需要新窗口打开
   // 1. 如果明确指定了 newWindow 参数，则按指定值执行
-  // 2. 如果未指定，则根据路由的 parent 属性自动判断
+  // 2. 如果未指定（undefined），则根据路由的 parent 属性自动判断
   let shouldOpenNewWindow = newWindow
 
-  if (!newWindow) {
+  if (newWindow === undefined) {
     // 获取路由的 parent 属性，默认为 'admin'
     const parent = (targetRoute.meta?.parent as LayoutMode) || 'admin'
 
@@ -331,6 +331,56 @@ export const updateRoute = (name: string, keyPath: string, value: unknown): void
  */
 export const getMenuTree = (): MenuItem[] => {
   return routeUtils.menuTree
+}
+
+/**
+ * 仅 admin 布局下的菜单树（供侧边栏/顶栏使用，已过滤 fullscreen/ratio）
+ */
+export const getAdminMenuTree = (): MenuItem[] => {
+  return routeUtils.getAdminMenuTree()
+}
+
+/** PrimeVue Menu/PanelMenu 单条 model 项（与项目 MenuItem 适配） */
+export interface PrimeMenuModelItem {
+  key: string
+  label: string
+  icon?: string
+  route?: { path: string; name?: string }
+  items?: PrimeMenuModelItem[]
+  /** 点击回调 (PrimeVue MenuItem) */
+  command?: (event: { originalEvent: Event; item: any }) => void
+  /** 层级（顶层为 0） */
+  level: number
+}
+
+/**
+ * 将项目 MenuItem 转为 PrimeVue Menu/PanelMenu 的 model 项
+ * 叶子节点携带 path + name，供 goToRoute 统一处理（含 fullscreen/ratio 新窗口等）
+ */
+export function menuItemToPrimeModel(
+  item: MenuItem,
+  t: (key: string) => string,
+  level = 0
+): PrimeMenuModelItem {
+  const label = item.titleKey ? t(item.titleKey) : item.title
+  const hasChildren = !!(item.children && item.children.length > 0)
+  const primeItem: PrimeMenuModelItem = {
+    key: item.path || item.name || label,
+    label,
+    icon: item.icon,
+    level,
+    // 目录节点不绑定 route；叶子节点携带 path + name 供 goToRoute 使用
+    route: !hasChildren && item.path ? { path: item.path, name: item.name } : undefined,
+    command: () => {
+      if (!hasChildren && item.path) {
+        goToRoute(item.path, undefined, undefined, false)
+      }
+    },
+  }
+  if (item.children && item.children.length > 0) {
+    primeItem.items = item.children.map(child => menuItemToPrimeModel(child, t, level + 1))
+  }
+  return primeItem
 }
 
 /**

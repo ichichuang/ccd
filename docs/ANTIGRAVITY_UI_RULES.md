@@ -27,7 +27,7 @@ Before generating any UI code, you MUST reference and strictly follow:
 ### 2.1 Theme System (配色系统)
 
 - Read: `src/types/systems/theme.d.ts`, `src/constants/theme.ts`, `src/stores/modules/theme.ts`
-- Use semantic color variables: `text-primary`, `bg-surface-ground`, `border-border`
+- Use semantic color variables: `text-primary`, `bg-surface-ground`, `border-border`, `text-info`, `bg-info`
 - Support dark mode with `dark:` variants or CSS variables
 - FORBIDDEN: hex codes (`#fff`, `#000`, etc.)
 
@@ -49,7 +49,7 @@ Before generating any UI code, you MUST reference and strictly follow:
 ### 2.4 UnoCSS Class Names (UnoCSS 类名)
 
 - Reference `uno.config.ts` for all available semantic classes
-- Must use classes defined there: `p-padding-{scale}`, `m-margin-{scale}`, `gap-gap-{scale}`, `fs-{scale}`, `w-sidebarWidth`, `h-headerHeight`, `rounded-scale`, `text-primary`, etc.
+- Must use classes defined there: `p-padding-{scale}`, `m-margin-{scale}`, `gap-gap-{scale}`, `fs-{scale}`, `w-sidebarWidth`, `h-headerHeight`, `rounded-scale`, `text-primary`, `text-info`, `bg-info`, etc.
 - FORBIDDEN: inline styles `style="padding: 16px"` in template
 
 ### 2.5 Logic Tools First (当 UI 需要逻辑时)

@@ -51,7 +51,7 @@ const toKebab = (s: string) => s.replace(/([A-Z])/g, '-$1').toLowerCase()
 function createSemanticSizeRules(): Rule[] {
   return [
     [
-      new RegExp(`^p([tblxy])?-padding-${scaleRegex}$`),
+      new RegExp(`^p([tblrxy])?-padding-${scaleRegex}$`),
       ([, dir, size]: string[]) => {
         const v = `var(--spacing-${size})`
         const suffixes = dirMap[dir || 'default']
@@ -64,7 +64,7 @@ function createSemanticSizeRules(): Rule[] {
       },
     ],
     [
-      new RegExp(`^m([tblxy])?-margin-${scaleRegex}$`),
+      new RegExp(`^m([tblrxy])?-margin-${scaleRegex}$`),
       ([, dir, size]: string[]) => {
         const v = `var(--spacing-${size})`
         const suffixes = dirMap[dir || 'default']
@@ -83,6 +83,34 @@ function createSemanticSizeRules(): Rule[] {
         if (!dirStr) return { gap: v }
         if (dirStr === '-x') return { 'column-gap': v }
         return { 'row-gap': v }
+      },
+    ],
+    // scroll-margin 语义化规则：scroll-m/scroll-mt/scroll-mb 等基于 spacing 阶梯
+    [
+      new RegExp(`^scroll-m([tblrxy])?-gap-${scaleRegex}$`),
+      ([, dir, size]: string[]) => {
+        const v = `var(--spacing-${size})`
+        const suffixes = dirMap[dir || 'default']
+        if (suffixes.length === 0) return { 'scroll-margin': v }
+        const out: Record<string, string> = {}
+        suffixes.forEach(s => {
+          out[`scroll-margin${s}`] = v
+        })
+        return out
+      },
+    ],
+    // margin + spacing 语义化规则：m-gap-/mt-gap-/mb-gap- 等
+    [
+      new RegExp(`^m([tblrxy])?-gap-${scaleRegex}$`),
+      ([, dir, size]: string[]) => {
+        const v = `var(--spacing-${size})`
+        const suffixes = dirMap[dir || 'default']
+        if (suffixes.length === 0) return { margin: v }
+        const out: Record<string, string> = {}
+        suffixes.forEach(s => {
+          out[`margin${s}`] = v
+        })
+        return out
       },
     ],
   ]
@@ -130,7 +158,7 @@ function createScaleRules(): Rule[] {
     y: ['-top', '-bottom'],
   }
   const paddingMarginRule: Rule = [
-    new RegExp(`^([pm])([tblxy])?-scale-${scaleRegex}$`),
+    new RegExp(`^([pm])([tblrxy])?-scale-${scaleRegex}$`),
     ([, type, dir, size]: string[]) => {
       const prop = type === 'p' ? 'padding' : 'margin'
       const suffixes = dir ? scaleDirMap[dir] : ['']
@@ -174,12 +202,12 @@ function createBaseVarRules(): Rule[] {
   for (const key of SIZE_BASE_VAR_KEYS) {
     const cssVar = `var(--${toKebab(key)})`
     rules.push([`p-${toKebab(key)}`, { padding: cssVar }])
-    rules.push([`px-${toKebab(key)}`, { paddingLeft: cssVar, paddingRight: cssVar }])
-    rules.push([`py-${toKebab(key)}`, { paddingTop: cssVar, paddingBottom: cssVar }])
-    rules.push([`pt-${toKebab(key)}`, { paddingTop: cssVar }])
-    rules.push([`pb-${toKebab(key)}`, { paddingBottom: cssVar }])
-    rules.push([`pl-${toKebab(key)}`, { paddingLeft: cssVar }])
-    rules.push([`pr-${toKebab(key)}`, { paddingRight: cssVar }])
+    rules.push([`px-${toKebab(key)}`, { 'padding-left': cssVar, 'padding-right': cssVar }])
+    rules.push([`py-${toKebab(key)}`, { 'padding-top': cssVar, 'padding-bottom': cssVar }])
+    rules.push([`pt-${toKebab(key)}`, { 'padding-top': cssVar }])
+    rules.push([`pb-${toKebab(key)}`, { 'padding-bottom': cssVar }])
+    rules.push([`pl-${toKebab(key)}`, { 'padding-left': cssVar }])
+    rules.push([`pr-${toKebab(key)}`, { 'padding-right': cssVar }])
   }
   return rules
 }
@@ -240,6 +268,11 @@ function buildThemeDemoSafelist(): string[] {
   list.push(
     'border-destructive/50',
     'border-primary/20',
+    'border-primary/30',
+    'border-primary/50',
+    'dark:bg-primary-light',
+    'dark:border-primary/50',
+    'bg-info/10',
     ...COLOR_FAMILIES.quadFamilies.flatMap(family =>
       [10, 20, 30, 40, 50, 60, 70, 80, 90].map(v => `bg-${family}/${v}`)
     )
@@ -283,6 +316,22 @@ function buildThemeDemoSafelist(): string[] {
       `text-${k}`,
       `rounded-scale-${k}`,
       `duration-scale-${k}`,
+      // margin + spacing 语义化类
+      `m-gap-${k}`,
+      `mx-gap-${k}`,
+      `my-gap-${k}`,
+      `mt-gap-${k}`,
+      `mb-gap-${k}`,
+      `ml-gap-${k}`,
+      `mr-gap-${k}`,
+      // scroll-margin + spacing 语义化类
+      `scroll-m-gap-${k}`,
+      `scroll-mx-gap-${k}`,
+      `scroll-my-gap-${k}`,
+      `scroll-mt-gap-${k}`,
+      `scroll-mb-gap-${k}`,
+      `scroll-ml-gap-${k}`,
+      `scroll-mr-gap-${k}`,
     ])
   )
 
@@ -297,7 +346,13 @@ function buildThemeDemoSafelist(): string[] {
   )
 
   // ====== PrimeVue 组件悬停态 ======
-  list.push('hover:bg-sidebar-accent/50', 'bg-destructive/10', 'bg-primary/5')
+  list.push(
+    'hover:bg-sidebar-accent/50',
+    'hover:bg-destructive-light',
+    'bg-destructive/10',
+    'bg-primary/5',
+    'bg-info/10'
+  )
 
   return list
 }
@@ -310,8 +365,10 @@ const themeDemoSafelist = buildThemeDemoSafelist()
 
 const rgbVar = (name: string) => `rgb(var(--${name}) / <alpha-value>)`
 
-function buildThemeColors() {
-  const colors: Record<string, any> = {}
+type ThemeColorValue = string | Record<string, string>
+
+function buildThemeColors(): Record<string, ThemeColorValue> {
+  const colors: Record<string, ThemeColorValue> = {}
 
   // 单一 token：直接映射到同名 CSS 变量
   for (const token of COLOR_FAMILIES.singleTokens) {
@@ -397,12 +454,15 @@ export default defineConfig({
     'truncate-2': 'line-clamp-2 text-ellipsis overflow-hidden',
 
     // 组件快捷方式 (自动联动 SizeStore，统一使用 p-padding-* / gap-gap-*)
+    'c-border': 'border border-solid border-border',
     'c-card':
       'center gap-gap-md p-padding-md rounded-scale-md bg-card text-card-foreground border border-border shadow-sm transition-all duration-scale-md',
     'c-card-hover': 'hover:shadow-md hover:border-primary/50',
     'c-cp': 'cursor-pointer',
     'c-transition': 'transition-all duration-scale-md ease-in-out',
-    'c-theme-swatch': 'w-[var(--spacing-xl)] h-[var(--spacing-xl)] rounded-full',
+    /** 侧边栏展开/收缩宽度过渡（仅 width，时长贴合「展开/收起」） */
+    'sidebar-width-transition': 'transition-[width] duration-scale-lg ease-in-out',
+    'c-theme-swatch': 'w-[var(--spacing-lg)] h-[var(--spacing-lg)] rounded-full',
     'c-select-width': 'min-w-[var(--spacing-3xl)]',
     'c-btn-primary-icon':
       'bg-primary text-primary-foreground border border-primary shadow-sm hover:opacity-90',

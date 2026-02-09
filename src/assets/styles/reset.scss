@@ -45,3 +45,58 @@ img {
   height: 100%;
   vertical-align: middle;
 }
+
+/* 系统默认滚动条设置 （兼容性） */
+::-webkit-scrollbar {
+  width: var(--spacing-sm);
+  height: var(--spacing-sm);
+  background: transparent !important;
+} //滚动条整体部分
+::-webkit-scrollbar-track {
+  background: transparent !important;
+} // 外层轨道
+::-webkit-scrollbar-track-piece {
+  background: transparent !important;
+} //内层轨道，滚动条中间部分（除去）
+::-webkit-scrollbar-thumb {
+  background: rgb(var(--input)) !important;
+  border-radius: var(--radius-md) !important;
+  cursor: pointer;
+} //滚动条里面可以拖动的那个
+::-webkit-scrollbar-corner {
+  background: transparent !important;
+} //边角
+::-webkit-resizer {
+  background: transparent !important;
+}
+
+/* Admin 侧栏 PanelMenu：多级菜单列表统一纵向间距（第三方组件覆盖，仅用变量） */
+.admin-sidebar--fixed {
+  .p-panelmenu-root-list,
+  .p-panelmenu-submenu {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xs);
+  }
+
+  // 针对子菜单增加纵向 padding，使父级菜单项与子菜单之间产生间距
+  .p-panelmenu-submenu {
+    padding-top: var(--spacing-xs);
+    padding-bottom: var(--spacing-xs);
+  }
+
+  // 防止侧边栏收缩动画过程中，PanelMenu 文字换行导致布局错乱
+  .p-panelmenu-header-content,
+  .p-panelmenu-content {
+    overflow: hidden;
+    white-space: nowrap;
+  }
+}
+
+.p-datepicker {
+  .p-datepicker-dropdown {
+    background: rgb(var(--card)) !important;
+    border-color: rgb(var(--border)) !important;
+    color: rgb(var(--card-foreground)) !important;
+  }
+}

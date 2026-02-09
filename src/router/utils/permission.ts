@@ -170,5 +170,15 @@ export const usePermissionGuard = ({
     if (!hasCalledLoadingDone && layoutStore.loadingCount > 0) {
       loadingDone()
     }
+
+    // 仅对 admin 布局下的路由同步标签页：addTab + updateTabActive
+    const permissionStore = usePermissionStore()
+    const parent = to.meta?.parent as LayoutMode | undefined
+    if (parent !== 'fullscreen' && parent !== 'ratio') {
+      if (to.name) {
+        permissionStore.addTab(to.name as string)
+        permissionStore.updateTabActive(to.name as string)
+      }
+    }
   })
 }

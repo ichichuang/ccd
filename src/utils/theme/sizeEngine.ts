@@ -9,6 +9,9 @@ import {
 
 type ScaleKey = (typeof SIZE_SCALE_KEYS)[number]
 
+/** 字体阶梯变量前缀：由 applyRootFontSize 负责写入，applySizeTheme 跳过 */
+const FONT_SIZE_VAR_PREFIX = '--font-size-'
+
 /**
  * 生成系统尺寸 CSS 变量 (含阶梯系统)
  *
@@ -40,7 +43,8 @@ export function generateSizeVars(preset: SizePreset): SizeCssVars {
   }
 
   // --- 生成字体阶梯变量 (xs-5xl) ---
-  // 公式: fontSizeBase × FONT_SCALE_RATIOS[key]
+  // 注意：实际写入由 applyRootFontSize 负责（基于 device+breakpoint+preset），
+  // applySizeTheme 会跳过这些键。此处保留以维持 SizeCssVars 类型完整及降级兼容。
   SIZE_SCALE_KEYS.forEach(key => {
     const size = preset.fontSizeBase * FONT_SCALE_RATIOS[key]
     vars[`--font-size-${key}`] = `${size}px`
@@ -79,6 +83,7 @@ export function generateSizeVars(preset: SizePreset): SizeCssVars {
 export function applySizeTheme(vars: SizeCssVars) {
   const root = document.documentElement
   Object.entries(vars).forEach(([key, value]) => {
+    if (key.startsWith(FONT_SIZE_VAR_PREFIX)) return
     root.style.setProperty(key, value)
   })
   root.style.setProperty('--dialog-settings-width', `${DIALOG_SETTINGS_WIDTH_PX}px`)
@@ -151,13 +156,13 @@ export function decideRootFontSize(ctx: RootFontSizeContext): RootFontSizeDecisi
       break
     case '2xl':
     case '3xl':
-      scaleKey = 'xl'
+      scaleKey = 'lg'
       break
     case '4xl':
-      scaleKey = '2xl'
+      scaleKey = 'xl'
       break
     case '5xl':
-      scaleKey = '3xl'
+      scaleKey = '2xl'
       break
     default:
       scaleKey = 'md'
@@ -173,9 +178,18 @@ export function decideRootFontSize(ctx: RootFontSizeContext): RootFontSizeDecisi
 
 /**
  * 将根字号决策结果应用到文档根元素
+ * 同时写入完整字体阶梯 --font-size-xs ~ --font-size-5xl，
+ * 确保 var() 引用与 rem 解析统一跟随 device+breakpoint+preset
  */
 export function applyRootFontSize(decision: RootFontSizeDecision) {
   const root = document.documentElement
-  root.style.setProperty('--font-size-root', `${decision.pixelValue}px`)
+  const base = decision.pixelValue
+
+  root.style.setProperty('--font-size-root', `${base}px`)
   root.dataset.fontScale = decision.scaleKey
+
+  SIZE_SCALE_KEYS.forEach(key => {
+    const size = base * FONT_SCALE_RATIOS[key]
+    root.style.setProperty(`--font-size-${key}`, `${size}px`)
+  })
 }

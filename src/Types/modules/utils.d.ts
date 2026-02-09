@@ -54,12 +54,12 @@ declare global {
     clear?: () => void
   }
 
-  /** 全局 Message API（Element Plus 风格） */
+  /** 全局 Message API（Element Plus 风格，与 PrimeVue 4 severity 对齐用 warn） */
   interface MessageApi {
     success: (message: string, title?: string) => void
     error: (message: string, title?: string) => void
     info: (message: string, title?: string) => void
-    warning: (message: string, title?: string) => void
+    warn: (message: string, title?: string) => void
   }
 
   interface Window {

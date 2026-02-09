@@ -47,7 +47,7 @@ Before generating UI code, you MUST reference and strictly follow:
    - Types: `src/types/systems/theme.d.ts`
    - Constants: `src/constants/theme.ts`
    - Store: `src/stores/modules/theme.ts`
-   - Use semantic color variables (e.g. `text-primary`, `bg-surface-ground`), NO hex codes.
+   - Use semantic color variables (e.g. `text-primary`, `bg-surface-ground`, `text-info`), NO hex codes.
 
 2. **Size System:**
    - Types: `src/types/systems/size.d.ts`

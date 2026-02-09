@@ -14,8 +14,8 @@ const coreRoutes: RouteConfig[] = [
     component: () => import('@/views/login/login.vue'),
     meta: {
       titleKey: 'router.core.login',
-      parent: 'fullscreen',
       showLink: false,
+      parent: 'fullscreen',
     },
   },
   {
@@ -23,7 +23,8 @@ const coreRoutes: RouteConfig[] = [
     name: 'systemConfiguration',
     meta: {
       title: '系统配置',
-      rank: 0,
+      rank: 1,
+      icon: 'i-lucide-settings',
     },
     children: [
       {
@@ -33,7 +34,7 @@ const coreRoutes: RouteConfig[] = [
         meta: {
           title: '主题系统',
           rank: 1,
-          parent: 'fullscreen',
+          icon: 'i-lucide-palette',
         },
       },
       {
@@ -43,7 +44,7 @@ const coreRoutes: RouteConfig[] = [
         meta: {
           title: '尺寸系统',
           rank: 2,
-          parent: 'fullscreen',
+          icon: 'i-lucide-layout-dashboard',
         },
       },
       {
@@ -53,7 +54,7 @@ const coreRoutes: RouteConfig[] = [
         meta: {
           title: '断点系统',
           rank: 3,
-          parent: 'fullscreen',
+          icon: 'i-lucide-layout-dashboard',
         },
       },
       // scrollbar
@@ -64,7 +65,7 @@ const coreRoutes: RouteConfig[] = [
         meta: {
           title: '滚动条系统',
           rank: 4,
-          parent: 'fullscreen',
+          icon: 'i-lucide-layout-dashboard',
         },
       },
     ],

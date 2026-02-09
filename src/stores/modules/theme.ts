@@ -14,7 +14,7 @@ export const useThemeStore = defineStore('theme', {
   state: (): ThemeState => ({
     mode: 'auto',
     themeName: DEFAULT_THEME_NAME,
-    transitionMode: 'circle',
+    transitionMode: 'curtain',
     transitionDuration: DEFAULT_TRANSITION_DURATION,
   }),
 

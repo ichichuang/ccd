@@ -4,11 +4,6 @@
  */
 export const THEME_PRESETS: ThemePreset[] = [
   {
-    name: 'zinc',
-    primary: '#18181b',
-    accent: '#3f3f46', // 锌灰强调，与主色协调
-  },
-  {
     name: 'deep-blue',
     primary: '#3665f9', // 兼容旧逻辑的兜底
     colors: {
@@ -156,6 +151,59 @@ export const THEME_PRESETS: ThemePreset[] = [
           base: '#262626',
           bg: '#171717',
           foreground: '#fff1f2',
+        },
+      },
+    },
+  },
+  {
+    name: 'jadeite',
+    primary: '#2eb88a', // Updated for better visibility
+    accent: '#ef4444', // Cleaner red
+    colors: {
+      light: {
+        primary: {
+          default: '#2eb88a',
+          hover: '#059669',
+          foreground: '#ffffff', // White text on vibrant green
+          light: '#ecfdf5',
+          lightForeground: '#047857',
+        },
+        accent: {
+          default: '#ef4444',
+          hover: '#dc2626',
+          foreground: '#ffffff',
+          light: '#fef2f2',
+          lightForeground: '#b91c1c',
+        },
+        background: '#fafaf9', // Stone-50 warm background
+        foreground: '#1c1917', // Stone-900
+        neutral: {
+          base: '#e7e5e4', // Stone-200
+          bg: '#f5f5f4', // Stone-100
+          foreground: '#44403c', // Stone-700
+        },
+      },
+      dark: {
+        primary: {
+          default: '#34d399',
+          hover: '#10b981',
+          foreground: '#022c22',
+          light: '#064e3b',
+          lightForeground: '#d1fae5',
+        },
+        accent: {
+          default: '#f87171',
+          hover: '#ef4444',
+          foreground: '#ffffff',
+          light: '#7f1d1d',
+          lightForeground: '#fecaca',
+        },
+        background: '#0c0a09', // Stone-950
+        foreground: '#f5f5f4', // Stone-100
+        neutral: {
+          base: '#292524', // Stone-800
+          bg: '#1c1917', // Stone-900
+          foreground: '#d6d3d1', // Stone-300
         },
       },
     },

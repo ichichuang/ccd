@@ -137,7 +137,7 @@ const renderSlot = () => <span class="text-muted-foreground">动态内容</span>
 
 **规则：**
 
-- 颜色必须使用语义变量（如 `text-primary`、`bg-surface-ground`、`border-border`），禁止硬编码 hex（如 `#fff`、`#000`）
+- 颜色必须使用语义变量（如 `text-primary`、`bg-surface-ground`、`border-border`、`text-info`、`bg-info`），禁止硬编码 hex（如 `#fff`、`#000`）
 - 支持暗黑模式，使用 `dark:` 变体或 CSS 变量自动切换
 - 所有颜色值必须来自 `uno.config.ts` 中定义的语义类或 CSS 变量
 
@@ -193,7 +193,7 @@ const renderSlot = () => <span class="text-muted-foreground">动态内容</span>
 - **布局变量类：** `w-sidebarWidth`、`h-headerHeight`、`w-sidebarCollapsedWidth` 等
 - **字体阶梯类：** `fs-xs`、`fs-sm`、`fs-md`、`fs-lg`、`fs-xl`、`fs-2xl`、`fs-3xl`、`fs-4xl`、`fs-5xl`
 - **圆角类：** `rounded-scale`（使用 CSS 变量 `--radius-md`）
-- **配色类：** `text-primary`、`bg-surface-ground`、`border-border` 等（使用 CSS 变量）
+- **配色类：** `text-primary`、`bg-surface-ground`、`border-border`、`text-info`、`bg-info` 等（使用 CSS 变量）
 
 **规则：**
 

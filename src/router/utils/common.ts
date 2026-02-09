@@ -1,6 +1,55 @@
 import type { RouteRecordRaw } from 'vue-router'
 
 /**
+ * 按 meta.parent 过滤路由树，仅保留属于指定布局的路由。
+ * - layoutParent === 'admin' 时保留 meta.parent 为 undefined 或 'admin' 的节点
+ * - 用于侧边栏/顶栏菜单与标签页只展示 admin 布局下的路由
+ */
+export function filterRoutesByParent(
+  routes: RouteConfig[],
+  layoutParent: LayoutMode
+): RouteConfig[] {
+  return routes
+    .filter(route => {
+      const parent = route.meta?.parent as LayoutMode | undefined
+      if (layoutParent === 'admin') {
+        if (parent === 'fullscreen' || parent === 'ratio') return false
+        return true
+      }
+      return parent === layoutParent
+    })
+    .map(route => ({
+      ...route,
+      children:
+        route.children && route.children.length > 0
+          ? filterRoutesByParent(route.children, layoutParent)
+          : undefined,
+    }))
+}
+
+/**
+ * 仅对「顶层」按 meta.parent 过滤，子路由不做递归过滤。
+ *
+ * 用途：
+ * - AdminSidebar 需要完整的多级菜单树（例如父级在 admin，但子级可能是 fullscreen 打开）
+ * - 仅展示层级与入口；实际打开方式由 goToRoute / meta.parent 等决定
+ */
+export function filterTopLevelRoutesByParent(
+  routes: RouteConfig[],
+  layoutParent: LayoutMode
+): RouteConfig[] {
+  return routes
+    .filter(route => {
+      const parent = route.meta?.parent as LayoutMode | undefined
+      if (layoutParent === 'admin') {
+        return parent !== 'fullscreen' && parent !== 'ratio'
+      }
+      return parent === layoutParent
+    })
+    .map(route => ({ ...route }))
+}
+
+/**
  * 过滤meta中showLink为false的菜单
  */
 export function filterShowLinkMenus(routes: RouteConfig[]): RouteConfig[] {
@@ -593,6 +642,7 @@ export function getKeepAliveNames(routes: RouteConfig[]): string[] {
 export function createRouteUtils(routes: RouteConfig[]): RouteUtils {
   const normalizedRoutes = normalizeRatioMetaOnRoutes(routes)
   const sortedRoutes = sortRoutes([...normalizedRoutes])
+  let currentRouteTree: RouteConfig[] = sortedRoutes
 
   return {
     flatRoutes: flattenRoutes(sortedRoutes),
@@ -602,11 +652,16 @@ export function createRouteUtils(routes: RouteConfig[]): RouteUtils {
     updateRouteUtils(newRoutes: RouteConfig[]) {
       const normalized = normalizeRatioMetaOnRoutes(newRoutes)
       const newSortedRoutes = sortRoutes([...normalized])
+      currentRouteTree = newSortedRoutes
       this.flatRoutes = flattenRoutes(newSortedRoutes)
-      // 修复：generateMenuTree 应该接收原始的路由结构，而不是扁平化的路由
       this.menuTree = generateMenuTree(newSortedRoutes)
       this.breadcrumbMap = generateBreadcrumbMap(newSortedRoutes)
       this.keepAliveNames = getKeepAliveNames(newSortedRoutes)
+    },
+    getAdminMenuTree(): MenuItem[] {
+      // 侧栏菜单：仅过滤顶层，保留完整子树以支持多级目录
+      const filtered = filterTopLevelRoutesByParent(currentRouteTree, 'admin')
+      return generateMenuTree(filtered)
     },
   }
 }

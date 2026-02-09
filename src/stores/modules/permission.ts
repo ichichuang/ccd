@@ -1,7 +1,14 @@
 // import { getAuthRoutes } from '@/api/auth'
 import { deepClone } from '@/utils/lodashes'
-import { getFlatMenuTree, getFlatRouteList } from '@/router/utils/helper'
+import { getAdminMenuTree, getFlatRouteList } from '@/router/utils/helper'
 import store from '@/stores'
+
+function flattenMenuPaths(items: MenuItem[]): string[] {
+  return items.flatMap(item => [
+    item.path,
+    ...(item.children && item.children.length > 0 ? flattenMenuPaths(item.children) : []),
+  ])
+}
 import { createPiniaEncryptedSerializer } from '@/utils/safeStorage/piniaSerializer'
 import { defineStore } from 'pinia'
 import type { LocationQueryRaw } from 'vue-router'
@@ -106,36 +113,32 @@ export const usePermissionStore = defineStore('permission', {
         return cached
       }
     },
-    // 添加标签页
+    // 添加标签页（仅 admin 布局下的路由，且需在 admin 菜单树中）
     addTab(name: RouteConfig['name'] | RouteConfig['path']) {
-      const flattenMenuTree = getFlatMenuTree()
       const route = getFlatRouteList().find(route => route.name === name || route.path === name)
-      if (route) {
-        // hiddenTag: 隐藏标签，不加入 tabs
-        if (route.meta?.hiddenTag) {
-          return
-        }
-        // 如果标签页已存在，则不添加
-        if (this.tabs.some(tab => tab.name === name || tab.path === name)) {
-          return
-        }
-        // 只有菜单树中存在的路由才添加到标签页
-        if (flattenMenuTree.some(menu => menu.path === route.path)) {
-          // 确保路由数据符合 TabItem 接口要求
-          const tabItem: TabItem = {
-            name: route.name || '',
-            path: route.path || '',
-            titleKey: route.meta?.titleKey,
-            title: route.meta?.title,
-            label: '', // 初始为空，由getter动态计算
-            active: false,
-            icon: route.meta?.icon,
-            fixed: route.meta?.fixedTag || false,
-            deletable: route.meta?.deletable !== false,
-          }
-          this.tabs.push(tabItem)
-        }
+      if (!route) return
+      // 仅 admin 布局：fullscreen/ratio 不加入 tabs
+      const parent = route.meta?.parent as LayoutMode | undefined
+      if (parent === 'fullscreen' || parent === 'ratio') return
+      // hiddenTag: 隐藏标签，不加入 tabs
+      if (route.meta?.hiddenTag) return
+      if (this.tabs.some(tab => tab.name === name || tab.path === name)) return
+      // 只有 admin 菜单树中存在的路由才添加到标签页
+      const adminMenuTree = getAdminMenuTree()
+      const adminPaths = flattenMenuPaths(adminMenuTree)
+      if (!adminPaths.includes(route.path)) return
+      const tabItem: TabItem = {
+        name: route.name || '',
+        path: route.path || '',
+        titleKey: route.meta?.titleKey,
+        title: route.meta?.title,
+        label: '',
+        active: false,
+        icon: route.meta?.icon,
+        fixed: route.meta?.fixedTag || false,
+        deletable: route.meta?.deletable !== false,
       }
+      this.tabs.push(tabItem)
     },
     // 移除标签页
     removeTab(name: RouteConfig['name'] | RouteConfig['path']) {

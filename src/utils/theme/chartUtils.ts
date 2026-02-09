@@ -56,7 +56,7 @@ export function getChartSystemVariables(): ChartSystemVariables {
     accent100: getCssRgbColor('accent'),
     primaryColor: getCssRgbColor('primary'),
     successColor: getCssRgbColor('success'),
-    infoColor: getCssRgbColor('accent'), // Info 复用 accent 色系
+    infoColor: getCssRgbColor('info'),
     warnColor: getCssRgbColor('warn'),
     dangerColor: getCssRgbColor('destructive'),
     helpColor: getCssRgbColor('accent'),

@@ -53,6 +53,8 @@ declare module 'vue-router' {
       enterTransition?: string
       /** 离场动画 */
       leaveTransition?: string
+      /** 动画时长 (e.g. '0.5s' or '500ms') */
+      duration?: string
     }
   }
 }
@@ -121,6 +123,16 @@ declare global {
     deletable: boolean
   }
 
+  /** 面包屑项类型（用于面包屑栏渲染，与 route.matched 映射结构一致；redirect 仅存可 push 的字符串） */
+  interface BreadcrumbItem {
+    path: string
+    redirect?: string
+    name?: import('vue-router').RouteRecordName
+    allowRedirect: boolean
+    title: string
+    icon?: string
+  }
+
   /** 路由工具类型 */
   interface RouteUtils {
     /** 扁平化路由 */
@@ -133,6 +145,8 @@ declare global {
     keepAliveNames: string[]
     /** 更新路由工具（用于动态路由加载后更新） */
     updateRouteUtils: (routes: RouteConfig[]) => void
+    /** 仅 admin 布局下的菜单树（供侧边栏/顶栏使用） */
+    getAdminMenuTree: () => MenuItem[]
   }
 
   /** 动态路由管理器接口 */

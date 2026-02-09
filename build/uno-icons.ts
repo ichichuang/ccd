@@ -254,16 +254,37 @@ function createCustomIconLoader(): CustomIconLoader {
 // ---------------------------------------------------------------------------
 
 function buildLayoutSafelistClasses(): string[] {
-  const layout = LAYOUT_DIMENSION_KEYS.flatMap(k => [`w-${k}`, `h-${k}`, `md:w-${k}`])
+  const layout = LAYOUT_DIMENSION_KEYS.flatMap(k => [
+    `w-${k}`,
+    `h-${k}`,
+    `min-w-${k}`,
+    `max-w-${k}`,
+    `min-h-${k}`,
+    `max-h-${k}`,
+    `md:w-${k}`,
+  ])
   const padding = SIZE_SCALE_KEYS.flatMap(s => [
     `p-padding-${s}`,
     `px-padding-${s}`,
     `py-padding-${s}`,
+    `pt-padding-${s}`,
+    `pb-padding-${s}`,
+    `pl-padding-${s}`,
+    `pr-padding-${s}`,
     `md:px-padding-${s}`,
   ])
-  const margin = SIZE_SCALE_KEYS.map(s => `m-margin-${s}`)
+  const margin = SIZE_SCALE_KEYS.flatMap(s => [
+    `m-margin-${s}`,
+    `mx-margin-${s}`,
+    `my-margin-${s}`,
+    `mt-margin-${s}`,
+    `mb-margin-${s}`,
+    `ml-margin-${s}`,
+    `mr-margin-${s}`,
+  ])
+  const marginGap = SIZE_SCALE_KEYS.flatMap(s => [`m-gap-${s}`, `mt-gap-${s}`, `mb-gap-${s}`])
   const gap = SIZE_SCALE_KEYS.map(s => `gap-gap-${s}`)
-  return [...layout, ...padding, ...margin, ...gap]
+  return [...layout, ...padding, ...margin, ...marginGap, ...gap]
 }
 
 const LAYOUT_SAFELIST_CLASSES = buildLayoutSafelistClasses()

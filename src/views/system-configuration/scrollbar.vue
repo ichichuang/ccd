@@ -1,13 +1,23 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-import CScrollbar from '@/components/CScrollbar/CScrollbar.vue'
 import type { OverlayScrollbars } from 'overlayscrollbars'
+import Button from 'primevue/button'
+import Card from 'primevue/card'
+import Tag from 'primevue/tag'
+import SelectButton from 'primevue/selectbutton'
 
 const scrollbarRef = ref<InstanceType<typeof CScrollbar> | null>(null)
 const logs = ref<string[]>([])
+
+// Visibility options
+const visibilityOptions = [
+  { label: 'Auto', value: 'auto' },
+  { label: 'Visible', value: 'visible' },
+  { label: 'Hidden', value: 'hidden' },
+]
 const visibility = ref<'auto' | 'visible' | 'hidden'>('auto')
 
-// 模拟长内容
+// Mock content
 const items = Array.from({ length: 50 }, (_, i) => ({
   id: i,
   title: `Scroll Item ${i + 1}`,
@@ -16,6 +26,18 @@ const items = Array.from({ length: 50 }, (_, i) => ({
 }))
 const horizontalItems = Array.from({ length: 20 }, (_, i) => `Column ${i + 1}`)
 
+// Copy to clipboard utility
+function copyToClipboard(text: string, label?: string) {
+  navigator.clipboard
+    .writeText(text)
+    .then(() => {
+      window.$message?.success(`已复制: ${label || text}`)
+    })
+    .catch(() => {
+      window.$message?.error('复制失败')
+    })
+}
+
 function addLog(msg: string) {
   const time = new Date().toLocaleTimeString()
   logs.value.unshift(`[${time}] ${msg}`)
@@ -23,28 +45,26 @@ function addLog(msg: string) {
 }
 
 function handleInitialized() {
-  addLog('Initialized')
+  addLog('🚀 Initialized')
 }
 
 function handleUpdated() {
-  addLog('Updated')
+  addLog('🔄 Updated')
 }
 
 function handleScroll(_: OverlayScrollbars, event: Event) {
   const target = event.target as HTMLElement
-  // 节流日志输出，仅在特定位置或偶尔输出
   if (Math.random() > 0.9) {
-    addLog(`Scroll: ${target.scrollTop}px`)
+    addLog(`📜 Scroll: ${target.scrollTop}px`)
   }
 }
 
 function scrollToTop() {
   scrollbarRef.value?.scrollTo({ top: 0, behavior: 'smooth' })
-  addLog('Action: Scroll to Top')
+  addLog('⬆️ Action: Scroll to Top')
 }
 
 function scrollToBottom() {
-  // 获取滚动内容高度
   const instance = scrollbarRef.value?.getInstance()
   if (instance) {
     const { scrollOffsetElement } = instance.elements()
@@ -52,189 +72,393 @@ function scrollToBottom() {
       top: scrollOffsetElement.scrollHeight,
       behavior: 'smooth',
     })
-    addLog('Action: Scroll to Bottom')
+    addLog('⬇️ Action: Scroll to Bottom')
   }
 }
 
 function checkState() {
   const state = scrollbarRef.value?.state()
-  addLog(`State: ${JSON.stringify(state, null, 2)}`)
+  addLog(`🔍 State: ${JSON.stringify(state, null, 2)}`)
 }
 
-function toggleVisibility() {
-  const modes: ('auto' | 'visible' | 'hidden')[] = ['auto', 'visible', 'hidden']
-  const nextIndex = (modes.indexOf(visibility.value) + 1) % modes.length
-  visibility.value = modes[nextIndex]
-  addLog(`Action: Visibility -> ${visibility.value}`)
-}
+// Code examples
+const usageExamples = [
+  {
+    title: 'Basic Usage',
+    code: `<CScrollbar class="h-[400px]">
+  <div>Your scrollable content</div>
+</CScrollbar>`,
+  },
+  {
+    title: 'With Options',
+    code: `<CScrollbar
+  :options="{ scrollbars: { autoHide: 'leave' } }"
+  visibility="auto"
+>
+  <div>Content</div>
+</CScrollbar>`,
+  },
+  {
+    title: 'With Events',
+    code: `<CScrollbar
+  ref="scrollbarRef"
+  @initialized="onInit"
+  @updated="onUpdate"
+  @scroll="onScroll"
+>
+  <div>Content</div>
+</CScrollbar>`,
+  },
+  {
+    title: 'Scroll Methods',
+    code: `// Scroll to position
+scrollbarRef.value?.scrollTo({
+  top: 0,
+  behavior: 'smooth'
+})
+
+// Get instance
+const instance = scrollbarRef.value?.getInstance()
+
+// Get state
+const state = scrollbarRef.value?.state()`,
+  },
+]
 </script>
 
 <template>
-  <div class="h-full w-full p-4 flex flex-col gap-4 overflow-hidden">
-    <!-- 头部控制栏 -->
-    <div
-      class="bg-card rounded-lg border p-4 shadow-sm flex flex-wrap gap-4 items-center justify-between shrink-0"
-    >
-      <div class="flex items-center gap-2">
-        <div class="p-2 bg-primary/10 rounded-full">
-          <div class="i-lucide-scroll text-primary text-xl" />
-        </div>
-        <div>
-          <h1 class="text-lg font-bold">CScrollbar 演示</h1>
-          <p class="text-sm text-muted-foreground">基于 OverlayScrollbars 的高性能滚动容器</p>
-        </div>
-      </div>
-
-      <div class="flex items-center gap-2">
-        <button
-          class="inline-flex items-center justify-center gap-2 px-4 py-2 text-sm font-medium transition-colors rounded-md hover:bg-muted focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 border shadow-sm bg-background"
-          @click="toggleVisibility"
-        >
-          <div class="i-lucide-eye w-4 h-4" />
-          {{ visibility.toUpperCase() }}
-        </button>
-        <div class="h-4 w-[1px] bg-border mx-2" />
-        <button
-          class="inline-flex items-center justify-center gap-2 px-4 py-2 text-sm font-medium transition-colors rounded-md hover:bg-muted focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 border shadow-sm bg-background"
-          @click="scrollToTop"
-        >
-          <div class="i-lucide-arrow-up-to-line w-4 h-4" />
-          Top
-        </button>
-        <button
-          class="inline-flex items-center justify-center gap-2 px-4 py-2 text-sm font-medium transition-colors rounded-md hover:bg-muted focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 border shadow-sm bg-background"
-          @click="scrollToBottom"
-        >
-          <div class="i-lucide-arrow-down-to-line w-4 h-4" />
-          Bottom
-        </button>
-        <button
-          class="inline-flex items-center justify-center gap-2 px-4 py-2 text-sm font-medium transition-colors rounded-md bg-primary text-primary-foreground shadow hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50"
-          @click="checkState"
-        >
-          <div class="i-lucide-bug w-4 h-4" />
-          Debug
-        </button>
-      </div>
-    </div>
-
-    <!-- 主体内容 -->
-    <div class="flex items-start gap-4 flex-1 min-h-0">
-      <!-- 左侧：垂直滚动 (固定高度容器演示) -->
-      <div class="w-2/5 h-full flex flex-col gap-4 min-w-[300px]">
-        <div class="bg-card rounded-lg border shadow-sm flex flex-col h-full overflow-hidden">
-          <div class="p-4 border-b shrink-0 flex justify-between items-center bg-muted/20">
-            <h2 class="font-semibold flex items-center gap-2">
-              <div class="i-lucide-arrow-up-down w-4 h-4 text-muted-foreground" />
-              Vertical Scroll
-            </h2>
-            <span class="text-xs text-muted-foreground bg-muted px-2 py-0.5 rounded">h-full</span>
+  <CScrollbar class="h-full p-padding-lg bg-surface-ground">
+    <div class="max-w-7xl mx-auto flex flex-col gap-gap-xl">
+      <!-- Header -->
+      <div class="flex flex-col gap-gap-xs">
+        <div class="flex items-center gap-gap-md">
+          <div class="p-padding-md bg-primary/10 rounded-scale-lg">
+            <Icons
+              name="i-lucide-scroll"
+              class="text-primary fs-2xl"
+            />
           </div>
+          <div>
+            <h1 class="fs-2xl font-bold text-foreground">CScrollbar Component</h1>
+            <p class="text-muted-foreground">基于 OverlayScrollbars 的高性能滚动容器组件</p>
+          </div>
+        </div>
+      </div>
 
-          <div class="flex-1 min-h-0 relative">
-            <CScrollbar
-              ref="scrollbarRef"
-              :visibility="visibility"
-              class="h-full"
-              @initialized="handleInitialized"
-              @updated="handleUpdated"
-              @scroll="handleScroll"
-            >
-              <div class="p-4 space-y-3">
-                <div
-                  v-for="item in items"
-                  :key="item.id"
-                  class="p-3 rounded-lg border bg-card hover:bg-accent/50 transition-colors group cursor-default"
-                >
-                  <div class="flex justify-between items-start mb-1">
-                    <span class="font-medium text-sm group-hover:text-primary transition-colors">{{
-                      item.title
-                    }}</span>
-                    <span class="text-xs text-muted-foreground">{{ item.date }}</span>
+      <!-- Control Panel -->
+      <Card class="border border-border">
+        <template #title>
+          <div class="flex items-center gap-gap-sm">
+            <Icons
+              name="i-lucide-settings"
+              class="text-primary"
+            />
+            <span>Controls 控制面板</span>
+          </div>
+        </template>
+        <template #content>
+          <div class="flex flex-wrap items-center gap-gap-lg">
+            <div class="flex flex-col gap-gap-sm">
+              <span class="text-muted-foreground fs-sm">Visibility Mode</span>
+              <SelectButton
+                v-model="visibility"
+                :options="visibilityOptions"
+                option-label="label"
+                option-value="value"
+              />
+            </div>
+            <div class="h-8 w-px bg-border mx-gap-md hidden md:block" />
+            <div class="flex gap-gap-sm flex-wrap">
+              <Button
+                label="Scroll to Top"
+                icon="i-lucide-arrow-up-to-line"
+                severity="secondary"
+                outlined
+                @click="scrollToTop"
+              />
+              <Button
+                label="Scroll to Bottom"
+                icon="i-lucide-arrow-down-to-line"
+                severity="secondary"
+                outlined
+                @click="scrollToBottom"
+              />
+              <Button
+                label="Check State"
+                icon="i-lucide-bug"
+                severity="info"
+                @click="checkState"
+              />
+              <Button
+                label="Clear Logs"
+                icon="i-lucide-trash-2"
+                severity="danger"
+                text
+                @click="logs = []"
+              />
+            </div>
+          </div>
+        </template>
+      </Card>
+
+      <!-- Demo Section -->
+      <div class="grid grid-cols-1 lg:grid-cols-5 gap-gap-lg">
+        <!-- Vertical Scroll Demo -->
+        <Card class="border border-border lg:col-span-2">
+          <template #title>
+            <div class="flex items-center justify-between">
+              <div class="flex items-center gap-gap-sm">
+                <Icons
+                  name="i-lucide-arrow-up-down"
+                  class="text-primary"
+                />
+                <span>Vertical Scroll</span>
+              </div>
+              <Tag
+                value="h-[400px]"
+                severity="secondary"
+              />
+            </div>
+          </template>
+          <template #content>
+            <div class="scroll-demo-vertical -mt-2">
+              <CScrollbar
+                ref="scrollbarRef"
+                :visibility="visibility"
+                class="h-full"
+                @initialized="handleInitialized"
+                @updated="handleUpdated"
+                @scroll="handleScroll"
+              >
+                <div class="p-padding-sm space-y-3">
+                  <div
+                    v-for="item in items"
+                    :key="item.id"
+                    class="p-padding-md rounded-scale-md border border-border bg-card hover:bg-accent/50 transition-colors group cursor-default"
+                  >
+                    <div class="flex justify-between items-start mb-1">
+                      <span class="font-medium fs-sm group-hover:text-primary transition-colors">
+                        {{ item.title }}
+                      </span>
+                      <span class="fs-xs text-muted-foreground">{{ item.date }}</span>
+                    </div>
+                    <p class="fs-xs text-muted-foreground leading-relaxed">
+                      {{ item.desc }}
+                    </p>
                   </div>
-                  <p class="text-xs text-muted-foreground leading-relaxed">
-                    {{ item.desc }}
-                  </p>
                 </div>
+              </CScrollbar>
+            </div>
+          </template>
+        </Card>
+
+        <!-- Right Side -->
+        <div class="flex flex-col gap-gap-lg lg:col-span-3">
+          <!-- Horizontal Scroll Demo -->
+          <Card class="border border-border">
+            <template #title>
+              <div class="flex items-center gap-gap-sm">
+                <Icons
+                  name="i-lucide-arrow-left-right"
+                  class="text-primary"
+                />
+                <span>Horizontal Scroll</span>
               </div>
-            </CScrollbar>
-          </div>
+            </template>
+            <template #content>
+              <div class="scroll-demo-horizontal -mt-2">
+                <CScrollbar
+                  :visibility="visibility"
+                  class="h-full"
+                >
+                  <div class="flex p-padding-sm gap-gap-md w-max h-full items-center">
+                    <div
+                      v-for="item in horizontalItems"
+                      :key="item"
+                      class="scroll-demo-tile rounded-scale-md border border-border bg-gradient-to-br from-background to-muted flex items-center justify-center shrink-0 shadow-sm hover:shadow-md transition-all hover:-translate-y-1"
+                    >
+                      <span class="font-medium text-muted-foreground">{{ item }}</span>
+                    </div>
+                  </div>
+                </CScrollbar>
+              </div>
+            </template>
+          </Card>
+
+          <!-- Event Logs -->
+          <Card class="border border-border flex-1">
+            <template #title>
+              <div class="flex items-center justify-between">
+                <div class="flex items-center gap-gap-sm">
+                  <Icons
+                    name="i-lucide-terminal"
+                    class="text-primary"
+                  />
+                  <span>Event Logs</span>
+                </div>
+                <Tag
+                  :value="`${logs.length} events`"
+                  severity="secondary"
+                />
+              </div>
+            </template>
+            <template #content>
+              <div class="scroll-demo-logs bg-surface-ground rounded-scale-md -mt-2">
+                <CScrollbar class="h-full">
+                  <div class="p-padding-md font-mono fs-xs space-y-1">
+                    <div
+                      v-if="logs.length === 0"
+                      class="text-muted-foreground italic select-none py-8 text-center"
+                    >
+                      Waiting for events...
+                    </div>
+                    <div
+                      v-for="(log, i) in logs"
+                      :key="i"
+                      class="break-all border-b border-white/5 pb-0.5 mb-0.5 last:border-0"
+                      :class="log.includes('Action') ? 'text-info font-bold' : 'text-success/80'"
+                    >
+                      {{ log }}
+                    </div>
+                  </div>
+                </CScrollbar>
+              </div>
+            </template>
+          </Card>
         </div>
       </div>
 
-      <!-- 右侧：混合演示 -->
-      <div class="flex-1 h-full flex flex-col gap-4 min-w-0">
-        <!-- 上部分：水平滚动 -->
-        <div class="bg-card rounded-lg border shadow-sm flex flex-col shrink-0 h-[200px]">
-          <div class="p-4 border-b shrink-0 flex justify-between items-center bg-muted/20">
-            <h2 class="font-semibold flex items-center gap-2">
-              <div class="i-lucide-arrow-left-right w-4 h-4 text-muted-foreground" />
-              Horizontal Scroll
-            </h2>
+      <!-- Code Examples -->
+      <Card class="border border-border">
+        <template #title>
+          <div class="flex items-center gap-gap-sm">
+            <Icons
+              name="i-lucide-code"
+              class="text-primary"
+            />
+            <span>Code Examples 代码示例</span>
+            <Tag
+              value="Click to copy"
+              severity="info"
+            />
           </div>
-          <div class="flex-1 min-h-0 relative">
-            <CScrollbar
-              :visibility="visibility"
-              class="h-full"
+        </template>
+        <template #content>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-gap-lg">
+            <div
+              v-for="example in usageExamples"
+              :key="example.title"
+              class="flex flex-col gap-gap-sm"
             >
-              <div class="flex p-4 gap-4 w-max h-full items-center">
-                <div
-                  v-for="item in horizontalItems"
-                  :key="item"
-                  class="w-[180px] h-[120px] rounded-lg border bg-gradient-to-br from-background to-muted flex items-center justify-center shrink-0 shadow-sm hover:shadow-md transition-all hover:-translate-y-1"
-                >
-                  <span class="font-medium text-muted-foreground">{{ item }}</span>
-                </div>
-              </div>
-            </CScrollbar>
+              <h4 class="font-semibold text-foreground flex items-center gap-gap-sm">
+                {{ example.title }}
+                <Button
+                  icon="i-lucide-copy"
+                  severity="secondary"
+                  text
+                  size="small"
+                  @click="copyToClipboard(example.code, example.title)"
+                />
+              </h4>
+              <pre
+                class="bg-muted/50 p-padding-md rounded-scale-md overflow-x-auto fs-sm cursor-pointer hover:bg-muted/70 transition-colors"
+                @click="copyToClipboard(example.code, example.title)"
+              ><code class="text-foreground">{{ example.code }}</code></pre>
+            </div>
           </div>
-        </div>
+        </template>
+      </Card>
 
-        <!-- 下部分：日志 -->
-        <div
-          class="bg-card rounded-lg border shadow-sm flex flex-col flex-1 min-h-0 overflow-hidden"
-        >
-          <div class="p-4 border-b shrink-0 flex justify-between items-center bg-muted/20">
-            <h2 class="font-semibold flex items-center gap-2">
-              <div class="i-lucide-terminal w-4 h-4 text-muted-foreground" />
-              Event Logs
-            </h2>
-            <button
-              class="text-xs px-2 py-1 hover:bg-background rounded border border-transparent hover:border-border transition-colors text-muted-foreground"
-              @click="logs = []"
-            >
-              Clear Logs
-            </button>
+      <!-- Props Reference -->
+      <Card class="border border-border">
+        <template #title>
+          <div class="flex items-center gap-gap-sm">
+            <Icons
+              name="i-lucide-book-open"
+              class="text-primary"
+            />
+            <span>Props & Events 属性与事件</span>
           </div>
-          <div class="flex-1 min-h-0 bg-[#0c0c0c] relative">
-            <CScrollbar class="h-full">
-              <div class="p-4 font-mono text-xs space-y-1">
-                <div
-                  v-if="logs.length === 0"
-                  class="text-gray-600 italic select-none py-8 text-center"
-                >
-                  Waiting for events...
-                </div>
-                <div
-                  v-for="(log, i) in logs"
-                  :key="i"
-                  class="break-all border-b border-white/5 pb-0.5 mb-0.5 last:border-0"
-                  :class="log.includes('Action') ? 'text-blue-400 font-bold' : 'text-green-400/80'"
-                >
-                  {{ log }}
-                </div>
-              </div>
-            </CScrollbar>
+        </template>
+        <template #content>
+          <div class="overflow-x-auto">
+            <table class="w-full border-collapse fs-sm">
+              <thead>
+                <tr class="border-b border-border">
+                  <th class="text-left p-padding-sm text-muted-foreground font-medium">Name</th>
+                  <th class="text-left p-padding-sm text-muted-foreground font-medium">Type</th>
+                  <th class="text-left p-padding-sm text-muted-foreground font-medium">Default</th>
+                  <th class="text-left p-padding-sm text-muted-foreground font-medium">
+                    Description
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr class="border-b border-border/50">
+                  <td class="p-padding-sm font-mono text-primary">options</td>
+                  <td class="p-padding-sm font-mono text-muted-foreground">
+                    OverlayScrollbarsOptions
+                  </td>
+                  <td class="p-padding-sm font-mono">-</td>
+                  <td class="p-padding-sm">OverlayScrollbars 配置对象</td>
+                </tr>
+                <tr class="border-b border-border/50">
+                  <td class="p-padding-sm font-mono text-primary">visibility</td>
+                  <td class="p-padding-sm font-mono text-muted-foreground">
+                    'auto' | 'visible' | 'hidden'
+                  </td>
+                  <td class="p-padding-sm font-mono">'auto'</td>
+                  <td class="p-padding-sm">滚动条可见性模式</td>
+                </tr>
+                <tr class="border-b border-border/50">
+                  <td class="p-padding-sm font-mono text-primary">@initialized</td>
+                  <td class="p-padding-sm font-mono text-muted-foreground">(instance) => void</td>
+                  <td class="p-padding-sm font-mono">-</td>
+                  <td class="p-padding-sm">初始化完成事件</td>
+                </tr>
+                <tr class="border-b border-border/50">
+                  <td class="p-padding-sm font-mono text-primary">@updated</td>
+                  <td class="p-padding-sm font-mono text-muted-foreground">(instance) => void</td>
+                  <td class="p-padding-sm font-mono">-</td>
+                  <td class="p-padding-sm">更新事件</td>
+                </tr>
+                <tr class="border-b border-border/50">
+                  <td class="p-padding-sm font-mono text-primary">@scroll</td>
+                  <td class="p-padding-sm font-mono text-muted-foreground">
+                    (instance, event) => void
+                  </td>
+                  <td class="p-padding-sm font-mono">-</td>
+                  <td class="p-padding-sm">滚动事件</td>
+                </tr>
+              </tbody>
+            </table>
           </div>
-        </div>
-      </div>
+        </template>
+      </Card>
     </div>
-  </div>
+  </CScrollbar>
 </template>
 
-<style scoped>
-/* Ensure the parent of this component allows it to grow */
-:deep(.os-scrollbar-handle) {
-  /* Optional customization if needed */
+<style lang="scss" scoped>
+/* 演示区固定高度，用于滚动行为展示（仅使用 CSS 变量，便于主题/尺寸系统扩展） */
+.scroll-demo-vertical {
+  height: var(--scroll-demo-vertical-h, 25rem);
+}
+.scroll-demo-horizontal {
+  height: var(--scroll-demo-horizontal-h, 8.75rem);
+}
+.scroll-demo-logs {
+  height: var(--scroll-demo-logs-h, 11.25rem);
+}
+.scroll-demo-tile {
+  width: var(--scroll-demo-tile-w, 10rem);
+  height: var(--scroll-demo-tile-h, 6.25rem);
+}
+
+pre {
+  margin: 0;
+}
+code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
 }
 </style>

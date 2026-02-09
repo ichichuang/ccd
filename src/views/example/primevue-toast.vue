@@ -14,8 +14,8 @@ const handleMessageInfo = () => {
   window.$message?.info('这是一条普通提示')
 }
 
-const handleMessageWarning = () => {
-  window.$message?.warning('请注意，此操作不可逆')
+const handleMessageWarn = () => {
+  window.$message?.warn('请注意，此操作不可逆')
 }
 
 /** 1.2 $message 带 title */
@@ -115,14 +115,14 @@ const handleToastRemoveGroup = (group: string) => {
             @click="handleMessageInfo"
           />
           <Button
-            label="Warning"
-            severity="warning"
-            @click="handleMessageWarning"
+            label="Warn"
+            severity="warn"
+            @click="handleMessageWarn"
           />
         </div>
         <p class="text-muted-foreground fs-sm">
-          success(message, title?) / error(message, title?) / info(message, title?) /
-          warning(message, title?)
+          success(message, title?) / error(message, title?) / info(message, title?) / warn(message,
+          title?)
         </p>
         <div class="flex flex-wrap gap-gap-md">
           <Button
@@ -205,7 +205,7 @@ const handleToastRemoveGroup = (group: string) => {
           />
           <Button
             label="Warn (左下)"
-            severity="warning"
+            severity="warn"
             @click="() => handleToastWarnIn('bottom-left')"
           />
         </div>

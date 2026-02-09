@@ -1,12 +1,12 @@
 <script setup lang="tsx">
-import Button from 'primevue/button'
+import type { DialogPosition } from '@/components/prime-dialog/utils/types'
 import { useDialog } from '@/hooks/modules/useDialog'
 import { ref } from 'vue'
 
 const {
   info,
   success,
-  warning,
+  warn,
   error,
   confirm,
   confirmDelete,
@@ -21,7 +21,7 @@ const {
 // --- 1. 基础反馈弹窗 (Basic Feedback) ---
 const handleInfo = () => info('这是一条普通的信息提示', '信息提示')
 const handleSuccess = () => success('操作成功！数据已保存', '成功')
-const handleWarning = () => warning('请注意，此操作不可逆', '警告')
+const handleWarn = () => warn('请注意，此操作不可逆', '警告')
 const handleError = () => error('发生错误，请稍后重试', '错误')
 
 // --- 2. 确认类弹窗 (Confirmation) ---
@@ -156,8 +156,11 @@ const handleHeaderRenderer = () => {
     maximizable: true,
     headerRenderer: ({ close, maximize }) => (
       <div class="flex items-center justify-between w-full gap-gap-md">
-        <span class="fs-lg font-semibold text-primary">
-          <span class="i-lucide-sparkles mr-1" />
+        <span class="fs-lg font-semibold text-primary flex items-center gap-gap-xs">
+          <Icons
+            name="i-lucide-sparkles"
+            size="sm"
+          />
           自定义 Header
         </span>
         <div class="flex gap-gap-xs">
@@ -334,7 +337,10 @@ const handleCustomContent = () => {
     contentRenderer: () => (
       <div class="p-padding-lg gap-gap-md flex flex-col">
         <div class="flex items-center gap-gap-md bg-surface-ground p-padding-md rounded-scale">
-          <span class="i-lucide-box text-primary fs-xl" />
+          <Icons
+            name="i-lucide-box"
+            class="text-primary fs-xl"
+          />
           <span>完全自定义的内容区域</span>
         </div>
         <div class="flex items-center gap-gap-md">
@@ -373,7 +379,7 @@ const handleNested = () => {
 }
 
 // 位置演示
-const handlePosition = (pos: any) => {
+const handlePosition = (pos: DialogPosition) => {
   openDialog({
     header: `Position: ${pos}`,
     position: pos,
@@ -411,9 +417,9 @@ const handlePosition = (pos: any) => {
             @click="handleSuccess"
           />
           <Button
-            label="Warning"
-            severity="warning"
-            @click="handleWarning"
+            label="Warn"
+            severity="warn"
+            @click="handleWarn"
           />
           <Button
             label="Error"
@@ -571,7 +577,7 @@ const handlePosition = (pos: any) => {
           <Button
             label="Interceptor (beforeSure)"
             outlined
-            severity="warning"
+            severity="warn"
             @click="handleIntercept"
           />
           <Button
@@ -709,5 +715,3 @@ const handlePosition = (pos: any) => {
     </div>
   </CScrollbar>
 </template>
-
-<style lang="scss" scoped></style>

@@ -15,8 +15,17 @@
     <Icons name="i-custom:custom-juejin" />
     <Icons name="i-custom:language-cn" />
     <Icons name="i-custom:language-en" />
-    sadasdsa
-    <div>艾薇儿王企鹅期望奇沃尔期望</div>
+
+    <Button size="small">小按钮</Button>
+    <Button>中按钮</Button>
+    <Button size="large">大按钮</Button>
+
+    <div
+      v-for="i in 100"
+      :key="i"
+    >
+      {{ i }}：这是一段文字，一段普通文本
+    </div>
   </div>
 </template>
 <style lang="scss" scoped></style>
