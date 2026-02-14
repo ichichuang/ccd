@@ -9,7 +9,7 @@
 ## 1. The "UnoCSS Only" Mandate
 
 - You are FORBIDDEN from writing CSS blocks for layout, spacing, or colors (e.g. `.class { color: red; padding: 10px; }`).
-- You MUST use UnoCSS utilities and the project's semantic classes (e.g. `text-primary`, `bg-surface-ground`, `px-padding-lg`, `gap-scale-md`, `rounded-scale`).
+- You MUST use UnoCSS utilities and the project's semantic classes (e.g. `text-primary`, `bg-surface-ground`, `px-padding-lg`, `gap-md`, `rounded-scale`).
 - Use semantic color variables only; DO NOT use hex codes like `#fff`.
 - FORBIDDEN: Hardcoded px/rem/hex values. Must use semantic classes from `uno.config.ts` or CSS variables.
 
@@ -27,6 +27,7 @@ Before generating any UI code, you MUST reference and strictly follow:
 ### 2.1 Theme System (配色系统)
 
 - Read: `src/types/systems/theme.d.ts`, `src/constants/theme.ts`, `src/stores/modules/theme.ts`
+- PrimeVue 主题融合（Button 等组件配色）：`docs/PRIMEVUE_THEME.md`
 - Use semantic color variables: `text-primary`, `bg-surface-ground`, `border-border`, `text-info`, `bg-info`
 - Support dark mode with `dark:` variants or CSS variables
 - FORBIDDEN: hex codes (`#fff`, `#000`, etc.)
@@ -34,7 +35,7 @@ Before generating any UI code, you MUST reference and strictly follow:
 ### 2.2 Size System (尺寸系统)
 
 - Read: `src/types/systems/size.d.ts`, `src/constants/size.ts`, `src/constants/sizeScale.ts`, `src/stores/modules/size.ts`
-- Use semantic size classes: `px-padding-lg`, `m-margin-md`, `gap-gap-xl`, `fs-md`
+- Use semantic size classes: `px-padding-lg`, `m-margin-md`, `gap-xl`, `fs-md`
 - Use layout variables: `w-sidebarWidth`, `h-headerHeight`
 - FORBIDDEN: hardcoded px (`padding: 16px`, `font-size: 14px`, `width: 240px`)
 
@@ -49,7 +50,7 @@ Before generating any UI code, you MUST reference and strictly follow:
 ### 2.4 UnoCSS Class Names (UnoCSS 类名)
 
 - Reference `uno.config.ts` for all available semantic classes
-- Must use classes defined there: `p-padding-{scale}`, `m-margin-{scale}`, `gap-gap-{scale}`, `fs-{scale}`, `w-sidebarWidth`, `h-headerHeight`, `rounded-scale`, `text-primary`, `text-info`, `bg-info`, etc.
+- Must use classes defined there: `p-padding-{scale}`, `m-margin-{scale}`, `gap-{scale}`（勿用已废弃的 `gap-gap-*`）, `fs-{scale}`, `w-sidebarWidth`, `h-headerHeight`, `rounded-scale`, `text-primary`, `text-info`, `bg-info`, etc.
 - FORBIDDEN: inline styles `style="padding: 16px"` in template
 
 ### 2.5 Logic Tools First (当 UI 需要逻辑时)
@@ -102,10 +103,15 @@ Because `AutoImport` scans all `src/api/**/*`:
 ### 3.3 Logic Tools Priority
 
 - **HTTP:** MUST use `@src/hooks/modules/useHttpRequest.ts` (or `src/utils/http/*`). **Forbidden: `axios`, `fetch`.**
+- **Connection/Reconnect:** MUST use `@src/utils/http/connection.ts` (`connectionManager`).
+- **File Upload:** MUST use `@src/utils/http/uploadManager.ts` (`addUploadTask`, `pauseUploadTask` etc.).
 - **Date/Time:** MUST use `@src/hooks/modules/useDateUtils.ts` (auto-locale/timezone).
 - **Element Size:** MUST use `@src/hooks/modules/useAppElementSize.ts`.
-- **theme:** MUST use `@src/hooks/modules/useThemeSwitch.ts`.
+- **Fullscreen:** MUST use `@src/hooks/layout/useFull.ts` (`useFull(target?)` → `isFullscreen`, `enter`, `exit`, `toggle`).
+- **Theme:** MUST use `@src/hooks/modules/useThemeSwitch.ts`.
+- **ECharts Theme:** MUST use `@src/hooks/modules/useChartTheme/` (`useChartTheme(option)` responsive hook).
 - **Locale:** MUST use `@src/hooks/modules/useLocale.ts`.
+- **Device Sync:** MUST use `@src/utils/deviceSync.ts` (pre-mount device/breakpoint detection without Pinia).
 - **IDs:** MUST use `@src/utils/ids.ts`.
 - **Cloning/Merges:** MUST use `@src/utils/lodashes.ts`.
 

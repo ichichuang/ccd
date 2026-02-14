@@ -6,6 +6,12 @@ export const routeWhitePathList: string[] = ['/login', '/register', '/example']
 export const routeWhiteNameList: string[] = ['Login', 'Register', 'Example']
 
 /**
+ * 是否启用登录/鉴权模式
+ * 默认开启；可通过 VITE_AUTH_ENABLED=false 关闭
+ */
+export const AUTH_ENABLED = import.meta.env.VITE_AUTH_ENABLED !== 'false'
+
+/**
  * 错误页面配置
  * 系统错误页面的路径
  */

@@ -1,12 +1,14 @@
 <script setup lang="tsx">
 import type { DialogPosition } from '@/components/prime-dialog/utils/types'
+import Button from 'primevue/button'
 import { useDialog } from '@/hooks/modules/useDialog'
 import { ref } from 'vue'
+import Icons from '@/components/Icons/Icons.vue'
 
 const {
   info,
   success,
-  warn,
+  warning,
   error,
   confirm,
   confirmDelete,
@@ -21,7 +23,7 @@ const {
 // --- 1. 基础反馈弹窗 (Basic Feedback) ---
 const handleInfo = () => info('这是一条普通的信息提示', '信息提示')
 const handleSuccess = () => success('操作成功！数据已保存', '成功')
-const handleWarn = () => warn('请注意，此操作不可逆', '警告')
+const handleWarn = () => warning('请注意，此操作不可逆', '警告')
 const handleError = () => error('发生错误，请稍后重试', '错误')
 
 // --- 2. 确认类弹窗 (Confirmation) ---
@@ -45,7 +47,7 @@ const handleConfirmDelete = () => {
 const handleModalTrue = () => {
   openDialog({
     header: '模态弹窗 (Modal: True)',
-    modal: true, // 默认通常为 true
+    modal: true,
     contentRenderer: () => <div class="p-padding-lg">背面内容不可点击，有遮罩层。</div>,
   })
 }
@@ -54,8 +56,7 @@ const handleModalFalse = () => {
   openDialog({
     header: '非模态弹窗 (Modal: False)',
     modal: false,
-    width: '400px',
-    position: 'topleft', // 移到角落方便测试
+    position: 'topleft',
     contentRenderer: () => <div class="p-padding-lg">你可以点击背面的按钮！</div>,
   })
 }
@@ -65,7 +66,7 @@ const handleCloseOnMask = () => {
   openDialog({
     header: '点击遮罩关闭',
     modal: true,
-    closeOnMask: true, // 对应 PrimeVue dismissableMask
+    closeOnMask: true,
     contentRenderer: () => <div class="p-padding-lg">点击弹窗外部的遮罩层可以直接关闭此弹窗。</div>,
   })
 }
@@ -110,9 +111,9 @@ const handleMaximizable = () => {
 // 4.1 隐藏头部 (No Header)
 const handleNoHeader = () => {
   openDialog({
-    hideHeader: true, // 隐藏整个头部
+    hideHeader: true,
     contentRenderer: ({ index }) => (
-      <div class="p-padding-xl text-center flex flex-col items-center gap-gap-md">
+      <div class="p-padding-xl text-center flex flex-col items-center gap-md">
         <span class="fs-lg font-bold">没有标题栏</span>
         <p>适合用于自定义程度很高的弹窗。</p>
         <Button
@@ -128,9 +129,8 @@ const handleNoHeader = () => {
 const handleNoCloseIcon = () => {
   openDialog({
     header: '无关闭图标',
-    closable: false, // PrimeVue 属性
-    // hideClose: true // 某些封装可能用的这个别名，这里以 types.ts 为准，DialogOptionsBase 继承 PrimeVue
-    contentRenderer: ({ index }) => (
+    closable: false,
+    contentRenderer: () => (
       <div class="p-padding-lg">
         <p>右上角没有 X 按钮。</p>
         <p>你必须通过底部按钮或 ESC (如果开启) 关闭。</p>
@@ -155,15 +155,15 @@ const handleHeaderRenderer = () => {
     header: '自定义头部',
     maximizable: true,
     headerRenderer: ({ close, maximize }) => (
-      <div class="flex items-center justify-between w-full gap-gap-md">
-        <span class="fs-lg font-semibold text-primary flex items-center gap-gap-xs">
+      <div class="flex items-center justify-between w-full gap-md">
+        <span class="fs-lg font-semibold text-primary flex items-center gap-xs">
           <Icons
             name="i-lucide-sparkles"
             size="sm"
           />
           自定义 Header
         </span>
-        <div class="flex gap-gap-xs">
+        <div class="flex gap-xs">
           <Button
             icon="i-lucide-maximize-2"
             text
@@ -191,10 +191,10 @@ const handleHeaderRenderer = () => {
 const handleFooterRenderer = () => {
   openDialog({
     header: '自定义底部',
-    footerRenderer: ({ options, index }) => (
-      <div class="flex items-center justify-between w-full gap-gap-md">
+    footerRenderer: ({ index }) => (
+      <div class="flex items-center justify-between w-full gap-md">
         <span class="text-muted-foreground fs-sm">自定义 Footer 布局</span>
-        <div class="flex gap-gap-sm">
+        <div class="flex gap-sm">
           <Button
             label="稍后"
             text
@@ -237,15 +237,14 @@ const handleIntercept = () => {
     header: '输入验证拦截',
     contentRenderer: () => <div class="p-padding-lg">点击确定时会模拟验证，2秒后通过。</div>,
     beforeSure: (done, { closeLoading }) => {
-      // 模拟 API 验证
       setTimeout(() => {
         const pass = Math.random() > 0.5
         if (pass) {
           success('验证通过')
-          done() // 关闭弹窗
+          done()
         } else {
           error('验证失败，请重试')
-          closeLoading() // 停止按钮 loading 状态，保持弹窗打开
+          closeLoading()
         }
       }, 1500)
     },
@@ -314,7 +313,6 @@ const handleOpenMultiple = () => {
 }
 
 // --- 8. 异步与自定义 (Async & Custom) ---
-// 使用 sureBtnLoading + beforeSure，由组件内部管理 loading，避免修改只读 store
 const handleAsyncConfirm = () => {
   openDialog({
     header: '手动异步 Loading',
@@ -333,17 +331,16 @@ const handleCustomContent = () => {
   const count = ref(0)
   openDialog({
     header: '自定义 TSX 内容',
-    width: '500px',
     contentRenderer: () => (
-      <div class="p-padding-lg gap-gap-md flex flex-col">
-        <div class="flex items-center gap-gap-md bg-surface-ground p-padding-md rounded-scale">
+      <div class="p-padding-lg gap-md flex flex-col">
+        <div class="flex items-center gap-md bg-card p-padding-md rounded-scale-md">
           <Icons
             name="i-lucide-box"
             class="text-primary fs-xl"
           />
           <span>完全自定义的内容区域</span>
         </div>
-        <div class="flex items-center gap-gap-md">
+        <div class="flex items-center gap-md">
           <span>Counter: {count.value}</span>
           <Button
             size="small"
@@ -359,7 +356,6 @@ const handleCustomContent = () => {
 const handleNested = () => {
   openDialog({
     header: 'Level 1',
-    width: '400px',
     contentRenderer: () => (
       <div class="p-padding-lg text-center">
         <Button
@@ -367,7 +363,6 @@ const handleNested = () => {
           onClick={() => {
             openDialog({
               header: 'Level 2',
-              width: '300px',
               modal: true,
               contentRenderer: () => <div class="p-padding-lg">最上层弹窗</div>,
             })
@@ -383,17 +378,16 @@ const handlePosition = (pos: DialogPosition) => {
   openDialog({
     header: `Position: ${pos}`,
     position: pos,
-    width: '300px',
-    modal: false, // 位置演示用非模态看效果更好
+    modal: false,
     contentRenderer: () => <div class="p-padding-lg">Located at {pos}</div>,
   })
 }
 </script>
 
 <template>
-  <CScrollbar class="h-full p-padding-lg bg-surface-ground">
-    <div class="max-w-6xl mx-auto flex flex-col gap-gap-xl">
-      <div class="flex flex-col gap-gap-xs">
+  <CScrollbar class="h-full p-padding-lg bg-background">
+    <div class="w-full max-w-[80vw] mx-auto flex flex-col gap-xl">
+      <div class="flex flex-col gap-xs">
         <h1 class="fs-2xl font-bold text-foreground">Dialog Component Full Demo</h1>
         <p class="text-muted-foreground">
           全功能演示：基于 useDialog 的二次封装，涵盖所有 Props 控制与交互模式。
@@ -401,11 +395,11 @@ const handlePosition = (pos: DialogPosition) => {
       </div>
 
       <!-- 1. 常用预设 -->
-      <section class="flex flex-col gap-gap-md">
+      <section class="flex flex-col gap-md">
         <h2 class="fs-lg font-semibold border-b border-border pb-padding-xs">
           1. 常用预设 (Presets)
         </h2>
-        <div class="flex flex-wrap gap-gap-md">
+        <div class="flex flex-wrap gap-md">
           <Button
             label="Info"
             severity="info"
@@ -441,18 +435,18 @@ const handlePosition = (pos: DialogPosition) => {
       </section>
 
       <!-- 2. 交互控制 -->
-      <section class="flex flex-col gap-gap-md">
+      <section class="flex flex-col gap-md">
         <h2 class="fs-lg font-semibold border-b border-border pb-padding-xs">
           2. 交互控制 (Behaviors)
         </h2>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-gap-md">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-md">
           <!-- Mask -->
           <div
-            class="p-padding-md border border-border rounded-scale bg-card flex flex-col gap-gap-sm"
+            class="p-padding-md border border-border rounded-scale-md bg-card flex flex-col gap-sm"
           >
             <h3 class="font-medium text-foreground">遮罩层 (Mask/Modal)</h3>
-            <div class="flex flex-wrap gap-gap-sm">
+            <div class="flex flex-wrap gap-sm">
               <Button
                 label="Modal (Default)"
                 size="small"
@@ -475,10 +469,10 @@ const handlePosition = (pos: DialogPosition) => {
 
           <!-- ESC & Close Icon -->
           <div
-            class="p-padding-md border border-border rounded-scale bg-card flex flex-col gap-gap-sm"
+            class="p-padding-md border border-border rounded-scale-md bg-card flex flex-col gap-sm"
           >
             <h3 class="font-medium text-foreground">关闭方式 (Closing)</h3>
-            <div class="flex flex-wrap gap-gap-sm">
+            <div class="flex flex-wrap gap-sm">
               <Button
                 label="Enable ESC"
                 size="small"
@@ -501,10 +495,10 @@ const handlePosition = (pos: DialogPosition) => {
 
           <!-- Drag & Resize -->
           <div
-            class="p-padding-md border border-border rounded-scale bg-card flex flex-col gap-gap-sm"
+            class="p-padding-md border border-border rounded-scale-md bg-card flex flex-col gap-sm"
           >
             <h3 class="font-medium text-foreground">拖拽与缩放 (Drag & Resize)</h3>
-            <div class="flex flex-wrap gap-gap-sm">
+            <div class="flex flex-wrap gap-sm">
               <Button
                 label="Draggable"
                 size="small"
@@ -528,11 +522,11 @@ const handlePosition = (pos: DialogPosition) => {
       </section>
 
       <!-- 3. 界面显示 -->
-      <section class="flex flex-col gap-gap-md">
+      <section class="flex flex-col gap-md">
         <h2 class="fs-lg font-semibold border-b border-border pb-padding-xs">
           3. 界面显示 (Visibility)
         </h2>
-        <div class="flex flex-wrap gap-gap-md">
+        <div class="flex flex-wrap gap-md">
           <Button
             label="Hide Header"
             severity="secondary"
@@ -564,11 +558,11 @@ const handlePosition = (pos: DialogPosition) => {
       </section>
 
       <!-- 4. 逻辑控制 -->
-      <section class="flex flex-col gap-gap-md">
+      <section class="flex flex-col gap-md">
         <h2 class="fs-lg font-semibold border-b border-border pb-padding-xs">
           4. 逻辑控制 (Logic)
         </h2>
-        <div class="flex flex-wrap gap-gap-md">
+        <div class="flex flex-wrap gap-md">
           <Button
             label="Async Button Loading"
             outlined
@@ -596,11 +590,11 @@ const handlePosition = (pos: DialogPosition) => {
       </section>
 
       <!-- 5. 生命周期回调 -->
-      <section class="flex flex-col gap-gap-md">
+      <section class="flex flex-col gap-md">
         <h2 class="fs-lg font-semibold border-b border-border pb-padding-xs">
           5. 生命周期回调 (Lifecycle)
         </h2>
-        <div class="flex flex-wrap gap-gap-md">
+        <div class="flex flex-wrap gap-md">
           <Button
             label="open/close 回调"
             severity="secondary"
@@ -623,11 +617,11 @@ const handlePosition = (pos: DialogPosition) => {
       </section>
 
       <!-- 6. 多弹窗管理 -->
-      <section class="flex flex-col gap-gap-md">
+      <section class="flex flex-col gap-md">
         <h2 class="fs-lg font-semibold border-b border-border pb-padding-xs">
           6. 多弹窗管理 (Multi-Dialog)
         </h2>
-        <div class="flex flex-wrap gap-gap-md items-center">
+        <div class="flex flex-wrap gap-md items-center">
           <Button
             label="Open 3 Dialogs"
             severity="info"
@@ -651,11 +645,11 @@ const handlePosition = (pos: DialogPosition) => {
       </section>
 
       <!-- 7. 位置控制 -->
-      <section class="flex flex-col gap-gap-md">
+      <section class="flex flex-col gap-md">
         <h2 class="fs-lg font-semibold border-b border-border pb-padding-xs">
           7. 位置控制 (Position)
         </h2>
-        <div class="flex flex-wrap gap-gap-sm">
+        <div class="flex flex-wrap gap-sm">
           <Button
             label="Top"
             size="small"

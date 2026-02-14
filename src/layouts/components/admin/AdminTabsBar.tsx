@@ -38,8 +38,8 @@ export default defineComponent({
     const tabRefs = ref<Map<string, HTMLElement>>(new Map())
 
     const activeTabStyle = ref({
-      left: '0px',
-      width: '0px',
+      left: '0',
+      width: '0',
       opacity: '0',
     })
 
@@ -254,17 +254,15 @@ export default defineComponent({
         <div class="relative w-full h-tabsHeight z-10 select-none">
           <CScrollbar
             ref={scrollContainer}
-            class="w-full h-full bg-background/80 backdrop-blur-sm border-b border-border [&_.os-scrollbar-horizontal]:[--os-size:2px] [&_.os-scrollbar-horizontal]:[--os-padding-perpendicular:0] [&_.os-scrollbar-horizontal]:[--os-padding-axis:0]"
             options={{
-              overflow: {
-                x: 'scroll',
-                y: 'hidden',
+              scrollbars: {
+                visibility: 'hidden',
               },
             }}
           >
             <div
               ref={tabsContainerRef}
-              class="flex items-end gap-gap-xs px-padding-md h-full relative min-w-max"
+              class="flex items-end gap-xs px-padding-md h-full relative min-w-max"
             >
               {/* Sliding Highlight Indicator */}
               <div
@@ -283,7 +281,7 @@ export default defineComponent({
                     data-path={tab.path}
                     class={[
                       'group relative flex items-center gap-scale-sm px-scale-md py-scale-xs h-full',
-                      'rounded-t-lg cursor-pointer transition-all duration-scale-md border-t border-x mb-[-1px]',
+                      'rounded-scale-md cursor-pointer transition-all duration-scale-md border-t border-x mb-[-1px]',
                       active
                         ? 'bg-primary/10 dark:bg-primary-light/50 border-primary/30 dark:border-primary/50 text-primary'
                         : 'bg-transparent border-transparent text-muted-foreground hover:bg-muted/40 hover:text-foreground',
@@ -307,7 +305,7 @@ export default defineComponent({
                     {!tab.fixed && tab.deletable && (
                       <div
                         class={[
-                          'size-1-1 rounded-full transition duration-scale-md h-66% center hover:bg-destructive-light/50',
+                          'size-1-1 h-[66%] rounded-scale-md center transition-opacity duration-scale-md hover:bg-destructive-light/50',
                           active ? 'opacity-100' : 'opacity-0 group-hover:opacity-100',
                         ]}
                         onClick={e => onCloseTab(e, tab)}
@@ -335,7 +333,7 @@ export default defineComponent({
           >
             {contextMenu.value.visible && (
               <div
-                class="fixed z-50 min-w-[var(--spacing-3xl)] bg-popover/95 backdrop-blur-sm border border-border shadow-lg rounded-scale-md p-padding-xs py-padding-sm flex flex-col gap-gap-xs origin-top-left"
+                class="fixed z-50 min-w-[var(--spacing-3xl)] bg-popover/95 backdrop-blur-sm border border-border shadow-lg rounded-scale-md p-padding-xs py-padding-sm flex flex-col gap-xs origin-top-left"
                 style={{ top: `${contextMenu.value.y}px`, left: `${contextMenu.value.x}px` }}
               >
                 {[
@@ -359,7 +357,7 @@ export default defineComponent({
                   <div
                     key={option.label}
                     class="
-                                flex items-center gap-gap-sm px-padding-sm py-padding-xs rounded-scale-sm
+                                flex items-center gap-sm px-padding-sm py-padding-xs rounded-scale-sm
                                 fs-sm text-popover-foreground hover:bg-accent hover:text-accent-foreground
                                 cursor-pointer duration-scale-md
                             "

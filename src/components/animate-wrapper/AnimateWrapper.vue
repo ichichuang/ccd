@@ -2,6 +2,10 @@
 import { defaultAnimateConfig } from './utils/constants'
 import type { AnimateName, AnimateWrapperProps } from './utils/types'
 
+defineOptions({
+  inheritAttrs: false,
+})
+
 const props = withDefaults(defineProps<AnimateWrapperProps>(), {
   ...defaultAnimateConfig,
 })
@@ -84,7 +88,8 @@ const handleBeforeLeave = (el: Element) => {
   >
     <div
       v-if="show"
-      class="full"
+      class="layout-full"
+      v-bind="$attrs"
     >
       <slot />
     </div>

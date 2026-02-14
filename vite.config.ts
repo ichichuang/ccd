@@ -35,8 +35,6 @@ const PX_TO_REM_SELECTOR_BLACKLIST: (string | RegExp)[] = [
   /^\.p-/, // 如果引入 PrimeVue，建议加上这个前缀排除
   // 排除明确标记的类
   /no-rem/,
-  // 排除媒体查询
-  /^@media.*\.(xs|sm|md|lg|xl|2xl):/,
 ]
 
 export default ({ mode, command }: ConfigEnv): UserConfigExport => {
@@ -127,7 +125,7 @@ export default ({ mode, command }: ConfigEnv): UserConfigExport => {
     build: {
       target: 'es2020',
       sourcemap: VITE_BUILD_SOURCEMAP,
-      chunkSizeWarningLimit: 2000,
+      chunkSizeWarningLimit: 1500, // 1.5MB，单 chunk 过大仍会警告，配合 manualChunks 控制
       cssCodeSplit: true, // 启用 CSS 代码分割
       assetsInlineLimit: 4096, // < 4kb 转 base64
 
@@ -141,14 +139,20 @@ export default ({ mode, command }: ConfigEnv): UserConfigExport => {
           entryFileNames: 'static/js/[name]-[hash].js',
           assetFileNames: 'static/[ext]/[name]-[hash].[ext]',
 
-          // 手动分包策略
-          manualChunks: (id: string) => {
+          // 手动拆包，避免 vendor-libs 单 chunk 过大
+          manualChunks(id: string) {
             if (id.includes('node_modules')) {
-              // 独立打包图表库 (体积大)
               if (id.includes('echarts') || id.includes('zrender')) return 'vendor-echarts'
-              // 独立打包工具库
+              if (id.includes('primevue') || id.includes('@primeuix') || id.includes('primeicons'))
+                return 'vendor-primevue'
               if (id.includes('lodash') || id.includes('dayjs')) return 'vendor-utils'
-              // 其余第三方库
+              if (
+                id.includes('vue/') ||
+                id.includes('vue-router') ||
+                id.includes('pinia') ||
+                id.includes('@vueuse')
+              )
+                return 'vendor-vue'
               return 'vendor-libs'
             }
           },

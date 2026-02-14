@@ -66,7 +66,13 @@ export const SIZE_PRESETS: SizePreset[] = [
 /** 默认尺寸模式 */
 export const DEFAULT_SIZE_NAME: SizeMode = 'comfortable'
 
-/** 布局尺寸字段名（与 SizePreset / SizeCssVars 布局变量一一对应，SSOT for UnoCSS） */
+/** Size Store 持久化 key（与 stores/modules/size.ts persist.key 一致，供 preload 等 mount 前逻辑使用；config 加载阶段 env 未注入时用默认前缀避免报错） */
+export const SIZE_PERSIST_KEY = `${import.meta.env?.VITE_PINIA_PERSIST_KEY_PREFIX ?? 'ccd-storage-kernel'}-size`
+
+/**
+ * 布局尺寸字段名（与 SizePreset / SizeCssVars 一一对应，SSOT for UnoCSS）
+ * 禁止加入 presetUno 已占用的类名片段（如 full / screen / min / max），否则会覆盖默认 w-full、w-screen 等，导致布局异常。
+ */
 export const LAYOUT_DIMENSION_KEYS = [
   'sidebarWidth',
   'sidebarCollapsedWidth',

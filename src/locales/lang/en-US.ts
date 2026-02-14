@@ -2,6 +2,17 @@
  * 英文语言包 (en-US)
  */
 const enUS = {
+  login: {
+    title: 'Login',
+    username: 'Username',
+    password: 'Password',
+    submit: 'Sign In',
+    placeholderUsername: 'admin or user',
+    placeholderPassword: '123456',
+    authDisabled: 'Login is disabled in this environment.',
+    required: 'Please enter username and password',
+    failed: 'Login failed, please try again later',
+  },
   router: {
     core: {
       root: 'Home',
@@ -16,6 +27,12 @@ const enUS = {
       forbidden: 'Forbidden',
       serverError: 'Server Error',
     },
+    systemConfiguration: 'System Configuration',
+    systemConfigurationTheme: 'Theme',
+    systemConfigurationSize: 'Size',
+    systemConfigurationBreakpoints: 'Breakpoints',
+    systemConfigurationScrollbar: 'Scrollbar',
+    systemConfigurationUnocss: 'UnoCSS',
   },
 
   http: {
@@ -69,6 +86,10 @@ const enUS = {
     confirm: 'Confirm',
     cancel: 'Cancel',
     delete: 'Delete',
+    reload: 'Reload',
+    close: 'Close',
+    closeOthers: 'Close Others',
+    closeAll: 'Close All',
   },
   settings: {
     themeMode: 'Theme Mode',
@@ -77,6 +98,9 @@ const enUS = {
     themeModeAuto: 'System',
     themePreset: 'Color Scheme',
     size: 'Size',
+    sizeCompact: 'Compact',
+    sizeComfortable: 'Comfortable (Default)',
+    sizeLoose: 'Loose',
     layoutMode: 'Layout',
     layoutVertical: 'Sidebar',
     layoutHorizontal: 'Top Menu',
@@ -111,6 +135,39 @@ const enUS = {
       title: 'System Menu',
       menu: 'Menu',
     },
+    appName: 'CCD Admin',
+    appSubtitle: 'Enterprise',
+    reload: 'Reload',
+    globalSettings: 'Global Settings',
+    globalSettingsTitle: 'Global Settings',
+    openGlobalSettings: 'Open Global Settings',
+    switchToLight: 'Switch to light mode',
+    switchToDark: 'Switch to dark mode',
+    footer: 'Footer',
+  },
+  user: {
+    unnamedUser: 'Unnamed User',
+    noRole: 'No role assigned',
+    email: 'Email',
+    phone: 'Phone',
+    logout: 'Log out',
+  },
+  dashboard: {
+    buttonSmall: 'Small',
+    buttonMedium: 'Medium',
+    buttonLarge: 'Large',
+    sampleText: 'This is a sample paragraph.',
+  },
+  schemaForm: {
+    stepPrev: 'Previous',
+    stepNext: 'Next',
+    submit: 'Submit',
+    yes: 'Yes',
+    no: 'No',
+    validationFailed: 'Validation failed',
+    unsupportedComponent: 'Unsupported component type: {component}',
+    customNoRender: 'Custom component missing render function',
+    customRenderFailed: 'Custom component render failed',
   },
 }
 

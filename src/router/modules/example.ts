@@ -38,6 +38,17 @@ const exampleRoutes: RouteConfig[] = [
           icon: 'i-lucide-layout-dashboard',
         },
       },
+      // schema-form
+      {
+        path: '/example/schema-form',
+        name: 'ExampleSchemaForm',
+        component: () => import('@/views/example/schema-form/schema-form.vue'),
+        meta: {
+          title: 'SchemaForm',
+          rank: 4,
+          icon: 'i-lucide-layout-dashboard',
+        },
+      },
     ],
   },
 ]

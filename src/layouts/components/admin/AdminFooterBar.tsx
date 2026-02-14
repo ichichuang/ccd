@@ -1,4 +1,5 @@
 import { defineComponent } from 'vue'
+import { useI18n } from 'vue-i18n'
 
 export interface AdminFooterBarProps {
   show: boolean
@@ -13,12 +14,13 @@ export default defineComponent({
     },
   },
   setup(props) {
+    const { t } = useI18n()
     return () => {
       if (!props.show) return null
 
       return (
         <footer class="w-full h-footerHeight flex items-center justify-center px-padding-lg border-t border-border fs-sm text-muted-foreground">
-          <div>footer</div>
+          <div>{t('layout.footer')}</div>
         </footer>
       )
     }

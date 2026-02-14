@@ -1,12 +1,13 @@
 # prime-dialog 二次封装
 
-> 项目基于 PrimeVue Dialog 的二次封装，支持便捷方法、自定义渲染器、多层弹窗、拦截器等。  
+> 项目基于 PrimeVue Dialog 的二次封装，支持便捷方法、自定义渲染器、多层弹窗、拦截器等。
 > 当需要**自定义弹窗、反馈提示、确认对话框**时，优先使用 `useDialog()`，禁止在业务中自行管理 Dialog 状态。
 
 ## 1. 概述
 
 - **组件**：`PrimeVueDialog`（`src/components/prime-dialog`）
-- **Hook**：`useDialog()`（`src/hooks/modules/useDialog`）
+- **Hook**：`useDialog()`（`src/hooks/modules/useDialog.tsx`）
+  - > 文件后缀为 `.tsx`（因 `contentRenderer` 使用 TSX 渲染自定义内容）。import 时不需要写后缀：`import { useDialog } from '@/hooks/modules/useDialog'`。
 - **集成**：`PrimeVueDialog` 已在 `AppPrimeVueGlobals.vue`（由 `App.vue` 引入）中挂载，业务层只需调用 `useDialog()` 返回的方法，无需再挂载组件。
 
 ## 2. 快速使用
@@ -36,7 +37,7 @@ confirmDelete('删除后无法恢复，确定吗？', '删除确认', {
 // 完全自定义
 const index = openDialog({
   header: '标题',
-  contentRenderer: () => <div class="p-scale-md">自定义内容（TSX）</div>,
+  contentRenderer: () => <div class="p-padding-md">自定义内容（TSX）</div>,
   footerButtons: [
     { label: '取消', severity: 'secondary', btnClick: ({ dialog }) => closeDialog(dialog.index) },
     { label: '确定', severity: 'primary', btnClick: ({ dialog }) => closeDialog(dialog.index) },

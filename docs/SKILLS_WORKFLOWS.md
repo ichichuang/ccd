@@ -10,7 +10,7 @@
 
 ```
 基于 @docs/PROJECT_PROTOCOL.md 和 @.cursor/rules/12-api-layer.mdc，为「用户列表」功能开发逻辑：
-1. 先创建 src/api/user/list.ts（DTO + buildUserListMethod）
+1. 先创建 src/api/user/list.ts（module=user, feature=list，仅两级；DTO + buildUserListMethod）
 2. 再创建 src/hooks/modules/useUserList.ts，用 useHttpRequest 调用 API
 3. 包含分页和加载状态
 4. 参考 @docs/GOLDEN_SAMPLES/useFeatureLogic.ts，不要生成 UI 代码。

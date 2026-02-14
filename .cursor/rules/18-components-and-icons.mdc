@@ -32,6 +32,7 @@ When generating or editing UI pages/components, you MUST:
   - MUST prefer PrimeVue components such as `<InputText>`, `<Password>`, `<InputNumber>`, `<Checkbox>`, `<RadioButton>`, `<Dropdown>`, `<MultiSelect>`, `<Calendar>`, `<InputSwitch>`, etc.
 - For **actions/buttons**:
   - MUST use `<Button>` for primary/secondary actions instead of styling raw `<button>` or `<a>`.
+  - Button 配色由 `src/utils/theme/primevue-preset.ts` 控制；text/outlined 变体的 hover 使用 `*-light`，勿用 `*-foreground` 作为背景。详见 `docs/PRIMEVUE_THEME.md`。
 - For **tables/lists**:
   - SHOULD use `<DataTable>` (or project-wrapped table components) for interactive data tables instead of hand-written `<table>` when possible.
 - For **dialogs/overlays**:
@@ -51,6 +52,8 @@ Styling PrimeVue components:
 This project auto-imports components/functions and generates:
 - `src/types/auto-imports.d.ts`
 - `src/types/components.d.ts`
+
+**完整配置**：imports 与 dirs 列表见 `docs/BUILD_SYSTEM.md` §2；组件扫描范围与排除（仅 `src/components`，排除 `src/layouts`，PrimeVue 按需）见 §3。
 
 Rules:
 - Prefer relying on auto-imports (avoid redundant manual imports) unless the file requires explicit imports.

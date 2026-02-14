@@ -53,16 +53,16 @@ globs: src/layouts/**/*.{ts,vue}
 
 1. 在 `LayoutMode` 中增加新值
 2. 在 `RouteMeta.parent` 中支持该值
-3. 新建 `src/layouts/modules/LayoutXxx.vue`
-4. 在 `layouts/index.vue` 中增加分支与 `layoutAnimations` 配置
+3. 新建 `src/layouts/modules/LayoutXxx.vue` 或 `LayoutXxx.tsx`（与现有壳一致，admin 为 .tsx）
+4. 在 `src/layouts/index.vue` 中增加分支与 `layoutAnimations` 配置
 
 ### 6.2 扩展新 AdminLayoutMode（admin 子模式）
 
 1. 在 `AdminLayoutMode` 中增加新值
 2. 在 `DEFAULT_LAYOUT_SETTING.mode` 中确定默认（或保持 vertical）
-3. 在 `LayoutAdmin.vue` 中实现对应布局逻辑（sidebar / top menu / body 显示规则）
+3. 在 `LayoutAdmin.tsx` 中实现对应布局逻辑（sidebar / top menu / body 显示规则）；须遵循 `docs/ADAPTIVE_LAYOUT.md`，不得绕过 runAdaptive 或有效显隐
 
-注意：移动端/平板会强制 `mode = 'vertical'`，新模式在 PC 下才会生效。
+注意：移动端小视口强制顶栏（horizontal），平板小视口为 vertical+收缩；PC 横屏不覆盖用户 mode。适配逻辑见 `docs/ADAPTIVE_LAYOUT.md`。修改 LayoutAdmin 时须遵循该文档，不得绕过 runAdaptive 或有效显隐。
 
 ## 7. 路由配置
 

@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import { SIZE_PRESETS, DEFAULT_SIZE_NAME } from '@/constants/size'
+import { SIZE_PRESETS, DEFAULT_SIZE_NAME, SIZE_PERSIST_KEY } from '@/constants/size'
 import { FONT_SCALE_RATIOS } from '@/constants/sizeScale'
 import { generateSizeVars, applySizeTheme } from '@/utils/theme/sizeEngine'
 import { createPiniaEncryptedSerializer } from '@/utils/safeStorage/piniaSerializer'
@@ -65,7 +65,7 @@ export const useSizeStore = defineStore('size', {
   },
 
   persist: {
-    key: `${import.meta.env.VITE_PINIA_PERSIST_KEY_PREFIX}-size`,
+    key: SIZE_PERSIST_KEY,
     storage: localStorage,
     serializer: createPiniaEncryptedSerializer(),
   },

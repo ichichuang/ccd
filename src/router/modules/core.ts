@@ -22,7 +22,7 @@ const coreRoutes: RouteConfig[] = [
     path: '/system-configuration',
     name: 'systemConfiguration',
     meta: {
-      title: '系统配置',
+      titleKey: 'router.systemConfiguration',
       rank: 1,
       icon: 'i-lucide-settings',
     },
@@ -32,7 +32,7 @@ const coreRoutes: RouteConfig[] = [
         name: 'theme',
         component: () => import('@/views/system-configuration/theme.vue'),
         meta: {
-          title: '主题系统',
+          titleKey: 'router.systemConfigurationTheme',
           rank: 1,
           icon: 'i-lucide-palette',
         },
@@ -42,7 +42,7 @@ const coreRoutes: RouteConfig[] = [
         name: 'size',
         component: () => import('@/views/system-configuration/size.vue'),
         meta: {
-          title: '尺寸系统',
+          titleKey: 'router.systemConfigurationSize',
           rank: 2,
           icon: 'i-lucide-layout-dashboard',
         },
@@ -52,20 +52,29 @@ const coreRoutes: RouteConfig[] = [
         name: 'breakpoints',
         component: () => import('@/views/system-configuration/breakpoints.vue'),
         meta: {
-          title: '断点系统',
+          titleKey: 'router.systemConfigurationBreakpoints',
           rank: 3,
           icon: 'i-lucide-layout-dashboard',
         },
       },
-      // scrollbar
       {
         path: '/system-configuration/scrollbar',
         name: 'scrollbar',
         component: () => import('@/views/system-configuration/scrollbar.vue'),
         meta: {
-          title: '滚动条系统',
+          titleKey: 'router.systemConfigurationScrollbar',
           rank: 4,
           icon: 'i-lucide-layout-dashboard',
+        },
+      },
+      {
+        path: '/system-configuration/unocss',
+        name: 'unocss',
+        component: () => import('@/views/system-configuration/unocss.vue'),
+        meta: {
+          titleKey: 'router.systemConfigurationUnocss',
+          rank: 5,
+          icon: 'i-lucide-diamond',
         },
       },
     ],

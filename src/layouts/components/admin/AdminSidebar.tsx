@@ -157,7 +157,7 @@ export default defineComponent({
         item.level <= 0 ? 'pl-padding-md' : item.level === 1 ? 'pl-padding-xl' : 'pl-padding-2xl'
 
       const baseClasses =
-        'flex items-center rounded-scale py-scale-sm pr-padding-sm no-underline clickable ' +
+        'flex items-center rounded-scale-md py-scale-sm pr-padding-sm no-underline clickable ' +
         indentClass
 
       const stateClasses = isActive
@@ -167,7 +167,7 @@ export default defineComponent({
           : 'text-sidebar-foreground hover:bg-sidebar-accent/10 active:bg-sidebar-accent/20' // 统一交互态
 
       const content = (
-        <span class="flex items-center gap-gap-sm w-full">
+        <span class="flex items-center gap-sm w-full">
           {item.icon ? (
             <Icons
               name={item.icon}
@@ -175,14 +175,14 @@ export default defineComponent({
               class="shrink-0 text-sidebar-foreground/80"
             />
           ) : null}
-          <span class="truncate-1 flex-1">{item.label}</span>
+          <span class="text-single-line-ellipsis flex-1">{item.label}</span>
           {!!item.items && item.items.length > 0 ? (
             <Icons
               name="i-lucide-chevron-down"
               size="lg" // 调整 toggle icon 大小
               class={
-                'ml-auto text-sidebar-foreground/60 c-transition' +
-                (layoutStore.getExpandedMenuKeys[item.key] ? 'rotate-180' : 'rotate-0')
+                'ml-auto text-sidebar-foreground/60 transition-transform duration-scale-md' +
+                (layoutStore.getExpandedMenuKeys[item.key] ? ' rotate-180' : ' rotate-0')
               }
             />
           ) : null}
@@ -253,7 +253,7 @@ export default defineComponent({
       }
     }
 
-    // 收缩态 TieredMenu 弹出子菜单项：图标与文字同色，悬停/激活时一致
+    // 收缩态 TieredMenu 弹出子菜单项：图标与文字同色，悬停/激活时一致，并支持当前路由高亮
     const renderTieredMenuItem = ({
       item,
       props: slotProps,
@@ -267,8 +267,25 @@ export default defineComponent({
         class?: string
         onClick?: (e: Event) => void
       }
+
+      // 与展开态 PanelMenu 复用同一套「当前激活 / 父级激活」判定逻辑
+      const isActive = isActiveMenuItem(item)
+      const isParentActive = isParentOfActive(item)
+
+      const stateClasses = isActive
+        ? 'bg-sidebar-accent text-sidebar-accent-foreground'
+        : isParentActive
+          ? 'bg-sidebar-accent/25 text-sidebar-foreground'
+          : 'text-sidebar-foreground hover:bg-sidebar-accent/10 active:bg-sidebar-accent/20'
+
       const actionClass = typeof action?.class === 'string' ? action.class : ''
-      const mergedClass = `flex items-center gap-gap-sm w-full text-current ${actionClass}`.trim()
+      const mergedClass = [
+        'flex items-center gap-sm w-full rounded-scale-md px-padding-sm py-padding-xs',
+        stateClasses,
+        actionClass,
+      ]
+        .join(' ')
+        .trim()
       const handleClick = (e: Event) => {
         if (item.route?.path) {
           e.preventDefault()
@@ -326,7 +343,7 @@ export default defineComponent({
               size="lg"
             />
           ) : (
-            <div class="w-[var(--spacing-lg)] h-[var(--spacing-lg)] rounded-full bg-surface-200 dark:bg-surface-700 flex items-center justify-center fs-xs font-bold">
+            <div class="w-[var(--spacing-lg)] h-[var(--spacing-lg)] rounded-full bg-card text-card-foreground flex items-center justify-center fs-xs font-bold">
               {item.label.substring(0, 1)}
             </div>
           )}
@@ -378,6 +395,7 @@ export default defineComponent({
             props.sidebarWidthClass,
             props.sidebarFixed ? 'admin-sidebar--fixed' : '',
             layoutStore.enableTransition ? 'sidebar-width-transition' : '',
+            props.sidebarCollapse ? 'gap-md' : '',
             'overflow-hidden flex flex-col select-none', // 增加 flex col
           ]}
         >
@@ -396,11 +414,11 @@ export default defineComponent({
             )}
           </div>
 
-          {/* Menus */}
-          <div class="flex-1 min-h-0 overflow-y-auto">
-            {!props.sidebarCollapse ? (
-              // 展开态：使用 PanelMenu
-              <CScrollbar class="h-full px-padding-sm">
+          {/* Menus：统一用 CScrollbar 包裹，符合 scrollbar 架构 */}
+          <div class="flex-1 min-h-0 flex flex-col overflow-hidden">
+            <CScrollbar class="flex-1 min-h-0 px-padding-sm">
+              {!props.sidebarCollapse ? (
+                // 展开态：PanelMenu
                 <PanelMenu
                   model={panelMenuModel.value}
                   multiple={allowMultiple.value}
@@ -413,13 +431,13 @@ export default defineComponent({
                     item: renderPanelMenuItem,
                   }}
                 />
-              </CScrollbar>
-            ) : (
-              // 收缩态：自定义图标列表 + 每个项目独立的 TieredMenu (Popup)
-              <div class="flex flex-col gap-gap-sm px-padding-sm items-center">
-                {panelMenuModel.value.map(item => renderCollapsedItem(item))}
-              </div>
-            )}
+              ) : (
+                // 收缩态：自定义图标列表 + 每个项目独立的 TieredMenu (Popup)
+                <div class="flex flex-col gap-sm items-center">
+                  {panelMenuModel.value.map(item => renderCollapsedItem(item))}
+                </div>
+              )}
+            </CScrollbar>
           </div>
         </aside>
       )

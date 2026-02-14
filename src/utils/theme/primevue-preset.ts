@@ -76,6 +76,7 @@ const createColorAdapter = () => {
     getPrimary: getRgbVar('primary'),
     getPrimaryForeground: getRgbVar('primary-foreground'),
     getPrimaryHover: getRgbVar('primary-hover'),
+    getPrimaryLight: getRgbVar('primary-light'),
 
     // === 辅助层 ===
     getSecondary: getRgbVar('secondary'),
@@ -87,15 +88,23 @@ const createColorAdapter = () => {
     getSuccess: getRgbVar('success'),
     getSuccessForeground: getRgbVar('success-foreground'),
     getSuccessHover: getRgbVar('success-hover'),
+    getSuccessLight: getRgbVar('success-light'),
     getWarn: getRgbVar('warn'),
     getWarnForeground: getRgbVar('warn-foreground'),
     getWarnHover: getRgbVar('warn-hover'),
+    getWarnLight: getRgbVar('warn-light'),
     getDestructive: getRgbVar('destructive'),
     getDestructiveForeground: getRgbVar('destructive-foreground'),
     getDestructiveHover: getRgbVar('destructive-hover'),
+    getDestructiveLight: getRgbVar('destructive-light'),
     getInfo: getRgbVar('info'),
     getInfoForeground: getRgbVar('info-foreground'),
     getInfoHover: getRgbVar('info-hover'),
+    getInfoLight: getRgbVar('info-light'),
+    getHelp: getRgbVar('help'),
+    getHelpForeground: getRgbVar('help-foreground'),
+    getHelpHover: getRgbVar('help-hover'),
+    getHelpLight: getRgbVar('help-light'),
   }
 }
 
@@ -124,21 +133,24 @@ const getAdapterKey = (
   // Contrast 特殊处理
   if (colorType === 'Contrast') {
     if (suffix === 'Text') return 'getBackground'
+    if (suffix === 'Light') return 'getMuted' // Contrast 无 *-light，用 muted 作为 hover 浅色背景
     return 'getForeground'
   }
 
   // 映射 Aura colorType 到架构命名
-  let mappedType: 'Primary' | 'Secondary' | 'Success' | 'Warn' | 'Destructive' | 'Info'
+  let mappedType: 'Primary' | 'Secondary' | 'Success' | 'Warn' | 'Destructive' | 'Info' | 'Help'
   if (colorType === 'Primary') {
     mappedType = 'Primary'
   } else if (colorType === 'Info') {
     mappedType = 'Info'
-  } else if (colorType === 'Help' || colorType === 'Warn') {
+  } else if (colorType === 'Warn') {
     mappedType = 'Warn'
+  } else if (colorType === 'Help') {
+    mappedType = 'Help'
   } else if (colorType === 'Danger') {
     mappedType = 'Destructive'
   } else {
-    mappedType = colorType as 'Primary' | 'Secondary' | 'Success' | 'Warn' | 'Destructive'
+    mappedType = colorType as 'Primary' | 'Secondary' | 'Success' | 'Warn' | 'Destructive' | 'Help'
   }
 
   // 映射 suffix 到架构命名
@@ -157,6 +169,13 @@ const getAdapterKey = (
   }
   if (suffix === 'Border') {
     return `get${mappedType}` as keyof ColorAdapter
+  }
+  if (suffix === 'Light') {
+    // Secondary 无 *-light，用 muted 作为浅色背景回退（Contrast 已在顶部提前返回）
+    if (mappedType === 'Secondary') {
+      return 'getMuted' as keyof ColorAdapter
+    }
+    return `get${mappedType}Light` as keyof ColorAdapter
   }
 
   // 兜底：返回基础色
@@ -187,15 +206,22 @@ const initComponentButtonColorSchemeOptionsItems = (
     switch (type) {
       case 'outlined':
         return {
-          hoverBackground: colorType === 'Secondary' ? get('') : get('Text'),
-          activeBackground: colorType === 'Secondary' ? get('') : get('Active'),
+          // Hover/Active: Light Tint (对齐 Aura，避免实色填充导致红底红字不可读)
+          hoverBackground: get('Light'),
+          activeBackground: get('Light'),
+          hoverBorderColor: colorType === 'Secondary' ? get('Text') : get(''),
+          activeBorderColor: colorType === 'Secondary' ? get('Text') : get(''),
+          hoverColor: get(''),
+          activeColor: get(''),
+
           borderColor: colorType === 'Secondary' ? get('Text') : get(''),
           color: colorType === 'Secondary' ? get('Text') : get(''),
         }
       case 'text':
         return {
-          hoverBackground: colorType === 'Secondary' ? get('') : get('Text'),
-          activeBackground: colorType === 'Secondary' ? get('') : get('Text'),
+          // Hover/Active: Light Tint (对齐 Aura，避免 *-foreground 为黑导致黑底彩字)
+          hoverBackground: get('Light'),
+          activeBackground: get('Light'),
           color: colorType === 'Secondary' ? get('Text') : get(''),
         }
       case 'link':
@@ -225,7 +251,7 @@ const initComponentButtonColorSchemeOptionsItems = (
     info: getColorOptions('Info'),
     success: getColorOptions('Success'),
     warn: getColorOptions('Warn'),
-    help: getColorOptions('Warn'), // Fallback for Help
+    help: getColorOptions('Help'),
     danger: getColorOptions('Danger'),
     contrast: getColorOptions('Contrast'),
   }
@@ -478,10 +504,10 @@ export const createCustomPreset = (sizeStore: ReturnType<typeof useSizeStore>) =
           activeColor: '{brand.700}',
         },
 
-        // Form Field (表单字段)
+        // Form Field (表单字段) — 禁用态对齐设计系统 muted/muted-foreground
         formField: {
           background: '{surface.0}',
-          disabledBackground: '{surface.200}',
+          disabledBackground: 'rgb(var(--muted))',
           filledBackground: '{surface.50}',
           filledHoverBackground: '{surface.50}',
           filledFocusBackground: '{surface.50}',
@@ -491,7 +517,7 @@ export const createCustomPreset = (sizeStore: ReturnType<typeof useSizeStore>) =
           invalidBorderColor: '{error.500}',
           invalidPlaceholderColor: '{error.600}',
           color: '{surface.700}',
-          disabledColor: '{surface.500}',
+          disabledColor: 'rgb(var(--muted-foreground))',
           placeholderColor: '{surface.500}',
           iconColor: 'rgb(var(--muted-foreground))',
           shadow: 'none',
@@ -541,10 +567,10 @@ export const createCustomPreset = (sizeStore: ReturnType<typeof useSizeStore>) =
           activeColor: '{brand.200}',
         },
 
-        // Form Field (暗色模式表单字段)
+        // Form Field (暗色模式表单字段) — 禁用态对齐设计系统 muted/muted-foreground
         formField: {
           background: 'rgb(var(--background))', // 暗色背景
-          disabledBackground: '{surface.700}',
+          disabledBackground: 'rgb(var(--muted))',
           filledBackground: '{surface.800}',
           filledHoverBackground: '{surface.800}',
           filledFocusBackground: '{surface.800}',
@@ -554,7 +580,7 @@ export const createCustomPreset = (sizeStore: ReturnType<typeof useSizeStore>) =
           invalidBorderColor: '{error.400}',
           invalidPlaceholderColor: '{error.600}',
           color: 'rgb(var(--foreground))',
-          disabledColor: '{surface.400}',
+          disabledColor: 'rgb(var(--muted-foreground))',
           placeholderColor: '{surface.400}',
           iconColor: 'rgb(var(--muted-foreground))',
           shadow: 'none',
@@ -1095,6 +1121,8 @@ export const createCustomPreset = (sizeStore: ReturnType<typeof useSizeStore>) =
         background: 'rgb(var(--background))',
         borderColor: 'rgb(var(--input))',
         color: 'rgb(var(--foreground))',
+        disabledBackground: 'rgb(var(--muted))',
+        disabledColor: 'rgb(var(--muted-foreground))',
       },
       preview: {
         background: 'rgb(var(--background))',
@@ -1113,6 +1141,7 @@ export const createCustomPreset = (sizeStore: ReturnType<typeof useSizeStore>) =
       track: {
         // 未选中轨道：使用中性色，弱化存在感
         background: 'rgb(var(--input))',
+        disabledBackground: 'rgb(var(--muted))',
         size: 'var(--spacing-xs)',
         borderRadius: 'var(--radius-md)',
       },
@@ -1125,6 +1154,7 @@ export const createCustomPreset = (sizeStore: ReturnType<typeof useSizeStore>) =
         // 外圈：与背景更贴近，形成轻微浮起感
         background: 'rgb(var(--background))',
         hoverBackground: 'rgb(var(--primary-light))',
+        disabledBackground: 'rgb(var(--muted))',
         width: 'var(--spacing-lg)',
         height: 'var(--spacing-lg)',
         borderRadius: '50%',
@@ -1132,6 +1162,7 @@ export const createCustomPreset = (sizeStore: ReturnType<typeof useSizeStore>) =
           // 内芯：主品牌色，作为视觉焦点
           background: 'rgb(var(--primary))',
           hoverBackground: 'rgb(var(--primary-hover))',
+          disabledBackground: 'rgb(var(--muted))',
           width: 'var(--spacing-md)',
           height: 'var(--spacing-md)',
           borderRadius: '50%',
@@ -1400,6 +1431,8 @@ export const createCustomPreset = (sizeStore: ReturnType<typeof useSizeStore>) =
         hoverBorderColor: 'rgb(var(--primary))',
         focusBorderColor: 'rgb(var(--primary))',
         color: 'rgb(var(--foreground))',
+        disabledBackground: 'rgb(var(--muted))',
+        disabledColor: 'rgb(var(--muted-foreground))',
       },
       overlay: {
         background: 'rgb(var(--popover))',
@@ -1427,6 +1460,8 @@ export const createCustomPreset = (sizeStore: ReturnType<typeof useSizeStore>) =
         hoverBorderColor: 'rgb(var(--primary))',
         focusBorderColor: 'rgb(var(--primary))',
         color: 'rgb(var(--foreground))',
+        disabledBackground: 'rgb(var(--muted))',
+        disabledColor: 'rgb(var(--muted-foreground))',
       },
       overlay: {
         background: 'rgb(var(--popover))',
@@ -1452,6 +1487,8 @@ export const createCustomPreset = (sizeStore: ReturnType<typeof useSizeStore>) =
         hoverBorderColor: 'rgb(var(--primary))',
         focusBorderColor: 'rgb(var(--primary))',
         color: 'rgb(var(--foreground))',
+        disabledBackground: 'rgb(var(--muted))',
+        disabledColor: 'rgb(var(--muted-foreground))',
       },
       overlay: {
         background: 'rgb(var(--popover))',
@@ -1479,6 +1516,8 @@ export const createCustomPreset = (sizeStore: ReturnType<typeof useSizeStore>) =
         hoverBorderColor: 'rgb(var(--primary))',
         focusBorderColor: 'rgb(var(--primary))',
         color: 'rgb(var(--foreground))',
+        disabledBackground: 'rgb(var(--muted))',
+        disabledColor: 'rgb(var(--muted-foreground))',
       },
       overlay: {
         background: 'rgb(var(--popover))',
@@ -1528,6 +1567,8 @@ export const createCustomPreset = (sizeStore: ReturnType<typeof useSizeStore>) =
         borderColor: 'rgb(var(--input))',
         hoverBorderColor: 'rgb(var(--primary))',
         focusBorderColor: 'rgb(var(--primary))',
+        disabledBackground: 'rgb(var(--muted))',
+        disabledColor: 'rgb(var(--muted-foreground))',
       },
       overlay: {
         background: 'rgb(var(--popover))',
@@ -1546,6 +1587,8 @@ export const createCustomPreset = (sizeStore: ReturnType<typeof useSizeStore>) =
         hoverBorderColor: 'rgb(var(--primary))',
         focusBorderColor: 'rgb(var(--primary))',
         color: 'rgb(var(--foreground))',
+        disabledBackground: 'rgb(var(--muted))',
+        disabledColor: 'rgb(var(--muted-foreground))',
       },
       panel: {
         background: 'rgb(var(--popover))',

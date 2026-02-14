@@ -107,7 +107,10 @@ const styleVars = computed(() => {
 })
 </script>
 <template>
-  <router-view v-slot="{ Component }">
+  <router-view
+    v-slot="{ Component }"
+    class="h-full min-h-0"
+  >
     <Transition
       appear
       :name="transitionName || undefined"

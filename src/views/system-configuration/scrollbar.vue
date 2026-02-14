@@ -11,9 +11,9 @@ const logs = ref<string[]>([])
 
 // Visibility options
 const visibilityOptions = [
-  { label: 'Auto', value: 'auto' },
-  { label: 'Visible', value: 'visible' },
-  { label: 'Hidden', value: 'hidden' },
+  { label: '自动', value: 'auto' },
+  { label: '可见', value: 'visible' },
+  { label: '隐藏', value: 'hidden' },
 ]
 const visibility = ref<'auto' | 'visible' | 'hidden'>('auto')
 
@@ -61,7 +61,7 @@ function handleScroll(_: OverlayScrollbars, event: Event) {
 
 function scrollToTop() {
   scrollbarRef.value?.scrollTo({ top: 0, behavior: 'smooth' })
-  addLog('⬆️ Action: Scroll to Top')
+  addLog('⬆️ 动作: 滚动至顶部')
 }
 
 function scrollToBottom() {
@@ -72,20 +72,20 @@ function scrollToBottom() {
       top: scrollOffsetElement.scrollHeight,
       behavior: 'smooth',
     })
-    addLog('⬇️ Action: Scroll to Bottom')
+    addLog('⬇️ 动作: 滚动至底部')
   }
 }
 
 function checkState() {
   const state = scrollbarRef.value?.state()
-  addLog(`🔍 State: ${JSON.stringify(state, null, 2)}`)
+  addLog(`🔍 状态: ${JSON.stringify(state, null, 2)}`)
 }
 
 // Code examples
 const usageExamples = [
   {
     title: 'Basic Usage',
-    code: `<CScrollbar class="h-[400px]">
+    code: `<CScrollbar class="h-full">
   <div>Your scrollable content</div>
 </CScrollbar>`,
   },
@@ -127,11 +127,11 @@ const state = scrollbarRef.value?.state()`,
 </script>
 
 <template>
-  <CScrollbar class="h-full p-padding-lg bg-surface-ground">
-    <div class="max-w-7xl mx-auto flex flex-col gap-gap-xl">
+  <CScrollbar class="h-full p-padding-lg bg-background">
+    <div class="w-full max-w-[90vw] mx-auto flex flex-col gap-xl">
       <!-- Header -->
-      <div class="flex flex-col gap-gap-xs">
-        <div class="flex items-center gap-gap-md">
+      <div class="flex flex-col gap-xs">
+        <div class="flex items-center gap-md">
           <div class="p-padding-md bg-primary/10 rounded-scale-lg">
             <Icons
               name="i-lucide-scroll"
@@ -139,7 +139,7 @@ const state = scrollbarRef.value?.state()`,
             />
           </div>
           <div>
-            <h1 class="fs-2xl font-bold text-foreground">CScrollbar Component</h1>
+            <h1 class="fs-2xl font-bold text-foreground">CScrollbar 滚动条组件</h1>
             <p class="text-muted-foreground">基于 OverlayScrollbars 的高性能滚动容器组件</p>
           </div>
         </div>
@@ -148,7 +148,7 @@ const state = scrollbarRef.value?.state()`,
       <!-- Control Panel -->
       <Card class="border border-border">
         <template #title>
-          <div class="flex items-center gap-gap-sm">
+          <div class="flex items-center gap-sm">
             <Icons
               name="i-lucide-settings"
               class="text-primary"
@@ -157,9 +157,9 @@ const state = scrollbarRef.value?.state()`,
           </div>
         </template>
         <template #content>
-          <div class="flex flex-wrap items-center gap-gap-lg">
-            <div class="flex flex-col gap-gap-sm">
-              <span class="text-muted-foreground fs-sm">Visibility Mode</span>
+          <div class="flex flex-wrap items-center gap-lg">
+            <div class="flex flex-col gap-sm">
+              <span class="text-muted-foreground fs-sm">可见性模式 (Visibility Mode)</span>
               <SelectButton
                 v-model="visibility"
                 :options="visibilityOptions"
@@ -168,29 +168,29 @@ const state = scrollbarRef.value?.state()`,
               />
             </div>
             <div class="h-8 w-px bg-border mx-gap-md hidden md:block" />
-            <div class="flex gap-gap-sm flex-wrap">
+            <div class="flex gap-sm flex-wrap">
               <Button
-                label="Scroll to Top"
+                label="滚动至顶部"
                 icon="i-lucide-arrow-up-to-line"
                 severity="secondary"
                 outlined
                 @click="scrollToTop"
               />
               <Button
-                label="Scroll to Bottom"
+                label="滚动至底部"
                 icon="i-lucide-arrow-down-to-line"
                 severity="secondary"
                 outlined
                 @click="scrollToBottom"
               />
               <Button
-                label="Check State"
+                label="检查状态"
                 icon="i-lucide-bug"
                 severity="info"
                 @click="checkState"
               />
               <Button
-                label="Clear Logs"
+                label="清空日志"
                 icon="i-lucide-trash-2"
                 severity="danger"
                 text
@@ -202,20 +202,20 @@ const state = scrollbarRef.value?.state()`,
       </Card>
 
       <!-- Demo Section -->
-      <div class="grid grid-cols-1 lg:grid-cols-5 gap-gap-lg">
+      <div class="grid grid-cols-1 lg:grid-cols-5 gap-lg">
         <!-- Vertical Scroll Demo -->
         <Card class="border border-border lg:col-span-2">
           <template #title>
             <div class="flex items-center justify-between">
-              <div class="flex items-center gap-gap-sm">
+              <div class="flex items-center gap-sm">
                 <Icons
                   name="i-lucide-arrow-up-down"
                   class="text-primary"
                 />
-                <span>Vertical Scroll</span>
+                <span>纵向滚动 (Vertical Scroll)</span>
               </div>
               <Tag
-                value="h-[400px]"
+                value="h-full"
                 severity="secondary"
               />
             </div>
@@ -253,16 +253,16 @@ const state = scrollbarRef.value?.state()`,
         </Card>
 
         <!-- Right Side -->
-        <div class="flex flex-col gap-gap-lg lg:col-span-3">
+        <div class="flex flex-col gap-lg lg:col-span-3">
           <!-- Horizontal Scroll Demo -->
           <Card class="border border-border">
             <template #title>
-              <div class="flex items-center gap-gap-sm">
+              <div class="flex items-center gap-sm">
                 <Icons
                   name="i-lucide-arrow-left-right"
                   class="text-primary"
                 />
-                <span>Horizontal Scroll</span>
+                <span>横向滚动 (Horizontal Scroll)</span>
               </div>
             </template>
             <template #content>
@@ -271,7 +271,7 @@ const state = scrollbarRef.value?.state()`,
                   :visibility="visibility"
                   class="h-full"
                 >
-                  <div class="flex p-padding-sm gap-gap-md w-max h-full items-center">
+                  <div class="flex p-padding-sm gap-md w-max h-full items-center">
                     <div
                       v-for="item in horizontalItems"
                       :key="item"
@@ -289,12 +289,12 @@ const state = scrollbarRef.value?.state()`,
           <Card class="border border-border flex-1">
             <template #title>
               <div class="flex items-center justify-between">
-                <div class="flex items-center gap-gap-sm">
+                <div class="flex items-center gap-sm">
                   <Icons
                     name="i-lucide-terminal"
                     class="text-primary"
                   />
-                  <span>Event Logs</span>
+                  <span>事件日志 (Event Logs)</span>
                 </div>
                 <Tag
                   :value="`${logs.length} events`"
@@ -303,14 +303,14 @@ const state = scrollbarRef.value?.state()`,
               </div>
             </template>
             <template #content>
-              <div class="scroll-demo-logs bg-surface-ground rounded-scale-md -mt-2">
+              <div class="scroll-demo-logs bg-card rounded-scale-md -mt-2">
                 <CScrollbar class="h-full">
                   <div class="p-padding-md font-mono fs-xs space-y-1">
                     <div
                       v-if="logs.length === 0"
                       class="text-muted-foreground italic select-none py-8 text-center"
                     >
-                      Waiting for events...
+                      等待事件...
                     </div>
                     <div
                       v-for="(log, i) in logs"
@@ -331,7 +331,7 @@ const state = scrollbarRef.value?.state()`,
       <!-- Code Examples -->
       <Card class="border border-border">
         <template #title>
-          <div class="flex items-center gap-gap-sm">
+          <div class="flex items-center gap-sm">
             <Icons
               name="i-lucide-code"
               class="text-primary"
@@ -344,13 +344,13 @@ const state = scrollbarRef.value?.state()`,
           </div>
         </template>
         <template #content>
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-gap-lg">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-lg">
             <div
               v-for="example in usageExamples"
               :key="example.title"
-              class="flex flex-col gap-gap-sm"
+              class="flex flex-col gap-sm"
             >
-              <h4 class="font-semibold text-foreground flex items-center gap-gap-sm">
+              <h4 class="font-semibold text-foreground flex items-center gap-sm">
                 {{ example.title }}
                 <Button
                   icon="i-lucide-copy"
@@ -360,10 +360,16 @@ const state = scrollbarRef.value?.state()`,
                   @click="copyToClipboard(example.code, example.title)"
                 />
               </h4>
-              <pre
-                class="bg-muted/50 p-padding-md rounded-scale-md overflow-x-auto fs-sm cursor-pointer hover:bg-muted/70 transition-colors"
+              <div
+                class="rounded-scale-md cursor-pointer hover:bg-muted/70 transition-colors"
                 @click="copyToClipboard(example.code, example.title)"
-              ><code class="text-foreground">{{ example.code }}</code></pre>
+              >
+                <CScrollbar class="min-w-0">
+                  <pre
+                    class="m-0 bg-muted/50 p-padding-md fs-sm"
+                  ><code class="text-foreground">{{ example.code }}</code></pre>
+                </CScrollbar>
+              </div>
             </div>
           </div>
         </template>
@@ -372,7 +378,7 @@ const state = scrollbarRef.value?.state()`,
       <!-- Props Reference -->
       <Card class="border border-border">
         <template #title>
-          <div class="flex items-center gap-gap-sm">
+          <div class="flex items-center gap-sm">
             <Icons
               name="i-lucide-book-open"
               class="text-primary"
@@ -381,16 +387,14 @@ const state = scrollbarRef.value?.state()`,
           </div>
         </template>
         <template #content>
-          <div class="overflow-x-auto">
+          <CScrollbar class="w-full min-w-0">
             <table class="w-full border-collapse fs-sm">
               <thead>
                 <tr class="border-b border-border">
-                  <th class="text-left p-padding-sm text-muted-foreground font-medium">Name</th>
-                  <th class="text-left p-padding-sm text-muted-foreground font-medium">Type</th>
-                  <th class="text-left p-padding-sm text-muted-foreground font-medium">Default</th>
-                  <th class="text-left p-padding-sm text-muted-foreground font-medium">
-                    Description
-                  </th>
+                  <th class="text-left p-padding-sm text-muted-foreground font-medium">属性名</th>
+                  <th class="text-left p-padding-sm text-muted-foreground font-medium">类型</th>
+                  <th class="text-left p-padding-sm text-muted-foreground font-medium">默认值</th>
+                  <th class="text-left p-padding-sm text-muted-foreground font-medium">描述</th>
                 </tr>
               </thead>
               <tbody>
@@ -432,7 +436,7 @@ const state = scrollbarRef.value?.state()`,
                 </tr>
               </tbody>
             </table>
-          </div>
+          </CScrollbar>
         </template>
       </Card>
     </div>

@@ -24,7 +24,7 @@ Before generating any code, you MUST:
 
 - **NO Options API**: Always use Composition API `<script setup lang="ts">`.
 - **NO Raw Axios/Fetch**: Always use the project's Alova instance (`@/utils/http`, `useHttpRequest` from `@/hooks/modules/useHttpRequest`).
-- **NO Raw CSS in layout/colors/spacing**: Do not write standard CSS in `<style>` for layout, colors, or spacing. Use UnoCSS utility classes and project semantic classes (e.g. `px-padding-lg`, `gap-scale-md`, `text-primary`).
+- **NO Raw CSS in layout/colors/spacing**: Do not write standard CSS in `<style>` for layout, colors, or spacing. Use UnoCSS utility classes and project semantic classes (e.g. `px-padding-lg`, `gap-md`, `text-primary`).
 - **NO Hardcoded Values**: FORBIDDEN to hardcode px/rem/hex colors. Must use semantic classes from `uno.config.ts` or CSS variables (e.g. `px-padding-lg` not `padding: 16px`, `text-primary` not `color: #fff`).
 - **NO Inline Styles**: FORBIDDEN to write inline `style="padding: 16px"` in template. Must use UnoCSS classes.
 - **NO `any` in Business Code**: In business logic (views/components feature logic, composables, stores), FORBIDDEN to use `any`. Use strict TypeScript types/interfaces (in `src/types/` or colocated).
@@ -60,6 +60,7 @@ Before generating UI code, you MUST reference and strictly follow:
    - Layout: `src/constants/layout.ts`
    - Stores: `src/stores/modules/device.ts`, `src/stores/modules/layout.ts`
    - Use Mobile First with `md:`/`lg:` breakpoints, use store getters for layout detection.
+   - When the task involves layout shell, sidebar visibility, orientation, or breakpoint collapse: read `docs/ADAPTIVE_LAYOUT.md` and follow the adaptive rules.
 
 4. **UnoCSS Classes:**
    - Reference `uno.config.ts` for all available semantic classes.
@@ -75,6 +76,8 @@ Before generating UI code, you MUST reference and strictly follow:
 # ROUTER SYSTEM REQUIREMENTS (Must Follow)
 
 When a task involves **routes, menus, breadcrumbs, permission guards, or dynamic routes**, you MUST treat the router system as a first-class architecture component and follow these rules:
+
+When the task involves **login, logout, token, or 401 handling**, read `docs/AUTH_AND_LOGIN_FLOW.md` first.
 
 1. **Read the Router Section First**
    - Before adding or changing any route-related code, re-read:

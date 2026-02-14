@@ -83,9 +83,9 @@ const handleToastRemoveGroup = (group: string) => {
 </script>
 
 <template>
-  <CScrollbar class="h-full p-padding-lg bg-surface-ground">
-    <div class="max-w-6xl mx-auto flex flex-col gap-gap-xl">
-      <div class="flex flex-col gap-gap-xs">
+  <CScrollbar class="h-full p-padding-lg bg-background">
+    <div class="w-full max-w-[80vw] mx-auto flex flex-col gap-xl">
+      <div class="flex flex-col gap-xs">
         <h1 class="fs-2xl font-bold text-foreground">Toast & Message Full Demo</h1>
         <p class="text-muted-foreground">
           全局 window.$toast / window.$message 演示，可在非组件环境（如 HTTP
@@ -94,11 +94,11 @@ const handleToastRemoveGroup = (group: string) => {
       </div>
 
       <!-- 1. window.$message - Element Plus 风格 -->
-      <section class="flex flex-col gap-gap-md">
+      <section class="flex flex-col gap-md">
         <h2 class="fs-lg font-semibold border-b border-border pb-padding-xs">
           1. window.$message（Element Plus 风格）
         </h2>
-        <div class="flex flex-wrap gap-gap-md">
+        <div class="flex flex-wrap gap-md">
           <Button
             label="Success"
             severity="success"
@@ -124,7 +124,7 @@ const handleToastRemoveGroup = (group: string) => {
           success(message, title?) / error(message, title?) / info(message, title?) / warn(message,
           title?)
         </p>
-        <div class="flex flex-wrap gap-gap-md">
+        <div class="flex flex-wrap gap-md">
           <Button
             label="Success + Title"
             severity="success"
@@ -141,7 +141,7 @@ const handleToastRemoveGroup = (group: string) => {
       </section>
 
       <!-- 2. window.$toast - errorIn / successIn / infoIn / warnIn -->
-      <section class="flex flex-col gap-gap-md">
+      <section class="flex flex-col gap-md">
         <h2 class="fs-lg font-semibold border-b border-border pb-padding-xs">
           2. window.$toast - 按 severity + 位置
         </h2>
@@ -149,7 +149,7 @@ const handleToastRemoveGroup = (group: string) => {
           errorIn(position, summary, detail?) / successIn / infoIn / warnIn；支持 6
           种位置：左上、上中、右上、左下、下中、右下
         </p>
-        <div class="flex flex-wrap gap-gap-sm">
+        <div class="flex flex-wrap gap-sm">
           <Button
             label="左上"
             size="small"
@@ -187,7 +187,7 @@ const handleToastRemoveGroup = (group: string) => {
             @click="() => handleToastSuccessIn('bottom-right')"
           />
         </div>
-        <div class="flex flex-wrap gap-gap-md">
+        <div class="flex flex-wrap gap-md">
           <Button
             label="Error (左上)"
             severity="danger"
@@ -212,14 +212,14 @@ const handleToastRemoveGroup = (group: string) => {
       </section>
 
       <!-- 3. window.$toast.add - 原始 API -->
-      <section class="flex flex-col gap-gap-md">
+      <section class="flex flex-col gap-md">
         <h2 class="fs-lg font-semibold border-b border-border pb-padding-xs">
           3. window.$toast.add（原始 API）
         </h2>
         <p class="text-muted-foreground fs-sm">
           add({ severity?, summary?, detail?, life?, group? })
         </p>
-        <div class="flex flex-wrap gap-gap-md">
+        <div class="flex flex-wrap gap-md">
           <Button
             label="Add Info (5s)"
             severity="info"
@@ -242,14 +242,14 @@ const handleToastRemoveGroup = (group: string) => {
       </section>
 
       <!-- 4. window.$toast - clear / removeGroup -->
-      <section class="flex flex-col gap-gap-md">
+      <section class="flex flex-col gap-md">
         <h2 class="fs-lg font-semibold border-b border-border pb-padding-xs">
           4. window.$toast - 清除
         </h2>
         <p class="text-muted-foreground fs-sm">
           clear() 清除所有（内部调用 removeAllGroups）；removeGroup(group) 清除指定位置
         </p>
-        <div class="flex flex-wrap gap-gap-md items-center">
+        <div class="flex flex-wrap gap-md items-center">
           <Button
             label="Clear All"
             severity="danger"

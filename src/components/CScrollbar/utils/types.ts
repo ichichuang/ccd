@@ -1,9 +1,13 @@
 /**
  * CScrollbar type definitions
  */
-import type { OverlayScrollbars } from 'overlayscrollbars'
+import type {
+  OverlayScrollbars,
+  PartialOptions,
+  OnUpdatedEventListenerArgs,
+} from 'overlayscrollbars'
 
-import type { PartialOptions } from 'overlayscrollbars'
+export type { OnUpdatedEventListenerArgs }
 
 /**
  * Scrollbar visibility options
@@ -82,7 +86,7 @@ export interface CScrollbarInstance {
  */
 export interface CScrollbarEventMap {
   initialized: [instance: OverlayScrollbars]
-  updated: [instance: OverlayScrollbars, onUpdatedArgs: any]
+  updated: [instance: OverlayScrollbars, onUpdatedArgs: OnUpdatedEventListenerArgs]
   destroyed: [instance: OverlayScrollbars, canceled: boolean]
   scroll: [instance: OverlayScrollbars, event: Event]
 }

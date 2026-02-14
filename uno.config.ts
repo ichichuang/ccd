@@ -13,14 +13,28 @@ import { BREAKPOINTS } from './src/constants/breakpoints'
 import { LAYOUT_DIMENSION_KEYS, SIZE_BASE_VAR_KEYS } from './src/constants/size'
 import { SIZE_SCALE_KEYS } from './src/constants/sizeScale'
 import { COLOR_FAMILIES } from './src/utils/theme/metadata'
-/** 阶梯正则片段 (xs|sm|md|...|5xl)，SSOT 来自 SIZE_SCALE_KEYS */
-const scaleRegex = `(${SIZE_SCALE_KEYS.join('|')})`
+
+// 约束：上述 src 下被引用的文件必须为纯数据（仅导出常量/类型），禁止 import .vue 或使用 window/document 等浏览器 API，否则 Node 构建会报错。
+/** 阶梯键模式 (xs|sm|...|5xl)，SSOT: SIZE_SCALE_KEYS；具名捕获用 (?<size>scalePattern)，避免依赖捕获顺序 */
+const scalePattern = SIZE_SCALE_KEYS.join('|')
+
+// ----------------------------------------------------------------------
+// Design System Rule Map (SSOT 与分层职责)
+// ----------------------------------------------------------------------
+// 语义尺寸（业务推荐）：p-padding-{scale} / m-margin-{scale} / gap-{scale} / gap-x-{scale} / gap-y-{scale} / m-gap-* / scroll-m-gap-*
+//   → var(--spacing-*)。业务组件只允许使用此类，禁止直接使用 p-scale-*。gap 仅支持 gap-* / gap-x-* / gap-y-*，不再使用 gap-gap-*。
+// 阶梯尺寸（Token 级）：fs-{scale} / p-scale-* / m-scale-* / gap-scale-* / rounded-scale-* / duration-scale-*
+//   → 对应 CSS 变量。与语义尺寸二选一，shortcuts 内部可用。
+// 布局变量：w-* / h-* / min-w-* / max-w-* / min-h-* / max-h-* 仅当 * 属于 LAYOUT_DIMENSION_KEYS 生效；新增 key 时勿与 presetUno 保留字冲突（如 full/screen），否则会覆盖默认 w-full 等行为。
+// 基础变量：p-* / px-* / py-* 等仅当 * 属于 SIZE_BASE_VAR_KEYS 的 kebab 形式生效。
+// SSOT：sizeScale.ts | size.ts | breakpoints.ts | src/utils/theme/metadata.ts
+// AI：业务层推荐只使用 shortcuts；spacing 推荐 p-padding-* / m-margin-* / gap-*，不直接使用 p-scale-*。
 
 // ----------------------------------------------------------------------
 // 1. 常量定义 (断点 SSOT: src/constants/breakpoints.ts)
 // ----------------------------------------------------------------------
 const breakpoints: Record<string, string> = Object.fromEntries(
-  Object.entries(BREAKPOINTS).map(([k, v]) => [k, `${v}px`])
+  Object.entries(BREAKPOINTS).map(([k, v]) => [k, typeof v === 'number' ? `${v}px` : (v as string)])
 )
 
 /** 布局变量白名单 (SSOT: src/constants/size.ts LAYOUT_DIMENSION_KEYS) */
@@ -30,95 +44,90 @@ const LAYOUT_SIZES = [...LAYOUT_DIMENSION_KEYS] as const
 // 2. 动态规则生成引擎 (The Rule Engine)
 // ----------------------------------------------------------------------
 
-/** 方向映射表 (padding/margin 用) */
-const dirMap: Record<string, string[]> = {
+/** 方向后缀映射 (padding/margin/scale 共用)；无方向语义统一由此表表达 */
+const DIR_SUFFIX_MAP: Record<string, string[]> = {
   t: ['-top'],
   b: ['-bottom'],
   l: ['-left'],
   r: ['-right'],
   x: ['-left', '-right'],
   y: ['-top', '-bottom'],
-  default: [], // all sides
+  all: [], // 语义规则“无方向” → 四边 (padding/margin)
+  default: [''], // 阶梯规则“无方向” → 单属性 (padding/margin)
 }
 
 /** camelCase -> kebab-case，用于 CSS 变量名 */
 const toKebab = (s: string) => s.replace(/([A-Z])/g, '-$1').toLowerCase()
 
+/** 按方向 key 取后缀列表，defaultKey：语义用 'all'（四边），阶梯用 'default'（单属性） */
+function getDirectionSuffixes(dir: string | undefined, defaultKey: 'all' | 'default'): string[] {
+  return DIR_SUFFIX_MAP[dir || defaultKey]
+}
+
+/** 根据方向生成单属性或多边 CSS 对象，避免各 Rule 内重复 DIR_SUFFIX_MAP 逻辑 */
+function applyDirection(
+  prop: string,
+  dir: string | undefined,
+  value: string,
+  defaultKey: 'all' | 'default'
+): Record<string, string> {
+  const suffixes = getDirectionSuffixes(dir, defaultKey)
+  if (suffixes.length === 0) return { [prop]: value }
+  const out: Record<string, string> = {}
+  suffixes.forEach(s => {
+    out[`${prop}${s}`] = value
+  })
+  return out
+}
+
 /**
- * 生成语义化尺寸规则 (SSOT: SIZE_SCALE_KEYS)
- * p-padding-{scale}, m-margin-{scale}, gap-gap-{scale} -> var(--spacing-{scale})
+ * 生成语义化尺寸规则 (SSOT: SIZE_SCALE_KEYS)，使用具名捕获组 (?<name>...) 避免依赖捕获顺序
  */
 function createSemanticSizeRules(): Rule[] {
   return [
     [
-      new RegExp(`^p([tblrxy])?-padding-${scaleRegex}$`),
-      ([, dir, size]: string[]) => {
-        const v = `var(--spacing-${size})`
-        const suffixes = dirMap[dir || 'default']
-        if (suffixes.length === 0) return { padding: v }
-        const out: Record<string, string> = {}
-        suffixes.forEach(s => {
-          out[`padding${s}`] = v
-        })
-        return out
+      new RegExp(`^p(?<dir>[tblrxy])?-padding-(?<size>${scalePattern})$`),
+      (match: RegExpMatchArray) => {
+        const { dir, size } = (match.groups ?? {}) as { dir?: string; size: string }
+        return applyDirection('padding', dir, `var(--spacing-${size})`, 'all')
       },
     ],
     [
-      new RegExp(`^m([tblrxy])?-margin-${scaleRegex}$`),
-      ([, dir, size]: string[]) => {
-        const v = `var(--spacing-${size})`
-        const suffixes = dirMap[dir || 'default']
-        if (suffixes.length === 0) return { margin: v }
-        const out: Record<string, string> = {}
-        suffixes.forEach(s => {
-          out[`margin${s}`] = v
-        })
-        return out
+      new RegExp(`^m(?<dir>[tblrxy])?-margin-(?<size>${scalePattern})$`),
+      (match: RegExpMatchArray) => {
+        const { dir, size } = (match.groups ?? {}) as { dir?: string; size: string }
+        return applyDirection('margin', dir, `var(--spacing-${size})`, 'all')
       },
     ],
     [
-      new RegExp(`^gap(-[xy])?-gap-${scaleRegex}$`),
-      ([, dirStr, size]: string[]) => {
+      new RegExp(`^gap(?<axisGroup>-(?<axis>x|y))?-(?<size>${scalePattern})$`),
+      (match: RegExpMatchArray) => {
+        const { axis, size } = (match.groups ?? {}) as { axis?: string; size: string }
         const v = `var(--spacing-${size})`
-        if (!dirStr) return { gap: v }
-        if (dirStr === '-x') return { 'column-gap': v }
+        if (!axis) return { gap: v }
+        if (axis === 'x') return { 'column-gap': v }
         return { 'row-gap': v }
       },
     ],
-    // scroll-margin 语义化规则：scroll-m/scroll-mt/scroll-mb 等基于 spacing 阶梯
     [
-      new RegExp(`^scroll-m([tblrxy])?-gap-${scaleRegex}$`),
-      ([, dir, size]: string[]) => {
-        const v = `var(--spacing-${size})`
-        const suffixes = dirMap[dir || 'default']
-        if (suffixes.length === 0) return { 'scroll-margin': v }
-        const out: Record<string, string> = {}
-        suffixes.forEach(s => {
-          out[`scroll-margin${s}`] = v
-        })
-        return out
+      new RegExp(`^scroll-m(?<dir>[tblrxy])?-gap-(?<size>${scalePattern})$`),
+      (match: RegExpMatchArray) => {
+        const { dir, size } = (match.groups ?? {}) as { dir?: string; size: string }
+        return applyDirection('scroll-margin', dir, `var(--spacing-${size})`, 'all')
       },
     ],
-    // margin + spacing 语义化规则：m-gap-/mt-gap-/mb-gap- 等
     [
-      new RegExp(`^m([tblrxy])?-gap-${scaleRegex}$`),
-      ([, dir, size]: string[]) => {
-        const v = `var(--spacing-${size})`
-        const suffixes = dirMap[dir || 'default']
-        if (suffixes.length === 0) return { margin: v }
-        const out: Record<string, string> = {}
-        suffixes.forEach(s => {
-          out[`margin${s}`] = v
-        })
-        return out
+      new RegExp(`^m(?<dir>[tblrxy])?-gap-(?<size>${scalePattern})$`),
+      (match: RegExpMatchArray) => {
+        const { dir, size } = (match.groups ?? {}) as { dir?: string; size: string }
+        return applyDirection('margin', dir, `var(--spacing-${size})`, 'all')
       },
     ],
   ]
 }
 
-/** 布局变量自动映射规则 */
+/** 布局变量自动映射规则（仅白名单 LAYOUT_SIZES；key 不得与 presetUno 保留类名如 full/screen 重合，见 size.ts 注释） */
 function createLayoutVariableRules(): Rule[] {
-  // 支持 w-, h-, min-w-, max-w-, min-h-, max-h-
   const properties = [
     ['w', 'width'],
     ['h', 'height'],
@@ -127,70 +136,65 @@ function createLayoutVariableRules(): Rule[] {
     ['min-h', 'min-height'],
     ['max-h', 'max-height'],
   ] as const
+  const layoutKeys = (LAYOUT_SIZES as readonly string[]).join('|')
 
   return properties.map(([prefix, cssProperty]) => [
-    new RegExp(`^${prefix}-([a-zA-Z_][\\w]*)$`),
+    new RegExp(`^${prefix}-(${layoutKeys})$`),
     ([, name]: string[]) => {
-      if ((LAYOUT_SIZES as readonly string[]).includes(name as any)) {
-        const cssVarName = `var(--${name.replace(/([A-Z])/g, '-$1').toLowerCase()})`
-        return { [cssProperty]: cssVarName }
-      }
-      return undefined
+      const cssVarName = `var(--${toKebab(name)})`
+      return { [cssProperty]: cssVarName }
     },
   ])
 }
 
-/** 阶梯规则生成器 (字体、间距、圆角、过渡 xs-5xl，SSOT: SIZE_SCALE_KEYS) */
+/** 阶梯规则生成器 (字体、间距、圆角、过渡 xs-5xl)，使用具名捕获组避免依赖捕获顺序 */
 function createScaleRules(): Rule[] {
-  // 字体阶梯: fs-xs, fs-5xl
   const fontRule: Rule = [
-    new RegExp(`^fs-${scaleRegex}$`),
-    ([, size]: string[]) => ({ 'font-size': `var(--font-size-${size})` }),
-  ]
-
-  // 间距阶梯 (带方向): p-scale-xl, mt-scale-xs, gap-scale-md
-  const scaleDirMap: Record<string, string[]> = {
-    t: ['-top'],
-    b: ['-bottom'],
-    l: ['-left'],
-    r: ['-right'],
-    x: ['-left', '-right'],
-    y: ['-top', '-bottom'],
-  }
-  const paddingMarginRule: Rule = [
-    new RegExp(`^([pm])([tblrxy])?-scale-${scaleRegex}$`),
-    ([, type, dir, size]: string[]) => {
-      const prop = type === 'p' ? 'padding' : 'margin'
-      const suffixes = dir ? scaleDirMap[dir] : ['']
-      const out: Record<string, string> = {}
-      suffixes.forEach(s => {
-        out[`${prop}${s}`] = `var(--spacing-${size})`
-      })
-      return out
+    new RegExp(`^fs-(?<size>${scalePattern})$`),
+    (match: RegExpMatchArray) => {
+      const { size } = (match.groups ?? {}) as { size: string }
+      return { 'font-size': `var(--font-size-${size})` }
     },
   ]
 
-  // Gap 阶梯: gap-scale-xl, gap-x-scale-md
+  const paddingMarginRule: Rule = [
+    new RegExp(`^(?<type>[pm])(?<dir>[tblrxy])?-scale-(?<size>${scalePattern})$`),
+    (match: RegExpMatchArray) => {
+      const { type, dir, size } = (match.groups ?? {}) as {
+        type: string
+        dir?: string
+        size: string
+      }
+      const prop = type === 'p' ? 'padding' : 'margin'
+      return applyDirection(prop, dir, `var(--spacing-${size})`, 'default')
+    },
+  ]
+
   const gapRule: Rule = [
-    new RegExp(`^gap-([xy]-)?scale-${scaleRegex}$`),
-    ([, dirStr, size]: string[]) => {
+    new RegExp(`^gap(?<axisGroup>-(?<axis>x|y))?-scale-(?<size>${scalePattern})$`),
+    (match: RegExpMatchArray) => {
+      const { axis, size } = (match.groups ?? {}) as { axis?: string; size: string }
       const v = `var(--spacing-${size})`
-      if (!dirStr) return { gap: v }
-      if (dirStr.startsWith('x')) return { 'column-gap': v }
+      if (!axis) return { gap: v }
+      if (axis === 'x') return { 'column-gap': v }
       return { 'row-gap': v }
     },
   ]
 
-  // 圆角阶梯: rounded-scale-xs, rounded-scale-5xl
   const roundedRule: Rule = [
-    new RegExp(`^rounded-scale-${scaleRegex}$`),
-    ([, size]: string[]) => ({ 'border-radius': `var(--radius-${size})` }),
+    new RegExp(`^rounded-scale-(?<size>${scalePattern})$`),
+    (match: RegExpMatchArray) => {
+      const { size } = (match.groups ?? {}) as { size: string }
+      return { 'border-radius': `var(--radius-${size})` }
+    },
   ]
 
-  // 过渡时长阶梯: duration-scale-xs, duration-scale-5xl
   const durationRule: Rule = [
-    new RegExp(`^duration-scale-${scaleRegex}$`),
-    ([, size]: string[]) => ({ 'transition-duration': `var(--transition-${size})` }),
+    new RegExp(`^duration-scale-(?<size>${scalePattern})$`),
+    (match: RegExpMatchArray) => {
+      const { size } = (match.groups ?? {}) as { size: string }
+      return { 'transition-duration': `var(--transition-${size})` }
+    },
   ]
 
   return [fontRule, paddingMarginRule, gapRule, roundedRule, durationRule]
@@ -212,21 +216,6 @@ function createBaseVarRules(): Rule[] {
   return rules
 }
 
-/** Flex 对齐快捷类（常用组合，减少冗余） */
-function createFlexShortcuts(): Record<string, string> {
-  const pairs: [string, string][] = [
-    ['start', 'center'],
-    ['end', 'center'],
-    ['center', 'start'],
-    ['center', 'end'],
-    ['between', 'start'],
-    ['between', 'end'],
-    ['around', 'center'],
-    ['evenly', 'center'],
-  ]
-  return Object.fromEntries(pairs.map(([j, i]) => [`${j}-${i}`, `flex justify-${j} items-${i}`]))
-}
-
 // ----------------------------------------------------------------------
 // 3. 配置主体
 // ----------------------------------------------------------------------
@@ -245,6 +234,7 @@ function buildThemeDemoSafelist(): string[] {
   for (const family of COLOR_FAMILIES.pairFamilies) {
     list.push(`bg-${family}`, `text-${family}-foreground`, `border-${family}`)
   }
+  // quadFamilies: *-light 用于 PrimeVue Button text/outlined 变体 hover 背景，详见 docs/PRIMEVUE_THEME.md
   for (const family of COLOR_FAMILIES.quadFamilies) {
     list.push(
       `bg-${family}`,
@@ -292,10 +282,13 @@ function buildThemeDemoSafelist(): string[] {
     )
   }
 
-  // ====== 尺寸阶梯类（不含 p-padding/m-margin/gap-gap，已由 LAYOUT_SAFELIST 覆盖） ======
+  // ====== 尺寸阶梯类 + 语义 gap（gap-* / gap-x-* / gap-y-*） ======
   list.push(
     ...SIZE_SCALE_KEYS.flatMap(k => [
       `fs-${k}`,
+      `gap-${k}`,
+      `gap-x-${k}`,
+      `gap-y-${k}`,
       `p-scale-${k}`,
       `m-scale-${k}`,
       `gap-scale-${k}`,
@@ -345,10 +338,15 @@ function buildThemeDemoSafelist(): string[] {
     'i-lucide-minimize-2'
   )
 
-  // ====== PrimeVue 组件悬停态 ======
+  // ====== PrimeVue 组件悬停态（Button text/outlined 使用 *-light 作为 hover 背景） ======
   list.push(
     'hover:bg-sidebar-accent/50',
     'hover:bg-destructive-light',
+    'hover:bg-primary-light',
+    'hover:bg-success-light',
+    'hover:bg-info-light',
+    'hover:bg-warn-light',
+    'hover:bg-help-light',
     'bg-destructive/10',
     'bg-primary/5',
     'bg-info/10'
@@ -358,6 +356,11 @@ function buildThemeDemoSafelist(): string[] {
 }
 
 const themeDemoSafelist = buildThemeDemoSafelist()
+
+/** 生产环境仅保留必要动态类；日常 dev 不加 themeDemoSafelist，避免冷启动变慢 */
+const isProd = process.env.NODE_ENV === 'production'
+/** 仅需跑主题/配色 demo 页时设为 true（如 UNO_DEMO=true pnpm dev），此时才合并 themeDemoSafelist */
+const isDemo = process.env.UNO_DEMO === 'true'
 
 // ----------------------------------------------------------------------
 // 4. 颜色系统动态映射 (与 ThemeEngine / COLOR_FAMILIES 对齐)
@@ -384,6 +387,7 @@ function buildThemeColors(): Record<string, ThemeColorValue> {
   }
 
   // 扩展家族：DEFAULT + foreground + hover + hover-foreground + light + light-foreground
+  // light 用于 PrimeVue Button text/outlined 变体 hover 背景，详见 docs/PRIMEVUE_THEME.md
   for (const family of COLOR_FAMILIES.quadFamilies) {
     colors[family] = {
       DEFAULT: rgbVar(family),
@@ -422,7 +426,11 @@ export default defineConfig({
     }),
   ],
 
-  safelist: [...getDynamicSafelist(), ...themeDemoSafelist],
+  safelist: isProd
+    ? getDynamicSafelist()
+    : isDemo
+      ? [...getDynamicSafelist(), ...themeDemoSafelist]
+      : getDynamicSafelist(),
 
   content: {
     pipeline: {
@@ -432,56 +440,135 @@ export default defineConfig({
 
   transformers: [transformerDirectives(), transformerVariantGroup()],
 
+  // 业务层推荐只使用 shortcuts，不直接拼原子类。
+  // spacing 推荐 p-padding-* / m-margin-* / gap-*，禁止在业务中直接使用 p-scale-*。
+  // Shortcuts 依赖规则：允许低层→高层（density/behavior/hover-* → layout-*/component-*）；严禁反向或形成环。
   shortcuts: {
-    full: 'w-full h-full',
-    container: 'full bg-background text-foreground',
-    screen: 'min-h-screen',
-    center: 'flex items-center justify-center',
-    'center-col': 'flex flex-col items-center justify-center',
-    ...createFlexShortcuts(),
-    between: 'flex items-center justify-between',
-    'text-ellipsis': 'text-ellipsis overflow-hidden whitespace-nowrap',
+    // =========================================================
+    // ① 密度语义（Density Token，便于紧凑/舒适/宽松模式切换）
+    // =========================================================
+    'density-compact': 'gap-sm p-padding-sm',
+    'density-normal': 'gap-md p-padding-md',
+    'density-comfortable': 'gap-lg p-padding-lg',
+    'density-responsive': 'density-compact md:density-normal',
 
-    // 布局类
-    stack: 'flex flex-col gap-gap-md',
-    cluster: 'flex flex-wrap gap-gap-md',
-    'grid-center': 'grid place-items-center',
-    'absolute-center': 'absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2',
+    // =========================================================
+    // ② Flex 布局基础（方向即含义；使用 main-* / cross-* 时须显式配合 row 或 column）
+    // =========================================================
+    center: 'flex justify-center items-center',
+    row: 'flex flex-row',
+    column: 'flex flex-col',
+    'flex-row': 'flex flex-row',
+    'flex-col': 'flex flex-col',
+    'flex-wrap': 'flex flex-wrap',
+    'flex-nowrap': 'flex flex-nowrap',
 
-    // 交互类
-    clickable: 'cursor-pointer select-none active:scale-95 transition-transform duration-100',
-    /* eslint-disable-next-line @typescript-eslint/naming-convention -- Uno 快捷类名 truncate-2 */
-    'truncate-2': 'line-clamp-2 text-ellipsis overflow-hidden',
+    // =========================================================
+    // ② Flex 主轴对齐（控制 justify-content）
+    // 说明：主轴 = flex-direction 方向
+    // =========================================================
+    'main-start': 'justify-start',
+    'main-center': 'justify-center',
+    'main-end': 'justify-end',
+    'main-between': 'justify-between',
+    'main-around': 'justify-around',
+    'main-evenly': 'justify-evenly',
 
-    // 组件快捷方式 (自动联动 SizeStore，统一使用 p-padding-* / gap-gap-*)
-    'c-border': 'border border-solid border-border',
-    'c-card':
-      'center gap-gap-md p-padding-md rounded-scale-md bg-card text-card-foreground border border-border shadow-sm transition-all duration-scale-md',
-    'c-card-hover': 'hover:shadow-md hover:border-primary/50',
-    'c-cp': 'cursor-pointer',
-    'c-transition': 'transition-all duration-scale-md ease-in-out',
-    /** 侧边栏展开/收缩宽度过渡（仅 width，时长贴合「展开/收起」） */
+    // =========================================================
+    // ③ Flex 交叉轴对齐（控制 align-items）
+    // 说明：交叉轴 = 与主轴垂直方向
+    // =========================================================
+    'cross-start': 'items-start',
+    'cross-center': 'items-center',
+    'cross-end': 'items-end',
+    'cross-stretch': 'items-stretch',
+
+    // =========================================================
+    // ④ 高频语义化 Flex 组合（只保留最常用场景）
+    // =========================================================
+    'row-center': 'flex flex-row items-center justify-center',
+    'row-between': 'flex flex-row items-center justify-between',
+    'row-start': 'flex flex-row items-start justify-start',
+    'column-center': 'flex flex-col items-center justify-center',
+    'column-between': 'flex flex-col justify-between',
+
+    // =========================================================
+    // ⑤ 布局结构类（Layout Patterns）
+    // 说明：用于整体结构、容器、定位等“空间结构语义”
+    // =========================================================
+    'layout-full': 'w-full h-full',
+    'layout-screen': 'w-screen h-screen',
+    'layout-container': 'bg-background text-foreground',
+    'layout-stack': 'flex flex-col density-normal',
+    'layout-wrap': 'flex flex-wrap density-normal',
+    'layout-grid-center': 'grid place-items-center',
+    'layout-absolute-center': 'absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2',
+
+    // =========================================================
+    // ⑥ 文本与排版工具类（Typography Utilities）
+    // 说明：文本展示、溢出、省略等
+    // =========================================================
+    'text-single-line-ellipsis': 'overflow-hidden whitespace-nowrap text-ellipsis',
+    'text-two-line-ellipsis': 'line-clamp-2 overflow-hidden',
+    'text-muted': 'text-muted-foreground',
+    'text-secondary': 'text-secondary-foreground',
+
+    // =========================================================
+    // ⑦ 交互行为类（Interaction Patterns）
+    // 说明：行为与风格解耦，便于统一调整 hover/focus 策略
+    // =========================================================
+    'behavior-hover-transition': 'transition-all duration-scale-md',
+    'hover-elevated': 'hover:shadow-md hover:border-primary/50',
+    'interactive-hover': 'behavior-hover-transition hover-elevated',
+    'interactive-click':
+      'cursor-pointer select-none active:scale-95 transition-transform duration-scale-xs',
+    'interactive-focus-ring': 'focus:outline-none focus:ring-2 focus:ring-primary/50',
+
+    // =========================================================
+    // ⑧ 组件语义基础（Component Base Styles）
+    // 说明：设计系统中的基础组件语义
+    // =========================================================
+    'component-border': 'border border-solid border-border',
+    'component-card-base':
+      'rounded-scale-md bg-card text-card-foreground border border-border shadow-sm',
+    'component-card-hoverable': 'behavior-hover-transition hover-elevated',
+    'component-card-layout': 'density-normal',
+    'component-card-content': 'row-center',
+    'component-card':
+      'component-card-base component-card-hoverable component-card-layout component-card-content',
+
+    // =========================================================
+    // ⑨ 尺寸与视觉工具类（Size & Visual Utilities）
+    // 说明：无对应 w-* / min-w-* 语义类，故用任意值引用 spacing 变量
+    // =========================================================
+    'size-theme-swatch': 'w-[var(--spacing-lg)] h-[var(--spacing-lg)] rounded-full',
+    'size-select-min': 'min-w-[var(--spacing-3xl)]',
     'sidebar-width-transition': 'transition-[width] duration-scale-lg ease-in-out',
-    'c-theme-swatch': 'w-[var(--spacing-lg)] h-[var(--spacing-lg)] rounded-full',
-    'c-select-width': 'min-w-[var(--spacing-3xl)]',
-    'c-btn-primary-icon':
-      'bg-primary text-primary-foreground border border-primary shadow-sm hover:opacity-90',
 
-    // 阶梯默认级别 (bare utilities default to md)
-    'rounded-scale': 'rounded-scale-md',
-    'duration-scale': 'duration-scale-md',
-    'p-scale': 'p-scale-md',
-    'm-scale': 'm-scale-md',
-    'gap-scale': 'gap-scale-md',
-    'fs-scale': 'fs-md',
+    // =========================================================
+    // ⑩ 设计系统默认等级（Design Token Defaults）
+    // 说明：与业务推荐一致，使用语义类 p-padding-* / m-margin-* / gap-*
+    // =========================================================
+    'default-rounded': 'rounded-scale-md',
+    'default-duration': 'duration-scale-md',
+    'default-padding': 'p-padding-md',
+    'default-margin': 'm-margin-md',
+    'default-gap': 'gap-md',
+    'default-font-size': 'fs-md',
   },
 
+  // 规则优先级设计：UnoCSS 按顺序匹配，新规则必须归入对应分组。
+  // ① 语义业务规则 > ② 布局变量 > ③ 设计系统阶梯 > ④ 基础变量 > ⑤ 安全区
   rules: [
-    ...createSemanticSizeRules(), // 优先级高：语义化尺寸 (p-padding)
-    ...createLayoutVariableRules(), // 优先级中：布局变量 (w-sidebarWidth)
-    ...createScaleRules(), // 优先级中：阶梯尺寸 (fs-xl, p-scale-lg)
-    ...createBaseVarRules(), // SizeCssVars 基础变量 (SIZE_BASE_VAR_KEYS)
-    // 安全区域
+    // ====== ① 业务语义规则（最高优先级） ======
+    ...createSemanticSizeRules(),
+    // ====== ② 布局变量规则 ======
+    ...createLayoutVariableRules(),
+    // ====== ③ 设计系统阶梯规则 ======
+    ...createScaleRules(),
+    // ====== ④ 基础尺寸变量（最低优先级） ======
+    ...createBaseVarRules(),
+    // ====== ⑤ 安全区规则 ======
     ['safe-top', { 'padding-top': 'env(safe-area-inset-top)' }],
     ['safe-bottom', { 'padding-bottom': 'env(safe-area-inset-bottom)' }],
   ],
@@ -495,19 +582,17 @@ export default defineConfig({
 
     // 字体系统：由 SIZE_SCALE_KEYS 动态生成，text-base 别名 md
     fontSize: (() => {
-      /* eslint-disable @typescript-eslint/naming-convention -- Tailwind 阶梯键 2xl/3xl/4xl/5xl */
       const lineHeightMap: Record<string, string> = {
         xs: '1',
         sm: '1.25',
         md: '1.5',
         lg: '1.75',
         xl: '1.75',
-        '2xl': '2',
-        '3xl': '2.25',
-        '4xl': '2.5',
-        '5xl': '1',
+        ['2xl']: '2',
+        ['3xl']: '2.25',
+        ['4xl']: '2.5',
+        ['5xl']: '1',
       }
-      /* eslint-enable @typescript-eslint/naming-convention */
       const out: Record<string, [string, { 'line-height': string }]> = {}
       for (const k of SIZE_SCALE_KEYS) {
         out[k] = [`var(--font-size-${k})`, { 'line-height': lineHeightMap[k] ?? '1.5' }]

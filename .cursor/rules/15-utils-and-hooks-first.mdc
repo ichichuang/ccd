@@ -3,6 +3,7 @@ description: 工具优先策略：遇到需求先复用 src/utils 与 src/hooks�
 globs: src/**/*.{ts,vue}
 alwaysApply: true
 ---
+
 # Utilities & Hooks First (Must Follow)
 
 ## 0. Primary Directive
@@ -14,45 +15,78 @@ If you find an existing utility/hook that covers most of the need, you MUST exte
 ## 1. Mandatory Lookup Map (遇到需求必须优先取用)
 
 ### HTTP / Requests
+
 - `src/utils/http/*` (Alova instance, interceptors, methods)
+- `src/utils/http/connection.ts` (ConnectionManager：网络状态监听、自动重连、健康检查)
+- `src/utils/http/uploadManager.ts` (UploadManager：大文件分片上传、断点续传、暂停/恢复)
 - `src/hooks/modules/useHttpRequest.ts` (typed request hook wrapper)
 
 ### Secure Storage / Persistence
+
 - `src/utils/safeStorage/*`
 
 ### Global Events
+
 - `src/utils/mitt.ts`
 
 ### Lodash Wrappers (防腐层)
+
 - `src/utils/lodashes.ts`
   - For data ops: prefer `deepClone`, `deepEqual`, `deepMerge`, `objectPick`, `objectOmit`
   - For debounce/throttle in components: prefer `@vueuse/core` (`useDebounceFn` / `useThrottleFn`) over lodash wrappers
 
 ### IDs
+
 - `src/utils/ids.ts` (`generateUniqueId`, `generateIdFromKey`)
 
 ### Date / Timezone
+
 - `src/utils/date.ts`
 - `src/hooks/modules/useDateUtils.ts`
 
 ### Strings
+
 - `src/utils/strings.ts`
 
 ### Browser / Platform
+
 - `src/utils/browser.ts`
 
+### Device / Breakpoint Sync
+
+- `src/utils/deviceSync.ts` (纯函数，不依赖 Pinia；供 mount 前逻辑使用)
+  - `getDeviceTypeSync()` → 同步计算设备类型（与 device store 判定一致）
+  - `getBreakpointSync(width?)` → 同步计算当前断点
+
+### ECharts Theme System
+
+- `src/hooks/modules/useChartTheme/` (响应式 ECharts 主题 Hook)
+  - `useChartTheme(option, opacityConfig?, advancedConfig?)` → 返回 computed 的主题化 option
+  - `applyThemeToOption(option, ...)` → 函数式版本（非响应式）
+  - 内含 20+ apply\*Styles 模块，自动对齐 ThemeStore 的配色
+
 ### Element Size Observation
+
 - `src/hooks/modules/useAppElementSize.ts`
 
 ### Core System Hooks
+
 - `src/hooks/modules/useThemeSwitch.ts`
 - `src/hooks/modules/useLocale.ts`
 
 ### Layout / Infra Hooks
+
 - `src/hooks/layout/usePageTitle.ts` (标题管理、calculatePageTitle)
 - `src/hooks/layout/useLoading.ts` (loadingStart/loadingDone、pageLoadingStart/pageLoadingDone)
 - `src/hooks/layout/useNprogress.ts` (startProgress、doneProgress)
 - `src/hooks/layout/useFull.ts` (全屏控制，封装 VueUse useFullscreen)
+
+### Schema-Form Hooks（表单 Schema 相关任务必查）
+
+- `src/components/schema-form/hooks/`
+  - useFormSync, useFormActions, useFormMemory, useLayout, useValidation
+  - usePersistence, useSteps, useSubmit, useLifecycle
+  - 以及该目录下所有导出
 
 ## 2. Import Rules (Hard Requirements)
 
@@ -70,6 +104,41 @@ If you find an existing utility/hook that covers most of the need, you MUST exte
    - File MUST have a clear responsibility and boundaries in a header comment.
    - File MUST export named functions (no default export), and follow the style of neighboring files.
 
+## 3a. Method Lookup Workflow（方法查找与归档决策）
+
+When you need a method/function for a task:
+
+### Step 1: Mandatory Lookup（必须优先查找）
+
+Before implementing any logic, search in this order:
+
+1. **Domain-specific hooks** (if task involves schema-form): `src/components/schema-form/hooks/`
+2. **Global utils**: `src/utils/` (lodashes, date, strings, ids, browser, safeStorage, http/*, mitt, deviceSync, etc.)
+
+Use `grep` / codebase_search for function names or semantics before writing code.
+
+### Step 2: If Found → Use Directly
+
+Import from the existing module. Do NOT re-implement or copy-paste equivalent logic.
+
+### Step 3: If NOT Found → Analyze & Inform User
+
+Before adding the method inline or creating a new file:
+
+1. **Analyze** whether the method is suitable for global reuse:
+   - Used by multiple modules? → Likely global.
+   - Pure function, no UI/store coupling? → Likely global.
+   - Schema-form-specific only? → Prefer `src/components/schema-form/hooks/` or `utils/`.
+   - Single-use, tightly coupled to one component? → May stay local.
+
+2. **Output a brief analysis** to the user:
+   - Method purpose
+   - Suitable for global use? (Yes/No + reason)
+   - Recommended placement: `src/utils/<file>.ts` OR `src/components/schema-form/hooks/` OR keep at usage site
+   - Ask: "Should I add this to the utils/hooks directory, or keep it locally?"
+
+3. **Wait for user decision** before placing the method.
+
 ## 4. Placement Rules (自动归档)
 
 - HTTP related → `src/utils/http/*` or a composable under `src/hooks/modules/`
@@ -86,6 +155,7 @@ If you find an existing utility/hook that covers most of the need, you MUST exte
 When a task matches the following needs, you MUST use the specified exports:
 
 ### Lodash (src/utils/lodashes.ts)
+
 - Deep clone → `deepClone`
 - Deep equal → `deepEqual`
 - Deep merge → `deepMerge`
@@ -94,39 +164,61 @@ When a task matches the following needs, you MUST use the specified exports:
   - In Vue components prefer `@vueuse/core`: `useDebounceFn` / `useThrottleFn`
 
 ### IDs (src/utils/ids.ts)
+
 - Unique id → `generateUniqueId`
 - Stable id from key → `generateIdFromKey`
 
 ### Strings (src/utils/strings.ts)
+
 - camelCase/PascalCase → kebab-case → `toKebabCase`
 
 ### Browser (src/utils/browser.ts)
+
 - System color mode → `getSystemColorMode`
 
 ### Global events (src/utils/mitt.ts)
+
 - MUST use `useMitt()` and the singleton emitter defined there.
 
-### HTTP (src/hooks/modules/useHttpRequest.ts + src/utils/http/*)
+### HTTP (src/hooks/modules/useHttpRequest.ts + src/utils/http/\*)
+
 - Prefer `useHttpRequest<TData>(buildMethod, options?)`
 - Use `alovaInstance` when you need direct Method construction.
 - Use `isHttpRequestError` / `HttpRequestError` for error narrowing.
+- Connection management → `connectionManager` / `getConnectionState()` / `addConnectionListener()` / `reconnect()`
+- Chunked upload → `addUploadTask(file, config?)` / `pauseUploadTask` / `resumeUploadTask` / `cancelUploadTask`
 
-### Safe storage (src/utils/safeStorage/*)
+### Device Sync (src/utils/deviceSync.ts)
+
+- Pre-mount device detection → `getDeviceTypeSync()` → `DeviceType`
+- Pre-mount breakpoint → `getBreakpointSync(width?)` → `BreakpointKey`
+
+### ECharts (src/hooks/modules/useChartTheme/\*)
+
+- Reactive theming → `useChartTheme(option, opacityConfig?, advancedConfig?)`
+- Imperative theming → `applyThemeToOption(option, opacityConfig?, advancedConfig?)`
+
+### Safe storage (src/utils/safeStorage/\*)
+
 - Encrypt/decrypt → `encrypt` / `decrypt` / `encryptSync` / `decryptSync`
 - Pack/unpack → `packData` / `unpackData` / `packDataSync` / `unpackDataSync`
 - Pinia serializer → `createPiniaEncryptedSerializer`
 
 ### Date / Timezone (src/hooks/modules/useDateUtils.ts)
+
 - Prefer `useDateUtils()` as the reactive gateway (do NOT reinvent timezone/locale sync).
 
 ### Element size (src/hooks/modules/useAppElementSize.ts)
+
 - Use `useAppElementSize(...)` (do NOT re-implement ResizeObserver patterns).
 
 ### Core system hooks
+
 - Theme switching → `useThemeSwitch()` (+ `isThemeLocked()` if needed)
 - Locale switching → `useLocale()`
 
-### Layout / Infra hooks (src/hooks/layout/*)
+### Layout / Infra hooks (src/hooks/layout/\*)
+
 - Page title → `usePageTitle(router?)`、`calculatePageTitle(route, appTitle, t)`
 - Loading → `useLoading()` → `loadingStart`、`loadingDone`、`pageLoadingStart`、`pageLoadingDone`
 - NProgress → `useNprogress()` → `startProgress`、`doneProgress`

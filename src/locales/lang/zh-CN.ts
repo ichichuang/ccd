@@ -2,6 +2,17 @@
  * 中文语言包 (zh-CN)
  */
 const zhCN = {
+  login: {
+    title: '登录',
+    username: '用户名',
+    password: '密码',
+    submit: '登录',
+    placeholderUsername: 'admin 或 user',
+    placeholderPassword: '123456',
+    authDisabled: '当前环境未启用登录模式，无需登录。',
+    required: '请输入用户名和密码',
+    failed: '登录失败，请稍后重试',
+  },
   router: {
     core: {
       root: '首页',
@@ -16,6 +27,12 @@ const zhCN = {
       forbidden: '访问被拒绝',
       serverError: '服务器错误',
     },
+    systemConfiguration: '系统配置',
+    systemConfigurationTheme: '主题系统',
+    systemConfigurationSize: '尺寸系统',
+    systemConfigurationBreakpoints: '断点系统',
+    systemConfigurationScrollbar: '滚动条系统',
+    systemConfigurationUnocss: 'UnoCSS系统',
   },
 
   http: {
@@ -69,6 +86,10 @@ const zhCN = {
     confirm: '确定',
     cancel: '取消',
     delete: '删除',
+    reload: '重新载入',
+    close: '关闭',
+    closeOthers: '关闭其他',
+    closeAll: '关闭全部',
   },
   settings: {
     themeMode: '深色 / 浅色',
@@ -77,6 +98,9 @@ const zhCN = {
     themeModeAuto: '跟随系统',
     themePreset: '系统配色',
     size: '尺寸',
+    sizeCompact: '紧凑模式',
+    sizeComfortable: '舒适模式 (默认)',
+    sizeLoose: '宽松模式',
     layoutMode: '布局模式',
     layoutVertical: '侧边栏',
     layoutHorizontal: '顶栏',
@@ -111,6 +135,39 @@ const zhCN = {
       title: '系统菜单',
       menu: '菜单',
     },
+    appName: 'CCD Admin',
+    appSubtitle: 'Enterprise',
+    reload: '重新载入',
+    globalSettings: '全局配置',
+    globalSettingsTitle: '全局配置 (Global Settings)',
+    openGlobalSettings: '打开全局配置',
+    switchToLight: '切换为浅色模式',
+    switchToDark: '切换为深色模式',
+    footer: 'Footer',
+  },
+  user: {
+    unnamedUser: '未命名用户',
+    noRole: '未分配角色',
+    email: '邮箱',
+    phone: '手机',
+    logout: '退出登录',
+  },
+  dashboard: {
+    buttonSmall: '小按钮',
+    buttonMedium: '中按钮',
+    buttonLarge: '大按钮',
+    sampleText: '这是一段文字，一段普通文本',
+  },
+  schemaForm: {
+    stepPrev: '上一步',
+    stepNext: '下一步',
+    submit: '提交',
+    yes: '是',
+    no: '否',
+    validationFailed: '验证失败',
+    unsupportedComponent: '不支持的组件类型: {component}',
+    customNoRender: '自定义组件缺少 render 函数',
+    customRenderFailed: '自定义组件渲染失败',
   },
 }
 

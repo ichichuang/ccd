@@ -257,7 +257,7 @@ const dialogFooterRenderers = computed(() => {
         <component :is="dialogFooterRenderers[originalIndex]" />
       </template>
       <template v-else>
-        <div class="flex gap-gap-md justify-end">
+        <div class="flex gap-md justify-end">
           <template
             v-for="(btn, key) in defaultButtons(options)"
             :key="key"

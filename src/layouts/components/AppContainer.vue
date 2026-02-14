@@ -16,12 +16,12 @@ watch(
 </script>
 
 <template>
-  <CScrollbar
-    ref="scrollbarRef"
-    class="full rounded-md border-solid border-border"
-  >
-    <div class="full relative flex flex-col">
+  <div class="layout-full">
+    <CScrollbar
+      ref="scrollbarRef"
+      class="layout-full rounded-scale-md border-solid border-border"
+    >
       <AnimateRouterView class="flex-1" />
-    </div>
-  </CScrollbar>
+    </CScrollbar>
+  </div>
 </template>

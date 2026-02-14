@@ -58,6 +58,8 @@ const sections: { id: string; label: string }[] = sectionMeta.map(({ id, label }
 
 // --- Scroll Spy & 目录导航 ---
 const scrollbarRef = ref<CScrollbarInstance | null>(null)
+const tocScrollbarRef = ref<CScrollbarInstance | null>(null)
+const tocAsideRef = ref<HTMLElement | null>(null)
 const activeSectionId = ref<string | null>(sections[0]?.id ?? null) // 默认激活第一项
 const isScrolling = ref(false) // 防止点击滚动时触发 scroll spy
 let intersectionObserver: IntersectionObserver | null = null
@@ -82,9 +84,25 @@ watch(
       return
     }
     tocSelectionKeys.value = { [id]: true }
+    nextTick(scrollTocToActive)
   },
   { immediate: true } // 立即执行，确保初始状态有高亮
 )
+
+/**
+ * 将右侧目录树中当前高亮项滚入视口，保证高亮项始终可见
+ * 当左侧滚动导致高亮变化时，右侧若高亮项在视口外则自动跟随滚动
+ */
+function scrollTocToActive() {
+  const aside = tocAsideRef.value
+  if (!aside) return
+  const el =
+    aside.querySelector<HTMLElement>('.p-treenode[aria-selected="true"]') ??
+    aside.querySelector<HTMLElement>('.p-treenode.p-highlight')
+  if (el) {
+    el.scrollIntoView({ block: 'nearest', behavior: 'smooth' })
+  }
+}
 
 /**
  * 获取 CScrollbar 内部的滚动容器元素
@@ -250,6 +268,7 @@ function onScrollbarInitialized() {
   nextTick(() => {
     initScrollSpy()
     computeActiveSectionFromScroll() // 初始高亮当前可见的 section
+    scrollTocToActive() // 保证右侧目录高亮项在视口内
   })
 }
 
@@ -469,7 +488,7 @@ const floatLabelVal = ref<string | undefined>('')
 
 <template>
   <!-- 最外层：全屏 Flex 容器 (80% / 20%) -->
-  <div class="h-full w-full flex overflow-hidden bg-surface-ground">
+  <div class="h-full w-full flex overflow-hidden bg-background">
     <!-- 左侧：主内容 (80%) -->
     <div class="w-[80%] h-full flex flex-col min-w-0">
       <CScrollbar
@@ -478,19 +497,304 @@ const floatLabelVal = ref<string | undefined>('')
         @initialized="onScrollbarInitialized"
         @scroll="throttledComputeActiveSection"
       >
-        <div class="p-padding-lg max-w-6xl mx-auto flex flex-col gap-gap-xl">
+        <div class="p-padding-lg w-full max-w-[80vw] mx-auto flex flex-col gap-xl">
           <!-- 1. Button -->
           <section
             :id="sections[0].id"
             class="scroll-mt-gap-lg"
           >
             <div
-              class="bg-card border border-border rounded-scale shadow-sm p-padding-lg flex flex-col gap-gap-md transition-all duration-scale-md hover:shadow-md"
+              class="bg-card border border-border rounded-scale-md shadow-sm p-padding-lg flex flex-col gap-md transition-all duration-scale-md hover:shadow-md"
             >
-              <h2 class="fs-xl font-semibold text-foreground flex items-center gap-gap-sm m-0">
+              <h2 class="fs-xl font-semibold text-foreground flex items-center gap-sm m-0">
                 {{ sectionMeta[0].indexLabel }} {{ sectionMeta[0].label }}
               </h2>
-              <div class="flex flex-wrap items-center gap-gap-md">
+              <div class="flex flex-wrap items-center gap-md">
+                <Button label="Primary" />
+                <Button
+                  label="Secondary"
+                  severity="secondary"
+                />
+                <Button
+                  label="Success"
+                  severity="success"
+                />
+                <Button
+                  label="Info"
+                  severity="info"
+                />
+                <Button
+                  label="Warn"
+                  severity="warn"
+                />
+                <Button
+                  label="Help"
+                  severity="help"
+                />
+                <Button
+                  label="Danger"
+                  severity="danger"
+                />
+                <Button
+                  label="Contrast"
+                  severity="contrast"
+                />
+              </div>
+              <div class="flex flex-wrap items-center gap-md">
+                <Button
+                  label="Primary"
+                  raised
+                />
+                <Button
+                  label="Secondary"
+                  severity="secondary"
+                  raised
+                />
+                <Button
+                  label="Success"
+                  severity="success"
+                  raised
+                />
+                <Button
+                  label="Info"
+                  severity="info"
+                  raised
+                />
+                <Button
+                  label="Warn"
+                  severity="warn"
+                  raised
+                />
+                <Button
+                  label="Help"
+                  severity="help"
+                  raised
+                />
+                <Button
+                  label="Danger"
+                  severity="danger"
+                  raised
+                />
+                <Button
+                  label="Contrast"
+                  severity="contrast"
+                  raised
+                />
+              </div>
+              <div class="flex flex-wrap items-center gap-md">
+                <Button
+                  label="Primary"
+                  rounded
+                />
+                <Button
+                  label="Secondary"
+                  severity="secondary"
+                  rounded
+                />
+                <Button
+                  label="Success"
+                  severity="success"
+                  rounded
+                />
+                <Button
+                  label="Info"
+                  severity="info"
+                  rounded
+                />
+                <Button
+                  label="Warn"
+                  severity="warn"
+                  rounded
+                />
+                <Button
+                  label="Help"
+                  severity="help"
+                  rounded
+                />
+                <Button
+                  label="Danger"
+                  severity="danger"
+                  rounded
+                />
+                <Button
+                  label="Contrast"
+                  severity="contrast"
+                  rounded
+                />
+              </div>
+              <div class="flex flex-wrap items-center gap-md">
+                <Button
+                  label="Primary"
+                  variant="text"
+                />
+                <Button
+                  label="Secondary"
+                  severity="secondary"
+                  variant="text"
+                />
+                <Button
+                  label="Success"
+                  severity="success"
+                  variant="text"
+                />
+                <Button
+                  label="Info"
+                  severity="info"
+                  variant="text"
+                />
+                <Button
+                  label="Warn"
+                  severity="warn"
+                  variant="text"
+                />
+                <Button
+                  label="Help"
+                  severity="help"
+                  variant="text"
+                />
+                <Button
+                  label="Danger"
+                  severity="danger"
+                  variant="text"
+                />
+                <Button
+                  label="Contrast"
+                  severity="contrast"
+                  variant="text"
+                />
+              </div>
+              <div class="flex flex-wrap items-center gap-md">
+                <Button
+                  label="Primary"
+                  variant="text"
+                  raised
+                />
+                <Button
+                  label="Secondary"
+                  severity="secondary"
+                  variant="text"
+                  raised
+                />
+                <Button
+                  label="Success"
+                  severity="success"
+                  variant="text"
+                  raised
+                />
+                <Button
+                  label="Info"
+                  severity="info"
+                  variant="text"
+                  raised
+                />
+                <Button
+                  label="Warn"
+                  severity="warn"
+                  variant="text"
+                  raised
+                />
+                <Button
+                  label="Help"
+                  severity="help"
+                  variant="text"
+                  raised
+                />
+                <Button
+                  label="Danger"
+                  severity="danger"
+                  variant="text"
+                  raised
+                />
+                <Button
+                  label="Contrast"
+                  severity="contrast"
+                  variant="text"
+                  raised
+                />
+              </div>
+              <div class="flex flex-wrap items-center gap-md">
+                <Button
+                  label="Primary"
+                  variant="outlined"
+                />
+                <Button
+                  label="Secondary"
+                  severity="secondary"
+                  variant="outlined"
+                />
+                <Button
+                  label="Success"
+                  severity="success"
+                  variant="outlined"
+                />
+                <Button
+                  label="Info"
+                  severity="info"
+                  variant="outlined"
+                />
+                <Button
+                  label="Warn"
+                  severity="warn"
+                  variant="outlined"
+                />
+                <Button
+                  label="Help"
+                  severity="help"
+                  variant="outlined"
+                />
+                <Button
+                  label="Danger"
+                  severity="danger"
+                  variant="outlined"
+                />
+                <Button
+                  label="Contrast"
+                  severity="contrast"
+                  variant="outlined"
+                />
+              </div>
+              <div class="flex flex-wrap items-center gap-md">
+                <Button
+                  icon="pi pi-check"
+                  aria-label="Filter"
+                />
+                <Button
+                  icon="pi pi-bookmark"
+                  severity="secondary"
+                  aria-label="Bookmark"
+                />
+                <Button
+                  icon="pi pi-search"
+                  severity="success"
+                  aria-label="Search"
+                />
+                <Button
+                  icon="pi pi-user"
+                  severity="info"
+                  aria-label="User"
+                />
+                <Button
+                  icon="pi pi-bell"
+                  severity="warn"
+                  aria-label="Notification"
+                />
+                <Button
+                  icon="pi pi-heart"
+                  severity="help"
+                  aria-label="Favorite"
+                />
+                <Button
+                  icon="pi pi-times"
+                  severity="danger"
+                  aria-label="Cancel"
+                />
+                <Button
+                  icon="pi pi-star"
+                  severity="contrast"
+                  aria-label="Star"
+                />
+              </div>
+              <div class="flex flex-wrap items-center gap-md">
                 <Button label="Basic" />
                 <Button
                   label="带图标"
@@ -516,7 +820,7 @@ const floatLabelVal = ref<string | undefined>('')
                   disabled
                 />
               </div>
-              <div class="flex flex-wrap items-center gap-gap-sm">
+              <div class="flex flex-wrap items-center gap-sm">
                 <Button label="Primary" />
                 <Button
                   label="Secondary"
@@ -539,7 +843,7 @@ const floatLabelVal = ref<string | undefined>('')
                   severity="danger"
                 />
               </div>
-              <div class="flex flex-wrap items-center gap-gap-sm">
+              <div class="flex flex-wrap items-center gap-sm">
                 <Button
                   label="Raised"
                   raised
@@ -557,7 +861,7 @@ const floatLabelVal = ref<string | undefined>('')
                   variant="outlined"
                 />
               </div>
-              <div class="flex flex-wrap items-center gap-gap-sm">
+              <div class="flex flex-wrap items-center gap-sm">
                 <Button
                   icon="pi pi-check"
                   aria-label="确定"
@@ -581,7 +885,7 @@ const floatLabelVal = ref<string | undefined>('')
                   size="large"
                 />
               </div>
-              <div class="flex flex-wrap items-center gap-gap-sm">
+              <div class="flex flex-wrap items-center gap-sm">
                 <ButtonGroup>
                   <Button
                     label="保存"
@@ -608,13 +912,13 @@ const floatLabelVal = ref<string | undefined>('')
             class="scroll-mt-gap-lg"
           >
             <div
-              class="bg-card border border-border rounded-scale shadow-sm p-padding-lg flex flex-col gap-gap-md transition-all duration-scale-md hover:shadow-md"
+              class="bg-card border border-border rounded-scale-md shadow-sm p-padding-lg flex flex-col gap-md transition-all duration-scale-md hover:shadow-md"
             >
-              <h2 class="fs-xl font-semibold text-foreground flex items-center gap-gap-sm m-0">
+              <h2 class="fs-xl font-semibold text-foreground flex items-center gap-sm m-0">
                 {{ sectionMeta[1].indexLabel }} {{ sectionMeta[1].label }}
               </h2>
-              <div class="flex flex-col gap-gap-md max-w-md">
-                <div class="flex flex-col gap-gap-xs">
+              <div class="flex flex-col gap-md max-w-md">
+                <div class="flex flex-col gap-xs">
                   <label
                     for="input-text"
                     class="text-foreground fs-sm"
@@ -627,7 +931,7 @@ const floatLabelVal = ref<string | undefined>('')
                     placeholder="请输入"
                   />
                 </div>
-                <div class="flex flex-col gap-gap-xs">
+                <div class="flex flex-col gap-xs">
                   <label
                     for="input-pwd"
                     class="text-foreground fs-sm"
@@ -641,7 +945,7 @@ const floatLabelVal = ref<string | undefined>('')
                     toggle-mask
                   />
                 </div>
-                <div class="flex flex-col gap-gap-xs">
+                <div class="flex flex-col gap-xs">
                   <label
                     for="input-textarea"
                     class="text-foreground fs-sm"
@@ -654,7 +958,7 @@ const floatLabelVal = ref<string | undefined>('')
                     placeholder="多行文本"
                   />
                 </div>
-                <div class="flex flex-col gap-gap-xs">
+                <div class="flex flex-col gap-xs">
                   <label
                     for="input-num"
                     class="text-foreground fs-sm"
@@ -667,7 +971,7 @@ const floatLabelVal = ref<string | undefined>('')
                     show-buttons
                   />
                 </div>
-                <div class="flex flex-wrap gap-gap-sm">
+                <div class="flex flex-wrap gap-sm">
                   <InputText
                     v-model="inputText"
                     size="small"
@@ -716,13 +1020,13 @@ const floatLabelVal = ref<string | undefined>('')
             class="scroll-mt-gap-lg"
           >
             <div
-              class="bg-card border border-border rounded-scale shadow-sm p-padding-lg flex flex-col gap-gap-md transition-all duration-scale-md hover:shadow-md"
+              class="bg-card border border-border rounded-scale-md shadow-sm p-padding-lg flex flex-col gap-md transition-all duration-scale-md hover:shadow-md"
             >
-              <h2 class="fs-xl font-semibold text-foreground flex items-center gap-gap-sm m-0">
+              <h2 class="fs-xl font-semibold text-foreground flex items-center gap-sm m-0">
                 {{ sectionMeta[2].indexLabel }} {{ sectionMeta[2].label }}
               </h2>
-              <div class="flex flex-wrap gap-gap-lg">
-                <div class="flex flex-col gap-gap-xs min-w-48">
+              <div class="flex flex-wrap gap-lg">
+                <div class="flex flex-col gap-xs min-w-[var(--spacing-4xl)]">
                   <label class="text-foreground fs-sm">Select 单选</label>
                   <Select
                     v-model="selectCity"
@@ -733,7 +1037,7 @@ const floatLabelVal = ref<string | undefined>('')
                     show-clear
                   />
                 </div>
-                <div class="flex flex-col gap-gap-xs min-w-56">
+                <div class="flex flex-col gap-xs min-w-[var(--spacing-5xl)]">
                   <label class="text-foreground fs-sm">MultiSelect</label>
                   <MultiSelect
                     v-model="multiSelectVal"
@@ -753,12 +1057,12 @@ const floatLabelVal = ref<string | undefined>('')
             class="scroll-mt-gap-lg"
           >
             <div
-              class="bg-card border border-border rounded-scale shadow-sm p-padding-lg flex flex-col gap-gap-md transition-all duration-scale-md hover:shadow-md"
+              class="bg-card border border-border rounded-scale-md shadow-sm p-padding-lg flex flex-col gap-md transition-all duration-scale-md hover:shadow-md"
             >
-              <h2 class="fs-xl font-semibold text-foreground flex items-center gap-gap-sm m-0">
+              <h2 class="fs-xl font-semibold text-foreground flex items-center gap-sm m-0">
                 {{ sectionMeta[3].indexLabel }} {{ sectionMeta[3].label }}
               </h2>
-              <div class="flex flex-wrap gap-gap-md">
+              <div class="flex flex-wrap gap-md">
                 <SelectButton
                   v-model="selectButtonVal"
                   :options="selectButtonOptions"
@@ -782,13 +1086,13 @@ const floatLabelVal = ref<string | undefined>('')
             class="scroll-mt-gap-lg"
           >
             <div
-              class="bg-card border border-border rounded-scale shadow-sm p-padding-lg flex flex-col gap-gap-md transition-all duration-scale-md hover:shadow-md"
+              class="bg-card border border-border rounded-scale-md shadow-sm p-padding-lg flex flex-col gap-md transition-all duration-scale-md hover:shadow-md"
             >
-              <h2 class="fs-xl font-semibold text-foreground flex items-center gap-gap-sm m-0">
+              <h2 class="fs-xl font-semibold text-foreground flex items-center gap-sm m-0">
                 {{ sectionMeta[4].indexLabel }} {{ sectionMeta[4].label }}
               </h2>
-              <div class="flex flex-wrap gap-gap-lg">
-                <div class="flex flex-col gap-gap-xs min-w-56">
+              <div class="flex flex-wrap gap-lg">
+                <div class="flex flex-col gap-xs min-w-[var(--spacing-5xl)]">
                   <label class="text-foreground fs-sm">AutoComplete</label>
                   <AutoComplete
                     v-model="autoCompleteVal"
@@ -797,7 +1101,7 @@ const floatLabelVal = ref<string | undefined>('')
                     @complete="onAutoCompleteSearch"
                   />
                 </div>
-                <div class="flex flex-col gap-gap-xs min-w-48">
+                <div class="flex flex-col gap-xs min-w-[var(--spacing-4xl)]">
                   <label class="text-foreground fs-sm">Listbox</label>
                   <Listbox
                     v-model="listboxVal"
@@ -815,14 +1119,14 @@ const floatLabelVal = ref<string | undefined>('')
             class="scroll-mt-gap-lg"
           >
             <div
-              class="bg-card border border-border rounded-scale shadow-sm p-padding-lg flex flex-col gap-gap-md transition-all duration-scale-md hover:shadow-md"
+              class="bg-card border border-border rounded-scale-md shadow-sm p-padding-lg flex flex-col gap-md transition-all duration-scale-md hover:shadow-md"
             >
-              <h2 class="fs-xl font-semibold text-foreground flex items-center gap-gap-sm m-0">
+              <h2 class="fs-xl font-semibold text-foreground flex items-center gap-sm m-0">
                 {{ sectionMeta[5].indexLabel }} {{ sectionMeta[5].label }}
               </h2>
-              <div class="flex flex-wrap gap-gap-xl">
-                <div class="flex flex-col gap-gap-sm">
-                  <div class="flex items-center gap-gap-sm">
+              <div class="flex flex-wrap gap-xl">
+                <div class="flex flex-col gap-sm">
+                  <div class="flex items-center gap-sm">
                     <Checkbox
                       v-model="checkboxVal"
                       input-id="cb1"
@@ -834,10 +1138,10 @@ const floatLabelVal = ref<string | undefined>('')
                       >Checkbox 二元</label
                     >
                   </div>
-                  <div class="flex flex-col gap-gap-xs">
+                  <div class="flex flex-col gap-xs">
                     <span class="text-foreground fs-sm">Checkbox 多选组</span>
-                    <div class="flex flex-wrap gap-gap-md">
-                      <div class="flex items-center gap-gap-xs">
+                    <div class="flex flex-wrap gap-md">
+                      <div class="flex items-center gap-xs">
                         <Checkbox
                           v-model="checkboxGroup"
                           input-id="cb-vue"
@@ -845,7 +1149,7 @@ const floatLabelVal = ref<string | undefined>('')
                         />
                         <label for="cb-vue">Vue</label>
                       </div>
-                      <div class="flex items-center gap-gap-xs">
+                      <div class="flex items-center gap-xs">
                         <Checkbox
                           v-model="checkboxGroup"
                           input-id="cb-react"
@@ -856,10 +1160,10 @@ const floatLabelVal = ref<string | undefined>('')
                     </div>
                   </div>
                 </div>
-                <div class="flex flex-col gap-gap-sm">
+                <div class="flex flex-col gap-sm">
                   <span class="text-foreground fs-sm">RadioButton</span>
-                  <div class="flex flex-wrap gap-gap-md">
-                    <div class="flex items-center gap-gap-xs">
+                  <div class="flex flex-wrap gap-md">
+                    <div class="flex items-center gap-xs">
                       <RadioButton
                         v-model="radioVal"
                         input-id="r1"
@@ -867,7 +1171,7 @@ const floatLabelVal = ref<string | undefined>('')
                       />
                       <label for="r1">A</label>
                     </div>
-                    <div class="flex items-center gap-gap-xs">
+                    <div class="flex items-center gap-xs">
                       <RadioButton
                         v-model="radioVal"
                         input-id="r2"
@@ -877,7 +1181,7 @@ const floatLabelVal = ref<string | undefined>('')
                     </div>
                   </div>
                 </div>
-                <div class="flex items-center gap-gap-sm">
+                <div class="flex items-center gap-sm">
                   <ToggleSwitch
                     v-model="toggleVal"
                     input-id="sw1"
@@ -898,13 +1202,13 @@ const floatLabelVal = ref<string | undefined>('')
             class="scroll-mt-gap-lg"
           >
             <div
-              class="bg-card border border-border rounded-scale shadow-sm p-padding-lg flex flex-col gap-gap-md transition-all duration-scale-md hover:shadow-md"
+              class="bg-card border border-border rounded-scale-md shadow-sm p-padding-lg flex flex-col gap-md transition-all duration-scale-md hover:shadow-md"
             >
-              <h2 class="fs-xl font-semibold text-foreground flex items-center gap-gap-sm m-0">
+              <h2 class="fs-xl font-semibold text-foreground flex items-center gap-sm m-0">
                 {{ sectionMeta[6].indexLabel }} {{ sectionMeta[6].label }}
               </h2>
-              <div class="flex flex-wrap gap-gap-md">
-                <div class="flex flex-col gap-gap-xs">
+              <div class="flex flex-wrap gap-md">
+                <div class="flex flex-col gap-xs">
                   <label class="text-foreground fs-sm">日期</label>
                   <DatePicker
                     v-model="dateVal"
@@ -931,13 +1235,13 @@ const floatLabelVal = ref<string | undefined>('')
             class="scroll-mt-gap-lg"
           >
             <div
-              class="bg-card border border-border rounded-scale shadow-sm p-padding-lg flex flex-col gap-gap-md transition-all duration-scale-md hover:shadow-md"
+              class="bg-card border border-border rounded-scale-md shadow-sm p-padding-lg flex flex-col gap-md transition-all duration-scale-md hover:shadow-md"
             >
-              <h2 class="fs-xl font-semibold text-foreground flex items-center gap-gap-sm m-0">
+              <h2 class="fs-xl font-semibold text-foreground flex items-center gap-sm m-0">
                 {{ sectionMeta[7].indexLabel }} {{ sectionMeta[7].label }}
               </h2>
-              <div class="flex flex-wrap gap-gap-xl max-w-md">
-                <div class="flex flex-col gap-gap-xs flex-1 min-w-0">
+              <div class="flex flex-wrap gap-xl max-w-md">
+                <div class="flex flex-col gap-xs flex-1 min-w-0">
                   <label class="text-foreground fs-sm">Slider: {{ sliderVal }}</label>
                   <Slider
                     v-model="sliderVal"
@@ -945,7 +1249,7 @@ const floatLabelVal = ref<string | undefined>('')
                     :max="100"
                   />
                 </div>
-                <div class="flex flex-col gap-gap-xs flex-1 min-w-0">
+                <div class="flex flex-col gap-xs flex-1 min-w-0">
                   <label class="text-foreground fs-sm">Slider Range: {{ sliderRangeVal }}</label>
                   <Slider
                     v-model="sliderRangeVal"
@@ -954,7 +1258,7 @@ const floatLabelVal = ref<string | undefined>('')
                     range
                   />
                 </div>
-                <div class="flex flex-col gap-gap-xs">
+                <div class="flex flex-col gap-xs">
                   <label class="text-foreground fs-sm">Rating</label>
                   <Rating v-model="ratingVal" />
                 </div>
@@ -968,12 +1272,12 @@ const floatLabelVal = ref<string | undefined>('')
             class="scroll-mt-gap-lg"
           >
             <div
-              class="bg-card border border-border rounded-scale shadow-sm p-padding-lg flex flex-col gap-gap-md transition-all duration-scale-md hover:shadow-md"
+              class="bg-card border border-border rounded-scale-md shadow-sm p-padding-lg flex flex-col gap-md transition-all duration-scale-md hover:shadow-md"
             >
-              <h2 class="fs-xl font-semibold text-foreground flex items-center gap-gap-sm m-0">
+              <h2 class="fs-xl font-semibold text-foreground flex items-center gap-sm m-0">
                 {{ sectionMeta[8].indexLabel }} {{ sectionMeta[8].label }}
               </h2>
-              <div class="flex flex-wrap items-center gap-gap-md">
+              <div class="flex flex-wrap items-center gap-md">
                 <Tag value="Primary" />
                 <Tag
                   value="Success"
@@ -1018,13 +1322,13 @@ const floatLabelVal = ref<string | undefined>('')
             class="scroll-mt-gap-lg"
           >
             <div
-              class="bg-card border border-border rounded-scale shadow-sm p-padding-lg flex flex-col gap-gap-md transition-all duration-scale-md hover:shadow-md"
+              class="bg-card border border-border rounded-scale-md shadow-sm p-padding-lg flex flex-col gap-md transition-all duration-scale-md hover:shadow-md"
             >
-              <h2 class="fs-xl font-semibold text-foreground flex items-center gap-gap-sm m-0">
+              <h2 class="fs-xl font-semibold text-foreground flex items-center gap-sm m-0">
                 {{ sectionMeta[9].indexLabel }} {{ sectionMeta[9].label }}
               </h2>
-              <div class="flex flex-col gap-gap-md">
-                <div class="flex items-center gap-gap-sm">
+              <div class="flex flex-col gap-md">
+                <div class="flex items-center gap-sm">
                   <span class="text-foreground fs-sm">左侧</span>
                   <Divider layout="vertical" />
                   <span class="text-foreground fs-sm">右侧</span>
@@ -1052,13 +1356,13 @@ const floatLabelVal = ref<string | undefined>('')
             class="scroll-mt-gap-lg"
           >
             <div
-              class="bg-card border border-border rounded-scale shadow-sm p-padding-lg flex flex-col gap-gap-md transition-all duration-scale-md hover:shadow-md"
+              class="bg-card border border-border rounded-scale-md shadow-sm p-padding-lg flex flex-col gap-md transition-all duration-scale-md hover:shadow-md"
             >
-              <h2 class="fs-xl font-semibold text-foreground flex items-center gap-gap-sm m-0">
+              <h2 class="fs-xl font-semibold text-foreground flex items-center gap-sm m-0">
                 {{ sectionMeta[10].indexLabel }} {{ sectionMeta[10].label }}
               </h2>
-              <div class="flex flex-wrap gap-gap-lg">
-                <Card class="flex-1 min-w-64 max-w-sm">
+              <div class="flex flex-wrap gap-lg">
+                <Card class="flex-1 min-w-[var(--spacing-5xl)] max-w-[80vw]">
                   <template #title>Card 标题</template>
                   <template #subtitle>副标题</template>
                   <template #content>
@@ -1067,7 +1371,7 @@ const floatLabelVal = ref<string | undefined>('')
                     </p>
                   </template>
                   <template #footer>
-                    <div class="flex gap-gap-sm">
+                    <div class="flex gap-sm">
                       <Button
                         label="确定"
                         size="small"
@@ -1083,7 +1387,7 @@ const floatLabelVal = ref<string | undefined>('')
                 </Card>
                 <Panel
                   header="Panel 可折叠"
-                  class="flex-1 min-w-64 max-w-sm"
+                  class="flex-1 min-w-[var(--spacing-5xl)] max-w-[80vw]"
                   toggleable
                 >
                   <p class="text-muted-foreground fs-sm m-0">Panel 内容，点击标题可折叠/展开。</p>
@@ -1098,9 +1402,9 @@ const floatLabelVal = ref<string | undefined>('')
             class="scroll-mt-gap-lg"
           >
             <div
-              class="bg-card border border-border rounded-scale shadow-sm p-padding-lg flex flex-col gap-gap-md transition-all duration-scale-md hover:shadow-md"
+              class="bg-card border border-border rounded-scale-md shadow-sm p-padding-lg flex flex-col gap-md transition-all duration-scale-md hover:shadow-md"
             >
-              <h2 class="fs-xl font-semibold text-foreground flex items-center gap-gap-sm m-0">
+              <h2 class="fs-xl font-semibold text-foreground flex items-center gap-sm m-0">
                 {{ sectionMeta[11].indexLabel }} {{ sectionMeta[11].label }}
               </h2>
               <DataTable
@@ -1112,7 +1416,7 @@ const floatLabelVal = ref<string | undefined>('')
                 :rows="2"
                 :rows-per-page-options="[2, 5, 10]"
                 table-style="min-width: 20rem"
-                class="max-w-2xl"
+                class="w-full max-w-[60vw]"
               >
                 <Column
                   selection-mode="single"
@@ -1149,12 +1453,12 @@ const floatLabelVal = ref<string | undefined>('')
             class="scroll-mt-gap-lg"
           >
             <div
-              class="bg-card border border-border rounded-scale shadow-sm p-padding-lg flex flex-col gap-gap-md transition-all duration-scale-md hover:shadow-md"
+              class="bg-card border border-border rounded-scale-md shadow-sm p-padding-lg flex flex-col gap-md transition-all duration-scale-md hover:shadow-md"
             >
-              <h2 class="fs-xl font-semibold text-foreground flex items-center gap-gap-sm m-0">
+              <h2 class="fs-xl font-semibold text-foreground flex items-center gap-sm m-0">
                 {{ sectionMeta[12].indexLabel }} {{ sectionMeta[12].label }}
               </h2>
-              <div class="flex flex-col gap-gap-md max-w-2xl">
+              <div class="flex flex-col gap-md w-full max-w-[60vw]">
                 <Message
                   severity="info"
                   :closable="true"
@@ -1168,7 +1472,7 @@ const floatLabelVal = ref<string | undefined>('')
                   variant="simple"
                   >Simple 变体 Message</Message
                 >
-                <div class="flex flex-wrap gap-gap-sm">
+                <div class="flex flex-wrap gap-sm">
                   <Button
                     label="Toast Success"
                     severity="success"
@@ -1204,17 +1508,17 @@ const floatLabelVal = ref<string | undefined>('')
             class="scroll-mt-gap-lg"
           >
             <div
-              class="bg-card border border-border rounded-scale shadow-sm p-padding-lg flex flex-col gap-gap-md transition-all duration-scale-md hover:shadow-md"
+              class="bg-card border border-border rounded-scale-md shadow-sm p-padding-lg flex flex-col gap-md transition-all duration-scale-md hover:shadow-md"
             >
-              <h2 class="fs-xl font-semibold text-foreground flex items-center gap-gap-sm m-0">
+              <h2 class="fs-xl font-semibold text-foreground flex items-center gap-sm m-0">
                 {{ sectionMeta[13].indexLabel }} {{ sectionMeta[13].label }}
               </h2>
               <p class="text-muted-foreground fs-sm">
                 业务中自定义弹窗/确认请使用
-                <code class="px-padding-xs rounded-scale bg-surface-100">useDialog()</code> /
-                <code class="px-padding-xs rounded-scale bg-surface-100">window.$toast</code>。
+                <code class="px-padding-xs rounded-scale-md bg-muted">useDialog()</code> /
+                <code class="px-padding-xs rounded-scale-md bg-muted">window.$toast</code>。
               </p>
-              <div class="flex flex-wrap gap-gap-sm">
+              <div class="flex flex-wrap gap-sm">
                 <Button
                   label="打开 Dialog"
                   @click="dialogVisible = true"
@@ -1232,7 +1536,7 @@ const floatLabelVal = ref<string | undefined>('')
                 draggable
                 :style="{ width: '28rem' }"
                 :pt="{
-                  root: { class: 'rounded-scale' },
+                  root: { class: 'rounded-scale-md' },
                   content: { class: 'pt-0' },
                 }"
                 @hide="dialogVisible = false"
@@ -1258,12 +1562,12 @@ const floatLabelVal = ref<string | undefined>('')
             class="scroll-mt-gap-lg"
           >
             <div
-              class="bg-card border border-border rounded-scale shadow-sm p-padding-lg flex flex-col gap-gap-md transition-all duration-scale-md hover:shadow-md"
+              class="bg-card border border-border rounded-scale-md shadow-sm p-padding-lg flex flex-col gap-md transition-all duration-scale-md hover:shadow-md"
             >
-              <h2 class="fs-xl font-semibold text-foreground flex items-center gap-gap-sm m-0">
+              <h2 class="fs-xl font-semibold text-foreground flex items-center gap-sm m-0">
                 {{ sectionMeta[14].indexLabel }} {{ sectionMeta[14].label }}
               </h2>
-              <div class="flex flex-wrap gap-gap-md">
+              <div class="flex flex-wrap gap-md">
                 <Button
                   label="打开 Drawer"
                   @click="drawerVisible = true"
@@ -1273,7 +1577,7 @@ const floatLabelVal = ref<string | undefined>('')
                   @click="togglePopover"
                 />
                 <Popover ref="popoverRef">
-                  <div class="flex flex-col gap-gap-sm p-padding-md max-w-xs">
+                  <div class="flex flex-col gap-sm p-padding-md max-w-xs">
                     <span class="fs-sm font-semibold text-foreground">Popover 内容</span>
                     <p class="text-muted-foreground fs-sm m-0">自定义浮层内容。</p>
                   </div>
@@ -1296,13 +1600,13 @@ const floatLabelVal = ref<string | undefined>('')
             class="scroll-mt-gap-lg"
           >
             <div
-              class="bg-card border border-border rounded-scale shadow-sm p-padding-lg flex flex-col gap-gap-md transition-all duration-scale-md hover:shadow-md"
+              class="bg-card border border-border rounded-scale-md shadow-sm p-padding-lg flex flex-col gap-md transition-all duration-scale-md hover:shadow-md"
             >
-              <h2 class="fs-xl font-semibold text-foreground flex items-center gap-gap-sm m-0">
+              <h2 class="fs-xl font-semibold text-foreground flex items-center gap-sm m-0">
                 {{ sectionMeta[15].indexLabel }} {{ sectionMeta[15].label }}
               </h2>
-              <div class="flex flex-col gap-gap-lg">
-                <div class="flex flex-wrap items-center gap-gap-md">
+              <div class="flex flex-col gap-lg">
+                <div class="flex flex-wrap items-center gap-md">
                   <Button
                     label="打开 Menu"
                     icon="pi pi-bars"
@@ -1315,7 +1619,7 @@ const floatLabelVal = ref<string | undefined>('')
                   />
                   <Menubar
                     :model="menuItems"
-                    class="flex-1 min-w-0 max-w-md"
+                    class="flex-1 min-w-0 max-w-[60vw]"
                   />
                 </div>
                 <div>
@@ -1323,7 +1627,7 @@ const floatLabelVal = ref<string | undefined>('')
                     右键点击下方区域打开 ContextMenu：
                   </p>
                   <div
-                    class="border border-border border-dashed rounded-scale p-padding-xl text-center text-muted-foreground fs-sm"
+                    class="border border-border border-dashed rounded-scale-md p-padding-xl text-center text-muted-foreground fs-sm"
                     @contextmenu="onContextMenu"
                   >
                     右键此处
@@ -1343,13 +1647,13 @@ const floatLabelVal = ref<string | undefined>('')
             class="scroll-mt-gap-lg"
           >
             <div
-              class="bg-card border border-border rounded-scale shadow-sm p-padding-lg flex flex-col gap-gap-md transition-all duration-scale-md hover:shadow-md"
+              class="bg-card border border-border rounded-scale-md shadow-sm p-padding-lg flex flex-col gap-md transition-all duration-scale-md hover:shadow-md"
             >
-              <h2 class="fs-xl font-semibold text-foreground flex items-center gap-gap-sm m-0">
+              <h2 class="fs-xl font-semibold text-foreground flex items-center gap-sm m-0">
                 {{ sectionMeta[16].indexLabel }} {{ sectionMeta[16].label }}
               </h2>
-              <div class="flex flex-wrap gap-gap-xl">
-                <div class="flex-1 min-w-0 max-w-md">
+              <div class="flex flex-wrap gap-xl">
+                <div class="flex-1 min-w-0 max-w-[60vw]">
                   <Tabs v-model:value="activeTab">
                     <TabList>
                       <Tab value="0">Tab 1</Tab>
@@ -1369,7 +1673,7 @@ const floatLabelVal = ref<string | undefined>('')
                     </TabPanels>
                   </Tabs>
                 </div>
-                <div class="flex-1 min-w-0 max-w-md">
+                <div class="flex-1 min-w-0 max-w-[60vw]">
                   <Accordion
                     :active-index="activeAccordion ?? 0"
                     @update:active-index="
@@ -1400,13 +1704,13 @@ const floatLabelVal = ref<string | undefined>('')
             class="scroll-mt-gap-lg"
           >
             <div
-              class="bg-card border border-border rounded-scale shadow-sm p-padding-lg flex flex-col gap-gap-md transition-all duration-scale-md hover:shadow-md"
+              class="bg-card border border-border rounded-scale-md shadow-sm p-padding-lg flex flex-col gap-md transition-all duration-scale-md hover:shadow-md"
             >
-              <h2 class="fs-xl font-semibold text-foreground flex items-center gap-gap-sm m-0">
+              <h2 class="fs-xl font-semibold text-foreground flex items-center gap-sm m-0">
                 {{ sectionMeta[17].indexLabel }} {{ sectionMeta[17].label }}
               </h2>
-              <div class="flex flex-wrap gap-gap-xl">
-                <div class="flex flex-col gap-gap-xs max-w-xs">
+              <div class="flex flex-wrap gap-xl">
+                <div class="flex flex-col gap-xs max-w-xs">
                   <label class="text-foreground fs-sm">Tree</label>
                   <Tree
                     v-model:selection-keys="selectedNodeKeys"
@@ -1415,7 +1719,7 @@ const floatLabelVal = ref<string | undefined>('')
                     class="w-full"
                   />
                 </div>
-                <div class="flex flex-col gap-gap-xs">
+                <div class="flex flex-col gap-xs">
                   <label class="text-foreground fs-sm">Paginator 独立分页</label>
                   <Paginator
                     :first="paginatorFirst"
@@ -1435,13 +1739,13 @@ const floatLabelVal = ref<string | undefined>('')
             class="scroll-mt-gap-lg"
           >
             <div
-              class="bg-card border border-border rounded-scale shadow-sm p-padding-lg flex flex-col gap-gap-md transition-all duration-scale-md hover:shadow-md"
+              class="bg-card border border-border rounded-scale-md shadow-sm p-padding-lg flex flex-col gap-md transition-all duration-scale-md hover:shadow-md"
             >
-              <h2 class="fs-xl font-semibold text-foreground flex items-center gap-gap-sm m-0">
+              <h2 class="fs-xl font-semibold text-foreground flex items-center gap-sm m-0">
                 {{ sectionMeta[18].indexLabel }} {{ sectionMeta[18].label }}
               </h2>
-              <div class="flex flex-wrap gap-gap-lg items-start">
-                <div class="flex flex-col gap-gap-xs">
+              <div class="flex flex-wrap gap-lg items-start">
+                <div class="flex flex-col gap-xs">
                   <label class="text-foreground fs-sm">FileUpload</label>
                   <FileUpload
                     mode="basic"
@@ -1449,16 +1753,16 @@ const floatLabelVal = ref<string | undefined>('')
                     @select="onFileUploadSelect"
                   />
                 </div>
-                <div class="flex flex-col gap-gap-sm">
+                <div class="flex flex-col gap-sm">
                   <span class="text-foreground fs-sm">ProgressSpinner</span>
                   <ProgressSpinner style="width: 3rem; height: 3rem" />
                 </div>
-                <div class="flex flex-col gap-gap-sm relative">
+                <div class="flex flex-col gap-sm relative">
                   <Button
                     label="切换 BlockUI"
                     @click="blockUIVisible = !blockUIVisible"
                   />
-                  <div class="border border-border rounded-scale p-padding-lg min-h-24 relative">
+                  <div class="border border-border rounded-scale-md p-padding-lg min-h-24 relative">
                     <p class="text-muted-foreground fs-sm m-0">被 BlockUI 遮罩的区域</p>
                     <BlockUI :blocked="blockUIVisible" />
                   </div>
@@ -1473,12 +1777,12 @@ const floatLabelVal = ref<string | undefined>('')
             class="scroll-mt-gap-lg"
           >
             <div
-              class="bg-card border border-border rounded-scale shadow-sm p-padding-lg flex flex-col gap-gap-md transition-all duration-scale-md hover:shadow-md"
+              class="bg-card border border-border rounded-scale-md shadow-sm p-padding-lg flex flex-col gap-md transition-all duration-scale-md hover:shadow-md"
             >
-              <h2 class="fs-xl font-semibold text-foreground flex items-center gap-gap-sm m-0">
+              <h2 class="fs-xl font-semibold text-foreground flex items-center gap-sm m-0">
                 {{ sectionMeta[19].indexLabel }} {{ sectionMeta[19].label }}
               </h2>
-              <div class="flex flex-col gap-gap-lg">
+              <div class="flex flex-col gap-lg">
                 <div class="max-w-xs">
                   <FloatLabel>
                     <InputText
@@ -1489,12 +1793,14 @@ const floatLabelVal = ref<string | undefined>('')
                     <label for="float-input">FloatLabel</label>
                   </FloatLabel>
                 </div>
-                <div class="max-w-md max-h-48 border border-border rounded-scale overflow-hidden">
+                <div
+                  class="max-w-md max-h-48 border border-border rounded-scale-md overflow-hidden"
+                >
                   <ScrollPanel
                     class="w-full"
                     style="height: 12rem"
                   >
-                    <div class="p-padding-md flex flex-col gap-gap-sm">
+                    <div class="p-padding-md flex flex-col gap-sm">
                       <p class="text-muted-foreground fs-sm m-0">ScrollPanel 可滚动内容区域。</p>
                       <p class="text-muted-foreground fs-sm m-0">多行内容...</p>
                       <p class="text-muted-foreground fs-sm m-0">多行内容...</p>
@@ -1523,14 +1829,14 @@ const floatLabelVal = ref<string | undefined>('')
             class="scroll-mt-gap-lg"
           >
             <div
-              class="bg-card border border-border rounded-scale shadow-sm p-padding-lg flex flex-col gap-gap-md transition-all duration-scale-md hover:shadow-md"
+              class="bg-card border border-border rounded-scale-md shadow-sm p-padding-lg flex flex-col gap-md transition-all duration-scale-md hover:shadow-md"
             >
-              <h2 class="fs-xl font-semibold text-foreground flex items-center gap-gap-sm m-0">
+              <h2 class="fs-xl font-semibold text-foreground flex items-center gap-sm m-0">
                 {{ sectionMeta[20].indexLabel }} {{ sectionMeta[20].label }}
               </h2>
-              <div class="flex flex-col gap-gap-lg">
+              <div class="flex flex-col gap-lg">
                 <Breadcrumb :model="breadcrumbItems" />
-                <div class="flex flex-col gap-gap-xs max-w-md">
+                <div class="flex flex-col gap-xs max-w-md">
                   <label class="text-foreground fs-sm">ProgressBar: {{ progressVal }}%</label>
                   <ProgressBar :value="progressVal" />
                   <ProgressBar
@@ -1538,7 +1844,7 @@ const floatLabelVal = ref<string | undefined>('')
                     class="mt-2"
                   />
                 </div>
-                <div class="flex flex-col gap-gap-sm max-w-xs">
+                <div class="flex flex-col gap-sm max-w-xs">
                   <span class="text-foreground fs-sm">Skeleton 占位</span>
                   <Skeleton
                     width="100%"
@@ -1562,26 +1868,30 @@ const floatLabelVal = ref<string | undefined>('')
 
     <!-- 右侧：目录树 (20%) -->
     <aside
+      ref="tocAsideRef"
       class="w-[20%] h-full flex flex-col min-w-0 border-l border-border bg-card hidden lg:flex"
     >
       <!-- 目录标题 -->
-      <div class="p-padding-md border-b border-border bg-surface-ground/50 backdrop-blur-sm">
+      <div class="p-padding-md border-b border-border bg-card backdrop-blur-sm">
         <h2 class="fs-md font-bold text-foreground uppercase tracking-wider">目录</h2>
       </div>
 
-      <CScrollbar class="flex-1 min-h-0">
+      <CScrollbar
+        ref="tocScrollbarRef"
+        class="flex-1 min-h-0"
+      >
         <div class="p-padding-sm">
           <!-- 右侧目录树：使用 PrimeVue Tree -->
           <Tree
             v-model:selection-keys="tocSelectionKeys"
             :value="tocTreeNodes"
             selection-mode="single"
-            class="w-full border-none p-0 text-sm"
+            class="w-full border-none p-0 fs-sm"
             :pt="{
               root: { class: 'bg-transparent' },
               content: {
                 class:
-                  'rounded-scale hover:bg-surface-hover transition-colors duration-scale-sm cursor-pointer',
+                  'rounded-scale-md hover:bg-accent transition-colors duration-scale-sm cursor-pointer',
               },
               label: {
                 class:

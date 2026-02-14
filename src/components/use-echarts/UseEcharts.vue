@@ -255,7 +255,7 @@ defineExpose({
 <template>
   <div
     ref="chartContainerRef"
-    class="full"
+    class="layout-full"
   >
     <VECharts
       ref="chartRef"

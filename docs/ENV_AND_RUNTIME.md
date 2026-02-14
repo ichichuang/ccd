@@ -36,7 +36,7 @@
 
 ### 2.4 持久化与密钥
 
-- `VITE_PINIA_PERSIST_KEY_PREFIX`
+- `VITE_PINIA_PERSIST_KEY_PREFIX`：Pinia 持久化 key 前缀。Size 的持久化 key 为 `{VITE_PINIA_PERSIST_KEY_PREFIX}-size`，与 `src/constants/size.ts` 的 `SIZE_PERSIST_KEY` 一致；`sizeEngine.preload()` 在应用挂载前会读取该 key 以注入尺寸/根字体变量，避免首帧 FOUC（见 `docs/BUILD_SYSTEM.md` §5.2）。
 - `VITE_APP_SECRET`
 
 ## 3. 类型转换（wrapperEnv）

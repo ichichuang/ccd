@@ -9,8 +9,9 @@ import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { FileSystemIconLoader } from '@iconify/utils/lib/loader/node-loaders'
 import { globSync } from 'glob'
-import { LAYOUT_DIMENSION_KEYS } from '../src/constants/size'
+import { LAYOUT_DIMENSION_KEYS, SIZE_BASE_VAR_KEYS } from '../src/constants/size'
 import { SIZE_SCALE_KEYS } from '../src/constants/sizeScale'
+import { COLOR_FAMILIES } from '../src/utils/theme/metadata'
 
 const currentDir = path.dirname(fileURLToPath(import.meta.url))
 const projectRoot = path.resolve(currentDir, '..')
@@ -282,12 +283,122 @@ function buildLayoutSafelistClasses(): string[] {
     `ml-margin-${s}`,
     `mr-margin-${s}`,
   ])
-  const marginGap = SIZE_SCALE_KEYS.flatMap(s => [`m-gap-${s}`, `mt-gap-${s}`, `mb-gap-${s}`])
-  const gap = SIZE_SCALE_KEYS.map(s => `gap-gap-${s}`)
-  return [...layout, ...padding, ...margin, ...marginGap, ...gap]
+  const marginGap = SIZE_SCALE_KEYS.flatMap(s => [
+    `m-gap-${s}`,
+    `mx-gap-${s}`,
+    `my-gap-${s}`,
+    `mt-gap-${s}`,
+    `mb-gap-${s}`,
+    `ml-gap-${s}`,
+    `mr-gap-${s}`,
+  ])
+  const scrollMarginGap = SIZE_SCALE_KEYS.flatMap(s => [
+    `scroll-m-gap-${s}`,
+    `scroll-mx-gap-${s}`,
+    `scroll-my-gap-${s}`,
+    `scroll-mt-gap-${s}`,
+    `scroll-mb-gap-${s}`,
+    `scroll-ml-gap-${s}`,
+    `scroll-mr-gap-${s}`,
+  ])
+  const gap = SIZE_SCALE_KEYS.map(s => `gap-${s}`)
+  return [...layout, ...padding, ...margin, ...marginGap, ...scrollMarginGap, ...gap]
+}
+
+/** 阶梯尺寸类 (fs / text / rounded-scale / duration-scale / p-scale / m-scale / gap-scale)，供 size.vue / unocss.vue 等动态类名使用 */
+function buildScaleSafelistClasses(): string[] {
+  return SIZE_SCALE_KEYS.flatMap(k => [
+    `fs-${k}`,
+    `text-${k}`,
+    `rounded-scale-${k}`,
+    `duration-scale-${k}`,
+    `p-scale-${k}`,
+    `px-scale-${k}`,
+    `py-scale-${k}`,
+    `pt-scale-${k}`,
+    `pb-scale-${k}`,
+    `pl-scale-${k}`,
+    `pr-scale-${k}`,
+    `m-scale-${k}`,
+    `mx-scale-${k}`,
+    `my-scale-${k}`,
+    `mt-scale-${k}`,
+    `mb-scale-${k}`,
+    `ml-scale-${k}`,
+    `mr-scale-${k}`,
+    `gap-scale-${k}`,
+    `gap-x-scale-${k}`,
+    `gap-y-scale-${k}`,
+  ])
+}
+
+/** 基础变量类 (p-container-padding 等)，供 unocss.vue baseVars 等动态类名使用，SSOT: SIZE_BASE_VAR_KEYS */
+function buildBaseVarSafelistClasses(): string[] {
+  const list: string[] = []
+  for (const key of SIZE_BASE_VAR_KEYS) {
+    const kebab = key.replace(/([A-Z])/g, '-$1').toLowerCase()
+    list.push(
+      `p-${kebab}`,
+      `px-${kebab}`,
+      `py-${kebab}`,
+      `pt-${kebab}`,
+      `pb-${kebab}`,
+      `pl-${kebab}`,
+      `pr-${kebab}`
+    )
+  }
+  return list
+}
+
+/** 配色类 (bg/text/border)，供 theme.vue 等动态类名使用，SSOT: COLOR_FAMILIES */
+function buildColorSafelistClasses(): string[] {
+  const list: string[] = []
+  for (const token of COLOR_FAMILIES.singleTokens) {
+    list.push(`bg-${token}`, `text-${token}`)
+    if (['border', 'input', 'ring'].includes(token)) list.push(`border-${token}`)
+  }
+  for (const family of COLOR_FAMILIES.pairFamilies) {
+    list.push(`bg-${family}`, `text-${family}-foreground`, `border-${family}`)
+  }
+  for (const family of COLOR_FAMILIES.quadFamilies) {
+    list.push(
+      `bg-${family}`,
+      `bg-${family}-hover`,
+      `bg-${family}-light`,
+      `text-${family}`,
+      `text-${family}-foreground`,
+      `text-${family}-hover-foreground`,
+      `text-${family}-light-foreground`,
+      `border-${family}`,
+      `border-${family}-hover`,
+      `border-${family}-light`
+    )
+  }
+  // Sidebar：与 uno.config.ts buildThemeColors 一致
+  list.push(
+    'bg-sidebar',
+    'bg-sidebar-foreground',
+    'bg-sidebar-primary',
+    'bg-sidebar-primary-foreground'
+  )
+  list.push(
+    'bg-sidebar-accent',
+    'bg-sidebar-accent-foreground',
+    'border-sidebar-border',
+    'border-sidebar-ring'
+  )
+  list.push(
+    ...COLOR_FAMILIES.quadFamilies.flatMap(family =>
+      [10, 20, 30, 40, 50, 60, 70, 80, 90].map(v => `bg-${family}/${v}`)
+    )
+  )
+  return list
 }
 
 const LAYOUT_SAFELIST_CLASSES = buildLayoutSafelistClasses()
+const SCALE_SAFELIST_CLASSES = buildScaleSafelistClasses()
+const BASE_VAR_SAFELIST_CLASSES = buildBaseVarSafelistClasses()
+const COLOR_SAFELIST_CLASSES = buildColorSafelistClasses()
 
 // ---------------------------------------------------------------------------
 // Route icon name → UnoCSS class (与 Icons.vue iconClass 规则一致)
@@ -303,12 +414,20 @@ function toUnoIconClass(name: string): string {
 // ---------------------------------------------------------------------------
 
 /**
- * 动态 safelist：路由/API 扫描到的图标（转为 UnoCSS 类名）+ 本地 i-custom:xxx + 布局/主题类
+ * 动态 safelist：路由/API 扫描到的图标 + 本地 i-custom:xxx + 布局/尺寸类 + 阶梯类 + 基础变量类 + 配色类
+ * 阶梯类支持 size.vue / unocss.vue 动态类名；基础变量类支持 unocss.vue baseVars；配色类支持 theme.vue 动态类名，无需 UNO_DEMO 即可完整显示。
  */
 export function getDynamicSafelist(): string[] {
   const routeIcons = getRouteMetaIcons().map(toUnoIconClass)
   const customIcons = getCustomIconClasses()
-  return [...routeIcons, ...customIcons, ...LAYOUT_SAFELIST_CLASSES]
+  return [
+    ...routeIcons,
+    ...customIcons,
+    ...LAYOUT_SAFELIST_CLASSES,
+    ...SCALE_SAFELIST_CLASSES,
+    ...BASE_VAR_SAFELIST_CLASSES,
+    ...COLOR_SAFELIST_CLASSES,
+  ]
 }
 
 /**

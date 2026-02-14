@@ -47,7 +47,7 @@ onMounted(() => {
 <template>
   <div
     ref="loadingRef"
-    class="full center"
+    class="layout-full center"
   >
     <div
       class="overflow-hidden atom-spinner"
@@ -83,7 +83,7 @@ onMounted(() => {
   display: block;
   position: absolute;
   color: rgb(var(--primary));
-  font-size: 10px;
+  font-size: var(--circle-size);
   top: 50%;
   left: 50%;
   transform: translateZ(0) translate(-50%, -50%);
@@ -95,8 +95,8 @@ onMounted(() => {
   width: 100%;
   height: 100%;
   border-radius: 50%;
-  border-left: 1px solid rgb(var(--primary));
-  border-top: 1px solid transparent;
+  border-left: var(--border-size) solid rgb(var(--primary));
+  border-top: var(--border-size) solid transparent;
   will-change: transform;
   transform: translateZ(0);
   backface-visibility: hidden;

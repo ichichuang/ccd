@@ -37,4 +37,5 @@
 - @.cursor/rules/20-ui-styling.mdc（UI/样式）
 - @.cursor/rules/22-layouts.mdc（布局壳/Admin 子模式）
 - @.cursor/rules/24-tsx-rendering.mdc（程序化渲染用 TSX，禁止 h()）
+涉及布局/侧栏/响应式时，须阅读 @docs/ADAPTIVE_LAYOUT.md 并遵循适配规则。
 ```

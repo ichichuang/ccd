@@ -16,7 +16,12 @@ import { ref, watch, computed, type ComputedRef } from 'vue'
 import { type OverlayScrollbars, type PartialOptions } from 'overlayscrollbars'
 import { OverlayScrollbarsComponent } from 'overlayscrollbars-vue'
 import { useThemeStore } from '@/stores/modules/theme'
-import type { CScrollbarProps, ScrollbarVisibility } from './utils/types'
+import { TRANSITION_SCALE_VALUES } from '@/constants/sizeScale'
+import type {
+  CScrollbarProps,
+  OnUpdatedEventListenerArgs,
+  ScrollbarVisibility,
+} from './utils/types'
 
 const props = withDefaults(defineProps<CScrollbarProps>(), {
   visibility: 'auto',
@@ -26,7 +31,7 @@ const props = withDefaults(defineProps<CScrollbarProps>(), {
 
 const emit = defineEmits<{
   (e: 'initialized', instance: OverlayScrollbars): void
-  (e: 'updated', instance: OverlayScrollbars, onUpdatedArgs: any): void
+  (e: 'updated', instance: OverlayScrollbars, onUpdatedArgs: OnUpdatedEventListenerArgs): void
   (e: 'destroyed', instance: OverlayScrollbars, canceled: boolean): void
   (e: 'scroll', instance: OverlayScrollbars, event: Event): void
 }>()
@@ -35,12 +40,13 @@ const themeStore = useThemeStore()
 const scrollbarRef = ref<InstanceType<typeof OverlayScrollbarsComponent> | null>(null)
 
 /** 根据当前主题模式返回配置 */
-const osOptions: ComputedRef<PartialOptions> = computed(() => {
+const osOptions: ComputedRef<any> = computed(() => {
   const baseOptions = {
     scrollbars: {
       visibility: props.visibility,
       autoHide: props.visibility === 'auto' ? ('leave' as const) : ('never' as const),
-      autoHideDelay: 400,
+      // 与尺寸系统 transition-xl (400ms) 一致
+      autoHideDelay: TRANSITION_SCALE_VALUES.xl,
       theme: themeStore.isDark ? 'os-theme-dark' : 'os-theme-light',
     },
   }
@@ -114,19 +120,19 @@ watch(
   <!-- 原生滚动条模式 -->
   <div
     v-if="native"
-    class="c-scrollbar-native"
+    class="c-scrollbar-native layout-full overflow-auto"
     :class="$props.class"
   >
     <slot />
   </div>
 
-  <!-- OverlayScrollbars 模式 -->
+  <!-- OverlayScrollbars 模式；options 与 PartialOptions 类型定义不完全一致，传参处使用边界层断言 -->
   <OverlayScrollbarsComponent
     v-else
     ref="scrollbarRef"
-    :options="osOptions as any"
+    :options="osOptions"
     :defer="defer"
-    class="c-scrollbar"
+    class="c-scrollbar layout-full"
     :class="$props.class"
     @os-initialized="instance => emit('initialized', instance)"
     @os-updated="(instance, args) => emit('updated', instance, args)"
@@ -145,20 +151,11 @@ watch(
  * 完美融合项目主题系统 CSS 变量
  * ============================================ */
 
-.c-scrollbar {
-  width: 100%;
-  height: 100%;
-}
-
 .c-scrollbar-native {
-  width: 100%;
-  height: 100%;
-  overflow: auto;
-
   /* 原生滚动条样式 */
   &::-webkit-scrollbar {
-    width: 8px;
-    height: 8px;
+    width: var(--spacing-xs);
+    height: var(--spacing-xs);
   }
 
   &::-webkit-scrollbar-track {
@@ -168,7 +165,7 @@ watch(
   &::-webkit-scrollbar-thumb {
     background: rgb(var(--muted) / 0.5);
     border-radius: var(--radius-md);
-    border: 2px solid transparent;
+    border: calc(var(--spacing-xs) / 2) solid transparent;
     background-clip: content-box;
 
     &:hover {
@@ -185,22 +182,22 @@ watch(
 /* 滚动条轨道 */
 .os-scrollbar {
   /* 滚动条宽度/高度 */
-  --os-size: 10px;
+  --os-size: var(--spacing-sm);
   /* 滚动条内边距 */
-  --os-padding-perpendicular: 2px;
-  --os-padding-axis: 2px;
+  --os-padding-perpendicular: calc(var(--spacing-xs) / 2);
+  --os-padding-axis: calc(var(--spacing-xs) / 2);
   /* 轨道背景色 */
-  --os-track-bg: transparent;
-  --os-track-bg-hover: rgb(var(--muted) / 0.1);
-  --os-track-bg-active: rgb(var(--muted) / 0.15);
+  background: rgb(var(--muted-foreground) / 0.08);
+  --os-track-bg-hover: rgb(var(--muted) / 0.12);
+  --os-track-bg-active: rgb(var(--muted) / 0.18);
   /* 滑块背景色 */
-  --os-handle-bg: rgb(var(--muted-foreground) / 0.3);
+  --os-handle-bg: rgb(var(--muted-foreground) / 0.2);
   --os-handle-bg-hover: rgb(var(--primary) / 0.6);
   --os-handle-bg-active: rgb(var(--primary) / 0.8);
   /* 滑块圆角 - 使用尺寸系统阶梯变量 */
   --os-handle-border-radius: var(--radius-md);
   /* 滑块最小尺寸 */
-  --os-handle-min-size: 40px;
+  --os-handle-min-size: calc(var(--spacing-lg) * 2);
   /* 滑块最大尺寸 */
   --os-handle-max-size: none;
   /* 滑块垂直方向边距 */
@@ -208,25 +205,22 @@ watch(
   --os-handle-perpendicular-size-hover: 100%;
   --os-handle-perpendicular-size-active: 100%;
   /* 过渡动画 */
-  transition:
-    opacity 0.2s ease,
-    visibility 0.2s ease;
+  transition: var(--transition-sm) ease-out;
 }
 
 /* 深色模式下的调整 */
-.os-theme-dark {
-  .os-scrollbar {
-    --os-handle-bg: rgb(var(--muted-foreground) / 0.4);
-    --os-handle-bg-hover: rgb(var(--primary) / 0.7);
-    --os-handle-bg-active: rgb(var(--primary) / 0.9);
-    --os-track-bg-hover: rgb(var(--muted) / 0.15);
-    --os-track-bg-active: rgb(var(--muted) / 0.2);
-  }
+.os-scrollbar.os-theme-dark {
+  --os-handle-bg: rgb(var(--muted-foreground) / 0.2);
+  --os-handle-bg-hover: rgb(var(--primary) / 0.75);
+  --os-handle-bg-active: rgb(var(--primary) / 0.9);
+  --os-track-bg-hover: rgb(var(--muted) / 0.18);
+  --os-track-bg-active: rgb(var(--muted) / 0.24);
 }
 
 /* 滚动条滑块 */
 .os-scrollbar-handle {
   cursor: pointer;
+  transition: var(--transition-md) ease-out !important;
 }
 
 /* 水平滚动条特殊处理 */

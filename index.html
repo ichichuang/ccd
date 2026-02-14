@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <link
       rel="icon"
-      href="/face.png"
+      href="%BASE_URL%face.png"
     />
     <meta
       name="viewport"
@@ -19,8 +19,16 @@
         else if (mode !== 'auto') mode = 'auto'
         if (mode === 'auto') isDark = window.matchMedia('(prefers-color-scheme: dark)').matches
         document.documentElement.classList.toggle('dark', isDark)
+
+        // 仅使用主题系统提供的 --background 变量作为 theme-color，不再使用硬编码兜底色值
         var meta = document.querySelector('meta[name="theme-color"]')
-        if (meta) meta.setAttribute('content', isDark ? '#09090b' : '#ffffff')
+        if (meta) {
+          var rootStyle = window.getComputedStyle(document.documentElement)
+          var background = rootStyle.getPropertyValue('--background').trim()
+          if (background) {
+            meta.setAttribute('content', background)
+          }
+        }
       })()
     </script>
     <title>%VITE_APP_TITLE%</title>
@@ -41,7 +49,7 @@
 
     <link
       rel="apple-touch-icon"
-      href="/face.png"
+      href="%BASE_URL%face.png"
     />
 
     <meta
@@ -58,7 +66,7 @@
     />
     <meta
       property="og:image"
-      content="/face.png"
+      content="%BASE_URL%face.png"
     />
 
     <meta

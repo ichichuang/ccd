@@ -1,4 +1,8 @@
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import { useI18n } from 'vue-i18n'
+
+const { t } = useI18n()
+</script>
 <template>
   <div>
     <Icons name="i-lucide-user" />
@@ -16,15 +20,15 @@
     <Icons name="i-custom:language-cn" />
     <Icons name="i-custom:language-en" />
 
-    <Button size="small">小按钮</Button>
-    <Button>中按钮</Button>
-    <Button size="large">大按钮</Button>
+    <Button size="small">{{ t('dashboard.buttonSmall') }}</Button>
+    <Button>{{ t('dashboard.buttonMedium') }}</Button>
+    <Button size="large">{{ t('dashboard.buttonLarge') }}</Button>
 
     <div
       v-for="i in 100"
       :key="i"
     >
-      {{ i }}：这是一段文字，一段普通文本
+      {{ i }}：{{ t('dashboard.sampleText') }}
     </div>
   </div>
 </template>

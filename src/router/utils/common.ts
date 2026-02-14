@@ -178,7 +178,6 @@ export function addParentPathsToBackendRoutes(
  */
 export function processAsyncRoutes(backendRoutes: BackendRouteConfig[]): RouteConfig[] {
   if (!Array.isArray(backendRoutes) || backendRoutes.length === 0) {
-    console.warn('🪒-Router: 后端返回的路由数据不是数组或为空，已跳过处理', backendRoutes)
     return []
   }
 

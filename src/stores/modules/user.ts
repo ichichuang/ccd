@@ -1,9 +1,11 @@
 import router from '@/router'
 import store from '@/stores'
+import { AUTH_ENABLED } from '@/constants/router'
 import { createPiniaEncryptedSerializer } from '@/utils/safeStorage/piniaSerializer'
 import { encryptAndCompressSync } from '@/utils/safeStorage/safeStorage'
 import { defineStore } from 'pinia'
-import type { UserInfo } from '@/api/user/types'
+import { requestCurrentUserMock, requestUserLoginMock } from '@/api/user/login'
+import type { UserInfo, UserLoginReq } from '@/api/user/types'
 
 interface UserState {
   token: string
@@ -40,27 +42,52 @@ export const useUserStore = defineStore('user', {
   },
 
   actions: {
-    async setToken(token: string) {
-      this.token = token
-      this.safeStorageToken = encryptAndCompressSync(token, import.meta.env.VITE_APP_SECRET)
+    /**
+     * 测试用假的登录流程：
+     * - 调用前端模拟接口 requestUserLoginMock
+     * - 写入 token
+     * - 写入用户信息并跳转到重定向路由
+     */
+    async login(payload: UserLoginReq) {
+      if (!AUTH_ENABLED) {
+        return
+      }
+      const res = await requestUserLoginMock(payload)
+      await this.setToken(res.token)
+      this.setUserInfo(res.userInfo)
+    },
+
+    /**
+     * 可选：根据已有 token 恢复登录状态（用于应用初始化）
+     */
+    async restoreLoginFromToken() {
+      if (!AUTH_ENABLED) {
+        return
+      }
+      if (!this.token) {
+        return
+      }
       try {
-        // 响应拦截器已经返回了 data 字段，所以 res 就是 UserInfo
-        // const userInfo = await getUserInfo()
-        const userInfo: UserInfo = {
-          userId: '123',
-          username: 'admin',
-          roles: ['admin'],
-          permissions: ['admin'],
-        }
+        const userInfo = await requestCurrentUserMock(this.token)
         this.setUserInfo(userInfo)
       } catch (error) {
-        console.error('获取用户信息失败:', error)
-        // 如果获取用户信息失败，清除 token
+        console.error('根据 token 恢复用户信息失败:', error)
         this.clearUserInfo()
-        throw error
       }
     },
+
+    async setToken(token: string) {
+      // 未启用登录/鉴权模式时，跳过一切登录相关逻辑
+      if (!AUTH_ENABLED) {
+        return
+      }
+      this.token = token
+      this.safeStorageToken = encryptAndCompressSync(token, import.meta.env.VITE_APP_SECRET)
+    },
     setUserInfo(userInfo: UserInfo) {
+      if (!AUTH_ENABLED) {
+        return
+      }
       this.userInfo = userInfo
       this.isLogin = true
       router.push(
@@ -68,6 +95,9 @@ export const useUserStore = defineStore('user', {
       )
     },
     clearUserInfo() {
+      if (!AUTH_ENABLED) {
+        return
+      }
       this.token = ''
       this.safeStorageToken = ''
       this.userInfo = {
@@ -82,11 +112,21 @@ export const useUserStore = defineStore('user', {
       this.isLogin = false
     },
     async logout() {
+      if (!AUTH_ENABLED) {
+        return
+      }
       const { loadingStart } = useLoading()
       loadingStart()
       this.clearUserInfo()
       const basePrefix = `${import.meta.env.VITE_PINIA_PERSIST_KEY_PREFIX}-`
-      const prefixes: string[] = [basePrefix]
+      const prefixKeys: string[] = [basePrefix, 'schemaform:']
+      const exactKeys: string[] = ['theme-mode']
+
+      const shouldRemove = (key: string): boolean => {
+        if (exactKeys.includes(key)) return true
+        return prefixKeys.some(prefix => key.startsWith(prefix))
+      }
+
       const keysToRemove = new Set<string>()
 
       for (let i = localStorage.length - 1; i >= 0; i -= 1) {
@@ -94,7 +134,7 @@ export const useUserStore = defineStore('user', {
         if (!key) {
           continue
         }
-        if (prefixes.some(prefix => key.startsWith(prefix))) {
+        if (shouldRemove(key)) {
           keysToRemove.add(key)
         }
       }

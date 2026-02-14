@@ -13,10 +13,41 @@ export const include = [
   // 工具库 (强烈建议保留)
   'dayjs',
   'lodash-es', // 关键：lodash-es 文件极多，预构建能显著减少 dev 请求数
+  'yup',
 
   // 图表库
   'echarts',
   'vue-echarts',
+
+  // PrimeVue 表单库
+  '@primevue/forms',
+
+  // PrimeVue 子路径组件 (SchemaForm componentMap 及 wrappers 使用)
+  'primevue/autocomplete',
+  'primevue/button',
+  'primevue/cascadeselect',
+  'primevue/checkbox',
+  'primevue/colorpicker',
+  'primevue/datepicker',
+  'primevue/inputgroup',
+  'primevue/inputgroupaddon',
+  'primevue/inputmask',
+  'primevue/inputnumber',
+  'primevue/inputtext',
+  'primevue/listbox',
+  'primevue/multiselect',
+  'primevue/password',
+  'primevue/progressspinner',
+  'primevue/radiobutton',
+  'primevue/radiobuttongroup',
+  'primevue/rating',
+  'primevue/select',
+  'primevue/selectbutton',
+  'primevue/slider',
+  'primevue/textarea',
+  'primevue/togglebutton',
+  'primevue/toggleswitch',
+  'primevue/treeselect',
 ]
 
 /**

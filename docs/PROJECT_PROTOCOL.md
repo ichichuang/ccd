@@ -9,9 +9,11 @@
 - `docs/TYPESCRIPT_AND_LINTING.md`：TS 项目引用与 ESLint（自动导入 globals、生成 d.ts 的纳入）
 - `docs/UNOCSS_AND_ICONS.md`：UnoCSS 语义类与图标体系（iconify + custom SVG + safelist）
 - `docs/PROJECT_PROTOCOL.md` §11 + `.cursor/rules/22-layouts.mdc`：Layouts 系统（LayoutMode、AdminLayoutMode、布局壳扩展）
+- `docs/ADAPTIVE_LAYOUT.md`：布局适配系统（PC/Tablet/Mobile、断点、有效显隐、userAdjusted）
 - `docs/PROJECT_PROTOCOL.md` §5.1 + `.cursor/rules/24-tsx-rendering.mdc`：TSX 渲染规范（程序化渲染用 TSX，禁止 h()）
 - `docs/DIALOG_COMPONENT.md`：prime-dialog 二次封装（useDialog、便捷方法、高级用法）
 - `docs/TOAST_AND_MESSAGE.md`：全局 Toast / Message（window.$toast、window.$message，非组件环境轻量通知）
+- `docs/AUTH_AND_LOGIN_FLOW.md`：登录与鉴权流程（登录/登出、路由守卫、401、动态路由、存储清理）
 
 ## 1. 技术栈核心 (Tech Stack)
 
@@ -101,7 +103,7 @@
 - **Vue：** 一律使用 `<script setup lang="ts">`；禁止 Options API 与 `this`
 - **Props：** 使用 `withDefaults(defineProps<Props>(), { ... })`
 - **样式：** 使用 UnoCSS 工具类；若必须写 `<style>`，仅用于 sticky/calc 等 Uno 无法表达的例外，且只使用项目 CSS 变量，不写固定 px 颜色/间距
-- **语义类：** 使用项目定义的语义类（如 `px-padding-lg`、`gap-scale-md`、`rounded-scale`、`text-primary`），SSOT 在 `src/constants/` 与 `uno.config.ts`
+- **语义类：** 使用项目定义的语义类（如 `px-padding-lg`、`gap-md`、`rounded-scale`、`text-primary`），SSOT 在 `src/constants/` 与 `uno.config.ts`
 
 ### 5.1 TSX 渲染规范（强制）
 
@@ -134,6 +136,7 @@ const renderSlot = () => <span class="text-muted-foreground">动态内容</span>
 - **类型定义：** `src/types/systems/theme.d.ts`（ThemeMode、ThemePreset、ThemeCssVars 等）
 - **预设常量：** `src/constants/theme.ts`（THEME_PRESETS、DEFAULT_THEME_NAME）
 - **状态管理：** `src/stores/modules/theme.ts`（useThemeStore）
+- **PrimeVue 融合：** `src/utils/theme/primevue-preset.ts` 将 ThemeCssVars 注入 PrimeVue 组件；Button 等配色规则见 `docs/PRIMEVUE_THEME.md`
 
 **规则：**
 
@@ -152,7 +155,7 @@ const renderSlot = () => <span class="text-muted-foreground">动态内容</span>
 
 **规则：**
 
-- 间距必须使用语义类（如 `px-padding-lg`、`m-margin-md`、`gap-gap-xl`），禁止硬编码 px（如 `padding: 16px`）
+- 间距必须使用语义类（如 `px-padding-lg`、`m-margin-md`、`gap-xl`），禁止硬编码 px（如 `padding: 16px`）
 - 字体大小必须使用语义类（如 `fs-md`、`fs-lg`），禁止硬编码 px
 - 布局尺寸必须使用 CSS 变量（如 `w-sidebarWidth`、`h-headerHeight`），禁止硬编码 px
 - 所有尺寸值必须来自 `uno.config.ts` 中定义的语义类或 CSS 变量
@@ -185,11 +188,18 @@ const renderSlot = () => <span class="text-muted-foreground">动态内容</span>
 - 断点必须使用 `src/constants/breakpoints.ts` 中定义的值，禁止自定义断点
 - 布局判定必须使用 `useDeviceStore` 的 getters（isMobileLayout/isTabletLayout/isPCLayout），禁止直接判断 window.innerWidth
 
+#### 6.3.2 布局自适应逻辑（必读）
+
+布局 mode、侧栏收展、侧栏/面包屑/Tabs/Footer 显隐由 **LayoutAdmin.runAdaptive** 统一驱动，具体规则见 `docs/ADAPTIVE_LAYOUT.md`。
+
+- **禁止**：在业务代码中直接调用 `adaptToMobile`、`adaptToTablet`、`adaptPcByOrientation`、`adaptPcByBreakpoint`，或直接修改 `layoutStore.mode` / `layoutStore.sidebarCollapse` 以实现「响应式布局」。
+- **必须**：在 LayoutAdmin 壳内展示侧栏/面包屑/Tabs/Footer 时使用 `showSidebarEffective` 等有效显隐，不得绕过。
+
 ### 6.4 UnoCSS 类名规范 - 必须遵循
 
 生成任何 UI 代码前，必须参考 `uno.config.ts` 中定义的类名规则：
 
-- **语义化尺寸类：** `p-padding-{scale}`、`m-margin-{scale}`、`gap-gap-{scale}`（scale: xs/sm/md/lg/xl/2xl/3xl/4xl/5xl）
+- **语义化尺寸类：** `p-padding-{scale}`、`m-margin-{scale}`、`gap-{scale}`（仅支持 `gap-*`/`gap-x-*`/`gap-y-*`；scale: xs/sm/md/lg/xl/2xl/3xl/4xl/5xl）
 - **布局变量类：** `w-sidebarWidth`、`h-headerHeight`、`w-sidebarCollapsedWidth` 等
 - **字体阶梯类：** `fs-xs`、`fs-sm`、`fs-md`、`fs-lg`、`fs-xl`、`fs-2xl`、`fs-3xl`、`fs-4xl`、`fs-5xl`
 - **圆角类：** `rounded-scale`（使用 CSS 变量 `--radius-md`）
@@ -418,6 +428,30 @@ const renderSlot = () => <span class="text-muted-foreground">动态内容</span>
 - ❌ 业务代码中直接 `new mitt()` → ✅ `useMitt()` / `src/utils/mitt.ts` 单例
 - ❌ 自己拼 UUID / Math.random → ✅ `generateUniqueId` / `generateIdFromKey`
 - ❌ 组件内直接 `fetch/axios` → ✅ `useHttpRequest` / `src/utils/http/*`
+
+### 8.4a 方法查找与归档决策流程（AI 必须执行）
+
+当需要某个方法实现功能时：
+
+**1. 强制查找顺序**
+
+- **领域 Hooks**（任务涉及 schema-form 时）：`src/components/schema-form/hooks/` — useFormSync、useFormActions、useFormMemory、useLayout、useValidation、usePersistence、useSteps、useSubmit、useLifecycle 等
+- **全局工具**：`src/utils/` — lodashes、date、strings、ids、browser、safeStorage、http/\*、mitt、deviceSync 等
+
+在实现前用 grep/codebase_search 按函数名或语义搜索，确认是否已存在。
+
+**2. 找到 → 直接使用**
+
+从已有模块导入，禁止复制等价逻辑。
+
+**3. 未找到 → 分析并告知用户**
+
+在行内实现或新建文件前：
+
+- **分析**是否适合全局复用：多处复用 / 纯函数无耦合 → 倾向全局；仅 schema-form 使用 → 倾向 `src/components/schema-form/hooks/` 或 `utils/`；单处使用且强耦合 → 可保留局部
+- **向用户输出**：方法用途、是否适合全局（是/否 + 理由）、建议放置位置
+- **明确询问**："是否放入 utils/hooks 目录，还是保留在使用处？"
+- **等待用户决策**后再落位
 
 ## 8.5 组件与图标使用规范 (Components & Icons Policy)
 
@@ -681,5 +715,9 @@ const renderSlot = () => <span class="text-muted-foreground">动态内容</span>
 
 ### 11.3 扩展
 
-- 新壳：扩展 LayoutMode，新建 `LayoutXxx.vue`，修改 `layouts/index.vue`
-- 新 admin 子模式：扩展 AdminLayoutMode，修改 `LayoutAdmin.vue`
+- 新壳：扩展 LayoutMode，新建 `LayoutXxx.vue` 或 `LayoutXxx.tsx`，修改 `src/layouts/index.vue`
+- 新 admin 子模式：扩展 AdminLayoutMode，修改 `LayoutAdmin.tsx`
+
+### 11.4 布局自适应
+
+Admin 壳下 mode、侧栏收展、侧栏/面包屑/Tabs/Footer 显隐由适配系统控制，详见 `docs/ADAPTIVE_LAYOUT.md`。修改 LayoutAdmin 或 layout store 的适配逻辑时须遵循该文档，不得绕过 runAdaptive 或有效显隐。

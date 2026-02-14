@@ -1,4 +1,5 @@
 import { HTTP_CONFIG } from '@/constants/http'
+import { AUTH_ENABLED } from '@/constants/router'
 import { useUserStoreWithOut } from '@/stores/modules/user'
 import { decompressAndDecryptSync, encryptAndCompressSync } from '@/utils/safeStorage'
 import type { Method } from 'alova'
@@ -77,7 +78,7 @@ export const beforeRequest = (method: Method) => {
   const userStore = useUserStoreWithOut()
   const token = userStore.getToken
 
-  if (token && token.trim()) {
+  if (AUTH_ENABLED && token && token.trim()) {
     method.config.headers['Authorization'] = `Bearer ${token}`
   } else {
     delete method.config.headers['Authorization']
@@ -411,7 +412,9 @@ const handleHttpError = (status: number, data: any) => {
     case 401:
       // 处理未授权错误
       statusMessage = $t('http.error.unauthorized')
-      useUserStoreWithOut().logout()
+      if (AUTH_ENABLED) {
+        useUserStoreWithOut().logout()
+      }
       break
     case 403:
       // 处理权限不足错误

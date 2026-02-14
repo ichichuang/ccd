@@ -97,6 +97,9 @@ declare global {
      * - value：是否展开
      */
     expandedMenuKeys: Record<string, boolean>
+
+    /** 表单记忆指针（formId -> storageKey），运行时不持久化 */
+    formMemoryPointers: Record<string, string>
   }
 }
 

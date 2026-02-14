@@ -10,13 +10,12 @@ import AdminLayout from '@/layouts/modules/LayoutAdmin.tsx'
 import FullScreenLayout from '@/layouts/modules/LayoutFullScreen.vue'
 import RatioLayout from '@/layouts/modules/LayoutRatio.vue'
 import { useLayoutStore } from '@/stores/modules/layout'
-import ContextMenuProvider from '@/layouts/components/ContextMenuProvider.vue'
-import { useThemeSwitch } from '@/hooks/modules/useThemeSwitch'
-import { refreshCurrentRoute } from '@/router/utils/helper'
-import { useDialog } from '@/hooks/modules/useDialog'
-import SettingsContent from '@/layouts/components/GlobalSetting/SettingsContent.vue'
+import { TRANSITION_SCALE_VALUES } from '@/constants/sizeScale'
 
 defineOptions({ name: 'LayoutIndex' })
+
+/** 加载层动画时长：使用尺寸系统过渡阶梯 2xl（500ms） */
+const loadingOverlayDuration = `${TRANSITION_SCALE_VALUES['2xl']}ms`
 
 const layoutStore = useLayoutStore()
 const isLoading = computed(() => layoutStore.isLoading)
@@ -65,112 +64,40 @@ const getLayoutLeaveAnimation = (from: LayoutMode, to: LayoutMode): AnimateName 
 
 const getAnimationDuration = (): string =>
   layoutAnimations[currentLayoutMode.value]?.duration ?? '1s'
-
-// ===== 全局右键菜单逻辑 =====
-const { isDark, isAnimating, toggleThemeWithAnimation } = useThemeSwitch()
-const { openDialog } = useDialog()
-
-const contextThemeToggleLabel = computed(() => (isDark.value ? '切换为浅色模式' : '切换为深色模式'))
-
-const onContextReload = () => {
-  refreshCurrentRoute()
-}
-
-const openGlobalSettings = () => {
-  openDialog({
-    header: '全局配置 (Global Settings)',
-    position: 'right',
-    width: 'auto',
-    contentRenderer: () => <SettingsContent />,
-  })
-}
-
-const onContextToggleTheme = (event: MouseEvent) => {
-  if (isAnimating.value) return
-  void toggleThemeWithAnimation(event)
-}
 </script>
 
 <template>
-  <div class="full">
-    <!-- 自定义右键菜单 -->
-    <ContextMenuProvider scope="global">
-      <template #menu="{ close, event }">
-        <div class="c-card c-border bg-muted p-padding-sm">
-          <div class="full between-start flex-col gap-gap-sm fs-sm font-medium">
-            <!-- 重新载入 -->
-            <div
-              class="full between-start rounded-scale-md px-padding-sm py-padding-xs transition-all duration-scale hover:bg-accent hover:text-accent-foreground active:scale-105"
-              @click="
-                () => {
-                  onContextReload()
-                  close()
-                }
-              "
-            >
-              <span class="c-cp">重新载入</span>
-            </div>
+  <div class="layout-full">
+    <!-- 1. 加载层 -->
+    <AnimateWrapper
+      :show="isLoadingRef"
+      enter="fadeIn"
+      leave="fadeOut"
+      :duration="loadingOverlayDuration"
+      delay="0s"
+    >
+      <div class="container fixed center top-0 right-0 left-0 bottom-0 z-[999]">
+        <LoadingWave :loading-size="3" />
+      </div>
+    </AnimateWrapper>
 
-            <!-- 设置：打开全局配置抽屉（SettingsContent） -->
-            <div
-              class="full between-start rounded-scale-md px-padding-sm py-padding-xs transition-all duration-scale hover:bg-accent hover:text-accent-foreground active:scale-105"
-              @click="
-                () => {
-                  openGlobalSettings()
-                  close()
-                }
-              "
-            >
-              <span class="c-cp">设置</span>
-            </div>
-
-            <!-- 动态切换深/浅色模式 -->
-            <div
-              class="full between-start rounded-scale-md px-padding-sm py-padding-xs transition-all duration-scale hover:bg-accent hover:text-accent-foreground active:scale-105"
-              @click="
-                () => {
-                  onContextToggleTheme(event)
-                  close()
-                }
-              "
-            >
-              <span class="c-cp">{{ contextThemeToggleLabel }}</span>
-            </div>
-          </div>
-        </div>
+    <!-- 2. 主布局层 -->
+    <AnimateWrapper
+      :show="!isLoadingRef"
+      :enter="getLayoutEnterAnimation(currentLayoutMode)"
+      :leave="getLayoutLeaveAnimation(previousLayout, currentLayoutMode)"
+      :duration="getAnimationDuration()"
+      delay="0s"
+    >
+      <template v-if="currentLayoutMode === 'fullscreen'">
+        <component :is="FullScreenLayout" />
       </template>
-
-      <!-- 1. 加载层 -->
-      <AnimateWrapper
-        :show="isLoadingRef"
-        enter="fadeIn"
-        leave="fadeOut"
-        duration="500ms"
-        delay="0s"
-      >
-        <div class="container fixed center top-0 right-0 left-0 bottom-0 z-999">
-          <LoadingWave :loading-size="3" />
-        </div>
-      </AnimateWrapper>
-
-      <!-- 2. 主布局层 -->
-      <AnimateWrapper
-        :show="!isLoadingRef"
-        :enter="getLayoutEnterAnimation(currentLayoutMode)"
-        :leave="getLayoutLeaveAnimation(previousLayout, currentLayoutMode)"
-        :duration="getAnimationDuration()"
-        delay="0s"
-      >
-        <template v-if="currentLayoutMode === 'fullscreen'">
-          <component :is="FullScreenLayout" />
-        </template>
-        <template v-if="currentLayoutMode === 'admin'">
-          <component :is="AdminLayout" />
-        </template>
-        <template v-if="currentLayoutMode === 'ratio'">
-          <component :is="RatioLayout" />
-        </template>
-      </AnimateWrapper>
-    </ContextMenuProvider>
+      <template v-if="currentLayoutMode === 'admin'">
+        <component :is="AdminLayout" />
+      </template>
+      <template v-if="currentLayoutMode === 'ratio'">
+        <component :is="RatioLayout" />
+      </template>
+    </AnimateWrapper>
   </div>
 </template>

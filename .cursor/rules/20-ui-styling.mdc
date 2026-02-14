@@ -10,6 +10,7 @@ Before writing any color-related code, read:
 - `src/types/systems/theme.d.ts` - Theme types (ThemeMode, ThemePreset, ThemeCssVars)
 - `src/constants/theme.ts` - Theme presets (THEME_PRESETS)
 - `src/stores/modules/theme.ts` - Theme store (useThemeStore)
+- `docs/PRIMEVUE_THEME.md` - PrimeVue 主题融合（Button 等组件配色规则）
 
 **Rules:**
 - Use semantic color variables: `text-primary`, `bg-surface-ground`, `border-border`, `text-foreground`, `text-info`, `bg-info`
@@ -26,7 +27,7 @@ Before writing any size-related code, read:
 - `src/stores/modules/size.ts` - Size store (useSizeStore)
 
 **Rules:**
-- Spacing: Use semantic classes `px-padding-lg`, `m-margin-md`, `gap-gap-xl` (scale: xs/sm/md/lg/xl/2xl/3xl/4xl/5xl)
+- Spacing: Use semantic classes `px-padding-lg`, `m-margin-md`, `gap-xl` (scale: xs/sm/md/lg/xl/2xl/3xl/4xl/5xl)
 - Font size: Use `fs-md`, `fs-lg`, `fs-xl` etc., NO `font-size: 14px`
 - Layout dimensions: Use CSS variables `w-sidebarWidth`, `h-headerHeight`, NO hardcoded px
 - FORBIDDEN: `padding: 16px`, `margin: 20px`, `font-size: 14px`, `width: 240px`
@@ -52,7 +53,7 @@ Reference `uno.config.ts` for all available semantic classes:
 **Semantic Size Classes:**
 - Padding: `p-padding-{scale}`, `px-padding-{scale}`, `py-padding-{scale}` (scale: xs/sm/md/lg/xl/2xl/3xl/4xl/5xl)
 - Margin: `m-margin-{scale}`, `mx-margin-{scale}`, `my-margin-{scale}`
-- Gap: `gap-gap-{scale}`, `gap-x-gap-{scale}`, `gap-y-gap-{scale}`
+- Gap: `gap-{scale}`, `gap-x-{scale}`, `gap-y-{scale}` (do NOT use deprecated `gap-gap-*`)
 
 **Layout Variable Classes:**
 - Width: `w-sidebarWidth`, `w-sidebarCollapsedWidth`
@@ -66,6 +67,14 @@ Reference `uno.config.ts` for all available semantic classes:
 
 **Color Classes:**
 - `text-primary`, `bg-surface-ground`, `border-border`, `text-foreground`, `text-info`, `bg-info`, etc.
+
+**Flex / main-* / cross-* (UnoCSS shortcuts):**
+- When using `main-*` or `cross-*`, MUST also use direction: `row` or `column` (e.g. `class="row main-between cross-center"` or `class="column main-center cross-start"`).
+- FORBIDDEN: using `main-*` or `cross-*` without `row` or `column` (ambiguous which axis is main/cross).
+
+**Shortcuts dependency (UnoCSS):**
+- Allowed: low-level → high-level (e.g. `density-*`, `behavior-*`, `hover-elevated` → `layout-*`, `component-*`).
+- FORBIDDEN: reverse or circular dependency (e.g. do not let `density-*` expand to something that references `layout-*` which references `density-*`).
 
 **Rules:**
 - MUST use classes from `uno.config.ts`, NO hardcoded px/rem/hex
@@ -123,3 +132,51 @@ Reference `uno.config.ts` for all available semantic classes:
 - ❌ `height: 64px` → ✅ `h-headerHeight` (layout variable)
 - ❌ `border-radius: 8px` → ✅ `rounded-scale`
 - ❌ `@media (min-width: 768px)` → ✅ `md:` breakpoint class
+
+## 7. 背景色类名白名单（禁止自造 surface-*）
+
+**Rules:**
+
+- 背景色必须来自设计系统或 PrimeVue 主题的**已知语义类**，例如：
+  - 页面 / 容器：`bg-background`
+  - 卡片 / 面板：`bg-card`
+  - 弱对比区域：`bg-muted`
+  - 状态色：`bg-primary` / `bg-accent` / `bg-destructive` / `bg-warn` / `bg-success` / `bg-info` 及 `-hover` / `-light` 变体
+  - 侧边栏：`bg-sidebar` / 其它 `sidebar-*` 家族
+  - PrimeVue 主题保留：`bg-surface-ground`（仅此一个 `surface-*` 语义允许直接使用）
+
+- **MUST**：只使用 `uno.config.ts` + 主题系统中真实存在的颜色 token。
+
+- **FORBIDDEN**：在模板中发明新的 `surface-*` 类名，例如：
+  - `bg-surface-50/100/200/...`
+  - `bg-surface-700`、`dark:bg-surface-700`
+  - `bg-surface-hover`、`hover:bg-surface-hover`
+  - 任何未在文档中显式列出的 `surface-*` 变体
+
+- 当你需要新的语义背景色时：
+  - 先在 `src/utils/theme/metadata.ts` 与 `uno.config.ts` 中增加对应 token
+  - 然后在业务代码中使用 `bg-{token}`，禁止直接在模板里拼接新的类名字符串
+
+## 8. 宽度类名规则（禁止使用 Tailwind 默认 max-w-* 尺寸）
+
+**Rules:**
+
+- 布局/内容区域宽度必须使用以下方式之一：
+  - 视口单位：例如 `w-[80vw]`、`max-w-[90vw]`、`min-h-[60vh]` 等；
+  - 百分比：例如 `w-full`、`w-[80%]` 等；
+  - 设计系统提供的布局变量类：如 `w-sidebarWidth`、`w-sidebarCollapsedWidth` 等（来自 `LAYOUT_DIMENSION_KEYS`）。
+
+- **FORBIDDEN**：在业务代码中直接使用 Uno preset/Tailwind 的固定宽度类，例如：
+  - `max-w-2xl` / `max-w-3xl` / `max-w-4xl` / `max-w-5xl`
+  - `max-w-6xl` / `max-w-7xl` 等
+  - 这些类会映射到固定 `rem` 宽度，不符合本项目「视口/百分比优先」的响应式策略。
+
+- 典型布局推荐：
+  - 内容容器（组件示例页等）：`class="w-full max-w-[80vw] mx-auto"`
+  - 文档/配置页面：`class="w-full max-w-[90vw] mx-auto"`
+  - 较窄内容区（说明文案/消息块等）：`class="w-full max-w-[60vw] mx-auto"`
+
+- 如需长期复用的「内容宽度」语义，应该：
+  1. 在 `src/constants/size.ts` / `LAYOUT_DIMENSION_KEYS` 中增加对应 key；
+  2. 在 `uno.config.ts` 中通过布局变量规则映射为 `w-xxx` / `max-w-xxx`；
+  3. 在业务代码中使用该语义类，而不是继续拼接 `max-w-?xl`。

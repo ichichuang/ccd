@@ -15,6 +15,30 @@
 - **build/**：仅负责工程化与构建能力（插件、注入、优化、自动导入、icon safelist 等）
 - **src/**：仅负责业务代码与 SSOT（constants/types/utils/hooks/components）
 
+### 1.1 build/ 文件职责
+
+| 文件                   | 职责                                                                                                                                                                       |
+| ---------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `build/plugins.ts`     | 插件入口：AutoImport、Components、UnoCSS、Vue、JSX、HTML 注入、图标 watcher、压缩、体积分析、Legacy 等                                                                     |
+| `build/optimize.ts`    | 依赖预构建：`optimizeDeps.include` / `exclude`，供 `vite.config.ts` 使用                                                                                                   |
+| `build/uno-icons.ts`   | 图标与类名：路由/API icon 扫描、自定义 SVG 集合、UnoCSS safelist（`getDynamicSafelist`）、custom collection loader（`getPresetIconsCollections`），由 `uno.config.ts` 引用 |
+| `build/html.ts`        | 向 `index.html` 注入环境变量（如 `VITE_APP_TITLE`）                                                                                                                        |
+| `build/compress.ts`    | 构建产物 gzip/brotli 压缩（按 `VITE_COMPRESSION` 启用）                                                                                                                    |
+| `build/info.ts`        | 构建信息输出（版本、耗时、产物体积）                                                                                                                                       |
+| `build/legacy.ts`      | `@vitejs/plugin-legacy`，旧浏览器兼容（`VITE_LEGACY` 为 true 时）                                                                                                          |
+| `build/performance.ts` | `rollup-plugin-visualizer`，体积分析（`VITE_BUILD_ANALYZE` 时生成 `dist/stats.html`）                                                                                      |
+| `build/utils.ts`       | 路径别名（`@`、`@!`、`@&`）、环境变量包装、`__APP_INFO__`、`getPackageSize` 等                                                                                             |
+
+### 1.2 依赖预构建（optimizeDeps）
+
+配置位置：`vite.config.ts` 的 `optimizeDeps.include` / `exclude`，**数据来源**：`build/optimize.ts`。
+
+- **作用**：Vite 启动时将 `include` 中的依赖预编译为 ESM 并缓存到 `node_modules/.vite`，减少 dev 时的请求数与冷启动时间。
+- **include**（以 `build/optimize.ts` 为准）：核心框架（vue、vue-router、pinia、alova、@vueuse/core）、工具库（dayjs、lodash-es、yup）、图表（echarts、vue-echarts）、PrimeVue 表单与子路径组件（@primevue/forms、primevue/button、primevue/inputtext 等一批子路径）。
+- **exclude**：当前为空数组；用于含 .wasm 或非标准 ESM 导出的库时再配置。
+
+新增需要预构建的依赖时，应修改 `build/optimize.ts` 的 `include` 数组，勿在 `vite.config.ts` 中硬编码。
+
 ## 2. AutoImport（函数/变量自动导入）
 
 配置位置：`build/plugins.ts` 的 `AutoImport({ ... })`。
@@ -86,3 +110,27 @@
 
 - 业务中应通过 `Icons` 组件 + `i-lucide/i-mdi/i-logos/i-custom:` 使用图标
 - 自定义 SVG 放在 `src/assets/icons/**`，并会被自动注入 `fill=\"currentColor\"`
+
+### 4.1 UnoCSS safelist 与 demo 模式
+
+- 生产构建：safelist 仅使用 `getDynamicSafelist()`（动态扫描到的类）。
+- 开发/演示：当 `UNO_DEMO=true`（如 `pnpm dev:demo`）时，safelist 会合并 `themeDemoSafelist`，便于主题/尺寸演示页完整展示类名。日常开发无需开启。
+
+## 5. Vite 构建拆包与首帧尺寸
+
+### 5.1 拆包策略（manualChunks）
+
+配置位置：`vite.config.ts` 的 `build.rollupOptions.output.manualChunks`。
+
+- **vendor-echarts**：ECharts 相关
+- **vendor-primevue**：PrimeVue + PrimeIcons
+- **vendor-utils**：项目 `src/utils` 等工具
+- **vendor-vue**：Vue + VueRouter + Pinia + @vueuse/core
+- **vendor-libs**：其余第三方库
+
+另设 `chunkSizeWarningLimit: 1500`，控制单 chunk 体积告警阈值。
+
+### 5.2 首帧 FOUC 与尺寸注入
+
+- 入口 `src/main.ts` 在 `createApp(App)` 之前会调用 `preload()`（来自 `src/utils/theme/sizeEngine.ts`）。
+- `preload()` 会读取 size 持久化数据（key 见 `src/constants/size.ts` 的 `SIZE_PERSIST_KEY`），应用尺寸预设并写入根字体等 CSS 变量，避免首屏尺寸/字体闪烁（FOUC）。

@@ -1,3 +1,5 @@
+import type { BreakpointKey } from '@/constants/breakpoints'
+import type { Orientation } from '@/types/systems/device'
 import {
   DEFAULT_LAYOUT_SETTING,
   DEFAULT_LAYOUT_VISIBILITY_SETTINGS,
@@ -48,6 +50,8 @@ export const useLayoutStore = defineStore('layout', {
     isPageLoading: false,
     // [NEW] 用户手动调整标记：防止自动适配覆盖用户偏好
     userAdjusted: false,
+    /** 表单记忆指针（formId -> storageKey） */
+    formMemoryPointers: {} as Record<string, string>,
   }),
 
   getters: {
@@ -88,6 +92,9 @@ export const useLayoutStore = defineStore('layout', {
   actions: {
     setExpandedMenuKeys(keys: Record<string, boolean>) {
       this.expandedMenuKeys = keys || {}
+    },
+    setFormMemoryPointer(formId: string, storageKey: string) {
+      this.formMemoryPointers[formId] = storageKey
     },
     /**
      * 旧版持久化迁移：
@@ -267,22 +274,16 @@ export const useLayoutStore = defineStore('layout', {
     /**
      * [NEW] 响应式适配：根据设备状态智能调整布局
      *
-     * 注意：只处理"物理限制导致必须改变"的配置
-     * - 移动端：强制收起侧边栏、垂直布局、隐藏 Tabs
-     * - PC 端：完全信任持久化数据，不做任何自动修改
+     * - 移动端 (isMobile=true)：强制顶栏菜单模式 (horizontal)，小屏最佳展示；显隐由展示层「有效显隐」控制
+     * - 离开移动端布局 (isMobile=false)：恢复侧栏模式 (vertical)，sidebarCollapse 由调用方后续 adaptPcByBreakpoint 按断点设置
+     * - PC 端不会调用本方法，由 adaptPcByOrientation + adaptPcByBreakpoint 处理
      *
      * @param isMobile - 是否为移动端布局（基于断点判断）
      * @param force - 是否强制应用（忽略 userAdjusted 标记，用于初始化等场景）
      *
      * @example
-     * // 移动端适配
-     * layoutStore.adaptToMobile(true)
-     *
-     * // PC 端：不做任何修改（完全信任持久化数据）
-     * layoutStore.adaptToMobile(false)
-     *
-     * // 强制适配（忽略用户偏好）
-     * layoutStore.adaptToMobile(true, true)
+     * layoutStore.adaptToMobile(true)   // 进入移动端布局 → 顶栏模式
+     * layoutStore.adaptToMobile(false, true)  // 离开移动端布局（如 Mobile 大视口）→ 恢复侧栏模式
      */
     adaptToMobile(isMobile: boolean, force = false) {
       // 如果用户已手动调整且不是强制模式，则不自动调整
@@ -291,13 +292,12 @@ export const useLayoutStore = defineStore('layout', {
       }
 
       if (isMobile) {
-        // 移动端：强制应用最佳配置
+        // 移动端：始终使用顶栏菜单模式 (horizontal)，小屏最佳展示；侧栏显隐由展示层「有效显隐」控制
         this.updateSetting('sidebarCollapse', true)
-        this.updateSetting('mode', 'vertical')
-        this.setModuleVisible('showTabs', false, 'vertical')
+        this.updateSetting('mode', 'horizontal')
       } else {
-        // PC 端：完全信任持久化数据，不做任何修改！
-        // 彻底避免 "PC端刷新导致用户配置被覆盖" 的问题
+        // 离开移动端布局（大视口恢复）：恢复侧栏模式，sidebarCollapse 由后续 adaptPcByBreakpoint 按断点设置
+        this.updateSetting('mode', 'vertical')
       }
     },
     /**
@@ -328,6 +328,35 @@ export const useLayoutStore = defineStore('layout', {
       }
       // 注意：当 isTablet = false 时（从平板切换到 PC），不需要特殊处理
       // 因为 adaptToMobile(false) 已经处理了恢复逻辑
+    },
+    /**
+     * [NEW] PC 端按横竖屏智能切换布局模式：仅竖屏强制顶栏，横屏尊重用户/持久化选择。
+     * - 竖屏 (vertical) → 顶栏模式 (horizontal)
+     * - 横屏：不覆盖 mode，由设置面板与持久化决定
+     */
+    adaptPcByOrientation(orientation: Orientation) {
+      if (orientation === 'vertical') {
+        this.updateSetting('mode', 'horizontal')
+      }
+    },
+    /**
+     * [NEW] PC/平板端按断点适配：仅当「展示侧边栏」时，根据断点动态设置展开/收缩；
+     * 不修改 visibilitySettings，完全遵循 SettingsContent 的布局模块显隐配置。
+     *
+     * @param breakpoint - 当前断点 (xs~5xl)
+     * @param force - 是否强制应用（忽略 userAdjusted）
+     */
+    adaptPcByBreakpoint(breakpoint: BreakpointKey, force = false) {
+      if (!this.showSidebar) return
+      if (this.userAdjusted && !force) return
+      // xs/sm/md 收缩；lg 及以上自动展开（PC 横屏）
+      const collapseBreakpoints: BreakpointKey[] = ['xs', 'sm', 'md']
+      const expandBreakpoints: BreakpointKey[] = ['lg', 'xl', '2xl', '3xl', '4xl', '5xl']
+      if (collapseBreakpoints.includes(breakpoint)) {
+        this.updateSetting('sidebarCollapse', true)
+      } else if (expandBreakpoints.includes(breakpoint)) {
+        this.updateSetting('sidebarCollapse', false)
+      }
     },
     /**
      * [NEW] 标记为用户手动调整（在用户手动操作时调用）

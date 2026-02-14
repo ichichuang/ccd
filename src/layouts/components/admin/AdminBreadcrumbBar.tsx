@@ -172,7 +172,7 @@ export default defineComponent({
         onClick?: (ev: Event) => void
       }
       const actionClass = typeof action?.class === 'string' ? action.class : ''
-      const mergedClass = `flex items-center gap-gap-sm w-full text-current ${actionClass}`.trim()
+      const mergedClass = `flex items-center gap-sm w-full text-current ${actionClass}`.trim()
       const handleClick = (ev: Event) => {
         if (item.route?.path) {
           ev.preventDefault()
@@ -238,7 +238,7 @@ export default defineComponent({
                     {/* Breadcrumb Item */}
                     <span
                       class={[
-                        'transition-colors duration-scale-lg flex items-center gap-gap-xs',
+                        'transition-colors duration-scale-lg flex items-center gap-xs',
                         isLast
                           ? 'text-foreground font-medium cursor-default'
                           : 'cursor-pointer hover:text-primary',

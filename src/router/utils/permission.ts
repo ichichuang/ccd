@@ -1,5 +1,5 @@
 /* 守卫 */
-import { routeWhitePathList } from '@/constants/router'
+import { AUTH_ENABLED, routeWhitePathList } from '@/constants/router'
 import { usePermissionStore } from '@/stores/modules/permission'
 import { useUserStoreWithOut } from '@/stores/modules/user'
 import { useLayoutStoreWithOut } from '@/stores/modules/layout'
@@ -73,6 +73,12 @@ export const usePermissionGuard = ({
     startProgress()
     updatePageTitle(to)
     pageLoadingStart()
+
+    // 未启用登录/鉴权模式时，直接放行（仅保留加载与标题更新）
+    if (!AUTH_ENABLED) {
+      next()
+      return
+    }
 
     const whiteList = routeWhitePathList
     const permissionStore = usePermissionStore()

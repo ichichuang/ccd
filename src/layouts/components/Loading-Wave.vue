@@ -46,7 +46,7 @@ onMounted(() => {
 <template>
   <div
     ref="loadingRef"
-    class="full center"
+    class="layout-full center"
   >
     <div
       class="spinner"

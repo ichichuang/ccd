@@ -40,8 +40,8 @@ const boxStyle = reactive<Record<string, string>>({
   left: '50%',
   top: '50%',
   transform: 'translate(-50%, -50%)',
-  width: '0px',
-  height: '0px',
+  width: '0',
+  height: '0',
 })
 
 let rafId = 0

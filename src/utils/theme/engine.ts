@@ -154,6 +154,7 @@ export function generateThemeVars(preset: ThemePreset, isDark: boolean): ThemeCs
   const warn = generateStatusFamily(modeConfig?.warn, preset.warn ?? E.warnDefault)
   const success = generateStatusFamily(modeConfig?.success, preset.success ?? E.successDefault)
   const info = generateStatusFamily(modeConfig?.info, preset.info ?? E.infoDefault)
+  const help = generateStatusFamily(modeConfig?.help, preset.help ?? E.helpDefault)
 
   // 8. Sidebar
   const sidebarConfig = modeConfig?.sidebar
@@ -242,6 +243,13 @@ export function generateThemeVars(preset: ThemePreset, isDark: boolean): ThemeCs
     '--info-hover-foreground': hexToRgb(info.hoverFg),
     '--info-light': hexToRgb(info.light),
     '--info-light-foreground': hexToRgb(info.lightFg),
+
+    '--help': hexToRgb(help.base),
+    '--help-foreground': hexToRgb(help.fg),
+    '--help-hover': hexToRgb(help.hover),
+    '--help-hover-foreground': hexToRgb(help.hoverFg),
+    '--help-light': hexToRgb(help.light),
+    '--help-light-foreground': hexToRgb(help.lightFg),
 
     '--border': hexToRgb(baseNeutral),
     '--input': hexToRgb(baseNeutral),

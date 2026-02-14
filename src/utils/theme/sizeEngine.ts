@@ -1,4 +1,9 @@
-import { DIALOG_SETTINGS_WIDTH_PX } from '@/constants/size'
+import {
+  DIALOG_SETTINGS_WIDTH_PX,
+  SIZE_PERSIST_KEY,
+  SIZE_PRESETS,
+  DEFAULT_SIZE_NAME,
+} from '@/constants/size'
 import {
   FONT_SCALE_RATIOS,
   SPACING_SCALE_RATIOS,
@@ -6,6 +11,8 @@ import {
   TRANSITION_SCALE_VALUES,
   SIZE_SCALE_KEYS,
 } from '@/constants/sizeScale'
+import { unpackDataSync } from '@/utils/safeStorage/core'
+import { getDeviceTypeSync, getBreakpointSync } from '@/utils/deviceSync'
 
 type ScaleKey = (typeof SIZE_SCALE_KEYS)[number]
 
@@ -192,4 +199,46 @@ export function applyRootFontSize(decision: RootFontSizeDecision) {
     const size = base * FONT_SCALE_RATIOS[key]
     root.style.setProperty(`--font-size-${key}`, `${size}px`)
   })
+}
+
+/** Size 持久化 state 形状（与 stores/modules/size 的 state 一致） */
+interface SizePersistState {
+  sizeName?: SizeMode
+}
+
+/**
+ * 在 createApp/mount 前同步注入尺寸与根字号变量，消除首帧 FOUC
+ * 仅浏览器环境执行；SSR 时直接 return
+ */
+export function preload(): void {
+  if (typeof document === 'undefined') return
+
+  let sizeName: SizeMode | undefined
+  const raw = localStorage.getItem(SIZE_PERSIST_KEY)
+  if (raw?.trim()) {
+    const state = unpackDataSync<SizePersistState>(raw)
+    if (state != null && state.sizeName) {
+      sizeName = state.sizeName as SizeMode
+    } else {
+      try {
+        const parsed = JSON.parse(raw) as SizePersistState
+        if (parsed?.sizeName) sizeName = parsed.sizeName as SizeMode
+      } catch {
+        // 忽略无效 JSON，使用默认
+      }
+    }
+  }
+
+  const preset =
+    SIZE_PRESETS.find(p => p.name === sizeName) ||
+    SIZE_PRESETS.find(p => p.name === DEFAULT_SIZE_NAME) ||
+    SIZE_PRESETS[0]
+
+  const vars = generateSizeVars(preset)
+  applySizeTheme(vars)
+
+  const deviceType = getDeviceTypeSync()
+  const breakpoint = getBreakpointSync()
+  const decision = decideRootFontSize({ deviceType, breakpoint, preset })
+  applyRootFontSize(decision)
 }

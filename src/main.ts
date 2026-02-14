@@ -7,7 +7,11 @@ import 'uno.css'
 // 导入应用
 import App from '@/App.vue'
 import { setupPlugins } from '@/plugins'
+import { preload } from '@/utils/theme/sizeEngine'
+
 async function bootstrap() {
+  if (typeof document !== 'undefined') preload()
+
   const app = createApp(App)
 
   // 设置插件（支持异步）

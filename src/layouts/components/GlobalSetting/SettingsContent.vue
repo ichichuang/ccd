@@ -3,6 +3,7 @@ import { useThemeSwitch } from '@/hooks/modules/useThemeSwitch'
 import { useThemeStore } from '@/stores/modules/theme'
 import { useSizeStore } from '@/stores/modules/size'
 import { useLayoutStore } from '@/stores/modules/layout'
+import { useDeviceStore } from '@/stores/modules/device'
 import { useLocale } from '@/hooks/modules/useLocale'
 import {
   THEME_PRESETS,
@@ -26,7 +27,11 @@ const { mode, isAnimating, setThemeWithAnimation } = useThemeSwitch()
 const themeStore = useThemeStore()
 const sizeStore = useSizeStore()
 const layoutStore = useLayoutStore()
+const deviceStore = useDeviceStore()
 const { locale, switchLocale, supportedLocales } = useLocale()
+
+/** 移动端/小视口：精简设置面板，不展示布局模式与布局模块开关；平板大屏与 PC 展示完整选项 */
+const isMobile = computed(() => deviceStore.type === 'Mobile' || deviceStore.isMobileLayout)
 
 // PrimeVue ToggleSwitch 的 emits/props 类型在模板类型检查下不够友好，这里用 any
 // 避免阻塞 update:model-value 的常规用法。
@@ -56,8 +61,15 @@ const transitionOptions: { value: ThemeTransitionMode; icon: string; labelKey: s
   { value: 'circle', icon: 'i-lucide-circle-dot', labelKey: 'settings.transitionCircle' },
 ]
 
-// 尺寸选项（来自 SIZE_PRESETS）
-const sizeOptions = SIZE_PRESETS.map(p => ({ value: p.name, label: p.label }))
+// 尺寸选项（来自 SIZE_PRESETS，文案走 i18n）
+const sizeOptionKeys: Record<SizeMode, string> = {
+  compact: 'settings.sizeCompact',
+  comfortable: 'settings.sizeComfortable',
+  loose: 'settings.sizeLoose',
+}
+const sizeOptions = computed(() =>
+  SIZE_PRESETS.map(p => ({ value: p.name, label: t(sizeOptionKeys[p.name]) }))
+)
 
 // 语言选项（来自 supportedLocales）
 const localeOptions = supportedLocales.map(l => ({ value: l.key, label: `${l.flag} ${l.name}` }))
@@ -156,11 +168,11 @@ function onThemeModeChange(value: ThemeMode) {
 </script>
 
 <template>
-  <div class="between-start flex-col px-padding-md gap-gap-xl">
+  <div class="column main-between cross-start flex-col px-padding-md gap-xl">
     <!-- 深色 / 浅色 -->
-    <div class="between-start flex-col gap-gap-sm">
+    <div class="column main-between cross-start flex-col gap-sm">
       <label class="fs-sm font-medium text-muted-foreground">{{ t('settings.themeMode') }}</label>
-      <div class="full flex gap-gap-md px-padding-sm">
+      <div class="layout-full flex gap-md px-padding-sm">
         <template
           v-for="opt in themeModeOptions"
           :key="opt.value"
@@ -177,9 +189,9 @@ function onThemeModeChange(value: ThemeMode) {
     </div>
 
     <!-- 系统配色 -->
-    <div class="between-start flex-col gap-gap-sm">
+    <div class="column main-between cross-start flex-col gap-sm">
       <label class="fs-sm font-medium text-muted-foreground">{{ t('settings.themePreset') }}</label>
-      <div class="full flex flex-wrap gap-gap-md px-padding-sm">
+      <div class="layout-full flex flex-wrap gap-md px-padding-sm">
         <Button
           v-for="preset in THEME_PRESETS"
           :key="preset.name"
@@ -191,7 +203,7 @@ function onThemeModeChange(value: ThemeMode) {
           :style="{
             backgroundColor: getPresetPrimaryColor(preset, themeStore.isDark),
           }"
-          class="c-theme-swatch p-0 transition-all! duration-scale-lg! hover:scale-120! active:scale-80!"
+          class="p-padding-md! transition-all! duration-scale-lg! hover:scale-120! active:scale-80!"
           :class="[themeStore.themeName === preset.name && 'border-primary  ']"
           @click="themeStore.setTheme(preset.name)"
         />
@@ -199,7 +211,7 @@ function onThemeModeChange(value: ThemeMode) {
     </div>
 
     <!-- 尺寸 -->
-    <div class="between-start flex-col gap-gap-sm">
+    <div class="column main-between cross-start flex-col gap-sm">
       <label class="fs-sm font-medium text-muted-foreground">{{ t('settings.size') }}</label>
       <div class="px-padding-sm">
         <SelectButton
@@ -216,7 +228,7 @@ function onThemeModeChange(value: ThemeMode) {
     </div>
 
     <!-- 语言 -->
-    <div class="between-start flex-col gap-gap-sm">
+    <div class="column main-between cross-start flex-col gap-sm">
       <label class="fs-sm font-medium text-muted-foreground">{{ t('settings.locale') }}</label>
       <div class="px-padding-sm">
         <Select
@@ -235,8 +247,11 @@ function onThemeModeChange(value: ThemeMode) {
       </div>
     </div>
 
-    <!-- 布局模式 -->
-    <div class="between-start flex-col gap-gap-sm">
+    <!-- 布局模式（移动端不展示：无侧栏/顶栏模式选择） -->
+    <div
+      v-if="!isMobile"
+      class="column main-between cross-start flex-col gap-sm"
+    >
       <label class="fs-sm font-medium text-muted-foreground">{{ t('settings.layoutMode') }}</label>
       <SelectButton
         :model-value="layoutStore.mode"
@@ -250,16 +265,19 @@ function onThemeModeChange(value: ThemeMode) {
       />
     </div>
 
-    <!-- 布局模块显示 -->
-    <div class="between-start flex-col gap-gap-sm">
+    <!-- 布局模块显示（移动端不展示：侧栏/顶栏等与移动端无关） -->
+    <div
+      v-if="!isMobile"
+      class="column main-between cross-start flex-col gap-sm"
+    >
       <label class="fs-sm font-medium text-muted-foreground">
         {{ t('settings.layoutModules') }}
       </label>
-      <div class="full stack gap-gap-sm px-padding-sm">
+      <div class="layout-full layout-stack gap-sm px-padding-sm">
         <div
           v-for="item in visibleLayoutModuleSwitches"
           :key="item.key"
-          class="between-start gap-gap-md"
+          class="column main-between cross-start gap-md"
         >
           <span class="fs-sm text-foreground">{{ t(item.labelKey) }}</span>
           <ToggleSwitchAny
@@ -269,7 +287,7 @@ function onThemeModeChange(value: ThemeMode) {
           />
         </div>
         <!-- 侧边栏手风琴模式 -->
-        <div class="between-start gap-gap-md">
+        <div class="column main-between cross-start gap-md">
           <span class="fs-sm text-foreground">{{ t('settings.sidebarAccordion') }}</span>
           <ToggleSwitchAny
             :model-value="layoutStore.sidebarUniqueOpened"
@@ -282,18 +300,18 @@ function onThemeModeChange(value: ThemeMode) {
     </div>
 
     <!-- 切换动画 -->
-    <div class="between-start flex-col gap-gap-sm">
+    <div class="column main-between cross-start flex-col gap-sm">
       <label class="fs-sm font-medium text-muted-foreground">
         {{ t('settings.transitionEffect') }}
       </label>
-      <div class="full flex flex-wrap gap-gap-md px-padding-sm">
+      <div class="layout-full flex flex-wrap gap-md px-padding-sm">
         <div
           v-for="opt in transitionOptions"
           :key="opt.value"
           v-tooltip.top="t(opt.labelKey)"
           :aria-pressed="themeStore.transitionMode === opt.value"
           :aria-label="t(opt.labelKey)"
-          class="c-cp hover:scale-120 active:scale-80 duration-scale-xl"
+          class="interactive-click hover:scale-120 active:scale-80 duration-scale-xl"
           @click="themeStore.setTransitionMode(opt.value)"
         >
           <Icons
@@ -307,14 +325,14 @@ function onThemeModeChange(value: ThemeMode) {
     </div>
 
     <!-- 过渡时长 -->
-    <div class="full between-start flex-col gap-gap-sm">
+    <div class="layout-full column main-between cross-start flex-col gap-sm">
       <div class="flex items-center justify-between">
         <label class="fs-sm font-medium text-muted-foreground">{{
           t('settings.transitionDuration')
         }}</label>
         <span class="fs-sm font-medium text-primary">{{ t(currentDurationLabel) }}</span>
       </div>
-      <div class="full px-padding-sm">
+      <div class="layout-full px-padding-sm">
         <Slider
           :model-value="durationIndex"
           :min="0"

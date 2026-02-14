@@ -15,6 +15,7 @@
 - `@docs/PROJECT_PROTOCOL.md`
 - `@docs/ANTIGRAVITY_UI_RULES.md`
 - `@docs/GOLDEN_SAMPLES/UIComponent.vue`
+- `@.cursor/rules/20-ui-styling.mdc`（UnoCSS/配色/尺寸/布局语义类）
 
 ## Output（必须输出）
 
@@ -43,4 +44,5 @@
 4) Mobile First：必须在 375px 下可用，再用 md:/lg: 扩展
 5) PrimeVue：交互组件优先用 PrimeVue（DataTable/Dialog/Input/Button 等），并用 class/pt 统一风格
 6) 非组件环境通知：若需在拦截器、全局错误处理等处显示提示，使用 window.$toast / window.$message，见 docs/TOAST_AND_MESSAGE.md
+7) 布局/侧栏/响应式：遵循 docs/ADAPTIVE_LAYOUT.md，不直接改 mode/sidebarCollapse，使用有效显隐（showXxxEffective）
 ```

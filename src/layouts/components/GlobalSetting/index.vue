@@ -1,16 +1,21 @@
 <script setup lang="tsx">
 import { useDialog } from '@/hooks/modules/useDialog'
+import { useDeviceStore } from '@/stores/modules/device'
+import { useI18n } from 'vue-i18n'
 import SettingsContent from './SettingsContent.vue'
 import Button from 'primevue/button'
 import { Icons } from '@/components/Icons'
 
+const { t } = useI18n()
 const { openDialog } = useDialog()
+const deviceStore = useDeviceStore()
 
 const openSettings = () => {
+  const isMobile = deviceStore.isMobileLayout
   openDialog({
-    header: '全局配置 (Global Settings)',
-    position: 'right',
-    width: 'auto',
+    header: t('layout.globalSettingsTitle'),
+    position: isMobile ? 'center' : 'right',
+    width: isMobile ? '95vw' : 'auto',
     contentRenderer: () => <SettingsContent />,
   })
 }
@@ -18,11 +23,11 @@ const openSettings = () => {
 
 <template>
   <Button
-    v-tooltip.left="'Open Global Settings'"
+    v-tooltip.left="t('layout.openGlobalSettings')"
     @click="openSettings"
   >
     <Icons
-      class="color-primary-foreground"
+      class="text-primary-foreground"
       name="i-lucide-settings"
     />
   </Button>

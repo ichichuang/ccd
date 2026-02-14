@@ -106,11 +106,11 @@ const breakpointItems = computed(() =>
 </script>
 
 <template>
-  <CScrollbar class="h-full p-padding-lg bg-surface-ground">
-    <div class="max-w-7xl mx-auto flex flex-col gap-gap-xl">
+  <CScrollbar class="h-full p-padding-lg bg-background">
+    <div class="w-full max-w-[90vw] mx-auto flex flex-col gap-xl">
       <!-- Header -->
-      <div class="flex flex-col gap-gap-xs">
-        <div class="flex items-center gap-gap-md">
+      <div class="flex flex-col gap-xs">
+        <div class="flex items-center gap-md">
           <div class="p-3 bg-primary/10 rounded-scale-lg">
             <Icons
               name="i-lucide-monitor"
@@ -129,7 +129,7 @@ const breakpointItems = computed(() =>
       <!-- Control Panel -->
       <Card class="border border-border">
         <template #title>
-          <div class="flex items-center gap-gap-sm">
+          <div class="flex items-center gap-sm">
             <Icons
               name="i-lucide-sliders-horizontal"
               class="text-primary"
@@ -138,12 +138,12 @@ const breakpointItems = computed(() =>
           </div>
         </template>
         <template #content>
-          <div class="flex flex-col gap-gap-lg">
+          <div class="flex flex-col gap-lg">
             <!-- Width Slider -->
-            <div class="flex flex-col gap-gap-md">
+            <div class="flex flex-col gap-md">
               <div class="flex items-center justify-between">
                 <span class="text-muted-foreground">Current Width</span>
-                <div class="flex items-center gap-gap-md">
+                <div class="flex items-center gap-md">
                   <span class="font-mono fs-xl font-bold text-foreground"
                     >{{ currentWidth }}px</span
                   >
@@ -163,7 +163,7 @@ const breakpointItems = computed(() =>
             </div>
 
             <!-- Preset Buttons -->
-            <div class="flex flex-wrap gap-gap-sm">
+            <div class="flex flex-wrap gap-sm">
               <Button
                 v-for="preset in presetWidths"
                 :key="preset.value"
@@ -182,7 +182,7 @@ const breakpointItems = computed(() =>
       <!-- Visual Ruler -->
       <Card class="border border-border">
         <template #title>
-          <div class="flex items-center gap-gap-sm">
+          <div class="flex items-center gap-sm">
             <Icons
               name="i-lucide-ruler"
               class="text-primary"
@@ -198,7 +198,7 @@ const breakpointItems = computed(() =>
           >
             <!-- Current Width Indicator -->
             <div
-              class="absolute top-0 h-full w-0.5 bg-primary z-10 transition-all duration-300"
+              class="absolute top-0 h-full w-0.5 bg-primary z-10 transition-all duration-scale-md"
               :style="{ left: `${(currentWidth / RULER_MAX) * 100}%` }"
             >
               <div
@@ -236,7 +236,7 @@ const breakpointItems = computed(() =>
       <!-- Breakpoint Reference Table -->
       <Card class="border border-border">
         <template #title>
-          <div class="flex items-center gap-gap-sm">
+          <div class="flex items-center gap-sm">
             <Icons
               name="i-lucide-table"
               class="text-primary"
@@ -249,7 +249,7 @@ const breakpointItems = computed(() =>
           </div>
         </template>
         <template #content>
-          <div class="overflow-x-auto">
+          <CScrollbar class="w-full min-w-0">
             <table class="w-full border-collapse">
               <thead>
                 <tr class="border-b border-border">
@@ -285,7 +285,7 @@ const breakpointItems = computed(() =>
                   </td>
                   <td class="p-padding-sm font-mono">{{ item.value }}px</td>
                   <td class="p-padding-sm">
-                    <div class="flex gap-gap-xs flex-wrap">
+                    <div class="flex gap-xs flex-wrap">
                       <Button
                         :label="item.minWidthClass"
                         severity="success"
@@ -314,14 +314,14 @@ const breakpointItems = computed(() =>
                 </tr>
               </tbody>
             </table>
-          </div>
+          </CScrollbar>
         </template>
       </Card>
 
       <!-- Grid Demo -->
       <Card class="border border-border">
         <template #title>
-          <div class="flex items-center gap-gap-sm">
+          <div class="flex items-center gap-sm">
             <Icons
               name="i-lucide-grid-3x3"
               class="text-primary"
@@ -334,7 +334,7 @@ const breakpointItems = computed(() =>
           </div>
         </template>
         <template #content>
-          <div class="flex flex-col gap-gap-md">
+          <div class="flex flex-col gap-md">
             <p class="text-muted-foreground fs-sm">
               模拟视窗宽度为 <span class="font-mono font-bold">{{ currentWidth }}px</span>，
               当前断点 <span class="font-mono font-bold">{{ activeBreakpoint ?? '< xs' }}</span
@@ -342,13 +342,13 @@ const breakpointItems = computed(() =>
             </p>
 
             <!-- Simulated Viewport -->
-            <div class="flex justify-center overflow-x-auto pb-gap-md">
+            <CScrollbar class="flex justify-center pb-gap-md min-w-0">
               <div
-                class="flex shrink-0 flex-col rounded-scale-lg border-2 border-border bg-card shadow-lg transition-all duration-300"
-                :style="{ width: `${Math.min(currentWidth, 1200)}px` }"
+                class="flex shrink-0 flex-col rounded-scale-lg border-2 border-border bg-card shadow-lg transition-all duration-scale-md"
+                :style="{ width: '100%' }"
               >
                 <div
-                  class="border-b border-border px-padding-md py-padding-sm text-center fs-sm text-muted-foreground flex items-center justify-center gap-gap-sm"
+                  class="border-b border-border px-padding-md py-padding-sm text-center fs-sm text-muted-foreground flex items-center justify-center gap-sm"
                 >
                   <Icons
                     name="i-lucide-monitor"
@@ -357,7 +357,7 @@ const breakpointItems = computed(() =>
                   <span>Viewport {{ currentWidth }}px · Grid {{ gridCols }} col</span>
                 </div>
                 <div
-                  class="grid gap-gap-sm p-padding-md"
+                  class="grid gap-sm p-padding-md"
                   :style="{ gridTemplateColumns: `repeat(${Math.min(gridCols, 6)}, 1fr)` }"
                 >
                   <div
@@ -369,7 +369,7 @@ const breakpointItems = computed(() =>
                   </div>
                 </div>
               </div>
-            </div>
+            </CScrollbar>
           </div>
         </template>
       </Card>
@@ -377,7 +377,7 @@ const breakpointItems = computed(() =>
       <!-- Usage Examples -->
       <Card class="border border-border">
         <template #title>
-          <div class="flex items-center gap-gap-sm">
+          <div class="flex items-center gap-sm">
             <Icons
               name="i-lucide-code"
               class="text-primary"
@@ -386,50 +386,74 @@ const breakpointItems = computed(() =>
           </div>
         </template>
         <template #content>
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-gap-lg">
-            <div class="flex flex-col gap-gap-sm">
-              <h4 class="font-semibold text-foreground">Min-Width (Mobile First)</h4>
-              <pre
-                class="m-0 bg-muted/50 p-padding-md rounded-scale-md overflow-x-auto fs-sm cursor-pointer hover:bg-muted/70 transition-colors"
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-lg">
+            <div class="flex flex-col gap-sm">
+              <h4 class="font-semibold text-foreground">最小宽度 (Min-Width Mobile First)</h4>
+              <div
+                class="rounded-scale-md cursor-pointer hover:bg-muted/70 transition-colors"
                 @click="copyToClipboard('md:hidden lg:block')"
-              ><code class="text-foreground">&lt;div class="hidden md:block"&gt;
-  Visible on md and above
+              >
+                <CScrollbar class="min-w-0">
+                  <pre
+                    class="m-0 bg-muted/50 p-padding-md fs-sm"
+                  ><code class="text-foreground">&lt;div class="hidden md:block"&gt;
+  MD 及以上可见
 &lt;/div&gt;
 
 &lt;div class="md:hidden lg:block"&gt;
-  Hidden on md, visible on lg+
+  MD 隐藏，LG 及以上可见
 &lt;/div&gt;</code></pre>
+                </CScrollbar>
+              </div>
             </div>
-            <div class="flex flex-col gap-gap-sm">
-              <h4 class="font-semibold text-foreground">Max-Width</h4>
-              <pre
-                class="m-0 bg-muted/50 p-padding-md rounded-scale-md overflow-x-auto fs-sm cursor-pointer hover:bg-muted/70 transition-colors"
+            <div class="flex flex-col gap-sm">
+              <h4 class="font-semibold text-foreground">最大宽度 (Max-Width)</h4>
+              <div
+                class="rounded-scale-md cursor-pointer hover:bg-muted/70 transition-colors"
                 @click="copyToClipboard('<md:text-sm')"
-              ><code class="text-foreground">&lt;div class="&lt;md:text-sm"&gt;
-  Smaller text on mobile
+              >
+                <CScrollbar class="min-w-0">
+                  <pre
+                    class="m-0 bg-muted/50 p-padding-md fs-sm"
+                  ><code class="text-foreground">&lt;div class="&lt;md:text-sm"&gt;
+  移动端小号文字
 &lt;/div&gt;
 
 &lt;div class="&lt;lg:grid-cols-1"&gt;
-  Single column below lg
+  LG 以下单列布局
 &lt;/div&gt;</code></pre>
+                </CScrollbar>
+              </div>
             </div>
-            <div class="flex flex-col gap-gap-sm">
-              <h4 class="font-semibold text-foreground">Responsive Grid</h4>
-              <pre
-                class="m-0 bg-muted/50 p-padding-md rounded-scale-md overflow-x-auto fs-sm cursor-pointer hover:bg-muted/70 transition-colors"
+            <div class="flex flex-col gap-sm">
+              <h4 class="font-semibold text-foreground">响应式网格 (Responsive Grid)</h4>
+              <div
+                class="rounded-scale-md cursor-pointer hover:bg-muted/70 transition-colors"
                 @click="copyToClipboard('grid-cols-1 sm:grid-cols-2 lg:grid-cols-4')"
-              ><code class="text-foreground">&lt;div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4"&gt;
-  &lt;!-- Responsive grid items --&gt;
+              >
+                <CScrollbar class="min-w-0">
+                  <pre
+                    class="m-0 bg-muted/50 p-padding-md fs-sm"
+                  ><code class="text-foreground">&lt;div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4"&gt;
+  &lt;!-- 响应式网格项 --&gt;
 &lt;/div&gt;</code></pre>
+                </CScrollbar>
+              </div>
             </div>
-            <div class="flex flex-col gap-gap-sm">
-              <h4 class="font-semibold text-foreground">Responsive Spacing</h4>
-              <pre
-                class="m-0 bg-muted/50 p-padding-md rounded-scale-md overflow-x-auto fs-sm cursor-pointer hover:bg-muted/70 transition-colors"
+            <div class="flex flex-col gap-sm">
+              <h4 class="font-semibold text-foreground">响应式间距 (Responsive Spacing)</h4>
+              <div
+                class="rounded-scale-md cursor-pointer hover:bg-muted/70 transition-colors"
                 @click="copyToClipboard('p-padding-sm md:p-padding-md lg:p-padding-lg')"
-              ><code class="text-foreground">&lt;div class="p-padding-sm md:p-padding-md lg:p-padding-lg"&gt;
-  Responsive padding
+              >
+                <CScrollbar class="min-w-0">
+                  <pre
+                    class="m-0 bg-muted/50 p-padding-md fs-sm"
+                  ><code class="text-foreground">&lt;div class="p-padding-sm md:p-padding-md lg:p-padding-lg"&gt;
+  响应式内边距
 &lt;/div&gt;</code></pre>
+                </CScrollbar>
+              </div>
             </div>
           </div>
         </template>
@@ -438,7 +462,7 @@ const breakpointItems = computed(() =>
       <!-- Quick Reference -->
       <Card class="border border-border bg-gradient-to-br from-primary/5 to-accent/5">
         <template #title>
-          <div class="flex items-center gap-gap-sm">
+          <div class="flex items-center gap-sm">
             <Icons
               name="i-lucide-zap"
               class="text-primary"
@@ -447,11 +471,11 @@ const breakpointItems = computed(() =>
           </div>
         </template>
         <template #content>
-          <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-gap-md">
+          <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-md">
             <div
               v-for="[key, value] in breakpointEntries"
               :key="key"
-              class="flex flex-col gap-gap-xs p-padding-md bg-card rounded-scale-md border border-border cursor-pointer hover:border-primary/50 hover:shadow-md transition-all"
+              class="flex flex-col gap-xs p-padding-md bg-card rounded-scale-md border border-border cursor-pointer hover:border-primary/50 hover:shadow-md transition-all"
               @click="copyToClipboard(`${key}:`)"
             >
               <div class="flex items-center justify-between">

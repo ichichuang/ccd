@@ -3,6 +3,8 @@ import Button from 'primevue/button'
 import Menubar from 'primevue/menubar'
 import { Icons } from '@/components/Icons'
 import GlobalSetting from '@/layouts/components/GlobalSetting/index.vue'
+import User from '@/layouts/components/User/index.vue'
+import { AUTH_ENABLED } from '@/constants/router'
 import { useRoute } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import {
@@ -86,6 +88,8 @@ export default defineComponent({
     const isHorizontal = computed(() => props.mode === 'horizontal')
     const isMix = computed(() => props.mode === 'mix')
     const userRoles = computed(() => userStore.getUserRoles || [])
+    const isLogin = computed(() => userStore.getIsLogin)
+    const showUserEntry = computed(() => AUTH_ENABLED && isLogin.value)
 
     // --- Menu Logic (Reused from AdminSidebar logic but for Horizontal) ---
     const menuModel = computed(() => {
@@ -125,7 +129,7 @@ export default defineComponent({
 
       // Common: Smooth transition, flex layout
       const commonClasses =
-        'flex items-center gap-gap-sm cursor-pointer transition-all duration-scale-md ease-in-out select-none'
+        'flex items-center gap-sm cursor-pointer transition-all duration-scale-md ease-in-out select-none'
 
       // Root Item Styling: Block shape (rounded-md), subtle hover
       const rootClasses = `
@@ -209,7 +213,7 @@ export default defineComponent({
     }
 
     const renderThemeAndSetting = () => (
-      <div class="flex items-center gap-gap-sm">
+      <div class="flex items-center gap-sm">
         {props.showSidebarToggle && (
           <Button
             variant="text"
@@ -238,6 +242,7 @@ export default defineComponent({
           />
         </Button>
         <GlobalSetting />
+        {showUserEntry.value && <User />}
       </div>
     )
 
@@ -252,18 +257,20 @@ export default defineComponent({
           ]}
         >
           {/* Left: Logo */}
-          <div class="flex items-center gap-gap-md shrink-0">
+          <div class="flex items-center gap-md shrink-0">
             {props.showLogo && (
               <div
-                class="flex items-center gap-gap-sm cursor-pointer hover:opacity-80 transition-opacity"
+                class="flex items-center gap-sm cursor-pointer hover:opacity-80 transition-opacity"
                 onClick={() => goToRoute('/')}
               >
                 <div class="w-[var(--spacing-xl)] h-[var(--spacing-xl)] rounded-scale-xl bg-primary text-primary-foreground flex items-center justify-center shadow-lg shadow-primary/20">
                   <span class="fs-md font-bold">C</span>
                 </div>
                 <div class="hidden md:flex flex-col leading-none">
-                  <span class="fs-sm font-bold tracking-tight">CCD Admin</span>
-                  <span class="fs-xs text-muted-foreground font-medium">Enterprise</span>
+                  <span class="fs-sm font-bold tracking-tight">{t('layout.appName')}</span>
+                  <span class="fs-xs text-muted-foreground font-medium">
+                    {t('layout.appSubtitle')}
+                  </span>
                 </div>
               </div>
             )}
@@ -280,7 +287,7 @@ export default defineComponent({
                 }}
                 pt={{
                   root: { class: 'bg-transparent border-none' },
-                  menu: { class: 'gap-gap-xs' },
+                  menu: { class: 'gap-xs' },
                 }}
               />
             </div>
