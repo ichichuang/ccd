@@ -1,6 +1,8 @@
 import router from '@/router'
 import store from '@/stores'
 import { AUTH_ENABLED } from '@/constants/router'
+import { useLayoutStore } from '@/stores/modules/layout'
+import { usePermissionStore } from '@/stores/modules/permission'
 import { createPiniaEncryptedSerializer } from '@/utils/safeStorage/piniaSerializer'
 import { encryptAndCompressSync } from '@/utils/safeStorage/safeStorage'
 import { defineStore } from 'pinia'
@@ -118,6 +120,9 @@ export const useUserStore = defineStore('user', {
       const { loadingStart } = useLoading()
       loadingStart()
       this.clearUserInfo()
+      // 先重置 layout、permission，避免 reload 时持久化插件把旧状态再次写入 localStorage
+      useLayoutStore(store).resetSetting()
+      usePermissionStore(store).reset()
       const basePrefix = `${import.meta.env.VITE_PINIA_PERSIST_KEY_PREFIX}-`
       const prefixKeys: string[] = [basePrefix, 'schemaform:']
       const exactKeys: string[] = ['theme-mode']

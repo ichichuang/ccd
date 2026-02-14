@@ -210,7 +210,7 @@ export const THEME_PRESETS: ThemePreset[] = [
   },
 ]
 
-export const DEFAULT_THEME_NAME = 'deep-blue'
+export const DEFAULT_THEME_NAME = 'violet'
 
 /**
  * 获取预设的主色（用于 UI 展示，如配色选择小球）

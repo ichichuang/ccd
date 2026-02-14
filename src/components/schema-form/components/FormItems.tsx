@@ -647,9 +647,8 @@ export default defineComponent({
         : {}
 
       // 选项属性：当 options 为函数时使用已加载的 options.value，否则使用静态数组
-      const optionsProps = Array.isArray(column.props?.options)
-        ? column.props.options
-        : options.value
+      const optionsProps =
+        column.props && Array.isArray(column.props.options) ? column.props.options : options.value
 
       // 构建组件 props
       const componentProps = buildComponentProps({

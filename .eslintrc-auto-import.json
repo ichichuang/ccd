@@ -85,6 +85,7 @@
     "LAYOUT_DIMENSION_KEYS": "readonly",
     "LAYOUT_PERSIST_PICK": "readonly",
     "LOCALE_TO_TIMEZONE_MAP": "readonly",
+    "LOGIN_CARD_MAX_WIDTH": "readonly",
     "Locale": "readonly",
     "LocaleModule": "readonly",
     "MaybeRef": "readonly",

@@ -4,11 +4,15 @@
 const zhCN = {
   login: {
     title: '登录',
+    subtitle: '欢迎回来，请登录您的账户',
     username: '用户名',
     password: '密码',
     submit: '登录',
     placeholderUsername: 'admin 或 user',
     placeholderPassword: '123456',
+    forgotPassword: '忘记密码？',
+    noAccount: '还没有账号？',
+    register: '立即注册',
     authDisabled: '当前环境未启用登录模式，无需登录。',
     required: '请输入用户名和密码',
     failed: '登录失败，请稍后重试',

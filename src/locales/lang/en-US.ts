@@ -4,11 +4,15 @@
 const enUS = {
   login: {
     title: 'Login',
+    subtitle: 'Welcome back, please sign in to your account',
     username: 'Username',
     password: 'Password',
     submit: 'Sign In',
     placeholderUsername: 'admin or user',
     placeholderPassword: '123456',
+    forgotPassword: 'Forgot password?',
+    noAccount: "Don't have an account?",
+    register: 'Register now',
     authDisabled: 'Login is disabled in this environment.',
     required: 'Please enter username and password',
     failed: 'Login failed, please try again later',

@@ -14,8 +14,8 @@ export type SizeScaleKey = (typeof SIZE_SCALE_KEYS)[number]
  * 遵循 Minor Third (1.2) 或 Major Third (1.25) 调性
  */
 export const FONT_SCALE_RATIOS: Record<SizeScaleKey, number> = {
-  xs: 0.75, // 12px
-  sm: 0.875, // 14px
+  xs: 0.85, // 12px
+  sm: 0.95, // 14px
   md: 1, // 16px (Base)
   lg: 1.125, // 18px
   xl: 1.25, // 20px

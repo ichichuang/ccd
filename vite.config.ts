@@ -150,6 +150,9 @@ export default ({ mode, command }: ConfigEnv): UserConfigExport => {
                 id.includes('vue/') ||
                 id.includes('vue-router') ||
                 id.includes('pinia') ||
+                id.includes('vue-i18n') ||
+                id.includes('pinia-plugin-persistedstate') ||
+                id.includes('/alova/') ||
                 id.includes('@vueuse')
               )
                 return 'vendor-vue'

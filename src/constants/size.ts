@@ -20,7 +20,7 @@ export const SIZE_PRESETS: SizePreset[] = [
     label: '紧凑模式',
     radius: 0.3,
     spacingBase: 3,
-    fontSizeBase: 14, // 基准 14px
+    fontSizeBase: 13.5, // 基准 14px
 
     sidebarWidth: 200,
     sidebarCollapsedWidth: 56,
@@ -36,7 +36,7 @@ export const SIZE_PRESETS: SizePreset[] = [
     label: '舒适模式 (默认)',
     radius: 0.5,
     spacingBase: 4,
-    fontSizeBase: 16, // 基准 16px
+    fontSizeBase: 15, // 基准 16px
 
     sidebarWidth: 240,
     sidebarCollapsedWidth: 64,
@@ -52,7 +52,7 @@ export const SIZE_PRESETS: SizePreset[] = [
     label: '宽松模式',
     radius: 0.8,
     spacingBase: 6,
-    fontSizeBase: 18, // 基准 18px
+    fontSizeBase: 17.5, // 基准 18px
 
     sidebarWidth: 280,
     sidebarCollapsedWidth: 80,
