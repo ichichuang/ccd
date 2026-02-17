@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue'
 import type { IconSize, IconAnimation, FlipDirection } from '@/components/Icons/utils/types'
-import { SIZE_SCALE_KEYS } from '@/constants/sizeScale'
+import { SIZE_SCALE_KEYS, type SizeScaleKey } from '@/constants/sizeScale'
 
 type EmitFn = {
   (e: 'update:size', value: IconSize): void
@@ -33,9 +33,9 @@ const colorInput = ref<string | undefined>('')
 watch(
   () => props.size,
   val => {
-    if (typeof val === 'string' && SIZE_SCALE_KEYS.includes(val as IconSize)) {
+    if (typeof val === 'string' && (SIZE_SCALE_KEYS as readonly string[]).includes(val)) {
       if (sizeMode.value !== 'scale') sizeMode.value = 'scale'
-      if (sizeScale.value !== val) sizeScale.value = val
+      if (sizeScale.value !== val) sizeScale.value = val as SizeScaleKey
     } else {
       if (sizeMode.value !== 'custom') sizeMode.value = 'custom'
       const customVal = String(val ?? '')
@@ -138,6 +138,32 @@ function updateScale() {
   const newVal = Number.isNaN(num) ? undefined : num
   if (props.scale !== newVal) emit('update:scale', newVal)
 }
+
+function handleSizeScaleClick(key: IconSize): void {
+  sizeScale.value = key
+  updateSize()
+}
+
+function handleColorInputChange(event: Event): void {
+  const target = event.target as HTMLInputElement
+  colorInput.value = target.value
+  updateColor()
+}
+
+function handleSetColor(color: string): void {
+  colorInput.value = color
+  updateColor()
+}
+
+function handleSetRotate(value: string): void {
+  rotateInput.value = value
+  updateRotate()
+}
+
+function handleSetScale(value: string): void {
+  scaleInput.value = value
+  updateScale()
+}
 </script>
 
 <template>
@@ -175,10 +201,7 @@ function updateScale() {
             :label="key"
             size="small"
             :severity="sizeScale === key ? 'primary' : 'secondary'"
-            @click="
-              sizeScale = key
-              updateSize()
-            "
+            @click="handleSizeScaleClick(key)"
           />
         </div>
       </div>
@@ -205,10 +228,7 @@ function updateScale() {
           type="color"
           :value="colorInput"
           class="w-[var(--spacing-xl)] h-[var(--spacing-lg)] rounded-scale-md cursor-pointer"
-          @input="
-            colorInput = ($event.target as HTMLInputElement).value
-            updateColor()
-          "
+          @input="handleColorInputChange"
         />
       </div>
       <div class="flex flex-wrap gap-sm">
@@ -216,64 +236,43 @@ function updateScale() {
           label="主色"
           size="small"
           severity="secondary"
-          @click="
-            colorInput = 'rgb(var(--primary))'
-            updateColor()
-          "
+          @click="handleSetColor('rgb(var(--primary))')"
         />
         <Button
           label="前景色"
           size="small"
           severity="secondary"
-          @click="
-            colorInput = 'rgb(var(--foreground))'
-            updateColor()
-          "
+          @click="handleSetColor('rgb(var(--foreground))')"
         />
         <Button
           label="信息色"
           size="small"
           severity="secondary"
-          @click="
-            colorInput = 'rgb(var(--info))'
-            updateColor()
-          "
+          @click="handleSetColor('rgb(var(--info))')"
         />
         <Button
           label="成功色"
           size="small"
           severity="secondary"
-          @click="
-            colorInput = 'rgb(var(--success))'
-            updateColor()
-          "
+          @click="handleSetColor('rgb(var(--success))')"
         />
         <Button
           label="警告色"
           size="small"
           severity="secondary"
-          @click="
-            colorInput = 'rgb(var(--warn))'
-            updateColor()
-          "
+          @click="handleSetColor('rgb(var(--warn))')"
         />
         <Button
           label="危险色"
           size="small"
           severity="secondary"
-          @click="
-            colorInput = 'rgb(var(--danger))'
-            updateColor()
-          "
+          @click="handleSetColor('rgb(var(--danger))')"
         />
         <Button
           label="清除"
           size="small"
           severity="secondary"
-          @click="
-            colorInput = ''
-            updateColor()
-          "
+          @click="handleSetColor('')"
         />
       </div>
     </div>
@@ -320,37 +319,25 @@ function updateScale() {
             label="90°"
             size="small"
             severity="secondary"
-            @click="
-              rotateInput = '90'
-              updateRotate()
-            "
+            @click="handleSetRotate('90')"
           />
           <Button
             label="180°"
             size="small"
             severity="secondary"
-            @click="
-              rotateInput = '180'
-              updateRotate()
-            "
+            @click="handleSetRotate('180')"
           />
           <Button
             label="270°"
             size="small"
             severity="secondary"
-            @click="
-              rotateInput = '270'
-              updateRotate()
-            "
+            @click="handleSetRotate('270')"
           />
           <Button
             label="清除"
             size="small"
             severity="secondary"
-            @click="
-              rotateInput = ''
-              updateRotate()
-            "
+            @click="handleSetRotate('')"
           />
         </div>
       </div>
@@ -370,37 +357,25 @@ function updateScale() {
             label="0.5x"
             size="small"
             severity="secondary"
-            @click="
-              scaleInput = '0.5'
-              updateScale()
-            "
+            @click="handleSetScale('0.5')"
           />
           <Button
             label="1.5x"
             size="small"
             severity="secondary"
-            @click="
-              scaleInput = '1.5'
-              updateScale()
-            "
+            @click="handleSetScale('1.5')"
           />
           <Button
             label="2x"
             size="small"
             severity="secondary"
-            @click="
-              scaleInput = '2'
-              updateScale()
-            "
+            @click="handleSetScale('2')"
           />
           <Button
             label="清除"
             size="small"
             severity="secondary"
-            @click="
-              scaleInput = ''
-              updateScale()
-            "
+            @click="handleSetScale('')"
           />
         </div>
       </div>

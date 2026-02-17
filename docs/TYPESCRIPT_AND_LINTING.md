@@ -193,3 +193,27 @@ export function useHttpRequest<TData = unknown>(
   // ...
 }
 ```
+
+### 6.5 Vue Template Expression Constraints（Vue 模板表达式约束）
+
+Vue 模板中的表达式**必须是单条 JavaScript 表达式**，不支持 TypeScript 语法。详见 `docs/VUE_TEMPLATE_ANTIPATTERNS.md`。
+
+- **禁止多语句内联事件处理器**：`@click`、`@input` 等只能接受单条表达式；多行/多语句会导致 `Error parsing JavaScript expression`。必须抽取为 `<script setup>` 中的方法。
+- **禁止模板中的 TypeScript 语法**：禁止在模板 binding 中使用 `as`、`:`、`<>`。类型断言必须在 `<script setup>` 中完成，模板只使用已类型化的变量。
+- **示例**：
+  - ❌ `@input="colorInput = ($event.target as HTMLInputElement).value"`
+  - ✅ 在 script 中定义 `handleColorInputChange(event: Event)`，内写 `const target = event.target as HTMLInputElement`，模板中 `@input="handleColorInputChange"`
+
+### 6.6 readonly Array includes 与类型收窄
+
+当使用 `as const` 定义的数组时，`Array.prototype.includes` 的入参类型为字面量联合。传入普通 `string` 会报类型错误。
+
+**正确写法**：放宽 `includes` 的入参类型，赋值时显式断言：
+
+```ts
+if (typeof val === 'string' && (SIZE_SCALE_KEYS as readonly string[]).includes(val)) {
+  if (sizeScale.value !== val) sizeScale.value = val as SizeScaleKey
+}
+```
+
+详见 `docs/VUE_TEMPLATE_ANTIPATTERNS.md` §3。

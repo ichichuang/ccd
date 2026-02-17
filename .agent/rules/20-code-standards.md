@@ -85,10 +85,14 @@ alwaysApply: true
   - ❌ `<div :prop="value as MyType">`
   - ❌ `<div :prop="value: MyType">`
   - ❌ 在模板绑定中使用任何 TypeScript 类型断言（`as`）、类型注解（`:`）或泛型（`<>`）。
-- **正确方法**：在 `<script setup>` 中定义类型，并在模板中直接使用类型化变量。
-  - ✅ 在 `<script setup>` 中：`const typedValue: MyType = value as MyType`
-  - ✅ 在 `<template>` 中：`<div :prop="typedValue">`
-- **理由**：Vue 模板不支持 TypeScript；此类语法在运行时会导致错误，并导致 IDE 高亮问题。类型定义必须在模板使用之前在 `<script setup>` 中声明。
+- **禁止多语句内联事件处理器**：`@click`、`@input` 等只能接受单条表达式；多行/多语句会触发 `Error parsing JavaScript expression`。必须将逻辑抽取到 `<script setup>` 中的方法，模板内仅调用方法。
+  - ❌ `@click="a = 1; b = 2"` 或 `@input="x = $event.target.value; update()"`
+  - ✅ `@click="handleClick"`，在 script 中定义 `function handleClick() { ... }`
+- **正确方法**：在 `<script setup>` 中定义类型和方法，并在模板中直接使用类型化变量或方法调用。
+  - ✅ 在 `<script setup>` 中：`const typedValue: MyType = value as MyType` 或 `function handleColorInputChange(event: Event) { ... }`
+  - ✅ 在 `<template>` 中：`<div :prop="typedValue">` 或 `@input="handleColorInputChange"`
+- **理由**：Vue 模板不支持 TypeScript；多语句会导致解析错误。类型定义与复杂逻辑必须在 `<script setup>` 中完成。
+- **参考**：`docs/VUE_TEMPLATE_ANTIPATTERNS.md` 为 SSOT，列出完整反模式与正确写法。
 
 ## 5. 导出模式
 

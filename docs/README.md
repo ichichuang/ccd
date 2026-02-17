@@ -36,30 +36,35 @@
    - **功能**：严格模式、显式类型注解、禁止 any、ESLint、Vue 模板约束
    - **引用**：`@docs/TYPESCRIPT_AND_LINTING.md`
 
+4. **`VUE_TEMPLATE_ANTIPATTERNS.md`** - Vue 模板反模式
+   - **功能**：多语句内联处理器、模板中 TS 语法、readonly 数组 includes 等反模式及正确写法
+   - **使用场景**：出现 `Error parsing JavaScript expression`、构建失败或 TS 类型错误时优先查阅
+   - **引用**：`@docs/VUE_TEMPLATE_ANTIPATTERNS.md`
+
 ### 2.2 设计系统
 
-4. **`PRIMEVUE_THEME.md`** - PrimeVue 主题
-5. **`UNOCSS_AND_ICONS.md`** - UnoCSS 与图标
-6. **`ECHARTS_THEME.md`** - ECharts 与主题
+5. **`PRIMEVUE_THEME.md`** - PrimeVue 主题
+6. **`UNOCSS_AND_ICONS.md`** - UnoCSS 与图标
+7. **`ECHARTS_THEME.md`** - ECharts 与主题
 
 ### 2.3 组件文档
 
-7. **`SCHEMA_FORM_COMPONENT.md`** - SchemaForm 表单
-8. **`DataTable_COMPONENT.md`** - DataTable 表格
-9. **`DIALOG_COMPONENT.md`** - PrimeDialog 弹窗
-10. **`TOAST_AND_MESSAGE.md`** - Toast & Message
-11. **`TOAST_UI_OVERRIDES.md`** - Toast 样式覆盖
+8. **`SCHEMA_FORM_COMPONENT.md`** - SchemaForm 表单
+9. **`DataTable_COMPONENT.md`** - DataTable 表格
+10. **`DIALOG_COMPONENT.md`** - PrimeDialog 弹窗
+11. **`TOAST_AND_MESSAGE.md`** - Toast & Message
+12. **`TOAST_UI_OVERRIDES.md`** - Toast 样式覆盖
 
 ### 2.4 布局与路由
 
-12. **`ADAPTIVE_LAYOUT.md`** - 布局适配系统
-13. **`AUTH_AND_LOGIN_FLOW.md`** - 登录与鉴权
+13. **`ADAPTIVE_LAYOUT.md`** - 布局适配系统
+14. **`AUTH_AND_LOGIN_FLOW.md`** - 登录与鉴权
 
 ### 2.5 工作流程与环境
 
-14. **`SKILLS_WORKFLOWS.md`** - AI Skills 工作流程
-15. **`ANTIGRAVITY_UI_RULES.md`** - Antigravity Agent 规则
-16. **`ENV_AND_RUNTIME.md`** - 环境变量与运行时
+15. **`SKILLS_WORKFLOWS.md`** - AI Skills 工作流程
+16. **`ANTIGRAVITY_UI_RULES.md`** - Antigravity Agent 规则
+17. **`ENV_AND_RUNTIME.md`** - 环境变量与运行时
 
 ---
 
@@ -78,22 +83,23 @@
 
 ### 按场景选择文档
 
-| 任务类型                             | 引用文档                                                                                   |
-| ------------------------------------ | ------------------------------------------------------------------------------------------ |
-| 理解架构/目录结构                    | `@docs/architecture/ARCHITECTURE_OVERVIEW.md`、`@docs/architecture/DIRECTORY_STRUCTURE.md` |
-| 表单（多字段/校验/分步/分组/动态）   | `@docs/SCHEMA_FORM_COMPONENT.md`                                                           |
-| 数据表格（列表/分页/排序/筛选/导出） | `@docs/DataTable_COMPONENT.md`                                                             |
-| 布局/侧栏/响应式                     | `@docs/ADAPTIVE_LAYOUT.md`                                                                 |
-| 登录/鉴权                            | `@docs/AUTH_AND_LOGIN_FLOW.md`                                                             |
-| 反馈提示（非组件环境）               | `@docs/TOAST_AND_MESSAGE.md`                                                               |
-| 弹窗/对话框                          | `@docs/DIALOG_COMPONENT.md`                                                                |
-| 样式编写                             | `@docs/UNOCSS_AND_ICONS.md`、`@docs/PRIMEVUE_THEME.md`                                     |
-| 图表开发                             | `@docs/ECHARTS_THEME.md`                                                                   |
-| 类型定义/注解                        | `@docs/TYPESCRIPT_AND_LINTING.md`                                                          |
-| 构建/自动导入                        | `@docs/BUILD_SYSTEM.md`                                                                    |
-| 环境配置                             | `@docs/ENV_AND_RUNTIME.md`                                                                 |
-| 右键菜单（ContextMenu）              | `@docs/PROJECT_PROTOCOL.md` §8.5.5                                                         |
-| 网络状态/大文件上传                  | `@docs/PROJECT_PROTOCOL.md` §8.4.6                                                         |
+| 任务类型                              | 引用文档                                                                                   |
+| ------------------------------------- | ------------------------------------------------------------------------------------------ |
+| 理解架构/目录结构                     | `@docs/architecture/ARCHITECTURE_OVERVIEW.md`、`@docs/architecture/DIRECTORY_STRUCTURE.md` |
+| 表单（多字段/校验/分步/分组/动态）    | `@docs/SCHEMA_FORM_COMPONENT.md`                                                           |
+| 数据表格（列表/分页/排序/筛选/导出）  | `@docs/DataTable_COMPONENT.md`                                                             |
+| 布局/侧栏/响应式                      | `@docs/ADAPTIVE_LAYOUT.md`                                                                 |
+| 登录/鉴权                             | `@docs/AUTH_AND_LOGIN_FLOW.md`                                                             |
+| 反馈提示（非组件环境）                | `@docs/TOAST_AND_MESSAGE.md`                                                               |
+| 弹窗/对话框                           | `@docs/DIALOG_COMPONENT.md`                                                                |
+| 样式编写                              | `@docs/UNOCSS_AND_ICONS.md`、`@docs/PRIMEVUE_THEME.md`                                     |
+| 图表开发                              | `@docs/ECHARTS_THEME.md`                                                                   |
+| 类型定义/注解                         | `@docs/TYPESCRIPT_AND_LINTING.md`                                                          |
+| Vue 模板解析错误/构建失败/TS 类型错误 | `@docs/VUE_TEMPLATE_ANTIPATTERNS.md`                                                       |
+| 构建/自动导入                         | `@docs/BUILD_SYSTEM.md`                                                                    |
+| 环境配置                              | `@docs/ENV_AND_RUNTIME.md`                                                                 |
+| 右键菜单（ContextMenu）               | `@docs/PROJECT_PROTOCOL.md` §8.5.5                                                         |
+| 网络状态/大文件上传                   | `@docs/PROJECT_PROTOCOL.md` §8.4.6                                                         |
 
 ### 引用方式
 
@@ -134,6 +140,7 @@
 | 怎么写表单          | `SCHEMA_FORM_COMPONENT.md`                                        |
 | 怎么写表格          | `DataTable_COMPONENT.md`                                          |
 | 怎么写类型          | `TYPESCRIPT_AND_LINTING.md`                                       |
+| 模板解析错误/反模式 | `VUE_TEMPLATE_ANTIPATTERNS.md`                                    |
 | 怎么写路由          | `PROJECT_PROTOCOL.md` §10                                         |
 | 怎么写认证          | `AUTH_AND_LOGIN_FLOW.md`                                          |
 | 怎么写布局          | `ADAPTIVE_LAYOUT.md`                                              |

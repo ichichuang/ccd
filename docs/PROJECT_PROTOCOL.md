@@ -7,6 +7,7 @@
 - `docs/BUILD_SYSTEM.md`：构建系统与自动导入（为什么 `ref/computed` 可以不 import）
 - `docs/ENV_AND_RUNTIME.md`：环境变量与运行时行为（dev/prod 差异、proxy/timeout）
 - `docs/TYPESCRIPT_AND_LINTING.md`：TS 项目引用与 ESLint（自动导入 globals、生成 d.ts 的纳入）
+- `docs/VUE_TEMPLATE_ANTIPATTERNS.md`：Vue 模板反模式（多语句内联处理器、模板中 TS 语法、readonly 数组 includes）
 - `docs/UNOCSS_AND_ICONS.md`：UnoCSS 语义类与图标体系（iconify + custom SVG + safelist）
 - `docs/PROJECT_PROTOCOL.md` §11 + `.cursor/rules/22-layouts.mdc`：Layouts 系统（LayoutMode、AdminLayoutMode、布局壳扩展）
 - `docs/ADAPTIVE_LAYOUT.md`：布局适配系统（PC/Tablet/Mobile、断点、有效显隐、userAdjusted）

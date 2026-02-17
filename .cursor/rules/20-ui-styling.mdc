@@ -184,3 +184,12 @@ Reference `uno.config.ts` for all available semantic classes:
   1. 在 `src/constants/size.ts` / `LAYOUT_DIMENSION_KEYS` 中增加对应 key；
   2. 在 `uno.config.ts` 中通过布局变量规则映射为 `w-xxx` / `max-w-xxx`；
   3. 在业务代码中使用该语义类，而不是继续拼接 `max-w-?xl`。
+
+## 9. Vue 模板事件处理器（Event Handlers）
+
+- **禁止多语句内联处理器**：`@click`、`@input` 等只能接受单条表达式；多行/多语句会触发 `Error parsing JavaScript expression`。
+  - ❌ `@click="a = 1; b = 2"` 或 `@input="x = $event.target.value; update()"`
+  - ✅ 抽取到 `<script setup>` 中的方法，模板中 `@click="handleClick"`
+- **禁止模板中的 TypeScript 语法**：禁止在 binding 中使用 `as`、`:`、`<>`。类型断言与复杂逻辑必须在 `<script setup>` 中完成。
+- **readonly 数组 includes**：使用 `(ARRAY as readonly string[]).includes(val)` 避免类型不兼容；赋值时使用显式断言 `val as XxxKey`。
+- **参考**：`docs/VUE_TEMPLATE_ANTIPATTERNS.md`（SSOT，完整反模式与正确写法）。
