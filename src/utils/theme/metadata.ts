@@ -8,7 +8,7 @@
  * - card / popover / secondary / muted
  *
  * 扩展家族（DEFAULT + foreground + hover + light + light-foreground）：
- * - primary / accent / destructive / warn / success / info / help
+ * - primary / accent / danger / warn / success / info / help
  *
  * Sidebar 家族：单独使用 sidebar- 前缀的 CSS 变量
  *
@@ -22,7 +22,7 @@
 export const COLOR_FAMILIES = {
   singleTokens: ['border', 'input', 'ring', 'background', 'foreground'] as const,
   pairFamilies: ['card', 'popover', 'secondary', 'muted'] as const,
-  quadFamilies: ['primary', 'accent', 'destructive', 'warn', 'success', 'info', 'help'] as const,
+  quadFamilies: ['primary', 'accent', 'danger', 'warn', 'success', 'info', 'help'] as const,
   sidebar: {
     background: 'sidebar-background',
     foreground: 'sidebar-foreground',
@@ -69,8 +69,8 @@ export const THEME_ENGINE = {
   accentMixPrimaryWeightLight: 0.15,
 
   /* 状态色默认与固定 */
-  destructive: '#ef4444',
-  destructiveFg: '#fafafa',
+  dangerDefault: '#ef4444',
+  dangerDefaultFg: '#fafafa',
   warnDefault: '#ca8a04',
   successDefault: '#22c55e',
   infoDefault: '#0ea5e9',

@@ -1,3 +1,4 @@
+// ECharts 系列样式边界：参数与 ECharts sankey 系列一致，内部使用 any 避免强依赖 echarts 内部类型。
 import type { ThemeConfig } from './types'
 
 /**
@@ -40,8 +41,9 @@ export const applySankeyStyles = (series: any, themeConfig: ThemeConfig): any =>
   if (!newSeries.label.color) {
     newSeries.label = {
       ...newSeries.label,
-      color: themeConfig.textColor100,
-      fontSize: themeConfig.font.fontSizeSmall,
+      color: themeConfig.foreground,
+      fontSize: themeConfig.size.fontSm,
+      lineHeight: themeConfig.size.lineHeightSm,
     }
   }
 

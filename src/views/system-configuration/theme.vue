@@ -13,7 +13,7 @@ function copyToClipboard(text: string, label?: string) {
       window.$message?.success(`已复制: ${label || text}`)
     })
     .catch(() => {
-      window.$message?.error('复制失败')
+      window.$message?.danger('复制失败')
     })
 }
 
@@ -179,7 +179,7 @@ const opacityVariants = [10, 20, 30, 40, 50, 60, 70, 80, 90] as const
       <!-- Header -->
       <div class="flex flex-col gap-xs">
         <div class="flex items-center gap-md">
-          <div class="p-3 bg-primary/10 rounded-scale-lg">
+          <div class="p-padding-md bg-primary/10 rounded-scale-lg">
             <Icons
               name="i-lucide-palette"
               class="text-primary fs-2xl"
@@ -195,7 +195,7 @@ const opacityVariants = [10, 20, 30, 40, 50, 60, 70, 80, 90] as const
       </div>
 
       <!-- Single Token Colors -->
-      <Card class="border border-border">
+      <Card class="component-border">
         <template #title>
           <div class="flex items-center gap-sm">
             <Icons
@@ -220,7 +220,7 @@ const opacityVariants = [10, 20, 30, 40, 50, 60, 70, 80, 90] as const
               >
                 <div class="flex items-center gap-sm">
                   <div
-                    class="w-10 h-10 rounded-scale-sm border border-border shadow-sm"
+                    class="w-[var(--spacing-xl)] h-[var(--spacing-xl)] rounded-scale-sm component-border shadow-sm"
                     :class="item.bgClass"
                   />
                   <span class="font-semibold text-foreground">{{ item.token }}</span>
@@ -259,7 +259,7 @@ const opacityVariants = [10, 20, 30, 40, 50, 60, 70, 80, 90] as const
       </Card>
 
       <!-- Pair Family Colors -->
-      <Card class="border border-border">
+      <Card class="component-border">
         <template #title>
           <div class="flex items-center gap-sm">
             <Icons
@@ -280,11 +280,11 @@ const opacityVariants = [10, 20, 30, 40, 50, 60, 70, 80, 90] as const
               <div
                 v-for="family in pairFamilies"
                 :key="family.family"
-                class="flex flex-col gap-md p-padding-lg bg-muted/20 rounded-scale-lg border border-border/50"
+                class="flex flex-col gap-md p-padding-lg bg-muted/20 rounded-scale-lg border border-solid border-border/50"
               >
                 <h3 class="fs-lg font-semibold text-foreground capitalize flex items-center gap-sm">
                   <div
-                    class="w-6 h-6 rounded-full border border-border"
+                    class="w-6 h-6 rounded-full component-border"
                     :class="`bg-${family.family}`"
                   />
                   {{ family.family }}
@@ -345,7 +345,7 @@ const opacityVariants = [10, 20, 30, 40, 50, 60, 70, 80, 90] as const
       </Card>
 
       <!-- Quad Family Colors -->
-      <Card class="border border-border">
+      <Card class="component-border">
         <template #title>
           <div class="flex items-center gap-sm">
             <Icons
@@ -365,17 +365,17 @@ const opacityVariants = [10, 20, 30, 40, 50, 60, 70, 80, 90] as const
               包含 DEFAULT, foreground, hover, hover-foreground, light, light-foreground 六个变体。
               <span class="text-foreground">*-light</span> 用于 PrimeVue Button text/outlined 变体
               hover 背景，详见
-              <code class="bg-muted px-1 rounded fs-xs">docs/PRIMEVUE_THEME.md</code>
+              <code class="bg-muted px-padding-xs rounded fs-xs">docs/PRIMEVUE_THEME.md</code>
             </p>
             <div class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-lg">
               <div
                 v-for="family in quadFamilies"
                 :key="family.family"
-                class="flex flex-col gap-md p-padding-lg bg-muted/20 rounded-scale-lg border border-border/50"
+                class="flex flex-col gap-md p-padding-lg bg-muted/20 rounded-scale-lg border border-solid border-border/50"
               >
                 <h3 class="fs-lg font-semibold text-foreground capitalize flex items-center gap-sm">
                   <div
-                    class="w-6 h-6 rounded-full border border-border"
+                    class="w-6 h-6 rounded-full component-border"
                     :class="`bg-${family.family}`"
                   />
                   {{ family.family }}
@@ -468,7 +468,7 @@ const opacityVariants = [10, 20, 30, 40, 50, 60, 70, 80, 90] as const
       </Card>
 
       <!-- PrimeVue Button 配色 -->
-      <Card class="border border-border">
+      <Card class="component-border">
         <template #title>
           <div class="flex items-center gap-sm">
             <Icons
@@ -485,11 +485,11 @@ const opacityVariants = [10, 20, 30, 40, 50, 60, 70, 80, 90] as const
         <template #content>
           <div class="flex flex-col gap-md">
             <p class="text-muted-foreground fs-sm">
-              Button <code class="bg-muted px-1 rounded">variant="text"</code> 与
-              <code class="bg-muted px-1 rounded">variant="outlined"</code> 使用
-              <code class="bg-muted px-1 rounded">*-light</code> 作为 hover
+              Button <code class="bg-muted px-padding-xs rounded">variant="text"</code> 与
+              <code class="bg-muted px-padding-xs rounded">variant="outlined"</code> 使用
+              <code class="bg-muted px-padding-xs rounded">*-light</code> 作为 hover
               背景，避免黑底彩字/红底红字。详见
-              <code class="bg-muted px-1 rounded fs-xs">docs/PRIMEVUE_THEME.md</code>
+              <code class="bg-muted px-padding-xs rounded fs-xs">docs/PRIMEVUE_THEME.md</code>
             </p>
             <div class="flex flex-col gap-lg">
               <div>
@@ -586,7 +586,7 @@ const opacityVariants = [10, 20, 30, 40, 50, 60, 70, 80, 90] as const
       </Card>
 
       <!-- Opacity Variants（使用 CSS 变量 + style，不依赖 UnoCSS safelist） -->
-      <Card class="border border-border">
+      <Card class="component-border">
         <template #title>
           <div class="flex items-center gap-sm">
             <Icons
@@ -600,7 +600,7 @@ const opacityVariants = [10, 20, 30, 40, 50, 60, 70, 80, 90] as const
           <div class="flex flex-col gap-md">
             <p class="text-muted-foreground fs-sm">
               所有颜色都支持透明度语法，格式:
-              <code class="bg-muted px-1 rounded">bg-{color}/{opacity}</code>
+              <code class="bg-muted px-padding-xs rounded">bg-{color}/{opacity}</code>
               · 色块使用 CSS 变量渲染，无需 UNO_DEMO 即可完整显示
             </p>
             <div class="flex flex-col gap-lg">
@@ -617,7 +617,7 @@ const opacityVariants = [10, 20, 30, 40, 50, 60, 70, 80, 90] as const
                     @click="copyToClipboard(`bg-${family}/${opacity}`)"
                   >
                     <div
-                      class="w-12 h-12 rounded-scale-sm border border-border group-hover:scale-110 transition-transform"
+                      class="w-[var(--spacing-2xl)] h-[var(--spacing-2xl)] rounded-scale-sm component-border group-hover:scale-110 transition-transform"
                       :style="{ background: `rgb(var(--${family}) / ${opacity / 100})` }"
                     />
                     <span class="font-mono fs-xs text-muted-foreground group-hover:text-foreground"
@@ -632,7 +632,7 @@ const opacityVariants = [10, 20, 30, 40, 50, 60, 70, 80, 90] as const
       </Card>
 
       <!-- Sidebar Colors -->
-      <Card class="border border-border">
+      <Card class="component-border">
         <template #title>
           <div class="flex items-center gap-sm">
             <Icons
@@ -660,9 +660,7 @@ const opacityVariants = [10, 20, 30, 40, 50, 60, 70, 80, 90] as const
                 <div class="flex items-center gap-sm">
                   <div
                     class="w-8 h-8 rounded-scale-sm shrink-0"
-                    :class="
-                      item.borderClass ? item.bgClass : ['border border-border', item.bgClass]
-                    "
+                    :class="item.borderClass ? item.bgClass : ['component-border', item.bgClass]"
                   />
                   <span class="font-medium text-foreground">{{ item.key }}</span>
                 </div>
@@ -691,7 +689,7 @@ const opacityVariants = [10, 20, 30, 40, 50, 60, 70, 80, 90] as const
       </Card>
 
       <!-- Quick Reference -->
-      <Card class="border border-border bg-gradient-to-br from-primary/5 to-accent/5">
+      <Card class="component-border bg-gradient-to-br from-primary/5 to-accent/5">
         <template #title>
           <div class="flex items-center gap-sm">
             <Icons
@@ -768,7 +766,7 @@ const opacityVariants = [10, 20, 30, 40, 50, 60, 70, 80, 90] as const
             <p class="text-muted-foreground fs-sm">
               <span class="font-semibold">可用颜色:</span>
               <span class="font-mono ml-1"
-                >primary | accent | destructive | warn | success | info | muted | secondary | card |
+                >primary | accent | danger | warn | success | info | muted | secondary | card |
                 popover</span
               >
             </p>

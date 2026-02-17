@@ -1,12 +1,18 @@
 import vue from '@vitejs/plugin-vue'
 import vueJsx from '@vitejs/plugin-vue-jsx'
+import fs from 'node:fs'
 import path from 'node:path'
 import UnoCSS from 'unocss/vite'
 import AutoImport from 'unplugin-auto-import/vite'
 import Components from 'unplugin-vue-components/vite'
 import { PrimeVueResolver } from '@primevue/auto-import-resolver'
 import type { PluginOption, ViteDevServer } from 'vite'
-import { invalidateIconCaches } from './uno-icons'
+import {
+  getCustomIconClasses,
+  getIconifyIconNamesSubset,
+  ICON_SUBSET_LIMITS,
+  invalidateIconCaches,
+} from './uno-icons'
 import type { ViteEnv } from './utils'
 import { configLegacyPlugin } from './legacy'
 
@@ -27,6 +33,9 @@ export function getPluginsList(env: ViteEnv, command: 'build' | 'serve'): Plugin
 
     // ✅ HTML 注入 VITE_APP_TITLE（与 usePageTitle 初始标题一致）
     configHtmlPlugin(env),
+
+    // 图标示例页列表：从 @iconify-json 与 src/assets/icons 动态生成
+    generateIconListsPlugin(),
 
     // 图标变更监听（仅开发环境启用）
     isDev && createIconsWatcherPlugin(),
@@ -112,6 +121,29 @@ export function getPluginsList(env: ViteEnv, command: 'build' | 'serve'): Plugin
   }
 
   return plugins.filter(Boolean) as PluginOption[]
+}
+
+/**
+ * 图标示例页列表生成插件
+ * 在构建/开发启动时从 @iconify-json 与 src/assets/icons 生成 iconLists.generated.ts（仅子集，与 safelist 一致）
+ */
+function generateIconListsPlugin(): PluginOption {
+  const generatedPath = path.resolve(
+    process.cwd(),
+    'src/views/example/icons/configs/iconLists.generated.ts'
+  )
+  return {
+    name: 'generate-icon-lists',
+    config() {
+      const lucide = getIconifyIconNamesSubset('lucide', ICON_SUBSET_LIMITS.lucide)
+      const mdi = getIconifyIconNamesSubset('mdi', ICON_SUBSET_LIMITS.mdi)
+      const logos = getIconifyIconNamesSubset('logos', ICON_SUBSET_LIMITS.logos)
+      const custom = getCustomIconClasses()
+      const content = `/** 由 build/plugins.ts generateIconListsPlugin 在构建时生成，请勿手改 */\n\nexport const LUCIDE_ICONS: string[] = ${JSON.stringify(lucide)}\nexport const MDI_ICONS: string[] = ${JSON.stringify(mdi)}\nexport const LOGOS_ICONS: string[] = ${JSON.stringify(logos)}\nexport const CUSTOM_ICONS: string[] = ${JSON.stringify(custom)}\n`
+      fs.mkdirSync(path.dirname(generatedPath), { recursive: true })
+      fs.writeFileSync(generatedPath, content, 'utf-8')
+    },
+  }
 }
 
 /**

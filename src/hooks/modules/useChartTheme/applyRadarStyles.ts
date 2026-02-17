@@ -1,28 +1,6 @@
+// ECharts 系列样式边界：参数与 ECharts radar 系列一致，内部使用 any 避免强依赖 echarts 内部类型。
 import type { ThemeConfig } from './types'
-
-// 将十六进制颜色转换为带透明度的 rgba 字符串；如果解析失败则返回原色
-const withAlpha = (color: string, alpha: number): string => {
-  if (!color || typeof color !== 'string') {
-    return color
-  }
-  const hex = color.replace('#', '')
-  if (hex.length === 6 || hex.length === 3) {
-    const fullHex =
-      hex.length === 3
-        ? hex
-            .split('')
-            .map(ch => ch + ch)
-            .join('')
-        : hex
-    const r = parseInt(fullHex.substring(0, 2), 16)
-    const g = parseInt(fullHex.substring(2, 4), 16)
-    const b = parseInt(fullHex.substring(4, 6), 16)
-    if (Number.isFinite(r) && Number.isFinite(g) && Number.isFinite(b)) {
-      return `rgba(${r}, ${g}, ${b}, ${alpha})`
-    }
-  }
-  return color
-}
+import { withAlpha } from './utils'
 
 /**
  * 应用雷达图样式：线条、区域、点、标签与主题融合
@@ -49,7 +27,7 @@ export const applyRadarStyles = (series: any, themeConfig: ThemeConfig): any => 
     newItem.lineStyle = {
       ...(newItem.lineStyle || {}),
       color: newItem.lineStyle?.color || radarColor,
-      width: newItem.lineStyle?.width ?? 2,
+      width: newItem.lineStyle?.width ?? themeConfig.size.strokeSeries,
     }
 
     // 区域
@@ -79,7 +57,9 @@ export const applyRadarStyles = (series: any, themeConfig: ThemeConfig): any => 
       lineStyle: {
         ...(newItem.emphasis?.lineStyle || {}),
         color: (newItem.emphasis?.lineStyle || {}).color || radarColor,
-        width: (newItem.emphasis?.lineStyle || {}).width ?? 2.5,
+        width:
+          (newItem.emphasis?.lineStyle || {}).width ??
+          themeConfig.size.strokeSeries + themeConfig.size.strokeHairline,
       },
       itemStyle: {
         ...(newItem.emphasis?.itemStyle || {}),
@@ -109,8 +89,8 @@ export const applyRadarStyles = (series: any, themeConfig: ThemeConfig): any => 
               color: series.radar.axisName?.color || themeConfig.font.textColor,
               fontSize:
                 series.radar.axisName?.fontSize ??
-                themeConfig.font.fontSizeSmall ??
-                themeConfig.font.fontSize,
+                themeConfig.size.fontSm ??
+                themeConfig.size.fontMd,
             },
             axisLine: {
               ...(series.radar.axisLine || {}),
@@ -118,7 +98,7 @@ export const applyRadarStyles = (series: any, themeConfig: ThemeConfig): any => 
                 ...(series.radar.axisLine?.lineStyle || {}),
                 color:
                   series.radar.axisLine?.lineStyle?.color ||
-                  withAlpha(themeConfig.textColor200 || themeConfig.bgColor200, 0.35),
+                  withAlpha(themeConfig.mutedForeground || themeConfig.background, 0.35),
               },
             },
             splitLine: {
@@ -127,7 +107,7 @@ export const applyRadarStyles = (series: any, themeConfig: ThemeConfig): any => 
                 ...(series.radar.splitLine?.lineStyle || {}),
                 color:
                   series.radar.splitLine?.lineStyle?.color ||
-                  withAlpha(themeConfig.textColor200 || themeConfig.bgColor200, 0.25),
+                  withAlpha(themeConfig.mutedForeground || themeConfig.background, 0.25),
               },
             },
             splitArea: {
@@ -135,8 +115,8 @@ export const applyRadarStyles = (series: any, themeConfig: ThemeConfig): any => 
               areaStyle: {
                 ...(series.radar.splitArea?.areaStyle || {}),
                 color: series.radar.splitArea?.areaStyle?.color || [
-                  withAlpha(themeConfig.bgColor300 || themeConfig.bgColor200, 0.06),
-                  withAlpha(themeConfig.bgColor200 || themeConfig.bgColor300, 0.03),
+                  withAlpha(themeConfig.card || themeConfig.background, 0.06),
+                  withAlpha(themeConfig.background || themeConfig.card, 0.03),
                 ],
               },
             },

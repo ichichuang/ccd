@@ -27,7 +27,26 @@
 ## Hard Constraints
 
 - 禁止手写 `<svg>`、外链/base64 图标
-- size 优先 `xs~5xl`（映射 `fs-*`），颜色用语义类/变量（禁止 hex）
+- **尺寸**：优先 `xs~5xl`（映射 `fs-*`，联动 SizeStore）；自定义尺寸仅在必要时使用
+- **颜色**：
+  - 静态颜色：使用语义类（`class="text-primary"`）
+  - 动态/主题变量：使用 `color` prop（`color="rgb(var(--primary))"`）
+  - 禁止 hex 颜色
+
+## Advanced Features（高级功能）
+
+当需求涉及图标动画、翻转、旋转、缩放时：
+
+- **动画**：`animation="spin|pulse|spin-pulse"`
+- **翻转**：`flip="horizontal|vertical|both"`
+- **旋转**：`rotate="90"` 或 `rotate={90}`（单位：deg）
+- **缩放**：`scale={1.5}`（数字值）
+
+**参考：**
+
+- 类型定义：`src/components/Icons/utils/types.ts`
+- 示例页面：`src/views/example/Icons/IconsExample.vue`（访问路径：`/example/icons`）
+- 完整文档：`docs/UNOCSS_AND_ICONS.md` §6
 
 ## Prompt 模板（复制使用）
 

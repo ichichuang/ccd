@@ -142,7 +142,7 @@ const shortcutGroups: ShortcutGroup[] = [
       { name: 'component-border', classes: 'border border-solid border-border' },
       {
         name: 'component-card-base',
-        classes: 'rounded-scale-md bg-card text-card-foreground border border-border shadow-sm',
+        classes: 'rounded-scale-md bg-card text-card-foreground component-border shadow-sm',
       },
       { name: 'component-card-hoverable', classes: 'behavior-hover-transition hover-elevated' },
       { name: 'component-card-layout', classes: 'density-normal' },
@@ -245,7 +245,7 @@ const safeAreaRules = [
       <!-- Header -->
       <div class="flex flex-col gap-xs">
         <div class="flex items-center gap-md">
-          <div class="p-3 bg-primary/10 rounded-scale-lg">
+          <div class="p-padding-md bg-primary/10 rounded-scale-lg">
             <Icons
               name="i-lucide-paintbrush"
               class="text-primary fs-2xl"
@@ -258,7 +258,8 @@ const safeAreaRules = [
               <RouterLink
                 to="/system-configuration/theme"
                 class="text-primary hover:underline"
-                >主题</RouterLink
+              >
+                主题</RouterLink
               >、
               <RouterLink
                 to="/system-configuration/size"
@@ -288,7 +289,7 @@ const safeAreaRules = [
       <!-- Shortcuts 快捷方式 -->
       <Card
         v-if="filteredShortcutGroups.length > 0"
-        class="border border-border"
+        class="component-border"
       >
         <template #title>
           <div class="flex items-center gap-sm">
@@ -350,54 +351,60 @@ const safeAreaRules = [
                     <!-- Density：多子块展示 gap + padding -->
                     <div
                       v-if="getShortcutDemoKind(group.category) === 'density'"
-                      :class="[item.name, 'flex flex-wrap w-full h-full p-1']"
+                      :class="[item.name, 'flex flex-wrap w-full h-full p-padding-xs']"
                     >
                       <span
                         v-for="i in 4"
                         :key="i"
-                        class="w-2 h-2 rounded-sm bg-primary/60 shrink-0"
+                        class="w-[var(--spacing-xs)] h-[var(--spacing-xs)] rounded-sm bg-primary/60 shrink-0"
                       />
                     </div>
                     <!-- Flex 基础：direction/center 等 -->
                     <div
                       v-else-if="getShortcutDemoKind(group.category) === 'flex'"
-                      :class="[item.name, 'w-full h-full p-0.5 gap-0.5']"
+                      :class="[item.name, 'w-full h-full p-padding-xs gap-xs']"
                     >
                       <span
                         v-for="i in 3"
                         :key="i"
-                        class="w-2 h-2 rounded-sm bg-primary/60 shrink-0"
+                        class="w-[var(--spacing-xs)] h-[var(--spacing-xs)] rounded-sm bg-primary/60 shrink-0"
                       />
                     </div>
                     <!-- Flex 主轴对齐：需配合 flex flex-row -->
                     <div
                       v-else-if="getShortcutDemoKind(group.category) === 'flex-justify'"
-                      :class="['flex flex-row w-full h-full p-0.5', item.name]"
+                      :class="['flex flex-row w-full h-full p-padding-xs', item.name]"
                     >
                       <span
                         v-for="i in 3"
                         :key="i"
-                        class="w-2 h-2 rounded-sm bg-primary/60 shrink-0"
+                        class="w-[var(--spacing-xs)] h-[var(--spacing-xs)] rounded-sm bg-primary/60 shrink-0"
                       />
                     </div>
                     <!-- Flex 交叉轴对齐：需配合 flex flex-row，子块不同高以见 align -->
                     <div
                       v-else-if="getShortcutDemoKind(group.category) === 'flex-align'"
-                      :class="['flex flex-row w-full h-full p-0.5 gap-0.5', item.name]"
+                      :class="['flex flex-row w-full h-full p-padding-xs gap-xs', item.name]"
                     >
-                      <span class="w-2 h-1.5 rounded-sm bg-primary/60 shrink-0" />
-                      <span class="w-2 h-3 rounded-sm bg-primary/60 shrink-0" />
-                      <span class="w-2 h-2 rounded-sm bg-primary/60 shrink-0" />
+                      <span
+                        class="w-[var(--spacing-xs)] h-[var(--spacing-xs)] rounded-sm bg-primary/60 shrink-0"
+                      />
+                      <span
+                        class="w-[var(--spacing-xs)] h-[var(--spacing-sm)] rounded-sm bg-primary/60 shrink-0"
+                      />
+                      <span
+                        class="w-[var(--spacing-xs)] h-[var(--spacing-xs)] rounded-sm bg-primary/60 shrink-0"
+                      />
                     </div>
                     <!-- Flex 高频组合 -->
                     <div
                       v-else-if="getShortcutDemoKind(group.category) === 'flex-combo'"
-                      :class="[item.name, 'w-full h-full p-0.5 gap-0.5']"
+                      :class="[item.name, 'w-full h-full p-padding-xs gap-xs']"
                     >
                       <span
                         v-for="i in 3"
                         :key="i"
-                        class="w-2 h-2 rounded-sm bg-primary/60 shrink-0"
+                        class="w-[var(--spacing-xs)] h-[var(--spacing-xs)] rounded-sm bg-primary/60 shrink-0"
                       />
                     </div>
                     <!-- Layout：stack/wrap/grid 需子元素，其余单层 -->
@@ -406,12 +413,12 @@ const safeAreaRules = [
                         v-if="
                           ['layout-stack', 'layout-wrap', 'layout-grid-center'].includes(item.name)
                         "
-                        :class="[item.name, 'w-full h-full p-0.5 gap-0.5']"
+                        :class="[item.name, 'w-full h-full p-padding-xs gap-xs']"
                       >
                         <span
                           v-for="i in 3"
                           :key="i"
-                          class="w-2 h-2 rounded-sm bg-primary/60 shrink-0"
+                          class="w-[var(--spacing-xs)] h-[var(--spacing-xs)] rounded-sm bg-primary/60 shrink-0"
                         />
                       </div>
                       <div
@@ -422,7 +429,7 @@ const safeAreaRules = [
                     <!-- Text：固定宽度 + 示例文案以展示 ellipsis / line-clamp -->
                     <div
                       v-else-if="getShortcutDemoKind(group.category) === 'text'"
-                      class="w-full h-full p-1 flex items-center"
+                      class="w-full h-full p-padding-xs flex items-center"
                     >
                       <p
                         v-if="item.name === 'text-single-line-ellipsis'"
@@ -448,11 +455,11 @@ const safeAreaRules = [
                     <!-- Interaction：可悬停/聚焦的小块 + 说明，效果需悬停/聚焦可见 -->
                     <div
                       v-else-if="getShortcutDemoKind(group.category) === 'interaction'"
-                      class="w-full h-full flex flex-col items-center justify-center gap-0.5 p-1"
+                      class="w-full h-full flex flex-col items-center justify-center gap-xs p-padding-xs"
                     >
                       <div
                         :class="item.name"
-                        class="min-w-8 min-h-6 rounded-scale-sm bg-primary/20 border border-primary/40 flex items-center justify-center cursor-pointer select-none fs-xs text-foreground"
+                        class="min-w-[var(--spacing-lg)] min-h-[var(--spacing-md)] rounded-scale-sm bg-primary/20 border border-primary/40 flex items-center justify-center cursor-pointer select-none fs-xs text-foreground"
                         tabindex="0"
                       >
                         悬停
@@ -462,16 +469,16 @@ const safeAreaRules = [
                     <!-- Component：不覆盖 shortcut 的尺寸/背景，卡片类加占位文案，row-center 加子块 -->
                     <div
                       v-else-if="getShortcutDemoKind(group.category) === 'component'"
-                      class="w-full h-full flex items-center justify-center p-1"
+                      class="w-full h-full flex items-center justify-center p-padding-xs"
                     >
                       <div
                         :class="[
                           item.name,
-                          'min-w-8 min-h-8 rounded-scale-sm',
+                          'min-w-[var(--spacing-lg)] min-h-[var(--spacing-lg)] rounded-scale-sm',
                           ['component-card-content', 'component-card', 'row-center'].includes(
                             item.name
                           )
-                            ? 'min-w-12 min-h-10 flex flex-row items-center justify-center gap-0.5 p-1'
+                            ? 'min-w-[var(--spacing-2xl)] min-h-[var(--spacing-xl)] flex flex-row items-center justify-center gap-xs p-padding-xs'
                             : '',
                         ]"
                       >
@@ -490,7 +497,7 @@ const safeAreaRules = [
                           <span
                             v-for="i in 3"
                             :key="i"
-                            class="w-1.5 h-1.5 rounded-sm bg-primary/60 shrink-0"
+                            class="w-[var(--spacing-xs)] h-[var(--spacing-xs)] rounded-sm bg-primary/60 shrink-0"
                           />
                         </template>
                       </div>
@@ -498,7 +505,7 @@ const safeAreaRules = [
                     <!-- Size & Visual：不覆盖尺寸，swatch 显小圆，select-min 显 min-width，transition 显条 -->
                     <div
                       v-else-if="getShortcutDemoKind(group.category) === 'size'"
-                      class="w-full h-full flex items-center justify-center p-1"
+                      class="w-full h-full flex items-center justify-center p-padding-xs"
                     >
                       <div
                         v-if="item.name === 'size-theme-swatch'"
@@ -511,19 +518,19 @@ const safeAreaRules = [
                       >
                         <div
                           :class="item.name"
-                          class="h-4 rounded-scale-sm bg-primary/30 shrink-0"
+                          class="h-[var(--spacing-md)] rounded-scale-sm bg-primary/30 shrink-0"
                         />
                       </div>
                       <div
                         v-else
                         :class="item.name"
-                        class="w-1/2 h-3 rounded-scale-sm bg-primary/30"
+                        class="w-1/2 h-[var(--spacing-sm)] rounded-scale-sm bg-primary/30"
                       />
                     </div>
                     <!-- Design Defaults：内层有内容以展示 padding/margin/rounded/font-size -->
                     <div
                       v-else-if="getShortcutDemoKind(group.category) === 'design-defaults'"
-                      class="w-full h-full flex items-center justify-center p-0.5"
+                      class="w-full h-full flex items-center justify-center p-padding-xs"
                     >
                       <div
                         v-if="item.name === 'default-gap'"
@@ -533,7 +540,7 @@ const safeAreaRules = [
                         <span
                           v-for="i in 2"
                           :key="i"
-                          class="w-2 h-2 rounded-sm bg-primary/50 shrink-0"
+                          class="w-[var(--spacing-xs)] h-[var(--spacing-xs)] rounded-sm bg-primary/50 shrink-0"
                         />
                       </div>
                       <span
@@ -564,7 +571,7 @@ const safeAreaRules = [
       </Card>
 
       <!-- 断点系统 -->
-      <Card class="border border-border">
+      <Card class="component-border">
         <template #title>
           <div class="flex items-center gap-sm">
             <Icons
@@ -581,8 +588,9 @@ const safeAreaRules = [
         <template #content>
           <div class="flex flex-col gap-md">
             <p class="text-muted-foreground fs-sm">
-              使用方式: <code class="bg-muted px-1 rounded">{breakpoint}:类名</code> · SSOT:
-              <code class="bg-muted px-1 rounded">src/constants/breakpoints.ts</code>
+              使用方式: <code class="bg-muted px-padding-xs rounded">{breakpoint}:类名</code> ·
+              SSOT:
+              <code class="bg-muted px-padding-xs rounded">src/constants/breakpoints.ts</code>
             </p>
             <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-md">
               <div
@@ -601,7 +609,7 @@ const safeAreaRules = [
       </Card>
 
       <!-- 安全区规则 -->
-      <Card class="border border-border">
+      <Card class="component-border">
         <template #title>
           <div class="flex items-center gap-sm">
             <Icons
@@ -615,7 +623,7 @@ const safeAreaRules = [
           <div class="flex flex-col gap-md">
             <p class="text-muted-foreground fs-sm">
               移动端安全区适配 · 自动使用
-              <code class="bg-muted px-1 rounded">env(safe-area-inset-*)</code>
+              <code class="bg-muted px-padding-xs rounded">env(safe-area-inset-*)</code>
             </p>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-md">
               <div
@@ -639,7 +647,7 @@ const safeAreaRules = [
       </Card>
 
       <!-- Quick Reference（仅 Uno 特性） -->
-      <Card class="border border-border bg-gradient-to-br from-primary/5 to-accent/5">
+      <Card class="component-border bg-gradient-to-br from-primary/5 to-accent/5">
         <template #title>
           <div class="flex items-center gap-sm">
             <Icons
@@ -670,8 +678,11 @@ const safeAreaRules = [
             <div class="flex flex-col gap-sm">
               <h4 class="font-semibold text-foreground">断点前缀 (Breakpoints)</h4>
               <p class="fs-xs text-muted-foreground">
-                用法 <code class="bg-muted px-1 rounded fs-xs">{breakpoint}:类名</code> · SSOT:
-                <code class="bg-muted px-1 rounded fs-xs">src/constants/breakpoints.ts</code>
+                用法 <code class="bg-muted px-padding-xs rounded fs-xs">{breakpoint}:类名</code> ·
+                SSOT:
+                <code class="bg-muted px-padding-xs rounded fs-xs"
+                  >src/constants/breakpoints.ts</code
+                >
               </p>
               <RouterLink
                 to="/system-configuration/breakpoints"
@@ -697,10 +708,11 @@ const safeAreaRules = [
             <div class="flex flex-col gap-sm">
               <h4 class="font-semibold text-foreground">规则 (Rules)</h4>
               <p class="fs-xs text-muted-foreground">
-                <code class="bg-muted px-1 rounded">main-*</code> /
-                <code class="bg-muted px-1 rounded">cross-*</code> 须与
-                <code class="bg-muted px-1 rounded">row</code> 或
-                <code class="bg-muted px-1 rounded">column</code> 同用，否则主轴/交叉轴语义不明。
+                <code class="bg-muted px-padding-xs rounded">main-*</code> /
+                <code class="bg-muted px-padding-xs rounded">cross-*</code> 须与
+                <code class="bg-muted px-padding-xs rounded">row</code> 或
+                <code class="bg-muted px-padding-xs rounded">column</code>
+                同用，否则主轴/交叉轴语义不明。
               </p>
             </div>
           </div>

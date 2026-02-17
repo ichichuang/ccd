@@ -1,5 +1,4 @@
-// 字体样式应用函数
-
+// ECharts 字体样式边界：目标对象与 ECharts 文本/轴标签等一致，内部使用 any 避免强依赖 echarts 内部类型。
 import type { FontConfig } from './types'
 
 /**

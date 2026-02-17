@@ -305,7 +305,7 @@ export default defineComponent({
                     {!tab.fixed && tab.deletable && (
                       <div
                         class={[
-                          'size-1-1 h-[66%] rounded-scale-md center transition-opacity duration-scale-md hover:bg-destructive-light/50',
+                          'size-1-1 h-[66%] rounded-scale-md center transition-opacity duration-scale-md hover:bg-danger-light/50',
                           active ? 'opacity-100' : 'opacity-0 group-hover:opacity-100',
                         ]}
                         onClick={e => onCloseTab(e, tab)}
@@ -333,7 +333,7 @@ export default defineComponent({
           >
             {contextMenu.value.visible && (
               <div
-                class="fixed z-50 min-w-[var(--spacing-3xl)] bg-popover/95 backdrop-blur-sm border border-border shadow-lg rounded-scale-md p-padding-xs py-padding-sm flex flex-col gap-xs origin-top-left"
+                class="fixed z-50 min-w-[var(--spacing-3xl)] bg-popover/95 backdrop-blur-sm component-border shadow-lg rounded-scale-md p-padding-xs py-padding-sm flex flex-col gap-xs origin-top-left"
                 style={{ top: `${contextMenu.value.y}px`, left: `${contextMenu.value.x}px` }}
               >
                 {[

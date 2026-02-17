@@ -7,7 +7,17 @@ globs: src/hooks/**/*.ts
 1. **Structure:** Follow the pattern in `docs/GOLDEN_SAMPLES/useFeatureLogic.ts`.
 2. **Requests:** Use `alovaInstance` (from `@/utils/http/instance`) or the `useHttpRequest` hook. Build method with `buildMethod: (client) => client.Get(...)` style; never use `fetch` or `axios` directly.
 3. **Return:** Always return reactive refs and explicit methods (e.g. `loading`, `data`, `error`, `send`).
-4. **Types:** Define interfaces in `src/types/` or in the same file; never use `any`.
+4. **Types:** Define interfaces in `src/types/` or in the same file; never use `any`. All variables MUST have explicit type annotations.
+   - ❌ `const data = await request()` (no type annotation)
+   - ✅ `const data: ApiResponse<UserDTO> = await request()`
+   - ❌ `const items = []` (inferred as never[])
+   - ✅ `const items: UserDTO[] = []`
+   - ❌ `const loading = ref(false)` (inferred)
+   - ✅ `const loading = ref<boolean>(false)`
+   - ❌ `const data = ref(null)` (inferred as Ref<null>)
+   - ✅ `const data = ref<UserDTO | null>(null)`
+   - ❌ `const result = computed(() => value.value)` (inferred)
+   - ✅ `const result = computed<ProcessedResult>(() => processValue(value.value))`
 5. Before generating, read `docs/GOLDEN_SAMPLES/useFeatureLogic.ts` and mimic its structure and comments.
 
 ## API Layer First (新增接口先落 src/api)

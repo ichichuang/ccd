@@ -255,7 +255,7 @@ export default defineComponent({
         scope="global"
         v-slots={{
           menu: ({ close, event }: { close: () => void; event: MouseEvent }) => (
-            <div class="min-w-[var(--spacing-4xl)] bg-card border border-border/50 shadow-xl rounded-scale-md p-padding-xs flex flex-col gap-xs select-none">
+            <div class="min-w-[var(--spacing-4xl)] bg-card border border-solid border-border/50 shadow-xl rounded-scale-md p-padding-xs flex flex-col gap-xs select-none">
               {/* 重新载入 */}
               <div
                 class="flex items-center gap-sm px-padding-sm py-padding-xs rounded-scale-md fs-sm text-popover-foreground hover:bg-accent hover:text-accent-foreground cursor-pointer transition-colors duration-scale-md"

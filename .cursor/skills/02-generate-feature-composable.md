@@ -53,6 +53,12 @@
 - [ ] 返回至少包含 `loading/data/error/send`
 - [ ] 无 fetch/axios
 - [ ] 无 any
+- [ ] 所有变量都有显式类型注解（包括 ref/computed/reactive）
+  - [ ] `const loading = ref<boolean>(false)` 而非 `const loading = ref(false)`
+  - [ ] `const data = ref<DataType | null>(null)` 而非 `const data = ref(null)`
+  - [ ] `const result = computed<ResultType>(() => ...)` 而非 `const result = computed(() => ...)`
+  - [ ] `const items: Item[] = []` 而非 `const items = []`
+  - [ ] 函数参数和返回值都有显式类型：`function process(data: ProcessData): ProcessResult`
 
 ## Prompt 模板（复制使用）
 

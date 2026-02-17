@@ -27,7 +27,7 @@ function copyToClipboard(text: string, label?: string) {
       window.$message?.success(`已复制: ${label || text}`)
     })
     .catch(() => {
-      window.$message?.error('复制失败')
+      window.$message?.danger('复制失败')
     })
 }
 
@@ -111,7 +111,7 @@ const breakpointItems = computed(() =>
       <!-- Header -->
       <div class="flex flex-col gap-xs">
         <div class="flex items-center gap-md">
-          <div class="p-3 bg-primary/10 rounded-scale-lg">
+          <div class="p-padding-md bg-primary/10 rounded-scale-lg">
             <Icons
               name="i-lucide-monitor"
               class="text-primary fs-2xl"
@@ -127,7 +127,7 @@ const breakpointItems = computed(() =>
       </div>
 
       <!-- Control Panel -->
-      <Card class="border border-border">
+      <Card class="component-border">
         <template #title>
           <div class="flex items-center gap-sm">
             <Icons
@@ -180,7 +180,7 @@ const breakpointItems = computed(() =>
       </Card>
 
       <!-- Visual Ruler -->
-      <Card class="border border-border">
+      <Card class="component-border">
         <template #title>
           <div class="flex items-center gap-sm">
             <Icons
@@ -192,17 +192,17 @@ const breakpointItems = computed(() =>
         </template>
         <template #content>
           <div
-            class="relative h-20 w-full overflow-hidden rounded-scale-md border border-border bg-muted/30"
+            class="relative h-20 w-full overflow-hidden rounded-scale-md component-border bg-muted/30"
             role="img"
             aria-label="Breakpoint ruler"
           >
             <!-- Current Width Indicator -->
             <div
-              class="absolute top-0 h-full w-0.5 bg-primary z-10 transition-all duration-scale-md"
+              class="absolute top-0 h-full w-px bg-primary z-10 transition-all duration-scale-md"
               :style="{ left: `${(currentWidth / RULER_MAX) * 100}%` }"
             >
               <div
-                class="absolute -top-1 left-1/2 -translate-x-1/2 w-3 h-3 bg-primary rounded-full border-2 border-background"
+                class="absolute -top-[var(--spacing-xs)] left-1/2 -translate-x-1/2 w-[var(--spacing-sm)] h-[var(--spacing-sm)] bg-primary rounded-full border-2 border-solid border-background"
               />
             </div>
 
@@ -214,11 +214,11 @@ const breakpointItems = computed(() =>
               :style="{ left: `${breakpointPercent(value)}%` }"
             >
               <div
-                class="h-10 w-px shrink-0 transition-colors"
+                class="h-[var(--spacing-xl)] w-px shrink-0 transition-colors"
                 :class="isBreakpointActive(value) ? 'bg-primary' : 'bg-border'"
               />
               <span
-                class="mt-1 shrink-0 rounded px-1 fs-xs font-medium cursor-pointer hover:scale-110 transition-transform"
+                class="mt-margin-xs shrink-0 rounded px-padding-xs fs-xs font-medium cursor-pointer hover:scale-110 transition-transform"
                 :class="
                   isBreakpointActive(value)
                     ? 'bg-primary text-primary-foreground'
@@ -234,7 +234,7 @@ const breakpointItems = computed(() =>
       </Card>
 
       <!-- Breakpoint Reference Table -->
-      <Card class="border border-border">
+      <Card class="component-border">
         <template #title>
           <div class="flex items-center gap-sm">
             <Icons
@@ -252,7 +252,7 @@ const breakpointItems = computed(() =>
           <CScrollbar class="w-full min-w-0">
             <table class="w-full border-collapse">
               <thead>
-                <tr class="border-b border-border">
+                <tr class="border-b-default">
                   <th class="text-left p-padding-sm text-muted-foreground fs-sm font-medium">
                     Scale
                   </th>
@@ -274,7 +274,7 @@ const breakpointItems = computed(() =>
                 <tr
                   v-for="item in breakpointItems"
                   :key="item.key"
-                  class="border-b border-border/50 hover:bg-muted/30 transition-colors"
+                  class="border-b border-solid border-border/50 hover:bg-muted/30 transition-colors"
                   :class="{ 'bg-primary/5': isBreakpointActive(item.value) }"
                 >
                   <td class="p-padding-sm">
@@ -307,7 +307,7 @@ const breakpointItems = computed(() =>
                   <td class="p-padding-sm text-muted-foreground fs-sm">{{ item.description }}</td>
                   <td class="p-padding-sm">
                     <div
-                      class="w-3 h-3 rounded-full"
+                      class="w-[var(--spacing-sm)] h-[var(--spacing-sm)] rounded-full"
                       :class="isBreakpointActive(item.value) ? 'bg-success' : 'bg-muted'"
                     />
                   </td>
@@ -319,7 +319,7 @@ const breakpointItems = computed(() =>
       </Card>
 
       <!-- Grid Demo -->
-      <Card class="border border-border">
+      <Card class="component-border">
         <template #title>
           <div class="flex items-center gap-sm">
             <Icons
@@ -344,11 +344,11 @@ const breakpointItems = computed(() =>
             <!-- Simulated Viewport -->
             <CScrollbar class="flex justify-center pb-gap-md min-w-0">
               <div
-                class="flex shrink-0 flex-col rounded-scale-lg border-2 border-border bg-card shadow-lg transition-all duration-scale-md"
+                class="flex shrink-0 flex-col rounded-scale-lg border-2 border-solid border-border bg-card shadow-lg transition-all duration-scale-md"
                 :style="{ width: '100%' }"
               >
                 <div
-                  class="border-b border-border px-padding-md py-padding-sm text-center fs-sm text-muted-foreground flex items-center justify-center gap-sm"
+                  class="border-b-default px-padding-md py-padding-sm text-center fs-sm text-muted-foreground flex items-center justify-center gap-sm"
                 >
                   <Icons
                     name="i-lucide-monitor"
@@ -363,7 +363,7 @@ const breakpointItems = computed(() =>
                   <div
                     v-for="n in 12"
                     :key="n"
-                    class="flex aspect-video items-center justify-center rounded-scale-md border border-border bg-muted/50 font-mono fs-lg font-medium text-foreground hover:bg-primary/10 hover:border-primary/50 transition-colors"
+                    class="flex aspect-video items-center justify-center rounded-scale-md component-border bg-muted/50 font-mono fs-lg font-medium text-foreground hover:bg-primary/10 hover:border-primary/50 transition-colors"
                   >
                     {{ n }}
                   </div>
@@ -375,7 +375,7 @@ const breakpointItems = computed(() =>
       </Card>
 
       <!-- Usage Examples -->
-      <Card class="border border-border">
+      <Card class="component-border">
         <template #title>
           <div class="flex items-center gap-sm">
             <Icons
@@ -460,7 +460,7 @@ const breakpointItems = computed(() =>
       </Card>
 
       <!-- Quick Reference -->
-      <Card class="border border-border bg-gradient-to-br from-primary/5 to-accent/5">
+      <Card class="component-border bg-gradient-to-br from-primary/5 to-accent/5">
         <template #title>
           <div class="flex items-center gap-sm">
             <Icons
@@ -475,7 +475,7 @@ const breakpointItems = computed(() =>
             <div
               v-for="[key, value] in breakpointEntries"
               :key="key"
-              class="flex flex-col gap-xs p-padding-md bg-card rounded-scale-md border border-border cursor-pointer hover:border-primary/50 hover:shadow-md transition-all"
+              class="flex flex-col gap-xs p-padding-md bg-card rounded-scale-md component-border cursor-pointer hover:border-primary/50 hover:shadow-md transition-all"
               @click="copyToClipboard(`${key}:`)"
             >
               <div class="flex items-center justify-between">
@@ -489,8 +489,10 @@ const breakpointItems = computed(() =>
             </div>
           </div>
           <p class="mt-gap-md text-muted-foreground fs-sm">
-            断点前缀遵循 Mobile-First 设计原则：<code class="bg-muted px-1 rounded">md:</code> 表示
-            ≥768px 时应用样式
+            断点前缀遵循 Mobile-First 设计原则：<code class="bg-muted px-padding-xs rounded"
+              >md:</code
+            >
+            表示 ≥768px 时应用样式
           </p>
         </template>
       </Card>

@@ -1,6 +1,6 @@
 # Project Protocol: Enterprise Vue 3 Architecture
 
-> 本文档是 Cursor 与 Antigravity 的**单一真理来源**。生成代码前必须阅读并严格遵循。
+> **目标读者：AI**。本文档是 Cursor 与 Antigravity 的**单一真理来源（SSOT）**。AI 在代码生成前必须阅读并严格遵循。
 
 ## 0. 进一步阅读（底层系统 SSOT 索引）
 
@@ -11,8 +11,11 @@
 - `docs/PROJECT_PROTOCOL.md` §11 + `.cursor/rules/22-layouts.mdc`：Layouts 系统（LayoutMode、AdminLayoutMode、布局壳扩展）
 - `docs/ADAPTIVE_LAYOUT.md`：布局适配系统（PC/Tablet/Mobile、断点、有效显隐、userAdjusted）
 - `docs/PROJECT_PROTOCOL.md` §5.1 + `.cursor/rules/24-tsx-rendering.mdc`：TSX 渲染规范（程序化渲染用 TSX，禁止 h()）
-- `docs/DIALOG_COMPONENT.md`：prime-dialog 二次封装（useDialog、便捷方法、高级用法）
+- `docs/DIALOG_COMPONENT.md`：PrimeDialog 二次封装（useDialog、便捷方法、高级用法）
+- `docs/DataTable_COMPONENT.md`：DataTable 表格封装（列配置、API、分页/无限滚动、选择、导出、列持久化）
+- `docs/SCHEMA_FORM_COMPONENT.md`：SchemaForm 表单组件（Schema 驱动、useSchemaForm、动态字段、分步/分组）
 - `docs/TOAST_AND_MESSAGE.md`：全局 Toast / Message（window.$toast、window.$message，非组件环境轻量通知）
+- `docs/TOAST_UI_OVERRIDES.md`：Toast 样式覆盖说明（居中 Message、关闭按钮位置、内边距）
 - `docs/AUTH_AND_LOGIN_FLOW.md`：登录与鉴权流程（登录/登出、路由守卫、401、动态路由、存储清理）
 
 ## 1. 技术栈核心 (Tech Stack)
@@ -37,16 +40,17 @@
 
 - **强制规则（Must）：**
   - 表单字段（输入/选择/日期/开关）：
-    - 优先使用 PrimeVue 组件：`<InputText>` / `<Password>` / `<InputNumber>` / `<Checkbox>` / `<RadioButton>` / `<Dropdown>` / `<MultiSelect>` / `<Calendar>` / `<InputSwitch>` 等。
+    - **多字段、需校验/分步/分组/动态 schema**：MUST 使用 SchemaForm + useSchemaForm（见 `docs/SCHEMA_FORM_COMPONENT.md`）。
+    - 简单 1–2 个字段：直接使用 PrimeVue 组件：`<InputText>` / `<Password>` / `<InputNumber>` / `<Checkbox>` / `<RadioButton>` / `<Dropdown>` / `<MultiSelect>` / `<Calendar>` / `<ToggleSwitch>` 等。
   - 操作按钮：
     - 使用 `<Button>` 作为主要/次要操作按钮，而不是手写 `<button>` 样式。
   - 列表/表格：
-    - 交互性数据列表优先使用 `<DataTable>`（或未来封装好的表格组件），避免从零写 `<table>`/`<tr>`/`<td>` 来实现复杂表格逻辑。
+    - 交互性数据列表优先使用 **DataTable**（`@/components/DataTable`），详见 `docs/DataTable_COMPONENT.md`；避免从零写 `<table>` 或裸用 PrimeVue DataTable 实现分页/排序/筛选/导出等复杂逻辑。
   - 弹窗/抽屉：
     - 自定义弹窗、反馈提示、确认对话框优先使用 `useDialog()`（见 `docs/DIALOG_COMPONENT.md`）。侧边抽屉使用 `<Sidebar>`。禁止用 `position: fixed` 的 div 临时拼装。
   - 消息/确认：
     - **组件内**轻量通知：可使用 PrimeVue `useToast()`。
-    - **非组件环境**（如 HTTP 拦截器、全局错误处理）：使用 `window.$toast` / `window.$message`（见 `docs/TOAST_AND_MESSAGE.md`）。禁止在业务中自建全局通知系统。
+    - **非组件环境**（如 HTTP 拦截器、全局错误处理）：使用 `window.$toast` / `window.$message`（见 `docs/TOAST_AND_MESSAGE.md`、`docs/TOAST_UI_OVERRIDES.md`）。禁止在业务中自建全局通知系统。
 
 - **样式与扩展：**
   - PrimeVue 的外观定制必须通过：
@@ -67,11 +71,14 @@
     - `src/utils/lodashes.ts`：对 lodash-es 的通用函数包装
     - `src/utils/safeStorage/**`：加密、压缩、Pinia 序列化等存储适配层
     - `src/utils/date.ts`：对 dayjs / date-holidays 等第三方日期库的深度适配
+    - `src/components/UseEcharts/**`：ECharts 组件与事件/option 类型边界（与 ECharts API 对齐）
+    - `src/hooks/modules/useChartTheme/**`：图表主题与 ECharts option 主题化边界（配置结构复杂、多版本兼容）
   - **规则**：
     - 上述白名单文件之外新增 `any` 一律视为违例，需通过重构/提炼类型消除；
     - 即便在白名单文件中使用 `any`，也必须：
       - 将 `any` 限制在最小作用域（例如内部实现细节，而不是公共导出类型）；
       - 用简短注释解释原因 & 期望的理想类型形状（方便未来进一步收紧类型）。
+    - 上述图表边界层（UseEcharts / useChartTheme）内，any 仅允许在最小作用域使用，且需注释说明与 ECharts API/option 的对应关系；对外暴露的 Props、Emit、Expose、类型定义应尽量使用具体类型或 `unknown`。
 - **状态管理**
   - 使用 Pinia（state/getters/actions + persist）。避免深层 Props Drilling
 - **请求层**
@@ -90,6 +97,21 @@
 | `src/types/`          | 全局/模块类型（含 `systems/*.d.ts`）                  |
 | `src/utils/http/`     | HTTP 唯一入口（Alova instance + 封装）                |
 | `src/views/`          | 页面容器，仅组合 hooks + components                   |
+
+### 3.1 状态层 Stores 索引（AI 查找用）
+
+| Store                | 路径                               | 职责                                   |
+| -------------------- | ---------------------------------- | -------------------------------------- |
+| `useThemeStore`      | `src/stores/modules/theme.ts`      | 主题模式、预设、过渡、CSS 变量         |
+| `useSizeStore`       | `src/stores/modules/size.ts`       | 尺寸预设、根字号、布局变量             |
+| `useDeviceStore`     | `src/stores/modules/device.ts`     | 设备类型、断点、视口、方向             |
+| `useLayoutStore`     | `src/stores/modules/layout.ts`     | 布局 mode、侧栏收展、显隐、适配方法    |
+| `useLocaleStore`     | `src/stores/modules/locale.ts`     | 当前语言                               |
+| `useUserStore`       | `src/stores/modules/user.ts`       | 用户信息、token、login/logout          |
+| `usePermissionStore` | `src/stores/modules/permission.ts` | 静态/动态路由、tabs、windows           |
+| `useDataTableStore`  | `src/stores/modules/dataTable.ts`  | DataTable 列持久化（顺序/列宽/隐藏列） |
+
+> 需要全局状态时，优先查上表复用；新增 store 前确认无重叠职责。
 
 ## 4. 文件命名 (Naming)
 
@@ -140,7 +162,7 @@ const renderSlot = () => <span class="text-muted-foreground">动态内容</span>
 
 **规则：**
 
-- 颜色必须使用语义变量（如 `text-primary`、`bg-surface-ground`、`border-border`、`text-info`、`bg-info`），禁止硬编码 hex（如 `#fff`、`#000`）
+- 颜色必须使用语义变量（如 `text-primary`、`bg-surface-ground`、`border-border`、`text-info`、`bg-info`），禁止硬编码 hex（如 `#fff`、`#000`）。边框若需可见须用快捷类：`component-border`、`border-b-default`、`border-t-default`，禁止仅写 `border border-border`（未设 border-style 不显示）
 - 支持暗黑模式，使用 `dark:` 变体或 CSS 变量自动切换
 - 所有颜色值必须来自 `uno.config.ts` 中定义的语义类或 CSS 变量
 
@@ -204,11 +226,13 @@ const renderSlot = () => <span class="text-muted-foreground">动态内容</span>
 - **字体阶梯类：** `fs-xs`、`fs-sm`、`fs-md`、`fs-lg`、`fs-xl`、`fs-2xl`、`fs-3xl`、`fs-4xl`、`fs-5xl`
 - **圆角类：** `rounded-scale`（使用 CSS 变量 `--radius-md`）
 - **配色类：** `text-primary`、`bg-surface-ground`、`border-border`、`text-info`、`bg-info` 等（使用 CSS 变量）
+- **边框快捷类：** 四边 `component-border`，底边 `border-b-default`，顶边 `border-t-default`；禁止仅写 `border border-border`
 
 **规则：**
 
 - 必须使用 `uno.config.ts` 中定义的语义类，禁止硬编码任何 px、rem、颜色值
 - 禁止在 template 中写内联样式（`style="padding: 16px"`），必须使用 UnoCSS 类名
+- 禁止在 template 中使用 TypeScript 语法（如 `:prop="value as any"`、`:prop="value as MyType"`、`:prop="value: Type"`）；必须在 `<script setup>` 中定义好类型，模板中直接使用变量
 - 若 `uno.config.ts` 中没有对应的类名，优先扩展 `uno.config.ts` 而非写 `<style>`
 
 ### 6.5 Style 标签使用规范
@@ -274,6 +298,7 @@ const renderSlot = () => <span class="text-muted-foreground">动态内容</span>
 - `useFeatureLogic.ts` — Composables 与 Alova 请求封装
 - `StoreExample.ts` — Pinia Store 写法
 - `UIComponent.vue` — Script Setup + UnoCSS + PrimeVue 组件写法
+- `ApiModuleExample.ts` — API 模块定义（DTO 类型、Method builder、便捷函数）
 
 生成后自审：
 
@@ -393,6 +418,8 @@ const renderSlot = () => <span class="text-muted-foreground">动态内容</span>
 - **Alova 实例**：`alovaInstance`（`src/utils/http/instance.ts`）
 - **通用请求方法（必要时）**：`get/post/put/del/patch/head/uploadFile/uploadFiles/downloadFile`（`src/utils/http/methods.ts`）
 - **错误与守卫**：`HttpRequestError`、`isHttpRequestError`（`src/utils/http/errors.ts`）
+- **ConnectionManager**（`src/utils/http/connection.ts`）：网络状态监听、自动重连、健康检查；需网络状态/离线提示时使用
+- **UploadManager**（`src/utils/http/uploadManager.ts`）：大文件分片上传、断点续传、暂停/恢复；需大文件上传或精细控制时使用
 
 #### 8.4.7 安全存储（`src/utils/safeStorage/*`）
 
@@ -435,7 +462,7 @@ const renderSlot = () => <span class="text-muted-foreground">动态内容</span>
 
 **1. 强制查找顺序**
 
-- **领域 Hooks**（任务涉及 schema-form 时）：`src/components/schema-form/hooks/` — useFormSync、useFormActions、useFormMemory、useLayout、useValidation、usePersistence、useSteps、useSubmit、useLifecycle 等
+- **领域 Hooks**（任务涉及 SchemaForm 时）：`src/components/SchemaForm/hooks/` — useFormSync、useFormActions、useFormMemory、useLayout、useValidation、usePersistence、useSteps、useSubmit、useLifecycle 等
 - **全局工具**：`src/utils/` — lodashes、date、strings、ids、browser、safeStorage、http/\*、mitt、deviceSync 等
 
 在实现前用 grep/codebase_search 按函数名或语义搜索，确认是否已存在。
@@ -448,7 +475,7 @@ const renderSlot = () => <span class="text-muted-foreground">动态内容</span>
 
 在行内实现或新建文件前：
 
-- **分析**是否适合全局复用：多处复用 / 纯函数无耦合 → 倾向全局；仅 schema-form 使用 → 倾向 `src/components/schema-form/hooks/` 或 `utils/`；单处使用且强耦合 → 可保留局部
+- **分析**是否适合全局复用：多处复用 / 纯函数无耦合 → 倾向全局；仅 SchemaForm 使用 → 倾向 `src/components/SchemaForm/hooks/` 或 `utils/`；单处使用且强耦合 → 可保留局部
 - **向用户输出**：方法用途、是否适合全局（是/否 + 理由）、建议放置位置
 - **明确询问**："是否放入 utils/hooks 目录，还是保留在使用处？"
 - **等待用户决策**后再落位
@@ -461,11 +488,13 @@ const renderSlot = () => <span class="text-muted-foreground">动态内容</span>
 
 当前已封装组件（遇到对应需求必须优先使用）：
 
-- **滚动容器**：`src/components/CScrollbar`
+- **滚动容器**：`src/components/CScrollbar`（模板中使用 `<CScrollbar>`）
   - 用于替代原生 `overflow-auto` 容器，自动接入主题与尺寸系统（CSS 变量 `--muted/--primary/--radius-md`）
+- **动画包装**：`src/components/AnimateWrapper`
+  - 进场/离场动画（基于 animate.css），适用布局切换、动态列表项、动态表单字段等
 - **图标**：`src/components/Icons`
   - 统一图标入口（UnoCSS preset-icons），支持 iconify 集合与本地自定义 SVG
-- **图表**：`src/components/use-echarts/UseEcharts.vue`
+- **图表**：`src/components/UseEcharts/UseEcharts.vue`
   - 基于 `vue-echarts` 的二次封装，已接入主题与尺寸（内部使用 `useChartTheme`）
 
 ### 8.5.2 自动引入（强制遵循现有工程化）
@@ -503,21 +532,42 @@ const renderSlot = () => <span class="text-muted-foreground">动态内容</span>
 
 #### (C) size / color / 动画
 
-- `size`：优先使用阶梯 `xs~5xl`（映射 `fs-*`，对齐尺寸系统）；仅在必要时才传数字/带单位字符串
-- `color`：优先用语义类/变量（如 `text-primary`、`text-foreground`），禁止硬编码 hex
-- 动画：`animation="spin|pulse|spin-pulse"`；翻转：`flip="horizontal|vertical|both"`；旋转/缩放：`rotate/scale`
+- `size`：
+  - **标准阶梯（推荐）**：`xs~5xl`（映射 `fs-*`，联动 SizeStore，响应式适配更好）
+  - **自定义尺寸（特殊场景）**：
+    - 数字：`size={24}` → `24px`
+    - 字符串：`size="2rem"` / `size="50%"` → 支持任意 CSS 单位
+  - **何时使用自定义尺寸**：仅在标准阶梯无法满足设计需求时使用
+- `color`：
+  - **语义类（推荐，静态颜色）**：通过 `class="text-primary"` 等 UnoCSS 类
+  - **color prop（动态/主题变量）**：`color="rgb(var(--primary))"`（注意使用 `rgb()` 格式）
+  - 禁止硬编码 hex
+- **动画与变换**：
+  - 动画：`animation="spin|pulse|spin-pulse"`
+  - 翻转：`flip="horizontal|vertical|both"`
+  - 旋转：`rotate="90"` 或 `rotate={90}`（单位：deg）
+  - 缩放：`scale={1.5}`（数字值）
+  - 详见 `docs/UNOCSS_AND_ICONS.md` §6.4
 
 ### 8.5.4 新增图标/组件的落点（强制）
 
 - 新增自定义 SVG 图标：放 `src/assets/icons/`（按业务域分子目录允许，但必须保持命名语义清晰）
-- 新增通用组件：放 `src/components/`（保持目录尽可能扁平化）
+- 新增通用组件：放 `src/components/`（保持目录尽可能扁平化）；目录名使用 PascalCase（如 SchemaForm、PrimeDialog、DataTable、UseEcharts）
 - 新增配套逻辑/Hook：放 `src/hooks/modules/`（命名 `useXxx.ts`），并遵循“工具优先复用”规则
+
+### 8.5.5 右键菜单（ContextMenuProvider）
+
+- **组件**：`src/layouts/components/ContextMenuProvider.vue`
+- **职责**：拦截 contextmenu 事件，渲染自定义右键菜单
+- **作用域**：`scope` 为 `local`（仅对 Provider 包裹区域生效）或 `global`（整站生效，建议挂载在 layouts/index.vue 等常驻节点）
+- **插槽**：`menu` 自定义菜单内容（slot context 含 x、y、event、target、close）
+- **说明**：布局层已挂载，业务通过 slot 或作用域使用；详见组件内注释
 
 ## 9. API Layer Policy（新增接口必须先落到 src/api，且目录扁平化）
 
 `src/api/` 目录已预置，详见 `src/api/README.md`。新增接口必须落在此处。
 
-> 核心规则：当需求涉及“新增接口/对接后端/新增请求”时，**必须先在 `src/api/<module>/` 落地类型与服务层**，随后才允许在 hooks/页面中使用。  
+> 核心规则：当需求涉及“新增接口/对接后端/新增请求”时，**必须先在 `src/api/<module>/` 落地类型与服务层**，随后才允许在 hooks/页面中使用。
 > 目的：接口“单一真理来源”，避免 URL/参数/响应解析散落在页面与组件中。
 
 ### 9.1 目录与职责（强制｜扁平化两级）
@@ -569,7 +619,7 @@ const renderSlot = () => <span class="text-muted-foreground">动态内容</span>
 
 ## 10. 路由系统 (Router System)
 
-> 目标：统一路由定义方式，集中路由工具与守卫逻辑，避免在业务代码中散落 `router.addRoute` / 权限判断 / 菜单生成等零碎实现。  
+> 目标：统一路由定义方式，集中路由工具与守卫逻辑，避免在业务代码中散落 `router.addRoute` / 权限判断 / 菜单生成等零碎实现。
 > 当任务涉及“新增/修改路由、菜单、面包屑、守卫、动态路由”等时，必须先阅读本节并遵循。
 
 ### 10.1 核心类型与文件 (SSOT)

@@ -1,13 +1,13 @@
-// @/hooks/components/useSchemaForm.ts
+// @/hooks/modules/useSchemaForm.ts
 /**
- * useSchemaForm.ts (重构后 - P2 架构)
+ * useSchemaForm (重构后 - P2 架构)
  * - Hook 成为 schema 和 formValues 的所有者
  * - 不再依赖 formRef，彻底解耦
  * - 所有方法直接操作内部状态
  */
 
-import { getEmptyValues, getResetValues } from '@/components/schema-form/utils/emptyValues'
-import type { FormValues, Schema, SchemaColumnsItem } from '@/components/schema-form/utils/types'
+import { getEmptyValues, getResetValues } from '@/components/SchemaForm/utils/emptyValues'
+import type { FormValues, Schema, SchemaColumnsItem } from '@/components/SchemaForm/utils/types'
 import { deepClone } from '@/utils/lodashes'
 import { ref, type Ref } from 'vue'
 
@@ -191,6 +191,11 @@ export const useSchemaForm = ({
       const field = getField(fieldName)
       if (field) {
         Object.assign(field, updates)
+        // 触发 schema 引用变更，确保依赖 schema 的视图（如 SchemaForm）重新渲染
+        schema.value = {
+          ...schema.value,
+          columns: [...(schema.value.columns as SchemaColumnsItem[])],
+        }
         return true
       }
       return false

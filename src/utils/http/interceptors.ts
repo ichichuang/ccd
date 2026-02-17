@@ -314,10 +314,10 @@ export const responseHandler = async (response: Response, method: Method) => {
 
       // 显示网络错误提示
       try {
-        if (window.$message?.error) {
-          window.$message.error(_networkErrorMessage, statusMessage)
-        } else if (window.$toast?.errorIn) {
-          window.$toast.errorIn('top-left', statusMessage, _networkErrorMessage)
+        if (window.$message?.danger) {
+          window.$message.danger(_networkErrorMessage, statusMessage)
+        } else if (window.$toast?.dangerIn) {
+          window.$toast.dangerIn('top-left', statusMessage, _networkErrorMessage)
         }
       } catch (toastError) {
         console.error('❌ 显示网络错误提示失败:', toastError)
@@ -443,10 +443,10 @@ const handleHttpError = (status: number, data: any) => {
   }
 
   try {
-    if (window.$message?.error) {
-      window.$message.error(errorMessage, statusMessage)
-    } else if (window.$toast?.errorIn) {
-      window.$toast.errorIn('top-left', statusMessage, errorMessage)
+    if (window.$message?.danger) {
+      window.$message.danger(errorMessage, statusMessage)
+    } else if (window.$toast?.dangerIn) {
+      window.$toast.dangerIn('top-left', statusMessage, errorMessage)
     }
   } catch (error) {
     console.error('❌ 显示错误提示失败:', error)

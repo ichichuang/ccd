@@ -2,8 +2,8 @@
  * 黄金样本：Composables 与 Alova 请求封装
  * 参考自 src/hooks/modules/useHttpRequest.ts
  * AI 生成逻辑层代码时请严格模仿本文件的结构与风格。
+ * Vue 运行时 API（computed 等）由自动导入提供；导出接口需 Ref/ComputedRef 时仅写 type 导入，见 docs/BUILD_SYSTEM.md。
  */
-import { computed } from 'vue'
 import type { ComputedRef, Ref } from 'vue'
 import { useRequest } from 'alova/client'
 import type { AlovaGenerics, Method } from 'alova'

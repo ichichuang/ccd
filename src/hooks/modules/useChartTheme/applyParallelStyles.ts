@@ -1,3 +1,4 @@
+// ECharts 系列样式边界：参数与 ECharts parallel 系列一致，内部使用 any 避免强依赖 echarts 内部类型。
 import type { ThemeConfig } from './types'
 
 /**
@@ -24,7 +25,7 @@ export const applyParallelStyles = (series: any, themeConfig: ThemeConfig): any 
           value: row,
           lineStyle: {
             color,
-            width: 2,
+            width: themeConfig.size.strokeSeries,
             opacity: 0.7,
             type: 'solid',
           },
@@ -35,7 +36,7 @@ export const applyParallelStyles = (series: any, themeConfig: ThemeConfig): any 
           ...row,
           lineStyle: {
             color: row.lineStyle?.color || color,
-            width: row.lineStyle?.width ?? 2,
+            width: row.lineStyle?.width ?? themeConfig.size.strokeSeries,
             opacity: row.lineStyle?.opacity ?? 0.7,
             type: row.lineStyle?.type || 'solid',
           },
@@ -59,7 +60,7 @@ export const applyParallelStyles = (series: any, themeConfig: ThemeConfig): any 
   if (!newSeries.emphasis.lineStyle.width) {
     emphasisUpdates.lineStyle = {
       ...newSeries.emphasis.lineStyle,
-      width: 3,
+      width: themeConfig.size.strokeSeries + 1,
     }
   }
   if (!newSeries.emphasis.lineStyle.opacity) {

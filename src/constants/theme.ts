@@ -3,96 +3,30 @@
  * 数据来源参考: AI Colors
  */
 export const THEME_PRESETS: ThemePreset[] = [
+  // 1. 深蓝 + 天空蓝 (经典与通透)
+  // Primary 是稳重的深蓝，Accent 是明亮的天空蓝，两者无缝衔接，像海洋到天空的过渡
   {
     name: 'deep-blue',
-    primary: '#3665f9', // 兼容旧逻辑的兜底
+    primary: '#2563eb', // blue-600
+    accent: '#38bdf8', // sky-400 (更浅、更亮)
     colors: {
       light: {
         primary: {
-          default: '#3665f9',
-          hover: '#2563eb',
+          default: '#2563eb',
+          hover: '#1d4ed8',
           foreground: '#ffffff',
-          light: '#eff6ff', // explicitly set light tint
-          lightForeground: '#1e3a8a',
+          light: '#eff6ff',
+          lightForeground: '#1e40af',
+        },
+        accent: {
+          default: '#38bdf8', // sky-400
+          hover: '#0ea5e9', // sky-500
+          foreground: '#0f172a', // ⚠️ 浅色背景配深色字
+          light: '#f0f9ff',
+          lightForeground: '#0c4a6e',
         },
         background: '#ffffff',
         foreground: '#0f172a',
-        neutral: {
-          base: '#e2e8f0', // slate-200 for borders
-          bg: '#f8fafc', // slate-50 for cards
-          foreground: '#0f172a',
-        },
-      },
-      dark: {
-        primary: {
-          default: '#60a5fa', // lighter blue for dark mode
-          hover: '#3b82f6',
-          foreground: '#000000',
-          light: '#1e3a8a',
-          lightForeground: '#ffffff',
-        },
-        background: '#020617', // slate-950
-        foreground: '#f8fafc', // slate-50
-        neutral: {
-          base: '#1e293b', // slate-800
-          bg: '#0f172a', // slate-900
-          foreground: '#f8fafc',
-        },
-      },
-    },
-  },
-  {
-    name: 'violet',
-    primary: '#7c3aed',
-    colors: {
-      light: {
-        primary: {
-          default: '#7c3aed', // violet-600
-          hover: '#6d28d9', // violet-700
-          foreground: '#ffffff',
-          light: '#f5f3ff', // violet-50
-          lightForeground: '#5b21b6', // violet-800
-        },
-        background: '#ffffff',
-        foreground: '#0f172a',
-        neutral: {
-          base: '#e5e7eb', // gray-200
-          bg: '#f9fafb', // gray-50
-          foreground: '#111827',
-        },
-      },
-      dark: {
-        primary: {
-          default: '#a78bfa', // violet-400 (lighter for dark mode)
-          hover: '#8b5cf6', // violet-500
-          foreground: '#ffffff',
-          light: '#4c1d95', // violet-900
-          lightForeground: '#e5e7eb',
-        },
-        background: '#0a0a0a', // neutral-950 (deep void)
-        foreground: '#fafafa', // neutral-50
-        neutral: {
-          base: '#262626', // neutral-800
-          bg: '#171717', // neutral-900
-          foreground: '#fafafa',
-        },
-      },
-    },
-  },
-  {
-    name: 'emerald',
-    primary: '#059669',
-    colors: {
-      light: {
-        primary: {
-          default: '#059669', // emerald-600
-          hover: '#047857', // emerald-700
-          foreground: '#ffffff',
-          light: '#ecfdf5', // emerald-50
-          lightForeground: '#064e3b', // emerald-800
-        },
-        background: '#ffffff',
-        foreground: '#064e3b', // deep green text for organic feel
         neutral: {
           base: '#e2e8f0',
           bg: '#f8fafc',
@@ -101,109 +35,249 @@ export const THEME_PRESETS: ThemePreset[] = [
       },
       dark: {
         primary: {
-          default: '#34d399', // emerald-400
-          hover: '#10b981', // emerald-500
-          foreground: '#022c22', // emerald-950
-          light: '#064e3b', // emerald-900
-          lightForeground: '#d1fae5',
+          default: '#3b82f6', // blue-500
+          hover: '#60a5fa',
+          foreground: '#ffffff',
+          light: '#1e3a8a',
+          lightForeground: '#bfdbfe',
         },
-        background: '#022c22', // emerald-950 (very deep green bg)
-        foreground: '#ecfdf5', // emerald-50
+        accent: {
+          default: '#0ea5e9', // sky-500 (暗色模式下稍微加深一点以防刺眼)
+          hover: '#38bdf8',
+          foreground: '#ffffff',
+          light: '#0c4a6e',
+          lightForeground: '#e0f2fe',
+        },
+        background: '#020617',
+        foreground: '#f8fafc',
         neutral: {
-          base: '#064e3b', // emerald-900
-          bg: '#065f46', // emerald-800
-          foreground: '#ecfdf5',
+          base: '#1e293b',
+          bg: '#0f172a',
+          foreground: '#94a3b8',
         },
       },
     },
   },
+
+  // 2. 紫罗兰 + 梦幻粉 (神秘与浪漫)
+  // Primary 是高贵的紫，Accent 是邻近的粉/紫红，过渡非常柔和
   {
-    name: 'ruby',
-    primary: '#e11d48',
+    name: 'violet',
+    primary: '#7c3aed', // violet-600
+    accent: '#d946ef', // fuchsia-500 (同色系偏粉)
     colors: {
       light: {
         primary: {
-          default: '#e11d48', // rose-600
-          hover: '#be123c', // rose-700
+          default: '#7c3aed',
+          hover: '#6d28d9',
           foreground: '#ffffff',
-          light: '#fff1f2', // rose-50
-          lightForeground: '#881337', // rose-900
+          light: '#f5f3ff',
+          lightForeground: '#5b21b6',
+        },
+        accent: {
+          default: '#e879f9', // fuchsia-400 (更亮的粉紫)
+          hover: '#d946ef',
+          foreground: '#ffffff', // 粉紫色足够深，可以用白字
+          light: '#fdf4ff',
+          lightForeground: '#86198f',
         },
         background: '#ffffff',
-        foreground: '#4c0519', // rose-950
+        foreground: '#0f172a',
         neutral: {
-          base: '#e5e5e5', // neutral-200
-          bg: '#fafafa', // neutral-50
-          foreground: '#404040',
+          base: '#e5e7eb',
+          bg: '#f9fafb',
+          foreground: '#374151',
         },
       },
       dark: {
         primary: {
-          default: '#fb7185', // rose-400
-          hover: '#f43f5e', // rose-500
-          foreground: '#4c0519', // rose-950
-          light: '#881337', // rose-900
-          lightForeground: '#ffe4e6',
+          default: '#8b5cf6', // violet-500
+          hover: '#a78bfa',
+          foreground: '#ffffff',
+          light: '#4c1d95',
+          lightForeground: '#e5e7eb',
         },
-        background: '#000000', // pure black
-        foreground: '#fff1f2', // rose-50
+        accent: {
+          default: '#c026d3', // fuchsia-600
+          hover: '#d946ef',
+          foreground: '#ffffff',
+          light: '#701a75',
+          lightForeground: '#fce7f3',
+        },
+        background: '#0a0a0a',
+        foreground: '#fafafa',
         neutral: {
           base: '#262626',
           bg: '#171717',
-          foreground: '#fff1f2',
+          foreground: '#a3a3a3',
         },
       },
     },
   },
+
+  // 3. 森林绿 + 薄荷青 (自然渐变)
+  // Primary 是深绿，Accent 是清新的薄荷绿/青色，看起来非常干净
   {
-    name: 'jadeite',
-    primary: '#2eb88a', // Updated for better visibility
-    accent: '#ef4444', // Cleaner red
+    name: 'emerald',
+    primary: '#059669', // emerald-600
+    accent: '#2dd4bf', // teal-400 (清爽的青绿)
     colors: {
       light: {
         primary: {
-          default: '#2eb88a',
-          hover: '#059669',
-          foreground: '#ffffff', // White text on vibrant green
+          default: '#059669',
+          hover: '#047857',
+          foreground: '#ffffff',
           light: '#ecfdf5',
-          lightForeground: '#047857',
+          lightForeground: '#064e3b',
         },
         accent: {
-          default: '#ef4444',
-          hover: '#dc2626',
-          foreground: '#ffffff',
-          light: '#fef2f2',
-          lightForeground: '#b91c1c',
+          default: '#2dd4bf', // teal-400
+          hover: '#14b8a6', // teal-500
+          foreground: '#0f172a', // ⚠️ 浅绿背景配深色字
+          light: '#f0fdfa',
+          lightForeground: '#115e59',
         },
-        background: '#fafaf9', // Stone-50 warm background
-        foreground: '#1c1917', // Stone-900
+        background: '#ffffff',
+        foreground: '#064e3b',
         neutral: {
-          base: '#e7e5e4', // Stone-200
-          bg: '#f5f5f4', // Stone-100
-          foreground: '#44403c', // Stone-700
+          base: '#e2e8f0',
+          bg: '#f8fafc',
+          foreground: '#334155',
         },
       },
       dark: {
         primary: {
-          default: '#34d399',
-          hover: '#10b981',
+          default: '#10b981', // emerald-500
+          hover: '#34d399',
           foreground: '#022c22',
           light: '#064e3b',
           lightForeground: '#d1fae5',
         },
         accent: {
-          default: '#f87171',
-          hover: '#ef4444',
+          default: '#14b8a6', // teal-500
+          hover: '#2dd4bf',
+          foreground: '#0f172a',
+          light: '#134e4a',
+          lightForeground: '#ccfbf1',
+        },
+        background: '#022c22',
+        foreground: '#ecfdf5',
+        neutral: {
+          base: '#064e3b',
+          bg: '#065f46',
+          foreground: '#a7f3d0',
+        },
+      },
+    },
+  },
+
+  // 4. 玫瑰红 + 珊瑚橙 (暖色渐变)
+  // Primary 是玫红，Accent 是邻近的橙色，像晚霞一样自然过渡
+  {
+    name: 'ruby',
+    primary: '#e11d48', // rose-600
+    accent: '#fb923c', // orange-400
+    colors: {
+      light: {
+        primary: {
+          default: '#e11d48',
+          hover: '#be123c',
           foreground: '#ffffff',
-          light: '#7f1d1d',
-          lightForeground: '#fecaca',
+          light: '#fff1f2',
+          lightForeground: '#881337',
+        },
+        accent: {
+          default: '#fb923c', // orange-400
+          hover: '#f97316', // orange-500
+          foreground: '#0f172a', // ⚠️ 浅橙色配深色字
+          light: '#fff7ed',
+          lightForeground: '#9a3412',
+        },
+        background: '#ffffff',
+        foreground: '#4c0519',
+        neutral: {
+          base: '#e5e5e5',
+          bg: '#fafafa',
+          foreground: '#404040',
+        },
+      },
+      dark: {
+        primary: {
+          default: '#f43f5e', // rose-500
+          hover: '#fb7185',
+          foreground: '#ffffff',
+          light: '#881337',
+          lightForeground: '#ffe4e6',
+        },
+        accent: {
+          default: '#f97316', // orange-500
+          hover: '#fb923c',
+          foreground: '#ffffff',
+          light: '#7c2d12',
+          lightForeground: '#fed7aa',
+        },
+        background: '#000000',
+        foreground: '#fff1f2',
+        neutral: {
+          base: '#262626',
+          bg: '#171717',
+          foreground: '#d4d4d4',
+        },
+      },
+    },
+  },
+
+  // 5. 墨玉 + 豆绿 (新中式同色系)
+  // Primary 是深沉的青色，Accent 是清透的黄绿，非常有质感
+  {
+    name: 'jadeite',
+    primary: '#0f766e', // teal-700 (更深沉的玉色)
+    accent: '#84cc16', // lime-500 (鲜活的嫩绿)
+    colors: {
+      light: {
+        primary: {
+          default: '#0f766e', // teal-700
+          hover: '#115e59', // teal-800
+          foreground: '#ffffff',
+          light: '#f0fdfa',
+          lightForeground: '#134e4a',
+        },
+        accent: {
+          default: '#84cc16', // lime-500
+          hover: '#65a30d', // lime-600
+          foreground: '#ffffff',
+          light: '#f7fee7',
+          lightForeground: '#365314',
+        },
+        background: '#fafaf9', // Stone-50
+        foreground: '#1c1917', // Stone-900
+        neutral: {
+          base: '#d6d3d1',
+          bg: '#f5f5f4',
+          foreground: '#57534e',
+        },
+      },
+      dark: {
+        primary: {
+          default: '#14b8a6', // teal-500 (暗模式下提亮)
+          hover: '#2dd4bf',
+          foreground: '#0f172a',
+          light: '#134e4a',
+          lightForeground: '#ccfbf1',
+        },
+        accent: {
+          default: '#a3e635', // lime-400
+          hover: '#84cc16',
+          foreground: '#1a2e05',
+          light: '#365314',
+          lightForeground: '#ecfccb',
         },
         background: '#0c0a09', // Stone-950
-        foreground: '#f5f5f4', // Stone-100
+        foreground: '#f5f5f4',
         neutral: {
-          base: '#292524', // Stone-800
-          bg: '#1c1917', // Stone-900
-          foreground: '#d6d3d1', // Stone-300
+          base: '#292524',
+          bg: '#1c1917',
+          foreground: '#a8a29e',
         },
       },
     },

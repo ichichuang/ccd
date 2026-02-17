@@ -36,7 +36,7 @@ declare global {
     /* 品牌色系 */
     primary?: Partial<ColorTokenState>
     accent?: Partial<ColorTokenState>
-    destructive?: Partial<ColorTokenState>
+    danger?: Partial<ColorTokenState>
     warn?: Partial<ColorTokenState>
     success?: Partial<ColorTokenState>
     info?: Partial<ColorTokenState>
@@ -139,12 +139,12 @@ declare global {
     '--accent-light-foreground': string
 
     /* ==================== 状态层 ==================== */
-    '--destructive': string
-    '--destructive-foreground': string
-    '--destructive-hover': string
-    '--destructive-hover-foreground': string
-    '--destructive-light': string
-    '--destructive-light-foreground': string
+    '--danger': string
+    '--danger-foreground': string
+    '--danger-hover': string
+    '--danger-hover-foreground': string
+    '--danger-light': string
+    '--danger-light-foreground': string
     '--warn': string
     '--warn-foreground': string
     '--warn-hover': string

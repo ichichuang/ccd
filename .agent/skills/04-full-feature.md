@@ -3,37 +3,41 @@ description: 全功能开发：API Definition -> Business Hook -> UI Integration
 globs: **/*
 ---
 
-# Full Feature Development Skill
+# 全功能开发技能
 
-## 1. Goal
+## 1. 目标
 
-Implement a complete feature from backend API definition to frontend UI.
+从后端 API 定义到前端 UI 实现完整功能。
 
-## 2. Steps
+## 2. 步骤
 
-### Step 1: API Definition (Level 1)
+### 步骤 1：API 定义（第 1 层）
 
-- Create `src/api/<module>/<feature>.ts`.
-- Define `Req` / `Res` / `DTO` interfaces.
-- Export `build<Feature>Method` using `alovaInstance`.
+- 创建 `src/api/<module>/<feature>.ts`。
+- 定义 `Req` / `Res` / `DTO` 接口。
+- 使用 `alovaInstance` 导出 `build<Feature>Method`。
 
-### Step 2: Business Logic Hook (Level 2)
+### 步骤 2：业务逻辑 Hook（第 2 层）
 
-- Create `src/hooks/modules/use<Feature>.ts`.
-- Import API from Step 1.
-- Use `useHttpRequest` to wrap the API call.
-- Export reactive state (`data`, `loading`, `error`) and methods (`fetch`, `submit`).
+- 创建 `src/hooks/modules/use<Feature>.ts`。
+- 从步骤 1 导入 API。
+- 使用 `useHttpRequest` 包装 API 调用。
+- 导出响应式状态（`data`、`loading`、`error`）和方法（`fetch`、`submit`）。
+- **类型安全**：所有变量必须有显式类型注解：
+  - ❌ `const loading = ref(false)` → ✅ `const loading = ref<boolean>(false)`
+  - ❌ `const data = ref(null)` → ✅ `const data = ref<FeatureData | null>(null)`
+  - ❌ `const result = computed(() => ...)` → ✅ `const result = computed<ResultType>(() => ...)`
 
-### Step 3: UI Implementation (Level 3)
+### 步骤 3：UI 实现（第 3 层）
 
-- Create `src/views/<Module>/<Page>.vue`.
-- Import the Hook from Step 2.
-- Bind reactive state to the template.
-- Use `UnoCSS` for styling.
-- Use components from `src/components/` **without** manual import (auto-imported). Layout components in `src/layouts/` require **explicit** import.
+- 创建 `src/views/<Module>/<Page>.vue`。
+- 从步骤 2 导入 Hook。
+- 将响应式状态绑定到模板。
+- 使用 `UnoCSS` 进行样式设置。
+- 使用 `src/components/` 中的组件，**无需**手动导入（自动导入）。`src/layouts/` 中的布局组件需要**显式**导入。
 
-### Step 4: Verify
+### 步骤 4：验证
 
-1.  Check console for API errors.
-2.  Inspect Network tab in `browser`.
-3.  Verify UI states (Loading, Error, Success).
+1. 检查控制台中的 API 错误。
+2. 在 `browser` 中检查网络标签。
+3. 验证 UI 状态（加载、错误、成功）。

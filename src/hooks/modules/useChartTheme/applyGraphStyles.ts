@@ -1,3 +1,4 @@
+// ECharts 系列样式边界：参数与 ECharts graph 系列一致，内部使用 any 避免强依赖 echarts 内部类型。
 import type { ThemeConfig } from './types'
 
 /**
@@ -47,6 +48,10 @@ export const applyGraphStyles = (series: any, themeConfig: ThemeConfig): any => 
           newNode.itemStyle.color = palette[idx % palette.length]
         }
       }
+      // 节点尺寸：仅在用户未显式配置时注入默认值（与 SizeMode 对齐）
+      if (newNode.symbolSize === undefined) {
+        newNode.symbolSize = themeConfig.size.symbolMd
+      }
       return newNode
     })
   }
@@ -85,6 +90,10 @@ export const applyGraphStyles = (series: any, themeConfig: ThemeConfig): any => 
           newLink.lineStyle.color = palette[idx % palette.length]
         }
       }
+      // 连线线宽：仅在用户未显式配置时注入默认值（与 SizeMode 对齐）
+      if (newLink.lineStyle.width === undefined) {
+        newLink.lineStyle.width = themeConfig.size.strokeSeries
+      }
       return newLink
     })
   }
@@ -93,11 +102,12 @@ export const applyGraphStyles = (series: any, themeConfig: ThemeConfig): any => 
   if (!newSeries.label) {
     newSeries.label = {}
   }
-  if (!newSeries.label.color || !newSeries.label.fontSize) {
+  if (!newSeries.label.color || !newSeries.label.fontSize || !newSeries.label.lineHeight) {
     newSeries.label = {
       ...newSeries.label,
-      color: newSeries.label.color || themeConfig.textColor100,
-      fontSize: newSeries.label.fontSize || themeConfig.font.fontSizeSmall,
+      color: newSeries.label.color || themeConfig.foreground,
+      fontSize: newSeries.label.fontSize || themeConfig.size.fontSm,
+      lineHeight: newSeries.label.lineHeight || themeConfig.size.lineHeightSm,
     }
   }
 

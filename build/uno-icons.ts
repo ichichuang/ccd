@@ -6,6 +6,7 @@
  */
 import fs from 'node:fs'
 import path from 'node:path'
+import { createRequire } from 'node:module'
 import { fileURLToPath } from 'node:url'
 import { FileSystemIconLoader } from '@iconify/utils/lib/loader/node-loaders'
 import { globSync } from 'glob'
@@ -41,6 +42,52 @@ let customIconsCache: CacheEntry<string[]> | null = null
 export function invalidateIconCaches(target: IconCacheTarget | 'all' = 'all'): void {
   if (target === 'route' || target === 'all') routeIconsCache = null
   if (target === 'custom' || target === 'all') customIconsCache = null
+}
+
+// ---------------------------------------------------------------------------
+// Iconify 图标列表（从 @iconify-json 包动态读取）
+// ---------------------------------------------------------------------------
+
+const _require = createRequire(import.meta.url)
+
+/** Iconify icons.json 最小结构（仅需 prefix + icons 键名） */
+interface IconifyIconsJson {
+  prefix?: string
+  icons?: Record<string, unknown>
+}
+
+/**
+ * 从 @iconify-json 包读取图标名称列表
+ * @param collectionName - 集合名称（lucide | mdi | logos）
+ * @returns 图标类名数组，格式 i-{prefix}-{name}
+ */
+export function getIconifyIconNames(collectionName: 'lucide' | 'mdi' | 'logos'): string[] {
+  try {
+    const iconSet = _require(`@iconify-json/${collectionName}/icons.json`) as IconifyIconsJson
+    const prefix = iconSet.prefix ?? collectionName
+    const icons = iconSet.icons ?? {}
+    return Object.keys(icons).map(name => `i-${prefix}-${name}`)
+  } catch (err) {
+    console.warn(`[uno-icons] Failed to load @iconify-json/${collectionName}:`, err)
+    return []
+  }
+}
+
+/** 示例页与 safelist 使用的子集数量，控制构建内存 */
+export const ICON_SUBSET_LIMITS = {
+  lucide: 500,
+  mdi: 500,
+  logos: 300,
+} as const
+
+/**
+ * 取某集合前 limit 个图标类名，供示例页与 safelist 使用，避免全量导致 OOM
+ */
+export function getIconifyIconNamesSubset(
+  collectionName: 'lucide' | 'mdi' | 'logos',
+  limit: number
+): string[] {
+  return getIconifyIconNames(collectionName).slice(0, limit)
 }
 
 // ---------------------------------------------------------------------------
@@ -414,15 +461,22 @@ function toUnoIconClass(name: string): string {
 // ---------------------------------------------------------------------------
 
 /**
- * 动态 safelist：路由/API 扫描到的图标 + 本地 i-custom:xxx + 布局/尺寸类 + 阶梯类 + 基础变量类 + 配色类
- * 阶梯类支持 size.vue / unocss.vue 动态类名；基础变量类支持 unocss.vue baseVars；配色类支持 theme.vue 动态类名，无需 UNO_DEMO 即可完整显示。
+ * 动态 safelist：路由/API 扫描到的图标 + 本地 i-custom:xxx + 示例页图标子集（Lucide/MDI/Logos 各取前 N + Custom 全量）+ 布局/尺寸类 + …
+ * 仅使用子集以避免全量导致 OOM。
  */
 export function getDynamicSafelist(): string[] {
   const routeIcons = getRouteMetaIcons().map(toUnoIconClass)
   const customIcons = getCustomIconClasses()
+  const examplePageIcons = [
+    ...getIconifyIconNamesSubset('lucide', ICON_SUBSET_LIMITS.lucide),
+    ...getIconifyIconNamesSubset('mdi', ICON_SUBSET_LIMITS.mdi),
+    ...getIconifyIconNamesSubset('logos', ICON_SUBSET_LIMITS.logos),
+    ...customIcons,
+  ]
   return [
     ...routeIcons,
     ...customIcons,
+    ...examplePageIcons,
     ...LAYOUT_SAFELIST_CLASSES,
     ...SCALE_SAFELIST_CLASSES,
     ...BASE_VAR_SAFELIST_CLASSES,

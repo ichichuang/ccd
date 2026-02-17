@@ -22,6 +22,12 @@ export type Events = {
    * 例如 'Asia/Shanghai' | 'UTC'
    */
   timezoneChange: string
+
+  // ===== DataTable 列宽变更（由 useTableLayout 发出，DataTable 订阅后转发 Vue emit） =====
+  tableColumnWidthsChange: {
+    tableId?: string
+    widths: { field: string; width: number; minWidth?: number; maxWidth?: number }[]
+  }
 }
 
 // 创建全局单例

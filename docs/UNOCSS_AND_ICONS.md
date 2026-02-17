@@ -1,5 +1,7 @@
 # UnoCSS & Icons System (SSOT)
 
+> **目标读者：AI**。本文档供 AI 在代码生成时参照，涉及样式编写、图标使用时必读。
+
 本文档描述项目的 UnoCSS 语义类、SSOT 推导机制，以及 iconify + 自定义 SVG 的完整链路。UI 相关输出必须遵循。
 
 ## 1. UnoCSS 的 SSOT 驱动
@@ -11,7 +13,7 @@
 - `src/constants/breakpoints.ts` → breakpoints
 - `src/constants/size.ts` → `LAYOUT_DIMENSION_KEYS`（布局变量白名单）
 - `src/constants/sizeScale.ts` → `SIZE_SCALE_KEYS`（xs→5xl 阶梯）
-- `src/utils/theme/metadata.ts` → 主题相关元数据（quadFamilies 含 primary、accent、destructive、warn、success、info，对应语义类如 `bg-primary`、`text-info` 等）
+- `src/utils/theme/metadata.ts` → 主题相关元数据（quadFamilies 含 primary、accent、danger、warn、success、info，对应语义类如 `bg-primary`、`text-info` 等）
 
 结论：
 
@@ -54,7 +56,7 @@
 - 页面/根容器：`bg-background`
 - 卡片/面板：`bg-card`
 - 弱对比信息块/提示：`bg-muted`
-- 状态色：`bg-primary` / `bg-accent` / `bg-destructive` / `bg-warn` / `bg-success` / `bg-info` 及其 `-hover` / `-light`
+- 状态色：`bg-primary` / `bg-accent` / `bg-danger` / `bg-warn` / `bg-success` / `bg-info` 及其 `-hover` / `-light`
 - 侧边栏区域：`bg-sidebar` 家族
 - PrimeVue 主题兼容保留：`bg-surface-ground`（仅此一个 `surface-*` 语义允许）
 
@@ -95,6 +97,14 @@ UnoCSS 内置的 `presetUno` 会提供 Tailwind 风格的 `max-w-2xl` / `max-w-7
   2. 在 `uno.config.ts` 的布局变量规则中映射为 `w-contentWide` / `max-w-contentNarrow`；
   3. 视图中使用这些语义类，而不是继续依赖 `max-w-?xl`。
 
+### 2.6 边框（Border）
+
+四边/单边边框须使用 `uno.config.ts` 中的**边框快捷类**，避免仅设 width+color 未设 style 导致不显示：
+
+- **四边**：`component-border`（= `border border-solid border-border`）
+- **底边**：`border-b-default`；**顶边**：`border-t-default`
+- **禁止**：仅写 `border border-border`（未设置 border-style，边框不显示）。带透明度或其它 style（如 `border-dashed`）时单独写 `border border-solid border-border/50` 等。
+
 ## 3. 图标系统：iconify + custom SVG
 
 你项目的图标链路由三部分组成：
@@ -130,8 +140,172 @@ UnoCSS 内置的 `presetUno` 会提供 Tailwind 风格的 `max-w-2xl` / `max-w-7
   3. `i-logos-*`
   4. `i-custom:*`（新增 SVG）
 
+**推荐：统一使用完整类名**
+
+- 业务代码中推荐始终使用以 `i-` 开头的完整类名，避免歧义与转换边界情况：
+  - Iconify：`i-lucide-xxx`、`i-mdi-xxx`、`i-logos-xxx`
+  - 自定义：`i-custom:xxx`（注意 custom 使用冒号，不要写成 `i-custom-xxx`）
+- PrimeVue 图标与上述不同，需通过 `import X from '@primevue/icons/xxx'` 使用组件，示例页中 PrimeVue 标签页仅展示名称与说明，不通过字符串渲染。
+
 禁止：
 
 - 手写 `<svg>` 图标
 - 外链 icon URL
 - base64 图标
+
+## 6. Icons 组件完整使用指南
+
+### 6.1 基础使用
+
+```vue
+<!-- 基础用法 -->
+<Icons name="i-lucide-user" />
+
+<!-- 自定义图标（子目录参与命名：custom/juejin.svg → i-custom:custom-juejin） -->
+<Icons name="i-custom:custom-juejin" size="xl" />
+```
+
+### 6.2 尺寸控制
+
+**标准阶梯（推荐）：**
+
+- 使用语义尺寸：`xs` | `sm` | `md` | `lg` | `xl` | `2xl` | `3xl` | `4xl` | `5xl`
+- 这些尺寸通过 `fs-*` 类名映射到 `--font-size-*` CSS 变量，联动 SizeStore
+- 示例：`<Icons name="i-lucide-check" size="lg" />`
+
+**自定义尺寸（特殊场景）：**
+
+- 数字：`size={24}` → `24px`
+- 字符串：`size="2rem"` / `size="50%"` → 支持任意 CSS 单位
+- **何时使用自定义尺寸**：仅在标准阶梯无法满足设计需求时使用
+- 示例：`<Icons name="i-lucide-star" size="1.5rem" />`
+
+### 6.3 颜色控制
+
+**两种方式：**
+
+1. **语义类（推荐，静态颜色）**：
+   - 通过 `class="text-primary"` 等 UnoCSS 类控制颜色
+   - 示例：`<Icons name="i-lucide-check" class="text-primary" />`
+
+2. **color prop（动态/主题变量）**：
+   - 当需要动态颜色或使用 CSS 变量时使用 `color` prop
+   - 示例：`<Icons name="i-lucide-check" color="rgb(var(--primary))" />`
+   - **注意**：使用 `color` prop 时，组件会自动去掉默认 `text-foreground` 类，确保自定义颜色生效
+   - **格式要求**：使用 `rgb(var(--primary))` 而不是 `var(--primary)`（因为主题变量是空格分隔的 RGB 三元组）
+
+**最佳实践：**
+
+- 静态颜色 → 使用语义类（`class="text-primary"`）
+- 动态颜色/主题变量 → 使用 `color` prop（`color="rgb(var(--primary))"`）
+
+### 6.4 动画与变换
+
+#### 6.4.1 动画 (animation)
+
+- `animation="spin"`：旋转动画（常用于加载状态）
+- `animation="pulse"`：脉冲动画（常用于提示/通知）
+- `animation="spin-pulse"`：旋转+脉冲组合动画
+
+```vue
+<!-- 旋转的加载图标 -->
+<Icons name="i-lucide-loader" animation="spin" />
+
+<!-- 脉冲提示图标 -->
+<Icons name="i-lucide-bell" animation="pulse" />
+```
+
+#### 6.4.2 翻转 (flip)
+
+- `flip="horizontal"`：水平翻转
+- `flip="vertical"`：垂直翻转
+- `flip="both"`：双向翻转
+
+```vue
+<!-- 水平翻转的箭头 -->
+<Icons name="i-lucide-arrow-right" flip="horizontal" />
+```
+
+#### 6.4.3 旋转 (rotate)
+
+- `rotate="90"` 或 `rotate={90}`：旋转 90 度
+- 支持任意角度值（单位：deg）
+
+```vue
+<!-- 旋转 90 度的箭头 -->
+<Icons name="i-lucide-arrow-up" rotate="90" />
+```
+
+#### 6.4.4 缩放 (scale)
+
+- `scale={1.5}`：缩放 1.5 倍
+- 支持任意数字值
+
+```vue
+<!-- 放大 1.5 倍的图标 -->
+<Icons name="i-lucide-star" scale="{1.5}" />
+```
+
+#### 6.4.5 组合使用
+
+```vue
+<!-- 旋转 90 度并放大 -->
+<Icons name="i-lucide-arrow-up" rotate="90" scale="{1.5}" />
+
+<!-- 水平翻转 + 旋转 + 动画 -->
+<Icons name="i-lucide-refresh" flip="horizontal" rotate="180" animation="spin" />
+```
+
+### 6.5 无障碍支持
+
+- `label`：无障碍标签（`aria-label`）
+- `title`：标题提示（`title` 属性）
+
+```vue
+<Icons name="i-lucide-user" label="用户图标" title="点击查看用户信息" />
+```
+
+### 6.6 类型定义参考
+
+完整的类型定义见：`src/components/Icons/utils/types.ts`
+
+- `IconsProps`：组件 Props 接口
+- `IconSize`：尺寸类型（`SizeScaleKey | number | string`）
+- `IconAnimation`：动画类型（`'spin' | 'pulse' | 'spin-pulse'`）
+- `FlipDirection`：翻转方向类型（`'horizontal' | 'vertical' | 'both'`）
+
+### 6.7 示例页面
+
+项目提供了完整的图标示例页面：`src/views/example/Icons/IconsExample.vue`
+
+**功能：**
+
+- 浏览所有图标库（Lucide、MDI、Logos、Custom）
+- 实时预览图标效果
+- 测试尺寸、颜色、动画、翻转、旋转、缩放等功能
+- 复制代码示例
+
+**访问路径：** `/example/icons`
+
+### 6.8 常见问题
+
+#### Q: 为什么设置了 color prop 但颜色不生效？
+
+A: 确保使用 `rgb(var(--primary))` 格式，而不是 `var(--primary)`。
+组件会自动处理：当有 `color` prop 时，会移除默认的 `text-foreground` 类，确保自定义颜色生效。
+
+#### Q: 何时使用语义尺寸 vs 自定义尺寸？
+
+A:
+
+- **语义尺寸（推荐）**：大多数场景使用 `xs~5xl`，这些尺寸会联动 SizeStore，响应式适配更好
+- **自定义尺寸**：仅在标准阶梯无法满足设计需求时使用（如需要精确的 `1.5rem`、`50%` 等）
+
+#### Q: 如何选择合适的图标库？
+
+A: 按优先级选择：
+
+1. **Lucide**（推荐默认）：现代、简洁、图标丰富
+2. **MDI**（补充）：当 Lucide 没有合适图标时
+3. **Logos**（品牌）：品牌/公司 logo
+4. **Custom SVG**（最后选择）：当所有集合都没有合适图标时

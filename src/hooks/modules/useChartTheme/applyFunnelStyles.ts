@@ -1,3 +1,4 @@
+// ECharts 系列样式边界：参数与 ECharts funnel 系列一致，内部使用 any 避免强依赖 echarts 内部类型。
 import type { ThemeConfig } from './types'
 
 /**
@@ -102,7 +103,7 @@ export const applyFunnelStyles = (series: any, themeConfig: ThemeConfig): any =>
       ...newSeries.labelLine,
       lineStyle: {
         ...newSeries.labelLine.lineStyle,
-        color: themeConfig.textColor200,
+        color: themeConfig.mutedForeground,
       },
     }
   }

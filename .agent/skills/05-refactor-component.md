@@ -3,28 +3,32 @@ description: 重构组件：Extract Logic -> Hooks & Style Audit
 globs: **/*.vue, **/*.ts
 ---
 
-# Refactor Component Skill
+# 重构组件技能
 
-## 1. Goal
+## 1. 目标
 
-Clean up a component by extracting logic and standardizing styles.
+通过提取逻辑和标准化样式来清理组件。
 
-## 2. Steps
+## 2. 步骤
 
-### Step 1: Logic Extraction
+### 步骤 1：逻辑提取
 
-- Identify complex logic in `<script setup>`.
-- Create a new hook in `src/hooks/modules/use<Feature>.ts`.
-- Move specific logic (state, methods, computed) to the hook.
-- Import and use the hook in the component.
+- 识别 `<script setup>` 中的复杂逻辑。
+- 在 `src/hooks/modules/use<Feature>.ts` 中创建新的 Hook。
+- 将特定逻辑（状态、方法、computed）移至 Hook。
+- 在组件中导入并使用 Hook。
+- **类型安全**：确保所有提取的变量都有显式类型注解：
+  - ❌ `const loading = ref(false)` → ✅ `const loading = ref<boolean>(false)`
+  - ❌ `const data = ref(null)` → ✅ `const data = ref<DataType | null>(null)`
+  - ❌ `const items = []` → ✅ `const items: Item[] = []`
 
-### Step 2: Utility Replacement
+### 步骤 2：工具替换
 
-- Scan for inline `axios`/`fetch` calls -> Replace with `useHttpRequest`.
-- Scan for inline date formatting -> Replace with `useDateUtils`.
-- Scan for inline element resizing -> Replace with `useAppElementSize`.
+- 扫描内联 `axios`/`fetch` 调用 → 替换为 `useHttpRequest`。
+- 扫描内联日期格式化 → 替换为 `useDateUtils`。
+- 扫描内联元素调整大小 → 替换为 `useAppElementSize`。
 
-### Step 3: Verify
+### 步骤 3：验证
 
-- Ensure functionality remains unchanged (Regression Testing).
-- Check `browser` console for errors.
+- 确保功能保持不变（回归测试）。
+- 检查 `browser` 控制台错误。

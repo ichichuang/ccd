@@ -1,3 +1,4 @@
+// ECharts 系列样式边界：参数与 ECharts gauge 系列一致，内部使用 any 避免强依赖 echarts 内部类型。
 import type { ThemeConfig } from './types'
 
 /**
@@ -73,8 +74,9 @@ export const applyGaugeStyles = (series: any, index: number, themeConfig: ThemeC
         ...newSeries.axisLine.lineStyle,
         color: [
           [progress, gaugeColor],
-          [1, themeConfig.bgColor300],
+          [1, themeConfig.card],
         ],
+        width: newSeries.axisLine.lineStyle.width ?? themeConfig.size.strokeSeries,
       },
     }
   }
@@ -94,9 +96,13 @@ export const applyGaugeStyles = (series: any, index: number, themeConfig: ThemeC
       ...newSeries.axisTick,
       lineStyle: {
         ...newSeries.axisTick.lineStyle,
-        color: themeConfig.textColor200,
+        color: themeConfig.mutedForeground,
+        width: newSeries.axisTick.lineStyle.width ?? themeConfig.size.strokeHairline,
       },
     }
+  }
+  if (!newSeries.axisTick.length) {
+    newSeries.axisTick.length = themeConfig.size.tickLen
   }
 
   // 设置分隔线颜色
@@ -114,7 +120,8 @@ export const applyGaugeStyles = (series: any, index: number, themeConfig: ThemeC
       ...newSeries.splitLine,
       lineStyle: {
         ...newSeries.splitLine.lineStyle,
-        color: themeConfig.textColor200,
+        color: themeConfig.mutedForeground,
+        width: newSeries.splitLine.lineStyle.width ?? themeConfig.size.strokeGrid,
       },
     }
   }
@@ -126,7 +133,8 @@ export const applyGaugeStyles = (series: any, index: number, themeConfig: ThemeC
   if (!newSeries.axisLabel.color) {
     newSeries.axisLabel = {
       ...newSeries.axisLabel,
-      color: themeConfig.textColor200,
+      color: themeConfig.mutedForeground,
+      fontSize: newSeries.axisLabel.fontSize ?? themeConfig.size.fontSm,
     }
   }
 
@@ -137,7 +145,8 @@ export const applyGaugeStyles = (series: any, index: number, themeConfig: ThemeC
   if (!newSeries.detail.color) {
     newSeries.detail = {
       ...newSeries.detail,
-      color: themeConfig.textColor100,
+      color: themeConfig.foreground,
+      fontSize: newSeries.detail.fontSize ?? themeConfig.size.fontMd,
     }
   }
 
@@ -148,7 +157,8 @@ export const applyGaugeStyles = (series: any, index: number, themeConfig: ThemeC
   if (!newSeries.title.color) {
     newSeries.title = {
       ...newSeries.title,
-      color: themeConfig.textColor200,
+      color: themeConfig.mutedForeground,
+      fontSize: newSeries.title.fontSize ?? themeConfig.size.fontSm,
     }
   }
 

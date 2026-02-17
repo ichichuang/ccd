@@ -36,14 +36,14 @@ export function setupErrorHandler(app: App) {
       const anyWindow = window as any
 
       // 优先使用全局 $message（与现有类型声明对齐）
-      if (anyWindow.$message?.error) {
-        anyWindow.$message.error('系统遇到问题，请刷新页面重试。')
+      if (anyWindow.$message?.danger) {
+        anyWindow.$message.danger('系统遇到问题，请刷新页面重试。')
         return
       }
 
-      // 兼容历史上的 $toast.errorIn 调用方式
-      if (anyWindow.$toast?.errorIn) {
-        anyWindow.$toast.errorIn('top-left', '系统错误', '系统遇到问题，请刷新页面重试。')
+      // 兼容历史上的 $toast.dangerIn 调用方式
+      if (anyWindow.$toast?.dangerIn) {
+        anyWindow.$toast.dangerIn('top-left', '系统错误', '系统遇到问题，请刷新页面重试。')
         return
       }
 
@@ -67,9 +67,11 @@ export function setupErrorHandler(app: App) {
       })
     } else {
       console.error('[GlobalErrorHandler] 捕获到 Vue 错误:', err, 'info:', info)
+      const inst = instance as { type?: { name?: string } } | null
+      const componentName = inst?.type?.name ?? (inst?.type != null ? String(inst.type) : 'unknown')
       reportErrorToServer(err, {
         info,
-        componentName: instance?.type?.name ?? instance?.type ?? 'unknown',
+        componentName,
       })
       showUserFriendlyToast()
     }

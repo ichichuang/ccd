@@ -35,29 +35,31 @@ declare global {
     | 'bottom-center'
     | 'bottom-right'
 
-  /** 全局 Toast API（基于 PrimeVue useToast） */
+  /** 全局 Toast API（基于 PrimeVue useToast，severity 统一用 danger/warn） */
   interface ToastApi {
     add: (options: {
-      severity?: 'success' | 'info' | 'warn' | 'error' | 'secondary' | 'contrast'
+      severity?: 'success' | 'info' | 'warn' | 'danger' | 'secondary' | 'contrast'
       summary?: string
       detail?: string
       life?: number
       group?: string
     }) => void
-    errorIn: (position: ToastPosition, summary: string, detail?: string) => void
+    dangerIn: (position: ToastPosition, summary: string, detail?: string) => void
     successIn: (position: ToastPosition, summary: string, detail?: string) => void
     infoIn: (position: ToastPosition, summary: string, detail?: string) => void
     warnIn: (position: ToastPosition, summary: string, detail?: string) => void
+    secondaryIn: (position: ToastPosition, summary: string, detail?: string) => void
+    contrastIn: (position: ToastPosition, summary: string, detail?: string) => void
     remove?: (message: object) => void
     removeGroup?: (group: string) => void
     /** 清除所有 Toast，内部调用 removeAllGroups() */
     clear?: () => void
   }
 
-  /** 全局 Message API（Element Plus 风格，与 PrimeVue 4 severity 对齐用 warn） */
+  /** 全局 Message API（Element Plus 风格，severity 统一用 danger/warn） */
   interface MessageApi {
     success: (message: string, title?: string) => void
-    error: (message: string, title?: string) => void
+    danger: (message: string, title?: string) => void
     info: (message: string, title?: string) => void
     warn: (message: string, title?: string) => void
   }

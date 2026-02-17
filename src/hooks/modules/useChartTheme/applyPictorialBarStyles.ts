@@ -1,3 +1,4 @@
+// ECharts 系列样式边界：参数与 ECharts pictorialBar 系列一致，内部使用 any 避免强依赖 echarts 内部类型。
 import type { ThemeConfig } from './types'
 
 /**
@@ -33,10 +34,13 @@ export const applyPictorialBarStyles = (
   }
   const labelUpdates: any = {}
   if (!newSeries.label.color) {
-    labelUpdates.color = themeConfig.textColor100
+    labelUpdates.color = themeConfig.foreground
   }
   if (!newSeries.label.fontSize) {
-    labelUpdates.fontSize = themeConfig.font.fontSizeSmall
+    labelUpdates.fontSize = themeConfig.size.fontSm
+  }
+  if (!newSeries.label.lineHeight) {
+    labelUpdates.lineHeight = themeConfig.size.lineHeightSm
   }
   if (Object.keys(labelUpdates).length > 0) {
     newSeries.label = {

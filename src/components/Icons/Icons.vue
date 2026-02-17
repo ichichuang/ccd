@@ -20,11 +20,13 @@ const props = withDefaults(defineProps<IconsProps>(), {
   title: undefined,
 })
 
-// 1. 图标名称 → UnoCSS 类名
+// 1. 图标名称 → UnoCSS 类名（custom 集合保留冒号 i-custom:name，其余集合 : 转 -）
 const iconClass = computed(() => {
   const n = props.name
   if (n.startsWith('i-')) return n
-  if (n.includes(':')) return `i-${n.replace(':', '-')}`
+  if (n.includes(':')) {
+    return n.startsWith('custom:') ? `i-${n}` : `i-${n.replace(':', '-')}`
+  }
   if (n.includes('-')) return `i-${n}`
   return `i-lucide-${toIconName(n)}`
 })
@@ -80,12 +82,12 @@ const functionalClasses = computed(() => {
 
 <template>
   <div
-    :class="[iconClass, functionalClasses, sizeClass]"
+    :class="[iconClass, functionalClasses, sizeClass, !props.color && 'text-foreground']"
     :style="{ ...style, ...sizeStyle }"
-    class="inline-block align-middle text-foreground"
+    class="inline-block align-middle"
     role="img"
-    :aria-label="label"
-    :title="title"
-    :aria-hidden="!label"
+    :aria-label="props.label"
+    :title="props.title"
+    :aria-hidden="!props.label"
   />
 </template>

@@ -1,3 +1,4 @@
+// ECharts 系列样式边界：参数与 ECharts boxplot 系列一致，内部使用 any 避免强依赖 echarts 内部类型。
 import type { ThemeConfig } from './types'
 
 /**

@@ -1,3 +1,4 @@
+// ECharts 系列/节点样式边界：参数与 ECharts tree 系列一致，内部使用 any 避免强依赖 echarts 内部类型。
 import type { ThemeConfig } from './types'
 
 /**
@@ -33,7 +34,7 @@ function colorizeNode(
     newNode.symbol = 'circle'
   }
   if (!newNode.symbolSize) {
-    newNode.symbolSize = 8
+    newNode.symbolSize = themeConfig.size.symbolMd
   }
 
   // 设置连线样式
@@ -43,13 +44,13 @@ function colorizeNode(
   if (!newNode.lineStyle.color) {
     newNode.lineStyle = {
       ...newNode.lineStyle,
-      color: themeConfig.bgColor300,
+      color: themeConfig.card,
     }
   }
   if (!newNode.lineStyle.width) {
     newNode.lineStyle = {
       ...newNode.lineStyle,
-      width: 1,
+      width: themeConfig.size.strokeGrid,
     }
   }
 
@@ -83,11 +84,12 @@ export const applyTreeStyles = (series: any, themeConfig: ThemeConfig): any => {
   if (!newSeries.label) {
     newSeries.label = {}
   }
-  if (!newSeries.label.color || !newSeries.label.fontSize) {
+  if (!newSeries.label.color || !newSeries.label.fontSize || !newSeries.label.lineHeight) {
     newSeries.label = {
       ...newSeries.label,
-      color: newSeries.label.color || themeConfig.textColor100,
-      fontSize: newSeries.label.fontSize || themeConfig.font.fontSizeSmall,
+      color: newSeries.label.color || themeConfig.foreground,
+      fontSize: newSeries.label.fontSize || themeConfig.size.fontSm,
+      lineHeight: newSeries.label.lineHeight || themeConfig.size.lineHeightSm,
     }
   }
 

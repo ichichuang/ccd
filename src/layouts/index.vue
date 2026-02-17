@@ -3,8 +3,8 @@
  * 核心布局入口：根据路由 meta.parent 在 Admin / FullScreen / Ratio 间切换
  * 页面布局模式仅由路由决定，不再写入 store
  */
-import type { AnimateName } from '@/components/animate-wrapper/utils/types'
-import { AnimateWrapper } from '@/components/animate-wrapper'
+import type { AnimateName } from '@/components/AnimateWrapper/utils/types'
+import { AnimateWrapper } from '@/components/AnimateWrapper'
 import LoadingWave from '@&/Loading-Wave.vue'
 import AdminLayout from '@/layouts/modules/LayoutAdmin.tsx'
 import FullScreenLayout from '@/layouts/modules/LayoutFullScreen.vue'

@@ -4,40 +4,40 @@ globs: **/*
 alwaysApply: true
 ---
 
-# Verification Standards
+# 验证标准
 
-As an autonomous agent, you are responsible for the quality of your output. **Unverified code is broken code.**
+作为自主 Agent，你负责输出质量。**未验证的代码就是有问题的代码。**
 
-## 1. The Verification Loop
+## 1. 验证循环
 
-For every UI or Logic change, you MUST perform this loop:
+对于每个 UI 或逻辑更改，必须执行此循环：
 
-1.  **Implement**: Write the code.
-2.  **Build/Type Check**: Run `vue-tsc --noEmit` or check for IDE errors.
-3.  **Browser Check** (Crucial):
-    - Use the `browser` tool to visit the page.
-    - **Check Console**: Are there any red errors? (e.g., 404, undefined, prop type check failed).
-    - **Visual Check**: Does it look like the requirement? (Alignment, Colors, Spacing).
-    - **Interaction**: Click the buttons. Do they work?
+1.  **实现**：编写代码。
+2.  **构建/类型检查**：运行 `vue-tsc --noEmit` 或检查 IDE 错误。
+3.  **浏览器检查**（关键）：
+    - 使用 `browser` 工具访问页面。
+    - **检查控制台**：是否有任何红色错误？（例如，404、undefined、prop 类型检查失败）。
+    - **视觉检查**：是否符合要求？（对齐、颜色、间距）。
+    - **交互**：点击按钮。它们是否工作？
 
-## 2. Using the Browser Tool
+## 2. 使用浏览器工具
 
-- **URL**: typically `http://localhost:xxxx` (check specific port).
-- **Console Logs**: Always check browser console output.
-- **Screenshots**: Take screenshots to confirm visual fidelity if the user asks or if complex UI changes were made.
+- **URL**：通常是 `http://localhost:xxxx`（检查特定端口）。
+- **控制台日志**：始终检查浏览器控制台输出。
+- **截图**：如果用户要求或进行了复杂的 UI 更改，请截图以确认视觉保真度。
 
-## 3. Common Failure Modes to Watch For
+## 3. 需要注意的常见失败模式
 
-- **UnoCSS FOUC**: Ensure `uno.config.ts` safelist covers dynamic classes.
-- **Import Errors**: Check for `Failed to resolve import` in the console.
-- **Vue Reactivity Loss**: Did you destructure a reactive object without `toRefs`?
-- **PrimeVue Styles**: Did you use a component without the proper unstyled config?
+- **UnoCSS FOUC**：确保 `uno.config.ts` safelist 覆盖动态类。
+- **导入错误**：检查控制台中是否有 `Failed to resolve import`。
+- **Vue 响应式丢失**：你是否在没有 `toRefs` 的情况下解构了响应式对象？
+- **PrimeVue 样式**：你是否在没有适当无样式配置的情况下使用了组件？
 
-## 4. Definition of Done
+## 4. 完成定义
 
-A task is NOT done until:
+任务在以下条件满足之前**未完成**：
 
-- [ ] No lint errors in file.
-- [ ] No console errors in browser.
-- [ ] Visuals match requirements (UnoCSS used).
-- [ ] Logic works as intended (Happy path verified).
+- [ ] 文件中没有 lint 错误。
+- [ ] 浏览器中没有控制台错误。
+- [ ] 视觉效果符合要求（使用了 UnoCSS）。
+- [ ] 逻辑按预期工作（已验证正常路径）。

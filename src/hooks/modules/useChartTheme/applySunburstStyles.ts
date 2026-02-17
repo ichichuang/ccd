@@ -1,3 +1,4 @@
+// ECharts 系列/节点样式边界：参数与 ECharts 对应类型一致，内部使用 any 避免强依赖 echarts 内部类型。
 import type { ThemeConfig } from './types'
 
 /**
@@ -62,8 +63,9 @@ export const applySunburstStyles = (series: any, themeConfig: ThemeConfig): any 
     newSeries.label = {
       ...newSeries.label,
       show: newSeries.label.show ?? true,
-      color: newSeries.label.color || themeConfig.textColor100,
-      fontSize: newSeries.label.fontSize || themeConfig.font.fontSizeSmall,
+      color: newSeries.label.color || themeConfig.foreground,
+      fontSize: newSeries.label.fontSize || themeConfig.size.fontSm,
+      lineHeight: newSeries.label.lineHeight || themeConfig.size.lineHeightSm,
     }
   }
 
@@ -97,7 +99,7 @@ export const applySunburstStyles = (series: any, themeConfig: ThemeConfig): any 
       itemStyle: {
         ...newSeries.emphasis.itemStyle,
         borderColor: themeConfig.color.primaryColors[0],
-        borderWidth: 2,
+        borderWidth: themeConfig.size.strokeSeries,
       },
     }
   }

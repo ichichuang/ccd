@@ -3,32 +3,33 @@ description: 样式审计：Find Hardcoded -> Replace with UnoCSS
 globs: **/*.vue, **/*.css, **/*.scss
 ---
 
-# Style Audit Skill
+# 样式审计技能
 
-## 1. Goal
+## 1. 目标
 
-Identify and fix non-compliant styles (hardcoded values) in the codebase.
+识别并修复代码库中不合规的样式（硬编码值）。
 
-## 2. Steps
+## 2. 步骤
 
-### Step 1: Scan
+### 步骤 1：扫描
 
-- Look for `<style>` blocks with raw CSS values.
-- Look for `style="..."` attributes with hardcoded values.
-- Look for non-semantic utility classes (e.g., `text-[#ff0000]`).
+- 查找带有原始 CSS 值的 `<style>` 块。
+- 查找带有硬编码值的 `style="..."` 属性。
+- 查找非语义工具类（例如，`text-[#ff0000]`）。
+- 查找 Vue 模板中的 TypeScript 语法（例如，`:prop="value as any"`、`:prop="value as MyType"`、`:prop="value: Type"`）。
 
-### Step 2: Map to System
+### 步骤 2：映射到系统
 
-- **Colors**: Map to `primary`, `secondary`, `destructive`, `success`, `info`, `warning` (and their `-light`, `-hover` variants).
-- **Spacing**: Map to `xs`, `sm`, `md`, `lg`, `xl`, `2xl`... (`p-md`, `gap-lg`).
-- **Layout**: Map to `w-sidebarWidth`, `h-headerHeight`.
+- **颜色**：映射到 `primary`、`secondary`、`danger`、`success`、`info`、`warn`（及其 `-light`、`-hover` 变体）。
+- **间距**：映射到 `xs`、`sm`、`md`、`lg`、`xl`、`2xl`...（`p-md`、`gap-lg`）。
+- **布局**：映射到 `w-sidebarWidth`、`h-headerHeight`。
 
-### Step 3: Replace
+### 步骤 3：替换
 
-- Convert `style="color: red"` -> `class="text-destructive"`.
-- Convert `padding: 20px` -> `class="p-xl"` (check strict scale).
+- 转换 `style="color: red"` -> `class="text-danger"`。
+- 转换 `padding: 20px` -> `class="p-xl"`（检查严格比例）。
 
-### Step 4: Verify
+### 步骤 4：验证
 
-- Visually verify the changes in `browser`.
-- Ensure no layout breakage.
+- 在 `browser` 中视觉验证更改。
+- 确保没有布局破坏。

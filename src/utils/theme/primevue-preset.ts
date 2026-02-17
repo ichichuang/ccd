@@ -27,7 +27,10 @@ import { generateColorScale, generateBorderRadiusScale } from './primevue-theme-
 // 3. 融合范围：仅对架构的配色系统（ThemeCssVars）与尺寸系统（SizeCssVars）做融合；
 //    highlight / mask / floatLabel 等保持 Aura 原始，由已覆盖的 primary / surface 等解析。
 //
-// 4. 尺寸模式与控件/布局缩放：
+// 4. 语义命名：项目对外 API 用 danger/warn；Aura/PrimeVue 内部（primitiveColors、
+//    toastDarkSemantic、messageDarkSemantic 的 key）仍用 error/warning，此处不改。
+//
+// 5. 尺寸模式与控件/布局缩放：
 //    - 尺寸模式（compact / comfortable / loose）通过 sizeStore.setSize → generateSizeVars →
 //      applySizeTheme 将整份 SizeCssVars 写入 :root，故 --font-size-*、--spacing-*、
 //      --radius-* 及布局变量（--sidebar-width、--header-height 等）均随模式更新。
@@ -93,10 +96,10 @@ const createColorAdapter = () => {
     getWarnForeground: getRgbVar('warn-foreground'),
     getWarnHover: getRgbVar('warn-hover'),
     getWarnLight: getRgbVar('warn-light'),
-    getDestructive: getRgbVar('destructive'),
-    getDestructiveForeground: getRgbVar('destructive-foreground'),
-    getDestructiveHover: getRgbVar('destructive-hover'),
-    getDestructiveLight: getRgbVar('destructive-light'),
+    getDanger: getRgbVar('danger'),
+    getDangerForeground: getRgbVar('danger-foreground'),
+    getDangerHover: getRgbVar('danger-hover'),
+    getDangerLight: getRgbVar('danger-light'),
     getInfo: getRgbVar('info'),
     getInfoForeground: getRgbVar('info-foreground'),
     getInfoHover: getRgbVar('info-hover'),
@@ -123,7 +126,7 @@ type ColorAdapter = ReturnType<typeof createColorAdapter>
  * - Secondary: '' → getSecondary, 'Text' → getSecondaryForeground, 'Hover'/'Active' → getSecondary, 'Border' → getSecondary
  * - Success: '' → getSuccess, 'Text' → getSuccessForeground, 'Hover'/'Active' → getSuccessHover, 'Border' → getSuccess
  * - Warn/Help: '' → getWarn, 'Text' → getWarnForeground, 'Hover'/'Active' → getWarnHover, 'Border' → getWarn
- * - Danger: '' → getDestructive, 'Text' → getDestructiveForeground, 'Hover'/'Active' → getDestructiveHover, 'Border' → getDestructive
+ * - Danger: '' → getDanger, 'Text' → getDangerForeground, 'Hover'/'Active' → getDangerHover, 'Border' → getDanger
  * - Contrast: '' → getForeground, 'Text' → getBackground, 'Hover'/'Active' → getForeground, 'Border' → getForeground
  */
 const getAdapterKey = (
@@ -137,8 +140,8 @@ const getAdapterKey = (
     return 'getForeground'
   }
 
-  // 映射 Aura colorType 到架构命名
-  let mappedType: 'Primary' | 'Secondary' | 'Success' | 'Warn' | 'Destructive' | 'Info' | 'Help'
+  // 映射 Aura colorType 到架构命名（与 PrimeVue severity 对齐：danger 统一命名）
+  let mappedType: 'Primary' | 'Secondary' | 'Success' | 'Warn' | 'Danger' | 'Info' | 'Help'
   if (colorType === 'Primary') {
     mappedType = 'Primary'
   } else if (colorType === 'Info') {
@@ -148,9 +151,9 @@ const getAdapterKey = (
   } else if (colorType === 'Help') {
     mappedType = 'Help'
   } else if (colorType === 'Danger') {
-    mappedType = 'Destructive'
+    mappedType = 'Danger'
   } else {
-    mappedType = colorType as 'Primary' | 'Secondary' | 'Success' | 'Warn' | 'Destructive' | 'Help'
+    mappedType = colorType as 'Primary' | 'Secondary' | 'Success' | 'Warn' | 'Danger' | 'Help'
   }
 
   // 映射 suffix 到架构命名
@@ -339,9 +342,9 @@ export const createCustomPreset = (sizeStore: ReturnType<typeof useSizeStore>) =
       ...generateColorScale('warn', { hasHover: true }),
     },
 
-    // 状态色 - Error/Destructive
+    // 状态色 - Error/Danger
     error: {
-      ...generateColorScale('destructive', { hasHover: true }),
+      ...generateColorScale('danger', { hasHover: true }),
     },
 
     // 辅助色 - Accent
@@ -792,7 +795,7 @@ export const createCustomPreset = (sizeStore: ReturnType<typeof useSizeStore>) =
           row: {
             background: 'rgb(var(--background))',
             hoverBackground: 'rgb(var(--muted))',
-            stripedBackground: 'rgb(var(--muted))',
+            stripedBackground: 'rgb(var(--muted-foreground) / 0.05)',
           },
           footerCell: {
             background: 'rgb(var(--background))',
@@ -813,7 +816,7 @@ export const createCustomPreset = (sizeStore: ReturnType<typeof useSizeStore>) =
           row: {
             background: 'rgb(var(--background))',
             hoverBackground: 'rgb(var(--muted))',
-            stripedBackground: 'rgb(var(--muted))',
+            stripedBackground: 'rgb(var(--muted-foreground) / 0.06)',
           },
           footerCell: {
             background: 'rgb(var(--background))',
@@ -2039,12 +2042,12 @@ export const createCustomPreset = (sizeStore: ReturnType<typeof useSizeStore>) =
       },
     },
     error: {
-      background: 'rgb(var(--destructive))',
-      borderColor: 'rgb(var(--destructive))',
-      color: 'rgb(var(--destructive-foreground))',
+      background: 'rgb(var(--danger))',
+      borderColor: 'rgb(var(--danger))',
+      color: 'rgb(var(--danger-foreground))',
       closeButton: {
         hoverBackground: 'rgb(var(--muted-foreground) / 0.1)',
-        focusRing: { color: 'rgb(var(--destructive))' },
+        focusRing: { color: 'rgb(var(--danger))' },
       },
     },
     secondary: {
@@ -2105,13 +2108,13 @@ export const createCustomPreset = (sizeStore: ReturnType<typeof useSizeStore>) =
       },
     },
     error: {
-      background: 'rgb(var(--destructive))',
-      borderColor: 'rgb(var(--destructive))',
-      color: 'rgb(var(--destructive-foreground))',
-      detailColor: 'rgb(var(--destructive-foreground))',
+      background: 'rgb(var(--danger))',
+      borderColor: 'rgb(var(--danger))',
+      color: 'rgb(var(--danger-foreground))',
+      detailColor: 'rgb(var(--danger-foreground))',
       closeButton: {
         hoverBackground: 'rgb(var(--muted-foreground) / 0.1)',
-        focusRing: { color: 'rgb(var(--destructive))' },
+        focusRing: { color: 'rgb(var(--danger))' },
       },
     },
     secondary: {
@@ -2137,6 +2140,11 @@ export const createCustomPreset = (sizeStore: ReturnType<typeof useSizeStore>) =
   }
   if (components?.toast) {
     deepMergeStylesAdvancedInPlace(components.toast, {
+      // 内边距：使用语义 spacing 替代 overlay.popover.padding，更紧凑
+      content: {
+        padding: 'var(--spacing-sm) var(--spacing-xs) var(--spacing-sm) var(--spacing-sm)',
+      },
+      // 关闭按钮贴右上角
       colorScheme: { dark: toastDarkSemantic },
     })
   }

@@ -1,4 +1,9 @@
-// 高级配置合并函数（仅依赖 useChartTheme 内部，消除对 use-echarts 的循环依赖）
+/**
+ * 高级配置合并函数（ECharts 边界层）
+ *
+ * 仅依赖 useChartTheme 内部，消除对 UseEcharts 的循环依赖。option 与“函数返回配置”的调用
+ * 使用类型断言/any 以兼容 UseEcharts 的 function-type props（如 animationConfig: () => ({...})）。
+ */
 
 import {
   DEFAULT_ANIMATION_CONFIG,
@@ -14,8 +19,13 @@ import type { ChartAdvancedConfig } from './types'
 /**
  * 合并高级配置到 ECharts 选项
  * 采用函数式编程，返回新对象而不修改原对象
+ * @param t - i18n 的 t，用于工具箱等文案；不传时使用英文 fallback
  */
-export function mergeAdvancedConfigs(option: any, advancedConfig?: ChartAdvancedConfig): any {
+export function mergeAdvancedConfigs(
+  option: any,
+  advancedConfig?: ChartAdvancedConfig,
+  t?: (key: string) => string
+): any {
   if (!advancedConfig || !option || typeof option !== 'object') {
     return option
   }
@@ -48,7 +58,7 @@ export function mergeAdvancedConfigs(option: any, advancedConfig?: ChartAdvanced
     if (toolboxConfig && toolboxConfig.show) {
       mergedOption = {
         ...mergedOption,
-        toolbox: { ...getDefaultToolboxConfig(), ...toolboxConfig },
+        toolbox: { ...getDefaultToolboxConfig(t), ...toolboxConfig },
       }
     }
   }

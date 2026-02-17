@@ -34,7 +34,7 @@ function copyToClipboard(text: string, label?: string) {
       window.$message?.success(`已复制: ${label || text}`)
     })
     .catch(() => {
-      window.$message?.error('复制失败')
+      window.$message?.danger('复制失败')
     })
 }
 
@@ -146,7 +146,7 @@ const state = scrollbarRef.value?.state()`,
       </div>
 
       <!-- Control Panel -->
-      <Card class="border border-border">
+      <Card class="component-border">
         <template #title>
           <div class="flex items-center gap-sm">
             <Icons
@@ -204,7 +204,7 @@ const state = scrollbarRef.value?.state()`,
       <!-- Demo Section -->
       <div class="grid grid-cols-1 lg:grid-cols-5 gap-lg">
         <!-- Vertical Scroll Demo -->
-        <Card class="border border-border lg:col-span-2">
+        <Card class="component-border lg:col-span-2">
           <template #title>
             <div class="flex items-center justify-between">
               <div class="flex items-center gap-sm">
@@ -234,9 +234,9 @@ const state = scrollbarRef.value?.state()`,
                   <div
                     v-for="item in items"
                     :key="item.id"
-                    class="p-padding-md rounded-scale-md border border-border bg-card hover:bg-accent/50 transition-colors group cursor-default"
+                    class="p-padding-md rounded-scale-md component-border bg-card hover:bg-accent/50 transition-colors group cursor-default"
                   >
-                    <div class="flex justify-between items-start mb-1">
+                    <div class="flex justify-between items-start mb-margin-xs">
                       <span class="font-medium fs-sm group-hover:text-primary transition-colors">
                         {{ item.title }}
                       </span>
@@ -255,7 +255,7 @@ const state = scrollbarRef.value?.state()`,
         <!-- Right Side -->
         <div class="flex flex-col gap-lg lg:col-span-3">
           <!-- Horizontal Scroll Demo -->
-          <Card class="border border-border">
+          <Card class="component-border">
             <template #title>
               <div class="flex items-center gap-sm">
                 <Icons
@@ -275,7 +275,7 @@ const state = scrollbarRef.value?.state()`,
                     <div
                       v-for="item in horizontalItems"
                       :key="item"
-                      class="scroll-demo-tile rounded-scale-md border border-border bg-gradient-to-br from-background to-muted flex items-center justify-center shrink-0 shadow-sm hover:shadow-md transition-all hover:-translate-y-1"
+                      class="scroll-demo-tile rounded-scale-md component-border bg-gradient-to-br from-background to-muted flex items-center justify-center shrink-0 shadow-sm hover:shadow-md transition-all hover:-translate-y-1"
                     >
                       <span class="font-medium text-muted-foreground">{{ item }}</span>
                     </div>
@@ -286,7 +286,7 @@ const state = scrollbarRef.value?.state()`,
           </Card>
 
           <!-- Event Logs -->
-          <Card class="border border-border flex-1">
+          <Card class="component-border flex-1">
             <template #title>
               <div class="flex items-center justify-between">
                 <div class="flex items-center gap-sm">
@@ -308,7 +308,7 @@ const state = scrollbarRef.value?.state()`,
                   <div class="p-padding-md font-mono fs-xs space-y-1">
                     <div
                       v-if="logs.length === 0"
-                      class="text-muted-foreground italic select-none py-8 text-center"
+                      class="text-muted-foreground italic select-none py-padding-2xl text-center"
                     >
                       等待事件...
                     </div>
@@ -329,7 +329,7 @@ const state = scrollbarRef.value?.state()`,
       </div>
 
       <!-- Code Examples -->
-      <Card class="border border-border">
+      <Card class="component-border">
         <template #title>
           <div class="flex items-center gap-sm">
             <Icons
@@ -376,7 +376,7 @@ const state = scrollbarRef.value?.state()`,
       </Card>
 
       <!-- Props Reference -->
-      <Card class="border border-border">
+      <Card class="component-border">
         <template #title>
           <div class="flex items-center gap-sm">
             <Icons
@@ -390,7 +390,7 @@ const state = scrollbarRef.value?.state()`,
           <CScrollbar class="w-full min-w-0">
             <table class="w-full border-collapse fs-sm">
               <thead>
-                <tr class="border-b border-border">
+                <tr class="border-b-default">
                   <th class="text-left p-padding-sm text-muted-foreground font-medium">属性名</th>
                   <th class="text-left p-padding-sm text-muted-foreground font-medium">类型</th>
                   <th class="text-left p-padding-sm text-muted-foreground font-medium">默认值</th>
@@ -398,7 +398,7 @@ const state = scrollbarRef.value?.state()`,
                 </tr>
               </thead>
               <tbody>
-                <tr class="border-b border-border/50">
+                <tr class="border-b border-solid border-border/50">
                   <td class="p-padding-sm font-mono text-primary">options</td>
                   <td class="p-padding-sm font-mono text-muted-foreground">
                     OverlayScrollbarsOptions
@@ -406,7 +406,7 @@ const state = scrollbarRef.value?.state()`,
                   <td class="p-padding-sm font-mono">-</td>
                   <td class="p-padding-sm">OverlayScrollbars 配置对象</td>
                 </tr>
-                <tr class="border-b border-border/50">
+                <tr class="border-b border-solid border-border/50">
                   <td class="p-padding-sm font-mono text-primary">visibility</td>
                   <td class="p-padding-sm font-mono text-muted-foreground">
                     'auto' | 'visible' | 'hidden'
@@ -414,19 +414,19 @@ const state = scrollbarRef.value?.state()`,
                   <td class="p-padding-sm font-mono">'auto'</td>
                   <td class="p-padding-sm">滚动条可见性模式</td>
                 </tr>
-                <tr class="border-b border-border/50">
+                <tr class="border-b border-solid border-border/50">
                   <td class="p-padding-sm font-mono text-primary">@initialized</td>
                   <td class="p-padding-sm font-mono text-muted-foreground">(instance) => void</td>
                   <td class="p-padding-sm font-mono">-</td>
                   <td class="p-padding-sm">初始化完成事件</td>
                 </tr>
-                <tr class="border-b border-border/50">
+                <tr class="border-b border-solid border-border/50">
                   <td class="p-padding-sm font-mono text-primary">@updated</td>
                   <td class="p-padding-sm font-mono text-muted-foreground">(instance) => void</td>
                   <td class="p-padding-sm font-mono">-</td>
                   <td class="p-padding-sm">更新事件</td>
                 </tr>
-                <tr class="border-b border-border/50">
+                <tr class="border-b border-solid border-border/50">
                   <td class="p-padding-sm font-mono text-primary">@scroll</td>
                   <td class="p-padding-sm font-mono text-muted-foreground">
                     (instance, event) => void

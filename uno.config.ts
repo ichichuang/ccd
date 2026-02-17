@@ -256,7 +256,7 @@ function buildThemeDemoSafelist(): string[] {
     if (key === 'border' || key === 'ring') list.push(`border-${varName}`)
   }
   list.push(
-    'border-destructive/50',
+    'border-danger/50',
     'border-primary/20',
     'border-primary/30',
     'border-primary/50',
@@ -341,13 +341,13 @@ function buildThemeDemoSafelist(): string[] {
   // ====== PrimeVue 组件悬停态（Button text/outlined 使用 *-light 作为 hover 背景） ======
   list.push(
     'hover:bg-sidebar-accent/50',
-    'hover:bg-destructive-light',
+    'hover:bg-danger-light',
     'hover:bg-primary-light',
     'hover:bg-success-light',
     'hover:bg-info-light',
     'hover:bg-warn-light',
     'hover:bg-help-light',
-    'bg-destructive/10',
+    'bg-danger/10',
     'bg-primary/5',
     'bg-info/10'
   )
@@ -525,12 +525,20 @@ export default defineConfig({
     'interactive-focus-ring': 'focus:outline-none focus:ring-2 focus:ring-primary/50',
 
     // =========================================================
-    // ⑧ 组件语义基础（Component Base Styles）
-    // 说明：设计系统中的基础组件语义
+    // ⑧a 边框快捷类（Border Shortcuts）
+    // 说明：仅设 border-width + border-color 不设 border-style 会导致边框不显示，
+    //       此处统一为 1px solid + 语义色，业务层优先使用此类，避免漏写 border-solid。
     // =========================================================
     'component-border': 'border border-solid border-border',
+    'border-b-default': 'border-b border-solid border-border',
+    'border-t-default': 'border-t border-solid border-border',
+
+    // =========================================================
+    // ⑧ 组件语义基础（Component Base Styles）
+    // 说明：设计系统中的基础组件语义；卡片边框使用 component-border 保证可见。
+    // =========================================================
     'component-card-base':
-      'rounded-scale-md bg-card text-card-foreground border border-border shadow-sm',
+      'rounded-scale-md bg-card text-card-foreground component-border shadow-sm',
     'component-card-hoverable': 'behavior-hover-transition hover-elevated',
     'component-card-layout': 'density-normal',
     'component-card-content': 'row-center',

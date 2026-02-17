@@ -35,7 +35,7 @@ const enUS = {
     systemConfigurationTheme: 'Theme',
     systemConfigurationSize: 'Size',
     systemConfigurationBreakpoints: 'Breakpoints',
-    systemConfigurationScrollbar: 'Scrollbar',
+    systemConfigurationScrollbar: 'CScrollbar',
     systemConfigurationUnocss: 'UnoCSS',
   },
 
@@ -66,6 +66,7 @@ const enUS = {
       chunkUploadFailed: 'Chunk upload failed: {chunk}/{total}',
       fileMergeFailed: 'File merge failed: {fileName}',
       fileDownloadFailed: 'File download failed',
+      invalidResponseFormat: 'File download failed: invalid response format',
     },
     connection: {
       networkUnavailable: 'Network unavailable',
@@ -86,6 +87,16 @@ const enUS = {
     deleteTitle: 'Delete Confirmation',
     deleteMessage: 'Are you sure you want to delete?',
   },
+  chart: {
+    toolbox: {
+      saveAsImage: 'Save as image',
+      restore: 'Restore',
+      dataView: 'Data view',
+      dataZoomZoom: 'Area zoom',
+      dataZoomBack: 'Restore area zoom',
+      reset: 'Reset',
+    },
+  },
   common: {
     confirm: 'Confirm',
     cancel: 'Cancel',
@@ -94,6 +105,14 @@ const enUS = {
     close: 'Close',
     closeOthers: 'Close Others',
     closeAll: 'Close All',
+    refresh: 'Refresh',
+    search: 'Search',
+    searchPlaceholder: 'Search...',
+    export: 'Export',
+    exportSuccess: 'Export succeeded',
+    exportFailed: 'Export failed',
+    loading: 'Loading...',
+    noMoreData: 'No more data',
   },
   settings: {
     themeMode: 'Theme Mode',
@@ -172,6 +191,21 @@ const enUS = {
     unsupportedComponent: 'Unsupported component type: {component}',
     customNoRender: 'Custom component missing render function',
     customRenderFailed: 'Custom component render failed',
+    validation: {
+      required: 'Required',
+      minChars: 'At least {n} characters',
+      minLength: 'Length cannot be less than {n}',
+      minValue: 'Minimum value is {n}',
+      maxChars: 'At most {n} characters',
+      maxLength: 'Length cannot be greater than {n}',
+      maxValue: 'Maximum value is {n}',
+      email: 'Invalid email format',
+      url: 'Invalid URL format',
+      pattern: 'Invalid format',
+      invalidPattern: 'Invalid regex pattern configuration',
+      integer: 'Must be an integer',
+      dateType: 'Invalid date format',
+    },
   },
 }
 

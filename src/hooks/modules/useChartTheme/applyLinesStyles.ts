@@ -1,3 +1,4 @@
+// ECharts 系列样式边界：参数与 ECharts lines 系列一致，内部使用 any 避免强依赖 echarts 内部类型。
 import type { ThemeConfig } from './types'
 
 /**
@@ -21,7 +22,7 @@ export const applyLinesStyles = (series: any, themeConfig: ThemeConfig, index: n
     lineStyleUpdates.color = seriesColor
   }
   if (!newSeries.lineStyle.width) {
-    lineStyleUpdates.width = 2
+    lineStyleUpdates.width = themeConfig.size.strokeSeries
   }
   if (newSeries.lineStyle.opacity === undefined) {
     lineStyleUpdates.opacity = 0.6
@@ -42,10 +43,10 @@ export const applyLinesStyles = (series: any, themeConfig: ThemeConfig, index: n
     effectUpdates.show = true
   }
   if (!newSeries.effect.color) {
-    effectUpdates.color = '#fff'
+    effectUpdates.color = themeConfig.primaryForeground || themeConfig.background
   }
   if (newSeries.effect.symbolSize === undefined) {
-    effectUpdates.symbolSize = 3
+    effectUpdates.symbolSize = themeConfig.size.symbolSm
   }
   if (Object.keys(effectUpdates).length > 0) {
     newSeries.effect = {

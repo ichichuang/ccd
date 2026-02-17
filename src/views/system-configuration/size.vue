@@ -20,7 +20,7 @@ function copyToClipboard(text: string, label?: string) {
       window.$message?.success(`已复制: ${label || text}`)
     })
     .catch(() => {
-      window.$message?.error('复制失败')
+      window.$message?.danger('复制失败')
     })
 }
 
@@ -145,7 +145,7 @@ const currentPreset = computed(
       <!-- Header -->
       <div class="flex flex-col gap-xs">
         <div class="flex items-center gap-md">
-          <div class="p-3 bg-primary/10 rounded-scale-lg">
+          <div class="p-padding-md bg-primary/10 rounded-scale-lg">
             <Icons
               name="i-lucide-ruler"
               class="text-primary fs-2xl"
@@ -161,7 +161,7 @@ const currentPreset = computed(
       </div>
 
       <!-- Font Size Section -->
-      <Card class="border border-border">
+      <Card class="component-border">
         <template #title>
           <div class="flex items-center gap-sm">
             <Icons
@@ -178,13 +178,13 @@ const currentPreset = computed(
         <template #content>
           <div class="flex flex-col gap-md">
             <p class="text-muted-foreground fs-sm">
-              基于 <code class="bg-muted px-1 rounded">fontSizeBase</code> 与
-              <code class="bg-muted px-1 rounded">FONT_SCALE_RATIOS</code> 动态计算
+              基于 <code class="bg-muted px-padding-xs rounded">fontSizeBase</code> 与
+              <code class="bg-muted px-padding-xs rounded">FONT_SCALE_RATIOS</code> 动态计算
             </p>
             <CScrollbar class="w-full min-w-0">
               <table class="w-full border-collapse">
                 <thead>
-                  <tr class="border-b border-border">
+                  <tr class="border-b-default">
                     <th class="text-left p-padding-sm text-muted-foreground fs-sm font-medium">
                       等级
                     </th>
@@ -206,7 +206,7 @@ const currentPreset = computed(
                   <tr
                     v-for="item in fontSizeItems"
                     :key="item.key"
-                    class="border-b border-border/50 hover:bg-muted/30 transition-colors"
+                    class="border-b border-solid border-border/50 hover:bg-muted/30 transition-colors"
                   >
                     <td class="p-padding-sm">
                       <Tag
@@ -255,7 +255,7 @@ const currentPreset = computed(
       </Card>
 
       <!-- Spacing Section -->
-      <Card class="border border-border">
+      <Card class="component-border">
         <template #title>
           <div class="flex items-center gap-sm">
             <Icons
@@ -272,13 +272,13 @@ const currentPreset = computed(
         <template #content>
           <div class="flex flex-col gap-md">
             <p class="text-muted-foreground fs-sm">
-              基于 <code class="bg-muted px-1 rounded">spacingBase</code> ×
-              <code class="bg-muted px-1 rounded">SPACING_SCALE_RATIOS</code> 动态计算
+              基于 <code class="bg-muted px-padding-xs rounded">spacingBase</code> ×
+              <code class="bg-muted px-padding-xs rounded">SPACING_SCALE_RATIOS</code> 动态计算
             </p>
             <CScrollbar class="w-full min-w-0">
               <table class="w-full border-collapse">
                 <thead>
-                  <tr class="border-b border-border">
+                  <tr class="border-b-default">
                     <th class="text-left p-padding-sm text-muted-foreground fs-sm font-medium">
                       等级
                     </th>
@@ -300,7 +300,7 @@ const currentPreset = computed(
                   <tr
                     v-for="item in spacingItems"
                     :key="item.key"
-                    class="border-b border-border/50 hover:bg-muted/30 transition-colors"
+                    class="border-b border-solid border-border/50 hover:bg-muted/30 transition-colors"
                   >
                     <td class="p-padding-sm">
                       <Tag
@@ -390,7 +390,7 @@ const currentPreset = computed(
       </Card>
 
       <!-- Radius Section -->
-      <Card class="border border-border">
+      <Card class="component-border">
         <template #title>
           <div class="flex items-center gap-sm">
             <Icons
@@ -407,8 +407,8 @@ const currentPreset = computed(
         <template #content>
           <div class="flex flex-col gap-md">
             <p class="text-muted-foreground fs-sm">
-              基于 <code class="bg-muted px-1 rounded">radius</code> ×
-              <code class="bg-muted px-1 rounded">RADIUS_SCALE_RATIOS</code> 动态计算
+              基于 <code class="bg-muted px-padding-xs rounded">radius</code> ×
+              <code class="bg-muted px-padding-xs rounded">RADIUS_SCALE_RATIOS</code> 动态计算
             </p>
             <div class="grid grid-cols-3 md:grid-cols-5 lg:grid-cols-9 gap-md">
               <div
@@ -418,7 +418,7 @@ const currentPreset = computed(
                 @click="copyToClipboard(item.unoClass)"
               >
                 <div
-                  class="w-16 h-16 bg-primary/80 transition-all group-hover:scale-110"
+                  class="w-[var(--spacing-3xl)] h-[var(--spacing-3xl)] bg-primary/80 transition-all group-hover:scale-110"
                   :style="{ borderRadius: `var(${item.cssVar})` }"
                 />
                 <Tag
@@ -435,7 +435,7 @@ const currentPreset = computed(
       </Card>
 
       <!-- Transition Duration Section -->
-      <Card class="border border-border">
+      <Card class="component-border">
         <template #title>
           <div class="flex items-center gap-sm">
             <Icons
@@ -471,7 +471,7 @@ const currentPreset = computed(
                   <span class="font-mono fs-xs text-primary">{{ item.unoClass }}</span>
                 </div>
                 <div
-                  class="w-12 h-12 bg-primary rounded-scale-md group-hover:translate-x-2 group-hover:bg-primary-hover"
+                  class="w-[var(--spacing-2xl)] h-[var(--spacing-2xl)] bg-primary rounded-scale-md group-hover:translate-x-[var(--spacing-sm)] group-hover:bg-primary-hover"
                   :style="{ transitionDuration: `var(${item.cssVar})`, transitionProperty: 'all' }"
                 />
               </div>
@@ -481,7 +481,7 @@ const currentPreset = computed(
       </Card>
 
       <!-- Layout Dimensions Section -->
-      <Card class="border border-border">
+      <Card class="component-border">
         <template #title>
           <div class="flex items-center gap-sm">
             <Icons
@@ -536,7 +536,7 @@ const currentPreset = computed(
       </Card>
 
       <!-- Size Presets Section -->
-      <Card class="border border-border">
+      <Card class="component-border">
         <template #title>
           <div class="flex items-center gap-sm">
             <Icons
@@ -555,7 +555,7 @@ const currentPreset = computed(
             <div
               v-for="preset in SIZE_PRESETS"
               :key="preset.name"
-              class="flex flex-col gap-md p-padding-lg bg-muted/20 rounded-scale-lg border border-border/50"
+              class="flex flex-col gap-md p-padding-lg bg-muted/20 rounded-scale-lg border border-solid border-border/50"
             >
               <div class="flex items-center justify-between">
                 <h3 class="fs-lg font-semibold text-foreground">{{ preset.label }}</h3>
@@ -596,7 +596,7 @@ const currentPreset = computed(
       </Card>
 
       <!-- Quick Reference -->
-      <Card class="border border-border bg-gradient-to-br from-primary/5 to-accent/5">
+      <Card class="component-border bg-gradient-to-br from-primary/5 to-accent/5">
         <template #title>
           <div class="flex items-center gap-sm">
             <Icons
@@ -657,8 +657,8 @@ const currentPreset = computed(
             </div>
           </div>
           <p class="mt-margin-md text-muted-foreground fs-sm">
-            <span class="font-mono bg-muted px-1 rounded">{scale}</span> = xs | sm | md | lg | xl |
-            2xl | 3xl | 4xl | 5xl
+            <span class="font-mono bg-muted px-padding-xs rounded">{scale}</span> = xs | sm | md |
+            lg | xl | 2xl | 3xl | 4xl | 5xl
           </p>
         </template>
       </Card>

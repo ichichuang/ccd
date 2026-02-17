@@ -13,17 +13,13 @@
  * </CScrollbar>
  */
 import { ref, watch, computed, type ComputedRef } from 'vue'
-import { type OverlayScrollbars, type PartialOptions } from 'overlayscrollbars'
+import { type OverlayScrollbars } from 'overlayscrollbars'
 import { OverlayScrollbarsComponent } from 'overlayscrollbars-vue'
 import { useThemeStore } from '@/stores/modules/theme'
 import { TRANSITION_SCALE_VALUES } from '@/constants/sizeScale'
-import type {
-  CScrollbarProps,
-  OnUpdatedEventListenerArgs,
-  ScrollbarVisibility,
-} from './utils/types'
+import type { ScrollbarProps, OnUpdatedEventListenerArgs } from './utils/types'
 
-const props = withDefaults(defineProps<CScrollbarProps>(), {
+const props = withDefaults(defineProps<ScrollbarProps>(), {
   visibility: 'auto',
   defer: true,
   native: false,

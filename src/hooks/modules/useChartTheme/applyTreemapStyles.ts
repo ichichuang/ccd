@@ -1,3 +1,4 @@
+// ECharts 系列/节点样式边界：参数与 ECharts treemap 系列一致，内部使用 any 避免强依赖 echarts 内部类型。
 import type { ThemeConfig } from './types'
 
 /**
@@ -131,10 +132,13 @@ export const applyTreemapStyles = (series: any, themeConfig: ThemeConfig): any =
     labelUpdates.formatter = '{b}'
   }
   if (!newSeries.label.color) {
-    labelUpdates.color = themeConfig.textColor100
+    labelUpdates.color = themeConfig.foreground
   }
   if (!newSeries.label.fontSize) {
-    labelUpdates.fontSize = themeConfig.font.fontSizeSmall
+    labelUpdates.fontSize = themeConfig.size.fontSm
+  }
+  if (!newSeries.label.lineHeight) {
+    labelUpdates.lineHeight = themeConfig.size.lineHeightSm
   }
   if (newSeries.label.show === undefined) {
     labelUpdates.show = true
@@ -179,7 +183,7 @@ export const applyTreemapStyles = (series: any, themeConfig: ThemeConfig): any =
     upperLabelUpdates.show = true
   }
   if (!newSeries.upperLabel.color) {
-    upperLabelUpdates.color = themeConfig.textColor200
+    upperLabelUpdates.color = themeConfig.mutedForeground
   }
   if (!newSeries.upperLabel.textBorderColor) {
     upperLabelUpdates.textBorderColor = 'transparent'
@@ -215,7 +219,7 @@ export const applyTreemapStyles = (series: any, themeConfig: ThemeConfig): any =
     itemStyleUpdates.gapWidth = 0
   }
   if (newSeries.itemStyle.borderRadius === undefined) {
-    itemStyleUpdates.borderRadius = 2
+    itemStyleUpdates.borderRadius = themeConfig.size.radiusSm
   }
   if (Object.keys(itemStyleUpdates).length > 0) {
     newSeries.itemStyle = {
@@ -276,19 +280,19 @@ export const applyTreemapStyles = (series: any, themeConfig: ThemeConfig): any =
   }
   const breadcrumbItemStyleUpdates: any = {}
   if (!newSeries.breadcrumb.itemStyle.color) {
-    breadcrumbItemStyleUpdates.color = themeConfig.bgColor200
+    breadcrumbItemStyleUpdates.color = themeConfig.background
   }
   if (newSeries.breadcrumb.itemStyle.opacity === undefined) {
     breadcrumbItemStyleUpdates.opacity = 0.95
   }
   if (!newSeries.breadcrumb.itemStyle.borderColor) {
-    breadcrumbItemStyleUpdates.borderColor = themeConfig.bgColor300
+    breadcrumbItemStyleUpdates.borderColor = themeConfig.card
   }
   if (!newSeries.breadcrumb.itemStyle.borderWidth) {
-    breadcrumbItemStyleUpdates.borderWidth = 1
+    breadcrumbItemStyleUpdates.borderWidth = themeConfig.size.strokeHairline
   }
   if (!newSeries.breadcrumb.itemStyle.borderRadius) {
-    breadcrumbItemStyleUpdates.borderRadius = 4
+    breadcrumbItemStyleUpdates.borderRadius = themeConfig.size.radiusSm
   }
   if (Object.keys(breadcrumbItemStyleUpdates).length > 0) {
     newSeries.breadcrumb.itemStyle = {
@@ -304,7 +308,7 @@ export const applyTreemapStyles = (series: any, themeConfig: ThemeConfig): any =
   if (!newSeries.breadcrumb.itemStyle.textStyle.color) {
     newSeries.breadcrumb.itemStyle.textStyle = {
       ...newSeries.breadcrumb.itemStyle.textStyle,
-      color: themeConfig.textColor100,
+      color: themeConfig.foreground,
     }
   }
 
@@ -314,10 +318,13 @@ export const applyTreemapStyles = (series: any, themeConfig: ThemeConfig): any =
   }
   const breadcrumbTextStyleUpdates: any = {}
   if (!newSeries.breadcrumb.textStyle.color) {
-    breadcrumbTextStyleUpdates.color = themeConfig.textColor100
+    breadcrumbTextStyleUpdates.color = themeConfig.foreground
   }
   if (!newSeries.breadcrumb.textStyle.fontSize) {
-    breadcrumbTextStyleUpdates.fontSize = themeConfig.font.fontSizeSmall
+    breadcrumbTextStyleUpdates.fontSize = themeConfig.size.fontSm
+  }
+  if (!newSeries.breadcrumb.textStyle.lineHeight) {
+    breadcrumbTextStyleUpdates.lineHeight = themeConfig.size.lineHeightSm
   }
   if (Object.keys(breadcrumbTextStyleUpdates).length > 0) {
     newSeries.breadcrumb.textStyle = {
@@ -335,7 +342,7 @@ export const applyTreemapStyles = (series: any, themeConfig: ThemeConfig): any =
   if (!newSeries.breadcrumb.separatorStyle.color) {
     newSeries.breadcrumb.separatorStyle = {
       ...newSeries.breadcrumb.separatorStyle,
-      color: themeConfig.bgColor300,
+      color: themeConfig.card,
       opacity: 0.9,
     }
   }
@@ -349,10 +356,10 @@ export const applyTreemapStyles = (series: any, themeConfig: ThemeConfig): any =
   }
   const breadcrumbEmphasisUpdates: any = {}
   if (!newSeries.breadcrumb.emphasis.itemStyle.color) {
-    breadcrumbEmphasisUpdates.color = themeConfig.bgColor300
+    breadcrumbEmphasisUpdates.color = themeConfig.card
   }
   if (!newSeries.breadcrumb.emphasis.itemStyle.borderColor) {
-    breadcrumbEmphasisUpdates.borderColor = themeConfig.bgColor300
+    breadcrumbEmphasisUpdates.borderColor = themeConfig.card
   }
   if (newSeries.breadcrumb.emphasis.itemStyle.opacity === undefined) {
     breadcrumbEmphasisUpdates.opacity = 1
@@ -369,7 +376,7 @@ export const applyTreemapStyles = (series: any, themeConfig: ThemeConfig): any =
   if (!newSeries.breadcrumb.emphasis.textStyle.color) {
     newSeries.breadcrumb.emphasis.textStyle = {
       ...newSeries.breadcrumb.emphasis.textStyle,
-      color: themeConfig.textColor100,
+      color: themeConfig.foreground,
     }
   }
 

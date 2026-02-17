@@ -83,10 +83,16 @@ If you find an existing utility/hook that covers most of the need, you MUST exte
 
 ### Schema-Form Hooks（表单 Schema 相关任务必查）
 
-- `src/components/schema-form/hooks/`
+- `src/hooks/modules/useSchemaForm.ts`：Schema 与 formValues 状态管理（无头模式），addField/removeField/updateField/moveField 等
+- `src/components/SchemaForm/hooks/`
   - useFormSync, useFormActions, useFormMemory, useLayout, useValidation
   - usePersistence, useSteps, useSubmit, useLifecycle
   - 以及该目录下所有导出
+
+### DataTable 列持久化（表格列配置相关任务必查）
+
+- `src/hooks/modules/useTablePersistence.ts`：DataTable 列顺序/列宽/隐藏列持久化
+- 需配合 `tableId` 使用，数据存于 `src/stores/modules/dataTable.ts`；详见 `docs/DataTable_COMPONENT.md` §4 列持久化
 
 ## 2. Import Rules (Hard Requirements)
 
@@ -112,7 +118,7 @@ When you need a method/function for a task:
 
 Before implementing any logic, search in this order:
 
-1. **Domain-specific hooks** (if task involves schema-form): `src/components/schema-form/hooks/`
+1. **Domain-specific hooks** (if task involves SchemaForm): `src/components/SchemaForm/hooks/`
 2. **Global utils**: `src/utils/` (lodashes, date, strings, ids, browser, safeStorage, http/*, mitt, deviceSync, etc.)
 
 Use `grep` / codebase_search for function names or semantics before writing code.
@@ -128,13 +134,13 @@ Before adding the method inline or creating a new file:
 1. **Analyze** whether the method is suitable for global reuse:
    - Used by multiple modules? → Likely global.
    - Pure function, no UI/store coupling? → Likely global.
-   - Schema-form-specific only? → Prefer `src/components/schema-form/hooks/` or `utils/`.
+   - SchemaForm-specific only? → Prefer `src/components/SchemaForm/hooks/` or `utils/`.
    - Single-use, tightly coupled to one component? → May stay local.
 
 2. **Output a brief analysis** to the user:
    - Method purpose
    - Suitable for global use? (Yes/No + reason)
-   - Recommended placement: `src/utils/<file>.ts` OR `src/components/schema-form/hooks/` OR keep at usage site
+   - Recommended placement: `src/utils/<file>.ts` OR `src/components/SchemaForm/hooks/` OR keep at usage site
    - Ask: "Should I add this to the utils/hooks directory, or keep it locally?"
 
 3. **Wait for user decision** before placing the method.
@@ -216,6 +222,13 @@ When a task matches the following needs, you MUST use the specified exports:
 
 - Theme switching → `useThemeSwitch()` (+ `isThemeLocked()` if needed)
 - Locale switching → `useLocale()`
+
+### SchemaForm (src/components/SchemaForm, src/hooks/modules/useSchemaForm.ts)
+
+- Schema 驱动多字段表单 → `SchemaForm` + `useSchemaForm`
+- 动态增删改字段 → `addField` / `removeField` / `updateField` / `moveField`
+- 校验 / 提交 / 重置 / 清空 → `validate` / `submit` / `reset` / `clear`（来自 SchemaForm ref 或 useSchemaForm）
+- 详见 `docs/SCHEMA_FORM_COMPONENT.md`
 
 ### Layout / Infra hooks (src/hooks/layout/\*)
 

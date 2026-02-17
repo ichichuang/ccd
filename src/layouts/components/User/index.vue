@@ -54,7 +54,7 @@ const onLogout = async () => {
     <Popover
       ref="popoverRef"
       :dismissable="true"
-      class="border border-border"
+      class="component-border"
     >
       <div class="column gap-sm">
         <div class="flex items-center gap-sm">

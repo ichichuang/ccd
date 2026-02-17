@@ -1,11 +1,12 @@
-# prime-dialog 二次封装
+# PrimeDialog 二次封装
 
-> 项目基于 PrimeVue Dialog 的二次封装，支持便捷方法、自定义渲染器、多层弹窗、拦截器等。
-> 当需要**自定义弹窗、反馈提示、确认对话框**时，优先使用 `useDialog()`，禁止在业务中自行管理 Dialog 状态。
+> **目标读者：AI**。本文档供 AI 在代码生成时参照，涉及弹窗、反馈提示、确认对话框时必读。
+>
+> 项目基于 PrimeVue Dialog 的二次封装，支持便捷方法、自定义渲染器、多层弹窗、拦截器等。当需要**自定义弹窗、反馈提示、确认对话框**时，优先使用 `useDialog()`，禁止在业务中自行管理 Dialog 状态。
 
 ## 1. 概述
 
-- **组件**：`PrimeVueDialog`（`src/components/prime-dialog`）
+- **组件**：`PrimeVueDialog`（`src/components/PrimeDialog`）
 - **Hook**：`useDialog()`（`src/hooks/modules/useDialog.tsx`）
   - > 文件后缀为 `.tsx`（因 `contentRenderer` 使用 TSX 渲染自定义内容）。import 时不需要写后缀：`import { useDialog } from '@/hooks/modules/useDialog'`。
 - **集成**：`PrimeVueDialog` 已在 `AppPrimeVueGlobals.vue`（由 `App.vue` 引入）中挂载，业务层只需调用 `useDialog()` 返回的方法，无需再挂载组件。
@@ -15,14 +16,14 @@
 ```ts
 import { useDialog } from '@/hooks/modules/useDialog'
 
-const { info, success, warning, error, confirm, confirmDelete, openDialog, closeDialog } =
+const { info, success, warn, danger, confirm, confirmDelete, openDialog, closeDialog } =
   useDialog()
 
 // 反馈弹窗（单按钮）
 info('这是一条信息', '信息提示')
 success('操作成功', '成功')
-warning('请注意', '警告')
-error('发生错误', '错误')
+warn('请注意', '警告')
+danger('发生错误', '错误')
 
 // 确认弹窗（双按钮）
 confirm('确定要提交吗？', '确认', {
@@ -67,7 +68,7 @@ const index = openDialog({
 | `closeAll()`                  | 关闭全部             |
 | `update(value, key?, index?)` | 动态更新 header 等   |
 | `getDialogCount()`            | 当前弹窗数量         |
-| `info/success/warning/error`  | 反馈弹窗             |
+| `info/success/warn/danger`    | 反馈弹窗             |
 | `confirm/confirmDelete`       | 确认弹窗             |
 
 ### DialogOptions 核心字段
@@ -100,6 +101,6 @@ const index = openDialog({
 - **多语言**：标题和按钮可用 `() => t('key')` 实现响应式文案。
 - **多层弹窗**：ESC 仅关闭最上层；遮罩点击仅关闭最上层。
 - **关闭幂等**：同一弹窗多次调用 `closeDialog` 仅生效一次（按 \_instanceId 去重）。
-- **内容滚动（统一 CScrollbar）**：弹窗内容超出高度时，应让滚动发生在 `CScrollbar` 内，而不是 PrimeVue Dialog 默认的 `.p-dialog-content` 原生滚动条。若仍看到原生滚动条，通常是 `.p-dialog-content` 仍为 `overflow: auto` 且拥有高度约束。处理思路：
+- **内容滚动（统一 CScrollbar）**：弹窗内容超出高度时，应让滚动发生在 `<CScrollbar>` 内，而不是 PrimeVue Dialog 默认的 `.p-dialog-content` 原生滚动条。若仍看到原生滚动条，通常是 `.p-dialog-content` 仍为 `overflow: auto` 且拥有高度约束。处理思路：
   - 使用 `pt`/`contentStyle` 将 `.p-dialog-content` 设为 `overflow-hidden`，并配合 `flex` 布局让内容区可 `flex: 1`；
-  - 再由 `CScrollbar` 承担唯一滚动容器（内容区 `h-full`/`flex-1`）。
+  - 再由 `<CScrollbar>` 承担唯一滚动容器（内容区 `h-full`/`flex-1`）。

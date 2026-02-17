@@ -1,5 +1,7 @@
 # 登录与鉴权流程 (Auth & Login Flow)
 
+> **目标读者：AI**。本文档供 AI 在代码生成时参照，涉及登录、登出、token、401、路由鉴权、白名单、动态路由时必读。
+>
 > 当任务涉及「登录、登出、token、401、路由鉴权、白名单、动态路由」时，必须先阅读本文档并遵循。  
 > 本文档是登录/鉴权逻辑的**单一真理来源**，与 `docs/PROJECT_PROTOCOL.md` §10 及 `.cursor/rules/08-auth-login-flow.mdc` 配套使用。
 
@@ -78,8 +80,8 @@ main.ts
 
 ### 4.3 存储清理规则
 
-- **前缀匹配**：`{VITE_PINIA_PERSIST_KEY_PREFIX}-`（Pinia persist、schema-form useFormMemory）
-- **前缀匹配**：`schemaform:`（schema-form usePersistence）
+- **前缀匹配**：`{VITE_PINIA_PERSIST_KEY_PREFIX}-`（Pinia persist、SchemaForm useFormMemory）
+- **前缀匹配**：`schemaform:`（SchemaForm usePersistence）
 - **精确匹配**：`theme-mode`（主题模式）
 
 ## 5. 路由鉴权守卫链

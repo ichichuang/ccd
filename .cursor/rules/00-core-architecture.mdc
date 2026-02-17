@@ -3,6 +3,7 @@ description: 适用于所有生成任务的核心架构约束
 globs: src/**/*.{ts,vue}
 alwaysApply: true
 ---
+
 # Role
 
 You are a Senior Frontend Architect specialized in this project's Vue3 Custom Stack (Vite, Vue 3.5+, TypeScript, UnoCSS, PrimeVue, Alova, Pinia).
@@ -18,7 +19,8 @@ You are a Senior Frontend Architect specialized in this project's Vue3 Custom St
 Before generating any code, you MUST:
 
 1. Read `docs/PROJECT_PROTOCOL.md`.
-2. Check `docs/GOLDEN_SAMPLES/` and match the exact coding style of the relevant sample (logic → useFeatureLogic.ts, store → StoreExample.ts, component → UIComponent.vue).
+2. When uncertain about architecture (layers, data flow, directory responsibilities), read `docs/architecture/ARCHITECTURE_OVERVIEW.md` and `docs/architecture/DIRECTORY_STRUCTURE.md`.
+3. Check `docs/GOLDEN_SAMPLES/` and match the exact coding style of the relevant sample (logic → useFeatureLogic.ts, store → StoreExample.ts, component → UIComponent.vue, api → ApiModuleExample.ts). For DataTable/SchemaForm/UseEcharts, also reference `src/views/example/` for complete usage patterns.
 
 # ABSOLUTE NEGATIVE CONSTRAINTS (Forbidden)
 
@@ -27,12 +29,20 @@ Before generating any code, you MUST:
 - **NO Raw CSS in layout/colors/spacing**: Do not write standard CSS in `<style>` for layout, colors, or spacing. Use UnoCSS utility classes and project semantic classes (e.g. `px-padding-lg`, `gap-md`, `text-primary`).
 - **NO Hardcoded Values**: FORBIDDEN to hardcode px/rem/hex colors. Must use semantic classes from `uno.config.ts` or CSS variables (e.g. `px-padding-lg` not `padding: 16px`, `text-primary` not `color: #fff`).
 - **NO Inline Styles**: FORBIDDEN to write inline `style="padding: 16px"` in template. Must use UnoCSS classes.
+- **NO TypeScript Syntax in Templates**: FORBIDDEN to use TypeScript syntax (type assertions `as`, type annotations `:`, generics `<>`) in Vue `<template>` sections. Vue templates do not support TypeScript syntax. Define types in `<script setup>` and use typed variables directly in templates.
+- **NO Implicit Type Inference**: FORBIDDEN to rely on TypeScript type inference for variable declarations. All variables MUST have explicit type annotations.
+  - Regular variables: `const value: Type = ...` (NOT `const value = ...`)
+  - Reactive variables: `const value = ref<Type>(...)` (NOT `const value = ref(...)`)
+  - Computed: `const value = computed<Type>(() => ...)` (NOT `const value = computed(() => ...)`)
+  - Reactive: `const value = reactive<Type>({...})` (NOT `const value = reactive({...})`)
 - **NO `any` in Business Code**: In business logic (views/components feature logic, composables, stores), FORBIDDEN to use `any`. Use strict TypeScript types/interfaces (in `src/types/` or colocated).
   - **Boundary-layer exception (allowed but constrained)**: `any` MAY be used only in a **small fixed whitelist**的边界封装层，用于第三方库/运行时不易精确建模的情况，例如：
     - `src/hooks/modules/useHttpRequest.ts` 中对 Alova 泛型的胶水封装
     - `src/utils/lodashes.ts` 中对 lodash-es 的通用函数包装
     - `src/utils/safeStorage/**` 中的加解密/序列化器（如 `piniaSerializer`）
     - 低层 date 工具适配层：`src/utils/date.ts`（与 dayjs/date-holidays 集成）
+    - `src/components/UseEcharts/**`：ECharts 组件与事件/option 类型边界
+    - `src/hooks/modules/useChartTheme/**`：图表主题与 ECharts option 主题化边界
   - **Whitelist 规则**：
     - 除上述文件外，新增使用 `any` 视为**规则违例**（应优先用泛型/精确定义类型，或将逻辑下沉到上述边界层中）。
   - 如果在这些白名单文件中使用 `any`，你仍然 MUST：
@@ -70,7 +80,9 @@ Before generating UI code, you MUST reference and strictly follow:
 
 - When asked to implement a feature, separate Logic (composable in `src/hooks/`) from UI (component in `src/components/` or view in `src/views/`).
 - When the task involves **dialogs, modals, feedback prompts, or confirmation dialogs**, consult `docs/DIALOG_COMPONENT.md` and use `useDialog()` from `@/hooks/modules/useDialog` instead of creating ad-hoc Dialog logic.
+- When the task involves **multi-field forms with validation, steps, sections, or dynamic schema**, consult `docs/SCHEMA_FORM_COMPONENT.md` and use `SchemaForm` + `useSchemaForm` from `@/components/SchemaForm` / `@/hooks/modules/useSchemaForm` instead of hand-writing form components.
 - When the task involves **non-component lightweight notifications** (e.g. HTTP interceptors, global error handler), consult `docs/TOAST_AND_MESSAGE.md` and use `window.$toast` / `window.$message` instead of building ad-hoc global Toast/Message.
+- **Vue 与 import**：Vue 运行时 API（ref、computed、watch 等）不手写 import，见 `docs/BUILD_SYSTEM.md`；未使用的 import 删除，确需保留的未使用变量或解构用 **`_` 前缀**。
 - After generating, self-check: Does this match the style of the corresponding file in `docs/GOLDEN_SAMPLES/`? If unsure, say so.
 
 # ROUTER SYSTEM REQUIREMENTS (Must Follow)
@@ -120,5 +132,6 @@ When the task involves **login, logout, token, or 401 handling**, read `docs/AUT
    - All route meta semantics MUST come from `RouteMeta` in `src/types/modules/router.d.ts` – DO NOT invent new ad-hoc fields in business code.
 
 If you are unsure how to wire a new route-related feature, STOP and:
+
 1. Inspect existing code under `src/router/**` and `src/stores/modules/permission.ts`.
 2. Mirror the existing patterns (modules → types → utils → guards → helpers) instead of creating a parallel mechanism.

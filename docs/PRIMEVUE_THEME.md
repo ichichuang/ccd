@@ -1,5 +1,7 @@
 # PrimeVue 主题融合 (Theme Integration)
 
+> **目标读者：AI**。本文档供 AI 在代码生成时参照，涉及 PrimeVue 组件配色、主题定制时必读。
+>
 > PrimeVue 组件与项目配色系统、尺寸系统的融合说明。当遇到 Button、Dialog 等组件配色异常时，应优先参考本文档。
 
 ## 1. 架构概览
@@ -33,7 +35,7 @@ PrimeVue preset 不直接依赖 Aura 的 semantic.json/primitive.json 色值，�
 
 - `getPrimary`、`getPrimaryForeground`、`getPrimaryHover`、`getPrimaryLight`
 - `getSuccess`、`getSuccessForeground`、`getSuccessHover`、`getSuccessLight`
-- `getInfo`、`getDestructive`、`getWarn`、`getHelp` 等同理
+- `getInfo`、`getDanger`、`getWarn`、`getHelp` 等同理
 
 **重要**：`*-foreground` 用于「实心色块上的文字色」（如白字配红底）；`*-light` 用于「浅色背景 tint」（如 hover 时的淡绿/淡红背景）。
 

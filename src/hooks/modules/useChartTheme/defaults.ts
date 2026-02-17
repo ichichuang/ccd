@@ -1,8 +1,9 @@
 /**
  * 图表默认配置（唯一数据源，供 useChartTheme 与 UseEcharts 共用）
- * 消除 useChartTheme 对 use-echarts 的循环依赖
+ * 消除 useChartTheme 对 UseEcharts 的循环依赖
  */
-import { getChartSystemVariables } from '@/utils/theme/chartUtils'
+import { getChartSizeTokens, getChartSystemVariables } from '@/utils/theme/chartUtils'
+import { withAlpha } from './utils'
 import type {
   ChartAnimationConfig,
   ChartAxisPointerConfig,
@@ -23,9 +24,20 @@ export const DEFAULT_ANIMATION_CONFIG: ChartAnimationConfig = {
   animationEasingUpdate: 'cubicInOut',
 }
 
-// 默认工具箱配置
-export function getDefaultToolboxConfig(): ChartToolboxConfig {
+/** 工具箱文案 fallback（无 t 时使用英文） */
+const TOOLBOX_FALLBACK: Record<string, string> = {
+  ['chart.toolbox.saveAsImage']: 'Save as image',
+  ['chart.toolbox.restore']: 'Restore',
+  ['chart.toolbox.dataView']: 'Data view',
+  ['chart.toolbox.dataZoomZoom']: 'Area zoom',
+  ['chart.toolbox.dataZoomBack']: 'Restore area zoom',
+  ['chart.toolbox.reset']: 'Reset',
+}
+
+// 默认工具箱配置（t 为 i18n 的 t 时使用翻译，否则用英文 fallback）
+export function getDefaultToolboxConfig(t?: (key: string) => string): ChartToolboxConfig {
   const systemVars = getChartSystemVariables()
+  const title = (key: string) => (t ? t(key) : (TOOLBOX_FALLBACK[key] ?? key))
 
   return {
     show: false,
@@ -33,33 +45,33 @@ export function getDefaultToolboxConfig(): ChartToolboxConfig {
     top: `${systemVars.gapl}px`,
     feature: {
       saveAsImage: {
-        title: '保存为图片',
+        title: title('chart.toolbox.saveAsImage'),
         type: 'png',
         backgroundColor: 'auto',
       },
       restore: {
-        title: '还原',
+        title: title('chart.toolbox.restore'),
       },
       dataView: {
-        title: '数据视图',
+        title: title('chart.toolbox.dataView'),
         readOnly: false,
       },
       dataZoom: {
         title: {
-          zoom: '区域缩放',
-          back: '区域缩放还原',
+          zoom: title('chart.toolbox.dataZoomZoom'),
+          back: title('chart.toolbox.dataZoomBack'),
         },
       },
       reset: {
-        title: '重置',
+        title: title('chart.toolbox.reset'),
       },
     },
     iconStyle: {
-      borderColor: systemVars.textColor200,
+      borderColor: systemVars.mutedForeground,
     },
     emphasis: {
       iconStyle: {
-        borderColor: systemVars.textColor100,
+        borderColor: systemVars.foreground,
       },
     },
   }
@@ -68,24 +80,25 @@ export function getDefaultToolboxConfig(): ChartToolboxConfig {
 // 默认标记点配置
 export function getDefaultMarkPointConfig(): ChartMarkPointConfig {
   const systemVars = getChartSystemVariables()
+  const size = getChartSizeTokens()
 
   return {
     show: false,
     data: [],
     itemStyle: {
-      color: systemVars.primaryColor,
-      borderColor: systemVars.bgColor200,
-      borderWidth: 2,
+      color: systemVars.primary,
+      borderColor: systemVars.background,
+      borderWidth: size.strokeSeries,
     },
     label: {
       show: true,
       position: 'top',
-      fontSize: systemVars.fontSizeSmall,
-      color: systemVars.textColor100,
+      fontSize: size.fontSm,
+      color: systemVars.foreground,
     },
     emphasis: {
       itemStyle: {
-        color: systemVars.warnColor,
+        color: systemVars.warn,
       },
     },
   }
@@ -94,25 +107,26 @@ export function getDefaultMarkPointConfig(): ChartMarkPointConfig {
 // 默认标记线配置
 export function getDefaultMarkLineConfig(): ChartMarkLineConfig {
   const systemVars = getChartSystemVariables()
+  const size = getChartSizeTokens()
 
   return {
     show: false,
     data: [],
     lineStyle: {
-      color: systemVars.primaryColor,
-      width: 2,
+      color: systemVars.primary,
+      width: size.strokeSeries,
       type: 'solid',
     },
     label: {
       show: true,
-      position: 'end',
-      fontSize: systemVars.fontSizeSmall,
-      color: systemVars.textColor100,
+      position: 'insideEndTop',
+      fontSize: size.fontSm,
+      color: systemVars.foreground,
     },
     emphasis: {
       lineStyle: {
-        color: systemVars.warnColor,
-        width: 3,
+        color: systemVars.warn,
+        width: size.strokeSeries + size.strokeHairline,
       },
     },
   }
@@ -121,6 +135,7 @@ export function getDefaultMarkLineConfig(): ChartMarkLineConfig {
 // 默认可视化映射配置
 export function getDefaultVisualMapConfig(): ChartVisualMapConfig {
   const systemVars = getChartSystemVariables()
+  const size = getChartSizeTokens()
 
   return {
     show: false,
@@ -129,17 +144,17 @@ export function getDefaultVisualMapConfig(): ChartVisualMapConfig {
     max: 100,
     dimension: 2,
     inRange: {
-      color: [systemVars.infoColor, systemVars.warnColor, systemVars.dangerColor],
+      color: [systemVars.info, systemVars.warn, systemVars.danger],
     },
     outOfRange: {
-      color: [systemVars.textColor200],
+      color: [systemVars.mutedForeground],
     },
     left: 'left',
     bottom: `${systemVars.gap}%`,
     orient: 'horizontal',
     textStyle: {
-      fontSize: systemVars.fontSizeSmall,
-      color: systemVars.textColor100,
+      fontSize: size.fontSm,
+      color: systemVars.foreground,
     },
   }
 }
@@ -147,14 +162,15 @@ export function getDefaultVisualMapConfig(): ChartVisualMapConfig {
 // 默认画刷配置
 export function getDefaultBrushConfig(): ChartBrushConfig {
   const systemVars = getChartSystemVariables()
+  const size = getChartSizeTokens()
 
   return {
     show: false,
     brushType: 'rect',
     brushStyle: {
-      borderWidth: 1,
-      color: `${systemVars.primaryColor}30`,
-      borderColor: `${systemVars.primaryColor}80`,
+      borderWidth: size.strokeHairline,
+      color: withAlpha(systemVars.primary, 0.19) ?? systemVars.primary,
+      borderColor: withAlpha(systemVars.primary, 0.5) ?? systemVars.primary,
     },
     areas: [],
     left: 'center',
@@ -167,25 +183,26 @@ export function getDefaultBrushConfig(): ChartBrushConfig {
 // 默认坐标轴指示器配置
 export function getDefaultAxisPointerConfig(): ChartAxisPointerConfig {
   const systemVars = getChartSystemVariables()
+  const size = getChartSizeTokens()
 
   return {
     show: true,
     type: 'line',
     lineStyle: {
-      color: systemVars.textColor200,
-      width: 1,
+      color: systemVars.mutedForeground,
+      width: size.strokeHairline,
       type: 'dashed',
     },
     shadowStyle: {
-      color: `${systemVars.textColor200}30`,
+      color: withAlpha(systemVars.mutedForeground, 0.19) ?? systemVars.mutedForeground,
     },
     label: {
       show: true,
-      backgroundColor: systemVars.bgColor300,
-      borderColor: systemVars.bgColor300,
-      borderWidth: 1,
-      color: systemVars.textColor100,
-      fontSize: systemVars.fontSizeSmall,
+      backgroundColor: systemVars.card,
+      borderColor: systemVars.card,
+      borderWidth: size.strokeHairline,
+      color: systemVars.foreground,
+      fontSize: size.fontSm,
     },
     triggerTooltip: true,
     triggerOn: 'mousemove|click',

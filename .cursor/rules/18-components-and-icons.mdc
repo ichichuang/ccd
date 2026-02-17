@@ -3,6 +3,7 @@ description: 组件与图标使用规范：优先复用 src/components（Icons/C
 globs: src/**/*.vue
 alwaysApply: true
 ---
+
 # Components & Icons Policy (UI Must Follow)
 
 ## 1. Primary Directive
@@ -16,46 +17,72 @@ When generating or editing UI pages/components, you MUST:
 ## 2. Component Reuse Map (Must Use First)
 
 ### Scroll container
-- Use `CScrollbar` (`src/components/CScrollbar`)
+
+- Use `CScrollbar` (`src/components/CScrollbar`)，模板中写 `<CScrollbar>`
 - Do NOT replace it with ad-hoc `overflow-auto` containers unless explicitly requested.
 
+### Animation wrapper
+
+- Use `AnimateWrapper` (`src/components/AnimateWrapper`) for enter/leave animations (animate.css)
+- 适用场景：布局切换过渡、动态列表项增删、表单字段动态展示等
+- Props：`animateName`、`tag`、`duration` 等，详见 `AnimateWrapper/utils/types.ts`
+
 ### Icons
+
 - Use `Icons` (`src/components/Icons`)
 - FORBIDDEN: writing raw `<svg>` icons, external icon URLs, base64 icon images.
 
 ### Charts
-- Use `UseEcharts` (`src/components/use-echarts/UseEcharts.vue`)
-- FORBIDDEN: manually instantiating ECharts directly in a page if `UseEcharts` fits.
+
+- **MUST use `UseEcharts`** (`src/components/UseEcharts/UseEcharts.vue`) for ALL chart scenarios.
+- **FORBIDDEN**: manually instantiating ECharts directly in a page, or using vue-echarts directly.
+- **FORBIDDEN**: hardcoding colors in ECharts option → `UseEcharts` automatically integrates `useChartTheme`.
+- **FORBIDDEN**: manually listening to ThemeStore to update charts → `UseEcharts` automatically responds to theme changes.
+- **Component features**:
+  - Automatic theme integration (ThemeStore/SizeStore)
+  - Responsive theme switching
+  - Multi-chart linkage (via `group` or `connectConfig`)
+  - Event handling (60+ ECharts events via `on*` props)
+  - Exposed methods via ref (`getEchartsInstance`, `setOption`, `resize`, `clear`, `dispose`, `triggerConnect`, etc.)
+- **Usage**: See `docs/ECHARTS_THEME.md` for complete API and examples.
 
 ### PrimeVue UI Components
+
 - For **forms & inputs** (text, password, number, checkbox, radio, select, multi-select, date, switch):
-  - MUST prefer PrimeVue components such as `<InputText>`, `<Password>`, `<InputNumber>`, `<Checkbox>`, `<RadioButton>`, `<Dropdown>`, `<MultiSelect>`, `<Calendar>`, `<InputSwitch>`, etc.
+  - **多字段、需校验/分步/分组/动态 schema**：MUST use SchemaForm（`@/components/SchemaForm`）+ useSchemaForm（`@/hooks/modules/useSchemaForm`），详见 `docs/SCHEMA_FORM_COMPONENT.md`。
+  - 简单 1–2 个字段：直接使用 PrimeVue 组件如 `<InputText>`, `<Password>`, `<InputNumber>`, `<Checkbox>`, `<RadioButton>`, `<Dropdown>`, `<MultiSelect>`, `<Calendar>`, `<ToggleSwitch>` 等。
 - For **actions/buttons**:
   - MUST use `<Button>` for primary/secondary actions instead of styling raw `<button>` or `<a>`.
   - Button 配色由 `src/utils/theme/primevue-preset.ts` 控制；text/outlined 变体的 hover 使用 `*-light`，勿用 `*-foreground` 作为背景。详见 `docs/PRIMEVUE_THEME.md`。
 - For **tables/lists**:
-  - SHOULD use `<DataTable>` (or project-wrapped table components) for interactive data tables instead of hand-written `<table>` when possible.
+  - **交互式数据表格**：MUST 使用 **DataTable**（`@/components/DataTable`），详见 `docs/DataTable_COMPONENT.md`。
+  - 简单静态表格、一次性展示可用 PrimeVue `<DataTable>`；需分页/排序/筛选/导出/API 时 MUST 用 DataTable。
+  - FORBIDDEN：在需要分页、排序、筛选、导出或 API 加载时裸用 PrimeVue DataTable 拼装逻辑，或手写 `<table>` 实现复杂交互。
 - For **dialogs/overlays**:
   - MUST use `<Dialog>` / `<Sidebar>` instead of ad-hoc fixed-position modals when they fit the use case.
-  - **项目二次封装 prime-dialog**：当需要**自定义弹窗、反馈提示、确认对话框**时，MUST 使用 `useDialog()`（`@/hooks/modules/useDialog`）。`PrimeVueDialog` 已在 `AppPrimeVueGlobals.vue`（由 `App.vue` 引入）挂载，业务只需调用 `info`、`success`、`warning`、`error`、`confirm`、`confirmDelete`、`openDialog` 等。高级用法见 `contentRenderer`、`headerRenderer`、`footerRenderer`、`footerButtons`、`beforeSure`、`beforeCancel`、`sureBtnLoading`。详见 `docs/DIALOG_COMPONENT.md`。
+  - **项目二次封装 PrimeDialog**：当需要**自定义弹窗、反馈提示、确认对话框**时，MUST 使用 `useDialog()`（`@/hooks/modules/useDialog`）。`PrimeVueDialog` 已在 `AppPrimeVueGlobals.vue`（由 `App.vue` 引入）挂载，业务只需调用 `info`、`success`、`warn`、`danger`、`confirm`、`confirmDelete`、`openDialog` 等。高级用法见 `contentRenderer`、`headerRenderer`、`footerRenderer`、`footerButtons`、`beforeSure`、`beforeCancel`、`sureBtnLoading`。详见 `docs/DIALOG_COMPONENT.md`。
   - 简单确认用 PrimeVue `useConfirm().require()`；复杂自定义/多层弹窗用 `useDialog()`。FORBIDDEN：在业务中自行实例化 PrimeVue `<Dialog>` 管理多弹窗状态。
 - For **Toast / Message**：
   - **组件内**轻量通知：使用 PrimeVue `useToast()`。
   - **非组件环境**（拦截器、errorHandler、工具函数）：MUST 使用 `window.$toast` / `window.$message`，详见 `docs/TOAST_AND_MESSAGE.md`。FORBIDDEN：在业务中自建全局 Toast/Message 或通过 DOM 自造通知。
+  - **$message 特性**：居中纯提示（正中央、无关闭按钮、life 后自动消失）；$toast 可按位置显示、带关闭按钮。样式覆盖见 `docs/TOAST_UI_OVERRIDES.md`。
 
 Styling PrimeVue components:
+
 - MUST style them using UnoCSS classes on the component and/or `pt` (PassThrough) configuration.
 - FORBIDDEN: adding custom CSS rules to control layout/spacing/colors for PrimeVue components when the same can be achieved by UnoCSS semantic classes and design system variables.
 
 ## 3. Auto Import Awareness
 
 This project auto-imports components/functions and generates:
+
 - `src/types/auto-imports.d.ts`
 - `src/types/components.d.ts`
 
 **完整配置**：imports 与 dirs 列表见 `docs/BUILD_SYSTEM.md` §2；组件扫描范围与排除（仅 `src/components`，排除 `src/layouts`，PrimeVue 按需）见 §3。
 
 Rules:
+
 - Prefer relying on auto-imports (avoid redundant manual imports) unless the file requires explicit imports.
 
 ## 4. Icons: Smart Selection Rules
@@ -73,13 +100,22 @@ Rules:
 ### 4.2 Usage requirements
 
 - Always render icons via `<Icons name=\"...\" />`.
-- Prefer semantic sizing (`size=\"xs|sm|md|lg|xl|2xl|3xl|4xl|5xl\"`) over hardcoded pixel sizes.
-- Prefer semantic colors via classes/variables; avoid hex colors.
+- **尺寸（Size）**：
+  - Prefer semantic sizing (`size=\"xs|sm|md|lg|xl|2xl|3xl|4xl|5xl\"`) over hardcoded pixel sizes.
+  - Custom sizes (`size={24}` or `size=\"2rem\"`) only when semantic sizes don't fit.
+- **颜色（Color）**：
+  - **静态颜色（推荐）**：Use semantic classes (`class=\"text-primary\"`) via UnoCSS.
+  - **动态/主题变量**：Use `color` prop (`color=\"rgb(var(--primary))\"`).
+  - **注意**：When using `color` prop, use `rgb(var(--primary))` format, not `var(--primary)`.
+  - Avoid hex colors in `color` prop (use CSS variables or semantic classes).
+- **动画与变换**：See `docs/UNOCSS_AND_ICONS.md` §6.4 for `animation`, `flip`, `rotate`, `scale` usage.
 
 ## 5. Forbidden Patterns
 
+- FORBIDDEN: 在需要多字段/校验/分步/分组/动态表单时，手写大量 PrimeVue 表单组件拼装；必须使用 SchemaForm + useSchemaForm，见 `docs/SCHEMA_FORM_COMPONENT.md`。
 - FORBIDDEN: raw `<svg>` icon markup in templates.
 - FORBIDDEN: 在业务代码中自行实例化 PrimeVue `<Dialog>` 管理多弹窗；必须使用 `useDialog()`（见 `docs/DIALOG_COMPONENT.md`）。
 - FORBIDDEN: 在非组件环境中自建全局 Toast/Message；必须使用 `window.$toast` / `window.$message`（见 `docs/TOAST_AND_MESSAGE.md`）。
 - FORBIDDEN: adding custom CSS for icon sizing/colors; use UnoCSS + `Icons` props/classes.
 - FORBIDDEN: bypassing `UseEcharts` for charts when it can be used.
+- FORBIDDEN: 在需分页/排序/筛选/导出/API 的表格场景裸用 PrimeVue DataTable 或手写 `<table>`；必须使用 DataTable（见 `docs/DataTable_COMPONENT.md`）。

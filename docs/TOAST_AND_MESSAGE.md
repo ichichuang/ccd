@@ -1,5 +1,7 @@
 # Toast & Message 全局 API
 
+> **目标读者：AI**。本文档供 AI 在代码生成时参照，涉及非组件环境的反馈提示时必读。
+>
 > 基于 PrimeVue Toast，在 `AppPrimeVueGlobals.vue` 中挂载并暴露 `window.$toast` / `window.$message`，  
 > 供**非组件环境**（HTTP 拦截器、全局错误处理、工具函数等）使用。组件内轻量通知仍可使用 PrimeVue `useToast()`。
 
@@ -11,30 +13,34 @@
 
 ## 2. 使用方式
 
-### 2.1 window.$message（Element Plus 风格）
+### 2.1 window.$message（居中纯提示）
+
+**特性**：正中央展示、无关闭按钮、纯提示（life 后自动消失）。
 
 ```ts
 // 任意位置（拦截器、errorHandler、工具函数等）
 window.$message?.success('操作成功')
-window.$message?.error('发生错误', '错误标题')
+window.$message?.danger('发生错误', '错误标题')
 window.$message?.info('提示信息')
 window.$message?.warn('请注意')
 ```
 
-| 方法                       | 说明     |
-| -------------------------- | -------- |
-| `success(message, title?)` | 成功提示 |
-| `error(message, title?)`   | 错误提示 |
-| `info(message, title?)`    | 信息提示 |
-| `warn(message, title?)`    | 警告提示 |
+| 方法                       | 说明          |
+| -------------------------- | ------------- |
+| `success(message, title?)` | 成功提示      |
+| `danger(message, title?)`  | 错误/危险提示 |
+| `info(message, title?)`    | 信息提示      |
+| `warn(message, title?)`    | 警告提示      |
 
 ### 2.2 window.$toast（按位置 + severity）
 
 ```ts
 window.$toast?.successIn('top-right', '成功', '操作已完成')
-window.$toast?.errorIn('top-left', '错误', '详情内容')
+window.$toast?.dangerIn('top-left', '错误', '详情内容')
 window.$toast?.infoIn('top-center', '信息', '详情')
 window.$toast?.warnIn('bottom-right', '警告', '详情')
+window.$toast?.secondaryIn('bottom-center', '次要', '详情')
+window.$toast?.contrastIn('top-center', '高对比', '详情')
 
 // 原始 API
 window.$toast?.add({
@@ -50,26 +56,26 @@ window.$toast?.clear() // 清除所有
 window.$toast?.removeGroup?.('tl') // 清除指定位置
 ```
 
-| 方法                                  | 说明                                                       |
-| ------------------------------------- | ---------------------------------------------------------- |
-| `errorIn(position, summary, detail?)` | 在指定位置显示错误                                         |
-| `successIn` / `infoIn` / `warnIn`     | 同上                                                       |
-| `add(options)`                        | 原始 PrimeVue add，可传 severity/summary/detail/life/group |
-| `clear()`                             | 清除所有 Toast（内部 removeAllGroups）                     |
-| `removeGroup(group)`                  | 清除指定 group                                             |
+| 方法                                                                          | 说明                                                       |
+| ----------------------------------------------------------------------------- | ---------------------------------------------------------- |
+| `dangerIn` / `successIn` / `infoIn` / `warnIn` / `secondaryIn` / `contrastIn` | 在指定位置显示对应 severity                                |
+| `add(options)`                                                                | 原始 PrimeVue add，可传 severity/summary/detail/life/group |
+| `clear()`                                                                     | 清除所有 Toast（内部 removeAllGroups）                     |
+| `removeGroup(group)`                                                          | 清除指定 group                                             |
 
 ## 3. 位置与 group
 
-| 位置 (ToastPosition) | group | 说明 |
-| -------------------- | ----- | ---- |
-| top-left             | tl    | 左上 |
-| top-center           | tc    | 上中 |
-| top-right            | tr    | 右上 |
-| bottom-left          | bl    | 左下 |
-| bottom-center        | bc    | 下中 |
-| bottom-right         | br    | 右下 |
+| 位置 (ToastPosition) | group  | 说明                       |
+| -------------------- | ------ | -------------------------- |
+| top-left             | tl     | 左上                       |
+| top-center           | tc     | 上中                       |
+| top-right            | tr     | 右上                       |
+| bottom-left          | bl     | 左下                       |
+| bottom-center        | bc     | 下中                       |
+| bottom-right         | br     | 右下                       |
+| center               | center | 正中央（供 $message 使用） |
 
-无 group 的 Toast 用于 `$message`，默认显示在右上（PrimeVue 默认）。
+`$message` 使用 `group="center"`、`closable: false`，在正中央展示纯提示。
 
 ## 4. 类型
 
@@ -79,5 +85,5 @@ window.$toast?.removeGroup?.('tl') // 清除指定位置
 
 ## 5. 注意事项
 
-- **时机**：仅 App 挂载后可用；在拦截器、errorHandler 等处调用时需使用可选链（如 `window.$message?.error(...)`），避免未挂载时报错。
+- **时机**：仅 App 挂载后可用；在拦截器、errorHandler 等处调用时需使用可选链（如 `window.$message?.danger(...)`），避免未挂载时报错。
 - **禁止**：在业务中自建全局 Toast/Message 或通过 DOM 自造通知；非组件环境必须使用 `window.$toast` / `window.$message`，详见本文档。

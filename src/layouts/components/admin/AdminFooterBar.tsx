@@ -19,7 +19,7 @@ export default defineComponent({
       if (!props.show) return null
 
       return (
-        <footer class="w-full h-footerHeight flex items-center justify-center px-padding-lg border-t border-border fs-sm text-muted-foreground">
+        <footer class="w-full h-footerHeight flex items-center justify-center px-padding-lg fs-sm text-muted-foreground">
           <div>{t('layout.footer')}</div>
         </footer>
       )

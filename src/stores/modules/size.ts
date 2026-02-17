@@ -20,13 +20,13 @@ export const useSizeStore = defineStore('size', {
 
     // --- 图表专用动态 Getters (兼容旧逻辑) ---
     getGap(): number {
-      return this.currentPreset.spacingBase * 4
+      return this.currentPreset.spacingBase * 1
     },
     getGapl(): number {
-      return this.currentPreset.spacingBase * 8
+      return this.currentPreset.spacingBase * 2
     },
     getPaddingsValue(): number {
-      return this.currentPreset.spacingBase * 4
+      return this.currentPreset.spacingBase * 1
     },
 
     // 字体大小动态化：直接读取当前预设的基准值 (SSOT，对应 --font-size-md)

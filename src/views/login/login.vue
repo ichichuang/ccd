@@ -1,6 +1,6 @@
 <script setup lang="tsx">
-import type { FormValues, Schema } from '@/components/schema-form'
-import { SchemaForm } from '@/components/schema-form'
+import type { FormValues, Schema } from '@/components/SchemaForm'
+import { SchemaForm } from '@/components/SchemaForm'
 import { AUTH_ENABLED } from '@/constants/router'
 import { LOGIN_CARD_MAX_WIDTH } from '@/constants/login'
 import { useDeviceStore } from '@/stores/modules/device'
@@ -149,7 +149,7 @@ async function handleSubmit(values: FormValues) {
 
     <!-- Login Card -->
     <div
-      class="login-card relative z-10 w-full max-w-[90vw] md:max-w-[var(--login-card-max-width)] p-padding-xl bg-card/90 backdrop-blur-md rounded-scale-md shadow-md border border-border animate__animated animate__fadeInUp"
+      class="login-card relative z-10 w-full max-w-[90vw] md:max-w-[var(--login-card-max-width)] p-padding-xl bg-card/90 backdrop-blur-md rounded-scale-md shadow-md component-border animate__animated animate__fadeInUp"
     >
       <!-- Header -->
       <div class="column cross-center gap-md mb-margin-xl">
@@ -184,13 +184,13 @@ async function handleSubmit(values: FormValues) {
       <Transition name="fade">
         <div
           v-if="errorMessage"
-          class="mt-margin-md p-padding-md rounded-scale-md bg-destructive/10 border border-destructive/20 row cross-center gap-sm"
+          class="mt-margin-md p-padding-md rounded-scale-md bg-danger/10 border border-danger/20 row cross-center gap-sm"
         >
           <Icons
             name="i-lucide-alert-circle"
-            class="text-destructive shrink-0"
+            class="text-danger shrink-0"
           />
-          <span class="text-destructive fs-sm">{{ errorMessage }}</span>
+          <span class="text-danger fs-sm">{{ errorMessage }}</span>
         </div>
       </Transition>
 

@@ -4,40 +4,40 @@ globs: **/*.vue, **/*.ts, **/*.tsx
 alwaysApply: true
 ---
 
-# Logic Layer Awareness
+# 逻辑层规范
 
-## 1. The Three-Tier Architecture
+## 1. 三层架构
 
-You MUST strictly follow this flow for any data-driven feature:
+对于任何数据驱动的功能，必须严格遵循此流程：
 
-1.  **Level 1: API Definition** (`src/api/<module>/<feature>.ts`)
-    - Define Types (DTOs).
-    - Define Method Builders using `alovaInstance`.
-    - **NO** hook logic here, just pure API definitions.
+1.  **第 1 层：API 定义**（`src/api/<module>/<feature>.ts`）
+    - 定义类型（DTO）。
+    - 使用 `alovaInstance` 定义方法构建器。
+    - **不要**在这里放置 Hook 逻辑，只是纯 API 定义。
 
-2.  **Level 2: Business Hook** (`src/hooks/modules/use<Feature>.ts`)
-    - Import API methods.
-    - Use `useHttpRequest` to manage state (`loading`, `data`, `error`).
-    - Export reactive state and methods to the UI.
+2.  **第 2 层：业务 Hook**（`src/hooks/modules/use<Feature>.ts`）
+    - 导入 API 方法。
+    - 使用 `useHttpRequest` 管理状态（`loading`、`data`、`error`）。
+    - 向 UI 导出响应式状态和方法。
 
-3.  **Level 3: UI Consumer** (`src/views/...` or `src/components/...`)
-    - Import the Hook: `const { list, loading, refresh } = useFeature()`
-    - Bind to Template: `:loading="loading"`, `v-for="item in list"`.
-    - **ZERO** API calls in UI. **ZERO** complex data processing in UI.
+3.  **第 3 层：UI 消费者**（`src/views/...` 或 `src/components/...`）
+    - 导入 Hook：`const { list, loading, refresh } = useFeature()`
+    - 绑定到模板：`:loading="loading"`、`v-for="item in list"`。
+    - UI 中**零** API 调用。UI 中**零**复杂数据处理。
 
-## 2. Logic Placement Map
+## 2. 逻辑放置映射
 
-| Logic Type                | Correct Location                           |
-| :------------------------ | :----------------------------------------- |
-| HTTP Requests             | `src/api/`                                 |
-| Business State            | `src/hooks/modules/`                       |
-| Global State (User/Theme) | `src/stores/modules/`                      |
-| UI State (Toggle, Form)   | `src/components/` (Local `ref`/`reactive`) |
-| Data Formatting           | `src/utils/` or `useDateUtils`             |
-| Element Resizing          | `useAppElementSize`                        |
+| 逻辑类型              | 正确位置                                   |
+| :-------------------- | :----------------------------------------- |
+| HTTP 请求             | `src/api/`                                 |
+| 业务状态              | `src/hooks/modules/`                       |
+| 全局状态（用户/主题） | `src/stores/modules/`                      |
+| UI 状态（切换、表单） | `src/components/`（本地 `ref`/`reactive`） |
+| 数据格式化            | `src/utils/` 或 `useDateUtils`             |
+| 元素调整大小          | `useAppElementSize`                        |
 
-## 3. Explicit Prohibitions
+## 3. 明确禁止
 
-- ❌ **NO** `axios.get()` or `fetch()` in components.
-- ❌ **NO** defining interfaces/types inside `.vue` files (move to `src/types/` or `src/api/`).
-- ❌ **NO** direct usage of `localStorage` (use `safeStorage` or `Pinia persist`).
+- ❌ **禁止**在组件中使用 `axios.get()` 或 `fetch()`。
+- ❌ **禁止**在 `.vue` 文件中定义接口/类型（移至 `src/types/` 或 `src/api/`）。
+- ❌ **禁止**直接使用 `localStorage`（使用 `safeStorage` 或 `Pinia persist`）。

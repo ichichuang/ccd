@@ -1,5 +1,4 @@
-// 基础系列样式应用函数
-
+// ECharts 系列样式边界：参数与 ECharts 系列类型一致，内部使用 any 避免强依赖 echarts 内部类型。
 import type { ThemeConfig } from './types'
 
 /**
@@ -9,7 +8,8 @@ function applyItemStyleAndLabel(
   series: any,
   seriesColor: string,
   labelColor: string,
-  fontSize: number
+  fontSize: number,
+  lineHeight?: number
 ): any {
   return {
     ...series,
@@ -21,6 +21,7 @@ function applyItemStyleAndLabel(
       ...series.label,
       color: series.label?.color ?? labelColor,
       fontSize: series.label?.fontSize ?? fontSize,
+      lineHeight: series.label?.lineHeight ?? lineHeight,
     },
   }
 }
@@ -28,7 +29,7 @@ function applyItemStyleAndLabel(
 /**
  * 线条样式应用函数（函数式版本）
  */
-function applyLineStyles(series: any, seriesColor: string): any {
+function applyLineStyles(series: any, seriesColor: string, strokeWidth: number): any {
   if (series.type !== 'line' && series.type !== 'area') {
     return series
   }
@@ -38,7 +39,7 @@ function applyLineStyles(series: any, seriesColor: string): any {
     lineStyle: {
       ...series.lineStyle,
       color: series.lineStyle?.color ?? seriesColor,
-      width: series.lineStyle?.width ?? 2,
+      width: series.lineStyle?.width ?? strokeWidth,
     },
   }
 
@@ -168,12 +169,28 @@ export function applySeriesStyles(series: any, index: number, config: ThemeConfi
   let result = applyItemStyleAndLabel(
     series,
     seriesColor,
-    config.textColor100,
-    config.font.fontSizeSmall
+    config.foreground,
+    config.size.fontSm,
+    config.size.lineHeightSm
   )
 
   // 应用线条样式
-  result = applyLineStyles(result, seriesColor)
+  result = applyLineStyles(result, seriesColor, config.size.strokeSeries)
+
+  // 符号尺寸：仅在用户未显式配置时注入默认值（与 SizeMode 对齐）
+  if (
+    result &&
+    result.symbolSize === undefined &&
+    (result.type === 'line' ||
+      result.type === 'area' ||
+      result.type === 'scatter' ||
+      result.type === 'effectScatter')
+  ) {
+    result = {
+      ...result,
+      symbolSize: config.size.symbolSm,
+    }
+  }
 
   // 应用透明度配置
   result = applyOpacityConfig(result, config.opacity)

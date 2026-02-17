@@ -85,6 +85,12 @@ export default ({ mode, command }: ConfigEnv): UserConfigExport => {
       },
       proxy: isDev
         ? {
+            '/api/jsonplaceholder': {
+              target: 'https://jsonplaceholder.typicode.com',
+              changeOrigin: true,
+              rewrite: path => path.replace(/^\/api\/jsonplaceholder/, ''),
+              timeout: VITE_PROXY_TIMEOUT ?? 15000,
+            },
             '/api': {
               target: VITE_API_BASE_URL,
               changeOrigin: true,

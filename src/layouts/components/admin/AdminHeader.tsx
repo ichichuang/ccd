@@ -252,7 +252,7 @@ export default defineComponent({
       return (
         <header
           class={[
-            'w-full h-headerHeight flex items-center justify-between px-padding-lg border-b border-border bg-background/80 backdrop-blur-md z-30 transition-all sticky top-0',
+            'w-full h-headerHeight flex items-center justify-between px-padding-lg border-b-default bg-background/80 backdrop-blur-md z-30 transition-all sticky top-0',
             props.headerFixed ? 'admin-header--fixed' : '',
           ]}
         >

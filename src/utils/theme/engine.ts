@@ -124,7 +124,7 @@ export function generateThemeVars(preset: ThemePreset, isDark: boolean): ThemeCs
     isDark ? E.fgDark : getRobustLightFg(accentBase)
   )
 
-  // 7. Status Colors (Destructive, Warn, Success)
+  // 7. Status Colors (Danger, Warn, Success)
   // Helper to generate a full quad family if config unavailable
   const generateStatusFamily = (
     config: Partial<ColorTokenState> | undefined,
@@ -150,7 +150,7 @@ export function generateThemeVars(preset: ThemePreset, isDark: boolean): ThemeCs
     return { base, fg, hover, hoverFg, light, lightFg }
   }
 
-  const destructive = generateStatusFamily(modeConfig?.destructive, E.destructive)
+  const danger = generateStatusFamily(modeConfig?.danger, E.dangerDefault)
   const warn = generateStatusFamily(modeConfig?.warn, preset.warn ?? E.warnDefault)
   const success = generateStatusFamily(modeConfig?.success, preset.success ?? E.successDefault)
   const info = generateStatusFamily(modeConfig?.info, preset.info ?? E.infoDefault)
@@ -216,12 +216,12 @@ export function generateThemeVars(preset: ThemePreset, isDark: boolean): ThemeCs
     '--accent-light': hexToRgb(accentLight),
     '--accent-light-foreground': hexToRgb(accentLightFg),
 
-    '--destructive': hexToRgb(destructive.base),
-    '--destructive-foreground': hexToRgb(destructive.fg),
-    '--destructive-hover': hexToRgb(destructive.hover),
-    '--destructive-hover-foreground': hexToRgb(destructive.hoverFg),
-    '--destructive-light': hexToRgb(destructive.light),
-    '--destructive-light-foreground': hexToRgb(destructive.lightFg),
+    '--danger': hexToRgb(danger.base),
+    '--danger-foreground': hexToRgb(danger.fg),
+    '--danger-hover': hexToRgb(danger.hover),
+    '--danger-hover-foreground': hexToRgb(danger.hoverFg),
+    '--danger-light': hexToRgb(danger.light),
+    '--danger-light-foreground': hexToRgb(danger.lightFg),
 
     '--warn': hexToRgb(warn.base),
     '--warn-foreground': hexToRgb(warn.fg),

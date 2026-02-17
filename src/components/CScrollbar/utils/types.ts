@@ -10,7 +10,7 @@ import type {
 export type { OnUpdatedEventListenerArgs }
 
 /**
- * Scrollbar visibility options
+ * CScrollbar visibility options
  * - 'auto': Automatically hide when not scrolling
  * - 'visible': Always visible
  * - 'hidden': Always hidden
@@ -20,9 +20,9 @@ export type ScrollbarVisibility = 'auto' | 'visible' | 'hidden'
 /**
  * CScrollbar Props Interface
  */
-export interface CScrollbarProps {
+export interface ScrollbarProps {
   /**
-   * Scrollbar visibility
+   * CScrollbar visibility
    * @default 'auto'
    */
   visibility?: ScrollbarVisibility
@@ -54,7 +54,7 @@ export interface CScrollbarProps {
  * CScrollbar Instance Interface
  * Exposed methods via template ref
  */
-export interface CScrollbarInstance {
+export interface ScrollbarInstance {
   /**
    * Scroll to specific position
    */
@@ -84,7 +84,7 @@ export interface CScrollbarInstance {
 /**
  * Event payloads
  */
-export interface CScrollbarEventMap {
+export interface ScrollbarEventMap {
   initialized: [instance: OverlayScrollbars]
   updated: [instance: OverlayScrollbars, onUpdatedArgs: OnUpdatedEventListenerArgs]
   destroyed: [instance: OverlayScrollbars, canceled: boolean]

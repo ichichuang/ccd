@@ -1,19 +1,34 @@
-// useChartTheme 主函数 - 响应式版本
+/**
+ * useChartTheme - 图表主题 Hook（响应式版本）
+ *
+ * 本模块为 ECharts option 主题化边界层。applyThemeToOption 的 option 参数与返回值因 ECharts
+ * 配置结构复杂且需兼容多版本，使用宽松类型；内部在可读性允许处可逐步使用 echarts 的 SeriesOption 等类型。
+ */
 
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import { storeToRefs } from 'pinia'
 import type { Ref, ComputedRef } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { useThemeStore } from '@/stores/modules/theme'
 import { useSizeStore } from '@/stores/modules/size'
 import type { ChartAdvancedConfig, ChartOpacityConfig, ThemeConfig } from './types'
 import { DEFAULT_OPACITY_VALUES } from './constants'
-import { getChartSystemVariables, generateChartPalette } from '@/utils/theme/chartUtils'
+import {
+  getChartSizeTokens,
+  getChartSystemVariables,
+  generateChartPalette,
+} from '@/utils/theme/chartUtils'
 import { deepCloneWithFunctions } from './utils'
 import { applyFontStylesToTargets } from './applyFontStyles'
 import { applySeriesStyles } from './applySeriesStyles'
 import { applyAxisStyles } from './applyAxisStyles'
 import { applyTooltipStyles } from './applyTooltipStyles'
 import { applyDataZoomStyles } from './applyDataZoomStyles'
+import { applyTitleStyles } from './applyTitleStyles'
+import { applyLegendStyles } from './applyLegendStyles'
+import { applyVisualMapStyles } from './applyVisualMapStyles'
+import { applyToolboxStyles } from './applyToolboxStyles'
+import { applyBrushStyles } from './applyBrushStyles'
 import { applyPieStyles } from './applyPieStyles'
 import { applyRadarStyles } from './applyRadarStyles'
 import { applyFunnelStyles } from './applyFunnelStyles'
@@ -31,51 +46,28 @@ import { applyTreemapStyles } from './applyTreemapStyles'
 import { applyParallelStyles } from './applyParallelStyles'
 import { applyPictorialBarStyles } from './applyPictorialBarStyles'
 import { applyLinesStyles } from './applyLinesStyles'
-import { applyStylesToArray } from './utils'
+import { applyStylesToArray, withAlpha } from './utils'
 import { mergeAdvancedConfigs } from './mergeAdvancedConfigs'
-
-// 将十六进制颜色转换为带透明度的 rgba 字符串；如果解析失败则返回原色
-const withAlpha = (color: string | undefined, alpha: number): string | undefined => {
-  if (!color || typeof color !== 'string') {
-    return color
-  }
-  const hex = color.replace('#', '')
-  if (hex.length === 6 || hex.length === 3) {
-    const fullHex =
-      hex.length === 3
-        ? hex
-            .split('')
-            .map(ch => ch + ch)
-            .join('')
-        : hex
-    const r = parseInt(fullHex.substring(0, 2), 16)
-    const g = parseInt(fullHex.substring(2, 4), 16)
-    const b = parseInt(fullHex.substring(4, 6), 16)
-    if (Number.isFinite(r) && Number.isFinite(g) && Number.isFinite(b)) {
-      return `rgba(${r}, ${g}, ${b}, ${alpha})`
-    }
-  }
-  return color
-}
 
 /**
  * 构建主题配置对象
  */
 function buildThemeConfig(): ThemeConfig {
   const {
-    textColor100,
-    textColor200,
-    bgColor200,
-    bgColor300,
-    accent100,
-    primaryColor,
-    successColor,
-    infoColor,
-    warnColor,
-    dangerColor,
-    helpColor,
-    contrastColor,
-    secondaryColor,
+    foreground,
+    mutedForeground,
+    background,
+    card,
+    border,
+    primary,
+    primaryForeground,
+    accent,
+    secondary,
+    success,
+    warn,
+    danger,
+    info,
+    help,
     paddings,
     gap,
     gapl,
@@ -83,27 +75,32 @@ function buildThemeConfig(): ThemeConfig {
     fontSizeSmall,
   } = getChartSystemVariables()
 
-  // 家族色仍然保留，供各图表模块做语义化使用
-  const primaryColors = [primaryColor, primaryColor, primaryColor, primaryColor]
-  const successColors = [successColor, successColor, successColor, successColor]
-  const infoColors = [infoColor, infoColor, infoColor, infoColor]
-  const warnColors = [warnColor, warnColor, warnColor, warnColor]
-  const dangerColors = [dangerColor, dangerColor, dangerColor, dangerColor]
-  const helpColors = [helpColor, helpColor, helpColor, helpColor]
-  const contrastColors = [contrastColor, contrastColor, contrastColor, contrastColor]
-  const secondaryColors = [secondaryColor, secondaryColor, secondaryColor, secondaryColor]
+  const size = getChartSizeTokens()
 
-  // 智能调色盘：基于语义颜色 + Light 变体生成具有层次感的颜色数组
-  // count 取 24，既保证足够的系列区分度，又不会过多重复
-  const colors = generateChartPalette(primaryColor, 24)
+  const primaryColors = [primary, primary, primary, primary]
+  const successColors = [success, success, success, success]
+  const infoColors = [info, info, info, info]
+  const warnColors = [warn, warn, warn, warn]
+  const dangerColors = [danger, danger, danger, danger]
+  const helpColors = [help, help, help, help]
+  const contrastColors = [
+    primaryForeground,
+    primaryForeground,
+    primaryForeground,
+    primaryForeground,
+  ]
+  const secondaryColors = [secondary, secondary, secondary, secondary]
+
+  const colors = generateChartPalette(primary, 24)
 
   return {
     font: {
-      textColor: textColor100,
-      textColorSecondary: textColor200,
+      textColor: foreground,
+      textColorSecondary: mutedForeground,
       fontSize,
       fontSizeSmall,
     },
+    size,
     color: {
       colors,
       primaryColors,
@@ -119,11 +116,13 @@ function buildThemeConfig(): ThemeConfig {
     paddings,
     gap,
     gapl,
-    textColor100,
-    textColor200,
-    bgColor200,
-    bgColor300,
-    accent100,
+    foreground,
+    mutedForeground,
+    background,
+    card,
+    border,
+    accent,
+    primaryForeground,
   }
 }
 
@@ -133,7 +132,8 @@ function buildThemeConfig(): ThemeConfig {
 function applyThemeToOption(
   option: any,
   opacityConfig?: ChartOpacityConfig,
-  advancedConfig?: ChartAdvancedConfig
+  advancedConfig?: ChartAdvancedConfig,
+  t?: (key: string) => string
 ): any {
   if (!option || typeof option !== 'object') {
     return option
@@ -151,6 +151,21 @@ function applyThemeToOption(
     opacity: finalOpacityConfig,
   }
 
+  // 设置全局背景色
+  if (!mergedOption.backgroundColor) {
+    mergedOption.backgroundColor = themeConfig.background
+  }
+
+  // 设置全局文本样式
+  mergedOption.textStyle = {
+    ...mergedOption.textStyle,
+    color: mergedOption.textStyle?.color ?? themeConfig.foreground,
+    fontSize: mergedOption.textStyle?.fontSize ?? themeConfig.size.fontMd,
+    lineHeight: mergedOption.textStyle?.lineHeight ?? themeConfig.size.lineHeightMd,
+    textBorderColor: mergedOption.textStyle?.textBorderColor ?? 'transparent',
+    textShadowColor: mergedOption.textStyle?.textShadowColor ?? 'transparent',
+  }
+
   // 设置全局调色盘
   if (Array.isArray(mergedOption.colors) && !mergedOption.color) {
     mergedOption.color = mergedOption.colors
@@ -163,15 +178,16 @@ function applyThemeToOption(
     themeConfig.color.colors = mergedOption.color as string[]
   }
 
-  // 应用字体样式到标题和图例
+  // 应用标题样式
   if (mergedOption.title) {
+    mergedOption.title = applyTitleStyles(mergedOption.title, themeConfig)
     mergedOption.title = applyFontStylesToTargets([mergedOption.title], themeConfig.font)[0]
     if (!mergedOption.title.textStyle?.fontSize) {
       mergedOption.title = {
         ...mergedOption.title,
         textStyle: {
           ...mergedOption.title.textStyle,
-          fontSize: themeConfig.font.fontSize * 1.3,
+          fontSize: themeConfig.size.fontLg,
         },
       }
     }
@@ -182,8 +198,16 @@ function applyThemeToOption(
     }
   }
 
+  // 应用图例样式
   if (mergedOption.legend) {
-    mergedOption.legend = applyFontStylesToTargets([mergedOption.legend], themeConfig.font)[0]
+    const legendArray = Array.isArray(mergedOption.legend)
+      ? mergedOption.legend
+      : [mergedOption.legend]
+    const styledLegend = applyStylesToArray(legendArray, (legend: any) => {
+      const styled = applyLegendStyles(legend, themeConfig)
+      return applyFontStylesToTargets([styled], themeConfig.font)[0]
+    })
+    mergedOption.legend = Array.isArray(mergedOption.legend) ? styledLegend : styledLegend[0]
     mergedOption.legend = {
       ...mergedOption.legend,
       right: mergedOption.legend.right ?? `${themeConfig.paddings}%`,
@@ -196,10 +220,16 @@ function applyThemeToOption(
     mergedOption.grid = {
       left: `${themeConfig.paddings}%`,
       right: `${themeConfig.paddings}%`,
-      top: '30%',
-      bottom: '2%',
+      top: '16%',
+      bottom: '4%',
       backgroundColor: 'transparent',
       containLabel: true,
+    }
+  } else {
+    // 如果用户提供了 grid，确保 backgroundColor 使用架构配色
+    mergedOption.grid = {
+      ...mergedOption.grid,
+      backgroundColor: mergedOption.grid.backgroundColor ?? 'transparent',
     }
   }
 
@@ -229,9 +259,7 @@ function applyThemeToOption(
         ...(radarConfig.axisName || {}),
         color: radarConfig.axisName?.color ?? themeConfig.font.textColorSecondary,
         fontSize:
-          radarConfig.axisName?.fontSize ??
-          themeConfig.font.fontSizeSmall ??
-          themeConfig.font.fontSize,
+          radarConfig.axisName?.fontSize ?? themeConfig.size.fontSm ?? themeConfig.size.fontMd,
       }
 
       // 轴线
@@ -241,7 +269,7 @@ function applyThemeToOption(
           ...(radarConfig.axisLine?.lineStyle || {}),
           color:
             radarConfig.axisLine?.lineStyle?.color ??
-            withAlpha(themeConfig.textColor200 || themeConfig.bgColor200, 0.35),
+            withAlpha(themeConfig.mutedForeground || themeConfig.background, 0.35),
         },
       }
 
@@ -252,7 +280,7 @@ function applyThemeToOption(
           ...(radarConfig.splitLine?.lineStyle || {}),
           color:
             radarConfig.splitLine?.lineStyle?.color ??
-            withAlpha(themeConfig.textColor200 || themeConfig.bgColor200, 0.25),
+            withAlpha(themeConfig.mutedForeground || themeConfig.background, 0.25),
         },
       }
 
@@ -263,8 +291,8 @@ function applyThemeToOption(
         areaStyle: {
           ...(radarConfig.splitArea?.areaStyle || {}),
           color: radarConfig.splitArea?.areaStyle?.color || [
-            withAlpha(themeConfig.bgColor300 || themeConfig.bgColor200, 0.06),
-            withAlpha(themeConfig.bgColor200 || themeConfig.bgColor300, 0.03),
+            withAlpha(themeConfig.card || themeConfig.background, 0.06),
+            withAlpha(themeConfig.background || themeConfig.card, 0.03),
           ],
         },
       }
@@ -359,6 +387,24 @@ function applyThemeToOption(
   // 合并提示框样式
   mergedOption.tooltip = applyTooltipStyles(mergedOption.tooltip, themeConfig)
 
+  // 合并 visualMap 样式
+  if (mergedOption.visualMap) {
+    const visualMapArray = Array.isArray(mergedOption.visualMap)
+      ? mergedOption.visualMap
+      : [mergedOption.visualMap]
+    const styledVisualMap = applyStylesToArray(visualMapArray, (visualMap: any) =>
+      applyVisualMapStyles(visualMap, themeConfig)
+    )
+    mergedOption.visualMap = Array.isArray(mergedOption.visualMap)
+      ? styledVisualMap
+      : styledVisualMap[0]
+  }
+
+  // 合并 toolbox 样式
+  if (mergedOption.toolbox) {
+    mergedOption.toolbox = applyToolboxStyles(mergedOption.toolbox, themeConfig)
+  }
+
   // 合并 dataZoom 样式
   if (mergedOption.dataZoom) {
     const dataZoomArray = Array.isArray(mergedOption.dataZoom)
@@ -372,8 +418,13 @@ function applyThemeToOption(
       : styledDataZoom[0]
   }
 
+  // 合并 brush 样式
+  if (mergedOption.brush) {
+    mergedOption.brush = applyBrushStyles(mergedOption.brush, themeConfig)
+  }
+
   // 合并高级配置（动画、工具箱、标记点等）
-  const finalOption = mergeAdvancedConfigs(mergedOption, advancedConfig)
+  const finalOption = mergeAdvancedConfigs(mergedOption, advancedConfig, t)
 
   return finalOption
 }
@@ -402,20 +453,49 @@ export function useChartTheme(
     advancedConfig && 'value' in advancedConfig ? advancedConfig : computed(() => advancedConfig)
 
   // 显式依赖主题/尺寸 Store，使切换主题或尺寸时 themedOption 自动重新计算
+  const { t } = useI18n()
   const themeStore = useThemeStore()
   const sizeStore = useSizeStore()
-  const { themeName } = storeToRefs(themeStore)
+  const { themeName, mode } = storeToRefs(themeStore)
   const { sizeName } = storeToRefs(sizeStore)
 
-  // 返回响应式的 computed option
+  // 缓存上次的输入与结果，仅在依赖（引用或值）变化时重算，减轻悬停等场景下的不必要 setOption
+  const cacheRef = ref<{
+    option: unknown
+    opacity: unknown
+    advanced: unknown
+    theme: string
+    mode: ThemeMode
+    isDark: boolean
+    size: string
+    result: any
+  } | null>(null)
+
   const themedOption = computed(() => {
-    void themeName.value
-    void sizeName.value
+    const theme = themeName.value
+    const currentMode = mode.value
+    const isDark = themeStore.isDark // 读取 isDark getter，Vue 会自动追踪 mode 和系统主题变化
+    const size = sizeName.value
     const option = optionRef.value
     const opacity = opacityConfigRef?.value
     const advanced = advancedConfigRef?.value
 
-    return applyThemeToOption(option, opacity, advanced)
+    const c = cacheRef.value
+    if (
+      c &&
+      c.option === option &&
+      c.opacity === opacity &&
+      c.advanced === advanced &&
+      c.theme === theme &&
+      c.mode === currentMode &&
+      c.isDark === isDark &&
+      c.size === size
+    ) {
+      return c.result
+    }
+    const result = applyThemeToOption(option, opacity, advanced, t)
+    cacheRef.value = { option, opacity, advanced, theme, mode: currentMode, isDark, size, result }
+    return result
   })
 
   return {

@@ -1,5 +1,7 @@
 # Build System & Auto Imports (SSOT)
 
+> **目标读者：AI**。本文档供 AI 在代码生成时参照，涉及构建配置、自动导入、类型生成时必读。
+
 本文档描述 `build/*`、`vite.config.ts`、自动导入（AutoImport/Components）与生成类型文件的**真实行为**。当你发现“为什么页面里不需要 import ref/computed？”或“为什么某个函数能直接用？”时，以此为准。
 
 ## 0. 包管理工具与命令约定
@@ -70,11 +72,13 @@
 ### 2.4 使用规则（写代码时）
 
 - 在 `src/**/*.vue`、`src/**/*.ts` 中通常**不需要**手写 `import { ref, computed } from 'vue'`。
+- 若**导出接口**需使用 `Ref`、`ComputedRef` 等类型，可仅写 `import type { Ref, ComputedRef } from 'vue'`；运行时 API（ref、computed、watch）仍由自动导入提供。
+- **未使用的 import** 应删除；确需保留的未使用变量或解构（如 composable 返回值暂时不用）可用 **`_` 前缀**，与 `eslint.config.ts` 的 `varsIgnorePattern: '^_'` 一致。
 - **HTTP 等底层库**（例如 `src/utils/http/*`）按当前策略应**显式 import** 使用（不要依赖自动导入）。
 
 ### 2.5 常见坑（必须读）
 
-你已将 API 规则改为扁平化：`src/api/<module>/<feature>.ts`。  
+你已将 API 规则改为扁平化：`src/api/<module>/<feature>.ts`。
 因此 `dirs` 必须递归覆盖二级文件（`src/api/**/*`），否则会出现“API 函数无法自动使用/类型声明未生成”的错觉。
 
 > 这不是业务代码问题，而是构建配置的扫描范围问题。出现“某个 api 函数不能自动用/类型声明没生成”时，优先检查这里。

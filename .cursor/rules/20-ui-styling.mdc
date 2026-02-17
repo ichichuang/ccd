@@ -68,6 +68,10 @@ Reference `uno.config.ts` for all available semantic classes:
 **Color Classes:**
 - `text-primary`, `bg-surface-ground`, `border-border`, `text-foreground`, `text-info`, `bg-info`, etc.
 
+**Border (边框)：**
+- 四边边框：`component-border`；底边：`border-b-default`；顶边：`border-t-default`（见 `uno.config.ts` ⑧a 边框快捷类）。
+- FORBIDDEN：仅写 `border border-border`（未设 border-style 导致边框不显示）。
+
 **Flex / main-* / cross-* (UnoCSS shortcuts):**
 - When using `main-*` or `cross-*`, MUST also use direction: `row` or `column` (e.g. `class="row main-between cross-center"` or `class="column main-center cross-start"`).
 - FORBIDDEN: using `main-*` or `cross-*` without `row` or `column` (ambiguous which axis is main/cross).
@@ -141,7 +145,7 @@ Reference `uno.config.ts` for all available semantic classes:
   - 页面 / 容器：`bg-background`
   - 卡片 / 面板：`bg-card`
   - 弱对比区域：`bg-muted`
-  - 状态色：`bg-primary` / `bg-accent` / `bg-destructive` / `bg-warn` / `bg-success` / `bg-info` 及 `-hover` / `-light` 变体
+  - 状态色：`bg-primary` / `bg-accent` / `bg-danger` / `bg-warn` / `bg-success` / `bg-info` 及 `-hover` / `-light` 变体
   - 侧边栏：`bg-sidebar` / 其它 `sidebar-*` 家族
   - PrimeVue 主题保留：`bg-surface-ground`（仅此一个 `surface-*` 语义允许直接使用）
 

@@ -41,7 +41,7 @@ globs: src/layouts/**/*.{ts,vue}
 - 壳：`src/layouts/modules/`
 - 内部组件：`src/layouts/components/`
 - 布局内引用：`@&/*` → `src/layouts/components/*`
-- **PrimeVue 全局 UI**：Toast、Confirm、Dialog 与 `window.$toast` / `window.$message` 的挂载由 `src/layouts/components/AppPrimeVueGlobals.vue` 负责，`App.vue` 仅引用该组件，不得在 `App.vue` 内重复挂载或封装 Toast/Message。
+- **PrimeVue 全局 UI**：Toast、Confirm、Dialog 与 `window.$toast` / `window.$message` 的挂载由 `src/layouts/components/AppPrimeVueGlobals.vue` 负责，`App.vue` 仅引用该组件，不得在 `App.vue` 内重复挂载或封装 Toast/Message。Toast 样式覆盖（居中 Message、关闭按钮位置）见该组件内 `<style>` 与 `docs/TOAST_UI_OVERRIDES.md`。
 
 ## 5. 显式引入
 

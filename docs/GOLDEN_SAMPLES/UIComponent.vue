@@ -3,9 +3,9 @@
   参考自 src/components/Icons/Icons.vue
   AI 生成 UI 组件时请严格模仿：withDefaults(defineProps<Props>())、UnoCSS class、语义类 text-foreground 等。
   导入路径在实际项目中请按 src 目录结构调整。
+  Vue 运行时 API（ref、computed 等）由自动导入提供，无需手写 import，见 docs/BUILD_SYSTEM.md。
 -->
 <script setup lang="ts">
-import { computed } from 'vue'
 import type { IconsProps } from '@/components/Icons/utils/types'
 import { toIconName } from '@/components/Icons/utils/helper'
 import { SIZE_SCALE_KEYS } from '@/constants/sizeScale'

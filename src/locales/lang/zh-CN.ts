@@ -66,6 +66,7 @@ const zhCN = {
       chunkUploadFailed: '分片上传失败: {chunk}/{total}',
       fileMergeFailed: '文件合并失败: {fileName}',
       fileDownloadFailed: '文件下载失败',
+      invalidResponseFormat: '文件下载失败：响应格式错误',
     },
     connection: {
       networkUnavailable: '网络不可用',
@@ -86,6 +87,16 @@ const zhCN = {
     deleteTitle: '删除确认',
     deleteMessage: '确定要删除吗？',
   },
+  chart: {
+    toolbox: {
+      saveAsImage: '保存为图片',
+      restore: '还原',
+      dataView: '数据视图',
+      dataZoomZoom: '区域缩放',
+      dataZoomBack: '区域缩放还原',
+      reset: '重置',
+    },
+  },
   common: {
     confirm: '确定',
     cancel: '取消',
@@ -94,6 +105,14 @@ const zhCN = {
     close: '关闭',
     closeOthers: '关闭其他',
     closeAll: '关闭全部',
+    refresh: '刷新',
+    search: '搜索',
+    searchPlaceholder: '搜索...',
+    export: '导出',
+    exportSuccess: '导出成功',
+    exportFailed: '导出失败',
+    loading: '加载中...',
+    noMoreData: '没有更多数据了',
   },
   settings: {
     themeMode: '深色 / 浅色',
@@ -172,6 +191,21 @@ const zhCN = {
     unsupportedComponent: '不支持的组件类型: {component}',
     customNoRender: '自定义组件缺少 render 函数',
     customRenderFailed: '自定义组件渲染失败',
+    validation: {
+      required: '必填项',
+      minChars: '至少 {n} 个字符',
+      minLength: '长度不能小于 {n}',
+      minValue: '最小值为 {n}',
+      maxChars: '最多 {n} 个字符',
+      maxLength: '长度不能大于 {n}',
+      maxValue: '最大值为 {n}',
+      email: '邮箱格式不正确',
+      url: 'URL 格式不正确',
+      pattern: '格式不正确',
+      invalidPattern: '正则规则配置错误',
+      integer: '必须为整数',
+      dateType: '日期格式不正确',
+    },
   },
 }
 

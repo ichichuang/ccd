@@ -4,7 +4,7 @@ globs: src/**/*.{ts,vue}
 alwaysApply: false
 ---
 
-# Auth & Login Flow (Must Follow)
+# 登录与鉴权流程（必须遵循）
 
 当任务涉及 **登录、登出、token、401、路由鉴权、白名单、动态路由** 时，必须先阅读 `docs/AUTH_AND_LOGIN_FLOW.md` 并遵循以下规则。
 

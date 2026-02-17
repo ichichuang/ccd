@@ -1,5 +1,6 @@
 // src/utils/http/methods.ts
 import { HTTP_CONFIG } from '@/constants/http'
+import { t } from '@/locales'
 import { alovaInstance } from './instance'
 import { HttpRequestError, isRetryableError, ErrorType } from './errors'
 import type {
@@ -243,6 +244,77 @@ export const get = async <T = any>(url: string, config?: RequestConfig): Promise
 }
 
 /**
+ * GET 请求 - 返回原始响应（包含头信息）
+ * 绕过 Alova 拦截器，直接使用 fetch 以获取 Headers
+ */
+export const getRaw = async <T = any>(
+  url: string,
+  config?: RequestConfig
+): Promise<{ data: T; headers: Headers }> => {
+  // 缓存键
+  const paramStr = config?.params ? JSON.stringify(config.params) : ''
+  const cacheKey = `GET_RAW:${url}:${paramStr}`
+  const cacheEnabled = config?.enableCache !== false
+  // const deduplicate = config?.deduplicate !== false // Not used in raw fetch
+
+  if (cacheEnabled) {
+    const cachedData = cache.get(cacheKey)
+    if (cachedData !== null) {
+      return cachedData as { data: T; headers: Headers }
+    }
+  }
+
+  // 构建 URL
+  const baseURL = alovaInstance.options.baseURL || ''
+  const fullUrl = url.startsWith('http') ? url : `${baseURL}${url}`
+  const queryString = config?.params
+    ? '?' + new URLSearchParams(config.params as Record<string, string>).toString()
+    : ''
+
+  // 构建 Headers
+  const headers = new Headers(config?.headers as Record<string, string>)
+
+  // 手动添加 Auth Token (因为绕过了 Alova 拦截器)
+  // 注意：这里需要引入 store，但如果在 methods.ts 引入可能会循环依赖？
+  // methods.ts 已经引入了 alovaInstance，它依赖 interceptors，interceptors 依赖 store。
+  // 所以这里引入 interceptors 中的 beforeRequest 逻辑比较复杂。
+  // 简单起见，从 localStorage 或通过回调获取 token？
+  // 或者复用 interceptors.ts 中的逻辑?
+  // 实际上 interceptors.ts 已经引入了 useUserStoreWithOut。
+  // 我们可以在这里动态获取。
+  try {
+    const { useUserStoreWithOut } = await import('@/stores/modules/user')
+    const userStore = useUserStoreWithOut()
+    const token = userStore.getToken
+    if (token) {
+      headers.set('Authorization', `Bearer ${token}`)
+    }
+  } catch (e) {
+    console.warn('Failed to inject token in getRaw', e)
+  }
+
+  const response = await fetch(`${fullUrl}${queryString}`, {
+    method: 'GET',
+    headers,
+    ...config,
+  })
+
+  if (!response.ok) {
+    throw new Error(`HTTP error! status: ${response.status}`)
+  }
+
+  const data = await response.json()
+  const result = { data, headers: response.headers }
+
+  if (cacheEnabled) {
+    const ttl = config?.cacheTTL || HTTP_CONFIG.defaultCacheTtl
+    cache.set(cacheKey, result, ttl)
+  }
+
+  return result
+}
+
+/**
  * POST 请求
  */
 export const post = <T = any>(url: string, data?: any, config?: RequestConfig): Promise<T> => {
@@ -383,7 +455,7 @@ export const downloadFile = async (
 
   if (!(blob instanceof Blob)) {
     throw new HttpRequestError(
-      '文件下载失败：响应格式错误',
+      t('http.upload.invalidResponseFormat'),
       ErrorType.SERVER,
       undefined,
       undefined,

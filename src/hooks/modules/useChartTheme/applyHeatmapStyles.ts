@@ -1,3 +1,4 @@
+// ECharts 系列样式边界：参数与 ECharts heatmap 系列一致，内部使用 any 避免强依赖 echarts 内部类型。
 import type { ThemeConfig } from './types'
 
 /**
@@ -39,8 +40,8 @@ export const applyHeatmapStyles = (series: any, themeConfig: ThemeConfig): any =
         color: themeConfig.color.colors.slice(0, 4), // 使用前4个颜色作为热力图渐变
       },
       textStyle: {
-        color: themeConfig.textColor100,
-        fontSize: themeConfig.font.fontSizeSmall,
+        color: themeConfig.foreground,
+        fontSize: themeConfig.size.fontSm,
       },
     }
   }
@@ -69,8 +70,8 @@ export const applyHeatmapStyles = (series: any, themeConfig: ThemeConfig): any =
       ...newSeries.emphasis,
       itemStyle: {
         ...newSeries.emphasis.itemStyle,
-        borderColor: themeConfig.textColor100,
-        borderWidth: 1,
+        borderColor: themeConfig.foreground,
+        borderWidth: themeConfig.size.strokeHairline,
       },
     }
   }
@@ -78,9 +79,7 @@ export const applyHeatmapStyles = (series: any, themeConfig: ThemeConfig): any =
     newSeries.emphasis = {
       ...newSeries.emphasis,
       label: {
-        show: true,
-        color: themeConfig.textColor100,
-        fontSize: themeConfig.font.fontSizeSmall,
+        show: false,
       },
     }
   }

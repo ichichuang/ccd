@@ -1,8 +1,12 @@
-// 工具函数
+/**
+ * useChartTheme 工具函数（ECharts option 边界层）
+ *
+ * 深拷贝与批量样式应用接受任意 option 结构，故参数/返回使用 any。
+ */
 
 /**
- * 优化的深拷贝函数，保留函数引用，支持更多数据类型
- * 使用 WeakMap 处理循环引用，避免无限递归
+ * 优化的深拷贝函数，保留函数引用，支持更多数据类型；用于 ECharts option 深拷贝，接受任意结构。
+ * 使用 WeakMap 处理循环引用，避免无限递归。
  */
 export function deepCloneWithFunctions(obj: any, visited = new WeakMap()): any {
   // 处理基本类型和 null
@@ -81,11 +85,52 @@ export function deepCloneWithFunctions(obj: any, visited = new WeakMap()): any {
 }
 
 /**
- * 通用样式应用函数，用于批量处理数组类型的配置
+ * 通用样式应用函数，用于批量处理数组类型的 ECharts 配置（如 axis、series），接受任意 item 结构。
  */
 export function applyStylesToArray(items: any[], styleApplier: (item: any) => any): any[] {
   if (!Array.isArray(items)) {
     return items
   }
   return items.map(styleApplier)
+}
+
+/**
+ * 将颜色转换为带透明度的 rgba 字符串
+ * 支持 hex (#rgb, #rrggbb) 和 rgb(r,g,b) 格式
+ */
+export function withAlpha(color: string | undefined, alpha: number): string | undefined {
+  if (!color || typeof color !== 'string') {
+    return color
+  }
+
+  // 处理 rgb(r,g,b) 格式
+  const rgbMatch = color.match(/^rgb\((\d+),\s*(\d+),\s*(\d+)\)$/)
+  if (rgbMatch) {
+    const r = parseInt(rgbMatch[1], 10)
+    const g = parseInt(rgbMatch[2], 10)
+    const b = parseInt(rgbMatch[3], 10)
+    if (Number.isFinite(r) && Number.isFinite(g) && Number.isFinite(b)) {
+      return `rgba(${r}, ${g}, ${b}, ${alpha})`
+    }
+  }
+
+  // 处理 hex 格式
+  const hex = color.replace('#', '')
+  if (hex.length === 6 || hex.length === 3) {
+    const fullHex =
+      hex.length === 3
+        ? hex
+            .split('')
+            .map(ch => ch + ch)
+            .join('')
+        : hex
+    const r = parseInt(fullHex.substring(0, 2), 16)
+    const g = parseInt(fullHex.substring(2, 4), 16)
+    const b = parseInt(fullHex.substring(4, 6), 16)
+    if (Number.isFinite(r) && Number.isFinite(g) && Number.isFinite(b)) {
+      return `rgba(${r}, ${g}, ${b}, ${alpha})`
+    }
+  }
+
+  return color
 }

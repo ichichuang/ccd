@@ -154,17 +154,23 @@ export interface ColorConfig {
   secondaryColors: string[]
 }
 
-// 主题配置接口
+// 主题配置接口（颜色字段与 theme.d.ts ThemeCssVars 命名对齐）
+import type { ChartSizeTokens } from '@/utils/theme/chartUtils'
+
 export interface ThemeConfig {
   font: FontConfig
   color: ColorConfig
-  opacity: any // ChartOpacityConfig
+  opacity: DefaultOpacityValues
+  /** 图表尺寸 tokens（px），与 SizeMode 对齐，用于默认值补齐 */
+  size: ChartSizeTokens
   paddings: number
   gap: number
   gapl: number
-  textColor100: string
-  textColor200: string
-  bgColor200: string
-  bgColor300: string
-  accent100: string
+  foreground: string
+  mutedForeground: string
+  background: string
+  card: string
+  border: string
+  accent: string
+  primaryForeground: string
 }
