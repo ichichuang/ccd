@@ -131,7 +131,8 @@ export default ({ mode, command }: ConfigEnv): UserConfigExport => {
     build: {
       target: 'es2020',
       sourcemap: VITE_BUILD_SOURCEMAP,
-      chunkSizeWarningLimit: 1500, // 1.5MB，单 chunk 过大仍会警告，配合 manualChunks 控制
+      // 调高单 chunk 体积告警阈值，在示例页与 vendor 拆包后，2.5MB 作为更合理上限
+      chunkSizeWarningLimit: 2500,
       cssCodeSplit: true, // 启用 CSS 代码分割
       assetsInlineLimit: 4096, // < 4kb 转 base64
 

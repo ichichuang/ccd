@@ -74,11 +74,27 @@ export function getIconifyIconNames(collectionName: 'lucide' | 'mdi' | 'logos'):
 }
 
 /** 示例页与 safelist 使用的子集数量，控制构建内存 */
-export const ICON_SUBSET_LIMITS = {
+const ICON_SUBSET_LIMITS_DEV = {
   lucide: 500,
   mdi: 500,
   logos: 300,
 } as const
+
+const ICON_SUBSET_LIMITS_PROD = {
+  lucide: 200,
+  mdi: 200,
+  logos: 100,
+} as const
+
+const isProdEnv = process.env.NODE_ENV === 'production'
+
+export const ICON_SUBSET_LIMITS = (
+  isProdEnv ? ICON_SUBSET_LIMITS_PROD : ICON_SUBSET_LIMITS_DEV
+) as {
+  readonly lucide: number
+  readonly mdi: number
+  readonly logos: number
+}
 
 /**
  * 取某集合前 limit 个图标类名，供示例页与 safelist 使用，避免全量导致 OOM
