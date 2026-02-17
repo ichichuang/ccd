@@ -24,7 +24,7 @@
 | `build/plugins.ts`     | 插件入口：AutoImport、Components、UnoCSS、Vue、JSX、HTML 注入、图标 watcher、压缩、体积分析、Legacy 等                                                                     |
 | `build/optimize.ts`    | 依赖预构建：`optimizeDeps.include` / `exclude`，供 `vite.config.ts` 使用                                                                                                   |
 | `build/uno-icons.ts`   | 图标与类名：路由/API icon 扫描、自定义 SVG 集合、UnoCSS safelist（`getDynamicSafelist`）、custom collection loader（`getPresetIconsCollections`），由 `uno.config.ts` 引用 |
-| `build/html.ts`        | 向 `index.html` 注入环境变量（如 `VITE_APP_TITLE`）                                                                                                                        |
+| `build/html.ts`        | 向 `index.html` 注入品牌配置（来自 `src/constants/brand.ts`：title、og:title、og:description、author）                                                                     |
 | `build/compress.ts`    | 构建产物 gzip/brotli 压缩（按 `VITE_COMPRESSION` 启用）                                                                                                                    |
 | `build/info.ts`        | 构建信息输出（版本、耗时、产物体积）                                                                                                                                       |
 | `build/legacy.ts`      | `@vitejs/plugin-legacy`，旧浏览器兼容（`VITE_LEGACY` 为 true 时）                                                                                                          |

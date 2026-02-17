@@ -4,7 +4,7 @@ import { COLOR_FAMILIES, THEME_ENGINE } from './metadata'
 export { COLOR_FAMILIES, THEME_ENGINE }
 
 /**
- * 生成 Shadcn 兼容的 CSS 变量 (Final v3.5)
+ * 生成语义化主题 CSS 变量 (Final v3.5)
  */
 export function generateThemeVars(preset: ThemePreset, isDark: boolean): ThemeCssVars {
   const E = THEME_ENGINE

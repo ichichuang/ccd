@@ -1,5 +1,6 @@
 import pc from 'picocolors'
 import type { Plugin } from 'vite'
+import { brand } from '../src/constants/brand'
 import { __APP_INFO__, getPackageSize } from './utils'
 
 export function viteBuildInfo(): Plugin {
@@ -27,10 +28,10 @@ export function viteBuildInfo(): Plugin {
 
       console.log(
         pc.bold(
-          pc.green(`🎉 欢迎使用 ${pkg.name}
+          pc.green(`🎉 欢迎使用 ${brand.name}
 📦 版本: ${pkg.version}
 ⚡ 基于 Vue ${vueVersion} + Vite 构建
-🛠️ UI 架构: Shadcn-vue (Atomic CSS)
+🛠️ UI 架构: PrimeVue + UnoCSS
 ${unocssLine}🕒 构建时间: ${__APP_INFO__.lastBuildTime}
 `)
         )

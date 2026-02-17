@@ -31,8 +31,8 @@ export function getPluginsList(env: ViteEnv, command: 'build' | 'serve'): Plugin
     // ✅ 构建信息看板
     viteBuildInfo(),
 
-    // ✅ HTML 注入 VITE_APP_TITLE（与 usePageTitle 初始标题一致）
-    configHtmlPlugin(env),
+    // ✅ HTML 注入品牌配置（来自 src/constants/brand.ts）
+    configHtmlPlugin(),
 
     // 图标示例页列表：从 @iconify-json 与 src/assets/icons 动态生成
     generateIconListsPlugin(),

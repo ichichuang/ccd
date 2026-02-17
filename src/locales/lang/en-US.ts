@@ -158,8 +158,6 @@ const enUS = {
       title: 'System Menu',
       menu: 'Menu',
     },
-    appName: 'CCD Admin',
-    appSubtitle: 'Enterprise',
     reload: 'Reload',
     globalSettings: 'Global Settings',
     globalSettingsTitle: 'Global Settings',

@@ -1,5 +1,5 @@
 /**
- * 全局主题类型定义 (v3.1 - 完整对齐 Shadcn 最新标准)
+ * 全局主题类型定义 (v3.1 - 语义化主题变量)
  * 作用范围：src/utils/theme/engine.ts 及相关 Store
  */
 declare global {
@@ -103,7 +103,7 @@ declare global {
   }
 
   /**
-   * Shadcn/UnoCSS 需要的 CSS 变量映射
+   * UnoCSS 与主题系统使用的 CSS 变量映射
    * ⚠️ 值必须是 RGB 通道格式 (e.g., "255 10 20") 以支持透明度语法
    */
   export interface ThemeCssVars {

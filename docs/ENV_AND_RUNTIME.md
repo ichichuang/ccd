@@ -14,12 +14,16 @@
 
 ### 2.1 App 基础
 
-- `VITE_APP_TITLE`：应用标题（HTML 首帧注入 + 运行时 usePageTitle）
 - `VITE_PORT`：dev server 端口
 - `VITE_ROUTER_MODE`：路由模式（hash/history）
 - `VITE_PUBLIC_PATH`：Vite base
 - `VITE_ROOT_REDIRECT`：登录后默认跳转
 - `VITE_APP_ENV`：`development | production`
+
+### 2.1.1 品牌配置（单一数据源）
+
+项目标题、描述、slogan、作者等统一在 `src/constants/brand.ts` 中维护，不通过 .env。  
+修改品牌信息时仅需编辑该文件。HTML meta、Header 布局、页面标题（usePageTitle / permission）、构建信息等均从该文件读取。
 
 ### 2.2 API / 超时
 

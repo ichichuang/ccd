@@ -11,6 +11,7 @@ import type { Router } from 'vue-router'
 import { useRoute } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { useTitle } from '@vueuse/core'
+import { brand } from '@/constants/brand'
 
 /**
  * 计算路由页面标题（支持多语言）
@@ -56,8 +57,7 @@ export function calculatePageTitle(
 export function usePageTitle(_router?: Router) {
   const route = useRoute()
   const { t } = useI18n()
-  const env = import.meta.env
-  const appTitle = env.VITE_APP_TITLE || ''
+  const appTitle = brand.name
 
   /**
    * 当前页面标题（响应式计算）
@@ -104,8 +104,8 @@ export function usePageTitle(_router?: Router) {
     getRouteTitle: (route: any, appTitle?: string) =>
       calculatePageTitle(
         route,
-        // 若未传入则使用环境变量；若显式传入空字符串则按“无应用标题”处理
-        appTitle === undefined ? env.VITE_APP_TITLE || '' : appTitle,
+        // 若未传入则使用 brand.name；若显式传入空字符串则按“无应用标题”处理
+        appTitle === undefined ? brand.name : appTitle,
         t
       ),
   }

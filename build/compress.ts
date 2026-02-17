@@ -1,7 +1,7 @@
 import type { PluginOption } from 'vite'
 import compression from 'vite-plugin-compression'
 
-/** 压缩文件类型过滤：仅压缩 js/mjs/json/css/html/svg，涵盖 Shadcn 的 JSON 配置与自定义 SVG 图标等静态资源 */
+/** 压缩文件类型过滤：仅压缩 js/mjs/json/css/html/svg，涵盖 JSON 配置与自定义 SVG 图标等静态资源 */
 const COMPRESS_FILTER = /\.(js|mjs|json|css|html|svg)$/i
 
 /**

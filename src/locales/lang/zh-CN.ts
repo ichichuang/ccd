@@ -158,8 +158,6 @@ const zhCN = {
       title: '系统菜单',
       menu: '菜单',
     },
-    appName: 'CCD Admin',
-    appSubtitle: 'Enterprise',
     reload: '重新载入',
     globalSettings: '全局配置',
     globalSettingsTitle: '全局配置 (Global Settings)',

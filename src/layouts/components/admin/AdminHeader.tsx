@@ -4,6 +4,7 @@ import Menubar from 'primevue/menubar'
 import { Icons } from '@/components/Icons'
 import GlobalSetting from '@/layouts/components/GlobalSetting/index.vue'
 import User from '@/layouts/components/User/index.vue'
+import { brand } from '@/constants/brand'
 import { AUTH_ENABLED } from '@/constants/router'
 import { useRoute } from 'vue-router'
 import { useI18n } from 'vue-i18n'
@@ -267,10 +268,8 @@ export default defineComponent({
                   <span class="fs-md font-bold">C</span>
                 </div>
                 <div class="hidden md:flex flex-col leading-none">
-                  <span class="fs-sm font-bold tracking-tight">{t('layout.appName')}</span>
-                  <span class="fs-xs text-muted-foreground font-medium">
-                    {t('layout.appSubtitle')}
-                  </span>
+                  <span class="fs-sm font-bold tracking-tight">{brand.displayName}</span>
+                  <span class="fs-xs text-muted-foreground font-medium">{brand.subtitle}</span>
                 </div>
               </div>
             )}

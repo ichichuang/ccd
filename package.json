@@ -1,10 +1,10 @@
 {
   "name": "ccd",
-  "version": "3.0.0",
+  "version": "3.0.2",
   "private": true,
   "type": "module",
   "author": "",
-  "description": "ccd 个人级后台管理框架",
+  "description": "现代化全局后台管理框架",
   "keywords": [
     "vue3",
     "typescript",

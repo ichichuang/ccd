@@ -1,4 +1,5 @@
 /* 守卫 */
+import { brand } from '@/constants/brand'
 import { AUTH_ENABLED, routeWhitePathList } from '@/constants/router'
 import { usePermissionStore } from '@/stores/modules/permission'
 import { useUserStoreWithOut } from '@/stores/modules/user'
@@ -12,7 +13,7 @@ import type { RouteLocationNormalized, Router } from 'vue-router'
  * 避免在守卫中调用 useI18n/useRoute 等 Composition API
  */
 function updatePageTitle(to: RouteLocationNormalized) {
-  const appTitle = import.meta.env.VITE_APP_TITLE || ''
+  const appTitle = brand.name
   const finalTitle = calculatePageTitle(to, appTitle, t)
   // 直接操作 document.title，保持守卫层的纯 JS 特性
   if (typeof document !== 'undefined') {
