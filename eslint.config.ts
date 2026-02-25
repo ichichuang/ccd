@@ -228,6 +228,67 @@ export default tseslint.config(
     },
   },
 
-  // 10. Prettier 兼容 (最后加载)
-  eslintConfigPrettier
+  // 10. Prettier 兼容 (基础配置)
+  eslintConfigPrettier,
+
+  // 11. Vue 模板格式规则（覆盖部分被 Prettier 关闭的 Vue 规则）
+  {
+    name: 'app/vue-formatting-rules',
+    files: ['**/*.vue'],
+    rules: {
+      // 单行元素内容必须换行（改为 warn，避免阻塞 Prettier 格式化）
+      'vue/singleline-html-element-content-newline': [
+        'warn',
+        {
+          ignoreWhenNoAttributes: true,
+          ignoreWhenEmpty: true,
+          ignores: [
+            'pre',
+            'textarea',
+            'code',
+            'td',
+            'th',
+            'span', // 内联文本标签，允许单行
+            'p', // 段落标签，内容通常较短时允许单行
+            'h1',
+            'h2',
+            'h3',
+            'h4',
+            'h5',
+            'h6', // 标题标签，短标题允许单行
+            'div', // 容器标签，简单内容允许单行
+            'label', // 表单标签，短文本允许单行
+            'button', // 按钮标签，短文本允许单行
+          ],
+        },
+      ],
+      // 多行元素内容前后必须换行（改为 warn，避免阻塞 Prettier 格式化）
+      'vue/multiline-html-element-content-newline': [
+        'warn',
+        {
+          ignoreWhenEmpty: true,
+          ignores: [
+            'pre',
+            'textarea',
+            'code',
+            'td',
+            'th',
+            'span', // 内联文本标签，允许单行
+            'p', // 段落标签，内容通常较短时允许单行
+            'h1',
+            'h2',
+            'h3',
+            'h4',
+            'h5',
+            'h6', // 标题标签，短标题允许单行
+            'div', // 容器标签，简单内容允许单行
+            'label', // 表单标签，短文本允许单行
+            'button', // 按钮标签，短文本允许单行
+          ],
+        },
+      ],
+      // 核心修改：完全交由 Prettier 处理，关闭此规则避免与 htmlWhitespaceSensitivity: "css" 发生冲突
+      'vue/html-closing-bracket-newline': 'off',
+    },
+  }
 )

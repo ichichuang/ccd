@@ -4,6 +4,8 @@
     "src/types/**/*.ts",
     "src/types/**/*.d.ts",
     "src/types/auto-imports.d.ts",
+    "src/layouts/components/admin/AdminHeader.vue",
+    "src/layouts/components/admin/AdminBreadcrumbBar.vue",
     "src/types/components.d.ts",
     "src/types/env.d.ts",
     "src/**/*",

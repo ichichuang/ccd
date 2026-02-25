@@ -72,6 +72,16 @@ Reference `uno.config.ts` for all available semantic classes:
 - 四边边框：`component-border`；底边：`border-b-default`；顶边：`border-t-default`（见 `uno.config.ts` ⑧a 边框快捷类）。
 - FORBIDDEN：仅写 `border border-border`（未设 border-style 导致边框不显示）。
 
+**Transition & Interaction (过渡与交互)：**
+- When using `hover:` / `active:` / `focus:` / `group-hover:`, MUST pair with transition classes to avoid abrupt changes.
+- Use `uno.config.ts` shortcuts: `interactive-hover`, `interactive-click`, `behavior-hover-transition`; or `transition-all duration-scale-{xs~5xl}`, `transition-opacity duration-scale-*`.
+- Scale: xs(75ms)~5xl(1500ms) via `duration-scale-{scale}`；SSOT: `src/constants/sizeScale.ts` TRANSITION_SCALE_VALUES.
+- **duration-scale 搭配**：`duration-scale-*` 必须与 `transition`/`transition-colors`/`transition-opacity` 搭配；transition-* 也必须配合 duration-scale-*。
+- **Icons 特殊**：Icons 使用 `group-hover:` 颜色/透明度时，transition 必须写在 Icons class 上，父容器 transition 无效。
+- **PrimeVue pt**：pt content 中的 hover/active 同样需加 `transition-colors duration-scale-md` 等。
+- FORBIDDEN: `hover:`/`active:`/`focus:` without transition; `duration-scale-*` alone; hardcoded durations.
+- 详见 `docs/UNOCSS_AND_ICONS.md` §2.7、§2.7.1、§6.3.2。
+
 **Flex / main-* / cross-* (UnoCSS shortcuts):**
 - When using `main-*` or `cross-*`, MUST also use direction: `row` or `column` (e.g. `class="row main-between cross-center"` or `class="column main-center cross-start"`).
 - FORBIDDEN: using `main-*` or `cross-*` without `row` or `column` (ambiguous which axis is main/cross).

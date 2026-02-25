@@ -57,44 +57,42 @@ watch([localPagination, localGlobalFilter, localExportable, localSelectable, loc
 </script>
 
 <template>
-  <div
-    class="card bg-card component-border p-padding-md flex flex-row flex-wrap gap-md items-center mb-margin-md"
-  >
-    <div class="row-center gap-sm">
-      <label class="text-sm font-medium">分页 (Pagination):</label>
+  <div class="flex flex-col gap-sm">
+    <div class="flex items-center justify-between">
+      <label class="text-sm">分页 (Pagination):</label>
       <ToggleSwitch
         v-model="localPagination"
         :disabled="paginationDisabled"
         @change="sync"
       />
     </div>
-    <div class="w-px h-[var(--spacing-md)] bg-border mx-margin-sm" />
-    <div class="row-center gap-sm">
-      <label class="text-sm font-medium">全局搜索 (GlobalFilter):</label>
+
+    <div class="flex items-center justify-between">
+      <label class="text-sm">全局搜索 (GlobalFilter):</label>
       <ToggleSwitch
         v-model="localGlobalFilter"
         @change="sync"
       />
     </div>
-    <div class="w-px h-[var(--spacing-md)] bg-border mx-margin-sm" />
-    <div class="row-center gap-sm">
-      <label class="text-sm font-medium">导出 (Exportable):</label>
+
+    <div class="flex items-center justify-between">
+      <label class="text-sm">导出 (Exportable):</label>
       <ToggleSwitch
         v-model="localExportable"
         @change="sync"
       />
     </div>
-    <div class="w-px h-[var(--spacing-md)] bg-border mx-margin-sm" />
-    <div class="row-center gap-sm">
-      <label class="text-sm font-medium">行选择 (Selectable):</label>
+
+    <div class="flex items-center justify-between">
+      <label class="text-sm">行选择 (Selectable):</label>
       <ToggleSwitch
         v-model="localSelectable"
         @change="sync"
       />
     </div>
-    <div class="w-px h-[var(--spacing-md)] bg-border mx-margin-sm" />
-    <div class="row-center gap-sm">
-      <label class="text-sm font-medium">显示表头栏 (ShowHeader):</label>
+
+    <div class="flex items-center justify-between">
+      <label class="text-sm">显示表头栏 (ShowHeader):</label>
       <ToggleSwitch
         v-model="localShowHeader"
         @change="sync"

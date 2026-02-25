@@ -150,8 +150,8 @@ watch(
 .c-scrollbar-native {
   /* 原生滚动条样式 */
   &::-webkit-scrollbar {
-    width: var(--spacing-xs);
-    height: var(--spacing-xs);
+    width: var(--spacing-sm);
+    height: var(--spacing-sm);
   }
 
   &::-webkit-scrollbar-track {

@@ -77,3 +77,6 @@ temp/
 
 # OS generated files
 Thumbs.db
+
+# 本地修复清单，不提交
+repair_list.txt

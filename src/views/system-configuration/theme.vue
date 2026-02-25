@@ -1,9 +1,16 @@
 <script setup lang="ts">
-import { computed } from 'vue'
 import Button from 'primevue/button'
 import Card from 'primevue/card'
 import Tag from 'primevue/tag'
+import SelectButton from 'primevue/selectbutton'
 import { COLOR_FAMILIES } from '@/utils/theme/metadata'
+import { useThemeStore } from '@/stores/modules/theme'
+import { useThemeSwitch } from '@/hooks/modules/useThemeSwitch'
+import {
+  THEME_PRESETS,
+  getPresetPrimaryColor,
+  TRANSITION_DURATION_OPTIONS,
+} from '@/constants/theme'
 
 // Copy to clipboard utility
 function copyToClipboard(text: string, label?: string) {
@@ -18,7 +25,15 @@ function copyToClipboard(text: string, label?: string) {
 }
 
 // Single token colors
-const singleTokens = computed(() =>
+const singleTokens = computed<
+  Array<{
+    token: string
+    cssVar: string
+    bgClass: string
+    textClass: string
+    borderClass: string | null
+  }>
+>(() =>
   COLOR_FAMILIES.singleTokens.map(token => ({
     token,
     cssVar: `--${token}`,
@@ -29,7 +44,17 @@ const singleTokens = computed(() =>
 )
 
 // Pair family colors
-const pairFamilies = computed(() =>
+const pairFamilies = computed<
+  Array<{
+    family: string
+    variants: Array<{
+      name: string
+      cssVar: string
+      bgClass: string | null
+      textClass: string | null
+    }>
+  }>
+>(() =>
   COLOR_FAMILIES.pairFamilies.map(family => ({
     family,
     variants: [
@@ -44,13 +69,25 @@ const pairFamilies = computed(() =>
         cssVar: `--${family}-foreground`,
         bgClass: null,
         textClass: `text-${family}-foreground`,
+        borderClass: null,
       },
     ],
   }))
 )
 
 // Quad family colors (extended families)
-const quadFamilies = computed(() =>
+const quadFamilies = computed<
+  Array<{
+    family: string
+    variants: Array<{
+      name: string
+      cssVar: string
+      bgClass: string | null
+      textClass: string | null
+      borderClass: string | null
+    }>
+  }>
+>(() =>
   COLOR_FAMILIES.quadFamilies.map(family => ({
     family,
     variants: [
@@ -66,6 +103,7 @@ const quadFamilies = computed(() =>
         cssVar: `--${family}-foreground`,
         bgClass: null,
         textClass: `text-${family}-foreground`,
+        borderClass: null,
       },
       {
         name: 'hover',
@@ -79,6 +117,7 @@ const quadFamilies = computed(() =>
         cssVar: `--${family}-hover-foreground`,
         bgClass: null,
         textClass: `text-${family}-hover-foreground`,
+        borderClass: null,
       },
       {
         name: 'light',
@@ -92,6 +131,7 @@ const quadFamilies = computed(() =>
         cssVar: `--${family}-light-foreground`,
         bgClass: null,
         textClass: `text-${family}-light-foreground`,
+        borderClass: null,
       },
     ],
   }))
@@ -153,7 +193,17 @@ const SIDEBAR_KEY_TO_CLASS: Record<
 }
 
 // Sidebar colors：使用与 uno.config.ts buildThemeColors 一致的类名
-const sidebarColors = computed(() =>
+const sidebarColors = computed<
+  Array<{
+    key: keyof typeof COLOR_FAMILIES.sidebar
+    varName: string
+    cssVar: string
+    bgClass: string
+    textClass: string
+    borderClass: string | null
+    copyClass: string
+  }>
+>(() =>
   (Object.keys(COLOR_FAMILIES.sidebar) as (keyof typeof COLOR_FAMILIES.sidebar)[]).map(key => {
     const mapping = SIDEBAR_KEY_TO_CLASS[key]
     const varName = COLOR_FAMILIES.sidebar[key]
@@ -171,6 +221,27 @@ const sidebarColors = computed(() =>
 
 // Opacity variants helper
 const opacityVariants = [10, 20, 30, 40, 50, 60, 70, 80, 90] as const
+
+// Theme Store & Switch
+const themeStore = useThemeStore()
+const { mode, isAnimating, setThemeWithAnimation } = useThemeSwitch()
+const themeModeOptions: Array<{ value: ThemeMode; label: string }> = [
+  { value: 'light', label: '亮色' },
+  { value: 'dark', label: '暗色' },
+  { value: 'auto', label: '跟随系统' },
+]
+const transitionOptions = TRANSITION_DURATION_OPTIONS.map(o => ({
+  value: o.value,
+  label: `${o.value}ms`,
+}))
+
+// Preset primary color for swatch (light mode)
+const presetSwatchColors = computed<Array<{ name: string; color: string }>>(() =>
+  THEME_PRESETS.map(p => ({
+    name: p.name,
+    color: getPresetPrimaryColor(p, false),
+  }))
+)
 </script>
 
 <template>
@@ -186,13 +257,108 @@ const opacityVariants = [10, 20, 30, 40, 50, 60, 70, 80, 90] as const
             />
           </div>
           <div>
-            <h1 class="fs-2xl font-bold text-foreground">Color System</h1>
+            <h1 class="fs-2xl font-bold text-foreground">Theme System 主题系统</h1>
             <p class="text-muted-foreground">
-              颜色系统变量完整参考 · 点击任意类名或变量即可自动复制到剪贴板
+              包含：颜色 token + Store 模式/预设 · 亮/暗/自动 + THEME_PRESETS ·
+              点击任意类名或变量即可复制
             </p>
           </div>
         </div>
       </div>
+
+      <!-- Theme Store 主题 Store -->
+      <Card class="component-border">
+        <template #title>
+          <div class="flex items-center gap-sm">
+            <Icons
+              name="i-lucide-settings-2"
+              class="text-primary"
+            />
+            <span>Theme Store 主题 Store</span>
+            <Tag
+              value="useThemeStore / useThemeSwitch"
+              severity="info"
+            />
+          </div>
+        </template>
+        <template #content>
+          <div class="flex flex-col gap-lg">
+            <div class="flex flex-col gap-sm">
+              <span class="text-muted-foreground fs-sm">模式 (Theme Mode)</span>
+              <SelectButton
+                :model-value="mode"
+                :options="themeModeOptions"
+                option-value="value"
+                option-label="label"
+                :disabled="!!isAnimating"
+                @update:model-value="(v: ThemeMode) => setThemeWithAnimation(v)"
+              />
+              <p class="text-muted-foreground fs-xs">
+                useThemeSwitch：setThemeWithAnimation(mode) · 切换时带动画
+              </p>
+            </div>
+            <div class="flex flex-col gap-sm">
+              <span class="text-muted-foreground fs-sm">切换动画时长 (Transition Duration)</span>
+              <div class="flex flex-wrap gap-sm">
+                <Button
+                  v-for="opt in transitionOptions"
+                  :key="opt.value"
+                  :label="opt.label"
+                  :severity="themeStore.transitionDuration === opt.value ? 'primary' : 'secondary'"
+                  :outlined="themeStore.transitionDuration !== opt.value"
+                  size="small"
+                  @click="themeStore.setTransitionDuration(opt.value)"
+                />
+              </div>
+            </div>
+          </div>
+        </template>
+      </Card>
+
+      <!-- THEME_PRESETS 预设展示 -->
+      <Card class="component-border">
+        <template #title>
+          <div class="flex items-center gap-sm">
+            <Icons
+              name="i-lucide-palette"
+              class="text-primary"
+            />
+            <span>THEME_PRESETS 预设展示</span>
+            <Tag
+              :value="`${THEME_PRESETS.length} presets`"
+              severity="secondary"
+            />
+          </div>
+        </template>
+        <template #content>
+          <div class="flex flex-col gap-md">
+            <p class="text-muted-foreground fs-sm">
+              来自
+              <span class="bg-muted px-padding-xs rounded">src/constants/theme.ts</span>
+              · 点击色块切换 preset，themeStore.setTheme 实时生效
+            </p>
+            <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-md">
+              <div
+                v-for="item in presetSwatchColors"
+                :key="item.name"
+                class="flex flex-col items-center gap-xs p-padding-md rounded-scale-md transition-colors cursor-pointer"
+                :class="
+                  themeStore.themeName === item.name
+                    ? 'bg-primary/10 component-border border-primary/50'
+                    : 'bg-muted/20 hover:bg-muted/40'
+                "
+                @click="themeStore.setTheme(item.name)"
+              >
+                <div
+                  class="w-12 h-12 rounded-full border-2 border-solid border-border shrink-0"
+                  :style="{ background: item.color }"
+                />
+                <span class="font-mono fs-xs text-foreground">{{ item.name }}</span>
+              </div>
+            </div>
+          </div>
+        </template>
+      </Card>
 
       <!-- Single Token Colors -->
       <Card class="component-border">
@@ -223,7 +389,9 @@ const opacityVariants = [10, 20, 30, 40, 50, 60, 70, 80, 90] as const
                     class="w-[var(--spacing-xl)] h-[var(--spacing-xl)] rounded-scale-sm component-border shadow-sm"
                     :class="item.bgClass"
                   />
-                  <span class="font-semibold text-foreground">{{ item.token }}</span>
+                  <span class="font-semibold text-foreground">
+                    {{ item.token }}
+                  </span>
                 </div>
                 <div class="flex flex-wrap gap-xs">
                   <Button
@@ -363,9 +531,9 @@ const opacityVariants = [10, 20, 30, 40, 50, 60, 70, 80, 90] as const
           <div class="flex flex-col gap-md">
             <p class="text-muted-foreground fs-sm">
               包含 DEFAULT, foreground, hover, hover-foreground, light, light-foreground 六个变体。
-              <span class="text-foreground">*-light</span> 用于 PrimeVue Button text/outlined 变体
-              hover 背景，详见
-              <code class="bg-muted px-padding-xs rounded fs-xs">docs/PRIMEVUE_THEME.md</code>
+              <span class="text-foreground">*-light</span>
+              用于 PrimeVue Button text/outlined 变体 hover 背景，详见
+              <span class="bg-muted px-padding-xs rounded fs-xs">docs/PRIMEVUE_THEME.md</span>
             </p>
             <div class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-lg">
               <div
@@ -485,11 +653,14 @@ const opacityVariants = [10, 20, 30, 40, 50, 60, 70, 80, 90] as const
         <template #content>
           <div class="flex flex-col gap-md">
             <p class="text-muted-foreground fs-sm">
-              Button <code class="bg-muted px-padding-xs rounded">variant="text"</code> 与
-              <code class="bg-muted px-padding-xs rounded">variant="outlined"</code> 使用
-              <code class="bg-muted px-padding-xs rounded">*-light</code> 作为 hover
-              背景，避免黑底彩字/红底红字。详见
-              <code class="bg-muted px-padding-xs rounded fs-xs">docs/PRIMEVUE_THEME.md</code>
+              Button
+              <span class="bg-muted px-padding-xs rounded">variant="text"</span>
+              与
+              <span class="bg-muted px-padding-xs rounded">variant="outlined"</span>
+              使用
+              <span class="bg-muted px-padding-xs rounded">*-light</span>
+              作为 hover 背景，避免黑底彩字/红底红字。详见
+              <span class="bg-muted px-padding-xs rounded fs-xs">docs/PRIMEVUE_THEME.md</span>
             </p>
             <div class="flex flex-col gap-lg">
               <div>
@@ -600,7 +771,7 @@ const opacityVariants = [10, 20, 30, 40, 50, 60, 70, 80, 90] as const
           <div class="flex flex-col gap-md">
             <p class="text-muted-foreground fs-sm">
               所有颜色都支持透明度语法，格式:
-              <code class="bg-muted px-padding-xs rounded">bg-{color}/{opacity}</code>
+              <span class="bg-muted px-padding-xs rounded">bg-{color}/{opacity}</span>
               · 色块使用 CSS 变量渲染，无需 UNO_DEMO 即可完整显示
             </p>
             <div class="flex flex-col gap-lg">
@@ -608,7 +779,9 @@ const opacityVariants = [10, 20, 30, 40, 50, 60, 70, 80, 90] as const
                 v-for="family in COLOR_FAMILIES.quadFamilies"
                 :key="family"
               >
-                <h4 class="font-semibold mb-gap-sm capitalize text-foreground">{{ family }}</h4>
+                <h4 class="font-semibold mb-gap-sm capitalize text-foreground">
+                  {{ family }}
+                </h4>
                 <div class="flex gap-xs flex-wrap">
                   <div
                     v-for="opacity in opacityVariants"
@@ -620,9 +793,9 @@ const opacityVariants = [10, 20, 30, 40, 50, 60, 70, 80, 90] as const
                       class="w-[var(--spacing-2xl)] h-[var(--spacing-2xl)] rounded-scale-sm component-border group-hover:scale-110 transition-transform"
                       :style="{ background: `rgb(var(--${family}) / ${opacity / 100})` }"
                     />
-                    <span class="font-mono fs-xs text-muted-foreground group-hover:text-foreground"
-                      >{{ opacity }}%</span
-                    >
+                    <span class="font-mono fs-xs text-muted-foreground group-hover:text-foreground">
+                      {{ opacity }}%
+                    </span>
                   </div>
                 </div>
               </div>
@@ -662,7 +835,9 @@ const opacityVariants = [10, 20, 30, 40, 50, 60, 70, 80, 90] as const
                     class="w-8 h-8 rounded-scale-sm shrink-0"
                     :class="item.borderClass ? item.bgClass : ['component-border', item.bgClass]"
                   />
-                  <span class="font-medium text-foreground">{{ item.key }}</span>
+                  <span class="font-medium text-foreground">
+                    {{ item.key }}
+                  </span>
                 </div>
                 <div class="flex flex-wrap gap-xs">
                   <Button
@@ -703,72 +878,82 @@ const opacityVariants = [10, 20, 30, 40, 50, 60, 70, 80, 90] as const
           <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-lg">
             <div class="flex flex-col gap-sm">
               <h4 class="font-semibold text-foreground">背景 (Background)</h4>
-              <code
+              <div
                 class="bg-muted p-padding-sm rounded-scale-sm fs-sm cursor-pointer hover:bg-muted/80"
                 @click="copyToClipboard('bg-{color}')"
-                >bg-{color}</code
               >
-              <code
+                bg-{color}
+              </div>
+              <div
                 class="bg-muted p-padding-sm rounded-scale-sm fs-sm cursor-pointer hover:bg-muted/80"
                 @click="copyToClipboard('bg-{color}/{opacity}')"
-                >bg-{color}/{opacity}</code
               >
-              <code
+                bg-{color}/{opacity}
+              </div>
+              <div
                 class="bg-muted p-padding-sm rounded-scale-sm fs-sm cursor-pointer hover:bg-muted/80"
                 @click="copyToClipboard('bg-{color}-hover')"
-                >bg-{color}-hover</code
               >
-              <code
+                bg-{color}-hover
+              </div>
+              <div
                 class="bg-muted p-padding-sm rounded-scale-sm fs-sm cursor-pointer hover:bg-muted/80"
                 title="Button text/outlined hover"
                 @click="copyToClipboard('bg-{color}-light')"
-                >bg-{color}-light</code
               >
+                bg-{color}-light
+              </div>
             </div>
             <div class="flex flex-col gap-sm">
               <h4 class="font-semibold text-foreground">文本 (Text)</h4>
-              <code
+              <div
                 class="bg-muted p-padding-sm rounded-scale-sm fs-sm cursor-pointer hover:bg-muted/80"
                 @click="copyToClipboard('text-{color}')"
-                >text-{color}</code
               >
-              <code
+                text-{color}
+              </div>
+              <div
                 class="bg-muted p-padding-sm rounded-scale-sm fs-sm cursor-pointer hover:bg-muted/80"
                 @click="copyToClipboard('text-{color}-foreground')"
-                >text-{color}-foreground</code
               >
-              <code
+                text-{color}-foreground
+              </div>
+              <div
                 class="bg-muted p-padding-sm rounded-scale-sm fs-sm cursor-pointer hover:bg-muted/80"
                 @click="copyToClipboard('text-muted-foreground')"
-                >text-muted-foreground</code
               >
+                text-muted-foreground
+              </div>
             </div>
             <div class="flex flex-col gap-sm">
               <h4 class="font-semibold text-foreground">边框 (Border)</h4>
-              <code
+              <div
                 class="bg-muted p-padding-sm rounded-scale-sm fs-sm cursor-pointer hover:bg-muted/80"
                 @click="copyToClipboard('border-{color}')"
-                >border-{color}</code
               >
-              <code
+                border-{color}
+              </div>
+              <div
                 class="bg-muted p-padding-sm rounded-scale-sm fs-sm cursor-pointer hover:bg-muted/80"
                 @click="copyToClipboard('border-border')"
-                >border-border</code
               >
-              <code
+                border-border
+              </div>
+              <div
                 class="bg-muted p-padding-sm rounded-scale-sm fs-sm cursor-pointer hover:bg-muted/80"
                 @click="copyToClipboard('border-{color}/50')"
-                >border-{color}/50</code
               >
+                border-{color}/50
+              </div>
             </div>
           </div>
           <div class="mt-gap-md p-padding-md bg-muted/30 rounded-scale-md">
             <p class="text-muted-foreground fs-sm">
               <span class="font-semibold">可用颜色:</span>
-              <span class="font-mono ml-1"
-                >primary | accent | danger | warn | success | info | muted | secondary | card |
-                popover</span
-              >
+              <span class="font-mono ml-1">
+                primary | accent | danger | warn | success | info | muted | secondary | card |
+                popover
+              </span>
             </p>
           </div>
         </template>

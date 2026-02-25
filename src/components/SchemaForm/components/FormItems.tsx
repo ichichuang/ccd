@@ -1,4 +1,10 @@
 // @/components/SchemaForm/components/FormItems.tsx
+/**
+ * FormItems - SchemaForm 表单项渲染器
+ *
+ * 使用 defineComponent：组件逻辑复杂（预览/编辑切换、多种组件类型、Custom render 等），
+ * 需从 setup 返回 render 函数。迁移至 script setup 需较大重构，暂保留此形式。
+ */
 import { AnimateWrapper } from '@/components/AnimateWrapper'
 import type { DefineComponent } from 'vue'
 import { computed, defineComponent, onMounted, ref, toRaw, watch } from 'vue'
@@ -370,10 +376,7 @@ export default defineComponent({
               ...(mergedColumnStyle.value.contentStyle || {}),
             }}
           >
-            <div
-              class="w-full"
-              innerHTML={previewText}
-            />
+            <div class="w-full whitespace-pre-wrap">{previewText}</div>
           </div>
         )
       }

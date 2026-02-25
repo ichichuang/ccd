@@ -173,7 +173,7 @@ function handleSetScale(value: string): void {
     <div class="flex flex-col gap-sm">
       <label class="text-sm font-medium text-foreground">当前图标</label>
       <div class="p-padding-sm bg-muted rounded-scale-md">
-        <code class="fs-xs font-mono text-foreground break-all">{{ iconName }}</code>
+        <div class="fs-xs font-mono text-foreground break-all">{{ iconName }}</div>
       </div>
     </div>
 

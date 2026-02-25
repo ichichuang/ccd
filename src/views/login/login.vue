@@ -190,7 +190,9 @@ async function handleSubmit(values: FormValues) {
             name="i-lucide-alert-circle"
             class="text-danger shrink-0"
           />
-          <span class="text-danger fs-sm">{{ errorMessage }}</span>
+          <span class="text-danger fs-sm">
+            {{ errorMessage }}
+          </span>
         </div>
       </Transition>
 

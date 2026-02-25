@@ -84,18 +84,45 @@ export function useTableData<T extends object>(
     }
 
     // Column-level filters
-    const filterEntries = Object.entries(columnFilters.value).filter(
-      ([, v]) => v != null && v !== ''
-    )
+    const filterEntries = Object.entries(columnFilters.value).filter(([, v]) => {
+      if (v == null || v === '') return false
+      if (Array.isArray(v) && v.length === 0) return false
+      if (Array.isArray(v) && v.length === 2 && v.every(x => x == null)) return false
+      return true
+    })
     if (filterEntries.length > 0 && !props.api) {
       data = data.filter((row: T) =>
         filterEntries.every(([field, filterValue]) => {
           const cellValue = (row as Record<string, unknown>)[field]
           if (cellValue == null) return false
           if (Array.isArray(filterValue)) {
+            // date-range: [start, end] with Date or timestamp
+            if (filterValue.length === 2) {
+              const a = filterValue[0]
+              const b = filterValue[1]
+              const isDateRange =
+                (a instanceof Date || (typeof a === 'number' && !isNaN(a))) &&
+                (b instanceof Date || (typeof b === 'number' && !isNaN(b)))
+              if (isDateRange) {
+                const start = a instanceof Date ? a.getTime() : Number(a)
+                const end = b instanceof Date ? b.getTime() : Number(b)
+                const ts =
+                  typeof cellValue === 'number'
+                    ? cellValue
+                    : cellValue instanceof Date
+                      ? cellValue.getTime()
+                      : Number(cellValue)
+                if (isNaN(ts)) return false
+                return ts >= start && ts <= end
+              }
+            }
             // multiselect: check if cell value is in the selected list
             return filterValue.includes(cellValue)
           }
+          // numeric: ≥ 比较（金额等列）
+          const numFilter = Number(filterValue)
+          const numCell = Number(cellValue)
+          if (!Number.isNaN(numFilter) && !Number.isNaN(numCell)) return numCell >= numFilter
           // text / select: string contains match
           return String(cellValue).toLowerCase().includes(String(filterValue).toLowerCase())
         })
@@ -105,13 +132,52 @@ export function useTableData<T extends object>(
     return data
   })
 
+  // 客户端排序：无 API 时按 multiSortMeta 或 sortField/sortOrder 排序
+  const sortedData = computed(() => {
+    const data = filteredData.value
+    if (props.api) return data
+
+    const multi = multiSortMeta.value
+    if (multi.length > 0) {
+      return [...data].sort((a, b) => {
+        for (const m of multi) {
+          const va = (a as Record<string, unknown>)[m.field]
+          const vb = (b as Record<string, unknown>)[m.field]
+          let cmp = 0
+          if (va == null && vb == null) cmp = 0
+          else if (va == null) cmp = 1
+          else if (vb == null) cmp = -1
+          else if (typeof va === 'number' && typeof vb === 'number') cmp = va - vb
+          else cmp = String(va).localeCompare(String(vb))
+          if (cmp !== 0) return m.order === -1 ? -cmp : cmp
+        }
+        return 0
+      })
+    }
+
+    const sf = sortField.value
+    const so = sortOrder.value
+    if (!sf || so === undefined) return data
+    return [...data].sort((a, b) => {
+      const va = (a as Record<string, unknown>)[sf]
+      const vb = (b as Record<string, unknown>)[sf]
+      let cmp = 0
+      if (va == null && vb == null) cmp = 0
+      else if (va == null) cmp = 1
+      else if (vb == null) cmp = -1
+      else if (typeof va === 'number' && typeof vb === 'number') cmp = va - vb
+      else cmp = String(va).localeCompare(String(vb))
+      return so === -1 ? -cmp : cmp
+    })
+  })
+
   const dataToRender = computed(() => {
     if (props.api?.mode === 'pagination') return sourceData.value
     if (props.pagination && !props.api) {
       const { first, rows } = paginationState.value
-      return filteredData.value.slice(first, first + rows)
+      return sortedData.value.slice(first, first + rows)
     }
-    return filteredData.value
+    return sortedData.value
   })
 
   const loadApiData = async (isInfiniteNext = false, forceRefresh = false) => {

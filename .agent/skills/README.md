@@ -115,6 +115,17 @@ globs: **/*
      - 程序化控制（ref + ChartInstance）
    - **禁止**：手动实例化 ECharts、硬编码颜色、手动监听 ThemeStore
 
+### Icons 颜色定制
+
+10. **`10-icons-color-styling.md`** - Icons 颜色定制与 class 权重覆盖
+
+- **功能**：当 Icons 通过 class 设置的颜色/opacity 不生效时的修复流程
+- **流程**：判断场景 -> 选择方案（color prop 或 class + !）-> 验证
+- **适用范围**：`**/*.vue, **/*.tsx`
+- **前置要求**：`docs/UNOCSS_AND_ICONS.md` §6.3.1
+- **关键步骤**：决策表选择（color prop 优先；class 时加 `!`）
+- **参考**：`src/layouts/components/admin/AdminHeader.vue`
+
 ## 📖 使用指南
 
 ### 选择正确的 Skill
@@ -129,6 +140,7 @@ globs: **/*
 - **修复样式问题** → `06-style-audit.md`
 - **表单相关任务** → `07-SchemaForm.md`
 - **反馈提示** → `08-toast-message-feedback.md`
+- **Icons 颜色不生效** → `10-icons-color-styling.md`
 
 ### Skill 执行流程
 
@@ -145,6 +157,7 @@ globs: **/*
 - **Toast/Message**：必须先阅读 `docs/TOAST_AND_MESSAGE.md`、`docs/TOAST_UI_OVERRIDES.md`
 - **布局相关**：必须阅读 `docs/ADAPTIVE_LAYOUT.md`
 - **认证相关**：必须阅读 `docs/AUTH_AND_LOGIN_FLOW.md`
+- **Icons 颜色**：`docs/UNOCSS_AND_ICONS.md` §6.3.1
 
 ## 🔗 相关资源
 

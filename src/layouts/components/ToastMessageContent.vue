@@ -20,7 +20,9 @@ defineProps<{
       class="p-toast-message-icon"
     />
     <div class="p-toast-message-text">
-      <span class="p-toast-summary">{{ message.summary }}</span>
+      <span class="p-toast-summary">
+        {{ message.summary }}
+      </span>
       <div
         v-if="message.detail"
         class="p-toast-detail"

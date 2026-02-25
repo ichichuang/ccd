@@ -18,7 +18,7 @@ import SelectButton from 'primevue/selectbutton'
 import Select from 'primevue/select'
 import Slider from 'primevue/slider'
 import ToggleSwitch from 'primevue/toggleswitch'
-import Icons from '@/components/Icons/Icons.vue'
+import { Icons } from '@/components/Icons'
 
 defineEmits(['close'])
 
@@ -32,10 +32,6 @@ const { locale, switchLocale, supportedLocales } = useLocale()
 
 /** 移动端/小视口：精简设置面板，不展示布局模式与布局模块开关；平板大屏与 PC 展示完整选项 */
 const isMobile = computed(() => deviceStore.type === 'Mobile' || deviceStore.isMobileLayout)
-
-// PrimeVue ToggleSwitch 的 emits/props 类型在模板类型检查下不够友好，这里用 any
-// 避免阻塞 update:model-value 的常规用法。
-const ToggleSwitchAny = ToggleSwitch as any
 
 // 主题模式选项 (light | dark | auto)
 const themeModeOptions: { value: ThemeMode; labelKey: string }[] = [
@@ -171,7 +167,9 @@ function onThemeModeChange(value: ThemeMode) {
   <div class="column main-between cross-start flex-col px-padding-md gap-xl">
     <!-- 深色 / 浅色 -->
     <div class="column main-between cross-start flex-col gap-sm">
-      <label class="fs-sm font-medium text-muted-foreground">{{ t('settings.themeMode') }}</label>
+      <label class="fs-sm font-medium text-muted-foreground">
+        {{ t('settings.themeMode') }}
+      </label>
       <div class="layout-full flex gap-md px-padding-sm">
         <template
           v-for="opt in themeModeOptions"
@@ -190,7 +188,9 @@ function onThemeModeChange(value: ThemeMode) {
 
     <!-- 系统配色 -->
     <div class="column main-between cross-start flex-col gap-sm">
-      <label class="fs-sm font-medium text-muted-foreground">{{ t('settings.themePreset') }}</label>
+      <label class="fs-sm font-medium text-muted-foreground">
+        {{ t('settings.themePreset') }}
+      </label>
       <div class="layout-full flex flex-wrap gap-md px-padding-sm">
         <Button
           v-for="preset in THEME_PRESETS"
@@ -204,7 +204,7 @@ function onThemeModeChange(value: ThemeMode) {
             backgroundColor: getPresetPrimaryColor(preset, themeStore.isDark),
           }"
           class="p-padding-md! transition-all! duration-scale-lg! hover:scale-120! active:scale-80!"
-          :class="[themeStore.themeName === preset.name && 'border-primary  ']"
+          :class="[themeStore.themeName === preset.name && 'border-primary']"
           @click="themeStore.setTheme(preset.name)"
         />
       </div>
@@ -212,7 +212,9 @@ function onThemeModeChange(value: ThemeMode) {
 
     <!-- 尺寸 -->
     <div class="column main-between cross-start flex-col gap-sm">
-      <label class="fs-sm font-medium text-muted-foreground">{{ t('settings.size') }}</label>
+      <label class="fs-sm font-medium text-muted-foreground">
+        {{ t('settings.size') }}
+      </label>
       <div class="px-padding-sm">
         <SelectButton
           :model-value="sizeStore.sizeName"
@@ -229,7 +231,9 @@ function onThemeModeChange(value: ThemeMode) {
 
     <!-- 语言 -->
     <div class="column main-between cross-start flex-col gap-sm">
-      <label class="fs-sm font-medium text-muted-foreground">{{ t('settings.locale') }}</label>
+      <label class="fs-sm font-medium text-muted-foreground">
+        {{ t('settings.locale') }}
+      </label>
       <div class="px-padding-sm">
         <Select
           :model-value="locale"
@@ -252,12 +256,14 @@ function onThemeModeChange(value: ThemeMode) {
       v-if="!isMobile"
       class="column main-between cross-start flex-col gap-sm"
     >
-      <label class="fs-sm font-medium text-muted-foreground">{{ t('settings.layoutMode') }}</label>
+      <label class="fs-sm font-medium text-muted-foreground">
+        {{ t('settings.layoutMode') }}
+      </label>
       <SelectButton
         :model-value="layoutStore.mode"
         :options="layoutModeOptions"
         option-value="value"
-        :option-label="(opt: { value: AdminLayoutMode; labelKey: string }) => t(opt.labelKey)"
+        :option-label="opt => t(opt.labelKey)"
         :allow-empty="false"
         size="small"
         class="w-full"
@@ -279,8 +285,10 @@ function onThemeModeChange(value: ThemeMode) {
           :key="item.key"
           class="column main-between cross-start gap-md"
         >
-          <span class="fs-sm text-foreground">{{ t(item.labelKey) }}</span>
-          <ToggleSwitchAny
+          <span class="fs-sm text-foreground">
+            {{ t(item.labelKey) }}
+          </span>
+          <ToggleSwitch
             :model-value="layoutStore[item.key]"
             :disabled="isLayoutModuleSwitchDisabled(item.key)"
             @update:model-value="(v: boolean) => layoutStore.setModuleVisible(item.key, v)"
@@ -288,8 +296,10 @@ function onThemeModeChange(value: ThemeMode) {
         </div>
         <!-- 侧边栏手风琴模式 -->
         <div class="column main-between cross-start gap-md">
-          <span class="fs-sm text-foreground">{{ t('settings.sidebarAccordion') }}</span>
-          <ToggleSwitchAny
+          <span class="fs-sm text-foreground">
+            {{ t('settings.sidebarAccordion') }}
+          </span>
+          <ToggleSwitch
             :model-value="layoutStore.sidebarUniqueOpened"
             @update:model-value="
               (v: boolean) => layoutStore.updateSetting('sidebarUniqueOpened', v)
@@ -327,10 +337,12 @@ function onThemeModeChange(value: ThemeMode) {
     <!-- 过渡时长 -->
     <div class="layout-full column main-between cross-start flex-col gap-sm">
       <div class="flex items-center justify-between">
-        <label class="fs-sm font-medium text-muted-foreground">{{
-          t('settings.transitionDuration')
-        }}</label>
-        <span class="fs-sm font-medium text-primary">{{ t(currentDurationLabel) }}</span>
+        <label class="fs-sm font-medium text-muted-foreground">
+          {{ t('settings.transitionDuration') }}
+        </label>
+        <span class="fs-sm font-medium text-primary">
+          {{ t(currentDurationLabel) }}
+        </span>
       </div>
       <div class="layout-full px-padding-sm">
         <Slider

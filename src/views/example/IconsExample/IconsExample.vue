@@ -169,10 +169,9 @@ watch(activeTab, () => {
                     class="flex-1"
                   />
                   <span class="text-muted-foreground fs-sm">
-                    <template v-if="hasMoreIcons"
-                      >已显示 {{ displayedIcons.length }} / 共
-                      {{ currentIcons.length }} 个</template
-                    >
+                    <template v-if="hasMoreIcons">
+                      已显示 {{ displayedIcons.length }} / 共 {{ currentIcons.length }} 个
+                    </template>
                     <template v-else>共 {{ currentIcons.length }} 个图标</template>
                   </span>
                 </div>

@@ -3,7 +3,7 @@
   "explorer.fileNesting.enabled": true,
   "explorer.fileNesting.expand": false,
   "explorer.fileNesting.patterns": {
-    "package.json": "pnpm-lock.yaml,.npmrc,.nvmrc,pnpm-workspace.yaml,.editorconfig,.gitattributes,.gitignore,.prettierrc.json,README.md,LICENSE,CHANGELOG.md",
+    "package.json": "pnpm-lock.yaml,.npmrc,.nvmrc,pnpm-workspace.yaml,.editorconfig,.gitattributes,.gitignore,.prettierrc.json,commitlint.config.ts,README.md,LICENSE,CHANGELOG.md",
     "vite.config.ts": "vite.config.*.ts,vitest.config.ts,index.html",
     "tsconfig.json": "tsconfig.*.json",
     "eslint.config.ts": ".eslintignore,eslint.config.js,eslint.config.mjs,.eslintrc-auto-import.json",
@@ -24,7 +24,7 @@
   "editor.formatOnSave": true,
   "editor.defaultFormatter": "esbenp.prettier-vscode",
   "editor.codeActionsOnSave": {
-    "source.fixAll.eslint": "explicit", // 保存时自动修复 ESLint 错误
+    "source.fixAll.eslint": "always", // 保存时自动修复 ESLint 错误（包含 Vue 模板换行）
     "source.organizeImports": "never" // 交给 ESLint 处理，防止冲突
   },
   "files.eol": "\n",
@@ -59,7 +59,11 @@
 
   // === 语言特定配置 ===
   "[vue]": {
-    "editor.defaultFormatter": "esbenp.prettier-vscode"
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.formatOnSave": true, // ✅ 恢复 Prettier 自动格式化
+    "editor.codeActionsOnSave": {
+      "source.fixAll.eslint": "always" // ESLint 修复会在 Prettier 格式化后执行
+    }
   },
   "[typescript]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"

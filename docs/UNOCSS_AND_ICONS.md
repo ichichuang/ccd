@@ -105,6 +105,59 @@ UnoCSS 内置的 `presetUno` 会提供 Tailwind 风格的 `max-w-2xl` / `max-w-7
 - **底边**：`border-b-default`；**顶边**：`border-t-default`
 - **禁止**：仅写 `border border-border`（未设置 border-style，边框不显示）。带透明度或其它 style（如 `border-dashed`）时单独写 `border border-solid border-border/50` 等。
 
+### 2.7 交互过渡（Transition）— AI 必读
+
+当使用 `hover:`、`active:`、`focus:`、`group-hover:` 等交互状态类时，**必须**搭配 transition 过渡类，避免状态切换生硬。过渡类全部来自 `uno.config.ts`，禁止硬编码时长。
+
+**决策表（AI 按场景选择）：**
+
+| 场景                                  | 推荐类名                                                                          | 说明                                              |
+| ------------------------------------- | --------------------------------------------------------------------------------- | ------------------------------------------------- |
+| 可悬停卡片/按钮（背景/阴影/边框变化） | `interactive-hover` 或 `behavior-hover-transition`                                | = transition-all + duration-scale-md + hover 效果 |
+| 点击反馈（scale 等）                  | `interactive-click`                                                               | 含 transition-transform duration-scale-xs         |
+| 仅需过渡时长                          | `transition-all duration-scale-{xs~5xl}` 或 `transition-opacity duration-scale-*` | 阶梯：xs(75ms)~5xl(1500ms)                        |
+| 宽度/单属性动画                       | `transition-[width] duration-scale-lg ease-in-out`                                | 侧栏等                                            |
+| Vue Transition enter/leave            | `transition duration-scale-md ease-out` 等                                        | 用于 enter-active-class / leave-active-class      |
+
+**阶梯时长参考**（`src/constants/sizeScale.ts` TRANSITION_SCALE_VALUES）：xs 75ms、sm 150ms、md 200ms、lg 300ms、xl 400ms、2xl 500ms。
+
+**禁止**：
+
+- 使用 `hover:` / `active:` / `focus:` 而不加 transition
+- 硬编码 `transition-duration: 200ms` 或 `duration-200`（须用 `duration-scale-md` 等）
+- 仅写 `duration-scale-*` 而不写 `transition`/`transition-colors`/`transition-opacity`（duration 单独无效）
+
+**duration-scale 与 transition 搭配**：
+
+- `duration-scale-*` 只设置 `transition-duration`，**必须**与 `transition`、`transition-colors`、`transition-opacity` 等搭配使用。
+- `transition-colors` / `transition-all` 等也**必须**配合 `duration-scale-*`，禁止仅写 transition 不写 duration。
+
+**PrimeVue pt / content 中的 hover/active**：
+
+- 通过 PassThrough（`pt`）定义的 `hover:`、`active:` 同样需要 transition，如：
+  `content: { class: '... transition-colors duration-scale-md hover:bg-xxx active:bg-xxx' }`
+
+**示例**：
+
+```vue
+<div
+  class="rounded-scale-md transition-all duration-scale-md hover:shadow-md hover:bg-accent-light"
+/>
+<div class="interactive-hover" />
+<!-- 含 transition + hover 效果 -->
+```
+
+### 2.7.1 Icons 组件的过渡归属（必读）
+
+Icons 为独立 DOM 元素，**父容器的 transition 不会影响 Icons 的 color/opacity 变化**。当 Icons 使用 `group-hover:`、`hover:` 等颜色/透明度类时，**过渡类必须写在 Icons 的 class 上**。
+
+| 写法                                                                       | 结果                     |
+| -------------------------------------------------------------------------- | ------------------------ |
+| ✅ `class="transition-colors duration-scale-md group-hover:text-primary!"` | Icons 颜色平滑过渡       |
+| ❌ 父 div 有 `transition-all`，Icons 仅有 `group-hover:text-primary!`      | Icons 颜色突变（无过渡） |
+
+**图标 + 文字组合**：父容器负责背景/边框/阴影过渡；Icons 若有 `group-hover:` 颜色/透明度变化，**必须在 Icons 自身加** `transition-colors` 或 `transition-opacity` + `duration-scale-*`。
+
 ## 3. 图标系统：iconify + custom SVG
 
 你项目的图标链路由三部分组成：
@@ -198,6 +251,66 @@ UnoCSS 内置的 `presetUno` 会提供 Tailwind 风格的 `max-w-2xl` / `max-w-7
 
 - 静态颜色 → 使用语义类（`class="text-primary"`）
 - 动态颜色/主题变量 → 使用 `color` prop（`color="rgb(var(--primary))"`）
+
+### 6.3.1 颜色类名权重与 class 覆盖（AI 必读）
+
+当通过 `class` 自定义 Icons 颜色时，若样式不生效，通常需要为类名添加 UnoCSS 的 `!` 修饰符以提升权重。
+
+**根因说明：**
+
+1. **组件默认颜色**：Icons 在未传 `color` 时会添加 `text-foreground`（见 `Icons.vue` 第 84 行）。
+2. **选择器特异性相同**：`text-foreground` 与 `text-primary`、`text-red` 等均为单类选择器，特异性相等，最终生效取决于样式表顺序（非确定性）。
+3. **第三方组件内**：Icons 放在 PrimeVue（Menubar、Dropdown 等）内部时，父级会注入 `.p-focus`、`.p-active` 等高权样式，更易覆盖普通 `text-*` 类。
+
+**决策表（AI 优先按此选择）：**
+
+| 场景                     | 推荐方式          | 示例                                                |
+| ------------------------ | ----------------- | --------------------------------------------------- |
+| 需强制覆盖且避免 `!`     | 使用 `color` prop | `color="rgb(var(--primary))"`                       |
+| 需覆盖且用 class         | 颜色类加 `!`      | `class="text-primary!"`                             |
+| hover / group-hover 颜色 | 状态类也加 `!`    | `class="group-hover:text-accent-light-foreground!"` |
+| opacity 被覆盖           | opacity 类加 `!`  | `class="opacity-100!"`                              |
+| 动态/主题变量            | `color` prop      | `color="rgb(var(--primary))"`                       |
+| 继承父级文字颜色         | `text-current`    | `class="text-current"`                              |
+| 自定义 `i-custom:*` 图标 | 与 iconify 相同   | 同样遵循上述规则                                    |
+
+**推荐用法速查：**
+
+```vue
+<!-- 方式一：color prop（无需 !，优先级最高） -->
+<Icons name="i-custom:custom-juejin" color="rgb(var(--primary))" />
+
+<!-- 方式二：class + !（必须覆盖默认/父级时） -->
+<Icons
+  name="i-lucide-chevron-right"
+  class="text-primary! group-hover:text-accent-light-foreground!"
+/>
+
+<!-- 方式三：继承父级 -->
+<Icons name="i-lucide-check" class="text-current" />
+```
+
+**注意事项：**
+
+- `opacity-*`、`group-hover:*` 等与颜色相关的类，若被父级或组件覆盖，同样需加 `!`。
+- 自定义 SVG（`i-custom:*`）在 `build/uno-icons.ts` 中已注入 `fill="currentColor"`，颜色继承行为与 iconify 一致。
+
+### 6.3.2 Icons 与 transition（hover/group-hover 时必读）
+
+当 Icons 使用 `group-hover:`、`hover:` 等颜色/透明度类时，**transition 必须写在 Icons 的 class 上**，父容器 transition 无效。详见 §2.7.1。
+
+```vue
+<!-- ✅ 正确：Icons 自身上 transition -->
+<Icons
+  class="transition-colors duration-scale-md group-hover:text-primary!"
+  name="i-lucide-chevron-right"
+/>
+
+<!-- ❌ 错误：父有 transition，Icons 无 transition，颜色会突变 -->
+<div class="group transition-all duration-scale-md">
+  <Icons class="group-hover:text-primary!" name="..." />
+</div>
+```
 
 ### 6.4 动画与变换
 
@@ -293,6 +406,14 @@ UnoCSS 内置的 `presetUno` 会提供 Tailwind 风格的 `max-w-2xl` / `max-w-7
 
 A: 确保使用 `rgb(var(--primary))` 格式，而不是 `var(--primary)`。
 组件会自动处理：当有 `color` prop 时，会移除默认的 `text-foreground` 类，确保自定义颜色生效。
+
+#### Q: 为什么用 class 设置颜色（如 text-primary）不生效，必须加 `!` 才生效？
+
+A: Icons 组件在未传 `color` 时会自动添加 `text-foreground`；在 PrimeVue 等第三方组件内时，父级样式权重更高。当多个颜色类特异性相同时，生效顺序不确定。解决方式：
+
+- **优先**：改用 `color` prop，避免 class 权重问题
+- **其次**：为颜色类加 `!` 修饰符，如 `text-primary!`、`group-hover:text-accent-light-foreground!`
+  详见 §6.3.1。
 
 #### Q: 何时使用语义尺寸 vs 自定义尺寸？
 

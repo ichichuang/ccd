@@ -1,4 +1,5 @@
 <script setup lang="ts" generic="T extends object">
+/* eslint-disable vue/v-on-event-hyphenation */
 /**
  * DataTable - PrimeVue DataTable 二次封装
  * 支持列配置驱动、API 加载、分页/无限滚动、列持久化、全局搜索、导出
@@ -30,9 +31,15 @@ import { useTableLayout } from './composables/useTableLayout'
 import { useTablePersistence } from '@/hooks/modules/useTablePersistence'
 import { useLocale } from '@/hooks/modules/useLocale'
 import { useSizeStore } from '@/stores/modules/size'
-import { nextTick, onMounted, onUnmounted, useSlots } from 'vue'
+import { nextTick, onMounted, onUnmounted, shallowRef, useSlots } from 'vue'
 import { useMitt } from '@/utils/mitt'
 import { FONT_SCALE_RATIOS, SPACING_SCALE_RATIOS } from '@/constants/sizeScale'
+
+/** PrimeVue DataTable bodycell PassThrough 的 options 结构 */
+interface BodycellPassThroughOptions {
+  state?: Record<string, unknown>
+  [key: string]: unknown
+}
 
 const selectionColumnStyle = { width: `${TABLE_SELECTION_COLUMN_WIDTH_PX}px` }
 
@@ -53,10 +60,20 @@ const props = withDefaults(defineProps<DataTableProps<T>>(), {
   bordered: false,
   showGridlines: false,
   stripedRows: false,
+  columnResizeMode: 'fit',
   rowHover: true,
   reorderableColumns: false,
   resizableColumns: false,
-  columnResizeMode: 'fit',
+
+  // Grouping
+  rowGroupMode: undefined,
+  groupRowsBy: undefined,
+  expandableRowGroups: false,
+  expandedRowGroups: undefined,
+  // Responsive
+  responsiveLayout: 'scroll',
+  // Misc
+  metaKeySelection: false,
   componentsProps: () => ({}),
 })
 
@@ -73,6 +90,10 @@ const emit = defineEmits<{
   (e: 'column-widths-change', widths: ColumnWidthInfo[]): void
   (e: 'column-reorder', event: unknown): void
   (e: 'column-resize-end', event: unknown): void
+  (e: 'update:expandedRowGroups', groups: unknown[]): void
+  (e: 'row-edit-init', event: unknown): void
+  (e: 'row-edit-save', event: unknown): void
+  (e: 'row-edit-cancel', event: unknown): void
 }>()
 
 const { $t: _t } = useLocale()
@@ -87,6 +108,7 @@ const {
   handleColumnReorder: handlePersistenceColumnReorder,
   getPreferences: getTablePreferences,
   resetPreferences: resetTablePreferences,
+  savePreferences: saveTablePreferencesToStore,
 } = useTablePersistence(tableIdRef, originalColumnsRef)
 
 const visibleColumns = computed(() => effectiveColumns.value.filter(col => !col.hide))
@@ -153,12 +175,11 @@ const {
   sourceData,
   filteredData,
   dataToRender,
-  emit: {
-    'update:selectedRows': (rows: T[]) => emit('update:selectedRows', rows),
-    'row-select': (event: unknown) => emit('row-select', event),
-    'row-unselect': (event: unknown) => emit('row-unselect', event),
-    'row-click': (event: unknown) => emit('row-click', event),
-  } as never,
+  // 通过类型断言将 Vue emit 缩窄为 useTableSelection 所需的子集签名
+  emit: emit as unknown as (
+    e: 'update:selectedRows' | 'row-select' | 'row-unselect' | 'row-click',
+    payload: unknown
+  ) => void,
 })
 
 // ─── Composable: Export ───
@@ -197,11 +218,82 @@ const {
   selectionModeComputed,
   loadApiData,
   slots: slots as Record<string, unknown>,
+  onScrollBottom: evt => emit('scroll-bottom', evt),
 })
 
 // ─── Template Refs & Computed ───
 const tableRef = ref<InstanceType<typeof PvDataTable>>()
-const expandedRows = ref<T[]>([])
+const expandedRows = ref<T[] | Record<string, boolean>>([])
+
+// 分组展开：使用内部 ref，手写更新以归一化为 unknown[]，避免 PrimeVue 的 DataTableExpandedRows 与 unknown[] 类型冲突
+const expandedRowGroupsRef = shallowRef<unknown[]>(
+  Array.isArray(props.expandedRowGroups) ? [...(props.expandedRowGroups as unknown[])] : []
+)
+watch(
+  () => props.expandedRowGroups,
+  v => {
+    expandedRowGroupsRef.value = Array.isArray(v) ? [...v] : []
+  },
+  { immediate: true, deep: true }
+)
+function onExpandedRowGroupsUpdate(v: unknown): void {
+  const next = Array.isArray(v) ? [...v] : []
+  expandedRowGroupsRef.value = next
+  emit('update:expandedRowGroups', next)
+}
+
+const isRowExpanded = (row: T): boolean => {
+  const current = expandedRows.value
+  const key = idField.value
+
+  if (key) {
+    if (Array.isArray(current) && current.length === 0) return false
+    const id = (row as Record<string, unknown>)[key]
+    if (id == null) return false
+    return Boolean((current as Record<string, boolean>)[String(id)])
+  }
+
+  if (Array.isArray(current)) {
+    const arr = current as unknown as T[]
+    return arr.includes(row)
+  }
+
+  return false
+}
+
+const toggleRowExpansion = (row: T): void => {
+  const current = expandedRows.value
+  const key = idField.value
+
+  if (key) {
+    const id = (row as Record<string, unknown>)[key]
+    if (id == null) return
+
+    // If current is empty array (initial state), treat as empty map
+    const map =
+      Array.isArray(current) && current.length === 0
+        ? {}
+        : { ...(current as Record<string, boolean>) }
+
+    const mapKey = String(id)
+    if (map[mapKey]) {
+      delete map[mapKey]
+    } else {
+      map[mapKey] = true
+    }
+    expandedRows.value = map
+  } else {
+    // Fallback to array mode if no idField
+    if (!Array.isArray(current)) {
+      expandedRows.value = [row] as unknown as T[] | Record<string, boolean>
+      return
+    }
+    const arr = current as unknown as T[]
+    const exists = arr.includes(row)
+    const next = exists ? (arr.filter(r => r !== row) as T[]) : ([...arr, row] as T[])
+    expandedRows.value = next as unknown as T[] | Record<string, boolean>
+  }
+}
 
 const showHeaderComputed = computed(() => {
   if (props.showHeader === false) return false
@@ -227,6 +319,30 @@ const getRowHeight = () => {
   return fs + pad
 }
 
+const handleUpdateSortField = (value: unknown) => {
+  sortField.value = typeof value === 'string' ? value : undefined
+}
+
+const handleUpdateSortOrder = (value: unknown) => {
+  sortOrder.value = typeof value === 'number' ? value : undefined
+}
+
+// 程序化多列排序标志：防止 PrimeVue 内部更新覆盖程序化设置
+const isProgrammaticMultiSort = ref(false)
+const programmaticMultiSortTimeout = ref<ReturnType<typeof setTimeout> | null>(null)
+
+const handleUpdateMultiSortMeta = (v: unknown) => {
+  // 若当前是程序化多列排序的短暂窗口（200ms），忽略 PrimeVue 的内部更新
+  if (isProgrammaticMultiSort.value) {
+    return
+  }
+  multiSortMeta.value = (v as SortMeta[]) ?? []
+}
+
+const handleUpdateExpandedRows = (value: unknown) => {
+  expandedRows.value = value as T[] | Record<string, boolean>
+}
+
 const formatWidth = (w: string | number | undefined) => {
   if (!w) return undefined
   if (typeof w === 'number') return `${w}px`
@@ -237,6 +353,8 @@ const formatWidth = (w: string | number | undefined) => {
 const getColumnStyle = (col: DataTableColumn<T>) => {
   const style: Record<string, string> = {}
   if (col.width) style.width = formatWidth(col.width) ?? ''
+  if (col.minWidth != null) style.minWidth = formatWidth(col.minWidth) ?? ''
+  if (col.maxWidth != null) style.maxWidth = formatWidth(col.maxWidth) ?? ''
   if (col.align) style.textAlign = col.align
   style.height = `${getRowHeight()}px`
   return Object.keys(style).length ? style : undefined
@@ -259,8 +377,13 @@ const refresh = () => {
 // Watch data length changes to keep totalRecords in sync (client-side mode)
 watch([() => sourceData.value.length, () => filteredData.value.length], () => {
   if (props.api?.mode !== 'pagination') {
+    const hasColumnFilters = Object.entries(columnFilters.value).some(([, v]) => {
+      if (v == null || v === '') return false
+      if (Array.isArray(v) && v.length === 0) return false
+      return true
+    })
     paginationState.value.totalRecords =
-      props.globalFilter && globalFilterValue.value
+      (props.globalFilter && globalFilterValue.value) || hasColumnFilters
         ? filteredData.value.length
         : sourceData.value.length
   }
@@ -450,6 +573,79 @@ onUnmounted(() => {
   mitt.off('tableColumnWidthsChange', handleTableColumnWidthsChange)
 })
 
+// ─── Filters: PrimeVue 需要 filters 绑定；手写 update 以归一化为 Record<string, FilterMeta>，避免 DataTableFilterMeta 类型冲突 ───
+type FilterMeta = { value: unknown; matchMode: string }
+const filters = shallowRef<Record<string, FilterMeta>>({})
+
+function onFiltersUpdate(v: unknown): void {
+  if (v == null || typeof v !== 'object') {
+    filters.value = {}
+    return
+  }
+  const raw = v as Record<string, unknown>
+  const next: Record<string, FilterMeta> = {}
+  for (const key of Object.keys(raw)) {
+    const entry = raw[key]
+    if (entry != null && typeof entry === 'object' && 'value' in entry) {
+      next[key] = {
+        value: (entry as FilterMeta).value,
+        matchMode:
+          typeof (entry as FilterMeta).matchMode === 'string'
+            ? (entry as FilterMeta).matchMode
+            : 'contains',
+      }
+    } else {
+      next[key] = { value: entry ?? null, matchMode: 'contains' }
+    }
+  }
+  filters.value = next
+}
+
+watch(
+  () => [visibleColumns.value, props.filterable] as const,
+  () => {
+    if (!props.filterable) return
+    const prev = filters.value
+    const next: Record<string, FilterMeta> = {}
+    for (const col of visibleColumns.value) {
+      if (col.filterable || col.filterRenderer) {
+        const field = String(col.field)
+        // B.3: 保留已有 columnFilters，避免列变化时误清空筛选
+        const existingValue = columnFilters.value[field]
+        next[field] = prev[field] ?? {
+          value: existingValue !== undefined ? existingValue : null,
+          matchMode: 'contains',
+        }
+      }
+    }
+    filters.value = next
+  },
+  { immediate: true }
+)
+
+// B.1: filters → columnFilters 同步兜底；仅同步非 null 值，避免用 null 覆盖用户已选筛选
+watch(
+  filters,
+  () => {
+    if (!props.filterable) return
+    const f = filters.value
+    for (const field of Object.keys(f)) {
+      const v = f[field].value
+      if (v != null && v !== '') setColumnFilter(field, v)
+    }
+  },
+  { deep: true, immediate: true }
+)
+
+const clearFiltersAndReset = () => {
+  clearFilters()
+  const next = { ...filters.value }
+  for (const k of Object.keys(next)) {
+    next[k] = { ...next[k], value: null }
+  }
+  filters.value = next
+}
+
 // ─── Expose ───
 defineExpose<DataTableExpose<T>>({
   get data() {
@@ -462,6 +658,15 @@ defineExpose<DataTableExpose<T>>({
     return paginationState.value
   },
   get sortState() {
+    if (props.multiSort && multiSortMeta.value.length > 0) {
+      return {
+        sortField: sortField.value,
+        sortOrder: (sortOrder.value === 0 || sortOrder.value === 1 || sortOrder.value === -1
+          ? sortOrder.value
+          : undefined) as 1 | -1 | 0 | undefined,
+        multiSortMeta: [...multiSortMeta.value],
+      }
+    }
     return {
       sortField: sortField.value,
       sortOrder: (sortOrder.value === 0 || sortOrder.value === 1 || sortOrder.value === -1
@@ -480,17 +685,34 @@ defineExpose<DataTableExpose<T>>({
   },
   refresh,
   exportData: (format?: 'csv' | 'xlsx' | 'json') => handleExport(format ?? 'csv'),
-  clearFilters,
+  clearFilters: clearFiltersAndReset,
   clearSort: () => {
     sortField.value = undefined
     sortOrder.value = undefined
+    multiSortMeta.value = []
+    if (props.api) void loadApiData(false, true)
   },
   setSort: (field, order) => {
     sortField.value = field
     sortOrder.value = order
+    if (props.api) void loadApiData(false, true)
   },
   setMultiSort: (meta: SortMeta[]) => {
+    // 设置程序化多列排序标志，防止 PrimeVue 内部更新覆盖
+    isProgrammaticMultiSort.value = true
     multiSortMeta.value = meta
+
+    // 清除之前的定时器
+    if (programmaticMultiSortTimeout.value) {
+      clearTimeout(programmaticMultiSortTimeout.value)
+    }
+
+    // 200ms 后清除标志，允许 PrimeVue 的正常更新
+    programmaticMultiSortTimeout.value = setTimeout(() => {
+      isProgrammaticMultiSort.value = false
+      programmaticMultiSortTimeout.value = null
+    }, 200)
+
     if (props.api) void loadApiData(false, true)
   },
   setColumnFilter: (field: string, value: unknown) => {
@@ -524,7 +746,35 @@ defineExpose<DataTableExpose<T>>({
   updateColumnWidths,
   getTablePreferences: props.tableId ? () => getTablePreferences() : undefined,
   resetTablePreferences: props.tableId ? () => resetTablePreferences() : undefined,
+  saveTablePreferences: props.tableId ? () => saveTablePreferencesToStore() : undefined,
 })
+
+// ─── Filter bridge: sync filterModel to columnFilters for useTableData ───
+const wrapFilterCallback =
+  (
+    col: DataTableColumn<T>,
+    filterModel: { value: unknown; matchMode?: string },
+    originalCallback: (value?: unknown) => void
+  ) =>
+  (value?: unknown) => {
+    const v = value !== undefined ? value : filterModel?.value
+    if (col.field != null) setColumnFilter(String(col.field), v)
+    originalCallback?.(value)
+  }
+
+// ─── Cell editor: Enter 完成编辑（先 blur 让编辑器提交值，再下一帧模拟 mousedown 触发 BodyCell 完成逻辑） ───
+const handleEditorKeydownEnter = (e: Event) => {
+  e.preventDefault()
+  e.stopPropagation()
+  const wrapper = e.currentTarget as HTMLElement
+  const input = wrapper?.querySelector?.('input') ?? (document.activeElement as HTMLElement)
+  if (typeof input?.blur === 'function') input.blur()
+  nextTick(() => {
+    nextTick(() => {
+      document.body.dispatchEvent(new MouseEvent('mousedown', { bubbles: true, cancelable: true }))
+    })
+  })
+}
 
 // ─── Template Helpers ───
 const resolveBodyClass = (col: DataTableColumn<T>, data: T) => {
@@ -595,8 +845,8 @@ const resolveBodyStyle = (col: DataTableColumn<T>, data: T) => {
               </InputIcon>
               <InputText
                 :model-value="searchInputValue"
-                :placeholder="$t('common.searchPlaceholder') as string"
-                class="w-40 sm:w-64"
+                :placeholder="String($t('common.searchPlaceholder'))"
+                class="min-w-[var(--spacing-4xl)] sm:min-w-[var(--spacing-5xl)] max-w-full"
                 @update:model-value="handleGlobalFilterChange"
               />
               <span
@@ -642,15 +892,15 @@ const resolveBodyStyle = (col: DataTableColumn<T>, data: T) => {
         </template>
       </div>
 
-      <!-- PrimeVue DataTable 期望 DataTableSortMeta[]，与 SortMeta 兼容 -->
+      <!-- PrimeVue DataTable：multiple 模式下仅用 multiSortMeta，single 模式用 sortField/sortOrder -->
       <PvDataTable
         ref="tableRef"
-        v-model:sort-field="sortField"
-        v-model:sort-order="sortOrder"
-        :multi-sort-meta="multiSortMeta as SortMeta[]"
+        :sort-field="props.multiSort ? undefined : sortField"
+        :sort-order="props.multiSort ? undefined : sortOrder"
+        :expanded-rows="expandedRows"
+        :multi-sort-meta="multiSortMeta"
         :sort-mode="props.multiSort ? 'multiple' : 'single'"
         class="flex-1 min-h-0"
-        :expanded-rows="expandedRows"
         :value="dataToRender"
         :loading="loading"
         :rows="paginationState.rows"
@@ -672,26 +922,73 @@ const resolveBodyStyle = (col: DataTableColumn<T>, data: T) => {
         :column-resize-mode="props.columnResizeMode"
         :row-class="rowClassComputed"
         :row-style="props.rowStyle"
-        v-bind="componentsProps ?? {}"
-        @update:multi-sort-meta="
-          (v: unknown) => {
-            multiSortMeta = (v as SortMeta[]) ?? []
-          }
+        :row-group-mode="props.rowGroupMode"
+        :group-rows-by="props.groupRowsBy"
+        :expandable-row-groups="props.expandableRowGroups"
+        :expanded-row-groups="expandedRowGroupsRef"
+        :edit-mode="props.editable ? 'cell' : undefined"
+        :meta-key-selection="props.metaKeySelection"
+        :filter-display="props.filterable ? 'row' : undefined"
+        :filters="filters"
+        :pt="
+          props.editable
+            ? {
+                column: {
+                  bodycell: (options: BodycellPassThroughOptions) => ({
+                    class: options?.state?.['d_editing']
+                      ? '!overflow-hidden !min-w-0 !max-w-full p-0!'
+                      : undefined,
+                  }),
+                },
+              }
+            : undefined
         "
+        v-bind="componentsProps ?? {}"
+        @update:expanded-row-groups="onExpandedRowGroupsUpdate"
+        @update:filters="onFiltersUpdate"
+        @update:multi-sort-meta="handleUpdateMultiSortMeta"
+        @update:sortField="handleUpdateSortField"
+        @update:sortOrder="handleUpdateSortOrder"
+        @update:expandedRows="handleUpdateExpandedRows"
         @sort="handleSortChange"
         @row-select="handleRowSelect"
         @row-unselect="handleRowUnselect"
         @row-click="handleRowClick"
-        @row-dblclick="(e: unknown) => emit('row-dblclick', e)"
+        @row-dblclick="emit('row-dblclick', $event)"
+        @cell-edit-complete="emit('cell-edit-complete', $event)"
         @column-reorder="onColumnReorder"
         @column-resize-end="onColumnResizeEnd"
       >
+        <template
+          v-if="props.emptyMessage"
+          #empty
+        >
+          {{ props.emptyMessage }}
+        </template>
         <template
           v-if="$slots.expansion"
           #expansion="slotProps"
         >
           <slot
             name="expansion"
+            v-bind="slotProps"
+          />
+        </template>
+        <template
+          v-if="$slots.groupheader"
+          #groupheader="slotProps"
+        >
+          <slot
+            name="groupheader"
+            v-bind="slotProps"
+          />
+        </template>
+        <template
+          v-if="$slots.groupfooter"
+          #groupfooter="slotProps"
+        >
+          <slot
+            name="groupfooter"
             v-bind="slotProps"
           />
         </template>
@@ -727,7 +1024,7 @@ const resolveBodyStyle = (col: DataTableColumn<T>, data: T) => {
                 v-else
                 :model-value="isRowSelected(data)"
                 :binary="true"
-                @update:model-value="(checked: boolean) => handleCheckboxChange(checked, data)"
+                @update:model-value="checked => handleCheckboxChange(checked, data)"
               />
             </div>
           </template>
@@ -758,7 +1055,43 @@ const resolveBodyStyle = (col: DataTableColumn<T>, data: T) => {
           >
             <component :is="col.headerRenderer" />
           </template>
-          <template #body="{ data }">
+          <template
+            v-if="col.filterRenderer"
+            #filter="{ filterModel, filterCallback }"
+          >
+            <component
+              :is="
+                filterModel
+                  ? col.filterRenderer!({
+                      filterModel,
+                      filterCallback: wrapFilterCallback(col, filterModel, filterCallback),
+                    })
+                  : null
+              "
+            />
+          </template>
+          <!-- 情况 1：expander + expanderBody，自绘展开单元格 -->
+          <template
+            v-if="col.expander && col.expanderBody"
+            #body="{ data }"
+          >
+            <BodyCellRenderer
+              :body-fn="
+                row =>
+                  col.expanderBody!(row as T, col, {
+                    isExpanded: isRowExpanded(row as T),
+                    toggle: () => toggleRowExpansion(row as T),
+                  })
+              "
+              :row-data="data"
+              :column="getColumnForBody(col)"
+            />
+          </template>
+          <!-- 情况 2：普通列，使用通用 body 渲染 -->
+          <template
+            v-else-if="!col.expander"
+            #body="{ data }"
+          >
             <div
               class="w-full h-full flex items-center"
               :class="resolveBodyClass(col, data)"
@@ -783,6 +1116,24 @@ const resolveBodyStyle = (col: DataTableColumn<T>, data: T) => {
               </template>
             </div>
           </template>
+
+          <template
+            v-if="col.editorRenderer"
+            #editor="{ data, field }"
+          >
+            <div
+              class="w-full h-full min-w-0 max-h-full overflow-hidden flex items-center"
+              @keydown.enter.capture.prevent="handleEditorKeydownEnter"
+            >
+              <component
+                :is="col.editorRenderer"
+                :data="data"
+                :value="getCellValue(data, field)"
+                :field="field"
+              />
+            </div>
+          </template>
+          <!-- 情况 3：纯 expander 列且没有 expanderBody，交给 PrimeVue 默认行为，不渲染 body -->
         </Column>
 
         <Column
@@ -816,7 +1167,7 @@ const resolveBodyStyle = (col: DataTableColumn<T>, data: T) => {
                 v-else
                 :model-value="isRowSelected(data)"
                 :binary="true"
-                @update:model-value="(checked: boolean) => handleCheckboxChange(checked, data)"
+                @update:model-value="checked => handleCheckboxChange(checked, data)"
               />
             </div>
           </template>
@@ -878,7 +1229,7 @@ const resolveBodyStyle = (col: DataTableColumn<T>, data: T) => {
                   <RenderFn
                     v-if="column.customFooter"
                     :fn="getCustomFooterFn(column)"
-                    :params="getFooterParamsForRender(column, index) as any"
+                    :params="getFooterParamsForRender(column, index)"
                   />
                 </div>
               </template>
@@ -895,7 +1246,7 @@ const resolveBodyStyle = (col: DataTableColumn<T>, data: T) => {
       <!-- External Paginator -->
       <div
         v-if="props.pagination"
-        class="border-t-default bg-card"
+        class="border-t-default bg-card rounded-b-[var(--radius-md)]"
       >
         <Paginator
           :rows="paginationState.rows"
@@ -938,6 +1289,7 @@ const resolveBodyStyle = (col: DataTableColumn<T>, data: T) => {
   flex-direction: column;
 }
 
+/* PrimeVue 内部表格 body 滚动区；必须 overflow-auto，CScrollbar 无法包裹 p-datatable-wrapper 内部结构 */
 .c-data-table-wrapper:deep(.p-datatable-wrapper) {
   flex: 1;
   overflow: auto;

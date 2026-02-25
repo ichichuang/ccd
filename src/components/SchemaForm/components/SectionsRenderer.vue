@@ -5,7 +5,9 @@
     :key="index"
   >
     <div class="col-span-12">
-      <div class="font-medium">{{ section.title }}</div>
+      <div class="font-medium">
+        {{ section.title }}
+      </div>
     </div>
     <SchemaFormItem
       v-for="item in section.fieldColumns"

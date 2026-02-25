@@ -301,17 +301,18 @@
 
 ### 3.9 src/router/ 路由层
 
-| 文件                    | 职责说明                                                                               |
-| ----------------------- | -------------------------------------------------------------------------------------- |
-| `index.ts`              | 创建 router、routeUtils、dynamicRouteManager，注册守卫                                 |
-| `modules/core.ts`       | 根、登录、系统配置路由                                                                 |
-| `modules/dashboard.ts`  | 仪表盘路由                                                                             |
-| `modules/example.ts`    | 示例页路由                                                                             |
-| `utils/common.ts`       | processAsyncRoutes、createRouteUtils、createDynamicRouteManager、权限过滤、菜单/面包屑 |
-| `utils/guards.ts`       | registerRouterGuards、initDynamicRoutes                                                |
-| `utils/permission.ts`   | usePermissionGuard                                                                     |
-| `utils/helper.ts`       | goBack、goToRoute、replaceRoute、refreshCurrentRoute、多窗口                           |
-| `utils/moduleLoader.ts` | 路由模块自动加载                                                                       |
+| 文件                              | 职责说明                                                                               |
+| --------------------------------- | -------------------------------------------------------------------------------------- |
+| `index.ts`                        | 创建 router、routeUtils、dynamicRouteManager，注册守卫                                 |
+| `modules/core.ts`                 | 根、登录路由                                                                           |
+| `modules/dashboard.ts`            | 仪表盘路由                                                                             |
+| `modules/system-configuration.ts` | 系统配置路由（主题、尺寸、断点、滚动条、UnoCSS）                                       |
+| `modules/example.ts`              | 示例页路由                                                                             |
+| `utils/common.ts`                 | processAsyncRoutes、createRouteUtils、createDynamicRouteManager、权限过滤、菜单/面包屑 |
+| `utils/guards.ts`                 | registerRouterGuards、initDynamicRoutes                                                |
+| `utils/permission.ts`             | usePermissionGuard                                                                     |
+| `utils/helper.ts`                 | goBack、goToRoute、replaceRoute、refreshCurrentRoute、多窗口                           |
+| `utils/moduleLoader.ts`           | 路由模块自动加载                                                                       |
 
 ---
 

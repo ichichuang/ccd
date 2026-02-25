@@ -69,7 +69,14 @@
      - 无匹配时创建 custom SVG
      - 必须使用 `<Icons>` 组件
 
-6. **`06-assemble-ui-handoff.md`** - 组装 UI 交接指令
+6. **`10-icons-color-styling.md`** - Icons 颜色定制
+   - **功能**：当 Icons 通过 class 设置的颜色/opacity 不生效时的修复流程
+   - **流程**：判断场景 → 选择方案（color prop 或 class + !）→ 验证
+   - **适用范围**：`**/*.vue, **/*.tsx`
+   - **前置要求**：`docs/UNOCSS_AND_ICONS.md` §6.3.1
+   - **关键步骤**：决策表选择（color prop 优先；class 时加 `!`）
+
+7. **`06-assemble-ui-handoff.md`** - 组装 UI 交接指令
    - **功能**：生成交接给 Antigravity 的 UI 指令（只做 UI）
    - **流程**：分析需求 → 生成 UI 指令 → 包含完整上下文
    - **适用范围**：UI 开发任务
@@ -81,7 +88,7 @@
 
 ### 反馈与表单
 
-7. **`07-toast-message-feedback.md`** - Toast & Message 反馈提示
+8. **`07-toast-message-feedback.md`** - Toast & Message 反馈提示
    - **功能**：Toast 和 Message 反馈提示使用规范
    - **流程**：判断场景 → 选择 $message 或 $toast → 调用
    - **适用范围**：`src/**/*.{ts,vue}`
@@ -92,7 +99,7 @@
      - $message：居中纯提示（正中央、无关闭按钮）
      - $toast：按位置显示、带关闭按钮
 
-8. **`08-SchemaForm.md`** - SchemaForm 表单组件
+9. **`08-SchemaForm.md`** - SchemaForm 表单组件
    - **功能**：多字段表单、校验、分步、分组、动态字段
    - **流程**：阅读文档 → 定义 Schema → 使用 useSchemaForm → 集成 UI
    - **适用范围**：`src/views/**/*.vue, src/components/**/*.vue`
@@ -105,18 +112,19 @@
 
 ### 图表组件
 
-9. **`09-use-echarts.md`** - UseEcharts 图表组件
-   - **功能**：图表展示与交互，自动主题集成
-   - **流程**：阅读文档 → 使用 UseEcharts 组件 → 配置 option → 处理事件
-   - **适用范围**：`src/views/**/*.vue, src/components/**/*.vue`
-   - **前置要求**：必须先阅读 `docs/ECHARTS_THEME.md`
-   - **关键步骤**：
-     - 使用 `<UseEcharts>` 组件
-     - 传入 `option` prop（EChartsOption）
-     - 事件处理（on\* props）
-     - 多图表联动（group/connectConfig）
-     - 程序化控制（ref + ChartInstance）
-   - **禁止**：手动实例化 ECharts、硬编码颜色、手动监听 ThemeStore
+10. **`09-use-echarts.md`** - UseEcharts 图表组件
+
+- **功能**：图表展示与交互，自动主题集成
+- **流程**：阅读文档 → 使用 UseEcharts 组件 → 配置 option → 处理事件
+- **适用范围**：`src/views/**/*.vue, src/components/**/*.vue`
+- **前置要求**：必须先阅读 `docs/ECHARTS_THEME.md`
+- **关键步骤**：
+  - 使用 `<UseEcharts>` 组件
+  - 传入 `option` prop（EChartsOption）
+  - 事件处理（on\* props）
+  - 多图表联动（group/connectConfig）
+  - 程序化控制（ref + ChartInstance）
+- **禁止**：手动实例化 ECharts、硬编码颜色、手动监听 ThemeStore
 
 ## 📖 使用指南
 
@@ -129,6 +137,7 @@
 - **修复逻辑 Bug** → `03-fix-logic-only.md`
 - **重构逻辑** → `04-refactor-composable.md`
 - **添加图标** → `05-add-icon.md`
+- **Icons 颜色不生效** → `10-icons-color-styling.md`
 - **UI 开发任务** → `06-assemble-ui-handoff.md`
 - **反馈提示** → `07-toast-message-feedback.md`
 - **表单相关任务** → `08-SchemaForm.md`
@@ -147,6 +156,7 @@
 - **Toast/Message**：必须先阅读 `docs/TOAST_AND_MESSAGE.md`
 - **布局相关**：必须阅读 `docs/ADAPTIVE_LAYOUT.md`
 - **数据表格**：必须阅读 `docs/DataTable_COMPONENT.md`
+- **Icons 颜色**：`docs/UNOCSS_AND_ICONS.md` §6.3.1
 
 ## 通用使用法（建议复制）
 

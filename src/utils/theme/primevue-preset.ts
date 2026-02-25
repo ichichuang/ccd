@@ -7,7 +7,7 @@ import {
   deepFindAndReplaceProperty,
 } from './primevue-theme-engine'
 import { generateColorScale, generateBorderRadiusScale } from './primevue-theme-helpers'
-
+import type SizeMode from '@/types/systems/size'
 // -----------------------------------------------------------------------------
 // 🧱 PrimeVue Preset 架构说明
 // -----------------------------------------------------------------------------
@@ -781,139 +781,108 @@ export const createCustomPreset = (sizeStore: ReturnType<typeof useSizeStore>) =
     },
     // DataTable - use colorScheme for proper dark mode text colors
     datatable: {
+      headerCell: {
+        background: 'rgb(var(--background))',
+        borderColor: 'rgb(var(--border))',
+        color: 'rgb(var(--foreground))',
+        // 表头悬停背景：使用 muted 形成轻微高亮
+        hoverBackground: 'rgb(var(--muted))',
+        // 表头选中/排序高亮背景：使用 primary-light 实色，避免半透明叠加导致对比度不足
+        selectedBackground: 'rgb(var(--muted))',
+      },
+      bodyCell: {
+        borderColor: 'rgb(var(--border))',
+        color: 'rgb(var(--foreground))',
+      },
+      row: {
+        background: 'rgb(var(--background))',
+      },
+      footerCell: {
+        background: 'rgb(var(--background))',
+        borderColor: 'rgb(var(--border))',
+        color: 'rgb(var(--foreground))',
+      },
+      footer: {
+        borderColor: 'rgb(var(--border))',
+      },
+      // Filter menu 样式：修复筛选菜单配色错乱问题
+      filter: {
+        overlaySelect: {
+          background: 'rgb(var(--popover))',
+          borderColor: 'rgb(var(--border))',
+          borderRadius: 'var(--radius-md)',
+          color: 'rgb(var(--popover-foreground))',
+          shadow: 'var(--shadow-md)',
+        },
+        overlayPopover: {
+          background: 'rgb(var(--popover))',
+          borderColor: 'rgb(var(--border))',
+          borderRadius: 'var(--radius-md)',
+          color: 'rgb(var(--popover-foreground))',
+          shadow: 'var(--shadow-md)',
+          padding: 'var(--spacing-sm)',
+          gap: 'var(--spacing-xs)',
+        },
+        rule: {
+          borderColor: 'rgb(var(--border))',
+        },
+        constraintList: {
+          padding: 'var(--spacing-xs)',
+          gap: 'var(--spacing-xs)',
+        },
+        constraint: {
+          focusBackground: 'rgb(var(--accent))',
+          selectedBackground: 'rgb(var(--primary))',
+          selectedFocusBackground: 'rgb(var(--primary))',
+          color: 'rgb(var(--popover-foreground))',
+          focusColor: 'rgb(var(--accent-foreground))',
+          selectedColor: 'rgb(var(--primary-foreground))',
+          selectedFocusColor: 'rgb(var(--primary-foreground))',
+          separator: {
+            borderColor: 'rgb(var(--border))',
+          },
+          padding: 'var(--spacing-xs) var(--spacing-sm)',
+          borderRadius: 'var(--radius-sm)',
+        },
+      },
+      // 斑马纹背景：使用 muted-foreground 的 5% 透明度，在深色背景下形成柔和的浅灰色条纹
       colorScheme: {
         light: {
-          headerCell: {
-            background: 'rgb(var(--background))',
-            borderColor: 'rgb(var(--muted))',
-            color: 'rgb(var(--foreground))',
-          },
-          bodyCell: {
-            borderColor: 'rgb(var(--muted))',
-            color: 'rgb(var(--foreground))',
-          },
           row: {
-            background: 'rgb(var(--background))',
-            hoverBackground: 'rgb(var(--muted))',
-            stripedBackground: 'rgb(var(--muted-foreground) / 0.05)',
-          },
-          footerCell: {
-            background: 'rgb(var(--background))',
-            borderColor: 'rgb(var(--muted))',
-            color: 'rgb(var(--foreground))',
+            stripedBackground: 'rgb(var(--muted-foreground)/0.1)',
+            hoverBackground: 'rgb(var(--accent)/0.12)',
           },
         },
         dark: {
-          headerCell: {
-            background: 'rgb(var(--background))',
-            borderColor: 'rgb(var(--muted))',
-            color: 'rgb(var(--foreground))',
-          },
-          bodyCell: {
-            borderColor: 'rgb(var(--muted))',
-            color: 'rgb(var(--foreground))',
-          },
           row: {
-            background: 'rgb(var(--background))',
-            hoverBackground: 'rgb(var(--muted))',
-            stripedBackground: 'rgb(var(--muted-foreground) / 0.06)',
-          },
-          footerCell: {
-            background: 'rgb(var(--background))',
-            borderColor: 'rgb(var(--muted))',
-            color: 'rgb(var(--foreground))',
+            stripedBackground: 'rgb(var(--muted))',
+            hoverBackground: 'rgb(var(--primary)/0.2)',
           },
         },
       },
     },
-    // Tabs - 圆角系统融合 + colorScheme
-    tabs: {
-      colorScheme: {
-        light: {
-          tablist: {
-            borderColor: 'rgb(var(--muted))',
-            borderRadius: 'var(--radius-md)',
-          },
-          tab: {
-            color: 'rgb(var(--muted-foreground))',
-            hoverColor: 'rgb(var(--foreground))',
-            activeColor: 'rgb(var(--primary))',
-            borderRadius: 'var(--radius-sm)',
-          },
-          activeBar: {
-            background: 'rgb(var(--primary))',
-          },
-          tabpanel: {
-            background: 'rgb(var(--background))',
-            color: 'rgb(var(--foreground))',
-            borderRadius: 'var(--radius-md)',
-          },
-        },
-        dark: {
-          tablist: {
-            borderColor: 'rgb(var(--muted))',
-            borderRadius: 'var(--radius-md)',
-          },
-          tab: {
-            color: 'rgb(var(--muted-foreground))',
-            hoverColor: 'rgb(var(--foreground))',
-            activeColor: 'rgb(var(--primary))',
-            borderRadius: 'var(--radius-sm)',
-          },
-          activeBar: {
-            background: 'rgb(var(--primary))',
-          },
-          tabpanel: {
-            background: 'rgb(var(--background))',
-            color: 'rgb(var(--foreground))',
-            borderRadius: 'var(--radius-md)',
-          },
-        },
-      },
-    },
-    // Accordion - 圆角系统融合 + colorScheme
+    // Accordion - 直接覆盖 header/content，融合 ThemeCssVars 配色系统
     accordion: {
+      // 与 Aura 结构对齐：root / panel / header / content
       root: {
         borderRadius: 'var(--radius-md)',
       },
-      panel: {
-        borderRadius: 'var(--radius-md)',
+      header: {
+        padding: 'var(--spacing-md) var(--spacing-sm)',
+
+        // 文本颜色：默认弱前景，悬停/激活使用主前景
+        color: 'rgb(var(--muted-foreground))',
+        hoverColor: 'rgb(var(--foreground))',
+        activeColor: 'rgb(var(--foreground))',
+        activeHoverColor: 'rgb(var(--foreground))',
+
+        // 背景：默认 card，悬停/激活使用 muted 形成轻微高亮
+        hoverBackground: 'rgb(var(--primary-hover)/0.4)',
+        activeBackground: 'rgb(var(--primary)/0.4)',
+        activeHoverBackground: 'rgb(var(--primary)/0.4)',
       },
-      colorScheme: {
-        light: {
-          header: {
-            background: 'rgb(var(--background))',
-            borderColor: 'rgb(var(--muted))',
-            color: 'rgb(var(--foreground))',
-            hoverBackground: 'rgb(var(--muted))',
-            borderRadius: 'var(--radius-sm)',
-            first: { topBorderRadius: 'var(--radius-md)' },
-            last: { bottomBorderRadius: 'var(--radius-md)' },
-          },
-          content: {
-            background: 'rgb(var(--background))',
-            borderColor: 'rgb(var(--muted))',
-            color: 'rgb(var(--foreground))',
-            borderRadius: 'var(--radius-sm)',
-          },
-        },
-        dark: {
-          header: {
-            background: 'rgb(var(--background))',
-            borderColor: 'rgb(var(--muted))',
-            color: 'rgb(var(--foreground))',
-            hoverBackground: 'rgb(var(--muted))',
-            borderRadius: 'var(--radius-sm)',
-            first: { topBorderRadius: 'var(--radius-md)' },
-            last: { bottomBorderRadius: 'var(--radius-md)' },
-          },
-          content: {
-            background: 'rgb(var(--background))',
-            borderColor: 'rgb(var(--muted))',
-            color: 'rgb(var(--foreground))',
-            borderRadius: 'var(--radius-sm)',
-          },
-        },
+      content: {
+        padding: 'var(--spacing-sm) var(--spacing-md)',
       },
     },
     // Panel - use colorScheme for proper dark mode
@@ -922,24 +891,24 @@ export const createCustomPreset = (sizeStore: ReturnType<typeof useSizeStore>) =
         light: {
           header: {
             background: 'rgb(var(--background))',
-            borderColor: 'rgb(var(--muted))',
+            borderColor: 'rgb(var(--border))',
             color: 'rgb(var(--foreground))',
           },
           content: {
             background: 'rgb(var(--background))',
-            borderColor: 'rgb(var(--muted))',
+            borderColor: 'rgb(var(--border))',
             color: 'rgb(var(--foreground))',
           },
         },
         dark: {
           header: {
             background: 'rgb(var(--background))',
-            borderColor: 'rgb(var(--muted))',
+            borderColor: 'rgb(var(--border))',
             color: 'rgb(var(--foreground))',
           },
           content: {
             background: 'rgb(var(--background))',
-            borderColor: 'rgb(var(--muted))',
+            borderColor: 'rgb(var(--border))',
             color: 'rgb(var(--foreground))',
           },
         },
@@ -951,7 +920,7 @@ export const createCustomPreset = (sizeStore: ReturnType<typeof useSizeStore>) =
         light: {
           root: {
             background: 'rgb(var(--background))',
-            borderColor: 'rgb(var(--muted))',
+            borderColor: 'rgb(var(--border))',
             color: 'rgb(var(--foreground))',
           },
           title: {
@@ -970,7 +939,7 @@ export const createCustomPreset = (sizeStore: ReturnType<typeof useSizeStore>) =
         dark: {
           root: {
             background: 'rgb(var(--background))',
-            borderColor: 'rgb(var(--muted))',
+            borderColor: 'rgb(var(--border))',
             color: 'rgb(var(--foreground))',
           },
           title: {
@@ -994,30 +963,26 @@ export const createCustomPreset = (sizeStore: ReturnType<typeof useSizeStore>) =
         light: {
           legend: {
             background: 'rgb(var(--background))',
-            borderColor: 'rgb(var(--muted))',
+            borderColor: 'rgb(var(--border))',
             color: 'rgb(var(--foreground))',
           },
           content: {
-            borderColor: 'rgb(var(--muted))',
+            borderColor: 'rgb(var(--border))',
             color: 'rgb(var(--foreground))',
           },
         },
         dark: {
           legend: {
             background: 'rgb(var(--background))',
-            borderColor: 'rgb(var(--muted))',
+            borderColor: 'rgb(var(--border))',
             color: 'rgb(var(--foreground))',
           },
           content: {
-            borderColor: 'rgb(var(--muted))',
+            borderColor: 'rgb(var(--border))',
             color: 'rgb(var(--foreground))',
           },
         },
       },
-    },
-    // Divider - soft
-    divider: {
-      borderColor: colors.getMuted,
     },
     // Stepper - softer styling
     stepper: {
@@ -1345,7 +1310,7 @@ export const createCustomPreset = (sizeStore: ReturnType<typeof useSizeStore>) =
         color: 'rgb(var(--popover-foreground))',
       },
       footer: {
-        padding: 'var(--spacing-xs) var(--spacing-sm)',
+        padding: 'var(--spacing-md) var(--spacing-md)',
       },
     },
     // Menu
@@ -1362,20 +1327,74 @@ export const createCustomPreset = (sizeStore: ReturnType<typeof useSizeStore>) =
         focusColor: 'rgb(var(--accent-foreground))',
       },
     },
-    // Menubar
+    // Menubar - 顶栏横向导航，完全对齐 ThemeCssVars & SizeCssVars
     menubar: {
       root: {
-        background: 'rgb(var(--background))',
-        borderColor: 'rgb(var(--border))',
+        // 顶栏整体背景/边框由 AdminHeader 控制，这里保持透明
+        background: 'transparent',
+        borderColor: 'transparent',
+        borderRadius: '0',
+        // 使用全局前景色，确保在自定义 header 背景上有足够对比度
+        color: 'rgb(var(--foreground))',
+        gap: 'var(--spacing-sm)',
+        // 水平 padding 略放大，使导航点击区更舒适
+        padding: '0 var(--spacing-md)',
+      },
+      baseItem: {
+        borderRadius: 'var(--radius-md)',
+        // 顶栏主导航项：上下紧凑，左右略宽，符合 Size 系统的舒适模式
+        padding: 'var(--spacing-xs) var(--spacing-sm)',
       },
       item: {
-        color: 'rgb(var(--foreground))',
-        focusBackground: 'rgb(var(--accent))',
-        focusColor: 'rgb(var(--accent-foreground))',
-        activeBackground: 'rgb(var(--accent))',
-        activeColor: 'rgb(var(--accent-foreground))',
+        // 方案 B：关闭 PT 背景，由 AdminHeader 自定义 renderer 完全控制，避免双层叠加
+        focusBackground: 'transparent',
+        activeBackground: 'transparent',
+        focusColor: 'transparent',
+        activeColor: 'transparent',
+        color: 'rgb(var(--muted-foreground))',
+        padding: '0',
         borderRadius: 'var(--radius-md)',
-        overflow: 'hidden', // Fix ripple overflow
+        gap: 'var(--spacing-sm)',
+        icon: {
+          color: 'rgb(var(--muted-foreground))',
+          focusColor: 'transparent',
+          activeColor: 'transparent',
+        },
+      },
+      submenu: {
+        // 下拉菜单：card 背景与 header 区分，radius-md 与 Menu 对齐；gap-md 增加项间呼吸感
+        padding: 'var(--spacing-sm)',
+        gap: 'var(--spacing-sm)',
+        background: 'rgb(var(--card))',
+        borderColor: 'rgb(var(--border))',
+        borderWidth: '1px',
+        borderRadius: 'var(--radius-md)',
+        shadow: 'var(--shadow-lg)',
+        mobileIndent: 'var(--spacing-md)',
+        icon: {
+          size: 'var(--font-size-sm)',
+          color: 'rgb(var(--muted-foreground))',
+          focusColor: 'transparent',
+          activeColor: 'transparent',
+        },
+      },
+      separator: {
+        borderColor: 'rgb(var(--border))',
+      },
+      mobileButton: {
+        borderRadius: '50%',
+        // 移动端菜单按钮尺寸略收一档，避免在小屏顶部显得过于“膨胀”
+        size: 'var(--spacing-xl)',
+        color: 'rgb(var(--muted-foreground))',
+        hoverColor: 'rgb(var(--foreground))',
+        hoverBackground: 'rgb(var(--muted))',
+        focusRing: {
+          width: 'calc(var(--spacing-xs) / 2)',
+          style: 'solid',
+          color: 'rgb(var(--primary))',
+          offset: 'calc(var(--spacing-xs) / 2)',
+          shadow: 'none',
+        },
       },
     },
     // Breadcrumb
@@ -1480,6 +1499,29 @@ export const createCustomPreset = (sizeStore: ReturnType<typeof useSizeStore>) =
         color: 'rgb(var(--popover-foreground))',
         focusBackground: 'rgb(var(--accent))',
         focusColor: 'rgb(var(--accent-foreground))',
+      },
+    },
+    // Tree
+    tree: {
+      root: {
+        transitionDuration: '{transition.duration}',
+        padding: 'var(--spacing-xs)',
+      },
+      node: {
+        padding: '0.25rem 0.5rem',
+        borderRadius: '{content.border.radius}',
+        hoverBackground: '{content.hover.background}',
+        selectedBackground: '{highlight.background}',
+        color: '{text.color}',
+        hoverColor: '{text.hover.color}',
+        selectedColor: '{highlight.color}',
+        focusRing: {
+          width: '{focus.ring.width}',
+          style: '{focus.ring.style}',
+          color: '{focus.ring.color}',
+          offset: '-1px',
+          shadow: '{focus.ring.shadow}',
+        },
       },
     },
     // TreeSelect
@@ -1783,42 +1825,7 @@ export const createCustomPreset = (sizeStore: ReturnType<typeof useSizeStore>) =
         },
       },
     },
-    // SelectButton
-    selectbutton: {
-      // 基础外观（主要针对浅色模式）
-      root: {
-        borderRadius: 'var(--radius-md)',
-        background: 'rgb(var(--secondary))',
-        borderColor: 'rgb(var(--input))',
-        color: 'rgb(var(--secondary-foreground))',
-        hoverBackground: 'rgb(var(--accent))',
-        hoverBorderColor: 'rgb(var(--primary))',
-        checkedBackground: 'rgb(var(--primary))',
-        checkedBorderColor: 'rgb(var(--primary))',
-        checkedColor: 'rgb(var(--primary-foreground))',
-        checkedHoverBackground: 'rgb(var(--primary-hover))',
-      },
-      // 深色模式单独控制 hover/选中，保证文字对比度
-      colorScheme: {
-        dark: {
-          root: {
-            // 未选中常态
-            background: 'rgb(var(--secondary))',
-            borderColor: 'rgb(var(--input))',
-            color: 'rgb(var(--foreground))',
-            // 悬停：使用 muted 背景 + 前景文字
-            hoverBackground: 'rgb(var(--muted))',
-            hoverBorderColor: 'rgb(var(--border))',
-            hoverColor: 'rgb(var(--foreground))',
-            // 选中态：主色背景 + 主色前景
-            checkedBackground: 'rgb(var(--primary))',
-            checkedBorderColor: 'rgb(var(--primary))',
-            checkedColor: 'rgb(var(--primary-foreground))',
-            checkedHoverBackground: 'rgb(var(--primary-hover))',
-          },
-        },
-      },
-    },
+
     // SplitButton
     splitbutton: {
       root: {
@@ -1831,21 +1838,40 @@ export const createCustomPreset = (sizeStore: ReturnType<typeof useSizeStore>) =
         // Dropdown menu follows Menu/Popover styles
       },
     },
-    // TieredMenu
+    // TieredMenu：使用 ThemeCssVars，确保 active 项文字对比度
     tieredmenu: {
       root: {
-        background: 'rgb(var(--popover))',
+        background: 'rgb(var(--card))',
         borderColor: 'rgb(var(--border))',
-        color: 'rgb(var(--popover-foreground))',
+        color: 'rgb(var(--foreground))',
         borderRadius: 'var(--radius-md)',
       },
+      list: {
+        padding: 'var(--spacing-xs)',
+        gap: 'var(--spacing-xs)',
+      },
       item: {
-        color: 'rgb(var(--popover-foreground))',
-        focusBackground: 'rgb(var(--accent))',
-        focusColor: 'rgb(var(--accent-foreground))',
-        activeBackground: 'rgb(var(--accent))', // For submenu
+        focusBackground: 'rgb(var(--accent-light))',
+        activeBackground: 'rgb(var(--accent))',
+        color: 'rgb(var(--foreground))',
+        focusColor: 'rgb(var(--accent-light-foreground))',
         activeColor: 'rgb(var(--accent-foreground))',
-        padding: 'var(--spacing-sm) var(--spacing-sm) var(--spacing-sm) var(--spacing-md)',
+        padding: 'var(--spacing-sm) var(--spacing-md)',
+        borderRadius: 'var(--radius-sm)',
+        gap: 'var(--spacing-sm)',
+        icon: {
+          color: 'rgb(var(--muted-foreground))',
+          focusColor: 'rgb(var(--accent-light-foreground))',
+          activeColor: 'rgb(var(--accent-foreground))',
+        },
+      },
+      submenuIcon: {
+        color: 'rgb(var(--muted-foreground))',
+        focusColor: 'rgb(var(--accent-light-foreground))',
+        activeColor: 'rgb(var(--accent-foreground))',
+      },
+      separator: {
+        borderColor: 'rgb(var(--border))',
       },
     },
     // PanelMenu：rootList / submenu 统一 gap，保证多级菜单均有纵向间距

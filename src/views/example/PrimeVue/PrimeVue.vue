@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { ref, computed, nextTick, onBeforeUnmount, watch } from 'vue'
 import { useThrottleFn } from '@vueuse/core'
 import { useToast } from 'primevue/usetoast'
 import { useConfirm } from 'primevue/useconfirm'
@@ -42,12 +41,12 @@ const sectionMeta: SectionMeta[] = [
   {
     id: 'section-upload',
     indexLabel: '12.3',
-    label: 'FileUpload / ProgressSpinner / BlockUI',
+    label: 'FileUpload / ProgressSpinner',
   },
   {
     id: 'section-floatlabel',
     indexLabel: '12.4',
-    label: 'FloatLabel / ScrollPanel / Splitter',
+    label: 'FloatLabel / Splitter',
   },
   { id: 'section-other', indexLabel: '13.', label: 'Breadcrumb / ProgressBar / Skeleton' },
 ]
@@ -60,14 +59,13 @@ const sections: { id: string; label: string }[] = sectionMeta.map(({ id, label }
 
 // --- Scroll Spy & 目录导航 ---
 const scrollbarRef = ref<ScrollbarInstance | null>(null)
-const tocScrollbarRef = ref<ScrollbarInstance | null>(null)
 const tocAsideRef = ref<HTMLElement | null>(null)
 const activeSectionId = ref<string | null>(sections[0]?.id ?? null) // 默认激活第一项
-const isScrolling = ref(false) // 防止点击滚动时触发 scroll spy
+const isScrolling = ref<boolean>(false) // 防止点击滚动时触发 scroll spy
 let intersectionObserver: IntersectionObserver | null = null
 
 // 右侧目录树数据（使用 PrimeVue Tree）
-const tocTreeNodes = computed(() =>
+const tocTreeNodes = computed<{ key: string; label: string }[]>(() =>
   sectionMeta.map(meta => ({
     key: meta.id,
     label: `${meta.indexLabel} ${meta.label}`,
@@ -283,7 +281,7 @@ onBeforeUnmount(() => {
 })
 
 // --- Button ---
-const loading = ref(false)
+const loading = ref<boolean>(false)
 function load() {
   loading.value = true
   setTimeout(() => {
@@ -298,20 +296,25 @@ const textareaVal = ref<string | undefined>('')
 const inputNumberVal = ref<number | null>(null)
 
 // --- Select ---
+interface CityOption {
+  name: string
+  code: string
+}
+
 const selectCity = ref<string | null>(null)
-const cities = [
+const cities: CityOption[] = [
   { name: '北京', code: 'bj' },
   { name: '上海', code: 'sh' },
   { name: '广州', code: 'gz' },
 ]
 const multiSelectVal = ref<string[]>([])
-const multiOptions = ['Vue', 'React', 'Angular', 'Svelte']
+const multiOptions: string[] = ['Vue', 'React', 'Angular', 'Svelte']
 
 // --- Checkbox / Radio / Toggle ---
-const checkboxVal = ref(false)
+const checkboxVal = ref<boolean>(false)
 const checkboxGroup = ref<string[]>([])
-const radioVal = ref('')
-const toggleVal = ref(false)
+const radioVal = ref<string>('')
+const toggleVal = ref<boolean>(false)
 
 // --- DatePicker ---
 const dateVal = ref<Date | Date[] | (Date | null)[] | null | undefined>(null)
@@ -337,7 +340,7 @@ const products = ref<Product[]>([
 const selectedProduct = ref<Product | null>(null)
 
 // --- Dialog ---
-const dialogVisible = ref(false)
+const dialogVisible = ref<boolean>(false)
 
 // --- Toast (useToast) ---
 const toast = useToast()
@@ -375,23 +378,27 @@ function confirmDelete() {
 }
 
 // --- Menu ---
-const menuItems = ref([
+interface SimpleMenuItem {
+  label?: string
+  icon?: string
+  separator?: boolean
+}
+
+interface PrimeMenuInstance {
+  toggle: (event: Event) => void
+}
+
+const menuItems = ref<SimpleMenuItem[]>([
   { label: '新建', icon: 'pi pi-plus' },
   { label: '打开', icon: 'pi pi-folder-open' },
   { label: '保存', icon: 'pi pi-save' },
   { separator: true },
   { label: '退出', icon: 'pi pi-sign-out' },
 ])
-const menuRef = ref()
+const menuRef = ref<PrimeMenuInstance | null>(null)
 function toggleMenu(event: Event) {
   menuRef.value?.toggle(event)
 }
-
-// --- Tabs (v4 替代 TabView) ---
-const activeTab = ref<string | number>('0')
-
-// --- Accordion ---（组件可能 emit undefined，用单绑 + 事件接收）
-const activeAccordion = ref<number | number[] | undefined>(0)
 
 // --- Breadcrumb ---
 interface BreadcrumbItem {
@@ -405,11 +412,11 @@ const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
 ])
 
 // --- ProgressBar ---
-const progressVal = ref(60)
+const progressVal = ref<number>(60)
 
 // --- SelectButton ---
-const selectButtonVal = ref('one')
-const selectButtonOptions = [
+const selectButtonVal = ref<string | string[]>('one')
+const selectButtonOptions: { label: string; value: string }[] = [
   { label: '选项一', value: 'one' },
   { label: '选项二', value: 'two' },
   { label: '选项三', value: 'three' },
@@ -418,7 +425,15 @@ const selectButtonOptions = [
 // --- AutoComplete ---
 const autoCompleteVal = ref<string | undefined>('')
 const autoCompleteSuggestions = ref<string[]>([])
-const allSuggestions = ['Apple', 'Apricot', 'Banana', 'Berry', 'Cherry', 'Grape', 'Orange']
+const allSuggestions: string[] = [
+  'Apple',
+  'Apricot',
+  'Banana',
+  'Berry',
+  'Cherry',
+  'Grape',
+  'Orange',
+]
 function onAutoCompleteSearch(event: { query: string }) {
   const q = event.query.toLowerCase()
   autoCompleteSuggestions.value = allSuggestions.filter(s => s.toLowerCase().includes(q))
@@ -426,24 +441,39 @@ function onAutoCompleteSearch(event: { query: string }) {
 
 // --- Listbox ---
 const listboxVal = ref<string | null>(null)
-const listboxOptions = ['选项 A', '选项 B', '选项 C', '选项 D']
+const listboxOptions: string[] = ['选项 A', '选项 B', '选项 C', '选项 D']
 
 // --- Drawer ---
-const drawerVisible = ref(false)
+const drawerVisible = ref<boolean>(false)
 
 // --- Popover ---
-const popoverRef = ref()
+interface PrimePopoverInstance {
+  toggle: (event: Event) => void
+}
+
+const popoverRef = ref<PrimePopoverInstance | null>(null)
 function togglePopover(event: Event) {
   popoverRef.value?.toggle(event)
 }
 
 // --- ContextMenu ---
-const contextMenuRef = ref()
-const contextMenuItems = [
+interface PrimeContextMenuInstance {
+  show: (event: MouseEvent) => void
+}
+
+interface PrimeContextMenuItem {
+  label?: string
+  icon?: string
+  separator?: boolean
+  severity?: 'danger' | 'info' | 'warn' | 'success' | 'secondary' | 'contrast' | 'help'
+}
+
+const contextMenuRef = ref<PrimeContextMenuInstance | null>(null)
+const contextMenuItems: PrimeContextMenuItem[] = [
   { label: '复制', icon: 'pi pi-copy' },
   { label: '粘贴', icon: 'pi pi-clipboard' },
   { separator: true },
-  { label: '删除', icon: 'pi pi-trash', severity: 'danger' as const },
+  { label: '删除', icon: 'pi pi-trash', severity: 'danger' },
 ]
 function onContextMenu(event: MouseEvent) {
   contextMenuRef.value?.show(event)
@@ -469,9 +499,9 @@ const treeNodes = ref<TreeNode[]>([
 const selectedNodeKeys = ref<Record<string, boolean> | undefined>(undefined)
 
 // --- Paginator ---
-const paginatorFirst = ref(0)
-const paginatorRows = ref(5)
-const paginatorTotal = ref(100)
+const paginatorFirst = ref<number>(0)
+const paginatorRows = ref<number>(5)
+const paginatorTotal = ref<number>(100)
 function onPaginatorPage(event: { first: number; rows: number }) {
   paginatorFirst.value = event.first
   paginatorRows.value = event.rows
@@ -482,11 +512,17 @@ function onFileUploadSelect() {
   toast.add({ severity: 'info', summary: '已选择文件', life: 2000 })
 }
 
-// --- BlockUI ---
-const blockUIVisible = ref(false)
-
 // --- FloatLabel ---
 const floatLabelVal = ref<string | undefined>('')
+
+// --- Tabs (v4 替代 TabView) ---
+const activeTab = ref<string | number>('0')
+
+// --- Accordion ---（组件可能 emit undefined，用单绑 + 事件接收）
+const activeAccordion = ref<number | number[] | undefined>(0)
+function onAccordionActiveIndexChange(value: number | number[] | undefined): void {
+  activeAccordion.value = value
+}
 </script>
 
 <template>
@@ -920,13 +956,14 @@ const floatLabelVal = ref<string | undefined>('')
               <h2 class="fs-xl font-semibold text-foreground flex items-center gap-sm m-0">
                 {{ sectionMeta[1].indexLabel }} {{ sectionMeta[1].label }}
               </h2>
-              <div class="flex flex-col gap-md max-w-md">
+              <div class="flex flex-col gap-md max-w-[60vw]">
                 <div class="flex flex-col gap-xs">
                   <label
                     for="input-text"
                     class="text-foreground fs-sm"
-                    >InputText</label
                   >
+                    InputText
+                  </label>
                   <InputText
                     id="input-text"
                     v-model="inputText"
@@ -938,8 +975,9 @@ const floatLabelVal = ref<string | undefined>('')
                   <label
                     for="input-pwd"
                     class="text-foreground fs-sm"
-                    >Password</label
                   >
+                    Password
+                  </label>
                   <Password
                     id="input-pwd"
                     v-model="inputPassword"
@@ -952,8 +990,9 @@ const floatLabelVal = ref<string | undefined>('')
                   <label
                     for="input-textarea"
                     class="text-foreground fs-sm"
-                    >Textarea</label
                   >
+                    Textarea
+                  </label>
                   <Textarea
                     id="input-textarea"
                     v-model="textareaVal"
@@ -965,8 +1004,9 @@ const floatLabelVal = ref<string | undefined>('')
                   <label
                     for="input-num"
                     class="text-foreground fs-sm"
-                    >InputNumber</label
                   >
+                    InputNumber
+                  </label>
                   <InputNumber
                     v-model="inputNumberVal"
                     :min="0"
@@ -1138,8 +1178,9 @@ const floatLabelVal = ref<string | undefined>('')
                     <label
                       for="cb1"
                       class="text-foreground"
-                      >Checkbox 二元</label
                     >
+                      Checkbox 二元
+                    </label>
                   </div>
                   <div class="flex flex-col gap-xs">
                     <span class="text-foreground fs-sm">Checkbox 多选组</span>
@@ -1192,8 +1233,9 @@ const floatLabelVal = ref<string | undefined>('')
                   <label
                     for="sw1"
                     class="text-foreground"
-                    >ToggleSwitch</label
                   >
+                    ToggleSwitch
+                  </label>
                 </div>
               </div>
             </div>
@@ -1243,7 +1285,7 @@ const floatLabelVal = ref<string | undefined>('')
               <h2 class="fs-xl font-semibold text-foreground flex items-center gap-sm m-0">
                 {{ sectionMeta[7].indexLabel }} {{ sectionMeta[7].label }}
               </h2>
-              <div class="flex flex-wrap gap-xl max-w-md">
+              <div class="flex flex-wrap gap-xl max-w-[60vw]">
                 <div class="flex flex-col gap-xs flex-1 min-w-0">
                   <label class="text-foreground fs-sm">Slider: {{ sliderVal }}</label>
                   <Slider
@@ -1313,7 +1355,7 @@ const floatLabelVal = ref<string | undefined>('')
                 />
                 <Chip
                   label="带图标"
-                  icon="pi pi-vue"
+                  icon="pi pi-prime"
                 />
               </div>
             </div>
@@ -1339,12 +1381,12 @@ const floatLabelVal = ref<string | undefined>('')
                 <Divider align="center">
                   <span class="text-muted-foreground fs-sm">分割线文字</span>
                 </Divider>
-                <div class="max-w-md">
+                <div class="max-w-[60vw]">
                   <InlineMessage severity="info">InlineMessage 内联提示</InlineMessage>
                 </div>
                 <Fieldset
                   legend="Fieldset 图例"
-                  class="max-w-md"
+                  class="max-w-[60vw]"
                   toggleable
                 >
                   <p class="text-muted-foreground fs-sm m-0">可折叠的 Fieldset 内容区域。</p>
@@ -1465,16 +1507,18 @@ const floatLabelVal = ref<string | undefined>('')
                 <Message
                   severity="info"
                   :closable="true"
-                  >Info Message，可关闭</Message
                 >
+                  Info Message，可关闭
+                </Message>
                 <Message severity="success">Success Message</Message>
                 <Message severity="warn">Warn Message</Message>
                 <Message severity="error">Danger Message</Message>
                 <Message
                   severity="secondary"
                   variant="simple"
-                  >Simple 变体 Message</Message
                 >
+                  Simple 变体 Message
+                </Message>
                 <div class="flex flex-wrap gap-sm">
                   <Button
                     label="Toast Success"
@@ -1518,8 +1562,10 @@ const floatLabelVal = ref<string | undefined>('')
               </h2>
               <p class="text-muted-foreground fs-sm">
                 业务中自定义弹窗/确认请使用
-                <code class="px-padding-xs rounded-scale-md bg-muted">useDialog()</code> /
-                <code class="px-padding-xs rounded-scale-md bg-muted">window.$toast</code>。
+                <span class="px-padding-xs rounded-scale-md bg-muted">useDialog()</span>
+                /
+                <span class="px-padding-xs rounded-scale-md bg-muted">window.$toast</span>
+                。
               </p>
               <div class="flex flex-wrap gap-sm">
                 <Button
@@ -1580,7 +1626,7 @@ const floatLabelVal = ref<string | undefined>('')
                   @click="togglePopover"
                 />
                 <Popover ref="popoverRef">
-                  <div class="flex flex-col gap-sm p-padding-md max-w-xs">
+                  <div class="flex flex-col gap-sm max-w-[min(20rem,90vw)]">
                     <span class="fs-sm font-semibold text-foreground">Popover 内容</span>
                     <p class="text-muted-foreground fs-sm m-0">自定义浮层内容。</p>
                   </div>
@@ -1590,7 +1636,7 @@ const floatLabelVal = ref<string | undefined>('')
                 v-model:visible="drawerVisible"
                 position="right"
                 header="Drawer 标题"
-                class="w-full max-w-sm"
+                class="w-full max-w-[min(24rem,90vw)]"
               >
                 <p class="text-muted-foreground fs-sm m-0">侧边抽屉内容，可从右滑出。</p>
               </Drawer>
@@ -1623,21 +1669,6 @@ const floatLabelVal = ref<string | undefined>('')
                   <Menubar
                     :model="menuItems"
                     class="flex-1 min-w-0 max-w-[60vw]"
-                  />
-                </div>
-                <div>
-                  <p class="text-muted-foreground fs-sm mb-padding-xs">
-                    右键点击下方区域打开 ContextMenu：
-                  </p>
-                  <div
-                    class="border border-border border-dashed rounded-scale-md p-padding-xl text-center text-muted-foreground fs-sm"
-                    @contextmenu="onContextMenu"
-                  >
-                    右键此处
-                  </div>
-                  <ContextMenu
-                    ref="contextMenuRef"
-                    :model="contextMenuItems"
                   />
                 </div>
               </div>
@@ -1679,9 +1710,7 @@ const floatLabelVal = ref<string | undefined>('')
                 <div class="flex-1 min-w-0 max-w-[60vw]">
                   <Accordion
                     :active-index="activeAccordion ?? 0"
-                    @update:active-index="
-                      (v: number | number[] | undefined) => (activeAccordion = v)
-                    "
+                    @update:active-index="onAccordionActiveIndexChange"
                   >
                     <AccordionPanel value="0">
                       <AccordionHeader>Accordion 1</AccordionHeader>
@@ -1713,7 +1742,7 @@ const floatLabelVal = ref<string | undefined>('')
                 {{ sectionMeta[17].indexLabel }} {{ sectionMeta[17].label }}
               </h2>
               <div class="flex flex-wrap gap-xl">
-                <div class="flex flex-col gap-xs max-w-xs">
+                <div class="flex flex-col gap-xs max-w-[min(20rem,90vw)]">
                   <label class="text-foreground fs-sm">Tree</label>
                   <Tree
                     v-model:selection-keys="selectedNodeKeys"
@@ -1736,7 +1765,7 @@ const floatLabelVal = ref<string | undefined>('')
             </div>
           </section>
 
-          <!-- 12.3 FileUpload / ProgressSpinner / BlockUI -->
+          <!-- 12.3 FileUpload / ProgressSpinner  -->
           <section
             :id="sections[18].id"
             class="scroll-mt-gap-lg"
@@ -1760,21 +1789,11 @@ const floatLabelVal = ref<string | undefined>('')
                   <span class="text-foreground fs-sm">ProgressSpinner</span>
                   <ProgressSpinner class="w-[var(--spacing-2xl)] h-[var(--spacing-2xl)]" />
                 </div>
-                <div class="flex flex-col gap-sm relative">
-                  <Button
-                    label="切换 BlockUI"
-                    @click="blockUIVisible = !blockUIVisible"
-                  />
-                  <div class="component-border rounded-scale-md p-padding-lg min-h-24 relative">
-                    <p class="text-muted-foreground fs-sm m-0">被 BlockUI 遮罩的区域</p>
-                    <BlockUI :blocked="blockUIVisible" />
-                  </div>
-                </div>
               </div>
             </div>
           </section>
 
-          <!-- 12.4 FloatLabel / ScrollPanel / Splitter -->
+          <!-- 12.4 FloatLabel / Splitter -->
           <section
             :id="sections[19].id"
             class="scroll-mt-gap-lg"
@@ -1786,7 +1805,7 @@ const floatLabelVal = ref<string | undefined>('')
                 {{ sectionMeta[19].indexLabel }} {{ sectionMeta[19].label }}
               </h2>
               <div class="flex flex-col gap-lg">
-                <div class="max-w-xs">
+                <div class="max-w-[min(20rem,90vw)]">
                   <FloatLabel>
                     <InputText
                       id="float-input"
@@ -1796,26 +1815,20 @@ const floatLabelVal = ref<string | undefined>('')
                     <label for="float-input">FloatLabel</label>
                   </FloatLabel>
                 </div>
-                <div class="max-w-md max-h-48 component-border rounded-scale-md overflow-hidden">
-                  <ScrollPanel class="w-full h-[var(--spacing-5xl)]">
-                    <div class="p-padding-md flex flex-col gap-sm">
-                      <p class="text-muted-foreground fs-sm m-0">ScrollPanel 可滚动内容区域。</p>
-                      <p class="text-muted-foreground fs-sm m-0">多行内容...</p>
-                      <p class="text-muted-foreground fs-sm m-0">多行内容...</p>
-                    </div>
-                  </ScrollPanel>
-                </div>
-                <Splitter class="max-w-lg">
+
+                <Splitter class="max-w-[min(40rem,90vw)]">
                   <SplitterPanel
                     :size="50"
                     :min-size="20"
-                    >左侧面板</SplitterPanel
                   >
+                    左侧面板
+                  </SplitterPanel>
                   <SplitterPanel
                     :size="50"
                     :min-size="20"
-                    >右侧面板</SplitterPanel
                   >
+                    右侧面板
+                  </SplitterPanel>
                 </Splitter>
               </div>
             </div>
@@ -1834,15 +1847,15 @@ const floatLabelVal = ref<string | undefined>('')
               </h2>
               <div class="flex flex-col gap-lg">
                 <Breadcrumb :model="breadcrumbItems" />
-                <div class="flex flex-col gap-xs max-w-md">
+                <div class="flex flex-col gap-xs max-w-[60vw]">
                   <label class="text-foreground fs-sm">ProgressBar: {{ progressVal }}%</label>
                   <ProgressBar :value="progressVal" />
                   <ProgressBar
                     mode="indeterminate"
-                    class="mt-2"
+                    class="mt-margin-sm"
                   />
                 </div>
-                <div class="flex flex-col gap-sm max-w-xs">
+                <div class="flex flex-col gap-sm max-w-[min(20rem,90vw)]">
                   <span class="text-foreground fs-sm">Skeleton 占位</span>
                   <Skeleton
                     width="100%"
@@ -1874,10 +1887,7 @@ const floatLabelVal = ref<string | undefined>('')
         <h2 class="fs-md font-bold text-foreground uppercase tracking-wider">目录</h2>
       </div>
 
-      <CScrollbar
-        ref="tocScrollbarRef"
-        class="flex-1 min-h-0"
-      >
+      <CScrollbar class="flex-1 min-h-0">
         <div class="p-padding-sm">
           <!-- 右侧目录树：使用 PrimeVue Tree -->
           <Tree

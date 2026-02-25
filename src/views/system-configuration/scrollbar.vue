@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { ref } from 'vue'
 import type { OverlayScrollbars } from 'overlayscrollbars'
 import Button from 'primevue/button'
 import Card from 'primevue/card'
@@ -10,7 +9,7 @@ const scrollbarRef = ref<InstanceType<typeof CScrollbar> | null>(null)
 const logs = ref<string[]>([])
 
 // Visibility options
-const visibilityOptions = [
+const visibilityOptions: Array<{ label: string; value: 'auto' | 'visible' | 'hidden' }> = [
   { label: '自动', value: 'auto' },
   { label: '可见', value: 'visible' },
   { label: '隐藏', value: 'hidden' },
@@ -18,13 +17,16 @@ const visibilityOptions = [
 const visibility = ref<'auto' | 'visible' | 'hidden'>('auto')
 
 // Mock content
-const items = Array.from({ length: 50 }, (_, i) => ({
-  id: i,
-  title: `Scroll Item ${i + 1}`,
-  date: new Date().toLocaleDateString(),
-  desc: '这是一个用于测试滚动条功能的示例文本内容，包含足够多的文字以展示换行效果。',
-}))
-const horizontalItems = Array.from({ length: 20 }, (_, i) => `Column ${i + 1}`)
+const items: Array<{ id: number; title: string; date: string; desc: string }> = Array.from(
+  { length: 50 },
+  (_, i) => ({
+    id: i,
+    title: `Scroll Item ${i + 1}`,
+    date: new Date().toLocaleDateString(),
+    desc: '这是一个用于测试滚动条功能的示例文本内容，包含足够多的文字以展示换行效果。',
+  })
+)
+const horizontalItems: string[] = Array.from({ length: 20 }, (_, i) => `Column ${i + 1}`)
 
 // Copy to clipboard utility
 function copyToClipboard(text: string, label?: string) {
@@ -240,7 +242,9 @@ const state = scrollbarRef.value?.state()`,
                       <span class="font-medium fs-sm group-hover:text-primary transition-colors">
                         {{ item.title }}
                       </span>
-                      <span class="fs-xs text-muted-foreground">{{ item.date }}</span>
+                      <span class="fs-xs text-muted-foreground">
+                        {{ item.date }}
+                      </span>
                     </div>
                     <p class="fs-xs text-muted-foreground leading-relaxed">
                       {{ item.desc }}
@@ -277,7 +281,9 @@ const state = scrollbarRef.value?.state()`,
                       :key="item"
                       class="scroll-demo-tile rounded-scale-md component-border bg-gradient-to-br from-background to-muted flex items-center justify-center shrink-0 shadow-sm hover:shadow-md transition-all hover:-translate-y-1"
                     >
-                      <span class="font-medium text-muted-foreground">{{ item }}</span>
+                      <span class="font-medium text-muted-foreground">
+                        {{ item }}
+                      </span>
                     </div>
                   </div>
                 </CScrollbar>
@@ -384,6 +390,10 @@ const state = scrollbarRef.value?.state()`,
               class="text-primary"
             />
             <span>Props & Events 属性与事件</span>
+            <Tag
+              value="完整覆盖 options/visibility/events/methods"
+              severity="success"
+            />
           </div>
         </template>
         <template #content>

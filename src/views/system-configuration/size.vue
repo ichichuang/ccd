@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { computed } from 'vue'
 import Button from 'primevue/button'
 import Card from 'primevue/card'
 import Tag from 'primevue/tag'
@@ -11,6 +10,7 @@ import {
   TRANSITION_SCALE_VALUES,
 } from '@/constants/sizeScale'
 import { LAYOUT_DIMENSION_KEYS, SIZE_PRESETS } from '@/constants/size'
+import { useSizeStore } from '@/stores/modules/size'
 
 // Copy to clipboard utility
 function copyToClipboard(text: string, label?: string) {
@@ -25,7 +25,16 @@ function copyToClipboard(text: string, label?: string) {
 }
 
 // Font size categories
-const fontSizeItems = computed(() =>
+const fontSizeItems = computed<
+  Array<{
+    key: string
+    cssVar: string
+    unoClass: string
+    textClass: string
+    ratio: number
+    example: string
+  }>
+>(() =>
   SIZE_SCALE_KEYS.map(key => ({
     key,
     cssVar: `--font-size-${key}`,
@@ -54,7 +63,18 @@ const fontSizeItems = computed(() =>
 )
 
 // Spacing categories
-const spacingItems = computed(() =>
+const spacingItems = computed<
+  Array<{
+    key: string
+    cssVar: string
+    paddingClass: string
+    marginClass: string
+    gapClass: string
+    scaleClass: string
+    ratio: number
+    units: number
+  }>
+>(() =>
   SIZE_SCALE_KEYS.map(key => ({
     key,
     cssVar: `--spacing-${key}`,
@@ -68,7 +88,14 @@ const spacingItems = computed(() =>
 )
 
 // Radius categories
-const radiusItems = computed(() =>
+const radiusItems = computed<
+  Array<{
+    key: string
+    cssVar: string
+    unoClass: string
+    ratio: number
+  }>
+>(() =>
   SIZE_SCALE_KEYS.map(key => ({
     key,
     cssVar: `--radius-${key}`,
@@ -78,7 +105,15 @@ const radiusItems = computed(() =>
 )
 
 // Transition categories
-const transitionItems = computed(() =>
+const transitionItems = computed<
+  Array<{
+    key: string
+    cssVar: string
+    unoClass: string
+    value: number
+    description: string
+  }>
+>(() =>
   SIZE_SCALE_KEYS.map(key => ({
     key,
     cssVar: `--transition-${key}`,
@@ -109,7 +144,14 @@ const transitionItems = computed(() =>
 const LAYOUT_WIDTH_KEYS = ['sidebarWidth', 'sidebarCollapsedWidth'] as const
 
 // Layout dimension items
-const layoutItems = computed(() =>
+const layoutItems = computed<
+  Array<{
+    key: string
+    cssVar: string
+    unoClass: string
+    description: string
+  }>
+>(() =>
   LAYOUT_DIMENSION_KEYS.map(key => {
     const cssVar = `--${key.replace(/([A-Z])/g, '-$1').toLowerCase()}`
     const isWidth = (LAYOUT_WIDTH_KEYS as readonly string[]).includes(key)
@@ -133,10 +175,20 @@ const layoutItems = computed(() =>
   })
 )
 
-// Current preset (comfortable as example)
-const currentPreset = computed(
-  () => SIZE_PRESETS.find(p => p.name === 'comfortable') || SIZE_PRESETS[1]
-)
+// Current preset (from store for demo, fallback to comfortable)
+const sizeStore = useSizeStore()
+const currentPreset = computed<(typeof SIZE_PRESETS)[number]>(() => sizeStore.currentPreset)
+
+// Margin direction variants (same pattern as padding)
+const marginDirMap = [
+  { dir: '', label: 'all' },
+  { dir: 't', label: 't' },
+  { dir: 'b', label: 'b' },
+  { dir: 'l', label: 'l' },
+  { dir: 'r', label: 'r' },
+  { dir: 'x', label: 'x' },
+  { dir: 'y', label: 'y' },
+] as const
 </script>
 
 <template>
@@ -160,6 +212,55 @@ const currentPreset = computed(
         </div>
       </div>
 
+      <!-- Size Store 尺寸 Store -->
+      <Card class="component-border">
+        <template #title>
+          <div class="flex items-center gap-sm">
+            <Icons
+              name="i-lucide-settings-2"
+              class="text-primary"
+            />
+            <span>Size Store 尺寸 Store</span>
+            <Tag
+              value="useSizeStore"
+              severity="info"
+            />
+          </div>
+        </template>
+        <template #content>
+          <div class="flex flex-col gap-md">
+            <p class="text-muted-foreground fs-sm">
+              切换预设可实时更新根字号、布局变量等，影响全站尺寸阶梯
+            </p>
+            <div class="flex flex-wrap gap-sm">
+              <Button
+                v-for="preset in SIZE_PRESETS"
+                :key="preset.name"
+                :label="preset.label"
+                :severity="sizeStore.sizeName === preset.name ? 'primary' : 'secondary'"
+                :outlined="sizeStore.sizeName !== preset.name"
+                size="small"
+                @click="sizeStore.setSize(preset.name)"
+              />
+            </div>
+            <div class="flex flex-wrap gap-md text-muted-foreground fs-sm">
+              <span>
+                当前:
+                <span class="font-mono font-bold text-foreground">{{ sizeStore.sizeName }}</span>
+              </span>
+              <span>
+                fontSizeBase:
+                <span class="font-mono">{{ currentPreset.fontSizeBase }}px</span>
+              </span>
+              <span>
+                spacingBase:
+                <span class="font-mono">{{ currentPreset.spacingBase }}px</span>
+              </span>
+            </div>
+          </div>
+        </template>
+      </Card>
+
       <!-- Font Size Section -->
       <Card class="component-border">
         <template #title>
@@ -178,8 +279,11 @@ const currentPreset = computed(
         <template #content>
           <div class="flex flex-col gap-md">
             <p class="text-muted-foreground fs-sm">
-              基于 <code class="bg-muted px-padding-xs rounded">fontSizeBase</code> 与
-              <code class="bg-muted px-padding-xs rounded">FONT_SCALE_RATIOS</code> 动态计算
+              基于
+              <span class="bg-muted px-padding-xs rounded">fontSizeBase</span>
+              与
+              <span class="bg-muted px-padding-xs rounded">FONT_SCALE_RATIOS</span>
+              动态计算
             </p>
             <CScrollbar class="w-full min-w-0">
               <table class="w-full border-collapse">
@@ -244,7 +348,9 @@ const currentPreset = computed(
                     </td>
                     <td class="p-padding-sm font-mono text-muted-foreground">{{ item.ratio }}×</td>
                     <td class="p-padding-sm">
-                      <span :class="`fs-${item.key}`">{{ item.example }}</span>
+                      <span :class="`fs-${item.key}`">
+                        {{ item.example }}
+                      </span>
                     </td>
                   </tr>
                 </tbody>
@@ -272,8 +378,11 @@ const currentPreset = computed(
         <template #content>
           <div class="flex flex-col gap-md">
             <p class="text-muted-foreground fs-sm">
-              基于 <code class="bg-muted px-padding-xs rounded">spacingBase</code> ×
-              <code class="bg-muted px-padding-xs rounded">SPACING_SCALE_RATIOS</code> 动态计算
+              基于
+              <span class="bg-muted px-padding-xs rounded">spacingBase</span>
+              ×
+              <span class="bg-muted px-padding-xs rounded">SPACING_SCALE_RATIOS</span>
+              动态计算
             </p>
             <CScrollbar class="w-full min-w-0">
               <table class="w-full border-collapse">
@@ -367,21 +476,50 @@ const currentPreset = computed(
               <h4 class="fs-sm font-semibold mb-margin-sm text-foreground">
                 Direction Variants 方向变体
               </h4>
-              <div class="flex flex-wrap gap-md">
-                <div
-                  v-for="dir in ['', 't', 'b', 'l', 'r', 'x', 'y']"
-                  :key="dir"
-                  class="flex flex-col gap-xs"
-                >
-                  <span class="text-muted-foreground fs-xs">{{ dir || 'all' }}</span>
-                  <Button
-                    :label="`p${dir}-padding-md`"
-                    severity="secondary"
-                    outlined
-                    size="small"
-                    class="font-mono"
-                    @click="copyToClipboard(`p${dir}-padding-md`)"
-                  />
+              <div class="flex flex-col gap-md">
+                <div>
+                  <span class="text-muted-foreground fs-xs mb-margin-xs block">Padding</span>
+                  <div class="flex flex-wrap gap-md">
+                    <div
+                      v-for="item in marginDirMap"
+                      :key="'p-' + item.dir"
+                      class="flex flex-col gap-xs"
+                    >
+                      <span class="text-muted-foreground fs-xs">
+                        {{ item.label }}
+                      </span>
+                      <Button
+                        :label="`p${item.dir}-padding-md`"
+                        severity="secondary"
+                        outlined
+                        size="small"
+                        class="font-mono"
+                        @click="copyToClipboard(`p${item.dir}-padding-md`)"
+                      />
+                    </div>
+                  </div>
+                </div>
+                <div>
+                  <span class="text-muted-foreground fs-xs mb-margin-xs block">Margin</span>
+                  <div class="flex flex-wrap gap-md">
+                    <div
+                      v-for="item in marginDirMap"
+                      :key="'m-' + item.dir"
+                      class="flex flex-col gap-xs"
+                    >
+                      <span class="text-muted-foreground fs-xs">
+                        {{ item.label }}
+                      </span>
+                      <Button
+                        :label="`m${item.dir}-margin-md`"
+                        severity="secondary"
+                        outlined
+                        size="small"
+                        class="font-mono"
+                        @click="copyToClipboard(`m${item.dir}-margin-md`)"
+                      />
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -407,8 +545,11 @@ const currentPreset = computed(
         <template #content>
           <div class="flex flex-col gap-md">
             <p class="text-muted-foreground fs-sm">
-              基于 <code class="bg-muted px-padding-xs rounded">radius</code> ×
-              <code class="bg-muted px-padding-xs rounded">RADIUS_SCALE_RATIOS</code> 动态计算
+              基于
+              <span class="bg-muted px-padding-xs rounded">radius</span>
+              ×
+              <span class="bg-muted px-padding-xs rounded">RADIUS_SCALE_RATIOS</span>
+              动态计算
             </p>
             <div class="grid grid-cols-3 md:grid-cols-5 lg:grid-cols-9 gap-md">
               <div
@@ -427,7 +568,9 @@ const currentPreset = computed(
                   class="group-hover:bg-primary group-hover:text-primary-foreground"
                 />
                 <span class="font-mono fs-xs text-muted-foreground">{{ item.ratio }}×</span>
-                <span class="font-mono fs-xs text-center text-foreground">{{ item.unoClass }}</span>
+                <span class="font-mono fs-xs text-center text-foreground">
+                  {{ item.unoClass }}
+                </span>
               </div>
             </div>
           </div>
@@ -467,8 +610,12 @@ const currentPreset = computed(
                     />
                     <span class="font-mono fs-sm text-foreground">{{ item.value }}ms</span>
                   </div>
-                  <span class="text-muted-foreground fs-xs">{{ item.description }}</span>
-                  <span class="font-mono fs-xs text-primary">{{ item.unoClass }}</span>
+                  <span class="text-muted-foreground fs-xs">
+                    {{ item.description }}
+                  </span>
+                  <span class="font-mono fs-xs text-primary">
+                    {{ item.unoClass }}
+                  </span>
                 </div>
                 <div
                   class="w-[var(--spacing-2xl)] h-[var(--spacing-2xl)] bg-primary rounded-scale-md group-hover:translate-x-[var(--spacing-sm)] group-hover:bg-primary-hover"
@@ -505,7 +652,9 @@ const currentPreset = computed(
                 class="flex flex-col gap-sm p-padding-md bg-muted/20 rounded-scale-md hover:bg-muted/40 transition-colors"
               >
                 <div class="flex items-center justify-between">
-                  <span class="font-medium text-foreground">{{ item.description }}</span>
+                  <span class="font-medium text-foreground">
+                    {{ item.description }}
+                  </span>
                   <Tag
                     :value="`${currentPreset[item.key as keyof typeof currentPreset]}px`"
                     severity="secondary"
@@ -558,7 +707,9 @@ const currentPreset = computed(
               class="flex flex-col gap-md p-padding-lg bg-muted/20 rounded-scale-lg border border-solid border-border/50"
             >
               <div class="flex items-center justify-between">
-                <h3 class="fs-lg font-semibold text-foreground">{{ preset.label }}</h3>
+                <h3 class="fs-lg font-semibold text-foreground">
+                  {{ preset.label }}
+                </h3>
                 <Tag
                   :value="preset.name"
                   :severity="preset.name === 'comfortable' ? 'success' : 'secondary'"
@@ -610,55 +761,62 @@ const currentPreset = computed(
           <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-lg">
             <div class="flex flex-col gap-sm">
               <h4 class="font-semibold text-foreground">字体大小 (Font Size)</h4>
-              <code
+              <div
                 class="bg-muted p-padding-sm rounded-scale-sm fs-sm cursor-pointer hover:bg-muted/80"
                 @click="copyToClipboard('fs-{scale}')"
-                >fs-{scale}</code
               >
-              <code
+                fs-{scale}
+              </div>
+              <div
                 class="bg-muted p-padding-sm rounded-scale-sm fs-sm cursor-pointer hover:bg-muted/80"
                 @click="copyToClipboard('text-{scale}')"
-                >text-{scale}</code
               >
+                text-{scale}
+              </div>
             </div>
             <div class="flex flex-col gap-sm">
               <h4 class="font-semibold text-foreground">间距 (Spacing)</h4>
-              <code
+              <div
                 class="bg-muted p-padding-sm rounded-scale-sm fs-sm cursor-pointer hover:bg-muted/80"
                 @click="copyToClipboard('p-padding-{scale}')"
-                >p-padding-{scale}</code
               >
-              <code
+                p-padding-{scale}
+              </div>
+              <div
                 class="bg-muted p-padding-sm rounded-scale-sm fs-sm cursor-pointer hover:bg-muted/80"
                 @click="copyToClipboard('gap-{scale}')"
-                >gap-{scale}</code
               >
-              <code
+                gap-{scale}
+              </div>
+              <div
                 class="bg-muted p-padding-sm rounded-scale-sm fs-sm cursor-pointer hover:bg-muted/80"
                 @click="copyToClipboard('m-margin-{scale}')"
-                >m-margin-{scale}</code
               >
+                m-margin-{scale}
+              </div>
             </div>
             <div class="flex flex-col gap-sm">
               <h4 class="font-semibold text-foreground">圆角 (Border Radius)</h4>
-              <code
+              <div
                 class="bg-muted p-padding-sm rounded-scale-sm fs-sm cursor-pointer hover:bg-muted/80"
                 @click="copyToClipboard('rounded-scale-{scale}')"
-                >rounded-scale-{scale}</code
               >
+                rounded-scale-{scale}
+              </div>
             </div>
             <div class="flex flex-col gap-sm">
               <h4 class="font-semibold text-foreground">过渡动画 (Transition)</h4>
-              <code
+              <div
                 class="bg-muted p-padding-sm rounded-scale-sm fs-sm cursor-pointer hover:bg-muted/80"
                 @click="copyToClipboard('duration-scale-{scale}')"
-                >duration-scale-{scale}</code
               >
+                duration-scale-{scale}
+              </div>
             </div>
           </div>
           <p class="mt-margin-md text-muted-foreground fs-sm">
-            <span class="font-mono bg-muted px-padding-xs rounded">{scale}</span> = xs | sm | md |
-            lg | xl | 2xl | 3xl | 4xl | 5xl
+            <span class="font-mono bg-muted px-padding-xs rounded">{scale}</span>
+            = xs | sm | md | lg | xl | 2xl | 3xl | 4xl | 5xl
           </p>
         </template>
       </Card>

@@ -3,6 +3,7 @@ import { Transition, defineComponent, nextTick, onMounted, onUnmounted, ref, wat
 import { useRoute, useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { usePermissionStore } from '@/stores/modules/permission'
+import { useAppElementSize } from '@/hooks/modules/useAppElementSize'
 import { Icons } from '@/components/Icons'
 import { storeToRefs } from 'pinia'
 
@@ -58,7 +59,7 @@ export default defineComponent({
       return route.path === tab.path
     }
 
-    function updateActiveTabPosition() {
+    function updateActiveTabPosition(behavior: ScrollBehavior = 'smooth') {
       nextTick(() => {
         const currentPath = route.path
         const activeTabEl = tabRefs.value.get(currentPath)
@@ -70,7 +71,7 @@ export default defineComponent({
             opacity: '1',
           }
 
-          activeTabEl.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' })
+          activeTabEl.scrollIntoView({ behavior, block: 'nearest', inline: 'center' })
         } else {
           activeTabStyle.value.opacity = '0'
         }
@@ -168,7 +169,7 @@ export default defineComponent({
     watch(
       () => route.path,
       () => {
-        updateActiveTabPosition()
+        updateActiveTabPosition('smooth')
         contextMenu.value.visible = false
       }
     )
@@ -177,9 +178,7 @@ export default defineComponent({
       () => tabs.value.length,
       () => {
         nextTick(() => {
-          updateActiveTabPosition()
-          // 重新设置 ResizeObserver 以监听新的标签元素
-          setupResizeObserver()
+          updateActiveTabPosition('smooth')
         })
       }
     )
@@ -190,58 +189,35 @@ export default defineComponent({
       show => {
         if (show) {
           nextTick(() => {
-            updateActiveTabPosition()
-            setupResizeObserver()
+            updateActiveTabPosition('auto')
           })
         }
       }
     )
 
-    // 使用 ResizeObserver 监听标签元素尺寸变化
-    // 当尺寸模式切换时，CSS 变量变化会导致标签尺寸变化，从而触发更新
-    const resizeObserver = ref<ResizeObserver | null>(null)
+    // 使用 useAppElementSize 监听容器尺寸变化
     const tabsContainerRef = ref<HTMLElement | null>(null)
 
-    function setupResizeObserver() {
-      // 断开之前的观察者
-      if (resizeObserver.value) {
-        resizeObserver.value.disconnect()
-      }
-
-      resizeObserver.value = new ResizeObserver(() => {
-        // 使用 requestAnimationFrame 确保在浏览器重排后执行
-        requestAnimationFrame(() => {
-          updateActiveTabPosition()
-        })
-      })
-
-      // 监听容器
-      if (tabsContainerRef.value) {
-        resizeObserver.value.observe(tabsContainerRef.value)
-      }
-
-      // 监听所有标签元素
-      tabRefs.value.forEach(el => {
-        if (el && resizeObserver.value) {
-          resizeObserver.value.observe(el)
-        }
-      })
-    }
+    useAppElementSize(
+      tabsContainerRef,
+      () => {
+        updateActiveTabPosition('auto')
+      },
+      { mode: 'throttle', delay: 100 }
+    )
 
     onMounted(() => {
       document.addEventListener('click', closeContextMenu)
       setTimeout(() => {
-        updateActiveTabPosition()
-        setupResizeObserver()
-      }, 100)
+        updateActiveTabPosition('auto')
+      }, 50)
+      setTimeout(() => {
+        updateActiveTabPosition('auto')
+      }, 300)
     })
 
     onUnmounted(() => {
       document.removeEventListener('click', closeContextMenu)
-      if (resizeObserver.value) {
-        resizeObserver.value.disconnect()
-        resizeObserver.value = null
-      }
     })
 
     return () => {
@@ -270,9 +246,10 @@ export default defineComponent({
                 style={activeTabStyle.value}
               />
 
-              {tabList.map(tab => {
+              {tabList.map((tab, index) => {
                 const active = isActive(tab)
                 const label = getTabLabel(tab)
+                const isNextActive = index < tabList.length - 1 && isActive(tabList[index + 1])
 
                 return (
                   <div
@@ -294,7 +271,11 @@ export default defineComponent({
                       <Icons
                         name={tab.icon}
                         size="xs"
-                        class={active ? 'text-primary' : 'text-muted-foreground opacity-70'}
+                        class={
+                          active
+                            ? 'text-primary'
+                            : 'text-muted-foreground! opacity-70 transition-colors transition-opacity duration-scale-xl group-hover:text-accent-light-foreground! group-hover:opacity-100'
+                        }
                       />
                     )}
 
@@ -305,7 +286,7 @@ export default defineComponent({
                     {!tab.fixed && tab.deletable && (
                       <div
                         class={[
-                          'size-1-1 h-[66%] rounded-scale-md center transition-opacity duration-scale-md hover:bg-danger-light/50',
+                          'size-1-1 h-[66%] rounded-scale-md center transition-all duration-scale-md hover:bg-danger-light/50',
                           active ? 'opacity-100' : 'opacity-0 group-hover:opacity-100',
                         ]}
                         onClick={e => onCloseTab(e, tab)}
@@ -315,6 +296,11 @@ export default defineComponent({
                           size="xs"
                         />
                       </div>
+                    )}
+
+                    {/* Divider */}
+                    {!active && !isNextActive && index !== tabList.length - 1 && (
+                      <div class="absolute top-1/4 h-1/2 w-px -right-[calc(var(--spacing-xs)/2)] bg-border pointer-events-none" />
                     )}
                   </div>
                 )
@@ -359,7 +345,7 @@ export default defineComponent({
                     class="
                                 flex items-center gap-sm px-padding-sm py-padding-xs rounded-scale-sm
                                 fs-sm text-popover-foreground hover:bg-accent hover:text-accent-foreground
-                                cursor-pointer duration-scale-md
+                                cursor-pointer transition-colors duration-scale-md
                             "
                     onClick={e => {
                       e.stopPropagation()

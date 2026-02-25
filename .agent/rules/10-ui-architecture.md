@@ -83,5 +83,45 @@ alwaysApply: true
 - **命名**：
   - Lucide（首选）：`i-lucide-home`
   - MDI：`i-mdi-account`
-  - 自定义：`i-custom-xxx`
+  - 自定义：`i-custom:xxx`（注意冒号，不要写成 `i-custom-xxx`）
 - **安全列表**：确保正确命名的图标，以便 `uno-icons.ts` 可以检测到它们。
+
+### 4.1 颜色与权重（Icons 颜色定制必读）
+
+当通过 `class` 自定义 Icons 颜色时，若样式不生效，需为类名加 UnoCSS `!` 修饰符或改用 `color` prop。
+
+**根因**：Icons 在未传 `color` 时会添加 `text-foreground`；在 PrimeVue/父级内时，父级样式权重更高，普通 `text-*` 易被覆盖。
+
+**决策规则（AI 必按此选）：**
+
+| 场景                 | 方式           | 示例                                        |
+| -------------------- | -------------- | ------------------------------------------- |
+| 需强制覆盖且避免 `!` | `color` prop   | `color="rgb(var(--primary))"`               |
+| 需覆盖且用 class     | 颜色类加 `!`   | `class="text-primary!"`                     |
+| hover / group-hover  | 状态类加 `!`   | `group-hover:text-accent-light-foreground!` |
+| opacity 被覆盖       | `opacity-*!`   | `opacity-100!`                              |
+| 继承父级颜色         | `text-current` | `class="text-current"`                      |
+
+**禁止**：在 `color` prop 中使用 hex；使用 `var(--primary)` 而非 `rgb(var(--primary))`。
+
+## 5. 交互过渡（Transition）— AI 必读
+
+使用 `hover:`、`active:`、`focus:`、`group-hover:` 等交互状态时，**必须**搭配 transition 过渡类，避免状态切换生硬。过渡类来自 `uno.config.ts`，禁止硬编码时长。
+
+**决策规则（AI 按场景选）：**
+
+| 场景                | 推荐                                               | 说明                                      |
+| ------------------- | -------------------------------------------------- | ----------------------------------------- |
+| 可悬停卡片/按钮     | `interactive-hover` 或 `behavior-hover-transition` | 含 transition-all + duration-scale-md     |
+| 点击反馈（scale）   | `interactive-click`                                | 含 transition-transform duration-scale-xs |
+| 自定义过渡          | `transition-all duration-scale-{xs~5xl}`           | 阶梯：xs 75ms ~ 5xl 1500ms                |
+| 宽度/单属性         | `transition-[width] duration-scale-lg ease-in-out` | 侧栏等                                    |
+| PrimeVue pt content | `transition-colors duration-scale-md hover:...`    | pt 中的 hover/active 同样需 transition    |
+
+**duration-scale 搭配**：`duration-scale-*` 必须与 transition* 搭配；transition* 也必须配合 duration-scale-\*。禁止单独写 duration-scale 或 transition。
+
+**Icons 特殊（必读）**：Icons 使用 `group-hover:` 颜色/透明度时，transition 必须写在 **Icons 的 class 上**，父容器 transition 无效。
+
+**禁止**：`hover:`/`active:`/`focus:` 不加 transition；`duration-scale-*` 单独使用；硬编码 duration。
+
+**SSOT**：`src/constants/sizeScale.ts` TRANSITION_SCALE_VALUES；`docs/UNOCSS_AND_ICONS.md` §2.7、§2.7.1、§6.3.2。

@@ -1,11 +1,13 @@
 <script setup lang="ts">
+import type { CSSProperties } from 'vue'
 import { BREAKPOINTS } from '@/constants/breakpoints'
 import type { BreakpointKey } from '@/constants/breakpoints'
-import { computed, ref } from 'vue'
 import Button from 'primevue/button'
 import Card from 'primevue/card'
 import Tag from 'primevue/tag'
 import Slider from 'primevue/slider'
+import { useDeviceStore } from '@/stores/modules/device'
+import { getDeviceTypeSync, getBreakpointSync } from '@/utils/deviceSync'
 
 const RULER_MAX = 3840
 const SLIDER_MIN = 320
@@ -14,8 +16,8 @@ const SLIDER_MAX = RULER_MAX
 const sliderValue = ref<number | number[]>(1200)
 
 /** Get the current width as a number (handles both single and range slider values) */
-const currentWidth = computed(() => {
-  const val = sliderValue.value
+const currentWidth = computed<number>(() => {
+  const val: number | number[] = sliderValue.value
   return Array.isArray(val) ? val[0] : val
 })
 
@@ -32,8 +34,10 @@ function copyToClipboard(text: string, label?: string) {
 }
 
 /** Breakpoint entries sorted by value */
-const breakpointEntries = computed(() =>
-  (Object.entries(BREAKPOINTS) as [BreakpointKey, number][]).sort((a, b) => a[1] - b[1])
+const breakpointEntries = computed<[BreakpointKey, number][]>(() =>
+  (Object.entries(BREAKPOINTS) as [BreakpointKey, number][]).sort(
+    (a: [BreakpointKey, number], b: [BreakpointKey, number]) => a[1] - b[1]
+  )
 )
 
 /** Current matched breakpoint */
@@ -46,8 +50,8 @@ const activeBreakpoint = computed<BreakpointKey | null>(() => {
 })
 
 /** Grid columns based on width */
-const gridCols = computed(() => {
-  const w = currentWidth.value
+const gridCols = computed<number>(() => {
+  const w: number = currentWidth.value
   if (w >= BREAKPOINTS['5xl']) return 12
   if (w >= BREAKPOINTS['4xl']) return 8
   if (w >= BREAKPOINTS['2xl']) return 6
@@ -68,7 +72,13 @@ function breakpointPercent(value: number) {
 }
 
 /** Preset widths for quick selection */
-const presetWidths = [
+interface PresetWidth {
+  label: string
+  value: number
+  icon: string
+}
+
+const presetWidths: PresetWidth[] = [
   { label: 'Mobile', value: 375, icon: 'i-lucide-smartphone' },
   { label: 'Tablet', value: 768, icon: 'i-lucide-tablet' },
   { label: 'Laptop', value: 1280, icon: 'i-lucide-laptop' },
@@ -77,8 +87,16 @@ const presetWidths = [
 ]
 
 /** Breakpoint usage examples */
-const breakpointItems = computed(() =>
-  breakpointEntries.value.map(([key, value]) => ({
+interface BreakpointItem {
+  key: BreakpointKey
+  value: number
+  minWidthClass: string
+  maxWidthClass: string
+  description: string
+}
+
+const breakpointItems = computed<BreakpointItem[]>(() =>
+  breakpointEntries.value.map(([key, value]: [BreakpointKey, number]) => ({
     key,
     value,
     minWidthClass: `${key}:`,
@@ -103,6 +121,23 @@ const breakpointItems = computed(() =>
                       : '4K UHD',
   }))
 )
+
+const rulerIndicatorStyle = computed<CSSProperties>(() => ({
+  left: `${(currentWidth.value / RULER_MAX) * 100}%`,
+}))
+
+const gridTemplateStyle = computed<CSSProperties>(() => ({
+  gridTemplateColumns: `repeat(${Math.min(gridCols.value, 6)}, 1fr)`,
+}))
+
+// Device Store (real-time viewport)
+const deviceStore = useDeviceStore()
+
+// deviceSync: sync API for pre-mount (no Pinia)
+const deviceSyncInfo = computed(() => ({
+  deviceType: getDeviceTypeSync(),
+  breakpoint: getBreakpointSync(),
+}))
 </script>
 
 <template>
@@ -144,9 +179,9 @@ const breakpointItems = computed(() =>
               <div class="flex items-center justify-between">
                 <span class="text-muted-foreground">Current Width</span>
                 <div class="flex items-center gap-md">
-                  <span class="font-mono fs-xl font-bold text-foreground"
-                    >{{ currentWidth }}px</span
-                  >
+                  <span class="font-mono fs-xl font-bold text-foreground">
+                    {{ currentWidth }}px
+                  </span>
                   <Tag
                     :value="activeBreakpoint ?? '< xs'"
                     :severity="activeBreakpoint ? 'success' : 'secondary'"
@@ -167,13 +202,126 @@ const breakpointItems = computed(() =>
               <Button
                 v-for="preset in presetWidths"
                 :key="preset.value"
-                :label="preset.label"
-                :icon="preset.icon"
                 :severity="currentWidth === preset.value ? 'primary' : 'secondary'"
                 :outlined="currentWidth !== preset.value"
                 size="small"
+                class="row-center gap-xs px-padding-sm"
                 @click="sliderValue = preset.value"
+              >
+                <Icons
+                  :name="preset.icon"
+                  size="sm"
+                  class="text-primary"
+                />
+                <span class="fs-sm">{{ preset.label }}</span>
+              </Button>
+            </div>
+          </div>
+        </template>
+      </Card>
+
+      <!-- Device Store 实时状态 -->
+      <Card class="component-border">
+        <template #title>
+          <div class="flex items-center gap-sm">
+            <Icons
+              name="i-lucide-smartphone"
+              class="text-primary"
+            />
+            <span>Device Store 实时状态</span>
+            <Tag
+              value="useDeviceStore"
+              severity="info"
+            />
+          </div>
+        </template>
+        <template #content>
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-md">
+            <div class="flex flex-col gap-xs p-padding-md bg-muted/20 rounded-scale-md">
+              <span class="text-muted-foreground fs-xs">type</span>
+              <Tag
+                :value="deviceStore.type"
+                severity="info"
               />
+              <span class="font-mono fs-xs text-muted-foreground">PC / Tablet / Mobile</span>
+            </div>
+            <div class="flex flex-col gap-xs p-padding-md bg-muted/20 rounded-scale-md">
+              <span class="text-muted-foreground fs-xs">currentBreakpoint</span>
+              <Tag
+                :value="deviceStore.currentBreakpoint"
+                severity="success"
+              />
+            </div>
+            <div class="flex flex-col gap-xs p-padding-md bg-muted/20 rounded-scale-md">
+              <span class="text-muted-foreground fs-xs">isMobileLayout</span>
+              <Tag
+                :value="String(deviceStore.isMobileLayout)"
+                :severity="deviceStore.isMobileLayout ? 'warn' : 'secondary'"
+              />
+              <span class="font-mono fs-xs text-muted-foreground">width &lt; lg</span>
+            </div>
+            <div class="flex flex-col gap-xs p-padding-md bg-muted/20 rounded-scale-md">
+              <span class="text-muted-foreground fs-xs">isTabletLayout</span>
+              <Tag
+                :value="String(deviceStore.isTabletLayout)"
+                :severity="deviceStore.isTabletLayout ? 'warn' : 'secondary'"
+              />
+            </div>
+          </div>
+          <p class="mt-margin-md text-muted-foreground fs-sm">
+            布局判定应使用
+            <span class="bg-muted px-padding-xs rounded font-mono">useDeviceStore</span>
+            的 getters，禁止直接判断 window.innerWidth
+          </p>
+        </template>
+      </Card>
+
+      <!-- deviceSync 同步 API -->
+      <Card class="component-border">
+        <template #title>
+          <div class="flex items-center gap-sm">
+            <Icons
+              name="i-lucide-cpu"
+              class="text-primary"
+            />
+            <span>deviceSync 同步 API</span>
+            <Tag
+              value="mount 前逻辑"
+              severity="warn"
+            />
+          </div>
+        </template>
+        <template #content>
+          <div class="flex flex-col gap-md">
+            <p class="text-muted-foreground fs-sm">
+              纯函数，不依赖 Pinia · 供 mount 前逻辑（如 sizeEngine.preload）使用 · SSOT:
+              <span class="bg-muted px-padding-xs rounded font-mono">src/utils/deviceSync.ts</span>
+            </p>
+            <div class="flex flex-wrap gap-md">
+              <Button
+                label="getDeviceTypeSync()"
+                severity="secondary"
+                text
+                size="small"
+                class="font-mono"
+                @click="copyToClipboard('getDeviceTypeSync()')"
+              />
+              <Button
+                label="getBreakpointSync(width?)"
+                severity="secondary"
+                text
+                size="small"
+                class="font-mono"
+                @click="copyToClipboard('getBreakpointSync(width?)')"
+              />
+            </div>
+            <div class="flex gap-md text-muted-foreground fs-sm">
+              <span>
+                当前 sync 结果: type=
+                <span class="font-mono text-foreground">{{ deviceSyncInfo.deviceType }}</span>
+                , breakpoint=
+                <span class="font-mono text-foreground">{{ deviceSyncInfo.breakpoint }}</span>
+              </span>
             </div>
           </div>
         </template>
@@ -199,7 +347,7 @@ const breakpointItems = computed(() =>
             <!-- Current Width Indicator -->
             <div
               class="absolute top-0 h-full w-px bg-primary z-10 transition-all duration-scale-md"
-              :style="{ left: `${(currentWidth / RULER_MAX) * 100}%` }"
+              :style="rulerIndicatorStyle"
             >
               <div
                 class="absolute -top-[var(--spacing-xs)] left-1/2 -translate-x-1/2 w-[var(--spacing-sm)] h-[var(--spacing-sm)] bg-primary rounded-full border-2 border-solid border-background"
@@ -304,7 +452,9 @@ const breakpointItems = computed(() =>
                       />
                     </div>
                   </td>
-                  <td class="p-padding-sm text-muted-foreground fs-sm">{{ item.description }}</td>
+                  <td class="p-padding-sm text-muted-foreground fs-sm">
+                    {{ item.description }}
+                  </td>
                   <td class="p-padding-sm">
                     <div
                       class="w-[var(--spacing-sm)] h-[var(--spacing-sm)] rounded-full"
@@ -336,16 +486,20 @@ const breakpointItems = computed(() =>
         <template #content>
           <div class="flex flex-col gap-md">
             <p class="text-muted-foreground fs-sm">
-              模拟视窗宽度为 <span class="font-mono font-bold">{{ currentWidth }}px</span>，
-              当前断点 <span class="font-mono font-bold">{{ activeBreakpoint ?? '< xs' }}</span
-              >， 网格列数 <span class="font-mono font-bold">{{ gridCols }}</span>
+              模拟视窗宽度为
+              <span class="font-mono font-bold">{{ currentWidth }}px</span>
+              ， 当前断点
+              <span class="font-mono font-bold">{{ activeBreakpoint ?? '< xs' }}</span>
+              ， 网格列数
+              <span class="font-mono font-bold">
+                {{ gridCols }}
+              </span>
             </p>
 
             <!-- Simulated Viewport -->
             <CScrollbar class="flex justify-center pb-gap-md min-w-0">
               <div
-                class="flex shrink-0 flex-col rounded-scale-lg border-2 border-solid border-border bg-card shadow-lg transition-all duration-scale-md"
-                :style="{ width: '100%' }"
+                class="flex shrink-0 flex-col rounded-scale-lg component-border bg-card shadow-lg transition-all duration-scale-md w-full"
               >
                 <div
                   class="border-b-default px-padding-md py-padding-sm text-center fs-sm text-muted-foreground flex items-center justify-center gap-sm"
@@ -358,7 +512,7 @@ const breakpointItems = computed(() =>
                 </div>
                 <div
                   class="grid gap-sm p-padding-md"
-                  :style="{ gridTemplateColumns: `repeat(${Math.min(gridCols, 6)}, 1fr)` }"
+                  :style="gridTemplateStyle"
                 >
                   <div
                     v-for="n in 12"
@@ -394,9 +548,9 @@ const breakpointItems = computed(() =>
                 @click="copyToClipboard('md:hidden lg:block')"
               >
                 <CScrollbar class="min-w-0">
-                  <pre
-                    class="m-0 bg-muted/50 p-padding-md fs-sm"
-                  ><code class="text-foreground">&lt;div class="hidden md:block"&gt;
+                  <pre class="m-0 bg-muted/50 p-padding-md fs-sm">
+    <code class="text-foreground font-mono">
+                    &lt;div class="hidden md:block"&gt;
   MD 及以上可见
 &lt;/div&gt;
 
@@ -415,7 +569,7 @@ const breakpointItems = computed(() =>
                 <CScrollbar class="min-w-0">
                   <pre
                     class="m-0 bg-muted/50 p-padding-md fs-sm"
-                  ><code class="text-foreground">&lt;div class="&lt;md:text-sm"&gt;
+                  ><code class="text-foreground font-mono">&lt;div class="&lt;md:text-sm"&gt;
   移动端小号文字
 &lt;/div&gt;
 
@@ -434,7 +588,7 @@ const breakpointItems = computed(() =>
                 <CScrollbar class="min-w-0">
                   <pre
                     class="m-0 bg-muted/50 p-padding-md fs-sm"
-                  ><code class="text-foreground">&lt;div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4"&gt;
+                  ><code class="text-foreground font-mono">&lt;div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4"&gt;
   &lt;!-- 响应式网格项 --&gt;
 &lt;/div&gt;</code></pre>
                 </CScrollbar>
@@ -449,7 +603,7 @@ const breakpointItems = computed(() =>
                 <CScrollbar class="min-w-0">
                   <pre
                     class="m-0 bg-muted/50 p-padding-md fs-sm"
-                  ><code class="text-foreground">&lt;div class="p-padding-sm md:p-padding-md lg:p-padding-lg"&gt;
+                  ><code class="text-foreground font-mono">&lt;div class="p-padding-sm md:p-padding-md lg:p-padding-lg"&gt;
   响应式内边距
 &lt;/div&gt;</code></pre>
                 </CScrollbar>
@@ -485,13 +639,12 @@ const breakpointItems = computed(() =>
                 />
                 <span class="font-mono fs-xs text-muted-foreground">{{ value }}px</span>
               </div>
-              <code class="font-mono fs-sm text-foreground">{{ key }}:class</code>
+              <div class="font-mono fs-sm text-foreground">{{ key }}:class</div>
             </div>
           </div>
           <p class="mt-gap-md text-muted-foreground fs-sm">
-            断点前缀遵循 Mobile-First 设计原则：<code class="bg-muted px-padding-xs rounded"
-              >md:</code
-            >
+            断点前缀遵循 Mobile-First 设计原则：
+            <span class="bg-muted px-padding-xs rounded">md:</span>
             表示 ≥768px 时应用样式
           </p>
         </template>
@@ -499,9 +652,3 @@ const breakpointItems = computed(() =>
     </div>
   </CScrollbar>
 </template>
-
-<style scoped>
-code {
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-}
-</style>

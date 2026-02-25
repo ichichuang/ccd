@@ -74,6 +74,7 @@
 - `.cursor/rules/20-ui-styling.mdc` ↔ `.agent/rules/10-ui-architecture.md`（部分）
 - `.cursor/rules/22-layouts.mdc` ↔ `.agent/rules/25-adaptive-layout.md`
 - `.cursor/rules/24-tsx-rendering.mdc` ↔ 无直接对应（.cursor 特有）
+- `.cursor/rules/25-html-tag-semantics.mdc` ↔ `.agent/rules/25-html-tag-semantics.md`
 - `.cursor/rules/08-auth-login-flow.mdc` ↔ `.agent/rules/08-auth-login-flow.md`
 
 注意：`.agent` 特有的规则（如 `22-verification.md`、`20-code-standards.md`）在 Cursor 中可能分散在其他规则文件中。

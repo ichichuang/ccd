@@ -108,19 +108,17 @@ function handleMessage(type: (typeof MESSAGE_TYPES)[number]['handler'], withTitl
 <template>
   <CScrollbar class="h-full p-padding-lg bg-background">
     <div class="w-full max-w-[80vw] mx-auto flex flex-col gap-xl">
-      <div class="flex flex-col gap-xs">
+      <section class="component-card-base density-normal flex flex-col gap-xs">
         <h1 class="fs-2xl font-bold text-foreground">Toast 完整演示</h1>
         <p class="text-muted-foreground">
           window.$message 居中纯提示（success / danger / info / warn）；window.$toast 6 种
           severity、6 种位置、add() 原始 API、清除。可在非组件环境（拦截器、errorHandler）使用。
         </p>
-      </div>
+      </section>
 
-      <!-- 0. Message 居中纯提示（4 种类型） -->
-      <section class="flex flex-col gap-md">
-        <h2 class="fs-lg font-semibold border-b-default pb-padding-xs">
-          0. Message 居中纯提示（4 种类型）
-        </h2>
+      <!-- 1. Message 居中纯提示（4 种类型） -->
+      <section class="component-card-base density-normal flex flex-col gap-md">
+        <h2 class="fs-lg font-semibold">1. Message 居中纯提示（4 种类型）</h2>
         <p class="text-muted-foreground fs-sm">
           window.$message.success / danger / info / warn(message,
           title?)；正中央展示、无关闭按钮、纯提示
@@ -129,11 +127,11 @@ function handleMessage(type: (typeof MESSAGE_TYPES)[number]['handler'], withTitl
           <div
             v-for="t in MESSAGE_TYPES"
             :key="t.key"
-            class="flex flex-wrap items-center gap-sm"
+            class="flex flex-wrap items-center gap-md rounded-scale-sm bg-muted p-padding-sm"
           >
-            <span class="text-muted-foreground fs-sm min-w-[var(--spacing-4xl)]"
-              >{{ t.label }}:</span
-            >
+            <span class="text-muted-foreground fs-sm min-w-[var(--spacing-4xl)]">
+              {{ t.label }}:
+            </span>
             <Button
               label="纯消息"
               size="small"
@@ -152,11 +150,9 @@ function handleMessage(type: (typeof MESSAGE_TYPES)[number]['handler'], withTitl
         </div>
       </section>
 
-      <!-- 1. 6 种 severity 快捷方法 + 6 种位置 -->
-      <section class="flex flex-col gap-md">
-        <h2 class="fs-lg font-semibold border-b-default pb-padding-xs">
-          1. 快捷方法 *In（6 种 severity × 6 种位置）
-        </h2>
+      <!-- 2. 6 种 severity 快捷方法 + 6 种位置 -->
+      <section class="component-card-base density-normal flex flex-col gap-md">
+        <h2 class="fs-lg font-semibold">2. 快捷方法 *In（6 种 severity × 6 种位置）</h2>
         <p class="text-muted-foreground fs-sm">
           dangerIn / successIn / infoIn / warnIn / secondaryIn / contrastIn (position, summary,
           detail?)
@@ -165,11 +161,11 @@ function handleMessage(type: (typeof MESSAGE_TYPES)[number]['handler'], withTitl
           <div
             v-for="sev in TOAST_SEVERITIES"
             :key="sev.key"
-            class="flex flex-wrap items-center gap-sm"
+            class="flex flex-wrap items-center gap-md rounded-scale-sm bg-muted p-padding-sm"
           >
-            <span class="text-muted-foreground fs-sm min-w-[var(--spacing-4xl)]"
-              >{{ sev.label }}:</span
-            >
+            <span class="text-muted-foreground fs-sm min-w-[var(--spacing-4xl)]">
+              {{ sev.label }}:
+            </span>
             <Button
               v-for="pos in TOAST_POSITIONS"
               :key="pos"
@@ -190,11 +186,9 @@ function handleMessage(type: (typeof MESSAGE_TYPES)[number]['handler'], withTitl
         </div>
       </section>
 
-      <!-- 2. add() 原始 API - 6 种 severity -->
-      <section class="flex flex-col gap-md">
-        <h2 class="fs-lg font-semibold border-b-default pb-padding-xs">
-          2. add() 原始 API（6 种 severity）
-        </h2>
+      <!-- 3. add() 原始 API - 6 种 severity -->
+      <section class="component-card-base density-normal flex flex-col gap-md">
+        <h2 class="fs-lg font-semibold">3. add() 原始 API（6 种 severity）</h2>
         <p class="text-muted-foreground fs-sm">
           add({ severity?, summary?, detail?, life?, group? })
         </p>
@@ -234,11 +228,9 @@ function handleMessage(type: (typeof MESSAGE_TYPES)[number]['handler'], withTitl
         </div>
       </section>
 
-      <!-- 3. add() 扩展：粘性、自定义 life、group -->
-      <section class="flex flex-col gap-md">
-        <h2 class="fs-lg font-semibold border-b-default pb-padding-xs">
-          3. add() 扩展：粘性、自定义 life、group
-        </h2>
+      <!-- 4. add() 扩展：粘性、自定义 life、group -->
+      <section class="component-card-base density-normal flex flex-col gap-md">
+        <h2 class="fs-lg font-semibold">4. add() 扩展：粘性、自定义 life、group</h2>
         <div class="flex flex-wrap gap-md">
           <Button
             label="粘性 Toast (无 life)"
@@ -264,9 +256,9 @@ function handleMessage(type: (typeof MESSAGE_TYPES)[number]['handler'], withTitl
         </div>
       </section>
 
-      <!-- 4. 清除 -->
-      <section class="flex flex-col gap-md">
-        <h2 class="fs-lg font-semibold border-b-default pb-padding-xs">4. 清除</h2>
+      <!-- 5. 清除 -->
+      <section class="component-card-base density-normal flex flex-col gap-md">
+        <h2 class="fs-lg font-semibold">5. 清除</h2>
         <p class="text-muted-foreground fs-sm">clear() 清除所有；removeGroup(group) 清除指定位置</p>
         <div class="flex flex-wrap gap-md items-center">
           <Button

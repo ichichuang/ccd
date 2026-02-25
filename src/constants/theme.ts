@@ -64,7 +64,7 @@ export const THEME_PRESETS: ThemePreset[] = [
   {
     name: 'violet',
     primary: '#7c3aed', // violet-600
-    accent: '#d946ef', // fuchsia-500 (同色系偏粉)
+    accent: '#b38df4', // fuchsia-500 (同色系偏粉)
     colors: {
       light: {
         primary: {
@@ -75,11 +75,11 @@ export const THEME_PRESETS: ThemePreset[] = [
           lightForeground: '#5b21b6',
         },
         accent: {
-          default: '#e879f9', // fuchsia-400 (更亮的粉紫)
-          hover: '#d946ef',
+          default: '#b38df4', // fuchsia-400 (更亮的粉紫)
+          hover: '#5a2e67',
           foreground: '#ffffff', // 粉紫色足够深，可以用白字
           light: '#fdf4ff',
-          lightForeground: '#86198f',
+          lightForeground: '#3a2e67',
         },
         background: '#ffffff',
         foreground: '#0f172a',
@@ -98,11 +98,11 @@ export const THEME_PRESETS: ThemePreset[] = [
           lightForeground: '#e5e7eb',
         },
         accent: {
-          default: '#c026d3', // fuchsia-600
-          hover: '#d946ef',
+          default: '#a78bfa', // fuchsia-600
+          hover: '#4d3a82',
           foreground: '#ffffff',
-          light: '#701a75',
-          lightForeground: '#fce7f3',
+          light: '#4d3a82',
+          lightForeground: '#ffffff',
         },
         background: '#0a0a0a',
         foreground: '#fafafa',

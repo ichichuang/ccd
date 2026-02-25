@@ -30,9 +30,9 @@ const emit = defineEmits<{
       </div>
     </div>
     <div class="flex flex-col gap-xs">
-      <span class="text-muted-foreground fs-sm"
-        >lineArea 透明度 {{ lineAreaOpacity }}（对带面积填充的折线图生效）</span
-      >
+      <span class="text-muted-foreground fs-sm">
+        lineArea 透明度 {{ lineAreaOpacity }}（对带面积填充的折线图生效）
+      </span>
       <Slider
         :model-value="lineAreaOpacity"
         :min="0"

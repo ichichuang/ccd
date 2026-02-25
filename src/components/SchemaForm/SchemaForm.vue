@@ -84,9 +84,13 @@
       <!-- Actions - 现在由用户自定义，不再预设按钮组 -->
 
       <!-- Persistence (Implicit) -->
-      <div class="hidden">{{ persistValues($form.values) }}</div>
+      <div class="hidden">
+        {{ persistValues($form.values) }}
+      </div>
       <!-- Capture $form API for expose -->
-      <div class="hidden">{{ captureFormApi($form) }}</div>
+      <div class="hidden">
+        {{ captureFormApi($form) }}
+      </div>
     </Form>
   </div>
 </template>
@@ -522,12 +526,12 @@ defineExpose({
 /* Fix InputNumber buttons height mismatch and alignment */
 :deep(.p-inputnumber-button-group) {
   overflow: hidden; /* Ensure buttons don't bleed past rounded corners */
-  border-top-right-radius: 7px;
-  border-bottom-right-radius: 7px;
+  border-top-right-radius: var(--radius-md);
+  border-bottom-right-radius: var(--radius-md);
 }
 
 :deep(.p-inputnumber-button) {
-  height: 50% !important; /* Force buttons to exactly 50% of the group height */
+  height: 50% !important; /* 50% 为比例，非固定尺寸 */
   min-height: 0; /* Clear any default min-height */
 }
 

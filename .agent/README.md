@@ -23,13 +23,14 @@
      - 禁止硬编码值
 
 2. **`10-ui-architecture.md`** - UI 架构规范
-   - **功能**：UnoCSS 唯一、PrimeVue 集成、组件系统
+   - **功能**：UnoCSS 唯一、PrimeVue 集成、组件系统、交互过渡
    - **适用范围**：Vue/TSX/TS 文件（`globs: **/*.vue, **/*.tsx, **/*.ts`）
    - **自动应用**：是
    - **关键内容**：
      - UnoCSS 唯一样式方案
      - PrimeVue 组件使用规范
      - 组件复用规则
+     - §5 交互过渡：hover/active/focus 须配 transition；Icons 的 group-hover 须在 Icons 自身加 transition；duration-scale 须与 transition\* 搭配
 
 3. **`12-logic-awareness.md`** - 逻辑层规范
    - **功能**：API -> Hook -> UI 三层架构
@@ -84,7 +85,18 @@
      - 断点系统
      - 有效显隐逻辑
 
-8. **`08-auth-login-flow.md`** - 登录/鉴权流程
+8. **`25-html-tag-semantics.md`** - HTML 标签语义与格式化规范
+   - **功能**：正确使用 code/span/div/pre，避免格式化冲突和语法错误
+   - **适用范围**：Vue/TSX 文件（`globs: src/**/*.{vue,tsx}`）
+   - **自动应用**：是
+   - **关键内容**：
+     - `<code>` 仅用于 `<pre><code>` 代码块组合
+     - `<span>` 用于内联样式，特别是在 `<p>` 标签内
+     - `<div>` 用于块级容器和可点击块（不能在 `<p>` 内）
+     - HTML 嵌套规则（块级元素不能在 `<p>` 内）
+     - Prettier/ESLint 格式化冲突解决
+
+9. **`08-auth-login-flow.md`** - 登录/鉴权流程
    - **功能**：登录/登出、token、401、路由守卫、白名单
    - **适用范围**：TS/Vue 文件（`globs: src/**/*.{ts,vue}`）
    - **自动应用**：否（按文件匹配）
@@ -95,6 +107,17 @@
      - 401 处理
      - 路由守卫
      - 动态路由
+
+10. **`26-repair-list-workflow.md`** - 修复清单工作流
+
+- **功能**：repair_list.txt 的创建、写入、进度跟踪与清空
+- **适用范围**：项目根目录，检查/修复类任务
+- **自动应用**：是（`alwaysApply: true`）
+- **关键内容**：
+  - Ask 模式询问是否写入，Agent 模式自动写入
+  - 纯 txt 格式，✅ 标记进度
+  - 全部解决后清空内容
+  - 已加入 .gitignore，不提交
 
 ## 🛠️ Skills（技能文件）
 
@@ -146,6 +169,8 @@
 - `.agent/rules/12-logic-awareness.md` ↔ `.cursor/rules/10-logic-layer.mdc`
 - `.agent/rules/15-toolchain-first.md` ↔ `.cursor/rules/15-utils-and-hooks-first.mdc`
 - `.agent/rules/25-adaptive-layout.md` ↔ `.cursor/rules/22-layouts.mdc`
+- `.agent/rules/25-html-tag-semantics.md` ↔ `.cursor/rules/25-html-tag-semantics.mdc`
 - `.agent/rules/08-auth-login-flow.md` ↔ `.cursor/rules/08-auth-login-flow.mdc`
+- `.agent/rules/26-repair-list-workflow.md` ↔ `.cursor/rules/26-repair-list-workflow.mdc`
 
 注意：`.agent` 特有的规则（如 `22-verification.md`、`20-code-standards.md`）在 Cursor 中可能分散在其他规则文件中。

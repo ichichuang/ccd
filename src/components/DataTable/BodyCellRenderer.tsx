@@ -4,6 +4,9 @@
  * 用于渲染 DataTable 列配置中 column.body(rowData, column) 的返回值（VNode 或 string）。
  * 仅用于 DataTable 列 body 模板内部，不单独对外使用。
  *
+ * 使用 defineComponent：本组件需从 setup 返回 render 函数以动态渲染 VNode/string，
+ * script setup 无法直接返回 render，故采用此形式。符合 TSX 渲染规范。
+ *
  * 错误处理：DEV 下显示 [Render Error] 并 console.error；生产环境静默返回 null，不抛错。
  */
 import { defineComponent, type PropType, type VNode } from 'vue'

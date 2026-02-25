@@ -13,7 +13,9 @@
           (typeof addonBefore === 'object' && addonBefore !== null)
         "
       />
-      <template v-else>{{ addonBefore }}</template>
+      <template v-else>
+        {{ addonBefore }}
+      </template>
     </InputGroupAddon>
     <InputText
       v-model="internalValue"
@@ -30,7 +32,9 @@
           (typeof addonAfter === 'object' && addonAfter !== null)
         "
       />
-      <template v-else>{{ addonAfter }}</template>
+      <template v-else>
+        {{ addonAfter }}
+      </template>
     </InputGroupAddon>
   </InputGroup>
 </template>

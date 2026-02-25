@@ -1,7 +1,7 @@
 import TieredMenu from 'primevue/tieredmenu'
 import PanelMenu from 'primevue/panelmenu'
 import Tooltip from 'primevue/tooltip'
-import { withDirectives } from 'vue'
+import { shallowRef, watch, withDirectives } from 'vue'
 import { useRoute } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { Icons } from '@/components/Icons'
@@ -15,6 +15,7 @@ import {
 } from '@/router/utils/helper'
 import { useLayoutStore } from '@/stores/modules/layout'
 import { useUserStore } from '@/stores/modules/user'
+import { useAppElementSize } from '@/hooks/modules/useAppElementSize'
 
 /** Record → Map，供 PrimeVue PanelMenu 使用 */
 
@@ -147,14 +148,80 @@ export default defineComponent({
       { immediate: true }
     )
 
+    // --- 菜单容器宽度（用于精确限制路由项标题宽度，避免超出侧栏）---
+    const menuContainerRef = ref<HTMLElement | null>(null)
+    const { width: menuContainerWidth } = useAppElementSize(menuContainerRef, undefined, {
+      mode: 'throttle',
+      delay: 100,
+    })
+
+    const labelMaxWidthStyle = computed<Record<string, string>>(() => {
+      const w: number = menuContainerWidth.value
+      // 初始阶段或测不到宽度时，退化为 100%（不会超过容器）
+      if (!w || w <= 0) {
+        const style: Record<string, string> = { maxWidth: '100%' }
+        return style
+      }
+      // 预留一部分空间给左侧图标、右侧箭头以及内边距和间距（使用 spacing 变量，避免硬编码 px）
+      const style: Record<string, string> = {
+        maxWidth: `calc(${w}px - var(--spacing-4xl))`,
+      }
+      return style
+    })
+
+    // 仅记录“真正被省略”的菜单 key，用于控制是否挂 Tooltip
+    const truncatedKeys = shallowRef<Set<string>>(new Set())
+
+    function measureTruncation(): void {
+      const container: HTMLElement | null = menuContainerRef.value
+      if (!container) return
+
+      const nodeList: NodeListOf<HTMLElement> =
+        container.querySelectorAll<HTMLElement>('[data-menu-label-key]')
+
+      const next: Set<string> = new Set<string>()
+      nodeList.forEach(node => {
+        const key: string | undefined = node.dataset.menuLabelKey
+        if (!key) return
+        const isTruncated: boolean = node.scrollWidth > node.clientWidth + 1
+        if (isTruncated) {
+          next.add(key)
+        }
+      })
+
+      const prev: Set<string> = truncatedKeys.value
+      let changed: boolean = prev.size !== next.size
+      if (!changed) {
+        for (const key of next) {
+          if (!prev.has(key)) {
+            changed = true
+            break
+          }
+        }
+      }
+      if (!changed) return
+
+      truncatedKeys.value = next
+    }
+
+    // 菜单数据或容器宽度变化时，统一测量一次溢出情况
+    watch(
+      () => [panelMenuModel.value, menuContainerWidth.value],
+      () => {
+        nextTick(() => {
+          measureTruncation()
+        })
+      },
+      { immediate: true }
+    )
+
     // --- PanelMenu 渲染器 (展开态) ---
     const renderPanelMenuItem = ({ item }: { item: PrimeMenuModelItem }) => {
       const isActive = isActiveMenuItem(item)
       const isParentActive = isParentOfActive(item)
 
       // 使用系统 padding 阶梯优化缩进逻辑
-      const indentClass =
-        item.level <= 0 ? 'pl-padding-md' : item.level === 1 ? 'pl-padding-xl' : 'pl-padding-2xl'
+      const indentClass = item.level <= 0 ? 'pl-padding-md' : 'pl-padding-sm'
 
       const baseClasses =
         'flex items-center rounded-scale-md py-scale-sm pr-padding-sm no-underline clickable ' +
@@ -164,26 +231,42 @@ export default defineComponent({
         ? 'bg-sidebar-accent text-sidebar-accent-foreground'
         : isParentActive
           ? 'bg-sidebar-accent/25 text-sidebar-foreground font-medium' // Increased visibility for active parents
-          : 'text-sidebar-foreground hover:bg-sidebar-accent/10 active:bg-sidebar-accent/20' // 统一交互态
+          : 'text-sidebar-foreground transition-colors duration-scale-md hover:bg-sidebar-accent/10 active:bg-sidebar-accent/20' // 统一交互态
+
+      // 标题节点：单行省略 + 最小宽度约束 + 基于容器宽度的 maxWidth，确保绝不超出；
+      // 使用 data-menu-label-key 供批量测量是否被省略。
+      const labelNode = (
+        <span
+          data-menu-label-key={item.key}
+          class="text-single-line-ellipsis flex-1 min-w-0"
+          style={labelMaxWidthStyle.value}
+        >
+          {item.label}
+        </span>
+      )
+
+      const isTruncated: boolean = truncatedKeys.value.has(item.key)
+      const labelContent = isTruncated
+        ? withDirectives(labelNode, [[Tooltip, item.label, '', { right: true }]])
+        : labelNode
 
       const content = (
-        <span class="flex items-center gap-sm w-full">
+        <span class="flex items-center gap-sm w-full min-w-0 overflow-hidden">
           {item.icon ? (
             <Icons
               name={item.icon}
               size="md"
-              class="shrink-0 text-sidebar-foreground/80"
+              class={`shrink-0 ${isActive ? 'text-current!' : 'text-sidebar-foreground/80!'}`}
             />
           ) : null}
-          <span class="text-single-line-ellipsis flex-1">{item.label}</span>
+          {labelContent}
           {!!item.items && item.items.length > 0 ? (
             <Icons
               name="i-lucide-chevron-down"
               size="lg" // 调整 toggle icon 大小
-              class={
-                'ml-auto text-sidebar-foreground/60 transition-transform duration-scale-md' +
-                (layoutStore.getExpandedMenuKeys[item.key] ? ' rotate-180' : ' rotate-0')
-              }
+              class={`ml-auto shrink-0 transition-transform duration-scale-md ${isActive ? 'text-current!' : 'text-sidebar-foreground/60!'} ${
+                layoutStore.getExpandedMenuKeys[item.key] ? 'rotate-180' : 'rotate-0'
+              }`}
             />
           ) : null}
         </span>
@@ -253,7 +336,7 @@ export default defineComponent({
       }
     }
 
-    // 收缩态 TieredMenu 弹出子菜单项：图标与文字同色，悬停/激活时一致，并支持当前路由高亮
+    // 收缩态 TieredMenu 弹出子菜单项：与 AdminHeader 样式统一（primary/accent-light）
     const renderTieredMenuItem = ({
       item,
       props: slotProps,
@@ -268,24 +351,36 @@ export default defineComponent({
         onClick?: (e: Event) => void
       }
 
-      // 与展开态 PanelMenu 复用同一套「当前激活 / 父级激活」判定逻辑
       const isActive = isActiveMenuItem(item)
       const isParentActive = isParentOfActive(item)
+      // PT 在子菜单悬停/展开时会给 action.class 添加 focus/active，需据此高亮（与 AdminHeader 一致）
+      const actionClassStr = typeof action?.class === 'string' ? action.class : ''
+      const isFocused =
+        actionClassStr.includes('p-focus') ||
+        actionClassStr.includes('p-active') ||
+        actionClassStr.includes('p-highlight') ||
+        /p-tieredmenu[^"'\s]*(active|focus)/.test(actionClassStr)
 
-      const stateClasses = isActive
-        ? 'bg-sidebar-accent text-sidebar-accent-foreground'
-        : isParentActive
-          ? 'bg-sidebar-accent/25 text-sidebar-foreground'
-          : 'text-sidebar-foreground hover:bg-sidebar-accent/10 active:bg-sidebar-accent/20'
+      // 与 AdminHeader subClasses 统一：primary/10 激活，accent-light 悬停
+      const stateClasses =
+        isActive || isParentActive
+          ? 'bg-primary/10! text-primary! font-medium'
+          : isFocused
+            ? 'bg-accent-light! text-accent-light-foreground!'
+            : 'text-foreground! hover:bg-accent-light! hover:text-accent-light-foreground!'
 
-      const actionClass = typeof action?.class === 'string' ? action.class : ''
-      const mergedClass = [
-        'flex items-center gap-sm w-full rounded-scale-md px-padding-sm py-padding-xs',
-        stateClasses,
-        actionClass,
-      ]
-        .join(' ')
-        .trim()
+      const baseClass =
+        'group flex items-center gap-sm w-full rounded-scale-md px-padding-md py-padding-sm fs-sm transition-all duration-scale-md ease-in-out select-none'
+      const mergedClass = [baseClass, stateClasses, actionClassStr].filter(Boolean).join(' ').trim()
+
+      // 图标颜色与 AdminHeader 一致
+      const iconColorClass =
+        isActive || isParentActive
+          ? 'text-primary! opacity-100!'
+          : isFocused
+            ? 'text-accent-light-foreground! opacity-100!'
+            : 'text-muted-foreground! opacity-80 transition-colors transition-opacity duration-scale-md group-hover:text-accent-light-foreground! group-hover:opacity-100'
+
       const handleClick = (e: Event) => {
         if (item.route?.path) {
           e.preventDefault()
@@ -303,15 +398,15 @@ export default defineComponent({
             <Icons
               name={item.icon}
               size="xs"
-              class="shrink-0 text-current"
+              class={`shrink-0 ${iconColorClass}`}
             />
           )}
-          <span class="truncate flex-1 text-current">{item.label}</span>
+          <span class="truncate flex-1">{item.label}</span>
           {hasSubmenu && (
             <Icons
               name="i-lucide-chevron-right"
               size="xs"
-              class="text-current ml-auto"
+              class={`ml-auto shrink-0 transition-transform duration-scale-md ${iconColorClass.replace('opacity-80', 'opacity-50')}`}
             />
           )}
         </a>
@@ -327,7 +422,7 @@ export default defineComponent({
         ? 'bg-sidebar-accent text-sidebar-accent-foreground'
         : isParentActive
           ? 'bg-sidebar-accent/25 text-sidebar-foreground'
-          : 'text-sidebar-foreground hover:bg-sidebar-accent/10'
+          : 'text-sidebar-foreground transition-colors duration-scale-md hover:bg-sidebar-accent/10 active:bg-sidebar-accent/20'
 
       const hasChildren = item.items && item.items.length > 0
 
@@ -341,6 +436,7 @@ export default defineComponent({
             <Icons
               name={item.icon}
               size="lg"
+              class={isActive ? 'text-current!' : 'text-sidebar-foreground/80!'}
             />
           ) : (
             <div class="w-[var(--spacing-lg)] h-[var(--spacing-lg)] rounded-full bg-card text-card-foreground flex items-center justify-center fs-xs font-bold">
@@ -372,13 +468,10 @@ export default defineComponent({
               appendTo="body"
               v-slots={{ item: renderTieredMenuItem }}
               pt={{
-                root: { class: 'border border-sidebar-border rounded-scale-md' },
-                menu: { class: 'bg-sidebar py-padding-xs rounded-scale-md' },
+                root: { class: 'border border-border rounded-scale-md' },
+                menu: { class: 'bg-card py-padding-xs rounded-scale-md' },
                 menuitem: { class: 'rounded-scale-sm' },
-                content: {
-                  class:
-                    'rounded-scale-sm text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground active:bg-sidebar-accent/80 active:text-sidebar-accent-foreground',
-                },
+                content: { class: 'rounded-scale-md' },
               }}
             />
           )}
@@ -408,7 +501,7 @@ export default defineComponent({
               </div>
             )}
             {props.sidebarCollapse && (
-              <div class="w-[var(--spacing-xl)] h-[var(--spacing-xl)] flex items-center justify-center font-bold text-primary bg-primary/10 rounded-scale-md">
+              <div class="w-[var(--spacing-xl)] h-[var(--spacing-xl)] flex items-center justify-center font-bold text-sidebar-foreground bg-sidebar-accent/10 rounded-scale-md">
                 C
               </div>
             )}
@@ -417,26 +510,31 @@ export default defineComponent({
           {/* Menus：统一用 CScrollbar 包裹，符合 scrollbar 架构 */}
           <div class="flex-1 min-h-0 flex flex-col overflow-hidden">
             <CScrollbar class="flex-1 min-h-0 px-padding-sm">
-              {!props.sidebarCollapse ? (
-                // 展开态：PanelMenu
-                <PanelMenu
-                  model={panelMenuModel.value}
-                  multiple={allowMultiple.value}
-                  {...({
-                    expandedKeys: layoutStore.getExpandedMenuKeys,
-                    ['onUpdate:expandedKeys']: onUpdateExpandedKeys,
-                  } as Record<string, unknown>)}
-                  class="w-full fs-sm"
-                  v-slots={{
-                    item: renderPanelMenuItem,
-                  }}
-                />
-              ) : (
-                // 收缩态：自定义图标列表 + 每个项目独立的 TieredMenu (Popup)
-                <div class="flex flex-col gap-sm items-center">
-                  {panelMenuModel.value.map(item => renderCollapsedItem(item))}
-                </div>
-              )}
+              <div
+                ref={menuContainerRef}
+                class="w-full overflow-hidden"
+              >
+                {!props.sidebarCollapse ? (
+                  // 展开态：PanelMenu
+                  <PanelMenu
+                    model={panelMenuModel.value}
+                    multiple={allowMultiple.value}
+                    {...({
+                      expandedKeys: layoutStore.getExpandedMenuKeys,
+                      ['onUpdate:expandedKeys']: onUpdateExpandedKeys,
+                    } as Record<string, unknown>)}
+                    class="w-full fs-sm"
+                    v-slots={{
+                      item: renderPanelMenuItem,
+                    }}
+                  />
+                ) : (
+                  // 收缩态：自定义图标列表 + 每个项目独立的 TieredMenu (Popup)
+                  <div class="flex flex-col gap-sm items-center">
+                    {panelMenuModel.value.map(item => renderCollapsedItem(item))}
+                  </div>
+                )}
+              </div>
             </CScrollbar>
           </div>
         </aside>

@@ -17,7 +17,8 @@
     // ✅ 允许构建侧(uno.config/build/*)通过 @ 引用 src 内 SSOT
     // composite 项目要求：凡被导入的文件必须属于 include/files
     "src/constants/**/*.ts",
-    "src/utils/theme/**/*.ts"
+    "src/utils/theme/**/*.ts",
+    "src/types/**/*.d.ts"
   ],
   "compilerOptions": {
     "composite": true,

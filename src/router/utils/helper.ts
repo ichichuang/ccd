@@ -372,8 +372,8 @@ export function menuItemToPrimeModel(
     // 目录节点不绑定 route；叶子节点携带 path + name 供 goToRoute 使用
     route: !hasChildren && item.path ? { path: item.path, name: item.name } : undefined,
     command: () => {
-      if (!hasChildren && item.path) {
-        goToRoute(item.path, undefined, undefined, false)
+      if (!hasChildren && (item.path || item.name)) {
+        goToRoute(item.name || item.path, undefined, undefined, false)
       }
     },
   }

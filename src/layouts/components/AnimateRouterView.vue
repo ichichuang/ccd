@@ -15,7 +15,9 @@ interface RouteTransition {
 const route = useRoute()
 const layoutStore = useLayoutStore()
 // 检查当前路由是否在白名单中
-const isWhiteListRoute = computed(() => routeWhitePathList.includes(route.path as any))
+const isWhiteListRoute = computed(() =>
+  (routeWhitePathList as readonly string[]).includes(route.path)
+)
 
 // 使用 ref 包装 keepAliveNames，确保响应式更新
 const keepAliveNamesRef = ref<string[]>(routeUtils.keepAliveNames)
@@ -157,14 +159,14 @@ const styleVars = computed(() => {
   top: 0;
   left: 0;
   width: 100%;
-  animation-duration: 800ms !important;
+  animation-duration: var(--transition-4xl) !important;
 }
 .leave-active-class {
   position: absolute;
   top: 0;
   left: 0;
   width: 100%;
-  animation-duration: 400ms !important;
+  animation-duration: var(--transition-xl) !important;
   animation-timing-function: ease-in-out !important;
 }
 </style>

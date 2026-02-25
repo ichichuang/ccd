@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue'
 import Card from 'primevue/card'
 import Tag from 'primevue/tag'
 import { BREAKPOINTS } from '@/constants/breakpoints'
@@ -183,7 +182,7 @@ const shortcutGroups: ShortcutGroup[] = [
   },
 ]
 
-const filteredShortcutGroups = computed(() =>
+const filteredShortcutGroups = computed<ShortcutGroup[]>(() =>
   shortcutGroups
     .map(g => ({
       ...g,
@@ -227,13 +226,13 @@ const shortcutPreviewBoxClass =
   'relative w-20 h-12 shrink-0 rounded-scale-sm overflow-hidden border border-primary/30 bg-primary/5 flex items-center justify-center'
 
 // ==================== 断点 / 安全区 ====================
-const breakpoints = computed(() =>
+const breakpoints = computed<Array<{ key: string; value: string }>>(() =>
   Object.entries(BREAKPOINTS).map(([key, value]) => ({
     key,
     value: typeof value === 'number' ? `${value}px` : value,
   }))
 )
-const safeAreaRules = [
+const safeAreaRules: Array<{ name: string; css: string; desc: string }> = [
   { name: 'safe-top', css: 'padding-top: env(safe-area-inset-top)', desc: '顶部安全区' },
   { name: 'safe-bottom', css: 'padding-bottom: env(safe-area-inset-bottom)', desc: '底部安全区' },
 ]
@@ -259,14 +258,23 @@ const safeAreaRules = [
                 to="/system-configuration/theme"
                 class="text-primary hover:underline"
               >
-                主题</RouterLink
-              >、
+                主题
+              </RouterLink>
+              、
               <RouterLink
                 to="/system-configuration/size"
                 class="text-primary hover:underline"
-                >尺寸</RouterLink
               >
-              页 · 点击类名即可复制
+                尺寸
+              </RouterLink>
+              页 · 点击类名即可复制 · 更多系统能力示例在
+              <RouterLink
+                to="/example"
+                class="text-primary hover:underline"
+              >
+                example
+              </RouterLink>
+              目录
             </p>
           </div>
         </div>
@@ -319,7 +327,9 @@ const safeAreaRules = [
                   :name="group.icon"
                   class="text-primary"
                 />
-                <h3 class="fs-lg font-semibold text-foreground">{{ group.category }}</h3>
+                <h3 class="fs-lg font-semibold text-foreground">
+                  {{ group.category }}
+                </h3>
                 <Tag
                   :value="`${group.items.length}`"
                   severity="secondary"
@@ -333,15 +343,18 @@ const safeAreaRules = [
                   @click="copyToClipboard(item.name)"
                 >
                   <div class="flex flex-col flex-1 min-w-0">
-                    <span class="font-semibold text-foreground">{{ item.name }}</span>
-                    <span class="font-mono fs-xs text-muted-foreground text-single-line-ellipsis">{{
-                      item.classes
-                    }}</span>
+                    <span class="font-semibold text-foreground">
+                      {{ item.name }}
+                    </span>
+                    <span class="font-mono fs-xs text-muted-foreground text-single-line-ellipsis">
+                      {{ item.classes }}
+                    </span>
                     <span
                       v-if="item.desc"
                       class="fs-xs text-info"
-                      >{{ item.desc }}</span
                     >
+                      {{ item.desc }}
+                    </span>
                   </div>
                   <!-- 按分组渲染可视化预览，使类名效果一目了然 -->
                   <div
@@ -449,8 +462,9 @@ const safeAreaRules = [
                         v-else
                         :class="item.name"
                         class="fs-xs"
-                        >示例文字</span
                       >
+                        示例文字
+                      </span>
                     </div>
                     <!-- Interaction：可悬停/聚焦的小块 + 说明，效果需悬停/聚焦可见 -->
                     <div
@@ -547,8 +561,9 @@ const safeAreaRules = [
                         v-else-if="item.name === 'default-font-size'"
                         :class="item.name"
                         class="text-foreground"
-                        >A</span
                       >
+                        A
+                      </span>
                       <div
                         v-else
                         :class="item.name"
@@ -588,9 +603,10 @@ const safeAreaRules = [
         <template #content>
           <div class="flex flex-col gap-md">
             <p class="text-muted-foreground fs-sm">
-              使用方式: <code class="bg-muted px-padding-xs rounded">{breakpoint}:类名</code> ·
-              SSOT:
-              <code class="bg-muted px-padding-xs rounded">src/constants/breakpoints.ts</code>
+              使用方式:
+              <span class="bg-muted px-padding-xs rounded">{breakpoint}:类名</span>
+              · SSOT:
+              <span class="bg-muted px-padding-xs rounded">src/constants/breakpoints.ts</span>
             </p>
             <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-md">
               <div
@@ -599,8 +615,12 @@ const safeAreaRules = [
                 class="flex flex-col items-center gap-sm p-padding-md bg-muted/20 rounded-scale-md hover:bg-muted/40 transition-colors cursor-pointer"
                 @click="copyToClipboard(bp.key + ':', bp.key)"
               >
-                <span class="font-bold fs-lg text-primary">{{ bp.key }}</span>
-                <span class="font-mono text-muted-foreground">{{ bp.value }}</span>
+                <span class="font-bold fs-lg text-primary">
+                  {{ bp.key }}
+                </span>
+                <span class="font-mono text-muted-foreground">
+                  {{ bp.value }}
+                </span>
                 <span class="fs-xs text-muted-foreground">{{ bp.key }}:类名</span>
               </div>
             </div>
@@ -623,7 +643,7 @@ const safeAreaRules = [
           <div class="flex flex-col gap-md">
             <p class="text-muted-foreground fs-sm">
               移动端安全区适配 · 自动使用
-              <code class="bg-muted px-padding-xs rounded">env(safe-area-inset-*)</code>
+              <span class="bg-muted px-padding-xs rounded">env(safe-area-inset-*)</span>
             </p>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-md">
               <div
@@ -633,13 +653,109 @@ const safeAreaRules = [
                 @click="copyToClipboard(rule.name)"
               >
                 <div class="flex flex-col flex-1">
-                  <span class="font-semibold text-foreground">{{ rule.name }}</span>
-                  <span class="font-mono fs-xs text-muted-foreground">{{ rule.css }}</span>
+                  <span class="font-semibold text-foreground">
+                    {{ rule.name }}
+                  </span>
+                  <span class="font-mono fs-xs text-muted-foreground">
+                    {{ rule.css }}
+                  </span>
                 </div>
                 <Tag
                   :value="rule.desc"
                   severity="info"
                 />
+              </div>
+            </div>
+          </div>
+        </template>
+      </Card>
+
+      <!-- 架构能力索引 -->
+      <Card class="component-border">
+        <template #title>
+          <div class="flex items-center gap-sm">
+            <Icons
+              name="i-lucide-network"
+              class="text-primary"
+            />
+            <span>架构能力索引</span>
+            <Tag
+              value="更多示例在 example 目录"
+              severity="info"
+            />
+          </div>
+        </template>
+        <template #content>
+          <div class="flex flex-col gap-md">
+            <p class="text-muted-foreground fs-sm">
+              system-configuration 展示设计系统常量与类名；以下架构能力示例位于 example 目录或文档
+            </p>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-md">
+              <RouterLink
+                to="/example/ui/use-echarts"
+                class="flex items-center gap-sm p-padding-md bg-muted/20 rounded-scale-md hover:bg-muted/40 transition-colors"
+              >
+                <Icons
+                  name="i-lucide-chart-bar"
+                  class="text-primary shrink-0"
+                />
+                <span>UseEcharts · ECharts 主题</span>
+              </RouterLink>
+              <RouterLink
+                to="/example/ui/icons"
+                class="flex items-center gap-sm p-padding-md bg-muted/20 rounded-scale-md hover:bg-muted/40 transition-colors"
+              >
+                <Icons
+                  name="i-lucide-brush"
+                  class="text-primary shrink-0"
+                />
+                <span>Icons 图标体系</span>
+              </RouterLink>
+              <RouterLink
+                to="/example/ui/schema-form"
+                class="flex items-center gap-sm p-padding-md bg-muted/20 rounded-scale-md hover:bg-muted/40 transition-colors"
+              >
+                <Icons
+                  name="i-lucide-clipboard-list"
+                  class="text-primary shrink-0"
+                />
+                <span>SchemaForm</span>
+              </RouterLink>
+              <RouterLink
+                to="/example/ui/data-table"
+                class="flex items-center gap-sm p-padding-md bg-muted/20 rounded-scale-md hover:bg-muted/40 transition-colors"
+              >
+                <Icons
+                  name="i-lucide-table"
+                  class="text-primary shrink-0"
+                />
+                <span>DataTable</span>
+              </RouterLink>
+              <RouterLink
+                to="/example/ui/primevue-dialog"
+                class="flex items-center gap-sm p-padding-md bg-muted/20 rounded-scale-md hover:bg-muted/40 transition-colors"
+              >
+                <Icons
+                  name="i-lucide-box"
+                  class="text-primary shrink-0"
+                />
+                <span>PrimeDialog · useDialog</span>
+              </RouterLink>
+              <div class="flex items-center gap-sm p-padding-md bg-muted/20 rounded-scale-md">
+                <Icons
+                  name="i-lucide-layout"
+                  class="text-primary shrink-0"
+                />
+                <span class="text-muted-foreground fs-sm">
+                  Layout 适配 · docs/ADAPTIVE_LAYOUT.md
+                </span>
+              </div>
+              <div class="flex items-center gap-sm p-padding-md bg-muted/20 rounded-scale-md">
+                <Icons
+                  name="i-lucide-lock"
+                  class="text-primary shrink-0"
+                />
+                <span class="text-muted-foreground fs-sm">安全存储 · PROJECT_PROTOCOL §8.4.7</span>
               </div>
             </div>
           </div>
@@ -664,25 +780,28 @@ const safeAreaRules = [
               <p class="fs-xs text-muted-foreground">
                 业务层优先使用 shortcuts（密度、布局、文本、交互、组件语义），避免手写原子类组合。
               </p>
-              <code
+              <div
                 class="bg-muted p-padding-sm rounded-scale-sm fs-sm cursor-pointer hover:bg-muted/80"
                 @click="copyToClipboard('row-center')"
-                >row-center</code
               >
-              <code
+                row-center
+              </div>
+              <div
                 class="bg-muted p-padding-sm rounded-scale-sm fs-sm cursor-pointer hover:bg-muted/80"
                 @click="copyToClipboard('density-normal')"
-                >density-normal</code
               >
+                density-normal
+              </div>
             </div>
             <div class="flex flex-col gap-sm">
               <h4 class="font-semibold text-foreground">断点前缀 (Breakpoints)</h4>
               <p class="fs-xs text-muted-foreground">
-                用法 <code class="bg-muted px-padding-xs rounded fs-xs">{breakpoint}:类名</code> ·
-                SSOT:
-                <code class="bg-muted px-padding-xs rounded fs-xs"
-                  >src/constants/breakpoints.ts</code
-                >
+                用法
+                <span class="bg-muted px-padding-xs rounded fs-xs">{breakpoint}:类名</span>
+                · SSOT:
+                <span class="bg-muted px-padding-xs rounded fs-xs">
+                  src/constants/breakpoints.ts
+                </span>
               </p>
               <RouterLink
                 to="/system-configuration/breakpoints"
@@ -693,25 +812,30 @@ const safeAreaRules = [
             </div>
             <div class="flex flex-col gap-sm">
               <h4 class="font-semibold text-foreground">安全区 (Safe Area)</h4>
-              <code
+              <div
                 class="bg-muted p-padding-sm rounded-scale-sm fs-sm cursor-pointer hover:bg-muted/80"
                 @click="copyToClipboard('safe-top')"
-                >safe-top</code
               >
-              <code
+                safe-top
+              </div>
+              <div
                 class="bg-muted p-padding-sm rounded-scale-sm fs-sm cursor-pointer hover:bg-muted/80"
                 @click="copyToClipboard('safe-bottom')"
-                >safe-bottom</code
               >
+                safe-bottom
+              </div>
               <p class="fs-xs text-muted-foreground">移动端安全区 · env(safe-area-inset-*)</p>
             </div>
             <div class="flex flex-col gap-sm">
               <h4 class="font-semibold text-foreground">规则 (Rules)</h4>
               <p class="fs-xs text-muted-foreground">
-                <code class="bg-muted px-padding-xs rounded">main-*</code> /
-                <code class="bg-muted px-padding-xs rounded">cross-*</code> 须与
-                <code class="bg-muted px-padding-xs rounded">row</code> 或
-                <code class="bg-muted px-padding-xs rounded">column</code>
+                <span class="bg-muted px-padding-xs rounded">main-*</span>
+                /
+                <span class="bg-muted px-padding-xs rounded">cross-*</span>
+                须与
+                <span class="bg-muted px-padding-xs rounded">row</span>
+                或
+                <span class="bg-muted px-padding-xs rounded">column</span>
                 同用，否则主轴/交叉轴语义不明。
               </p>
             </div>

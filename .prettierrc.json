@@ -12,6 +12,6 @@
   "endOfLine": "lf",
   "vueIndentScriptAndStyle": false,
   "singleAttributePerLine": true,
-  "htmlWhitespaceSensitivity": "css",
+  "htmlWhitespaceSensitivity": "ignore",
   "proseWrap": "preserve"
 }

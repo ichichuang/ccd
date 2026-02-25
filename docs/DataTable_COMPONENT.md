@@ -68,20 +68,20 @@ API 分页示例：
 
 通过 ref 调用：`tableRef.value.refresh()` 等。
 
-| 方法/属性                                              | 说明                       |
-| ------------------------------------------------------ | -------------------------- |
-| refresh                                                | 重新加载数据并更新列宽     |
-| data / selectedRows                                    | 当前数据 / 选中行          |
-| paginationState                                        | 分页状态                   |
-| sortState / filterState                                | 排序/筛选状态              |
-| clearFilters / clearSort                               | 清空筛选/排序              |
-| setSort / setMultiSort                                 | 设置单列/多列排序          |
-| setColumnFilter / clearColumnFilter / getColumnFilters | 列级筛选                   |
-| clearSelection / selectAll / selectRow / unselectRow   | 选择操作                   |
-| goToPage / setPageSize / setGlobalFilter               | 分页与全局搜索             |
-| exportData(format?)                                    | 导出 csv/xlsx/json         |
-| getColumnWidths / updateColumnWidths                   | 列宽测量与刷新             |
-| getTablePreferences / resetTablePreferences            | 列持久化读写（需 tableId） |
+| 方法/属性                                                          | 说明                             |
+| ------------------------------------------------------------------ | -------------------------------- |
+| refresh                                                            | 重新加载数据并更新列宽           |
+| data / selectedRows                                                | 当前数据 / 选中行                |
+| paginationState                                                    | 分页状态                         |
+| sortState / filterState                                            | 排序/筛选状态                    |
+| clearFilters / clearSort                                           | 清空筛选/排序                    |
+| setSort / setMultiSort                                             | 设置单列/多列排序                |
+| setColumnFilter / clearColumnFilter / getColumnFilters             | 列级筛选                         |
+| clearSelection / selectAll / selectRow / unselectRow               | 选择操作                         |
+| goToPage / setPageSize / setGlobalFilter                           | 分页与全局搜索                   |
+| exportData(format?)                                                | 导出 csv/xlsx/json               |
+| getColumnWidths / updateColumnWidths                               | 列宽测量与刷新                   |
+| getTablePreferences / resetTablePreferences / saveTablePreferences | 列持久化读写与保存（需 tableId） |
 
 ### 5.1 DataTableProps / 列配置核心字段
 

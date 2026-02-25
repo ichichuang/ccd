@@ -11,12 +11,10 @@ export interface UseTableSelectionOptions<T> {
   sourceData: ComputedRef<T[]>
   filteredData: ComputedRef<T[]>
   dataToRender: ComputedRef<T[]>
-  emit: {
-    (e: 'update:selectedRows', rows: T[]): void
-    (e: 'row-select', event: unknown): void
-    (e: 'row-unselect', event: unknown): void
-    (e: 'row-click', event: unknown): void
-  }
+  emit: (
+    e: 'update:selectedRows' | 'row-select' | 'row-unselect' | 'row-click',
+    payload: unknown
+  ) => void
 }
 
 export interface UseTableSelectionReturn<T> {
@@ -67,15 +65,18 @@ export function useTableSelection<T extends object>(
     return selectedRows.value
   })
 
-  const isRowSelected = (row: T) => {
+  /** 判断两行是否为同一行（有 idField 时按 id，否则按引用） */
+  const sameRow = (a: T, b: T): boolean => {
     const field = idField.value
-    const rows = selectedRows.value as T[]
     if (field) {
-      return rows.some(
-        s => (s as Record<string, unknown>)[field] === (row as Record<string, unknown>)[field]
-      )
+      return (a as Record<string, unknown>)[field] === (b as Record<string, unknown>)[field]
     }
-    return rows.includes(row)
+    return a === b
+  }
+
+  const isRowSelected = (row: T) => {
+    const rows = selectedRows.value as T[]
+    return rows.some(s => sameRow(s, row))
   }
 
   const isAllSelected = computed(
@@ -154,7 +155,7 @@ export function useTableSelection<T extends object>(
   const handleRowUnselect = (event: { data: T; type?: string }) => {
     if (event.type === 'row' && !props.rowSelectable) return
     const rows = selectedRows.value as T[]
-    selectedRows.value = rows.filter(r => r !== event.data) as T[]
+    selectedRows.value = rows.filter(r => !sameRow(r, event.data)) as T[]
     emitSelectedRows(selectedRows.value as T[])
     emit('row-unselect', event)
   }
@@ -213,7 +214,7 @@ export function useTableSelection<T extends object>(
   const unselectRow = (row: T): boolean => {
     const rows = selectedRows.value as T[]
     const before = rows.length
-    selectedRows.value = rows.filter(r => r !== row) as T[]
+    selectedRows.value = rows.filter(r => !sameRow(r, row)) as T[]
     if (selectedRows.value.length !== before) emitSelectedRows(selectedRows.value as T[])
     return before !== selectedRows.value.length
   }

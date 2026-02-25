@@ -4,6 +4,7 @@ import { useI18n } from 'vue-i18n'
 const { t } = useI18n()
 
 const inputText = ref<string | undefined>('')
+const inputNumber = ref<number | undefined>(0)
 defineOptions({ name: 'Dashboard' })
 </script>
 <template>
@@ -24,11 +25,19 @@ defineOptions({ name: 'Dashboard' })
       <Icons name="i-custom:language-cn" />
       <Icons name="i-custom:language-en" />
 
-      <Button size="small">{{ t('dashboard.buttonSmall') }}</Button>
+      <Button size="small">
+        {{ t('dashboard.buttonSmall') }}
+      </Button>
       <Button>{{ t('dashboard.buttonMedium') }}</Button>
-      <Button size="large">{{ t('dashboard.buttonLarge') }}</Button>
+      <Button size="large">
+        {{ t('dashboard.buttonLarge') }}
+      </Button>
 
       <InputText v-model="inputText" />
+      <InputNumber
+        v-model="inputNumber"
+        class="full w-120px! overflow-hidden!"
+      />
     </div>
     <div
       v-for="i in 100"

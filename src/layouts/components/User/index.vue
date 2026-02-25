@@ -41,7 +41,7 @@ const onLogout = async () => {
     <Button
       variant="text"
       severity="secondary"
-      class="center rounded-full text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
+      class="center rounded-full text-muted-foreground hover:bg-muted hover:text-foreground transition-colors duration-scale-md"
       @click="togglePanel"
     >
       <Avatar

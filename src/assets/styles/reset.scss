@@ -100,3 +100,9 @@ img {
     color: rgb(var(--card-foreground)) !important;
   }
 }
+
+.full {
+  .p-inputtext {
+    width: 100% !important;
+  }
+}

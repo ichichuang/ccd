@@ -104,11 +104,14 @@ Rules:
   - Prefer semantic sizing (`size=\"xs|sm|md|lg|xl|2xl|3xl|4xl|5xl\"`) over hardcoded pixel sizes.
   - Custom sizes (`size={24}` or `size=\"2rem\"`) only when semantic sizes don't fit.
 - **颜色（Color）**：
-  - **静态颜色（推荐）**：Use semantic classes (`class=\"text-primary\"`) via UnoCSS.
+  - **静态颜色**：Use semantic classes via UnoCSS；在 PrimeVue/父级样式较强的场景，class 颜色可能被覆盖，需加 `!` 或改用 `color` prop。
   - **动态/主题变量**：Use `color` prop (`color=\"rgb(var(--primary))\"`).
-  - **注意**：When using `color` prop, use `rgb(var(--primary))` format, not `var(--primary)`.
-  - Avoid hex colors in `color` prop (use CSS variables or semantic classes).
+  - **格式**：`color` prop 必须用 `rgb(var(--primary))`，禁止 `var(--primary)`；hex 禁止。
+  - **Class 权重覆盖**：当 `class=\"text-primary\"` 等不生效时，加 `!` 修饰符：`text-primary!`、`group-hover:text-accent-light-foreground!`；或改用 `color` prop 避免权重冲突。
+  - **继承父级**：需与父级文字同色时用 `class=\"text-current\"`。
+  - 详见 `docs/UNOCSS_AND_ICONS.md` §6.3.1。
 - **动画与变换**：See `docs/UNOCSS_AND_ICONS.md` §6.4 for `animation`, `flip`, `rotate`, `scale` usage.
+- **Icons 与 transition**：当 Icons 使用 `group-hover:`/`hover:` 颜色或透明度类时，transition 必须写在 Icons 的 class 上；父容器 transition 无效。详见 `docs/UNOCSS_AND_ICONS.md` §2.7.1、§6.3.2。
 
 ## 5. Forbidden Patterns
 

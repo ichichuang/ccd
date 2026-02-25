@@ -53,26 +53,29 @@ const updateColumnConfig = (key: keyof TableColumnConfig, value: unknown) => {
 
 <template>
   <div class="flex flex-col gap-md">
-    <!-- Size Controls -->
+    <!-- Height Mode -->
     <div class="flex flex-col gap-sm">
       <label class="text-sm font-medium">高度模式 (Height Mode)</label>
-      <div class="flex gap-sm">
+      <div class="flex flex-wrap gap-sm">
         <Button
           label="自动 (Auto)"
           size="small"
           :severity="sizeConfig.heightMode === 'auto' ? 'primary' : 'secondary'"
+          :outlined="sizeConfig.heightMode !== 'auto'"
           @click="updateConfig('heightMode', 'auto')"
         />
         <Button
           label="固定 (Fixed)"
           size="small"
           :severity="sizeConfig.heightMode === 'fixed' ? 'primary' : 'secondary'"
+          :outlined="sizeConfig.heightMode !== 'fixed'"
           @click="updateConfig('heightMode', 'fixed')"
         />
         <Button
           label="撑满 (Fill)"
           size="small"
           :severity="sizeConfig.heightMode === 'fill' ? 'primary' : 'secondary'"
+          :outlined="sizeConfig.heightMode !== 'fill'"
           @click="updateConfig('heightMode', 'fill')"
         />
       </div>
@@ -93,17 +96,19 @@ const updateColumnConfig = (key: keyof TableColumnConfig, value: unknown) => {
 
     <div class="flex flex-col gap-sm">
       <label class="text-sm font-medium">宽度模式 (Width Mode)</label>
-      <div class="flex gap-sm">
+      <div class="flex flex-wrap gap-sm">
         <Button
           label="自动 (Auto)"
           size="small"
           :severity="sizeConfig.widthMode === 'auto' ? 'primary' : 'secondary'"
+          :outlined="sizeConfig.widthMode !== 'auto'"
           @click="updateConfig('widthMode', 'auto')"
         />
         <Button
           label="固定 (Fixed)"
           size="small"
           :severity="sizeConfig.widthMode === 'fixed' ? 'primary' : 'secondary'"
+          :outlined="sizeConfig.widthMode !== 'fixed'"
           @click="updateConfig('widthMode', 'fixed')"
         />
       </div>
@@ -122,110 +127,115 @@ const updateColumnConfig = (key: keyof TableColumnConfig, value: unknown) => {
       />
     </div>
 
-    <div class="border-t-default my-sm" />
-
     <!-- Style Controls -->
     <div class="flex flex-col gap-sm">
-      <label class="text-sm font-medium">样式 (Style)</label>
-      <div class="flex items-center justify-between">
-        <label class="text-sm text-muted-foreground">边框 (Bordered)</label>
-        <ToggleSwitch
-          :model-value="styleConfig.bordered"
-          @update:model-value="updateStyle('bordered', $event)"
-        />
-      </div>
-      <div class="flex items-center justify-between">
-        <label class="text-sm text-muted-foreground">网格线 (Gridlines)</label>
-        <ToggleSwitch
-          :model-value="styleConfig.showGridlines"
-          @update:model-value="updateStyle('showGridlines', $event)"
-        />
-      </div>
-      <div class="flex items-center justify-between">
-        <label class="text-sm text-muted-foreground">斑马纹 (Striped)</label>
-        <ToggleSwitch
-          :model-value="styleConfig.stripedRows"
-          @update:model-value="updateStyle('stripedRows', $event)"
-        />
-      </div>
-      <div class="flex items-center justify-between">
-        <label class="text-sm text-muted-foreground">行悬停 (RowHover)</label>
-        <ToggleSwitch
-          :model-value="styleConfig.rowHover"
-          @update:model-value="updateStyle('rowHover', $event)"
-        />
+      <label class="text-sm font-medium mb-margin-xs">样式 (Style)</label>
+      <div class="flex flex-col gap-sm">
+        <div class="flex items-center justify-between">
+          <label class="text-sm">边框</label>
+          <ToggleSwitch
+            :model-value="styleConfig.bordered"
+            @update:model-value="updateStyle('bordered', $event)"
+          />
+        </div>
+        <div class="flex items-center justify-between">
+          <label class="text-sm">网格线</label>
+          <ToggleSwitch
+            :model-value="styleConfig.showGridlines"
+            @update:model-value="updateStyle('showGridlines', $event)"
+          />
+        </div>
+        <div class="flex items-center justify-between">
+          <label class="text-sm">斑马纹</label>
+          <ToggleSwitch
+            :model-value="styleConfig.stripedRows"
+            @update:model-value="updateStyle('stripedRows', $event)"
+          />
+        </div>
+        <div class="flex items-center justify-between">
+          <label class="text-sm">行悬停</label>
+          <ToggleSwitch
+            :model-value="styleConfig.rowHover"
+            @update:model-value="updateStyle('rowHover', $event)"
+          />
+        </div>
       </div>
     </div>
 
-    <div class="border-t-default my-sm" />
-
-    <!-- Size & Paginator -->
+    <!-- Size -->
     <div class="flex flex-col gap-sm">
       <label class="text-sm font-medium">表格尺寸 (Size)</label>
-      <div class="flex gap-sm">
+      <div class="flex flex-wrap gap-sm">
         <Button
           label="小 (Small)"
           size="small"
           :severity="(size ?? 'normal') === 'small' ? 'primary' : 'secondary'"
+          :outlined="(size ?? 'normal') !== 'small'"
           @click="emit('update:size', 'small')"
         />
         <Button
           label="中 (Normal)"
           size="small"
           :severity="(size ?? 'normal') === 'normal' ? 'primary' : 'secondary'"
+          :outlined="(size ?? 'normal') !== 'normal'"
           @click="emit('update:size', 'normal')"
         />
         <Button
           label="大 (Large)"
           size="small"
           :severity="(size ?? 'normal') === 'large' ? 'primary' : 'secondary'"
+          :outlined="(size ?? 'normal') !== 'large'"
           @click="emit('update:size', 'large')"
         />
       </div>
     </div>
 
+    <!-- Paginator -->
     <div
       v-if="showPaginatorPosition"
       class="flex flex-col gap-sm"
     >
       <label class="text-sm font-medium">分页器位置 (Paginator Position)</label>
-      <div class="flex gap-sm">
+      <div class="flex flex-wrap gap-sm">
         <Button
-          label="左"
+          label="左 (Left)"
           size="small"
           :severity="(paginatorPosition ?? 'center') === 'left' ? 'primary' : 'secondary'"
+          :outlined="(paginatorPosition ?? 'center') !== 'left'"
           @click="emit('update:paginatorPosition', 'left')"
         />
         <Button
-          label="中"
+          label="中 (Center)"
           size="small"
           :severity="(paginatorPosition ?? 'center') === 'center' ? 'primary' : 'secondary'"
+          :outlined="(paginatorPosition ?? 'center') !== 'center'"
           @click="emit('update:paginatorPosition', 'center')"
         />
         <Button
-          label="右"
+          label="右 (Right)"
           size="small"
           :severity="(paginatorPosition ?? 'center') === 'right' ? 'primary' : 'secondary'"
+          :outlined="(paginatorPosition ?? 'center') !== 'right'"
           @click="emit('update:paginatorPosition', 'right')"
         />
       </div>
     </div>
 
+    <!-- Column Interactivity -->
     <div
       v-if="columnConfig"
-      class="border-t-default my-sm"
+      class="flex flex-col gap-md"
     >
-      <label class="text-sm font-medium mb-margin-sm block">列交互 (Column)</label>
-      <div class="flex flex-col gap-sm mt-margin-sm">
+      <div class="flex flex-col gap-sm">
         <div class="flex items-center justify-between">
-          <label class="text-sm text-muted-foreground">列拖拽排序 (Reorderable)</label>
+          <label class="text-sm text-muted-foreground mr-margin-md">列拖拽排序 (Reorderable)</label>
           <ToggleSwitch
             :model-value="columnConfig.reorderableColumns"
             @update:model-value="updateColumnConfig('reorderableColumns', $event)"
           />
         </div>
         <div class="flex items-center justify-between">
-          <label class="text-sm text-muted-foreground">列宽可调 (Resizable)</label>
+          <label class="text-sm text-muted-foreground mr-margin-md">列宽可调 (Resizable)</label>
           <ToggleSwitch
             :model-value="columnConfig.resizableColumns"
             @update:model-value="updateColumnConfig('resizableColumns', $event)"
@@ -233,20 +243,22 @@ const updateColumnConfig = (key: keyof TableColumnConfig, value: unknown) => {
         </div>
         <div
           v-if="columnConfig.resizableColumns"
-          class="flex flex-col gap-sm"
+          class="flex flex-col gap-sm mt-margin-xs"
         >
-          <label class="text-sm text-muted-foreground">列宽模式</label>
-          <div class="flex gap-sm">
+          <label class="text-xs text-muted-foreground font-medium">列宽模式 (Resize Mode)</label>
+          <div class="flex flex-wrap gap-sm">
             <Button
-              label="Fit"
+              label="内容贴合 (Fit)"
               size="small"
               :severity="columnConfig.columnResizeMode === 'fit' ? 'primary' : 'secondary'"
+              :outlined="columnConfig.columnResizeMode !== 'fit'"
               @click="updateColumnConfig('columnResizeMode', 'fit')"
             />
             <Button
-              label="Expand"
+              label="等比展开 (Expand)"
               size="small"
               :severity="columnConfig.columnResizeMode === 'expand' ? 'primary' : 'secondary'"
+              :outlined="columnConfig.columnResizeMode !== 'expand'"
               @click="updateColumnConfig('columnResizeMode', 'expand')"
             />
           </div>
@@ -257,26 +269,29 @@ const updateColumnConfig = (key: keyof TableColumnConfig, value: unknown) => {
     <!-- Content Alignment -->
     <div
       v-if="columnConfig"
-      class="border-t-default my-sm"
+      class="flex flex-col gap-sm mt-margin-xs"
     >
-      <label class="text-sm font-medium mb-margin-sm block">内容对齐 (Content Alignment)</label>
-      <div class="flex gap-sm mt-margin-sm">
+      <label class="text-sm font-medium block">内容对齐 (Content Alignment)</label>
+      <div class="flex gap-sm">
         <Button
           icon="i-lucide-align-left"
           size="small"
           :severity="columnConfig.contentAlign === 'left' ? 'primary' : 'secondary'"
+          text
           @click="updateColumnConfig('contentAlign', 'left')"
         />
         <Button
           icon="i-lucide-align-center"
           size="small"
           :severity="columnConfig.contentAlign === 'center' ? 'primary' : 'secondary'"
+          text
           @click="updateColumnConfig('contentAlign', 'center')"
         />
         <Button
           icon="i-lucide-align-right"
           size="small"
           :severity="columnConfig.contentAlign === 'right' ? 'primary' : 'secondary'"
+          text
           @click="updateColumnConfig('contentAlign', 'right')"
         />
       </div>

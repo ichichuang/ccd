@@ -89,18 +89,6 @@ export type FooterMode = 'custom' | 'column-aligned'
 export type ContainerSizeMode = 'fill' | 'auto' | 'fixed'
 export type ColumnWidthMode = 'auto' | 'fixed' | 'equal'
 
-export interface VirtualScrollerOptions {
-  itemSize?: number
-  orientation?: 'vertical' | 'horizontal' | 'both'
-  delay?: number
-  lazy?: boolean
-  showLoader?: boolean
-  loading?: boolean
-  numToleratedItems?: number
-  onLazyLoad?: (event: { first: number; last: number }) => void
-  [key: string]: unknown
-}
-
 export interface TableSizeConfig {
   widthMode?: 'auto' | 'fixed'
   heightMode?: ContainerSizeMode
@@ -178,12 +166,39 @@ export interface DataTableColumn<T = unknown> extends Omit<
   expander?: boolean
   align?: 'left' | 'center' | 'right'
   body?: (rowData: T, column: DataTableColumn<T>) => VNode | string
+  /**
+   * 自定义 expander 列单元格渲染（用于展示「展开箭头 + 文本」等高级场景）。
+   *
+   * 当列配置了 expander = true 且提供 expanderBody 时：
+   * - DataTable 不再使用 PrimeVue 默认的 expander body；
+   * - 而是渲染 expanderBody 的返回内容。
+   *
+   * helpers:
+   *  - isExpanded: 当前行是否已展开
+   *  - toggle: 切换当前行的展开状态（展开/收起）
+   *
+   * 仅对 expander 列生效，其它列请使用 body。
+   */
+  expanderBody?: (
+    rowData: T,
+    column: DataTableColumn<T>,
+    helpers: { isExpanded: boolean; toggle: () => void }
+  ) => VNode | string
   headerRenderer?: () => VNode
   customFooter?: (params: {
     rows: Array<{ value: unknown; row: T; column: DataTableColumn<T>; columnIndex: number }>
     column: DataTableColumn<T>
     columnIndex: number
   }) => VNode | VNode[]
+  /**
+   * 自定义列筛选渲染器。
+   * @param params.filterModel - 当前列的筛选值 model (v-model)
+   * @param params.filterCallback - 应用筛选的回调，可传入新值以同步到 columnFilters（优先于 filterModel.value）
+   */
+  filterRenderer?: (params: {
+    filterModel: { value: unknown; matchMode: string }
+    filterCallback: (value?: unknown) => void
+  }) => VNode
   editable?: boolean
   editorRenderer?: (params: { data: T; value: unknown; field: string }) => VNode | string
   componentsProps?: Record<string, unknown>
@@ -285,8 +300,6 @@ export interface DataTableProps<T = unknown> extends Omit<
   selectionAlignFrozen?: 'left' | 'right'
   scrollable?: boolean
   editable?: boolean
-  editMode?: 'cell' | 'row'
-  virtualScrollerOptions?: VirtualScrollerOptions
   reorderableColumns?: boolean
   resizableColumns?: boolean
   columnResizeMode?: 'fit' | 'expand'
@@ -349,4 +362,6 @@ export interface DataTableExpose<T = unknown> {
   getTablePreferences?: () => DataTableUserPreferences | null
   /** 当提供 tableId 时可用：清除当前表格的持久化偏好并恢复默认列 */
   resetTablePreferences?: () => void
+  /** 当提供 tableId 时可用：将当前列偏好（列顺序/列宽/隐藏列）持久化到 store */
+  saveTablePreferences?: () => void
 }

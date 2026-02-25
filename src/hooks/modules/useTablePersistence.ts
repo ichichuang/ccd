@@ -52,6 +52,8 @@ export function useTablePersistence<T>(
 
   const savePreferences = () => {
     ;(debouncedSave as { cancel?: () => void }).cancel?.()
+    // 保存前同步当前列顺序，确保「保存列偏好」能记录当前表格状态
+    preferences.value.columnOrder = effectiveColumns.value.map(col => String(col.field))
     _savePreferences()
   }
 
@@ -130,7 +132,11 @@ export function useTablePersistence<T>(
 
   const getPreferences = (): DataTableUserPreferences | null => {
     if (!tableIdRef.value) return null
-    return { ...preferences.value }
+    // 返回当前状态，包含列顺序（来自 effectiveColumns）
+    return {
+      ...preferences.value,
+      columnOrder: effectiveColumns.value.map(col => String(col.field)),
+    }
   }
 
   watch(tableIdRef, loadPreferences, { immediate: true })

@@ -61,19 +61,20 @@
    - **关键内容**：
      - 组件复用映射（CScrollbar、AnimateWrapper、Icons、UseEcharts、SchemaForm、DataTable、PrimeDialog）
      - 图标智能选择规则（Lucide → MDI → Logos → custom SVG）
+     - Icons 颜色与权重：class 不生效时加 `!` 或改用 `color` prop；Icons 的 group-hover 须在自身加 transition；详见 `docs/UNOCSS_AND_ICONS.md` §6.3.1、§6.3.2
      - 禁止模式（禁止 raw SVG、禁止外部图标 URL）
 
 ### UI/样式规则
 
 6. **`20-ui-styling.mdc`** - UI/样式层规则
-   - **功能**：配色、尺寸、布局、UnoCSS、SCSS
+   - **功能**：配色、尺寸、布局、UnoCSS、SCSS、交互过渡
    - **适用范围**：`src/**/*.vue`
    - **自动应用**：否（按文件匹配）
    - **关键内容**：
      - 配色系统（Theme Store、语义变量）
      - 尺寸系统（Size Store、语义类）
      - 布局与响应式系统（Breakpoints、Layout Store）
-     - UnoCSS 类使用规范
+     - UnoCSS 类使用规范（含 Transition & Interaction：hover/active/focus 须配 transition；Icons 的 group-hover 须在 Icons 自身加 transition；duration-scale 须与 transition\* 搭配；pt content 同样需 transition）
      - SCSS 使用限制
 
 7. **`22-layouts.mdc`** - Layouts 系统
@@ -97,17 +98,40 @@
      - TSX 使用方式（Vue SFC 中、独立 .tsx 组件）
      - 禁止模式（禁止 `h()`、禁止 `createElement`）
 
-9. **`08-auth-login-flow.mdc`** - 登录/鉴权流程
-   - **功能**：登录/登出、token、401、路由守卫
-   - **适用范围**：`src/**/*.{ts,vue}`
-   - **自动应用**：否（按文件匹配）
-   - **详细文档**：`docs/AUTH_AND_LOGIN_FLOW.md`
+9. **`25-html-tag-semantics.mdc`** - HTML 标签语义与格式化规范
+   - **功能**：正确使用 code/span/div/pre，避免格式化冲突和语法错误
+   - **适用范围**：`src/**/*.{vue,tsx}`
+   - **自动应用**：是（`alwaysApply: true`）
    - **关键内容**：
-     - 登录流程
-     - Token 管理
-     - 401 处理
-     - 路由守卫
-     - 动态路由
+     - `<code>` 仅用于 `<pre><code>` 代码块组合
+     - `<span>` 用于内联样式，特别是在 `<p>` 标签内
+     - `<div>` 用于块级容器和可点击块（不能在 `<p>` 内）
+     - HTML 嵌套规则（块级元素不能在 `<p>` 内）
+     - Prettier/ESLint 格式化冲突解决
+
+10. **`08-auth-login-flow.mdc`** - 登录/鉴权流程
+
+- **功能**：登录/登出、token、401、路由守卫
+- **适用范围**：`src/**/*.{ts,vue}`
+- **自动应用**：否（按文件匹配）
+- **详细文档**：`docs/AUTH_AND_LOGIN_FLOW.md`
+- **关键内容**：
+  - 登录流程
+  - Token 管理
+  - 401 处理
+  - 路由守卫
+  - 动态路由
+
+11. **`26-repair-list-workflow.mdc`** - 修复清单工作流
+
+- **功能**：repair_list.txt 的创建、写入、进度跟踪与清空
+- **适用范围**：项目根目录，检查/修复类任务
+- **自动应用**：是（`alwaysApply: true`）
+- **关键内容**：
+  - Ask 模式询问是否写入，Agent 模式自动写入
+  - 纯 txt 格式，✅ 标记进度
+  - 全部解决后清空内容
+  - 已加入 .gitignore，不提交
 
 ## 📖 使用指南
 
@@ -120,6 +144,8 @@
 - `15-utils-and-hooks-first.mdc`
 - `18-components-and-icons.mdc`
 - `24-tsx-rendering.mdc`
+- `25-html-tag-semantics.mdc`
+- `26-repair-list-workflow.mdc`
 
 ### 文件匹配规则
 
@@ -144,6 +170,7 @@
 - @.cursor/rules/20-ui-styling.mdc（UI/样式）
 - @.cursor/rules/22-layouts.mdc（布局壳/Admin 子模式）
 - @.cursor/rules/24-tsx-rendering.mdc（程序化渲染用 TSX，禁止 h()）
+- @.cursor/rules/25-html-tag-semantics.mdc（HTML 标签语义与格式化规范）
 ```
 
 ### 规则元数据说明
@@ -173,6 +200,8 @@
 - `20-ui-styling.mdc` ↔ `10-ui-architecture.md`（部分）
 - `22-layouts.mdc` ↔ `25-adaptive-layout.md`
 - `24-tsx-rendering.mdc` ↔ 无直接对应（.cursor 特有）
+- `25-html-tag-semantics.mdc` ↔ `25-html-tag-semantics.md`
 - `08-auth-login-flow.mdc` ↔ `08-auth-login-flow.md`
+- `26-repair-list-workflow.mdc` ↔ `26-repair-list-workflow.md`
 
 注意：`.agent` 特有的规则（如 `22-verification.md`、`20-code-standards.md`）在 Cursor 中可能分散在其他规则文件中。

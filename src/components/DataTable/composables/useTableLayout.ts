@@ -33,6 +33,13 @@ export interface UseTableLayoutOptions<T> {
   selectionModeComputed: ComputedRef<'single' | 'multiple' | undefined>
   loadApiData: (isInfiniteNext?: boolean, forceRefresh?: boolean) => Promise<void>
   slots: Record<string, unknown>
+  /** 触底时回调，用于 emit scroll-bottom 等 */
+  onScrollBottom?: (event: {
+    distanceToBottom: number
+    scrollTop: number
+    scrollHeight: number
+    clientHeight: number
+  }) => void
 }
 
 export interface UseTableLayoutReturn<T> {
@@ -71,6 +78,7 @@ export function useTableLayout<T extends object>(
     selectionModeComputed,
     loadApiData,
     slots,
+    onScrollBottom,
   } = options
 
   const tableWrapperRef = ref<HTMLElement | null>(null)
@@ -236,12 +244,19 @@ export function useTableLayout<T extends object>(
       })
     }
     const { scrollTop, scrollHeight, clientHeight } = target
+    const distanceToBottom = scrollHeight - scrollTop - clientHeight
     if (
-      scrollHeight - scrollTop - clientHeight < INFINITE_SCROLL_THRESHOLD_PX &&
+      distanceToBottom < INFINITE_SCROLL_THRESHOLD_PX &&
       props.api?.mode === 'infinite' &&
       infiniteHasNext.value &&
       !loading.value
     ) {
+      onScrollBottom?.({
+        distanceToBottom,
+        scrollTop,
+        scrollHeight,
+        clientHeight,
+      })
       void loadApiData(true)
     }
   }
