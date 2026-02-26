@@ -206,25 +206,31 @@ const initComponentButtonColorSchemeOptionsItems = (
       return colors[key] || colors[getAdapterKey(colorType, '')]
     }
 
+    const getAlpha = (suffix: string, alpha: number) => {
+      const val = get(suffix)
+      // 使用正则确保替换的是最后一个右括号（即 rgb 的结尾），而不是 var() 的右括号
+      return val.replace(/\)$/, ` / ${alpha})`)
+    }
+
     switch (type) {
       case 'outlined':
         return {
-          // Hover/Active: Light Tint (对齐 Aura，避免实色填充导致红底红字不可读)
-          hoverBackground: get('Light'),
-          activeBackground: get('Light'),
+          // Hover/Active: 使用基础色的超低透明度叠加，比实色更高级
+          hoverBackground: getAlpha('', 0.08),
+          activeBackground: getAlpha('', 0.12),
           hoverBorderColor: colorType === 'Secondary' ? get('Text') : get(''),
           activeBorderColor: colorType === 'Secondary' ? get('Text') : get(''),
-          hoverColor: get(''),
-          activeColor: get(''),
+          hoverColor: colorType === 'Secondary' ? get('Text') : get(''),
+          activeColor: colorType === 'Secondary' ? get('Text') : get(''),
 
           borderColor: colorType === 'Secondary' ? get('Text') : get(''),
           color: colorType === 'Secondary' ? get('Text') : get(''),
         }
       case 'text':
         return {
-          // Hover/Active: Light Tint (对齐 Aura，避免 *-foreground 为黑导致黑底彩字)
-          hoverBackground: get('Light'),
-          activeBackground: get('Light'),
+          // Hover/Active: Text 按钮悬停背景更透气 (12% / 18%)
+          hoverBackground: getAlpha('', 0.12),
+          activeBackground: getAlpha('', 0.18),
           color: colorType === 'Secondary' ? get('Text') : get(''),
         }
       case 'link':
@@ -238,9 +244,9 @@ const initComponentButtonColorSchemeOptionsItems = (
           background: get(''),
           hoverBackground: get('Hover'),
           activeBackground: get('Active'),
-          borderColor: get('Border') || get(''),
-          hoverBorderColor: get('Active'),
-          activeBorderColor: get('Hover'),
+          borderColor: get(''),
+          hoverBorderColor: get(''),
+          activeBorderColor: get(''),
           color: get('Text'),
           hoverColor: get('Text'),
           activeColor: get('Text'),
@@ -365,10 +371,10 @@ export const createCustomPreset = (sizeStore: ReturnType<typeof useSizeStore>) =
     // 全局配置（与 SizeCssVars 过渡阶梯统一，尺寸模式切换时过渡时长一致）
     transitionDuration: 'var(--transition-md)',
     focusRing: {
-      width: 'calc(var(--spacing-xs) / 2)',
+      width: '1px',
       style: 'solid',
-      color: '{brand.500}', // 使用Token引用
-      offset: 'calc(var(--spacing-xs) / 2)',
+      color: 'rgb(var(--ring))',
+      offset: '2px',
       shadow: 'none',
     },
     disabledOpacity: '0.6',
@@ -389,10 +395,10 @@ export const createCustomPreset = (sizeStore: ReturnType<typeof useSizeStore>) =
       borderRadius: 'var(--radius-md)',
       fontSize: 'var(--font-size-md)', // Base font size
       focusRing: {
-        width: '0', // Native focus ring handled by focusRing global above or individually
-        style: 'none',
-        color: 'transparent',
-        offset: '0',
+        width: '1px', // Native focus ring handled by focusRing global above or individually
+        style: 'solid',
+        color: 'rgb(var(--ring))',
+        offset: '2px',
         shadow: 'none',
       },
       transitionDuration: 'var(--transition-md)',
@@ -516,7 +522,7 @@ export const createCustomPreset = (sizeStore: ReturnType<typeof useSizeStore>) =
           filledFocusBackground: '{surface.50}',
           borderColor: '{surface.300}',
           hoverBorderColor: '{surface.400}',
-          focusBorderColor: '{brand.500}',
+          focusBorderColor: 'rgb(var(--ring))',
           invalidBorderColor: '{error.500}',
           invalidPlaceholderColor: '{error.600}',
           color: '{surface.700}',
@@ -578,8 +584,8 @@ export const createCustomPreset = (sizeStore: ReturnType<typeof useSizeStore>) =
           filledHoverBackground: '{surface.800}',
           filledFocusBackground: '{surface.800}',
           borderColor: 'rgb(var(--border))',
-          hoverBorderColor: '{brand.400}',
-          focusBorderColor: '{brand.400}',
+          hoverBorderColor: 'rgb(var(--primary-hover))',
+          focusBorderColor: 'rgb(var(--ring))',
           invalidBorderColor: '{error.400}',
           invalidPlaceholderColor: '{error.600}',
           color: 'rgb(var(--foreground))',
@@ -624,7 +630,7 @@ export const createCustomPreset = (sizeStore: ReturnType<typeof useSizeStore>) =
         focusRing: {
           width: 'calc(var(--spacing-xs) / 2)',
           style: 'solid',
-          color: 'rgb(var(--brand-500))',
+          color: 'rgb(var(--ring))',
           offset: 'calc(var(--spacing-xs) / 2)',
           shadow: 'none',
         },
@@ -676,7 +682,7 @@ export const createCustomPreset = (sizeStore: ReturnType<typeof useSizeStore>) =
           root: {
             background: colors.getBackground,
             borderColor: 'rgb(var(--input))', // Consistent with input border
-            hoverBorderColor: colors.getPrimary,
+            hoverBorderColor: colors.getPrimaryHover,
             checkedBackground: colors.getPrimary,
             checkedBorderColor: colors.getPrimary,
             checkedHoverBackground: colors.getPrimaryHover,
@@ -689,7 +695,7 @@ export const createCustomPreset = (sizeStore: ReturnType<typeof useSizeStore>) =
           root: {
             background: colors.getBackground,
             borderColor: 'rgb(var(--input))',
-            hoverBorderColor: colors.getPrimary,
+            hoverBorderColor: colors.getPrimaryHover,
             checkedBackground: colors.getPrimary,
             checkedBorderColor: colors.getPrimary,
             checkedHoverBackground: colors.getPrimaryHover,
@@ -707,7 +713,7 @@ export const createCustomPreset = (sizeStore: ReturnType<typeof useSizeStore>) =
           root: {
             background: colors.getBackground,
             borderColor: 'rgb(var(--input))',
-            hoverBorderColor: colors.getPrimary,
+            hoverBorderColor: colors.getPrimaryHover,
             checkedBackground: colors.getPrimary,
             checkedBorderColor: colors.getPrimary,
           },
@@ -720,7 +726,7 @@ export const createCustomPreset = (sizeStore: ReturnType<typeof useSizeStore>) =
           root: {
             background: colors.getBackground,
             borderColor: 'rgb(var(--input))',
-            hoverBorderColor: colors.getPrimary,
+            hoverBorderColor: colors.getPrimaryHover,
             checkedBackground: colors.getPrimary,
             checkedBorderColor: colors.getPrimary,
           },
@@ -812,14 +818,14 @@ export const createCustomPreset = (sizeStore: ReturnType<typeof useSizeStore>) =
           borderColor: 'rgb(var(--border))',
           borderRadius: 'var(--radius-md)',
           color: 'rgb(var(--popover-foreground))',
-          shadow: 'var(--shadow-md)',
+          shadow: '0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)',
         },
         overlayPopover: {
           background: 'rgb(var(--popover))',
           borderColor: 'rgb(var(--border))',
           borderRadius: 'var(--radius-md)',
           color: 'rgb(var(--popover-foreground))',
-          shadow: 'var(--shadow-md)',
+          shadow: '0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)',
           padding: 'var(--spacing-sm)',
           gap: 'var(--spacing-xs)',
         },
@@ -831,11 +837,11 @@ export const createCustomPreset = (sizeStore: ReturnType<typeof useSizeStore>) =
           gap: 'var(--spacing-xs)',
         },
         constraint: {
-          focusBackground: 'rgb(var(--accent))',
+          focusBackground: 'rgb(var(--primary-light))',
           selectedBackground: 'rgb(var(--primary))',
           selectedFocusBackground: 'rgb(var(--primary))',
           color: 'rgb(var(--popover-foreground))',
-          focusColor: 'rgb(var(--accent-foreground))',
+          focusColor: 'rgb(var(--primary-light-foreground))',
           selectedColor: 'rgb(var(--primary-foreground))',
           selectedFocusColor: 'rgb(var(--primary-foreground))',
           separator: {
@@ -850,7 +856,7 @@ export const createCustomPreset = (sizeStore: ReturnType<typeof useSizeStore>) =
         light: {
           row: {
             stripedBackground: 'rgb(var(--muted-foreground)/0.1)',
-            hoverBackground: 'rgb(var(--accent)/0.12)',
+            hoverBackground: 'rgb(var(--primary-hover)/0.12)',
           },
         },
         dark: {
@@ -1005,8 +1011,8 @@ export const createCustomPreset = (sizeStore: ReturnType<typeof useSizeStore>) =
       root: {
         background: 'rgb(var(--background))',
         borderColor: 'rgb(var(--input))',
-        hoverBorderColor: 'rgb(var(--primary))',
-        focusBorderColor: 'rgb(var(--primary))',
+        hoverBorderColor: 'rgb(var(--primary-hover))',
+        focusBorderColor: 'rgb(var(--ring))',
         color: 'rgb(var(--foreground))',
         placeholderColor: 'rgb(var(--muted-foreground))',
         disabledBackground: 'rgb(var(--muted))',
@@ -1018,8 +1024,8 @@ export const createCustomPreset = (sizeStore: ReturnType<typeof useSizeStore>) =
       root: {
         background: 'rgb(var(--background))',
         borderColor: 'rgb(var(--input))',
-        hoverBorderColor: 'rgb(var(--primary))',
-        focusBorderColor: 'rgb(var(--primary))',
+        hoverBorderColor: 'rgb(var(--primary-hover))',
+        focusBorderColor: 'rgb(var(--ring))',
         color: 'rgb(var(--foreground))',
         placeholderColor: 'rgb(var(--muted-foreground))',
         disabledBackground: 'rgb(var(--muted))',
@@ -1059,8 +1065,8 @@ export const createCustomPreset = (sizeStore: ReturnType<typeof useSizeStore>) =
       root: {
         background: 'rgb(var(--background))',
         borderColor: 'rgb(var(--input))',
-        hoverBorderColor: 'rgb(var(--primary))',
-        focusBorderColor: 'rgb(var(--primary))',
+        hoverBorderColor: 'rgb(var(--primary-hover))',
+        focusBorderColor: 'rgb(var(--ring))',
         color: 'rgb(var(--foreground))',
         disabledBackground: 'rgb(var(--muted))',
         disabledColor: 'rgb(var(--muted-foreground))',
@@ -1158,8 +1164,8 @@ export const createCustomPreset = (sizeStore: ReturnType<typeof useSizeStore>) =
       root: {
         background: 'rgb(var(--background))',
         borderColor: 'rgb(var(--input))',
-        hoverBorderColor: 'rgb(var(--primary))',
-        focusBorderColor: 'rgb(var(--primary))',
+        hoverBorderColor: 'rgb(var(--primary-hover))',
+        focusBorderColor: 'rgb(var(--ring))',
         color: 'rgb(var(--foreground))',
         disabledBackground: 'rgb(var(--muted))',
         disabledColor: 'rgb(var(--muted-foreground))',
@@ -1177,8 +1183,8 @@ export const createCustomPreset = (sizeStore: ReturnType<typeof useSizeStore>) =
       },
       option: {
         color: 'rgb(var(--popover-foreground))',
-        focusBackground: 'rgb(var(--accent))',
-        focusColor: 'rgb(var(--accent-foreground))',
+        focusBackground: 'rgb(var(--primary-light))',
+        focusColor: 'rgb(var(--primary-light-foreground))',
         selectedBackground: 'rgb(var(--primary))',
         selectedColor: 'rgb(var(--primary-foreground))',
         selectedFocusBackground: 'rgb(var(--primary))',
@@ -1323,8 +1329,8 @@ export const createCustomPreset = (sizeStore: ReturnType<typeof useSizeStore>) =
       },
       item: {
         color: 'rgb(var(--popover-foreground))',
-        focusBackground: 'rgb(var(--accent))',
-        focusColor: 'rgb(var(--accent-foreground))',
+        focusBackground: 'rgb(var(--primary-light))',
+        focusColor: 'rgb(var(--primary-light-foreground))',
       },
     },
     // Menubar - 顶栏横向导航，完全对齐 ThemeCssVars & SizeCssVars
@@ -1369,7 +1375,7 @@ export const createCustomPreset = (sizeStore: ReturnType<typeof useSizeStore>) =
         borderColor: 'rgb(var(--border))',
         borderWidth: '1px',
         borderRadius: 'var(--radius-md)',
-        shadow: 'var(--shadow-lg)',
+        shadow: '0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1)',
         mobileIndent: 'var(--spacing-md)',
         icon: {
           size: 'var(--font-size-sm)',
@@ -1391,7 +1397,7 @@ export const createCustomPreset = (sizeStore: ReturnType<typeof useSizeStore>) =
         focusRing: {
           width: 'calc(var(--spacing-xs) / 2)',
           style: 'solid',
-          color: 'rgb(var(--primary))',
+          color: 'rgb(var(--ring))',
           offset: 'calc(var(--spacing-xs) / 2)',
           shadow: 'none',
         },
@@ -1407,7 +1413,7 @@ export const createCustomPreset = (sizeStore: ReturnType<typeof useSizeStore>) =
       },
       itemLink: {
         color: 'rgb(var(--foreground))',
-        hoverColor: 'rgb(var(--primary))',
+        hoverColor: 'rgb(var(--primary-hover))',
       },
       separator: {
         color: 'rgb(var(--muted-foreground))',
@@ -1433,8 +1439,8 @@ export const createCustomPreset = (sizeStore: ReturnType<typeof useSizeStore>) =
       },
       option: {
         color: 'rgb(var(--popover-foreground))',
-        focusBackground: 'rgb(var(--accent))',
-        focusColor: 'rgb(var(--accent-foreground))',
+        focusBackground: 'rgb(var(--primary-light))',
+        focusColor: 'rgb(var(--primary-light-foreground))',
         selectedBackground: 'rgb(var(--primary))',
         selectedColor: 'rgb(var(--primary-foreground))',
         selectedFocusBackground: 'rgb(var(--primary))',
@@ -1450,8 +1456,8 @@ export const createCustomPreset = (sizeStore: ReturnType<typeof useSizeStore>) =
       root: {
         background: 'rgb(var(--background))',
         borderColor: 'rgb(var(--input))',
-        hoverBorderColor: 'rgb(var(--primary))',
-        focusBorderColor: 'rgb(var(--primary))',
+        hoverBorderColor: 'rgb(var(--primary-hover))',
+        focusBorderColor: 'rgb(var(--ring))',
         color: 'rgb(var(--foreground))',
         disabledBackground: 'rgb(var(--muted))',
         disabledColor: 'rgb(var(--muted-foreground))',
@@ -1464,8 +1470,8 @@ export const createCustomPreset = (sizeStore: ReturnType<typeof useSizeStore>) =
       },
       option: {
         color: 'rgb(var(--popover-foreground))',
-        focusBackground: 'rgb(var(--accent))',
-        focusColor: 'rgb(var(--accent-foreground))',
+        focusBackground: 'rgb(var(--primary-light))',
+        focusColor: 'rgb(var(--primary-light-foreground))',
         selectedBackground: 'rgb(var(--primary))',
         selectedColor: 'rgb(var(--primary-foreground))',
       },
@@ -1479,8 +1485,8 @@ export const createCustomPreset = (sizeStore: ReturnType<typeof useSizeStore>) =
       root: {
         background: 'rgb(var(--background))',
         borderColor: 'rgb(var(--input))',
-        hoverBorderColor: 'rgb(var(--primary))',
-        focusBorderColor: 'rgb(var(--primary))',
+        hoverBorderColor: 'rgb(var(--primary-hover))',
+        focusBorderColor: 'rgb(var(--ring))',
         color: 'rgb(var(--foreground))',
         disabledBackground: 'rgb(var(--muted))',
         disabledColor: 'rgb(var(--muted-foreground))',
@@ -1497,8 +1503,8 @@ export const createCustomPreset = (sizeStore: ReturnType<typeof useSizeStore>) =
       },
       option: {
         color: 'rgb(var(--popover-foreground))',
-        focusBackground: 'rgb(var(--accent))',
-        focusColor: 'rgb(var(--accent-foreground))',
+        focusBackground: 'rgb(var(--primary-light))',
+        focusColor: 'rgb(var(--primary-light-foreground))',
       },
     },
     // Tree
@@ -1529,8 +1535,8 @@ export const createCustomPreset = (sizeStore: ReturnType<typeof useSizeStore>) =
       root: {
         background: 'rgb(var(--background))',
         borderColor: 'rgb(var(--input))',
-        hoverBorderColor: 'rgb(var(--primary))',
-        focusBorderColor: 'rgb(var(--primary))',
+        hoverBorderColor: 'rgb(var(--primary-hover))',
+        focusBorderColor: 'rgb(var(--ring))',
         color: 'rgb(var(--foreground))',
         disabledBackground: 'rgb(var(--muted))',
         disabledColor: 'rgb(var(--muted-foreground))',
@@ -1547,7 +1553,7 @@ export const createCustomPreset = (sizeStore: ReturnType<typeof useSizeStore>) =
         },
         node: {
           color: 'rgb(var(--popover-foreground))',
-          hoverBackground: 'rgb(var(--accent))',
+          hoverBackground: 'rgb(var(--primary-hover) / 0.15)',
           selectedBackground: 'rgb(var(--primary))',
           selectedColor: 'rgb(var(--primary-foreground))',
         },
@@ -1558,8 +1564,8 @@ export const createCustomPreset = (sizeStore: ReturnType<typeof useSizeStore>) =
       root: {
         background: 'rgb(var(--background))',
         borderColor: 'rgb(var(--input))',
-        hoverBorderColor: 'rgb(var(--primary))',
-        focusBorderColor: 'rgb(var(--primary))',
+        hoverBorderColor: 'rgb(var(--primary-hover))',
+        focusBorderColor: 'rgb(var(--ring))',
         color: 'rgb(var(--foreground))',
         disabledBackground: 'rgb(var(--muted))',
         disabledColor: 'rgb(var(--muted-foreground))',
@@ -1576,8 +1582,8 @@ export const createCustomPreset = (sizeStore: ReturnType<typeof useSizeStore>) =
       },
       option: {
         color: 'rgb(var(--popover-foreground))',
-        focusBackground: 'rgb(var(--accent))',
-        focusColor: 'rgb(var(--accent-foreground))',
+        focusBackground: 'rgb(var(--primary-light))',
+        focusColor: 'rgb(var(--primary-light-foreground))',
         selectedBackground: 'rgb(var(--primary))',
         selectedColor: 'rgb(var(--primary-foreground))',
       },
@@ -1610,8 +1616,8 @@ export const createCustomPreset = (sizeStore: ReturnType<typeof useSizeStore>) =
     password: {
       root: {
         borderColor: 'rgb(var(--input))',
-        hoverBorderColor: 'rgb(var(--primary))',
-        focusBorderColor: 'rgb(var(--primary))',
+        hoverBorderColor: 'rgb(var(--primary-hover))',
+        focusBorderColor: 'rgb(var(--ring))',
         disabledBackground: 'rgb(var(--muted))',
         disabledColor: 'rgb(var(--muted-foreground))',
       },
@@ -1629,8 +1635,8 @@ export const createCustomPreset = (sizeStore: ReturnType<typeof useSizeStore>) =
       root: {
         background: 'rgb(var(--background))',
         borderColor: 'rgb(var(--input))',
-        hoverBorderColor: 'rgb(var(--primary))',
-        focusBorderColor: 'rgb(var(--primary))',
+        hoverBorderColor: 'rgb(var(--primary-hover))',
+        focusBorderColor: 'rgb(var(--ring))',
         color: 'rgb(var(--foreground))',
         disabledBackground: 'rgb(var(--muted))',
         disabledColor: 'rgb(var(--muted-foreground))',
@@ -1652,8 +1658,8 @@ export const createCustomPreset = (sizeStore: ReturnType<typeof useSizeStore>) =
       },
       date: {
         color: 'rgb(var(--popover-foreground))',
-        hoverBackground: 'rgb(var(--accent))',
-        hoverColor: 'rgb(var(--accent-foreground))',
+        hoverBackground: 'rgb(var(--primary-hover) / 0.15)',
+        hoverColor: 'rgb(var(--foreground))',
         selectedBackground: 'rgb(var(--primary))',
         selectedColor: 'rgb(var(--primary-foreground))',
       },
@@ -1679,8 +1685,8 @@ export const createCustomPreset = (sizeStore: ReturnType<typeof useSizeStore>) =
       },
       option: {
         color: 'rgb(var(--foreground))',
-        focusBackground: 'rgb(var(--accent))',
-        focusColor: 'rgb(var(--accent-foreground))',
+        focusBackground: 'rgb(var(--primary-light))',
+        focusColor: 'rgb(var(--primary-light-foreground))',
       },
     },
     // PickList
@@ -1701,8 +1707,8 @@ export const createCustomPreset = (sizeStore: ReturnType<typeof useSizeStore>) =
       },
       option: {
         color: 'rgb(var(--foreground))',
-        focusBackground: 'rgb(var(--accent))',
-        focusColor: 'rgb(var(--accent-foreground))',
+        focusBackground: 'rgb(var(--primary-light))',
+        focusColor: 'rgb(var(--primary-light-foreground))',
       },
       controls: {
         background: 'transparent',
@@ -1778,8 +1784,8 @@ export const createCustomPreset = (sizeStore: ReturnType<typeof useSizeStore>) =
             background: 'rgb(var(--secondary))',
             borderColor: 'rgb(var(--input))',
             color: 'rgb(var(--secondary-foreground))',
-            hoverBackground: 'rgb(var(--accent))',
-            hoverBorderColor: 'rgb(var(--primary))',
+            hoverBackground: 'rgb(var(--primary-hover) / 0.2)',
+            hoverBorderColor: 'rgb(var(--primary-hover))',
             checkedBackground: 'rgb(var(--primary))',
             checkedBorderColor: 'rgb(var(--primary))',
             checkedColor: 'rgb(var(--primary-foreground))',
@@ -1787,7 +1793,7 @@ export const createCustomPreset = (sizeStore: ReturnType<typeof useSizeStore>) =
           },
           icon: {
             color: 'rgb(var(--secondary-foreground))',
-            hoverColor: 'rgb(var(--accent-foreground))',
+            hoverColor: 'rgb(var(--foreground))',
             checkedColor: 'rgb(var(--primary-foreground))',
           },
           content: {
@@ -1799,7 +1805,7 @@ export const createCustomPreset = (sizeStore: ReturnType<typeof useSizeStore>) =
             background: 'rgb(var(--secondary))',
             borderColor: 'rgb(var(--input))',
             color: 'rgb(var(--foreground))',
-            hoverBackground: 'rgb(var(--accent))',
+            hoverBackground: 'rgb(var(--primary-hover) / 0.15)',
             hoverBorderColor: 'rgb(var(--border))',
             hoverColor: 'rgb(var(--foreground))',
             checkedBackground: 'rgb(var(--primary))',
@@ -1809,7 +1815,7 @@ export const createCustomPreset = (sizeStore: ReturnType<typeof useSizeStore>) =
           },
           icon: {
             color: 'rgb(var(--foreground))',
-            hoverColor: 'rgb(var(--accent-foreground))',
+            hoverColor: 'rgb(var(--foreground))',
             checkedColor: 'rgb(var(--primary-foreground))',
           },
           content: {
@@ -1851,24 +1857,24 @@ export const createCustomPreset = (sizeStore: ReturnType<typeof useSizeStore>) =
         gap: 'var(--spacing-xs)',
       },
       item: {
-        focusBackground: 'rgb(var(--accent-light))',
-        activeBackground: 'rgb(var(--accent))',
+        focusBackground: 'transparent',
+        activeBackground: 'transparent',
         color: 'rgb(var(--foreground))',
-        focusColor: 'rgb(var(--accent-light-foreground))',
-        activeColor: 'rgb(var(--accent-foreground))',
+        focusColor: 'transparent',
+        activeColor: 'transparent',
         padding: 'var(--spacing-sm) var(--spacing-md)',
         borderRadius: 'var(--radius-sm)',
         gap: 'var(--spacing-sm)',
         icon: {
           color: 'rgb(var(--muted-foreground))',
-          focusColor: 'rgb(var(--accent-light-foreground))',
-          activeColor: 'rgb(var(--accent-foreground))',
+          focusColor: 'rgb(var(--primary-light-foreground))',
+          activeColor: 'rgb(var(--primary-foreground))',
         },
       },
       submenuIcon: {
         color: 'rgb(var(--muted-foreground))',
-        focusColor: 'rgb(var(--accent-light-foreground))',
-        activeColor: 'rgb(var(--accent-foreground))',
+        focusColor: 'transparent',
+        activeColor: 'transparent',
       },
       separator: {
         borderColor: 'rgb(var(--border))',
@@ -1887,11 +1893,12 @@ export const createCustomPreset = (sizeStore: ReturnType<typeof useSizeStore>) =
       header: {
         background: 'transparent',
         borderColor: 'transparent',
+        borderWidth: '0',
         color: 'rgb(var(--foreground))',
-        hoverBackground: 'rgb(var(--accent))',
-        hoverColor: 'rgb(var(--accent-foreground))',
-        focusBackground: 'rgb(var(--accent))',
-        activeBackground: 'transparent', // Usually keep transparent and jsut rotate icon
+        hoverBackground: 'transparent',
+        hoverColor: 'transparent',
+        focusBackground: 'transparent',
+        activeBackground: 'transparent', // Usually keep transparent and just rotate icon
         borderRadius: 'var(--radius-md)',
       },
       content: {
@@ -1912,8 +1919,10 @@ export const createCustomPreset = (sizeStore: ReturnType<typeof useSizeStore>) =
       },
       item: {
         color: 'rgb(var(--foreground))',
-        focusBackground: 'rgb(var(--accent))',
-        focusColor: 'rgb(var(--accent-foreground))',
+        focusBackground: 'transparent',
+        focusColor: 'transparent',
+        borderWidth: '0',
+        borderColor: 'transparent',
       },
     },
     // TabMenu - 圆角系统融合
@@ -1929,11 +1938,11 @@ export const createCustomPreset = (sizeStore: ReturnType<typeof useSizeStore>) =
         background: 'transparent',
         borderColor: 'transparent',
         color: 'rgb(var(--muted-foreground))',
-        hoverBackground: 'rgb(var(--accent))',
-        hoverColor: 'rgb(var(--accent-foreground))',
+        hoverBackground: 'rgb(var(--primary-hover) / 0.15)',
+        hoverColor: 'rgb(var(--foreground))',
         activeBackground: 'transparent',
-        activeBorderColor: 'rgb(var(--primary))',
-        activeColor: 'rgb(var(--primary))',
+        activeBorderColor: 'rgb(var(--accent))',
+        activeColor: 'rgb(var(--accent))',
         borderRadius: 'var(--radius-sm)',
       },
     },

@@ -6,6 +6,10 @@ alwaysApply: true
 
 # UI 架构与样式规则
 
+## 0. 颜色语义权威（配色决策必读）
+
+**颜色语义决策以 `src/constants/theme/colorUsage.ts` 为准（SSOT）**，详见 `.cursor/rules/21-color-authority.mdc`、`21-color-semantic-usage.mdc`。primary=品牌，primary-hover=悬停，primary-light=聚焦预选，accent=独立互补高亮（Tab 指示线/特殊标记），ring=focus ring。hover/active 使用 primary-hover 系列。
+
 ## 1. UnoCSS（唯一的样式方式）
 
 - **语义类**：优先使用语义类而不是原始工具类。

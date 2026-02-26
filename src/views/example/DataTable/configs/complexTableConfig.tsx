@@ -12,7 +12,7 @@ export interface ComplexOrder {
   items: Array<{ name: string; price: number; quantity: number }>
 }
 
-const statusColors = { pending: 'text-warn', shipped: 'text-primary', delivered: 'text-success' }
+const statusColors = { pending: 'text-warn', shipped: 'text-info', delivered: 'text-success' }
 
 export const complexColumns: DataTableColumn<ComplexOrder>[] = [
   { field: 'id', header: '', expander: true, width: 'var(--spacing-2xl)' },

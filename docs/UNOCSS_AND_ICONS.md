@@ -14,6 +14,7 @@
 - `src/constants/size.ts` → `LAYOUT_DIMENSION_KEYS`（布局变量白名单）
 - `src/constants/sizeScale.ts` → `SIZE_SCALE_KEYS`（xs→5xl 阶梯）
 - `src/utils/theme/metadata.ts` → 主题相关元数据（quadFamilies 含 primary、accent、danger、warn、success、info，对应语义类如 `bg-primary`、`text-info` 等）
+- `src/constants/theme/colorUsage.ts` → **颜色语义权威（SSOT）**，primary/accent/ring/neutral 的职责定义，详见 `.cursor/rules/21-color-authority.mdc`
 
 结论：
 
@@ -62,14 +63,14 @@
 
 **禁止示例（不要再出现在业务代码）：**
 
-| ❌ 不允许                | ✅ 推荐写法                       | 说明                        |
-| ------------------------ | --------------------------------- | --------------------------- |
-| `bg-surface-100`         | `bg-muted`                        | 代码块、弱对比背景          |
-| `bg-surface-200`         | `bg-card`                         | 卡片、面板                  |
-| `bg-surface-ground`      | `bg-background` / `bg-card`       | 视实际语义选择              |
-| `bg-surface-ground/50`   | `bg-card` / `bg-primary/5`        | 顶部栏浅背景                |
-| `dark:bg-surface-700`    | 依赖 token 自动切换               | 深浅模式由 CSS 变量统一控制 |
-| `hover:bg-surface-hover` | `hover:bg-accent` 或交互 shortcut | 悬停态统一用语义类          |
+| ❌ 不允许                | ✅ 推荐写法                              | 说明                        |
+| ------------------------ | ---------------------------------------- | --------------------------- |
+| `bg-surface-100`         | `bg-muted`                               | 代码块、弱对比背景          |
+| `bg-surface-200`         | `bg-card`                                | 卡片、面板                  |
+| `bg-surface-ground`      | `bg-background` / `bg-card`              | 视实际语义选择              |
+| `bg-surface-ground/50`   | `bg-card` / `bg-primary/5`               | 顶部栏浅背景                |
+| `dark:bg-surface-700`    | 依赖 token 自动切换                      | 深浅模式由 CSS 变量统一控制 |
+| `hover:bg-surface-hover` | `hover:bg-primary-hover` 或交互 shortcut | 悬停态统一用语义类          |
 
 如确有新的语义需求，请**先更新主题系统（`metadata.ts` + `uno.config.ts`）**再在 UI 中使用对应 token，禁止直接在模板里创造新的 `bg-*` 类名。
 
@@ -141,7 +142,7 @@ UnoCSS 内置的 `presetUno` 会提供 Tailwind 风格的 `max-w-2xl` / `max-w-7
 
 ```vue
 <div
-  class="rounded-scale-md transition-all duration-scale-md hover:shadow-md hover:bg-accent-light"
+  class="rounded-scale-md transition-all duration-scale-md hover:shadow-md hover:bg-primary-light"
 />
 <div class="interactive-hover" />
 <!-- 含 transition + hover 效果 -->
@@ -151,10 +152,10 @@ UnoCSS 内置的 `presetUno` 会提供 Tailwind 风格的 `max-w-2xl` / `max-w-7
 
 Icons 为独立 DOM 元素，**父容器的 transition 不会影响 Icons 的 color/opacity 变化**。当 Icons 使用 `group-hover:`、`hover:` 等颜色/透明度类时，**过渡类必须写在 Icons 的 class 上**。
 
-| 写法                                                                       | 结果                     |
-| -------------------------------------------------------------------------- | ------------------------ |
-| ✅ `class="transition-colors duration-scale-md group-hover:text-primary!"` | Icons 颜色平滑过渡       |
-| ❌ 父 div 有 `transition-all`，Icons 仅有 `group-hover:text-primary!`      | Icons 颜色突变（无过渡） |
+| 写法                                                                             | 结果                     |
+| -------------------------------------------------------------------------------- | ------------------------ |
+| ✅ `class="transition-colors duration-scale-md group-hover:text-primary-hover!"` | Icons 颜色平滑过渡       |
+| ❌ 父 div 有 `transition-all`，Icons 仅有 `group-hover:text-accent!`             | Icons 颜色突变（无过渡） |
 
 **图标 + 文字组合**：父容器负责背景/边框/阴影过渡；Icons 若有 `group-hover:` 颜色/透明度变化，**必须在 Icons 自身加** `transition-colors` 或 `transition-opacity` + `duration-scale-*`。
 
@@ -264,15 +265,15 @@ Icons 为独立 DOM 元素，**父容器的 transition 不会影响 Icons 的 co
 
 **决策表（AI 优先按此选择）：**
 
-| 场景                     | 推荐方式          | 示例                                                |
-| ------------------------ | ----------------- | --------------------------------------------------- |
-| 需强制覆盖且避免 `!`     | 使用 `color` prop | `color="rgb(var(--primary))"`                       |
-| 需覆盖且用 class         | 颜色类加 `!`      | `class="text-primary!"`                             |
-| hover / group-hover 颜色 | 状态类也加 `!`    | `class="group-hover:text-accent-light-foreground!"` |
-| opacity 被覆盖           | opacity 类加 `!`  | `class="opacity-100!"`                              |
-| 动态/主题变量            | `color` prop      | `color="rgb(var(--primary))"`                       |
-| 继承父级文字颜色         | `text-current`    | `class="text-current"`                              |
-| 自定义 `i-custom:*` 图标 | 与 iconify 相同   | 同样遵循上述规则                                    |
+| 场景                     | 推荐方式          | 示例                                      |
+| ------------------------ | ----------------- | ----------------------------------------- |
+| 需强制覆盖且避免 `!`     | 使用 `color` prop | `color="rgb(var(--primary))"`             |
+| 需覆盖且用 class         | 颜色类加 `!`      | `class="text-primary!"`                   |
+| hover / group-hover 颜色 | 状态类也加 `!`    | `class="group-hover:text-primary-hover!"` |
+| opacity 被覆盖           | opacity 类加 `!`  | `class="opacity-100!"`                    |
+| 动态/主题变量            | `color` prop      | `color="rgb(var(--primary))"`             |
+| 继承父级文字颜色         | `text-current`    | `class="text-current"`                    |
+| 自定义 `i-custom:*` 图标 | 与 iconify 相同   | 同样遵循上述规则                          |
 
 **推荐用法速查：**
 
@@ -280,10 +281,10 @@ Icons 为独立 DOM 元素，**父容器的 transition 不会影响 Icons 的 co
 <!-- 方式一：color prop（无需 !，优先级最高） -->
 <Icons name="i-custom:custom-juejin" color="rgb(var(--primary))" />
 
-<!-- 方式二：class + !（必须覆盖默认/父级时） -->
+<!-- 方式二：class + !（必须覆盖默认/父级时；品牌静态场景用 text-primary!，hover 用 primary-hover） -->
 <Icons
   name="i-lucide-chevron-right"
-  class="text-primary! group-hover:text-accent-light-foreground!"
+  class="text-primary-hover! group-hover:text-primary-light-foreground!"
 />
 
 <!-- 方式三：继承父级 -->
@@ -300,15 +301,15 @@ Icons 为独立 DOM 元素，**父容器的 transition 不会影响 Icons 的 co
 当 Icons 使用 `group-hover:`、`hover:` 等颜色/透明度类时，**transition 必须写在 Icons 的 class 上**，父容器 transition 无效。详见 §2.7.1。
 
 ```vue
-<!-- ✅ 正确：Icons 自身上 transition -->
+<!-- ✅ 正确：Icons 自身上 transition；hover 用 primary-hover；品牌静态颜色可用 text-primary! -->
 <Icons
-  class="transition-colors duration-scale-md group-hover:text-primary!"
+  class="transition-colors duration-scale-md group-hover:text-primary-hover!"
   name="i-lucide-chevron-right"
 />
 
 <!-- ❌ 错误：父有 transition，Icons 无 transition，颜色会突变 -->
 <div class="group transition-all duration-scale-md">
-  <Icons class="group-hover:text-primary!" name="..." />
+  <Icons class="group-hover:text-primary-hover!" name="..." />
 </div>
 ```
 
@@ -412,7 +413,7 @@ A: 确保使用 `rgb(var(--primary))` 格式，而不是 `var(--primary)`。
 A: Icons 组件在未传 `color` 时会自动添加 `text-foreground`；在 PrimeVue 等第三方组件内时，父级样式权重更高。当多个颜色类特异性相同时，生效顺序不确定。解决方式：
 
 - **优先**：改用 `color` prop，避免 class 权重问题
-- **其次**：为颜色类加 `!` 修饰符，如 `text-primary!`、`group-hover:text-accent-light-foreground!`
+- **其次**：为颜色类加 `!` 修饰符，如 `text-primary!`、`group-hover:text-primary-hover!`
   详见 §6.3.1。
 
 #### Q: 何时使用语义尺寸 vs 自定义尺寸？

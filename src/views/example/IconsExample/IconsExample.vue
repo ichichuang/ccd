@@ -193,8 +193,8 @@ watch(activeTab, () => {
                         <div
                           v-for="icon in displayedIcons"
                           :key="icon"
-                          class="flex flex-col items-center gap-sm p-padding-md bg-card component-border rounded-scale-md cursor-pointer transition-all duration-scale-md hover:border-primary hover:shadow-md"
-                          :class="{ 'border-primary': selectedIcon === icon }"
+                          class="flex flex-col items-center gap-sm p-padding-md bg-card component-border rounded-scale-md cursor-pointer transition-all duration-scale-md hover:border-accent hover:shadow-md"
+                          :class="{ 'border-accent': selectedIcon === icon }"
                           @click="selectedIcon = icon"
                         >
                           <div

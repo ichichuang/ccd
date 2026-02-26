@@ -1,0 +1,60 @@
+---
+description: 颜色语义使用规范，hover 使用 primary-hover，accent 为独立高亮色
+globs: src/**/*.{vue,ts,tsx}
+alwaysApply: true
+---
+
+# Color Semantic Usage (颜色语义使用)
+
+## 1. Primary Directive
+
+Never choose colors visually. Always map UI intention → semantic token per `colorUsage.ts`.
+
+## 2. Semantic Mapping (AI 必须遵守)
+
+| 意图        | Token         | 示例                            |
+| ----------- | ------------- | ------------------------------- |
+| 品牌/主 CTA | primary       | `bg-primary`、`text-primary`    |
+| 悬停反馈    | primary-hover | `hover:bg-primary-hover`        |
+| 聚焦预选    | primary-light | PrimeVue 列表项 focus           |
+| 独立高亮    | accent        | Tab 指示线、特殊标记、badge     |
+| Focus 圈    | ring          | `focus:ring-ring`               |
+| 结构/层级   | neutral       | `bg-secondary`、`border-border` |
+
+- **primary** = brand authority（品牌主色，用于按钮填充、选中态、品牌标识）
+- **primary-hover** = interaction hover（悬停态，primary 的深/浅变体）
+- **primary-light** = focus highlight（聚焦预选，primary 的极浅底）
+- **accent** = independent highlight（独立互补色，用于 Tab 激活线、特殊标记）
+- **ring** = focus system（焦点环）
+- **neutral** = layout structure（布局结构）
+
+## 3. Forbidden (AI 自动检查)
+
+- `hover:bg-accent`、`hover:text-accent` → 改为 `hover:bg-primary-hover`、`hover:text-primary-hover`
+- `focus:ring-primary` → 必须 `focus:ring-ring`
+- `bg-accent-light` 作为 selection → 必须 `bg-primary-light`
+
+## 4. Component Mapping
+
+| 组件          | 状态             | Token              |
+| ------------- | ---------------- | ------------------ |
+| Button        | filled           | primary            |
+| Button        | ghost hover      | primary-hover/0.15 |
+| Input         | hover border     | primary-hover      |
+| Input         | focus border     | ring               |
+| Select Option | focus            | primary-light      |
+| Select Option | selected         | primary            |
+| Table Row     | hover            | primary-hover/0.12 |
+| Tab           | active indicator | accent             |
+| Badge         | highlight        | accent             |
+
+## 5. Decision Flow (AI 按此顺序思考)
+
+1. 这是品牌行为？ → primary
+2. 用户正在悬停？ → primary-hover
+3. 键盘聚焦预选？ → primary-light
+4. 需要特殊视觉高亮（Tab 指示线、badge）？ → accent
+5. 只是结构？ → neutral
+6. 状态反馈？ → status color (danger/warn/success/info)
+
+**If unsure, choose primary-hover for interaction, accent for static highlight.**

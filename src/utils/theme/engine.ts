@@ -1,10 +1,10 @@
-import { hexToRgb, adjustBrightness, isDarkColor, mixHex, normalizeHex } from './colors'
+import { adjustBrightness, hexToRgb, isDarkColor, mixHex, normalizeHex, shiftHue } from './colors'
 import { COLOR_FAMILIES, THEME_ENGINE } from './metadata'
 
 export { COLOR_FAMILIES, THEME_ENGINE }
 
 /**
- * 生成语义化主题 CSS 变量 (Final v3.5)
+ * 生成语义化主题 CSS 变量 (Final v4.0 - Switch from color-mix to static JS calc)
  */
 export function generateThemeVars(preset: ThemePreset, isDark: boolean): ThemeCssVars {
   const E = THEME_ENGINE
@@ -38,23 +38,21 @@ export function generateThemeVars(preset: ThemePreset, isDark: boolean): ThemeCs
   )
 
   // 3. 卡片/Popover 背景
-  const cardBase = resolveToken(modeConfig?.neutral?.bg, () =>
-    isDark
-      ? preset.backgroundDark
+  const cardBase = resolveToken(modeConfig?.neutral?.bg, () => {
+    if (isDark) {
+      return preset.backgroundDark
         ? adjustBrightness(preset.backgroundDark, E.cardBrightnessOffset)
         : E.cardDark
-      : preset.backgroundLight
-        ? adjustBrightness(preset.backgroundLight, E.cardBrightnessOffset)
-        : E.bgLight
-  )
+    }
+    return preset.backgroundLight
+      ? adjustBrightness(preset.backgroundLight, -Math.abs(E.cardBrightnessOffset))
+      : E.bgLight
+  })
 
   const cardFg = resolveToken(modeConfig?.neutral?.foreground, () => fgBase)
 
   // 4. Primary (核心逻辑: Config -> Legacy String -> Default)
-  const primaryBase = resolveToken(
-    modeConfig?.primary?.default,
-    () => preset.primary || '#000000' // Fallback needed if strictly no primary provided (shouldn't happen in valid presets)
-  )
+  const primaryBase = resolveToken(modeConfig?.primary?.default, () => preset.primary || '#000000')
 
   const primaryFg = resolveToken(modeConfig?.primary?.foreground, () =>
     isDarkColor(primaryBase) ? E.fgDark : E.fgLight
@@ -69,12 +67,11 @@ export function generateThemeVars(preset: ThemePreset, isDark: boolean): ThemeCs
   const primaryLight = resolveToken(modeConfig?.primary?.light, () =>
     isDark
       ? adjustBrightness(primaryBase, E.lightBrightnessDark)
-      : mixHex(primaryBase, E.lightMixWhite, E.lightMixWhiteWeight)
+      : mixHex(primaryBase, E.lightMixWhite, 1 - E.lightMixWhiteWeight)
   )
 
   const getRobustLightFg = (baseColor: string) => {
-    const darkened = adjustBrightness(baseColor, -40)
-    return isDarkColor(darkened) ? darkened : E.fgLight
+    return mixHex(baseColor, '#000000', 0.6)
   }
 
   const primaryLightFg = resolveToken(modeConfig?.primary?.lightForeground, () =>
@@ -82,10 +79,7 @@ export function generateThemeVars(preset: ThemePreset, isDark: boolean): ThemeCs
   )
 
   // 5. Secondary / Muted
-  const secondaryBase = resolveToken(
-    modeConfig?.neutral?.bg, // Default fallback to card bg logic if not overridden, or base neutral
-    () => baseNeutral
-  )
+  const secondaryBase = resolveToken(modeConfig?.neutral?.bg, () => baseNeutral)
   const secondaryFg = resolveToken(modeConfig?.neutral?.secondaryForeground, () =>
     isDark ? E.secondaryFgDark : E.fgLight
   )
@@ -98,13 +92,7 @@ export function generateThemeVars(preset: ThemePreset, isDark: boolean): ThemeCs
   // 6. Accent
   const accentBase = resolveToken(
     modeConfig?.accent?.default,
-    () =>
-      preset.accent ??
-      mixHex(
-        primaryBase,
-        baseNeutral,
-        isDark ? E.accentMixPrimaryWeightDark : E.accentMixPrimaryWeightLight
-      )
+    () => preset.accent ?? shiftHue(primaryBase, E.accentHueShift)
   )
   const accentFg = resolveToken(modeConfig?.accent?.foreground, () =>
     isDarkColor(accentBase) ? E.fgDark : E.fgLight
@@ -118,20 +106,19 @@ export function generateThemeVars(preset: ThemePreset, isDark: boolean): ThemeCs
   const accentLight = resolveToken(modeConfig?.accent?.light, () =>
     isDark
       ? adjustBrightness(accentBase, E.lightBrightnessDark)
-      : mixHex(accentBase, E.lightMixWhite, E.lightMixWhiteWeight)
+      : mixHex(accentBase, E.lightMixWhite, 1 - E.lightMixWhiteWeight)
   )
   const accentLightFg = resolveToken(modeConfig?.accent?.lightForeground, () =>
     isDark ? E.fgDark : getRobustLightFg(accentBase)
   )
 
   // 7. Status Colors (Danger, Warn, Success)
-  // Helper to generate a full quad family if config unavailable
   const generateStatusFamily = (
     config: Partial<ColorTokenState> | undefined,
     baseDefault: string
   ) => {
     const base = resolveToken(config?.default, () => baseDefault)
-    const fg = resolveToken(config?.foreground, () => (isDarkColor(base) ? E.fgDark : E.fgLight)) // often white on status colors
+    const fg = resolveToken(config?.foreground, () => (isDarkColor(base) ? E.fgDark : E.fgLight))
 
     const hover = resolveToken(config?.hover, () =>
       adjustBrightness(base, isDark ? E.hoverBrightnessDark : E.hoverBrightnessLight)
@@ -141,7 +128,7 @@ export function generateThemeVars(preset: ThemePreset, isDark: boolean): ThemeCs
     const light = resolveToken(config?.light, () =>
       isDark
         ? adjustBrightness(base, E.lightBrightnessDark)
-        : mixHex(base, E.lightMixWhite, E.lightMixWhiteWeight)
+        : mixHex(base, E.lightMixWhite, 1 - E.lightMixWhiteWeight)
     )
     const lightFg = resolveToken(config?.lightForeground, () =>
       isDark ? E.fgDark : getRobustLightFg(base)
@@ -165,11 +152,10 @@ export function generateThemeVars(preset: ThemePreset, isDark: boolean): ThemeCs
   } else if (isDark && preset.backgroundDark) {
     sidebarBase = adjustBrightness(preset.backgroundDark, E.sidebarBrightnessOffset)
   } else if (!isDark && preset.backgroundLight) {
-    sidebarBase = adjustBrightness(preset.backgroundLight, E.sidebarBrightnessOffset)
+    sidebarBase = adjustBrightness(preset.backgroundLight, -Math.abs(E.sidebarBrightnessOffset))
   }
 
   const sidebarFg = sidebarConfig?.foreground ? extractHex(sidebarConfig.foreground) : fgBase
-  // defaults for others match main theme if not provided
   const sidebarPrimary = sidebarConfig?.primary ? extractHex(sidebarConfig.primary) : primaryBase
   const sidebarPrimaryFg = sidebarConfig?.primaryForeground
     ? extractHex(sidebarConfig.primaryForeground)
@@ -179,90 +165,94 @@ export function generateThemeVars(preset: ThemePreset, isDark: boolean): ThemeCs
     ? extractHex(sidebarConfig.accentForeground)
     : accentFg
   const sidebarBorder = sidebarConfig?.border ? extractHex(sidebarConfig.border) : baseNeutral
-  const sidebarRing = sidebarConfig?.ring ? extractHex(sidebarConfig.ring) : primaryBase
+  const sidebarRing = sidebarConfig?.ring ? extractHex(sidebarConfig.ring) : accentBase
 
-  // Helper because explicit config values might not need normalization if we trust them, but safer to do it
   function extractHex(val: string) {
     return normalizeHex(val)
   }
 
+  function safeToRgb(val: string) {
+    // Now results are guaranteed to be HEX or precalculated HEX strings
+    return hexToRgb(val)
+  }
+
   return {
-    '--background': hexToRgb(bgBase),
-    '--foreground': hexToRgb(fgBase),
+    '--background': safeToRgb(bgBase),
+    '--foreground': safeToRgb(fgBase),
 
-    '--card': hexToRgb(cardBase),
-    '--card-foreground': hexToRgb(cardFg),
+    '--card': safeToRgb(cardBase),
+    '--card-foreground': safeToRgb(cardFg),
 
-    '--popover': hexToRgb(cardBase),
-    '--popover-foreground': hexToRgb(cardFg),
+    '--popover': safeToRgb(cardBase),
+    '--popover-foreground': safeToRgb(cardFg),
 
-    '--primary': hexToRgb(primaryBase),
-    '--primary-foreground': hexToRgb(primaryFg),
-    '--primary-hover': hexToRgb(primaryHover),
-    '--primary-hover-foreground': hexToRgb(primaryHoverFg),
-    '--primary-light': hexToRgb(primaryLight),
-    '--primary-light-foreground': hexToRgb(primaryLightFg),
+    '--primary': safeToRgb(primaryBase),
+    '--primary-foreground': safeToRgb(primaryFg),
+    '--primary-hover': safeToRgb(primaryHover),
+    '--primary-hover-foreground': safeToRgb(primaryHoverFg),
+    '--primary-light': safeToRgb(primaryLight),
+    '--primary-light-foreground': safeToRgb(primaryLightFg),
 
-    '--secondary': hexToRgb(secondaryBase),
-    '--secondary-foreground': hexToRgb(secondaryFg),
+    '--secondary': safeToRgb(secondaryBase),
+    '--secondary-foreground': safeToRgb(secondaryFg),
 
-    '--muted': hexToRgb(mutedBase),
-    '--muted-foreground': hexToRgb(mutedFg),
+    '--muted': safeToRgb(mutedBase),
+    '--muted-foreground': safeToRgb(mutedFg),
 
-    '--accent': hexToRgb(accentBase),
-    '--accent-foreground': hexToRgb(accentFg),
-    '--accent-hover': hexToRgb(accentHover),
-    '--accent-hover-foreground': hexToRgb(accentHoverFg),
-    '--accent-light': hexToRgb(accentLight),
-    '--accent-light-foreground': hexToRgb(accentLightFg),
+    '--accent': safeToRgb(accentBase),
+    '--accent-foreground': safeToRgb(accentFg),
+    '--accent-hover': safeToRgb(accentHover),
+    '--accent-hover-foreground': safeToRgb(accentHoverFg),
+    '--accent-light': safeToRgb(accentLight),
+    '--accent-light-foreground': safeToRgb(accentLightFg),
 
-    '--danger': hexToRgb(danger.base),
-    '--danger-foreground': hexToRgb(danger.fg),
-    '--danger-hover': hexToRgb(danger.hover),
-    '--danger-hover-foreground': hexToRgb(danger.hoverFg),
-    '--danger-light': hexToRgb(danger.light),
-    '--danger-light-foreground': hexToRgb(danger.lightFg),
+    '--danger': safeToRgb(danger.base),
+    '--danger-foreground': safeToRgb(danger.fg),
+    '--danger-hover': safeToRgb(danger.hover),
+    '--danger-hover-foreground': safeToRgb(danger.hoverFg),
+    '--danger-light': safeToRgb(danger.light),
+    '--danger-light-foreground': safeToRgb(danger.lightFg),
 
-    '--warn': hexToRgb(warn.base),
-    '--warn-foreground': hexToRgb(warn.fg),
-    '--warn-hover': hexToRgb(warn.hover),
-    '--warn-hover-foreground': hexToRgb(warn.hoverFg),
-    '--warn-light': hexToRgb(warn.light),
-    '--warn-light-foreground': hexToRgb(warn.lightFg),
+    '--warn': safeToRgb(warn.base),
+    '--warn-foreground': safeToRgb(warn.fg),
+    '--warn-hover': safeToRgb(warn.hover),
+    '--warn-hover-foreground': safeToRgb(warn.hoverFg),
+    '--warn-light': safeToRgb(warn.light),
+    '--warn-light-foreground': safeToRgb(warn.lightFg),
 
-    '--success': hexToRgb(success.base),
-    '--success-foreground': hexToRgb(success.fg),
-    '--success-hover': hexToRgb(success.hover),
-    '--success-hover-foreground': hexToRgb(success.hoverFg),
-    '--success-light': hexToRgb(success.light),
-    '--success-light-foreground': hexToRgb(success.lightFg),
+    '--success': safeToRgb(success.base),
+    '--success-foreground': safeToRgb(success.fg),
+    '--success-hover': safeToRgb(success.hover),
+    '--success-hover-foreground': safeToRgb(success.hoverFg),
+    '--success-light': safeToRgb(success.light),
+    '--success-light-foreground': safeToRgb(success.lightFg),
 
-    '--info': hexToRgb(info.base),
-    '--info-foreground': hexToRgb(info.fg),
-    '--info-hover': hexToRgb(info.hover),
-    '--info-hover-foreground': hexToRgb(info.hoverFg),
-    '--info-light': hexToRgb(info.light),
-    '--info-light-foreground': hexToRgb(info.lightFg),
+    '--info': safeToRgb(info.base),
+    '--info-foreground': safeToRgb(info.fg),
+    '--info-hover': safeToRgb(info.hover),
+    '--info-hover-foreground': safeToRgb(info.hoverFg),
+    '--info-light': safeToRgb(info.light),
+    '--info-light-foreground': safeToRgb(info.lightFg),
 
-    '--help': hexToRgb(help.base),
-    '--help-foreground': hexToRgb(help.fg),
-    '--help-hover': hexToRgb(help.hover),
-    '--help-hover-foreground': hexToRgb(help.hoverFg),
-    '--help-light': hexToRgb(help.light),
-    '--help-light-foreground': hexToRgb(help.lightFg),
+    '--help': safeToRgb(help.base),
+    '--help-foreground': safeToRgb(help.fg),
+    '--help-hover': safeToRgb(help.hover),
+    '--help-hover-foreground': safeToRgb(help.hoverFg),
+    '--help-light': safeToRgb(help.light),
+    '--help-light-foreground': safeToRgb(help.lightFg),
 
-    '--border': hexToRgb(baseNeutral),
-    '--input': hexToRgb(baseNeutral),
-    '--ring': hexToRgb(primaryBase),
+    '--border': safeToRgb(baseNeutral),
+    '--input': safeToRgb(baseNeutral),
+    '--ring': safeToRgb(primaryBase),
 
-    '--sidebar-background': hexToRgb(sidebarBase),
-    '--sidebar-foreground': hexToRgb(sidebarFg),
-    '--sidebar-primary': hexToRgb(sidebarPrimary),
-    '--sidebar-primary-foreground': hexToRgb(sidebarPrimaryFg),
-    '--sidebar-accent': hexToRgb(sidebarAccent),
-    '--sidebar-accent-foreground': hexToRgb(sidebarAccentFg),
-    '--sidebar-border': hexToRgb(sidebarBorder),
-    '--sidebar-ring': hexToRgb(sidebarRing),
+    '--sidebar-background': safeToRgb(sidebarBase),
+    '--sidebar-foreground': safeToRgb(sidebarFg),
+    '--sidebar-primary': safeToRgb(sidebarPrimary),
+    '--sidebar-primary-foreground': safeToRgb(sidebarPrimaryFg),
+    '--sidebar-accent': safeToRgb(sidebarAccent),
+    '--sidebar-accent-foreground': safeToRgb(sidebarAccentFg),
+    '--sidebar-border': safeToRgb(sidebarBorder),
+    '--sidebar-ring': safeToRgb(sidebarRing),
   }
 }
 

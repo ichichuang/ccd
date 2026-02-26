@@ -75,7 +75,7 @@ const loginSchema = computed<Schema>(() => ({
           <div class="row main-end w-full">
             <a
               href="#"
-              class="text-primary fs-sm no-underline hover:text-primary-hover transition-colors"
+              class="text-primary fs-sm no-underline hover:text-accent transition-colors"
               onClick={(e: Event) => {
                 e.preventDefault()
                 /* TODO: Forgot Password */

@@ -239,7 +239,7 @@ const state = scrollbarRef.value?.state()`,
                     class="p-padding-md rounded-scale-md component-border bg-card hover:bg-accent/50 transition-colors group cursor-default"
                   >
                     <div class="flex justify-between items-start mb-margin-xs">
-                      <span class="font-medium fs-sm group-hover:text-primary transition-colors">
+                      <span class="font-medium fs-sm group-hover:text-accent transition-colors">
                         {{ item.title }}
                       </span>
                       <span class="fs-xs text-muted-foreground">

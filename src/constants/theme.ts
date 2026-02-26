@@ -1,14 +1,19 @@
 /**
  * 核心主题预设池
  * 数据来源参考: AI Colors
+ *
+ * 配色原则：
+ * - primary = 品牌主色（用于按钮填充、选中态、品牌标识）
+ * - accent = 独立互补高亮色（与 primary 形成对比/互补关系，用于 Tab 激活指示线、特殊标记、badge）
+ * - accent 不是 primary 的 hover 变体，hover 应使用 primary-hover
  */
 export const THEME_PRESETS: ThemePreset[] = [
-  // 1. 深蓝 + 天空蓝 (经典与通透)
-  // Primary 是稳重的深蓝，Accent 是明亮的天空蓝，两者无缝衔接，像海洋到天空的过渡
+  // 1. 深蓝 + 琥珀金 (经典互补：蓝↔金)
+  // Primary 是稳重的深蓝，Accent 是明亮的琥珀金，形成经典的蓝金互补对比
   {
     name: 'deep-blue',
     primary: '#2563eb', // blue-600
-    accent: '#38bdf8', // sky-400 (更浅、更亮)
+    accent: '#f59e0b', // amber-500 (蓝色的互补高亮)
     colors: {
       light: {
         primary: {
@@ -19,11 +24,11 @@ export const THEME_PRESETS: ThemePreset[] = [
           lightForeground: '#1e40af',
         },
         accent: {
-          default: '#38bdf8', // sky-400
-          hover: '#0ea5e9', // sky-500
-          foreground: '#0f172a', // ⚠️ 浅色背景配深色字
-          light: '#f0f9ff',
-          lightForeground: '#0c4a6e',
+          default: '#f59e0b', // amber-500 (醒目的金色高亮)
+          hover: '#d97706', // amber-600
+          foreground: '#0f172a', // 浅色金背景配深色字
+          light: '#fffbeb', // amber-50
+          lightForeground: '#92400e', // amber-800
         },
         background: '#ffffff',
         foreground: '#0f172a',
@@ -42,11 +47,11 @@ export const THEME_PRESETS: ThemePreset[] = [
           lightForeground: '#bfdbfe',
         },
         accent: {
-          default: '#0ea5e9', // sky-500 (暗色模式下稍微加深一点以防刺眼)
-          hover: '#38bdf8',
-          foreground: '#ffffff',
-          light: '#0c4a6e',
-          lightForeground: '#e0f2fe',
+          default: '#fbbf24', // amber-400 (暗色模式下稍亮，更醒目)
+          hover: '#fcd34d', // amber-300
+          foreground: '#0f172a', // 金色配深色字
+          light: '#78350f', // amber-900
+          lightForeground: '#fef3c7', // amber-100
         },
         background: '#020617',
         foreground: '#f8fafc',
@@ -59,12 +64,12 @@ export const THEME_PRESETS: ThemePreset[] = [
     },
   },
 
-  // 2. 紫罗兰 + 梦幻粉 (神秘与浪漫)
-  // Primary 是高贵的紫，Accent 是邻近的粉/紫红，过渡非常柔和
+  // 2. 紫罗兰 + 翡翠青 (紫↔青对比：神秘与清透)
+  // Primary 是高贵的紫，Accent 是清透的青绿色，形成鲜明的冷暖对比
   {
     name: 'violet',
     primary: '#7c3aed', // violet-600
-    accent: '#b38df4', // fuchsia-500 (同色系偏粉)
+    accent: '#14b8a6', // teal-500 (紫色的对比高亮)
     colors: {
       light: {
         primary: {
@@ -75,11 +80,11 @@ export const THEME_PRESETS: ThemePreset[] = [
           lightForeground: '#5b21b6',
         },
         accent: {
-          default: '#b38df4', // fuchsia-400 (更亮的粉紫)
-          hover: '#5a2e67',
-          foreground: '#ffffff', // 粉紫色足够深，可以用白字
-          light: '#fdf4ff',
-          lightForeground: '#3a2e67',
+          default: '#14b8a6', // teal-500 (清透的青绿高亮)
+          hover: '#0d9488', // teal-600
+          foreground: '#ffffff',
+          light: '#f0fdfa', // teal-50
+          lightForeground: '#115e59', // teal-800
         },
         background: '#ffffff',
         foreground: '#0f172a',
@@ -95,14 +100,14 @@ export const THEME_PRESETS: ThemePreset[] = [
           hover: '#a78bfa',
           foreground: '#ffffff',
           light: '#4c1d95',
-          lightForeground: '#e5e7eb',
+          lightForeground: '#ddd6fe',
         },
         accent: {
-          default: '#a78bfa', // fuchsia-600
-          hover: '#4d3a82',
-          foreground: '#ffffff',
-          light: '#4d3a82',
-          lightForeground: '#ffffff',
+          default: '#2dd4bf', // teal-400 (暗色模式下更亮)
+          hover: '#5eead4', // teal-300
+          foreground: '#0f172a',
+          light: '#134e4a', // teal-900
+          lightForeground: '#ccfbf1', // teal-100
         },
         background: '#0a0a0a',
         foreground: '#fafafa',
@@ -115,12 +120,12 @@ export const THEME_PRESETS: ThemePreset[] = [
     },
   },
 
-  // 3. 森林绿 + 薄荷青 (自然渐变)
-  // Primary 是深绿，Accent 是清新的薄荷绿/青色，看起来非常干净
+  // 3. 森林绿 + 琥珀金 (绿↔金对比：自然与丰收)
+  // Primary 是深沉的绿，Accent 是温暖的琥珀金，像大自然的绿叶与阳光
   {
     name: 'emerald',
     primary: '#059669', // emerald-600
-    accent: '#2dd4bf', // teal-400 (清爽的青绿)
+    accent: '#f59e0b', // amber-500 (绿色的暖色高亮)
     colors: {
       light: {
         primary: {
@@ -131,14 +136,14 @@ export const THEME_PRESETS: ThemePreset[] = [
           lightForeground: '#064e3b',
         },
         accent: {
-          default: '#2dd4bf', // teal-400
-          hover: '#14b8a6', // teal-500
-          foreground: '#0f172a', // ⚠️ 浅绿背景配深色字
-          light: '#f0fdfa',
-          lightForeground: '#115e59',
+          default: '#f59e0b', // amber-500 (温暖的金色高亮)
+          hover: '#d97706', // amber-600
+          foreground: '#0f172a', // 浅色金背景配深色字
+          light: '#fffbeb', // amber-50
+          lightForeground: '#92400e', // amber-800
         },
         background: '#ffffff',
-        foreground: '#064e3b',
+        foreground: '#0f172a',
         neutral: {
           base: '#e2e8f0',
           bg: '#f8fafc',
@@ -154,11 +159,11 @@ export const THEME_PRESETS: ThemePreset[] = [
           lightForeground: '#d1fae5',
         },
         accent: {
-          default: '#14b8a6', // teal-500
-          hover: '#2dd4bf',
+          default: '#fbbf24', // amber-400 (暗色模式下更亮)
+          hover: '#fcd34d', // amber-300
           foreground: '#0f172a',
-          light: '#134e4a',
-          lightForeground: '#ccfbf1',
+          light: '#78350f', // amber-900
+          lightForeground: '#fef3c7', // amber-100
         },
         background: '#022c22',
         foreground: '#ecfdf5',
@@ -171,12 +176,12 @@ export const THEME_PRESETS: ThemePreset[] = [
     },
   },
 
-  // 4. 玫瑰红 + 珊瑚橙 (暖色渐变)
-  // Primary 是玫红，Accent 是邻近的橙色，像晚霞一样自然过渡
+  // 4. 玫瑰红 + 冰蓝青 (红↔青对比：热情与冷静)
+  // Primary 是热烈的玫红，Accent 是清冷的冰蓝青，形成强烈的冷暖对比
   {
     name: 'ruby',
     primary: '#e11d48', // rose-600
-    accent: '#fb923c', // orange-400
+    accent: '#06b6d4', // cyan-500 (红色的冷色对比高亮)
     colors: {
       light: {
         primary: {
@@ -187,14 +192,14 @@ export const THEME_PRESETS: ThemePreset[] = [
           lightForeground: '#881337',
         },
         accent: {
-          default: '#fb923c', // orange-400
-          hover: '#f97316', // orange-500
-          foreground: '#0f172a', // ⚠️ 浅橙色配深色字
-          light: '#fff7ed',
-          lightForeground: '#9a3412',
+          default: '#06b6d4', // cyan-500 (冰蓝色高亮)
+          hover: '#0891b2', // cyan-600
+          foreground: '#ffffff',
+          light: '#ecfeff', // cyan-50
+          lightForeground: '#155e75', // cyan-800
         },
         background: '#ffffff',
-        foreground: '#4c0519',
+        foreground: '#0f172a',
         neutral: {
           base: '#e5e5e5',
           bg: '#fafafa',
@@ -210,11 +215,11 @@ export const THEME_PRESETS: ThemePreset[] = [
           lightForeground: '#ffe4e6',
         },
         accent: {
-          default: '#f97316', // orange-500
-          hover: '#fb923c',
-          foreground: '#ffffff',
-          light: '#7c2d12',
-          lightForeground: '#fed7aa',
+          default: '#22d3ee', // cyan-400 (暗色模式下更亮)
+          hover: '#67e8f9', // cyan-300
+          foreground: '#0f172a',
+          light: '#164e63', // cyan-900
+          lightForeground: '#cffafe', // cyan-100
         },
         background: '#000000',
         foreground: '#fff1f2',
@@ -222,62 +227,6 @@ export const THEME_PRESETS: ThemePreset[] = [
           base: '#262626',
           bg: '#171717',
           foreground: '#d4d4d4',
-        },
-      },
-    },
-  },
-
-  // 5. 墨玉 + 豆绿 (新中式同色系)
-  // Primary 是深沉的青色，Accent 是清透的黄绿，非常有质感
-  {
-    name: 'jadeite',
-    primary: '#0f766e', // teal-700 (更深沉的玉色)
-    accent: '#84cc16', // lime-500 (鲜活的嫩绿)
-    colors: {
-      light: {
-        primary: {
-          default: '#0f766e', // teal-700
-          hover: '#115e59', // teal-800
-          foreground: '#ffffff',
-          light: '#f0fdfa',
-          lightForeground: '#134e4a',
-        },
-        accent: {
-          default: '#84cc16', // lime-500
-          hover: '#65a30d', // lime-600
-          foreground: '#ffffff',
-          light: '#f7fee7',
-          lightForeground: '#365314',
-        },
-        background: '#fafaf9', // Stone-50
-        foreground: '#1c1917', // Stone-900
-        neutral: {
-          base: '#d6d3d1',
-          bg: '#f5f5f4',
-          foreground: '#57534e',
-        },
-      },
-      dark: {
-        primary: {
-          default: '#14b8a6', // teal-500 (暗模式下提亮)
-          hover: '#2dd4bf',
-          foreground: '#0f172a',
-          light: '#134e4a',
-          lightForeground: '#ccfbf1',
-        },
-        accent: {
-          default: '#a3e635', // lime-400
-          hover: '#84cc16',
-          foreground: '#1a2e05',
-          light: '#365314',
-          lightForeground: '#ecfccb',
-        },
-        background: '#0c0a09', // Stone-950
-        foreground: '#f5f5f4',
-        neutral: {
-          base: '#292524',
-          bg: '#1c1917',
-          foreground: '#a8a29e',
         },
       },
     },

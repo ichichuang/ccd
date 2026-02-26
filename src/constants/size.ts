@@ -39,11 +39,11 @@ export const SIZE_PRESETS: SizePreset[] = [
     fontSizeBase: 15, // 基准 16px
 
     sidebarWidth: 240,
-    sidebarCollapsedWidth: 64,
+    sidebarCollapsedWidth: 60,
     headerHeight: 60,
     breadcrumbHeight: 32,
     footerHeight: 40,
-    tabsHeight: 40,
+    tabsHeight: 36,
   },
 
   // --- 3. 宽松模式 (Loose) ---

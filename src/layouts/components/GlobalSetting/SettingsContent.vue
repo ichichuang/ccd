@@ -204,7 +204,7 @@ function onThemeModeChange(value: ThemeMode) {
             backgroundColor: getPresetPrimaryColor(preset, themeStore.isDark),
           }"
           class="p-padding-md! transition-all! duration-scale-lg! hover:scale-120! active:scale-80!"
-          :class="[themeStore.themeName === preset.name && 'border-primary']"
+          :class="[themeStore.themeName === preset.name && 'border-accent']"
           @click="themeStore.setTheme(preset.name)"
         />
       </div>
@@ -326,7 +326,7 @@ function onThemeModeChange(value: ThemeMode) {
         >
           <Icons
             class="text-muted-foreground"
-            :class="[themeStore.transitionMode === opt.value && 'text-primary']"
+            :class="[themeStore.transitionMode === opt.value && 'text-accent']"
             :name="opt.icon"
             size="3xl"
           />
@@ -340,7 +340,7 @@ function onThemeModeChange(value: ThemeMode) {
         <label class="fs-sm font-medium text-muted-foreground">
           {{ t('settings.transitionDuration') }}
         </label>
-        <span class="fs-sm font-medium text-primary">
+        <span class="fs-sm font-medium text-accent">
           {{ t(currentDurationLabel) }}
         </span>
       </div>

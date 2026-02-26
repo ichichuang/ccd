@@ -109,20 +109,24 @@ export default defineComponent({
     }
 
     /** 父级菜单点击时手动切换展开，避免自定义 slot 的 preventDefault 阻断 PanelMenu 的 toggle */
-    const handleParentItemClick = (e: MouseEvent, _item: PrimeMenuModelItem) => {
+    const handleParentItemClick = (e: Event, _item: PrimeMenuModelItem) => {
       e.preventDefault()
     }
 
-    const isActiveMenuItem = (item: PrimeMenuModelItem): boolean => {
+    /** 计算当前项到激活叶子节点的距离：0=激活项, 1=直接父级, 2=祖父级... -1=未激活 */
+    const getActiveDistance = (item: PrimeMenuModelItem): number => {
       const activePath = getActiveMenuPath(route)
-      return item.route?.path === activePath
-    }
+      if (item.route?.path === activePath) return 0
 
-    const isParentOfActive = (item: PrimeMenuModelItem): boolean => {
       const parentPaths = Array.isArray(route.meta?.parentPaths)
         ? (route.meta?.parentPaths as string[])
         : []
-      return parentPaths.includes(item.key)
+      const idx = parentPaths.indexOf(item.key)
+      if (idx !== -1) {
+        // parentPaths 顺序为 [root, subRoot, ...parent]
+        return parentPaths.length - idx
+      }
+      return -1
     }
 
     // 根据当前路由的 parentPaths 自动展开父级菜单（对齐老项目行为）
@@ -155,6 +159,8 @@ export default defineComponent({
       delay: 100,
     })
 
+    // [style] This inline labelMaxWidthStyle exists because UnoCSS cannot dynamically express
+    // a calculated runtime pixel width (`calc([dynamic_px] - var(--spacing-4xl))`).
     const labelMaxWidthStyle = computed<Record<string, string>>(() => {
       const w: number = menuContainerWidth.value
       // 初始阶段或测不到宽度时，退化为 100%（不会超过容器）
@@ -217,28 +223,36 @@ export default defineComponent({
 
     // --- PanelMenu 渲染器 (展开态) ---
     const renderPanelMenuItem = ({ item }: { item: PrimeMenuModelItem }) => {
-      const isActive = isActiveMenuItem(item)
-      const isParentActive = isParentOfActive(item)
+      const distance = getActiveDistance(item)
 
       // 使用系统 padding 阶梯优化缩进逻辑
       const indentClass = item.level <= 0 ? 'pl-padding-md' : 'pl-padding-sm'
 
       const baseClasses =
-        'flex items-center rounded-scale-md py-scale-sm pr-padding-sm no-underline clickable ' +
+        'group flex items-center w-full rounded-scale-md py-scale-sm pr-padding-sm no-underline ' +
+        'transition-[background-color,color,opacity,transform] duration-scale-md ease-in-out ' +
+        'focus:outline-none! border-none! bg-transparent active:ring-0! active:border-none! ' +
+        'active:shadow-none! focus:shadow-none! active:outline-none! ' +
         indentClass
 
-      const stateClasses = isActive
-        ? 'bg-sidebar-accent text-sidebar-accent-foreground'
-        : isParentActive
-          ? 'bg-sidebar-accent/25 text-sidebar-foreground font-medium' // Increased visibility for active parents
-          : 'text-sidebar-foreground transition-colors duration-scale-md hover:bg-sidebar-accent/10 active:bg-sidebar-accent/20' // 统一交互态
+      const activeBgMapping: Record<number, string> = {
+        0: 'bg-primary/90!',
+        1: 'bg-primary/20!',
+        2: 'bg-primary/10!',
+        3: 'bg-primary/5!',
+      }
+
+      const stateClasses =
+        distance >= 0
+          ? `${activeBgMapping[distance] || 'bg-primary/5!'} ${distance === 0 ? 'text-primary-foreground! font-bold' : 'text-primary!'}`
+          : 'text-sidebar-foreground hover:menu-item-hover'
 
       // 标题节点：单行省略 + 最小宽度约束 + 基于容器宽度的 maxWidth，确保绝不超出；
       // 使用 data-menu-label-key 供批量测量是否被省略。
       const labelNode = (
         <span
           data-menu-label-key={item.key}
-          class="text-single-line-ellipsis flex-1 min-w-0"
+          class="text-single-line-ellipsis text-left! flex-1 min-w-0"
           style={labelMaxWidthStyle.value}
         >
           {item.label}
@@ -251,20 +265,20 @@ export default defineComponent({
         : labelNode
 
       const content = (
-        <span class="flex items-center gap-sm w-full min-w-0 overflow-hidden">
+        <span class="flex items-center justify-start gap-sm w-full min-w-0 overflow-hidden">
           {item.icon ? (
             <Icons
               name={item.icon}
               size="md"
-              class={`shrink-0 ${isActive ? 'text-current!' : 'text-sidebar-foreground/80!'}`}
+              class={`shrink-0 transition-colors duration-scale-md ${distance === 0 ? 'text-primary-foreground!' : distance > 0 ? 'text-primary!' : 'text-sidebar-foreground/80! group-hover:text-primary!'}`}
             />
           ) : null}
           {labelContent}
           {!!item.items && item.items.length > 0 ? (
             <Icons
               name="i-lucide-chevron-down"
-              size="lg" // 调整 toggle icon 大小
-              class={`ml-auto shrink-0 transition-transform duration-scale-md ${isActive ? 'text-current!' : 'text-sidebar-foreground/60!'} ${
+              size="sm" // 调整 toggle icon 大小
+              class={`ml-auto shrink-0 transition-transform duration-scale-md ${distance === 0 ? 'text-primary-foreground!' : distance > 0 ? 'text-primary!' : 'text-sidebar-foreground/60! group-hover:text-primary!'} ${
                 layoutStore.getExpandedMenuKeys[item.key] ? 'rotate-180' : 'rotate-0'
               }`}
             />
@@ -279,7 +293,7 @@ export default defineComponent({
           <a
             href={item.route.path}
             role="link"
-            class={linkClass}
+            class={[linkClass, 'outline-none! shadow-none!'].join(' ')}
             onClick={(e: MouseEvent) => {
               e.preventDefault()
               e.stopPropagation()
@@ -291,20 +305,21 @@ export default defineComponent({
         )
       }
       return (
-        <a
-          href="#"
-          role="button"
-          class={linkClass}
-          onClick={(e: MouseEvent) => handleParentItemClick(e, item)}
+        <button
+          type="button"
+          class={[linkClass, 'outline-none! shadow-none!'].join(' ')}
+          onClick={(e: Event) => handleParentItemClick(e, item)}
         >
           {content}
-        </a>
+        </button>
       )
     }
 
     // --- Collapsed Sidebar 逻辑 (每个菜单项独立的 TieredMenu 实例) ---
     // 使用 Map 存储每个菜单项的 TieredMenu ref
     const tieredMenuRefs = ref<Map<string, InstanceType<typeof TieredMenu>>>(new Map())
+    /** 当前打开的 TieredMenu 对应父级 key，用于子菜单打开时弱化父级高亮，避免与悬停子项同色 */
+    const openDropdownKey = ref<string | null>(null)
 
     // 设置菜单 ref 的回调
     const setMenuRef = (key: string, el: InstanceType<typeof TieredMenu> | null) => {
@@ -327,8 +342,10 @@ export default defineComponent({
               ref.hide()
             }
           })
-          // 切换当前菜单
+          // 切换当前菜单：toggle 会翻转打开状态，据此更新 openDropdownKey
+          const wasOpen = openDropdownKey.value === item.key
           menuRef.toggle(e)
+          openDropdownKey.value = wasOpen ? null : item.key
         }
       } else if (item.route?.path) {
         // 无子菜单，直接跳转
@@ -336,7 +353,7 @@ export default defineComponent({
       }
     }
 
-    // 收缩态 TieredMenu 弹出子菜单项：与 AdminHeader 样式统一（primary/accent-light）
+    // 收缩态 TieredMenu 弹出子菜单项：与 AdminHeader 样式统一（accent/accent-light）
     const renderTieredMenuItem = ({
       item,
       props: slotProps,
@@ -351,8 +368,7 @@ export default defineComponent({
         onClick?: (e: Event) => void
       }
 
-      const isActive = isActiveMenuItem(item)
-      const isParentActive = isParentOfActive(item)
+      const distance = getActiveDistance(item)
       // PT 在子菜单悬停/展开时会给 action.class 添加 focus/active，需据此高亮（与 AdminHeader 一致）
       const actionClassStr = typeof action?.class === 'string' ? action.class : ''
       const isFocused =
@@ -361,25 +377,37 @@ export default defineComponent({
         actionClassStr.includes('p-highlight') ||
         /p-tieredmenu[^"'\s]*(active|focus)/.test(actionClassStr)
 
-      // 与 AdminHeader subClasses 统一：primary/10 激活，accent-light 悬停
+      // 与 AdminHeader subClasses 统一
+      const activeBgMapping: Record<number, string> = {
+        0: 'bg-primary/90!',
+        1: 'bg-primary/20!',
+        2: 'bg-primary/10!',
+        3: 'bg-primary/5!',
+      }
+
       const stateClasses =
-        isActive || isParentActive
-          ? 'bg-primary/10! text-primary! font-medium'
+        distance >= 0
+          ? `${activeBgMapping[distance] || 'bg-primary/5!'} ${distance === 0 ? 'text-primary-foreground! font-bold' : 'text-primary!'}`
           : isFocused
-            ? 'bg-accent-light! text-accent-light-foreground!'
-            : 'text-foreground! hover:bg-accent-light! hover:text-accent-light-foreground!'
+            ? 'menu-item-hover'
+            : 'text-foreground! hover:menu-item-hover'
 
       const baseClass =
-        'group flex items-center gap-sm w-full rounded-scale-md px-padding-md py-padding-sm fs-sm transition-all duration-scale-md ease-in-out select-none'
+        'group flex items-center gap-sm w-full rounded-scale-md px-padding-md py-padding-sm fs-sm ' +
+        'transition-[background-color,color,opacity,transform] duration-scale-md ease-in-out select-none ' +
+        'focus:outline-none! border-none! bg-transparent active:ring-0! active:border-none! ' +
+        'active:shadow-none! focus:shadow-none! active:outline-none!'
       const mergedClass = [baseClass, stateClasses, actionClassStr].filter(Boolean).join(' ').trim()
 
       // 图标颜色与 AdminHeader 一致
       const iconColorClass =
-        isActive || isParentActive
-          ? 'text-primary! opacity-100!'
+        distance >= 0
+          ? distance === 0
+            ? 'text-primary-foreground! opacity-100!'
+            : 'text-primary! opacity-100!'
           : isFocused
-            ? 'text-accent-light-foreground! opacity-100!'
-            : 'text-muted-foreground! opacity-80 transition-colors transition-opacity duration-scale-md group-hover:text-accent-light-foreground! group-hover:opacity-100'
+            ? 'text-primary! opacity-100!'
+            : 'text-muted-foreground! opacity-80 transition-colors transition-opacity duration-scale-md group-hover:text-primary! group-hover:opacity-100'
 
       const handleClick = (e: Event) => {
         if (item.route?.path) {
@@ -391,21 +419,21 @@ export default defineComponent({
       return (
         <a
           {...action}
-          class={mergedClass}
+          class={[mergedClass, 'outline-none! shadow-none!'].join(' ')}
           onClick={handleClick}
         >
           {item.icon && (
             <Icons
               name={item.icon}
-              size="xs"
-              class={`shrink-0 ${iconColorClass}`}
+              size="sm"
+              class={`shrink-0 text-current! ${iconColorClass}`}
             />
           )}
           <span class="truncate flex-1">{item.label}</span>
           {hasSubmenu && (
             <Icons
               name="i-lucide-chevron-right"
-              size="xs"
+              size="sm"
               class={`ml-auto shrink-0 transition-transform duration-scale-md ${iconColorClass.replace('opacity-80', 'opacity-50')}`}
             />
           )}
@@ -415,28 +443,42 @@ export default defineComponent({
 
     // 渲染收缩状态下的单个图标项（包含独立的 TieredMenu）
     const renderCollapsedItem = (item: PrimeMenuModelItem) => {
-      const isActive = isActiveMenuItem(item)
-      const isParentActive = isParentOfActive(item)
+      const distance = getActiveDistance(item)
+      const isSubmenuOpen = openDropdownKey.value === item.key
 
-      const stateClasses = isActive
-        ? 'bg-sidebar-accent text-sidebar-accent-foreground'
-        : isParentActive
-          ? 'bg-sidebar-accent/25 text-sidebar-foreground'
-          : 'text-sidebar-foreground transition-colors duration-scale-md hover:bg-sidebar-accent/10 active:bg-sidebar-accent/20'
+      const activeBgMapping: Record<number, string> = {
+        0: 'bg-primary/90!',
+        1: 'bg-primary/20!',
+        2: 'bg-primary/10!',
+        3: 'bg-primary/5!',
+      }
+
+      const stateClasses =
+        distance >= 0
+          ? `${activeBgMapping[distance] || 'bg-primary/5!'} ${distance === 0 ? 'text-primary-foreground! font-bold' : 'text-primary!'}`
+          : isSubmenuOpen
+            ? 'bg-primary/50 text-primary'
+            : 'text-sidebar-foreground hover:menu-item-hover'
 
       const hasChildren = item.items && item.items.length > 0
 
       // 使用 withDirectives 应用 PrimeVue Tooltip 指令
       const iconButton = (
         <div
-          class={`flex items-center justify-center p-padding-sm rounded-scale-md cursor-pointer transition-colors duration-scale-md aspect-square w-[var(--spacing-xl)] h-[var(--spacing-xl)] ${stateClasses}`}
+          class={`flex items-center justify-center p-padding-sm rounded-scale-md cursor-pointer transition-[background-color,color,opacity,transform] duration-scale-md aspect-square w-[var(--spacing-xl)] h-[var(--spacing-xl)] focus:outline-none! border-none! active:ring-0! active:border-none! active:shadow-none! focus:shadow-none! active:outline-none! ${stateClasses}`}
           onClick={e => onCollapsedItemClick(e, item)}
         >
           {item.icon ? (
             <Icons
               name={item.icon}
               size="lg"
-              class={isActive ? 'text-current!' : 'text-sidebar-foreground/80!'}
+              class={
+                distance === 0
+                  ? 'text-primary-foreground!'
+                  : distance > 0 || isSubmenuOpen
+                    ? 'text-primary!'
+                    : 'text-sidebar-foreground/80!'
+              }
             />
           ) : (
             <div class="w-[var(--spacing-lg)] h-[var(--spacing-lg)] rounded-full bg-card text-card-foreground flex items-center justify-center fs-xs font-bold">
@@ -466,12 +508,24 @@ export default defineComponent({
               model={item.items}
               popup
               appendTo="body"
+              {...{
+                onHide: () => {
+                  openDropdownKey.value = null
+                },
+              }}
               v-slots={{ item: renderTieredMenuItem }}
               pt={{
-                root: { class: 'border border-border rounded-scale-md' },
-                menu: { class: 'bg-card py-padding-xs rounded-scale-md' },
-                menuitem: { class: 'rounded-scale-sm' },
-                content: { class: 'rounded-scale-md' },
+                root: {
+                  class:
+                    'border border-border rounded-scale-md shadow-md outline-none! box-shadow-none!',
+                },
+                menu: { class: 'bg-card py-padding-xs rounded-scale-md outline-none!' },
+                menuitem: { class: 'bg-transparent border-none rounded-scale-sm outline-none!' },
+                content: {
+                  class:
+                    'bg-transparent! border-none rounded-scale-md outline-none! box-shadow-none!',
+                },
+                action: { class: 'outline-none! shadow-none!' },
               }}
             />
           )}
@@ -492,21 +546,6 @@ export default defineComponent({
             'overflow-hidden flex flex-col select-none', // 增加 flex col
           ]}
         >
-          {/* Header */}
-          <div class="h-breadcrumbHeight flex items-center justify-center border-b border-sidebar-border shrink-0">
-            {/* 收缩时只显示简单内容或空 */}
-            {!props.sidebarCollapse && (
-              <div class="fs-sm font-medium text-ellipsis px-padding-md">
-                {t('layout.sidebar.title')}
-              </div>
-            )}
-            {props.sidebarCollapse && (
-              <div class="w-[var(--spacing-xl)] h-[var(--spacing-xl)] flex items-center justify-center font-bold text-sidebar-foreground bg-sidebar-accent/10 rounded-scale-md">
-                C
-              </div>
-            )}
-          </div>
-
           {/* Menus：统一用 CScrollbar 包裹，符合 scrollbar 架构 */}
           <div class="flex-1 min-h-0 flex flex-col overflow-hidden">
             <CScrollbar class="flex-1 min-h-0 px-padding-sm">
@@ -526,6 +565,17 @@ export default defineComponent({
                     class="w-full fs-sm"
                     v-slots={{
                       item: renderPanelMenuItem,
+                    }}
+                    pt={{
+                      root: { class: 'gap-xs outline-none!' },
+                      panel: { class: 'bg-transparent border-none outline-none!' },
+                      header: { class: 'bg-transparent border-none outline-none!' },
+                      headerContent: {
+                        class: 'bg-transparent! border-none outline-none! box-shadow-none!',
+                      },
+                      content: { class: 'bg-transparent border-none py-0 px-0 outline-none!' },
+                      menu: { class: 'gap-xs bg-transparent p-0 m-0 list-none outline-none!' },
+                      menuitem: { class: 'bg-transparent border-none outline-none!' },
                     }}
                   />
                 ) : (

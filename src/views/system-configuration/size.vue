@@ -565,7 +565,7 @@ const marginDirMap = [
                 <Tag
                   :value="item.key"
                   severity="info"
-                  class="group-hover:bg-primary group-hover:text-primary-foreground"
+                  class="group-hover:bg-accent group-hover:text-accent-foreground"
                 />
                 <span class="font-mono fs-xs text-muted-foreground">{{ item.ratio }}×</span>
                 <span class="font-mono fs-xs text-center text-foreground">
@@ -618,7 +618,7 @@ const marginDirMap = [
                   </span>
                 </div>
                 <div
-                  class="w-[var(--spacing-2xl)] h-[var(--spacing-2xl)] bg-primary rounded-scale-md group-hover:translate-x-[var(--spacing-sm)] group-hover:bg-primary-hover"
+                  class="w-[var(--spacing-2xl)] h-[var(--spacing-2xl)] bg-primary rounded-scale-md group-hover:translate-x-[var(--spacing-sm)] group-hover:bg-accent-hover"
                   :style="{ transitionDuration: `var(${item.cssVar})`, transitionProperty: 'all' }"
                 />
               </div>

@@ -172,3 +172,86 @@ export function applyOpacityToColor(color: string, opacity: number): string {
   console.warn(`Unsupported color format: "${color}"`)
   return `rgba(0, 0, 0, ${alpha})`
 }
+
+// ---------------------------------------------------------------------------
+// 内部工具：HSL 转换（供 shiftHue 使用，不 export）
+// ---------------------------------------------------------------------------
+
+function hexToHsl(hex: string): { h: number; s: number; l: number } {
+  const h = normalizeHex(hex).replace('#', '')
+  const num = parseInt(h, 16)
+  const r = ((num >> 16) & 255) / 255
+  const g = ((num >> 8) & 255) / 255
+  const b = (num & 255) / 255
+
+  const max = Math.max(r, g, b)
+  const min = Math.min(r, g, b)
+  let hVal = 0
+  let sVal = 0
+  const lVal = (max + min) / 2
+
+  if (max !== min) {
+    const d = max - min
+    sVal = lVal > 0.5 ? d / (2 - max - min) : d / (max + min)
+    switch (max) {
+      case r:
+        hVal = ((g - b) / d + (g < b ? 6 : 0)) / 6
+        break
+      case g:
+        hVal = ((b - r) / d + 2) / 6
+        break
+      default:
+        hVal = ((r - g) / d + 4) / 6
+    }
+  }
+
+  return {
+    h: hVal * 360,
+    s: sVal * 100,
+    l: lVal * 100,
+  }
+}
+
+function hslToHex(h: number, s: number, l: number): string {
+  const hue2rgb = (p: number, q: number, t: number): number => {
+    if (t < 0) t += 1
+    if (t > 1) t -= 1
+    if (t < 1 / 6) return p + (q - p) * 6 * t
+    if (t < 1 / 2) return q
+    if (t < 2 / 3) return p + (q - p) * (2 / 3 - t) * 6
+    return p
+  }
+
+  const hNorm = (((h % 360) + 360) % 360) / 360
+  const sNorm = Math.max(0, Math.min(100, s)) / 100
+  const lNorm = Math.max(0, Math.min(100, l)) / 100
+
+  let r: number
+  let g: number
+  let b: number
+
+  if (sNorm === 0) {
+    r = g = b = lNorm
+  } else {
+    const q = lNorm < 0.5 ? lNorm * (1 + sNorm) : lNorm + sNorm - lNorm * sNorm
+    const p = 2 * lNorm - q
+    r = hue2rgb(p, q, hNorm + 1 / 3)
+    g = hue2rgb(p, q, hNorm)
+    b = hue2rgb(p, q, hNorm - 1 / 3)
+  }
+
+  const clamp = (val: number) => Math.max(0, Math.min(255, Math.round(val * 255)))
+  return '#' + (0x1000000 + clamp(r) * 0x10000 + clamp(g) * 0x100 + clamp(b)).toString(16).slice(1)
+}
+
+/**
+ * 按色相偏移 HEX 颜色
+ * @param hex - 输入 HEX 颜色
+ * @param degree - 色相偏移度数（正数顺时针，负数逆时针），会循环 0~360
+ * @returns 偏移后的 HEX 颜色
+ */
+export function shiftHue(hex: string, degree: number): string {
+  const hsl = hexToHsl(hex)
+  const newH = (hsl.h + degree + 360) % 360
+  return normalizeHex(hslToHex(newH, hsl.s, hsl.l))
+}

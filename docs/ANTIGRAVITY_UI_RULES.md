@@ -26,6 +26,7 @@ Before generating any UI code, you MUST reference and strictly follow:
 
 ### 2.1 Theme System (配色系统)
 
+- **颜色语义 SSOT:** `src/constants/theme/colorUsage.ts`（COLOR_USAGE、PRIMARY_USAGE、ACCENT_USAGE）
 - Read: `src/types/systems/theme.d.ts`, `src/constants/theme.ts`, `src/stores/modules/theme.ts`
 - PrimeVue 主题融合（Button 等组件配色）：`docs/PRIMEVUE_THEME.md`
 - Use semantic color variables: `text-primary`, `bg-surface-ground`, `border-border`, `text-info`, `bg-info`

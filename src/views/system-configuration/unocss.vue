@@ -121,7 +121,7 @@ const shortcutGroups: ShortcutGroup[] = [
     icon: 'i-lucide-pointer',
     items: [
       { name: 'behavior-hover-transition', classes: 'transition-all duration-scale-md' },
-      { name: 'hover-elevated', classes: 'hover:shadow-md hover:border-primary/50' },
+      { name: 'hover-elevated', classes: 'hover:shadow-md hover:border-accent/50' },
       { name: 'interactive-hover', classes: 'behavior-hover-transition hover-elevated' },
       {
         name: 'interactive-click',
@@ -130,7 +130,7 @@ const shortcutGroups: ShortcutGroup[] = [
       },
       {
         name: 'interactive-focus-ring',
-        classes: 'focus:outline-none focus:ring-2 focus:ring-primary/50',
+        classes: 'focus:outline-none focus:ring-2 focus:ring-ring',
       },
     ],
   },

@@ -1,24 +1,8 @@
+import { defineComponent, Transition } from 'vue'
 import { CScrollbar } from '@/components/CScrollbar'
-import { Transition, defineComponent, nextTick, onMounted, onUnmounted, ref, watch } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
-import { useI18n } from 'vue-i18n'
-import { usePermissionStore } from '@/stores/modules/permission'
-import { useAppElementSize } from '@/hooks/modules/useAppElementSize'
 import { Icons } from '@/components/Icons'
-import { storeToRefs } from 'pinia'
-
-export interface AdminTabsBarProps {
-  show: boolean
-}
-
-type ContextMenuAction = 'reload' | 'close' | 'closeOthers' | 'closeAll'
-
-interface ContextMenuState {
-  visible: boolean
-  x: number
-  y: number
-  targetPath: string
-}
+import { useAdminTabs } from '@/hooks/layout/useAdminTabs'
+import type { ContextMenuAction } from '@/hooks/layout/useAdminTabs'
 
 export default defineComponent({
   name: 'AdminTabsBar',
@@ -29,161 +13,24 @@ export default defineComponent({
     },
   },
   setup(props) {
-    const route = useRoute()
-    const router = useRouter()
-    const { t } = useI18n()
-    const permissionStore = usePermissionStore()
-    const { tabs } = storeToRefs(permissionStore)
+    const {
+      tabs,
+      scrollContainer,
+      tabsContainerRef,
+      activeTabStyle,
+      contextMenu,
+      getTabLabel,
+      isActive,
+      updateActiveTabPosition,
+      setTabRef,
+      onTabClick,
+      onCloseTab,
+      onContextMenu,
+      handleContextAction,
+      t,
+    } = useAdminTabs()
 
-    const scrollContainer = ref<InstanceType<typeof CScrollbar> | null>(null)
-    const tabRefs = ref<Map<string, HTMLElement>>(new Map())
-
-    const activeTabStyle = ref({
-      left: '0',
-      width: '0',
-      opacity: '0',
-    })
-
-    const contextMenu = ref<ContextMenuState>({
-      visible: false,
-      x: 0,
-      y: 0,
-      targetPath: '',
-    })
-
-    function getTabLabel(tab: TabItem) {
-      return tab.titleKey ? t(tab.titleKey) : (tab.title ?? tab.name)
-    }
-
-    function isActive(tab: TabItem) {
-      return route.path === tab.path
-    }
-
-    function updateActiveTabPosition(behavior: ScrollBehavior = 'smooth') {
-      nextTick(() => {
-        const currentPath = route.path
-        const activeTabEl = tabRefs.value.get(currentPath)
-
-        if (activeTabEl) {
-          activeTabStyle.value = {
-            left: `${activeTabEl.offsetLeft}px`,
-            width: `${activeTabEl.offsetWidth}px`,
-            opacity: '1',
-          }
-
-          activeTabEl.scrollIntoView({ behavior, block: 'nearest', inline: 'center' })
-        } else {
-          activeTabStyle.value.opacity = '0'
-        }
-      })
-    }
-
-    function setTabRef(el: HTMLElement | null, path: string) {
-      if (el) {
-        tabRefs.value.set(path, el)
-      } else {
-        tabRefs.value.delete(path)
-      }
-    }
-
-    function onTabClick(tab: TabItem) {
-      contextMenu.value.visible = false
-      if (tab.path !== route.path) {
-        router.push(tab.path)
-      }
-    }
-
-    function onCloseTab(e: Event, tab: TabItem) {
-      e.preventDefault()
-      e.stopPropagation()
-      if (tab.fixed || !tab.deletable) return
-
-      const wasCurrent = isActive(tab)
-      tabRefs.value.delete(tab.path)
-      permissionStore.removeTab(tab.path)
-
-      if (wasCurrent) {
-        const remaining = tabs.value
-        if (remaining.length > 0) {
-          const nextTab = remaining[remaining.length - 1]
-          router.push(nextTab.path)
-        } else {
-          router.push(import.meta.env.VITE_ROOT_REDIRECT || '/dashboard')
-        }
-      }
-    }
-
-    function onContextMenu(e: MouseEvent, tab: TabItem) {
-      e.preventDefault()
-      contextMenu.value = {
-        visible: true,
-        x: e.clientX,
-        y: e.clientY,
-        targetPath: tab.path,
-      }
-    }
-
-    function closeContextMenu() {
-      contextMenu.value.visible = false
-    }
-
-    function handleContextAction(action: ContextMenuAction) {
-      const targetPath = contextMenu.value.targetPath
-      const targetTab = tabs.value.find(t => t.path === targetPath)
-      if (!targetTab) return
-
-      switch (action) {
-        case 'reload': {
-          break
-        }
-        case 'close': {
-          onCloseTab(new Event('click'), targetTab)
-          break
-        }
-        case 'closeOthers': {
-          const tabsToKeep = tabs.value
-            .filter(tab => tab.fixed || tab.path === targetPath)
-            .map(tab => tab.path)
-
-          permissionStore.removeTabsExcept(tabsToKeep)
-          if (!tabsToKeep.includes(route.path)) {
-            router.push(targetPath)
-          }
-          break
-        }
-        case 'closeAll': {
-          const fixedTabs = tabs.value.filter(tab => tab.fixed).map(t => t.path)
-          permissionStore.removeTabsExcept(fixedTabs)
-
-          if (fixedTabs.length > 0) {
-            router.push(fixedTabs[fixedTabs.length - 1])
-          } else {
-            router.push('/')
-          }
-          break
-        }
-      }
-      closeContextMenu()
-    }
-
-    watch(
-      () => route.path,
-      () => {
-        updateActiveTabPosition('smooth')
-        contextMenu.value.visible = false
-      }
-    )
-
-    watch(
-      () => tabs.value.length,
-      () => {
-        nextTick(() => {
-          updateActiveTabPosition('smooth')
-        })
-      }
-    )
-
-    // 从隐藏变为显示时重新计算激活项横条位置并重建 ResizeObserver
+    // 监听显示状态，从隐藏变为显示时重新计算位置
     watch(
       () => props.show,
       show => {
@@ -194,31 +41,6 @@ export default defineComponent({
         }
       }
     )
-
-    // 使用 useAppElementSize 监听容器尺寸变化
-    const tabsContainerRef = ref<HTMLElement | null>(null)
-
-    useAppElementSize(
-      tabsContainerRef,
-      () => {
-        updateActiveTabPosition('auto')
-      },
-      { mode: 'throttle', delay: 100 }
-    )
-
-    onMounted(() => {
-      document.addEventListener('click', closeContextMenu)
-      setTimeout(() => {
-        updateActiveTabPosition('auto')
-      }, 50)
-      setTimeout(() => {
-        updateActiveTabPosition('auto')
-      }, 300)
-    })
-
-    onUnmounted(() => {
-      document.removeEventListener('click', closeContextMenu)
-    })
 
     return () => {
       if (!props.show) return null
@@ -260,22 +82,23 @@ export default defineComponent({
                       'group relative flex items-center gap-scale-sm px-scale-md py-scale-xs h-full',
                       'rounded-scale-md cursor-pointer transition-all duration-scale-md border-t border-x mb-[-1px]',
                       active
-                        ? 'bg-primary/10 dark:bg-primary-light/50 border-primary/30 dark:border-primary/50 text-primary'
+                        ? 'bg-primary/20 text-primary font-semibold border-primary/30'
                         : 'bg-transparent border-transparent text-muted-foreground hover:bg-muted/40 hover:text-foreground',
                     ]}
                     onClick={() => onTabClick(tab)}
-                    onContextmenu={e => onContextMenu(e, tab)}
+                    onContextmenu={e => onContextMenu(e as MouseEvent, tab)}
                   >
                     {/* Icon */}
                     {tab.icon && (
                       <Icons
                         name={tab.icon}
                         size="xs"
-                        class={
+                        class={[
+                          'shrink-0 text-current!',
                           active
-                            ? 'text-primary'
-                            : 'text-muted-foreground! opacity-70 transition-colors transition-opacity duration-scale-xl group-hover:text-accent-light-foreground! group-hover:opacity-100'
-                        }
+                            ? 'opacity-100'
+                            : 'opacity-70 transition-all duration-scale-md group-hover:opacity-100',
+                        ]}
                       />
                     )}
 
@@ -319,7 +142,7 @@ export default defineComponent({
           >
             {contextMenu.value.visible && (
               <div
-                class="fixed z-50 min-w-[var(--spacing-3xl)] bg-popover/95 backdrop-blur-sm component-border shadow-lg rounded-scale-md p-padding-xs py-padding-sm flex flex-col gap-xs origin-top-left"
+                class="fixed z-50 min-w-[var(--spacing-3xl)] bg-popover/95 backdrop-blur-md border border-border shadow-lg rounded-scale-md p-padding-xs flex flex-col gap-xs origin-top-left outline-none!"
                 style={{ top: `${contextMenu.value.y}px`, left: `${contextMenu.value.x}px` }}
               >
                 {[
@@ -342,18 +165,23 @@ export default defineComponent({
                 ].map(option => (
                   <div
                     key={option.label}
-                    class="
-                                flex items-center gap-sm px-padding-sm py-padding-xs rounded-scale-sm
-                                fs-sm text-popover-foreground hover:bg-accent hover:text-accent-foreground
-                                cursor-pointer transition-colors duration-scale-md
-                            "
+                    class="menu-item-base px-padding-sm py-padding-xs rounded-scale-sm fs-sm text-popover-foreground hover:menu-item-hover group"
+                    role="button"
+                    tabindex="0"
                     onClick={e => {
                       e.stopPropagation()
                       handleContextAction(option.label as ContextMenuAction)
                     }}
+                    onKeyup={(e: KeyboardEvent) => {
+                      if (e.key === 'Enter') {
+                        e.stopPropagation()
+                        handleContextAction(option.label as ContextMenuAction)
+                      }
+                    }}
                   >
                     <Icons
                       name={option.icon}
+                      class="text-muted-foreground! transition-colors duration-scale-md group-hover:text-primary!"
                       size="xs"
                     />
                     <span>{option.text}</span>

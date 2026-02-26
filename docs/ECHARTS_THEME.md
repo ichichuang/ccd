@@ -405,6 +405,7 @@ const themedOption = applyThemeToOption(
   - 语义色（primary/success/info/warn/danger/help）
   - 对比色（primaryForeground）
   - 次要色（secondary）
+  - 图表主系列色使用 primary，符合 `colorUsage.ts` 的 `chart-primary-series` 白名单
 - **透明度配置**：8 种图表类型透明度
 - **尺寸系统**：ChartSizeTokens（font/lineHeight/stroke/symbolSize），与 SizeMode 对齐
 - **字体系统**：textColor, textColorSecondary, fontSize, fontSizeSmall

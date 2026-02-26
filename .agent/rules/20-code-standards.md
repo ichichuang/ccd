@@ -108,6 +108,7 @@ alwaysApply: true
 
 ## 7. 颜色类指南（针对 AI Agents）
 
+- **颜色语义 SSOT**：`src/constants/theme/colorUsage.ts`（primary=品牌，accent=交互，ring=focus）；禁止 hover/focus/selection 使用 primary。详见 `.cursor/rules/21-color-authority.mdc`。
 - 生成 `bg-*` / `text-*` / `border-*` 类时，**仅使用设计系统中存在的标记**（`uno.config.ts` + 主题元数据）。边框须使用快捷类（`component-border` / `border-b-default` / `border-t-default`），禁止仅写 `border border-border`（缺 border-style 不显示）。
 - **允许的背景语义（示例）**：
   - 页面/容器：`bg-background`

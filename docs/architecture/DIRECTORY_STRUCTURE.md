@@ -180,17 +180,18 @@
 
 ### 3.5 src/constants/ 常量层
 
-| 文件             | 职责说明                           |
-| ---------------- | ---------------------------------- |
-| `breakpoints.ts` | 响应式断点（xs~5xl）               |
-| `theme.ts`       | 主题预设、默认主题名               |
-| `size.ts`        | 尺寸预设、布局维度 key、持久化 key |
-| `sizeScale.ts`   | 尺寸阶梯、字体/间距比例            |
-| `layout.ts`      | 布局默认配置、持久化字段           |
-| `router.ts`      | 路由白名单、错误页、rootRedirect   |
-| `http.ts`        | HTTP 常量                          |
-| `locale.ts`      | 默认语言、回退语言                 |
-| `login.ts`       | 登录常量                           |
+| 文件                  | 职责说明                                              |
+| --------------------- | ----------------------------------------------------- |
+| `breakpoints.ts`      | 响应式断点（xs~5xl）                                  |
+| `theme.ts`            | 主题预设、默认主题名                                  |
+| `theme/colorUsage.ts` | 颜色语义 SSOT（COLOR_USAGE、PRIMARY_USAGE_WHITELIST） |
+| `size.ts`             | 尺寸预设、布局维度 key、持久化 key                    |
+| `sizeScale.ts`        | 尺寸阶梯、字体/间距比例                               |
+| `layout.ts`           | 布局默认配置、持久化字段                              |
+| `router.ts`           | 路由白名单、错误页、rootRedirect                      |
+| `http.ts`             | HTTP 常量                                             |
+| `locale.ts`           | 默认语言、回退语言                                    |
+| `login.ts`            | 登录常量                                              |
 
 ---
 
@@ -306,7 +307,7 @@
 | `index.ts`                        | 创建 router、routeUtils、dynamicRouteManager，注册守卫                                 |
 | `modules/core.ts`                 | 根、登录路由                                                                           |
 | `modules/dashboard.ts`            | 仪表盘路由                                                                             |
-| `modules/system-configuration.ts` | 系统配置路由（主题、尺寸、断点、滚动条、UnoCSS）                                       |
+| `modules/system-configuration.ts` | 系统配置路由（主题、尺寸、断点、布局/设备、滚动条、UnoCSS）                            |
 | `modules/example.ts`              | 示例页路由                                                                             |
 | `utils/common.ts`                 | processAsyncRoutes、createRouteUtils、createDynamicRouteManager、权限过滤、菜单/面包屑 |
 | `utils/guards.ts`                 | registerRouterGuards、initDynamicRoutes                                                |
@@ -398,7 +399,7 @@
 | `login/login.vue`                        | 登录页                                                                 |
 | `dashboard/dashboard.vue`                | 仪表盘                                                                 |
 | `notfound/404.vue`、`403.vue`、`500.vue` | 错误页                                                                 |
-| `system-configuration/*.vue`             | 主题、尺寸、断点、滚动条、UnoCSS 配置                                  |
+| `system-configuration/*.vue`             | 主题、尺寸、断点、布局/设备、滚动条、UnoCSS 配置                       |
 | `example/PrimeVue/*`                     | PrimeVue 示例                                                          |
 | `example/PrimeVueDialog/*`               | PrimeDialog 示例                                                       |
 | `example/PrimeVueToast/*`                | Toast 示例                                                             |

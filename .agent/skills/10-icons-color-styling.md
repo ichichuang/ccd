@@ -22,13 +22,13 @@ globs: **/*.vue, **/*.tsx
 
 ## 决策表（按优先级）
 
-| 场景                           | 方案                  | 示例                                        |
-| ------------------------------ | --------------------- | ------------------------------------------- |
-| 需强制覆盖，且可接受内联样式   | 使用 `color` prop     | `color="rgb(var(--primary))"`               |
-| 需用 class 覆盖                | 颜色/opacity 类加 `!` | `class="text-primary! opacity-100!"`        |
-| hover / group-hover 颜色不生效 | 状态类加 `!`          | `group-hover:text-accent-light-foreground!` |
-| 需与父级文字同色               | `text-current`        | `class="text-current"`                      |
-| 自定义 `i-custom:*` 图标       | 同上                  | 同样 inject fill="currentColor"，规则相同   |
+| 场景                           | 方案                  | 示例                                      |
+| ------------------------------ | --------------------- | ----------------------------------------- |
+| 需强制覆盖，且可接受内联样式   | 使用 `color` prop     | `color="rgb(var(--primary))"`             |
+| 需用 class 覆盖                | 颜色/opacity 类加 `!` | `class="text-primary! opacity-100!"`      |
+| hover / group-hover 颜色不生效 | 状态类加 `!`          | `group-hover:text-primary-hover!`         |
+| 需与父级文字同色               | `text-current`        | `class="text-current"`                    |
+| 自定义 `i-custom:*` 图标       | 同上                  | 同样 inject fill="currentColor"，规则相同 |
 
 ## 步骤
 
@@ -39,7 +39,7 @@ globs: **/*.vue, **/*.tsx
 
 ## Icons 与 transition（hover/group-hover 时）
 
-当 Icons 使用 `group-hover:`、`hover:` 颜色/透明度类时，**transition 必须写在 Icons 的 class 上**，父容器 transition 无效。示例：`class="transition-colors duration-scale-md group-hover:text-primary!"`
+当 Icons 使用 `group-hover:`、`hover:` 颜色/透明度类时，**transition 必须写在 Icons 的 class 上**，父容器 transition 无效。示例：`class="transition-colors duration-scale-md group-hover:text-primary-hover!"`。hover 用 primary-hover；品牌**静态**颜色可用 `text-primary!`。
 
 ## 禁止
 

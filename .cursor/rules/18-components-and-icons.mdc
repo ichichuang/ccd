@@ -53,7 +53,7 @@ When generating or editing UI pages/components, you MUST:
   - 简单 1–2 个字段：直接使用 PrimeVue 组件如 `<InputText>`, `<Password>`, `<InputNumber>`, `<Checkbox>`, `<RadioButton>`, `<Dropdown>`, `<MultiSelect>`, `<Calendar>`, `<ToggleSwitch>` 等。
 - For **actions/buttons**:
   - MUST use `<Button>` for primary/secondary actions instead of styling raw `<button>` or `<a>`.
-  - Button 配色由 `src/utils/theme/primevue-preset.ts` 控制；text/outlined 变体的 hover 使用 `*-light`，勿用 `*-foreground` 作为背景。详见 `docs/PRIMEVUE_THEME.md`。
+  - Button 配色由 `src/utils/theme/primevue-preset.ts` 控制；Primary text/outlined 的 hover 用 accent-light，其余类型用 `*-light`；勿用 `*-foreground` 作为背景。详见 `docs/PRIMEVUE_THEME.md`。
 - For **tables/lists**:
   - **交互式数据表格**：MUST 使用 **DataTable**（`@/components/DataTable`），详见 `docs/DataTable_COMPONENT.md`。
   - 简单静态表格、一次性展示可用 PrimeVue `<DataTable>`；需分页/排序/筛选/导出/API 时 MUST 用 DataTable。

@@ -450,11 +450,10 @@ function buildColorSafelistClasses(): string[] {
     'border-sidebar-border',
     'border-sidebar-ring'
   )
-  list.push(
-    ...COLOR_FAMILIES.quadFamilies.flatMap(family =>
-      [10, 20, 30, 40, 50, 60, 70, 80, 90].map(v => `bg-${family}/${v}`)
-    )
-  )
+  // Remove brute-force opacity scaling from the standard safelist.
+  // We leave specific opacities to be picked up by UnoCSS JIT scanning of .vue files.
+  // Example: 'bg-primary/10' will be extracted by JIT dynamically when used in components.
+  // Only explicitly used dynamic string concatenations need to go here.
   return list
 }
 

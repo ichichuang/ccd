@@ -39,12 +39,22 @@ const systemConfigurationRoutes: RouteConfig[] = [
         },
       },
       {
+        path: '/system-configuration/layout',
+        name: 'layout',
+        component: () => import('@/views/system-configuration/layout.vue'),
+        meta: {
+          titleKey: 'router.systemConfigurationLayout',
+          rank: 4,
+          icon: 'i-lucide-layout-dashboard',
+        },
+      },
+      {
         path: '/system-configuration/scrollbar',
         name: 'scrollbar',
         component: () => import('@/views/system-configuration/scrollbar.vue'),
         meta: {
           titleKey: 'router.systemConfigurationScrollbar',
-          rank: 4,
+          rank: 5,
           icon: 'i-lucide-layout',
         },
       },
@@ -54,7 +64,7 @@ const systemConfigurationRoutes: RouteConfig[] = [
         component: () => import('@/views/system-configuration/unocss.vue'),
         meta: {
           titleKey: 'router.systemConfigurationUnocss',
-          rank: 5,
+          rank: 6,
           icon: 'i-lucide-diamond',
         },
       },

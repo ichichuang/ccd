@@ -2,17 +2,23 @@
 description: UI/样式层专用规则：配色、尺寸、布局、UnoCSS、SCSS
 globs: src/**/*.vue
 ---
+
 # UI Styling Rules
 
 ## 1. Theme System (配色系统) - REQUIRED
 
+**颜色语义决策以 `src/constants/theme/colorUsage.ts` 为准（SSOT）**，详见 `21-color-authority.mdc`。
+
 Before writing any color-related code, read:
+
+- `src/constants/theme/colorUsage.ts` - 颜色语义权威（COLOR_USAGE、PRIMARY_USAGE、ACCENT_USAGE）
 - `src/types/systems/theme.d.ts` - Theme types (ThemeMode, ThemePreset, ThemeCssVars)
 - `src/constants/theme.ts` - Theme presets (THEME_PRESETS)
 - `src/stores/modules/theme.ts` - Theme store (useThemeStore)
 - `docs/PRIMEVUE_THEME.md` - PrimeVue 主题融合（Button 等组件配色规则）
 
 **Rules:**
+
 - Use semantic color variables: `text-primary`, `bg-surface-ground`, `border-border`, `text-foreground`, `text-info`, `bg-info`
 - Support dark mode: use `dark:` variants or CSS variables that auto-switch
 - FORBIDDEN: hex codes like `#fff`, `#000`, `#3665f9`
@@ -21,12 +27,14 @@ Before writing any color-related code, read:
 ## 2. Size System (尺寸系统) - REQUIRED
 
 Before writing any size-related code, read:
+
 - `src/types/systems/size.d.ts` - Size types (SizeMode, SizePreset, SizeCssVars)
 - `src/constants/size.ts` - Size presets (SIZE_PRESETS, LAYOUT_DIMENSION_KEYS)
 - `src/constants/sizeScale.ts` - Size scales (SIZE_SCALE_KEYS, FONT_SCALE_RATIOS, SPACING_SCALE_RATIOS)
 - `src/stores/modules/size.ts` - Size store (useSizeStore)
 
 **Rules:**
+
 - Spacing: Use semantic classes `px-padding-lg`, `m-margin-md`, `gap-xl` (scale: xs/sm/md/lg/xl/2xl/3xl/4xl/5xl)
 - Font size: Use `fs-md`, `fs-lg`, `fs-xl` etc., NO `font-size: 14px`
 - Layout dimensions: Use CSS variables `w-sidebarWidth`, `h-headerHeight`, NO hardcoded px
@@ -35,12 +43,14 @@ Before writing any size-related code, read:
 ## 3. Layout & Responsive System (布局响应式系统) - REQUIRED
 
 Before writing any layout/responsive code, read:
+
 - `src/constants/breakpoints.ts` - Breakpoints (BREAKPOINTS: xs/sm/md/lg/xl/2xl/3xl/4xl/5xl)
 - `src/constants/layout.ts` - Layout constants (DEFAULT_LAYOUT_SETTING)
 - `src/stores/modules/device.ts` - Device store (isMobileLayout/isTabletLayout/isPCLayout)
 - `src/stores/modules/layout.ts` - Layout store (mode, sidebarCollapse, etc.)
 
 **Rules:**
+
 - Mobile First: Default mobile styles, then `md:`, `lg:` for desktop
 - Use breakpoints from `breakpoints.ts`, NO custom breakpoints
 - Use `useDeviceStore` getters for layout detection, NO direct `window.innerWidth` checks
@@ -51,46 +61,56 @@ Before writing any layout/responsive code, read:
 Reference `uno.config.ts` for all available semantic classes:
 
 **Semantic Size Classes:**
+
 - Padding: `p-padding-{scale}`, `px-padding-{scale}`, `py-padding-{scale}` (scale: xs/sm/md/lg/xl/2xl/3xl/4xl/5xl)
 - Margin: `m-margin-{scale}`, `mx-margin-{scale}`, `my-margin-{scale}`
 - Gap: `gap-{scale}`, `gap-x-{scale}`, `gap-y-{scale}` (do NOT use deprecated `gap-gap-*`)
 
 **Layout Variable Classes:**
+
 - Width: `w-sidebarWidth`, `w-sidebarCollapsedWidth`
 - Height: `h-headerHeight`, `h-breadcrumbHeight`, `h-footerHeight`, `h-tabsHeight`
 
 **Font Scale Classes:**
+
 - `fs-xs`, `fs-sm`, `fs-md`, `fs-lg`, `fs-xl`, `fs-2xl`, `fs-3xl`, `fs-4xl`, `fs-5xl`
 
 **Radius Classes:**
+
 - `rounded-scale` (uses CSS variable `--radius-md`)
 
 **Color Classes:**
+
 - `text-primary`, `bg-surface-ground`, `border-border`, `text-foreground`, `text-info`, `bg-info`, etc.
 
 **Border (边框)：**
+
 - 四边边框：`component-border`；底边：`border-b-default`；顶边：`border-t-default`（见 `uno.config.ts` ⑧a 边框快捷类）。
 - FORBIDDEN：仅写 `border border-border`（未设 border-style 导致边框不显示）。
 
 **Transition & Interaction (过渡与交互)：**
+
 - When using `hover:` / `active:` / `focus:` / `group-hover:`, MUST pair with transition classes to avoid abrupt changes.
 - Use `uno.config.ts` shortcuts: `interactive-hover`, `interactive-click`, `behavior-hover-transition`; or `transition-all duration-scale-{xs~5xl}`, `transition-opacity duration-scale-*`.
 - Scale: xs(75ms)~5xl(1500ms) via `duration-scale-{scale}`；SSOT: `src/constants/sizeScale.ts` TRANSITION_SCALE_VALUES.
-- **duration-scale 搭配**：`duration-scale-*` 必须与 `transition`/`transition-colors`/`transition-opacity` 搭配；transition-* 也必须配合 duration-scale-*。
+- **duration-scale 搭配**：`duration-scale-*` 必须与 `transition`/`transition-colors`/`transition-opacity` 搭配；transition-_ 也必须配合 duration-scale-_。
 - **Icons 特殊**：Icons 使用 `group-hover:` 颜色/透明度时，transition 必须写在 Icons class 上，父容器 transition 无效。
 - **PrimeVue pt**：pt content 中的 hover/active 同样需加 `transition-colors duration-scale-md` 等。
 - FORBIDDEN: `hover:`/`active:`/`focus:` without transition; `duration-scale-*` alone; hardcoded durations.
 - 详见 `docs/UNOCSS_AND_ICONS.md` §2.7、§2.7.1、§6.3.2。
 
-**Flex / main-* / cross-* (UnoCSS shortcuts):**
+**Flex / main-_ / cross-_ (UnoCSS shortcuts):**
+
 - When using `main-*` or `cross-*`, MUST also use direction: `row` or `column` (e.g. `class="row main-between cross-center"` or `class="column main-center cross-start"`).
 - FORBIDDEN: using `main-*` or `cross-*` without `row` or `column` (ambiguous which axis is main/cross).
 
 **Shortcuts dependency (UnoCSS):**
+
 - Allowed: low-level → high-level (e.g. `density-*`, `behavior-*`, `hover-elevated` → `layout-*`, `component-*`).
 - FORBIDDEN: reverse or circular dependency (e.g. do not let `density-*` expand to something that references `layout-*` which references `density-*`).
 
 **Rules:**
+
 - MUST use classes from `uno.config.ts`, NO hardcoded px/rem/hex
 - FORBIDDEN: inline styles `style="padding: 16px"` in template
 - If a class doesn't exist in `uno.config.ts`, extend it there rather than writing `<style>`
@@ -98,6 +118,7 @@ Reference `uno.config.ts` for all available semantic classes:
 ## 5. Style Tag Usage (Style 标签使用)
 
 **FORBIDDEN in `<style>`:**
+
 - Layout (flex, grid, position)
 - Spacing (padding, margin, gap)
 - Colors (background, color, border-color)
@@ -105,28 +126,31 @@ Reference `uno.config.ts` for all available semantic classes:
 - Border radius (border-radius)
 
 **ALLOWED `<style lang="scss" scoped>` for:**
+
 - Complex animations (keyframes, transition combinations)
 - Pseudo-elements (::before, ::after) with complex styles
 - Sticky/calc positioning that UnoCSS cannot express
 - Third-party component overrides (must use `:deep()`)
 
 **SCSS Nesting Requirements:**
+
 - MUST use SCSS nesting syntax
 - Use `&` for parent selector reference
 - Use `:deep()` for PrimeVue component style overrides
 - Only use CSS variables, NO hardcoded values
 
 **Example:**
+
 ```scss
 <style lang="scss" scoped>
 .component {
   position: sticky;
   top: var(--header-height); // CSS variable only
-  
+
   :deep(.primevue-component) {
     // Deep selector for third-party
   }
-  
+
   &::before {
     // Pseudo-element
   }
@@ -137,6 +161,7 @@ Reference `uno.config.ts` for all available semantic classes:
 ## 6. Hardcoding Prohibition Checklist
 
 **FORBIDDEN hardcoded values:**
+
 - ❌ `padding: 16px` → ✅ `px-padding-lg` or `p-padding-md`
 - ❌ `margin: 20px` → ✅ `m-margin-lg`
 - ❌ `font-size: 14px` → ✅ `fs-sm`
@@ -147,7 +172,7 @@ Reference `uno.config.ts` for all available semantic classes:
 - ❌ `border-radius: 8px` → ✅ `rounded-scale`
 - ❌ `@media (min-width: 768px)` → ✅ `md:` breakpoint class
 
-## 7. 背景色类名白名单（禁止自造 surface-*）
+## 7. 背景色类名白名单（禁止自造 surface-\*）
 
 **Rules:**
 
@@ -171,7 +196,7 @@ Reference `uno.config.ts` for all available semantic classes:
   - 先在 `src/utils/theme/metadata.ts` 与 `uno.config.ts` 中增加对应 token
   - 然后在业务代码中使用 `bg-{token}`，禁止直接在模板里拼接新的类名字符串
 
-## 8. 宽度类名规则（禁止使用 Tailwind 默认 max-w-* 尺寸）
+## 8. 宽度类名规则（禁止使用 Tailwind 默认 max-w-\* 尺寸）
 
 **Rules:**
 

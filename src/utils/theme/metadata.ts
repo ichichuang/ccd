@@ -64,9 +64,8 @@ export const THEME_ENGINE = {
   lightMixWhiteWeight: 0.6,
   lightMixWhite: '#ffffff',
 
-  /* Accent 未预设时：主色与中性混合的占比 */
-  accentMixPrimaryWeightDark: 0.25,
-  accentMixPrimaryWeightLight: 0.15,
+  /** Accent 色相偏移（度），用于从 primary 推导 accent 时的 hue 偏移 */
+  accentHueShift: 24,
 
   /* 状态色默认与固定 */
   dangerDefault: '#ef4444',

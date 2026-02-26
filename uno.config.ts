@@ -262,9 +262,13 @@ function buildThemeDemoSafelist(): string[] {
     'border-primary/50',
     'dark:bg-primary-light',
     'dark:border-primary/50',
-    'bg-info/10',
+    'bg-info/10'
+  )
+
+  // Explicitly add specific opacity layers only generated dynamically in the documentation loops
+  list.push(
     ...COLOR_FAMILIES.quadFamilies.flatMap(family =>
-      [10, 20, 30, 40, 50, 60, 70, 80, 90].map(v => `bg-${family}/${v}`)
+      [5, 10, 15, 20, 30, 40, 50, 60, 70, 80, 90].map(v => `bg-${family}/${v}`)
     )
   )
 
@@ -518,11 +522,16 @@ export default defineConfig({
     // 说明：行为与风格解耦，便于统一调整 hover/focus 策略
     // =========================================================
     'behavior-hover-transition': 'transition-all duration-scale-md',
-    'hover-elevated': 'hover:shadow-md hover:border-primary/50',
+    'hover-elevated': 'hover:shadow-md hover:border-primary-hover/50',
     'interactive-hover': 'behavior-hover-transition hover-elevated',
     'interactive-click':
       'cursor-pointer select-none active:scale-95 transition-transform duration-scale-xs',
-    'interactive-focus-ring': 'focus:outline-none focus:ring-2 focus:ring-primary/50',
+    'interactive-focus-ring': 'focus:outline-none focus:ring-2 focus:ring-ring',
+
+    // ⑦b 语义别名（AI 优先写行为语义，不直接接触颜色词）
+    'bg-interactive': 'bg-primary-hover',
+    'bg-brand': 'bg-primary',
+    'text-interactive': 'text-primary-hover',
 
     // =========================================================
     // ⑧a 边框快捷类（Border Shortcuts）
@@ -563,6 +572,12 @@ export default defineConfig({
     'default-margin': 'm-margin-md',
     'default-gap': 'gap-md',
     'default-font-size': 'fs-md',
+    // =========================================================
+    // ⑪ 菜单交互语义 (Menu Interaction)
+    // =========================================================
+    'menu-item-base':
+      'group flex items-center gap-sm cursor-pointer select-none transition-all duration-scale-md ease-in-out focus:outline-none border-none bg-transparent',
+    'menu-item-hover': 'bg-primary/20! text-primary!',
   },
 
   // 规则优先级设计：UnoCSS 按顺序匹配，新规则必须归入对应分组。

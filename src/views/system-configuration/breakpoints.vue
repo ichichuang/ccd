@@ -346,11 +346,11 @@ const deviceSyncInfo = computed(() => ({
           >
             <!-- Current Width Indicator -->
             <div
-              class="absolute top-0 h-full w-px bg-primary z-10 transition-all duration-scale-md"
+              class="absolute top-0 h-full w-px bg-accent z-10 transition-all duration-scale-md"
               :style="rulerIndicatorStyle"
             >
               <div
-                class="absolute -top-[var(--spacing-xs)] left-1/2 -translate-x-1/2 w-[var(--spacing-sm)] h-[var(--spacing-sm)] bg-primary rounded-full border-2 border-solid border-background"
+                class="absolute -top-[var(--spacing-xs)] left-1/2 -translate-x-1/2 w-[var(--spacing-sm)] h-[var(--spacing-sm)] bg-accent rounded-full border-2 border-solid border-background"
               />
             </div>
 
@@ -363,13 +363,13 @@ const deviceSyncInfo = computed(() => ({
             >
               <div
                 class="h-[var(--spacing-xl)] w-px shrink-0 transition-colors"
-                :class="isBreakpointActive(value) ? 'bg-primary' : 'bg-border'"
+                :class="isBreakpointActive(value) ? 'bg-accent' : 'bg-border'"
               />
               <span
                 class="mt-margin-xs shrink-0 rounded px-padding-xs fs-xs font-medium cursor-pointer hover:scale-110 transition-transform"
                 :class="
                   isBreakpointActive(value)
-                    ? 'bg-primary text-primary-foreground'
+                    ? 'bg-accent text-accent-foreground'
                     : 'bg-muted text-muted-foreground'
                 "
                 @click="copyToClipboard(`${key}:`, `${key}: prefix`)"
@@ -423,7 +423,7 @@ const deviceSyncInfo = computed(() => ({
                   v-for="item in breakpointItems"
                   :key="item.key"
                   class="border-b border-solid border-border/50 hover:bg-muted/30 transition-colors"
-                  :class="{ 'bg-primary/5': isBreakpointActive(item.value) }"
+                  :class="{ 'bg-accent/5': isBreakpointActive(item.value) }"
                 >
                   <td class="p-padding-sm">
                     <Tag
@@ -517,7 +517,7 @@ const deviceSyncInfo = computed(() => ({
                   <div
                     v-for="n in 12"
                     :key="n"
-                    class="flex aspect-video items-center justify-center rounded-scale-md component-border bg-muted/50 font-mono fs-lg font-medium text-foreground hover:bg-primary/10 hover:border-primary/50 transition-colors"
+                    class="flex aspect-video items-center justify-center rounded-scale-md component-border bg-muted/50 font-mono fs-lg font-medium text-foreground hover:bg-accent/10 hover:border-accent/50 transition-colors"
                   >
                     {{ n }}
                   </div>
@@ -629,7 +629,7 @@ const deviceSyncInfo = computed(() => ({
             <div
               v-for="[key, value] in breakpointEntries"
               :key="key"
-              class="flex flex-col gap-xs p-padding-md bg-card rounded-scale-md component-border cursor-pointer hover:border-primary/50 hover:shadow-md transition-all"
+              class="flex flex-col gap-xs p-padding-md bg-card rounded-scale-md component-border cursor-pointer hover:border-accent/50 hover:shadow-md transition-all"
               @click="copyToClipboard(`${key}:`)"
             >
               <div class="flex items-center justify-between">

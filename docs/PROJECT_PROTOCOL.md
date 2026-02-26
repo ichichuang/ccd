@@ -154,8 +154,11 @@ const renderSlot = () => <span class="text-muted-foreground">动态内容</span>
 
 ### 6.1 配色系统 (Theme System) - 必须遵循
 
+**颜色语义决策以 `src/constants/theme/colorUsage.ts` 为唯一权威（SSOT）**，禁止在文档中重新定义 primary/accent/ring/neutral 语义。详见 `.cursor/rules/21-color-authority.mdc`。
+
 生成任何 UI 代码前，必须参考并严格遵循项目的配色系统：
 
+- **语义权威：** `src/constants/theme/colorUsage.ts`（COLOR_USAGE、PRIMARY_USAGE_WHITELIST）
 - **类型定义：** `src/types/systems/theme.d.ts`（ThemeMode、ThemePreset、ThemeCssVars 等）
 - **预设常量：** `src/constants/theme.ts`（THEME_PRESETS、DEFAULT_THEME_NAME）
 - **状态管理：** `src/stores/modules/theme.ts`（useThemeStore）

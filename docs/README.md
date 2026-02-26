@@ -43,6 +43,8 @@
 
 ### 2.2 设计系统
 
+- **颜色语义权威**：`src/constants/theme/colorUsage.ts`（SSOT），详见 `.cursor/rules/21-color-authority.mdc`
+
 5. **`PRIMEVUE_THEME.md`** - PrimeVue 主题
 6. **`UNOCSS_AND_ICONS.md`** - UnoCSS 与图标
 7. **`ECHARTS_THEME.md`** - ECharts 与主题
@@ -127,6 +129,7 @@
 - **Antigravity Skills**：`.agent/skills/`
 - **黄金样本**：`docs/GOLDEN_SAMPLES/` — 基础模式（useFeatureLogic、UIComponent、ApiModule、StoreExample）
 - **示例页面**：`src/views/example/` — DataTable、SchemaForm、UseEcharts、PrimeDialog 等复杂组件的完整用法示例，生成同类功能时优先参考对应目录
+- **系统配置页**：`src/views/system-configuration/` — 主题、尺寸、断点、布局/设备、滚动条、UnoCSS 等核心系统能力演示；与 example 区别：system-configuration 展示架构基础设施，example 展示业务组件用法
 
 ---
 
@@ -135,6 +138,7 @@
 | 需求                | 文档                                                              |
 | ------------------- | ----------------------------------------------------------------- |
 | 理解架构            | `architecture/ARCHITECTURE_OVERVIEW.md`、`DIRECTORY_STRUCTURE.md` |
+| 系统配置 vs 示例页  | system-configuration=架构能力演示；example=业务组件用法示例       |
 | 用什么组件          | `PROJECT_PROTOCOL.md` §1.1                                        |
 | 怎么写样式          | `UNOCSS_AND_ICONS.md`                                             |
 | 怎么写表单          | `SCHEMA_FORM_COMPONENT.md`                                        |

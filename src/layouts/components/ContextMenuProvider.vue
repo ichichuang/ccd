@@ -197,24 +197,46 @@ const slotCtx = computed<ContextMenuSlotContext | null>(() => {
     <slot />
 
     <Teleport to="body">
-      <div
-        v-if="visible"
-        class="fixed inset-0 z-50"
-        @contextmenu.prevent
-      >
+      <Transition name="ctx-menu">
         <div
-          ref="menuRef"
-          class="fixed z-50 min-w-[var(--spacing-3xl)] rounded-scale-md component-border bg-background shadow-lg"
-          :style="menuStyle"
-          role="menu"
+          v-if="visible"
+          class="fixed inset-0 z-50"
+          @contextmenu.prevent
         >
-          <slot
-            v-if="slotCtx"
-            name="menu"
-            v-bind="slotCtx"
-          />
+          <div
+            ref="menuRef"
+            class="fixed z-50 min-w-[var(--spacing-3xl)] rounded-scale-md component-border bg-background shadow-lg"
+            :style="menuStyle"
+            role="menu"
+          >
+            <slot
+              v-if="slotCtx"
+              name="menu"
+              v-bind="slotCtx"
+            />
+          </div>
         </div>
-      </div>
+      </Transition>
     </Teleport>
   </div>
 </template>
+
+<style scoped>
+/* 右键菜单面板出现/消失的 scale-fade 动画 */
+.ctx-menu-enter-active,
+.ctx-menu-leave-active {
+  transition:
+    opacity var(--duration-scale-md, 200ms) ease-out,
+    transform var(--duration-scale-md, 200ms) ease-out;
+}
+
+.ctx-menu-enter-from {
+  opacity: 0;
+  transform: scale(0.95);
+}
+
+.ctx-menu-leave-to {
+  opacity: 0;
+  transform: scale(0.95);
+}
+</style>

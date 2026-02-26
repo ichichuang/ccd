@@ -35,6 +35,7 @@ const zhCN = {
     systemConfigurationTheme: '主题系统',
     systemConfigurationSize: '尺寸系统',
     systemConfigurationBreakpoints: '断点系统',
+    systemConfigurationLayout: '布局/设备',
     systemConfigurationScrollbar: '滚动条系统',
     systemConfigurationUnocss: 'UnoCSS系统',
     example: {
@@ -177,10 +178,7 @@ const zhCN = {
     sidebarAccordion: '侧边栏手风琴模式',
   },
   layout: {
-    sidebar: {
-      title: '系统菜单',
-      menu: '菜单',
-    },
+    sidebar: {},
     reload: '重新载入',
     globalSettings: '全局配置',
     globalSettingsTitle: '全局配置 (Global Settings)',

@@ -35,6 +35,7 @@ const enUS = {
     systemConfigurationTheme: 'Theme',
     systemConfigurationSize: 'Size',
     systemConfigurationBreakpoints: 'Breakpoints',
+    systemConfigurationLayout: 'Layout & Device',
     systemConfigurationScrollbar: 'CScrollbar',
     systemConfigurationUnocss: 'UnoCSS',
     example: {
@@ -177,10 +178,7 @@ const enUS = {
     sidebarAccordion: 'Sidebar Accordion Mode',
   },
   layout: {
-    sidebar: {
-      title: 'System Menu',
-      menu: 'Menu',
-    },
+    sidebar: {},
     reload: 'Reload',
     globalSettings: 'Global Settings',
     globalSettingsTitle: 'Global Settings',
