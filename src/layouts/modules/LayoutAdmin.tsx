@@ -178,7 +178,7 @@ export default defineComponent({
 
     // --- 布局模式切换过渡：与 AnimateRouterView / AnimateWrapper 一致使用 animate.css ---
     const enableTransition = computed(() => layoutStore.enableTransition)
-    const bodyTransitionDuration = 'var(--transition-lg)'
+    const bodyTransitionDuration = 'var(--transition-md)'
 
     const renderContent = () => (
       <main class="flex-1 min-w-0 min-h-0 flex flex-col overflow-hidden bg-background">

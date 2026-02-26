@@ -128,8 +128,8 @@ if (typeof val === 'string' && (SIZE_SCALE_KEYS as readonly string[]).includes(v
 
 ## 4. 引用
 
-- Vue 模板约束详见 `docs/TYPESCRIPT_AND_LINTING.md` §6.5
-- TypeScript 类型注解详见 `docs/TYPESCRIPT_AND_LINTING.md` §6
-- 项目协议中的模板约束：`docs/PROJECT_PROTOCOL.md` §5.1
+- Vue 模板约束详见 `./TYPESCRIPT_AND_LINTING.md` §6.5
+- TypeScript 类型注解详见 `./TYPESCRIPT_AND_LINTING.md` §6
+- 项目协议中的模板约束：`./PROJECT_PROTOCOL.md` §5.1
 - `.agent/rules/20-code-standards.md` §4a
 - `.cursor/rules/00-core-architecture.mdc` 中的 NO TypeScript Syntax in Templates

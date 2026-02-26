@@ -37,4 +37,4 @@ alwaysApply: true
 
 - **语义权威：** `src/constants/theme/colorUsage.ts`（COLOR_USAGE、PRIMARY_USAGE、ACCENT_USAGE）
 - **类型与变量：** `src/types/systems/theme.d.ts`、`src/utils/theme/engine.ts`
-- **PrimeVue 融合：** `docs/PRIMEVUE_THEME.md`
+- **PrimeVue 融合：** `docs/ai-specs/PRIMEVUE_THEME.md`

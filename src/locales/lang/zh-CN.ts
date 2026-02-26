@@ -87,6 +87,7 @@ const zhCN = {
     upload: {
       hashCalculationFailed: '文件哈希计算失败',
       fileReadFailed: '文件读取失败',
+      fileSizeExceeded: '文件大小超过限制（最大 {max}MB）',
       chunkUploadFailed: '分片上传失败: {chunk}/{total}',
       fileMergeFailed: '文件合并失败: {fileName}',
       fileDownloadFailed: '文件下载失败',

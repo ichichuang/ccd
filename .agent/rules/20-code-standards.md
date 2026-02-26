@@ -36,7 +36,7 @@ alwaysApply: true
 
 ## 3. 导入与未使用代码
 
-- **Vue**：不要手动从 `'vue'` 导入 `ref`、`computed`、`watch`（自动导入）；仅在导出接口时使用 `import type { Ref, ComputedRef } from 'vue'`。参见 `docs/BUILD_SYSTEM.md`。
+- **Vue**：不要手动从 `'vue'` 导入 `ref`、`computed`、`watch`（自动导入）；仅在导出接口时使用 `import type { Ref, ComputedRef } from 'vue'`。参见 `docs/ai-specs/BUILD_SYSTEM.md`。
 - **未使用**：删除未使用的导入；对于有意未使用的变量/解构，使用 **`_`** 前缀（例如 `_apiData`、`selectionComputed: _selectionComputed`）。
 
 ## 4. TypeScript 最佳实践
@@ -92,7 +92,7 @@ alwaysApply: true
   - ✅ 在 `<script setup>` 中：`const typedValue: MyType = value as MyType` 或 `function handleColorInputChange(event: Event) { ... }`
   - ✅ 在 `<template>` 中：`<div :prop="typedValue">` 或 `@input="handleColorInputChange"`
 - **理由**：Vue 模板不支持 TypeScript；多语句会导致解析错误。类型定义与复杂逻辑必须在 `<script setup>` 中完成。
-- **参考**：`docs/VUE_TEMPLATE_ANTIPATTERNS.md` 为 SSOT，列出完整反模式与正确写法。
+- **参考**：`docs/ai-specs/VUE_TEMPLATE_ANTIPATTERNS.md` 为 SSOT，列出完整反模式与正确写法。
 
 ## 5. 导出模式
 

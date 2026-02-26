@@ -115,6 +115,13 @@ export class UploadManager implements IUploadManager {
    * 添加上传任务
    */
   addTask(file: File, config?: UploadChunkConfig): string {
+    if (file.size > HTTP_CONFIG.maxFileSize) {
+      throw new Error(
+        $t('http.upload.fileSizeExceeded', {
+          max: String(Math.round(HTTP_CONFIG.maxFileSize / (1024 * 1024))),
+        })
+      )
+    }
     const taskId = this.generateTaskId()
     const chunkSize = config?.chunkSize || HTTP_CONFIG.defaultChunkSize // 2MB
     const chunks = splitFileIntoChunks(file, chunkSize)

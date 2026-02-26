@@ -11,7 +11,7 @@ globs: src/views/**/*.vue, src/components/**/*.vue
 
 ## 2. Pre-check
 
-- **必读**：`docs/ECHARTS_THEME.md`
+- **必读**：`docs/ai-specs/ECHARTS_THEME.md`
 - **规则**：`.agent/rules/10-ui-architecture.md` §2d
 
 ## 3. 判断标准
@@ -30,7 +30,7 @@ globs: src/views/**/*.vue, src/components/**/*.vue
 
 ### Step 2: 阅读文档并选用组件
 
-- 打开 `docs/ECHARTS_THEME.md`，确认 UseEcharts 组件的完整 API。
+- 打开 `docs/ai-specs/ECHARTS_THEME.md`，确认 UseEcharts 组件的完整 API。
 - 类型从 `@/components/UseEcharts` 导入：`UseEchartsProps`、`ChartInstance`、`ChartEventParams`、`ChartEventHandlers`、`EChartsOption` 等。
 
 ### Step 3: 实现图表
@@ -53,7 +53,7 @@ globs: src/views/**/*.vue, src/components/**/*.vue
 - 组件：`src/components/UseEcharts`
 - Hook：`src/hooks/modules/useChartTheme`
 - 类型：`src/components/UseEcharts/utils/types.ts`
-- 文档：`docs/ECHARTS_THEME.md`
+- 文档：`docs/ai-specs/ECHARTS_THEME.md`
 
 ## 6. 示例
 

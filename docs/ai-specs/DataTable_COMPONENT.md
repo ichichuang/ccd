@@ -145,6 +145,6 @@ API 分页示例：
 ## 8. 与项目规范
 
 - **请求**：表格 API 由组件内部 `executeTableApi` 调用 `@/utils/http`，业务 API 仍定义在 `src/api/<module>/`；禁止在业务页面直接使用 executeTableApi 替代 src/api。
-- **通知**：导出成功/失败使用 `window.$message`（见 `docs/TOAST_AND_MESSAGE.md`）。
+- **通知**：导出成功/失败使用 `window.$message`（见 `./TOAST_AND_MESSAGE.md`）。
 - **样式**：UnoCSS 语义类 + 设计系统变量；图标使用 `Icons` 组件。
 - **类型**：列配置与 Props 见 `@/components/DataTable` 导出的类型（DataTableColumn、DataTableProps、DataTableExpose、DataTableApiConfig 等）。

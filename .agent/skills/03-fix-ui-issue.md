@@ -26,11 +26,11 @@ globs: **/*.vue, **/*.ts
   - 多语句内联事件处理器 → 抽取到 script 方法。
   - 模板中使用 TypeScript 语法（`as`、`:`、`<>`）→ 移到 script 中。
   - `readonly` 数组 `includes` 类型不兼容 → 使用 `(ARRAY as readonly string[]).includes(val)`，赋值时显式断言。
-  - 详见 `docs/VUE_TEMPLATE_ANTIPATTERNS.md`。
+  - 详见 `docs/ai-specs/VUE_TEMPLATE_ANTIPATTERNS.md`。
 - **PrimeVue 组件配色**：若问题涉及 Button/Dialog 等组件的 hover、pressed、outlined/text 变体状态：
   - 检查 `src/utils/theme/primevue-preset.ts` 的 `initComponentButtonColorSchemeOptionsItems`
   - 确认 text/outlined 使用 `get('Light')` 作为 hover 背景，而非 `get('Text')`（\*-foreground）或 `get('')`（实色）
-  - 详见 `docs/PRIMEVUE_THEME.md`
+  - 详见 `docs/ai-specs/PRIMEVUE_THEME.md`
 
 ### 步骤 3：修复
 

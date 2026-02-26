@@ -10,10 +10,10 @@ alwaysApply: true
 
 ## 1. 单一真理来源（SSOT）遵循
 
-- **文档即法律**：你必须优先遵循 `docs/PROJECT_PROTOCOL.md` 和 `docs/ANTIGRAVITY_UI_RULES.md`。
+- **文档即法律**：你必须优先遵循 `docs/ai-specs/PROJECT_PROTOCOL.md` 和 `docs/ai-specs/ANTIGRAVITY_UI_RULES.md`。
 - **配置驱动**：`uno.config.ts`、`src/constants/` 和 `src/types/` 是样式和逻辑约束的 SSOT。不要在代码中发明新的颜色、尺寸或类型。
-- **黄金样本**：创建文件时，必须严格模仿 `docs/GOLDEN_SAMPLES/` 的结构。
-- **构建与自动导入**：自动导入库的完整列表（vue、vue-router、pinia、@vueuse/core、@/locales t/$t）、扫描目录（stores、hooks、api、utils、constants/\*、CScrollbar）和组件范围（仅 src/components；排除 src/layouts；PrimeVueResolver）在 **`docs/BUILD_SYSTEM.md`** 中。不确定什么可以在不使用 `import` 的情况下使用时，请查阅该文档。不要手动从 `'vue'` 导入 `ref`/`computed`/`watch`；删除未使用的导入；对于有意未使用的变量，使用 **`_`** 前缀。
+- **黄金样本**：创建文件时，必须严格模仿 `docs/ai-specs/GOLDEN_SAMPLES/` 的结构。
+- **构建与自动导入**：自动导入库的完整列表（vue、vue-router、pinia、@vueuse/core、@/locales t/$t）、扫描目录（stores、hooks、api、utils、constants/\*、CScrollbar）和组件范围（仅 src/components；排除 src/layouts；PrimeVueResolver）在 **`docs/ai-specs/BUILD_SYSTEM.md`** 中。不确定什么可以在不使用 `import` 的情况下使用时，请查阅该文档。不要手动从 `'vue'` 导入 `ref`/`computed`/`watch`；删除未使用的导入；对于有意未使用的变量，使用 **`_`** 前缀。
 
 ## 2. "工具与 Hooks 优先"策略（严格）
 

@@ -226,8 +226,8 @@ const slotCtx = computed<ContextMenuSlotContext | null>(() => {
 .ctx-menu-enter-active,
 .ctx-menu-leave-active {
   transition:
-    opacity var(--duration-scale-md, 200ms) ease-out,
-    transform var(--duration-scale-md, 200ms) ease-out;
+    opacity var(--transition-md) ease-out,
+    transform var(--transition-md) ease-out;
 }
 
 .ctx-menu-enter-from {

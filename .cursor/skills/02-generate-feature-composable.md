@@ -14,14 +14,14 @@
 
 先阅读并遵循：
 
-- `@docs/PROJECT_PROTOCOL.md`
-- `@docs/GOLDEN_SAMPLES/useFeatureLogic.ts`（结构/风格参考）
+- `@docs/ai-specs/PROJECT_PROTOCOL.md`
+- `@docs/ai-specs/GOLDEN_SAMPLES/useFeatureLogic.ts`（结构/风格参考）
 - `@.cursor/rules/10-logic-layer.mdc`
 - `@.cursor/rules/15-utils-and-hooks-first.mdc`
 
 ## Golden Sample 说明
 
-`docs/GOLDEN_SAMPLES/useFeatureLogic.ts` 是 `useHttpRequest` 的封装，提供 **loading/data/error/send** 的返回结构参考。
+`docs/ai-specs/GOLDEN_SAMPLES/useFeatureLogic.ts` 是 `useHttpRequest` 的封装，提供 **loading/data/error/send** 的返回结构参考。
 本 Skill 要求生成的 Hook 应：
 
 1. 从 `src/api/<module>/<feature>.ts` 导入 `buildXxxMethod`
@@ -63,8 +63,8 @@
 ## Prompt 模板（复制使用）
 
 ```
-先阅读 @docs/PROJECT_PROTOCOL.md
-参考 @docs/GOLDEN_SAMPLES/useFeatureLogic.ts
+先阅读 @docs/ai-specs/PROJECT_PROTOCOL.md
+参考 @docs/ai-specs/GOLDEN_SAMPLES/useFeatureLogic.ts
 遵循 @.cursor/rules/10-logic-layer.mdc 与 @.cursor/rules/15-utils-and-hooks-first.mdc
 
 任务：为以下 API module 生成业务 Hook（不写 UI）

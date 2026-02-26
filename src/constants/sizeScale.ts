@@ -65,13 +65,13 @@ export const RADIUS_SCALE_RATIOS: Record<SizeScaleKey, number> = {
  * 遵循 Material Design 动效时长指南
  */
 export const TRANSITION_SCALE_VALUES: Record<SizeScaleKey, number> = {
-  xs: 75, // 微交互 (hover 高亮)
-  sm: 150, // 快速反馈
-  md: 200, // 标准过渡
-  lg: 300, // 展开/收起
-  xl: 400, // 页面过渡
-  '2xl': 500, // 复杂动画
-  '3xl': 700, // 慢动画
-  '4xl': 1000, // 强调动画
-  '5xl': 1500, // 戏剧效果
+  xs: 80, // 微交互 (hover 高亮)
+  sm: 180, // 快速反馈
+  md: 280, // 标准过渡
+  lg: 380, // 展开/收起
+  xl: 480, // 页面过渡
+  '2xl': 580, // 复杂动画
+  '3xl': 680, // 慢动画
+  '4xl': 780, // 强调动画
+  '5xl': 880, // 戏剧效果
 }

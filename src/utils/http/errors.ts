@@ -4,6 +4,8 @@
  * - 供业务侧与 hooks 显式引用，形成强类型闭环
  */
 
+import { HTTP_CONFIG } from '@/constants/http'
+
 /**
  * 错误类型枚举
  */
@@ -17,11 +19,29 @@ export enum ErrorType {
   UNKNOWN = 'UNKNOWN',
 }
 
+const ERROR_TYPE_TO_CODE_KEY: Record<ErrorType, keyof typeof HTTP_CONFIG.errorCodes> = {
+  [ErrorType.NETWORK]: 'networkError',
+  [ErrorType.TIMEOUT]: 'timeoutError',
+  [ErrorType.AUTH]: 'authError',
+  [ErrorType.SERVER]: 'serverError',
+  [ErrorType.CLIENT]: 'clientError',
+  [ErrorType.SECURITY]: 'securityError',
+  [ErrorType.UNKNOWN]: 'unknownError',
+}
+
+/**
+ * 根据 ErrorType 获取 HTTP_CONFIG.errorCodes 中的字符串错误码
+ */
+export function getErrorCodeFromType(type: ErrorType): string {
+  return HTTP_CONFIG.errorCodes[ERROR_TYPE_TO_CODE_KEY[type]]
+}
+
 /**
  * 自定义 HTTP 错误类
  */
 export class HttpRequestError extends Error {
   public type: ErrorType
+  public code: string
   public status?: number
   public statusText?: string
   public data?: any
@@ -38,6 +58,7 @@ export class HttpRequestError extends Error {
     super(message)
     this.name = 'HttpRequestError'
     this.type = type
+    this.code = getErrorCodeFromType(type)
     this.status = status
     this.statusText = statusText
     this.data = data

@@ -191,10 +191,10 @@ const renderTieredMenuItem = ({ item, props: slotProps, hasSubmenu }: TieredMenu
 
 <style lang="scss" scoped>
 .breadcrumb-enter-active {
-  transition: all var(--transition-xl) ease-out;
+  transition: all var(--transition-md) ease-out;
 }
 .breadcrumb-leave-active {
-  transition: all var(--transition-lg) ease-in;
+  transition: all var(--transition-md) ease-in;
   position: absolute;
 }
 .breadcrumb-enter-from {
@@ -206,6 +206,6 @@ const renderTieredMenuItem = ({ item, props: slotProps, hasSubmenu }: TieredMenu
   transform: translateX(var(--spacing-sm));
 }
 .breadcrumb-move {
-  transition: all var(--transition-xl) ease;
+  transition: all var(--transition-md) ease;
 }
 </style>

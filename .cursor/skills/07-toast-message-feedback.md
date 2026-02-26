@@ -13,12 +13,12 @@
 
 - **非组件环境**：`window.$message?.success('操作成功')` 或 `window.$toast?.dangerIn('top-right', '错误', '详情')`
 - **组件内**：优先 PrimeVue `useToast()`
-- **文档**：`docs/TOAST_AND_MESSAGE.md`、`docs/TOAST_UI_OVERRIDES.md`
+- **文档**：`docs/ai-specs/TOAST_AND_MESSAGE.md`、`docs/ai-specs/TOAST_AND_MESSAGE.md`
 
 ## Pre-check
 
-- `docs/TOAST_AND_MESSAGE.md` - API 与使用方式
-- `docs/TOAST_UI_OVERRIDES.md` - 样式覆盖说明（居中、关闭按钮、内边距）
+- `docs/ai-specs/TOAST_AND_MESSAGE.md` - API 与使用方式
+- `docs/ai-specs/TOAST_AND_MESSAGE.md` - 样式覆盖说明（居中、关闭按钮、内边距）
 
 ## 实现要点（技术细节）
 
@@ -53,8 +53,8 @@
 
 - `src/layouts/components/AppPrimeVueGlobals.vue` - 挂载、buildMessageApi、样式
 - `src/utils/theme/primevue-preset.ts` - Toast content.padding
-- `docs/TOAST_AND_MESSAGE.md` - API 文档
-- `docs/TOAST_UI_OVERRIDES.md` - 样式覆盖说明
+- `docs/ai-specs/TOAST_AND_MESSAGE.md` - API 文档
+- `docs/ai-specs/TOAST_AND_MESSAGE.md` - 样式覆盖说明
 
 ## 验证
 

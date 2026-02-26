@@ -8,6 +8,7 @@ export const HTTP_CONFIG = {
   maxConcurrentRequests: 10, // 最大并发请求数
   maxCacheSize: 1000, // 最大缓存条目数
   defaultCacheTtl: 5 * 60 * 1000, // 默认缓存时间（5分钟）
+  defaultDeduplicate: true, // 是否默认启用请求去重
 
   // 重试配置
   defaultRetryTimes: 3, // 默认重试次数
@@ -30,16 +31,16 @@ export const HTTP_CONFIG = {
   reconnectDelay: 2000, // 重连延迟（毫秒）
   healthCheckInterval: 30000, // 健康检查间隔（毫秒）
 
-  // 安全配置
-  enableCsrf: true, // 是否启用CSRF保护
-  enableSignature: true, // 是否启用请求签名
-  enableRateLimit: true, // 是否启用速率限制
-  maxRequestsPerMinute: 60, // 每分钟最大请求数
+  // 安全配置（可被 RequestConfig.security 覆盖）
+  enableCsrf: true, // 是否启用 CSRF 保护（预留：拦截器接入）
+  enableSignature: true, // 是否启用请求签名（预留：拦截器接入）
+  enableRateLimit: true, // 是否启用速率限制（methods.ts 已接入）
+  maxRequestsPerMinute: 60, // 每分钟最大请求数（methods.ts 已接入）
 
   // 敏感字段
   sensitiveFields: ['password', 'token', 'secret', 'key', 'ssn', 'creditCard'],
 
-  // 错误码映射
+  // 错误码映射（供 errors.ts getErrorCodeFromType 使用，用于 API 响应/日志）
   errorCodes: {
     networkError: 'NETWORK_ERROR',
     timeoutError: 'TIMEOUT_ERROR',

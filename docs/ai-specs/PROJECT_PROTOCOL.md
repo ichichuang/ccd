@@ -4,20 +4,20 @@
 
 ## 0. 进一步阅读（底层系统 SSOT 索引）
 
-- `docs/BUILD_SYSTEM.md`：构建系统与自动导入（为什么 `ref/computed` 可以不 import）
-- `docs/ENV_AND_RUNTIME.md`：环境变量与运行时行为（dev/prod 差异、proxy/timeout）
-- `docs/TYPESCRIPT_AND_LINTING.md`：TS 项目引用与 ESLint（自动导入 globals、生成 d.ts 的纳入）
-- `docs/VUE_TEMPLATE_ANTIPATTERNS.md`：Vue 模板反模式（多语句内联处理器、模板中 TS 语法、readonly 数组 includes）
-- `docs/UNOCSS_AND_ICONS.md`：UnoCSS 语义类与图标体系（iconify + custom SVG + safelist）
-- `docs/PROJECT_PROTOCOL.md` §11 + `.cursor/rules/22-layouts.mdc`：Layouts 系统（LayoutMode、AdminLayoutMode、布局壳扩展）
-- `docs/ADAPTIVE_LAYOUT.md`：布局适配系统（PC/Tablet/Mobile、断点、有效显隐、userAdjusted）
-- `docs/PROJECT_PROTOCOL.md` §5.1 + `.cursor/rules/24-tsx-rendering.mdc`：TSX 渲染规范（程序化渲染用 TSX，禁止 h()）
-- `docs/DIALOG_COMPONENT.md`：PrimeDialog 二次封装（useDialog、便捷方法、高级用法）
-- `docs/DataTable_COMPONENT.md`：DataTable 表格封装（列配置、API、分页/无限滚动、选择、导出、列持久化）
-- `docs/SCHEMA_FORM_COMPONENT.md`：SchemaForm 表单组件（Schema 驱动、useSchemaForm、动态字段、分步/分组）
-- `docs/TOAST_AND_MESSAGE.md`：全局 Toast / Message（window.$toast、window.$message，非组件环境轻量通知）
-- `docs/TOAST_UI_OVERRIDES.md`：Toast 样式覆盖说明（居中 Message、关闭按钮位置、内边距）
-- `docs/AUTH_AND_LOGIN_FLOW.md`：登录与鉴权流程（登录/登出、路由守卫、401、动态路由、存储清理）
+- `./BUILD_SYSTEM.md`：构建系统与自动导入（为什么 `ref/computed` 可以不 import）
+- `./ENV_AND_RUNTIME.md`：环境变量与运行时行为（dev/prod 差异、proxy/timeout）
+- `./TYPESCRIPT_AND_LINTING.md`：TS 项目引用与 ESLint（自动导入 globals、生成 d.ts 的纳入）
+- `./VUE_TEMPLATE_ANTIPATTERNS.md`：Vue 模板反模式（多语句内联处理器、模板中 TS 语法、readonly 数组 includes）
+- `./UNOCSS_AND_ICONS.md`：UnoCSS 语义类与图标体系（iconify + custom SVG + safelist）
+- `./PROJECT_PROTOCOL.md` §11 + `.cursor/rules/22-layouts.mdc`：Layouts 系统（LayoutMode、AdminLayoutMode、布局壳扩展）
+- `./ADAPTIVE_LAYOUT.md`：布局适配系统（PC/Tablet/Mobile、断点、有效显隐、userAdjusted）
+- `./PROJECT_PROTOCOL.md` §5.1 + `.cursor/rules/24-tsx-rendering.mdc`：TSX 渲染规范（程序化渲染用 TSX，禁止 h()）
+- `./DIALOG_COMPONENT.md`：PrimeDialog 二次封装（useDialog、便捷方法、高级用法）
+- `./DataTable_COMPONENT.md`：DataTable 表格封装（列配置、API、分页/无限滚动、选择、导出、列持久化）
+- `./SCHEMA_FORM_COMPONENT.md`：SchemaForm 表单组件（Schema 驱动、useSchemaForm、动态字段、分步/分组）
+- `./TOAST_AND_MESSAGE.md`：全局 Toast / Message（window.$toast、window.$message，非组件环境轻量通知）
+- `./TOAST_AND_MESSAGE.md`：Toast 样式覆盖说明（居中 Message、关闭按钮位置、内边距）
+- `./AUTH_AND_LOGIN_FLOW.md`：登录与鉴权流程（登录/登出、路由守卫、401、动态路由、存储清理）
 
 ## 1. 技术栈核心 (Tech Stack)
 
@@ -41,17 +41,17 @@
 
 - **强制规则（Must）：**
   - 表单字段（输入/选择/日期/开关）：
-    - **多字段、需校验/分步/分组/动态 schema**：MUST 使用 SchemaForm + useSchemaForm（见 `docs/SCHEMA_FORM_COMPONENT.md`）。
+    - **多字段、需校验/分步/分组/动态 schema**：MUST 使用 SchemaForm + useSchemaForm（见 `./SCHEMA_FORM_COMPONENT.md`）。
     - 简单 1–2 个字段：直接使用 PrimeVue 组件：`<InputText>` / `<Password>` / `<InputNumber>` / `<Checkbox>` / `<RadioButton>` / `<Dropdown>` / `<MultiSelect>` / `<Calendar>` / `<ToggleSwitch>` 等。
   - 操作按钮：
     - 使用 `<Button>` 作为主要/次要操作按钮，而不是手写 `<button>` 样式。
   - 列表/表格：
-    - 交互性数据列表优先使用 **DataTable**（`@/components/DataTable`），详见 `docs/DataTable_COMPONENT.md`；避免从零写 `<table>` 或裸用 PrimeVue DataTable 实现分页/排序/筛选/导出等复杂逻辑。
+    - 交互性数据列表优先使用 **DataTable**（`@/components/DataTable`），详见 `./DataTable_COMPONENT.md`；避免从零写 `<table>` 或裸用 PrimeVue DataTable 实现分页/排序/筛选/导出等复杂逻辑。
   - 弹窗/抽屉：
-    - 自定义弹窗、反馈提示、确认对话框优先使用 `useDialog()`（见 `docs/DIALOG_COMPONENT.md`）。侧边抽屉使用 `<Sidebar>`。禁止用 `position: fixed` 的 div 临时拼装。
+    - 自定义弹窗、反馈提示、确认对话框优先使用 `useDialog()`（见 `./DIALOG_COMPONENT.md`）。侧边抽屉使用 `<Sidebar>`。禁止用 `position: fixed` 的 div 临时拼装。
   - 消息/确认：
     - **组件内**轻量通知：可使用 PrimeVue `useToast()`。
-    - **非组件环境**（如 HTTP 拦截器、全局错误处理）：使用 `window.$toast` / `window.$message`（见 `docs/TOAST_AND_MESSAGE.md`、`docs/TOAST_UI_OVERRIDES.md`）。禁止在业务中自建全局通知系统。
+    - **非组件环境**（如 HTTP 拦截器、全局错误处理）：使用 `window.$toast` / `window.$message`（见 `./TOAST_AND_MESSAGE.md`、`./TOAST_AND_MESSAGE.md`）。禁止在业务中自建全局通知系统。
 
 - **样式与扩展：**
   - PrimeVue 的外观定制必须通过：
@@ -162,7 +162,7 @@ const renderSlot = () => <span class="text-muted-foreground">动态内容</span>
 - **类型定义：** `src/types/systems/theme.d.ts`（ThemeMode、ThemePreset、ThemeCssVars 等）
 - **预设常量：** `src/constants/theme.ts`（THEME_PRESETS、DEFAULT_THEME_NAME）
 - **状态管理：** `src/stores/modules/theme.ts`（useThemeStore）
-- **PrimeVue 融合：** `src/utils/theme/primevue-preset.ts` 将 ThemeCssVars 注入 PrimeVue 组件；Button 等配色规则见 `docs/PRIMEVUE_THEME.md`
+- **PrimeVue 融合：** `src/utils/theme/primevue-preset.ts` 将 ThemeCssVars 注入 PrimeVue 组件；Button 等配色规则见 `./PRIMEVUE_THEME.md`
 
 **规则：**
 
@@ -216,7 +216,7 @@ const renderSlot = () => <span class="text-muted-foreground">动态内容</span>
 
 #### 6.3.2 布局自适应逻辑（必读）
 
-布局 mode、侧栏收展、侧栏/面包屑/Tabs/Footer 显隐由 **LayoutAdmin.runAdaptive** 统一驱动，具体规则见 `docs/ADAPTIVE_LAYOUT.md`。
+布局 mode、侧栏收展、侧栏/面包屑/Tabs/Footer 显隐由 **LayoutAdmin.runAdaptive** 统一驱动，具体规则见 `./ADAPTIVE_LAYOUT.md`。
 
 - **禁止**：在业务代码中直接调用 `adaptToMobile`、`adaptToTablet`、`adaptPcByOrientation`、`adaptPcByBreakpoint`，或直接修改 `layoutStore.mode` / `layoutStore.sidebarCollapse` 以实现「响应式布局」。
 - **必须**：在 LayoutAdmin 壳内展示侧栏/面包屑/Tabs/Footer 时使用 `showSidebarEffective` 等有效显隐，不得绕过。
@@ -297,7 +297,7 @@ const renderSlot = () => <span class="text-muted-foreground">动态内容</span>
 
 ## 7. 黄金样本 (Golden Samples)
 
-生成任何逻辑或 UI 前，必须参考 `docs/GOLDEN_SAMPLES/` 中的文件并**严格模仿**其结构与风格：
+生成任何逻辑或 UI 前，必须参考 `./GOLDEN_SAMPLES/` 中的文件并**严格模仿**其结构与风格：
 
 - `useFeatureLogic.ts` — Composables 与 Alova 请求封装
 - `StoreExample.ts` — Pinia Store 写法
@@ -551,7 +551,7 @@ const renderSlot = () => <span class="text-muted-foreground">动态内容</span>
   - 翻转：`flip="horizontal|vertical|both"`
   - 旋转：`rotate="90"` 或 `rotate={90}`（单位：deg）
   - 缩放：`scale={1.5}`（数字值）
-  - 详见 `docs/UNOCSS_AND_ICONS.md` §6.4
+  - 详见 `./UNOCSS_AND_ICONS.md` §6.4
 
 ### 8.5.4 新增图标/组件的落点（强制）
 
@@ -774,4 +774,4 @@ const renderSlot = () => <span class="text-muted-foreground">动态内容</span>
 
 ### 11.4 布局自适应
 
-Admin 壳下 mode、侧栏收展、侧栏/面包屑/Tabs/Footer 显隐由适配系统控制，详见 `docs/ADAPTIVE_LAYOUT.md`。修改 LayoutAdmin 或 layout store 的适配逻辑时须遵循该文档，不得绕过 runAdaptive 或有效显隐。
+Admin 壳下 mode、侧栏收展、侧栏/面包屑/Tabs/Footer 显隐由适配系统控制，详见 `./ADAPTIVE_LAYOUT.md`。修改 LayoutAdmin 或 layout store 的适配逻辑时须遵循该文档，不得绕过 runAdaptive 或有效显隐。

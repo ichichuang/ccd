@@ -60,7 +60,7 @@
 
 - “ref/computed 等不 import 也能用”不会触发 `no-undef`
 - 自动生成的 `.d.ts` 不会被 ESLint 无意义地报错
-- **未使用变量**：TS/TSX 启用 `@typescript-eslint/no-unused-vars`（warn）；有意保留的未使用变量或解构用 **`_` 前缀**（`varsIgnorePattern: '^_'`），详见 `docs/BUILD_SYSTEM.md` §2.4。
+- **未使用变量**：TS/TSX 启用 `@typescript-eslint/no-unused-vars`（warn）；有意保留的未使用变量或解构用 **`_` 前缀**（`varsIgnorePattern: '^_'`），详见 `./BUILD_SYSTEM.md` §2.4。
 
 ## 5. TSX/JSX 支持
 
@@ -68,7 +68,7 @@
 - `build/plugins.ts`：`@vitejs/plugin-vue-jsx` 提供 JSX/TSX 编译
 - 程序化渲染（render 函数、动态 VNode、slot 内容等）**必须使用 TSX**，**禁止使用 `h()`**
 - **决策：** 需要程序化渲染（返回 VNode）时 → 用 TSX，不用 `h()`
-- 详见 `docs/PROJECT_PROTOCOL.md` §5.1 与 `.cursor/rules/24-tsx-rendering.mdc`
+- 详见 `./PROJECT_PROTOCOL.md` §5.1 与 `.cursor/rules/24-tsx-rendering.mdc`
 
 ## 6. Type Annotation Best Practices（类型注解最佳实践）
 
@@ -175,7 +175,7 @@ const status = ref<Status>('pending')
 
 ### 6.4 Examples from Golden Samples（黄金样本示例）
 
-参考 `docs/GOLDEN_SAMPLES/useFeatureLogic.ts`：
+参考 `./GOLDEN_SAMPLES/useFeatureLogic.ts`：
 
 ```ts
 // ✅ Correct pattern
@@ -196,7 +196,7 @@ export function useHttpRequest<TData = unknown>(
 
 ### 6.5 Vue Template Expression Constraints（Vue 模板表达式约束）
 
-Vue 模板中的表达式**必须是单条 JavaScript 表达式**，不支持 TypeScript 语法。详见 `docs/VUE_TEMPLATE_ANTIPATTERNS.md`。
+Vue 模板中的表达式**必须是单条 JavaScript 表达式**，不支持 TypeScript 语法。详见 `./VUE_TEMPLATE_ANTIPATTERNS.md`。
 
 - **禁止多语句内联事件处理器**：`@click`、`@input` 等只能接受单条表达式；多行/多语句会导致 `Error parsing JavaScript expression`。必须抽取为 `<script setup>` 中的方法。
 - **禁止模板中的 TypeScript 语法**：禁止在模板 binding 中使用 `as`、`:`、`<>`。类型断言必须在 `<script setup>` 中完成，模板只使用已类型化的变量。
@@ -216,4 +216,4 @@ if (typeof val === 'string' && (SIZE_SCALE_KEYS as readonly string[]).includes(v
 }
 ```
 
-详见 `docs/VUE_TEMPLATE_ANTIPATTERNS.md` §3。
+详见 `./VUE_TEMPLATE_ANTIPATTERNS.md` §3。

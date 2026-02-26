@@ -223,8 +223,9 @@ const sidebarColors = computed<
 const opacityVariants = [10, 20, 30, 40, 50, 60, 70, 80, 90] as const
 
 // Theme Store & Switch
-const themeStore = useThemeStore()
-const { mode, isAnimating, setThemeWithAnimation } = useThemeSwitch()
+const themeStore: ReturnType<typeof useThemeStore> = useThemeStore()
+const { mode, isAnimating, setThemeWithAnimation }: ReturnType<typeof useThemeSwitch> =
+  useThemeSwitch()
 const themeModeOptions: Array<{ value: ThemeMode; label: string }> = [
   { value: 'light', label: '亮色' },
   { value: 'dark', label: '暗色' },
@@ -242,6 +243,23 @@ const presetSwatchColors = computed<Array<{ name: string; color: string }>>(() =
     color: getPresetPrimaryColor(p, false),
   }))
 )
+
+// Semantic colors (Brand/Interactive)
+const semanticColors = [
+  { name: 'bg-brand', classes: 'bg-primary', desc: '品牌大背景 (SSOT: Primary)' },
+  { name: 'bg-interactive', classes: 'bg-primary-hover', desc: '交互背景 (Primary Hover)' },
+  { name: 'text-interactive', classes: 'text-primary-hover', desc: '交互文字颜色' },
+]
+
+// Menu shortcuts
+const menuShortcuts = [
+  {
+    name: 'menu-item-base',
+    classes: 'menu-item-base border border-dashed border-border',
+    desc: '菜单项基础样式',
+  },
+  { name: 'menu-item-hover', classes: 'menu-item-hover', desc: '菜单项悬停态 (Primary Theme)' },
+]
 </script>
 
 <template>
@@ -250,7 +268,7 @@ const presetSwatchColors = computed<Array<{ name: string; color: string }>>(() =
       <!-- Header -->
       <div class="flex flex-col gap-xs">
         <div class="flex items-center gap-md">
-          <div class="p-padding-md bg-primary/10 rounded-scale-lg">
+          <div class="p-padding-md bg-primary/10 rounded-scale-lg shrink-0">
             <Icons
               name="i-lucide-palette"
               class="text-primary fs-2xl"
@@ -258,23 +276,43 @@ const presetSwatchColors = computed<Array<{ name: string; color: string }>>(() =
           </div>
           <div>
             <h1 class="fs-2xl font-bold text-foreground">Theme System 主题系统</h1>
-            <p class="text-muted-foreground">
+            <p class="text-muted-foreground fs-sm">
               包含：颜色 token + Store 模式/预设 · 亮/暗/自动 + THEME_PRESETS ·
               点击任意类名或变量即可复制
             </p>
           </div>
         </div>
+        <div
+          class="border-l-4 border-primary bg-primary/5 p-padding-md rounded-r-scale-md flex gap-md items-start mt-margin-sm"
+        >
+          <Icons
+            name="i-lucide-info"
+            class="text-primary fs-xl shrink-0 mt-0.5"
+          />
+          <div class="flex flex-col gap-0.5">
+            <div class="font-semibold text-primary fs-sm">Architectural Guide 架构引导</div>
+            <div class="text-muted-foreground fs-xs leading-relaxed">
+              配色方案由
+              <span class="bg-muted px-padding-xs rounded font-mono">src/constants/theme/</span>
+              与
+              <span class="bg-muted px-padding-xs rounded font-mono">
+                src/utils/theme/metadata.ts
+              </span>
+              定义。如需修改全局色盘，请编辑相应常量。
+            </div>
+          </div>
+        </div>
       </div>
 
       <!-- Theme Store 主题 Store -->
-      <Card class="component-border">
+      <Card class="component-border hover:shadow-md behavior-hover-transition">
         <template #title>
           <div class="flex items-center gap-sm">
             <Icons
               name="i-lucide-settings-2"
               class="text-primary"
             />
-            <span>Theme Store 主题 Store</span>
+            <span class="font-semibold">Theme Store 主题 Store</span>
             <Tag
               value="useThemeStore / useThemeSwitch"
               severity="info"
@@ -300,15 +338,19 @@ const presetSwatchColors = computed<Array<{ name: string; color: string }>>(() =
             <div class="flex flex-col gap-sm">
               <span class="text-muted-foreground fs-sm">切换动画时长 (Transition Duration)</span>
               <div class="flex flex-wrap gap-sm">
-                <Button
+                <div
                   v-for="opt in transitionOptions"
                   :key="opt.value"
-                  :label="opt.label"
-                  :severity="themeStore.transitionDuration === opt.value ? 'primary' : 'secondary'"
-                  :outlined="themeStore.transitionDuration !== opt.value"
-                  size="small"
+                  class="p-padding-sm py-1 rounded-scale-md cursor-pointer select-none transition-all duration-scale-md ease-in-out fs-sm active:scale-95"
+                  :class="[
+                    themeStore.transitionDuration === opt.value
+                      ? 'bg-primary text-primary-foreground shadow-sm'
+                      : 'bg-muted/20 text-muted-foreground hover:bg-muted/40',
+                  ]"
                   @click="themeStore.setTransitionDuration(opt.value)"
-                />
+                >
+                  {{ opt.label }}
+                </div>
               </div>
             </div>
           </div>
@@ -323,7 +365,7 @@ const presetSwatchColors = computed<Array<{ name: string; color: string }>>(() =
               name="i-lucide-palette"
               class="text-primary"
             />
-            <span>THEME_PRESETS 预设展示</span>
+            <span class="font-semibold">THEME_PRESETS 预设展示</span>
             <Tag
               :value="`${THEME_PRESETS.length} presets`"
               severity="secondary"
@@ -341,19 +383,39 @@ const presetSwatchColors = computed<Array<{ name: string; color: string }>>(() =
               <div
                 v-for="item in presetSwatchColors"
                 :key="item.name"
-                class="flex flex-col items-center gap-xs p-padding-md rounded-scale-md transition-colors cursor-pointer"
+                class="relative flex flex-col items-center gap-xs p-padding-md rounded-scale-md transition-all duration-scale-md cursor-pointer group active:scale-95"
                 :class="
                   themeStore.themeName === item.name
-                    ? 'bg-primary/10 component-border border-primary/50'
-                    : 'bg-muted/20 hover:bg-muted/40'
+                    ? 'bg-primary/10 component-border border-primary/50 ring-2 ring-primary/30 ring-offset-2 ring-offset-background'
+                    : 'bg-muted/20 hover:bg-muted/40 hover:-translate-y-1'
                 "
                 @click="themeStore.setTheme(item.name)"
               >
+                <!-- Selected Indicator -->
                 <div
-                  class="w-12 h-12 rounded-full border-2 border-solid border-border shrink-0"
+                  v-if="themeStore.themeName === item.name"
+                  class="absolute top-1 right-1 w-4 h-4 rounded-full bg-primary text-primary-foreground flex items-center justify-center shadow-sm"
+                >
+                  <Icons
+                    name="i-lucide-check"
+                    class="fs-[10px]"
+                  />
+                </div>
+
+                <div
+                  class="w-12 h-12 rounded-full border-2 border-solid border-border shrink-0 transition-transform group-hover:scale-110 duration-scale-md shadow-sm"
                   :style="{ background: item.color }"
                 />
-                <span class="font-mono fs-xs text-foreground">{{ item.name }}</span>
+                <span
+                  class="font-mono fs-xs transition-colors"
+                  :class="
+                    themeStore.themeName === item.name
+                      ? 'text-primary font-bold'
+                      : 'text-foreground'
+                  "
+                >
+                  {{ item.name }}
+                </span>
               </div>
             </div>
           </div>
@@ -361,14 +423,14 @@ const presetSwatchColors = computed<Array<{ name: string; color: string }>>(() =
       </Card>
 
       <!-- Single Token Colors -->
-      <Card class="component-border">
+      <Card class="component-border hover:shadow-md behavior-hover-transition">
         <template #title>
           <div class="flex items-center gap-sm">
             <Icons
               name="i-lucide-circle"
               class="text-primary"
             />
-            <span>Single Tokens 单色令牌</span>
+            <span class="font-semibold">Single Tokens 单色令牌</span>
             <Tag
               :value="`${singleTokens.length} colors`"
               severity="secondary"
@@ -382,7 +444,7 @@ const presetSwatchColors = computed<Array<{ name: string; color: string }>>(() =
               <div
                 v-for="item in singleTokens"
                 :key="item.token"
-                class="flex flex-col gap-sm p-padding-md bg-muted/20 rounded-scale-md hover:bg-muted/40 transition-colors"
+                class="flex flex-col gap-sm p-padding-md bg-muted/20 rounded-scale-md hover:bg-muted/40 transition-colors duration-scale-md"
               >
                 <div class="flex items-center gap-sm">
                   <div
@@ -394,31 +456,25 @@ const presetSwatchColors = computed<Array<{ name: string; color: string }>>(() =
                   </span>
                 </div>
                 <div class="flex flex-wrap gap-xs">
-                  <Button
-                    :label="item.cssVar"
-                    severity="secondary"
-                    text
-                    size="small"
-                    class="font-mono fs-xs"
+                  <div
+                    class="fs-xs font-mono bg-muted/30 px-padding-xs py-0.5 rounded cursor-pointer select-none transition-all duration-scale-md ease-in-out hover:bg-primary/20 hover:text-primary active:scale-95 text-muted-foreground"
                     @click="copyToClipboard(`var(${item.cssVar})`, item.cssVar)"
-                  />
-                  <Button
-                    :label="item.bgClass"
-                    severity="success"
-                    text
-                    size="small"
-                    class="font-mono fs-xs"
+                  >
+                    {{ item.cssVar }}
+                  </div>
+                  <div
+                    class="fs-xs font-mono bg-muted/30 px-padding-xs py-0.5 rounded cursor-pointer select-none transition-all duration-scale-md ease-in-out hover:bg-success/20 hover:text-success active:scale-95 text-muted-foreground"
                     @click="copyToClipboard(item.bgClass)"
-                  />
-                  <Button
+                  >
+                    {{ item.bgClass }}
+                  </div>
+                  <div
                     v-if="item.borderClass"
-                    :label="item.borderClass"
-                    severity="warn"
-                    text
-                    size="small"
-                    class="font-mono fs-xs"
+                    class="fs-xs font-mono bg-muted/30 px-padding-xs py-0.5 rounded cursor-pointer select-none transition-all duration-scale-md ease-in-out hover:bg-warn/20 hover:text-warn active:scale-95 text-muted-foreground"
                     @click="copyToClipboard(item.borderClass!)"
-                  />
+                  >
+                    {{ item.borderClass }}
+                  </div>
                 </div>
               </div>
             </div>
@@ -427,14 +483,14 @@ const presetSwatchColors = computed<Array<{ name: string; color: string }>>(() =
       </Card>
 
       <!-- Pair Family Colors -->
-      <Card class="component-border">
+      <Card class="component-border hover:shadow-md behavior-hover-transition">
         <template #title>
           <div class="flex items-center gap-sm">
             <Icons
               name="i-lucide-layers"
               class="text-primary"
             />
-            <span>Pair Families 成对颜色族</span>
+            <span class="font-semibold">Pair Families 成对颜色族</span>
             <Tag
               :value="`${pairFamilies.length} families`"
               severity="secondary"
@@ -450,13 +506,15 @@ const presetSwatchColors = computed<Array<{ name: string; color: string }>>(() =
                 :key="family.family"
                 class="flex flex-col gap-md p-padding-lg bg-muted/20 rounded-scale-lg border border-solid border-border/50"
               >
-                <h3 class="fs-lg font-semibold text-foreground capitalize flex items-center gap-sm">
+                <h4
+                  class="fs-sm font-semibold text-foreground capitalize flex items-center gap-sm mb-margin-xs"
+                >
                   <div
-                    class="w-6 h-6 rounded-full component-border"
+                    class="w-4 h-4 rounded-full component-border"
                     :class="`bg-${family.family}`"
                   />
                   {{ family.family }}
-                </h3>
+                </h4>
                 <div class="flex flex-col gap-sm">
                   <div
                     v-for="variant in family.variants"
@@ -471,32 +529,26 @@ const presetSwatchColors = computed<Array<{ name: string; color: string }>>(() =
                       />
                     </div>
                     <div class="flex flex-wrap gap-xs">
-                      <Button
-                        :label="variant.cssVar"
-                        severity="secondary"
-                        text
-                        size="small"
-                        class="font-mono fs-xs"
+                      <div
+                        class="fs-xs font-mono bg-muted/30 px-padding-xs py-0.5 rounded cursor-pointer select-none transition-all duration-scale-md ease-in-out hover:bg-primary/20 hover:text-primary active:scale-95 text-muted-foreground"
                         @click="copyToClipboard(`var(${variant.cssVar})`, variant.cssVar)"
-                      />
-                      <Button
+                      >
+                        {{ variant.cssVar }}
+                      </div>
+                      <div
                         v-if="variant.bgClass"
-                        :label="variant.bgClass"
-                        severity="success"
-                        text
-                        size="small"
-                        class="font-mono fs-xs"
+                        class="fs-xs font-mono bg-muted/30 px-padding-xs py-0.5 rounded cursor-pointer select-none transition-all duration-scale-md ease-in-out hover:bg-success/20 hover:text-success active:scale-95 text-muted-foreground"
                         @click="copyToClipboard(variant.bgClass!)"
-                      />
-                      <Button
+                      >
+                        {{ variant.bgClass }}
+                      </div>
+                      <div
                         v-if="variant.textClass"
-                        :label="variant.textClass"
-                        severity="warn"
-                        text
-                        size="small"
-                        class="font-mono fs-xs"
+                        class="fs-xs font-mono bg-muted/30 px-padding-xs py-0.5 rounded cursor-pointer select-none transition-all duration-scale-md ease-in-out hover:bg-warn/20 hover:text-warn active:scale-95 text-muted-foreground"
                         @click="copyToClipboard(variant.textClass!)"
-                      />
+                      >
+                        {{ variant.textClass }}
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -513,14 +565,14 @@ const presetSwatchColors = computed<Array<{ name: string; color: string }>>(() =
       </Card>
 
       <!-- Quad Family Colors -->
-      <Card class="component-border">
+      <Card class="component-border hover:shadow-md behavior-hover-transition">
         <template #title>
           <div class="flex items-center gap-sm">
             <Icons
               name="i-lucide-layers-3"
               class="text-primary"
             />
-            <span>Extended Families 扩展颜色族</span>
+            <span class="font-semibold">Extended Families 扩展颜色族</span>
             <Tag
               :value="`${quadFamilies.length} families`"
               severity="secondary"
@@ -541,13 +593,15 @@ const presetSwatchColors = computed<Array<{ name: string; color: string }>>(() =
                 :key="family.family"
                 class="flex flex-col gap-md p-padding-lg bg-muted/20 rounded-scale-lg border border-solid border-border/50"
               >
-                <h3 class="fs-lg font-semibold text-foreground capitalize flex items-center gap-sm">
+                <h4
+                  class="fs-sm font-semibold text-foreground capitalize flex items-center gap-sm mb-margin-xs"
+                >
                   <div
-                    class="w-6 h-6 rounded-full component-border"
+                    class="w-4 h-4 rounded-full component-border"
                     :class="`bg-${family.family}`"
                   />
                   {{ family.family }}
-                </h3>
+                </h4>
 
                 <!-- Color Swatch Row -->
                 <div class="flex gap-xs">
@@ -574,39 +628,33 @@ const presetSwatchColors = computed<Array<{ name: string; color: string }>>(() =
                     <div
                       v-for="variant in family.variants"
                       :key="variant.name"
-                      class="flex flex-wrap items-center gap-xs p-padding-xs rounded-scale-sm hover:bg-muted/30"
+                      class="flex flex-wrap items-center gap-xs p-padding-xs rounded-scale-sm hover:bg-muted/30 transition-colors duration-scale-md"
                     >
                       <Tag
                         :value="variant.name"
                         severity="info"
                         class="fs-xs shrink-0"
                       />
-                      <Button
-                        :label="variant.cssVar"
-                        severity="secondary"
-                        text
-                        size="small"
-                        class="font-mono fs-xs"
+                      <div
+                        class="fs-xs font-mono bg-muted/30 px-padding-xs py-0.5 rounded cursor-pointer select-none transition-all duration-scale-md ease-in-out hover:bg-primary/20 hover:text-primary active:scale-95 text-muted-foreground"
                         @click="copyToClipboard(`var(${variant.cssVar})`, variant.cssVar)"
-                      />
-                      <Button
+                      >
+                        {{ variant.cssVar }}
+                      </div>
+                      <div
                         v-if="variant.bgClass"
-                        :label="variant.bgClass"
-                        severity="success"
-                        text
-                        size="small"
-                        class="font-mono fs-xs"
+                        class="fs-xs font-mono bg-muted/30 px-padding-xs py-0.5 rounded cursor-pointer select-none transition-all duration-scale-md ease-in-out hover:bg-success/20 hover:text-success active:scale-95 text-muted-foreground"
                         @click="copyToClipboard(variant.bgClass!)"
-                      />
-                      <Button
+                      >
+                        {{ variant.bgClass }}
+                      </div>
+                      <div
                         v-if="variant.borderClass"
-                        :label="variant.borderClass"
-                        severity="warn"
-                        text
-                        size="small"
-                        class="font-mono fs-xs"
+                        class="fs-xs font-mono bg-muted/30 px-padding-xs py-0.5 rounded cursor-pointer select-none transition-all duration-scale-md ease-in-out hover:bg-warn/20 hover:text-warn active:scale-95 text-muted-foreground"
                         @click="copyToClipboard(variant.borderClass!)"
-                      />
+                      >
+                        {{ variant.borderClass }}
+                      </div>
                     </div>
                   </div>
                 </CScrollbar>
@@ -635,8 +683,91 @@ const presetSwatchColors = computed<Array<{ name: string; color: string }>>(() =
         </template>
       </Card>
 
+      <!-- Semantic Colors & Shortcuts -->
+
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-xl">
+        <!-- Semantic Colors -->
+        <Card class="component-border h-full hover:shadow-md behavior-hover-transition">
+          <template #title>
+            <div class="flex items-center gap-sm">
+              <Icons
+                name="i-lucide-tags"
+                class="text-primary"
+              />
+              <span class="font-semibold">Semantic Colors 语义颜色</span>
+              <Tag
+                value="推荐使用"
+                severity="success"
+              />
+            </div>
+          </template>
+          <template #content>
+            <div class="flex flex-col gap-md">
+              <p class="text-muted-foreground fs-sm">映射业务意图到主题颜色 (uno.config.ts)</p>
+              <div class="flex flex-col gap-md">
+                <div
+                  v-for="item in semanticColors"
+                  :key="item.name"
+                  class="flex items-center gap-md p-padding-md bg-muted/20 rounded-scale-md hover:bg-muted/40 transition-colors duration-scale-md cursor-pointer"
+                  @click="copyToClipboard(item.name)"
+                >
+                  <div
+                    class="w-8 h-8 rounded-full shrink-0 border border-primary/20"
+                    :class="item.classes"
+                  />
+                  <div class="flex flex-col flex-1">
+                    <span class="font-semibold text-foreground">{{ item.name }}</span>
+                    <span class="fs-xs text-muted-foreground">{{ item.desc }}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </template>
+        </Card>
+
+        <!-- Menu Shortcuts -->
+        <Card class="component-border h-full hover:shadow-md behavior-hover-transition">
+          <template #title>
+            <div class="flex items-center gap-sm">
+              <Icons
+                name="i-lucide-menu"
+                class="text-primary"
+              />
+              <span>Menu Shortcuts 菜单快捷键</span>
+            </div>
+          </template>
+          <template #content>
+            <div class="flex flex-col gap-md">
+              <p class="text-muted-foreground fs-sm">
+                组合类名：
+                <span class="text-foreground">bg-primary/20! text-primary!</span>
+              </p>
+              <div class="flex flex-col gap-md">
+                <div
+                  v-for="item in menuShortcuts"
+                  :key="item.name"
+                  class="flex flex-col gap-sm p-padding-md bg-muted/20 rounded-scale-md hover:bg-muted/40 transition-colors duration-scale-md cursor-pointer"
+                  @click="copyToClipboard(item.name)"
+                >
+                  <div class="flex items-center justify-between">
+                    <span class="font-semibold text-foreground text-primary">{{ item.name }}</span>
+                    <span class="fs-xs text-muted-foreground">{{ item.desc }}</span>
+                  </div>
+                  <div
+                    class="p-padding-sm rounded-scale-sm text-center fs-sm"
+                    :class="item.classes"
+                  >
+                    Menu Item Preview
+                  </div>
+                </div>
+              </div>
+            </div>
+          </template>
+        </Card>
+      </div>
+
       <!-- PrimeVue Button 配色 -->
-      <Card class="component-border">
+      <Card class="component-border hover:shadow-md behavior-hover-transition">
         <template #title>
           <div class="flex items-center gap-sm">
             <Icons
@@ -757,7 +888,7 @@ const presetSwatchColors = computed<Array<{ name: string; color: string }>>(() =
       </Card>
 
       <!-- Opacity Variants（使用 CSS 变量 + style，不依赖 UnoCSS safelist） -->
-      <Card class="component-border">
+      <Card class="component-border hover:shadow-md behavior-hover-transition">
         <template #title>
           <div class="flex items-center gap-sm">
             <Icons
@@ -805,7 +936,7 @@ const presetSwatchColors = computed<Array<{ name: string; color: string }>>(() =
       </Card>
 
       <!-- Sidebar Colors -->
-      <Card class="component-border">
+      <Card class="component-border hover:shadow-md behavior-hover-transition">
         <template #title>
           <div class="flex items-center gap-sm">
             <Icons
@@ -840,22 +971,18 @@ const presetSwatchColors = computed<Array<{ name: string; color: string }>>(() =
                   </span>
                 </div>
                 <div class="flex flex-wrap gap-xs">
-                  <Button
-                    :label="item.cssVar"
-                    severity="secondary"
-                    text
-                    size="small"
-                    class="font-mono fs-xs"
+                  <div
+                    class="fs-xs font-mono bg-muted/30 px-padding-xs py-0.5 rounded cursor-pointer select-none transition-all duration-scale-md ease-in-out hover:bg-primary/20 hover:text-primary active:scale-95 text-muted-foreground"
                     @click="copyToClipboard(`var(${item.cssVar})`, item.cssVar)"
-                  />
-                  <Button
-                    :label="item.copyClass"
-                    severity="success"
-                    text
-                    size="small"
-                    class="font-mono fs-xs"
+                  >
+                    {{ item.cssVar }}
+                  </div>
+                  <div
+                    class="fs-xs font-mono bg-muted/30 px-padding-xs py-0.5 rounded cursor-pointer select-none transition-all duration-scale-md ease-in-out hover:bg-success/20 hover:text-success active:scale-95 text-muted-foreground"
                     @click="copyToClipboard(item.copyClass)"
-                  />
+                  >
+                    {{ item.copyClass }}
+                  </div>
                 </div>
               </div>
             </div>
@@ -864,7 +991,9 @@ const presetSwatchColors = computed<Array<{ name: string; color: string }>>(() =
       </Card>
 
       <!-- Quick Reference -->
-      <Card class="component-border bg-gradient-to-br from-primary/5 to-accent/5">
+      <Card
+        class="component-border bg-gradient-to-br from-primary/5 to-accent/5 hover:shadow-md behavior-hover-transition"
+      >
         <template #title>
           <div class="flex items-center gap-sm">
             <Icons
@@ -875,85 +1004,95 @@ const presetSwatchColors = computed<Array<{ name: string; color: string }>>(() =
           </div>
         </template>
         <template #content>
-          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-lg">
-            <div class="flex flex-col gap-sm">
-              <h4 class="font-semibold text-foreground">背景 (Background)</h4>
-              <div
-                class="bg-muted p-padding-sm rounded-scale-sm fs-sm cursor-pointer hover:bg-muted/80"
-                @click="copyToClipboard('bg-{color}')"
-              >
-                bg-{color}
+          <div class="flex flex-col gap-md">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-lg">
+              <div class="flex flex-col gap-sm">
+                <h4 class="font-semibold text-foreground">背景 (Background)</h4>
+                <div
+                  class="bg-muted p-padding-sm rounded-scale-sm fs-sm cursor-pointer hover:bg-muted/80 active:scale-95 transition-all duration-scale-md"
+                  @click="copyToClipboard('bg-{color}')"
+                >
+                  bg-{color}
+                </div>
+                <div
+                  class="bg-muted p-padding-sm rounded-scale-sm fs-sm cursor-pointer hover:bg-muted/80 active:scale-95 transition-all duration-scale-md"
+                  @click="copyToClipboard('bg-{color}/{opacity}')"
+                >
+                  bg-{color}/{opacity}
+                </div>
+                <div
+                  class="bg-muted p-padding-sm rounded-scale-sm fs-sm cursor-pointer hover:bg-muted/80 active:scale-95 transition-all duration-scale-md"
+                  @click="copyToClipboard('bg-{color}-hover')"
+                >
+                  bg-{color}-hover
+                </div>
+                <div
+                  class="bg-muted p-padding-sm rounded-scale-sm fs-sm cursor-pointer hover:bg-muted/80 active:scale-95 transition-all duration-scale-md"
+                  title="Button text/outlined hover"
+                  @click="copyToClipboard('bg-{color}-light')"
+                >
+                  bg-{color}-light
+                </div>
               </div>
-              <div
-                class="bg-muted p-padding-sm rounded-scale-sm fs-sm cursor-pointer hover:bg-muted/80"
-                @click="copyToClipboard('bg-{color}/{opacity}')"
-              >
-                bg-{color}/{opacity}
+              <div class="flex flex-col gap-sm">
+                <h4 class="font-semibold text-foreground">文本 (Text)</h4>
+                <div
+                  class="bg-muted p-padding-sm rounded-scale-sm fs-sm cursor-pointer hover:bg-muted/80 active:scale-95 transition-all duration-scale-md"
+                  @click="copyToClipboard('text-{color}')"
+                >
+                  text-{color}
+                </div>
+                <div
+                  class="bg-muted p-padding-sm rounded-scale-sm fs-sm cursor-pointer hover:bg-muted/80 active:scale-95 transition-all duration-scale-md"
+                  @click="copyToClipboard('text-{color}-foreground')"
+                >
+                  text-{color}-foreground
+                </div>
+                <div
+                  class="bg-muted p-padding-sm rounded-scale-sm fs-sm cursor-pointer hover:bg-muted/80 active:scale-95 transition-all duration-scale-md"
+                  @click="copyToClipboard('text-muted-foreground')"
+                >
+                  text-muted-foreground
+                </div>
               </div>
-              <div
-                class="bg-muted p-padding-sm rounded-scale-sm fs-sm cursor-pointer hover:bg-muted/80"
-                @click="copyToClipboard('bg-{color}-hover')"
-              >
-                bg-{color}-hover
-              </div>
-              <div
-                class="bg-muted p-padding-sm rounded-scale-sm fs-sm cursor-pointer hover:bg-muted/80"
-                title="Button text/outlined hover"
-                @click="copyToClipboard('bg-{color}-light')"
-              >
-                bg-{color}-light
+              <div class="flex flex-col gap-sm">
+                <h4 class="font-semibold text-foreground">边框 (Border)</h4>
+                <div
+                  class="bg-muted p-padding-sm rounded-scale-sm fs-sm cursor-pointer hover:bg-muted/80 active:scale-95 transition-all duration-scale-md"
+                  @click="copyToClipboard('border-{color}')"
+                >
+                  border-{color}
+                </div>
+                <div
+                  class="bg-muted p-padding-sm rounded-scale-sm fs-sm cursor-pointer hover:bg-muted/80 active:scale-95 transition-all duration-scale-md"
+                  @click="copyToClipboard('border-border')"
+                >
+                  border-border
+                </div>
+                <div
+                  class="bg-muted p-padding-sm rounded-scale-sm fs-sm cursor-pointer hover:bg-muted/80 active:scale-95 transition-all duration-scale-md"
+                  @click="copyToClipboard('border-{color}/50')"
+                >
+                  border-{color}/50
+                </div>
               </div>
             </div>
-            <div class="flex flex-col gap-sm">
-              <h4 class="font-semibold text-foreground">文本 (Text)</h4>
-              <div
-                class="bg-muted p-padding-sm rounded-scale-sm fs-sm cursor-pointer hover:bg-muted/80"
-                @click="copyToClipboard('text-{color}')"
-              >
-                text-{color}
-              </div>
-              <div
-                class="bg-muted p-padding-sm rounded-scale-sm fs-sm cursor-pointer hover:bg-muted/80"
-                @click="copyToClipboard('text-{color}-foreground')"
-              >
-                text-{color}-foreground
-              </div>
-              <div
-                class="bg-muted p-padding-sm rounded-scale-sm fs-sm cursor-pointer hover:bg-muted/80"
-                @click="copyToClipboard('text-muted-foreground')"
-              >
-                text-muted-foreground
-              </div>
-            </div>
-            <div class="flex flex-col gap-sm">
-              <h4 class="font-semibold text-foreground">边框 (Border)</h4>
-              <div
-                class="bg-muted p-padding-sm rounded-scale-sm fs-sm cursor-pointer hover:bg-muted/80"
-                @click="copyToClipboard('border-{color}')"
-              >
-                border-{color}
-              </div>
-              <div
-                class="bg-muted p-padding-sm rounded-scale-sm fs-sm cursor-pointer hover:bg-muted/80"
-                @click="copyToClipboard('border-border')"
-              >
-                border-border
-              </div>
-              <div
-                class="bg-muted p-padding-sm rounded-scale-sm fs-sm cursor-pointer hover:bg-muted/80"
-                @click="copyToClipboard('border-{color}/50')"
-              >
-                border-{color}/50
-              </div>
-            </div>
-          </div>
-          <div class="mt-gap-md p-padding-md bg-muted/30 rounded-scale-md">
             <p class="text-muted-foreground fs-sm">
               <span class="font-semibold">可用颜色:</span>
-              <span class="font-mono ml-1">
+              <span class="font-mono ml-1 text-primary">
                 primary | accent | danger | warn | success | info | muted | secondary | card |
                 popover
               </span>
+            </p>
+            <p class="text-muted-foreground fs-sm mt-1">
+              <span class="font-semibold">语义别名:</span>
+              <span class="font-mono ml-1 text-primary">
+                bg-brand | bg-interactive | text-interactive
+              </span>
+            </p>
+            <p class="text-muted-foreground fs-sm mt-1">
+              <span class="font-semibold">菜单快捷键:</span>
+              <span class="font-mono ml-1 text-primary">menu-item-base | menu-item-hover</span>
             </p>
           </div>
         </template>

@@ -451,7 +451,7 @@ export const createCustomPreset = (sizeStore: ReturnType<typeof useSizeStore>) =
 
     // 遮罩与导航：与尺寸系统过渡/间距/圆角阶梯统一
     mask: {
-      transitionDuration: 'var(--transition-lg)', // 与 Aura 0.3s 接近，随尺寸模式
+      transitionDuration: 'var(--transition-md)',
     },
     navigation: {
       list: {
@@ -1510,7 +1510,6 @@ export const createCustomPreset = (sizeStore: ReturnType<typeof useSizeStore>) =
     // Tree
     tree: {
       root: {
-        transitionDuration: '{transition.duration}',
         padding: 'var(--spacing-xs)',
       },
       node: {

@@ -3,7 +3,7 @@
 > **目标读者：AI**。本文档供 AI 在代码生成时参照，涉及登录、登出、token、401、路由鉴权、白名单、动态路由时必读。
 >
 > 当任务涉及「登录、登出、token、401、路由鉴权、白名单、动态路由」时，必须先阅读本文档并遵循。  
-> 本文档是登录/鉴权逻辑的**单一真理来源**，与 `docs/PROJECT_PROTOCOL.md` §10 及 `.cursor/rules/08-auth-login-flow.mdc` 配套使用。
+> 本文档是登录/鉴权逻辑的**单一真理来源**，与 `./PROJECT_PROTOCOL.md` §10 及 `.cursor/rules/08-auth-login-flow.mdc` 配套使用。
 
 ## 1. 配置与开关
 

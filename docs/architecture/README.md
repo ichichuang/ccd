@@ -26,7 +26,7 @@
 
 开发时需遵循的规范与组件文档位于 `docs/` 根目录：
 
-- [项目协议](../PROJECT_PROTOCOL.md) — 编码规范、组件策略、路由系统
-- [设计系统](../PRIMEVUE_THEME.md)、[UnoCSS 与图标](../UNOCSS_AND_ICONS.md)
-- [组件文档](../DataTable_COMPONENT.md)、[SchemaForm](../SCHEMA_FORM_COMPONENT.md)、[PrimeDialog](../DIALOG_COMPONENT.md)
-- [布局适配](../ADAPTIVE_LAYOUT.md)、[登录鉴权](../AUTH_AND_LOGIN_FLOW.md)
+- [项目协议](../ai-specs/PROJECT_PROTOCOL.md) — 编码规范、组件策略、路由系统
+- [设计系统](../ai-specs/PRIMEVUE_THEME.md)、[UnoCSS 与图标](../ai-specs/UNOCSS_AND_ICONS.md)
+- [组件文档](../ai-specs/DataTable_COMPONENT.md)、[SchemaForm](../ai-specs/SCHEMA_FORM_COMPONENT.md)、[PrimeDialog](../ai-specs/DIALOG_COMPONENT.md)
+- [布局适配](../ai-specs/ADAPTIVE_LAYOUT.md)、[登录鉴权](../ai-specs/AUTH_AND_LOGIN_FLOW.md)

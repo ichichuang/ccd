@@ -16,8 +16,8 @@
 
 先阅读并遵循：
 
-- `@docs/PROJECT_PROTOCOL.md`
-- `@docs/GOLDEN_SAMPLES/ApiModuleExample.ts`（API 模块定义示例）
+- `@docs/ai-specs/PROJECT_PROTOCOL.md`
+- `@docs/ai-specs/GOLDEN_SAMPLES/ApiModuleExample.ts`（API 模块定义示例）
 - `@.cursor/rules/12-api-layer.mdc`（扁平化 + 禁止 default export + 禁止通用导出名）
 - `@.cursor/rules/00-core-architecture.mdc`（禁止 fetch/axios、禁止 any）
 
@@ -53,8 +53,8 @@
 ## Prompt 模板（复制使用）
 
 ```
-先阅读 @docs/PROJECT_PROTOCOL.md
-参考 @docs/GOLDEN_SAMPLES/ApiModuleExample.ts
+先阅读 @docs/ai-specs/PROJECT_PROTOCOL.md
+参考 @docs/ai-specs/GOLDEN_SAMPLES/ApiModuleExample.ts
 遵循 @.cursor/rules/00-core-architecture.mdc 与 @.cursor/rules/12-api-layer.mdc
 
 任务：新增接口（API module）

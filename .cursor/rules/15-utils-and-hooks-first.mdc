@@ -92,7 +92,7 @@ If you find an existing utility/hook that covers most of the need, you MUST exte
 ### DataTable 列持久化（表格列配置相关任务必查）
 
 - `src/hooks/modules/useTablePersistence.ts`：DataTable 列顺序/列宽/隐藏列持久化
-- 需配合 `tableId` 使用，数据存于 `src/stores/modules/dataTable.ts`；详见 `docs/DataTable_COMPONENT.md` §4 列持久化
+- 需配合 `tableId` 使用，数据存于 `src/stores/modules/dataTable.ts`；详见 `docs/ai-specs/DataTable_COMPONENT.md` §4 列持久化
 
 ## 2. Import Rules (Hard Requirements)
 
@@ -228,7 +228,7 @@ When a task matches the following needs, you MUST use the specified exports:
 - Schema 驱动多字段表单 → `SchemaForm` + `useSchemaForm`
 - 动态增删改字段 → `addField` / `removeField` / `updateField` / `moveField`
 - 校验 / 提交 / 重置 / 清空 → `validate` / `submit` / `reset` / `clear`（来自 SchemaForm ref 或 useSchemaForm）
-- 详见 `docs/SCHEMA_FORM_COMPONENT.md`
+- 详见 `docs/ai-specs/SCHEMA_FORM_COMPONENT.md`
 
 ### Layout / Infra hooks (src/hooks/layout/\*)
 

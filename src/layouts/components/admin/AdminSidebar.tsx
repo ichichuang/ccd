@@ -551,7 +551,7 @@ export default defineComponent({
             <CScrollbar class="flex-1 min-h-0 px-padding-sm">
               <div
                 ref={menuContainerRef}
-                class="w-full overflow-hidden"
+                class="w-full overflow-hidden pt-padding-xs"
               >
                 {!props.sidebarCollapse ? (
                   // 展开态：PanelMenu
@@ -568,7 +568,9 @@ export default defineComponent({
                     }}
                     pt={{
                       root: { class: 'gap-xs outline-none!' },
-                      panel: { class: 'bg-transparent border-none outline-none!' },
+                      panel: {
+                        class: 'bg-transparent border-none outline-none! !pt-0',
+                      },
                       header: { class: 'bg-transparent border-none outline-none!' },
                       headerContent: {
                         class: 'bg-transparent! border-none outline-none! box-shadow-none!',

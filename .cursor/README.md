@@ -34,7 +34,7 @@
 对于复杂任务，建议显式引用相关规则：
 
 ```
-先阅读 @docs/PROJECT_PROTOCOL.md
+先阅读 @docs/ai-specs/PROJECT_PROTOCOL.md
 遵循 @.cursor/rules/00-core-architecture.mdc
 同时遵循与任务相关的 rules：
 - @.cursor/rules/10-logic-layer.mdc（逻辑）
@@ -57,8 +57,8 @@
 
 ## 🔗 相关文档
 
-- **项目协议**：`docs/PROJECT_PROTOCOL.md`
-- **黄金样本**：`docs/GOLDEN_SAMPLES/`
+- **项目协议**：`docs/ai-specs/PROJECT_PROTOCOL.md`
+- **黄金样本**：`docs/ai-specs/GOLDEN_SAMPLES/`
 - **Antigravity 规则**：`.agent/rules/`
 - **Antigravity Skills**：`.agent/skills/`
 

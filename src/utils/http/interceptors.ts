@@ -74,6 +74,18 @@ export const processRequestData = <T extends Record<string, any>>(data: T): T =>
 export const beforeRequest = (method: Method) => {
   method.config.headers = method.config.headers || {}
 
+  // 安全配置：优先使用 per-request security，否则使用 HTTP_CONFIG 全局配置
+  const enableCsrf = method.config.security?.enableCSRF ?? HTTP_CONFIG.enableCsrf
+  const enableSignature = method.config.security?.enableSignature ?? HTTP_CONFIG.enableSignature
+  if (enableCsrf) {
+    // 预留：需从 cookie/metadata 获取 CSRF token 并设置 X-CSRF-Token 头
+    // TODO: method.config.headers['X-CSRF-Token'] = getCsrfToken()
+  }
+  if (enableSignature) {
+    // 预留：需对请求体/参数进行签名并设置签名头
+    // TODO: method.config.headers['X-Request-Signature'] = signRequest(method)
+  }
+
   // 添加认证头
   const userStore = useUserStoreWithOut()
   const token = userStore.getToken

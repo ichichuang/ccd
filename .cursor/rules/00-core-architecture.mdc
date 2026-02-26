@@ -18,9 +18,9 @@ You are a Senior Frontend Architect specialized in this project's Vue3 Custom St
 
 Before generating any code, you MUST:
 
-1. Read `docs/PROJECT_PROTOCOL.md`.
+1. Read `docs/ai-specs/PROJECT_PROTOCOL.md`.
 2. When uncertain about architecture (layers, data flow, directory responsibilities), read `docs/architecture/ARCHITECTURE_OVERVIEW.md` and `docs/architecture/DIRECTORY_STRUCTURE.md`.
-3. Check `docs/GOLDEN_SAMPLES/` and match the exact coding style of the relevant sample (logic → useFeatureLogic.ts, store → StoreExample.ts, component → UIComponent.vue, api → ApiModuleExample.ts). For DataTable/SchemaForm/UseEcharts, also reference `src/views/example/` for complete usage patterns.
+3. Check `docs/ai-specs/GOLDEN_SAMPLES/` and match the exact coding style of the relevant sample (logic → useFeatureLogic.ts, store → StoreExample.ts, component → UIComponent.vue, api → ApiModuleExample.ts). For DataTable/SchemaForm/UseEcharts, also reference `src/views/example/` for complete usage patterns.
 
 # ABSOLUTE NEGATIVE CONSTRAINTS (Forbidden)
 
@@ -70,7 +70,7 @@ Before generating UI code, you MUST reference and strictly follow:
    - Layout: `src/constants/layout.ts`
    - Stores: `src/stores/modules/device.ts`, `src/stores/modules/layout.ts`
    - Use Mobile First with `md:`/`lg:` breakpoints, use store getters for layout detection.
-   - When the task involves layout shell, sidebar visibility, orientation, or breakpoint collapse: read `docs/ADAPTIVE_LAYOUT.md` and follow the adaptive rules.
+   - When the task involves layout shell, sidebar visibility, orientation, or breakpoint collapse: read `docs/ai-specs/ADAPTIVE_LAYOUT.md` and follow the adaptive rules.
 
 4. **UnoCSS Classes:**
    - Reference `uno.config.ts` for all available semantic classes.
@@ -79,21 +79,21 @@ Before generating UI code, you MUST reference and strictly follow:
 # BEHAVIOR
 
 - When asked to implement a feature, separate Logic (composable in `src/hooks/`) from UI (component in `src/components/` or view in `src/views/`).
-- When the task involves **dialogs, modals, feedback prompts, or confirmation dialogs**, consult `docs/DIALOG_COMPONENT.md` and use `useDialog()` from `@/hooks/modules/useDialog` instead of creating ad-hoc Dialog logic.
-- When the task involves **multi-field forms with validation, steps, sections, or dynamic schema**, consult `docs/SCHEMA_FORM_COMPONENT.md` and use `SchemaForm` + `useSchemaForm` from `@/components/SchemaForm` / `@/hooks/modules/useSchemaForm` instead of hand-writing form components.
-- When the task involves **non-component lightweight notifications** (e.g. HTTP interceptors, global error handler), consult `docs/TOAST_AND_MESSAGE.md` and use `window.$toast` / `window.$message` instead of building ad-hoc global Toast/Message.
-- **Vue 与 import**：Vue 运行时 API（ref、computed、watch 等）不手写 import，见 `docs/BUILD_SYSTEM.md`；未使用的 import 删除，确需保留的未使用变量或解构用 **`_` 前缀**。
-- After generating, self-check: Does this match the style of the corresponding file in `docs/GOLDEN_SAMPLES/`? If unsure, say so.
+- When the task involves **dialogs, modals, feedback prompts, or confirmation dialogs**, consult `docs/ai-specs/DIALOG_COMPONENT.md` and use `useDialog()` from `@/hooks/modules/useDialog` instead of creating ad-hoc Dialog logic.
+- When the task involves **multi-field forms with validation, steps, sections, or dynamic schema**, consult `docs/ai-specs/SCHEMA_FORM_COMPONENT.md` and use `SchemaForm` + `useSchemaForm` from `@/components/SchemaForm` / `@/hooks/modules/useSchemaForm` instead of hand-writing form components.
+- When the task involves **non-component lightweight notifications** (e.g. HTTP interceptors, global error handler), consult `docs/ai-specs/TOAST_AND_MESSAGE.md` and use `window.$toast` / `window.$message` instead of building ad-hoc global Toast/Message.
+- **Vue 与 import**：Vue 运行时 API（ref、computed、watch 等）不手写 import，见 `docs/ai-specs/BUILD_SYSTEM.md`；未使用的 import 删除，确需保留的未使用变量或解构用 **`_` 前缀**。
+- After generating, self-check: Does this match the style of the corresponding file in `docs/ai-specs/GOLDEN_SAMPLES/`? If unsure, say so.
 
 # ROUTER SYSTEM REQUIREMENTS (Must Follow)
 
 When a task involves **routes, menus, breadcrumbs, permission guards, or dynamic routes**, you MUST treat the router system as a first-class architecture component and follow these rules:
 
-When the task involves **login, logout, token, or 401 handling**, read `docs/AUTH_AND_LOGIN_FLOW.md` first.
+When the task involves **login, logout, token, or 401 handling**, read `docs/ai-specs/AUTH_AND_LOGIN_FLOW.md` first.
 
 1. **Read the Router Section First**
    - Before adding or changing any route-related code, re-read:
-     - `docs/PROJECT_PROTOCOL.md` → Section “10. 路由系统 (Router System)”
+     - `docs/ai-specs/PROJECT_PROTOCOL.md` → Section “10. 路由系统 (Router System)”
      - `src/types/modules/router.d.ts` → `RouteMeta`, `RouteConfig`, `BackendRouteConfig`, `RouteModule`, `RouteUtils`, `DynamicRouteManager`.
 
 2. **Static Routes Live Only in `src/router/modules`**

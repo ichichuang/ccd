@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import Button from 'primevue/button'
 import Card from 'primevue/card'
 import Tag from 'primevue/tag'
 import {
@@ -70,7 +69,12 @@ const spacingItems = computed<
     paddingClass: string
     marginClass: string
     gapClass: string
-    scaleClass: string
+    gapXClass: string
+    gapYClass: string
+    scrollGapClass: string
+    pScaleClass: string
+    mScaleClass: string
+    gapScaleClass: string
     ratio: number
     units: number
   }>
@@ -81,11 +85,26 @@ const spacingItems = computed<
     paddingClass: `p-padding-${key}`,
     marginClass: `m-margin-${key}`,
     gapClass: `gap-${key}`,
-    scaleClass: `p-scale-${key}`,
+    gapXClass: `gap-x-${key}`,
+    gapYClass: `gap-y-${key}`,
+    scrollGapClass: `scroll-m-gap-${key}`,
+    pScaleClass: `p-scale-${key}`,
+    mScaleClass: `m-scale-${key}`,
+    gapScaleClass: `gap-scale-${key}`,
     ratio: SPACING_SCALE_RATIOS[key],
     units: SPACING_SCALE_RATIOS[key],
   }))
 )
+
+// Base variables (SSOT: SIZE_BASE_VAR_KEYS)
+const baseVarItems = [
+  {
+    key: 'containerPadding',
+    cssVar: '--container-padding',
+    unoClass: 'p-container-padding',
+    description: '容器全局内边距',
+  },
+]
 
 // Radius categories
 const radiusItems = computed<
@@ -176,7 +195,7 @@ const layoutItems = computed<
 )
 
 // Current preset (from store for demo, fallback to comfortable)
-const sizeStore = useSizeStore()
+const sizeStore: ReturnType<typeof useSizeStore> = useSizeStore()
 const currentPreset = computed<(typeof SIZE_PRESETS)[number]>(() => sizeStore.currentPreset)
 
 // Margin direction variants (same pattern as padding)
@@ -197,7 +216,7 @@ const marginDirMap = [
       <!-- Header -->
       <div class="flex flex-col gap-xs">
         <div class="flex items-center gap-md">
-          <div class="p-padding-md bg-primary/10 rounded-scale-lg">
+          <div class="p-padding-md bg-primary/10 rounded-scale-lg shrink-0">
             <Icons
               name="i-lucide-ruler"
               class="text-primary fs-2xl"
@@ -205,22 +224,40 @@ const marginDirMap = [
           </div>
           <div>
             <h1 class="fs-2xl font-bold text-foreground">Size System</h1>
-            <p class="text-muted-foreground">
+            <p class="text-muted-foreground fs-sm">
               尺寸系统变量完整参考 · 点击任意类名或变量即可自动复制到剪贴板
             </p>
+          </div>
+        </div>
+        <div
+          class="border-l-4 border-primary bg-primary/5 p-padding-md rounded-r-scale-md flex gap-md items-start mt-margin-sm"
+        >
+          <Icons
+            name="i-lucide-info"
+            class="text-primary fs-xl shrink-0 mt-0.5"
+          />
+          <div class="flex flex-col gap-0.5">
+            <div class="font-semibold text-primary fs-sm">Architectural Guide 架构引导</div>
+            <div class="text-muted-foreground fs-xs leading-relaxed">
+              尺寸阶梯由
+              <span class="bg-muted px-padding-xs rounded font-mono">
+                src/constants/sizeScale.ts
+              </span>
+              定义。如需修改全局比例，请编辑该文件而非在此页面调整。
+            </div>
           </div>
         </div>
       </div>
 
       <!-- Size Store 尺寸 Store -->
-      <Card class="component-border">
+      <Card class="component-border hover:shadow-md behavior-hover-transition">
         <template #title>
           <div class="flex items-center gap-sm">
             <Icons
               name="i-lucide-settings-2"
               class="text-primary"
             />
-            <span>Size Store 尺寸 Store</span>
+            <span class="font-semibold">Size Store 尺寸 Store</span>
             <Tag
               value="useSizeStore"
               severity="info"
@@ -233,15 +270,19 @@ const marginDirMap = [
               切换预设可实时更新根字号、布局变量等，影响全站尺寸阶梯
             </p>
             <div class="flex flex-wrap gap-sm">
-              <Button
+              <div
                 v-for="preset in SIZE_PRESETS"
                 :key="preset.name"
-                :label="preset.label"
-                :severity="sizeStore.sizeName === preset.name ? 'primary' : 'secondary'"
-                :outlined="sizeStore.sizeName !== preset.name"
-                size="small"
+                class="p-padding-sm py-1 rounded-scale-md cursor-pointer select-none transition-all duration-scale-xl ease-in-out fs-sm active:scale-95"
+                :class="[
+                  sizeStore.sizeName === preset.name
+                    ? 'bg-primary text-primary-foreground shadow-sm'
+                    : 'bg-muted/20 text-muted-foreground hover:bg-muted/40',
+                ]"
                 @click="sizeStore.setSize(preset.name)"
-              />
+              >
+                {{ preset.label }}
+              </div>
             </div>
             <div class="flex flex-wrap gap-md text-muted-foreground fs-sm">
               <span>
@@ -262,14 +303,14 @@ const marginDirMap = [
       </Card>
 
       <!-- Font Size Section -->
-      <Card class="component-border">
+      <Card class="component-border hover:shadow-md behavior-hover-transition">
         <template #title>
           <div class="flex items-center gap-sm">
             <Icons
               name="i-lucide-type"
               class="text-primary"
             />
-            <span>Font Size 字体大小阶梯</span>
+            <span class="font-semibold">Font Size 字体大小阶梯</span>
             <Tag
               value="9 scales"
               severity="secondary"
@@ -310,7 +351,7 @@ const marginDirMap = [
                   <tr
                     v-for="item in fontSizeItems"
                     :key="item.key"
-                    class="border-b border-solid border-border/50 hover:bg-muted/30 transition-colors"
+                    class="border-b border-solid border-border/50 hover:bg-muted/30 transition-colors duration-scale-md"
                   >
                     <td class="p-padding-sm">
                       <Tag
@@ -319,32 +360,26 @@ const marginDirMap = [
                       />
                     </td>
                     <td class="p-padding-sm">
-                      <Button
-                        :label="item.cssVar"
-                        severity="secondary"
-                        text
-                        size="small"
-                        class="font-mono"
+                      <div
+                        class="fs-xs font-mono bg-muted/30 px-padding-xs py-0.5 rounded cursor-pointer select-none transition-all duration-scale-xl ease-in-out hover:bg-primary/20 hover:text-primary active:scale-95 text-muted-foreground w-fit"
                         @click="copyToClipboard(`var(${item.cssVar})`, item.cssVar)"
-                      />
+                      >
+                        {{ item.cssVar }}
+                      </div>
                     </td>
                     <td class="p-padding-sm flex gap-xs flex-wrap">
-                      <Button
-                        :label="item.unoClass"
-                        severity="success"
-                        text
-                        size="small"
-                        class="font-mono"
+                      <div
+                        class="fs-xs font-mono bg-muted/30 px-padding-xs py-0.5 rounded cursor-pointer select-none transition-all duration-scale-xl ease-in-out hover:bg-success/20 hover:text-success active:scale-95 text-muted-foreground"
                         @click="copyToClipboard(item.unoClass)"
-                      />
-                      <Button
-                        :label="item.textClass"
-                        severity="success"
-                        text
-                        size="small"
-                        class="font-mono"
+                      >
+                        {{ item.unoClass }}
+                      </div>
+                      <div
+                        class="fs-xs font-mono bg-muted/30 px-padding-xs py-0.5 rounded cursor-pointer select-none transition-all duration-scale-xl ease-in-out hover:bg-success/20 hover:text-success active:scale-95 text-muted-foreground"
                         @click="copyToClipboard(item.textClass)"
-                      />
+                      >
+                        {{ item.textClass }}
+                      </div>
                     </td>
                     <td class="p-padding-sm font-mono text-muted-foreground">{{ item.ratio }}×</td>
                     <td class="p-padding-sm">
@@ -361,7 +396,7 @@ const marginDirMap = [
       </Card>
 
       <!-- Spacing Section -->
-      <Card class="component-border">
+      <Card class="component-border hover:shadow-md behavior-hover-transition">
         <template #title>
           <div class="flex items-center gap-sm">
             <Icons
@@ -409,7 +444,7 @@ const marginDirMap = [
                   <tr
                     v-for="item in spacingItems"
                     :key="item.key"
-                    class="border-b border-solid border-border/50 hover:bg-muted/30 transition-colors"
+                    class="border-b border-solid border-border/50 hover:bg-muted/30 transition-colors duration-scale-md"
                   >
                     <td class="p-padding-sm">
                       <Tag
@@ -418,41 +453,63 @@ const marginDirMap = [
                       />
                     </td>
                     <td class="p-padding-sm">
-                      <Button
-                        :label="item.cssVar"
-                        severity="secondary"
-                        text
-                        size="small"
-                        class="font-mono"
+                      <div
+                        class="fs-xs font-mono bg-muted/30 px-padding-xs py-0.5 rounded cursor-pointer select-none transition-all duration-scale-xl ease-in-out hover:bg-primary/20 hover:text-primary active:scale-95 text-muted-foreground w-fit"
                         @click="copyToClipboard(`var(${item.cssVar})`, item.cssVar)"
-                      />
+                      >
+                        {{ item.cssVar }}
+                      </div>
                     </td>
                     <td class="p-padding-sm">
                       <div class="flex gap-xs flex-wrap">
-                        <Button
-                          :label="item.paddingClass"
-                          severity="success"
-                          text
-                          size="small"
-                          class="font-mono"
+                        <div
+                          class="fs-xs font-mono bg-muted/30 px-padding-xs py-0.5 rounded cursor-pointer select-none transition-all duration-scale-xl ease-in-out hover:bg-success/20 hover:text-success active:scale-95 text-muted-foreground"
                           @click="copyToClipboard(item.paddingClass)"
-                        />
-                        <Button
-                          :label="item.gapClass"
-                          severity="success"
-                          text
-                          size="small"
-                          class="font-mono"
+                        >
+                          {{ item.paddingClass }}
+                        </div>
+                        <div
+                          class="fs-xs font-mono bg-muted/30 px-padding-xs py-0.5 rounded cursor-pointer select-none transition-all duration-scale-xl ease-in-out hover:bg-success/20 hover:text-success active:scale-95 text-muted-foreground"
                           @click="copyToClipboard(item.gapClass)"
-                        />
-                        <Button
-                          :label="item.scaleClass"
-                          severity="warn"
-                          text
-                          size="small"
-                          class="font-mono"
-                          @click="copyToClipboard(item.scaleClass)"
-                        />
+                        >
+                          {{ item.gapClass }}
+                        </div>
+                        <div
+                          class="fs-xs font-mono bg-muted/30 px-padding-xs py-0.5 rounded cursor-pointer select-none transition-all duration-scale-xl ease-in-out hover:bg-success/20 hover:text-success active:scale-95 text-muted-foreground"
+                          @click="copyToClipboard(item.gapXClass)"
+                        >
+                          {{ item.gapXClass }}
+                        </div>
+                        <div
+                          class="fs-xs font-mono bg-muted/30 px-padding-xs py-0.5 rounded cursor-pointer select-none transition-all duration-scale-xl ease-in-out hover:bg-success/20 hover:text-success active:scale-95 text-muted-foreground"
+                          @click="copyToClipboard(item.gapYClass)"
+                        >
+                          {{ item.gapYClass }}
+                        </div>
+                        <div
+                          class="fs-xs font-mono bg-muted/30 px-padding-xs py-0.5 rounded cursor-pointer select-none transition-all duration-scale-xl ease-in-out hover:bg-success/20 hover:text-success active:scale-95 text-muted-foreground"
+                          @click="copyToClipboard(item.scrollGapClass)"
+                        >
+                          {{ item.scrollGapClass }}
+                        </div>
+                        <div
+                          class="fs-xs font-mono bg-muted/30 px-padding-xs py-0.5 rounded cursor-pointer select-none transition-all duration-scale-xl ease-in-out hover:bg-warn/20 hover:text-warn active:scale-95 text-muted-foreground"
+                          @click="copyToClipboard(item.pScaleClass)"
+                        >
+                          {{ item.pScaleClass }}
+                        </div>
+                        <div
+                          class="fs-xs font-mono bg-muted/30 px-padding-xs py-0.5 rounded cursor-pointer select-none transition-all duration-scale-xl ease-in-out hover:bg-warn/20 hover:text-warn active:scale-95 text-muted-foreground"
+                          @click="copyToClipboard(item.mScaleClass)"
+                        >
+                          {{ item.mScaleClass }}
+                        </div>
+                        <div
+                          class="fs-xs font-mono bg-muted/30 px-padding-xs py-0.5 rounded cursor-pointer select-none transition-all duration-scale-xl ease-in-out hover:bg-warn/20 hover:text-warn active:scale-95 text-muted-foreground"
+                          @click="copyToClipboard(item.gapScaleClass)"
+                        >
+                          {{ item.gapScaleClass }}
+                        </div>
                       </div>
                     </td>
                     <td class="p-padding-sm font-mono text-muted-foreground">
@@ -473,7 +530,7 @@ const marginDirMap = [
 
             <!-- Spacing Direction Examples -->
             <div class="mt-margin-md p-padding-md bg-muted/30 rounded-scale-md">
-              <h4 class="fs-sm font-semibold mb-margin-sm text-foreground">
+              <h4 class="fs-sm font-semibold text-foreground mb-margin-xs">
                 Direction Variants 方向变体
               </h4>
               <div class="flex flex-col gap-md">
@@ -488,14 +545,12 @@ const marginDirMap = [
                       <span class="text-muted-foreground fs-xs">
                         {{ item.label }}
                       </span>
-                      <Button
-                        :label="`p${item.dir}-padding-md`"
-                        severity="secondary"
-                        outlined
-                        size="small"
-                        class="font-mono"
+                      <div
+                        class="fs-xs font-mono bg-muted/30 px-padding-xs py-0.5 rounded cursor-pointer select-none transition-all duration-scale-xl ease-in-out hover:bg-primary/20 hover:text-primary active:scale-95 text-muted-foreground"
                         @click="copyToClipboard(`p${item.dir}-padding-md`)"
-                      />
+                      >
+                        p{{ item.dir }}-padding-md
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -510,14 +565,12 @@ const marginDirMap = [
                       <span class="text-muted-foreground fs-xs">
                         {{ item.label }}
                       </span>
-                      <Button
-                        :label="`m${item.dir}-margin-md`"
-                        severity="secondary"
-                        outlined
-                        size="small"
-                        class="font-mono"
+                      <div
+                        class="fs-xs font-mono bg-muted/30 px-padding-xs py-0.5 rounded cursor-pointer select-none transition-all duration-scale-xl ease-in-out hover:bg-primary/20 hover:text-primary active:scale-95 text-muted-foreground"
                         @click="copyToClipboard(`m${item.dir}-margin-md`)"
-                      />
+                      >
+                        m{{ item.dir }}-margin-md
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -528,7 +581,7 @@ const marginDirMap = [
       </Card>
 
       <!-- Radius Section -->
-      <Card class="component-border">
+      <Card class="component-border hover:shadow-md behavior-hover-transition">
         <template #title>
           <div class="flex items-center gap-sm">
             <Icons
@@ -555,7 +608,7 @@ const marginDirMap = [
               <div
                 v-for="item in radiusItems"
                 :key="item.key"
-                class="flex flex-col items-center gap-sm p-padding-md bg-muted/20 rounded-scale-md hover:bg-muted/40 transition-colors cursor-pointer group"
+                class="flex flex-col items-center gap-sm p-padding-md bg-muted/20 rounded-scale-md hover:bg-muted/40 transition-colors duration-scale-md cursor-pointer group"
                 @click="copyToClipboard(item.unoClass)"
               >
                 <div
@@ -578,7 +631,7 @@ const marginDirMap = [
       </Card>
 
       <!-- Transition Duration Section -->
-      <Card class="component-border">
+      <Card class="component-border hover:shadow-md behavior-hover-transition">
         <template #title>
           <div class="flex items-center gap-sm">
             <Icons
@@ -599,7 +652,7 @@ const marginDirMap = [
               <div
                 v-for="item in transitionItems"
                 :key="item.key"
-                class="flex items-center gap-md p-padding-md bg-muted/20 rounded-scale-md hover:bg-muted/40 transition-colors cursor-pointer group"
+                class="flex items-center gap-md p-padding-md bg-muted/20 rounded-scale-md hover:bg-muted/40 transition-colors duration-scale-md cursor-pointer group"
                 @click="copyToClipboard(item.unoClass)"
               >
                 <div class="flex flex-col gap-xs flex-1">
@@ -628,64 +681,124 @@ const marginDirMap = [
       </Card>
 
       <!-- Layout Dimensions Section -->
-      <Card class="component-border">
-        <template #title>
-          <div class="flex items-center gap-sm">
-            <Icons
-              name="i-lucide-layout"
-              class="text-primary"
-            />
-            <span>Layout Dimensions 布局尺寸</span>
-            <Tag
-              :value="`${layoutItems.length} vars`"
-              severity="secondary"
-            />
-          </div>
-        </template>
-        <template #content>
-          <div class="flex flex-col gap-md">
-            <p class="text-muted-foreground fs-sm">固定像素值，用于布局区域尺寸控制</p>
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-md">
-              <div
-                v-for="item in layoutItems"
-                :key="item.key"
-                class="flex flex-col gap-sm p-padding-md bg-muted/20 rounded-scale-md hover:bg-muted/40 transition-colors"
-              >
-                <div class="flex items-center justify-between">
-                  <span class="font-medium text-foreground">
-                    {{ item.description }}
-                  </span>
-                  <Tag
-                    :value="`${currentPreset[item.key as keyof typeof currentPreset]}px`"
-                    severity="secondary"
-                  />
-                </div>
-                <div class="flex flex-wrap gap-xs">
-                  <Button
-                    :label="item.cssVar"
-                    severity="secondary"
-                    text
-                    size="small"
-                    class="font-mono"
-                    @click="copyToClipboard(`var(${item.cssVar})`, item.cssVar)"
-                  />
-                  <Button
-                    :label="item.unoClass"
-                    severity="success"
-                    text
-                    size="small"
-                    class="font-mono"
-                    @click="copyToClipboard(item.unoClass)"
-                  />
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-xl">
+        <Card class="component-border h-full hover:shadow-md behavior-hover-transition">
+          <template #title>
+            <div class="flex items-center gap-sm">
+              <Icons
+                name="i-lucide-layout"
+                class="text-primary"
+              />
+              <span>Layout Dimensions 布局尺寸</span>
+              <Tag
+                :value="`${layoutItems.length} vars`"
+                severity="secondary"
+              />
+            </div>
+          </template>
+          <template #content>
+            <div class="flex flex-col gap-md">
+              <p class="text-muted-foreground fs-sm">固定像素值，用于布局区域尺寸控制</p>
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-md">
+                <div
+                  v-for="item in layoutItems"
+                  :key="item.key"
+                  class="flex flex-col gap-sm p-padding-md bg-muted/20 rounded-scale-md hover:bg-muted/40 transition-colors duration-scale-md"
+                >
+                  <div class="flex items-center justify-between">
+                    <span class="font-medium text-foreground fs-xs">
+                      {{ item.description }}
+                    </span>
+                    <Tag
+                      :value="`${currentPreset[item.key as keyof typeof currentPreset]}px`"
+                      severity="secondary"
+                    />
+                  </div>
+                  <div class="flex flex-wrap gap-xs">
+                    <div
+                      class="fs-xs font-mono bg-muted/30 px-padding-xs py-0.5 rounded cursor-pointer select-none transition-all duration-scale-xl ease-in-out hover:bg-primary/20 hover:text-primary active:scale-95 text-muted-foreground w-fit"
+                      @click="copyToClipboard(`var(${item.cssVar})`, item.cssVar)"
+                    >
+                      {{ item.cssVar }}
+                    </div>
+                    <div
+                      class="fs-xs font-mono bg-muted/30 px-padding-xs py-0.5 rounded cursor-pointer select-none transition-all duration-scale-xl ease-in-out hover:bg-success/20 hover:text-success active:scale-95 text-muted-foreground w-fit"
+                      @click="copyToClipboard(item.unoClass)"
+                    >
+                      {{ item.unoClass }}
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-        </template>
-      </Card>
+          </template>
+        </Card>
+
+        <!-- Base Variables Section -->
+        <Card class="component-border h-full hover:shadow-md behavior-hover-transition">
+          <template #title>
+            <div class="flex items-center gap-sm">
+              <Icons
+                name="i-lucide-database"
+                class="text-primary"
+              />
+              <span>Base Variables 基础变量</span>
+              <Tag
+                :value="`${baseVarItems.length} vars`"
+                severity="secondary"
+              />
+            </div>
+          </template>
+          <template #content>
+            <div class="flex flex-col gap-md">
+              <p class="text-muted-foreground fs-sm">
+                SSOT 定义的基础全局变量类名 (SIZE_BASE_VAR_KEYS)
+              </p>
+              <div class="grid grid-cols-1 gap-md">
+                <div
+                  v-for="item in baseVarItems"
+                  :key="item.key"
+                  class="flex flex-col gap-sm p-padding-md bg-muted/20 rounded-scale-md hover:bg-muted/40 transition-colors duration-scale-md"
+                >
+                  <div class="flex items-center justify-between">
+                    <span class="font-medium text-foreground">
+                      {{ item.description }}
+                    </span>
+                    <span class="font-mono text-primary fs-sm">{{ item.key }}</span>
+                  </div>
+                  <div class="flex flex-wrap gap-xs">
+                    <div
+                      class="fs-xs font-mono bg-muted/30 px-padding-xs py-0.5 rounded cursor-pointer select-none transition-all duration-scale-xl ease-in-out hover:bg-primary/20 hover:text-primary active:scale-95 text-muted-foreground w-fit"
+                      @click="copyToClipboard(`var(${item.cssVar})`, item.cssVar)"
+                    >
+                      {{ item.cssVar }}
+                    </div>
+                    <div
+                      class="fs-xs font-mono bg-muted/30 px-padding-xs py-0.5 rounded cursor-pointer select-none transition-all duration-scale-xl ease-in-out hover:bg-success/20 hover:text-success active:scale-95 text-muted-foreground w-fit"
+                      @click="copyToClipboard(item.unoClass)"
+                    >
+                      {{ item.unoClass }}
+                    </div>
+                  </div>
+                  <!-- Preview -->
+                  <div
+                    class="mt-margin-xs p-container-padding bg-primary/10 rounded-scale-sm border border-dashed border-primary/30"
+                  >
+                    <div
+                      class="bg-primary/20 h-8 flex items-center justify-center fs-xs text-primary"
+                    >
+                      Content with p-container-padding
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </template>
+        </Card>
+      </div>
 
       <!-- Size Presets Section -->
-      <Card class="component-border">
+      <Card class="component-border hover:shadow-md behavior-hover-transition">
         <template #title>
           <div class="flex items-center gap-sm">
             <Icons
@@ -707,9 +820,9 @@ const marginDirMap = [
               class="flex flex-col gap-md p-padding-lg bg-muted/20 rounded-scale-lg border border-solid border-border/50"
             >
               <div class="flex items-center justify-between">
-                <h3 class="fs-lg font-semibold text-foreground">
+                <h4 class="fs-sm font-semibold text-foreground mb-margin-xs">
                   {{ preset.label }}
-                </h3>
+                </h4>
                 <Tag
                   :value="preset.name"
                   :severity="preset.name === 'comfortable' ? 'success' : 'secondary'"
@@ -747,7 +860,9 @@ const marginDirMap = [
       </Card>
 
       <!-- Quick Reference -->
-      <Card class="component-border bg-gradient-to-br from-primary/5 to-accent/5">
+      <Card
+        class="component-border bg-gradient-to-br from-primary/5 to-accent/5 hover:shadow-md behavior-hover-transition"
+      >
         <template #title>
           <div class="flex items-center gap-sm">
             <Icons
@@ -760,54 +875,80 @@ const marginDirMap = [
         <template #content>
           <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-lg">
             <div class="flex flex-col gap-sm">
-              <h4 class="font-semibold text-foreground">字体大小 (Font Size)</h4>
+              <h4 class="fs-sm font-semibold text-foreground mb-margin-xs">字体大小 (Font Size)</h4>
               <div
-                class="bg-muted p-padding-sm rounded-scale-sm fs-sm cursor-pointer hover:bg-muted/80"
+                class="bg-muted p-padding-sm rounded-scale-sm fs-sm cursor-pointer hover:bg-muted/80 active:scale-95 transition-all duration-scale-xs"
                 @click="copyToClipboard('fs-{scale}')"
               >
                 fs-{scale}
               </div>
               <div
-                class="bg-muted p-padding-sm rounded-scale-sm fs-sm cursor-pointer hover:bg-muted/80"
+                class="bg-muted p-padding-sm rounded-scale-sm fs-sm cursor-pointer hover:bg-muted/80 active:scale-95 transition-all duration-scale-xs"
                 @click="copyToClipboard('text-{scale}')"
               >
                 text-{scale}
               </div>
             </div>
             <div class="flex flex-col gap-sm">
-              <h4 class="font-semibold text-foreground">间距 (Spacing)</h4>
+              <h4 class="fs-sm font-semibold text-foreground mb-margin-xs">间距 (Spacing)</h4>
               <div
-                class="bg-muted p-padding-sm rounded-scale-sm fs-sm cursor-pointer hover:bg-muted/80"
+                class="bg-muted p-padding-sm rounded-scale-sm fs-sm cursor-pointer hover:bg-muted/80 active:scale-95 transition-all duration-scale-xs"
                 @click="copyToClipboard('p-padding-{scale}')"
               >
                 p-padding-{scale}
               </div>
               <div
-                class="bg-muted p-padding-sm rounded-scale-sm fs-sm cursor-pointer hover:bg-muted/80"
+                class="bg-muted p-padding-sm rounded-scale-sm fs-sm cursor-pointer hover:bg-muted/80 active:scale-95 transition-all duration-scale-xs"
                 @click="copyToClipboard('gap-{scale}')"
               >
                 gap-{scale}
               </div>
               <div
-                class="bg-muted p-padding-sm rounded-scale-sm fs-sm cursor-pointer hover:bg-muted/80"
+                class="bg-muted p-padding-sm rounded-scale-sm fs-sm cursor-pointer hover:bg-muted/80 active:scale-95 transition-all duration-scale-xs"
+                @click="copyToClipboard('gap-x-{scale}')"
+              >
+                gap-x-{scale}
+              </div>
+              <div
+                class="bg-muted p-padding-sm rounded-scale-sm fs-sm cursor-pointer hover:bg-muted/80 active:scale-95 transition-all duration-scale-xs"
+                @click="copyToClipboard('scroll-m-gap-{scale}')"
+              >
+                scroll-m-gap-{scale}
+              </div>
+              <div
+                class="bg-muted p-padding-sm rounded-scale-sm fs-sm cursor-pointer hover:bg-muted/80 active:scale-95 transition-all duration-scale-xs"
+                @click="copyToClipboard('gap-scale-{scale}')"
+              >
+                gap-scale-{scale}
+              </div>
+              <div
+                class="bg-muted p-padding-sm rounded-scale-sm fs-sm cursor-pointer hover:bg-muted/80 active:scale-95 transition-all duration-scale-xs"
+                @click="copyToClipboard('m-gap-{scale}')"
+              >
+                m-gap-{scale}
+              </div>
+              <div
+                class="bg-muted p-padding-sm rounded-scale-sm fs-sm cursor-pointer hover:bg-muted/80 active:scale-95 transition-all duration-scale-xs"
                 @click="copyToClipboard('m-margin-{scale}')"
               >
                 m-margin-{scale}
               </div>
             </div>
             <div class="flex flex-col gap-sm">
-              <h4 class="font-semibold text-foreground">圆角 (Border Radius)</h4>
+              <h4 class="fs-sm font-semibold text-foreground mb-margin-xs">圆角 (Border Radius)</h4>
               <div
-                class="bg-muted p-padding-sm rounded-scale-sm fs-sm cursor-pointer hover:bg-muted/80"
+                class="bg-muted p-padding-sm rounded-scale-sm fs-sm cursor-pointer hover:bg-muted/80 active:scale-95 transition-all duration-scale-xs"
                 @click="copyToClipboard('rounded-scale-{scale}')"
               >
                 rounded-scale-{scale}
               </div>
             </div>
             <div class="flex flex-col gap-sm">
-              <h4 class="font-semibold text-foreground">过渡动画 (Transition)</h4>
+              <h4 class="fs-sm font-semibold text-foreground mb-margin-xs">
+                过渡动画 (Transition)
+              </h4>
               <div
-                class="bg-muted p-padding-sm rounded-scale-sm fs-sm cursor-pointer hover:bg-muted/80"
+                class="bg-muted p-padding-sm rounded-scale-sm fs-sm cursor-pointer hover:bg-muted/80 active:scale-95 transition-all duration-scale-xs"
                 @click="copyToClipboard('duration-scale-{scale}')"
               >
                 duration-scale-{scale}

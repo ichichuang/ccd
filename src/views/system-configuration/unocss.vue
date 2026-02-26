@@ -120,13 +120,13 @@ const shortcutGroups: ShortcutGroup[] = [
     category: 'Interaction 交互行为',
     icon: 'i-lucide-pointer',
     items: [
-      { name: 'behavior-hover-transition', classes: 'transition-all duration-scale-md' },
+      { name: 'behavior-hover-transition', classes: 'transition-all duration-scale-xl' },
       { name: 'hover-elevated', classes: 'hover:shadow-md hover:border-accent/50' },
       { name: 'interactive-hover', classes: 'behavior-hover-transition hover-elevated' },
       {
         name: 'interactive-click',
         classes:
-          'cursor-pointer select-none active:scale-95 transition-transform duration-scale-xs',
+          'cursor-pointer select-none active:scale-95 transition-transform duration-scale-xl',
       },
       {
         name: 'interactive-focus-ring',
@@ -135,10 +135,33 @@ const shortcutGroups: ShortcutGroup[] = [
     ],
   },
   {
+    category: 'Menu 菜单交互',
+    icon: 'i-lucide-menu',
+    items: [
+      {
+        name: 'menu-item-base',
+        classes:
+          'flex items-center gap-sm cursor-pointer select-none transition-all duration-scale-xl ease-in-out focus:outline-none border-none bg-transparent',
+        desc: '菜单项基础样式',
+      },
+      { name: 'menu-item-hover', classes: 'bg-primary/20! text-primary!', desc: '菜单项悬停态' },
+    ],
+  },
+  {
     category: 'Component 组件基础',
     icon: 'i-lucide-component',
     items: [
       { name: 'component-border', classes: 'border border-solid border-border' },
+      {
+        name: 'border-b-default',
+        classes: 'border-b border-solid border-border',
+        desc: '底部边框',
+      },
+      {
+        name: 'border-t-default',
+        classes: 'border-t border-solid border-border',
+        desc: '顶部边框',
+      },
       {
         name: 'component-card-base',
         classes: 'rounded-scale-md bg-card text-card-foreground component-border shadow-sm',
@@ -173,11 +196,27 @@ const shortcutGroups: ShortcutGroup[] = [
     icon: 'i-lucide-settings',
     items: [
       { name: 'default-rounded', classes: 'rounded-scale-md' },
-      { name: 'default-duration', classes: 'duration-scale-md' },
+      { name: 'default-duration', classes: 'duration-scale-xl' },
       { name: 'default-padding', classes: 'p-padding-md' },
       { name: 'default-margin', classes: 'm-margin-md' },
       { name: 'default-gap', classes: 'gap-md' },
       { name: 'default-font-size', classes: 'fs-md' },
+    ],
+  },
+  {
+    category: 'Responsive Gaps 响应式间距',
+    icon: 'i-lucide-split',
+    items: [
+      { name: 'gap-x-*', classes: 'gap-x-sm | gap-x-md | gap-x-lg', desc: '水平间距阶梯' },
+      { name: 'gap-y-*', classes: 'gap-y-sm | gap-y-md | gap-y-lg', desc: '垂直间距阶梯' },
+    ],
+  },
+  {
+    category: 'Special Spacing Rules 特殊间距规则',
+    icon: 'i-lucide-move',
+    items: [
+      { name: 'm-gap-*', classes: 'm-gap-md', desc: 'Margin 匹配 Gap (SSOT)' },
+      { name: 'scroll-m-gap-*', classes: 'scroll-m-gap-lg', desc: '滚动贴合偏移 (匹配 Gap)' },
     ],
   },
 ]
@@ -215,6 +254,7 @@ function getShortcutDemoKind(category: string): ShortcutDemoKind {
   if (category === 'Layout 布局结构') return 'layout'
   if (category === 'Text 文本排版') return 'text'
   if (category === 'Interaction 交互行为') return 'interaction'
+  if (category === 'Menu 菜单交互') return 'flex'
   if (category === 'Component 组件基础') return 'component'
   if (category === 'Size & Visual 尺寸视觉') return 'size'
   if (category === 'Design Defaults 设计默认值') return 'design-defaults'
@@ -236,6 +276,13 @@ const safeAreaRules: Array<{ name: string; css: string; desc: string }> = [
   { name: 'safe-top', css: 'padding-top: env(safe-area-inset-top)', desc: '顶部安全区' },
   { name: 'safe-bottom', css: 'padding-bottom: env(safe-area-inset-bottom)', desc: '底部安全区' },
 ]
+
+// ==================== 语义别名 ====================
+const semanticAliases: Array<{ name: string; classes: string; desc: string }> = [
+  { name: 'bg-brand', classes: 'bg-primary', desc: '品牌大背景' },
+  { name: 'bg-interactive', classes: 'bg-primary-hover', desc: '交互背景' },
+  { name: 'text-interactive', classes: 'text-primary-hover', desc: '交互文字颜色' },
+]
 </script>
 
 <template>
@@ -244,15 +291,15 @@ const safeAreaRules: Array<{ name: string; css: string; desc: string }> = [
       <!-- Header -->
       <div class="flex flex-col gap-xs">
         <div class="flex items-center gap-md">
-          <div class="p-padding-md bg-primary/10 rounded-scale-lg">
+          <div class="p-padding-md bg-primary/10 rounded-scale-lg shrink-0">
             <Icons
               name="i-lucide-paintbrush"
-              class="text-primary fs-2xl"
+              class="text-primary fs-2xl transition-all duration-scale-md"
             />
           </div>
           <div>
             <h1 class="fs-2xl font-bold text-foreground">UnoCSS 特性展示</h1>
-            <p class="text-muted-foreground">
+            <p class="text-muted-foreground fs-sm">
               快捷类名、断点用法、安全区规则 · 配色与尺寸系统详见
               <RouterLink
                 to="/system-configuration/theme"
@@ -278,6 +325,22 @@ const safeAreaRules: Array<{ name: string; css: string; desc: string }> = [
             </p>
           </div>
         </div>
+        <div
+          class="border-l-4 border-primary bg-primary/5 p-padding-md rounded-r-scale-md flex gap-md items-start mt-margin-sm"
+        >
+          <Icons
+            name="i-lucide-info"
+            class="text-primary fs-xl shrink-0 mt-0.5"
+          />
+          <div class="flex flex-col gap-0.5">
+            <div class="font-semibold text-primary fs-sm">Architectural Guide 架构引导</div>
+            <div class="text-muted-foreground fs-xs leading-relaxed">
+              本页面展示由
+              <span class="bg-muted px-padding-xs rounded font-mono">uno.config.ts</span>
+              定义的快捷类名与规则。业务组件应优先使用逻辑语义相关的快捷类名。
+            </div>
+          </div>
+        </div>
       </div>
 
       <!-- Search -->
@@ -297,7 +360,7 @@ const safeAreaRules: Array<{ name: string; css: string; desc: string }> = [
       <!-- Shortcuts 快捷方式 -->
       <Card
         v-if="filteredShortcutGroups.length > 0"
-        class="component-border"
+        class="component-border hover:shadow-md behavior-hover-transition"
       >
         <template #title>
           <div class="flex items-center gap-sm">
@@ -305,7 +368,7 @@ const safeAreaRules: Array<{ name: string; css: string; desc: string }> = [
               name="i-lucide-zap"
               class="text-primary"
             />
-            <span>Shortcuts 快捷方式</span>
+            <span class="font-semibold">Shortcuts 快捷方式</span>
             <Tag
               :value="`${shortcutGroups.reduce((a, g) => a + g.items.length, 0)} shortcuts`"
               severity="secondary"
@@ -327,9 +390,9 @@ const safeAreaRules: Array<{ name: string; css: string; desc: string }> = [
                   :name="group.icon"
                   class="text-primary"
                 />
-                <h3 class="fs-lg font-semibold text-foreground">
+                <h4 class="fs-sm font-semibold text-foreground mb-margin-xs">
                   {{ group.category }}
-                </h3>
+                </h4>
                 <Tag
                   :value="`${group.items.length}`"
                   severity="secondary"
@@ -339,7 +402,7 @@ const safeAreaRules: Array<{ name: string; css: string; desc: string }> = [
                 <div
                   v-for="item in group.items"
                   :key="item.name"
-                  class="flex items-center gap-md p-padding-md bg-muted/20 rounded-scale-md hover:bg-muted/40 transition-colors cursor-pointer"
+                  class="flex items-center gap-md p-padding-md bg-muted/20 rounded-scale-md hover:bg-muted/40 transition-all duration-scale-xl cursor-pointer active:scale-[0.98] border border-transparent hover:border-primary/20"
                   @click="copyToClipboard(item.name)"
                 >
                   <div class="flex flex-col flex-1 min-w-0">
@@ -593,7 +656,7 @@ const safeAreaRules: Array<{ name: string; css: string; desc: string }> = [
               name="i-lucide-monitor"
               class="text-primary"
             />
-            <span>Breakpoints 断点系统</span>
+            <span class="font-semibold">Breakpoints 断点系统</span>
             <Tag
               :value="`${breakpoints.length} breakpoints`"
               severity="secondary"
@@ -612,7 +675,7 @@ const safeAreaRules: Array<{ name: string; css: string; desc: string }> = [
               <div
                 v-for="bp in breakpoints"
                 :key="bp.key"
-                class="flex flex-col items-center gap-sm p-padding-md bg-muted/20 rounded-scale-md hover:bg-muted/40 transition-colors cursor-pointer"
+                class="flex flex-col items-center gap-sm p-padding-md bg-muted/20 rounded-scale-md hover:bg-muted/40 transition-colors duration-scale-xl cursor-pointer"
                 @click="copyToClipboard(bp.key + ':', bp.key)"
               >
                 <span class="font-bold fs-lg text-primary">
@@ -628,6 +691,48 @@ const safeAreaRules: Array<{ name: string; css: string; desc: string }> = [
         </template>
       </Card>
 
+      <!-- 语义别名 (Semantic Aliases) -->
+      <Card class="component-border">
+        <template #title>
+          <div class="flex items-center gap-sm">
+            <Icons
+              name="i-lucide-tags"
+              class="text-primary"
+            />
+            <span class="font-semibold">Semantic Aliases 语义别名</span>
+            <Tag
+              value="推荐业务层使用"
+              severity="success"
+            />
+          </div>
+        </template>
+        <template #content>
+          <div class="flex flex-col gap-md">
+            <p class="text-muted-foreground fs-sm">
+              将抽象业务需求映射到具体配色 · 详见
+              <span class="bg-muted px-padding-xs rounded">uno.config.ts</span>
+            </p>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-md">
+              <div
+                v-for="item in semanticAliases"
+                :key="item.name"
+                class="flex items-center gap-md p-padding-md bg-muted/20 rounded-scale-md hover:bg-muted/40 transition-colors duration-scale-xl cursor-pointer"
+                @click="copyToClipboard(item.name)"
+              >
+                <div
+                  class="w-8 h-8 rounded-full shrink-0 border border-primary/20"
+                  :class="item.classes"
+                />
+                <div class="flex flex-col flex-1">
+                  <span class="font-semibold text-foreground">{{ item.name }}</span>
+                  <span class="fs-xs text-muted-foreground">{{ item.desc }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </template>
+      </Card>
+
       <!-- 安全区规则 -->
       <Card class="component-border">
         <template #title>
@@ -636,7 +741,7 @@ const safeAreaRules: Array<{ name: string; css: string; desc: string }> = [
               name="i-lucide-shield"
               class="text-primary"
             />
-            <span>Safe Area 安全区规则</span>
+            <span class="font-semibold">Safe Area 安全区规则</span>
           </div>
         </template>
         <template #content>
@@ -649,7 +754,7 @@ const safeAreaRules: Array<{ name: string; css: string; desc: string }> = [
               <div
                 v-for="rule in safeAreaRules"
                 :key="rule.name"
-                class="flex items-center gap-md p-padding-md bg-muted/20 rounded-scale-md hover:bg-muted/40 transition-colors cursor-pointer"
+                class="flex items-center gap-md p-padding-md bg-muted/20 rounded-scale-md hover:bg-muted/40 transition-colors duration-scale-xl cursor-pointer"
                 @click="copyToClipboard(rule.name)"
               >
                 <div class="flex flex-col flex-1">
@@ -678,7 +783,7 @@ const safeAreaRules: Array<{ name: string; css: string; desc: string }> = [
               name="i-lucide-network"
               class="text-primary"
             />
-            <span>架构能力索引</span>
+            <span class="font-semibold">架构能力索引</span>
             <Tag
               value="更多示例在 example 目录"
               severity="info"
@@ -693,7 +798,7 @@ const safeAreaRules: Array<{ name: string; css: string; desc: string }> = [
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-md">
               <RouterLink
                 to="/example/ui/use-echarts"
-                class="flex items-center gap-sm p-padding-md bg-muted/20 rounded-scale-md hover:bg-muted/40 transition-colors"
+                class="flex items-center gap-sm p-padding-md bg-muted/20 rounded-scale-md hover:bg-muted/40 transition-colors duration-scale-md"
               >
                 <Icons
                   name="i-lucide-chart-bar"
@@ -703,7 +808,7 @@ const safeAreaRules: Array<{ name: string; css: string; desc: string }> = [
               </RouterLink>
               <RouterLink
                 to="/example/ui/icons"
-                class="flex items-center gap-sm p-padding-md bg-muted/20 rounded-scale-md hover:bg-muted/40 transition-colors"
+                class="flex items-center gap-sm p-padding-md bg-muted/20 rounded-scale-md hover:bg-muted/40 transition-colors duration-scale-md"
               >
                 <Icons
                   name="i-lucide-brush"
@@ -814,20 +919,26 @@ const safeAreaRules: Array<{ name: string; css: string; desc: string }> = [
               <h4 class="font-semibold text-foreground">安全区 (Safe Area)</h4>
               <div
                 class="bg-muted p-padding-sm rounded-scale-sm fs-sm cursor-pointer hover:bg-muted/80"
-                @click="copyToClipboard('safe-top')"
+                @click="copyToClipboard('scroll-m-gap-md')"
               >
-                safe-top
+                scroll-m-gap-{scale}
               </div>
               <div
                 class="bg-muted p-padding-sm rounded-scale-sm fs-sm cursor-pointer hover:bg-muted/80"
-                @click="copyToClipboard('safe-bottom')"
+                @click="copyToClipboard('m-gap-md')"
               >
-                safe-bottom
+                m-gap-{scale}
               </div>
               <p class="fs-xs text-muted-foreground">移动端安全区 · env(safe-area-inset-*)</p>
             </div>
             <div class="flex flex-col gap-sm">
               <h4 class="font-semibold text-foreground">规则 (Rules)</h4>
+              <p class="fs-xs text-muted-foreground">
+                <span class="bg-muted px-padding-xs rounded">gap-x-*</span>
+                /
+                <span class="bg-muted px-padding-xs rounded">gap-y-*</span>
+                独立轴向间距。
+              </p>
               <p class="fs-xs text-muted-foreground">
                 <span class="bg-muted px-padding-xs rounded">main-*</span>
                 /

@@ -19,16 +19,16 @@ Before generating any UI code, you MUST reference and strictly follow:
 
 ### 2.0 System Documentation (底层系统 SSOT)
 
-- **Build & Auto-Imports:** `docs/BUILD_SYSTEM.md` (Why `ref`, `computed`, `CScrollbar` don't need import).
-- **Env & Runtime:** `docs/ENV_AND_RUNTIME.md` (Env vars, Proxy behavior).
-- **TS & Linting:** `docs/TYPESCRIPT_AND_LINTING.md` (DS generation, ESLint globals).
-- **UnoCSS & Icons:** `docs/UNOCSS_AND_ICONS.md` (Iconify chain, Custom SVG logic).
+- **Build & Auto-Imports:** `./BUILD_SYSTEM.md` (Why `ref`, `computed`, `CScrollbar` don't need import).
+- **Env & Runtime:** `./ENV_AND_RUNTIME.md` (Env vars, Proxy behavior).
+- **TS & Linting:** `./TYPESCRIPT_AND_LINTING.md` (DS generation, ESLint globals).
+- **UnoCSS & Icons:** `./UNOCSS_AND_ICONS.md` (Iconify chain, Custom SVG logic).
 
 ### 2.1 Theme System (配色系统)
 
 - **颜色语义 SSOT:** `src/constants/theme/colorUsage.ts`（COLOR_USAGE、PRIMARY_USAGE、ACCENT_USAGE）
 - Read: `src/types/systems/theme.d.ts`, `src/constants/theme.ts`, `src/stores/modules/theme.ts`
-- PrimeVue 主题融合（Button 等组件配色）：`docs/PRIMEVUE_THEME.md`
+- PrimeVue 主题融合（Button 等组件配色）：`./PRIMEVUE_THEME.md`
 - Use semantic color variables: `text-primary`, `bg-surface-ground`, `border-border`, `text-info`, `bg-info`
 - For visible borders use shortcuts: `component-border`, `border-b-default`, `border-t-default`; FORBIDDEN: only `border border-border` (no border-style → invisible)
 - Support dark mode with `dark:` variants or CSS variables
@@ -185,7 +185,7 @@ The project uses `unplugin-auto-import` and `unplugin-vue-components`.
   - 操作按钮：使用 `<Button>` 作为主要/次要操作按钮，而不是手写 `<button>`；
   - 数据列表/表格：优先使用 **DataTable**（`@/components/DataTable`），详见 `docs/DataTable_COMPONENT.md`；不要从零写 `<table>` 或裸用 PrimeVue DataTable 实现分页/排序/导出等复杂交互；
   - 弹窗/抽屉：优先使用 `<Dialog>` / `<Sidebar>`，而不是用 `position: fixed` 的 div 临时拼装。
-  - 全局轻量通知：组件内用 PrimeVue `useToast()`；非组件环境（拦截器、全局错误处理）用 `window.$toast` / `window.$message`，见 `docs/TOAST_AND_MESSAGE.md`。
+  - 全局轻量通知：组件内用 PrimeVue `useToast()`；非组件环境（拦截器、全局错误处理）用 `window.$toast` / `window.$message`，见 `./TOAST_AND_MESSAGE.md`。
 
 - 定制方式（必须遵守）：
   - 使用 UnoCSS 类：`<Button class="px-padding-md fs-sm text-primary" ... />`；
@@ -266,4 +266,4 @@ Before finishing, ask yourself:
 - Did I use classes from `uno.config.ts` and avoid hardcoding?
 - Is this responsive using Mobile First and proper breakpoints?
 - If I used `<style>`, did I use `<style lang="scss" scoped>` with proper SCSS nesting?
-- Did I use the project's semantic variables and `docs/GOLDEN_SAMPLES/UIComponent.vue` style?
+- Did I use the project's semantic variables and `./GOLDEN_SAMPLES/UIComponent.vue` style?

@@ -6,7 +6,7 @@
 
 ## Pre-check（强制）
 
-- `@docs/PROJECT_PROTOCOL.md`
+- `@docs/ai-specs/PROJECT_PROTOCOL.md`
 - `@.cursor/rules/10-logic-layer.mdc`
 - `@.cursor/rules/15-utils-and-hooks-first.mdc`
 
@@ -25,7 +25,7 @@
 ## Prompt 模板（复制使用）
 
 ```
-先阅读 @docs/PROJECT_PROTOCOL.md
+先阅读 @docs/ai-specs/PROJECT_PROTOCOL.md
 遵循 @.cursor/rules/10-logic-layer.mdc 与 @.cursor/rules/15-utils-and-hooks-first.mdc
 
 任务：将以下文件中的业务逻辑抽离到 composable（保持 UI 不变）

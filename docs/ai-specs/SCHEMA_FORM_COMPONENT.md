@@ -24,7 +24,7 @@
 
 ```vue
 <script setup lang="ts">
-// ref 由自动导入提供，可省略 import { ref } from 'vue'，见 docs/BUILD_SYSTEM.md
+// ref 由自动导入提供，可省略 import { ref } from 'vue'，见 ./BUILD_SYSTEM.md
 import { SchemaForm } from '@/components/SchemaForm'
 import type { Schema, FormValues } from '@/components/SchemaForm'
 

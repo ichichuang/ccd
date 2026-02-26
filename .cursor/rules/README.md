@@ -27,7 +27,7 @@
    - **适用范围**：`src/hooks/**/*.ts`
    - **自动应用**：否（按文件匹配）
    - **关键内容**：
-     - 结构遵循黄金样本（`docs/GOLDEN_SAMPLES/useFeatureLogic.ts`）
+     - 结构遵循黄金样本（`docs/ai-specs/GOLDEN_SAMPLES/useFeatureLogic.ts`）
      - 使用 `useHttpRequest` 进行 HTTP 请求
      - 显式类型注解要求（ref/computed/reactive）
      - 禁止 `any`（边界层例外）
@@ -61,7 +61,7 @@
    - **关键内容**：
      - 组件复用映射（CScrollbar、AnimateWrapper、Icons、UseEcharts、SchemaForm、DataTable、PrimeDialog）
      - 图标智能选择规则（Lucide → MDI → Logos → custom SVG）
-     - Icons 颜色与权重：class 不生效时加 `!` 或改用 `color` prop；Icons 的 group-hover 须在自身加 transition；详见 `docs/UNOCSS_AND_ICONS.md` §6.3.1、§6.3.2
+     - Icons 颜色与权重：class 不生效时加 `!` 或改用 `color` prop；Icons 的 group-hover 须在自身加 transition；详见 `docs/ai-specs/UNOCSS_AND_ICONS.md` §6.3.1、§6.3.2
      - 禁止模式（禁止 raw SVG、禁止外部图标 URL）
 
 ### UI/样式规则
@@ -114,7 +114,7 @@
 - **功能**：登录/登出、token、401、路由守卫
 - **适用范围**：`src/**/*.{ts,vue}`
 - **自动应用**：否（按文件匹配）
-- **详细文档**：`docs/AUTH_AND_LOGIN_FLOW.md`
+- **详细文档**：`docs/ai-specs/AUTH_AND_LOGIN_FLOW.md`
 - **关键内容**：
   - 登录流程
   - Token 管理
@@ -160,7 +160,7 @@
 对于复杂任务，建议显式引用相关规则：
 
 ```
-先阅读 @docs/PROJECT_PROTOCOL.md
+先阅读 @docs/ai-specs/PROJECT_PROTOCOL.md
 遵循 @.cursor/rules/00-core-architecture.mdc
 同时遵循与任务相关的 rules：
 - @.cursor/rules/10-logic-layer.mdc（逻辑）
@@ -183,7 +183,7 @@
 
 ## 🔗 相关文档
 
-- **项目协议**：`docs/PROJECT_PROTOCOL.md`（必读）
+- **项目协议**：`docs/ai-specs/PROJECT_PROTOCOL.md`（必读）
 - **Cursor Skills**：`.cursor/skills/`
 - **Antigravity 规则**：`.agent/rules/`（参考对应关系）
 - **详细文档**：`docs/` 目录下的各专项文档

@@ -79,7 +79,7 @@ globs: **/*
    - **功能**：多字段表单、校验、分步、分组、动态字段
    - **流程**：阅读文档 -> 定义 Schema -> 使用 useSchemaForm -> 集成 UI
    - **适用范围**：`src/views/**/*.vue, src/components/**/*.vue`
-   - **前置要求**：必须先阅读 `docs/SCHEMA_FORM_COMPONENT.md`
+   - **前置要求**：必须先阅读 `docs/ai-specs/SCHEMA_FORM_COMPONENT.md`
    - **关键步骤**：
      - Schema 定义
      - useSchemaForm Hook 使用
@@ -92,7 +92,7 @@ globs: **/*
    - **功能**：Toast 和 Message 反馈提示使用规范与实现要点
    - **流程**：判断场景 -> 选择 $message 或 $toast -> 调用 -> 验证
    - **适用范围**：`src/**/*.{ts,vue}`
-   - **前置要求**：阅读 `docs/TOAST_AND_MESSAGE.md`、`docs/TOAST_UI_OVERRIDES.md`
+   - **前置要求**：阅读 `docs/ai-specs/TOAST_AND_MESSAGE.md`、`docs/ai-specs/TOAST_AND_MESSAGE.md`
    - **关键步骤**：
      - 组件内轻量通知 → `useToast()`
      - 非组件环境（拦截器、工具函数）→ `window.$toast` / `window.$message`
@@ -106,7 +106,7 @@ globs: **/*
    - **功能**：图表展示与交互，自动主题集成
    - **流程**：阅读文档 -> 使用 UseEcharts 组件 -> 配置 option -> 处理事件
    - **适用范围**：`src/views/**/*.vue, src/components/**/*.vue`
-   - **前置要求**：必须先阅读 `docs/ECHARTS_THEME.md`
+   - **前置要求**：必须先阅读 `docs/ai-specs/ECHARTS_THEME.md`
    - **关键步骤**：
      - 使用 `<UseEcharts>` 组件
      - 传入 `option` prop（EChartsOption）
@@ -122,7 +122,7 @@ globs: **/*
 - **功能**：当 Icons 通过 class 设置的颜色/opacity 不生效时的修复流程
 - **流程**：判断场景 -> 选择方案（color prop 或 class + !）-> 验证
 - **适用范围**：`**/*.vue, **/*.tsx`
-- **前置要求**：`docs/UNOCSS_AND_ICONS.md` §6.3.1
+- **前置要求**：`docs/ai-specs/UNOCSS_AND_ICONS.md` §6.3.1
 - **关键步骤**：决策表选择（color prop 优先；class 时加 `!`）
 - **参考**：`src/layouts/components/admin/AdminHeader.vue`
 
@@ -153,17 +153,17 @@ globs: **/*
 
 某些 Skill 需要先阅读相关文档：
 
-- **SchemaForm**：必须先阅读 `docs/SCHEMA_FORM_COMPONENT.md`
-- **Toast/Message**：必须先阅读 `docs/TOAST_AND_MESSAGE.md`、`docs/TOAST_UI_OVERRIDES.md`
-- **布局相关**：必须阅读 `docs/ADAPTIVE_LAYOUT.md`
-- **认证相关**：必须阅读 `docs/AUTH_AND_LOGIN_FLOW.md`
-- **Icons 颜色**：`docs/UNOCSS_AND_ICONS.md` §6.3.1
+- **SchemaForm**：必须先阅读 `docs/ai-specs/SCHEMA_FORM_COMPONENT.md`
+- **Toast/Message**：必须先阅读 `docs/ai-specs/TOAST_AND_MESSAGE.md`、`docs/ai-specs/TOAST_AND_MESSAGE.md`
+- **布局相关**：必须阅读 `docs/ai-specs/ADAPTIVE_LAYOUT.md`
+- **认证相关**：必须阅读 `docs/ai-specs/AUTH_AND_LOGIN_FLOW.md`
+- **Icons 颜色**：`docs/ai-specs/UNOCSS_AND_ICONS.md` §6.3.1
 
 ## 🔗 相关资源
 
 - **Rules 文件**：`.agent/rules/`
-- **项目协议**：`docs/PROJECT_PROTOCOL.md`
-- **黄金样本**：`docs/GOLDEN_SAMPLES/`
+- **项目协议**：`docs/ai-specs/PROJECT_PROTOCOL.md`
+- **黄金样本**：`docs/ai-specs/GOLDEN_SAMPLES/`
 - **Cursor Skills**：`.cursor/skills/`（参考对应关系）
 
 ## 📝 与 Cursor Skills 的对应关系

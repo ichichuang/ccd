@@ -79,7 +79,7 @@
    - **功能**：PC/Tablet/Mobile、断点、有效显隐、userAdjusted
    - **适用范围**：layouts 相关文件（`globs: src/layouts/**/*, src/stores/modules/layout.ts, src/stores/modules/device.ts`）
    - **自动应用**：否（按文件匹配）
-   - **详细文档**：`docs/ADAPTIVE_LAYOUT.md`
+   - **详细文档**：`docs/ai-specs/ADAPTIVE_LAYOUT.md`
    - **关键内容**：
      - 单一驱动源
      - 断点系统
@@ -100,7 +100,7 @@
    - **功能**：登录/登出、token、401、路由守卫、白名单
    - **适用范围**：TS/Vue 文件（`globs: src/**/*.{ts,vue}`）
    - **自动应用**：否（按文件匹配）
-   - **详细文档**：`docs/AUTH_AND_LOGIN_FLOW.md`
+   - **详细文档**：`docs/ai-specs/AUTH_AND_LOGIN_FLOW.md`
    - **关键内容**：
      - 登录流程
      - Token 管理
@@ -140,7 +140,7 @@
 对于复杂任务，建议显式引用相关规则：
 
 ```
-先阅读 @docs/PROJECT_PROTOCOL.md
+先阅读 @docs/ai-specs/PROJECT_PROTOCOL.md
 遵循 @.agent/rules/00-primary-directive.md
 ```
 
@@ -155,8 +155,8 @@
 
 ## 🔗 相关文档
 
-- **项目协议**：`docs/PROJECT_PROTOCOL.md`
-- **黄金样本**：`docs/GOLDEN_SAMPLES/`
+- **项目协议**：`docs/ai-specs/PROJECT_PROTOCOL.md`
+- **黄金样本**：`docs/ai-specs/GOLDEN_SAMPLES/`
 - **Cursor 规则**：`.cursor/rules/`
 - **Cursor Skills**：`.cursor/skills/`
 

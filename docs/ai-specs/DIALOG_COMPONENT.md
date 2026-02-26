@@ -48,13 +48,13 @@ const index = openDialog({
 
 ## 3. 与 PrimeVue 的分工
 
-| 场景                                           | 使用                                                                  |
-| ---------------------------------------------- | --------------------------------------------------------------------- |
-| 简单确认（是/否）                              | PrimeVue `useConfirm().require()`                                     |
-| 动态组件弹窗                                   | PrimeVue `useDialog().open()`                                         |
-| 轻量通知（组件内）                             | PrimeVue `useToast()`                                                 |
-| 轻量通知（非组件环境）                         | `window.$toast` / `window.$message`（见 `docs/TOAST_AND_MESSAGE.md`） |
-| 自定义内容、反馈提示、需要拦截的确认、多层弹窗 | **useDialog()**                                                       |
+| 场景                                           | 使用                                                               |
+| ---------------------------------------------- | ------------------------------------------------------------------ |
+| 简单确认（是/否）                              | PrimeVue `useConfirm().require()`                                  |
+| 动态组件弹窗                                   | PrimeVue `useDialog().open()`                                      |
+| 轻量通知（组件内）                             | PrimeVue `useToast()`                                              |
+| 轻量通知（非组件环境）                         | `window.$toast` / `window.$message`（见 `./TOAST_AND_MESSAGE.md`） |
+| 自定义内容、反馈提示、需要拦截的确认、多层弹窗 | **useDialog()**                                                    |
 
 ## 4. API 速查
 

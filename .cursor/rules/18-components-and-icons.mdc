@@ -44,28 +44,28 @@ When generating or editing UI pages/components, you MUST:
   - Multi-chart linkage (via `group` or `connectConfig`)
   - Event handling (60+ ECharts events via `on*` props)
   - Exposed methods via ref (`getEchartsInstance`, `setOption`, `resize`, `clear`, `dispose`, `triggerConnect`, etc.)
-- **Usage**: See `docs/ECHARTS_THEME.md` for complete API and examples.
+- **Usage**: See `docs/ai-specs/ECHARTS_THEME.md` for complete API and examples.
 
 ### PrimeVue UI Components
 
 - For **forms & inputs** (text, password, number, checkbox, radio, select, multi-select, date, switch):
-  - **多字段、需校验/分步/分组/动态 schema**：MUST use SchemaForm（`@/components/SchemaForm`）+ useSchemaForm（`@/hooks/modules/useSchemaForm`），详见 `docs/SCHEMA_FORM_COMPONENT.md`。
+  - **多字段、需校验/分步/分组/动态 schema**：MUST use SchemaForm（`@/components/SchemaForm`）+ useSchemaForm（`@/hooks/modules/useSchemaForm`），详见 `docs/ai-specs/SCHEMA_FORM_COMPONENT.md`。
   - 简单 1–2 个字段：直接使用 PrimeVue 组件如 `<InputText>`, `<Password>`, `<InputNumber>`, `<Checkbox>`, `<RadioButton>`, `<Dropdown>`, `<MultiSelect>`, `<Calendar>`, `<ToggleSwitch>` 等。
 - For **actions/buttons**:
   - MUST use `<Button>` for primary/secondary actions instead of styling raw `<button>` or `<a>`.
-  - Button 配色由 `src/utils/theme/primevue-preset.ts` 控制；Primary text/outlined 的 hover 用 accent-light，其余类型用 `*-light`；勿用 `*-foreground` 作为背景。详见 `docs/PRIMEVUE_THEME.md`。
+  - Button 配色由 `src/utils/theme/primevue-preset.ts` 控制；Primary text/outlined 的 hover 用 accent-light，其余类型用 `*-light`；勿用 `*-foreground` 作为背景。详见 `docs/ai-specs/PRIMEVUE_THEME.md`。
 - For **tables/lists**:
-  - **交互式数据表格**：MUST 使用 **DataTable**（`@/components/DataTable`），详见 `docs/DataTable_COMPONENT.md`。
+  - **交互式数据表格**：MUST 使用 **DataTable**（`@/components/DataTable`），详见 `docs/ai-specs/DataTable_COMPONENT.md`。
   - 简单静态表格、一次性展示可用 PrimeVue `<DataTable>`；需分页/排序/筛选/导出/API 时 MUST 用 DataTable。
   - FORBIDDEN：在需要分页、排序、筛选、导出或 API 加载时裸用 PrimeVue DataTable 拼装逻辑，或手写 `<table>` 实现复杂交互。
 - For **dialogs/overlays**:
   - MUST use `<Dialog>` / `<Sidebar>` instead of ad-hoc fixed-position modals when they fit the use case.
-  - **项目二次封装 PrimeDialog**：当需要**自定义弹窗、反馈提示、确认对话框**时，MUST 使用 `useDialog()`（`@/hooks/modules/useDialog`）。`PrimeVueDialog` 已在 `AppPrimeVueGlobals.vue`（由 `App.vue` 引入）挂载，业务只需调用 `info`、`success`、`warn`、`danger`、`confirm`、`confirmDelete`、`openDialog` 等。高级用法见 `contentRenderer`、`headerRenderer`、`footerRenderer`、`footerButtons`、`beforeSure`、`beforeCancel`、`sureBtnLoading`。详见 `docs/DIALOG_COMPONENT.md`。
+  - **项目二次封装 PrimeDialog**：当需要**自定义弹窗、反馈提示、确认对话框**时，MUST 使用 `useDialog()`（`@/hooks/modules/useDialog`）。`PrimeVueDialog` 已在 `AppPrimeVueGlobals.vue`（由 `App.vue` 引入）挂载，业务只需调用 `info`、`success`、`warn`、`danger`、`confirm`、`confirmDelete`、`openDialog` 等。高级用法见 `contentRenderer`、`headerRenderer`、`footerRenderer`、`footerButtons`、`beforeSure`、`beforeCancel`、`sureBtnLoading`。详见 `docs/ai-specs/DIALOG_COMPONENT.md`。
   - 简单确认用 PrimeVue `useConfirm().require()`；复杂自定义/多层弹窗用 `useDialog()`。FORBIDDEN：在业务中自行实例化 PrimeVue `<Dialog>` 管理多弹窗状态。
 - For **Toast / Message**：
   - **组件内**轻量通知：使用 PrimeVue `useToast()`。
-  - **非组件环境**（拦截器、errorHandler、工具函数）：MUST 使用 `window.$toast` / `window.$message`，详见 `docs/TOAST_AND_MESSAGE.md`。FORBIDDEN：在业务中自建全局 Toast/Message 或通过 DOM 自造通知。
-  - **$message 特性**：居中纯提示（正中央、无关闭按钮、life 后自动消失）；$toast 可按位置显示、带关闭按钮。样式覆盖见 `docs/TOAST_UI_OVERRIDES.md`。
+  - **非组件环境**（拦截器、errorHandler、工具函数）：MUST 使用 `window.$toast` / `window.$message`，详见 `docs/ai-specs/TOAST_AND_MESSAGE.md`。FORBIDDEN：在业务中自建全局 Toast/Message 或通过 DOM 自造通知。
+  - **$message 特性**：居中纯提示（正中央、无关闭按钮、life 后自动消失）；$toast 可按位置显示、带关闭按钮。样式覆盖见 `docs/ai-specs/TOAST_AND_MESSAGE.md`。
 
 Styling PrimeVue components:
 
@@ -79,7 +79,7 @@ This project auto-imports components/functions and generates:
 - `src/types/auto-imports.d.ts`
 - `src/types/components.d.ts`
 
-**完整配置**：imports 与 dirs 列表见 `docs/BUILD_SYSTEM.md` §2；组件扫描范围与排除（仅 `src/components`，排除 `src/layouts`，PrimeVue 按需）见 §3。
+**完整配置**：imports 与 dirs 列表见 `docs/ai-specs/BUILD_SYSTEM.md` §2；组件扫描范围与排除（仅 `src/components`，排除 `src/layouts`，PrimeVue 按需）见 §3。
 
 Rules:
 
@@ -109,16 +109,16 @@ Rules:
   - **格式**：`color` prop 必须用 `rgb(var(--primary))`，禁止 `var(--primary)`；hex 禁止。
   - **Class 权重覆盖**：当 `class=\"text-primary\"` 等不生效时，加 `!` 修饰符：`text-primary!`、`group-hover:text-accent-light-foreground!`；或改用 `color` prop 避免权重冲突。
   - **继承父级**：需与父级文字同色时用 `class=\"text-current\"`。
-  - 详见 `docs/UNOCSS_AND_ICONS.md` §6.3.1。
-- **动画与变换**：See `docs/UNOCSS_AND_ICONS.md` §6.4 for `animation`, `flip`, `rotate`, `scale` usage.
-- **Icons 与 transition**：当 Icons 使用 `group-hover:`/`hover:` 颜色或透明度类时，transition 必须写在 Icons 的 class 上；父容器 transition 无效。详见 `docs/UNOCSS_AND_ICONS.md` §2.7.1、§6.3.2。
+  - 详见 `docs/ai-specs/UNOCSS_AND_ICONS.md` §6.3.1。
+- **动画与变换**：See `docs/ai-specs/UNOCSS_AND_ICONS.md` §6.4 for `animation`, `flip`, `rotate`, `scale` usage.
+- **Icons 与 transition**：当 Icons 使用 `group-hover:`/`hover:` 颜色或透明度类时，transition 必须写在 Icons 的 class 上；父容器 transition 无效。详见 `docs/ai-specs/UNOCSS_AND_ICONS.md` §2.7.1、§6.3.2。
 
 ## 5. Forbidden Patterns
 
-- FORBIDDEN: 在需要多字段/校验/分步/分组/动态表单时，手写大量 PrimeVue 表单组件拼装；必须使用 SchemaForm + useSchemaForm，见 `docs/SCHEMA_FORM_COMPONENT.md`。
+- FORBIDDEN: 在需要多字段/校验/分步/分组/动态表单时，手写大量 PrimeVue 表单组件拼装；必须使用 SchemaForm + useSchemaForm，见 `docs/ai-specs/SCHEMA_FORM_COMPONENT.md`。
 - FORBIDDEN: raw `<svg>` icon markup in templates.
-- FORBIDDEN: 在业务代码中自行实例化 PrimeVue `<Dialog>` 管理多弹窗；必须使用 `useDialog()`（见 `docs/DIALOG_COMPONENT.md`）。
-- FORBIDDEN: 在非组件环境中自建全局 Toast/Message；必须使用 `window.$toast` / `window.$message`（见 `docs/TOAST_AND_MESSAGE.md`）。
+- FORBIDDEN: 在业务代码中自行实例化 PrimeVue `<Dialog>` 管理多弹窗；必须使用 `useDialog()`（见 `docs/ai-specs/DIALOG_COMPONENT.md`）。
+- FORBIDDEN: 在非组件环境中自建全局 Toast/Message；必须使用 `window.$toast` / `window.$message`（见 `docs/ai-specs/TOAST_AND_MESSAGE.md`）。
 - FORBIDDEN: adding custom CSS for icon sizing/colors; use UnoCSS + `Icons` props/classes.
 - FORBIDDEN: bypassing `UseEcharts` for charts when it can be used.
-- FORBIDDEN: 在需分页/排序/筛选/导出/API 的表格场景裸用 PrimeVue DataTable 或手写 `<table>`；必须使用 DataTable（见 `docs/DataTable_COMPONENT.md`）。
+- FORBIDDEN: 在需分页/排序/筛选/导出/API 的表格场景裸用 PrimeVue DataTable 或手写 `<table>`；必须使用 DataTable（见 `docs/ai-specs/DataTable_COMPONENT.md`）。

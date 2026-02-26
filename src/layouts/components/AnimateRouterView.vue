@@ -159,14 +159,14 @@ const styleVars = computed(() => {
   top: 0;
   left: 0;
   width: 100%;
-  animation-duration: var(--transition-4xl) !important;
+  animation-duration: var(--transition-md) !important;
 }
 .leave-active-class {
   position: absolute;
   top: 0;
   left: 0;
   width: 100%;
-  animation-duration: var(--transition-xl) !important;
+  animation-duration: var(--transition-md) !important;
   animation-timing-function: ease-in-out !important;
 }
 </style>

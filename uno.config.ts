@@ -525,7 +525,7 @@ export default defineConfig({
     'hover-elevated': 'hover:shadow-md hover:border-primary-hover/50',
     'interactive-hover': 'behavior-hover-transition hover-elevated',
     'interactive-click':
-      'cursor-pointer select-none active:scale-95 transition-transform duration-scale-xs',
+      'cursor-pointer select-none active:scale-95 transition-transform duration-scale-md',
     'interactive-focus-ring': 'focus:outline-none focus:ring-2 focus:ring-ring',
 
     // ⑦b 语义别名（AI 优先写行为语义，不直接接触颜色词）
@@ -560,7 +560,7 @@ export default defineConfig({
     // =========================================================
     'size-theme-swatch': 'w-[var(--spacing-lg)] h-[var(--spacing-lg)] rounded-full',
     'size-select-min': 'min-w-[var(--spacing-3xl)]',
-    'sidebar-width-transition': 'transition-[width] duration-scale-lg ease-in-out',
+    'sidebar-width-transition': 'transition-[width] duration-scale-md ease-in-out',
 
     // =========================================================
     // ⑩ 设计系统默认等级（Design Token Defaults）
@@ -576,7 +576,7 @@ export default defineConfig({
     // ⑪ 菜单交互语义 (Menu Interaction)
     // =========================================================
     'menu-item-base':
-      'group flex items-center gap-sm cursor-pointer select-none transition-all duration-scale-md ease-in-out focus:outline-none border-none bg-transparent',
+      'flex items-center gap-sm cursor-pointer select-none transition-all duration-scale-md ease-in-out focus:outline-none border-none bg-transparent',
     'menu-item-hover': 'bg-primary/20! text-primary!',
   },
 
@@ -592,6 +592,7 @@ export default defineConfig({
     // ====== ④ 基础尺寸变量（最低优先级） ======
     ...createBaseVarRules(),
     // ====== ⑤ 安全区规则 ======
+    ['group', {}],
     ['safe-top', { 'padding-top': 'env(safe-area-inset-top)' }],
     ['safe-bottom', { 'padding-bottom': 'env(safe-area-inset-bottom)' }],
   ],

@@ -612,7 +612,7 @@ function updateOption() {
 
 ## 6. 相关文档
 
-- **项目协议**：`docs/PROJECT_PROTOCOL.md`
+- **项目协议**：`./PROJECT_PROTOCOL.md`
 - **组件使用规则**：`.cursor/rules/18-components-and-icons.mdc`
 - **UI 架构规则**：`.agent/rules/10-ui-architecture.md`
 - **UseEcharts README**：`src/components/UseEcharts/README.md`

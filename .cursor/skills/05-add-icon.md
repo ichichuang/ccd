@@ -6,9 +6,9 @@
 
 ## Pre-check（强制）
 
-- `@docs/PROJECT_PROTOCOL.md`（组件与图标规范）
+- `@docs/ai-specs/PROJECT_PROTOCOL.md`（组件与图标规范）
 - `@.cursor/rules/18-components-and-icons.mdc`
-- `@docs/UNOCSS_AND_ICONS.md`
+- `@docs/ai-specs/UNOCSS_AND_ICONS.md`
 
 ## Smart Selection Policy（强制优先级）
 
@@ -33,7 +33,7 @@
   - 动态/主题变量：使用 `color` prop（`color="rgb(var(--primary))"`），可避免 class 权重问题
   - 继承父级：`class="text-current"`
   - 禁止 hex；`color` prop 必须 `rgb(var(--primary))` 格式
-  - 详见 `docs/UNOCSS_AND_ICONS.md` §6.3.1
+  - 详见 `docs/ai-specs/UNOCSS_AND_ICONS.md` §6.3.1
 
 ## Advanced Features（高级功能）
 
@@ -48,13 +48,13 @@
 
 - 类型定义：`src/components/Icons/utils/types.ts`
 - 示例页面：`src/views/example/Icons/IconsExample.vue`（访问路径：`/example/icons`）
-- 完整文档：`docs/UNOCSS_AND_ICONS.md` §6
-- 颜色权重与覆盖：`docs/UNOCSS_AND_ICONS.md` §6.3.1
+- 完整文档：`docs/ai-specs/UNOCSS_AND_ICONS.md` §6
+- 颜色权重与覆盖：`docs/ai-specs/UNOCSS_AND_ICONS.md` §6.3.1
 
 ## Prompt 模板（复制使用）
 
 ```
-先阅读 @docs/PROJECT_PROTOCOL.md 与 @docs/UNOCSS_AND_ICONS.md
+先阅读 @docs/ai-specs/PROJECT_PROTOCOL.md 与 @docs/ai-specs/UNOCSS_AND_ICONS.md
 遵循 @.cursor/rules/18-components-and-icons.mdc
 
 任务：为以下语义选择/添加图标，并给出最终 <Icons /> 写法：

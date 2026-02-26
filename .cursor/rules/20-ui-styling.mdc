@@ -15,7 +15,7 @@ Before writing any color-related code, read:
 - `src/types/systems/theme.d.ts` - Theme types (ThemeMode, ThemePreset, ThemeCssVars)
 - `src/constants/theme.ts` - Theme presets (THEME_PRESETS)
 - `src/stores/modules/theme.ts` - Theme store (useThemeStore)
-- `docs/PRIMEVUE_THEME.md` - PrimeVue 主题融合（Button 等组件配色规则）
+- `docs/ai-specs/PRIMEVUE_THEME.md` - PrimeVue 主题融合（Button 等组件配色规则）
 
 **Rules:**
 
@@ -92,12 +92,12 @@ Reference `uno.config.ts` for all available semantic classes:
 
 - When using `hover:` / `active:` / `focus:` / `group-hover:`, MUST pair with transition classes to avoid abrupt changes.
 - Use `uno.config.ts` shortcuts: `interactive-hover`, `interactive-click`, `behavior-hover-transition`; or `transition-all duration-scale-{xs~5xl}`, `transition-opacity duration-scale-*`.
-- Scale: xs(75ms)~5xl(1500ms) via `duration-scale-{scale}`；SSOT: `src/constants/sizeScale.ts` TRANSITION_SCALE_VALUES.
+- Scale: xs(100ms)~5xl(2000ms) via `duration-scale-{scale}`；SSOT: `src/constants/sizeScale.ts` TRANSITION_SCALE_VALUES.
 - **duration-scale 搭配**：`duration-scale-*` 必须与 `transition`/`transition-colors`/`transition-opacity` 搭配；transition-_ 也必须配合 duration-scale-_。
 - **Icons 特殊**：Icons 使用 `group-hover:` 颜色/透明度时，transition 必须写在 Icons class 上，父容器 transition 无效。
 - **PrimeVue pt**：pt content 中的 hover/active 同样需加 `transition-colors duration-scale-md` 等。
 - FORBIDDEN: `hover:`/`active:`/`focus:` without transition; `duration-scale-*` alone; hardcoded durations.
-- 详见 `docs/UNOCSS_AND_ICONS.md` §2.7、§2.7.1、§6.3.2。
+- 详见 `docs/ai-specs/UNOCSS_AND_ICONS.md` §2.7、§2.7.1、§6.3.2。
 
 **Flex / main-_ / cross-_ (UnoCSS shortcuts):**
 
@@ -227,4 +227,4 @@ Reference `uno.config.ts` for all available semantic classes:
   - ✅ 抽取到 `<script setup>` 中的方法，模板中 `@click="handleClick"`
 - **禁止模板中的 TypeScript 语法**：禁止在 binding 中使用 `as`、`:`、`<>`。类型断言与复杂逻辑必须在 `<script setup>` 中完成。
 - **readonly 数组 includes**：使用 `(ARRAY as readonly string[]).includes(val)` 避免类型不兼容；赋值时使用显式断言 `val as XxxKey`。
-- **参考**：`docs/VUE_TEMPLATE_ANTIPATTERNS.md`（SSOT，完整反模式与正确写法）。
+- **参考**：`docs/ai-specs/VUE_TEMPLATE_ANTIPATTERNS.md`（SSOT，完整反模式与正确写法）。

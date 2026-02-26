@@ -41,12 +41,12 @@ alwaysApply: true
 - **useSchemaForm**：`src/hooks/modules/useSchemaForm.ts` — Schema 与 formValues 状态管理（addField/removeField/updateField/moveField 等）
 - **SchemaForm 组件**：`src/components/SchemaForm` — Schema 驱动表单渲染
 - **Hooks**：`src/components/SchemaForm/hooks/` — useFormSync、useFormActions、useFormMemory、useLayout、useValidation、usePersistence、useSteps、useSubmit、useLifecycle
-- 详见 `docs/SCHEMA_FORM_COMPONENT.md`
+- 详见 `docs/ai-specs/SCHEMA_FORM_COMPONENT.md`
 
 ## 5a. DataTable 列持久化（表格列配置相关任务必查）
 
 - **useTablePersistence**：`src/hooks/modules/useTablePersistence.ts` — DataTable 列顺序/列宽/隐藏列持久化
-- 配合 `tableId` 使用，数据存于 `src/stores/modules/dataTable.ts`；详见 `docs/DataTable_COMPONENT.md`
+- 配合 `tableId` 使用，数据存于 `src/stores/modules/dataTable.ts`；详见 `docs/ai-specs/DataTable_COMPONENT.md`
 
 ## 6. 方法查找工作流
 

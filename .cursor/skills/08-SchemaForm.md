@@ -6,7 +6,7 @@
 
 ## Pre-check
 
-- `@docs/SCHEMA_FORM_COMPONENT.md`
+- `@docs/ai-specs/SCHEMA_FORM_COMPONENT.md`
 - `@.cursor/rules/18-components-and-icons.mdc`
 
 ## 判断标准

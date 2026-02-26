@@ -3,7 +3,7 @@
 本目录用于保存**可复制粘贴的标准 Prompt 模板**，让 Cursor 在不同任务下稳定遵循项目架构（`docs/` + `.cursor/rules/*.mdc`）。
 
 > 注意：Rules（`.cursor/rules/*.mdc`）负责“强制约束/禁止项”；Skills 负责“如何下指令/如何拆解任务”。
-> 每次使用 Skill 时，请在 Prompt 中显式 @ 引用：`docs/PROJECT_PROTOCOL.md` 与相关 `.cursor/rules/*.mdc`。
+> 每次使用 Skill 时，请在 Prompt 中显式 @ 引用：`docs/ai-specs/PROJECT_PROTOCOL.md` 与相关 `.cursor/rules/*.mdc`。
 
 ## 约定（已确认）
 
@@ -32,7 +32,7 @@
    - **流程**：创建 Hook 文件 → 使用 useHttpRequest → 定义状态与逻辑
    - **适用范围**：`src/hooks/modules/**/*.ts`
    - **关键步骤**：
-     - 遵循黄金样本（`docs/GOLDEN_SAMPLES/useFeatureLogic.ts`）
+     - 遵循黄金样本（`docs/ai-specs/GOLDEN_SAMPLES/useFeatureLogic.ts`）
      - 使用 `useHttpRequest` 进行 HTTP 请求
      - 显式类型注解（ref/computed/reactive）
      - 禁止 `any`（边界层例外）
@@ -73,7 +73,7 @@
    - **功能**：当 Icons 通过 class 设置的颜色/opacity 不生效时的修复流程
    - **流程**：判断场景 → 选择方案（color prop 或 class + !）→ 验证
    - **适用范围**：`**/*.vue, **/*.tsx`
-   - **前置要求**：`docs/UNOCSS_AND_ICONS.md` §6.3.1
+   - **前置要求**：`docs/ai-specs/UNOCSS_AND_ICONS.md` §6.3.1
    - **关键步骤**：决策表选择（color prop 优先；class 时加 `!`）
 
 7. **`06-assemble-ui-handoff.md`** - 组装 UI 交接指令
@@ -92,7 +92,7 @@
    - **功能**：Toast 和 Message 反馈提示使用规范
    - **流程**：判断场景 → 选择 $message 或 $toast → 调用
    - **适用范围**：`src/**/*.{ts,vue}`
-   - **前置要求**：阅读 `docs/TOAST_AND_MESSAGE.md`
+   - **前置要求**：阅读 `docs/ai-specs/TOAST_AND_MESSAGE.md`
    - **关键步骤**：
      - 组件内轻量通知 → `useToast()`
      - 非组件环境（拦截器、工具函数）→ `window.$toast` / `window.$message`
@@ -103,7 +103,7 @@
    - **功能**：多字段表单、校验、分步、分组、动态字段
    - **流程**：阅读文档 → 定义 Schema → 使用 useSchemaForm → 集成 UI
    - **适用范围**：`src/views/**/*.vue, src/components/**/*.vue`
-   - **前置要求**：必须先阅读 `docs/SCHEMA_FORM_COMPONENT.md`
+   - **前置要求**：必须先阅读 `docs/ai-specs/SCHEMA_FORM_COMPONENT.md`
    - **关键步骤**：
      - Schema 定义
      - useSchemaForm Hook 使用
@@ -117,7 +117,7 @@
 - **功能**：图表展示与交互，自动主题集成
 - **流程**：阅读文档 → 使用 UseEcharts 组件 → 配置 option → 处理事件
 - **适用范围**：`src/views/**/*.vue, src/components/**/*.vue`
-- **前置要求**：必须先阅读 `docs/ECHARTS_THEME.md`
+- **前置要求**：必须先阅读 `docs/ai-specs/ECHARTS_THEME.md`
 - **关键步骤**：
   - 使用 `<UseEcharts>` 组件
   - 传入 `option` prop（EChartsOption）
@@ -152,18 +152,18 @@
 
 某些 Skill 需要先阅读相关文档：
 
-- **SchemaForm**：必须先阅读 `docs/SCHEMA_FORM_COMPONENT.md`
-- **Toast/Message**：必须先阅读 `docs/TOAST_AND_MESSAGE.md`
-- **布局相关**：必须阅读 `docs/ADAPTIVE_LAYOUT.md`
-- **数据表格**：必须阅读 `docs/DataTable_COMPONENT.md`
-- **Icons 颜色**：`docs/UNOCSS_AND_ICONS.md` §6.3.1
+- **SchemaForm**：必须先阅读 `docs/ai-specs/SCHEMA_FORM_COMPONENT.md`
+- **Toast/Message**：必须先阅读 `docs/ai-specs/TOAST_AND_MESSAGE.md`
+- **布局相关**：必须阅读 `docs/ai-specs/ADAPTIVE_LAYOUT.md`
+- **数据表格**：必须阅读 `docs/ai-specs/DataTable_COMPONENT.md`
+- **Icons 颜色**：`docs/ai-specs/UNOCSS_AND_ICONS.md` §6.3.1
 
 ## 通用使用法（建议复制）
 
 在每次任务的 Prompt 首部加上：
 
 ```
-先阅读 @docs/PROJECT_PROTOCOL.md
+先阅读 @docs/ai-specs/PROJECT_PROTOCOL.md
 并遵循 @.cursor/rules/00-core-architecture.mdc
 同时遵循与任务相关的 rules：
 - @.cursor/rules/10-logic-layer.mdc（逻辑）
@@ -173,6 +173,6 @@
 - @.cursor/rules/20-ui-styling.mdc（UI/样式）
 - @.cursor/rules/22-layouts.mdc（布局壳/Admin 子模式）
 - @.cursor/rules/24-tsx-rendering.mdc（程序化渲染用 TSX，禁止 h()）
-涉及布局/侧栏/响应式时，须阅读 @docs/ADAPTIVE_LAYOUT.md 并遵循适配规则。
-涉及数据表格（列表/分页/排序/导出）时，须阅读 @docs/DataTable_COMPONENT.md 并优先使用 DataTable。
+涉及布局/侧栏/响应式时，须阅读 @docs/ai-specs/ADAPTIVE_LAYOUT.md 并遵循适配规则。
+涉及数据表格（列表/分页/排序/导出）时，须阅读 @docs/ai-specs/DataTable_COMPONENT.md 并优先使用 DataTable。
 ```

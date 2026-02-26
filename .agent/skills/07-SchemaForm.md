@@ -11,7 +11,7 @@ globs: src/views/**/*.vue, src/components/**/*.vue
 
 ## 2. Pre-check
 
-- **必读**：`docs/SCHEMA_FORM_COMPONENT.md`
+- **必读**：`docs/ai-specs/SCHEMA_FORM_COMPONENT.md`
 - **规则**：`.agent/rules/10-ui-architecture.md` §2b、`.agent/rules/15-toolchain-first.md` §5
 
 ## 3. 判断标准
@@ -30,7 +30,7 @@ globs: src/views/**/*.vue, src/components/**/*.vue
 
 ### Step 2: 阅读文档并选用入口
 
-- 打开 `docs/SCHEMA_FORM_COMPONENT.md`，确认 Schema 结构（columns、layout、rules、steps/sections、transform、hidden 等）。
+- 打开 `docs/ai-specs/SCHEMA_FORM_COMPONENT.md`，确认 Schema 结构（columns、layout、rules、steps/sections、transform、hidden 等）。
 - **静态 Schema**：在页面内定义 `Schema`，用 `<SchemaForm v-model="formValues" :schema="schema" />`。
 - **动态 Schema**：使用 `useSchemaForm({ initialSchema })`，得到 `schema`、`formValues`、`addField`、`removeField`、`updateField`、`moveField` 等，再传给 `<SchemaForm>`。
 

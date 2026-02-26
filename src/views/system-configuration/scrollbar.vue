@@ -134,7 +134,7 @@ const state = scrollbarRef.value?.state()`,
       <!-- Header -->
       <div class="flex flex-col gap-xs">
         <div class="flex items-center gap-md">
-          <div class="p-padding-md bg-primary/10 rounded-scale-lg">
+          <div class="p-padding-md bg-primary/10 rounded-scale-lg shrink-0">
             <Icons
               name="i-lucide-scroll"
               class="text-primary fs-2xl"
@@ -142,20 +142,38 @@ const state = scrollbarRef.value?.state()`,
           </div>
           <div>
             <h1 class="fs-2xl font-bold text-foreground">CScrollbar 滚动条组件</h1>
-            <p class="text-muted-foreground">基于 OverlayScrollbars 的高性能滚动容器组件</p>
+            <p class="text-muted-foreground fs-sm">基于 OverlayScrollbars 的高性能滚动容器组件</p>
+          </div>
+        </div>
+        <div
+          class="border-l-4 border-primary bg-primary/5 p-padding-md rounded-r-scale-md flex gap-md items-start mt-margin-sm"
+        >
+          <Icons
+            name="i-lucide-info"
+            class="text-primary fs-xl shrink-0 mt-0.5"
+          />
+          <div class="flex flex-col gap-0.5">
+            <div class="font-semibold text-primary fs-sm">Architectural Guide 架构引导</div>
+            <div class="text-muted-foreground fs-xs leading-relaxed">
+              本组件是对
+              <span class="bg-muted px-padding-xs rounded font-mono">overlayscrollbars</span>
+              的 Vue 封装。如需修改全局滚动条样式，请通过 UnoCSS 的
+              <span class="bg-muted px-padding-xs rounded font-mono">scrollbar</span>
+              插件进行全局配置。
+            </div>
           </div>
         </div>
       </div>
 
       <!-- Control Panel -->
-      <Card class="component-border">
+      <Card class="component-border hover:shadow-md behavior-hover-transition">
         <template #title>
           <div class="flex items-center gap-sm">
             <Icons
               name="i-lucide-settings"
               class="text-primary"
             />
-            <span>Controls 控制面板</span>
+            <span class="font-semibold">Controls 控制面板</span>
           </div>
         </template>
         <template #content>
@@ -170,34 +188,47 @@ const state = scrollbarRef.value?.state()`,
               />
             </div>
             <div class="h-8 w-px bg-border mx-gap-md hidden md:block" />
-            <div class="flex gap-sm flex-wrap">
-              <Button
-                label="滚动至顶部"
-                icon="i-lucide-arrow-up-to-line"
-                severity="secondary"
-                outlined
+            <div class="flex gap-sm flex-wrap items-center">
+              <div
+                class="flex items-center gap-2 p-padding-sm py-1.5 rounded-scale-md cursor-pointer select-none transition-all duration-scale-md ease-in-out fs-sm active:scale-95 border border-solid border-border bg-muted/10 hover:bg-muted/30 hover:shadow-sm"
                 @click="scrollToTop"
-              />
-              <Button
-                label="滚动至底部"
-                icon="i-lucide-arrow-down-to-line"
-                severity="secondary"
-                outlined
+              >
+                <Icons
+                  name="i-lucide-arrow-up-to-line"
+                  class="fs-sm"
+                />
+                <span>滚动至顶部</span>
+              </div>
+              <div
+                class="flex items-center gap-2 p-padding-sm py-1.5 rounded-scale-md cursor-pointer select-none transition-all duration-scale-md ease-in-out fs-sm active:scale-95 border border-solid border-border bg-muted/10 hover:bg-muted/30 hover:shadow-sm"
                 @click="scrollToBottom"
-              />
-              <Button
-                label="检查状态"
-                icon="i-lucide-bug"
-                severity="info"
+              >
+                <Icons
+                  name="i-lucide-arrow-down-to-line"
+                  class="fs-sm"
+                />
+                <span>滚动至底部</span>
+              </div>
+              <div
+                class="flex items-center gap-2 p-padding-sm py-1.5 rounded-scale-md cursor-pointer select-none transition-all duration-scale-md ease-in-out fs-sm active:scale-95 bg-info text-info-foreground shadow-sm hover:opacity-90 hover:shadow-md"
                 @click="checkState"
-              />
-              <Button
-                label="清空日志"
-                icon="i-lucide-trash-2"
-                severity="danger"
-                text
+              >
+                <Icons
+                  name="i-lucide-bug"
+                  class="fs-sm"
+                />
+                <span>检查状态</span>
+              </div>
+              <div
+                class="flex items-center gap-2 p-padding-sm py-1.5 rounded-scale-md cursor-pointer select-none transition-all duration-scale-md ease-in-out fs-sm active:scale-95 text-danger hover:bg-danger/10"
                 @click="logs = []"
-              />
+              >
+                <Icons
+                  name="i-lucide-trash-2"
+                  class="fs-sm"
+                />
+                <span>清空日志</span>
+              </div>
             </div>
           </div>
         </template>
@@ -206,7 +237,7 @@ const state = scrollbarRef.value?.state()`,
       <!-- Demo Section -->
       <div class="grid grid-cols-1 lg:grid-cols-5 gap-lg">
         <!-- Vertical Scroll Demo -->
-        <Card class="component-border lg:col-span-2">
+        <Card class="component-border lg:col-span-2 hover:shadow-md behavior-hover-transition">
           <template #title>
             <div class="flex items-center justify-between">
               <div class="flex items-center gap-sm">
@@ -214,7 +245,7 @@ const state = scrollbarRef.value?.state()`,
                   name="i-lucide-arrow-up-down"
                   class="text-primary"
                 />
-                <span>纵向滚动 (Vertical Scroll)</span>
+                <span class="font-semibold">纵向滚动 (Vertical Scroll)</span>
               </div>
               <Tag
                 value="h-full"
@@ -236,10 +267,10 @@ const state = scrollbarRef.value?.state()`,
                   <div
                     v-for="item in items"
                     :key="item.id"
-                    class="p-padding-md rounded-scale-md component-border bg-card hover:bg-accent/50 transition-colors group cursor-default"
+                    class="p-padding-md rounded-scale-md component-border bg-card hover:bg-primary/10 transition-colors duration-scale-md group cursor-default"
                   >
                     <div class="flex justify-between items-start mb-margin-xs">
-                      <span class="font-medium fs-sm group-hover:text-accent transition-colors">
+                      <span class="font-medium fs-sm group-hover:text-primary transition-colors">
                         {{ item.title }}
                       </span>
                       <span class="fs-xs text-muted-foreground">
@@ -259,14 +290,14 @@ const state = scrollbarRef.value?.state()`,
         <!-- Right Side -->
         <div class="flex flex-col gap-lg lg:col-span-3">
           <!-- Horizontal Scroll Demo -->
-          <Card class="component-border">
+          <Card class="component-border hover:shadow-md behavior-hover-transition">
             <template #title>
               <div class="flex items-center gap-sm">
                 <Icons
                   name="i-lucide-arrow-left-right"
                   class="text-primary"
                 />
-                <span>横向滚动 (Horizontal Scroll)</span>
+                <span class="font-semibold">横向滚动 (Horizontal Scroll)</span>
               </div>
             </template>
             <template #content>
@@ -279,7 +310,7 @@ const state = scrollbarRef.value?.state()`,
                     <div
                       v-for="item in horizontalItems"
                       :key="item"
-                      class="scroll-demo-tile rounded-scale-md component-border bg-gradient-to-br from-background to-muted flex items-center justify-center shrink-0 shadow-sm hover:shadow-md transition-all hover:-translate-y-1"
+                      class="scroll-demo-tile rounded-scale-md component-border bg-gradient-to-br from-background to-muted flex items-center justify-center shrink-0 shadow-sm hover:shadow-md transition-all duration-scale-md hover:-translate-y-1"
                     >
                       <span class="font-medium text-muted-foreground">
                         {{ item }}
@@ -292,7 +323,7 @@ const state = scrollbarRef.value?.state()`,
           </Card>
 
           <!-- Event Logs -->
-          <Card class="component-border flex-1">
+          <Card class="component-border flex-1 hover:shadow-md behavior-hover-transition">
             <template #title>
               <div class="flex items-center justify-between">
                 <div class="flex items-center gap-sm">
@@ -300,7 +331,7 @@ const state = scrollbarRef.value?.state()`,
                     name="i-lucide-terminal"
                     class="text-primary"
                   />
-                  <span>事件日志 (Event Logs)</span>
+                  <span class="font-semibold">事件日志 (Event Logs)</span>
                 </div>
                 <Tag
                   :value="`${logs.length} events`"
@@ -335,14 +366,14 @@ const state = scrollbarRef.value?.state()`,
       </div>
 
       <!-- Code Examples -->
-      <Card class="component-border">
+      <Card class="component-border hover:shadow-md behavior-hover-transition">
         <template #title>
           <div class="flex items-center gap-sm">
             <Icons
               name="i-lucide-code"
               class="text-primary"
             />
-            <span>Code Examples 代码示例</span>
+            <span class="font-semibold">Code Examples 代码示例</span>
             <Tag
               value="Click to copy"
               severity="info"
@@ -356,18 +387,20 @@ const state = scrollbarRef.value?.state()`,
               :key="example.title"
               class="flex flex-col gap-sm"
             >
-              <h4 class="font-semibold text-foreground flex items-center gap-sm">
+              <h4 class="fs-sm font-semibold text-foreground mb-margin-xs flex items-center gap-sm">
                 {{ example.title }}
-                <Button
-                  icon="i-lucide-copy"
-                  severity="secondary"
-                  text
-                  size="small"
-                  @click="copyToClipboard(example.code, example.title)"
-                />
+                <div
+                  class="p-1 rounded-scale-sm cursor-pointer select-none transition-all duration-scale-md ease-in-out hover:bg-primary/10 hover:text-primary active:scale-90"
+                  @click.stop="copyToClipboard(example.code, example.title)"
+                >
+                  <Icons
+                    name="i-lucide-copy"
+                    class="fs-xs"
+                  />
+                </div>
               </h4>
               <div
-                class="rounded-scale-md cursor-pointer hover:bg-muted/70 transition-colors"
+                class="rounded-scale-md cursor-pointer hover:bg-muted/70 transition-colors duration-scale-md"
                 @click="copyToClipboard(example.code, example.title)"
               >
                 <CScrollbar class="min-w-0">
@@ -382,14 +415,14 @@ const state = scrollbarRef.value?.state()`,
       </Card>
 
       <!-- Props Reference -->
-      <Card class="component-border">
+      <Card class="component-border hover:shadow-md behavior-hover-transition">
         <template #title>
           <div class="flex items-center gap-sm">
             <Icons
               name="i-lucide-book-open"
               class="text-primary"
             />
-            <span>Props & Events 属性与事件</span>
+            <span class="font-semibold">Props & Events 属性与事件</span>
             <Tag
               value="完整覆盖 options/visibility/events/methods"
               severity="success"

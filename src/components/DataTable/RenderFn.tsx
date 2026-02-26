@@ -16,12 +16,12 @@ export default defineComponent({
   props: {
     /** 渲染函数 (params) => VNode | VNode[] */
     fn: {
-      type: Function as PropType<(params?: unknown) => VNode | VNode[]>,
+      type: Function as PropType<(params?: any) => VNode | VNode[]>,
       required: true,
     },
     /** 传入渲染函数的参数，类型由调用方决定 */
     params: {
-      type: [Object, Array, String, Number, Boolean] as PropType<unknown>,
+      type: [Object, Array, String, Number, Boolean] as PropType<any>,
       default: undefined,
     },
   },

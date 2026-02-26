@@ -1899,11 +1899,11 @@ function onAccordionActiveIndexChange(value: number | number[] | undefined): voi
               root: { class: 'bg-transparent' },
               content: {
                 class:
-                  'rounded-scale-md hover:bg-accent transition-colors duration-scale-sm cursor-pointer',
+                  'rounded-scale-md hover:bg-accent transition-colors duration-scale-md cursor-pointer',
               },
               label: {
                 class:
-                  'text-muted-foreground hover:text-foreground transition-colors duration-scale-sm',
+                  'text-muted-foreground hover:text-foreground transition-colors duration-scale-md',
               },
             }"
             @node-select="onTocNodeSelect"

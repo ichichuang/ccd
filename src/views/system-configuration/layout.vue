@@ -4,8 +4,8 @@ import Tag from 'primevue/tag'
 import { useDeviceStore } from '@/stores/modules/device'
 import { useLayoutStore } from '@/stores/modules/layout'
 
-const deviceStore = useDeviceStore()
-const layoutStore = useLayoutStore()
+const deviceStore: ReturnType<typeof useDeviceStore> = useDeviceStore()
+const layoutStore: ReturnType<typeof useLayoutStore> = useLayoutStore()
 
 /** 有效显隐（与 LayoutAdmin 逻辑一致）：PC 用 store；非 PC 且小视口强制 false */
 const showSidebarEffective = computed<boolean>(() =>
@@ -37,6 +37,19 @@ const showFooterEffective = computed<boolean>(() =>
       : layoutStore.showFooter
 )
 
+/** 架构约束：禁止在业务视图中直接调用适配函数 */
+const architecturalConstraints = [
+  {
+    rule: '禁止在 View 视图层直接调用 adaptToMobile / adaptToTablet 等函数',
+    reason: '这些函数属于 LayoutAdmin 的生命周期驱动，手动调用会破坏 SSOT 状态一致性。',
+  },
+  {
+    rule: 'userAdjusted 逻辑',
+    reason:
+      '当用户手动点击收展侧边栏后，userAdjusted 记录为 true，此时断点变化将不再自动强制同步侧边栏状态，以尊重用户意图。',
+  },
+]
+
 /** runAdaptive 触发时机简要说明 */
 const adaptiveTriggerDesc = [
   'onMounted 执行一次',
@@ -50,7 +63,7 @@ const adaptiveTriggerDesc = [
       <!-- Header -->
       <div class="flex flex-col gap-xs">
         <div class="flex items-center gap-md">
-          <div class="p-padding-md bg-primary/10 rounded-scale-lg">
+          <div class="p-padding-md bg-primary/10 rounded-scale-lg shrink-0">
             <Icons
               name="i-lucide-layout-dashboard"
               class="text-primary fs-2xl"
@@ -66,19 +79,35 @@ const adaptiveTriggerDesc = [
         <Tag
           value="核心文档: ADAPTIVE_LAYOUT.md"
           severity="info"
-          class="self-start"
+          class="self-start mt-margin-xs"
         />
+        <!-- 架构提示 -->
+        <div
+          class="border-l-4 border-primary bg-primary/5 p-padding-md rounded-r-scale-md flex gap-md items-start mt-margin-sm"
+        >
+          <Icons
+            name="i-lucide-info"
+            class="text-primary fs-xl shrink-0 mt-0.5"
+          />
+          <div class="flex flex-col gap-0.5">
+            <div class="font-semibold text-primary fs-sm">Architectural Guide 架构引导</div>
+            <div class="text-muted-foreground fs-xs leading-relaxed">
+              业务视图组件应当仅读取 Store 状态，禁止通过逻辑手动触发适配函数。所有适配逻辑应由
+              Layout 核心驱动。
+            </div>
+          </div>
+        </div>
       </div>
 
       <!-- Device Store -->
-      <Card class="component-border">
+      <Card class="component-border hover:shadow-md transition-all duration-scale-md">
         <template #title>
           <div class="flex items-center gap-sm">
             <Icons
               name="i-lucide-smartphone"
               class="text-primary"
             />
-            <span>Device Store (useDeviceStore)</span>
+            <span class="font-semibold">Device Store (useDeviceStore)</span>
             <Tag
               value="type / isMobileLayout / currentBreakpoint"
               severity="secondary"
@@ -129,14 +158,14 @@ const adaptiveTriggerDesc = [
       </Card>
 
       <!-- Layout Store -->
-      <Card class="component-border">
+      <Card class="component-border hover:shadow-md transition-all duration-scale-md">
         <template #title>
           <div class="flex items-center gap-sm">
             <Icons
               name="i-lucide-panel-left"
               class="text-primary"
             />
-            <span>Layout Store (useLayoutStore)</span>
+            <span class="font-semibold">Layout Store (useLayoutStore)</span>
             <Tag
               value="mode / sidebarCollapse / showXxx"
               severity="secondary"
@@ -183,7 +212,7 @@ const adaptiveTriggerDesc = [
               name="i-lucide-rotate-ccw"
               class="text-primary"
             />
-            <span>runAdaptive & 有效显隐</span>
+            <span class="font-semibold">runAdaptive & 有效显隐</span>
             <Tag
               value="LayoutAdmin 驱动"
               severity="info"
@@ -227,6 +256,39 @@ const adaptiveTriggerDesc = [
                   />
                 </div>
               </div>
+            </div>
+          </div>
+        </template>
+      </Card>
+
+      <!-- 架构规则与详细逻辑 -->
+      <Card class="component-border bg-muted/5">
+        <template #title>
+          <div class="flex items-center gap-sm">
+            <Icons
+              name="i-lucide-shield-check"
+              class="text-primary"
+            />
+            <span class="font-semibold">Architectural Rules 架构规则</span>
+          </div>
+        </template>
+        <template #content>
+          <div class="flex flex-col gap-lg">
+            <div
+              v-for="(item, i) in architecturalConstraints"
+              :key="i"
+              class="flex flex-col gap-sm"
+            >
+              <h4 class="fs-sm font-semibold text-foreground flex items-center gap-xs">
+                <Icons
+                  name="i-lucide-check-circle-2"
+                  class="text-success fs-xs"
+                />
+                {{ item.rule }}
+              </h4>
+              <p class="fs-xs text-muted-foreground leading-relaxed pl-padding-lg">
+                {{ item.reason }}
+              </p>
             </div>
           </div>
         </template>

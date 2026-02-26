@@ -41,7 +41,7 @@ const osOptions: ComputedRef<any> = computed(() => {
     scrollbars: {
       visibility: props.visibility,
       autoHide: props.visibility === 'auto' ? ('leave' as const) : ('never' as const),
-      // 与尺寸系统 transition-xl (400ms) 一致
+      // 与尺寸系统 --transition-xl 一致（TRANSITION_SCALE_VALUES.xl）
       autoHideDelay: TRANSITION_SCALE_VALUES.xl,
       theme: themeStore.isDark ? 'os-theme-dark' : 'os-theme-light',
     },
@@ -201,7 +201,7 @@ watch(
   --os-handle-perpendicular-size-hover: 100%;
   --os-handle-perpendicular-size-active: 100%;
   /* 过渡动画 */
-  transition: var(--transition-sm) ease-out;
+  transition: var(--transition-md) ease-out;
 }
 
 /* 深色模式下的调整 */

@@ -122,6 +122,6 @@ hoverBackground: get(''),  // 勿用
 
 ## 5. 相关文档
 
-- 配色系统：`docs/PROJECT_PROTOCOL.md` § 6.1
+- 配色系统：`./PROJECT_PROTOCOL.md` § 6.1
 - 主题类型：`src/types/systems/theme.d.ts`
 - 主题引擎：`src/utils/theme/engine.ts`

@@ -11,7 +11,7 @@ globs: **/*.vue, **/*.tsx
 
 ## Pre-check（强制）
 
-- `@docs/UNOCSS_AND_ICONS.md` §6.3、§6.3.1、§6.3.2、§2.7.1
+- `@docs/ai-specs/UNOCSS_AND_ICONS.md` §6.3、§6.3.1、§6.3.2、§2.7.1
 - `@.cursor/rules/18-components-and-icons.mdc` 或 `@.agent/rules/10-ui-architecture.md` §4.1
 
 ## 根因速查
@@ -49,5 +49,5 @@ globs: **/*.vue, **/*.tsx
 
 ## 参考
 
-- 完整规则：`docs/UNOCSS_AND_ICONS.md` §6.3.1、§6.3.2、§2.7.1
+- 完整规则：`docs/ai-specs/UNOCSS_AND_ICONS.md` §6.3.1、§6.3.2、§2.7.1
 - 示例：`src/layouts/components/admin/AdminHeader.vue`（Menubar 内 Icons 使用 `text-primary!` 等）

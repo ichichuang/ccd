@@ -75,7 +75,7 @@ const loginSchema = computed<Schema>(() => ({
           <div class="row main-end w-full">
             <a
               href="#"
-              class="text-primary fs-sm no-underline hover:text-accent transition-colors"
+              class="text-primary fs-sm no-underline hover:text-accent transition-colors duration-scale-md"
               onClick={(e: Event) => {
                 e.preventDefault()
                 /* TODO: Forgot Password */
@@ -127,7 +127,7 @@ async function handleSubmit(values: FormValues) {
       <Button
         variant="text"
         severity="secondary"
-        class="center rounded-full text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
+        class="center rounded-full text-muted-foreground hover:bg-muted hover:text-foreground transition-colors duration-scale-md"
         :disabled="isAnimating"
         @click="toggleThemeWithAnimation($event)"
       >

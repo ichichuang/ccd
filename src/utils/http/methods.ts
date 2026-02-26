@@ -155,6 +155,33 @@ class EnhancedCache {
 const cache = new EnhancedCache()
 const requestManager = new RequestManager()
 
+/** 速率限制：最近 1 分钟内的请求时间戳 */
+const rateLimitTimestamps: number[] = []
+
+/**
+ * 获取速率限制槽位（HTTP_CONFIG.enableRateLimit 关闭时直接返回）
+ */
+async function acquireRateLimitSlot(): Promise<void> {
+  if (!HTTP_CONFIG.enableRateLimit) return
+  const max = HTTP_CONFIG.maxRequestsPerMinute
+  const windowMs = 60000
+  const now = Date.now()
+  const windowStart = now - windowMs
+  const valid = rateLimitTimestamps.filter(t => t > windowStart)
+  rateLimitTimestamps.length = 0
+  rateLimitTimestamps.push(...valid)
+  while (rateLimitTimestamps.length >= max) {
+    await new Promise(r => setTimeout(r, 500))
+    const n = Date.now()
+    const w = n - windowMs
+    const stillValid = rateLimitTimestamps.filter(t => t > w)
+    rateLimitTimestamps.length = 0
+    rateLimitTimestamps.push(...stillValid)
+    if (rateLimitTimestamps.length < max) break
+  }
+  rateLimitTimestamps.push(Date.now())
+}
+
 /**
  * 转换请求配置：
  * - 剥离 RequestConfig 中仅供本模块使用的字段（enableCache/cacheTTL/retry）
@@ -186,6 +213,7 @@ async function executeWithRetry<T>(
 
   for (let attempt = 0; attempt <= config.retries; attempt++) {
     try {
+      await acquireRateLimitSlot()
       return await requestFn()
     } catch (error) {
       const httpError = error as HttpRequestError
@@ -217,7 +245,7 @@ export const get = async <T = any>(url: string, config?: RequestConfig): Promise
   const paramStr = config?.params ? JSON.stringify(config.params) : ''
   const cacheKey = `GET:${url}:${paramStr}`
   const cacheEnabled = config?.enableCache !== false
-  const deduplicate = config?.deduplicate !== false
+  const deduplicate = config?.deduplicate ?? HTTP_CONFIG.defaultDeduplicate
 
   if (cacheEnabled) {
     const cachedData = cache.get(cacheKey)
@@ -325,7 +353,7 @@ export const post = <T = any>(url: string, data?: any, config?: RequestConfig): 
   return requestManager.execute(
     requestKey,
     () => executeWithRetry(requestFn, config?.retry),
-    config?.deduplicate !== false
+    config?.deduplicate ?? HTTP_CONFIG.defaultDeduplicate
   )
 }
 
@@ -340,7 +368,7 @@ export const put = <T = any>(url: string, data?: any, config?: RequestConfig): P
   return requestManager.execute(
     requestKey,
     () => executeWithRetry(requestFn, config?.retry),
-    config?.deduplicate !== false
+    config?.deduplicate ?? HTTP_CONFIG.defaultDeduplicate
   )
 }
 
@@ -355,7 +383,7 @@ export const del = <T = any>(url: string, config?: RequestConfig): Promise<T> =>
   return requestManager.execute(
     requestKey,
     () => executeWithRetry(requestFn, config?.retry),
-    config?.deduplicate !== false
+    config?.deduplicate ?? HTTP_CONFIG.defaultDeduplicate
   )
 }
 
@@ -370,7 +398,7 @@ export const patch = <T = any>(url: string, data?: any, config?: RequestConfig):
   return requestManager.execute(
     requestKey,
     () => executeWithRetry(requestFn, config?.retry),
-    config?.deduplicate !== false
+    config?.deduplicate ?? HTTP_CONFIG.defaultDeduplicate
   )
 }
 
@@ -388,7 +416,7 @@ export const head = (url: string, config?: RequestConfig): Promise<void> => {
   return requestManager.execute(
     requestKey,
     () => executeWithRetry(requestFn, config?.retry),
-    config?.deduplicate !== false
+    config?.deduplicate ?? HTTP_CONFIG.defaultDeduplicate
   )
 }
 

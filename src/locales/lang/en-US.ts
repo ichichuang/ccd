@@ -87,6 +87,7 @@ const enUS = {
     upload: {
       hashCalculationFailed: 'File hash calculation failed',
       fileReadFailed: 'File read failed',
+      fileSizeExceeded: 'File size exceeds limit (max {max}MB)',
       chunkUploadFailed: 'Chunk upload failed: {chunk}/{total}',
       fileMergeFailed: 'File merge failed: {fileName}',
       fileDownloadFailed: 'File download failed',

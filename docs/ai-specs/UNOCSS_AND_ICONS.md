@@ -115,12 +115,12 @@ UnoCSS 内置的 `presetUno` 会提供 Tailwind 风格的 `max-w-2xl` / `max-w-7
 | 场景                                  | 推荐类名                                                                          | 说明                                              |
 | ------------------------------------- | --------------------------------------------------------------------------------- | ------------------------------------------------- |
 | 可悬停卡片/按钮（背景/阴影/边框变化） | `interactive-hover` 或 `behavior-hover-transition`                                | = transition-all + duration-scale-md + hover 效果 |
-| 点击反馈（scale 等）                  | `interactive-click`                                                               | 含 transition-transform duration-scale-xs         |
-| 仅需过渡时长                          | `transition-all duration-scale-{xs~5xl}` 或 `transition-opacity duration-scale-*` | 阶梯：xs(75ms)~5xl(1500ms)                        |
-| 宽度/单属性动画                       | `transition-[width] duration-scale-lg ease-in-out`                                | 侧栏等                                            |
+| 点击反馈（scale 等）                  | `interactive-click`                                                               | 含 transition-transform duration-scale-md         |
+| 仅需过渡时长                          | `transition-all duration-scale-{xs~5xl}` 或 `transition-opacity duration-scale-*` | 阶梯：xs(100ms)~5xl(2000ms)（SSOT: sizeScale.ts） |
+| 宽度/单属性动画                       | `transition-[width] duration-scale-md ease-in-out`                                | 侧栏等                                            |
 | Vue Transition enter/leave            | `transition duration-scale-md ease-out` 等                                        | 用于 enter-active-class / leave-active-class      |
 
-**阶梯时长参考**（`src/constants/sizeScale.ts` TRANSITION_SCALE_VALUES）：xs 75ms、sm 150ms、md 200ms、lg 300ms、xl 400ms、2xl 500ms。
+**阶梯时长参考**（`src/constants/sizeScale.ts` TRANSITION_SCALE_VALUES）：xs 100ms、sm 200ms、md 400ms、lg 600ms、xl 800ms、2xl 1000ms、3xl 1400ms、4xl 1600ms、5xl 2000ms。
 
 **禁止**：
 

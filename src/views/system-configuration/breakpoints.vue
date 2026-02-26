@@ -2,7 +2,6 @@
 import type { CSSProperties } from 'vue'
 import { BREAKPOINTS } from '@/constants/breakpoints'
 import type { BreakpointKey } from '@/constants/breakpoints'
-import Button from 'primevue/button'
 import Card from 'primevue/card'
 import Tag from 'primevue/tag'
 import Slider from 'primevue/slider'
@@ -131,10 +130,10 @@ const gridTemplateStyle = computed<CSSProperties>(() => ({
 }))
 
 // Device Store (real-time viewport)
-const deviceStore = useDeviceStore()
+const deviceStore: ReturnType<typeof useDeviceStore> = useDeviceStore()
 
 // deviceSync: sync API for pre-mount (no Pinia)
-const deviceSyncInfo = computed(() => ({
+const deviceSyncInfo = computed<{ deviceType: string; breakpoint: BreakpointKey | null }>(() => ({
   deviceType: getDeviceTypeSync(),
   breakpoint: getBreakpointSync(),
 }))
@@ -146,30 +145,48 @@ const deviceSyncInfo = computed(() => ({
       <!-- Header -->
       <div class="flex flex-col gap-xs">
         <div class="flex items-center gap-md">
-          <div class="p-padding-md bg-primary/10 rounded-scale-lg">
+          <div class="p-padding-md bg-primary/10 rounded-scale-lg shrink-0">
             <Icons
               name="i-lucide-monitor"
-              class="text-primary fs-2xl"
+              class="text-primary fs-2xl transition-all duration-scale-md"
             />
           </div>
           <div>
             <h1 class="fs-2xl font-bold text-foreground">Breakpoint System</h1>
-            <p class="text-muted-foreground">
+            <p class="text-muted-foreground fs-sm">
               响应式断点系统完整参考 · 点击任意类名即可自动复制到剪贴板
             </p>
+          </div>
+        </div>
+        <div
+          class="border-l-4 border-primary bg-primary/5 p-padding-md rounded-r-scale-md flex gap-md items-start mt-margin-sm"
+        >
+          <Icons
+            name="i-lucide-info"
+            class="text-primary fs-xl shrink-0 mt-0.5"
+          />
+          <div class="flex flex-col gap-0.5">
+            <div class="font-semibold text-primary fs-sm">Architectural Guide 架构引导</div>
+            <div class="text-muted-foreground fs-xs leading-relaxed">
+              断点数值由
+              <span class="bg-muted px-padding-xs rounded font-mono">
+                src/constants/breakpoints.ts
+              </span>
+              定义。如需修改全局断点，请在该文件中统一调整。
+            </div>
           </div>
         </div>
       </div>
 
       <!-- Control Panel -->
-      <Card class="component-border">
+      <Card class="component-border hover:shadow-md transition-all duration-scale-md">
         <template #title>
           <div class="flex items-center gap-sm">
             <Icons
               name="i-lucide-sliders-horizontal"
               class="text-primary"
             />
-            <span>Viewport Simulator 视窗模拟器</span>
+            <span class="font-semibold">Viewport Simulator 视窗模拟器</span>
           </div>
         </template>
         <template #content>
@@ -199,36 +216,42 @@ const deviceSyncInfo = computed(() => ({
 
             <!-- Preset Buttons -->
             <div class="flex flex-wrap gap-sm">
-              <Button
-                v-for="preset in presetWidths"
-                :key="preset.value"
-                :severity="currentWidth === preset.value ? 'primary' : 'secondary'"
-                :outlined="currentWidth !== preset.value"
-                size="small"
-                class="row-center gap-xs px-padding-sm"
-                @click="sliderValue = preset.value"
-              >
-                <Icons
-                  :name="preset.icon"
-                  size="sm"
-                  class="text-primary"
-                />
-                <span class="fs-sm">{{ preset.label }}</span>
-              </Button>
+              <div class="flex flex-wrap gap-sm">
+                <div
+                  v-for="preset in presetWidths"
+                  :key="preset.value"
+                  class="flex items-center gap-xs p-padding-sm py-1.5 rounded-scale-md cursor-pointer select-none transition-all duration-scale-md ease-in-out fs-sm active:scale-95"
+                  :class="[
+                    currentWidth === preset.value
+                      ? 'bg-primary text-primary-foreground shadow-sm'
+                      : 'bg-muted/20 text-muted-foreground hover:bg-muted/40',
+                  ]"
+                  @click="sliderValue = preset.value"
+                >
+                  <Icons
+                    :name="preset.icon"
+                    size="sm"
+                    :class="
+                      currentWidth === preset.value ? 'text-primary-foreground' : 'text-primary'
+                    "
+                  />
+                  <span>{{ preset.label }}</span>
+                </div>
+              </div>
             </div>
           </div>
         </template>
       </Card>
 
       <!-- Device Store 实时状态 -->
-      <Card class="component-border">
+      <Card class="component-border hover:shadow-md transition-all duration-scale-md">
         <template #title>
           <div class="flex items-center gap-sm">
             <Icons
               name="i-lucide-smartphone"
               class="text-primary"
             />
-            <span>Device Store 实时状态</span>
+            <span class="font-semibold">Device Store 实时状态</span>
             <Tag
               value="useDeviceStore"
               severity="info"
@@ -277,14 +300,14 @@ const deviceSyncInfo = computed(() => ({
       </Card>
 
       <!-- deviceSync 同步 API -->
-      <Card class="component-border">
+      <Card class="component-border hover:shadow-md transition-all duration-scale-md">
         <template #title>
           <div class="flex items-center gap-sm">
             <Icons
               name="i-lucide-cpu"
               class="text-primary"
             />
-            <span>deviceSync 同步 API</span>
+            <span class="font-semibold">deviceSync 同步 API</span>
             <Tag
               value="mount 前逻辑"
               severity="warn"
@@ -298,22 +321,18 @@ const deviceSyncInfo = computed(() => ({
               <span class="bg-muted px-padding-xs rounded font-mono">src/utils/deviceSync.ts</span>
             </p>
             <div class="flex flex-wrap gap-md">
-              <Button
-                label="getDeviceTypeSync()"
-                severity="secondary"
-                text
-                size="small"
-                class="font-mono"
+              <div
+                class="fs-xs font-mono bg-muted/30 px-padding-xs py-1 rounded cursor-pointer select-none transition-all duration-scale-md ease-in-out hover:bg-primary/20 hover:text-primary active:scale-95 text-muted-foreground"
                 @click="copyToClipboard('getDeviceTypeSync()')"
-              />
-              <Button
-                label="getBreakpointSync(width?)"
-                severity="secondary"
-                text
-                size="small"
-                class="font-mono"
+              >
+                getDeviceTypeSync()
+              </div>
+              <div
+                class="fs-xs font-mono bg-muted/30 px-padding-xs py-1 rounded cursor-pointer select-none transition-all duration-scale-md ease-in-out hover:bg-primary/20 hover:text-primary active:scale-95 text-muted-foreground"
                 @click="copyToClipboard('getBreakpointSync(width?)')"
-              />
+              >
+                getBreakpointSync(width?)
+              </div>
             </div>
             <div class="flex gap-md text-muted-foreground fs-sm">
               <span>
@@ -328,7 +347,7 @@ const deviceSyncInfo = computed(() => ({
       </Card>
 
       <!-- Visual Ruler -->
-      <Card class="component-border">
+      <Card class="component-border hover:shadow-md transition-all duration-scale-md">
         <template #title>
           <div class="flex items-center gap-sm">
             <Icons
@@ -366,7 +385,7 @@ const deviceSyncInfo = computed(() => ({
                 :class="isBreakpointActive(value) ? 'bg-accent' : 'bg-border'"
               />
               <span
-                class="mt-margin-xs shrink-0 rounded px-padding-xs fs-xs font-medium cursor-pointer hover:scale-110 transition-transform"
+                class="mt-margin-xs shrink-0 rounded px-padding-xs fs-xs font-medium cursor-pointer hover:scale-110 transition-transform duration-scale-md"
                 :class="
                   isBreakpointActive(value)
                     ? 'bg-accent text-accent-foreground'
@@ -382,14 +401,14 @@ const deviceSyncInfo = computed(() => ({
       </Card>
 
       <!-- Breakpoint Reference Table -->
-      <Card class="component-border">
+      <Card class="component-border hover:shadow-md transition-all duration-scale-md">
         <template #title>
           <div class="flex items-center gap-sm">
             <Icons
               name="i-lucide-table"
               class="text-primary"
             />
-            <span>Breakpoint Reference 断点参考表</span>
+            <span class="font-semibold">Breakpoint Reference 断点参考表</span>
             <Tag
               :value="`${breakpointItems.length} breakpoints`"
               severity="secondary"
@@ -422,7 +441,7 @@ const deviceSyncInfo = computed(() => ({
                 <tr
                   v-for="item in breakpointItems"
                   :key="item.key"
-                  class="border-b border-solid border-border/50 hover:bg-muted/30 transition-colors"
+                  class="border-b border-solid border-border/50 hover:bg-muted/30 transition-colors duration-scale-md"
                   :class="{ 'bg-accent/5': isBreakpointActive(item.value) }"
                 >
                   <td class="p-padding-sm">
@@ -434,22 +453,18 @@ const deviceSyncInfo = computed(() => ({
                   <td class="p-padding-sm font-mono">{{ item.value }}px</td>
                   <td class="p-padding-sm">
                     <div class="flex gap-xs flex-wrap">
-                      <Button
-                        :label="item.minWidthClass"
-                        severity="success"
-                        text
-                        size="small"
-                        class="font-mono"
+                      <div
+                        class="fs-xs font-mono bg-muted/30 px-padding-xs py-0.5 rounded cursor-pointer select-none transition-all duration-scale-md ease-in-out hover:bg-success/20 hover:text-success active:scale-95 text-muted-foreground"
                         @click="copyToClipboard(item.minWidthClass)"
-                      />
-                      <Button
-                        :label="item.maxWidthClass"
-                        severity="warn"
-                        text
-                        size="small"
-                        class="font-mono"
+                      >
+                        {{ item.minWidthClass }}
+                      </div>
+                      <div
+                        class="fs-xs font-mono bg-muted/30 px-padding-xs py-0.5 rounded cursor-pointer select-none transition-all duration-scale-md ease-in-out hover:bg-warn/20 hover:text-warn active:scale-95 text-muted-foreground"
                         @click="copyToClipboard(item.maxWidthClass)"
-                      />
+                      >
+                        {{ item.maxWidthClass }}
+                      </div>
                     </div>
                   </td>
                   <td class="p-padding-sm text-muted-foreground fs-sm">
@@ -469,14 +484,14 @@ const deviceSyncInfo = computed(() => ({
       </Card>
 
       <!-- Grid Demo -->
-      <Card class="component-border">
+      <Card class="component-border hover:shadow-md transition-all duration-scale-md">
         <template #title>
           <div class="flex items-center gap-sm">
             <Icons
               name="i-lucide-grid-3x3"
               class="text-primary"
             />
-            <span>Responsive Grid Demo 响应式网格演示</span>
+            <span class="font-semibold">Responsive Grid Demo 响应式网格演示</span>
             <Tag
               :value="`${gridCols} columns`"
               severity="info"
@@ -517,7 +532,7 @@ const deviceSyncInfo = computed(() => ({
                   <div
                     v-for="n in 12"
                     :key="n"
-                    class="flex aspect-video items-center justify-center rounded-scale-md component-border bg-muted/50 font-mono fs-lg font-medium text-foreground hover:bg-accent/10 hover:border-accent/50 transition-colors"
+                    class="flex aspect-video items-center justify-center rounded-scale-md component-border bg-muted/50 font-mono fs-lg font-medium text-foreground hover:bg-accent/10 hover:border-accent/50 transition-colors duration-scale-md"
                   >
                     {{ n }}
                   </div>
@@ -536,15 +551,17 @@ const deviceSyncInfo = computed(() => ({
               name="i-lucide-code"
               class="text-primary"
             />
-            <span>Usage Examples 使用示例</span>
+            <span class="font-semibold">Usage Examples 使用示例</span>
           </div>
         </template>
         <template #content>
           <div class="grid grid-cols-1 md:grid-cols-2 gap-lg">
             <div class="flex flex-col gap-sm">
-              <h4 class="font-semibold text-foreground">最小宽度 (Min-Width Mobile First)</h4>
+              <h4 class="fs-sm font-semibold text-foreground mb-margin-xs">
+                最小宽度 (Min-Width Mobile First)
+              </h4>
               <div
-                class="rounded-scale-md cursor-pointer hover:bg-muted/70 transition-colors"
+                class="rounded-scale-md cursor-pointer hover:bg-muted/70 transition-colors duration-scale-md"
                 @click="copyToClipboard('md:hidden lg:block')"
               >
                 <CScrollbar class="min-w-0">
@@ -561,9 +578,9 @@ const deviceSyncInfo = computed(() => ({
               </div>
             </div>
             <div class="flex flex-col gap-sm">
-              <h4 class="font-semibold text-foreground">最大宽度 (Max-Width)</h4>
+              <h4 class="fs-sm font-semibold text-foreground mb-margin-xs">最大宽度 (Max-Width)</h4>
               <div
-                class="rounded-scale-md cursor-pointer hover:bg-muted/70 transition-colors"
+                class="rounded-scale-md cursor-pointer hover:bg-muted/70 transition-colors duration-scale-md"
                 @click="copyToClipboard('<md:text-sm')"
               >
                 <CScrollbar class="min-w-0">
@@ -580,9 +597,11 @@ const deviceSyncInfo = computed(() => ({
               </div>
             </div>
             <div class="flex flex-col gap-sm">
-              <h4 class="font-semibold text-foreground">响应式网格 (Responsive Grid)</h4>
+              <h4 class="fs-sm font-semibold text-foreground mb-margin-xs">
+                响应式网格 (Responsive Grid)
+              </h4>
               <div
-                class="rounded-scale-md cursor-pointer hover:bg-muted/70 transition-colors"
+                class="rounded-scale-md cursor-pointer hover:bg-muted/70 transition-colors duration-scale-md"
                 @click="copyToClipboard('grid-cols-1 sm:grid-cols-2 lg:grid-cols-4')"
               >
                 <CScrollbar class="min-w-0">
@@ -595,9 +614,11 @@ const deviceSyncInfo = computed(() => ({
               </div>
             </div>
             <div class="flex flex-col gap-sm">
-              <h4 class="font-semibold text-foreground">响应式间距 (Responsive Spacing)</h4>
+              <h4 class="fs-sm font-semibold text-foreground mb-margin-xs">
+                响应式间距 (Responsive Spacing)
+              </h4>
               <div
-                class="rounded-scale-md cursor-pointer hover:bg-muted/70 transition-colors"
+                class="rounded-scale-md cursor-pointer hover:bg-muted/70 transition-colors duration-scale-md"
                 @click="copyToClipboard('p-padding-sm md:p-padding-md lg:p-padding-lg')"
               >
                 <CScrollbar class="min-w-0">
@@ -621,7 +642,7 @@ const deviceSyncInfo = computed(() => ({
               name="i-lucide-zap"
               class="text-primary"
             />
-            <span>Quick Reference 快速参考</span>
+            <span class="font-semibold">Quick Reference 快速参考</span>
           </div>
         </template>
         <template #content>
@@ -629,7 +650,7 @@ const deviceSyncInfo = computed(() => ({
             <div
               v-for="[key, value] in breakpointEntries"
               :key="key"
-              class="flex flex-col gap-xs p-padding-md bg-card rounded-scale-md component-border cursor-pointer hover:border-accent/50 hover:shadow-md transition-all"
+              class="flex flex-col gap-xs p-padding-md bg-card rounded-scale-md component-border cursor-pointer hover:border-accent/50 hover:shadow-md transition-all duration-scale-md"
               @click="copyToClipboard(`${key}:`)"
             >
               <div class="flex items-center justify-between">

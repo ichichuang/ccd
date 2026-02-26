@@ -6,7 +6,7 @@
 
 ## Pre-check
 
-- `@docs/ECHARTS_THEME.md`
+- `@docs/ai-specs/ECHARTS_THEME.md`
 - `@.cursor/rules/18-components-and-icons.mdc`
 
 ## 判断标准

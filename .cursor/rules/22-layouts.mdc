@@ -41,7 +41,7 @@ globs: src/layouts/**/*.{ts,vue}
 - 壳：`src/layouts/modules/`
 - 内部组件：`src/layouts/components/`
 - 布局内引用：`@&/*` → `src/layouts/components/*`
-- **PrimeVue 全局 UI**：Toast、Confirm、Dialog 与 `window.$toast` / `window.$message` 的挂载由 `src/layouts/components/AppPrimeVueGlobals.vue` 负责，`App.vue` 仅引用该组件，不得在 `App.vue` 内重复挂载或封装 Toast/Message。Toast 样式覆盖（居中 Message、关闭按钮位置）见该组件内 `<style>` 与 `docs/TOAST_UI_OVERRIDES.md`。
+- **PrimeVue 全局 UI**：Toast、Confirm、Dialog 与 `window.$toast` / `window.$message` 的挂载由 `src/layouts/components/AppPrimeVueGlobals.vue` 负责，`App.vue` 仅引用该组件，不得在 `App.vue` 内重复挂载或封装 Toast/Message。Toast 样式覆盖（居中 Message、关闭按钮位置）见该组件内 `<style>` 与 `docs/ai-specs/TOAST_AND_MESSAGE.md`。
 
 ## 5. 显式引入
 
@@ -60,9 +60,9 @@ globs: src/layouts/**/*.{ts,vue}
 
 1. 在 `AdminLayoutMode` 中增加新值
 2. 在 `DEFAULT_LAYOUT_SETTING.mode` 中确定默认（或保持 vertical）
-3. 在 `LayoutAdmin.tsx` 中实现对应布局逻辑（sidebar / top menu / body 显示规则）；须遵循 `docs/ADAPTIVE_LAYOUT.md`，不得绕过 runAdaptive 或有效显隐
+3. 在 `LayoutAdmin.tsx` 中实现对应布局逻辑（sidebar / top menu / body 显示规则）；须遵循 `docs/ai-specs/ADAPTIVE_LAYOUT.md`，不得绕过 runAdaptive 或有效显隐
 
-注意：移动端小视口强制顶栏（horizontal），平板小视口为 vertical+收缩；PC 横屏不覆盖用户 mode。适配逻辑见 `docs/ADAPTIVE_LAYOUT.md`。修改 LayoutAdmin 时须遵循该文档，不得绕过 runAdaptive 或有效显隐。
+注意：移动端小视口强制顶栏（horizontal），平板小视口为 vertical+收缩；PC 横屏不覆盖用户 mode。适配逻辑见 `docs/ai-specs/ADAPTIVE_LAYOUT.md`。修改 LayoutAdmin 时须遵循该文档，不得绕过 runAdaptive 或有效显隐。
 
 ## 7. 路由配置
 

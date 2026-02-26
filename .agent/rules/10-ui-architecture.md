@@ -48,13 +48,13 @@ alwaysApply: true
 
 - **SchemaForm**：当任务涉及多字段、校验、分步、分组或动态 schema 时，必须使用 SchemaForm（`@/components/SchemaForm`）+ useSchemaForm（`@/hooks/modules/useSchemaForm`）。
 - **简单表单**：1–2 个字段时可直接使用 PrimeVue InputText、Select 等。
-- 详细用法见 `docs/SCHEMA_FORM_COMPONENT.md`。
+- 详细用法见 `docs/ai-specs/SCHEMA_FORM_COMPONENT.md`。
 
 ## 2c. 表格
 
 - **DataTable**：当任务涉及**交互式数据表格**（分页、排序、筛选、导出、API 加载）时，必须使用 DataTable（`@/components/DataTable`）。
 - 简单静态表格、一次性展示可用 PrimeVue `<DataTable>`；需分页/排序/筛选/导出/API 时必须用 DataTable。
-- 详细用法见 `docs/DataTable_COMPONENT.md`。
+- 详细用法见 `docs/ai-specs/DataTable_COMPONENT.md`。
 
 ## 2d. 图表
 
@@ -70,7 +70,7 @@ alwaysApply: true
   - 暴露方法（通过 ref：`getEchartsInstance`、`setOption`、`resize`、`clear`、`dispose`、`triggerConnect` 等）
 - **支持的图表类型**：Bar、Line、Scatter、Pie、Radar、Gauge、Funnel、Graph、Tree、Treemap、Sunburst、Heatmap、Boxplot、Candlestick、Parallel、ThemeRiver、Sankey、EffectScatter、PictorialBar、Lines 等 20+ 种。
 - **useChartTheme Hook**：提供响应式主题化能力，支持透明度配置、尺寸系统集成、高级配置合并。
-- 详细用法见 `docs/ECHARTS_THEME.md`。
+- 详细用法见 `docs/ai-specs/ECHARTS_THEME.md`。
 
 ## 3. 组件结构（Vue 3 SBA）
 
@@ -117,9 +117,9 @@ alwaysApply: true
 | 场景                | 推荐                                               | 说明                                      |
 | ------------------- | -------------------------------------------------- | ----------------------------------------- |
 | 可悬停卡片/按钮     | `interactive-hover` 或 `behavior-hover-transition` | 含 transition-all + duration-scale-md     |
-| 点击反馈（scale）   | `interactive-click`                                | 含 transition-transform duration-scale-xs |
-| 自定义过渡          | `transition-all duration-scale-{xs~5xl}`           | 阶梯：xs 75ms ~ 5xl 1500ms                |
-| 宽度/单属性         | `transition-[width] duration-scale-lg ease-in-out` | 侧栏等                                    |
+| 点击反馈（scale）   | `interactive-click`                                | 含 transition-transform duration-scale-md |
+| 自定义过渡          | `transition-all duration-scale-{xs~5xl}`           | 阶梯：xs 100ms ~ 5xl 2000ms               |
+| 宽度/单属性         | `transition-[width] duration-scale-md ease-in-out` | 侧栏等                                    |
 | PrimeVue pt content | `transition-colors duration-scale-md hover:...`    | pt 中的 hover/active 同样需 transition    |
 
 **duration-scale 搭配**：`duration-scale-*` 必须与 transition* 搭配；transition* 也必须配合 duration-scale-\*。禁止单独写 duration-scale 或 transition。
@@ -128,4 +128,4 @@ alwaysApply: true
 
 **禁止**：`hover:`/`active:`/`focus:` 不加 transition；`duration-scale-*` 单独使用；硬编码 duration。
 
-**SSOT**：`src/constants/sizeScale.ts` TRANSITION_SCALE_VALUES；`docs/UNOCSS_AND_ICONS.md` §2.7、§2.7.1、§6.3.2。
+**SSOT**：`src/constants/sizeScale.ts` TRANSITION_SCALE_VALUES；`docs/ai-specs/UNOCSS_AND_ICONS.md` §2.7、§2.7.1、§6.3.2。

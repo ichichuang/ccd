@@ -56,6 +56,9 @@ export default defineComponent({
               scrollbars: {
                 visibility: 'hidden',
               },
+              overflow: {
+                y: 'hidden',
+              },
             }}
           >
             <div
@@ -64,7 +67,7 @@ export default defineComponent({
             >
               {/* Sliding Highlight Indicator */}
               <div
-                class="absolute bottom-0 h-[var(--spacing-xs)] bg-primary transition-all duration-scale-lg ease-out z-20 rounded-full"
+                class="absolute bottom-0 h-[var(--spacing-xs)] bg-primary transition-all duration-scale-md ease-out z-20 rounded-full"
                 style={activeTabStyle.value}
               />
 
@@ -136,7 +139,7 @@ export default defineComponent({
             enter-active-class="transition duration-scale-md ease-out"
             enter-from-class="opacity-0 scale-95"
             enter-to-class="opacity-100 scale-100"
-            leave-active-class="transition duration-scale-sm ease-in"
+            leave-active-class="transition duration-scale-md ease-in"
             leave-from-class="opacity-100 scale-100"
             leave-to-class="opacity-0 scale-95"
           >
