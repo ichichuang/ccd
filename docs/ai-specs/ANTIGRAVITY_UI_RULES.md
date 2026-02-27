@@ -1,6 +1,8 @@
 # UI Engineering & Visual System (Antigravity Only)
 
 > **目标读者：AI（Antigravity Agent）**。本文档供 Antigravity 执行 UI 任务时参照。将以下内容复制到 Antigravity 的 Knowledge Base（知识库）或 System Prompt 中，作为 UI/布局层的专用规则。
+>
+> **与 `.agent/rules/` 的关系**：本文档为长版详细说明；强制规则以 `.agent/rules/`（如 `10-ui-architecture.md`）为权威。若与本文档冲突，以 `.agent/rules/` 为准。
 
 ---
 
@@ -109,7 +111,7 @@ Because `AutoImport` scans all `src/api/**/*`:
 - **File Upload:** MUST use `@src/utils/http/uploadManager.ts` (`addUploadTask`, `pauseUploadTask` etc.).
 - **Date/Time:** MUST use `@src/hooks/modules/useDateUtils.ts` (auto-locale/timezone).
 - **Element Size:** MUST use `@src/hooks/modules/useAppElementSize.ts`.
-- **Fullscreen:** MUST use `@src/hooks/layout/useFull.ts` (`useFull(target?)` → `isFullscreen`, `enter`, `exit`, `toggle`).
+- **Fullscreen:** Use `@vueuse/core` `useFullscreen(target?)` directly（useFull 已移除）.
 - **Theme:** MUST use `@src/hooks/modules/useThemeSwitch.ts`.
 - **ECharts Theme:** MUST use `@src/hooks/modules/useChartTheme/` (`useChartTheme(option)` responsive hook).
 - **Locale:** MUST use `@src/hooks/modules/useLocale.ts`.
@@ -121,18 +123,18 @@ Because `AutoImport` scans all `src/api/**/*`:
 
 When you need functionality, use these EXACT exports:
 
-| Category    | File                                | Preferred Function(s)                                |
-| ----------- | ----------------------------------- | ---------------------------------------------------- |
-| **HTTP**    | `@/hooks/modules/useHttpRequest`    | `useHttpRequest(method, options)`                    |
-|             | `@/utils/http/instance`             | `alovaInstance`                                      |
-| **Storage** | `@/utils/safeStorage`               | `encrypt`, `decrypt`, `packData`, `unpackData`       |
-| **Events**  | `@/utils/mitt`                      | `useMitt()` (returns `{ emit, on, off }`)            |
-| **Lodash**  | `@/utils/lodashes`                  | `deepClone`, `deepEqual`, `objectPick`, `debounceFn` |
-| **IDs**     | `@/utils/ids`                       | `generateUniqueId()`, `generateIdFromKey()`          |
-| **Date**    | `@/hooks/modules/useDateUtils`      | `useDateUtils()` (returns `{ formatDate, ... }`)     |
-| **Strings** | `@/utils/strings`                   | `toKebabCase()`                                      |
-| **Browser** | `@/utils/browser`                   | `getSystemColorMode()`                               |
-| **Size**    | `@/hooks/modules/useAppElementSize` | `useAppElementSize(ref)`                             |
+| Category    | File                                    | Preferred Function(s)                                |
+| ----------- | --------------------------------------- | ---------------------------------------------------- |
+| **HTTP**    | `@/hooks/modules/useHttpRequest`        | `useHttpRequest(method, options)`                    |
+|             | `@/utils/http/instance`                 | `alovaInstance`                                      |
+| **Storage** | `@/utils/safeStorage`                   | `encrypt`, `decrypt`, `packData`, `unpackData`       |
+| **Events**  | `@/utils/mitt`                          | `useMitt()` (returns `{ emit, on, off }`)            |
+| **Lodash**  | `@/utils/lodashes`                      | `deepClone`, `deepEqual`, `objectPick`, `debounceFn` |
+| **IDs**     | `@/utils/ids`                           | `generateUniqueId()`, `generateIdFromKey()`          |
+| **Date**    | `@/hooks/modules/useDateUtils`          | `useDateUtils()` (returns `{ formatDate, ... }`)     |
+| **Strings** | `@/utils/strings`                       | `toKebabCase()`                                      |
+| **Browser** | 已移除（原 `@/utils/browser` 未被引用） | —                                                    |
+| **Size**    | `@/hooks/modules/useAppElementSize`     | `useAppElementSize(ref)`                             |
 
 ### 3.5 New Logic Rule
 
@@ -181,10 +183,10 @@ The project uses `unplugin-auto-import` and `unplugin-vue-components`.
 ### 4.3 PrimeVue Integration（优先使用 PrimeVue 组件）
 
 - 你在构建 UI 时，**必须优先使用 PrimeVue 组件**，而不是原生 HTML 元素，特别是：
-  - 表单字段：`<InputText>` / `<Password>` / `<InputNumber>` / `<Checkbox>` / `<RadioButton>` / `<Dropdown>` / `<MultiSelect>` / `<Calendar>` / `<ToggleSwitch>` 等；
+  - 表单字段：`<InputText>` / `<Password>` / `<InputNumber>` / `<Checkbox>` / `<RadioButton>` / `<Select>` / `<MultiSelect>` / `<DatePicker>` / `<ToggleSwitch>` 等（PrimeVue v4；禁止 v3 的 Dropdown、Calendar、InputSwitch）。详见 `./PRIMEVUE_V4_API.md`；
   - 操作按钮：使用 `<Button>` 作为主要/次要操作按钮，而不是手写 `<button>`；
   - 数据列表/表格：优先使用 **DataTable**（`@/components/DataTable`），详见 `docs/DataTable_COMPONENT.md`；不要从零写 `<table>` 或裸用 PrimeVue DataTable 实现分页/排序/导出等复杂交互；
-  - 弹窗/抽屉：优先使用 `<Dialog>` / `<Sidebar>`，而不是用 `position: fixed` 的 div 临时拼装。
+  - 弹窗/抽屉：优先使用 `<Dialog>` / `<Drawer>`（PrimeVue v4；禁止 v3 的 Sidebar），而不是用 `position: fixed` 的 div 临时拼装。
   - 全局轻量通知：组件内用 PrimeVue `useToast()`；非组件环境（拦截器、全局错误处理）用 `window.$toast` / `window.$message`，见 `./TOAST_AND_MESSAGE.md`。
 
 - 定制方式（必须遵守）：

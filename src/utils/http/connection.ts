@@ -330,7 +330,7 @@ export class ConnectionManager {
 // 创建全局连接管理器实例
 export const connectionManager = new ConnectionManager()
 
-// 导出便捷函数
+// 导出便捷函数（getConnectionState/disconnect/reconnect 供未来网络状态 UI、重连按钮等使用）
 export const getConnectionState = () => connectionManager.getConnectionState()
 export const addConnectionListener = (listener: (state: ConnectionState) => void) =>
   connectionManager.addListener(listener)

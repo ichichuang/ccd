@@ -33,9 +33,9 @@
 
 ### 2.3 构建优化
 
-- `VITE_BUILD_ANALYZE`：构建分析
+- `VITE_BUILD_ANALYZE`：构建分析。使用 `pnpm build:analyze`（加载 `.env.analyze`）生成 `dist/stats.html` 体积报告
 - `VITE_BUILD_SOURCEMAP`：sourcemap
-- `VITE_COMPRESSION`：`none | gzip | brotli | both`
+- `VITE_COMPRESSION`：`none | gzip | brotli | both`（部署时 Nginx 配置见 `docs/DEPLOYMENT.md`）
 - `VITE_DROP_DEBUGGER` / `VITE_DROP_CONSOLE`：构建时 esbuild drop
 - `VITE_LEGACY`：是否启用 legacy
 - `VITE_CDN`：是否启用 CDN（如未来扩展）

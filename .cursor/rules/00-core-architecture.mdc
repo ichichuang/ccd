@@ -1,6 +1,6 @@
 ---
-description: 适用于所有生成任务的核心架构约束
-globs: src/**/*.{ts,vue}
+description: Core architecture constraints for all generation tasks
+globs: src/**/*.{ts,vue,tsx}
 alwaysApply: true
 ---
 
@@ -19,8 +19,10 @@ You are a Senior Frontend Architect specialized in this project's Vue3 Custom St
 Before generating any code, you MUST:
 
 1. Read `docs/ai-specs/PROJECT_PROTOCOL.md`.
-2. When uncertain about architecture (layers, data flow, directory responsibilities), read `docs/architecture/ARCHITECTURE_OVERVIEW.md` and `docs/architecture/DIRECTORY_STRUCTURE.md`.
-3. Check `docs/ai-specs/GOLDEN_SAMPLES/` and match the exact coding style of the relevant sample (logic → useFeatureLogic.ts, store → StoreExample.ts, component → UIComponent.vue, api → ApiModuleExample.ts). For DataTable/SchemaForm/UseEcharts, also reference `src/views/example/` for complete usage patterns.
+2. When the task involves programmatic rendering (DataTable body, Dialog contentRenderer, etc.), read `docs/ai-specs/AI_CODING_PROTOCOL.md` and execute its decision flow; ensure `lang="tsx"` when using JSX in .vue.
+3. When uncertain about architecture (layers, data flow, directory responsibilities), read `docs/architecture/ARCHITECTURE_OVERVIEW.md` and `docs/architecture/DIRECTORY_STRUCTURE.md`.
+4. Check `docs/ai-specs/GOLDEN_SAMPLES/` and match the exact coding style of the relevant sample (logic → useFeatureLogic.ts, store → StoreExample.ts, component → UIComponent.vue, api → ApiModuleExample.ts). **For DataTable column body / filterRenderer / customFooter**: MUST reference `GOLDEN_SAMPLES/DataTableBodyColumn.vue` and `src/views/example/DataTable/configs/customColumnConfig.tsx`.
+5. When generating PrimeVue component code, read `docs/ai-specs/PRIMEVUE_V4_API.md` and use v4 component names (Select, DatePicker, Drawer, etc.); FORBIDDEN: Dropdown, Calendar, InputSwitch, Sidebar, OverlayPanel.
 
 # ABSOLUTE NEGATIVE CONSTRAINTS (Forbidden)
 
@@ -36,18 +38,18 @@ Before generating any code, you MUST:
   - Computed: `const value = computed<Type>(() => ...)` (NOT `const value = computed(() => ...)`)
   - Reactive: `const value = reactive<Type>({...})` (NOT `const value = reactive({...})`)
 - **NO `any` in Business Code**: In business logic (views/components feature logic, composables, stores), FORBIDDEN to use `any`. Use strict TypeScript types/interfaces (in `src/types/` or colocated).
-  - **Boundary-layer exception (allowed but constrained)**: `any` MAY be used only in a **small fixed whitelist**的边界封装层，用于第三方库/运行时不易精确建模的情况，例如：
-    - `src/hooks/modules/useHttpRequest.ts` 中对 Alova 泛型的胶水封装
-    - `src/utils/lodashes.ts` 中对 lodash-es 的通用函数包装
-    - `src/utils/safeStorage/**` 中的加解密/序列化器（如 `piniaSerializer`）
-    - 低层 date 工具适配层：`src/utils/date.ts`（与 dayjs/date-holidays 集成）
-    - `src/components/UseEcharts/**`：ECharts 组件与事件/option 类型边界
-    - `src/hooks/modules/useChartTheme/**`：图表主题与 ECharts option 主题化边界
-  - **Whitelist 规则**：
-    - 除上述文件外，新增使用 `any` 视为**规则违例**（应优先用泛型/精确定义类型，或将逻辑下沉到上述边界层中）。
-  - 如果在这些白名单文件中使用 `any`，你仍然 MUST：
-    - 将 `any` 限制在最小可能作用域（例如函数参数/内部变量，而不是公共 API 返回类型）。
-    - 添加简短注释，说明为什么不可避免以及期望的类型形状。
+  - **Boundary-layer exception (allowed but constrained)**: `any` MAY be used only in a **small fixed whitelist** of boundary adapter layers where third-party libs/runtime are hard to type precisely, e.g.:
+    - `src/hooks/modules/useHttpRequest.ts` – Alova generic glue
+    - `src/utils/lodashes.ts` – lodash-es wrapper
+    - `src/utils/safeStorage/**` – encrypt/decrypt/serializers (e.g. `piniaSerializer`)
+    - `src/utils/date/` – low-level date adapter (dayjs/date-holidays, same structure as http)
+    - `src/components/UseEcharts/**` – ECharts component and event/option typing boundary
+    - `src/hooks/modules/useChartTheme/**` – chart theme and ECharts option theming boundary
+  - **Whitelist rules**:
+    - New use of `any` outside the above files is a **rule violation** (prefer generics or moving logic into the boundary layer).
+  - When using `any` in whitelisted files, you still MUST:
+    - Keep `any` in the smallest possible scope (e.g. function params or internal vars, not public API return types).
+    - Add a brief comment explaining why it is unavoidable and the expected type shape.
 
 # DESIGN SYSTEM REQUIREMENTS (Must Follow)
 
@@ -82,7 +84,7 @@ Before generating UI code, you MUST reference and strictly follow:
 - When the task involves **dialogs, modals, feedback prompts, or confirmation dialogs**, consult `docs/ai-specs/DIALOG_COMPONENT.md` and use `useDialog()` from `@/hooks/modules/useDialog` instead of creating ad-hoc Dialog logic.
 - When the task involves **multi-field forms with validation, steps, sections, or dynamic schema**, consult `docs/ai-specs/SCHEMA_FORM_COMPONENT.md` and use `SchemaForm` + `useSchemaForm` from `@/components/SchemaForm` / `@/hooks/modules/useSchemaForm` instead of hand-writing form components.
 - When the task involves **non-component lightweight notifications** (e.g. HTTP interceptors, global error handler), consult `docs/ai-specs/TOAST_AND_MESSAGE.md` and use `window.$toast` / `window.$message` instead of building ad-hoc global Toast/Message.
-- **Vue 与 import**：Vue 运行时 API（ref、computed、watch 等）不手写 import，见 `docs/ai-specs/BUILD_SYSTEM.md`；未使用的 import 删除，确需保留的未使用变量或解构用 **`_` 前缀**。
+- **Vue and imports**: Do NOT manually import Vue runtime APIs (ref, computed, watch, etc.); see `docs/ai-specs/BUILD_SYSTEM.md`. Remove unused imports; prefix intentionally unused vars/destructuring with **`_`**.
 - After generating, self-check: Does this match the style of the corresponding file in `docs/ai-specs/GOLDEN_SAMPLES/`? If unsure, say so.
 
 # ROUTER SYSTEM REQUIREMENTS (Must Follow)
@@ -93,7 +95,7 @@ When the task involves **login, logout, token, or 401 handling**, read `docs/ai-
 
 1. **Read the Router Section First**
    - Before adding or changing any route-related code, re-read:
-     - `docs/ai-specs/PROJECT_PROTOCOL.md` → Section “10. 路由系统 (Router System)”
+     - `docs/ai-specs/PROJECT_PROTOCOL.md` → Section “10. Router System”
      - `src/types/modules/router.d.ts` → `RouteMeta`, `RouteConfig`, `BackendRouteConfig`, `RouteModule`, `RouteUtils`, `DynamicRouteManager`.
 
 2. **Static Routes Live Only in `src/router/modules`**

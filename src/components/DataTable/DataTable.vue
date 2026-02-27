@@ -960,10 +960,19 @@ const resolveBodyStyle = (col: DataTableColumn<T>, data: T) => {
         @column-resize-end="onColumnResizeEnd"
       >
         <template
-          v-if="props.emptyMessage"
+          v-if="$slots.empty"
           #empty
         >
-          {{ props.emptyMessage }}
+          <slot name="empty" />
+        </template>
+        <template
+          v-else-if="props.emptyMessage"
+          #empty
+        >
+          <EmptyState
+            icon="i-lucide-inbox"
+            :title="props.emptyMessage"
+          />
         </template>
         <template
           v-if="$slots.expansion"

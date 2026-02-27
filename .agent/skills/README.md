@@ -1,180 +1,148 @@
 ---
-description: Antigravity Skills 索引
+description: Antigravity Skills index
 globs: **/*
 ---
 
-# Antigravity Skills（技能文件索引）
+# Antigravity Skills (skill index)
 
-本目录包含 Antigravity Agent 的标准操作流程（SOP）。每个 Skill 文件定义了特定任务的详细步骤和最佳实践。
+This directory contains standard operating procedures (SOP) for Antigravity Agent. Each skill file defines detailed steps and best practices for specific tasks.
 
-## 📋 Skills 列表
+## Skills List
 
-### UI 组件与页面
+### UI Components and Pages
 
-1. **`01-build-ui-component.md`** - 构建 UI 组件
-   - **功能**：创建可复用的 Vue 3 组件
-   - **流程**：Scaffold（脚手架） -> Style（样式） -> Verify（验证）
-   - **适用范围**：`src/components/**/*.vue`
-   - **关键步骤**：
-     - 组件结构搭建
-     - Props/Emits 定义
-     - UnoCSS 样式应用
-     - 浏览器验证
+1. **`01-build-ui-component.md`** – Build UI component
+   - **Purpose**: Create reusable Vue 3 components
+   - **Flow**: Scaffold -> Style -> Verify
+   - **Scope**: `src/components/**/*.vue`
+   - **Key steps**: Component structure, Props/Emits, UnoCSS styling, browser verification
 
-2. **`02-build-page-view.md`** - 构建页面视图
-   - **功能**：组装完整页面视图
-   - **流程**：Layout（布局） -> Components（组件） -> Logic Integration（逻辑集成）
-   - **适用范围**：`src/views/**/*.vue`
-   - **关键步骤**：
-     - 布局选择
-     - 组件复用
-     - 逻辑 Hook 集成
-     - 类型安全检查
+2. **`02-build-page-view.md`** – Build page view
+   - **Purpose**: Assemble full page views
+   - **Flow**: Layout -> Components -> Logic Integration
+   - **Scope**: `src/views/**/*.vue`
+   - **Key steps**: Layout selection, component reuse, logic hook integration, type safety
 
-### 问题修复与重构
+### Bug Fixing and Refactoring
 
-3. **`03-fix-ui-issue.md`** - 修复 UI 问题
-   - **功能**：调试和修复 UI Bug
-   - **流程**：Reproduce（复现） -> Locate（定位） -> Fix（修复） -> Verify（验证）
-   - **适用范围**：`**/*.vue, **/*.ts`
-   - **关键步骤**：
-     - 问题复现
-     - 根因定位
-     - 修复实施
-     - 浏览器验证
+3. **`03-fix-ui-issue.md`** – Fix UI issue
+   - **Purpose**: Debug and fix UI bugs
+   - **Flow**: Reproduce -> Locate -> Fix -> Verify
+   - **Scope**: `**/*.vue, **/*.ts`
+   - **Key steps**: Reproduce, root cause analysis, apply fix, browser verification
 
-4. **`05-refactor-component.md`** - 重构组件
-   - **功能**：提取逻辑并标准化样式
-   - **流程**：Extract Logic（提取逻辑） -> Hooks & Style Audit（Hook 与样式审计）
-   - **适用范围**：`**/*.vue, **/*.ts`
-   - **关键步骤**：
-     - 逻辑提取到 Hook
-     - 样式标准化（UnoCSS）
-     - 类型安全检查
+4. **`05-refactor-component.md`** – Refactor component
+   - **Purpose**: Extract logic and standardize styles
+   - **Flow**: Extract Logic -> Hooks & Style Audit
+   - **Scope**: `**/*.vue, **/*.ts`
+   - **Key steps**: Extract logic to hooks, UnoCSS style audit, type safety
 
-5. **`06-style-audit.md`** - 样式审计
-   - **功能**：修复硬编码样式，强制 UnoCSS 合规
-   - **流程**：Find Hardcoded（查找硬编码） -> Replace with UnoCSS（替换为 UnoCSS）
-   - **适用范围**：`**/*.vue, **/*.css, **/*.scss`
-   - **关键步骤**：
-     - 扫描硬编码值
-     - 查找语义类替代
-     - 替换并验证
+5. **`06-style-audit.md`** – Style audit
+   - **Purpose**: Fix hardcoded styles, enforce UnoCSS compliance
+   - **Flow**: Find Hardcoded -> Replace with UnoCSS
+   - **Scope**: `**/*.vue, **/*.css, **/*.scss`
+   - **Key steps**: Scan hardcoded values, map to semantic classes, replace and verify
 
-### 完整功能开发
+### Full Feature Development
 
-6. **`04-full-feature.md`** - 全功能开发
-   - **功能**：端到端功能实现
-   - **流程**：API Definition（API 定义） -> Business Hook（业务 Hook） -> UI Integration（UI 集成）
-   - **适用范围**：`**/*`
-   - **关键步骤**：
-     - API 层定义（`src/api/<module>/<feature>.ts`）
-     - 业务逻辑 Hook（`src/hooks/modules/useXxx.ts`）
-     - UI 层集成（`src/views/**/*.vue`）
-     - 类型安全与验证
+6. **`04-full-feature.md`** – Full feature development
+   - **Purpose**: End-to-end feature implementation
+   - **Flow**: API Definition -> Business Hook -> UI Integration
+   - **Scope**: `**/*`
+   - **Key steps**: API layer, business hook, UI integration, type safety and verification
 
-### 表单组件
+### Form Component
 
-7. **`07-SchemaForm.md`** - SchemaForm 表单组件
-   - **功能**：多字段表单、校验、分步、分组、动态字段
-   - **流程**：阅读文档 -> 定义 Schema -> 使用 useSchemaForm -> 集成 UI
-   - **适用范围**：`src/views/**/*.vue, src/components/**/*.vue`
-   - **前置要求**：必须先阅读 `docs/ai-specs/SCHEMA_FORM_COMPONENT.md`
-   - **关键步骤**：
-     - Schema 定义
-     - useSchemaForm Hook 使用
-     - 动态字段管理
-     - 校验与提交
+7. **`07-SchemaForm.md`** – SchemaForm
+   - **Purpose**: Multi-field forms, validation, steps, groups, dynamic fields
+   - **Flow**: Read doc -> Define Schema -> useSchemaForm -> UI integration
+   - **Scope**: `src/views/**/*.vue, src/components/**/*.vue`
+   - **Prerequisites**: Must read `docs/ai-specs/SCHEMA_FORM_COMPONENT.md`
+   - **Key steps**: Schema definition, useSchemaForm, dynamic fields, validation and submit
 
-### 反馈与提示
+### Feedback and Notifications
 
-8. **`08-toast-message-feedback.md`** - Toast & Message 反馈提示
-   - **功能**：Toast 和 Message 反馈提示使用规范与实现要点
-   - **流程**：判断场景 -> 选择 $message 或 $toast -> 调用 -> 验证
-   - **适用范围**：`src/**/*.{ts,vue}`
-   - **前置要求**：阅读 `docs/ai-specs/TOAST_AND_MESSAGE.md`、`docs/ai-specs/TOAST_AND_MESSAGE.md`
-   - **关键步骤**：
-     - 组件内轻量通知 → `useToast()`
-     - 非组件环境（拦截器、工具函数）→ `window.$toast` / `window.$message`
-     - $message：居中纯提示（正中央、无关闭按钮）
-     - $toast：按位置显示、带关闭按钮
-     - 实现要点（居中样式、关闭按钮位置、内边距配置）
+8. **`08-toast-message-feedback.md`** – Toast & Message feedback
+   - **Purpose**: Usage rules and implementation for Toast/Message
+   - **Flow**: Choose scenario -> Select $message or $toast -> Call -> Verify
+   - **Scope**: `src/**/*.{ts,vue}`
+   - **Prerequisites**: Read `docs/ai-specs/TOAST_AND_MESSAGE.md`
+   - **Key steps**: Component use `useToast()`; non-component use `window.$toast` / `window.$message`; $message centered; $toast positional; implementation notes
 
-### 图表组件
+### Chart Component
 
-9. **`09-use-echarts.md`** - UseEcharts 图表组件
-   - **功能**：图表展示与交互，自动主题集成
-   - **流程**：阅读文档 -> 使用 UseEcharts 组件 -> 配置 option -> 处理事件
-   - **适用范围**：`src/views/**/*.vue, src/components/**/*.vue`
-   - **前置要求**：必须先阅读 `docs/ai-specs/ECHARTS_THEME.md`
-   - **关键步骤**：
-     - 使用 `<UseEcharts>` 组件
-     - 传入 `option` prop（EChartsOption）
-     - 事件处理（on\* props）
-     - 多图表联动（group/connectConfig）
-     - 程序化控制（ref + ChartInstance）
-   - **禁止**：手动实例化 ECharts、硬编码颜色、手动监听 ThemeStore
+9. **`09-use-echarts.md`** – UseEcharts
+   - **Purpose**: Chart display and interaction, auto theme integration
+   - **Flow**: Read doc -> Use UseEcharts -> Configure option -> Handle events
+   - **Scope**: `src/views/**/*.vue, src/components/**/*.vue`
+   - **Prerequisites**: Must read `docs/ai-specs/ECHARTS_THEME.md`
+   - **Key steps**: `<UseEcharts>`, `option` prop, `on*` events, group/connectConfig, ref + ChartInstance
+   - **Forbidden**: Manual ECharts, hardcoded colors, manual ThemeStore listeners
 
-### Icons 颜色定制
+### Icons Color Customization
 
-10. **`10-icons-color-styling.md`** - Icons 颜色定制与 class 权重覆盖
+10. **`10-icons-color-styling.md`** – Icons color customization and class specificity
 
-- **功能**：当 Icons 通过 class 设置的颜色/opacity 不生效时的修复流程
-- **流程**：判断场景 -> 选择方案（color prop 或 class + !）-> 验证
-- **适用范围**：`**/*.vue, **/*.tsx`
-- **前置要求**：`docs/ai-specs/UNOCSS_AND_ICONS.md` §6.3.1
-- **关键步骤**：决策表选择（color prop 优先；class 时加 `!`）
-- **参考**：`src/layouts/components/admin/AdminHeader.vue`
+- **Purpose**: Fix when Icons color/opacity set via class does not apply
 
-## 📖 使用指南
+11. **`12-generate-industrial-page.md`** – Generate industrial page
 
-### 选择正确的 Skill
+- **Purpose**: Industrial monitoring/dashboard page SOP
+- **Flow**: 信息收集 → Flex 骨架 → 内容区 → 细节打磨 → 自检
+- **Scope**: `src/views/**/*.vue`
+- **Prerequisites**: Read `docs/ai-specs/INDUSTRIAL_UX_DESIGN_SYSTEM.md`
+- **Flow**: Identify scenario -> Choose approach (color prop or class + !) -> Verify
+- **Scope**: `**/*.vue, **/*.tsx`
+- **Prerequisites**: `docs/ai-specs/UNOCSS_AND_ICONS.md` §6.3.1
+- **Key steps**: Decision table (color prop first; add `!` when using class)
+- **Reference**: `src/layouts/components/admin/AdminHeader.vue`
 
-当收到任务时，根据任务类型选择对应的 Skill：
+## Usage Guide
 
-- **创建新组件** → `01-build-ui-component.md`
-- **创建新页面** → `02-build-page-view.md`
-- **修复 UI Bug** → `03-fix-ui-issue.md`
-- **完整功能开发** → `04-full-feature.md`
-- **重构组件** → `05-refactor-component.md`
-- **修复样式问题** → `06-style-audit.md`
-- **表单相关任务** → `07-SchemaForm.md`
-- **反馈提示** → `08-toast-message-feedback.md`
-- **Icons 颜色不生效** → `10-icons-color-styling.md`
+### Choosing the Right Skill
 
-### Skill 执行流程
+- **Create new component** → `01-build-ui-component.md`
+- **Create new page** → `02-build-page-view.md`
+- **Fix UI bug** → `03-fix-ui-issue.md`
+- **Full feature development** → `04-full-feature.md`
+- **Refactor component** → `05-refactor-component.md`
+- **Fix style issues** → `06-style-audit.md`
+- **Form-related task** → `07-SchemaForm.md`
+- **Feedback notifications** → `08-toast-message-feedback.md`
+- **Chart-related task** → `09-use-echarts.md`
+- **Icons color not applying** → `10-icons-color-styling.md`
+- **工业/仪表盘页面** → `12-generate-industrial-page.md`
 
-1. **阅读相关规则**：在执行 Skill 前，先阅读相关的 Rules 文件
-2. **遵循 Skill 步骤**：严格按照 Skill 文件中定义的步骤执行
-3. **验证结果**：使用浏览器工具验证最终结果
-4. **检查清单**：完成 Skill 文件中的检查清单
+### Skill Execution Flow
 
-### 前置文档
+1. **Read related rules** before running a skill
+2. **Follow skill steps** as defined in the file
+3. **Verify result** with browser tool
+4. **Checklist** – complete items in the skill file
 
-某些 Skill 需要先阅读相关文档：
+### Prerequisite Docs
 
-- **SchemaForm**：必须先阅读 `docs/ai-specs/SCHEMA_FORM_COMPONENT.md`
-- **Toast/Message**：必须先阅读 `docs/ai-specs/TOAST_AND_MESSAGE.md`、`docs/ai-specs/TOAST_AND_MESSAGE.md`
-- **布局相关**：必须阅读 `docs/ai-specs/ADAPTIVE_LAYOUT.md`
-- **认证相关**：必须阅读 `docs/ai-specs/AUTH_AND_LOGIN_FLOW.md`
-- **Icons 颜色**：`docs/ai-specs/UNOCSS_AND_ICONS.md` §6.3.1
+- **SchemaForm**: Must read `docs/ai-specs/SCHEMA_FORM_COMPONENT.md`
+- **Toast/Message**: Must read `docs/ai-specs/TOAST_AND_MESSAGE.md`
+- **Layout**: Must read `docs/ai-specs/ADAPTIVE_LAYOUT.md`
+- **Auth**: Must read `docs/ai-specs/AUTH_AND_LOGIN_FLOW.md`
+- **Icons color**: `docs/ai-specs/UNOCSS_AND_ICONS.md` §6.3.1
 
-## 🔗 相关资源
+## Related Resources
 
-- **Rules 文件**：`.agent/rules/`
-- **项目协议**：`docs/ai-specs/PROJECT_PROTOCOL.md`
-- **黄金样本**：`docs/ai-specs/GOLDEN_SAMPLES/`
-- **Cursor Skills**：`.cursor/skills/`（参考对应关系）
+- **Rules**: `.agent/rules/`
+- **Project protocol**: `docs/ai-specs/PROJECT_PROTOCOL.md`
+- **Golden samples**: `docs/ai-specs/GOLDEN_SAMPLES/`
+- **Cursor skills**: `.cursor/skills/` (for mapping)
 
-## 📝 与 Cursor Skills 的对应关系
+## Correspondence with Cursor Skills
 
-虽然 Skills 的具体实现可能不同，但功能对应关系如下：
-
-- `01-build-ui-component.md` ↔ Cursor 中通过 `06-assemble-ui-handoff.md` 交接
-- `02-build-page-view.md` ↔ Cursor 中通过 `06-assemble-ui-handoff.md` 交接
-- `03-fix-ui-issue.md` ↔ `03-fix-logic-only.md`（Cursor 专注逻辑）
-- `04-full-feature.md` ↔ `01-generate-api-module.md` + `02-generate-feature-composable.md` + `06-assemble-ui-handoff.md`
-- `05-refactor-component.md` ↔ `04-refactor-composable.md`
-- `06-style-audit.md` ↔ Cursor 中通过规则自动检查
-- `07-SchemaForm.md` ↔ `08-SchemaForm.md`
-- `08-toast-message-feedback.md` ↔ `07-toast-message-feedback.md`
+- `01-build-ui-component.md` ↔ Cursor `06-assemble-ui-handoff.md`
+- `02-build-page-view.md` ↔ Cursor `06-assemble-ui-handoff.md`
+- `03-fix-ui-issue.md` ↔ Cursor `03-fix-logic-only.md` (Cursor focuses on logic)
+- `04-full-feature.md` ↔ Cursor `01-generate-api-module.md` + `02-generate-feature-composable.md` + `06-assemble-ui-handoff.md`
+- `05-refactor-component.md` ↔ Cursor `04-refactor-composable.md`
+- `06-style-audit.md` ↔ Cursor rules auto-check
+- `07-SchemaForm.md` ↔ Cursor `08-SchemaForm.md`
+- `08-toast-message-feedback.md` ↔ Cursor `07-toast-message-feedback.md`
+- `12-generate-industrial-page.md` ↔ Cursor 无直接对应（工业场景扩展，可视为 02-build-page-view 的工业版）

@@ -1,52 +1,53 @@
 ---
-description: Antigravity 主指令与核心原则 (Primary Directive)
+description: Antigravity primary directive and core principles
 globs: **/*
 alwaysApply: true
 ---
 
-# Antigravity 主指令
+# Antigravity Primary Directive
 
-你是一个能够进行全栈变更的自主 Agent。你的主要操作约束如下。
+You are an autonomous Agent capable of full-stack changes. Your main operational constraints are:
 
-## 1. 单一真理来源（SSOT）遵循
+## 1. Single Source of Truth (SSOT) Compliance
 
-- **文档即法律**：你必须优先遵循 `docs/ai-specs/PROJECT_PROTOCOL.md` 和 `docs/ai-specs/ANTIGRAVITY_UI_RULES.md`。
-- **配置驱动**：`uno.config.ts`、`src/constants/` 和 `src/types/` 是样式和逻辑约束的 SSOT。不要在代码中发明新的颜色、尺寸或类型。
-- **黄金样本**：创建文件时，必须严格模仿 `docs/ai-specs/GOLDEN_SAMPLES/` 的结构。
-- **构建与自动导入**：自动导入库的完整列表（vue、vue-router、pinia、@vueuse/core、@/locales t/$t）、扫描目录（stores、hooks、api、utils、constants/\*、CScrollbar）和组件范围（仅 src/components；排除 src/layouts；PrimeVueResolver）在 **`docs/ai-specs/BUILD_SYSTEM.md`** 中。不确定什么可以在不使用 `import` 的情况下使用时，请查阅该文档。不要手动从 `'vue'` 导入 `ref`/`computed`/`watch`；删除未使用的导入；对于有意未使用的变量，使用 **`_`** 前缀。
+- **Docs are law**: You MUST follow `docs/ai-specs/PROJECT_PROTOCOL.md` and `docs/ai-specs/ANTIGRAVITY_UI_RULES.md` first.
+- **AI coding protocol**: For programmatic rendering (DataTable column body/renderer, Dialog contentRenderer, etc.), read `docs/ai-specs/AI_CODING_PROTOCOL.md`, follow its decision flow and checklist; ensure `lang="tsx"` when using JSX; FORBIDDEN template strings like `return \`<tag>...\``.
+- **Config-driven**: `uno.config.ts`, `src/constants/`, and `src/types/` are the SSOT for style and logic constraints. Do NOT invent new colors, sizes, or types in code.
+- **Golden samples**: When creating files, strictly mimic the structure in `docs/ai-specs/GOLDEN_SAMPLES/`.
+- **Build and auto-import**: Full list of auto-imported libs (vue, vue-router, pinia, @vueuse/core, @/locales t/$t), scanned dirs (stores, hooks, api, utils, constants/\*, CScrollbar), and component scope (only src/components; exclude src/layouts; PrimeVueResolver) are in **`docs/ai-specs/BUILD_SYSTEM.md`**. When unsure what can be used without `import`, consult that doc. Do NOT manually import `ref`/`computed`/`watch` from `'vue'`; remove unused imports; prefix intentionally unused vars with **`_`**.
 
-## 2. "工具与 Hooks 优先"策略（严格）
+## 2. "Tools & Hooks First" Strategy (strict)
 
-在编写任何新的逻辑或样式代码之前：
+Before writing any new logic or style code:
 
-1. **检查现有工具**：必须搜索 `src/utils/` 和 `src/hooks/` 以查找现有解决方案。
-2. **复用，不要重新发明**：
-   - 需要 HTTP？使用 `useHttpRequest` / `alovaInstance`。**永远不要**直接使用 `fetch`/`axios`。
-   - 需要格式化？使用 `useDateUtils` / `strings.ts`。
-   - 需要存储？使用 `safeStorage`。
-   - 需要图标？使用 `<Icons name="..." />` 匹配 `uno-icons` safelist。
+1. **Check existing tools**: MUST search `src/utils/` and `src/hooks/` for existing solutions.
+2. **Reuse, do NOT reinvent**:
+   - Need HTTP? Use `useHttpRequest` / `alovaInstance`. **Never** use `fetch`/`axios` directly.
+   - Need formatting? Use `useDateUtils` / `strings.ts`.
+   - Need storage? Use `safeStorage`.
+   - Need icons? Use `<Icons name="..." />` matching `uno-icons` safelist.
 
-## 3. "禁止硬编码"策略
+## 3. "No Hardcoding" Strategy
 
-- **样式**：**永远不要**在 `<style>` 或 `:style` 中编写硬编码的 px/rem/hex 颜色。
-  - ✅ 使用 UnoCSS 工具类（例如，`p-md`、`text-primary`、`bg-card`）。
-  - ✅ 如果是动态的，使用 CSS 变量（例如，`style="--custom-height: 100px"`）。
-- **文本**：如果可用，使用 i18n 键（检查 `src/locales`），或至少使用集中式常量。
+- **Styles**: **Never** write hardcoded px/rem/hex colors in `<style>` or `:style`.
+  - ✅ Use UnoCSS utility classes (e.g. `p-md`, `text-primary`, `bg-card`).
+  - ✅ If dynamic, use CSS variables (e.g. `style="--custom-height: 100px"`).
+- **Text**: Use i18n keys if available (check `src/locales`), or at least centralized constants.
 
-## 4. 验证要求
+## 4. Verification Requirements
 
-你是一个 **Agent**，而不仅仅是代码生成器。你必须验证你的工作。
+You are an **Agent**, not just a code generator. You MUST verify your work.
 
-- **构建检查**：创建/修改文件后，如果不确定，始终运行构建检查或类型检查。
-- **浏览器验证**：使用 `browser` 工具：
-  1. 打开正在修改的页面。
-  2. 验证没有控制台错误（红色文本）。
-  3. 验证视觉布局符合预期（例如，"按钮是红色且居中"）。
-  4. 验证交互性（点击按钮、提交表单）。
+- **Build check**: After creating/modifying files, run build or type check when uncertain.
+- **Browser verification**: Use the `browser` tool:
+  1. Open the page being modified.
+  2. Verify no console errors (red text).
+  3. Verify visual layout matches expectation (e.g. "button is red and centered").
+  4. Verify interactivity (click button, submit form).
 
-## 5. 文件与目录结构
+## 5. File and Directory Structure
 
-- **API 层**：`src/api/<module>/<feature>.ts`（扁平两级）。
-- **Hooks**：`src/hooks/modules/`（业务逻辑）或 `src/hooks/layout/`（UI/基础设施）。
-- **组件**：`src/components/<PascalCase>/` 或 `src/views/<module>/`。
-- **图片**：放置在 `src/assets/images` 或 `public/`。
+- **API layer**: `src/api/<module>/<feature>.ts` (flat two levels).
+- **Hooks**: `src/hooks/modules/` (business logic) or `src/hooks/layout/` (UI/infrastructure).
+- **Components**: `src/components/<PascalCase>/` or `src/views/<module>/`.
+- **Images**: Place in `src/assets/images` or `public/`.

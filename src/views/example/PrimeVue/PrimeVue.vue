@@ -1,17 +1,15 @@
 <script setup lang="ts">
-import { useThrottleFn } from '@vueuse/core'
 import { useToast } from 'primevue/usetoast'
 import { useConfirm } from 'primevue/useconfirm'
 import PvDataTable from 'primevue/datatable'
 import Column from 'primevue/column'
 import type { ScrollbarInstance } from '@/components/CScrollbar'
+import { usePrimeVueScrollSpy } from './composables/usePrimeVueScrollSpy'
 
 // --- 导航锚点（单一数据源，驱动左侧标题与右侧目录树） ---
 interface SectionMeta {
   id: string
-  /** 目录中的序号前缀，如 1. / 3.1 */
   indexLabel: string
-  /** 短标签文案，如 Button / Select / MultiSelect */
   label: string
 }
 
@@ -51,234 +49,19 @@ const sectionMeta: SectionMeta[] = [
   { id: 'section-other', indexLabel: '13.', label: 'Breadcrumb / ProgressBar / Skeleton' },
 ]
 
-// 简化数组供 Scroll Spy 使用（保持现有 id/label 结构）
-const sections: { id: string; label: string }[] = sectionMeta.map(({ id, label }) => ({
-  id,
-  label,
-}))
-
-// --- Scroll Spy & 目录导航 ---
+// --- Scroll Spy & 目录导航（逻辑已抽取至 composables/usePrimeVueScrollSpy） ---
 const scrollbarRef = ref<ScrollbarInstance | null>(null)
 const tocAsideRef = ref<HTMLElement | null>(null)
-const activeSectionId = ref<string | null>(sections[0]?.id ?? null) // 默认激活第一项
-const isScrolling = ref<boolean>(false) // 防止点击滚动时触发 scroll spy
-let intersectionObserver: IntersectionObserver | null = null
-
-// 右侧目录树数据（使用 PrimeVue Tree）
-const tocTreeNodes = computed<{ key: string; label: string }[]>(() =>
-  sectionMeta.map(meta => ({
-    key: meta.id,
-    label: `${meta.indexLabel} ${meta.label}`,
-  }))
-)
-
-// 右侧目录树选中状态（与 activeSectionId 联动）
-const tocSelectionKeys = ref<Record<string, boolean> | undefined>(undefined)
-
-watch(
+const {
+  sections,
   activeSectionId,
-  id => {
-    if (!id) {
-      // 始终保持有激活项，fallback 到第一项
-      activeSectionId.value = sections[0]?.id ?? null
-      return
-    }
-    tocSelectionKeys.value = { [id]: true }
-    nextTick(scrollTocToActive)
-  },
-  { immediate: true } // 立即执行，确保初始状态有高亮
-)
-
-/**
- * 将右侧目录树中当前高亮项滚入视口，保证高亮项始终可见
- * 当左侧滚动导致高亮变化时，右侧若高亮项在视口外则自动跟随滚动
- */
-function scrollTocToActive() {
-  const aside = tocAsideRef.value
-  if (!aside) return
-  const el =
-    aside.querySelector<HTMLElement>('.p-treenode[aria-selected="true"]') ??
-    aside.querySelector<HTMLElement>('.p-treenode.p-highlight')
-  if (el) {
-    el.scrollIntoView({ block: 'nearest', behavior: 'smooth' })
-  }
-}
-
-/**
- * 获取 CScrollbar 内部的滚动容器元素
- * 这是 Scroll Spy 和 scrollTo 的 root 元素
- */
-function getScrollElement(): HTMLElement | null {
-  const instance = scrollbarRef.value?.getInstance()
-  if (!instance) return null
-  const { scrollOffsetElement } = instance.elements()
-  return scrollOffsetElement
-}
-
-/**
- * 统一的滚动偏移量常量
- * - SCROLL_OFFSET: 点击目录项时，section 顶部距离视口顶部的距离
- * - DETECTION_BUFFER: 额外缓冲，确保检测锚点落在 section 内部而非边界
- *   需要足够大以跳过 card padding + h2 标题 + 间距，确保落在内容区
- */
-const SCROLL_OFFSET = 80
-const DETECTION_BUFFER = 50
-
-/**
- * 点击目录项 → 滚动到对应 section
- * 使用 CScrollbar 的 scrollTo API，计算精确位置
- */
-function scrollToSection(id: string) {
-  // 临时禁用 scroll spy，避免滚动过程中频繁更新
-  isScrolling.value = true
-  activeSectionId.value = id // 立即更新高亮
-
-  nextTick(() => {
-    const scrollEl = getScrollElement()
-    const targetEl = document.getElementById(id)
-    if (!scrollEl || !targetEl) {
-      isScrolling.value = false
-      return
-    }
-
-    // 计算目标 section 相对于滚动容器的位置
-    const scrollRect = scrollEl.getBoundingClientRect()
-    const targetRect = targetEl.getBoundingClientRect()
-    const currentScrollTop = scrollEl.scrollTop
-    const targetOffsetTop = currentScrollTop + targetRect.top - scrollRect.top
-
-    // 滚动到目标位置（减去偏移量，避免被顶部遮挡）
-    scrollbarRef.value?.scrollTo({
-      top: Math.max(0, targetOffsetTop - SCROLL_OFFSET),
-      behavior: 'smooth',
-    })
-
-    // 滚动动画结束后恢复 scroll spy（smooth 动画通常 300-500ms）
-    setTimeout(() => {
-      isScrolling.value = false
-    }, 500)
-  })
-}
-
-/**
- * 根据当前滚动位置计算应高亮的 section
- * 检测锚点 = scrollTop + SCROLL_OFFSET + DETECTION_BUFFER
- * 这样点击滚动后，锚点会落在 section 内部，而非边界
- *
- * 特殊处理：当滚动到底部时，优先选择最后一个可见的 section
- */
-function computeActiveSectionFromScroll(): void {
-  if (isScrolling.value) return
-
-  const scrollEl = getScrollElement()
-  if (!scrollEl) return
-
-  const scrollRect = scrollEl.getBoundingClientRect()
-  const scrollTop = scrollEl.scrollTop
-  const scrollHeight = scrollEl.scrollHeight
-  const clientHeight = scrollEl.clientHeight
-
-  // 边缘检测：是否已滚动到底部（允许 5px 误差）
-  const isAtBottom = scrollTop + clientHeight >= scrollHeight - 5
-
-  // 如果滚动到底部，直接选择最后一个 section
-  if (isAtBottom && sections.length > 0) {
-    activeSectionId.value = sections[sections.length - 1].id
-    return
-  }
-
-  // 检测锚点：偏移量 + 缓冲，确保落在 section 内部
-  const viewportAnchor = scrollTop + SCROLL_OFFSET + DETECTION_BUFFER
-
-  let containingId: string | null = null
-  let fallbackId: string | null = null
-  let fallbackTop = -Infinity // 满足 elTop <= anchor 的最大 elTop
-
-  sections.forEach(section => {
-    const el = document.getElementById(section.id)
-    if (!el) return
-
-    const rect = el.getBoundingClientRect()
-    const elTop = scrollTop + rect.top - scrollRect.top
-    const elBottom = elTop + rect.height
-
-    if (viewportAnchor >= elTop && viewportAnchor <= elBottom) {
-      containingId = section.id
-    }
-    if (elTop <= viewportAnchor && elTop >= fallbackTop) {
-      fallbackTop = elTop
-      fallbackId = section.id
-    }
-  })
-
-  const targetId = containingId ?? fallbackId
-  if (targetId && sections.some(s => s.id === targetId)) {
-    activeSectionId.value = targetId
-  }
-}
-
-// 节流版：用于 @scroll 事件，避免滚动时频繁计算
-const throttledComputeActiveSection = useThrottleFn(computeActiveSectionFromScroll, 80)
-
-/**
- * 初始化 Scroll Spy（IntersectionObserver + @scroll 双重保障）
- * - IO 回调：entries 仅含变化元素，不可靠；统一改为遍历所有 section 计算最近一个
- * - @scroll：IO 未跨越 threshold 时不触发，补充 scroll 事件确保慢速滚动也更新
- */
-function initScrollSpy() {
-  const scrollEl = getScrollElement()
-  if (!scrollEl) return
-
-  intersectionObserver = new IntersectionObserver(
-    () => {
-      computeActiveSectionFromScroll()
-    },
-    {
-      root: scrollEl,
-      rootMargin: '-64px 0px -40% 0px',
-      threshold: [0, 0.25, 0.5, 0.75, 1],
-    }
-  )
-
-  sections.forEach(section => {
-    const el = document.getElementById(section.id)
-    if (el) {
-      intersectionObserver!.observe(el)
-    }
-  })
-}
-
-/**
- * 右侧目录树节点选择事件
- * 使用 PrimeVue Tree 的 node-select 事件
- */
-function onTocNodeSelect(node: { key?: string }) {
-  const key = node.key
-  if (typeof key === 'string') {
-    scrollToSection(key)
-  }
-}
-
-/**
- * CScrollbar 初始化完成回调
- * 因 CScrollbar 默认 defer: true，OverlayScrollbars 异步初始化，
- * 必须在 @initialized 后再启动 Scroll Spy，否则 getScrollElement() 为 null
- */
-function onScrollbarInitialized() {
-  nextTick(() => {
-    initScrollSpy()
-    computeActiveSectionFromScroll() // 初始高亮当前可见的 section
-    scrollTocToActive() // 保证右侧目录高亮项在视口内
-  })
-}
-
-// --- 生命周期 ---
-
-onBeforeUnmount(() => {
-  // 清理 IntersectionObserver
-  intersectionObserver?.disconnect()
-  intersectionObserver = null
-})
+  tocTreeNodes,
+  tocSelectionKeys,
+  scrollToSection,
+  onTocNodeSelect,
+  onScrollbarInitialized,
+  throttledComputeActiveSection,
+} = usePrimeVueScrollSpy(scrollbarRef, tocAsideRef, sectionMeta)
 
 // --- Button ---
 const loading = ref<boolean>(false)

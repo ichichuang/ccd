@@ -1,44 +1,44 @@
 ---
-description: 修复 UI 问题：Reproduce -> Fix -> Verify
+description: Fix UI issue: Reproduce -> Fix -> Verify
 globs: **/*.vue, **/*.ts
 ---
 
-# 修复 UI 问题技能
+# Fix UI Issue Skill
 
-## 1. 目标
+## 1. Goal
 
-修复报告的 UI Bug 或回归问题。
+Fix reported UI bugs or regressions.
 
-## 2. 步骤
+## 2. Steps
 
-### 步骤 1：复现
+### Step 1: Reproduce
 
-1. 使用 `browser` 工具访问 URL。
-2. 确认问题存在（如有用，截图）。
-3. 检查控制台错误。
+1. Use `browser` tool to open the URL.
+2. Confirm the issue exists (screenshot if helpful).
+3. Check console for errors.
 
-### 步骤 2：定位原因（LCD）
+### Step 2: Locate Root Cause (LCD)
 
-- 检查组件代码。
-- 检查 `uno.config.ts` 是否有缺失的类。
-- 检查逻辑 Hook 是否有数据问题。
-- **Vue 模板相关**（若报 `Error parsing JavaScript expression`、构建失败或 TS 类型错误）：
-  - 多语句内联事件处理器 → 抽取到 script 方法。
-  - 模板中使用 TypeScript 语法（`as`、`:`、`<>`）→ 移到 script 中。
-  - `readonly` 数组 `includes` 类型不兼容 → 使用 `(ARRAY as readonly string[]).includes(val)`，赋值时显式断言。
-  - 详见 `docs/ai-specs/VUE_TEMPLATE_ANTIPATTERNS.md`。
-- **PrimeVue 组件配色**：若问题涉及 Button/Dialog 等组件的 hover、pressed、outlined/text 变体状态：
-  - 检查 `src/utils/theme/primevue-preset.ts` 的 `initComponentButtonColorSchemeOptionsItems`
-  - 确认 text/outlined 使用 `get('Light')` 作为 hover 背景，而非 `get('Text')`（\*-foreground）或 `get('')`（实色）
-  - 详见 `docs/ai-specs/PRIMEVUE_THEME.md`
+- Inspect component code.
+- Check `uno.config.ts` for missing classes.
+- Check logic hooks for data issues.
+- **Vue template issues** (if you see `Error parsing JavaScript expression`, build failure, or TS type errors):
+  - Multi-statement inline event handlers → Extract to script methods.
+  - TypeScript syntax in template (`as`, `:`, `<>`) → Move to script.
+  - `readonly` array `includes` type mismatch → Use `(ARRAY as readonly string[]).includes(val)` with explicit cast.
+  - See `docs/ai-specs/VUE_TEMPLATE_ANTIPATTERNS.md`.
+- **PrimeVue component colors**: If the issue involves Button/Dialog hover, pressed, outlined/text variants:
+  - Check `initComponentButtonColorSchemeOptionsItems` in `src/utils/theme/color-adapter.ts`
+  - Ensure text/outlined use `get('Light')` for hover background, not `get('Text')` (\*-foreground) or `get('')` (solid)
+  - See `docs/ai-specs/PRIMEVUE_THEME.md`
 
-### 步骤 3：修复
+### Step 3: Fix
 
-- 应用修复。
-- 确保遵循"禁止硬编码"规则。
+- Apply the fix.
+- Ensure "no hardcoding" rules are followed.
 
-### 步骤 4：验证
+### Step 4: Verify
 
-1. 在 `browser` 中刷新页面。
-2. 确认 Bug 已消失。
-3. 检查相关区域是否有回归。
+1. Refresh the page in `browser`.
+2. Confirm the bug is gone.
+3. Check for regressions in related areas.

@@ -1,31 +1,31 @@
-# Skill 08：SchemaForm 表单组件使用
+# Skill 08: SchemaForm Component Usage
 
 ## Goal
 
-当任务涉及多字段表单（校验、分步、分组、动态字段）时，使用 SchemaForm + useSchemaForm，不手写 PrimeVue 表单组件拼装。
+When the task involves multi-field forms (validation, steps, groups, dynamic fields), use SchemaForm + useSchemaForm instead of hand-writing PrimeVue form components.
 
 ## Pre-check
 
 - `@docs/ai-specs/SCHEMA_FORM_COMPONENT.md`
 - `@.cursor/rules/18-components-and-icons.mdc`
 
-## 判断标准
+## Decision criteria
 
-| 场景                                 | 使用                           |
-| ------------------------------------ | ------------------------------ |
-| 1–2 个字段、无复杂逻辑               | PrimeVue InputText / Select 等 |
-| 多字段、需校验/分步/分组/动态 schema | **SchemaForm + useSchemaForm** |
+| Scenario                                            | Use                              |
+| --------------------------------------------------- | -------------------------------- |
+| 1–2 fields, no complex logic                        | PrimeVue InputText / Select etc. |
+| Multi-field, validation/steps/groups/dynamic schema | **SchemaForm + useSchemaForm**   |
 
 ## Output
 
-- 定义 Schema（columns、layout、rules、steps/sections、transform、hidden 等）
-- 使用 SchemaForm 或 useSchemaForm 驱动表单
-- 类型从 `@/components/SchemaForm` 导入：Schema、SchemaColumnsItem、FormValues、EvalCtx、FieldRenderCtx
-- **校验**：用 SchemaForm 的 ref，`formRef.value?.validate()`；useSchemaForm 不提供 validate()
-- **转换**：需要「外部→控件」或「控件→提交」时用 column 的 `transform: { input?, output? }`
-- **持久化**：`persist` 短期草稿（key/ttl）；`remember` 内容记忆；步骤表单与 remember 互斥，详见文档
+- Define Schema (columns, layout, rules, steps/sections, transform, hidden, etc.)
+- Drive form via SchemaForm or useSchemaForm
+- Import types from `@/components/SchemaForm`: Schema, SchemaColumnsItem, FormValues, EvalCtx, FieldRenderCtx
+- **Validation**: Use SchemaForm ref, `formRef.value?.validate()`; useSchemaForm does NOT provide validate()
+- **Transform**: Use column `transform: { input?, output? }` for "external→control" or "control→submit"
+- **Persistence**: `persist` for short-term drafts (key/ttl); `remember` for content memory; step form and remember are mutually exclusive; see docs
 
-## 禁止
+## Forbidden
 
-- 引用 `src/views/example/schema-form`（示例目录后期会删除）
-- 手写大量 PrimeVue 表单组件拼装替代 SchemaForm
+- Import from `src/views/example/schema-form` (example dir may be removed later)
+- Hand-writing many PrimeVue form components instead of SchemaForm

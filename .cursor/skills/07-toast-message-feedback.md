@@ -1,64 +1,63 @@
-# Skill 07：Toast & Message 反馈提示
+# Skill 07: Toast & Message Feedback
 
 ## Goal
 
-在拦截器、errorHandler、工具函数等非组件环境需要轻量提示时，正确选用 `$message` 或 `$toast`。
+When a lightweight notification is needed in non-component contexts (interceptors, errorHandler, utils), correctly choose `$message` or `$toast`.
 
-## 决策
+## Decision
 
-- **$message**：居中纯提示（正中央、无关闭按钮、life 后自动消失）；适合错误/成功/信息/警告等一般反馈。
-- **$toast**：可指定位置（tl/tc/tr/bl/bc/br）、可带关闭按钮；适合需定位或可交互的提示。
+- **$message**: Centered, no close button, auto-dismiss after life; suitable for error/success/info/warning feedback.
+- **$toast**: Positionable (tl/tc/tr/bl/bc/br), can have close button; suitable for positioned or interactive notifications.
 
-## 使用
+## Usage
 
-- **非组件环境**：`window.$message?.success('操作成功')` 或 `window.$toast?.dangerIn('top-right', '错误', '详情')`
-- **组件内**：优先 PrimeVue `useToast()`
-- **文档**：`docs/ai-specs/TOAST_AND_MESSAGE.md`、`docs/ai-specs/TOAST_AND_MESSAGE.md`
+- **Non-component**: `window.$message?.success('Operation succeeded')` or `window.$toast?.dangerIn('top-right', 'Error', 'Details')`
+- **Inside component**: Prefer PrimeVue `useToast()`
+- **Docs**: `docs/ai-specs/TOAST_AND_MESSAGE.md`
 
 ## Pre-check
 
-- `docs/ai-specs/TOAST_AND_MESSAGE.md` - API 与使用方式
-- `docs/ai-specs/TOAST_AND_MESSAGE.md` - 样式覆盖说明（居中、关闭按钮、内边距）
+- `docs/ai-specs/TOAST_AND_MESSAGE.md` - API and usage
+- `docs/ai-specs/TOAST_AND_MESSAGE.md` - Style overrides (center, close button, padding)
 
-## 实现要点（技术细节）
+## Implementation Notes (technical details)
 
-### $message 实现
+### $message implementation
 
-- **buildMessageApi**：`group: 'center'`、`closable: false`
-- **Toast 配置**：`position="center"`、`group="center"`
+- **buildMessageApi**: `group: 'center'`, `closable: false`
+- **Toast config**: `position="center"`, `group="center"`
 
-### 居中样式实现
+### Center styling
 
-- **CSS 类**：`.p-toast.p-toast-center`
-- **样式规则**：
+- **CSS class**: `.p-toast.p-toast-center`
+- **Rules**:
   - `top: 50%`
   - `left: 50%`
   - `transform: translate(-50%, -50%)`
 
-### 关闭按钮位置
+### Close button position
 
-- **CSS 选择器**：`.p-toast:not(.p-toast-center)`
-- **样式规则**：
+- **CSS selector**: `.p-toast:not(.p-toast-center)`
+- **Rules**:
   - `position: absolute`
   - `top: 0`
   - `right: 0`
 
-### 内边距配置
+### Padding config
 
-- **配置文件**：`src/utils/theme/primevue-preset.ts`
-- **配置项**：`toast.content.padding`
-- **使用变量**：`var(--spacing-*)`
+- **Config file**: `src/utils/theme/primevue-preset.ts`
+- **Config key**: `toast.content.padding`
+- **Variables**: `var(--spacing-*)`
 
-## 相关文件
+## Related Files
 
-- `src/layouts/components/AppPrimeVueGlobals.vue` - 挂载、buildMessageApi、样式
+- `src/layouts/components/AppPrimeVueGlobals.vue` - Mount, buildMessageApi, styles
 - `src/utils/theme/primevue-preset.ts` - Toast content.padding
-- `docs/ai-specs/TOAST_AND_MESSAGE.md` - API 文档
-- `docs/ai-specs/TOAST_AND_MESSAGE.md` - 样式覆盖说明
+- `docs/ai-specs/TOAST_AND_MESSAGE.md` - API docs and style overrides
 
-## 验证
+## Validation
 
-- 检查控制台是否有错误
-- 验证 $message 居中显示
-- 验证 $toast 按指定位置显示
-- 验证关闭按钮位置正确
+- Check console for errors
+- Verify $message is centered
+- Verify $toast displays at specified position
+- Verify close button position is correct

@@ -1,48 +1,48 @@
-# Skill 10：Icons 颜色定制（颜色不生效时）
+# Skill 10: Icons Color Styling (When color does not apply)
 
 ## Goal
 
-当 Icons 组件通过 `class` 设置的颜色/opacity 不生效时，按本技能决策表选择修复方案。
+When Icons component color/opacity set via `class` does not apply, use this Skill's decision table to choose the fix.
 
-## Pre-check（强制）
+## Pre-check (mandatory)
 
-- `@docs/ai-specs/UNOCSS_AND_ICONS.md` §6.3、§6.3.1、§6.3.2、§2.7.1
+- `@docs/ai-specs/UNOCSS_AND_ICONS.md` §6.3, §6.3.1, §6.3.2, §2.7.1
 - `@.cursor/rules/18-components-and-icons.mdc`
 
-## 根因速查
+## Root cause quick reference
 
-1. Icons 未传 `color` 时会自动添加 `text-foreground`，与自定义 class 冲突
-2. 在 PrimeVue（Menubar、Dropdown 等）内时，父级样式权重更高
-3. 多个颜色类特异性相同，生效顺序非 deterministic
+1. Icons adds `text-foreground` when `color` is not passed; conflicts with custom class
+2. Inside PrimeVue (Menubar, Dropdown, etc.), parent styles have higher specificity
+3. Multiple color classes with same specificity; order is non-deterministic
 
-## 决策表（按优先级）
+## Decision table (by priority)
 
-| 场景                           | 方案                  | 示例                                      |
-| ------------------------------ | --------------------- | ----------------------------------------- |
-| 需强制覆盖，且可接受内联样式   | 使用 `color` prop     | `color="rgb(var(--primary))"`             |
-| 需用 class 覆盖                | 颜色/opacity 类加 `!` | `class="text-primary! opacity-100!"`      |
-| hover / group-hover 颜色不生效 | 状态类加 `!`          | `group-hover:text-primary-hover!`         |
-| 需与父级文字同色               | `text-current`        | `class="text-current"`                    |
-| 自定义 `i-custom:*` 图标       | 同上                  | 同样 inject fill="currentColor"，规则相同 |
+| Scenario                        | Solution                 | Example                                |
+| ------------------------------- | ------------------------ | -------------------------------------- |
+| Need override, inline style ok  | Use `color` prop         | `color="rgb(var(--primary))"`          |
+| Must use class to override      | Add `!` to color/opacity | `class="text-primary! opacity-100!"`   |
+| hover / group-hover not applied | Add `!` to state class   | `group-hover:text-primary-hover!`      |
+| Match parent text color         | `text-current`           | `class="text-current"`                 |
+| Custom `i-custom:*` icon        | Same as above            | Same rules, inject fill="currentColor" |
 
-## 步骤
+## Steps
 
-1. **判断场景**：Icons 是否在 PrimeVue 或样式权重较高的父级内？
-2. **选择方案**：优先 `color` prop；若必须用 class，则加 `!`
-3. **检查 opacity**：若 `opacity-*` 也被覆盖，同样加 `!`
-4. **验证**：浏览器检查图标最终颜色是否生效
+1. **Identify scenario**: Is Icons inside PrimeVue or a parent with higher specificity?
+2. **Choose solution**: Prefer `color` prop; if class is required, add `!`
+3. **Check opacity**: If `opacity-*` is also overridden, add `!` there too
+4. **Verify**: Inspect icon final color in browser
 
-## Icons 与 transition
+## Icons and transition
 
-Icons 使用 `group-hover:` 颜色/透明度时，transition 必须写在 Icons 的 class 上，父容器 transition 无效。示例：`class="transition-colors duration-scale-md group-hover:text-primary-hover!"`。hover 用 primary-hover；品牌**静态**颜色可用 `text-primary!`。
+When Icons use `group-hover:` color/opacity, transition MUST be on Icons class; parent transition does not apply. Example: `class="transition-colors duration-scale-md group-hover:text-primary-hover!"`. Use primary-hover for hover; `text-primary!` for brand **static** color.
 
-## 禁止
+## Forbidden
 
-- `color` prop 使用 hex 或 `var(--primary)`（必须 `rgb(var(--primary))`）
-- 手写 `<svg>` 或外链图标
-- Icons 有 group-hover 颜色时，仅在父级加 transition
+- `color` prop with hex or `var(--primary)` (MUST use `rgb(var(--primary))`)
+- Hand-written `<svg>` or external icons
+- Icons with group-hover color but transition only on parent
 
-## 参考
+## Reference
 
-- 完整规则：`docs/ai-specs/UNOCSS_AND_ICONS.md` §6.3.1、§6.3.2、§2.7.1
-- 示例：`src/layouts/components/admin/AdminHeader.vue`（Menubar 内 Icons 使用 `text-primary!` 等）
+- Full rules: `docs/ai-specs/UNOCSS_AND_ICONS.md` §6.3.1, §6.3.2, §2.7.1
+- Example: `src/layouts/components/admin/AdminHeader.vue` (Icons in Menubar using `text-primary!` etc.)

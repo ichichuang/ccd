@@ -110,3 +110,14 @@ window.$toast?.removeGroup?.('tl') // 清除指定位置
 - **位置**：`src/utils/theme/primevue-preset.ts` 中 `components.toast.content.padding`
 - **值**：`var(--spacing-sm) var(--spacing-xs) var(--spacing-sm) var(--spacing-sm)`
 - **说明**：替代 `overlay.popover.padding`，使用语义 spacing 变量，更紧凑
+
+## 7. Toast/Message 默认 life 建议（工业场景）
+
+| severity       | 建议 life (ms) | 说明                                               |
+| -------------- | -------------- | -------------------------------------------------- |
+| success        | 3000           | 与 `AppPrimeVueGlobals.vue` 当前 DEFAULT_LIFE 一致 |
+| info           | 3000           | 同上                                               |
+| warn           | 5000           | 便于阅读                                           |
+| error / danger | 8000           | 便于阅读与排查                                     |
+
+通过 `add({ life: N })` 或 `window.$toast?.add({ ..., life: 8000 })` 覆盖默认值。

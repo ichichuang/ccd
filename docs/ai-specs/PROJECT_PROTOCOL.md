@@ -4,6 +4,7 @@
 
 ## 0. 进一步阅读（底层系统 SSOT 索引）
 
+- **`./AI_CODING_PROTOCOL.md`**：**AI 编码协议**，生成代码前的决策流程与自检清单，必读。
 - `./BUILD_SYSTEM.md`：构建系统与自动导入（为什么 `ref/computed` 可以不 import）
 - `./ENV_AND_RUNTIME.md`：环境变量与运行时行为（dev/prod 差异、proxy/timeout）
 - `./TYPESCRIPT_AND_LINTING.md`：TS 项目引用与 ESLint（自动导入 globals、生成 d.ts 的纳入）
@@ -11,7 +12,8 @@
 - `./UNOCSS_AND_ICONS.md`：UnoCSS 语义类与图标体系（iconify + custom SVG + safelist）
 - `./PROJECT_PROTOCOL.md` §11 + `.cursor/rules/22-layouts.mdc`：Layouts 系统（LayoutMode、AdminLayoutMode、布局壳扩展）
 - `./ADAPTIVE_LAYOUT.md`：布局适配系统（PC/Tablet/Mobile、断点、有效显隐、userAdjusted）
-- `./PROJECT_PROTOCOL.md` §5.1 + `.cursor/rules/24-tsx-rendering.mdc`：TSX 渲染规范（程序化渲染用 TSX，禁止 h()）
+- `./PROJECT_PROTOCOL.md` §5.1 + `.cursor/rules/24-tsx-rendering.mdc` + `.cursor/rules/27-ai-tsx-decision.mdc`：TSX 渲染规范（程序化渲染用 TSX，禁止 h()；lang 切换、VNode vs 模板字符串）
+- **`./PRIMEVUE_V4_API.md`**：PrimeVue v4 API 规范，禁止 v3 弃用组件名（Dropdown→Select、Calendar→DatePicker 等），生成 PrimeVue 代码前必读。
 - `./DIALOG_COMPONENT.md`：PrimeDialog 二次封装（useDialog、便捷方法、高级用法）
 - `./DataTable_COMPONENT.md`：DataTable 表格封装（列配置、API、分页/无限滚动、选择、导出、列持久化）
 - `./SCHEMA_FORM_COMPONENT.md`：SchemaForm 表单组件（Schema 驱动、useSchemaForm、动态字段、分步/分组）
@@ -42,13 +44,13 @@
 - **强制规则（Must）：**
   - 表单字段（输入/选择/日期/开关）：
     - **多字段、需校验/分步/分组/动态 schema**：MUST 使用 SchemaForm + useSchemaForm（见 `./SCHEMA_FORM_COMPONENT.md`）。
-    - 简单 1–2 个字段：直接使用 PrimeVue 组件：`<InputText>` / `<Password>` / `<InputNumber>` / `<Checkbox>` / `<RadioButton>` / `<Dropdown>` / `<MultiSelect>` / `<Calendar>` / `<ToggleSwitch>` 等。
+    - 简单 1–2 个字段：直接使用 PrimeVue v4 组件：`<InputText>` / `<Password>` / `<InputNumber>` / `<Checkbox>` / `<RadioButton>` / `<Select>` / `<MultiSelect>` / `<DatePicker>` / `<ToggleSwitch>` 等。**禁止**使用 v3 已弃用名（`Dropdown`、`Calendar`、`InputSwitch`）。详见 `./PRIMEVUE_V4_API.md`。
   - 操作按钮：
     - 使用 `<Button>` 作为主要/次要操作按钮，而不是手写 `<button>` 样式。
   - 列表/表格：
     - 交互性数据列表优先使用 **DataTable**（`@/components/DataTable`），详见 `./DataTable_COMPONENT.md`；避免从零写 `<table>` 或裸用 PrimeVue DataTable 实现分页/排序/筛选/导出等复杂逻辑。
   - 弹窗/抽屉：
-    - 自定义弹窗、反馈提示、确认对话框优先使用 `useDialog()`（见 `./DIALOG_COMPONENT.md`）。侧边抽屉使用 `<Sidebar>`。禁止用 `position: fixed` 的 div 临时拼装。
+    - 自定义弹窗、反馈提示、确认对话框优先使用 `useDialog()`（见 `./DIALOG_COMPONENT.md`）。PrimeVue 侧边抽屉使用 `<Drawer>`（v4；禁止使用 v3 的 `Sidebar`）。禁止用 `position: fixed` 的 div 临时拼装。
   - 消息/确认：
     - **组件内**轻量通知：可使用 PrimeVue `useToast()`。
     - **非组件环境**（如 HTTP 拦截器、全局错误处理）：使用 `window.$toast` / `window.$message`（见 `./TOAST_AND_MESSAGE.md`、`./TOAST_AND_MESSAGE.md`）。禁止在业务中自建全局通知系统。
@@ -71,7 +73,7 @@
     - `src/hooks/modules/useHttpRequest.ts`：对 Alova 泛型与 Method 的胶水封装
     - `src/utils/lodashes.ts`：对 lodash-es 的通用函数包装
     - `src/utils/safeStorage/**`：加密、压缩、Pinia 序列化等存储适配层
-    - `src/utils/date.ts`：对 dayjs / date-holidays 等第三方日期库的深度适配
+    - `src/utils/date/`：对 dayjs / date-holidays 等第三方日期库的深度适配（目录同构于 http）
     - `src/components/UseEcharts/**`：ECharts 组件与事件/option 类型边界（与 ECharts API 对齐）
     - `src/hooks/modules/useChartTheme/**`：图表主题与 ECharts option 主题化边界（配置结构复杂、多版本兼容）
   - **规则**：
@@ -303,6 +305,7 @@ const renderSlot = () => <span class="text-muted-foreground">动态内容</span>
 - `StoreExample.ts` — Pinia Store 写法
 - `UIComponent.vue` — Script Setup + UnoCSS + PrimeVue 组件写法
 - `ApiModuleExample.ts` — API 模块定义（DTO 类型、Method builder、便捷函数）
+- **`DataTableBodyColumn.vue`** — DataTable 列 body 自定义（**必须** `lang="tsx"` + JSX 返回 VNode），详见 `./AI_CODING_PROTOCOL.md` §3
 
 生成后自审：
 
@@ -356,7 +359,7 @@ const renderSlot = () => <span class="text-muted-foreground">动态内容</span>
 
 #### 日期 / 时区
 
-- `src/utils/date.ts`：日期工具函数（格式化/解析等）
+- `src/utils/date/`：日期工具函数（格式化/解析等）
 - `src/hooks/modules/useDateUtils.ts`：时区、可用时区列表、与 locale 联动等（优先使用）
 
 #### 字符串工具
@@ -365,7 +368,7 @@ const renderSlot = () => <span class="text-muted-foreground">动态内容</span>
 
 #### 浏览器环境/能力检测
 
-- `src/utils/browser.ts`：浏览器/终端/平台差异处理（禁止在业务中写 UA/平台判断）
+- ~~`src/utils/browser.ts`~~：已移除。浏览器/平台差异处理可使用 `@vueuse/core` 或 `window.matchMedia` 等标准 API
 
 #### 元素尺寸监听/容器尺寸
 
@@ -380,7 +383,7 @@ const renderSlot = () => <span class="text-muted-foreground">动态内容</span>
 
 - **HTTP 相关**：优先扩展 `src/utils/http/` 或按 `useHttpRequest` 模式新增 composable；不要在业务组件里封装请求
 - **安全存储**：落到 `src/utils/safeStorage/` 对应模块
-- **字符串/ID/浏览器/日期**：分别落到 `src/utils/strings.ts`、`src/utils/ids.ts`、`src/utils/browser.ts`、`src/utils/date.ts`
+- **字符串/ID/日期**：分别落到 `src/utils/strings.ts`、`src/utils/ids.ts`、`src/utils/date/`（browser 已移除）
 - **跨组件逻辑/页面逻辑**：落到 `src/hooks/modules/`（命名 `useXxx.ts`）
 - 若必须创建新工具文件：必须在文件头写清楚“职责/边界/禁止用途”，并保持导出风格与同目录一致
 
@@ -407,9 +410,9 @@ const renderSlot = () => <span class="text-muted-foreground">动态内容</span>
 
 - **驼峰转 kebab-case**：`toKebabCase(str, start?, end?): string`
 
-#### 8.4.4 浏览器/系统能力（`src/utils/browser.ts`）
+#### 8.4.4 浏览器/系统能力
 
-- **系统颜色模式**：`getSystemColorMode(): 'light' | 'dark'`
+- ~~`src/utils/browser.ts`~~ 已移除。系统颜色模式可改用 `window.matchMedia('(prefers-color-scheme: dark)')` 或主题 Store
 
 #### 8.4.5 全局事件总线（`src/utils/mitt.ts`）
 
@@ -433,10 +436,10 @@ const renderSlot = () => <span class="text-muted-foreground">动态内容</span>
 - **友好别名**：`encryptAndCompress/...`（`safeStorage.ts`）
 - **Pinia 序列化器**：`createPiniaEncryptedSerializer(secret?)`（`piniaSerializer.ts`）
 
-#### 8.4.8 日期/时区（`src/utils/date.ts` + `src/hooks/modules/useDateUtils.ts`）
+#### 8.4.8 日期/时区（`src/utils/date/` + `src/hooks/modules/useDateUtils.ts`）
 
 - **默认入口（推荐）**：`useDateUtils()`（响应式代理层：locale/timezone 同步、格式化等）
-- **底层能力（必要时）**：`DateUtils`（default export，`src/utils/date.ts`）
+- **底层能力（必要时）**：`DateUtils`（default export，`src/utils/date/`）
 
 #### 8.4.9 元素尺寸监听（`src/hooks/modules/useAppElementSize.ts`）
 
@@ -467,7 +470,7 @@ const renderSlot = () => <span class="text-muted-foreground">动态内容</span>
 **1. 强制查找顺序**
 
 - **领域 Hooks**（任务涉及 SchemaForm 时）：`src/components/SchemaForm/hooks/` — useFormSync、useFormActions、useFormMemory、useLayout、useValidation、usePersistence、useSteps、useSubmit、useLifecycle 等
-- **全局工具**：`src/utils/` — lodashes、date、strings、ids、browser、safeStorage、http/\*、mitt、deviceSync 等
+- **全局工具**：`src/utils/` — lodashes、date、strings、ids、safeStorage、http/\*、mitt、deviceSync 等（browser 已移除）
 
 在实现前用 grep/codebase_search 按函数名或语义搜索，确认是否已存在。
 

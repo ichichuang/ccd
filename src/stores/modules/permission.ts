@@ -1,3 +1,4 @@
+// 占位：对接后端时恢复 import，并创建 src/api/auth 实现 getAuthRoutes
 // import { getAuthRoutes } from '@/api/auth'
 import { deepClone } from '@/utils/lodashes'
 import { getAdminMenuTree, getFlatRouteList } from '@/router/utils/helper'
@@ -88,6 +89,7 @@ export const usePermissionStore = defineStore('permission', {
      */
     async fetchDynamicRoutes(): Promise<BackendRouteConfig[]> {
       try {
+        // 占位：对接后端时恢复 getAuthRoutes 调用
         // const routeResponse = await getAuthRoutes()
         const routeResponse: BackendRouteConfig[] = []
         const routes = Array.isArray(routeResponse)

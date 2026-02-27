@@ -1,168 +1,131 @@
-# Antigravity 规则与技能系统
+# Antigravity Rules and Skills System
 
-本目录包含 Antigravity Agent 的操作约束和能力定义。
+This directory contains constraints and capability definitions for the Antigravity Agent.
 
-## 📋 目录结构
+## Directory Structure
 
-- **`.agent/rules/`**：规则文件，定义 AI 必须遵循的强制约束
-- **`.agent/skills/`**：技能文件，定义标准操作流程（SOP）
+- **`.agent/rules/`**: Rule files that define mandatory constraints for AI
+- **`.agent/skills/`**: Skill files that define standard operating procedures (SOP)
 
-## 📚 Rules（规则文件）
+## Rules
 
-规则文件定义了 AI 必须遵循的严格边界。标记了 `alwaysApply: true` 的规则会自动应用。
+Rules define strict boundaries that AI must follow. Rules with `alwaysApply: true` are applied automatically.
 
-### 核心规则（自动应用）
+### Core Rules (auto-applied)
 
-1. **`00-primary-directive.md`** - 主指令与核心原则
-   - **功能**：SSOT 遵循、工具优先、禁止硬编码
-   - **适用范围**：所有文件（`globs: **/*`）
-   - **自动应用**：是
-   - **关键内容**：
-     - 单一真理来源（SSOT）
-     - 工具优先策略
-     - 禁止硬编码值
+1. **`00-primary-directive.md`** – Primary directive and core principles
+   - **Purpose**: SSOT, tools-first, no hardcoding
+   - **Scope**: All files (`globs: **/*`)
+   - **Auto-apply**: Yes
+   - **Contents**: Single source of truth (SSOT), tools-first, no hardcoded values
 
-2. **`10-ui-architecture.md`** - UI 架构规范
-   - **功能**：UnoCSS 唯一、PrimeVue 集成、组件系统、交互过渡
-   - **适用范围**：Vue/TSX/TS 文件（`globs: **/*.vue, **/*.tsx, **/*.ts`）
-   - **自动应用**：是
-   - **关键内容**：
-     - UnoCSS 唯一样式方案
-     - PrimeVue 组件使用规范
-     - 组件复用规则
-     - §5 交互过渡：hover/active/focus 须配 transition；Icons 的 group-hover 须在 Icons 自身加 transition；duration-scale 须与 transition\* 搭配
+2. **`10-ui-architecture.md`** – UI architecture
+   - **Purpose**: UnoCSS only, PrimeVue integration, component system, transitions
+   - **Scope**: Vue/TSX/TS (`globs: **/*.vue, **/*.tsx, **/*.ts`)
+   - **Auto-apply**: Yes
+   - **Contents**: UnoCSS as the only styling approach, PrimeVue usage, component reuse; §5 transitions: hover/active/focus need transition; Icons group-hover needs transition on Icons; duration-scale pairs with transition\*
 
-3. **`12-logic-awareness.md`** - 逻辑层规范
-   - **功能**：API -> Hook -> UI 三层架构
-   - **适用范围**：Vue/TS/TSX 文件（`globs: **/*.vue, **/*.ts, **/*.tsx`）
-   - **自动应用**：是
-   - **关键内容**：
-     - 三层架构强制分离
-     - API 层定义
-     - Hook 层业务逻辑
-     - UI 层纯展示
+3. **`12-logic-awareness.md`** – Logic layer
+   - **Purpose**: API -> Hook -> UI three-layer architecture
+   - **Scope**: Vue/TS/TSX (`globs: **/*.vue, **/*.ts, **/*.tsx`)
+   - **Auto-apply**: Yes
+   - **Contents**: Three-layer separation, API layer, Hook layer business logic, UI layer presentation only
 
-4. **`15-toolchain-first.md`** - 工具链优先
-   - **功能**：必备工具查找表，强制复用现有工具
-   - **适用范围**：TS/Vue/TSX 文件（`globs: **/*.ts, **/*.vue, **/*.tsx`）
-   - **自动应用**：是
-   - **关键内容**：
-     - HTTP 请求工具
-     - 安全存储工具
-     - 日期/字符串工具
-     - 全局事件工具
+4. **`15-toolchain-first.md`** – Toolchain first
+   - **Purpose**: Mandatory tool lookup table, reuse existing tools
+   - **Scope**: TS/Vue/TSX (`globs: **/*.ts, **/*.vue, **/*.tsx`)
+   - **Auto-apply**: Yes
+   - **Contents**: HTTP, secure storage, date/string utils, global events
 
-5. **`20-code-standards.md`** - 代码规范
-   - **功能**：命名、目录结构、导出模式、TypeScript 最佳实践
-   - **适用范围**：TS/Vue/TSX 文件（`globs: **/*.ts, **/*.vue, **/*.tsx`）
-   - **自动应用**：是
-   - **关键内容**：
-     - 命名约定（camelCase/PascalCase/kebab-case）
-     - 目录结构规范
-     - 导出模式（禁止 default export）
-     - TypeScript 类型注解要求
-     - Vue 模板语法约束
+5. **`20-code-standards.md`** – Code standards
+   - **Purpose**: Naming, directory structure, exports, TypeScript practices
+   - **Scope**: TS/Vue/TSX (`globs: **/*.ts, **/*.vue, **/*.tsx`)
+   - **Auto-apply**: Yes
+   - **Contents**: Naming conventions, directory structure, export patterns (no default export), TS type annotations, Vue template syntax constraints
 
-6. **`22-verification.md`** - 验证规范
-   - **功能**：Agent 自查与浏览器测试标准
-   - **适用范围**：所有文件（`globs: **/*`）
-   - **自动应用**：是
-   - **关键内容**：
-     - 验证循环流程
-     - 浏览器工具使用
-     - 常见失败模式检查
-     - 完成定义（Definition of Done）
+6. **`22-verification.md`** – Verification
+   - **Purpose**: Agent self-check and browser testing standards
+   - **Scope**: All files (`globs: **/*`)
+   - **Auto-apply**: Yes
+   - **Contents**: Verification loop, browser tool usage, common failure modes, Definition of Done
 
-### 特定场景规则
+### Specific Scenarios
 
-7. **`25-adaptive-layout.md`** - 布局自适应规则
-   - **功能**：PC/Tablet/Mobile、断点、有效显隐、userAdjusted
-   - **适用范围**：layouts 相关文件（`globs: src/layouts/**/*, src/stores/modules/layout.ts, src/stores/modules/device.ts`）
-   - **自动应用**：否（按文件匹配）
-   - **详细文档**：`docs/ai-specs/ADAPTIVE_LAYOUT.md`
-   - **关键内容**：
-     - 单一驱动源
-     - 断点系统
-     - 有效显隐逻辑
+7. **`25-adaptive-layout.md`** – Adaptive layout
+   - **Purpose**: PC/Tablet/Mobile, breakpoints, effective visibility, userAdjusted
+   - **Scope**: Layout-related (`globs: src/layouts/**/*, src/stores/modules/layout.ts, src/stores/modules/device.ts`)
+   - **Auto-apply**: No (file-match)
+   - **Details**: `docs/ai-specs/ADAPTIVE_LAYOUT.md`
+   - **Contents**: Single driver, breakpoint system, effective visibility logic
 
-8. **`25-html-tag-semantics.md`** - HTML 标签语义与格式化规范
-   - **功能**：正确使用 code/span/div/pre，避免格式化冲突和语法错误
-   - **适用范围**：Vue/TSX 文件（`globs: src/**/*.{vue,tsx}`）
-   - **自动应用**：是
-   - **关键内容**：
-     - `<code>` 仅用于 `<pre><code>` 代码块组合
-     - `<span>` 用于内联样式，特别是在 `<p>` 标签内
-     - `<div>` 用于块级容器和可点击块（不能在 `<p>` 内）
-     - HTML 嵌套规则（块级元素不能在 `<p>` 内）
-     - Prettier/ESLint 格式化冲突解决
+8. **`25-html-tag-semantics.md`** – HTML tag semantics and formatting
+   - **Purpose**: Correct use of code/span/div/pre, avoid formatter conflicts and syntax errors
+   - **Scope**: Vue/TSX (`globs: src/**/*.{vue,tsx}`)
+   - **Auto-apply**: Yes
+   - **Contents**: `<code>` only in `<pre><code>`; `<span>` for inline in `<p>`; `<div>` for blocks (not inside `<p>`); HTML nesting rules; Prettier/ESLint conflict handling
 
-9. **`08-auth-login-flow.md`** - 登录/鉴权流程
-   - **功能**：登录/登出、token、401、路由守卫、白名单
-   - **适用范围**：TS/Vue 文件（`globs: src/**/*.{ts,vue}`）
-   - **自动应用**：否（按文件匹配）
-   - **详细文档**：`docs/ai-specs/AUTH_AND_LOGIN_FLOW.md`
-   - **关键内容**：
-     - 登录流程
-     - Token 管理
-     - 401 处理
-     - 路由守卫
-     - 动态路由
+9. **`08-auth-login-flow.md`** – Auth / login flow
+   - **Purpose**: Login/logout, token, 401, route guards, whitelist
+   - **Scope**: TS/Vue (`globs: src/**/*.{ts,vue}`)
+   - **Auto-apply**: No (file-match)
+   - **Details**: `docs/ai-specs/AUTH_AND_LOGIN_FLOW.md`
+   - **Contents**: Login flow, token handling, 401 handling, route guards, dynamic routes
 
-10. **`26-repair-list-workflow.md`** - 修复清单工作流
+10. **`26-repair-list-workflow.md`** – Repair list workflow
 
-- **功能**：repair_list.txt 的创建、写入、进度跟踪与清空
-- **适用范围**：项目根目录，检查/修复类任务
-- **自动应用**：是（`alwaysApply: true`）
-- **关键内容**：
-  - Ask 模式询问是否写入，Agent 模式自动写入
-  - 纯 txt 格式，✅ 标记进度
-  - 全部解决后清空内容
-  - 已加入 .gitignore，不提交
+- **Purpose**: repair_list.txt creation, writing, progress tracking, clearing
+- **Scope**: Project root, check/fix tasks
+- **Auto-apply**: Yes (`alwaysApply: true`)
+- **Contents**:
+  - Ask mode: ask before writing; Agent mode: auto-write
+  - Plain txt format, ✅ for progress
+  - Clear content when all resolved
+  - In .gitignore, do not commit
 
-## 🛠️ Skills（技能文件）
+## Skills
 
-技能文件定义了常见任务的标准操作流程。
+Skills define standard workflows for common tasks.
 
-详见：`.agent/skills/README.md`
+See: `.agent/skills/README.md`
 
-## 📖 使用指南
+## Usage Guide
 
-### 自动应用的规则
+### Auto-Applied Rules
 
-标记了 `alwaysApply: true` 的规则会自动应用，无需手动引用。这些规则会在所有任务中生效。
+Rules with `alwaysApply: true` are applied automatically; no manual reference needed. They apply to all tasks.
 
-### 文件匹配规则
+### File Matching
 
-带有 `globs` 字段的规则会根据当前编辑的文件自动匹配。例如，编辑 `src/layouts/**/*` 文件时，`25-adaptive-layout.md` 会自动应用。
+Rules with `globs` are matched by the edited file. For example, when editing `src/layouts/**/*`, `25-adaptive-layout.md` is applied.
 
-### 手动引用
+### Manual Reference
 
-对于复杂任务，建议显式引用相关规则：
+For complex tasks, explicitly reference rules:
 
 ```
-先阅读 @docs/ai-specs/PROJECT_PROTOCOL.md
-遵循 @.agent/rules/00-primary-directive.md
+Read @docs/ai-specs/PROJECT_PROTOCOL.md first
+Follow @.agent/rules/00-primary-directive.md
 ```
 
-### Agent 工作流程
+### Agent Workflow
 
-当 Agent 开始任务时，应该：
+When the Agent starts a task, it should:
 
-1. 阅读 **Rules** 以理解约束
-2. 选择适当的 **Skill** 执行任务
-3. 遵循 Skill 文件中的步骤
-4. **验证**结果（使用浏览器工具检查）
+1. Read **Rules** to understand constraints
+2. Choose the appropriate **Skill** for the task
+3. Follow the steps in the Skill file
+4. **Verify** the result (browser tool)
 
-## 🔗 相关文档
+## Related Docs
 
-- **项目协议**：`docs/ai-specs/PROJECT_PROTOCOL.md`
-- **黄金样本**：`docs/ai-specs/GOLDEN_SAMPLES/`
-- **Cursor 规则**：`.cursor/rules/`
-- **Cursor Skills**：`.cursor/skills/`
+- **Project protocol**: `docs/ai-specs/PROJECT_PROTOCOL.md`
+- **Golden samples**: `docs/ai-specs/GOLDEN_SAMPLES/`
+- **Cursor rules**: `.cursor/rules/`
+- **Cursor skills**: `.cursor/skills/`
 
-## 📝 规则与 Cursor 的对应关系
+## Rule Correspondence with Cursor
 
-虽然 `.agent` 目录用于 Antigravity Agent，`.cursor` 目录用于 Cursor AI 编辑器，但两者的规则和技能应该保持一致：
+Although `.agent` is for Antigravity Agent and `.cursor` is for the Cursor AI editor, their rules and skills should stay aligned:
 
 - `.agent/rules/00-primary-directive.md` ↔ `.cursor/rules/00-core-architecture.mdc`
 - `.agent/rules/10-ui-architecture.md` ↔ `.cursor/rules/20-ui-styling.mdc`
@@ -173,4 +136,4 @@
 - `.agent/rules/08-auth-login-flow.md` ↔ `.cursor/rules/08-auth-login-flow.mdc`
 - `.agent/rules/26-repair-list-workflow.md` ↔ `.cursor/rules/26-repair-list-workflow.mdc`
 
-注意：`.agent` 特有的规则（如 `22-verification.md`、`20-code-standards.md`）在 Cursor 中可能分散在其他规则文件中。
+Note: `.agent`-only rules (e.g. `22-verification.md`, `20-code-standards.md`) may be scattered across other Cursor rule files.

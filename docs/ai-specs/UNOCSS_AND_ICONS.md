@@ -261,7 +261,7 @@ Icons 为独立 DOM 元素，**父容器的 transition 不会影响 Icons 的 co
 
 1. **组件默认颜色**：Icons 在未传 `color` 时会添加 `text-foreground`（见 `Icons.vue` 第 84 行）。
 2. **选择器特异性相同**：`text-foreground` 与 `text-primary`、`text-red` 等均为单类选择器，特异性相等，最终生效取决于样式表顺序（非确定性）。
-3. **第三方组件内**：Icons 放在 PrimeVue（Menubar、Dropdown 等）内部时，父级会注入 `.p-focus`、`.p-active` 等高权样式，更易覆盖普通 `text-*` 类。
+3. **第三方组件内**：Icons 放在 PrimeVue（Menubar、Select 等，v4 组件名）内部时，父级会注入 `.p-focus`、`.p-active` 等高权样式，更易覆盖普通 `text-*` 类。
 
 **决策表（AI 优先按此选择）：**
 

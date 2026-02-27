@@ -1,77 +1,77 @@
-# Skill 01：Generate API Module（新增接口先落 src/api）
+# Skill 01: Generate API Module (New APIs land in src/api first)
 
 ## Goal
 
-当需求涉及“新增接口/对接后端/新增请求”时，先在 **`src/api/<module>/<feature>.ts`** 落地（扁平化两级），再由 hook 使用。
+When the task involves "new API / backend integration / new request", implement it in **`src/api/<module>/<feature>.ts`** first (flat two-level structure), then consume it from hooks.
 
-## Inputs（你需要提供）
+## Inputs (provide these)
 
-- **module**：业务域（如 `user` / `dashboard` / `system`）
-- **feature**：功能点文件名（如 `login` / `profile` / `list`）
-- **HTTP**：method + url（是否需要 `/api` 前缀由后端/代理决定；一般 service 内写相对路径）
-- **参数/响应**：若你提供字段结构，则必须补齐 DTO 类型（禁止 any）
-- **鉴权**：是否需要 token/header（若项目拦截器已统一处理，则说明“无需额外处理”）
+- **module**: Business domain (e.g. `user` / `dashboard` / `system`)
+- **feature**: Feature file name (e.g. `login` / `profile` / `list`)
+- **HTTP**: method + url (whether `/api` prefix is needed depends on backend/proxy; usually relative path in service)
+- **Params/response**: If you provide field structure, MUST add DTO types (NO `any`)
+- **Auth**: Whether token/header is needed (if project interceptors already handle it, state "no extra handling needed")
 
-## Pre-check（强制）
+## Pre-check (mandatory)
 
-先阅读并遵循：
+Read and follow:
 
 - `@docs/ai-specs/PROJECT_PROTOCOL.md`
-- `@docs/ai-specs/GOLDEN_SAMPLES/ApiModuleExample.ts`（API 模块定义示例）
-- `@.cursor/rules/12-api-layer.mdc`（扁平化 + 禁止 default export + 禁止通用导出名）
-- `@.cursor/rules/00-core-architecture.mdc`（禁止 fetch/axios、禁止 any）
+- `@docs/ai-specs/GOLDEN_SAMPLES/ApiModuleExample.ts` (API module definition example)
+- `@.cursor/rules/12-api-layer.mdc` (flat structure + NO default export + NO generic export names)
+- `@.cursor/rules/00-core-architecture.mdc` (NO fetch/axios, NO any)
 
-## Task（AI 要做什么）
+## Task (what AI does)
 
-1. 在 `src/api/<module>/<feature>.ts` 中新增/更新该接口定义（不得创建任何三级目录）
-2. 在同一个文件里：
-   - 先写 DTO Types：`<Domain><Feature>Req/Res/DTO`（例如：`UserLoginReq` / `UserLoginRes`）
-   - 再写 Method builder：`build<Domain><Feature>Method(client, ...)`
-   - 再写便捷函数（允许）：`request<Domain><Feature>(...)`（内部必须走 Alova/`@/utils/http`）
-3. 保证导出命名不污染全局（AutoImport 扫描 `src/api/**/*`）
+1. Add/update the API definition in `src/api/<module>/<feature>.ts` (do NOT create any third-level directories)
+2. In the same file:
+   - Write DTO types first: `<Domain><Feature>Req/Res/DTO` (e.g. `UserLoginReq` / `UserLoginRes`)
+   - Write Method builder: `build<Domain><Feature>Method(client, ...)`
+   - Write convenience function (optional): `request<Domain><Feature>(...)` (MUST use Alova/`@/utils/http` internally)
+3. Ensure export names do not pollute global namespace (AutoImport scans `src/api/**/*`)
 
-## Output（必须输出）
+## Output (required)
 
-- 修改后的 `src/api/<module>/<feature>.ts` 全部内容（或明确说明新增的导出/类型）
+- Full content of modified `src/api/<module>/<feature>.ts` (or clear description of new exports/types)
 
-## Non-goals（禁止做）
+## Non-goals (forbidden)
 
-- 禁止在 `views/components` 内新增 URL/请求构建逻辑
-- 禁止 `export default`
-- 禁止导出通用名字：`get/list/data/request/config/params` 等
-- 禁止使用 `fetch/axios`
-- 禁止使用 `any`
+- FORBIDDEN: Adding URL/request building logic in views/components
+- FORBIDDEN: `export default`
+- FORBIDDEN: Generic export names: `get/list/data/request/config/params`, etc.
+- FORBIDDEN: `fetch`/`axios`
+- FORBIDDEN: `any`
 
-## Validation Checklist（自检）
+## Validation Checklist (self-check)
 
-- [ ] 文件路径为 `src/api/<module>/<feature>.ts`，没有三级目录
-- [ ] 无 `export default`
-- [ ] 导出名有域前缀（如 `buildUserLoginMethod` / `requestUserLogin`）
-- [ ] DTO 类型为 `UserLoginReq/UserLoginRes`（域前缀 + feature 前缀）
-- [ ] 实际请求只使用 Alova（`alovaInstance`/`@/utils/http/*`），无 fetch/axios
+- [ ] File path is `src/api/<module>/<feature>.ts`, no third-level directories
+- [ ] No `export default`
+- [ ] Export names have domain prefix (e.g. `buildUserLoginMethod` / `requestUserLogin`)
+- [ ] DTO types are `UserLoginReq/UserLoginRes` (domain + feature prefix)
+- [ ] Actual requests use Alova only (`alovaInstance`/`@/utils/http/*`), no fetch/axios
 
-## Prompt 模板（复制使用）
+## Prompt Template (copy & use)
 
 ```
-先阅读 @docs/ai-specs/PROJECT_PROTOCOL.md
-参考 @docs/ai-specs/GOLDEN_SAMPLES/ApiModuleExample.ts
-遵循 @.cursor/rules/00-core-architecture.mdc 与 @.cursor/rules/12-api-layer.mdc
+Read @docs/ai-specs/PROJECT_PROTOCOL.md
+Reference @docs/ai-specs/GOLDEN_SAMPLES/ApiModuleExample.ts
+Follow @.cursor/rules/00-core-architecture.mdc and @.cursor/rules/12-api-layer.mdc
 
-任务：新增接口（API module）
+Task: Add new API (API module)
 
 module = <module>
 feature = <feature>
 
-接口：
+API:
 - method: <GET|POST|PUT|DELETE|PATCH>
 - url: <path>
 
-请在 src/api/<module>/<feature>.ts 中：
-1) 定义 DTO 类型：<Domain><Feature>Req / <Domain><Feature>Res（例如 UserLoginReq/UserLoginRes）
-2) 导出 build<Domain><Feature>Method(client, ...)（返回 Method<T>）
-3) 同时导出 request<Domain><Feature>(...) 便捷函数（内部仍必须走 Alova/`@/utils/http`）
+In src/api/<module>/<feature>.ts:
+1) Define DTO types: <Domain><Feature>Req / <Domain><Feature>Res (e.g. UserLoginReq/UserLoginRes)
+2) Export build<Domain><Feature>Method(client, ...) (returns Method<T>)
+3) Also export request<Domain><Feature>(...) convenience function (MUST use Alova/`@/utils/http` internally)
 
-禁止：
+Forbidden:
 - export default
-- 导出通用名（get/list/data/request/config/params）
+- Generic export names (get/list/data/request/config/params)
 ```

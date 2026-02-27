@@ -1,52 +1,52 @@
 ---
-description: 表单任务：多字段/校验/分步/分组/动态时使用 SchemaForm + useSchemaForm
+description: Form tasks: use SchemaForm + useSchemaForm for multi-field, validation, steps, groups, dynamic schema
 globs: src/views/**/*.vue, src/components/**/*.vue
 ---
 
-# SchemaForm 表单组件 Skill
+# SchemaForm Skill
 
 ## 1. Goal
 
-当任务涉及**多字段表单、校验、分步、分组或动态 schema** 时，优先使用 SchemaForm + useSchemaForm，不手写大量 PrimeVue 表单组件拼装。
+When the task involves **multi-field forms, validation, steps, groups, or dynamic schema**, prefer SchemaForm + useSchemaForm instead of hand-writing many PrimeVue form components.
 
 ## 2. Pre-check
 
-- **必读**：`docs/ai-specs/SCHEMA_FORM_COMPONENT.md`
-- **规则**：`.agent/rules/10-ui-architecture.md` §2b、`.agent/rules/15-toolchain-first.md` §5
+- **Required reading**: `docs/ai-specs/SCHEMA_FORM_COMPONENT.md`
+- **Rules**: `.agent/rules/10-ui-architecture.md` §2b, `.agent/rules/15-toolchain-first.md` §5
 
-## 3. 判断标准
+## 3. Decision Criteria
 
-| 场景                                    | 使用                                    |
-| --------------------------------------- | --------------------------------------- |
-| 1–2 个字段、无校验/分步/分组            | PrimeVue InputText、Select、Calendar 等 |
-| 多字段、需校验、分步、分组、动态 schema | **SchemaForm + useSchemaForm**          |
+| Scenario                                               | Use                                          |
+| ------------------------------------------------------ | -------------------------------------------- |
+| 1–2 fields, no validation/steps/groups                 | PrimeVue InputText, Select, DatePicker, etc. |
+| Multi-field, validation, steps, groups, dynamic schema | **SchemaForm + useSchemaForm**               |
 
 ## 4. Steps
 
-### Step 1: 确认是否属于表单场景
+### Step 1: Confirm Form Scenario
 
-- 若为「多字段 + 校验/分步/分组/动态字段」→ 进入 Step 2。
-- 若为简单 1–2 个输入 → 直接使用 PrimeVue 组件，无需本 Skill。
+- If "multi-field + validation/steps/groups/dynamic fields" → proceed to Step 2.
+- If simple 1–2 inputs → use PrimeVue components directly; this Skill is not needed.
 
-### Step 2: 阅读文档并选用入口
+### Step 2: Read Doc and Choose Entry
 
-- 打开 `docs/ai-specs/SCHEMA_FORM_COMPONENT.md`，确认 Schema 结构（columns、layout、rules、steps/sections、transform、hidden 等）。
-- **静态 Schema**：在页面内定义 `Schema`，用 `<SchemaForm v-model="formValues" :schema="schema" />`。
-- **动态 Schema**：使用 `useSchemaForm({ initialSchema })`，得到 `schema`、`formValues`、`addField`、`removeField`、`updateField`、`moveField` 等，再传给 `<SchemaForm>`。
+- Open `docs/ai-specs/SCHEMA_FORM_COMPONENT.md`, confirm Schema structure (columns, layout, rules, steps/sections, transform, hidden, etc.).
+- **Static Schema**: Define `Schema` in the page, use `<SchemaForm v-model="formValues" :schema="schema" />`.
+- **Dynamic Schema**: Use `useSchemaForm({ initialSchema })`, obtain `schema`, `formValues`, `addField`, `removeField`, `updateField`, `moveField`, etc., then pass to `<SchemaForm>`.
 
-### Step 3: 实现与校验
+### Step 3: Implement and Validate
 
-- 类型从 `@/components/SchemaForm` 导入：Schema、SchemaColumnsItem、FormValues、EvalCtx、FieldRenderCtx。
-- 校验：给 `<SchemaForm>` 加 `ref="formRef"`，调用 `formRef.value?.validate()`；useSchemaForm 不提供 validate()。
-- 提交：`@submit` 或 `formRef.value?.submit()`。
+- Types from `@/components/SchemaForm`: Schema, SchemaColumnsItem, FormValues, EvalCtx, FieldRenderCtx.
+- Validation: Add `ref="formRef"` to `<SchemaForm>`, call `formRef.value?.validate()`; useSchemaForm does not provide `validate()`.
+- Submit: `@submit` or `formRef.value?.submit()`.
 
-### Step 4: 禁止项
+### Step 4: Forbidden
 
-- 禁止引用 `src/views/example/schema-form` 作为业务代码依赖（示例目录后期会删除）。
-- 禁止在符合「多字段/校验/分步/分组/动态」时手写大量 PrimeVue 表单拼装。
+- Do NOT reference `src/views/example/schema-form` as a business dependency (example dir may be removed later).
+- Do NOT hand-write many PrimeVue form components when the scenario matches "multi-field / validation / steps / groups / dynamic".
 
-## 5. 参考
+## 5. Reference
 
-- 组件：`src/components/SchemaForm`
-- Hook：`src/hooks/modules/useSchemaForm.ts`
-- 内部 Hooks：`src/components/SchemaForm/hooks/`（useFormSync、useValidation、useSteps 等，业务层通常只需 useSchemaForm）
+- Component: `src/components/SchemaForm`
+- Hook: `src/hooks/modules/useSchemaForm.ts`
+- Internal hooks: `src/components/SchemaForm/hooks/` (useFormSync, useValidation, useSteps, etc.; business layer usually only needs useSchemaForm)

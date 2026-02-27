@@ -1,40 +1,40 @@
-# Skill 09：UseEcharts 图表组件使用
+# Skill 09: UseEcharts Component Usage
 
 ## Goal
 
-当任务涉及任何图表场景时，使用 UseEcharts 组件，不手动实例化 ECharts 或直接使用 vue-echarts。
+When the task involves any chart scenario, use the UseEcharts component; do NOT manually instantiate ECharts or use vue-echarts directly.
 
 ## Pre-check
 
 - `@docs/ai-specs/ECHARTS_THEME.md`
 - `@.cursor/rules/18-components-and-icons.mdc`
 
-## 判断标准
+## Decision criteria
 
-| 场景               | 使用                                                       |
-| ------------------ | ---------------------------------------------------------- |
-| 任何图表场景       | **UseEcharts 组件**                                        |
-| 需要程序化控制图表 | 通过 ref 获取 `ChartInstance`，调用 `getEchartsInstance()` |
+| Scenario                        | Use                                                      |
+| ------------------------------- | -------------------------------------------------------- |
+| Any chart scenario              | **UseEcharts component**                                 |
+| Need programmatic chart control | Get `ChartInstance` via ref, call `getEchartsInstance()` |
 
 ## Output
 
-- 使用 `<UseEcharts>` 组件，传入 `option` prop
-- 类型从 `@/components/UseEcharts` 导入：`UseEchartsProps`、`ChartInstance`、`ChartEventParams`、`ChartEventHandlers`、`EChartsOption` 等
-- **主题集成**：默认自动集成 `useChartTheme`，可通过 `themeConfig.enableTheme` 关闭
-- **事件处理**：使用 `on*` props（如 `onClick`、`onLegendSelectChanged`、`onDataZoom`）或 `onEvents` prop
-- **多图表联动**：使用 `group` prop 或 `connectConfig` 配置
-- **程序化控制**：通过 ref 获取 `ChartInstance`，调用 `getEchartsInstance()`、`setOption()`、`resize()`、`triggerConnect()` 等
+- Use `<UseEcharts>` component, pass `option` prop
+- Import types from `@/components/UseEcharts`: UseEchartsProps, ChartInstance, ChartEventParams, ChartEventHandlers, EChartsOption, etc.
+- **Theme integration**: Auto-integrates `useChartTheme` by default; can disable via `themeConfig.enableTheme`
+- **Events**: Use `on*` props (e.g. onClick, onLegendSelectChanged, onDataZoom) or `onEvents` prop
+- **Multi-chart sync**: Use `group` prop or `connectConfig`
+- **Programmatic control**: Get ChartInstance via ref, call getEchartsInstance(), setOption(), resize(), triggerConnect(), etc.
 
-## 禁止
+## Forbidden
 
-- 禁止手动实例化 ECharts 或直接使用 vue-echarts
-- 禁止在 ECharts option 中硬编码颜色值
-- 禁止手动监听 ThemeStore 来更新图表
-- 禁止引用 `src/views/example/use-echarts`（示例目录后期可能删除）
+- Manually instantiating ECharts or using vue-echarts directly
+- Hardcoding colors in ECharts option
+- Manually listening to ThemeStore to update charts
+- Importing from `src/views/example/use-echarts` (example dir may be removed later)
 
-## 示例
+## Examples
 
-### 基础用法
+### Basic usage
 
 ```vue
 <template>
@@ -52,7 +52,7 @@ const chartOption = ref<EChartsOption>({
 </script>
 ```
 
-### 事件处理
+### Event handling
 
 ```vue
 <template>
@@ -67,16 +67,16 @@ const chartOption = ref<EChartsOption>({
 import type { ChartMouseEventParams, ChartLegendEventParams } from '@/components/UseEcharts'
 
 function handleClick(params: ChartMouseEventParams) {
-  console.log('点击', params)
+  console.log('click', params)
 }
 
 function handleLegendChange(params: ChartLegendEventParams) {
-  console.log('图例变化', params.selected)
+  console.log('legend change', params.selected)
 }
 </script>
 ```
 
-### 程序化控制
+### Programmatic control
 
 ```vue
 <template>
@@ -84,7 +84,7 @@ function handleLegendChange(params: ChartLegendEventParams) {
     ref="chartRef"
     :option="chartOption"
   />
-  <Button @click="highlightData">高亮数据</Button>
+  <Button @click="highlightData">Highlight data</Button>
 </template>
 
 <script setup lang="ts">
@@ -106,7 +106,7 @@ function highlightData() {
 </script>
 ```
 
-### 多图表联动
+### Multi-chart sync
 
 ```vue
 <template>

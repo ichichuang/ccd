@@ -103,6 +103,22 @@ const zhCN = {
     },
   },
 
+  emptyState: {
+    safeNoData: '一切正常',
+    safeNoDataDesc: '当前无告警。',
+    noSearchResult: '未找到结果',
+    noSearchResultDesc: '请尝试调整筛选条件或搜索关键词。',
+    connectionLost: '连接已断开',
+    connectionLostDesc: '数据可能已过期，请检查网络后重试。',
+    noChartData: '暂无图表数据',
+    noChartDataDesc: '请选择数据点或前往设置配置。',
+    noReportSelected: '未选择报表',
+    noReportSelectedDesc: '请从列表选择报表或新建。',
+    actions: {
+      addConfig: '添加配置',
+      goToSettings: '前往设置',
+    },
+  },
   dialog: {
     infoTitle: '提示',
     successTitle: '成功',

@@ -137,12 +137,62 @@ API 分页示例：
 
 ## 7. 注意事项
 
-- **列 body 自定义**：列 `body` 可返回 VNode 或 string；需返回 VNode 时使用 TSX（`<script setup lang="tsx">` 或 .tsx 组件），禁止 `h()`，见 `.cursor/rules/24-tsx-rendering.mdc`。
+### 7.1 列 body 自定义：正确与错误
+
+**列 `body` 可返回 VNode 或 string。** 需返回 VNode 时，必须使用 TSX（`<script setup lang="tsx">` 或独立 `.tsx` 文件），禁止 `h()`，见 `.cursor/rules/24-tsx-rendering.mdc`。
+
+| 场景                      | ✅ 正确                                                                   | ❌ 错误                                                             |
+| ------------------------- | ------------------------------------------------------------------------- | ------------------------------------------------------------------- |
+| 返回 VNode（带样式/标签） | `body: row => <span class={\`font-semibold ${cls}\`}>{row.status}</span>` | `body: row => return \`<span class="${cls}">${row.status}</span>\`` |
+| 返回 string（纯文本）     | `body: row => row.name` 或 `body: row => \`¥${row.amount}\``              | —                                                                   |
+| lang 切换                 | 在 .vue 内写 JSX 时，必须 `lang="tsx"`                                    | 使用 JSX 却保持 `lang="ts"`                                         |
+
+**黄金样本（必须参考模仿）**：`docs/ai-specs/GOLDEN_SAMPLES/DataTableBodyColumn.vue`。
+
+**示例（正确写法）**：
+
+```tsx
+// 列配置在 .tsx 或在 .vue 中（此时必须 lang="tsx"）
+body: row => {
+  const cls = row.status === 'active' ? 'text-success' : 'text-muted-foreground'
+  return <span class={cls}>{statusMap[row.status]}</span>
+}
+```
+
+**示例（错误写法）**：
+
+```ts
+// ❌ 模板字符串返回 string，不是 VNode，表格不会正确渲染
+body: row => return `<span class="${cls}">${row.status}</span>`
+```
+
+### 7.2 Empty State & #empty Slot
+
+- **`emptyMessage`**: Pass a string to show when the table has no data. Renders inside the table body via PrimeVue `#empty`.
+- **Custom `#empty`**: Override the default empty content with a slot. Use `<EmptyState>` for consistent industrial UX (icon + title + description). See `EMPTY_STATE_AND_ROBUSTNESS.md`.
+- **Double-blank fix**: When data is empty, either (a) use `v-if` to hide the DataTable and show `<EmptyState>` at page level, or (b) provide `#empty` slot with `<EmptyState>` content. Avoid empty table header + floating text.
+
+**Example**:
+
+```vue
+<DataTable :columns="columns" :data="data">
+  <template #empty>
+    <EmptyState
+      icon="i-lucide-inbox"
+      :title="$t('emptyState.noSearchResult')"
+      :description="$t('emptyState.noSearchResultDesc')"
+    />
+  </template>
+</DataTable>
+```
+
+### 7.3 其他注意事项
+
 - **tableId 与列持久化**：提供 `tableId` 后，列顺序、列宽、隐藏列会写入 dataTable store；expose 的 `getTablePreferences` / `resetTablePreferences` 仅在提供 tableId 时可用。
 - **API 错误与刷新**：请求失败时组件将 `apiData` 置空并结束 loading；用户可通过 ref 调用 `refresh()` 重新加载；业务 API 仍应定义在 `src/api/<module>/`，executeTableApi 仅作组件内部执行器。
 - **列宽与 footer 对齐**：`footerMode="column-aligned"` 时，footer 与表体列宽同步；列宽在 DOM 渲染后测量，若表格异步渲染可稍后调用 `updateColumnWidths()`。
 
-## 8. 与项目规范
+## 8. Project Conventions
 
 - **请求**：表格 API 由组件内部 `executeTableApi` 调用 `@/utils/http`，业务 API 仍定义在 `src/api/<module>/`；禁止在业务页面直接使用 executeTableApi 替代 src/api。
 - **通知**：导出成功/失败使用 `window.$message`（见 `./TOAST_AND_MESSAGE.md`）。

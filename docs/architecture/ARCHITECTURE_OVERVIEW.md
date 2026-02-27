@@ -125,7 +125,7 @@ deviceStore 变化（设备类型、断点、视口）
 | `src/router/`     | 路由定义、守卫、工具                          |
 | `src/stores/`     | Pinia 状态                                    |
 | `src/types/`      | 全局类型定义                                  |
-| `src/utils/`      | 工具函数（http、safeStorage、theme 等）       |
+| `src/utils/`      | 工具函数（http、date、safeStorage、theme 等） |
 | `src/views/`      | 页面组件                                      |
 
 ---

@@ -1,5 +1,5 @@
 ---
-description: TSX 渲染规范：程序化渲染必须用 TSX，禁止使用 h()
+description: TSX rendering policy — programmatic rendering MUST use TSX, FORBIDDEN h()
 globs: src/**/*.{vue,tsx}
 alwaysApply: true
 ---
@@ -56,51 +56,56 @@ export default defineComponent({
 
 ### 3.3 Decision Guide: When to Use Which Format
 
-**关键决策点：** 根据实际场景选择使用 Vue SFC + `lang="tsx"` 还是创建独立的 `.tsx` 文件。
+**Decision point:** Choose Vue SFC + `lang="tsx"` vs standalone `.tsx` based on scenario.
 
-**使用 Vue SFC + `lang="tsx"`（推荐优先考虑）：**
+**Use Vue SFC + `lang="tsx"` (preferred):**
 
-- ✅ **页面/视图组件**（`src/views/**/*.vue`）：需要 `<template>` 部分，但 script 中有 TSX 渲染函数
-- ✅ **需要模板语法**：需要 `<template>` 处理大部分 UI，只有部分逻辑需要 TSX 渲染函数
-- ✅ **组件内 TSX 渲染函数**：在组件内部定义渲染函数（如表单元格渲染器、下拉项模板等）
-- ✅ **示例**：`src/views/example/DataTable/DataTable.vue`（需要 template，但列配置中有 TSX 渲染函数）
+- ✅ **Page/view components** (`src/views/**/*.vue`): Need `<template>` but script has TSX render functions
+- ✅ **Need template syntax**: `<template>` for most UI, TSX only for partial logic
+- ✅ **Component-internal TSX**: Render functions inside component (table cell renderers, dropdown item templates, etc.)
+- ✅ **Example**: `src/views/example/DataTable/DataTable.vue` (needs template, column config has TSX)
 
-**创建独立的 `.tsx` 文件：**
+**Create standalone `.tsx` file:**
 
-- ✅ **配置导出文件**（`src/**/configs/*.tsx`）：纯配置/数据导出，不需要 template
-- ✅ **纯渲染组件**：整个组件都用 TSX 渲染，不需要 template（如 `LayoutAdmin.tsx`）
-- ✅ **Hooks/Composables**：返回 TSX 渲染函数的 hooks（如 `useDialog.tsx`）
-- ✅ **可复用组件**：需要在多个位置导入使用的纯 TSX 组件
-- ✅ **示例**：
-  - `src/views/example/DataTable/configs/customColumnConfig.tsx`（配置导出）
-  - `src/hooks/modules/useDialog.tsx`（Hook 返回 TSX）
-  - `src/layouts/modules/LayoutAdmin.tsx`（纯 TSX 组件）
+- ✅ **Config export** (`src/**/configs/*.tsx`): Pure config/data export, no template
+- ✅ **Pure render component**: Entire component in TSX, no template (e.g. `LayoutAdmin.tsx`)
+- ✅ **Hooks/Composables**: Hooks returning TSX (e.g. `useDialog.tsx`)
+- ✅ **Reusable component**: Pure TSX component imported in multiple places
+- ✅ **Examples**:
+  - `src/views/example/DataTable/configs/customColumnConfig.tsx`
+  - `src/hooks/modules/useDialog.tsx`
+  - `src/layouts/modules/LayoutAdmin.tsx`
 
-**决策流程图：**
+**Decision flow:**
 
 ```
-需要 TSX 渲染？
-├─ 是
-│ ├─ 是否需要 <template>？
-│ │ ├─ 是 → 使用 Vue SFC + lang="tsx"（.vue 文件）
-│ │ └─ 否 → 继续判断
-│ │     ├─ 是配置/数据导出？ → 独立的 .tsx 文件
-│ │     ├─ 是 Hook/Composable？ → 独立的 .tsx 文件
-│ │     └─ 是纯渲染组件？ → 独立的 .tsx 文件
-│ └─ 否 → 使用普通 Vue SFC（.vue 文件）
+Need TSX rendering?
+├─ Yes
+│ ├─ Need <template>?
+│ │ ├─ Yes → Vue SFC + lang="tsx" (.vue)
+│ │ └─ No → Config export? → standalone .tsx
+│ │         Hook/Composable? → standalone .tsx
+│ │         Pure render component? → standalone .tsx
+│ └─ No → Plain Vue SFC (.vue)
 ```
 
-**最佳实践：**
+**Best practices:**
 
-1. **默认优先使用 Vue SFC + `lang="tsx"`**：当组件需要 template 时，在现有 `.vue` 文件中添加 `lang="tsx"`，而不是创建新文件
-2. **配置分离为 `.tsx`**：表格列配置、表单 schema 等配置数据，如果包含 TSX 渲染函数，应导出为独立的 `.tsx` 文件
-3. **避免过度拆分**：如果 TSX 渲染函数只在单个组件内使用，优先在组件内定义，而不是创建独立文件
+1. **Default to Vue SFC + `lang="tsx"`**: When component needs template, add `lang="tsx"` to existing `.vue` instead of new file
+2. **Config in `.tsx`**: Table column config, form schema, etc. with TSX render functions → standalone `.tsx`
+3. **Avoid over-splitting**: If TSX render is used in one component only, define inside component
 
 ## 4. Forbidden
 
 - FORBIDDEN: `import { h } from 'vue'` and using `h()` for render
 - FORBIDDEN: `createElement` or manual VNode construction
+- FORBIDDEN: Returning template string as "HTML" in body/formatter/renderer:
+  - ❌ `body: row => return \`<span class="${cls}">${row.status}</span>\`` — returns string, not VNode
+  - ✅ `body: row => <span class={\`font-semibold ${cls}\`}>{row.status}</span>` — TSX returns VNode
+- FORBIDDEN: Using JSX syntax but keeping `lang="ts"` — MUST change to `lang="tsx"` or JSX won't compile
 - Use TSX instead: readable, type-safe, composable
+
+See `.cursor/rules/27-ai-tsx-decision.mdc` for causal rules and lang-switch table.
 
 ## 5. Config Support
 

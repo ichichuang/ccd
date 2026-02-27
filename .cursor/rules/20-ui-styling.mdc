@@ -1,21 +1,21 @@
 ---
-description: UI/样式层专用规则：配色、尺寸、布局、UnoCSS、SCSS
+description: UI/styling rules: theme, size, layout, UnoCSS, SCSS
 globs: src/**/*.vue
 ---
 
 # UI Styling Rules
 
-## 1. Theme System (配色系统) - REQUIRED
+## 1. Theme System - REQUIRED
 
-**颜色语义决策以 `src/constants/theme/colorUsage.ts` 为准（SSOT）**，详见 `21-color-authority.mdc`。
+**Color semantic decisions follow `src/constants/theme/colorUsage.ts` (SSOT)**; see `21-color-authority.mdc`.
 
 Before writing any color-related code, read:
 
-- `src/constants/theme/colorUsage.ts` - 颜色语义权威（COLOR_USAGE、PRIMARY_USAGE、ACCENT_USAGE）
+- `src/constants/theme/colorUsage.ts` - color semantic authority (COLOR_USAGE, PRIMARY_USAGE, ACCENT_USAGE)
 - `src/types/systems/theme.d.ts` - Theme types (ThemeMode, ThemePreset, ThemeCssVars)
 - `src/constants/theme.ts` - Theme presets (THEME_PRESETS)
 - `src/stores/modules/theme.ts` - Theme store (useThemeStore)
-- `docs/ai-specs/PRIMEVUE_THEME.md` - PrimeVue 主题融合（Button 等组件配色规则）
+- `docs/ai-specs/PRIMEVUE_THEME.md` - PrimeVue theme integration (Button etc.)
 
 **Rules:**
 
@@ -24,7 +24,7 @@ Before writing any color-related code, read:
 - FORBIDDEN: hex codes like `#fff`, `#000`, `#3665f9`
 - FORBIDDEN: hardcoded color values in `<style>` or inline styles
 
-## 2. Size System (尺寸系统) - REQUIRED
+## 2. Size System - REQUIRED
 
 Before writing any size-related code, read:
 
@@ -40,7 +40,7 @@ Before writing any size-related code, read:
 - Layout dimensions: Use CSS variables `w-sidebarWidth`, `h-headerHeight`, NO hardcoded px
 - FORBIDDEN: `padding: 16px`, `margin: 20px`, `font-size: 14px`, `width: 240px`
 
-## 3. Layout & Responsive System (布局响应式系统) - REQUIRED
+## 3. Layout & Responsive System - REQUIRED
 
 Before writing any layout/responsive code, read:
 
@@ -56,7 +56,7 @@ Before writing any layout/responsive code, read:
 - Use `useDeviceStore` getters for layout detection, NO direct `window.innerWidth` checks
 - FORBIDDEN: `@media (min-width: 768px)`, use `md:` instead
 
-## 4. UnoCSS Class Names (UnoCSS 类名) - REQUIRED
+## 4. UnoCSS Class Names - REQUIRED
 
 Reference `uno.config.ts` for all available semantic classes:
 
@@ -83,21 +83,21 @@ Reference `uno.config.ts` for all available semantic classes:
 
 - `text-primary`, `bg-surface-ground`, `border-border`, `text-foreground`, `text-info`, `bg-info`, etc.
 
-**Border (边框)：**
+**Border:**
 
-- 四边边框：`component-border`；底边：`border-b-default`；顶边：`border-t-default`（见 `uno.config.ts` ⑧a 边框快捷类）。
-- FORBIDDEN：仅写 `border border-border`（未设 border-style 导致边框不显示）。
+- All sides: `component-border`; bottom: `border-b-default`; top: `border-t-default`; see `uno.config.ts` shortcut classes.
+- FORBIDDEN: only `border border-border` (no border-style, border won't show).
 
-**Transition & Interaction (过渡与交互)：**
+**Transition & Interaction:**
 
 - When using `hover:` / `active:` / `focus:` / `group-hover:`, MUST pair with transition classes to avoid abrupt changes.
 - Use `uno.config.ts` shortcuts: `interactive-hover`, `interactive-click`, `behavior-hover-transition`; or `transition-all duration-scale-{xs~5xl}`, `transition-opacity duration-scale-*`.
-- Scale: xs(100ms)~5xl(2000ms) via `duration-scale-{scale}`；SSOT: `src/constants/sizeScale.ts` TRANSITION_SCALE_VALUES.
-- **duration-scale 搭配**：`duration-scale-*` 必须与 `transition`/`transition-colors`/`transition-opacity` 搭配；transition-_ 也必须配合 duration-scale-_。
-- **Icons 特殊**：Icons 使用 `group-hover:` 颜色/透明度时，transition 必须写在 Icons class 上，父容器 transition 无效。
-- **PrimeVue pt**：pt content 中的 hover/active 同样需加 `transition-colors duration-scale-md` 等。
+- Scale: xs(100ms)~5xl(2000ms) via `duration-scale-{scale}`; SSOT: `src/constants/sizeScale.ts` TRANSITION_SCALE_VALUES.
+- **duration-scale pairing**: `duration-scale-*` MUST pair with `transition`/`transition-colors`/`transition-opacity`; transition-* must pair with duration-scale-*.
+- **Icons**: When Icons use `group-hover:` color/opacity, transition MUST be on Icons class; parent transition does not apply.
+- **PrimeVue pt**: hover/active in pt content also need `transition-colors duration-scale-md` etc.
 - FORBIDDEN: `hover:`/`active:`/`focus:` without transition; `duration-scale-*` alone; hardcoded durations.
-- 详见 `docs/ai-specs/UNOCSS_AND_ICONS.md` §2.7、§2.7.1、§6.3.2。
+- See `docs/ai-specs/UNOCSS_AND_ICONS.md` §2.7, §2.7.1, §6.3.2.
 
 **Flex / main-_ / cross-_ (UnoCSS shortcuts):**
 
@@ -115,7 +115,7 @@ Reference `uno.config.ts` for all available semantic classes:
 - FORBIDDEN: inline styles `style="padding: 16px"` in template
 - If a class doesn't exist in `uno.config.ts`, extend it there rather than writing `<style>`
 
-## 5. Style Tag Usage (Style 标签使用)
+## 5. Style Tag Usage
 
 **FORBIDDEN in `<style>`:**
 
@@ -172,59 +172,58 @@ Reference `uno.config.ts` for all available semantic classes:
 - ❌ `border-radius: 8px` → ✅ `rounded-scale`
 - ❌ `@media (min-width: 768px)` → ✅ `md:` breakpoint class
 
-## 7. 背景色类名白名单（禁止自造 surface-\*）
+## 7. Background Color Whitelist (no custom surface-*)
 
 **Rules:**
 
-- 背景色必须来自设计系统或 PrimeVue 主题的**已知语义类**，例如：
-  - 页面 / 容器：`bg-background`
-  - 卡片 / 面板：`bg-card`
-  - 弱对比区域：`bg-muted`
-  - 状态色：`bg-primary` / `bg-accent` / `bg-danger` / `bg-warn` / `bg-success` / `bg-info` 及 `-hover` / `-light` 变体
-  - 侧边栏：`bg-sidebar` / 其它 `sidebar-*` 家族
-  - PrimeVue 主题保留：`bg-surface-ground`（仅此一个 `surface-*` 语义允许直接使用）
+- Background colors MUST come from design system or PrimeVue theme **known semantic classes**, e.g.:
+  - Page / container: `bg-background`
+  - Card / panel: `bg-card`
+  - Low-contrast area: `bg-muted`
+  - Status: `bg-primary` / `bg-accent` / `bg-danger` / `bg-warn` / `bg-success` / `bg-info` and `-hover` / `-light` variants
+  - Sidebar: `bg-sidebar` / other `sidebar-*` family
+  - PrimeVue reserved: `bg-surface-ground` (only `surface-*` allowed directly)
 
-- **MUST**：只使用 `uno.config.ts` + 主题系统中真实存在的颜色 token。
+- **MUST**: Use only color tokens that exist in `uno.config.ts` + theme system.
 
-- **FORBIDDEN**：在模板中发明新的 `surface-*` 类名，例如：
+- **FORBIDDEN**: Inventing new `surface-*` class names in templates, e.g.:
   - `bg-surface-50/100/200/...`
-  - `bg-surface-700`、`dark:bg-surface-700`
-  - `bg-surface-hover`、`hover:bg-surface-hover`
-  - 任何未在文档中显式列出的 `surface-*` 变体
+  - `bg-surface-700`, `dark:bg-surface-700`
+  - `bg-surface-hover`, `hover:bg-surface-hover`
+  - Any `surface-*` variant not explicitly listed in docs.
 
-- 当你需要新的语义背景色时：
-  - 先在 `src/utils/theme/metadata.ts` 与 `uno.config.ts` 中增加对应 token
-  - 然后在业务代码中使用 `bg-{token}`，禁止直接在模板里拼接新的类名字符串
+- When you need new semantic background colors:
+  1. Add the token in `src/utils/theme/metadata.ts` and `uno.config.ts`
+  2. Use `bg-{token}` in business code; FORBIDDEN to concatenate new class names in template
 
-## 8. 宽度类名规则（禁止使用 Tailwind 默认 max-w-\* 尺寸）
+## 8. Width Class Rules (no Tailwind default max-w-* sizes)
 
 **Rules:**
 
-- 布局/内容区域宽度必须使用以下方式之一：
-  - 视口单位：例如 `w-[80vw]`、`max-w-[90vw]`、`min-h-[60vh]` 等；
-  - 百分比：例如 `w-full`、`w-[80%]` 等；
-  - 设计系统提供的布局变量类：如 `w-sidebarWidth`、`w-sidebarCollapsedWidth` 等（来自 `LAYOUT_DIMENSION_KEYS`）。
+- Layout/content width MUST use one of:
+  - Viewport units: e.g. `w-[80vw]`, `max-w-[90vw]`, `min-h-[60vh]`
+  - Percentage: e.g. `w-full`, `w-[80%]`
+  - Layout variable classes from design system: `w-sidebarWidth`, `w-sidebarCollapsedWidth` (from `LAYOUT_DIMENSION_KEYS`)
 
-- **FORBIDDEN**：在业务代码中直接使用 Uno preset/Tailwind 的固定宽度类，例如：
-  - `max-w-2xl` / `max-w-3xl` / `max-w-4xl` / `max-w-5xl`
-  - `max-w-6xl` / `max-w-7xl` 等
-  - 这些类会映射到固定 `rem` 宽度，不符合本项目「视口/百分比优先」的响应式策略。
+- **FORBIDDEN**: Using Uno preset/Tailwind fixed width classes in business code, e.g.:
+  - `max-w-2xl` / `max-w-3xl` / `max-w-4xl` / `max-w-5xl` / `max-w-6xl` / `max-w-7xl`
+  - These map to fixed rem widths; this project prefers viewport/percentage for responsive layout.
 
-- 典型布局推荐：
-  - 内容容器（组件示例页等）：`class="w-full max-w-[80vw] mx-auto"`
-  - 文档/配置页面：`class="w-full max-w-[90vw] mx-auto"`
-  - 较窄内容区（说明文案/消息块等）：`class="w-full max-w-[60vw] mx-auto"`
+- Recommended layouts:
+  - Content container: `class="w-full max-w-[80vw] mx-auto"`
+  - Doc/config page: `class="w-full max-w-[90vw] mx-auto"`
+  - Narrow content: `class="w-full max-w-[60vw] mx-auto"`
 
-- 如需长期复用的「内容宽度」语义，应该：
-  1. 在 `src/constants/size.ts` / `LAYOUT_DIMENSION_KEYS` 中增加对应 key；
-  2. 在 `uno.config.ts` 中通过布局变量规则映射为 `w-xxx` / `max-w-xxx`；
-  3. 在业务代码中使用该语义类，而不是继续拼接 `max-w-?xl`。
+- For reusable content width semantics:
+  1. Add key in `src/constants/size.ts` / `LAYOUT_DIMENSION_KEYS`
+  2. Map in `uno.config.ts` via layout variable rules to `w-xxx` / `max-w-xxx`
+  3. Use that semantic class in business code instead of `max-w-?xl`
 
-## 9. Vue 模板事件处理器（Event Handlers）
+## 9. Vue Template Event Handlers
 
-- **禁止多语句内联处理器**：`@click`、`@input` 等只能接受单条表达式；多行/多语句会触发 `Error parsing JavaScript expression`。
-  - ❌ `@click="a = 1; b = 2"` 或 `@input="x = $event.target.value; update()"`
-  - ✅ 抽取到 `<script setup>` 中的方法，模板中 `@click="handleClick"`
-- **禁止模板中的 TypeScript 语法**：禁止在 binding 中使用 `as`、`:`、`<>`。类型断言与复杂逻辑必须在 `<script setup>` 中完成。
-- **readonly 数组 includes**：使用 `(ARRAY as readonly string[]).includes(val)` 避免类型不兼容；赋值时使用显式断言 `val as XxxKey`。
-- **参考**：`docs/ai-specs/VUE_TEMPLATE_ANTIPATTERNS.md`（SSOT，完整反模式与正确写法）。
+- **No multi-statement inline handlers**: `@click`, `@input` etc. accept a single expression; multi-line/statement causes `Error parsing JavaScript expression`.
+  - ❌ `@click="a = 1; b = 2"` or `@input="x = $event.target.value; update()"`
+  - ✅ Extract to method in `<script setup>`, use `@click="handleClick"` in template
+- **No TypeScript syntax in template**: FORBIDDEN `as`, `:`, `<>` in bindings. Type assertions and complex logic MUST be in `<script setup>`.
+- **readonly array includes**: Use `(ARRAY as readonly string[]).includes(val)` to avoid type mismatch; use explicit assertion `val as XxxKey` when assigning.
+- **Reference**: `docs/ai-specs/VUE_TEMPLATE_ANTIPATTERNS.md` (SSOT, full antipatterns and correct usage).

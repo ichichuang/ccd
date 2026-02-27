@@ -11,7 +11,7 @@ export const HTTP_CONFIG = {
   defaultDeduplicate: true, // 是否默认启用请求去重
 
   // 重试配置
-  defaultRetryTimes: 3, // 默认重试次数
+  defaultRetryTimes: 0, // 默认重试次数
   defaultRetryDelay: 1000, // 默认重试延迟（毫秒）
 
   // 文件上传配置

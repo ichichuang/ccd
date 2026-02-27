@@ -1,21 +1,21 @@
 ---
-description: 配色语义权威链与决策优先级，colorUsage.ts 为唯一语义源
+description: Color semantic authority chain; colorUsage.ts is the single semantic source
 globs: src/**/*.{vue,ts,tsx}
 alwaysApply: true
 ---
 
-# Color Authority Chain (配色权威链)
+# Color Authority Chain
 
 ## 1. Primary Directive
 
 **colorUsage.ts is the single source of truth for semantic color decisions.**
 
-所有颜色相关决策必须遵循本权威链。下层不得覆盖上层语义定义。
+All color decisions MUST follow this authority chain. Lower layers must NOT override upper semantic definitions.
 
-## 2. Authority Priority (决策顺序)
+## 2. Authority Priority
 
 ```
-1. src/constants/theme/colorUsage.ts  ← 语义权威（SSOT）
+1. src/constants/theme/colorUsage.ts  ← semantic authority (SSOT)
 2. Theme Engine (engine.ts → ThemeCssVars)
 3. Component presets (primevue-preset.ts)
 4. UnoCSS shortcuts & docs examples
@@ -23,18 +23,18 @@ alwaysApply: true
 
 **Lower layers must never override higher layers.**
 
-- **hover 一律 primary-hover**：所有 hover 态颜色反馈使用 `primary-hover` 系（包括 PrimeVue 组件和 UnoCSS 业务代码）
-- **focus ring 使用 ring**：`focus:ring-ring`
-- **accent = 独立互补高亮色**：仅用于 Tab 激活指示线、特殊标记、badge 等场景，不用于 hover/active/focus 态
-- Rules 必须引用 colorUsage.ts
-- 文档不得重新定义 primary/accent/ring/neutral 语义
-- Preset 不解释语义，仅实现 Token 映射
-- Uno 示例必须遵守 colorUsage
+- **hover always primary-hover**: All hover color feedback uses `primary-hover` family (PrimeVue and UnoCSS business code)
+- **focus ring uses ring**: `focus:ring-ring`
+- **accent = independent complementary highlight**: Tab active indicator, special markers, badge; NOT for hover/active/focus
+- Rules MUST reference colorUsage.ts
+- Docs must NOT redefine primary/accent/ring/neutral semantics
+- Preset implements Token mapping only, does not interpret semantics
+- Uno examples MUST follow colorUsage
 
 ## 3. Reference
 
-生成任何涉及颜色的代码前，必须读取：
+Before generating any color-related code, read:
 
-- **语义权威：** `src/constants/theme/colorUsage.ts`（COLOR_USAGE、PRIMARY_USAGE、ACCENT_USAGE）
-- **类型与变量：** `src/types/systems/theme.d.ts`、`src/utils/theme/engine.ts`
-- **PrimeVue 融合：** `docs/ai-specs/PRIMEVUE_THEME.md`
+- **Semantic authority**: `src/constants/theme/colorUsage.ts` (COLOR_USAGE, PRIMARY_USAGE, ACCENT_USAGE)
+- **Types and vars**: `src/types/systems/theme.d.ts`, `src/utils/theme/engine.ts`
+- **PrimeVue integration**: `docs/ai-specs/PRIMEVUE_THEME.md`

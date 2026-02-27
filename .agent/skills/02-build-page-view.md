@@ -1,26 +1,26 @@
 ---
-description: 构建页面视图：Layout -> Components -> Logic Integration
+description: Build page view: Layout -> Components -> Logic Integration
 globs: src/views/**/*.vue
 ---
 
-# 构建页面视图技能
+# Build Page View Skill
 
-## 1. 目标
+## 1. Goal
 
-使用现有组件和逻辑 Hook 组装完整页面视图。
+Assemble full page views using existing components and logic hooks.
 
-## 2. 步骤
+## 2. Steps
 
-### 步骤 1：布局选择
+### Step 1: Layout Selection
 
-- 确定所需布局（默认 `LayoutAdmin`）。
-- 如需要，在 `route.meta` 中配置。
+- Determine layout (default `LayoutAdmin`).
+- Configure in `route.meta` if needed.
 
-### 步骤 2：逻辑集成
+### Step 2: Logic Integration
 
-- 导入业务逻辑 Hook：`import { useFeature } from '@/hooks/modules/useFeature'`
-- 解构状态：`const { loading, data } = useFeature()`
-- **类型安全检查**：确保所有本地变量都有显式类型注解：
+- Import business hook: `import { useFeature } from '@/hooks/modules/useFeature'`
+- Destructure state: `const { loading, data } = useFeature()`
+- **Type safety**: Ensure all local variables have explicit type annotations:
   - ❌ `const localData = ref(null)`
   - ✅ `const localData = ref<FeatureData | null>(null)`
   - ❌ `const computedValue = computed(() => data.value?.name)`
@@ -28,14 +28,14 @@ globs: src/views/**/*.vue
   - ❌ `const items = []`
   - ✅ `const items: Item[] = []`
 
-### 步骤 3：模板组装
+### Step 3: Template Assembly
 
-- 如需要，使用 `AdminBreadcrumb`。
-- 使用 `PageContainer` 或类似的包装器。
-- 将状态绑定到组件。
+- Use `AdminBreadcrumb` if needed.
+- Use `PageContainer` or similar wrapper.
+- Bind state to components.
 
-### 步骤 4：验证
+### Step 4: Verify
 
-1. 在 `browser` 中打开页面。
-2. 检查网络请求（通过控制台日志或 Hook 状态）。
-3. 验证空状态和加载状态。
+1. Open the page in `browser`.
+2. Check network requests (via console or hook state).
+3. Verify empty and loading states.

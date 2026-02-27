@@ -115,6 +115,22 @@ const chartOption: EChartsOption = {
 | `setConnectState(state)`            | 设置联动状态                                                   |
 | `triggerConnect(eventType, params)` | 触发联动事件                                                   |
 
+### 2.5 No-Data Handling
+
+UseEcharts has no built-in no-data overlay. **Recommended**: Wrap with `v-if`. When `option.series` is empty and not loading, hide the chart and show `<EmptyState>`.
+
+```vue
+<UseEcharts v-if="hasChartData" :option="chartOption" />
+<EmptyState
+  v-else
+  icon="i-lucide-line-chart"
+  :title="$t('emptyState.noChartData')"
+  :description="$t('emptyState.noChartDataDesc')"
+/>
+```
+
+See `EMPTY_STATE_AND_ROBUSTNESS.md` for the full pattern.
+
 **使用示例**：
 
 ```vue

@@ -1,41 +1,41 @@
 ---
-description: 布局自适应规则：PC/Tablet/Mobile、断点、有效显隐、userAdjusted
+description: Adaptive layout rules: PC/Tablet/Mobile, breakpoints, effective visibility, userAdjusted
 globs: src/layouts/**/*, src/stores/modules/layout.ts, src/stores/modules/device.ts
 ---
 
-# 布局自适应规则
+# Adaptive Layout Rules
 
-当任务涉及布局壳、侧栏显隐、方向、断点收展或 PC/Tablet/Mobile 行为时，必须阅读 `docs/ai-specs/ADAPTIVE_LAYOUT.md` 并遵循自适应系统。本规则总结了关键约束。
+When a task involves layout shell, sidebar visibility, orientation, breakpoint collapse, or PC/Tablet/Mobile behavior, you MUST read `docs/ai-specs/ADAPTIVE_LAYOUT.md` and follow the adaptive system. This rule summarizes key constraints.
 
-## 1. 单一驱动源
+## 1. Single Driver
 
-- **仅** `LayoutAdmin.runAdaptive()` 驱动布局模式、侧栏收展和有效显隐。
-- **禁止**：从 views/components 或其他布局代码调用 `adaptToMobile`、`adaptToTablet`、`adaptPcByOrientation` 或 `adaptPcByBreakpoint`。
-- **禁止**：在业务代码中直接设置 `layoutStore.mode` 或 `layoutStore.sidebarCollapse` 以实现"响应式布局"。
+- **Only** `LayoutAdmin.runAdaptive()` drives layout mode, sidebar collapse, and effective visibility.
+- **FORBIDDEN**: Calling `adaptToMobile`, `adaptToTablet`, `adaptPcByOrientation`, or `adaptPcByBreakpoint` from views/components or other layout code.
+- **FORBIDDEN**: Directly setting `layoutStore.mode` or `layoutStore.sidebarCollapse` in business code to achieve "responsive layout".
 
-## 2. 有效显隐
+## 2. Effective Visibility
 
-- 管理壳中的侧栏/面包屑/标签/页脚显隐必须使用 LayoutAdmin 中的 `showSidebarEffective`、`showBreadcrumbEffective`、`showTabsEffective`、`showFooterEffective`。
-- **禁止**：绕过这些并在管理壳内的渲染决策中使用 `layoutStore.showSidebar` 等。
+- Managing sidebar/breadcrumb/tabs/footer visibility in the shell MUST use LayoutAdmin's `showSidebarEffective`, `showBreadcrumbEffective`, `showTabsEffective`, `showFooterEffective`.
+- **FORBIDDEN**: Bypassing these and using `layoutStore.showSidebar` etc. in render decisions inside the admin shell.
 
-## 3. 设置面板
+## 3. Settings Panel
 
-- `SettingsContent.vue`：`isMobile = deviceStore.type === 'Mobile' || deviceStore.isMobileLayout`。
-- 仅在这种情况下隐藏"布局模式"和"布局模块显示"；平板大屏和 PC 显示完整选项。
+- `SettingsContent.vue`: `isMobile = deviceStore.type === 'Mobile' || deviceStore.isMobileLayout`.
+- Only in that case hide "Layout Mode" and "Layout Module Visibility"; show full options on tablet large screen and PC.
 
-## 4. 用户偏好
+## 4. User Preference
 
-- 当 `layoutStore.userAdjusted` 为 true 时，断点逻辑不得覆盖 `sidebarCollapse`（即 `adaptPcByBreakpoint(..., !layoutStore.userAdjusted)`）。
-- 用户通过 `toggleSidebarCollapse` / `closeSidebarWithUserMark` 切换侧栏，通过 `markUserAdjusted()` 设置 `userAdjusted`。
+- When `layoutStore.userAdjusted` is true, breakpoint logic MUST NOT override `sidebarCollapse` (i.e. `adaptPcByBreakpoint(..., !layoutStore.userAdjusted)`).
+- User toggles sidebar via `toggleSidebarCollapse` / `closeSidebarWithUserMark`; `markUserAdjusted()` sets `userAdjusted`.
 
-## 5. 关键文件
+## 5. Key Files
 
-- 决策入口：`src/layouts/modules/LayoutAdmin.tsx`（runAdaptive、showXxxEffective）
-- Store 逻辑：`src/stores/modules/layout.ts`（adaptToMobile、adaptToTablet、adaptPcByOrientation、adaptPcByBreakpoint）
-- 设备/断点：`src/stores/modules/device.ts`、`src/constants/breakpoints.ts`
-- 完整语义：`docs/ai-specs/ADAPTIVE_LAYOUT.md`
+- Entry: `src/layouts/modules/LayoutAdmin.tsx` (runAdaptive, showXxxEffective)
+- Store logic: `src/stores/modules/layout.ts` (adaptToMobile, adaptToTablet, adaptPcByOrientation, adaptPcByBreakpoint)
+- Device/breakpoints: `src/stores/modules/device.ts`, `src/constants/breakpoints.ts`
+- Full semantics: `docs/ai-specs/ADAPTIVE_LAYOUT.md`
 
-## 6. 禁止
+## 6. Forbidden
 
-- 在设备 Store 之外直接检查 `window.innerWidth` 来实现"移动/平板"布局。
-- 在 `runAdaptive` 或布局 Store 适配方法之外添加新的自适应分支，而不更新 `docs/ai-specs/ADAPTIVE_LAYOUT.md`。
+- Checking `window.innerWidth` directly outside the device store to implement "mobile/tablet" layout.
+- Adding new adaptive branches without updating `runAdaptive` or layout store adapt methods, and without updating `docs/ai-specs/ADAPTIVE_LAYOUT.md`.

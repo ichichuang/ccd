@@ -103,6 +103,22 @@ const enUS = {
     },
   },
 
+  emptyState: {
+    safeNoData: 'All clear',
+    safeNoDataDesc: 'No alerts at this time.',
+    noSearchResult: 'No results found',
+    noSearchResultDesc: 'Try adjusting filters or search criteria.',
+    connectionLost: 'Connection lost',
+    connectionLostDesc: 'Data may be outdated. Check your network and retry.',
+    noChartData: 'No chart data',
+    noChartDataDesc: 'Select data points or configure settings.',
+    noReportSelected: 'No report selected',
+    noReportSelectedDesc: 'Select a report from the list or create a new one.',
+    actions: {
+      addConfig: 'Add configuration',
+      goToSettings: 'Go to Settings',
+    },
+  },
   dialog: {
     infoTitle: 'Info',
     successTitle: 'Success',

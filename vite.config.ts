@@ -152,6 +152,7 @@ export default ({ mode, command }: ConfigEnv): UserConfigExport => {
               if (id.includes('echarts') || id.includes('zrender')) return 'vendor-echarts'
               if (id.includes('primevue') || id.includes('@primeuix') || id.includes('primeicons'))
                 return 'vendor-primevue'
+              if (id.includes('date-holidays')) return 'vendor-date-holidays'
               if (id.includes('lodash') || id.includes('dayjs')) return 'vendor-utils'
               if (
                 id.includes('vue/') ||

@@ -1,6 +1,12 @@
 /**
  * 依赖预构建配置
- * Vite 启动时会将下面 include 里的模块编译成 ESM 格式并缓存到 node_modules/.vite 文件夹
+ * 数据来源：build/optimize.ts（BUILD_SYSTEM.md §1.2）
+ * Vite 启动时会将 include 里的模块预编译为 ESM 并缓存到 node_modules/.vite
+ *
+ * PrimeVue 子路径 SSOT：与 componentMap + SchemaForm wrappers 严格对齐
+ * - componentMap: src/components/SchemaForm/components/componentMap.ts
+ * - wrappers: WrappedAutoComplete, WrappedColorPicker, WrappedDatePicker 等
+ * 精简前必须 grep 确认无引用；禁止删除 componentMap 中使用的子路径
  */
 export const include = [
   // 核心框架 (Vite 通常能自动识别，但显式列出可防止某些边缘情况)

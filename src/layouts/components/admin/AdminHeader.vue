@@ -289,8 +289,8 @@ const renderRootItem = (item: PrimeMenuModelItem) => {
         >
           <span class="fs-md font-bold">C</span>
         </div>
-        <div class="hidden md:flex flex-col leading-none">
-          <span class="fs-sm font-bold tracking-tight">{{ brand.displayName }}</span>
+        <div class="hidden md:flex flex-col leading-none gap-xs">
+          <span class="fs-xl font-bold tracking-tight">{{ brand.displayName }}</span>
           <span class="fs-xs text-muted-foreground font-medium">{{ brand.subtitle }}</span>
         </div>
       </div>

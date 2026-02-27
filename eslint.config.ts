@@ -143,6 +143,10 @@ export default tseslint.config(
 
   // 8. 自定义业务规则
   // ----------------------------------------------------------------------
+  // [待评估] body/formatter 返回模板字符串反模式：no-restricted-syntax 可检测
+  // `return \`<tag>${x}</tag>\`` 等写法，但需评估误报率（如合法模板字符串、纯文本返回）。
+  // 暂不启用，由 .cursor/rules/24-tsx-rendering.mdc、27-ai-tsx-decision.mdc 规范约束。
+  //
   // 8.1 针对 TS/TSX 的规则 (开启严格检查)
   {
     name: 'app/ts-custom-rules',

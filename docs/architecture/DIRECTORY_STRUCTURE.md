@@ -204,7 +204,7 @@
 | `usePageTitle.ts` | 页面标题管理、calculatePageTitle                           |
 | `useLoading.ts`   | loadingStart/loadingDone、pageLoadingStart/pageLoadingDone |
 | `useNprogress.ts` | NProgress startProgress/doneProgress                       |
-| `useFull.ts`      | 全屏控制（VueUse useFullscreen）                           |
+| ~~useFull.ts~~    | 已移除（可改用 @vueuse/core useFullscreen）                |
 
 #### hooks/modules/
 
@@ -352,32 +352,41 @@
 
 ### 3.12 src/utils/ 工具层
 
-| 文件                                                                | 职责说明                                                |
-| ------------------------------------------------------------------- | ------------------------------------------------------- |
-| `browser.ts`                                                        | getSystemColorMode                                      |
-| `date.ts`                                                           | 日期工具（dayjs、date-holidays）                        |
-| `deviceSync.ts`                                                     | getDeviceTypeSync、getBreakpointSync                    |
-| `ids.ts`                                                            | generateUniqueId、generateIdFromKey                     |
-| `lodashes.ts`                                                       | deepClone、deepEqual、deepMerge、objectPick、objectOmit |
-| `mitt.ts`                                                           | 全局事件总线 useMitt                                    |
-| `strings.ts`                                                        | toKebabCase                                             |
-| `http/instance.ts`                                                  | Alova 实例                                              |
-| `http/methods.ts`                                                   | get/post/put/del/patch/head/uploadFile/downloadFile     |
-| `http/interceptors.ts`                                              | 请求/响应拦截                                           |
-| `http/errors.ts`                                                    | HttpRequestError、isHttpRequestError                    |
-| `http/types.ts`                                                     | HTTP 相关类型                                           |
-| `http/index.ts`                                                     | HTTP 模块导出                                           |
-| `http/connection.ts`                                                | ConnectionManager（网络状态、重连、健康检查）           |
-| `http/uploadManager.ts`                                             | UploadManager（分片上传、断点续传、暂停/恢复）          |
-| `safeStorage/*`                                                     | 加密、压缩、序列化                                      |
-| `theme/engine.ts`                                                   | 主题应用引擎                                            |
-| `theme/sizeEngine.ts`                                               | 尺寸预设、preload、根字号                               |
-| `theme/metadata.ts`                                                 | 主题元数据                                              |
-| `theme/primevue-preset.ts`                                          | PrimeVue 主题融合                                       |
-| `theme/transitions.ts`                                              | 主题切换过渡                                            |
-| `theme/primevue-theme-helpers.ts`、`theme/primevue-theme-engine.ts` | PrimeVue 主题引擎                                       |
-| `theme/colors.ts`、`theme/*.json`                                   | 颜色与主题配置                                          |
-| `theme/chartUtils.ts`                                               | 图表颜色工具                                            |
+| 文件                                                                | 职责说明                                                                               |
+| ------------------------------------------------------------------- | -------------------------------------------------------------------------------------- |
+| ~~browser.ts~~                                                      | 已移除                                                                                 |
+| `date/`                                                             | 日期工具（与 http 同构：types、constants、holidaysLoader、timezone、dateUtils、index） |
+| `deviceSync.ts`                                                     | getDeviceTypeSync、getBreakpointSync                                                   |
+| `ids.ts`                                                            | generateUniqueId、generateIdFromKey                                                    |
+| `lodashes.ts`                                                       | deepClone、deepEqual、deepMerge、objectPick、objectOmit                                |
+| `mitt.ts`                                                           | 全局事件总线 useMitt                                                                   |
+| `strings.ts`                                                        | toKebabCase                                                                            |
+| `http/instance.ts`                                                  | Alova 实例                                                                             |
+| `http/methods.ts`                                                   | get/post/put/del/patch/head/uploadFile/downloadFile                                    |
+| `http/interceptors.ts`                                              | 请求/响应拦截                                                                          |
+| `http/errors.ts`                                                    | HttpRequestError、isHttpRequestError                                                   |
+| `http/types.ts`                                                     | HTTP 相关类型                                                                          |
+| `http/index.ts`                                                     | HTTP 模块导出                                                                          |
+| `http/connection.ts`                                                | ConnectionManager（网络状态、重连、健康检查）                                          |
+| `http/uploadManager.ts`                                             | UploadManager（分片上传、断点续传、暂停/恢复）                                         |
+| `safeStorage/*`                                                     | 加密、压缩、序列化                                                                     |
+| `theme/engine.ts`                                                   | 主题应用引擎                                                                           |
+| `theme/sizeEngine.ts`                                               | 尺寸预设、preload、根字号                                                              |
+| `theme/metadata.ts`                                                 | 主题元数据                                                                             |
+| `theme/color-adapter.ts`                                            | 颜色适配器（ThemeCssVars → rgb(var(--xxx))）                                           |
+| `theme/preset-primitive.ts`                                         | Primitive Layer（brand、neutral、success 等）                                          |
+| `theme/preset-semantic.ts`                                          | Semantic Layer（formField、colorScheme.light/dark）                                    |
+| `theme/preset-components/base.ts`                                   | 基础组件 preset（scrollpanel、accordion、card 等）                                     |
+| `theme/preset-components/form.ts`                                   | 表单组件 preset（button、inputtext、select 等）                                        |
+| `theme/preset-components/overlay.ts`                                | 浮层组件 preset（dialog、drawer、popover 等）                                          |
+| `theme/preset-components/data.ts`                                   | 数据组件 preset（datatable、listbox、tree 等）                                         |
+| `theme/preset-components/menu-nav-misc.ts`                          | 菜单/导航/杂项 preset（menu、breadcrumb、message 等）                                  |
+| `theme/preset-components/index.ts`                                  | 组件 preset 聚合（buildAllComponents）                                                 |
+| `theme/primevue-preset.ts`                                          | PrimeVue 主题融合主入口（组装与 ROOT_SIZE 注入）                                       |
+| `theme/transitions.ts`                                              | 主题切换过渡                                                                           |
+| `theme/primevue-theme-helpers.ts`、`theme/primevue-theme-engine.ts` | PrimeVue 主题引擎                                                                      |
+| `theme/colors.ts`、`theme/*.json`                                   | 颜色与主题配置                                                                         |
+| `theme/chartUtils.ts`                                               | 图表颜色工具                                                                           |
 
 ---
 
@@ -407,32 +416,32 @@
 | `example/DataTable/*`                    | DataTable 示例                                                         |
 | `example/UseEcharts/*`                   | UseEcharts 示例                                                        |
 | `example/IconsExample/*`                 | Icons 示例                                                             |
-| `example/icons/`                         | IconsExample 的 iconLists 配置（iconLists.ts、iconLists.generated.ts） |
+| `example/icons/configs/`                 | 构建生成的 iconLists.generated.ts，IconsExample 通过 iconLists.ts 引用 |
 
 ---
 
 ## 📚 四、docs/ 文档层
 
-| 文件                        | 职责说明                                                       |
-| --------------------------- | -------------------------------------------------------------- |
-| `README.md`                 | 文档索引与使用指南                                             |
-| `PROJECT_PROTOCOL.md`       | 项目协议（SSOT）                                               |
-| `BUILD_SYSTEM.md`           | 构建系统、AutoImport                                           |
-| `TYPESCRIPT_AND_LINTING.md` | TypeScript、ESLint                                             |
-| `PRIMEVUE_THEME.md`         | PrimeVue 主题                                                  |
-| `UNOCSS_AND_ICONS.md`       | UnoCSS、Icons                                                  |
-| `ECHARTS_THEME.md`          | UseEcharts、useChartTheme                                      |
-| `SCHEMA_FORM_COMPONENT.md`  | SchemaForm 使用                                                |
-| `DataTable_COMPONENT.md`    | DataTable 使用                                                 |
-| `DIALOG_COMPONENT.md`       | PrimeDialog、useDialog                                         |
-| `TOAST_AND_MESSAGE.md`      | window.$toast、$message                                        |
-| `TOAST_UI_OVERRIDES.md`     | Toast 样式覆盖                                                 |
-| `ADAPTIVE_LAYOUT.md`        | 布局适配                                                       |
-| `AUTH_AND_LOGIN_FLOW.md`    | 登录鉴权                                                       |
-| `ENV_AND_RUNTIME.md`        | 环境变量、代理                                                 |
-| `GOLDEN_SAMPLES/`           | 黄金样本                                                       |
-| `SKILLS_WORKFLOWS.md`       | AI Skills 工作流程（Cursor + Antigravity 两步走、常用 Prompt） |
-| `ANTIGRAVITY_UI_RULES.md`   | Antigravity Agent 专用 UI 规则                                 |
+| 文件                                 | 职责说明                                                         |
+| ------------------------------------ | ---------------------------------------------------------------- |
+| `README.md`                          | 文档索引与使用指南                                               |
+| `AI_COLLABORATION.md`                | Cursor + Antigravity 协作、AI Skills 工作流程、常用 Prompt       |
+| `DEPLOYMENT.md`                      | 部署指南（Nginx、gzip 预压缩）                                   |
+| `ai-specs/PROJECT_PROTOCOL.md`       | 项目协议（SSOT）                                                 |
+| `ai-specs/BUILD_SYSTEM.md`           | 构建系统、AutoImport                                             |
+| `ai-specs/TYPESCRIPT_AND_LINTING.md` | TypeScript、ESLint                                               |
+| `ai-specs/PRIMEVUE_THEME.md`         | PrimeVue 主题                                                    |
+| `ai-specs/UNOCSS_AND_ICONS.md`       | UnoCSS、Icons                                                    |
+| `ai-specs/ECHARTS_THEME.md`          | UseEcharts、useChartTheme                                        |
+| `ai-specs/SCHEMA_FORM_COMPONENT.md`  | SchemaForm 使用                                                  |
+| `ai-specs/DataTable_COMPONENT.md`    | DataTable 使用                                                   |
+| `ai-specs/DIALOG_COMPONENT.md`       | PrimeDialog、useDialog                                           |
+| `ai-specs/TOAST_AND_MESSAGE.md`      | window.$toast、$message（含 §6 样式覆盖）                        |
+| `ai-specs/ADAPTIVE_LAYOUT.md`        | 布局适配                                                         |
+| `ai-specs/AUTH_AND_LOGIN_FLOW.md`    | 登录鉴权                                                         |
+| `ai-specs/ENV_AND_RUNTIME.md`        | 环境变量、代理                                                   |
+| `ai-specs/GOLDEN_SAMPLES/`           | 黄金样本                                                         |
+| `ai-specs/ANTIGRAVITY_UI_RULES.md`   | Antigravity Agent 专用 UI 规则（长版，规则以 .agent/rules 为准） |
 
 ---
 
@@ -458,8 +467,8 @@
 
 ## 📖 延伸阅读
 
-| 文档                                   | 说明                         |
-| -------------------------------------- | ---------------------------- |
-| [架构总览](./ARCHITECTURE_OVERVIEW.md) | 分层设计、设计原则、核心流程 |
-| [技术栈详解](./TECH_STACK.md)          | 各项技术的版本与用途         |
-| [项目协议](../PROJECT_PROTOCOL.md)     | 开发时需遵循的编码规范与约束 |
+| 文档                                        | 说明                         |
+| ------------------------------------------- | ---------------------------- |
+| [架构总览](./ARCHITECTURE_OVERVIEW.md)      | 分层设计、设计原则、核心流程 |
+| [技术栈详解](./TECH_STACK.md)               | 各项技术的版本与用途         |
+| [项目协议](../ai-specs/PROJECT_PROTOCOL.md) | 开发时需遵循的编码规范与约束 |

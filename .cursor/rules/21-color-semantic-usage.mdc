@@ -28,15 +28,15 @@ Never choose colors visually. Always map UI intention → semantic token per `co
 - **ring** = focus system（焦点环）
 - **neutral** = layout structure（布局结构）
 
-## 3. Forbidden (AI 自动检查)
+## 3. Forbidden (AI auto-check)
 
-- `hover:bg-accent`、`hover:text-accent` → 改为 `hover:bg-primary-hover`、`hover:text-primary-hover`
-- `focus:ring-primary` → 必须 `focus:ring-ring`
-- `bg-accent-light` 作为 selection → 必须 `bg-primary-light`
+- `hover:bg-accent`, `hover:text-accent` → use `hover:bg-primary-hover`, `hover:text-primary-hover`
+- `focus:ring-primary` → MUST use `focus:ring-ring`
+- `bg-accent-light` for selection → MUST use `bg-primary-light`
 
 ## 4. Component Mapping
 
-| 组件          | 状态             | Token              |
+| Component     | State            | Token              |
 | ------------- | ---------------- | ------------------ |
 | Button        | filled           | primary            |
 | Button        | ghost hover      | primary-hover/0.15 |
@@ -48,13 +48,13 @@ Never choose colors visually. Always map UI intention → semantic token per `co
 | Tab           | active indicator | accent             |
 | Badge         | highlight        | accent             |
 
-## 5. Decision Flow (AI 按此顺序思考)
+## 5. Decision Flow (AI think in this order)
 
-1. 这是品牌行为？ → primary
-2. 用户正在悬停？ → primary-hover
-3. 键盘聚焦预选？ → primary-light
-4. 需要特殊视觉高亮（Tab 指示线、badge）？ → accent
-5. 只是结构？ → neutral
-6. 状态反馈？ → status color (danger/warn/success/info)
+1. Is this brand behavior? → primary
+2. User hovering? → primary-hover
+3. Keyboard focus preselect? → primary-light
+4. Need special highlight (Tab indicator, badge)? → accent
+5. Just structure? → neutral
+6. Status feedback? → status color (danger/warn/success/info)
 
 **If unsure, choose primary-hover for interaction, accent for static highlight.**

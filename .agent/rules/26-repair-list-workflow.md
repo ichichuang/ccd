@@ -1,68 +1,68 @@
 ---
-description: 修复清单工作流 — repair_list.txt 的创建、写入、进度跟踪与清空
+description: Repair list workflow — repair_list.txt creation, writing, progress tracking, and clearing
 globs: repair_list.txt, **/*
 alwaysApply: true
 ---
 
-# Repair List 工作流（repair_list.txt）
+# Repair List Workflow (repair_list.txt)
 
-## 1. 文件位置与创建
+## 1. File Location and Creation
 
-- 路径：项目根目录 `repair_list.txt`
-- 若根目录不存在此文件，AI 可自行创建并写入
-- 已加入 .gitignore，不提交到版本控制
+- Path: project root `repair_list.txt`
+- If missing, AI may create and populate it
+- Included in .gitignore; do not commit to version control
 
-## 2. 适用场景
+## 2. When to Use
 
-当用户请求「检查问题」「审计」「修复」「合规检查」等时启用本工作流。
+Enable this workflow when the user requests "check issues", "audit", "fix", "compliance check", etc.
 
-## 3. 模式行为
+## 3. Mode Behavior
 
-- **Ask 模式**：完成检查后，询问用户：「是否将以上问题写入 repair_list.txt 供后续修复？」
-- **Agent 模式**：检查完成后，自动将问题写入 repair_list.txt
+- **Ask mode**: After the check, ask the user: "Add the above issues to repair_list.txt for later fixing?"
+- **Agent mode**: After the check, write issues to repair_list.txt automatically
 
-## 4. 文件格式（纯 txt，非 md）
+## 4. File Format (plain txt, not md)
 
-### 4.1 基本结构
+### 4.1 Basic Structure
 
 ```
-修复清单
-生成: YYYY-MM-DD HH:mm
-待解决: N | 已解决: M
+Repair List
+Generated: YYYY-MM-DD HH:mm
+Pending: N | Resolved: M
 
-=== 待解决 (N) ===
-1. [⬜] 文件路径:行号 - 问题描述
-2. [⬜] 文件路径:起始行-结束行 - [类型] 问题描述
+=== Pending (N) ===
+1. [⬜] file:line - description
+2. [⬜] file:start-end - [type] description
 
-=== 已解决 (M) ===
-3. [✅] 文件路径:行号 - 已解决的问题
+=== Resolved (M) ===
+3. [✅] file:line - resolved description
 ```
 
-### 4.2 行号格式
+### 4.2 Line Number Format
 
-- **单行**：`文件路径:123`
-- **行范围**：`文件路径:123-125`
+- **Single line**: `file:123`
+- **Line range**: `file:123-125`
 
-### 4.3 待解决 / 已解决
+### 4.3 Pending / Resolved
 
-- **状态标记**（每条前必须出现，便于开发者一眼看出解决情况）：
-  - 待解决：`[⬜]`（空框，Unicode U+2B1C）
-  - 已解决：`[✅]`（勾选，Unicode U+2705）
-- 待解决：`序号. [⬜] 文件:行 - 描述`
-- 已解决：`序号. [✅] 文件:行 - 描述`
-- 分区标题 `=== 待解决 (N) ===` / `=== 已解决 (M) ===` 便于 AI 解析与开发者快速扫描
+- **Status markers** (required at the start of each entry):
+  - Pending: `[⬜]` (empty box, Unicode U+2B1C)
+  - Resolved: `[✅]` (check, Unicode U+2705)
+- Pending: `number. [⬜] file:line - description`
+- Resolved: `number. [✅] file:line - description`
+- Section titles `=== Pending (N) ===` / `=== Resolved (M) ===` help AI parsing and quick scanning
 
-### 4.4 可选分类标签
+### 4.4 Optional Category Tags
 
-- 可在描述前加 `[类型]` 便于按类批量处理，例如：`[transition]`、`[hardcode]`、`[import]`
+- Add `[type]` before the description for batch processing, e.g. `[transition]`, `[hardcode]`, `[import]`
 
-## 5. 修复流程
+## 5. Repair Flow
 
-- 若 repair_list.txt 有内容：先读取，识别 `=== 待解决 ===` 下 `[⬜]` 标记的项，按序修复
-- 每解决一项：将该条 `[⬜]` 改为 `[✅]` 并移入 `=== 已解决 ===` 区，同时更新统计行（待解决: N | 已解决: M）
-- 当全部为 `[✅]` 且再次检查无遗留后：清空 repair_list.txt 内容（保留空文件，供下次使用）
+- If repair_list.txt exists: read it, identify `[⬜]` entries under `=== Pending ===`, fix in order
+- For each resolved item: change `[⬜]` to `[✅]`, move to `=== Resolved ===`, update the stats line (Pending: N | Resolved: M)
+- When all are `[✅]` and a final check shows no remaining issues: clear repair_list.txt content (keep the file for reuse)
 
-## 6. 禁止
+## 6. Forbidden
 
-- 未确认全部解决前，不清空 repair_list.txt
-- 不将 repair_list.txt 提交到 git
+- Do NOT clear repair_list.txt before all items are confirmed resolved
+- Do NOT commit repair_list.txt to git

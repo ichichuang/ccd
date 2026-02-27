@@ -28,6 +28,12 @@
    - **使用场景**：所有代码生成任务前必须阅读
    - **引用**：`@./PROJECT_PROTOCOL.md`
 
+1a. **`AI_CODING_PROTOCOL.md`** - AI 编码协议
+
+- **功能**：生成前决策流程、TSX/lang 切换、VNode vs 模板字符串、生成后自检清单
+- **使用场景**：涉及 DataTable 列 body/renderer、Dialog contentRenderer、SchemaForm 自定义渲染等程序化渲染时必读
+- **引用**：`@./AI_CODING_PROTOCOL.md`
+
 2. **`BUILD_SYSTEM.md`** - 构建系统与自动导入
    - **功能**：Vite 配置、AutoImport、类型生成、组件扫描范围
    - **引用**：`@./BUILD_SYSTEM.md`
@@ -45,28 +51,39 @@
 
 - **颜色语义权威**：`src/constants/theme/colorUsage.ts`（SSOT），详见 `.cursor/rules/21-color-authority.mdc`
 
-5. **`PRIMEVUE_THEME.md`** - PrimeVue 主题
-6. **`UNOCSS_AND_ICONS.md`** - UnoCSS 与图标
-7. **`ECHARTS_THEME.md`** - ECharts 与主题
+5. **`PRIMEVUE_V4_API.md`** - PrimeVue v4 API 规范（禁止 v3 弃用组件名，以 https://primevue.org/ 为准）
+6. **`PRIMEVUE_THEME.md`** - PrimeVue 主题
+7. **`UNOCSS_AND_ICONS.md`** - UnoCSS 与图标
+8. **`ECHARTS_THEME.md`** - ECharts 与主题
+9. **`INDUSTRIAL_UX_DESIGN_SYSTEM.md`** - 工业级 UX 设计系统
+
+- **功能**：桌面级布局骨架、工业状态色、防呆设计、Toast 时长建议、连接感知
+- **使用场景**：工业监控/仪表盘类页面
+- **引用**：`@./INDUSTRIAL_UX_DESIGN_SYSTEM.md`
+
+20. **`EMPTY_STATE_AND_ROBUSTNESS.md`** - Empty State & UI Robustness
+
+- **功能**：Industrial Empty State Pattern、EmptyState 组件、消除双重空白、i18n 强制检查
+- **使用场景**：表格/图表/仪表盘无数据、连接中断、空态设计
+- **引用**：`@./EMPTY_STATE_AND_ROBUSTNESS.md`
 
 ### 2.3 组件文档
 
-8. **`SCHEMA_FORM_COMPONENT.md`** - SchemaForm 表单
-9. **`DataTable_COMPONENT.md`** - DataTable 表格
-10. **`DIALOG_COMPONENT.md`** - PrimeDialog 弹窗
-11. **`TOAST_AND_MESSAGE.md`** - Toast & Message
-12. **`TOAST_UI_OVERRIDES.md`** - Toast 样式覆盖
+9. **`SCHEMA_FORM_COMPONENT.md`** - SchemaForm 表单
+10. **`DataTable_COMPONENT.md`** - DataTable 表格
+11. **`DIALOG_COMPONENT.md`** - PrimeDialog 弹窗
+12. **`TOAST_AND_MESSAGE.md`** - Toast & Message（含 §6 样式覆盖：居中、关闭按钮、内边距）
 
 ### 2.4 布局与路由
 
-13. **`ADAPTIVE_LAYOUT.md`** - 布局适配系统
-14. **`AUTH_AND_LOGIN_FLOW.md`** - 登录与鉴权
+14. **`ADAPTIVE_LAYOUT.md`** - 布局适配系统
+15. **`AUTH_AND_LOGIN_FLOW.md`** - 登录与鉴权
 
 ### 2.5 工作流程与环境
 
-15. **`SKILLS_WORKFLOWS.md`** - AI Skills 工作流程
-16. **`ANTIGRAVITY_UI_RULES.md`** - Antigravity Agent 规则
-17. **`ENV_AND_RUNTIME.md`** - 环境变量与运行时
+16. **`AI_COLLABORATION.md`**（`docs/` 根目录）- Cursor + Antigravity 协作、AI Skills 工作流程、常用 Prompt
+17. **`ANTIGRAVITY_UI_RULES.md`** - Antigravity Agent 专用 UI 规则（长版，与 `.agent/rules/` 互补；规则以 `.agent/rules/` 为权威）
+18. **`ENV_AND_RUNTIME.md`** - 环境变量与运行时
 
 ---
 
@@ -88,20 +105,25 @@
 | 任务类型                              | 引用文档                                                                                   |
 | ------------------------------------- | ------------------------------------------------------------------------------------------ |
 | 理解架构/目录结构                     | `@docs/architecture/ARCHITECTURE_OVERVIEW.md`、`@docs/architecture/DIRECTORY_STRUCTURE.md` |
+| Cursor+Antigravity 协作、常用 Prompt  | `@docs/AI_COLLABORATION.md`                                                                |
 | 表单（多字段/校验/分步/分组/动态）    | `@docs/SCHEMA_FORM_COMPONENT.md`                                                           |
-| 数据表格（列表/分页/排序/筛选/导出）  | `@docs/DataTable_COMPONENT.md`                                                             |
+| 数据表格（列表/分页/排序/筛选/导出）  | `@docs/DataTable_COMPONENT.md`、`@docs/AI_CODING_PROTOCOL.md`（列 body/renderer 自定义时） |
 | 布局/侧栏/响应式                      | `@./ADAPTIVE_LAYOUT.md`                                                                    |
 | 登录/鉴权                             | `@./AUTH_AND_LOGIN_FLOW.md`                                                                |
 | 反馈提示（非组件环境）                | `@./TOAST_AND_MESSAGE.md`                                                                  |
 | 弹窗/对话框                           | `@docs/DIALOG_COMPONENT.md`                                                                |
 | 样式编写                              | `@./UNOCSS_AND_ICONS.md`、`@./PRIMEVUE_THEME.md`                                           |
+| PrimeVue 组件（下拉/日期/抽屉等）     | `@./PRIMEVUE_V4_API.md`（禁止 v3 弃用名，以 https://primevue.org/ 为准）                   |
 | 图表开发                              | `@./ECHARTS_THEME.md`                                                                      |
 | 类型定义/注解                         | `@./TYPESCRIPT_AND_LINTING.md`                                                             |
 | Vue 模板解析错误/构建失败/TS 类型错误 | `@./VUE_TEMPLATE_ANTIPATTERNS.md`                                                          |
 | 构建/自动导入                         | `@./BUILD_SYSTEM.md`                                                                       |
 | 环境配置                              | `@./ENV_AND_RUNTIME.md`                                                                    |
+| 部署/Nginx/gzip 预压缩                | `@../DEPLOYMENT.md`                                                                        |
 | 右键菜单（ContextMenu）               | `@./PROJECT_PROTOCOL.md` §8.5.5                                                            |
 | 网络状态/大文件上传                   | `@./PROJECT_PROTOCOL.md` §8.4.6                                                            |
+| 工业/仪表盘页面                       | `@./INDUSTRIAL_UX_DESIGN_SYSTEM.md`                                                        |
+| 空状态/鲁棒性                         | `@./EMPTY_STATE_AND_ROBUSTNESS.md`                                                         |
 
 ### 引用方式
 
@@ -125,9 +147,10 @@
 
 - **Cursor Rules**：`.cursor/rules/`（强制约束）
 - **Cursor Skills**：`.cursor/skills/`（操作流程）
-- **Antigravity Rules**：`.agent/rules/`
+- **Antigravity Rules**：`.agent/rules/`（权威规则，AI 必须遵循）
 - **Antigravity Skills**：`.agent/skills/`
-- **黄金样本**：`docs/ai-specs/GOLDEN_SAMPLES/` — 基础模式（useFeatureLogic、UIComponent、ApiModule、StoreExample）
+- **`ANTIGRAVITY_UI_RULES.md`**：Antigravity 专用 UI 长版说明，与 `.agent/rules/10-ui-architecture.md` 等互补；规则冲突时以 `.agent/rules/` 为准
+- **黄金样本**：`docs/ai-specs/GOLDEN_SAMPLES/` — 基础模式（useFeatureLogic、UIComponent、ApiModule、StoreExample）；**DataTable 列 body** 见 `DataTableBodyColumn.vue`
 - **示例页面**：`src/views/example/` — DataTable、SchemaForm、UseEcharts、PrimeDialog 等复杂组件的完整用法示例，生成同类功能时优先参考对应目录
 - **系统配置页**：`src/views/system-configuration/` — 主题、尺寸、断点、布局/设备、滚动条、UnoCSS 等核心系统能力演示；与 example 区别：system-configuration 展示架构基础设施，example 展示业务组件用法
 
@@ -153,3 +176,4 @@
 | 怎么写图表          | `ECHARTS_THEME.md`                                                |
 | 怎么写右键菜单      | `PROJECT_PROTOCOL.md` §8.5.5                                      |
 | 网络状态/大文件上传 | `PROJECT_PROTOCOL.md` §8.4.6                                      |
+| 部署/Nginx/gzip     | `DEPLOYMENT.md`                                                   |

@@ -1,3 +1,8 @@
+/**
+ * UploadManager - 大文件分片上传、断点续传
+ * 业务层当前无引用；属基础设施，供未来上传功能使用。
+ * 若无上传需求可考虑懒加载引入以减小首包。
+ */
 import { HTTP_CONFIG } from '@/constants/http'
 import { post } from './methods'
 import type {

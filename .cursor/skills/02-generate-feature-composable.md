@@ -1,79 +1,78 @@
-# Skill 02：Generate Feature Composable（业务 Hook）
+# Skill 02: Generate Feature Composable (Business Hook)
 
 ## Goal
 
-基于已有 API module（`src/api/<module>/<feature>.ts`），生成/更新对应业务 Hook（`src/hooks/modules/useXxx.ts`），统一输出 `loading/data/error/send`，并按需要补充分页/筛选等业务状态。
+Based on existing API module (`src/api/<module>/<feature>.ts`), generate/update the corresponding business Hook (`src/hooks/modules/useXxx.ts`), return a unified `loading/data/error/send`, and add pagination/filtering state as needed.
 
 ## Inputs
 
-- API module 路径：`src/api/<module>/<feature>.ts`
-- 期望 Hook 名：例如 `useUserLogin` / `useUserList`
-- 业务状态：是否需要分页（page/pageSize/total）、筛选条件、刷新、缓存策略等
+- API module path: `src/api/<module>/<feature>.ts`
+- Desired Hook name: e.g. `useUserLogin` / `useUserList`
+- Business state: Whether pagination (page/pageSize/total), filters, refresh, cache strategy, etc. is needed
 
-## Pre-check（强制）
+## Pre-check (mandatory)
 
-先阅读并遵循：
+Read and follow:
 
 - `@docs/ai-specs/PROJECT_PROTOCOL.md`
-- `@docs/ai-specs/GOLDEN_SAMPLES/useFeatureLogic.ts`（结构/风格参考）
+- `@docs/ai-specs/GOLDEN_SAMPLES/useFeatureLogic.ts` (structure/style reference)
 - `@.cursor/rules/10-logic-layer.mdc`
 - `@.cursor/rules/15-utils-and-hooks-first.mdc`
 
-## Golden Sample 说明
+## Golden Sample
 
-`docs/ai-specs/GOLDEN_SAMPLES/useFeatureLogic.ts` 是 `useHttpRequest` 的封装，提供 **loading/data/error/send** 的返回结构参考。
-本 Skill 要求生成的 Hook 应：
+`docs/ai-specs/GOLDEN_SAMPLES/useFeatureLogic.ts` wraps `useHttpRequest` and provides reference for the **loading/data/error/send** return shape. This Skill requires the generated Hook to:
 
-1. 从 `src/api/<module>/<feature>.ts` 导入 `buildXxxMethod`
-2. 以 `useHttpRequest(buildXxxMethod)` 形式调用
-3. 返回与 useHttpRequest 一致的结构（loading/data/error/send）
+1. Import `buildXxxMethod` from `src/api/<module>/<feature>.ts`
+2. Call it via `useHttpRequest(buildXxxMethod)`
+3. Return the same shape as useHttpRequest (loading/data/error/send)
 
 ## Task
 
-1. 在 `src/hooks/modules/useXxx.ts` 中实现：
-   - 使用 `useHttpRequest`（来自 `@/hooks/modules/useHttpRequest`）
-   - 调用 API module 导出的 `build<Domain><Feature>Method`（优先）或 `request<Domain><Feature>`（次选）
-2. 暴露统一返回结构（建议与黄金样本一致）：`loading/data/error/send`
-3. 若涉及分页/筛选：同时暴露 `params`（ref/reactive）与 `reset/refresh` 等方法
-4. 复用已有工具（date/ids/lodashes/mitt 等），禁止重复造轮子
+1. Implement in `src/hooks/modules/useXxx.ts`:
+   - Use `useHttpRequest` (from `@/hooks/modules/useHttpRequest`)
+   - Call `build<Domain><Feature>Method` (preferred) or `request<Domain><Feature>` (fallback) from API module
+2. Expose unified return shape (recommend matching golden sample): `loading/data/error/send`
+3. If pagination/filtering: also expose `params` (ref/reactive) and methods like `reset`/`refresh`
+4. Reuse existing utils (date/ids/lodashes/mitt, etc.); do NOT reimplement
 
 ## Output
 
-- 目标 Hook 文件 `src/hooks/modules/useXxx.ts` 的完整内容
+- Full content of target Hook file `src/hooks/modules/useXxx.ts`
 
 ## Non-goals
 
-- 不写 UI（不改 template/class）
-- 不在 Hook 内硬编码 URL（URL/Method 构建必须在 API module）
+- No UI (do not change template/class)
+- No hardcoded URL in Hook (URL/Method building MUST be in API module)
 
 ## Validation
 
-- [ ] 使用 `useHttpRequest`
-- [ ] API 来自 `src/api/<module>/<feature>.ts`（而不是 views/components）
-- [ ] 返回至少包含 `loading/data/error/send`
-- [ ] 无 fetch/axios
-- [ ] 无 any
-- [ ] 所有变量都有显式类型注解（包括 ref/computed/reactive）
-  - [ ] `const loading = ref<boolean>(false)` 而非 `const loading = ref(false)`
-  - [ ] `const data = ref<DataType | null>(null)` 而非 `const data = ref(null)`
-  - [ ] `const result = computed<ResultType>(() => ...)` 而非 `const result = computed(() => ...)`
-  - [ ] `const items: Item[] = []` 而非 `const items = []`
-  - [ ] 函数参数和返回值都有显式类型：`function process(data: ProcessData): ProcessResult`
+- [ ] Uses `useHttpRequest`
+- [ ] API from `src/api/<module>/<feature>.ts` (not views/components)
+- [ ] Return includes at least `loading/data/error/send`
+- [ ] No fetch/axios
+- [ ] No any
+- [ ] All variables have explicit type annotations (including ref/computed/reactive)
+  - [ ] `const loading = ref<boolean>(false)` not `const loading = ref(false)`
+  - [ ] `const data = ref<DataType | null>(null)` not `const data = ref(null)`
+  - [ ] `const result = computed<ResultType>(() => ...)` not `const result = computed(() => ...)`
+  - [ ] `const items: Item[] = []` not `const items = []`
+  - [ ] Function params and return types are explicit: `function process(data: ProcessData): ProcessResult`
 
-## Prompt 模板（复制使用）
+## Prompt Template (copy & use)
 
 ```
-先阅读 @docs/ai-specs/PROJECT_PROTOCOL.md
-参考 @docs/ai-specs/GOLDEN_SAMPLES/useFeatureLogic.ts
-遵循 @.cursor/rules/10-logic-layer.mdc 与 @.cursor/rules/15-utils-and-hooks-first.mdc
+Read @docs/ai-specs/PROJECT_PROTOCOL.md
+Reference @docs/ai-specs/GOLDEN_SAMPLES/useFeatureLogic.ts
+Follow @.cursor/rules/10-logic-layer.mdc and @.cursor/rules/15-utils-and-hooks-first.mdc
 
-任务：为以下 API module 生成业务 Hook（不写 UI）
+Task: Generate business Hook for the following API module (no UI)
 - API: @src/api/<module>/<feature>.ts
-- Hook: src/hooks/modules/use<Xxx>.ts（命名为 use<Domain><Feature>，例如 useUserLogin）
+- Hook: src/hooks/modules/use<Xxx>.ts (name as use<Domain><Feature>, e.g. useUserLogin)
 
-要求：
-1) 必须用 useHttpRequest
-2) 调用 API module 的 build<Domain><Feature>Method（优先）或 request<Domain><Feature>（次选）
-3) 返回 loading/data/error/send，并按需补充分页/筛选状态与 refresh/reset 方法
-4) 禁止 fetch/axios；禁止 any；禁止在 Hook 内硬编码 URL
+Requirements:
+1) MUST use useHttpRequest
+2) Call build<Domain><Feature>Method (preferred) or request<Domain><Feature> (fallback) from API module
+3) Return loading/data/error/send, add pagination/filter state and refresh/reset as needed
+4) Forbidden: fetch/axios; any; hardcoded URL in Hook
 ```

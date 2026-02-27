@@ -1,12 +1,12 @@
 ---
-description: HTML 标签语义与格式化规范：正确使用 code/span/div/pre，避免格式化冲突和语法错误
+description: HTML tag semantics and formatting — correct use of code/span/div/pre, avoid format conflicts and syntax errors
 globs: src/**/*.{vue,tsx}
 alwaysApply: true
 ---
 
-# HTML Tag Semantics & Formatting Rules (HTML 标签语义与格式化规范)
+# HTML Tag Semantics & Formatting Rules
 
-## 1. Primary Directive (核心原则)
+## 1. Primary Directive
 
 When generating HTML/Vue template code, you MUST:
 
@@ -15,13 +15,13 @@ When generating HTML/Vue template code, you MUST:
 3. **Avoid formatting conflicts** between Prettier and ESLint by choosing appropriate tags
 4. **Preserve code readability** while maintaining valid HTML structure
 
-## 2. Tag Selection Guide (标签选择指南)
+## 2. Tag Selection Guide
 
-### 2.1 `<code>` Tag Usage (代码标签使用)
+### 2.1 `<code>` Tag Usage
 
 **✅ CORRECT Usage:**
 
-1. **Code blocks (代码块)** - MUST use with `<pre>`:
+1. **Code blocks** - MUST use with `<pre>`:
    ```vue
    <pre class="m-0 bg-muted/50 p-padding-md fs-sm">
      <code class="text-foreground">
@@ -30,7 +30,7 @@ When generating HTML/Vue template code, you MUST:
    </pre>
    ```
 
-2. **Inline code snippets (内联代码片段)** - Use `<span>` instead (see below)
+2. **Inline code snippets** - Use `<span>` instead (see below)
 
 **❌ FORBIDDEN:**
 
@@ -44,11 +44,11 @@ When generating HTML/Vue template code, you MUST:
 - ESLint Vue rules conflict with Prettier formatting
 - Can lead to syntax errors when closing tags are split
 
-### 2.2 `<span>` Tag Usage (内联元素使用)
+### 2.2 `<span>` Tag Usage
 
 **✅ CORRECT Usage:**
 
-1. **Inline text styling (内联文本样式)** - Use `<span>` for styled inline content:
+1. **Inline text styling** - Use `<span>` for styled inline content:
    ```vue
    <p class="text-muted-foreground fs-sm">
      基于 <span class="bg-muted px-padding-xs rounded">fontSizeBase</span> 与
@@ -75,11 +75,11 @@ When generating HTML/Vue template code, you MUST:
 - Can be nested inside `<p>`, `<div>`, `<h1-h6>`, etc.
 - Perfect for inline code-like styling without semantic code meaning
 
-### 2.3 `<div>` Tag Usage (块级元素使用)
+### 2.3 `<div>` Tag Usage
 
 **✅ CORRECT Usage:**
 
-1. **Block-level containers (块级容器)** - Use `<div>` for layout/structure:
+1. **Block-level containers** - Use `<div>` for layout/structure:
    ```vue
    <div class="flex flex-col gap-sm">
      <div

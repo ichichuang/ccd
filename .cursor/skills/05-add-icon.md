@@ -1,66 +1,66 @@
-# Skill 05：Add Icon（智能选图标）
+# Skill 05: Add Icon (Smart icon selection)
 
 ## Goal
 
-当需求是“添加一个图标/替换一个图标”，在不破坏设计系统的前提下，智能选择并输出可直接使用的 `<Icons name="...">` 方案。
+When the task is "add an icon / replace an icon", smart-select and output a ready-to-use `<Icons name="...">` solution without breaking the design system.
 
-## Pre-check（强制）
+## Pre-check (mandatory)
 
-- `@docs/ai-specs/PROJECT_PROTOCOL.md`（组件与图标规范）
+- `@docs/ai-specs/PROJECT_PROTOCOL.md` (component and icon rules)
 - `@.cursor/rules/18-components-and-icons.mdc`
 - `@docs/ai-specs/UNOCSS_AND_ICONS.md`
 
-## Smart Selection Policy（强制优先级）
+## Smart Selection Policy (priority order)
 
-1. **Lucide（默认/推荐）**：`i-lucide-*`
-2. **MDI（补充）**：`i-mdi-*`
-3. **Logos（品牌）**：`i-logos-*`
-4. **Custom SVG**：当集合里都没有合适图标时
-   - SVG 放 `src/assets/icons/**`
-   - 使用 `i-custom:<path-with-dashes>`
+1. **Lucide (default/recommended)**: `i-lucide-*`
+2. **MDI (fallback)**: `i-mdi-*`
+3. **Logos (brands)**: `i-logos-*`
+4. **Custom SVG**: When no suitable icon exists in collections
+   - Place SVG in `src/assets/icons/**`
+   - Use `i-custom:<path-with-dashes>`
 
-## Output（必须输出）
+## Output (required)
 
-- 推荐的 `<Icons name="..." />` 写法（含 size 建议）
-- 若必须新增自定义 SVG：给出应放置的路径与最终 `i-custom:` 名称
+- Recommended `<Icons name="..." />` usage (include size suggestion)
+- If custom SVG is needed: path to place it and final `i-custom:` name
 
 ## Hard Constraints
 
-- 禁止手写 `<svg>`、外链/base64 图标
-- **尺寸**：优先 `xs~5xl`（映射 `fs-*`，联动 SizeStore）；自定义尺寸仅在必要时使用
-- **颜色**：
-  - 静态颜色：使用语义类（`class="text-primary"`）；若在 PrimeVue/父级内不生效，加 `!`：`text-primary!`、`group-hover:text-accent-light-foreground!`
-  - 动态/主题变量：使用 `color` prop（`color="rgb(var(--primary))"`），可避免 class 权重问题
-  - 继承父级：`class="text-current"`
-  - 禁止 hex；`color` prop 必须 `rgb(var(--primary))` 格式
-  - 详见 `docs/ai-specs/UNOCSS_AND_ICONS.md` §6.3.1
+- FORBIDDEN: hand-written `<svg>`, external/base64 icons
+- **Size**: Prefer `xs~5xl` (maps to `fs-*`, tied to SizeStore); custom size only when necessary
+- **Color**:
+  - Static: Use semantic classes (`class="text-primary"`); if not effective inside PrimeVue/parent, add `!`: `text-primary!`, `group-hover:text-accent-light-foreground!`
+  - Dynamic/theme vars: Use `color` prop (`color="rgb(var(--primary))"`), avoids class specificity issues
+  - Inherit parent: `class="text-current"`
+  - No hex; `color` prop MUST use `rgb(var(--primary))` format
+  - See `docs/ai-specs/UNOCSS_AND_ICONS.md` §6.3.1
 
-## Advanced Features（高级功能）
+## Advanced Features
 
-当需求涉及图标动画、翻转、旋转、缩放时：
+When the task involves icon animation, flip, rotate, scale:
 
-- **动画**：`animation="spin|pulse|spin-pulse"`
-- **翻转**：`flip="horizontal|vertical|both"`
-- **旋转**：`rotate="90"` 或 `rotate={90}`（单位：deg）
-- **缩放**：`scale={1.5}`（数字值）
+- **Animation**: `animation="spin|pulse|spin-pulse"`
+- **Flip**: `flip="horizontal|vertical|both"`
+- **Rotate**: `rotate="90"` or `rotate={90}` (deg)
+- **Scale**: `scale={1.5}` (numeric)
 
-**参考：**
+**Reference:**
 
-- 类型定义：`src/components/Icons/utils/types.ts`
-- 示例页面：`src/views/example/Icons/IconsExample.vue`（访问路径：`/example/icons`）
-- 完整文档：`docs/ai-specs/UNOCSS_AND_ICONS.md` §6
-- 颜色权重与覆盖：`docs/ai-specs/UNOCSS_AND_ICONS.md` §6.3.1
+- Types: `src/components/Icons/utils/types.ts`
+- Example page: `src/views/example/Icons/IconsExample.vue` (route: `/example/icons`)
+- Full doc: `docs/ai-specs/UNOCSS_AND_ICONS.md` §6
+- Color specificity: `docs/ai-specs/UNOCSS_AND_ICONS.md` §6.3.1
 
-## Prompt 模板（复制使用）
+## Prompt Template (copy & use)
 
 ```
-先阅读 @docs/ai-specs/PROJECT_PROTOCOL.md 与 @docs/ai-specs/UNOCSS_AND_ICONS.md
-遵循 @.cursor/rules/18-components-and-icons.mdc
+Read @docs/ai-specs/PROJECT_PROTOCOL.md and @docs/ai-specs/UNOCSS_AND_ICONS.md
+Follow @.cursor/rules/18-components-and-icons.mdc
 
-任务：为以下语义选择/添加图标，并给出最终 <Icons /> 写法：
-语义：<例如：新增/编辑/删除/刷新/导出/设置/用户/角色/权限/提示/警告>
+Task: Select/add icon for the following semantics and provide final <Icons /> usage:
+Semantics: <e.g. add/edit/delete/refresh/export/settings/user/role/permission/hint/warning>
 
-要求：
-- 优先 Lucide，其次 MDI，再 Logos
-- 若没有合适 icon，说明应新增 custom SVG（放 src/assets/icons/**）以及最终 i-custom: 名称
+Requirements:
+- Prefer Lucide, then MDI, then Logos
+- If no suitable icon, describe custom SVG placement (src/assets/icons/**) and final i-custom: name
 ```

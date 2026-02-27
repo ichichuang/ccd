@@ -1,6 +1,6 @@
 ---
-description: 组件与图标使用规范：优先复用 src/components（Icons/CScrollbar/UseEcharts），图标必须走 Icons + iconify/custom
-globs: src/**/*.vue
+description: Component and icon rules: prefer src/components (Icons/CScrollbar/UseEcharts); icons must use Icons + iconify/custom
+globs: src/**/*.{vue,tsx}
 alwaysApply: true
 ---
 
@@ -18,14 +18,20 @@ When generating or editing UI pages/components, you MUST:
 
 ### Scroll container
 
-- Use `CScrollbar` (`src/components/CScrollbar`)，模板中写 `<CScrollbar>`
+- Use `CScrollbar` (`src/components/CScrollbar`); write `<CScrollbar>` in template
 - Do NOT replace it with ad-hoc `overflow-auto` containers unless explicitly requested.
 
 ### Animation wrapper
 
 - Use `AnimateWrapper` (`src/components/AnimateWrapper`) for enter/leave animations (animate.css)
-- 适用场景：布局切换过渡、动态列表项增删、表单字段动态展示等
-- Props：`animateName`、`tag`、`duration` 等，详见 `AnimateWrapper/utils/types.ts`
+- Use cases: layout transitions, dynamic list add/remove, dynamic form field display
+- Props: `animateName`, `tag`, `duration`; see `AnimateWrapper/utils/types.ts`
+
+### Empty state
+
+- Use `EmptyState` (`src/components/EmptyState`) when tables, charts, or overview areas have no data.
+- Props: `icon`, `title`, `description`, optional `actionLabel` + `actionTo`. See `docs/ai-specs/EMPTY_STATE_AND_ROBUSTNESS.md`.
+- FORBIDDEN: blank screens or single-line "no data" text; use EmptyState structure (icon + title + description).
 
 ### Icons
 
@@ -49,23 +55,23 @@ When generating or editing UI pages/components, you MUST:
 ### PrimeVue UI Components
 
 - For **forms & inputs** (text, password, number, checkbox, radio, select, multi-select, date, switch):
-  - **多字段、需校验/分步/分组/动态 schema**：MUST use SchemaForm（`@/components/SchemaForm`）+ useSchemaForm（`@/hooks/modules/useSchemaForm`），详见 `docs/ai-specs/SCHEMA_FORM_COMPONENT.md`。
-  - 简单 1–2 个字段：直接使用 PrimeVue 组件如 `<InputText>`, `<Password>`, `<InputNumber>`, `<Checkbox>`, `<RadioButton>`, `<Dropdown>`, `<MultiSelect>`, `<Calendar>`, `<ToggleSwitch>` 等。
+  - **Multi-field, validation/steps/groups/dynamic schema**: MUST use SchemaForm (`@/components/SchemaForm`) + useSchemaForm (`@/hooks/modules/useSchemaForm`); see `docs/ai-specs/SCHEMA_FORM_COMPONENT.md`.
+  - Simple 1–2 fields: use PrimeVue v4 components directly: `<InputText>`, `<Password>`, `<InputNumber>`, `<Checkbox>`, `<RadioButton>`, `<Select>`, `<MultiSelect>`, `<DatePicker>`, `<ToggleSwitch>`. FORBIDDEN: v3 deprecated names (`Dropdown`, `Calendar`, `InputSwitch`). See `docs/ai-specs/PRIMEVUE_V4_API.md`.
 - For **actions/buttons**:
   - MUST use `<Button>` for primary/secondary actions instead of styling raw `<button>` or `<a>`.
-  - Button 配色由 `src/utils/theme/primevue-preset.ts` 控制；Primary text/outlined 的 hover 用 accent-light，其余类型用 `*-light`；勿用 `*-foreground` 作为背景。详见 `docs/ai-specs/PRIMEVUE_THEME.md`。
+  - Button colors controlled by `src/utils/theme/primevue-preset.ts`; Primary text/outlined hover uses accent-light, others use `*-light`; do NOT use `*-foreground` as background. See `docs/ai-specs/PRIMEVUE_THEME.md`.
 - For **tables/lists**:
-  - **交互式数据表格**：MUST 使用 **DataTable**（`@/components/DataTable`），详见 `docs/ai-specs/DataTable_COMPONENT.md`。
-  - 简单静态表格、一次性展示可用 PrimeVue `<DataTable>`；需分页/排序/筛选/导出/API 时 MUST 用 DataTable。
-  - FORBIDDEN：在需要分页、排序、筛选、导出或 API 加载时裸用 PrimeVue DataTable 拼装逻辑，或手写 `<table>` 实现复杂交互。
+  - **Interactive data tables**: MUST use **DataTable** (`@/components/DataTable`); see `docs/ai-specs/DataTable_COMPONENT.md`.
+  - Simple static tables / one-off display may use PrimeVue `<DataTable>`; for pagination/sort/filter/export/API MUST use DataTable.
+  - FORBIDDEN: Using raw PrimeVue DataTable or hand-written `<table>` when pagination/sort/filter/export/API is needed.
 - For **dialogs/overlays**:
-  - MUST use `<Dialog>` / `<Sidebar>` instead of ad-hoc fixed-position modals when they fit the use case.
-  - **项目二次封装 PrimeDialog**：当需要**自定义弹窗、反馈提示、确认对话框**时，MUST 使用 `useDialog()`（`@/hooks/modules/useDialog`）。`PrimeVueDialog` 已在 `AppPrimeVueGlobals.vue`（由 `App.vue` 引入）挂载，业务只需调用 `info`、`success`、`warn`、`danger`、`confirm`、`confirmDelete`、`openDialog` 等。高级用法见 `contentRenderer`、`headerRenderer`、`footerRenderer`、`footerButtons`、`beforeSure`、`beforeCancel`、`sureBtnLoading`。详见 `docs/ai-specs/DIALOG_COMPONENT.md`。
-  - 简单确认用 PrimeVue `useConfirm().require()`；复杂自定义/多层弹窗用 `useDialog()`。FORBIDDEN：在业务中自行实例化 PrimeVue `<Dialog>` 管理多弹窗状态。
-- For **Toast / Message**：
-  - **组件内**轻量通知：使用 PrimeVue `useToast()`。
-  - **非组件环境**（拦截器、errorHandler、工具函数）：MUST 使用 `window.$toast` / `window.$message`，详见 `docs/ai-specs/TOAST_AND_MESSAGE.md`。FORBIDDEN：在业务中自建全局 Toast/Message 或通过 DOM 自造通知。
-  - **$message 特性**：居中纯提示（正中央、无关闭按钮、life 后自动消失）；$toast 可按位置显示、带关闭按钮。样式覆盖见 `docs/ai-specs/TOAST_AND_MESSAGE.md`。
+  - MUST use `<Dialog>` / `<Drawer>` (PrimeVue v4 side drawer) instead of ad-hoc fixed modals. FORBIDDEN: v3 `Sidebar`, `OverlayPanel`; v4 uses `Drawer`, `Popover`.
+  - **Project wrapper PrimeDialog**: For custom dialogs, feedback, confirm dialogs, MUST use `useDialog()` (`@/hooks/modules/useDialog`). `PrimeVueDialog` is mounted in `AppPrimeVueGlobals.vue` (via `App.vue`); call `info`, `success`, `warn`, `danger`, `confirm`, `confirmDelete`, `openDialog`. Advanced: `contentRenderer`, `headerRenderer`, `footerRenderer`, `footerButtons`, `beforeSure`, `beforeCancel`, `sureBtnLoading`. See `docs/ai-specs/DIALOG_COMPONENT.md`.
+  - Simple confirm: PrimeVue `useConfirm().require()`; complex custom/multi-layer dialogs: `useDialog()`. FORBIDDEN: instantiating PrimeVue `<Dialog>` directly in business code.
+- For **Toast / Message**:
+  - **Inside components** (lightweight): use PrimeVue `useToast()`.
+  - **Non-component** (interceptors, errorHandler, utils): MUST use `window.$toast` / `window.$message`; see `docs/ai-specs/TOAST_AND_MESSAGE.md`. FORBIDDEN: custom global Toast/Message or DOM-based notifications in business code.
+  - **$message**: centered, no close button, auto-dismiss after life. **$toast**: positionable, with close button. See `docs/ai-specs/TOAST_AND_MESSAGE.md` for style overrides.
 
 Styling PrimeVue components:
 
@@ -79,7 +85,7 @@ This project auto-imports components/functions and generates:
 - `src/types/auto-imports.d.ts`
 - `src/types/components.d.ts`
 
-**完整配置**：imports 与 dirs 列表见 `docs/ai-specs/BUILD_SYSTEM.md` §2；组件扫描范围与排除（仅 `src/components`，排除 `src/layouts`，PrimeVue 按需）见 §3。
+**Full config**: imports and dirs in `docs/ai-specs/BUILD_SYSTEM.md` §2; component scan scope (only `src/components`, exclude `src/layouts`, PrimeVue on-demand) in §3.
 
 Rules:
 
@@ -99,26 +105,26 @@ Rules:
 
 ### 4.2 Usage requirements
 
-- Always render icons via `<Icons name=\"...\" />`.
-- **尺寸（Size）**：
-  - Prefer semantic sizing (`size=\"xs|sm|md|lg|xl|2xl|3xl|4xl|5xl\"`) over hardcoded pixel sizes.
-  - Custom sizes (`size={24}` or `size=\"2rem\"`) only when semantic sizes don't fit.
-- **颜色（Color）**：
-  - **静态颜色**：Use semantic classes via UnoCSS；在 PrimeVue/父级样式较强的场景，class 颜色可能被覆盖，需加 `!` 或改用 `color` prop。
-  - **动态/主题变量**：Use `color` prop (`color=\"rgb(var(--primary))\"`).
-  - **格式**：`color` prop 必须用 `rgb(var(--primary))`，禁止 `var(--primary)`；hex 禁止。
-  - **Class 权重覆盖**：当 `class=\"text-primary\"` 等不生效时，加 `!` 修饰符：`text-primary!`、`group-hover:text-accent-light-foreground!`；或改用 `color` prop 避免权重冲突。
-  - **继承父级**：需与父级文字同色时用 `class=\"text-current\"`。
-  - 详见 `docs/ai-specs/UNOCSS_AND_ICONS.md` §6.3.1。
-- **动画与变换**：See `docs/ai-specs/UNOCSS_AND_ICONS.md` §6.4 for `animation`, `flip`, `rotate`, `scale` usage.
-- **Icons 与 transition**：当 Icons 使用 `group-hover:`/`hover:` 颜色或透明度类时，transition 必须写在 Icons 的 class 上；父容器 transition 无效。详见 `docs/ai-specs/UNOCSS_AND_ICONS.md` §2.7.1、§6.3.2。
+- Always render icons via `<Icons name="..." />`.
+- **Size**:
+  - Prefer semantic sizing (`size="xs|sm|md|lg|xl|2xl|3xl|4xl|5xl"`) over hardcoded pixel sizes.
+  - Custom sizes (`size={24}` or `size="2rem"`) only when semantic sizes don't fit.
+- **Color**:
+  - **Static**: Use semantic classes via UnoCSS; in PrimeVue/parent-heavy styles, add `!` or use `color` prop if class is overridden.
+  - **Dynamic/theme vars**: Use `color` prop (`color="rgb(var(--primary))"`).
+  - **Format**: `color` MUST use `rgb(var(--primary))`, not `var(--primary)`; no hex.
+  - **Class specificity**: When `class="text-primary"` etc. does not apply, add `!` (e.g. `text-primary!`, `group-hover:text-accent-light-foreground!`) or use `color` prop.
+  - **Inherit parent**: Use `class="text-current"` when matching parent text color.
+  - See `docs/ai-specs/UNOCSS_AND_ICONS.md` §6.3.1.
+- **Animation/transform**: See `docs/ai-specs/UNOCSS_AND_ICONS.md` §6.4 for `animation`, `flip`, `rotate`, `scale`.
+- **Icons + transition**: When Icons use `group-hover:`/`hover:` color or opacity, transition MUST be on Icons class; parent transition does not apply. See §2.7.1, §6.3.2.
 
 ## 5. Forbidden Patterns
 
-- FORBIDDEN: 在需要多字段/校验/分步/分组/动态表单时，手写大量 PrimeVue 表单组件拼装；必须使用 SchemaForm + useSchemaForm，见 `docs/ai-specs/SCHEMA_FORM_COMPONENT.md`。
+- FORBIDDEN: Hand-writing PrimeVue form components when multi-field/validation/steps/groups/dynamic schema is needed; use SchemaForm + useSchemaForm; see `docs/ai-specs/SCHEMA_FORM_COMPONENT.md`.
 - FORBIDDEN: raw `<svg>` icon markup in templates.
-- FORBIDDEN: 在业务代码中自行实例化 PrimeVue `<Dialog>` 管理多弹窗；必须使用 `useDialog()`（见 `docs/ai-specs/DIALOG_COMPONENT.md`）。
-- FORBIDDEN: 在非组件环境中自建全局 Toast/Message；必须使用 `window.$toast` / `window.$message`（见 `docs/ai-specs/TOAST_AND_MESSAGE.md`）。
+- FORBIDDEN: Instantiating PrimeVue `<Dialog>` directly in business code; use `useDialog()`; see `docs/ai-specs/DIALOG_COMPONENT.md`.
+- FORBIDDEN: Custom global Toast/Message outside components; use `window.$toast` / `window.$message`; see `docs/ai-specs/TOAST_AND_MESSAGE.md`.
 - FORBIDDEN: adding custom CSS for icon sizing/colors; use UnoCSS + `Icons` props/classes.
 - FORBIDDEN: bypassing `UseEcharts` for charts when it can be used.
-- FORBIDDEN: 在需分页/排序/筛选/导出/API 的表格场景裸用 PrimeVue DataTable 或手写 `<table>`；必须使用 DataTable（见 `docs/ai-specs/DataTable_COMPONENT.md`）。
+- FORBIDDEN: Using raw PrimeVue DataTable or hand-written `<table>` when pagination/sort/filter/export/API is needed; use DataTable; see `docs/ai-specs/DataTable_COMPONENT.md`.

@@ -1,43 +1,43 @@
 ---
-description: 全功能开发：API Definition -> Business Hook -> UI Integration
+description: Full feature development: API Definition -> Business Hook -> UI Integration
 globs: **/*
 ---
 
-# 全功能开发技能
+# Full Feature Development Skill
 
-## 1. 目标
+## 1. Goal
 
-从后端 API 定义到前端 UI 实现完整功能。
+Implement an end-to-end feature from backend API definition to frontend UI.
 
-## 2. 步骤
+## 2. Steps
 
-### 步骤 1：API 定义（第 1 层）
+### Step 1: API Definition (Layer 1)
 
-- 创建 `src/api/<module>/<feature>.ts`。
-- 定义 `Req` / `Res` / `DTO` 接口。
-- 使用 `alovaInstance` 导出 `build<Feature>Method`。
+- Create `src/api/<module>/<feature>.ts`.
+- Define `Req` / `Res` / `DTO` interfaces.
+- Use `alovaInstance` and export `build<Feature>Method`.
 
-### 步骤 2：业务逻辑 Hook（第 2 层）
+### Step 2: Business Logic Hook (Layer 2)
 
-- 创建 `src/hooks/modules/use<Feature>.ts`。
-- 从步骤 1 导入 API。
-- 使用 `useHttpRequest` 包装 API 调用。
-- 导出响应式状态（`data`、`loading`、`error`）和方法（`fetch`、`submit`）。
-- **类型安全**：所有变量必须有显式类型注解：
+- Create `src/hooks/modules/use<Feature>.ts`.
+- Import API from Step 1.
+- Wrap API calls with `useHttpRequest`.
+- Export reactive state (`data`, `loading`, `error`) and methods (`fetch`, `submit`).
+- **Type safety**: All variables MUST have explicit type annotations:
   - ❌ `const loading = ref(false)` → ✅ `const loading = ref<boolean>(false)`
   - ❌ `const data = ref(null)` → ✅ `const data = ref<FeatureData | null>(null)`
   - ❌ `const result = computed(() => ...)` → ✅ `const result = computed<ResultType>(() => ...)`
 
-### 步骤 3：UI 实现（第 3 层）
+### Step 3: UI Implementation (Layer 3)
 
-- 创建 `src/views/<Module>/<Page>.vue`。
-- 从步骤 2 导入 Hook。
-- 将响应式状态绑定到模板。
-- 使用 `UnoCSS` 进行样式设置。
-- 使用 `src/components/` 中的组件，**无需**手动导入（自动导入）。`src/layouts/` 中的布局组件需要**显式**导入。
+- Create `src/views/<Module>/<Page>.vue`.
+- Import hook from Step 2.
+- Bind reactive state to template.
+- Use UnoCSS for styling.
+- Use components from `src/components/` — **no** manual import (auto-import). Layout components in `src/layouts/` require **explicit** import.
 
-### 步骤 4：验证
+### Step 4: Verify
 
-1. 检查控制台中的 API 错误。
-2. 在 `browser` 中检查网络标签。
-3. 验证 UI 状态（加载、错误、成功）。
+1. Check console for API errors.
+2. Inspect network tab in `browser`.
+3. Verify UI states (loading, error, success).

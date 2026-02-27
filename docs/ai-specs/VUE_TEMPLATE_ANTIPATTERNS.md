@@ -126,10 +126,39 @@ if (typeof val === 'string' && (SIZE_SCALE_KEYS as readonly string[]).includes(v
 
 ---
 
-## 4. 引用
+## 4. DataTable / 渲染函数：返回模板字符串（FORBIDDEN）
+
+### 问题
+
+DataTable 列 `body`、`filterRenderer`、`contentRenderer` 等需要返回 **VNode** 时，若使用模板字符串，返回的是 **string**，不是 VNode，表格不会正确渲染。
+
+### 错误写法
+
+```ts
+// ❌ FORBIDDEN - 返回 string，不是 VNode
+body: row => `<span class="${cls}">${row.status}</span>`
+contentRenderer: () => `<div>动态内容</div>`
+```
+
+### 正确写法
+
+使用 TSX（JSX）返回 VNode；若在 .vue 内写 JSX，必须 `lang="tsx"`：
+
+```tsx
+// ✅ CORRECT
+body: row => <span class={`font-semibold ${cls}`}>{row.status}</span>
+contentRenderer: () => <div>动态内容</div>
+```
+
+详见 `./AI_CODING_PROTOCOL.md`、`./DataTable_COMPONENT.md` §7.1、`.cursor/rules/27-ai-tsx-decision.mdc`。
+
+---
+
+## 5. 引用
 
 - Vue 模板约束详见 `./TYPESCRIPT_AND_LINTING.md` §6.5
 - TypeScript 类型注解详见 `./TYPESCRIPT_AND_LINTING.md` §6
 - 项目协议中的模板约束：`./PROJECT_PROTOCOL.md` §5.1
+- DataTable/渲染函数 TSX 与 VNode：`./AI_CODING_PROTOCOL.md`、`./DataTable_COMPONENT.md` §7.1
 - `.agent/rules/20-code-standards.md` §4a
 - `.cursor/rules/00-core-architecture.mdc` 中的 NO TypeScript Syntax in Templates

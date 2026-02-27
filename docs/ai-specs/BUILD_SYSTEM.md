@@ -28,7 +28,7 @@
 | `build/compress.ts`    | 构建产物 gzip/brotli 压缩（按 `VITE_COMPRESSION` 启用）                                                                                                                    |
 | `build/info.ts`        | 构建信息输出（版本、耗时、产物体积）                                                                                                                                       |
 | `build/legacy.ts`      | `@vitejs/plugin-legacy`，旧浏览器兼容（`VITE_LEGACY` 为 true 时）                                                                                                          |
-| `build/performance.ts` | `rollup-plugin-visualizer`，体积分析（`VITE_BUILD_ANALYZE` 时生成 `dist/stats.html`）                                                                                      |
+| `build/performance.ts` | `rollup-plugin-visualizer`，体积分析。启用方式：`pnpm build:analyze`（`--mode analyze` 加载 `.env.analyze`，`VITE_BUILD_ANALYZE=true`）生成 `dist/stats.html`              |
 | `build/utils.ts`       | 路径别名（`@`、`@!`、`@&`）、环境变量包装、`__APP_INFO__`、`getPackageSize` 等                                                                                             |
 
 ### 1.2 依赖预构建（optimizeDeps）
@@ -128,11 +128,12 @@
 
 - **vendor-echarts**：ECharts 相关
 - **vendor-primevue**：PrimeVue + PrimeIcons
-- **vendor-utils**：项目 `src/utils` 等工具
+- **vendor-date-holidays**：date-holidays（动态 import 懒加载，首次调用节假日 API 时加载）
+- **vendor-utils**：lodash、dayjs 等
 - **vendor-vue**：Vue + VueRouter + Pinia + @vueuse/core
 - **vendor-libs**：其余第三方库
 
-另设 `chunkSizeWarningLimit: 1500`，控制单 chunk 体积告警阈值。
+另设 `chunkSizeWarningLimit: 2500`，控制单 chunk 体积告警阈值（与 vite.config.ts 一致）。
 
 ### 5.2 首帧 FOUC 与尺寸注入
 
