@@ -90,7 +90,12 @@ export const useUserStore = defineStore('user', {
       if (!AUTH_ENABLED) {
         return
       }
-      this.userInfo = userInfo
+      // 过滤 /src/ 开头的无效 avatar 路径，生产构建后该路径不存在，避免 404
+      const sanitized: UserInfo = { ...userInfo }
+      if (typeof sanitized.avatar === 'string' && sanitized.avatar.startsWith('/src/')) {
+        sanitized.avatar = undefined
+      }
+      this.userInfo = sanitized
       this.isLogin = true
       router.push(
         (router.currentRoute.value.query.redirect as string) || import.meta.env.VITE_ROOT_REDIRECT

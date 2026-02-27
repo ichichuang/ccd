@@ -20,7 +20,13 @@ const userInfo = computed(() => userStore.getUserInfo)
 const shouldRender = computed(() => AUTH_ENABLED && isLogin.value)
 
 // 头像地址：优先使用用户头像，缺省时使用默认头像
-const avatarSrc = computed(() => userInfo.value.avatar || defaultAvatar)
+// 生产构建后 /src/ 不存在，过滤 persisted 或后端返回的无效本地路径，避免 404
+const avatarSrc = computed(() => {
+  const av = userInfo.value.avatar
+  if (!av || typeof av !== 'string') return defaultAvatar
+  if (av.startsWith('/src/')) return defaultAvatar
+  return av
+})
 
 const togglePanel = (event: MouseEvent) => {
   if (!shouldRender.value) return
