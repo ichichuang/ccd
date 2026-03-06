@@ -5,9 +5,9 @@
  * 配置结构复杂且需兼容多版本，使用宽松类型；内部在可读性允许处可逐步使用 echarts 的 SeriesOption 等类型。
  */
 
-import { computed, ref } from 'vue'
 import { storeToRefs } from 'pinia'
 import type { Ref, ComputedRef } from 'vue'
+import type { EChartsOption } from 'echarts'
 import { useI18n } from 'vue-i18n'
 import { useThemeStore } from '@/stores/modules/theme'
 import { useSizeStore } from '@/stores/modules/size'
@@ -128,19 +128,22 @@ function buildThemeConfig(): ThemeConfig {
 
 /**
  * 应用主题到 ECharts 配置（函数式版本）
+ *
+ * 边界约定：外部可以传入任意符合 EChartsOption 结构的对象，这里在入口处使用 any，
+ * 立即通过类型断言收窄为 EChartsOption，防止 any 向外泄漏。
  */
 function applyThemeToOption(
-  option: any,
+  rawOption: any,
   opacityConfig?: ChartOpacityConfig,
   advancedConfig?: ChartAdvancedConfig,
   t?: (key: string) => string
-): any {
-  if (!option || typeof option !== 'object') {
-    return option
+): EChartsOption | undefined {
+  if (!rawOption || typeof rawOption !== 'object') {
+    return rawOption as EChartsOption | undefined
   }
 
   // 深拷贝原始配置，避免修改原始对象
-  const mergedOption = deepCloneWithFunctions(option)
+  const mergedOption = deepCloneWithFunctions(rawOption) as EChartsOption
 
   // 合并透明度配置
   const finalOpacityConfig = { ...DEFAULT_OPACITY_VALUES, ...opacityConfig }
@@ -161,10 +164,10 @@ function applyThemeToOption(
     ...mergedOption.textStyle,
     color: mergedOption.textStyle?.color ?? themeConfig.foreground,
     fontSize: mergedOption.textStyle?.fontSize ?? themeConfig.size.fontMd,
-    lineHeight: mergedOption.textStyle?.lineHeight ?? themeConfig.size.lineHeightMd,
-    textBorderColor: mergedOption.textStyle?.textBorderColor ?? 'transparent',
-    textShadowColor: mergedOption.textStyle?.textShadowColor ?? 'transparent',
-  }
+    lineHeight: (mergedOption.textStyle as any)?.lineHeight ?? themeConfig.size.lineHeightMd,
+    textBorderColor: (mergedOption.textStyle as any)?.textBorderColor ?? 'transparent',
+    textShadowColor: (mergedOption.textStyle as any)?.textShadowColor ?? 'transparent',
+  } as any
 
   // 设置全局调色盘
   if (Array.isArray(mergedOption.colors) && !mergedOption.color) {
@@ -178,41 +181,52 @@ function applyThemeToOption(
     themeConfig.color.colors = mergedOption.color as string[]
   }
 
-  // 应用标题样式
+  // 应用标题样式（ECharts title 可为 Object | Array，需要归一化处理）
   if (mergedOption.title) {
-    mergedOption.title = applyTitleStyles(mergedOption.title, themeConfig)
-    mergedOption.title = applyFontStylesToTargets([mergedOption.title], themeConfig.font)[0]
-    if (!mergedOption.title.textStyle?.fontSize) {
-      mergedOption.title = {
-        ...mergedOption.title,
-        textStyle: {
-          ...mergedOption.title.textStyle,
-          fontSize: themeConfig.size.fontLg,
-        },
+    const titleRaw: any = mergedOption.title
+    const isTitleArray = Array.isArray(titleRaw)
+    const titleArray: any[] = isTitleArray ? titleRaw : [titleRaw]
+
+    const finalTitle = titleArray.map((title: any) => {
+      let next = applyTitleStyles(title, themeConfig)
+      next = applyFontStylesToTargets([next], themeConfig.font)[0]
+
+      if (!next.textStyle?.fontSize) {
+        next = {
+          ...next,
+          textStyle: {
+            ...next.textStyle,
+            fontSize: themeConfig.size.fontLg,
+          },
+        }
       }
-    }
-    mergedOption.title = {
-      ...mergedOption.title,
-      left: mergedOption.title.left ?? 0,
-      top: mergedOption.title.top ?? 0,
-    }
+
+      return {
+        ...next,
+        left: next.left ?? 0,
+        top: next.top ?? 0,
+      }
+    })
+
+    mergedOption.title = isTitleArray ? finalTitle : finalTitle[0]
   }
 
   // 应用图例样式
   if (mergedOption.legend) {
-    const legendArray = Array.isArray(mergedOption.legend)
-      ? mergedOption.legend
-      : [mergedOption.legend]
+    const legendRaw: any = mergedOption.legend
+    const isLegendArray = Array.isArray(legendRaw)
+    const legendArray: any[] = isLegendArray ? legendRaw : [legendRaw]
     const styledLegend = applyStylesToArray(legendArray, (legend: any) => {
       const styled = applyLegendStyles(legend, themeConfig)
       return applyFontStylesToTargets([styled], themeConfig.font)[0]
     })
-    mergedOption.legend = Array.isArray(mergedOption.legend) ? styledLegend : styledLegend[0]
-    mergedOption.legend = {
-      ...mergedOption.legend,
-      right: mergedOption.legend.right ?? `${themeConfig.paddings}%`,
-      top: mergedOption.legend.top ?? themeConfig.gapl,
-    }
+    const finalLegend = styledLegend.map((legend: any) => ({
+      ...legend,
+      right: legend.right ?? `${themeConfig.paddings}%`,
+      top: legend.top ?? themeConfig.gapl,
+    }))
+
+    mergedOption.legend = isLegendArray ? finalLegend : finalLegend[0]
   }
 
   // 合并网格样式
@@ -226,11 +240,14 @@ function applyThemeToOption(
       containLabel: true,
     }
   } else {
-    // 如果用户提供了 grid，确保 backgroundColor 使用架构配色
-    mergedOption.grid = {
-      ...mergedOption.grid,
-      backgroundColor: mergedOption.grid.backgroundColor ?? 'transparent',
-    }
+    const isGridArray = Array.isArray(mergedOption.grid)
+    const gridRaw: any = mergedOption.grid
+    const gridArray: any[] = isGridArray ? gridRaw : [gridRaw]
+    const finalGrid = gridArray.map((g: any) => ({
+      ...g,
+      backgroundColor: g.backgroundColor ?? 'transparent',
+    }))
+    mergedOption.grid = isGridArray ? finalGrid : finalGrid[0]
   }
 
   // 合并坐标轴样式
@@ -424,9 +441,13 @@ function applyThemeToOption(
   }
 
   // 合并高级配置（动画、工具箱、标记点等）
-  const finalOption = mergeAdvancedConfigs(mergedOption, advancedConfig, t)
+  const finalOption = mergeAdvancedConfigs(mergedOption, advancedConfig, t) as EChartsOption
 
   return finalOption
+}
+
+export interface UseChartThemeReturn {
+  themedOption: ComputedRef<EChartsOption | undefined>
 }
 
 /**
@@ -434,7 +455,11 @@ function applyThemeToOption(
  * 返回一个 computed 属性，当主题变化时自动重新计算
  */
 export function useChartTheme(
-  originalOption: Ref<any> | ComputedRef<any> | any,
+  originalOption:
+    | Ref<EChartsOption | undefined>
+    | ComputedRef<EChartsOption | undefined>
+    | EChartsOption
+    | undefined,
   opacityConfig?:
     | Ref<ChartOpacityConfig | undefined>
     | ComputedRef<ChartOpacityConfig | undefined>
@@ -443,14 +468,23 @@ export function useChartTheme(
     | Ref<ChartAdvancedConfig | undefined>
     | ComputedRef<ChartAdvancedConfig | undefined>
     | ChartAdvancedConfig
-) {
+): UseChartThemeReturn {
   // 将参数转换为 ref（如果还不是 ref）
-  const optionRef =
-    originalOption && 'value' in originalOption ? originalOption : computed(() => originalOption)
-  const opacityConfigRef =
-    opacityConfig && 'value' in opacityConfig ? opacityConfig : computed(() => opacityConfig)
-  const advancedConfigRef =
-    advancedConfig && 'value' in advancedConfig ? advancedConfig : computed(() => advancedConfig)
+  const optionRef: Ref<EChartsOption | undefined> | ComputedRef<EChartsOption | undefined> = isRef(
+    originalOption
+  )
+    ? (originalOption as Ref<EChartsOption | undefined>)
+    : computed<EChartsOption | undefined>(() => originalOption)
+  const opacityConfigRef:
+    | Ref<ChartOpacityConfig | undefined>
+    | ComputedRef<ChartOpacityConfig | undefined> = isRef(opacityConfig)
+    ? (opacityConfig as Ref<ChartOpacityConfig | undefined>)
+    : computed<ChartOpacityConfig | undefined>(() => opacityConfig)
+  const advancedConfigRef:
+    | Ref<ChartAdvancedConfig | undefined>
+    | ComputedRef<ChartAdvancedConfig | undefined> = isRef(advancedConfig)
+    ? (advancedConfig as Ref<ChartAdvancedConfig | undefined>)
+    : computed<ChartAdvancedConfig | undefined>(() => advancedConfig)
 
   // 显式依赖主题/尺寸 Store，使切换主题或尺寸时 themedOption 自动重新计算
   const { t } = useI18n()
@@ -461,14 +495,14 @@ export function useChartTheme(
 
   // 缓存上次的输入与结果，仅在依赖（引用或值）变化时重算，减轻悬停等场景下的不必要 setOption
   const cacheRef = ref<{
-    option: unknown
+    option: EChartsOption | undefined
     opacity: unknown
     advanced: unknown
     theme: string
     mode: ThemeMode
     isDark: boolean
     size: string
-    result: any
+    result: EChartsOption | undefined
   } | null>(null)
 
   const themedOption = computed(() => {
@@ -493,10 +527,12 @@ export function useChartTheme(
     ) {
       return c.result
     }
-    const result = applyThemeToOption(option, opacity, advanced, t)
+    const result: EChartsOption | undefined = applyThemeToOption(option, opacity, advanced, t) as
+      | EChartsOption
+      | undefined
     cacheRef.value = { option, opacity, advanced, theme, mode: currentMode, isDark, size, result }
     return result
-  })
+  }) as ComputedRef<EChartsOption | undefined>
 
   return {
     themedOption,

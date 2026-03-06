@@ -60,15 +60,31 @@ export const RADIUS_SCALE_RATIOS: Record<SizeScaleKey, number> = {
 }
 
 /**
+ * 布局尺寸倍率表 (按断点缩放，仅 PC 使用；Mobile/Tablet 固定 1)
+ * 布局比字体更保守：xl 起才略放大，大屏逐步加至 1.25
+ */
+export const LAYOUT_SCALE_RATIOS: Record<SizeScaleKey, number> = {
+  xs: 1,
+  sm: 1,
+  md: 1,
+  lg: 1,
+  xl: 1.05,
+  '2xl': 1.1,
+  '3xl': 1.15,
+  '4xl': 1.2,
+  '5xl': 1.25,
+}
+
+/**
  * 过渡时长表 (毫秒)
  * 从微交互到慢动画的完整阶梯
  * 遵循 Material Design 动效时长指南
  */
 export const TRANSITION_SCALE_VALUES: Record<SizeScaleKey, number> = {
-  xs: 80, // 微交互 (hover 高亮)
-  sm: 180, // 快速反馈
-  md: 280, // 标准过渡
-  lg: 380, // 展开/收起
+  xs: 180, // 微交互 (hover 高亮)
+  sm: 280, // 快速反馈
+  md: 320, // 标准过渡
+  lg: 420, // 展开/收起
   xl: 480, // 页面过渡
   '2xl': 580, // 复杂动画
   '3xl': 680, // 慢动画

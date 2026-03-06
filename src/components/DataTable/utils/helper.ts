@@ -5,10 +5,20 @@
 import {
   DEFAULT_COLUMN_MIN_WIDTH_PX,
   DEFAULT_COLUMN_WIDTH_PX,
-  ROOT_FONT_SIZE_BASE,
   TABLE_SELECTION_COLUMN_WIDTH_PX,
 } from './constants'
 import type { ColumnWidthInfo, DataTableColumn } from './types'
+
+const getRootFontSizePx = (): number => {
+  if (typeof document === 'undefined') return 16
+  const root = document.documentElement
+  const value = getComputedStyle(root).getPropertyValue('--font-size-root').trim()
+  const parsed = Number.parseFloat(value)
+  if (!Number.isNaN(parsed) && parsed > 0) return parsed
+  const fallback = getComputedStyle(root).fontSize
+  const fallbackParsed = Number.parseFloat(fallback)
+  return !Number.isNaN(fallbackParsed) && fallbackParsed > 0 ? fallbackParsed : 16
+}
 
 /**
  * 将 width 字符串/数字解析为 px 数值。
@@ -25,7 +35,7 @@ export const parseWidth = (width: string | number | undefined): number => {
     const value = Number.parseFloat(match[1])
     const unit = match[2] || 'px'
     if (unit === 'px') return value
-    if (unit === 'rem' || unit === 'em') return value * ROOT_FONT_SIZE_BASE
+    if (unit === 'rem' || unit === 'em') return value * getRootFontSizePx()
   }
   return 0
 }

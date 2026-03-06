@@ -8,6 +8,7 @@
  * - 高级：useTableData, useTableSelection, useTableExport, useTableLayout（用于自定义表格或 headless 用法）
  */
 export { default as DataTable } from './DataTable.vue'
+export { default as DataTableV2 } from './DataTableV2.vue'
 export { default as BodyCellRenderer } from './BodyCellRenderer'
 export { default as RenderFn } from './RenderFn'
 
@@ -21,7 +22,6 @@ export {
   DEFAULT_TABLE_SIZE_CONFIG,
   INFINITE_SCROLL_THRESHOLD_PX,
   MIN_AUTO_HEIGHT_THRESHOLD_PX,
-  ROOT_FONT_SIZE_BASE,
   TABLE_SELECTION_COLUMN_WIDTH_PX,
 } from './utils/constants'
 

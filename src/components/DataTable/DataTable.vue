@@ -31,7 +31,6 @@ import { useTableLayout } from './composables/useTableLayout'
 import { useTablePersistence } from '@/hooks/modules/useTablePersistence'
 import { useLocale } from '@/hooks/modules/useLocale'
 import { useSizeStore } from '@/stores/modules/size'
-import { nextTick, onMounted, onUnmounted, shallowRef, useSlots } from 'vue'
 import { useMitt } from '@/utils/mitt'
 import { FONT_SCALE_RATIOS, SPACING_SCALE_RATIOS } from '@/constants/sizeScale'
 
@@ -971,7 +970,7 @@ const resolveBodyStyle = (col: DataTableColumn<T>, data: T) => {
         >
           <EmptyState
             icon="i-lucide-inbox"
-            :title="props.emptyMessage"
+            :title="props.emptyMessage || ''"
           />
         </template>
         <template

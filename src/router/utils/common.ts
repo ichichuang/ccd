@@ -1,4 +1,4 @@
-import type { RouteRecordRaw } from 'vue-router'
+import type { RouteRecordRaw, Router } from 'vue-router'
 
 /**
  * 按 meta.parent 过滤路由树，仅保留属于指定布局的路由。
@@ -53,17 +53,18 @@ export function filterTopLevelRoutesByParent(
  * 过滤meta中showLink为false的菜单
  */
 export function filterShowLinkMenus(routes: RouteConfig[]): RouteConfig[] {
-  return routes.filter(route => {
-    if (route.meta?.showLink === false) {
-      return false
-    }
-
-    if (route.children && route.children.length > 0) {
-      route.children = filterShowLinkMenus(route.children)
-    }
-
-    return true
-  })
+  return routes
+    .filter(route => route.meta?.showLink !== false)
+    .map(route => {
+      if (route.children && route.children.length > 0) {
+        const filteredChildren = filterShowLinkMenus(route.children)
+        return {
+          ...route,
+          children: filteredChildren,
+        }
+      }
+      return { ...route }
+    })
 }
 
 /**
@@ -76,14 +77,21 @@ export function filterShowLinkMenus(routes: RouteConfig[]): RouteConfig[] {
  * - 目前项目内未直接使用该函数，如需启用请确认以上行为是否符合预期。
  */
 export function filterEmptyChildren(routes: RouteConfig[]): RouteConfig[] {
-  return routes.filter(route => {
-    // 如果有子路由，递归过滤
+  const withFilteredChildren = routes.map(route => {
     if (route.children && route.children.length > 0) {
-      route.children = filterShowLinkMenus(route.children)
-      // 如果过滤后没有子路由了，则过滤掉父路由（除非父路由本身也是一个页面）
-      if (route.children.length === 0 && !route.component) {
-        return false
+      const filteredChildren = filterShowLinkMenus(route.children)
+      return {
+        ...route,
+        children: filteredChildren,
       }
+    }
+    return { ...route }
+  })
+
+  return withFilteredChildren.filter(route => {
+    const hasChildren = route.children && route.children.length > 0
+    if (!hasChildren && !route.component) {
+      return false
     }
     return true
   })
@@ -96,21 +104,25 @@ export function filterNoPermissionTree(
   routes: RouteConfig[],
   userRoles: string[] = []
 ): RouteConfig[] {
-  return routes.filter(route => {
-    // 检查权限
-    if (route.meta?.roles && route.meta.roles.length > 0) {
-      if (!isOneOfArray(route.meta.roles, userRoles)) {
-        return false
+  return routes
+    .filter(route => {
+      if (route.meta?.roles && route.meta.roles.length > 0) {
+        if (!isOneOfArray(route.meta.roles, userRoles)) {
+          return false
+        }
       }
-    }
-
-    // 递归处理子路由
-    if (route.children && route.children.length > 0) {
-      route.children = filterNoPermissionTree(route.children, userRoles)
-    }
-
-    return true
-  })
+      return true
+    })
+    .map(route => {
+      if (route.children && route.children.length > 0) {
+        const filteredChildren = filterNoPermissionTree(route.children, userRoles)
+        return {
+          ...route,
+          children: filteredChildren,
+        }
+      }
+      return { ...route }
+    })
 }
 
 /**
@@ -374,7 +386,7 @@ export function hasAuth(value: string | string[], userPermissions: string[]): bo
  * 按照 meta.rank 升序排序，未设置 rank 的路由排在最后
  */
 export function sortRoutes(routes: RouteConfig[]): RouteConfig[] {
-  return routes.sort((a, b) => {
+  return [...routes].sort((a, b) => {
     const rankA = a.meta?.rank ?? 999
     const rankB = b.meta?.rank ?? 999
     return rankA - rankB
@@ -528,19 +540,18 @@ export function checkRoutePermission(route: RouteConfig, userRoles: string[]): b
  * 根据用户角色过滤用户有权限访问的路由
  */
 export function filterAuthorizedRoutes(routes: RouteConfig[], userRoles: string[]): RouteConfig[] {
-  return routes.filter(route => {
-    // 检查当前路由权限
-    if (!checkRoutePermission(route, userRoles)) {
-      return false
-    }
-
-    // 递归过滤子路由
-    if (route.children && route.children.length > 0) {
-      route.children = filterAuthorizedRoutes(route.children, userRoles)
-    }
-
-    return true
-  })
+  return routes
+    .filter(route => checkRoutePermission(route, userRoles))
+    .map(route => {
+      if (route.children && route.children.length > 0) {
+        const filteredChildren = filterAuthorizedRoutes(route.children, userRoles)
+        return {
+          ...route,
+          children: filteredChildren,
+        }
+      }
+      return { ...route }
+    })
 }
 
 /**
@@ -570,11 +581,11 @@ export function transformToVueRoutes(routes: RouteConfig[]): RouteRecordRaw[] {
   const normalizedRoutes = normalizeRatioMetaOnRoutes(routes)
   return normalizedRoutes.map(route => {
     // 构建基础路由对象
-    const vueRoute: any = {
+    const vueRoute = {
       path: route.path,
       component: route.component,
       meta: route.meta as Record<string, any>,
-    }
+    } as RouteRecordRaw
 
     // 只有当确实存在时才添加这些可选属性
     if (route.name) {
@@ -711,7 +722,7 @@ export function getBackendRoutes(routes: RouteConfig[]): RouteConfig[] {
  * 动态路由管理器
  * 提供动态路由的添加、删除、重置等功能
  */
-export function createDynamicRouteManager(router: any) {
+export function createDynamicRouteManager(router: Router) {
   const dynamicRoutes: RouteConfig[] = []
 
   return {
@@ -895,7 +906,10 @@ function parseComponentPath(componentName: string): string[] {
  * @param extensions 支持的文件扩展名
  * @returns 找到的组件或 null
  */
-function findComponentFile(possiblePaths: string[], extensions: string[]): any | null {
+function findComponentFile(
+  possiblePaths: string[],
+  extensions: string[]
+): (() => Promise<unknown>) | null {
   // 遍历所有可能的路径
   for (const basePath of possiblePaths) {
     // 遍历所有支持的文件扩展名
@@ -1024,7 +1038,7 @@ export function getAvailableComponentPaths(): string[] {
  * @param component 组件对象
  * @returns 是否使用了回退组件
  */
-export function isUsingFallbackComponent(component: any): boolean {
+export function isUsingFallbackComponent(component: unknown): boolean {
   return component === modules['/src/views/notfound/not-found-page.vue']
 }
 

@@ -3,7 +3,7 @@
  * 负责：selectedRows、idField、selection 模式、行点击选择、全选、checkbox/radio
  */
 
-import { computed, ref, watch, type ComputedRef, type Ref } from 'vue'
+import type { ComputedRef, Ref } from 'vue'
 import type { DataTableProps } from '../utils/types'
 
 export interface UseTableSelectionOptions<T> {

@@ -77,7 +77,6 @@ onMounted(() => {
 
 .flower-spinner {
   transform: translateZ(0);
-  -webkit-transform: translateZ(0);
   will-change: transform;
   height: var(--container-size);
   width: var(--container-size);
@@ -98,11 +97,8 @@ onMounted(() => {
   width: 100%;
   border-radius: 50%;
   transform: translateZ(0);
-  -webkit-transform: translateZ(0);
   backface-visibility: hidden;
-  -webkit-backface-visibility: hidden;
   animation: flower-spinner-smaller-dot-animation 2.5s 0s infinite both;
-  -webkit-animation: flower-spinner-smaller-dot-animation 2.5s 0s infinite both;
 }
 
 .flower-spinner .bigger-dot {
@@ -112,172 +108,175 @@ onMounted(() => {
   padding: 10%;
   border-radius: 50%;
   transform: translateZ(0);
-  -webkit-transform: translateZ(0);
   backface-visibility: hidden;
-  -webkit-backface-visibility: hidden;
   animation: flower-spinner-bigger-dot-animation 2.5s 0s infinite both;
-  -webkit-animation: flower-spinner-bigger-dot-animation 2.5s 0s infinite both;
 }
 
 @keyframes flower-spinner-bigger-dot-animation {
   0% {
     box-shadow:
-      rgb(var(--primary)) 0px 0px 0px,
-      rgb(var(--primary)) 0px 0px 0px,
-      rgb(var(--primary)) 0px 0px 0px,
-      rgb(var(--primary)) 0px 0px 0px,
-      rgb(var(--primary)) 0px 0px 0px,
-      rgb(var(--primary)) 0px 0px 0px,
-      rgb(var(--primary)) 0px 0px 0px,
-      rgb(var(--primary)) 0px 0px 0px;
+      rgb(var(--primary)) 0 0 0,
+      rgb(var(--primary)) 0 0 0,
+      rgb(var(--primary)) 0 0 0,
+      rgb(var(--primary)) 0 0 0,
+      rgb(var(--primary)) 0 0 0,
+      rgb(var(--primary)) 0 0 0,
+      rgb(var(--primary)) 0 0 0,
+      rgb(var(--primary)) 0 0 0;
   }
+
   50% {
     transform: translateZ(0) rotate(180deg);
   }
+
   25%,
   75% {
     box-shadow:
-      rgb(var(--primary)) var(--bigger-offset) 0px 0px,
-      rgb(var(--primary)) calc(var(--bigger-offset) * -1) 0px 0px,
-      rgb(var(--primary)) 0px var(--bigger-offset) 0px,
-      rgb(var(--primary)) 0px calc(var(--bigger-offset) * -1) 0px,
-      rgb(var(--primary)) var(--diagonal-offset) calc(var(--diagonal-offset) * -1) 0px,
-      rgb(var(--primary)) var(--diagonal-offset) var(--diagonal-offset) 0px,
-      rgb(var(--primary)) calc(var(--diagonal-offset) * -1) calc(var(--diagonal-offset) * -1) 0px,
-      rgb(var(--primary)) calc(var(--diagonal-offset) * -1) var(--diagonal-offset) 0px;
+      rgb(var(--primary)) var(--bigger-offset) 0 0,
+      rgb(var(--primary)) calc(var(--bigger-offset) * -1) 0 0,
+      rgb(var(--primary)) 0 var(--bigger-offset) 0,
+      rgb(var(--primary)) 0 calc(var(--bigger-offset) * -1) 0,
+      rgb(var(--primary)) var(--diagonal-offset) calc(var(--diagonal-offset) * -1) 0,
+      rgb(var(--primary)) var(--diagonal-offset) var(--diagonal-offset) 0,
+      rgb(var(--primary)) calc(var(--diagonal-offset) * -1) calc(var(--diagonal-offset) * -1) 0,
+      rgb(var(--primary)) calc(var(--diagonal-offset) * -1) var(--diagonal-offset) 0;
   }
+
   100% {
     transform: translateZ(0) rotate(360deg);
     box-shadow:
-      rgb(var(--primary)) 0px 0px 0px,
-      rgb(var(--primary)) 0px 0px 0px,
-      rgb(var(--primary)) 0px 0px 0px,
-      rgb(var(--primary)) 0px 0px 0px,
-      rgb(var(--primary)) 0px 0px 0px,
-      rgb(var(--primary)) 0px 0px 0px,
-      rgb(var(--primary)) 0px 0px 0px,
-      rgb(var(--primary)) 0px 0px 0px;
+      rgb(var(--primary)) 0 0 0,
+      rgb(var(--primary)) 0 0 0,
+      rgb(var(--primary)) 0 0 0,
+      rgb(var(--primary)) 0 0 0,
+      rgb(var(--primary)) 0 0 0,
+      rgb(var(--primary)) 0 0 0,
+      rgb(var(--primary)) 0 0 0,
+      rgb(var(--primary)) 0 0 0;
   }
 }
 
-@-webkit-keyframes flower-spinner-bigger-dot-animation {
+@keyframes flower-spinner-bigger-dot-animation {
   0% {
     box-shadow:
-      rgb(var(--primary)) 0px 0px 0px,
-      rgb(var(--primary)) 0px 0px 0px,
-      rgb(var(--primary)) 0px 0px 0px,
-      rgb(var(--primary)) 0px 0px 0px,
-      rgb(var(--primary)) 0px 0px 0px,
-      rgb(var(--primary)) 0px 0px 0px,
-      rgb(var(--primary)) 0px 0px 0px,
-      rgb(var(--primary)) 0px 0px 0px;
+      rgb(var(--primary)) 0 0 0,
+      rgb(var(--primary)) 0 0 0,
+      rgb(var(--primary)) 0 0 0,
+      rgb(var(--primary)) 0 0 0,
+      rgb(var(--primary)) 0 0 0,
+      rgb(var(--primary)) 0 0 0,
+      rgb(var(--primary)) 0 0 0,
+      rgb(var(--primary)) 0 0 0;
   }
+
   50% {
-    -webkit-transform: translateZ(0) rotate(180deg);
+    transform: translateZ(0) rotate(180deg);
   }
+
   25%,
   75% {
     box-shadow:
-      rgb(var(--primary)) var(--bigger-offset) 0px 0px,
-      rgb(var(--primary)) calc(var(--bigger-offset) * -1) 0px 0px,
-      rgb(var(--primary)) 0px var(--bigger-offset) 0px,
-      rgb(var(--primary)) 0px calc(var(--bigger-offset) * -1) 0px,
-      rgb(var(--primary)) var(--diagonal-offset) calc(var(--diagonal-offset) * -1) 0px,
-      rgb(var(--primary)) var(--diagonal-offset) var(--diagonal-offset) 0px,
-      rgb(var(--primary)) calc(var(--diagonal-offset) * -1) calc(var(--diagonal-offset) * -1) 0px,
-      rgb(var(--primary)) calc(var(--diagonal-offset) * -1) var(--diagonal-offset) 0px;
+      rgb(var(--primary)) var(--bigger-offset) 0 0,
+      rgb(var(--primary)) calc(var(--bigger-offset) * -1) 0 0,
+      rgb(var(--primary)) 0 var(--bigger-offset) 0,
+      rgb(var(--primary)) 0 calc(var(--bigger-offset) * -1) 0,
+      rgb(var(--primary)) var(--diagonal-offset) calc(var(--diagonal-offset) * -1) 0,
+      rgb(var(--primary)) var(--diagonal-offset) var(--diagonal-offset) 0,
+      rgb(var(--primary)) calc(var(--diagonal-offset) * -1) calc(var(--diagonal-offset) * -1) 0,
+      rgb(var(--primary)) calc(var(--diagonal-offset) * -1) var(--diagonal-offset) 0;
   }
+
   100% {
-    -webkit-transform: translateZ(0) rotate(360deg);
+    transform: translateZ(0) rotate(360deg);
     box-shadow:
-      rgb(var(--primary)) 0px 0px 0px,
-      rgb(var(--primary)) 0px 0px 0px,
-      rgb(var(--primary)) 0px 0px 0px,
-      rgb(var(--primary)) 0px 0px 0px,
-      rgb(var(--primary)) 0px 0px 0px,
-      rgb(var(--primary)) 0px 0px 0px,
-      rgb(var(--primary)) 0px 0px 0px,
-      rgb(var(--primary)) 0px 0px 0px;
+      rgb(var(--primary)) 0 0 0,
+      rgb(var(--primary)) 0 0 0,
+      rgb(var(--primary)) 0 0 0,
+      rgb(var(--primary)) 0 0 0,
+      rgb(var(--primary)) 0 0 0,
+      rgb(var(--primary)) 0 0 0,
+      rgb(var(--primary)) 0 0 0,
+      rgb(var(--primary)) 0 0 0;
   }
 }
 
 @keyframes flower-spinner-smaller-dot-animation {
   0% {
     box-shadow:
-      rgb(var(--primary)) 0px 0px 0px,
-      rgb(var(--primary)) 0px 0px 0px,
-      rgb(var(--primary)) 0px 0px 0px,
-      rgb(var(--primary)) 0px 0px 0px,
-      rgb(var(--primary)) 0px 0px 0px,
-      rgb(var(--primary)) 0px 0px 0px,
-      rgb(var(--primary)) 0px 0px 0px,
-      rgb(var(--primary)) 0px 0px 0px;
+      rgb(var(--primary)) 0 0 0,
+      rgb(var(--primary)) 0 0 0,
+      rgb(var(--primary)) 0 0 0,
+      rgb(var(--primary)) 0 0 0,
+      rgb(var(--primary)) 0 0 0,
+      rgb(var(--primary)) 0 0 0,
+      rgb(var(--primary)) 0 0 0,
+      rgb(var(--primary)) 0 0 0;
   }
+
   25%,
   75% {
     box-shadow:
-      rgb(var(--primary)) var(--smaller-offset) 0px 0px,
-      rgb(var(--primary)) calc(var(--smaller-offset) * -1) 0px 0px,
-      rgb(var(--primary)) 0px var(--smaller-offset) 0px,
-      rgb(var(--primary)) 0px calc(var(--smaller-offset) * -1) 0px,
-      rgb(var(--primary)) var(--smaller-diagonal-offset) calc(var(--smaller-diagonal-offset) * -1)
-        0px,
-      rgb(var(--primary)) var(--smaller-diagonal-offset) var(--smaller-diagonal-offset) 0px,
+      rgb(var(--primary)) var(--smaller-offset) 0 0,
+      rgb(var(--primary)) calc(var(--smaller-offset) * -1) 0 0,
+      rgb(var(--primary)) 0 var(--smaller-offset) 0,
+      rgb(var(--primary)) 0 calc(var(--smaller-offset) * -1) 0,
+      rgb(var(--primary)) var(--smaller-diagonal-offset) calc(var(--smaller-diagonal-offset) * -1) 0,
+      rgb(var(--primary)) var(--smaller-diagonal-offset) var(--smaller-diagonal-offset) 0,
       rgb(var(--primary)) calc(var(--smaller-diagonal-offset) * -1)
-        calc(var(--smaller-diagonal-offset) * -1) 0px,
-      rgb(var(--primary)) calc(var(--smaller-diagonal-offset) * -1) var(--smaller-diagonal-offset)
-        0px;
+        calc(var(--smaller-diagonal-offset) * -1) 0,
+      rgb(var(--primary)) calc(var(--smaller-diagonal-offset) * -1) var(--smaller-diagonal-offset) 0;
   }
+
   100% {
     box-shadow:
-      rgb(var(--primary)) 0px 0px 0px,
-      rgb(var(--primary)) 0px 0px 0px,
-      rgb(var(--primary)) 0px 0px 0px,
-      rgb(var(--primary)) 0px 0px 0px,
-      rgb(var(--primary)) 0px 0px 0px,
-      rgb(var(--primary)) 0px 0px 0px,
-      rgb(var(--primary)) 0px 0px 0px,
-      rgb(var(--primary)) 0px 0px 0px;
+      rgb(var(--primary)) 0 0 0,
+      rgb(var(--primary)) 0 0 0,
+      rgb(var(--primary)) 0 0 0,
+      rgb(var(--primary)) 0 0 0,
+      rgb(var(--primary)) 0 0 0,
+      rgb(var(--primary)) 0 0 0,
+      rgb(var(--primary)) 0 0 0,
+      rgb(var(--primary)) 0 0 0;
   }
 }
 
-@-webkit-keyframes flower-spinner-smaller-dot-animation {
+@keyframes flower-spinner-smaller-dot-animation {
   0% {
     box-shadow:
-      rgb(var(--primary)) 0px 0px 0px,
-      rgb(var(--primary)) 0px 0px 0px,
-      rgb(var(--primary)) 0px 0px 0px,
-      rgb(var(--primary)) 0px 0px 0px,
-      rgb(var(--primary)) 0px 0px 0px,
-      rgb(var(--primary)) 0px 0px 0px,
-      rgb(var(--primary)) 0px 0px 0px,
-      rgb(var(--primary)) 0px 0px 0px;
+      rgb(var(--primary)) 0 0 0,
+      rgb(var(--primary)) 0 0 0,
+      rgb(var(--primary)) 0 0 0,
+      rgb(var(--primary)) 0 0 0,
+      rgb(var(--primary)) 0 0 0,
+      rgb(var(--primary)) 0 0 0,
+      rgb(var(--primary)) 0 0 0,
+      rgb(var(--primary)) 0 0 0;
   }
+
   25%,
   75% {
     box-shadow:
-      rgb(var(--primary)) var(--smaller-offset) 0px 0px,
-      rgb(var(--primary)) calc(var(--smaller-offset) * -1) 0px 0px,
-      rgb(var(--primary)) 0px var(--smaller-offset) 0px,
-      rgb(var(--primary)) 0px calc(var(--smaller-offset) * -1) 0px,
-      rgb(var(--primary)) var(--smaller-diagonal-offset) calc(var(--smaller-diagonal-offset) * -1)
-        0px,
-      rgb(var(--primary)) var(--smaller-diagonal-offset) var(--smaller-diagonal-offset) 0px,
+      rgb(var(--primary)) var(--smaller-offset) 0 0,
+      rgb(var(--primary)) calc(var(--smaller-offset) * -1) 0 0,
+      rgb(var(--primary)) 0 var(--smaller-offset) 0,
+      rgb(var(--primary)) 0 calc(var(--smaller-offset) * -1) 0,
+      rgb(var(--primary)) var(--smaller-diagonal-offset) calc(var(--smaller-diagonal-offset) * -1) 0,
+      rgb(var(--primary)) var(--smaller-diagonal-offset) var(--smaller-diagonal-offset) 0,
       rgb(var(--primary)) calc(var(--smaller-diagonal-offset) * -1)
-        calc(var(--smaller-diagonal-offset) * -1) 0px,
-      rgb(var(--primary)) calc(var(--smaller-diagonal-offset) * -1) var(--smaller-diagonal-offset)
-        0px;
+        calc(var(--smaller-diagonal-offset) * -1) 0,
+      rgb(var(--primary)) calc(var(--smaller-diagonal-offset) * -1) var(--smaller-diagonal-offset) 0;
   }
+
   100% {
     box-shadow:
-      rgb(var(--primary)) 0px 0px 0px,
-      rgb(var(--primary)) 0px 0px 0px,
-      rgb(var(--primary)) 0px 0px 0px,
-      rgb(var(--primary)) 0px 0px 0px,
-      rgb(var(--primary)) 0px 0px 0px,
-      rgb(var(--primary)) 0px 0px 0px,
-      rgb(var(--primary)) 0px 0px 0px,
-      rgb(var(--primary)) 0px 0px 0px;
+      rgb(var(--primary)) 0 0 0,
+      rgb(var(--primary)) 0 0 0,
+      rgb(var(--primary)) 0 0 0,
+      rgb(var(--primary)) 0 0 0,
+      rgb(var(--primary)) 0 0 0,
+      rgb(var(--primary)) 0 0 0,
+      rgb(var(--primary)) 0 0 0,
+      rgb(var(--primary)) 0 0 0;
   }
 }
 </style>

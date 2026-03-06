@@ -14,9 +14,6 @@
 </template>
 
 <script setup lang="ts">
-import DatePicker from 'primevue/datepicker'
-import { computed } from 'vue'
-
 interface WrappedDatePickerProps {
   modelValue?: Date | number | string | (Date | number | string)[] | null
   /** 外部存储格式，仅在本组件内用于转换，不透传给 DatePicker */
@@ -27,8 +24,6 @@ interface WrappedDatePickerProps {
   placeholder?: string
   class?: string | string[]
   style?: Record<string, string>
-  /** rest 透传 PrimeVue DatePicker */
-  [key: string]: unknown
 }
 
 const props = withDefaults(defineProps<WrappedDatePickerProps>(), {
@@ -50,6 +45,7 @@ const emit = defineEmits<{
  * class 属性（避免使用保留字）
  */
 const classProp = computed(() => props.class)
+const attrs = useAttrs()
 
 /**
  * 组件 key
@@ -87,24 +83,23 @@ const componentKey = computed(() => {
  */
 type DateValue = Date | (Date | null)[] | null | undefined
 
-function normalizeDateValueForDisplay(value: unknown, _format: string): DateValue {
-  if (value === null || value === undefined || value === '') {
-    return null
-  }
-
-  // 🔥 关键修复：如果 value 是对象，尝试提取实际值
-  let resolved = value
+function unwrapValue(input: unknown): unknown {
   if (
-    resolved &&
-    typeof resolved === 'object' &&
-    !(resolved instanceof Date) &&
-    !Array.isArray(resolved)
+    input &&
+    typeof input === 'object' &&
+    !(input instanceof Date) &&
+    !Array.isArray(input) &&
+    'value' in (input as Record<string, unknown>)
   ) {
-    if ('value' in resolved) {
-      resolved = (resolved as { value: unknown }).value
-    } else {
-      return null
-    }
+    return (input as { value: unknown }).value
+  }
+  return input
+}
+
+function normalizeDateValueForDisplay(value: unknown, _format: string): DateValue {
+  const resolved = unwrapValue(value)
+  if (resolved === null || resolved === undefined || resolved === '') {
+    return null
   }
 
   const convert = (input: unknown): Date | null => {
@@ -112,14 +107,7 @@ function normalizeDateValueForDisplay(value: unknown, _format: string): DateValu
       return null
     }
     try {
-      let inVal = input
-      if (inVal && typeof inVal === 'object' && !(inVal instanceof Date)) {
-        if ('value' in inVal) {
-          inVal = (inVal as { value: unknown }).value
-        } else {
-          return null
-        }
-      }
+      const inVal = unwrapValue(input)
 
       // 如果已经是 Date 对象，直接返回
       if (inVal instanceof Date && !isNaN(inVal.getTime())) {
@@ -256,19 +244,20 @@ function normalizeDateProp(value: unknown): Date | number | string | undefined {
 
   // 如果是普通对象（可能是序列化后的 Date），尝试转换
   if (value && typeof value === 'object' && !Array.isArray(value)) {
+    const obj = value as Record<string, unknown>
     // 检查是否是序列化后的 Date 对象（有 getTime 方法）
-    if (typeof value.getTime === 'function') {
+    if (typeof obj.getTime === 'function') {
       try {
-        const date = new Date(value.getTime())
+        const date = new Date((obj.getTime as () => number)())
         return isNaN(date.getTime()) ? undefined : date
       } catch {
         return undefined
       }
     }
     // 检查是否有 valueOf 方法（Date 对象的方法）
-    if (typeof value.valueOf === 'function') {
+    if (typeof obj.valueOf === 'function') {
       try {
-        const timestamp = value.valueOf()
+        const timestamp = (obj.valueOf as () => unknown)()
         if (typeof timestamp === 'number' && isFinite(timestamp)) {
           const date = new Date(timestamp)
           return isNaN(date.getTime()) ? undefined : date
@@ -278,14 +267,14 @@ function normalizeDateProp(value: unknown): Date | number | string | undefined {
       }
     }
     // 检查是否是序列化后的对象（有 $date 或其他常见属性）
-    if ('$date' in value && typeof value.$date === 'number') {
-      const date = new Date(value.$date)
+    if ('$date' in obj && typeof obj.$date === 'number') {
+      const date = new Date(obj.$date)
       return isNaN(date.getTime()) ? undefined : date
     }
     // 如果对象有 toString 方法，尝试解析
-    if (typeof value.toString === 'function') {
+    if (typeof obj.toString === 'function') {
       try {
-        const date = new Date(value.toString())
+        const date = new Date((obj.toString as () => string)())
         if (!isNaN(date.getTime())) {
           return date
         }
@@ -317,20 +306,8 @@ function normalizeDateProp(value: unknown): Date | number | string | undefined {
  * 提取其他 props（排除已处理的属性，并规范化日期相关的 props）
  */
 const restProps = computed(() => {
-  const {
-    modelValue: _modelValue,
-    valueFormat: _valueFormat,
-    name: _name,
-    disabled: _disabled,
-    readonly: _readonly,
-    placeholder: _placeholder,
-    class: _class,
-    style: _style,
-    ...rest
-  } = props
-
   // 🔥 修复：规范化 minDate 和 maxDate，确保它们是 Date 对象
-  const normalizedRest: Record<string, unknown> = { ...rest }
+  const normalizedRest: Record<string, unknown> = { ...(attrs as Record<string, unknown>) }
   if ('minDate' in normalizedRest) {
     const normalized = normalizeDateProp(normalizedRest.minDate)
     if (normalized !== undefined) {

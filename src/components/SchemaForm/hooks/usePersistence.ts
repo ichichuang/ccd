@@ -67,8 +67,10 @@ export function usePersistence(options: UsePersistenceOptions): UsePersistenceRe
 
     clearTimeout(persistTimer!)
     persistTimer = setTimeout(() => {
+      const persistConfig =
+        persist.value && typeof persist.value === 'object' ? (persist.value as PersistConfig) : null
+      if (!persistConfig) return
       try {
-        const persistConfig = persist.value as PersistConfig
         const ttl = persistConfig.ttl ?? 24 * 60 * 60 * 1000
         const key = `schemaform:${persistConfig.key}`
         localStorage.setItem(

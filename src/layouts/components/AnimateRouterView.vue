@@ -161,6 +161,7 @@ const styleVars = computed(() => {
   width: 100%;
   animation-duration: var(--transition-md) !important;
 }
+
 .leave-active-class {
   position: absolute;
   top: 0;

@@ -17,7 +17,10 @@ Use the `EmptyState` component (`src/components/EmptyState`) for all empty state
 | Background watermark icon | Lucide via `<Icons>`, size `fs-5xl`, `text-muted-foreground opacity-25`     |
 | Primary title             | `fs-md font-semibold`, direct tone (e.g. "All clear", "No report selected") |
 | Secondary description     | `fs-sm text-muted-foreground`, tell the user what to do next                |
-| Action button (optional)  | `severity="secondary"` or outlined, links to related page                   |
+| Action button (Mandatory) | `severity="secondary"` or outlined, MUST provide a clear CTA to break out   |
+
+**Rule: The Call to Action (CTA)**
+Every empty state MUST have a clear, primary CTA button to help the user break out of the dead end (e.g., "Create New Data Group"). Never leave the user stranded on a blank list.
 
 **Example**:
 

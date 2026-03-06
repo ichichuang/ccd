@@ -12,9 +12,6 @@
 </template>
 
 <script setup lang="ts">
-import ColorPicker from 'primevue/colorpicker'
-import { computed } from 'vue'
-
 interface WrappedColorPickerProps {
   modelValue?: string
   format?: 'hex' | 'rgb' | 'hsl'
@@ -25,8 +22,6 @@ interface WrappedColorPickerProps {
   placeholder?: string
   class?: string | string[]
   style?: Record<string, string>
-  /** rest 透传 PrimeVue ColorPicker */
-  [key: string]: unknown
 }
 
 const props = withDefaults(defineProps<WrappedColorPickerProps>(), {
@@ -107,21 +102,12 @@ const internalValue = computed({
   },
 })
 
+const attrs = useAttrs()
+
 /**
  * 提取其他 props（排除已处理的属性）
  */
 const restProps = computed(() => {
-  const {
-    modelValue: _modelValue,
-    format: _format,
-    name: _name,
-    disabled: _disabled,
-    readonly: _readonly,
-    placeholder: _placeholder,
-    class: _class,
-    style: _style,
-    ...rest
-  } = props
-  return rest
+  return attrs as Record<string, unknown>
 })
 </script>

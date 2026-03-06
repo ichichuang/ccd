@@ -1,5 +1,7 @@
-import { computed, defineComponent, ref, Transition, watch } from 'vue'
+import { defineComponent, Transition } from 'vue'
 import { useI18n } from 'vue-i18n'
+import Drawer from 'primevue/drawer'
+import { useRoute } from 'vue-router'
 import AppContainer from '@&/AppContainer.vue'
 import { useLayoutStore } from '@/stores/modules/layout'
 import { useDeviceStore } from '@/stores/modules/device'
@@ -14,6 +16,8 @@ import AdminSidebar from '@&/admin/AdminSidebar.tsx'
 import AdminBreadcrumbBar from '@&/admin/AdminBreadcrumbBar.vue'
 import AdminTabsBar from '@&/admin/AdminTabsBar.tsx'
 import AdminFooterBar from '@&/admin/AdminFooterBar.tsx'
+import AdminSidebarLogo from '@/layouts/components/admin/AdminSidebarLogo'
+import AdminSidebarMenu from '@/layouts/components/admin/AdminSidebarMenu'
 import { Icons } from '@/components/Icons'
 
 /**
@@ -32,6 +36,8 @@ export default defineComponent({
     const { t } = useI18n()
     const layoutStore = useLayoutStore()
     const deviceStore = useDeviceStore()
+    const route = useRoute()
+
     const { getAvailableTimezones, isInitialized } = useDateUtils()
     const { isDark, isAnimating, toggleThemeWithAnimation } = useThemeSwitch()
     const { openDialog } = useDialog()
@@ -124,9 +130,19 @@ export default defineComponent({
       () => runAdaptive()
     )
 
+    watch(
+      () => route.path,
+      () => {
+        if (layoutStore.mobileDrawerOpen) {
+          layoutStore.mobileDrawerOpen = false
+        }
+      }
+    )
+
     // --- AdminLayoutMode：结构模式 ---
     const mode = computed(() => layoutStore.mode)
     const isHorizontal = computed(() => mode.value === 'horizontal')
+    const isMobileLayout = computed(() => deviceStore.isMobileLayout)
 
     // --- 展示开关（store 仅由配置面板控制）---
     const showHeader = computed(() => layoutStore.showHeader)
@@ -247,6 +263,36 @@ export default defineComponent({
             onToggleCollapse={(_e: MouseEvent) => layoutStore.toggleCollapse()}
           />
           {bodyContent}
+          {/* 移动端抽屉导航（Headless：无默认 header/content，完全自绘，无内边距） */}
+          <Drawer
+            visible={layoutStore.mobileDrawerOpen && isMobileLayout.value}
+            {...({
+              ['onUpdate:visible']: (val: boolean) => {
+                layoutStore.mobileDrawerOpen = val
+              },
+            } as Record<string, unknown>)}
+            position="left"
+            modal
+            blockScroll
+            dismissable
+            showCloseIcon={false}
+            class="w-sidebarWidth max-w-[80vw]"
+            pt={{
+              root: { class: 'p-0' },
+            }}
+            v-slots={{
+              container: () => (
+                <div class="admin-sidebar--fixed flex flex-col h-full overflow-hidden select-none bg-sidebar text-sidebar-foreground">
+                  <AdminSidebarLogo />
+                  <div class="flex-1 min-h-0 flex flex-col overflow-hidden">
+                    <CScrollbar class="flex-1 min-h-0 px-padding-sm">
+                      <AdminSidebarMenu sidebarCollapse={false} />
+                    </CScrollbar>
+                  </div>
+                </div>
+              ),
+            }}
+          />
         </div>
       )
     }

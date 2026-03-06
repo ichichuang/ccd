@@ -117,8 +117,9 @@
 
 ### 4.1 UnoCSS safelist 与 demo 模式
 
-- 生产构建：safelist 仅使用 `getDynamicSafelist()`（动态扫描到的类）。
-- 开发/演示：当 `UNO_DEMO=true`（如 `pnpm dev:demo`）时，safelist 会合并 `themeDemoSafelist`，便于主题/尺寸演示页完整展示类名。日常开发无需开启。
+- **生产构建**：safelist 仅使用 `getDynamicSafelist()`（动态扫描到的路由/API 图标）。
+- **优化模式 (Lite)**：默认情况下，`UNO_DEMO` 为 `false`，图标示例页仅展示 20 个常用的精简图标集，不加载巨大的 Iconify JSON 文件，从而极大提升冷启动速度并防止 Vercel 构建超时。
+- **演示模式 (Full)**：当 `UNO_DEMO=true`（如 `pnpm dev:demo`）时，safelist 会加载完整的图标子集（Lucide 500/MDI 500 等），并合并 `themeDemoSafelist`。
 
 ## 5. Vite 构建拆包与首帧尺寸
 

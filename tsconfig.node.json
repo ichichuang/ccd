@@ -1,7 +1,7 @@
 {
   "extends": "@tsconfig/node22/tsconfig.json",
   "include": [
-    // ✅ 核心配置文件
+    // ✅ Node 侧仅负责工具链与构建脚本
     "vite.config.ts",
     "uno.config.ts",
     "eslint.config.ts",
@@ -9,21 +9,29 @@
     "cypress.config.ts",
     "playwright.config.ts",
     "commitlint.config.ts",
-
-    // ✅ 接管构建脚本 (这是重点！)
-    // 之前从 tsconfig.app.json 移出来的，必须放在这里
     "build/**/*",
+    "scripts/**/*.ts",
 
-    // ✅ 允许构建侧(uno.config/build/*)通过 @ 引用 src 内 SSOT
-    // composite 项目要求：凡被导入的文件必须属于 include/files
+    // ✅ Node 侧需要的全局类型声明
+    "src/types/**/*.d.ts",
+
+    // ✅ 供 uno.config.ts 等工具链引用的浏览器常量与类型
     "src/constants/**/*.ts",
-    "src/utils/theme/**/*.ts",
-    "src/types/**/*.d.ts"
+    "src/utils/theme/metadata.ts",
+    "src/views/system-configuration/configs/shortcutGroups.ts",
+    "src/locales/**/*"
+  ],
+  "exclude": [
+    "src/types/auto-imports.d.ts",
+    "src/types/components.d.ts",
+    "src/constants/router.ts"
   ],
   "compilerOptions": {
     "composite": true,
     "noEmit": true,
     "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.node.tsbuildinfo",
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
 
     "baseUrl": ".",
     "paths": {
@@ -32,6 +40,7 @@
 
     "module": "ESNext",
     "moduleResolution": "Bundler",
-    "types": ["node"]
+    "lib": ["ESNext", "DOM", "DOM.Iterable"],
+    "types": ["node", "vite/client"]
   }
 }

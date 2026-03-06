@@ -6,8 +6,7 @@
  * - 统一监听 localeStore.locale 而非 hack 方式
  * - 提取标题计算逻辑，便于复用
  */
-import { computed, watch } from 'vue'
-import type { Router } from 'vue-router'
+import type { Router, RouteLocationNormalizedLoaded } from 'vue-router'
 import { useRoute } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { useTitle } from '@vueuse/core'
@@ -22,7 +21,7 @@ import { brand } from '@/constants/brand'
  * @returns 完整的页面标题
  */
 export function calculatePageTitle(
-  route: any,
+  route: RouteLocationNormalizedLoaded,
   appTitle: string,
   t: (key: string) => string
 ): string {
@@ -101,7 +100,7 @@ export function usePageTitle(_router?: Router) {
     // 手动更新方法
     updatePageTitle,
     // 标题计算函数（供外部复用）
-    getRouteTitle: (route: any, appTitle?: string) =>
+    getRouteTitle: (route: RouteLocationNormalizedLoaded, appTitle?: string) =>
       calculatePageTitle(
         route,
         // 若未传入则使用 brand.name；若显式传入空字符串则按“无应用标题”处理

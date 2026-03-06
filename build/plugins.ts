@@ -135,11 +135,83 @@ function generateIconListsPlugin(): PluginOption {
   return {
     name: 'generate-icon-lists',
     config() {
-      const lucide = getIconifyIconNamesSubset('lucide', ICON_SUBSET_LIMITS.lucide)
-      const mdi = getIconifyIconNamesSubset('mdi', ICON_SUBSET_LIMITS.mdi)
-      const logos = getIconifyIconNamesSubset('logos', ICON_SUBSET_LIMITS.logos)
+      const isDemo = process.env.UNO_DEMO === 'true'
+
+      let lucide: string[]
+      let mdi: string[]
+      let logos: string[]
+
+      if (isDemo) {
+        lucide = getIconifyIconNamesSubset('lucide', ICON_SUBSET_LIMITS.lucide)
+        mdi = getIconifyIconNamesSubset('mdi', ICON_SUBSET_LIMITS.mdi)
+        logos = getIconifyIconNamesSubset('logos', ICON_SUBSET_LIMITS.logos)
+      } else {
+        // UNO_DEMO=false 时使用精简 fallback 列表，避免加载巨大 JSON
+        lucide = [
+          'i-lucide-home',
+          'i-lucide-user',
+          'i-lucide-settings',
+          'i-lucide-search',
+          'i-lucide-bell',
+          'i-lucide-mail',
+          'i-lucide-calendar',
+          'i-lucide-check',
+          'i-lucide-x',
+          'i-lucide-plus',
+          'i-lucide-info',
+          'i-lucide-menu',
+          'i-lucide-chevron-right',
+          'i-lucide-trash-2',
+          'i-lucide-edit',
+          'i-lucide-download',
+          'i-lucide-upload',
+          'i-lucide-external-link',
+          'i-lucide-refresh-cw',
+          'i-lucide-lock',
+        ]
+        mdi = [
+          'i-mdi-home',
+          'i-mdi-account',
+          'i-mdi-cog',
+          'i-mdi-magnify',
+          'i-mdi-bell',
+          'i-mdi-email',
+          'i-mdi-calendar',
+          'i-mdi-check',
+          'i-mdi-close',
+          'i-mdi-plus',
+          'i-mdi-information',
+          'i-mdi-menu',
+          'i-mdi-chevron-right',
+          'i-mdi-delete',
+          'i-mdi-pencil',
+          'i-mdi-download',
+          'i-mdi-upload',
+          'i-mdi-open-in-new',
+          'i-mdi-refresh',
+          'i-mdi-lock',
+        ]
+        logos = [
+          'i-logos-vue',
+          'i-logos-vitejs',
+          'i-logos-unocss',
+          'i-logos-typescript-icon',
+          'i-logos-javascript',
+          'i-logos-pinia',
+          'i-logos-react',
+          'i-logos-nextjs-icon',
+          'i-logos-naiveui',
+          'i-logos-ant-design',
+          'i-logos-tailwindcss-icon',
+          'i-logos-visual-studio-code',
+          'i-logos-github-icon',
+          'i-logos-google-icon',
+          'i-logos-chrome',
+        ]
+      }
+
       const custom = getCustomIconClasses()
-      const content = `/** 由 build/plugins.ts generateIconListsPlugin 在构建时生成，请勿手改 */\n\nexport const LUCIDE_ICONS: string[] = ${JSON.stringify(lucide)}\nexport const MDI_ICONS: string[] = ${JSON.stringify(mdi)}\nexport const LOGOS_ICONS: string[] = ${JSON.stringify(logos)}\nexport const CUSTOM_ICONS: string[] = ${JSON.stringify(custom)}\n`
+      const content = `/** 由 build/plugins.ts generateIconListsPlugin 在构建时生成，请勿手改 */\n\nexport const LUCIDE_ICONS: string[] = ${JSON.stringify(lucide)}\nexport const MDI_ICONS: string[] = ${JSON.stringify(mdi)}\nexport const LOGOS_ICONS: string[] = ${JSON.stringify(logos)}\nexport const CUSTOM_ICONS: string[] = ${JSON.stringify(custom)}\nexport const IS_LITE_MODE: boolean = ${!isDemo}\n`
       fs.mkdirSync(path.dirname(generatedPath), { recursive: true })
       fs.writeFileSync(generatedPath, content, 'utf-8')
     },

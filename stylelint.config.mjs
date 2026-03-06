@@ -1,0 +1,43 @@
+/**
+ * Stylelint 配置
+ * 标准 SCSS 规则 + Prettier 兼容
+ * 覆盖 src 下的 css/scss/vue 样式
+ */
+import path from 'node:path'
+import { fileURLToPath } from 'node:url'
+import postcssHtml from 'postcss-html'
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url))
+
+export default {
+  extends: [
+    path.resolve(__dirname, 'node_modules/stylelint-config-standard-scss/index.js'),
+    path.resolve(__dirname, 'node_modules/stylelint-config-prettier-scss/src/index.js'),
+  ],
+  ignores: [
+    '**/node_modules/**',
+    '**/dist/**',
+    '**/dist-ssr/**',
+    '**/coverage/**',
+    '**/*.min.css',
+  ],
+  overrides: [
+    {
+      files: ['**/*.vue'],
+      customSyntax: postcssHtml,
+    },
+  ],
+  rules: {
+    // Vue SFC 的 :deep() 为合法选择器
+    'selector-pseudo-class-no-unknown': [
+      true,
+      { ignorePseudoClasses: ['deep', 'global', 'slotted'] },
+    ],
+    // 放宽 class 命名：支持 BEM (block__element--modifier)、animate.css 等
+    'selector-class-pattern': null,
+    // 放宽 keyframe 命名：允许 camelCase（如 nprogressPulse）
+    'keyframes-name-pattern': null,
+    // 允许空 style 块（Vue 中常见占位）
+    'no-empty-source': null,
+  },
+}

@@ -1,0 +1,162 @@
+/**
+ * 菜单项通用渲染工厂（TieredMenu #item slot 渲染器）
+ *
+ * 职责：
+ * - 统一 Header / Sidebar / Breadcrumb 等场景下 TieredMenu 子项的 DOM 结构与状态样式
+ * - 复用 useMenuVisuals 提供的 base/state/icon 逻辑，避免在布局组件中重复实现
+ *
+ * 边界：
+ * - 仅负责菜单项自身的视觉与 click 行为，不参与菜单数据结构与布局容器逻辑
+ * - 场景化差异通过 context / inactiveClasses / onItemClick / emphasizeActiveLabel 参数传入
+ */
+
+import { Icons } from '@/components/Icons'
+import { MENU_ICON_COMMON_CLASS, MENU_TEXT_CLASS } from '@/constants/layout-menu'
+import type { VNode } from 'vue'
+import {
+  getMenuItemBase,
+  getMenuStateClasses,
+  getIconSize,
+  type MenuVisualContext,
+} from '@/hooks/layout/useMenuVisuals'
+import { goToRoute, type PrimeMenuModelItem } from '@/router/utils/helper'
+
+export interface TieredMenuItemSlotProps {
+  item: PrimeMenuModelItem
+  props: {
+    action: Record<string, unknown>
+  }
+  hasSubmenu: boolean
+}
+
+export interface TieredMenuInactiveClasses {
+  root?: string
+  child?: string
+}
+
+export interface TieredMenuItemRendererOptions {
+  /** 菜单视觉上下文（header / sidebar / breadcrumb） */
+  context: MenuVisualContext
+  /** 计算当前菜单项与激活路由的距离（由调用方根据场景提供） */
+  getDistance: (item: PrimeMenuModelItem) => number
+  /** 非激活态文字样式覆写（默认使用 layout-menu.ts 中的语义类） */
+  inactiveClasses?: TieredMenuInactiveClasses
+  /**
+   * 自定义点击逻辑：
+   * - 若提供：完全接管点击行为（内部不会再调用 goToRoute 或 action.onClick）
+   * - 若未提供：默认行为为根据 route.name/path 调用 goToRoute，再透传 action.onClick
+   */
+  onItemClick?: (
+    item: PrimeMenuModelItem,
+    ev: Event,
+    action?: {
+      onClick?: (ev: Event) => void
+    }
+  ) => void
+  /** 是否对当前激活项（distance === 0）的 label 增强强调（如 font-bold），适用于 Breadcrumb 等场景 */
+  emphasizeActiveLabel?: boolean
+}
+
+function getLabelClassByContext(context: MenuVisualContext): string {
+  if (context === 'breadcrumb') {
+    return 'truncate flex-1 leading-none text-left pt-[1px] fs-sm text-current!'
+  }
+  if (context === 'header') {
+    return `truncate flex-1 text-left text-current! ${MENU_TEXT_CLASS} font-medium leading-none pt-[1px]`
+  }
+  return ['truncate flex-1 text-current!', MENU_TEXT_CLASS].join(' ')
+}
+
+export function createTieredMenuItemRenderer(
+  options: TieredMenuItemRendererOptions
+): (slotProps: TieredMenuItemSlotProps) => VNode {
+  const {
+    context,
+    getDistance,
+    inactiveClasses,
+    onItemClick,
+    emphasizeActiveLabel,
+  }: TieredMenuItemRendererOptions = options
+
+  const labelClassBase: string = getLabelClassByContext(context)
+
+  return ({ item, props: slotProps, hasSubmenu }: TieredMenuItemSlotProps) => {
+    const action = slotProps.action as Record<string, unknown> & {
+      class?: string
+      onClick?: (e: Event) => void
+    }
+
+    const actionClassStr: string = typeof action?.class === 'string' ? action.class : ''
+
+    const isFocused: boolean =
+      actionClassStr.includes('p-focus') ||
+      actionClassStr.includes('p-active') ||
+      actionClassStr.includes('p-highlight') ||
+      /p-tieredmenu[^"'\s]*(active|focus)/.test(actionClassStr)
+
+    const distance: number = getDistance(item)
+
+    const stateClasses: string = getMenuStateClasses({
+      distance,
+      isFocused,
+      level: context === 'sidebar' ? undefined : 0,
+      inactiveRootClass: inactiveClasses?.root,
+      inactiveChildClass: inactiveClasses?.child,
+    })
+
+    const mergedClass: string = [
+      getMenuItemBase(context),
+      'w-full',
+      stateClasses,
+      'interactive-focus-ring',
+      actionClassStr,
+    ]
+      .filter(Boolean)
+      .join(' ')
+      .trim()
+
+    const isActive: boolean = distance === 0
+    const finalLabelClass: string =
+      emphasizeActiveLabel && isActive ? `${labelClassBase} font-bold` : labelClassBase
+
+    const handleClick = (ev: Event): void => {
+      if (onItemClick) {
+        onItemClick(item, ev, action)
+        return
+      }
+
+      if (item.route?.name || item.route?.path) {
+        ev.preventDefault()
+        goToRoute(item.route.name ?? item.route.path, undefined, undefined, false)
+      }
+
+      if (typeof action?.onClick === 'function') {
+        action.onClick(ev)
+      }
+    }
+
+    return (
+      <a
+        {...action}
+        class={mergedClass}
+        onClick={handleClick}
+      >
+        {item.icon && (
+          <Icons
+            name={item.icon}
+            size={getIconSize(context)}
+            class={`text-current! shrink-0 ${MENU_ICON_COMMON_CLASS}`}
+          />
+        )}
+        <span class={finalLabelClass}>{item.label}</span>
+        {hasSubmenu && (
+          <Icons
+            name="i-lucide-chevron-right"
+            size={getIconSize(context)}
+            class={`ml-auto text-current! shrink-0 ${MENU_ICON_COMMON_CLASS}`}
+          />
+        )}
+      </a>
+    )
+  }
+}

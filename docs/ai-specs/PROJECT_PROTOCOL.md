@@ -1,3 +1,32 @@
+<protocol>
+<context>
+  This document is the single source of truth (SSOT) for AI behavior in this project.
+  It defines how to use the tech stack, how to structure code, and how to interact with surrounding specifications.
+</context>
+
+<workflow>
+  <step>Before generating any code, read this protocol and follow all referenced AI specs.</step>
+  <step>When the task touches a specific subsystem (for example SchemaForm, DataTable, dialogs, router, theme, or build system), jump to the corresponding <code>docs/ai-specs/*.md</code> file and apply its rules.</step>
+  <step>Mirror the patterns used in existing files and golden samples rather than inventing new architectural styles.</step>
+</workflow>
+
+<constraints>
+  <rule>Use Vue 3.5+ with script setup only, strict TypeScript, UnoCSS, PrimeVue v4, Alova, and Pinia as described in this protocol.</rule>
+  <rule>Separate concerns strictly: APIs in <code>src/api</code>, pure logic in <code>src/hooks</code>, pure UI in <code>src/components</code>, containers in <code>src/views</code>, and shared types/constants in <code>src/types</code> and <code>src/constants</code>.</rule>
+  <rule>Follow schema-driven development for complex forms and tables: use SchemaForm and DataTable/DataTableV2 with schema/column configs instead of hand-built field collections.</rule>
+</constraints>
+
+<communication>
+  Output Requirement: Always respond to the human user in fluent, developer-friendly Chinese.  
+  When you explain architecture decisions, reference docs, or show code examples derived from this protocol, keep code and identifiers in their original language but describe intent, trade-offs, and usage in Chinese.
+</communication>
+
+<notes>
+  The sections below provide detailed, human-readable documentation, partly in Chinese, for both AI and human developers.
+  The XML block above is the condensed AI-facing logic in English and should be treated as the primary machine-readable summary of this protocol.
+</notes>
+</protocol>
+
 # Project Protocol: Enterprise Vue 3 Architecture
 
 > **目标读者：AI**。本文档是 Cursor 与 Antigravity 的**单一真理来源（SSOT）**。AI 在代码生成前必须阅读并严格遵循。
@@ -86,6 +115,24 @@
   - 使用 Pinia（state/getters/actions + persist）。避免深层 Props Drilling
 - **请求层**
   - 所有接口请求必须通过 `alovaInstance` 或 `useHttpRequest`（`@/hooks/modules/useHttpRequest`），禁止直接 `fetch`/`axios`
+- **数据契约（端到端类型安全）**
+  - page.state.ts 中的 model 类型、SchemaForm formValues、DataTable row 类型应优先从 API 定义中 Pick/Extend，而非手写独立类型
+  - 参见 `src/types/design-state.ts` 中的 `BaseBusinessDTO` 及 JSDoc 说明
+  - 目标：后端字段变更时，前端编译期即报错，而非运行时才发现
+
+### 2.1 架构升级路线图 (Architecture Ascension) — AppTemplate v0.5 开发法则
+
+- **L5 自愈顺序 (Heal → Format → Lint)**
+  - 修复 (Heal)：`pnpm heal` 执行 drift-fix 自愈；先修复业务逻辑、类型错误、漂移问题
+  - 格式化 (Format)：`pnpm format` 统一代码风格
+  - 静态检查 (Lint)：`pnpm check` + `pnpm check:drift`（或 `pnpm drift-check`）确保无违例
+- **V2 引擎与联动模式**
+  - SchemaForm V2：useAsyncOptions（optionsMap / loadingMap / errorMap / retryField）、Schema 驱动、分步/分组
+  - DataTableV2：列配置驱动、API 集成、分页/排序/筛选
+  - 引擎层内置 Poka-yoke 容错：异步选项加载失败时展示「加载失败，点击重试」，避免白屏或死锁
+- **Style Guard (drift-check)**
+  - pre-commit 阶段扫描 `src/**/*.vue` 的 `<style>` 块，禁止 hex、raw rgb/rgba/hsl/hsla（注释内除外）
+  - 必须使用 Design Tokens（`rgb(var(--primary))`）或 UnoCSS 语义类
 
 ## 3. 目录职责 (Directory Roles)
 
@@ -164,7 +211,7 @@ const renderSlot = () => <span class="text-muted-foreground">动态内容</span>
 - **类型定义：** `src/types/systems/theme.d.ts`（ThemeMode、ThemePreset、ThemeCssVars 等）
 - **预设常量：** `src/constants/theme.ts`（THEME_PRESETS、DEFAULT_THEME_NAME）
 - **状态管理：** `src/stores/modules/theme.ts`（useThemeStore）
-- **PrimeVue 融合：** `src/utils/theme/primevue-preset.ts` 将 ThemeCssVars 注入 PrimeVue 组件；Button 等配色规则见 `./PRIMEVUE_THEME.md`
+- **PrimeVue 融合：** `src/utils/theme/primevuePreset.ts` 将 ThemeCssVars 注入 PrimeVue 组件；Button 等配色规则见 `./PRIMEVUE_THEME.md`
 
 **规则：**
 
@@ -229,8 +276,8 @@ const renderSlot = () => <span class="text-muted-foreground">动态内容</span>
 
 - **语义化尺寸类：** `p-padding-{scale}`、`m-margin-{scale}`、`gap-{scale}`（仅支持 `gap-*`/`gap-x-*`/`gap-y-*`；scale: xs/sm/md/lg/xl/2xl/3xl/4xl/5xl）
 - **布局变量类：** `w-sidebarWidth`、`h-headerHeight`、`w-sidebarCollapsedWidth` 等
-- **字体阶梯类：** `fs-xs`、`fs-sm`、`fs-md`、`fs-lg`、`fs-xl`、`fs-2xl`、`fs-3xl`、`fs-4xl`、`fs-5xl`
-- **圆角类：** `rounded-scale`（使用 CSS 变量 `--radius-md`）
+- **字体阶梯类：** `fs-xs`～`fs-5xl`；标题用 `fs-2xl`、正文 `fs-md`、辅助 `fs-sm`，详见 `src/constants/layout-menu.ts` TYPO\_\*
+- **圆角类：** `rounded-scale`（使用 CSS 变量 `--radius-md`）；导航/Tab 用 `rounded-scale-md`、卡片/表单用 `rounded-scale-sm`，详见 `src/constants/layout-menu.ts`
 - **配色类：** `text-primary`、`bg-surface-ground`、`border-border`、`text-info`、`bg-info` 等（使用 CSS 变量）
 - **边框快捷类：** 四边 `component-border`，底边 `border-b-default`，顶边 `border-t-default`；禁止仅写 `border border-border`
 
@@ -778,3 +825,13 @@ const renderSlot = () => <span class="text-muted-foreground">动态内容</span>
 ### 11.4 布局自适应
 
 Admin 壳下 mode、侧栏收展、侧栏/面包屑/Tabs/Footer 显隐由适配系统控制，详见 `./ADAPTIVE_LAYOUT.md`。修改 LayoutAdmin 或 layout store 的适配逻辑时须遵循该文档，不得绕过 runAdaptive 或有效显隐。
+
+## 12. Temporary Artifacts "Leave No Trace" Policy
+
+- AI 在推理与验证过程中**允许**创建临时测试文件与脚本（如 `*.spec.ts`、`__tests__/` 目录、一次性脚本等），也允许为运行这些临时产物对 `tsconfig*.json`、`vite.config.ts`、`vitest.config.ts`、`package.json` 等做**临时**调整。
+- 在**结束当前任务/回答之前**，AI 必须：
+  - 删除本任务中由 AI 创建的所有临时测试/脚本文件；
+  - 还原为了运行这些临时文件而修改的配置（例如移除临时 `include`、`references`、`scripts`、依赖等）；
+  - 确保任何配置文件中不存在指向已删除临时文件的“幽灵引用”（例如删除脚本后保留 `"scripts/**/*.ts"`）。
+- 仅当用户**明确要求**“生成并保留正式单元测试”时，测试文件与相关配置变更才被视为长期资产，必须通过类型检查与 lint。
+- 具体规则见：`.cursor/rules/31-temp-artifacts-lifecycle.mdc` 与 `.agent/rules/31-temp-artifacts-lifecycle.md`。

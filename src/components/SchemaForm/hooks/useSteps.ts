@@ -5,7 +5,6 @@
  */
 
 import type { Ref } from 'vue'
-import { nextTick, ref, watch } from 'vue'
 import { isFieldRequired } from '../utils/helper'
 import type { FormApiLike, FormValues, SchemaColumnsItem, SchemaConfig } from '../utils/types'
 
@@ -58,7 +57,7 @@ function isValueFilled(value: unknown): boolean {
  */
 export function useSteps<TValues extends FormValues = FormValues>(
   options: UseStepsOptions<TValues>
-): UseStepsReturn {
+): UseStepsReturn<TValues> {
   const {
     schema,
     valuesRef,

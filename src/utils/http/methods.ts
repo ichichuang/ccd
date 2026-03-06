@@ -331,8 +331,8 @@ export const getRaw = async <T = any>(
     throw new Error(`HTTP error! status: ${response.status}`)
   }
 
-  const data = await response.json()
-  const result = { data, headers: response.headers }
+  const data = (await response.json()) as T
+  const result: { data: T; headers: Headers } = { data, headers: response.headers }
 
   if (cacheEnabled) {
     const ttl = config?.cacheTTL || HTTP_CONFIG.defaultCacheTtl

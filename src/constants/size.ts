@@ -26,7 +26,7 @@ export const SIZE_PRESETS: SizePreset[] = [
     sidebarCollapsedWidth: 56,
     headerHeight: 48,
     breadcrumbHeight: 28,
-    footerHeight: 32,
+    footerHeight: 28,
     tabsHeight: 32,
   },
 
@@ -42,7 +42,7 @@ export const SIZE_PRESETS: SizePreset[] = [
     sidebarCollapsedWidth: 60,
     headerHeight: 60,
     breadcrumbHeight: 32,
-    footerHeight: 40,
+    footerHeight: 32,
     tabsHeight: 36,
   },
 
@@ -56,10 +56,10 @@ export const SIZE_PRESETS: SizePreset[] = [
 
     sidebarWidth: 280,
     sidebarCollapsedWidth: 80,
-    headerHeight: 74,
-    breadcrumbHeight: 48,
-    footerHeight: 56,
-    tabsHeight: 56,
+    headerHeight: 66,
+    breadcrumbHeight: 36,
+    footerHeight: 38,
+    tabsHeight: 46,
   },
 ]
 
@@ -67,7 +67,9 @@ export const SIZE_PRESETS: SizePreset[] = [
 export const DEFAULT_SIZE_NAME: SizeMode = 'comfortable'
 
 /** Size Store 持久化 key（与 stores/modules/size.ts persist.key 一致，供 preload 等 mount 前逻辑使用；config 加载阶段 env 未注入时用默认前缀避免报错） */
-export const SIZE_PERSIST_KEY = `${import.meta.env?.VITE_PINIA_PERSIST_KEY_PREFIX ?? 'ccd-storage-kernel'}-size`
+export const SIZE_PERSIST_KEY = `${
+  (import.meta as any).env?.VITE_PINIA_PERSIST_KEY_PREFIX ?? 'app-template-storage-kernel'
+}-size`
 
 /**
  * 布局尺寸字段名（与 SizePreset / SizeCssVars 一一对应，SSOT for UnoCSS）

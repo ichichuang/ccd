@@ -28,9 +28,6 @@
 </template>
 
 <script setup lang="ts">
-import RadioButton from 'primevue/radiobutton'
-import RadioButtonGroup from 'primevue/radiobuttongroup'
-import { computed } from 'vue'
 import type { OptionItem } from '../../utils/types'
 
 interface WrappedRadioButtonProps {
@@ -41,8 +38,6 @@ interface WrappedRadioButtonProps {
   options?: OptionItem[]
   class?: string | string[]
   style?: Record<string, string>
-  /** rest 透传 PrimeVue RadioButtonGroup */
-  [key: string]: unknown
 }
 
 const props = withDefaults(defineProps<WrappedRadioButtonProps>(), {
@@ -74,20 +69,12 @@ const internalValue = computed({
   },
 })
 
+const attrs = useAttrs()
+
 /**
  * 提取其他 props（排除已处理的属性）
  */
 const restProps = computed(() => {
-  const {
-    modelValue: _modelValue,
-    name: _name,
-    disabled: _disabled,
-    readonly: _readonly,
-    options: _options,
-    class: _class,
-    style: _style,
-    ...rest
-  } = props
-  return rest
+  return attrs as Record<string, unknown>
 })
 </script>

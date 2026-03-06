@@ -18,6 +18,7 @@ import {
   CACHE_DEFAULTS,
   CHINA_HOLIDAYS_2024,
   DATE_FORMATS,
+  type DateFormatValues,
   DAYJS_LOCALE_MAP,
   DEFAULT_LOCALE,
   DEFAULT_TIMEZONE,
@@ -31,7 +32,6 @@ import type {
   BatchProcessOptions,
   CacheOptions,
   DateFormat,
-  DateFormatValues,
   DateInput,
   DateProcessor,
   DayjsManipulateType,
@@ -249,16 +249,6 @@ export class DateUtils {
       }
     }
     return date
-  }
-
-  /**
-   * 生成缓存键
-   * @param method - 方法名
-   * @param args - 参数
-   * @returns 缓存键
-   */
-  private static generateCacheKey(method: string, ...args: any[]): string {
-    return `${method}:${JSON.stringify(args)}`
   }
 
   /**

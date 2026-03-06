@@ -12,7 +12,7 @@
  *   <div>滚动内容</div>
  * </CScrollbar>
  */
-import { ref, watch, computed, type ComputedRef } from 'vue'
+import type { ComputedRef } from 'vue'
 import { type OverlayScrollbars } from 'overlayscrollbars'
 import { OverlayScrollbarsComponent } from 'overlayscrollbars-vue'
 import { useThemeStore } from '@/stores/modules/theme'
@@ -36,7 +36,7 @@ const themeStore = useThemeStore()
 const scrollbarRef = ref<InstanceType<typeof OverlayScrollbarsComponent> | null>(null)
 
 /** 根据当前主题模式返回配置 */
-const osOptions: ComputedRef<any> = computed(() => {
+const osOptions: ComputedRef<Record<string, unknown>> = computed(() => {
   const baseOptions = {
     scrollbars: {
       visibility: props.visibility,
@@ -159,13 +159,13 @@ watch(
   }
 
   &::-webkit-scrollbar-thumb {
-    background: rgb(var(--muted) / 0.5);
+    background: rgb(var(--muted) / 50%);
     border-radius: var(--radius-md);
     border: calc(var(--spacing-xs) / 2) solid transparent;
     background-clip: content-box;
 
     &:hover {
-      background: rgb(var(--muted) / 0.8);
+      background: rgb(var(--muted) / 80%);
       background-clip: content-box;
     }
   }
@@ -179,38 +179,47 @@ watch(
 .os-scrollbar {
   /* 滚动条宽度/高度 */
   --os-size: var(--spacing-sm);
+
   /* 滚动条内边距 */
   --os-padding-perpendicular: calc(var(--spacing-xs) / 2);
   --os-padding-axis: calc(var(--spacing-xs) / 2);
+
   /* 轨道背景色 */
-  background: rgb(var(--muted-foreground) / 0.08);
-  --os-track-bg-hover: rgb(var(--muted) / 0.12);
-  --os-track-bg-active: rgb(var(--muted) / 0.18);
+  background: rgb(var(--muted-foreground) / 8%);
+
+  --os-track-bg-hover: rgb(var(--muted) / 12%);
+  --os-track-bg-active: rgb(var(--muted) / 18%);
+
   /* 滑块背景色 */
-  --os-handle-bg: rgb(var(--muted-foreground) / 0.2);
-  --os-handle-bg-hover: rgb(var(--primary) / 0.6);
-  --os-handle-bg-active: rgb(var(--primary) / 0.8);
+  --os-handle-bg: rgb(var(--muted-foreground) / 20%);
+  --os-handle-bg-hover: rgb(var(--primary) / 60%);
+  --os-handle-bg-active: rgb(var(--primary) / 80%);
+
   /* 滑块圆角 - 使用尺寸系统阶梯变量 */
   --os-handle-border-radius: var(--radius-md);
+
   /* 滑块最小尺寸 */
   --os-handle-min-size: calc(var(--spacing-lg) * 2);
+
   /* 滑块最大尺寸 */
   --os-handle-max-size: none;
+
   /* 滑块垂直方向边距 */
   --os-handle-perpendicular-size: 100%;
   --os-handle-perpendicular-size-hover: 100%;
   --os-handle-perpendicular-size-active: 100%;
+
   /* 过渡动画 */
   transition: var(--transition-md) ease-out;
 }
 
 /* 深色模式下的调整 */
 .os-scrollbar.os-theme-dark {
-  --os-handle-bg: rgb(var(--muted-foreground) / 0.2);
-  --os-handle-bg-hover: rgb(var(--primary) / 0.75);
-  --os-handle-bg-active: rgb(var(--primary) / 0.9);
-  --os-track-bg-hover: rgb(var(--muted) / 0.18);
-  --os-track-bg-active: rgb(var(--muted) / 0.24);
+  --os-handle-bg: rgb(var(--muted-foreground) / 20%);
+  --os-handle-bg-hover: rgb(var(--primary) / 75%);
+  --os-handle-bg-active: rgb(var(--primary) / 90%);
+  --os-track-bg-hover: rgb(var(--muted) / 18%);
+  --os-track-bg-active: rgb(var(--muted) / 24%);
 }
 
 /* 滚动条滑块 */

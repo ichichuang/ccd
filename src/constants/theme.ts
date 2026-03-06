@@ -1,239 +1,839 @@
 /**
- * 核心主题预设池
- * 数据来源参考: AI Colors
- *
- * 配色原则：
- * - primary = 品牌主色（用于按钮填充、选中态、品牌标识）
- * - accent = 独立互补高亮色（与 primary 形成对比/互补关系，用于 Tab 激活指示线、特殊标记、badge）
- * - accent 不是 primary 的 hover 变体，hover 应使用 primary-hover
+ * 核心主题预设池 (全状态极致定制版 - The Ultimate 7)
+ * * 核心设计理念：
+ * 1. 彻底绕过引擎的自动计算，为每一个主题的 Light/Dark 模式显式指定所有状态色。
+ * 2. WCAG 严格对比度：深色背景必配白字 (#ffffff)，亮色背景必配极深色字。
+ * 3. 色相融合 (Hue Harmony)：状态色不再是干巴巴的纯红纯绿，而是根据主色调做了冷暖偏移。
  */
 export const THEME_PRESETS: ThemePreset[] = [
-  // 1. 深蓝 + 琥珀金 (经典互补：蓝↔金)
-  // Primary 是稳重的深蓝，Accent 是明亮的琥珀金，形成经典的蓝金互补对比
+  // =========================================================================
+  // 1. 经典蓝 (Classic Blue) - 致敬 GitHub / Tailwind
+  // 语境：最经典的 B2B 后台。状态色标准、清晰，毫不花哨。
+  // =========================================================================
   {
-    name: 'deep-blue',
-    primary: '#2563eb', // blue-600
-    accent: '#f59e0b', // amber-500 (蓝色的互补高亮)
+    name: 'classic-blue',
     colors: {
       light: {
-        primary: {
-          default: '#2563eb',
-          hover: '#1d4ed8',
-          foreground: '#ffffff',
-          light: '#eff6ff',
-          lightForeground: '#1e40af',
-        },
-        accent: {
-          default: '#f59e0b', // amber-500 (醒目的金色高亮)
-          hover: '#d97706', // amber-600
-          foreground: '#0f172a', // 浅色金背景配深色字
-          light: '#fffbeb', // amber-50
-          lightForeground: '#92400e', // amber-800
-        },
         background: '#ffffff',
         foreground: '#0f172a',
-        neutral: {
-          base: '#e2e8f0',
-          bg: '#f8fafc',
-          foreground: '#334155',
+        neutral: { base: '#e2e8f0', bg: '#f8fafc', foreground: '#334155' },
+        primary: {
+          default: '#0f62fe',
+          foreground: '#ffffff',
+          hover: '#0043ce',
+          light: '#edf5ff',
+          lightForeground: '#001d6c',
+        },
+        accent: {
+          default: '#f59e0b',
+          foreground: '#ffffff',
+          hover: '#d97706',
+          light: '#fffbeb',
+          lightForeground: '#92400e',
+        },
+        success: {
+          default: '#198038',
+          foreground: '#ffffff',
+          hover: '#0e6027',
+          light: '#defbe6',
+          lightForeground: '#073215',
+        },
+        info: {
+          default: '#00539a',
+          foreground: '#ffffff',
+          hover: '#003a6d',
+          light: '#e5f6ff',
+          lightForeground: '#001c39',
+        },
+        warn: {
+          default: '#f1c21b',
+          foreground: '#000000',
+          hover: '#d2a106',
+          light: '#fcf4d6',
+          lightForeground: '#5b4300',
+        }, // 黄底必须黑字
+        danger: {
+          default: '#da1e28',
+          foreground: '#ffffff',
+          hover: '#a2191f',
+          light: '#fff1f1',
+          lightForeground: '#750e13',
+        },
+        help: {
+          default: '#8a3ffc',
+          foreground: '#ffffff',
+          hover: '#6929c4',
+          light: '#f6f2ff',
+          lightForeground: '#31135e',
         },
       },
       dark: {
+        background: '#0d1117',
+        foreground: '#e6edf3',
+        neutral: { base: '#30363d', bg: '#161b22', foreground: '#8b949e' },
         primary: {
-          default: '#3b82f6', // blue-500
-          hover: '#60a5fa',
+          default: '#2f81f7',
           foreground: '#ffffff',
-          light: '#1e3a8a',
+          hover: '#58a6ff',
+          light: '#112240',
+          lightForeground: '#79c0ff',
+        },
+        accent: {
+          default: '#d29922',
+          foreground: '#ffffff',
+          hover: '#e3b341',
+          light: '#3d2e05',
+          lightForeground: '#e3b341',
+        },
+        success: {
+          default: '#238636',
+          foreground: '#ffffff',
+          hover: '#2ea043',
+          light: '#092111',
+          lightForeground: '#56d364',
+        },
+        info: {
+          default: '#388bfd',
+          foreground: '#ffffff',
+          hover: '#58a6ff',
+          light: '#0d223d',
+          lightForeground: '#79c0ff',
+        },
+        warn: {
+          default: '#9e6a03',
+          foreground: '#ffffff',
+          hover: '#d29922',
+          light: '#2e2000',
+          lightForeground: '#e3b341',
+        }, // 暗色下的 Warn 更深邃，用白字
+        danger: {
+          default: '#f85149',
+          foreground: '#ffffff',
+          hover: '#ff7b72',
+          light: '#3d1213',
+          lightForeground: '#ffa198',
+        },
+        help: {
+          default: '#bc8cff',
+          foreground: '#ffffff',
+          hover: '#d2a8ff',
+          light: '#2d1c4d',
+          lightForeground: '#e2c5ff',
+        },
+      },
+    },
+  },
+
+  // =========================================================================
+  // 2. 皇家紫 (Royal Violet) - 致敬 Stripe
+  // 语境：高质感的现代 SaaS。所有的状态色都融入了一丝冷色调，显得极具科技感。
+  // =========================================================================
+  {
+    name: 'royal-violet',
+    colors: {
+      light: {
+        background: '#f8f9fa',
+        foreground: '#111827',
+        neutral: { base: '#e5e7eb', bg: '#ffffff', foreground: '#4b5563' },
+        primary: {
+          default: '#635bff',
+          foreground: '#ffffff',
+          hover: '#544de8',
+          light: '#f2f1ff',
+          lightForeground: '#3c31d6',
+        },
+        accent: {
+          default: '#00d4ff',
+          foreground: '#003b4d',
+          hover: '#00b8db',
+          light: '#e0fbff',
+          lightForeground: '#005f7a',
+        },
+        success: {
+          default: '#0ca678',
+          foreground: '#ffffff',
+          hover: '#099268',
+          light: '#e6fcf5',
+          lightForeground: '#087f5b',
+        },
+        info: {
+          default: '#339af0',
+          foreground: '#ffffff',
+          hover: '#228be6',
+          light: '#e7f5ff',
+          lightForeground: '#1864ab',
+        },
+        warn: {
+          default: '#fcc419',
+          foreground: '#000000',
+          hover: '#fab005',
+          light: '#fff9db',
+          lightForeground: '#e67700',
+        },
+        danger: {
+          default: '#ff6b6b',
+          foreground: '#ffffff',
+          hover: '#fa5252',
+          light: '#fff5f5',
+          lightForeground: '#e03131',
+        },
+        help: {
+          default: '#cc5de8',
+          foreground: '#ffffff',
+          hover: '#b197fc',
+          light: '#f3d9fa',
+          lightForeground: '#862e9c',
+        },
+      },
+      dark: {
+        background: '#0b0f19',
+        foreground: '#f3f4f6',
+        neutral: { base: '#1f2937', bg: '#111827', foreground: '#9ca3af' },
+        primary: {
+          default: '#7b73ff',
+          foreground: '#ffffff',
+          hover: '#8e86ff',
+          light: '#232159',
+          lightForeground: '#d4d1ff',
+        },
+        accent: {
+          default: '#00e5ff',
+          foreground: '#00262b',
+          hover: '#33ebff',
+          light: '#003f47',
+          lightForeground: '#99f5ff',
+        },
+        success: {
+          default: '#20c997',
+          foreground: '#ffefef',
+          hover: '#38d9a9',
+          light: '#093d2e',
+          lightForeground: '#63e6be',
+        },
+        info: {
+          default: '#4dabf7',
+          foreground: '#fefefe',
+          hover: '#74c0fc',
+          light: '#143652',
+          lightForeground: '#a5d8ff',
+        },
+        warn: {
+          default: '#ffd43b',
+          foreground: '#000000',
+          hover: '#ffe066',
+          light: '#4d3e00',
+          lightForeground: '#ffec99',
+        },
+        danger: {
+          default: '#ff8787',
+          foreground: '#eeeeee',
+          hover: '#ffa8a8',
+          light: '#4d1e1e',
+          lightForeground: '#ffc9c9',
+        },
+        help: {
+          default: '#da77f2',
+          foreground: '#000000',
+          hover: '#e599f7',
+          light: '#421d4d',
+          lightForeground: '#f0b3ff',
+        },
+      },
+    },
+  },
+
+  // =========================================================================
+  // 3. 极光青 (Aurora Cyan) - Vercel / Web3 风格
+  // 语境：科技、前沿。状态色全部采用高明度的霓虹质感，暗色模式表现极其惊艳。
+  // =========================================================================
+  {
+    name: 'aurora-cyan',
+    colors: {
+      light: {
+        background: '#ffffff',
+        foreground: '#164e63',
+        neutral: { base: '#cffafe', bg: '#f8fafc', foreground: '#155e75' },
+        primary: {
+          default: '#0891b2',
+          foreground: '#ffffff',
+          hover: '#0e7490',
+          light: '#ecfeff',
+          lightForeground: '#164e63',
+        },
+        accent: {
+          default: '#ec4899',
+          foreground: '#ffffff',
+          hover: '#db2777',
+          light: '#fdf2f8',
+          lightForeground: '#9d174d',
+        },
+        success: {
+          default: '#10b981',
+          foreground: '#ffffff',
+          hover: '#059669',
+          light: '#ecfdf5',
+          lightForeground: '#064e3b',
+        },
+        info: {
+          default: '#3b82f6',
+          foreground: '#ffffff',
+          hover: '#2563eb',
+          light: '#eff6ff',
+          lightForeground: '#1e3a8a',
+        },
+        warn: {
+          default: '#f59e0b',
+          foreground: '#ffffff',
+          hover: '#d97706',
+          light: '#fffbeb',
+          lightForeground: '#92400e',
+        },
+        danger: {
+          default: '#f43f5e',
+          foreground: '#ffffff',
+          hover: '#e11d48',
+          light: '#fff1f2',
+          lightForeground: '#881337',
+        },
+        help: {
+          default: '#8b5cf6',
+          foreground: '#ffffff',
+          hover: '#7c3aed',
+          light: '#f5f3ff',
+          lightForeground: '#4c1d95',
+        },
+      },
+      dark: {
+        background: '#040d12', // 极深的青黑
+        foreground: '#ecfeff',
+        neutral: { base: '#164e63', bg: '#0b1922', foreground: '#67e8f9' },
+        primary: {
+          default: '#22d3ee',
+          foreground: '#000000',
+          hover: '#67e8f9',
+          light: '#083344',
+          lightForeground: '#cffafe',
+        },
+        accent: {
+          default: '#f472b6',
+          foreground: '#000000',
+          hover: '#f9a8d4',
+          light: '#500724',
+          lightForeground: '#fbcfe8',
+        },
+        success: {
+          default: '#34d399',
+          foreground: '#000000',
+          hover: '#6ee7b7',
+          light: '#022c22',
+          lightForeground: '#a7f3d0',
+        },
+        info: {
+          default: '#60a5fa',
+          foreground: '#000000',
+          hover: '#93c5fd',
+          light: '#172554',
           lightForeground: '#bfdbfe',
         },
-        accent: {
-          default: '#fbbf24', // amber-400 (暗色模式下稍亮，更醒目)
-          hover: '#fcd34d', // amber-300
-          foreground: '#0f172a', // 金色配深色字
-          light: '#78350f', // amber-900
-          lightForeground: '#fef3c7', // amber-100
+        warn: {
+          default: '#fbbf24',
+          foreground: '#000000',
+          hover: '#fcd34d',
+          light: '#451a03',
+          lightForeground: '#fde68a',
         },
-        background: '#020617',
-        foreground: '#f8fafc',
-        neutral: {
-          base: '#1e293b',
-          bg: '#0f172a',
-          foreground: '#94a3b8',
+        danger: {
+          default: '#fb7185',
+          foreground: '#000000',
+          hover: '#fda4af',
+          light: '#4c0519',
+          lightForeground: '#fecdd3',
+        },
+        help: {
+          default: '#a78bfa',
+          foreground: '#000000',
+          hover: '#c4b5fd',
+          light: '#2e1065',
+          lightForeground: '#ddd6fe',
         },
       },
     },
   },
 
-  // 2. 紫罗兰 + 翡翠青 (紫↔青对比：神秘与清透)
-  // Primary 是高贵的紫，Accent 是清透的青绿色，形成鲜明的冷暖对比
+  // =========================================================================
+  // 4. 琥珀晚霞 (Sunset Amber) - Linear 暖色系风格
+  // 语境：极具活力、创意平台。以橙红为主，状态色整体偏暖。
+  // =========================================================================
   {
-    name: 'violet',
-    primary: '#7c3aed', // violet-600
-    accent: '#14b8a6', // teal-500 (紫色的对比高亮)
+    name: 'sunset-amber',
     colors: {
       light: {
+        background: '#fffbf7',
+        foreground: '#431407',
+        neutral: { base: '#fed7aa', bg: '#ffffff', foreground: '#9a3412' },
         primary: {
-          default: '#7c3aed',
-          hover: '#6d28d9',
+          default: '#f97316',
           foreground: '#ffffff',
-          light: '#f5f3ff',
-          lightForeground: '#5b21b6',
+          hover: '#ea580c',
+          light: '#ffedd5',
+          lightForeground: '#9a3412',
         },
         accent: {
-          default: '#14b8a6', // teal-500 (清透的青绿高亮)
-          hover: '#0d9488', // teal-600
+          default: '#6366f1',
           foreground: '#ffffff',
-          light: '#f0fdfa', // teal-50
-          lightForeground: '#115e59', // teal-800
+          hover: '#4f46e5',
+          light: '#e0e7ff',
+          lightForeground: '#3730a3',
         },
-        background: '#ffffff',
-        foreground: '#0f172a',
-        neutral: {
-          base: '#e5e7eb',
-          bg: '#f9fafb',
-          foreground: '#374151',
+        success: {
+          default: '#14b8a6',
+          foreground: '#ffffff',
+          hover: '#0d9488',
+          light: '#ccfbf1',
+          lightForeground: '#115e59',
+        }, // 暖主题用青绿做成功色更高级
+        info: {
+          default: '#0ea5e9',
+          foreground: '#ffffff',
+          hover: '#0284c7',
+          light: '#e0f2fe',
+          lightForeground: '#075985',
+        },
+        warn: {
+          default: '#eab308',
+          foreground: '#000000',
+          hover: '#ca8a04',
+          light: '#fef9c3',
+          lightForeground: '#854d0e',
+        },
+        danger: {
+          default: '#ef4444',
+          foreground: '#ffffff',
+          hover: '#dc2626',
+          light: '#fee2e2',
+          lightForeground: '#991b1b',
+        },
+        help: {
+          default: '#d946ef',
+          foreground: '#ffffff',
+          hover: '#c026d3',
+          light: '#fae8ff',
+          lightForeground: '#86198f',
         },
       },
       dark: {
+        background: '#0c0a09',
+        foreground: '#fafaf9',
+        neutral: { base: '#292524', bg: '#1c1917', foreground: '#a8a29e' },
         primary: {
-          default: '#8b5cf6', // violet-500
-          hover: '#a78bfa',
-          foreground: '#ffffff',
-          light: '#4c1d95',
-          lightForeground: '#ddd6fe',
+          default: '#fb923c',
+          foreground: '#000000',
+          hover: '#fdba74',
+          light: '#431407',
+          lightForeground: '#ffedd5',
         },
         accent: {
-          default: '#2dd4bf', // teal-400 (暗色模式下更亮)
-          hover: '#5eead4', // teal-300
-          foreground: '#0f172a',
-          light: '#134e4a', // teal-900
-          lightForeground: '#ccfbf1', // teal-100
+          default: '#818cf8',
+          foreground: '#000000',
+          hover: '#a5b4fc',
+          light: '#312e81',
+          lightForeground: '#e0e7ff',
         },
-        background: '#0a0a0a',
-        foreground: '#fafafa',
-        neutral: {
-          base: '#262626',
-          bg: '#171717',
-          foreground: '#a3a3a3',
+        success: {
+          default: '#2dd4bf',
+          foreground: '#000000',
+          hover: '#5eead4',
+          light: '#042f2e',
+          lightForeground: '#ccfbf1',
+        },
+        info: {
+          default: '#38bdf8',
+          foreground: '#000000',
+          hover: '#7dd3fc',
+          light: '#082f49',
+          lightForeground: '#e0f2fe',
+        },
+        warn: {
+          default: '#facc15',
+          foreground: '#000000',
+          hover: '#fef08a',
+          light: '#422006',
+          lightForeground: '#fef9c3',
+        },
+        danger: {
+          default: '#f87171',
+          foreground: '#000000',
+          hover: '#fca5a5',
+          light: '#450a0a',
+          lightForeground: '#fee2e2',
+        },
+        help: {
+          default: '#e879f9',
+          foreground: '#000000',
+          hover: '#f0abfc',
+          light: '#4a044e',
+          lightForeground: '#fae8ff',
         },
       },
     },
   },
 
-  // 3. 森林绿 + 琥珀金 (绿↔金对比：自然与丰收)
-  // Primary 是深沉的绿，Accent 是温暖的琥珀金，像大自然的绿叶与阳光
+  // =========================================================================
+  // 5. 森林生态 (Forest Eco) - Shopify 风格
+  // 语境：医疗、电商、大自然。色彩饱和度适中，极其护眼。
+  // =========================================================================
   {
-    name: 'emerald',
-    primary: '#059669', // emerald-600
-    accent: '#f59e0b', // amber-500 (绿色的暖色高亮)
+    name: 'forest-eco',
     colors: {
       light: {
+        background: '#f8faf8',
+        foreground: '#064e3b',
+        neutral: { base: '#d1fae5', bg: '#ffffff', foreground: '#065f46' },
         primary: {
           default: '#059669',
-          hover: '#047857',
           foreground: '#ffffff',
+          hover: '#047857',
           light: '#ecfdf5',
           lightForeground: '#064e3b',
         },
         accent: {
-          default: '#f59e0b', // amber-500 (温暖的金色高亮)
-          hover: '#d97706', // amber-600
-          foreground: '#0f172a', // 浅色金背景配深色字
-          light: '#fffbeb', // amber-50
-          lightForeground: '#92400e', // amber-800
+          default: '#d97706',
+          foreground: '#ffffff',
+          hover: '#b45309',
+          light: '#fffbeb',
+          lightForeground: '#92400e',
         },
-        background: '#ffffff',
-        foreground: '#0f172a',
-        neutral: {
-          base: '#e2e8f0',
-          bg: '#f8fafc',
-          foreground: '#334155',
+        success: {
+          default: '#65a30d',
+          foreground: '#ffffff',
+          hover: '#4d7c0f',
+          light: '#ecfccb',
+          lightForeground: '#3f6212',
+        }, // 偏草绿的成功色
+        info: {
+          default: '#0284c7',
+          foreground: '#ffffff',
+          hover: '#0369a1',
+          light: '#e0f2fe',
+          lightForeground: '#075985',
+        },
+        warn: {
+          default: '#eab308',
+          foreground: '#000000',
+          hover: '#ca8a04',
+          light: '#fef9c3',
+          lightForeground: '#854d0e',
+        },
+        danger: {
+          default: '#dc2626',
+          foreground: '#ffffff',
+          hover: '#b91c1c',
+          light: '#fee2e2',
+          lightForeground: '#991b1b',
+        },
+        help: {
+          default: '#9333ea',
+          foreground: '#ffffff',
+          hover: '#7e22ce',
+          light: '#f3e8ff',
+          lightForeground: '#581c87',
         },
       },
       dark: {
+        background: '#021c15',
+        foreground: '#ecfdf5',
+        neutral: { base: '#064e3b', bg: '#032c22', foreground: '#6ee7b7' },
         primary: {
-          default: '#10b981', // emerald-500
+          default: '#10b981',
+          foreground: '#000000',
           hover: '#34d399',
-          foreground: '#022c22',
           light: '#064e3b',
           lightForeground: '#d1fae5',
         },
         accent: {
-          default: '#fbbf24', // amber-400 (暗色模式下更亮)
-          hover: '#fcd34d', // amber-300
-          foreground: '#0f172a',
-          light: '#78350f', // amber-900
-          lightForeground: '#fef3c7', // amber-100
+          default: '#f59e0b',
+          foreground: '#000000',
+          hover: '#fbbf24',
+          light: '#78350f',
+          lightForeground: '#fef3c7',
         },
-        background: '#022c22',
-        foreground: '#ecfdf5',
-        neutral: {
-          base: '#064e3b',
-          bg: '#065f46',
-          foreground: '#a7f3d0',
+        success: {
+          default: '#84cc16',
+          foreground: '#000000',
+          hover: '#a3e635',
+          light: '#3f6212',
+          lightForeground: '#d9f99d',
+        },
+        info: {
+          default: '#38bdf8',
+          foreground: '#000000',
+          hover: '#7dd3fc',
+          light: '#082f49',
+          lightForeground: '#e0f2fe',
+        },
+        warn: {
+          default: '#fde047',
+          foreground: '#000000',
+          hover: '#fef08a',
+          light: '#713f12',
+          lightForeground: '#fef9c3',
+        },
+        danger: {
+          default: '#ef4444',
+          foreground: '#ffffff',
+          hover: '#f87171',
+          light: '#7f1d1d',
+          lightForeground: '#fecaca',
+        },
+        help: {
+          default: '#c084fc',
+          foreground: '#000000',
+          hover: '#d8b4fe',
+          light: '#3b0764',
+          lightForeground: '#e9d5ff',
         },
       },
     },
   },
 
-  // 4. 玫瑰红 + 冰蓝青 (红↔青对比：热情与冷静)
-  // Primary 是热烈的玫红，Accent 是清冷的冰蓝青，形成强烈的冷暖对比
+  // =========================================================================
+  // 6. 胭脂魅影 (Ruby Phantom) - 偏生活方式、设计平台
+  // 语境：感性、优雅。以玫瑰红为主调，危险色使用更深邃的暗红以示区分。
+  // =========================================================================
   {
-    name: 'ruby',
-    primary: '#e11d48', // rose-600
-    accent: '#06b6d4', // cyan-500 (红色的冷色对比高亮)
+    name: 'ruby-phantom',
     colors: {
       light: {
+        background: '#fffbfc',
+        foreground: '#4c0519',
+        neutral: { base: '#ffe4e6', bg: '#ffffff', foreground: '#9f1239' },
         primary: {
           default: '#e11d48',
-          hover: '#be123c',
           foreground: '#ffffff',
-          light: '#fff1f2',
+          hover: '#be123c',
+          light: '#ffe4e6',
           lightForeground: '#881337',
         },
         accent: {
-          default: '#06b6d4', // cyan-500 (冰蓝色高亮)
-          hover: '#0891b2', // cyan-600
+          default: '#0f766e',
           foreground: '#ffffff',
-          light: '#ecfeff', // cyan-50
-          lightForeground: '#155e75', // cyan-800
+          hover: '#0f766e',
+          light: '#ccfbf1',
+          lightForeground: '#115e59',
+        }, // 深青色点缀
+        success: {
+          default: '#059669',
+          foreground: '#ffffff',
+          hover: '#047857',
+          light: '#d1fae5',
+          lightForeground: '#064e3b',
         },
-        background: '#ffffff',
-        foreground: '#0f172a',
-        neutral: {
-          base: '#e5e5e5',
-          bg: '#fafafa',
-          foreground: '#404040',
+        info: {
+          default: '#2563eb',
+          foreground: '#ffffff',
+          hover: '#1d4ed8',
+          light: '#dbeafe',
+          lightForeground: '#1e40af',
+        },
+        warn: {
+          default: '#d97706',
+          foreground: '#ffffff',
+          hover: '#b45309',
+          light: '#fef3c7',
+          lightForeground: '#92400e',
+        }, // 优雅的深橙黄，白字
+        danger: {
+          default: '#9f1239',
+          foreground: '#ffffff',
+          hover: '#881337',
+          light: '#ffe4e6',
+          lightForeground: '#4c0519',
+        }, // 危险色必须比 Primary 更深
+        help: {
+          default: '#7c3aed',
+          foreground: '#ffffff',
+          hover: '#6d28d9',
+          light: '#ede9fe',
+          lightForeground: '#5b21b6',
         },
       },
       dark: {
+        background: '#150308',
+        foreground: '#fff1f2',
+        neutral: { base: '#4c0519', bg: '#250611', foreground: '#fda4af' },
         primary: {
-          default: '#f43f5e', // rose-500
-          hover: '#fb7185',
-          foreground: '#ffffff',
+          default: '#fb7185',
+          foreground: '#000000',
+          hover: '#fda4af',
           light: '#881337',
           lightForeground: '#ffe4e6',
         },
         accent: {
-          default: '#22d3ee', // cyan-400 (暗色模式下更亮)
-          hover: '#67e8f9', // cyan-300
-          foreground: '#0f172a',
-          light: '#164e63', // cyan-900
-          lightForeground: '#cffafe', // cyan-100
+          default: '#14b8a6',
+          foreground: '#000000',
+          hover: '#2dd4bf',
+          light: '#134e4a',
+          lightForeground: '#ccfbf1',
         },
-        background: '#000000',
-        foreground: '#fff1f2',
-        neutral: {
-          base: '#262626',
-          bg: '#171717',
-          foreground: '#d4d4d4',
+        success: {
+          default: '#10b981',
+          foreground: '#000000',
+          hover: '#34d399',
+          light: '#064e3b',
+          lightForeground: '#d1fae5',
+        },
+        info: {
+          default: '#60a5fa',
+          foreground: '#000000',
+          hover: '#93c5fd',
+          light: '#1e3a8a',
+          lightForeground: '#bfdbfe',
+        },
+        warn: {
+          default: '#fbbf24',
+          foreground: '#000000',
+          hover: '#fcd34d',
+          light: '#78350f',
+          lightForeground: '#fef3c7',
+        },
+        danger: {
+          default: '#f43f5e',
+          foreground: '#ffffff',
+          hover: '#fb7185',
+          light: '#4c0519',
+          lightForeground: '#fecdd3',
+        },
+        help: {
+          default: '#a78bfa',
+          foreground: '#000000',
+          hover: '#c4b5fd',
+          light: '#4c1d95',
+          lightForeground: '#ddd6fe',
+        },
+      },
+    },
+  },
+
+  // =========================================================================
+  // 7. 深空灰 (Space Graphite) - 终极修复版 (Apple 质感)
+  // 语境：极致专业。告别生硬死黑。所有状态色都降低了饱和度(Muted)，显得极为高级。
+  // =========================================================================
+  {
+    name: 'space-graphite',
+    colors: {
+      light: {
+        background: '#ffffff',
+        foreground: '#0f172a',
+        neutral: { base: '#e2e8f0', bg: '#f8fafc', foreground: '#475569' },
+        primary: {
+          default: '#475569',
+          foreground: '#ffffff',
+          hover: '#334155',
+          light: '#f1f5f9',
+          lightForeground: '#0f172a',
+        }, // Slate
+        accent: {
+          default: '#0ea5e9',
+          foreground: '#ffffff',
+          hover: '#0284c7',
+          light: '#e0f2fe',
+          lightForeground: '#075985',
+        }, // Apple Blue
+        success: {
+          default: '#059669',
+          foreground: '#ffffff',
+          hover: '#047857',
+          light: '#ecfdf5',
+          lightForeground: '#064e3b',
+        }, // 降低饱和度的绿
+        info: {
+          default: '#4f46e5',
+          foreground: '#ffffff',
+          hover: '#4338ca',
+          light: '#e0e7ff',
+          lightForeground: '#3730a3',
+        }, // Indigo
+        warn: {
+          default: '#d97706',
+          foreground: '#ffffff',
+          hover: '#b45309',
+          light: '#fffbeb',
+          lightForeground: '#92400e',
+        }, // 深琥珀，强行白字
+        danger: {
+          default: '#dc2626',
+          foreground: '#ffffff',
+          hover: '#b91c1c',
+          light: '#fee2e2',
+          lightForeground: '#991b1b',
+        },
+        help: {
+          default: '#7c3aed',
+          foreground: '#ffffff',
+          hover: '#6d28d9',
+          light: '#f5f3ff',
+          lightForeground: '#5b21b6',
+        },
+      },
+      dark: {
+        background: '#020617', // 极深的蓝黑
+        foreground: '#f8fafc',
+        neutral: { base: '#1e293b', bg: '#0f172a', foreground: '#94a3b8' }, // 卡片是 0f172a，完美与底色区分
+        primary: {
+          default: '#94a3b8',
+          foreground: '#020617',
+          hover: '#cbd5e1',
+          light: '#334155',
+          lightForeground: '#f1f5f9',
+        },
+        accent: {
+          default: '#38bdf8',
+          foreground: '#020617',
+          hover: '#7dd3fc',
+          light: '#0c4a6e',
+          lightForeground: '#e0f2fe',
+        },
+        success: {
+          default: '#10b981',
+          foreground: '#020617',
+          hover: '#34d399',
+          light: '#022c22',
+          lightForeground: '#a7f3d0',
+        },
+        info: {
+          default: '#818cf8',
+          foreground: '#020617',
+          hover: '#a5b4fc',
+          light: '#312e81',
+          lightForeground: '#e0e7ff',
+        },
+        warn: {
+          default: '#f59e0b',
+          foreground: '#020617',
+          hover: '#fbbf24',
+          light: '#451a03',
+          lightForeground: '#fde68a',
+        }, // 暗色下黄底黑字
+        danger: {
+          default: '#ef4444',
+          foreground: '#ffffff',
+          hover: '#f87171',
+          light: '#450a0a',
+          lightForeground: '#fecaca',
+        }, // 暗色危险按钮依然白字，最高警戒
+        help: {
+          default: '#a78bfa',
+          foreground: '#020617',
+          hover: '#c4b5fd',
+          light: '#2e1065',
+          lightForeground: '#ddd6fe',
         },
       },
     },
   },
 ]
 
-export const DEFAULT_THEME_NAME = 'violet'
+export const DEFAULT_THEME_NAME = 'royal-violet'
 
 /**
  * 获取预设的主色（用于 UI 展示，如配色选择小球）

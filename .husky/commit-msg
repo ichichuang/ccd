@@ -1,5 +1,4 @@
 #!/usr/bin/env sh
 . "$(dirname -- "$0")/_/husky.sh"
 
-# 使用本地安装的 commitlint (速度快)
-pnpm exec commitlint --edit "$1"
+npx --no -- commitlint --edit "$1"

@@ -1,8 +1,20 @@
-@use '@/assets/styles/theme/transitions.scss';
-@use '@/assets/styles/custom-nprogress.scss';
+@use '@/assets/styles/theme/transitions';
+@use '@/assets/styles/theme/data-region-transitions';
+@use '@/assets/styles/custom-nprogress';
 
-html,
-body {
+// -----------------------------------------------------------------------------
+// 1. 基础重置 (Global Font Inheritance Fix)
+// -----------------------------------------------------------------------------
+button,
+input,
+select,
+textarea {
+  font-family: inherit;
+  font-size: inherit;
+  line-height: inherit;
+}
+
+:root {
   font-size: var(--font-size-root, var(--font-size-md));
 }
 
@@ -29,7 +41,7 @@ body {
   padding: 0;
   -webkit-tap-highlight-color: transparent; // 去除点击时的默认高亮
   -webkit-overflow-scrolling: touch; // 移动端滚动优化
-  -webkit-text-size-adjust: 100%; // 禁止用户缩放
+  text-size-adjust: 100%; // 禁止用户缩放
   -webkit-font-smoothing: antialiased; // 抗锯齿
   -moz-osx-font-smoothing: grayscale; // 抗锯齿
 }
@@ -50,44 +62,62 @@ img {
   width: var(--spacing-sm);
   height: var(--spacing-sm);
   background: transparent !important;
-} //滚动条整体部分
+} // 滚动条整体部分
 ::-webkit-scrollbar-track {
   background: transparent !important;
 } // 外层轨道
 ::-webkit-scrollbar-track-piece {
   background: transparent !important;
-} //内层轨道，滚动条中间部分（除去）
+} // 内层轨道，滚动条中间部分（除去）
 ::-webkit-scrollbar-thumb {
   background: rgb(var(--input)) !important;
   border-radius: var(--radius-md) !important;
   cursor: pointer;
-} //滚动条里面可以拖动的那个
+} // 滚动条里面可以拖动的那个
 ::-webkit-scrollbar-corner {
   background: transparent !important;
-} //边角
+} // 边角
 ::-webkit-resizer {
   background: transparent !important;
 }
 
 /* Admin 侧栏 PanelMenu：多级菜单列表统一纵向间距（第三方组件覆盖，仅用变量） */
 .admin-sidebar--fixed {
+  // Panel 容器：grid 子项与 wrapper 统一锁定在侧栏宽度内，允许内容收缩
+  .p-panelmenu-content-container,
+  .p-panelmenu-content-wrapper {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    overflow: hidden;
+    box-sizing: border-box;
+  }
+
   .p-panelmenu-root-list,
   .p-panelmenu-submenu {
     display: flex;
     flex-direction: column;
-    gap: var(--spacing-xs);
+    gap: var(--spacing-sm);
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
   }
 
   // 针对子菜单增加纵向 padding，使父级菜单项与子菜单之间产生间距
   .p-panelmenu-submenu {
     padding-top: var(--spacing-xs);
     padding-bottom: var(--spacing-xs);
+
+    // 子菜单整体缩进：让整块高亮背景随层级右移，而不是只挪动文字
+    padding-left: var(--spacing-md);
   }
 
-  // 防止侧边栏收缩动画过程中，PanelMenu 文字换行导致布局错乱
+  // 防止侧边栏收缩动画过程中，PanelMenu 文字换行导致布局错乱；overflow-x 确保嵌套子项不超出
   .p-panelmenu-header-content,
   .p-panelmenu-content {
     overflow: hidden;
+    width: 100%;
     white-space: nowrap;
   }
 
@@ -99,6 +129,25 @@ img {
     outline: none !important;
     box-shadow: none !important;
   }
+}
+
+/* PrimeVue 菜单 .p-highlight：已移除 reset 覆盖，由 menu-nav-misc preset + getMenuItemActive 完全控制 */
+
+/* Trinity Menu 几何锁定：强制 PrimeVue 菜单容器严守边界 */
+.p-panelmenu-header-content,
+.p-panelmenu-content,
+.p-menuitem-content {
+  display: flex !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  overflow: hidden !important;
+  box-sizing: border-box !important;
+}
+
+/* Trinity 过渡同步：禁用 PrimeVue 原生过渡，由 Trinity 统一接管 */
+.p-menuitem-link,
+.p-panelmenu-header-content {
+  transition: none !important;
 }
 
 .p-datepicker {

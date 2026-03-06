@@ -6,7 +6,7 @@
 import type { DataTableColumn, DataTableUserPreferences } from '@/components/DataTable/utils/types'
 import { useDataTableStore } from '@/stores/modules/dataTable'
 import { debounceFn } from '@/utils/lodashes'
-import { computed, ref, unref, watch, type MaybeRef, type Ref } from 'vue'
+import type { MaybeRef, Ref } from 'vue'
 
 export interface UseTablePersistenceReturn<T = unknown> {
   effectiveColumns: Ref<DataTableColumn<T>[]>

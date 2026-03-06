@@ -86,21 +86,21 @@ function applyDirection(
 function createSemanticSizeRules(): Rule[] {
   return [
     [
-      new RegExp(`^p(?<dir>[tblrxy])?-padding-(?<size>${scalePattern})$`),
+      new RegExp(`^p(?<dir>[tblrxy])?-padding-(?<size>${scalePattern})(!)?$`),
       (match: RegExpMatchArray) => {
         const { dir, size } = (match.groups ?? {}) as { dir?: string; size: string }
         return applyDirection('padding', dir, `var(--spacing-${size})`, 'all')
       },
     ],
     [
-      new RegExp(`^m(?<dir>[tblrxy])?-margin-(?<size>${scalePattern})$`),
+      new RegExp(`^m(?<dir>[tblrxy])?-margin-(?<size>${scalePattern})(!)?$`),
       (match: RegExpMatchArray) => {
         const { dir, size } = (match.groups ?? {}) as { dir?: string; size: string }
         return applyDirection('margin', dir, `var(--spacing-${size})`, 'all')
       },
     ],
     [
-      new RegExp(`^gap(?<axisGroup>-(?<axis>x|y))?-(?<size>${scalePattern})$`),
+      new RegExp(`^gap(?<axisGroup>-(?<axis>x|y))?-(?<size>${scalePattern})(!)?$`),
       (match: RegExpMatchArray) => {
         const { axis, size } = (match.groups ?? {}) as { axis?: string; size: string }
         const v = `var(--spacing-${size})`
@@ -110,14 +110,14 @@ function createSemanticSizeRules(): Rule[] {
       },
     ],
     [
-      new RegExp(`^scroll-m(?<dir>[tblrxy])?-gap-(?<size>${scalePattern})$`),
+      new RegExp(`^scroll-m(?<dir>[tblrxy])?-gap-(?<size>${scalePattern})(!)?$`),
       (match: RegExpMatchArray) => {
         const { dir, size } = (match.groups ?? {}) as { dir?: string; size: string }
         return applyDirection('scroll-margin', dir, `var(--spacing-${size})`, 'all')
       },
     ],
     [
-      new RegExp(`^m(?<dir>[tblrxy])?-gap-(?<size>${scalePattern})$`),
+      new RegExp(`^m(?<dir>[tblrxy])?-gap-(?<size>${scalePattern})(!)?$`),
       (match: RegExpMatchArray) => {
         const { dir, size } = (match.groups ?? {}) as { dir?: string; size: string }
         return applyDirection('margin', dir, `var(--spacing-${size})`, 'all')
@@ -139,7 +139,7 @@ function createLayoutVariableRules(): Rule[] {
   const layoutKeys = (LAYOUT_SIZES as readonly string[]).join('|')
 
   return properties.map(([prefix, cssProperty]) => [
-    new RegExp(`^${prefix}-(${layoutKeys})$`),
+    new RegExp(`^${prefix}-(${layoutKeys})(!)?$`),
     ([, name]: string[]) => {
       const cssVarName = `var(--${toKebab(name)})`
       return { [cssProperty]: cssVarName }
@@ -150,7 +150,7 @@ function createLayoutVariableRules(): Rule[] {
 /** 阶梯规则生成器 (字体、间距、圆角、过渡 xs-5xl)，使用具名捕获组避免依赖捕获顺序 */
 function createScaleRules(): Rule[] {
   const fontRule: Rule = [
-    new RegExp(`^fs-(?<size>${scalePattern})$`),
+    new RegExp(`^fs-(?<size>${scalePattern})(!)?$`),
     (match: RegExpMatchArray) => {
       const { size } = (match.groups ?? {}) as { size: string }
       return { 'font-size': `var(--font-size-${size})` }
@@ -158,7 +158,7 @@ function createScaleRules(): Rule[] {
   ]
 
   const paddingMarginRule: Rule = [
-    new RegExp(`^(?<type>[pm])(?<dir>[tblrxy])?-scale-(?<size>${scalePattern})$`),
+    new RegExp(`^(?<type>[pm])(?<dir>[tblrxy])?-scale-(?<size>${scalePattern})(!)?$`),
     (match: RegExpMatchArray) => {
       const { type, dir, size } = (match.groups ?? {}) as {
         type: string
@@ -171,7 +171,7 @@ function createScaleRules(): Rule[] {
   ]
 
   const gapRule: Rule = [
-    new RegExp(`^gap(?<axisGroup>-(?<axis>x|y))?-scale-(?<size>${scalePattern})$`),
+    new RegExp(`^gap(?<axisGroup>-(?<axis>x|y))?-scale-(?<size>${scalePattern})(!)?$`),
     (match: RegExpMatchArray) => {
       const { axis, size } = (match.groups ?? {}) as { axis?: string; size: string }
       const v = `var(--spacing-${size})`
@@ -182,7 +182,7 @@ function createScaleRules(): Rule[] {
   ]
 
   const roundedRule: Rule = [
-    new RegExp(`^rounded-scale-(?<size>${scalePattern})$`),
+    new RegExp(`^rounded-scale-(?<size>${scalePattern})(!)?$`),
     (match: RegExpMatchArray) => {
       const { size } = (match.groups ?? {}) as { size: string }
       return { 'border-radius': `var(--radius-${size})` }
@@ -190,7 +190,7 @@ function createScaleRules(): Rule[] {
   ]
 
   const durationRule: Rule = [
-    new RegExp(`^duration-scale-(?<size>${scalePattern})$`),
+    new RegExp(`^duration-scale-(?<size>${scalePattern})(!)?$`),
     (match: RegExpMatchArray) => {
       const { size } = (match.groups ?? {}) as { size: string }
       return { 'transition-duration': `var(--transition-${size})` }
@@ -438,7 +438,7 @@ export default defineConfig({
 
   content: {
     pipeline: {
-      include: [/\.(vue|svelte|[jt]sx|mdx?|astro|elm|php|phtml|html)($|\?)/],
+      include: [/\.(vue|svelte|[jt]sx|vine\.ts|mdx?|astro|elm|php|phtml|marko|html)($|\?)/],
     },
   },
 
@@ -507,6 +507,18 @@ export default defineConfig({
     'layout-wrap': 'flex flex-wrap density-normal',
     'layout-grid-center': 'grid place-items-center',
     'layout-absolute-center': 'absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2',
+    // 常用内容容器宽度（替代 max-w-[xxvw]/max-w-[xxrem] 等任意值）
+    'layout-content-narrow': 'w-full max-w-2xl mx-auto',
+    'layout-content': 'w-full max-w-5xl mx-auto',
+    'layout-content-wide': 'w-full max-w-7xl mx-auto',
+    // 常用覆盖层/对话框宽度（替代 max-w-[480px] / w-[320px] 等任意值）
+    'layout-dialog-sm': 'w-full max-w-md',
+    'layout-dialog': 'w-full max-w-lg',
+    'layout-dialog-lg': 'w-full max-w-xl',
+    // 侧边面板/抽屉的常用固定宽度（基于 rem；由 SizeStore 调整根字号实现“流体”）
+    'layout-sidepanel': 'w-80',
+    // 视口相关的常用上限（集中定义，避免业务层写 max-h-[50vh]）
+    'layout-scroll-panel': 'max-h-[50vh]',
 
     // =========================================================
     // ⑥ 文本与排版工具类（Typography Utilities）
@@ -526,7 +538,10 @@ export default defineConfig({
     'interactive-hover': 'behavior-hover-transition hover-elevated',
     'interactive-click':
       'cursor-pointer select-none active:scale-95 transition-transform duration-scale-md',
-    'interactive-focus-ring': 'focus:outline-none focus:ring-2 focus:ring-ring',
+    'interactive-focus-ring':
+      'focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
+    // 细微对齐（替代 pt-[1px] 这类任意值）
+    'pt-hairline': 'pt-px',
 
     // ⑦b 语义别名（AI 优先写行为语义，不直接接触颜色词）
     'bg-interactive': 'bg-primary-hover',
@@ -537,10 +552,11 @@ export default defineConfig({
     // ⑧a 边框快捷类（Border Shortcuts）
     // 说明：仅设 border-width + border-color 不设 border-style 会导致边框不显示，
     //       此处统一为 1px solid + 语义色，业务层优先使用此类，避免漏写 border-solid。
+    //       border-b-default / border-t-default 含 border-0 确保仅单边显示，避免叠加 component-border 时出现多余边框。
     // =========================================================
     'component-border': 'border border-solid border-border',
-    'border-b-default': 'border-b border-solid border-border',
-    'border-t-default': 'border-t border-solid border-border',
+    'border-b-default': 'border-0 border-b border-solid border-border',
+    'border-t-default': 'border-0 border-t border-solid border-border',
 
     // =========================================================
     // ⑧ 组件语义基础（Component Base Styles）
@@ -560,6 +576,9 @@ export default defineConfig({
     // =========================================================
     'size-theme-swatch': 'w-[var(--spacing-lg)] h-[var(--spacing-lg)] rounded-full',
     'size-select-min': 'min-w-[var(--spacing-3xl)]',
+    'w-table-actions': 'w-[var(--spacing-5xl)]',
+    'w-dialog-settings': 'w-[var(--dialog-settings-width)] max-w-full',
+    'h-spacing-lg': 'h-[var(--spacing-lg)]',
     'sidebar-width-transition': 'transition-[width] duration-scale-md ease-in-out',
 
     // =========================================================
@@ -576,8 +595,27 @@ export default defineConfig({
     // ⑪ 菜单交互语义 (Menu Interaction)
     // =========================================================
     'menu-item-base':
-      'flex items-center gap-sm cursor-pointer select-none transition-all duration-scale-md ease-in-out focus:outline-none border-none bg-transparent',
-    'menu-item-hover': 'bg-primary/20! text-primary!',
+      'flex items-center gap-sm cursor-pointer select-none transition-all duration-scale-md ease-in-out border-none bg-transparent',
+    'menu-item-hover': 'bg-primary/12! dark:bg-primary/30! text-primary!',
+    'menu-item-active-leaf': 'bg-primary! text-primary-foreground! dark:text-white!',
+
+    // =========================================================
+    // ⑫ Premium 视觉系统 (Glassmorphism / Elevation / Surface)
+    // =========================================================
+    'glass-surface': 'bg-white/70 dark:bg-black/70 backdrop-blur-md',
+    'glass-surface-lg': 'bg-white/80 dark:bg-black/80 backdrop-blur-lg',
+    'shadow-soft': 'shadow-[0_1px_3px_rgba(0,0,0,0.06),0_2px_8px_rgba(0,0,0,0.04)]',
+    'shadow-float':
+      'shadow-[0_4px_12px_rgba(0,0,0,0.08),0_8px_24px_rgba(0,0,0,0.06)] dark:shadow-[0_4px_12px_rgba(0,0,0,0.3),0_8px_24px_rgba(0,0,0,0.2)]',
+    'surface-base': 'bg-background',
+    'surface-elevated': 'bg-card shadow-soft',
+    'surface-sunken': 'bg-muted',
+    // 列表项/卡片条目背景：浅色模式需更高不透明度（40%）才能与 bg-card 形成可见对比，深色模式 20% 已足够
+    'surface-item': 'bg-muted/40 dark:bg-muted/20',
+    'brand-primary': 'text-primary',
+    'transition-fluid': 'transition-[transform,opacity] duration-scale-md ease-out-expo',
+    // KPI/统计卡片最小高度（替代 min-h-[12rem] 这类任意值）
+    'min-h-kpi-card': 'min-h-48',
   },
 
   // 规则优先级设计：UnoCSS 按顺序匹配，新规则必须归入对应分组。
@@ -599,6 +637,12 @@ export default defineConfig({
 
   theme: {
     breakpoints,
+    // 动画曲线 - 流体有机感，适配 120Hz 高刷
+    transitionTimingFunction: {
+      'out-expo': 'cubic-bezier(0.16, 1, 0.3, 1)',
+      'out-quart': 'cubic-bezier(0.25, 1, 0.5, 1)',
+      'in-out-expo': 'cubic-bezier(0.87, 0, 0.13, 1)',
+    },
     // 颜色系统 (设计系统 RGB 规范) - 由 COLOR_FAMILIES 动态映射
     colors: buildThemeColors(),
     // 显式设置 borderColor 以确保 border-{color} 类正确工作
@@ -624,6 +668,9 @@ export default defineConfig({
       out.base = out.md
       return out
     })(),
+    fontFamily: {
+      sans: '"PingFang SC", "Microsoft YaHei", "Source Han Sans CN", "Source Han Sans SC", system-ui, -apple-system, sans-serif',
+    },
     // 间距系统：基于 SIZE_SCALE_KEYS 生成语义阶梯，全部基于 --spacing-unit 动态计算
     spacing: (() => {
       const base: Record<string, string> = {

@@ -1,4 +1,3 @@
-import router from '@/router'
 import store from '@/stores'
 import { AUTH_ENABLED } from '@/constants/router'
 import { useLayoutStore } from '@/stores/modules/layout'
@@ -6,8 +5,8 @@ import { usePermissionStore } from '@/stores/modules/permission'
 import { createPiniaEncryptedSerializer } from '@/utils/safeStorage/piniaSerializer'
 import { encryptAndCompressSync } from '@/utils/safeStorage/safeStorage'
 import { defineStore } from 'pinia'
-import { requestCurrentUserMock, requestUserLoginMock } from '@/api/user/login'
-import type { UserInfo, UserLoginReq } from '@/api/user/types'
+import { requestAuthCurrentUserMock, requestAuthLoginMock } from '@/api/modules/auth'
+import type { LoginParams, UserInfo } from '@/api/types/auth'
 
 interface UserState {
   token: string
@@ -50,11 +49,11 @@ export const useUserStore = defineStore('user', {
      * - 写入 token
      * - 写入用户信息并跳转到重定向路由
      */
-    async login(payload: UserLoginReq) {
+    async login(payload: LoginParams) {
       if (!AUTH_ENABLED) {
         return
       }
-      const res = await requestUserLoginMock(payload)
+      const res = await requestAuthLoginMock(payload)
       await this.setToken(res.token)
       this.setUserInfo(res.userInfo)
     },
@@ -70,7 +69,7 @@ export const useUserStore = defineStore('user', {
         return
       }
       try {
-        const userInfo = await requestCurrentUserMock(this.token)
+        const userInfo = await requestAuthCurrentUserMock(this.token)
         this.setUserInfo(userInfo)
       } catch (error) {
         console.error('根据 token 恢复用户信息失败:', error)
@@ -97,9 +96,6 @@ export const useUserStore = defineStore('user', {
       }
       this.userInfo = sanitized
       this.isLogin = true
-      router.push(
-        (router.currentRoute.value.query.redirect as string) || import.meta.env.VITE_ROOT_REDIRECT
-      )
     },
     clearUserInfo() {
       if (!AUTH_ENABLED) {

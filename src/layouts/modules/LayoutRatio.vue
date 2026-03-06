@@ -126,8 +126,7 @@ watch(
 <template>
   <div
     ref="wrapperRef"
-    class="ratio-wrapper"
-    :style="{ position: 'relative', width: '100%', height: '100%' }"
+    class="ratio-wrapper relative w-full h-full"
   >
     <div
       ref="ratioRef"

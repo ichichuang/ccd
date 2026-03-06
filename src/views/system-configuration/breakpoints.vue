@@ -2,9 +2,6 @@
 import type { CSSProperties } from 'vue'
 import { BREAKPOINTS } from '@/constants/breakpoints'
 import type { BreakpointKey } from '@/constants/breakpoints'
-import Card from 'primevue/card'
-import Tag from 'primevue/tag'
-import Slider from 'primevue/slider'
 import { useDeviceStore } from '@/stores/modules/device'
 import { getDeviceTypeSync, getBreakpointSync } from '@/utils/deviceSync'
 
@@ -12,12 +9,27 @@ const RULER_MAX = 3840
 const SLIDER_MIN = 320
 const SLIDER_MAX = RULER_MAX
 
+// Device Store (real-time viewport)，需在 effectiveWidth / watch 前初始化
+const deviceStore = useDeviceStore()
+
 const sliderValue = ref<number | number[]>(1200)
+
+/** 跟随真实视口时，模拟器使用 deviceStore.width，与真实布局一致 */
+const followViewport = ref(false)
 
 /** Get the current width as a number (handles both single and range slider values) */
 const currentWidth = computed<number>(() => {
   const val: number | number[] = sliderValue.value
   return Array.isArray(val) ? val[0] : val
+})
+
+/** 模拟器展示用宽度：跟随真实视口时取 deviceStore.width，否则取 slider */
+const effectiveWidth = computed<number>(() =>
+  followViewport.value ? deviceStore.width : currentWidth.value
+)
+
+watch([() => deviceStore.width, followViewport], () => {
+  if (followViewport.value) sliderValue.value = deviceStore.width
 })
 
 // Copy to clipboard utility
@@ -43,14 +55,14 @@ const breakpointEntries = computed<[BreakpointKey, number][]>(() =>
 const activeBreakpoint = computed<BreakpointKey | null>(() => {
   let matched: BreakpointKey | null = null
   for (const [key, value] of breakpointEntries.value) {
-    if (currentWidth.value >= value) matched = key
+    if (effectiveWidth.value >= value) matched = key
   }
   return matched
 })
 
 /** Grid columns based on width */
 const gridCols = computed<number>(() => {
-  const w: number = currentWidth.value
+  const w: number = effectiveWidth.value
   if (w >= BREAKPOINTS['5xl']) return 12
   if (w >= BREAKPOINTS['4xl']) return 8
   if (w >= BREAKPOINTS['2xl']) return 6
@@ -62,7 +74,7 @@ const gridCols = computed<number>(() => {
 
 /** Check if breakpoint is active */
 function isBreakpointActive(value: number) {
-  return currentWidth.value >= value
+  return effectiveWidth.value >= value
 }
 
 /** Breakpoint percentage position on ruler */
@@ -84,6 +96,16 @@ const presetWidths: PresetWidth[] = [
   { label: 'Desktop', value: 1920, icon: 'i-lucide-monitor' },
   { label: '4K', value: 3840, icon: 'i-lucide-tv' },
 ]
+
+/** Active preset by width range (Mobile < 768, Tablet 768~1279, Laptop 1280~1919, Desktop 1920~3839, 4K >= 3840) */
+const activePreset = computed<PresetWidth | null>(() => {
+  const w: number = effectiveWidth.value
+  if (w >= 3840) return presetWidths[4]
+  if (w >= 1920) return presetWidths[3]
+  if (w >= 1280) return presetWidths[2]
+  if (w >= 768) return presetWidths[1]
+  return presetWidths[0]
+})
 
 /** Breakpoint usage examples */
 interface BreakpointItem {
@@ -122,15 +144,12 @@ const breakpointItems = computed<BreakpointItem[]>(() =>
 )
 
 const rulerIndicatorStyle = computed<CSSProperties>(() => ({
-  left: `${(currentWidth.value / RULER_MAX) * 100}%`,
+  left: `${(effectiveWidth.value / RULER_MAX) * 100}%`,
 }))
 
 const gridTemplateStyle = computed<CSSProperties>(() => ({
   gridTemplateColumns: `repeat(${Math.min(gridCols.value, 6)}, 1fr)`,
 }))
-
-// Device Store (real-time viewport)
-const deviceStore: ReturnType<typeof useDeviceStore> = useDeviceStore()
 
 // deviceSync: sync API for pre-mount (no Pinia)
 const deviceSyncInfo = computed<{ deviceType: string; breakpoint: BreakpointKey | null }>(() => ({
@@ -140,432 +159,502 @@ const deviceSyncInfo = computed<{ deviceType: string; breakpoint: BreakpointKey 
 </script>
 
 <template>
-  <CScrollbar class="h-full p-padding-lg bg-background">
-    <div class="w-full max-w-[90vw] mx-auto flex flex-col gap-xl">
-      <!-- Header -->
-      <div class="flex flex-col gap-xs">
-        <div class="flex items-center gap-md">
-          <div class="p-padding-md bg-primary/10 rounded-scale-lg shrink-0">
-            <Icons
-              name="i-lucide-monitor"
-              class="text-primary fs-2xl transition-all duration-scale-md"
-            />
-          </div>
-          <div>
-            <h1 class="fs-2xl font-bold text-foreground">Breakpoint System</h1>
-            <p class="text-muted-foreground fs-sm">
-              响应式断点系统完整参考 · 点击任意类名即可自动复制到剪贴板
-            </p>
-          </div>
-        </div>
-        <div
-          class="border-l-4 border-primary bg-primary/5 p-padding-md rounded-r-scale-md flex gap-md items-start mt-margin-sm"
-        >
-          <Icons
-            name="i-lucide-info"
-            class="text-primary fs-xl shrink-0 mt-0.5"
-          />
-          <div class="flex flex-col gap-0.5">
-            <div class="font-semibold text-primary fs-sm">Architectural Guide 架构引导</div>
-            <div class="text-muted-foreground fs-xs leading-relaxed">
-              断点数值由
-              <span class="bg-muted px-padding-xs rounded font-mono">
-                src/constants/breakpoints.ts
-              </span>
-              定义。如需修改全局断点，请在该文件中统一调整。
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Control Panel -->
-      <Card class="component-border hover:shadow-md transition-all duration-scale-md">
-        <template #title>
-          <div class="flex items-center gap-sm">
-            <Icons
-              name="i-lucide-sliders-horizontal"
-              class="text-primary"
-            />
-            <span class="font-semibold">Viewport Simulator 视窗模拟器</span>
-          </div>
-        </template>
-        <template #content>
-          <div class="flex flex-col gap-lg">
-            <!-- Width Slider -->
-            <div class="flex flex-col gap-md">
-              <div class="flex items-center justify-between">
-                <span class="text-muted-foreground">Current Width</span>
-                <div class="flex items-center gap-md">
-                  <span class="font-mono fs-xl font-bold text-foreground">
-                    {{ currentWidth }}px
-                  </span>
-                  <Tag
-                    :value="activeBreakpoint ?? '< xs'"
-                    :severity="activeBreakpoint ? 'success' : 'secondary'"
-                    class="fs-sm"
-                  />
-                </div>
-              </div>
-              <Slider
-                v-model="sliderValue"
-                :min="SLIDER_MIN"
-                :max="SLIDER_MAX"
-                class="w-full"
+  <div class="h-full flex flex-col overflow-hidden">
+    <!-- Fixed top: Header + Viewport Simulator -->
+    <div
+      class="shrink-0 px-padding-lg py-padding-md bg-background flex flex-col gap-md border-b-default"
+    >
+      <div class="w-full max-w-[90vw] mx-auto flex flex-col gap-md">
+        <!-- Header -->
+        <div class="flex flex-col gap-xs">
+          <div class="flex items-center gap-md">
+            <div class="p-padding-sm bg-primary/10 rounded-scale-lg shrink-0">
+              <Icons
+                name="i-lucide-monitor"
+                class="text-primary fs-xl transition-all duration-scale-lg"
               />
             </div>
-
-            <!-- Preset Buttons -->
-            <div class="flex flex-wrap gap-sm">
-              <div class="flex flex-wrap gap-sm">
-                <div
-                  v-for="preset in presetWidths"
-                  :key="preset.value"
-                  class="flex items-center gap-xs p-padding-sm py-1.5 rounded-scale-md cursor-pointer select-none transition-all duration-scale-md ease-in-out fs-sm active:scale-95"
-                  :class="[
-                    currentWidth === preset.value
-                      ? 'bg-primary text-primary-foreground shadow-sm'
-                      : 'bg-muted/20 text-muted-foreground hover:bg-muted/40',
-                  ]"
-                  @click="sliderValue = preset.value"
-                >
-                  <Icons
-                    :name="preset.icon"
-                    size="sm"
-                    :class="
-                      currentWidth === preset.value ? 'text-primary-foreground' : 'text-primary'
-                    "
-                  />
-                  <span>{{ preset.label }}</span>
-                </div>
-              </div>
+            <div>
+              <h1 class="fs-xl font-bold text-foreground">Breakpoint System</h1>
+              <p class="text-muted-foreground fs-xs">
+                响应式断点系统完整参考 · 点击任意类名即可自动复制到剪贴板
+              </p>
             </div>
           </div>
-        </template>
-      </Card>
-
-      <!-- Device Store 实时状态 -->
-      <Card class="component-border hover:shadow-md transition-all duration-scale-md">
-        <template #title>
-          <div class="flex items-center gap-sm">
-            <Icons
-              name="i-lucide-smartphone"
-              class="text-primary"
-            />
-            <span class="font-semibold">Device Store 实时状态</span>
-            <Tag
-              value="useDeviceStore"
-              severity="info"
-            />
-          </div>
-        </template>
-        <template #content>
-          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-md">
-            <div class="flex flex-col gap-xs p-padding-md bg-muted/20 rounded-scale-md">
-              <span class="text-muted-foreground fs-xs">type</span>
-              <Tag
-                :value="deviceStore.type"
-                severity="info"
-              />
-              <span class="font-mono fs-xs text-muted-foreground">PC / Tablet / Mobile</span>
-            </div>
-            <div class="flex flex-col gap-xs p-padding-md bg-muted/20 rounded-scale-md">
-              <span class="text-muted-foreground fs-xs">currentBreakpoint</span>
-              <Tag
-                :value="deviceStore.currentBreakpoint"
-                severity="success"
-              />
-            </div>
-            <div class="flex flex-col gap-xs p-padding-md bg-muted/20 rounded-scale-md">
-              <span class="text-muted-foreground fs-xs">isMobileLayout</span>
-              <Tag
-                :value="String(deviceStore.isMobileLayout)"
-                :severity="deviceStore.isMobileLayout ? 'warn' : 'secondary'"
-              />
-              <span class="font-mono fs-xs text-muted-foreground">width &lt; lg</span>
-            </div>
-            <div class="flex flex-col gap-xs p-padding-md bg-muted/20 rounded-scale-md">
-              <span class="text-muted-foreground fs-xs">isTabletLayout</span>
-              <Tag
-                :value="String(deviceStore.isTabletLayout)"
-                :severity="deviceStore.isTabletLayout ? 'warn' : 'secondary'"
-              />
-            </div>
-          </div>
-          <p class="mt-margin-md text-muted-foreground fs-sm">
-            布局判定应使用
-            <span class="bg-muted px-padding-xs rounded font-mono">useDeviceStore</span>
-            的 getters，禁止直接判断 window.innerWidth
-          </p>
-        </template>
-      </Card>
-
-      <!-- deviceSync 同步 API -->
-      <Card class="component-border hover:shadow-md transition-all duration-scale-md">
-        <template #title>
-          <div class="flex items-center gap-sm">
-            <Icons
-              name="i-lucide-cpu"
-              class="text-primary"
-            />
-            <span class="font-semibold">deviceSync 同步 API</span>
-            <Tag
-              value="mount 前逻辑"
-              severity="warn"
-            />
-          </div>
-        </template>
-        <template #content>
-          <div class="flex flex-col gap-md">
-            <p class="text-muted-foreground fs-sm">
-              纯函数，不依赖 Pinia · 供 mount 前逻辑（如 sizeEngine.preload）使用 · SSOT:
-              <span class="bg-muted px-padding-xs rounded font-mono">src/utils/deviceSync.ts</span>
-            </p>
-            <div class="flex flex-wrap gap-md">
-              <div
-                class="fs-xs font-mono bg-muted/30 px-padding-xs py-1 rounded cursor-pointer select-none transition-all duration-scale-md ease-in-out hover:bg-primary/20 hover:text-primary active:scale-95 text-muted-foreground"
-                @click="copyToClipboard('getDeviceTypeSync()')"
-              >
-                getDeviceTypeSync()
-              </div>
-              <div
-                class="fs-xs font-mono bg-muted/30 px-padding-xs py-1 rounded cursor-pointer select-none transition-all duration-scale-md ease-in-out hover:bg-primary/20 hover:text-primary active:scale-95 text-muted-foreground"
-                @click="copyToClipboard('getBreakpointSync(width?)')"
-              >
-                getBreakpointSync(width?)
-              </div>
-            </div>
-            <div class="flex gap-md text-muted-foreground fs-sm">
-              <span>
-                当前 sync 结果: type=
-                <span class="font-mono text-foreground">{{ deviceSyncInfo.deviceType }}</span>
-                , breakpoint=
-                <span class="font-mono text-foreground">{{ deviceSyncInfo.breakpoint }}</span>
-              </span>
-            </div>
-          </div>
-        </template>
-      </Card>
-
-      <!-- Visual Ruler -->
-      <Card class="component-border hover:shadow-md transition-all duration-scale-md">
-        <template #title>
-          <div class="flex items-center gap-sm">
-            <Icons
-              name="i-lucide-ruler"
-              class="text-primary"
-            />
-            <span>Breakpoint Ruler 断点标尺</span>
-          </div>
-        </template>
-        <template #content>
           <div
-            class="relative h-20 w-full overflow-hidden rounded-scale-md component-border bg-muted/30"
-            role="img"
-            aria-label="Breakpoint ruler"
+            class="border-l-4 border-primary bg-primary/5 p-padding-sm rounded-r-scale-md flex gap-md items-start mt-margin-sm"
           >
-            <!-- Current Width Indicator -->
-            <div
-              class="absolute top-0 h-full w-px bg-accent z-10 transition-all duration-scale-md"
-              :style="rulerIndicatorStyle"
-            >
-              <div
-                class="absolute -top-[var(--spacing-xs)] left-1/2 -translate-x-1/2 w-[var(--spacing-sm)] h-[var(--spacing-sm)] bg-accent rounded-full border-2 border-solid border-background"
-              />
-            </div>
-
-            <!-- Breakpoint Markers -->
-            <div
-              v-for="[key, value] in breakpointEntries"
-              :key="key"
-              class="absolute top-0 flex h-full flex-col items-center transition-colors"
-              :style="{ left: `${breakpointPercent(value)}%` }"
-            >
-              <div
-                class="h-[var(--spacing-xl)] w-px shrink-0 transition-colors"
-                :class="isBreakpointActive(value) ? 'bg-accent' : 'bg-border'"
-              />
-              <span
-                class="mt-margin-xs shrink-0 rounded px-padding-xs fs-xs font-medium cursor-pointer hover:scale-110 transition-transform duration-scale-md"
-                :class="
-                  isBreakpointActive(value)
-                    ? 'bg-accent text-accent-foreground'
-                    : 'bg-muted text-muted-foreground'
-                "
-                @click="copyToClipboard(`${key}:`, `${key}: prefix`)"
-              >
-                {{ key }}: {{ value }}
-              </span>
-            </div>
-          </div>
-        </template>
-      </Card>
-
-      <!-- Breakpoint Reference Table -->
-      <Card class="component-border hover:shadow-md transition-all duration-scale-md">
-        <template #title>
-          <div class="flex items-center gap-sm">
             <Icons
-              name="i-lucide-table"
-              class="text-primary"
+              name="i-lucide-info"
+              class="text-primary fs-xl shrink-0 mt-margin-xs"
             />
-            <span class="font-semibold">Breakpoint Reference 断点参考表</span>
-            <Tag
-              :value="`${breakpointItems.length} breakpoints`"
-              severity="secondary"
-            />
+            <div class="flex flex-col gap-0.5">
+              <div class="font-semibold text-primary fs-sm">Architectural Guide 架构引导</div>
+              <div class="text-muted-foreground fs-xs leading-relaxed">
+                断点数值由
+                <span class="bg-muted px-padding-xs rounded font-mono">
+                  src/constants/breakpoints.ts
+                </span>
+                定义。如需修改全局断点，请在该文件中统一调整。同一组键名
+                <span class="bg-muted px-padding-xs rounded font-mono">xs ~ 5xl</span>
+                也用于尺寸阶梯
+                <span class="bg-muted px-padding-xs rounded font-mono">SIZE_SCALE_KEYS</span>
+                ，便于在字体/间距/圆角/过渡中复用同一心智模型。勾选「跟随真实视口」后，模拟器将使用
+                <span class="bg-muted px-padding-xs rounded font-mono">useDeviceStore</span>
+                的实时宽度，与真实布局一致。
+              </div>
+            </div>
           </div>
-        </template>
-        <template #content>
-          <CScrollbar class="w-full min-w-0">
-            <table class="w-full border-collapse">
-              <thead>
-                <tr class="border-b-default">
-                  <th class="text-left p-padding-sm text-muted-foreground fs-sm font-medium">
-                    Scale
-                  </th>
-                  <th class="text-left p-padding-sm text-muted-foreground fs-sm font-medium">
-                    Min Width
-                  </th>
-                  <th class="text-left p-padding-sm text-muted-foreground fs-sm font-medium">
-                    UnoCSS Prefix
-                  </th>
-                  <th class="text-left p-padding-sm text-muted-foreground fs-sm font-medium">
-                    Description
-                  </th>
-                  <th class="text-left p-padding-sm text-muted-foreground fs-sm font-medium">
-                    Status
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr
-                  v-for="item in breakpointItems"
-                  :key="item.key"
-                  class="border-b border-solid border-border/50 hover:bg-muted/30 transition-colors duration-scale-md"
-                  :class="{ 'bg-accent/5': isBreakpointActive(item.value) }"
+        </div>
+
+        <!-- Control Panel -->
+        <Card class="component-border hover:shadow-md transition-all duration-scale-lg">
+          <template #title>
+            <div class="flex items-center gap-sm">
+              <Icons
+                name="i-lucide-sliders-horizontal"
+                class="text-primary"
+              />
+              <span class="font-semibold">Viewport Simulator 视窗模拟器</span>
+            </div>
+          </template>
+          <template #content>
+            <div class="flex flex-col gap-md">
+              <!-- 跟随真实视口 -->
+              <div class="flex items-center gap-sm">
+                <Checkbox
+                  v-model="followViewport"
+                  :binary="true"
+                  input-id="follow-viewport"
+                />
+                <label
+                  for="follow-viewport"
+                  class="cursor-pointer select-none text-muted-foreground fs-sm"
                 >
-                  <td class="p-padding-sm">
+                  跟随真实视口 (useDeviceStore.width)
+                </label>
+                <Tag
+                  v-if="followViewport"
+                  value="已同步"
+                  severity="success"
+                  class="fs-xs"
+                />
+              </div>
+              <!-- Width Slider -->
+              <div class="flex flex-col gap-sm">
+                <div class="flex items-center justify-between">
+                  <span class="text-muted-foreground">Current Width</span>
+                  <div class="flex items-center gap-md">
+                    <span class="font-mono fs-xl font-bold text-foreground">
+                      {{ effectiveWidth }}px
+                    </span>
                     <Tag
-                      :value="item.key"
-                      :severity="isBreakpointActive(item.value) ? 'success' : 'secondary'"
+                      :value="activeBreakpoint ?? '< xs'"
+                      :severity="activeBreakpoint ? 'success' : 'secondary'"
+                      class="fs-sm"
                     />
-                  </td>
-                  <td class="p-padding-sm font-mono">{{ item.value }}px</td>
-                  <td class="p-padding-sm">
-                    <div class="flex gap-xs flex-wrap">
-                      <div
-                        class="fs-xs font-mono bg-muted/30 px-padding-xs py-0.5 rounded cursor-pointer select-none transition-all duration-scale-md ease-in-out hover:bg-success/20 hover:text-success active:scale-95 text-muted-foreground"
-                        @click="copyToClipboard(item.minWidthClass)"
-                      >
-                        {{ item.minWidthClass }}
-                      </div>
-                      <div
-                        class="fs-xs font-mono bg-muted/30 px-padding-xs py-0.5 rounded cursor-pointer select-none transition-all duration-scale-md ease-in-out hover:bg-warn/20 hover:text-warn active:scale-95 text-muted-foreground"
-                        @click="copyToClipboard(item.maxWidthClass)"
-                      >
-                        {{ item.maxWidthClass }}
-                      </div>
-                    </div>
-                  </td>
-                  <td class="p-padding-sm text-muted-foreground fs-sm">
-                    {{ item.description }}
-                  </td>
-                  <td class="p-padding-sm">
-                    <div
-                      class="w-[var(--spacing-sm)] h-[var(--spacing-sm)] rounded-full"
-                      :class="isBreakpointActive(item.value) ? 'bg-success' : 'bg-muted'"
-                    />
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </CScrollbar>
-        </template>
-      </Card>
-
-      <!-- Grid Demo -->
-      <Card class="component-border hover:shadow-md transition-all duration-scale-md">
-        <template #title>
-          <div class="flex items-center gap-sm">
-            <Icons
-              name="i-lucide-grid-3x3"
-              class="text-primary"
-            />
-            <span class="font-semibold">Responsive Grid Demo 响应式网格演示</span>
-            <Tag
-              :value="`${gridCols} columns`"
-              severity="info"
-            />
-          </div>
-        </template>
-        <template #content>
-          <div class="flex flex-col gap-md">
-            <p class="text-muted-foreground fs-sm">
-              模拟视窗宽度为
-              <span class="font-mono font-bold">{{ currentWidth }}px</span>
-              ， 当前断点
-              <span class="font-mono font-bold">{{ activeBreakpoint ?? '< xs' }}</span>
-              ， 网格列数
-              <span class="font-mono font-bold">
-                {{ gridCols }}
-              </span>
-            </p>
-
-            <!-- Simulated Viewport -->
-            <CScrollbar class="flex justify-center pb-gap-md min-w-0">
-              <div
-                class="flex shrink-0 flex-col rounded-scale-lg component-border bg-card shadow-lg transition-all duration-scale-md w-full"
-              >
-                <div
-                  class="border-b-default px-padding-md py-padding-sm text-center fs-sm text-muted-foreground flex items-center justify-center gap-sm"
-                >
-                  <Icons
-                    name="i-lucide-monitor"
-                    class="fs-lg"
-                  />
-                  <span>Viewport {{ currentWidth }}px · Grid {{ gridCols }} col</span>
+                  </div>
                 </div>
-                <div
-                  class="grid gap-sm p-padding-md"
-                  :style="gridTemplateStyle"
-                >
+                <Slider
+                  v-model="sliderValue"
+                  :min="SLIDER_MIN"
+                  :max="SLIDER_MAX"
+                  class="w-full"
+                  :disabled="followViewport"
+                />
+              </div>
+
+              <!-- Preset Buttons -->
+              <div class="flex flex-wrap gap-sm">
+                <div class="flex flex-wrap gap-sm">
                   <div
-                    v-for="n in 12"
-                    :key="n"
-                    class="flex aspect-video items-center justify-center rounded-scale-md component-border bg-muted/50 font-mono fs-lg font-medium text-foreground hover:bg-accent/10 hover:border-accent/50 transition-colors duration-scale-md"
+                    v-for="preset in presetWidths"
+                    :key="preset.value"
+                    class="flex items-center gap-xs px-padding-sm py-padding-xs rounded-scale-md cursor-pointer select-none transition-all duration-scale-lg ease-in-out fs-sm active:scale-95 interactive-focus-ring"
+                    tabindex="0"
+                    :class="[
+                      activePreset?.value === preset.value
+                        ? 'bg-primary text-primary-foreground shadow-sm'
+                        : 'surface-item text-muted-foreground hover:bg-muted/60 dark:hover:bg-muted/40',
+                    ]"
+                    @click="sliderValue = preset.value"
+                    @keydown.enter.prevent="sliderValue = preset.value"
+                    @keydown.space.prevent="sliderValue = preset.value"
                   >
-                    {{ n }}
+                    <Icons
+                      :name="preset.icon"
+                      size="sm"
+                      :class="
+                        activePreset?.value === preset.value
+                          ? 'text-primary-foreground'
+                          : 'text-primary'
+                      "
+                    />
+                    <span>{{ preset.label }}</span>
                   </div>
                 </div>
               </div>
-            </CScrollbar>
-          </div>
-        </template>
-      </Card>
+            </div>
+          </template>
+        </Card>
+      </div>
+    </div>
 
-      <!-- Usage Examples -->
-      <Card class="component-border">
-        <template #title>
-          <div class="flex items-center gap-sm">
-            <Icons
-              name="i-lucide-code"
-              class="text-primary"
-            />
-            <span class="font-semibold">Usage Examples 使用示例</span>
-          </div>
-        </template>
-        <template #content>
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-lg">
-            <div class="flex flex-col gap-sm">
-              <h4 class="fs-sm font-semibold text-foreground mb-margin-xs">
-                最小宽度 (Min-Width Mobile First)
-              </h4>
+    <!-- Scrollable content -->
+    <CScrollbar class="flex-1 min-h-0">
+      <div class="p-padding-lg bg-background">
+        <div class="w-full max-w-[90vw] mx-auto flex flex-col gap-xl">
+          <!-- Device Store 实时状态 -->
+          <Card class="component-border hover:shadow-md transition-all duration-scale-lg">
+            <template #title>
+              <div class="flex items-center gap-sm">
+                <Icons
+                  name="i-lucide-smartphone"
+                  class="text-primary"
+                />
+                <span class="font-semibold">Device Store 实时状态</span>
+                <Tag
+                  value="useDeviceStore"
+                  severity="info"
+                />
+              </div>
+            </template>
+            <template #content>
+              <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-md">
+                <div
+                  class="flex flex-col gap-xs p-padding-md surface-item rounded-scale-md component-border shadow-sm hover:shadow-md hover:bg-muted/60 dark:hover:bg-muted/40 hover:-translate-y-0.5 transition-all duration-scale-lg"
+                >
+                  <span class="text-muted-foreground fs-xs">type</span>
+                  <Tag
+                    :value="deviceStore.type"
+                    severity="info"
+                  />
+                  <span class="font-mono fs-xs text-muted-foreground">PC / Tablet / Mobile</span>
+                </div>
+                <div
+                  class="flex flex-col gap-xs p-padding-md surface-item rounded-scale-md component-border shadow-sm hover:shadow-md hover:bg-muted/60 dark:hover:bg-muted/40 hover:-translate-y-0.5 transition-all duration-scale-lg"
+                >
+                  <span class="text-muted-foreground fs-xs">currentBreakpoint</span>
+                  <Tag
+                    :value="deviceStore.currentBreakpoint"
+                    severity="success"
+                  />
+                </div>
+                <div
+                  class="flex flex-col gap-xs p-padding-md surface-item rounded-scale-md component-border shadow-sm hover:shadow-md hover:bg-muted/60 dark:hover:bg-muted/40 hover:-translate-y-0.5 transition-all duration-scale-lg"
+                >
+                  <span class="text-muted-foreground fs-xs">isMobileLayout</span>
+                  <Tag
+                    :value="String(deviceStore.isMobileLayout)"
+                    :severity="deviceStore.isMobileLayout ? 'warn' : 'secondary'"
+                  />
+                  <span class="font-mono fs-xs text-muted-foreground">width &lt; lg</span>
+                </div>
+                <div
+                  class="flex flex-col gap-xs p-padding-md surface-item rounded-scale-md component-border shadow-sm hover:shadow-md hover:bg-muted/60 dark:hover:bg-muted/40 hover:-translate-y-0.5 transition-all duration-scale-lg"
+                >
+                  <span class="text-muted-foreground fs-xs">isTabletLayout</span>
+                  <Tag
+                    :value="String(deviceStore.isTabletLayout)"
+                    :severity="deviceStore.isTabletLayout ? 'warn' : 'secondary'"
+                  />
+                </div>
+              </div>
+              <p class="mt-margin-md text-muted-foreground fs-sm">
+                布局判定应使用
+                <span class="bg-muted px-padding-xs rounded font-mono">useDeviceStore</span>
+                的 getters，禁止直接判断 window.innerWidth
+              </p>
+            </template>
+          </Card>
+
+          <!-- deviceSync 同步 API -->
+          <Card class="component-border hover:shadow-md transition-all duration-scale-lg">
+            <template #title>
+              <div class="flex items-center gap-sm">
+                <Icons
+                  name="i-lucide-cpu"
+                  class="text-primary"
+                />
+                <span class="font-semibold">deviceSync 同步 API</span>
+                <Tag
+                  value="mount 前逻辑"
+                  severity="warn"
+                />
+              </div>
+            </template>
+            <template #content>
+              <div class="flex flex-col gap-md">
+                <p class="text-muted-foreground fs-sm">
+                  纯函数，不依赖 Pinia · 供 mount 前逻辑（如 sizeEngine.preload）使用 · SSOT:
+                  <span class="bg-muted px-padding-xs rounded font-mono">
+                    src/utils/deviceSync.ts
+                  </span>
+                </p>
+                <div class="flex flex-wrap gap-md">
+                  <div
+                    class="fs-xs font-mono bg-muted/30 px-padding-xs py-1 rounded cursor-pointer select-none transition-all duration-scale-lg ease-in-out hover:bg-primary/20 hover:text-primary active:scale-95 text-muted-foreground interactive-focus-ring"
+                    tabindex="0"
+                    @click="copyToClipboard('getDeviceTypeSync()')"
+                    @keydown.enter.prevent="copyToClipboard('getDeviceTypeSync()')"
+                    @keydown.space.prevent="copyToClipboard('getDeviceTypeSync()')"
+                  >
+                    getDeviceTypeSync()
+                  </div>
+                  <div
+                    class="fs-xs font-mono bg-muted/30 px-padding-xs py-1 rounded cursor-pointer select-none transition-all duration-scale-lg ease-in-out hover:bg-primary/20 hover:text-primary active:scale-95 text-muted-foreground interactive-focus-ring"
+                    tabindex="0"
+                    @click="copyToClipboard('getBreakpointSync(width?)')"
+                    @keydown.enter.prevent="copyToClipboard('getBreakpointSync(width?)')"
+                    @keydown.space.prevent="copyToClipboard('getBreakpointSync(width?)')"
+                  >
+                    getBreakpointSync(width?)
+                  </div>
+                </div>
+                <div class="flex gap-md text-muted-foreground fs-sm">
+                  <span>
+                    当前 sync 结果: type=
+                    <span class="font-mono text-foreground">{{ deviceSyncInfo.deviceType }}</span>
+                    , breakpoint=
+                    <span class="font-mono text-foreground">{{ deviceSyncInfo.breakpoint }}</span>
+                  </span>
+                </div>
+              </div>
+            </template>
+          </Card>
+
+          <!-- Visual Ruler -->
+          <Card class="component-border hover:shadow-md transition-all duration-scale-lg">
+            <template #title>
+              <div class="flex items-center gap-sm">
+                <Icons
+                  name="i-lucide-ruler"
+                  class="text-primary"
+                />
+                <span>Breakpoint Ruler 断点标尺</span>
+              </div>
+            </template>
+            <template #content>
               <div
-                class="rounded-scale-md cursor-pointer hover:bg-muted/70 transition-colors duration-scale-md"
-                @click="copyToClipboard('md:hidden lg:block')"
+                class="relative h-20 w-full overflow-hidden rounded-scale-md component-border bg-muted/30"
+                role="img"
+                aria-label="Breakpoint ruler"
               >
-                <CScrollbar class="min-w-0">
-                  <pre class="m-0 bg-muted/50 p-padding-md fs-sm">
+                <!-- Current Width Indicator -->
+                <div
+                  class="absolute top-0 h-full w-px bg-accent z-10 transition-all duration-scale-lg"
+                  :style="rulerIndicatorStyle"
+                >
+                  <div
+                    class="absolute -top-[var(--spacing-xs)] left-1/2 -translate-x-1/2 w-[var(--spacing-sm)] h-[var(--spacing-sm)] bg-accent rounded-full border-2 border-solid border-background"
+                  />
+                </div>
+
+                <!-- Breakpoint Markers -->
+                <div
+                  v-for="[key, value] in breakpointEntries"
+                  :key="key"
+                  class="absolute top-0 flex h-full flex-col items-center transition-colors"
+                  :style="{ left: `${breakpointPercent(value)}%` }"
+                >
+                  <div
+                    class="h-[var(--spacing-xl)] w-px shrink-0 transition-colors"
+                    :class="isBreakpointActive(value) ? 'bg-accent' : 'bg-border'"
+                  />
+                  <span
+                    class="mt-margin-xs shrink-0 rounded px-padding-xs fs-xs font-medium cursor-pointer hover:scale-110 transition-transform duration-scale-lg interactive-focus-ring"
+                    tabindex="0"
+                    :class="
+                      isBreakpointActive(value)
+                        ? 'bg-accent text-accent-foreground'
+                        : 'bg-muted text-muted-foreground'
+                    "
+                    @click="copyToClipboard(`${key}:`, `${key}: prefix`)"
+                    @keydown.enter.prevent="copyToClipboard(`${key}:`, `${key}: prefix`)"
+                    @keydown.space.prevent="copyToClipboard(`${key}:`, `${key}: prefix`)"
+                  >
+                    {{ key }}: {{ value }}
+                  </span>
+                </div>
+              </div>
+            </template>
+          </Card>
+
+          <!-- Breakpoint Reference Table -->
+          <Card class="component-border hover:shadow-md transition-all duration-scale-lg">
+            <template #title>
+              <div class="flex items-center gap-sm">
+                <Icons
+                  name="i-lucide-table"
+                  class="text-primary"
+                />
+                <span class="font-semibold">Breakpoint Reference 断点参考表</span>
+                <Tag
+                  :value="`${breakpointItems.length} breakpoints`"
+                  severity="secondary"
+                />
+              </div>
+            </template>
+            <template #content>
+              <CScrollbar class="w-full min-w-0">
+                <table class="w-full border-collapse">
+                  <thead>
+                    <tr class="border-b-default">
+                      <th class="text-left p-padding-sm text-muted-foreground fs-sm font-medium">
+                        Scale
+                      </th>
+                      <th class="text-left p-padding-sm text-muted-foreground fs-sm font-medium">
+                        Min Width
+                      </th>
+                      <th class="text-left p-padding-sm text-muted-foreground fs-sm font-medium">
+                        UnoCSS Prefix
+                      </th>
+                      <th class="text-left p-padding-sm text-muted-foreground fs-sm font-medium">
+                        Description
+                      </th>
+                      <th class="text-left p-padding-sm text-muted-foreground fs-sm font-medium">
+                        Status
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr
+                      v-for="item in breakpointItems"
+                      :key="item.key"
+                      class="border-b border-solid border-border/50 hover:bg-muted/30 transition-colors duration-scale-lg"
+                      :class="{ 'bg-accent/5': isBreakpointActive(item.value) }"
+                    >
+                      <td class="p-padding-sm">
+                        <Tag
+                          :value="item.key"
+                          :severity="isBreakpointActive(item.value) ? 'success' : 'secondary'"
+                        />
+                      </td>
+                      <td class="p-padding-sm font-mono">{{ item.value }}px</td>
+                      <td class="p-padding-sm">
+                        <div class="flex gap-xs flex-wrap">
+                          <div
+                            class="fs-xs font-mono bg-muted/30 px-padding-xs py-0.5 rounded cursor-pointer select-none transition-all duration-scale-lg ease-in-out hover:bg-success/20 hover:text-success active:scale-95 text-muted-foreground interactive-focus-ring"
+                            tabindex="0"
+                            @click="copyToClipboard(item.minWidthClass)"
+                            @keydown.enter.prevent="copyToClipboard(item.minWidthClass)"
+                            @keydown.space.prevent="copyToClipboard(item.minWidthClass)"
+                          >
+                            {{ item.minWidthClass }}
+                          </div>
+                          <div
+                            class="fs-xs font-mono bg-muted/30 px-padding-xs py-0.5 rounded cursor-pointer select-none transition-all duration-scale-lg ease-in-out hover:bg-warn/20 hover:text-warn active:scale-95 text-muted-foreground interactive-focus-ring"
+                            tabindex="0"
+                            @click="copyToClipboard(item.maxWidthClass)"
+                            @keydown.enter.prevent="copyToClipboard(item.maxWidthClass)"
+                            @keydown.space.prevent="copyToClipboard(item.maxWidthClass)"
+                          >
+                            {{ item.maxWidthClass }}
+                          </div>
+                        </div>
+                      </td>
+                      <td class="p-padding-sm text-muted-foreground fs-sm">
+                        {{ item.description }}
+                      </td>
+                      <td class="p-padding-sm">
+                        <div
+                          class="w-[var(--spacing-sm)] h-[var(--spacing-sm)] rounded-full"
+                          :class="isBreakpointActive(item.value) ? 'bg-success' : 'bg-muted'"
+                        />
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </CScrollbar>
+            </template>
+          </Card>
+
+          <!-- Grid Demo -->
+          <Card class="component-border hover:shadow-md transition-all duration-scale-lg">
+            <template #title>
+              <div class="flex items-center gap-sm">
+                <Icons
+                  name="i-lucide-grid-3x3"
+                  class="text-primary"
+                />
+                <span class="font-semibold">Responsive Grid Demo 响应式网格演示</span>
+                <Tag
+                  :value="`${gridCols} columns`"
+                  severity="info"
+                />
+              </div>
+            </template>
+            <template #content>
+              <div class="flex flex-col gap-md">
+                <p class="text-muted-foreground fs-sm">
+                  模拟视窗宽度为
+                  <span class="font-mono font-bold">{{ effectiveWidth }}px</span>
+                  ， 当前断点
+                  <span class="font-mono font-bold">{{ activeBreakpoint ?? '< xs' }}</span>
+                  ， 网格列数
+                  <span class="font-mono font-bold">
+                    {{ gridCols }}
+                  </span>
+                </p>
+
+                <!-- Simulated Viewport -->
+                <CScrollbar class="flex justify-center pb-gap-md min-w-0">
+                  <div
+                    class="flex shrink-0 flex-col rounded-scale-lg component-border bg-card shadow-lg transition-all duration-scale-lg w-full"
+                  >
+                    <div
+                      class="border-b-default px-padding-md py-padding-sm text-center fs-sm text-muted-foreground flex items-center justify-center gap-sm"
+                    >
+                      <Icons
+                        name="i-lucide-monitor"
+                        class="fs-lg"
+                      />
+                      <span>Viewport {{ effectiveWidth }}px · Grid {{ gridCols }} col</span>
+                    </div>
+                    <div
+                      class="grid gap-sm p-padding-md"
+                      :style="gridTemplateStyle"
+                    >
+                      <div
+                        v-for="n in 12"
+                        :key="n"
+                        class="flex aspect-video items-center justify-center rounded-scale-md component-border bg-muted/50 font-mono fs-lg font-medium text-foreground hover:bg-accent/10 hover:border-accent/50 transition-colors duration-scale-lg"
+                      >
+                        {{ n }}
+                      </div>
+                    </div>
+                  </div>
+                </CScrollbar>
+              </div>
+            </template>
+          </Card>
+
+          <!-- Usage Examples -->
+          <Card class="component-border">
+            <template #title>
+              <div class="flex items-center gap-sm">
+                <Icons
+                  name="i-lucide-code"
+                  class="text-primary"
+                />
+                <span class="font-semibold">Usage Examples 使用示例</span>
+              </div>
+            </template>
+            <template #content>
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-lg">
+                <div class="flex flex-col gap-sm">
+                  <h4 class="fs-sm font-semibold text-foreground mb-margin-xs">
+                    最小宽度 (Min-Width Mobile First)
+                  </h4>
+                  <div
+                    class="rounded-scale-md cursor-pointer hover:bg-muted/70 transition-colors duration-scale-lg interactive-focus-ring"
+                    tabindex="0"
+                    @click="copyToClipboard('md:hidden lg:block')"
+                    @keydown.enter.prevent="copyToClipboard('md:hidden lg:block')"
+                    @keydown.space.prevent="copyToClipboard('md:hidden lg:block')"
+                  >
+                    <CScrollbar class="min-w-0">
+                      <pre class="m-0 bg-muted/50 p-padding-md fs-sm">
     <code class="text-foreground font-mono">
                     &lt;div class="hidden md:block"&gt;
   MD 及以上可见
@@ -574,102 +663,126 @@ const deviceSyncInfo = computed<{ deviceType: string; breakpoint: BreakpointKey 
 &lt;div class="md:hidden lg:block"&gt;
   MD 隐藏，LG 及以上可见
 &lt;/div&gt;</code></pre>
-                </CScrollbar>
-              </div>
-            </div>
-            <div class="flex flex-col gap-sm">
-              <h4 class="fs-sm font-semibold text-foreground mb-margin-xs">最大宽度 (Max-Width)</h4>
-              <div
-                class="rounded-scale-md cursor-pointer hover:bg-muted/70 transition-colors duration-scale-md"
-                @click="copyToClipboard('<md:text-sm')"
-              >
-                <CScrollbar class="min-w-0">
-                  <pre
-                    class="m-0 bg-muted/50 p-padding-md fs-sm"
-                  ><code class="text-foreground font-mono">&lt;div class="&lt;md:text-sm"&gt;
+                    </CScrollbar>
+                  </div>
+                </div>
+                <div class="flex flex-col gap-sm">
+                  <h4 class="fs-sm font-semibold text-foreground mb-margin-xs">
+                    最大宽度 (Max-Width)
+                  </h4>
+                  <div
+                    class="rounded-scale-md cursor-pointer hover:bg-muted/70 transition-colors duration-scale-lg interactive-focus-ring"
+                    tabindex="0"
+                    @click="copyToClipboard('<md:text-sm')"
+                    @keydown.enter.prevent="copyToClipboard('<md:text-sm')"
+                    @keydown.space.prevent="copyToClipboard('<md:text-sm')"
+                  >
+                    <CScrollbar class="min-w-0">
+                      <pre
+                        class="m-0 bg-muted/50 p-padding-md fs-sm"
+                      ><code class="text-foreground font-mono">&lt;div class="&lt;md:text-sm"&gt;
   移动端小号文字
 &lt;/div&gt;
 
 &lt;div class="&lt;lg:grid-cols-1"&gt;
   LG 以下单列布局
 &lt;/div&gt;</code></pre>
-                </CScrollbar>
-              </div>
-            </div>
-            <div class="flex flex-col gap-sm">
-              <h4 class="fs-sm font-semibold text-foreground mb-margin-xs">
-                响应式网格 (Responsive Grid)
-              </h4>
-              <div
-                class="rounded-scale-md cursor-pointer hover:bg-muted/70 transition-colors duration-scale-md"
-                @click="copyToClipboard('grid-cols-1 sm:grid-cols-2 lg:grid-cols-4')"
-              >
-                <CScrollbar class="min-w-0">
-                  <pre
-                    class="m-0 bg-muted/50 p-padding-md fs-sm"
-                  ><code class="text-foreground font-mono">&lt;div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4"&gt;
+                    </CScrollbar>
+                  </div>
+                </div>
+                <div class="flex flex-col gap-sm">
+                  <h4 class="fs-sm font-semibold text-foreground mb-margin-xs">
+                    响应式网格 (Responsive Grid)
+                  </h4>
+                  <div
+                    class="rounded-scale-md cursor-pointer hover:bg-muted/70 transition-colors duration-scale-lg interactive-focus-ring"
+                    tabindex="0"
+                    @click="copyToClipboard('grid-cols-1 sm:grid-cols-2 lg:grid-cols-4')"
+                    @keydown.enter.prevent="
+                      copyToClipboard('grid-cols-1 sm:grid-cols-2 lg:grid-cols-4')
+                    "
+                    @keydown.space.prevent="
+                      copyToClipboard('grid-cols-1 sm:grid-cols-2 lg:grid-cols-4')
+                    "
+                  >
+                    <CScrollbar class="min-w-0">
+                      <pre
+                        class="m-0 bg-muted/50 p-padding-md fs-sm"
+                      ><code class="text-foreground font-mono">&lt;div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4"&gt;
   &lt;!-- 响应式网格项 --&gt;
 &lt;/div&gt;</code></pre>
-                </CScrollbar>
-              </div>
-            </div>
-            <div class="flex flex-col gap-sm">
-              <h4 class="fs-sm font-semibold text-foreground mb-margin-xs">
-                响应式间距 (Responsive Spacing)
-              </h4>
-              <div
-                class="rounded-scale-md cursor-pointer hover:bg-muted/70 transition-colors duration-scale-md"
-                @click="copyToClipboard('p-padding-sm md:p-padding-md lg:p-padding-lg')"
-              >
-                <CScrollbar class="min-w-0">
-                  <pre
-                    class="m-0 bg-muted/50 p-padding-md fs-sm"
-                  ><code class="text-foreground font-mono">&lt;div class="p-padding-sm md:p-padding-md lg:p-padding-lg"&gt;
+                    </CScrollbar>
+                  </div>
+                </div>
+                <div class="flex flex-col gap-sm">
+                  <h4 class="fs-sm font-semibold text-foreground mb-margin-xs">
+                    响应式间距 (Responsive Spacing)
+                  </h4>
+                  <div
+                    class="rounded-scale-md cursor-pointer hover:bg-muted/70 transition-colors duration-scale-lg interactive-focus-ring"
+                    tabindex="0"
+                    @click="copyToClipboard('p-padding-sm md:p-padding-md lg:p-padding-lg')"
+                    @keydown.enter.prevent="
+                      copyToClipboard('p-padding-sm md:p-padding-md lg:p-padding-lg')
+                    "
+                    @keydown.space.prevent="
+                      copyToClipboard('p-padding-sm md:p-padding-md lg:p-padding-lg')
+                    "
+                  >
+                    <CScrollbar class="min-w-0">
+                      <pre
+                        class="m-0 bg-muted/50 p-padding-md fs-sm"
+                      ><code class="text-foreground font-mono">&lt;div class="p-padding-sm md:p-padding-md lg:p-padding-lg"&gt;
   响应式内边距
 &lt;/div&gt;</code></pre>
-                </CScrollbar>
+                    </CScrollbar>
+                  </div>
+                </div>
               </div>
-            </div>
-          </div>
-        </template>
-      </Card>
+            </template>
+          </Card>
 
-      <!-- Quick Reference -->
-      <Card class="component-border bg-gradient-to-br from-primary/5 to-accent/5">
-        <template #title>
-          <div class="flex items-center gap-sm">
-            <Icons
-              name="i-lucide-zap"
-              class="text-primary"
-            />
-            <span class="font-semibold">Quick Reference 快速参考</span>
-          </div>
-        </template>
-        <template #content>
-          <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-md">
-            <div
-              v-for="[key, value] in breakpointEntries"
-              :key="key"
-              class="flex flex-col gap-xs p-padding-md bg-card rounded-scale-md component-border cursor-pointer hover:border-accent/50 hover:shadow-md transition-all duration-scale-md"
-              @click="copyToClipboard(`${key}:`)"
-            >
-              <div class="flex items-center justify-between">
-                <Tag
-                  :value="key"
-                  severity="info"
+          <!-- Quick Reference -->
+          <Card class="component-border bg-gradient-to-br from-primary/5 to-accent/5">
+            <template #title>
+              <div class="flex items-center gap-sm">
+                <Icons
+                  name="i-lucide-zap"
+                  class="text-primary"
                 />
-                <span class="font-mono fs-xs text-muted-foreground">{{ value }}px</span>
+                <span class="font-semibold">Quick Reference 快速参考</span>
               </div>
-              <div class="font-mono fs-sm text-foreground">{{ key }}:class</div>
-            </div>
-          </div>
-          <p class="mt-gap-md text-muted-foreground fs-sm">
-            断点前缀遵循 Mobile-First 设计原则：
-            <span class="bg-muted px-padding-xs rounded">md:</span>
-            表示 ≥768px 时应用样式
-          </p>
-        </template>
-      </Card>
-    </div>
-  </CScrollbar>
+            </template>
+            <template #content>
+              <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-md">
+                <div
+                  v-for="[key, value] in breakpointEntries"
+                  :key="key"
+                  class="flex flex-col gap-xs p-padding-md bg-card rounded-scale-md component-border cursor-pointer hover:border-accent/50 hover:shadow-md transition-all duration-scale-lg interactive-focus-ring"
+                  tabindex="0"
+                  @click="copyToClipboard(`${key}:`)"
+                  @keydown.enter.prevent="copyToClipboard(`${key}:`)"
+                  @keydown.space.prevent="copyToClipboard(`${key}:`)"
+                >
+                  <div class="flex items-center justify-between">
+                    <Tag
+                      :value="key"
+                      severity="info"
+                    />
+                    <span class="font-mono fs-xs text-muted-foreground">{{ value }}px</span>
+                  </div>
+                  <div class="font-mono fs-sm text-foreground">{{ key }}:class</div>
+                </div>
+              </div>
+              <p class="mt-gap-md text-muted-foreground fs-sm">
+                断点前缀遵循 Mobile-First 设计原则：
+                <span class="bg-muted px-padding-xs rounded">md:</span>
+                表示 ≥768px 时应用样式
+              </p>
+            </template>
+          </Card>
+        </div>
+      </div>
+    </CScrollbar>
+  </div>
 </template>

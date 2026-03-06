@@ -1,6 +1,5 @@
 <script setup lang="tsx">
 import type { FormValues, Schema } from '@/components/SchemaForm'
-import { SchemaForm } from '@/components/SchemaForm'
 import { AUTH_ENABLED } from '@/constants/router'
 import { LOGIN_CARD_MAX_WIDTH } from '@/constants/login'
 import { useDeviceStore } from '@/stores/modules/device'
@@ -8,9 +7,12 @@ import { useUserStore } from '@/stores/modules/user'
 import { useThemeSwitch } from '@/hooks/modules/useThemeSwitch'
 import { useLocale } from '@/hooks/modules/useLocale'
 import type { SupportedLocale } from '@/locales'
-import { useI18n } from 'vue-i18n'
 
-const { t } = useI18n()
+interface SchemaFormRef {
+  submit?: () => void
+}
+
+const formRef = ref<SchemaFormRef | null>(null)
 const userStore = useUserStore()
 const deviceStore = useDeviceStore()
 const isMobileLayout = computed(() => deviceStore.isMobileLayout)
@@ -18,12 +20,14 @@ const toolbarIconSize = computed(() => (isMobileLayout.value ? 'xl' : '2xl'))
 const toolbarSelectSize = computed(() => (isMobileLayout.value ? 'large' : 'small'))
 const { isDark, isAnimating, toggleThemeWithAnimation } = useThemeSwitch()
 const { locale, switchLocale, supportedLocales } = useLocale()
+const t = $t
+
+const login_card_max_width = LOGIN_CARD_MAX_WIDTH
 
 const localeOptions = computed(() =>
   supportedLocales.map(l => ({ value: l.key as SupportedLocale, label: `${l.flag} ${l.name}` }))
 )
 
-const formRef = ref<InstanceType<typeof SchemaForm> | null>(null)
 const formValues = ref<FormValues>({} as FormValues)
 const loading = ref(false)
 const errorMessage = ref('')
@@ -236,16 +240,16 @@ async function handleSubmit(values: FormValues) {
 
 // 登录卡片最大宽度（语义化常量）
 .login-card {
-  --login-card-max-width: v-bind(LOGIN_CARD_MAX_WIDTH);
+  --login-card-max-width: v-bind(login_card_max_width);
 }
 
 // 渐变背景：使用配色系统 CSS 变量，无硬编码
 .login-bg {
   background: linear-gradient(
     135deg,
-    rgb(var(--muted) / 0.15) 0%,
+    rgb(var(--muted) / 15%) 0%,
     rgb(var(--background)) 40%,
-    rgb(var(--muted) / 0.25) 100%
+    rgb(var(--muted) / 25%) 100%
   );
 }
 

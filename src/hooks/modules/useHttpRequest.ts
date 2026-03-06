@@ -1,4 +1,3 @@
-import { computed } from 'vue'
 import type { ComputedRef, Ref } from 'vue'
 import { useRequest } from 'alova/client'
 import type { AlovaGenerics, Method } from 'alova'

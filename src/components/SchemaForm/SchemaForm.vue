@@ -34,6 +34,10 @@
             :form="{ ...$form, modelValue: props.modelValue ?? {}, setFieldValue }"
             :disabled="disabled"
             :options-cache-t-t-l="optionsCacheTTL"
+            :options-map="optionsMap"
+            :loading-map="loadingMap"
+            :error-map="errorMap"
+            :retry-field="retryField"
             :global-layout="mergedLayout"
             :global-style="mergedStyle"
             :column-by-field="columnByField"
@@ -49,6 +53,10 @@
             :form="{ ...$form, modelValue: props.modelValue ?? {}, setFieldValue }"
             :disabled="disabled"
             :options-cache-t-t-l="optionsCacheTTL"
+            :options-map="optionsMap"
+            :loading-map="loadingMap"
+            :error-map="errorMap"
+            :retry-field="retryField"
             :global-layout="mergedLayout"
             :global-style="mergedStyle"
             :column-by-field="columnByField"
@@ -62,7 +70,7 @@
             :total-steps="schema.steps.length"
             :form="$form"
             :next-enabled="stepAccessibility[activeStep + 1] ?? false"
-            @next="form => nextStep(form)"
+            @next="_form => nextStep(_form)"
             @prev="prevStep"
           />
         </template>
@@ -73,6 +81,10 @@
             :form="{ ...$form, modelValue: props.modelValue ?? {}, setFieldValue }"
             :disabled="disabled"
             :options-cache-t-t-l="optionsCacheTTL"
+            :options-map="optionsMap"
+            :loading-map="loadingMap"
+            :error-map="errorMap"
+            :retry-field="retryField"
             :global-layout="mergedLayout"
             :global-style="mergedStyle"
             :col-style="colStyle"
@@ -85,7 +97,7 @@
 
       <!-- Persistence (Implicit) -->
       <div class="hidden">
-        {{ persistValues($form.values) }}
+        {{ persistValues(getPersistableValues($form.values)) }}
       </div>
       <!-- Capture $form API for expose -->
       <div class="hidden">
@@ -99,7 +111,6 @@
 import { deepClone } from '@/utils/lodashes'
 import { useLayoutStore } from '@/stores/modules/layout'
 import { Form } from '@primevue/forms'
-import { computed, nextTick, ref, watch } from 'vue'
 import {
   DefaultRenderer,
   SectionsRenderer,
@@ -108,6 +119,7 @@ import {
   StepsRenderer,
 } from './components'
 import {
+  useAsyncOptions,
   useFormActions,
   useFormMemory,
   useFormSync,
@@ -204,7 +216,7 @@ const {
   valuesRef,
   formApiRef,
   preview: previewRef,
-  emit: (event: 'update:modelValue', value: FormValues) => {
+  emit: (_event: 'update:modelValue', value: FormValues) => {
     emit('update:modelValue', value)
   },
 })
@@ -238,6 +250,13 @@ const { persistValues, loadPersistedValues } = usePersistence({
   persist: persistRef,
 })
 
+function getPersistableValues(values: unknown): Record<string, unknown> {
+  if (values && typeof values === 'object') {
+    return values as Record<string, unknown>
+  }
+  return {}
+}
+
 // 4. 初始化 useLayout（布局和样式）
 const {
   mergedLayout,
@@ -249,6 +268,14 @@ const {
 } = useLayout({
   schema: schemaRef,
   formContainerRef,
+})
+
+// 4.5 V2 异步选项控制器（optionsMap / loadingMap / errorMap / retryField）
+const modelValueForOptions = computed(() => props.modelValue ?? {})
+const { optionsMap, loadingMap, errorMap, retryField } = useAsyncOptions({
+  schema: schemaRef,
+  modelValue: modelValueForOptions,
+  optionsCacheTTL: optionsCacheTTL.value ?? 60_000,
 })
 
 // ==================== 辅助函数（需要在 hooks 之前定义）====================

@@ -228,25 +228,26 @@ onUnmounted(() => {
 <style lang="scss">
 /* Message 居中 Toast：强制正中央（top/left 50% + transform 居中对齐） */
 .p-toast.p-toast-center {
-  top: var(--spacing-3xl) !important;
-  left: 50% !important;
-  right: auto !important;
-  bottom: auto !important;
+  inset: var(--spacing-3xl) auto auto 50% !important;
   transform: translate(-50%, -50%) !important;
 }
+
 /* Toast 消息基础：相对定位 + 全宽 */
 .p-toast-message {
   position: relative !important;
   width: 100% !important;
+
   .p-toast-message-content {
     display: flex !important;
     justify-content: space-between !important;
   }
 }
+
 /* 关闭按钮贴右上角（仅对有关闭按钮的 Toast：排除 center） */
 .p-toast:not(.p-toast-center) .p-toast-message .p-toast-message-content {
   padding-right: calc(var(--spacing-lg) + var(--spacing-xs)) !important;
 }
+
 .p-toast:not(.p-toast-center) .p-toast-message .p-toast-close-button {
   position: absolute !important;
   top: 0 !important;

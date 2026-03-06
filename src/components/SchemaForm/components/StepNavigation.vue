@@ -29,10 +29,8 @@
 
 <script setup lang="ts">
 import type { FormApiLike } from '../utils/types'
-import Button from 'primevue/button'
-import { useI18n } from 'vue-i18n'
 
-const { t } = useI18n()
+const t = $t
 
 defineProps<{
   activeStep: number

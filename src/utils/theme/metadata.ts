@@ -17,7 +17,7 @@
  * 2. 提供给 UnoCSS 配置做动态 colors 映射（避免硬编码）
  *
  * 与 PrimeVue 主题链的关系：本文件由 engine.ts 使用并参与生成 ThemeCssVars（写入 :root）；
- * PrimeVue preset（primevue-preset.ts）仅消费已写入的 :root 变量，不直接引用本文件。
+ * PrimeVue preset（primevuePreset.ts）仅消费已写入的 :root 变量，不直接引用本文件。
  */
 export const COLOR_FAMILIES = {
   singleTokens: ['border', 'input', 'ring', 'background', 'foreground'] as const,
@@ -71,7 +71,7 @@ export const THEME_ENGINE = {
   dangerDefault: '#ef4444',
   dangerDefaultFg: '#fafafa',
   warnDefault: '#ca8a04',
-  successDefault: '#22c55e',
+  successDefault: '#10b981',
   infoDefault: '#0ea5e9',
   helpDefault: '#a855f7', // Purple-500
 

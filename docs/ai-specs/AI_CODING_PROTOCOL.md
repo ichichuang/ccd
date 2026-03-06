@@ -18,7 +18,7 @@
 **黄金样本（必须参考模仿）**：
 
 - **DataTable 列 body**：`docs/ai-specs/GOLDEN_SAMPLES/DataTableBodyColumn.vue` — 含 `lang="tsx"`、正确 body JSX 写法
-- **完整示例**：`src/views/example/DataTable/configs/customColumnConfig.tsx` — 含 body、filterRenderer、customFooter
+- **完整示例**：`src/views/example/data-table/configs/customColumnConfig.tsx` — 含 body、filterRenderer、customFooter
 
 ### 1.1a 任务分类检查表
 
@@ -85,10 +85,10 @@
 
 ## 3. 黄金样本索引（DataTable 列 body 必模仿）
 
-| 场景                               | 黄金样本路径                                                 | 关键点                                        |
-| ---------------------------------- | ------------------------------------------------------------ | --------------------------------------------- |
-| DataTable 列 body 自定义           | `docs/ai-specs/GOLDEN_SAMPLES/DataTableBodyColumn.vue`       | `lang="tsx"`、`body: row => <span>...</span>` |
-| 完整列配置（含 filterRenderer 等） | `src/views/example/DataTable/configs/customColumnConfig.tsx` | 独立 .tsx 文件，全部 JSX 语法                 |
+| 场景                               | 黄金样本路径                                                  | 关键点                                        |
+| ---------------------------------- | ------------------------------------------------------------- | --------------------------------------------- |
+| DataTable 列 body 自定义           | `docs/ai-specs/GOLDEN_SAMPLES/DataTableBodyColumn.vue`        | `lang="tsx"`、`body: row => <span>...</span>` |
+| 完整列配置（含 filterRenderer 等） | `src/views/example/data-table/configs/customColumnConfig.tsx` | 独立 .tsx 文件，全部 JSX 语法                 |
 
 ## 4. 规范引用链
 

@@ -9,7 +9,6 @@
  * v7.2 优化：
  * - 移除重复的标题更新逻辑，标题更新统一由全局 usePageTitle 实例负责
  */
-import { computed } from 'vue'
 import type { SupportedLocale } from '@/locales'
 import { supportedLocales } from '@/locales'
 import { useI18n } from 'vue-i18n'

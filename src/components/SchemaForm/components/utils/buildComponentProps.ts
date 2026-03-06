@@ -74,7 +74,7 @@ export function buildComponentProps({
   }
 
   // 为特定组件设置默认的 optionLabel 和 optionValue
-  if (COMPONENTS_WITH_OPTIONS.includes(column.component)) {
+  if ((COMPONENTS_WITH_OPTIONS as readonly string[]).includes(column.component)) {
     if (componentProps.optionLabel === undefined) {
       componentProps.optionLabel = DEFAULT_OPTION_LABEL
     }

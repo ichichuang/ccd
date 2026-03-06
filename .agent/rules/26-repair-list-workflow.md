@@ -1,68 +1,45 @@
 ---
-description: Repair list workflow — repair_list.txt creation, writing, progress tracking, and clearing
+description: Repair list workflow — track issues via repair_list.txt
 globs: repair_list.txt, **/*
 alwaysApply: true
 ---
 
-# Repair List Workflow (repair_list.txt)
+<rule>
+  <context>
+    This rule defines how to create, read, update, and clear the <code>repair_list.txt</code> file in the project root.
+    The file is used as a lightweight backlog for issues that should be fixed now or later and must never be committed to Git.
+  </context>
 
-## 1. File Location and Creation
+  <workflow>
+    <step>Ensure the file <code>repair_list.txt</code> exists in the project root; if it does not exist, you may create it.</step>
+    <step>When the user asks to “check issues”, “audit”, “fix”, or “compliance check”, collect all detected issues into an in-memory list first.</step>
+    <step>In Ask mode, after reporting issues, ask the user whether to write them into <code>repair_list.txt</code> for later fixes; in Agent mode, write them automatically.</step>
+    <step>When writing the file, include a header with title, generated timestamp, and a summary line in the form <code>Pending: N | Resolved: M</code>, followed by separate <code>=== Pending (N) ===</code> and <code>=== Resolved (M) ===</code> sections.</step>
+    <step>When reading an existing repair list, parse the header and sections, then find all lines under <code>=== Pending</code> whose status marker is <code>[⬜]</code>.</step>
+    <step>Process pending items in order: for each <code>[⬜]</code> item, attempt to fix the referenced issue in the codebase.</step>
+    <step>After successfully fixing an item, change its status marker from <code>[⬜]</code> to <code>[✅]</code>, move it from the Pending section to the Resolved section, and update the Pending/Resolved counts accordingly.</step>
+    <step>After all items are marked <code>[✅]</code> and a re-check confirms there are no remaining issues, clear the file content but keep an empty <code>repair_list.txt</code> ready for the next run.</step>
+  </workflow>
 
-- Path: project root `repair_list.txt`
-- If missing, AI may create and populate it
-- Included in .gitignore; do not commit to version control
+  <constraints>
+    <rule>Store <code>repair_list.txt</code> in the project root and ensure it remains ignored by Git.</rule>
+    <rule>Use plain text format (not Markdown) with the documented header and section titles.</rule>
+    <rule>Use <code>[⬜]</code> (pending) and <code>[✅]</code> (resolved) as the only status markers for items.</rule>
+    <rule>Accept both English section headers and Chinese headers <code>待解决</code>/<code>已解决</code> for parsing.</rule>
+  </constraints>
 
-## 2. When to Use
+  <forbidden>
+    <item>Clearing <code>repair_list.txt</code> before all issues are truly resolved and validated.</item>
+    <item>Committing <code>repair_list.txt</code> or its contents to Git.</item>
+  </forbidden>
 
-Enable this workflow when the user requests "check issues", "audit", "fix", "compliance check", etc.
+  <communication>
+    Output Requirement: Always respond to the user, write code comments, and generate CLI/git logs in fluent Chinese when explaining detected issues, repair plans, and updates to <code>repair_list.txt</code>, while keeping file paths and status markers in their original form.
+  </communication>
 
-## 3. Mode Behavior
-
-- **Ask mode**: After the check, ask the user: "Add the above issues to repair_list.txt for later fixing?"
-- **Agent mode**: After the check, write issues to repair_list.txt automatically
-
-## 4. File Format (plain txt, not md)
-
-### 4.1 Basic Structure
-
-```
-Repair List
-Generated: YYYY-MM-DD HH:mm
-Pending: N | Resolved: M
-
-=== Pending (N) ===
-1. [⬜] file:line - description
-2. [⬜] file:start-end - [type] description
-
-=== Resolved (M) ===
-3. [✅] file:line - resolved description
-```
-
-### 4.2 Line Number Format
-
-- **Single line**: `file:123`
-- **Line range**: `file:123-125`
-
-### 4.3 Pending / Resolved
-
-- **Status markers** (required at the start of each entry):
-  - Pending: `[⬜]` (empty box, Unicode U+2B1C)
-  - Resolved: `[✅]` (check, Unicode U+2705)
-- Pending: `number. [⬜] file:line - description`
-- Resolved: `number. [✅] file:line - description`
-- Section titles `=== Pending (N) ===` / `=== Resolved (M) ===` help AI parsing and quick scanning
-
-### 4.4 Optional Category Tags
-
-- Add `[type]` before the description for batch processing, e.g. `[transition]`, `[hardcode]`, `[import]`
-
-## 5. Repair Flow
-
-- If repair_list.txt exists: read it, identify `[⬜]` entries under `=== Pending ===`, fix in order
-- For each resolved item: change `[⬜]` to `[✅]`, move to `=== Resolved ===`, update the stats line (Pending: N | Resolved: M)
-- When all are `[✅]` and a final check shows no remaining issues: clear repair_list.txt content (keep the file for reuse)
-
-## 6. Forbidden
-
-- Do NOT clear repair_list.txt before all items are confirmed resolved
-- Do NOT commit repair_list.txt to git
+  <examples>
+    <example>
+      A pending item example: <code>1. [⬜] src/views/example/index.vue:42-48 - [layout] header spacing is inconsistent</code>.
+    </example>
+  </examples>
+</rule>

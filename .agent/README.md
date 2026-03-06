@@ -125,15 +125,9 @@ When the Agent starts a task, it should:
 
 ## Rule Correspondence with Cursor
 
-Although `.agent` is for Antigravity Agent and `.cursor` is for the Cursor AI editor, their rules and skills should stay aligned:
+To maintain a Single Source of Truth, the `.agent` configuration has been unified to strictly mirror `.cursor` configuration.
 
-- `.agent/rules/00-primary-directive.md` ↔ `.cursor/rules/00-core-architecture.mdc`
-- `.agent/rules/10-ui-architecture.md` ↔ `.cursor/rules/20-ui-styling.mdc`
-- `.agent/rules/12-logic-awareness.md` ↔ `.cursor/rules/10-logic-layer.mdc`
-- `.agent/rules/15-toolchain-first.md` ↔ `.cursor/rules/15-utils-and-hooks-first.mdc`
-- `.agent/rules/25-adaptive-layout.md` ↔ `.cursor/rules/22-layouts.mdc`
-- `.agent/rules/25-html-tag-semantics.md` ↔ `.cursor/rules/25-html-tag-semantics.mdc`
-- `.agent/rules/08-auth-login-flow.md` ↔ `.cursor/rules/08-auth-login-flow.mdc`
-- `.agent/rules/26-repair-list-workflow.md` ↔ `.cursor/rules/26-repair-list-workflow.mdc`
+- All rules in `.agent/rules/*.md` exactly match `.cursor/rules/*.mdc`.
+- All skills in `.agent/skills/*.md` exactly match `.cursor/skills/*.md`.
 
-Note: `.agent`-only rules (e.g. `22-verification.md`, `20-code-standards.md`) may be scattered across other Cursor rule files.
+Any updates to architectural constants or instructions should be replicated across both directories to ensure all AI agents maintain the same product-minded enforcement (such as the UX Watchdog rules).

@@ -16,8 +16,6 @@
 </template>
 
 <script setup lang="ts">
-import AutoComplete from 'primevue/autocomplete'
-import { computed, ref, watch } from 'vue'
 import type { OptionItem } from '../../utils/types'
 
 interface WrappedAutoCompleteProps {
@@ -33,8 +31,6 @@ interface WrappedAutoCompleteProps {
   optionValue?: string
   class?: string | string[]
   style?: Record<string, string>
-  /** rest 透传 PrimeVue AutoComplete */
-  [key: string]: unknown
 }
 
 const props = withDefaults(defineProps<WrappedAutoCompleteProps>(), {
@@ -72,6 +68,7 @@ const baseOptions = computed<OptionItem[]>(() => {
  * 建议列表
  */
 const suggestions = ref<OptionItem[]>([])
+const attrs = useAttrs()
 
 /**
  * 初始化建议列表
@@ -145,21 +142,7 @@ const internalValue = computed({
  * 提取其他 props
  */
 const restProps = computed(() => {
-  const {
-    modelValue: _modelValue,
-    name: _name,
-    disabled: _disabled,
-    readonly: _readonly,
-    placeholder: _placeholder,
-    options: _options,
-    completeMethod: _completeMethod,
-    optionLabel: _optionLabel,
-    optionValue: _optionValue,
-    class: _class,
-    style: _style,
-    onFocus: _onFocus,
-    ...rest
-  } = props
+  const { onFocus: _onFocus, onComplete: _onComplete, ...rest } = attrs as Record<string, unknown>
   return rest
 })
 </script>

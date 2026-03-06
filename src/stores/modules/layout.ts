@@ -50,6 +50,8 @@ export const useLayoutStore = defineStore('layout', {
     isPageLoading: false,
     // [NEW] 用户手动调整标记：防止自动适配覆盖用户偏好
     userAdjusted: false,
+    /** 移动端抽屉侧边栏打开状态（运行时状态，不持久化） */
+    mobileDrawerOpen: false,
     /** 表单记忆指针（formId -> storageKey） */
     formMemoryPointers: {} as Record<string, string>,
   }),
@@ -203,6 +205,18 @@ export const useLayoutStore = defineStore('layout', {
       this.sidebarCollapse = !this.sidebarCollapse
       this.userAdjusted = true // 标记为用户手动调整
     },
+    /**
+     * 移动端抽屉导航开关
+     */
+    toggleMobileDrawer() {
+      this.mobileDrawerOpen = !this.mobileDrawerOpen
+    },
+    /**
+     * 显式设置移动端抽屉导航状态
+     */
+    setMobileDrawerOpen(open: boolean) {
+      this.mobileDrawerOpen = open
+    },
     updateSetting<K extends keyof LayoutSetting>(key: K, value: LayoutSetting[K]) {
       ;(this.$state as unknown as Record<string, unknown>)[key] = value
     },
@@ -292,10 +306,14 @@ export const useLayoutStore = defineStore('layout', {
       }
 
       if (isMobile) {
+        // 进入移动端布局时，确保抽屉初始为关闭状态，避免历史状态残留
+        this.mobileDrawerOpen = false
         // 移动端：始终使用顶栏菜单模式 (horizontal)，小屏最佳展示；侧栏显隐由展示层「有效显隐」控制
         this.updateSetting('sidebarCollapse', true)
         this.updateSetting('mode', 'horizontal')
       } else {
+        // 离开移动端布局（恢复到 PC/大视口）时关闭抽屉，避免在后台保持打开状态
+        this.mobileDrawerOpen = false
         // 离开移动端布局（大视口恢复）：恢复侧栏模式，sidebarCollapse 由后续 adaptPcByBreakpoint 按断点设置
         this.updateSetting('mode', 'vertical')
       }
@@ -325,6 +343,9 @@ export const useLayoutStore = defineStore('layout', {
         // 平板：默认收起侧边栏，但允许展开
         this.updateSetting('sidebarCollapse', true)
         this.updateSetting('mode', 'vertical')
+      } else {
+        // 从平板切换回 PC 或大视口时，确保移动端抽屉关闭
+        this.mobileDrawerOpen = false
       }
       // 注意：当 isTablet = false 时（从平板切换到 PC），不需要特殊处理
       // 因为 adaptToMobile(false) 已经处理了恢复逻辑

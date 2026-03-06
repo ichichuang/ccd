@@ -5,10 +5,15 @@
     :key="column.field"
   >
     <SchemaFormItem
+      v-if="!column.vIf || column.vIf(form.modelValue ?? form.values ?? {})"
       :column="column"
       :form="form"
       :disabled="disabled"
       :options-cache-t-t-l="optionsCacheTTL"
+      :options-map="optionsMap"
+      :loading-map="loadingMap"
+      :error-map="errorMap"
+      :retry-field="retryField"
       :global-layout="globalLayout"
       :global-style="globalStyle"
       :style="colStyle(column.layout)"
@@ -26,6 +31,10 @@ defineProps<{
   form: FormApiLike
   disabled: boolean
   optionsCacheTTL: number
+  optionsMap?: Record<string, import('../utils/types').OptionItem[]>
+  loadingMap?: Record<string, boolean>
+  errorMap?: Record<string, Error | null>
+  retryField?: (field: SchemaColumnsItem) => Promise<void>
   globalLayout: LayoutConfig
   globalStyle?: StyleConfig
   colStyle: (layout?: LayoutConfig) => Record<string, string>

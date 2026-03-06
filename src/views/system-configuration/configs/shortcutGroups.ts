@@ -105,17 +105,17 @@ export const shortcutGroups: ShortcutGroup[] = [
     category: 'Interaction 交互行为',
     icon: 'i-lucide-pointer',
     items: [
-      { name: 'behavior-hover-transition', classes: 'transition-all duration-scale-xl' },
-      { name: 'hover-elevated', classes: 'hover:shadow-md hover:border-accent/50' },
+      { name: 'behavior-hover-transition', classes: 'transition-all duration-scale-md' },
+      { name: 'hover-elevated', classes: 'hover:shadow-md hover:border-primary-hover/50' },
       { name: 'interactive-hover', classes: 'behavior-hover-transition hover-elevated' },
       {
         name: 'interactive-click',
         classes:
-          'cursor-pointer select-none active:scale-95 transition-transform duration-scale-xl',
+          'cursor-pointer select-none active:scale-95 transition-transform duration-scale-md',
       },
       {
         name: 'interactive-focus-ring',
-        classes: 'focus:outline-none focus:ring-2 focus:ring-ring',
+        classes: 'focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
       },
     ],
   },
@@ -126,10 +126,19 @@ export const shortcutGroups: ShortcutGroup[] = [
       {
         name: 'menu-item-base',
         classes:
-          'flex items-center gap-sm cursor-pointer select-none transition-all duration-scale-xl ease-in-out focus:outline-none border-none bg-transparent',
+          'flex items-center gap-sm cursor-pointer select-none transition-all duration-scale-md ease-in-out border-none bg-transparent',
         desc: '菜单项基础样式',
       },
-      { name: 'menu-item-hover', classes: 'bg-primary/20! text-primary!', desc: '菜单项悬停态' },
+      {
+        name: 'menu-item-hover',
+        classes: 'bg-primary/12! text-primary! dark:text-white!',
+        desc: '菜单项悬停态 (12% 标准)',
+      },
+      {
+        name: 'menu-item-active-leaf',
+        classes: 'bg-primary! text-primary-foreground! dark:text-white!',
+        desc: '菜单项选中态（primary 背景 + primary-foreground 统一样式）',
+      },
     ],
   },
   {
@@ -139,12 +148,12 @@ export const shortcutGroups: ShortcutGroup[] = [
       { name: 'component-border', classes: 'border border-solid border-border' },
       {
         name: 'border-b-default',
-        classes: 'border-b border-solid border-border',
+        classes: 'border-0 border-b border-solid border-border',
         desc: '底部边框',
       },
       {
         name: 'border-t-default',
-        classes: 'border-t border-solid border-border',
+        classes: 'border-0 border-t border-solid border-border',
         desc: '顶部边框',
       },
       {
@@ -172,7 +181,7 @@ export const shortcutGroups: ShortcutGroup[] = [
       { name: 'size-select-min', classes: 'min-w-[var(--spacing-3xl)]' },
       {
         name: 'sidebar-width-transition',
-        classes: 'transition-[width] duration-scale-lg ease-in-out',
+        classes: 'transition-[width] duration-scale-md ease-in-out',
       },
     ],
   },
@@ -181,7 +190,7 @@ export const shortcutGroups: ShortcutGroup[] = [
     icon: 'i-lucide-settings',
     items: [
       { name: 'default-rounded', classes: 'rounded-scale-md' },
-      { name: 'default-duration', classes: 'duration-scale-xl' },
+      { name: 'default-duration', classes: 'duration-scale-md' },
       { name: 'default-padding', classes: 'p-padding-md' },
       { name: 'default-margin', classes: 'm-margin-md' },
       { name: 'default-gap', classes: 'gap-md' },

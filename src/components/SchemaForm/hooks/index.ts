@@ -24,3 +24,8 @@ export {
 } from './usePersistence'
 export { useSteps, type UseStepsOptions, type UseStepsReturn } from './useSteps'
 export { useSubmit, type UseSubmitOptions, type UseSubmitReturn } from './useSubmit'
+export {
+  useAsyncOptions,
+  type UseAsyncOptionsOptions,
+  type UseAsyncOptionsReturn,
+} from './useAsyncOptions'

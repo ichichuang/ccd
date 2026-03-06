@@ -192,10 +192,23 @@ export interface SchemaColumnsItem {
   rules?: Rule
   /** 依赖字段 */
   dependsOn?: string[]
-  /** 是否可见（支持函数式） */
+  /**
+   * v2 声明式显隐：根据 model 决定是否渲染，优先级高于 visible
+   */
+  vIf?: (model: FormValues) => boolean
+  /** 是否可见（支持函数式，当无 vIf 时生效） */
   visible?: boolean | string | ((ctx: EvalCtx) => boolean | Promise<boolean>)
   /** 是否禁用（支持函数式） */
   disabled?: boolean | string | ((ctx: EvalCtx) => boolean | Promise<boolean>)
+  /**
+   * v2 动态组件属性：静态对象 或 根据 model 计算的函数
+   */
+  componentProps?: Record<string, unknown> | ((model: FormValues) => Record<string, unknown>)
+  /**
+   * v2 选项：静态数组 或 (model) => Promise<OptionItem[]>（支持级联）
+   * 优先于 props.options
+   */
+  options?: unknown[] | ((model: FormValues) => Promise<OptionItem[]> | OptionItem[])
   /** 是否只读（支持函数式） */
   readonly?: boolean | string | ((ctx: EvalCtx) => boolean | Promise<boolean>)
   /** 帮助文本（提示文本，显示在表单项下方） */

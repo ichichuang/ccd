@@ -1,11 +1,10 @@
-import { computed, nextTick, ref, watch } from 'vue'
 import type { ComputedRef, Ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import type { RouteRecordName, RouteLocationNormalizedLoaded } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import type { Composer } from 'vue-i18n'
 import type TieredMenu from 'primevue/tieredmenu'
-import { getActiveMenuPath, goToRoute, type PrimeMenuModelItem } from '@/router/utils/helper'
+import { getActiveDistance, goToRoute, type PrimeMenuModelItem } from '@/router/utils/helper'
 
 /** 面包屑一级子项（弹层内展示） */
 export interface BreadcrumbChildItem {
@@ -32,7 +31,7 @@ export function useAdminBreadcrumbs(): {
   breadcrumbs: ComputedRef<AdminBreadcrumbItem[]>
   openDropdownPath: Ref<string | null>
   onMenuHide: (itemPath: string) => void
-  getActiveDistance: (item: PrimeMenuModelItem) => number
+  getActiveDistance: (item: PrimeMenuModelItem) => number // wraps getActiveDistance(route, item)
   bindBreadcrumbMenuRef: (path: string) => (el: unknown) => void
   childItemsToPrimeModel: (childItems: BreadcrumbChildItem[]) => PrimeMenuModelItem[]
   onBreadcrumbClick: (item: AdminBreadcrumbItem, isLast: boolean, e: Event) => void
@@ -57,20 +56,7 @@ export function useAdminBreadcrumbs(): {
     }
   }
 
-  /** 计算当前项到激活叶子节点的距离：0=激活项, 1=直接父级, 2=祖父级... -1=未激活 */
-  const getActiveDistance = (item: PrimeMenuModelItem): number => {
-    const activePath = getActiveMenuPath(route)
-    if (item.route?.path === activePath) return 0
-
-    const parentPaths = Array.isArray(route.meta?.parentPaths)
-      ? (route.meta?.parentPaths as string[])
-      : []
-    const idx = parentPaths.indexOf(item.key)
-    if (idx !== -1) {
-      return parentPaths.length - idx
-    }
-    return -1
-  }
+  const getActiveDistanceForItem = (item: PrimeMenuModelItem) => getActiveDistance(route, item)
 
   const setBreadcrumbMenuRef = (key: string, el: InstanceType<typeof TieredMenu> | null) => {
     if (el) {
@@ -233,7 +219,7 @@ export function useAdminBreadcrumbs(): {
     breadcrumbs,
     openDropdownPath,
     onMenuHide,
-    getActiveDistance,
+    getActiveDistance: getActiveDistanceForItem,
     bindBreadcrumbMenuRef,
     childItemsToPrimeModel,
     onBreadcrumbClick,

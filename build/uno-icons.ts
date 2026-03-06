@@ -13,6 +13,7 @@ import { globSync } from 'glob'
 import { LAYOUT_DIMENSION_KEYS, SIZE_BASE_VAR_KEYS } from '../src/constants/size'
 import { SIZE_SCALE_KEYS } from '../src/constants/sizeScale'
 import { COLOR_FAMILIES } from '../src/utils/theme/metadata'
+import { shortcutGroups } from '../src/views/system-configuration/configs/shortcutGroups'
 
 const currentDir = path.dirname(fileURLToPath(import.meta.url))
 const projectRoot = path.resolve(currentDir, '..')
@@ -38,6 +39,7 @@ export type CustomIconLoader = ReturnType<typeof FileSystemIconLoader>
 
 let routeIconsCache: CacheEntry<string[]> | null = null
 let customIconsCache: CacheEntry<string[]> | null = null
+const iconifyJsonCache = new Map<string, IconifyIconsJson>()
 
 export function invalidateIconCaches(target: IconCacheTarget | 'all' = 'all'): void {
   if (target === 'route' || target === 'all') routeIconsCache = null
@@ -63,7 +65,14 @@ interface IconifyIconsJson {
  */
 export function getIconifyIconNames(collectionName: 'lucide' | 'mdi' | 'logos'): string[] {
   try {
+    if (iconifyJsonCache.has(collectionName)) {
+      const iconSet = iconifyJsonCache.get(collectionName)!
+      return Object.keys(iconSet.icons ?? {}).map(
+        name => `i-${iconSet.prefix ?? collectionName}-${name}`
+      )
+    }
     const iconSet = _require(`@iconify-json/${collectionName}/icons.json`) as IconifyIconsJson
+    iconifyJsonCache.set(collectionName, iconSet)
     const prefix = iconSet.prefix ?? collectionName
     const icons = iconSet.icons ?? {}
     return Object.keys(icons).map(name => `i-${prefix}-${name}`)
@@ -463,11 +472,42 @@ const BASE_VAR_SAFELIST_CLASSES = buildBaseVarSafelistClasses()
 const COLOR_SAFELIST_CLASSES = buildColorSafelistClasses()
 
 // ---------------------------------------------------------------------------
+// System Configuration Demo (UnoCSS shortcut preview)
+// ---------------------------------------------------------------------------
+
+function buildShortcutGroupsSafelist(): string[] {
+  const out = new Set<string>()
+
+  // 1) All shortcut names used as runtime classes (unocss.vue uses :class="item.name")
+  for (const group of shortcutGroups) {
+    for (const item of group.items) {
+      const name = item.name?.trim()
+      if (!name) continue
+      // Wildcard placeholders like "gap-x-*" are documentation-only; not valid classes
+      if (name.includes('*')) continue
+      // Avoid whitespace / separators
+      if (/\s|\|/.test(name)) continue
+      out.add(name)
+    }
+  }
+
+  // 2) Representative concrete classes for wildcard demo groups
+  ;['gap-x-sm', 'gap-x-md', 'gap-x-lg', 'gap-y-sm', 'gap-y-md', 'gap-y-lg'].forEach(c => out.add(c))
+  ;['m-gap-md', 'scroll-m-gap-lg'].forEach(c => out.add(c))
+
+  return Array.from(out)
+}
+
+const SHORTCUT_GROUPS_SAFELIST_CLASSES = buildShortcutGroupsSafelist()
+
+// ---------------------------------------------------------------------------
 // Route icon name → UnoCSS class (与 Icons.vue iconClass 规则一致)
 // ---------------------------------------------------------------------------
 
 function toUnoIconClass(name: string): string {
   if (name.startsWith('i-')) return name
+  // custom 集合必须保留冒号，与 Icons.vue iconClass 规则一致
+  if (name.startsWith('custom:')) return `i-${name}`
   return `i-${name.replace(':', '-')}`
 }
 
@@ -482,12 +522,29 @@ function toUnoIconClass(name: string): string {
 export function getDynamicSafelist(): string[] {
   const routeIcons = getRouteMetaIcons().map(toUnoIconClass)
   const customIcons = getCustomIconClasses()
-  const examplePageIcons = [
-    ...getIconifyIconNamesSubset('lucide', ICON_SUBSET_LIMITS.lucide),
-    ...getIconifyIconNamesSubset('mdi', ICON_SUBSET_LIMITS.mdi),
-    ...getIconifyIconNamesSubset('logos', ICON_SUBSET_LIMITS.logos),
-    ...customIcons,
+
+  const isDemo = process.env.UNO_DEMO === 'true'
+  const examplePageIcons = isDemo
+    ? [
+        ...getIconifyIconNamesSubset('lucide', ICON_SUBSET_LIMITS.lucide),
+        ...getIconifyIconNamesSubset('mdi', ICON_SUBSET_LIMITS.mdi),
+        ...getIconifyIconNamesSubset('logos', ICON_SUBSET_LIMITS.logos),
+        ...customIcons,
+      ]
+    : []
+
+  // 菜单激活态类（useMenuVisuals 动态拼接，JIT 可能遗漏，显式 safelist 确保编译）
+  const menuVisualSafelist = [
+    'bg-primary!',
+    'text-primary-foreground!',
+    'bg-primary/30!',
+    'bg-primary/20!',
+    'bg-primary/10!',
+    'text-primary!',
+    'text-current!',
+    'dark:text-white!',
   ]
+
   return [
     ...routeIcons,
     ...customIcons,
@@ -496,6 +553,8 @@ export function getDynamicSafelist(): string[] {
     ...SCALE_SAFELIST_CLASSES,
     ...BASE_VAR_SAFELIST_CLASSES,
     ...COLOR_SAFELIST_CLASSES,
+    ...SHORTCUT_GROUPS_SAFELIST_CLASSES,
+    ...menuVisualSafelist,
   ]
 }
 

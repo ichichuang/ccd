@@ -2,13 +2,13 @@
  * 图表主题工具：与架构配色体系统一
  *
  * - 颜色一律从 ThemeCssVars（src/types/systems/theme.d.ts）对应的 :root CSS 变量解析，
- *   与 engine.ts、primevue-preset.ts 使用同一套 token；ECharts 需要 rgb(r,g,b)，
+ *   与 engine.ts、primevuePreset.ts 使用同一套 token；ECharts 需要 rgb(r,g,b)，
  *   故在此做「读 computedStyle → 规范化逗号格式」，而非 PrimeVue 的 rgb(var(--xxx))。
  * - 尺寸来自 SizeStore，与全局尺寸阶梯一致。
  */
 import { useSizeStore } from '@/stores/modules/size'
 
-/** ThemeCssVars 的 key 去掉 '--' 后的 token 名，与 engine / primevue-preset 一致 */
+/** ThemeCssVars 的 key 去掉 '--' 后的 token 名，与 engine / primevuePreset 一致 */
 type ThemeCssVarName = keyof ThemeCssVars extends `--${infer T}` ? T : never
 
 /**

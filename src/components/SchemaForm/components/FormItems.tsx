@@ -7,10 +7,12 @@
  */
 import { AnimateWrapper } from '@/components/AnimateWrapper'
 import type { DefineComponent } from 'vue'
-import { computed, defineComponent, onMounted, ref, toRaw, watch } from 'vue'
+import { defineComponent } from 'vue'
+import type { PropType } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { evalBoolish, isFieldRequired, loadOptions } from '../utils/helper'
 import { formatPreviewValue as _formatPreview } from '../utils/formatPreview'
+import Icons from '@/components/Icons/Icons.vue'
 import type {
   EvalCtx,
   FieldRenderCtx,
@@ -40,6 +42,10 @@ interface SchemaFormItemProps {
   form: FormApiLike
   disabled: boolean
   optionsCacheTTL: number
+  optionsMap?: Record<string, OptionItem[]>
+  loadingMap?: Record<string, boolean>
+  errorMap?: Record<string, Error | null>
+  retryField?: (field: SchemaColumnsItem) => Promise<void>
   globalLayout: LayoutConfig
   globalStyle?: StyleConfig
   style?: Record<string, string>
@@ -55,6 +61,13 @@ export default defineComponent({
     form: { type: Object, required: true },
     disabled: { type: Boolean, default: false },
     optionsCacheTTL: { type: Number, default: 1000 * 60 * 5 },
+    optionsMap: { type: Object as () => Record<string, OptionItem[]>, default: undefined },
+    loadingMap: { type: Object as () => Record<string, boolean>, default: undefined },
+    errorMap: { type: Object as () => Record<string, Error | null>, default: undefined },
+    retryField: {
+      type: Function as PropType<(field: SchemaColumnsItem) => Promise<void>>,
+      default: undefined,
+    },
     globalLayout: { type: Object as () => LayoutConfig, default: () => ({}) },
     globalStyle: { type: Object as () => StyleConfig, default: () => ({}) },
     style: { type: Object as () => Record<string, string>, default: () => ({}) },
@@ -249,13 +262,18 @@ export default defineComponent({
 
     // ==================== Methods ====================
     async function evalAll() {
-      const result = await evalBoolish(props.column.visible ?? true, ctx.value)
-      visible.value = result
+      // v2: vIf 优先，否则用 visible
+      const model = (props.form.modelValue || props.form.values || {}) as FormValues
+      const passesVIf = !props.column.vIf || props.column.vIf(model)
+      const resultVisible = await evalBoolish(props.column.visible ?? true, ctx.value)
+      visible.value = passesVIf && resultVisible
       fieldDisabled.value =
         props.disabled || (await evalBoolish(props.column.disabled ?? false, ctx.value))
       readonly.value = await evalBoolish(props.column.readonly ?? false, ctx.value)
 
-      if (props.column.props?.options) {
+      // v2: 当父级提供 optionsMap 时跳过内部加载，由 useAsyncOptions 负责
+      const hasOptions = props.column.options ?? props.column.props?.options
+      if (hasOptions && !props.optionsMap) {
         loading.value = true
         try {
           const data = await loadOptions(props.column, ctx.value, props.optionsCacheTTL)
@@ -294,15 +312,20 @@ export default defineComponent({
       }
     })
 
-    // 监听 dependsOn 触发刷新
+    // dependsOn 触发刷新
     watch(
       () => (props.column.dependsOn || []).map((key: string) => (props.form.values || {})[key]),
+      () => evalAll(),
+      { deep: false }
+    )
+
+    // v2: vIf 依赖 model，当 modelValue 变化时重新 eval
+    watch(
+      () => (props.form.modelValue || props.form.values || {}) as FormValues,
       () => {
-        evalAll()
+        if (props.column.vIf) evalAll()
       },
-      {
-        deep: false,
-      }
+      { deep: true }
     )
 
     // 监听全局 disabled 变化，确保开关切换时 fieldDisabled 同步更新
@@ -528,14 +551,10 @@ export default defineComponent({
       baseProps['onUpdate:modelValue'] = handleModelValueUpdate
 
       // 安全地过滤 props，排除可能导致问题的属性
-      const safeProps = column.props
+      let safeProps: Record<string, unknown> = column.props
         ? Object.fromEntries(
             Object.entries(column.props).filter(([key]) => {
-              // 排除以 'on' 开头的属性，避免被当作事件处理器
-              if (key.startsWith('on')) {
-                return false
-              }
-              // 排除会破坏 Form 受控绑定的值相关属性
+              if (key.startsWith('on')) return false
               if (
                 key === 'value' ||
                 key === 'modelValue' ||
@@ -548,10 +567,23 @@ export default defineComponent({
             })
           )
         : {}
+      // v2: componentProps 函数合并（覆盖 static props）
+      if (column.componentProps) {
+        const model = (props.form.modelValue || props.form.values || {}) as FormValues
+        const dynamicProps =
+          typeof column.componentProps === 'function'
+            ? column.componentProps(model)
+            : column.componentProps
+        safeProps = { ...safeProps, ...dynamicProps }
+      }
 
-      // 选项属性：当 options 为函数时使用已加载的 options.value，否则使用静态数组
-      const optionsProps =
-        column.props && Array.isArray(column.props.options) ? column.props.options : options.value
+      // 选项属性：v2 优先使用 optionsMap[field]，否则用 static 或内部 options
+      const staticOptions = Array.isArray(column.options)
+        ? column.options
+        : column.props && Array.isArray(column.props.options)
+          ? column.props.options
+          : undefined
+      const optionsProps = props.optionsMap?.[column.field] ?? staticOptions ?? options.value
 
       // 构建组件 props
       const componentProps = buildComponentProps({
@@ -771,10 +803,28 @@ export default defineComponent({
           >
             {/* Component Container */}
             {renderComponent()}
-            {/* Loading Spinner */}
-            {!props.preview && loading.value && (
+            {/* Loading Spinner：v2 支持 loadingMap[field] */}
+            {!props.preview && (props.loadingMap?.[column.field] ?? loading.value) && (
               <ProgressSpinner class="w-[var(--font-size-sm)] h-[var(--font-size-sm)] absolute right-[var(--spacing-sm)] top-1/2 -translate-y-1/2" />
             )}
+            {/* Error + Retry：v2 支持 errorMap[field]，加载失败时展示「加载失败，点击重试」 */}
+            {!props.preview &&
+              !(props.loadingMap?.[column.field] ?? loading.value) &&
+              props.errorMap?.[column.field] &&
+              props.retryField && (
+                <button
+                  type="button"
+                  class="absolute right-[var(--spacing-sm)] top-1/2 -translate-y-1/2 p-padding-xs rounded-scale-sm text-danger hover:bg-danger/10 transition-colors duration-scale-sm interactive-focus-ring"
+                  title={t('schemaForm.asyncOptionsLoadFailed')}
+                  aria-label={t('schemaForm.asyncOptionsRetry')}
+                  onClick={() => props.retryField?.(column)}
+                >
+                  <Icons
+                    name="i-lucide-refresh-cw"
+                    size="sm"
+                  />
+                </button>
+              )}
             {/* Help Text */}
             {!props.preview && !isInvalid && column.help && (
               <div

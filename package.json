@@ -1,10 +1,10 @@
 {
-  "name": "ccd",
-  "version": "3.0.6",
+  "name": "app-template",
+  "version": "0.0.0",
   "private": true,
   "type": "module",
   "author": "",
-  "description": "现代化全局后台管理框架",
+  "description": "企业级 Vue 3 后台管理模板",
   "keywords": [
     "vue3",
     "typescript",
@@ -13,10 +13,10 @@
     "alova",
     "admin",
     "framework",
-    "ccd"
+    "enterprise-vue-admin"
   ],
   "engines": {
-    "node": ">=24.3.0",
+    "node": ">=20.0.0",
     "pnpm": ">=8.0.0"
   },
   "packageManager": "pnpm@10.28.2",
@@ -24,30 +24,26 @@
     "dev": "vite",
     "dev:icons": "NODE_OPTIONS='--max-old-space-size=8192' vite",
     "dev:demo": "UNO_DEMO=true vite",
-    "build": "vue-tsc --noEmit && vite build",
-    "build:analyze": "vue-tsc --noEmit && vite build --mode analyze",
+    "build": "vue-tsc --build --force && vite build",
+    "build:analyze": "vue-tsc --build --force && vite build --mode analyze",
     "preview": "vite preview",
     "preview:dist": "pnpm build && pnpm dlx serve dist",
     "report": "npx vite-bundle-analyzer dist/stats.html",
-    "type-check": "vue-tsc --noEmit",
+    "type-check": "vue-tsc --build --force",
     "lint": "eslint .",
     "lint:check": "eslint .",
     "lint:fix": "eslint . --fix",
+    "lint:style": "stylelint \"src/**/*.{css,scss,vue}\" --fix",
     "format": "prettier --write src/",
     "fix": "pnpm format && pnpm lint:fix",
     "check": "pnpm type-check && pnpm lint:check",
-    "pre-commit": "pnpm check",
+    "heal": "tsx scripts/drift-fix.ts",
+    "drift-check": "node scripts/drift-check.mjs",
+    "check:drift": "node scripts/drift-check.mjs",
+    "test": "vitest run",
+    "pre-commit": "pnpm type-check && pnpm drift-check",
     "commit": "git-cz",
     "prepare": "husky"
-  },
-  "lint-staged": {
-    "*.{ts,tsx,vue}": [
-      "prettier --write",
-      "eslint --fix"
-    ],
-    "*.{css,scss,sass,less,styl,json,md}": [
-      "prettier --write"
-    ]
   },
   "config": {
     "commitizen": {
@@ -121,6 +117,8 @@
     "@vitejs/plugin-legacy": "^7.0.0",
     "@vitejs/plugin-vue": "^6.0.3",
     "@vitejs/plugin-vue-jsx": "^5.1.3",
+    "@vue/compiler-sfc": "^3.5.29",
+    "@vue/test-utils": "^2.4.6",
     "@vue/tsconfig": "^0.7.0",
     "autoprefixer": "^10.4.23",
     "baseline-browser-mapping": "^2.9.19",
@@ -133,17 +131,24 @@
     "eslint": "^9.39.2",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-vue": "^9.31.0",
+    "fast-glob": "^3.3.3",
     "glob": "^11.1.0",
     "globals": "^17.1.0",
     "husky": "^9.1.7",
+    "jsdom": "^28.1.0",
     "lint-staged": "^15.2.11",
+    "magic-string": "^0.30.21",
     "npm-run-all2": "^7.0.2",
     "picocolors": "^1.1.1",
     "postcss": "^8.5.6",
+    "postcss-html": "^1.8.1",
     "postcss-pxtorem": "^6.1.0",
     "prettier": "^3.8.1",
     "rollup-plugin-visualizer": "^6.0.3",
     "sass": "^1.97.3",
+    "stylelint": "^17.4.0",
+    "stylelint-config-prettier-scss": "^1.0.0",
+    "stylelint-config-standard-scss": "^17.0.0",
     "terser": "^5.46.0",
     "ts-node": "^10.9.2",
     "tsx": "^4.20.3",
@@ -154,6 +159,7 @@
     "unplugin-vue-components": "^28.8.0",
     "vite": "^7.3.1",
     "vite-plugin-compression": "^0.5.1",
+    "vitest": "^4.0.18",
     "vue-eslint-parser": "^10.2.0",
     "vue-tsc": "^2.2.10"
   }

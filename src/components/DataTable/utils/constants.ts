@@ -53,9 +53,6 @@ export const DEFAULT_COLUMN_WIDTH_PX = 100
 /** fill 模式下，容器高度低于此值（px）不应用 calculatedHeight */
 export const MIN_AUTO_HEIGHT_THRESHOLD_PX = 10
 
-/** rem/em 换算为 px 的基准（根字体大小），与 sizeScale 设计一致 */
-export const ROOT_FONT_SIZE_BASE = 16
-
 /** Infinite 模式默认每页条数 */
 export const DEFAULT_INFINITE_PAGE_SIZE = 20
 

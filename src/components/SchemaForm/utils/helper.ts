@@ -8,7 +8,7 @@
  */
 import * as yup from 'yup'
 import { DEFAULT_OPTIONS_CACHE_TTL, getResponsiveSpan } from './constants'
-import type { EvalCtx, LayoutConfig, OptionItem, SchemaColumnsItem } from './types'
+import type { EvalCtx, FormValues, LayoutConfig, OptionItem, SchemaColumnsItem } from './types'
 
 /** 简单内存缓存：Map<key, {expires,data}> */
 const memoryCache = new Map<string, { expires: number; data: OptionItem[] }>()
@@ -292,23 +292,25 @@ export function buildYupFromRuleString(
   return base
 }
 
-/** 将 field.props.options 加载（支持静态数组或函数），并使用内存缓存 */
+/** 将 field.options 或 field.props.options 加载（支持静态数组或 (model)=>Promise），并使用内存缓存 */
 export async function loadOptions(
   field: SchemaColumnsItem,
   ctx: EvalCtx,
   cacheTTL = DEFAULT_OPTIONS_CACHE_TTL
-) {
-  const options = field.props?.options
+): Promise<OptionItem[]> {
+  // v2: 优先使用 column.options，其次 column.props?.options
+  const options = field.options ?? field.props?.options
   if (!options) {
     return []
   }
   if (Array.isArray(options)) {
-    return options
+    return options as OptionItem[]
   }
-  // options 是函数
+  // options 是函数：(model) => Promise<OptionItem[]> 或 (ctx) => Promise<OptionItem[]>
+  const model = ctx.values
   let cacheKey: string
   try {
-    const depValues = field.dependsOn?.map((k: string) => ctx.values[k] ?? null) ?? []
+    const depValues = field.dependsOn?.map((k: string) => model[k] ?? null) ?? []
     cacheKey = `${field.field}:${JSON.stringify(depValues)}`
   } catch {
     cacheKey = `${field.field}:${Date.now()}`
@@ -317,11 +319,11 @@ export async function loadOptions(
   if (cached) {
     return cached
   }
-  // 此处约定非数组的 options 为函数，显式断言类型以满足 TypeScript
-  const loader = options as (context: EvalCtx) => Promise<OptionItem[]> | OptionItem[]
-  const data = await loader(ctx)
-  cacheSet(cacheKey, data, cacheTTL)
-  return data
+  const loader = options as (m: FormValues) => Promise<OptionItem[]> | OptionItem[]
+  const data = await loader(model)
+  const result = Array.isArray(data) ? data : []
+  cacheSet(cacheKey, result, cacheTTL)
+  return result
 }
 
 /** col -> 内联样式（12 栅格）；优先使用 layout.span，否则按 cols/断点推算 */

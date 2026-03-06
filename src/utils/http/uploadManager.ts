@@ -23,7 +23,7 @@ async function calculateFileHash(file: File): Promise<string> {
   return new Promise((resolve, reject) => {
     const reader = new FileReader()
 
-    reader.onload = e => {
+    reader.onload = (e: ProgressEvent<FileReader>) => {
       try {
         const arrayBuffer = e.target?.result as ArrayBuffer
         const uint8Array = new Uint8Array(arrayBuffer)
@@ -42,7 +42,7 @@ async function calculateFileHash(file: File): Promise<string> {
       }
     }
 
-    reader.onerror = _error => {
+    reader.onerror = (_error: ProgressEvent<FileReader>) => {
       reject(new Error($t('http.upload.fileReadFailed')))
     }
 

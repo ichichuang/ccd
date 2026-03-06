@@ -4,7 +4,7 @@
  * 处理表单提交逻辑
  */
 
-import { nextTick, type Ref } from 'vue'
+import type { Ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import type { FormSubmitEvent } from '@primevue/forms'
 import type {
@@ -28,7 +28,7 @@ export interface UseSubmitOptions<TValues extends FormValues = FormValues> {
 }
 
 export interface UseSubmitReturn {
-  onValidSubmit: (event: FormSubmitEvent<Record<string, any>>) => Promise<void>
+  onValidSubmit: (event: FormSubmitEvent<FormValues>) => Promise<void>
 }
 
 /**
@@ -43,7 +43,7 @@ export function useSubmit<TValues extends FormValues = FormValues>(
   /**
    * 提交成功处理
    */
-  async function onValidSubmit(event: FormSubmitEvent<Record<string, any>>) {
+  async function onValidSubmit(event: FormSubmitEvent<FormValues>) {
     const { values, valid, errors } = event
     const typedValues = values as TValues
     const fieldErrors = (errors as unknown as FieldErrorsMap) || {}

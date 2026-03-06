@@ -1,10 +1,13 @@
 <script setup lang="ts">
-import { decideRootFontSize, applyRootFontSize } from '@/utils/theme/sizeEngine'
+import {
+  decideRootFontSize,
+  applyRootFontSize,
+  decideLayoutDimensions,
+  applyLayoutDimensions,
+} from '@/utils/theme/sizeEngine'
 import LayoutManager from '@/layouts/index.vue'
 import AppPrimeVueGlobals from '@/layouts/components/AppPrimeVueGlobals.vue'
 import { usePermissionStore } from '@/stores/modules/permission'
-import { useSizeStore } from '@/stores/modules/size'
-import { useDeviceStore } from '@/stores/modules/device'
 
 const sizeStore = useSizeStore()
 const deviceStore = useDeviceStore()
@@ -12,18 +15,29 @@ const deviceStore = useDeviceStore()
 let cleanupDeviceListener: (() => void) | undefined
 
 // 提前检测设备，确保 watchEffect 首帧使用正确断点，避免字体闪动
+// 提前检测设备，确保 watchEffect 首帧使用正确断点，避免字体闪动
 if (typeof window !== 'undefined') {
-  deviceStore.detectDeviceInfo()
+  deviceStore.initHardwareInfo()
+  deviceStore.detectViewportInfo()
 }
 
-// 根字号自适应：根据设备类型 + 断点 + 尺寸预设动态计算
+// 根字号与布局尺寸双轨自适应：根据设备类型 + 断点 + 尺寸预设动态计算
 watchEffect(() => {
   const decision = decideRootFontSize({
     deviceType: deviceStore.type,
     breakpoint: deviceStore.currentBreakpoint,
     preset: sizeStore.currentPreset,
+    pixelRatio: deviceStore.pixelRatio,
   })
   applyRootFontSize(decision)
+
+  const layoutDecision = decideLayoutDimensions({
+    deviceType: deviceStore.type,
+    breakpoint: deviceStore.currentBreakpoint,
+    preset: sizeStore.currentPreset,
+    pixelRatio: deviceStore.pixelRatio,
+  })
+  applyLayoutDimensions(layoutDecision)
 })
 
 onMounted(() => {

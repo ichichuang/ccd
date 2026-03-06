@@ -10,11 +10,12 @@ import type { SupportedLocale } from '@/locales'
 import store from '@/stores'
 import { useLocaleStore } from '@/stores/modules/locale'
 import { useSizeStore } from '@/stores/modules/size'
-import { createCustomPreset } from '@/utils/theme/primevue-preset'
+import { createCustomPreset } from '@/utils/theme/primevuePreset'
+import { menuPt } from '@/utils/theme/ptPresets/menuPt'
 
 /**
  * Register PrimeVue v4 (Styled Mode)
- * Uses @primevue/themes with a custom preset adapted to CCD's design system.
+ * Uses @primevue/themes with a custom preset adapted to this template's design system.
  * Locale 按当前系统语言设置，运行时切换由 AppPrimeVueGlobals.vue 的 watch 同步。
  */
 export function setupPrimeVue(app: App) {
@@ -38,6 +39,7 @@ export function setupPrimeVue(app: App) {
         // },
       },
     },
+    pt: menuPt,
     ripple: true,
     locale: initialPrimeLocale,
   })

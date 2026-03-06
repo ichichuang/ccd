@@ -1,0 +1,15 @@
+# 依赖与构建产物
+node_modules
+dist
+dist-ssr
+
+# 锁文件（避免格式化导致无意义 diff）
+pnpm-lock.yaml
+package-lock.json
+yarn.lock
+
+# 自动生成的类型定义
+src/types/components.d.ts
+src/types/auto-imports.d.ts
+src/components.d.ts
+src/auto-imports.d.ts

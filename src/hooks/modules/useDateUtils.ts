@@ -23,7 +23,6 @@ import type { DateFormat, DateInput, FormatOptions, Locale } from '@/utils/date'
 import type { SupportedLocale } from '@/locales'
 import { useLocaleStore } from '@/stores/modules/locale'
 import { useMitt } from '@/utils/mitt'
-import { onScopeDispose } from 'vue'
 
 // 使用浏览器本地时区作为默认值（不强绑语言）
 const DEFAULT_TIMEZONE =

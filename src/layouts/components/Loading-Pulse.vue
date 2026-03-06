@@ -61,7 +61,6 @@ onMounted(() => {
 <style lang="scss" scoped>
 .pulse-container {
   transform: translateZ(0);
-  -webkit-transform: translateZ(0);
   will-change: transform;
   position: relative;
   width: var(--pulse-size);
@@ -79,24 +78,19 @@ onMounted(() => {
   height: 100%;
   opacity: 0;
   transform: translateZ(0) scale(0.5);
-  -webkit-transform: translateZ(0) scale(0.5);
   backface-visibility: hidden;
-  -webkit-backface-visibility: hidden;
 }
 
 .pulse-ring-1 {
   animation: pulse-animation 2s infinite;
-  -webkit-animation: pulse-animation 2s infinite;
 }
 
 .pulse-ring-2 {
   animation: pulse-animation 2s infinite 0.4s;
-  -webkit-animation: pulse-animation 2s infinite 0.4s;
 }
 
 .pulse-ring-3 {
   animation: pulse-animation 2s infinite 0.8s;
-  -webkit-animation: pulse-animation 2s infinite 0.8s;
 }
 
 .pulse-core {
@@ -107,9 +101,7 @@ onMounted(() => {
   position: relative;
   z-index: 1;
   transform: translateZ(0);
-  -webkit-transform: translateZ(0);
   animation: pulse-core-animation 2s infinite;
-  -webkit-animation: pulse-core-animation 2s infinite;
 }
 
 @keyframes pulse-animation {
@@ -117,25 +109,29 @@ onMounted(() => {
     transform: translateZ(0) scale(0.5);
     opacity: 1;
   }
+
   50% {
     opacity: 0.5;
   }
+
   100% {
     transform: translateZ(0) scale(1.5);
     opacity: 0;
   }
 }
 
-@-webkit-keyframes pulse-animation {
+@keyframes pulse-animation {
   0% {
-    -webkit-transform: translateZ(0) scale(0.5);
+    transform: translateZ(0) scale(0.5);
     opacity: 1;
   }
+
   50% {
     opacity: 0.5;
   }
+
   100% {
-    -webkit-transform: translateZ(0) scale(1.5);
+    transform: translateZ(0) scale(1.5);
     opacity: 0;
   }
 }
@@ -145,18 +141,20 @@ onMounted(() => {
   100% {
     transform: translateZ(0) scale(1);
   }
+
   50% {
     transform: translateZ(0) scale(1.2);
   }
 }
 
-@-webkit-keyframes pulse-core-animation {
+@keyframes pulse-core-animation {
   0%,
   100% {
-    -webkit-transform: translateZ(0) scale(1);
+    transform: translateZ(0) scale(1);
   }
+
   50% {
-    -webkit-transform: translateZ(0) scale(1.2);
+    transform: translateZ(0) scale(1.2);
   }
 }
 </style>

@@ -1,5 +1,4 @@
-// 占位：对接后端时恢复 import，并创建 src/api/auth 实现 getAuthRoutes
-// import { getAuthRoutes } from '@/api/auth'
+import { requestSystemAsyncRoutes } from '@/api/modules/system'
 import { deepClone } from '@/utils/lodashes'
 import { getAdminMenuTree, getFlatRouteList } from '@/router/utils/helper'
 import store from '@/stores'
@@ -89,22 +88,15 @@ export const usePermissionStore = defineStore('permission', {
      */
     async fetchDynamicRoutes(): Promise<BackendRouteConfig[]> {
       try {
-        // 占位：对接后端时恢复 getAuthRoutes 调用
-        // const routeResponse = await getAuthRoutes()
-        const routeResponse: BackendRouteConfig[] = []
-        const routes = Array.isArray(routeResponse)
-          ? routeResponse
-          : Array.isArray((routeResponse as any)?.routes)
-            ? (routeResponse as any).routes
-            : []
+        const routes = await requestSystemAsyncRoutes()
 
         if (!Array.isArray(routes)) {
           throw new Error('动态路由数据格式不正确，预期为数组或包含 routes 字段的对象')
         }
 
-        this.dynamicRoutes = routes
+        this.dynamicRoutes = routes as BackendRouteConfig[]
         this.isDynamicRoutesLoaded = true
-        return routes
+        return routes as BackendRouteConfig[]
       } catch (error) {
         console.error('🪒 Router: 获取动态路由失败，使用本地缓存:', error)
         if (this.dynamicRoutes.length === 0) {
@@ -117,7 +109,9 @@ export const usePermissionStore = defineStore('permission', {
     },
     // 添加标签页（仅 admin 布局下的路由，且需在 admin 菜单树中）
     addTab(name: RouteConfig['name'] | RouteConfig['path']) {
-      const route = getFlatRouteList().find(route => route.name === name || route.path === name)
+      const route = getFlatRouteList().find(
+        route => String(route.name || '') === String(name || '') || route.path === name
+      )
       if (!route) return
       // 仅 admin 布局：fullscreen/ratio 不加入 tabs
       const parent = route.meta?.parent as LayoutMode | undefined
@@ -130,7 +124,7 @@ export const usePermissionStore = defineStore('permission', {
       const adminPaths = flattenMenuPaths(adminMenuTree)
       if (!adminPaths.includes(route.path)) return
       const tabItem: TabItem = {
-        name: route.name || '',
+        name: String(route.name || ''),
         path: route.path || '',
         titleKey: route.meta?.titleKey,
         title: route.meta?.title,

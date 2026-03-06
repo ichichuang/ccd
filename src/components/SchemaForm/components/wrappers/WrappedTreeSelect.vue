@@ -13,17 +13,8 @@
 </template>
 
 <script setup lang="ts">
-import TreeSelect from 'primevue/treeselect'
-import { computed } from 'vue'
 import type { OptionItem } from '../../utils/types'
-
-/** PrimeVue TreeSelect TreeNode 最小形状 */
-interface TreeNode {
-  key?: unknown
-  label: string
-  data?: unknown
-  children?: TreeNode[]
-}
+import type { TreeNode } from 'primevue/treenode'
 
 interface WrappedTreeSelectProps {
   modelValue?: unknown
@@ -35,8 +26,6 @@ interface WrappedTreeSelectProps {
   options?: OptionItem[]
   class?: string | string[]
   style?: Record<string, string>
-  /** rest 透传 PrimeVue TreeSelect */
-  [key: string]: unknown
 }
 
 const props = withDefaults(defineProps<WrappedTreeSelectProps>(), {
@@ -66,18 +55,16 @@ const classProp = computed(() => props.class)
  * 修复：优先使用 item.key（schema 中定义的），兼容 item.value
  */
 const convertToTreeNode = (item: OptionItem): TreeNode => {
-  const key = item.key !== undefined ? item.key : item.value
+  const key = item.key ?? item.value ?? item.label
   return {
-    key,
+    key: String(key),
     label: item.label,
     data: key,
     children: item.children ? (item.children as OptionItem[]).map(convertToTreeNode) : undefined,
   }
 }
 
-const treeNodes = computed(() => {
-  return props.options.map(convertToTreeNode)
-})
+const treeNodes = computed<TreeNode[]>(() => props.options.map(convertToTreeNode))
 
 /**
  * 内部值
@@ -89,21 +76,12 @@ const internalValue = computed({
   },
 })
 
+const attrs = useAttrs()
+
 /**
  * 提取其他 props（排除已处理的属性）
  */
 const restProps = computed(() => {
-  const {
-    modelValue: _modelValue,
-    name: _name,
-    disabled: _disabled,
-    readonly: _readonly,
-    placeholder: _placeholder,
-    options: _options,
-    class: _class,
-    style: _style,
-    ...rest
-  } = props
-  return rest
+  return attrs as Record<string, unknown>
 })
 </script>

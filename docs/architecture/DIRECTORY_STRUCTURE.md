@@ -1,4 +1,4 @@
-# 📁 CCD 项目架构目录说明
+# 📁 AppTemplate 项目架构目录说明
 
 > 逐目录、逐文件说明架构职责与实现内容，供开发者快速了解项目结构。
 
@@ -352,41 +352,41 @@
 
 ### 3.12 src/utils/ 工具层
 
-| 文件                                                                | 职责说明                                                                               |
-| ------------------------------------------------------------------- | -------------------------------------------------------------------------------------- |
-| ~~browser.ts~~                                                      | 已移除                                                                                 |
-| `date/`                                                             | 日期工具（与 http 同构：types、constants、holidaysLoader、timezone、dateUtils、index） |
-| `deviceSync.ts`                                                     | getDeviceTypeSync、getBreakpointSync                                                   |
-| `ids.ts`                                                            | generateUniqueId、generateIdFromKey                                                    |
-| `lodashes.ts`                                                       | deepClone、deepEqual、deepMerge、objectPick、objectOmit                                |
-| `mitt.ts`                                                           | 全局事件总线 useMitt                                                                   |
-| `strings.ts`                                                        | toKebabCase                                                                            |
-| `http/instance.ts`                                                  | Alova 实例                                                                             |
-| `http/methods.ts`                                                   | get/post/put/del/patch/head/uploadFile/downloadFile                                    |
-| `http/interceptors.ts`                                              | 请求/响应拦截                                                                          |
-| `http/errors.ts`                                                    | HttpRequestError、isHttpRequestError                                                   |
-| `http/types.ts`                                                     | HTTP 相关类型                                                                          |
-| `http/index.ts`                                                     | HTTP 模块导出                                                                          |
-| `http/connection.ts`                                                | ConnectionManager（网络状态、重连、健康检查）                                          |
-| `http/uploadManager.ts`                                             | UploadManager（分片上传、断点续传、暂停/恢复）                                         |
-| `safeStorage/*`                                                     | 加密、压缩、序列化                                                                     |
-| `theme/engine.ts`                                                   | 主题应用引擎                                                                           |
-| `theme/sizeEngine.ts`                                               | 尺寸预设、preload、根字号                                                              |
-| `theme/metadata.ts`                                                 | 主题元数据                                                                             |
-| `theme/color-adapter.ts`                                            | 颜色适配器（ThemeCssVars → rgb(var(--xxx))）                                           |
-| `theme/preset-primitive.ts`                                         | Primitive Layer（brand、neutral、success 等）                                          |
-| `theme/preset-semantic.ts`                                          | Semantic Layer（formField、colorScheme.light/dark）                                    |
-| `theme/preset-components/base.ts`                                   | 基础组件 preset（scrollpanel、accordion、card 等）                                     |
-| `theme/preset-components/form.ts`                                   | 表单组件 preset（button、inputtext、select 等）                                        |
-| `theme/preset-components/overlay.ts`                                | 浮层组件 preset（dialog、drawer、popover 等）                                          |
-| `theme/preset-components/data.ts`                                   | 数据组件 preset（datatable、listbox、tree 等）                                         |
-| `theme/preset-components/menu-nav-misc.ts`                          | 菜单/导航/杂项 preset（menu、breadcrumb、message 等）                                  |
-| `theme/preset-components/index.ts`                                  | 组件 preset 聚合（buildAllComponents）                                                 |
-| `theme/primevue-preset.ts`                                          | PrimeVue 主题融合主入口（组装与 ROOT_SIZE 注入）                                       |
-| `theme/transitions.ts`                                              | 主题切换过渡                                                                           |
-| `theme/primevue-theme-helpers.ts`、`theme/primevue-theme-engine.ts` | PrimeVue 主题引擎                                                                      |
-| `theme/colors.ts`、`theme/*.json`                                   | 颜色与主题配置                                                                         |
-| `theme/chartUtils.ts`                                               | 图表颜色工具                                                                           |
+| 文件                                                            | 职责说明                                                                               |
+| --------------------------------------------------------------- | -------------------------------------------------------------------------------------- |
+| ~~browser.ts~~                                                  | 已移除                                                                                 |
+| `date/`                                                         | 日期工具（与 http 同构：types、constants、holidaysLoader、timezone、dateUtils、index） |
+| `deviceSync.ts`                                                 | getDeviceTypeSync、getBreakpointSync                                                   |
+| `ids.ts`                                                        | generateUniqueId、generateIdFromKey                                                    |
+| `lodashes.ts`                                                   | deepClone、deepEqual、deepMerge、objectPick、objectOmit                                |
+| `mitt.ts`                                                       | 全局事件总线 useMitt                                                                   |
+| `strings.ts`                                                    | toKebabCase                                                                            |
+| `http/instance.ts`                                              | Alova 实例                                                                             |
+| `http/methods.ts`                                               | get/post/put/del/patch/head/uploadFile/downloadFile                                    |
+| `http/interceptors.ts`                                          | 请求/响应拦截                                                                          |
+| `http/errors.ts`                                                | HttpRequestError、isHttpRequestError                                                   |
+| `http/types.ts`                                                 | HTTP 相关类型                                                                          |
+| `http/index.ts`                                                 | HTTP 模块导出                                                                          |
+| `http/connection.ts`                                            | ConnectionManager（网络状态、重连、健康检查）                                          |
+| `http/uploadManager.ts`                                         | UploadManager（分片上传、断点续传、暂停/恢复）                                         |
+| `safeStorage/*`                                                 | 加密、压缩、序列化                                                                     |
+| `theme/engine.ts`                                               | 主题应用引擎                                                                           |
+| `theme/sizeEngine.ts`                                           | 尺寸预设、preload、根字号                                                              |
+| `theme/metadata.ts`                                             | 主题元数据                                                                             |
+| `theme/colorAdapter.ts`                                         | 颜色适配器（ThemeCssVars → rgb(var(--xxx))）                                           |
+| `theme/presetPrimitive.ts`                                      | Primitive Layer（brand、neutral、success 等）                                          |
+| `theme/presetSemantic.ts`                                       | Semantic Layer（formField、colorScheme.light/dark）                                    |
+| `theme/presetComponents/base.ts`                                | 基础组件 preset（scrollpanel、accordion、card 等）                                     |
+| `theme/presetComponents/form.ts`                                | 表单组件 preset（button、inputtext、select 等）                                        |
+| `theme/presetComponents/overlay.ts`                             | 浮层组件 preset（dialog、drawer、popover 等）                                          |
+| `theme/presetComponents/data.ts`                                | 数据组件 preset（datatable、listbox、tree 等）                                         |
+| `theme/presetComponents/menuNavMisc.ts`                         | 菜单/导航/杂项 preset（menu、breadcrumb、message 等）                                  |
+| `theme/presetComponents/index.ts`                               | 组件 preset 聚合（buildAllComponents）                                                 |
+| `theme/primevuePreset.ts`                                       | PrimeVue 主题融合主入口（组装与 ROOT_SIZE 注入）                                       |
+| `theme/transitions.ts`                                          | 主题切换过渡                                                                           |
+| `theme/primevueThemeHelpers.ts`、`theme/primevueThemeEngine.ts` | PrimeVue 主题引擎                                                                      |
+| `theme/colors.ts`、`theme/*.json`                               | 颜色与主题配置                                                                         |
+| `theme/chartUtils.ts`                                           | 图表颜色工具                                                                           |
 
 ---
 
@@ -409,13 +409,13 @@
 | `dashboard/dashboard.vue`                | 仪表盘                                                                 |
 | `notfound/404.vue`、`403.vue`、`500.vue` | 错误页                                                                 |
 | `system-configuration/*.vue`             | 主题、尺寸、断点、布局/设备、滚动条、UnoCSS 配置                       |
-| `example/PrimeVue/*`                     | PrimeVue 示例                                                          |
-| `example/PrimeVueDialog/*`               | PrimeDialog 示例                                                       |
-| `example/PrimeVueToast/*`                | Toast 示例                                                             |
-| `example/SchemaForm/*`                   | SchemaForm 示例                                                        |
-| `example/DataTable/*`                    | DataTable 示例                                                         |
-| `example/UseEcharts/*`                   | UseEcharts 示例                                                        |
-| `example/IconsExample/*`                 | Icons 示例                                                             |
+| `example/prime-vue/*`                    | PrimeVue 示例                                                          |
+| `example/prime-vue-dialog/*`             | PrimeDialog 示例                                                       |
+| `example/prime-vue-toast/*`              | Toast 示例                                                             |
+| `example/schema-form/*`                  | SchemaForm 示例                                                        |
+| `example/data-table/*`                   | DataTable 示例                                                         |
+| `example/use-echarts/*`                  | UseEcharts 示例                                                        |
+| `example/icons-example/*`                | Icons 示例                                                             |
 | `example/icons/configs/`                 | 构建生成的 iconLists.generated.ts，IconsExample 通过 iconLists.ts 引用 |
 
 ---

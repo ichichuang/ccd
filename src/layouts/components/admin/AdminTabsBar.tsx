@@ -1,6 +1,7 @@
 import { defineComponent, Transition } from 'vue'
 import { CScrollbar } from '@/components/CScrollbar'
 import { Icons } from '@/components/Icons'
+import { TAB_ICON_SIZE } from '@/constants/layout-menu'
 import { useAdminTabs } from '@/hooks/layout/useAdminTabs'
 import type { ContextMenuAction } from '@/hooks/layout/useAdminTabs'
 
@@ -65,7 +66,7 @@ export default defineComponent({
               ref={tabsContainerRef}
               class="flex items-end gap-xs px-padding-md h-full relative min-w-max"
             >
-              {/* Sliding Highlight Indicator */}
+              {/* Sliding Highlight Indicator（Tab 激活指示线默认使用 primary，与 Header/Sidebar 保持一致） */}
               <div
                 class="absolute bottom-0 h-[var(--spacing-xs)] bg-primary transition-all duration-scale-md ease-out z-20 rounded-full"
                 style={activeTabStyle.value}
@@ -83,9 +84,9 @@ export default defineComponent({
                     data-path={tab.path}
                     class={[
                       'group relative flex items-center gap-scale-sm px-scale-md py-scale-xs h-full',
-                      'rounded-scale-md cursor-pointer transition-all duration-scale-md border-t border-x mb-[-1px]',
+                      'rounded-scale-md cursor-pointer transition-all duration-scale-md component-border border-b-none mb-[-1px]',
                       active
-                        ? 'bg-primary/20 text-primary font-semibold border-primary/30'
+                        ? 'text-primary bg-primary/10 border-primary/20 dark:bg-primary/20 dark:border-primary/30'
                         : 'bg-transparent border-transparent text-muted-foreground hover:bg-muted/40 hover:text-foreground',
                     ]}
                     onClick={() => onTabClick(tab)}
@@ -95,7 +96,7 @@ export default defineComponent({
                     {tab.icon && (
                       <Icons
                         name={tab.icon}
-                        size="xs"
+                        size={TAB_ICON_SIZE}
                         class={[
                           'shrink-0 text-current!',
                           active
@@ -119,7 +120,7 @@ export default defineComponent({
                       >
                         <Icons
                           name="i-lucide-x"
-                          size="xs"
+                          size={TAB_ICON_SIZE}
                         />
                       </div>
                     )}
@@ -185,7 +186,7 @@ export default defineComponent({
                     <Icons
                       name={option.icon}
                       class="text-muted-foreground! transition-colors duration-scale-md group-hover:text-primary!"
-                      size="xs"
+                      size={TAB_ICON_SIZE}
                     />
                     <span>{option.text}</span>
                   </div>

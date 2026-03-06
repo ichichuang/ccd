@@ -6,6 +6,7 @@ import {
 } from '@/constants/size'
 import {
   FONT_SCALE_RATIOS,
+  LAYOUT_SCALE_RATIOS,
   SPACING_SCALE_RATIOS,
   RADIUS_SCALE_RATIOS,
   TRANSITION_SCALE_VALUES,
@@ -20,86 +21,102 @@ type ScaleKey = (typeof SIZE_SCALE_KEYS)[number]
 const FONT_SIZE_VAR_PREFIX = '--font-size-'
 
 /**
- * 生成系统尺寸 CSS 变量 (含阶梯系统)
+ * 生成系统尺寸 CSS 变量 (仅阶梯与基础变量，不含布局尺寸)
+ *
+ * 布局变量（--sidebar-width、--header-height 等）由 decideLayoutDimensions + applyLayoutDimensions
+ * 按 device + breakpoint 动态计算并注入。
  *
  * @param preset - 尺寸预设对象
- * @returns 完整的 SizeCssVars 对象，包含所有尺寸相关的 CSS 变量
+ * @returns 不含布局变量的 SizeCssVars 子集（基础 + 间距/圆角/过渡阶梯 + 字体占位）
  *
  * 生成内容：
  * 1. 基础变量：圆角、间距单位、容器内边距
- * 2. 布局变量：侧边栏、头部、面包屑等尺寸
- * 3. 字体阶梯：xs 到 5xl（基于 fontSizeBase × FONT_SCALE_RATIOS）
- * 4. 间距阶梯：xs 到 5xl（基于 spacingBase × SPACING_SCALE_RATIOS）
- * 5. 圆角阶梯：xs 到 5xl（基于 radius × RADIUS_SCALE_RATIOS）
- * 6. 过渡阶梯：xs 到 5xl（固定毫秒值 TRANSITION_SCALE_VALUES）
+ * 2. 字体阶梯占位（实际写入由 applyRootFontSize 负责，applySizeTheme 跳过）
+ * 3. 间距阶梯：xs 到 5xl
+ * 4. 圆角阶梯：xs 到 5xl
+ * 5. 过渡阶梯：xs 到 5xl
  */
-export function generateSizeVars(preset: SizePreset): SizeCssVars {
-  // 使用 Partial<SizeCssVars> 构建，最后类型断言为完整类型
+export function generateSizeVars(preset: SizePreset): Partial<SizeCssVars> {
   const vars: Partial<SizeCssVars> = {
     // --- 基础变量 ---
     '--spacing-unit': `${preset.spacingBase}px`,
     '--container-padding': `${preset.spacingBase * 5}px`,
-
-    // --- 布局变量 ---
-    '--sidebar-width': `${preset.sidebarWidth}px`,
-    '--sidebar-collapsed-width': `${preset.sidebarCollapsedWidth}px`,
-    '--header-height': `${preset.headerHeight}px`,
-    '--breadcrumb-height': `${preset.breadcrumbHeight}px`,
-    '--footer-height': `${preset.footerHeight}px`,
-    '--tabs-height': `${preset.tabsHeight}px`,
   }
 
-  // --- 生成字体阶梯变量 (xs-5xl) ---
-  // 注意：实际写入由 applyRootFontSize 负责（基于 device+breakpoint+preset），
-  // applySizeTheme 会跳过这些键。此处保留以维持 SizeCssVars 类型完整及降级兼容。
+  // --- 字体阶梯占位（applySizeTheme 会跳过，由 applyRootFontSize 写入）---
   SIZE_SCALE_KEYS.forEach(key => {
     const size = preset.fontSizeBase * FONT_SCALE_RATIOS[key]
-    vars[`--font-size-${key}`] = `${size}px`
+    vars[`--font-size-${key}` as keyof SizeCssVars] = `${size}px`
   })
 
-  // --- 生成间距阶梯变量 (xs-5xl) ---
-  // 公式: spacingBase × SPACING_SCALE_RATIOS[key]
+  // --- 间距阶梯变量 (xs-5xl) ---
   SIZE_SCALE_KEYS.forEach(key => {
     const size = preset.spacingBase * SPACING_SCALE_RATIOS[key]
-    vars[`--spacing-${key}`] = `${size}px`
+    vars[`--spacing-${key}` as keyof SizeCssVars] = `${size}px`
   })
 
-  // --- 生成圆角阶梯变量 (xs-5xl) ---
-  // 公式: radius × RADIUS_SCALE_RATIOS[key]
+  // --- 圆角阶梯变量 (xs-5xl) ---
   SIZE_SCALE_KEYS.forEach(key => {
     const size = preset.radius * RADIUS_SCALE_RATIOS[key]
-    vars[`--radius-${key}`] = `${size}rem`
+    vars[`--radius-${key}` as keyof SizeCssVars] = `${size}rem`
   })
 
-  // --- 生成过渡时长阶梯变量 (xs-5xl) ---
-  // 直接使用 TRANSITION_SCALE_VALUES 毫秒值
+  // --- 过渡时长阶梯变量 (xs-5xl) ---
   SIZE_SCALE_KEYS.forEach(key => {
-    vars[`--transition-${key}`] = `${TRANSITION_SCALE_VALUES[key]}ms`
+    vars[`--transition-${key}` as keyof SizeCssVars] = `${TRANSITION_SCALE_VALUES[key]}ms`
   })
 
-  // 类型断言：确保返回完整的 SizeCssVars
-  // 由于我们按接口完整构建，这里可以安全断言
-  return vars as SizeCssVars
+  return vars
 }
 
 /**
- * 将尺寸 CSS 变量应用到文档根元素
+ * 将尺寸 CSS 变量应用到文档根元素（不含布局变量，布局由 applyLayoutDimensions 负责）
  *
- * @param vars - SizeCssVars 对象，包含所有要应用的 CSS 变量
+ * @param vars - SizeCssVars 子集，可不含布局键
  */
-export function applySizeTheme(vars: SizeCssVars) {
+export function applySizeTheme(vars: Partial<SizeCssVars>) {
   const root = document.documentElement
   Object.entries(vars).forEach(([key, value]) => {
     if (key.startsWith(FONT_SIZE_VAR_PREFIX)) return
-    root.style.setProperty(key, value)
+    if (value != null) root.style.setProperty(key, value)
   })
   root.style.setProperty('--dialog-settings-width', `${DIALOG_SETTINGS_WIDTH_PX}px`)
+}
+
+/**
+ * 根据设备类型与断点计算布局尺寸 CSS 变量（双轨：预设 + 断点）
+ * Mobile/Tablet 不缩放 (ratio=1)；PC 使用 LAYOUT_SCALE_RATIOS[breakpoint]
+ */
+export function decideLayoutDimensions(ctx: RootFontSizeContext): Record<string, string> {
+  const { deviceType, breakpoint, preset } = ctx
+  const ratio =
+    deviceType === 'Mobile' || deviceType === 'Tablet' ? 1 : (LAYOUT_SCALE_RATIOS[breakpoint] ?? 1)
+
+  return {
+    '--sidebar-width': `${preset.sidebarWidth * ratio}px`,
+    '--sidebar-collapsed-width': `${preset.sidebarCollapsedWidth * ratio}px`,
+    '--header-height': `${preset.headerHeight * ratio}px`,
+    '--breadcrumb-height': `${preset.breadcrumbHeight * ratio}px`,
+    '--footer-height': `${preset.footerHeight * ratio}px`,
+    '--tabs-height': `${preset.tabsHeight * ratio}px`,
+  }
+}
+
+/**
+ * 将布局尺寸 CSS 变量应用到文档根元素
+ */
+export function applyLayoutDimensions(dimensions: Record<string, string>) {
+  const root = document.documentElement
+  Object.entries(dimensions).forEach(([key, value]) => {
+    root.style.setProperty(key, value)
+  })
 }
 
 interface RootFontSizeContext {
   deviceType: 'Mobile' | 'Tablet' | 'PC'
   breakpoint: ScaleKey
   preset: SizePreset
+  pixelRatio?: number
 }
 
 interface RootFontSizeDecision {
@@ -116,14 +133,15 @@ interface RootFontSizeDecision {
  * - PC：xs -> sm，sm -> md，md/lg/xl -> 自身，2xl 及以上统一 capped 为 2xl
  */
 export function decideRootFontSize(ctx: RootFontSizeContext): RootFontSizeDecision {
-  const { deviceType, breakpoint, preset } = ctx
+  const { deviceType, breakpoint, preset, pixelRatio = 1 } = ctx
 
   // 移动端：保持稳定阅读体验，不随断点缩小
   if (deviceType === 'Mobile') {
     const scaleKey: ScaleKey = 'md'
     const base = preset.fontSizeBase
     const ratio = FONT_SCALE_RATIOS[scaleKey]
-    const pixelValue = Math.max(15, base * ratio)
+    const minBase = pixelRatio >= 3 ? 16 : 15
+    const pixelValue = Math.max(minBase, base * ratio)
     return { scaleKey, pixelValue }
   }
 
@@ -239,6 +257,10 @@ export function preload(): void {
 
   const deviceType = getDeviceTypeSync()
   const breakpoint = getBreakpointSync()
-  const decision = decideRootFontSize({ deviceType, breakpoint, preset })
+  const pixelRatio = typeof window !== 'undefined' ? window.devicePixelRatio || 1 : 1
+  const decision = decideRootFontSize({ deviceType, breakpoint, preset, pixelRatio })
   applyRootFontSize(decision)
+
+  const layoutDecision = decideLayoutDimensions({ deviceType, breakpoint, preset, pixelRatio })
+  applyLayoutDimensions(layoutDecision)
 }

@@ -23,6 +23,13 @@
 
 ### 2.1 核心规范（AI 必读）
 
+0. **UI State Contract Package**（State Authority）
+   - **`UI_STATE_CONTRACT.md`** - UIDesignState 定义、Primary vs Derived、禁止组合、校验规则
+   - **`INTENT_PROFILES.md`** - 查表核心，intent → derived state
+   - **`ARCHETYPE_SPEC.md`** - 布局原型（A1~A5）结构、scroll model、component map、FORBIDDEN
+   - **使用场景**：生成/修改页面 UI 前必读；AI 必须先产出 UIDesignState 再写代码
+   - **引用**：`@./UI_STATE_CONTRACT.md`
+
 1. **`PROJECT_PROTOCOL.md`** - 项目协议
    - **功能**：技术栈、目录规范、编码规范、路由系统、认证、设计系统
    - **使用场景**：所有代码生成任务前必须阅读
@@ -54,8 +61,11 @@
 5. **`PRIMEVUE_V4_API.md`** - PrimeVue v4 API 规范（禁止 v3 弃用组件名，以 https://primevue.org/ 为准）
 6. **`PRIMEVUE_THEME.md`** - PrimeVue 主题
 7. **`UNOCSS_AND_ICONS.md`** - UnoCSS 与图标
-8. **`ECHARTS_THEME.md`** - ECharts 与主题
-9. **`INDUSTRIAL_UX_DESIGN_SYSTEM.md`** - 工业级 UX 设计系统
+8. **`FOCUS_AND_OUTLINE_STYLING.md`** - Focus/Outline 样式（最小化 suppression，禁止冗长链）
+   - **使用场景**：菜单项、面包屑、可聚焦按钮等
+   - **引用**：`@./FOCUS_AND_OUTLINE_STYLING.md`
+9. **`ECHARTS_THEME.md`** - ECharts 与主题
+10. **`INDUSTRIAL_UX_DESIGN_SYSTEM.md`** - 工业级 UX 设计系统
 
 - **功能**：桌面级布局骨架、工业状态色、防呆设计、Toast 时长建议、连接感知
 - **使用场景**：工业监控/仪表盘类页面
@@ -158,22 +168,23 @@
 
 ## 🎯 AI 快速查找
 
-| 需求                | 文档                                                              |
-| ------------------- | ----------------------------------------------------------------- |
-| 理解架构            | `architecture/ARCHITECTURE_OVERVIEW.md`、`DIRECTORY_STRUCTURE.md` |
-| 系统配置 vs 示例页  | system-configuration=架构能力演示；example=业务组件用法示例       |
-| 用什么组件          | `PROJECT_PROTOCOL.md` §1.1                                        |
-| 怎么写样式          | `UNOCSS_AND_ICONS.md`                                             |
-| 怎么写表单          | `SCHEMA_FORM_COMPONENT.md`                                        |
-| 怎么写表格          | `DataTable_COMPONENT.md`                                          |
-| 怎么写类型          | `TYPESCRIPT_AND_LINTING.md`                                       |
-| 模板解析错误/反模式 | `VUE_TEMPLATE_ANTIPATTERNS.md`                                    |
-| 怎么写路由          | `PROJECT_PROTOCOL.md` §10                                         |
-| 怎么写认证          | `AUTH_AND_LOGIN_FLOW.md`                                          |
-| 怎么写布局          | `ADAPTIVE_LAYOUT.md`                                              |
-| 怎么写反馈提示      | `TOAST_AND_MESSAGE.md`                                            |
-| 怎么写弹窗/对话框   | `DIALOG_COMPONENT.md`                                             |
-| 怎么写图表          | `ECHARTS_THEME.md`                                                |
-| 怎么写右键菜单      | `PROJECT_PROTOCOL.md` §8.5.5                                      |
-| 网络状态/大文件上传 | `PROJECT_PROTOCOL.md` §8.4.6                                      |
-| 部署/Nginx/gzip     | `DEPLOYMENT.md`                                                   |
+| 需求                | 文档                                                                                             |
+| ------------------- | ------------------------------------------------------------------------------------------------ |
+| 理解架构            | `architecture/ARCHITECTURE_OVERVIEW.md`、`DIRECTORY_STRUCTURE.md`                                |
+| 系统配置 vs 示例页  | system-configuration=架构能力演示；example=业务组件用法示例                                      |
+| 用什么组件          | `PROJECT_PROTOCOL.md` §1.1                                                                       |
+| 怎么写样式          | `UNOCSS_AND_ICONS.md`                                                                            |
+| 怎么写表单          | `SCHEMA_FORM_COMPONENT.md`                                                                       |
+| 怎么写表格          | `DataTable_COMPONENT.md`                                                                         |
+| Schema-First 策略   | `.cursor/rules/35-schema-driven-development.mdc`、`.agent/rules/35-schema-driven-development.md` |
+| 怎么写类型          | `TYPESCRIPT_AND_LINTING.md`                                                                      |
+| 模板解析错误/反模式 | `VUE_TEMPLATE_ANTIPATTERNS.md`                                                                   |
+| 怎么写路由          | `PROJECT_PROTOCOL.md` §10                                                                        |
+| 怎么写认证          | `AUTH_AND_LOGIN_FLOW.md`                                                                         |
+| 怎么写布局          | `ADAPTIVE_LAYOUT.md`                                                                             |
+| 怎么写反馈提示      | `TOAST_AND_MESSAGE.md`                                                                           |
+| 怎么写弹窗/对话框   | `DIALOG_COMPONENT.md`                                                                            |
+| 怎么写图表          | `ECHARTS_THEME.md`                                                                               |
+| 怎么写右键菜单      | `PROJECT_PROTOCOL.md` §8.5.5                                                                     |
+| 网络状态/大文件上传 | `PROJECT_PROTOCOL.md` §8.4.6                                                                     |
+| 部署/Nginx/gzip     | `DEPLOYMENT.md`                                                                                  |

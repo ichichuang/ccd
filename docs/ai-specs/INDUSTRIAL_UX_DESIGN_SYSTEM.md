@@ -15,6 +15,7 @@
 - **数据优先**：关键数值、实时数据为主角，使用 `font-mono fs-3xl font-bold text-foreground`。
 - **标签弱化**：数据点名称、单位不得喧宾夺主，使用 `fs-sm text-muted-foreground`。
 - **卡片式 UI**：逻辑相关的内容用 PrimeVue `<Card>` 或 UnoCSS equivalent：`bg-card component-border rounded-scale shadow-sm`；卡片需轻微 hover 效果，使用 `interactive-hover` 或 `behavior-hover-transition`。
+- **渐进式披露 (Progressive Disclosure)**：界面默认必须保持极简（极低认知负荷）。高级、低频或具有破坏性的设置项**必须**隐藏在「高级选项」开关、PrimeVue `<Accordion>` 折叠面板或次要 Tab 之后。禁止在一屏内平铺复杂表单字段而没有任何逻辑分组或隐藏机制。
 
 ## 3. 工业状态色（严格语义）
 

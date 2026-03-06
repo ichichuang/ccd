@@ -65,10 +65,8 @@ onMounted(() => {
 <style lang="scss" scoped>
 .cube-container {
   transform: translateZ(0);
-  -webkit-transform: translateZ(0);
   will-change: transform;
   perspective: 1000px;
-  -webkit-perspective: 1000px;
   width: var(--cube-size);
   height: var(--cube-size);
 }
@@ -78,11 +76,8 @@ onMounted(() => {
   height: 100%;
   position: relative;
   transform-style: preserve-3d;
-  -webkit-transform-style: preserve-3d;
   animation: cube-rotate 3s infinite linear;
-  -webkit-animation: cube-rotate 3s infinite linear;
   transform: translateZ(0);
-  -webkit-transform: translateZ(0);
 }
 
 .cube-face {
@@ -93,56 +88,50 @@ onMounted(() => {
   background: linear-gradient(135deg, rgb(var(--primary-light)), rgb(var(--primary)));
   opacity: 0.8;
   backface-visibility: hidden;
-  -webkit-backface-visibility: hidden;
   transform: translateZ(0);
-  -webkit-transform: translateZ(0);
 }
 
 .cube-face-front {
   transform: translateZ(calc(var(--cube-size) / 2));
-  -webkit-transform: translateZ(calc(var(--cube-size) / 2));
 }
 
 .cube-face-back {
   transform: rotateY(180deg) translateZ(calc(var(--cube-size) / 2));
-  -webkit-transform: rotateY(180deg) translateZ(calc(var(--cube-size) / 2));
 }
 
 .cube-face-right {
   transform: rotateY(90deg) translateZ(calc(var(--cube-size) / 2));
-  -webkit-transform: rotateY(90deg) translateZ(calc(var(--cube-size) / 2));
 }
 
 .cube-face-left {
   transform: rotateY(-90deg) translateZ(calc(var(--cube-size) / 2));
-  -webkit-transform: rotateY(-90deg) translateZ(calc(var(--cube-size) / 2));
 }
 
 .cube-face-top {
   transform: rotateX(90deg) translateZ(calc(var(--cube-size) / 2));
-  -webkit-transform: rotateX(90deg) translateZ(calc(var(--cube-size) / 2));
 }
 
 .cube-face-bottom {
   transform: rotateX(-90deg) translateZ(calc(var(--cube-size) / 2));
-  -webkit-transform: rotateX(-90deg) translateZ(calc(var(--cube-size) / 2));
 }
 
 @keyframes cube-rotate {
   0% {
     transform: translateZ(0) rotateX(0deg) rotateY(0deg);
   }
+
   100% {
     transform: translateZ(0) rotateX(360deg) rotateY(360deg);
   }
 }
 
-@-webkit-keyframes cube-rotate {
+@keyframes cube-rotate {
   0% {
-    -webkit-transform: translateZ(0) rotateX(0deg) rotateY(0deg);
+    transform: translateZ(0) rotateX(0deg) rotateY(0deg);
   }
+
   100% {
-    -webkit-transform: translateZ(0) rotateX(360deg) rotateY(360deg);
+    transform: translateZ(0) rotateX(360deg) rotateY(360deg);
   }
 }
 </style>

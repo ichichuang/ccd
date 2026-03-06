@@ -2,7 +2,7 @@ const dashboardRoutes: RouteConfig[] = [
   {
     path: '/dashboard',
     name: 'Dashboard',
-    component: () => import('@/views/dashboard/dashboard.vue'),
+    component: () => import('@/views/dashboard/index.vue'),
     meta: {
       titleKey: 'router.dashboard.dashboard',
       rank: 0,

@@ -66,7 +66,6 @@ onMounted(() => {
 <style lang="scss" scoped>
 .atom-spinner {
   transform: translateZ(0);
-  -webkit-transform: translateZ(0);
   will-change: transform;
 }
 
@@ -76,7 +75,6 @@ onMounted(() => {
   height: 100%;
   width: 100%;
   transform: translateZ(0);
-  -webkit-transform: translateZ(0);
 }
 
 .atom-spinner .spinner-circle {
@@ -87,7 +85,6 @@ onMounted(() => {
   top: 50%;
   left: 50%;
   transform: translateZ(0) translate(-50%, -50%);
-  -webkit-transform: translateZ(0) translate(-50%, -50%);
 }
 
 .atom-spinner .spinner-line {
@@ -100,24 +97,20 @@ onMounted(() => {
   will-change: transform;
   transform: translateZ(0);
   backface-visibility: hidden;
-  -webkit-backface-visibility: hidden;
 }
 
 .atom-spinner .spinner-line:nth-child(1) {
   animation: atom-spinner-animation-1 1s linear infinite;
-  -webkit-animation: atom-spinner-animation-1 1s linear infinite;
   transform: translateZ(0) rotateZ(120deg) rotateX(66deg) rotateZ(0deg);
 }
 
 .atom-spinner .spinner-line:nth-child(2) {
   animation: atom-spinner-animation-2 1s linear infinite;
-  -webkit-animation: atom-spinner-animation-2 1s linear infinite;
   transform: translateZ(0) rotateZ(240deg) rotateX(66deg) rotateZ(0deg);
 }
 
 .atom-spinner .spinner-line:nth-child(3) {
   animation: atom-spinner-animation-3 1s linear infinite;
-  -webkit-animation: atom-spinner-animation-3 1s linear infinite;
   transform: translateZ(0) rotateZ(360deg) rotateX(66deg) rotateZ(0deg);
 }
 
@@ -125,17 +118,19 @@ onMounted(() => {
   0% {
     transform: translateZ(0) rotateZ(120deg) rotateX(66deg) rotateZ(0deg);
   }
+
   100% {
     transform: translateZ(0) rotateZ(120deg) rotateX(66deg) rotateZ(360deg);
   }
 }
 
-@-webkit-keyframes atom-spinner-animation-1 {
+@keyframes atom-spinner-animation-1 {
   0% {
-    -webkit-transform: translateZ(0) rotateZ(120deg) rotateX(66deg) rotateZ(0deg);
+    transform: translateZ(0) rotateZ(120deg) rotateX(66deg) rotateZ(0deg);
   }
+
   100% {
-    -webkit-transform: translateZ(0) rotateZ(120deg) rotateX(66deg) rotateZ(360deg);
+    transform: translateZ(0) rotateZ(120deg) rotateX(66deg) rotateZ(360deg);
   }
 }
 
@@ -143,17 +138,19 @@ onMounted(() => {
   0% {
     transform: translateZ(0) rotateZ(240deg) rotateX(66deg) rotateZ(0deg);
   }
+
   100% {
     transform: translateZ(0) rotateZ(240deg) rotateX(66deg) rotateZ(360deg);
   }
 }
 
-@-webkit-keyframes atom-spinner-animation-2 {
+@keyframes atom-spinner-animation-2 {
   0% {
-    -webkit-transform: translateZ(0) rotateZ(240deg) rotateX(66deg) rotateZ(0deg);
+    transform: translateZ(0) rotateZ(240deg) rotateX(66deg) rotateZ(0deg);
   }
+
   100% {
-    -webkit-transform: translateZ(0) rotateZ(240deg) rotateX(66deg) rotateZ(360deg);
+    transform: translateZ(0) rotateZ(240deg) rotateX(66deg) rotateZ(360deg);
   }
 }
 
@@ -161,17 +158,19 @@ onMounted(() => {
   0% {
     transform: translateZ(0) rotateZ(360deg) rotateX(66deg) rotateZ(0deg);
   }
+
   100% {
     transform: translateZ(0) rotateZ(360deg) rotateX(66deg) rotateZ(360deg);
   }
 }
 
-@-webkit-keyframes atom-spinner-animation-3 {
+@keyframes atom-spinner-animation-3 {
   0% {
-    -webkit-transform: translateZ(0) rotateZ(360deg) rotateX(66deg) rotateZ(0deg);
+    transform: translateZ(0) rotateZ(360deg) rotateX(66deg) rotateZ(0deg);
   }
+
   100% {
-    -webkit-transform: translateZ(0) rotateZ(360deg) rotateX(66deg) rotateZ(360deg);
+    transform: translateZ(0) rotateZ(360deg) rotateX(66deg) rotateZ(360deg);
   }
 }
 </style>

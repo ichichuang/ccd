@@ -35,7 +35,8 @@
       var(--transition-radius, 150%) at var(--transition-x, 50%) var(--transition-y, 50%)
     );
   }
+
   100% {
-    clip-path: circle(0px at var(--transition-x, 50%) var(--transition-y, 50%));
+    clip-path: circle(0 at var(--transition-x, 50%) var(--transition-y, 50%));
   }
 }

@@ -1,57 +1,29 @@
-# CCD
+# Enterprise Vue3 Boilerplate
 
-<p align="center">
-  <strong>企业级 Vue 3 后台管理框架</strong>
-</p>
-
-<p align="center">
-  基于 Vue 3.5 + TypeScript + Vite 7 + PrimeVue + Alova + Pinia 的现代化中后台解决方案
-</p>
-
----
+一个基于 Vue 3 + TypeScript + Vite + PrimeVue + UnoCSS + Pinia + Alova 的企业级中后台管理模板，可作为新项目的起步脚手架。
 
 ## ✨ 特性
 
-- **📱 响应式布局** — PC / 平板 / 移动端自适应，断点驱动
-- **🎨 设计系统** — 主题（亮/暗）、尺寸阶梯、语义化样式
-- **📦 封装组件** — DataTable、SchemaForm、UseEcharts、PrimeDialog、Icons 等开箱即用
-- **🛣️ 路由与权限** — 静态 + 动态路由、鉴权守卫、标签页、多窗口
-- **🔐 登录与鉴权** — Token 管理、401 处理、登出清理
-- **🌍 国际化** — vue-i18n，中英文切换
-- **📊 图表** — ECharts 集成，主题联动
-- **📋 表单** — Schema 驱动，支持分步、分组、动态字段
-
----
-
-## 🛠️ 技术栈
-
-| 类别 | 技术                          |
-| ---- | ----------------------------- |
-| 框架 | Vue 3.5 · TypeScript · Vite 7 |
-| UI   | PrimeVue · UnoCSS             |
-| 状态 | Pinia                         |
-| 请求 | Alova                         |
-| 路由 | Vue Router                    |
-| 图表 | ECharts · vue-echarts         |
-
-> 完整技术栈与版本见 [技术栈详解](docs/architecture/TECH_STACK.md)
-
----
+- 现代技术栈：Vue 3.5、TypeScript、Vite 7、PrimeVue、UnoCSS、Pinia、Alova
+- 企业级架构：清晰的目录结构、模块化路由、状态管理与请求封装
+- 通用组件：内置 DataTable、SchemaForm、UseEcharts、PrimeDialog、Icons 等高复用组件
+- 设计系统：主题（亮/暗）、尺寸阶梯、语义化颜色与样式
+- 国际化支持：内置中英文切换（vue-i18n）
 
 ## 🚀 快速开始
 
 ### 环境要求
 
-- Node.js >= 24.3.0
-- pnpm >= 8.0.0
+- Node.js >= 20
+- pnpm >= 8
 
-### 安装与运行
+### 安装与启动
 
 ```bash
 # 安装依赖
 pnpm install
 
-# 启动开发服务
+# 启动开发服务器
 pnpm dev
 ```
 
@@ -65,26 +37,12 @@ pnpm dev
 | `pnpm lint`     | 代码检查       |
 | `pnpm lint:fix` | 代码检查并修复 |
 
----
+## 📁 项目结构概览
 
-## 📚 文档
-
-| 文档                                                   | 说明                                                     |
-| ------------------------------------------------------ | -------------------------------------------------------- |
-| [架构总览](docs/architecture/ARCHITECTURE_OVERVIEW.md) | 分层设计、核心流程、设计原则                             |
-| [技术栈详解](docs/architecture/TECH_STACK.md)          | 各项技术的版本与用途                                     |
-| [目录结构](docs/architecture/DIRECTORY_STRUCTURE.md)   | 各目录、文件的职责说明                                   |
-| [规范文档索引](docs/README.md)                         | 规范与组件文档（协议、设计系统等，供 AI 与深度开发查阅） |
-
----
-
-## 📁 项目结构
-
-```
-ccd/
+```text
+app-template/
 ├── build/          # 构建配置
 ├── docs/           # 文档
-│   └── architecture/   # 架构相关文档
 ├── src/
 │   ├── api/        # 接口定义
 │   ├── assets/     # 静态资源
@@ -99,11 +57,8 @@ ccd/
 │   ├── types/      # 类型定义
 │   ├── utils/      # 工具函数
 │   └── views/      # 页面
-└── ...
 ```
-
----
 
 ## 📄 License
 
-Private
+本仓库作为企业内部或自用模板，请根据实际情况补充许可证说明。

@@ -5,7 +5,6 @@
  */
 import { t } from '@/locales'
 import { useDeviceStore } from '@/stores/modules/device'
-import { computed, onMounted, onUnmounted, ref } from 'vue'
 import type { Component, VNode } from 'vue'
 import type { ButtonProps, DialogOptions, EventType } from './utils/types'
 import type { ArgsType } from './utils/types'

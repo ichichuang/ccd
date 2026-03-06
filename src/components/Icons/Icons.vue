@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { computed } from 'vue'
 import type { IconsProps } from './utils/types'
 import { toIconName } from './utils/helper'
 import { SIZE_SCALE_KEYS } from '@/constants/sizeScale'
@@ -46,8 +45,15 @@ const sizeStyle = computed(() => {
   if (typeof s === 'string' && SIZE_SCALE_KEYS.includes(s as SizeScaleKey)) {
     return {}
   }
-  if (typeof s === 'number') return { fontSize: `${s}px` }
-  if (typeof s === 'string' && !Number.isNaN(Number(s))) return { fontSize: `${s}px` }
+  if (typeof s === 'number') {
+    const rem = s / 16
+    return { fontSize: `${rem}rem` }
+  }
+  if (typeof s === 'string' && !Number.isNaN(Number(s))) {
+    const numeric = Number(s)
+    const rem = numeric / 16
+    return { fontSize: `${rem}rem` }
+  }
   if (typeof s === 'string') return { fontSize: s }
   return {}
 })
@@ -63,6 +69,20 @@ const style = computed(() => {
   if (props.scale !== undefined) transforms.push(`scale(${props.scale})`)
   if (transforms.length) css.transform = transforms.join(' ')
   return css
+})
+
+// 4b. 父级传入 text-current 时不追加 text-foreground，避免颜色冲突
+const attrs = useAttrs()
+function hasTextCurrent(cls: unknown): boolean {
+  if (typeof cls === 'string') return cls.includes('text-current')
+  if (Array.isArray(cls)) return cls.some(c => hasTextCurrent(c))
+  if (cls && typeof cls === 'object') return Object.keys(cls).some(k => k.includes('text-current'))
+  return false
+}
+const defaultColorClass = computed(() => {
+  if (props.color) return ''
+  if (hasTextCurrent(attrs.class)) return ''
+  return 'text-foreground'
 })
 
 // 5. 动画、翻转
@@ -82,7 +102,7 @@ const functionalClasses = computed(() => {
 
 <template>
   <div
-    :class="[iconClass, functionalClasses, sizeClass, !props.color && 'text-foreground']"
+    :class="[iconClass, functionalClasses, sizeClass, defaultColorClass]"
     :style="{ ...style, ...sizeStyle }"
     class="inline-block align-middle"
     role="img"

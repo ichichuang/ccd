@@ -64,7 +64,6 @@ onMounted(() => {
 <style lang="scss" scoped>
 .spinner {
   transform: translateZ(0);
-  -webkit-transform: translateZ(0);
   will-change: transform;
   width: var(--spinner-width);
   height: var(--spinner-height);
@@ -81,41 +80,35 @@ onMounted(() => {
   width: var(--bar-width);
   display: inline-block;
   transform: translateZ(0);
-  -webkit-transform: translateZ(0);
   backface-visibility: hidden;
-  -webkit-backface-visibility: hidden;
   animation: sk-stretchdelay 1.2s infinite ease-in-out;
-  -webkit-animation: sk-stretchdelay 1.2s infinite ease-in-out;
 }
 
 .spinner .rect2 {
-  -webkit-animation-delay: -1.1s;
   animation-delay: -1.1s;
 }
 
 .spinner .rect3 {
-  -webkit-animation-delay: -1s;
   animation-delay: -1s;
 }
 
 .spinner .rect4 {
-  -webkit-animation-delay: -0.9s;
   animation-delay: -0.9s;
 }
 
 .spinner .rect5 {
-  -webkit-animation-delay: -0.8s;
   animation-delay: -0.8s;
 }
 
-@-webkit-keyframes sk-stretchdelay {
+@keyframes sk-stretchdelay {
   0%,
   40%,
   100% {
-    -webkit-transform: translateZ(0) scaleY(0.4);
+    transform: translateZ(0) scaleY(0.4);
   }
+
   20% {
-    -webkit-transform: translateZ(0) scaleY(1);
+    transform: translateZ(0) scaleY(1);
   }
 }
 
@@ -124,11 +117,10 @@ onMounted(() => {
   40%,
   100% {
     transform: translateZ(0) scaleY(0.4);
-    -webkit-transform: translateZ(0) scaleY(0.4);
   }
+
   20% {
     transform: translateZ(0) scaleY(1);
-    -webkit-transform: translateZ(0) scaleY(1);
   }
 }
 </style>

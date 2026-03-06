@@ -7,6 +7,59 @@ import path from 'node:path'
 import tseslint from 'typescript-eslint'
 import vueEslintParser from 'vue-eslint-parser'
 
+// Auto-Import Shield: 禁止手动导入 Vue 组合式 API（允许 import type）
+const VUE_AUTO_IMPORT_FORBIDDEN_VALUE_IMPORTS = [
+  // Reactivity
+  'ref',
+  'shallowRef',
+  'triggerRef',
+  'customRef',
+  'computed',
+  'reactive',
+  'shallowReactive',
+  'readonly',
+  'shallowReadonly',
+  'markRaw',
+  'toRaw',
+  'toRef',
+  'toRefs',
+  'unref',
+  'isRef',
+  'isReactive',
+  'isReadonly',
+  'isProxy',
+  // Watch
+  'watch',
+  'watchEffect',
+  'watchPostEffect',
+  'watchSyncEffect',
+  // Lifecycle
+  'onBeforeMount',
+  'onMounted',
+  'onBeforeUpdate',
+  'onUpdated',
+  'onBeforeUnmount',
+  'onUnmounted',
+  'onActivated',
+  'onDeactivated',
+  'onErrorCaptured',
+  'onRenderTracked',
+  'onRenderTriggered',
+  'onServerPrefetch',
+  // Scope / scheduling
+  'nextTick',
+  'effectScope',
+  'getCurrentScope',
+  'onScopeDispose',
+  // DI
+  'provide',
+  'inject',
+  // Component instance utils (常见误手导入)
+  'getCurrentInstance',
+  'useAttrs',
+  'useSlots',
+] as const
+
 // 1. 自动导入生成的 ESLint 配置
 // ----------------------------------------------------------------------
 const autoImportEslintConfigPath = path.resolve(process.cwd(), '.eslintrc-auto-import.json')
@@ -149,15 +202,56 @@ export default tseslint.config(
   //
   // 8.1 针对 TS/TSX 的规则 (开启严格检查)
   {
+    name: 'app/auto-import-shield',
+    files: ['**/*.{ts,mts,cts,tsx,vue}'],
+    rules: {
+      '@typescript-eslint/no-restricted-imports': [
+        'error',
+        {
+          paths: [
+            {
+              name: 'vue',
+              importNames: [...VUE_AUTO_IMPORT_FORBIDDEN_VALUE_IMPORTS],
+              message:
+                'Auto-Import Shield: Vue 组合式 API 由 unplugin-auto-import 全局提供，请删除该手动导入（类型请使用 import type）。',
+              // ✅ 关键：允许 `import type { Ref } from 'vue'`
+              allowTypeImports: true,
+            },
+          ],
+        },
+      ],
+    },
+  },
+  {
+    name: 'app/auto-import-shield-js',
+    files: ['**/*.{js,jsx,mjs,cjs}'],
+    rules: {
+      'no-restricted-imports': [
+        'error',
+        {
+          paths: [
+            {
+              name: 'vue',
+              importNames: [...VUE_AUTO_IMPORT_FORBIDDEN_VALUE_IMPORTS],
+              message:
+                'Auto-Import Shield: Vue 组合式 API 由 unplugin-auto-import 全局提供，请删除该手动导入。',
+            },
+          ],
+        },
+      ],
+    },
+  },
+  {
     name: 'app/ts-custom-rules',
     files: ['**/*.{ts,mts,tsx}'],
     rules: {
+      'no-unused-vars': 'off',
       '@typescript-eslint/no-explicit-any': 'off',
       '@typescript-eslint/ban-ts-comment': 'off', // 允许 @ts-ignore 等，解决 components.d.ts 的报错
 
       // ✅ 核心修改：全面忽略所有以 _ 开头的未使用变量、参数和错误捕获
       '@typescript-eslint/no-unused-vars': [
-        'warn',
+        'error',
         {
           args: 'all',
           argsIgnorePattern: '^_',

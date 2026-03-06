@@ -1,6 +1,6 @@
 <!--
   黄金样本：DataTable 列 body 自定义渲染（必须 lang="tsx" + JSX 返回 VNode）
-  参考自 src/views/example/DataTable/configs/customColumnConfig.tsx
+  参考自 src/views/example/data-table/configs/customColumnConfig.tsx
   AI 生成 DataTable 列 body / filterRenderer / editorRenderer / customFooter 时请严格模仿。
   关键点：
   1. 必须 <script setup lang="tsx">，不能 lang="ts"

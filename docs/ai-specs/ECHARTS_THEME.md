@@ -632,3 +632,37 @@ function updateOption() {
 - **组件使用规则**：`.cursor/rules/18-components-and-icons.mdc`
 - **UI 架构规则**：`.agent/rules/10-ui-architecture.md`
 - **UseEcharts README**：`src/components/UseEcharts/README.md`
+
+---
+
+## 7. Premium Visualization (V2)
+
+> V2 引擎：Apple 级流体动画、Glassmorphism、严格设计系统对齐。详见 `.cursor/rules/40-echarts-visualization.mdc`。
+
+### 7.1 Glass 模式配色策略
+
+当 `ThemeStore.isGlassMode === true` 时：
+
+- **图表背景**：`backgroundColor` 可使用 `withAlpha(config.background, 0.9)` 或 `'transparent'`，由外层卡片提供 glass-surface 效果
+- **Tooltip**：默认使用 `withAlpha(config.card, 0.92)` 作为 `backgroundColor`，实现玻璃态半透明
+- **颜色来源**：所有颜色仍从 `getChartSystemVariables()` / ThemeConfig 获取，禁止硬编码
+
+### 7.2 ChartAnimationConfig（强制规范）
+
+| 属性                      | 值                                | 说明                             |
+| ------------------------- | --------------------------------- | -------------------------------- |
+| `animationEasing`         | `'cubic-bezier(0.16, 1, 0.3, 1)'` | 与 uno.config ease-out-expo 一致 |
+| `animationDuration`       | `1000`                            | 初始动画时长 (ms)                |
+| `animationDurationUpdate` | `400`                             | 数据更新动画时长 (ms)            |
+| `animationEasingUpdate`   | `'cubic-bezier(0.16, 1, 0.3, 1)'` | 更新动画曲线                     |
+
+默认值由 `useChartTheme/defaults.ts` 的 `DEFAULT_ANIMATION_CONFIG` 提供；可通过 `animationConfig` prop 覆盖。
+
+### 7.3 Tooltip 过渡规范
+
+| 属性                 | 值                             | 说明                        |
+| -------------------- | ------------------------------ | --------------------------- |
+| `transitionDuration` | `0.3` (s)                      | 显示/隐藏过渡时长，流体动画 |
+| `backgroundColor`    | `withAlpha(config.card, 0.92)` | 玻璃态半透明背景            |
+
+由 `applyTooltipStyles` 自动注入；用户显式传入时以用户为准。

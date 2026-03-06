@@ -11,9 +11,6 @@
 </template>
 
 <script setup lang="ts">
-import Slider from 'primevue/slider'
-import { computed } from 'vue'
-
 interface WrappedSliderProps {
   modelValue?: number | number[]
   /** 是否允许空值（null/undefined），默认 false：空值会被归一为 0 */
@@ -24,8 +21,6 @@ interface WrappedSliderProps {
   readonly?: boolean
   class?: string | string[]
   style?: Record<string, string>
-  /** rest 透传 PrimeVue Slider */
-  [key: string]: unknown
 }
 
 const props = withDefaults(defineProps<WrappedSliderProps>(), {
@@ -61,20 +56,12 @@ const internalValue = computed({
   },
 })
 
+const attrs = useAttrs()
+
 /**
  * 提取其他 props（排除已处理的属性）
  */
 const restProps = computed(() => {
-  const {
-    modelValue: _modelValue,
-    name: _name,
-    disabled: _disabled,
-    readonly: _readonly,
-    class: _class,
-    style: _style,
-
-    ...rest
-  } = props
-  return rest
+  return attrs as Record<string, unknown>
 })
 </script>

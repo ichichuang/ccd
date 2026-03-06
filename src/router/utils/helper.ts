@@ -6,7 +6,8 @@ import {
 } from '@/constants/router'
 import router, { routeUtils } from '@/router'
 import { usePermissionStore } from '@/stores/modules/permission'
-import type { LocationQueryRaw, RouteLocationNormalized } from 'vue-router'
+import type { LocationQueryRaw, RouteLocationNormalized, RouteMeta } from 'vue-router'
+import type { MenuItem as PrimeMenuItem } from 'primevue/menuitem'
 
 // ================= 窗口管理 =================
 
@@ -28,7 +29,7 @@ function initWindowChannel() {
       if (e.data?.type === 'window-closed') {
         const { key } = e.data
         routeWindowRefMap.delete(key)
-        const permissionStore = usePermissionStore() as any
+        const permissionStore = usePermissionStore()
         permissionStore.markWindowClosed(key)
       }
     })
@@ -50,7 +51,7 @@ function getRouteWindowRef(key: string): Window | null {
 
   if (win.closed) {
     routeWindowRefMap.delete(key)
-    const permissionStore = usePermissionStore() as any
+    const permissionStore = usePermissionStore()
     permissionStore.markWindowClosed(key)
     windowChannel?.postMessage({ type: 'window-closed', key })
     return null
@@ -68,7 +69,7 @@ function setRouteWindowRef(key: string, win: Window): void {
   try {
     win.addEventListener('beforeunload', () => {
       routeWindowRefMap.delete(key)
-      const permissionStore = usePermissionStore() as any
+      const permissionStore = usePermissionStore()
       permissionStore.markWindowClosed(key)
       windowChannel?.postMessage({ type: 'window-closed', key })
     })
@@ -85,7 +86,7 @@ if (typeof window !== 'undefined') {
  * 构建路由 URL（包含窗口标识）
  */
 function buildRouteUrl(
-  targetRoute: any,
+  targetRoute: FlatRouteItem,
   query: LocationQueryRaw | undefined,
   windowKey: string
 ): string {
@@ -134,10 +135,15 @@ export const goBack = (): void => {
  * 获取扁平化的路由列表
  * @param menuList - 菜单列表，默认使用系统路由
  */
-export const getFlatRouteList = (menuList?: any[]): any[] => {
+/** 扁平化路由项（来自 RouteConfig 或 RouteRecordNormalized） */
+type FlatRouteItem = Pick<RouteConfig, 'path' | 'name' | 'meta'> & {
+  children?: RouteConfig[] | MenuItem[]
+}
+
+export const getFlatRouteList = (menuList?: RouteConfig[] | MenuItem[]): FlatRouteItem[] => {
   // 当未传入 menuList 时，直接使用 Vue Router 已经拍平的路由结果
   if (!menuList) {
-    return router.getRoutes().map(route => ({ ...route }))
+    return router.getRoutes().map(route => ({ ...route })) as FlatRouteItem[]
   }
 
   // 对显式传入的 menuList 仍然保持递归展开逻辑
@@ -145,9 +151,9 @@ export const getFlatRouteList = (menuList?: any[]): any[] => {
     return []
   }
 
-  const result: any[] = []
+  const result: FlatRouteItem[] = []
 
-  const flattenRoutes = (routeList: any[], parentPath = '') => {
+  const flattenRoutes = (routeList: RouteConfig[] | MenuItem[], parentPath = '') => {
     routeList.forEach(route => {
       const currentRoute = { ...route }
 
@@ -170,7 +176,7 @@ export const getFlatRouteList = (menuList?: any[]): any[] => {
 /**
  * 根据路由名称获取路由信息
  */
-export const getRouteByName = (name?: string): any[] => {
+export const getRouteByName = (name?: string): FlatRouteItem[] => {
   const parseNameFromURL = (): string => {
     const urlPath = location.pathname
     const pathSegments = urlPath.split('/').filter(Boolean)
@@ -186,7 +192,7 @@ export const getRouteByName = (name?: string): any[] => {
 /**
  * 根据路径获取路由信息
  */
-export const getRouteByPath = (path: string): any | null => {
+export const getRouteByPath = (path: string): FlatRouteItem | null => {
   const flatRoutes = getFlatRouteList()
   return flatRoutes.find(route => route.path === path) || null
 }
@@ -264,7 +270,7 @@ export const goToRoute = (
   }
 
   if (shouldOpenNewWindow) {
-    const permissionStore = usePermissionStore() as any
+    const permissionStore = usePermissionStore()
     const windowKey = generateWindowKey(String(targetRoute.name), query)
     const shouldReuse = targetRoute.meta?.reuseWindow === true
 
@@ -308,13 +314,13 @@ export const updateRoute = (name: string, keyPath: string, value: unknown): void
   }
   const targetRoute = targetRoutes[index]
   const keys = keyPath.split('.')
-  let current: any = targetRoute
+  let current: Record<string, unknown> = targetRoute as Record<string, unknown>
   for (let i = 0; i < keys.length - 1; i++) {
     const key = keys[i]
     if (!current[key]) {
       current[key] = {}
     }
-    current = current[key]
+    current = current[key] as Record<string, unknown>
   }
   current[keys[keys.length - 1]] = value
   // 更新路由注册表
@@ -341,16 +347,10 @@ export const getAdminMenuTree = (): MenuItem[] => {
 }
 
 /** PrimeVue Menu/PanelMenu 单条 model 项（与项目 MenuItem 适配） */
-export interface PrimeMenuModelItem {
-  key: string
-  label: string
-  icon?: string
-  route?: { path: string; name?: string }
-  items?: PrimeMenuModelItem[]
-  /** 点击回调 (PrimeVue MenuItem) */
-  command?: (event: { originalEvent: Event; item: any }) => void
+export interface PrimeMenuModelItem extends PrimeMenuItem {
+  route?: { path: string; name?: string; meta?: RouteMeta }
   /** 层级（顶层为 0） */
-  level: number
+  level?: number
 }
 
 /**
@@ -364,16 +364,26 @@ export function menuItemToPrimeModel(
 ): PrimeMenuModelItem {
   const label = item.titleKey ? t(item.titleKey) : item.title
   const hasChildren = !!(item.children && item.children.length > 0)
+
+  if (!hasChildren && !item.name && item.path && import.meta.env.DEV) {
+    console.warn(
+      `[Router] 菜单叶子项缺失 name，可能导致高级路由功能失效: path=${item.path}, title=${
+        item.titleKey || item.title
+      }`
+    )
+  }
+
   const primeItem: PrimeMenuModelItem = {
     key: item.path || item.name || label,
     label,
     icon: item.icon,
     level,
-    // 目录节点不绑定 route；叶子节点携带 path + name 供 goToRoute 使用
-    route: !hasChildren && item.path ? { path: item.path, name: item.name } : undefined,
+    // 目录节点不绑定 route；叶子节点携带 path + name + meta 供 goToRoute / RouterLink 使用
+    route:
+      !hasChildren && item.path ? { path: item.path, name: item.name, meta: item.meta } : undefined,
     command: () => {
-      if (!hasChildren && (item.path || item.name)) {
-        goToRoute(item.name || item.path, undefined, undefined, false)
+      if (!hasChildren && item.name) {
+        goToRoute(item.name, undefined, undefined, false)
       }
     },
   }
@@ -386,27 +396,30 @@ export function menuItemToPrimeModel(
 /**
  * 获取扁平化菜单树结构
  */
-export const getFlatMenuTree = (): any[] => {
+export const getFlatMenuTree = (): FlatRouteItem[] => {
   return getFlatRouteList().filter(route => route.meta?.showLink !== false)
 }
 
 /**
  * 根据权限过滤菜单
+ * 纯函数：返回新对象，不修改原菜单树
  */
 export const getAuthorizedMenuTree = (userRoles: string[], menuTree?: MenuItem[]): MenuItem[] => {
   const menus = menuTree || getMenuTree()
-  return menus.filter(menu => {
-    if (menu.roles && menu.roles.length > 0) {
-      const hasPermission = menu.roles.some(role => userRoles.includes(role))
-      if (!hasPermission) {
-        return false
+  return menus
+    .filter(menu => {
+      if (menu.roles && menu.roles.length > 0) {
+        return menu.roles.some(role => userRoles.includes(role))
       }
-    }
-    if (menu.children && menu.children.length > 0) {
-      menu.children = getAuthorizedMenuTree(userRoles, menu.children)
-    }
-    return true
-  })
+      return true
+    })
+    .map(menu => ({
+      ...menu,
+      children:
+        menu.children && menu.children.length > 0
+          ? getAuthorizedMenuTree(userRoles, menu.children)
+          : menu.children,
+    }))
 }
 
 /**
@@ -557,4 +570,24 @@ export function getActiveMenuPath(route: RouteLocationNormalized): string {
   const activeMenu = (route.meta?.activeMenu as string | undefined) || ''
   const path = route.path || '/'
   return activeMenu || path
+}
+
+/**
+ * 计算菜单项到激活叶子节点的距离：0=激活项, 1=直接父级, 2=祖父级... -1=未激活
+ */
+export function getActiveDistance(
+  route: RouteLocationNormalized,
+  item: PrimeMenuModelItem
+): number {
+  const activePath = getActiveMenuPath(route)
+  if (item.route?.path === activePath) return 0
+
+  const parentPaths = Array.isArray(route.meta?.parentPaths)
+    ? (route.meta?.parentPaths as string[])
+    : []
+  const idx = parentPaths.indexOf(item.key ?? '')
+  if (idx !== -1) {
+    return parentPaths.length - idx
+  }
+  return -1
 }

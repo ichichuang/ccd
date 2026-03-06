@@ -16,12 +16,14 @@ export default defineComponent({
   props: {
     /** 渲染函数 (params) => VNode | VNode[] */
     fn: {
-      type: Function as PropType<(params?: any) => VNode | VNode[]>,
+      type: Function as PropType<(params?: unknown) => VNode | VNode[]>,
       required: true,
     },
     /** 传入渲染函数的参数，类型由调用方决定 */
     params: {
-      type: [Object, Array, String, Number, Boolean] as PropType<any>,
+      // 目前唯一调用方为 DataTable 列对齐 footer，这里使用 Record<string, unknown> 显式建模，
+      // 避免 Vue 模板类型推断为仅 undefined 导致绑定时报错。
+      type: Object as PropType<Record<string, unknown> | undefined>,
       default: undefined,
     },
   },

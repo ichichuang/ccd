@@ -1,40 +1,63 @@
-# Skill 09: UseEcharts Component Usage
+---
+description: Chart tasks: use UseEcharts component, do not instantiate ECharts manually
+globs: src/views/**/*.vue, src/components/**/*.vue
+---
 
-## Goal
+# UseEcharts Skill
 
-When the task involves any chart scenario, use the UseEcharts component; do NOT manually instantiate ECharts or use vue-echarts directly.
+## 1. Goal
 
-## Pre-check
+When the task involves **any chart scenario**, prefer UseEcharts component; do NOT instantiate ECharts manually or use vue-echarts directly.
 
-- `@docs/ai-specs/ECHARTS_THEME.md`
-- `@.cursor/rules/18-components-and-icons.mdc`
+## 2. Pre-check
 
-## Decision criteria
+- **Required reading**: `docs/ai-specs/ECHARTS_THEME.md`
+- **Rules**: `.agent/rules/10-ui-architecture.md` §2d
 
-| Scenario                        | Use                                                      |
-| ------------------------------- | -------------------------------------------------------- |
-| Any chart scenario              | **UseEcharts component**                                 |
-| Need programmatic chart control | Get `ChartInstance` via ref, call `getEchartsInstance()` |
+## 3. Decision Criteria
 
-## Output
+| Scenario                  | Use                                                      |
+| ------------------------- | -------------------------------------------------------- |
+| Any chart scenario        | **UseEcharts component**                                 |
+| Need programmatic control | Get `ChartInstance` via ref, call `getEchartsInstance()` |
 
-- Use `<UseEcharts>` component, pass `option` prop
-- Import types from `@/components/UseEcharts`: UseEchartsProps, ChartInstance, ChartEventParams, ChartEventHandlers, EChartsOption, etc.
-- **Theme integration**: Auto-integrates `useChartTheme` by default; can disable via `themeConfig.enableTheme`
-- **Events**: Use `on*` props (e.g. onClick, onLegendSelectChanged, onDataZoom) or `onEvents` prop
-- **Multi-chart sync**: Use `group` prop or `connectConfig`
-- **Programmatic control**: Get ChartInstance via ref, call getEchartsInstance(), setOption(), resize(), triggerConnect(), etc.
+## 4. Steps
 
-## Forbidden
+### Step 1: Confirm Chart Scenario
 
-- Manually instantiating ECharts or using vue-echarts directly
-- Hardcoding colors in ECharts option
-- Manually listening to ThemeStore to update charts
-- Importing from `src/views/example/use-echarts` (example dir may be removed later)
+- If chart display/interaction → proceed to Step 2.
+- If other UI → this Skill is not needed.
 
-## Examples
+### Step 2: Read Doc and Choose Component
 
-### Basic usage
+- Open `docs/ai-specs/ECHARTS_THEME.md`, confirm full UseEcharts API.
+- Import types from `@/components/UseEcharts`: `UseEchartsProps`, `ChartInstance`, `ChartEventParams`, `ChartEventHandlers`, `EChartsOption`, etc.
+
+### Step 3: Implement Chart
+
+- Use `<UseEcharts>` with `option` prop (`EChartsOption`).
+- **Theme integration**: Auto-integrates `useChartTheme` by default; set `themeConfig.enableTheme` to false to disable.
+- **Events**: Use `on*` props (e.g. `onClick`, `onLegendSelectChanged`, `onDataZoom`) or `onEvents`.
+- **Multi-chart sync**: Use `group` or `connectConfig`.
+- **Programmatic control**: Get `ChartInstance` via ref, call `getEchartsInstance()`, `setOption()`, `resize()`, `triggerConnect()`, etc.
+
+### Step 4: Forbidden
+
+- Do NOT instantiate ECharts manually or use vue-echarts directly.
+- Do NOT hardcode colors in ECharts option.
+- Do NOT manually listen to ThemeStore to update charts.
+- Do NOT reference `src/views/example/use-echarts` as a business dependency (example dir may be removed).
+
+## 5. Reference
+
+- Component: `src/components/UseEcharts`
+- Hook: `src/hooks/modules/useChartTheme`
+- Types: `src/components/UseEcharts/utils/types.ts`
+- Doc: `docs/ai-specs/ECHARTS_THEME.md`
+
+## 6. Examples
+
+### Basic
 
 ```vue
 <template>
@@ -52,7 +75,7 @@ const chartOption = ref<EChartsOption>({
 </script>
 ```
 
-### Event handling
+### Events
 
 ```vue
 <template>
@@ -76,7 +99,7 @@ function handleLegendChange(params: ChartLegendEventParams) {
 </script>
 ```
 
-### Programmatic control
+### Programmatic Control
 
 ```vue
 <template>
@@ -106,7 +129,7 @@ function highlightData() {
 </script>
 ```
 
-### Multi-chart sync
+### Multi-Chart Sync
 
 ```vue
 <template>

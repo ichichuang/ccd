@@ -23,10 +23,10 @@ export const COLOR_USAGE = {
   focusHighlight: 'primary-light',
   focusHighlightForeground: 'primary-light-foreground',
 
-  /* 强调/高亮 — 独立互补色，用于特殊视觉标记 */
+  /* 强调/高亮 — 独立互补色，用于特殊视觉标记（Tab 激活指示线默认使用 primary，仅在需要强对比主题时可选用 accent） */
   accent: 'accent',
   accentForeground: 'accent-foreground',
-  /** accent 适用场景：Tab 激活指示线、特殊标记、badge、navlink 高亮 */
+  /** accent 适用场景：特殊标记、badge、navlink 高亮；Tab 激活指示线仅作为可选风格，不再强制归属 accent */
 
   /* 选中态 */
   selection: 'primary',
@@ -37,7 +37,7 @@ export const COLOR_USAGE = {
   mutedText: 'muted-foreground',
 } as const
 
-/** 使用 primary 的推荐场景 */
+/** 使用 primary 的推荐场景（包括默认的 Tab 激活指示线） */
 export const PRIMARY_USAGE = [
   'logo',
   'primary-button',
@@ -48,12 +48,8 @@ export const PRIMARY_USAGE = [
   'hover-background',
   'selected-state',
   'focus-highlight',
+  'tab-active-indicator',
 ] as const
 
-/** accent 的推荐场景（独立互补高亮色，非 hover） */
-export const ACCENT_USAGE = [
-  'tab-active-indicator',
-  'special-badge',
-  'navlink-highlight',
-  'feature-callout',
-] as const
+/** accent 的推荐场景（独立互补高亮色，非 hover；Tab 激活指示线仅在需要强对比主题时可选用） */
+export const ACCENT_USAGE = ['special-badge', 'navlink-highlight', 'feature-callout'] as const

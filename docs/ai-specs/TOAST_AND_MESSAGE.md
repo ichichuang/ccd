@@ -107,7 +107,7 @@ window.$toast?.removeGroup?.('tl') // 清除指定位置
 
 ### 6.3 Toast 内边距
 
-- **位置**：`src/utils/theme/primevue-preset.ts` 中 `components.toast.content.padding`
+- **位置**：`src/utils/theme/primevuePreset.ts` 中 `components.toast.content.padding`
 - **值**：`var(--spacing-sm) var(--spacing-xs) var(--spacing-sm) var(--spacing-sm)`
 - **说明**：替代 `overlay.popover.padding`，使用语义 spacing 变量，更紧凑
 
@@ -121,3 +121,11 @@ window.$toast?.removeGroup?.('tl') // 清除指定位置
 | error / danger | 8000           | 便于阅读与排查                                     |
 
 通过 `add({ life: N })` 或 `window.$toast?.add({ ..., life: 8000 })` 覆盖默认值。
+
+## 8. Human-Readable Microcopy (UX Watchdog)
+
+**Rule**: Raw technical errors MUST NEVER be exposed to the end-user via Toasts or Messages.
+
+- **Forbidden**: Displaying raw backend traces (defaults or network failures) like "500 Internal Server Error", "SQL Constraint Violation: column X", or "Null Pointer Exception".
+- **Must Do**: Implement interceptors or catch blocks to translate technical traces into actionable, human-readable language.
+- **Example**: Instead of `window.$message.danger(err.message)`, use `window.$message.danger('操作失败，请检查您的网络连接并重试')` (Unable to save configuration. Please check your network and try again).

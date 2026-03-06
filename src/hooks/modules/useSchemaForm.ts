@@ -9,7 +9,7 @@
 import { getEmptyValues, getResetValues } from '@/components/SchemaForm/utils/emptyValues'
 import type { FormValues, Schema, SchemaColumnsItem } from '@/components/SchemaForm/utils/types'
 import { deepClone } from '@/utils/lodashes'
-import { ref, type Ref } from 'vue'
+import type { Ref } from 'vue'
 
 /**
  * useSchemaForm Hook 返回值接口

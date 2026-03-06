@@ -13,7 +13,6 @@ import {
 import { SIZE_PRESETS } from '@/constants/size'
 import type { SupportedLocale } from '@/locales'
 import { useI18n } from 'vue-i18n'
-import Button from 'primevue/button'
 import SelectButton from 'primevue/selectbutton'
 import Select from 'primevue/select'
 import Slider from 'primevue/slider'
@@ -164,18 +163,18 @@ function onThemeModeChange(value: ThemeMode) {
 </script>
 
 <template>
-  <div class="column px-padding-md gap-2xl">
+  <div class="column px-padding-md gap-xl">
     <!-- 深色 / 浅色 -->
     <div class="column gap-sm">
       <label class="fs-sm font-medium text-muted-foreground">
         {{ t('settings.themeMode') }}
       </label>
-      <div class="layout-full px-padding-sm">
+      <div class="layout-full">
         <SelectButton
           :model-value="mode"
           :options="themeModeOptions"
           option-value="value"
-          :option-label="(opt: any) => t(opt.labelKey)"
+          :option-label="opt => t(opt.labelKey)"
           :allow-empty="false"
           :disabled="isAnimating"
           size="small"
@@ -192,7 +191,7 @@ function onThemeModeChange(value: ThemeMode) {
       <label class="fs-sm font-medium text-muted-foreground">
         {{ t('settings.themePreset') }}
       </label>
-      <div class="layout-full flex flex-wrap gap-md px-padding-sm">
+      <div class="layout-full flex flex-wrap gap-md">
         <div
           v-for="preset in THEME_PRESETS"
           :key="preset.name"
@@ -225,7 +224,7 @@ function onThemeModeChange(value: ThemeMode) {
       <label class="fs-sm font-medium text-muted-foreground">
         {{ t('settings.size') }}
       </label>
-      <div class="px-padding-sm">
+      <div>
         <SelectButton
           :model-value="sizeStore.sizeName"
           :options="sizeOptions"
@@ -246,7 +245,7 @@ function onThemeModeChange(value: ThemeMode) {
       <label class="fs-sm font-medium text-muted-foreground">
         {{ t('settings.locale') }}
       </label>
-      <div class="px-padding-sm">
+      <div>
         <Select
           :model-value="locale"
           :options="localeOptions"
@@ -293,7 +292,7 @@ function onThemeModeChange(value: ThemeMode) {
       <label class="fs-sm font-medium text-muted-foreground">
         {{ t('settings.layoutModules') }}
       </label>
-      <div class="layout-full layout-stack gap-sm px-padding-sm">
+      <div class="layout-full layout-stack gap-sm">
         <div
           v-for="item in visibleLayoutModuleSwitches"
           :key="item.key"
@@ -328,7 +327,7 @@ function onThemeModeChange(value: ThemeMode) {
       <label class="fs-sm font-medium text-muted-foreground">
         {{ t('settings.transitionEffect') }}
       </label>
-      <div class="layout-full flex flex-wrap gap-md px-padding-sm">
+      <div class="layout-full flex flex-wrap gap-md">
         <div
           v-for="opt in transitionOptions"
           :key="opt.value"
@@ -361,7 +360,7 @@ function onThemeModeChange(value: ThemeMode) {
           {{ t(currentDurationLabel) }}
         </span>
       </div>
-      <div class="layout-full px-padding-sm">
+      <div class="layout-full">
         <Slider
           :model-value="durationIndex"
           :min="0"
@@ -372,6 +371,5 @@ function onThemeModeChange(value: ThemeMode) {
         />
       </div>
     </div>
-    <div class="p-padding-sm"></div>
   </div>
 </template>

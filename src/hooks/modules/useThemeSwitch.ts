@@ -4,7 +4,6 @@
  * v2.0 - 性能优化版本
  */
 
-import { ref, computed, nextTick } from 'vue'
 import { useThemeStore } from '@/stores/modules/theme'
 import { THEME_PRESETS, DEFAULT_THEME_NAME } from '@/constants/theme'
 import { generateThemeVars, applyTheme } from '@/utils/theme/engine'

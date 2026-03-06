@@ -176,6 +176,7 @@ export function generateThemeVars(preset: ThemePreset, isDark: boolean): ThemeCs
     return hexToRgb(val)
   }
 
+  // Dark mode: bgBase/cardBase/baseNeutral use dark values; --background/--input/--popover are correct
   return {
     '--background': safeToRgb(bgBase),
     '--foreground': safeToRgb(fgBase),

@@ -1,0 +1,47 @@
+---
+description: Rules for generating Hooks and business logic
+globs: src/hooks/**/*.ts
+---
+
+# Logic Layer Rules
+
+1. **Structure:** Follow the pattern in `docs/ai-specs/GOLDEN_SAMPLES/useFeatureLogic.ts`.
+2. **Requests:** Use `alovaInstance` (from `@/utils/http/instance`) or the `useHttpRequest` hook. Build method with `buildMethod: (client) => client.Get(...)` style; never use `fetch` or `axios` directly.
+3. **Return:** Always return reactive refs and explicit methods (e.g. `loading`, `data`, `error`, `send`).
+4. **Types:** Define interfaces in `src/types/` or in the same file; never use `any`. All variables MUST have explicit type annotations.
+   - ❌ `const data = await request()` (no type annotation)
+   - ✅ `const data: ApiResponse<UserDTO> = await request()`
+   - ❌ `const items = []` (inferred as never[])
+   - ✅ `const items: UserDTO[] = []`
+   - ❌ `const loading = ref(false)` (inferred)
+   - ✅ `const loading = ref<boolean>(false)`
+   - ❌ `const data = ref(null)` (inferred as Ref<null>)
+   - ✅ `const data = ref<UserDTO | null>(null)`
+   - ❌ `const result = computed(() => value.value)` (inferred)
+   - ✅ `const result = computed<ProcessedResult>(() => processValue(value.value))`
+5. Before generating, read `docs/ai-specs/GOLDEN_SAMPLES/useFeatureLogic.ts` and mimic its structure and comments.
+
+## API Layer First (New APIs must land in src/api first)
+
+When the task involves adding a new API/endpoint/request:
+
+1. Create/extend `src/api/<module>/<feature>.ts` (Flat only; NO subdirectories under `src/api/<module>/`).
+2. Add DTO types + API builders/functions in that single file (NO `any`).
+3. Then implement/extend the composable under `src/hooks/modules/` using `useHttpRequest`.
+4. UI must consume the composable only (no URL or response parsing in UI).
+
+## Utilities/Hooks First (Mandatory reuse)
+
+When implementing logic in `src/hooks/**`, you MUST reuse project utilities/hooks first:
+
+- HTTP: `@/utils/http/*`, `@/hooks/modules/useHttpRequest`
+- Date/Timezone: `@/utils/date`, `@/hooks/modules/useDateUtils`
+- Theme/Locale: `@/hooks/modules/useThemeSwitch`, `@/hooks/modules/useLocale`
+- IDs: `@/utils/ids`
+- Events: `@/utils/mitt`
+- Lodash wrappers: `@/utils/lodashes` (avoid direct `lodash-es` imports in business logic)
+- Browser/platform: browser.ts removed; use @vueuse/core or window API
+- Strings: `@/utils/strings`
+- Element size: `@/hooks/modules/useAppElementSize`
+
+If no suitable helper exists, you MAY add a new helper, but it MUST be placed into the appropriate existing utility file. If none fits, create a new file under `src/utils/` or `src/hooks/modules/` with clear responsibility and exports.

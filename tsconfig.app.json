@@ -9,7 +9,10 @@
     "src/types/components.d.ts",
     "src/types/env.d.ts",
     "src/**/*",
-    "src/**/*.vue" // ✅ 必须确保 Vue 文件被包含
+    "src/**/*.vue", // ✅ 必须确保 Vue 文件被包含
+    "src/**/*.tsx",
+    "src/**/*.jsx",
+    "src/**/__tests__/**/*.ts"
   ],
   "exclude": ["src/**/__tests__/*"],
   "compilerOptions": {
@@ -22,6 +25,8 @@
     "jsxImportSource": "vue",
 
     "strict": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
 
     "baseUrl": ".",
     "paths": {

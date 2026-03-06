@@ -1,11 +1,10 @@
-import { computed, nextTick, onMounted, onUnmounted, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { storeToRefs } from 'pinia'
 import { usePermissionStore } from '@/stores/modules/permission'
 import { useAppElementSize } from '@/hooks/modules/useAppElementSize'
 import type { CScrollbar } from '@/components/CScrollbar'
-import type { TabItem } from '@/stores/modules/permission'
+import type { Ref } from 'vue'
 
 export type ContextMenuAction = 'reload' | 'close' | 'closeOthers' | 'closeAll'
 
@@ -16,7 +15,25 @@ export interface ContextMenuState {
   targetPath: string
 }
 
-export function useAdminTabs() {
+export interface UseAdminTabsReturn {
+  tabs: Ref<TabItem[]>
+  scrollContainer: Ref<InstanceType<typeof CScrollbar> | null>
+  tabsContainerRef: Ref<HTMLElement | null>
+  activeTabStyle: Ref<{ left: string; width: string; opacity: string }>
+  contextMenu: Ref<ContextMenuState>
+  getTabLabel: (tab: TabItem) => string
+  isActive: (tab: TabItem) => boolean
+  updateActiveTabPosition: (behavior?: ScrollBehavior, options?: { skipScroll?: boolean }) => void
+  setTabRef: (el: HTMLElement | null, path: string) => void
+  onTabClick: (tab: TabItem) => void
+  onCloseTab: (e: Event | undefined, tab: TabItem) => void
+  onContextMenu: (e: MouseEvent, tab: TabItem) => void
+  closeContextMenu: () => void
+  handleContextAction: (action: ContextMenuAction) => void
+  t: (key: string, ...args: unknown[]) => string
+}
+
+export function useAdminTabs(): UseAdminTabsReturn {
   const route = useRoute()
   const router = useRouter()
   const { t } = useI18n()
@@ -48,21 +65,51 @@ export function useAdminTabs() {
     return route.path === tab.path
   }
 
-  const updateActiveTabPosition = (behavior: ScrollBehavior = 'smooth') => {
+  // 防重入 + 同一 tick 合并，避免 route/tabs/resize 多路触发导致栈溢出
+  let isUpdatingPosition = false
+  let pendingUpdate: { behavior: ScrollBehavior; skipScroll: boolean } | null = null
+  let scheduled = false
+
+  const updateActiveTabPosition = (
+    behavior: ScrollBehavior = 'smooth',
+    options?: { skipScroll?: boolean }
+  ) => {
+    const skipScroll = options?.skipScroll ?? false
+    if (pendingUpdate) {
+      pendingUpdate = { behavior, skipScroll }
+      return
+    }
+    pendingUpdate = { behavior, skipScroll }
+    if (scheduled) return
+    scheduled = true
     nextTick(() => {
-      const currentPath = route.path
-      const activeTabEl = tabRefs.value.get(currentPath)
+      scheduled = false
+      const p = pendingUpdate
+      pendingUpdate = null
+      if (!p || isUpdatingPosition) return
+      isUpdatingPosition = true
+      try {
+        const currentPath = route.path
+        const activeTabEl = tabRefs.value.get(currentPath)
 
-      if (activeTabEl) {
-        activeTabStyle.value = {
-          left: `${activeTabEl.offsetLeft}px`,
-          width: `${activeTabEl.offsetWidth}px`,
-          opacity: '1',
+        if (activeTabEl) {
+          activeTabStyle.value = {
+            left: `${activeTabEl.offsetLeft}px`,
+            width: `${activeTabEl.offsetWidth}px`,
+            opacity: '1',
+          }
+          if (!p.skipScroll) {
+            activeTabEl.scrollIntoView({
+              behavior: p.behavior,
+              block: 'nearest',
+              inline: 'center',
+            })
+          }
+        } else {
+          activeTabStyle.value.opacity = '0'
         }
-
-        activeTabEl.scrollIntoView({ behavior, block: 'nearest', inline: 'center' })
-      } else {
-        activeTabStyle.value.opacity = '0'
+      } finally {
+        isUpdatingPosition = false
       }
     })
   }
@@ -159,12 +206,14 @@ export function useAdminTabs() {
     closeContextMenu()
   }
 
-  // Watchers
+  // Watchers：route 回调放入 nextTick，避免与 tabs 等在同一 tick 交叉触发
   watch(
     () => route.path,
     () => {
-      updateActiveTabPosition('smooth')
       contextMenu.value.visible = false
+      nextTick(() => {
+        updateActiveTabPosition('smooth')
+      })
     }
   )
 
@@ -177,11 +226,11 @@ export function useAdminTabs() {
     }
   )
 
-  // Resize listener
+  // Resize：仅更新指示条位置，不 scrollIntoView，避免 resize → scroll → resize 环路
   useAppElementSize(
     tabsContainerRef,
     () => {
-      updateActiveTabPosition('auto')
+      updateActiveTabPosition('auto', { skipScroll: true })
     },
     { mode: 'throttle', delay: 100 }
   )

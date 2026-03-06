@@ -5,7 +5,6 @@
 import { generateUniqueId } from '@/utils/ids'
 import { deepClone } from '@/utils/lodashes'
 import type { Ref } from 'vue'
-import { readonly, ref } from 'vue'
 import { defaultContentRenderer } from './defaultContentRenderer'
 import { defaultDialogProps } from './utils/constants'
 import type { ArgsType, DialogOptions } from './utils/types'

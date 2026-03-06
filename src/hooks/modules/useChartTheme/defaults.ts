@@ -13,15 +13,18 @@ import type {
   ChartToolboxConfig,
   ChartVisualMapConfig,
 } from './types'
-// 默认动画配置
+/** Apple-level easing: ease-out-expo, matches uno.config.ts transitionTimingFunction */
+const EASE_OUT_EXPO = 'cubic-bezier(0.16, 1, 0.3, 1)'
+
+/** 默认动画配置（V2 Premium: 流体有机感，适配 120Hz 高刷） */
 export const DEFAULT_ANIMATION_CONFIG: ChartAnimationConfig = {
   animation: true,
   duration: 1000,
-  easing: 'cubicOut',
+  easing: EASE_OUT_EXPO,
   delay: 0,
   animationUpdate: true,
-  animationDurationUpdate: 300,
-  animationEasingUpdate: 'cubicInOut',
+  animationDurationUpdate: 400,
+  animationEasingUpdate: EASE_OUT_EXPO,
 }
 
 /** 工具箱文案 fallback（无 t 时使用英文） */
@@ -209,6 +212,6 @@ export function getDefaultAxisPointerConfig(): ChartAxisPointerConfig {
     axis: 'auto',
     animation: true,
     animationDuration: 200,
-    animationEasing: 'cubicOut',
+    animationEasing: EASE_OUT_EXPO,
   }
 }

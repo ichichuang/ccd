@@ -3,7 +3,7 @@
  *
  * 2026-02：showXxx 改为「按 AdminLayoutMode 独立保存」：
  * - DEFAULT_LAYOUT_SETTING：仍用于兼容/基准（包含 showXxx）
- * - DEFAULT_LAYOUT_VISIBILITY_SETTINGS：三种模式的独立显隐默认值（SSOT）
+ * - DEFAULT_LAYOUT_VISIBILITY_SETTINGS：三种模式的独立显显默认值（SSOT）
  * - LAYOUT_PERSIST_PICK：显式列出持久化字段（避免依赖 Object.keys 推导导致迁移期混乱）
  */
 
@@ -68,3 +68,5 @@ export const LAYOUT_PERSIST_PICK: (keyof LayoutStoreState)[] = [
   'expandedMenuKeys',
   'userAdjusted',
 ] as (keyof LayoutStoreState)[]
+
+// The visual menu constants have been moved to PrimeVue Preset Theming engine.

@@ -4,7 +4,7 @@
  * 处理布局和样式计算
  */
 
-import { computed, nextTick, onMounted, onUnmounted, ref, type Ref } from 'vue'
+import type { Ref } from 'vue'
 import {
   DEFAULT_CONTAINER_WIDTH,
   getDefaultLayoutConfig,

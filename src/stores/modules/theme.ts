@@ -3,9 +3,13 @@ import { THEME_PRESETS, DEFAULT_THEME_NAME, DEFAULT_TRANSITION_DURATION } from '
 import { generateThemeVars, applyTheme } from '@/utils/theme/engine'
 import { isThemeLocked } from '@/hooks/modules/useThemeSwitch'
 
+/** 可选强调色覆盖（hex），未设置时使用 themeName 预设 */
+type AccentColorOverride = string | null
+
 interface ThemeState {
   mode: ThemeMode
   themeName: string
+  accentColor: AccentColorOverride
   transitionMode: ThemeTransitionMode
   transitionDuration: ThemeTransitionDuration
 }
@@ -14,16 +18,20 @@ export const useThemeStore = defineStore('theme', {
   state: (): ThemeState => ({
     mode: 'auto',
     themeName: DEFAULT_THEME_NAME,
+    accentColor: null,
     transitionMode: 'curtain',
     transitionDuration: DEFAULT_TRANSITION_DURATION,
   }),
 
   getters: {
     isDark(state): boolean {
-      if (state.mode === 'auto') {
+      if (state.mode === 'auto' || state.mode === 'glass') {
         return window.matchMedia('(prefers-color-scheme: dark)').matches
       }
       return state.mode === 'dark'
+    },
+    isGlassMode(state): boolean {
+      return state.mode === 'glass'
     },
   },
 
@@ -38,6 +46,11 @@ export const useThemeStore = defineStore('theme', {
         this.themeName = name
         this.refreshTheme()
       }
+    },
+
+    setAccentColor(color: string | null) {
+      this.accentColor = color
+      this.refreshTheme()
     },
 
     setTransitionMode(mode: ThemeTransitionMode) {
@@ -59,11 +72,12 @@ export const useThemeStore = defineStore('theme', {
 
       // 1. 获取当前系统/模式
       const isDark =
-        this.mode === 'auto'
+        this.mode === 'auto' || this.mode === 'glass'
           ? window.matchMedia('(prefers-color-scheme: dark)').matches
           : this.mode === 'dark'
 
       document.documentElement.classList.toggle('dark', isDark)
+      document.documentElement.classList.toggle('glass', this.mode === 'glass')
 
       // 2. 查找预设，如果失效则自动纠正 Store 状态
       let preset = THEME_PRESETS.find(p => p.name === this.themeName)
@@ -88,7 +102,7 @@ export const useThemeStore = defineStore('theme', {
     init() {
       // 监听系统主题变化
       window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
-        if (this.mode === 'auto') this.refreshTheme()
+        if (this.mode === 'auto' || this.mode === 'glass') this.refreshTheme()
       })
       this.refreshTheme()
     },

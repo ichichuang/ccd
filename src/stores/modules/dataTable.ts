@@ -5,7 +5,9 @@
 
 import { defineStore } from 'pinia'
 
-const PERSIST_KEY = `${import.meta.env?.VITE_PINIA_PERSIST_KEY_PREFIX ?? 'ccd-storage-kernel'}-dataTable`
+const PERSIST_KEY = `${
+  import.meta.env?.VITE_PINIA_PERSIST_KEY_PREFIX ?? 'app-template-storage-kernel'
+}-dataTable`
 
 export interface DataTableUserPreferences {
   columnOrder?: string[]

@@ -4,7 +4,7 @@
  * @description 负责表单值的持久化存储和恢复（localStorage 缓存）
  */
 
-import { ref, type Ref } from 'vue'
+import type { Ref } from 'vue'
 import {
   getDateValueFormat,
   normalizeColorValue,
@@ -24,7 +24,7 @@ export interface FormMemoryConfig {
   enabled: boolean
 }
 
-const PINIA_PREFIX = import.meta.env?.VITE_PINIA_PERSIST_KEY_PREFIX ?? 'ccd'
+const PINIA_PREFIX = import.meta.env?.VITE_PINIA_PERSIST_KEY_PREFIX ?? 'app-template'
 export const FORM_MEMORY_LOCAL_STORAGE_PREFIX = `${PINIA_PREFIX}-__form_cache__:`
 
 // ==================== 工具函数 ====================

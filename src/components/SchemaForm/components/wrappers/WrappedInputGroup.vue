@@ -18,11 +18,12 @@
       </template>
     </InputGroupAddon>
     <InputText
-      v-model="internalValue"
+      :model-value="internalValue"
       :name="name"
       :disabled="disabled"
       :readonly="readonly"
       :placeholder="placeholder"
+      @update:model-value="handleUpdateModelValue"
     />
     <InputGroupAddon v-if="addonAfter">
       <component
@@ -40,10 +41,7 @@
 </template>
 
 <script setup lang="ts">
-import InputGroup from 'primevue/inputgroup'
-import InputGroupAddon from 'primevue/inputgroupaddon'
-import InputText from 'primevue/inputtext'
-import { computed, type Component, type VNode } from 'vue'
+import type { Component, VNode } from 'vue'
 
 interface WrappedInputGroupProps {
   modelValue?: string
@@ -57,12 +55,10 @@ interface WrappedInputGroupProps {
   addonAfter?: string | Component | VNode
   class?: string | string[]
   style?: Record<string, string>
-  /** rest 透传 PrimeVue InputGroup */
-  [key: string]: unknown
 }
 
 const props = withDefaults(defineProps<WrappedInputGroupProps>(), {
-  modelValue: undefined,
+  modelValue: '',
   name: undefined,
   disabled: false,
   readonly: false,
@@ -85,29 +81,23 @@ const classProp = computed(() => props.class)
 /**
  * 内部值
  */
-const internalValue = computed({
+const internalValue = computed<string>({
   get: () => props.modelValue,
-  set: (val: string | undefined) => {
-    emit('update:modelValue', val ?? '')
+  set: (val: string) => {
+    emit('update:modelValue', val)
   },
 })
+
+const attrs = useAttrs()
+
+function handleUpdateModelValue(val: unknown) {
+  emit('update:modelValue', typeof val === 'string' ? val : '')
+}
 
 /**
  * 提取其他 props（排除已处理的属性）
  */
 const restProps = computed(() => {
-  const {
-    modelValue: _modelValue,
-    name: _name,
-    disabled: _disabled,
-    readonly: _readonly,
-    placeholder: _placeholder,
-    addonBefore: _addonBefore,
-    addonAfter: _addonAfter,
-    class: _class,
-    style: _style,
-    ...rest
-  } = props
-  return rest
+  return attrs as Record<string, unknown>
 })
 </script>

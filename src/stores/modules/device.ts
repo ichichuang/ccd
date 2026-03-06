@@ -56,24 +56,11 @@ export const useDeviceStore = defineStore('device', {
 
   actions: {
     /**
-     * 核心检测逻辑
+     * 1. 静态硬件检测 (仅在 init 时运行一次)
+     * 解析 User Agent，确定操作系统和物理设备类型
      */
-    detectDeviceInfo() {
+    initHardwareInfo() {
       const ua = navigator.userAgent
-      const screenW = window.screen.width
-      const screenH = window.screen.height
-      const pageW = window.innerWidth
-      const pageH = window.innerHeight
-
-      this.width = pageW
-      this.height = pageH
-      this.screenWidth = screenW
-      this.screenHeight = screenH
-      this.pixelRatio = window.devicePixelRatio || 1
-
-      this.orientation = pageW >= pageH ? 'horizontal' : 'vertical'
-      this.screenShortSide = Math.min(pageW, pageH)
-      this.screenLongSide = Math.max(pageW, pageH)
 
       // 系统类型判定
       if (/Windows/i.test(ua)) this.os = 'Windows'
@@ -83,30 +70,45 @@ export const useDeviceStore = defineStore('device', {
       else if (/Linux/i.test(ua)) this.os = 'Linux'
       else this.os = 'Unknown'
 
-      // 设备类型判定
+      // 物理设备类型判定
       const isMobileUA = /Android|webOS|iPhone|iPod|BlackBerry|IEMobile|Opera Mini/i.test(ua)
-      const isTabletUA = /iPad/i.test(ua) || (isMobileUA && this.screenShortSide >= 600)
+      // 注意：这里需要用到 screen.width，在现代浏览器中通常也是不变的
+      const screenShort = Math.min(window.screen.width, window.screen.height)
+      const isTabletUA = /iPad/i.test(ua) || (isMobileUA && screenShort >= 600)
 
       if (isTabletUA) this.type = 'Tablet'
       else if (isMobileUA) this.type = 'Mobile'
       else this.type = 'PC'
 
-      // 移动端 UI 高度预估
+      // 移动端 UI 预估高度 (硬件决定，不会随视口变化)
       if (this.type !== 'PC') {
-        if (this.os === 'iOS') {
-          this.navHeight = 44
-          this.tabHeight = 34
-        } else if (this.os === 'Android') {
-          this.navHeight = 48
-          this.tabHeight = 48
-        }
+        this.navHeight = this.os === 'iOS' ? 44 : 48
+        this.tabHeight = this.os === 'iOS' ? 34 : 48
       } else {
         this.navHeight = 0
         this.tabHeight = 0
       }
+    },
+
+    /**
+     * 2. 动态视口检测 (在 resize 时高频触发)
+     * 仅计算与窗口尺寸相关的值
+     */
+    detectViewportInfo() {
+      const pageW = window.innerWidth
+      const pageH = window.innerHeight
+
+      this.width = pageW
+      this.height = pageH
+      this.screenWidth = window.screen.width
+      this.screenHeight = window.screen.height
+      this.pixelRatio = window.devicePixelRatio || 1
+
+      this.orientation = pageW >= pageH ? 'horizontal' : 'vertical'
+      this.screenShortSide = Math.min(pageW, pageH)
+      this.screenLongSide = Math.max(pageW, pageH)
 
       this.updateBreakpoint()
-
       useMitt().emit('windowResize', { width: pageW, height: pageH })
     },
 
@@ -116,7 +118,6 @@ export const useDeviceStore = defineStore('device', {
     updateBreakpoint() {
       const bps = Object.entries(BREAKPOINTS).sort((a, b) => b[1] - a[1])
       const match = bps.find(([_, val]) => this.width >= val)
-      // [修正] 确保赋值给 state 的类型匹配 BreakpointKey
       this.currentBreakpoint = (match ? match[0] : 'xs') as BreakpointKey
     },
 
@@ -124,12 +125,13 @@ export const useDeviceStore = defineStore('device', {
      * 初始化监听 (带清理功能)
      */
     init() {
-      // 立即执行一次
-      this.detectDeviceInfo()
+      // 首次加载：先测硬件，再测视口
+      this.initHardwareInfo()
+      this.detectViewportInfo()
 
-      // 创建防抖函数并保存引用
+      // 绑定的全都是纯净的视口计算函数
       const handleResize = debounce(() => {
-        this.detectDeviceInfo()
+        this.detectViewportInfo()
       }, RESIZE_INTERVAL)
 
       const handleOrientation = () => {
@@ -142,11 +144,10 @@ export const useDeviceStore = defineStore('device', {
         }
       }
 
-      // [核心修正] 保存所有处理函数的引用，以便 removeEventListener 能正确清理
       const handlers = {
         resize: handleResize,
         orientation: handleOrientation,
-        pageshow: handleResize, // pageshow 复用 resize 逻辑
+        pageshow: handleResize,
         visibility: handleVisibility,
       }
 
@@ -155,7 +156,6 @@ export const useDeviceStore = defineStore('device', {
       window.addEventListener('pageshow', handlers.pageshow)
       window.addEventListener('visibilitychange', handlers.visibility)
 
-      // 返回清理函数 (Vue 组件 onUnmounted 时可调用，或在 HMR 时自动清理)
       return () => {
         window.removeEventListener('resize', handlers.resize)
         window.removeEventListener('orientationchange', handlers.orientation)

@@ -1,0 +1,118 @@
+---
+description: TSX rendering policy — programmatic rendering MUST use TSX, FORBIDDEN h()
+globs: src/**/*.{vue,tsx}
+alwaysApply: true
+---
+
+# TSX Rendering Policy (Must Follow)
+
+## 1. Primary Directive
+
+When you need **programmatic rendering** (render functions, dynamic VNodes, slot content, complex conditional UI), you MUST use TSX, NOT `h()`.
+
+**Quick decision rule:** If you would write `h('div', ...)` or `createElement(...)`, use TSX instead.
+
+- **Use:** `<script setup lang="tsx">` + JSX (e.g. `() => <div class="text-primary">...</div>`)
+- **FORBIDDEN:** `h('div', { class: '...' }, ...)` / `createElement` / manual VNode construction
+
+## 2. When This Applies
+
+**Typical triggers:** Need to return a VNode from setup? Need dynamic slot content? Need a table cell/formatter? → Use TSX.
+
+- Render functions returned from setup or composables
+- Dynamic slot content (e.g. `v-slot="{ default: () => ... }"`)
+- Conditionally rendered complex structures
+- Table cell renderers, dropdown item templates, etc.
+- Any place where you would otherwise reach for `h()`
+
+## 3. How to Use TSX
+
+### 3.1 In Vue SFC
+
+```vue
+<script setup lang="tsx">
+const renderContent = () => (
+  <div class="text-primary fs-md">
+    <Icons
+      name="i-lucide-check"
+      size="sm"
+    />
+    <span>Done</span>
+  </div>
+)
+</script>
+<template>
+  <component :is="renderContent" />
+</template>
+```
+
+### 3.2 Standalone .tsx Component
+
+```tsx
+// src/components/MyRender.tsx
+import { defineComponent } from 'vue'
+export default defineComponent({
+  setup() {
+    return () => <div class="text-primary">Hello</div>
+  },
+})
+```
+
+### 3.3 Decision Guide: When to Use Which Format
+
+**Decision point:** Choose Vue SFC + `lang="tsx"` vs standalone `.tsx` based on scenario.
+
+**Use Vue SFC + `lang="tsx"` (preferred):**
+
+- ✅ **Page/view components** (`src/views/**/*.vue`): Need `<template>` but script has TSX render functions
+- ✅ **Need template syntax**: `<template>` for most UI, TSX only for partial logic
+- ✅ **Component-internal TSX**: Render functions inside component (table cell renderers, dropdown item templates, etc.)
+- ✅ **Example**: `src/views/example/data-table/DataTable.vue` (needs template, column config has TSX)
+
+**Create standalone `.tsx` file:**
+
+- ✅ **Config export** (`src/**/configs/*.tsx`): Pure config/data export, no template
+- ✅ **Pure render component**: Entire component in TSX, no template (e.g. `LayoutAdmin.tsx`)
+- ✅ **Hooks/Composables**: Hooks returning TSX (e.g. `useDialog.tsx`)
+- ✅ **Reusable component**: Pure TSX component imported in multiple places
+- ✅ **Examples**:
+  - `src/views/example/data-table/configs/customColumnConfig.tsx`
+  - `src/hooks/modules/useDialog.tsx`
+  - `src/layouts/modules/LayoutAdmin.tsx`
+
+**Decision flow:**
+
+```
+Need TSX rendering?
+├─ Yes
+│ ├─ Need <template>?
+│ │ ├─ Yes → Vue SFC + lang="tsx" (.vue)
+│ │ └─ No → Config export? → standalone .tsx
+│ │         Hook/Composable? → standalone .tsx
+│ │         Pure render component? → standalone .tsx
+│ └─ No → Plain Vue SFC (.vue)
+```
+
+**Best practices:**
+
+1. **Default to Vue SFC + `lang="tsx"`**: When component needs template, add `lang="tsx"` to existing `.vue` instead of new file
+2. **Config in `.tsx`**: Table column config, form schema, etc. with TSX render functions → standalone `.tsx`
+3. **Avoid over-splitting**: If TSX render is used in one component only, define inside component
+
+## 4. Forbidden
+
+- FORBIDDEN: `import { h } from 'vue'` and using `h()` for render
+- FORBIDDEN: `createElement` or manual VNode construction
+- FORBIDDEN: Returning template string as "HTML" in body/formatter/renderer:
+  - ❌ `body: row => return \`<span class="${cls}">${row.status}</span>\`` — returns string, not VNode
+  - ✅ `body: row => <span class={\`font-semibold ${cls}\`}>{row.status}</span>` — TSX returns VNode
+- FORBIDDEN: Using JSX syntax but keeping `lang="ts"` — MUST change to `lang="tsx"` or JSX won't compile
+- Use TSX instead: readable, type-safe, composable
+
+See `.cursor/rules/27-ai-tsx-decision.mdc` for causal rules and lang-switch table.
+
+## 5. Config Support
+
+- `tsconfig.app.json`: `jsx: "preserve"`, `jsxImportSource: "vue"`
+- `build/plugins.ts`: `@vitejs/plugin-vue-jsx`
+- Components auto-import supports `.tsx` files

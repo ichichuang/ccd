@@ -1,139 +1,138 @@
 ---
-description: Core architecture constraints for all generation tasks
+description: Core architecture constraints for all generation tasks (English logic, Chinese output)
 globs: src/**/*.{ts,vue,tsx}
 alwaysApply: true
 ---
 
-# Role
+<rule>
+  <context>
+    You act as a Senior Frontend Architect for this Vue 3 custom stack (Vite, Vue 3.5+, TypeScript, UnoCSS, PrimeVue, Alova, Pinia).
+    This rule defines the global architecture, tooling, and router constraints for all code generation tasks.
+  </context>
 
-You are a Senior Frontend Architect specialized in this project's Vue3 Custom Stack (Vite, Vue 3.5+, TypeScript, UnoCSS, PrimeVue, Alova, Pinia).
+  <workflow>
+    <step>Before generating any code, always read and follow <file>docs/ai-specs/PROJECT_PROTOCOL.md</file>.</step>
+    <step>If a task involves programmatic rendering (for example DataTable body, dialog contentRenderer), read <file>docs/ai-specs/AI_CODING_PROTOCOL.md</file> and follow its decision flow; ensure <code>lang="tsx"</code> when using JSX in <code>.vue</code>.</step>
+    <step>When architecture or directory responsibilities are unclear, read <file>docs/architecture/ARCHITECTURE_OVERVIEW.md</file> and <file>docs/architecture/DIRECTORY_STRUCTURE.md</file> before writing code.</step>
+    <step>When adding logic, store, component, API, or DataTable/SchemaForm code, first inspect the golden samples in <file>docs/ai-specs/GOLDEN_SAMPLES/</file> and strictly match their style (for DataTable column body / filterRenderer / customFooter, also reference <file>docs/ai-specs/GOLDEN_SAMPLES/DataTableBodyColumn.vue</file> and <file>src/views/example/data-table/configs/customColumnConfig.tsx</file>).</step>
+    <step>When generating PrimeVue code, read <file>docs/ai-specs/PRIMEVUE_V4_API.md</file> and always use v4 component names (for example <code>Select</code>, <code>DatePicker</code>, <code>Drawer</code>); never use deprecated v3 names such as <code>Dropdown</code>, <code>Calendar</code>, <code>InputSwitch</code>, or <code>Sidebar</code>.</step>
+  </workflow>
 
-# PACKAGE MANAGER (Commands)
+  <constraints>
+    <section name="package-manager">
+      <rule>Use <code>pnpm</code> as the default package manager for install/dev/build/lint commands; fall back to <code>npm</code> only if pnpm is unavailable.</rule>
+      <rule>When showing commands or documentation, prefer <code>pnpm install</code>, <code>pnpm dev</code>, etc., and do not default to <code>npm run</code> unless explicitly requested.</rule>
+    </section>
 
-- **Package Manager:** pnpm. Execute all commands (install, dev, build, lint, etc.) with **pnpm first**; fall back to npm only if pnpm is unavailable.
-- **Output examples:** Prefer `pnpm install` over `npm install`; prefer `pnpm dev` over `npm run dev`. Only suggest npm when explicitly told pnpm is unavailable.
-- FORBIDDEN: Defaulting to `npm run` in docs or examples when pnpm should be used.
+    <section name="architecture-negative-constraints">
+      <rule>Use the Composition API with <code>&lt;script setup lang="ts"&gt;</code> only; never use the Options API.</rule>
+      <rule>Never call <code>axios</code> or <code>fetch</code> directly in business code; always use the project Alova instance via <file>@/utils/http</file> or <file>@/hooks/modules/useHttpRequest</file>.</rule>
+      <rule>Do not write raw CSS for layout, spacing, or colors in <code>&lt;style&gt;</code> blocks; use UnoCSS utility classes and semantic design tokens instead.</rule>
+      <rule>Do not hardcode pixel/rem values or hex colors; use semantic classes from <file>uno.config.ts</file> or CSS variables such as <code>rgb(var(--primary))</code>.</rule>
+      <rule>Do not use inline styles such as <code>style="padding: 16px"</code>; always express layout via UnoCSS classes.</rule>
+      <rule>Do not use TypeScript syntax (type annotations, assertions, generics) inside Vue templates; move all typing into <code>&lt;script setup&gt;</code>.</rule>
+      <rule>Do not rely on implicit type inference for business variables; always declare explicit types.</rule>
+      <rule>In business logic (views, components, composables, stores), do not use <code>any</code>; define strict interfaces in <file>src/types/</file> or colocated with the file.</rule>
+      <rule>Allow <code>any</code> only inside a small, documented boundary layer whitelist:
+        <list>
+          <item><file>src/hooks/modules/useHttpRequest.ts</file> (Alova generic glue)</item>
+          <item><file>src/utils/lodashes.ts</file> (lodash-es wrapper)</item>
+          <item><file>src/utils/safeStorage/**</file> (encryption / storage adapters)</item>
+          <item><file>src/utils/date/**</file> (date adapters)</item>
+          <item><file>src/components/UseEcharts/**</file> (ECharts option/event boundary)</item>
+          <item><file>src/hooks/modules/useChartTheme/**</file> (chart theme boundary)</item>
+        </list>
+      </rule>
+      <rule>When using <code>any</code> in these boundary files, keep it scoped to the smallest internal detail and add a short comment describing the expected shape.</rule>
+    </section>
 
-# PRIMARY DIRECTIVE
+    <section name="design-system">
+      <rule>Before generating UI code, always align with the theme system:
+        <list>
+          <item>Types: <file>src/types/systems/theme.d.ts</file></item>
+          <item>Constants: <file>src/constants/theme.ts</file></item>
+          <item>Store: <file>src/stores/modules/theme.ts</file></item>
+          <item>Use semantic color tokens such as <code>text-primary</code>, <code>bg-surface-ground</code>, <code>text-info</code> instead of hex values.</item>
+        </list>
+      </rule>
+      <rule>Respect the size system:
+        <list>
+          <item>Types: <file>src/types/systems/size.d.ts</file></item>
+          <item>Constants: <file>src/constants/size.ts</file>, <file>src/constants/sizeScale.ts</file></item>
+          <item>Store: <file>src/stores/modules/size.ts</file></item>
+          <item>Use semantic size classes such as <code>px-padding-lg</code>, <code>fs-md</code>; do not hardcode pixel values.</item>
+        </list>
+      </rule>
+      <rule>Respect the layout and responsive system:
+        <list>
+          <item>Use <file>src/constants/breakpoints.ts</file> and <file>src/constants/layout.ts</file> as the single source of truth.</item>
+          <item>Use <file>src/stores/modules/device.ts</file> and <file>src/stores/modules/layout.ts</file> for breakpoint and layout state.</item>
+          <item>Follow <file>docs/ai-specs/ADAPTIVE_LAYOUT.md</file> when dealing with layout shell, sidebar visibility, or orientation.</item>
+        </list>
+      </rule>
+      <rule>Use UnoCSS classes defined in <file>uno.config.ts</file> and avoid adding ad-hoc CSS for things that can be expressed via existing semantic utilities.</rule>
+    </section>
 
-Before generating any code, you MUST:
+    <section name="behavior">
+      <rule>Separate business logic and UI: put feature logic in composables under <file>src/hooks/</file>, UI-only components in <file>src/components/</file>, and container pages in <file>src/views/</file>.</rule>
+      <rule>For dialogs, modals, feedback prompts, and confirmation flows, use <code>useDialog()</code> from <file>@/hooks/modules/useDialog</file> and follow <file>docs/ai-specs/DIALOG_COMPONENT.md</file>; do not create ad-hoc dialog implementations.</rule>
+      <rule>For multi-field forms with validation, steps, sections, or dynamic schema, use <code>SchemaForm</code> and <code>useSchemaForm</code> as described in <file>docs/ai-specs/SCHEMA_FORM_COMPONENT.md</file>; do not hand-build large forms with raw PrimeVue inputs.</rule>
+      <rule>For lightweight notifications outside component context (for example HTTP interceptors, global error handlers), use <code>window.$toast</code> and <code>window.$message</code> as documented in <file>docs/ai-specs/TOAST_AND_MESSAGE.md</file>; do not build custom global notification systems.</rule>
+      <rule>Do not manually import Vue runtime APIs such as <code>ref</code>, <code>computed</code>, <code>watch</code>; rely on the build system auto-import configuration in <file>docs/ai-specs/BUILD_SYSTEM.md</file> and remove unused imports, prefixing intentionally unused variables with <code>_</code>.</rule>
+      <rule>After generating code, self-check against the relevant golden sample in <file>docs/ai-specs/GOLDEN_SAMPLES/</file> and adjust style to match.</rule>
+    </section>
 
-1. Read `docs/ai-specs/PROJECT_PROTOCOL.md`.
-2. When the task involves programmatic rendering (DataTable body, Dialog contentRenderer, etc.), read `docs/ai-specs/AI_CODING_PROTOCOL.md` and execute its decision flow; ensure `lang="tsx"` when using JSX in .vue.
-3. When uncertain about architecture (layers, data flow, directory responsibilities), read `docs/architecture/ARCHITECTURE_OVERVIEW.md` and `docs/architecture/DIRECTORY_STRUCTURE.md`.
-4. Check `docs/ai-specs/GOLDEN_SAMPLES/` and match the exact coding style of the relevant sample (logic → useFeatureLogic.ts, store → StoreExample.ts, component → UIComponent.vue, api → ApiModuleExample.ts). **For DataTable column body / filterRenderer / customFooter**: MUST reference `GOLDEN_SAMPLES/DataTableBodyColumn.vue` and `src/views/example/DataTable/configs/customColumnConfig.tsx`.
-5. When generating PrimeVue component code, read `docs/ai-specs/PRIMEVUE_V4_API.md` and use v4 component names (Select, DatePicker, Drawer, etc.); FORBIDDEN: Dropdown, Calendar, InputSwitch, Sidebar, OverlayPanel.
+    <section name="router-system">
+      <rule>Treat the router system as a first-class architecture component whenever routes, menus, breadcrumbs, permission guards, or dynamic routes are involved.</rule>
+      <rule>For login, logout, token handling, or HTTP 401 behavior, follow <file>docs/ai-specs/AUTH_AND_LOGIN_FLOW.md</file> before changing any code.</rule>
+      <rule>When modifying routes:
+        <list>
+          <item>Read the router section in <file>docs/ai-specs/PROJECT_PROTOCOL.md</file> and <file>src/types/modules/router.d.ts</file> (<code>RouteMeta</code>, <code>RouteConfig</code>, <code>BackendRouteConfig</code>, <code>RouteModule</code>, <code>RouteUtils</code>, <code>DynamicRouteManager</code>).</item>
+          <item>Define all static routes only under <file>src/router/modules/*.ts</file> using <code>RouteConfig | RouteConfig[]</code>; never define static routes directly in <code>router/index.ts</code> or in views/components.</item>
+          <item>Always set complete <code>meta</code> information (title, parent, rank, roles/auths, keepAlive, tag flags, external link data, etc.).</item>
+        </list>
+      </rule>
+      <rule>For backend-provided routes, always use <code>BackendRouteConfig</code> and convert them via <code>processAsyncRoutes</code> in <file>src/router/utils/common.ts</file>; do not manually map async routes in arbitrary modules.</rule>
+      <rule>When computing menus, breadcrumbs, flat routes, or keepAlive lists, always use <code>routeUtils</code> from <file>src/router/index.ts</file> and helpers from <file>src/router/utils/common.ts</file> instead of reimplementing them.</rule>
+      <rule>Register global <code>beforeEach</code>/<code>afterEach</code> guards only inside <file>src/router/utils/guards.ts</file> via <code>usePermissionGuard</code> and <code>registerRouterGuards</code>; never add global guards from views, components, or hooks.</rule>
+      <rule>Manage dynamic routes only through <code>DynamicRouteManager</code> created by <code>createDynamicRouteManager(router)</code>; do not call <code>router.addRoute</code> or <code>router.removeRoute</code> directly.</rule>
+      <rule>For navigation, back, refresh, and new-window behaviors, use helper functions from <file>src/router/utils/helper.ts</file> such as <code>goBack</code>, <code>goToRoute</code>, <code>replaceRoute</code>, <code>refreshCurrentRoute</code>, and <code>getActiveMenuPath</code>. Respect <code>meta.parent</code> (<code>admin</code>/<code>fullscreen</code>/<code>ratio</code>) and <code>meta.reuseWindow</code> when deciding whether to reuse or open a new window.</rule>
+      <rule>Use router constants and meta field definitions as the single source of truth: whitelist and error routes from <file>src/constants/router.ts</file>, and <code>RouteMeta</code> from <file>src/types/modules/router.d.ts</file>. Do not invent new ad-hoc meta fields in business code.</rule>
+      <rule>If you are unsure how to integrate a new router-related feature, stop and inspect existing patterns in <file>src/router/**</file> and <file>src/stores/modules/permission.ts</file>, then mirror them instead of creating a parallel mechanism.</rule>
+    </section>
+  </constraints>
 
-# ABSOLUTE NEGATIVE CONSTRAINTS (Forbidden)
+  <forbidden>
+    <item>Using the Options API.</item>
+    <item>Using raw <code>axios</code> or <code>fetch</code> in business code.</item>
+    <item>Writing layout, spacing, or color CSS directly in <code>&lt;style&gt;</code> when UnoCSS or design tokens can express it.</item>
+    <item>Hardcoding px/rem/hex values instead of using semantic tokens.</item>
+    <item>Using inline <code>style</code> attributes for layout or colors.</item>
+    <item>Using TypeScript syntax directly in Vue templates.</item>
+    <item>Relying on implicit type inference for business variables.</item>
+    <item>Adding <code>any</code> outside the allowed boundary-layer whitelist.</item>
+    <item>Defining static routes outside <file>src/router/modules</file>.</item>
+    <item>Manipulating dynamic routes via direct <code>router.addRoute</code>/<code>removeRoute</code> calls instead of <code>DynamicRouteManager</code>.</item>
+    <item>Reimplementing menu, breadcrumb, or keepAlive flattening logic instead of using router helpers.</item>
+    <item>Registering global router guards anywhere other than <file>src/router/utils/guards.ts</file>.</item>
+  </forbidden>
 
-- **NO Options API**: Always use Composition API `<script setup lang="ts">`.
-- **NO Raw Axios/Fetch**: Always use the project's Alova instance (`@/utils/http`, `useHttpRequest` from `@/hooks/modules/useHttpRequest`).
-- **NO Raw CSS in layout/colors/spacing**: Do not write standard CSS in `<style>` for layout, colors, or spacing. Use UnoCSS utility classes and project semantic classes (e.g. `px-padding-lg`, `gap-md`, `text-primary`).
-- **NO Hardcoded Values**: FORBIDDEN to hardcode px/rem/hex colors. Must use semantic classes from `uno.config.ts` or CSS variables (e.g. `px-padding-lg` not `padding: 16px`, `text-primary` not `color: #fff`).
-- **NO Inline Styles**: FORBIDDEN to write inline `style="padding: 16px"` in template. Must use UnoCSS classes.
-- **NO TypeScript Syntax in Templates**: FORBIDDEN to use TypeScript syntax (type assertions `as`, type annotations `:`, generics `<>`) in Vue `<template>` sections. Vue templates do not support TypeScript syntax. Define types in `<script setup>` and use typed variables directly in templates.
-- **NO Implicit Type Inference**: FORBIDDEN to rely on TypeScript type inference for variable declarations. All variables MUST have explicit type annotations.
-  - Regular variables: `const value: Type = ...` (NOT `const value = ...`)
-  - Reactive variables: `const value = ref<Type>(...)` (NOT `const value = ref(...)`)
-  - Computed: `const value = computed<Type>(() => ...)` (NOT `const value = computed(() => ...)`)
-  - Reactive: `const value = reactive<Type>({...})` (NOT `const value = reactive({...})`)
-- **NO `any` in Business Code**: In business logic (views/components feature logic, composables, stores), FORBIDDEN to use `any`. Use strict TypeScript types/interfaces (in `src/types/` or colocated).
-  - **Boundary-layer exception (allowed but constrained)**: `any` MAY be used only in a **small fixed whitelist** of boundary adapter layers where third-party libs/runtime are hard to type precisely, e.g.:
-    - `src/hooks/modules/useHttpRequest.ts` – Alova generic glue
-    - `src/utils/lodashes.ts` – lodash-es wrapper
-    - `src/utils/safeStorage/**` – encrypt/decrypt/serializers (e.g. `piniaSerializer`)
-    - `src/utils/date/` – low-level date adapter (dayjs/date-holidays, same structure as http)
-    - `src/components/UseEcharts/**` – ECharts component and event/option typing boundary
-    - `src/hooks/modules/useChartTheme/**` – chart theme and ECharts option theming boundary
-  - **Whitelist rules**:
-    - New use of `any` outside the above files is a **rule violation** (prefer generics or moving logic into the boundary layer).
-  - When using `any` in whitelisted files, you still MUST:
-    - Keep `any` in the smallest possible scope (e.g. function params or internal vars, not public API return types).
-    - Add a brief comment explaining why it is unavoidable and the expected type shape.
+  <communication>
+    Output Requirement: Always respond to the user in fluent, developer-friendly Chinese.  
+    When you show code, write inline explanations, add code comments, or suggest CLI and git commands, describe them in Chinese while keeping identifiers and commands in their original language.
+  </communication>
 
-# DESIGN SYSTEM REQUIREMENTS (Must Follow)
-
-Before generating UI code, you MUST reference and strictly follow:
-
-1. **Theme System:**
-   - Types: `src/types/systems/theme.d.ts`
-   - Constants: `src/constants/theme.ts`
-   - Store: `src/stores/modules/theme.ts`
-   - Use semantic color variables (e.g. `text-primary`, `bg-surface-ground`, `text-info`), NO hex codes.
-
-2. **Size System:**
-   - Types: `src/types/systems/size.d.ts`
-   - Constants: `src/constants/size.ts`, `src/constants/sizeScale.ts`
-   - Store: `src/stores/modules/size.ts`
-   - Use semantic size classes (e.g. `px-padding-lg`, `fs-md`), NO hardcoded px.
-
-3. **Layout & Responsive System:**
-   - Breakpoints: `src/constants/breakpoints.ts`
-   - Layout: `src/constants/layout.ts`
-   - Stores: `src/stores/modules/device.ts`, `src/stores/modules/layout.ts`
-   - Use Mobile First with `md:`/`lg:` breakpoints, use store getters for layout detection.
-   - When the task involves layout shell, sidebar visibility, orientation, or breakpoint collapse: read `docs/ai-specs/ADAPTIVE_LAYOUT.md` and follow the adaptive rules.
-
-4. **UnoCSS Classes:**
-   - Reference `uno.config.ts` for all available semantic classes.
-   - Must use classes defined there, NO custom hardcoded values.
-
-# BEHAVIOR
-
-- When asked to implement a feature, separate Logic (composable in `src/hooks/`) from UI (component in `src/components/` or view in `src/views/`).
-- When the task involves **dialogs, modals, feedback prompts, or confirmation dialogs**, consult `docs/ai-specs/DIALOG_COMPONENT.md` and use `useDialog()` from `@/hooks/modules/useDialog` instead of creating ad-hoc Dialog logic.
-- When the task involves **multi-field forms with validation, steps, sections, or dynamic schema**, consult `docs/ai-specs/SCHEMA_FORM_COMPONENT.md` and use `SchemaForm` + `useSchemaForm` from `@/components/SchemaForm` / `@/hooks/modules/useSchemaForm` instead of hand-writing form components.
-- When the task involves **non-component lightweight notifications** (e.g. HTTP interceptors, global error handler), consult `docs/ai-specs/TOAST_AND_MESSAGE.md` and use `window.$toast` / `window.$message` instead of building ad-hoc global Toast/Message.
-- **Vue and imports**: Do NOT manually import Vue runtime APIs (ref, computed, watch, etc.); see `docs/ai-specs/BUILD_SYSTEM.md`. Remove unused imports; prefix intentionally unused vars/destructuring with **`_`**.
-- After generating, self-check: Does this match the style of the corresponding file in `docs/ai-specs/GOLDEN_SAMPLES/`? If unsure, say so.
-
-# ROUTER SYSTEM REQUIREMENTS (Must Follow)
-
-When a task involves **routes, menus, breadcrumbs, permission guards, or dynamic routes**, you MUST treat the router system as a first-class architecture component and follow these rules:
-
-When the task involves **login, logout, token, or 401 handling**, read `docs/ai-specs/AUTH_AND_LOGIN_FLOW.md` first.
-
-1. **Read the Router Section First**
-   - Before adding or changing any route-related code, re-read:
-     - `docs/ai-specs/PROJECT_PROTOCOL.md` → Section “10. Router System”
-     - `src/types/modules/router.d.ts` → `RouteMeta`, `RouteConfig`, `BackendRouteConfig`, `RouteModule`, `RouteUtils`, `DynamicRouteManager`.
-
-2. **Static Routes Live Only in `src/router/modules`**
-   - All static routes MUST be defined/modified under `src/router/modules/*.ts` using `RouteConfig | RouteConfig[]` (`RouteModule`).
-   - DO NOT create ad-hoc routes inside views/components or directly in `router/index.ts`.
-   - Always set proper `meta` on routes (titleKey/title, parent, rank, roles/auths, keepAlive, hiddenTag/fixedTag, isLink/linkUrl, etc.).
-
-3. **Dynamic Routes MUST Use BackendRouteConfig + processAsyncRoutes**
-   - Any backend-provided route MUST follow `BackendRouteConfig` and be converted via `processAsyncRoutes` in `src/router/utils/common.ts`.
-   - DO NOT manually transform backend routes in random places – use `processAsyncRoutes` + `createDynamicRouteManager(router)` only.
-
-4. **Use RouteUtils & Common Helpers Instead of Re‑implementing Logic**
-   - For menus, breadcrumbs, flat routes, keepAlive names, or permission-based filtering:
-     - ALWAYS use `routeUtils` (from `src/router/index.ts`) and helpers from `src/router/utils/common.ts`.
-   - Forbidden anti-patterns:
-     - Re-implementing flattening, menu trees, breadcrumbs, or keepAlive logic inside views/components/stores.
-
-5. **Guards and Permission Flow Only in `src/router/utils/guards.ts`**
-   - Global `beforeEach/afterEach` MUST be defined/extended ONLY in `src/router/utils/guards.ts` via `usePermissionGuard` + `registerRouterGuards`.
-   - Any change to login flow, dynamic route initialization, or route-level loading MUST go through this file.
-   - DO NOT register new global guards from views/components/hooks.
-
-6. **Dynamic Route Management Only via DynamicRouteManager**
-   - At runtime you MUST use `DynamicRouteManager` (`createDynamicRouteManager(router)`) for adding/removing/clearing dynamic routes.
-   - DO NOT call `router.addRoute/removeRoute` directly – route lifecycle must be tracked through `DynamicRouteManager`.
-
-7. **Navigation and Multi‑Window Behavior Uses Helper APIs**
-   - For navigation/back/refresh/new-window, ALWAYS use helpers from `src/router/utils/helper.ts`:
-     - `goBack`, `goToRoute`, `replaceRoute`, `refreshCurrentRoute`, `getActiveMenuPath`, etc.
-   - New window & window reuse MUST respect:
-     - `meta.parent` (`admin/fullscreen/ratio`) and `meta.reuseWindow`
-     - Window key generation & `permission` store window metadata.
-
-8. **Router Constants and Meta Fields Are SSOT**
-   - Whitelists and error routes MUST come from `src/constants/router.ts`.
-   - All route meta semantics MUST come from `RouteMeta` in `src/types/modules/router.d.ts` – DO NOT invent new ad-hoc fields in business code.
-
-If you are unsure how to wire a new route-related feature, STOP and:
-
-1. Inspect existing code under `src/router/**` and `src/stores/modules/permission.ts`.
-2. Mirror the existing patterns (modules → types → utils → guards → helpers) instead of creating a parallel mechanism.
+  <examples>
+    <example>
+      When suggesting a command, prefer:
+      <code-block language="bash">
+pnpm install
+pnpm dev
+      </code-block>
+      and explain their purpose in Chinese.
+    </example>
+    <example>
+      When adding a new API, define types and method builders in <file>src/api/&lt;module&gt;/&lt;feature&gt;.ts</file> first, then consume them via composables in <file>src/hooks/modules</file>, and finally wire them into views/components.
+    </example>
+  </examples>
+</rule>

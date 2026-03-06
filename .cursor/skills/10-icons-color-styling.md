@@ -1,48 +1,53 @@
-# Skill 10: Icons Color Styling (When color does not apply)
+---
+description: Icons color customization and class specificity override
+globs: **/*.vue, **/*.tsx
+---
+
+# Skill 10: Icons Color Customization (when color does not apply)
 
 ## Goal
 
-When Icons component color/opacity set via `class` does not apply, use this Skill's decision table to choose the fix.
+When Icons component color/opacity set via `class` does not apply, use this skill's decision table to choose a fix.
 
-## Pre-check (mandatory)
+## Pre-check (required)
 
-- `@docs/ai-specs/UNOCSS_AND_ICONS.md` §6.3, §6.3.1, §6.3.2, §2.7.1
-- `@.cursor/rules/18-components-and-icons.mdc`
+- `docs/ai-specs/UNOCSS_AND_ICONS.md` §6.3, §6.3.1, §6.3.2, §2.7.1
+- `.cursor/rules/18-components-and-icons.mdc` or `.agent/rules/10-ui-architecture.md` §4.1
 
-## Root cause quick reference
+## Root Cause Quick Reference
 
-1. Icons adds `text-foreground` when `color` is not passed; conflicts with custom class
-2. Inside PrimeVue (Menubar, Dropdown, etc.), parent styles have higher specificity
-3. Multiple color classes with same specificity; order is non-deterministic
+1. Icons adds `text-foreground` when `color` is not passed, conflicting with custom class
+2. Inside PrimeVue (Menubar, Select, etc.), parent styles have higher specificity
+3. Multiple color classes with same specificity, order not deterministic
 
-## Decision table (by priority)
+## Decision Table (by priority)
 
-| Scenario                        | Solution                 | Example                                |
-| ------------------------------- | ------------------------ | -------------------------------------- |
-| Need override, inline style ok  | Use `color` prop         | `color="rgb(var(--primary))"`          |
-| Must use class to override      | Add `!` to color/opacity | `class="text-primary! opacity-100!"`   |
-| hover / group-hover not applied | Add `!` to state class   | `group-hover:text-primary-hover!`      |
-| Match parent text color         | `text-current`           | `class="text-current"`                 |
-| Custom `i-custom:*` icon        | Same as above            | Same rules, inject fill="currentColor" |
+| Scenario                               | Approach                       | Example                                |
+| -------------------------------------- | ------------------------------ | -------------------------------------- |
+| Need override, inline style acceptable | Use `color` prop               | `color="rgb(var(--primary))"`          |
+| Need class override                    | Add `!` to color/opacity class | `class="text-primary! opacity-100!"`   |
+| hover / group-hover color not applied  | Add `!` to state class         | `group-hover:text-primary-hover!`      |
+| Match parent text color                | `text-current`                 | `class="text-current"`                 |
+| Custom `i-custom:*` icons              | Same as above                  | Same rules, inject fill="currentColor" |
 
 ## Steps
 
-1. **Identify scenario**: Is Icons inside PrimeVue or a parent with higher specificity?
-2. **Choose solution**: Prefer `color` prop; if class is required, add `!`
+1. **Identify scenario**: Is Icons inside PrimeVue or a high-specificity parent?
+2. **Choose approach**: Prefer `color` prop; if class is required, add `!`
 3. **Check opacity**: If `opacity-*` is also overridden, add `!` there too
-4. **Verify**: Inspect icon final color in browser
+4. **Verify**: Check final icon color in browser
 
-## Icons and transition
+## Icons and Transition (hover / group-hover)
 
-When Icons use `group-hover:` color/opacity, transition MUST be on Icons class; parent transition does not apply. Example: `class="transition-colors duration-scale-md group-hover:text-primary-hover!"`. Use primary-hover for hover; `text-primary!` for brand **static** color.
+When Icons use `group-hover:`, `hover:` color/opacity classes, **transition MUST be on Icons class**; parent transition does not apply. Example: `class="transition-colors duration-scale-md group-hover:text-primary-hover!"`. Use primary-hover for hover; `text-primary!` for static brand color.
 
 ## Forbidden
 
-- `color` prop with hex or `var(--primary)` (MUST use `rgb(var(--primary))`)
-- Hand-written `<svg>` or external icons
-- Icons with group-hover color but transition only on parent
+- hex or `var(--primary)` in `color` prop (must use `rgb(var(--primary))`)
+- Hand-written `<svg>` or external icon URLs
+- Adding transition only on parent when Icons has group-hover color
 
 ## Reference
 
-- Full rules: `docs/ai-specs/UNOCSS_AND_ICONS.md` §6.3.1, §6.3.2, §2.7.1
-- Example: `src/layouts/components/admin/AdminHeader.vue` (Icons in Menubar using `text-primary!` etc.)
+- Rules: `docs/ai-specs/UNOCSS_AND_ICONS.md` §6.3.1, §6.3.2, §2.7.1
+- Example: `src/layouts/components/admin/AdminHeader.vue` (Icons in Menubar with `text-primary!` etc.)

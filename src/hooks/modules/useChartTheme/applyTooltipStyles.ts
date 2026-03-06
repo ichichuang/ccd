@@ -2,21 +2,30 @@
 import type { ThemeConfig } from './types'
 import { withAlpha } from './utils'
 
+/** Tooltip 玻璃态透明度（Glassmorphism），与 glass-surface-lg 一致 */
+const TOOLTIP_BG_ALPHA = 0.92
+/** Tooltip 过渡时长 (s)，流体动画 */
+const TOOLTIP_TRANSITION_DURATION = 0.3
+
 /**
  * 应用主题样式到 ECharts tooltip
  * 仅负责融合颜色和尺寸，不改动 formatter 逻辑（函数式版本）
+ * V2: 玻璃态背景 + 流体 transitionDuration
  */
 export function applyTooltipStyles(
   tooltip: Record<string, any> | undefined,
   config: ThemeConfig
 ): Record<string, any> {
+  const bgColor = withAlpha(config.card, TOOLTIP_BG_ALPHA) ?? config.card
+
   if (!tooltip) {
     return {
-      backgroundColor: config.background,
+      backgroundColor: bgColor,
       borderColor: config.card,
       padding: config.size.tooltipPadding,
       borderWidth: config.size.tooltipBorderWidth,
       borderRadius: config.size.tooltipRadius,
+      transitionDuration: TOOLTIP_TRANSITION_DURATION,
       textStyle: {
         color: config.foreground,
         fontSize: config.size.fontSm,
@@ -37,7 +46,7 @@ export function applyTooltipStyles(
 
   return {
     ...tooltip,
-    backgroundColor: tooltip.backgroundColor ?? config.background,
+    backgroundColor: tooltip.backgroundColor ?? bgColor,
     borderColor: tooltip.borderColor ?? config.card,
     padding: tooltip.padding ?? config.size.tooltipPadding,
     borderWidth: tooltip.borderWidth ?? config.size.tooltipBorderWidth,
@@ -61,6 +70,7 @@ export function applyTooltipStyles(
         width: tooltip.axisPointer?.crossStyle?.width ?? config.size.strokeHairline,
       },
     },
+    transitionDuration: tooltip.transitionDuration ?? TOOLTIP_TRANSITION_DURATION,
     // 不处理 formatter —— 避免污染全局 tooltip 逻辑
   }
 }
