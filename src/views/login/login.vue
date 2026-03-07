@@ -1,5 +1,6 @@
 <script setup lang="tsx">
 import type { FormValues, Schema } from '@/components/SchemaForm'
+import { brand } from '@/constants/brand'
 import { AUTH_ENABLED } from '@/constants/router'
 import { LOGIN_CARD_MAX_WIDTH } from '@/constants/login'
 import { useDeviceStore } from '@/stores/modules/device'
@@ -14,6 +15,21 @@ interface SchemaFormRef {
 
 const formRef = ref<SchemaFormRef | null>(null)
 const userStore = useUserStore()
+const route = useRoute()
+const router = useRouter()
+
+const appVersion: string =
+  typeof __APP_INFO__ === 'object' && __APP_INFO__ !== null
+    ? (__APP_INFO__?.pkg?.version ?? '')
+    : (() => {
+        try {
+          const parsed = JSON.parse(__APP_INFO__ as string) as { pkg?: { version?: string } }
+          return parsed?.pkg?.version ?? ''
+        } catch {
+          return ''
+        }
+      })()
+const footerVersion = computed(() => (appVersion ? `v${appVersion}` : ''))
 const deviceStore = useDeviceStore()
 const isMobileLayout = computed(() => deviceStore.isMobileLayout)
 const toolbarIconSize = computed(() => (isMobileLayout.value ? 'xl' : '2xl'))
@@ -112,19 +128,49 @@ async function handleSubmit(values: FormValues) {
     loading.value = true
     errorMessage.value = ''
     await userStore.login({ username, password })
-    // 成功后，userStore.setUserInfo 内部会处理跳转
+    // 架构规定：Store 不负责导航，由调用方在登录成功后跳转（见 05-architecture-decoupling）
+    const redirect = route.query.redirect
+    const targetPath =
+      typeof redirect === 'string' && redirect
+        ? decodeURIComponent(redirect)
+        : import.meta.env.VITE_ROOT_REDIRECT || '/'
+    await router.replace(targetPath)
   } catch (error) {
     errorMessage.value = (error as Error).message || t('login.failed')
   } finally {
     loading.value = false
   }
 }
+
+/** 回车快捷登录：在输入框内按 Enter 时触发提交，与点击登录按钮一致 */
+function onEnterSubmit() {
+  if (!loading.value) formRef.value?.submit?.()
+}
 </script>
 
 <template>
-  <div class="fixed inset-0 overflow-hidden center">
+  <div
+    class="fixed inset-0 overflow-hidden center"
+    @keydown.enter.prevent="onEnterSubmit"
+  >
     <!-- 渐变背景：使用配色系统变量，无外部资源 -->
     <div class="login-bg absolute inset-0 z-0" />
+
+    <!-- 错误提示：固定于页面中上方，不撑开登录卡片 -->
+    <Transition name="fade">
+      <div
+        v-if="errorMessage"
+        class="login-error-fixed fixed left-1/2 top-[var(--spacing-xl)] z-30 -translate-x-1/2 row cross-center gap-sm p-padding-md rounded-scale-md bg-danger/10 border border-danger/20 shadow-md"
+      >
+        <Icons
+          name="i-lucide-alert-circle"
+          class="text-danger shrink-0"
+        />
+        <span class="text-danger fs-sm">
+          {{ errorMessage }}
+        </span>
+      </div>
+    </Transition>
 
     <!-- 主题 / 语言切换（右上角） -->
     <div class="absolute top-[var(--spacing-lg)] right-[var(--spacing-lg)] z-20 row-center gap-sm">
@@ -184,22 +230,6 @@ async function handleSubmit(values: FormValues) {
         @submit="handleSubmit"
       />
 
-      <!-- Error Message -->
-      <Transition name="fade">
-        <div
-          v-if="errorMessage"
-          class="mt-margin-md p-padding-md rounded-scale-md bg-danger/10 border border-danger/20 row cross-center gap-sm"
-        >
-          <Icons
-            name="i-lucide-alert-circle"
-            class="text-danger shrink-0"
-          />
-          <span class="text-danger fs-sm">
-            {{ errorMessage }}
-          </span>
-        </div>
-      </Transition>
-
       <!-- Submit Button -->
       <div class="mt-margin-xl">
         <Button
@@ -222,9 +252,27 @@ async function handleSubmit(values: FormValues) {
       </div>
     </div>
 
-    <!-- Footer Copyright -->
-    <div class="absolute bottom-[var(--spacing-lg)] text-muted fs-xs text-center w-full z-10">
-      &copy; {{ new Date().getFullYear() }}
+    <!-- Footer：版权 + 应用名 · 版本 · 描述 -->
+    <div
+      class="absolute bottom-[var(--spacing-lg)] left-0 right-0 z-10 flex flex-col items-center justify-center gap-y-gap-xs text-muted fs-xs"
+    >
+      <div class="flex flex-wrap items-center justify-center gap-x-gap-md gap-y-gap-xs">
+        <span>{{ brand.displayName }}</span>
+        <template v-if="footerVersion">
+          <span class="text-border">·</span>
+          <span>{{ footerVersion }}</span>
+        </template>
+        <template v-if="brand.description">
+          <span class="text-border">·</span>
+          <span
+            class="max-w-2xl truncate"
+            :title="brand.description"
+          >
+            {{ brand.description }}
+          </span>
+        </template>
+      </div>
+      <div class="text-muted-foreground/80">&copy; {{ new Date().getFullYear() }}</div>
     </div>
   </div>
 </template>

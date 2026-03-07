@@ -5,8 +5,20 @@
  * date-holidays 仅在首次调用 getCountryHolidays / isCountryHoliday 等方法时加载。
  */
 
-// 边界层：date-holidays 实例类型不易精确建模，使用 any 做最小作用域封装
-let holidaysApi: any = null
+/** date-holidays 实例最小接口（第三方库无完整类型，边界处使用 any 桥接） */
+export interface HolidaysApiLike {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  init: (...args: any[]) => void
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  getHolidays?: (year?: string | number) => any[]
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  getCountries?: () => any
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  isHoliday?: (date: Date) => any
+  [key: string]: unknown
+}
+
+let holidaysApi: HolidaysApiLike | null = null
 let holidaysApiReady = false
 let holidaysApiLoader: Promise<void> | null = null
 
@@ -17,7 +29,7 @@ const ensureHolidaysApi = async (): Promise<void> => {
   if (!holidaysApiLoader) {
     holidaysApiLoader = import('date-holidays')
       .then(module => {
-        const holidaysCtor = module.default
+        const holidaysCtor = module.default as unknown as new () => HolidaysApiLike
         holidaysApi = new holidaysCtor()
         holidaysApi.init('CN')
         holidaysApiReady = true
@@ -34,7 +46,7 @@ const ensureHolidaysApi = async (): Promise<void> => {
 /**
  * 获取 date-holidays API 实例（未加载完成时返回 null）
  */
-export const getHolidaysApi = (): any => {
+export const getHolidaysApi = (): HolidaysApiLike | null => {
   if (holidaysApiReady && holidaysApi) {
     return holidaysApi
   }

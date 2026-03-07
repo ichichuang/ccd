@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { toKebabCase } from '@/utils/strings'
 import { useDeviceStore } from '@/stores/modules/device'
 
 const deviceStore = useDeviceStore()

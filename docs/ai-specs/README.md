@@ -35,6 +35,12 @@
    - **使用场景**：所有代码生成任务前必须阅读
    - **引用**：`@./PROJECT_PROTOCOL.md`
 
+1b. **`ENTERPRISE_GUARDRAILS.md`** - 企业架构护栏（CRITICAL，冲突时优先）
+
+- **功能**：边界与依赖、类型稀释、数据不可变、组件纯粹性、设计系统、单一职责等禁止项
+- **使用场景**：所有 `*.ts`/`*.tsx`/`*.vue` 代码生成与审查；与其它规则冲突时以本规范为准
+- **引用**：`@./ENTERPRISE_GUARDRAILS.md`
+
 1a. **`AI_CODING_PROTOCOL.md`** - AI 编码协议
 
 - **功能**：生成前决策流程、TSX/lang 切换、VNode vs 模板字符串、生成后自检清单
@@ -114,6 +120,7 @@
 
 | 任务类型                              | 引用文档                                                                                   |
 | ------------------------------------- | ------------------------------------------------------------------------------------------ |
+| 架构护栏/禁止项（冲突时优先）         | `@./ENTERPRISE_GUARDRAILS.md`                                                              |
 | 理解架构/目录结构                     | `@docs/architecture/ARCHITECTURE_OVERVIEW.md`、`@docs/architecture/DIRECTORY_STRUCTURE.md` |
 | Cursor+Antigravity 协作、常用 Prompt  | `@docs/AI_COLLABORATION.md`                                                                |
 | 表单（多字段/校验/分步/分组/动态）    | `@docs/SCHEMA_FORM_COMPONENT.md`                                                           |
@@ -170,6 +177,7 @@
 
 | 需求                | 文档                                                                                             |
 | ------------------- | ------------------------------------------------------------------------------------------------ |
+| 架构护栏/禁止项     | `ENTERPRISE_GUARDRAILS.md`（冲突时优先）                                                         |
 | 理解架构            | `architecture/ARCHITECTURE_OVERVIEW.md`、`DIRECTORY_STRUCTURE.md`                                |
 | 系统配置 vs 示例页  | system-configuration=架构能力演示；example=业务组件用法示例                                      |
 | 用什么组件          | `PROJECT_PROTOCOL.md` §1.1                                                                       |

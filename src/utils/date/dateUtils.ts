@@ -74,7 +74,7 @@ export class DateUtils {
   private static holidays: Map<string, Holiday[]> = new Map()
 
   // 性能缓存
-  private static cache = new Map<string, { value: any; timestamp: number }>()
+  private static cache = new Map<string, { value: unknown; timestamp: number }>()
   private static readonly cacheTtl = CACHE_DEFAULTS.ttl
 
   // 语言切换监听器
@@ -323,9 +323,9 @@ export class DateUtils {
 
       // 尝试 i18n
       if (mode === 'i18n' || mode === 'auto') {
-        if (typeof window !== 'undefined' && (window as any).$i18n) {
+        if (typeof window !== 'undefined' && window.$i18n) {
           try {
-            const i18n = (window as any).$i18n
+            const i18n = window.$i18n
             return i18n.d(d.toDate(), formatKey, locale)
           } catch (_error) {
             // ignore i18n fallback failure
@@ -1221,7 +1221,7 @@ export class DateUtils {
       }
 
       api.init(countryCode)
-      const holidays = api.getHolidays(year) as HolidayInfo[]
+      const holidays = (api.getHolidays?.(year) ?? []) as HolidayInfo[]
 
       if (importToDateUtils && holidays && Array.isArray(holidays)) {
         // 转换为DateUtils的Holiday格式并导入
@@ -1254,7 +1254,7 @@ export class DateUtils {
       if (!api) {
         return {}
       }
-      return api.getCountries()
+      return (api.getCountries?.() ?? {}) as Record<string, string>
     } catch (error) {
       console.error('Failed to get supported countries:', error)
       return {}
@@ -1275,8 +1275,8 @@ export class DateUtils {
       }
       api.init(countryCode)
       const d = this.validateDateInput(date, 'isCountryHoliday')
-      const result = api.isHoliday(d.toDate())
-      return result !== false
+      const result = api.isHoliday?.(d.toDate())
+      return result !== false && result !== undefined
     } catch (error) {
       console.error('Failed to check country holiday:', error)
       return false
@@ -1297,8 +1297,8 @@ export class DateUtils {
       }
       api.init(countryCode)
       const d = this.validateDateInput(date, 'getCountryHolidayInfo')
-      const result = api.isHoliday(d.toDate())
-      return result === false ? null : (result as unknown as HolidayInfo)
+      const result = api.isHoliday?.(d.toDate())
+      return result === false || result === undefined ? null : (result as unknown as HolidayInfo)
     } catch (error) {
       console.error('Failed to get holiday info:', error)
       return null
@@ -1335,7 +1335,9 @@ export class DateUtils {
       return false
     }
 
-    existing.splice(index, 1)
+    const next = [...existing]
+    next.splice(index, 1)
+    this.holidays.set(yearKey, next)
     return true
   }
 
@@ -1547,7 +1549,7 @@ export class DateUtils {
     const now = Date.now()
 
     if (cached && now - cached.timestamp < ttl) {
-      return cached.value
+      return cached.value as T
     }
 
     const result = calculator()
@@ -1767,7 +1769,7 @@ export class DateUtils {
   static sort(dates: DateInput[], order: 'asc' | 'desc' = 'asc'): dayjs.Dayjs[] {
     const validDates = dates.map(d => this.safeParse(d)).filter((d): d is dayjs.Dayjs => d !== null)
 
-    return validDates.sort((a, b) => {
+    return [...validDates].sort((a, b) => {
       const comparison = a.valueOf() - b.valueOf()
       return order === 'asc' ? comparison : -comparison
     })

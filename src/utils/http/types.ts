@@ -10,7 +10,7 @@ export type WithSafeStorage<T> = T & {
   isSafeStorage?: boolean
 }
 
-export interface ApiResponse<T = any> {
+export interface ApiResponse<T = unknown> {
   success: boolean
   data?: T
   message?: string
@@ -29,7 +29,7 @@ export interface RequestConfig {
   retry?: RetryConfig // 重试配置
   deduplicate?: boolean // 是否启用请求去重
   security?: SecurityConfig // 安全配置
-  [key: string]: any
+  [key: string]: unknown
 }
 
 // Alova 兼容的请求配置
@@ -37,7 +37,7 @@ export interface AlovaRequestConfig {
   headers?: Record<string, string>
   timeout?: number
   cache?: RequestCache // 使用标准的 RequestCache 类型
-  [key: string]: any
+  [key: string]: unknown
 }
 
 // 安全配置
@@ -51,7 +51,7 @@ export interface SecurityConfig {
 
 export interface UploadConfig extends RequestConfig {
   onProgress?: (progress: number) => void
-  onSuccess?: (response: any) => void
+  onSuccess?: (response: unknown) => void
   onError?: (error: Error) => void
 }
 
@@ -82,7 +82,7 @@ export interface RetryConfig {
 export interface HttpError extends Error {
   status?: number
   statusText?: string
-  data?: any
+  data?: unknown
 }
 
 // 供业务侧与 hooks 显式使用的错误类型别名
@@ -143,7 +143,7 @@ export interface UploadChunkConfig extends UploadConfig {
   chunkSize?: number // 分片大小，默认使用 HTTP_CONFIG.defaultChunkSize
   concurrentChunks?: number // 并发上传分片数，默认使用 HTTP_CONFIG.defaultConcurrentChunks
   onChunkProgress?: (chunkIndex: number, progress: number) => void
-  onChunkSuccess?: (chunkIndex: number, response: any) => void
+  onChunkSuccess?: (chunkIndex: number, response: unknown) => void
   onChunkError?: (chunkIndex: number, error: Error) => void
   onMergeProgress?: (progress: number) => void
 }

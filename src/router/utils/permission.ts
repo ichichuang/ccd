@@ -54,7 +54,7 @@ export const usePermissionGuard = ({
   initDynamicRoutes,
 }: {
   router: Router
-  initDynamicRoutes: () => Promise<any>
+  initDynamicRoutes: () => Promise<void>
 }) => {
   // 使用闭包变量追踪当前导航是否调用了 loadingStart()
   // 用于在 afterEach 中精确控制 loadingDone() 的调用
@@ -122,8 +122,8 @@ export const usePermissionGuard = ({
           currentNavigationHasLoadingStart = false
           // 阻断当前导航
           next(false)
-          // 核心修复：清除登录状态并刷新页面，彻底打破循环
           await userStore.logout()
+          router.replace('/login')
           return
         }
       }

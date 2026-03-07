@@ -44,16 +44,16 @@ main.ts
 ```
 1. 用户填写 username / password，点击提交
 2. login.vue 调用 userStore.login({ username, password })
-3. userStore.login() → requestUserLoginMock() (src/api/user/login.ts)
+3. userStore.login() → requestAuthLoginMock() (src/api/auth/auth.api.ts)
 4. 成功 → setToken(res.token) → setUserInfo(res.userInfo) → isLogin = true
-5. setUserInfo 内部执行 router.push(redirect || VITE_ROOT_REDIRECT)
+5. login.vue 在 await 成功后执行 router.replace(redirect || VITE_ROOT_REDIRECT)（Store 不负责导航，见 05-architecture-decoupling）
 6. Pinia persist 将 user state 写入 localStorage（加密）
 ```
 
 ### 3.3 登录 API
 
-- 文件：`src/api/user/login.ts`
-- 当前实现：`requestUserLoginMock` / `requestCurrentUserMock` 模拟
+- 文件：`src/api/auth/auth.api.ts`
+- 当前实现：`requestAuthLoginMock` / `requestAuthCurrentUserMock` 模拟
 - 对接后端：保持函数签名，替换为 Alova 请求即可
 
 ### 3.4 Token 存储
@@ -173,7 +173,7 @@ router/index.ts
     └─ 未登录: 白名单 → next()；否则 → next(`/login?redirect=${to.path}`)
     │
     ▼
-登录页 submit → userStore.login() → setToken + setUserInfo → router.push
+登录页 submit → userStore.login() → setToken + setUserInfo → login.vue 内 router.replace
     │
     ▼
 后续请求：beforeRequest 注入 Authorization

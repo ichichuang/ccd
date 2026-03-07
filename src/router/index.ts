@@ -1,19 +1,22 @@
 // Router 统一管理入口
 import {
   addParentPathsToLeafRoutes,
-  createDynamicRouteManager,
   createRouteUtils,
   normalizeRatioMetaOnRoutes,
   sortRoutes,
   transformToVueRoutes,
-} from '@/router/utils/common'
+} from '@/router/utils/transform'
+import { createDynamicRouteManager } from '@/router/utils/dynamic'
 import type { RouteRecordRaw } from 'vue-router'
 import { createRouter, createWebHashHistory, createWebHistory } from 'vue-router'
 import { autoImportModulesSync } from '@/router/utils/moduleLoader'
 import { registerRouterGuards } from './utils/guards'
 
 const routeModules = import.meta.glob('./modules/**/*.ts', { eager: true })
-const importedRoutes = autoImportModulesSync<RouteModule>(routeModules, './modules/')
+const importedRoutes = autoImportModulesSync<RouteModule>(
+  routeModules as Record<string, { default?: unknown; [key: string]: unknown }>,
+  './modules/'
+)
 
 // 类型安全的路由模块处理函数
 function processRouteModules(modules: Record<string, RouteModule>): RouteConfig[] {
@@ -92,6 +95,14 @@ registerRouterGuards({
   routeUtils,
   staticRoutes: normalizedStaticRoutes,
   dynamicRouteManager,
+})
+
+// 注入路由能力到 infra 层，供 Store 等通过 getRouterCapabilities() 使用，避免 Store 直接依赖 router/utils
+// 此处不从 helper 导入，避免 index ↔ helper 循环依赖导致 getAdminMenuTree 未初始化
+import { setRouterCapabilities } from '@/infra/router/routeProvider'
+setRouterCapabilities({
+  getAdminMenuTree: () => routeUtils.getAdminMenuTree(),
+  getFlatRouteList: () => routeUtils.flatRoutes,
 })
 
 export default router

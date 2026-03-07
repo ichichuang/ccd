@@ -9,6 +9,7 @@ function triggerCellEditCompleteOnBlur() {
   })
 }
 import type { DataTableColumn } from '@/components/DataTable'
+import { castRecord } from '@/utils/typeCasters'
 import Select from 'primevue/select'
 import InputNumber from 'primevue/inputnumber'
 import MultiSelect from 'primevue/multiselect'
@@ -83,7 +84,7 @@ export const customColumns: DataTableColumn<SubscriptionRecord>[] = [
         onChange: onChange,
         placeholder: '筛选方案',
       }
-      return <MultiSelect {...(multiSelectProps as unknown as Record<string, unknown>)} />
+      return <MultiSelect {...castRecord(multiSelectProps)} />
     },
     body: row => {
       const cls =
@@ -207,7 +208,7 @@ export const customColumns: DataTableColumn<SubscriptionRecord>[] = [
         placeholder: '全部',
         showClear: true,
       }
-      return <Select {...(selectProps as unknown as Record<string, unknown>)} />
+      return <Select {...castRecord(selectProps)} />
     },
     body: row => {
       const cls =

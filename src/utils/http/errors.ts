@@ -44,7 +44,7 @@ export class HttpRequestError extends Error {
   public code: string
   public status?: number
   public statusText?: string
-  public data?: any
+  public data?: unknown
   public retryable: boolean
 
   constructor(
@@ -52,7 +52,7 @@ export class HttpRequestError extends Error {
     type: ErrorType = ErrorType.UNKNOWN,
     status?: number,
     statusText?: string,
-    data?: any,
+    data?: unknown,
     retryable: boolean = false
   ) {
     super(message)

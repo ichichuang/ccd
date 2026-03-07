@@ -179,9 +179,12 @@ export default ({ mode, command }: ConfigEnv): UserConfigExport => {
       copyPublicDir: true,
     },
 
-    // 6. 全局常量注入 (已移除冗余的 VITE_ 变量)
+    // 6. 全局常量注入：仅向客户端注入最小应用信息（避免大 JSON 导致 define 替换异常）
     define: {
-      __APP_INFO__: JSON.stringify(__APP_INFO__),
+      __APP_INFO__: JSON.stringify({
+        pkg: { name: __APP_INFO__.pkg.name, version: __APP_INFO__.pkg.version },
+        lastBuildTime: __APP_INFO__.lastBuildTime,
+      }),
       // 仅在非常必要时保留 processEnv，通常 import.meta.env 足够使用
       processEnv: env,
     },

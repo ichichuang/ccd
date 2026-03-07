@@ -31,7 +31,7 @@ declare module '@vue/runtime-dom' {
 // 3. 注入全局命名空间
 declare global {
   // 基础类型映射：解决 setupLocales 等文件中 App 找不到的问题
-  type App<T = any> = import('vue').App<T>
+  type App<T = unknown> = import('vue').App<T>
   type Component = import('vue').Component
 
   /** 全局多语言工具 (由 AutoImport 自动注入，此处提供 TS 支持) */
@@ -39,6 +39,31 @@ declare global {
 
   // 布局与主题相关全局类型
   type LayoutMode = import('./systems/layout').LayoutMode
+
+  /** 构建时注入的应用信息（vite.config define，对象或 JSON 字符串，仅含 pkg.name/version 与 lastBuildTime） */
+  const __APP_INFO__: string | { pkg?: { name?: string; version?: string }; lastBuildTime?: string }
+
+  // 非组件环境全局 API（见 docs/ai-specs/TOAST_AND_MESSAGE.md）
+  interface Window {
+    $message?: {
+      success: (message: string, title?: string) => void
+      danger: (message: string, title?: string) => void
+      info: (message: string, title?: string) => void
+      warn: (message: string, title?: string) => void
+    }
+    $toast?: {
+      dangerIn: (position: string, summary: string, detail?: string) => void
+      successIn: (position: string, summary: string, detail?: string) => void
+      infoIn: (position: string, summary: string, detail?: string) => void
+      warnIn: (position: string, summary: string, detail?: string) => void
+      secondaryIn: (position: string, summary: string, detail?: string) => void
+      contrastIn: (position: string, summary: string, detail?: string) => void
+      add: (options: unknown) => void
+      clear: () => void
+      removeGroup?: (group: string) => void
+    }
+    $i18n?: { d: (date: Date, formatKey: string, locale: string) => string }
+  }
 }
 
 /**

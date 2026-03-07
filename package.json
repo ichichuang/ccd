@@ -1,6 +1,6 @@
 {
   "name": "app-template",
-  "version": "0.0.0",
+  "version": "1.0.0",
   "private": true,
   "type": "module",
   "author": "",
@@ -40,7 +40,9 @@
     "heal": "tsx scripts/drift-fix.ts",
     "drift-check": "node scripts/drift-check.mjs",
     "check:drift": "node scripts/drift-check.mjs",
-    "test": "vitest run",
+    "test": "vitest",
+    "test:run": "vitest run",
+    "test:coverage": "vitest run --coverage",
     "pre-commit": "pnpm type-check && pnpm drift-check",
     "commit": "git-cz",
     "prepare": "husky"

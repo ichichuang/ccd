@@ -119,7 +119,7 @@ function buildMessageApi() {
 
 onMounted(() => {
   if (typeof window !== 'undefined') {
-    window.$toast = buildToastApi()
+    window.$toast = buildToastApi() as typeof window.$toast
     window.$message = buildMessageApi()
   }
 })

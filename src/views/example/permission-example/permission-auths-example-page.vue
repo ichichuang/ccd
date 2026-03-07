@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { hasAuth } from '@/router/utils/common'
+import { hasAuth } from '@/router/utils/transform'
 
 const userStore = useUserStoreWithOut()
 

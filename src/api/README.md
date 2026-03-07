@@ -4,8 +4,9 @@
 
 ## 结构规范
 
-- 路径：`src/api/<module>/<feature>.ts`
+- 路径：`src/api/<domain>/<domain>.api.ts`、`src/api/<domain>/<domain>.dto.ts`（按业务领域划分）
 - 仅允许两级，禁止 `src/api/<module>/<subdir>/...`
+- 领域内：接口方法放在 `.api.ts`，类型/DTO 放在 `.dto.ts`
 
 ## 命名规范
 

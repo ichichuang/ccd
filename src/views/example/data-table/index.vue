@@ -1,15 +1,14 @@
 <script setup lang="tsx">
 import { createA4Columns, a4ApiConfig, A4_PAGE_SIZE, type PostItem } from './configs/a4ApiConfig'
-import { useTableDrawerStore } from '@/stores/modules/tableDrawer'
 import { DataTable as CDataTable } from '@/components/DataTable'
+import { useTableDrawerStore } from '@/stores/modules/tableDrawer'
+import { castRecord } from '@/utils/typeCasters'
 
 defineOptions({ name: 'DataTableExampleIndex' })
 
 const drawerStore = useTableDrawerStore()
 
-const columns = createA4Columns((row: PostItem) =>
-  drawerStore.openDrawer(row as unknown as Record<string, unknown>)
-)
+const columns = createA4Columns((row: PostItem) => drawerStore.openDrawer(castRecord(row)))
 
 function handleDrawerVisibleChange(v: boolean) {
   if (!v) drawerStore.closeDrawer()

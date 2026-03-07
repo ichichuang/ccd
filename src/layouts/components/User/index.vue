@@ -8,6 +8,7 @@ import { useUserStore } from '@/stores/modules/user'
 import defaultAvatar from '@/assets/images/default-avatar.jpeg'
 
 const { t } = useI18n()
+const router = useRouter()
 const userStore = useUserStore()
 
 const popoverRef = ref<InstanceType<typeof Popover> | null>(null)
@@ -34,6 +35,8 @@ const togglePanel = (event: MouseEvent) => {
 
 const onLogout = async () => {
   await userStore.logout()
+  popoverRef.value?.hide()
+  await router.push('/login')
 }
 </script>
 

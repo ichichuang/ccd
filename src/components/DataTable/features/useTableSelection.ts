@@ -4,6 +4,7 @@
  */
 
 import type { ComputedRef, Ref } from 'vue'
+import { castArray } from '@/utils/typeCasters'
 import type { DataTableProps } from '../utils/types'
 
 export interface UseTableSelectionOptions<T> {
@@ -198,8 +199,8 @@ export function useTableSelection<T extends object>(
   }
 
   const selectAll = () => {
-    const rows = filteredData.value as unknown as T[]
-    selectedRows.value = rows as unknown as T[]
+    const rows = castArray<unknown, T>(filteredData.value)
+    selectedRows.value = rows
     emitSelectedRows(rows)
   }
 

@@ -460,7 +460,7 @@ export const getCurrentRoute = (): RouteLocationNormalized => {
 /**
  * 获取当前路由的 Meta 信息
  */
-export const getCurrentRouteMeta = (): Record<string, any> => {
+export const getCurrentRouteMeta = (): Record<string, unknown> => {
   return router.currentRoute.value.meta || {}
 }
 

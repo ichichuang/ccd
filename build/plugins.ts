@@ -56,21 +56,10 @@ export function getPluginsList(env: ViteEnv, command: 'build' | 'serve'): Plugin
     // JSX/TSX 语法支持
     vueJsx(),
 
-    // 自动导入 API
+    // 自动导入 API（仅 hooks + stores，减少噪音；api/constants 需显式 import）
     AutoImport({
       imports: ['vue', 'vue-router', 'pinia', '@vueuse/core', { '@/locales': [['t', '$t']] }],
-      dirs: [
-        'src/stores/modules',
-        'src/hooks/**/*',
-        // API 目录采用扁平化两级：src/api/<module>/<feature>.ts
-        // 需要递归扫描，否则无法覆盖二级文件（例如 src/api/user/login.ts）
-        'src/api/**/*',
-        // 仅扫描 utils 顶层文件，避免递归扫描内部子目录（如 src/utils/http）
-        // HTTP 等基础库应通过显式 import 使用，防止自动导入产生重复导出告警
-        'src/utils',
-        'src/constants/*',
-        'src/components/CScrollbar',
-      ],
+      dirs: ['src/stores/modules', 'src/hooks/**/*'],
       dts: 'src/types/auto-imports.d.ts',
       eslintrc: {
         enabled: true,

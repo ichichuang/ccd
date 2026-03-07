@@ -29,15 +29,15 @@ export function deepClone<T>(obj: T): T {
 /**
  * 深度比较
  */
-export function deepEqual(value: any, other: any): boolean {
+export function deepEqual(value: unknown, other: unknown): boolean {
   return isEqual(value, other)
 }
 
 /**
  * 深度合并
  */
-export function deepMerge(object: any, ...sources: any[]): any {
-  return merge(object, ...sources)
+export function deepMerge(object: unknown, ...sources: unknown[]): unknown {
+  return merge(object as object, ...(sources as object[]))
 }
 
 /**
@@ -62,18 +62,18 @@ export function objectOmit<T extends object, K extends keyof T>(object: T, paths
  * 函数防抖
  * @note 组件内建议优先使用 useDebounceFn (VueUse)
  */
-export const debounceFn = debounce as (
-  func: (...args: any[]) => any,
+export const debounceFn = debounce as <T extends unknown[], R>(
+  func: (...args: T) => R,
   wait?: number,
-  options?: any
-) => (...args: any[]) => any
+  options?: { leading?: boolean; trailing?: boolean; maxWait?: number }
+) => (...args: T) => R
 
 /**
  * 函数节流
  * @note 组件内建议优先使用 useThrottleFn (VueUse)
  */
-export const throttleFn = throttle as (
-  func: (...args: any[]) => any,
+export const throttleFn = throttle as <T extends unknown[], R>(
+  func: (...args: T) => R,
   wait?: number,
-  options?: any
-) => (...args: any[]) => any
+  options?: { leading?: boolean; trailing?: boolean }
+) => (...args: T) => R

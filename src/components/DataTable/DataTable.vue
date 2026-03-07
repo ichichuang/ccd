@@ -11,8 +11,11 @@
  * - useTableLayout：布局、尺寸、滚动、列宽与 footer 对齐
  */
 import PvDataTable from 'primevue/datatable'
-import Paginator from 'primevue/paginator'
-import BodyCellRenderer from './BodyCellRenderer'
+import DataTableCell from './render/DataTableCell.vue'
+import DataTableEditor from './render/DataTableEditor.vue'
+import DataTableFilter from './render/DataTableFilter.vue'
+import DataTablePagination from './render/DataTablePagination.vue'
+import DataTableToolbar from './render/DataTableToolbar.vue'
 import RenderFn from './RenderFn'
 import { DEFAULT_PAGINATOR_CONFIG, TABLE_SELECTION_COLUMN_WIDTH_PX } from './utils/constants'
 import { getColumnHeader } from './utils/helper'
@@ -24,12 +27,13 @@ import type {
   PaginationState,
   SortMeta,
 } from './utils/types'
-import { useTableData } from './composables/useTableData'
-import { useTableSelection } from './composables/useTableSelection'
-import { useTableExport } from './composables/useTableExport'
-import { useTableLayout } from './composables/useTableLayout'
+import { useTableData } from './core/useTableData'
+import { useTableLayout } from './core/useTableLayout'
+import { useTableSelection } from './features/useTableSelection'
+import { useTableExport } from './features/useTableExport'
 import { useTablePersistence } from '@/hooks/modules/useTablePersistence'
 import { useLocale } from '@/hooks/modules/useLocale'
+import { castArray, castValue } from '@/utils/typeCasters'
 import { useSizeStore } from '@/stores/modules/size'
 import { useMitt } from '@/utils/mitt'
 import { FONT_SCALE_RATIOS, SPACING_SCALE_RATIOS } from '@/constants/sizeScale'
@@ -175,10 +179,12 @@ const {
   filteredData,
   dataToRender,
   // 通过类型断言将 Vue emit 缩窄为 useTableSelection 所需的子集签名
-  emit: emit as unknown as (
-    e: 'update:selectedRows' | 'row-select' | 'row-unselect' | 'row-click',
-    payload: unknown
-  ) => void,
+  emit: castValue<
+    (
+      e: 'update:selectedRows' | 'row-select' | 'row-unselect' | 'row-click',
+      payload: unknown
+    ) => void
+  >(emit),
 })
 
 // ─── Composable: Export ───
@@ -253,7 +259,7 @@ const isRowExpanded = (row: T): boolean => {
   }
 
   if (Array.isArray(current)) {
-    const arr = current as unknown as T[]
+    const arr = castArray<unknown, T>(current)
     return arr.includes(row)
   }
 
@@ -284,13 +290,13 @@ const toggleRowExpansion = (row: T): void => {
   } else {
     // Fallback to array mode if no idField
     if (!Array.isArray(current)) {
-      expandedRows.value = [row] as unknown as T[] | Record<string, boolean>
+      expandedRows.value = castValue<T[] | Record<string, boolean>>([row])
       return
     }
-    const arr = current as unknown as T[]
+    const arr = castArray<unknown, T>(current)
     const exists = arr.includes(row)
     const next = exists ? (arr.filter(r => r !== row) as T[]) : ([...arr, row] as T[])
-    expandedRows.value = next as unknown as T[] | Record<string, boolean>
+    expandedRows.value = castValue<T[] | Record<string, boolean>>(next)
   }
 }
 
@@ -789,6 +795,14 @@ const resolveBodyStyle = (col: DataTableColumn<T>, data: T) => {
   }
   return col.bodyStyle
 }
+
+/** 类型桥接：供 DataTableEditor 使用的 editorRenderer，避免泛型 T 与 object 不兼容 */
+const getEditorRendererForSlot = (col: DataTableColumn<T>) =>
+  col.editorRenderer as (params: {
+    data: object
+    value: unknown
+    field: string
+  }) => import('vue').VNode | string
 </script>
 <template>
   <div class="relative w-full h-full">
@@ -803,12 +817,22 @@ const resolveBodyStyle = (col: DataTableColumn<T>, data: T) => {
       :style="containerStyle"
       @click.capture="handleTableWrapperClick"
     >
-      <div
+      <DataTableToolbar
         v-if="showHeaderComputed"
-        class="c-data-table-header flex justify-between items-center gap-sm px-padding-md py-padding-sm"
+        :global-filter="props.globalFilter"
+        :search-value="searchInputValue"
+        :search-placeholder="String($t('common.searchPlaceholder'))"
+        :exportable="props.exportable"
+        :export-label="$t('common.export')"
+        :show-refresh="showRefreshButton"
+        :refresh-label="$t('common.refresh')"
+        :loading="loading"
+        @update:search-value="handleGlobalFilterChange"
+        @refresh="refresh"
+        @export="handleExport"
+        @clear-filters="clearFilters"
       >
-        <!-- Full Override Header -->
-        <template v-if="$slots.header">
+        <template #header>
           <slot
             name="header"
             :data="sourceData"
@@ -816,80 +840,23 @@ const resolveBodyStyle = (col: DataTableColumn<T>, data: T) => {
             :pagination="paginationState"
           />
         </template>
-        <template v-else>
-          <div class="flex-1 flex items-center gap-md">
-            <slot
-              name="header-left"
-              :data="sourceData"
-              :loading="loading"
-              :pagination="paginationState"
-            />
-          </div>
-          <div class="flex gap-md items-center fs-md">
-            <slot
-              name="header-right"
-              :data="sourceData"
-              :loading="loading"
-              :pagination="paginationState"
-            />
-            <IconField
-              v-if="props.globalFilter"
-              class="flex items-center"
-            >
-              <InputIcon>
-                <Icons
-                  name="i-lucide-search"
-                  size="sm"
-                />
-              </InputIcon>
-              <InputText
-                :model-value="searchInputValue"
-                :placeholder="String($t('common.searchPlaceholder'))"
-                class="min-w-[var(--spacing-4xl)] sm:min-w-[var(--spacing-5xl)] max-w-full"
-                @update:model-value="handleGlobalFilterChange"
-              />
-              <span
-                v-if="searchInputValue"
-                class="cursor-pointer inline-flex"
-                @click="clearFilters"
-              >
-                <InputIcon>
-                  <Icons
-                    name="i-lucide-x"
-                    size="sm"
-                  />
-                </InputIcon>
-              </span>
-            </IconField>
-            <Button
-              v-if="props.exportable"
-              severity="secondary"
-              size="small"
-              class="gap-sm"
-              @click="handleExport('csv')"
-            >
-              <Icons
-                name="i-lucide-download"
-                size="sm"
-              />
-              <span>{{ $t('common.export') }}</span>
-            </Button>
-            <Button
-              v-if="showRefreshButton"
-              severity="secondary"
-              size="small"
-              class="gap-sm"
-              @click="refresh"
-            >
-              <Icons
-                name="i-lucide-refresh-cw"
-                size="sm"
-              />
-              <span>{{ $t('common.refresh') }}</span>
-            </Button>
-          </div>
+        <template #header-left>
+          <slot
+            name="header-left"
+            :data="sourceData"
+            :loading="loading"
+            :pagination="paginationState"
+          />
         </template>
-      </div>
+        <template #header-right>
+          <slot
+            name="header-right"
+            :data="sourceData"
+            :loading="loading"
+            :pagination="paginationState"
+          />
+        </template>
+      </DataTableToolbar>
 
       <!-- PrimeVue DataTable：multiple 模式下仅用 multiSortMeta，single 模式用 sortField/sortOrder -->
       <PvDataTable
@@ -1067,79 +1034,55 @@ const resolveBodyStyle = (col: DataTableColumn<T>, data: T) => {
             v-if="col.filterRenderer"
             #filter="{ filterModel, filterCallback }"
           >
-            <component
-              :is="
-                filterModel
-                  ? col.filterRenderer!({
-                      filterModel,
-                      filterCallback: wrapFilterCallback(col, filterModel, filterCallback),
-                    })
-                  : null
-              "
+            <DataTableFilter
+              :filter-model="filterModel"
+              :filter-callback="wrapFilterCallback(col, filterModel, filterCallback)"
+              :column="getColumnForBody(col)"
             />
           </template>
-          <!-- 情况 1：expander + expanderBody，自绘展开单元格 -->
+          <!-- body 槽：expander+expanderBody 与普通列统一由 DataTableCell 渲染 -->
           <template
             v-if="col.expander && col.expanderBody"
             #body="{ data }"
           >
-            <BodyCellRenderer
-              :body-fn="
-                row =>
-                  col.expanderBody!(row as T, col, {
-                    isExpanded: isRowExpanded(row as T),
-                    toggle: () => toggleRowExpansion(row as T),
-                  })
-              "
-              :row-data="data"
+            <DataTableCell
+              :row-data="data as Record<string, unknown>"
               :column="getColumnForBody(col)"
+              :content-align="col.align ?? props.contentAlign ?? 'left'"
+              :body-class="resolveBodyClass(col, data)"
+              :body-style="resolveBodyStyle(col, data)"
+              :cell-value="getCellValue(data, col.field)"
+              :is-expander-with-body="true"
+              :is-expanded="isRowExpanded(data)"
+              :on-toggle="() => toggleRowExpansion(data)"
             />
           </template>
-          <!-- 情况 2：普通列，使用通用 body 渲染 -->
           <template
             v-else-if="!col.expander"
             #body="{ data }"
           >
-            <div
-              class="w-full h-full flex items-center"
-              :class="resolveBodyClass(col, data)"
-              :style="{
-                ...resolveBodyStyle(col, data),
-                justifyContent:
-                  (col.align ?? props.contentAlign) === 'center'
-                    ? 'center'
-                    : (col.align ?? props.contentAlign) === 'right'
-                      ? 'flex-end'
-                      : 'flex-start',
-              }"
-            >
-              <BodyCellRenderer
-                v-if="col.body"
-                :body-fn="getBodyFn(col)"
-                :row-data="data"
-                :column="getColumnForBody(col)"
-              />
-              <template v-else>
-                {{ getCellValue(data, col.field) }}
-              </template>
-            </div>
+            <DataTableCell
+              :row-data="data as Record<string, unknown>"
+              :column="getColumnForBody(col)"
+              :content-align="col.align ?? props.contentAlign ?? 'left'"
+              :body-class="resolveBodyClass(col, data)"
+              :body-style="resolveBodyStyle(col, data)"
+              :cell-value="getCellValue(data, col.field)"
+              :body-fn="col.body ? getBodyFn(col) : undefined"
+            />
           </template>
 
           <template
             v-if="col.editorRenderer"
             #editor="{ data, field }"
           >
-            <div
-              class="w-full h-full min-w-0 max-h-full overflow-hidden flex items-center"
-              @keydown.enter.capture.prevent="handleEditorKeydownEnter"
-            >
-              <component
-                :is="col.editorRenderer"
-                :data="data"
-                :value="getCellValue(data, field)"
-                :field="field"
-              />
-            </div>
+            <DataTableEditor
+              :data="data as Record<string, unknown>"
+              :value="getCellValue(data, field)"
+              :field="field"
+              :editor-renderer="getEditorRendererForSlot(col)"
+              @enter="handleEditorKeydownEnter"
+            />
           </template>
           <!-- 情况 3：纯 expander 列且没有 expanderBody，交给 PrimeVue 默认行为，不渲染 body -->
         </Column>
@@ -1251,22 +1194,17 @@ const resolveBodyStyle = (col: DataTableColumn<T>, data: T) => {
         </template>
       </div>
 
-      <!-- External Paginator -->
-      <div
+      <DataTablePagination
         v-if="props.pagination"
-        class="border-t-default bg-card rounded-b-[var(--radius-md)]"
-      >
-        <Paginator
-          :rows="paginationState.rows"
-          :first="paginationState.first"
-          :total-records="paginationState.totalRecords"
-          :rows-per-page-options="
-            paginatorConfig?.rowsPerPageOptions ?? DEFAULT_PAGINATOR_CONFIG.rowsPerPageOptions
-          "
-          :template="paginatorConfig?.template ?? DEFAULT_PAGINATOR_CONFIG.template"
-          @page="handlePageChange"
-        />
-      </div>
+        :rows="paginationState.rows"
+        :first="paginationState.first"
+        :total-records="paginationState.totalRecords ?? 0"
+        :rows-per-page-options="
+          paginatorConfig?.rowsPerPageOptions ?? DEFAULT_PAGINATOR_CONFIG.rowsPerPageOptions
+        "
+        :template="paginatorConfig?.template ?? DEFAULT_PAGINATOR_CONFIG.template"
+        @page="handlePageChange"
+      />
     </div>
   </div>
 </template>

@@ -1,3 +1,4 @@
+import { parseSafeObject } from '@/adapters/http.adapter'
 import { packDataSync, unpackDataSync } from './core'
 
 /**
@@ -19,9 +20,11 @@ export const createPiniaEncryptedSerializer = (secret?: string) => {
 
     /**
      * 反序列化：解密并解压缩数据
-     * 流程：AES 解密 → LZ-String(Base64) 解压 → JSON.parse
-     * 简单降级：若解包失败，尝试直接 JSON.parse
+     * 流程：AES 解密 → LZ-String(Base64) 解压 → 经 Type Boundary 校验后返回
+     * 简单降级：若解包失败，尝试直接 JSON.parse，再经 parseSafeObject 校验
+     * Pinia persist 插件要求反序列化返回 any，否则会破坏 store 类型推断；any 仅在此边界使用。
      */
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     deserialize: (value: string): any => {
       if (!value || typeof value !== 'string' || value.trim() === '') {
         if (import.meta.env.DEV) {
@@ -30,10 +33,10 @@ export const createPiniaEncryptedSerializer = (secret?: string) => {
         return undefined
       }
 
-      // 1. 标准解密解压流程
+      // 1. 标准解密解压流程，经边界校验后返回
       const result = secret ? unpackDataSync(value, secret) : unpackDataSync(value)
       if (result !== null) {
-        return result
+        return parseSafeObject(result, {})
       }
 
       if (import.meta.env.DEV) {
@@ -43,12 +46,13 @@ export const createPiniaEncryptedSerializer = (secret?: string) => {
         )
       }
 
-      // 2. 降级：尝试直接解析 JSON（开发阶段未加密或旧数据）
+      // 2. 降级：尝试直接解析 JSON，经 Type Boundary 校验后返回
       try {
-        return JSON.parse(value)
+        const parsed = JSON.parse(value)
+        return parseSafeObject(parsed, {})
       } catch {
-        // 3. 彻底失败：返回 undefined，Pinia 使用初始状态
-        return undefined
+        // 3. 彻底失败：返回空对象，Pinia 使用初始状态
+        return {}
       }
     },
   }

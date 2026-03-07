@@ -14,6 +14,7 @@ import type {
 } from '@/components/DataTable'
 import { DataTable as CDataTable } from '@/components/DataTable'
 import type { DataTableUserPreferences, TableSizeConfig } from '@/components/DataTable/utils/types'
+import { castArray, castColumns, castRecord } from '@/utils/typeCasters'
 import { basicColumns, basicData } from './configs/basicTableConfig.tsx'
 import { apiTableColumns, apiTableConfig } from './configs/apiTableConfig'
 import { infiniteTableColumns, infiniteTableConfig } from './configs/infiniteTableConfig'
@@ -164,8 +165,8 @@ const tableInstanceType = ref<string | null>(null)
 const tableAdvancedPreferences = ref<DataTableUserPreferences | null>(null)
 
 /** 5.4 style Tab：带 headerRenderer 的列配置（Name 列使用 TSX 自定义表头） */
-const styleColumnsWithHeaderRenderer = computed<DataTableColumn<object>[]>(
-  () =>
+const styleColumnsWithHeaderRenderer = computed<DataTableColumn<object>[]>(() =>
+  castColumns<DataTableColumn<object>>(
     (styleColumns as DataTableColumn<StyleProduct>[]).map(col =>
       col.field === 'name'
         ? {
@@ -177,31 +178,30 @@ const styleColumnsWithHeaderRenderer = computed<DataTableColumn<object>[]>(
             ),
           }
         : col
-    ) as unknown as DataTableColumn<object>[]
-) as import('vue').ComputedRef<DataTableColumn<object>[]>
+    )
+  )
+)
 
 /** 当前 Tab 对应的列配置 */
 const currentColumns = computed<DataTableColumn<object>[]>(() => {
   switch (activeTab.value) {
     case 'basic':
-      return basicColumns as unknown as DataTableColumn<object>[]
+      return castColumns<DataTableColumn<object>>(basicColumns)
     case 'api':
-      return apiTableColumns as unknown as DataTableColumn<object>[]
+      return castColumns<DataTableColumn<object>>(apiTableColumns)
     case 'infinite':
-      return infiniteTableColumns as unknown as DataTableColumn<object>[]
+      return castColumns<DataTableColumn<object>>(infiniteTableColumns)
     case 'filterSort':
-      return customColumns as unknown as DataTableColumn<object>[]
     case 'editing':
-      return customColumns as unknown as DataTableColumn<object>[]
+      return castColumns<DataTableColumn<object>>(customColumns)
     case 'grouping':
-      return complexColumns as unknown as DataTableColumn<object>[]
-
+      return castColumns<DataTableColumn<object>>(complexColumns)
     case 'style':
       return styleColumnsWithHeaderRenderer.value
     case 'expose':
-      return basicColumns as unknown as DataTableColumn<object>[]
+      return castColumns<DataTableColumn<object>>(basicColumns)
     default:
-      return basicColumns as unknown as DataTableColumn<object>[]
+      return castColumns<DataTableColumn<object>>(basicColumns)
   }
 })
 
@@ -214,16 +214,15 @@ const currentData = computed<object[]>(() => {
     case 'basic':
       return basicDataCleared.value ? [] : basicData
     case 'filterSort':
-      return customData as unknown as object[]
+      return castArray<SubscriptionRecord, object>(customData)
     case 'editing':
-      return editingData.value as unknown as object[]
+      return castArray<SubscriptionRecord, object>(editingData.value)
     case 'grouping':
-      return complexData as unknown as object[]
-
+      return castArray<unknown, object>(complexData)
     case 'style':
-      return styleData as unknown as object[]
+      return castArray<StyleProduct, object>(styleData)
     case 'expose':
-      return basicData as unknown as object[]
+      return castArray<unknown, object>(basicData)
     default:
       return []
   }
@@ -758,7 +757,7 @@ function handleCellEditComplete(event: unknown): void {
       const updated: SubscriptionRecord[] = editingData.value.map((item: SubscriptionRecord) => ({
         ...item,
       }))
-      const row = updated[idx] as unknown as Record<string, unknown>
+      const row = castRecord(updated[idx])
       if (row) row[e.field] = e.newValue
 
       // 单格编辑成功后，执行对应列的 onEditUpdate 逻辑（如计算总价）

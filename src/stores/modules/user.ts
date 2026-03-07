@@ -5,8 +5,8 @@ import { usePermissionStore } from '@/stores/modules/permission'
 import { createPiniaEncryptedSerializer } from '@/utils/safeStorage/piniaSerializer'
 import { encryptAndCompressSync } from '@/utils/safeStorage/safeStorage'
 import { defineStore } from 'pinia'
-import { requestAuthCurrentUserMock, requestAuthLoginMock } from '@/api/modules/auth'
-import type { LoginParams, UserInfo } from '@/api/types/auth'
+import { requestAuthCurrentUserMock, requestAuthLoginMock } from '@/api/auth/auth.api'
+import type { LoginParams, UserInfo } from '@/types/dto/auth.dto'
 
 interface UserState {
   token: string
@@ -114,14 +114,15 @@ export const useUserStore = defineStore('user', {
       }
       this.isLogin = false
     },
+    /**
+     * 仅做状态清理，不包含 UI 副作用或导航。
+     * 刷新/跳转由调用方负责（如 main.ts 的 setOnUnauthorized、User 组件的退出按钮、路由守卫）。
+     */
     async logout() {
       if (!AUTH_ENABLED) {
         return
       }
-      const { loadingStart } = useLoading()
-      loadingStart()
       this.clearUserInfo()
-      // 先重置 layout、permission，避免 reload 时持久化插件把旧状态再次写入 localStorage
       useLayoutStore(store).resetSetting()
       usePermissionStore(store).reset()
       const basePrefix = `${import.meta.env.VITE_PINIA_PERSIST_KEY_PREFIX}-`
@@ -145,12 +146,9 @@ export const useUserStore = defineStore('user', {
         }
       }
 
-      // 统一清理后仅触发一次 reload，避免潜在的多次刷新风险
       for (const key of keysToRemove) {
         localStorage.removeItem(key)
       }
-      await new Promise(resolve => setTimeout(resolve, 300)) // 等待路由跳转完成
-      window.location.reload()
     },
   },
 

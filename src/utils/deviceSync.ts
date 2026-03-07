@@ -29,7 +29,7 @@ export function getDeviceTypeSync(): DeviceType {
 export function getBreakpointSync(width?: number): BreakpointKey {
   if (typeof window === 'undefined') return 'xs'
   const w = width ?? window.innerWidth
-  const bps = Object.entries(BREAKPOINTS).sort((a, b) => b[1] - a[1])
+  const bps = [...Object.entries(BREAKPOINTS)].sort((a, b) => b[1] - a[1])
   const match = bps.find(([, val]) => w >= val)
   return (match ? match[0] : 'xs') as BreakpointKey
 }

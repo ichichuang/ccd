@@ -55,7 +55,7 @@ export const alovaInstance = createAlova({
   // FIX: 全局禁用 Alova 的默认缓存
   // 因为我们在 methods.ts 中已经封装了自定义的 EnhancedCache
   // 这里设置为 null 可以防止双重缓存和刷新失效的问题
-  localCache: null as any,
+  localCache: null,
 
   // 全局请求拦截器
   beforeRequest,
@@ -65,7 +65,7 @@ export const alovaInstance = createAlova({
 
   // 全局超时时间 (毫秒)
   timeout: HTTP_CONFIG.timeout,
-} as any)
+} as Parameters<typeof createAlova>[0])
 
 // 验证配置
 validateAlovaConfig()

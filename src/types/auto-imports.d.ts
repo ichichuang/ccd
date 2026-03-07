@@ -100,6 +100,11 @@ declare global {
   const autoResetRef: typeof import('@vueuse/core').autoResetRef
   const brand: typeof import('../constants/brand').brand
   const calculatePageTitle: typeof import('../hooks/layout/usePageTitle').calculatePageTitle
+  const castArray: typeof import('../utils/typeCasters').castArray
+  const castColumn: typeof import('../utils/typeCasters').castColumn
+  const castColumns: typeof import('../utils/typeCasters').castColumns
+  const castRecord: typeof import('../utils/typeCasters').castRecord
+  const castValue: typeof import('../utils/typeCasters').castValue
   const computed: typeof import('vue').computed
   const computedAsync: typeof import('@vueuse/core').computedAsync
   const computedEager: typeof import('@vueuse/core').computedEager
@@ -214,14 +219,14 @@ declare global {
   const refDefault: typeof import('@vueuse/core').refDefault
   const refThrottled: typeof import('@vueuse/core').refThrottled
   const refWithControl: typeof import('@vueuse/core').refWithControl
-  const requestAuthCurrentUser: typeof import('../api/modules/auth').requestAuthCurrentUser
-  const requestAuthCurrentUserMock: typeof import('../api/modules/auth').requestAuthCurrentUserMock
-  const requestAuthLogin: typeof import('../api/modules/auth').requestAuthLogin
-  const requestAuthLoginMock: typeof import('../api/modules/auth').requestAuthLoginMock
+  const requestAuthCurrentUser: typeof import('../api/auth/auth.api').requestAuthCurrentUser
+  const requestAuthCurrentUserMock: typeof import('../api/auth/auth.api').requestAuthCurrentUserMock
+  const requestAuthLogin: typeof import('../api/auth/auth.api').requestAuthLogin
+  const requestAuthLoginMock: typeof import('../api/auth/auth.api').requestAuthLoginMock
   const requestCurrentUserMock: typeof import('../api/user/login').requestCurrentUserMock
-  const requestSystemAsyncRoutes: typeof import('../api/modules/system').requestSystemAsyncRoutes
-  const requestSystemAsyncRoutesMock: typeof import('../api/modules/system').requestSystemAsyncRoutesMock
-  const requestSystemAsyncRoutesReal: typeof import('../api/modules/system').requestSystemAsyncRoutesReal
+  const requestSystemAsyncRoutes: typeof import('../api/system/system.api').requestSystemAsyncRoutes
+  const requestSystemAsyncRoutesMock: typeof import('../api/system/system.api').requestSystemAsyncRoutesMock
+  const requestSystemAsyncRoutesReal: typeof import('../api/system/system.api').requestSystemAsyncRoutesReal
   const requestUserLoginMock: typeof import('../api/user/login').requestUserLoginMock
   const resolveComponent: typeof import('vue').resolveComponent
   const resolveRef: typeof import('@vueuse/core').resolveRef
@@ -514,28 +519,4 @@ declare global {
   // @ts-ignore
   export type { UseTablePersistenceReturn } from '../hooks/modules/useTablePersistence'
   import('../hooks/modules/useTablePersistence')
-  // @ts-ignore
-  export type { UserInfo, LoginParams, LoginResult } from '../api/types/auth'
-  import('../api/types/auth')
-  // @ts-ignore
-  export type { SystemAsyncRouteItem, SystemAsyncRoutesRawRes } from '../api/types/system'
-  import('../api/types/system')
-  // @ts-ignore
-  export type { UserDetailResDTO } from '../api/user/types'
-  import('../api/user/types')
-  // @ts-ignore
-  export type { Events } from '../utils/mitt'
-  import('../utils/mitt')
-  // @ts-ignore
-  export type { Brand } from '../constants/brand'
-  import('../constants/brand')
-  // @ts-ignore
-  export type { BreakpointKey } from '../constants/breakpoints'
-  import('../constants/breakpoints')
-  // @ts-ignore
-  export type { SizeScaleKey } from '../constants/sizeScale'
-  import('../constants/sizeScale')
-  // @ts-ignore
-  export type { ScrollbarVisibility, ScrollbarProps, ScrollbarInstance, ScrollbarEventMap, OnUpdatedEventListenerArgs } from '../components/CScrollbar/utils/types'
-  import('../components/CScrollbar/utils/types')
 }

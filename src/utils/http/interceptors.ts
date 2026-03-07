@@ -1,6 +1,6 @@
 import { HTTP_CONFIG } from '@/constants/http'
 import { AUTH_ENABLED } from '@/constants/router'
-import { useUserStoreWithOut } from '@/stores/modules/user'
+import { getToken, triggerUnauthorized } from '@/infra/auth/tokenProvider'
 import { decompressAndDecryptSync, encryptAndCompressSync } from '@/utils/safeStorage'
 import type { Method } from 'alova'
 import { ErrorType, HttpRequestError } from './errors'
@@ -9,14 +9,14 @@ import { ErrorType, HttpRequestError } from './errors'
  * 安全检查和数据清理
  */
 function sanitizeData(
-  data: any,
+  data: unknown,
   sensitiveFields: string[] = [...HTTP_CONFIG.sensitiveFields]
-): any {
+): unknown {
   if (!data || typeof data !== 'object') {
     return data
   }
 
-  const sanitized = { ...data }
+  const sanitized = { ...(data as Record<string, unknown>) }
 
   // 清理敏感字段
   sensitiveFields.forEach(field => {
@@ -34,12 +34,12 @@ function sanitizeData(
  * @param data 请求数据对象
  * @returns 处理后的数据对象
  */
-export const processRequestData = <T extends Record<string, any>>(data: T): T => {
+export const processRequestData = <T extends Record<string, unknown>>(data: T): T => {
   // 检查是否存在 isSafeStorage 且为 true
   if (data && typeof data === 'object' && data.isSafeStorage === true) {
     try {
       // 创建新对象，保持原有key，只加密value
-      const encryptedData: Record<string, any> = {
+      const encryptedData: Record<string, unknown> = {
         isSafeStorage: true,
       }
 
@@ -86,11 +86,10 @@ export const beforeRequest = (method: Method) => {
     // TODO: method.config.headers['X-Request-Signature'] = signRequest(method)
   }
 
-  // 添加认证头
-  const userStore = useUserStoreWithOut()
-  const token = userStore.getToken
+  // 添加认证头（通过 TokenProvider 获取，不依赖 Store）
+  const token = getToken()
 
-  if (AUTH_ENABLED && token && token.trim()) {
+  if (AUTH_ENABLED && token && String(token).trim()) {
     method.config.headers['Authorization'] = `Bearer ${token}`
   } else {
     delete method.config.headers['Authorization']
@@ -99,15 +98,21 @@ export const beforeRequest = (method: Method) => {
   // 数据脱敏处理（在加密之前进行，因为加密后的数据不需要脱敏）
   if (!method.url.startsWith('/')) {
     if (method.config.security?.sensitiveFields) {
-      method.data = sanitizeData(method.data, method.config.security.sensitiveFields)
+      // Alova Method.data 边界：sanitizeData 返回 unknown，需桥接
+      method.data = sanitizeData(
+        method.data,
+        method.config.security.sensitiveFields
+      ) as typeof method.data
     } else {
-      method.data = sanitizeData(method.data, [...HTTP_CONFIG.sensitiveFields])
+      method.data = sanitizeData(method.data, [
+        ...HTTP_CONFIG.sensitiveFields,
+      ]) as typeof method.data
     }
   }
 
   // 检查请求数据是否需要加密（在脱敏之后进行）
   if (method.data && typeof method.data === 'object') {
-    method.data = processRequestData(method.data)
+    method.data = processRequestData(method.data as Record<string, unknown>) as typeof method.data
   }
 }
 
@@ -148,14 +153,14 @@ export const responseHandler = async (response: Response, method: Method) => {
       method.config?.responseType === 'blob' ||
       contentType?.includes('application/octet-stream') ||
       contentType?.includes('application/force-download') ||
-      method.config?.['responseType'] === 'blob' // 兼容不同的配置方式
+      (method.config as Record<string, unknown>)?.['responseType'] === 'blob' // 兼容不同的配置方式
 
     // 如果是 blob 响应，直接返回 blob
     if (isBlobResponse) {
       // 先检查 HTTP 状态码错误
       if (!response.ok) {
         // 尝试读取错误信息（可能是 JSON）
-        let errorData: any
+        let errorData: { message?: string }
         try {
           const text = await response.text()
           try {
@@ -187,11 +192,11 @@ export const responseHandler = async (response: Response, method: Method) => {
 
     // 文本优先策略：优先获取文本，然后尝试解析 JSON
     const text = await response.text()
-    let json: any = null
+    let json: Record<string, unknown> | null = null
 
     // 尝试解析 JSON
     try {
-      json = JSON.parse(text)
+      json = JSON.parse(text) as Record<string, unknown>
     } catch {
       json = null
     }
@@ -205,7 +210,7 @@ export const responseHandler = async (response: Response, method: Method) => {
 
         handleHttpError(response.status, json)
         throw new HttpRequestError(
-          json?.message || `HTTP ${response.status}`,
+          String(json?.message ?? `HTTP ${response.status}`),
           errorType,
           response.status,
           response.statusText,
@@ -217,7 +222,7 @@ export const responseHandler = async (response: Response, method: Method) => {
       // server 使用 success 字段而不是 code
       if (json.success === false) {
         throw new HttpRequestError(
-          json.message || $t('http.error.requestFailed'),
+          String(json.message ?? $t('http.error.requestFailed')),
           ErrorType.SERVER,
           response.status,
           response.statusText,
@@ -235,22 +240,23 @@ export const responseHandler = async (response: Response, method: Method) => {
         if (
           responseData &&
           typeof responseData === 'object' &&
-          responseData.isSafeStorage === true
+          (responseData as Record<string, unknown>).isSafeStorage === true
         ) {
           try {
             // 创建新对象，保持原有key，只解密value
-            const decryptedData: Record<string, any> = {}
+            const decryptedData: Record<string, unknown> = {}
+            const responseDataObj = responseData as Record<string, unknown>
 
             // 遍历所有字段，解密每个字段的值（除了 isSafeStorage）
-            for (const key in responseData) {
+            for (const key in responseDataObj) {
               if (
                 key !== 'isSafeStorage' &&
-                Object.prototype.hasOwnProperty.call(responseData, key)
+                Object.prototype.hasOwnProperty.call(responseDataObj, key)
               ) {
-                const value = responseData[key]
+                const value = responseDataObj[key]
                 // 如果值是字符串，尝试解密
                 if (typeof value === 'string' && value) {
-                  const decrypted = decompressAndDecryptSync<any>(value)
+                  const decrypted = decompressAndDecryptSync<unknown>(value)
                   if (decrypted !== null) {
                     decryptedData[key] = decrypted
                   } else {
@@ -265,7 +271,7 @@ export const responseHandler = async (response: Response, method: Method) => {
             }
 
             // 使用解密后的数据替换原始数据
-            responseData = decryptedData
+            responseData = decryptedData as typeof responseData
           } catch (error) {
             console.error('[ResponseHandler] 解密响应数据失败:', error)
             // 解密失败时返回原始数据
@@ -411,7 +417,7 @@ function getErrorTypeByStatus(status: number): ErrorType {
 /**
  * 处理 HTTP 状态码错误
  */
-const handleHttpError = (status: number, data: any) => {
+const handleHttpError = (status: number, data: { message?: string } | undefined) => {
   const errorMessage = data?.message || $t('http.error.httpError', { status })
   let statusMessage = `HTTP ${status}`
 
@@ -422,10 +428,10 @@ const handleHttpError = (status: number, data: any) => {
       console.warn('请求错误')
       break
     case 401:
-      // 处理未授权错误
+      // 处理未授权错误（由应用入口注入的 onUnauthorized 执行 logout，此处不依赖 Store）
       statusMessage = $t('http.error.unauthorized')
       if (AUTH_ENABLED) {
-        useUserStoreWithOut().logout()
+        triggerUnauthorized()
       }
       break
     case 403:

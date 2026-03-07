@@ -7,6 +7,7 @@ import type {
   DataTableApiResult,
   DataTableColumn,
 } from '@/types/data-table'
+import { castColumn, castValue } from '@/utils/typeCasters'
 
 const props = withDefaults(
   defineProps<{
@@ -67,9 +68,9 @@ function getCellValue(row: object, field: string): unknown {
 // --- Template Type Helpers ---
 // 强制转换为子组件期望的 object 边界，解决泛型逆变(Contravariance)报错
 const getSafeRender = (col: DataTableColumn<T>) =>
-  col.render as unknown as NonNullable<DataTableColumn<object>['render']>
+  castValue<NonNullable<DataTableColumn<object>['render']>>(col.render)
 const getSafeRow = (data: unknown) => data as object
-const getSafeColumn = (col: unknown) => col as unknown as DataTableColumn<object>
+const getSafeColumn = (col: unknown) => castColumn<DataTableColumn<object>>(col)
 const getSafeField = (col: DataTableColumn<T>) => (col.field as string) || ''
 
 function shouldShowAction(action: DataTableAction<T>, row: T): boolean {

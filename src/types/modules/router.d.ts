@@ -1,8 +1,21 @@
 import 'vue-router'
 
+/** 应用路由元信息基础接口（严格类型策略） */
+export interface AppRouteMeta {
+  title?: string
+  icon?: string
+  hidden?: boolean
+  keepAlive?: boolean
+  requiresAuth?: boolean
+  roles?: string[]
+  rank?: number
+  /** 布局父级标识（如 admin / fullscreen / ratio） */
+  parent?: string
+}
+
 // 扩展 Vue Router 的 RouteMeta 接口
 declare module 'vue-router' {
-  interface RouteMeta {
+  interface RouteMeta extends AppRouteMeta {
     /** 页面标题（优先使用 titleKey） */
     title?: string
     /** 页面标题国际化 key（首选） */

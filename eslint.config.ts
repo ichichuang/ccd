@@ -246,7 +246,7 @@ export default tseslint.config(
     files: ['**/*.{ts,mts,tsx}'],
     rules: {
       'no-unused-vars': 'off',
-      '@typescript-eslint/no-explicit-any': 'off',
+      '@typescript-eslint/no-explicit-any': 'error',
       '@typescript-eslint/ban-ts-comment': 'off', // 允许 @ts-ignore 等，解决 components.d.ts 的报错
 
       // ✅ 核心修改：全面忽略所有以 _ 开头的未使用变量、参数和错误捕获
@@ -271,13 +271,38 @@ export default tseslint.config(
     files: ['**/*.vue'],
     rules: {
       '@typescript-eslint/no-unused-vars': 'off',
-      '@typescript-eslint/no-explicit-any': 'off',
+      '@typescript-eslint/no-explicit-any': 'error',
       'no-undef': 'off',
       'vue/script-setup-uses-vars': 'error',
 
       // ✅ 核心修改：放宽组件命名限制
       // 理由：设计系统和自动生成组件中，index.vue 或单词组件名很常见
       'vue/multi-word-component-names': 'off',
+    },
+  },
+
+  // 8.3 基础设施边界：全局 no-explicit-any 为 error；目标白名单仅保留 typeCasters / adapters / http，其余边界待迁移为 unknown 后移除
+  {
+    name: 'app/no-explicit-any-infra-overrides',
+    files: [
+      'src/utils/typeCasters.ts',
+      'src/adapters/**/*.{ts,tsx}',
+      'src/utils/http/**/*.{ts,tsx}',
+      // 以下为临时保留，待迁移为 unknown 后从白名单移除
+      'src/hooks/modules/useChartTheme/**/*.{ts,tsx}',
+      'src/hooks/modules/useHttpRequest.ts',
+      'build/**/*.ts',
+      '**/*.config.ts',
+      '**/*.d.ts',
+      'src/locales/**/*.ts',
+      'src/hooks/modules/useLocale.ts',
+      'src/plugins/**/*.ts',
+      'src/components/CScrollbar/**/*.ts',
+      'src/constants/**/*.ts',
+      'src/views/**/useChartOptions.ts',
+    ],
+    rules: {
+      '@typescript-eslint/no-explicit-any': 'off',
     },
   },
 

@@ -1,5 +1,6 @@
 // src/utils/http/methods.ts
 import { HTTP_CONFIG } from '@/constants/http'
+import { getToken } from '@/infra/auth/tokenProvider'
 import { t } from '@/locales'
 import { alovaInstance } from './instance'
 import { HttpRequestError, isRetryableError, ErrorType } from './errors'
@@ -16,8 +17,8 @@ import type {
  * 请求管理器 - 处理去重和并发控制
  */
 class RequestManager {
-  private pendingRequests = new Map<string, Promise<any>>()
-  private requestQueue: Array<() => Promise<any>> = []
+  private pendingRequests = new Map<string, Promise<unknown>>()
+  private requestQueue: Array<() => Promise<unknown>> = []
   private readonly maxConcurrent = HTTP_CONFIG.maxConcurrentRequests
   private runningCount = 0
 
@@ -96,12 +97,12 @@ class RequestManager {
  * 增强的内存缓存
  */
 class EnhancedCache {
-  private cache = new Map<string, { data: any; timestamp: number; ttl: number }>()
+  private cache = new Map<string, { data: unknown; timestamp: number; ttl: number }>()
   private readonly maxSize = HTTP_CONFIG.maxCacheSize
   private hitCount = 0
   private missCount = 0
 
-  set(key: string, data: any, ttl: number = HTTP_CONFIG.defaultCacheTtl): void {
+  set(key: string, data: unknown, ttl: number = HTTP_CONFIG.defaultCacheTtl): void {
     // 如果缓存已满，删除最旧的条目
     if (this.cache.size >= this.maxSize) {
       const oldestKey = this.cache.keys().next().value
@@ -117,7 +118,7 @@ class EnhancedCache {
     })
   }
 
-  get(key: string): any | null {
+  get(key: string): unknown | null {
     const item = this.cache.get(key)
     if (!item) {
       this.missCount++
@@ -240,7 +241,7 @@ async function executeWithRetry<T>(
  * - 显式 .send(true)
  * - 只缓存数据，不缓存 Method
  */
-export const get = async <T = any>(url: string, config?: RequestConfig): Promise<T> => {
+export const get = async <T = unknown>(url: string, config?: RequestConfig): Promise<T> => {
   // 缓存键必须包含查询参数，否则不同分页/条件会命中同一缓存
   const paramStr = config?.params ? JSON.stringify(config.params) : ''
   const cacheKey = `GET:${url}:${paramStr}`
@@ -275,7 +276,7 @@ export const get = async <T = any>(url: string, config?: RequestConfig): Promise
  * GET 请求 - 返回原始响应（包含头信息）
  * 绕过 Alova 拦截器，直接使用 fetch 以获取 Headers
  */
-export const getRaw = async <T = any>(
+export const getRaw = async <T = unknown>(
   url: string,
   config?: RequestConfig
 ): Promise<{ data: T; headers: Headers }> => {
@@ -302,23 +303,10 @@ export const getRaw = async <T = any>(
   // 构建 Headers
   const headers = new Headers(config?.headers as Record<string, string>)
 
-  // 手动添加 Auth Token (因为绕过了 Alova 拦截器)
-  // 注意：这里需要引入 store，但如果在 methods.ts 引入可能会循环依赖？
-  // methods.ts 已经引入了 alovaInstance，它依赖 interceptors，interceptors 依赖 store。
-  // 所以这里引入 interceptors 中的 beforeRequest 逻辑比较复杂。
-  // 简单起见，从 localStorage 或通过回调获取 token？
-  // 或者复用 interceptors.ts 中的逻辑?
-  // 实际上 interceptors.ts 已经引入了 useUserStoreWithOut。
-  // 我们可以在这里动态获取。
-  try {
-    const { useUserStoreWithOut } = await import('@/stores/modules/user')
-    const userStore = useUserStoreWithOut()
-    const token = userStore.getToken
-    if (token) {
-      headers.set('Authorization', `Bearer ${token}`)
-    }
-  } catch (e) {
-    console.warn('Failed to inject token in getRaw', e)
+  // 手动添加 Auth Token（绕过 Alova 拦截器时通过 TokenProvider 获取，不依赖 Store）
+  const token = getToken()
+  if (token && String(token).trim()) {
+    headers.set('Authorization', `Bearer ${token}`)
   }
 
   const response = await fetch(`${fullUrl}${queryString}`, {
@@ -345,10 +333,15 @@ export const getRaw = async <T = any>(
 /**
  * POST 请求
  */
-export const post = <T = any>(url: string, data?: any, config?: RequestConfig): Promise<T> => {
+export const post = <T = unknown>(
+  url: string,
+  data?: unknown,
+  config?: RequestConfig
+): Promise<T> => {
   const requestKey = `POST:${url}:${JSON.stringify(data)}`
   const alovaConfig = convertRequestConfig(config)
-  const requestFn = () => alovaInstance.Post<T>(url, data, alovaConfig).send(true)
+  // Alova 边界：data 为 unknown 时类型不匹配，需桥接
+  const requestFn = () => alovaInstance.Post<T>(url, data as BodyInit, alovaConfig).send(true)
 
   return requestManager.execute(
     requestKey,
@@ -360,10 +353,14 @@ export const post = <T = any>(url: string, data?: any, config?: RequestConfig): 
 /**
  * PUT 请求
  */
-export const put = <T = any>(url: string, data?: any, config?: RequestConfig): Promise<T> => {
+export const put = <T = unknown>(
+  url: string,
+  data?: unknown,
+  config?: RequestConfig
+): Promise<T> => {
   const requestKey = `PUT:${url}:${JSON.stringify(data)}`
   const alovaConfig = convertRequestConfig(config)
-  const requestFn = () => alovaInstance.Put<T>(url, data, alovaConfig).send(true)
+  const requestFn = () => alovaInstance.Put<T>(url, data as BodyInit, alovaConfig).send(true)
 
   return requestManager.execute(
     requestKey,
@@ -375,7 +372,7 @@ export const put = <T = any>(url: string, data?: any, config?: RequestConfig): P
 /**
  * DELETE 请求
  */
-export const del = <T = any>(url: string, config?: RequestConfig): Promise<T> => {
+export const del = <T = unknown>(url: string, config?: RequestConfig): Promise<T> => {
   const requestKey = `DELETE:${url}:${JSON.stringify(config?.params ?? {})}`
   const alovaConfig = convertRequestConfig(config)
   const requestFn = () => alovaInstance.Delete<T>(url, alovaConfig).send(true)
@@ -390,10 +387,14 @@ export const del = <T = any>(url: string, config?: RequestConfig): Promise<T> =>
 /**
  * PATCH 请求
  */
-export const patch = <T = any>(url: string, data?: any, config?: RequestConfig): Promise<T> => {
+export const patch = <T = unknown>(
+  url: string,
+  data?: unknown,
+  config?: RequestConfig
+): Promise<T> => {
   const requestKey = `PATCH:${url}:${JSON.stringify(data)}`
   const alovaConfig = convertRequestConfig(config)
-  const requestFn = () => alovaInstance.Patch<T>(url, data, alovaConfig).send(true)
+  const requestFn = () => alovaInstance.Patch<T>(url, data as BodyInit, alovaConfig).send(true)
 
   return requestManager.execute(
     requestKey,
@@ -423,7 +424,11 @@ export const head = (url: string, config?: RequestConfig): Promise<void> => {
 /**
  * 文件上传
  */
-export const uploadFile = <T = any>(url: string, file: File, config?: UploadConfig): Promise<T> => {
+export const uploadFile = <T = unknown>(
+  url: string,
+  file: File,
+  config?: UploadConfig
+): Promise<T> => {
   const formData = new FormData()
   formData.append('file', file)
 
@@ -442,7 +447,7 @@ export const uploadFile = <T = any>(url: string, file: File, config?: UploadConf
 /**
  * 多文件上传
  */
-export const uploadFiles = <T = any>(
+export const uploadFiles = <T = unknown>(
   url: string,
   files: File[],
   config?: UploadConfig

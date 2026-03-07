@@ -2,8 +2,8 @@
 import { rootRedirect } from '@/constants/router'
 import { usePermissionStore } from '@/stores/modules/permission'
 import type { Router } from 'vue-router'
-import { processAsyncRoutes } from './common'
-import type { createDynamicRouteManager } from './common'
+import { processAsyncRoutes } from './transform'
+import type { createDynamicRouteManager } from './dynamic'
 import { usePermissionGuard } from './permission'
 
 type DynamicRouteManager = ReturnType<typeof createDynamicRouteManager>

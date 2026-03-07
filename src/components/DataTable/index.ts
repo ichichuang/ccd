@@ -59,15 +59,17 @@ export type {
 
 export {
   useTableData,
-  useTableSelection,
-  useTableExport,
   useTableLayout,
   type UseTableDataReturn,
   type UseTableDataOptions,
+  type UseTableLayoutReturn,
+  type UseTableLayoutOptions,
+} from './core'
+export {
+  useTableSelection,
+  useTableExport,
   type UseTableSelectionReturn,
   type UseTableSelectionOptions,
   type UseTableExportReturn,
   type UseTableExportOptions,
-  type UseTableLayoutReturn,
-  type UseTableLayoutOptions,
-} from './composables'
+} from './features'

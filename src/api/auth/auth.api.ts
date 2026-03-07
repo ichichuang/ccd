@@ -2,13 +2,14 @@
  * 认证 API 模块
  * 登录、获取当前用户等接口，严格使用 DTO 类型
  * 禁止导入 Pinia stores，避免循环依赖
+ * 对接后端时响应使用 ApiResponse<LoginResult> / ApiResponse<UserInfo>，解包 data 后返回
  */
 
-import type { LoginParams, LoginResult, UserInfo } from '@/api/types/auth'
+import type { LoginParams, LoginResult, UserInfo } from '@/types/dto/auth.dto'
 
 /**
  * 登录 API
- * 当前为 mock 实现；对接后端时改为：post<LoginResult>('/auth/login', data)
+ * 当前为 mock 实现；对接后端时改为 post<ApiResponse<LoginResult>> 并返回 res.data
  */
 export const requestAuthLogin = async (data: LoginParams): Promise<LoginResult> => {
   return requestAuthLoginMock(data)

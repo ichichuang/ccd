@@ -14,24 +14,29 @@ export interface MergeOptions {
   /**
    * 预留扩展：按路径/条件精细匹配节点。当前 preset 未使用；若需仅对部分路径应用样式可传入。
    */
-  matcher?: (key: string, value: any, path: string[]) => boolean
+  matcher?: (key: string, value: unknown, path: string[]) => boolean
   /**
    * 预留扩展：合并时对单节点值做转换。当前 preset 未使用；若需自定义合并逻辑可传入。
    */
-  transformer?: (key: string, oldValue: any, newValue: any) => any
+  transformer?: (key: string, oldValue: unknown, newValue: unknown) => unknown
 }
 
 /**
  * Helper: Set value by path (creating intermediate objects if needed)
  */
-function setValueByPath(obj: any, path: string[], value: any, override: boolean = true): void {
-  let current = obj
+function setValueByPath(
+  obj: Record<string, unknown>,
+  path: string[],
+  value: unknown,
+  override: boolean = true
+): void {
+  let current: Record<string, unknown> = obj
   for (let i = 0; i < path.length - 1; i++) {
     const part = path[i]
     if (!current[part] || typeof current[part] !== 'object') {
       current[part] = {}
     }
-    current = current[part]
+    current = current[part] as Record<string, unknown>
   }
   const lastPart = path[path.length - 1]
 
@@ -46,10 +51,10 @@ function setValueByPath(obj: any, path: string[], value: any, override: boolean 
  * Used to apply dotted-path styles into already-existing nodes during traversal.
  */
 function setIfExistsByPath(
-  root: any,
+  root: Record<string, unknown>,
   baseKey: string,
   subPath: string,
-  valueToSet: any,
+  valueToSet: unknown,
   override: boolean = true
 ): void {
   if (!root || typeof root !== 'object') {
@@ -64,7 +69,7 @@ function setIfExistsByPath(
   }
 
   const parts = subPath.split('.')
-  let current: any = base
+  let current: Record<string, unknown> = base as Record<string, unknown>
   for (let i = 0; i < parts.length - 1; i++) {
     const part = parts[i]
     if (
@@ -74,7 +79,7 @@ function setIfExistsByPath(
     ) {
       return
     }
-    current = current[part]
+    current = current[part] as Record<string, unknown>
   }
   const last = parts[parts.length - 1]
   if (!Object.prototype.hasOwnProperty.call(current, last)) {
@@ -101,9 +106,9 @@ function setIfExistsByPath(
  * @param inPlace - If true, mutate target; if false, merge into a clone and return it
  * @returns The merged object (clone when inPlace=false, same ref when inPlace=true)
  */
-function applyMergeToTarget<T = any>(
+function applyMergeToTarget<T = unknown>(
   target: T,
-  styles: Record<string, any>,
+  styles: Record<string, unknown>,
   options: MergeOptions,
   inPlace: boolean
 ): T {
@@ -111,8 +116,8 @@ function applyMergeToTarget<T = any>(
 
   const work = inPlace ? target : (JSON.parse(JSON.stringify(target)) as T)
 
-  const processedStyles: Record<string, any> = {}
-  const pathStyles: Record<string, any> = {}
+  const processedStyles: Record<string, unknown> = {}
+  const pathStyles: Record<string, unknown> = {}
 
   for (const [key, value] of Object.entries(styles)) {
     if (key.includes('.')) {
@@ -122,7 +127,7 @@ function applyMergeToTarget<T = any>(
     }
   }
 
-  function traverse(obj: any, path: string[] = []): void {
+  function traverse(obj: Record<string, unknown>, path: string[] = []): void {
     if (obj === null || typeof obj !== 'object') {
       return
     }
@@ -135,7 +140,7 @@ function applyMergeToTarget<T = any>(
       const currentPathString = currentPath.join('.')
 
       let matchedPathStyle = false
-      let pathStyleValue: any = null
+      let pathStyleValue: unknown = null
 
       // A. Exact path match: this node is the target of a dotted-path style → apply and remove from pathStyles
       if (Object.prototype.hasOwnProperty.call(pathStyles, currentPathString)) {
@@ -183,26 +188,26 @@ function applyMergeToTarget<T = any>(
       }
 
       if (typeof obj[key] === 'object' && obj[key] !== null) {
-        traverse(obj[key], currentPath)
+        traverse(obj[key] as Record<string, unknown>, currentPath)
       }
     }
   }
 
-  traverse(work)
+  traverse(work as Record<string, unknown>)
 
   // C. Remaining pathStyles: paths that didn't exist in target (no node was visited for them).
   //    Create intermediate keys and set the value so nothing is dropped.
   for (const [pathKey, pathValue] of Object.entries(pathStyles)) {
     const pathParts = pathKey.split('.')
-    setValueByPath(work, pathParts, pathValue, override)
+    setValueByPath(work as Record<string, unknown>, pathParts, pathValue, override)
   }
 
   return work
 }
 
-export function deepMergeStylesAdvanced<T = any>(
+export function deepMergeStylesAdvanced<T = unknown>(
   target: T,
-  styles: Record<string, any>,
+  styles: Record<string, unknown>,
   options: MergeOptions = {}
 ): T {
   return applyMergeToTarget(target, styles, options, false)
@@ -213,10 +218,10 @@ export function deepMergeStylesAdvanced<T = any>(
  * and set that property to newValue. Modifies target in place.
  */
 export function deepFindAndReplaceProperty(
-  target: any,
+  target: Record<string, unknown>,
   keyToFind: string,
   subKeyToModify: string,
-  newValue: any
+  newValue: unknown
 ): void {
   if (target === null || typeof target !== 'object') {
     return
@@ -225,13 +230,21 @@ export function deepFindAndReplaceProperty(
     Object.prototype.hasOwnProperty.call(target, keyToFind) &&
     target[keyToFind] != null &&
     typeof target[keyToFind] === 'object' &&
-    Object.prototype.hasOwnProperty.call(target[keyToFind], subKeyToModify)
+    Object.prototype.hasOwnProperty.call(
+      target[keyToFind] as Record<string, unknown>,
+      subKeyToModify
+    )
   ) {
-    target[keyToFind][subKeyToModify] = newValue
+    ;(target[keyToFind] as Record<string, unknown>)[subKeyToModify] = newValue
   }
   for (const value of Object.values(target)) {
     if (typeof value === 'object' && value !== null) {
-      deepFindAndReplaceProperty(value, keyToFind, subKeyToModify, newValue)
+      deepFindAndReplaceProperty(
+        value as Record<string, unknown>,
+        keyToFind,
+        subKeyToModify,
+        newValue
+      )
     }
   }
 }
@@ -239,9 +252,9 @@ export function deepFindAndReplaceProperty(
 /**
  * In-place version of deep merge (modifies target directly)
  */
-export function deepMergeStylesAdvancedInPlace<T = any>(
+export function deepMergeStylesAdvancedInPlace<T = unknown>(
   target: T,
-  styles: Record<string, any>,
+  styles: Record<string, unknown>,
   options: MergeOptions = {}
 ): void {
   applyMergeToTarget(target, styles, options, true)

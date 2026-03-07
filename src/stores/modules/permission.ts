@@ -1,6 +1,6 @@
-import { requestSystemAsyncRoutes } from '@/api/modules/system'
+import { requestSystemAsyncRoutes } from '@/api/system/system.api'
 import { deepClone } from '@/utils/lodashes'
-import { getAdminMenuTree, getFlatRouteList } from '@/router/utils/helper'
+import { getRouterCapabilities } from '@/infra/router/routeProvider'
 import store from '@/stores'
 
 function flattenMenuPaths(items: MenuItem[]): string[] {
@@ -18,7 +18,7 @@ import type { LocationQueryRaw } from 'vue-router'
  * ⚠️ 说明
  * - 仅记录"曾经打开过"的窗口信息
  * - 不参与窗口是否存在的判断
- * - 实际状态以 router.ts 中的 Window 引用为准
+ * - 实际状态以路由模块（@/router）中的 Window 引用为准
  */
 interface WindowMetadata {
   key: string
@@ -109,6 +109,7 @@ export const usePermissionStore = defineStore('permission', {
     },
     // 添加标签页（仅 admin 布局下的路由，且需在 admin 菜单树中）
     addTab(name: RouteConfig['name'] | RouteConfig['path']) {
+      const { getAdminMenuTree, getFlatRouteList } = getRouterCapabilities()
       const route = getFlatRouteList().find(
         route => String(route.name || '') === String(name || '') || route.path === name
       )
@@ -157,7 +158,7 @@ export const usePermissionStore = defineStore('permission', {
     // 修改标签页某一项的属性 传入 name|path 和 {property: value}
     updateTabProperty(
       name: RouteConfig['name'] | RouteConfig['path'],
-      property: { property: any; value: any }
+      property: { property: keyof TabItem; value: TabItem[keyof TabItem] }
     ) {
       const tab = this.tabs.find(tab => tab.name === name || tab.path === name)
       if (tab) {
@@ -264,10 +265,10 @@ export const usePermissionStore = defineStore('permission', {
     storage: localStorage,
     pick: ['staticRoutes', 'dynamicRoutes', 'tabs', 'windows'],
     serializer: {
-      serialize: (value: any) => {
+      serialize: (value: unknown) => {
         try {
           // 使用 deepClone 替代低效的 JSON.parse(JSON.stringify())
-          const stateToStore = deepClone(value)
+          const stateToStore = deepClone(value) as { state?: { windows?: WindowMetadata[] } }
 
           // 优化数据清洗：使用解构赋值剔除 isOpen 字段
           if (stateToStore?.state?.windows) {

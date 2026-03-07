@@ -116,7 +116,7 @@ export const useDeviceStore = defineStore('device', {
      * 更新断点 (v2.0 标准)
      */
     updateBreakpoint() {
-      const bps = Object.entries(BREAKPOINTS).sort((a, b) => b[1] - a[1])
+      const bps = [...Object.entries(BREAKPOINTS)].sort((a, b) => b[1] - a[1])
       const match = bps.find(([_, val]) => this.width >= val)
       this.currentBreakpoint = (match ? match[0] : 'xs') as BreakpointKey
     },
