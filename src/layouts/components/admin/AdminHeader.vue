@@ -211,7 +211,7 @@ const renderRootItem = (item: PrimeMenuModelItem) => {
   <header
     v-if="showHeader"
     :class="[
-      'w-full h-headerHeight flex items-center justify-between px-padding-lg border-b-default bg-background/80 backdrop-blur-md z-30 transition-all duration-scale-md sticky top-0',
+      'w-full h-headerHeight flex items-center justify-between px-padding-lg transition-all duration-scale-md sticky top-0 z-30',
     ]"
   >
     <!-- Left: Mobile Menu + Logo -->

@@ -4,11 +4,12 @@
 
 | 文档                                                   | 说明                                   |
 | ------------------------------------------------------ | -------------------------------------- |
-| [🚀 Quick Start](./QUICK_START.md)                     | 环境搭建、本地启动、创建新页面         |
+| [🚀 快速上手](./QUICK_START.md)                        | 环境搭建、本地启动、创建新页面         |
 | [🏗️ 架构总览](./architecture/ARCHITECTURE_OVERVIEW.md) | 分层设计、数据流、设计原则             |
 | [🛠️ 技术栈](./architecture/TECH_STACK.md)              | 技术选型与版本                         |
 | [📁 目录结构](./architecture/DIRECTORY_STRUCTURE.md)   | 逐目录职责说明                         |
 | [🤝 AI 协作流程](./AI_COLLABORATION.md)                | Cursor + Antigravity 分工与常用 Prompt |
+| [📤 部署指南](./DEPLOYMENT.md)                         | 生产构建、Nginx、gzip 预压缩           |
 
 ## 🤖 AI 文档（开发者无需关注）
 

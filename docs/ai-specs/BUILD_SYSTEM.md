@@ -1,142 +1,139 @@
 # Build System & Auto Imports (SSOT)
 
-> **目标读者：AI**。本文档供 AI 在代码生成时参照，涉及构建配置、自动导入、类型生成时必读。
+> **Target reader: AI**. This doc is for AI when generating code; required reading for build config, auto-imports, and type generation.
 
-本文档描述 `build/*`、`vite.config.ts`、自动导入（AutoImport/Components）与生成类型文件的**真实行为**。当你发现“为什么页面里不需要 import ref/computed？”或“为什么某个函数能直接用？”时，以此为准。
+This doc describes the **actual behavior** of `build/*`, `vite.config.ts`, auto-imports (AutoImport/Components), and generated type files. When you wonder “why don’t I need to import ref/computed in the page?” or “why can I use this function directly?”, use this as the source of truth.
 
-## 0. 包管理工具与命令约定
+## 0. Package manager and command convention
 
-- **包管理器：** 本项目使用 **pnpm**（`package.json` 中已声明 `packageManager: "pnpm@10.28.2"`）
-- **命令执行顺序：** 执行任何依赖/构建/脚本命令时，**优先使用 pnpm**（如 `pnpm install`、`pnpm dev`、`pnpm build`）；若环境无 pnpm 再使用 npm
-- **应当：** AI 在生成命令、文档或 README 时，默认写 pnpm 命令（如 `pnpm install`、`pnpm dev`）
-- **禁止：** 默认写 `npm install` 或 `npm run dev`，除非明确标注「pnpm 不可用时」
+- **Package manager:** The project uses **pnpm** (`package.json` declares `packageManager: "pnpm@10.28.2"`).
+- **Command preference:** For any install/build/script command, **use pnpm first** (e.g. `pnpm install`, `pnpm dev`, `pnpm build`); use npm only if pnpm is not available.
+- **Must:** When generating commands, docs, or README, default to pnpm (e.g. `pnpm install`, `pnpm dev`).
+- **Forbidden:** Defaulting to `npm install` or `npm run dev` unless explicitly labeled “when pnpm is unavailable”.
 
-## 1. 插件入口与职责分层
+## 1. Plugin entry and responsibility split
 
-- **入口**：`vite.config.ts` → `build/plugins.ts#getPluginsList(env, command)`
-- **build/**：仅负责工程化与构建能力（插件、注入、优化、自动导入、icon safelist 等）
-- **src/**：仅负责业务代码与 SSOT（constants/types/utils/hooks/components）
+- **Entry:** `vite.config.ts` → `build/plugins.ts#getPluginsList(env, command)`
+- **build/:** Only build tooling (plugins, injection, optimization, auto-import, icon safelist, etc.).
+- **src/:** Only app code and SSOT (constants, types, utils, hooks, components).
 
-### 1.1 build/ 文件职责
+### 1.1 build/ file roles
 
-| 文件                   | 职责                                                                                                                                                                       |
-| ---------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `build/plugins.ts`     | 插件入口：AutoImport、Components、UnoCSS、Vue、JSX、HTML 注入、图标 watcher、压缩、体积分析、Legacy 等                                                                     |
-| `build/optimize.ts`    | 依赖预构建：`optimizeDeps.include` / `exclude`，供 `vite.config.ts` 使用                                                                                                   |
-| `build/uno-icons.ts`   | 图标与类名：路由/API icon 扫描、自定义 SVG 集合、UnoCSS safelist（`getDynamicSafelist`）、custom collection loader（`getPresetIconsCollections`），由 `uno.config.ts` 引用 |
-| `build/html.ts`        | 向 `index.html` 注入品牌配置（来自 `src/constants/brand.ts`：title、og:title、og:description、author）                                                                     |
-| `build/compress.ts`    | 构建产物 gzip/brotli 压缩（按 `VITE_COMPRESSION` 启用）                                                                                                                    |
-| `build/info.ts`        | 构建信息输出（版本、耗时、产物体积）                                                                                                                                       |
-| `build/legacy.ts`      | `@vitejs/plugin-legacy`，旧浏览器兼容（`VITE_LEGACY` 为 true 时）                                                                                                          |
-| `build/performance.ts` | `rollup-plugin-visualizer`，体积分析。启用方式：`pnpm build:analyze`（`--mode analyze` 加载 `.env.analyze`，`VITE_BUILD_ANALYZE=true`）生成 `dist/stats.html`              |
-| `build/utils.ts`       | 路径别名（`@`、`@!`、`@&`）、环境变量包装、`__APP_INFO__`、`getPackageSize` 等                                                                                             |
+| File                   | Responsibility                                                                                                                                                                       |
+| ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `build/plugins.ts`     | Plugin entry: AutoImport, Components, UnoCSS, Vue, JSX, HTML injection, icon watcher, compress, bundle analysis, Legacy, etc.                                                        |
+| `build/optimize.ts`    | Pre-bundling: `optimizeDeps.include` / `exclude` for `vite.config.ts`                                                                                                                |
+| `build/uno-icons.ts`   | Icons and class names: router/API icon scan, custom SVG set, UnoCSS safelist (`getDynamicSafelist`), custom collection loader (`getPresetIconsCollections`), used by `uno.config.ts` |
+| `build/html.ts`        | Inject brand config into `index.html` (from `src/constants/brand.ts`: title, og:title, og:description, author)                                                                       |
+| `build/compress.ts`    | Gzip/brotli for build output (enabled via `VITE_COMPRESSION`)                                                                                                                        |
+| `build/info.ts`        | Build info (version, duration, bundle size)                                                                                                                                          |
+| `build/legacy.ts`      | `@vitejs/plugin-legacy` for older browsers (when `VITE_LEGACY` is true)                                                                                                              |
+| `build/performance.ts` | `rollup-plugin-visualizer`. Enable: `pnpm build:analyze` (`--mode analyze` loads `.env.analyze`, `VITE_BUILD_ANALYZE=true`) → `dist/stats.html`                                      |
+| `build/utils.ts`       | Path aliases (`@`, `@!`, `@&`), env helpers, `__APP_INFO__`, `getPackageSize`, etc.                                                                                                  |
 
-### 1.2 依赖预构建（optimizeDeps）
+### 1.2 Pre-bundling (optimizeDeps)
 
-配置位置：`vite.config.ts` 的 `optimizeDeps.include` / `exclude`，**数据来源**：`build/optimize.ts`。
+Configured in `vite.config.ts` as `optimizeDeps.include` / `exclude`; **source of data:** `build/optimize.ts`.
 
-- **作用**：Vite 启动时将 `include` 中的依赖预编译为 ESM 并缓存到 `node_modules/.vite`，减少 dev 时的请求数与冷启动时间。
-- **include**（以 `build/optimize.ts` 为准）：核心框架（vue、vue-router、pinia、alova、@vueuse/core）、工具库（dayjs、lodash-es、yup）、图表（echarts、vue-echarts）、PrimeVue 表单与子路径组件（@primevue/forms、primevue/button、primevue/inputtext 等一批子路径）。
-- **exclude**：当前为空数组；用于含 .wasm 或非标准 ESM 导出的库时再配置。
+- **Purpose:** Vite pre-compiles listed dependencies to ESM and caches in `node_modules/.vite`, reducing dev requests and cold start.
+- **include** (see `build/optimize.ts`): Core (vue, vue-router, pinia, alova, @vueuse/core), utils (dayjs, lodash-es, yup), charts (echarts, vue-echarts), PrimeVue forms and subpath components (@primevue/forms, primevue/button, primevue/inputtext, etc.).
+- **exclude:** Currently empty; use for .wasm or non-standard ESM when needed.
 
-新增需要预构建的依赖时，应修改 `build/optimize.ts` 的 `include` 数组，勿在 `vite.config.ts` 中硬编码。
+When adding a dependency that must be pre-bundled, update the `include` array in `build/optimize.ts`; do not hardcode in `vite.config.ts`.
 
-## 2. AutoImport（函数/变量自动导入）
+## 2. AutoImport (function/variable auto-import)
 
-配置位置：`build/plugins.ts` 的 `AutoImport({ ... })`。
+Configured in `build/plugins.ts` under `AutoImport({ ... })`.
 
-### 2.1 自动导入的库（imports）
+### 2.1 Auto-imported libraries (imports)
 
-- `vue`：`ref`、`computed`、`watch`、`onMounted` 等可以在页面/组件直接使用
+- `vue`: `ref`, `computed`, `watch`, `onMounted`, etc. can be used in pages/components without import
 - `vue-router`
 - `pinia`
 - `@vueuse/core`
-- `@/locales`：将 `t` 自动映射为 `$t`
+- `@/locales`: `t` is auto-mapped as `$t`
 
-### 2.2 扫描目录（dirs）
+### 2.2 Scanned directories (dirs)
 
-当前配置（以 `build/plugins.ts` 为准）：
+Current config (see `build/plugins.ts`; **only these** are scanned and auto-injected):
 
 - `src/stores/modules`
 - `src/hooks/**/*`
-- `src/api/**/*`：接口定义层，目录已预置（见 `src/api/README.md`）
-- `src/utils`（**仅顶层**，不递归；避免自动扫描 `src/utils/http` 产生重复导出/副作用）
-- `src/constants/*`
-- `src/components/CScrollbar`
 
-### 2.3 生成物
+Modules **not** in these dirs (e.g. `src/router/**`, `src/utils/**`, `src/api/**`, `src/constants/**`, `src/plugins/**`) are **not** auto-injected. Using `@/utils/ids`, `@/api/*`, `@/constants/*`, etc. requires **explicit import**, or runtime will throw `xxx is not defined` (types may still exist via generated dts).
 
-- 类型声明：`src/types/auto-imports.d.ts`
-- ESLint globals：`./.eslintrc-auto-import.json`
+### 2.3 Outputs
 
-### 2.4 使用规则（写代码时）
+- Type declarations: `src/types/auto-imports.d.ts`
+- ESLint globals: `./.eslintrc-auto-import.json`
 
-- 在 `src/**/*.vue`、`src/**/*.ts` 中通常**不需要**手写 `import { ref, computed } from 'vue'`。
-- 若**导出接口**需使用 `Ref`、`ComputedRef` 等类型，可仅写 `import type { Ref, ComputedRef } from 'vue'`；运行时 API（ref、computed、watch）仍由自动导入提供。
-- **未使用的 import** 应删除；确需保留的未使用变量或解构（如 composable 返回值暂时不用）可用 **`_` 前缀**，与 `eslint.config.ts` 的 `varsIgnorePattern: '^_'` 一致。
-- **HTTP 等底层库**（例如 `src/utils/http/*`）按当前策略应**显式 import** 使用（不要依赖自动导入）。
+### 2.4 Usage rules (when writing code)
 
-### 2.5 常见坑（必须读）
+- In `src/**/*.vue` and `src/**/*.ts` you usually **do not** need to write `import { ref, computed } from 'vue'`.
+- If an **exported type** needs `Ref`, `ComputedRef`, etc., use only `import type { Ref, ComputedRef } from 'vue'`; runtime APIs (ref, computed, watch) still come from auto-import.
+- **Remove unused imports.** For intentionally unused variables or destructuring (e.g. composable return values), use a **`_` prefix**, matching `eslint.config.ts` `varsIgnorePattern: '^_'`.
+- **Low-level libs** (e.g. `src/utils/http/*`) should be **explicitly imported**; do not rely on auto-import.
+- **.ts modules outside dirs** (e.g. `src/router/utils/helper.ts`, `src/plugins/**`): when using `@/utils/ids`, `@/api/*`, `@/constants/*`, etc., **must explicitly import**; otherwise runtime `ReferenceError: xxx is not defined`.
 
-你已将 API 规则改为扁平化：`src/api/<module>/<feature>.ts`。
-因此 `dirs` 必须递归覆盖二级文件（`src/api/**/*`），否则会出现“API 函数无法自动使用/类型声明未生成”的错觉。
+### 2.5 Common pitfalls (must read)
 
-> 这不是业务代码问题，而是构建配置的扫描范围问题。出现“某个 api 函数不能自动用/类型声明没生成”时，优先检查这里。
+- In **non-dirs** (e.g. `src/router/**`, `src/utils/**`, `src/plugins/**`) using `generateIdFromKey`, API functions, etc., you must add an explicit `import { ... } from '@/utils/ids'` (or the right module) at the top; otherwise types may exist via dts but runtime will be undefined.
+- When extending AutoImport scan scope, update the `dirs` in `build/plugins.ts` and keep this doc §2.2 in sync.
 
-## 3. Components（组件自动导入）
+## 3. Components (component auto-import)
 
-配置位置：`build/plugins.ts` 的 `Components({ ... })`。
+Configured in `build/plugins.ts` under `Components({ ... })`.
 
-### 3.1 扫描范围与排除
+### 3.1 Scan scope and exclusions
 
-- 扫描目录：`src/components`（deep=true）
-- 排除：`src/layouts`（符合“布局组件需显式引入”的架构约束）
-- PrimeVue：通过 `PrimeVueResolver()` 按需自动 import（模板中用到即导入）
+- Scan directory: `src/components` (deep=true)
+- Excluded: `src/layouts` (layout components must be explicitly imported per architecture)
+- PrimeVue: via `PrimeVueResolver()`, on-demand (imported when used in templates)
 
-### 3.2 生成物
+### 3.2 Outputs
 
 - `src/types/components.d.ts`
 
-### 3.3 使用规则
+### 3.3 Usage rules
 
-- 使用 `src/components/*` 与 PrimeVue 组件时，通常无需手写 import（保持组件名即可）。
-- 布局层组件（`src/layouts/**`）若使用，需显式引入（不会被自动扫描）。
+- When using `src/components/*` and PrimeVue components, you usually do not need to write imports (component name is enough).
+- Layout components (`src/layouts/**`) must be explicitly imported (they are not scanned).
 
-## 4. 图标变更监听与 safelist
+## 4. Icon change watch and safelist
 
-相关文件：
+Relevant files:
 
-- `build/plugins.ts`：开发环境启用图标 watcher（变更后触发 full reload）
-- `build/uno-icons.ts`：扫描 router/api/icon 字符串 + 自定义 SVG，生成 UnoCSS safelist 与 custom collection loader
-- `uno.config.ts`：通过 `getDynamicSafelist/getPresetIconsCollections` 接入上面的结果
+- `build/plugins.ts`: In dev, icon watcher is enabled (full reload on change)
+- `build/uno-icons.ts`: Scans router/api icon strings + custom SVG, produces UnoCSS safelist and custom collection loader
+- `uno.config.ts`: Consumes the above via `getDynamicSafelist` / `getPresetIconsCollections`
 
-结论：
+Summary:
 
-- 业务中应通过 `Icons` 组件 + `i-lucide/i-mdi/i-logos/i-custom:` 使用图标
-- 自定义 SVG 放在 `src/assets/icons/**`，并会被自动注入 `fill=\"currentColor\"`
+- In app code use the `Icons` component with `i-lucide` / `i-mdi` / `i-logos` / `i-custom:`
+- Custom SVGs go under `src/assets/icons/**` and get `fill="currentColor"` injected automatically
 
-### 4.1 UnoCSS safelist 与 demo 模式
+### 4.1 UnoCSS safelist and demo mode
 
-- **生产构建**：safelist 仅使用 `getDynamicSafelist()`（动态扫描到的路由/API 图标）。
-- **优化模式 (Lite)**：默认情况下，`UNO_DEMO` 为 `false`，图标示例页仅展示 20 个常用的精简图标集，不加载巨大的 Iconify JSON 文件，从而极大提升冷启动速度并防止 Vercel 构建超时。
-- **演示模式 (Full)**：当 `UNO_DEMO=true`（如 `pnpm dev:demo`）时，safelist 会加载完整的图标子集（Lucide 500/MDI 500 等），并合并 `themeDemoSafelist`。
+- **Production build:** Safelist uses only `getDynamicSafelist()` (icons found by dynamic scan for routes/API).
+- **Lite mode:** By default `UNO_DEMO` is `false`; the icon demo page shows a small set of ~20 common icons and does not load large Iconify JSON, improving cold start and avoiding Vercel timeouts.
+- **Full demo mode:** When `UNO_DEMO=true` (e.g. `pnpm dev:demo`), safelist loads the full icon subset (Lucide 500, MDI 500, etc.) and merges `themeDemoSafelist`.
 
-## 5. Vite 构建拆包与首帧尺寸
+## 5. Vite build splitting and first-frame size
 
-### 5.1 拆包策略（manualChunks）
+### 5.1 Chunk strategy (manualChunks)
 
-配置位置：`vite.config.ts` 的 `build.rollupOptions.output.manualChunks`。
+Configured in `vite.config.ts` under `build.rollupOptions.output.manualChunks`.
 
-- **vendor-echarts**：ECharts 相关
-- **vendor-primevue**：PrimeVue + PrimeIcons
-- **vendor-date-holidays**：date-holidays（动态 import 懒加载，首次调用节假日 API 时加载）
-- **vendor-utils**：lodash、dayjs 等
-- **vendor-vue**：Vue + VueRouter + Pinia + @vueuse/core
-- **vendor-libs**：其余第三方库
+- **vendor-echarts:** ECharts
+- **vendor-primevue:** PrimeVue + PrimeIcons
+- **vendor-date-holidays:** date-holidays (dynamic import, loaded on first holiday API use)
+- **vendor-utils:** lodash, dayjs, etc.
+- **vendor-vue:** Vue, VueRouter, Pinia, @vueuse/core
+- **vendor-libs:** Other third-party libs
 
-另设 `chunkSizeWarningLimit: 2500`，控制单 chunk 体积告警阈值（与 vite.config.ts 一致）。
+`chunkSizeWarningLimit: 2500` is set for chunk size warnings (aligned with vite.config.ts).
 
-### 5.2 首帧 FOUC 与尺寸注入
+### 5.2 First-frame FOUC and size injection
 
-- 入口 `src/main.ts` 在 `createApp(App)` 之前会调用 `preload()`（来自 `src/utils/theme/sizeEngine.ts`）。
-- `preload()` 会读取 size 持久化数据（key 见 `src/constants/size.ts` 的 `SIZE_PERSIST_KEY`），应用尺寸预设并写入根字体等 CSS 变量，避免首屏尺寸/字体闪烁（FOUC）。
+- Entry `src/main.ts` calls `preload()` (from `src/utils/theme/sizeEngine.ts`) before `createApp(App)`.
+- `preload()` reads persisted size (key in `src/constants/size.ts`: `SIZE_PERSIST_KEY`), applies the size preset, and writes root font and other CSS variables to avoid first-frame size/font flash (FOUC).

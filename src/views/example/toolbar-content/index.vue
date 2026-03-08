@@ -28,19 +28,21 @@ function handleSave(): void {
       class="flex-1 min-h-0"
     >
       <CScrollbar class="h-full">
-        <div class="p-padding-lg max-w-2xl">
-          <p class="fs-md text-foreground m-0 mb-margin-md">
-            此页面为 A1 Toolbar + Content 标准布局示例。
-          </p>
-          <p class="fs-sm text-muted-foreground m-0 mb-margin-lg">
-            顶部工具栏固定，主内容区使用 CScrollbar
-            独立滚动。适用于设置页、说明页等以阅读为主的场景。
-          </p>
-          <div class="rounded-scale-md border-default p-padding-lg bg-surface-ground">
-            <h4 class="fs-sm font-semibold text-foreground m-0 mb-margin-sm">占位设置项</h4>
-            <p class="fs-sm text-muted-foreground m-0">
-              此处可接入 SchemaForm 或 PrimeVue 表单组件，实现完整的设置表单。
+        <div class="p-padding-lg layout-content-narrow">
+          <div class="surface-elevated rounded-scale-md p-padding-lg">
+            <p class="fs-md text-foreground m-0 mb-margin-md">
+              此页面为 A1 Toolbar + Content 标准布局示例。
             </p>
+            <p class="fs-sm text-muted-foreground m-0 mb-margin-lg">
+              顶部工具栏固定，主内容区使用 CScrollbar
+              独立滚动。适用于设置页、说明页等以阅读为主的场景。
+            </p>
+            <div class="surface-sunken rounded-scale-md p-padding-lg mt-margin-lg">
+              <h4 class="fs-sm font-semibold text-foreground m-0 mb-margin-sm">占位设置项</h4>
+              <p class="fs-sm text-muted-foreground m-0">
+                此处可接入 SchemaForm 或 PrimeVue 表单组件，实现完整的设置表单。
+              </p>
+            </div>
           </div>
         </div>
       </CScrollbar>

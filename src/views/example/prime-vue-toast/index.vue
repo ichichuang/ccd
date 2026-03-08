@@ -106,7 +106,7 @@ function handleMessage(type: (typeof MESSAGE_TYPES)[number]['handler'], withTitl
 </script>
 
 <template>
-  <CScrollbar class="h-full p-padding-lg bg-background">
+  <CScrollbar class="h-full p-padding-lg">
     <div class="layout-content-wide flex flex-col gap-xl">
       <section class="component-card-base density-normal flex flex-col gap-xs">
         <h1 class="fs-2xl font-bold text-foreground">Toast 完整演示</h1>

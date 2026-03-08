@@ -272,7 +272,7 @@ const menuShortcuts = [
 <template>
   <div class="h-full flex flex-col overflow-hidden">
     <!-- Toolbar: Header (non-scroll) -->
-    <div class="shrink-0 px-padding-lg py-padding-md bg-background border-b-default">
+    <div class="shrink-0 px-padding-lg py-padding-md border-b-default">
       <div class="layout-content-wide flex flex-col gap-xs">
         <div class="flex items-center gap-md">
           <div class="p-padding-md bg-primary/10 rounded-scale-lg shrink-0">
@@ -314,7 +314,7 @@ const menuShortcuts = [
 
     <!-- Scrollable content -->
     <CScrollbar class="flex-1 min-h-0">
-      <div class="p-padding-lg bg-background">
+      <div class="p-padding-lg">
         <div class="layout-content-wide flex flex-col gap-xl">
           <!-- Theme Store 主题 Store -->
           <Card class="component-border hover:shadow-md transition-all duration-scale-lg">
@@ -389,7 +389,7 @@ const menuShortcuts = [
             <template #content>
               <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-md">
                 <div
-                  class="flex flex-col gap-xs p-padding-md surface-item rounded-scale-md component-border shadow-sm hover:shadow-md hover:bg-muted/60 dark:hover:bg-muted/40 hover:-translate-y-0.5 transition-all duration-scale-lg"
+                  class="flex flex-col gap-xs p-padding-md surface-item rounded-scale-md component-border hover:shadow-md hover:bg-muted/60 dark:hover:bg-muted/40 hover:-translate-y-0.5 transition-all duration-scale-lg"
                 >
                   <span class="text-muted-foreground fs-xs">type</span>
                   <Tag
@@ -398,7 +398,7 @@ const menuShortcuts = [
                   />
                 </div>
                 <div
-                  class="flex flex-col gap-xs p-padding-md surface-item rounded-scale-md component-border shadow-sm hover:shadow-md hover:bg-muted/60 dark:hover:bg-muted/40 hover:-translate-y-0.5 transition-all duration-scale-lg"
+                  class="flex flex-col gap-xs p-padding-md surface-item rounded-scale-md component-border hover:shadow-md hover:bg-muted/60 dark:hover:bg-muted/40 hover:-translate-y-0.5 transition-all duration-scale-lg"
                 >
                   <span class="text-muted-foreground fs-xs">currentBreakpoint</span>
                   <Tag
@@ -407,7 +407,7 @@ const menuShortcuts = [
                   />
                 </div>
                 <div
-                  class="flex flex-col gap-xs p-padding-md surface-item rounded-scale-md component-border shadow-sm hover:shadow-md hover:bg-muted/60 dark:hover:bg-muted/40 hover:-translate-y-0.5 transition-all duration-scale-lg"
+                  class="flex flex-col gap-xs p-padding-md surface-item rounded-scale-md component-border hover:shadow-md hover:bg-muted/60 dark:hover:bg-muted/40 hover:-translate-y-0.5 transition-all duration-scale-lg"
                 >
                   <span class="text-muted-foreground fs-xs">isMobileLayout</span>
                   <Tag
@@ -416,7 +416,7 @@ const menuShortcuts = [
                   />
                 </div>
                 <div
-                  class="flex flex-col gap-xs p-padding-md surface-item rounded-scale-md component-border shadow-sm hover:shadow-md hover:bg-muted/60 dark:hover:bg-muted/40 hover:-translate-y-0.5 transition-all duration-scale-lg"
+                  class="flex flex-col gap-xs p-padding-md surface-item rounded-scale-md component-border hover:shadow-md hover:bg-muted/60 dark:hover:bg-muted/40 hover:-translate-y-0.5 transition-all duration-scale-lg"
                 >
                   <span class="text-muted-foreground fs-xs">width × height</span>
                   <span class="font-mono fs-sm">
@@ -474,7 +474,7 @@ const menuShortcuts = [
                     <!-- Selected Indicator -->
                     <div
                       v-if="themeStore.themeName === item.name"
-                      class="absolute top-1 right-1 w-4 h-4 rounded-full bg-primary text-primary-foreground flex items-center justify-center shadow-sm"
+                      class="absolute top-[var(--spacing-xs)] right-[var(--spacing-xs)] w-[var(--spacing-md)] h-[var(--spacing-md)] rounded-full bg-primary text-primary-foreground flex items-center justify-center shadow-sm"
                     >
                       <Icons
                         name="i-lucide-check"
@@ -484,7 +484,7 @@ const menuShortcuts = [
                     </div>
 
                     <div
-                      class="w-12 h-12 rounded-full border-2 border-solid border-border shrink-0 transition-transform group-hover:scale-110 duration-scale-lg shadow-sm"
+                      class="w-12 h-12 rounded-full ring-2 ring-border/30 shrink-0 transition-transform group-hover:scale-110 duration-scale-lg shadow-sm"
                       :style="{ background: item.color }"
                     />
                     <span
@@ -525,11 +525,11 @@ const menuShortcuts = [
                   <div
                     v-for="item in singleTokens"
                     :key="item.token"
-                    class="flex flex-col gap-sm p-padding-md surface-item rounded-scale-md component-border shadow-sm hover:shadow-md hover:bg-muted/60 dark:hover:bg-muted/40 hover:-translate-y-0.5 transition-all duration-scale-lg"
+                    class="flex flex-col gap-sm p-padding-md surface-item rounded-scale-md component-border hover:shadow-md hover:bg-muted/60 dark:hover:bg-muted/40 hover:-translate-y-0.5 transition-all duration-scale-lg"
                   >
                     <div class="flex items-center gap-sm">
                       <div
-                        class="w-[var(--spacing-xl)] h-[var(--spacing-xl)] rounded-scale-sm component-border shadow-sm"
+                        class="w-[var(--spacing-xl)] h-[var(--spacing-xl)] rounded-scale-sm component-border"
                         :class="item.bgClass"
                       />
                       <span class="font-semibold text-foreground">
@@ -585,7 +585,7 @@ const menuShortcuts = [
                   <div
                     v-for="family in pairFamilies"
                     :key="family.family"
-                    class="flex flex-col gap-md p-padding-lg surface-item rounded-scale-lg border border-solid border-border/50"
+                    class="flex flex-col gap-md p-padding-lg surface-item rounded-scale-lg ring-1 ring-border/20"
                   >
                     <h4
                       class="fs-sm font-semibold text-foreground capitalize flex items-center gap-sm mb-margin-xs"
@@ -673,7 +673,7 @@ const menuShortcuts = [
                   <div
                     v-for="family in quadFamilies"
                     :key="family.family"
-                    class="flex flex-col gap-md p-padding-lg surface-item rounded-scale-lg border border-solid border-border/50"
+                    class="flex flex-col gap-md p-padding-lg surface-item rounded-scale-lg ring-1 ring-border/20"
                   >
                     <h4
                       class="fs-sm font-semibold text-foreground capitalize flex items-center gap-sm mb-margin-xs"
@@ -860,11 +860,11 @@ const menuShortcuts = [
                     <div
                       v-for="item in semanticColors"
                       :key="item.name"
-                      class="flex items-center gap-md p-padding-md surface-item rounded-scale-md component-border shadow-sm hover:shadow-md hover:bg-muted/60 dark:hover:bg-muted/40 hover:-translate-y-0.5 transition-all duration-scale-lg cursor-pointer"
+                      class="flex items-center gap-md p-padding-md surface-item rounded-scale-md component-border hover:shadow-md hover:bg-muted/60 dark:hover:bg-muted/40 hover:-translate-y-0.5 transition-all duration-scale-lg cursor-pointer"
                       @click="copyToClipboard(item.name)"
                     >
                       <div
-                        class="w-8 h-8 rounded-full shrink-0 border border-primary/20"
+                        class="w-8 h-8 rounded-full shrink-0 ring-1 ring-primary/20"
                         :class="item.classes"
                       />
                       <div class="flex flex-col flex-1">
@@ -898,7 +898,7 @@ const menuShortcuts = [
                     <div
                       v-for="item in menuShortcuts"
                       :key="item.name"
-                      class="flex flex-col gap-sm p-padding-md surface-item rounded-scale-md component-border shadow-sm hover:shadow-md hover:bg-muted/60 dark:hover:bg-muted/40 hover:-translate-y-0.5 transition-all duration-scale-lg cursor-pointer"
+                      class="flex flex-col gap-sm p-padding-md surface-item rounded-scale-md component-border hover:shadow-md hover:bg-muted/60 dark:hover:bg-muted/40 hover:-translate-y-0.5 transition-all duration-scale-lg cursor-pointer"
                       @click="copyToClipboard(item.name)"
                     >
                       <div class="flex items-center justify-between">

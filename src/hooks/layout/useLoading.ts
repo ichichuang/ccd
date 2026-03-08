@@ -49,6 +49,20 @@
  */
 import { useLayoutStoreWithOut } from '@/stores/modules/layout'
 
+/** 101 Handoff: 原生 HTML 预加载层是否已淡出（仅执行一次） */
+let hasNativePreloaderHandedOff = false
+
+/** 淡出并移除 index.html 中的 #preloader-bg，实现与 Vue 的无缝切换（供 loadingDone 及兜底逻辑调用） */
+export function fadeOutNativePreloader() {
+  if (hasNativePreloaderHandedOff) return
+  hasNativePreloaderHandedOff = true
+  const el = typeof document !== 'undefined' ? document.getElementById('preloader-bg') : null
+  if (!el) return
+  el.style.opacity = '0'
+  el.style.visibility = 'hidden'
+  setTimeout(() => el.remove(), 600)
+}
+
 export function useLoading() {
   const layoutStore = useLayoutStoreWithOut()
 
@@ -62,10 +76,11 @@ export function useLoading() {
 
   /**
    * 结束全局 loading（并发安全：计数 -1，下限保护）
-   * 兼容旧 API：不要求严格配对，但建议使用 startLoading/withLoading
+   * 101 Handoff: 首次关闭时淡出原生 HTML 预加载层，实现无缝切换
    */
   const loadingDone = () => {
     layoutStore.endGlobalLoading()
+    if (layoutStore.loadingCount === 0) fadeOutNativePreloader()
   }
 
   /** 开始内容区 loading（并发安全：计数 +1） */

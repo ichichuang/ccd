@@ -507,10 +507,13 @@ export default defineConfig({
     'layout-wrap': 'flex flex-wrap density-normal',
     'layout-grid-center': 'grid place-items-center',
     'layout-absolute-center': 'absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2',
-    // 常用内容容器宽度（替代 max-w-[xxvw]/max-w-[xxrem] 等任意值）
-    'layout-content-narrow': 'w-full max-w-2xl mx-auto',
-    'layout-content': 'w-full max-w-5xl mx-auto',
-    'layout-content-wide': 'w-full max-w-7xl mx-auto',
+    // 常用内容容器宽度（彻底抛弃 rem，改用响应式 vw，实现完美流体布局）
+    'layout-content-narrow':
+      'w-full mx-auto max-w-[94vw] sm:max-w-[84vw] md:max-w-[72vw] lg:max-w-[60vw] xl:max-w-[50vw] 2xl:max-w-[40vw]',
+    'layout-content':
+      'w-full mx-auto max-w-[96vw] sm:max-w-[88vw] md:max-w-[80vw] lg:max-w-[72vw] xl:max-w-[64vw] 2xl:max-w-[60vw]',
+    'layout-content-wide':
+      'w-full mx-auto max-w-[98vw] sm:max-w-[94vw] md:max-w-[88vw] lg:max-w-[84vw] xl:max-w-[80vw] 2xl:max-w-[76vw] 3xl:max-w-[72vw]',
     // 常用覆盖层/对话框宽度（替代 max-w-[480px] / w-[320px] 等任意值）
     'layout-dialog-sm': 'w-full max-w-md',
     'layout-dialog': 'w-full max-w-lg',
@@ -549,21 +552,20 @@ export default defineConfig({
     'text-interactive': 'text-primary-hover',
 
     // =========================================================
-    // ⑧a 边框快捷类（Border Shortcuts）
-    // 说明：仅设 border-width + border-color 不设 border-style 会导致边框不显示，
-    //       此处统一为 1px solid + 语义色，业务层优先使用此类，避免漏写 border-solid。
-    //       border-b-default / border-t-default 含 border-0 确保仅单边显示，避免叠加 component-border 时出现多余边框。
+    // ⑧a 边框快捷类（Border Shortcuts · Premium Borderless）
+    // component-border：无实线边框，用极淡 ring + 柔和阴影营造浮起感（101-premium-ui）。
+    // border-*-default：分区线使用低透明度，弱化视觉切割。
     // =========================================================
-    'component-border': 'border border-solid border-border',
-    'border-b-default': 'border-0 border-b border-solid border-border',
-    'border-t-default': 'border-0 border-t border-solid border-border',
+    'component-border': 'ring-1 ring-border/20 shadow-soft',
+    'border-b-default': 'border-0 border-b border-solid border-border/15',
+    'border-t-default': 'border-0 border-t border-solid border-border/15',
+    'border-l-default': 'border-0 border-l border-solid border-border/15',
 
     // =========================================================
     // ⑧ 组件语义基础（Component Base Styles）
-    // 说明：设计系统中的基础组件语义；卡片边框使用 component-border 保证可见。
+    // 说明：component-border 已含 shadow-soft，无需再叠 shadow-sm。
     // =========================================================
-    'component-card-base':
-      'rounded-scale-md bg-card text-card-foreground component-border shadow-sm',
+    'component-card-base': 'rounded-scale-md bg-card text-card-foreground component-border',
     'component-card-hoverable': 'behavior-hover-transition hover-elevated',
     'component-card-layout': 'density-normal',
     'component-card-content': 'row-center',
@@ -613,7 +615,10 @@ export default defineConfig({
     // 列表项/卡片条目背景：浅色模式需更高不透明度（40%）才能与 bg-card 形成可见对比，深色模式 20% 已足够
     'surface-item': 'bg-muted/40 dark:bg-muted/20',
     'brand-primary': 'text-primary',
-    'transition-fluid': 'transition-[transform,opacity] duration-scale-md ease-out-expo',
+    'transition-fluid':
+      'transition-[transform,opacity] duration-scale-md ease-[cubic-bezier(0.16,1,0.3,1)]',
+    /** 内容区 overlay 淡入淡出：0.3s cubic-bezier(0.4, 0, 0.2, 1) */
+    'transition-fade': 'transition-opacity duration-300 ease-[cubic-bezier(0.4,0,0.2,1)]',
     // KPI/统计卡片最小高度（替代 min-h-[12rem] 这类任意值）
     'min-h-kpi-card': 'min-h-48',
   },

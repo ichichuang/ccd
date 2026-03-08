@@ -140,6 +140,7 @@ declare global {
   const errorPagesNameList: typeof import('../constants/router').errorPagesNameList
   const errorPagesPathList: typeof import('../constants/router').errorPagesPathList
   const extendRef: typeof import('@vueuse/core').extendRef
+  const fadeOutNativePreloader: typeof import('../hooks/layout/useLoading').fadeOutNativePreloader
   const generateIdFromKey: typeof import('../utils/ids').generateIdFromKey
   const generateUniqueId: typeof import('../utils/ids').generateUniqueId
   const getActivePinia: typeof import('pinia').getActivePinia
@@ -511,7 +512,7 @@ declare global {
   export type { UseDialogReturn, ArgsType, ButtonProps, DialogOptions } from '../hooks/modules/useDialog'
   import('../hooks/modules/useDialog')
   // @ts-ignore
-  export type { UseHttpRequestResult } from '../hooks/modules/useHttpRequest'
+  export type { UseHttpRequestOptions, UseHttpRequestResult } from '../hooks/modules/useHttpRequest'
   import('../hooks/modules/useHttpRequest')
   // @ts-ignore
   export type { UseSchemaFormReturn } from '../hooks/modules/useSchemaForm'

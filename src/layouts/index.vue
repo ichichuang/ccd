@@ -5,7 +5,7 @@
  */
 import type { AnimateName } from '@/components/AnimateWrapper/utils/types'
 import { AnimateWrapper } from '@/components/AnimateWrapper'
-import LoadingWave from '@&/Loading-Wave.vue'
+import Loading from '@&/Loading.vue'
 import AdminLayout from '@/layouts/modules/LayoutAdmin.tsx'
 import FullScreenLayout from '@/layouts/modules/LayoutFullScreen.vue'
 import RatioLayout from '@/layouts/modules/LayoutRatio.vue'
@@ -76,8 +76,13 @@ const getAnimationDuration = (): string =>
       :duration="loadingOverlayDuration"
       delay="0s"
     >
-      <div class="container fixed center top-0 right-0 left-0 bottom-0 z-[999]">
-        <LoadingWave :loading-size="3" />
+      <div
+        class="fixed inset-0 z-[999] flex items-center justify-center backdrop-blur-md glass-surface w-full h-full"
+      >
+        <Loading
+          :type="3"
+          size="5xl"
+        />
       </div>
     </AnimateWrapper>
 

@@ -384,7 +384,7 @@ const handlePosition = (pos: DialogPosition) => {
 </script>
 
 <template>
-  <CScrollbar class="h-full p-padding-lg bg-background">
+  <CScrollbar class="h-full p-padding-lg">
     <div class="w-full max-w-[80vw] mx-auto flex flex-col gap-xl">
       <section class="component-card-base density-normal flex flex-col gap-xs">
         <h1 class="fs-2xl font-bold text-foreground">Dialog Component Full Demo</h1>

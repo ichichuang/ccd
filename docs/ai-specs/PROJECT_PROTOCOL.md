@@ -29,39 +29,37 @@
 
 # Project Protocol: Enterprise Vue 3 Architecture
 
-> **目标读者：AI**。本文档是 Cursor 与 Antigravity 的**单一真理来源（SSOT）**。AI 在代码生成前必须阅读并严格遵循。
+> **Target reader: AI**. This document is the **single source of truth (SSOT)** for Cursor and Antigravity. AI must read and follow it strictly before generating code.
 
-## 0. 进一步阅读（底层系统 SSOT 索引）
+## 0. Further reading (SSOT index)
 
-- **`./AI_CODING_PROTOCOL.md`**：**AI 编码协议**，生成代码前的决策流程与自检清单，必读。
-- `./BUILD_SYSTEM.md`：构建系统与自动导入（为什么 `ref/computed` 可以不 import）
-- `./ENV_AND_RUNTIME.md`：环境变量与运行时行为（dev/prod 差异、proxy/timeout）
-- `./TYPESCRIPT_AND_LINTING.md`：TS 项目引用与 ESLint（自动导入 globals、生成 d.ts 的纳入）
-- `./VUE_TEMPLATE_ANTIPATTERNS.md`：Vue 模板反模式（多语句内联处理器、模板中 TS 语法、readonly 数组 includes）
-- `./UNOCSS_AND_ICONS.md`：UnoCSS 语义类与图标体系（iconify + custom SVG + safelist）
-- `./PROJECT_PROTOCOL.md` §11 + `.cursor/rules/22-layouts.mdc`：Layouts 系统（LayoutMode、AdminLayoutMode、布局壳扩展）
-- `./ADAPTIVE_LAYOUT.md`：布局适配系统（PC/Tablet/Mobile、断点、有效显隐、userAdjusted）
-- `./PROJECT_PROTOCOL.md` §5.1 + `.cursor/rules/24-tsx-rendering.mdc` + `.cursor/rules/27-ai-tsx-decision.mdc`：TSX 渲染规范（程序化渲染用 TSX，禁止 h()；lang 切换、VNode vs 模板字符串）
-- **`./PRIMEVUE_V4_API.md`**：PrimeVue v4 API 规范，禁止 v3 弃用组件名（Dropdown→Select、Calendar→DatePicker 等），生成 PrimeVue 代码前必读。
-- `./DIALOG_COMPONENT.md`：PrimeDialog 二次封装（useDialog、便捷方法、高级用法）
-- `./DataTable_COMPONENT.md`：DataTable 表格封装（列配置、API、分页/无限滚动、选择、导出、列持久化）
-- `./SCHEMA_FORM_COMPONENT.md`：SchemaForm 表单组件（Schema 驱动、useSchemaForm、动态字段、分步/分组）
-- `./TOAST_AND_MESSAGE.md`：全局 Toast / Message（window.$toast、window.$message，非组件环境轻量通知）
-- `./TOAST_AND_MESSAGE.md`：Toast 样式覆盖说明（居中 Message、关闭按钮位置、内边距）
-- `./AUTH_AND_LOGIN_FLOW.md`：登录与鉴权流程（登录/登出、路由守卫、401、动态路由、存储清理）
+- **`./AI_CODING_PROTOCOL.md`** – AI coding protocol: decision flow and checklist; required.
+- `./BUILD_SYSTEM.md` – Build system and auto-imports.
+- `./ENV_AND_RUNTIME.md` – Env vars and runtime (dev/prod, proxy, timeout).
+- `./TYPESCRIPT_AND_LINTING.md` – TS and ESLint (auto-import globals, d.ts).
+- `./VUE_TEMPLATE_ANTIPATTERNS.md` – Vue template antipatterns.
+- `./UNOCSS_AND_ICONS.md` – UnoCSS and icons (iconify, custom SVG, safelist).
+- `./PROJECT_PROTOCOL.md` §11 + `.cursor/rules/22-layouts.mdc` – Layouts (LayoutMode, AdminLayoutMode).
+- `./ADAPTIVE_LAYOUT.md` – Adaptive layout (PC/Tablet/Mobile, breakpoints).
+- `./PROJECT_PROTOCOL.md` §5.1 + `.cursor/rules/24-tsx-rendering.mdc` + `.cursor/rules/27-ai-tsx-decision.mdc` – TSX rendering (no `h()`; lang, VNode vs string).
+- **`./PRIMEVUE_V4_API.md`** – PrimeVue v4; no v3 names; required before PrimeVue code.
+- `./DIALOG_COMPONENT.md` – PrimeDialog (useDialog).
+- `./DataTable_COMPONENT.md` – DataTable (columns, API, pagination, export, persistence).
+- `./SCHEMA_FORM_COMPONENT.md` – SchemaForm (schema, useSchemaForm, dynamic fields, steps).
+- `./TOAST_AND_MESSAGE.md` – Toast/Message (window.$toast, window.$message).
+- `./AUTH_AND_LOGIN_FLOW.md` – Auth (login/logout, guards, 401, dynamic routes).
+- `./LOADING_SYSTEM.md` – Loading (Global/Page/Component; useLoading, useHttpRequest).
 
-## 1. 技术栈核心 (Tech Stack)
+## 1. Tech stack
 
-- **Framework:** Vue 3.5+（仅允许 Script Setup）
-- **Language:** TypeScript（严格模式；**业务代码禁止 `any`**，边界封装层允许受控例外）
-- **Build:** Vite 7
-- **Package Manager:** pnpm
-  - 执行 install/dev/build/lint 等命令时，**优先使用 pnpm**（如 `pnpm install`、`pnpm dev`、`pnpm build`）；若环境无 pnpm 再使用 npm
-  - AI 生成命令/文档时：默认输出 `pnpm xxx`，不要默认输出 `npm run xxx`
-- **Styling:** UnoCSS（Utility-First）。**禁止在 `<style>` 中写常规布局/间距/颜色**
-- **UI Lib:** PrimeVue（Unstyled/PassThrough 优先，样式用 UnoCSS 或 `pt`）
-- **Network:** Alova.js（通过 `@/utils/http`）。**禁止在业务代码中直接使用 axios/fetch**
-- **State:** Pinia
+- **Framework:** Vue 3.5+ (script setup only).
+- **Language:** TypeScript (strict; **no `any` in business code**; controlled exceptions in boundary layers).
+- **Build:** Vite 7.
+- **Package manager:** pnpm – prefer pnpm for install/dev/build/lint; when generating commands/docs, default to `pnpm xxx`, not `npm run xxx`.
+- **Styling:** UnoCSS (utility-first). **No layout/spacing/color in `<style>`**.
+- **UI lib:** PrimeVue (unstyled/PassThrough; UnoCSS or `pt`).
+- **Network:** Alova.js via `@/utils/http`. **No axios/fetch in business code**.
+- **State:** Pinia.
 
 ## 1.1 PrimeVue 使用策略 (UI Component Policy)
 
@@ -276,8 +274,10 @@ const renderSlot = () => <span class="text-muted-foreground">动态内容</span>
 
 - **语义化尺寸类：** `p-padding-{scale}`、`m-margin-{scale}`、`gap-{scale}`（仅支持 `gap-*`/`gap-x-*`/`gap-y-*`；scale: xs/sm/md/lg/xl/2xl/3xl/4xl/5xl）
 - **布局变量类：** `w-sidebarWidth`、`h-headerHeight`、`w-sidebarCollapsedWidth` 等
-- **字体阶梯类：** `fs-xs`～`fs-5xl`；标题用 `fs-2xl`、正文 `fs-md`、辅助 `fs-sm`，详见 `src/constants/layout-menu.ts` TYPO\_\*
-- **圆角类：** `rounded-scale`（使用 CSS 变量 `--radius-md`）；导航/Tab 用 `rounded-scale-md`、卡片/表单用 `rounded-scale-sm`，详见 `src/constants/layout-menu.ts`
+- **字体阶梯类：** `fs-xs`～`fs-5xl`（仅使用 `fs-{scale}`，禁止 `text-size-*`）；标题用 `fs-2xl`、正文 `fs-md`、辅助 `fs-sm`，详见 `src/constants/layout-menu.ts` TYPO\_\*
+- **圆角类：** 默认使用 `rounded-scale-md` 或 shortcut `default-rounded`（卡片、按钮、抬升面）；阶梯见 `src/constants/sizeScale.ts`。禁止通用 Tailwind 圆角如 `rounded-md`、`rounded-lg`。
+- **过渡类：** 使用 `duration-scale-{scale}`（SSOT: `sizeScale.ts` TRANSITION_SCALE_VALUES），或 shortcut `behavior-hover-transition`（= `transition-all duration-scale-md`）。禁止硬编码 `duration-300`、`duration-200`。
+- **表面/交互 shortcut：** 优先使用 `surface-base`、`surface-elevated`、`surface-sunken`、`surface-item`（列表/表格行）、`interactive-focus-ring`（焦点环），见 `uno.config.ts` shortcuts。
 - **配色类：** `text-primary`、`bg-surface-ground`、`border-border`、`text-info`、`bg-info` 等（使用 CSS 变量）
 - **边框快捷类：** 四边 `component-border`，底边 `border-b-default`，顶边 `border-t-default`；禁止仅写 `border border-border`
 

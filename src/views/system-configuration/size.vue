@@ -213,7 +213,7 @@ const marginDirMap = [
 <template>
   <div class="h-full flex flex-col overflow-hidden">
     <!-- Toolbar: Header (non-scroll) -->
-    <div class="shrink-0 px-padding-lg py-padding-md bg-background border-b-default">
+    <div class="shrink-0 px-padding-lg py-padding-md border-b-default">
       <div class="layout-content-wide flex flex-col gap-xs">
         <div class="flex items-center gap-md">
           <div class="p-padding-md bg-primary/10 rounded-scale-lg shrink-0">
@@ -252,7 +252,7 @@ const marginDirMap = [
 
     <!-- Scrollable content -->
     <CScrollbar class="flex-1 min-h-0">
-      <div class="p-padding-lg bg-background">
+      <div class="p-padding-lg">
         <div class="layout-content-wide flex flex-col gap-xl">
           <!-- Size Store 尺寸 Store -->
           <Card class="component-border hover:shadow-md transition-all duration-scale-lg">
@@ -327,7 +327,7 @@ const marginDirMap = [
             <template #content>
               <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-md">
                 <div
-                  class="flex flex-col gap-xs p-padding-md surface-item rounded-scale-md component-border shadow-sm hover:shadow-md hover:bg-muted/60 dark:hover:bg-muted/40 hover:-translate-y-0.5 transition-all duration-scale-lg"
+                  class="flex flex-col gap-xs p-padding-md surface-item rounded-scale-md component-border hover:shadow-md hover:bg-muted/60 dark:hover:bg-muted/40 hover:-translate-y-0.5 transition-all duration-scale-lg"
                 >
                   <span class="text-muted-foreground fs-xs">type</span>
                   <Tag
@@ -336,7 +336,7 @@ const marginDirMap = [
                   />
                 </div>
                 <div
-                  class="flex flex-col gap-xs p-padding-md surface-item rounded-scale-md component-border shadow-sm hover:shadow-md hover:bg-muted/60 dark:hover:bg-muted/40 hover:-translate-y-0.5 transition-all duration-scale-lg"
+                  class="flex flex-col gap-xs p-padding-md surface-item rounded-scale-md component-border hover:shadow-md hover:bg-muted/60 dark:hover:bg-muted/40 hover:-translate-y-0.5 transition-all duration-scale-lg"
                 >
                   <span class="text-muted-foreground fs-xs">currentBreakpoint</span>
                   <Tag
@@ -345,7 +345,7 @@ const marginDirMap = [
                   />
                 </div>
                 <div
-                  class="flex flex-col gap-xs p-padding-md surface-item rounded-scale-md component-border shadow-sm hover:shadow-md hover:bg-muted/60 dark:hover:bg-muted/40 hover:-translate-y-0.5 transition-all duration-scale-lg"
+                  class="flex flex-col gap-xs p-padding-md surface-item rounded-scale-md component-border hover:shadow-md hover:bg-muted/60 dark:hover:bg-muted/40 hover:-translate-y-0.5 transition-all duration-scale-lg"
                 >
                   <span class="text-muted-foreground fs-xs">isMobileLayout</span>
                   <Tag
@@ -354,7 +354,7 @@ const marginDirMap = [
                   />
                 </div>
                 <div
-                  class="flex flex-col gap-xs p-padding-md surface-item rounded-scale-md component-border shadow-sm hover:shadow-md hover:bg-muted/60 dark:hover:bg-muted/40 hover:-translate-y-0.5 transition-all duration-scale-lg"
+                  class="flex flex-col gap-xs p-padding-md surface-item rounded-scale-md component-border hover:shadow-md hover:bg-muted/60 dark:hover:bg-muted/40 hover:-translate-y-0.5 transition-all duration-scale-lg"
                 >
                   <span class="text-muted-foreground fs-xs">width × height</span>
                   <span class="font-mono fs-sm">
@@ -897,7 +897,7 @@ const marginDirMap = [
                 <div
                   v-for="preset in SIZE_PRESETS"
                   :key="preset.name"
-                  class="flex flex-col gap-md p-padding-lg surface-item rounded-scale-lg component-border shadow-sm hover:shadow-md hover:bg-muted/60 dark:hover:bg-muted/40 hover:-translate-y-0.5 transition-all duration-scale-lg"
+                  class="flex flex-col gap-md p-padding-lg surface-item rounded-scale-lg component-border hover:shadow-md hover:bg-muted/60 dark:hover:bg-muted/40 hover:-translate-y-0.5 transition-all duration-scale-lg"
                 >
                   <div class="flex items-center justify-between">
                     <h4 class="fs-sm font-semibold text-foreground mb-margin-xs">

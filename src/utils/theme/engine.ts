@@ -46,7 +46,7 @@ export function generateThemeVars(preset: ThemePreset, isDark: boolean): ThemeCs
     }
     return preset.backgroundLight
       ? adjustBrightness(preset.backgroundLight, -Math.abs(E.cardBrightnessOffset))
-      : E.bgLight
+      : (E.cardLight ?? E.bgLight)
   })
 
   const cardFg = resolveToken(modeConfig?.neutral?.foreground, () => fgBase)
@@ -286,4 +286,14 @@ export function applyTheme(vars: ThemeCssVars) {
 
   // 4. 单次原子更新 - 只触发 1 次 style mutation
   root.style.cssText = cssText
+
+  // 5. 持久化 --primary 供 index.html 预加载圈首帧读取（刷新后与主题一致）
+  try {
+    const primary = vars['--primary']
+    if (primary) {
+      localStorage.setItem('theme-primary', primary)
+    }
+  } catch (_) {
+    /* ignore */
+  }
 }

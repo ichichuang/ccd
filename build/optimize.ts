@@ -25,6 +25,9 @@ export const include = [
   'echarts',
   'vue-echarts',
 
+  // Lottie 动画
+  'vue3-lottie',
+
   // PrimeVue 表单库
   '@primevue/forms',
 

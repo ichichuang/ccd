@@ -91,7 +91,7 @@ const semanticAliases: Array<{ name: string; classes: string; desc: string }> = 
 <template>
   <div class="h-full flex flex-col overflow-hidden">
     <!-- Toolbar: Header + Search (non-scroll) -->
-    <div class="shrink-0 px-padding-lg py-padding-md bg-background border-b-default">
+    <div class="shrink-0 px-padding-lg py-padding-md border-b-default">
       <div class="layout-content-wide flex flex-col gap-md">
         <!-- Header -->
         <div class="flex flex-col gap-xs">
@@ -152,7 +152,10 @@ const semanticAliases: Array<{ name: string; classes: string; desc: string }> = 
         <div class="w-full max-w-lg">
           <IconField>
             <InputIcon>
-              <i class="i-lucide-search" />
+              <Icons
+                name="i-lucide-search"
+                size="sm"
+              />
             </InputIcon>
             <InputText
               v-model="searchQuery"
@@ -166,7 +169,7 @@ const semanticAliases: Array<{ name: string; classes: string; desc: string }> = 
 
     <!-- Scrollable content -->
     <CScrollbar class="flex-1 min-h-0">
-      <div class="p-padding-lg bg-background">
+      <div class="p-padding-lg">
         <div class="layout-content-wide flex flex-col gap-xl">
           <!-- Shortcuts 快捷方式 -->
           <Card
@@ -217,7 +220,7 @@ const semanticAliases: Array<{ name: string; classes: string; desc: string }> = 
                       <div
                         v-for="item in group.items"
                         :key="item.name"
-                        class="flex flex-col rounded-scale-md overflow-hidden cursor-pointer surface-item component-border shadow-sm hover:shadow-md hover:bg-muted/60 dark:hover:bg-muted/40 hover:-translate-y-0.5 active:scale-95 transition-all duration-scale-lg"
+                        class="flex flex-col rounded-scale-md overflow-hidden cursor-pointer surface-item component-border hover:shadow-md hover:bg-muted/60 dark:hover:bg-muted/40 hover:-translate-y-0.5 active:scale-95 transition-all duration-scale-lg"
                         @click="copyToClipboard(item.name)"
                       >
                         <!-- 示意图区域 -->
@@ -372,7 +375,7 @@ const semanticAliases: Array<{ name: string; classes: string; desc: string }> = 
                       <div
                         v-for="item in group.items"
                         :key="item.name"
-                        class="flex items-center gap-md p-padding-md surface-item rounded-scale-md component-border shadow-sm hover:shadow-md hover:bg-muted/60 dark:hover:bg-muted/40 hover:-translate-y-0.5 cursor-pointer active:scale-95 transition-all duration-scale-lg"
+                        class="flex items-center gap-md p-padding-md surface-item rounded-scale-md component-border hover:shadow-md hover:bg-muted/60 dark:hover:bg-muted/40 hover:-translate-y-0.5 cursor-pointer active:scale-95 transition-all duration-scale-lg"
                         @click="copyToClipboard(item.name)"
                       >
                         <!-- 文字信息 -->
@@ -460,7 +463,7 @@ const semanticAliases: Array<{ name: string; classes: string; desc: string }> = 
                             </div>
                             <span class="fs-xs text-muted-foreground/50 leading-none">active</span>
                           </div>
-                          <!-- interactive-focus-ring: 静态展示 ring 效果 -->
+                          <!-- interactive-focus-ring: 静态展示 ring 效果；原生 button 便于演示 focus-visible/ring，符合 29-focus-outline -->
                           <div
                             v-else-if="item.name === 'interactive-focus-ring'"
                             class="flex flex-col items-center gap-xs"
@@ -559,7 +562,7 @@ const semanticAliases: Array<{ name: string; classes: string; desc: string }> = 
                         <div
                           v-for="item in group.items"
                           :key="`info-${item.name}`"
-                          class="flex flex-col gap-xs p-padding-sm surface-item rounded-scale-md component-border shadow-sm hover:shadow-md hover:bg-muted/60 dark:hover:bg-muted/40 hover:-translate-y-0.5 cursor-pointer active:scale-95 transition-all duration-scale-lg"
+                          class="flex flex-col gap-xs p-padding-sm surface-item rounded-scale-md component-border hover:shadow-md hover:bg-muted/60 dark:hover:bg-muted/40 hover:-translate-y-0.5 cursor-pointer active:scale-95 transition-all duration-scale-lg"
                           @click="copyToClipboard(item.name)"
                         >
                           <span class="font-semibold fs-sm text-foreground">{{ item.name }}</span>
@@ -585,7 +588,7 @@ const semanticAliases: Array<{ name: string; classes: string; desc: string }> = 
                     <div
                       v-for="item in group.items"
                       :key="item.name"
-                      class="flex items-center gap-md p-padding-md surface-item rounded-scale-md component-border shadow-sm hover:shadow-md hover:bg-muted/60 dark:hover:bg-muted/40 hover:-translate-y-0.5 cursor-pointer active:scale-95 transition-all duration-scale-lg"
+                      class="flex items-center gap-md p-padding-md surface-item rounded-scale-md component-border hover:shadow-md hover:bg-muted/60 dark:hover:bg-muted/40 hover:-translate-y-0.5 cursor-pointer active:scale-95 transition-all duration-scale-lg"
                       @click="copyToClipboard(item.name)"
                     >
                       <div class="flex flex-col flex-1 min-w-0">
@@ -741,7 +744,7 @@ const semanticAliases: Array<{ name: string; classes: string; desc: string }> = 
                             示例文字
                           </span>
                         </div>
-                        <!-- Interaction：可悬停/聚焦的小块 + 说明，效果需悬停/聚焦可见 -->
+                        <!-- Interaction：可悬停/聚焦的小块 + 说明；原生 button 用于演示 interactive-focus-ring 的 focus-visible/ring -->
                         <div
                           v-else-if="getShortcutDemoKind(group.category) === 'interaction'"
                           class="w-full h-full flex flex-col items-center justify-center gap-xs p-padding-xs"
@@ -1052,7 +1055,7 @@ const semanticAliases: Array<{ name: string; classes: string; desc: string }> = 
                   <div
                     v-for="item in semanticAliases"
                     :key="item.name"
-                    class="flex items-center gap-md p-padding-md surface-item rounded-scale-md component-border shadow-sm hover:shadow-md hover:bg-muted/60 dark:hover:bg-muted/40 hover:-translate-y-0.5 transition-all duration-scale-lg cursor-pointer"
+                    class="flex items-center gap-md p-padding-md surface-item rounded-scale-md component-border hover:shadow-md hover:bg-muted/60 dark:hover:bg-muted/40 hover:-translate-y-0.5 transition-all duration-scale-lg cursor-pointer"
                     @click="copyToClipboard(item.name)"
                   >
                     <div
@@ -1236,7 +1239,7 @@ const semanticAliases: Array<{ name: string; classes: string; desc: string }> = 
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-md">
                   <RouterLink
                     to="/example/charts/use-echarts"
-                    class="flex items-center gap-sm p-padding-md surface-item rounded-scale-md component-border shadow-sm hover:shadow-md behavior-hover-transition hover:bg-muted/60 dark:hover:bg-muted/40 hover:-translate-y-0.5 transition-colors duration-scale-lg"
+                    class="flex items-center gap-sm p-padding-md surface-item rounded-scale-md component-border hover:shadow-md behavior-hover-transition hover:bg-muted/60 dark:hover:bg-muted/40 hover:-translate-y-0.5 transition-colors duration-scale-lg"
                   >
                     <Icons
                       name="i-lucide-chart-bar"
@@ -1246,7 +1249,7 @@ const semanticAliases: Array<{ name: string; classes: string; desc: string }> = 
                   </RouterLink>
                   <RouterLink
                     to="/example/basic-ui/icons"
-                    class="flex items-center gap-sm p-padding-md surface-item rounded-scale-md component-border shadow-sm hover:shadow-md behavior-hover-transition hover:bg-muted/60 dark:hover:bg-muted/40 hover:-translate-y-0.5 transition-colors duration-scale-lg"
+                    class="flex items-center gap-sm p-padding-md surface-item rounded-scale-md component-border hover:shadow-md behavior-hover-transition hover:bg-muted/60 dark:hover:bg-muted/40 hover:-translate-y-0.5 transition-colors duration-scale-lg"
                   >
                     <Icons
                       name="i-lucide-brush"
@@ -1256,7 +1259,7 @@ const semanticAliases: Array<{ name: string; classes: string; desc: string }> = 
                   </RouterLink>
                   <RouterLink
                     to="/example/forms/schema-form"
-                    class="flex items-center gap-sm p-padding-md surface-item rounded-scale-md component-border shadow-sm hover:shadow-md behavior-hover-transition hover:bg-muted/60 dark:hover:bg-muted/40 hover:-translate-y-0.5 transition-colors"
+                    class="flex items-center gap-sm p-padding-md surface-item rounded-scale-md component-border hover:shadow-md behavior-hover-transition hover:bg-muted/60 dark:hover:bg-muted/40 hover:-translate-y-0.5 transition-colors"
                   >
                     <Icons
                       name="i-lucide-clipboard-list"
@@ -1266,7 +1269,7 @@ const semanticAliases: Array<{ name: string; classes: string; desc: string }> = 
                   </RouterLink>
                   <RouterLink
                     to="/example/tables/data-table"
-                    class="flex items-center gap-sm p-padding-md surface-item rounded-scale-md component-border shadow-sm hover:shadow-md behavior-hover-transition hover:bg-muted/60 dark:hover:bg-muted/40 hover:-translate-y-0.5 transition-colors"
+                    class="flex items-center gap-sm p-padding-md surface-item rounded-scale-md component-border hover:shadow-md behavior-hover-transition hover:bg-muted/60 dark:hover:bg-muted/40 hover:-translate-y-0.5 transition-colors"
                   >
                     <Icons
                       name="i-lucide-table"
@@ -1276,7 +1279,7 @@ const semanticAliases: Array<{ name: string; classes: string; desc: string }> = 
                   </RouterLink>
                   <RouterLink
                     to="/example/basic-ui/primevue-dialog"
-                    class="flex items-center gap-sm p-padding-md surface-item rounded-scale-md component-border shadow-sm hover:shadow-md behavior-hover-transition hover:bg-muted/60 dark:hover:bg-muted/40 hover:-translate-y-0.5 transition-colors"
+                    class="flex items-center gap-sm p-padding-md surface-item rounded-scale-md component-border hover:shadow-md behavior-hover-transition hover:bg-muted/60 dark:hover:bg-muted/40 hover:-translate-y-0.5 transition-colors"
                   >
                     <Icons
                       name="i-lucide-box"

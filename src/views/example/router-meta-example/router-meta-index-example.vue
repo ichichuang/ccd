@@ -77,7 +77,7 @@ function navigateTo(item: MetaExampleItem) {
       <span>Router Meta 功能示例索引</span>
     </h2>
 
-    <div class="component-border rounded-scale p-padding-md space-y-margin-sm bg-card">
+    <div class="component-border rounded-scale p-padding-md space-y-margin-sm">
       <div class="fs-md font-medium">当前路由 meta.parentPaths（自动注入）</div>
       <p class="text-muted-foreground fs-sm">
         parentPaths 由 addParentPathsToLeafRoutes 自动为叶子路由注入，用于面包屑、菜单展开等。

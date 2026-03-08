@@ -76,6 +76,38 @@ export const LAYOUT_SCALE_RATIOS: Record<SizeScaleKey, number> = {
 }
 
 /**
+ * Loading 动画尺寸映射（vw）
+ * 用于 Lottie 等固定像素渲染，与 SizeScaleKey 一一对应
+ */
+export const LOADING_SIZE_PERCENT: Record<SizeScaleKey, number> = {
+  xs: 8, // 内联/按钮旁
+  sm: 18, // 小区域
+  md: 28, // 中等
+  lg: 36, // 页面 loading
+  xl: 48, // 大区域
+  '2xl': 60, // 全局 loading 偏小
+  '3xl': 72, // 全局 loading 推荐
+  '4xl': 86, // 大屏/强调
+  '5xl': 100, // 全屏/hero
+}
+
+/**
+ * Loading 动画尺寸（正方形，避免宽高比失真）
+ * 与 SizeScaleKey 一一对应；xs～4xl 为固定 px，5xl 为流体 CSS 实现巨型全屏 loader
+ */
+export const LOADING_SIZE_CSS: Record<SizeScaleKey, number | string> = {
+  xs: 32,
+  sm: 48,
+  md: 64,
+  lg: 80,
+  xl: 96,
+  '2xl': 104,
+  '3xl': 112,
+  '4xl': 120,
+  '5xl': 'min(80vw, 80vh)', // 流体巨型正方形，与 index.html .lottie-preload 一致
+}
+
+/**
  * 过渡时长表 (毫秒)
  * 从微交互到慢动画的完整阶梯
  * 遵循 Material Design 动效时长指南

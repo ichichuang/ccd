@@ -88,7 +88,7 @@ This directory contains standard operating procedures (SOP) for Antigravity Agen
 11. **`12-generate-industrial-page.md`** – Generate industrial page
 
 - **Purpose**: Industrial monitoring/dashboard page SOP
-- **Flow**: 信息收集 → Flex 骨架 → 内容区 → 细节打磨 → 自检
+- **Flow**: Gather context → Flex skeleton → Content areas → Polish → Self-check
 - **Scope**: `src/views/**/*.vue`
 - **Prerequisites**: Read `docs/ai-specs/INDUSTRIAL_UX_DESIGN_SYSTEM.md`
 - **Flow**: Identify scenario -> Choose approach (color prop or class + !) -> Verify
@@ -111,7 +111,7 @@ This directory contains standard operating procedures (SOP) for Antigravity Agen
 - **Feedback notifications** → `08-toast-message-feedback.md`
 - **Chart-related task** → `09-use-echarts.md`
 - **Icons color not applying** → `10-icons-color-styling.md`
-- **工业/仪表盘页面** → `12-generate-industrial-page.md`
+- **Industrial / dashboard page** → `12-generate-industrial-page.md`
 
 ### Skill Execution Flow
 
@@ -145,4 +145,4 @@ This directory contains standard operating procedures (SOP) for Antigravity Agen
 - `06-style-audit.md` ↔ Cursor rules auto-check
 - `07-SchemaForm.md` ↔ Cursor `08-SchemaForm.md`
 - `08-toast-message-feedback.md` ↔ Cursor `07-toast-message-feedback.md`
-- `12-generate-industrial-page.md` ↔ Cursor 无直接对应（工业场景扩展，可视为 02-build-page-view 的工业版）
+- `12-generate-industrial-page.md` ↔ Cursor: no direct counterpart (industrial scenario; treat as industrial variant of 02-build-page-view)

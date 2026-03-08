@@ -1,3 +1,4 @@
+import type { Ref } from 'vue'
 import type { EChartsOption } from 'echarts'
 import * as echarts from 'echarts/core'
 import { useThemeStore } from '@/stores/modules/theme'
@@ -7,8 +8,9 @@ import type { SystemMetricsDTO } from '../page.state'
 /**
  * Hook to build ultra-premium ECharts options for System Metrics.
  * Strictly follows .cursor/rules/40-echarts-visualization.mdc
+ * @param dataRef - Reactive ref of metrics data for live chart updates
  */
-export function useChartOptions(data: SystemMetricsDTO[]) {
+export function useChartOptions(dataRef: Ref<SystemMetricsDTO[]>) {
   const themeStore = useThemeStore()
 
   const chartOptions = computed<EChartsOption>(() => {
@@ -17,6 +19,7 @@ export function useChartOptions(data: SystemMetricsDTO[]) {
     void themeStore.mode
     void themeStore.isDark
 
+    const data = dataRef.value
     const vars = getChartSystemVariables()
 
     // Premium Animation Config

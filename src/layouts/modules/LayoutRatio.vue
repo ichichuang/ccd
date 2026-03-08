@@ -2,8 +2,12 @@
 import { getCurrentRouteMeta } from '@/router/utils/helper'
 import { useDeviceStore } from '@/stores/modules/device'
 import AnimateRouterView from '@&/AnimateRouterView.vue'
+import Loading from '@&/Loading.vue'
+import { useLayoutStore } from '@/stores/modules/layout'
 
 const deviceStore = useDeviceStore()
+const layoutStore = useLayoutStore()
+const isPageLoading = computed(() => layoutStore.isPageLoading)
 const width = computed(() => deviceStore.getWidth)
 const height = computed(() => deviceStore.getHeight)
 
@@ -130,10 +134,21 @@ watch(
   >
     <div
       ref="ratioRef"
-      class="ratio-box"
+      class="ratio-box relative"
       :style="boxStyle"
     >
       <AnimateRouterView />
+      <Transition name="fade">
+        <div
+          v-show="isPageLoading"
+          class="absolute inset-0 z-10 flex items-center justify-center backdrop-blur-sm bg-background/60 pointer-events-auto"
+        >
+          <Loading
+            :type="2"
+            size="lg"
+          />
+        </div>
+      </Transition>
     </div>
   </div>
 </template>

@@ -129,8 +129,8 @@ const state = scrollbarRef.value?.state()`,
 <template>
   <div class="h-full flex flex-col overflow-hidden">
     <!-- Toolbar: Header (non-scroll) -->
-    <div class="shrink-0 px-padding-lg py-padding-md bg-background border-b-default">
-      <div class="w-full max-w-[90vw] mx-auto flex flex-col gap-xs">
+    <div class="shrink-0 px-padding-lg py-padding-md border-b-default">
+      <div class="layout-content-wide flex flex-col gap-xs">
         <div class="flex items-center gap-md">
           <div class="p-padding-md bg-primary/10 rounded-scale-lg shrink-0">
             <Icons
@@ -170,8 +170,8 @@ const state = scrollbarRef.value?.state()`,
 
     <!-- Scrollable content -->
     <CScrollbar class="flex-1 min-h-0">
-      <div class="p-padding-lg bg-background">
-        <div class="w-full max-w-[90vw] mx-auto flex flex-col gap-xl">
+      <div class="p-padding-lg">
+        <div class="layout-content-wide flex flex-col gap-xl">
           <!-- Control Panel -->
           <Card class="component-border hover:shadow-md transition-all duration-scale-lg">
             <template #title>
@@ -197,7 +197,8 @@ const state = scrollbarRef.value?.state()`,
                 <div class="h-8 w-px bg-border mx-gap-md hidden md:block" />
                 <div class="flex gap-sm flex-wrap items-center">
                   <div
-                    class="flex items-center gap-2 p-padding-sm py-1.5 rounded-scale-md cursor-pointer select-none transition-all duration-scale-lg ease-in-out fs-sm active:scale-95 border border-solid border-border bg-muted/10 hover:bg-muted/30 hover:shadow-sm"
+                    class="flex items-center gap-2 px-padding-sm py-padding-xs rounded-scale-md cursor-pointer select-none transition-all duration-scale-lg ease-in-out fs-sm active:scale-95 surface-item hover:bg-muted/30 hover:shadow-sm interactive-focus-ring"
+                    tabindex="0"
                     @click="scrollToTop"
                   >
                     <Icons
@@ -207,7 +208,8 @@ const state = scrollbarRef.value?.state()`,
                     <span>滚动至顶部</span>
                   </div>
                   <div
-                    class="flex items-center gap-2 p-padding-sm py-1.5 rounded-scale-md cursor-pointer select-none transition-all duration-scale-lg ease-in-out fs-sm active:scale-95 border border-solid border-border bg-muted/10 hover:bg-muted/30 hover:shadow-sm"
+                    class="flex items-center gap-2 px-padding-sm py-padding-xs rounded-scale-md cursor-pointer select-none transition-all duration-scale-lg ease-in-out fs-sm active:scale-95 surface-item hover:bg-muted/30 hover:shadow-sm interactive-focus-ring"
+                    tabindex="0"
                     @click="scrollToBottom"
                   >
                     <Icons
@@ -217,7 +219,8 @@ const state = scrollbarRef.value?.state()`,
                     <span>滚动至底部</span>
                   </div>
                   <div
-                    class="flex items-center gap-2 p-padding-sm py-1.5 rounded-scale-md cursor-pointer select-none transition-all duration-scale-lg ease-in-out fs-sm active:scale-95 bg-info text-info-foreground shadow-sm hover:opacity-90 hover:shadow-md"
+                    class="flex items-center gap-2 px-padding-sm py-padding-xs rounded-scale-md cursor-pointer select-none transition-all duration-scale-lg ease-in-out fs-sm active:scale-95 bg-info text-info-foreground shadow-sm hover:opacity-90 hover:shadow-md interactive-focus-ring"
+                    tabindex="0"
                     @click="checkState"
                   >
                     <Icons
@@ -227,7 +230,8 @@ const state = scrollbarRef.value?.state()`,
                     <span>检查状态</span>
                   </div>
                   <div
-                    class="flex items-center gap-2 p-padding-sm py-1.5 rounded-scale-md cursor-pointer select-none transition-all duration-scale-lg ease-in-out fs-sm active:scale-95 text-danger hover:bg-danger/10"
+                    class="flex items-center gap-2 px-padding-sm py-padding-xs rounded-scale-md cursor-pointer select-none transition-all duration-scale-lg ease-in-out fs-sm active:scale-95 text-danger hover:bg-danger/10 interactive-focus-ring"
+                    tabindex="0"
                     @click="logs = []"
                   >
                     <Icons
@@ -259,7 +263,7 @@ const state = scrollbarRef.value?.state()`,
             <template #content>
               <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-md">
                 <div
-                  class="flex flex-col gap-xs p-padding-md surface-item rounded-scale-md component-border shadow-sm hover:shadow-md hover:bg-muted/60 dark:hover:bg-muted/40 hover:-translate-y-0.5 transition-all duration-scale-lg"
+                  class="flex flex-col gap-xs p-padding-md surface-item rounded-scale-md component-border hover:shadow-md hover:bg-muted/60 dark:hover:bg-muted/40 hover:-translate-y-0.5 transition-all duration-scale-lg"
                 >
                   <span class="text-muted-foreground fs-xs">type</span>
                   <Tag
@@ -268,7 +272,7 @@ const state = scrollbarRef.value?.state()`,
                   />
                 </div>
                 <div
-                  class="flex flex-col gap-xs p-padding-md surface-item rounded-scale-md component-border shadow-sm hover:shadow-md hover:bg-muted/60 dark:hover:bg-muted/40 hover:-translate-y-0.5 transition-all duration-scale-lg"
+                  class="flex flex-col gap-xs p-padding-md surface-item rounded-scale-md component-border hover:shadow-md hover:bg-muted/60 dark:hover:bg-muted/40 hover:-translate-y-0.5 transition-all duration-scale-lg"
                 >
                   <span class="text-muted-foreground fs-xs">currentBreakpoint</span>
                   <Tag
@@ -277,7 +281,7 @@ const state = scrollbarRef.value?.state()`,
                   />
                 </div>
                 <div
-                  class="flex flex-col gap-xs p-padding-md surface-item rounded-scale-md component-border shadow-sm hover:shadow-md hover:bg-muted/60 dark:hover:bg-muted/40 hover:-translate-y-0.5 transition-all duration-scale-lg"
+                  class="flex flex-col gap-xs p-padding-md surface-item rounded-scale-md component-border hover:shadow-md hover:bg-muted/60 dark:hover:bg-muted/40 hover:-translate-y-0.5 transition-all duration-scale-lg"
                 >
                   <span class="text-muted-foreground fs-xs">isMobileLayout</span>
                   <Tag
@@ -286,7 +290,7 @@ const state = scrollbarRef.value?.state()`,
                   />
                 </div>
                 <div
-                  class="flex flex-col gap-xs p-padding-md surface-item rounded-scale-md component-border shadow-sm hover:shadow-md hover:bg-muted/60 dark:hover:bg-muted/40 hover:-translate-y-0.5 transition-all duration-scale-lg"
+                  class="flex flex-col gap-xs p-padding-md surface-item rounded-scale-md component-border hover:shadow-md hover:bg-muted/60 dark:hover:bg-muted/40 hover:-translate-y-0.5 transition-all duration-scale-lg"
                 >
                   <span class="text-muted-foreground fs-xs">width × height</span>
                   <span class="font-mono fs-sm">
@@ -338,7 +342,7 @@ const state = scrollbarRef.value?.state()`,
                     @updated="handleUpdated"
                     @scroll="handleScroll"
                   >
-                    <div class="p-padding-sm space-y-3">
+                    <div class="p-padding-sm flex flex-col gap-scale-md">
                       <div
                         v-for="item in items"
                         :key="item.id"
@@ -421,7 +425,7 @@ const state = scrollbarRef.value?.state()`,
                 <template #content>
                   <div class="scroll-demo-logs bg-card rounded-scale-md -mt-2">
                     <CScrollbar class="h-full">
-                      <div class="p-padding-md font-mono fs-xs space-y-1">
+                      <div class="p-padding-md font-mono fs-xs flex flex-col gap-0.5">
                         <div
                           v-if="logs.length === 0"
                           class="text-muted-foreground italic select-none py-padding-2xl text-center"
@@ -431,7 +435,7 @@ const state = scrollbarRef.value?.state()`,
                         <div
                           v-for="(log, i) in logs"
                           :key="i"
-                          class="break-all border-b border-white/5 pb-0.5 mb-0.5 last:border-0"
+                          class="break-all pb-padding-xs mb-padding-xs last:mb-0"
                           :class="
                             log.includes('Action') ? 'text-info font-bold' : 'text-success/80'
                           "
@@ -473,7 +477,7 @@ const state = scrollbarRef.value?.state()`,
                   >
                     {{ example.title }}
                     <div
-                      class="p-1 rounded-scale-sm cursor-pointer select-none transition-all duration-scale-lg ease-in-out hover:bg-primary/10 hover:text-primary active:scale-90"
+                      class="p-padding-xs rounded-scale-sm cursor-pointer select-none transition-all duration-scale-lg ease-in-out hover:bg-primary/10 hover:text-primary active:scale-90"
                       @click.stop="copyToClipboard(example.code, example.title)"
                     >
                       <Icons

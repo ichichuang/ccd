@@ -105,3 +105,22 @@ body {
   opacity: 0;
   transform: translateX(30px);
 }
+
+/* ═══════════════════════════════════════════════════════════════
+   Page Loading Overlay - 内容区淡入淡出
+   duration: 0.3s, cubic-bezier(0.4, 0, 0.2, 1) ease
+   ═══════════════════════════════════════════════════════════════ */
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}
+
+.fade-enter-to,
+.fade-leave-from {
+  opacity: 1;
+}

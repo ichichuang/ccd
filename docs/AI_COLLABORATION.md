@@ -1,12 +1,12 @@
 # Skills & Workflows: Cursor + Antigravity
 
-> **目标读者：AI**。本文档供 AI 执行任务时参考，定义标准化的「两步走」流程与常用 Prompt。
+> **Target reader: AI**. This doc is for AI task execution: it defines the standard two-step workflow and common prompts (prompt examples below are in Chinese for developers to copy).
 
-## 场景：开发「用户列表」功能
+## Scenario: Implement «User List» feature
 
-### 第一步：Cursor（做逻辑）
+### Step 1: Cursor (logic)
 
-在 Cursor 中执行（可 @ 引用规则与文档）：
+Run in Cursor (you can @-reference rules and docs):
 
 ```
 基于 @./ai-specs/PROJECT_PROTOCOL.md 和 @.cursor/rules/12-api-layer.mdc，为「用户列表」功能开发逻辑：
@@ -16,9 +16,9 @@
 4. 参考 @./ai-specs/GOLDEN_SAMPLES/useFeatureLogic.ts，不要生成 UI 代码。
 ```
 
-### 第二步：Antigravity（画页面）
+### Step 2: Antigravity (UI)
 
-在 Antigravity 中执行：
+Run in Antigravity:
 
 ```
 读取 @src/hooks/modules/useUserList.ts、@./ai-specs/GOLDEN_SAMPLES/UIComponent.vue 和 @./ai-specs/DataTable_COMPONENT.md。
@@ -30,7 +30,7 @@ UnoCSS 美化，移动端适配，内容区用 CScrollbar 包裹。
 
 ---
 
-## 其他常用 Prompt
+## Other common prompts
 
 | 场景                | 工具        | Prompt 要点                                                                                                                                                                                                                                |
 | ------------------- | ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
@@ -42,7 +42,7 @@ UnoCSS 美化，移动端适配，内容区用 CScrollbar 包裹。
 
 ---
 
-## 使用建议
+## Usage tips
 
-- 每次复杂任务开始时，在 Cursor / Antigravity 中先 **@ 引用** `./ai-specs/PROJECT_PROTOCOL.md` 或对应黄金示例，再发具体指令。
-- 逻辑层一律交给 Cursor（composables、types、Store）；UI/布局交给 Antigravity（template、class、pt）。
+- At the start of each complex task, @-reference `./ai-specs/PROJECT_PROTOCOL.md` or the relevant golden sample in Cursor / Antigravity before sending the concrete instruction.
+- Logic layer goes to Cursor (composables, types, Store); UI and layout go to Antigravity (template, class, pt).

@@ -27,7 +27,7 @@ export const SIZE_PRESETS: SizePreset[] = [
     headerHeight: 48,
     breadcrumbHeight: 28,
     footerHeight: 28,
-    tabsHeight: 32,
+    tabsHeight: 36,
   },
 
   // --- 2. 舒适模式 (Comfortable - 默认) ---
@@ -43,7 +43,7 @@ export const SIZE_PRESETS: SizePreset[] = [
     headerHeight: 60,
     breadcrumbHeight: 32,
     footerHeight: 32,
-    tabsHeight: 36,
+    tabsHeight: 40,
   },
 
   // --- 3. 宽松模式 (Loose) ---

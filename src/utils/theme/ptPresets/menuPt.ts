@@ -12,7 +12,7 @@ const MENU_ACTION_TRANSITION =
 export const menuPt = {
   tieredmenu: {
     root: {
-      class: 'border border-border rounded-scale-md shadow-float outline-none',
+      class: 'component-border rounded-scale-md shadow-float outline-none',
     },
     menu: {
       class: 'bg-card py-padding-xs rounded-scale-md outline-none',

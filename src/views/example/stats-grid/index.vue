@@ -22,7 +22,7 @@ const metrics = [
         <div
           v-for="m in metrics"
           :key="m.label"
-          class="rounded-scale-md border-default p-padding-lg bg-surface-ground shadow-soft flex items-center gap-padding-md"
+          class="rounded-scale-md surface-elevated p-padding-lg flex items-center gap-padding-md"
         >
           <div
             class="shrink-0 w-10 h-10 rounded-scale-sm bg-primary/10 flex items-center justify-center"
@@ -44,15 +44,11 @@ const metrics = [
         data-region="chart-grid"
         class="grid grid-cols-1 lg:grid-cols-2 gap-padding-lg"
       >
-        <div
-          class="rounded-scale-md border-default p-padding-lg bg-surface-ground shadow-soft min-h-kpi-card"
-        >
+        <div class="rounded-scale-md surface-elevated p-padding-lg min-h-kpi-card">
           <h4 class="fs-sm font-semibold text-foreground m-0 mb-margin-md">图表占位</h4>
           <p class="fs-sm text-muted-foreground m-0">此处可接入 UseEcharts 渲染折线图、柱状图等</p>
         </div>
-        <div
-          class="rounded-scale-md border-default p-padding-lg bg-surface-ground shadow-soft min-h-kpi-card"
-        >
+        <div class="rounded-scale-md surface-elevated p-padding-lg min-h-kpi-card">
           <h4 class="fs-sm font-semibold text-foreground m-0 mb-margin-md">图表占位</h4>
           <p class="fs-sm text-muted-foreground m-0">UseEcharts 自动集成主题与响应式</p>
         </div>

@@ -26,7 +26,7 @@ async function bootstrap() {
     window.location.reload()
   })
 
-  // 挂载应用
+  // 挂载应用（loading 关闭由 router.afterEach 负责）
   app.mount('#app')
 }
 

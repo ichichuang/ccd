@@ -1,9 +1,19 @@
 /**
  * 主题切换动画策略工具
  * 支持多种过渡模式：circle, curtain, diamond, implosion, glitch, fade
+ * 含主题过渡锁（打破 theme store ↔ useThemeSwitch 循环依赖）
  */
 
 import { rgbToHex } from './colors'
+
+// 主题过渡锁：防止 store.refreshTheme 在动画期间被外部触发（从 useThemeSwitch 抽离，避免循环依赖）
+let isThemeTransitionLocked = false
+export function isThemeLocked(): boolean {
+  return isThemeTransitionLocked
+}
+export function setThemeLocked(value: boolean): void {
+  isThemeTransitionLocked = value
+}
 
 export interface TransitionConfig {
   duration: number

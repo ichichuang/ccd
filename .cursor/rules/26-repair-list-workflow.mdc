@@ -26,6 +26,7 @@ alwaysApply: true
     <rule>Use plain text format (not Markdown) with the documented header and section titles.</rule>
     <rule>Use <code>[⬜]</code> (pending) and <code>[✅]</code> (resolved) as the only status markers for items.</rule>
     <rule>Accept both English section headers and Chinese headers <code>待解决</code>/<code>已解决</code> for parsing.</rule>
+    <rule>When writing each pending or resolved item line into <code>repair_list.txt</code>, use developer-friendly Chinese for the item description (the file is read by developers).</rule>
   </constraints>
 
   <forbidden>

@@ -14,7 +14,7 @@
       <span>路由过渡动画示例（meta.transition）</span>
     </h2>
 
-    <div class="component-border rounded-scale p-padding-md space-y-margin-sm bg-card">
+    <div class="component-border rounded-scale p-padding-md space-y-margin-sm">
       <div class="fs-md font-medium">本路由 meta.transition 配置</div>
       <pre class="text-muted-foreground fs-sm font-mono whitespace-pre-wrap">{{
         JSON.stringify(

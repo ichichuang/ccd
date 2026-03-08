@@ -12,6 +12,7 @@ function flattenMenuPaths(items: MenuItem[]): string[] {
 import { createPiniaEncryptedSerializer } from '@/utils/safeStorage/piniaSerializer'
 import { defineStore } from 'pinia'
 import type { LocationQueryRaw } from 'vue-router'
+import { generateIdFromKey } from '@/utils/ids'
 
 /**
  * 窗口元数据接口

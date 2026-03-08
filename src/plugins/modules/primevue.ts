@@ -11,6 +11,7 @@ import store from '@/stores'
 import { useLocaleStore } from '@/stores/modules/locale'
 import { useSizeStore } from '@/stores/modules/size'
 import { createCustomPreset } from '@/utils/theme/primevuePreset'
+import { formControlsPt } from '@/utils/theme/ptPresets/formControlsPt'
 import { menuPt } from '@/utils/theme/ptPresets/menuPt'
 
 /**
@@ -39,7 +40,7 @@ export function setupPrimeVue(app: App) {
         // },
       },
     },
-    pt: menuPt,
+    pt: { ...menuPt, ...formControlsPt },
     ripple: true,
     locale: initialPrimeLocale,
   })

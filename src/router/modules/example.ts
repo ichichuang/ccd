@@ -214,6 +214,52 @@ const exampleRoutes: RouteConfig[] = [
               icon: 'i-lucide-panel-right',
             },
           },
+          {
+            path: '/example/layout-inspector/system-states',
+            name: 'ExampleSystemStates',
+            component: () => import('@/views/example/system-states/index.vue'),
+            meta: {
+              titleKey: 'router.example.systemStates',
+              rank: 2,
+              icon: 'i-lucide-layers',
+            },
+          },
+          {
+            path: '403',
+            name: 'Example403',
+            component: () => import('@/views/notfound/403.vue'),
+            meta: {
+              titleKey: 'router.error.forbidden',
+              showLink: true,
+              parent: 'fullscreen',
+              rank: 3,
+              icon: 'i-lucide-shield-x',
+            },
+          },
+          {
+            path: '404',
+            name: 'Example404',
+            component: () => import('@/views/notfound/404.vue'),
+            meta: {
+              titleKey: 'router.error.notFound',
+              showLink: true,
+              parent: 'fullscreen',
+              rank: 4,
+              icon: 'i-lucide-file-question',
+            },
+          },
+          {
+            path: '500',
+            name: 'Example500',
+            component: () => import('@/views/notfound/500.vue'),
+            meta: {
+              titleKey: 'router.error.serverError',
+              showLink: true,
+              parent: 'fullscreen',
+              rank: 5,
+              icon: 'i-lucide-server-crash',
+            },
+          },
         ],
       },
       // === 6. 权限示例 ===

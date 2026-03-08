@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia'
 import { THEME_PRESETS, DEFAULT_THEME_NAME, DEFAULT_TRANSITION_DURATION } from '@/constants/theme'
 import { generateThemeVars, applyTheme } from '@/utils/theme/engine'
-import { isThemeLocked } from '@/hooks/modules/useThemeSwitch'
+import { isThemeLocked } from '@/utils/theme/transitions'
 
 /** 可选强调色覆盖（hex），未设置时使用 themeName 预设 */
 type AccentColorOverride = string | null
@@ -66,7 +66,7 @@ export const useThemeStore = defineStore('theme', {
      */
     refreshTheme() {
       // CRITICAL: Skip if theme is locked during transition
-      if (isThemeLocked && isThemeLocked()) {
+      if (isThemeLocked()) {
         return
       }
 

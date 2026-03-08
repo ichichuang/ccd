@@ -147,6 +147,8 @@ export default ({ mode, command }: ConfigEnv): UserConfigExport => {
           assetFileNames: 'static/[ext]/[name]-[hash].[ext]',
 
           // 手动拆包，避免 vendor-libs 单 chunk 过大
+          // 关键：vue-echarts、vue3-lottie、overlayscrollbars-vue 必须与 Vue 同 chunk，
+          // 否则 vendor-libs 调用 defineComponent 时 Vue 内部 isFunction 未初始化 → TDZ
           manualChunks(id: string) {
             if (id.includes('node_modules')) {
               if (id.includes('echarts') || id.includes('zrender')) return 'vendor-echarts'
@@ -161,7 +163,10 @@ export default ({ mode, command }: ConfigEnv): UserConfigExport => {
                 id.includes('vue-i18n') ||
                 id.includes('pinia-plugin-persistedstate') ||
                 id.includes('/alova/') ||
-                id.includes('@vueuse')
+                id.includes('@vueuse') ||
+                id.includes('vue-echarts') ||
+                id.includes('vue3-lottie') ||
+                id.includes('overlayscrollbars-vue')
               )
                 return 'vendor-vue'
               return 'vendor-libs'
@@ -177,6 +182,7 @@ export default ({ mode, command }: ConfigEnv): UserConfigExport => {
 
       reportCompressedSize: !isDev,
       copyPublicDir: true,
+      // minify: false,
     },
 
     // 6. 全局常量注入：仅向客户端注入最小应用信息（避免大 JSON 导致 define 替换异常）

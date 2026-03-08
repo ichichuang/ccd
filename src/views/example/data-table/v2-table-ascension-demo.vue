@@ -77,7 +77,7 @@ const rowActions: DataTableAction<UserRow>[] = [
   >
     <div
       data-region="toolbar"
-      class="shrink-0 flex items-center justify-between gap-lg px-padding-lg py-padding-md border-b-default bg-card"
+      class="shrink-0 flex items-center justify-between gap-lg px-padding-lg py-padding-md border-b-default"
     >
       <h2 class="fs-lg font-semibold text-primary m-0">DataTable V2 升维 Demo</h2>
       <Button

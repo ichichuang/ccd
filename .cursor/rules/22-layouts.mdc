@@ -75,3 +75,16 @@ Note: Mobile small viewport forces horizontal; tablet small viewport is vertical
 - Bypassing `meta.parent` to decide layout
 - Defining LayoutSetting defaults outside `DEFAULT_LAYOUT_SETTING`
 - Persisting LayoutSetting fields outside layout store
+
+## 9. Transparent Root Policy (Admin Layout Only)
+
+**Scope:** Route views under `meta.parent === 'admin'` (LayoutAdmin shell).
+
+**Rule:** The root container of a route view MUST NOT set background classes (`bg-card`, `bg-background`, `bg-surface-ground`, `bg-surface-elevated`, or `surface-*` shortcuts) on its top-level wrapper. The layout engine (`LayoutAdmin`) already provides the premium canvas background (`bg-card` with inset shadow) for the main content area.
+
+**Requirements:**
+
+- Root: Use `h-full flex flex-col overflow-hidden` (or equivalent layout classes) **without** `bg-*` or `surface-*`.
+- Toolbars/Headers: Do NOT add background colors. Let them inherit the canvas color. Use subtle borders (`border-b-default`) if separation is needed.
+- Text colors: Inherit by default (`text-foreground`, `text-muted-foreground`).
+- Internal components: Use `surface-elevated`, `glass-surface`, or `shadow-soft` **only** on actual data cards, panels, and widgets **inside** the transparent page.

@@ -1,4 +1,4 @@
-# 📁 AppTemplate 项目架构目录说明
+# 📁 项目架构目录说明
 
 > 逐目录、逐文件说明架构职责与实现内容，供开发者快速了解项目结构。
 
@@ -50,7 +50,7 @@
 | `info.ts`        | 构建信息输出                                                                                      |
 | `legacy.ts`      | 旧浏览器兼容                                                                                      |
 | `performance.ts` | 体积分析                                                                                          |
-| `utils.ts`       | 路径别名、环境变量包装、**APP_INFO** 等                                                           |
+| `utils.ts`       | 路径别名、环境变量包装、`__APP_INFO__` 等                                                         |
 
 ---
 
@@ -221,40 +221,7 @@
 
 #### hooks/modules/useChartTheme/
 
-| 文件                          | 职责说明                               |
-| ----------------------------- | -------------------------------------- |
-| `index.ts`                    | useChartTheme、applyThemeToOption 导出 |
-| `defaults.ts`                 | 主题默认配置                           |
-| `mergeAdvancedConfigs.ts`     | 高级主题配置合并                       |
-| `utils.ts`                    | 工具函数                               |
-| `types.ts`                    | 主题类型                               |
-| `applyAxisStyles.ts`          | 坐标轴主题                             |
-| `applySeriesStyles.ts`        | 系列主题                               |
-| `applyTooltipStyles.ts`       | 提示框主题                             |
-| `applyLegendStyles.ts`        | 图例主题                               |
-| `applyTitleStyles.ts`         | 标题主题                               |
-| `applyBrushStyles.ts`         | 刷选主题                               |
-| `applyDataZoomStyles.ts`      | 数据区域缩放主题                       |
-| `applyVisualMapStyles.ts`     | 视觉映射主题                           |
-| `applyToolboxStyles.ts`       | 工具箱主题                             |
-| `applyFontStyles.ts`          | 字体主题                               |
-| `applyPieStyles.ts`           | 饼图主题                               |
-| `applyLinesStyles.ts`         | 折线图主题                             |
-| `applyRadarStyles.ts`         | 雷达图主题                             |
-| `applyGaugeStyles.ts`         | 仪表盘主题                             |
-| `applyFunnelStyles.ts`        | 漏斗图主题                             |
-| `applyHeatmapStyles.ts`       | 热力图主题                             |
-| `applyGraphStyles.ts`         | 关系图主题                             |
-| `applyTreeStyles.ts`          | 树图主题                               |
-| `applyTreemapStyles.ts`       | 矩形树图主题                           |
-| `applySunburstStyles.ts`      | 旭日图主题                             |
-| `applySankeyStyles.ts`        | 桑基图主题                             |
-| `applyParallelStyles.ts`      | 平行坐标系主题                         |
-| `applyThemeRiverStyles.ts`    | 主题河流图主题                         |
-| `applyBoxplotStyles.ts`       | 箱线图主题                             |
-| `applyCandlestickStyles.ts`   | K 线图主题                             |
-| `applyEffectScatterStyles.ts` | 涟漪散点图主题                         |
-| `applyPictorialBarStyles.ts`  | 象形柱图主题                           |
+图表主题与 ECharts option 主题化，包含 `index.ts`、`defaults.ts`、各类 `apply*Styles.ts`（坐标轴、系列、提示框、图例、饼图、折线图等）及 `types.ts`、`utils.ts`。详见目录内文件。
 
 ---
 
@@ -319,17 +286,17 @@
 
 ### 3.10 src/stores/ 状态层
 
-| 文件                    | 职责说明                                |
-| ----------------------- | --------------------------------------- |
-| `index.ts`              | Pinia 实例、persistedstate 插件         |
-| `modules/theme.ts`      | 主题模式、预设、CSS 变量                |
-| `modules/size.ts`       | 尺寸预设、根字号                        |
-| `modules/device.ts`     | 设备类型、断点、视口、orientation       |
-| `modules/layout.ts`     | 布局 mode、侧栏收展、显隐、adapt\* 方法 |
-| `modules/locale.ts`     | 当前语言                                |
-| `modules/user.ts`       | 用户信息、token                         |
-| `modules/permission.ts` | 静态/动态路由、tabs、windows            |
-| `modules/dataTable.ts`  | DataTable 列持久化                      |
+| 文件                    | 职责说明                            |
+| ----------------------- | ----------------------------------- |
+| `index.ts`              | Pinia 实例、persistedstate 插件     |
+| `modules/theme.ts`      | 主题模式、预设、CSS 变量            |
+| `modules/size.ts`       | 尺寸预设、根字号                    |
+| `modules/device.ts`     | 设备类型、断点、视口、方向          |
+| `modules/layout.ts`     | 布局 mode、侧栏收展、显隐、适配方法 |
+| `modules/locale.ts`     | 当前语言                            |
+| `modules/user.ts`       | 用户信息、token                     |
+| `modules/permission.ts` | 静态/动态路由、tabs、windows        |
+| `modules/dataTable.ts`  | DataTable 列持久化                  |
 
 ---
 
@@ -352,41 +319,26 @@
 
 ### 3.12 src/utils/ 工具层
 
-| 文件                                                            | 职责说明                                                                               |
-| --------------------------------------------------------------- | -------------------------------------------------------------------------------------- |
-| ~~browser.ts~~                                                  | 已移除                                                                                 |
-| `date/`                                                         | 日期工具（与 http 同构：types、constants、holidaysLoader、timezone、dateUtils、index） |
-| `deviceSync.ts`                                                 | getDeviceTypeSync、getBreakpointSync                                                   |
-| `ids.ts`                                                        | generateUniqueId、generateIdFromKey                                                    |
-| `lodashes.ts`                                                   | deepClone、deepEqual、deepMerge、objectPick、objectOmit                                |
-| `mitt.ts`                                                       | 全局事件总线 useMitt                                                                   |
-| `strings.ts`                                                    | toKebabCase                                                                            |
-| `http/instance.ts`                                              | Alova 实例                                                                             |
-| `http/methods.ts`                                               | get/post/put/del/patch/head/uploadFile/downloadFile                                    |
-| `http/interceptors.ts`                                          | 请求/响应拦截                                                                          |
-| `http/errors.ts`                                                | HttpRequestError、isHttpRequestError                                                   |
-| `http/types.ts`                                                 | HTTP 相关类型                                                                          |
-| `http/index.ts`                                                 | HTTP 模块导出                                                                          |
-| `http/connection.ts`                                            | ConnectionManager（网络状态、重连、健康检查）                                          |
-| `http/uploadManager.ts`                                         | UploadManager（分片上传、断点续传、暂停/恢复）                                         |
-| `safeStorage/*`                                                 | 加密、压缩、序列化                                                                     |
-| `theme/engine.ts`                                               | 主题应用引擎                                                                           |
-| `theme/sizeEngine.ts`                                           | 尺寸预设、preload、根字号                                                              |
-| `theme/metadata.ts`                                             | 主题元数据                                                                             |
-| `theme/colorAdapter.ts`                                         | 颜色适配器（ThemeCssVars → rgb(var(--xxx))）                                           |
-| `theme/presetPrimitive.ts`                                      | Primitive Layer（brand、neutral、success 等）                                          |
-| `theme/presetSemantic.ts`                                       | Semantic Layer（formField、colorScheme.light/dark）                                    |
-| `theme/presetComponents/base.ts`                                | 基础组件 preset（scrollpanel、accordion、card 等）                                     |
-| `theme/presetComponents/form.ts`                                | 表单组件 preset（button、inputtext、select 等）                                        |
-| `theme/presetComponents/overlay.ts`                             | 浮层组件 preset（dialog、drawer、popover 等）                                          |
-| `theme/presetComponents/data.ts`                                | 数据组件 preset（datatable、listbox、tree 等）                                         |
-| `theme/presetComponents/menuNavMisc.ts`                         | 菜单/导航/杂项 preset（menu、breadcrumb、message 等）                                  |
-| `theme/presetComponents/index.ts`                               | 组件 preset 聚合（buildAllComponents）                                                 |
-| `theme/primevuePreset.ts`                                       | PrimeVue 主题融合主入口（组装与 ROOT_SIZE 注入）                                       |
-| `theme/transitions.ts`                                          | 主题切换过渡                                                                           |
-| `theme/primevueThemeHelpers.ts`、`theme/primevueThemeEngine.ts` | PrimeVue 主题引擎                                                                      |
-| `theme/colors.ts`、`theme/*.json`                               | 颜色与主题配置                                                                         |
-| `theme/chartUtils.ts`                                           | 图表颜色工具                                                                           |
+| 文件/目录                 | 职责说明                                                                               |
+| ------------------------- | -------------------------------------------------------------------------------------- |
+| ~~browser.ts~~            | 已移除                                                                                 |
+| `date/`                   | 日期工具（与 http 同构：types、constants、holidaysLoader、timezone、dateUtils、index） |
+| `deviceSync.ts`           | getDeviceTypeSync、getBreakpointSync                                                   |
+| `ids.ts`                  | generateUniqueId、generateIdFromKey                                                    |
+| `lodashes.ts`             | deepClone、deepEqual、deepMerge、objectPick、objectOmit                                |
+| `mitt.ts`                 | 全局事件总线 useMitt                                                                   |
+| `strings.ts`              | toKebabCase                                                                            |
+| `http/instance.ts`        | Alova 实例                                                                             |
+| `http/methods.ts`         | get/post/put/del/patch/head/uploadFile/downloadFile                                    |
+| `http/interceptors.ts`    | 请求/响应拦截                                                                          |
+| `http/errors.ts`          | HttpRequestError、isHttpRequestError                                                   |
+| `http/connection.ts`      | ConnectionManager（网络状态、重连、健康检查）                                          |
+| `http/uploadManager.ts`   | UploadManager（分片上传、断点续传、暂停/恢复）                                         |
+| `safeStorage/*`           | 加密、压缩、序列化                                                                     |
+| `theme/engine.ts`         | 主题应用引擎                                                                           |
+| `theme/sizeEngine.ts`     | 尺寸预设、preload、根字号                                                              |
+| `theme/primevuePreset.ts` | PrimeVue 主题融合主入口                                                                |
+| 其他 `theme/*`            | 元数据、颜色适配、preset、过渡等                                                       |
 
 ---
 

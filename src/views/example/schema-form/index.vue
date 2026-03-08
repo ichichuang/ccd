@@ -261,7 +261,7 @@ function handleClear() {
               <!-- 右栏：实时 Values + 独立滚动 -->
               <div class="w-80 shrink-0 min-h-0 flex flex-col hidden xl:flex">
                 <CScrollbar class="flex-1 min-h-0 layout-full">
-                  <div class="card bg-card component-border p-padding-md">
+                  <div class="surface-elevated rounded-scale-md p-padding-md">
                     <h3 class="fs-lg font-medium mb-margin-sm border-b-default pb-padding-sm">
                       表单数据 (Values)
                     </h3>

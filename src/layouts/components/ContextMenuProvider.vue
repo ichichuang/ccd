@@ -205,7 +205,7 @@ const slotCtx = computed<ContextMenuSlotContext | null>(() => {
         >
           <div
             ref="menuRef"
-            class="fixed z-50 min-w-[var(--spacing-3xl)] rounded-scale-md component-border bg-background shadow-lg"
+            class="fixed z-50 min-w-[var(--spacing-3xl)] rounded-scale-md bg-popover shadow-xl"
             :style="menuStyle"
             role="menu"
           >

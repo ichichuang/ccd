@@ -378,7 +378,7 @@ export type PickKeys<T, K extends keyof T> = Pick<T, K>
  *   layout: { cols: 2, gap: 16 },
  *   style: {
  *     labelClass: 'text-primary font-medium',
- *     contentClass: 'border-2 border-gray-300',
+ *     contentClass: 'component-border',
  *     labelStyle: { fontSize: '14px' },
  *     contentStyle: { padding: '8px' }
  *   }

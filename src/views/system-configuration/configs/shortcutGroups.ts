@@ -158,7 +158,7 @@ export const shortcutGroups: ShortcutGroup[] = [
       },
       {
         name: 'component-card-base',
-        classes: 'rounded-scale-md bg-card text-card-foreground component-border shadow-sm',
+        classes: 'rounded-scale-md bg-card text-card-foreground component-border',
       },
       { name: 'component-card-hoverable', classes: 'behavior-hover-transition hover-elevated' },
       { name: 'component-card-layout', classes: 'density-normal' },

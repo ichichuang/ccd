@@ -50,90 +50,90 @@ export default defineComponent({
       if (tabList.length === 0) return null
 
       return (
-        <div class="relative w-full h-tabsHeight z-10 select-none">
-          <CScrollbar
-            ref={scrollContainer}
-            options={{
-              scrollbars: {
-                visibility: 'hidden',
-              },
-              overflow: {
-                y: 'hidden',
-              },
-            }}
-          >
-            <div
-              ref={tabsContainerRef}
-              class="flex items-end gap-xs px-padding-md h-full relative min-w-max"
+        <div class="w-full h-tabsHeight border-b-default px-padding-md overflow-hidden flex items-end select-none z-10">
+          <div class="relative flex items-center gap-1 h-full flex-1 min-w-0">
+            <CScrollbar
+              ref={scrollContainer}
+              options={{
+                scrollbars: {
+                  visibility: 'hidden',
+                },
+                overflow: {
+                  y: 'hidden',
+                },
+              }}
             >
-              {/* Sliding Highlight Indicator（Tab 激活指示线默认使用 primary，与 Header/Sidebar 保持一致） */}
               <div
-                class="absolute bottom-0 h-[var(--spacing-xs)] bg-primary transition-all duration-scale-md ease-out z-20 rounded-full"
-                style={activeTabStyle.value}
-              />
+                ref={tabsContainerRef}
+                class="flex items-end gap-1 h-full relative min-w-max"
+              >
+                {/* Smart sliding indicator */}
+                <div
+                  class="absolute bottom-0 h-[2px] bg-primary pointer-events-none rounded-t-sm z-10"
+                  style={{
+                    left: activeTabStyle.value.left,
+                    width: activeTabStyle.value.width,
+                    opacity: activeTabStyle.value.opacity,
+                    transition: 'all 0.4s cubic-bezier(0.16, 1, 0.3, 1)',
+                  }}
+                />
+                {tabList.map(tab => {
+                  const active = isActive(tab)
+                  const label = getTabLabel(tab)
 
-              {tabList.map((tab, index) => {
-                const active = isActive(tab)
-                const label = getTabLabel(tab)
-                const isNextActive = index < tabList.length - 1 && isActive(tabList[index + 1])
-
-                return (
-                  <div
-                    key={tab.path}
-                    ref={el => setTabRef(el as HTMLElement | null, tab.path)}
-                    data-path={tab.path}
-                    class={[
-                      'group relative flex items-center gap-scale-sm px-scale-md py-scale-xs h-full',
-                      'rounded-scale-md cursor-pointer transition-all duration-scale-md component-border border-b-none mb-[-1px]',
-                      active
-                        ? 'text-primary bg-primary/10 border-primary/20 dark:bg-primary/20 dark:border-primary/30'
-                        : 'bg-transparent border-transparent text-muted-foreground hover:bg-muted/40 hover:text-foreground',
-                    ]}
-                    onClick={() => onTabClick(tab)}
-                    onContextmenu={e => onContextMenu(e as MouseEvent, tab)}
-                  >
-                    {/* Icon */}
-                    {tab.icon && (
-                      <Icons
-                        name={tab.icon}
-                        size={TAB_ICON_SIZE}
-                        class={[
-                          'shrink-0 text-current!',
-                          active
-                            ? 'opacity-100'
-                            : 'opacity-70 transition-all duration-scale-md group-hover:opacity-100',
-                        ]}
-                      />
-                    )}
-
-                    {/* Label */}
-                    <span class="truncate fs-sm flex-1">{label}</span>
-
-                    {/* Close Button */}
-                    {!tab.fixed && tab.deletable && (
-                      <div
-                        class={[
-                          'size-1-1 h-[66%] rounded-scale-md center transition-all duration-scale-md hover:bg-danger-light/50',
-                          active ? 'opacity-100' : 'opacity-0 group-hover:opacity-100',
-                        ]}
-                        onClick={e => onCloseTab(e, tab)}
-                      >
+                  return (
+                    <div
+                      key={tab.path}
+                      ref={el => setTabRef(el as HTMLElement | null, tab.path)}
+                      data-path={tab.path}
+                      class={[
+                        'group relative h-[calc(100%-6px)] flex items-center px-3 rounded-t-md cursor-pointer gap-scale-sm shrink-0',
+                        active
+                          ? 'bg-primary/10 text-primary font-medium backdrop-blur-md transition-all'
+                          : 'bg-transparent text-muted-foreground hover:bg-muted/30 hover:text-foreground transition-all',
+                      ]}
+                      onClick={() => onTabClick(tab)}
+                      onContextmenu={e => onContextMenu(e as MouseEvent, tab)}
+                    >
+                      {/* Icon */}
+                      {tab.icon && (
                         <Icons
-                          name="i-lucide-x"
+                          name={tab.icon}
                           size={TAB_ICON_SIZE}
+                          class={[
+                            'shrink-0 text-current!',
+                            active
+                              ? 'opacity-100'
+                              : 'opacity-70 transition-all duration-scale-md group-hover:opacity-100',
+                          ]}
                         />
-                      </div>
-                    )}
+                      )}
 
-                    {/* Divider */}
-                    {!active && !isNextActive && index !== tabList.length - 1 && (
-                      <div class="absolute top-1/4 h-1/2 w-px -right-[calc(var(--spacing-xs)/2)] bg-border pointer-events-none" />
-                    )}
-                  </div>
-                )
-              })}
-            </div>
-          </CScrollbar>
+                      {/* Label */}
+                      <span class="truncate fs-sm flex-1">{label}</span>
+
+                      {/* Close Button */}
+                      {!tab.fixed && tab.deletable && (
+                        <div
+                          class={[
+                            'center rounded-full p-0.5 transition-colors duration-scale-sm text-muted-foreground hover:text-danger hover:bg-danger/10',
+                            active ? 'opacity-100' : 'opacity-0 group-hover:opacity-100',
+                          ]}
+                          onClick={e => onCloseTab(e, tab)}
+                        >
+                          <Icons
+                            name="i-lucide-x"
+                            size={TAB_ICON_SIZE}
+                            class="text-current!"
+                          />
+                        </div>
+                      )}
+                    </div>
+                  )
+                })}
+              </div>
+            </CScrollbar>
+          </div>
 
           {/* Context Menu Portal/Overlay with Transition */}
           <Transition
@@ -146,7 +146,7 @@ export default defineComponent({
           >
             {contextMenu.value.visible && (
               <div
-                class="fixed z-50 min-w-[var(--spacing-3xl)] bg-popover/95 backdrop-blur-md border border-border shadow-lg rounded-scale-md p-padding-xs flex flex-col gap-xs origin-top-left outline-none!"
+                class="fixed z-50 min-w-[var(--spacing-3xl)] bg-popover/95 backdrop-blur-md shadow-xl rounded-scale-md p-padding-xs flex flex-col gap-xs origin-top-left outline-none!"
                 style={{ top: `${contextMenu.value.y}px`, left: `${contextMenu.value.x}px` }}
               >
                 {[

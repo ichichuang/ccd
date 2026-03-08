@@ -13,7 +13,7 @@
       <span>隐藏标签页示例（meta.hiddenTag）</span>
     </h2>
 
-    <div class="component-border rounded-scale p-padding-md space-y-margin-sm bg-card">
+    <div class="component-border rounded-scale p-padding-md space-y-margin-sm">
       <div class="fs-md font-medium">本路由 meta.hiddenTag = true</div>
       <p class="text-muted-foreground fs-sm">
         当前页面访问后不会添加到多标签栏中。适合详情页、弹窗内嵌等不希望增加标签的场景。

@@ -27,6 +27,7 @@ import type {
   PaginationState,
   SortMeta,
 } from './utils/types'
+import Loading from '@&/Loading.vue'
 import { useTableData } from './core/useTableData'
 import { useTableLayout } from './core/useTableLayout'
 import { useTableSelection } from './features/useTableSelection'
@@ -925,20 +926,28 @@ const getEditorRendererForSlot = (col: DataTableColumn<T>) =>
         @column-reorder="onColumnReorder"
         @column-resize-end="onColumnResizeEnd"
       >
-        <template
-          v-if="$slots.empty"
-          #empty
-        >
-          <slot name="empty" />
+        <template #empty>
+          <div
+            class="surface-sunken rounded-scale-lg flex flex-col items-center justify-center p-padding-2xl w-full min-h-[12rem]"
+          >
+            <slot
+              v-if="$slots.empty"
+              name="empty"
+            />
+            <EmptyState
+              v-else-if="props.emptyMessage"
+              icon="i-lucide-inbox"
+              :title="props.emptyMessage || ''"
+            />
+          </div>
         </template>
-        <template
-          v-else-if="props.emptyMessage"
-          #empty
-        >
-          <EmptyState
-            icon="i-lucide-inbox"
-            :title="props.emptyMessage || ''"
-          />
+        <template #loading>
+          <div class="flex items-center justify-center w-full min-h-100%">
+            <Loading
+              :type="2"
+              size="sm"
+            />
+          </div>
         </template>
         <template
           v-if="$slots.expansion"
@@ -1253,12 +1262,26 @@ const getEditorRendererForSlot = (col: DataTableColumn<T>) =>
   border-radius: var(--radius-md);
 }
 
-/* Override PrimeVue border colors to use system border variable */
+/* Override PrimeVue border colors: thead/tfoot/paginator use full border, tbody uses hairline (Premium Borderless) */
 .c-data-table-wrapper:deep(.p-datatable .p-datatable-thead > tr > th),
-.c-data-table-wrapper:deep(.p-datatable .p-datatable-tbody > tr > td),
 .c-data-table-wrapper:deep(.p-datatable .p-datatable-tfoot > tr > td),
 .c-data-table-wrapper:deep(.p-paginator) {
   border-color: rgb(var(--border));
+}
+
+/* Hairline row dividers: barely visible line for row separation only */
+.c-data-table-wrapper:deep(.p-datatable .p-datatable-tbody > tr > td) {
+  border-color: rgb(var(--border) / 0.12);
+}
+
+/* Floating row: hover uses subtle background shift, no border emphasis */
+.c-data-table-wrapper:deep(.p-datatable .p-datatable-tbody > tr) {
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease;
+}
+.c-data-table-wrapper:deep(.p-datatable .p-datatable-tbody > tr:hover) {
+  background: rgb(var(--muted) / 0.2);
 }
 
 .c-data-table-wrapper:deep(.p-datatable-header),
@@ -1266,6 +1289,12 @@ const getEditorRendererForSlot = (col: DataTableColumn<T>) =>
   border-color: rgb(var(--border));
   background: rgb(var(--card));
   color: rgb(var(--card-foreground));
+}
+
+/* Loading overlay: glassmorphism 效果，避免遮罩过于不透明 */
+.c-data-table-wrapper:deep(.p-datatable-loading-overlay),
+.c-data-table-wrapper:deep([data-pc-section='loadingOverlay']) {
+  backdrop-filter: blur(4px);
 }
 
 /* Column-aligned footer scrollbar: 隐藏滚动条并禁用滚动交互 */

@@ -12,6 +12,7 @@ import {
   getTransitionConfig,
   calculateCircleRadius,
   calculateDiamondRadius,
+  setThemeLocked,
 } from '@/utils/theme/transitions'
 
 type ViewTransition = {
@@ -26,11 +27,8 @@ let themeTransitionGeneration = 0
 const THEME_TRANSITION_COOLDOWN_MS = 500
 let lastTransitionEndAt = 0
 
-// 过渡锁：防止 store 的 refreshTheme 在动画期间被外部触发
-let isThemeTransitionLocked = false
-export function isThemeLocked() {
-  return isThemeTransitionLocked
-}
+// 过渡锁已抽离至 @/utils/theme/transitions，避免 theme store ↔ useThemeSwitch 循环依赖
+export { isThemeLocked } from '@/utils/theme/transitions'
 
 // 缓存系统主题检测（性能优化）
 let systemDarkModeQuery: MediaQueryList | null = null
@@ -137,7 +135,7 @@ function cleanupTransitionState(generation?: number) {
           root.classList.remove('theme-transition-recovery')
           root.classList.remove('theme-transition')
           root.removeAttribute('data-transition')
-          isThemeTransitionLocked = false
+          setThemeLocked(false)
         }, 100)
       })
     })
@@ -193,7 +191,7 @@ export function useThemeSwitch() {
     if (Date.now() - lastTransitionEndAt < THEME_TRANSITION_COOLDOWN_MS) return
 
     // CRITICAL: Lock theme to prevent external refreshTheme calls
-    isThemeTransitionLocked = true
+    setThemeLocked(true)
     isAnimating.value = true
     const transitionModeToUse = mode || transitionMode.value
     const currentIsDark = isDark.value
@@ -338,7 +336,7 @@ export function useThemeSwitch() {
     if (Date.now() - lastTransitionEndAt < THEME_TRANSITION_COOLDOWN_MS) return
 
     // CRITICAL: Lock theme to prevent external refreshTheme calls
-    isThemeTransitionLocked = true
+    setThemeLocked(true)
     isAnimating.value = true
     const transitionModeToUse = transitionModeOverride || transitionMode.value
     const systemPrefersDark = getSystemDarkModeQuery().matches

@@ -63,7 +63,7 @@ onUnmounted(() => {
 })
 
 // --- Chart Options ---
-const { chartOptions } = useChartOptions(metricsData.value)
+const { chartOptions } = useChartOptions(metricsData)
 
 // --- Summary Cards Definition ---
 const metricsConfig = computed(() => [
@@ -97,11 +97,11 @@ const metricsConfig = computed(() => [
 <template>
   <div
     data-archetype="A3-stats-grid"
-    class="h-full overflow-y-auto bg-surface-ground/50"
+    class="h-full overflow-y-auto"
   >
-    <div class="p-padding-xl flex flex-col gap-padding-xl max-w-7xl mx-auto">
+    <div class="p-padding-xl flex flex-col gap-xl layout-content-wide">
       <!-- Header Section -->
-      <header class="flex flex-col gap-1">
+      <header class="flex flex-col gap-sm">
         <h1 class="fs-2xl font-bold text-foreground m-0 tracking-tight">System Data Overview</h1>
         <p class="fs-sm text-muted-foreground m-0">
           Real-time performance monitoring and analytics.
@@ -111,15 +111,15 @@ const metricsConfig = computed(() => [
       <!-- Metrics Header -->
       <div
         data-region="metrics-header"
-        class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-padding-lg"
+        class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-lg"
       >
         <div
           v-for="m in metricsConfig"
           :key="m.label"
-          class="glass-surface shadow-soft border-default p-padding-lg rounded-scale-lg component-card-hoverable transition-fluid flex items-center gap-padding-lg group"
+          class="surface-elevated default-rounded p-padding-lg behavior-hover-transition flex items-center gap-lg group hover:bg-foreground/5"
         >
           <div
-            class="shrink-0 w-12 h-12 rounded-scale-md bg-surface-elevated flex items-center justify-center transition-fluid group-hover:scale-110 shadow-sm"
+            class="shrink-0 w-12 h-12 rounded-scale-md surface-item flex items-center justify-center behavior-hover-transition group-hover:scale-105"
           >
             <Icons
               :name="m.icon"
@@ -139,23 +139,21 @@ const metricsConfig = computed(() => [
       <!-- Chart Grid -->
       <div
         data-region="chart-grid"
-        class="grid grid-cols-1 gap-padding-lg"
+        class="grid grid-cols-1 gap-lg"
       >
         <div
-          class="glass-surface shadow-soft border-default rounded-scale-xl p-padding-xl flex flex-col gap-padding-lg min-h-[28rem]"
+          class="surface-elevated rounded-scale-xl p-padding-xl flex flex-col gap-lg min-h-kpi-card"
         >
-          <div class="flex items-center justify-between">
-            <div class="flex flex-col gap-1">
+          <div class="flex items-center justify-between shrink-0">
+            <div class="flex flex-col gap-xs">
               <h3 class="fs-lg font-semibold text-foreground m-0">Performance Analytics</h3>
               <p class="fs-xs text-muted-foreground m-0">Live telemetry of core system resources</p>
             </div>
-            <div class="flex gap-2">
-              <div
-                class="flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 border border-primary/20"
-              >
-                <span class="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
-                <span class="fs-xs font-medium text-primary">Live Data</span>
-              </div>
+            <div
+              class="flex items-center gap-sm px-padding-md py-padding-xs rounded-full bg-primary/10"
+            >
+              <span class="w-2 h-2 rounded-full bg-primary animate-pulse shrink-0" />
+              <span class="fs-xs font-medium text-primary">Live Data</span>
             </div>
           </div>
 

@@ -78,7 +78,7 @@ function handleSubmit(values: FormValues) {
   >
     <div
       data-region="toolbar"
-      class="shrink-0 flex flex-col gap-sm px-padding-lg py-padding-md border-b-default bg-card"
+      class="shrink-0 flex flex-col gap-sm px-padding-lg py-padding-md border-b-default"
     >
       <h2 class="fs-xl font-semibold text-primary m-0">SchemaForm v2 升维 Demo</h2>
       <p class="fs-sm text-muted-foreground m-0">

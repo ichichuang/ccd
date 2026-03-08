@@ -15,6 +15,7 @@ declare module 'vue' {
     AnimateWrapper: typeof import('./../components/AnimateWrapper/AnimateWrapper.vue')['default']
     AutoComplete: typeof import('primevue/autocomplete')['default']
     Badge: typeof import('primevue/badge')['default']
+    BaseLottieLoader: typeof import('./../components/BaseLottieLoader/BaseLottieLoader.vue')['default']
     BodyCellRenderer: typeof import('./../components/DataTable/BodyCellRenderer.tsx')['default']
     Breadcrumb: typeof import('primevue/breadcrumb')['default']
     Button: typeof import('primevue/button')['default']

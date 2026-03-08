@@ -20,7 +20,7 @@ const id = computed<string>(() => {
       <span>DataTable 详情示例（meta.activeMenu）</span>
     </h2>
 
-    <div class="component-border rounded-scale p-padding-md space-y-margin-sm bg-card">
+    <div class="component-border rounded-scale p-padding-md space-y-margin-sm">
       <div class="fs-md font-medium">当前 ID：{{ id || '-' }}</div>
       <p class="text-muted-foreground fs-sm">
         本路由 meta.activeMenu =

@@ -9,6 +9,7 @@ import { setupScrollbar } from '@/plugins/modules/scrollbar'
 
 /**
  * 统一设置所有插件
+ * 注意：loadingDone() 由 router.afterEach 在首次导航完成后调用，确保 Vue 挂载后无缝切换
  * @param app Vue 应用实例
  */
 export const setupPlugins = async (app: App) => {
@@ -20,17 +21,11 @@ export const setupPlugins = async (app: App) => {
   setupStores(app)
   setupPrimeVue(app)
   setupScrollbar(app)
-  const { loadingDone } = useLoading()
-  try {
-    // loadingStart()
-    setupRouter(app)
 
-    // 在语言系统之后初始化 DateUtils，确保语言设置已就绪
-    await setupDateUtils(app)
+  setupRouter(app)
 
-    setupEcharts(app)
-  } finally {
-    // 无论初始化成功与否，都要确保全局 loading 可关闭，避免页面卡在加载层
-    loadingDone()
-  }
+  // 在语言系统之后初始化 DateUtils，确保语言设置已就绪
+  await setupDateUtils(app)
+
+  setupEcharts(app)
 }

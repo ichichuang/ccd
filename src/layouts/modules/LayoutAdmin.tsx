@@ -200,22 +200,28 @@ export default defineComponent({
       <main class="flex-1 min-w-0 min-h-0 flex flex-col overflow-hidden bg-background">
         <AdminBreadcrumbBar show={showBreadcrumbEffective.value} />
         <AdminTabsBar show={showTabsEffective.value} />
-        <section class="flex-1 min-h-0 overflow-hidden">
+        <section class={`flex-1 min-h-0 overflow-hidden bg-card rounded-2xl`}>
           <AppContainer />
         </section>
-        <AdminFooterBar show={showFooterEffective.value} />
+        <div class="bg-background shrink-0">
+          <AdminFooterBar show={showFooterEffective.value} />
+        </div>
       </main>
     )
 
     const renderBody = () => {
       // horizontal：header 下方直接 content
       if (isHorizontal.value) {
-        return <div class="flex-1 min-h-0 overflow-hidden flex flex-col">{renderContent()}</div>
+        return (
+          <div class="flex-1 min-h-0 overflow-hidden flex flex-col bg-background">
+            {renderContent()}
+          </div>
+        )
       }
 
       // vertical/mix：sidebar + content
       return (
-        <div class="flex-1 min-h-0 overflow-hidden flex">
+        <div class="flex-1 min-h-0 overflow-hidden flex bg-background">
           <AdminSidebar
             mode={mode.value}
             showSidebar={showSidebarEffective.value}
@@ -238,17 +244,17 @@ export default defineComponent({
         >
           <div
             key={mode.value}
-            class="flex-1 min-h-0 overflow-hidden flex flex-col"
+            class="flex-1 min-h-0 overflow-hidden flex flex-col bg-background"
             style={{ '--animate-duration': bodyTransitionDuration } as Record<string, string>}
           >
             {renderBody()}
           </div>
         </Transition>
       ) : (
-        <div class="flex-1 min-h-0 overflow-hidden flex flex-col">{renderBody()}</div>
+        <div class="flex-1 min-h-0 overflow-hidden flex flex-col bg-background">{renderBody()}</div>
       )
       return (
-        <div class="flex flex-col overflow-hidden h-full">
+        <div class="flex flex-col overflow-hidden h-full bg-sidebar">
           <AdminHeader
             mode={mode.value}
             showHeader={showHeader.value}
@@ -282,7 +288,7 @@ export default defineComponent({
             }}
             v-slots={{
               container: () => (
-                <div class="admin-sidebar--fixed flex flex-col h-full overflow-hidden select-none bg-sidebar text-sidebar-foreground">
+                <div class="admin-sidebar--fixed flex flex-col h-full overflow-hidden select-none bg-background text-foreground">
                   <AdminSidebarLogo />
                   <div class="flex-1 min-h-0 flex flex-col overflow-hidden">
                     <CScrollbar class="flex-1 min-h-0 px-padding-sm">
@@ -301,10 +307,10 @@ export default defineComponent({
         scope="global"
         v-slots={{
           menu: ({ close, event }: { close: () => void; event: MouseEvent }) => (
-            <div class="min-w-[var(--spacing-4xl)] bg-card border border-solid border-border/50 shadow-xl rounded-scale-md p-padding-xs flex flex-col gap-xs select-none">
+            <div class="min-w-[var(--spacing-4xl)] bg-card shadow-xl rounded-scale-md p-padding-xs flex flex-col gap-xs select-none">
               {/* 重新载入 */}
               <div
-                class="flex items-center gap-sm px-padding-sm py-padding-xs rounded-scale-md fs-sm text-foreground hover:bg-primary hover:text-primary-foreground cursor-pointer transition-colors duration-scale-md"
+                class="flex items-center gap-sm px-padding-sm py-padding-xs rounded-scale-md fs-sm text-foreground hover:bg-primary  cursor-pointer transition-colors duration-scale-md"
                 onClick={() => {
                   onContextReload()
                   close()
@@ -319,7 +325,7 @@ export default defineComponent({
 
               {/* 设置 */}
               <div
-                class="flex items-center gap-sm px-padding-sm py-padding-xs rounded-scale-md fs-sm text-foreground hover:bg-primary hover:text-primary-foreground cursor-pointer transition-colors duration-scale-md"
+                class="flex items-center gap-sm px-padding-sm py-padding-xs rounded-scale-md fs-sm text-foreground hover:bg-primary  cursor-pointer transition-colors duration-scale-md"
                 onClick={() => {
                   openGlobalSettings()
                   close()
@@ -334,7 +340,7 @@ export default defineComponent({
 
               {/* 动态切换深/浅色模式 */}
               <div
-                class="flex items-center gap-sm px-padding-sm py-padding-xs rounded-scale-md fs-sm text-foreground hover:bg-primary hover:text-primary-foreground cursor-pointer transition-colors duration-scale-md"
+                class="flex items-center gap-sm px-padding-sm py-padding-xs rounded-scale-md fs-sm text-foreground hover:bg-primary  cursor-pointer transition-colors duration-scale-md"
                 onClick={() => {
                   onContextToggleTheme(event)
                   close()

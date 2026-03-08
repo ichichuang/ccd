@@ -43,7 +43,7 @@ function handleSubmit(values: FormValues): void {
       class="flex-1 min-h-0"
     >
       <CScrollbar class="h-full">
-        <div class="p-padding-lg flex flex-col gap-lg max-w-2xl">
+        <div class="p-padding-lg flex flex-col gap-lg layout-content-narrow">
           <SchemaForm
             v-model="formValues"
             :schema="wizardSchema"

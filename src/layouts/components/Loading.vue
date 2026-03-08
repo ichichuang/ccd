@@ -1,177 +1,63 @@
 <script setup lang="ts">
-import { toKebabCase } from '@/utils/strings'
-import { useDeviceStore } from '@/stores/modules/device'
+/**
+ * 页面级 Loading 动画（Lottie）
+ * 通过 type 选择 loading-001 / 002 / 003.json；通过 size 使用 Design System 尺寸阶梯。
+ * 视觉缩放由内部 LOADING_SCALE_MAP 按 type 自动决定。
+ * 颜色随 --primary 主题同步（Lottie Theming Engine）。
+ */
+import type { SizeScaleKey } from '@/constants/sizeScale'
+import { LOADING_SIZE_CSS } from '@/constants/sizeScale'
+import loading001 from '@/assets/lottie/loading-001.json'
+import loading002 from '@/assets/lottie/loading-002.json'
+import loading003 from '@/assets/lottie/loading-003.json'
+import { BaseLottieLoader } from '@/components/BaseLottieLoader'
+import { applyThemeToLottieJson } from '@/utils/theme/lottieThemeUtils'
+import { useThemeStore } from '@/stores/modules/theme'
 
-const deviceStore = useDeviceStore()
-const definitely = computed(() => deviceStore.getDefinitely)
-const props = withDefaults(
-  defineProps<{
-    size?: number
-    page?: boolean
-    loadingSize?: number
-  }>(),
-  {
-    size: undefined,
-    loadingSize: 5,
-  }
-)
+/** 加载动画样式：1 | 2 | 3 对应 loading-001 / 002 / 003.json */
+type LoadingType = 1 | 2 | 3
 
-const newSize = computed(() => {
-  return props.size ? props.size : definitely.value / Number(props.loadingSize)
+interface LoadingProps {
+  /** 加载动画样式，默认 1 */
+  type?: LoadingType
+  /** 尺寸阶梯（xs～5xl），默认 3xl；与 Design System 一致 */
+  size?: SizeScaleKey
+}
+
+const props = withDefaults(defineProps<LoadingProps>(), {
+  type: 1,
+  size: 'md',
 })
 
-const spinnerStyle = reactive({
-  width: `${newSize.value}px`,
-  height: `${newSize.value}px`,
-  [toKebabCase('circleSize', '--')]: `${newSize.value * 0.24}px`,
-  [toKebabCase('borderSize', '--')]: `${newSize.value / 25}px`,
+const LOADING_ANIMATION_MAP: Record<LoadingType, object> = {
+  1: loading001,
+  2: loading002,
+  3: loading003,
+}
+
+const themeStore = useThemeStore()
+const resolvedSize = computed(() => LOADING_SIZE_CSS[props.size])
+
+const normalizedType = computed((): LoadingType => {
+  const t = props.type
+  if (t === 1 || t === 2 || t === 3) return t
+  return 1
 })
 
-const loadingRef = ref<HTMLElement | null>(null)
-
-onMounted(() => {
-  // 获取 loadingRef 的宽度高度提取出最短的边长
-  if (loadingRef.value) {
-    const width = loadingRef.value.clientWidth
-    const height = loadingRef.value.clientHeight
-    const min = Math.min(width, height) / Number(props.loadingSize)
-    if (props.page) {
-      spinnerStyle.width = `${min}px`
-      spinnerStyle.height = `${min}px`
-      spinnerStyle[toKebabCase('circleSize', '--')] = `${min * 0.24}px`
-      spinnerStyle[toKebabCase('borderSize', '--')] = `${min / 25}px`
-    }
-  }
+const resolvedAnimationData = computed(() => {
+  const raw = LOADING_ANIMATION_MAP[normalizedType.value] as object
+  void themeStore.themeName
+  void themeStore.isDark
+  return applyThemeToLottieJson(raw, { loadingType: normalizedType.value })
 })
 </script>
 
 <template>
-  <div
-    ref="loadingRef"
-    class="layout-full center"
-  >
-    <div
-      class="overflow-hidden atom-spinner"
-      :style="spinnerStyle"
-    >
-      <div class="spinner-inner">
-        <div class="spinner-line" />
-        <div class="spinner-line" />
-        <div class="spinner-line" />
-        <div class="spinner-circle">●</div>
-      </div>
-    </div>
-  </div>
+  <BaseLottieLoader
+    :width="resolvedSize"
+    :height="resolvedSize"
+    :animation-data="resolvedAnimationData"
+    :loop="true"
+    :speed="1"
+  />
 </template>
-
-<style lang="scss" scoped>
-.atom-spinner {
-  transform: translateZ(0);
-  will-change: transform;
-}
-
-.atom-spinner .spinner-inner {
-  position: relative;
-  display: block;
-  height: 100%;
-  width: 100%;
-  transform: translateZ(0);
-}
-
-.atom-spinner .spinner-circle {
-  display: block;
-  position: absolute;
-  color: rgb(var(--primary));
-  font-size: var(--circle-size);
-  top: 50%;
-  left: 50%;
-  transform: translateZ(0) translate(-50%, -50%);
-}
-
-.atom-spinner .spinner-line {
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  border-radius: 50%;
-  border-left: var(--border-size) solid rgb(var(--primary));
-  border-top: var(--border-size) solid transparent;
-  will-change: transform;
-  transform: translateZ(0);
-  backface-visibility: hidden;
-}
-
-.atom-spinner .spinner-line:nth-child(1) {
-  animation: atom-spinner-animation-1 1s linear infinite;
-  transform: translateZ(0) rotateZ(120deg) rotateX(66deg) rotateZ(0deg);
-}
-
-.atom-spinner .spinner-line:nth-child(2) {
-  animation: atom-spinner-animation-2 1s linear infinite;
-  transform: translateZ(0) rotateZ(240deg) rotateX(66deg) rotateZ(0deg);
-}
-
-.atom-spinner .spinner-line:nth-child(3) {
-  animation: atom-spinner-animation-3 1s linear infinite;
-  transform: translateZ(0) rotateZ(360deg) rotateX(66deg) rotateZ(0deg);
-}
-
-@keyframes atom-spinner-animation-1 {
-  0% {
-    transform: translateZ(0) rotateZ(120deg) rotateX(66deg) rotateZ(0deg);
-  }
-
-  100% {
-    transform: translateZ(0) rotateZ(120deg) rotateX(66deg) rotateZ(360deg);
-  }
-}
-
-@keyframes atom-spinner-animation-1 {
-  0% {
-    transform: translateZ(0) rotateZ(120deg) rotateX(66deg) rotateZ(0deg);
-  }
-
-  100% {
-    transform: translateZ(0) rotateZ(120deg) rotateX(66deg) rotateZ(360deg);
-  }
-}
-
-@keyframes atom-spinner-animation-2 {
-  0% {
-    transform: translateZ(0) rotateZ(240deg) rotateX(66deg) rotateZ(0deg);
-  }
-
-  100% {
-    transform: translateZ(0) rotateZ(240deg) rotateX(66deg) rotateZ(360deg);
-  }
-}
-
-@keyframes atom-spinner-animation-2 {
-  0% {
-    transform: translateZ(0) rotateZ(240deg) rotateX(66deg) rotateZ(0deg);
-  }
-
-  100% {
-    transform: translateZ(0) rotateZ(240deg) rotateX(66deg) rotateZ(360deg);
-  }
-}
-
-@keyframes atom-spinner-animation-3 {
-  0% {
-    transform: translateZ(0) rotateZ(360deg) rotateX(66deg) rotateZ(0deg);
-  }
-
-  100% {
-    transform: translateZ(0) rotateZ(360deg) rotateX(66deg) rotateZ(360deg);
-  }
-}
-
-@keyframes atom-spinner-animation-3 {
-  0% {
-    transform: translateZ(0) rotateZ(360deg) rotateX(66deg) rotateZ(0deg);
-  }
-
-  100% {
-    transform: translateZ(0) rotateZ(360deg) rotateX(66deg) rotateZ(360deg);
-  }
-}
-</style>

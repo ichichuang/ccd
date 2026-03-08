@@ -16,7 +16,7 @@ globs: src/views/**/*.vue
 
 ### 2. Build Flex Skeleton
 
-- Root: `<div class="h-full flex flex-col overflow-hidden bg-surface-ground">`
+- Root: Root container MUST be transparent (e.g., `<div class="h-full flex flex-col overflow-hidden">`). DO NOT use `bg-*` classes on the root.
 - Header/Toolbar: `<div class="shrink-0 flex items-center justify-between p-padding-md component-border border-b-default">`
 
 ### 3. Build Content Area

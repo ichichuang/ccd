@@ -562,8 +562,8 @@ defineExpose({
   min-height: 0; /* Clear any default min-height */
 }
 
-/* Optional: Add a subtle separator between buttons */
+/* 101 例外：表单控件内部增减按钮之间的分隔线，使用极弱边框避免布局偏移 */
 :deep(.p-inputnumber-increment-button) {
-  border-bottom: 1px solid rgb(var(--border));
+  border-bottom: 1px solid rgb(var(--border) / 0.15);
 }
 </style>

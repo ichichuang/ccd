@@ -287,7 +287,7 @@ function onAccordionActiveIndexChange(value: number | number[] | undefined): voi
 
 <template>
   <!-- 最外层：全屏 Flex 容器 (80% / 20%) -->
-  <div class="h-full w-full flex overflow-hidden bg-background">
+  <div class="h-full w-full flex overflow-hidden">
     <!-- 左侧：主内容 (80%) -->
     <div class="basis-4/5 min-w-0 h-full flex flex-col">
       <CScrollbar
@@ -716,7 +716,7 @@ function onAccordionActiveIndexChange(value: number | number[] | undefined): voi
               <h2 class="fs-xl font-semibold text-foreground flex items-center gap-sm m-0">
                 {{ sectionMeta[1].indexLabel }} {{ sectionMeta[1].label }}
               </h2>
-              <div class="flex flex-col gap-md max-w-5xl">
+              <div class="flex flex-col gap-md layout-content">
                 <div class="flex flex-col gap-xs">
                   <label
                     for="input-text"
@@ -1045,7 +1045,7 @@ function onAccordionActiveIndexChange(value: number | number[] | undefined): voi
               <h2 class="fs-xl font-semibold text-foreground flex items-center gap-sm m-0">
                 {{ sectionMeta[7].indexLabel }} {{ sectionMeta[7].label }}
               </h2>
-              <div class="flex flex-wrap gap-xl max-w-5xl">
+              <div class="flex flex-wrap gap-xl layout-content">
                 <div class="flex flex-col gap-xs flex-1 min-w-0">
                   <label class="text-foreground fs-sm">Slider: {{ sliderVal }}</label>
                   <Slider
@@ -1141,12 +1141,12 @@ function onAccordionActiveIndexChange(value: number | number[] | undefined): voi
                 <Divider align="center">
                   <span class="text-muted-foreground fs-sm">分割线文字</span>
                 </Divider>
-                <div class="max-w-5xl">
+                <div class="layout-content">
                   <InlineMessage severity="info">InlineMessage 内联提示</InlineMessage>
                 </div>
                 <Fieldset
                   legend="Fieldset 图例"
-                  class="max-w-5xl"
+                  class="layout-content"
                   toggleable
                 >
                   <p class="text-muted-foreground fs-sm m-0">可折叠的 Fieldset 内容区域。</p>
@@ -1167,7 +1167,7 @@ function onAccordionActiveIndexChange(value: number | number[] | undefined): voi
                 {{ sectionMeta[10].indexLabel }} {{ sectionMeta[10].label }}
               </h2>
               <div class="flex flex-wrap gap-lg">
-                <Card class="flex-1 min-w-[var(--spacing-5xl)] max-w-5xl">
+                <Card class="flex-1 min-w-[var(--spacing-5xl)] layout-content">
                   <template #title>Card 标题</template>
                   <template #subtitle>副标题</template>
                   <template #content>
@@ -1192,7 +1192,7 @@ function onAccordionActiveIndexChange(value: number | number[] | undefined): voi
                 </Card>
                 <Panel
                   header="Panel 可折叠"
-                  class="flex-1 min-w-[var(--spacing-5xl)] max-w-5xl"
+                  class="flex-1 min-w-[var(--spacing-5xl)] layout-content"
                   toggleable
                 >
                   <p class="text-muted-foreground fs-sm m-0">Panel 内容，点击标题可折叠/展开。</p>
@@ -1222,7 +1222,7 @@ function onAccordionActiveIndexChange(value: number | number[] | undefined): voi
                 :rows="2"
                 :rows-per-page-options="[2, 5, 10]"
                 table-style="min-width: var(--spacing-5xl)"
-                class="w-full max-w-5xl"
+                class="layout-content"
               >
                 <Column
                   selection-mode="single"
@@ -1264,7 +1264,7 @@ function onAccordionActiveIndexChange(value: number | number[] | undefined): voi
               <h2 class="fs-xl font-semibold text-foreground flex items-center gap-sm m-0">
                 {{ sectionMeta[12].indexLabel }} {{ sectionMeta[12].label }}
               </h2>
-              <div class="flex flex-col gap-md w-full max-w-5xl">
+              <div class="flex flex-col gap-md layout-content">
                 <Message
                   severity="info"
                   :closable="true"
@@ -1429,7 +1429,7 @@ function onAccordionActiveIndexChange(value: number | number[] | undefined): voi
                   />
                   <Menubar
                     :model="menuItems"
-                    class="flex-1 min-w-0 max-w-5xl"
+                    class="flex-1 min-w-0 layout-content"
                   />
                 </div>
               </div>
@@ -1448,7 +1448,7 @@ function onAccordionActiveIndexChange(value: number | number[] | undefined): voi
                 {{ sectionMeta[16].indexLabel }} {{ sectionMeta[16].label }}
               </h2>
               <div class="flex flex-wrap gap-xl">
-                <div class="flex-1 min-w-0 max-w-5xl">
+                <div class="flex-1 min-w-0 layout-content">
                   <Tabs v-model:value="activeTab">
                     <TabList>
                       <Tab value="0">Tab 1</Tab>
@@ -1468,7 +1468,7 @@ function onAccordionActiveIndexChange(value: number | number[] | undefined): voi
                     </TabPanels>
                   </Tabs>
                 </div>
-                <div class="flex-1 min-w-0 max-w-5xl">
+                <div class="flex-1 min-w-0 layout-content">
                   <Accordion
                     :active-index="activeAccordion ?? 0"
                     @update:active-index="onAccordionActiveIndexChange"
@@ -1608,7 +1608,7 @@ function onAccordionActiveIndexChange(value: number | number[] | undefined): voi
               </h2>
               <div class="flex flex-col gap-lg">
                 <Breadcrumb :model="breadcrumbItems" />
-                <div class="flex flex-col gap-xs max-w-5xl">
+                <div class="flex flex-col gap-xs layout-content">
                   <label class="text-foreground fs-sm">ProgressBar: {{ progressVal }}%</label>
                   <ProgressBar :value="progressVal" />
                   <ProgressBar

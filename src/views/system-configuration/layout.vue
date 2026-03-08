@@ -58,8 +58,8 @@ const adaptiveTriggerDesc = [
 <template>
   <div class="h-full flex flex-col overflow-hidden">
     <!-- Toolbar: Header (non-scroll) -->
-    <div class="shrink-0 px-padding-lg py-padding-md bg-background border-b-default">
-      <div class="w-full max-w-[90vw] mx-auto flex flex-col gap-xs">
+    <div class="shrink-0 px-padding-lg py-padding-md border-b-default">
+      <div class="layout-content-wide flex flex-col gap-xs">
         <div class="flex items-center gap-md">
           <div class="p-padding-md bg-primary/10 rounded-scale-lg shrink-0">
             <Icons
@@ -100,8 +100,8 @@ const adaptiveTriggerDesc = [
 
     <!-- Scrollable content -->
     <CScrollbar class="flex-1 min-h-0">
-      <div class="p-padding-lg bg-background">
-        <div class="w-full max-w-[90vw] mx-auto flex flex-col gap-xl">
+      <div class="p-padding-lg">
+        <div class="layout-content-wide flex flex-col gap-xl">
           <!-- Device Store -->
           <Card class="component-border">
             <template #title>
@@ -120,14 +120,14 @@ const adaptiveTriggerDesc = [
             <template #content>
               <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-md">
                 <div
-                  class="flex flex-col gap-xs p-padding-md surface-item rounded-scale-md component-border shadow-sm hover:shadow-md hover:bg-muted/60 dark:hover:bg-muted/40 hover:-translate-y-0.5 transition-all duration-scale-lg"
+                  class="flex flex-col gap-xs p-padding-md surface-item rounded-scale-md component-border hover:shadow-md hover:bg-muted/60 dark:hover:bg-muted/40 hover:-translate-y-0.5 transition-all duration-scale-lg"
                 >
                   <span class="text-muted-foreground fs-xs">type</span>
                   <span class="font-mono fs-md font-semibold">{{ deviceStore.type }}</span>
                   <span class="text-muted-foreground fs-xs">基于 UA 的物理设备类型</span>
                 </div>
                 <div
-                  class="flex flex-col gap-xs p-padding-md surface-item rounded-scale-md component-border shadow-sm hover:shadow-md hover:bg-muted/60 dark:hover:bg-muted/40 hover:-translate-y-0.5 transition-all duration-scale-lg"
+                  class="flex flex-col gap-xs p-padding-md surface-item rounded-scale-md component-border hover:shadow-md hover:bg-muted/60 dark:hover:bg-muted/40 hover:-translate-y-0.5 transition-all duration-scale-lg"
                 >
                   <span class="text-muted-foreground fs-xs">isMobileLayout</span>
                   <span class="font-mono fs-md font-semibold">
@@ -136,7 +136,7 @@ const adaptiveTriggerDesc = [
                   <span class="text-muted-foreground fs-xs">width &lt; lg (1024px)</span>
                 </div>
                 <div
-                  class="flex flex-col gap-xs p-padding-md surface-item rounded-scale-md component-border shadow-sm hover:shadow-md hover:bg-muted/60 dark:hover:bg-muted/40 hover:-translate-y-0.5 transition-all duration-scale-lg"
+                  class="flex flex-col gap-xs p-padding-md surface-item rounded-scale-md component-border hover:shadow-md hover:bg-muted/60 dark:hover:bg-muted/40 hover:-translate-y-0.5 transition-all duration-scale-lg"
                 >
                   <span class="text-muted-foreground fs-xs">isTabletLayout</span>
                   <span class="font-mono fs-md font-semibold">
@@ -145,7 +145,7 @@ const adaptiveTriggerDesc = [
                   <span class="text-muted-foreground fs-xs">md ≤ width &lt; lg</span>
                 </div>
                 <div
-                  class="flex flex-col gap-xs p-padding-md surface-item rounded-scale-md component-border shadow-sm hover:shadow-md hover:bg-muted/60 dark:hover:bg-muted/40 hover:-translate-y-0.5 transition-all duration-scale-lg"
+                  class="flex flex-col gap-xs p-padding-md surface-item rounded-scale-md component-border hover:shadow-md hover:bg-muted/60 dark:hover:bg-muted/40 hover:-translate-y-0.5 transition-all duration-scale-lg"
                 >
                   <span class="text-muted-foreground fs-xs">isPCLayout</span>
                   <span class="font-mono fs-md font-semibold">{{ deviceStore.isPCLayout }}</span>
@@ -287,7 +287,7 @@ const adaptiveTriggerDesc = [
                         { label: 'showFooterEffective', val: showFooterEffective },
                       ]"
                       :key="item.label"
-                      class="flex items-center justify-between p-padding-sm surface-item rounded-scale-sm component-border shadow-sm hover:shadow-md hover:bg-muted/60 dark:hover:bg-muted/40 hover:-translate-y-0.5 transition-all duration-scale-lg"
+                      class="flex items-center justify-between p-padding-sm surface-item rounded-scale-sm component-border hover:shadow-md hover:bg-muted/60 dark:hover:bg-muted/40 hover:-translate-y-0.5 transition-all duration-scale-lg"
                     >
                       <span class="fs-xs text-muted-foreground font-mono">{{ item.label }}</span>
                       <Tag

@@ -161,10 +161,8 @@ const deviceSyncInfo = computed<{ deviceType: string; breakpoint: BreakpointKey 
 <template>
   <div class="h-full flex flex-col overflow-hidden">
     <!-- Fixed top: Header + Viewport Simulator -->
-    <div
-      class="shrink-0 px-padding-lg py-padding-md bg-background flex flex-col gap-md border-b-default"
-    >
-      <div class="w-full max-w-[90vw] mx-auto flex flex-col gap-md">
+    <div class="shrink-0 px-padding-lg py-padding-md flex flex-col gap-md border-b-default">
+      <div class="layout-content-wide flex flex-col gap-md">
         <!-- Header -->
         <div class="flex flex-col gap-xs">
           <div class="flex items-center gap-md">
@@ -302,8 +300,8 @@ const deviceSyncInfo = computed<{ deviceType: string; breakpoint: BreakpointKey 
 
     <!-- Scrollable content -->
     <CScrollbar class="flex-1 min-h-0">
-      <div class="p-padding-lg bg-background">
-        <div class="w-full max-w-[90vw] mx-auto flex flex-col gap-xl">
+      <div class="p-padding-lg">
+        <div class="layout-content-wide flex flex-col gap-xl">
           <!-- Device Store 实时状态 -->
           <Card class="component-border hover:shadow-md transition-all duration-scale-lg">
             <template #title>
@@ -322,7 +320,7 @@ const deviceSyncInfo = computed<{ deviceType: string; breakpoint: BreakpointKey 
             <template #content>
               <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-md">
                 <div
-                  class="flex flex-col gap-xs p-padding-md surface-item rounded-scale-md component-border shadow-sm hover:shadow-md hover:bg-muted/60 dark:hover:bg-muted/40 hover:-translate-y-0.5 transition-all duration-scale-lg"
+                  class="flex flex-col gap-xs p-padding-md surface-item rounded-scale-md component-border hover:shadow-md hover:bg-muted/60 dark:hover:bg-muted/40 hover:-translate-y-0.5 transition-all duration-scale-lg"
                 >
                   <span class="text-muted-foreground fs-xs">type</span>
                   <Tag
@@ -332,7 +330,7 @@ const deviceSyncInfo = computed<{ deviceType: string; breakpoint: BreakpointKey 
                   <span class="font-mono fs-xs text-muted-foreground">PC / Tablet / Mobile</span>
                 </div>
                 <div
-                  class="flex flex-col gap-xs p-padding-md surface-item rounded-scale-md component-border shadow-sm hover:shadow-md hover:bg-muted/60 dark:hover:bg-muted/40 hover:-translate-y-0.5 transition-all duration-scale-lg"
+                  class="flex flex-col gap-xs p-padding-md surface-item rounded-scale-md component-border hover:shadow-md hover:bg-muted/60 dark:hover:bg-muted/40 hover:-translate-y-0.5 transition-all duration-scale-lg"
                 >
                   <span class="text-muted-foreground fs-xs">currentBreakpoint</span>
                   <Tag
@@ -341,7 +339,7 @@ const deviceSyncInfo = computed<{ deviceType: string; breakpoint: BreakpointKey 
                   />
                 </div>
                 <div
-                  class="flex flex-col gap-xs p-padding-md surface-item rounded-scale-md component-border shadow-sm hover:shadow-md hover:bg-muted/60 dark:hover:bg-muted/40 hover:-translate-y-0.5 transition-all duration-scale-lg"
+                  class="flex flex-col gap-xs p-padding-md surface-item rounded-scale-md component-border hover:shadow-md hover:bg-muted/60 dark:hover:bg-muted/40 hover:-translate-y-0.5 transition-all duration-scale-lg"
                 >
                   <span class="text-muted-foreground fs-xs">isMobileLayout</span>
                   <Tag
@@ -351,7 +349,7 @@ const deviceSyncInfo = computed<{ deviceType: string; breakpoint: BreakpointKey 
                   <span class="font-mono fs-xs text-muted-foreground">width &lt; lg</span>
                 </div>
                 <div
-                  class="flex flex-col gap-xs p-padding-md surface-item rounded-scale-md component-border shadow-sm hover:shadow-md hover:bg-muted/60 dark:hover:bg-muted/40 hover:-translate-y-0.5 transition-all duration-scale-lg"
+                  class="flex flex-col gap-xs p-padding-md surface-item rounded-scale-md component-border hover:shadow-md hover:bg-muted/60 dark:hover:bg-muted/40 hover:-translate-y-0.5 transition-all duration-scale-lg"
                 >
                   <span class="text-muted-foreground fs-xs">isTabletLayout</span>
                   <Tag
@@ -446,7 +444,7 @@ const deviceSyncInfo = computed<{ deviceType: string; breakpoint: BreakpointKey 
                   :style="rulerIndicatorStyle"
                 >
                   <div
-                    class="absolute -top-[var(--spacing-xs)] left-1/2 -translate-x-1/2 w-[var(--spacing-sm)] h-[var(--spacing-sm)] bg-accent rounded-full border-2 border-solid border-background"
+                    class="absolute -top-[var(--spacing-xs)] left-1/2 -translate-x-1/2 w-[var(--spacing-sm)] h-[var(--spacing-sm)] bg-accent rounded-full ring-2 ring-background"
                   />
                 </div>
 
@@ -521,7 +519,7 @@ const deviceSyncInfo = computed<{ deviceType: string; breakpoint: BreakpointKey 
                     <tr
                       v-for="item in breakpointItems"
                       :key="item.key"
-                      class="border-b border-solid border-border/50 hover:bg-muted/30 transition-colors duration-scale-lg"
+                      class="border-b-default hover:bg-muted/30 transition-colors duration-scale-lg"
                       :class="{ 'bg-accent/5': isBreakpointActive(item.value) }"
                     >
                       <td class="p-padding-sm">

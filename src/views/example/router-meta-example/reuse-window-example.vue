@@ -16,7 +16,7 @@
       <span>窗口复用示例（meta.reuseWindow）</span>
     </h2>
 
-    <div class="component-border rounded-scale p-padding-md space-y-margin-sm bg-card max-w-[80%]">
+    <div class="component-border rounded-scale p-padding-md space-y-margin-sm max-w-[80%]">
       <div class="fs-md font-medium">本路由 meta 配置</div>
       <p class="text-muted-foreground fs-sm">meta.parent = 'fullscreen'，meta.reuseWindow = true</p>
       <p class="text-muted-foreground fs-sm">

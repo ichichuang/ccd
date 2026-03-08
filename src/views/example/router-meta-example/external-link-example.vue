@@ -22,7 +22,7 @@ function openLink() {
       <span>外链示例（meta.isLink + meta.linkUrl）</span>
     </h2>
 
-    <div class="component-border rounded-scale p-padding-md space-y-margin-sm bg-card">
+    <div class="component-border rounded-scale p-padding-md space-y-margin-sm">
       <div class="fs-md font-medium">本路由 meta 配置</div>
       <p class="text-muted-foreground fs-sm">
         meta.isLink = true, meta.linkUrl = 'https://vuejs.org'

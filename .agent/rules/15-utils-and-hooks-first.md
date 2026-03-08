@@ -38,6 +38,7 @@ If you find an existing utility/hook that covers most of the need, you MUST exte
 ### IDs
 
 - `src/utils/ids.ts` (`generateUniqueId`, `generateIdFromKey`)
+- **Explicit import in non–AutoImport-dirs**: In files outside `src/stores/modules` and `src/hooks/**` (e.g. `src/router/**`, `src/plugins/**`), you **must** explicitly `import { generateIdFromKey } from '@/utils/ids'` (and same for other utils/api/constants); auto-import does not inject there, so omitting the import causes runtime `ReferenceError: xxx is not defined`.
 
 ### Date / Timezone
 

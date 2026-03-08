@@ -71,7 +71,7 @@ const statusMap: Record<ProjectItem['status'], string> = {
             <div
               v-for="item in projectList"
               :key="item.id"
-              class="rounded-scale-md border-default p-padding-md cursor-pointer transition-colors hover:bg-muted/50"
+              class="rounded-scale-md component-border p-padding-md cursor-pointer transition-colors hover:bg-muted/50"
               :class="{
                 'ring-2 ring-primary bg-primary/5': selectedProject?.id === item.id,
               }"

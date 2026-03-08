@@ -41,7 +41,8 @@ export const COLOR_FAMILIES = {
 export const THEME_ENGINE = {
   /* 基础层：未指定 backgroundDark/backgroundLight 时的默认色 */
   bgDark: '#09090b',
-  bgLight: '#ffffff',
+  bgLight: '#F7F8F9',
+  cardLight: '#ffffff',
   fgDark: '#ffffff',
   fgLight: '#09090b',
 

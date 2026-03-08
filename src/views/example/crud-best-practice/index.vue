@@ -244,7 +244,7 @@ function handleDrawerVisibleChange(v: boolean) {
   >
     <div
       data-region="toolbar"
-      class="shrink-0 flex flex-wrap items-end gap-lg px-padding-lg py-padding-md border-b-default bg-card"
+      class="shrink-0 flex flex-wrap items-end gap-lg px-padding-lg py-padding-md border-b-default"
     >
       <SchemaForm
         v-model="searchFormValues"

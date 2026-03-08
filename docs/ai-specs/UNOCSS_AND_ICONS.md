@@ -74,29 +74,27 @@
 
 如确有新的语义需求，请**先更新主题系统（`metadata.ts` + `uno.config.ts`）**再在 UI 中使用对应 token，禁止直接在模板里创造新的 `bg-*` 类名。
 
-### 2.5 内容宽度规范（禁止 Tailwind 默认 max-w-\*）
+### 2.5 内容宽度规范（禁止 Tailwind 默认 max-w-\* · 必须使用 layout-content-\*）
 
-UnoCSS 内置的 `presetUno` 会提供 Tailwind 风格的 `max-w-2xl` / `max-w-7xl` 等类，这些类对应固定的 `rem` 宽度，仅适合通用 Tailwind 项目。
+UnoCSS 内置的 `presetUno` 会提供 Tailwind 风格的 `max-w-2xl` / `max-w-7xl` 等类，这些类对应固定的 `rem` 宽度，会随根字号变化而破坏布局稳定性。**页面级主内容区必须使用 `vw` 基流体布局，与根字号解耦。**
 
 在本项目中：
 
-- **内容宽度必须基于视口或布局变量，而不是固定 rem：**
-  - 居中宽容器：`w-full max-w-[80vw] mx-auto`
-  - 文档/配置页面：`w-full max-w-[90vw] mx-auto`
-  - 窄内容区（如描述、弹窗文案）：`w-full max-w-[60vw] mx-auto`
+- **页面级内容宽度必须使用 `uno.config.ts` 中的 layout-content shortcut（基于响应式 vw 链）：**
+  - `layout-content-narrow`：窄内容区（如描述、表格/消息示例块）— 内部为 `max-w-[94vw] sm:max-w-[84vw] … 2xl:max-w-[40vw]`
+  - `layout-content`：标准内容区（如 PrimeVue 组件示例页）— 内部为 `max-w-[96vw] sm:max-w-[88vw] … 2xl:max-w-[60vw]`
+  - `layout-content-wide`：宽内容区（如系统配置文档页、Dashboard）— 内部为 `max-w-[98vw] sm:max-w-[94vw] … 3xl:max-w-[72vw]`
 
-- **禁止直接使用的类（示例）：**
+- **禁止在页面主内容区使用的类（rem 基，会破坏布局稳定性）：**
 
-| ❌ 不允许   | ✅ 推荐写法                   | 场景示例            |
-| ----------- | ----------------------------- | ------------------- |
-| `max-w-7xl` | `w-full max-w-[90vw] mx-auto` | 系统配置文档页      |
-| `max-w-6xl` | `w-full max-w-[80vw] mx-auto` | PrimeVue 组件示例页 |
-| `max-w-2xl` | `w-full max-w-[60vw] mx-auto` | 表格/消息示例块     |
+| ❌ 不允许   | ✅ 推荐 shortcut        | 场景示例            |
+| ----------- | ----------------------- | ------------------- |
+| `max-w-7xl` | `layout-content-wide`   | 系统配置文档页      |
+| `max-w-6xl` | `layout-content`        | PrimeVue 组件示例页 |
+| `max-w-5xl` | `layout-content`        | 主内容区、Dashboard |
+| `max-w-2xl` | `layout-content-narrow` | 表格/消息示例块     |
 
-- 如需统一的「内容区域宽度」语义（例如 `contentNarrow` / `contentWide`），推荐：
-  1. 在 `LAYOUT_DIMENSION_KEYS` 中为这些宽度定义 CSS 变量；
-  2. 在 `uno.config.ts` 的布局变量规则中映射为 `w-contentWide` / `max-w-contentNarrow`；
-  3. 视图中使用这些语义类，而不是继续依赖 `max-w-?xl`。
+- 上述 shortcut 已包含 `w-full mx-auto` 及响应式 vw 阶梯，直接使用即可，无需再写 `max-w-[xxvw]`。
 
 ### 2.6 边框（Border）
 

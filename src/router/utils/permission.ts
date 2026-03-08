@@ -1,6 +1,7 @@
 /* 守卫 */
 import { brand } from '@/constants/brand'
 import { AUTH_ENABLED, routeWhitePathList } from '@/constants/router'
+import { fadeOutNativePreloader } from '@/hooks/layout/useLoading'
 import { usePermissionStore } from '@/stores/modules/permission'
 import { useUserStoreWithOut } from '@/stores/modules/user'
 import { useLayoutStoreWithOut } from '@/stores/modules/layout'
@@ -161,8 +162,6 @@ export const usePermissionGuard = ({
     }
 
     // 处理初始 loading 状态：如果这是首次导航且 loadingCount > 0，说明初始 loading 还未关闭
-    // 这可能是 setupPlugins 的 finally 还未执行，或者路由守卫在 setupPlugins 之前执行了
-    // 为了确保初始 loading 能够关闭，这里也处理一下
     if (isFirstNavigation && layoutStore.loadingCount > 0) {
       loadingDone()
       hasCalledLoadingDone = true
@@ -172,11 +171,19 @@ export const usePermissionGuard = ({
     }
 
     // 🔥 兜底逻辑：如果 loadingCount > 0 且前面没有调用过 loadingDone()，确保关闭 loading
-    // 这可以处理动态路由已加载时，但 loadingCount 仍然 > 0 的情况
-    // 例如：登录后跳转时，如果动态路由已加载，不会调用 loadingStart()，但可能仍有遗留的 loading
     if (!hasCalledLoadingDone && layoutStore.loadingCount > 0) {
       loadingDone()
     }
+
+    // 兜底：100ms 后强制关闭 loading，避免 composable 调用失败导致无限 loading
+    setTimeout(() => {
+      const store = useLayoutStoreWithOut()
+      if (store.loadingCount > 0) {
+        store.loadingCount = 0
+        store.isLoading = false
+        fadeOutNativePreloader() // 101 Handoff: 强制关闭时也淡出原生预加载层
+      }
+    }, 100)
 
     // 仅对 admin 布局下的路由同步标签页：addTab + updateTabActive
     const permissionStore = usePermissionStore()
