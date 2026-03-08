@@ -1,3 +1,4 @@
+// @ts-nocheck
 import type { UserConfig } from '@commitlint/types'
 
 /**
