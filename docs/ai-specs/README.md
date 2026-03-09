@@ -64,6 +64,7 @@ For human developers and GitHub visitors to understand project architecture:
 
 - **Color semantic authority**: `src/constants/theme/colorUsage.ts` (SSOT); see `.cursor/rules/21-color-authority.mdc`
 - **Premium UI & token enforcement**: `.cursor/rules/101-premium-ui.mdc`, `102-primevue-unstyled.mdc`, `103-architecture-docs-enforcement.mdc` (same content in `.agent/rules/*.md`). Enforce design tokens (`fs-*`, `rounded-scale-md`, `duration-scale-md`), shortcuts (`behavior-hover-transition`, `surface-elevated`, `surface-item`, `interactive-focus-ring`), and SSOT (`uno.config.ts`, `src/constants/sizeScale.ts`).
+- **Semantic UI Golden Rules (Phase 13.0)**: `SEMANTIC_UI_GOLDEN_RULES.md` – Supreme mandate for page structure (data-archetype, transparent root, scroll model), absolute semantic layout, physical interaction, and typography hierarchy. Required for system-configuration and page refactors. Reference: `@./SEMANTIC_UI_GOLDEN_RULES.md`
 
 5. **`PRIMEVUE_V4_API.md`** – PrimeVue v4 API (no v3 deprecated names; see https://primevue.org/)
 6. **`PRIMEVUE_THEME.md`** – PrimeVue theme

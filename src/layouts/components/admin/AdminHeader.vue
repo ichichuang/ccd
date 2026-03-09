@@ -1,9 +1,7 @@
 <script setup lang="tsx">
-import Button from 'primevue/button'
 import TieredMenu from 'primevue/tieredmenu'
 import type { MenuItem } from 'primevue/menuitem'
 import { Icons } from '@/components/Icons'
-import GlobalSetting from '@/layouts/components/GlobalSetting/index.vue'
 import User from '@/layouts/components/User/index.vue'
 import { brand } from '@/constants/brand'
 import { AUTH_ENABLED } from '@/constants/router'
@@ -23,6 +21,8 @@ import { createTieredMenuItemRenderer } from '@/hooks/layout/useMenuRenderer'
 import { useUserStore } from '@/stores/modules/user'
 import { useDeviceStore } from '@/stores/modules/device'
 import { useLayoutStore } from '@/stores/modules/layout'
+
+import logoSrc from '@/assets/images/face.png'
 
 const props = defineProps<{
   mode: AdminLayoutMode
@@ -46,6 +46,8 @@ const route = useRoute()
 const userStore = useUserStore()
 const deviceStore = useDeviceStore()
 const layoutStore = useLayoutStore()
+
+const { isFullscreen, toggle: toggleFullscreen } = useFullscreen()
 
 const isHorizontal = computed(() => props.mode === 'horizontal')
 const isMix = computed(() => props.mode === 'mix')
@@ -211,91 +213,95 @@ const renderRootItem = (item: PrimeMenuModelItem) => {
   <header
     v-if="showHeader"
     :class="[
-      'w-full h-headerHeight flex items-center justify-between px-padding-lg transition-all duration-scale-md sticky top-0 z-30',
+      'w-full h-headerHeight flex items-center justify-between px-padding-md py-padding-sm transition-all duration-scale-md sticky top-0 z-30 border-b-default border-primary/20 gap-md',
     ]"
   >
     <!-- Left: Mobile Menu + Logo -->
-    <div class="flex items-center gap-md shrink-0">
+    <div class="h-full center gap-sm">
       <!-- 移动端：汉堡菜单按钮，打开抽屉侧边栏 -->
-      <Button
+      <div
         v-if="isMobileLayout"
-        variant="text"
-        severity="secondary"
-        class="center rounded-full text-muted-foreground hover:bg-muted hover:text-foreground transition-colors duration-scale-md md:hidden"
         @click="layoutStore.toggleMobileDrawer()"
       >
         <Icons
           name="i-lucide-menu"
-          size="xl"
+          size="2xl"
         />
-      </Button>
+      </div>
       <div
         v-if="showLogo"
-        class="flex items-center gap-sm cursor-pointer transition-opacity duration-scale-md"
+        class="h-full flex items-center gap-sm cursor-pointer transition-opacity duration-scale-md py-xs hover:text-primary!"
         @click="goToRoute('/')"
       >
-        <div
-          class="logo-box rounded-scale-xl bg-primary text-primary-foreground flex items-center justify-center shadow-lg shadow-primary/20"
-        >
-          <span class="fs-md font-bold">C</span>
+        <div class="h-full size-1-1 rounded-full center">
+          <img
+            class="layout-full!"
+            :src="logoSrc"
+          />
         </div>
-        <div class="hidden md:flex flex-col leading-none gap-xs">
-          <span class="fs-xl font-bold tracking-tight">{{ brand.displayName }}</span>
+        <div class="h-full hidden md:flex flex-col justify-between leading-none">
+          <span class="fs-xl font-bold tracking-tight duration-scale-md">
+            {{ brand.displayName }}
+          </span>
           <span class="fs-xs text-muted-foreground font-medium">{{ brand.subtitle }}</span>
         </div>
       </div>
     </div>
 
     <!-- Middle: Horizontal Menu（TieredMenu Popup 架构，移动端隐藏以避免拥挤）-->
-    <nav
-      v-if="showMenu && (isHorizontal || isMix) && !isMobileLayout"
-      class="flex-1 min-w-0 px-padding-md flex items-center justify-start"
-      role="menubar"
-    >
-      <component
-        :is="renderRootItem(item)"
-        v-for="item in menuModel"
-        :key="item.key"
-      />
-    </nav>
+    <div class="flex-1 h-full flex justify-between items-center">
+      <nav
+        v-if="showMenu && (isHorizontal || isMix) && !isMobileLayout"
+        class="min-w-0 flex items-center justify-start"
+        role="menubar"
+      >
+        <component
+          :is="renderRootItem(item)"
+          v-for="item in menuModel"
+          :key="item.key"
+        />
+      </nav>
+      <div class="flex-1 h-full"></div>
+    </div>
 
     <!-- Right: Actions -->
-    <div class="shrink-0 ml-auto flex items-center">
-      <div class="flex items-center gap-sm">
-        <Button
-          v-if="showSidebarToggle"
-          variant="text"
-          severity="secondary"
-          class="center rounded-full text-muted-foreground hover:bg-muted hover:text-foreground transition-colors duration-scale-md"
-          @click="emit('toggleCollapse', $event)"
-        >
-          <Icons
-            :name="sidebarCollapse ? 'i-lucide-panel-left-open' : 'i-lucide-panel-left-close'"
-            size="xl"
-          />
-        </Button>
-        <Button
-          variant="text"
-          severity="secondary"
-          class="center rounded-full text-muted-foreground hover:bg-muted hover:text-foreground transition-colors duration-scale-md"
-          :disabled="isAnimating"
-          @click="emit('toggleTheme', $event)"
-        >
-          <Icons
-            :name="isDark ? 'i-lucide-sun' : 'i-lucide-moon'"
-            size="xl"
-          />
-        </Button>
-        <GlobalSetting />
-        <User v-if="showUserEntry" />
+    <div class="h-full center gap-md py-xs">
+      <div
+        v-if="showSidebarToggle"
+        class="cursor-pointer hover:scale-110 duration-scale-sm"
+        @click="emit('toggleCollapse', $event)"
+      >
+        <Icons
+          :name="sidebarCollapse ? 'i-lucide-panel-left-open' : 'i-lucide-panel-left-close'"
+          class="color-inherit"
+          size="2xl"
+        />
       </div>
+      <div
+        class="cursor-pointer hover:scale-110 duration-scale-sm"
+        @click="toggleFullscreen()"
+      >
+        <Icons
+          :name="
+            isFullscreen
+              ? 'i-solar-quit-full-screen-bold-duotone'
+              : 'i-solar-full-screen-bold-duotone'
+          "
+          class="color-inherit"
+          size="2xl"
+        />
+      </div>
+      <div
+        class="cursor-pointer"
+        @click="emit('toggleTheme', $event)"
+      >
+        <Icons
+          :name="isDark ? 'i-solar-moon-bold-duotone' : 'i-solar-sun-2-bold-duotone'"
+          size="2xl"
+          class="color-inherit"
+        />
+      </div>
+      <User v-if="showUserEntry" />
     </div>
   </header>
 </template>
-
-<style lang="scss" scoped>
-.logo-box {
-  width: var(--spacing-xl);
-  height: var(--spacing-xl);
-}
-</style>

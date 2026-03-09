@@ -19,7 +19,7 @@
 结论：
 
 - 断点、尺寸阶梯、布局变量、语义类的生成，全部由 SSOT 推导
-- UI 代码禁止硬编码 px/rem/hex；必须使用语义类/变量
+- UI 代码禁止硬编码 px/rem/hex；必须使用语义类/变量。**FORBIDDEN:** 业务代码中直接使用 raw `rem`、`em`、`px`；必须使用 `var(--spacing-*)`、语义 token（`p-padding-*`、`gap-*`、`fs-*`）及 vw/vh 布局
 
 ## 2. 语义类的核心能力（示例）
 
@@ -74,6 +74,8 @@
 
 如确有新的语义需求，请**先更新主题系统（`metadata.ts` + `uno.config.ts`）**再在 UI 中使用对应 token，禁止直接在模板里创造新的 `bg-*` 类名。
 
+**Transparent Root Policy（透明根策略）：** 在 `meta.parent === 'admin'` 的路由视图中，根容器（如 `<div class="h-full flex flex-col overflow-hidden">`）**禁止**设置 `bg-card`、`bg-background`、`bg-surface-ground`、`bg-surface-elevated` 或任何 `surface-*`。LayoutAdmin 已提供画布背景；内部卡片/面板仅在嵌套内容上使用 `surface-elevated`、`glass-surface` 或 `shadow-soft`。详见 `.cursor/rules/22-layouts.mdc` §9。
+
 ### 2.5 内容宽度规范（禁止 Tailwind 默认 max-w-\* · 必须使用 layout-content-\*）
 
 UnoCSS 内置的 `presetUno` 会提供 Tailwind 风格的 `max-w-2xl` / `max-w-7xl` 等类，这些类对应固定的 `rem` 宽度，会随根字号变化而破坏布局稳定性。**页面级主内容区必须使用 `vw` 基流体布局，与根字号解耦。**
@@ -100,9 +102,11 @@ UnoCSS 内置的 `presetUno` 会提供 Tailwind 风格的 `max-w-2xl` / `max-w-7
 
 四边/单边边框须使用 `uno.config.ts` 中的**边框快捷类**，避免仅设 width+color 未设 style 导致不显示：
 
-- **四边**：`component-border`（= `border border-solid border-border`）
+- **四边**：`component-border`（= `shadow-soft`，无 ring/border；Premium Borderless 策略，见 104-anti-flicker-ring-less）
 - **底边**：`border-b-default`；**顶边**：`border-t-default`
 - **禁止**：仅写 `border border-border`（未设置 border-style，边框不显示）。带透明度或其它 style（如 `border-dashed`）时单独写 `border border-solid border-border/50` 等。
+
+**Theme-Tinted Shadow Policy（主题着色阴影）：** 禁止 `rgba(0,0,0,x)` 用于 box-shadow。浅色模式用 `rgb(var(--foreground)/<alpha>)`，深色模式用 `rgb(var(--background)/<alpha>)`。优先使用 `shadow-soft`、`shadow-float`、`interactive-hover-card`、`interactive-hover-tile` 等 shortcut。详见 104-anti-flicker-ring-less。
 
 ### 2.7 交互过渡（Transition）— AI 必读
 
@@ -122,6 +126,7 @@ UnoCSS 内置的 `presetUno` 会提供 Tailwind 风格的 `max-w-2xl` / `max-w-7
 
 **禁止**：
 
+- 使用 `hover:ring-*`、`hover:border-*` 做交互反馈（仅允许 `hover:-translate-y-1` + 阴影扩散，见 104-anti-flicker-ring-less）
 - 使用 `hover:` / `active:` / `focus:` 而不加 transition
 - 硬编码 `transition-duration: 200ms` 或 `duration-200`（须用 `duration-scale-md` 等）
 - 仅写 `duration-scale-*` 而不写 `transition`/`transition-colors`/`transition-opacity`（duration 单独无效）
@@ -161,7 +166,7 @@ Icons 为独立 DOM 元素，**父容器的 transition 不会影响 Icons 的 co
 
 你项目的图标链路由三部分组成：
 
-1. **依赖（iconify collections）**：`package.json` 中已包含 lucide/mdi/logos 等集合
+1. **依赖（iconify collections）**：`package.json` 中已包含 lucide/solar/ph/logos 等集合
 2. **自定义 SVG（custom collection）**：放置于 `src/assets/icons/**`
 3. **构建侧扫描与 safelist**：`build/uno-icons.ts` + `uno.config.ts`
 
@@ -188,14 +193,15 @@ Icons 为独立 DOM 元素，**父容器的 transition 不会影响 Icons 的 co
 - 所有图标必须通过 `Icons` 组件渲染（见 `src/components/Icons`）
 - 优先顺序：
   1. `i-lucide-*`
-  2. `i-mdi-*`
-  3. `i-logos-*`
-  4. `i-custom:*`（新增 SVG）
+  2. `i-solar-*`
+  3. `i-ph-*`
+  4. `i-logos-*`
+  5. `i-custom:*`（新增 SVG）
 
 **推荐：统一使用完整类名**
 
 - 业务代码中推荐始终使用以 `i-` 开头的完整类名，避免歧义与转换边界情况：
-  - Iconify：`i-lucide-xxx`、`i-mdi-xxx`、`i-logos-xxx`
+  - Iconify：`i-lucide-xxx`、`i-solar-xxx`、`i-ph-xxx`、`i-logos-xxx`
   - 自定义：`i-custom:xxx`（注意 custom 使用冒号，不要写成 `i-custom-xxx`）
 - PrimeVue 图标与上述不同，需通过 `import X from '@primevue/icons/xxx'` 使用组件，示例页中 PrimeVue 标签页仅展示名称与说明，不通过字符串渲染。
 

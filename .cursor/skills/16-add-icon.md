@@ -13,9 +13,10 @@ When the task is "add an icon / replace an icon", smart-select and output a read
 ## Smart Selection Policy (priority order)
 
 1. **Lucide (default/recommended)**: `i-lucide-*`
-2. **MDI (fallback)**: `i-mdi-*`
-3. **Logos (brands)**: `i-logos-*`
-4. **Custom SVG**: When no suitable icon exists in collections
+2. **Solar (premium line)**: `i-solar-*`
+3. **Phosphor (ph)**: `i-ph-*`
+4. **Logos (brands)**: `i-logos-*`
+5. **Custom SVG**: When no suitable icon exists in collections
    - Place SVG in `src/assets/icons/**`
    - Use `i-custom:<path-with-dashes>`
 
@@ -61,6 +62,6 @@ Task: Select/add icon for the following semantics and provide final <Icons /> us
 Semantics: <e.g. add/edit/delete/refresh/export/settings/user/role/permission/hint/warning>
 
 Requirements:
-- Prefer Lucide, then MDI, then Logos
+- Prefer Lucide, then Solar, then Phosphor, then Logos
 - If no suitable icon, describe custom SVG placement (src/assets/icons/**) and final i-custom: name
 ```

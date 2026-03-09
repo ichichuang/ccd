@@ -1,11 +1,11 @@
 <script setup lang="ts">
 import { useI18n } from 'vue-i18n'
 import Popover from 'primevue/popover'
-import Avatar from 'primevue/avatar'
 import Button from 'primevue/button'
 import { AUTH_ENABLED } from '@/constants/router'
 import { useUserStore } from '@/stores/modules/user'
 import defaultAvatar from '@/assets/images/default-avatar.jpeg'
+import GlobalSetting from '@/layouts/components/GlobalSetting/index.vue'
 
 const { t } = useI18n()
 const router = useRouter()
@@ -43,35 +43,27 @@ const onLogout = async () => {
 <template>
   <div
     v-if="shouldRender"
-    class="flex items-center"
+    class="h-full size-1-1 rounded-full center"
   >
     <!-- 头像入口按钮 -->
-    <Button
-      variant="text"
-      severity="secondary"
-      class="center rounded-full text-muted-foreground hover:bg-muted hover:text-foreground transition-colors duration-scale-md"
+    <img
+      class="layout-full! cursor-pointer rounded-full"
+      :src="avatarSrc"
       @click="togglePanel"
-    >
-      <Avatar
-        :image="avatarSrc"
-        shape="circle"
-      />
-    </Button>
-
+    />
     <!-- 用户信息下拉面板（PrimeVue Popover） -->
     <Popover
       ref="popoverRef"
       :dismissable="true"
-      class="component-border"
     >
-      <div class="column gap-sm">
-        <div class="flex items-center gap-sm">
-          <Avatar
-            :image="avatarSrc"
-            shape="circle"
+      <div class="column gap-md">
+        <div class="grid grid-cols-2 gap-md">
+          <img
+            :src="avatarSrc"
+            class="w-[var(--spacing-3xl)]! h-[var(--spacing-3xl)]! rounded-full"
           />
-          <div class="flex flex-col">
-            <span class="fs-sm font-medium">
+          <div class="h-full flex flex-col justify-between py-xs">
+            <span class="fs-2xl font-black text-foreground">
               {{ userInfo.username || t('user.unnamedUser') }}
             </span>
             <span class="fs-xs text-muted-foreground">
@@ -79,21 +71,20 @@ const onLogout = async () => {
             </span>
           </div>
         </div>
-
-        <div class="fs-xs text-muted-foreground mt-margin-xs">
-          <div v-if="userInfo.email">{{ t('user.email') }}：{{ userInfo.email }}</div>
-          <div v-if="userInfo.phone">{{ t('user.phone') }}：{{ userInfo.phone }}</div>
-        </div>
-
-        <div class="mt-margin-sm">
+        <div v-if="userInfo.email">{{ t('user.email') }}：{{ userInfo.email }}</div>
+        <div v-if="userInfo.phone">{{ t('user.phone') }}：{{ userInfo.phone }}</div>
+        <GlobalSetting>
           <Button
             class="w-full"
-            :label="t('user.logout')"
-            severity="danger"
-            size="small"
-            @click="onLogout"
+            :label="t('layout.openGlobalSettings')"
           />
-        </div>
+        </GlobalSetting>
+        <Button
+          class="w-full"
+          :label="t('user.logout')"
+          severity="danger"
+          @click="onLogout"
+        />
       </div>
     </Popover>
   </div>

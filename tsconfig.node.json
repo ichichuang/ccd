@@ -18,6 +18,7 @@
     // ✅ 供 uno.config.ts 等工具链引用的浏览器常量与类型
     "src/constants/**/*.ts",
     "src/utils/theme/metadata.ts",
+    "src/utils/theme/colors.ts",
     "src/views/system-configuration/configs/shortcutGroups.ts",
     "src/locales/**/*"
   ],

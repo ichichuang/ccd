@@ -96,9 +96,10 @@ Rules:
 ### 4.1 Default preference order
 
 1. **Lucide** (recommended default): `i-lucide-...`
-2. **MDI** (fallback for missing lucide): `i-mdi-...`
-3. **Logos** (brands): `i-logos-...`
-4. **Custom SVG** (when no suitable icon exists):
+2. **Solar** (premium line icons): `i-solar-...`
+3. **Phosphor** (ph) (expressive icons): `i-ph-...`
+4. **Logos** (brands): `i-logos-...`
+5. **Custom SVG** (when no suitable icon exists):
    - Place SVG under `src/assets/icons/**`
    - Use `i-custom:...` naming (custom collection)
    - Custom icon loading/safelist is handled by `build/uno-icons.ts` + `uno.config.ts`

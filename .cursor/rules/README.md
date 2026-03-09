@@ -208,7 +208,8 @@ Each rule file has metadata:
 - `08-auth-login-flow.mdc` ↔ `08-auth-login-flow.md`
 - `26-repair-list-workflow.mdc` ↔ `26-repair-list-workflow.md`
 - `28-industrial-ux-standards.mdc` ↔ `28-industrial-ux-standards.md`
-- `30-drift-check.mdc` ↔ no direct match (drift-fix behavior in `docs/ai-specs/ARCHETYPE_SPEC.md` § Automation Awareness)
+- `30-drift-check.mdc` ↔ no direct match (archetype sync with `page.state.ts`; region scroll in `docs/ai-specs/ARCHETYPE_SPEC.md` § Region scroll behavior)
 - `35-schema-driven-development.mdc` ↔ `35-schema-driven-development.md`
+- `104-anti-flicker-ring-less.mdc` ↔ `104-anti-flicker-ring-less.md`
 
 Note: `.agent`-only rules (e.g. `22-verification.md`, `20-code-standards.md`) may be scattered across other Cursor rule files.

@@ -18,10 +18,11 @@ globs: src/**/*.{vue,tsx,scss}
     </section>
 
     <section name="size-system">
+      <rule>**FORBIDDEN:** Raw <code>rem</code>, <code>em</code>, or <code>px</code> in business code for dimensions, spacing, or font-size. Use semantic tokens exclusively.</rule>
       <rule>Use the size types and presets from <file>src/types/systems/size.d.ts</file>, <file>src/constants/size.ts</file>, and <file>src/constants/sizeScale.ts</file>, and the store in <file>src/stores/modules/size.ts</file>.</rule>
-      <rule>Express spacing with semantic UnoCSS classes such as <code>px-padding-lg</code>, <code>m-margin-md</code>, <code>gap-xl</code> using the project’s scale keys.</rule>
+      <rule>Express spacing with semantic UnoCSS classes such as <code>px-padding-lg</code>, <code>m-margin-md</code>, <code>gap-xl</code>, or <code>var(--spacing-*)</code> using the project’s scale keys.</rule>
       <rule>Express font sizes via <code>fs-xs</code>…<code>fs-5xl</code> instead of hardcoded <code>font-size</code>.</rule>
-      <rule>Use layout dimension variables (for example <code>w-sidebarWidth</code>, <code>h-headerHeight</code>) instead of fixed pixel widths and heights.</rule>
+      <rule>Use layout dimension variables (for example <code>w-sidebarWidth</code>, <code>h-headerHeight</code>) instead of fixed pixel widths and heights. Macro-layout MUST use <code>layout-content-*</code> shortcuts (vw-based).</rule>
     </section>
 
     <section name="layout-responsive">
@@ -55,9 +56,19 @@ globs: src/**/*.{vue,tsx,scss}
       <rule>Do not use TypeScript syntax (for example <code>as</code>, <code>:</code>, generics) in templates; place type assertions and complex logic in <code>&lt;script setup&gt;</code>.</rule>
       <rule>Follow <file>docs/ai-specs/VUE_TEMPLATE_ANTIPATTERNS.md</file> for full antipatterns and correct patterns.</rule>
     </section>
+
+    <section name="semantic-shortcuts-mandate">
+      <rule>**Flex &amp; Alignment:** When building toolbars, headers, or card content areas, MUST use <code>center</code>, <code>row-center</code>, <code>row-between</code>, <code>column-center</code>, or <code>column-between</code> instead of composing raw flex classes. FORBIDDEN: <code>flex justify-center items-center</code>, <code>flex flex-row items-center justify-between</code>, or equivalent atomic combinations.</rule>
+      <rule>**Typography Shortcuts:** For single-line text truncation (table cells, menu items, labels), MUST use <code>text-single-line-ellipsis</code>. For two-line truncation (cards, list previews), MUST use <code>text-two-line-ellipsis</code>. For secondary labels, hints, and subdued text, MUST use <code>text-muted</code> or <code>text-secondary</code>. FORBIDDEN: <code>overflow-hidden whitespace-nowrap text-ellipsis</code> when the shortcut exists.</rule>
+      <rule>**Density Tokens:** For lists, form sections, or card inner layouts, MUST use <code>density-compact</code>, <code>density-normal</code>, <code>density-comfortable</code>, or <code>density-responsive</code>. For vertical stacks (form sections, card body), MUST use <code>layout-stack</code>. For flex-wrap layouts with default spacing, MUST use <code>layout-wrap</code>. FORBIDDEN: manual <code>gap-md p-padding-md</code> when a density shortcut exists.</rule>
+    </section>
   </constraints>
 
   <forbidden>
+    <item>Using <code>flex justify-center items-center</code> instead of <code>center</code>; using raw flex atomic classes when <code>row-center</code>, <code>row-between</code>, <code>column-center</code>, or <code>column-between</code> apply.</item>
+    <item>Using <code>overflow-hidden whitespace-nowrap text-ellipsis</code> instead of <code>text-single-line-ellipsis</code>; using <code>text-muted-foreground</code> when <code>text-muted</code> shortcut applies.</item>
+    <item>Using manual <code>gap-md p-padding-md</code> or <code>flex flex-col gap-md</code> when <code>density-normal</code>, <code>layout-stack</code>, or <code>layout-wrap</code> apply.</item>
+    <item>Using raw <code>rem</code>, <code>em</code>, or <code>px</code> for dimensions, spacing, or font-size in business code—use semantic tokens (<code>p-padding-*</code>, <code>gap-*</code>, <code>fs-*</code>, <code>var(--spacing-*)</code>) only.</item>
     <item>Hardcoding padding, margin, font-size, width, height, border-radius, or colors in CSS or inline <code>style</code> attributes.</item>
     <item>Using hex values (for example <code>#fff</code>, <code>#000</code>) or raw RGB/RGBA in templates or styles.</item>
     <item>Using custom media queries like <code>@media (min-width: 768px)</code> instead of UnoCSS breakpoint prefixes.</item>

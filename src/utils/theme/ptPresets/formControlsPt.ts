@@ -1,7 +1,7 @@
 /**
  * 表单控件全局 PassThrough 配置
  *
- * Premium Borderless UI：无实线边框，使用 bg-muted/30 背景 + interactive-focus-ring 焦点环。
+ * Premium Borderless UI：无实线边框，使用 bg-muted/30 背景 + interactive-focus-ring 焦点 shadow。
  * 符合 101-premium-ui.mdc 与 29-focus-outline-styling.mdc。
  */
 
@@ -43,5 +43,20 @@ export const formControlsPt = {
     root: { class: PREMIUM_INPUT_ROOT },
     overlay: { class: PREMIUM_OVERLAY },
     list: { class: PREMIUM_OVERLAY },
+  },
+  // 104-anti-flicker-ring-less: no ring/border on hover; use bg for feedback
+  selectbutton: {
+    button: (opts: { context?: { active?: boolean } }) => {
+      const active = opts?.context?.active ?? false
+      return {
+        class: [
+          '!border-0 !ring-0',
+          'transition-all duration-scale-sm',
+          active
+            ? 'bg-primary text-primary-foreground'
+            : 'bg-muted/40 dark:bg-muted/20 hover:bg-muted/60 dark:hover:bg-muted/40',
+        ],
+      }
+    },
   },
 } as const

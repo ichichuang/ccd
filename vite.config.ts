@@ -137,6 +137,15 @@ export default ({ mode, command }: ConfigEnv): UserConfigExport => {
       assetsInlineLimit: 4096, // < 4kb 转 base64
 
       rollupOptions: {
+        treeshake: {
+          preset: 'smallest',
+          moduleSideEffects: id =>
+            /\.(css|scss|sass)$/.test(id) ||
+            id.includes('animate.css') ||
+            id.includes('primeicons/primeicons.css') ||
+            id.includes('uno.css') ||
+            id.startsWith('virtual:'),
+        },
         input: {
           index: pathResolve('./index.html', import.meta.url),
         },
@@ -146,16 +155,13 @@ export default ({ mode, command }: ConfigEnv): UserConfigExport => {
           entryFileNames: 'static/js/[name]-[hash].js',
           assetFileNames: 'static/[ext]/[name]-[hash].[ext]',
 
-          // 手动拆包，避免 vendor-libs 单 chunk 过大
-          // 关键：vue-echarts、vue3-lottie、overlayscrollbars-vue 必须与 Vue 同 chunk，
-          // 否则 vendor-libs 调用 defineComponent 时 Vue 内部 isFunction 未初始化 → TDZ
           manualChunks(id: string) {
             if (id.includes('node_modules')) {
-              if (id.includes('echarts') || id.includes('zrender')) return 'vendor-echarts'
               if (id.includes('primevue') || id.includes('@primeuix') || id.includes('primeicons'))
                 return 'vendor-primevue'
               if (id.includes('date-holidays')) return 'vendor-date-holidays'
               if (id.includes('lodash') || id.includes('dayjs')) return 'vendor-utils'
+              if (id.includes('xlsx')) return 'vendor-xlsx'
               if (
                 id.includes('vue/') ||
                 id.includes('vue-router') ||
@@ -164,12 +170,12 @@ export default ({ mode, command }: ConfigEnv): UserConfigExport => {
                 id.includes('pinia-plugin-persistedstate') ||
                 id.includes('/alova/') ||
                 id.includes('@vueuse') ||
-                id.includes('vue-echarts') ||
-                id.includes('vue3-lottie') ||
                 id.includes('overlayscrollbars-vue')
               )
                 return 'vendor-vue'
-              return 'vendor-libs'
+
+              // 核心绝杀：去掉 vendor-libs 兜底，交给 Rollup 原生异步切分机制
+              return undefined
             }
           },
         },

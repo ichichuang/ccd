@@ -197,13 +197,13 @@ export default defineComponent({
     const bodyTransitionDuration = 'var(--transition-md)'
 
     const renderContent = () => (
-      <main class="flex-1 min-w-0 min-h-0 flex flex-col overflow-hidden bg-background">
+      <main class="flex-1 min-w-0 min-h-0 flex flex-col overflow-hidden bg-sidebar">
         <AdminBreadcrumbBar show={showBreadcrumbEffective.value} />
         <AdminTabsBar show={showTabsEffective.value} />
-        <section class={`flex-1 min-h-0 overflow-hidden bg-card rounded-2xl`}>
+        <section class={`flex-1 min-h-0 overflow-hidden rounded-2xl bg-background`}>
           <AppContainer />
         </section>
-        <div class="bg-background shrink-0">
+        <div class="bg-sidebar shrink-0">
           <AdminFooterBar show={showFooterEffective.value} />
         </div>
       </main>
@@ -221,7 +221,7 @@ export default defineComponent({
 
       // vertical/mix：sidebar + content
       return (
-        <div class="flex-1 min-h-0 overflow-hidden flex bg-background">
+        <div class="flex-1 min-h-0 overflow-hidden flex bg-sidebar">
           <AdminSidebar
             mode={mode.value}
             showSidebar={showSidebarEffective.value}
@@ -254,7 +254,7 @@ export default defineComponent({
         <div class="flex-1 min-h-0 overflow-hidden flex flex-col bg-background">{renderBody()}</div>
       )
       return (
-        <div class="flex flex-col overflow-hidden h-full bg-sidebar">
+        <div class="flex flex-col overflow-hidden h-full bg-card">
           <AdminHeader
             mode={mode.value}
             showHeader={showHeader.value}

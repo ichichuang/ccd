@@ -1,5 +1,4 @@
 import { setupDateUtils } from '@/plugins/modules/date'
-import { setupEcharts } from '@/plugins/modules/echarts'
 import { setupLocales } from '@/plugins/modules/locales'
 import { setupRouter } from '@/plugins/modules/router'
 import { setupStores } from '@/plugins/modules/stores'
@@ -26,6 +25,4 @@ export const setupPlugins = async (app: App) => {
 
   // 在语言系统之后初始化 DateUtils，确保语言设置已就绪
   await setupDateUtils(app)
-
-  setupEcharts(app)
 }

@@ -6,11 +6,136 @@ import { useAppElementSize } from '@/hooks/modules/useAppElementSize'
 import { storeToRefs } from 'pinia'
 import { useThemeStore } from '@/stores/modules/theme'
 import { useSizeStore } from '@/stores/modules/size'
-import VECharts from 'vue-echarts'
 import { createDefaultUseEchartsProps } from './utils/constants'
 import type { EChartsOption } from 'echarts'
 import type { ChartAdvancedConfig } from '@/hooks/modules/useChartTheme/types'
 import type { ChartConnectState, ChartEventParams, UseEchartsProps } from './utils/types'
+
+let echartsRegistryPromise: Promise<void> | null = null
+
+const ensureEchartsRegistry = async (): Promise<void> => {
+  if (echartsRegistryPromise) {
+    return echartsRegistryPromise
+  }
+
+  echartsRegistryPromise = (async () => {
+    const [
+      { use },
+      { CanvasRenderer, SVGRenderer },
+      {
+        BarChart,
+        BoxplotChart,
+        CandlestickChart,
+        EffectScatterChart,
+        FunnelChart,
+        GaugeChart,
+        GraphChart,
+        HeatmapChart,
+        LineChart,
+        LinesChart,
+        ParallelChart,
+        PictorialBarChart,
+        PieChart,
+        RadarChart,
+        SankeyChart,
+        ScatterChart,
+        SunburstChart,
+        ThemeRiverChart,
+        TreeChart,
+        TreemapChart,
+      },
+      {
+        AriaComponent,
+        BrushComponent,
+        CalendarComponent,
+        DatasetComponent,
+        DataZoomComponent,
+        GeoComponent,
+        GraphicComponent,
+        GridComponent,
+        LegendComponent,
+        MarkAreaComponent,
+        MarkLineComponent,
+        MarkPointComponent,
+        ParallelComponent,
+        PolarComponent,
+        RadarComponent,
+        SingleAxisComponent,
+        TimelineComponent,
+        TitleComponent,
+        ToolboxComponent,
+        TooltipComponent,
+        TransformComponent,
+        VisualMapComponent,
+      },
+    ] = await Promise.all([
+      import('echarts/core'),
+      import('echarts/renderers'),
+      import('echarts/charts'),
+      import('echarts/components'),
+    ])
+
+    use([
+      CanvasRenderer,
+      SVGRenderer,
+      BarChart,
+      BoxplotChart,
+      CandlestickChart,
+      EffectScatterChart,
+      FunnelChart,
+      GaugeChart,
+      GraphChart,
+      HeatmapChart,
+      LineChart,
+      LinesChart,
+      ParallelChart,
+      PictorialBarChart,
+      PieChart,
+      RadarChart,
+      SankeyChart,
+      ScatterChart,
+      SunburstChart,
+      ThemeRiverChart,
+      TreeChart,
+      TreemapChart,
+      AriaComponent,
+      BrushComponent,
+      CalendarComponent,
+      DatasetComponent,
+      DataZoomComponent,
+      GeoComponent,
+      GraphicComponent,
+      GridComponent,
+      LegendComponent,
+      MarkAreaComponent,
+      MarkLineComponent,
+      MarkPointComponent,
+      ParallelComponent,
+      PolarComponent,
+      RadarComponent,
+      SingleAxisComponent,
+      TimelineComponent,
+      TitleComponent,
+      ToolboxComponent,
+      TooltipComponent,
+      TransformComponent,
+      VisualMapComponent,
+    ])
+  })()
+
+  try {
+    await echartsRegistryPromise
+  } catch (error) {
+    echartsRegistryPromise = null
+    throw error
+  }
+}
+
+const VEChartsAsync = defineAsyncComponent(async () => {
+  await ensureEchartsRegistry()
+  const module = await import('vue-echarts')
+  return module.default
+})
 
 const props = withDefaults(defineProps<UseEchartsProps & { group?: string }>(), {
   ...createDefaultUseEchartsProps(),
@@ -39,7 +164,10 @@ useAppElementSize(
   () => {
     // 仅在 autoResize 不为 false 时执行 resize
     if (props.autoResize !== false && chartRef.value) {
-      chartRef.value.resize()
+      // [Phase 13.11] Defer resize to next frame to prevent ResizeObserver loop errors
+      requestAnimationFrame(() => {
+        chartRef.value?.resize()
+      })
     }
   },
   { mode: 'throttle', delay: 300 }
@@ -317,7 +445,7 @@ defineExpose({
     ref="chartContainerRef"
     class="layout-full"
   >
-    <VECharts
+    <VEChartsAsync
       :key="props.renderer"
       ref="chartRef"
       :option="mergedOption"

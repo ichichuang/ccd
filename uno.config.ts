@@ -509,17 +509,17 @@ export default defineConfig({
     'layout-absolute-center': 'absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2',
     // 常用内容容器宽度（彻底抛弃 rem，改用响应式 vw，实现完美流体布局）
     'layout-content-narrow':
-      'w-full mx-auto max-w-[94vw] sm:max-w-[84vw] md:max-w-[72vw] lg:max-w-[60vw] xl:max-w-[50vw] 2xl:max-w-[40vw]',
+      'py-padding-sm md:py-padding-md xl:py-padding-lg 2xl:py-padding-xl mx-auto max-w-[88%] sm:max-w-[84%] md:max-w-[82%] lg:max-w-[80%] xl:max-w-[78%] 2xl:max-w-[76%]',
     'layout-content':
-      'w-full mx-auto max-w-[96vw] sm:max-w-[88vw] md:max-w-[80vw] lg:max-w-[72vw] xl:max-w-[64vw] 2xl:max-w-[60vw]',
+      'py-padding-sm md:py-padding-md xl:py-padding-lg 2xl:py-padding-xl mx-auto max-w-[90%] sm:max-w-[88%] md:max-w-[86%] lg:max-w-[84%] xl:max-w-[82%] 2xl:max-w-[80%]',
     'layout-content-wide':
-      'w-full mx-auto max-w-[98vw] sm:max-w-[94vw] md:max-w-[88vw] lg:max-w-[84vw] xl:max-w-[80vw] 2xl:max-w-[76vw] 3xl:max-w-[72vw]',
-    // 常用覆盖层/对话框宽度（替代 max-w-[480px] / w-[320px] 等任意值）
-    'layout-dialog-sm': 'w-full max-w-md',
-    'layout-dialog': 'w-full max-w-lg',
-    'layout-dialog-lg': 'w-full max-w-xl',
-    // 侧边面板/抽屉的常用固定宽度（基于 rem；由 SizeStore 调整根字号实现“流体”）
-    'layout-sidepanel': 'w-80',
+      'py-padding-sm md:py-padding-md xl:py-padding-lg 2xl:py-padding-xl mx-auto max-w-[92%] sm:max-w-[94%] md:max-w-[92%] lg:max-w-[90%] xl:max-w-[88%] 2xl:max-w-[86%] 3xl:max-w-[84%]',
+    // 常用覆盖层/对话框宽度（vw 流体，无 rem；由 CSS 变量或 vw 回退）
+    'layout-dialog-sm': 'w-full max-w-[var(--dialog-sm,30vw)]',
+    'layout-dialog': 'w-full max-w-[var(--dialog-md,40vw)]',
+    'layout-dialog-lg': 'w-full max-w-[var(--dialog-lg,50vw)]',
+    // 侧边面板/抽屉宽度（优先 --sidebar-width，否则 15vw 流体回退）
+    'layout-sidepanel': 'w-[var(--sidebar-width,15vw)]',
     // 视口相关的常用上限（集中定义，避免业务层写 max-h-[50vh]）
     'layout-scroll-panel': 'max-h-[50vh]',
 
@@ -537,12 +537,18 @@ export default defineConfig({
     // 说明：行为与风格解耦，便于统一调整 hover/focus 策略
     // =========================================================
     'behavior-hover-transition': 'transition-all duration-scale-md',
-    'hover-elevated': 'hover:shadow-md hover:border-primary-hover/50',
+    'hover-elevated': 'hover:shadow-md',
     'interactive-hover': 'behavior-hover-transition hover-elevated',
     'interactive-click':
       'cursor-pointer select-none active:scale-95 transition-transform duration-scale-md',
+    // 焦点指示：使用 box-shadow + 语义色，禁止 ring/outline（104-anti-flicker-ring-less）
     'interactive-focus-ring':
-      'focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
+      'focus-visible:shadow-[0_0_0_2px_rgb(var(--primary)/0.3)] focus-visible:outline-none',
+    // Card/Tile hover 仅用位移+阴影，无 ring（104-anti-flicker-ring-less）
+    'interactive-hover-card':
+      'transition-all duration-scale-md ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)]',
+    'interactive-hover-tile':
+      'shadow-soft transition-all duration-scale-xl ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)]',
     // 细微对齐（替代 pt-[1px] 这类任意值）
     'pt-hairline': 'pt-px',
 
@@ -553,10 +559,10 @@ export default defineConfig({
 
     // =========================================================
     // ⑧a 边框快捷类（Border Shortcuts · Premium Borderless）
-    // component-border：无实线边框，用极淡 ring + 柔和阴影营造浮起感（101-premium-ui）。
+    // component-border：无 ring/border，仅用 shadow 营造浮起感（101-premium-ui）。
     // border-*-default：分区线使用低透明度，弱化视觉切割。
     // =========================================================
-    'component-border': 'ring-1 ring-border/20 shadow-soft',
+    'component-border': 'shadow-soft',
     'border-b-default': 'border-0 border-b border-solid border-border/15',
     'border-t-default': 'border-0 border-t border-solid border-border/15',
     'border-l-default': 'border-0 border-l border-solid border-border/15',
@@ -606,21 +612,22 @@ export default defineConfig({
     // =========================================================
     'glass-surface': 'bg-white/70 dark:bg-black/70 backdrop-blur-md',
     'glass-surface-lg': 'bg-white/80 dark:bg-black/80 backdrop-blur-lg',
-    'shadow-soft': 'shadow-[0_1px_3px_rgba(0,0,0,0.06),0_2px_8px_rgba(0,0,0,0.04)]',
+    'shadow-soft':
+      'shadow-[0_1px_3px_rgb(var(--foreground)/0.10),0_2px_8px_rgb(var(--foreground)/0.08)] dark:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_1px_3px_rgb(var(--background)/0.7),0_2px_8px_rgb(var(--background)/0.5)]',
     'shadow-float':
-      'shadow-[0_4px_12px_rgba(0,0,0,0.08),0_8px_24px_rgba(0,0,0,0.06)] dark:shadow-[0_4px_12px_rgba(0,0,0,0.3),0_8px_24px_rgba(0,0,0,0.2)]',
+      'shadow-[0_4px_12px_rgb(var(--foreground)/0.14),0_8px_24px_rgb(var(--foreground)/0.10)] dark:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_4px_12px_rgb(var(--background)/0.9),0_8px_24px_rgb(var(--background)/0.7)]',
     'surface-base': 'bg-background',
     'surface-elevated': 'bg-card shadow-soft',
     'surface-sunken': 'bg-muted',
     // 列表项/卡片条目背景：浅色模式需更高不透明度（40%）才能与 bg-card 形成可见对比，深色模式 20% 已足够
-    'surface-item': 'bg-muted/40 dark:bg-muted/20',
+    'surface-item': 'bg-muted/60 dark:bg-muted',
     'brand-primary': 'text-primary',
     'transition-fluid':
       'transition-[transform,opacity] duration-scale-md ease-[cubic-bezier(0.16,1,0.3,1)]',
-    /** 内容区 overlay 淡入淡出：0.3s cubic-bezier(0.4, 0, 0.2, 1) */
-    'transition-fade': 'transition-opacity duration-300 ease-[cubic-bezier(0.4,0,0.2,1)]',
-    // KPI/统计卡片最小高度（替代 min-h-[12rem] 这类任意值）
-    'min-h-kpi-card': 'min-h-48',
+    /** 内容区 overlay 淡入淡出：duration-scale-sm cubic-bezier(0.4, 0, 0.2, 1) */
+    'transition-fade': 'transition-opacity duration-scale-sm ease-[cubic-bezier(0.4,0,0.2,1)]',
+    // KPI/统计卡片最小高度（vh 流体，无 rem）
+    'min-h-kpi-card': 'min-h-[var(--kpi-card-height,20vh)]',
   },
 
   // 规则优先级设计：UnoCSS 按顺序匹配，新规则必须归入对应分组。

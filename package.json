@@ -3,6 +3,15 @@
   "version": "1.0.0",
   "private": true,
   "type": "module",
+  "sideEffects": [
+    "**/*.css",
+    "**/*.scss",
+    "**/*.sass",
+    "animate.css",
+    "primeicons/primeicons.css",
+    "uno.css",
+    "virtual:*"
+  ],
   "author": "",
   "description": "企业级 Vue 3 后台管理模板",
   "keywords": [
@@ -23,7 +32,7 @@
   "scripts": {
     "dev": "vite",
     "dev:icons": "NODE_OPTIONS='--max-old-space-size=8192' vite",
-    "dev:demo": "UNO_DEMO=true vite",
+    "dev:demo": "NODE_OPTIONS='--max-old-space-size=8192' UNO_DEMO=true vite",
     "build": "vue-tsc --build --force && vite build",
     "build:analyze": "vue-tsc --build --force && vite build --mode analyze",
     "preview": "vite preview",
@@ -37,7 +46,6 @@
     "format": "prettier --write src/",
     "fix": "pnpm format && pnpm lint:fix",
     "check": "pnpm type-check && pnpm lint:check",
-    "heal": "tsx scripts/drift-fix.ts",
     "drift-check": "node scripts/drift-check.mjs",
     "check:drift": "node scripts/drift-check.mjs",
     "test": "vitest",
@@ -103,7 +111,8 @@
     "@faker-js/faker": "^9.9.0",
     "@iconify-json/logos": "^1.2.10",
     "@iconify-json/lucide": "^1.2.86",
-    "@iconify-json/mdi": "^1.2.3",
+    "@iconify-json/ph": "^1.2.2",
+    "@iconify-json/solar": "^1.2.5",
     "@iconify/utils": "^3.1.0",
     "@primevue/auto-import-resolver": "^4.5.4",
     "@tsconfig/node22": "^22.0.2",

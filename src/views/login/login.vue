@@ -8,6 +8,7 @@ import { useUserStore } from '@/stores/modules/user'
 import { useThemeSwitch } from '@/hooks/modules/useThemeSwitch'
 import { useLocale } from '@/hooks/modules/useLocale'
 import type { SupportedLocale } from '@/locales'
+import logoSrc from '@/assets/images/face.png'
 
 interface SchemaFormRef {
   submit?: () => void
@@ -160,7 +161,7 @@ function onEnterSubmit() {
     <Transition name="fade">
       <div
         v-if="errorMessage"
-        class="login-error-fixed fixed left-1/2 top-[var(--spacing-xl)] z-30 -translate-x-1/2 row cross-center gap-sm p-padding-md rounded-scale-md bg-danger/10 border border-danger/20 shadow-md"
+        class="ixed left-1/2 top-[var(--spacing-xl)] z-30 -translate-x-1/2 row cross-center gap-sm p-padding-md rounded-scale-md bg-danger/10 border border-danger/20 shadow-md"
       >
         <Icons
           name="i-lucide-alert-circle"
@@ -203,13 +204,10 @@ function onEnterSubmit() {
     >
       <!-- Header -->
       <div class="column cross-center gap-md mb-margin-xl">
-        <div
-          class="w-[var(--spacing-3xl)] h-[var(--spacing-3xl)] shrink-0 rounded-full bg-primary/10 row-center"
-        >
-          <Icons
-            name="i-lucide-layout-dashboard"
-            size="2xl"
-            class="text-primary"
+        <div class="w-[var(--spacing-4xl)] h-[var(--spacing-4xl)]">
+          <img
+            class="layout-full!"
+            :src="logoSrc"
           />
         </div>
         <div class="column cross-center">

@@ -56,9 +56,18 @@ globs: src/**/*.{vue,tsx,scss}
       <rule>Follow <file>docs/ai-specs/VUE_TEMPLATE_ANTIPATTERNS.md</file> for full antipatterns and correct patterns.</rule>
     </section>
 
+    <section name="semantic-shortcuts-mandate">
+      <rule>**Flex &amp; Alignment:** When building toolbars, headers, or card content areas, MUST use <code>center</code>, <code>row-center</code>, <code>row-between</code>, <code>column-center</code>, or <code>column-between</code> instead of composing raw flex classes. FORBIDDEN: <code>flex justify-center items-center</code>, <code>flex flex-row items-center justify-between</code>, or equivalent atomic combinations.</rule>
+      <rule>**Typography Shortcuts:** For single-line text truncation (table cells, menu items, labels), MUST use <code>text-single-line-ellipsis</code>. For two-line truncation (cards, list previews), MUST use <code>text-two-line-ellipsis</code>. For secondary labels, hints, and subdued text, MUST use <code>text-muted</code> or <code>text-secondary</code>. FORBIDDEN: <code>overflow-hidden whitespace-nowrap text-ellipsis</code> when the shortcut exists.</rule>
+      <rule>**Density Tokens:** For lists, form sections, or card inner layouts, MUST use <code>density-compact</code>, <code>density-normal</code>, <code>density-comfortable</code>, or <code>density-responsive</code>. For vertical stacks (form sections, card body), MUST use <code>layout-stack</code>. For flex-wrap layouts with default spacing, MUST use <code>layout-wrap</code>. FORBIDDEN: manual <code>gap-md p-padding-md</code> when a density shortcut exists.</rule>
+    </section>
+
   </constraints>
 
   <forbidden>
+    <item>Using <code>flex justify-center items-center</code> instead of <code>center</code>; using raw flex atomic classes when <code>row-center</code>, <code>row-between</code>, <code>column-center</code>, or <code>column-between</code> apply.</item>
+    <item>Using <code>overflow-hidden whitespace-nowrap text-ellipsis</code> instead of <code>text-single-line-ellipsis</code>; using <code>text-muted-foreground</code> when <code>text-muted</code> shortcut applies.</item>
+    <item>Using manual <code>gap-md p-padding-md</code> or <code>flex flex-col gap-md</code> when <code>density-normal</code>, <code>layout-stack</code>, or <code>layout-wrap</code> apply.</item>
     <item>Hardcoding padding, margin, font-size, width, height, border-radius, or colors in CSS or inline <code>style</code> attributes.</item>
     <item>Using hex values (for example <code>#fff</code>, <code>#000</code>) or raw RGB/RGBA in templates or styles.</item>
     <item>Using custom media queries like <code>@media (min-width: 768px)</code> instead of UnoCSS breakpoint prefixes.</item>

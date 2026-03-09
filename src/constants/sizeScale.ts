@@ -96,15 +96,15 @@ export const LOADING_SIZE_PERCENT: Record<SizeScaleKey, number> = {
  * 与 SizeScaleKey 一一对应；xs～4xl 为固定 px，5xl 为流体 CSS 实现巨型全屏 loader
  */
 export const LOADING_SIZE_CSS: Record<SizeScaleKey, number | string> = {
-  xs: 32,
-  sm: 48,
-  md: 64,
-  lg: 80,
-  xl: 96,
-  '2xl': 104,
-  '3xl': 112,
-  '4xl': 120,
-  '5xl': 'min(80vw, 80vh)', // 流体巨型正方形，与 index.html .lottie-preload 一致
+  xs: 'min(12vw, 12vh)',
+  sm: 'min(20vw, 20vh)',
+  md: 'min(32vw, 32vh)',
+  lg: 'min(42vw, 42vh)',
+  xl: 'min(60vw, 60vh)',
+  '2xl': 'min(78vw, 78vh)',
+  '3xl': 'min(82vw, 82vh)',
+  '4xl': 'min(90vw, 90vh)',
+  '5xl': 'min(100vw, 100vh)', // 流体巨型正方形，与 index.html .lottie-preload 一致
 }
 
 /**

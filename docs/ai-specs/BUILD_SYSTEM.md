@@ -109,14 +109,14 @@ Relevant files:
 
 Summary:
 
-- In app code use the `Icons` component with `i-lucide` / `i-mdi` / `i-logos` / `i-custom:`
+- In app code use the `Icons` component with `i-lucide` / `i-solar` / `i-ph` / `i-logos` / `i-custom:`
 - Custom SVGs go under `src/assets/icons/**` and get `fill="currentColor"` injected automatically
 
 ### 4.1 UnoCSS safelist and demo mode
 
 - **Production build:** Safelist uses only `getDynamicSafelist()` (icons found by dynamic scan for routes/API).
 - **Lite mode:** By default `UNO_DEMO` is `false`; the icon demo page shows a small set of ~20 common icons and does not load large Iconify JSON, improving cold start and avoiding Vercel timeouts.
-- **Full demo mode:** When `UNO_DEMO=true` (e.g. `pnpm dev:demo`), safelist loads the full icon subset (Lucide 500, MDI 500, etc.) and merges `themeDemoSafelist`.
+- **Full demo mode:** When `UNO_DEMO=true` (e.g. `pnpm dev:demo`), safelist loads the full icon subset (Lucide/Solar/Phosphor/Logos, etc.) and merges `themeDemoSafelist`.
 
 ## 5. Vite build splitting and first-frame size
 

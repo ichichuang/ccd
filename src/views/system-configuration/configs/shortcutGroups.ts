@@ -106,7 +106,7 @@ export const shortcutGroups: ShortcutGroup[] = [
     icon: 'i-lucide-pointer',
     items: [
       { name: 'behavior-hover-transition', classes: 'transition-all duration-scale-md' },
-      { name: 'hover-elevated', classes: 'hover:shadow-md hover:border-primary-hover/50' },
+      { name: 'hover-elevated', classes: 'hover:shadow-md' },
       { name: 'interactive-hover', classes: 'behavior-hover-transition hover-elevated' },
       {
         name: 'interactive-click',
@@ -115,7 +115,8 @@ export const shortcutGroups: ShortcutGroup[] = [
       },
       {
         name: 'interactive-focus-ring',
-        classes: 'focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
+        classes:
+          'focus-visible:shadow-[0_0_0_2px_rgb(var(--primary)/0.3)] focus-visible:outline-none',
       },
     ],
   },
@@ -131,12 +132,12 @@ export const shortcutGroups: ShortcutGroup[] = [
       },
       {
         name: 'menu-item-hover',
-        classes: 'bg-primary/12! text-primary! dark:text-white!',
+        classes: 'bg-primary/12! text-primary! dark:text-primary-foreground!',
         desc: '菜单项悬停态 (12% 标准)',
       },
       {
         name: 'menu-item-active-leaf',
-        classes: 'bg-primary! text-primary-foreground! dark:text-white!',
+        classes: 'bg-primary! text-primary-foreground!',
         desc: '菜单项选中态（primary 背景 + primary-foreground 统一样式）',
       },
     ],
@@ -145,7 +146,7 @@ export const shortcutGroups: ShortcutGroup[] = [
     category: 'Component 组件基础',
     icon: 'i-lucide-component',
     items: [
-      { name: 'component-border', classes: 'border border-solid border-border' },
+      { name: 'component-border', classes: 'shadow-soft' },
       {
         name: 'border-b-default',
         classes: 'border-0 border-b border-solid border-border',

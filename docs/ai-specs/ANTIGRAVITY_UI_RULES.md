@@ -13,7 +13,7 @@
 - You are FORBIDDEN from writing CSS blocks for layout, spacing, or colors (e.g. `.class { color: red; padding: 10px; }`).
 - You MUST use UnoCSS utilities and the project's semantic classes (e.g. `text-primary`, `bg-surface-ground`, `px-padding-lg`, `gap-md`, `rounded-scale`).
 - Use semantic color variables only; DO NOT use hex codes like `#fff`.
-- FORBIDDEN: Hardcoded px/rem/hex values. Must use semantic classes from `uno.config.ts` or CSS variables.
+- **FORBIDDEN:** Raw `rem`, `em`, or `px` in business code for dimensions, spacing, or font-size. Use semantic tokens (`p-padding-*`, `m-margin-*`, `gap-*`, `fs-*`, `var(--spacing-*)`) and viewport units (`vh`/`vw`) for macro layouts exclusively.
 
 ## 2. Design System Requirements (设计系统要求)
 
@@ -39,9 +39,9 @@ Before generating any UI code, you MUST reference and strictly follow:
 ### 2.2 Size System (尺寸系统)
 
 - Read: `src/types/systems/size.d.ts`, `src/constants/size.ts`, `src/constants/sizeScale.ts`, `src/stores/modules/size.ts`
-- Use semantic size classes: `px-padding-lg`, `m-margin-md`, `gap-xl`, `fs-md`
-- Use layout variables: `w-sidebarWidth`, `h-headerHeight`
-- FORBIDDEN: hardcoded px (`padding: 16px`, `font-size: 14px`, `width: 240px`)
+- Use semantic size classes: `px-padding-lg`, `m-margin-md`, `gap-xl`, `fs-md`, `var(--spacing-*)`
+- Use layout variables: `w-sidebarWidth`, `h-headerHeight`; macro-layout use `layout-content-*` (vw-based)
+- **FORBIDDEN:** raw `rem`, `em`, or `px` in business code (e.g. `padding: 16px`, `font-size: 14px`, `width: 240px`)
 
 ### 2.3 Layout & Responsive System (布局响应式系统)
 
@@ -169,9 +169,10 @@ The project uses `unplugin-auto-import` and `unplugin-vue-components`.
 **Selection Priority (Order matters):**
 
 1.  **Lucide (Standard):** `i-lucide-<name>` (e.g. `i-lucide-home`, `i-lucide-settings`) -> **PREFERRED**.
-2.  **MDI (Rich):** `i-mdi-<name>` (if Lucide is missing).
-3.  **Logos:** `i-logos-<name>` (for brands).
-4.  **Custom SVG:** `i-custom:<filename>` (Located in `src/assets/icons/*.svg`).
+2.  **Solar (Premium):** `i-solar-<name>` (if Lucide is missing).
+3.  **Phosphor (ph):** `i-ph-<name>` (expressive alternative set).
+4.  **Logos:** `i-logos-<name>` (for brands).
+5.  **Custom SVG:** `i-custom:<filename>` (Located in `src/assets/icons/*.svg`).
 
 **Prohibitions:**
 

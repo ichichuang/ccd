@@ -14,7 +14,7 @@ import type { ChartAnimationConfig } from './types'
 export const createDefaultUseEchartsProps = () => ({
   option: () => ({}),
   width: '100%',
-  height: '30vh',
+  height: '100%',
   theme: 'default',
   renderer: 'canvas' as const,
   autoResize: true,

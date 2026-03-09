@@ -1,5 +1,5 @@
 ---
-description: Modern focus styling with :focus-visible + ring; forbid outline/outline-none
+description: Modern focus styling with :focus-visible + box-shadow; forbid ring/outline
 globs: src/**/*.{vue,ts,tsx}
 alwaysApply: true
 ---
@@ -7,18 +7,18 @@ alwaysApply: true
 <rule>
   <context>
     This rule defines modern focus styling for keyboard accessibility.
-    Focus indication must use <code>:focus-visible</code> and semantic ring tokens, not browser default outlines or outline suppression.
+    Focus indication must use <code>:focus-visible</code> and semantic box-shadow (via <code>--primary</code>), not ring/outline.
   </context>
 
   <constraints>
     <section name="primary-directive">
-      <rule>Use <code>:focus-visible</code> combined with ring styles (for example classes that map to <code>outline: none; box-shadow: 0 0 0 2px var(--ring)</code> via UnoCSS shortcuts) instead of raw <code>outline</code>.</rule>
+      <rule>Use <code>:focus-visible</code> combined with box-shadow (e.g. <code>interactive-focus-ring</code> shortcut: <code>focus-visible:shadow-[0_0_0_2px_rgb(var(--primary)/0.3)]</code>) instead of ring/outline.</rule>
       <rule>Prefer UnoCSS shortcuts such as <code>interactive-focus-ring</code> and <code>menu-item-base</code> for focus styling and base states.</rule>
     </section>
 
     <section name="decision">
-      <rule>For elements that need a visible keyboard focus ring (for example primary buttons, inputs, key navigable actions), apply <code>interactive-focus-ring</code> or equivalent focus-ring shortcut.</rule>
-      <rule>For menu items, icons, and breadcrumbs that do not require a visible ring but still must be focusable, use base shortcuts such as <code>menu-item-base</code> or combinations like <code>border-none! bg-transparent</code> while relying on higher-level patterns for focus indication.</rule>
+      <rule>For elements that need a visible keyboard focus indicator (primary buttons, inputs, key navigable actions), apply <code>interactive-focus-ring</code>.</rule>
+      <rule>For menu items, icons, and breadcrumbs that do not require a visible focus indicator, use <code>menu-item-base</code> or <code>border-none! bg-transparent</code>.</rule>
     </section>
 
     <section name="references">
@@ -37,6 +37,6 @@ alwaysApply: true
 
   <examples>
     <example>
-      For a primary button, apply a shortcut like <code>interactive-focus-ring</code> so that keyboard users see a clear ring using the <code>ring</code> token when the button is focused.</example>
+      For a primary button, apply <code>interactive-focus-ring</code> so that keyboard users see a clear focus shadow using <code>--primary</code> when focused.</example>
   </examples>
 </rule>

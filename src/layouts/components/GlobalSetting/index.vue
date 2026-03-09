@@ -3,8 +3,6 @@ import { useDialog } from '@/hooks/modules/useDialog'
 import { useDeviceStore } from '@/stores/modules/device'
 import { useI18n } from 'vue-i18n'
 import SettingsContent from './SettingsContent.vue'
-import Button from 'primevue/button'
-import { Icons } from '@/components/Icons'
 
 const { t } = useI18n()
 const { openDialog } = useDialog()
@@ -22,13 +20,7 @@ const openSettings = () => {
 </script>
 
 <template>
-  <Button
-    v-tooltip.left="t('layout.openGlobalSettings')"
-    @click="openSettings"
-  >
-    <Icons
-      class="text-primary-foreground"
-      name="i-lucide-settings"
-    />
-  </Button>
+  <div @click="openSettings">
+    <slot></slot>
+  </div>
 </template>

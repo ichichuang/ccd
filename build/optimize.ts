@@ -21,10 +21,6 @@ export const include = [
   'lodash-es', // 关键：lodash-es 文件极多，预构建能显著减少 dev 请求数
   'yup',
 
-  // 图表库
-  'echarts',
-  'vue-echarts',
-
   // Lottie 动画
   'vue3-lottie',
 

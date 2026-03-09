@@ -6,25 +6,16 @@ Archetype defines STRUCTURE, not styling.
 
 ---
 
-## Automation Awareness (Drift-Fix Self-Healer)
+## Region scroll behavior (CScrollbar)
 
-The `scripts/drift-fix.ts` script automatically applies layout fixes to **all** `.vue` files that contain `data-archetype` and have a corresponding `page.state.ts` in the same directory. Run via `pnpm heal`. AI MUST be aware of this behavior to avoid conflicts.
+Scroll ownership is defined per archetype. When implementing regions, use `<CScrollbar>` as follows:
 
-**CScrollbar auto-wrapping:**
+- **A1**: `data-region="content"` → wrap content in `<CScrollbar>` (page owns scroll).
+- **A2**: `data-region="main-content"` and `data-region="inspector"` → each scrollable region wrapped in `<CScrollbar>`.
+- **A4**: `data-region="datatable"` → **NOT** wrapped (table uses virtual scroll; nested scroll forbidden).
+- **A5**: `data-region="form-body"` → wrap form body in `<CScrollbar>`.
 
-- **A1**: `data-region="content"` → auto-wrapped in `<CScrollbar>` when missing
-- **A2**: `data-region="main-content"` and `data-region="inspector"` → auto-wrapped in `<CScrollbar>` when missing
-- **A4**: `data-region="datatable"` → **NOT** wrapped (table uses virtual scroll; nested scroll forbidden)
-- **A5**: `data-region="form-body"` → auto-wrapped in `<CScrollbar>` when missing
-
-**AI behavior rules:**
-
-- **DO NOT** manually add `<CScrollbar>` inside regions that drift-fix will auto-wrap. This causes duplication and conflicting nested scrollbars.
-- If a region needs scroll, leave it unwrapped; drift-fix will inject `<CScrollbar>` on `pnpm drift-fix` or equivalent.
-- If you must add scroll before drift-fix runs, use `<CScrollbar>`—but be aware drift-fix will not duplicate it (it checks for existing CScrollbar before wrapping).
-- When in doubt, run `pnpm heal` after structural changes to let the self-healer apply canonical layout.
-
-**Reference:** `scripts/drift-fix.ts`, `.cursor/rules/30-drift-check.mdc`
+**Reference:** `.cursor/rules/30-drift-check.mdc` (archetype sync with `page.state.ts`).
 
 ---
 

@@ -13,11 +13,105 @@ import type {
   UploadConfig,
 } from './types'
 
+function isBinaryBody(data: unknown): boolean {
+  return (
+    data instanceof FormData ||
+    data instanceof Blob ||
+    data instanceof ArrayBuffer ||
+    data instanceof File
+  )
+}
+
+function createNonce(): string {
+  if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') {
+    return crypto.randomUUID()
+  }
+  return `${Date.now()}_${Math.random().toString(36).slice(2)}`
+}
+
+function stableStringify(value: unknown): string {
+  const seen = new WeakSet<object>()
+
+  const normalize = (input: unknown): unknown => {
+    if (input === null || typeof input !== 'object') {
+      return input
+    }
+    if (input instanceof Date) {
+      return input.toISOString()
+    }
+    if (Array.isArray(input)) {
+      return input.map(item => normalize(item))
+    }
+    if (seen.has(input as object)) {
+      return '[Circular]'
+    }
+    seen.add(input as object)
+
+    const obj = input as Record<string, unknown>
+    const sortedKeys = Object.keys(obj).sort()
+    const out: Record<string, unknown> = {}
+    sortedKeys.forEach(key => {
+      out[key] = normalize(obj[key])
+    })
+    return out
+  }
+
+  return JSON.stringify(normalize(value))
+}
+
+function buildRequestKey(method: string, url: string, payload?: unknown): string {
+  if (isBinaryBody(payload)) {
+    return `${method}:${url}:[binary]:${createNonce()}`
+  }
+  const body = payload === undefined ? '' : stableStringify(payload)
+  return `${method}:${url}:${body}`
+}
+
+function isAbortError(error: unknown): boolean {
+  return error instanceof DOMException && error.name === 'AbortError'
+}
+
+function getErrorTypeByStatus(status: number): ErrorType {
+  if (status >= 500) {
+    return ErrorType.SERVER
+  }
+  if (status === 401 || status === 403) {
+    return ErrorType.AUTH
+  }
+  if (status >= 400 && status < 500) {
+    return ErrorType.CLIENT
+  }
+  return ErrorType.UNKNOWN
+}
+
+function shouldShowRawGlobalError(config?: RequestConfig): boolean {
+  const globalError = config?.globalError
+  return globalError !== 'silent'
+}
+
+function showRawGlobalError(status: number, message: string, config?: RequestConfig): void {
+  if (!shouldShowRawGlobalError(config)) {
+    return
+  }
+
+  const statusTitle = t('http.error.httpError', { status })
+  try {
+    if (window.$message?.danger) {
+      window.$message.danger(message, statusTitle)
+    } else if (window.$toast?.dangerIn) {
+      window.$toast.dangerIn('top-left', statusTitle, message)
+    }
+  } catch (_error) {
+    // no-op: UI 通知失败不应影响主流程
+  }
+}
+
 /**
  * 请求管理器 - 处理去重和并发控制
  */
 class RequestManager {
   private pendingRequests = new Map<string, Promise<unknown>>()
+  private activeControllers = new Map<string, AbortController>()
   private requestQueue: Array<() => Promise<unknown>> = []
   private readonly maxConcurrent = HTTP_CONFIG.maxConcurrentRequests
   private runningCount = 0
@@ -27,21 +121,31 @@ class RequestManager {
    */
   async execute<T>(
     key: string,
-    requestFn: () => Promise<T>,
-    deduplicate: boolean = true
+    requestFn: (signal?: AbortSignal) => Promise<T>,
+    deduplicate: boolean = true,
+    cancelStrategy: 'none' | 'cancelPrevious' = 'none'
   ): Promise<T> {
+    if (cancelStrategy === 'cancelPrevious' && this.activeControllers.has(key)) {
+      this.activeControllers.get(key)?.abort()
+      this.activeControllers.delete(key)
+      this.pendingRequests.delete(key)
+    }
+
     if (deduplicate && this.pendingRequests.has(key)) {
       return this.pendingRequests.get(key) as Promise<T>
     }
 
-    const requestPromise = this.queueRequest(requestFn)
+    const controller = new AbortController()
+    this.activeControllers.set(key, controller)
+    const requestPromise = this.queueRequest(() => requestFn(controller.signal))
 
     if (deduplicate) {
       this.pendingRequests.set(key, requestPromise)
-      requestPromise.finally(() => {
-        this.pendingRequests.delete(key)
-      })
     }
+    requestPromise.finally(() => {
+      this.pendingRequests.delete(key)
+      this.activeControllers.delete(key)
+    })
 
     return requestPromise
   }
@@ -79,6 +183,8 @@ class RequestManager {
 
   clear(): void {
     this.pendingRequests.clear()
+    this.activeControllers.forEach(controller => controller.abort())
+    this.activeControllers.clear()
     this.requestQueue = []
     this.runningCount = 0
   }
@@ -193,7 +299,13 @@ function convertRequestConfig(config?: RequestConfig): AlovaRequestConfig {
     return {}
   }
 
-  const { enableCache: _enableCache, cacheTTL: _cacheTTL, retry: _retry, ...alovaConfig } = config
+  const {
+    enableCache: _enableCache,
+    cacheTTL: _cacheTTL,
+    retry: _retry,
+    cancelStrategy: _cancelStrategy,
+    ...alovaConfig
+  } = config
   return alovaConfig
 }
 
@@ -201,8 +313,9 @@ function convertRequestConfig(config?: RequestConfig): AlovaRequestConfig {
  * 带重试的请求执行器
  */
 async function executeWithRetry<T>(
-  requestFn: () => Promise<T>,
-  retryConfig?: RetryConfig
+  requestFn: (signal?: AbortSignal) => Promise<T>,
+  retryConfig?: RetryConfig,
+  signal?: AbortSignal
 ): Promise<T> {
   const config: RetryConfig = {
     retries: HTTP_CONFIG.defaultRetryTimes,
@@ -214,9 +327,15 @@ async function executeWithRetry<T>(
 
   for (let attempt = 0; attempt <= config.retries; attempt++) {
     try {
+      if (signal?.aborted) {
+        throw new DOMException('The request was aborted', 'AbortError')
+      }
       await acquireRateLimitSlot()
-      return await requestFn()
+      return await requestFn(signal)
     } catch (error) {
+      if (isAbortError(error) || signal?.aborted) {
+        throw error
+      }
       const httpError = error as HttpRequestError
       lastError = httpError
 
@@ -243,8 +362,7 @@ async function executeWithRetry<T>(
  */
 export const get = async <T = unknown>(url: string, config?: RequestConfig): Promise<T> => {
   // 缓存键必须包含查询参数，否则不同分页/条件会命中同一缓存
-  const paramStr = config?.params ? JSON.stringify(config.params) : ''
-  const cacheKey = `GET:${url}:${paramStr}`
+  const cacheKey = buildRequestKey('GET', url, config?.params ?? {})
   const cacheEnabled = config?.enableCache !== false
   const deduplicate = config?.deduplicate ?? HTTP_CONFIG.defaultDeduplicate
 
@@ -256,12 +374,14 @@ export const get = async <T = unknown>(url: string, config?: RequestConfig): Pro
   }
 
   const alovaConfig = convertRequestConfig(config)
-  const requestFn = () => alovaInstance.Get<T>(url, alovaConfig).send(true)
+  const requestFn = (signal?: AbortSignal) =>
+    alovaInstance.Get<T>(url, { ...alovaConfig, ...(signal ? { signal } : {}) }).send(true)
 
   const result = await requestManager.execute(
     cacheKey,
-    () => executeWithRetry(requestFn, config?.retry),
-    deduplicate
+    signal => executeWithRetry(requestFn, config?.retry, signal),
+    deduplicate,
+    config?.cancelStrategy ?? 'none'
   )
 
   if (cacheEnabled) {
@@ -281,8 +401,7 @@ export const getRaw = async <T = unknown>(
   config?: RequestConfig
 ): Promise<{ data: T; headers: Headers }> => {
   // 缓存键
-  const paramStr = config?.params ? JSON.stringify(config.params) : ''
-  const cacheKey = `GET_RAW:${url}:${paramStr}`
+  const cacheKey = buildRequestKey('GET_RAW', url, config?.params ?? {})
   const cacheEnabled = config?.enableCache !== false
   // const deduplicate = config?.deduplicate !== false // Not used in raw fetch
 
@@ -309,25 +428,72 @@ export const getRaw = async <T = unknown>(
     headers.set('Authorization', `Bearer ${token}`)
   }
 
-  const response = await fetch(`${fullUrl}${queryString}`, {
-    method: 'GET',
-    headers,
-    ...config,
-  })
+  try {
+    const response = await fetch(`${fullUrl}${queryString}`, {
+      method: 'GET',
+      headers,
+      signal: config?.signal as AbortSignal | undefined,
+    })
 
-  if (!response.ok) {
-    throw new Error(`HTTP error! status: ${response.status}`)
+    if (!response.ok) {
+      let errorMessage =
+        response.statusText || t('http.error.httpError', { status: response.status })
+
+      try {
+        const text = await response.text()
+        if (text) {
+          try {
+            const json = JSON.parse(text) as { message?: string }
+            errorMessage = json?.message || errorMessage
+          } catch {
+            errorMessage = text
+          }
+        }
+      } catch {
+        // 忽略 body 解析错误，使用 statusText
+      }
+
+      const errorType = getErrorTypeByStatus(response.status)
+      const retryable = response.status >= 500
+      showRawGlobalError(response.status, errorMessage, config)
+      throw new HttpRequestError(
+        errorMessage,
+        errorType,
+        response.status,
+        response.statusText,
+        undefined,
+        retryable
+      )
+    }
+
+    const data = (await response.json()) as T
+    const result: { data: T; headers: Headers } = { data, headers: response.headers }
+
+    if (cacheEnabled) {
+      const ttl = config?.cacheTTL || HTTP_CONFIG.defaultCacheTtl
+      cache.set(cacheKey, result, ttl)
+    }
+
+    return result
+  } catch (error) {
+    if (error instanceof HttpRequestError) {
+      throw error
+    }
+    if (isAbortError(error)) {
+      throw error
+    }
+
+    const networkMessage = t('http.error.networkConnectionFailed')
+    showRawGlobalError(0, networkMessage, config)
+    throw new HttpRequestError(
+      networkMessage,
+      ErrorType.NETWORK,
+      undefined,
+      undefined,
+      undefined,
+      true
+    )
   }
-
-  const data = (await response.json()) as T
-  const result: { data: T; headers: Headers } = { data, headers: response.headers }
-
-  if (cacheEnabled) {
-    const ttl = config?.cacheTTL || HTTP_CONFIG.defaultCacheTtl
-    cache.set(cacheKey, result, ttl)
-  }
-
-  return result
 }
 
 /**
@@ -338,15 +504,19 @@ export const post = <T = unknown>(
   data?: unknown,
   config?: RequestConfig
 ): Promise<T> => {
-  const requestKey = `POST:${url}:${JSON.stringify(data)}`
+  const requestKey = buildRequestKey('POST', url, data)
   const alovaConfig = convertRequestConfig(config)
   // Alova 边界：data 为 unknown 时类型不匹配，需桥接
-  const requestFn = () => alovaInstance.Post<T>(url, data as BodyInit, alovaConfig).send(true)
+  const requestFn = (signal?: AbortSignal) =>
+    alovaInstance
+      .Post<T>(url, data as BodyInit, { ...alovaConfig, ...(signal ? { signal } : {}) })
+      .send(true)
 
   return requestManager.execute(
     requestKey,
-    () => executeWithRetry(requestFn, config?.retry),
-    config?.deduplicate ?? HTTP_CONFIG.defaultDeduplicate
+    signal => executeWithRetry(requestFn, config?.retry, signal),
+    config?.deduplicate ?? HTTP_CONFIG.defaultDeduplicate,
+    config?.cancelStrategy ?? 'none'
   )
 }
 
@@ -358,14 +528,18 @@ export const put = <T = unknown>(
   data?: unknown,
   config?: RequestConfig
 ): Promise<T> => {
-  const requestKey = `PUT:${url}:${JSON.stringify(data)}`
+  const requestKey = buildRequestKey('PUT', url, data)
   const alovaConfig = convertRequestConfig(config)
-  const requestFn = () => alovaInstance.Put<T>(url, data as BodyInit, alovaConfig).send(true)
+  const requestFn = (signal?: AbortSignal) =>
+    alovaInstance
+      .Put<T>(url, data as BodyInit, { ...alovaConfig, ...(signal ? { signal } : {}) })
+      .send(true)
 
   return requestManager.execute(
     requestKey,
-    () => executeWithRetry(requestFn, config?.retry),
-    config?.deduplicate ?? HTTP_CONFIG.defaultDeduplicate
+    signal => executeWithRetry(requestFn, config?.retry, signal),
+    config?.deduplicate ?? HTTP_CONFIG.defaultDeduplicate,
+    config?.cancelStrategy ?? 'none'
   )
 }
 
@@ -373,14 +547,16 @@ export const put = <T = unknown>(
  * DELETE 请求
  */
 export const del = <T = unknown>(url: string, config?: RequestConfig): Promise<T> => {
-  const requestKey = `DELETE:${url}:${JSON.stringify(config?.params ?? {})}`
+  const requestKey = buildRequestKey('DELETE', url, config?.params ?? {})
   const alovaConfig = convertRequestConfig(config)
-  const requestFn = () => alovaInstance.Delete<T>(url, alovaConfig).send(true)
+  const requestFn = (signal?: AbortSignal) =>
+    alovaInstance.Delete<T>(url, { ...alovaConfig, ...(signal ? { signal } : {}) }).send(true)
 
   return requestManager.execute(
     requestKey,
-    () => executeWithRetry(requestFn, config?.retry),
-    config?.deduplicate ?? HTTP_CONFIG.defaultDeduplicate
+    signal => executeWithRetry(requestFn, config?.retry, signal),
+    config?.deduplicate ?? HTTP_CONFIG.defaultDeduplicate,
+    config?.cancelStrategy ?? 'none'
   )
 }
 
@@ -392,14 +568,18 @@ export const patch = <T = unknown>(
   data?: unknown,
   config?: RequestConfig
 ): Promise<T> => {
-  const requestKey = `PATCH:${url}:${JSON.stringify(data)}`
+  const requestKey = buildRequestKey('PATCH', url, data)
   const alovaConfig = convertRequestConfig(config)
-  const requestFn = () => alovaInstance.Patch<T>(url, data as BodyInit, alovaConfig).send(true)
+  const requestFn = (signal?: AbortSignal) =>
+    alovaInstance
+      .Patch<T>(url, data as BodyInit, { ...alovaConfig, ...(signal ? { signal } : {}) })
+      .send(true)
 
   return requestManager.execute(
     requestKey,
-    () => executeWithRetry(requestFn, config?.retry),
-    config?.deduplicate ?? HTTP_CONFIG.defaultDeduplicate
+    signal => executeWithRetry(requestFn, config?.retry, signal),
+    config?.deduplicate ?? HTTP_CONFIG.defaultDeduplicate,
+    config?.cancelStrategy ?? 'none'
   )
 }
 
@@ -408,16 +588,17 @@ export const patch = <T = unknown>(
  * 用于检查资源是否存在，不返回响应体
  */
 export const head = (url: string, config?: RequestConfig): Promise<void> => {
-  const requestKey = `HEAD:${url}:${JSON.stringify(config?.params ?? {})}`
+  const requestKey = buildRequestKey('HEAD', url, config?.params ?? {})
   const alovaConfig = convertRequestConfig(config)
-  const requestFn: () => Promise<void> = async () => {
-    await alovaInstance.Head(url, alovaConfig).send(true)
+  const requestFn = async (signal?: AbortSignal): Promise<void> => {
+    await alovaInstance.Head(url, { ...alovaConfig, ...(signal ? { signal } : {}) }).send(true)
   }
 
   return requestManager.execute(
     requestKey,
-    () => executeWithRetry(requestFn, config?.retry),
-    config?.deduplicate ?? HTTP_CONFIG.defaultDeduplicate
+    signal => executeWithRetry(requestFn, config?.retry, signal),
+    config?.deduplicate ?? HTTP_CONFIG.defaultDeduplicate,
+    config?.cancelStrategy ?? 'none'
   )
 }
 
@@ -483,7 +664,8 @@ export const downloadFile = async (
     responseType: 'blob',
   })
 
-  const requestFn = () => alovaInstance.Get<Blob>(url, alovaConfig).send(true)
+  const requestFn = (signal?: AbortSignal) =>
+    alovaInstance.Get<Blob>(url, { ...alovaConfig, ...(signal ? { signal } : {}) }).send(true)
   const blob = await executeWithRetry(requestFn, config?.retry)
 
   if (!(blob instanceof Blob)) {

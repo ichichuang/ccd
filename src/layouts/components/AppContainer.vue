@@ -34,7 +34,7 @@ watch(
         v-show="isPageLoading"
         class="absolute inset-0 z-10 flex items-center justify-center backdrop-blur-sm pointer-events-auto"
       >
-        <Loading size="lg" />
+        <Loading size="xl" />
       </div>
     </Transition>
   </div>

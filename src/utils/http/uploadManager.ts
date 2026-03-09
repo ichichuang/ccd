@@ -12,6 +12,8 @@ import type {
   UploadTask,
 } from './types'
 
+type InternalUploadTask = UploadTask & { config?: UploadChunkConfig }
+
 /**
  * 计算文件哈希值 - 使用更高效的方式
  */
@@ -75,6 +77,9 @@ export class UploadManager implements IUploadManager {
   private uploadQueue: string[] = []
   private isProcessing = false
   private beforeUnloadHandler?: () => void
+  private taskConfigs = new Map<string, UploadChunkConfig | undefined>()
+  private taskLoadedBytes = new Map<string, number>()
+  private taskChunkLoadedBytes = new Map<string, Map<number, number>>()
 
   constructor() {
     this.setupBeforeUnloadHandler()
@@ -113,6 +118,9 @@ export class UploadManager implements IUploadManager {
     })
 
     this.tasks.clear()
+    this.taskConfigs.clear()
+    this.taskLoadedBytes.clear()
+    this.taskChunkLoadedBytes.clear()
     this.uploadQueue = []
   }
 
@@ -152,7 +160,11 @@ export class UploadManager implements IUploadManager {
       cancelToken: new AbortController(),
     }
 
+    ;(task as InternalUploadTask).config = config
     this.tasks.set(taskId, task)
+    this.taskConfigs.set(taskId, config)
+    this.taskLoadedBytes.set(taskId, 0)
+    this.taskChunkLoadedBytes.set(taskId, new Map())
     this.uploadQueue.push(taskId)
 
     // 开始处理队列
@@ -171,6 +183,9 @@ export class UploadManager implements IUploadManager {
         task.cancelToken.abort()
       }
       this.tasks.delete(taskId)
+      this.taskConfigs.delete(taskId)
+      this.taskLoadedBytes.delete(taskId)
+      this.taskChunkLoadedBytes.delete(taskId)
       this.uploadQueue = this.uploadQueue.filter(id => id !== taskId)
     }
   }
@@ -239,25 +254,25 @@ export class UploadManager implements IUploadManager {
     }
 
     this.isProcessing = true
+    try {
+      while (this.uploadQueue.length > 0) {
+        const taskId = this.uploadQueue.shift()!
+        const task = this.tasks.get(taskId)
 
-    while (this.uploadQueue.length > 0) {
-      const taskId = this.uploadQueue.shift()!
-      const task = this.tasks.get(taskId)
+        if (!task || task.status === 'cancelled') {
+          continue
+        }
 
-      if (!task || task.status === 'cancelled') {
-        continue
+        try {
+          await this.uploadTask(task)
+        } catch (_error) {
+          task.status = 'failed'
+          this.updateTaskProgress(task)
+        }
       }
-
-      try {
-        await this.uploadTask(task)
-      } catch (error) {
-        task.status = 'failed'
-        this.updateTaskProgress(task)
-        throw error
-      }
+    } finally {
+      this.isProcessing = false
     }
-
-    this.isProcessing = false
   }
 
   /**
@@ -282,6 +297,13 @@ export class UploadManager implements IUploadManager {
       // 检查是否已上传
       const uploadedChunks = await this.checkUploadedChunks(task)
       task.uploadedChunks = new Set(uploadedChunks)
+      uploadedChunks.forEach(chunkIndex => {
+        const chunk = task.chunks[chunkIndex]
+        if (chunk) {
+          this.setChunkLoadedBytes(task, chunkIndex, chunk.chunkSize)
+        }
+      })
+      this.updateTaskProgress(task)
 
       // 上传未完成的分片
       const pendingChunks = task.chunks.filter(
@@ -295,7 +317,8 @@ export class UploadManager implements IUploadManager {
       }
 
       // 并发上传分片
-      const concurrentChunks = HTTP_CONFIG.defaultConcurrentChunks
+      const concurrentChunks =
+        (task as InternalUploadTask).config?.concurrentChunks ?? HTTP_CONFIG.defaultConcurrentChunks
       const chunks = [...pendingChunks]
 
       for (let i = 0; i < chunks.length; i += concurrentChunks) {
@@ -343,6 +366,7 @@ export class UploadManager implements IUploadManager {
       return
     }
 
+    const taskConfig = this.getTaskConfig(task)
     try {
       const formData = new FormData()
       formData.append('file', chunk.chunk)
@@ -356,18 +380,32 @@ export class UploadManager implements IUploadManager {
 
       await post(HTTP_CONFIG.uploadEndpoints.chunk, formData, {
         signal: task.cancelToken?.signal,
+        deduplicate: false,
       })
 
       // 分片上传成功
       task.uploadedChunks.add(chunk.chunkIndex)
       task.failedChunks.delete(chunk.chunkIndex)
+      this.setChunkLoadedBytes(task, chunk.chunkIndex, chunk.chunkSize)
+      taskConfig?.onChunkProgress?.(chunk.chunkIndex, 100)
+      taskConfig?.onChunkSuccess?.(chunk.chunkIndex, {
+        chunkIndex: chunk.chunkIndex,
+        fileId: chunk.fileId,
+      })
 
       // 更新进度
       this.updateTaskProgress(task)
     } catch (error) {
       task.failedChunks.add(chunk.chunkIndex)
+      taskConfig?.onChunkProgress?.(chunk.chunkIndex, 0)
+      taskConfig?.onChunkError?.(
+        chunk.chunkIndex,
+        error instanceof Error ? error : new Error($t('http.upload.chunkUploadFailed'))
+      )
 
       throw error
+    } finally {
+      this.updateTaskProgress(task)
     }
   }
 
@@ -392,6 +430,8 @@ export class UploadManager implements IUploadManager {
       // 文件上传完成
       task.status = 'completed'
       task.progress = 100
+      this.taskLoadedBytes.set(task.id, task.file.size)
+      this.getTaskConfig(task)?.onProgress?.(100)
       this.updateTaskProgress(task)
     } catch (error) {
       task.status = 'failed'
@@ -404,9 +444,28 @@ export class UploadManager implements IUploadManager {
    * 更新任务进度
    */
   private updateTaskProgress(task: UploadTask): void {
-    const uploadedCount = task.uploadedChunks.size
-    const totalCount = task.chunks.length
-    task.progress = Math.round((uploadedCount / totalCount) * 100)
+    const loadedBytes = this.taskLoadedBytes.get(task.id) ?? 0
+    const totalBytes = task.file.size || task.chunks.reduce((sum, item) => sum + item.chunkSize, 0)
+    const progress =
+      totalBytes > 0 ? Math.min(100, Math.round((loadedBytes / totalBytes) * 100)) : 0
+    task.progress = progress
+    this.getTaskConfig(task)?.onProgress?.(progress)
+  }
+
+  private getTaskConfig(task: UploadTask): UploadChunkConfig | undefined {
+    return this.taskConfigs.get(task.id)
+  }
+
+  private setChunkLoadedBytes(task: UploadTask, chunkIndex: number, loadedBytes: number): void {
+    const chunkLoadedMap = this.taskChunkLoadedBytes.get(task.id) ?? new Map<number, number>()
+    chunkLoadedMap.set(chunkIndex, Math.max(0, loadedBytes))
+    this.taskChunkLoadedBytes.set(task.id, chunkLoadedMap)
+
+    let totalLoadedBytes = 0
+    chunkLoadedMap.forEach(value => {
+      totalLoadedBytes += value
+    })
+    this.taskLoadedBytes.set(task.id, totalLoadedBytes)
   }
 
   /**

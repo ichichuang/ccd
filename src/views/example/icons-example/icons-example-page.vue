@@ -6,7 +6,8 @@
 import type { IconSize, IconAnimation, FlipDirection } from '@/components/Icons/utils/types'
 import {
   LUCIDE_ICONS,
-  MDI_ICONS,
+  SOLAR_ICONS,
+  PH_ICONS,
   LOGOS_ICONS,
   CUSTOM_ICONS,
   IS_LITE_MODE,
@@ -14,7 +15,7 @@ import {
 import IconControls from './components/IconControls.vue'
 import { useAppElementSize } from '@/hooks/modules/useAppElementSize'
 
-type TabKey = 'lucide' | 'mdi' | 'logos' | 'custom'
+type TabKey = 'lucide' | 'solar' | 'ph' | 'logos' | 'custom'
 
 const INITIAL_DISPLAY_COUNT = 50
 const LOAD_MORE_STEP = 50
@@ -82,8 +83,11 @@ const currentIcons = computed(() => {
     case 'lucide':
       icons = LUCIDE_ICONS
       break
-    case 'mdi':
-      icons = MDI_ICONS
+    case 'solar':
+      icons = SOLAR_ICONS
+      break
+    case 'ph':
+      icons = PH_ICONS
       break
     case 'logos':
       icons = LOGOS_ICONS
@@ -150,7 +154,8 @@ function openExternalLink(url: string) {
       <div class="shrink-0 flex justify-between items-center border-b-default pr-md">
         <TabList class="border-0!">
           <Tab value="lucide">Lucide</Tab>
-          <Tab value="mdi">MDI</Tab>
+          <Tab value="solar">Solar</Tab>
+          <Tab value="ph">Phosphor</Tab>
           <Tab value="logos">Logos</Tab>
           <Tab value="custom">Custom</Tab>
         </TabList>
@@ -177,7 +182,7 @@ function openExternalLink(url: string) {
               <span class="fs-xs text-muted-foreground ml-margin-sm">
                 运行
                 <code class="bg-muted px-padding-xs rounded-scale-sm">pnpm dev:demo</code>
-                可查看完整库（Lucide 1000+, MDI 7000+）。
+                可查看完整库（Lucide / Solar / Phosphor 等多套图标库）。
               </span>
             </div>
             <Button

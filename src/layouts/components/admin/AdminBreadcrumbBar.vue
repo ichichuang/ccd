@@ -42,7 +42,7 @@ const renderTieredMenuItem = createTieredMenuItemRenderer({
 <template>
   <div
     v-if="show"
-    class="admin-breadcrumb w-full h-breadcrumbHeight flex items-center px-padding-md overflow-hidden select-none"
+    class="admin-breadcrumb w-full h-breadcrumbHeight flex items-center px-padding-md overflow-hidden select-none border-b-default"
   >
     <div class="flex items-center fs-sm text-muted-foreground whitespace-nowrap">
       <TransitionGroup name="breadcrumb">

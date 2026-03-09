@@ -120,10 +120,10 @@
 
 ### 2.1 架构升级路线图 (Architecture Ascension) — AppTemplate v0.5 开发法则
 
-- **L5 自愈顺序 (Heal → Format → Lint)**
-  - 修复 (Heal)：`pnpm heal` 执行 drift-fix 自愈；先修复业务逻辑、类型错误、漂移问题
+- **L5 自愈顺序 (Format → Lint → Drift)**
   - 格式化 (Format)：`pnpm format` 统一代码风格
-  - 静态检查 (Lint)：`pnpm check` + `pnpm check:drift`（或 `pnpm drift-check`）确保无违例
+  - 静态检查 (Lint)：`pnpm check` 确保类型与 ESLint 无违例
+  - 漂移检查 (Drift)：`pnpm drift-check`（或 `pnpm check:drift`）确保页面与 `page.state.ts` 的 archetype 一致
 - **V2 引擎与联动模式**
   - SchemaForm V2：useAsyncOptions（optionsMap / loadingMap / errorMap / retryField）、Schema 驱动、分步/分组
   - DataTableV2：列配置驱动、API 集成、分页/排序/筛选
@@ -574,11 +574,13 @@ const renderSlot = () => <span class="text-muted-foreground">动态内容</span>
 
 1. **Lucide（默认/推荐）**：线性、统一风格
    - 写法：`i-lucide-xxx`（例如：`i-lucide-user`、`i-lucide-settings`）
-2. **MDI（补充）**：图标更丰富
-   - 写法：`i-mdi-xxx`（例如：`i-mdi-home`）
-3. **Logos（品牌）**：品牌/Logo
+2. **Solar（补充）**：高质线性/双色图标
+   - 写法：`i-solar-xxx`（例如：`i-solar-moon-linear`）
+3. **Phosphor / ph（补充）**：表现力更强的通用图标
+   - 写法：`i-ph-xxx`（例如：`i-ph-gear`）
+4. **Logos（品牌）**：品牌/Logo
    - 写法：`i-logos-xxx`（例如：`i-logos-vue`）
-4. **自定义 SVG（custom collection）**：
+5. **自定义 SVG（custom collection）**：
    - SVG 放置：`src/assets/icons/**/*.svg`
    - 写法：`i-custom:xxx-yyy`（例如：`i-custom:custom-juejin`）
 

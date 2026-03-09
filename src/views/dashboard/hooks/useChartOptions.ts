@@ -1,6 +1,5 @@
 import type { Ref } from 'vue'
 import type { EChartsOption } from 'echarts'
-import * as echarts from 'echarts/core'
 import { useThemeStore } from '@/stores/modules/theme'
 import { getChartSystemVariables } from '@/utils/theme/chartUtils'
 import type { SystemMetricsDTO } from '../page.state'
@@ -51,7 +50,6 @@ export function useChartOptions(dataRef: Ref<SystemMetricsDTO[]>) {
         },
         padding: vars.paddings,
         transitionDuration: 0.3,
-        shadowColor: 'rgba(0, 0, 0, 0.1)',
         shadowBlur: 10,
       },
       xAxis: {
@@ -80,10 +78,17 @@ export function useChartOptions(dataRef: Ref<SystemMetricsDTO[]>) {
           },
           // Gradient Fill Area
           areaStyle: {
-            color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
-              { offset: 0, color: vars.primary.replace('rgb', 'rgba').replace(')', ', 0.3)') },
-              { offset: 1, color: vars.primary.replace('rgb', 'rgba').replace(')', ', 0.01)') },
-            ]),
+            color: {
+              type: 'linear',
+              x: 0,
+              y: 0,
+              x2: 0,
+              y2: 1,
+              colorStops: [
+                { offset: 0, color: vars.primary.replace('rgb', 'rgba').replace(')', ', 0.3)') },
+                { offset: 1, color: vars.primary.replace('rgb', 'rgba').replace(')', ', 0.01)') },
+              ],
+            },
           },
         },
         {
@@ -97,10 +102,17 @@ export function useChartOptions(dataRef: Ref<SystemMetricsDTO[]>) {
             color: vars.success,
           },
           areaStyle: {
-            color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
-              { offset: 0, color: vars.success.replace('rgb', 'rgba').replace(')', ', 0.2)') },
-              { offset: 1, color: vars.success.replace('rgb', 'rgba').replace(')', ', 0.01)') },
-            ]),
+            color: {
+              type: 'linear',
+              x: 0,
+              y: 0,
+              x2: 0,
+              y2: 1,
+              colorStops: [
+                { offset: 0, color: vars.success.replace('rgb', 'rgba').replace(')', ', 0.2)') },
+                { offset: 1, color: vars.success.replace('rgb', 'rgba').replace(')', ', 0.01)') },
+              ],
+            },
           },
         },
       ],

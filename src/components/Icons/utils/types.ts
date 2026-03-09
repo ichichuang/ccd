@@ -37,7 +37,7 @@ export type FlipDirection = 'horizontal' | 'vertical' | 'both'
  * <Icons name="i-lucide-loader" animation="spin" />
  *
  * <!-- 缩放和旋转 -->
- * <Icons name="i-mdi-arrow-right" scale="1.5" rotate="90" />
+ * <Icons name="i-solar-arrow-right-up-linear" scale="1.5" rotate="90" />
  * ```
  */
 export interface IconsProps {
@@ -47,7 +47,7 @@ export interface IconsProps {
    *
    * - 以 'i-' 开头：直接作为 UnoCSS 图标类（如 'i-lucide-user'、'i-custom:custom-juejin'）
    * - 含 ':' 且以 custom: 开头：补 i- 前缀且保留冒号 → i-custom:xxx
-   * - 含 ':' 其他：集合前缀语法（mdi:home）→ 转为 i-mdi-home
+   * - 含 ':' 其他：集合前缀语法（solar:moon）→ 转为 i-solar-moon
    * - 含连字符（lucide-home）→ 补 i- 前缀
    * - 无前缀（home / Home）→ 默认 Lucide，PascalCase 会转为 kebab-case
    */

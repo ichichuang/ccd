@@ -225,11 +225,11 @@ export const THEME_PRESETS: ThemePreset[] = [
           lightForeground: '#ffec99',
         },
         danger: {
-          default: '#ff8787',
+          default: '#cf364c',
           foreground: '#eeeeee',
-          hover: '#ffa8a8',
-          light: '#4d1e1e',
-          lightForeground: '#ffc9c9',
+          hover: '#f1455e',
+          light: '#f1696e',
+          lightForeground: '#f1455e',
         },
         help: {
           default: '#da77f2',

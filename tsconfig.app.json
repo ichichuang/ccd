@@ -12,7 +12,8 @@
     "src/**/*.vue", // ✅ 必须确保 Vue 文件被包含
     "src/**/*.tsx",
     "src/**/*.jsx",
-    "src/**/__tests__/**/*.ts"
+    "src/**/__tests__/**/*.ts",
+    "src/views/system-configuration/theme.vue"
   ],
   "exclude": ["src/**/__tests__/*"],
   "compilerOptions": {

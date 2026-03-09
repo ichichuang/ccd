@@ -4,7 +4,8 @@
  */
 export {
   LUCIDE_ICONS,
-  MDI_ICONS,
+  SOLAR_ICONS,
+  PH_ICONS,
   LOGOS_ICONS,
   CUSTOM_ICONS,
 } from '../../icons/configs/iconLists.generated'

@@ -21,7 +21,7 @@ globs: src/views/**/*.vue
 
 ### 3. Build Content Area
 
-- **Main content**: Use `<div data-region="content" class="flex-1 min-h-0">...</div>`. Do NOT manually add `<CScrollbar>` inside regions that `scripts/drift-fix.ts` auto-wraps (A1 content, A2 main-content/inspector, A5 form-body). The drift-fix self-healer will inject CScrollbar when missing. See `docs/ai-specs/ARCHETYPE_SPEC.md` § Automation Awareness.
+- **Main content**: Use `<div data-region="content" class="flex-1 min-h-0">...</div>`. Wrap scrollable regions in `<CScrollbar>` per `docs/ai-specs/ARCHETYPE_SPEC.md` § Region scroll behavior (A1 content, A2 main-content/inspector, A5 form-body). A4 datatable region MUST NOT be wrapped (virtual scroll).
 - **DataTable**: use `scrollHeight="100%"`; A4 datatable MUST NOT be wrapped in CScrollbar (table virtual scroll). See `DataTable_COMPONENT.md`.
 
 ### 4. Empty State Handling

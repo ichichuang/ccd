@@ -5,6 +5,163 @@ import { decompressAndDecryptSync, encryptAndCompressSync } from '@/utils/safeSt
 import type { Method } from 'alova'
 import { ErrorType, HttpRequestError } from './errors'
 
+type RefreshTokenExecutor = () => Promise<string>
+
+interface RefreshQueueItem {
+  resolve: (token: string) => void
+  reject: (error: Error) => void
+}
+
+let refreshTokenExecutor: RefreshTokenExecutor | null = null
+
+const REFRESH_ENDPOINT = '/auth/refresh'
+const RETRIED_AFTER_REFRESH_FLAG = '__retriedAfterRefresh'
+
+export function setRefreshTokenExecutor(executor: RefreshTokenExecutor): void {
+  refreshTokenExecutor = executor
+}
+
+function isRefreshEndpoint(url: string): boolean {
+  return url.includes(REFRESH_ENDPOINT)
+}
+
+async function defaultRefreshTokenExecutor(): Promise<string> {
+  const response = await fetch(REFRESH_ENDPOINT, {
+    method: 'POST',
+    credentials: 'include',
+    headers: { 'Content-Type': 'application/json' },
+  })
+
+  if (!response.ok) {
+    throw new Error(`refresh failed: HTTP ${response.status}`)
+  }
+
+  const payload = (await response.json()) as {
+    token?: string
+    data?: { token?: string }
+    message?: string
+  } | null
+  const token = payload?.data?.token ?? payload?.token
+
+  if (!token || !String(token).trim()) {
+    throw new Error(payload?.message || 'refresh token missing in response')
+  }
+
+  return token
+}
+
+class TokenRefreshCoordinator {
+  private isRefreshing = false
+  private refreshPromise: Promise<string> | null = null
+  private requestsQueue: RefreshQueueItem[] = []
+  private unauthorizedNotified = false
+
+  private enqueue(): Promise<string> {
+    return new Promise<string>((resolve, reject) => {
+      this.requestsQueue.push({ resolve, reject })
+    })
+  }
+
+  private flushSuccess(token: string): void {
+    const queue = [...this.requestsQueue]
+    this.requestsQueue = []
+    queue.forEach(({ resolve }) => resolve(token))
+  }
+
+  private flushFailure(error: Error): void {
+    const queue = [...this.requestsQueue]
+    this.requestsQueue = []
+    queue.forEach(({ reject }) => reject(error))
+  }
+
+  private notifyUnauthorizedOnce(): void {
+    if (this.unauthorizedNotified) {
+      return
+    }
+
+    this.unauthorizedNotified = true
+    try {
+      triggerUnauthorized()
+    } finally {
+      queueMicrotask(() => {
+        this.unauthorizedNotified = false
+      })
+    }
+  }
+
+  private async runRefresh(): Promise<string> {
+    const executor = refreshTokenExecutor ?? defaultRefreshTokenExecutor
+    return executor()
+  }
+
+  async acquireFreshToken(): Promise<string> {
+    if (this.isRefreshing && this.refreshPromise) {
+      return this.enqueue()
+    }
+
+    this.isRefreshing = true
+    this.refreshPromise = this.runRefresh()
+
+    try {
+      const token = await this.refreshPromise
+      this.flushSuccess(token)
+      return token
+    } catch (error) {
+      const normalizedError = error instanceof Error ? error : new Error('refresh failed')
+      this.flushFailure(normalizedError)
+      this.notifyUnauthorizedOnce()
+      throw normalizedError
+    } finally {
+      this.isRefreshing = false
+      this.refreshPromise = null
+    }
+  }
+}
+
+const tokenRefreshCoordinator = new TokenRefreshCoordinator()
+
+function getMethodConfigRecord(method: Method): Record<string, unknown> {
+  return method.config as Record<string, unknown>
+}
+
+function isRetriedAfterRefresh(method: Method): boolean {
+  return Boolean(getMethodConfigRecord(method)[RETRIED_AFTER_REFRESH_FLAG])
+}
+
+function markRetriedAfterRefresh(method: Method): void {
+  getMethodConfigRecord(method)[RETRIED_AFTER_REFRESH_FLAG] = true
+}
+
+async function handle401WithRefresh(method: Method): Promise<unknown> {
+  if (isRefreshEndpoint(method.url)) {
+    triggerUnauthorized()
+    throw new HttpRequestError(
+      $t('http.error.unauthorized'),
+      ErrorType.AUTH,
+      401,
+      'Unauthorized',
+      undefined,
+      false
+    )
+  }
+
+  if (isRetriedAfterRefresh(method)) {
+    triggerUnauthorized()
+    throw new HttpRequestError(
+      $t('http.error.unauthorized'),
+      ErrorType.AUTH,
+      401,
+      'Unauthorized',
+      undefined,
+      false
+    )
+  }
+
+  await tokenRefreshCoordinator.acquireFreshToken()
+  markRetriedAfterRefresh(method)
+  return method.send(true)
+}
+
 /**
  * 安全检查和数据清理
  */
@@ -126,6 +283,9 @@ export const responseHandler = async (response: Response, method: Method) => {
     if (method.type === 'HEAD') {
       // HEAD 请求只检查状态码
       if (!response.ok) {
+        if (response.status === 401 && AUTH_ENABLED) {
+          return await handle401WithRefresh(method)
+        }
         const errorType = getErrorTypeByStatus(response.status)
         const retryable = response.status >= 500
 
@@ -159,6 +319,9 @@ export const responseHandler = async (response: Response, method: Method) => {
     if (isBlobResponse) {
       // 先检查 HTTP 状态码错误
       if (!response.ok) {
+        if (response.status === 401 && AUTH_ENABLED) {
+          return await handle401WithRefresh(method)
+        }
         // 尝试读取错误信息（可能是 JSON）
         let errorData: { message?: string }
         try {
@@ -205,6 +368,9 @@ export const responseHandler = async (response: Response, method: Method) => {
     if (json && typeof json === 'object') {
       // 处理 HTTP 状态码错误
       if (!response.ok) {
+        if (response.status === 401 && AUTH_ENABLED) {
+          return await handle401WithRefresh(method)
+        }
         const errorType = getErrorTypeByStatus(response.status)
         const retryable = response.status >= 500
 
@@ -428,11 +594,8 @@ const handleHttpError = (status: number, data: { message?: string } | undefined)
       console.warn('请求错误')
       break
     case 401:
-      // 处理未授权错误（由应用入口注入的 onUnauthorized 执行 logout，此处不依赖 Store）
+      // 401 刷新与未授权处理由 TokenRefreshCoordinator 统一负责
       statusMessage = $t('http.error.unauthorized')
-      if (AUTH_ENABLED) {
-        triggerUnauthorized()
-      }
       break
     case 403:
       // 处理权限不足错误

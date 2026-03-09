@@ -58,12 +58,14 @@ interface IconifyIconsJson {
   icons?: Record<string, unknown>
 }
 
+type IconifyCollectionName = 'lucide' | 'logos' | 'solar' | 'ph'
+
 /**
  * 从 @iconify-json 包读取图标名称列表
- * @param collectionName - 集合名称（lucide | mdi | logos）
+ * @param collectionName - 集合名称（lucide | logos | solar | ph）
  * @returns 图标类名数组，格式 i-{prefix}-{name}
  */
-export function getIconifyIconNames(collectionName: 'lucide' | 'mdi' | 'logos'): string[] {
+export function getIconifyIconNames(collectionName: IconifyCollectionName): string[] {
   try {
     if (iconifyJsonCache.has(collectionName)) {
       const iconSet = iconifyJsonCache.get(collectionName)!
@@ -84,15 +86,17 @@ export function getIconifyIconNames(collectionName: 'lucide' | 'mdi' | 'logos'):
 
 /** 示例页与 safelist 使用的子集数量，控制构建内存 */
 const ICON_SUBSET_LIMITS_DEV = {
-  lucide: 500,
-  mdi: 500,
-  logos: 300,
+  lucide: 300,
+  logos: 80,
+  solar: 300,
+  ph: 300,
 } as const
 
 const ICON_SUBSET_LIMITS_PROD = {
-  lucide: 200,
-  mdi: 200,
-  logos: 100,
+  lucide: 150,
+  logos: 60,
+  solar: 150,
+  ph: 150,
 } as const
 
 const isProdEnv = process.env.NODE_ENV === 'production'
@@ -101,15 +105,16 @@ export const ICON_SUBSET_LIMITS = (
   isProdEnv ? ICON_SUBSET_LIMITS_PROD : ICON_SUBSET_LIMITS_DEV
 ) as {
   readonly lucide: number
-  readonly mdi: number
   readonly logos: number
+  readonly solar: number
+  readonly ph: number
 }
 
 /**
  * 取某集合前 limit 个图标类名，供示例页与 safelist 使用，避免全量导致 OOM
  */
 export function getIconifyIconNamesSubset(
-  collectionName: 'lucide' | 'mdi' | 'logos',
+  collectionName: IconifyCollectionName,
   limit: number
 ): string[] {
   return getIconifyIconNames(collectionName).slice(0, limit)
@@ -527,7 +532,8 @@ export function getDynamicSafelist(): string[] {
   const examplePageIcons = isDemo
     ? [
         ...getIconifyIconNamesSubset('lucide', ICON_SUBSET_LIMITS.lucide),
-        ...getIconifyIconNamesSubset('mdi', ICON_SUBSET_LIMITS.mdi),
+        ...getIconifyIconNamesSubset('solar', ICON_SUBSET_LIMITS.solar),
+        ...getIconifyIconNamesSubset('ph', ICON_SUBSET_LIMITS.ph),
         ...getIconifyIconNamesSubset('logos', ICON_SUBSET_LIMITS.logos),
         ...customIcons,
       ]

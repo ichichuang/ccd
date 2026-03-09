@@ -28,6 +28,7 @@ export interface RequestConfig {
   cacheTTL?: number // 缓存生存时间（毫秒）
   retry?: RetryConfig // 重试配置
   deduplicate?: boolean // 是否启用请求去重
+  cancelStrategy?: 'none' | 'cancelPrevious' // 请求取消策略
   security?: SecurityConfig // 安全配置
   [key: string]: unknown
 }

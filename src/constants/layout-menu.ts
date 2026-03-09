@@ -18,7 +18,7 @@ export const MENU_ACTIVE_BG_MAPPING: Record<number, string> = {
 }
 
 /** 激活项及所有父级统一样式（菜单激活态单一权威）：primary 背景 + primary-foreground 文字/图标，用于侧栏/Header/面包屑等所有菜单场景 */
-export const MENU_ACTIVE_UNIFIED = 'bg-primary! text-primary-foreground! dark:text-white!' as const
+export const MENU_ACTIVE_UNIFIED = 'bg-primary! text-primary-foreground!' as const
 
 /** 未激活项文字（子级） */
 export const MENU_INACTIVE_TEXT = 'text-foreground'
