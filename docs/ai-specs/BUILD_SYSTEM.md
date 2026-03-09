@@ -124,12 +124,12 @@ Summary:
 
 Configured in `vite.config.ts` under `build.rollupOptions.output.manualChunks`.
 
-- **vendor-echarts:** ECharts
-- **vendor-primevue:** PrimeVue + PrimeIcons
-- **vendor-date-holidays:** date-holidays (dynamic import, loaded on first holiday API use)
-- **vendor-utils:** lodash, dayjs, etc.
-- **vendor-vue:** Vue, VueRouter, Pinia, @vueuse/core
-- **vendor-libs:** Other third-party libs
+- **vendor-primevue:** PrimeVue + @primeuix + PrimeIcons
+- **vendor-date-holidays:** `date-holidays`（按需引入，首次使用节假日相关能力时才会加载）
+- **vendor-utils:** `lodash-es`、`dayjs` 等通用工具库
+- **vendor-xlsx:** `xlsx`（体积较大的 Excel 处理库，单独拆分便于延迟加载）
+- **vendor-vue:** Vue 栈核心：`vue`、`vue-router`、`pinia`、`vue-i18n`、`pinia-plugin-persistedstate`、`alova`、`@vueuse/core`、`overlayscrollbars-vue`
+- **其他依赖：** 不再使用 `vendor-libs` 兜底 chunk，而是交给 Rollup 的原生异步切分机制（`manualChunks` 返回 `undefined`），根据真实依赖图自动拆分剩余第三方库。
 
 `chunkSizeWarningLimit: 2500` is set for chunk size warnings (aligned with vite.config.ts).
 

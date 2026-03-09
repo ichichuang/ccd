@@ -13,6 +13,9 @@ const __dirname = dirname(fileURLToPath(import.meta.url))
 const ROOT = join(__dirname, '..')
 const SRC_DIR = join(ROOT, 'src')
 const VIEWS_DIR = join(ROOT, 'src', 'views')
+const BUILD_SYSTEM_MD = join(ROOT, 'docs', 'ai-specs', 'BUILD_SYSTEM.md')
+const VITE_CONFIG = join(ROOT, 'vite.config.ts')
+const BUILD_PLUGINS = join(ROOT, 'build', 'plugins.ts')
 
 /** 禁止：十六进制颜色 #fff, #ff0000, #ff0000ff */
 const HEX_REGEX = /#([0-9a-fA-F]{3}|[0-9a-fA-F]{6}|[0-9a-fA-F]{8})\b/g
@@ -101,6 +104,83 @@ function extractDataArchetypeFromVue(content) {
   return m ? m[1].trim() : null
 }
 
+function checkManualChunksDrift() {
+  const errors = []
+  if (!existsSync(BUILD_SYSTEM_MD) || !existsSync(VITE_CONFIG)) {
+    return errors
+  }
+
+  const doc = readFileSync(BUILD_SYSTEM_MD, 'utf-8')
+  const config = readFileSync(VITE_CONFIG, 'utf-8')
+
+  const docMatches = Array.from(doc.matchAll(/-\s+\*\*(vendor-[^*]+)\*\*/g))
+  const docChunks = new Set(docMatches.map((m) => m[1].trim()))
+
+  const configMatches = Array.from(config.matchAll(/['"](vendor-[^'"]+)['"]/g))
+  const configChunks = new Set(configMatches.map((m) => m[1].trim()))
+
+  if (!docChunks.size && !configChunks.size) {
+    return errors
+  }
+
+  for (const name of configChunks) {
+    if (!docChunks.has(name)) {
+      errors.push(
+        `BUILD_SYSTEM.md vs vite.config.ts 漂移: manualChunks 中存在 "${name}"，但文档 §5.1 未记录，请同步更新文档或配置。`
+      )
+    }
+  }
+
+  for (const name of docChunks) {
+    if (!configChunks.has(name)) {
+      errors.push(
+        `BUILD_SYSTEM.md vs vite.config.ts 漂移: 文档 §5.1 中存在 "${name}"，但 vite.config.ts manualChunks 未使用，请同步更新文档或配置。`
+      )
+    }
+  }
+
+  return errors
+}
+
+function checkBuildPluginsDrift() {
+  const errors = []
+  if (!existsSync(BUILD_PLUGINS)) {
+    return errors
+  }
+
+  const content = readFileSync(BUILD_PLUGINS, 'utf-8')
+
+  if (content.includes('AutoImport({')) {
+    if (!content.includes("dirs: ['src/stores/modules', 'src/hooks/**/*']")) {
+      errors.push(
+        'build/plugins.ts: AutoImport.dirs 与 BUILD_SYSTEM/.cursor 规则不一致，应至少包含 "src/stores/modules" 与 "src/hooks/**/*"。'
+      )
+    }
+  }
+
+  if (content.includes('Components({')) {
+    if (!content.includes("dirs: ['src/components']")) {
+      errors.push('build/plugins.ts: Components.dirs 应为 ["src/components"]。')
+    }
+    if (
+      !content.includes(
+        'exclude: [/[\\\\/]node_modules[\\\\/]/, /[\\\\/]\\.git[\\\\/]/, /[\\\\/]src[\\\\/]layouts[\\\\/]/]'
+      )
+    ) {
+      errors.push(
+        'build/plugins.ts: Components.exclude 需包含 src/layouts 目录，防止布局组件被自动导入。'
+      )
+    }
+    if (!content.includes('PrimeVueResolver()')) {
+      errors.push(
+        'build/plugins.ts: Components.resolvers 需包含 PrimeVueResolver() 以保持 PrimeVue 组件按需引入。'
+      )
+    }
+  }
+
+  return errors
+}
+
 function main() {
   const errors = []
 
@@ -137,6 +217,14 @@ function main() {
     const styleErrors = checkStyleDrift(`src/${rel}`, content)
     errors.push(...styleErrors)
   }
+
+  // ---------- 3. Build System vs vite.config.ts (manualChunks) ----------
+  const manualChunkErrors = checkManualChunksDrift()
+  errors.push(...manualChunkErrors)
+
+  // ---------- 4. AutoImport / Components vs .cursor 规则 ----------
+  const buildPluginsErrors = checkBuildPluginsDrift()
+  errors.push(...buildPluginsErrors)
 
   if (errors.length > 0) {
     console.error('❌ Drift Check 失败:\n')
