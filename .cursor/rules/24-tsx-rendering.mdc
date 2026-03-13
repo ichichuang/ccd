@@ -63,7 +63,6 @@ export default defineComponent({
 - ✅ **Page/view components** (`src/views/**/*.vue`): Need `<template>` but script has TSX render functions
 - ✅ **Need template syntax**: `<template>` for most UI, TSX only for partial logic
 - ✅ **Component-internal TSX**: Render functions inside component (table cell renderers, dropdown item templates, etc.)
-- ✅ **Example**: `src/views/example/data-table/DataTable.vue` (needs template, column config has TSX)
 
 **Create standalone `.tsx` file:**
 

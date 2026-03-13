@@ -6,7 +6,7 @@
  */
 
 const PREMIUM_INPUT_ROOT =
-  '!border-0 !shadow-none outline-none bg-muted/30 hover:bg-muted/40 transition-colors duration-scale-sm rounded-scale-md interactive-focus-ring'
+  '!border-0 !shadow-none bg-muted/30 hover:bg-muted/40 behavior-hover-transition rounded-scale-md interactive-focus-ring'
 
 const PREMIUM_OVERLAY = 'surface-elevated rounded-scale-md'
 

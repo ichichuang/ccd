@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import type { DataTableColumn } from '@/components/DataTable'
-import { DataTable as CDataTable } from '@/components/DataTable'
 import { LOADING_SIZE_PERCENT, SIZE_SCALE_KEYS, type SizeScaleKey } from '@/constants/sizeScale'
 import { useLoading } from '@/hooks/layout/useLoading'
 
@@ -9,12 +7,6 @@ defineOptions({ name: 'SystemStatesShowcaseIndex' })
 const { withLoading, withPageLoading } = useLoading()
 
 const btnLoading = ref(false)
-const tableLoading = ref(false)
-
-const demoColumns: DataTableColumn<{ id: number; name: string }>[] = [
-  { field: 'id', header: 'ID', width: 80 },
-  { field: 'name', header: '名称' },
-]
 
 async function triggerGlobalLoading() {
   await withLoading(async () => {
@@ -32,12 +24,6 @@ async function triggerButtonLoading() {
   btnLoading.value = true
   await new Promise(resolve => setTimeout(resolve, 3000))
   btnLoading.value = false
-}
-
-async function triggerTableLoading() {
-  tableLoading.value = true
-  await new Promise(resolve => setTimeout(resolve, 3000))
-  tableLoading.value = false
 }
 </script>
 
@@ -144,39 +130,6 @@ async function triggerTableLoading() {
                   :loading="btnLoading"
                   @click="triggerButtonLoading"
                 />
-              </template>
-            </Card>
-
-            <Card class="bg-card component-border">
-              <template #title>
-                <span class="flex items-center gap-sm">
-                  <Icons
-                    name="i-lucide-table"
-                    size="sm"
-                    class="text-primary"
-                  />
-                  表格 Loading
-                </span>
-              </template>
-              <template #content>
-                <p class="fs-sm text-muted-foreground m-0 mb-margin-md">
-                  DataTable 的 loading 状态。触发后持续 3 秒。
-                </p>
-                <Button
-                  label="触发表格 Loading"
-                  icon="i-lucide-loader-2"
-                  severity="secondary"
-                  class="mb-margin-md"
-                  @click="triggerTableLoading"
-                />
-                <div class="rounded-scale-md overflow-hidden h-40vh">
-                  <CDataTable
-                    :columns="demoColumns"
-                    :data="[]"
-                    :loading="tableLoading"
-                    show-header
-                  />
-                </div>
               </template>
             </Card>
 

@@ -52,7 +52,10 @@ export function generateThemeVars(preset: ThemePreset, isDark: boolean): ThemeCs
   const cardFg = resolveToken(modeConfig?.neutral?.foreground, () => fgBase)
 
   // 4. Primary (核心逻辑: Config -> Legacy String -> Default)
-  const primaryBase = resolveToken(modeConfig?.primary?.default, () => preset.primary || '#000000')
+  const primaryBase = resolveToken(
+    modeConfig?.primary?.default,
+    () => preset.primary || E.fallbackPrimary
+  )
 
   const primaryFg = resolveToken(modeConfig?.primary?.foreground, () =>
     isDarkColor(primaryBase) ? E.fgDark : E.fgLight
@@ -71,7 +74,7 @@ export function generateThemeVars(preset: ThemePreset, isDark: boolean): ThemeCs
   )
 
   const getRobustLightFg = (baseColor: string) => {
-    return mixHex(baseColor, '#000000', 0.6)
+    return mixHex(baseColor, E.darkForeground, 0.6)
   }
 
   const primaryLightFg = resolveToken(modeConfig?.primary?.lightForeground, () =>

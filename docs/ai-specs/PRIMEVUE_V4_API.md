@@ -40,7 +40,7 @@
 
 **弹窗/浮层**：`Dialog`、**`Drawer`**、**`Popover`**
 
-**其他**：`Button`、`DataTable`、`Menu`、`Menubar`、`Toast`、`ConfirmPopup`、`ConfirmDialog`
+**其他**：`Button`、`Menu`、`Menubar`、`Toast`、`ConfirmPopup`、`ConfirmDialog`
 
 ## 5. 生成 PrimeVue 代码前的必读
 

@@ -7,11 +7,11 @@ export function buildSemanticLayer(): Record<string, unknown> {
   return {
     transitionDuration: 'var(--transition-md)',
     focusRing: {
-      width: '1px',
-      style: 'solid',
-      color: 'rgb(var(--ring))',
-      offset: '2px',
-      shadow: 'none',
+      width: '0',
+      style: 'none',
+      color: 'transparent',
+      offset: '0',
+      shadow: '0 0 0 2px rgb(var(--ring) / 0.5)',
     },
     disabledOpacity: '0.6',
     iconSize: 'var(--font-size-md)',
@@ -23,11 +23,11 @@ export function buildSemanticLayer(): Record<string, unknown> {
       borderRadius: 'var(--radius-md)',
       fontSize: 'var(--font-size-md)',
       focusRing: {
-        width: '1px',
-        style: 'solid',
-        color: 'rgb(var(--ring))',
-        offset: '2px',
-        shadow: 'none',
+        width: '0',
+        style: 'none',
+        color: 'transparent',
+        offset: '0',
+        shadow: '0 0 0 2px rgb(var(--ring) / 0.5)',
       },
       transitionDuration: 'var(--transition-md)',
       sm: {

@@ -38,7 +38,7 @@ All rule files use `.md` extension. When a Cursor counterpart exists, the conten
 | 29  | `29-focus-outline-styling.md`          | `29-focus-outline-styling.mdc`          | Focus styling (focus-visible, interactive-focus-ring)                          |
 | 30  | `30-drift-check.md`                    | `30-drift-check.mdc`                    | Archetype sync with page.state.ts; region scroll in ARCHETYPE_SPEC             |
 | 31  | `31-temp-artifacts-lifecycle.md`       | `31-temp-artifacts-lifecycle.mdc`       | Temp artifacts lifecycle (delete before conclude)                              |
-| 35  | `35-schema-driven-development.md`      | `35-schema-driven-development.mdc`      | Schema-driven (SchemaForm, DataTable)                                          |
+| 35  | `35-schema-driven-development.md`      | `35-schema-driven-development.mdc`      | Schema-driven (configs first; TSX render helpers)                              |
 | 40  | `40-echarts-visualization.md`          | `40-echarts-visualization.mdc`          | ECharts (UseEcharts, theme)                                                    |
 | 50  | `50-user-centric-engineering.md`       | `50-user-centric-engineering.mdc`       | User-centric (8-field rule, empty CTA, errors)                                 |
 | 101 | `101-premium-ui.md`                    | `101-premium-ui.mdc`                    | Premium UI + Phase 13.0 Golden Rules                                           |

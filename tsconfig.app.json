@@ -1,21 +1,7 @@
 {
   "extends": "@vue/tsconfig/tsconfig.dom.json",
-  "include": [
-    "src/types/**/*.ts",
-    "src/types/**/*.d.ts",
-    "src/types/auto-imports.d.ts",
-    "src/layouts/components/admin/AdminHeader.vue",
-    "src/layouts/components/admin/AdminBreadcrumbBar.vue",
-    "src/types/components.d.ts",
-    "src/types/env.d.ts",
-    "src/**/*",
-    "src/**/*.vue", // ✅ 必须确保 Vue 文件被包含
-    "src/**/*.tsx",
-    "src/**/*.jsx",
-    "src/**/__tests__/**/*.ts",
-    "src/views/system-configuration/theme.vue"
-  ],
-  "exclude": ["src/**/__tests__/*"],
+  "include": ["src/**/*"],
+  "exclude": ["src/**/__tests__/**"],
   "compilerOptions": {
     "composite": true,
     "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.app.tsbuildinfo",
@@ -37,10 +23,14 @@
       "@!/*": ["./src/api/*"],
       "@&/*": ["./src/layouts/components/*"]
     },
-    "types": ["node", "vue"]
+    // vite/client 提供 import.meta.env / import.meta.hot 等 Vite 专属类型。
+    // 不应包含 "node"（会将 process/Buffer/__dirname 等 Node 全局量暴露给浏览器编译上下文）。
+    "types": ["vite/client"]
   },
   "vueCompilerOptions": {
     "strictTemplates": true,
+    // target: 3.3 保持原值 — 升级至 3.5 导致 vue-tsc 2.2.10 将 <Transition>/<TransitionGroup>
+    // 等内置组件报错 "Property 'X' does not exist on type '{}'", 待 vue-language-tools 修复后再升级。
     "target": 3.3,
     "strict": true
   }

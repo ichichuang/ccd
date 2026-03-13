@@ -7,7 +7,7 @@ alwaysApply: true
 # Vue 3 & TypeScript Strict Mode Protocols
 
 <context>
-This enterprise architecture heavily utilizes Vue 3 `<script setup>`, complex Generic Wrappers (like SchemaForm), and Vue TSX. AI must strictly follow these typing rules to prevent `ts-plugin` errors, generic mismatches, and build failures.
+This enterprise architecture heavily utilizes Vue 3 `<script setup>`, complex Generic Wrappers, and Vue TSX. AI must strictly follow these typing rules to prevent `ts-plugin` errors, generic mismatches, and build failures.
 </context>
 
 <constraints>
@@ -34,7 +34,7 @@ This enterprise architecture heavily utilizes Vue 3 `<script setup>`, complex Ge
 
 ## 5. Generic Propagation
 
-- When passing generics down multiple layers (e.g., `SchemaForm` -> `UseSteps`), ensure the generic constraint `TValues extends Record<string, unknown>` is preserved explicitly in all intermediate functions. Do not let it silently degrade to `any` or `unknown`.
+- When passing generics down multiple layers, ensure the generic constraint `TValues extends Record<string, unknown>` is preserved explicitly in all intermediate functions. Do not let it silently degrade to `any` or `unknown`.
   </constraints>
 
 <communication>

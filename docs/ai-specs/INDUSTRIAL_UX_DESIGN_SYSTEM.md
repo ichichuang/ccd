@@ -33,7 +33,6 @@
 
 ## 4. PrimeVue 组件最佳实践
 
-- **DataTable**：`size="small"`、`stripedRows`、`hoverableRows` 提升密度；数值列 MUST 右对齐（`align: 'right'`）。
 - **Tabs**：Tab 头 MUST 含语义图标（如 `i-lucide-settings`），降低认知负担。
 - **Button**：主操作（Save、Deploy）用标准 `<Button>`；次要/ destructive 用 `severity="secondary"` 或 `severity="danger"`。
 

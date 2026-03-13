@@ -37,11 +37,11 @@ alwaysApply: true
     <section name="components">
       <rule>
         Directories directly under <file>src/components</file> MUST use <code>PascalCase</code> names that match the conceptual component
-        (for example <code>DataTable</code>, <code>SchemaForm</code>, <code>EmptyState</code>, <code>PrimeDialog</code>, <code>UseEcharts</code>).
+        (for example <code>DataGrid</code>, <code>FormBuilder</code>, <code>EmptyState</code>, <code>PrimeDialog</code>, <code>UseEcharts</code>).
       </rule>
       <rule>
         Vue single-file components inside <file>src/components</file> MUST use <code>PascalCase</code> filenames that match the component name
-        (for example <code>DataTable.vue</code>, <code>DataTableV2.vue</code>, <code>AnimateWrapper.vue</code>, <code>EmptyState.vue</code>).
+        (for example <code>DataGrid.vue</code>, <code>DataGridV2.vue</code>, <code>AnimateWrapper.vue</code>, <code>EmptyState.vue</code>).
         Kebab-case component filenames inside <file>src/components</file> are not allowed.
       </rule>
       <rule>
@@ -59,7 +59,7 @@ alwaysApply: true
     <section name="composables">
       <rule>
         All composable hooks under <file>src/hooks</file> MUST be implemented in files whose names start with <code>use</code> and follow <code>camelCase</code>
-        (for example <code>useAdminTabs.ts</code>, <code>useMenuRenderer.tsx</code>, <code>useSchemaForm.ts</code>, <code>useDateUtils.ts</code>).
+        (for example <code>useAdminTabs.ts</code>, <code>useMenuRenderer.tsx</code>, <code>useFormState.ts</code>, <code>useDateUtils.ts</code>).
       </rule>
       <rule>
         Directory names under <file>src/hooks</file> (for example <code>layout</code>, <code>modules</code>) MUST be all lowercase and describe the grouping domain, not the specific hook.
@@ -116,7 +116,7 @@ alwaysApply: true
     </item>
     <item>
       NEVER use <code>kebab-case</code> filenames for Vue components under <file>src/components</file>.
-      Component SFCs in this directory MUST be <code>PascalCase.vue</code> (for example <code>DataTable.vue</code>, not <code>data-table.vue</code>).
+      Component SFCs in this directory MUST be <code>PascalCase.vue</code> (for example <code>DataGrid.vue</code>, not <code>data-grid.vue</code>).
     </item>
     <item>
       NEVER mix different casing styles within the same functional domain.
@@ -143,9 +143,9 @@ src/
       index.vue
 
   components/
-    DataTable/
-      DataTable.vue
-      DataTableV2.vue
+    DataGrid/
+      DataGrid.vue
+      DataGridV2.vue
       utils/
         columnUtils.ts
 

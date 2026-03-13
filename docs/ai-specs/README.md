@@ -44,7 +44,7 @@ For human developers and GitHub visitors to understand project architecture:
 1a. **`AI_CODING_PROTOCOL.md`** – AI coding protocol
 
 - **Scope**: Pre-generation decision flow, TSX/lang switch, VNode vs template strings, post-generation checklist
-- **When to use**: Required when using DataTable column body/renderer, Dialog contentRenderer, SchemaForm custom render, or any programmatic rendering
+- **When to use**: Required when using Dialog contentRenderer or any programmatic rendering
 - **Reference**: `@./AI_CODING_PROTOCOL.md`
 
 2. **`BUILD_SYSTEM.md`** – Build system and auto-imports
@@ -85,8 +85,6 @@ For human developers and GitHub visitors to understand project architecture:
 
 ### 2.3 Component docs
 
-9. **`SCHEMA_FORM_COMPONENT.md`** – SchemaForm
-10. **`DataTable_COMPONENT.md`** – DataTable
 11. **`DIALOG_COMPONENT.md`** – PrimeDialog
 12. **`TOAST_AND_MESSAGE.md`** – Toast & Message (§6 style overrides: center, close button, padding)
 
@@ -118,29 +116,27 @@ Before any code generation: `@./PROJECT_PROTOCOL.md`
 
 ### Doc by scenario
 
-| Task type                                               | Reference                                                                                  |
-| ------------------------------------------------------- | ------------------------------------------------------------------------------------------ |
-| Guardrails / forbidden (wins on conflict)               | `@./ENTERPRISE_GUARDRAILS.md`                                                              |
-| Architecture / directory structure                      | `@docs/architecture/ARCHITECTURE_OVERVIEW.md`, `@docs/architecture/DIRECTORY_STRUCTURE.md` |
-| Cursor + Antigravity / common prompts                   | `@docs/AI_COLLABORATION.md`                                                                |
-| Forms (multi-field, validation, steps, groups, dynamic) | `@docs/SCHEMA_FORM_COMPONENT.md`                                                           |
-| Data tables (list, pagination, sort, filter, export)    | `@docs/DataTable_COMPONENT.md`, `@docs/AI_CODING_PROTOCOL.md` (for column body/renderer)   |
-| Layout / sidebar / responsive                           | `@./ADAPTIVE_LAYOUT.md`                                                                    |
-| Auth / login                                            | `@./AUTH_AND_LOGIN_FLOW.md`                                                                |
-| Feedback (non-component)                                | `@./TOAST_AND_MESSAGE.md`                                                                  |
-| Dialogs                                                 | `@docs/DIALOG_COMPONENT.md`                                                                |
-| Styling                                                 | `@./UNOCSS_AND_ICONS.md`, `@./PRIMEVUE_THEME.md`                                           |
-| PrimeVue (Select, DatePicker, Drawer, etc.)             | `@./PRIMEVUE_V4_API.md` (no v3 names; see primevue.org)                                    |
-| Charts                                                  | `@./ECHARTS_THEME.md`                                                                      |
-| Types / annotations                                     | `@./TYPESCRIPT_AND_LINTING.md`                                                             |
-| Vue template parse error / build / TS errors            | `@./VUE_TEMPLATE_ANTIPATTERNS.md`                                                          |
-| Build / auto-import                                     | `@./BUILD_SYSTEM.md`                                                                       |
-| Env config                                              | `@./ENV_AND_RUNTIME.md`                                                                    |
-| Deployment / Nginx / gzip                               | `@../DEPLOYMENT.md`                                                                        |
-| Context menu                                            | `@./PROJECT_PROTOCOL.md` §8.5.5                                                            |
-| Network state / large upload                            | `@./PROJECT_PROTOCOL.md` §8.4.6                                                            |
-| Industrial / dashboard pages                            | `@./INDUSTRIAL_UX_DESIGN_SYSTEM.md`                                                        |
-| Empty state / robustness                                | `@./EMPTY_STATE_AND_ROBUSTNESS.md`                                                         |
+| Task type                                    | Reference                                                                                  |
+| -------------------------------------------- | ------------------------------------------------------------------------------------------ |
+| Guardrails / forbidden (wins on conflict)    | `@./ENTERPRISE_GUARDRAILS.md`                                                              |
+| Architecture / directory structure           | `@docs/architecture/ARCHITECTURE_OVERVIEW.md`, `@docs/architecture/DIRECTORY_STRUCTURE.md` |
+| Cursor + Antigravity / common prompts        | `@docs/AI_COLLABORATION.md`                                                                |
+| Layout / sidebar / responsive                | `@./ADAPTIVE_LAYOUT.md`                                                                    |
+| Auth / login                                 | `@./AUTH_AND_LOGIN_FLOW.md`                                                                |
+| Feedback (non-component)                     | `@./TOAST_AND_MESSAGE.md`                                                                  |
+| Dialogs                                      | `@docs/DIALOG_COMPONENT.md`                                                                |
+| Styling                                      | `@./UNOCSS_AND_ICONS.md`, `@./PRIMEVUE_THEME.md`                                           |
+| PrimeVue (Select, DatePicker, Drawer, etc.)  | `@./PRIMEVUE_V4_API.md` (no v3 names; see primevue.org)                                    |
+| Charts                                       | `@./ECHARTS_THEME.md`                                                                      |
+| Types / annotations                          | `@./TYPESCRIPT_AND_LINTING.md`                                                             |
+| Vue template parse error / build / TS errors | `@./VUE_TEMPLATE_ANTIPATTERNS.md`                                                          |
+| Build / auto-import                          | `@./BUILD_SYSTEM.md`                                                                       |
+| Env config                                   | `@./ENV_AND_RUNTIME.md`                                                                    |
+| Deployment / Nginx / gzip                    | `@../DEPLOYMENT.md`                                                                        |
+| Context menu                                 | `@./PROJECT_PROTOCOL.md` §8.5.5                                                            |
+| Network state / large upload                 | `@./PROJECT_PROTOCOL.md` §8.4.6                                                            |
+| Industrial / dashboard pages                 | `@./INDUSTRIAL_UX_DESIGN_SYSTEM.md`                                                        |
+| Empty state / robustness                     | `@./EMPTY_STATE_AND_ROBUSTNESS.md`                                                         |
 
 ### How to reference
 
@@ -148,7 +144,6 @@ Use `@` in prompts:
 
 ```
 Read @docs/ai-specs/PROJECT_PROTOCOL.md first
-For forms: @docs/ai-specs/SCHEMA_FORM_COMPONENT.md
 For layout: @docs/ai-specs/ADAPTIVE_LAYOUT.md
 ```
 
@@ -167,8 +162,8 @@ For layout: @docs/ai-specs/ADAPTIVE_LAYOUT.md
 - **Antigravity rules**: `.agent/rules/` (authoritative; AI must follow)
 - **Antigravity skills**: `.agent/skills/`
 - **`ANTIGRAVITY_UI_RULES.md`**: Long-form Antigravity UI; conflicts resolved by `.agent/rules/`
-- **Golden samples**: `docs/ai-specs/GOLDEN_SAMPLES/` – useFeatureLogic, UIComponent, ApiModule, StoreExample; **DataTable column body** in `DataTableBodyColumn.vue`
-- **Example views**: `src/views/example/` – DataTable, SchemaForm, UseEcharts, PrimeDialog examples; prefer these when generating similar features
+- **Golden samples**: `docs/ai-specs/GOLDEN_SAMPLES/` – useFeatureLogic, UIComponent, ApiModule, StoreExample
+- **Example views**: `src/views/example/` – UseEcharts, PrimeDialog examples
 - **System configuration**: `src/views/system-configuration/` – theme, size, breakpoints, layout/device, scrollbar, UnoCSS; shows infra; `example` shows business component usage
 
 ---
@@ -182,8 +177,6 @@ For layout: @docs/ai-specs/ADAPTIVE_LAYOUT.md
 | system-configuration vs example     | system-configuration = infra demo; example = business component usage                            |
 | Which components                    | `PROJECT_PROTOCOL.md` §1.1                                                                       |
 | How to style                        | `UNOCSS_AND_ICONS.md`                                                                            |
-| How to build forms                  | `SCHEMA_FORM_COMPONENT.md`                                                                       |
-| How to build tables                 | `DataTable_COMPONENT.md`                                                                         |
 | Schema-first                        | `.cursor/rules/35-schema-driven-development.mdc`, `.agent/rules/35-schema-driven-development.md` |
 | How to type                         | `TYPESCRIPT_AND_LINTING.md`                                                                      |
 | Template parse error / antipatterns | `VUE_TEMPLATE_ANTIPATTERNS.md`                                                                   |

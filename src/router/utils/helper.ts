@@ -30,8 +30,15 @@ function initWindowChannel() {
       if (e.data?.type === 'window-closed') {
         const { key } = e.data
         routeWindowRefMap.delete(key)
-        const permissionStore = usePermissionStore()
-        permissionStore.markWindowClosed(key)
+        // 此模块在 app 入口 import 时即执行，BroadcastChannel 消息有极小概率在
+        // app.use(pinia) 初始化完成之前到达，需防御性捕获 "getActivePinia() was called
+        // without an active Pinia" 错误，避免窗口管理状态损坏。
+        try {
+          const permissionStore = usePermissionStore()
+          permissionStore.markWindowClosed(key)
+        } catch {
+          // Pinia 尚未初始化，忽略此次窗口关闭通知（窗口状态将在下次访问时自动修正）
+        }
       }
     })
   }

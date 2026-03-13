@@ -108,21 +108,6 @@
 | `index.ts`       | 导出                              |
 | `utils/types.ts` | 类型定义                          |
 
-#### DataTable
-
-| 文件                               | 职责说明                                                  |
-| ---------------------------------- | --------------------------------------------------------- |
-| `DataTable.vue`                    | 表格主组件：列配置、API、分页、排序、筛选、导出、列持久化 |
-| `BodyCellRenderer.tsx`             | 表体单元格渲染                                            |
-| `RenderFn.tsx`                     | 渲染函数封装                                              |
-| `composables/useTableSelection.ts` | 行选择                                                    |
-| `composables/useTableData.ts`      | 数据加载与状态                                            |
-| `composables/useTableExport.ts`    | 导出 CSV/JSON/XLSX                                        |
-| `composables/useTableLayout.ts`    | 布局与列宽                                                |
-| `utils/helper.ts`                  | 工具函数                                                  |
-| `utils/executeTableApi.ts`         | API 请求执行                                              |
-| `utils/types.ts`                   | 类型定义                                                  |
-
 #### Icons
 
 | 文件              | 职责说明                                |
@@ -141,32 +126,6 @@
 | `defaultContentRenderer.tsx` | 默认 content 渲染器    |
 | `utils/types.ts`             | 弹窗选项、事件类型     |
 | `utils/constants.ts`         | 弹窗默认配置           |
-
-#### SchemaForm
-
-| 文件                                      | 职责说明                                                      |
-| ----------------------------------------- | ------------------------------------------------------------- |
-| `SchemaForm.vue`                          | Schema 驱动表单主组件                                         |
-| `components/FormItems.tsx`                | 表单项渲染                                                    |
-| `components/DefaultRenderer.vue`          | 默认字段渲染器                                                |
-| `components/SectionsRenderer.vue`         | 分组渲染                                                      |
-| `components/StepsRenderer.vue`            | 分步表单渲染                                                  |
-| `components/StepsHeader.vue`              | 分步头部                                                      |
-| `components/StepNavigation.vue`           | 分步导航                                                      |
-| `components/componentMap.ts`              | 字段类型到组件映射                                            |
-| `components/utils/buildComponentProps.ts` | 根据 schema 构建组件 props                                    |
-| `components/wrappers/*.vue`               | PrimeVue 组件封装（AutoComplete、ColorPicker、DatePicker 等） |
-| `hooks/useFormSync.ts`                    | 表单值与 schema 同步                                          |
-| `hooks/useFormActions.ts`                 | 提交、重置、清空                                              |
-| `hooks/useFormMemory.ts`                  | 表单记忆/草稿                                                 |
-| `hooks/useLayout.ts`                      | 表单布局                                                      |
-| `hooks/usePersistence.ts`                 | 表单持久化                                                    |
-| `hooks/useSteps.ts`                       | 分步逻辑                                                      |
-| `hooks/useSubmit.ts`                      | 提交逻辑                                                      |
-| `hooks/useLifecycle.ts`                   | 生命周期                                                      |
-| `utils/useValidation.ts`                  | 校验逻辑                                                      |
-| `utils/helper.ts`                         | 工具函数                                                      |
-| `utils/types.ts`                          | schema、字段类型                                              |
 
 #### UseEcharts
 
@@ -208,16 +167,15 @@
 
 #### hooks/modules/
 
-| 文件                     | 职责说明                                                                   |
-| ------------------------ | -------------------------------------------------------------------------- |
-| `useHttpRequest.ts`      | Alova 请求 Hook 封装                                                       |
-| `useDialog.tsx`          | 弹窗 Hook：info、success、warn、danger、confirm、confirmDelete、openDialog |
-| `useLocale.ts`           | 多语言切换                                                                 |
-| `useThemeSwitch.ts`      | 主题切换、动画锁                                                           |
-| `useSchemaForm.ts`       | SchemaForm 无头状态：addField、removeField、updateField、moveField         |
-| `useTablePersistence.ts` | DataTable 列持久化                                                         |
-| `useDateUtils.ts`        | 日期/时区响应式工具                                                        |
-| `useAppElementSize.ts`   | 元素尺寸监听（ResizeObserver）                                             |
+| 文件                   | 职责说明                                                                   |
+| ---------------------- | -------------------------------------------------------------------------- |
+| `useHttpRequest.ts`    | Alova 请求 Hook 封装                                                       |
+| `useDialog.tsx`        | 弹窗 Hook：info、success、warn、danger、confirm、confirmDelete、openDialog |
+| `useLocale.ts`         | 多语言切换                                                                 |
+| `useThemeSwitch.ts`    | 主题切换、动画锁                                                           |
+| `useFormState.ts`      | （预留）表单无头状态                                                       |
+| `useDateUtils.ts`      | 日期/时区响应式工具                                                        |
+| `useAppElementSize.ts` | 元素尺寸监听（ResizeObserver）                                             |
 
 #### hooks/modules/useChartTheme/
 
@@ -296,7 +254,6 @@
 | `modules/locale.ts`     | 当前语言                            |
 | `modules/user.ts`       | 用户信息、token                     |
 | `modules/permission.ts` | 静态/动态路由、tabs、windows        |
-| `modules/dataTable.ts`  | DataTable 列持久化                  |
 
 ---
 
@@ -364,8 +321,6 @@
 | `example/prime-vue/*`                    | PrimeVue 示例                                                          |
 | `example/prime-vue-dialog/*`             | PrimeDialog 示例                                                       |
 | `example/prime-vue-toast/*`              | Toast 示例                                                             |
-| `example/schema-form/*`                  | SchemaForm 示例                                                        |
-| `example/data-table/*`                   | DataTable 示例                                                         |
 | `example/use-echarts/*`                  | UseEcharts 示例                                                        |
 | `example/icons-example/*`                | Icons 示例                                                             |
 | `example/icons/configs/`                 | 构建生成的 iconLists.generated.ts，IconsExample 通过 iconLists.ts 引用 |
@@ -385,8 +340,6 @@
 | `ai-specs/PRIMEVUE_THEME.md`         | PrimeVue 主题                                                    |
 | `ai-specs/UNOCSS_AND_ICONS.md`       | UnoCSS、Icons                                                    |
 | `ai-specs/ECHARTS_THEME.md`          | UseEcharts、useChartTheme                                        |
-| `ai-specs/SCHEMA_FORM_COMPONENT.md`  | SchemaForm 使用                                                  |
-| `ai-specs/DataTable_COMPONENT.md`    | DataTable 使用                                                   |
 | `ai-specs/DIALOG_COMPONENT.md`       | PrimeDialog、useDialog                                           |
 | `ai-specs/TOAST_AND_MESSAGE.md`      | window.$toast、$message（含 §6 样式覆盖）                        |
 | `ai-specs/ADAPTIVE_LAYOUT.md`        | 布局适配                                                         |

@@ -34,14 +34,16 @@ export function buildDataComponents(): Record<string, unknown> {
           borderColor: 'rgb(var(--border))',
           borderRadius: 'var(--radius-md)',
           color: 'rgb(var(--popover-foreground))',
-          shadow: '0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)',
+          shadow:
+            '0 4px 6px -1px rgb(var(--foreground) / 0.08), 0 2px 4px -2px rgb(var(--foreground) / 0.06)',
         },
         overlayPopover: {
           background: 'rgb(var(--popover))',
           borderColor: 'rgb(var(--border))',
           borderRadius: 'var(--radius-md)',
           color: 'rgb(var(--popover-foreground))',
-          shadow: '0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)',
+          shadow:
+            '0 4px 6px -1px rgb(var(--foreground) / 0.08), 0 2px 4px -2px rgb(var(--foreground) / 0.06)',
           padding: 'var(--spacing-sm)',
           gap: 'var(--spacing-xs)',
         },

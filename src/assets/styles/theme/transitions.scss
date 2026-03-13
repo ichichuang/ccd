@@ -70,7 +70,7 @@ html.theme-transition-recovery *::after {
   inset: 0;
   z-index: 2000;
   opacity: 0;
-  transition: opacity 0.4s ease;
+  transition: opacity var(--route-transition-duration, 0.4s) ease;
 }
 
 /* 浏览器兼容性处理 */
@@ -86,7 +86,6 @@ body {
   transition: none !important;
 }
 
-/* fade-slide */
 .fade-slide-leave-active,
 .fade-slide-enter-active {
   transition: all var(--route-transition-duration, 0.3s);
@@ -112,7 +111,7 @@ body {
    ═══════════════════════════════════════════════════════════════ */
 .fade-enter-active,
 .fade-leave-active {
-  transition: opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: opacity var(--route-transition-duration, 0.3s) cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .fade-enter-from,

@@ -51,15 +51,6 @@ This directory contains standard operating procedures (SOP) for Antigravity Agen
    - **Scope**: `**/*`
    - **Key steps**: API layer, business hook, UI integration, type safety and verification
 
-### Form Component
-
-7. **`07-SchemaForm.md`** – SchemaForm
-   - **Purpose**: Multi-field forms, validation, steps, groups, dynamic fields
-   - **Flow**: Read doc -> Define Schema -> useSchemaForm -> UI integration
-   - **Scope**: `src/views/**/*.vue, src/components/**/*.vue`
-   - **Prerequisites**: Must read `docs/ai-specs/SCHEMA_FORM_COMPONENT.md`
-   - **Key steps**: Schema definition, useSchemaForm, dynamic fields, validation and submit
-
 ### Feedback and Notifications
 
 8. **`08-toast-message-feedback.md`** – Toast & Message feedback
@@ -107,7 +98,6 @@ This directory contains standard operating procedures (SOP) for Antigravity Agen
 - **Full feature development** → `04-full-feature.md`
 - **Refactor component** → `05-refactor-component.md`
 - **Fix style issues** → `06-style-audit.md`
-- **Form-related task** → `07-SchemaForm.md`
 - **Feedback notifications** → `08-toast-message-feedback.md`
 - **Chart-related task** → `09-use-echarts.md`
 - **Icons color not applying** → `10-icons-color-styling.md`
@@ -122,7 +112,6 @@ This directory contains standard operating procedures (SOP) for Antigravity Agen
 
 ### Prerequisite Docs
 
-- **SchemaForm**: Must read `docs/ai-specs/SCHEMA_FORM_COMPONENT.md`
 - **Toast/Message**: Must read `docs/ai-specs/TOAST_AND_MESSAGE.md`
 - **Layout**: Must read `docs/ai-specs/ADAPTIVE_LAYOUT.md`
 - **Auth**: Must read `docs/ai-specs/AUTH_AND_LOGIN_FLOW.md`
@@ -143,6 +132,5 @@ This directory contains standard operating procedures (SOP) for Antigravity Agen
 - `04-full-feature.md` ↔ Cursor `01-generate-api-module.md` + `02-generate-feature-composable.md` + `06-assemble-ui-handoff.md`
 - `05-refactor-component.md` ↔ Cursor `04-refactor-composable.md`
 - `06-style-audit.md` ↔ Cursor rules auto-check
-- `07-SchemaForm.md` ↔ Cursor `08-SchemaForm.md`
 - `08-toast-message-feedback.md` ↔ Cursor `07-toast-message-feedback.md`
 - `12-generate-industrial-page.md` ↔ Cursor: no direct counterpart (industrial scenario; treat as industrial variant of 02-build-page-view)

@@ -190,12 +190,12 @@ export const shortcutGroups: ShortcutGroup[] = [
     category: 'Design Defaults 设计默认值',
     icon: 'i-lucide-settings',
     items: [
-      { name: 'default-rounded', classes: 'rounded-scale-md' },
-      { name: 'default-duration', classes: 'duration-scale-md' },
-      { name: 'default-padding', classes: 'p-padding-md' },
-      { name: 'default-margin', classes: 'm-margin-md' },
-      { name: 'default-gap', classes: 'gap-md' },
-      { name: 'default-font-size', classes: 'fs-md' },
+      { name: 'def-rounded', classes: 'rounded-scale-md!' },
+      { name: 'def-duration', classes: 'duration-scale-md!' },
+      { name: 'def-padding', classes: 'p-padding-md!' },
+      { name: 'def-margin', classes: 'm-margin-md!' },
+      { name: 'def-gap', classes: 'gap-md!' },
+      { name: 'def-fs', classes: 'fs-md!' },
     ],
   },
   {

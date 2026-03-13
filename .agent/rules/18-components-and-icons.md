@@ -55,15 +55,39 @@ When generating or editing UI pages/components, you MUST:
 ### PrimeVue UI Components
 
 - For **forms & inputs** (text, password, number, checkbox, radio, select, multi-select, date, switch):
-  - **Multi-field, validation/steps/groups/dynamic schema**: MUST use SchemaForm (`@/components/SchemaForm`) + useSchemaForm (`@/hooks/modules/useSchemaForm`); see `docs/ai-specs/SCHEMA_FORM_COMPONENT.md`.
-  - Simple 1–2 fields: use PrimeVue v4 components directly: `<InputText>`, `<Password>`, `<InputNumber>`, `<Checkbox>`, `<RadioButton>`, `<Select>`, `<MultiSelect>`, `<DatePicker>`, `<ToggleSwitch>`. FORBIDDEN: v3 deprecated names (`Dropdown`, `Calendar`, `InputSwitch`). See `docs/ai-specs/PRIMEVUE_V4_API.md`.
-- For **actions/buttons**:
-  - MUST use `<Button>` for primary/secondary actions instead of styling raw `<button>` or `<a>`.
-  - Button colors controlled by `src/utils/theme/primevuePreset.ts`; Primary text/outlined hover uses accent-light, others use `*-light`; do NOT use `*-foreground` as background. See `docs/ai-specs/PRIMEVUE_THEME.md`.
+- Simple 1–2 fields: use PrimeVue v4 components directly: `<InputText>`, `<Password>`, `<InputNumber>`, `<Checkbox>`, `<RadioButton>`, `<Select>`, `<MultiSelect>`, `<DatePicker>`, `<ToggleSwitch>`. FORBIDDEN: v3 deprecated names (`Dropdown`, `Calendar`, `InputSwitch`). See `docs/ai-specs/PRIMEVUE_V4_API.md`.
+- For **actions/buttons** — Context-Aware Smart Choice:
+
+  **Decision Flow (evaluate context before picking an element):**
+
+  | Scenario                                                                                         | Element Choice                                                                                                                                        |
+  | ------------------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
+  | Form submit, dialog confirm/cancel, pagination actions, generic text-label buttons               | **`<Button>`** (PrimeVue)                                                                                                                             |
+  | Icon-only header triggers, toolbar close/refresh/copy icons                                      | Prefer **`<Button icon="..." text rounded plain />`**; fall back to `<button>` + UnoCSS if PrimeVue padding is obtrusive after `pt` override attempts |
+  | User Avatars, image cards, clickable list rows, custom dropdown triggers, full-row table actions | Strictly **Semantic HTML** (`<div>`, `<a>`, `<li>`, `<img>`) + UnoCSS interactive tokens                                                              |
+
+  **Rules:**
+  1. **Standard Actions** (text-label CTA, form submit, dialog footer buttons):
+     - MUST use `<Button>` from PrimeVue.
+     - Use `severity` prop (`secondary`, `danger`, `contrast`) for non-primary variants.
+     - FORBIDDEN: hand-writing `<button class="...">` for standard form/dialog actions.
+
+  2. **Icon-Only / Micro-Interactions** (header icon triggers, panel close buttons, copy-code icons):
+     - Prefer `<Button icon="..." text rounded plain />` or `<Button text rounded plain><Icons .../></Button>`.
+     - MAY use native `<button>` + UnoCSS if PrimeVue's internal padding/ring/min-width is visually intrusive after `pt` override attempts.
+     - If using native `<button>`: MUST include `cursor-pointer behavior-hover-transition interactive-focus-ring` and optionally `hover:bg-foreground/5 rounded-scale-md`.
+
+  3. **Complex / Visual Elements** (User Avatars, clickable image cards, entire table rows, nav list items, custom dropdown triggers):
+     - MUST use Semantic HTML: `<div>`, `<a>`, `<li>`, `<img>` etc. combined with UnoCSS interactive tokens.
+     - MUST apply: `cursor-pointer`, `interactive-hover-tile` or `hover:bg-foreground/5`, `behavior-hover-transition`, `interactive-focus-ring` (for keyboard accessibility).
+     - FORBIDDEN: wrapping visual/composite elements inside `<Button>` — produces invalid HTML nesting and broken PrimeVue styling.
+     - FORBIDDEN: using `<Button>` purely as a layout container.
+
+  **Color rule (applies to all PrimeVue Button variants):**
+  - Button colors controlled by `src/utils/theme/primevuePreset.ts`; Primary text/outlined hover uses `accent-light`, others use `*-light`; do NOT use `*-foreground` as background. See `docs/ai-specs/PRIMEVUE_THEME.md`.
+
 - For **tables/lists**:
-  - **Interactive data tables**: MUST use **DataTable** (`@/components/DataTable`); see `docs/ai-specs/DataTable_COMPONENT.md`.
-  - Simple static tables / one-off display may use PrimeVue `<DataTable>`; for pagination/sort/filter/export/API MUST use DataTable.
-  - FORBIDDEN: Using raw PrimeVue DataTable or hand-written `<table>` when pagination/sort/filter/export/API is needed.
+  - Prefer using project-standard table/list solutions; avoid hand-writing complex `<table>` interactions.
 - For **dialogs/overlays**:
   - MUST use `<Dialog>` / `<Drawer>` (PrimeVue v4 side drawer) instead of ad-hoc fixed modals. FORBIDDEN: v3 `Sidebar`, `OverlayPanel`; v4 uses `Drawer`, `Popover`.
   - **Project wrapper PrimeDialog**: For custom dialogs, feedback, confirm dialogs, MUST use `useDialog()` (`@/hooks/modules/useDialog`). `PrimeVueDialog` is mounted in `AppPrimeVueGlobals.vue` (via `App.vue`); call `info`, `success`, `warn`, `danger`, `confirm`, `confirmDelete`, `openDialog`. Advanced: `contentRenderer`, `headerRenderer`, `footerRenderer`, `footerButtons`, `beforeSure`, `beforeCancel`, `sureBtnLoading`. See `docs/ai-specs/DIALOG_COMPONENT.md`.
@@ -122,10 +146,8 @@ Rules:
 
 ## 5. Forbidden Patterns
 
-- FORBIDDEN: Hand-writing PrimeVue form components when multi-field/validation/steps/groups/dynamic schema is needed; use SchemaForm + useSchemaForm; see `docs/ai-specs/SCHEMA_FORM_COMPONENT.md`.
 - FORBIDDEN: raw `<svg>` icon markup in templates.
 - FORBIDDEN: Instantiating PrimeVue `<Dialog>` directly in business code; use `useDialog()`; see `docs/ai-specs/DIALOG_COMPONENT.md`.
 - FORBIDDEN: Custom global Toast/Message outside components; use `window.$toast` / `window.$message`; see `docs/ai-specs/TOAST_AND_MESSAGE.md`.
 - FORBIDDEN: adding custom CSS for icon sizing/colors; use UnoCSS + `Icons` props/classes.
 - FORBIDDEN: bypassing `UseEcharts` for charts when it can be used.
-- FORBIDDEN: Using raw PrimeVue DataTable or hand-written `<table>` when pagination/sort/filter/export/API is needed; use DataTable; see `docs/ai-specs/DataTable_COMPONENT.md`.

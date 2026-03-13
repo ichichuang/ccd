@@ -20,7 +20,11 @@ const openSettings = () => {
 </script>
 
 <template>
-  <div @click="openSettings">
+  <button
+    type="button"
+    class="block w-full bg-transparent border-none p-0 text-left outline-none interactive-focus-ring"
+    @click="openSettings"
+  >
     <slot></slot>
-  </div>
+  </button>
 </template>

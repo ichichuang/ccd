@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git stash:*)",
+      "Bash(git checkout:*)",
+      "Bash(pnpm type-check:*)",
+      "Bash(pnpm lint:*)",
+      "Bash(python3 -c \"\nimport json\nfname = '/private/tmp/claude-501/-Users-cc-MyPorject-ccd/83308c61-191c-4850-bd36-81a8746887a5/tasks/af9407ec20e4cdf93.output'\nwith open\\(fname\\) as f:\n  lines = [l.strip\\(\\) for l in f if l.strip\\(\\)]\nlast = json.loads\\(lines[-1]\\)\ncontent = last['message']['content']\nfor c in content:\n  if isinstance\\(c, dict\\) and c.get\\('type'\\) == 'text':\n    print\\(c['text']\\)\n\" 2>&1)",
+      "Bash(python3 -c \"\nimport json\nfname = '/private/tmp/claude-501/-Users-cc-MyPorject-ccd/83308c61-191c-4850-bd36-81a8746887a5/tasks/a5aef57e9b9ee4134.output'\nwith open\\(fname\\) as f:\n  lines = [l.strip\\(\\) for l in f if l.strip\\(\\)]\nlast = json.loads\\(lines[-1]\\)\ncontent = last['message']['content']\nfor c in content:\n  if isinstance\\(c, dict\\) and c.get\\('type'\\) == 'text':\n    print\\(c['text']\\)\n\" 2>&1)",
+      "Bash(grep -n \"py-1\\\\.5\\\\|py-2\\\\b\" /Users/cc/MyPorject/ccd/src/components/ProForm/renderers/components/*.vue)"
+    ]
+  }
+}

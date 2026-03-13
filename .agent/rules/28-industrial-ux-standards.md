@@ -21,12 +21,11 @@ globs: src/views/**/*.vue, src/components/**/*.vue
 
     <section name="empty-and-loading-check">
       <rule>For any page that fetches data, include both a loading state (for example a skeleton or spinner) and an empty state.</rule>
-      <rule>For empty states, use the <code>&lt;EmptyState&gt;</code> component (icon + title + description) or a DataTable <code>#empty</code> slot that follows the same structure, choosing icons and copy according to <file>EMPTY_STATE_AND_ROBUSTNESS.md</file>.</rule>
+      <rule>For empty states, use the <code>&lt;EmptyState&gt;</code> component (icon + title + description), choosing icons and copy according to <file>EMPTY_STATE_AND_ROBUSTNESS.md</file>.</rule>
       <rule>Avoid the “double-blank” anti-pattern (an empty table header plus a single floating text line); always use a structured empty state.</rule>
     </section>
 
     <section name="primevue-polish">
-      <rule>Ensure DataTables follow project styling guidelines (for example dense rows, striped styling where appropriate) and align numeric columns to the right.</rule>
       <rule>Ensure tab headers use icons where the design system expects them.</rule>
     </section>
 

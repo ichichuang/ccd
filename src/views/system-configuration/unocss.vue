@@ -930,7 +930,7 @@ const semanticAliases: Array<{ name: string; classes: string; desc: string }> = 
                             class="w-full h-full flex items-center justify-center p-padding-xs"
                           >
                             <div
-                              v-if="item.name === 'default-gap'"
+                              v-if="item.name === 'def-gap'"
                               :class="item.name"
                               class="flex flex-wrap min-w-0 min-h-0"
                             >
@@ -941,7 +941,7 @@ const semanticAliases: Array<{ name: string; classes: string; desc: string }> = 
                               />
                             </div>
                             <span
-                              v-else-if="item.name === 'default-font-size'"
+                              v-else-if="item.name === 'def-fs'"
                               :class="item.name"
                               class="text-foreground"
                             >

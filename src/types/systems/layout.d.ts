@@ -25,7 +25,7 @@ declare global {
   /** 布局配置：显隐、固定、动画等 (不包含具体尺寸像素) */
   export interface LayoutSetting {
     // --- 1. 核心模式 ---
-    mode: AdminLayoutMode
+    preferredMode: AdminLayoutMode
 
     // --- 2. 侧边栏行为 ---
     // 侧边栏折叠

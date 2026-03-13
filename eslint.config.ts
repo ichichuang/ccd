@@ -246,6 +246,8 @@ export default tseslint.config(
     files: ['**/*.{ts,mts,tsx}'],
     rules: {
       'no-unused-vars': 'off',
+      'prefer-const': 'error',
+      eqeqeq: ['error', 'always', { null: 'ignore' }],
       '@typescript-eslint/no-explicit-any': 'error',
       '@typescript-eslint/ban-ts-comment': 'off', // 允许 @ts-ignore 等，解决 components.d.ts 的报错
 
@@ -272,6 +274,8 @@ export default tseslint.config(
     rules: {
       '@typescript-eslint/no-unused-vars': 'off',
       '@typescript-eslint/no-explicit-any': 'error',
+      'prefer-const': 'error',
+      eqeqeq: ['error', 'always', { null: 'ignore' }],
       'no-undef': 'off',
       'vue/script-setup-uses-vars': 'error',
 

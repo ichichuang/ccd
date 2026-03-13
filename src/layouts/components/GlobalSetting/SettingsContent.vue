@@ -3,7 +3,6 @@ import { useThemeSwitch } from '@/hooks/modules/useThemeSwitch'
 import { useThemeStore } from '@/stores/modules/theme'
 import { useSizeStore } from '@/stores/modules/size'
 import { useLayoutStore } from '@/stores/modules/layout'
-import { useDeviceStore } from '@/stores/modules/device'
 import { useLocale } from '@/hooks/modules/useLocale'
 import {
   THEME_PRESETS,
@@ -26,11 +25,7 @@ const { mode, isAnimating, setThemeWithAnimation } = useThemeSwitch()
 const themeStore = useThemeStore()
 const sizeStore = useSizeStore()
 const layoutStore = useLayoutStore()
-const deviceStore = useDeviceStore()
 const { locale, switchLocale, supportedLocales } = useLocale()
-
-/** 移动端/小视口：精简设置面板，不展示布局模式与布局模块开关；平板大屏与 PC 展示完整选项 */
-const isMobile = computed(() => deviceStore.type === 'Mobile' || deviceStore.isMobileLayout)
 
 // 主题模式选项 (light | dark | auto)
 const themeModeOptions: { value: ThemeMode; labelKey: string }[] = [
@@ -105,15 +100,16 @@ const layoutModuleSwitches: { key: LayoutModuleVisibilityKey; labelKey: string }
 ]
 
 function isLayoutModuleSwitchDisabled(key: LayoutModuleVisibilityKey): boolean {
+  const preferredVisibility = layoutStore.visibilitySettings[layoutStore.preferredMode]
   // Header 关闭时，Menu/Logo 即使打开也不会渲染；UI 上禁用以避免困惑
-  if (!layoutStore.showHeader && (key === 'showMenu' || key === 'showLogo')) return true
+  if (!preferredVisibility.showHeader && (key === 'showMenu' || key === 'showLogo')) return true
   // Breadcrumb 关闭时，Icon 没有意义；UI 上禁用
-  if (!layoutStore.showBreadcrumb && key === 'showBreadcrumbIcon') return true
+  if (!preferredVisibility.showBreadcrumb && key === 'showBreadcrumbIcon') return true
   return false
 }
 
 const allowedLayoutModuleKeys = computed<LayoutModuleVisibilityKey[]>(() => {
-  const mode = layoutStore.mode
+  const mode = layoutStore.preferredMode
   if (mode === 'vertical') {
     return [
       'showHeader',
@@ -154,7 +150,7 @@ const visibleLayoutModuleSwitches = computed(() =>
 )
 
 function onLayoutModeChange(value: AdminLayoutMode) {
-  layoutStore.setLayoutMode(value)
+  layoutStore.setPreferredMode(value)
 }
 
 function onThemeModeChange(value: ThemeMode) {
@@ -264,16 +260,13 @@ function onThemeModeChange(value: ThemeMode) {
 
     <div class="border-b-default opacity-50"></div>
 
-    <!-- 布局模式（移动端不展示：无侧栏/顶栏模式选择） -->
-    <div
-      v-if="!isMobile"
-      class="column main-between cross-start flex-col gap-sm"
-    >
+    <!-- 布局模式（始终展示：控制用户偏好 preferredMode） -->
+    <div class="column main-between cross-start flex-col gap-sm">
       <label class="fs-sm font-medium text-muted-foreground">
         {{ t('settings.layoutMode') }}
       </label>
       <SelectButton
-        :model-value="layoutStore.mode"
+        :model-value="layoutStore.preferredMode"
         :options="layoutModeOptions"
         option-value="value"
         :option-label="opt => t(opt.labelKey)"
@@ -284,11 +277,8 @@ function onThemeModeChange(value: ThemeMode) {
       />
     </div>
 
-    <!-- 布局模块显示（移动端不展示：侧栏/顶栏等与移动端无关） -->
-    <div
-      v-if="!isMobile"
-      class="column main-between cross-start flex-col gap-sm"
-    >
+    <!-- 布局模块显示（按 preferredMode 配置，不随 effectiveMode 跳变） -->
+    <div class="column main-between cross-start flex-col gap-sm">
       <label class="fs-sm font-medium text-muted-foreground">
         {{ t('settings.layoutModules') }}
       </label>
@@ -302,7 +292,7 @@ function onThemeModeChange(value: ThemeMode) {
             {{ t(item.labelKey) }}
           </span>
           <ToggleSwitch
-            :model-value="layoutStore[item.key]"
+            :model-value="layoutStore.visibilitySettings[layoutStore.preferredMode][item.key]"
             :disabled="isLayoutModuleSwitchDisabled(item.key)"
             @update:model-value="(v: boolean) => layoutStore.setModuleVisible(item.key, v)"
           />

@@ -9,6 +9,7 @@ import {
   createTieredMenuItemRenderer,
   type TieredMenuItemSlotProps,
 } from '@/hooks/layout/useMenuRenderer'
+import { useLayoutStore } from '@/stores/modules/layout'
 
 defineProps<{
   show: boolean
@@ -24,6 +25,7 @@ const {
   onBreadcrumbClick,
   handleTieredMenuClick,
 } = useAdminBreadcrumbs()
+const layoutStore = useLayoutStore()
 
 const renderTieredMenuItem = createTieredMenuItemRenderer({
   context: 'breadcrumb',
@@ -66,7 +68,7 @@ const renderTieredMenuItem = createTieredMenuItemRenderer({
             @keyup.enter="e => onBreadcrumbClick(item, index === breadcrumbs.length - 1, e)"
           >
             <Icons
-              v-if="item.icon"
+              v-if="item.icon && layoutStore.showBreadcrumbIcon"
               :name="item.icon"
               :class="[MENU_ICON_COMMON_CLASS, 'shrink-0 text-current!']"
               :size="getIconSize('breadcrumb')"

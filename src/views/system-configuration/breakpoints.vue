@@ -5,7 +5,7 @@ import type { BreakpointKey } from '@/constants/breakpoints'
 import { useDeviceStore } from '@/stores/modules/device'
 import { getDeviceTypeSync, getBreakpointSync } from '@/utils/deviceSync'
 
-const RULER_MAX = 3840
+const RULER_MAX = Math.max(...Object.values(BREAKPOINTS))
 const SLIDER_MIN = 320
 const SLIDER_MAX = RULER_MAX
 
@@ -91,19 +91,19 @@ interface PresetWidth {
 
 const presetWidths: PresetWidth[] = [
   { label: 'Mobile', value: 375, icon: 'i-lucide-smartphone' },
-  { label: 'Tablet', value: 768, icon: 'i-lucide-tablet' },
-  { label: 'Laptop', value: 1280, icon: 'i-lucide-laptop' },
-  { label: 'Desktop', value: 1920, icon: 'i-lucide-monitor' },
-  { label: '4K', value: 3840, icon: 'i-lucide-tv' },
+  { label: 'Tablet', value: BREAKPOINTS.md, icon: 'i-lucide-tablet' },
+  { label: 'Laptop', value: BREAKPOINTS.xl, icon: 'i-lucide-laptop' },
+  { label: 'Desktop', value: BREAKPOINTS['3xl'], icon: 'i-lucide-monitor' },
+  { label: '4K', value: BREAKPOINTS['5xl'], icon: 'i-lucide-tv' },
 ]
 
-/** Active preset by width range (Mobile < 768, Tablet 768~1279, Laptop 1280~1919, Desktop 1920~3839, 4K >= 3840) */
+/** Active preset by width range */
 const activePreset = computed<PresetWidth | null>(() => {
   const w: number = effectiveWidth.value
-  if (w >= 3840) return presetWidths[4]
-  if (w >= 1920) return presetWidths[3]
-  if (w >= 1280) return presetWidths[2]
-  if (w >= 768) return presetWidths[1]
+  if (w >= BREAKPOINTS['5xl']) return presetWidths[4]
+  if (w >= BREAKPOINTS['3xl']) return presetWidths[3]
+  if (w >= BREAKPOINTS.xl) return presetWidths[2]
+  if (w >= BREAKPOINTS.md) return presetWidths[1]
   return presetWidths[0]
 })
 

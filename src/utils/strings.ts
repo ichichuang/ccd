@@ -5,5 +5,6 @@
  * @param end 拼接后缀
  */
 export function toKebabCase(str: string, start: string = '', end: string = ''): string {
+  if (!str) return ''
   return start + `${str.replace(/([A-Z])/g, '-$1').toLowerCase()}` + end
 }

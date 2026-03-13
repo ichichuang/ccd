@@ -1,4 +1,3 @@
-import { requestSystemAsyncRoutes } from '@/api/system/system.api'
 import { deepClone } from '@/utils/lodashes'
 import { getRouterCapabilities } from '@/infra/router/routeProvider'
 import store from '@/stores'
@@ -11,6 +10,9 @@ function flattenMenuPaths(items: MenuItem[]): string[] {
 }
 import { createPiniaEncryptedSerializer } from '@/utils/safeStorage/piniaSerializer'
 import { defineStore } from 'pinia'
+
+// 单例序列化器：避免每次持久化时重复实例化加密上下文（成本较高）
+const _permissionSerializer = createPiniaEncryptedSerializer()
 import type { LocationQueryRaw } from 'vue-router'
 import { generateIdFromKey } from '@/utils/ids'
 
@@ -82,31 +84,6 @@ export const usePermissionStore = defineStore('permission', {
     // 设置动态路由加载状态
     setDynamicRoutesLoaded(loaded: boolean) {
       this.isDynamicRoutesLoaded = loaded
-    },
-    /**
-     * 拉取动态路由：调用 API 获取、归一化后写入 state，并返回原始后端路由数组。
-     * 失败时若有缓存则使用缓存并返回，否则抛出错误。
-     */
-    async fetchDynamicRoutes(): Promise<BackendRouteConfig[]> {
-      try {
-        const routes = await requestSystemAsyncRoutes()
-
-        if (!Array.isArray(routes)) {
-          throw new Error('动态路由数据格式不正确，预期为数组或包含 routes 字段的对象')
-        }
-
-        this.dynamicRoutes = routes as BackendRouteConfig[]
-        this.isDynamicRoutesLoaded = true
-        return routes as BackendRouteConfig[]
-      } catch (error) {
-        console.error('🪒 Router: 获取动态路由失败，使用本地缓存:', error)
-        if (this.dynamicRoutes.length === 0) {
-          throw error
-        }
-        const cached = deepClone(this.dynamicRoutes) as BackendRouteConfig[]
-        this.isDynamicRoutesLoaded = true
-        return cached
-      }
     },
     // 添加标签页（仅 admin 布局下的路由，且需在 admin 菜单树中）
     addTab(name: RouteConfig['name'] | RouteConfig['path']) {
@@ -279,20 +256,17 @@ export const usePermissionStore = defineStore('permission', {
             })
           }
 
-          // 使用加密序列化器进行加密
-          const encryptedSerializer = createPiniaEncryptedSerializer()
-          return encryptedSerializer.serialize(stateToStore)
+          // 使用单例加密序列化器（避免每次持久化重复初始化加密上下文）
+          return _permissionSerializer.serialize(stateToStore)
         } catch {
-          // 降级处理：如果序列化失败，使用加密序列化器处理原始值
-          const encryptedSerializer = createPiniaEncryptedSerializer()
-          return encryptedSerializer.serialize(value)
+          // 降级处理：序列化失败时直接加密原始值
+          return _permissionSerializer.serialize(value)
         }
       },
       deserialize: (value: string) => {
         try {
-          // 使用加密序列化器进行解密
-          const encryptedSerializer = createPiniaEncryptedSerializer()
-          const data = encryptedSerializer.deserialize(value)
+          // 使用单例加密序列化器进行解密
+          const data = _permissionSerializer.deserialize(value)
 
           // 恢复时，所有窗口标记为未打开（需要运行时检测）
           if (data?.state?.windows) {

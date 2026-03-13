@@ -32,7 +32,7 @@ const PX_TO_REM_SELECTOR_BLACKLIST: (string | RegExp)[] = [
   /^\.el-/,
   /^\.ant-/,
   /^\.van-/,
-  /^\.p-/, // 如果引入 PrimeVue，建议加上这个前缀排除
+  /^\.p-/, // PrimeVue v4 组件内部 class 前缀，必须排除（防止 pxtorem 破坏组件样式）
   // 排除明确标记的类
   /no-rem/,
 ]
@@ -131,8 +131,8 @@ export default ({ mode, command }: ConfigEnv): UserConfigExport => {
     build: {
       target: 'es2020',
       sourcemap: VITE_BUILD_SOURCEMAP,
-      // 调高单 chunk 体积告警阈值，在示例页与 vendor 拆包后，2.5MB 作为更合理上限
-      chunkSizeWarningLimit: 2500,
+      // 示例页已移除，vendor 手动拆包后 1MB 作为合理上限，超出需审查依赖体积
+      chunkSizeWarningLimit: 1000,
       cssCodeSplit: true, // 启用 CSS 代码分割
       assetsInlineLimit: 4096, // < 4kb 转 base64
 
@@ -188,7 +188,7 @@ export default ({ mode, command }: ConfigEnv): UserConfigExport => {
 
       reportCompressedSize: !isDev,
       copyPublicDir: true,
-      // minify: false,
+      minify: 'esbuild' as const, // 使用 esbuild 默认压缩器（速度快，产物质量与 terser 接近）
     },
 
     // 6. 全局常量注入：仅向客户端注入最小应用信息（避免大 JSON 导致 define 替换异常）

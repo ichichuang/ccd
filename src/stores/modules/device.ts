@@ -1,7 +1,11 @@
 // src/stores/modules/device.ts
 import { defineStore } from 'pinia'
 import { debounce } from 'lodash-es'
-import { BREAKPOINTS, type BreakpointKey } from '@/constants/breakpoints'
+import {
+  BREAKPOINTS,
+  TABLET_DETECTION_MIN_SHORT_SIDE,
+  type BreakpointKey,
+} from '@/constants/breakpoints'
 import { useMitt } from '@/utils/mitt'
 import type { DeviceState } from '@/types/systems/device'
 
@@ -74,7 +78,8 @@ export const useDeviceStore = defineStore('device', {
       const isMobileUA = /Android|webOS|iPhone|iPod|BlackBerry|IEMobile|Opera Mini/i.test(ua)
       // 注意：这里需要用到 screen.width，在现代浏览器中通常也是不变的
       const screenShort = Math.min(window.screen.width, window.screen.height)
-      const isTabletUA = /iPad/i.test(ua) || (isMobileUA && screenShort >= 600)
+      const isTabletUA =
+        /iPad/i.test(ua) || (isMobileUA && screenShort >= TABLET_DETECTION_MIN_SHORT_SIDE)
 
       if (isTabletUA) this.type = 'Tablet'
       else if (isMobileUA) this.type = 'Mobile'

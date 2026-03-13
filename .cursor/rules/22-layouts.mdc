@@ -1,3 +1,23 @@
+# Layouts Rule (Must Read Spec)
+
+<CRITICAL>
+Before making ANY changes to layout wrappers, layout modules, or layout stores, you MUST read and comply with `docs/ai-specs/LAYOUT_ARCHITECTURE.md`.
+</CRITICAL>
+
+## Scope
+
+- `src/layouts/**`
+- `src/stores/modules/layout.ts`
+- `src/stores/modules/device.ts`
+- Any router code that changes `route.meta.parent` behaviors (`LayoutMode`)
+
+## Non-negotiables (Quick Reminders)
+
+- Dual-track mode is mandatory: `preferredMode` (user preference) vs `effectiveMode` (runtime resolution).
+- `runAdaptive()` / `adapt*()` MUST NOT mutate `preferredMode`.
+- Visibility SSOT is `visibilitySettings[effectiveMode]`, while Settings panel binds to `visibilitySettings[preferredMode]`.
+- Mobile Drawer is UI behavior; state is `mobileDrawerOpen` (runtime-only), and activation is strictly gated by `effectiveMode` + mobile viewport.
+
 ---
 description: Layouts system: LayoutMode, AdminLayoutMode, layout shells, extension
 globs: src/layouts/**/*.{ts,vue}

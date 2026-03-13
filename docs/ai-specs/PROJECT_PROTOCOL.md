@@ -6,14 +6,13 @@
 
 <workflow>
   <step>Before generating any code, read this protocol and follow all referenced AI specs.</step>
-  <step>When the task touches a specific subsystem (for example SchemaForm, DataTable, dialogs, router, theme, or build system), jump to the corresponding <code>docs/ai-specs/*.md</code> file and apply its rules.</step>
+  <step>When the task touches a specific subsystem (for example dialogs, router, theme, or build system), jump to the corresponding <code>docs/ai-specs/*.md</code> file and apply its rules.</step>
   <step>Mirror the patterns used in existing files and golden samples rather than inventing new architectural styles.</step>
 </workflow>
 
 <constraints>
   <rule>Use Vue 3.5+ with script setup only, strict TypeScript, UnoCSS, PrimeVue v4, Alova, and Pinia as described in this protocol.</rule>
   <rule>Separate concerns strictly: APIs in <code>src/api</code>, pure logic in <code>src/hooks</code>, pure UI in <code>src/components</code>, containers in <code>src/views</code>, and shared types/constants in <code>src/types</code> and <code>src/constants</code>.</rule>
-  <rule>Follow schema-driven development for complex forms and tables: use SchemaForm and DataTable/DataTableV2 with schema/column configs instead of hand-built field collections.</rule>
 </constraints>
 
 <communication>
@@ -44,8 +43,6 @@
 - `./PROJECT_PROTOCOL.md` §5.1 + `.cursor/rules/24-tsx-rendering.mdc` + `.cursor/rules/27-ai-tsx-decision.mdc` – TSX rendering (no `h()`; lang, VNode vs string).
 - **`./PRIMEVUE_V4_API.md`** – PrimeVue v4; no v3 names; required before PrimeVue code.
 - `./DIALOG_COMPONENT.md` – PrimeDialog (useDialog).
-- `./DataTable_COMPONENT.md` – DataTable (columns, API, pagination, export, persistence).
-- `./SCHEMA_FORM_COMPONENT.md` – SchemaForm (schema, useSchemaForm, dynamic fields, steps).
 - `./TOAST_AND_MESSAGE.md` – Toast/Message (window.$toast, window.$message).
 - `./AUTH_AND_LOGIN_FLOW.md` – Auth (login/logout, guards, 401, dynamic routes).
 - `./LOADING_SYSTEM.md` – Loading (Global/Page/Component; useLoading, useHttpRequest).
@@ -70,12 +67,10 @@
 
 - **强制规则（Must）：**
   - 表单字段（输入/选择/日期/开关）：
-    - **多字段、需校验/分步/分组/动态 schema**：MUST 使用 SchemaForm + useSchemaForm（见 `./SCHEMA_FORM_COMPONENT.md`）。
     - 简单 1–2 个字段：直接使用 PrimeVue v4 组件：`<InputText>` / `<Password>` / `<InputNumber>` / `<Checkbox>` / `<RadioButton>` / `<Select>` / `<MultiSelect>` / `<DatePicker>` / `<ToggleSwitch>` 等。**禁止**使用 v3 已弃用名（`Dropdown`、`Calendar`、`InputSwitch`）。详见 `./PRIMEVUE_V4_API.md`。
   - 操作按钮：
     - 使用 `<Button>` 作为主要/次要操作按钮，而不是手写 `<button>` 样式。
   - 列表/表格：
-    - 交互性数据列表优先使用 **DataTable**（`@/components/DataTable`），详见 `./DataTable_COMPONENT.md`；避免从零写 `<table>` 或裸用 PrimeVue DataTable 实现分页/排序/筛选/导出等复杂逻辑。
   - 弹窗/抽屉：
     - 自定义弹窗、反馈提示、确认对话框优先使用 `useDialog()`（见 `./DIALOG_COMPONENT.md`）。PrimeVue 侧边抽屉使用 `<Drawer>`（v4；禁止使用 v3 的 `Sidebar`）。禁止用 `position: fixed` 的 div 临时拼装。
   - 消息/确认：
@@ -114,7 +109,7 @@
 - **请求层**
   - 所有接口请求必须通过 `alovaInstance` 或 `useHttpRequest`（`@/hooks/modules/useHttpRequest`），禁止直接 `fetch`/`axios`
 - **数据契约（端到端类型安全）**
-  - page.state.ts 中的 model 类型、SchemaForm formValues、DataTable row 类型应优先从 API 定义中 Pick/Extend，而非手写独立类型
+  - page.state.ts 中的 model 类型应优先从 API 定义中 Pick/Extend，而非手写独立类型
   - 参见 `src/types/design-state.ts` 中的 `BaseBusinessDTO` 及 JSDoc 说明
   - 目标：后端字段变更时，前端编译期即报错，而非运行时才发现
 
@@ -125,8 +120,6 @@
   - 静态检查 (Lint)：`pnpm check` 确保类型与 ESLint 无违例
   - 漂移检查 (Drift)：`pnpm drift-check`（或 `pnpm check:drift`）确保页面与 `page.state.ts` 的 archetype 一致
 - **V2 引擎与联动模式**
-  - SchemaForm V2：useAsyncOptions（optionsMap / loadingMap / errorMap / retryField）、Schema 驱动、分步/分组
-  - DataTableV2：列配置驱动、API 集成、分页/排序/筛选
   - 引擎层内置 Poka-yoke 容错：异步选项加载失败时展示「加载失败，点击重试」，避免白屏或死锁
 - **Style Guard (drift-check)**
   - pre-commit 阶段扫描 `src/**/*.vue` 的 `<style>` 块，禁止 hex、raw rgb/rgba/hsl/hsla（注释内除外）
@@ -148,16 +141,15 @@
 
 ### 3.1 状态层 Stores 索引（AI 查找用）
 
-| Store                | 路径                               | 职责                                   |
-| -------------------- | ---------------------------------- | -------------------------------------- |
-| `useThemeStore`      | `src/stores/modules/theme.ts`      | 主题模式、预设、过渡、CSS 变量         |
-| `useSizeStore`       | `src/stores/modules/size.ts`       | 尺寸预设、根字号、布局变量             |
-| `useDeviceStore`     | `src/stores/modules/device.ts`     | 设备类型、断点、视口、方向             |
-| `useLayoutStore`     | `src/stores/modules/layout.ts`     | 布局 mode、侧栏收展、显隐、适配方法    |
-| `useLocaleStore`     | `src/stores/modules/locale.ts`     | 当前语言                               |
-| `useUserStore`       | `src/stores/modules/user.ts`       | 用户信息、token、login/logout          |
-| `usePermissionStore` | `src/stores/modules/permission.ts` | 静态/动态路由、tabs、windows           |
-| `useDataTableStore`  | `src/stores/modules/dataTable.ts`  | DataTable 列持久化（顺序/列宽/隐藏列） |
+| Store                | 路径                               | 职责                                |
+| -------------------- | ---------------------------------- | ----------------------------------- |
+| `useThemeStore`      | `src/stores/modules/theme.ts`      | 主题模式、预设、过渡、CSS 变量      |
+| `useSizeStore`       | `src/stores/modules/size.ts`       | 尺寸预设、根字号、布局变量          |
+| `useDeviceStore`     | `src/stores/modules/device.ts`     | 设备类型、断点、视口、方向          |
+| `useLayoutStore`     | `src/stores/modules/layout.ts`     | 布局 mode、侧栏收展、显隐、适配方法 |
+| `useLocaleStore`     | `src/stores/modules/locale.ts`     | 当前语言                            |
+| `useUserStore`       | `src/stores/modules/user.ts`       | 用户信息、token、login/logout       |
+| `usePermissionStore` | `src/stores/modules/permission.ts` | 静态/动态路由、tabs、windows        |
 
 > 需要全局状态时，优先查上表复用；新增 store 前确认无重叠职责。
 
@@ -275,7 +267,7 @@ const renderSlot = () => <span class="text-muted-foreground">动态内容</span>
 - **语义化尺寸类：** `p-padding-{scale}`、`m-margin-{scale}`、`gap-{scale}`（仅支持 `gap-*`/`gap-x-*`/`gap-y-*`；scale: xs/sm/md/lg/xl/2xl/3xl/4xl/5xl）
 - **布局变量类：** `w-sidebarWidth`、`h-headerHeight`、`w-sidebarCollapsedWidth` 等
 - **字体阶梯类：** `fs-xs`～`fs-5xl`（仅使用 `fs-{scale}`，禁止 `text-size-*`）；标题用 `fs-2xl`、正文 `fs-md`、辅助 `fs-sm`，详见 `src/constants/layout-menu.ts` TYPO\_\*
-- **圆角类：** 默认使用 `rounded-scale-md` 或 shortcut `default-rounded`（卡片、按钮、抬升面）；阶梯见 `src/constants/sizeScale.ts`。禁止通用 Tailwind 圆角如 `rounded-md`、`rounded-lg`。
+- **圆角类：** 默认使用 `rounded-scale-md` 或 shortcut `def-rounded`（卡片、按钮、抬升面）；阶梯见 `src/constants/sizeScale.ts`。禁止通用 Tailwind 圆角如 `rounded-md`、`rounded-lg`。
 - **过渡类：** 使用 `duration-scale-{scale}`（SSOT: `sizeScale.ts` TRANSITION_SCALE_VALUES），或 shortcut `behavior-hover-transition`（= `transition-all duration-scale-md`）。禁止硬编码 `duration-300`、`duration-200`。
 - **表面/交互 shortcut：** 优先使用 `surface-base`、`surface-elevated`、`surface-sunken`、`surface-item`（列表/表格行）、`interactive-focus-ring`（焦点环），见 `uno.config.ts` shortcuts。
 - **配色类：** `text-primary`、`bg-surface-ground`、`border-border`、`text-info`、`bg-info` 等（使用 CSS 变量）
@@ -352,7 +344,6 @@ const renderSlot = () => <span class="text-muted-foreground">动态内容</span>
 - `StoreExample.ts` — Pinia Store 写法
 - `UIComponent.vue` — Script Setup + UnoCSS + PrimeVue 组件写法
 - `ApiModuleExample.ts` — API 模块定义（DTO 类型、Method builder、便捷函数）
-- **`DataTableBodyColumn.vue`** — DataTable 列 body 自定义（**必须** `lang="tsx"` + JSX 返回 VNode），详见 `./AI_CODING_PROTOCOL.md` §3
 
 生成后自审：
 
@@ -516,7 +507,6 @@ const renderSlot = () => <span class="text-muted-foreground">动态内容</span>
 
 **1. 强制查找顺序**
 
-- **领域 Hooks**（任务涉及 SchemaForm 时）：`src/components/SchemaForm/hooks/` — useFormSync、useFormActions、useFormMemory、useLayout、useValidation、usePersistence、useSteps、useSubmit、useLifecycle 等
 - **全局工具**：`src/utils/` — lodashes、date、strings、ids、safeStorage、http/\*、mitt、deviceSync 等（browser 已移除）
 
 在实现前用 grep/codebase_search 按函数名或语义搜索，确认是否已存在。
@@ -529,7 +519,6 @@ const renderSlot = () => <span class="text-muted-foreground">动态内容</span>
 
 在行内实现或新建文件前：
 
-- **分析**是否适合全局复用：多处复用 / 纯函数无耦合 → 倾向全局；仅 SchemaForm 使用 → 倾向 `src/components/SchemaForm/hooks/` 或 `utils/`；单处使用且强耦合 → 可保留局部
 - **向用户输出**：方法用途、是否适合全局（是/否 + 理由）、建议放置位置
 - **明确询问**："是否放入 utils/hooks 目录，还是保留在使用处？"
 - **等待用户决策**后再落位
@@ -608,7 +597,7 @@ const renderSlot = () => <span class="text-muted-foreground">动态内容</span>
 ### 8.5.4 新增图标/组件的落点（强制）
 
 - 新增自定义 SVG 图标：放 `src/assets/icons/`（按业务域分子目录允许，但必须保持命名语义清晰）
-- 新增通用组件：放 `src/components/`（保持目录尽可能扁平化）；目录名使用 PascalCase（如 SchemaForm、PrimeDialog、DataTable、UseEcharts）
+- 新增通用组件：放 `src/components/`（保持目录尽可能扁平化）；目录名使用 PascalCase（如 PrimeDialog、UseEcharts）
 - 新增配套逻辑/Hook：放 `src/hooks/modules/`（命名 `useXxx.ts`），并遵循“工具优先复用”规则
 
 ### 8.5.5 右键菜单（ContextMenuProvider）

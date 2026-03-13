@@ -61,7 +61,6 @@ Scroll ownership is defined per archetype. When implementing regions, use `<CScr
 
 - DataPanel
 - InspectorTabs
-- SchemaForm
 - useDialog
 
 **FORBIDDEN**
@@ -109,10 +108,8 @@ Scroll ownership is defined per archetype. When implementing regions, use `<CScr
 
 **COMPONENT MAP**
 
-- DataTable
 - TableToolbar
-- Drawer + SchemaForm / useDialog
-- Pagination
+- Drawer + useDialog
 
 **FORBIDDEN**
 
@@ -137,7 +134,6 @@ Scroll ownership is defined per archetype. When implementing regions, use `<CScr
 
 **COMPONENT MAP**
 
-- SchemaForm
 - Stepper
 - StickyFooterCTA
 

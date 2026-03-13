@@ -102,15 +102,7 @@ const { loading, data, send } = useHttpRequest(client => client.Get<UserDTO>('/u
 })
 ```
 
-### 4.2 DataTable
-
-- **Props**：`loading` 或由 `api` 自动推导 `apiLoading`
-- **内部**：`useTableData` 合并 `props.loading` 与 `apiLoading`
-
-### 4.3 SchemaForm
-
-- **loadingMap**：`useAsyncOptions` 维护字段级异步选项加载
-- **ProgressSpinner**：在 `FormItems.tsx` 中按 `loadingMap[field]` 显示
+（已移除旧表格/表单组件的 loading 说明）
 
 ## 5. 数据流总览
 

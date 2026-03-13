@@ -7,8 +7,7 @@
 
 /** date-holidays 实例最小接口（第三方库无完整类型，边界处使用 any 桥接） */
 export interface HolidaysApiLike {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  init: (...args: any[]) => void
+  init: (...args: unknown[]) => void
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   getHolidays?: (year?: string | number) => any[]
   // eslint-disable-next-line @typescript-eslint/no-explicit-any

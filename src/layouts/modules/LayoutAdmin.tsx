@@ -19,6 +19,7 @@ import AdminFooterBar from '@&/admin/AdminFooterBar.tsx'
 import AdminSidebarLogo from '@/layouts/components/admin/AdminSidebarLogo'
 import AdminSidebarMenu from '@/layouts/components/admin/AdminSidebarMenu'
 import { Icons } from '@/components/Icons'
+import { CScrollbar } from '@/components/CScrollbar'
 
 /**
  * LayoutAdmin（Admin 壳）- TSX 版本
@@ -77,14 +78,14 @@ export default defineComponent({
       { immediate: true }
     )
 
-    // --- 响应式适配：PC 横竖屏+断点（尊重 userAdjusted）；Tablet 分支接入 adaptToTablet；Mobile 大视口恢复侧栏 ---
+    // --- 响应式适配：仅协调侧栏/抽屉；布局模式由 layoutStore.effectiveMode 派生 ---
     function runAdaptive() {
-      const forceByUserPreference = !layoutStore.userAdjusted
-
+      const force = !layoutStore.userAdjusted
+      // runAdaptive 不再修改布局模式，mode 由 layoutStore.effectiveMode 响应式派生
       if (deviceStore.type === 'PC') {
         layoutStore.adaptPcByOrientation(deviceStore.orientation)
         if (layoutStore.showSidebar) {
-          layoutStore.adaptPcByBreakpoint(deviceStore.currentBreakpoint, forceByUserPreference)
+          layoutStore.adaptPcByBreakpoint(deviceStore.currentBreakpoint, force)
         }
         return
       }
@@ -95,7 +96,7 @@ export default defineComponent({
         } else {
           layoutStore.adaptToTablet(false, true)
           if (layoutStore.showSidebar) {
-            layoutStore.adaptPcByBreakpoint(deviceStore.currentBreakpoint, forceByUserPreference)
+            layoutStore.adaptPcByBreakpoint(deviceStore.currentBreakpoint, force)
           }
         }
         return
@@ -109,7 +110,7 @@ export default defineComponent({
       // Mobile 大视口：恢复侧栏模式，再按断点收展
       layoutStore.adaptToMobile(false, true)
       if (layoutStore.showSidebar) {
-        layoutStore.adaptPcByBreakpoint(deviceStore.currentBreakpoint, forceByUserPreference)
+        layoutStore.adaptPcByBreakpoint(deviceStore.currentBreakpoint, force)
       }
     }
 
@@ -142,7 +143,13 @@ export default defineComponent({
     // --- AdminLayoutMode：结构模式 ---
     const mode = computed(() => layoutStore.mode)
     const isHorizontal = computed(() => mode.value === 'horizontal')
-    const isMobileLayout = computed(() => deviceStore.isMobileLayout)
+    const isDrawerMode = computed(
+      () =>
+        mode.value === 'horizontal' &&
+        (deviceStore.type === 'Mobile' ||
+          deviceStore.currentBreakpoint === 'xs' ||
+          deviceStore.currentBreakpoint === 'sm')
+    )
 
     // --- 展示开关（store 仅由配置面板控制）---
     const showHeader = computed(() => layoutStore.showHeader)
@@ -153,28 +160,28 @@ export default defineComponent({
     const showSidebarEffective = computed(() =>
       deviceStore.type === 'PC'
         ? layoutStore.showSidebar
-        : deviceStore.isMobileLayout
+        : isDrawerMode.value
           ? false
           : layoutStore.showSidebar
     )
     const showTabsEffective = computed(() =>
       deviceStore.type === 'PC'
         ? layoutStore.showTabs
-        : deviceStore.isMobileLayout
+        : isDrawerMode.value
           ? false
           : layoutStore.showTabs
     )
     const showBreadcrumbEffective = computed(() =>
       deviceStore.type === 'PC'
         ? layoutStore.showBreadcrumb
-        : deviceStore.isMobileLayout
+        : isDrawerMode.value
           ? false
           : layoutStore.showBreadcrumb
     )
     const showFooterEffective = computed(() =>
       deviceStore.type === 'PC'
         ? layoutStore.showFooter
-        : deviceStore.isMobileLayout
+        : isDrawerMode.value
           ? false
           : layoutStore.showFooter
     )
@@ -254,7 +261,7 @@ export default defineComponent({
         <div class="flex-1 min-h-0 overflow-hidden flex flex-col bg-background">{renderBody()}</div>
       )
       return (
-        <div class="flex flex-col overflow-hidden h-full bg-card">
+        <div class="flex flex-col  h-full">
           <AdminHeader
             mode={mode.value}
             showHeader={showHeader.value}
@@ -271,7 +278,7 @@ export default defineComponent({
           {bodyContent}
           {/* 移动端抽屉导航（Headless：无默认 header/content，完全自绘，无内边距） */}
           <Drawer
-            visible={layoutStore.mobileDrawerOpen && isMobileLayout.value}
+            visible={layoutStore.mobileDrawerOpen && isDrawerMode.value}
             {...({
               ['onUpdate:visible']: (val: boolean) => {
                 layoutStore.mobileDrawerOpen = val
@@ -283,15 +290,12 @@ export default defineComponent({
             dismissable
             showCloseIcon={false}
             class="w-sidebarWidth max-w-[80vw]"
-            pt={{
-              root: { class: 'p-0' },
-            }}
             v-slots={{
               container: () => (
-                <div class="admin-sidebar--fixed flex flex-col h-full overflow-hidden select-none bg-background text-foreground">
+                <div class="admin-sidebar--fixed py-padding-md flex flex-col h-full overflow-hidden select-none bg-background text-foreground">
                   <AdminSidebarLogo />
                   <div class="flex-1 min-h-0 flex flex-col overflow-hidden">
-                    <CScrollbar class="flex-1 min-h-0 px-padding-sm">
+                    <CScrollbar class="flex-1 min-h-0 px-padding-md">
                       <AdminSidebarMenu sidebarCollapse={false} />
                     </CScrollbar>
                   </div>

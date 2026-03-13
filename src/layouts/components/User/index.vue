@@ -46,17 +46,25 @@ const onLogout = async () => {
     class="h-full size-1-1 rounded-full center"
   >
     <!-- 头像入口按钮 -->
-    <img
-      class="layout-full! cursor-pointer rounded-full"
-      :src="avatarSrc"
+    <button
+      type="button"
+      class="layout-full! rounded-full bg-transparent border-none p-0 outline-none interactive-focus-ring cursor-pointer"
       @click="togglePanel"
-    />
+    >
+      <img
+        class="layout-full! rounded-full"
+        :src="avatarSrc"
+      />
+    </button>
     <!-- 用户信息下拉面板（PrimeVue Popover） -->
     <Popover
       ref="popoverRef"
       :dismissable="true"
     >
-      <div class="column gap-md">
+      <div
+        class="column gap-md"
+        @dragstart.prevent
+      >
         <div class="grid grid-cols-2 gap-md">
           <img
             :src="avatarSrc"

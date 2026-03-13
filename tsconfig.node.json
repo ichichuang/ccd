@@ -23,8 +23,12 @@
     "src/locales/**/*"
   ],
   "exclude": [
+    // 自动生成的类型声明文件，不参与 Node 编译（避免 DOM/browser 类型污染）
     "src/types/auto-imports.d.ts",
     "src/types/components.d.ts",
+    // router.ts 使用了 import.meta.env（Vite 浏览器专属 API），
+    // 在 Node 上下文中没有此 API，必须排除以防止类型冲突。
+    // 根本原因：src/constants/**/*.ts 通配包含了此文件，故需显式排除。
     "src/constants/router.ts"
   ],
   "compilerOptions": {

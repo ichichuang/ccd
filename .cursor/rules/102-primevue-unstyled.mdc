@@ -19,7 +19,7 @@ You are integrating PrimeVue components in a Vue 3 + TypeScript architecture. Th
 
 ## 3. UnoCSS Integration
 - All `pt` configurations MUST strictly use our UnoCSS utility classes.
-- Prefer shortcuts for transitions and surfaces: `behavior-hover-transition`, `default-rounded`, `surface-item` (for rows), `surface-elevated` (for panels).
+- Prefer shortcuts for transitions and surfaces: `behavior-hover-transition`, `def-rounded`, `surface-item` (for rows), `surface-elevated` (for panels).
 - NEVER inject raw CSS strings or arbitrary hex codes into `pt` props.
 
 ## 4. Complex Components Strategy

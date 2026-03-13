@@ -235,12 +235,14 @@ export const beforeRequest = (method: Method) => {
   const enableCsrf = method.config.security?.enableCSRF ?? HTTP_CONFIG.enableCsrf
   const enableSignature = method.config.security?.enableSignature ?? HTTP_CONFIG.enableSignature
   if (enableCsrf) {
-    // 预留：需从 cookie/metadata 获取 CSRF token 并设置 X-CSRF-Token 头
-    // TODO: method.config.headers['X-CSRF-Token'] = getCsrfToken()
+    // 预留：CSRF 保护（HTTP_CONFIG.enableCsrf 默认关闭，对接后端时启用）
+    // 接入方式：从服务端 cookie 或 <meta name="csrf-token"> 读取 token 并注入请求头。
+    // 示例：method.config.headers['X-CSRF-Token'] = document.cookie.match(/csrf=([^;]+)/)?.[1]
   }
   if (enableSignature) {
-    // 预留：需对请求体/参数进行签名并设置签名头
-    // TODO: method.config.headers['X-Request-Signature'] = signRequest(method)
+    // 预留：请求签名（HTTP_CONFIG.enableSignature 默认关闭，对接后端时启用）
+    // 接入方式：对 method.url + method.data + timestamp 进行 HMAC-SHA256 签名，注入签名头。
+    // 示例：method.config.headers['X-Request-Signature'] = signRequest(method)
   }
 
   // 添加认证头（通过 TokenProvider 获取，不依赖 Store）

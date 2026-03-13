@@ -2,7 +2,11 @@
  * 设备/断点同步工具（纯函数，不依赖 Pinia）
  * 供 mount 前逻辑（如 sizeEngine.preload）使用，与 stores/modules/device.ts 判定一致
  */
-import { BREAKPOINTS, type BreakpointKey } from '@/constants/breakpoints'
+import {
+  BREAKPOINTS,
+  TABLET_DETECTION_MIN_SHORT_SIDE,
+  type BreakpointKey,
+} from '@/constants/breakpoints'
 import type { DeviceType } from '@/types/systems/device'
 
 /**
@@ -16,7 +20,8 @@ export function getDeviceTypeSync(): DeviceType {
   const screenShortSide = Math.min(pageW, pageH)
 
   const isMobileUA = /Android|webOS|iPhone|iPod|BlackBerry|IEMobile|Opera Mini/i.test(ua)
-  const isTabletUA = /iPad/i.test(ua) || (isMobileUA && screenShortSide >= 600)
+  const isTabletUA =
+    /iPad/i.test(ua) || (isMobileUA && screenShortSide >= TABLET_DETECTION_MIN_SHORT_SIDE)
 
   if (isTabletUA) return 'Tablet'
   if (isMobileUA) return 'Mobile'

@@ -54,7 +54,8 @@ export function buildMenuNavMiscComponents(): Record<string, unknown> {
         borderColor: 'rgb(var(--border))',
         borderWidth: '1px',
         borderRadius: 'var(--radius-md)',
-        shadow: '0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1)',
+        shadow:
+          '0 10px 15px -3px rgb(var(--foreground) / 0.08), 0 4px 6px -4px rgb(var(--foreground) / 0.06)',
         mobileIndent: 'var(--spacing-md)',
         icon: {
           size: 'var(--font-size-sm)',

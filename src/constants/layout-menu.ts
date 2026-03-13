@@ -53,12 +53,12 @@ export const MENU_ICON_COMMON_CLASS =
 /**
  * Panel 缩进常量
  * 当前侧栏层级缩进由 reset.scss 中 .admin-sidebar--fixed .p-panelmenu-submenu 控制，
- * 这里默认保持 pl-0，仅作为未来在 Header/Breadcrumb 等场景下需要额外缩进时的扩展点。
+ * 这里默认保持 pl-md，仅作为未来在 Header/Breadcrumb 等场景下需要额外缩进时的扩展点。
  */
 /** Panel 根级缩进 */
-export const MENU_PANEL_INDENT_ROOT = 'pl-0'
+export const MENU_PANEL_INDENT_ROOT = 'pl-md'
 /** Panel 子级缩进 */
-export const MENU_PANEL_INDENT_CHILD = 'pl-0'
+export const MENU_PANEL_INDENT_CHILD = 'pl-md'
 
 /** 收缩态按钮内边距（仅图标，适当放大点击热区） */
 export const MENU_COLLAPSED_BUTTON_PADDING = 'p-padding-sm'

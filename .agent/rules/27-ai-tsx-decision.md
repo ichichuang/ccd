@@ -16,16 +16,16 @@ alwaysApply: true
 
 When returning styled DOM or VNode, MUST use TSX and ensure `lang="tsx"` or standalone `.tsx`:
 
-| Trigger                         | Description            | If returning VNode                  |
-| ------------------------------- | ---------------------- | ----------------------------------- |
-| `body`                          | DataTable column cell  | Use JSX, not `return \`<span>...\`` |
-| `headerRenderer`                | Custom header          | Use JSX                             |
-| `filterRenderer`                | Column filter          | Use JSX                             |
-| `editorRenderer`                | Editable column editor | Use JSX                             |
-| `contentRenderer`               | Dialog content         | Use JSX                             |
-| `customFooter`                  | Column footer          | Use JSX                             |
-| `v-slot` dynamic content        | Dynamic slot           | Use JSX                             |
-| Render function returning VNode | Any                    | Use JSX                             |
+| Trigger                         | Description              | If returning VNode                  |
+| ------------------------------- | ------------------------ | ----------------------------------- |
+| `body`                          | Table/list cell renderer | Use JSX, not `return \`<span>...\`` |
+| `headerRenderer`                | Custom header            | Use JSX                             |
+| `filterRenderer`                | Column filter            | Use JSX                             |
+| `editorRenderer`                | Editable column editor   | Use JSX                             |
+| `contentRenderer`               | Dialog content           | Use JSX                             |
+| `customFooter`                  | Column footer            | Use JSX                             |
+| `v-slot` dynamic content        | Dynamic slot             | Use JSX                             |
+| Render function returning VNode | Any                      | Use JSX                             |
 
 ## 3. VNode vs String
 
@@ -59,8 +59,6 @@ body: row => {
 
 ## 6. Golden Samples (MUST reference and mimic)
 
-- **DataTable column body**: `docs/ai-specs/GOLDEN_SAMPLES/DataTableBodyColumn.vue` — has `lang="tsx"`, correct body JSX
-- **Full column config**: `src/views/example/data-table/configs/customColumnConfig.tsx` — body, filterRenderer, customFooter
 - **PrimeVue in body/filterRenderer** (Select, MultiSelect, etc.): also reference `docs/ai-specs/PRIMEVUE_V4_API.md`, use v4 names (Select not Dropdown, DatePicker not Calendar)
 
 ## 7. lang Switch Table

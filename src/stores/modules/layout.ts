@@ -5,6 +5,7 @@ import {
   DEFAULT_LAYOUT_VISIBILITY_SETTINGS,
   LAYOUT_PERSIST_PICK,
 } from '@/constants/layout'
+import { useDeviceStore } from '@/stores/modules/device'
 import { deepClone } from '@/utils/lodashes'
 import store from '@/stores'
 import { createPiniaEncryptedSerializer } from '@/utils/safeStorage/piniaSerializer'
@@ -27,6 +28,27 @@ const MODULE_DEPENDENCIES: Partial<Record<LayoutModuleVisibilityKey, LayoutModul
     // Breadcrumb 是父模块：承载 Icon（当前 LayoutAdmin 还未渲染 icon，但语义上依赖存在）
     showBreadcrumb: ['showBreadcrumbIcon'],
   }
+
+/**
+ * 各布局模式下“不会被渲染”的模块开关，统一在 Store 层做兜底约束，
+ * 避免出现“状态被打开但当前模式永远不渲染”的错配体验。
+ */
+const MODE_HIDDEN_MODULES: Record<AdminLayoutMode, LayoutModuleVisibilityKey[]> = {
+  vertical: ['showMenu'],
+  horizontal: ['showSidebar'],
+  mix: [],
+}
+
+function enforceModeVisibilityConstraints(
+  mode: AdminLayoutMode,
+  visibility: LayoutVisibilitySetting
+): LayoutVisibilitySetting {
+  const next: LayoutVisibilitySetting = { ...visibility }
+  MODE_HIDDEN_MODULES[mode].forEach(key => {
+    next[key] = false
+  })
+  return next
+}
 
 export const useLayoutStore = defineStore('layout', {
   state: (): LayoutStoreState => ({
@@ -57,10 +79,34 @@ export const useLayoutStore = defineStore('layout', {
   }),
 
   getters: {
-    isHorizontal: state => state.mode === 'horizontal',
-    isMix: state => state.mode === 'mix',
+    effectiveMode: (state): AdminLayoutMode => {
+      const deviceStore = useDeviceStore()
+      // 1) 真移动端（设备类型为 Mobile，或 xs/sm 视口）统一走抽屉式 horizontal
+      if (
+        deviceStore.type === 'Mobile' ||
+        deviceStore.currentBreakpoint === 'xs' ||
+        deviceStore.currentBreakpoint === 'sm'
+      ) {
+        return 'horizontal'
+      }
+      // 2) 平板 md 视口保持 vertical，由 LayoutAdmin 负责按断点收缩侧栏
+      if (deviceStore.isMobileLayout) return 'vertical'
+      if (deviceStore.type === 'PC' && deviceStore.orientation === 'vertical') return 'horizontal'
+      return state.preferredMode
+    },
+    mode(): AdminLayoutMode {
+      return this.effectiveMode
+    },
+    isHorizontal(): boolean {
+      return this.effectiveMode === 'horizontal'
+    },
+    isMix(): boolean {
+      return this.effectiveMode === 'mix'
+    },
     // --- active visibility (SSOT) ---
-    activeVisibility: state => state.visibilitySettings[state.mode],
+    activeVisibility(state): LayoutVisibilitySetting {
+      return state.visibilitySettings[this.effectiveMode]
+    },
     // --- 兼容字段：对外仍以 showXxx 形式暴露，但实际读取 activeVisibility ---
     showHeader(): boolean {
       return this.activeVisibility.showHeader
@@ -141,9 +187,9 @@ export const useLayoutStore = defineStore('layout', {
 
       // 迁移策略：用旧配置快照初始化三种模式（用户升级后不会丢失习惯）
       this.visibilitySettings = {
-        vertical: { ...legacyVisibility },
-        horizontal: { ...legacyVisibility },
-        mix: { ...legacyVisibility },
+        vertical: enforceModeVisibilityConstraints('vertical', { ...legacyVisibility }),
+        horizontal: enforceModeVisibilityConstraints('horizontal', { ...legacyVisibility }),
+        mix: enforceModeVisibilityConstraints('mix', { ...legacyVisibility }),
       }
 
       // 清理旧字段（避免继续被误用）
@@ -157,15 +203,29 @@ export const useLayoutStore = defineStore('layout', {
       delete legacy.showLogo
     },
 
-    setLayoutMode(mode: AdminLayoutMode) {
-      this.updateSetting('mode', mode)
+    setPreferredMode(mode: AdminLayoutMode) {
+      this.updateSetting('preferredMode', mode)
+      this.visibilitySettings[mode] = enforceModeVisibilityConstraints(mode, {
+        ...this.visibilitySettings[mode],
+      })
       this.markUserAdjusted()
+    },
+    /**
+     * @deprecated 请使用 setPreferredMode
+     */
+    setLayoutMode(mode: AdminLayoutMode) {
+      this.setPreferredMode(mode)
     },
     /**
      * 布局模块显隐字段限定类型，避免 UI 传入任意 key
      */
     setModuleVisible(key: LayoutModuleVisibilityKey, visible: boolean, mode?: AdminLayoutMode) {
-      const targetMode = mode ?? this.mode
+      const targetMode = mode ?? this.preferredMode
+      if (MODE_HIDDEN_MODULES[targetMode].includes(key)) {
+        this.visibilitySettings[targetMode][key] = false
+        this.markUserAdjusted()
+        return
+      }
 
       const children = MODULE_DEPENDENCIES[key]
       if (children && children.length > 0) {
@@ -196,10 +256,13 @@ export const useLayoutStore = defineStore('layout', {
       }
 
       this.visibilitySettings[targetMode][key] = visible
+      this.visibilitySettings[targetMode] = enforceModeVisibilityConstraints(targetMode, {
+        ...this.visibilitySettings[targetMode],
+      })
       this.markUserAdjusted()
     },
     toggleModuleVisible(key: LayoutModuleVisibilityKey) {
-      this.setModuleVisible(key, !this.visibilitySettings[this.mode][key])
+      this.setModuleVisible(key, !this.visibilitySettings[this.preferredMode][key])
     },
     toggleCollapse() {
       this.sidebarCollapse = !this.sidebarCollapse
@@ -308,14 +371,10 @@ export const useLayoutStore = defineStore('layout', {
       if (isMobile) {
         // 进入移动端布局时，确保抽屉初始为关闭状态，避免历史状态残留
         this.mobileDrawerOpen = false
-        // 移动端：始终使用顶栏菜单模式 (horizontal)，小屏最佳展示；侧栏显隐由展示层「有效显隐」控制
-        this.updateSetting('sidebarCollapse', true)
-        this.updateSetting('mode', 'horizontal')
+        // 移动端 effectiveMode 为 horizontal，主侧栏不渲染，由 Drawer 替代；不修改 sidebarCollapse，以便恢复桌面时正确还原
       } else {
         // 离开移动端布局（恢复到 PC/大视口）时关闭抽屉，避免在后台保持打开状态
         this.mobileDrawerOpen = false
-        // 离开移动端布局（大视口恢复）：恢复侧栏模式，sidebarCollapse 由后续 adaptPcByBreakpoint 按断点设置
-        this.updateSetting('mode', 'vertical')
       }
     },
     /**
@@ -340,9 +399,7 @@ export const useLayoutStore = defineStore('layout', {
       }
 
       if (isTablet) {
-        // 平板：默认收起侧边栏，但允许展开
-        this.updateSetting('sidebarCollapse', true)
-        this.updateSetting('mode', 'vertical')
+        // 平板侧栏收展由 adaptPcByBreakpoint 按 md 断点统一处理，此处不覆盖持久化状态
       } else {
         // 从平板切换回 PC 或大视口时，确保移动端抽屉关闭
         this.mobileDrawerOpen = false
@@ -356,9 +413,9 @@ export const useLayoutStore = defineStore('layout', {
      * - 横屏：不覆盖 mode，由设置面板与持久化决定
      */
     adaptPcByOrientation(orientation: Orientation) {
-      if (orientation === 'vertical') {
-        this.updateSetting('mode', 'horizontal')
-      }
+      // effectiveMode 已在 getter 中对「PC 竖屏」强制返回 horizontal；
+      // 这里不再覆盖 sidebarCollapse（它是用户偏好且会被持久化），避免在模式来回切换时丢失“上次展开/收起状态”。
+      if (orientation === 'vertical') return
     },
     /**
      * [NEW] PC/平板端按断点适配：仅当「展示侧边栏」时，根据断点动态设置展开/收缩；

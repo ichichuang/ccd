@@ -544,6 +544,11 @@ export default defineConfig({
     // 焦点指示：使用 box-shadow + 语义色，禁止 ring/outline（104-anti-flicker-ring-less）
     'interactive-focus-ring':
       'focus-visible:shadow-[0_0_0_2px_rgb(var(--primary)/0.3)] focus-visible:outline-none',
+    // Touch target：移动端/触控设备最小可点击区域（约 44px）
+    'touch-target': 'min-w-[44px] min-h-[44px] flex items-center justify-center',
+    // Header 图标按钮：统一交互与触控目标，避免 p-0 导致可点击面积过小
+    'header-icon-btn':
+      'cursor-pointer bg-transparent border-none outline-none duration-scale-sm hover:scale-110 hover:text-accent active:scale-105',
     // Card/Tile hover 仅用位移+阴影，无 ring（104-anti-flicker-ring-less）
     'interactive-hover-card':
       'transition-all duration-scale-md ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)]',
@@ -593,12 +598,12 @@ export default defineConfig({
     // ⑩ 设计系统默认等级（Design Token Defaults）
     // 说明：与业务推荐一致，使用语义类 p-padding-* / m-margin-* / gap-*
     // =========================================================
-    'default-rounded': 'rounded-scale-md',
-    'default-duration': 'duration-scale-md',
-    'default-padding': 'p-padding-md',
-    'default-margin': 'm-margin-md',
-    'default-gap': 'gap-md',
-    'default-font-size': 'fs-md',
+    'def-rounded': 'rounded-scale-md!',
+    'def-duration': 'duration-scale-md!',
+    'def-padding': 'p-padding-md!',
+    'def-margin': 'm-margin-md!',
+    'def-gap': 'gap-md!',
+    'def-fs': 'fs-md!',
     // =========================================================
     // ⑪ 菜单交互语义 (Menu Interaction)
     // =========================================================
@@ -610,8 +615,8 @@ export default defineConfig({
     // =========================================================
     // ⑫ Premium 视觉系统 (Glassmorphism / Elevation / Surface)
     // =========================================================
-    'glass-surface': 'bg-white/70 dark:bg-black/70 backdrop-blur-md',
-    'glass-surface-lg': 'bg-white/80 dark:bg-black/80 backdrop-blur-lg',
+    'glass-surface': 'bg-background/70 backdrop-blur-md',
+    'glass-surface-lg': 'bg-background/80 backdrop-blur-lg',
     'shadow-soft':
       'shadow-[0_1px_3px_rgb(var(--foreground)/0.10),0_2px_8px_rgb(var(--foreground)/0.08)] dark:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_1px_3px_rgb(var(--background)/0.7),0_2px_8px_rgb(var(--background)/0.5)]',
     'shadow-float':

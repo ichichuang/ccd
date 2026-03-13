@@ -5,6 +5,10 @@ globs: src/layouts/**/*.{ts,vue}
 
 # Layouts System Rules
 
+> **CRITICAL**
+>
+> Before making ANY changes to layout wrappers, layout modules, or layout stores, you MUST read and comply with `docs/ai-specs/LAYOUT_ARCHITECTURE.md`.
+
 ## 1. Primary Directive
 
 Layout is determined by `route.meta.parent` (LayoutMode); `layouts/index.vue` switches accordingly.
@@ -22,7 +26,10 @@ Type: `src/types/systems/layout.d.ts` → `LayoutMode`
 
 ### 2.2 AdminLayoutMode (layer 2: admin shell structure)
 
-**Only when LayoutMode = admin**, controlled by `LayoutSetting.mode` (layout store):
+**Only when LayoutMode = admin**, the admin-shell structure is determined by the layout store's **dual-track mode**:
+
+- `preferredMode`: persisted user preference (set by Settings panel only)
+- `effectiveMode`: runtime resolution based on device constraints (SSOT for rendering)
 
 - **vertical**: Sidebar on left, no top menu
 - **horizontal**: Top menu, no sidebar
@@ -34,8 +41,13 @@ Type: `src/types/systems/layout.d.ts` → `AdminLayoutMode`
 
 - Definition: `src/types/systems/layout.d.ts` → `LayoutSetting`
 - Default: `src/constants/layout.ts` → `DEFAULT_LAYOUT_SETTING`
-- Persistence: `LAYOUT_PERSIST_PICK` derived from `DEFAULT_LAYOUT_SETTING`
-- New fields: add only in `DEFAULT_LAYOUT_SETTING`
+- Persistence: `src/constants/layout.ts` → `LAYOUT_PERSIST_PICK` (explicit list; do NOT derive dynamically)
+- Visibility SSOT: `visibilitySettings[effectiveMode]`; Settings panel binds to `visibilitySettings[preferredMode]` to prevent viewport-resize jumping
+
+> **Forbidden**
+>
+> - `runAdaptive()` / `adapt*()` MUST NOT mutate `preferredMode`
+> - Do NOT implement ad-hoc mode resolution in components; use store `effectiveMode` / `mode`
 
 ## 4. Directory and Aliases
 
@@ -60,10 +72,10 @@ Type: `src/types/systems/layout.d.ts` → `AdminLayoutMode`
 ### 6.2 Extend new AdminLayoutMode (admin sub-mode)
 
 1. Add new value to `AdminLayoutMode`
-2. Set default in `DEFAULT_LAYOUT_SETTING.mode` (or keep vertical)
-3. Implement layout logic in `LayoutAdmin.tsx` (sidebar / top menu / body visibility); MUST follow `docs/ai-specs/ADAPTIVE_LAYOUT.md`, do NOT bypass runAdaptive or effective visibility
+2. Set default in `DEFAULT_LAYOUT_SETTING.preferredMode` (or keep vertical)
+3. Implement layout logic in `LayoutAdmin.tsx` (sidebar / top menu / body visibility); MUST follow `docs/ai-specs/LAYOUT_ARCHITECTURE.md` and the existing dual-track rules (do NOT bypass `effectiveMode` / visibility SSOT)
 
-Note: Mobile small viewport forces horizontal; tablet small viewport is vertical+collapse; PC landscape does not override user mode. See `docs/ai-specs/ADAPTIVE_LAYOUT.md`. When modifying LayoutAdmin, follow that doc; do NOT bypass runAdaptive or effective visibility.
+Note: Mobile small viewport forces horizontal (Drawer); tablet is vertical+collapse; PC vertical orientation forces horizontal. See `docs/ai-specs/LAYOUT_ARCHITECTURE.md` (Chapter 2/4).
 
 ## 7. Route Config
 

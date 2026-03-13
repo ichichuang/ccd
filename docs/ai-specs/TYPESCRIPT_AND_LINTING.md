@@ -68,8 +68,7 @@
 - `build/plugins.ts`：`@vitejs/plugin-vue-jsx` 提供 JSX/TSX 编译
 - 程序化渲染（render 函数、动态 VNode、slot 内容等）**必须使用 TSX**，**禁止使用 `h()`**
 - **决策：** 需要程序化渲染（返回 VNode）时 → 用 TSX，不用 `h()`
-- **黄金样本**：DataTable 列 body 见 `./GOLDEN_SAMPLES/DataTableBodyColumn.vue`
-- 详见 `./PROJECT_PROTOCOL.md` §5.1、`.cursor/rules/24-tsx-rendering.mdc`、`27-ai-tsx-decision.mdc`
+- 详见 `./PROJECT_PROTOCOL.md` §5.1、`.cursor/rules/24-tsx-rendering.mdc`
 
 ## 6. Type Annotation Best Practices（类型注解最佳实践）
 

@@ -27,24 +27,23 @@ const sectionMeta: SectionMeta[] = [
     label: 'Divider / InlineMessage / Fieldset',
   },
   { id: 'section-card', indexLabel: '8.', label: 'Card / Panel' },
-  { id: 'section-datatable', indexLabel: '9.', label: 'DataTable' },
-  { id: 'section-message', indexLabel: '10.', label: 'Message / Toast' },
-  { id: 'section-dialog', indexLabel: '11.', label: 'Dialog / ConfirmPopup' },
-  { id: 'section-drawer', indexLabel: '11.1', label: 'Drawer / Popover' },
-  { id: 'section-menu', indexLabel: '12.', label: 'Menu / Menubar / ContextMenu' },
-  { id: 'section-tab-accordion', indexLabel: '12.1', label: 'Tabs / Accordion' },
-  { id: 'section-tree', indexLabel: '12.2', label: 'Tree / Paginator' },
+  { id: 'section-message', indexLabel: '9.', label: 'Message / Toast' },
+  { id: 'section-dialog', indexLabel: '10.', label: 'Dialog / ConfirmPopup' },
+  { id: 'section-drawer', indexLabel: '10.1', label: 'Drawer / Popover' },
+  { id: 'section-menu', indexLabel: '11.', label: 'Menu / Menubar / ContextMenu' },
+  { id: 'section-tab-accordion', indexLabel: '11.1', label: 'Tabs / Accordion' },
+  { id: 'section-tree', indexLabel: '11.2', label: 'Tree / Paginator' },
   {
     id: 'section-upload',
-    indexLabel: '12.3',
+    indexLabel: '11.3',
     label: 'FileUpload / ProgressSpinner',
   },
   {
     id: 'section-floatlabel',
-    indexLabel: '12.4',
+    indexLabel: '11.4',
     label: 'FloatLabel / Splitter',
   },
-  { id: 'section-other', indexLabel: '13.', label: 'Breadcrumb / ProgressBar / Skeleton' },
+  { id: 'section-other', indexLabel: '12.', label: 'Breadcrumb / ProgressBar / Skeleton' },
 ]
 
 // --- Scroll Spy & 目录导航（逻辑已抽取至 composables/usePrimeVueScrollSpy） ---
@@ -102,22 +101,6 @@ const dateVal = ref<Date | Date[] | (Date | null)[] | null | undefined>(null)
 const sliderVal = ref<number | number[]>(50)
 const sliderRangeVal = ref<number | number[]>([20, 80])
 const ratingVal = ref<number | undefined>(3)
-
-// --- DataTable ---
-interface Product {
-  id: number
-  code: string
-  name: string
-  category: string
-  quantity: number
-}
-const products = ref<Product[]>([
-  { id: 1, code: 'P001', name: '产品 A', category: '分类1', quantity: 10 },
-  { id: 2, code: 'P002', name: '产品 B', category: '分类2', quantity: 20 },
-  { id: 3, code: 'P003', name: '产品 C', category: '分类1', quantity: 15 },
-])
-const selectedProduct = ref<Product | null>(null)
-const PvDataTable = resolveComponent('PvDataTable')
 
 // --- Dialog ---
 const dialogVisible = ref<boolean>(false)
@@ -303,7 +286,7 @@ function onAccordionActiveIndexChange(value: number | number[] | undefined): voi
             class="scroll-mt-gap-lg"
           >
             <div
-              class="bg-card component-border rounded-scale-md shadow-sm p-padding-lg flex flex-col gap-md transition-all duration-scale-md hover:shadow-md"
+              class="bg-card component-border rounded-scale-md interactive-hover-card p-padding-lg flex flex-col gap-md"
             >
               <h2 class="fs-xl font-semibold text-foreground flex items-center gap-sm m-0">
                 {{ sectionMeta[0].indexLabel }} {{ sectionMeta[0].label }}
@@ -711,7 +694,7 @@ function onAccordionActiveIndexChange(value: number | number[] | undefined): voi
             class="scroll-mt-gap-lg"
           >
             <div
-              class="bg-card component-border rounded-scale-md shadow-sm p-padding-lg flex flex-col gap-md transition-all duration-scale-md hover:shadow-md"
+              class="bg-card component-border rounded-scale-md interactive-hover-card p-padding-lg flex flex-col gap-md"
             >
               <h2 class="fs-xl font-semibold text-foreground flex items-center gap-sm m-0">
                 {{ sectionMeta[1].indexLabel }} {{ sectionMeta[1].label }}
@@ -823,7 +806,7 @@ function onAccordionActiveIndexChange(value: number | number[] | undefined): voi
             class="scroll-mt-gap-lg"
           >
             <div
-              class="bg-card component-border rounded-scale-md shadow-sm p-padding-lg flex flex-col gap-md transition-all duration-scale-md hover:shadow-md"
+              class="bg-card component-border rounded-scale-md interactive-hover-card p-padding-lg flex flex-col gap-md"
             >
               <h2 class="fs-xl font-semibold text-foreground flex items-center gap-sm m-0">
                 {{ sectionMeta[2].indexLabel }} {{ sectionMeta[2].label }}
@@ -860,7 +843,7 @@ function onAccordionActiveIndexChange(value: number | number[] | undefined): voi
             class="scroll-mt-gap-lg"
           >
             <div
-              class="bg-card component-border rounded-scale-md shadow-sm p-padding-lg flex flex-col gap-md transition-all duration-scale-md hover:shadow-md"
+              class="bg-card component-border rounded-scale-md interactive-hover-card p-padding-lg flex flex-col gap-md"
             >
               <h2 class="fs-xl font-semibold text-foreground flex items-center gap-sm m-0">
                 {{ sectionMeta[3].indexLabel }} {{ sectionMeta[3].label }}
@@ -889,7 +872,7 @@ function onAccordionActiveIndexChange(value: number | number[] | undefined): voi
             class="scroll-mt-gap-lg"
           >
             <div
-              class="bg-card component-border rounded-scale-md shadow-sm p-padding-lg flex flex-col gap-md transition-all duration-scale-md hover:shadow-md"
+              class="bg-card component-border rounded-scale-md interactive-hover-card p-padding-lg flex flex-col gap-md"
             >
               <h2 class="fs-xl font-semibold text-foreground flex items-center gap-sm m-0">
                 {{ sectionMeta[4].indexLabel }} {{ sectionMeta[4].label }}
@@ -922,50 +905,55 @@ function onAccordionActiveIndexChange(value: number | number[] | undefined): voi
             class="scroll-mt-gap-lg"
           >
             <div
-              class="bg-card component-border rounded-scale-md shadow-sm p-padding-lg flex flex-col gap-md transition-all duration-scale-md hover:shadow-md"
+              class="bg-card component-border rounded-scale-md interactive-hover-card p-padding-lg flex flex-col gap-md"
             >
               <h2 class="fs-xl font-semibold text-foreground flex items-center gap-sm m-0">
                 {{ sectionMeta[5].indexLabel }} {{ sectionMeta[5].label }}
               </h2>
-              <div class="flex flex-wrap gap-xl">
-                <div class="flex flex-col gap-sm">
-                  <div class="flex items-center gap-sm">
-                    <Checkbox
-                      v-model="checkboxVal"
-                      input-id="cb1"
-                      :binary="true"
-                    />
-                    <label
-                      for="cb1"
-                      class="text-foreground"
-                    >
-                      Checkbox 二元
-                    </label>
-                  </div>
+              <div class="flex flex-wrap gap-xl layout-content">
+                <div class="flex flex-col gap-xs flex-1 min-w-[var(--spacing-5xl)]">
+                  <span class="text-foreground fs-sm font-medium">Checkbox</span>
+                  <span class="text-muted-foreground fs-xs">二元 + 多选组示例</span>
                   <div class="flex flex-col gap-xs">
-                    <span class="text-foreground fs-sm">Checkbox 多选组</span>
-                    <div class="flex flex-wrap gap-md">
-                      <div class="flex items-center gap-xs">
-                        <Checkbox
-                          v-model="checkboxGroup"
-                          input-id="cb-vue"
-                          value="Vue"
-                        />
-                        <label for="cb-vue">Vue</label>
-                      </div>
-                      <div class="flex items-center gap-xs">
-                        <Checkbox
-                          v-model="checkboxGroup"
-                          input-id="cb-react"
-                          value="React"
-                        />
-                        <label for="cb-react">React</label>
+                    <div class="flex items-center gap-xs">
+                      <Checkbox
+                        v-model="checkboxVal"
+                        input-id="cb1"
+                        :binary="true"
+                      />
+                      <label
+                        for="cb1"
+                        class="text-foreground"
+                      >
+                        Checkbox 二元
+                      </label>
+                    </div>
+                    <div class="flex flex-col gap-xs">
+                      <span class="text-foreground fs-xs">Checkbox 多选组</span>
+                      <div class="flex flex-wrap gap-md">
+                        <div class="flex items-center gap-xs">
+                          <Checkbox
+                            v-model="checkboxGroup"
+                            input-id="cb-vue"
+                            value="Vue"
+                          />
+                          <label for="cb-vue">Vue</label>
+                        </div>
+                        <div class="flex items-center gap-xs">
+                          <Checkbox
+                            v-model="checkboxGroup"
+                            input-id="cb-react"
+                            value="React"
+                          />
+                          <label for="cb-react">React</label>
+                        </div>
                       </div>
                     </div>
                   </div>
                 </div>
-                <div class="flex flex-col gap-sm">
-                  <span class="text-foreground fs-sm">RadioButton</span>
+                <div class="flex flex-col gap-xs flex-1 min-w-[var(--spacing-5xl)]">
+                  <span class="text-foreground fs-sm font-medium">RadioButton</span>
+                  <span class="text-muted-foreground fs-xs">单选按钮组</span>
                   <div class="flex flex-wrap gap-md">
                     <div class="flex items-center gap-xs">
                       <RadioButton
@@ -985,17 +973,21 @@ function onAccordionActiveIndexChange(value: number | number[] | undefined): voi
                     </div>
                   </div>
                 </div>
-                <div class="flex items-center gap-sm">
-                  <ToggleSwitch
-                    v-model="toggleVal"
-                    input-id="sw1"
-                  />
-                  <label
-                    for="sw1"
-                    class="text-foreground"
-                  >
-                    ToggleSwitch
-                  </label>
+                <div class="flex flex-col gap-xs flex-1 min-w-[var(--spacing-5xl)]">
+                  <span class="text-foreground fs-sm font-medium">ToggleSwitch</span>
+                  <span class="text-muted-foreground fs-xs">开关控件</span>
+                  <div class="flex items-center gap-sm">
+                    <ToggleSwitch
+                      v-model="toggleVal"
+                      input-id="sw1"
+                    />
+                    <label
+                      for="sw1"
+                      class="text-foreground"
+                    >
+                      ToggleSwitch
+                    </label>
+                  </div>
                 </div>
               </div>
             </div>
@@ -1007,7 +999,7 @@ function onAccordionActiveIndexChange(value: number | number[] | undefined): voi
             class="scroll-mt-gap-lg"
           >
             <div
-              class="bg-card component-border rounded-scale-md shadow-sm p-padding-lg flex flex-col gap-md transition-all duration-scale-md hover:shadow-md"
+              class="bg-card component-border rounded-scale-md interactive-hover-card p-padding-lg flex flex-col gap-md"
             >
               <h2 class="fs-xl font-semibold text-foreground flex items-center gap-sm m-0">
                 {{ sectionMeta[6].indexLabel }} {{ sectionMeta[6].label }}
@@ -1040,22 +1032,30 @@ function onAccordionActiveIndexChange(value: number | number[] | undefined): voi
             class="scroll-mt-gap-lg"
           >
             <div
-              class="bg-card component-border rounded-scale-md shadow-sm p-padding-lg flex flex-col gap-md transition-all duration-scale-md hover:shadow-md"
+              class="bg-card component-border rounded-scale-md interactive-hover-card p-padding-lg flex flex-col gap-md"
             >
               <h2 class="fs-xl font-semibold text-foreground flex items-center gap-sm m-0">
                 {{ sectionMeta[7].indexLabel }} {{ sectionMeta[7].label }}
               </h2>
-              <div class="flex flex-wrap gap-xl layout-content">
-                <div class="flex flex-col gap-xs flex-1 min-w-0">
-                  <label class="text-foreground fs-sm">Slider: {{ sliderVal }}</label>
+              <div class="flex flex-wrap gap-xl">
+                <div class="flex flex-col gap-xs flex-1 min-w-[var(--spacing-5xl)]">
+                  <div class="flex items-center justify-between gap-sm">
+                    <label class="text-foreground fs-sm">Slider</label>
+                    <span class="text-muted-foreground fs-xs">{{ sliderVal }}</span>
+                  </div>
                   <Slider
                     v-model="sliderVal"
                     :min="0"
                     :max="100"
                   />
                 </div>
-                <div class="flex flex-col gap-xs flex-1 min-w-0">
-                  <label class="text-foreground fs-sm">Slider Range: {{ sliderRangeVal }}</label>
+                <div class="flex flex-col gap-xs flex-1 min-w-[var(--spacing-5xl)]">
+                  <div class="flex items-center justify-between gap-sm">
+                    <label class="text-foreground fs-sm">Slider Range</label>
+                    <span class="text-muted-foreground fs-xs">
+                      {{ sliderRangeVal }}
+                    </span>
+                  </div>
                   <Slider
                     v-model="sliderRangeVal"
                     :min="0"
@@ -1063,7 +1063,7 @@ function onAccordionActiveIndexChange(value: number | number[] | undefined): voi
                     range
                   />
                 </div>
-                <div class="flex flex-col gap-xs">
+                <div class="flex flex-col gap-xs flex-1 min-w-[var(--spacing-5xl)]">
                   <label class="text-foreground fs-sm">Rating</label>
                   <Rating v-model="ratingVal" />
                 </div>
@@ -1077,7 +1077,7 @@ function onAccordionActiveIndexChange(value: number | number[] | undefined): voi
             class="scroll-mt-gap-lg"
           >
             <div
-              class="bg-card component-border rounded-scale-md shadow-sm p-padding-lg flex flex-col gap-md transition-all duration-scale-md hover:shadow-md"
+              class="bg-card component-border rounded-scale-md interactive-hover-card p-padding-lg flex flex-col gap-md"
             >
               <h2 class="fs-xl font-semibold text-foreground flex items-center gap-sm m-0">
                 {{ sectionMeta[8].indexLabel }} {{ sectionMeta[8].label }}
@@ -1127,7 +1127,7 @@ function onAccordionActiveIndexChange(value: number | number[] | undefined): voi
             class="scroll-mt-gap-lg"
           >
             <div
-              class="bg-card component-border rounded-scale-md shadow-sm p-padding-lg flex flex-col gap-md transition-all duration-scale-md hover:shadow-md"
+              class="bg-card component-border rounded-scale-md interactive-hover-card p-padding-lg flex flex-col gap-md"
             >
               <h2 class="fs-xl font-semibold text-foreground flex items-center gap-sm m-0">
                 {{ sectionMeta[9].indexLabel }} {{ sectionMeta[9].label }}
@@ -1161,7 +1161,7 @@ function onAccordionActiveIndexChange(value: number | number[] | undefined): voi
             class="scroll-mt-gap-lg"
           >
             <div
-              class="bg-card component-border rounded-scale-md shadow-sm p-padding-lg flex flex-col gap-md transition-all duration-scale-md hover:shadow-md"
+              class="bg-card component-border rounded-scale-md interactive-hover-card p-padding-lg flex flex-col gap-md"
             >
               <h2 class="fs-xl font-semibold text-foreground flex items-center gap-sm m-0">
                 {{ sectionMeta[10].indexLabel }} {{ sectionMeta[10].label }}
@@ -1201,68 +1201,16 @@ function onAccordionActiveIndexChange(value: number | number[] | undefined): voi
             </div>
           </section>
 
-          <!-- 9. DataTable -->
+          <!-- 9. Message / Toast -->
           <section
             :id="sections[11].id"
             class="scroll-mt-gap-lg"
           >
             <div
-              class="bg-card component-border rounded-scale-md shadow-sm p-padding-lg flex flex-col gap-md transition-all duration-scale-md hover:shadow-md"
+              class="bg-card component-border rounded-scale-md interactive-hover-card p-padding-lg flex flex-col gap-md"
             >
               <h2 class="fs-xl font-semibold text-foreground flex items-center gap-sm m-0">
                 {{ sectionMeta[11].indexLabel }} {{ sectionMeta[11].label }}
-              </h2>
-              <component
-                :is="PvDataTable"
-                v-model:selection="selectedProduct"
-                :value="products"
-                data-key="id"
-                selection-mode="single"
-                paginator
-                :rows="2"
-                :rows-per-page-options="[2, 5, 10]"
-                table-style="min-width: var(--spacing-5xl)"
-                class="layout-content"
-              >
-                <Column
-                  selection-mode="single"
-                  header-style="width: var(--spacing-2xl)"
-                />
-                <Column
-                  field="code"
-                  header="Code"
-                  sortable
-                />
-                <Column
-                  field="name"
-                  header="Name"
-                  sortable
-                />
-                <Column
-                  field="category"
-                  header="Category"
-                />
-                <Column
-                  field="quantity"
-                  header="Quantity"
-                />
-              </component>
-              <p class="text-muted-foreground fs-sm">
-                已选: {{ selectedProduct ? selectedProduct.name : '无' }}
-              </p>
-            </div>
-          </section>
-
-          <!-- 10. Message / Toast -->
-          <section
-            :id="sections[12].id"
-            class="scroll-mt-gap-lg"
-          >
-            <div
-              class="bg-card component-border rounded-scale-md shadow-sm p-padding-lg flex flex-col gap-md transition-all duration-scale-md hover:shadow-md"
-            >
-              <h2 class="fs-xl font-semibold text-foreground flex items-center gap-sm m-0">
-                {{ sectionMeta[12].indexLabel }} {{ sectionMeta[12].label }}
               </h2>
               <div class="flex flex-col gap-md layout-content">
                 <Message
@@ -1310,16 +1258,16 @@ function onAccordionActiveIndexChange(value: number | number[] | undefined): voi
             </div>
           </section>
 
-          <!-- 11. Dialog / ConfirmPopup -->
+          <!-- 10. Dialog / ConfirmPopup -->
           <section
-            :id="sections[13].id"
+            :id="sections[12].id"
             class="scroll-mt-gap-lg"
           >
             <div
-              class="bg-card component-border rounded-scale-md shadow-sm p-padding-lg flex flex-col gap-md transition-all duration-scale-md hover:shadow-md"
+              class="bg-card component-border rounded-scale-md interactive-hover-card p-padding-lg flex flex-col gap-md"
             >
               <h2 class="fs-xl font-semibold text-foreground flex items-center gap-sm m-0">
-                {{ sectionMeta[13].indexLabel }} {{ sectionMeta[13].label }}
+                {{ sectionMeta[12].indexLabel }} {{ sectionMeta[12].label }}
               </h2>
               <p class="text-muted-foreground fs-sm">
                 业务中自定义弹窗/确认请使用
@@ -1366,16 +1314,16 @@ function onAccordionActiveIndexChange(value: number | number[] | undefined): voi
             </div>
           </section>
 
-          <!-- 11.1 Drawer / Popover -->
+          <!-- 10.1 Drawer / Popover -->
           <section
-            :id="sections[14].id"
+            :id="sections[13].id"
             class="scroll-mt-gap-lg"
           >
             <div
-              class="bg-card component-border rounded-scale-md shadow-sm p-padding-lg flex flex-col gap-md transition-all duration-scale-md hover:shadow-md"
+              class="bg-card component-border rounded-scale-md interactive-hover-card p-padding-lg flex flex-col gap-md"
             >
               <h2 class="fs-xl font-semibold text-foreground flex items-center gap-sm m-0">
-                {{ sectionMeta[14].indexLabel }} {{ sectionMeta[14].label }}
+                {{ sectionMeta[13].indexLabel }} {{ sectionMeta[13].label }}
               </h2>
               <div class="flex flex-wrap gap-md">
                 <Button
@@ -1387,7 +1335,7 @@ function onAccordionActiveIndexChange(value: number | number[] | undefined): voi
                   @click="togglePopover"
                 />
                 <Popover ref="popoverRef">
-                  <div class="flex flex-col gap-sm max-w-[min(20rem,90vw)]">
+                  <div class="flex flex-col gap-sm layout-content-narrow">
                     <span class="fs-sm font-semibold text-foreground">Popover 内容</span>
                     <p class="text-muted-foreground fs-sm m-0">自定义浮层内容。</p>
                   </div>
@@ -1397,23 +1345,23 @@ function onAccordionActiveIndexChange(value: number | number[] | undefined): voi
                 v-model:visible="drawerVisible"
                 position="right"
                 header="Drawer 标题"
-                class="w-full max-w-[min(24rem,90vw)]"
+                class="layout-sidepanel"
               >
                 <p class="text-muted-foreground fs-sm m-0">侧边抽屉内容，可从右滑出。</p>
               </Drawer>
             </div>
           </section>
 
-          <!-- 12. Menu / Menubar / ContextMenu -->
+          <!-- 11. Menu / Menubar / ContextMenu -->
           <section
-            :id="sections[15].id"
+            :id="sections[14].id"
             class="scroll-mt-gap-lg"
           >
             <div
-              class="bg-card component-border rounded-scale-md shadow-sm p-padding-lg flex flex-col gap-md transition-all duration-scale-md hover:shadow-md"
+              class="bg-card component-border rounded-scale-md interactive-hover-card p-padding-lg flex flex-col gap-md"
             >
               <h2 class="fs-xl font-semibold text-foreground flex items-center gap-sm m-0">
-                {{ sectionMeta[15].indexLabel }} {{ sectionMeta[15].label }}
+                {{ sectionMeta[14].indexLabel }} {{ sectionMeta[14].label }}
               </h2>
               <div class="flex flex-col gap-lg">
                 <div class="flex flex-wrap items-center gap-md">
@@ -1436,16 +1384,16 @@ function onAccordionActiveIndexChange(value: number | number[] | undefined): voi
             </div>
           </section>
 
-          <!-- 12.1 Tabs / Accordion (v4 使用 Tabs 替代 TabView) -->
+          <!-- 11.1 Tabs / Accordion (v4 使用 Tabs 替代 TabView) -->
           <section
-            :id="sections[16].id"
+            :id="sections[15].id"
             class="scroll-mt-gap-lg"
           >
             <div
-              class="bg-card component-border rounded-scale-md shadow-sm p-padding-lg flex flex-col gap-md transition-all duration-scale-md hover:shadow-md"
+              class="bg-card component-border rounded-scale-md interactive-hover-card p-padding-lg flex flex-col gap-md"
             >
               <h2 class="fs-xl font-semibold text-foreground flex items-center gap-sm m-0">
-                {{ sectionMeta[16].indexLabel }} {{ sectionMeta[16].label }}
+                {{ sectionMeta[15].indexLabel }} {{ sectionMeta[15].label }}
               </h2>
               <div class="flex flex-wrap gap-xl">
                 <div class="flex-1 min-w-0 layout-content">
@@ -1491,19 +1439,19 @@ function onAccordionActiveIndexChange(value: number | number[] | undefined): voi
             </div>
           </section>
 
-          <!-- 12.2 Tree / Paginator -->
+          <!-- 11.2 Tree / Paginator -->
           <section
-            :id="sections[17].id"
+            :id="sections[16].id"
             class="scroll-mt-gap-lg"
           >
             <div
-              class="bg-card component-border rounded-scale-md shadow-sm p-padding-lg flex flex-col gap-md transition-all duration-scale-md hover:shadow-md"
+              class="bg-card component-border rounded-scale-md interactive-hover-card p-padding-lg flex flex-col gap-md"
             >
               <h2 class="fs-xl font-semibold text-foreground flex items-center gap-sm m-0">
-                {{ sectionMeta[17].indexLabel }} {{ sectionMeta[17].label }}
+                {{ sectionMeta[16].indexLabel }} {{ sectionMeta[16].label }}
               </h2>
               <div class="flex flex-wrap gap-xl">
-                <div class="flex flex-col gap-xs max-w-[min(20rem,90vw)]">
+                <div class="flex flex-col gap-xs layout-content-narrow">
                   <label class="text-foreground fs-sm">Tree</label>
                   <Tree
                     v-model:selection-keys="selectedNodeKeys"
@@ -1526,16 +1474,16 @@ function onAccordionActiveIndexChange(value: number | number[] | undefined): voi
             </div>
           </section>
 
-          <!-- 12.3 FileUpload / ProgressSpinner  -->
+          <!-- 11.3 FileUpload / ProgressSpinner  -->
           <section
-            :id="sections[18].id"
+            :id="sections[17].id"
             class="scroll-mt-gap-lg"
           >
             <div
-              class="bg-card component-border rounded-scale-md shadow-sm p-padding-lg flex flex-col gap-md transition-all duration-scale-md hover:shadow-md"
+              class="bg-card component-border rounded-scale-md interactive-hover-card p-padding-lg flex flex-col gap-md"
             >
               <h2 class="fs-xl font-semibold text-foreground flex items-center gap-sm m-0">
-                {{ sectionMeta[18].indexLabel }} {{ sectionMeta[18].label }}
+                {{ sectionMeta[17].indexLabel }} {{ sectionMeta[17].label }}
               </h2>
               <div class="flex flex-wrap gap-lg items-start">
                 <div class="flex flex-col gap-xs">
@@ -1554,57 +1502,69 @@ function onAccordionActiveIndexChange(value: number | number[] | undefined): voi
             </div>
           </section>
 
-          <!-- 12.4 FloatLabel / Splitter -->
+          <!-- 11.4 FloatLabel / Splitter -->
+          <section
+            :id="sections[18].id"
+            class="scroll-mt-gap-lg"
+          >
+            <div
+              class="bg-card component-border rounded-scale-md interactive-hover-card p-padding-lg flex flex-col gap-md"
+            >
+              <h2 class="fs-xl font-semibold text-foreground flex items-center gap-sm m-0">
+                {{ sectionMeta[18].indexLabel }} {{ sectionMeta[18].label }}
+              </h2>
+              <div class="flex flex-col gap-lg layout-content">
+                <div class="flex flex-col gap-sm">
+                  <span class="text-foreground fs-sm font-medium">FloatLabel</span>
+                  <span class="text-muted-foreground fs-xs">
+                    标签会在输入聚焦或有值时上浮，适合紧凑表单。
+                  </span>
+                  <div class="layout-content-narrow">
+                    <FloatLabel>
+                      <InputText
+                        id="float-input"
+                        v-model="floatLabelVal"
+                        class="w-full"
+                      />
+                      <label for="float-input">FloatLabel</label>
+                    </FloatLabel>
+                  </div>
+                </div>
+
+                <div class="flex flex-col gap-sm">
+                  <span class="text-foreground fs-sm font-medium">Splitter</span>
+                  <span class="text-muted-foreground fs-xs">
+                    可拖拽的分栏容器，用于在同一视图中对比展示两个区域。
+                  </span>
+                  <Splitter class="layout-content">
+                    <SplitterPanel
+                      :size="50"
+                      :min-size="20"
+                    >
+                      左侧内容
+                    </SplitterPanel>
+                    <SplitterPanel
+                      :size="50"
+                      :min-size="20"
+                    >
+                      右侧内容
+                    </SplitterPanel>
+                  </Splitter>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- 12. Breadcrumb / ProgressBar / Skeleton -->
           <section
             :id="sections[19].id"
             class="scroll-mt-gap-lg"
           >
             <div
-              class="bg-card component-border rounded-scale-md shadow-sm p-padding-lg flex flex-col gap-md transition-all duration-scale-md hover:shadow-md"
+              class="bg-card component-border rounded-scale-md interactive-hover-card p-padding-lg flex flex-col gap-md"
             >
               <h2 class="fs-xl font-semibold text-foreground flex items-center gap-sm m-0">
                 {{ sectionMeta[19].indexLabel }} {{ sectionMeta[19].label }}
-              </h2>
-              <div class="flex flex-col gap-lg">
-                <div class="max-w-[min(20rem,90vw)]">
-                  <FloatLabel>
-                    <InputText
-                      id="float-input"
-                      v-model="floatLabelVal"
-                      class="w-full"
-                    />
-                    <label for="float-input">FloatLabel</label>
-                  </FloatLabel>
-                </div>
-
-                <Splitter class="max-w-[min(40rem,90vw)]">
-                  <SplitterPanel
-                    :size="50"
-                    :min-size="20"
-                  >
-                    左侧面板
-                  </SplitterPanel>
-                  <SplitterPanel
-                    :size="50"
-                    :min-size="20"
-                  >
-                    右侧面板
-                  </SplitterPanel>
-                </Splitter>
-              </div>
-            </div>
-          </section>
-
-          <!-- 13. Breadcrumb / ProgressBar / Skeleton -->
-          <section
-            :id="sections[20].id"
-            class="scroll-mt-gap-lg"
-          >
-            <div
-              class="bg-card component-border rounded-scale-md shadow-sm p-padding-lg flex flex-col gap-md transition-all duration-scale-md hover:shadow-md"
-            >
-              <h2 class="fs-xl font-semibold text-foreground flex items-center gap-sm m-0">
-                {{ sectionMeta[20].indexLabel }} {{ sectionMeta[20].label }}
               </h2>
               <div class="flex flex-col gap-lg">
                 <Breadcrumb :model="breadcrumbItems" />
@@ -1641,7 +1601,7 @@ function onAccordionActiveIndexChange(value: number | number[] | undefined): voi
     <!-- 右侧：目录树 (20%) -->
     <aside
       ref="tocAsideRef"
-      class="basis-1/5 min-w-0 h-full flex flex-col border-l border-border bg-card hidden lg:flex"
+      class="basis-1/5 min-w-0 h-full flex flex-col bg-card hidden xl:flex"
     >
       <!-- 目录标题 -->
       <div class="p-padding-md border-b-default bg-card backdrop-blur-sm">

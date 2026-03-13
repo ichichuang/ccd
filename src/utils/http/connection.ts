@@ -18,8 +18,8 @@ export enum ConnectionStatus {
 export class ConnectionManager {
   private state: ConnectionState
   private config: ConnectionConfig
-  private healthCheckTimer?: NodeJS.Timeout
-  private reconnectTimer?: NodeJS.Timeout
+  private healthCheckTimer?: ReturnType<typeof setTimeout>
+  private reconnectTimer?: ReturnType<typeof setTimeout>
   private listeners: Set<(state: ConnectionState) => void>
   private isDestroyed = false
 

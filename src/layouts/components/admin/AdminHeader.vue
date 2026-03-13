@@ -213,30 +213,35 @@ const renderRootItem = (item: PrimeMenuModelItem) => {
   <header
     v-if="showHeader"
     :class="[
-      'w-full h-headerHeight flex items-center justify-between px-padding-md py-padding-sm transition-all duration-scale-md sticky top-0 z-30 border-b-default border-primary/20 gap-md',
+      'w-full h-headerHeight flex items-center justify-between px-padding-md py-padding-sm transition-all duration-scale-md gap-md select-none',
     ]"
+    @dragstart.prevent
   >
     <!-- Left: Mobile Menu + Logo -->
     <div class="h-full center gap-sm">
       <!-- 移动端：汉堡菜单按钮，打开抽屉侧边栏 -->
-      <div
+      <button
         v-if="isMobileLayout"
+        type="button"
+        class="header-icon-btn"
         @click="layoutStore.toggleMobileDrawer()"
       >
         <Icons
           name="i-lucide-menu"
           size="2xl"
         />
-      </div>
-      <div
+      </button>
+      <a
         v-if="showLogo"
-        class="h-full flex items-center gap-sm cursor-pointer transition-opacity duration-scale-md py-xs hover:text-primary!"
-        @click="goToRoute('/')"
+        href="/"
+        class="h-full flex items-center gap-sm cursor-pointer behavior-hover-transition py-xs hover:text-primary! bg-transparent border-none p-0 outline-none interactive-focus-ring"
+        @click.prevent="goToRoute('/')"
       >
         <div class="h-full size-1-1 rounded-full center">
           <img
             class="layout-full!"
             :src="logoSrc"
+            draggable="false"
           />
         </div>
         <div class="h-full hidden md:flex flex-col justify-between leading-none">
@@ -245,7 +250,7 @@ const renderRootItem = (item: PrimeMenuModelItem) => {
           </span>
           <span class="fs-xs text-muted-foreground font-medium">{{ brand.subtitle }}</span>
         </div>
-      </div>
+      </a>
     </div>
 
     <!-- Middle: Horizontal Menu（TieredMenu Popup 架构，移动端隐藏以避免拥挤）-->
@@ -265,10 +270,11 @@ const renderRootItem = (item: PrimeMenuModelItem) => {
     </div>
 
     <!-- Right: Actions -->
-    <div class="h-full center gap-md py-xs">
-      <div
+    <div class="h-full center gap-sm md:gap-md py-xs">
+      <button
         v-if="showSidebarToggle"
-        class="cursor-pointer hover:scale-110 duration-scale-sm"
+        type="button"
+        class="header-icon-btn"
         @click="emit('toggleCollapse', $event)"
       >
         <Icons
@@ -276,9 +282,11 @@ const renderRootItem = (item: PrimeMenuModelItem) => {
           class="color-inherit"
           size="2xl"
         />
-      </div>
-      <div
-        class="cursor-pointer hover:scale-110 duration-scale-sm"
+      </button>
+      <button
+        v-if="!isMobileLayout"
+        type="button"
+        class="header-icon-btn"
         @click="toggleFullscreen()"
       >
         <Icons
@@ -290,9 +298,10 @@ const renderRootItem = (item: PrimeMenuModelItem) => {
           class="color-inherit"
           size="2xl"
         />
-      </div>
-      <div
-        class="cursor-pointer"
+      </button>
+      <button
+        type="button"
+        class="header-icon-btn"
         @click="emit('toggleTheme', $event)"
       >
         <Icons
@@ -300,7 +309,7 @@ const renderRootItem = (item: PrimeMenuModelItem) => {
           size="2xl"
           class="color-inherit"
         />
-      </div>
+      </button>
       <User v-if="showUserEntry" />
     </div>
   </header>

@@ -11,7 +11,7 @@ import {
   LOGOS_ICONS,
   CUSTOM_ICONS,
   IS_LITE_MODE,
-} from '../icons/configs/iconLists.generated'
+} from './configs/iconLists'
 import IconControls from './components/IconControls.vue'
 import { useAppElementSize } from '@/hooks/modules/useAppElementSize'
 

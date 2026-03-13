@@ -49,7 +49,7 @@ Choose the EmptyState `icon` by scenario. Use Lucide icons via `<Icons>`; prefix
 
 ## 3. Double-Render Fix (Anti-pattern)
 
-**Rule**: When data array is empty, use `v-if` to hide DataTable or Chart and show `EmptyState` instead.
+**Rule**: When data array is empty, use `v-if` to hide the data view (table or chart) and show `EmptyState` instead.
 
 **Wrong**: An empty table header plus floating "No data" text.
 
@@ -58,9 +58,8 @@ Choose the EmptyState `icon` by scenario. Use Lucide icons via `<Icons>`; prefix
 ```vue
 <template>
   <div v-if="loading"><Skeleton /></div>
-  <DataTable
+  <div
     v-else-if="data.length"
-    :data="data"
     ...
   />
   <EmptyState
@@ -72,13 +71,7 @@ Choose the EmptyState `icon` by scenario. Use Lucide icons via `<Icons>`; prefix
 </template>
 ```
 
-Alternatively, use DataTable's built-in `#empty` slot with `EmptyState` content.
-
-## 4. DataTable Empty State
-
-- All DataTables MUST provide an empty state via `emptyMessage` or a custom `#empty` slot.
-- When using `#empty`, render `<EmptyState>` or equivalent structure (icon + title + description).
-- See `DataTable_COMPONENT.md` §Empty State for details.
+Alternatively, use the table component's built-in empty slot (if available) with `EmptyState` content.
 
 ## 5. UseEcharts No-Data Handling
 

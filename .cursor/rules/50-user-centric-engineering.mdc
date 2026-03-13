@@ -13,7 +13,7 @@ alwaysApply: true
   <workflow>
     <step>When the developer asks for a UI change, first evaluate whether the requested design is simple enough for the user.</step>
     <step>If the requested UI is “bulldozer style” (many controls, dense configuration), propose a curated, simplified alternative that preserves the key user goals.</step>
-    <step>Apply the 8-field rule to SchemaForm-based UIs and enforce grouping into sections or steps when the field count grows.</step>
+    <step>Apply the 8-field rule to form-heavy UIs and enforce grouping into sections or steps when the field count grows.</step>
     <step>Separate default views (happy path) from advanced options, exposing advanced settings only on demand.</step>
     <step>Ensure every empty state includes a clear primary CTA that moves the user forward.</step>
     <step>Translate technical error details into human-readable, empathetic messages with clear next steps.</step>
@@ -22,7 +22,7 @@ alwaysApply: true
 
   <constraints>
     <section name="H1-8-field-rule">
-      <rule>If a <code>SchemaForm</code> contains more than eight fields, you must design or suggest sections or steps (progressive disclosure) instead of a single long flat form.</rule>
+      <rule>If a form contains more than eight fields, you must design or suggest sections or steps (progressive disclosure) instead of a single long flat form.</rule>
       <rule>Refuse to generate a single-page form with nine or more fields without grouping; instead, move non-critical fields to later sections.</rule>
     </section>
 

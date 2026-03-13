@@ -28,6 +28,6 @@
 
 - [项目协议](../ai-specs/PROJECT_PROTOCOL.md) — 编码规范、组件策略、路由系统
 - [设计系统](../ai-specs/PRIMEVUE_THEME.md)、[UnoCSS 与图标](../ai-specs/UNOCSS_AND_ICONS.md)
-- [组件文档](../ai-specs/DataTable_COMPONENT.md)、[SchemaForm](../ai-specs/SCHEMA_FORM_COMPONENT.md)、[PrimeDialog](../ai-specs/DIALOG_COMPONENT.md)
+- [组件文档](../ai-specs/DIALOG_COMPONENT.md)
 - [布局适配](../ai-specs/ADAPTIVE_LAYOUT.md)、[登录鉴权](../ai-specs/AUTH_AND_LOGIN_FLOW.md)
 - [部署指南](../DEPLOYMENT.md) — Nginx 配置、VITE_COMPRESSION 与 gzip 预压缩

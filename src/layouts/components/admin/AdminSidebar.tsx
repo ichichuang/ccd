@@ -1,6 +1,7 @@
 import { useLayoutStore } from '@/stores/modules/layout'
 import AdminSidebarLogo from '@/layouts/components/admin/AdminSidebarLogo'
 import AdminSidebarMenu from '@/layouts/components/admin/AdminSidebarMenu'
+import { CScrollbar } from '@/components/CScrollbar'
 
 export interface AdminSidebarProps {
   mode: AdminLayoutMode

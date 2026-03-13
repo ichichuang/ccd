@@ -62,6 +62,8 @@ export const usePermissionGuard = ({
   let currentNavigationHasLoadingStart = false
   // 标记是否是首次路由导航（用于处理初始 loadingCount: 1 的情况）
   let isFirstNavigation = true
+  // 竞态保护：缓存进行中的路由初始化 Promise，防止并发导航触发多次 API 请求
+  let routeInitializingPromise: Promise<void> | null = null
 
   // 全局前置守卫
   router.beforeEach(async (to, from, next) => {
@@ -85,15 +87,16 @@ export const usePermissionGuard = ({
     const whiteList = routeWhitePathList
     const permissionStore = usePermissionStore()
     const userStore = useUserStoreWithOut()
-    const isLogin = computed(() => userStore.isLogin)
-    const isDynamicRoutesLoaded = computed(() => permissionStore.isDynamicRoutesLoaded)
+    // 直接读取 store 属性（beforeEach 入口为同步上下文，无需 computed 包装）
+    const isLogin = userStore.isLogin
+    const isDynamicRoutesLoaded = permissionStore.isDynamicRoutesLoaded
 
-    if (isLogin.value) {
+    if (isLogin) {
       if (to.path === '/login') {
         next({ path: '/' })
         return
       } else {
-        if (isDynamicRoutesLoaded.value) {
+        if (isDynamicRoutesLoaded) {
           next()
           return
         }
@@ -101,7 +104,11 @@ export const usePermissionGuard = ({
         loadingStart()
         currentNavigationHasLoadingStart = true
         try {
-          await initDynamicRoutes()
+          // 竞态保护：多次并发导航共享同一个初始化 Promise，防止重复发起 API 请求
+          routeInitializingPromise ??= initDynamicRoutes().finally(() => {
+            routeInitializingPromise = null
+          })
+          await routeInitializingPromise
           const redirectPath = from.query.redirect || to.path
           const redirect = decodeURIComponent(redirectPath as string)
           const nextData = to.path === redirect ? { ...to, replace: true } : { path: redirect }

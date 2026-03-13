@@ -8,7 +8,7 @@ After Cursor has completed API/Hook logic, generate a "copy-paste ready for Anti
 
 - Logic file path (e.g. `src/hooks/modules/useUserList.ts`)
 - Target component path (e.g. `src/views/user/UserList.vue` or `src/components/UserList.vue`)
-- Components to use (e.g. DataTable / Dialog / Form)
+- Components to use (e.g. Dialog / Form / Charts)
 
 ## Pre-check (mandatory)
 
@@ -16,7 +16,6 @@ After Cursor has completed API/Hook logic, generate a "copy-paste ready for Anti
 - `@docs/ai-specs/ANTIGRAVITY_UI_RULES.md`
 - `@docs/ai-specs/GOLDEN_SAMPLES/UIComponent.vue`
 - `@.cursor/rules/20-ui-styling.mdc` (UnoCSS/theme/size/layout semantic classes)
-- If **data tables** (list, pagination, sort, export): read `@docs/ai-specs/DataTable_COMPONENT.md`
 
 ## Output (required)
 
@@ -43,7 +42,7 @@ Requirements (CRITICAL):
 2) MUST reuse project components first: Icons/CScrollbar/UseEcharts (as needed)
 3) UnoCSS only: No hardcoded px/hex; use semantic classes for color/size/breakpoint/layout (uno.config.ts)
 4) Mobile First: Must work at 375px, then md:/lg: for larger
-5) Tables: Interactive data tables MUST use DataTable (see docs/ai-specs/DataTable_COMPONENT.md); other interactive components use PrimeVue (Dialog/Input/Button, etc.), consistent class/pt style
+5) Tables: Use the project's standard table/list solution; other interactive components use PrimeVue (Dialog/Input/Button, etc.), consistent class/pt style
 6) Non-component notifications: For interceptors, global error handler, use window.$toast / window.$message (see docs/ai-specs/TOAST_AND_MESSAGE.md); $message is centered, no close button; $toast is positionable, has close button
 7) Layout/sidebar/responsive: Follow docs/ai-specs/ADAPTIVE_LAYOUT.md; do not change mode/sidebarCollapse directly; use effective visibility (showXxxEffective)
 8) Vue template syntax: No TypeScript syntax in <template> (no `as`, type annotations `:`, generics `<>`); define types in <script setup>, use typed variables in template

@@ -185,8 +185,8 @@ The project uses `unplugin-auto-import` and `unplugin-vue-components`.
 
 - 你在构建 UI 时，**必须优先使用 PrimeVue 组件**，而不是原生 HTML 元素，特别是：
   - 表单字段：`<InputText>` / `<Password>` / `<InputNumber>` / `<Checkbox>` / `<RadioButton>` / `<Select>` / `<MultiSelect>` / `<DatePicker>` / `<ToggleSwitch>` 等（PrimeVue v4；禁止 v3 的 Dropdown、Calendar、InputSwitch）。详见 `./PRIMEVUE_V4_API.md`；
-  - 操作按钮：使用 `<Button>` 作为主要/次要操作按钮，而不是手写 `<button>`；
-  - 数据列表/表格：优先使用 **DataTable**（`@/components/DataTable`），详见 `docs/DataTable_COMPONENT.md`；不要从零写 `<table>` 或裸用 PrimeVue DataTable 实现分页/排序/导出等复杂交互；
+  - 操作按钮：遵循「智能选择策略」—— 标准表单/对话框操作用 `<Button>`；图标微交互优先用 `<Button text rounded plain>`；Avatar/图片卡片/整行点击等视觉复合元素用语义 HTML + UnoCSS interactive tokens（禁止套 `<Button>` 包裹视觉元素）；
+  - 数据列表/表格：避免从零写 `<table>` 或裸用 PrimeVue DataTable 实现分页/排序/导出等复杂交互；
   - 弹窗/抽屉：优先使用 `<Dialog>` / `<Drawer>`（PrimeVue v4；禁止 v3 的 Sidebar），而不是用 `position: fixed` 的 div 临时拼装。
   - 全局轻量通知：组件内用 PrimeVue `useToast()`；非组件环境（拦截器、全局错误处理）用 `window.$toast` / `window.$message`，见 `./TOAST_AND_MESSAGE.md`。
 

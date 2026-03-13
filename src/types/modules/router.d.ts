@@ -9,8 +9,8 @@ export interface AppRouteMeta {
   requiresAuth?: boolean
   roles?: string[]
   rank?: number
-  /** 布局父级标识（如 admin / fullscreen / ratio） */
-  parent?: string
+  /** 布局模式 */
+  parent?: LayoutMode
 }
 
 // 扩展 Vue Router 的 RouteMeta 接口

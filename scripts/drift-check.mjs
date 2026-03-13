@@ -114,7 +114,11 @@ function checkManualChunksDrift() {
   const config = readFileSync(VITE_CONFIG, 'utf-8')
 
   const docMatches = Array.from(doc.matchAll(/-\s+\*\*(vendor-[^*]+)\*\*/g))
-  const docChunks = new Set(docMatches.map((m) => m[1].trim()))
+  const docChunks = new Set(
+    docMatches
+      .map((m) => m[1].trim())
+      .map((name) => name.replace(/:$/, ''))
+  )
 
   const configMatches = Array.from(config.matchAll(/['"](vendor-[^'"]+)['"]/g))
   const configChunks = new Set(configMatches.map((m) => m[1].trim()))

@@ -262,7 +262,11 @@ class EnhancedCache {
 const cache = new EnhancedCache()
 const requestManager = new RequestManager()
 
-/** 速率限制：最近 1 分钟内的请求时间戳 */
+/**
+ * 速率限制：最近 1 分钟内的请求时间戳
+ * ⚠️ 本地单 Tab 独立计数，不与其他 Tab 或服务端共享——此机制提供前端公平性限流，
+ * 不能替代服务器级别的速率保护（API Gateway / Nginx limit_req 等）。
+ */
 const rateLimitTimestamps: number[] = []
 
 /**

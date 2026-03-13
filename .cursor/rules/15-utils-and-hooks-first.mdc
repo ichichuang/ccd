@@ -77,18 +77,9 @@ If you find an existing utility/hook that covers most of the need, you MUST exte
 - `src/hooks/layout/useNprogress.ts` (startProgress、doneProgress)
 - Fullscreen: use `@vueuse/core` `useFullscreen` (useFull removed)
 
-### Schema-Form Hooks (mandatory when task involves form schema)
+### Form/Table 相关 Hooks
 
-- `src/hooks/modules/useSchemaForm.ts`: Schema and formValues state (headless), addField/removeField/updateField/moveField
-- `src/components/SchemaForm/hooks/`
-  - useFormSync, useFormActions, useFormMemory, useLayout, useValidation
-  - usePersistence, useSteps, useSubmit, useLifecycle
-  - and all exports in that directory
-
-### DataTable column persistence (mandatory when task involves table column config)
-
-- `src/hooks/modules/useTablePersistence.ts`: DataTable column order/width/hidden persistence
-- Use with `tableId`; data stored in `src/stores/modules/dataTable.ts`; see `docs/ai-specs/DataTable_COMPONENT.md` §4
+（旧表单/表格架构已移除；待 Phase 19 以 ProForm/ProTable 重新定义统一入口）
 
 ## 2. Import Rules (Hard Requirements)
 
@@ -114,8 +105,7 @@ When you need a method/function for a task:
 
 Before implementing any logic, search in this order:
 
-1. **Domain-specific hooks** (if task involves SchemaForm): `src/components/SchemaForm/hooks/`
-2. **Global utils**: `src/utils/` (lodashes, date, strings, ids, safeStorage, http/*, mitt, deviceSync, etc.)
+1. **Global utils**: `src/utils/` (lodashes, date, strings, ids, safeStorage, http/*, mitt, deviceSync, etc.)
 
 Use `grep` / codebase_search for function names or semantics before writing code.
 
@@ -130,13 +120,13 @@ Before adding the method inline or creating a new file:
 1. **Analyze** whether the method is suitable for global reuse:
    - Used by multiple modules? → Likely global.
    - Pure function, no UI/store coupling? → Likely global.
-   - SchemaForm-specific only? → Prefer `src/components/SchemaForm/hooks/` or `utils/`.
+   - Form-specific only? → Prefer a dedicated `src/components/<Form>/hooks/` or `utils/`.
    - Single-use, tightly coupled to one component? → May stay local.
 
 2. **Output a brief analysis** to the user:
    - Method purpose
    - Suitable for global use? (Yes/No + reason)
-   - Recommended placement: `src/utils/<file>.ts` OR `src/components/SchemaForm/hooks/` OR keep at usage site
+   - Recommended placement: `src/utils/<file>.ts` OR `src/components/<Feature>/hooks/` OR keep at usage site
    - Ask: "Should I add this to the utils/hooks directory, or keep it locally?"
 
 3. **Wait for user decision** before placing the method.
@@ -219,12 +209,9 @@ When a task matches the following needs, you MUST use the specified exports:
 - Theme switching → `useThemeSwitch()` (+ `isThemeLocked()` if needed)
 - Locale switching → `useLocale()`
 
-### SchemaForm (src/components/SchemaForm, src/hooks/modules/useSchemaForm.ts)
+### Form/Table
 
-- Schema-driven multi-field forms → `SchemaForm` + `useSchemaForm`
-- Dynamic fields → `addField` / `removeField` / `updateField` / `moveField`
-- Validate / submit / reset / clear → from SchemaForm ref or useSchemaForm
-- See `docs/ai-specs/SCHEMA_FORM_COMPONENT.md`
+（旧表单/表格架构已移除；待 Phase 19 以 ProForm/ProTable 补齐对应目录与函数目录表）
 
 ### Layout / Infra hooks (src/hooks/layout/*)
 

@@ -3,6 +3,9 @@ import { THEME_PRESETS, DEFAULT_THEME_NAME, DEFAULT_TRANSITION_DURATION } from '
 import { generateThemeVars, applyTheme } from '@/utils/theme/engine'
 import { isThemeLocked } from '@/utils/theme/transitions'
 
+// 模块级变量持有 handler 引用，确保 removeEventListener 可精确移除同一函数引用
+let _themeMediaQueryHandler: (() => void) | null = null
+
 /** 可选强调色覆盖（hex），未设置时使用 themeName 预设 */
 type AccentColorOverride = string | null
 
@@ -100,11 +103,26 @@ export const useThemeStore = defineStore('theme', {
     },
 
     init() {
-      // 监听系统主题变化
-      window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
+      // 监听系统主题变化：存储 handler 引用以便 dispose() 能精确移除（匿名函数无法移除）
+      const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)')
+      _themeMediaQueryHandler = () => {
         if (this.mode === 'auto' || this.mode === 'glass') this.refreshTheme()
-      })
+      }
+      mediaQuery.addEventListener('change', _themeMediaQueryHandler)
       this.refreshTheme()
+    },
+
+    /**
+     * 清理 matchMedia 监听器。
+     * 在应用卸载（HMR 热重载、单测 teardown）时调用，防止监听器累积导致内存泄漏。
+     */
+    dispose() {
+      if (_themeMediaQueryHandler) {
+        window
+          .matchMedia('(prefers-color-scheme: dark)')
+          .removeEventListener('change', _themeMediaQueryHandler)
+        _themeMediaQueryHandler = null
+      }
     },
   },
 

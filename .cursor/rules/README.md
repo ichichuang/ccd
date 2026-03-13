@@ -59,10 +59,10 @@ This directory contains rule files that the Cursor AI editor must follow. Rules 
    - **Scope**: `src/**/*.vue`
    - **Auto-apply**: Yes (`alwaysApply: true`)
    - **Contents**:
-     - Component reuse map (CScrollbar, AnimateWrapper, Icons, UseEcharts, SchemaForm, DataTable, PrimeDialog)
-     - Icon selection (Lucide → MDI → Logos → custom SVG)
-     - Icons color/specificity: add `!` or use `color` prop when class fails; group-hover needs transition on Icons; see `docs/ai-specs/UNOCSS_AND_ICONS.md` §6.3.1, §6.3.2
-     - Forbidden (raw SVG, external icon URLs)
+   - Component reuse map (CScrollbar, AnimateWrapper, Icons, UseEcharts, PrimeDialog)
+   - Icon selection (Lucide → MDI → Logos → custom SVG)
+   - Icons color/specificity: add `!` or use `color` prop when class fails; group-hover needs transition on Icons; see `docs/ai-specs/UNOCSS_AND_ICONS.md` §6.3.1, §6.3.2
+   - Forbidden (raw SVG, external icon URLs)
 
 ### UI / Styling
 

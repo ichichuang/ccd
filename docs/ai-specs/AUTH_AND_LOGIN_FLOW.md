@@ -75,13 +75,12 @@ main.ts
 ### 4.2 logout 内部逻辑
 
 1. `clearUserInfo()`：清空 state（token、userInfo、isLogin）
-2. 清理 localStorage：前缀 `{prefix}-`、`schemaform:`，精确 key `theme-mode`
+2. 清理 localStorage：前缀 `{prefix}-`，精确 key `theme-mode`
 3. 300ms 后 `window.location.reload()`
 
 ### 4.3 存储清理规则
 
-- **前缀匹配**：`{VITE_PINIA_PERSIST_KEY_PREFIX}-`（Pinia persist、SchemaForm useFormMemory）
-- **前缀匹配**：`schemaform:`（SchemaForm usePersistence）
+- **前缀匹配**：`{VITE_PINIA_PERSIST_KEY_PREFIX}-`（Pinia persist）
 - **精确匹配**：`theme-mode`（主题模式）
 
 ## 5. 路由鉴权守卫链

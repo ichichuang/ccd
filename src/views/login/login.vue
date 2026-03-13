@@ -1,23 +1,19 @@
 <script setup lang="tsx">
-import type { FormValues, Schema } from '@/components/SchemaForm'
 import { brand } from '@/constants/brand'
-import { AUTH_ENABLED } from '@/constants/router'
+// import { AUTH_ENABLED } from '@/constants/router'
 import { LOGIN_CARD_MAX_WIDTH } from '@/constants/login'
 import { useDeviceStore } from '@/stores/modules/device'
-import { useUserStore } from '@/stores/modules/user'
 import { useThemeSwitch } from '@/hooks/modules/useThemeSwitch'
 import { useLocale } from '@/hooks/modules/useLocale'
 import type { SupportedLocale } from '@/locales'
 import logoSrc from '@/assets/images/face.png'
+import { goToRoute } from '@/router/utils/helper'
 
 interface SchemaFormRef {
   submit?: () => void
 }
 
 const formRef = ref<SchemaFormRef | null>(null)
-const userStore = useUserStore()
-const route = useRoute()
-const router = useRouter()
 
 const appVersion: string =
   typeof __APP_INFO__ === 'object' && __APP_INFO__ !== null
@@ -45,107 +41,18 @@ const localeOptions = computed(() =>
   supportedLocales.map(l => ({ value: l.key as SupportedLocale, label: `${l.flag} ${l.name}` }))
 )
 
-const formValues = ref<FormValues>({} as FormValues)
+// LEGACY SchemaForm 已物理删除：登录页暂时进入“白地”占位状态
 const loading = ref(false)
 const errorMessage = ref('')
 
-const loginSchema = computed<Schema>(() => ({
-  gap: 24, // 语义间距，映射到 var(--spacing-lg)
-  layout: {
-    cols: 1,
-    labelWidth: 0, // 登录页通常不需要 Label 文案，用 placeholder + icon 即可
-    labelPosition: 'top',
-    showLabel: false, // 隐藏 Label
-  },
-  columns: [
-    {
-      field: 'username',
-      label: t('login.username'),
-      component: 'InputText',
-      props: {
-        placeholder: t('login.placeholderUsername'),
-        autocomplete: 'username',
-        size: 'large', // 大尺寸输入框
-        prefixIcon: 'i-lucide-user', // 新增：前缀图标
-        fluid: true, // 确保宽度填满
-      },
-      rules: 'required',
-    },
-    {
-      field: 'password',
-      label: t('login.password'),
-      component: 'Password',
-      props: {
-        placeholder: t('login.placeholderPassword'),
-        feedback: false,
-        toggleMask: true,
-        autocomplete: 'current-password',
-        size: 'large',
-        prefixIcon: 'i-lucide-lock', // 新增：前缀图标
-        fluid: true,
-        inputClass: 'w-full', // 确保 Input 内部宽度
-      },
-      rules: 'required',
-    },
-    {
-      field: 'forgotPassword',
-      label: '',
-      component: 'Custom',
-      props: {
-        render: () => (
-          <div class="row main-end w-full">
-            <a
-              href="#"
-              class="text-primary fs-sm no-underline hover:text-accent transition-colors duration-scale-md"
-              onClick={(e: Event) => {
-                e.preventDefault()
-                /* TODO: Forgot Password */
-              }}
-            >
-              {t('login.forgotPassword')}
-            </a>
-          </div>
-        ),
-      },
-    },
-  ],
-}))
-
-async function handleSubmit(values: FormValues) {
-  if (!AUTH_ENABLED) {
-    errorMessage.value = t('login.authDisabled')
-    return
-  }
-
-  const username = String(values.username ?? '').trim()
-  const password = String(values.password ?? '').trim()
-
-  if (!username || !password) {
-    errorMessage.value = t('login.required')
-    return
-  }
-
-  try {
-    loading.value = true
-    errorMessage.value = ''
-    await userStore.login({ username, password })
-    // 架构规定：Store 不负责导航，由调用方在登录成功后跳转（见 05-architecture-decoupling）
-    const redirect = route.query.redirect
-    const targetPath =
-      typeof redirect === 'string' && redirect
-        ? decodeURIComponent(redirect)
-        : import.meta.env.VITE_ROOT_REDIRECT || '/'
-    await router.replace(targetPath)
-  } catch (error) {
-    errorMessage.value = (error as Error).message || t('login.failed')
-  } finally {
-    loading.value = false
-  }
-}
-
-/** 回车快捷登录：在输入框内按 Enter 时触发提交，与点击登录按钮一致 */
+/** 回车快捷登录：在输入框内按 Enter 时触发提交（占位实现） */
 function onEnterSubmit() {
   if (!loading.value) formRef.value?.submit?.()
+}
+
+function login() {
+  console.log('login')
+  goToRoute('Dashboard')
 }
 </script>
 
@@ -221,12 +128,18 @@ function onEnterSubmit() {
       </div>
 
       <!-- Form -->
+      <!-- LEGACY SchemaForm 已物理删除：表单区域暂时占位 -->
+      <!--
       <SchemaForm
         ref="formRef"
         v-model="formValues"
         :schema="loginSchema"
         @submit="handleSubmit"
       />
+      -->
+      <!-- <div class="surface-sunken rounded-md p-padding-lg text-muted-foreground fs-sm">
+        登录表单已清空（等待 Phase 19：ProForm 重写）
+      </div> -->
 
       <!-- Submit Button -->
       <div class="mt-margin-xl">
@@ -235,7 +148,7 @@ function onEnterSubmit() {
           :label="t('login.submit')"
           :loading="loading"
           size="large"
-          @click="formRef?.submit?.()"
+          @click="login"
         />
       </div>
 

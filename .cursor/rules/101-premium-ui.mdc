@@ -22,7 +22,7 @@ You are generating code for a world-class, enterprise-grade admin application. Y
 
 ## 3. Sizing System (Design Tokens)
 - You MUST strictly use the system-defined spacing and sizing scales: e.g., `p-padding-lg`, `px-padding-md`, `gap-scale-md`, `fs-sm` / `fs-md` (font size: `fs-{scale}` only; NEVER use `text-size-*`).
-- Default Border-Radius: MUST use `rounded-scale-md` or the `default-rounded` shortcut for cards, buttons, and surfaces. FORBIDDEN: generic Tailwind radius classes like `rounded-md`, `rounded-lg`.
+- Default Border-Radius: MUST use `rounded-scale-md` or the `def-rounded` shortcut for cards, buttons, and surfaces. FORBIDDEN: generic Tailwind radius classes like `rounded-md`, `rounded-lg`.
 - Ensure ample breathing room inside and outside of cards.
 
 ## 3a. Absolute Semantic Sizing Rule (Phase 12)

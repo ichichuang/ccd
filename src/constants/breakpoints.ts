@@ -28,3 +28,6 @@ export const BREAKPOINTS: Record<SizeScaleKey, number> = {
 
 /** 断点键名，与尺寸阶梯键统一 (SizeScaleKey) */
 export type BreakpointKey = SizeScaleKey
+
+/** 基于物理屏幕短边的平板设备检测阈值（非布局响应断点，仅用于 UA + 屏幕尺寸的设备类型判定） */
+export const TABLET_DETECTION_MIN_SHORT_SIDE = 600

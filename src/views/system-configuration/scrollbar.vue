@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { OverlayScrollbars } from 'overlayscrollbars'
+import type CScrollbar from '@/components/CScrollbar/CScrollbar.vue'
 import { useDeviceStore } from '@/stores/modules/device'
 
 const deviceStore = useDeviceStore()

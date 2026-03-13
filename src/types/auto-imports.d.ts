@@ -7,65 +7,9 @@
 export {}
 declare global {
   const $t: typeof import('@/locales').t
-  const AUTH_ENABLED: typeof import('../constants/router').AUTH_ENABLED
-  const BREADCRUMB_ICON_SIZE: typeof import('../constants/layout-menu').BREADCRUMB_ICON_SIZE
-  const BREAKPOINTS: typeof import('../constants/breakpoints').BREAKPOINTS
-  const CScrollbar: typeof import('../components/CScrollbar/index').default
   const DEFAULT_ANIMATION_CONFIG: typeof import('../hooks/modules/useChartTheme/defaults').DEFAULT_ANIMATION_CONFIG
-  const DEFAULT_LAYOUT_SETTING: typeof import('../constants/layout').DEFAULT_LAYOUT_SETTING
-  const DEFAULT_LAYOUT_VISIBILITY_SETTINGS: typeof import('../constants/layout').DEFAULT_LAYOUT_VISIBILITY_SETTINGS
-  const DEFAULT_LOCALE: typeof import('../constants/locale').DEFAULT_LOCALE
   const DEFAULT_OPACITY_VALUES: typeof import('../hooks/modules/useChartTheme/constants').DEFAULT_OPACITY_VALUES
-  const DEFAULT_SIZE_NAME: typeof import('../constants/size').DEFAULT_SIZE_NAME
-  const DEFAULT_THEME_NAME: typeof import('../constants/theme').DEFAULT_THEME_NAME
-  const DEFAULT_TRANSITION_DURATION: typeof import('../constants/theme').DEFAULT_TRANSITION_DURATION
-  const DIALOG_SETTINGS_WIDTH: typeof import('../constants/size').DIALOG_SETTINGS_WIDTH
-  const DIALOG_SETTINGS_WIDTH_PX: typeof import('../constants/size').DIALOG_SETTINGS_WIDTH_PX
   const EffectScope: typeof import('vue').EffectScope
-  const FALLBACK_LOCALE: typeof import('../constants/locale').FALLBACK_LOCALE
-  const FONT_SCALE_RATIOS: typeof import('../constants/sizeScale').FONT_SCALE_RATIOS
-  const HTTP_CONFIG: typeof import('../constants/http').HTTP_CONFIG
-  const LAYOUT_DIMENSION_KEYS: typeof import('../constants/size').LAYOUT_DIMENSION_KEYS
-  const LAYOUT_PERSIST_PICK: typeof import('../constants/layout').LAYOUT_PERSIST_PICK
-  const LAYOUT_SCALE_RATIOS: typeof import('../constants/sizeScale').LAYOUT_SCALE_RATIOS
-  const LOCALE_TO_TIMEZONE_MAP: typeof import('../constants/locale').LOCALE_TO_TIMEZONE_MAP
-  const LOGIN_CARD_MAX_WIDTH: typeof import('../constants/login').LOGIN_CARD_MAX_WIDTH
-  const MENU_ACTIVE_BG_MAPPING: typeof import('../constants/layout-menu').MENU_ACTIVE_BG_MAPPING
-  const MENU_ACTIVE_UNIFIED: typeof import('../constants/layout-menu').MENU_ACTIVE_UNIFIED
-  const MENU_COLLAPSED_BUTTON_PADDING: typeof import('../constants/layout-menu').MENU_COLLAPSED_BUTTON_PADDING
-  const MENU_COLLAPSED_BUTTON_SIZE: typeof import('../constants/layout-menu').MENU_COLLAPSED_BUTTON_SIZE
-  const MENU_COLLAPSED_FALLBACK_SIZE: typeof import('../constants/layout-menu').MENU_COLLAPSED_FALLBACK_SIZE
-  const MENU_COLLAPSED_FALLBACK_TEXT: typeof import('../constants/layout-menu').MENU_COLLAPSED_FALLBACK_TEXT
-  const MENU_ICON_COMMON_CLASS: typeof import('../constants/layout-menu').MENU_ICON_COMMON_CLASS
-  const MENU_ICON_SIZE: typeof import('../constants/layout-menu').MENU_ICON_SIZE
-  const MENU_ICON_SIZE_COLLAPSED: typeof import('../constants/layout-menu').MENU_ICON_SIZE_COLLAPSED
-  const MENU_INACTIVE_CHEVRON: typeof import('../constants/layout-menu').MENU_INACTIVE_CHEVRON
-  const MENU_INACTIVE_ICON: typeof import('../constants/layout-menu').MENU_INACTIVE_ICON
-  const MENU_INACTIVE_TEXT: typeof import('../constants/layout-menu').MENU_INACTIVE_TEXT
-  const MENU_INACTIVE_TEXT_ROOT: typeof import('../constants/layout-menu').MENU_INACTIVE_TEXT_ROOT
-  const MENU_ITEM_BASE: typeof import('../constants/layout-menu').MENU_ITEM_BASE
-  const MENU_ITEM_GAP: typeof import('../constants/layout-menu').MENU_ITEM_GAP
-  const MENU_PANEL_INDENT_CHILD: typeof import('../constants/layout-menu').MENU_PANEL_INDENT_CHILD
-  const MENU_PANEL_INDENT_ROOT: typeof import('../constants/layout-menu').MENU_PANEL_INDENT_ROOT
-  const MENU_PANEL_PADDING: typeof import('../constants/layout-menu').MENU_PANEL_PADDING
-  const MENU_TEXT_CLASS: typeof import('../constants/layout-menu').MENU_TEXT_CLASS
-  const MENU_TEXT_WEIGHT: typeof import('../constants/layout-menu').MENU_TEXT_WEIGHT
-  const RADIUS_SCALE_RATIOS: typeof import('../constants/sizeScale').RADIUS_SCALE_RATIOS
-  const ROUNDED_CARD: typeof import('../constants/layout-menu').ROUNDED_CARD
-  const ROUNDED_NAV: typeof import('../constants/layout-menu').ROUNDED_NAV
-  const ROUNDED_TAB: typeof import('../constants/layout-menu').ROUNDED_TAB
-  const SIZE_BASE_VAR_KEYS: typeof import('../constants/size').SIZE_BASE_VAR_KEYS
-  const SIZE_PERSIST_KEY: typeof import('../constants/size').SIZE_PERSIST_KEY
-  const SIZE_PRESETS: typeof import('../constants/size').SIZE_PRESETS
-  const SIZE_SCALE_KEYS: typeof import('../constants/sizeScale').SIZE_SCALE_KEYS
-  const SPACING_SCALE_RATIOS: typeof import('../constants/sizeScale').SPACING_SCALE_RATIOS
-  const TAB_ICON_SIZE: typeof import('../constants/layout-menu').TAB_ICON_SIZE
-  const THEME_PRESETS: typeof import('../constants/theme').THEME_PRESETS
-  const TRANSITION_DURATION_OPTIONS: typeof import('../constants/theme').TRANSITION_DURATION_OPTIONS
-  const TRANSITION_SCALE_VALUES: typeof import('../constants/sizeScale').TRANSITION_SCALE_VALUES
-  const TYPO_BODY: typeof import('../constants/layout-menu').TYPO_BODY
-  const TYPO_CAPTION: typeof import('../constants/layout-menu').TYPO_CAPTION
-  const TYPO_TITLE: typeof import('../constants/layout-menu').TYPO_TITLE
   const acceptHMRUpdate: typeof import('pinia').acceptHMRUpdate
   const applyAxisStyles: typeof import('../hooks/modules/useChartTheme/applyAxisStyles').applyAxisStyles
   const applyBoxplotStyles: typeof import('../hooks/modules/useChartTheme/applyBoxplotStyles').applyBoxplotStyles
@@ -98,13 +42,7 @@ declare global {
   const applyVisualMapStyles: typeof import('../hooks/modules/useChartTheme/applyVisualMapStyles').applyVisualMapStyles
   const asyncComputed: typeof import('@vueuse/core').asyncComputed
   const autoResetRef: typeof import('@vueuse/core').autoResetRef
-  const brand: typeof import('../constants/brand').brand
   const calculatePageTitle: typeof import('../hooks/layout/usePageTitle').calculatePageTitle
-  const castArray: typeof import('../utils/typeCasters').castArray
-  const castColumn: typeof import('../utils/typeCasters').castColumn
-  const castColumns: typeof import('../utils/typeCasters').castColumns
-  const castRecord: typeof import('../utils/typeCasters').castRecord
-  const castValue: typeof import('../utils/typeCasters').castValue
   const computed: typeof import('vue').computed
   const computedAsync: typeof import('@vueuse/core').computedAsync
   const computedEager: typeof import('@vueuse/core').computedEager
@@ -125,26 +63,17 @@ declare global {
   const createTieredMenuItemRenderer: typeof import('../hooks/layout/useMenuRenderer').createTieredMenuItemRenderer
   const createUnrefFn: typeof import('@vueuse/core').createUnrefFn
   const customRef: typeof import('vue').customRef
-  const debounceFn: typeof import('../utils/lodashes').debounceFn
   const debouncedRef: typeof import('@vueuse/core').debouncedRef
   const debouncedWatch: typeof import('@vueuse/core').debouncedWatch
-  const deepClone: typeof import('../utils/lodashes').deepClone
   const deepCloneWithFunctions: typeof import('../hooks/modules/useChartTheme/utils').deepCloneWithFunctions
-  const deepEqual: typeof import('../utils/lodashes').deepEqual
-  const deepMerge: typeof import('../utils/lodashes').deepMerge
   const defineAsyncComponent: typeof import('vue').defineAsyncComponent
   const defineComponent: typeof import('vue').defineComponent
   const defineStore: typeof import('pinia').defineStore
   const eagerComputed: typeof import('@vueuse/core').eagerComputed
   const effectScope: typeof import('vue').effectScope
-  const errorPagesNameList: typeof import('../constants/router').errorPagesNameList
-  const errorPagesPathList: typeof import('../constants/router').errorPagesPathList
   const extendRef: typeof import('@vueuse/core').extendRef
   const fadeOutNativePreloader: typeof import('../hooks/layout/useLoading').fadeOutNativePreloader
-  const generateIdFromKey: typeof import('../utils/ids').generateIdFromKey
-  const generateUniqueId: typeof import('../utils/ids').generateUniqueId
   const getActivePinia: typeof import('pinia').getActivePinia
-  const getBreakpointSync: typeof import('../utils/deviceSync').getBreakpointSync
   const getCurrentInstance: typeof import('vue').getCurrentInstance
   const getCurrentScope: typeof import('vue').getCurrentScope
   const getCurrentWatcher: typeof import('vue').getCurrentWatcher
@@ -154,12 +83,10 @@ declare global {
   const getDefaultMarkPointConfig: typeof import('../hooks/modules/useChartTheme/defaults').getDefaultMarkPointConfig
   const getDefaultToolboxConfig: typeof import('../hooks/modules/useChartTheme/defaults').getDefaultToolboxConfig
   const getDefaultVisualMapConfig: typeof import('../hooks/modules/useChartTheme/defaults').getDefaultVisualMapConfig
-  const getDeviceTypeSync: typeof import('../utils/deviceSync').getDeviceTypeSync
   const getIconSize: typeof import('../hooks/layout/useMenuVisuals').getIconSize
   const getMenuItemActive: typeof import('../hooks/layout/useMenuVisuals').getMenuItemActive
   const getMenuItemBase: typeof import('../hooks/layout/useMenuVisuals').getMenuItemBase
   const getMenuStateClasses: typeof import('../hooks/layout/useMenuVisuals').getMenuStateClasses
-  const getPresetPrimaryColor: typeof import('../constants/theme').getPresetPrimaryColor
   const h: typeof import('vue').h
   const ignorableWatch: typeof import('@vueuse/core').ignorableWatch
   const inject: typeof import('vue').inject
@@ -179,10 +106,7 @@ declare global {
   const mapWritableState: typeof import('pinia').mapWritableState
   const markRaw: typeof import('vue').markRaw
   const mergeAdvancedConfigs: typeof import('../hooks/modules/useChartTheme/mergeAdvancedConfigs').mergeAdvancedConfigs
-  const mitt: typeof import('../utils/mitt').default
   const nextTick: typeof import('vue').nextTick
-  const objectOmit: typeof import('../utils/lodashes').objectOmit
-  const objectPick: typeof import('../utils/lodashes').objectPick
   const onActivated: typeof import('vue').onActivated
   const onBeforeMount: typeof import('vue').onBeforeMount
   const onBeforeRouteLeave: typeof import('vue-router').onBeforeRouteLeave
@@ -220,21 +144,9 @@ declare global {
   const refDefault: typeof import('@vueuse/core').refDefault
   const refThrottled: typeof import('@vueuse/core').refThrottled
   const refWithControl: typeof import('@vueuse/core').refWithControl
-  const requestAuthCurrentUser: typeof import('../api/auth/auth.api').requestAuthCurrentUser
-  const requestAuthCurrentUserMock: typeof import('../api/auth/auth.api').requestAuthCurrentUserMock
-  const requestAuthLogin: typeof import('../api/auth/auth.api').requestAuthLogin
-  const requestAuthLoginMock: typeof import('../api/auth/auth.api').requestAuthLoginMock
-  const requestCurrentUserMock: typeof import('../api/user/login').requestCurrentUserMock
-  const requestSystemAsyncRoutes: typeof import('../api/system/system.api').requestSystemAsyncRoutes
-  const requestSystemAsyncRoutesMock: typeof import('../api/system/system.api').requestSystemAsyncRoutesMock
-  const requestSystemAsyncRoutesReal: typeof import('../api/system/system.api').requestSystemAsyncRoutesReal
-  const requestUserLoginMock: typeof import('../api/user/login').requestUserLoginMock
   const resolveComponent: typeof import('vue').resolveComponent
   const resolveRef: typeof import('@vueuse/core').resolveRef
   const resolveUnref: typeof import('@vueuse/core').resolveUnref
-  const rootRedirect: typeof import('../constants/router').rootRedirect
-  const routeWhiteNameList: typeof import('../constants/router').routeWhiteNameList
-  const routeWhitePathList: typeof import('../constants/router').routeWhitePathList
   const setActivePinia: typeof import('pinia').setActivePinia
   const setMapStoreSuffix: typeof import('pinia').setMapStoreSuffix
   const shallowReactive: typeof import('vue').shallowReactive
@@ -244,10 +156,8 @@ declare global {
   const syncRef: typeof import('@vueuse/core').syncRef
   const syncRefs: typeof import('@vueuse/core').syncRefs
   const templateRef: typeof import('@vueuse/core').templateRef
-  const throttleFn: typeof import('../utils/lodashes').throttleFn
   const throttledRef: typeof import('@vueuse/core').throttledRef
   const throttledWatch: typeof import('@vueuse/core').throttledWatch
-  const toKebabCase: typeof import('../utils/strings').toKebabCase
   const toRaw: typeof import('vue').toRaw
   const toReactive: typeof import('@vueuse/core').toReactive
   const toRef: typeof import('vue').toRef
@@ -282,6 +192,7 @@ declare global {
   const useAsyncQueue: typeof import('@vueuse/core').useAsyncQueue
   const useAsyncState: typeof import('@vueuse/core').useAsyncState
   const useAttrs: typeof import('vue').useAttrs
+  const useAutoMitt: typeof import('../hooks/modules/useAutoMitt').useAutoMitt
   const useBase64: typeof import('@vueuse/core').useBase64
   const useBattery: typeof import('@vueuse/core').useBattery
   const useBluetooth: typeof import('@vueuse/core').useBluetooth
@@ -303,7 +214,6 @@ declare global {
   const useCurrentElement: typeof import('@vueuse/core').useCurrentElement
   const useCycleList: typeof import('@vueuse/core').useCycleList
   const useDark: typeof import('@vueuse/core').useDark
-  const useDataTableStore: typeof import('../stores/modules/dataTable').useDataTableStore
   const useDateFormat: typeof import('@vueuse/core').useDateFormat
   const useDateUtils: typeof import('../hooks/modules/useDateUtils').useDateUtils
   const useDebounce: typeof import('@vueuse/core').useDebounce
@@ -362,7 +272,6 @@ declare global {
   const useMediaQuery: typeof import('@vueuse/core').useMediaQuery
   const useMemoize: typeof import('@vueuse/core').useMemoize
   const useMemory: typeof import('@vueuse/core').useMemory
-  const useMitt: typeof import('../utils/mitt').useMitt
   const useModel: typeof import('vue').useModel
   const useMounted: typeof import('@vueuse/core').useMounted
   const useMouse: typeof import('@vueuse/core').useMouse
@@ -382,6 +291,7 @@ declare global {
   const useParentElement: typeof import('@vueuse/core').useParentElement
   const usePerformanceObserver: typeof import('@vueuse/core').usePerformanceObserver
   const usePermission: typeof import('@vueuse/core').usePermission
+  const usePermissionRoutes: typeof import('../hooks/modules/usePermissionRoutes').usePermissionRoutes
   const usePermissionStore: typeof import('../stores/modules/permission').usePermissionStore
   const usePermissionStoreWithOut: typeof import('../stores/modules/permission').usePermissionStoreWithOut
   const usePointer: typeof import('@vueuse/core').usePointer
@@ -400,7 +310,6 @@ declare global {
   const useRoute: typeof import('vue-router').useRoute
   const useRouter: typeof import('vue-router').useRouter
   const useSSRWidth: typeof import('@vueuse/core').useSSRWidth
-  const useSchemaForm: typeof import('../hooks/modules/useSchemaForm').useSchemaForm
   const useScreenOrientation: typeof import('@vueuse/core').useScreenOrientation
   const useScreenSafeArea: typeof import('@vueuse/core').useScreenSafeArea
   const useScriptTag: typeof import('@vueuse/core').useScriptTag
@@ -420,7 +329,6 @@ declare global {
   const useSupported: typeof import('@vueuse/core').useSupported
   const useSwipe: typeof import('@vueuse/core').useSwipe
   const useTableDrawerStore: typeof import('../stores/modules/tableDrawer').useTableDrawerStore
-  const useTablePersistence: typeof import('../hooks/modules/useTablePersistence').useTablePersistence
   const useTemplateRef: typeof import('vue').useTemplateRef
   const useTemplateRefsList: typeof import('@vueuse/core').useTemplateRefsList
   const useTextDirection: typeof import('@vueuse/core').useTextDirection
@@ -482,9 +390,6 @@ declare global {
   export type { Component, Slot, Slots, ComponentPublicInstance, ComputedRef, DirectiveBinding, ExtractDefaultPropTypes, ExtractPropTypes, ExtractPublicPropTypes, InjectionKey, PropType, Ref, ShallowRef, MaybeRef, MaybeRefOrGetter, VNode, WritableComputedRef } from 'vue'
   import('vue')
   // @ts-ignore
-  export type { DataTableUserPreferences } from '../stores/modules/dataTable'
-  import('../stores/modules/dataTable')
-  // @ts-ignore
   export type { TableDrawerState } from '../stores/modules/tableDrawer'
   import('../stores/modules/tableDrawer')
   // @ts-ignore
@@ -514,10 +419,4 @@ declare global {
   // @ts-ignore
   export type { UseHttpRequestOptions, UseHttpRequestResult } from '../hooks/modules/useHttpRequest'
   import('../hooks/modules/useHttpRequest')
-  // @ts-ignore
-  export type { UseSchemaFormReturn } from '../hooks/modules/useSchemaForm'
-  import('../hooks/modules/useSchemaForm')
-  // @ts-ignore
-  export type { UseTablePersistenceReturn } from '../hooks/modules/useTablePersistence'
-  import('../hooks/modules/useTablePersistence')
 }

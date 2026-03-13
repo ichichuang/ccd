@@ -71,12 +71,7 @@ This directory stores **copy-paste ready prompt templates** so Cursor follows pr
    - **Prerequisite**: Read `docs/ai-specs/TOAST_AND_MESSAGE.md`
    - **Key steps**: Use useToast() in components; window.$toast / window.$message outside; $message centered, no close; $toast positionable, has close
 
-9. **`08-SchemaForm.md`** - SchemaForm component
-   - **Purpose**: Multi-field forms, validation, steps, groups, dynamic fields
-   - **Flow**: Read docs → Define Schema → Use useSchemaForm → Integrate UI
-   - **Scope**: `src/views/**/*.vue`, `src/components/**/*.vue`
-   - **Prerequisite**: Read `docs/ai-specs/SCHEMA_FORM_COMPONENT.md`
-   - **Key steps**: Schema definition, useSchemaForm usage, dynamic field management, validation and submit
+9. **`08-form-skill.md`** - (Deprecated)
 
 ### Chart component
 
@@ -102,7 +97,6 @@ When receiving a task, pick the matching Skill:
 - **Icons color not applied** → `10-icons-color-styling.md`
 - **UI task** → `06-assemble-ui-handoff.md`
 - **Feedback notification** → `07-toast-message-feedback.md`
-- **Form task** → `08-SchemaForm.md`
 - **Chart task** → `09-use-echarts.md`
 
 ### Skill execution flow
@@ -115,10 +109,8 @@ When receiving a task, pick the matching Skill:
 
 Some Skills require reading docs first:
 
-- **SchemaForm**: Read `docs/ai-specs/SCHEMA_FORM_COMPONENT.md`
 - **Toast/Message**: Read `docs/ai-specs/TOAST_AND_MESSAGE.md`
 - **Layout**: Read `docs/ai-specs/ADAPTIVE_LAYOUT.md`
-- **Data tables**: Read `docs/ai-specs/DataTable_COMPONENT.md`
 - **Icons color**: `docs/ai-specs/UNOCSS_AND_ICONS.md` §6.3.1
 
 ## General usage (recommended to copy)
@@ -137,5 +129,4 @@ And relevant rules:
 - @.cursor/rules/22-layouts.mdc (layout shells/Admin mode)
 - @.cursor/rules/24-tsx-rendering.mdc (TSX for programmatic render, no h())
 For layout/sidebar/responsive: read @docs/ai-specs/ADAPTIVE_LAYOUT.md and follow.
-For data tables (list/pagination/sort/export): read @docs/ai-specs/DataTable_COMPONENT.md and use DataTable.
 ```

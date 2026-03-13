@@ -12,9 +12,9 @@ alwaysApply: true
 
   <workflow>
     <step>Before generating any code, always read and follow <file>docs/ai-specs/PROJECT_PROTOCOL.md</file>.</step>
-    <step>If a task involves programmatic rendering (for example DataTable body, dialog contentRenderer), read <file>docs/ai-specs/AI_CODING_PROTOCOL.md</file> and follow its decision flow; ensure <code>lang="tsx"</code> when using JSX in <code>.vue</code>.</step>
+    <step>If a task involves programmatic rendering (for example dialog contentRenderer), read <file>docs/ai-specs/AI_CODING_PROTOCOL.md</file> and follow its decision flow; ensure <code>lang="tsx"</code> when using JSX in <code>.vue</code>.</step>
     <step>When architecture or directory responsibilities are unclear, read <file>docs/architecture/ARCHITECTURE_OVERVIEW.md</file> and <file>docs/architecture/DIRECTORY_STRUCTURE.md</file> before writing code.</step>
-    <step>When adding logic, store, component, API, or DataTable/SchemaForm code, first inspect the golden samples in <file>docs/ai-specs/GOLDEN_SAMPLES/</file> and strictly match their style (for DataTable column body / filterRenderer / customFooter, also reference <file>docs/ai-specs/GOLDEN_SAMPLES/DataTableBodyColumn.vue</file> and <file>src/views/example/data-table/configs/customColumnConfig.tsx</file>).</step>
+    <step>When adding logic, store, component, or API code, first inspect the golden samples in <file>docs/ai-specs/GOLDEN_SAMPLES/</file> and strictly match their style.</step>
     <step>When generating PrimeVue code, read <file>docs/ai-specs/PRIMEVUE_V4_API.md</file> and always use v4 component names (for example <code>Select</code>, <code>DatePicker</code>, <code>Drawer</code>); never use deprecated v3 names such as <code>Dropdown</code>, <code>Calendar</code>, <code>InputSwitch</code>, or <code>Sidebar</code>.</step>
   </workflow>
 
@@ -76,7 +76,6 @@ alwaysApply: true
     <section name="behavior">
       <rule>Separate business logic and UI: put feature logic in composables under <file>src/hooks/</file>, UI-only components in <file>src/components/</file>, and container pages in <file>src/views/</file>.</rule>
       <rule>For dialogs, modals, feedback prompts, and confirmation flows, use <code>useDialog()</code> from <file>@/hooks/modules/useDialog</file> and follow <file>docs/ai-specs/DIALOG_COMPONENT.md</file>; do not create ad-hoc dialog implementations.</rule>
-      <rule>For multi-field forms with validation, steps, sections, or dynamic schema, use <code>SchemaForm</code> and <code>useSchemaForm</code> as described in <file>docs/ai-specs/SCHEMA_FORM_COMPONENT.md</file>; do not hand-build large forms with raw PrimeVue inputs.</rule>
       <rule>For lightweight notifications outside component context (for example HTTP interceptors, global error handlers), use <code>window.$toast</code> and <code>window.$message</code> as documented in <file>docs/ai-specs/TOAST_AND_MESSAGE.md</file>; do not build custom global notification systems.</rule>
       <rule>Do not manually import Vue runtime APIs such as <code>ref</code>, <code>computed</code>, <code>watch</code>; rely on the build system auto-import configuration in <file>docs/ai-specs/BUILD_SYSTEM.md</file> and remove unused imports, prefixing intentionally unused variables with <code>_</code>.</rule>
       <rule>After generating code, self-check against the relevant golden sample in <file>docs/ai-specs/GOLDEN_SAMPLES/</file> and adjust style to match.</rule>

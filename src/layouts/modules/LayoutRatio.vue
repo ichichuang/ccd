@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { getCurrentRouteMeta } from '@/router/utils/helper'
+import { useRoute } from 'vue-router'
 import { useDeviceStore } from '@/stores/modules/device'
 import AnimateRouterView from '@&/AnimateRouterView.vue'
 import Loading from '@&/Loading.vue'
@@ -11,7 +11,7 @@ const isPageLoading = computed(() => layoutStore.isPageLoading)
 const width = computed(() => deviceStore.getWidth)
 const height = computed(() => deviceStore.getHeight)
 
-const routeMeta = getCurrentRouteMeta()
+const route = useRoute()
 
 function parseRatioString(input?: unknown): number {
   const fallback = 16 / 9
@@ -34,7 +34,7 @@ function parseRatioString(input?: unknown): number {
   return fallback
 }
 
-const aspectRatio = ref<number>(parseRatioString(routeMeta.ratio))
+const aspectRatio = computed<number>(() => parseRatioString(route.meta?.ratio))
 
 const wrapperRef = ref<HTMLDivElement>()
 const ratioRef = ref<HTMLDivElement>()
@@ -125,6 +125,13 @@ watch(
     scheduleUpdate()
   },
   { immediate: false }
+)
+
+watch(
+  () => route.meta?.ratio,
+  () => {
+    scheduleUpdate()
+  }
 )
 </script>
 <template>

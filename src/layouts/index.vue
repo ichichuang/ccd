@@ -11,6 +11,7 @@ import FullScreenLayout from '@/layouts/modules/LayoutFullScreen.vue'
 import RatioLayout from '@/layouts/modules/LayoutRatio.vue'
 import { useLayoutStore } from '@/stores/modules/layout'
 import { TRANSITION_SCALE_VALUES } from '@/constants/sizeScale'
+import { useRoute, useRouter } from 'vue-router'
 
 defineOptions({ name: 'LayoutIndex' })
 
@@ -20,15 +21,19 @@ const loadingOverlayDuration = `${TRANSITION_SCALE_VALUES['2xl']}ms`
 const layoutStore = useLayoutStore()
 const isLoading = computed(() => layoutStore.isLoading)
 const route = useRoute()
+const router = useRouter()
 const currentLayoutMode = computed<LayoutMode>(() => (route.meta?.parent as LayoutMode) || 'admin')
 const previousLayout = ref<LayoutMode>(currentLayoutMode.value)
 
-watch(
-  () => route.fullPath,
-  () => {
-    previousLayout.value = currentLayoutMode.value
-  }
-)
+// Use beforeResolve to capture the 'from' route just before the transition
+const unregisterGuard = router.beforeResolve((_to, from) => {
+  previousLayout.value = (from.meta?.parent as LayoutMode) || 'admin'
+})
+
+// Prevent memory leaks if the layout component is ever hot-reloaded or unmounted
+onUnmounted(() => {
+  unregisterGuard()
+})
 
 const isLoadingRef = ref(true)
 watch(

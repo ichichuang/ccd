@@ -32,8 +32,8 @@ export const HTTP_CONFIG = {
   healthCheckInterval: 30000, // 健康检查间隔（毫秒）
 
   // 安全配置（可被 RequestConfig.security 覆盖）
-  enableCsrf: true, // 是否启用 CSRF 保护（预留：拦截器接入）
-  enableSignature: true, // 是否启用请求签名（预留：拦截器接入）
+  enableCsrf: false, // 是否启用 CSRF 保护（预留：拦截器逻辑已就位，对接后端时改为 true）
+  enableSignature: false, // 是否启用请求签名（预留：拦截器逻辑已就位，对接后端时改为 true）
   enableRateLimit: true, // 是否启用速率限制（methods.ts 已接入）
   maxRequestsPerMinute: 60, // 每分钟最大请求数（methods.ts 已接入）
 

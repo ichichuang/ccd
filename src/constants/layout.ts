@@ -9,7 +9,7 @@
 
 /** 布局默认配置（兼容基准：包含 showXxx，但 store 不再以平铺 showXxx 作为 SSOT） */
 export const DEFAULT_LAYOUT_SETTING: LayoutSetting = {
-  mode: 'vertical' as AdminLayoutMode,
+  preferredMode: 'vertical' as AdminLayoutMode,
   sidebarCollapse: false,
   sidebarUniqueOpened: true,
   sidebarFixed: true,
@@ -56,7 +56,7 @@ export const DEFAULT_LAYOUT_VISIBILITY_SETTINGS: Record<AdminLayoutMode, LayoutV
 
 /** 持久化字段（显式列出，避免迁移期因 keys 推导导致字段漂移） */
 export const LAYOUT_PERSIST_PICK: (keyof LayoutStoreState)[] = [
-  'mode',
+  'preferredMode',
   'sidebarCollapse',
   'sidebarUniqueOpened',
   'sidebarFixed',

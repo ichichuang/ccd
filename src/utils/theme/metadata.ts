@@ -85,4 +85,9 @@ export const THEME_ENGINE = {
   sidebarDark: '#18181b',
   sidebarLight: '#f4f4f5',
   sidebarBrightnessOffset: -2,
+
+  /** 未配置 primary 时的最终兜底色（仅作最后降级，不作业务默认值） */
+  fallbackPrimary: '#000000',
+  /** 亮色模式 light 变体前景色计算的黑色混合目标 */
+  darkForeground: '#000000',
 }

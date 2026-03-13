@@ -26,7 +26,7 @@ You are generating code for a world-class, enterprise-grade admin application. Y
 
 - **FORBIDDEN:** Raw `rem`, `em`, or `px` in business code. Use semantic tokens exclusively: `p-padding-*`, `m-margin-*`, `gap-*`, `fs-xs`…`fs-5xl`, `var(--spacing-*)`, layout variables (`w-sidebarWidth`, `h-headerHeight`).
 - **Macro-layout:** MUST use `layout-content-narrow`, `layout-content`, or `layout-content-wide` (vw-based). FORBIDDEN: `max-w-7xl`, `max-w-5xl`, `max-w-2xl` (rem-based).
-- Default Border-Radius: MUST use `rounded-scale-md` or the `default-rounded` shortcut for cards, buttons, and surfaces. FORBIDDEN: generic Tailwind radius classes like `rounded-md`, `rounded-lg`.
+- Default Border-Radius: MUST use `rounded-scale-md` or the `def-rounded` shortcut for cards, buttons, and surfaces. FORBIDDEN: generic Tailwind radius classes like `rounded-md`, `rounded-lg`.
 - Ensure ample breathing room inside and outside of cards.
 
 ## 3a. Theme-Tinted Shadow Policy (Phase 12)
