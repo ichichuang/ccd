@@ -132,7 +132,7 @@ const styleVars = computed(() => {
     >
       <div
         :key="currentRoute.fullPath"
-        class="h-full w-full"
+        class="layout-full"
       >
         <keep-alive
           v-if="enableKeepAlive"

@@ -270,7 +270,7 @@ function onAccordionActiveIndexChange(value: number | number[] | undefined): voi
 
 <template>
   <!-- 最外层：全屏 Flex 容器 (80% / 20%) -->
-  <div class="h-full w-full flex overflow-hidden">
+  <div class="layout-full flex overflow-hidden">
     <!-- 左侧：主内容 (80%) -->
     <div class="basis-4/5 min-w-0 h-full column">
       <CScrollbar

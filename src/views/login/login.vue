@@ -237,7 +237,7 @@ async function handleLoginSubmit(): Promise<void> {
         />
       </div>
 
-      <div class="h-full w-full center p-padding-sm md:p-padding-md lg:p-padding-lg">
+      <div class="layout-full center p-padding-sm md:p-padding-md lg:p-padding-lg">
         <div class="w-full layout-content-narrow col-stack-xl">
           <div class="col-stack-sm text-left">
             <h2 class="fs-3xl font-bold text-foreground">
