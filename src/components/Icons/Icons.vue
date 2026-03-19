@@ -45,14 +45,15 @@ const sizeStyle = computed(() => {
   if (typeof s === 'string' && SIZE_SCALE_KEYS.includes(s as SizeScaleKey)) {
     return {}
   }
+  // 数字或纯数字字符串统一按 px 处理，避免 rem/em 心智负担
   if (typeof s === 'number') {
-    const rem = s / 16
-    return { fontSize: `${rem}rem` }
+    const px = Math.round(s)
+    return { fontSize: `${px}px` }
   }
   if (typeof s === 'string' && !Number.isNaN(Number(s))) {
     const numeric = Number(s)
-    const rem = numeric / 16
-    return { fontSize: `${rem}rem` }
+    const px = Math.round(numeric)
+    return { fontSize: `${px}px` }
   }
   if (typeof s === 'string') return { fontSize: s }
   return {}

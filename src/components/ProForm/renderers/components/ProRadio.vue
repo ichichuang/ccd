@@ -45,7 +45,7 @@ const handleUpdate = (value: unknown): void => {
   </span>
   <div
     v-else
-    class="flex flex-wrap gap-scale-xs"
+    class="layout-wrap gap-scale-xs"
   >
     <label
       v-for="option in options"

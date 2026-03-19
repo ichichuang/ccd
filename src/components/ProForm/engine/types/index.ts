@@ -7,6 +7,7 @@ export interface GridLayoutSchema {
   type: 'grid'
   /**
    * 间距，建议使用 CSS 变量，例如 'var(--spacing-md)'
+   * @default 参考 PRO_FORM_DEFAULTS.gap
    */
   gap?: string
 }
@@ -71,6 +72,7 @@ export interface FieldSchema<TValue = unknown> {
   options?: SelectOption[] | OptionsLoader
   /**
    * 网格布局中占用的列数（12 栅格制），仅用于渲染层布局，不参与业务逻辑
+   * @default 参考 PRO_FORM_DEFAULTS.gridSpan
    */
   span?: ResponsiveSpan
 }
@@ -148,6 +150,7 @@ export interface FormContext<TValues extends Record<string, unknown> = Record<st
   resetFields(names?: (keyof TValues)[]): void
   clearValidate(names?: (keyof TValues)[]): void
   setFieldProps(name: string, props: Record<string, unknown>): void
+  setValidateOn(validateOn?: 'change' | 'blur' | 'submit'): void
   validate(): Promise<boolean>
   submit(): Promise<void>
   reset(): Promise<void> | void
@@ -194,6 +197,10 @@ export interface ProFormProps<TValues extends Record<string, unknown> = Record<s
   resolver?: ValidationResolver<TValues>
   disabled?: boolean
   readonly?: boolean
+  /**
+   * 表单布局模式
+   * @default 参考 PRO_FORM_DEFAULTS.layout
+   */
   layout?: FormLayoutMode
   persistKey?: string
   autoSave?: boolean
@@ -204,10 +211,12 @@ export interface ProFormProps<TValues extends Record<string, unknown> = Record<s
   labelWidth?: string | number
   /**
    * 表单主轴间距，推荐使用 CSS 变量字符串，例如 'var(--spacing-md)'
+   * @default 参考 PRO_FORM_DEFAULTS.gap
    */
   gap?: string
   /**
    * 标签对齐方式，仅在 horizontal 布局下生效
+   * @default 参考 PRO_FORM_DEFAULTS.labelAlign
    */
   labelAlign?: 'left' | 'center' | 'right'
 }
@@ -237,6 +246,18 @@ export interface FieldArrayReturn<TValue = unknown> {
   append: (value: TValue) => void
   remove: (index: number) => void
   move: (from: number, to: number) => void
+}
+
+/**
+ * ProForm 组件 expose 类型
+ * 通过 ref 访问 ProForm 实例时使用
+ */
+export interface ProFormExpose<TValues extends Record<string, unknown> = Record<string, unknown>> {
+  form: FormContext<TValues>
+  submit: () => Promise<void>
+  validate: () => Promise<boolean>
+  getValues: () => TValues
+  getFormState: () => FormState<TValues>
 }
 
 /**

@@ -45,10 +45,9 @@ export const MENU_TEXT_WEIGHT = 'font-medium'
 /** 面板项内边距 */
 export const MENU_PANEL_PADDING = 'px-padding-md py-padding-sm'
 /** 文字样式 */
-export const MENU_TEXT_CLASS = 'fs-md font-sans leading-none'
+export const MENU_TEXT_CLASS = 'fs-md font-sans'
 /** 图标通用 class（transition-none 使图标随 wrapper 同帧变化，不独立过渡） */
-export const MENU_ICON_COMMON_CLASS =
-  'w-5 text-center flex-shrink-0 flex items-center justify-center transition-none!'
+export const MENU_ICON_COMMON_CLASS = 'w-5 text-center flex-shrink-0 center transition-none!'
 
 /**
  * Panel 缩进常量

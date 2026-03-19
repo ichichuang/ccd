@@ -134,13 +134,13 @@ deviceStore 变化（设备类型、断点、视口）
 
 项目内置完整设计系统，开发时需遵循的规范详见 `docs/ai-specs/` 下相关文档：
 
-| 系统                 | 说明                                 | 相关文档                              |
-| -------------------- | ------------------------------------ | ------------------------------------- |
-| **主题系统**         | 亮/暗模式、预设、PrimeVue 融合       | `PRIMEVUE_THEME.md`                   |
-| **尺寸系统**         | 响应式尺寸阶梯、根字号、布局变量     | `uno.config.ts` + `constants/size.ts` |
-| **布局系统**         | 断点、PC/平板/移动端适配、有效显隐   | `ADAPTIVE_LAYOUT.md`                  |
-| **ECharts 主题系统** | UseEcharts、useChartTheme 图表主题化 | `ECHARTS_THEME.md`                    |
-| **安全存储**         | 加密、压缩、Pinia 序列化             | `PROJECT_PROTOCOL.md` §8.4.7          |
+| 系统                 | 说明                                                  | 相关文档                              |
+| -------------------- | ----------------------------------------------------- | ------------------------------------- |
+| **主题系统**         | 亮/暗模式、预设、PrimeVue 融合                        | `PRIMEVUE_THEME.md`                   |
+| **尺寸系统**         | 响应式尺寸阶梯、根字号、布局变量                      | `uno.config.ts` + `constants/size.ts` |
+| **布局系统**         | 断点、PC/平板/移动端适配、有效显隐（业务宽屏起点 xl） | `ADAPTIVE_LAYOUT.md`                  |
+| **ECharts 主题系统** | UseEcharts、useChartTheme 图表主题化                  | `ECHARTS_THEME.md`                    |
+| **安全存储**         | 加密、压缩、Pinia 序列化                              | `PROJECT_PROTOCOL.md` §8.4.7          |
 
 ---
 

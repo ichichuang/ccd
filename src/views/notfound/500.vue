@@ -14,9 +14,9 @@ function handleBack() {
 
 <template>
   <div
-    class="h-full flex flex-col items-center justify-center gap-lg px-padding-xl py-padding-2xl text-center bg-surface-ground"
+    class="h-full column-center gap-lg px-padding-xl py-padding-2xl text-center bg-surface-ground"
   >
-    <div class="flex items-center justify-center w-28 h-28 rounded-full bg-danger/10 shrink-0">
+    <div class="center w-28 h-28 rounded-full bg-danger/10 shrink-0">
       <Icons
         name="i-lucide-server-crash"
         size="5xl"

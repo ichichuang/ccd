@@ -5,6 +5,7 @@ import { setupStores } from '@/plugins/modules/stores'
 import { setupErrorHandler } from '@/plugins/modules/errorHandler'
 import { setupPrimeVue } from '@/plugins/modules/primevue'
 import { setupScrollbar } from '@/plugins/modules/scrollbar'
+import { vAuth } from '@/directives/auth'
 
 /**
  * 统一设置所有插件
@@ -25,4 +26,7 @@ export const setupPlugins = async (app: App) => {
 
   // 在语言系统之后初始化 DateUtils，确保语言设置已就绪
   await setupDateUtils(app)
+
+  // 全局指令
+  app.directive('auth', vAuth)
 }

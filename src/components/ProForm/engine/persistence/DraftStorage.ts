@@ -1,3 +1,5 @@
+import { PRO_FORM_LOGGER } from '../utils/logger'
+
 export class DraftStorage {
   private static PREFIX = 'pro-form-draft:'
 
@@ -5,7 +7,7 @@ export class DraftStorage {
     try {
       localStorage.setItem(this.PREFIX + key, JSON.stringify(data))
     } catch (e) {
-      console.warn('[ProForm] Failed to save draft', e)
+      PRO_FORM_LOGGER.warn('Failed to save draft', e)
     }
   }
 
@@ -14,7 +16,7 @@ export class DraftStorage {
       const raw = localStorage.getItem(this.PREFIX + key)
       return raw ? (JSON.parse(raw) as Record<string, unknown>) : null
     } catch (e) {
-      console.warn('[ProForm] Failed to load draft', e)
+      PRO_FORM_LOGGER.warn('Failed to load draft', e)
       return null
     }
   }

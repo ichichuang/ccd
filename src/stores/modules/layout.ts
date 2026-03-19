@@ -8,6 +8,8 @@ import {
 import { useDeviceStore } from '@/stores/modules/device'
 import { deepClone } from '@/utils/lodashes'
 import store from '@/stores'
+/** 缓存 deviceStore，避免 effectiveMode getter 每次求值都调用 useDeviceStore() */
+let _deviceStore: ReturnType<typeof useDeviceStore> | null = null
 import { createPiniaEncryptedSerializer } from '@/utils/safeStorage/piniaSerializer'
 import { defineStore } from 'pinia'
 
@@ -80,19 +82,20 @@ export const useLayoutStore = defineStore('layout', {
 
   getters: {
     effectiveMode: (state): AdminLayoutMode => {
-      const deviceStore = useDeviceStore()
-      // 1) 真移动端（设备类型为 Mobile，或 xs/sm 视口）统一走抽屉式 horizontal
-      if (
-        deviceStore.type === 'Mobile' ||
-        deviceStore.currentBreakpoint === 'xs' ||
-        deviceStore.currentBreakpoint === 'sm'
-      ) {
+      if (!_deviceStore) _deviceStore = useDeviceStore()
+      const type = _deviceStore.type
+      const bp = _deviceStore.currentBreakpoint
+
+      // 1. Drawer Zone & Narrow Fallback Zone (< 1280px)
+      // Mobile device OR any breakpoint below 'xl' → horizontal (LayoutAdmin decides Drawer vs Top Menu)
+      const isDrawerOrNarrow = type === 'Mobile' || ['xs', 'sm', 'md', 'lg'].includes(bp)
+      if (isDrawerOrNarrow) {
         return 'horizontal'
       }
-      // 2) 平板 md 视口保持 vertical，由 LayoutAdmin 负责按断点收缩侧栏
-      if (deviceStore.isMobileLayout) return 'vertical'
-      if (deviceStore.type === 'PC' && deviceStore.orientation === 'vertical') return 'horizontal'
-      return state.preferredMode
+
+      // 2. Wide Zone (>= 1280px)
+      if (type === 'Tablet') return 'vertical' // iPad Pro landscape prefers sidebar
+      return state.preferredMode // PC respects user choice
     },
     mode(): AdminLayoutMode {
       return this.effectiveMode
@@ -426,14 +429,16 @@ export const useLayoutStore = defineStore('layout', {
      */
     adaptPcByBreakpoint(breakpoint: BreakpointKey, force = false) {
       if (!this.showSidebar) return
-      if (this.userAdjusted && !force) return
-      // xs/sm/md 收缩；lg 及以上自动展开（PC 横屏）
-      const collapseBreakpoints: BreakpointKey[] = ['xs', 'sm', 'md']
-      const expandBreakpoints: BreakpointKey[] = ['lg', 'xl', '2xl', '3xl', '4xl', '5xl']
+      const collapseBreakpoints: BreakpointKey[] = ['xs', 'sm', 'md', 'lg']
+      const expandBreakpoints: BreakpointKey[] = ['xl', '2xl', '3xl', '4xl', '5xl']
       if (collapseBreakpoints.includes(breakpoint)) {
+        // Narrow: ALWAYS collapse sidebar regardless of userAdjusted
         this.updateSetting('sidebarCollapse', true)
       } else if (expandBreakpoints.includes(breakpoint)) {
-        this.updateSetting('sidebarCollapse', false)
+        // Wide: uncollapse only when not user-adjusted (or force)
+        if (!this.userAdjusted || force) {
+          this.updateSetting('sidebarCollapse', false)
+        }
       }
     },
     /**
@@ -441,6 +446,12 @@ export const useLayoutStore = defineStore('layout', {
      */
     markUserAdjusted() {
       this.userAdjusted = true
+    },
+    /**
+     * [NEW] 重置用户调整标记，恢复响应式自动折叠/展开行为
+     */
+    resetUserAdjusted() {
+      this.userAdjusted = false
     },
     /**
      * [NEW] 关闭侧边栏并标记为用户调整（用于移动端遮罩层等场景）

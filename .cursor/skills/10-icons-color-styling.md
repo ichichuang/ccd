@@ -12,7 +12,8 @@ When Icons component color/opacity set via `class` does not apply, use this skil
 ## Pre-check (required)
 
 - `docs/ai-specs/UNOCSS_AND_ICONS.md` §6.3, §6.3.1, §6.3.2, §2.7.1
-- `.cursor/rules/18-components-and-icons.mdc` or `.agent/rules/10-ui-architecture.md` §4.1
+- `.cursor/rules/18-components-and-icons.mdc`
+- `.cursor/rules/21-color-system.mdc`
 
 ## Root Cause Quick Reference
 

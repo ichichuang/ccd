@@ -1,21 +1,23 @@
-import { FORM_CONTROLLER_KEY } from './useForm'
-import type { FieldArrayReturn } from '../types'
+import type { FieldArrayReturn, FormState } from '../types'
+import { PRO_FORM_STATE_KEY } from '../constants'
+import { useFormContext } from './useFormContext'
 
-let keyCounter = 0
-const generateKey = (): string => `field-array-key-${keyCounter++}`
-
-export function useFieldArray<TValue = unknown>(name: string): FieldArrayReturn<TValue> {
-  const controller = inject(FORM_CONTROLLER_KEY)
-  if (!controller) {
-    throw new Error('[ProForm] useFieldArray must be used within a ProForm context')
-  }
+export function useFieldArray<
+  TItem = unknown,
+  TValues extends Record<string, unknown> = Record<string, unknown>,
+>(name: string): FieldArrayReturn<TItem> {
+  let keyCounter = 0
+  const generateKey = (): string => `field-array-${name}-${keyCounter++}`
+  const controller = useFormContext<TValues>()
+  const globalState = inject(PRO_FORM_STATE_KEY, null) as FormState<TValues> | null
 
   // Keep track of stable keys for DOM rendering
   const keyMap = ref<string[]>([])
 
-  const currentValues = computed<TValue[]>(() => {
-    const val = controller.getValues()[name]
-    return Array.isArray(val) ? (val as TValue[]) : []
+  const currentValues = computed<TItem[]>(() => {
+    const values = globalState?.values ?? controller.getValues()
+    const val = values[name as keyof TValues]
+    return Array.isArray(val) ? (val as TItem[]) : []
   })
 
   const syncKeyMapByLength = (length: number): void => {
@@ -47,17 +49,16 @@ export function useFieldArray<TValue = unknown>(name: string): FieldArrayReturn<
     }))
   })
 
-  const append = (value: TValue): void => {
+  const append = (value: TItem): void => {
     const newArray = [...currentValues.value, value]
     keyMap.value.push(generateKey())
-    controller.setFieldsValue({ [name]: newArray })
+    controller.setFieldsValue({ [name]: newArray } as unknown as Partial<TValues>)
   }
 
   const remove = (index: number): void => {
-    const newArray = [...currentValues.value]
-    newArray.splice(index, 1)
-    keyMap.value.splice(index, 1)
-    controller.setFieldsValue({ [name]: newArray })
+    const newArray = currentValues.value.filter((_, i) => i !== index)
+    keyMap.value = keyMap.value.filter((_, i) => i !== index)
+    controller.setFieldsValue({ [name]: newArray } as unknown as Partial<TValues>)
   }
 
   const move = (from: number, to: number): void => {
@@ -65,17 +66,19 @@ export function useFieldArray<TValue = unknown>(name: string): FieldArrayReturn<
     if (from < 0 || from >= currentValues.value.length) return
     if (from === to) return
 
-    const newArray = [...currentValues.value]
-    const newKeyMap = [...keyMap.value]
+    const arr = currentValues.value
+    const keys = keyMap.value
+    const item = arr[from] as TItem
+    const keyItem = keys[from] as string
 
-    const [item] = newArray.splice(from, 1)
-    newArray.splice(to, 0, item as TValue)
+    const withoutFrom = arr.filter((_, i) => i !== from)
+    const newArray = [...withoutFrom.slice(0, to), item, ...withoutFrom.slice(to)]
 
-    const [keyItem] = newKeyMap.splice(from, 1)
-    newKeyMap.splice(to, 0, keyItem as string)
+    const keysWithoutFrom = keys.filter((_, i) => i !== from)
+    const newKeyMap = [...keysWithoutFrom.slice(0, to), keyItem, ...keysWithoutFrom.slice(to)]
 
     keyMap.value = newKeyMap
-    controller.setFieldsValue({ [name]: newArray })
+    controller.setFieldsValue({ [name]: newArray } as unknown as Partial<TValues>)
   }
 
   return {

@@ -1,5 +1,6 @@
 import { BREAKPOINTS } from '@/constants/breakpoints'
 import type { ResponsiveSpan } from '../types'
+import { PRO_FORM_LAYOUT_DEFAULTS } from '../config'
 
 export type BreakpointKey = keyof typeof BREAKPOINTS
 
@@ -26,7 +27,7 @@ export const resolveSpan = (
   spanConfig: ResponsiveSpan | undefined,
   activeBp: BreakpointKey
 ): number => {
-  if (!spanConfig) return 12
+  if (!spanConfig) return PRO_FORM_LAYOUT_DEFAULTS.gridSpan
   if (typeof spanConfig === 'number') return spanConfig
 
   const bpOrder: BreakpointKey[] = ['xs', 'sm', 'md', 'lg', 'xl', '2xl', '3xl', '4xl', '5xl']
@@ -39,5 +40,5 @@ export const resolveSpan = (
     }
   }
 
-  return 12
+  return PRO_FORM_LAYOUT_DEFAULTS.gridSpan
 }

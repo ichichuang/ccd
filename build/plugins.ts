@@ -119,7 +119,7 @@ export function getPluginsList(env: ViteEnv, command: 'build' | 'serve'): Plugin
 function generateIconListsPlugin(): PluginOption {
   const generatedPath = path.resolve(
     process.cwd(),
-    'src/views/example/icons/configs/iconLists.generated.ts'
+    'src/views/example/icons-example/configs/iconLists.generated.ts'
   )
   return {
     name: 'generate-icon-lists',

@@ -107,8 +107,8 @@ function handleMessage(type: (typeof MESSAGE_TYPES)[number]['handler'], withTitl
 
 <template>
   <CScrollbar class="h-full p-padding-lg">
-    <div class="layout-content-wide flex flex-col gap-xl">
-      <section class="component-card-base density-normal flex flex-col gap-xs">
+    <div class="layout-content-wide col-stack-xl">
+      <section class="component-card-base density-normal col-stack-xs">
         <h1 class="fs-2xl font-bold text-foreground">Toast 完整演示</h1>
         <p class="text-muted-foreground">
           window.$message 居中纯提示（success / danger / info / warn）；window.$toast 6 种
@@ -117,17 +117,17 @@ function handleMessage(type: (typeof MESSAGE_TYPES)[number]['handler'], withTitl
       </section>
 
       <!-- 1. Message 居中纯提示（4 种类型） -->
-      <section class="component-card-base density-normal flex flex-col gap-md">
+      <section class="component-card-base density-normal col-stack-md">
         <h2 class="fs-lg font-semibold">1. Message 居中纯提示（4 种类型）</h2>
         <p class="text-muted-foreground fs-sm">
           window.$message.success / danger / info / warn(message,
           title?)；正中央展示、无关闭按钮、纯提示
         </p>
-        <div class="flex flex-col gap-md">
+        <div class="col-stack-md">
           <div
             v-for="t in MESSAGE_TYPES"
             :key="t.key"
-            class="flex flex-wrap items-center gap-md rounded-scale-sm bg-muted p-padding-sm"
+            class="row-y-center flex-wrap gap-md rounded-scale-sm bg-muted p-padding-sm"
           >
             <span class="text-muted-foreground fs-sm min-w-[var(--spacing-4xl)]">
               {{ t.label }}:
@@ -151,17 +151,17 @@ function handleMessage(type: (typeof MESSAGE_TYPES)[number]['handler'], withTitl
       </section>
 
       <!-- 2. 6 种 severity 快捷方法 + 6 种位置 -->
-      <section class="component-card-base density-normal flex flex-col gap-md">
+      <section class="component-card-base density-normal col-stack-md">
         <h2 class="fs-lg font-semibold">2. 快捷方法 *In（6 种 severity × 6 种位置）</h2>
         <p class="text-muted-foreground fs-sm">
           dangerIn / successIn / infoIn / warnIn / secondaryIn / contrastIn (position, summary,
           detail?)
         </p>
-        <div class="flex flex-col gap-md">
+        <div class="col-stack-md">
           <div
             v-for="sev in TOAST_SEVERITIES"
             :key="sev.key"
-            class="flex flex-wrap items-center gap-md rounded-scale-sm bg-muted p-padding-sm"
+            class="row-y-center flex-wrap gap-md rounded-scale-sm bg-muted p-padding-sm"
           >
             <span class="text-muted-foreground fs-sm min-w-[var(--spacing-4xl)]">
               {{ sev.label }}:
@@ -187,7 +187,7 @@ function handleMessage(type: (typeof MESSAGE_TYPES)[number]['handler'], withTitl
       </section>
 
       <!-- 3. add() 原始 API - 6 种 severity -->
-      <section class="component-card-base density-normal flex flex-col gap-md">
+      <section class="component-card-base density-normal col-stack-md">
         <h2 class="fs-lg font-semibold">3. add() 原始 API（6 种 severity）</h2>
         <p class="text-muted-foreground fs-sm">
           add({ severity?, summary?, detail?, life?, group? })
@@ -229,7 +229,7 @@ function handleMessage(type: (typeof MESSAGE_TYPES)[number]['handler'], withTitl
       </section>
 
       <!-- 4. add() 扩展：粘性、自定义 life、group -->
-      <section class="component-card-base density-normal flex flex-col gap-md">
+      <section class="component-card-base density-normal col-stack-md">
         <h2 class="fs-lg font-semibold">4. add() 扩展：粘性、自定义 life、group</h2>
         <div class="flex flex-wrap gap-md">
           <Button
@@ -257,10 +257,10 @@ function handleMessage(type: (typeof MESSAGE_TYPES)[number]['handler'], withTitl
       </section>
 
       <!-- 5. 清除 -->
-      <section class="component-card-base density-normal flex flex-col gap-md">
+      <section class="component-card-base density-normal col-stack-md">
         <h2 class="fs-lg font-semibold">5. 清除</h2>
         <p class="text-muted-foreground fs-sm">clear() 清除所有；removeGroup(group) 清除指定位置</p>
-        <div class="flex flex-wrap gap-md items-center">
+        <div class="row-y-center flex-wrap gap-md">
           <Button
             label="Clear All"
             severity="danger"

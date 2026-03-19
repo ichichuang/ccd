@@ -18,6 +18,7 @@
  *
  * 如需区分“未初始化”与“真实结果”，请同时检查 `isInitialized`。
  */
+import type { DeepReadonly, Ref } from 'vue'
 import DateUtils from '@/utils/date'
 import type { DateFormat, DateInput, FormatOptions, Locale } from '@/utils/date'
 import type { SupportedLocale } from '@/locales'
@@ -29,7 +30,68 @@ const DEFAULT_TIMEZONE =
   typeof Intl !== 'undefined' && Intl.DateTimeFormat().resolvedOptions().timeZone
     ? Intl.DateTimeFormat().resolvedOptions().timeZone
     : 'UTC'
-export function useDateUtils() {
+export interface UseDateUtilsReturn {
+  currentLocale: DeepReadonly<Ref<Locale>>
+  currentTimezone: DeepReadonly<Ref<string>>
+  isInitialized: DeepReadonly<Ref<boolean>>
+  formatDate: (
+    date: DateInput,
+    format?: DateFormat,
+    options?: Omit<FormatOptions, 'locale'>
+  ) => string
+  formatWithLocale: (
+    date: DateInput,
+    formatType?: 'date' | 'datetime' | 'time' | 'shortDate' | 'longDate'
+  ) => string
+  formatIntl: (date: DateInput, options?: Intl.DateTimeFormatOptions) => string
+  formatSmart: (
+    date: DateInput,
+    formatStyle?: 'system' | 'dayjs' | 'auto',
+    options?: { intlOptions?: Intl.DateTimeFormatOptions }
+  ) => string
+  formatI18n: (
+    date: DateInput,
+    formatKey?: 'short' | 'long' | 'datetime' | 'time' | 'dateOnly' | 'timeOnly'
+  ) => string
+  fromNow: (date: DateInput) => string
+  batchFormat: (
+    dates: DateInput[],
+    format?: DateFormat,
+    options?: Parameters<typeof DateUtils.batchFormat>[2]
+  ) => ReturnType<typeof DateUtils.batchFormat>
+  smartParse: (input: string) => ReturnType<typeof DateUtils.smartParse> | null
+  now: () => ReturnType<typeof DateUtils.now> | null
+  isWorkingDay: (date: DateInput) => boolean
+  isNonWorkingDay: (date: DateInput) => boolean
+  isHoliday: (date: DateInput) => boolean
+  nextWorkingDay: (date: DateInput) => ReturnType<typeof DateUtils.nextWorkingDay> | null
+  getLocalizedFormats: () => Record<string, string>
+  getSupportedLocales: () => Record<SupportedLocale, Locale>
+  setLocale: (locale: Locale) => Promise<void>
+  setTimezone: (timezone: string) => void
+  importHolidays: (year: number, country?: 'CN' | 'US' | 'INTL') => void
+  getHolidays: (year: number) => ReturnType<typeof DateUtils.getHolidays>
+  getAvailableTimezones: (
+    groupByContinent?: boolean
+  ) => ReturnType<typeof DateUtils.getAvailableTimezones>
+  getTimezonesByCountry: (countryCode: string) => ReturnType<typeof DateUtils.getTimezonesByCountry>
+  getCountryHolidays: (
+    countryCode: string,
+    year: number,
+    importToDateUtils?: boolean
+  ) => ReturnType<typeof DateUtils.getCountryHolidays> | null
+  isCountryHoliday: (date: DateInput, countryCode?: string) => boolean
+  getCountryHolidayInfo: (
+    date: DateInput,
+    countryCode?: string
+  ) => ReturnType<typeof DateUtils.getCountryHolidayInfo> | null
+  getSupportedHolidayCountries: () =>
+    | ReturnType<typeof DateUtils.getSupportedCountries>
+    | Record<string, never>
+  DateUtils: typeof DateUtils
+}
+
+export function useDateUtils(): UseDateUtilsReturn {
   // 当前语言状态
   const currentLocale = ref<Locale>('zh-CN')
   const currentTimezone = ref<string>(DEFAULT_TIMEZONE)

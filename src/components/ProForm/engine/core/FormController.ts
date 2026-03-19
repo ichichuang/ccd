@@ -10,6 +10,7 @@ import { ComputedEngine } from '../logic/ComputedEngine'
 import { SchemaNormalizer } from '../schema/SchemaNormalizer'
 import { LifecycleManager } from './LifecycleManager'
 import { DraftStorage } from '../persistence/DraftStorage'
+import { PRO_FORM_TIMING_DEFAULTS } from '../config'
 import type {
   FieldSchema,
   FormSchema,
@@ -40,8 +41,9 @@ export class FormController<TValues extends ValuesRecord = ValuesRecord> {
   readonly transactionManager: TransactionManager
   readonly validationEngine: ValidationEngine<TValues>
   readonly fieldNames: (keyof TValues & string)[]
-  readonly validateOn?: 'change' | 'blur' | 'submit'
+  public validateOn?: 'change' | 'blur' | 'submit'
   private readonly options: UseFormOptions<TValues>
+  private effectiveInitials: Partial<TValues>
   private readonly lifecycle: LifecycleManager<TValues>
   private readonly visibilityEngine: VisibilityEngine<TValues>
   private readonly disableEngine: DisableEngine<TValues>
@@ -67,6 +69,7 @@ export class FormController<TValues extends ValuesRecord = ValuesRecord> {
       ...baseInitialValues,
       ...(draft ?? {}),
     } as Partial<TValues>
+    this.effectiveInitials = effectiveInitialValues
 
     this.store = new SubscriptionStore<TValues>()
     this.graph = new DependencyGraph()
@@ -213,7 +216,7 @@ export class FormController<TValues extends ValuesRecord = ValuesRecord> {
       this.saveDraftTimer = window.setTimeout(() => {
         DraftStorage.save(this.options.persistKey as string, this.getValues() as ValuesRecord)
         this.saveDraftTimer = null
-      }, 500)
+      }, PRO_FORM_TIMING_DEFAULTS.autoSaveDebounceMs)
     }
   }
 
@@ -257,16 +260,43 @@ export class FormController<TValues extends ValuesRecord = ValuesRecord> {
   }
 
   /**
-   * 构造一个基础的 FormState 快照（后续可与验证结果等集成）
+   * 从 SubscriptionStore 聚合各字段状态，构造完整的 FormState 快照
    */
   getFormState(): FormState<TValues> {
     const values = this.getValues()
+    const errors: Partial<Record<keyof TValues, string[]>> = {}
+    const touched: Partial<Record<keyof TValues, boolean>> = {}
+    let dirty = false
+    let valid = true
+
+    for (const fieldName of this.fieldNames) {
+      const fieldState = this.store.getFieldState(fieldName) as FieldState<unknown> | undefined
+      if (!fieldState) continue
+
+      if (fieldState.errors.length > 0) {
+        errors[fieldName as keyof TValues] = [...fieldState.errors]
+        valid = false
+      }
+
+      if (fieldState.touched) {
+        touched[fieldName as keyof TValues] = true
+      }
+
+      if (fieldState.dirty) {
+        dirty = true
+      }
+
+      if (!fieldState.valid) {
+        valid = false
+      }
+    }
+
     return {
       values,
-      errors: {},
-      touched: {},
-      dirty: false,
-      valid: true,
+      errors,
+      touched,
+      dirty,
+      valid,
       submitting: false,
     }
   }
@@ -276,15 +306,13 @@ export class FormController<TValues extends ValuesRecord = ValuesRecord> {
    */
   reset(initialValues?: Partial<TValues>): void {
     if (initialValues && Object.keys(initialValues as ValuesRecord).length > 0) {
-      const base = (this.options.initialValues ?? {}) as Partial<TValues>
-      this.options.initialValues = {
-        ...base,
+      this.effectiveInitials = {
+        ...this.effectiveInitials,
         ...initialValues,
       }
     }
 
-    const source =
-      ((this.options.initialValues ?? {}) as Partial<TValues>) ?? ({} as Partial<TValues>)
+    const source: Partial<TValues> = this.effectiveInitials
 
     this.transactionManager.begin()
 
@@ -533,7 +561,7 @@ export class FormController<TValues extends ValuesRecord = ValuesRecord> {
         .finally(() => {
           this.optionsDebounceTimers.delete(fieldName)
         })
-    }, 200)
+    }, PRO_FORM_TIMING_DEFAULTS.asyncOptionsDebounceMs)
 
     this.optionsDebounceTimers.set(fieldName, timerId)
   }
@@ -592,6 +620,10 @@ export class FormController<TValues extends ValuesRecord = ValuesRecord> {
 
   validateForm(resolver?: ValidationResolver<TValues>): Promise<boolean> {
     return this.validationEngine.validateForm(resolver)
+  }
+
+  setValidateOn(validateOn?: 'change' | 'blur' | 'submit'): void {
+    this.validateOn = validateOn
   }
 
   /**

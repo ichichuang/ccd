@@ -10,7 +10,7 @@ import { LOADING_SIZE_CSS } from '@/constants/sizeScale'
 import loading001 from '@/assets/lottie/loading-001.json'
 import loading002 from '@/assets/lottie/loading-002.json'
 import loading003 from '@/assets/lottie/loading-003.json'
-import { BaseLottieLoader } from '@/components/BaseLottieLoader'
+import { BaseLottieLoader } from './BaseLottieLoader'
 import { applyThemeToLottieJson } from '@/utils/theme/lottieThemeUtils'
 import { useThemeStore } from '@/stores/modules/theme'
 

@@ -49,9 +49,24 @@ export default defineComponent({
       const tabList = tabs.value
       if (tabList.length === 0) return null
 
+      const contextMenuOptions: { label: ContextMenuAction; icon: string; text: string }[] = [
+        { label: 'reload', icon: 'i-lucide-refresh-cw', text: t('common.reload') || 'Reload' },
+        { label: 'close', icon: 'i-lucide-x', text: t('common.close') || 'Close' },
+        {
+          label: 'closeOthers',
+          icon: 'i-lucide-copy-x',
+          text: t('common.closeOthers') || 'Close Others',
+        },
+        {
+          label: 'closeAll',
+          icon: 'i-lucide-trash-2',
+          text: t('common.closeAll') || 'Close All',
+        },
+      ]
+
       return (
-        <div class="w-full h-tabsHeight border-b-default px-padding-md overflow-hidden flex items-end select-none z-10">
-          <div class="relative flex items-center gap-1 h-full flex-1 min-w-0">
+        <div class="w-full h-tabsHeight border-b-default px-padding-md overflow-hidden row items-end select-none z-10">
+          <div class="relative row-y-center gap-1 h-full flex-1 min-w-0">
             <CScrollbar
               ref={scrollContainer}
               options={{
@@ -65,16 +80,17 @@ export default defineComponent({
             >
               <div
                 ref={tabsContainerRef}
-                class="flex items-end gap-1 h-full relative min-w-max"
+                class="row items-end gap-1 h-full relative min-w-max"
               >
                 {/* Smart sliding indicator */}
                 <div
-                  class="absolute bottom-0 h-[2px] bg-primary pointer-events-none rounded-t-sm z-10"
+                  class="absolute bottom-0 bg-primary pointer-events-none rounded-t-sm z-10"
                   style={{
+                    height: 'var(--spacing-xs, 2px)',
                     left: activeTabStyle.value.left,
                     width: activeTabStyle.value.width,
                     opacity: activeTabStyle.value.opacity,
-                    transition: 'all 0.4s cubic-bezier(0.16, 1, 0.3, 1)',
+                    transition: 'all var(--transition-lg, 0.4s) cubic-bezier(0.16, 1, 0.3, 1)',
                   }}
                 />
                 {tabList.map(tab => {
@@ -84,16 +100,16 @@ export default defineComponent({
                   return (
                     <div
                       key={tab.path}
-                      ref={el => setTabRef(el as HTMLElement | null, tab.path)}
+                      ref={el => setTabRef(el instanceof HTMLElement ? el : null, tab.path)}
                       data-path={tab.path}
                       class={[
-                        'group relative h-[calc(100%-6px)] flex items-center px-3 rounded-t-md cursor-pointer gap-scale-sm shrink-0',
+                        'group relative h-[calc(100%-var(--spacing-xs))] row-y-center px-padding-sm rounded-t-md cursor-pointer gap-scale-sm shrink-0',
                         active
                           ? 'bg-primary/10 text-primary font-medium backdrop-blur-md transition-all'
                           : 'bg-transparent text-muted-foreground hover:bg-muted/30 hover:text-foreground transition-all',
                       ]}
                       onClick={() => onTabClick(tab)}
-                      onContextmenu={e => onContextMenu(e as MouseEvent, tab)}
+                      onContextmenu={(e: MouseEvent) => onContextMenu(e, tab)}
                     >
                       {/* Icon */}
                       {tab.icon && (
@@ -146,27 +162,10 @@ export default defineComponent({
           >
             {contextMenu.value.visible && (
               <div
-                class="fixed z-50 min-w-[var(--spacing-3xl)] bg-popover/95 backdrop-blur-md shadow-xl rounded-scale-md p-padding-xs flex flex-col gap-xs origin-top-left outline-none!"
+                class="fixed z-50 min-w-[var(--spacing-3xl)] bg-popover/95 backdrop-blur-md shadow-xl rounded-scale-md p-padding-xs col-stack-xs origin-top-left outline-none!"
                 style={{ top: `${contextMenu.value.y}px`, left: `${contextMenu.value.x}px` }}
               >
-                {[
-                  {
-                    label: 'reload',
-                    icon: 'i-lucide-refresh-cw',
-                    text: t('common.reload') || 'Reload',
-                  },
-                  { label: 'close', icon: 'i-lucide-x', text: t('common.close') || 'Close' },
-                  {
-                    label: 'closeOthers',
-                    icon: 'i-lucide-copy-x',
-                    text: t('common.closeOthers') || 'Close Others',
-                  },
-                  {
-                    label: 'closeAll',
-                    icon: 'i-lucide-trash-2',
-                    text: t('common.closeAll') || 'Close All',
-                  },
-                ].map(option => (
+                {contextMenuOptions.map(option => (
                   <div
                     key={option.label}
                     class="menu-item-base px-padding-sm py-padding-xs rounded-scale-sm fs-sm text-popover-foreground hover:menu-item-hover group"
@@ -174,12 +173,12 @@ export default defineComponent({
                     tabindex="0"
                     onClick={e => {
                       e.stopPropagation()
-                      handleContextAction(option.label as ContextMenuAction)
+                      handleContextAction(option.label)
                     }}
                     onKeyup={(e: KeyboardEvent) => {
                       if (e.key === 'Enter') {
                         e.stopPropagation()
-                        handleContextAction(option.label as ContextMenuAction)
+                        handleContextAction(option.label)
                       }
                     }}
                   >

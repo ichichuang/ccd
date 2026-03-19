@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { FieldComponentProps, SelectOption } from '../../engine/types'
+import { PRO_FORM_COMPONENT_DEFAULTS } from '../../engine/config'
 
 type Props = FieldComponentProps<unknown[] | null> & {
   options?: SelectOption[] | Record<string, unknown>[]
@@ -15,18 +16,20 @@ const attrs = useAttrs()
 
 const emptyPlaceholder = computed<string>(() => {
   const value = attrs.previewEmptyPlaceholder as string | undefined
-  return value && value.length > 0 ? value : '-'
+  return value && value.length > 0 ? value : PRO_FORM_COMPONENT_DEFAULTS.emptyTextFallback
 })
 
 const optionLabel = computed<string>(() => {
   const value = attrs.optionLabel as string | undefined
-  return value ?? 'label'
+  return value ?? PRO_FORM_COMPONENT_DEFAULTS.defaultLabelField
 })
 
 const optionValue = computed<string>(() => {
   const value = attrs.optionValue as string | undefined
-  return value ?? 'value'
+  return value ?? PRO_FORM_COMPONENT_DEFAULTS.defaultValueField
 })
+
+const safeModelValue = computed<unknown[]>(() => (props.modelValue as unknown[]) ?? [])
 
 const displayLabel = computed<string>(() => {
   const val = props.modelValue
@@ -60,7 +63,7 @@ const handleUpdate = (value: unknown): void => {
   </span>
   <MultiSelect
     v-else
-    :model-value="(props.modelValue as unknown[]) ?? []"
+    :model-value="safeModelValue"
     :options="props.options"
     :option-label="optionLabel"
     :option-value="optionValue"

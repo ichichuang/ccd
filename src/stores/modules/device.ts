@@ -12,11 +12,25 @@ import type { DeviceState } from '@/types/systems/device'
 // 防抖间隔，300ms 比较温和，适合 resize
 const RESIZE_INTERVAL = 300
 
+/** 模块级缓存：断点按阈值降序排列，避免每次 resize 重复排序 */
+const SORTED_BREAKPOINTS: [string, number][] = [...Object.entries(BREAKPOINTS)].sort(
+  (a, b) => b[1] - a[1]
+)
+
+/** 根据宽度同步计算断点（使用缓存的排序结果） */
+function resolveBreakpoint(width: number): BreakpointKey {
+  const match = SORTED_BREAKPOINTS.find(([, val]) => width >= val)
+  return (match ? match[0] : 'xs') as BreakpointKey
+}
+
+/** SSR 安全的初始视口宽度 */
+const INITIAL_WIDTH: number = typeof window === 'undefined' ? 0 : window.innerWidth
+
 export const useDeviceStore = defineStore('device', {
   state: (): DeviceState => ({
-    width: typeof window === 'undefined' ? 0 : window.innerWidth,
+    width: INITIAL_WIDTH,
     height: typeof window === 'undefined' ? 0 : window.innerHeight,
-    currentBreakpoint: 'xs' as BreakpointKey, // [修正] 明确类型断言
+    currentBreakpoint: resolveBreakpoint(INITIAL_WIDTH),
     type: 'PC',
     os: 'Unknown',
     orientation: 'horizontal',
@@ -40,7 +54,9 @@ export const useDeviceStore = defineStore('device', {
 
     // 物理判定：基于 UA 和 触摸能力
     isTouchDevice: state =>
-      state.type === 'Mobile' || state.type === 'Tablet' || 'ontouchstart' in window,
+      state.type === 'Mobile' ||
+      state.type === 'Tablet' ||
+      (typeof window !== 'undefined' && 'ontouchstart' in window),
     isMobileTerminal: state => state.type === 'Mobile',
     isTabletTerminal: state => state.type === 'Tablet',
 
@@ -121,9 +137,7 @@ export const useDeviceStore = defineStore('device', {
      * 更新断点 (v2.0 标准)
      */
     updateBreakpoint() {
-      const bps = [...Object.entries(BREAKPOINTS)].sort((a, b) => b[1] - a[1])
-      const match = bps.find(([_, val]) => this.width >= val)
-      this.currentBreakpoint = (match ? match[0] : 'xs') as BreakpointKey
+      this.currentBreakpoint = resolveBreakpoint(this.width)
     },
 
     /**
@@ -140,7 +154,7 @@ export const useDeviceStore = defineStore('device', {
       }, RESIZE_INTERVAL)
 
       const handleOrientation = () => {
-        setTimeout(handleResize, 300)
+        handleResize()
       }
 
       const handleVisibility = () => {

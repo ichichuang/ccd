@@ -1,5 +1,6 @@
 import type { FieldRegistryItem, ProFormPlugin, ProFormPluginContext } from '../types'
 import { fieldRegistry } from '../registry/FieldRegistry'
+import { PRO_FORM_LOGGER } from '../utils/logger'
 
 class ProFormPluginManagerCore {
   private plugins: Set<string> = new Set()
@@ -12,7 +13,7 @@ class ProFormPluginManagerCore {
 
   use(plugin: ProFormPlugin): this {
     if (this.plugins.has(plugin.name)) {
-      console.warn(`[ProForm] Plugin "${plugin.name}" is already installed.`)
+      // 已安装时静默返回：组件 script setup 在路由切换/HMR 时会重复执行，use() 幂等安全
       return this
     }
 
@@ -20,7 +21,7 @@ class ProFormPluginManagerCore {
       plugin.install(this.context)
       this.plugins.add(plugin.name)
     } catch (error) {
-      console.error(`[ProForm] Failed to install plugin "${plugin.name}":`, error)
+      PRO_FORM_LOGGER.error(`Failed to install plugin "${plugin.name}"`, error)
     }
 
     return this

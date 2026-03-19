@@ -1,13 +1,31 @@
 ---
-description: Layouts system: LayoutMode, AdminLayoutMode, layout shells, extension
+description: Layouts system: LayoutMode, AdminLayoutMode, layout shells, extension; Scope and Non-negotiables
 globs: src/layouts/**/*.{ts,vue}
+alwaysApply: false
 ---
 
-# Layouts System Rules
+# Layouts Rule (Must Read Spec)
 
-> **CRITICAL**
->
-> Before making ANY changes to layout wrappers, layout modules, or layout stores, you MUST read and comply with `docs/ai-specs/LAYOUT_ARCHITECTURE.md`.
+<CRITICAL>
+Before making ANY changes to layout wrappers, layout modules, or layout stores, you MUST read and comply with `docs/ai-specs/LAYOUT_ARCHITECTURE.md`.
+</CRITICAL>
+
+## Scope
+
+- `src/layouts/**`
+- `src/stores/modules/layout.ts`
+- `src/stores/modules/device.ts`
+- Any router code that changes `route.meta.parent` behaviors (`LayoutMode`)
+
+## Non-negotiables (Quick Reminders)
+
+- **Business pivot for wide desktop is xl (1280px). lg (1024px) is considered a narrow fallback zone.** Do NOT treat lg as wide screen; effectiveMode and sidebar collapse use xl as the expand threshold. See `docs/ai-specs/ADAPTIVE_LAYOUT.md` §0.1.
+- Dual-track mode is mandatory: `preferredMode` (user preference) vs `effectiveMode` (runtime resolution).
+- `runAdaptive()` / `adapt*()` MUST NOT mutate `preferredMode`.
+- Visibility SSOT is `visibilitySettings[effectiveMode]`, while Settings panel binds to `visibilitySettings[preferredMode]`.
+- Mobile Drawer is UI behavior; state is `mobileDrawerOpen` (runtime-only). Drawer activates when `(deviceStore.type === 'Mobile' OR currentBreakpoint is xs or sm)` and mode is horizontal. **xs and sm MUST trigger the Drawer**; do NOT document Drawer as "Mobile only".
+
+# Layouts System Rules
 
 ## 1. Primary Directive
 
@@ -31,6 +49,8 @@ Type: `src/types/systems/layout.d.ts` → `LayoutMode`
 - `preferredMode`: persisted user preference (set by Settings panel only)
 - `effectiveMode`: runtime resolution based on device constraints (SSOT for rendering)
 
+Modes:
+
 - **vertical**: Sidebar on left, no top menu
 - **horizontal**: Top menu, no sidebar
 - **mix**: Sidebar + top menu
@@ -41,13 +61,8 @@ Type: `src/types/systems/layout.d.ts` → `AdminLayoutMode`
 
 - Definition: `src/types/systems/layout.d.ts` → `LayoutSetting`
 - Default: `src/constants/layout.ts` → `DEFAULT_LAYOUT_SETTING`
-- Persistence: `src/constants/layout.ts` → `LAYOUT_PERSIST_PICK` (explicit list; do NOT derive dynamically)
-- Visibility SSOT: `visibilitySettings[effectiveMode]`; Settings panel binds to `visibilitySettings[preferredMode]` to prevent viewport-resize jumping
-
-> **Forbidden**
->
-> - `runAdaptive()` / `adapt*()` MUST NOT mutate `preferredMode`
-> - Do NOT implement ad-hoc mode resolution in components; use store `effectiveMode` / `mode`
+- Persistence: `LAYOUT_PERSIST_PICK` derived from `DEFAULT_LAYOUT_SETTING`
+- New fields: add only in `DEFAULT_LAYOUT_SETTING`
 
 ## 4. Directory and Aliases
 
@@ -72,10 +87,10 @@ Type: `src/types/systems/layout.d.ts` → `AdminLayoutMode`
 ### 6.2 Extend new AdminLayoutMode (admin sub-mode)
 
 1. Add new value to `AdminLayoutMode`
-2. Set default in `DEFAULT_LAYOUT_SETTING.preferredMode` (or keep vertical)
-3. Implement layout logic in `LayoutAdmin.tsx` (sidebar / top menu / body visibility); MUST follow `docs/ai-specs/LAYOUT_ARCHITECTURE.md` and the existing dual-track rules (do NOT bypass `effectiveMode` / visibility SSOT)
+2. Set default in `DEFAULT_LAYOUT_SETTING.mode` (or keep vertical)
+3. Implement layout logic in `LayoutAdmin.tsx` (sidebar / top menu / body visibility); MUST follow `docs/ai-specs/ADAPTIVE_LAYOUT.md`, do NOT bypass runAdaptive or effective visibility
 
-Note: Mobile small viewport forces horizontal (Drawer); tablet is vertical+collapse; PC vertical orientation forces horizontal. See `docs/ai-specs/LAYOUT_ARCHITECTURE.md` (Chapter 2/4).
+Note: **Drawer Zone** (xs, sm, or Mobile) → Drawer; **Top Menu Fallback** (md, lg) → top menu; **Wide Zone** (≥ xl) → respect preferredMode / Tablet sidebar. Logo: always in Drawer Zone and on Tablet; hidden on PC in md/lg only. See `docs/ai-specs/ADAPTIVE_LAYOUT.md` §0.1.
 
 ## 7. Route Config
 
@@ -88,3 +103,16 @@ Note: Mobile small viewport forces horizontal (Drawer); tablet is vertical+colla
 - Bypassing `meta.parent` to decide layout
 - Defining LayoutSetting defaults outside `DEFAULT_LAYOUT_SETTING`
 - Persisting LayoutSetting fields outside layout store
+
+## 9. Transparent Root Policy (Admin Layout Only)
+
+**Scope:** Route views under `meta.parent === 'admin'` (LayoutAdmin shell).
+
+**Rule:** The root container of a route view MUST NOT set background classes (`bg-card`, `bg-background`, `bg-surface-ground`, `bg-surface-elevated`, or `surface-*` shortcuts) on its top-level wrapper. The layout engine (`LayoutAdmin`) already provides the premium canvas background (`bg-card` with inset shadow) for the main content area.
+
+**Requirements:**
+
+- Root: Use `col-fill` (or `h-full flex flex-col overflow-hidden`) **without** `bg-*` or `surface-*`.
+- Toolbars/Headers: Do NOT add background colors. Let them inherit the canvas color. Use subtle borders (`border-b-default`) if separation is needed.
+- Text colors: Inherit by default (`text-foreground`, `text-muted-foreground`).
+- Internal components: Use `surface-elevated`, `glass-surface`, or `shadow-soft` **only** on actual data cards, panels, and widgets **inside** the transparent page.

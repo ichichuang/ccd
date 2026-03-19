@@ -31,8 +31,8 @@ export default defineComponent({
       if (!props.show) return null
 
       return (
-        <footer class="w-full h-footerHeight flex items-center justify-center px-padding-lg fs-xs text-muted-foreground">
-          <div class="flex flex-wrap items-center justify-center gap-x-gap-md gap-y-gap-xs">
+        <footer class="w-full h-footerHeight center px-padding-lg fs-xs text-muted-foreground">
+          <div class="center flex-wrap gap-x-gap-md gap-y-gap-xs">
             <span>{brand.displayName}</span>
             {version && (
               <>
@@ -44,7 +44,7 @@ export default defineComponent({
               <>
                 <span class="text-border">·</span>
                 <span
-                  class="max-w-2xl truncate"
+                  class="max-w-[50vw] truncate"
                   title={brand.description}
                 >
                   {brand.description}

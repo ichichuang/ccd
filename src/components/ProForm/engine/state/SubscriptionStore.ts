@@ -1,4 +1,5 @@
 import type { FieldState } from '../types'
+import { deepEqual } from '@/utils/lodashes'
 
 export type FieldSubscriber = () => void
 
@@ -52,7 +53,7 @@ export class SubscriptionStore<TValues extends Record<string, unknown> = Record<
     const existing = this.getFieldState(field)
 
     if (existing) {
-      const dirty = existing.initialValue !== value
+      const dirty = !deepEqual(existing.initialValue, value)
       const nextState: FieldState<unknown> = {
         ...existing,
         value,

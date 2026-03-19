@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { FieldComponentProps } from '../../engine/types'
+import { PRO_FORM_COMPONENT_DEFAULTS } from '../../engine/config'
 
 type SingleDateValue = Date | string | number | null | undefined
 type RangeDateValue = [SingleDateValue, SingleDateValue] | null | undefined
@@ -17,12 +18,12 @@ const attrs = useAttrs()
 
 const emptyPlaceholder = computed<string>(() => {
   const value = attrs.previewEmptyPlaceholder as string | undefined
-  return value && value.length > 0 ? value : '-'
+  return value && value.length > 0 ? value : PRO_FORM_COMPONENT_DEFAULTS.emptyTextFallback
 })
 
-const locale = computed<string>(() => {
+const locale = computed<string | undefined>(() => {
   const value = attrs.previewLocale as string | undefined
-  return value ?? 'zh-CN'
+  return value && value.length > 0 ? value : undefined
 })
 
 const dateStyle = computed<Intl.DateTimeFormatOptions['dateStyle']>(() => {
@@ -88,6 +89,9 @@ const displayValue = computed<string>(() => {
 const handleUpdate = (value: unknown): void => {
   emit('update:modelValue', value as ModelValue)
 }
+
+type DatePickerModel = Date | Date[] | (Date | null)[] | null | undefined
+const datePickerModelValue = computed<DatePickerModel>(() => props.modelValue as DatePickerModel)
 </script>
 
 <template>
@@ -99,7 +103,7 @@ const handleUpdate = (value: unknown): void => {
   </span>
   <DatePicker
     v-else
-    :model-value="props.modelValue as Date | Date[] | (Date | null)[] | null | undefined"
+    :model-value="datePickerModelValue"
     :disabled="props.disabled || props.readonly"
     :invalid="!!props.error && props.error.length > 0"
     class="w-full"

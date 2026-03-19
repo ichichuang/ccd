@@ -70,7 +70,7 @@ const onLogout = async () => {
             :src="avatarSrc"
             class="w-[var(--spacing-3xl)]! h-[var(--spacing-3xl)]! rounded-full"
           />
-          <div class="h-full flex flex-col justify-between py-xs">
+          <div class="h-full column justify-between py-xs">
             <span class="fs-2xl font-black text-foreground">
               {{ userInfo.username || t('user.unnamedUser') }}
             </span>

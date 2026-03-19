@@ -1,7 +1,6 @@
 /* 守卫 */
 import { brand } from '@/constants/brand'
 import { AUTH_ENABLED, routeWhitePathList } from '@/constants/router'
-import { fadeOutNativePreloader } from '@/hooks/layout/useLoading'
 import { usePermissionStore } from '@/stores/modules/permission'
 import { useUserStoreWithOut } from '@/stores/modules/user'
 import { useLayoutStoreWithOut } from '@/stores/modules/layout'
@@ -57,22 +56,13 @@ export const usePermissionGuard = ({
   router: Router
   initDynamicRoutes: () => Promise<void>
 }) => {
-  // 使用闭包变量追踪当前导航是否调用了 loadingStart()
-  // 用于在 afterEach 中精确控制 loadingDone() 的调用
-  let currentNavigationHasLoadingStart = false
-  // 标记是否是首次路由导航（用于处理初始 loadingCount: 1 的情况）
-  let isFirstNavigation = true
   // 竞态保护：缓存进行中的路由初始化 Promise，防止并发导航触发多次 API 请求
   let routeInitializingPromise: Promise<void> | null = null
 
   // 全局前置守卫
   router.beforeEach(async (to, from, next) => {
-    const { loadingStart, pageLoadingStart, loadingDone, pageLoadingDone } = useLoading()
-    const { startProgress, doneProgress } = useNprogress()
-    const layoutStore = useLayoutStoreWithOut()
-
-    // 重置状态标记
-    currentNavigationHasLoadingStart = false
+    const { loadingStart, pageLoadingStart } = useLoading()
+    const { startProgress } = useNprogress()
 
     startProgress()
     updatePageTitle(to)
@@ -97,41 +87,58 @@ export const usePermissionGuard = ({
         return
       } else {
         if (isDynamicRoutesLoaded) {
+          const routeRoles = to.meta?.roles as string[] | undefined
+          if (routeRoles && routeRoles.length > 0) {
+            const hasRole = routeRoles.some(r => userStore.userInfo.roles.includes(r))
+            if (!hasRole) {
+              next('/403')
+              return
+            }
+          }
           next()
           return
         }
-        // 标记已调用 loadingStart()
-        loadingStart()
-        currentNavigationHasLoadingStart = true
         try {
           // 竞态保护：多次并发导航共享同一个初始化 Promise，防止重复发起 API 请求
           routeInitializingPromise ??= initDynamicRoutes().finally(() => {
             routeInitializingPromise = null
           })
           await routeInitializingPromise
-          const redirectPath = from.query.redirect || to.path
-          const redirect = decodeURIComponent(redirectPath as string)
-          const nextData = to.path === redirect ? { ...to, replace: true } : { path: redirect }
+
+          const rawRedirect = (from.query.redirect as string | undefined) || to.fullPath
+          const targetRedirect = decodeURIComponent(rawRedirect)
+
           permissionStore.setDynamicRoutesLoaded(true)
-          next(nextData)
+
+          const toParent = to.meta?.parent as LayoutMode | undefined
+          const fromParent = from.meta?.parent as LayoutMode | undefined
+
+          // 专门识别“登录页(fullscreen) → 后台(admin/ratio)”的场景：
+          // 这类跳转用户已经明确触发了登录，不再叠加全屏遮罩，只保留 pageLoading 即可。
+          const isLoginToNonFullscreen =
+            from.path === '/login' && fromParent === 'fullscreen' && toParent !== 'fullscreen'
+
+          const shouldShowGlobalLoading = !isLoginToNonFullscreen && toParent !== 'fullscreen'
+          if (shouldShowGlobalLoading) {
+            // 标记已调用 loadingStart()
+            loadingStart()
+          }
+
+          // 避免多跳：如果是从登录页跳转，且目标一致，直接放行
+          if (
+            from.path === '/login' &&
+            (to.fullPath === targetRedirect || to.path === targetRedirect)
+          ) {
+            next()
+            return
+          }
+
+          // 其他场景（如 F5 刷新）：中断当前导航，重定向到完整目标路径
+          next({ path: targetRedirect, replace: true })
+          return
         } catch (error) {
-          // 错误日志
-          console.error('🪒 Router: 初始化动态路由失败:', error)
-          // 状态重置：强制标记为未加载，防止后续重试
-          permissionStore.setDynamicRoutesLoaded(false)
-          // 清理 UI 状态（因为 next(false) 会跳过全局后置守卫，需要手动清理）
-          doneProgress()
-          updatePageTitle(to)
-          loadingDone()
-          // 清理所有未配对的 pageLoadingStart()（可能由于重定向导致多次调用）
-          // 使用安全清理函数确保完整清理并防止无限循环
-          safeClearPageLoading(layoutStore, pageLoadingDone)
-          // 重置状态标记
-          currentNavigationHasLoadingStart = false
-          // 阻断当前导航
-          next(false)
-          await userStore.logout()
-          router.replace('/login')
+          console.error('动态路由初始化失败', error)
+          next('/login')
           return
         }
       }
@@ -150,47 +157,16 @@ export const usePermissionGuard = ({
     const { doneProgress } = useNprogress()
     const layoutStore = useLayoutStoreWithOut()
 
+    // 绝对防御：确保无论经历多少次内部重定向，最终到达时清空所有残留的 Loading 计数
+    while (layoutStore.loadingCount > 0) {
+      loadingDone()
+    }
+    while (layoutStore.pageLoadingCount > 0) {
+      pageLoadingDone()
+    }
+
     doneProgress()
     updatePageTitle(to)
-
-    // 处理页面加载状态：由于路由重定向可能导致多次 beforeEach 调用但只有一次 afterEach
-    // 需要确保 pageLoadingCount 被正确清理
-    // 使用安全清理函数确保完整清理并防止无限循环
-    safeClearPageLoading(layoutStore, pageLoadingDone)
-
-    // 精确控制：只有在 beforeEach 中调用了 loadingStart() 的情况下才调用 loadingDone()
-    // 这样可以确保 loadingStart/Done 的精确配对，避免不必要的计数器操作
-    let hasCalledLoadingDone = false
-    if (currentNavigationHasLoadingStart) {
-      loadingDone()
-      hasCalledLoadingDone = true
-      // 重置状态标记，为下一次导航做准备
-      currentNavigationHasLoadingStart = false
-    }
-
-    // 处理初始 loading 状态：如果这是首次导航且 loadingCount > 0，说明初始 loading 还未关闭
-    if (isFirstNavigation && layoutStore.loadingCount > 0) {
-      loadingDone()
-      hasCalledLoadingDone = true
-      isFirstNavigation = false
-    } else if (isFirstNavigation) {
-      isFirstNavigation = false
-    }
-
-    // 🔥 兜底逻辑：如果 loadingCount > 0 且前面没有调用过 loadingDone()，确保关闭 loading
-    if (!hasCalledLoadingDone && layoutStore.loadingCount > 0) {
-      loadingDone()
-    }
-
-    // 兜底：100ms 后强制关闭 loading，避免 composable 调用失败导致无限 loading
-    setTimeout(() => {
-      const store = useLayoutStoreWithOut()
-      if (store.loadingCount > 0) {
-        store.loadingCount = 0
-        store.isLoading = false
-        fadeOutNativePreloader() // 101 Handoff: 强制关闭时也淡出原生预加载层
-      }
-    }, 100)
 
     // 仅对 admin 布局下的路由同步标签页：addTab + updateTabActive
     const permissionStore = usePermissionStore()
@@ -201,5 +177,22 @@ export const usePermissionGuard = ({
         permissionStore.updateTabActive(to.name as string)
       }
     }
+  })
+
+  // 路由错误兜底：确保全局 / 页面 loading 计数不会泄漏（如导航被中断、解析失败等）
+  router.onError(error => {
+    const { loadingDone, pageLoadingDone } = useLoading()
+    const layoutStore = useLayoutStoreWithOut()
+
+    // 兜底清理页面级 loading（重复调用由计数保护）
+    safeClearPageLoading(layoutStore, pageLoadingDone)
+
+    // 兜底清理全局 loading：将剩余计数全部归零
+    while (layoutStore.loadingCount > 0) {
+      loadingDone()
+    }
+
+    // 记录错误，方便排查
+    console.error('🪒 Router: navigation error', error)
   })
 }

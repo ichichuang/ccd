@@ -148,7 +148,7 @@ watch(
       <Transition name="fade">
         <div
           v-show="isPageLoading"
-          class="absolute inset-0 z-10 flex items-center justify-center backdrop-blur-sm bg-background/60 pointer-events-auto"
+          class="absolute inset-0 z-10 center backdrop-blur-sm bg-background/60 pointer-events-auto"
         >
           <Loading
             :type="2"

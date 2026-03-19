@@ -18,9 +18,9 @@ export const SIZE_PRESETS: SizePreset[] = [
   {
     name: 'compact',
     label: '紧凑模式',
-    radius: 0.3,
-    spacingBase: 3,
-    fontSizeBase: 13.5, // 基准 14px
+    radius: 6,
+    spacingBase: 4,
+    fontSizeBase: 14,
 
     sidebarWidth: 200,
     sidebarCollapsedWidth: 56,
@@ -34,9 +34,9 @@ export const SIZE_PRESETS: SizePreset[] = [
   {
     name: 'comfortable',
     label: '舒适模式 (默认)',
-    radius: 0.5,
+    radius: 8,
     spacingBase: 4,
-    fontSizeBase: 15, // 基准 16px
+    fontSizeBase: 16,
 
     sidebarWidth: 240,
     sidebarCollapsedWidth: 60,
@@ -50,9 +50,9 @@ export const SIZE_PRESETS: SizePreset[] = [
   {
     name: 'loose',
     label: '宽松模式',
-    radius: 0.8,
-    spacingBase: 6,
-    fontSizeBase: 17.5, // 基准 18px
+    radius: 12,
+    spacingBase: 4,
+    fontSizeBase: 18,
 
     sidebarWidth: 280,
     sidebarCollapsedWidth: 80,

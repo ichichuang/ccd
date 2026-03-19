@@ -100,3 +100,7 @@
   background-color: rgb(var(--primary) / 0.12) !important;
   @apply shadow-soft translate-y-0;
 }
+
+.p-card {
+  padding: 0 !important;
+}

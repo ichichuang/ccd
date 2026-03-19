@@ -106,7 +106,6 @@ export function registerBuiltinFields(): void {
     component: ProUpload as FieldComponent<unknown>,
     defaultProps: {
       mode: 'basic',
-      chooseLabel: '选择文件',
     },
   } as FieldRegistryItem)
 }

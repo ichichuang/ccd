@@ -1,0 +1,180 @@
+<script setup lang="ts">
+import type { DummyProductDTO } from '@/api/example/dummy'
+import { requestDummyProducts } from '@/api/example/dummy'
+import { productColumns } from './columns'
+
+defineOptions({ name: 'ExampleProTableInfinitePage' })
+
+// ── State ────────────────────────────────────────────────────────────────────
+
+const allProducts = ref<DummyProductDTO[]>([])
+const totalCount = ref<number>(0)
+const isLoading = ref<boolean>(false)
+const hasError = ref<boolean>(false)
+const errorMessage = ref<string>('')
+const hasMore = ref<boolean>(true)
+
+let currentPage = 1
+const PAGE_SIZE = 20
+
+// ── Data fetching ─────────────────────────────────────────────────────────────
+
+async function loadMore(): Promise<void> {
+  if (isLoading.value || !hasMore.value) return
+
+  isLoading.value = true
+  hasError.value = false
+
+  try {
+    const res = await requestDummyProducts({ page: currentPage, pageSize: PAGE_SIZE })
+    allProducts.value.push(...res.products)
+    totalCount.value = res.total
+    hasMore.value = allProducts.value.length < res.total
+    currentPage++
+  } catch (err) {
+    hasError.value = true
+    errorMessage.value = err instanceof Error ? err.message : '请求失败，请检查网络后重试'
+  } finally {
+    isLoading.value = false
+  }
+}
+
+function handleRetry(): void {
+  void loadMore()
+}
+
+function handleRefresh(): void {
+  currentPage = 1
+  allProducts.value = []
+  hasMore.value = true
+  void loadMore()
+}
+
+onMounted(() => {
+  void loadMore()
+})
+
+// ── Derived ───────────────────────────────────────────────────────────────────
+
+const progressText = computed<string>(() => {
+  if (totalCount.value === 0) return ''
+  return `已加载 ${allProducts.value.length} / ${totalCount.value} 条`
+})
+</script>
+
+<template>
+  <div
+    data-archetype="A1-toolbar-content"
+    class="layout-full px-padding-md md:px-padding-lg col-stack-sm min-h-0"
+  >
+    <!-- Toolbar: Hero Header (Transparent Root Policy: Inherit canvas) -->
+    <header class="shrink-0 border-b-default">
+      <div class="w-full py-padding-sm row-between gap-md flex-wrap">
+        <div class="row-y-center gap-md">
+          <div class="p-padding-md bg-primary/10 rounded-scale-lg shrink-0">
+            <Icons
+              name="i-lucide-arrow-down-to-line"
+              class="text-primary fs-2xl"
+            />
+          </div>
+          <div class="col-stack-xs">
+            <div class="row-y-center gap-sm flex-wrap">
+              <h1 class="fs-2xl font-bold text-foreground m-0">ProTable — 无限加载模式</h1>
+              <span
+                class="bg-accent/15 text-accent rounded-scale-md px-padding-sm py-padding-xs fs-xs font-semibold uppercase tracking-wider shrink-0"
+              >
+                Infinite Scroll
+              </span>
+            </div>
+            <p class="text-muted fs-sm m-0">
+              数据来自
+              <code>dummyjson.com/products</code>
+              （194 件）。滚动到底部自动加载下一页，数据追加到列表末尾。
+            </p>
+          </div>
+        </div>
+
+        <!-- Progress badge -->
+        <div
+          v-if="totalCount > 0"
+          class="surface-sunken rounded-scale-md px-padding-md py-padding-xs row-y-center gap-sm shrink-0"
+        >
+          <div class="row-y-center gap-xs">
+            <Icons
+              name="i-lucide-layers"
+              size="xs"
+              class="text-accent!"
+            />
+            <span class="fs-xs text-muted-foreground">{{ progressText }}</span>
+          </div>
+          <span
+            v-if="!hasMore"
+            class="bg-success text-success-foreground rounded-scale-sm px-padding-xs py-0.5 fs-xs font-semibold uppercase tracking-tighter"
+          >
+            全部加载完毕
+          </span>
+        </div>
+      </div>
+    </header>
+
+    <!-- Content -->
+    <div class="flex-1 min-h-0 col-stack-sm">
+      <!-- Error banner -->
+      <Transition name="error-bar">
+        <div
+          v-if="hasError"
+          class="shrink-0 row-between px-padding-lg py-padding-sm bg-danger/10 border-b-default"
+        >
+          <div class="row-y-center gap-sm">
+            <Icons
+              name="i-lucide-wifi-off"
+              size="sm"
+              class="text-danger"
+            />
+            <span class="fs-sm text-danger font-bold">{{ errorMessage }}</span>
+          </div>
+          <Button
+            label="重试"
+            size="small"
+            severity="danger"
+            outlined
+            @click="handleRetry"
+          />
+        </div>
+      </Transition>
+
+      <!-- ProTable with infiniteScroll -->
+      <div class="col-fill">
+        <ProTable
+          :columns="productColumns"
+          :data="allProducts"
+          :loading="isLoading"
+          :total="totalCount"
+          :server-mode="true"
+          :pagination="false"
+          :infinite-scroll="true"
+          title="商品列表"
+          row-key="id"
+          @load-more="loadMore"
+          @refresh="handleRefresh"
+        />
+      </div>
+    </div>
+  </div>
+</template>
+
+<style scoped>
+.error-bar-enter-active,
+.error-bar-leave-active {
+  transition:
+    opacity var(--transition-md) ease,
+    max-height var(--transition-md) ease;
+  overflow: hidden;
+  max-height: var(--spacing-3xl);
+}
+.error-bar-enter-from,
+.error-bar-leave-to {
+  opacity: 0;
+  max-height: 0;
+}
+</style>

@@ -18,10 +18,10 @@ const emit = defineEmits<{
 </script>
 
 <template>
-  <div class="flex flex-col gap-md">
+  <div class="col-stack-md">
     <h3 class="fs-md font-semibold text-foreground border-b-default pb-padding-xs">全局控制</h3>
-    <div class="flex flex-wrap items-center justify-between gap-sm">
-      <div class="flex items-center gap-sm">
+    <div class="row-between flex-wrap gap-sm">
+      <div class="row-y-center gap-sm">
         <ToggleSwitch
           :model-value="themeEnabled"
           @update:model-value="value => emit('update:themeEnabled', value)"
@@ -29,7 +29,7 @@ const emit = defineEmits<{
         <span class="text-foreground fs-sm">启用主题</span>
       </div>
     </div>
-    <div class="flex flex-col gap-xs">
+    <div class="col-stack-xs">
       <span class="text-muted-foreground fs-sm">
         lineArea 透明度 {{ lineAreaOpacity }}（对带面积填充的折线图生效）
       </span>
@@ -56,7 +56,7 @@ const emit = defineEmits<{
         @click="emit('update:renderer', 'svg')"
       />
     </div>
-    <div class="flex items-center justify-between">
+    <div class="row-between">
       <span class="text-foreground fs-sm">Loading</span>
       <ToggleSwitch
         :model-value="chartLoading"

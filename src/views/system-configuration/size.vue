@@ -11,15 +11,30 @@ import { useSizeStore } from '@/stores/modules/size'
 import { useDeviceStore } from '@/stores/modules/device'
 
 // Copy to clipboard utility（与 unocss.vue 一致：成功用 toast，失败用 message）
-function copyToClipboard(text: string, label?: string) {
-  navigator.clipboard
-    .writeText(text)
-    .then(() => {
-      window.$toast?.successIn('top-right', `已复制: ${label || text}`, `类名: ${text}`)
-    })
-    .catch(() => {
-      window.$message?.danger('复制失败')
-    })
+async function copyToClipboard(text: string, label?: string) {
+  try {
+    if (navigator.clipboard && window.isSecureContext) {
+      await navigator.clipboard.writeText(text)
+    } else {
+      const textArea = document.createElement('textarea')
+      textArea.value = text
+      textArea.style.position = 'absolute'
+      textArea.style.left = '-999999px'
+      textArea.style.top = '-999999px'
+      document.body.appendChild(textArea)
+      textArea.focus()
+      textArea.select()
+
+      const successful = document.execCommand('copy')
+      textArea.remove()
+
+      if (!successful) throw new Error('Fallback copy failed')
+    }
+
+    window.$toast?.successIn('top-right', `已复制: ${label || text}`, `类名: ${text}`)
+  } catch (_error) {
+    window.$message?.danger('复制失败')
+  }
 }
 
 // Font size categories
@@ -198,6 +213,10 @@ const sizeStore: ReturnType<typeof useSizeStore> = useSizeStore()
 const deviceStore = useDeviceStore()
 const currentPreset = computed<(typeof SIZE_PRESETS)[number]>(() => sizeStore.currentPreset)
 
+function getPresetValue(key: string): number {
+  return currentPreset.value[key as keyof typeof currentPreset.value] as number
+}
+
 // Margin direction variants (same pattern as padding)
 const marginDirMap = [
   { dir: '', label: 'all' },
@@ -212,20 +231,20 @@ const marginDirMap = [
 
 <template>
   <div
-    class="h-full flex flex-col overflow-hidden"
+    class="h-full column overflow-hidden"
     data-archetype="A1-toolbar-content"
   >
     <!-- Toolbar: Header (Transparent Root · Nested Canvas) -->
     <div class="shrink-0 border-b-default border-primary/50 bg-primary/5">
-      <div class="layout-content-wide flex flex-col gap-sm py-padding-sm">
-        <div class="flex items-center gap-md">
+      <div class="layout-content-wide col-stack-sm py-padding-sm">
+        <div class="row-y-center gap-md">
           <div class="p-padding-md bg-primary/10 rounded-scale-lg shrink-0">
             <Icons
               name="i-lucide-ruler"
               class="text-primary fs-2xl"
             />
           </div>
-          <div class="flex flex-col gap-xs">
+          <div class="col-stack-xs">
             <h1 class="fs-2xl font-bold text-foreground">Size System</h1>
             <p class="text-muted-foreground fs-sm">
               尺寸系统变量完整参考 · 点击任意类名或变量即可自动复制到剪贴板
@@ -233,13 +252,13 @@ const marginDirMap = [
           </div>
         </div>
         <div
-          class="border-l-4 border-primary bg-primary/5 p-padding-md rounded-r-scale-md flex gap-md items-start mt-margin-sm"
+          class="surface-item p-padding-md rounded-scale-md row-start gap-md component-border mt-margin-sm"
         >
           <Icons
             name="i-lucide-info"
             class="text-primary fs-xl shrink-0 mt-margin-xs"
           />
-          <div class="flex flex-col gap-xs">
+          <div class="col-stack-xs">
             <div class="font-semibold text-primary fs-sm">Architectural Guide 架构引导</div>
             <div class="text-muted-foreground fs-xs leading-relaxed">
               尺寸阶梯由
@@ -255,13 +274,11 @@ const marginDirMap = [
 
     <!-- Scrollable content -->
     <CScrollbar class="flex-1 min-h-0">
-      <div class="layout-content-wide flex flex-col gap-xl">
+      <div class="layout-content-wide col-stack-xl">
         <!-- Size Store 尺寸 Store (Hero: primary tint + title strip) -->
-        <Card
-          class="bg-primary/10 dark:bg-primary/5 rounded-scale-xl shadow-soft p-padding-xl flex flex-col gap-lg"
-        >
+        <Card class="panel-base bg-primary/10 dark:bg-primary/5">
           <template #title>
-            <div class="flex items-center gap-sm border-b-default pb-padding-sm mb-padding-sm">
+            <div class="row-y-center gap-sm border-b-default pb-padding-sm mb-padding-sm">
               <Icons
                 name="i-lucide-settings-2"
                 class="text-primary"
@@ -274,11 +291,11 @@ const marginDirMap = [
             </div>
           </template>
           <template #content>
-            <div class="flex flex-col gap-md">
+            <div class="col-stack-md">
               <p class="text-muted-foreground fs-sm">
                 切换预设可实时更新根字号、布局变量等，影响全站尺寸阶梯
               </p>
-              <div class="flex flex-wrap gap-sm">
+              <div class="layout-wrap gap-sm">
                 <div
                   v-for="preset in SIZE_PRESETS"
                   :key="preset.name"
@@ -293,7 +310,7 @@ const marginDirMap = [
                   {{ preset.label }}
                 </div>
               </div>
-              <div class="flex flex-wrap gap-md text-muted-foreground fs-sm">
+              <div class="layout-wrap gap-md text-muted-foreground fs-sm">
                 <span>
                   当前:
                   <span class="font-mono font-bold text-foreground">
@@ -314,11 +331,9 @@ const marginDirMap = [
         </Card>
 
         <!-- Device Store 当前设备/断点 (Hero: accent tint + title strip) -->
-        <Card
-          class="bg-accent/10 dark:bg-accent/5 rounded-scale-xl shadow-soft p-padding-xl flex flex-col gap-lg"
-        >
+        <Card class="panel-base bg-accent/10 dark:bg-accent/5">
           <template #title>
-            <div class="flex items-center gap-sm border-b-default pb-padding-sm mb-padding-sm">
+            <div class="row-y-center gap-sm border-b-default pb-padding-sm mb-padding-sm">
               <Icons
                 name="i-lucide-smartphone"
                 class="text-primary"
@@ -333,7 +348,7 @@ const marginDirMap = [
           <template #content>
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-md">
               <div
-                class="flex flex-col gap-xs p-padding-md surface-item rounded-scale-lg interactive-hover-tile behavior-hover-transition"
+                class="col-stack-xs p-padding-md surface-item rounded-scale-lg interactive-hover-tile behavior-hover-transition"
               >
                 <span class="text-muted-foreground fs-xs">type</span>
                 <Tag
@@ -342,7 +357,7 @@ const marginDirMap = [
                 />
               </div>
               <div
-                class="flex flex-col gap-xs p-padding-md surface-item rounded-scale-lg interactive-hover-tile behavior-hover-transition"
+                class="col-stack-xs p-padding-md surface-item rounded-scale-lg interactive-hover-tile behavior-hover-transition"
               >
                 <span class="text-muted-foreground fs-xs">currentBreakpoint</span>
                 <Tag
@@ -351,7 +366,7 @@ const marginDirMap = [
                 />
               </div>
               <div
-                class="flex flex-col gap-xs p-padding-md surface-item rounded-scale-lg interactive-hover-tile behavior-hover-transition"
+                class="col-stack-xs p-padding-md surface-item rounded-scale-lg interactive-hover-tile behavior-hover-transition"
               >
                 <span class="text-muted-foreground fs-xs">isMobileLayout</span>
                 <Tag
@@ -360,7 +375,7 @@ const marginDirMap = [
                 />
               </div>
               <div
-                class="flex flex-col gap-xs p-padding-md surface-item rounded-scale-lg interactive-hover-tile behavior-hover-transition"
+                class="col-stack-xs p-padding-md surface-item rounded-scale-lg interactive-hover-tile behavior-hover-transition"
               >
                 <span class="text-muted-foreground fs-xs">width × height</span>
                 <span class="font-mono fs-sm">
@@ -382,9 +397,9 @@ const marginDirMap = [
         </Card>
 
         <!-- Font Size Section (数据区：title 无 strip，与 theme 一致) -->
-        <Card class="bg-card rounded-scale-xl shadow-soft p-padding-xl flex flex-col gap-lg">
+        <Card class="panel-base">
           <template #title>
-            <div class="flex items-center gap-sm">
+            <div class="row-y-center gap-sm">
               <Icons
                 name="i-lucide-type"
                 class="text-primary"
@@ -397,7 +412,7 @@ const marginDirMap = [
             </div>
           </template>
           <template #content>
-            <div class="flex flex-col gap-md">
+            <div class="col-stack-md">
               <div class="border-b-default pb-padding-sm mb-padding-sm">
                 <p class="text-muted-foreground fs-sm">
                   基于
@@ -446,7 +461,7 @@ const marginDirMap = [
                       </td>
                       <td class="p-padding-sm">
                         <div
-                          class="fs-xs font-mono bg-muted/30 px-padding-xs py-padding-xs rounded-scale-xs cursor-pointer select-none transition-all duration-scale-lg ease-in-out hover:bg-primary/20 hover:text-primary active:scale-95 text-muted-foreground w-fit"
+                          class="interactive-tag w-fit"
                           @click="copyToClipboard(`var(${item.cssVar})`, item.cssVar)"
                         >
                           {{ item.cssVar }}
@@ -454,13 +469,13 @@ const marginDirMap = [
                       </td>
                       <td class="p-padding-sm flex gap-xs flex-wrap">
                         <div
-                          class="fs-xs font-mono bg-muted/30 px-padding-xs py-padding-xs rounded-scale-xs cursor-pointer select-none transition-all duration-scale-lg ease-in-out hover:bg-success/20 hover:text-success active:scale-95 text-muted-foreground"
+                          class="interactive-tag hover:bg-success/20 hover:text-success"
                           @click="copyToClipboard(item.unoClass)"
                         >
                           {{ item.unoClass }}
                         </div>
                         <div
-                          class="fs-xs font-mono bg-muted/30 px-padding-xs py-padding-xs rounded-scale-xs cursor-pointer select-none transition-all duration-scale-lg ease-in-out hover:bg-success/20 hover:text-success active:scale-95 text-muted-foreground"
+                          class="interactive-tag hover:bg-success/20 hover:text-success"
                           @click="copyToClipboard(item.textClass)"
                         >
                           {{ item.textClass }}
@@ -483,9 +498,9 @@ const marginDirMap = [
         </Card>
 
         <!-- Spacing Section (数据区：title 无 strip，与 theme 一致) -->
-        <Card class="bg-card rounded-scale-xl shadow-soft p-padding-xl flex flex-col gap-lg">
+        <Card class="panel-base">
           <template #title>
-            <div class="flex items-center gap-sm">
+            <div class="row-y-center gap-sm">
               <Icons
                 name="i-lucide-space"
                 class="text-primary"
@@ -498,7 +513,7 @@ const marginDirMap = [
             </div>
           </template>
           <template #content>
-            <div class="flex flex-col gap-md">
+            <div class="col-stack-md">
               <div class="border-b-default pb-padding-sm mb-padding-sm">
                 <p class="text-muted-foreground fs-sm">
                   基于
@@ -545,7 +560,7 @@ const marginDirMap = [
                       </td>
                       <td class="p-padding-sm">
                         <div
-                          class="fs-xs font-mono bg-muted/30 px-padding-xs py-padding-xs rounded-scale-xs cursor-pointer select-none transition-all duration-scale-lg ease-in-out hover:bg-primary/20 hover:text-primary active:scale-95 text-muted-foreground w-fit"
+                          class="interactive-tag w-fit"
                           @click="copyToClipboard(`var(${item.cssVar})`, item.cssVar)"
                         >
                           {{ item.cssVar }}
@@ -554,49 +569,49 @@ const marginDirMap = [
                       <td class="p-padding-sm">
                         <div class="flex gap-xs flex-wrap">
                           <div
-                            class="fs-xs font-mono bg-muted/30 px-padding-xs py-padding-xs rounded-scale-xs cursor-pointer select-none transition-all duration-scale-lg ease-in-out hover:bg-success/20 hover:text-success active:scale-95 text-muted-foreground"
+                            class="interactive-tag hover:bg-success/20 hover:text-success"
                             @click="copyToClipboard(item.paddingClass)"
                           >
                             {{ item.paddingClass }}
                           </div>
                           <div
-                            class="fs-xs font-mono bg-muted/30 px-padding-xs py-padding-xs rounded-scale-xs cursor-pointer select-none transition-all duration-scale-lg ease-in-out hover:bg-success/20 hover:text-success active:scale-95 text-muted-foreground"
+                            class="interactive-tag hover:bg-success/20 hover:text-success"
                             @click="copyToClipboard(item.gapClass)"
                           >
                             {{ item.gapClass }}
                           </div>
                           <div
-                            class="fs-xs font-mono bg-muted/30 px-padding-xs py-padding-xs rounded-scale-xs cursor-pointer select-none transition-all duration-scale-lg ease-in-out hover:bg-success/20 hover:text-success active:scale-95 text-muted-foreground"
+                            class="interactive-tag hover:bg-success/20 hover:text-success"
                             @click="copyToClipboard(item.gapXClass)"
                           >
                             {{ item.gapXClass }}
                           </div>
                           <div
-                            class="fs-xs font-mono bg-muted/30 px-padding-xs py-padding-xs rounded-scale-xs cursor-pointer select-none transition-all duration-scale-lg ease-in-out hover:bg-success/20 hover:text-success active:scale-95 text-muted-foreground"
+                            class="interactive-tag hover:bg-success/20 hover:text-success"
                             @click="copyToClipboard(item.gapYClass)"
                           >
                             {{ item.gapYClass }}
                           </div>
                           <div
-                            class="fs-xs font-mono bg-muted/30 px-padding-xs py-padding-xs rounded-scale-xs cursor-pointer select-none transition-all duration-scale-lg ease-in-out hover:bg-success/20 hover:text-success active:scale-95 text-muted-foreground"
+                            class="interactive-tag hover:bg-success/20 hover:text-success"
                             @click="copyToClipboard(item.scrollGapClass)"
                           >
                             {{ item.scrollGapClass }}
                           </div>
                           <div
-                            class="fs-xs font-mono bg-muted/30 px-padding-xs py-padding-xs rounded-scale-xs cursor-pointer select-none transition-all duration-scale-lg ease-in-out hover:bg-warn/20 hover:text-warn active:scale-95 text-muted-foreground"
+                            class="interactive-tag hover:bg-warn/20 hover:text-warn"
                             @click="copyToClipboard(item.pScaleClass)"
                           >
                             {{ item.pScaleClass }}
                           </div>
                           <div
-                            class="fs-xs font-mono bg-muted/30 px-padding-xs py-padding-xs rounded-scale-xs cursor-pointer select-none transition-all duration-scale-lg ease-in-out hover:bg-warn/20 hover:text-warn active:scale-95 text-muted-foreground"
+                            class="interactive-tag hover:bg-warn/20 hover:text-warn"
                             @click="copyToClipboard(item.mScaleClass)"
                           >
                             {{ item.mScaleClass }}
                           </div>
                           <div
-                            class="fs-xs font-mono bg-muted/30 px-padding-xs py-padding-xs rounded-scale-xs cursor-pointer select-none transition-all duration-scale-lg ease-in-out hover:bg-warn/20 hover:text-warn active:scale-95 text-muted-foreground"
+                            class="interactive-tag hover:bg-warn/20 hover:text-warn"
                             @click="copyToClipboard(item.gapScaleClass)"
                           >
                             {{ item.gapScaleClass }}
@@ -624,20 +639,20 @@ const marginDirMap = [
                 <h4 class="fs-sm font-semibold text-foreground mb-margin-xs">
                   Direction Variants 方向变体
                 </h4>
-                <div class="flex flex-col gap-md">
+                <div class="col-stack-md">
                   <div>
                     <span class="text-muted-foreground fs-xs mb-margin-xs block">Padding</span>
-                    <div class="flex flex-wrap gap-md">
+                    <div class="layout-wrap gap-md">
                       <div
                         v-for="item in marginDirMap"
                         :key="'p-' + item.dir"
-                        class="flex flex-col gap-xs"
+                        class="col-stack-xs"
                       >
                         <span class="text-muted-foreground fs-xs">
                           {{ item.label }}
                         </span>
                         <div
-                          class="fs-xs font-mono bg-muted/30 px-padding-xs py-padding-xs rounded-scale-xs cursor-pointer select-none transition-all duration-scale-lg ease-in-out hover:bg-primary/20 hover:text-primary active:scale-95 text-muted-foreground"
+                          class="interactive-tag"
                           @click="copyToClipboard(`p${item.dir}-padding-md`)"
                         >
                           p{{ item.dir }}-padding-md
@@ -647,17 +662,17 @@ const marginDirMap = [
                   </div>
                   <div>
                     <span class="text-muted-foreground fs-xs mb-margin-xs block">Margin</span>
-                    <div class="flex flex-wrap gap-md">
+                    <div class="layout-wrap gap-md">
                       <div
                         v-for="item in marginDirMap"
                         :key="'m-' + item.dir"
-                        class="flex flex-col gap-xs"
+                        class="col-stack-xs"
                       >
                         <span class="text-muted-foreground fs-xs">
                           {{ item.label }}
                         </span>
                         <div
-                          class="fs-xs font-mono bg-muted/30 px-padding-xs py-padding-xs rounded-scale-xs cursor-pointer select-none transition-all duration-scale-lg ease-in-out hover:bg-primary/20 hover:text-primary active:scale-95 text-muted-foreground"
+                          class="interactive-tag"
                           @click="copyToClipboard(`m${item.dir}-margin-md`)"
                         >
                           m{{ item.dir }}-margin-md
@@ -672,9 +687,9 @@ const marginDirMap = [
         </Card>
 
         <!-- Radius Section (数据区：title 无 strip，与 theme 一致) -->
-        <Card class="bg-card rounded-scale-xl shadow-soft p-padding-xl flex flex-col gap-lg">
+        <Card class="panel-base">
           <template #title>
-            <div class="flex items-center gap-sm">
+            <div class="row-y-center gap-sm">
               <Icons
                 name="i-lucide-square"
                 class="text-primary"
@@ -687,7 +702,7 @@ const marginDirMap = [
             </div>
           </template>
           <template #content>
-            <div class="flex flex-col gap-md">
+            <div class="col-stack-md">
               <div class="border-b-default pb-padding-sm mb-padding-sm">
                 <p class="text-muted-foreground fs-sm">
                   基于
@@ -703,7 +718,7 @@ const marginDirMap = [
                 <div
                   v-for="item in radiusItems"
                   :key="item.key"
-                  class="flex flex-col items-center gap-sm p-padding-md surface-item rounded-scale-lg interactive-hover-tile behavior-hover-transition cursor-pointer group"
+                  class="col-stack-sm items-center p-padding-md surface-item rounded-scale-lg interactive-hover-tile behavior-hover-transition cursor-pointer group"
                   @click="copyToClipboard(item.unoClass)"
                 >
                   <div
@@ -726,9 +741,9 @@ const marginDirMap = [
         </Card>
 
         <!-- Transition Duration Section (数据区：title 无 strip，与 theme 一致) -->
-        <Card class="bg-card rounded-scale-xl shadow-soft p-padding-xl flex flex-col gap-lg">
+        <Card class="panel-base">
           <template #title>
-            <div class="flex items-center gap-sm">
+            <div class="row-y-center gap-sm">
               <Icons
                 name="i-lucide-timer"
                 class="text-primary"
@@ -741,7 +756,7 @@ const marginDirMap = [
             </div>
           </template>
           <template #content>
-            <div class="flex flex-col gap-md">
+            <div class="col-stack-md">
               <div class="border-b-default pb-padding-sm mb-padding-sm">
                 <p class="text-muted-foreground fs-sm">
                   固定毫秒值，遵循 Material Design 动效时长指南
@@ -751,11 +766,11 @@ const marginDirMap = [
                 <div
                   v-for="item in transitionItems"
                   :key="item.key"
-                  class="flex items-center gap-md p-padding-md surface-item rounded-scale-lg interactive-hover-tile behavior-hover-transition cursor-pointer group"
+                  class="row-y-center gap-md p-padding-md surface-item rounded-scale-lg interactive-hover-tile behavior-hover-transition cursor-pointer group"
                   @click="copyToClipboard(item.unoClass)"
                 >
-                  <div class="flex flex-col gap-xs flex-1">
-                    <div class="flex items-center gap-sm">
+                  <div class="col-stack-xs flex-1">
+                    <div class="row-y-center gap-sm">
                       <Tag
                         :value="item.key"
                         severity="info"
@@ -784,11 +799,9 @@ const marginDirMap = [
 
         <!-- Layout Dimensions Section (数据区：title 无 strip，与 theme 一致) -->
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-xl">
-          <Card
-            class="bg-card rounded-scale-xl shadow-soft p-padding-xl flex flex-col gap-lg h-full"
-          >
+          <Card class="panel-base h-full">
             <template #title>
-              <div class="flex items-center gap-sm">
+              <div class="row-y-center gap-sm">
                 <Icons
                   name="i-lucide-layout"
                   class="text-primary"
@@ -801,7 +814,7 @@ const marginDirMap = [
               </div>
             </template>
             <template #content>
-              <div class="flex flex-col gap-md">
+              <div class="col-stack-md">
                 <div class="border-b-default pb-padding-sm mb-padding-sm">
                   <p class="text-muted-foreground fs-sm">固定像素值，用于布局区域尺寸控制</p>
                 </div>
@@ -809,26 +822,26 @@ const marginDirMap = [
                   <div
                     v-for="item in layoutItems"
                     :key="item.key"
-                    class="flex flex-col gap-sm p-padding-md surface-item rounded-scale-lg interactive-hover-tile behavior-hover-transition"
+                    class="col-stack-sm p-padding-md surface-item rounded-scale-lg interactive-hover-tile behavior-hover-transition"
                   >
-                    <div class="flex items-center justify-between">
+                    <div class="row-between">
                       <span class="font-medium text-foreground fs-xs">
                         {{ item.description }}
                       </span>
                       <Tag
-                        :value="`${currentPreset[item.key as keyof typeof currentPreset]}px`"
+                        :value="`${getPresetValue(item.key)}px`"
                         severity="secondary"
                       />
                     </div>
-                    <div class="flex flex-wrap gap-xs">
+                    <div class="layout-wrap gap-xs">
                       <div
-                        class="fs-xs font-mono bg-muted/30 px-padding-xs py-padding-xs rounded-scale-xs cursor-pointer select-none transition-all duration-scale-lg ease-in-out hover:bg-primary/20 hover:text-primary active:scale-95 text-muted-foreground w-fit"
+                        class="interactive-tag w-fit"
                         @click="copyToClipboard(`var(${item.cssVar})`, item.cssVar)"
                       >
                         {{ item.cssVar }}
                       </div>
                       <div
-                        class="fs-xs font-mono bg-muted/30 px-padding-xs py-padding-xs rounded-scale-xs cursor-pointer select-none transition-all duration-scale-lg ease-in-out hover:bg-success/20 hover:text-success active:scale-95 text-muted-foreground w-fit"
+                        class="interactive-tag hover:bg-success/20 hover:text-success w-fit"
                         @click="copyToClipboard(item.unoClass)"
                       >
                         {{ item.unoClass }}
@@ -841,11 +854,9 @@ const marginDirMap = [
           </Card>
 
           <!-- Base Variables Section (数据区：title 无 strip，与 theme 一致) -->
-          <Card
-            class="bg-card rounded-scale-xl shadow-soft p-padding-xl flex flex-col gap-lg h-full"
-          >
+          <Card class="panel-base h-full">
             <template #title>
-              <div class="flex items-center gap-sm">
+              <div class="row-y-center gap-sm">
                 <Icons
                   name="i-lucide-database"
                   class="text-primary"
@@ -858,7 +869,7 @@ const marginDirMap = [
               </div>
             </template>
             <template #content>
-              <div class="flex flex-col gap-md">
+              <div class="col-stack-md">
                 <div class="border-b-default pb-padding-sm mb-padding-sm">
                   <p class="text-muted-foreground fs-sm">
                     SSOT 定义的基础全局变量类名 (SIZE_BASE_VAR_KEYS)
@@ -868,23 +879,23 @@ const marginDirMap = [
                   <div
                     v-for="item in baseVarItems"
                     :key="item.key"
-                    class="flex flex-col gap-sm p-padding-md surface-item rounded-scale-lg interactive-hover-tile behavior-hover-transition"
+                    class="col-stack-sm p-padding-md surface-item rounded-scale-lg interactive-hover-tile behavior-hover-transition"
                   >
-                    <div class="flex items-center justify-between">
+                    <div class="row-between">
                       <span class="font-medium text-foreground">
                         {{ item.description }}
                       </span>
                       <span class="font-mono text-primary fs-sm">{{ item.key }}</span>
                     </div>
-                    <div class="flex flex-wrap gap-xs">
+                    <div class="layout-wrap gap-xs">
                       <div
-                        class="fs-xs font-mono bg-muted/30 px-padding-xs py-padding-xs rounded-scale-xs cursor-pointer select-none transition-all duration-scale-lg ease-in-out hover:bg-primary/20 hover:text-primary active:scale-95 text-muted-foreground w-fit"
+                        class="interactive-tag w-fit"
                         @click="copyToClipboard(`var(${item.cssVar})`, item.cssVar)"
                       >
                         {{ item.cssVar }}
                       </div>
                       <div
-                        class="fs-xs font-mono bg-muted/30 px-padding-xs py-padding-xs rounded-scale-xs cursor-pointer select-none transition-all duration-scale-lg ease-in-out hover:bg-success/20 hover:text-success active:scale-95 text-muted-foreground w-fit"
+                        class="interactive-tag hover:bg-success/20 hover:text-success w-fit"
                         @click="copyToClipboard(item.unoClass)"
                       >
                         {{ item.unoClass }}
@@ -894,9 +905,7 @@ const marginDirMap = [
                     <div
                       class="mt-margin-xs p-container-padding bg-primary/10 rounded-scale-sm component-border"
                     >
-                      <div
-                        class="bg-primary/20 h-[var(--spacing-xl)] flex items-center justify-center fs-xs text-primary"
-                      >
+                      <div class="bg-primary/20 h-[var(--spacing-xl)] center fs-xs text-primary">
                         Content with p-container-padding
                       </div>
                     </div>
@@ -908,11 +917,9 @@ const marginDirMap = [
         </div>
 
         <!-- Size Presets Section (Hero: primary tint + title strip) -->
-        <Card
-          class="bg-primary/10 dark:bg-primary/5 rounded-scale-xl shadow-soft p-padding-xl flex flex-col gap-lg"
-        >
+        <Card class="panel-base bg-primary/10 dark:bg-primary/5">
           <template #title>
-            <div class="flex items-center gap-sm border-b-default pb-padding-sm mb-padding-sm">
+            <div class="row-y-center gap-sm border-b-default pb-padding-sm mb-padding-sm">
               <Icons
                 name="i-lucide-settings"
                 class="text-primary"
@@ -929,9 +936,9 @@ const marginDirMap = [
               <div
                 v-for="preset in SIZE_PRESETS"
                 :key="preset.name"
-                class="flex flex-col gap-md p-padding-lg surface-item rounded-scale-lg interactive-hover-tile behavior-hover-transition"
+                class="col-stack-md p-padding-lg surface-item rounded-scale-lg interactive-hover-tile behavior-hover-transition"
               >
-                <div class="flex items-center justify-between">
+                <div class="row-between">
                   <h4 class="fs-sm font-semibold text-foreground mb-margin-xs">
                     {{ preset.label }}
                   </h4>
@@ -943,7 +950,7 @@ const marginDirMap = [
                 <div class="grid grid-cols-2 gap-sm fs-sm">
                   <div class="flex justify-between">
                     <span class="text-muted-foreground">radius:</span>
-                    <span class="font-mono">{{ preset.radius }}rem</span>
+                    <span class="font-mono">{{ preset.radius }}px</span>
                   </div>
                   <div class="flex justify-between">
                     <span class="text-muted-foreground">spacingBase:</span>
@@ -972,11 +979,9 @@ const marginDirMap = [
         </Card>
 
         <!-- Quick Reference (末尾轻渐变，title 无 strip 无 font-semibold，与 theme 一致) -->
-        <Card
-          class="bg-card rounded-scale-xl shadow-soft p-padding-xl flex flex-col gap-lg bg-gradient-to-br from-primary/5 to-accent/5"
-        >
+        <Card class="panel-base bg-gradient-to-br from-primary/5 to-accent/5">
           <template #title>
-            <div class="flex items-center gap-sm">
+            <div class="row-y-center gap-sm">
               <Icons
                 name="i-lucide-zap"
                 class="text-primary"
@@ -986,7 +991,7 @@ const marginDirMap = [
           </template>
           <template #content>
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-lg">
-              <div class="flex flex-col gap-sm">
+              <div class="col-stack-sm">
                 <h4 class="fs-sm font-semibold text-foreground mb-margin-xs">
                   字体大小 (Font Size)
                 </h4>
@@ -1003,7 +1008,7 @@ const marginDirMap = [
                   text-{scale}
                 </div>
               </div>
-              <div class="flex flex-col gap-sm">
+              <div class="col-stack-sm">
                 <h4 class="fs-sm font-semibold text-foreground mb-margin-xs">间距 (Spacing)</h4>
                 <div
                   class="bg-muted p-padding-sm rounded-scale-sm fs-sm cursor-pointer hover:bg-muted/80 active:scale-95 transition-all duration-scale-lg"
@@ -1048,7 +1053,7 @@ const marginDirMap = [
                   m-margin-{scale}
                 </div>
               </div>
-              <div class="flex flex-col gap-sm">
+              <div class="col-stack-sm">
                 <h4 class="fs-sm font-semibold text-foreground mb-margin-xs">
                   圆角 (Border Radius)
                 </h4>
@@ -1059,7 +1064,7 @@ const marginDirMap = [
                   rounded-scale-{scale}
                 </div>
               </div>
-              <div class="flex flex-col gap-sm">
+              <div class="col-stack-sm">
                 <h4 class="fs-sm font-semibold text-foreground mb-margin-xs">
                   过渡动画 (Transition)
                 </h4>

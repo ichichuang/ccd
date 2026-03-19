@@ -254,7 +254,8 @@ export const beforeRequest = (method: Method) => {
     delete method.config.headers['Authorization']
   }
 
-  // 数据脱敏处理（在加密之前进行，因为加密后的数据不需要脱敏）
+  // 仅对完整 URL（视为外部请求）做请求体脱敏，避免敏感字段发往第三方；
+  // 相对路径（/api/...）视为自有后端，不脱敏以保留真实请求体。
   if (!method.url.startsWith('/')) {
     if (method.config.security?.sensitiveFields) {
       // Alova Method.data 边界：sanitizeData 返回 unknown，需桥接

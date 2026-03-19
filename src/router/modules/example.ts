@@ -4,7 +4,7 @@ const basicUiRoute: RouteConfig = {
   redirect: '/example/basic-ui/primevue',
   meta: {
     titleKey: 'router.example.basicUi',
-    rank: 1,
+    rank: 2,
     icon: 'i-lucide-layers',
   },
   children: [
@@ -55,67 +55,23 @@ const basicUiRoute: RouteConfig = {
 const chartsRoute: RouteConfig = {
   path: '/example/charts',
   name: 'ExampleCharts',
-  redirect: '/example/charts/use-echarts',
+  component: () => import('@/views/example/use-echarts/index.vue'),
   meta: {
-    titleKey: 'router.example.charts',
-    rank: 2,
+    titleKey: 'router.example.useEcharts',
+    rank: 3,
     icon: 'i-lucide-chart-bar',
   },
-  children: [
-    {
-      path: '/example/charts/use-echarts',
-      name: 'ExampleUseEcharts',
-      component: () => import('@/views/example/use-echarts/index.vue'),
-      meta: {
-        titleKey: 'router.example.useEcharts',
-        rank: 1,
-        icon: 'i-lucide-chart-bar',
-      },
-    },
-    {
-      path: '/example/charts/stats-grid',
-      name: 'ExampleStatsGrid',
-      component: () => import('@/views/example/stats-grid/index.vue'),
-      meta: {
-        titleKey: 'router.example.statsGrid',
-        rank: 2,
-        icon: 'i-lucide-layout-grid',
-      },
-    },
-  ],
 }
 
 const layoutInspectorRoute: RouteConfig = {
-  path: '/example/layout-inspector',
-  name: 'ExampleLayoutInspector',
-  redirect: '/example/layout-inspector/sidebar-inspector',
+  path: '/example/system-states',
+  name: 'ExampleSystemStates',
+  component: () => import('@/views/example/system-states/index.vue'),
   meta: {
-    titleKey: 'router.example.layoutInspector',
-    rank: 3,
+    titleKey: 'router.example.systemStates',
+    rank: 4,
     icon: 'i-lucide-panel-right',
   },
-  children: [
-    {
-      path: '/example/layout-inspector/sidebar-inspector',
-      name: 'ExampleSidebarInspector',
-      component: () => import('@/views/example/sidebar-inspector/index.vue'),
-      meta: {
-        titleKey: 'router.example.sidebarInspector',
-        rank: 1,
-        icon: 'i-lucide-panel-right',
-      },
-    },
-    {
-      path: '/example/layout-inspector/system-states',
-      name: 'ExampleSystemStates',
-      component: () => import('@/views/example/system-states/index.vue'),
-      meta: {
-        titleKey: 'router.example.systemStates',
-        rank: 2,
-        icon: 'i-lucide-layers',
-      },
-    },
-  ],
 }
 
 const permissionRoute: RouteConfig = {
@@ -124,7 +80,7 @@ const permissionRoute: RouteConfig = {
   redirect: '/example/permission/roles',
   meta: {
     titleKey: 'router.example.permission',
-    rank: 4,
+    rank: 5,
     icon: 'i-lucide-shield',
   },
   children: [
@@ -160,7 +116,7 @@ const routerMetaRoute: RouteConfig = {
   redirect: '/example/router-meta/index',
   meta: {
     titleKey: 'router.example.routerMeta',
-    rank: 5,
+    rank: 6,
     icon: 'i-lucide-route',
   },
   children: [
@@ -251,13 +207,107 @@ const routerMetaRoute: RouteConfig = {
   ],
 }
 
+const proTableRoute: RouteConfig = {
+  path: '/example/pro-table',
+  name: 'ExampleProTable',
+  redirect: '/example/pro-table/basic',
+  meta: {
+    titleKey: 'router.example.proTable',
+    rank: 8,
+    icon: 'i-lucide-table',
+  },
+  children: [
+    {
+      path: '/example/pro-table/playground',
+      name: 'ExampleProTablePlayground',
+      component: () => import('@/views/example/pro-table/playground/index.vue'),
+      meta: {
+        titleKey: 'router.example.proTablePlayground',
+        icon: 'i-lucide-flask-conical',
+      },
+    },
+    {
+      path: '/example/pro-table/height-modes',
+      name: 'ExampleProTableHeightModes',
+      component: () => import('@/views/example/pro-table/height-modes/index.vue'),
+      meta: {
+        titleKey: 'router.example.proTableHeightModes',
+        icon: 'i-lucide-maximize-2',
+      },
+    },
+    {
+      path: '/example/pro-table/columns',
+      name: 'ExampleProTableColumns',
+      component: () => import('@/views/example/pro-table/columns/index.vue'),
+      meta: {
+        titleKey: 'router.example.proTableColumns',
+        icon: 'i-lucide-columns-3',
+      },
+    },
+    {
+      path: '/example/pro-table/column-sizing',
+      name: 'ExampleProTableColumnSizing',
+      component: () => import('@/views/example/pro-table/column-sizing/index.vue'),
+      meta: {
+        titleKey: 'router.example.proTableColumnSizing',
+        icon: 'i-lucide-columns',
+      },
+    },
+    {
+      path: '/example/pro-table/server',
+      name: 'ExampleProTableServer',
+      component: () => import('@/views/example/pro-table/server/index.vue'),
+      meta: {
+        titleKey: 'router.example.proTableServer',
+        icon: 'i-lucide-globe',
+      },
+    },
+    {
+      path: '/example/pro-table/infinite',
+      name: 'ExampleProTableInfinite',
+      component: () => import('@/views/example/pro-table/infinite/index.vue'),
+      meta: {
+        titleKey: 'router.example.proTableInfinite',
+        icon: 'i-lucide-arrow-down-to-line',
+      },
+    },
+    {
+      path: '/example/pro-table/advanced',
+      name: 'ExampleProTableAdvanced',
+      component: () => import('@/views/example/pro-table/advanced/index.vue'),
+      meta: {
+        titleKey: 'router.example.proTableAdvanced',
+        icon: 'i-lucide-move-horizontal',
+      },
+    },
+    {
+      path: '/example/pro-table/api-events',
+      name: 'ExampleProTableApiEvents',
+      component: () => import('@/views/example/pro-table/api-events/index.vue'),
+      meta: {
+        titleKey: 'router.example.proTableApiEvents',
+        icon: 'i-lucide-webhook',
+      },
+    },
+    {
+      path: '/example/pro-table/virtual',
+      name: 'ExampleProTableVirtual',
+      component: () => import('@/views/example/pro-table/virtual/index.vue'),
+      meta: {
+        titleKey: 'router.example.proTableVirtual',
+        icon: 'i-lucide-gauge',
+      },
+    },
+  ],
+}
+
 const proFormRoute: RouteConfig = {
   path: '/example/pro-form',
   name: 'ExampleProForm',
   redirect: '/example/pro-form/basic',
   meta: {
     titleKey: 'router.example.proForm',
-    rank: 6,
+    rank: 7,
     icon: 'i-lucide-form-input',
   },
   children: [
@@ -266,7 +316,7 @@ const proFormRoute: RouteConfig = {
       name: 'ExampleProFormBasic',
       component: () => import('@/views/example/pro-form/basic/index.vue'),
       meta: {
-        title: 'ProForm 全量组件与基础',
+        titleKey: 'router.example.proFormBasic',
         rank: 1,
         icon: 'i-lucide-form-input',
       },
@@ -276,7 +326,7 @@ const proFormRoute: RouteConfig = {
       name: 'ExampleProFormLayout',
       component: () => import('@/views/example/pro-form/layout/index.vue'),
       meta: {
-        title: 'ProForm 响应式与排版引擎',
+        titleKey: 'router.example.proFormLayout',
         rank: 2,
         icon: 'i-lucide-layout-grid',
       },
@@ -286,7 +336,7 @@ const proFormRoute: RouteConfig = {
       name: 'ExampleProFormGroup',
       component: () => import('@/views/example/pro-form/group/index.vue'),
       meta: {
-        title: 'ProForm 容器分组与向导',
+        titleKey: 'router.example.proFormGroup',
         rank: 3,
         icon: 'i-lucide-folder-tree',
       },
@@ -296,7 +346,7 @@ const proFormRoute: RouteConfig = {
       name: 'ExampleProFormValidation',
       component: () => import('@/views/example/pro-form/validation/index.vue'),
       meta: {
-        title: 'ProForm 校验管线与持久化',
+        titleKey: 'router.example.proFormValidation',
         rank: 4,
         icon: 'i-lucide-shield-check',
       },
@@ -306,9 +356,9 @@ const proFormRoute: RouteConfig = {
       name: 'ExampleProFormDag',
       component: () => import('@/views/example/pro-form/dag/index.vue'),
       meta: {
-        title: 'ProForm 动态联动与计算',
+        titleKey: 'router.example.proFormDag',
         rank: 5,
-        icon: 'i-lucide-bezier-curve',
+        icon: 'i-lucide-align-center-vertical',
       },
     },
     {
@@ -316,38 +366,39 @@ const proFormRoute: RouteConfig = {
       name: 'ExampleProFormAdvanced',
       component: () => import('@/views/example/pro-form/advanced/index.vue'),
       meta: {
-        title: 'ProForm 动态数组与高级扩展',
+        titleKey: 'router.example.proFormAdvanced',
         rank: 6,
         icon: 'i-lucide-layers',
+      },
+    },
+    {
+      path: '/example/pro-form/plugins',
+      name: 'ExampleProFormPlugins',
+      component: () => import('@/views/example/pro-form/plugins/index.vue'),
+      meta: {
+        titleKey: 'router.example.proFormPlugins',
+        rank: 7,
+        icon: 'i-lucide-plug',
       },
     },
   ],
 }
 
 const exampleRoutes: RouteConfig[] = [
-  {
-    path: '/example',
-    name: 'Example',
-    meta: {
-      titleKey: 'router.example.root',
-      rank: 2,
-      icon: 'i-lucide-beaker',
-    },
-    children: [
-      // === 1. 基础 UI ===
-      basicUiRoute,
-      // === 2. 图表与展示 ===
-      chartsRoute,
-      // === 3. 布局与检查器 ===
-      layoutInspectorRoute,
-      // === 4. 权限示例 ===
-      permissionRoute,
-      // === 5. Router Meta 示例 ===
-      routerMetaRoute,
-      // === 6. ProForm 示例 ===
-      proFormRoute,
-    ],
-  },
+  // === 1. 基础 UI 示例 ===
+  basicUiRoute,
+  // === 2. 图表与展示 ===
+  chartsRoute,
+  // === 3. 系统状态与布局检查 ===
+  layoutInspectorRoute,
+  // === 4. 权限示例 ===
+  permissionRoute,
+  // === 5. Router Meta 与路由行为示例 ===
+  routerMetaRoute,
+  // === 6. ProForm 超级表单示例 ===
+  proFormRoute,
+  // === 7. ProTable 超级表格示例 ===
+  proTableRoute,
 ]
 
 export default exampleRoutes

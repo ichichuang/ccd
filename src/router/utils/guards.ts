@@ -30,10 +30,10 @@ export const registerRouterGuards = ({
     const rawRoutes = await fetchRoutes()
     const asyncRoutes = processAsyncRoutes(rawRoutes)
 
+    // 仅注入后台/权限相关的动态路由；错误页与 CatchAll 已作为初始静态路由注册
     dynamicRouteManager.addRoutes([...asyncRoutes])
-    dynamicRouteManager.addRoutes([...rootRedirect])
 
-    const completeRoutes = [...staticRoutes, ...asyncRoutes, ...rootRedirect]
+    const completeRoutes = [...staticRoutes, ...asyncRoutes]
     routeUtils.updateRouteUtils(completeRoutes)
   }
 

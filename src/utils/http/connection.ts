@@ -18,7 +18,7 @@ export enum ConnectionStatus {
 export class ConnectionManager {
   private state: ConnectionState
   private config: ConnectionConfig
-  private healthCheckTimer?: ReturnType<typeof setTimeout>
+  private healthCheckTimer?: ReturnType<typeof setInterval>
   private reconnectTimer?: ReturnType<typeof setTimeout>
   private listeners: Set<(state: ConnectionState) => void>
   private isDestroyed = false
@@ -182,12 +182,15 @@ export class ConnectionManager {
     }
 
     try {
-      const response = await fetch(this.config.healthCheckUrl, {
+      const controller = new AbortController()
+      const timeoutId: ReturnType<typeof setTimeout> = setTimeout(() => controller.abort(), 5000)
+      await fetch(this.config.healthCheckUrl, {
         method: 'HEAD',
-        mode: 'no-cors',
         cache: 'no-cache',
+        signal: controller.signal,
       })
-      return response.ok
+      clearTimeout(timeoutId)
+      return true
     } catch {
       return false
     }

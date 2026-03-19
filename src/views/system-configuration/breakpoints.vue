@@ -33,15 +33,30 @@ watch([() => deviceStore.width, followViewport], () => {
 })
 
 // Copy to clipboard utility（与 size/unocss 一致：成功用 toast，失败用 message）
-function copyToClipboard(text: string, label?: string) {
-  navigator.clipboard
-    .writeText(text)
-    .then(() => {
-      window.$toast?.successIn('top-right', `已复制: ${label || text}`, `类名: ${text}`)
-    })
-    .catch(() => {
-      window.$message?.danger('复制失败')
-    })
+async function copyToClipboard(text: string, label?: string) {
+  try {
+    if (navigator.clipboard && window.isSecureContext) {
+      await navigator.clipboard.writeText(text)
+    } else {
+      const textArea = document.createElement('textarea')
+      textArea.value = text
+      textArea.style.position = 'absolute'
+      textArea.style.left = '-999999px'
+      textArea.style.top = '-999999px'
+      document.body.appendChild(textArea)
+      textArea.focus()
+      textArea.select()
+
+      const successful = document.execCommand('copy')
+      textArea.remove()
+
+      if (!successful) throw new Error('Fallback copy failed')
+    }
+
+    window.$toast?.successIn('top-right', `已复制: ${label || text}`, `类名: ${text}`)
+  } catch (_error) {
+    window.$message?.danger('复制失败')
+  }
 }
 
 /** Breakpoint entries sorted by value */
@@ -160,22 +175,22 @@ const deviceSyncInfo = computed<{ deviceType: string; breakpoint: BreakpointKey 
 
 <template>
   <div
-    class="h-full flex flex-col overflow-hidden"
+    class="h-full column overflow-hidden"
     data-archetype="A1-toolbar-content"
   >
     <!-- Fixed top: Header + Viewport Simulator (Transparent Root · Nested Canvas) -->
     <div class="shrink-0 border-b-default border-primary/50 bg-primary/5">
-      <div class="layout-content-wide flex flex-col gap-sm py-padding-sm">
+      <div class="layout-content-wide col-stack-sm py-padding-sm">
         <!-- Header -->
-        <div class="flex flex-col gap-xs">
-          <div class="flex items-center gap-md">
+        <div class="col-stack-xs">
+          <div class="row-y-center gap-md">
             <div class="p-padding-md bg-primary/10 rounded-scale-lg shrink-0">
               <Icons
                 name="i-lucide-monitor"
                 class="text-primary fs-2xl behavior-hover-transition"
               />
             </div>
-            <div class="flex flex-col gap-xs">
+            <div class="col-stack-xs">
               <h1 class="fs-2xl font-bold text-foreground">Breakpoint System</h1>
               <p class="text-muted-foreground fs-sm">
                 响应式断点系统完整参考 · 点击任意类名即可自动复制到剪贴板
@@ -183,13 +198,13 @@ const deviceSyncInfo = computed<{ deviceType: string; breakpoint: BreakpointKey 
             </div>
           </div>
           <div
-            class="border-l-4 border-primary bg-primary/5 p-padding-md rounded-r-scale-md flex gap-md items-start mt-margin-sm"
+            class="border-l-4 border-primary bg-primary/5 p-padding-md rounded-r-scale-md row-start gap-md mt-margin-sm"
           >
             <Icons
               name="i-lucide-info"
               class="text-primary fs-xl shrink-0 mt-margin-xs"
             />
-            <div class="flex flex-col gap-xs">
+            <div class="col-stack-xs">
               <div class="font-semibold text-primary fs-sm">Architectural Guide 架构引导</div>
               <div class="text-muted-foreground fs-xs leading-relaxed">
                 断点数值由
@@ -213,110 +228,88 @@ const deviceSyncInfo = computed<{ deviceType: string; breakpoint: BreakpointKey 
         </div>
 
         <!-- Control Panel -->
-        <Card
-          class="bg-card rounded-scale-xl shadow-soft p-padding-xl flex flex-col gap-md"
-          :pt="{ title: { class: '!min-h-0 py-padding-sm' } }"
-        >
-          <template #title>
-            <div class="flex items-center gap-sm">
-              <Icons
-                name="i-lucide-sliders-horizontal"
-                class="text-primary"
-              />
-              <span class="font-semibold">Viewport Simulator 视窗模拟器</span>
-            </div>
-          </template>
-          <template #content>
-            <div class="flex flex-col gap-md">
-              <!-- 跟随真实视口 -->
-              <div class="flex items-center gap-sm">
-                <Checkbox
-                  v-model="followViewport"
-                  :binary="true"
-                  input-id="follow-viewport"
-                />
-                <label
-                  for="follow-viewport"
-                  class="cursor-pointer select-none text-muted-foreground fs-sm"
-                >
-                  跟随真实视口 (useDeviceStore.width)
-                </label>
+        <div class="col-stack-xs">
+          <!-- 跟随真实视口 -->
+          <div class="row-y-center gap-sm">
+            <Checkbox
+              v-model="followViewport"
+              :binary="true"
+              input-id="follow-viewport"
+            />
+            <label
+              for="follow-viewport"
+              class="cursor-pointer select-none text-muted-foreground fs-sm"
+            >
+              跟随真实视口 (useDeviceStore.width)
+            </label>
+            <Tag
+              v-if="followViewport"
+              value="已同步"
+              severity="success"
+              class="fs-xs"
+            />
+          </div>
+          <!-- Width Slider -->
+          <div class="col-stack-sm">
+            <div class="row-between">
+              <span class="text-muted-foreground">Current Width</span>
+              <div class="row-y-center gap-md">
+                <span class="font-mono fs-xl font-bold text-foreground">
+                  {{ effectiveWidth }}px
+                </span>
                 <Tag
-                  v-if="followViewport"
-                  value="已同步"
-                  severity="success"
-                  class="fs-xs"
+                  :value="activeBreakpoint ?? '< xs'"
+                  :severity="activeBreakpoint ? 'success' : 'secondary'"
+                  class="fs-sm"
                 />
-              </div>
-              <!-- Width Slider -->
-              <div class="flex flex-col gap-sm">
-                <div class="flex items-center justify-between">
-                  <span class="text-muted-foreground">Current Width</span>
-                  <div class="flex items-center gap-md">
-                    <span class="font-mono fs-xl font-bold text-foreground">
-                      {{ effectiveWidth }}px
-                    </span>
-                    <Tag
-                      :value="activeBreakpoint ?? '< xs'"
-                      :severity="activeBreakpoint ? 'success' : 'secondary'"
-                      class="fs-sm"
-                    />
-                  </div>
-                </div>
-                <Slider
-                  v-model="sliderValue"
-                  :min="SLIDER_MIN"
-                  :max="SLIDER_MAX"
-                  class="w-full"
-                  :disabled="followViewport"
-                />
-              </div>
-
-              <!-- Preset Buttons -->
-              <div class="flex flex-wrap gap-sm">
-                <div class="flex flex-wrap gap-sm">
-                  <div
-                    v-for="preset in presetWidths"
-                    :key="preset.value"
-                    class="flex items-center gap-xs px-padding-sm py-padding-xs rounded-scale-md cursor-pointer select-none transition-all duration-scale-lg ease-in-out fs-sm active:scale-95 interactive-focus-ring"
-                    tabindex="0"
-                    :class="[
-                      activePreset?.value === preset.value
-                        ? 'bg-primary text-primary-foreground shadow-soft'
-                        : 'surface-item text-muted-foreground hover:bg-muted/60 dark:hover:bg-muted/40',
-                    ]"
-                    @click="sliderValue = preset.value"
-                    @keydown.enter.prevent="sliderValue = preset.value"
-                    @keydown.space.prevent="sliderValue = preset.value"
-                  >
-                    <Icons
-                      :name="preset.icon"
-                      size="sm"
-                      :class="
-                        activePreset?.value === preset.value
-                          ? 'text-primary-foreground'
-                          : 'text-primary'
-                      "
-                    />
-                    <span>{{ preset.label }}</span>
-                  </div>
-                </div>
               </div>
             </div>
-          </template>
-        </Card>
+            <Slider
+              v-model="sliderValue"
+              :min="SLIDER_MIN"
+              :max="SLIDER_MAX"
+              class="w-full"
+              :disabled="followViewport"
+            />
+          </div>
+
+          <!-- Preset Buttons -->
+          <div class="layout-full row-start p-sm gap-sm">
+            <div
+              v-for="preset in presetWidths"
+              :key="preset.value"
+              class="row-y-center gap-xs px-padding-sm py-padding-xs rounded-scale-md cursor-pointer select-none transition-all duration-scale-lg ease-in-out fs-sm active:scale-95 interactive-focus-ring"
+              tabindex="0"
+              :class="[
+                activePreset?.value === preset.value
+                  ? 'bg-primary text-primary-foreground shadow-soft'
+                  : 'surface-item text-muted-foreground hover:bg-muted/60 dark:hover:bg-muted/40',
+              ]"
+              @click="sliderValue = preset.value"
+              @keydown.enter.prevent="sliderValue = preset.value"
+              @keydown.space.prevent="sliderValue = preset.value"
+            >
+              <Icons
+                :name="preset.icon"
+                size="sm"
+                :class="
+                  activePreset?.value === preset.value ? 'text-primary-foreground' : 'text-primary'
+                "
+              />
+              <span>{{ preset.label }}</span>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
 
     <!-- Scrollable content -->
     <CScrollbar class="flex-1 min-h-0">
-      <div class="layout-content-wide flex flex-col gap-xl">
+      <div class="layout-content-wide col-stack-xl">
         <!-- Device Store 实时状态 -->
-        <Card
-          class="bg-accent/10 dark:bg-accent/5 rounded-scale-xl shadow-soft p-padding-xl flex flex-col gap-lg"
-        >
+        <Card class="panel-base bg-accent/10 dark:bg-accent/5">
           <template #title>
-            <div class="flex items-center gap-sm border-b-default pb-padding-sm mb-padding-sm">
+            <div class="row-y-center gap-sm border-b-default pb-padding-sm mb-padding-sm">
               <Icons
                 name="i-lucide-smartphone"
                 class="text-primary"
@@ -331,7 +324,7 @@ const deviceSyncInfo = computed<{ deviceType: string; breakpoint: BreakpointKey 
           <template #content>
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-md">
               <div
-                class="flex flex-col gap-xs p-padding-md surface-item rounded-scale-lg interactive-hover-tile behavior-hover-transition"
+                class="col-stack-xs p-padding-md surface-item rounded-scale-lg interactive-hover-tile behavior-hover-transition"
               >
                 <span class="text-muted-foreground fs-xs">type</span>
                 <Tag
@@ -341,7 +334,7 @@ const deviceSyncInfo = computed<{ deviceType: string; breakpoint: BreakpointKey 
                 <span class="font-mono fs-xs text-muted-foreground">PC / Tablet / Mobile</span>
               </div>
               <div
-                class="flex flex-col gap-xs p-padding-md surface-item rounded-scale-lg interactive-hover-tile behavior-hover-transition"
+                class="col-stack-xs p-padding-md surface-item rounded-scale-lg interactive-hover-tile behavior-hover-transition"
               >
                 <span class="text-muted-foreground fs-xs">currentBreakpoint</span>
                 <Tag
@@ -350,7 +343,7 @@ const deviceSyncInfo = computed<{ deviceType: string; breakpoint: BreakpointKey 
                 />
               </div>
               <div
-                class="flex flex-col gap-xs p-padding-md surface-item rounded-scale-lg interactive-hover-tile behavior-hover-transition"
+                class="col-stack-xs p-padding-md surface-item rounded-scale-lg interactive-hover-tile behavior-hover-transition"
               >
                 <span class="text-muted-foreground fs-xs">isMobileLayout</span>
                 <Tag
@@ -360,7 +353,7 @@ const deviceSyncInfo = computed<{ deviceType: string; breakpoint: BreakpointKey 
                 <span class="font-mono fs-xs text-muted-foreground">width &lt; lg</span>
               </div>
               <div
-                class="flex flex-col gap-xs p-padding-md surface-item rounded-scale-lg interactive-hover-tile behavior-hover-transition"
+                class="col-stack-xs p-padding-md surface-item rounded-scale-lg interactive-hover-tile behavior-hover-transition"
               >
                 <span class="text-muted-foreground fs-xs">isTabletLayout</span>
                 <Tag
@@ -379,10 +372,10 @@ const deviceSyncInfo = computed<{ deviceType: string; breakpoint: BreakpointKey 
 
         <!-- deviceSync 同步 API -->
         <Card
-          class="bg-accent/10 dark:bg-accent/5 rounded-scale-xl shadow-soft p-padding-xl flex flex-col gap-lg"
+          class="bg-accent/10 dark:bg-accent/5 rounded-scale-xl shadow-soft p-padding-xl col-stack-lg"
         >
           <template #title>
-            <div class="flex items-center gap-sm border-b-default pb-padding-sm mb-padding-sm">
+            <div class="row-y-center gap-sm border-b-default pb-padding-sm mb-padding-sm">
               <Icons
                 name="i-lucide-cpu"
                 class="text-primary"
@@ -395,16 +388,16 @@ const deviceSyncInfo = computed<{ deviceType: string; breakpoint: BreakpointKey 
             </div>
           </template>
           <template #content>
-            <div class="flex flex-col gap-md">
+            <div class="col-stack-md">
               <p class="text-muted-foreground fs-sm">
                 纯函数，不依赖 Pinia · 供 mount 前逻辑（如 sizeEngine.preload）使用 · SSOT:
                 <span class="bg-muted px-padding-xs rounded-scale-xs font-mono">
                   src/utils/deviceSync.ts
                 </span>
               </p>
-              <div class="flex flex-wrap gap-md">
+              <div class="layout-wrap gap-md">
                 <div
-                  class="fs-xs font-mono bg-muted/30 px-padding-xs py-padding-xs rounded-scale-xs cursor-pointer select-none transition-all duration-scale-lg ease-in-out hover:bg-primary/20 hover:text-primary active:scale-95 text-muted-foreground interactive-focus-ring"
+                  class="interactive-tag interactive-focus-ring"
                   tabindex="0"
                   @click="copyToClipboard('getDeviceTypeSync()')"
                   @keydown.enter.prevent="copyToClipboard('getDeviceTypeSync()')"
@@ -413,7 +406,7 @@ const deviceSyncInfo = computed<{ deviceType: string; breakpoint: BreakpointKey 
                   getDeviceTypeSync()
                 </div>
                 <div
-                  class="fs-xs font-mono bg-muted/30 px-padding-xs py-padding-xs rounded-scale-xs cursor-pointer select-none transition-all duration-scale-lg ease-in-out hover:bg-primary/20 hover:text-primary active:scale-95 text-muted-foreground interactive-focus-ring"
+                  class="interactive-tag interactive-focus-ring"
                   tabindex="0"
                   @click="copyToClipboard('getBreakpointSync(width?)')"
                   @keydown.enter.prevent="copyToClipboard('getBreakpointSync(width?)')"
@@ -422,7 +415,7 @@ const deviceSyncInfo = computed<{ deviceType: string; breakpoint: BreakpointKey 
                   getBreakpointSync(width?)
                 </div>
               </div>
-              <div class="flex gap-md text-muted-foreground fs-sm">
+              <div class="row-y-center gap-md text-muted-foreground fs-sm">
                 <span>
                   当前 sync 结果: type=
                   <span class="font-mono text-foreground">{{ deviceSyncInfo.deviceType }}</span>
@@ -435,9 +428,9 @@ const deviceSyncInfo = computed<{ deviceType: string; breakpoint: BreakpointKey 
         </Card>
 
         <!-- Visual Ruler -->
-        <Card class="bg-card rounded-scale-xl shadow-soft p-padding-xl flex flex-col gap-lg">
+        <Card class="panel-base">
           <template #title>
-            <div class="flex items-center gap-sm">
+            <div class="row-y-center gap-sm">
               <Icons
                 name="i-lucide-ruler"
                 class="text-primary"
@@ -465,7 +458,7 @@ const deviceSyncInfo = computed<{ deviceType: string; breakpoint: BreakpointKey 
               <div
                 v-for="[key, value] in breakpointEntries"
                 :key="key"
-                class="absolute top-0 flex h-full flex-col items-center transition-colors"
+                class="absolute top-0 column cross-center h-full transition-colors"
                 :style="{ left: `${breakpointPercent(value)}%` }"
               >
                 <div
@@ -492,9 +485,9 @@ const deviceSyncInfo = computed<{ deviceType: string; breakpoint: BreakpointKey 
         </Card>
 
         <!-- Breakpoint Reference Table -->
-        <Card class="bg-card rounded-scale-xl shadow-soft p-padding-xl flex flex-col gap-lg">
+        <Card class="panel-base">
           <template #title>
-            <div class="flex items-center gap-sm">
+            <div class="row-y-center gap-sm">
               <Icons
                 name="i-lucide-table"
                 class="text-primary"
@@ -543,9 +536,9 @@ const deviceSyncInfo = computed<{ deviceType: string; breakpoint: BreakpointKey 
                     </td>
                     <td class="p-padding-sm font-mono">{{ item.value }}px</td>
                     <td class="p-padding-sm">
-                      <div class="flex gap-xs flex-wrap">
+                      <div class="layout-wrap gap-xs">
                         <div
-                          class="fs-xs font-mono bg-muted/30 px-padding-xs py-padding-xs rounded-scale-xs cursor-pointer select-none transition-all duration-scale-lg ease-in-out hover:bg-success/20 hover:text-success active:scale-95 text-muted-foreground interactive-focus-ring"
+                          class="interactive-tag hover:bg-success/20 hover:text-success interactive-focus-ring"
                           tabindex="0"
                           @click="copyToClipboard(item.minWidthClass)"
                           @keydown.enter.prevent="copyToClipboard(item.minWidthClass)"
@@ -554,7 +547,7 @@ const deviceSyncInfo = computed<{ deviceType: string; breakpoint: BreakpointKey 
                           {{ item.minWidthClass }}
                         </div>
                         <div
-                          class="fs-xs font-mono bg-muted/30 px-padding-xs py-padding-xs rounded-scale-xs cursor-pointer select-none transition-all duration-scale-lg ease-in-out hover:bg-warn/20 hover:text-warn active:scale-95 text-muted-foreground interactive-focus-ring"
+                          class="interactive-tag hover:bg-warn/20 hover:text-warn interactive-focus-ring"
                           tabindex="0"
                           @click="copyToClipboard(item.maxWidthClass)"
                           @keydown.enter.prevent="copyToClipboard(item.maxWidthClass)"
@@ -581,9 +574,9 @@ const deviceSyncInfo = computed<{ deviceType: string; breakpoint: BreakpointKey 
         </Card>
 
         <!-- Grid Demo -->
-        <Card class="bg-card rounded-scale-xl shadow-soft p-padding-xl flex flex-col gap-lg">
+        <Card class="panel-base">
           <template #title>
-            <div class="flex items-center gap-sm">
+            <div class="row-y-center gap-sm">
               <Icons
                 name="i-lucide-grid-3x3"
                 class="text-primary"
@@ -596,7 +589,7 @@ const deviceSyncInfo = computed<{ deviceType: string; breakpoint: BreakpointKey 
             </div>
           </template>
           <template #content>
-            <div class="flex flex-col gap-md">
+            <div class="col-stack-md">
               <p class="text-muted-foreground fs-sm">
                 模拟视窗宽度为
                 <span class="font-mono font-bold">{{ effectiveWidth }}px</span>
@@ -609,12 +602,12 @@ const deviceSyncInfo = computed<{ deviceType: string; breakpoint: BreakpointKey 
               </p>
 
               <!-- Simulated Viewport -->
-              <CScrollbar class="flex justify-center pb-padding-md min-w-0">
+              <CScrollbar class="row-center pb-padding-md min-w-0">
                 <div
-                  class="flex shrink-0 flex-col rounded-scale-lg component-border bg-card shadow-soft transition-all duration-scale-lg w-full"
+                  class="column shrink-0 rounded-scale-lg component-border surface-elevated transition-all duration-scale-lg w-full"
                 >
                   <div
-                    class="border-b-default px-padding-md py-padding-sm text-center fs-sm text-muted-foreground flex items-center justify-center gap-sm"
+                    class="border-b-default px-padding-md py-padding-sm text-center fs-sm text-muted-foreground center gap-sm"
                   >
                     <Icons
                       name="i-lucide-monitor"
@@ -629,7 +622,7 @@ const deviceSyncInfo = computed<{ deviceType: string; breakpoint: BreakpointKey 
                     <div
                       v-for="n in 12"
                       :key="n"
-                      class="flex aspect-video items-center justify-center rounded-scale-md component-border bg-muted/50 font-mono fs-lg font-medium text-foreground interactive-hover-tile behavior-hover-transition"
+                      class="center aspect-video rounded-scale-md component-border bg-muted/50 font-mono fs-lg font-medium text-foreground interactive-hover-tile behavior-hover-transition"
                     >
                       {{ n }}
                     </div>
@@ -641,9 +634,9 @@ const deviceSyncInfo = computed<{ deviceType: string; breakpoint: BreakpointKey 
         </Card>
 
         <!-- Usage Examples -->
-        <Card class="bg-card rounded-scale-xl shadow-soft p-padding-xl flex flex-col gap-lg">
+        <Card class="panel-base">
           <template #title>
-            <div class="flex items-center gap-sm">
+            <div class="row-y-center gap-sm">
               <Icons
                 name="i-lucide-code"
                 class="text-primary"
@@ -653,7 +646,7 @@ const deviceSyncInfo = computed<{ deviceType: string; breakpoint: BreakpointKey 
           </template>
           <template #content>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-lg">
-              <div class="flex flex-col gap-sm">
+              <div class="col-stack-sm">
                 <h4 class="fs-sm font-semibold text-foreground mb-margin-xs">
                   最小宽度 (Min-Width Mobile First)
                 </h4>
@@ -679,7 +672,7 @@ const deviceSyncInfo = computed<{ deviceType: string; breakpoint: BreakpointKey 
                   </CScrollbar>
                 </div>
               </div>
-              <div class="flex flex-col gap-sm">
+              <div class="col-stack-sm">
                 <h4 class="fs-sm font-semibold text-foreground mb-margin-xs">
                   最大宽度 (Max-Width)
                 </h4>
@@ -703,7 +696,7 @@ const deviceSyncInfo = computed<{ deviceType: string; breakpoint: BreakpointKey 
                   </CScrollbar>
                 </div>
               </div>
-              <div class="flex flex-col gap-sm">
+              <div class="col-stack-sm">
                 <h4 class="fs-sm font-semibold text-foreground mb-margin-xs">
                   响应式网格 (Responsive Grid)
                 </h4>
@@ -727,7 +720,7 @@ const deviceSyncInfo = computed<{ deviceType: string; breakpoint: BreakpointKey 
                   </CScrollbar>
                 </div>
               </div>
-              <div class="flex flex-col gap-sm">
+              <div class="col-stack-sm">
                 <h4 class="fs-sm font-semibold text-foreground mb-margin-xs">
                   响应式间距 (Responsive Spacing)
                 </h4>
@@ -756,9 +749,9 @@ const deviceSyncInfo = computed<{ deviceType: string; breakpoint: BreakpointKey 
         </Card>
 
         <!-- Quick Reference -->
-        <Card class="bg-card rounded-scale-xl shadow-soft p-padding-xl flex flex-col gap-lg">
+        <Card class="panel-base">
           <template #title>
-            <div class="flex items-center gap-sm">
+            <div class="row-y-center gap-sm">
               <Icons
                 name="i-lucide-zap"
                 class="text-primary"
@@ -771,13 +764,13 @@ const deviceSyncInfo = computed<{ deviceType: string; breakpoint: BreakpointKey 
               <div
                 v-for="[key, value] in breakpointEntries"
                 :key="key"
-                class="flex flex-col gap-xs p-padding-md surface-item rounded-scale-lg interactive-hover-tile behavior-hover-transition cursor-pointer interactive-focus-ring"
+                class="col-stack-xs p-padding-md surface-item rounded-scale-lg interactive-hover-tile behavior-hover-transition cursor-pointer interactive-focus-ring"
                 tabindex="0"
                 @click="copyToClipboard(`${key}:`)"
                 @keydown.enter.prevent="copyToClipboard(`${key}:`)"
                 @keydown.space.prevent="copyToClipboard(`${key}:`)"
               >
-                <div class="flex items-center justify-between">
+                <div class="row-between">
                   <Tag
                     :value="key"
                     severity="info"

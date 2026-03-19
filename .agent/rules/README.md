@@ -27,8 +27,7 @@ All rule files use `.md` extension. When a Cursor counterpart exists, the conten
 | 15  | `15-utils-and-hooks-first.md`          | `15-utils-and-hooks-first.mdc`          | Utils and hooks first; mandatory lookup map                                    |
 | 18  | `18-components-and-icons.md`           | `18-components-and-icons.mdc`           | Components and Icons (CScrollbar, Icons, UseEcharts, etc.)                     |
 | 20  | `20-ui-styling.md`                     | `20-ui-styling.mdc`                     | UI styling (theme, size, layout, UnoCSS, SCSS)                                 |
-| 21  | `21-color-authority.md`                | `21-color-authority.mdc`                | Color authority (colorUsage.ts SSOT)                                           |
-| 21  | `21-color-semantic-usage.md`           | `21-color-semantic-usage.mdc`           | Semantic color mapping                                                         |
+| 21  | `21-color-system.md`                   | `21-color-system.mdc`                   | Color authority chain + semantic usage (SSOT)                                  |
 | 22  | `22-layouts.md`                        | `22-layouts.mdc`                        | Layouts (LayoutMode, AdminLayoutMode)                                          |
 | 24  | `24-tsx-rendering.md`                  | `24-tsx-rendering.mdc`                  | TSX for programmatic render; forbid h()                                        |
 | 25  | `25-html-tag-semantics.md`             | `25-html-tag-semantics.mdc`             | HTML tag semantics (code/span/div/pre)                                         |

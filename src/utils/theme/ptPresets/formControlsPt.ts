@@ -3,6 +3,11 @@
  *
  * Premium Borderless UI：无实线边框，使用 bg-muted/30 背景 + interactive-focus-ring 焦点 shadow。
  * 符合 101-premium-ui.mdc 与 29-focus-outline-styling.mdc。
+ *
+ * PT Merge 契约 (PrimeVue v4, mergeProps: true, mergeSections: true):
+ * - 全局 PT 类与组件级 :pt 类合并（非替换）
+ * - 使用 !important 的全局 PT 属性无法被局部 :pt 覆盖
+ * - ⚠️ HMR 不生效：修改此文件后需全页面刷新
  */
 
 const PREMIUM_INPUT_ROOT =
@@ -16,7 +21,13 @@ export const formControlsPt = {
   },
   inputnumber: {
     root: { class: PREMIUM_INPUT_ROOT },
-    button: { class: '!border-0' },
+    buttonGroup: { class: '!border-0 !bg-transparent' },
+    incrementButton: {
+      class: '!border-0 !bg-transparent hover:!bg-muted/20 behavior-hover-transition',
+    },
+    decrementButton: {
+      class: '!border-0 !bg-transparent hover:!bg-muted/20 behavior-hover-transition',
+    },
   },
   inputchips: {
     root: { class: PREMIUM_INPUT_ROOT },

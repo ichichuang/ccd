@@ -19,7 +19,7 @@ export type MenuVisualContext = 'header' | 'sidebar' | 'breadcrumb'
 
 /** 返回指定上下文的 base 类（使用 MENU_PANEL_PADDING 统一内边距；过渡统一 duration-scale-md + ease-out-expo，与 layout-menu / uno.config 菜单交互语义一致） */
 export function getMenuItemBase(context: MenuVisualContext): string {
-  const base: string = `${MENU_ITEM_BASE} ${MENU_PANEL_PADDING} text-foreground text-current! group flex items-center leading-none rounded-scale-md transition-all duration-scale-md ease-out-expo`
+  const base: string = `${MENU_ITEM_BASE} ${MENU_PANEL_PADDING} text-foreground text-current! group flex items-center rounded-scale-md transition-all duration-scale-md ease-out-expo`
   return context === 'breadcrumb' ? `${base} fs-sm` : base
 }
 

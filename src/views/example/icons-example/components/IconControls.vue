@@ -166,17 +166,17 @@ function handleSetScale(value: string): void {
 </script>
 
 <template>
-  <div class="flex flex-col gap-lg">
+  <div class="col-stack-lg">
     <h3 class="fs-md font-semibold text-foreground">图标控制</h3>
 
-    <div class="flex flex-col gap-sm">
+    <div class="col-stack-sm">
       <label class="fs-sm font-medium text-foreground">当前图标</label>
       <div class="p-padding-sm bg-muted rounded-scale-md">
         <div class="fs-xs font-mono text-foreground break-all">{{ iconName }}</div>
       </div>
     </div>
 
-    <div class="flex flex-col gap-md">
+    <div class="col-stack-md">
       <label class="fs-sm font-medium text-foreground">尺寸 (Size)</label>
       <div class="flex gap-sm">
         <Button
@@ -193,7 +193,7 @@ function handleSetScale(value: string): void {
         />
       </div>
       <div v-if="sizeMode === 'scale'">
-        <div class="flex flex-wrap gap-sm">
+        <div class="layout-wrap gap-sm">
           <Button
             v-for="key in SIZE_SCALE_KEYS"
             :key="key"
@@ -207,15 +207,15 @@ function handleSetScale(value: string): void {
       <div v-else>
         <InputText
           v-model="sizeCustom"
-          placeholder="例如: 24px, 2rem, 50%"
+          placeholder="例如: 24px, 50%"
           size="small"
         />
       </div>
     </div>
 
-    <div class="flex flex-col gap-md">
+    <div class="col-stack-md">
       <label class="fs-sm font-medium text-foreground">颜色 (Color)</label>
-      <div class="flex gap-sm items-center">
+      <div class="row-y-center gap-sm">
         <InputText
           v-model="colorInput"
           placeholder="例如: #ff0000, rgb(var(--primary))"
@@ -230,7 +230,7 @@ function handleSetScale(value: string): void {
           @input="handleColorInputChange"
         />
       </div>
-      <div class="flex flex-wrap gap-sm">
+      <div class="layout-wrap gap-sm">
         <Button
           label="主色"
           size="small"
@@ -276,9 +276,9 @@ function handleSetScale(value: string): void {
       </div>
     </div>
 
-    <div class="flex flex-col gap-md">
+    <div class="col-stack-md">
       <label class="fs-sm font-medium text-foreground">动画 (Animation)</label>
-      <div class="flex flex-wrap gap-sm">
+      <div class="layout-wrap gap-sm">
         <Button
           v-for="opt in animationOptions"
           :key="opt.value"
@@ -290,9 +290,9 @@ function handleSetScale(value: string): void {
       </div>
     </div>
 
-    <div class="flex flex-col gap-md">
+    <div class="col-stack-md">
       <label class="fs-sm font-medium text-foreground">翻转 (Flip)</label>
-      <div class="flex flex-wrap gap-sm">
+      <div class="layout-wrap gap-sm">
         <Button
           v-for="opt in flipOptions"
           :key="opt.value"
@@ -304,9 +304,9 @@ function handleSetScale(value: string): void {
       </div>
     </div>
 
-    <div class="flex flex-col gap-md">
+    <div class="col-stack-md">
       <label class="fs-sm font-medium text-foreground">旋转 (Rotate)</label>
-      <div class="flex flex-wrap gap-sm items-center">
+      <div class="row-y-center flex-wrap gap-sm">
         <InputText
           v-model="rotateInput"
           placeholder="角度 (deg)，例如: 90"
@@ -342,9 +342,9 @@ function handleSetScale(value: string): void {
       </div>
     </div>
 
-    <div class="flex flex-col gap-md">
+    <div class="col-stack-md">
       <label class="fs-sm font-medium text-foreground">缩放 (Scale)</label>
-      <div class="flex flex-wrap gap-sm items-center">
+      <div class="row-y-center flex-wrap gap-sm">
         <InputText
           v-model="scaleInput"
           placeholder="缩放比例，例如: 1.5"

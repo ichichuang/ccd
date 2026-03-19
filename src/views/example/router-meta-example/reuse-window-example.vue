@@ -4,10 +4,8 @@
 </script>
 
 <template>
-  <div
-    class="p-padding-lg space-y-margin-md flex flex-col items-center justify-center min-h-[60vh]"
-  >
-    <h2 class="fs-xl font-semibold flex items-center gap-sm">
+  <div class="p-padding-lg space-y-margin-md column-center min-h-[60vh]">
+    <h2 class="fs-xl font-semibold row-y-center gap-sm">
       <Icons
         name="i-lucide-window"
         size="lg"

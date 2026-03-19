@@ -1,9 +1,8 @@
 <script setup lang="ts">
 import {
   decideRootFontSize,
-  applyRootFontSize,
   decideLayoutDimensions,
-  applyLayoutDimensions,
+  applyRuntimeSizeUpdate,
 } from '@/utils/theme/sizeEngine'
 import LayoutManager from '@/layouts/index.vue'
 import AppPrimeVueGlobals from '@/layouts/components/AppPrimeVueGlobals.vue'
@@ -22,22 +21,18 @@ if (typeof window !== 'undefined') {
 }
 
 // 根字号与布局尺寸双轨自适应：根据设备类型 + 断点 + 尺寸预设动态计算
+// 使用 applyRuntimeSizeUpdate 合并字体 + 布局变量为单次 cssText 写入，
+// 避免 ~16 次独立 setProperty 导致的多次 style recalc
 watchEffect(() => {
-  const decision = decideRootFontSize({
+  const ctx = {
     deviceType: deviceStore.type,
     breakpoint: deviceStore.currentBreakpoint,
     preset: sizeStore.currentPreset,
     pixelRatio: deviceStore.pixelRatio,
-  })
-  applyRootFontSize(decision)
-
-  const layoutDecision = decideLayoutDimensions({
-    deviceType: deviceStore.type,
-    breakpoint: deviceStore.currentBreakpoint,
-    preset: sizeStore.currentPreset,
-    pixelRatio: deviceStore.pixelRatio,
-  })
-  applyLayoutDimensions(layoutDecision)
+  }
+  const decision = decideRootFontSize(ctx)
+  const layoutDimensions = decideLayoutDimensions(ctx)
+  applyRuntimeSizeUpdate(decision, layoutDimensions)
 })
 
 onMounted(() => {

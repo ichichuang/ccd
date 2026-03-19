@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { FieldComponentProps } from '../../engine/types'
+import { PRO_FORM_COMPONENT_DEFAULTS } from '../../engine/config'
 
 type Props = FieldComponentProps<number | number[] | null>
 
@@ -13,7 +14,7 @@ const attrs = useAttrs()
 
 const emptyPlaceholder = computed<string>(() => {
   const value = attrs.previewEmptyPlaceholder as string | undefined
-  return value && value.length > 0 ? value : '-'
+  return value && value.length > 0 ? value : PRO_FORM_COMPONENT_DEFAULTS.emptyTextFallback
 })
 
 const displayValue = computed<string>(() => {
@@ -38,8 +39,9 @@ const isRangeMode = computed<boolean>(() => {
 
 const sliderValue = computed<number | number[]>(() => {
   const val = props.modelValue
-  if (val == null) return isRangeMode.value ? [0, 100] : 0
-  if (Array.isArray(val)) return val.length === 2 ? val : [val[0] ?? 0, val[1] ?? 100]
+  const [min, max] = PRO_FORM_COMPONENT_DEFAULTS.sliderDefaultRange
+  if (val == null) return isRangeMode.value ? [min, max] : min
+  if (Array.isArray(val)) return val.length === 2 ? val : [val[0] ?? min, val[1] ?? max]
   return val
 })
 

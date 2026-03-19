@@ -11,6 +11,7 @@ import type { RouteRecordRaw } from 'vue-router'
 import { createRouter, createWebHashHistory, createWebHistory } from 'vue-router'
 import { autoImportModulesSync } from '@/router/utils/moduleLoader'
 import { registerRouterGuards } from './utils/guards'
+import { rootRedirect } from '@/constants/router'
 
 const routeModules = import.meta.glob('./modules/**/*.ts', { eager: true })
 const importedRoutes = autoImportModulesSync<RouteModule>(
@@ -67,7 +68,11 @@ function createInitialRoutes(routes: RouteConfig[]): RouteRecordRaw[] {
 }
 
 // 转换为 Vue Router 兼容格式
-const initialRoutes: RouteRecordRaw[] = createInitialRoutes(normalizedStaticRoutes)
+// 将错误页与 CatchAll 的 rootRedirect 一并纳入初始静态路由，避免依赖鉴权动态注入
+const initialRoutes: RouteRecordRaw[] = createInitialRoutes([
+  ...normalizedStaticRoutes,
+  ...rootRedirect,
+])
 
 // 创建路由实例
 const router = createRouter({
@@ -93,7 +98,8 @@ export const dynamicRouteManager = createDynamicRouteManager(router)
 registerRouterGuards({
   router,
   routeUtils,
-  staticRoutes: normalizedStaticRoutes,
+  // 向权限系统与菜单暴露的 staticRoutes 也包含错误页与 CatchAll
+  staticRoutes: [...normalizedStaticRoutes, ...rootRedirect],
   dynamicRouteManager,
 })
 

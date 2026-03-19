@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { FieldComponentProps, SelectOption } from '../../engine/types'
+import { PRO_FORM_COMPONENT_DEFAULTS } from '../../engine/config'
 
 type Props = FieldComponentProps<unknown> & {
   options?: SelectOption[]
@@ -16,7 +17,8 @@ const handleUpdate = (value: unknown): void => {
 }
 
 const displayLabel = computed(() => {
-  if (props.modelValue == null || props.modelValue === '') return '-'
+  if (props.modelValue == null || props.modelValue === '')
+    return PRO_FORM_COMPONENT_DEFAULTS.emptyTextFallback
 
   const option = props.options?.find(o => o.value === props.modelValue)
   if (option) return option.label
@@ -36,8 +38,8 @@ const displayLabel = computed(() => {
     v-else
     :model-value="props.modelValue"
     :options="props.options"
-    option-label="label"
-    option-value="value"
+    :option-label="PRO_FORM_COMPONENT_DEFAULTS.defaultLabelField"
+    :option-value="PRO_FORM_COMPONENT_DEFAULTS.defaultValueField"
     :disabled="props.disabled || props.readonly"
     :invalid="!!props.error && props.error.length > 0"
     :loading="props.loading"

@@ -12,7 +12,9 @@ When the task involves **any chart scenario**, prefer UseEcharts component; do N
 ## 2. Pre-check
 
 - **Required reading**: `docs/ai-specs/ECHARTS_THEME.md`
-- **Rules**: `.agent/rules/10-ui-architecture.md` §2d
+- **Rules**:
+  - `.cursor/rules/40-echarts-visualization.mdc`
+  - `.cursor/rules/18-components-and-icons.mdc`
 
 ## 3. Decision Criteria
 

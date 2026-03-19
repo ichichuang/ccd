@@ -1,22 +1,63 @@
-<script setup lang="ts">
+<script setup lang="tsx">
 defineOptions({ name: 'ExampleProFormLayoutPage' })
 
-import type { FormSchema, FormState } from '@/components/ProForm'
-import { useAppElementSize } from '@/hooks/modules/useAppElementSize'
+import type { PropType, VNode } from 'vue'
+import type { ComponentPublicInstance } from 'vue'
+import type { FormSchema, FormState, ProFormExpose } from '@/components/ProForm'
+import Button from 'primevue/button'
+import InputText from 'primevue/inputtext'
+import Icons from '@/components/Icons/Icons.vue'
 
-type ProFormExpose = {
-  submit: () => Promise<void>
-  validate: () => Promise<boolean>
-  getValues: () => Record<string, unknown>
-  getFormState: () => FormState<Record<string, unknown>>
-}
+/** 插槽内使用的自定义字段组件：提供 stringValue 可写计算属性，消除模板中的类型断言 */
+const CustomFieldSlotContent = defineComponent({
+  name: 'CustomFieldSlotContent',
+  props: {
+    state: { type: Object as PropType<{ value: unknown }>, required: true },
+    onUpdate: { type: Function as PropType<(v: unknown) => void>, required: true },
+  },
+  setup(props) {
+    const stringValue = computed<string>({
+      get: () => (props.state?.value as string) ?? '',
+      set: (val: string) => props.onUpdate(val),
+    })
+    return { stringValue }
+  },
+  render(): VNode {
+    const value = this.stringValue as string
+    const onUpdate = this.onUpdate as (v: unknown) => void
 
-const containerRef = ref<HTMLDivElement | null>(null)
-const { height: containerHeight } = useAppElementSize(containerRef)
+    return (
+      <div class="row-y-center gap-sm w-full p-padding-xs border-dashed rounded-scale-md bg-accent/5">
+        <Icons
+          name="i-lucide-sparkles"
+          class="text-accent"
+        />
+        <InputText
+          modelValue={value}
+          class="flex-1"
+          placeholder="从插槽注入..."
+          {...{
+            'onUpdate:modelValue': (v?: string) => onUpdate(v ?? ''),
+          }}
+        />
+        <Button
+          severity="success"
+          text
+          onClick={() => onUpdate(value + ' √')}
+        >
+          <Icons
+            name="i-lucide-check"
+            size="sm"
+          />
+        </Button>
+      </div>
+    )
+  },
+})
 
 // 排版控制状态
 const layoutMode = ref<'horizontal' | 'vertical'>('horizontal')
-const labelAlign = ref<'left' | 'right'>('right')
+const labelAlign = ref<'left' | 'center' | 'right'>('right')
 
 // 选项配置
 const layoutOptions = [
@@ -26,6 +67,7 @@ const layoutOptions = [
 
 const alignOptions = [
   { label: '居左', value: 'left' },
+  { label: '居中', value: 'center' },
   { label: '居右', value: 'right' },
 ]
 
@@ -99,7 +141,8 @@ const initialValues = reactive<Record<string, unknown>>({
   customField: '我是被插槽接管的值',
 })
 
-const formRef = ref<ProFormExpose | null>(null)
+type ProFormInstance = ComponentPublicInstance<ProFormExpose<Record<string, unknown>>>
+const formRef = ref<ProFormInstance | null>(null)
 
 const formState = computed<FormState<Record<string, unknown>>>(() => {
   return (
@@ -120,7 +163,7 @@ const valuesJson = computed<string>(() => {
 
 // === 自定义拖拽缩放逻辑 ===
 const resizableRef = ref<HTMLDivElement | null>(null)
-const resizableWidth = ref<number | null>(null)
+const resizableWidthUnits = ref<number | null>(null)
 const isResizing = ref(false)
 
 const startResize = (e: MouseEvent): void => {
@@ -134,8 +177,12 @@ const startResize = (e: MouseEvent): void => {
   const onMouseMove = (moveEvent: MouseEvent): void => {
     if (!isResizing.value) return
     const deltaX = moveEvent.clientX - startX
-    // 限制最小宽度 320px
-    resizableWidth.value = Math.max(320, initialWidth + deltaX)
+    // 使用 spacing-md (16px) 作为拖拽宽度的语义基准单位，避免直接在样式中出现 px
+    const spacingUnitPx = 16
+    const initialUnits = initialWidth / spacingUnitPx
+    // ARCHITECTURE EXCEPTION: Drag boundary expressed in semantic units (~320px when spacingUnitPx=16)
+    const minWidthUnits = 20
+    resizableWidthUnits.value = Math.max(minWidthUnits, initialUnits + deltaX / spacingUnitPx)
   }
 
   const onMouseUp = (): void => {
@@ -166,192 +213,209 @@ async function onClickSubmit(): Promise<void> {
 
 <template>
   <div
-    class="h-full flex flex-col overflow-hidden"
-    data-archetype="playground-single-panel"
+    data-archetype="A1-toolbar-content"
+    class="col-fill"
   >
-    <div
-      class="shrink-0 px-padding-lg py-padding-md bg-accent/20 dark:bg-accent/12 border-b-default border-accent"
-    >
-      <div class="gap-scale-xs">
-        <div class="fs-xl font-semibold text-foreground">ProForm 响应式与排版引擎</div>
-        <div class="fs-sm text-muted-foreground">
-          演示动态控制表单 Layout，以及
-          <span class="text-primary font-bold">无 CSS 媒体查询的纯容器级自适应栅格</span>
-          ，并演示具名插槽覆盖渲染。
+    <!-- Toolbar: Hero Header (Transparent Root Policy: Inherit canvas) -->
+    <header class="shrink-0 border-b-default border-primary/20">
+      <div class="w-full px-padding-md md:px-padding-lg py-padding-sm row-y-center gap-md">
+        <div class="p-padding-md bg-primary/10 rounded-scale-lg shrink-0">
+          <Icons
+            name="i-lucide-layout-template"
+            class="text-primary fs-2xl"
+          />
+        </div>
+        <div class="col-stack-xs">
+          <h1 class="fs-2xl font-bold text-foreground m-0">ProForm 响应式与排版引擎</h1>
+          <p class="text-muted fs-sm m-0">
+            演示动态控制表单 Layout，以及
+            <span class="text-primary font-bold">容器级自适应栅格</span>
+            (无 CSS 媒体查询)，并演示具名插槽覆盖渲染。
+          </p>
         </div>
       </div>
-    </div>
+    </header>
 
-    <div
-      ref="containerRef"
-      class="gap-xs flex-1"
-    >
-      <div
-        class="layout-full flex gap-xs"
-        :style="{ height: `${containerHeight}px` }"
-      >
-        <CScrollbar>
-          <div class="layout-stack gap-scale-md">
-            <div
-              class="sticky top-0 z-1 surface-elevated px-md py-sm rounded-md gap-scale-md flex justify-between flex-wrap"
-            >
-              <div class="center gap-md">
-                <Icons
-                  name="i-lucide-layout-template"
-                  size="xl"
-                  class="text-accent!"
-                />
-                <div class="flex-col gap-xs">
-                  <div class="font-semibold">排版控制台</div>
-                  <div class="fs-xs text-muted-foreground">切换布局模式与标签对齐。</div>
-                </div>
-              </div>
+    <!-- Content: split layout (form + JSON preview) -->
+    <div class="flex-1 min-h-0">
+      <div class="row-start items-start gap-lg layout-full min-h-0">
+        <div class="flex-1 min-w-0 h-full">
+          <CScrollbar class="layout-full">
+            <div class="w-full p-padding-md md:p-padding-lg col-stack-xl pb-padding-xl">
+              <!-- 排版控制台 -->
+              <div
+                class="panel-base sticky top-0 z-1 bg-background/80 backdrop-blur-md border-primary/20 shadow-sm!"
+              >
+                <div class="row-between gap-md flex-wrap">
+                  <div class="center gap-md">
+                    <Icons
+                      name="i-lucide-settings-2"
+                      size="xl"
+                      class="text-accent"
+                    />
+                    <div class="col-stack-xs">
+                      <div class="font-bold text-foreground uppercase tracking-tight">排版配置</div>
+                      <div class="fs-xs text-muted-foreground">实时切换布局模式与对齐方式。</div>
+                    </div>
+                  </div>
 
-              <div class="flex items-center gap-md flex-wrap">
-                <div class="center gap-xs">
-                  <span class="fs-sm text-muted-foreground">Layout:</span>
-                  <SelectButton
-                    v-model="layoutMode"
-                    :options="layoutOptions"
-                    option-label="label"
-                    option-value="value"
-                  />
-                </div>
-                <div class="center gap-xs">
-                  <span class="fs-sm text-muted-foreground">Align:</span>
-                  <SelectButton
-                    v-model="labelAlign"
-                    :options="alignOptions"
-                    option-label="label"
-                    option-value="value"
-                    :disabled="layoutMode === 'vertical'"
-                  />
-                </div>
-                <Button
-                  label="校验并提交"
-                  size="small"
-                  :loading="formState.submitting"
-                  @click="onClickSubmit"
-                />
-              </div>
-            </div>
-
-            <div class="surface-elevated px-md py-sm rounded-md layout-stack gap-scale-md">
-              <div class="flex items-center gap-scale-md">
-                <Icons
-                  name="i-lucide-move-horizontal"
-                  size="xl"
-                  class="text-primary!"
-                />
-                <div class="flex-col gap-xs">
-                  <div class="fs-md font-semibold text-foreground">容器级响应式测试区</div>
-                  <div class="fs-sm text-muted-foreground">
-                    拖拽下方虚线框的右下角改变容器宽度，观察表单如何根据容器宽度丝滑变阵
-                    (xs/md/lg)。
+                  <div class="row-y-center gap-md flex-wrap">
+                    <div class="center gap-xs">
+                      <span class="fs-xs font-bold text-muted uppercase">Layout</span>
+                      <SelectButton
+                        v-model="layoutMode"
+                        :options="layoutOptions"
+                        option-label="label"
+                        option-value="value"
+                        class="scale-90"
+                      />
+                    </div>
+                    <div class="center gap-xs">
+                      <span class="fs-xs font-bold text-muted uppercase">Align</span>
+                      <SelectButton
+                        v-model="labelAlign"
+                        :options="alignOptions"
+                        option-label="label"
+                        option-value="value"
+                        :disabled="layoutMode === 'vertical'"
+                        class="scale-90"
+                      />
+                    </div>
+                    <Button
+                      label="提交验证"
+                      icon="i-lucide-send"
+                      size="small"
+                      :loading="formState.submitting"
+                      @click="onClickSubmit"
+                    />
                   </div>
                 </div>
               </div>
 
-              <div
-                ref="resizableRef"
-                class="relative overflow-hidden border-default border-dashed p-padding-lg rounded-scale-lg surface-elevated transition-colors"
-                :style="{
-                  width: resizableWidth ? `${resizableWidth}px` : '100%',
-                  minWidth: '320px',
-                  maxWidth: '100%',
-                }"
-              >
-                <div
-                  class="absolute top-0 right-0 h-full w-[var(--spacing-xs)] cursor-col-resize hover:bg-primary/50 active:bg-primary transition-colors z-10"
-                  title="拖拽改变宽度"
-                  @mousedown.prevent="startResize"
-                ></div>
-
-                <div
-                  class="absolute top-0 right-3 bg-primary text-primary-foreground fs-xs px-padding-xs py-padding-xs rounded-b-md opacity-50 pointer-events-none transition-opacity"
-                  :class="{ 'opacity-100': isResizing }"
-                >
-                  ← 拖拽右侧边缘改变容器宽度
+              <!-- 容器级响应式测试区 -->
+              <div class="panel-base">
+                <div class="row-y-center gap-sm border-b-default pb-padding-sm mb-padding-sm">
+                  <Icons
+                    name="i-lucide-move-horizontal"
+                    class="text-primary"
+                  />
+                  <div class="col-stack-xs">
+                    <span class="fs-md font-semibold text-foreground uppercase tracking-tight">
+                      容器级响应式观测
+                    </span>
+                    <span class="fs-xs text-muted-foreground italic">
+                      拖拽右侧边缘改变容器宽度，观察表单如何根据容器尺寸丝滑变阵 (xs/md/lg)。
+                    </span>
+                  </div>
                 </div>
 
-                <ProForm
-                  ref="formRef"
-                  :schema="schema"
-                  :initial-values="initialValues"
-                  :layout="layoutMode"
-                  :label-align="labelAlign"
-                  label-width="120px"
-                  @submit="onSubmit"
+                <div
+                  ref="resizableRef"
+                  class="relative overflow-hidden border-default border-dashed border-primary/30 p-padding-lg rounded-scale-lg surface-sunken transition-colors"
+                  :style="{
+                    width: resizableWidthUnits
+                      ? `calc(var(--spacing-md) * ${resizableWidthUnits})`
+                      : '100%',
+                    minWidth: '20%',
+                    maxWidth: '100%',
+                  }"
                 >
-                  <template #field-customField="{ state, onUpdate }">
+                  <div
+                    class="absolute top-0 right-0 h-full w-1.5 cursor-col-resize hover:bg-primary/40 active:bg-primary transition-all z-10 group"
+                    @mousedown.prevent="startResize"
+                  >
                     <div
-                      class="flex items-center gap-scale-sm w-full p-padding-xs border-default border-dashed rounded-scale-md bg-accent/5"
-                    >
-                      <Icons
-                        name="i-lucide-sparkles"
-                        class="text-accent"
+                      class="absolute inset-y-0 left-1/2 -ml-px w-px bg-primary/20 group-hover:bg-primary/50"
+                    ></div>
+                  </div>
+
+                  <div
+                    class="absolute top-0 right-4 bg-primary/80 text-primary-foreground fs-xs px-padding-xs py-1 rounded-b-scale-md opacity-0 pointer-events-none transition-opacity backdrop-blur-sm"
+                    :class="{ 'opacity-100': isResizing }"
+                  >
+                    <Icons
+                      name="i-lucide-arrow-left-right"
+                      size="xs"
+                      class="mr-1"
+                    />
+                    RESZING...
+                  </div>
+
+                  <ProForm
+                    ref="formRef"
+                    :schema="schema"
+                    :initial-values="initialValues"
+                    :layout="layoutMode"
+                    :label-align="labelAlign"
+                    :label-width="'15%'"
+                    @submit="onSubmit"
+                  >
+                    <!-- 插槽签名：{ state, onUpdate } — 重命名避免与上层变量冲突 -->
+                    <template #field-customField="{ state: fieldState, onUpdate: onFieldUpdate }">
+                      <CustomFieldSlotContent
+                        :state="fieldState"
+                        :on-update="onFieldUpdate"
                       />
-                      <InputText
-                        :model-value="state.value as string"
-                        class="flex-1"
-                        placeholder="从插槽注入..."
-                        @update:model-value="onUpdate"
-                      />
-                      <Button
-                        severity="success"
-                        text
-                        @click="onUpdate((state.value as string) + ' √')"
+                    </template>
+
+                    <template #footer="{ submit, formState: slotState }">
+                      <div
+                        class="row-end gap-sm mt-padding-md border-t-default border-border/15 pt-padding-md"
                       >
-                        <template #default>
-                          <Icons
-                            name="i-lucide-check"
-                            size="sm"
-                          />
-                        </template>
-                      </Button>
-                    </div>
-                  </template>
-
-                  <template #footer="{ submit, formState: slotState }">
-                    <div class="flex justify-end gap-scale-sm pt-padding-md mt-padding-md">
-                      <Button
-                        label="保存配置 (Slot)"
-                        :loading="slotState.submitting"
-                        @click="submit"
-                      />
-                    </div>
-                  </template>
-                </ProForm>
-              </div>
-            </div>
-
-            <div
-              class="xl:hidden surface-elevated px-md py-sm rounded-md layout-stack gap-scale-sm"
-            >
-              <div class="flex items-center gap-scale-md">
-                <Icons
-                  name="i-lucide-database"
-                  size="xl"
-                  class="text-accent!"
-                />
-                <div class="flex-col gap-xs">
-                  <div class="fs-md font-semibold text-foreground">实时 Values</div>
+                        <Button
+                          label="保存配置"
+                          icon="i-lucide-check-check"
+                          :loading="slotState.submitting"
+                          @click="submit"
+                        />
+                      </div>
+                    </template>
+                  </ProForm>
                 </div>
               </div>
-              <div class="surface-sunken rounded-md p-padding-md">
-                <pre class="m-0 whitespace-pre-wrap break-words fs-xs">{{ valuesJson }}</pre>
+
+              <!-- Mobile JSON preview -->
+              <div class="panel-base xl:hidden">
+                <div class="row-y-center gap-sm mb-padding-sm">
+                  <Icons
+                    name="i-lucide-braces"
+                    class="text-primary"
+                  />
+                  <span class="fs-sm font-semibold text-foreground uppercase">
+                    Real-time values
+                  </span>
+                </div>
+                <div
+                  class="surface-sunken rounded-scale-md p-padding-md border-default border-border/40 text-muted-foreground"
+                >
+                  <pre class="m-0 whitespace-pre-wrap break-words fs-xs">{{ valuesJson }}</pre>
+                </div>
               </div>
             </div>
-          </div>
-        </CScrollbar>
+          </CScrollbar>
+        </div>
 
+        <!-- Desktop side panel -->
         <div
-          class="hidden xl:block w-30% layout-stack pl-0"
-          :style="{ height: `${containerHeight}px` }"
+          class="hidden xl:block layout-sidepanel shrink-0 h-full border-l-default border-border/20"
         >
-          <div class="layout-full surface-elevated rounded-md layout-stack fs-xs">
-            <CScrollbar>
-              <pre>{{ valuesJson }}</pre>
+          <div class="layout-full layout-stack">
+            <div
+              class="shrink-0 px-padding-md py-padding-sm border-b-default border-border/20 row-y-center gap-sm"
+            >
+              <Icons
+                name="i-lucide-code-2"
+                size="sm"
+                class="text-accent"
+              />
+              <span class="fs-xs font-bold text-muted uppercase tracking-widest">
+                Calculated Result
+              </span>
+            </div>
+            <CScrollbar class="flex-1 min-h-0 surface-sunken px-padding-md py-padding-sm">
+              <pre class="m-0 fs-xs text-muted-foreground font-mono leading-relaxed">{{
+                valuesJson
+              }}</pre>
             </CScrollbar>
           </div>
         </div>

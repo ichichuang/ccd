@@ -10,7 +10,7 @@ export type SizeScaleKey = (typeof SIZE_SCALE_KEYS)[number]
 
 /**
  * 字体大小倍率表 (相对于 --font-size-base)
- * 假设 base (md) = 1rem (16px)
+ * 假设 base (md) = 16px
  * 遵循 Minor Third (1.2) 或 Major Third (1.25) 调性
  */
 export const FONT_SCALE_RATIOS: Record<SizeScaleKey, number> = {
@@ -44,7 +44,7 @@ export const SPACING_SCALE_RATIOS: Record<SizeScaleKey, number> = {
 
 /**
  * 圆角倍率表 (相对于 SizePreset.radius，对应 --radius-md 的基准值)
- * 假设 base (md) = 0.5rem (8px)
+ * 假设 base (md) = 8px
  * 从微圆角到全圆角的完整阶梯
  */
 export const RADIUS_SCALE_RATIOS: Record<SizeScaleKey, number> = {
@@ -53,10 +53,10 @@ export const RADIUS_SCALE_RATIOS: Record<SizeScaleKey, number> = {
   md: 1, // 8px (Base)
   lg: 1.5, // 12px
   xl: 2, // 16px
-  '2xl': 3, // 24px
-  '3xl': 4, // 32px
-  '4xl': 5, // 40px
-  '5xl': 6, // 48px (接近全圆)
+  '2xl': 2.5, // 20px
+  '3xl': 3, // 24px
+  '4xl': 3.5, // 28px
+  '5xl': 999, // 极大值，用于胶囊/全圆角效果
 }
 
 /**
@@ -93,7 +93,7 @@ export const LOADING_SIZE_PERCENT: Record<SizeScaleKey, number> = {
 
 /**
  * Loading 动画尺寸（正方形，避免宽高比失真）
- * 与 SizeScaleKey 一一对应；xs～4xl 为固定 px，5xl 为流体 CSS 实现巨型全屏 loader
+ * 与 SizeScaleKey 一一对应；完全基于视口短边自适应，确保任何设备下绝对可控且不溢出
  */
 export const LOADING_SIZE_CSS: Record<SizeScaleKey, number | string> = {
   xs: 'min(12vw, 12vh)',
@@ -104,7 +104,7 @@ export const LOADING_SIZE_CSS: Record<SizeScaleKey, number | string> = {
   '2xl': 'min(78vw, 78vh)',
   '3xl': 'min(82vw, 82vh)',
   '4xl': 'min(90vw, 90vh)',
-  '5xl': 'min(100vw, 100vh)', // 流体巨型正方形，与 index.html .lottie-preload 一致
+  '5xl': 'min(100vw, 100vh)',
 }
 
 /**

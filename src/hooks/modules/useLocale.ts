@@ -9,12 +9,25 @@
  * v7.2 优化：
  * - 移除重复的标题更新逻辑，标题更新统一由全局 usePageTitle 实例负责
  */
+import type { ComputedRef } from 'vue'
 import type { SupportedLocale } from '@/locales'
 import { supportedLocales } from '@/locales'
 import { useI18n } from 'vue-i18n'
 import { useLocaleStore } from '@/stores/modules/locale'
 
-export function useLocale() {
+export interface UseLocaleReturn {
+  locale: ComputedRef<SupportedLocale>
+  currentLocale: ComputedRef<(typeof supportedLocales)[number] | undefined>
+  isChineseLang: ComputedRef<boolean>
+  isRTL: ComputedRef<boolean>
+  supportedLocales: typeof supportedLocales
+  switchLocale: (newLocale: SupportedLocale) => Promise<void>
+  $t: (key: string, params?: Record<string, unknown>) => string
+  $d: (date: Date | number, format?: string) => string
+  $n: (number: number, format?: string) => string
+}
+
+export function useLocale(): UseLocaleReturn {
   const { t, d, n } = useI18n()
   const localeStore = useLocaleStore()
 
@@ -45,7 +58,7 @@ export function useLocale() {
   }
 
   // 获取翻译文本（带类型安全）
-  const $t = (key: string, params?: Record<string, any>) => {
+  const $t = (key: string, params?: Record<string, unknown>) => {
     return t(key, params || {})
   }
 

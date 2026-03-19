@@ -40,8 +40,8 @@ function toRecord(
   val: Map<string, boolean> | Record<string, boolean> | null | undefined
 ): Record<string, boolean> {
   if (!val) return {}
-  if (val instanceof Map) return Object.fromEntries(val)
-  return val as Record<string, boolean>
+  if (val instanceof Map) return Object.fromEntries(val) as Record<string, boolean>
+  return val
 }
 
 /** 根级互斥：只保留指定根及其子路径展开，其余根级收起 */
@@ -212,8 +212,8 @@ export default defineComponent({
         scheduleMeasureTruncation(350)
         if (!fontsReadyHooked) {
           fontsReadyHooked = true
-          const fontsReady = (document as unknown as { fonts?: { ready?: Promise<unknown> } }).fonts
-            ?.ready
+          type DocWithFonts = Document & { fonts?: { ready?: Promise<unknown> } }
+          const fontsReady = (document as DocWithFonts).fonts?.ready
           if (fontsReady) {
             fontsReady.then(() => {
               scheduleMeasureTruncation(0)
@@ -288,7 +288,7 @@ export default defineComponent({
 
       const labelNode = (
         <span
-          ref={el => setMenuLabelRef(key, el as HTMLElement | null)}
+          ref={el => setMenuLabelRef(key, el instanceof HTMLElement ? el : null)}
           data-menu-label-key={key}
           class={`text-single-line-ellipsis text-left! flex-1 min-w-0 shrink text-current! ${MENU_TEXT_CLASS}`}
         >
@@ -303,7 +303,7 @@ export default defineComponent({
 
       const content = (
         <span
-          class={`flex items-center justify-start ${MENU_ITEM_GAP} w-full min-w-0 shrink overflow-hidden text-current! ${MENU_TEXT_CLASS}`}
+          class={`row-y-center ${MENU_ITEM_GAP} w-full min-w-0 shrink overflow-hidden text-current! ${MENU_TEXT_CLASS}`}
         >
           {item.icon ? (
             <Icons
@@ -327,7 +327,10 @@ export default defineComponent({
 
       if (item.route?.name) {
         const isExtLink = item.route.meta?.isLink === true
-        const extUrl = (item.route.meta?.linkUrl as string | undefined) || item.route.path
+        const linkUrlRaw = item.route.meta?.linkUrl
+        const extUrl = (typeof linkUrlRaw === 'string' ? linkUrlRaw : undefined) || item.route.path
+        const routeName =
+          typeof item.route.name === 'string' ? item.route.name : (item.route.path ?? '')
 
         return (
           <RouterLink
@@ -342,7 +345,7 @@ export default defineComponent({
                   onClick={(e: MouseEvent) => {
                     e.preventDefault()
                     e.stopPropagation()
-                    goToRoute(item.route!.name as string, undefined, undefined, false)
+                    goToRoute(routeName, undefined, undefined, false)
                   }}
                 >
                   {content}
@@ -400,34 +403,17 @@ export default defineComponent({
 
           const wasOpen = openDropdownKey.value === key
           const rect = anchorEl.getBoundingClientRect()
-          const scrollX =
-            window.scrollX ??
-            window.pageXOffset ??
-            document.documentElement.scrollLeft ??
-            document.body.scrollLeft ??
-            0
-          const scrollY =
-            window.scrollY ??
-            window.pageYOffset ??
-            document.documentElement.scrollTop ??
-            document.body.scrollTop ??
-            0
-
-          const fakeEvent = {
-            type: 'click',
-            currentTarget: anchorEl,
-            target: anchorEl,
+          const syntheticEvent: Event = new MouseEvent('click', {
             clientX: rect.left,
             clientY: rect.top,
-            pageX: rect.left + scrollX,
-            pageY: rect.top + scrollY,
             button: 0,
-            which: 1,
-            preventDefault: () => {},
-            stopPropagation: () => {},
-          } as unknown as MouseEvent
-
-          menuRef.toggle(fakeEvent as unknown as Event)
+          })
+          Object.defineProperty(syntheticEvent, 'currentTarget', {
+            value: anchorEl,
+            writable: false,
+          })
+          Object.defineProperty(syntheticEvent, 'target', { value: anchorEl, writable: false })
+          menuRef.toggle(syntheticEvent)
           openDropdownKey.value = wasOpen ? null : key
         }
       } else if (item.route?.path) {
@@ -466,7 +452,7 @@ export default defineComponent({
       const iconButton = (
         <button
           type="button"
-          class={`flex items-center justify-center group ${MENU_COLLAPSED_BUTTON_PADDING} rounded-md ${ROUNDED_NAV} cursor-pointer transition-[background-color,color,opacity,transform] duration-scale-md aspect-square ${MENU_COLLAPSED_BUTTON_SIZE} border-none bg-transparent p-0 outline-none interactive-focus-ring ${stateClasses}`}
+          class={`center group ${MENU_COLLAPSED_BUTTON_PADDING} rounded-md ${ROUNDED_NAV} cursor-pointer transition-[background-color,color,opacity,transform] duration-scale-md aspect-square ${MENU_COLLAPSED_BUTTON_SIZE} border-none bg-transparent p-0 outline-none interactive-focus-ring ${stateClasses}`}
           onClick={e => onCollapsedItemClick(e, item)}
         >
           {item.icon ? (
@@ -477,7 +463,7 @@ export default defineComponent({
             />
           ) : (
             <div
-              class={`${MENU_COLLAPSED_FALLBACK_SIZE} rounded-full bg-card text-card-foreground flex items-center justify-center ${MENU_COLLAPSED_FALLBACK_TEXT} font-bold`}
+              class={`${MENU_COLLAPSED_FALLBACK_SIZE} rounded-full bg-card text-card-foreground center ${MENU_COLLAPSED_FALLBACK_TEXT} font-bold`}
             >
               {label.substring(0, 1)}
             </div>
@@ -495,13 +481,13 @@ export default defineComponent({
           {iconWithTooltip}
           {hasChildren && (
             <span
-              ref={el => setCollapsedAnchorRef(key, el as HTMLElement | null)}
+              ref={el => setCollapsedAnchorRef(key, el instanceof HTMLElement ? el : null)}
               class="absolute top-0 right-0 w-0 h-0"
             />
           )}
           {hasChildren && (
             <TieredMenu
-              ref={(el: unknown) => setMenuRef(key, el as InstanceType<typeof TieredMenu> | null)}
+              ref={el => setMenuRef(key, el as InstanceType<typeof TieredMenu> | null)}
               model={item.items}
               popup
               appendTo="body"
@@ -517,38 +503,41 @@ export default defineComponent({
       )
     }
 
-    return () => (
-      <div
-        ref={menuContainerRef}
-        class="w-full overflow-hidden pt-padding-xs"
-      >
-        {!props.sidebarCollapse ? (
-          <PanelMenu
-            model={panelMenuModel.value}
-            multiple={allowMultiple.value}
-            {...({
-              expandedKeys: layoutStore.getExpandedMenuKeys,
-              ['onUpdate:expandedKeys']: onUpdateExpandedKeys,
-            } as Record<string, unknown>)}
-            class={`w-full ${MENU_TEXT_CLASS}`}
-            pt={{
-              item: {
-                class: 'mb-padding-xs last:mb-0',
-              },
-              submenu: {
-                class: 'mt-padding-xs',
-              },
-            }}
-            v-slots={{
-              item: renderPanelMenuItem,
-            }}
-          />
-        ) : (
-          <div class={`flex flex-col ${MENU_ITEM_GAP} items-center`}>
-            {panelMenuModel.value.map(item => renderCollapsedItem(item))}
-          </div>
-        )}
-      </div>
-    )
+    return () => {
+      const panelMenuBind: Record<string, unknown> = {
+        expandedKeys: layoutStore.getExpandedMenuKeys,
+        ['onUpdate:expandedKeys']: onUpdateExpandedKeys,
+      }
+      return (
+        <div
+          ref={menuContainerRef}
+          class="w-full overflow-hidden pt-padding-xs"
+        >
+          {!props.sidebarCollapse ? (
+            <PanelMenu
+              model={panelMenuModel.value}
+              multiple={allowMultiple.value}
+              {...panelMenuBind}
+              class={`w-full ${MENU_TEXT_CLASS}`}
+              pt={{
+                item: {
+                  class: 'mb-padding-xs last:mb-0',
+                },
+                submenu: {
+                  class: 'mt-padding-xs',
+                },
+              }}
+              v-slots={{
+                item: renderPanelMenuItem,
+              }}
+            />
+          ) : (
+            <div class="col-stack-sm items-center">
+              {panelMenuModel.value.map(item => renderCollapsedItem(item))}
+            </div>
+          )}
+        </div>
+      )
+    }
   },
 })

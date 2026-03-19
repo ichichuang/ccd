@@ -46,7 +46,9 @@ pnpm type-check   # vue-tsc --build --force (no emit)
 - **MANDATORY**: `<script setup lang="ts">` for ALL components. Options API is FORBIDDEN.
 - **MANDATORY**: All composables must declare explicit return types to prevent "inferred type cannot be named" TS errors.
 - **FORBIDDEN**: TypeScript syntax in `<template>` (move casts/assertions to `<script setup>`).
+- **CRITICAL VUE BOUNDARY:** NEVER use type assertions (`as Type`) inside `<template>` HTML blocks. All type casting and narrowing MUST happen inside `<script setup>` via `computed` or helper functions.
 - **FORBIDDEN**: `defineProps` with index signatures combined with `withDefaults` (Vue compiler crash).
+- **Component Paradigms:** Strictly follow the decision tree in `02-component-paradigms.mdc`. Default to `.vue` (lang="ts"). Use `lang="tsx"` or `.tsx` for programmatic rendering. `h()` and `resolveComponent` are FORBIDDEN.
 - **Auto-imports active** in `.vue` files — do NOT manually import Vue primitives or PrimeVue components:
   - FORBIDDEN: `import { ref, computed } from 'vue'`
   - FORBIDDEN: `import Card from 'primevue/card'`
@@ -236,6 +238,24 @@ Each file contains:
 
 ---
 
+**Rule N-5 — Anti-Utility-Soup (The Rule of 5)**
+
+> **ABSOLUTE RULE**: AI agents MUST NEVER generate more than 5 raw utility classes on a single element for common structural patterns (panels, cards, flex containers, fill columns). When a recognized shortcut exists, MUST use it instead.
+>
+> | Raw utility soup (FORBIDDEN)                                             | Shortcut (REQUIRED) |
+> | ------------------------------------------------------------------------ | ------------------- |
+> | `bg-card rounded-scale-xl shadow-soft p-padding-xl flex flex-col gap-lg` | `panel-base`        |
+> | Same pattern with `-md` spacing                                          | `panel-base-md`     |
+> | `flex-1 min-h-0 flex flex-col overflow-hidden`                           | `col-fill`          |
+> | `flex items-center` (bare, no `justify-*`)                               | `row-y-center`      |
+> | `flex flex-col gap-sm/md/lg/xl`                                          | `col-stack-{size}`  |
+>
+> **Self-check**: Count raw utility classes on any element. If > 5 and the combination is structural (layout/spacing/surface), find a shortcut or propose one — never ship the soup.
+>
+> **Note**: `col-stack-*` is for bare column+gap; `layout-stack` includes padding via `density-normal`. Pick by intent.
+
+---
+
 ### 4.4 Layout System
 
 **Layer 1 — LayoutMode** (via `route.meta.parent`):
@@ -253,8 +273,23 @@ Each file contains:
 **CRITICAL — Transparent Root Policy**:
 
 - Routes with `meta.parent === 'admin'` MUST NOT set background on root wrapper
-- Root element classes: `h-full flex flex-col overflow-hidden` ONLY
+- Root element classes: `col-fill` (expands to `h-full flex-1 min-h-0 flex flex-col overflow-hidden`) or equivalent — ONLY
 - Background is provided by LayoutAdmin canvas; internal cards use `surface-elevated`, `glass-surface`, etc.
+
+### 4.4a 布局响应式与业务阈值 (Business Pivot & Golden Rules)
+
+- **像素 SSOT**：`src/constants/breakpoints.ts`（lg=1024px, xl=1280px, md=768px）不变。
+- **三区规则**（与实现一致）：
+
+| 区                    | 宽度/断点                        | 布局                             | Logo                 |
+| --------------------- | -------------------------------- | -------------------------------- | -------------------- |
+| **Drawer Zone**       | &lt; 768px（xs, sm）或 Mobile UA | Drawer（汉堡）                   | 始终显示             |
+| **Top Menu Fallback** | 768–1279px（md, lg）             | Top Menu                         | Tablet 显示，PC 隐藏 |
+| **Wide Zone**         | ≥ 1280px（xl+）                  | Tablet=Sidebar，PC=preferredMode | 显示                 |
+
+- Drawer 激活条件：Mobile **或** currentBreakpoint 为 **xs/sm**（且 mode 为 horizontal），见 `LayoutAdmin.tsx` 的 `isDrawerMode`。
+- **禁止**将 lg 视为宽桌面；禁止文档中仅写「Drawer 仅 Mobile」而忽略 xs/sm。
+- 详见 `docs/ai-specs/ADAPTIVE_LAYOUT.md` §0.1。
 
 ### 4.5 PrimeVue v4 — Mandatory Rules
 
@@ -288,23 +323,23 @@ Each file contains:
 
 Before writing ANY utility logic, check existing utilities:
 
-| Need              | Use                                                                        |
-| ----------------- | -------------------------------------------------------------------------- |
-| HTTP requests     | `@/utils/http/*` + `useHttpRequest`                                        |
-| Secure storage    | `@/utils/safeStorage/*`                                                    |
-| Global events     | `@/utils/mitt`                                                             |
-| Deep clone/merge  | `@/utils/lodashes` (`deepClone`, `deepEqual`, `deepMerge`, `pick`, `omit`) |
-| Unique IDs        | `@/utils/ids` (`generateUniqueId`, `generateIdFromKey`)                    |
-| Date utilities    | `@/utils/date/`, `@/hooks/modules/useDateUtils`                            |
-| String utilities  | `@/utils/strings` (`toKebabCase`, etc.)                                    |
-| Breakpoint/device | `@/utils/deviceSync` (pre-mount), stores (runtime)                         |
-| ECharts theme     | `@/hooks/modules/useChartTheme/`                                           |
-| Element resize    | `@/hooks/modules/useAppElementSize`                                        |
-| Theme switch      | `@/hooks/modules/useThemeSwitch`                                           |
-| Locale switch     | `@/hooks/modules/useLocale`                                                |
-| Page title        | `@/hooks/layout/usePageTitle`                                              |
-| Loading state     | `@/hooks/layout/useLoading`                                                |
-| Progress bar      | `@/hooks/layout/useNprogress`                                              |
+| Need              | Use                                                                                                         |
+| ----------------- | ----------------------------------------------------------------------------------------------------------- |
+| HTTP requests     | `@/utils/http/*` + `useHttpRequest`                                                                         |
+| Secure storage    | `@/utils/safeStorage/*`                                                                                     |
+| Global events     | `@/utils/mitt`                                                                                              |
+| Deep clone/merge  | `@/utils/lodashes` (`deepClone`, `deepEqual`, `deepMerge`, `pick`, `omit`)                                  |
+| Unique IDs        | `@/utils/ids` (`generateUniqueId`, `generateIdFromKey`)                                                     |
+| Date utilities    | `@/utils/date/`, `@/hooks/modules/useDateUtils`                                                             |
+| String utilities  | `@/utils/strings` (`toKebabCase`, etc.)                                                                     |
+| Breakpoint/device | `@/utils/deviceSync` (pre-mount), stores (runtime)；**布局宽屏起点为 xl**，见 §4.4a 与 `ADAPTIVE_LAYOUT.md` |
+| ECharts theme     | `@/hooks/modules/useChartTheme/`                                                                            |
+| Element resize    | `@/hooks/modules/useAppElementSize`                                                                         |
+| Theme switch      | `@/hooks/modules/useThemeSwitch`                                                                            |
+| Locale switch     | `@/hooks/modules/useLocale`                                                                                 |
+| Page title        | `@/hooks/layout/usePageTitle`                                                                               |
+| Loading state     | `@/hooks/layout/useLoading`                                                                                 |
+| Progress bar      | `@/hooks/layout/useNprogress`                                                                               |
 
 ### 5.2 Composable Pattern (HTTP + State)
 
@@ -557,7 +592,9 @@ ProFormPlugins.use(myPlugin)
 | Alova HTTP hook    | `src/hooks/modules/useHttpRequest.ts`                       |
 | Router helper      | `src/router/utils/helper.ts`                                |
 | Router guards      | `src/router/utils/guards.ts`                                |
-| Dynamic routes     | `src/router/utils/common.ts` (`processAsyncRoutes`)         |
+| Dynamic routes     | `src/router/utils/transform.ts` (`transformToVueRoutes`)    |
+| Dynamic route mgr  | `src/router/utils/dynamic.ts` (`createDynamicRouteManager`) |
+| Permission guard   | `src/router/utils/permission.ts` (`usePermissionGuard`)     |
 | Auth constants     | `src/constants/router.ts`                                   |
 | Layout store       | `src/stores/modules/layout.ts`                              |
 | User store         | `src/stores/modules/user.ts`                                |

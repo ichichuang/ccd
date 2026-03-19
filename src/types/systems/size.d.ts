@@ -26,7 +26,7 @@ declare global {
     /** 预设显示标签 */
     label: string
 
-    /** 圆角基数 (rem) */
+    /** 圆角基数 (px) */
     radius: number
     /** 间距基数 (px)，用于计算语义化间距 */
     spacingBase: number

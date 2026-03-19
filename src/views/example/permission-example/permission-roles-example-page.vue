@@ -7,7 +7,7 @@ const userPermissions = computed<string[]>(() => userStore.getUserPermissions)
 
 <template>
   <div class="p-padding-lg space-y-margin-md">
-    <h2 class="fs-xl font-semibold flex items-center gap-sm">
+    <h2 class="fs-xl font-semibold row-y-center gap-sm">
       <Icons
         name="i-lucide-shield-check"
         size="lg"

@@ -187,7 +187,7 @@ function onThemeModeChange(value: ThemeMode) {
       <label class="fs-sm font-medium text-muted-foreground">
         {{ t('settings.themePreset') }}
       </label>
-      <div class="layout-full flex flex-wrap gap-md">
+      <div class="w-full layout-wrap gap-md">
         <div
           v-for="preset in THEME_PRESETS"
           :key="preset.name"
@@ -196,7 +196,7 @@ function onThemeModeChange(value: ThemeMode) {
           :style="{
             backgroundColor: getPresetPrimaryColor(preset, themeStore.isDark),
           }"
-          class="w-10 h-10 shadow-sm rounded-scale-md cursor-pointer select-none center transition-all duration-scale-md ease-in-out hover:scale-110 hover:-translate-y-1 hover:shadow-lg hover:z-10 active:scale-95 border-2"
+          class="size-theme-swatch shadow-sm cursor-pointer select-none center transition-all duration-scale-md ease-in-out hover:scale-110 hover:-translate-y-1 hover:shadow-lg hover:z-10 active:scale-95 border-2"
           :class="[
             themeStore.themeName === preset.name
               ? 'border-primary bg-primary/10 shadow-md'
@@ -261,7 +261,7 @@ function onThemeModeChange(value: ThemeMode) {
     <div class="border-b-default opacity-50"></div>
 
     <!-- 布局模式（始终展示：控制用户偏好 preferredMode） -->
-    <div class="column main-between cross-start flex-col gap-sm">
+    <div class="column main-between cross-start col-stack-sm">
       <label class="fs-sm font-medium text-muted-foreground">
         {{ t('settings.layoutMode') }}
       </label>
@@ -278,7 +278,7 @@ function onThemeModeChange(value: ThemeMode) {
     </div>
 
     <!-- 布局模块显示（按 preferredMode 配置，不随 effectiveMode 跳变） -->
-    <div class="column main-between cross-start flex-col gap-sm">
+    <div class="column main-between cross-start col-stack-sm">
       <label class="fs-sm font-medium text-muted-foreground">
         {{ t('settings.layoutModules') }}
       </label>
@@ -317,7 +317,7 @@ function onThemeModeChange(value: ThemeMode) {
       <label class="fs-sm font-medium text-muted-foreground">
         {{ t('settings.transitionEffect') }}
       </label>
-      <div class="layout-full flex flex-wrap gap-md">
+      <div class="w-full layout-wrap gap-md">
         <div
           v-for="opt in transitionOptions"
           :key="opt.value"
@@ -342,7 +342,7 @@ function onThemeModeChange(value: ThemeMode) {
 
     <!-- 过渡时长 -->
     <div class="layout-full column gap-sm">
-      <div class="flex items-center justify-between">
+      <div class="row-between">
         <label class="fs-sm font-medium text-muted-foreground">
           {{ t('settings.transitionDuration') }}
         </label>

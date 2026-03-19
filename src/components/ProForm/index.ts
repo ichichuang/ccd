@@ -1,7 +1,6 @@
 import ProForm from './index.vue'
 
 export { ProForm }
-export default ProForm
 
 export { pluginManager as ProFormPlugins } from './engine/plugins/PluginManager'
 export type { ProFormPlugin, ProFormPluginContext } from './engine/types'
@@ -20,10 +19,13 @@ export type {
   FormSchema,
   FormSchemaNode,
   FormState,
+  ProFormExpose,
   ProFormProps,
   UseFormOptions,
   UseFormReturn,
   UseFieldReturn,
+  ValidationResolver,
+  ValidationResult,
 } from './engine/types'
 
 import type { ProFormPlugin } from './engine/types'

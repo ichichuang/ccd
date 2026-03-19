@@ -1,4 +1,5 @@
 import type { Scheduler } from '../dependency/Scheduler'
+import { PRO_FORM_LOGGER } from '../utils/logger'
 
 export interface RecomputeCapableController {
   recomputeFields(orderedFields: string[]): void
@@ -46,8 +47,12 @@ export class TransactionManager {
       if (this.pendingUpdates.size === 0) return
       const ordered = this.scheduler.getUpdateOrder(Array.from(this.pendingUpdates))
       this.pendingUpdates.clear()
-      controller?.recomputeFields(ordered)
-      onFlush(ordered)
+      try {
+        controller?.recomputeFields(ordered)
+        onFlush(ordered)
+      } catch (error) {
+        PRO_FORM_LOGGER.error('Transaction flush error', error)
+      }
       return
     }
 
@@ -59,8 +64,12 @@ export class TransactionManager {
 
     const ordered = this.scheduler.getUpdateOrder(Array.from(this.pendingUpdates))
     this.pendingUpdates.clear()
-    controller?.recomputeFields(ordered)
-    onFlush(ordered)
+    try {
+      controller?.recomputeFields(ordered)
+      onFlush(ordered)
+    } catch (error) {
+      PRO_FORM_LOGGER.error('Transaction flush error', error)
+    }
   }
 
   /**

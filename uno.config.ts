@@ -189,6 +189,30 @@ function createScaleRules(): Rule[] {
     },
   ]
 
+  /** 方向性 rounded-scale 规则：rounded-{dir}-scale-{size} → 对应角的 border-radius */
+  const ROUNDED_DIR_MAP: Record<string, string[]> = {
+    t: ['border-top-left-radius', 'border-top-right-radius'],
+    b: ['border-bottom-left-radius', 'border-bottom-right-radius'],
+    l: ['border-top-left-radius', 'border-bottom-left-radius'],
+    r: ['border-top-right-radius', 'border-bottom-right-radius'],
+    tl: ['border-top-left-radius'],
+    tr: ['border-top-right-radius'],
+    bl: ['border-bottom-left-radius'],
+    br: ['border-bottom-right-radius'],
+  }
+
+  const roundedDirRule: Rule = [
+    new RegExp(`^rounded-(?<dir>tl|tr|bl|br|t|b|l|r)-scale-(?<size>${scalePattern})(!)?$`),
+    (match: RegExpMatchArray) => {
+      const { dir, size } = (match.groups ?? {}) as { dir: string; size: string }
+      const props: string[] = ROUNDED_DIR_MAP[dir] ?? []
+      const value: string = `var(--radius-${size})`
+      const result: Record<string, string> = {}
+      for (const p of props) result[p] = value
+      return result
+    },
+  ]
+
   const durationRule: Rule = [
     new RegExp(`^duration-scale-(?<size>${scalePattern})(!)?$`),
     (match: RegExpMatchArray) => {
@@ -197,7 +221,7 @@ function createScaleRules(): Rule[] {
     },
   ]
 
-  return [fontRule, paddingMarginRule, gapRule, roundedRule, durationRule]
+  return [fontRule, paddingMarginRule, gapRule, roundedRule, roundedDirRule, durationRule]
 }
 
 /** 从 SIZE_BASE_VAR_KEYS 生成基础变量规则 (SSOT: constants/size.ts) */
@@ -312,6 +336,14 @@ function buildThemeDemoSafelist(): string[] {
       `gap-y-scale-${k}`,
       `text-${k}`,
       `rounded-scale-${k}`,
+      `rounded-t-scale-${k}`,
+      `rounded-b-scale-${k}`,
+      `rounded-l-scale-${k}`,
+      `rounded-r-scale-${k}`,
+      `rounded-tl-scale-${k}`,
+      `rounded-tr-scale-${k}`,
+      `rounded-bl-scale-${k}`,
+      `rounded-br-scale-${k}`,
       `duration-scale-${k}`,
       // margin + spacing 语义化类
       `m-gap-${k}`,
@@ -462,10 +494,6 @@ export default defineConfig({
     center: 'flex justify-center items-center',
     row: 'flex flex-row',
     column: 'flex flex-col',
-    'flex-row': 'flex flex-row',
-    'flex-col': 'flex flex-col',
-    'flex-wrap': 'flex flex-wrap',
-    'flex-nowrap': 'flex flex-nowrap',
 
     // =========================================================
     // ② Flex 主轴对齐（控制 justify-content）
@@ -495,6 +523,16 @@ export default defineConfig({
     'row-start': 'flex flex-row items-start justify-start',
     'column-center': 'flex flex-col items-center justify-center',
     'column-between': 'flex flex-col justify-between',
+    // 填充列（flex-1 + min-h-0 防溢出）& 行内垂直居中
+    'col-fill': 'flex-1 min-h-0 flex flex-col overflow-hidden',
+    'row-y-center': 'flex flex-row items-center',
+    'row-end': 'flex flex-row items-center justify-end',
+    // 列堆叠（纯 column + gap，不含 padding；需 padding 用 layout-stack）
+    'col-stack-xs': 'flex flex-col gap-xs',
+    'col-stack-sm': 'flex flex-col gap-sm',
+    'col-stack-md': 'flex flex-col gap-md',
+    'col-stack-lg': 'flex flex-col gap-lg',
+    'col-stack-xl': 'flex flex-col gap-xl',
 
     // =========================================================
     // ⑤ 布局结构类（Layout Patterns）
@@ -549,6 +587,12 @@ export default defineConfig({
     // Header 图标按钮：统一交互与触控目标，避免 p-0 导致可点击面积过小
     'header-icon-btn':
       'cursor-pointer bg-transparent border-none outline-none duration-scale-sm hover:scale-110 hover:text-accent active:scale-105',
+    // 复制/标签类小按钮（theme/size/scrollbar 等配置页）
+    'interactive-tag':
+      'fs-xs font-mono bg-muted/30 px-padding-xs py-padding-xs rounded-scale-xs cursor-pointer select-none transition-all duration-scale-lg ease-in-out hover:bg-primary/20 hover:text-primary active:scale-95 text-muted-foreground',
+    // 列表项/磁贴行（scrollbar 等）
+    'interactive-tile':
+      'row-y-center gap-sm px-padding-sm py-padding-xs rounded-scale-md cursor-pointer select-none transition-all duration-scale-lg ease-in-out fs-sm active:scale-95 surface-item interactive-hover-tile interactive-focus-ring',
     // Card/Tile hover 仅用位移+阴影，无 ring（104-anti-flicker-ring-less）
     'interactive-hover-card':
       'transition-all duration-scale-md ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)]',
@@ -571,6 +615,7 @@ export default defineConfig({
     'border-b-default': 'border-0 border-b border-solid border-border/15',
     'border-t-default': 'border-0 border-t border-solid border-border/15',
     'border-l-default': 'border-0 border-l border-solid border-border/15',
+    'border-r-default': 'border-0 border-r border-solid border-border/15',
 
     // =========================================================
     // ⑧ 组件语义基础（Component Base Styles）
@@ -587,7 +632,7 @@ export default defineConfig({
     // ⑨ 尺寸与视觉工具类（Size & Visual Utilities）
     // 说明：无对应 w-* / min-w-* 语义类，故用任意值引用 spacing 变量
     // =========================================================
-    'size-theme-swatch': 'w-[var(--spacing-lg)] h-[var(--spacing-lg)] rounded-full',
+    'size-theme-swatch': 'w-[var(--spacing-xl)] h-[var(--spacing-xl)] rounded-scale-md',
     'size-select-min': 'min-w-[var(--spacing-3xl)]',
     'w-table-actions': 'w-[var(--spacing-5xl)]',
     'w-dialog-settings': 'w-[var(--dialog-settings-width)] max-w-full',
@@ -623,6 +668,10 @@ export default defineConfig({
       'shadow-[0_4px_12px_rgb(var(--foreground)/0.14),0_8px_24px_rgb(var(--foreground)/0.10)] dark:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_4px_12px_rgb(var(--background)/0.9),0_8px_24px_rgb(var(--background)/0.7)]',
     'surface-base': 'bg-background',
     'surface-elevated': 'bg-card shadow-soft',
+    // 面板基础（Anti-Utility-Soup Rule N-5 的重型快捷方式）
+    'panel-base':
+      'bg-card rounded-scale-md shadow-soft py-padding-md px-padding-lg flex flex-col gap-lg',
+    'panel-base-md': 'bg-card rounded-scale-lg shadow-soft p-padding-lg flex flex-col gap-md',
     'surface-sunken': 'bg-muted',
     // 列表项/卡片条目背景：浅色模式需更高不透明度（40%）才能与 bg-card 形成可见对比，深色模式 20% 已足够
     'surface-item': 'bg-muted/60 dark:bg-muted',

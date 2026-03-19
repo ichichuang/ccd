@@ -1,44 +1,55 @@
 <script setup lang="ts">
-import type { ComputedRef } from 'vue'
-import type { FieldSchema, FieldComponentProps, FieldRegistryItem } from '../engine/types'
+import type {
+  FieldComponentProps,
+  FieldRegistryItem,
+  FieldState,
+  FieldSchema,
+} from '../engine/types'
+import type { ProFormPrimeVueRendererProps } from '../engine/types/props'
 import { useField } from '../engine/hooks/useField'
 import { fieldRegistry } from '../engine/registry/FieldRegistry'
+import { PRO_FORM_DEFAULTS } from '../engine/config'
+import {
+  PRO_FORM_GLOBAL_STATE_KEY,
+  PRO_FORM_LAYOUT_KEY,
+  PRO_FORM_SLOTS_KEY,
+} from '../engine/constants'
 
-const props = defineProps<{
-  field: FieldSchema<unknown>
-}>()
+const props = defineProps<ProFormPrimeVueRendererProps>()
 
 const { value, state, setValue } = useField<unknown>(props.field.name)
 
-const globalState = inject<{
-  disabled: ComputedRef<boolean>
-  readonly: ComputedRef<boolean>
-} | null>('PRO_FORM_GLOBAL_STATE', null)
+type ExtendedFieldSchema = FieldSchema<unknown> & {
+  layout?: {
+    labelWidth?: string
+    labelAlign?: 'left' | 'center' | 'right'
+  }
+  options?: unknown
+}
 
-const layoutState = inject<{
-  layout: ComputedRef<'vertical' | 'horizontal'>
-  labelWidth: ComputedRef<string | undefined>
-  gap: ComputedRef<string>
-  activeBreakpoint?: ComputedRef<unknown>
-  labelAlign?: ComputedRef<'left' | 'center' | 'right'>
-} | null>('PRO_FORM_LAYOUT', null)
+type FieldStateWithOptions = FieldState<unknown> & { loadedOptions?: unknown[] }
 
-const formSlots = inject<Record<string, unknown> | null>('PRO_FORM_SLOTS', null)
+const fieldExt = computed<ExtendedFieldSchema>(() => props.field as ExtendedFieldSchema)
+const stateExt = computed<FieldStateWithOptions>(() => state as unknown as FieldStateWithOptions)
 
-const layoutMode = computed(() => layoutState?.layout.value ?? 'vertical')
+const globalState = inject(PRO_FORM_GLOBAL_STATE_KEY, null)
+
+const layoutState = inject(PRO_FORM_LAYOUT_KEY, null)
+
+const formSlots = inject(PRO_FORM_SLOTS_KEY, null)
+
+const layoutMode = computed(() => layoutState?.layout.value ?? PRO_FORM_DEFAULTS.layout)
 
 const labelWidth = computed<string | undefined>(() => {
-  const fieldLayout = (props.field as unknown as { layout?: { labelWidth?: string } }).layout
+  const fieldLayout = fieldExt.value.layout
   const fieldLabelWidth = fieldLayout?.labelWidth
   return fieldLabelWidth ?? layoutState?.labelWidth.value
 })
 
 const labelAlign = computed<'left' | 'center' | 'right'>(() => {
-  const fieldLayout = (
-    props.field as unknown as { layout?: { labelAlign?: 'left' | 'center' | 'right' } }
-  ).layout
+  const fieldLayout = fieldExt.value.layout
   const fieldAlign = fieldLayout?.labelAlign
-  return fieldAlign ?? layoutState?.labelAlign?.value ?? 'left'
+  return fieldAlign ?? layoutState?.labelAlign?.value ?? PRO_FORM_DEFAULTS.labelAlign
 })
 
 const labelClass = 'block font-medium text-secondary-foreground mb-margin-xs fs-sm'
@@ -98,10 +109,10 @@ const mergedProps = computed<FieldComponentProps<unknown> & Record<string, unkno
 
   // Async options MUST come from store state (no Schema mutation).
   // Priority: state.loadedOptions -> field.props.options -> field.options (static array only)
-  const stateLoadedOptions = (state as unknown as { loadedOptions?: unknown[] }).loadedOptions
+  const stateLoadedOptions = stateExt.value.loadedOptions
   const propsOptions = (fieldProps as { options?: unknown }).options
-  const schemaOptions = Array.isArray((props.field as unknown as { options?: unknown }).options)
-    ? ((props.field as unknown as { options?: unknown[] }).options ?? undefined)
+  const schemaOptions = Array.isArray(fieldExt.value.options)
+    ? (fieldExt.value.options as unknown[] | undefined)
     : undefined
 
   const finalOptions = stateLoadedOptions ?? propsOptions ?? schemaOptions
@@ -116,6 +127,26 @@ const mergedProps = computed<FieldComponentProps<unknown> & Record<string, unkno
 
   return merged
 })
+
+const slotBindProps = computed<Record<string, unknown>>(() => ({
+  field: props.field,
+  state,
+  onUpdate: (v: unknown) => setValue(v),
+}))
+
+const componentBindProps = computed<Record<string, unknown>>(
+  () => mergedProps.value as Record<string, unknown>
+)
+
+const resolvedIs = computed<unknown>(() => {
+  if (hasCustomSlot.value && formSlots) return formSlots[customSlotName.value]
+  return resolvedComponent.value
+})
+
+const resolvedBindProps = computed<Record<string, unknown>>(() => {
+  if (hasCustomSlot.value && formSlots) return slotBindProps.value
+  return componentBindProps.value
+})
 </script>
 
 <template>
@@ -123,9 +154,7 @@ const mergedProps = computed<FieldComponentProps<unknown> & Record<string, unkno
     v-if="isVisible"
     class="w-full"
   >
-    <div
-      :class="['w-full', layoutMode === 'horizontal' ? 'row-start gap-scale-sm' : 'flex flex-col']"
-    >
+    <div :class="['w-full', layoutMode === 'horizontal' ? 'row-start gap-scale-sm' : 'column']">
       <label
         v-if="field.label && field.component !== 'checkbox'"
         :class="labelClass"
@@ -145,29 +174,39 @@ const mergedProps = computed<FieldComponentProps<unknown> & Record<string, unkno
         {{ field.label }}
       </label>
 
-      <div class="flex-1 min-w-0 flex flex-col w-full">
+      <div class="flex-1 min-w-0 column w-full">
         <component
-          :is="hasCustomSlot && formSlots ? formSlots[customSlotName] : resolvedComponent"
-          v-bind="
-            hasCustomSlot && formSlots
-              ? { field, state, onUpdate: (v: unknown) => setValue(v) }
-              : mergedProps
-          "
+          :is="resolvedIs"
+          v-bind="resolvedBindProps"
           class="w-full"
         />
 
-        <small
-          v-if="field.description && state.errors.length === 0"
-          class="text-muted-foreground mt-margin-xs fs-xs"
+        <div
+          class="fs-xs flex items-end!"
+          :style="{ height: 'var(--font-size-xl)' }"
         >
-          {{ field.description }}
-        </small>
-        <small
-          v-else-if="state.errors.length > 0"
-          class="text-danger mt-margin-xs fs-xs"
-        >
-          {{ state.errors[0] }}
-        </small>
+          <transition
+            name="fade"
+            mode="out-in"
+          >
+            <span
+              v-if="state.errors.length > 0"
+              class="text-danger block"
+            >
+              {{ state.errors[0] }}
+            </span>
+            <span
+              v-else-if="field.description"
+              class="text-muted-foreground block"
+            >
+              {{ field.description }}
+            </span>
+            <span
+              v-else
+              class="block"
+            />
+          </transition>
+        </div>
       </div>
     </div>
   </div>

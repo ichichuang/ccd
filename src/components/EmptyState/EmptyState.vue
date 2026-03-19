@@ -23,9 +23,7 @@ const props = withDefaults(
 </script>
 
 <template>
-  <div
-    class="flex flex-col items-center justify-center gap-md py-padding-2xl px-padding-lg text-center"
-  >
+  <div class="column-center gap-md py-padding-2xl px-padding-lg text-center">
     <!-- Watermark icon -->
     <Icons
       :name="props.icon"

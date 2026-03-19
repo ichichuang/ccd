@@ -192,6 +192,7 @@ declare global {
   const useAsyncQueue: typeof import('@vueuse/core').useAsyncQueue
   const useAsyncState: typeof import('@vueuse/core').useAsyncState
   const useAttrs: typeof import('vue').useAttrs
+  const useAuth: typeof import('../hooks/modules/useAuth').useAuth
   const useAutoMitt: typeof import('../hooks/modules/useAutoMitt').useAutoMitt
   const useBase64: typeof import('@vueuse/core').useBase64
   const useBattery: typeof import('@vueuse/core').useBattery
@@ -408,15 +409,27 @@ declare global {
   export type { UseElementSizeOptions } from '../hooks/modules/useAppElementSize'
   import('../hooks/modules/useAppElementSize')
   // @ts-ignore
+  export type { UseAuthReturn } from '../hooks/modules/useAuth'
+  import('../hooks/modules/useAuth')
+  // @ts-ignore
   export type { UseChartThemeReturn } from '../hooks/modules/useChartTheme/index'
   import('../hooks/modules/useChartTheme/index')
   // @ts-ignore
   export type { ChartOpacityConfig, ChartThemeConfig, ChartAnimationConfig, ChartToolboxConfig, ChartMarkPointConfig, ChartMarkLineConfig, ChartVisualMapConfig, ChartBrushConfig, ChartAxisPointerConfig, ChartAdvancedConfig, DefaultOpacityValues, FontConfig, ColorConfig, ThemeConfig } from '../hooks/modules/useChartTheme/types'
   import('../hooks/modules/useChartTheme/types')
   // @ts-ignore
+  export type { UseDateUtilsReturn } from '../hooks/modules/useDateUtils'
+  import('../hooks/modules/useDateUtils')
+  // @ts-ignore
   export type { UseDialogReturn, ArgsType, ButtonProps, DialogOptions } from '../hooks/modules/useDialog'
   import('../hooks/modules/useDialog')
   // @ts-ignore
   export type { UseHttpRequestOptions, UseHttpRequestResult } from '../hooks/modules/useHttpRequest'
   import('../hooks/modules/useHttpRequest')
+  // @ts-ignore
+  export type { UseLocaleReturn } from '../hooks/modules/useLocale'
+  import('../hooks/modules/useLocale')
+  // @ts-ignore
+  export type { UseThemeSwitchReturn } from '../hooks/modules/useThemeSwitch'
+  import('../hooks/modules/useThemeSwitch')
 }

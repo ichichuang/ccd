@@ -15,8 +15,8 @@ import { useRoute, useRouter } from 'vue-router'
 
 defineOptions({ name: 'LayoutIndex' })
 
-/** 加载层动画时长：使用尺寸系统过渡阶梯 2xl（500ms） */
-const loadingOverlayDuration = `${TRANSITION_SCALE_VALUES['2xl']}ms`
+/** 加载层动画时长：使用尺寸系统过渡阶梯 sm（更快的遮罩响应，减轻底层闪烁感） */
+const loadingOverlayDuration = `${TRANSITION_SCALE_VALUES.sm}ms`
 
 const layoutStore = useLayoutStore()
 const isLoading = computed(() => layoutStore.isLoading)
@@ -69,6 +69,12 @@ const getLayoutLeaveAnimation = (from: LayoutMode, to: LayoutMode): AnimateName 
 
 const getAnimationDuration = (): string =>
   layoutAnimations[currentLayoutMode.value]?.duration ?? '1s'
+
+const currentLayoutComponent = computed(() => {
+  if (currentLayoutMode.value === 'fullscreen') return FullScreenLayout
+  if (currentLayoutMode.value === 'ratio') return RatioLayout
+  return AdminLayout
+})
 </script>
 
 <template>
@@ -81,9 +87,7 @@ const getAnimationDuration = (): string =>
       :duration="loadingOverlayDuration"
       delay="0s"
     >
-      <div
-        class="fixed inset-0 z-[999] flex items-center justify-center backdrop-blur-md glass-surface w-full h-full"
-      >
+      <div class="fixed inset-0 z-[999] center bg-background w-full h-full">
         <Loading
           :type="3"
           size="5xl"
@@ -95,19 +99,11 @@ const getAnimationDuration = (): string =>
     <AnimateWrapper
       :show="!isLoadingRef"
       :enter="getLayoutEnterAnimation(currentLayoutMode)"
-      :leave="getLayoutLeaveAnimation(previousLayout, currentLayoutMode)"
+      :leave="isLoadingRef ? 'fadeOut' : getLayoutLeaveAnimation(previousLayout, currentLayoutMode)"
       :duration="getAnimationDuration()"
       delay="0s"
     >
-      <template v-if="currentLayoutMode === 'fullscreen'">
-        <component :is="FullScreenLayout" />
-      </template>
-      <template v-if="currentLayoutMode === 'admin'">
-        <component :is="AdminLayout" />
-      </template>
-      <template v-if="currentLayoutMode === 'ratio'">
-        <component :is="RatioLayout" />
-      </template>
+      <component :is="currentLayoutComponent" />
     </AnimateWrapper>
   </div>
 </template>

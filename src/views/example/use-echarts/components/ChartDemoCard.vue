@@ -7,9 +7,7 @@ defineProps<{
 </script>
 
 <template>
-  <div
-    class="bg-card component-border rounded-scale-md shadow-sm p-padding-lg flex flex-col gap-md"
-  >
+  <div class="panel-base-md">
     <h2 class="fs-xl font-semibold text-foreground m-0">
       {{ title }}
     </h2>

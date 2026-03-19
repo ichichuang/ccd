@@ -139,18 +139,18 @@
 
 ### 3.5 src/constants/ 常量层
 
-| 文件                  | 职责说明                                              |
-| --------------------- | ----------------------------------------------------- |
-| `breakpoints.ts`      | 响应式断点（xs~5xl）                                  |
-| `theme.ts`            | 主题预设、默认主题名                                  |
-| `theme/colorUsage.ts` | 颜色语义 SSOT（COLOR_USAGE、PRIMARY_USAGE_WHITELIST） |
-| `size.ts`             | 尺寸预设、布局维度 key、持久化 key                    |
-| `sizeScale.ts`        | 尺寸阶梯、字体/间距比例                               |
-| `layout.ts`           | 布局默认配置、持久化字段                              |
-| `router.ts`           | 路由白名单、错误页、rootRedirect                      |
-| `http.ts`             | HTTP 常量                                             |
-| `locale.ts`           | 默认语言、回退语言                                    |
-| `login.ts`            | 登录常量                                              |
+| 文件                  | 职责说明                                                         |
+| --------------------- | ---------------------------------------------------------------- |
+| `breakpoints.ts`      | 响应式断点（xs~5xl）；布局业务宽屏起点 xl，见 ADAPTIVE_LAYOUT.md |
+| `theme.ts`            | 主题预设、默认主题名                                             |
+| `theme/colorUsage.ts` | 颜色语义 SSOT（COLOR_USAGE、PRIMARY_USAGE_WHITELIST）            |
+| `size.ts`             | 尺寸预设、布局维度 key、持久化 key                               |
+| `sizeScale.ts`        | 尺寸阶梯、字体/间距比例                                          |
+| `layout.ts`           | 布局默认配置、持久化字段                                         |
+| `router.ts`           | 路由白名单、错误页、rootRedirect                                 |
+| `http.ts`             | HTTP 常量                                                        |
+| `locale.ts`           | 默认语言、回退语言                                               |
+| `login.ts`            | 登录常量                                                         |
 
 ---
 
@@ -366,7 +366,7 @@
 - **请求流**：View → Hook → API → Alova → 后端
 - **状态流**：Store ↔ UI，部分 Store 持久化
 - **路由流**：静态路由 + 动态路由 → routeUtils → 守卫 → meta.parent 选择布局
-- **布局适配**：deviceStore → LayoutAdmin.runAdaptive() → layoutStore → 有效显隐
+- **布局适配**：deviceStore → LayoutAdmin.runAdaptive() → layoutStore → 有效显隐；业务宽屏起点 xl (1280px)。
 
 ---
 

@@ -4,8 +4,8 @@
 </script>
 
 <template>
-  <div class="p-padding-lg space-y-margin-md h-full flex flex-col items-center justify-center">
-    <h2 class="fs-xl font-semibold flex items-center gap-sm">
+  <div class="p-padding-lg space-y-margin-md h-full column-center">
+    <h2 class="fs-xl font-semibold row-y-center gap-sm">
       <Icons
         name="i-lucide-aspect-ratio"
         size="lg"

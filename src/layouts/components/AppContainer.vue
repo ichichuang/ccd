@@ -11,6 +11,7 @@ const scrollbarRef = ref<InstanceType<typeof CScrollbar> | null>(null)
 const isPageLoading = computed(() => layoutStore.isPageLoading)
 
 const route = useRoute()
+const isFullscreen = computed(() => route.meta?.parent === 'fullscreen')
 watch(
   () => route.fullPath,
   () => {
@@ -32,8 +33,8 @@ watch(
     <!-- 内容区 Loading 遮罩：路由切换时显示 -->
     <Transition name="fade">
       <div
-        v-show="isPageLoading"
-        class="absolute inset-0 z-10 flex items-center justify-center backdrop-blur-sm pointer-events-auto"
+        v-show="isPageLoading && !isFullscreen"
+        class="absolute inset-0 z-10 center backdrop-blur-sm pointer-events-auto"
       >
         <Loading size="xl" />
       </div>

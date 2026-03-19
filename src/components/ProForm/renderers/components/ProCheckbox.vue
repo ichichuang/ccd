@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { FieldComponentProps, SelectOption } from '../../engine/types'
+import { PRO_FORM_COMPONENT_DEFAULTS, PRO_FORM_TEXT_DEFAULTS } from '../../engine/config'
 
 type CheckboxValue = boolean | unknown[] | null | undefined
 
@@ -17,7 +18,7 @@ const attrs = useAttrs()
 
 const emptyPlaceholder = computed<string>(() => {
   const value = attrs.previewEmptyPlaceholder as string | undefined
-  return value && value.length > 0 ? value : '-'
+  return value && value.length > 0 ? value : PRO_FORM_COMPONENT_DEFAULTS.emptyTextFallback
 })
 
 const optionsList = computed<SelectOption[]>(() => props.options ?? [])
@@ -31,8 +32,10 @@ const displayLabel = computed<string>(() => {
 
   // 单个布尔
   if (typeof value === 'boolean') {
-    const trueLabel = (attrs.previewTrueLabel as string | undefined) ?? '是'
-    const falseLabel = (attrs.previewFalseLabel as string | undefined) ?? '否'
+    const trueLabel =
+      (attrs.previewTrueLabel as string | undefined) ?? $t(PRO_FORM_TEXT_DEFAULTS.booleanTrueKey)
+    const falseLabel =
+      (attrs.previewFalseLabel as string | undefined) ?? $t(PRO_FORM_TEXT_DEFAULTS.booleanFalseKey)
     return value ? trueLabel : falseLabel
   }
 
@@ -67,7 +70,7 @@ const handleUpdate = (value: CheckboxValue): void => {
   </span>
   <div
     v-else-if="optionsList.length > 0"
-    class="flex flex-wrap gap-scale-xs"
+    class="layout-wrap gap-scale-xs"
   >
     <div
       v-for="opt in optionsList"

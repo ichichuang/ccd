@@ -25,7 +25,7 @@ This enterprise architecture heavily utilizes Vue 3 `<script setup>`, complex Ge
 
 - **FORBIDDEN:** NEVER access methods on variables typed as `unknown` or general `object` (e.g., calling `date.getTime()` on an `unknown` variable).
 - **REQUIRED:** Always use Type Guards before access. (e.g., `if (val instanceof Date) { val.getTime() }`).
-- **REQUIRED:** When dealing with dynamic form models (`Record<string, unknown>`), use explicit type assertions (`as UserTableRowModel`) only when absolutely certain, or runtime checks.
+- **REQUIRED:** When dealing with dynamic form models (`Record<string, unknown>`), use explicit type assertions (`as UserTableRowModel`) only when absolutely certain, or runtime checks. **Such assertions are allowed ONLY inside <script setup> or in .ts/.tsx files—NEVER inside <template> (see §6).**
 
 ## 4. Composable Return Types (Exported Definitions)
 
@@ -35,6 +35,15 @@ This enterprise architecture heavily utilizes Vue 3 `<script setup>`, complex Ge
 ## 5. Generic Propagation
 
 - When passing generics down multiple layers, ensure the generic constraint `TValues extends Record<string, unknown>` is preserved explicitly in all intermediate functions. Do not let it silently degrade to `any` or `unknown`.
+
+## 6. Vue Template & TypeScript Boundary (CRITICAL)
+
+- **ABSOLUTELY FORBIDDEN:** You must NEVER use TypeScript syntax, especially inline type assertions (e.g., `as string`, `as MyType`, `as const`), generic type arguments (`<T>`), or explicit type annotations (`: Type`) directly inside Vue `<template>` blocks (including bindings like `:prop="val"`, `@click="fn"`, or interpolations `{{ }}`). This strictly includes dynamic components (<component :is="comp as Component" />), slot scopes ({{ (slotData as User).name }}), and event emitters (@click="$emit('update', val as number)").
+- **CORRECT PATTERN:** If a value in the template has a type mismatch, you MUST resolve it inside `<script setup>`:
+  1. Create a strongly-typed `computed` property.
+  2. Create a strongly-typed helper function.
+  3. Narrow the type of the `ref`/`reactive` directly.
+- _Never try to satisfy the "Strict TypeScript" rules by injecting `as` into the HTML template._
   </constraints>
 
 <communication>

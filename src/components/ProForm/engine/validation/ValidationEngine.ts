@@ -7,6 +7,8 @@ import type {
   FormSchemaNode,
   ValidationResolver,
 } from '../types'
+import { PRO_FORM_TIMING_DEFAULTS } from '../config'
+import { PRO_FORM_LOGGER } from '../utils/logger'
 
 export class ValidationEngine<TValues extends Record<string, unknown> = Record<string, unknown>> {
   private readonly fieldMap = new Map<string, FieldSchema<unknown>>()
@@ -75,7 +77,7 @@ export class ValidationEngine<TValues extends Record<string, unknown> = Record<s
         const result = await this.runFieldValidation(name, schema, requestId)
         this.validationTimers.delete(name)
         resolve(result)
-      }, 200)
+      }, PRO_FORM_TIMING_DEFAULTS.validationDebounceMs)
 
       this.validationTimers.set(name, timerId)
     })
@@ -139,7 +141,7 @@ export class ValidationEngine<TValues extends Record<string, unknown> = Record<s
         }
       } catch (error) {
         // 单条规则异常视为该字段校验失败，但不阻断整个表单其他字段的校验
-        console.error(`[ProForm] Validator error in field "${name}":`, error)
+        PRO_FORM_LOGGER.error(`Validator error in field "${name}"`, error)
         errors.push(rule.message)
       }
     }

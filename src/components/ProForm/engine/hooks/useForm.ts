@@ -1,13 +1,8 @@
-import type { InjectionKey } from 'vue'
 import type { FormContext, FormState, UseFormOptions, UseFormReturn } from '../types'
 import { FormController } from '../core/FormController'
 import { DraftStorage } from '../persistence/DraftStorage'
-
-/* eslint-disable @typescript-eslint/no-explicit-any */
-export const FORM_CONTROLLER_KEY: InjectionKey<FormController<any>> = Symbol(
-  'ProFormFormController'
-) as InjectionKey<FormController<any>>
-/* eslint-enable @typescript-eslint/no-explicit-any */
+import { FORM_CONTROLLER_KEY, PRO_FORM_STATE_KEY } from '../constants'
+import { PRO_FORM_LOGGER } from '../utils/logger'
 
 /**
  * ProForm 表单入口 Hook
@@ -29,7 +24,19 @@ export function useForm<TValues extends Record<string, unknown> = Record<string,
   const state = reactive(baseState) as unknown as FormState<TValues>
 
   // 向渲染层暴露实时表单状态，支持 visibleIf 等逻辑读取
-  provide('PRO_FORM_STATE', state)
+  provide(PRO_FORM_STATE_KEY, state)
+
+  /**
+   * 从 FormController 聚合最新的字段状态并同步到 reactive state
+   */
+  const syncFormState = (): void => {
+    const latest: FormState<TValues> = controller.getFormState()
+    state.values = latest.values
+    state.errors = latest.errors
+    state.touched = latest.touched
+    state.dirty = latest.dirty
+    state.valid = latest.valid
+  }
 
   const formContext: FormContext<TValues> = {
     state,
@@ -37,37 +44,40 @@ export function useForm<TValues extends Record<string, unknown> = Record<string,
       controller.transactionManager.begin()
       controller.store.setFieldValue(field as string, value)
       controller.transactionManager.updateField(field as string)
-      controller.transactionManager.commit(orderedFields => {
-        if (orderedFields.length > 0) {
-          // 提交后整体刷新 values 快照
-          state.values = controller.getValues()
-        }
+      controller.transactionManager.commit(() => {
+        syncFormState()
       }, controller)
     },
+    setValidateOn(validateOn) {
+      controller.setValidateOn(validateOn)
+    },
     async validate() {
-      return controller.validateForm(options.resolver)
+      const result: boolean = await controller.validateForm(options.resolver)
+      syncFormState()
+      return result
     },
     async submit() {
       await controller.submit()
     },
     reset: async () => {
       controller.reset(options.initialValues)
-      state.values = controller.getValues()
+      syncFormState()
     },
     setFieldsValue(values) {
       controller.setFieldsValue(values)
-      state.values = controller.getValues()
+      syncFormState()
     },
     resetFields(names) {
       controller.resetFields(
         (names as (keyof TValues)[] | undefined)?.map(name => name as keyof TValues & string)
       )
-      state.values = controller.getValues()
+      syncFormState()
     },
     clearValidate(names) {
       controller.clearValidate(
         (names as (keyof TValues)[] | undefined)?.map(name => name as keyof TValues & string)
       )
+      syncFormState()
     },
     setFieldProps(name, props) {
       controller.setFieldProps(name as string, props as Record<string, unknown>)
@@ -87,6 +97,7 @@ export function useForm<TValues extends Record<string, unknown> = Record<string,
 
       try {
         const isValid = await controller.validateForm(options.resolver)
+        syncFormState()
         if (!isValid) {
           return
         }
@@ -98,7 +109,7 @@ export function useForm<TValues extends Record<string, unknown> = Record<string,
           DraftStorage.clear(options.persistKey)
         }
       } catch (error) {
-        console.error('[ProForm] Submission error:', error)
+        PRO_FORM_LOGGER.error('Submission error', error)
         throw error
       } finally {
         state.submitting = false

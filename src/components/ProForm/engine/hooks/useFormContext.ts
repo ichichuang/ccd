@@ -1,12 +1,12 @@
-import { FORM_CONTROLLER_KEY } from './useForm'
 import type { FormController } from '../core/FormController'
+import { FORM_CONTROLLER_KEY } from '../constants'
 
 export function useFormContext<
   TValues extends Record<string, unknown> = Record<string, unknown>,
 >(): FormController<TValues> {
-  const context = inject<FormController<TValues>>(FORM_CONTROLLER_KEY)
-  if (!context) {
-    throw new Error('[ProForm] useFormContext must be used within a ProForm component.')
+  const controller = inject(FORM_CONTROLLER_KEY, null) as FormController<TValues> | null
+  if (!controller) {
+    throw new Error('[ProForm] useFormContext must be used within a ProForm context')
   }
-  return context
+  return controller
 }

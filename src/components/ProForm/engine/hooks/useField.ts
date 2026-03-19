@@ -1,10 +1,8 @@
 import type { Ref } from 'vue'
 import type { FieldState, FormState, UseFieldReturn } from '../types'
 import { SubscriptionStore } from '../state/SubscriptionStore'
-import { FORM_CONTROLLER_KEY } from './useForm'
-import type { FormController } from '../core/FormController'
-
-type ValuesRecord = Record<string, unknown>
+import { PRO_FORM_STATE_KEY } from '../constants'
+import { useFormContext } from './useFormContext'
 
 /**
  * 字段级 Hook：使用 SubscriptionStore 进行字段级订阅
@@ -12,18 +10,15 @@ type ValuesRecord = Record<string, unknown>
  * - 不依赖全局 reactive(formValues)
  * - 每个字段仅订阅自身状态更新，保证微渲染
  */
-export function useField<T = unknown>(name: string): UseFieldReturn<T> {
-  const controller = inject<FormController<ValuesRecord> | null>(FORM_CONTROLLER_KEY, null)
+export function useField<
+  T = unknown,
+  TValues extends Record<string, unknown> = Record<string, unknown>,
+>(name: string): UseFieldReturn<T> {
+  const controller = useFormContext<TValues>()
+  const store = controller.store as SubscriptionStore<TValues>
+  const globalState = inject(PRO_FORM_STATE_KEY, null) as FormState<TValues> | null
 
-  if (!controller) {
-    throw new Error('useField must be used within a ProForm.useForm context')
-  }
-
-  const store = controller.store as SubscriptionStore<ValuesRecord>
-
-  const globalState = inject<FormState<ValuesRecord> | null>('PRO_FORM_STATE', null)
-
-  const initialStateFromStore = store.getFieldState(name as keyof ValuesRecord & string) as
+  const initialStateFromStore = store.getFieldState(name as keyof TValues & string) as
     | FieldState<T>
     | undefined
 
@@ -48,9 +43,7 @@ export function useField<T = unknown>(name: string): UseFieldReturn<T> {
   ) as unknown as FieldState<T>
 
   const syncFromStore = (): void => {
-    const latest = store.getFieldState(name as keyof ValuesRecord & string) as
-      | FieldState<T>
-      | undefined
+    const latest = store.getFieldState(name as keyof TValues & string) as FieldState<T> | undefined
     if (!latest) return
 
     value.value = latest.value
@@ -86,17 +79,32 @@ export function useField<T = unknown>(name: string): UseFieldReturn<T> {
 
   const setValue = (newValue: T): void => {
     controller.transactionManager.begin()
-    store.setFieldValue(name as string, newValue as ValuesRecord[keyof ValuesRecord])
+    store.setFieldValue(name as string, newValue as TValues[keyof TValues])
     controller.transactionManager.updateField(name)
     controller.transactionManager.commit(() => {
       // 对字段级 Hook 而言，在 flush 时同步最新的字段状态即可
       syncFromStore()
       if (globalState) {
-        globalState.values = controller.getValues() as ValuesRecord
+        const latest = controller.getFormState()
+        globalState.values = latest.values
+        globalState.errors = latest.errors
+        globalState.touched = latest.touched
+        globalState.dirty = latest.dirty
+        globalState.valid = latest.valid
       }
       if (controller.validateOn === 'change') {
         // 变更后按需自动校验
-        void validate()
+        void validate().then(() => {
+          // 校验完成后再次同步 globalState，确保 errors/valid 等状态反映到全局
+          if (globalState) {
+            const postValidation = controller.getFormState()
+            globalState.values = postValidation.values
+            globalState.errors = postValidation.errors
+            globalState.touched = postValidation.touched
+            globalState.dirty = postValidation.dirty
+            globalState.valid = postValidation.valid
+          }
+        })
       }
     }, controller)
   }

@@ -41,3 +41,89 @@ When the task involves **login, logout, token, 401, route guards, whitelist, or 
 
 - logout clears: `{prefix}-*`, `schemaform:*`, `theme-mode`
 - When adding new localStorage keys to clear on logout: extend `prefixKeys` or `exactKeys` in `user.ts` logout
+
+## 7. RBAC Directives & Composable (Button/Operation-Level Access Control)
+
+The project provides two mechanisms for **runtime permission checks** at the UI layer:
+
+| Mechanism              | File                           | Usage                                             |
+| ---------------------- | ------------------------------ | ------------------------------------------------- |
+| `v-auth` directive     | `src/directives/auth.ts`       | Declarative, removes DOM element if no permission |
+| `useAuth()` composable | `src/hooks/modules/useAuth.ts` | Programmatic, returns `{ hasRole, hasAuth }`      |
+
+### 7.1 When to use which
+
+- **Page-level access** (entire route blocked) → handled by `usePermissionGuard` in `src/router/utils/permission.ts`. Do NOT add `v-auth` to page root wrappers.
+- **Button / action-level access** → use `v-auth` directive (preferred for simple show/hide).
+- **Conditional rendering with branching logic** (e.g. showing different content based on role) → use `v-if="hasAuth('auth:code')"` via `useAuth()`.
+
+### 7.2 `v-auth` directive usage
+
+```vue
+<!-- Removes element from DOM if user lacks 'system:user:create' permission -->
+<Button v-auth="'system:user:create'" label="新建用户" />
+
+<!-- Works on any element -->
+<div v-auth="'report:export'">
+  <Button label="导出报表" />
+</div>
+```
+
+**FORBIDDEN anti-patterns:**
+
+```vue
+<!-- FORBIDDEN: direct store access in template -->
+<Button v-if="userStore.userInfo.permissions.includes('system:user:create')" />
+
+<!-- FORBIDDEN: using v-auth on page root (use route guard instead) -->
+<div v-auth="'page:access'" class="col-fill">...</div>
+```
+
+### 7.3 `useAuth()` composable usage
+
+```vue
+<script setup lang="ts">
+const { hasRole, hasAuth } = useAuth()
+</script>
+
+<template>
+  <!-- Conditional rendering with fallback -->
+  <Button
+    v-if="hasAuth('system:user:edit')"
+    label="编辑"
+  />
+  <span
+    v-else
+    class="text-muted fs-sm"
+  >
+    无权限
+  </span>
+
+  <!-- Role-based layout branching -->
+  <AdminPanel v-if="hasRole(['admin', 'super-admin'])" />
+  <ReadonlyPanel v-else />
+</template>
+```
+
+### 7.4 `meta.roles` and `meta.auths` route config
+
+```typescript
+// src/router/modules/system.ts
+{
+  path: '/system/user',
+  component: () => import('@/views/system/user/index.vue'),
+  meta: {
+    title: '用户管理',
+    parent: 'admin',
+    rank: 10,
+    roles: ['admin'],          // Array of roles that can access this route
+    auths: ['system:user:list'], // Array of permission codes (checked by guard)
+    keepAlive: false,
+  },
+}
+```
+
+- `meta.roles`: Checked against `userStore.userInfo.roles` — route is blocked if no match.
+- `meta.auths`: Fine-grained permission codes — button-level actions typically mirror these codes.
+- Both can be combined; the guard checks roles first, then auths.
+- FORBIDDEN: hardcoding role/auth strings outside of `src/constants/router.ts` or route config files.

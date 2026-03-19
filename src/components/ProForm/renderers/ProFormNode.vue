@@ -1,5 +1,5 @@
-<script setup lang="ts">
-import type { ComputedRef } from 'vue'
+<script setup lang="ts" generic="TValues extends Record<string, unknown> = Record<string, unknown>">
+import type { ComponentPublicInstance, ComputedRef } from 'vue'
 import type {
   FieldSchema,
   FormSchemaNode,
@@ -7,20 +7,31 @@ import type {
   NodeLayoutSchema,
   ResponsiveSpan,
 } from '../engine/types'
-import type { FormController } from '../engine/core/FormController'
 import type { BreakpointKey } from '../engine/utils/breakpoint'
+import type { ProFormNodeProps } from '../engine/types/props'
 import PrimeVueRenderer from './PrimeVueRenderer.vue'
 import { useFormContext } from '../engine/hooks/useFormContext'
 import { resolveSpan } from '../engine/utils/breakpoint'
+import {
+  PRO_FORM_DEFAULTS,
+  PRO_FORM_LAYOUT_DEFAULTS,
+  PRO_FORM_TEXT_DEFAULTS,
+} from '../engine/config'
+import { PRO_FORM_LAYOUT_KEY } from '../engine/constants'
 
-const props = defineProps<{
-  node: FormSchemaNode
-}>()
+const props = defineProps<ProFormNodeProps>()
+
+type I18nProxy = ComponentPublicInstance & { $t?: (key: string) => string }
+const proxy = getCurrentInstance()?.proxy as I18nProxy | null
+const t = (key: string): string => {
+  const result = proxy?.$t?.(key)
+  return result && result !== key ? result : ''
+}
 
 const injectedLayout = inject<{
   gap: ComputedRef<string>
   activeBreakpoint?: ComputedRef<BreakpointKey>
-} | null>('PRO_FORM_LAYOUT', null)
+} | null>(PRO_FORM_LAYOUT_KEY, null)
 
 const isGroup = (n: FormSchemaNode): n is Extract<FormSchemaNode, { children: FormSchemaNode[] }> =>
   (n as { children?: FormSchemaNode[] }).children !== undefined
@@ -28,7 +39,32 @@ const isGroup = (n: FormSchemaNode): n is Extract<FormSchemaNode, { children: Fo
 const isField = (n: FormSchemaNode): n is FieldSchema<unknown> =>
   (n as FieldSchema<unknown>).component !== undefined
 
-const controller = useFormContext() as unknown as FormController<Record<string, unknown>>
+const controller = useFormContext<TValues>()
+
+const fieldVisibleMap = reactive<Record<string, boolean>>({})
+const visibilityCleanups: Array<() => void> = []
+
+if (isGroup(props.node)) {
+  for (const child of props.node.children) {
+    if (!isField(child)) continue
+    const name = child.name
+    const state = controller.store.getFieldState(name)
+    fieldVisibleMap[name] = state?.visible !== false
+
+    const sub = (): void => {
+      const latest = controller.store.getFieldState(name)
+      fieldVisibleMap[name] = latest?.visible !== false
+    }
+    controller.store.subscribe(name, sub)
+    visibilityCleanups.push(() => {
+      controller.store.unsubscribe(name, sub)
+    })
+  }
+}
+
+onUnmounted(() => {
+  visibilityCleanups.forEach(fn => fn())
+})
 
 const handleFieldFocusOut = (field: FieldSchema<unknown>): void => {
   const name = field.name
@@ -55,11 +91,16 @@ const getColSpanStyle = (field: FormSchemaNode): { gridColumn: string } => {
   const spanConfig = f.span ?? f.layout?.span
   const currentBp: BreakpointKey = injectedLayout?.activeBreakpoint?.value ?? 'md'
   const finalSpan = resolveSpan(spanConfig, currentBp)
-  const span = finalSpan > 0 ? finalSpan : 12
+  const span = finalSpan > 0 ? finalSpan : PRO_FORM_DEFAULTS.gridSpan
   return { gridColumn: `span ${span} / span ${span}` }
 }
 
-const groupGridClass = 'grid grid-cols-12 w-full'
+const groupGridClass = 'grid w-full'
+
+const getGroupGridStyle = (gap: string): Record<string, string> => ({
+  gap,
+  gridTemplateColumns: `repeat(${PRO_FORM_LAYOUT_DEFAULTS.gridSpan}, minmax(0, 1fr))`,
+})
 
 const activeStep = ref('0')
 
@@ -84,16 +125,33 @@ const getChildren = (node: FormSchemaNode): FormSchemaNode[] => {
   return node.children
 }
 
+const isFieldVisible = (node: FormSchemaNode): boolean => {
+  if (!isField(node)) return true
+  return fieldVisibleMap[node.name] !== false
+}
+
 const getGroupLabel = (node: FormSchemaNode, index: number): string => {
   const group = node as Partial<GroupSchema>
-  if (typeof group.label === 'string' && group.label.length > 0) return group.label
-  return `Tab ${index + 1}`
+  if (typeof group.label === 'string' && group.label.length > 0) {
+    const translated = t(group.label)
+    const labelLooksLikeI18nKey = group.label.includes('.') || group.label.includes(':')
+    if (translated && translated.length > 0) return translated
+    if (!labelLooksLikeI18nKey) return group.label
+  }
+  const prefix = t(PRO_FORM_TEXT_DEFAULTS.tabPrefixKey)
+  return prefix && prefix.length > 0 ? `${prefix} ${index + 1}` : String(index + 1)
 }
 
 const getStepLabel = (node: FormSchemaNode, index: number): string => {
   const group = node as Partial<GroupSchema>
-  if (typeof group.label === 'string' && group.label.length > 0) return group.label
-  return `Step ${index + 1}`
+  if (typeof group.label === 'string' && group.label.length > 0) {
+    const translated = t(group.label)
+    const labelLooksLikeI18nKey = group.label.includes('.') || group.label.includes(':')
+    if (translated && translated.length > 0) return translated
+    if (!labelLooksLikeI18nKey) return group.label
+  }
+  const prefix = t(PRO_FORM_TEXT_DEFAULTS.stepPrefixKey)
+  return prefix && prefix.length > 0 ? `${prefix} ${index + 1}` : String(index + 1)
 }
 
 const getGroupLabelText = (node: FormSchemaNode): string => {
@@ -114,7 +172,7 @@ const getGroupLabelText = (node: FormSchemaNode): string => {
     <Tabs
       v-if="props.node.type === 'tabs'"
       value="0"
-      class="w-full mb-margin-md"
+      class="w-full mb-margin-md rounded-scale-md"
     >
       <TabList>
         <Tab
@@ -133,12 +191,19 @@ const getGroupLabelText = (node: FormSchemaNode): string => {
         >
           <div
             :class="groupGridClass"
-            :style="{ gap: injectedLayout?.gap.value ?? 'var(--spacing-md)' }"
+            :style="getGroupGridStyle(injectedLayout?.gap.value ?? PRO_FORM_DEFAULTS.gap)"
           >
             <div
               v-for="child in getChildren(tab)"
+              v-show="isFieldVisible(child)"
               :key="getNodeKey(child)"
-              :style="isField(child) ? getColSpanStyle(child) : { gridColumn: 'span 12 / span 12' }"
+              :style="
+                isField(child)
+                  ? getColSpanStyle(child)
+                  : {
+                      gridColumn: `span ${PRO_FORM_DEFAULTS.gridSpan} / span ${PRO_FORM_DEFAULTS.gridSpan}`,
+                    }
+              "
             >
               <ProFormNode :node="child" />
             </div>
@@ -150,7 +215,7 @@ const getGroupLabelText = (node: FormSchemaNode): string => {
     <Stepper
       v-else-if="props.node.type === 'step'"
       v-model:value="activeStep"
-      class="w-full mb-margin-md"
+      class="w-full mb-margin-md rounded-scale-md"
     >
       <StepList>
         <Step
@@ -167,15 +232,23 @@ const getGroupLabelText = (node: FormSchemaNode): string => {
           :key="getNodeKey(step, index)"
           v-slot="{ activateCallback }"
           :value="String(index)"
+          class="p-padding-md"
         >
           <div
             :class="groupGridClass"
-            :style="{ gap: injectedLayout?.gap.value ?? 'var(--spacing-md)' }"
+            :style="getGroupGridStyle(injectedLayout?.gap.value ?? PRO_FORM_DEFAULTS.gap)"
           >
             <div
               v-for="child in getChildren(step)"
+              v-show="isFieldVisible(child)"
               :key="getNodeKey(child)"
-              :style="isField(child) ? getColSpanStyle(child) : { gridColumn: 'span 12 / span 12' }"
+              :style="
+                isField(child)
+                  ? getColSpanStyle(child)
+                  : {
+                      gridColumn: `span ${PRO_FORM_DEFAULTS.gridSpan} / span ${PRO_FORM_DEFAULTS.gridSpan}`,
+                    }
+              "
             >
               <ProFormNode :node="child" />
             </div>
@@ -192,7 +265,7 @@ const getGroupLabelText = (node: FormSchemaNode): string => {
                     name="i-lucide-arrow-left"
                     size="sm"
                   />
-                  <span>上一步</span>
+                  <span>{{ $t('proForm.step.prev') }}</span>
                 </span>
               </template>
             </Button>
@@ -203,7 +276,7 @@ const getGroupLabelText = (node: FormSchemaNode): string => {
             >
               <template #default>
                 <span class="inline-flex items-center gap-scale-xs">
-                  <span>下一步</span>
+                  <span>{{ $t('proForm.step.next') }}</span>
                   <Icons
                     name="i-lucide-arrow-right"
                     size="sm"
@@ -218,7 +291,7 @@ const getGroupLabelText = (node: FormSchemaNode): string => {
 
     <Card
       v-else-if="props.node.type === 'card'"
-      class="w-full mb-margin-md surface-elevated rounded-scale-md shadow-soft"
+      class="w-full mb-margin-md surface-elevated rounded-scale-md"
     >
       <template
         v-if="props.node.label"
@@ -231,12 +304,19 @@ const getGroupLabelText = (node: FormSchemaNode): string => {
       <template #content>
         <div
           :class="groupGridClass"
-          :style="{ gap: injectedLayout?.gap.value ?? 'var(--spacing-md)' }"
+          :style="getGroupGridStyle(injectedLayout?.gap.value ?? PRO_FORM_DEFAULTS.gap)"
         >
           <div
             v-for="child in getChildren(props.node)"
+            v-show="isFieldVisible(child)"
             :key="getNodeKey(child)"
-            :style="isField(child) ? getColSpanStyle(child) : { gridColumn: 'span 12 / span 12' }"
+            :style="
+              isField(child)
+                ? getColSpanStyle(child)
+                : {
+                    gridColumn: `span ${PRO_FORM_DEFAULTS.gridSpan} / span ${PRO_FORM_DEFAULTS.gridSpan}`,
+                  }
+            "
           >
             <ProFormNode :node="child" />
           </div>
@@ -248,16 +328,23 @@ const getGroupLabelText = (node: FormSchemaNode): string => {
       v-else-if="props.node.type === 'collapse'"
       :header="props.node.label"
       toggleable
-      class="w-full mb-margin-md"
+      class="w-full mb-margin-md rounded-scale-md"
     >
       <div
         :class="groupGridClass"
-        :style="{ gap: injectedLayout?.gap.value ?? 'var(--spacing-md)' }"
+        :style="getGroupGridStyle(injectedLayout?.gap.value ?? PRO_FORM_DEFAULTS.gap)"
       >
         <div
           v-for="child in getChildren(props.node)"
+          v-show="isFieldVisible(child)"
           :key="getNodeKey(child)"
-          :style="isField(child) ? getColSpanStyle(child) : { gridColumn: 'span 12 / span 12' }"
+          :style="
+            isField(child)
+              ? getColSpanStyle(child)
+              : {
+                  gridColumn: `span ${PRO_FORM_DEFAULTS.gridSpan} / span ${PRO_FORM_DEFAULTS.gridSpan}`,
+                }
+          "
         >
           <ProFormNode :node="child" />
         </div>
@@ -276,12 +363,19 @@ const getGroupLabelText = (node: FormSchemaNode): string => {
       </div>
       <div
         :class="groupGridClass"
-        :style="{ gap: injectedLayout?.gap.value ?? 'var(--spacing-md)' }"
+        :style="getGroupGridStyle(injectedLayout?.gap.value ?? PRO_FORM_DEFAULTS.gap)"
       >
         <div
           v-for="child in getChildren(props.node)"
+          v-show="isFieldVisible(child)"
           :key="getNodeKey(child)"
-          :style="isField(child) ? getColSpanStyle(child) : { gridColumn: 'span 12 / span 12' }"
+          :style="
+            isField(child)
+              ? getColSpanStyle(child)
+              : {
+                  gridColumn: `span ${PRO_FORM_DEFAULTS.gridSpan} / span ${PRO_FORM_DEFAULTS.gridSpan}`,
+                }
+          "
         >
           <ProFormNode :node="child" />
         </div>

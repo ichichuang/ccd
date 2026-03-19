@@ -18,6 +18,8 @@ const emptyPlaceholder = computed<string>(() => {
   return value && value.length > 0 ? value : '-'
 })
 
+const uploadMode = computed<string>(() => (attrs.mode as string | undefined) ?? 'basic')
+
 const isMultiple = computed<boolean>(() => {
   if (Array.isArray(props.modelValue)) return true
   const multipleAttr = attrs.multiple as string | boolean | undefined
@@ -40,9 +42,12 @@ const fileNames = computed<string[]>(() => {
   return [String(value)]
 })
 
-// 这里使用 any 以兼容 PrimeVue FileUpload 不同事件类型的交集定义
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const handleSelect = (event: any): void => {
+/** 兼容 FileUploadSelectEvent 和 FileUploadUploaderEvent 的共有属性 */
+interface FileUploadFilesEvent {
+  files: File | File[] | null | undefined
+}
+
+const handleSelect = (event: FileUploadFilesEvent): void => {
   const rawFiles = event.files
 
   const files: File[] = rawFiles == null ? [] : Array.isArray(rawFiles) ? rawFiles : [rawFiles]
@@ -82,7 +87,7 @@ const handleSelect = (event: any): void => {
       v-else
       :disabled="props.disabled"
       :custom-upload="true"
-      :mode="(attrs.mode as string | undefined) ?? 'basic'"
+      :mode="uploadMode"
       :multiple="isMultiple"
       @select="handleSelect"
       @uploader="handleSelect"

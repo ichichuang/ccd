@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { FieldComponentProps } from '../../engine/types'
+import { PRO_FORM_COMPONENT_DEFAULTS } from '../../engine/config'
 
 type Props = FieldComponentProps<number | null | undefined>
 
@@ -13,7 +14,7 @@ const attrs = useAttrs()
 
 const emptyPlaceholder = computed<string>(() => {
   const value = attrs.previewEmptyPlaceholder as string | undefined
-  return value && value.length > 0 ? value : '-'
+  return value && value.length > 0 ? value : PRO_FORM_COMPONENT_DEFAULTS.emptyTextFallback
 })
 
 const mode = computed<string>(() => {
@@ -21,14 +22,14 @@ const mode = computed<string>(() => {
   return value ?? 'decimal'
 })
 
-const locale = computed<string>(() => {
+const locale = computed<string | undefined>(() => {
   const value = attrs.previewLocale as string | undefined
-  return value ?? 'zh-CN'
+  return value && value.length > 0 ? value : undefined
 })
 
-const currency = computed<string>(() => {
+const currency = computed<string | undefined>(() => {
   const value = attrs.currency as string | undefined
-  return value ?? 'CNY'
+  return value && value.length > 0 ? value : undefined
 })
 
 const displayValue = computed<string>(() => {
@@ -45,11 +46,13 @@ const displayValue = computed<string>(() => {
 
   try {
     if (mode.value === 'currency') {
-      const formatter = new Intl.NumberFormat(locale.value, {
-        style: 'currency',
-        currency: currency.value,
-      })
-      return formatter.format(value)
+      if (currency.value) {
+        const formatter = new Intl.NumberFormat(locale.value, {
+          style: 'currency',
+          currency: currency.value,
+        })
+        return formatter.format(value)
+      }
     }
 
     if (mode.value === 'percent') {
@@ -60,7 +63,7 @@ const displayValue = computed<string>(() => {
     }
 
     const formatter = new Intl.NumberFormat(locale.value, {
-      maximumFractionDigits: 20,
+      maximumFractionDigits: PRO_FORM_COMPONENT_DEFAULTS.inputNumberMaxFractionDigits,
     })
     return formatter.format(value)
   } catch {

@@ -1,0 +1,102 @@
+import type { VNode } from 'vue'
+import type { ProTableColumn, ColumnRenderParams } from '@/components/ProTable'
+import type { DummyProductDTO } from '@/api/example/dummy'
+
+const BADGE = 'rounded-scale-sm px-padding-sm py-padding-xs fs-xs font-semibold'
+
+function stockBadge(stock: number): VNode {
+  if (stock === 0) {
+    return <span class={`bg-danger/15 text-danger ${BADGE}`}>缺货</span>
+  }
+  if (stock <= 10) {
+    return <span class={`bg-warn/15 text-warn ${BADGE}`}>{stock} 件</span>
+  }
+  return <span class={`bg-success/15 text-success ${BADGE}`}>{stock} 件</span>
+}
+
+function ratingStars(rating: number): VNode {
+  const filled = Math.round(rating)
+  return (
+    <div class="row-y-center gap-xs">
+      <span class="fs-xs font-semibold text-foreground">{rating.toFixed(1)}</span>
+      <div class="row-y-center gap-[var(--spacing-xs)]">
+        {Array.from({ length: 5 }).map((_, i) => (
+          <span
+            key={i}
+            class={i < filled ? 'text-warn fs-xs' : 'text-muted-foreground/40 fs-xs'}
+          >
+            ★
+          </span>
+        ))}
+      </div>
+    </div>
+  )
+}
+
+export const productColumns: ProTableColumn<DummyProductDTO>[] = [
+  {
+    id: 'id',
+    title: 'ID',
+    field: 'id',
+    width: '60px',
+    align: 'right',
+  },
+  {
+    id: 'product',
+    title: '商品',
+    field: 'title',
+    minWidth: '220px',
+    render: ({ row }: ColumnRenderParams<DummyProductDTO>) => (
+      <div class="row-y-center gap-sm">
+        <img
+          src={row.thumbnail}
+          alt={row.title}
+          class="w-[var(--spacing-2xl)] h-[var(--spacing-2xl)] rounded-scale-md object-cover shrink-0 shadow-sm"
+        />
+        <div class="col-stack-xs min-w-0">
+          <span class="fs-sm font-medium text-foreground text-single-line-ellipsis">
+            {row.title}
+          </span>
+          <span class="fs-xs text-muted-foreground text-single-line-ellipsis">{row.brand}</span>
+        </div>
+      </div>
+    ),
+  },
+  {
+    id: 'category',
+    title: '分类',
+    field: 'category',
+    width: '130px',
+    render: ({ row }: ColumnRenderParams<DummyProductDTO>) => (
+      <span class={`bg-accent/15 text-accent ${BADGE}`}>{row.category}</span>
+    ),
+  },
+  {
+    id: 'price',
+    title: '价格',
+    field: 'price',
+    width: '100px',
+    align: 'right',
+    render: ({ row }: ColumnRenderParams<DummyProductDTO>) => (
+      <div class="col-stack-xs items-end">
+        <span class="fs-sm font-semibold text-foreground">${row.price.toFixed(2)}</span>
+        {row.discountPercentage > 0 && (
+          <span class="fs-xs text-danger">-{row.discountPercentage.toFixed(0)}%</span>
+        )}
+      </div>
+    ),
+  },
+  {
+    id: 'rating',
+    title: '评分',
+    width: '120px',
+    render: ({ row }: ColumnRenderParams<DummyProductDTO>) => ratingStars(row.rating),
+  },
+  {
+    id: 'stock',
+    title: '库存',
+    field: 'stock',
+    width: '90px',
+    render: ({ row }: ColumnRenderParams<DummyProductDTO>) => stockBadge(row.stock),
+  },
+]

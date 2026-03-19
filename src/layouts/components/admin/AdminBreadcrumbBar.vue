@@ -39,24 +39,28 @@ const renderTieredMenuItem = createTieredMenuItemRenderer({
   },
   emphasizeActiveLabel: true,
 })
+
+function renderBreadcrumbMenuItem(slotProps: unknown) {
+  return renderTieredMenuItem(slotProps as TieredMenuItemSlotProps)
+}
 </script>
 
 <template>
   <div
     v-if="show"
-    class="admin-breadcrumb w-full h-breadcrumbHeight flex items-center px-padding-md overflow-hidden select-none border-b-default"
+    class="admin-breadcrumb w-full h-breadcrumbHeight row-y-center px-padding-md overflow-hidden select-none border-b-default"
   >
-    <div class="flex items-center fs-sm text-muted-foreground whitespace-nowrap">
+    <div class="row-y-center fs-sm text-muted-foreground whitespace-nowrap">
       <TransitionGroup name="breadcrumb">
         <div
           v-for="(item, index) in breadcrumbs"
           :key="item.path"
-          class="flex items-center"
+          class="row-y-center"
         >
           <!-- Breadcrumb Item -->
           <span
             :class="[
-              'transition-all duration-scale-md flex items-center gap-xs rounded-scale-sm',
+              'transition-all duration-scale-md row-y-center gap-xs rounded-scale-sm',
               index === breadcrumbs.length - 1
                 ? 'text-foreground font-semibold cursor-default'
                 : 'cursor-pointer hover:text-primary',
@@ -104,7 +108,7 @@ const renderTieredMenuItem = createTieredMenuItemRenderer({
             @hide="onMenuHide(item.path)"
           >
             <template #item="slotProps">
-              <component :is="() => renderTieredMenuItem(slotProps as TieredMenuItemSlotProps)" />
+              <component :is="() => renderBreadcrumbMenuItem(slotProps)" />
             </template>
           </TieredMenu>
         </div>

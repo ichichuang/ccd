@@ -4,6 +4,7 @@
  * v2.0 - 性能优化版本
  */
 
+import type { Ref, ComputedRef } from 'vue'
 import { useThemeStore } from '@/stores/modules/theme'
 import { THEME_PRESETS, DEFAULT_THEME_NAME } from '@/constants/theme'
 import { generateThemeVars, applyTheme } from '@/utils/theme/engine'
@@ -142,7 +143,26 @@ function cleanupTransitionState(generation?: number) {
   })
 }
 
-export function useThemeSwitch() {
+export interface UseThemeSwitchReturn {
+  isAnimating: Ref<boolean>
+  isDark: ComputedRef<boolean>
+  mode: ComputedRef<ThemeMode>
+  transitionMode: ComputedRef<ThemeTransitionMode>
+  toggleThemeWithAnimation: (
+    event?: MouseEvent | null,
+    mode?: ThemeTransitionMode | null
+  ) => Promise<void>
+  setThemeWithAnimation: (
+    targetMode: ThemeMode,
+    event?: MouseEvent | null,
+    transitionModeOverride?: ThemeTransitionMode | null
+  ) => Promise<void>
+  toggleMode: () => void
+  setMode: (newMode: ThemeMode) => void
+  getNextMode: () => ThemeMode
+}
+
+export function useThemeSwitch(): UseThemeSwitchReturn {
   const themeStore = useThemeStore()
   const isAnimating = ref(false)
 

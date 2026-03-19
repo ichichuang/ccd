@@ -28,6 +28,8 @@ export function setupPrimeVue(app: App) {
   // Generate the dynamic preset adapted to our design & size system
   const dynamicPreset = createCustomPreset(sizeStore)
 
+  // ⚠️ HMR 限制：PT 对象在 app.use() 时被静态捕获，修改 ptPresets 文件后需全页面刷新。
+  // 这是 PrimeVue v4 的框架限制，非项目缺陷。PT 属于设计系统基础设施，变更频率低。
   app.use(PrimeVue, {
     theme: {
       preset: dynamicPreset,
@@ -41,6 +43,10 @@ export function setupPrimeVue(app: App) {
       },
     },
     pt: { ...menuPt, ...formControlsPt },
+    ptOptions: {
+      mergeSections: true,
+      mergeProps: true,
+    },
     ripple: true,
     locale: initialPrimeLocale,
   })

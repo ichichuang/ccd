@@ -181,9 +181,9 @@ const metricsConfig = computed(() => [
 
 <template>
   <div data-archetype="A3-stats-grid">
-    <div class="flex flex-col gap-xl layout-content-wide">
+    <div class="col-stack-xl layout-content-wide">
       <!-- Header Section -->
-      <header class="flex flex-col gap-sm">
+      <header class="col-stack-sm">
         <h1 class="fs-2xl font-bold text-foreground m-0 tracking-tight">System Data Overview</h1>
         <p class="fs-sm text-muted-foreground m-0">
           Real-time performance monitoring and analytics.
@@ -197,18 +197,18 @@ const metricsConfig = computed(() => [
         <div
           v-for="m in metricsConfig"
           :key="m.label"
-          class="bg-accent/10 dark:bg-accent/5 rounded-scale-xl shadow-soft interactive-hover-card p-padding-lg flex items-center gap-lg group"
+          class="bg-accent/10 dark:bg-accent/5 rounded-scale-xl shadow-soft interactive-hover-card p-padding-lg row-y-center gap-lg group"
         >
           <div
-            class="shrink-0 w-[var(--spacing-3xl)] h-[var(--spacing-3xl)] rounded-scale-lg surface-item flex items-center justify-center transition-fluid group-hover:scale-105"
+            class="shrink-0 w-[var(--spacing-3xl)] h-[var(--spacing-3xl)] rounded-scale-lg surface-item center transition-fluid group-hover:scale-105"
           >
             <Icons
               :name="m.icon"
-              size="xl"
+              size="5xl"
               :class="m.color"
             />
           </div>
-          <div class="flex flex-col">
+          <div class="column">
             <span class="fs-xs font-medium text-accent uppercase tracking-wider">
               {{ m.label }}
             </span>
@@ -222,16 +222,14 @@ const metricsConfig = computed(() => [
         data-region="chart-grid"
         class="grid grid-cols-1 gap-lg"
       >
-        <div
-          class="bg-card rounded-scale-xl shadow-soft p-padding-xl flex flex-col gap-lg min-h-[50vh]"
-        >
-          <div class="flex items-center justify-between shrink-0">
-            <div class="flex flex-col gap-xs">
+        <div class="panel-base min-h-[50vh]">
+          <div class="row-between shrink-0">
+            <div class="col-stack-xs">
               <h3 class="fs-lg font-semibold text-foreground m-0">Performance Analytics</h3>
               <p class="fs-xs text-muted-foreground m-0">Live telemetry of core system resources</p>
             </div>
             <div
-              class="bg-primary/10 text-primary rounded-full px-padding-md py-padding-xs flex items-center gap-sm shadow-soft"
+              class="bg-primary/10 text-primary rounded-full px-padding-md py-padding-xs row-y-center gap-sm shadow-soft"
             >
               <span
                 class="w-[var(--spacing-sm)] h-[var(--spacing-sm)] rounded-full bg-primary animate-pulse shrink-0"
@@ -253,7 +251,7 @@ const metricsConfig = computed(() => [
       >
         <!-- Recent System Events (Left, 2/3) -->
         <div
-          class="bg-primary/20 dark:bg-primary/10 rounded-scale-xl shadow-soft p-padding-xl flex flex-col gap-lg lg:col-span-2 interactive-hover-card"
+          class="bg-primary/20 dark:bg-primary/10 rounded-scale-xl shadow-soft p-padding-xl col-stack-lg lg:col-span-2 interactive-hover-card"
         >
           <div class="row-between shrink-0">
             <h3 class="fs-lg font-semibold text-foreground m-0">Recent System Events</h3>
@@ -271,18 +269,18 @@ const metricsConfig = computed(() => [
               :key="evt.id"
               class="surface-item rounded-scale-md p-padding-md row-between behavior-hover-transition hover:bg-foreground/5"
             >
-              <div class="flex items-center gap-md min-w-0 flex-1">
+              <div class="row-y-center gap-md min-w-0 flex-1">
                 <div
-                  class="shrink-0 w-[var(--spacing-2xl)] h-[var(--spacing-2xl)] rounded-scale-md flex items-center justify-center"
+                  class="shrink-0 w-[var(--spacing-2xl)] h-[var(--spacing-2xl)] rounded-scale-md center"
                   :class="eventTypeStyles[evt.type]"
                 >
                   <Icons
                     :name="evt.icon"
                     class="text-inherit!"
-                    size="sm"
+                    size="xl"
                   />
                 </div>
-                <div class="flex flex-col min-w-0 flex-1">
+                <div class="column min-w-0 flex-1">
                   <span class="fs-sm font-medium text-foreground">{{ evt.title }}</span>
                   <span class="text-muted text-single-line-ellipsis fs-xs">
                     {{ evt.description }}
@@ -298,7 +296,7 @@ const metricsConfig = computed(() => [
 
         <!-- Active Service Nodes (Right, 1/3) -->
         <div
-          class="bg-primary/20 dark:bg-primary/10 rounded-scale-xl shadow-soft p-padding-xl flex flex-col gap-lg lg:col-span-1 interactive-hover-card"
+          class="bg-primary/20 dark:bg-primary/10 rounded-scale-xl shadow-soft p-padding-xl col-stack-lg lg:col-span-1 interactive-hover-card"
         >
           <div class="row-between shrink-0">
             <h3 class="fs-lg font-semibold text-foreground m-0">Active Service Nodes</h3>
@@ -312,11 +310,11 @@ const metricsConfig = computed(() => [
               :key="node.id"
               class="surface-item rounded-scale-md p-padding-md row-between behavior-hover-transition hover:bg-foreground/5"
             >
-              <div class="flex flex-col min-w-0">
+              <div class="column min-w-0">
                 <span class="fs-sm font-medium text-foreground">{{ node.name }}</span>
                 <span class="text-muted fs-xs">{{ node.region }}</span>
               </div>
-              <div class="flex flex-col items-end shrink-0">
+              <div class="column items-end shrink-0">
                 <span
                   class="fs-xs px-padding-sm py-padding-xs rounded-full font-medium"
                   :class="

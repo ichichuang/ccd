@@ -272,26 +272,26 @@ function onAccordionActiveIndexChange(value: number | number[] | undefined): voi
   <!-- 最外层：全屏 Flex 容器 (80% / 20%) -->
   <div class="h-full w-full flex overflow-hidden">
     <!-- 左侧：主内容 (80%) -->
-    <div class="basis-4/5 min-w-0 h-full flex flex-col">
+    <div class="basis-4/5 min-w-0 h-full column">
       <CScrollbar
         ref="scrollbarRef"
         class="h-full"
         @initialized="onScrollbarInitialized"
         @scroll="throttledComputeActiveSection"
       >
-        <div class="p-padding-lg layout-content-wide flex flex-col gap-xl">
+        <div class="p-padding-lg layout-content-wide col-stack-xl">
           <!-- 1. Button -->
           <section
             :id="sections[0].id"
             class="scroll-mt-gap-lg"
           >
             <div
-              class="bg-card component-border rounded-scale-md interactive-hover-card p-padding-lg flex flex-col gap-md"
+              class="bg-card component-border rounded-scale-md interactive-hover-card p-padding-lg col-stack-md"
             >
-              <h2 class="fs-xl font-semibold text-foreground flex items-center gap-sm m-0">
+              <h2 class="fs-xl font-semibold text-foreground row-y-center gap-sm m-0">
                 {{ sectionMeta[0].indexLabel }} {{ sectionMeta[0].label }}
               </h2>
-              <div class="flex flex-wrap items-center gap-md">
+              <div class="row-y-center flex-wrap gap-md">
                 <Button label="Primary" />
                 <Button
                   label="Secondary"
@@ -322,7 +322,7 @@ function onAccordionActiveIndexChange(value: number | number[] | undefined): voi
                   severity="contrast"
                 />
               </div>
-              <div class="flex flex-wrap items-center gap-md">
+              <div class="row-y-center flex-wrap gap-md">
                 <Button
                   label="Primary"
                   raised
@@ -363,7 +363,7 @@ function onAccordionActiveIndexChange(value: number | number[] | undefined): voi
                   raised
                 />
               </div>
-              <div class="flex flex-wrap items-center gap-md">
+              <div class="row-y-center flex-wrap gap-md">
                 <Button
                   label="Primary"
                   rounded
@@ -404,7 +404,7 @@ function onAccordionActiveIndexChange(value: number | number[] | undefined): voi
                   rounded
                 />
               </div>
-              <div class="flex flex-wrap items-center gap-md">
+              <div class="row-y-center flex-wrap gap-md">
                 <Button
                   label="Primary"
                   variant="text"
@@ -445,7 +445,7 @@ function onAccordionActiveIndexChange(value: number | number[] | undefined): voi
                   variant="text"
                 />
               </div>
-              <div class="flex flex-wrap items-center gap-md">
+              <div class="row-y-center flex-wrap gap-md">
                 <Button
                   label="Primary"
                   variant="text"
@@ -494,7 +494,7 @@ function onAccordionActiveIndexChange(value: number | number[] | undefined): voi
                   raised
                 />
               </div>
-              <div class="flex flex-wrap items-center gap-md">
+              <div class="row-y-center flex-wrap gap-md">
                 <Button
                   label="Primary"
                   variant="outlined"
@@ -535,7 +535,7 @@ function onAccordionActiveIndexChange(value: number | number[] | undefined): voi
                   variant="outlined"
                 />
               </div>
-              <div class="flex flex-wrap items-center gap-md">
+              <div class="row-y-center flex-wrap gap-md">
                 <Button
                   icon="pi pi-check"
                   aria-label="Filter"
@@ -576,7 +576,7 @@ function onAccordionActiveIndexChange(value: number | number[] | undefined): voi
                   aria-label="Star"
                 />
               </div>
-              <div class="flex flex-wrap items-center gap-md">
+              <div class="row-y-center flex-wrap gap-md">
                 <Button label="Basic" />
                 <Button
                   label="带图标"
@@ -602,7 +602,7 @@ function onAccordionActiveIndexChange(value: number | number[] | undefined): voi
                   disabled
                 />
               </div>
-              <div class="flex flex-wrap items-center gap-sm">
+              <div class="row-y-center flex-wrap gap-sm">
                 <Button label="Primary" />
                 <Button
                   label="Secondary"
@@ -625,7 +625,7 @@ function onAccordionActiveIndexChange(value: number | number[] | undefined): voi
                   severity="danger"
                 />
               </div>
-              <div class="flex flex-wrap items-center gap-sm">
+              <div class="row-y-center flex-wrap gap-sm">
                 <Button
                   label="Raised"
                   raised
@@ -643,7 +643,7 @@ function onAccordionActiveIndexChange(value: number | number[] | undefined): voi
                   variant="outlined"
                 />
               </div>
-              <div class="flex flex-wrap items-center gap-sm">
+              <div class="row-y-center flex-wrap gap-sm">
                 <Button
                   icon="pi pi-check"
                   aria-label="确定"
@@ -667,7 +667,7 @@ function onAccordionActiveIndexChange(value: number | number[] | undefined): voi
                   size="large"
                 />
               </div>
-              <div class="flex flex-wrap items-center gap-sm">
+              <div class="row-y-center flex-wrap gap-sm">
                 <ButtonGroup>
                   <Button
                     label="保存"
@@ -694,13 +694,13 @@ function onAccordionActiveIndexChange(value: number | number[] | undefined): voi
             class="scroll-mt-gap-lg"
           >
             <div
-              class="bg-card component-border rounded-scale-md interactive-hover-card p-padding-lg flex flex-col gap-md"
+              class="bg-card component-border rounded-scale-md interactive-hover-card p-padding-lg col-stack-md"
             >
-              <h2 class="fs-xl font-semibold text-foreground flex items-center gap-sm m-0">
+              <h2 class="fs-xl font-semibold text-foreground row-y-center gap-sm m-0">
                 {{ sectionMeta[1].indexLabel }} {{ sectionMeta[1].label }}
               </h2>
-              <div class="flex flex-col gap-md layout-content">
-                <div class="flex flex-col gap-xs">
+              <div class="col-stack-md layout-content">
+                <div class="col-stack-xs">
                   <label
                     for="input-text"
                     class="text-foreground fs-sm"
@@ -714,7 +714,7 @@ function onAccordionActiveIndexChange(value: number | number[] | undefined): voi
                     placeholder="请输入"
                   />
                 </div>
-                <div class="flex flex-col gap-xs">
+                <div class="col-stack-xs">
                   <label
                     for="input-pwd"
                     class="text-foreground fs-sm"
@@ -729,7 +729,7 @@ function onAccordionActiveIndexChange(value: number | number[] | undefined): voi
                     toggle-mask
                   />
                 </div>
-                <div class="flex flex-col gap-xs">
+                <div class="col-stack-xs">
                   <label
                     for="input-textarea"
                     class="text-foreground fs-sm"
@@ -743,7 +743,7 @@ function onAccordionActiveIndexChange(value: number | number[] | undefined): voi
                     placeholder="多行文本"
                   />
                 </div>
-                <div class="flex flex-col gap-xs">
+                <div class="col-stack-xs">
                   <label
                     for="input-num"
                     class="text-foreground fs-sm"
@@ -757,7 +757,7 @@ function onAccordionActiveIndexChange(value: number | number[] | undefined): voi
                     show-buttons
                   />
                 </div>
-                <div class="flex flex-wrap gap-sm">
+                <div class="layout-wrap gap-sm">
                   <InputText
                     v-model="inputText"
                     size="small"
@@ -806,13 +806,13 @@ function onAccordionActiveIndexChange(value: number | number[] | undefined): voi
             class="scroll-mt-gap-lg"
           >
             <div
-              class="bg-card component-border rounded-scale-md interactive-hover-card p-padding-lg flex flex-col gap-md"
+              class="bg-card component-border rounded-scale-md interactive-hover-card p-padding-lg col-stack-md"
             >
-              <h2 class="fs-xl font-semibold text-foreground flex items-center gap-sm m-0">
+              <h2 class="fs-xl font-semibold text-foreground row-y-center gap-sm m-0">
                 {{ sectionMeta[2].indexLabel }} {{ sectionMeta[2].label }}
               </h2>
-              <div class="flex flex-wrap gap-lg">
-                <div class="flex flex-col gap-xs min-w-[var(--spacing-4xl)]">
+              <div class="layout-wrap gap-lg">
+                <div class="col-stack-xs min-w-[var(--spacing-4xl)]">
                   <label class="text-foreground fs-sm">Select 单选</label>
                   <Select
                     v-model="selectCity"
@@ -823,7 +823,7 @@ function onAccordionActiveIndexChange(value: number | number[] | undefined): voi
                     show-clear
                   />
                 </div>
-                <div class="flex flex-col gap-xs min-w-[var(--spacing-5xl)]">
+                <div class="col-stack-xs min-w-[var(--spacing-5xl)]">
                   <label class="text-foreground fs-sm">MultiSelect</label>
                   <MultiSelect
                     v-model="multiSelectVal"
@@ -843,12 +843,12 @@ function onAccordionActiveIndexChange(value: number | number[] | undefined): voi
             class="scroll-mt-gap-lg"
           >
             <div
-              class="bg-card component-border rounded-scale-md interactive-hover-card p-padding-lg flex flex-col gap-md"
+              class="bg-card component-border rounded-scale-md interactive-hover-card p-padding-lg col-stack-md"
             >
-              <h2 class="fs-xl font-semibold text-foreground flex items-center gap-sm m-0">
+              <h2 class="fs-xl font-semibold text-foreground row-y-center gap-sm m-0">
                 {{ sectionMeta[3].indexLabel }} {{ sectionMeta[3].label }}
               </h2>
-              <div class="flex flex-wrap gap-md">
+              <div class="layout-wrap gap-md">
                 <SelectButton
                   v-model="selectButtonVal"
                   :options="selectButtonOptions"
@@ -872,13 +872,13 @@ function onAccordionActiveIndexChange(value: number | number[] | undefined): voi
             class="scroll-mt-gap-lg"
           >
             <div
-              class="bg-card component-border rounded-scale-md interactive-hover-card p-padding-lg flex flex-col gap-md"
+              class="bg-card component-border rounded-scale-md interactive-hover-card p-padding-lg col-stack-md"
             >
-              <h2 class="fs-xl font-semibold text-foreground flex items-center gap-sm m-0">
+              <h2 class="fs-xl font-semibold text-foreground row-y-center gap-sm m-0">
                 {{ sectionMeta[4].indexLabel }} {{ sectionMeta[4].label }}
               </h2>
-              <div class="flex flex-wrap gap-lg">
-                <div class="flex flex-col gap-xs min-w-[var(--spacing-5xl)]">
+              <div class="layout-wrap gap-lg">
+                <div class="col-stack-xs min-w-[var(--spacing-5xl)]">
                   <label class="text-foreground fs-sm">AutoComplete</label>
                   <AutoComplete
                     v-model="autoCompleteVal"
@@ -887,7 +887,7 @@ function onAccordionActiveIndexChange(value: number | number[] | undefined): voi
                     @complete="onAutoCompleteSearch"
                   />
                 </div>
-                <div class="flex flex-col gap-xs min-w-[var(--spacing-4xl)]">
+                <div class="col-stack-xs min-w-[var(--spacing-4xl)]">
                   <label class="text-foreground fs-sm">Listbox</label>
                   <Listbox
                     v-model="listboxVal"
@@ -905,17 +905,17 @@ function onAccordionActiveIndexChange(value: number | number[] | undefined): voi
             class="scroll-mt-gap-lg"
           >
             <div
-              class="bg-card component-border rounded-scale-md interactive-hover-card p-padding-lg flex flex-col gap-md"
+              class="bg-card component-border rounded-scale-md interactive-hover-card p-padding-lg col-stack-md"
             >
-              <h2 class="fs-xl font-semibold text-foreground flex items-center gap-sm m-0">
+              <h2 class="fs-xl font-semibold text-foreground row-y-center gap-sm m-0">
                 {{ sectionMeta[5].indexLabel }} {{ sectionMeta[5].label }}
               </h2>
-              <div class="flex flex-wrap gap-xl layout-content">
-                <div class="flex flex-col gap-xs flex-1 min-w-[var(--spacing-5xl)]">
+              <div class="layout-wrap gap-xl layout-content">
+                <div class="col-stack-xs flex-1 min-w-[var(--spacing-5xl)]">
                   <span class="text-foreground fs-sm font-medium">Checkbox</span>
                   <span class="text-muted-foreground fs-xs">二元 + 多选组示例</span>
-                  <div class="flex flex-col gap-xs">
-                    <div class="flex items-center gap-xs">
+                  <div class="col-stack-xs">
+                    <div class="row-y-center gap-xs">
                       <Checkbox
                         v-model="checkboxVal"
                         input-id="cb1"
@@ -928,10 +928,10 @@ function onAccordionActiveIndexChange(value: number | number[] | undefined): voi
                         Checkbox 二元
                       </label>
                     </div>
-                    <div class="flex flex-col gap-xs">
+                    <div class="col-stack-xs">
                       <span class="text-foreground fs-xs">Checkbox 多选组</span>
-                      <div class="flex flex-wrap gap-md">
-                        <div class="flex items-center gap-xs">
+                      <div class="layout-wrap gap-md">
+                        <div class="row-y-center gap-xs">
                           <Checkbox
                             v-model="checkboxGroup"
                             input-id="cb-vue"
@@ -939,7 +939,7 @@ function onAccordionActiveIndexChange(value: number | number[] | undefined): voi
                           />
                           <label for="cb-vue">Vue</label>
                         </div>
-                        <div class="flex items-center gap-xs">
+                        <div class="row-y-center gap-xs">
                           <Checkbox
                             v-model="checkboxGroup"
                             input-id="cb-react"
@@ -951,11 +951,11 @@ function onAccordionActiveIndexChange(value: number | number[] | undefined): voi
                     </div>
                   </div>
                 </div>
-                <div class="flex flex-col gap-xs flex-1 min-w-[var(--spacing-5xl)]">
+                <div class="col-stack-xs flex-1 min-w-[var(--spacing-5xl)]">
                   <span class="text-foreground fs-sm font-medium">RadioButton</span>
                   <span class="text-muted-foreground fs-xs">单选按钮组</span>
-                  <div class="flex flex-wrap gap-md">
-                    <div class="flex items-center gap-xs">
+                  <div class="layout-wrap gap-md">
+                    <div class="row-y-center gap-xs">
                       <RadioButton
                         v-model="radioVal"
                         input-id="r1"
@@ -963,7 +963,7 @@ function onAccordionActiveIndexChange(value: number | number[] | undefined): voi
                       />
                       <label for="r1">A</label>
                     </div>
-                    <div class="flex items-center gap-xs">
+                    <div class="row-y-center gap-xs">
                       <RadioButton
                         v-model="radioVal"
                         input-id="r2"
@@ -973,10 +973,10 @@ function onAccordionActiveIndexChange(value: number | number[] | undefined): voi
                     </div>
                   </div>
                 </div>
-                <div class="flex flex-col gap-xs flex-1 min-w-[var(--spacing-5xl)]">
+                <div class="col-stack-xs flex-1 min-w-[var(--spacing-5xl)]">
                   <span class="text-foreground fs-sm font-medium">ToggleSwitch</span>
                   <span class="text-muted-foreground fs-xs">开关控件</span>
-                  <div class="flex items-center gap-sm">
+                  <div class="row-y-center gap-sm">
                     <ToggleSwitch
                       v-model="toggleVal"
                       input-id="sw1"
@@ -999,13 +999,13 @@ function onAccordionActiveIndexChange(value: number | number[] | undefined): voi
             class="scroll-mt-gap-lg"
           >
             <div
-              class="bg-card component-border rounded-scale-md interactive-hover-card p-padding-lg flex flex-col gap-md"
+              class="bg-card component-border rounded-scale-md interactive-hover-card p-padding-lg col-stack-md"
             >
-              <h2 class="fs-xl font-semibold text-foreground flex items-center gap-sm m-0">
+              <h2 class="fs-xl font-semibold text-foreground row-y-center gap-sm m-0">
                 {{ sectionMeta[6].indexLabel }} {{ sectionMeta[6].label }}
               </h2>
-              <div class="flex flex-wrap gap-md">
-                <div class="flex flex-col gap-xs">
+              <div class="layout-wrap gap-md">
+                <div class="col-stack-xs">
                   <label class="text-foreground fs-sm">日期</label>
                   <DatePicker
                     v-model="dateVal"
@@ -1032,14 +1032,14 @@ function onAccordionActiveIndexChange(value: number | number[] | undefined): voi
             class="scroll-mt-gap-lg"
           >
             <div
-              class="bg-card component-border rounded-scale-md interactive-hover-card p-padding-lg flex flex-col gap-md"
+              class="bg-card component-border rounded-scale-md interactive-hover-card p-padding-lg col-stack-md"
             >
-              <h2 class="fs-xl font-semibold text-foreground flex items-center gap-sm m-0">
+              <h2 class="fs-xl font-semibold text-foreground row-y-center gap-sm m-0">
                 {{ sectionMeta[7].indexLabel }} {{ sectionMeta[7].label }}
               </h2>
-              <div class="flex flex-wrap gap-xl">
-                <div class="flex flex-col gap-xs flex-1 min-w-[var(--spacing-5xl)]">
-                  <div class="flex items-center justify-between gap-sm">
+              <div class="layout-wrap gap-xl">
+                <div class="col-stack-xs flex-1 min-w-[var(--spacing-5xl)]">
+                  <div class="row-between gap-sm">
                     <label class="text-foreground fs-sm">Slider</label>
                     <span class="text-muted-foreground fs-xs">{{ sliderVal }}</span>
                   </div>
@@ -1049,8 +1049,8 @@ function onAccordionActiveIndexChange(value: number | number[] | undefined): voi
                     :max="100"
                   />
                 </div>
-                <div class="flex flex-col gap-xs flex-1 min-w-[var(--spacing-5xl)]">
-                  <div class="flex items-center justify-between gap-sm">
+                <div class="col-stack-xs flex-1 min-w-[var(--spacing-5xl)]">
+                  <div class="row-between gap-sm">
                     <label class="text-foreground fs-sm">Slider Range</label>
                     <span class="text-muted-foreground fs-xs">
                       {{ sliderRangeVal }}
@@ -1063,7 +1063,7 @@ function onAccordionActiveIndexChange(value: number | number[] | undefined): voi
                     range
                   />
                 </div>
-                <div class="flex flex-col gap-xs flex-1 min-w-[var(--spacing-5xl)]">
+                <div class="col-stack-xs flex-1 min-w-[var(--spacing-5xl)]">
                   <label class="text-foreground fs-sm">Rating</label>
                   <Rating v-model="ratingVal" />
                 </div>
@@ -1077,12 +1077,12 @@ function onAccordionActiveIndexChange(value: number | number[] | undefined): voi
             class="scroll-mt-gap-lg"
           >
             <div
-              class="bg-card component-border rounded-scale-md interactive-hover-card p-padding-lg flex flex-col gap-md"
+              class="bg-card component-border rounded-scale-md interactive-hover-card p-padding-lg col-stack-md"
             >
-              <h2 class="fs-xl font-semibold text-foreground flex items-center gap-sm m-0">
+              <h2 class="fs-xl font-semibold text-foreground row-y-center gap-sm m-0">
                 {{ sectionMeta[8].indexLabel }} {{ sectionMeta[8].label }}
               </h2>
-              <div class="flex flex-wrap items-center gap-md">
+              <div class="row-y-center flex-wrap gap-md">
                 <Tag value="Primary" />
                 <Tag
                   value="Success"
@@ -1127,13 +1127,13 @@ function onAccordionActiveIndexChange(value: number | number[] | undefined): voi
             class="scroll-mt-gap-lg"
           >
             <div
-              class="bg-card component-border rounded-scale-md interactive-hover-card p-padding-lg flex flex-col gap-md"
+              class="bg-card component-border rounded-scale-md interactive-hover-card p-padding-lg col-stack-md"
             >
-              <h2 class="fs-xl font-semibold text-foreground flex items-center gap-sm m-0">
+              <h2 class="fs-xl font-semibold text-foreground row-y-center gap-sm m-0">
                 {{ sectionMeta[9].indexLabel }} {{ sectionMeta[9].label }}
               </h2>
-              <div class="flex flex-col gap-md">
-                <div class="flex items-center gap-sm">
+              <div class="col-stack-md">
+                <div class="row-y-center gap-sm">
                   <span class="text-foreground fs-sm">左侧</span>
                   <Divider layout="vertical" />
                   <span class="text-foreground fs-sm">右侧</span>
@@ -1161,12 +1161,12 @@ function onAccordionActiveIndexChange(value: number | number[] | undefined): voi
             class="scroll-mt-gap-lg"
           >
             <div
-              class="bg-card component-border rounded-scale-md interactive-hover-card p-padding-lg flex flex-col gap-md"
+              class="bg-card component-border rounded-scale-md interactive-hover-card p-padding-lg col-stack-md"
             >
-              <h2 class="fs-xl font-semibold text-foreground flex items-center gap-sm m-0">
+              <h2 class="fs-xl font-semibold text-foreground row-y-center gap-sm m-0">
                 {{ sectionMeta[10].indexLabel }} {{ sectionMeta[10].label }}
               </h2>
-              <div class="flex flex-wrap gap-lg">
+              <div class="layout-wrap gap-lg">
                 <Card class="flex-1 min-w-[var(--spacing-5xl)] layout-content">
                   <template #title>Card 标题</template>
                   <template #subtitle>副标题</template>
@@ -1207,12 +1207,12 @@ function onAccordionActiveIndexChange(value: number | number[] | undefined): voi
             class="scroll-mt-gap-lg"
           >
             <div
-              class="bg-card component-border rounded-scale-md interactive-hover-card p-padding-lg flex flex-col gap-md"
+              class="bg-card component-border rounded-scale-md interactive-hover-card p-padding-lg col-stack-md"
             >
-              <h2 class="fs-xl font-semibold text-foreground flex items-center gap-sm m-0">
+              <h2 class="fs-xl font-semibold text-foreground row-y-center gap-sm m-0">
                 {{ sectionMeta[11].indexLabel }} {{ sectionMeta[11].label }}
               </h2>
-              <div class="flex flex-col gap-md layout-content">
+              <div class="col-stack-md layout-content">
                 <Message
                   severity="info"
                   :closable="true"
@@ -1228,7 +1228,7 @@ function onAccordionActiveIndexChange(value: number | number[] | undefined): voi
                 >
                   Simple 变体 Message
                 </Message>
-                <div class="flex flex-wrap gap-sm">
+                <div class="layout-wrap gap-sm">
                   <Button
                     label="Toast Success"
                     severity="success"
@@ -1264,9 +1264,9 @@ function onAccordionActiveIndexChange(value: number | number[] | undefined): voi
             class="scroll-mt-gap-lg"
           >
             <div
-              class="bg-card component-border rounded-scale-md interactive-hover-card p-padding-lg flex flex-col gap-md"
+              class="bg-card component-border rounded-scale-md interactive-hover-card p-padding-lg col-stack-md"
             >
-              <h2 class="fs-xl font-semibold text-foreground flex items-center gap-sm m-0">
+              <h2 class="fs-xl font-semibold text-foreground row-y-center gap-sm m-0">
                 {{ sectionMeta[12].indexLabel }} {{ sectionMeta[12].label }}
               </h2>
               <p class="text-muted-foreground fs-sm">
@@ -1276,7 +1276,7 @@ function onAccordionActiveIndexChange(value: number | number[] | undefined): voi
                 <span class="px-padding-xs rounded-scale-md bg-muted">window.$toast</span>
                 。
               </p>
-              <div class="flex flex-wrap gap-sm">
+              <div class="layout-wrap gap-sm">
                 <Button
                   label="打开 Dialog"
                   @click="dialogVisible = true"
@@ -1320,12 +1320,12 @@ function onAccordionActiveIndexChange(value: number | number[] | undefined): voi
             class="scroll-mt-gap-lg"
           >
             <div
-              class="bg-card component-border rounded-scale-md interactive-hover-card p-padding-lg flex flex-col gap-md"
+              class="bg-card component-border rounded-scale-md interactive-hover-card p-padding-lg col-stack-md"
             >
-              <h2 class="fs-xl font-semibold text-foreground flex items-center gap-sm m-0">
+              <h2 class="fs-xl font-semibold text-foreground row-y-center gap-sm m-0">
                 {{ sectionMeta[13].indexLabel }} {{ sectionMeta[13].label }}
               </h2>
-              <div class="flex flex-wrap gap-md">
+              <div class="layout-wrap gap-md">
                 <Button
                   label="打开 Drawer"
                   @click="drawerVisible = true"
@@ -1335,7 +1335,7 @@ function onAccordionActiveIndexChange(value: number | number[] | undefined): voi
                   @click="togglePopover"
                 />
                 <Popover ref="popoverRef">
-                  <div class="flex flex-col gap-sm layout-content-narrow">
+                  <div class="col-stack-sm layout-content-narrow">
                     <span class="fs-sm font-semibold text-foreground">Popover 内容</span>
                     <p class="text-muted-foreground fs-sm m-0">自定义浮层内容。</p>
                   </div>
@@ -1358,13 +1358,13 @@ function onAccordionActiveIndexChange(value: number | number[] | undefined): voi
             class="scroll-mt-gap-lg"
           >
             <div
-              class="bg-card component-border rounded-scale-md interactive-hover-card p-padding-lg flex flex-col gap-md"
+              class="bg-card component-border rounded-scale-md interactive-hover-card p-padding-lg col-stack-md"
             >
-              <h2 class="fs-xl font-semibold text-foreground flex items-center gap-sm m-0">
+              <h2 class="fs-xl font-semibold text-foreground row-y-center gap-sm m-0">
                 {{ sectionMeta[14].indexLabel }} {{ sectionMeta[14].label }}
               </h2>
-              <div class="flex flex-col gap-lg">
-                <div class="flex flex-wrap items-center gap-md">
+              <div class="col-stack-lg">
+                <div class="row-y-center flex-wrap gap-md">
                   <Button
                     label="打开 Menu"
                     icon="pi pi-bars"
@@ -1390,12 +1390,12 @@ function onAccordionActiveIndexChange(value: number | number[] | undefined): voi
             class="scroll-mt-gap-lg"
           >
             <div
-              class="bg-card component-border rounded-scale-md interactive-hover-card p-padding-lg flex flex-col gap-md"
+              class="bg-card component-border rounded-scale-md interactive-hover-card p-padding-lg col-stack-md"
             >
-              <h2 class="fs-xl font-semibold text-foreground flex items-center gap-sm m-0">
+              <h2 class="fs-xl font-semibold text-foreground row-y-center gap-sm m-0">
                 {{ sectionMeta[15].indexLabel }} {{ sectionMeta[15].label }}
               </h2>
-              <div class="flex flex-wrap gap-xl">
+              <div class="layout-wrap gap-xl">
                 <div class="flex-1 min-w-0 layout-content">
                   <Tabs v-model:value="activeTab">
                     <TabList>
@@ -1445,13 +1445,13 @@ function onAccordionActiveIndexChange(value: number | number[] | undefined): voi
             class="scroll-mt-gap-lg"
           >
             <div
-              class="bg-card component-border rounded-scale-md interactive-hover-card p-padding-lg flex flex-col gap-md"
+              class="bg-card component-border rounded-scale-md interactive-hover-card p-padding-lg col-stack-md"
             >
-              <h2 class="fs-xl font-semibold text-foreground flex items-center gap-sm m-0">
+              <h2 class="fs-xl font-semibold text-foreground row-y-center gap-sm m-0">
                 {{ sectionMeta[16].indexLabel }} {{ sectionMeta[16].label }}
               </h2>
-              <div class="flex flex-wrap gap-xl">
-                <div class="flex flex-col gap-xs layout-content-narrow">
+              <div class="layout-wrap gap-xl">
+                <div class="col-stack-xs layout-content-narrow">
                   <label class="text-foreground fs-sm">Tree</label>
                   <Tree
                     v-model:selection-keys="selectedNodeKeys"
@@ -1460,7 +1460,7 @@ function onAccordionActiveIndexChange(value: number | number[] | undefined): voi
                     class="w-full"
                   />
                 </div>
-                <div class="flex flex-col gap-xs">
+                <div class="col-stack-xs">
                   <label class="text-foreground fs-sm">Paginator 独立分页</label>
                   <Paginator
                     :first="paginatorFirst"
@@ -1480,13 +1480,13 @@ function onAccordionActiveIndexChange(value: number | number[] | undefined): voi
             class="scroll-mt-gap-lg"
           >
             <div
-              class="bg-card component-border rounded-scale-md interactive-hover-card p-padding-lg flex flex-col gap-md"
+              class="bg-card component-border rounded-scale-md interactive-hover-card p-padding-lg col-stack-md"
             >
-              <h2 class="fs-xl font-semibold text-foreground flex items-center gap-sm m-0">
+              <h2 class="fs-xl font-semibold text-foreground row-y-center gap-sm m-0">
                 {{ sectionMeta[17].indexLabel }} {{ sectionMeta[17].label }}
               </h2>
-              <div class="flex flex-wrap gap-lg items-start">
-                <div class="flex flex-col gap-xs">
+              <div class="layout-wrap gap-lg items-start">
+                <div class="col-stack-xs">
                   <label class="text-foreground fs-sm">FileUpload</label>
                   <FileUpload
                     mode="basic"
@@ -1494,7 +1494,7 @@ function onAccordionActiveIndexChange(value: number | number[] | undefined): voi
                     @select="onFileUploadSelect"
                   />
                 </div>
-                <div class="flex flex-col gap-sm">
+                <div class="col-stack-sm">
                   <span class="text-foreground fs-sm">ProgressSpinner</span>
                   <ProgressSpinner class="w-[var(--spacing-2xl)] h-[var(--spacing-2xl)]" />
                 </div>
@@ -1508,13 +1508,13 @@ function onAccordionActiveIndexChange(value: number | number[] | undefined): voi
             class="scroll-mt-gap-lg"
           >
             <div
-              class="bg-card component-border rounded-scale-md interactive-hover-card p-padding-lg flex flex-col gap-md"
+              class="bg-card component-border rounded-scale-md interactive-hover-card p-padding-lg col-stack-md"
             >
-              <h2 class="fs-xl font-semibold text-foreground flex items-center gap-sm m-0">
+              <h2 class="fs-xl font-semibold text-foreground row-y-center gap-sm m-0">
                 {{ sectionMeta[18].indexLabel }} {{ sectionMeta[18].label }}
               </h2>
-              <div class="flex flex-col gap-lg layout-content">
-                <div class="flex flex-col gap-sm">
+              <div class="col-stack-lg layout-content">
+                <div class="col-stack-sm">
                   <span class="text-foreground fs-sm font-medium">FloatLabel</span>
                   <span class="text-muted-foreground fs-xs">
                     标签会在输入聚焦或有值时上浮，适合紧凑表单。
@@ -1531,7 +1531,7 @@ function onAccordionActiveIndexChange(value: number | number[] | undefined): voi
                   </div>
                 </div>
 
-                <div class="flex flex-col gap-sm">
+                <div class="col-stack-sm">
                   <span class="text-foreground fs-sm font-medium">Splitter</span>
                   <span class="text-muted-foreground fs-xs">
                     可拖拽的分栏容器，用于在同一视图中对比展示两个区域。
@@ -1561,14 +1561,14 @@ function onAccordionActiveIndexChange(value: number | number[] | undefined): voi
             class="scroll-mt-gap-lg"
           >
             <div
-              class="bg-card component-border rounded-scale-md interactive-hover-card p-padding-lg flex flex-col gap-md"
+              class="bg-card component-border rounded-scale-md interactive-hover-card p-padding-lg col-stack-md"
             >
-              <h2 class="fs-xl font-semibold text-foreground flex items-center gap-sm m-0">
+              <h2 class="fs-xl font-semibold text-foreground row-y-center gap-sm m-0">
                 {{ sectionMeta[19].indexLabel }} {{ sectionMeta[19].label }}
               </h2>
-              <div class="flex flex-col gap-lg">
+              <div class="col-stack-lg">
                 <Breadcrumb :model="breadcrumbItems" />
-                <div class="flex flex-col gap-xs layout-content">
+                <div class="col-stack-xs layout-content">
                   <label class="text-foreground fs-sm">ProgressBar: {{ progressVal }}%</label>
                   <ProgressBar :value="progressVal" />
                   <ProgressBar
@@ -1576,7 +1576,7 @@ function onAccordionActiveIndexChange(value: number | number[] | undefined): voi
                     class="mt-margin-sm"
                   />
                 </div>
-                <div class="flex flex-col gap-sm w-full max-w-xs">
+                <div class="col-stack-sm w-full max-w-xs">
                   <span class="text-foreground fs-sm">Skeleton 占位</span>
                   <Skeleton
                     width="100%"

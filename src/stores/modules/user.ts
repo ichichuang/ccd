@@ -5,8 +5,7 @@ import { usePermissionStore } from '@/stores/modules/permission'
 import { createPiniaEncryptedSerializer } from '@/utils/safeStorage/piniaSerializer'
 import { encryptAndCompressSync } from '@/utils/safeStorage/safeStorage'
 import { defineStore } from 'pinia'
-import { requestAuthCurrentUserMock, requestAuthLoginMock } from '@/api/auth/auth.api'
-import type { LoginParams, UserInfo } from '@/types/dto/auth.dto'
+import type { LoginResult, UserInfo } from '@/types/dto/auth.dto'
 
 interface UserState {
   token: string
@@ -44,37 +43,26 @@ export const useUserStore = defineStore('user', {
 
   actions: {
     /**
-     * 测试用假的登录流程：
-     * - 调用前端模拟接口 requestUserLoginMock
-     * - 写入 token
-     * - 写入用户信息并跳转到重定向路由
+     * 写入登录结果（token + 用户信息）
+     * API 调用由 useAuth composable 负责，Store 仅做状态写入
      */
-    async login(payload: LoginParams) {
+    async applyLoginResult(result: LoginResult) {
       if (!AUTH_ENABLED) {
         return
       }
-      const res = await requestAuthLoginMock(payload)
-      await this.setToken(res.token)
-      this.setUserInfo(res.userInfo)
+      await this.setToken(result.token)
+      this.setUserInfo(result.userInfo)
     },
 
     /**
-     * 可选：根据已有 token 恢复登录状态（用于应用初始化）
+     * 根据已获取的用户信息恢复登录状态
+     * API 调用由 useAuth composable 负责，Store 仅做状态写入
      */
-    async restoreLoginFromToken() {
+    applyRestoredUserInfo(userInfo: UserInfo) {
       if (!AUTH_ENABLED) {
         return
       }
-      if (!this.token) {
-        return
-      }
-      try {
-        const userInfo = await requestAuthCurrentUserMock(this.token)
-        this.setUserInfo(userInfo)
-      } catch (error) {
-        console.error('根据 token 恢复用户信息失败:', error)
-        this.clearUserInfo()
-      }
+      this.setUserInfo(userInfo)
     },
 
     async setToken(token: string) {

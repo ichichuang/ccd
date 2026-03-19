@@ -1,224 +1,338 @@
-<script setup lang="tsx">
-import { brand } from '@/constants/brand'
+<script setup lang="ts">
+import { useRoute, useRouter } from 'vue-router'
+import { useI18n } from 'vue-i18n'
 // import { AUTH_ENABLED } from '@/constants/router'
-import { LOGIN_CARD_MAX_WIDTH } from '@/constants/login'
 import { useDeviceStore } from '@/stores/modules/device'
+import { useLayoutStore } from '@/stores/modules/layout'
 import { useThemeSwitch } from '@/hooks/modules/useThemeSwitch'
 import { useLocale } from '@/hooks/modules/useLocale'
 import type { SupportedLocale } from '@/locales'
-import logoSrc from '@/assets/images/face.png'
-import { goToRoute } from '@/router/utils/helper'
+import { useAuth } from '@/hooks/modules/useAuth'
+import type { LoginParams } from '@/types/dto/auth.dto'
+import type { FormSchema, ProFormExpose } from '@/components/ProForm'
 
-interface SchemaFormRef {
-  submit?: () => void
-}
+type LoginFormValues = LoginParams
 
-const formRef = ref<SchemaFormRef | null>(null)
+const formRef = ref<ProFormExpose | null>(null)
 
-const appVersion: string =
-  typeof __APP_INFO__ === 'object' && __APP_INFO__ !== null
-    ? (__APP_INFO__?.pkg?.version ?? '')
-    : (() => {
-        try {
-          const parsed = JSON.parse(__APP_INFO__ as string) as { pkg?: { version?: string } }
-          return parsed?.pkg?.version ?? ''
-        } catch {
-          return ''
-        }
-      })()
-const footerVersion = computed(() => (appVersion ? `v${appVersion}` : ''))
 const deviceStore = useDeviceStore()
+const layoutStore = useLayoutStore()
 const isMobileLayout = computed(() => deviceStore.isMobileLayout)
-const toolbarIconSize = computed(() => (isMobileLayout.value ? 'xl' : '2xl'))
-const toolbarSelectSize = computed(() => (isMobileLayout.value ? 'large' : 'small'))
-const { isDark, isAnimating, toggleThemeWithAnimation } = useThemeSwitch()
+const { toggleThemeWithAnimation } = useThemeSwitch()
 const { locale, switchLocale, supportedLocales } = useLocale()
-const t = $t
-
-const login_card_max_width = LOGIN_CARD_MAX_WIDTH
+const { t } = useI18n({ useScope: 'global' })
 
 const localeOptions = computed(() =>
   supportedLocales.map(l => ({ value: l.key as SupportedLocale, label: `${l.flag} ${l.name}` }))
 )
 
-// LEGACY SchemaForm 已物理删除：登录页暂时进入“白地”占位状态
-const loading = ref(false)
-const errorMessage = ref('')
+const loginSchema = computed<FormSchema>(() => {
+  return {
+    fields: [
+      {
+        name: 'username',
+        component: 'input',
+        label: t('login.usernameLabel'),
+        required: true,
+        rules: [
+          {
+            message: t('login.usernameRequired'),
+            validator: v => typeof v === 'string' && v.trim().length > 0,
+          },
+          {
+            message: t('login.usernameLength'),
+            validator: v => typeof v === 'string' && v.trim().length >= 3 && v.trim().length <= 20,
+          },
+        ],
+        props: {
+          placeholder: t('login.usernamePlaceholder'),
+          prefixIcon: 'i-lucide-user',
+          size: 'large',
+        },
+      },
+      {
+        name: 'password',
+        component: 'input',
+        label: t('login.passwordLabel'),
+        required: true,
+        rules: [
+          {
+            message: t('login.passwordRequired'),
+            validator: v => typeof v === 'string' && v.trim().length > 0,
+          },
+          {
+            message: t('login.passwordMin'),
+            validator: v => typeof v === 'string' && v.trim().length >= 6,
+          },
+        ],
+        props: {
+          type: 'password',
+          placeholder: t('login.passwordPlaceholder'),
+          prefixIcon: 'i-lucide-lock',
+          size: 'large',
+          toggleMask: true,
+        },
+      },
+    ],
+  }
+})
 
-/** 回车快捷登录：在输入框内按 Enter 时触发提交（占位实现） */
-function onEnterSubmit() {
-  if (!loading.value) formRef.value?.submit?.()
+const ADMIN_PRESET: LoginFormValues = {
+  username: 'admin',
+  password: '123456',
 }
 
-function login() {
-  console.log('login')
-  goToRoute('Dashboard')
+const USER_PRESET: LoginFormValues = {
+  username: 'user',
+  password: '123456',
+}
+
+function fillAdminPreset(): void {
+  formRef.value?.form.setFieldsValue({
+    username: ADMIN_PRESET.username,
+    password: ADMIN_PRESET.password,
+  })
+}
+
+function fillUserPreset(): void {
+  formRef.value?.form.setFieldsValue({
+    username: USER_PRESET.username,
+    password: USER_PRESET.password,
+  })
+}
+
+// LEGACY SchemaForm 已物理删除：登录页暂时进入“白地”占位状态
+const loading = ref(false)
+
+const route = useRoute()
+const router = useRouter()
+const { login: doLogin } = useAuth()
+
+/** 回车快捷登录：在输入框内按 Enter 时触发提交 */
+function onEnterSubmit(): void {
+  if (!loading.value) {
+    void handleLoginSubmit()
+  }
+}
+
+async function login(values: Record<string, unknown>): Promise<void> {
+  if (loading.value) return
+
+  loading.value = true
+
+  let didStartGlobalLoading = false
+
+  try {
+    const payload: LoginParams = {
+      username: String(values.username ?? '').trim(),
+      password: String(values.password ?? ''),
+    }
+
+    await doLogin(payload)
+
+    // 先开启全屏 Loading 作为“快门”，彻底遮住退出中间态（避免卡片样式瞬变被看到）
+    layoutStore.beginGlobalLoading()
+    didStartGlobalLoading = true
+
+    const redirectPath = route.query.redirect as string | undefined
+    const fallbackPath = import.meta.env.VITE_ROOT_REDIRECT || '/'
+
+    await router.replace(redirectPath || fallbackPath)
+  } catch (error) {
+    // 若路由跳转失败/异常，回收本次手动开启的全屏 Loading，避免遮罩残留
+    if (didStartGlobalLoading) {
+      layoutStore.endGlobalLoading()
+    }
+    const rawMessage =
+      (error as { message?: string })?.message ||
+      (error as { data?: { message?: string } })?.data?.message ||
+      ''
+    const message = rawMessage || t('login.errorMessageGeneric')
+
+    // 使用全局 Toast 提示错误（组件内可直接访问 window.$toast）
+    if (window.$toast?.dangerIn) {
+      window.$toast.dangerIn('top-center', t('login.errorTitle'), message)
+    }
+
+    // 失败后清空密码字段，减少安全风险
+    formRef.value?.form.setFieldsValue({
+      password: '',
+    })
+  } finally {
+    loading.value = false
+  }
+}
+
+async function handleLoginSubmit(): Promise<void> {
+  if (loading.value) return
+
+  const instance = formRef.value
+  if (!instance) return
+
+  const isValid = await instance.validate()
+  if (!isValid) return
+
+  const formState = instance.getFormState()
+  await login(formState.values)
 }
 </script>
 
 <template>
   <div
-    class="fixed inset-0 overflow-hidden center"
+    class="flex h-screen w-screen overflow-hidden bg-background"
     @keydown.enter.prevent="onEnterSubmit"
   >
-    <!-- 渐变背景：使用配色系统变量，无外部资源 -->
-    <div class="login-bg absolute inset-0 z-0" />
-
-    <!-- 错误提示：固定于页面中上方，不撑开登录卡片 -->
-    <Transition name="fade">
+    <!-- Left Background -->
+    <div
+      class="hidden lg:flex flex-col justify-between w-[55%] surface-base text-foreground p-padding-xl relative overflow-hidden"
+    >
       <div
-        v-if="errorMessage"
-        class="ixed left-1/2 top-[var(--spacing-xl)] z-30 -translate-x-1/2 row cross-center gap-sm p-padding-md rounded-scale-md bg-danger/10 border border-danger/20 shadow-md"
-      >
+        class="absolute inset-0 bg-gradient-to-br from-primary/20 via-transparent to-transparent pointer-events-none"
+      ></div>
+
+      <div class="relative z-10 row-y-center gap-md">
         <Icons
-          name="i-lucide-alert-circle"
-          class="text-danger shrink-0"
+          name="i-lucide-box"
+          class="text-primary"
+          size="3xl"
         />
-        <span class="text-danger fs-sm">
-          {{ errorMessage }}
+        <span class="fs-xl font-bold tracking-wider">
+          {{ t('login.brandTitle') }}
         </span>
       </div>
-    </Transition>
 
-    <!-- 主题 / 语言切换（右上角） -->
-    <div class="absolute top-[var(--spacing-lg)] right-[var(--spacing-lg)] z-20 row-center gap-sm">
-      <Button
-        variant="text"
-        severity="secondary"
-        class="center rounded-full text-muted-foreground hover:bg-muted hover:text-foreground transition-colors duration-scale-md"
-        :disabled="isAnimating"
-        @click="toggleThemeWithAnimation($event)"
-      >
-        <Icons
-          :name="isDark ? 'i-lucide-sun' : 'i-lucide-moon'"
-          :size="toolbarIconSize"
-        />
-      </Button>
-      <SelectButton
-        :model-value="locale"
-        :options="localeOptions"
-        option-value="value"
-        option-label="label"
-        :size="toolbarSelectSize"
-        :allow-empty="false"
-        @update:model-value="v => v && switchLocale(v)"
-      />
-    </div>
-
-    <!-- Login Card -->
-    <div
-      class="login-card relative z-10 w-full max-w-[90vw] md:max-w-[var(--login-card-max-width)] p-padding-xl bg-card/90 backdrop-blur-md rounded-scale-md shadow-md component-border animate__animated animate__fadeInUp"
-    >
-      <!-- Header -->
-      <div class="column cross-center gap-md mb-margin-xl">
-        <div class="w-[var(--spacing-4xl)] h-[var(--spacing-4xl)]">
-          <img
-            class="layout-full!"
-            :src="logoSrc"
-          />
-        </div>
-        <div class="column cross-center">
-          <h1 class="fs-2xl font-bold text-foreground m-0">
-            {{ t('login.title') }}
-          </h1>
-          <p class="text-muted mt-margin-sm fs-sm">
-            {{ t('login.subtitle') }}
+      <div class="relative z-10 mb-[var(--spacing-2xl)]">
+        <blockquote class="col-stack-md">
+          <p class="fs-2xl font-medium leading-relaxed text-foreground/90">
+            "{{ t('login.brandSloganLine1') }}
+            <br />
+            {{ t('login.brandSloganLine2') }}"
           </p>
-        </div>
-      </div>
-
-      <!-- Form -->
-      <!-- LEGACY SchemaForm 已物理删除：表单区域暂时占位 -->
-      <!--
-      <SchemaForm
-        ref="formRef"
-        v-model="formValues"
-        :schema="loginSchema"
-        @submit="handleSubmit"
-      />
-      -->
-      <!-- <div class="surface-sunken rounded-md p-padding-lg text-muted-foreground fs-sm">
-        登录表单已清空（等待 Phase 19：ProForm 重写）
-      </div> -->
-
-      <!-- Submit Button -->
-      <div class="mt-margin-xl">
-        <Button
-          class="w-full"
-          :label="t('login.submit')"
-          :loading="loading"
-          size="large"
-          @click="login"
-        />
-      </div>
-
-      <!-- Footer / Register Link -->
-      <div class="mt-margin-lg text-center">
-        <span class="text-muted fs-sm">
-          {{ t('login.noAccount') }}
-        </span>
-        <a class="text-primary font-medium fs-sm ml-margin-sm cursor-pointer hover:underline">
-          {{ t('login.register') }}
-        </a>
+          <footer class="fs-sm text-muted-foreground">— {{ t('login.brandQuoteAuthor') }}</footer>
+        </blockquote>
       </div>
     </div>
 
-    <!-- Footer：版权 + 应用名 · 版本 · 描述 -->
-    <div
-      class="absolute bottom-[var(--spacing-lg)] left-0 right-0 z-10 flex flex-col items-center justify-center gap-y-gap-xs text-muted fs-xs"
-    >
-      <div class="flex flex-wrap items-center justify-center gap-x-gap-md gap-y-gap-xs">
-        <span>{{ brand.displayName }}</span>
-        <template v-if="footerVersion">
-          <span class="text-border">·</span>
-          <span>{{ footerVersion }}</span>
-        </template>
-        <template v-if="brand.description">
-          <span class="text-border">·</span>
-          <span
-            class="max-w-2xl truncate"
-            :title="brand.description"
-          >
-            {{ brand.description }}
-          </span>
-        </template>
+    <!-- Right Panel -->
+    <div class="flex-1 col-fill relative surface-base bg-card">
+      <div
+        class="absolute top-[var(--spacing-xl)] right-[var(--spacing-xl)] row-y-center gap-md z-20"
+      >
+        <Button
+          icon="i-lucide-sun dark:i-lucide-moon"
+          text
+          rounded
+          severity="secondary"
+          class="fs-lg!"
+          @click="toggleThemeWithAnimation"
+        />
+        <Select
+          :model-value="locale"
+          :options="localeOptions"
+          option-label="label"
+          option-value="value"
+          :size="isMobileLayout ? 'large' : 'small'"
+          class="size-select-min"
+          @change="e => e.value && switchLocale(e.value)"
+        />
       </div>
-      <div class="text-muted-foreground/80">&copy; {{ new Date().getFullYear() }}</div>
+
+      <div class="h-full w-full center p-padding-sm md:p-padding-md lg:p-padding-lg">
+        <div class="w-full layout-content-narrow col-stack-xl">
+          <div class="col-stack-sm text-left">
+            <h2 class="fs-3xl font-bold text-foreground">
+              {{ t('login.heading') }}
+            </h2>
+            <p class="fs-sm text-muted-foreground">
+              {{ t('login.description') }}
+            </p>
+          </div>
+
+          <!-- Quick Fill / Role Switch -->
+          <div class="mb-margin-md column-between gap-scale-sm">
+            <div class="fs-xs text-muted-foreground">
+              {{ t('login.quickFillTips') }}
+            </div>
+            <div class="row-start gap-scale-xs">
+              <Button
+                size="small"
+                text
+                @click="fillAdminPreset"
+              >
+                <Icons
+                  name="i-lucide-shield-check"
+                  size="sm"
+                  class="mr-margin-xs text-current"
+                />
+                <span class="fs-xs">
+                  {{ t('login.quickAdmin') }}
+                </span>
+              </Button>
+              <Button
+                size="small"
+                severity="success"
+                text
+                @click="fillUserPreset"
+              >
+                <Icons
+                  name="i-lucide-user-round"
+                  size="sm"
+                  class="mr-margin-xs text-current"
+                />
+                <span class="fs-xs">
+                  {{ t('login.quickUser') }}
+                </span>
+              </Button>
+            </div>
+          </div>
+
+          <ProForm
+            :key="locale"
+            ref="formRef"
+            :schema="loginSchema"
+            :validate-on="'submit'"
+            :disabled="loading"
+            @submit="login"
+          >
+            <template #footer="{ formState }">
+              <div class="mt-margin-xl">
+                <Button
+                  class="w-full"
+                  :label="t('login.submit')"
+                  :loading="formState.submitting || loading"
+                  size="large"
+                  @click="handleLoginSubmit"
+                />
+              </div>
+            </template>
+          </ProForm>
+
+          <div class="col-stack-md text-center mt-[var(--spacing-xl)]">
+            <div class="text-muted-foreground fs-sm">
+              {{ t('login.noAccount') }}
+              <a
+                href="#"
+                class="text-primary hover:underline"
+              >
+                {{ t('login.register') }}
+              </a>
+            </div>
+            <p class="text-muted-foreground/50 fs-xs mt-[var(--spacing-2xl)]">
+              {{ t('login.footerText', { version: '1.0.0', year: '2026' }) }}
+            </p>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </template>
 
 <style scoped lang="scss">
-// 覆盖 AnimateRouterView 对 .animate__animated 的绝对定位，使 flex 居中生效
-:deep(.animate__animated) {
-  position: relative !important;
-  top: auto !important;
-  left: auto !important;
-  width: auto !important;
-}
-
-// 登录卡片最大宽度（语义化常量）
-.login-card {
-  --login-card-max-width: v-bind(login_card_max_width);
-}
-
-// 渐变背景：使用配色系统 CSS 变量，无硬编码
-.login-bg {
-  background: linear-gradient(
-    135deg,
-    rgb(var(--muted) / 15%) 0%,
-    rgb(var(--background)) 40%,
-    rgb(var(--muted) / 25%) 100%
-  );
-}
-
-// 覆盖 PrimeVue Card 样式以支持 glassmorphism
 :deep(.p-card) {
   background: transparent;
   box-shadow: none;
 }
 
-// 动画
 .fade-enter-active,
 .fade-leave-active {
   transition: opacity var(--transition-md) ease;

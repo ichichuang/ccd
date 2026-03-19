@@ -439,12 +439,12 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <div class="h-full flex flex-col min-h-0">
+  <div class="h-full column min-h-0">
     <Tabs
       v-model:value="activeTabModel"
-      class="flex-1 min-h-0 flex flex-col"
+      class="col-fill"
     >
-      <div class="shrink-0 flex justify-between items-center border-b-default pr-md">
+      <div class="shrink-0 row-between border-b-default pr-md">
         <TabList class="border-0!">
           <Tab value="basic">基础</Tab>
           <Tab value="dynamic">动态</Tab>
@@ -455,14 +455,14 @@ onBeforeUnmount(() => {
         </TabList>
       </div>
 
-      <TabPanels class="flex-1 min-h-0 flex flex-col overflow-hidden p-0">
+      <TabPanels class="col-fill overflow-hidden p-0">
         <TabPanel
           :value="activeTab"
-          class="flex-1 min-h-0 flex flex-col p-padding-md"
+          class="col-fill p-padding-md"
         >
-          <div class="flex-1 min-h-0 flex flex-row gap-md items-stretch">
-            <CScrollbar class="flex-1 min-h-0 layout-full">
-              <div class="p-padding-md flex flex-col gap-xl">
+          <div class="flex-1 min-h-0 row gap-md items-stretch overflow-hidden">
+            <CScrollbar class="col-fill layout-full">
+              <div class="p-padding-md col-stack-xl">
                 <!-- 基础 -->
                 <template v-if="activeTab === 'basic'">
                   <ChartDemoCard
@@ -751,7 +751,7 @@ onBeforeUnmount(() => {
                     description="chartReady、finished、onClick、onLegendSelectChanged、onDataZoom。"
                     chart-height="24vh"
                   >
-                    <div class="flex flex-wrap gap-xs text-muted-foreground fs-sm mb-padding-xs">
+                    <div class="layout-wrap gap-xs text-muted-foreground fs-sm mb-padding-xs">
                       <span>chartReady: {{ chartReadyFired ? '已触发' : '未触发' }}</span>
                       <span>finished: {{ finishedFired ? '已触发' : '未触发' }}</span>
                     </div>
@@ -770,8 +770,8 @@ onBeforeUnmount(() => {
                     description="通过下方按钮调用组件暴露的方法。"
                     chart-height="22vh"
                   >
-                    <div class="flex flex-col gap-md">
-                      <div class="flex flex-wrap gap-sm">
+                    <div class="col-stack-md">
+                      <div class="layout-wrap gap-sm">
                         <Button
                           label="getChartInstance"
                           size="small"
@@ -815,9 +815,9 @@ onBeforeUnmount(() => {
             <!-- 右侧：全局控制（仅 basic/dynamic/customTheme 显示） -->
             <div
               v-if="showGlobalControls"
-              class="w-72 shrink-0 min-h-0 flex flex-col hidden xl:flex"
+              class="w-72 shrink-0 min-h-0 column hidden xl:flex"
             >
-              <CScrollbar class="flex-1 min-h-0 layout-full">
+              <CScrollbar class="col-fill layout-full">
                 <div class="card bg-card component-border p-padding-md">
                   <GlobalControls
                     :theme-enabled="themeEnabled"
@@ -836,11 +836,11 @@ onBeforeUnmount(() => {
             <!-- 右侧：联动操作日志（仅 connect 显示） -->
             <div
               v-if="activeTab === 'connect'"
-              class="w-72 shrink-0 min-h-0 flex flex-col hidden xl:flex"
+              class="w-72 shrink-0 min-h-0 column hidden xl:flex"
             >
-              <CScrollbar class="flex-1 min-h-0 layout-full">
+              <CScrollbar class="col-fill layout-full">
                 <div class="card bg-card component-border p-padding-md">
-                  <div class="flex flex-col gap-md">
+                  <div class="col-stack-md">
                     <div class="text-foreground fs-md font-semibold">联动操作日志</div>
                     <div
                       class="rounded-scale-md component-border bg-muted p-padding-sm fs-xs font-mono"
@@ -867,11 +867,11 @@ onBeforeUnmount(() => {
             <!-- 右侧：事件与 Ref 日志（仅 eventsRef 显示） -->
             <div
               v-if="activeTab === 'eventsRef'"
-              class="w-72 shrink-0 min-h-0 flex flex-col hidden xl:flex"
+              class="w-72 shrink-0 min-h-0 column hidden xl:flex"
             >
-              <CScrollbar class="flex-1 min-h-0 layout-full">
+              <CScrollbar class="col-fill layout-full">
                 <div class="card bg-card component-border p-padding-md">
-                  <div class="flex flex-col gap-md">
+                  <div class="col-stack-md">
                     <div class="text-foreground fs-md font-semibold">事件日志</div>
                     <div
                       class="rounded-scale-md component-border bg-muted p-padding-sm fs-xs font-mono"

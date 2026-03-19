@@ -1,19 +1,10 @@
 <script setup lang="ts">
 defineOptions({ name: 'ExampleProFormBasicPage' })
 
-import type { FormSchema, FormState } from '@/components/ProForm'
-import { useAppElementSize } from '@/hooks/modules/useAppElementSize'
-type ProFormExpose = {
-  submit: () => Promise<void>
-  validate: () => Promise<boolean>
-  getValues: () => Record<string, unknown>
-  getFormState: () => FormState<Record<string, unknown>>
-}
+import type { FormSchema, FormState, ProFormExpose } from '@/components/ProForm'
 
 const isReadonly = ref<boolean>(false)
 const isDisabled = ref<boolean>(false)
-const containerRef = ref<HTMLDivElement | null>(null)
-const { height: containerHeight } = useAppElementSize(containerRef)
 const schema = reactive<FormSchema>({
   layout: { type: 'grid', gap: 'var(--spacing-md)' },
   fields: [
@@ -228,6 +219,10 @@ async function onClickValidateAndSubmit(): Promise<void> {
   await formRef.value?.submit()
 }
 
+function onClickResetAll(): void {
+  formRef.value?.form?.reset()
+}
+
 async function onClickValidateOnly(): Promise<void> {
   const ok = await (formRef.value?.validate() ?? Promise.resolve(false))
   window.$toast?.infoIn(
@@ -240,147 +235,176 @@ async function onClickValidateOnly(): Promise<void> {
 
 <template>
   <div
-    class="h-full flex flex-col overflow-hidden"
-    data-archetype="playground-single-panel"
+    data-archetype="A1-toolbar-content"
+    class="col-fill"
   >
-    <div
-      class="shrink-0 px-padding-lg py-padding-md bg-accent/20 dark:bg-accent/12 border-b-default border-accent"
-    >
-      <div class="gap-scale-xs">
-        <div class="fs-xl font-semibold text-foreground">ProForm 基础组件与状态联动</div>
-        <div class="fs-sm text-muted-foreground">
-          本页展示 ProForm 引擎已注册的全部基础字段，并演示全局
-          <span class="px-padding-xs rounded-scale-md bg-muted">readonly</span>
-          /
-          <span class="px-padding-xs rounded-scale-md bg-muted">disabled</span>
-          联动、校验与提交。
+    <!-- Toolbar: Hero Header (Transparent Root Policy: Inherit canvas) -->
+    <header class="shrink-0 border-b-default border-primary/20">
+      <div class="w-full px-padding-md md:px-padding-lg py-padding-sm row-y-center gap-md">
+        <div class="p-padding-md bg-primary/10 rounded-scale-lg shrink-0">
+          <Icons
+            name="i-lucide-form-input"
+            class="text-primary fs-2xl"
+          />
+        </div>
+        <div class="col-stack-xs">
+          <h1 class="fs-2xl font-bold text-foreground m-0">ProForm 基础组件与状态联动</h1>
+          <p class="text-muted fs-sm m-0">
+            展示 ProForm 引擎已注册的全部基础字段，并演示全局 readonly / disabled 联动、校验与提交。
+          </p>
         </div>
       </div>
-    </div>
+    </header>
 
-    <div
-      ref="containerRef"
-      class="gap-xs flex-1"
-    >
-      <div
-        class="layout-full flex gap-xs"
-        :style="{ height: `${containerHeight}px` }"
-      >
-        <CScrollbar>
-          <div class="layout-stack gap-scale-md">
-            <!-- 吸附到顶部的卡片 -->
-            <div
-              class="sticky top-0 z-1 surface-elevated px-md py-sm rounded-md gap-scale-md flex justify-between"
-            >
-              <div class="center gap-md">
-                <Icons
-                  name="i-lucide-sliders-horizontal"
-                  size="xl"
-                  class="text-accent!"
-                />
-                <div class="flex-col gap-xs">
-                  <div class="font-semibold">全局状态控制</div>
-                  <div class="fs-xs text-muted-foreground">
-                    用于快速验证 readonly / disabled 对所有字段的影响。
-                  </div>
-                </div>
-              </div>
-
-              <div class="center gap-sm">
-                <div class="center gap-xs">
-                  <span class="fs-sm text-muted-foreground">Disabled</span>
-                  <ToggleSwitch v-model="isDisabled" />
-                </div>
-                <div class="center gap-xs">
-                  <span class="fs-sm text-muted-foreground">Readonly</span>
-                  <ToggleSwitch v-model="isReadonly" />
-                </div>
-                <div class="center gap-sm">
-                  <Button
-                    label="仅校验"
-                    severity="secondary"
-                    size="small"
-                    :disabled="formState.submitting"
-                    @click="onClickValidateOnly"
-                  />
-                  <Button
-                    label="校验并提交"
-                    size="small"
-                    :loading="formState.submitting"
-                    :disabled="isReadonly || isDisabled"
-                    @click="onClickValidateAndSubmit"
-                  />
-                </div>
-              </div>
-            </div>
-
-            <div class="surface-elevated px-md py-sm rounded-md layout-stack gap-scale-md">
-              <div class="flex items-center gap-scale-md">
-                <Icons
-                  name="i-lucide-form-input"
-                  size="xl"
-                  class="text-accent!"
-                />
-                <div class="flex-col gap-xs">
-                  <div class="fs-md font-semibold text-foreground">表单区域</div>
-                  <div class="fs-sm text-muted-foreground">
-                    组件覆盖：input / mask / textarea / select / multiselect / number / slider /
-                    switch / checkbox / radio / date / rating / upload。
-                  </div>
-                </div>
-              </div>
-
-              <ProForm
-                ref="formRef"
-                :schema="schema"
-                :initial-values="initialValues"
-                :readonly="isReadonly"
-                :disabled="isDisabled"
-                @submit="onSubmit"
+    <!-- Content: split layout (form + JSON preview) -->
+    <div class="flex-1 min-h-0">
+      <div class="row-start items-start gap-lg layout-full min-h-0">
+        <div class="flex-1 min-w-0 h-full">
+          <CScrollbar class="layout-full">
+            <div class="w-full p-padding-md md:p-padding-lg col-stack-xl">
+              <!-- 吸附到顶部的控制面板 -->
+              <div
+                class="panel-base sticky top-0 z-10 surface-sunken/80 backdrop-blur-md border-primary/20"
               >
-                <template #footer="{ formState: slotFormState, submit }">
-                  <div class="flex justify-end gap-scale-sm pt-padding-md">
-                    <Button
-                      label="提交（slot.submit）"
-                      :loading="slotFormState.submitting"
-                      :disabled="isReadonly || isDisabled"
-                      @click="submit"
+                <div class="row-between gap-md flex-wrap">
+                  <div class="row-y-center gap-md">
+                    <Icons
+                      name="i-lucide-sliders-horizontal"
+                      size="xl"
+                      class="text-accent!"
                     />
+                    <div class="col-stack-xs">
+                      <div class="font-semibold text-foreground">全局状态控制</div>
+                      <div class="fs-xs text-muted">
+                        验证 readonly / disabled 对所有字段的影响。
+                      </div>
+                    </div>
                   </div>
-                </template>
-              </ProForm>
-            </div>
 
-            <div
-              class="xl:hidden surface-elevated px-md py-sm rounded-md layout-stack gap-scale-sm"
-            >
-              <div class="flex items-center gap-scale-md">
-                <Icons
-                  name="i-lucide-database"
-                  size="xl"
-                  class="text-accent!"
-                />
-                <div class="flex-col gap-xs">
-                  <div class="fs-md font-semibold text-foreground">实时 Values（只读）</div>
-                  <div class="fs-sm text-muted-foreground">
-                    用于观察各字段的 model 序列化结果；提交时同样会把 values 输出到控制台。
+                  <div class="row-y-center gap-sm flex-wrap">
+                    <div class="row-y-center gap-xs">
+                      <span class="fs-sm text-muted">Disabled</span>
+                      <ToggleSwitch v-model="isDisabled" />
+                    </div>
+                    <div
+                      class="row-y-center gap-xs pr-padding-md border-r-default border-border/40"
+                    >
+                      <span class="fs-sm text-muted">Readonly</span>
+                      <ToggleSwitch v-model="isReadonly" />
+                    </div>
+                    <div class="row-y-center gap-sm flex-wrap">
+                      <Button
+                        label="重置"
+                        severity="secondary"
+                        variant="text"
+                        size="small"
+                        :disabled="formState.submitting"
+                        @click="onClickResetAll"
+                      />
+                      <Button
+                        label="仅校验"
+                        severity="secondary"
+                        variant="text"
+                        size="small"
+                        :disabled="formState.submitting"
+                        @click="onClickValidateOnly"
+                      />
+                      <Button
+                        label="校验并提交"
+                        size="small"
+                        :loading="formState.submitting"
+                        :disabled="isReadonly || isDisabled"
+                        @click="onClickValidateAndSubmit"
+                      />
+                    </div>
                   </div>
                 </div>
               </div>
 
-              <div class="surface-sunken rounded-md p-padding-md">
-                <pre class="m-0 whitespace-pre-wrap break-words fs-xs">{{ valuesJson }}</pre>
+              <!-- 表单区域 -->
+              <div class="panel-base">
+                <div class="row-y-center gap-sm border-b-default pb-padding-sm mb-padding-sm">
+                  <Icons
+                    name="i-lucide-form-input"
+                    class="text-primary"
+                  />
+                  <div class="col-stack-xs">
+                    <span class="fs-md font-semibold text-foreground uppercase tracking-tight">
+                      表单配置与渲染
+                    </span>
+                    <span class="fs-xs text-muted-foreground">
+                      组件：input / mask / textarea / select / multiselect / number / slider /
+                      switch / checkbox / radio / date / rating / upload。
+                    </span>
+                  </div>
+                </div>
+
+                <ProForm
+                  ref="formRef"
+                  :schema="schema"
+                  :initial-values="initialValues"
+                  :gap="'var(--spacing-lg)'"
+                  :readonly="isReadonly"
+                  :disabled="isDisabled"
+                  @submit="onSubmit"
+                >
+                  <template #footer="{ formState: slotFormState, submit }">
+                    <div
+                      class="row-end gap-sm pt-padding-md border-t-default border-border/15 mt-padding-md"
+                    >
+                      <Button
+                        label="立即提交"
+                        icon="i-lucide-send"
+                        :loading="slotFormState.submitting"
+                        :disabled="isReadonly || isDisabled"
+                        @click="submit"
+                      />
+                    </div>
+                  </template>
+                </ProForm>
+              </div>
+
+              <!-- Mobile JSON preview -->
+              <div class="panel-base xl:hidden">
+                <div class="row-y-center gap-sm mb-padding-sm">
+                  <Icons
+                    name="i-lucide-database"
+                    class="text-primary"
+                  />
+                  <span class="fs-sm font-semibold text-foreground uppercase">实时 Values</span>
+                </div>
+                <div
+                  class="surface-sunken rounded-scale-md p-padding-md border-default border-border/40"
+                >
+                  <pre class="m-0 whitespace-pre-wrap break-words fs-xs text-muted-foreground">{{
+                    valuesJson
+                  }}</pre>
+                </div>
               </div>
             </div>
-          </div>
-        </CScrollbar>
+          </CScrollbar>
+        </div>
+
         <div
-          class="hidden xl:block w-30% layout-stack pl-0"
-          :style="{ height: `${containerHeight}px` }"
+          class="hidden xl:block layout-sidepanel shrink-0 h-full border-l-default border-border/20"
         >
-          <div class="layout-full surface-elevated rounded-md layout-stack fs-xs">
-            <CScrollbar>
-              <pre>{{ valuesJson }}</pre>
+          <div class="layout-full layout-stack">
+            <div
+              class="shrink-0 px-padding-md py-padding-sm border-b-default border-border/20 row-y-center gap-sm"
+            >
+              <Icons
+                name="i-lucide-braces"
+                size="sm"
+                class="text-accent"
+              />
+              <span class="fs-xs font-bold text-muted uppercase tracking-widest">
+                Real-time Form State
+              </span>
+            </div>
+            <CScrollbar class="flex-1 min-h-0 surface-sunken px-padding-md py-padding-sm">
+              <pre class="m-0 fs-xs text-muted-foreground font-mono leading-relaxed">{{
+                valuesJson
+              }}</pre>
             </CScrollbar>
           </div>
         </div>

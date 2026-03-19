@@ -1,12 +1,13 @@
 <script setup lang="tsx">
 import TieredMenu from 'primevue/tieredmenu'
-import type { MenuItem } from 'primevue/menuitem'
 import { Icons } from '@/components/Icons'
 import User from '@/layouts/components/User/index.vue'
 import { brand } from '@/constants/brand'
 import { AUTH_ENABLED } from '@/constants/router'
 import { RouterLink, useRoute } from 'vue-router'
 import { useI18n } from 'vue-i18n'
+import { useFullscreen, useWindowSize } from '@vueuse/core'
+import { useAppElementSize } from '@/hooks/modules/useAppElementSize'
 import {
   getAdminMenuTree,
   getAuthorizedMenuTree,
@@ -24,17 +25,26 @@ import { useLayoutStore } from '@/stores/modules/layout'
 
 import logoSrc from '@/assets/images/face.png'
 
-const props = defineProps<{
-  mode: AdminLayoutMode
-  showHeader: boolean
-  showLogo: boolean
-  showMenu: boolean
-  headerFixed: boolean
-  isDark: boolean
-  isAnimating: boolean
-  showSidebarToggle: boolean
-  sidebarCollapse: boolean
-}>()
+withDefaults(
+  defineProps<{
+    mode: AdminLayoutMode
+    showHeader: boolean
+    showLogo: boolean
+    /** 是否显示 Logo 文字（品牌名+副标题），由 LayoutAdmin 按设备与断点计算 */
+    showLogoText?: boolean
+    showMenu: boolean
+    /** 顶栏菜单是否显示（horizontal/mix 且非 Drawer 模式） */
+    showTopMenuEffective: boolean
+    /** 是否显示抽屉触发按钮（仅 Mobile 设备） */
+    showDrawerTrigger: boolean
+    headerFixed: boolean
+    isDark: boolean
+    isAnimating: boolean
+    showSidebarToggle: boolean
+    sidebarCollapse: boolean
+  }>(),
+  { showLogoText: true }
+)
 
 const emit = defineEmits<{
   toggleTheme: [event: MouseEvent]
@@ -49,14 +59,15 @@ const layoutStore = useLayoutStore()
 
 const { isFullscreen, toggle: toggleFullscreen } = useFullscreen()
 
-const isHorizontal = computed(() => props.mode === 'horizontal')
-const isMix = computed(() => props.mode === 'mix')
 const userRoles = computed(() => userStore.getUserRoles || [])
 const isLogin = computed(() => userStore.getIsLogin)
 const showUserEntry = computed(() => AUTH_ENABLED && isLogin.value)
-const isMobileLayout = computed(() => deviceStore.isMobileLayout)
+
+const { width: windowWidth } = useWindowSize()
 
 // --- Menu Logic ---
+const topContentRef = ref<HTMLElement | null>(null)
+const { width: topContentWidth } = useAppElementSize(topContentRef)
 const menuModel = computed(() => {
   const tree = getAdminMenuTree()
   const authorizedTree = getAuthorizedMenuTree(userRoles.value, tree)
@@ -126,9 +137,7 @@ const renderRootItem = (item: PrimeMenuModelItem) => {
           class={`text-current! shrink-0 ${MENU_ICON_COMMON_CLASS}`}
         />
       )}
-      <span
-        class={`truncate text-current! ${MENU_TEXT_CLASS} font-medium leading-none pt-hairline`}
-      >
+      <span class={`truncate text-current! ${MENU_TEXT_CLASS} font-medium pt-hairline`}>
         {item.label}
       </span>
       {hasChildren && (
@@ -159,8 +168,11 @@ const renderRootItem = (item: PrimeMenuModelItem) => {
         v-slots={{
           default: ({ href }: { href: string }) => {
             const isExtLink: boolean = item.route?.meta?.isLink === true
+            const linkUrlVal = item.route?.meta?.linkUrl
             const extUrl: string =
-              (item.route?.meta?.linkUrl as string | undefined) || item.route!.path
+              (typeof linkUrlVal === 'string' ? linkUrlVal : undefined) || item.route!.path
+            const routeNameStr: string =
+              typeof item.route?.name === 'string' ? item.route.name : (item.route?.path ?? '')
 
             return (
               <a
@@ -171,7 +183,7 @@ const renderRootItem = (item: PrimeMenuModelItem) => {
                 aria-expanded={undefined}
                 onClick={(e: MouseEvent) => {
                   e.preventDefault()
-                  goToRoute(item.route!.name as string, undefined, undefined, false)
+                  goToRoute(routeNameStr, undefined, undefined, false)
                 }}
               >
                 {content}
@@ -193,7 +205,7 @@ const renderRootItem = (item: PrimeMenuModelItem) => {
           ref={(el: unknown) =>
             setMenuRef(item.key ?? '', el as InstanceType<typeof TieredMenu> | null)
           }
-          model={item.items as unknown as MenuItem[]}
+          model={item.items ?? []}
           popup
           appendTo="body"
           {...{
@@ -213,15 +225,15 @@ const renderRootItem = (item: PrimeMenuModelItem) => {
   <header
     v-if="showHeader"
     :class="[
-      'w-full h-headerHeight flex items-center justify-between px-padding-md py-padding-sm transition-all duration-scale-md gap-md select-none',
+      'w-full h-headerHeight row-between px-padding-md py-padding-sm transition-all duration-scale-md gap-md select-none',
     ]"
     @dragstart.prevent
   >
     <!-- Left: Mobile Menu + Logo -->
     <div class="h-full center gap-sm">
-      <!-- 移动端：汉堡菜单按钮，打开抽屉侧边栏 -->
+      <!-- State 1 only: 抽屉触发按钮（由 LayoutAdmin 传入 showDrawerTrigger） -->
       <button
-        v-if="isMobileLayout"
+        v-if="showDrawerTrigger"
         type="button"
         class="header-icon-btn"
         @click="layoutStore.toggleMobileDrawer()"
@@ -234,7 +246,7 @@ const renderRootItem = (item: PrimeMenuModelItem) => {
       <a
         v-if="showLogo"
         href="/"
-        class="h-full flex items-center gap-sm cursor-pointer behavior-hover-transition py-xs hover:text-primary! bg-transparent border-none p-0 outline-none interactive-focus-ring"
+        class="h-full row-y-center gap-sm cursor-pointer behavior-hover-transition py-xs hover:text-primary! bg-transparent border-none p-0 outline-none interactive-focus-ring"
         @click.prevent="goToRoute('/')"
       >
         <div class="h-full size-1-1 rounded-full center">
@@ -244,7 +256,10 @@ const renderRootItem = (item: PrimeMenuModelItem) => {
             draggable="false"
           />
         </div>
-        <div class="h-full hidden md:flex flex-col justify-between leading-none">
+        <div
+          v-show="showLogoText"
+          class="h-full column justify-between"
+        >
           <span class="fs-xl font-bold tracking-tight duration-scale-md">
             {{ brand.displayName }}
           </span>
@@ -253,24 +268,48 @@ const renderRootItem = (item: PrimeMenuModelItem) => {
       </a>
     </div>
 
-    <!-- Middle: Horizontal Menu（TieredMenu Popup 架构，移动端隐藏以避免拥挤）-->
-    <div class="flex-1 h-full flex justify-between items-center">
-      <nav
-        v-if="showMenu && (isHorizontal || isMix) && !isMobileLayout"
-        class="min-w-0 flex items-center justify-start"
-        role="menubar"
+    <!-- Middle: Top Menu — visibility 100% from v-if (no CSS hidden/lg:flex etc.) -->
+    <div
+      ref="topContentRef"
+      class="flex-1 h-full min-w-0 overflow-hidden"
+    >
+      <div
+        v-if="topContentWidth > 0"
+        :key="`${topContentWidth}-${windowWidth}`"
+        class="layout-full"
+        :style="{ width: `${topContentWidth}px` }"
       >
-        <component
-          :is="renderRootItem(item)"
-          v-for="item in menuModel"
-          :key="item.key"
-        />
-      </nav>
-      <div class="flex-1 h-full"></div>
+        <CScrollbar
+          :key="`${topContentWidth}-${windowWidth}`"
+          :options="{
+            scrollbars: {
+              visibility: 'hidden',
+            },
+            overflow: {
+              y: 'hidden',
+            },
+          }"
+        >
+          <div class="layout-full row-between gap-md">
+            <nav
+              v-if="showTopMenuEffective"
+              class="min-w-0 row-y-center"
+              role="menubar"
+            >
+              <component
+                :is="renderRootItem(item)"
+                v-for="item in menuModel"
+                :key="item.key"
+              />
+            </nav>
+            <div class="flex-1 h-full"></div>
+          </div>
+        </CScrollbar>
+      </div>
     </div>
 
-    <!-- Right: Actions -->
-    <div class="h-full center gap-sm md:gap-md py-xs">
+    <!-- Right: Actions (no responsive display classes; visibility from v-if only) -->
+    <div class="h-full center gap-sm py-xs">
       <button
         v-if="showSidebarToggle"
         type="button"
@@ -284,7 +323,7 @@ const renderRootItem = (item: PrimeMenuModelItem) => {
         />
       </button>
       <button
-        v-if="!isMobileLayout"
+        v-if="deviceStore.type === 'PC'"
         type="button"
         class="header-icon-btn"
         @click="toggleFullscreen()"

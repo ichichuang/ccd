@@ -67,13 +67,21 @@ export default defineComponent({
     }
 
     // 时区选项：DateUtils 初始化后从 getAvailableTimezones 加载（暂留，后续由设置面板消费）
-    const timezoneOptions = ref<
-      { name: string; countryCode: string; currentTimeOffsetInMinutes: number }[]
-    >([])
+    type TimezoneOptionItem = {
+      name: string
+      countryCode: string
+      currentTimeOffsetInMinutes: number
+    }
+    const timezoneOptions = ref<TimezoneOptionItem[]>([])
     watch(
       isInitialized,
       v => {
-        if (v) timezoneOptions.value = getAvailableTimezones(false) as typeof timezoneOptions.value
+        if (v) {
+          const nextList: TimezoneOptionItem[] = getAvailableTimezones(
+            false
+          ) as TimezoneOptionItem[]
+          timezoneOptions.value = nextList
+        }
       },
       { immediate: true }
     )
@@ -140,21 +148,45 @@ export default defineComponent({
       }
     )
 
-    // --- AdminLayoutMode：结构模式 ---
+    // --- AdminLayoutMode：结构模式（三态状态机）---
     const mode = computed(() => layoutStore.mode)
     const isHorizontal = computed(() => mode.value === 'horizontal')
+    // Drawer Zone (< 768px): xs and sm MUST trigger Drawer to avoid Top Menu overflow
     const isDrawerMode = computed(
       () =>
-        mode.value === 'horizontal' &&
-        (deviceStore.type === 'Mobile' ||
-          deviceStore.currentBreakpoint === 'xs' ||
-          deviceStore.currentBreakpoint === 'sm')
+        (deviceStore.type === 'Mobile' || ['xs', 'sm'].includes(deviceStore.currentBreakpoint)) &&
+        mode.value === 'horizontal'
     )
+    const showDrawerTrigger = computed(() => isDrawerMode.value)
 
     // --- 展示开关（store 仅由配置面板控制）---
     const showHeader = computed(() => layoutStore.showHeader)
     const showLogo = computed(() => layoutStore.showLogo)
     const showMenu = computed(() => layoutStore.showMenu)
+    // Top menu in header: horizontal/mix and not Drawer mode
+    const showTopMenuEffective = computed(
+      () =>
+        layoutStore.showMenu &&
+        (mode.value === 'horizontal' || mode.value === 'mix') &&
+        !isDrawerMode.value
+    )
+    // Logo text: Drawer Zone always show; Tablet always; PC narrow (md/lg) hide for Top Menu
+    const showLogoText = computed(() => {
+      const type = deviceStore.type
+      const bp = deviceStore.currentBreakpoint
+
+      // 1. Drawer Zone (< 768px or Mobile): ALWAYS show text
+      if (type === 'Mobile' || ['xs', 'sm'].includes(bp)) return true
+
+      // 2. Tablet: Always show text, even when falling back to Top Menu
+      if (type === 'Tablet') return true
+
+      // 3. PC Narrow (md, lg): HIDE text to save space for Top Menu
+      if (type === 'PC' && ['md', 'lg'].includes(bp)) return false
+
+      // 4. Wide screens: Show text
+      return true
+    })
 
     // --- 有效显隐：仅非 PC 且小视口时强制隐藏侧栏等；PC 端完全由配置面板控制，仅按断点收展 ---
     const showSidebarEffective = computed(() =>
@@ -204,10 +236,10 @@ export default defineComponent({
     const bodyTransitionDuration = 'var(--transition-md)'
 
     const renderContent = () => (
-      <main class="flex-1 min-w-0 min-h-0 flex flex-col overflow-hidden bg-sidebar">
+      <main class="col-fill min-w-0 bg-sidebar">
         <AdminBreadcrumbBar show={showBreadcrumbEffective.value} />
         <AdminTabsBar show={showTabsEffective.value} />
-        <section class={`flex-1 min-h-0 overflow-hidden rounded-2xl bg-background`}>
+        <section class="flex-1 min-h-0 overflow-hidden rounded-2xl bg-background">
           <AppContainer />
         </section>
         <div class="bg-sidebar shrink-0">
@@ -219,16 +251,12 @@ export default defineComponent({
     const renderBody = () => {
       // horizontal：header 下方直接 content
       if (isHorizontal.value) {
-        return (
-          <div class="flex-1 min-h-0 overflow-hidden flex flex-col bg-background">
-            {renderContent()}
-          </div>
-        )
+        return <div class="col-fill bg-background">{renderContent()}</div>
       }
 
       // vertical/mix：sidebar + content
       return (
-        <div class="flex-1 min-h-0 overflow-hidden flex bg-sidebar">
+        <div class="flex-1 min-h-0 flex overflow-hidden bg-sidebar">
           <AdminSidebar
             mode={mode.value}
             showSidebar={showSidebarEffective.value}
@@ -242,6 +270,9 @@ export default defineComponent({
     }
 
     const renderLayout = () => {
+      const bodyTransitionStyle: Record<string, string> = {
+        '--animate-duration': bodyTransitionDuration,
+      }
       // vertical / horizontal / mix 三种模式都渲染 Header，Body 按 mode 切换并做过渡
       const bodyContent = enableTransition.value ? (
         <Transition
@@ -251,22 +282,30 @@ export default defineComponent({
         >
           <div
             key={mode.value}
-            class="flex-1 min-h-0 overflow-hidden flex flex-col bg-background"
-            style={{ '--animate-duration': bodyTransitionDuration } as Record<string, string>}
+            class="col-fill bg-background"
+            style={bodyTransitionStyle}
           >
             {renderBody()}
           </div>
         </Transition>
       ) : (
-        <div class="flex-1 min-h-0 overflow-hidden flex flex-col bg-background">{renderBody()}</div>
+        <div class="col-fill bg-background">{renderBody()}</div>
       )
+      const drawerUpdateVisibleProps: Record<string, unknown> = {
+        ['onUpdate:visible']: (val: boolean) => {
+          layoutStore.mobileDrawerOpen = val
+        },
+      }
       return (
         <div class="flex flex-col  h-full">
           <AdminHeader
             mode={mode.value}
             showHeader={showHeader.value}
             showLogo={showLogo.value}
+            showLogoText={showLogoText.value}
             showMenu={showMenu.value}
+            showTopMenuEffective={showTopMenuEffective.value}
+            showDrawerTrigger={showDrawerTrigger.value}
             headerFixed={headerFixed.value}
             isDark={isDark.value}
             isAnimating={isAnimating.value}
@@ -276,33 +315,31 @@ export default defineComponent({
             onToggleCollapse={(_e: MouseEvent) => layoutStore.toggleCollapse()}
           />
           {bodyContent}
-          {/* 移动端抽屉导航（Headless：无默认 header/content，完全自绘，无内边距） */}
-          <Drawer
-            visible={layoutStore.mobileDrawerOpen && isDrawerMode.value}
-            {...({
-              ['onUpdate:visible']: (val: boolean) => {
-                layoutStore.mobileDrawerOpen = val
-              },
-            } as Record<string, unknown>)}
-            position="left"
-            modal
-            blockScroll
-            dismissable
-            showCloseIcon={false}
-            class="w-sidebarWidth max-w-[80vw]"
-            v-slots={{
-              container: () => (
-                <div class="admin-sidebar--fixed py-padding-md flex flex-col h-full overflow-hidden select-none bg-background text-foreground">
-                  <AdminSidebarLogo />
-                  <div class="flex-1 min-h-0 flex flex-col overflow-hidden">
-                    <CScrollbar class="flex-1 min-h-0 px-padding-md">
-                      <AdminSidebarMenu sidebarCollapse={false} />
-                    </CScrollbar>
+          {/* 移动端抽屉导航：仅在 Drawer 模式下挂载，避免桌面端无意义的 VNode 开销 */}
+          {isDrawerMode.value && (
+            <Drawer
+              visible={layoutStore.mobileDrawerOpen}
+              {...drawerUpdateVisibleProps}
+              position="left"
+              modal
+              blockScroll
+              dismissable
+              showCloseIcon={false}
+              class="w-sidebarWidth max-w-[80vw]"
+              v-slots={{
+                container: () => (
+                  <div class="admin-sidebar--fixed py-padding-md col-fill select-none bg-background text-foreground">
+                    <AdminSidebarLogo />
+                    <div class="col-fill">
+                      <CScrollbar class="col-fill px-padding-md">
+                        <AdminSidebarMenu sidebarCollapse={false} />
+                      </CScrollbar>
+                    </div>
                   </div>
-                </div>
-              ),
-            }}
-          />
+                ),
+              }}
+            />
+          )}
         </div>
       )
     }
@@ -311,10 +348,10 @@ export default defineComponent({
         scope="global"
         v-slots={{
           menu: ({ close, event }: { close: () => void; event: MouseEvent }) => (
-            <div class="min-w-[var(--spacing-4xl)] bg-card shadow-xl rounded-scale-md p-padding-xs flex flex-col gap-xs select-none">
+            <div class="min-w-[var(--spacing-4xl)] surface-elevated rounded-scale-md p-padding-xs col-stack-xs select-none">
               {/* 重新载入 */}
               <div
-                class="flex items-center gap-sm px-padding-sm py-padding-xs rounded-scale-md fs-sm text-foreground hover:bg-primary  cursor-pointer transition-colors duration-scale-md"
+                class="row-y-center gap-sm px-padding-sm py-padding-xs rounded-scale-md fs-sm text-foreground hover:bg-primary hover:text-primary-foreground cursor-pointer transition-colors duration-scale-md"
                 onClick={() => {
                   onContextReload()
                   close()
@@ -323,13 +360,14 @@ export default defineComponent({
                 <Icons
                   name="i-lucide-rotate-cw"
                   size="sm"
+                  class="text-inherit!"
                 />
                 <span>{t('layout.reload')}</span>
               </div>
 
               {/* 设置 */}
               <div
-                class="flex items-center gap-sm px-padding-sm py-padding-xs rounded-scale-md fs-sm text-foreground hover:bg-primary  cursor-pointer transition-colors duration-scale-md"
+                class="row-y-center gap-sm px-padding-sm py-padding-xs rounded-scale-md fs-sm text-foreground hover:bg-primary hover:text-primary-foreground cursor-pointer transition-colors duration-scale-md"
                 onClick={() => {
                   openGlobalSettings()
                   close()
@@ -338,13 +376,14 @@ export default defineComponent({
                 <Icons
                   name="i-lucide-settings-2"
                   size="sm"
+                  class="text-inherit!"
                 />
                 <span>{t('layout.globalSettings')}</span>
               </div>
 
               {/* 动态切换深/浅色模式 */}
               <div
-                class="flex items-center gap-sm px-padding-sm py-padding-xs rounded-scale-md fs-sm text-foreground hover:bg-primary  cursor-pointer transition-colors duration-scale-md"
+                class="row-y-center gap-sm px-padding-sm py-padding-xs rounded-scale-md fs-sm text-foreground hover:bg-primary hover:text-primary-foreground cursor-pointer transition-colors duration-scale-md"
                 onClick={() => {
                   onContextToggleTheme(event)
                   close()
@@ -353,6 +392,7 @@ export default defineComponent({
                 <Icons
                   name={isDark.value ? 'i-lucide-sun' : 'i-lucide-moon'}
                   size="sm"
+                  class="text-inherit!"
                 />
                 <span>{contextThemeToggleLabel.value}</span>
               </div>

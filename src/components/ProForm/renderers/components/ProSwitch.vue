@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { FieldComponentProps } from '../../engine/types'
+import { PRO_FORM_COMPONENT_DEFAULTS, PRO_FORM_TEXT_DEFAULTS } from '../../engine/config'
 
 type Props = FieldComponentProps<boolean | null | undefined>
 
@@ -13,17 +14,17 @@ const attrs = useAttrs()
 
 const trueLabel = computed<string>(() => {
   const value = attrs.previewTrueLabel as string | undefined
-  return value && value.length > 0 ? value : '是'
+  return value && value.length > 0 ? value : $t(PRO_FORM_TEXT_DEFAULTS.booleanTrueKey)
 })
 
 const falseLabel = computed<string>(() => {
   const value = attrs.previewFalseLabel as string | undefined
-  return value && value.length > 0 ? value : '否'
+  return value && value.length > 0 ? value : $t(PRO_FORM_TEXT_DEFAULTS.booleanFalseKey)
 })
 
 const emptyPlaceholder = computed<string>(() => {
   const value = attrs.previewEmptyPlaceholder as string | undefined
-  return value && value.length > 0 ? value : '-'
+  return value && value.length > 0 ? value : PRO_FORM_COMPONENT_DEFAULTS.emptyTextFallback
 })
 
 const displayValue = computed<string>(() => {

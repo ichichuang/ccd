@@ -226,6 +226,17 @@ onUnmounted(() => {
   />
 </template>
 <style lang="scss">
+/*
+ * EXCEPTION: Toast 定位覆盖 — 无法迁移到 PT (PassThrough)
+ *
+ * 原因：
+ * 1. .p-toast-center 需要 inset + transform 覆盖实现居中，PT 作用于所有实例无法条件化
+ * 2. :not(.p-toast-center) 选择器在 PT 中不可表达
+ * 3. !important 是覆盖 PrimeVue 内置定位的必要手段
+ *
+ * 所有间距值已使用语义 CSS 变量 (--spacing-*)，仅定位属性为结构性例外。
+ */
+
 /* Message 居中 Toast：强制正中央（top/left 50% + transform 居中对齐） */
 .p-toast.p-toast-center {
   inset: var(--spacing-3xl) auto auto 50% !important;

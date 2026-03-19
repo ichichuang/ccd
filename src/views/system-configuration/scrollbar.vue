@@ -28,15 +28,30 @@ const items: Array<{ id: number; title: string; date: string; desc: string }> = 
 const horizontalItems: string[] = Array.from({ length: 20 }, (_, i) => `Column ${i + 1}`)
 
 // Copy to clipboard utility（与 size/unocss 一致：成功用 toast，失败用 message）
-function copyToClipboard(text: string, label?: string) {
-  navigator.clipboard
-    .writeText(text)
-    .then(() => {
-      window.$toast?.successIn('top-right', `已复制: ${label || text}`, `类名: ${text}`)
-    })
-    .catch(() => {
-      window.$message?.danger('复制失败')
-    })
+async function copyToClipboard(text: string, label?: string) {
+  try {
+    if (navigator.clipboard && window.isSecureContext) {
+      await navigator.clipboard.writeText(text)
+    } else {
+      const textArea = document.createElement('textarea')
+      textArea.value = text
+      textArea.style.position = 'absolute'
+      textArea.style.left = '-999999px'
+      textArea.style.top = '-999999px'
+      document.body.appendChild(textArea)
+      textArea.focus()
+      textArea.select()
+
+      const successful = document.execCommand('copy')
+      textArea.remove()
+
+      if (!successful) throw new Error('Fallback copy failed')
+    }
+
+    window.$toast?.successIn('top-right', `已复制: ${label || text}`, `类名: ${text}`)
+  } catch (_error) {
+    window.$message?.danger('复制失败')
+  }
 }
 
 function addLog(msg: string) {
@@ -82,6 +97,17 @@ function checkState() {
   addLog(`🔍 状态: ${JSON.stringify(state, null, 2)}`)
 }
 
+// Scroll to specific item
+const targetItemIndex = ref<number>(1)
+const ESTIMATED_ITEM_HEIGHT = 78 // px: each item's approx rendered height
+
+function scrollToItem() {
+  const idx = Math.max(1, Math.min(50, targetItemIndex.value))
+  const top = (idx - 1) * ESTIMATED_ITEM_HEIGHT
+  scrollbarRef.value?.scrollTo({ top, behavior: 'smooth' })
+  addLog(`🎯 动作: 定位到第 ${idx} 项 (top=${top}px)`)
+}
+
 // Code examples
 const usageExamples = [
   {
@@ -118,6 +144,11 @@ scrollbarRef.value?.scrollTo({
   behavior: 'smooth'
 })
 
+// Scroll to specific item
+const idx = 25
+const top = (idx - 1) * itemHeight
+scrollbarRef.value?.scrollTo({ top, behavior: 'smooth' })
+
 // Get instance
 const instance = scrollbarRef.value?.getInstance()
 
@@ -129,20 +160,20 @@ const state = scrollbarRef.value?.state()`,
 
 <template>
   <div
-    class="h-full flex flex-col overflow-hidden"
+    class="h-full column overflow-hidden"
     data-archetype="A1-toolbar-content"
   >
     <!-- Toolbar: Header (Transparent Root · Nested Canvas) -->
     <div class="shrink-0 border-b-default border-primary/50 bg-primary/5">
-      <div class="layout-content-wide flex flex-col gap-sm py-padding-sm">
-        <div class="flex items-center gap-md">
+      <div class="layout-content-wide col-stack-sm py-padding-sm">
+        <div class="row-y-center gap-md">
           <div class="p-padding-md bg-primary/10 rounded-scale-lg shrink-0">
             <Icons
               name="i-lucide-scroll"
               class="text-primary fs-2xl"
             />
           </div>
-          <div class="flex flex-col gap-xs">
+          <div class="col-stack-xs">
             <h1 class="fs-2xl font-bold text-foreground">CScrollbar 滚动条组件</h1>
             <p class="text-muted-foreground fs-sm">基于 OverlayScrollbars 的高性能滚动容器组件</p>
           </div>
@@ -154,7 +185,7 @@ const state = scrollbarRef.value?.state()`,
             name="i-lucide-info"
             class="text-primary fs-xl shrink-0 mt-margin-xs"
           />
-          <div class="flex flex-col gap-xs">
+          <div class="col-stack-xs">
             <div class="font-semibold text-primary fs-sm">Architectural Guide 架构引导</div>
             <div class="text-muted-foreground fs-xs leading-relaxed">
               本组件是对
@@ -171,101 +202,114 @@ const state = scrollbarRef.value?.state()`,
             </div>
           </div>
         </div>
+        <!-- Controls 控制面板 (Hero: primary tint + title strip) -->
+
+        <div class="row-y-center flex-wrap gap-lg">
+          <div class="col-stack-sm">
+            <span class="text-muted-foreground fs-sm">可见性模式 (Visibility Mode)</span>
+            <SelectButton
+              v-model="visibility"
+              :options="visibilityOptions"
+              option-label="label"
+              option-value="value"
+            />
+          </div>
+          <div class="h-[var(--spacing-xl)] w-px bg-border mx-gap-md hidden md:block" />
+          <div class="col-stack-sm">
+            <span class="text-muted-foreground fs-sm">定位到指定项 (Scroll To Item)</span>
+            <div class="row-y-center gap-sm">
+              <InputNumber
+                v-model="targetItemIndex"
+                :min="1"
+                :max="50"
+                :step="1"
+                show-buttons
+                button-layout="horizontal"
+                class="w-[var(--spacing-4xl)]"
+              />
+              <div
+                class="interactive-tile"
+                tabindex="0"
+                @click="scrollToItem"
+                @keydown.enter.prevent="scrollToItem"
+                @keydown.space.prevent="scrollToItem"
+              >
+                <Icons
+                  name="i-lucide-locate-fixed"
+                  class="fs-sm"
+                />
+                <span>定位</span>
+              </div>
+            </div>
+          </div>
+          <div class="h-[var(--spacing-xl)] w-px bg-border mx-gap-md hidden md:block" />
+          <div class="flex gap-sm flex-wrap items-center">
+            <div
+              class="interactive-tile"
+              tabindex="0"
+              @click="scrollToTop"
+              @keydown.enter.prevent="scrollToTop"
+              @keydown.space.prevent="scrollToTop"
+            >
+              <Icons
+                name="i-lucide-arrow-up-to-line"
+                class="fs-sm"
+              />
+              <span>滚动至顶部</span>
+            </div>
+            <div
+              class="interactive-tile"
+              tabindex="0"
+              @click="scrollToBottom"
+              @keydown.enter.prevent="scrollToBottom"
+              @keydown.space.prevent="scrollToBottom"
+            >
+              <Icons
+                name="i-lucide-arrow-down-to-line"
+                class="fs-sm"
+              />
+              <span>滚动至底部</span>
+            </div>
+            <div
+              class="interactive-tile bg-info text-info-foreground shadow-soft hover:opacity-90"
+              tabindex="0"
+              @click="checkState"
+              @keydown.enter.prevent="checkState"
+              @keydown.space.prevent="checkState"
+            >
+              <Icons
+                name="i-lucide-bug"
+                class="fs-sm"
+              />
+              <span>检查状态</span>
+            </div>
+            <div
+              class="interactive-tile text-danger hover:bg-danger/10"
+              tabindex="0"
+              @click="logs = []"
+              @keydown.enter.prevent="logs = []"
+              @keydown.space.prevent="logs = []"
+            >
+              <Icons
+                name="i-lucide-trash-2"
+                class="fs-sm"
+              />
+              <span>清空日志</span>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
 
     <!-- Scrollable content -->
     <CScrollbar class="flex-1 min-h-0">
-      <div class="layout-content-wide flex flex-col gap-xl">
-        <!-- Controls 控制面板 (Hero: primary tint + title strip) -->
-        <Card
-          class="bg-primary/10 dark:bg-primary/5 rounded-scale-xl shadow-soft p-padding-xl flex flex-col gap-lg"
-        >
-          <template #title>
-            <div class="flex items-center gap-sm border-b-default pb-padding-sm mb-padding-sm">
-              <Icons
-                name="i-lucide-settings"
-                class="text-primary"
-              />
-              <span class="font-semibold">Controls 控制面板</span>
-            </div>
-          </template>
-          <template #content>
-            <div class="flex flex-wrap items-center gap-lg">
-              <div class="flex flex-col gap-sm">
-                <span class="text-muted-foreground fs-sm">可见性模式 (Visibility Mode)</span>
-                <SelectButton
-                  v-model="visibility"
-                  :options="visibilityOptions"
-                  option-label="label"
-                  option-value="value"
-                />
-              </div>
-              <div class="h-[var(--spacing-xl)] w-px bg-border mx-gap-md hidden md:block" />
-              <div class="flex gap-sm flex-wrap items-center">
-                <div
-                  class="flex items-center gap-sm px-padding-sm py-padding-xs rounded-scale-md cursor-pointer select-none transition-all duration-scale-lg ease-in-out fs-sm active:scale-95 surface-item interactive-hover-tile interactive-focus-ring"
-                  tabindex="0"
-                  @click="scrollToTop"
-                  @keydown.enter.prevent="scrollToTop"
-                  @keydown.space.prevent="scrollToTop"
-                >
-                  <Icons
-                    name="i-lucide-arrow-up-to-line"
-                    class="fs-sm"
-                  />
-                  <span>滚动至顶部</span>
-                </div>
-                <div
-                  class="flex items-center gap-sm px-padding-sm py-padding-xs rounded-scale-md cursor-pointer select-none transition-all duration-scale-lg ease-in-out fs-sm active:scale-95 surface-item interactive-hover-tile interactive-focus-ring"
-                  tabindex="0"
-                  @click="scrollToBottom"
-                  @keydown.enter.prevent="scrollToBottom"
-                  @keydown.space.prevent="scrollToBottom"
-                >
-                  <Icons
-                    name="i-lucide-arrow-down-to-line"
-                    class="fs-sm"
-                  />
-                  <span>滚动至底部</span>
-                </div>
-                <div
-                  class="flex items-center gap-sm px-padding-sm py-padding-xs rounded-scale-md cursor-pointer select-none transition-all duration-scale-lg ease-in-out fs-sm active:scale-95 bg-info text-info-foreground shadow-soft hover:opacity-90 interactive-hover-tile interactive-focus-ring"
-                  tabindex="0"
-                  @click="checkState"
-                  @keydown.enter.prevent="checkState"
-                  @keydown.space.prevent="checkState"
-                >
-                  <Icons
-                    name="i-lucide-bug"
-                    class="fs-sm"
-                  />
-                  <span>检查状态</span>
-                </div>
-                <div
-                  class="flex items-center gap-sm px-padding-sm py-padding-xs rounded-scale-md cursor-pointer select-none transition-all duration-scale-lg ease-in-out fs-sm active:scale-95 text-danger hover:bg-danger/10 interactive-focus-ring"
-                  tabindex="0"
-                  @click="logs = []"
-                  @keydown.enter.prevent="logs = []"
-                  @keydown.space.prevent="logs = []"
-                >
-                  <Icons
-                    name="i-lucide-trash-2"
-                    class="fs-sm"
-                  />
-                  <span>清空日志</span>
-                </div>
-              </div>
-            </div>
-          </template>
-        </Card>
-
+      <div class="layout-content-wide col-stack-xl">
         <!-- Device Store 当前设备/断点 (Hero: accent tint + title strip) -->
         <Card
-          class="bg-accent/10 dark:bg-accent/5 rounded-scale-xl shadow-soft p-padding-xl flex flex-col gap-lg"
+          class="bg-accent/10 dark:bg-accent/5 rounded-scale-xl shadow-soft p-padding-xl col-stack-lg"
         >
           <template #title>
-            <div class="flex items-center gap-sm border-b-default pb-padding-sm mb-padding-sm">
+            <div class="row-y-center gap-sm border-b-default pb-padding-sm mb-padding-sm">
               <Icons
                 name="i-lucide-smartphone"
                 class="text-primary"
@@ -280,7 +324,7 @@ const state = scrollbarRef.value?.state()`,
           <template #content>
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-md">
               <div
-                class="flex flex-col gap-xs p-padding-md surface-item rounded-scale-lg interactive-hover-tile behavior-hover-transition"
+                class="col-stack-xs p-padding-md surface-item rounded-scale-lg interactive-hover-tile behavior-hover-transition"
               >
                 <span class="text-muted-foreground fs-xs">type</span>
                 <Tag
@@ -289,7 +333,7 @@ const state = scrollbarRef.value?.state()`,
                 />
               </div>
               <div
-                class="flex flex-col gap-xs p-padding-md surface-item rounded-scale-lg interactive-hover-tile behavior-hover-transition"
+                class="col-stack-xs p-padding-md surface-item rounded-scale-lg interactive-hover-tile behavior-hover-transition"
               >
                 <span class="text-muted-foreground fs-xs">currentBreakpoint</span>
                 <Tag
@@ -298,7 +342,7 @@ const state = scrollbarRef.value?.state()`,
                 />
               </div>
               <div
-                class="flex flex-col gap-xs p-padding-md surface-item rounded-scale-lg interactive-hover-tile behavior-hover-transition"
+                class="col-stack-xs p-padding-md surface-item rounded-scale-lg interactive-hover-tile behavior-hover-transition"
               >
                 <span class="text-muted-foreground fs-xs">isMobileLayout</span>
                 <Tag
@@ -307,7 +351,7 @@ const state = scrollbarRef.value?.state()`,
                 />
               </div>
               <div
-                class="flex flex-col gap-xs p-padding-md surface-item rounded-scale-lg interactive-hover-tile behavior-hover-transition"
+                class="col-stack-xs p-padding-md surface-item rounded-scale-lg interactive-hover-tile behavior-hover-transition"
               >
                 <span class="text-muted-foreground fs-xs">width × height</span>
                 <span class="font-mono fs-sm">
@@ -331,12 +375,10 @@ const state = scrollbarRef.value?.state()`,
         <!-- Demo Section -->
         <div class="grid grid-cols-1 lg:grid-cols-5 gap-lg">
           <!-- Vertical Scroll Demo (数据区：固定高度以触发纵向滚动) -->
-          <Card
-            class="bg-card rounded-scale-xl shadow-soft p-padding-xl flex flex-col gap-lg lg:col-span-2"
-          >
+          <Card class="panel-base lg:col-span-2">
             <template #title>
-              <div class="flex items-center justify-between">
-                <div class="flex items-center gap-sm">
+              <div class="row-between">
+                <div class="row-y-center gap-sm">
                   <Icons
                     name="i-lucide-arrow-up-down"
                     class="text-primary"
@@ -350,45 +392,43 @@ const state = scrollbarRef.value?.state()`,
               </div>
             </template>
             <template #content>
-              <div class="h-[40vh] min-h-[var(--spacing-5xl)]">
-                <CScrollbar
-                  ref="scrollbarRef"
-                  :visibility="visibility"
-                  class="h-full"
-                  @initialized="handleInitialized"
-                  @updated="handleUpdated"
-                  @scroll="handleScroll"
-                >
-                  <div class="p-padding-sm flex flex-col gap-scale-md">
-                    <div
-                      v-for="item in items"
-                      :key="item.id"
-                      class="p-padding-md rounded-scale-lg surface-item behavior-hover-transition hover:bg-foreground/5 group cursor-default"
-                    >
-                      <div class="flex justify-between items-start mb-margin-xs">
-                        <span class="font-medium fs-sm group-hover:text-primary transition-colors">
-                          {{ item.title }}
-                        </span>
-                        <span class="fs-xs text-muted-foreground">
-                          {{ item.date }}
-                        </span>
-                      </div>
-                      <p class="fs-xs text-muted-foreground leading-relaxed">
-                        {{ item.desc }}
-                      </p>
+              <CScrollbar
+                ref="scrollbarRef"
+                :visibility="visibility"
+                class="layout-scroll-panel min-h-[var(--spacing-5xl)]"
+                @initialized="handleInitialized"
+                @updated="handleUpdated"
+                @scroll="handleScroll"
+              >
+                <div class="p-padding-sm col-stack-md">
+                  <div
+                    v-for="item in items"
+                    :key="item.id"
+                    class="p-padding-md rounded-scale-lg surface-item behavior-hover-transition hover:bg-foreground/5 group cursor-default"
+                  >
+                    <div class="row main-between cross-start mb-margin-xs">
+                      <span class="font-medium fs-sm group-hover:text-primary transition-colors">
+                        {{ item.title }}
+                      </span>
+                      <span class="fs-xs text-muted-foreground">
+                        {{ item.date }}
+                      </span>
                     </div>
+                    <p class="fs-xs text-muted-foreground leading-relaxed">
+                      {{ item.desc }}
+                    </p>
                   </div>
-                </CScrollbar>
-              </div>
+                </div>
+              </CScrollbar>
             </template>
           </Card>
 
           <!-- Right Side -->
-          <div class="flex flex-col gap-lg lg:col-span-3">
+          <div class="col-stack-lg lg:col-span-3">
             <!-- Horizontal Scroll Demo (数据区：title 无 strip) -->
-            <Card class="bg-card rounded-scale-xl shadow-soft p-padding-xl flex flex-col gap-lg">
+            <Card class="panel-base">
               <template #title>
-                <div class="flex items-center gap-sm">
+                <div class="row-y-center gap-sm">
                   <Icons
                     name="i-lucide-arrow-left-right"
                     class="text-primary"
@@ -397,16 +437,16 @@ const state = scrollbarRef.value?.state()`,
                 </div>
               </template>
               <template #content>
-                <div class="h-[20vh] min-h-[var(--spacing-3xl)] -mt-margin-sm scroll-m-gap-md">
+                <div class="-mt-margin-sm scroll-m-gap-md">
                   <CScrollbar
                     :visibility="visibility"
-                    class="h-full"
+                    class="layout-scroll-panel min-h-[var(--spacing-3xl)]"
                   >
-                    <div class="flex p-padding-md gap-lg w-max h-full items-center">
+                    <div class="row-y-center p-padding-md gap-lg w-max h-full">
                       <div
                         v-for="item in horizontalItems"
                         :key="item"
-                        class="min-w-[var(--spacing-4xl)] h-[var(--spacing-2xl)] p-padding-md rounded-scale-lg interactive-hover-tile surface-item flex items-center justify-center shrink-0 behavior-hover-transition"
+                        class="min-w-[var(--spacing-4xl)] h-[var(--spacing-2xl)] p-padding-md rounded-scale-lg interactive-hover-tile surface-item center shrink-0 behavior-hover-transition"
                       >
                         <span class="font-medium text-muted-foreground">
                           {{ item }}
@@ -420,13 +460,11 @@ const state = scrollbarRef.value?.state()`,
 
             <!-- Event Logs (Hero: primary tint + title strip) -->
             <Card
-              class="bg-primary/10 dark:bg-primary/5 rounded-scale-xl shadow-soft p-padding-xl flex flex-col gap-lg flex-1"
+              class="bg-primary/10 dark:bg-primary/5 rounded-scale-xl shadow-soft p-padding-xl col-stack-lg flex-1"
             >
               <template #title>
-                <div
-                  class="flex items-center justify-between border-b-default pb-padding-sm mb-padding-sm"
-                >
-                  <div class="flex items-center gap-sm">
+                <div class="row-between border-b-default pb-padding-sm mb-padding-sm">
+                  <div class="row-y-center gap-sm">
                     <Icons
                       name="i-lucide-terminal"
                       class="text-primary"
@@ -440,11 +478,9 @@ const state = scrollbarRef.value?.state()`,
                 </div>
               </template>
               <template #content>
-                <div
-                  class="h-[25vh] min-h-[var(--spacing-4xl)] bg-card rounded-scale-md -mt-margin-sm"
-                >
-                  <CScrollbar class="h-full">
-                    <div class="p-padding-md font-mono fs-xs flex flex-col gap-xs">
+                <div class="bg-card rounded-scale-md -mt-margin-sm">
+                  <CScrollbar class="layout-scroll-panel min-h-[var(--spacing-4xl)]">
+                    <div class="p-padding-md font-mono fs-xs col-stack-xs">
                       <div
                         v-if="logs.length === 0"
                         class="text-muted-foreground italic select-none py-padding-2xl text-center"
@@ -468,9 +504,9 @@ const state = scrollbarRef.value?.state()`,
         </div>
 
         <!-- Code Examples (数据区：title 无 strip) -->
-        <Card class="bg-card rounded-scale-xl shadow-soft p-padding-xl flex flex-col gap-lg">
+        <Card class="panel-base">
           <template #title>
-            <div class="flex items-center gap-sm">
+            <div class="row-y-center gap-sm">
               <Icons
                 name="i-lucide-code"
                 class="text-primary"
@@ -487,11 +523,9 @@ const state = scrollbarRef.value?.state()`,
               <div
                 v-for="example in usageExamples"
                 :key="example.title"
-                class="flex flex-col gap-sm"
+                class="col-stack-sm"
               >
-                <h4
-                  class="fs-sm font-semibold text-foreground mb-margin-xs flex items-center gap-sm"
-                >
+                <h4 class="fs-sm font-semibold text-foreground mb-margin-xs row-y-center gap-sm">
                   {{ example.title }}
                   <div
                     class="p-padding-xs rounded-scale-sm cursor-pointer select-none transition-all duration-scale-lg ease-in-out hover:bg-primary/10 hover:text-primary active:scale-90"
@@ -519,9 +553,9 @@ const state = scrollbarRef.value?.state()`,
         </Card>
 
         <!-- Props Reference (数据区：title 无 strip) -->
-        <Card class="bg-card rounded-scale-xl shadow-soft p-padding-xl flex flex-col gap-lg">
+        <Card class="panel-base">
           <template #title>
-            <div class="flex items-center gap-sm">
+            <div class="row-y-center gap-sm">
               <Icons
                 name="i-lucide-book-open"
                 class="text-primary"

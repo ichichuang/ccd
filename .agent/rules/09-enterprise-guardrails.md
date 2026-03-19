@@ -19,7 +19,7 @@ You are operating in a strict World-Class Enterprise Vue 3 + TypeScript codebase
 
 - **FORBIDDEN:** Do NOT use `any` or `as any` in business logic, components, or stores.
 - **CORRECT:** `any` is ONLY permitted inside `src/adapters/` (Type Boundaries) alongside an `// eslint-disable-next-line @typescript-eslint/no-explicit-any` comment.
-- **CORRECT:** For generic bridging, you MUST use the functions in `src/utils/typeCasters.ts` (e.g., `castValue`, `castColumn`) instead of `as unknown as Type`.
+- **CORRECT:** For generic bridging, you MUST use the functions in `src/utils/typeCasters.ts` (e.g., `castValue`, `castColumn`) instead of `as unknown as Type`. **Use these helpers ONLY in <script setup> or .ts/.tsx files—NEVER inline them within <template> bindings or interpolations.**
 
 ## 3. Data Immutability (Anti-Pattern 6)
 

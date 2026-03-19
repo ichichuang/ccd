@@ -68,7 +68,7 @@ function navigateTo(item: MetaExampleItem) {
 
 <template>
   <div class="p-padding-lg space-y-margin-md">
-    <h2 class="fs-xl font-semibold flex items-center gap-sm">
+    <h2 class="fs-xl font-semibold row-y-center gap-sm">
       <Icons
         name="i-lucide-route"
         size="lg"
@@ -93,9 +93,9 @@ function navigateTo(item: MetaExampleItem) {
         <div
           v-for="item in examples"
           :key="item.name"
-          class="component-border rounded-scale p-padding-md bg-card flex flex-col gap-sm"
+          class="component-border rounded-scale p-padding-md bg-card col-stack-sm"
         >
-          <div class="flex items-center gap-sm">
+          <div class="row-y-center gap-sm">
             <Icons
               :name="item.icon"
               size="md"

@@ -1,3 +1,5 @@
+import { PRO_FORM_LOGGER } from '../utils/logger'
+
 export class DependencyNode {
   readonly field: string
   readonly dependencies: Set<string>
@@ -41,6 +43,12 @@ export class DependencyGraph {
    * source 变化会影响 target（source → target）
    */
   addDependency(source: string, target: string): void {
+    if (source === target) {
+      PRO_FORM_LOGGER.warn(
+        `Self-dependency detected: field "${source}" depends on itself, skipping`
+      )
+      return
+    }
     const sourceNode = this.addNode(source)
     const targetNode = this.addNode(target)
 

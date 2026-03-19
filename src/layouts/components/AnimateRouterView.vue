@@ -110,11 +110,13 @@ const styleVars = computed(() => {
 </script>
 <template>
   <router-view
-    v-slot="{ Component }"
+    v-slot="{ Component, route: currentRoute }"
     class="h-full min-h-0"
   >
     <Transition
       appear
+      mode="out-in"
+      :duration="300"
       :name="transitionName || undefined"
       :appear-active-class="
         hasCustomClass ? enterActiveClass : !transitionName ? enterActiveClass : undefined
@@ -126,22 +128,25 @@ const styleVars = computed(() => {
         hasCustomClass ? leaveActiveClass : !transitionName ? leaveActiveClass : undefined
       "
       :style="styleVars"
+      @after-leave="() => {}"
     >
-      <component
-        :is="Component"
-        v-if="!enableKeepAlive"
-        :key="route.fullPath"
-      />
-      <keep-alive
-        v-else
-        :include="keepAliveNames"
-        :max="10"
+      <div
+        :key="currentRoute.fullPath"
+        class="h-full w-full"
       >
+        <keep-alive
+          v-if="enableKeepAlive"
+          :include="keepAliveNames"
+          :max="10"
+        >
+          <component :is="Component" />
+        </keep-alive>
+
         <component
           :is="Component"
-          :key="route.fullPath"
+          v-else
         />
-      </keep-alive>
+      </div>
     </Transition>
   </router-view>
 </template>

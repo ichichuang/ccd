@@ -112,7 +112,7 @@ const handleNoHeader = () => {
   openDialog({
     hideHeader: true,
     contentRenderer: ({ index }) => (
-      <div class="p-padding-xl text-center flex flex-col items-center gap-md">
+      <div class="p-padding-xl text-center col-stack-md items-center">
         <span class="fs-lg font-bold">没有标题栏</span>
         <p>适合用于自定义程度很高的弹窗。</p>
         <Button
@@ -154,8 +154,8 @@ const handleHeaderRenderer = () => {
     header: '自定义头部',
     maximizable: true,
     headerRenderer: ({ close, maximize }) => (
-      <div class="flex items-center justify-between w-full gap-md">
-        <span class="fs-lg font-semibold text-primary flex items-center gap-xs">
+      <div class="row-between w-full gap-md">
+        <span class="fs-lg font-semibold text-primary row-y-center gap-xs">
           <Icons
             name="i-lucide-sparkles"
             size="sm"
@@ -191,7 +191,7 @@ const handleFooterRenderer = () => {
   openDialog({
     header: '自定义底部',
     footerRenderer: ({ index }) => (
-      <div class="flex items-center justify-between w-full gap-md">
+      <div class="row-between w-full gap-md">
         <span class="text-muted-foreground fs-sm">自定义 Footer 布局</span>
         <div class="flex gap-sm">
           <Button
@@ -331,15 +331,15 @@ const handleCustomContent = () => {
   openDialog({
     header: '自定义 TSX 内容',
     contentRenderer: () => (
-      <div class="p-padding-lg gap-md flex flex-col">
-        <div class="flex items-center gap-md bg-card p-padding-md rounded-scale-md">
+      <div class="p-padding-lg col-stack-md">
+        <div class="row-y-center gap-md bg-card p-padding-md rounded-scale-md">
           <Icons
             name="i-lucide-box"
             class="text-primary fs-xl"
           />
           <span>完全自定义的内容区域</span>
         </div>
-        <div class="flex items-center gap-md">
+        <div class="row-y-center gap-md">
           <span>Counter: {count.value}</span>
           <Button
             size="small"
@@ -385,8 +385,8 @@ const handlePosition = (pos: DialogPosition) => {
 
 <template>
   <CScrollbar class="h-full p-padding-lg">
-    <div class="w-full max-w-[80vw] mx-auto flex flex-col gap-xl">
-      <section class="component-card-base density-normal flex flex-col gap-xs">
+    <div class="w-full max-w-[80vw] mx-auto col-stack-xl">
+      <section class="component-card-base density-normal col-stack-xs">
         <h1 class="fs-2xl font-bold text-foreground">Dialog Component Full Demo</h1>
         <p class="text-muted-foreground">
           全功能演示：基于 useDialog 的二次封装，涵盖所有 Props 控制与交互模式。
@@ -394,9 +394,9 @@ const handlePosition = (pos: DialogPosition) => {
       </section>
 
       <!-- 1. 常用预设 -->
-      <section class="component-card-base density-normal flex flex-col gap-md">
+      <section class="component-card-base density-normal col-stack-md">
         <h2 class="fs-lg font-semibold">1. 常用预设 (Presets)</h2>
-        <div class="flex flex-wrap gap-md">
+        <div class="layout-wrap gap-md">
           <Button
             label="Info"
             severity="info"
@@ -432,14 +432,14 @@ const handlePosition = (pos: DialogPosition) => {
       </section>
 
       <!-- 2. 交互控制 -->
-      <section class="component-card-base density-normal flex flex-col gap-md">
+      <section class="component-card-base density-normal col-stack-md">
         <h2 class="fs-lg font-semibold">2. 交互控制 (Behaviors)</h2>
 
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-md">
           <!-- Mask -->
-          <div class="p-padding-md rounded-scale-md bg-muted flex flex-col gap-sm">
+          <div class="p-padding-md rounded-scale-md bg-muted col-stack-sm">
             <h3 class="font-medium text-foreground">遮罩层 (Mask/Modal)</h3>
-            <div class="flex flex-wrap gap-sm">
+            <div class="layout-wrap gap-sm">
               <Button
                 label="Modal (Default)"
                 size="small"
@@ -461,9 +461,9 @@ const handlePosition = (pos: DialogPosition) => {
           </div>
 
           <!-- ESC & Close Icon -->
-          <div class="p-padding-md rounded-scale-md bg-muted flex flex-col gap-sm">
+          <div class="p-padding-md rounded-scale-md bg-muted col-stack-sm">
             <h3 class="font-medium text-foreground">关闭方式 (Closing)</h3>
-            <div class="flex flex-wrap gap-sm">
+            <div class="layout-wrap gap-sm">
               <Button
                 label="Enable ESC"
                 size="small"
@@ -485,9 +485,9 @@ const handlePosition = (pos: DialogPosition) => {
           </div>
 
           <!-- Drag & Resize -->
-          <div class="p-padding-md rounded-scale-md bg-muted flex flex-col gap-sm">
+          <div class="p-padding-md rounded-scale-md bg-muted col-stack-sm">
             <h3 class="font-medium text-foreground">拖拽与缩放 (Drag & Resize)</h3>
-            <div class="flex flex-wrap gap-sm">
+            <div class="layout-wrap gap-sm">
               <Button
                 label="Draggable"
                 size="small"
@@ -511,9 +511,9 @@ const handlePosition = (pos: DialogPosition) => {
       </section>
 
       <!-- 3. 界面显示 -->
-      <section class="component-card-base density-normal flex flex-col gap-md">
+      <section class="component-card-base density-normal col-stack-md">
         <h2 class="fs-lg font-semibold">3. 界面显示 (Visibility)</h2>
-        <div class="flex flex-wrap gap-md">
+        <div class="layout-wrap gap-md">
           <Button
             label="Hide Header"
             severity="secondary"
@@ -545,9 +545,9 @@ const handlePosition = (pos: DialogPosition) => {
       </section>
 
       <!-- 4. 逻辑控制 -->
-      <section class="component-card-base density-normal flex flex-col gap-md">
+      <section class="component-card-base density-normal col-stack-md">
         <h2 class="fs-lg font-semibold">4. 逻辑控制 (Logic)</h2>
-        <div class="flex flex-wrap gap-md">
+        <div class="layout-wrap gap-md">
           <Button
             label="Async Button Loading"
             outlined
@@ -575,9 +575,9 @@ const handlePosition = (pos: DialogPosition) => {
       </section>
 
       <!-- 5. 生命周期回调 -->
-      <section class="component-card-base density-normal flex flex-col gap-md">
+      <section class="component-card-base density-normal col-stack-md">
         <h2 class="fs-lg font-semibold">5. 生命周期回调 (Lifecycle)</h2>
-        <div class="flex flex-wrap gap-md">
+        <div class="layout-wrap gap-md">
           <Button
             label="open/close 回调"
             severity="secondary"
@@ -600,9 +600,9 @@ const handlePosition = (pos: DialogPosition) => {
       </section>
 
       <!-- 6. 多弹窗管理 -->
-      <section class="component-card-base density-normal flex flex-col gap-md">
+      <section class="component-card-base density-normal col-stack-md">
         <h2 class="fs-lg font-semibold">6. 多弹窗管理 (Multi-Dialog)</h2>
-        <div class="flex flex-wrap gap-md items-center">
+        <div class="row-y-center flex-wrap gap-md">
           <Button
             label="Open 3 Dialogs"
             severity="info"
@@ -626,9 +626,9 @@ const handlePosition = (pos: DialogPosition) => {
       </section>
 
       <!-- 7. 位置控制 -->
-      <section class="component-card-base density-normal flex flex-col gap-md">
+      <section class="component-card-base density-normal col-stack-md">
         <h2 class="fs-lg font-semibold">7. 位置控制 (Position)</h2>
-        <div class="flex flex-wrap gap-sm">
+        <div class="layout-wrap gap-sm">
           <Button
             label="Top"
             size="small"

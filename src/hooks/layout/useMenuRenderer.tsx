@@ -24,7 +24,10 @@ import { goToRoute, type PrimeMenuModelItem } from '@/router/utils/helper'
 export interface TieredMenuItemSlotProps {
   item: PrimeMenuModelItem
   props: {
-    action: Record<string, unknown>
+    action: Record<string, unknown> & {
+      class?: string
+      onClick?: (e: Event) => void
+    }
   }
   hasSubmenu: boolean
 }
@@ -59,10 +62,10 @@ export interface TieredMenuItemRendererOptions {
 
 function getLabelClassByContext(context: MenuVisualContext): string {
   if (context === 'breadcrumb') {
-    return 'truncate flex-1 leading-none text-left pt-[1px] fs-sm text-current!'
+    return 'truncate flex-1 text-left pt-[1px] fs-sm text-current!'
   }
   if (context === 'header') {
-    return `truncate flex-1 text-left text-current! ${MENU_TEXT_CLASS} font-medium leading-none pt-[1px]`
+    return `truncate flex-1 text-left text-current! ${MENU_TEXT_CLASS} font-medium pt-[1px]`
   }
   return ['truncate flex-1 text-current!', MENU_TEXT_CLASS].join(' ')
 }
@@ -81,10 +84,7 @@ export function createTieredMenuItemRenderer(
   const labelClassBase: string = getLabelClassByContext(context)
 
   return ({ item, props: slotProps, hasSubmenu }: TieredMenuItemSlotProps) => {
-    const action = slotProps.action as Record<string, unknown> & {
-      class?: string
-      onClick?: (e: Event) => void
-    }
+    const action = slotProps.action
 
     const actionClassStr: string = typeof action?.class === 'string' ? action.class : ''
 

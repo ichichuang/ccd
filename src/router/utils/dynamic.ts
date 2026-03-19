@@ -10,7 +10,7 @@ import { transformToVueRoutes } from './transform'
  * 动态路由管理器
  */
 export function createDynamicRouteManager(router: Router) {
-  const dynamicRoutes: RouteConfig[] = []
+  let dynamicRoutes: RouteConfig[] = []
 
   return {
     addRoute(route: RouteConfig) {
@@ -22,11 +22,11 @@ export function createDynamicRouteManager(router: Router) {
         return
       }
 
-      const existingIndex = dynamicRoutes.findIndex(r => r.path === route.path)
+      const existingIndex = dynamicRoutes.findIndex(r => r.name === route.name)
       if (existingIndex !== -1) {
-        dynamicRoutes[existingIndex] = route
+        dynamicRoutes = dynamicRoutes.map((r, i) => (i === existingIndex ? route : r))
       } else {
-        dynamicRoutes.push(route)
+        dynamicRoutes = [...dynamicRoutes, route]
       }
 
       const vueRoute = transformToVueRoutes([route])[0]
@@ -40,9 +40,9 @@ export function createDynamicRouteManager(router: Router) {
     },
 
     removeRoute(name: string) {
-      const index = dynamicRoutes.findIndex(r => r.name === name)
-      if (index !== -1) {
-        dynamicRoutes.splice(index, 1)
+      const exists = dynamicRoutes.some(r => r.name === name)
+      if (exists) {
+        dynamicRoutes = dynamicRoutes.filter(r => r.name !== name)
         if (router.hasRoute(name)) {
           router.removeRoute(name)
         }
@@ -55,7 +55,7 @@ export function createDynamicRouteManager(router: Router) {
           router.removeRoute(route.name)
         }
       })
-      dynamicRoutes.length = 0
+      dynamicRoutes = []
     },
 
     getRoutes() {
