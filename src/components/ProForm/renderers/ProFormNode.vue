@@ -1,5 +1,5 @@
 <script setup lang="ts" generic="TValues extends Record<string, unknown> = Record<string, unknown>">
-import type { ComponentPublicInstance, ComputedRef } from 'vue'
+import type { ComputedRef } from 'vue'
 import type {
   FieldSchema,
   FormSchemaNode,
@@ -12,21 +12,10 @@ import type { ProFormNodeProps } from '../engine/types/props'
 import PrimeVueRenderer from './PrimeVueRenderer.vue'
 import { useFormContext } from '../engine/hooks/useFormContext'
 import { resolveSpan } from '../engine/utils/breakpoint'
-import {
-  PRO_FORM_DEFAULTS,
-  PRO_FORM_LAYOUT_DEFAULTS,
-  PRO_FORM_TEXT_DEFAULTS,
-} from '../engine/config'
+import { PRO_FORM_DEFAULTS, PRO_FORM_LAYOUT_DEFAULTS } from '../engine/config'
 import { PRO_FORM_LAYOUT_KEY } from '../engine/constants'
 
 const props = defineProps<ProFormNodeProps>()
-
-type I18nProxy = ComponentPublicInstance & { $t?: (key: string) => string }
-const proxy = getCurrentInstance()?.proxy as I18nProxy | null
-const t = (key: string): string => {
-  const result = proxy?.$t?.(key)
-  return result && result !== key ? result : ''
-}
 
 const injectedLayout = inject<{
   gap: ComputedRef<string>
@@ -133,25 +122,17 @@ const isFieldVisible = (node: FormSchemaNode): boolean => {
 const getGroupLabel = (node: FormSchemaNode, index: number): string => {
   const group = node as Partial<GroupSchema>
   if (typeof group.label === 'string' && group.label.length > 0) {
-    const translated = t(group.label)
-    const labelLooksLikeI18nKey = group.label.includes('.') || group.label.includes(':')
-    if (translated && translated.length > 0) return translated
-    if (!labelLooksLikeI18nKey) return group.label
+    return group.label
   }
-  const prefix = t(PRO_FORM_TEXT_DEFAULTS.tabPrefixKey)
-  return prefix && prefix.length > 0 ? `${prefix} ${index + 1}` : String(index + 1)
+  return String(index + 1)
 }
 
 const getStepLabel = (node: FormSchemaNode, index: number): string => {
   const group = node as Partial<GroupSchema>
   if (typeof group.label === 'string' && group.label.length > 0) {
-    const translated = t(group.label)
-    const labelLooksLikeI18nKey = group.label.includes('.') || group.label.includes(':')
-    if (translated && translated.length > 0) return translated
-    if (!labelLooksLikeI18nKey) return group.label
+    return group.label
   }
-  const prefix = t(PRO_FORM_TEXT_DEFAULTS.stepPrefixKey)
-  return prefix && prefix.length > 0 ? `${prefix} ${index + 1}` : String(index + 1)
+  return String(index + 1)
 }
 
 const getGroupLabelText = (node: FormSchemaNode): string => {
@@ -265,7 +246,7 @@ const getGroupLabelText = (node: FormSchemaNode): string => {
                     name="i-lucide-arrow-left"
                     size="sm"
                   />
-                  <span>{{ $t('proForm.step.prev') }}</span>
+                  <span>上一页</span>
                 </span>
               </template>
             </Button>
@@ -276,7 +257,7 @@ const getGroupLabelText = (node: FormSchemaNode): string => {
             >
               <template #default>
                 <span class="inline-flex items-center gap-scale-xs">
-                  <span>{{ $t('proForm.step.next') }}</span>
+                  <span>下一页</span>
                   <Icons
                     name="i-lucide-arrow-right"
                     size="sm"
