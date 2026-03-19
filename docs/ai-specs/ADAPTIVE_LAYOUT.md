@@ -14,6 +14,21 @@
 - **Mobile**：小视口强制顶栏（`adaptToMobile(true)` → horizontal）；大视口恢复侧栏（`adaptToMobile(false)` → vertical）+ 断点收展。
 - **用户偏好**：`userAdjusted` 为 true 时，断点逻辑不覆盖 `sidebarCollapse`（`adaptPcByBreakpoint(..., !userAdjusted)`）。
 
+### 0.1 业务阈值与响应式三区 (xl Pivot & Golden Rules)
+
+- **像素 SSOT**：`src/constants/breakpoints.ts` 中 `lg=1024px`、`xl=1280px`、`md=768px` 等定义不变。
+- **布局业务宽屏起点**：**xl (1280px)**。以下三区为**绝对规则**，与实现一致：
+
+| 区名                       | 宽度 / 断点                                  | 布局行为                                         | Logo 文字                                |
+| -------------------------- | -------------------------------------------- | ------------------------------------------------ | ---------------------------------------- |
+| **Drawer Zone**            | &lt; 768px（**xs**、**sm**）或 **Mobile UA** | 强制 **Drawer**（汉堡菜单），不渲染顶栏菜单      | **始终显示**                             |
+| **Top Menu Fallback Zone** | 768px–1279px（**md**、**lg**）               | 强制 **Top Menu**（横向顶栏）                    | **Tablet 显示，PC 隐藏**（为顶栏腾空间） |
+| **Wide Zone**              | ≥ 1280px（**xl**+）                          | Tablet → Sidebar（vertical）；PC → preferredMode | **显示**                                 |
+
+- **Drawer 激活**：`LayoutAdmin` 中 `isDrawerMode` 为 `(type === 'Mobile' || currentBreakpoint in ['xs','sm']) && mode === 'horizontal'`。故 **xs 与 sm 必须**触发 Drawer，避免 694px 等 sm 宽度下顶栏溢出。
+- **禁止**将 lg 视为宽桌面；禁止仅用「Mobile UA」描述 Drawer（须同时写 xs/sm）。
+- 实现见 `layout.ts` 的 `effectiveMode`、`LayoutAdmin.tsx` 的 `isDrawerMode` 与 `showLogoText`。
+
 ## 1. 核心入口与数据流
 
 ### 1.1 决策入口
@@ -57,12 +72,12 @@ if (layoutStore.showSidebar)
 
 ### 1.3 Layout Store 适配方法语义
 
-| 方法                                     | 作用                                                                         | 调用方                                    |
-| ---------------------------------------- | ---------------------------------------------------------------------------- | ----------------------------------------- |
-| `adaptPcByOrientation(orientation)`      | 仅竖屏 → `mode = 'horizontal'`；横屏不覆盖 mode                              | runAdaptive（PC 分支）                    |
-| `adaptPcByBreakpoint(breakpoint, force)` | xs/sm/md 收缩侧栏，lg 及以上展开；`force = !userAdjusted` 时尊重用户手动收展 | runAdaptive（PC / Tablet 宽 / Mobile 宽） |
-| `adaptToMobile(isMobile, force)`         | isMobile 为 true → horizontal + 收缩；为 false → vertical（大视口恢复）      | runAdaptive（Mobile 分支）                |
-| `adaptToTablet(isTablet, force)`         | isTablet 为 true → vertical + 收缩；为 false 为 no-op                        | runAdaptive（Tablet 分支）                |
+| 方法                                     | 作用                                                                            | 调用方                                    |
+| ---------------------------------------- | ------------------------------------------------------------------------------- | ----------------------------------------- |
+| `adaptPcByOrientation(orientation)`      | 仅竖屏 → `mode = 'horizontal'`；横屏不覆盖 mode                                 | runAdaptive（PC 分支）                    |
+| `adaptPcByBreakpoint(breakpoint, force)` | xs/sm/md/lg 收缩侧栏，xl 及以上展开；`force = !userAdjusted` 时尊重用户手动收展 | runAdaptive（PC / Tablet 宽 / Mobile 宽） |
+| `adaptToMobile(isMobile, force)`         | isMobile 为 true → horizontal + 收缩；为 false → vertical（大视口恢复）         | runAdaptive（Mobile 分支）                |
+| `adaptToTablet(isTablet, force)`         | isTablet 为 true → vertical + 收缩；为 false 为 no-op                           | runAdaptive（Tablet 分支）                |
 
 ### 1.4 有效显隐（展示层）
 
@@ -77,7 +92,7 @@ if (layoutStore.showSidebar)
 
 - **文件**：`src/layouts/components/GlobalSetting/SettingsContent.vue`。
 - **isMobile**：`deviceStore.type === 'Mobile' || deviceStore.isMobileLayout`。
-- **效果**：仅手机或小视口时隐藏「布局模式」与「布局模块显示」；平板大屏（Tablet 且 width ≥ lg）与 PC 展示完整选项。
+- **效果**：仅手机或小视口时隐藏「布局模式」与「布局模块显示」；平板大屏（Tablet 且 width ≥ xl）与 PC 展示完整选项。布局业务宽屏起点为 xl，与 §0.1 一致。
 
 ### 1.6 用户偏好 userAdjusted
 
@@ -87,16 +102,16 @@ if (layoutStore.showSidebar)
 
 ## 2. 关键文件与类型
 
-| 用途                           | 路径                                                                                                                    |
-| ------------------------------ | ----------------------------------------------------------------------------------------------------------------------- |
-| 设备/视口/断点                 | `src/stores/modules/device.ts`（type、orientation、currentBreakpoint、isMobileLayout）                                  |
-| 布局 mode/侧栏收展/显隐/持久化 | `src/stores/modules/layout.ts`（adaptToMobile、adaptToTablet、adaptPcByOrientation、adaptPcByBreakpoint、userAdjusted） |
-| 适配入口与有效显隐             | `src/layouts/modules/LayoutAdmin.tsx`（runAdaptive、showXxxEffective）                                                  |
-| 断点常量                       | `src/constants/breakpoints.ts`（BREAKPOINTS，lg=1024）                                                                  |
-| 布局常量/持久化字段            | `src/constants/layout.ts`（DEFAULT_LAYOUT_SETTING、LAYOUT_PERSIST_PICK）                                                |
-| 设置面板 isMobile              | `src/layouts/components/GlobalSetting/SettingsContent.vue`                                                              |
-| 设备类型定义                   | `src/types/systems/device.d.ts`（DeviceState、DeviceType、Orientation）                                                 |
-| 布局类型定义                   | `src/types/systems/layout.d.ts`（LayoutSetting、AdminLayoutMode、LayoutVisibilitySetting）                              |
+| 用途                           | 路径                                                                                                                           |
+| ------------------------------ | ------------------------------------------------------------------------------------------------------------------------------ |
+| 设备/视口/断点                 | `src/stores/modules/device.ts`（type、orientation、currentBreakpoint、isMobileLayout）                                         |
+| 布局 mode/侧栏收展/显隐/持久化 | `src/stores/modules/layout.ts`（adaptToMobile、adaptToTablet、adaptPcByOrientation、adaptPcByBreakpoint、userAdjusted）        |
+| 适配入口与有效显隐             | `src/layouts/modules/LayoutAdmin.tsx`（runAdaptive、showXxxEffective）                                                         |
+| 断点常量                       | `src/constants/breakpoints.ts`（BREAKPOINTS，lg=1024、xl=1280）；**业务宽屏起点为 xl**，见 effectiveMode / adaptPcByBreakpoint |
+| 布局常量/持久化字段            | `src/constants/layout.ts`（DEFAULT_LAYOUT_SETTING、LAYOUT_PERSIST_PICK）                                                       |
+| 设置面板 isMobile              | `src/layouts/components/GlobalSetting/SettingsContent.vue`                                                                     |
+| 设备类型定义                   | `src/types/systems/device.d.ts`（DeviceState、DeviceType、Orientation）                                                        |
+| 布局类型定义                   | `src/types/systems/layout.d.ts`（LayoutSetting、AdminLayoutMode、LayoutVisibilitySetting）                                     |
 
 ## 3. 禁止项 (Forbidden)
 

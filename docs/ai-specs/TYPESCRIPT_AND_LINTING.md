@@ -216,4 +216,4 @@ if (typeof val === 'string' && (SIZE_SCALE_KEYS as readonly string[]).includes(v
 }
 ```
 
-详见 `./VUE_TEMPLATE_ANTIPATTERNS.md` §3。
+详见 `./VUE_TEMPLATE_ANTIPATTERNS.md` §4。

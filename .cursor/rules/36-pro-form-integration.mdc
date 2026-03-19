@@ -1,0 +1,75 @@
+<rule>
+  <context>
+    ProForm V1.0 (Phases 200-209) is finalized: E2E Generic Propagation (TValues), SSOT configuration (engine/config.ts), and strict InjectionKey usage (engine/constants.ts).
+    This rule is a hard guardrail for all future AI-generated/AI-modified ProForm integration code. Legacy patterns and V0-era anti-patterns are strictly forbidden.
+  </context>
+
+  <constraints>
+    <section name="ssot-mandate-config-ts-only">
+      <rule>
+        [SSOT REQUIRED] Never hardcode defaults/fallbacks/magic numbers (e.g. spans, debounces, fallback widths), static locale text (e.g. 'yes'/'no'), or static currency/locale tokens (e.g. 'CNY').
+        You MUST import and use SSOT from <code>src/components/ProForm/engine/config.ts</code>:
+        <code>PRO_FORM_LAYOUT_DEFAULTS</code> / <code>PRO_FORM_TIMING_DEFAULTS</code> / <code>PRO_FORM_COMPONENT_DEFAULTS</code> / <code>PRO_FORM_TEXT_DEFAULTS</code> (and <code>PRO_FORM_DEFAULTS</code> when appropriate).
+      </rule>
+      <rule>
+        [i18n REQUIRED] UI fallback text MUST be expressed as i18n keys (e.g. <code>PRO_FORM_TEXT_DEFAULTS.booleanTrueKey</code>) and resolved by runtime/i18n.
+        Never write fixed-language fallback strings anywhere in schema/renderer/view.
+      </rule>
+    </section>
+
+    <section name="e2e-generic-propagation">
+      <rule>
+        [E2E GENERICS REQUIRED] Any ProForm wrapper / view-layer integration component MUST use:
+        <code>&lt;script setup lang="ts" generic="TValues extends Record&lt;string, unknown&gt;"&gt;</code>.
+      </rule>
+      <rule>
+        <code>useForm</code> MUST be explicitly typed: <code>useForm&lt;TValues&gt;(...)</code>.
+        Any context access MUST use: <code>useFormContext&lt;TValues&gt;()</code>.
+      </rule>
+      <rule>
+        Do NOT "simplify" by degrading <code>TValues</code> to <code>Record&lt;string, unknown&gt;</code> or <code>any</code>.
+        That breaks the V1.0 end-to-end type propagation contract.
+      </rule>
+    </section>
+
+    <section name="injectionkey-only-no-string-keys">
+      <rule>
+        [InjectionKey ONLY] Never use string keys or ad-hoc Symbols:
+        <code>provide('xxx', ...)</code> / <code>inject('xxx')</code> / <code>provide(Symbol('xxx'))</code> are forbidden.
+        You MUST import the existing InjectionKeys from <code>src/components/ProForm/engine/constants.ts</code>:
+        <code>FORM_CONTROLLER_KEY</code> / <code>PRO_FORM_GLOBAL_STATE_KEY</code> / <code>PRO_FORM_LAYOUT_KEY</code> / <code>PRO_FORM_SLOTS_KEY</code> / <code>PRO_FORM_STATE_KEY</code>.
+      </rule>
+      <rule>
+        [GENERIC ERASURE STRATEGY] <code>FORM_CONTROLLER_KEY</code> is intentionally typed as <code>InjectionKey&lt;unknown&gt;</code>.
+        View-layer code must NOT bypass this with scattered assertions. Always recover the type via <code>useFormContext&lt;TValues&gt;()</code>.
+      </rule>
+    </section>
+
+    <section name="logging-mandate">
+      <rule>
+        [LOGGING REQUIRED] Do not call <code>console.error</code> / <code>console.warn</code> directly in business/engine/renderer code.
+        You MUST use the logger from <code>src/components/ProForm/engine/utils/logger.ts</code>:
+        <code>import { PRO_FORM_LOGGER as ProFormLogger } from '@/components/ProForm/engine/utils/logger'</code>
+        and emit via <code>ProFormLogger.error(...)</code> / <code>ProFormLogger.warn(...)</code>.
+      </rule>
+    </section>
+
+    <section name="absolute-bans">
+      <rule>
+        [ABSOLUTE BAN] No <code>any</code> (including <code>as any</code>) anywhere in ProForm integration code (views/components/hooks/schema/config/renderers).
+      </rule>
+      <rule>
+        [ABSOLUTE BAN] Do not implement a parallel form state machine in view/components (values/errors/submitting/validation debounce, etc.).
+        All form state must be driven by Engine APIs (<code>useForm</code> / <code>FormController</code>).
+      </rule>
+    </section>
+  </constraints>
+
+  <communication>
+    Output Requirement: When explaining or changing ProForm-related code, explicitly state:
+    - which V1.0 guardrail is being applied (SSOT / generics / InjectionKey / logging)
+    - which legacy anti-pattern is forbidden and the correct replacement
+    Keep file paths, type names, key names, and import statements in English for copy/paste.
+  </communication>
+</rule>
+

@@ -46,6 +46,8 @@
 - `./TOAST_AND_MESSAGE.md` – Toast/Message (window.$toast, window.$message).
 - `./AUTH_AND_LOGIN_FLOW.md` – Auth (login/logout, guards, 401, dynamic routes).
 - `./LOADING_SYSTEM.md` – Loading (Global/Page/Component; useLoading, useHttpRequest).
+- `./PRO_FORM_ENGINE_ARCHITECTURE.md` – ProForm Engine 架构蓝图（Engine 内部实现与目录结构）。
+- `./PRO_FORM_INTEGRATION_GUIDE.md` – ProForm 集成指南（提交流程、footer 插槽、formRef 使用规范）。
 
 ## 1. Tech stack
 
@@ -255,7 +257,7 @@ const renderSlot = () => <span class="text-muted-foreground">动态内容</span>
 
 #### 6.3.2 布局自适应逻辑（必读）
 
-布局 mode、侧栏收展、侧栏/面包屑/Tabs/Footer 显隐由 **LayoutAdmin.runAdaptive** 统一驱动，具体规则见 `./ADAPTIVE_LAYOUT.md`。
+布局 mode、侧栏收展、侧栏/面包屑/Tabs/Footer 显隐由 **LayoutAdmin.runAdaptive** 统一驱动，具体规则见 `./ADAPTIVE_LAYOUT.md`。布局业务宽屏起点为 xl (1280px)，lg 为窄屏回退区。
 
 - **禁止**：在业务代码中直接调用 `adaptToMobile`、`adaptToTablet`、`adaptPcByOrientation`、`adaptPcByBreakpoint`，或直接修改 `layoutStore.mode` / `layoutStore.sidebarCollapse` 以实现「响应式布局」。
 - **必须**：在 LayoutAdmin 壳内展示侧栏/面包屑/Tabs/Footer 时使用 `showSidebarEffective` 等有效显隐，不得绕过。

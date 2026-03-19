@@ -2,7 +2,7 @@
 
 > **目标读者：AI（Antigravity Agent）**。本文档供 Antigravity 执行 UI 任务时参照。将以下内容复制到 Antigravity 的 Knowledge Base（知识库）或 System Prompt 中，作为 UI/布局层的专用规则。
 >
-> **与 `.agent/rules/` 的关系**：本文档为长版详细说明；强制规则以 `.agent/rules/`（如 `10-ui-architecture.md`）为权威。若与本文档冲突，以 `.agent/rules/` 为准。
+> **与规则系统的关系**：本文档为长版详细说明；强制规则以 `.cursor/rules/` 为 SSOT（`.agent/rules/` 以同 basename 镜像对齐）。若与本文档冲突，以规则文件为准（例如 `.cursor/rules/00-core-architecture.mdc`、`18-components-and-icons.mdc`、`20-ui-styling.mdc`、`21-color-system.mdc`、`40-echarts-visualization.mdc`、`101-premium-ui.mdc`、`104-anti-flicker-ring-less.mdc`）。
 
 ---
 
@@ -11,7 +11,7 @@
 ## 1. The "UnoCSS Only" Mandate
 
 - You are FORBIDDEN from writing CSS blocks for layout, spacing, or colors (e.g. `.class { color: red; padding: 10px; }`).
-- You MUST use UnoCSS utilities and the project's semantic classes (e.g. `text-primary`, `bg-surface-ground`, `px-padding-lg`, `gap-md`, `rounded-scale`).
+- You MUST use UnoCSS utilities and the project's semantic classes (e.g. `text-primary`, `bg-background`, `px-padding-lg`, `gap-md`, `rounded-scale`).
 - Use semantic color variables only; DO NOT use hex codes like `#fff`.
 - **FORBIDDEN:** Raw `rem`, `em`, or `px` in business code for dimensions, spacing, or font-size. Use semantic tokens (`p-padding-*`, `m-margin-*`, `gap-*`, `fs-*`, `var(--spacing-*)`) and viewport units (`vh`/`vw`) for macro layouts exclusively.
 
@@ -31,7 +31,8 @@ Before generating any UI code, you MUST reference and strictly follow:
 - **颜色语义 SSOT:** `src/constants/theme/colorUsage.ts`（COLOR_USAGE、PRIMARY_USAGE、ACCENT_USAGE）
 - Read: `src/types/systems/theme.d.ts`, `src/constants/theme.ts`, `src/stores/modules/theme.ts`
 - PrimeVue 主题融合（Button 等组件配色）：`./PRIMEVUE_THEME.md`
-- Use semantic color variables: `text-primary`, `bg-surface-ground`, `border-border`, `text-info`, `bg-info`
+- Use semantic color variables: `text-primary`, `bg-background`, `bg-card`, `border-border`, `text-info`, `bg-info`
+- `bg-surface-ground` is reserved for PrimeVue component internal override ONLY; in business code use `bg-background` (root/page canvas) or `bg-card` (cards/panels)
 - For visible borders use shortcuts: `component-border`, `border-b-default`, `border-t-default`; FORBIDDEN: only `border border-border` (no border-style → invisible)
 - Support dark mode with `dark:` variants or CSS variables
 - FORBIDDEN: hex codes (`#fff`, `#000`, etc.)
@@ -76,124 +77,25 @@ Before generating any UI code, you MUST reference and strictly follow:
 
 ## 3. Utilities & Hooks First Policy (工具优先策略)
 
-Even though you are focused on UI, you will often need to bind logic or use utilities in `<script setup>`.
-**PRIMARY RULE:** Do NOT reinvent the wheel. Prefer existing utilities over standard library functions.
+> **→ See `.cursor/rules/15-utils-and-hooks-first.mdc` for the complete Utilities & Hooks First Policy** (API layer, naming, logic tool catalog, etc.)
 
-### 3.1 API Layer Policy (API 层规范) - STRICT
+Key rules summary:
 
-When the UI needs data from the server:
-
-1.  **NEVER** write `axios.get` or `fetch` in the component.
-2.  **NEVER** define the URL or request parameters in the component.
-3.  **Check `src/api/<module>/<feature>.ts`**: The API must be defined here first.
-    - **Structure**: `src/api/<module>/<feature>.ts` (Flat 2-level structure only. No subdirectories).
-    - **Content**: Must contain Types (DTO) and Method Builders.
-4.  **Check `src/hooks/modules/useXxx.ts`**: The UI should consume a hook that calls the API.
-
-**If the API is missing:**
-
-- You must request its creation following the path: `src/api/<module>/<feature>.ts` -> `src/hooks/modules/useXxx.ts`.
-
-### 3.2 Export Naming Policy (API 命名防污染) - STRICT
-
-Because `AutoImport` scans all `src/api/**/*`:
-
-1.  **Forbidden Generic Names**: NEVER export `get`, `post`, `list`, `data`, `api`, `service`, `request`.
-2.  **Required Pattern**: MUST use domain prefix.
-    - Methods: `buildUserLoginMethod`, `requestUserList`.
-    - Types: `UserLoginReq`, `SystemConfigDTO`.
-3.  **No Default Exports**: NEVER use `export default` in API files. Only named exports are allowed.
-
-### 3.3 Logic Tools Priority
-
-- **HTTP:** MUST use `@src/hooks/modules/useHttpRequest.ts` (or `src/utils/http/*`). **Forbidden: `axios`, `fetch`.**
-- **Connection/Reconnect:** MUST use `@src/utils/http/connection.ts` (`connectionManager`).
-- **File Upload:** MUST use `@src/utils/http/uploadManager.ts` (`addUploadTask`, `pauseUploadTask` etc.).
-- **Date/Time:** MUST use `@src/hooks/modules/useDateUtils.ts` (auto-locale/timezone).
-- **Element Size:** MUST use `@src/hooks/modules/useAppElementSize.ts`.
-- **Fullscreen:** Use `@vueuse/core` `useFullscreen(target?)` directly（useFull 已移除）.
-- **Theme:** MUST use `@src/hooks/modules/useThemeSwitch.ts`.
-- **ECharts Theme:** MUST use `@src/hooks/modules/useChartTheme/` (`useChartTheme(option)` responsive hook).
-- **Locale:** MUST use `@src/hooks/modules/useLocale.ts`.
-- **Device Sync:** MUST use `@src/utils/deviceSync.ts` (pre-mount device/breakpoint detection without Pinia).
-- **IDs:** MUST use `@src/utils/ids.ts`.
-- **Cloning/Merges:** MUST use `@src/utils/lodashes.ts`.
-
-### 3.4 Function-Level Catalog (精确到函数名)
-
-When you need functionality, use these EXACT exports:
-
-| Category    | File                                    | Preferred Function(s)                                |
-| ----------- | --------------------------------------- | ---------------------------------------------------- |
-| **HTTP**    | `@/hooks/modules/useHttpRequest`        | `useHttpRequest(method, options)`                    |
-|             | `@/utils/http/instance`                 | `alovaInstance`                                      |
-| **Storage** | `@/utils/safeStorage`                   | `encrypt`, `decrypt`, `packData`, `unpackData`       |
-| **Events**  | `@/utils/mitt`                          | `useMitt()` (returns `{ emit, on, off }`)            |
-| **Lodash**  | `@/utils/lodashes`                      | `deepClone`, `deepEqual`, `objectPick`, `debounceFn` |
-| **IDs**     | `@/utils/ids`                           | `generateUniqueId()`, `generateIdFromKey()`          |
-| **Date**    | `@/hooks/modules/useDateUtils`          | `useDateUtils()` (returns `{ formatDate, ... }`)     |
-| **Strings** | `@/utils/strings`                       | `toKebabCase()`                                      |
-| **Browser** | 已移除（原 `@/utils/browser` 未被引用） | —                                                    |
-| **Size**    | `@/hooks/modules/useAppElementSize`     | `useAppElementSize(ref)`                             |
-
-### 3.5 New Logic Rule
-
-If you need a utility not listed above:
-
-1. Check `src/utils/` or `src/hooks/modules/` first.
-2. If it doesn't exist, created it in the appropriate `src/utils/` file (e.g. `src/utils/strings.ts` for string logic).
-3. **DO NOT** write complex inline logic in `<script setup>`.
+- NEVER write `axios.get` or `fetch` in UI components — use `@/hooks/modules/useHttpRequest.ts`
+- API structure: `src/api/<module>/<feature>.ts` (2-level flat, no subdirs)
+- NEVER export generic names (`get`, `post`, `list`, `data`) from API files
+- Check `src/utils/` and `src/hooks/modules/` before implementing any new helper
 
 ## 4. Components & Icons Policy (组件与图标使用规范)
 
-### 4.1 Component Reuse (强制复用)
+> **→ See `.cursor/rules/18-components-and-icons.mdc` for the complete Components & Icons Policy** (CScrollbar, Icons, PrimeVue v4 component names, auto-import rules, etc.)
 
-Before writing HTML, check if these components exist:
+Key rules summary:
 
-- **Scroll Container:** MUST use `<CScrollbar>` (from `src/components/CScrollbar`, replaces `overflow-auto`).
-- **Animation:** Use `<AnimateWrapper>` (from `src/components/AnimateWrapper`) for enter/leave animations (layout transitions, dynamic list items, etc.).
-- **Icons:** MUST use `<Icons name="..." />` (based on UnoCSS iconify).
-- **Charts:** MUST use `<UseEcharts>` (wrapper for vue-echarts with theme support).
-
-**Auto-Import Rule:**
-The project uses `unplugin-auto-import` and `unplugin-vue-components`.
-
-- **DO NOT** manually import `ref`, `computed`, `watch` (Vue).
-- **DO NOT** manually import `CScrollbar`, `Icons` (Components).
-- **DO** verify `src/types/components.d.ts` if typing is missing.
-
-### 4.2 Icon Strategy (Icons 组件)
-
-**Usage:** `<Icons name="i-lucide-user" class="text-primary fs-xl" />`
-
-**Selection Priority (Order matters):**
-
-1.  **Lucide (Standard):** `i-lucide-<name>` (e.g. `i-lucide-home`, `i-lucide-settings`) -> **PREFERRED**.
-2.  **Solar (Premium):** `i-solar-<name>` (if Lucide is missing).
-3.  **Phosphor (ph):** `i-ph-<name>` (expressive alternative set).
-4.  **Logos:** `i-logos-<name>` (for brands).
-5.  **Custom SVG:** `i-custom:<filename>` (Located in `src/assets/icons/*.svg`).
-
-**Prohibitions:**
-
-- ❌ NO raw `<svg>` tags.
-- ❌ NO base64 icons.
-- ❌ NO external image links for icons.
-- ❌ NO hardcoded color/size in `style` (Use UnoCSS classes).
-
-### 4.3 PrimeVue Integration（优先使用 PrimeVue 组件）
-
-- 你在构建 UI 时，**必须优先使用 PrimeVue 组件**，而不是原生 HTML 元素，特别是：
-  - 表单字段：`<InputText>` / `<Password>` / `<InputNumber>` / `<Checkbox>` / `<RadioButton>` / `<Select>` / `<MultiSelect>` / `<DatePicker>` / `<ToggleSwitch>` 等（PrimeVue v4；禁止 v3 的 Dropdown、Calendar、InputSwitch）。详见 `./PRIMEVUE_V4_API.md`；
-  - 操作按钮：遵循「智能选择策略」—— 标准表单/对话框操作用 `<Button>`；图标微交互优先用 `<Button text rounded plain>`；Avatar/图片卡片/整行点击等视觉复合元素用语义 HTML + UnoCSS interactive tokens（禁止套 `<Button>` 包裹视觉元素）；
-  - 数据列表/表格：避免从零写 `<table>` 或裸用 PrimeVue DataTable 实现分页/排序/导出等复杂交互；
-  - 弹窗/抽屉：优先使用 `<Dialog>` / `<Drawer>`（PrimeVue v4；禁止 v3 的 Sidebar），而不是用 `position: fixed` 的 div 临时拼装。
-  - 全局轻量通知：组件内用 PrimeVue `useToast()`；非组件环境（拦截器、全局错误处理）用 `window.$toast` / `window.$message`，见 `./TOAST_AND_MESSAGE.md`。
-
-- 定制方式（必须遵守）：
-  - 使用 UnoCSS 类：`<Button class="px-padding-md fs-sm text-primary" ... />`；
-  - 使用 `pt`（PassThrough）配置对象对 PrimeVue 内部结构进行精细控制；
-  - 若必须覆盖复杂 DOM 结构，使用 `<style lang="scss" scoped">` + `:deep()`，但仍禁止在其中写布局/间距/颜色/字体大小/圆角的硬编码。
+- Scrollable containers MUST use `<CScrollbar>` — NEVER bare `overflow-auto`
+- Icons MUST use `<Icons name="i-lucide-*" />` — NO raw SVG, NO base64
+- PrimeVue v4 names: `Select` (not Dropdown), `DatePicker` (not Calendar), `ToggleSwitch` (not InputSwitch), `Drawer` (not Sidebar)
+- Auto-imports active in `.vue` files — DO NOT manually import `ref`, `computed`, `CScrollbar`, `Icons`
 
 ## 5. Layout Strategy
 
@@ -252,7 +154,7 @@ The project uses `unplugin-auto-import` and `unplugin-vue-components`.
 - ❌ `margin: 20px` → ✅ `m-margin-lg`
 - ❌ `font-size: 14px` → ✅ `fs-sm`
 - ❌ `color: #fff` → ✅ `text-foreground` or `text-white`
-- ❌ `background: #000` → ✅ `bg-background` or `bg-surface-ground`
+- ❌ `background: #000` → ✅ `bg-background` or `bg-card`
 - ❌ `width: 240px` → ✅ `w-sidebarWidth` (layout variable)
 - ❌ `height: 64px` → ✅ `h-headerHeight` (layout variable)
 - ❌ `border-radius: 8px` → ✅ `rounded-scale`

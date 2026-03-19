@@ -18,7 +18,7 @@
 ```vue
 <template>
   <div data-archetype="A3-stats-grid">
-    <div class="flex flex-col gap-xl layout-content-wide">
+    <div class="col-stack-xl layout-content-wide">
       <!-- content -->
     </div>
   </div>
@@ -56,13 +56,13 @@
 ### 2.3 Micro layout (spacing & alignment)
 
 - **Spacing:** MUST use semantic tokens: `gap-xl`, `gap-lg`, `p-padding-md`, `px-padding-lg`, etc. FORBIDDEN: raw `p-4`, `gap-4`, `m-2`.
-- **Alignment:** MUST use layout shortcuts: `row-between`, `center`, `column-stack`, `layout-stack`, `row-center`, etc. FORBIDDEN: hand-written long flex atomics (e.g. `flex flex-row items-center justify-between`) when a shortcut exists.
+- **Alignment:** MUST use layout shortcuts: `row-between`, `center`, `col-stack-{xs|sm|md|lg|xl}`, `layout-stack`, `row-center`, `row-y-center`, etc. FORBIDDEN: hand-written long flex atomics (e.g. `flex flex-row items-center justify-between`) when a shortcut exists. NOTE: `column-stack` does NOT exist — use `col-stack-{size}` instead.
 
 **Example (correct):**
 
 ```vue
-<div class="flex flex-col gap-xl layout-content-wide">
-  <header class="flex flex-col gap-sm">
+<div class="col-stack-xl layout-content-wide">
+  <header class="col-stack-sm">
     <h1 class="fs-2xl font-bold text-foreground m-0">Title</h1>
     <p class="fs-sm text-muted-foreground m-0">Subtitle</p>
   </header>

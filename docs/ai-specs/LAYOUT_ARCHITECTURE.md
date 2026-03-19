@@ -69,58 +69,37 @@
 > - **禁止**绕过 `effectiveMode`，在组件里通过“设备 if-else”手工拼出另一套 mode 推导逻辑（容易与 store 分叉）。
 > - **禁止**在 store 中依赖路由（例如 import `vue-router` / `router.push`），导航必须由调用方负责（遵循解耦规则）。
 
-### 2.2 Mermaid 状态图：effectiveMode 计算路径
+### 2.2 响应式三区与 effectiveMode（Device-First + xl Pivot）
 
-下面状态图展示 `effectiveMode` 如何由 `preferredMode` 与 `deviceStore` 约束派生：
+**三区规则**：Drawer Zone（&lt; 768px = xs/sm 或 Mobile）→ Drawer；Top Menu Fallback（768–1279px = md/lg）→ 顶栏；Wide Zone（≥ 1280px = xl+）→ Tablet 侧栏 / PC preferredMode。Logo：Drawer 区与 Tablet 始终显示；PC 仅在 md/lg 隐藏。
 
 ```mermaid
 stateDiagram-v2
   [*] --> Compute
 
   state Compute {
-    [*] --> CheckMobile
-
-    CheckMobile --> ForcedHorizontal : device.type == Mobile\nOR breakpoint in (xs, sm)
-    CheckMobile --> CheckMd : else
-
-    CheckMd --> ForcedVertical : device.isMobileLayout == true\n(非 xs/sm 情况下的 md 侧)
-    CheckMd --> CheckPcOrientation : else
-
-    CheckPcOrientation --> ForcedHorizontal : device.type == PC\nAND orientation == vertical
-    CheckPcOrientation --> Preferred : else
-
-    ForcedHorizontal --> [*]
-    ForcedVertical --> [*]
-    Preferred --> [*]
+    [*] --> CheckWide
+    CheckWide --> Wide : bp >= xl
+    Wide --> [*]
+    CheckWide --> Narrow : bp < xl
+    Narrow --> Drawer : type==Mobile OR bp in (xs, sm)
+    Narrow --> TopMenu : bp in (md, lg)
+    Drawer --> [*]
+    TopMenu --> [*]
   }
 ```
+
+- **LayoutAdmin 层**：当 effectiveMode 为 horizontal 且 **（Mobile 或 bp 为 xs/sm）** 时，`isDrawerMode=true`，渲染 **Drawer**；否则在 md/lg 渲染 **Top Menu**。
+- **Logo 文字**：Drawer 区（xs/sm/Mobile）与 Tablet 始终显示；PC 在 md/lg 隐藏；其余显示。
 
 ### 2.3 真实代码：`effectiveMode` getter（SSOT）
 
-代码位置：`src/stores/modules/layout.ts`
-
-```82:96:/Users/cc/MyPorject/ccd/src/stores/modules/layout.ts
-effectiveMode: (state): AdminLayoutMode => {
-  const deviceStore = useDeviceStore()
-  // 1) 真移动端（设备类型为 Mobile，或 xs/sm 视口）统一走抽屉式 horizontal
-  if (
-    deviceStore.type === 'Mobile'
-    || deviceStore.currentBreakpoint === 'xs'
-    || deviceStore.currentBreakpoint === 'sm'
-  ) {
-    return 'horizontal'
-  }
-  // 2) 平板 md 视口保持 vertical，由 LayoutAdmin 负责按断点收缩侧栏
-  if (deviceStore.isMobileLayout) return 'vertical'
-  if (deviceStore.type === 'PC' && deviceStore.orientation === 'vertical') return 'horizontal'
-  return state.preferredMode
-},
-```
+代码位置：`src/stores/modules/layout.ts`。逻辑以**设备类型 + 断点**为准：Mobile 一律 horizontal；Tablet/PC 的窄屏为 xs/sm/md/lg（&lt; xl），宽屏为 xl+ 时尊重 preferredMode。具体实现见仓库内 `effectiveMode` getter（isNarrowPc / isNarrowTablet 含 lg，pivot 为 xl）。
 
 补充说明：
 
-- **“移动端强制 horizontal”**：这是为了统一抽屉导航（Drawer）体验与更小的头部容器组织方式。
-- **“md 视口保持 vertical”**：平板/窄屏不是移动端 Drawer；Tablet 更适合侧栏折叠（collapse）而非抽屉强制。
+- **“移动端强制 horizontal”**：统一抽屉导航（Drawer）体验与更小的头部容器组织方式。
+- **“lg 为窄屏”**：在 enterprise SaaS 下，lg (1024px) 不足以舒适支撑侧栏+复杂表格，故业务阈值提升至 xl (1280px)；Tablet/PC 在 &lt; xl 时均为 Horizontal 顶栏回退。
 
 ### 2.4 `mode` 的对外语义
 
@@ -132,7 +111,7 @@ effectiveMode: (state): AdminLayoutMode => {
 ### 2.5 AI 任务触发词（When AI should jump here）
 
 - “preferredMode / effectiveMode / 派生模式 / 双轨状态机 / 断点强制”
-- “移动端强制 horizontal / Tablet md 不走 Drawer”
+- “移动端强制 horizontal / xl 宽屏起点 / lg 窄屏回退”
 
 ---
 
@@ -311,22 +290,20 @@ function runAdaptive() {
   - 在“初始化/设备切换”时允许覆盖
   - 在“用户已明确调整”后避免反复自动收展造成“抢控制权”的体验
 
-### 4.3 Drawer 模式（Mobile Drawer）激活条件
+### 4.3 Drawer 模式（Drawer Zone）激活条件
 
-Drawer 是 **UI 渲染层的行为**，而非 store 的 mode：
-
-- `LayoutAdmin.tsx` 中的 `isDrawerMode`：
-  - `mode === 'horizontal'` 且断点严格为 `xs/sm` 或设备类型 `Mobile`
-- Drawer 的打开状态：
-  - `layoutStore.mobileDrawerOpen`（运行时，不持久化）
+- **isDrawerMode**（`LayoutAdmin.tsx`）：**Mobile 设备** 或 **currentBreakpoint 为 xs/sm**，且 `mode === 'horizontal'` 时激活。
+- 因此 &lt; 768px（xs、sm）或 UA 为 Mobile 时使用 Drawer；**md/lg 使用 Top Menu**，避免 sm 宽度（如 694px）下顶栏溢出。
+- Drawer 的打开状态：`layoutStore.mobileDrawerOpen`（运行时，不持久化）。
 
 ### 4.4 禁区声明（必须遵守）
 
 > **CRITICAL：禁区声明（Anti-patterns）**
 >
 > - **禁止**在 `runAdaptive()` 或 `adapt*()` 中调用 `setPreferredMode` / `updateSetting('preferredMode', ...)`。
-> - **禁止**把 Tablet 当作 Mobile：Tablet（md）应该是 `vertical + collapse` 的体验，而不是强制 Drawer。
+> - **禁止**把 Tablet 当作 Mobile：Tablet 在 **xs/sm** 为 Drawer，在 **md/lg** 为 Top Menu 顶栏回退，≥ xl 为 Sidebar；禁止在 xs/sm 对 Tablet 仅用顶栏而不用 Drawer。
 > - **禁止**忽略 `userAdjusted`：用户一旦手动折叠，自动逻辑不能来回“抢”折叠状态（除非 `force=true`）。
+> - **禁止**将 lg (1024px) 视为宽屏：业务宽屏起点为 xl (1280px)，见 `docs/ai-specs/ADAPTIVE_LAYOUT.md` §0.1。
 
 ### 4.5 AI 任务触发词（When AI should jump here）
 
@@ -506,7 +483,11 @@ const aspectRatio = computed<number>(() => parseRatioString(route.meta?.ratio))
 </div>
 ```
 
-### 5.9 AI 任务触发词（When AI should jump here）
+### 5.10 样式规范交叉引用（Styling Cross-Reference）
+
+布局组件的样式必须遵循 Anti-Utility-Soup 原则（详见 `CLAUDE.md` §4.3-B Rule N-5）。新增或修改布局组件时，当结构类超过 5 个原子类应优先使用语义快捷类（如 `col-fill`、`panel-base`、`row-y-center`、`col-stack-*`）。本文档中已有代码引用反映当前实现快照，不代表最佳实践模板。
+
+### 5.11 AI 任务触发词（When AI should jump here）
 
 - “AdminHeader / AdminSidebar / Drawer / 汉堡菜单 / 用户入口”
 - “SidebarMenu 展开/折叠 / accordion / expandedKeys / parentPaths”

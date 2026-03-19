@@ -630,7 +630,7 @@ function updateOption() {
 
 - **项目协议**：`./PROJECT_PROTOCOL.md`
 - **组件使用规则**：`.cursor/rules/18-components-and-icons.mdc`
-- **UI 架构规则**：`.agent/rules/10-ui-architecture.md`
+- **UI 架构规则（SSOT）**：`.cursor/rules/40-echarts-visualization.mdc` + `.cursor/rules/18-components-and-icons.mdc` + `.cursor/rules/20-ui-styling.mdc`
 - **UseEcharts README**：`src/components/UseEcharts/README.md`
 
 ---

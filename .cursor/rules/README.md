@@ -196,20 +196,38 @@ Each rule file has metadata:
 
 ## Rule Correspondence with Antigravity
 
-- `00-core-architecture.mdc` ↔ `00-primary-directive.md`
-- `10-logic-layer.mdc` ↔ `12-logic-awareness.md`
-- `12-api-layer.mdc` ↔ no direct match (.cursor only)
-- `15-utils-and-hooks-first.mdc` ↔ `15-toolchain-first.md`
-- `18-components-and-icons.mdc` ↔ `10-ui-architecture.md` (partial)
-- `20-ui-styling.mdc` ↔ `10-ui-architecture.md` (partial)
-- `22-layouts.mdc` ↔ `25-adaptive-layout.md`
-- `24-tsx-rendering.mdc` ↔ no direct match (.cursor only)
-- `25-html-tag-semantics.mdc` ↔ `25-html-tag-semantics.md`
-- `08-auth-login-flow.mdc` ↔ `08-auth-login-flow.md`
-- `26-repair-list-workflow.mdc` ↔ `26-repair-list-workflow.md`
-- `28-industrial-ux-standards.mdc` ↔ `28-industrial-ux-standards.md`
-- `30-drift-check.mdc` ↔ no direct match (archetype sync with `page.state.ts`; region scroll in `docs/ai-specs/ARCHETYPE_SPEC.md` § Region scroll behavior)
-- `35-schema-driven-development.mdc` ↔ `35-schema-driven-development.md`
-- `104-anti-flicker-ring-less.mdc` ↔ `104-anti-flicker-ring-less.md`
+This repository uses `.cursor/rules/` as the SSOT; `.agent/rules/` mirrors it with the same basenames (extension differs: `.mdc` vs `.md`).
 
-Note: `.agent`-only rules (e.g. `22-verification.md`, `20-code-standards.md`) may be scattered across other Cursor rule files.
+- `00-core-architecture.mdc` ↔ `00-core-architecture.md`
+- `01-naming-conventions.mdc` ↔ `01-naming-conventions.md`
+- `02-boilerplate-immunity.mdc` ↔ `02-boilerplate-immunity.md`
+- `03-auto-import-shield.mdc` ↔ `03-auto-import-shield.md`
+- `04-strict-vue-typescript.mdc` ↔ `04-strict-vue-typescript.md`
+- `05-architecture-decoupling.mdc` ↔ `05-architecture-decoupling.md`
+- `06-data-immutability.mdc` ↔ `06-data-immutability.md`
+- `07-compilation-boundaries.mdc` ↔ `07-compilation-boundaries.md`
+- `08-auth-login-flow.mdc` ↔ `08-auth-login-flow.md`
+- `09-enterprise-guardrails.mdc` ↔ `09-enterprise-guardrails.md`
+- `10-logic-layer.mdc` ↔ `10-logic-layer.md`
+- `12-api-layer.mdc` ↔ `12-api-layer.md`
+- `15-utils-and-hooks-first.mdc` ↔ `15-utils-and-hooks-first.md`
+- `18-components-and-icons.mdc` ↔ `18-components-and-icons.md`
+- `20-ui-styling.mdc` ↔ `20-ui-styling.md`
+- `21-color-system.mdc` ↔ `21-color-system.md`
+- `22-layouts.mdc` ↔ `22-layouts.md`
+- `24-tsx-rendering.mdc` ↔ `24-tsx-rendering.md`
+- `25-html-tag-semantics.mdc` ↔ `25-html-tag-semantics.md`
+- `26-repair-list-workflow.mdc` ↔ `26-repair-list-workflow.md`
+- `27-ai-tsx-decision.mdc` ↔ `27-ai-tsx-decision.md`
+- `28-industrial-ux-standards.mdc` ↔ `28-industrial-ux-standards.md`
+- `29-focus-outline-styling.mdc` ↔ `29-focus-outline-styling.md`
+- `30-drift-check.mdc` ↔ `30-drift-check.md`
+- `31-temp-artifacts-lifecycle.mdc` ↔ `31-temp-artifacts-lifecycle.md`
+- `35-schema-driven-development.mdc` ↔ `35-schema-driven-development.md`
+- `36-pro-form-integration.mdc` ↔ `36-pro-form-integration.md`
+- `40-echarts-visualization.mdc` ↔ `40-echarts-visualization.md`
+- `50-user-centric-engineering.mdc` ↔ `50-user-centric-engineering.md`
+- `101-premium-ui.mdc` ↔ `101-premium-ui.md`
+- `102-primevue-unstyled.mdc` ↔ `102-primevue-unstyled.md`
+- `103-architecture-docs-enforcement.mdc` ↔ `103-architecture-docs-enforcement.md`
+- `104-anti-flicker-ring-less.mdc` ↔ `104-anti-flicker-ring-less.md`

@@ -78,14 +78,14 @@
 
 ### 2.5 内容宽度规范（禁止 Tailwind 默认 max-w-\* · 必须使用 layout-content-\*）
 
-UnoCSS 内置的 `presetUno` 会提供 Tailwind 风格的 `max-w-2xl` / `max-w-7xl` 等类，这些类对应固定的 `rem` 宽度，会随根字号变化而破坏布局稳定性。**页面级主内容区必须使用 `vw` 基流体布局，与根字号解耦。**
+UnoCSS 内置的 `presetUno` 会提供 Tailwind 风格的 `max-w-2xl` / `max-w-7xl` 等类，这些类对应固定的 `rem` 宽度，会随根字号变化而破坏布局稳定性。**页面级主内容区必须使用响应式百分比布局，与根字号解耦。**
 
 在本项目中：
 
-- **页面级内容宽度必须使用 `uno.config.ts` 中的 layout-content shortcut（基于响应式 vw 链）：**
-  - `layout-content-narrow`：窄内容区（如描述、表格/消息示例块）— 内部为 `max-w-[94vw] sm:max-w-[84vw] … 2xl:max-w-[40vw]`
-  - `layout-content`：标准内容区（如 PrimeVue 组件示例页）— 内部为 `max-w-[96vw] sm:max-w-[88vw] … 2xl:max-w-[60vw]`
-  - `layout-content-wide`：宽内容区（如系统配置文档页、Dashboard）— 内部为 `max-w-[98vw] sm:max-w-[94vw] … 3xl:max-w-[72vw]`
+- **页面级内容宽度必须使用 `uno.config.ts` 中的 layout-content shortcut（基于响应式 % 链）：**
+  - `layout-content-narrow`：窄内容区（如描述、表格/消息示例块）— 内部为 `max-w-[88%] sm:max-w-[84%] … 2xl:max-w-[76%]`
+  - `layout-content`：标准内容区（如 PrimeVue 组件示例页）— 内部为 `max-w-[90%] sm:max-w-[88%] … 2xl:max-w-[80%]`
+  - `layout-content-wide`：宽内容区（如系统配置文档页、Dashboard）— 内部为 `max-w-[92%] sm:max-w-[94%] … 3xl:max-w-[84%]`
 
 - **禁止在页面主内容区使用的类（rem 基，会破坏布局稳定性）：**
 

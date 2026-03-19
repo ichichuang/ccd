@@ -17,6 +17,7 @@
 - **禁止**：在业务逻辑、组件或 store 中使用 `any` 或 `as any`。
 - **正确**：`any` 仅允许出现在 `src/adapters/`（类型边界）内，并附带 `// eslint-disable-next-line @typescript-eslint/no-explicit-any`。
 - **正确**：泛型桥接必须使用 `src/utils/typeCasters.ts` 中的函数（如 `castValue`、`castColumn`），不得使用 `as unknown as Type`。
+- **注意：上述 typeCasters 仅允许在 <script setup> 或 .ts/.tsx 中使用，绝对禁止在模板的 bindings 或 {{ }} 插值中内联使用。**
 
 ## 3. 数据不可变性（Anti-Pattern 6）
 

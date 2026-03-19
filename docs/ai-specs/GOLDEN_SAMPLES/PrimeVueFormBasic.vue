@@ -21,8 +21,8 @@ const cityOptions: CityOption[] = [
 </script>
 
 <template>
-  <div class="flex flex-col gap-md max-w-md">
-    <div class="flex flex-col gap-xs">
+  <div class="col-stack-md layout-content-narrow">
+    <div class="col-stack-xs">
       <label
         for="pv-select"
         class="text-foreground fs-sm"
@@ -39,7 +39,7 @@ const cityOptions: CityOption[] = [
         show-clear
       />
     </div>
-    <div class="flex flex-col gap-xs">
+    <div class="col-stack-xs">
       <label
         for="pv-date"
         class="text-foreground fs-sm"
@@ -54,7 +54,7 @@ const cityOptions: CityOption[] = [
         show-icon
       />
     </div>
-    <div class="flex items-center gap-sm">
+    <div class="row-y-center gap-sm">
       <ToggleSwitch
         id="pv-toggle"
         v-model="toggleVal"
