@@ -1,0 +1,20 @@
+# Component Governance Rule
+
+## ProTable (MUST)
+- ✅ **MUST** use the **dual-engine** architecture:
+  - Virtual Scroll engine
+  - PrimeVue rendering integration
+- ✅ **MUST** define and propagate generics:
+  - `ProTable<T>` (or equivalent type plumbing)
+- ❌ **NEVER** collapse the ProTable pipeline into a single non-generic “any-style” renderer.
+
+## ProForm (MUST)
+- ✅ **MUST** follow strict SSOT from `config.ts`.
+  - Labels, placeholders, validation rules must come from config/SSOT sources.
+- ✅ **MUST** avoid inline ad-hoc rule definitions in templates.
+- ❌ **NEVER** bypass the ProForm schema engine with handwritten DOM-only forms for non-trivial cases.
+
+## Anti-Pattern Warning (FORBIDDEN)
+- ❌ **FORBIDDEN**: inline CSS and ad-hoc `<style scoped>` when a Design Engine utility/shortcut can solve it.
+- ❌ **FORBIDDEN**: embedding raw layout/spacing/color decisions in templates if a semantic utility exists.
+
