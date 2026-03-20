@@ -31,22 +31,22 @@ const effectiveStateKey = computed<string | undefined>(() =>
 <template>
   <div
     data-archetype="A1-toolbar-content"
-    class="layout-full px-padding-md md:px-padding-lg col-stack-sm min-h-0"
+    class="layout-full px-md md:px-lg col-stack-sm min-h-0"
   >
     <!-- Toolbar: Hero Header (Transparent Root Policy: Inherit canvas) -->
     <header class="shrink-0 border-b-default">
-      <div class="w-full py-padding-sm row-y-center gap-md">
-        <div class="p-padding-md bg-primary/10 rounded-scale-lg shrink-0">
+      <div class="w-full py-sm row-y-center gap-md">
+        <div class="p-md bg-primary/10 rounded-lg shrink-0">
           <Icons
             name="i-lucide-columns-2"
-            class="text-primary fs-2xl"
+            class="text-primary text-2xl"
           />
         </div>
         <div class="col-stack-xs">
-          <h1 class="fs-2xl font-bold text-foreground m-0">
+          <h1 class="text-2xl font-bold text-foreground m-0">
             {{ $t('router.example.proTableAdvanced') }}
           </h1>
-          <p class="text-muted fs-sm m-0">列宽拖拽 · 列重排 · 状态记忆（session/local）</p>
+          <p class="text-muted text-sm m-0">列宽拖拽 · 列重排 · 状态记忆（session/local）</p>
         </div>
       </div>
     </header>
@@ -55,15 +55,15 @@ const effectiveStateKey = computed<string | undefined>(() =>
     <div class="flex-1 min-h-0 col-stack-sm">
       <!-- Control Panel -->
       <div class="shrink-0 border-b-default">
-        <div class="w-full py-padding-sm">
-          <div class="panel-base">
-            <div class="row-y-center gap-sm border-b-default pb-padding-sm mb-padding-sm">
+        <div class="w-full py-sm">
+          <div class="bg-card rounded-md shadow-soft py-md px-lg flex flex-col gap-lg">
+            <div class="row-y-center gap-sm border-b-default pb-sm mb-padding-sm">
               <Icons
                 name="i-lucide-settings-2"
                 class="text-primary"
                 size="sm"
               />
-              <span class="fs-sm font-semibold text-foreground tracking-wider uppercase">
+              <span class="text-sm font-semibold text-foreground tracking-wider uppercase">
                 高级功能控制台 / Advanced Controls
               </span>
             </div>
@@ -71,7 +71,7 @@ const effectiveStateKey = computed<string | undefined>(() =>
             <div class="col-stack-md">
               <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-xl">
                 <!-- 列宽拖拽 -->
-                <div class="bg-muted/5 rounded-scale-md p-padding-md col-stack-md">
+                <div class="bg-muted/5 rounded-md p-md col-stack-md">
                   <div class="row-y-center gap-xs mb-padding-xs">
                     <Icons
                       name="i-lucide-move-horizontal"
@@ -79,7 +79,7 @@ const effectiveStateKey = computed<string | undefined>(() =>
                       class="text-muted-foreground shrink-0"
                     />
                     <p
-                      class="fs-xs font-semibold text-muted-foreground uppercase tracking-wider m-0"
+                      class="text-xs font-semibold text-muted-foreground uppercase tracking-wider m-0"
                     >
                       列宽拖拽
                     </p>
@@ -87,7 +87,7 @@ const effectiveStateKey = computed<string | undefined>(() =>
                   <div class="row-between">
                     <label
                       for="ctrl-resize"
-                      class="fs-sm text-foreground cursor-pointer"
+                      class="text-sm text-foreground cursor-pointer"
                     >
                       Resize
                     </label>
@@ -100,7 +100,7 @@ const effectiveStateKey = computed<string | undefined>(() =>
                 </div>
 
                 <!-- 拖拽模式 -->
-                <div class="bg-muted/5 rounded-scale-md p-padding-md col-stack-md">
+                <div class="bg-muted/5 rounded-md p-md col-stack-md">
                   <div class="row-y-center gap-xs mb-padding-xs">
                     <Icons
                       name="i-lucide-columns-2"
@@ -108,13 +108,13 @@ const effectiveStateKey = computed<string | undefined>(() =>
                       class="text-muted-foreground shrink-0"
                     />
                     <p
-                      class="fs-xs font-semibold text-muted-foreground uppercase tracking-wider m-0"
+                      class="text-xs font-semibold text-muted-foreground uppercase tracking-wider m-0"
                     >
                       拖拽模式
                     </p>
                   </div>
                   <div class="row-y-center gap-md">
-                    <label class="fs-sm text-foreground shrink-0 w-[var(--spacing-4xl)]">
+                    <label class="text-sm text-foreground shrink-0 w-[var(--spacing-4xl)]">
                       Resize Mode
                     </label>
                     <Select
@@ -128,7 +128,7 @@ const effectiveStateKey = computed<string | undefined>(() =>
                 </div>
 
                 <!-- 列重排 -->
-                <div class="bg-muted/5 rounded-scale-md p-padding-md col-stack-md">
+                <div class="bg-muted/5 rounded-md p-md col-stack-md">
                   <div class="row-y-center gap-xs mb-padding-xs">
                     <Icons
                       name="i-lucide-arrow-left-right"
@@ -136,7 +136,7 @@ const effectiveStateKey = computed<string | undefined>(() =>
                       class="text-muted-foreground shrink-0"
                     />
                     <p
-                      class="fs-xs font-semibold text-muted-foreground uppercase tracking-wider m-0"
+                      class="text-xs font-semibold text-muted-foreground uppercase tracking-wider m-0"
                     >
                       列重排
                     </p>
@@ -144,7 +144,7 @@ const effectiveStateKey = computed<string | undefined>(() =>
                   <div class="row-between">
                     <label
                       for="ctrl-reorder"
-                      class="fs-sm text-foreground cursor-pointer"
+                      class="text-sm text-foreground cursor-pointer"
                     >
                       Reorder
                     </label>
@@ -157,7 +157,7 @@ const effectiveStateKey = computed<string | undefined>(() =>
                 </div>
 
                 <!-- 状态记忆 -->
-                <div class="bg-muted/5 rounded-scale-md p-padding-md col-stack-md">
+                <div class="bg-muted/5 rounded-md p-md col-stack-md">
                   <div class="row-y-center gap-xs mb-padding-xs">
                     <Icons
                       name="i-lucide-database"
@@ -165,13 +165,13 @@ const effectiveStateKey = computed<string | undefined>(() =>
                       class="text-muted-foreground shrink-0"
                     />
                     <p
-                      class="fs-xs font-semibold text-muted-foreground uppercase tracking-wider m-0"
+                      class="text-xs font-semibold text-muted-foreground uppercase tracking-wider m-0"
                     >
                       状态记忆
                     </p>
                   </div>
                   <div class="row-y-center gap-md">
-                    <label class="fs-sm text-foreground shrink-0 w-[var(--spacing-4xl)]">
+                    <label class="text-sm text-foreground shrink-0 w-[var(--spacing-4xl)]">
                       State Storage
                     </label>
                     <Select
@@ -185,8 +185,8 @@ const effectiveStateKey = computed<string | undefined>(() =>
                 </div>
               </div>
 
-              <div class="p-padding-md bg-muted/5 rounded-scale-md">
-                <p class="fs-xs text-muted m-0 leading-relaxed italic">
+              <div class="p-md bg-muted/5 rounded-md">
+                <p class="text-xs text-muted m-0 leading-relaxed italic">
                   <span class="font-bold not-italic">说明：</span>
                   开启「列宽拖拽」后拖动表头列边界可调整列宽；「列重排」可拖动表头改变列顺序。
                   启用「状态记忆」后，列宽与列顺序会写入浏览器存储，刷新或重新打开页面可恢复（stateKey:

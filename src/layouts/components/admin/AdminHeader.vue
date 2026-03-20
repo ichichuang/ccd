@@ -124,7 +124,7 @@ const renderRootItem = (item: PrimeMenuModelItem) => {
     level: 0,
   })
 
-  const linkClass = [getMenuItemBase('header'), MENU_TEXT_WEIGHT, 'mx-margin-xs', stateClasses]
+  const linkClass = [getMenuItemBase('header'), MENU_TEXT_WEIGHT, 'mx-xs', stateClasses]
     .filter(Boolean)
     .join(' ')
 
@@ -225,7 +225,7 @@ const renderRootItem = (item: PrimeMenuModelItem) => {
   <header
     v-if="showHeader"
     :class="[
-      'w-full h-headerHeight row-between px-padding-md py-padding-sm transition-all duration-scale-md gap-md select-none',
+      'w-full h-headerHeight row-between px-md py-sm transition-all duration-md gap-md select-none',
     ]"
     @dragstart.prevent
   >
@@ -235,7 +235,7 @@ const renderRootItem = (item: PrimeMenuModelItem) => {
       <button
         v-if="showDrawerTrigger"
         type="button"
-        class="header-icon-btn"
+        class="cursor-pointer border-none outline-none duration-sm hover:scale-110 active:scale-100 shadow-sm hover:shadow-float hover:text-primary p-sm center rounded-sm bg-sidebar"
         @click="layoutStore.toggleMobileDrawer()"
       >
         <Icons
@@ -260,10 +260,10 @@ const renderRootItem = (item: PrimeMenuModelItem) => {
           v-show="showLogoText"
           class="h-full column justify-between"
         >
-          <span class="fs-xl font-bold tracking-tight duration-scale-md">
+          <span class="text-xl font-bold tracking-tight duration-md">
             {{ brand.displayName }}
           </span>
-          <span class="fs-xs text-muted-foreground font-medium">{{ brand.subtitle }}</span>
+          <span class="text-xs text-muted-foreground font-medium">{{ brand.subtitle }}</span>
         </div>
       </a>
     </div>
@@ -309,23 +309,23 @@ const renderRootItem = (item: PrimeMenuModelItem) => {
     </div>
 
     <!-- Right: Actions (no responsive display classes; visibility from v-if only) -->
-    <div class="h-full center gap-sm py-xs">
+    <div class="h-full center gap-sm">
       <button
         v-if="showSidebarToggle"
         type="button"
-        class="header-icon-btn"
+        class="cursor-pointer border-none outline-none duration-sm hover:scale-110 active:scale-100 shadow-sm hover:shadow-float hover:text-primary p-sm center rounded-sm bg-sidebar"
         @click="emit('toggleCollapse', $event)"
       >
         <Icons
           :name="sidebarCollapse ? 'i-lucide-panel-left-open' : 'i-lucide-panel-left-close'"
           class="color-inherit"
-          size="2xl"
+          size="lg"
         />
       </button>
       <button
         v-if="deviceStore.type === 'PC'"
         type="button"
-        class="header-icon-btn"
+        class="cursor-pointer border-none outline-none duration-sm hover:scale-110 active:scale-100 shadow-sm hover:shadow-float hover:text-primary p-sm center rounded-sm bg-sidebar"
         @click="toggleFullscreen()"
       >
         <Icons
@@ -335,17 +335,17 @@ const renderRootItem = (item: PrimeMenuModelItem) => {
               : 'i-solar-full-screen-bold-duotone'
           "
           class="color-inherit"
-          size="2xl"
+          size="lg"
         />
       </button>
       <button
         type="button"
-        class="header-icon-btn"
+        class="cursor-pointer border-none outline-none duration-sm hover:scale-110 active:scale-100 shadow-sm hover:shadow-float hover:text-primary p-sm center rounded-sm bg-sidebar"
         @click="emit('toggleTheme', $event)"
       >
         <Icons
           :name="isDark ? 'i-solar-moon-bold-duotone' : 'i-solar-sun-2-bold-duotone'"
-          size="2xl"
+          size="lg"
           class="color-inherit"
         />
       </button>

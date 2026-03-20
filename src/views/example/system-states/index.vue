@@ -57,9 +57,9 @@ const sizeScaleDisplayList = computed<{ key: SizeScaleKey; percent: number }[]>(
   >
     <div
       data-region="toolbar"
-      class="shrink-0 row-between gap-scale-md px-padding-lg py-padding-md border-b-default"
+      class="shrink-0 row-between gap-md px-lg py-md border-b-default"
     >
-      <span class="fs-md font-semibold text-foreground">
+      <span class="text-md font-semibold text-foreground">
         {{ $t('router.example.systemStates') }}
       </span>
     </div>
@@ -69,10 +69,10 @@ const sizeScaleDisplayList = computed<{ key: SizeScaleKey; percent: number }[]>(
       class="col-fill"
     >
       <CScrollbar class="h-full">
-        <div class="p-padding-lg layout-stack gap-scale-xl">
+        <div class="p-lg layout-stack gap-xl">
           <!-- Loading States -->
           <section class="col-stack-lg">
-            <h2 class="fs-lg font-semibold text-foreground m-0 row-y-center gap-scale-sm">
+            <h2 class="text-lg font-semibold text-foreground m-0 row-y-center gap-sm">
               <Icons
                 name="i-lucide-loader-2"
                 size="sm"
@@ -80,10 +80,10 @@ const sizeScaleDisplayList = computed<{ key: SizeScaleKey; percent: number }[]>(
               />
               加载状态
             </h2>
-            <div class="layout-stack gap-scale-lg">
-              <Card class="surface-elevated def-rounded overflow-hidden">
+            <div class="layout-stack gap-lg">
+              <Card class="surface-elevated rounded-md! overflow-hidden">
                 <template #title>
-                  <span class="row-y-center gap-scale-sm">
+                  <span class="row-y-center gap-sm">
                     <Icons
                       name="i-lucide-loader-2"
                       size="sm"
@@ -93,9 +93,9 @@ const sizeScaleDisplayList = computed<{ key: SizeScaleKey; percent: number }[]>(
                   </span>
                 </template>
                 <template #content>
-                  <p class="fs-sm text-muted m-0 mb-margin-md">
+                  <p class="text-sm text-muted m-0 mb-md">
                     全屏遮罩，覆盖整个布局，使用
-                    <span class="px-padding-xs rounded bg-muted">Loading</span>
+                    <span class="px-xs rounded bg-muted">Loading</span>
                     type 3（003.json）、size 5xl。触发后持续 3 秒自动关闭。
                   </p>
                   <Button
@@ -108,9 +108,9 @@ const sizeScaleDisplayList = computed<{ key: SizeScaleKey; percent: number }[]>(
                 </template>
               </Card>
 
-              <Card class="surface-elevated def-rounded overflow-hidden">
+              <Card class="surface-elevated rounded-md! overflow-hidden">
                 <template #title>
-                  <span class="row-y-center gap-scale-sm">
+                  <span class="row-y-center gap-sm">
                     <Icons
                       name="i-lucide-layout"
                       size="sm"
@@ -120,9 +120,9 @@ const sizeScaleDisplayList = computed<{ key: SizeScaleKey; percent: number }[]>(
                   </span>
                 </template>
                 <template #content>
-                  <p class="fs-sm text-muted m-0 mb-margin-md">
+                  <p class="text-sm text-muted m-0 mb-md">
                     内容区遮罩，仅覆盖主内容区域，使用
-                    <span class="px-padding-xs rounded bg-muted">Loading</span>
+                    <span class="px-xs rounded bg-muted">Loading</span>
                     type 2（002.json）、size lg。触发后持续 3 秒自动关闭。
                   </p>
                   <Button
@@ -135,9 +135,9 @@ const sizeScaleDisplayList = computed<{ key: SizeScaleKey; percent: number }[]>(
                 </template>
               </Card>
 
-              <Card class="surface-elevated def-rounded overflow-hidden">
+              <Card class="surface-elevated rounded-md! overflow-hidden">
                 <template #title>
-                  <span class="row-y-center gap-scale-sm">
+                  <span class="row-y-center gap-sm">
                     <Icons
                       name="i-lucide-mouse-pointer-click"
                       size="sm"
@@ -147,7 +147,7 @@ const sizeScaleDisplayList = computed<{ key: SizeScaleKey; percent: number }[]>(
                   </span>
                 </template>
                 <template #content>
-                  <p class="fs-sm text-muted m-0 mb-margin-md">
+                  <p class="text-sm text-muted m-0 mb-md">
                     PrimeVue Button 的 loading 状态。触发后持续 3 秒。
                   </p>
                   <Button
@@ -160,9 +160,9 @@ const sizeScaleDisplayList = computed<{ key: SizeScaleKey; percent: number }[]>(
                 </template>
               </Card>
 
-              <Card class="surface-elevated def-rounded overflow-hidden">
+              <Card class="surface-elevated rounded-md! overflow-hidden">
                 <template #title>
-                  <span class="row-y-center gap-scale-sm">
+                  <span class="row-y-center gap-sm">
                     <Icons
                       name="i-lucide-ruler"
                       size="sm"
@@ -172,17 +172,17 @@ const sizeScaleDisplayList = computed<{ key: SizeScaleKey; percent: number }[]>(
                   </span>
                 </template>
                 <template #content>
-                  <p class="fs-sm text-muted m-0 mb-margin-md">
-                    <span class="px-padding-xs rounded bg-muted">size</span>
+                  <p class="text-sm text-muted m-0 mb-md">
+                    <span class="px-xs rounded bg-muted">size</span>
                     使用 Design System 的 SizeScaleKey，对应 LOADING_SIZE_PERCENT。
                   </p>
-                  <div class="layout-wrap gap-scale-xl items-end">
+                  <div class="layout-wrap gap-xl items-end">
                     <div
                       v-for="item in sizeScaleDisplayList"
                       :key="item.key"
                       class="col-stack-sm items-center"
                     >
-                      <span class="fs-xs font-mono text-muted">
+                      <span class="text-xs font-mono text-muted">
                         {{ item.key }} ({{ item.percent }}vw)
                       </span>
                     </div>
@@ -190,9 +190,9 @@ const sizeScaleDisplayList = computed<{ key: SizeScaleKey; percent: number }[]>(
                 </template>
               </Card>
 
-              <Card class="surface-elevated def-rounded overflow-hidden">
+              <Card class="surface-elevated rounded-md! overflow-hidden">
                 <template #title>
-                  <span class="row-y-center gap-scale-sm">
+                  <span class="row-y-center gap-sm">
                     <Icons
                       name="i-lucide-square-dashed-bottom-code"
                       size="sm"
@@ -202,8 +202,10 @@ const sizeScaleDisplayList = computed<{ key: SizeScaleKey; percent: number }[]>(
                   </span>
                 </template>
                 <template #content>
-                  <p class="fs-sm text-muted m-0 mb-margin-md">模拟个人资料卡片的骨架占位。</p>
-                  <div class="row-y-center gap-scale-lg layout-content-narrow">
+                  <p class="text-sm text-muted m-0 mb-md">模拟个人资料卡片的骨架占位。</p>
+                  <div
+                    class="row-y-center gap-lg py-sm md:py-md xl:py-lg 2xl:py-xl mx-auto max-w-[88%] sm:max-w-[84%] md:max-w-[82%] lg:max-w-[80%] xl:max-w-[78%] 2xl:max-w-[76%]"
+                  >
                     <div class="shrink-0">
                       <Skeleton
                         shape="circle"
@@ -232,7 +234,7 @@ const sizeScaleDisplayList = computed<{ key: SizeScaleKey; percent: number }[]>(
 
           <!-- Exception Pages -->
           <section class="col-stack-md">
-            <h2 class="fs-lg font-semibold text-foreground m-0 row-y-center gap-scale-sm">
+            <h2 class="text-lg font-semibold text-foreground m-0 row-y-center gap-sm">
               <Icons
                 name="i-lucide-alert-triangle"
                 size="sm"
@@ -240,9 +242,9 @@ const sizeScaleDisplayList = computed<{ key: SizeScaleKey; percent: number }[]>(
               />
               异常页面
             </h2>
-            <Card class="surface-elevated def-rounded overflow-hidden">
+            <Card class="surface-elevated rounded-md! overflow-hidden">
               <template #title>
-                <span class="row-y-center gap-scale-sm">
+                <span class="row-y-center gap-sm">
                   <Icons
                     name="i-lucide-file-question"
                     size="sm"
@@ -252,10 +254,10 @@ const sizeScaleDisplayList = computed<{ key: SizeScaleKey; percent: number }[]>(
                 </span>
               </template>
               <template #content>
-                <p class="fs-sm text-muted m-0 mb-margin-md">
+                <p class="text-sm text-muted m-0 mb-md">
                   通过路由可访问 403 / 404 / 500 等异常页，用于演示错误态与返回引导。
                 </p>
-                <div class="row-y-center layout-wrap gap-scale-md">
+                <div class="row-y-center layout-wrap gap-md">
                   <Button
                     severity="primary"
                     class="behavior-hover-transition interactive-focus-ring"

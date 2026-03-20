@@ -9,6 +9,8 @@ import {
   type Rule,
 } from 'unocss'
 import { getDynamicSafelist, getPresetIconsCollections } from './build/uno-icons'
+import { buildThemeDemoSafelist as buildThemeDemoSafelistFromTheme, theme } from './uno.theme'
+import { shortcuts } from './uno.shortcuts'
 import { BREAKPOINTS } from './src/constants/breakpoints'
 import { LAYOUT_DIMENSION_KEYS, SIZE_BASE_VAR_KEYS } from './src/constants/size'
 import { SIZE_SCALE_KEYS } from './src/constants/sizeScale'
@@ -465,7 +467,7 @@ export default defineConfig({
   safelist: isProd
     ? getDynamicSafelist()
     : isDemo
-      ? [...getDynamicSafelist(), ...themeDemoSafelist]
+      ? [...getDynamicSafelist(), ...buildThemeDemoSafelistFromTheme()]
       : getDynamicSafelist(),
 
   content: {
@@ -479,273 +481,30 @@ export default defineConfig({
   // 业务层推荐只使用 shortcuts，不直接拼原子类。
   // spacing 推荐 p-padding-* / m-margin-* / gap-*，禁止在业务中直接使用 p-scale-*。
   // Shortcuts 依赖规则：允许低层→高层（density/behavior/hover-* → layout-*/component-*）；严禁反向或形成环。
-  shortcuts: {
-    // =========================================================
-    // ① 密度语义（Density Token，便于紧凑/舒适/宽松模式切换）
-    // =========================================================
-    'density-compact': 'gap-sm p-padding-sm',
-    'density-normal': 'gap-md p-padding-md',
-    'density-comfortable': 'gap-lg p-padding-lg',
-    'density-responsive': 'density-compact md:density-normal',
-
-    // =========================================================
-    // ② Flex 布局基础（方向即含义；使用 main-* / cross-* 时须显式配合 row 或 column）
-    // =========================================================
-    center: 'flex justify-center items-center',
-    row: 'flex flex-row',
-    column: 'flex flex-col',
-
-    // =========================================================
-    // ② Flex 主轴对齐（控制 justify-content）
-    // 说明：主轴 = flex-direction 方向
-    // =========================================================
-    'main-start': 'justify-start',
-    'main-center': 'justify-center',
-    'main-end': 'justify-end',
-    'main-between': 'justify-between',
-    'main-around': 'justify-around',
-    'main-evenly': 'justify-evenly',
-
-    // =========================================================
-    // ③ Flex 交叉轴对齐（控制 align-items）
-    // 说明：交叉轴 = 与主轴垂直方向
-    // =========================================================
-    'cross-start': 'items-start',
-    'cross-center': 'items-center',
-    'cross-end': 'items-end',
-    'cross-stretch': 'items-stretch',
-
-    // =========================================================
-    // ④ 高频语义化 Flex 组合（只保留最常用场景）
-    // =========================================================
-    'row-center': 'flex flex-row items-center justify-center',
-    'row-between': 'flex flex-row items-center justify-between',
-    'row-start': 'flex flex-row items-start justify-start',
-    'column-center': 'flex flex-col items-center justify-center',
-    'column-between': 'flex flex-col justify-between',
-    // 填充列（flex-1 + min-h-0 防溢出）& 行内垂直居中
-    'col-fill': 'flex-1 min-h-0 flex flex-col overflow-hidden',
-    'row-y-center': 'flex flex-row items-center',
-    'row-end': 'flex flex-row items-center justify-end',
-    // 列堆叠（纯 column + gap，不含 padding；需 padding 用 layout-stack）
-    'col-stack-xs': 'flex flex-col gap-xs',
-    'col-stack-sm': 'flex flex-col gap-sm',
-    'col-stack-md': 'flex flex-col gap-md',
-    'col-stack-lg': 'flex flex-col gap-lg',
-    'col-stack-xl': 'flex flex-col gap-xl',
-
-    // =========================================================
-    // ⑤ 布局结构类（Layout Patterns）
-    // 说明：用于整体结构、容器、定位等“空间结构语义”
-    // =========================================================
-    'layout-full': 'w-full h-full',
-    'layout-screen': 'w-screen h-screen',
-    'layout-container': 'bg-background text-foreground',
-    'layout-stack': 'flex flex-col density-normal',
-    'layout-wrap': 'flex flex-wrap density-normal',
-    'layout-grid-center': 'grid place-items-center',
-    'layout-absolute-center': 'absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2',
-    // 常用内容容器宽度（彻底抛弃 rem，改用响应式 vw，实现完美流体布局）
-    'layout-content-narrow':
-      'py-padding-sm md:py-padding-md xl:py-padding-lg 2xl:py-padding-xl mx-auto max-w-[88%] sm:max-w-[84%] md:max-w-[82%] lg:max-w-[80%] xl:max-w-[78%] 2xl:max-w-[76%]',
-    'layout-content':
-      'py-padding-sm md:py-padding-md xl:py-padding-lg 2xl:py-padding-xl mx-auto max-w-[90%] sm:max-w-[88%] md:max-w-[86%] lg:max-w-[84%] xl:max-w-[82%] 2xl:max-w-[80%]',
-    'layout-content-wide':
-      'py-padding-sm md:py-padding-md xl:py-padding-lg 2xl:py-padding-xl mx-auto max-w-[92%] sm:max-w-[94%] md:max-w-[92%] lg:max-w-[90%] xl:max-w-[88%] 2xl:max-w-[86%] 3xl:max-w-[84%]',
-    // 常用覆盖层/对话框宽度（vw 流体，无 rem；由 CSS 变量或 vw 回退）
-    'layout-dialog-sm': 'w-full max-w-[var(--dialog-sm,30vw)]',
-    'layout-dialog': 'w-full max-w-[var(--dialog-md,40vw)]',
-    'layout-dialog-lg': 'w-full max-w-[var(--dialog-lg,50vw)]',
-    // 侧边面板/抽屉宽度（优先 --sidebar-width，否则 15vw 流体回退）
-    'layout-sidepanel': 'w-[var(--sidebar-width,15vw)]',
-    // 视口相关的常用上限（集中定义，避免业务层写 max-h-[50vh]）
-    'layout-scroll-panel': 'max-h-[50vh]',
-
-    // =========================================================
-    // ⑥ 文本与排版工具类（Typography Utilities）
-    // 说明：文本展示、溢出、省略等
-    // =========================================================
-    'text-single-line-ellipsis': 'overflow-hidden whitespace-nowrap text-ellipsis',
-    'text-two-line-ellipsis': 'line-clamp-2 overflow-hidden',
-    'text-muted': 'text-muted-foreground',
-    'text-secondary': 'text-secondary-foreground',
-
-    // =========================================================
-    // ⑦ 交互行为类（Interaction Patterns）
-    // 说明：行为与风格解耦，便于统一调整 hover/focus 策略
-    // =========================================================
-    'behavior-hover-transition': 'transition-all duration-scale-md',
-    'hover-elevated': 'hover:shadow-md',
-    'interactive-hover': 'behavior-hover-transition hover-elevated',
-    'interactive-click':
-      'cursor-pointer select-none active:scale-95 transition-transform duration-scale-md',
-    // 焦点指示：使用 box-shadow + 语义色，禁止 ring/outline（104-anti-flicker-ring-less）
-    'interactive-focus-ring':
-      'focus-visible:shadow-[0_0_0_2px_rgb(var(--primary)/0.3)] focus-visible:outline-none',
-    // Touch target：移动端/触控设备最小可点击区域（约 44px）
-    'touch-target': 'min-w-[44px] min-h-[44px] flex items-center justify-center',
-    // Header 图标按钮：统一交互与触控目标，避免 p-0 导致可点击面积过小
-    'header-icon-btn':
-      'cursor-pointer bg-transparent border-none outline-none duration-scale-sm hover:scale-110 hover:text-accent active:scale-105',
-    // 复制/标签类小按钮（theme/size/scrollbar 等配置页）
-    'interactive-tag':
-      'fs-xs font-mono bg-muted/30 px-padding-xs py-padding-xs rounded-scale-xs cursor-pointer select-none transition-all duration-scale-lg ease-in-out hover:bg-primary/20 hover:text-primary active:scale-95 text-muted-foreground',
-    // 列表项/磁贴行（scrollbar 等）
-    'interactive-tile':
-      'row-y-center gap-sm px-padding-sm py-padding-xs rounded-scale-md cursor-pointer select-none transition-all duration-scale-lg ease-in-out fs-sm active:scale-95 surface-item interactive-hover-tile interactive-focus-ring',
-    // Card/Tile hover 仅用位移+阴影，无 ring（104-anti-flicker-ring-less）
-    'interactive-hover-card':
-      'transition-all duration-scale-md ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)]',
-    'interactive-hover-tile':
-      'shadow-soft transition-all duration-scale-xl ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)]',
-    // 细微对齐（替代 pt-[1px] 这类任意值）
-    'pt-hairline': 'pt-px',
-
-    // ⑦b 语义别名（AI 优先写行为语义，不直接接触颜色词）
-    'bg-interactive': 'bg-primary-hover',
-    'bg-brand': 'bg-primary',
-    'text-interactive': 'text-primary-hover',
-
-    // =========================================================
-    // ⑧a 边框快捷类（Border Shortcuts · Premium Borderless）
-    // component-border：无 ring/border，仅用 shadow 营造浮起感（101-premium-ui）。
-    // border-*-default：分区线使用低透明度，弱化视觉切割。
-    // =========================================================
-    'component-border': 'shadow-soft',
-    'border-b-default': 'border-0 border-b border-solid border-border/15',
-    'border-t-default': 'border-0 border-t border-solid border-border/15',
-    'border-l-default': 'border-0 border-l border-solid border-border/15',
-    'border-r-default': 'border-0 border-r border-solid border-border/15',
-
-    // =========================================================
-    // ⑧ 组件语义基础（Component Base Styles）
-    // 说明：component-border 已含 shadow-soft，无需再叠 shadow-sm。
-    // =========================================================
-    'component-card-base': 'rounded-scale-md bg-card text-card-foreground component-border',
-    'component-card-hoverable': 'behavior-hover-transition hover-elevated',
-    'component-card-layout': 'density-normal',
-    'component-card-content': 'row-center',
-    'component-card':
-      'component-card-base component-card-hoverable component-card-layout component-card-content',
-
-    // =========================================================
-    // ⑨ 尺寸与视觉工具类（Size & Visual Utilities）
-    // 说明：无对应 w-* / min-w-* 语义类，故用任意值引用 spacing 变量
-    // =========================================================
-    'size-theme-swatch': 'w-[var(--spacing-xl)] h-[var(--spacing-xl)] rounded-scale-md',
-    'size-select-min': 'min-w-[var(--spacing-3xl)]',
-    'w-table-actions': 'w-[var(--spacing-5xl)]',
-    'w-dialog-settings': 'w-[var(--dialog-settings-width)] max-w-full',
-    'h-spacing-lg': 'h-[var(--spacing-lg)]',
-    'sidebar-width-transition': 'transition-[width] duration-scale-md ease-in-out',
-
-    // =========================================================
-    // ⑩ 设计系统默认等级（Design Token Defaults）
-    // 说明：与业务推荐一致，使用语义类 p-padding-* / m-margin-* / gap-*
-    // =========================================================
-    'def-rounded': 'rounded-scale-md!',
-    'def-duration': 'duration-scale-md!',
-    'def-padding': 'p-padding-md!',
-    'def-margin': 'm-margin-md!',
-    'def-gap': 'gap-md!',
-    'def-fs': 'fs-md!',
-    // =========================================================
-    // ⑪ 菜单交互语义 (Menu Interaction)
-    // =========================================================
-    'menu-item-base':
-      'flex items-center gap-sm cursor-pointer select-none transition-all duration-scale-md ease-in-out border-none bg-transparent',
-    'menu-item-hover': 'bg-primary/12! dark:bg-primary/30! text-primary!',
-    'menu-item-active-leaf': 'bg-primary! text-primary-foreground! dark:text-white!',
-
-    // =========================================================
-    // ⑫ Premium 视觉系统 (Glassmorphism / Elevation / Surface)
-    // =========================================================
-    'glass-surface': 'bg-background/70 backdrop-blur-md',
-    'glass-surface-lg': 'bg-background/80 backdrop-blur-lg',
-    'shadow-soft':
-      'shadow-[0_1px_3px_rgb(var(--foreground)/0.10),0_2px_8px_rgb(var(--foreground)/0.08)] dark:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_1px_3px_rgb(var(--background)/0.7),0_2px_8px_rgb(var(--background)/0.5)]',
-    'shadow-float':
-      'shadow-[0_4px_12px_rgb(var(--foreground)/0.14),0_8px_24px_rgb(var(--foreground)/0.10)] dark:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_4px_12px_rgb(var(--background)/0.9),0_8px_24px_rgb(var(--background)/0.7)]',
-    'surface-base': 'bg-background',
-    'surface-elevated': 'bg-card shadow-soft',
-    // 面板基础（Anti-Utility-Soup Rule N-5 的重型快捷方式）
-    'panel-base':
-      'bg-card rounded-scale-md shadow-soft py-padding-md px-padding-lg flex flex-col gap-lg',
-    'panel-base-md': 'bg-card rounded-scale-lg shadow-soft p-padding-lg flex flex-col gap-md',
-    'surface-sunken': 'bg-muted',
-    // 列表项/卡片条目背景：浅色模式需更高不透明度（40%）才能与 bg-card 形成可见对比，深色模式 20% 已足够
-    'surface-item': 'bg-muted/60 dark:bg-muted',
-    'brand-primary': 'text-primary',
-    'transition-fluid':
-      'transition-[transform,opacity] duration-scale-md ease-[cubic-bezier(0.16,1,0.3,1)]',
-    /** 内容区 overlay 淡入淡出：duration-scale-sm cubic-bezier(0.4, 0, 0.2, 1) */
-    'transition-fade': 'transition-opacity duration-scale-sm ease-[cubic-bezier(0.4,0,0.2,1)]',
-    // KPI/统计卡片最小高度（vh 流体，无 rem）
-    'min-h-kpi-card': 'min-h-[var(--kpi-card-height,20vh)]',
-  },
+  shortcuts,
 
   // 规则优先级设计：UnoCSS 按顺序匹配，新规则必须归入对应分组。
   // ① 语义业务规则 > ② 布局变量 > ③ 设计系统阶梯 > ④ 基础变量 > ⑤ 安全区
   rules: [
-    // ====== ① 业务语义规则（最高优先级） ======
-    ...createSemanticSizeRules(),
-    // ====== ② 布局变量规则 ======
-    ...createLayoutVariableRules(),
-    // ====== ③ 设计系统阶梯规则 ======
-    ...createScaleRules(),
-    // ====== ④ 基础尺寸变量（最低优先级） ======
-    ...createBaseVarRules(),
-    // ====== ⑤ 安全区规则 ======
     ['group', {}],
     ['safe-top', { 'padding-top': 'env(safe-area-inset-top)' }],
     ['safe-bottom', { 'padding-bottom': 'env(safe-area-inset-bottom)' }],
   ],
 
-  theme: {
-    breakpoints,
-    // 动画曲线 - 流体有机感，适配 120Hz 高刷
-    transitionTimingFunction: {
-      'out-expo': 'cubic-bezier(0.16, 1, 0.3, 1)',
-      'out-quart': 'cubic-bezier(0.25, 1, 0.5, 1)',
-      'in-out-expo': 'cubic-bezier(0.87, 0, 0.13, 1)',
-    },
-    // 颜色系统 (设计系统 RGB 规范) - 由 COLOR_FAMILIES 动态映射
-    colors: buildThemeColors(),
-    // 显式设置 borderColor 以确保 border-{color} 类正确工作
-    borderColor: buildThemeColors(),
-
-    // 字体系统：由 SIZE_SCALE_KEYS 动态生成，text-base 别名 md
-    fontSize: (() => {
-      const lineHeightMap: Record<string, string> = {
-        xs: '1',
-        sm: '1.25',
-        md: '1.5',
-        lg: '1.75',
-        xl: '1.75',
-        ['2xl']: '2',
-        ['3xl']: '2.25',
-        ['4xl']: '2.5',
-        ['5xl']: '1',
-      }
-      const out: Record<string, [string, { 'line-height': string }]> = {}
-      for (const k of SIZE_SCALE_KEYS) {
-        out[k] = [`var(--font-size-${k})`, { 'line-height': lineHeightMap[k] ?? '1.5' }]
-      }
-      out.base = out.md
-      return out
-    })(),
-    fontFamily: {
-      sans: '"PingFang SC", "Microsoft YaHei", "Source Han Sans CN", "Source Han Sans SC", system-ui, -apple-system, sans-serif',
-    },
-    // 间距系统：基于 SIZE_SCALE_KEYS 生成语义阶梯，全部基于 --spacing-unit 动态计算
-    spacing: (() => {
-      const base: Record<string, string> = {
-        unit: 'var(--spacing-unit)',
-        px: '1px',
-        0: '0',
-      }
-      const scaleEntries = SIZE_SCALE_KEYS.map(k => [k, `var(--spacing-${k})`] as const)
-      return { ...base, ...Object.fromEntries(scaleEntries) }
-    })(),
-  },
+  theme,
 })
+
+// ---------------------------------------------------------------------------
+// The following declarations remain in this file for now, but are no longer
+// used by the runtime config after extracting logic into `uno.theme.ts` and
+// `uno.shortcuts.ts`. They are referenced to satisfy `noUnusedLocals` in tsconfig.node.json.
+// ---------------------------------------------------------------------------
+void breakpoints
+void createSemanticSizeRules
+void createLayoutVariableRules
+void createScaleRules
+void createBaseVarRules
+void buildThemeDemoSafelist
+void themeDemoSafelist
+void buildThemeColors
+void rgbVar

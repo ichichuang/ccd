@@ -296,8 +296,8 @@ defineExpose({
     <div
       :class="
         heightMode === 'fill'
-          ? 'surface-elevated rounded-scale-xl col-fill px-padding-md py-padding-sm'
-          : 'surface-elevated rounded-scale-xl w-full px-padding-md py-padding-sm'
+          ? 'surface-elevated rounded-xl col-fill px-md py-sm'
+          : 'surface-elevated rounded-xl w-full px-md py-sm'
       "
     >
       <ProTableToolbar
@@ -423,7 +423,7 @@ defineExpose({
         <!-- Loading overlay — suppressed when infinite-scroll is appending to existing data -->
         <div
           v-if="loading && (!infiniteScroll || ctrl.processedRows.value.length === 0)"
-          class="absolute inset-0 center glass-surface z-10"
+          class="absolute inset-0 center bg-background/70 backdrop-blur-md z-10"
         >
           <ProgressSpinner />
         </div>
@@ -445,7 +445,7 @@ defineExpose({
       <!-- Infinite scroll: bottom loading indicator while appending -->
       <div
         v-if="infiniteScroll && loading && ctrl.processedRows.value.length > 0"
-        class="shrink-0 py-padding-sm center"
+        class="shrink-0 py-sm center"
       >
         <ProgressSpinner />
       </div>

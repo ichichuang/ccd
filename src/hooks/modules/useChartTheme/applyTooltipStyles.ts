@@ -2,7 +2,7 @@
 import type { ThemeConfig } from './types'
 import { withAlpha } from './utils'
 
-/** Tooltip 玻璃态透明度（Glassmorphism），与 glass-surface-lg 一致 */
+/** Tooltip 玻璃态透明度（Glassmorphism），与 bg-background/80 backdrop-blur-lg 一致 */
 const TOOLTIP_BG_ALPHA = 0.92
 /** Tooltip 过渡时长 (s)，流体动画 */
 const TOOLTIP_TRANSITION_DURATION = 0.3

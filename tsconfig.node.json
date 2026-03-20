@@ -4,6 +4,8 @@
     // ✅ Node 侧仅负责工具链与构建脚本
     "vite.config.ts",
     "uno.config.ts",
+    "uno.theme.ts",
+    "uno.shortcuts.ts",
     "eslint.config.ts",
     "vitest.config.ts",
     "cypress.config.ts",

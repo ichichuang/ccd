@@ -19,12 +19,12 @@ export default defineComponent({
       set: (v: string) => emit('update:modelValue', v),
     })
     return () => (
-      <div class="row-y-center gap-scale-sm w-full">
+      <div class="row-y-center gap-sm w-full">
         <input
           type="color"
           value={color.value}
           disabled={props.disabled || props.readonly}
-          class="h-[var(--spacing-xl)] w-[var(--spacing-2xl)] cursor-pointer rounded-scale-sm border-0 bg-transparent"
+          class="h-[var(--spacing-xl)] w-[var(--spacing-2xl)] cursor-pointer rounded-sm border-0 bg-transparent"
           onInput={(e: Event) => {
             const el = e.target
             if (el instanceof HTMLInputElement) color.value = el.value

@@ -51,7 +51,7 @@ const fontSizeItems = computed<
   SIZE_SCALE_KEYS.map(key => ({
     key,
     cssVar: `--font-size-${key}`,
-    unoClass: `fs-${key}`,
+    unoClass: `text-${key}`,
     textClass: `text-${key}`,
     ratio: FONT_SCALE_RATIOS[key],
     example:
@@ -96,15 +96,15 @@ const spacingItems = computed<
   SIZE_SCALE_KEYS.map(key => ({
     key,
     cssVar: `--spacing-${key}`,
-    paddingClass: `p-padding-${key}`,
-    marginClass: `m-margin-${key}`,
+    paddingClass: `p-${key}`,
+    marginClass: `m-${key}`,
     gapClass: `gap-${key}`,
     gapXClass: `gap-x-${key}`,
     gapYClass: `gap-y-${key}`,
     scrollGapClass: `scroll-m-gap-${key}`,
     pScaleClass: `p-scale-${key}`,
     mScaleClass: `m-scale-${key}`,
-    gapScaleClass: `gap-scale-${key}`,
+    gapScaleClass: `gap-${key}`,
     ratio: SPACING_SCALE_RATIOS[key],
     units: SPACING_SCALE_RATIOS[key],
   }))
@@ -132,7 +132,7 @@ const radiusItems = computed<
   SIZE_SCALE_KEYS.map(key => ({
     key,
     cssVar: `--radius-${key}`,
-    unoClass: `rounded-scale-${key}`,
+    unoClass: `rounded-${key}`,
     ratio: RADIUS_SCALE_RATIOS[key],
   }))
 )
@@ -150,7 +150,7 @@ const transitionItems = computed<
   SIZE_SCALE_KEYS.map(key => ({
     key,
     cssVar: `--transition-${key}`,
-    unoClass: `duration-scale-${key}`,
+    unoClass: `duration-${key}`,
     value: TRANSITION_SCALE_VALUES[key],
     description:
       key === 'xs'
@@ -236,35 +236,33 @@ const marginDirMap = [
   >
     <!-- Toolbar: Header (Transparent Root · Nested Canvas) -->
     <div class="shrink-0 border-b-default border-primary/50 bg-primary/5">
-      <div class="layout-content-wide col-stack-sm py-padding-sm">
+      <div
+        class="py-sm md:py-md xl:py-lg 2xl:py-xl mx-auto max-w-[92%] sm:max-w-[94%] md:max-w-[92%] lg:max-w-[90%] xl:max-w-[88%] 2xl:max-w-[86%] 3xl:max-w-[84%] col-stack-sm py-sm"
+      >
         <div class="row-y-center gap-md">
-          <div class="p-padding-md bg-primary/10 rounded-scale-lg shrink-0">
+          <div class="p-md bg-primary/10 rounded-lg shrink-0">
             <Icons
               name="i-lucide-ruler"
-              class="text-primary fs-2xl"
+              class="text-primary text-2xl"
             />
           </div>
           <div class="col-stack-xs">
-            <h1 class="fs-2xl font-bold text-foreground">Size System</h1>
-            <p class="text-muted-foreground fs-sm">
+            <h1 class="text-2xl font-bold text-foreground">Size System</h1>
+            <p class="text-muted-foreground text-sm">
               尺寸系统变量完整参考 · 点击任意类名或变量即可自动复制到剪贴板
             </p>
           </div>
         </div>
-        <div
-          class="surface-item p-padding-md rounded-scale-md row-start gap-md component-border mt-margin-sm"
-        >
+        <div class="surface-item p-md rounded-md row-start gap-md shadow-soft mt-sm">
           <Icons
             name="i-lucide-info"
-            class="text-primary fs-xl shrink-0 mt-margin-xs"
+            class="text-primary text-xl shrink-0 mt-xs"
           />
           <div class="col-stack-xs">
-            <div class="font-semibold text-primary fs-sm">Architectural Guide 架构引导</div>
-            <div class="text-muted-foreground fs-xs leading-relaxed">
+            <div class="font-semibold text-primary text-sm">Architectural Guide 架构引导</div>
+            <div class="text-muted-foreground text-xs leading-relaxed">
               尺寸阶梯由
-              <span class="bg-muted px-padding-xs rounded-scale-xs font-mono">
-                src/constants/sizeScale.ts
-              </span>
+              <span class="bg-muted px-xs rounded-xs font-mono">src/constants/sizeScale.ts</span>
               定义。如需修改全局比例，请编辑该文件而非在此页面调整。
             </div>
           </div>
@@ -274,11 +272,15 @@ const marginDirMap = [
 
     <!-- Scrollable content -->
     <CScrollbar class="flex-1 min-h-0">
-      <div class="layout-content-wide col-stack-xl">
+      <div
+        class="py-sm md:py-md xl:py-lg 2xl:py-xl mx-auto max-w-[92%] sm:max-w-[94%] md:max-w-[92%] lg:max-w-[90%] xl:max-w-[88%] 2xl:max-w-[86%] 3xl:max-w-[84%] col-stack-xl"
+      >
         <!-- Size Store 尺寸 Store (Hero: primary tint + title strip) -->
-        <Card class="panel-base bg-primary/10 dark:bg-primary/5">
+        <Card
+          class="bg-card rounded-md shadow-soft py-md px-lg flex flex-col gap-lg bg-primary/10 dark:bg-primary/5"
+        >
           <template #title>
-            <div class="row-y-center gap-sm border-b-default pb-padding-sm mb-padding-sm">
+            <div class="row-y-center gap-sm border-b-default pb-sm mb-padding-sm">
               <Icons
                 name="i-lucide-settings-2"
                 class="text-primary"
@@ -292,14 +294,14 @@ const marginDirMap = [
           </template>
           <template #content>
             <div class="col-stack-md">
-              <p class="text-muted-foreground fs-sm">
+              <p class="text-muted-foreground text-sm">
                 切换预设可实时更新根字号、布局变量等，影响全站尺寸阶梯
               </p>
               <div class="layout-wrap gap-sm">
                 <div
                   v-for="preset in SIZE_PRESETS"
                   :key="preset.name"
-                  class="p-padding-sm py-padding-xs rounded-scale-md cursor-pointer select-none transition-all duration-scale-lg ease-in-out fs-sm active:scale-95"
+                  class="p-sm py-xs rounded-md cursor-pointer select-none transition-all duration-lg ease-in-out text-sm active:scale-95"
                   :class="[
                     sizeStore.sizeName === preset.name
                       ? 'bg-primary text-primary-foreground shadow-soft'
@@ -310,7 +312,7 @@ const marginDirMap = [
                   {{ preset.label }}
                 </div>
               </div>
-              <div class="layout-wrap gap-md text-muted-foreground fs-sm">
+              <div class="layout-wrap gap-md text-muted-foreground text-sm">
                 <span>
                   当前:
                   <span class="font-mono font-bold text-foreground">
@@ -331,9 +333,11 @@ const marginDirMap = [
         </Card>
 
         <!-- Device Store 当前设备/断点 (Hero: accent tint + title strip) -->
-        <Card class="panel-base bg-accent/10 dark:bg-accent/5">
+        <Card
+          class="bg-card rounded-md shadow-soft py-md px-lg flex flex-col gap-lg bg-accent/10 dark:bg-accent/5"
+        >
           <template #title>
-            <div class="row-y-center gap-sm border-b-default pb-padding-sm mb-padding-sm">
+            <div class="row-y-center gap-sm border-b-default pb-sm mb-padding-sm">
               <Icons
                 name="i-lucide-smartphone"
                 class="text-primary"
@@ -348,42 +352,42 @@ const marginDirMap = [
           <template #content>
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-md">
               <div
-                class="col-stack-xs p-padding-md surface-item rounded-scale-lg interactive-hover-tile behavior-hover-transition"
+                class="col-stack-xs p-md surface-item rounded-lg shadow-soft transition-all duration-xl ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)] behavior-hover-transition"
               >
-                <span class="text-muted-foreground fs-xs">type</span>
+                <span class="text-muted-foreground text-xs">type</span>
                 <Tag
                   :value="deviceStore.type"
                   severity="info"
                 />
               </div>
               <div
-                class="col-stack-xs p-padding-md surface-item rounded-scale-lg interactive-hover-tile behavior-hover-transition"
+                class="col-stack-xs p-md surface-item rounded-lg shadow-soft transition-all duration-xl ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)] behavior-hover-transition"
               >
-                <span class="text-muted-foreground fs-xs">currentBreakpoint</span>
+                <span class="text-muted-foreground text-xs">currentBreakpoint</span>
                 <Tag
                   :value="deviceStore.currentBreakpoint"
                   severity="success"
                 />
               </div>
               <div
-                class="col-stack-xs p-padding-md surface-item rounded-scale-lg interactive-hover-tile behavior-hover-transition"
+                class="col-stack-xs p-md surface-item rounded-lg shadow-soft transition-all duration-xl ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)] behavior-hover-transition"
               >
-                <span class="text-muted-foreground fs-xs">isMobileLayout</span>
+                <span class="text-muted-foreground text-xs">isMobileLayout</span>
                 <Tag
                   :value="String(deviceStore.isMobileLayout)"
                   :severity="deviceStore.isMobileLayout ? 'warn' : 'secondary'"
                 />
               </div>
               <div
-                class="col-stack-xs p-padding-md surface-item rounded-scale-lg interactive-hover-tile behavior-hover-transition"
+                class="col-stack-xs p-md surface-item rounded-lg shadow-soft transition-all duration-xl ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)] behavior-hover-transition"
               >
-                <span class="text-muted-foreground fs-xs">width × height</span>
-                <span class="font-mono fs-sm">
+                <span class="text-muted-foreground text-xs">width × height</span>
+                <span class="font-mono text-sm">
                   {{ deviceStore.width }} × {{ deviceStore.height }}
                 </span>
               </div>
             </div>
-            <p class="mt-margin-md text-muted-foreground fs-xs">
+            <p class="mt-md text-muted-foreground text-xs">
               布局判定应使用 useDeviceStore 的 getters，详见
               <RouterLink
                 to="/system-configuration/layout"
@@ -397,7 +401,7 @@ const marginDirMap = [
         </Card>
 
         <!-- Font Size Section (数据区：title 无 strip，与 theme 一致) -->
-        <Card class="panel-base">
+        <Card class="bg-card rounded-md shadow-soft py-md px-lg flex flex-col gap-lg">
           <template #title>
             <div class="row-y-center gap-sm">
               <Icons
@@ -413,16 +417,12 @@ const marginDirMap = [
           </template>
           <template #content>
             <div class="col-stack-md">
-              <div class="border-b-default pb-padding-sm mb-padding-sm">
-                <p class="text-muted-foreground fs-sm">
+              <div class="border-b-default pb-sm mb-padding-sm">
+                <p class="text-muted-foreground text-sm">
                   基于
-                  <span class="bg-muted px-padding-xs rounded-scale-xs font-mono">
-                    fontSizeBase
-                  </span>
+                  <span class="bg-muted px-xs rounded-xs font-mono">fontSizeBase</span>
                   与
-                  <span class="bg-muted px-padding-xs rounded-scale-xs font-mono">
-                    FONT_SCALE_RATIOS
-                  </span>
+                  <span class="bg-muted px-xs rounded-xs font-mono">FONT_SCALE_RATIOS</span>
                   动态计算
                 </p>
               </div>
@@ -430,21 +430,15 @@ const marginDirMap = [
                 <table class="w-full border-collapse">
                   <thead>
                     <tr class="border-b-default">
-                      <th class="text-left p-padding-sm text-muted-foreground fs-sm font-medium">
-                        等级
-                      </th>
-                      <th class="text-left p-padding-sm text-muted-foreground fs-sm font-medium">
+                      <th class="text-left p-sm text-muted-foreground text-sm font-medium">等级</th>
+                      <th class="text-left p-sm text-muted-foreground text-sm font-medium">
                         CSS 变量
                       </th>
-                      <th class="text-left p-padding-sm text-muted-foreground fs-sm font-medium">
+                      <th class="text-left p-sm text-muted-foreground text-sm font-medium">
                         UnoCSS 类名
                       </th>
-                      <th class="text-left p-padding-sm text-muted-foreground fs-sm font-medium">
-                        比例
-                      </th>
-                      <th class="text-left p-padding-sm text-muted-foreground fs-sm font-medium">
-                        预览
-                      </th>
+                      <th class="text-left p-sm text-muted-foreground text-sm font-medium">比例</th>
+                      <th class="text-left p-sm text-muted-foreground text-sm font-medium">预览</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -453,39 +447,37 @@ const marginDirMap = [
                       :key="item.key"
                       class="border-b-default surface-item behavior-hover-transition hover:bg-foreground/5"
                     >
-                      <td class="p-padding-sm">
+                      <td class="p-sm">
                         <Tag
                           :value="item.key"
                           severity="info"
                         />
                       </td>
-                      <td class="p-padding-sm">
+                      <td class="p-sm">
                         <div
-                          class="interactive-tag w-fit"
+                          class="text-xs font-mono bg-muted/30 px-xs py-xs rounded-xs cursor-pointer select-none transition-all duration-lg ease-in-out hover:bg-primary/20 hover:text-primary active:scale-95 text-muted-foreground w-fit"
                           @click="copyToClipboard(`var(${item.cssVar})`, item.cssVar)"
                         >
                           {{ item.cssVar }}
                         </div>
                       </td>
-                      <td class="p-padding-sm flex gap-xs flex-wrap">
+                      <td class="p-sm flex gap-xs flex-wrap">
                         <div
-                          class="interactive-tag hover:bg-success/20 hover:text-success"
+                          class="text-xs font-mono bg-muted/30 px-xs py-xs rounded-xs cursor-pointer select-none transition-all duration-lg ease-in-out hover:bg-primary/20 hover:text-primary active:scale-95 text-muted-foreground hover:bg-success/20 hover:text-success"
                           @click="copyToClipboard(item.unoClass)"
                         >
                           {{ item.unoClass }}
                         </div>
                         <div
-                          class="interactive-tag hover:bg-success/20 hover:text-success"
+                          class="text-xs font-mono bg-muted/30 px-xs py-xs rounded-xs cursor-pointer select-none transition-all duration-lg ease-in-out hover:bg-primary/20 hover:text-primary active:scale-95 text-muted-foreground hover:bg-success/20 hover:text-success"
                           @click="copyToClipboard(item.textClass)"
                         >
                           {{ item.textClass }}
                         </div>
                       </td>
-                      <td class="p-padding-sm font-mono text-muted-foreground">
-                        {{ item.ratio }}×
-                      </td>
-                      <td class="p-padding-sm">
-                        <span :class="`fs-${item.key}`">
+                      <td class="p-sm font-mono text-muted-foreground">{{ item.ratio }}×</td>
+                      <td class="p-sm">
+                        <span :class="`text-${item.key}`">
                           {{ item.example }}
                         </span>
                       </td>
@@ -498,7 +490,7 @@ const marginDirMap = [
         </Card>
 
         <!-- Spacing Section (数据区：title 无 strip，与 theme 一致) -->
-        <Card class="panel-base">
+        <Card class="bg-card rounded-md shadow-soft py-md px-lg flex flex-col gap-lg">
           <template #title>
             <div class="row-y-center gap-sm">
               <Icons
@@ -514,14 +506,12 @@ const marginDirMap = [
           </template>
           <template #content>
             <div class="col-stack-md">
-              <div class="border-b-default pb-padding-sm mb-padding-sm">
-                <p class="text-muted-foreground fs-sm">
+              <div class="border-b-default pb-sm mb-padding-sm">
+                <p class="text-muted-foreground text-sm">
                   基于
-                  <span class="bg-muted px-padding-xs rounded-scale-xs font-mono">spacingBase</span>
+                  <span class="bg-muted px-xs rounded-xs font-mono">spacingBase</span>
                   ×
-                  <span class="bg-muted px-padding-xs rounded-scale-xs font-mono">
-                    SPACING_SCALE_RATIOS
-                  </span>
+                  <span class="bg-muted px-xs rounded-xs font-mono">SPACING_SCALE_RATIOS</span>
                   动态计算
                 </p>
               </div>
@@ -529,21 +519,15 @@ const marginDirMap = [
                 <table class="w-full border-collapse">
                   <thead>
                     <tr class="border-b-default">
-                      <th class="text-left p-padding-sm text-muted-foreground fs-sm font-medium">
-                        等级
-                      </th>
-                      <th class="text-left p-padding-sm text-muted-foreground fs-sm font-medium">
+                      <th class="text-left p-sm text-muted-foreground text-sm font-medium">等级</th>
+                      <th class="text-left p-sm text-muted-foreground text-sm font-medium">
                         CSS 变量
                       </th>
-                      <th class="text-left p-padding-sm text-muted-foreground fs-sm font-medium">
+                      <th class="text-left p-sm text-muted-foreground text-sm font-medium">
                         Padding 类名
                       </th>
-                      <th class="text-left p-padding-sm text-muted-foreground fs-sm font-medium">
-                        单位
-                      </th>
-                      <th class="text-left p-padding-sm text-muted-foreground fs-sm font-medium">
-                        预览
-                      </th>
+                      <th class="text-left p-sm text-muted-foreground text-sm font-medium">单位</th>
+                      <th class="text-left p-sm text-muted-foreground text-sm font-medium">预览</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -552,79 +536,77 @@ const marginDirMap = [
                       :key="item.key"
                       class="border-b-default surface-item behavior-hover-transition hover:bg-foreground/5"
                     >
-                      <td class="p-padding-sm">
+                      <td class="p-sm">
                         <Tag
                           :value="item.key"
                           severity="info"
                         />
                       </td>
-                      <td class="p-padding-sm">
+                      <td class="p-sm">
                         <div
-                          class="interactive-tag w-fit"
+                          class="text-xs font-mono bg-muted/30 px-xs py-xs rounded-xs cursor-pointer select-none transition-all duration-lg ease-in-out hover:bg-primary/20 hover:text-primary active:scale-95 text-muted-foreground w-fit"
                           @click="copyToClipboard(`var(${item.cssVar})`, item.cssVar)"
                         >
                           {{ item.cssVar }}
                         </div>
                       </td>
-                      <td class="p-padding-sm">
+                      <td class="p-sm">
                         <div class="flex gap-xs flex-wrap">
                           <div
-                            class="interactive-tag hover:bg-success/20 hover:text-success"
+                            class="text-xs font-mono bg-muted/30 px-xs py-xs rounded-xs cursor-pointer select-none transition-all duration-lg ease-in-out hover:bg-primary/20 hover:text-primary active:scale-95 text-muted-foreground hover:bg-success/20 hover:text-success"
                             @click="copyToClipboard(item.paddingClass)"
                           >
                             {{ item.paddingClass }}
                           </div>
                           <div
-                            class="interactive-tag hover:bg-success/20 hover:text-success"
+                            class="text-xs font-mono bg-muted/30 px-xs py-xs rounded-xs cursor-pointer select-none transition-all duration-lg ease-in-out hover:bg-primary/20 hover:text-primary active:scale-95 text-muted-foreground hover:bg-success/20 hover:text-success"
                             @click="copyToClipboard(item.gapClass)"
                           >
                             {{ item.gapClass }}
                           </div>
                           <div
-                            class="interactive-tag hover:bg-success/20 hover:text-success"
+                            class="text-xs font-mono bg-muted/30 px-xs py-xs rounded-xs cursor-pointer select-none transition-all duration-lg ease-in-out hover:bg-primary/20 hover:text-primary active:scale-95 text-muted-foreground hover:bg-success/20 hover:text-success"
                             @click="copyToClipboard(item.gapXClass)"
                           >
                             {{ item.gapXClass }}
                           </div>
                           <div
-                            class="interactive-tag hover:bg-success/20 hover:text-success"
+                            class="text-xs font-mono bg-muted/30 px-xs py-xs rounded-xs cursor-pointer select-none transition-all duration-lg ease-in-out hover:bg-primary/20 hover:text-primary active:scale-95 text-muted-foreground hover:bg-success/20 hover:text-success"
                             @click="copyToClipboard(item.gapYClass)"
                           >
                             {{ item.gapYClass }}
                           </div>
                           <div
-                            class="interactive-tag hover:bg-success/20 hover:text-success"
+                            class="text-xs font-mono bg-muted/30 px-xs py-xs rounded-xs cursor-pointer select-none transition-all duration-lg ease-in-out hover:bg-primary/20 hover:text-primary active:scale-95 text-muted-foreground hover:bg-success/20 hover:text-success"
                             @click="copyToClipboard(item.scrollGapClass)"
                           >
                             {{ item.scrollGapClass }}
                           </div>
                           <div
-                            class="interactive-tag hover:bg-warn/20 hover:text-warn"
+                            class="text-xs font-mono bg-muted/30 px-xs py-xs rounded-xs cursor-pointer select-none transition-all duration-lg ease-in-out hover:bg-primary/20 hover:text-primary active:scale-95 text-muted-foreground hover:bg-warn/20 hover:text-warn"
                             @click="copyToClipboard(item.pScaleClass)"
                           >
                             {{ item.pScaleClass }}
                           </div>
                           <div
-                            class="interactive-tag hover:bg-warn/20 hover:text-warn"
+                            class="text-xs font-mono bg-muted/30 px-xs py-xs rounded-xs cursor-pointer select-none transition-all duration-lg ease-in-out hover:bg-primary/20 hover:text-primary active:scale-95 text-muted-foreground hover:bg-warn/20 hover:text-warn"
                             @click="copyToClipboard(item.mScaleClass)"
                           >
                             {{ item.mScaleClass }}
                           </div>
                           <div
-                            class="interactive-tag hover:bg-warn/20 hover:text-warn"
+                            class="text-xs font-mono bg-muted/30 px-xs py-xs rounded-xs cursor-pointer select-none transition-all duration-lg ease-in-out hover:bg-primary/20 hover:text-primary active:scale-95 text-muted-foreground hover:bg-warn/20 hover:text-warn"
                             @click="copyToClipboard(item.gapScaleClass)"
                           >
                             {{ item.gapScaleClass }}
                           </div>
                         </div>
                       </td>
-                      <td class="p-padding-sm font-mono text-muted-foreground">
-                        {{ item.units }} unit
-                      </td>
-                      <td class="p-padding-sm">
+                      <td class="p-sm font-mono text-muted-foreground">{{ item.units }} unit</td>
+                      <td class="p-sm">
                         <div class="inline-flex">
                           <div
-                            class="bg-primary/20 component-border rounded-scale-xs h-spacing-lg"
+                            class="bg-primary/20 shadow-soft rounded-xs h-spacing-lg"
                             :style="{ width: `var(${item.cssVar})` }"
                           />
                         </div>
@@ -635,24 +617,24 @@ const marginDirMap = [
               </CScrollbar>
 
               <!-- Spacing Direction Examples -->
-              <div class="mt-margin-md p-padding-md surface-item rounded-scale-md">
-                <h4 class="fs-sm font-semibold text-foreground mb-margin-xs">
+              <div class="mt-md p-md surface-item rounded-md">
+                <h4 class="text-sm font-semibold text-foreground mb-xs">
                   Direction Variants 方向变体
                 </h4>
                 <div class="col-stack-md">
                   <div>
-                    <span class="text-muted-foreground fs-xs mb-margin-xs block">Padding</span>
+                    <span class="text-muted-foreground text-xs mb-xs block">Padding</span>
                     <div class="layout-wrap gap-md">
                       <div
                         v-for="item in marginDirMap"
                         :key="'p-' + item.dir"
                         class="col-stack-xs"
                       >
-                        <span class="text-muted-foreground fs-xs">
+                        <span class="text-muted-foreground text-xs">
                           {{ item.label }}
                         </span>
                         <div
-                          class="interactive-tag"
+                          class="text-xs font-mono bg-muted/30 px-xs py-xs rounded-xs cursor-pointer select-none transition-all duration-lg ease-in-out hover:bg-primary/20 hover:text-primary active:scale-95 text-muted-foreground"
                           @click="copyToClipboard(`p${item.dir}-padding-md`)"
                         >
                           p{{ item.dir }}-padding-md
@@ -661,18 +643,18 @@ const marginDirMap = [
                     </div>
                   </div>
                   <div>
-                    <span class="text-muted-foreground fs-xs mb-margin-xs block">Margin</span>
+                    <span class="text-muted-foreground text-xs mb-xs block">Margin</span>
                     <div class="layout-wrap gap-md">
                       <div
                         v-for="item in marginDirMap"
                         :key="'m-' + item.dir"
                         class="col-stack-xs"
                       >
-                        <span class="text-muted-foreground fs-xs">
+                        <span class="text-muted-foreground text-xs">
                           {{ item.label }}
                         </span>
                         <div
-                          class="interactive-tag"
+                          class="text-xs font-mono bg-muted/30 px-xs py-xs rounded-xs cursor-pointer select-none transition-all duration-lg ease-in-out hover:bg-primary/20 hover:text-primary active:scale-95 text-muted-foreground"
                           @click="copyToClipboard(`m${item.dir}-margin-md`)"
                         >
                           m{{ item.dir }}-margin-md
@@ -687,7 +669,7 @@ const marginDirMap = [
         </Card>
 
         <!-- Radius Section (数据区：title 无 strip，与 theme 一致) -->
-        <Card class="panel-base">
+        <Card class="bg-card rounded-md shadow-soft py-md px-lg flex flex-col gap-lg">
           <template #title>
             <div class="row-y-center gap-sm">
               <Icons
@@ -703,14 +685,12 @@ const marginDirMap = [
           </template>
           <template #content>
             <div class="col-stack-md">
-              <div class="border-b-default pb-padding-sm mb-padding-sm">
-                <p class="text-muted-foreground fs-sm">
+              <div class="border-b-default pb-sm mb-padding-sm">
+                <p class="text-muted-foreground text-sm">
                   基于
-                  <span class="bg-muted px-padding-xs rounded-scale-xs font-mono">radius</span>
+                  <span class="bg-muted px-xs rounded-xs font-mono">radius</span>
                   ×
-                  <span class="bg-muted px-padding-xs rounded-scale-xs font-mono">
-                    RADIUS_SCALE_RATIOS
-                  </span>
+                  <span class="bg-muted px-xs rounded-xs font-mono">RADIUS_SCALE_RATIOS</span>
                   动态计算
                 </p>
               </div>
@@ -718,7 +698,7 @@ const marginDirMap = [
                 <div
                   v-for="item in radiusItems"
                   :key="item.key"
-                  class="col-stack-sm items-center p-padding-md surface-item rounded-scale-lg interactive-hover-tile behavior-hover-transition cursor-pointer group"
+                  class="col-stack-sm items-center p-md surface-item rounded-lg shadow-soft transition-all duration-xl ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)] behavior-hover-transition cursor-pointer group"
                   @click="copyToClipboard(item.unoClass)"
                 >
                   <div
@@ -730,8 +710,8 @@ const marginDirMap = [
                     severity="info"
                     class="group-hover:bg-primary-light group-hover:text-primary-light-foreground"
                   />
-                  <span class="font-mono fs-xs text-muted-foreground">{{ item.ratio }}×</span>
-                  <span class="font-mono fs-xs text-center text-foreground">
+                  <span class="font-mono text-xs text-muted-foreground">{{ item.ratio }}×</span>
+                  <span class="font-mono text-xs text-center text-foreground">
                     {{ item.unoClass }}
                   </span>
                 </div>
@@ -741,7 +721,7 @@ const marginDirMap = [
         </Card>
 
         <!-- Transition Duration Section (数据区：title 无 strip，与 theme 一致) -->
-        <Card class="panel-base">
+        <Card class="bg-card rounded-md shadow-soft py-md px-lg flex flex-col gap-lg">
           <template #title>
             <div class="row-y-center gap-sm">
               <Icons
@@ -757,8 +737,8 @@ const marginDirMap = [
           </template>
           <template #content>
             <div class="col-stack-md">
-              <div class="border-b-default pb-padding-sm mb-padding-sm">
-                <p class="text-muted-foreground fs-sm">
+              <div class="border-b-default pb-sm mb-padding-sm">
+                <p class="text-muted-foreground text-sm">
                   固定毫秒值，遵循 Material Design 动效时长指南
                 </p>
               </div>
@@ -766,7 +746,7 @@ const marginDirMap = [
                 <div
                   v-for="item in transitionItems"
                   :key="item.key"
-                  class="row-y-center gap-md p-padding-md surface-item rounded-scale-lg interactive-hover-tile behavior-hover-transition cursor-pointer group"
+                  class="row-y-center gap-md p-md surface-item rounded-lg shadow-soft transition-all duration-xl ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)] behavior-hover-transition cursor-pointer group"
                   @click="copyToClipboard(item.unoClass)"
                 >
                   <div class="col-stack-xs flex-1">
@@ -775,17 +755,17 @@ const marginDirMap = [
                         :value="item.key"
                         severity="info"
                       />
-                      <span class="font-mono fs-sm text-foreground">{{ item.value }}ms</span>
+                      <span class="font-mono text-sm text-foreground">{{ item.value }}ms</span>
                     </div>
-                    <span class="text-muted-foreground fs-xs">
+                    <span class="text-muted-foreground text-xs">
                       {{ item.description }}
                     </span>
-                    <span class="font-mono fs-xs text-primary">
+                    <span class="font-mono text-xs text-primary">
                       {{ item.unoClass }}
                     </span>
                   </div>
                   <div
-                    class="w-[var(--spacing-2xl)] h-[var(--spacing-2xl)] bg-primary rounded-scale-md group-hover:translate-x-[var(--spacing-sm)] group-hover:bg-accent-hover"
+                    class="w-[var(--spacing-2xl)] h-[var(--spacing-2xl)] bg-primary rounded-md group-hover:translate-x-[var(--spacing-sm)] group-hover:bg-accent-hover"
                     :style="{
                       transitionDuration: `var(${item.cssVar})`,
                       transitionProperty: 'all',
@@ -799,7 +779,7 @@ const marginDirMap = [
 
         <!-- Layout Dimensions Section (数据区：title 无 strip，与 theme 一致) -->
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-xl">
-          <Card class="panel-base h-full">
+          <Card class="bg-card rounded-md shadow-soft py-md px-lg flex flex-col gap-lg h-full">
             <template #title>
               <div class="row-y-center gap-sm">
                 <Icons
@@ -815,17 +795,17 @@ const marginDirMap = [
             </template>
             <template #content>
               <div class="col-stack-md">
-                <div class="border-b-default pb-padding-sm mb-padding-sm">
-                  <p class="text-muted-foreground fs-sm">固定像素值，用于布局区域尺寸控制</p>
+                <div class="border-b-default pb-sm mb-padding-sm">
+                  <p class="text-muted-foreground text-sm">固定像素值，用于布局区域尺寸控制</p>
                 </div>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-md">
                   <div
                     v-for="item in layoutItems"
                     :key="item.key"
-                    class="col-stack-sm p-padding-md surface-item rounded-scale-lg interactive-hover-tile behavior-hover-transition"
+                    class="col-stack-sm p-md surface-item rounded-lg shadow-soft transition-all duration-xl ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)] behavior-hover-transition"
                   >
                     <div class="row-between">
-                      <span class="font-medium text-foreground fs-xs">
+                      <span class="font-medium text-foreground text-xs">
                         {{ item.description }}
                       </span>
                       <Tag
@@ -835,13 +815,13 @@ const marginDirMap = [
                     </div>
                     <div class="layout-wrap gap-xs">
                       <div
-                        class="interactive-tag w-fit"
+                        class="text-xs font-mono bg-muted/30 px-xs py-xs rounded-xs cursor-pointer select-none transition-all duration-lg ease-in-out hover:bg-primary/20 hover:text-primary active:scale-95 text-muted-foreground w-fit"
                         @click="copyToClipboard(`var(${item.cssVar})`, item.cssVar)"
                       >
                         {{ item.cssVar }}
                       </div>
                       <div
-                        class="interactive-tag hover:bg-success/20 hover:text-success w-fit"
+                        class="text-xs font-mono bg-muted/30 px-xs py-xs rounded-xs cursor-pointer select-none transition-all duration-lg ease-in-out hover:bg-primary/20 hover:text-primary active:scale-95 text-muted-foreground hover:bg-success/20 hover:text-success w-fit"
                         @click="copyToClipboard(item.unoClass)"
                       >
                         {{ item.unoClass }}
@@ -854,7 +834,7 @@ const marginDirMap = [
           </Card>
 
           <!-- Base Variables Section (数据区：title 无 strip，与 theme 一致) -->
-          <Card class="panel-base h-full">
+          <Card class="bg-card rounded-md shadow-soft py-md px-lg flex flex-col gap-lg h-full">
             <template #title>
               <div class="row-y-center gap-sm">
                 <Icons
@@ -870,8 +850,8 @@ const marginDirMap = [
             </template>
             <template #content>
               <div class="col-stack-md">
-                <div class="border-b-default pb-padding-sm mb-padding-sm">
-                  <p class="text-muted-foreground fs-sm">
+                <div class="border-b-default pb-sm mb-padding-sm">
+                  <p class="text-muted-foreground text-sm">
                     SSOT 定义的基础全局变量类名 (SIZE_BASE_VAR_KEYS)
                   </p>
                 </div>
@@ -879,33 +859,31 @@ const marginDirMap = [
                   <div
                     v-for="item in baseVarItems"
                     :key="item.key"
-                    class="col-stack-sm p-padding-md surface-item rounded-scale-lg interactive-hover-tile behavior-hover-transition"
+                    class="col-stack-sm p-md surface-item rounded-lg shadow-soft transition-all duration-xl ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)] behavior-hover-transition"
                   >
                     <div class="row-between">
                       <span class="font-medium text-foreground">
                         {{ item.description }}
                       </span>
-                      <span class="font-mono text-primary fs-sm">{{ item.key }}</span>
+                      <span class="font-mono text-primary text-sm">{{ item.key }}</span>
                     </div>
                     <div class="layout-wrap gap-xs">
                       <div
-                        class="interactive-tag w-fit"
+                        class="text-xs font-mono bg-muted/30 px-xs py-xs rounded-xs cursor-pointer select-none transition-all duration-lg ease-in-out hover:bg-primary/20 hover:text-primary active:scale-95 text-muted-foreground w-fit"
                         @click="copyToClipboard(`var(${item.cssVar})`, item.cssVar)"
                       >
                         {{ item.cssVar }}
                       </div>
                       <div
-                        class="interactive-tag hover:bg-success/20 hover:text-success w-fit"
+                        class="text-xs font-mono bg-muted/30 px-xs py-xs rounded-xs cursor-pointer select-none transition-all duration-lg ease-in-out hover:bg-primary/20 hover:text-primary active:scale-95 text-muted-foreground hover:bg-success/20 hover:text-success w-fit"
                         @click="copyToClipboard(item.unoClass)"
                       >
                         {{ item.unoClass }}
                       </div>
                     </div>
                     <!-- Preview -->
-                    <div
-                      class="mt-margin-xs p-container-padding bg-primary/10 rounded-scale-sm component-border"
-                    >
-                      <div class="bg-primary/20 h-[var(--spacing-xl)] center fs-xs text-primary">
+                    <div class="mt-xs p-container-padding bg-primary/10 rounded-sm shadow-soft">
+                      <div class="bg-primary/20 h-[var(--spacing-xl)] center text-xs text-primary">
                         Content with p-container-padding
                       </div>
                     </div>
@@ -917,9 +895,11 @@ const marginDirMap = [
         </div>
 
         <!-- Size Presets Section (Hero: primary tint + title strip) -->
-        <Card class="panel-base bg-primary/10 dark:bg-primary/5">
+        <Card
+          class="bg-card rounded-md shadow-soft py-md px-lg flex flex-col gap-lg bg-primary/10 dark:bg-primary/5"
+        >
           <template #title>
-            <div class="row-y-center gap-sm border-b-default pb-padding-sm mb-padding-sm">
+            <div class="row-y-center gap-sm border-b-default pb-sm mb-padding-sm">
               <Icons
                 name="i-lucide-settings"
                 class="text-primary"
@@ -936,10 +916,10 @@ const marginDirMap = [
               <div
                 v-for="preset in SIZE_PRESETS"
                 :key="preset.name"
-                class="col-stack-md p-padding-lg surface-item rounded-scale-lg interactive-hover-tile behavior-hover-transition"
+                class="col-stack-md p-lg surface-item rounded-lg shadow-soft transition-all duration-xl ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)] behavior-hover-transition"
               >
                 <div class="row-between">
-                  <h4 class="fs-sm font-semibold text-foreground mb-margin-xs">
+                  <h4 class="text-sm font-semibold text-foreground mb-xs">
                     {{ preset.label }}
                   </h4>
                   <Tag
@@ -947,7 +927,7 @@ const marginDirMap = [
                     :severity="preset.name === 'comfortable' ? 'success' : 'secondary'"
                   />
                 </div>
-                <div class="grid grid-cols-2 gap-sm fs-sm">
+                <div class="grid grid-cols-2 gap-sm text-sm">
                   <div class="flex justify-between">
                     <span class="text-muted-foreground">radius:</span>
                     <span class="font-mono">{{ preset.radius }}px</span>
@@ -979,7 +959,9 @@ const marginDirMap = [
         </Card>
 
         <!-- Quick Reference (末尾轻渐变，title 无 strip 无 font-semibold，与 theme 一致) -->
-        <Card class="panel-base bg-gradient-to-br from-primary/5 to-accent/5">
+        <Card
+          class="bg-card rounded-md shadow-soft py-md px-lg flex flex-col gap-lg bg-gradient-to-br from-primary/5 to-accent/5"
+        >
           <template #title>
             <div class="row-y-center gap-sm">
               <Icons
@@ -992,100 +974,94 @@ const marginDirMap = [
           <template #content>
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-lg">
               <div class="col-stack-sm">
-                <h4 class="fs-sm font-semibold text-foreground mb-margin-xs">
-                  字体大小 (Font Size)
-                </h4>
+                <h4 class="text-sm font-semibold text-foreground mb-xs">字体大小 (Font Size)</h4>
                 <div
-                  class="bg-muted p-padding-sm rounded-scale-sm fs-sm cursor-pointer hover:bg-muted/80 active:scale-95 transition-all duration-scale-lg"
-                  @click="copyToClipboard('fs-{scale}')"
+                  class="bg-muted p-sm rounded-sm text-sm cursor-pointer hover:bg-muted/80 active:scale-95 transition-all duration-lg"
+                  @click="copyToClipboard('text-{scale}')"
                 >
-                  fs-{scale}
+                  text-{scale}
                 </div>
                 <div
-                  class="bg-muted p-padding-sm rounded-scale-sm fs-sm cursor-pointer hover:bg-muted/80 active:scale-95 transition-all duration-scale-lg"
+                  class="bg-muted p-sm rounded-sm text-sm cursor-pointer hover:bg-muted/80 active:scale-95 transition-all duration-lg"
                   @click="copyToClipboard('text-{scale}')"
                 >
                   text-{scale}
                 </div>
               </div>
               <div class="col-stack-sm">
-                <h4 class="fs-sm font-semibold text-foreground mb-margin-xs">间距 (Spacing)</h4>
+                <h4 class="text-sm font-semibold text-foreground mb-xs">间距 (Spacing)</h4>
                 <div
-                  class="bg-muted p-padding-sm rounded-scale-sm fs-sm cursor-pointer hover:bg-muted/80 active:scale-95 transition-all duration-scale-lg"
-                  @click="copyToClipboard('p-padding-{scale}')"
+                  class="bg-muted p-sm rounded-sm text-sm cursor-pointer hover:bg-muted/80 active:scale-95 transition-all duration-lg"
+                  @click="copyToClipboard('p-{scale}')"
                 >
-                  p-padding-{scale}
+                  p-{scale}
                 </div>
                 <div
-                  class="bg-muted p-padding-sm rounded-scale-sm fs-sm cursor-pointer hover:bg-muted/80 active:scale-95 transition-all duration-scale-lg"
+                  class="bg-muted p-sm rounded-sm text-sm cursor-pointer hover:bg-muted/80 active:scale-95 transition-all duration-lg"
                   @click="copyToClipboard('gap-{scale}')"
                 >
                   gap-{scale}
                 </div>
                 <div
-                  class="bg-muted p-padding-sm rounded-scale-sm fs-sm cursor-pointer hover:bg-muted/80 active:scale-95 transition-all duration-scale-lg"
+                  class="bg-muted p-sm rounded-sm text-sm cursor-pointer hover:bg-muted/80 active:scale-95 transition-all duration-lg"
                   @click="copyToClipboard('gap-x-{scale}')"
                 >
                   gap-x-{scale}
                 </div>
                 <div
-                  class="bg-muted p-padding-sm rounded-scale-sm fs-sm cursor-pointer hover:bg-muted/80 active:scale-95 transition-all duration-scale-lg"
+                  class="bg-muted p-sm rounded-sm text-sm cursor-pointer hover:bg-muted/80 active:scale-95 transition-all duration-lg"
                   @click="copyToClipboard('scroll-m-gap-{scale}')"
                 >
                   scroll-m-gap-{scale}
                 </div>
                 <div
-                  class="bg-muted p-padding-sm rounded-scale-sm fs-sm cursor-pointer hover:bg-muted/80 active:scale-95 transition-all duration-scale-lg"
+                  class="bg-muted p-sm rounded-sm text-sm cursor-pointer hover:bg-muted/80 active:scale-95 transition-all duration-lg"
                   @click="copyToClipboard('m-gap-{scale}')"
                 >
                   m-gap-{scale}
                 </div>
                 <div
-                  class="bg-muted p-padding-sm rounded-scale-sm fs-sm cursor-pointer hover:bg-muted/80 active:scale-95 transition-all duration-scale-lg"
-                  @click="copyToClipboard('gap-scale-{scale}')"
+                  class="bg-muted p-sm rounded-sm text-sm cursor-pointer hover:bg-muted/80 active:scale-95 transition-all duration-lg"
+                  @click="copyToClipboard('gap-{scale}')"
                 >
-                  gap-scale-{scale}
+                  gap-{scale}
                 </div>
                 <div
-                  class="bg-muted p-padding-sm rounded-scale-sm fs-sm cursor-pointer hover:bg-muted/80 active:scale-95 transition-all duration-scale-lg"
-                  @click="copyToClipboard('m-margin-{scale}')"
+                  class="bg-muted p-sm rounded-sm text-sm cursor-pointer hover:bg-muted/80 active:scale-95 transition-all duration-lg"
+                  @click="copyToClipboard('m-{scale}')"
                 >
-                  m-margin-{scale}
-                </div>
-              </div>
-              <div class="col-stack-sm">
-                <h4 class="fs-sm font-semibold text-foreground mb-margin-xs">
-                  圆角 (Border Radius)
-                </h4>
-                <div
-                  class="bg-muted p-padding-sm rounded-scale-sm fs-sm cursor-pointer hover:bg-muted/80 active:scale-95 transition-all duration-scale-lg"
-                  @click="copyToClipboard('rounded-scale-{scale}')"
-                >
-                  rounded-scale-{scale}
+                  m-{scale}
                 </div>
               </div>
               <div class="col-stack-sm">
-                <h4 class="fs-sm font-semibold text-foreground mb-margin-xs">
-                  过渡动画 (Transition)
-                </h4>
+                <h4 class="text-sm font-semibold text-foreground mb-xs">圆角 (Border Radius)</h4>
                 <div
-                  class="bg-muted p-padding-sm rounded-scale-sm fs-sm cursor-pointer hover:bg-muted/80 active:scale-95 transition-all duration-scale-lg"
-                  @click="copyToClipboard('duration-scale-{scale}')"
+                  class="bg-muted p-sm rounded-sm text-sm cursor-pointer hover:bg-muted/80 active:scale-95 transition-all duration-lg"
+                  @click="copyToClipboard('rounded-{scale}')"
                 >
-                  duration-scale-{scale}
+                  rounded-{scale}
+                </div>
+              </div>
+              <div class="col-stack-sm">
+                <h4 class="text-sm font-semibold text-foreground mb-xs">过渡动画 (Transition)</h4>
+                <div
+                  class="bg-muted p-sm rounded-sm text-sm cursor-pointer hover:bg-muted/80 active:scale-95 transition-all duration-lg"
+                  @click="copyToClipboard('duration-{scale}')"
+                >
+                  duration-{scale}
                 </div>
               </div>
             </div>
-            <p class="mt-margin-md text-muted-foreground fs-sm">
-              <span class="font-mono bg-muted px-padding-xs rounded-scale-xs">{scale}</span>
+            <p class="mt-md text-muted-foreground text-sm">
+              <span class="font-mono bg-muted px-xs rounded-xs">{scale}</span>
               = xs | sm | md | lg | xl | 2xl | 3xl | 4xl | 5xl
             </p>
-            <p class="mt-margin-xs text-muted-foreground fs-xs">
-              <span class="bg-muted px-padding-xs rounded-scale-xs font-mono">m-gap-*</span>
+            <p class="mt-xs text-muted-foreground text-xs">
+              <span class="bg-muted px-xs rounded-xs font-mono">m-gap-*</span>
               适合作为与
-              <span class="bg-muted px-padding-xs rounded-scale-xs font-mono">gap-*</span>
+              <span class="bg-muted px-xs rounded-xs font-mono">gap-*</span>
               成对使用的「语义化外间距」；若仅需普通 margin，可使用
-              <span class="bg-muted px-padding-xs rounded-scale-xs font-mono">m-margin-*</span>
+              <span class="bg-muted px-xs rounded-xs font-mono">m-*</span>
               。
             </p>
           </template>

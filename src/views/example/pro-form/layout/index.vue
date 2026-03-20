@@ -27,7 +27,7 @@ const CustomFieldSlotContent = defineComponent({
     const onUpdate = this.onUpdate as (v: unknown) => void
 
     return (
-      <div class="row-y-center gap-sm w-full p-padding-xs border-dashed rounded-scale-md bg-accent/5">
+      <div class="row-y-center gap-sm w-full p-xs border-dashed rounded-md bg-accent/5">
         <Icons
           name="i-lucide-sparkles"
           class="text-accent"
@@ -218,16 +218,16 @@ async function onClickSubmit(): Promise<void> {
   >
     <!-- Toolbar: Hero Header (Transparent Root Policy: Inherit canvas) -->
     <header class="shrink-0 border-b-default border-primary/20">
-      <div class="w-full px-padding-md md:px-padding-lg py-padding-sm row-y-center gap-md">
-        <div class="p-padding-md bg-primary/10 rounded-scale-lg shrink-0">
+      <div class="w-full px-md md:px-lg py-sm row-y-center gap-md">
+        <div class="p-md bg-primary/10 rounded-lg shrink-0">
           <Icons
             name="i-lucide-layout-template"
-            class="text-primary fs-2xl"
+            class="text-primary text-2xl"
           />
         </div>
         <div class="col-stack-xs">
-          <h1 class="fs-2xl font-bold text-foreground m-0">ProForm 响应式与排版引擎</h1>
-          <p class="text-muted fs-sm m-0">
+          <h1 class="text-2xl font-bold text-foreground m-0">ProForm 响应式与排版引擎</h1>
+          <p class="text-muted text-sm m-0">
             演示动态控制表单 Layout，以及
             <span class="text-primary font-bold">容器级自适应栅格</span>
             (无 CSS 媒体查询)，并演示具名插槽覆盖渲染。
@@ -241,10 +241,10 @@ async function onClickSubmit(): Promise<void> {
       <div class="row-start items-start gap-lg layout-full min-h-0">
         <div class="flex-1 min-w-0 h-full">
           <CScrollbar class="layout-full">
-            <div class="w-full p-padding-md md:p-padding-lg col-stack-xl pb-padding-xl">
+            <div class="w-full p-md md:p-lg col-stack-xl pb-xl">
               <!-- 排版控制台 -->
               <div
-                class="panel-base sticky top-0 z-1 bg-background/80 backdrop-blur-md border-primary/20 shadow-sm!"
+                class="bg-card rounded-md shadow-soft py-md px-lg flex flex-col gap-lg sticky top-0 z-1 bg-background/80 backdrop-blur-md border-primary/20 shadow-sm!"
               >
                 <div class="row-between gap-md flex-wrap">
                   <div class="center gap-md">
@@ -255,13 +255,13 @@ async function onClickSubmit(): Promise<void> {
                     />
                     <div class="col-stack-xs">
                       <div class="font-bold text-foreground uppercase tracking-tight">排版配置</div>
-                      <div class="fs-xs text-muted-foreground">实时切换布局模式与对齐方式。</div>
+                      <div class="text-xs text-muted-foreground">实时切换布局模式与对齐方式。</div>
                     </div>
                   </div>
 
                   <div class="row-y-center gap-md flex-wrap">
                     <div class="center gap-xs">
-                      <span class="fs-xs font-bold text-muted uppercase">Layout</span>
+                      <span class="text-xs font-bold text-muted uppercase">Layout</span>
                       <SelectButton
                         v-model="layoutMode"
                         :options="layoutOptions"
@@ -271,7 +271,7 @@ async function onClickSubmit(): Promise<void> {
                       />
                     </div>
                     <div class="center gap-xs">
-                      <span class="fs-xs font-bold text-muted uppercase">Align</span>
+                      <span class="text-xs font-bold text-muted uppercase">Align</span>
                       <SelectButton
                         v-model="labelAlign"
                         :options="alignOptions"
@@ -293,17 +293,17 @@ async function onClickSubmit(): Promise<void> {
               </div>
 
               <!-- 容器级响应式测试区 -->
-              <div class="panel-base">
-                <div class="row-y-center gap-sm border-b-default pb-padding-sm mb-padding-sm">
+              <div class="bg-card rounded-md shadow-soft py-md px-lg flex flex-col gap-lg">
+                <div class="row-y-center gap-sm border-b-default pb-sm mb-padding-sm">
                   <Icons
                     name="i-lucide-move-horizontal"
                     class="text-primary"
                   />
                   <div class="col-stack-xs">
-                    <span class="fs-md font-semibold text-foreground uppercase tracking-tight">
+                    <span class="text-md font-semibold text-foreground uppercase tracking-tight">
                       容器级响应式观测
                     </span>
-                    <span class="fs-xs text-muted-foreground italic">
+                    <span class="text-xs text-muted-foreground italic">
                       拖拽右侧边缘改变容器宽度，观察表单如何根据容器尺寸丝滑变阵 (xs/md/lg)。
                     </span>
                   </div>
@@ -311,7 +311,7 @@ async function onClickSubmit(): Promise<void> {
 
                 <div
                   ref="resizableRef"
-                  class="relative overflow-hidden border-default border-dashed border-primary/30 p-padding-lg rounded-scale-lg surface-sunken transition-colors"
+                  class="relative overflow-hidden border-default border-dashed border-primary/30 p-lg rounded-lg surface-sunken transition-colors"
                   :style="{
                     width: resizableWidthUnits
                       ? `calc(var(--spacing-md) * ${resizableWidthUnits})`
@@ -330,7 +330,7 @@ async function onClickSubmit(): Promise<void> {
                   </div>
 
                   <div
-                    class="absolute top-0 right-4 bg-primary/80 text-primary-foreground fs-xs px-padding-xs py-1 rounded-b-scale-md opacity-0 pointer-events-none transition-opacity backdrop-blur-sm"
+                    class="absolute top-0 right-4 bg-primary/80 text-primary-foreground text-xs px-xs py-1 rounded-b-md opacity-0 pointer-events-none transition-opacity backdrop-blur-sm"
                     :class="{ 'opacity-100': isResizing }"
                   >
                     <Icons
@@ -360,7 +360,7 @@ async function onClickSubmit(): Promise<void> {
 
                     <template #footer="{ submit, formState: slotState }">
                       <div
-                        class="row-end gap-sm mt-padding-md border-t-default border-border/15 pt-padding-md"
+                        class="row-end gap-sm mt-padding-md border-t-default border-border/15 pt-md"
                       >
                         <Button
                           label="保存配置"
@@ -375,20 +375,22 @@ async function onClickSubmit(): Promise<void> {
               </div>
 
               <!-- Mobile JSON preview -->
-              <div class="panel-base xl:hidden">
+              <div
+                class="bg-card rounded-md shadow-soft py-md px-lg flex flex-col gap-lg xl:hidden"
+              >
                 <div class="row-y-center gap-sm mb-padding-sm">
                   <Icons
                     name="i-lucide-braces"
                     class="text-primary"
                   />
-                  <span class="fs-sm font-semibold text-foreground uppercase">
+                  <span class="text-sm font-semibold text-foreground uppercase">
                     Real-time values
                   </span>
                 </div>
                 <div
-                  class="surface-sunken rounded-scale-md p-padding-md border-default border-border/40 text-muted-foreground"
+                  class="surface-sunken rounded-md p-md border-default border-border/40 text-muted-foreground"
                 >
-                  <pre class="m-0 whitespace-pre-wrap break-words fs-xs">{{ valuesJson }}</pre>
+                  <pre class="m-0 whitespace-pre-wrap break-words text-xs">{{ valuesJson }}</pre>
                 </div>
               </div>
             </div>
@@ -400,20 +402,18 @@ async function onClickSubmit(): Promise<void> {
           class="hidden xl:block layout-sidepanel shrink-0 h-full border-l-default border-border/20"
         >
           <div class="layout-full layout-stack">
-            <div
-              class="shrink-0 px-padding-md py-padding-sm border-b-default border-border/20 row-y-center gap-sm"
-            >
+            <div class="shrink-0 px-md py-sm border-b-default border-border/20 row-y-center gap-sm">
               <Icons
                 name="i-lucide-code-2"
                 size="sm"
                 class="text-accent"
               />
-              <span class="fs-xs font-bold text-muted uppercase tracking-widest">
+              <span class="text-xs font-bold text-muted uppercase tracking-widest">
                 Calculated Result
               </span>
             </div>
-            <CScrollbar class="flex-1 min-h-0 surface-sunken px-padding-md py-padding-sm">
-              <pre class="m-0 fs-xs text-muted-foreground font-mono leading-relaxed">{{
+            <CScrollbar class="flex-1 min-h-0 surface-sunken px-md py-sm">
+              <pre class="m-0 text-xs text-muted-foreground font-mono leading-relaxed">{{
                 valuesJson
               }}</pre>
             </CScrollbar>

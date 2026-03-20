@@ -1,7 +1,7 @@
 /**
  * 默认空内容渲染器
  * 在无 contentRenderer 时提供占位，避免对话框 body 空白
- * 使用 UnoCSS 语义类：p-padding-md（间距）
+ * 使用 UnoCSS 语义类：p-md（间距）
  */
 import type { VNode } from 'vue'
 import type { DialogOptionsBase } from './utils/types'
@@ -12,4 +12,4 @@ export const defaultContentRenderer = ({
 }: {
   options: DialogOptionsBase
   index: number
-}): VNode => <div class="p-padding-md" />
+}): VNode => <div class="p-md" />

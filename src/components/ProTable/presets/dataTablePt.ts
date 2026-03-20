@@ -1,7 +1,7 @@
 const HEADER_CELL_CLASS =
-  'py-padding-xs! px-padding-md! fs-xs! font-semibold text-muted-foreground uppercase tracking-wider text-left'
+  'py-xs! px-md! text-xs! font-semibold text-muted-foreground uppercase tracking-wider text-left'
 
-const BODY_CELL_CLASS = 'py-padding-sm! px-padding-md!'
+const BODY_CELL_CLASS = 'py-sm! px-md!'
 const BODY_ROW_BASE = 'behavior-hover-transition'
 
 export interface DataTablePtOptions {

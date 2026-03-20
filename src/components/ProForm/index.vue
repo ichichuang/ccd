@@ -145,14 +145,14 @@ defineExpose(exposed)
   >
     <div
       v-if="!hasVisibleFields"
-      class="column-center p-padding-xl text-muted-foreground surface-elevated rounded-scale-md"
+      class="column-center p-xl text-muted-foreground surface-elevated rounded-md"
     >
       <Icons
         name="i-lucide-inbox"
         size="2xl"
-        class="mb-margin-md text-muted-foreground opacity-50"
+        class="mb-md text-muted-foreground opacity-50"
       />
-      <span class="fs-sm">{{ $t('emptyState.noFormConfig') }}</span>
+      <span class="text-sm">{{ $t('emptyState.noFormConfig') }}</span>
     </div>
 
     <div

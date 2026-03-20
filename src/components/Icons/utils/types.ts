@@ -56,7 +56,7 @@ export interface IconsProps {
   /**
    * 图标大小（可选）
    *
-   * - 标准尺寸：xs | sm | md | lg | xl | 2xl | 3xl | 4xl | 5xl，通过 fs-* 类名联动 SizeStore
+   * - 标准尺寸：xs | sm | md | lg | xl | 2xl | 3xl | 4xl | 5xl，通过 text-* 类名联动 SizeStore
    * - 数字：单位为 px
    * - 字符串：支持 px、%、vw、vh 等单位
    *

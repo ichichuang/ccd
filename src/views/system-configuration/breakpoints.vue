@@ -180,47 +180,45 @@ const deviceSyncInfo = computed<{ deviceType: string; breakpoint: BreakpointKey 
   >
     <!-- Fixed top: Header + Viewport Simulator (Transparent Root · Nested Canvas) -->
     <div class="shrink-0 border-b-default border-primary/50 bg-primary/5">
-      <div class="layout-content-wide col-stack-sm py-padding-sm">
+      <div
+        class="py-sm md:py-md xl:py-lg 2xl:py-xl mx-auto max-w-[92%] sm:max-w-[94%] md:max-w-[92%] lg:max-w-[90%] xl:max-w-[88%] 2xl:max-w-[86%] 3xl:max-w-[84%] col-stack-sm py-sm"
+      >
         <!-- Header -->
         <div class="col-stack-xs">
           <div class="row-y-center gap-md">
-            <div class="p-padding-md bg-primary/10 rounded-scale-lg shrink-0">
+            <div class="p-md bg-primary/10 rounded-lg shrink-0">
               <Icons
                 name="i-lucide-monitor"
-                class="text-primary fs-2xl behavior-hover-transition"
+                class="text-primary text-2xl behavior-hover-transition"
               />
             </div>
             <div class="col-stack-xs">
-              <h1 class="fs-2xl font-bold text-foreground">Breakpoint System</h1>
-              <p class="text-muted-foreground fs-sm">
+              <h1 class="text-2xl font-bold text-foreground">Breakpoint System</h1>
+              <p class="text-muted-foreground text-sm">
                 响应式断点系统完整参考 · 点击任意类名即可自动复制到剪贴板
               </p>
             </div>
           </div>
           <div
-            class="border-l-4 border-primary bg-primary/5 p-padding-md rounded-r-scale-md row-start gap-md mt-margin-sm"
+            class="border-l-4 border-primary bg-primary/5 p-md rounded-r-md row-start gap-md mt-sm"
           >
             <Icons
               name="i-lucide-info"
-              class="text-primary fs-xl shrink-0 mt-margin-xs"
+              class="text-primary text-xl shrink-0 mt-xs"
             />
             <div class="col-stack-xs">
-              <div class="font-semibold text-primary fs-sm">Architectural Guide 架构引导</div>
-              <div class="text-muted-foreground fs-xs leading-relaxed">
+              <div class="font-semibold text-primary text-sm">Architectural Guide 架构引导</div>
+              <div class="text-muted-foreground text-xs leading-relaxed">
                 断点数值由
-                <span class="bg-muted px-padding-xs rounded-scale-xs font-mono">
+                <span class="bg-muted px-xs rounded-xs font-mono">
                   src/constants/breakpoints.ts
                 </span>
                 定义。如需修改全局断点，请在该文件中统一调整。同一组键名
-                <span class="bg-muted px-padding-xs rounded-scale-xs font-mono">xs ~ 5xl</span>
+                <span class="bg-muted px-xs rounded-xs font-mono">xs ~ 5xl</span>
                 也用于尺寸阶梯
-                <span class="bg-muted px-padding-xs rounded-scale-xs font-mono">
-                  SIZE_SCALE_KEYS
-                </span>
+                <span class="bg-muted px-xs rounded-xs font-mono">SIZE_SCALE_KEYS</span>
                 ，便于在字体/间距/圆角/过渡中复用同一心智模型。勾选「跟随真实视口」后，模拟器将使用
-                <span class="bg-muted px-padding-xs rounded-scale-xs font-mono">
-                  useDeviceStore
-                </span>
+                <span class="bg-muted px-xs rounded-xs font-mono">useDeviceStore</span>
                 的实时宽度，与真实布局一致。
               </div>
             </div>
@@ -238,7 +236,7 @@ const deviceSyncInfo = computed<{ deviceType: string; breakpoint: BreakpointKey 
             />
             <label
               for="follow-viewport"
-              class="cursor-pointer select-none text-muted-foreground fs-sm"
+              class="cursor-pointer select-none text-muted-foreground text-sm"
             >
               跟随真实视口 (useDeviceStore.width)
             </label>
@@ -246,7 +244,7 @@ const deviceSyncInfo = computed<{ deviceType: string; breakpoint: BreakpointKey 
               v-if="followViewport"
               value="已同步"
               severity="success"
-              class="fs-xs"
+              class="text-xs"
             />
           </div>
           <!-- Width Slider -->
@@ -254,13 +252,13 @@ const deviceSyncInfo = computed<{ deviceType: string; breakpoint: BreakpointKey 
             <div class="row-between">
               <span class="text-muted-foreground">Current Width</span>
               <div class="row-y-center gap-md">
-                <span class="font-mono fs-xl font-bold text-foreground">
+                <span class="font-mono text-xl font-bold text-foreground">
                   {{ effectiveWidth }}px
                 </span>
                 <Tag
                   :value="activeBreakpoint ?? '< xs'"
                   :severity="activeBreakpoint ? 'success' : 'secondary'"
-                  class="fs-sm"
+                  class="text-sm"
                 />
               </div>
             </div>
@@ -278,7 +276,7 @@ const deviceSyncInfo = computed<{ deviceType: string; breakpoint: BreakpointKey 
             <div
               v-for="preset in presetWidths"
               :key="preset.value"
-              class="row-y-center gap-xs px-padding-sm py-padding-xs rounded-scale-md cursor-pointer select-none transition-all duration-scale-lg ease-in-out fs-sm active:scale-95 interactive-focus-ring"
+              class="row-y-center gap-xs px-sm py-xs rounded-md cursor-pointer select-none transition-all duration-lg ease-in-out text-sm active:scale-95 interactive-focus-ring"
               tabindex="0"
               :class="[
                 activePreset?.value === preset.value
@@ -305,11 +303,15 @@ const deviceSyncInfo = computed<{ deviceType: string; breakpoint: BreakpointKey 
 
     <!-- Scrollable content -->
     <CScrollbar class="flex-1 min-h-0">
-      <div class="layout-content-wide col-stack-xl">
+      <div
+        class="py-sm md:py-md xl:py-lg 2xl:py-xl mx-auto max-w-[92%] sm:max-w-[94%] md:max-w-[92%] lg:max-w-[90%] xl:max-w-[88%] 2xl:max-w-[86%] 3xl:max-w-[84%] col-stack-xl"
+      >
         <!-- Device Store 实时状态 -->
-        <Card class="panel-base bg-accent/10 dark:bg-accent/5">
+        <Card
+          class="bg-card rounded-md shadow-soft py-md px-lg flex flex-col gap-lg bg-accent/10 dark:bg-accent/5"
+        >
           <template #title>
-            <div class="row-y-center gap-sm border-b-default pb-padding-sm mb-padding-sm">
+            <div class="row-y-center gap-sm border-b-default pb-sm mb-padding-sm">
               <Icons
                 name="i-lucide-smartphone"
                 class="text-primary"
@@ -324,58 +326,56 @@ const deviceSyncInfo = computed<{ deviceType: string; breakpoint: BreakpointKey 
           <template #content>
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-md">
               <div
-                class="col-stack-xs p-padding-md surface-item rounded-scale-lg interactive-hover-tile behavior-hover-transition"
+                class="col-stack-xs p-md surface-item rounded-lg shadow-soft transition-all duration-xl ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)] behavior-hover-transition"
               >
-                <span class="text-muted-foreground fs-xs">type</span>
+                <span class="text-muted-foreground text-xs">type</span>
                 <Tag
                   :value="deviceStore.type"
                   severity="info"
                 />
-                <span class="font-mono fs-xs text-muted-foreground">PC / Tablet / Mobile</span>
+                <span class="font-mono text-xs text-muted-foreground">PC / Tablet / Mobile</span>
               </div>
               <div
-                class="col-stack-xs p-padding-md surface-item rounded-scale-lg interactive-hover-tile behavior-hover-transition"
+                class="col-stack-xs p-md surface-item rounded-lg shadow-soft transition-all duration-xl ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)] behavior-hover-transition"
               >
-                <span class="text-muted-foreground fs-xs">currentBreakpoint</span>
+                <span class="text-muted-foreground text-xs">currentBreakpoint</span>
                 <Tag
                   :value="deviceStore.currentBreakpoint"
                   severity="success"
                 />
               </div>
               <div
-                class="col-stack-xs p-padding-md surface-item rounded-scale-lg interactive-hover-tile behavior-hover-transition"
+                class="col-stack-xs p-md surface-item rounded-lg shadow-soft transition-all duration-xl ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)] behavior-hover-transition"
               >
-                <span class="text-muted-foreground fs-xs">isMobileLayout</span>
+                <span class="text-muted-foreground text-xs">isMobileLayout</span>
                 <Tag
                   :value="String(deviceStore.isMobileLayout)"
                   :severity="deviceStore.isMobileLayout ? 'warn' : 'secondary'"
                 />
-                <span class="font-mono fs-xs text-muted-foreground">width &lt; lg</span>
+                <span class="font-mono text-xs text-muted-foreground">width &lt; lg</span>
               </div>
               <div
-                class="col-stack-xs p-padding-md surface-item rounded-scale-lg interactive-hover-tile behavior-hover-transition"
+                class="col-stack-xs p-md surface-item rounded-lg shadow-soft transition-all duration-xl ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)] behavior-hover-transition"
               >
-                <span class="text-muted-foreground fs-xs">isTabletLayout</span>
+                <span class="text-muted-foreground text-xs">isTabletLayout</span>
                 <Tag
                   :value="String(deviceStore.isTabletLayout)"
                   :severity="deviceStore.isTabletLayout ? 'warn' : 'secondary'"
                 />
               </div>
             </div>
-            <p class="mt-margin-md text-muted-foreground fs-sm">
+            <p class="mt-md text-muted-foreground text-sm">
               布局判定应使用
-              <span class="bg-muted px-padding-xs rounded-scale-xs font-mono">useDeviceStore</span>
+              <span class="bg-muted px-xs rounded-xs font-mono">useDeviceStore</span>
               的 getters，禁止直接判断 window.innerWidth
             </p>
           </template>
         </Card>
 
         <!-- deviceSync 同步 API -->
-        <Card
-          class="bg-accent/10 dark:bg-accent/5 rounded-scale-xl shadow-soft p-padding-xl col-stack-lg"
-        >
+        <Card class="bg-accent/10 dark:bg-accent/5 rounded-xl shadow-soft p-xl col-stack-lg">
           <template #title>
-            <div class="row-y-center gap-sm border-b-default pb-padding-sm mb-padding-sm">
+            <div class="row-y-center gap-sm border-b-default pb-sm mb-padding-sm">
               <Icons
                 name="i-lucide-cpu"
                 class="text-primary"
@@ -389,15 +389,13 @@ const deviceSyncInfo = computed<{ deviceType: string; breakpoint: BreakpointKey 
           </template>
           <template #content>
             <div class="col-stack-md">
-              <p class="text-muted-foreground fs-sm">
+              <p class="text-muted-foreground text-sm">
                 纯函数，不依赖 Pinia · 供 mount 前逻辑（如 sizeEngine.preload）使用 · SSOT:
-                <span class="bg-muted px-padding-xs rounded-scale-xs font-mono">
-                  src/utils/deviceSync.ts
-                </span>
+                <span class="bg-muted px-xs rounded-xs font-mono">src/utils/deviceSync.ts</span>
               </p>
               <div class="layout-wrap gap-md">
                 <div
-                  class="interactive-tag interactive-focus-ring"
+                  class="text-xs font-mono bg-muted/30 px-xs py-xs rounded-xs cursor-pointer select-none transition-all duration-lg ease-in-out hover:bg-primary/20 hover:text-primary active:scale-95 text-muted-foreground interactive-focus-ring"
                   tabindex="0"
                   @click="copyToClipboard('getDeviceTypeSync()')"
                   @keydown.enter.prevent="copyToClipboard('getDeviceTypeSync()')"
@@ -406,7 +404,7 @@ const deviceSyncInfo = computed<{ deviceType: string; breakpoint: BreakpointKey 
                   getDeviceTypeSync()
                 </div>
                 <div
-                  class="interactive-tag interactive-focus-ring"
+                  class="text-xs font-mono bg-muted/30 px-xs py-xs rounded-xs cursor-pointer select-none transition-all duration-lg ease-in-out hover:bg-primary/20 hover:text-primary active:scale-95 text-muted-foreground interactive-focus-ring"
                   tabindex="0"
                   @click="copyToClipboard('getBreakpointSync(width?)')"
                   @keydown.enter.prevent="copyToClipboard('getBreakpointSync(width?)')"
@@ -415,7 +413,7 @@ const deviceSyncInfo = computed<{ deviceType: string; breakpoint: BreakpointKey 
                   getBreakpointSync(width?)
                 </div>
               </div>
-              <div class="row-y-center gap-md text-muted-foreground fs-sm">
+              <div class="row-y-center gap-md text-muted-foreground text-sm">
                 <span>
                   当前 sync 结果: type=
                   <span class="font-mono text-foreground">{{ deviceSyncInfo.deviceType }}</span>
@@ -428,7 +426,7 @@ const deviceSyncInfo = computed<{ deviceType: string; breakpoint: BreakpointKey 
         </Card>
 
         <!-- Visual Ruler -->
-        <Card class="panel-base">
+        <Card class="bg-card rounded-md shadow-soft py-md px-lg flex flex-col gap-lg">
           <template #title>
             <div class="row-y-center gap-sm">
               <Icons
@@ -440,13 +438,13 @@ const deviceSyncInfo = computed<{ deviceType: string; breakpoint: BreakpointKey 
           </template>
           <template #content>
             <div
-              class="relative h-[var(--spacing-5xl)] w-full overflow-hidden rounded-scale-md component-border bg-muted/30"
+              class="relative h-[var(--spacing-5xl)] w-full overflow-hidden rounded-md shadow-soft bg-muted/30"
               role="img"
               aria-label="Breakpoint ruler"
             >
               <!-- Current Width Indicator -->
               <div
-                class="absolute top-0 h-full w-px bg-accent z-10 transition-all duration-scale-lg"
+                class="absolute top-0 h-full w-px bg-accent z-10 transition-all duration-lg"
                 :style="rulerIndicatorStyle"
               >
                 <div
@@ -466,7 +464,7 @@ const deviceSyncInfo = computed<{ deviceType: string; breakpoint: BreakpointKey 
                   :class="isBreakpointActive(value) ? 'bg-accent' : 'bg-border'"
                 />
                 <span
-                  class="mt-margin-xs shrink-0 rounded-scale-xs px-padding-xs fs-xs font-medium cursor-pointer hover:scale-110 transition-transform duration-scale-lg interactive-focus-ring"
+                  class="mt-xs shrink-0 rounded-xs px-xs text-xs font-medium cursor-pointer hover:scale-110 transition-transform duration-lg interactive-focus-ring"
                   tabindex="0"
                   :class="
                     isBreakpointActive(value)
@@ -485,7 +483,7 @@ const deviceSyncInfo = computed<{ deviceType: string; breakpoint: BreakpointKey 
         </Card>
 
         <!-- Breakpoint Reference Table -->
-        <Card class="panel-base">
+        <Card class="bg-card rounded-md shadow-soft py-md px-lg flex flex-col gap-lg">
           <template #title>
             <div class="row-y-center gap-sm">
               <Icons
@@ -504,21 +502,17 @@ const deviceSyncInfo = computed<{ deviceType: string; breakpoint: BreakpointKey 
               <table class="w-full border-collapse">
                 <thead>
                   <tr class="border-b-default">
-                    <th class="text-left p-padding-sm text-muted-foreground fs-sm font-medium">
-                      Scale
-                    </th>
-                    <th class="text-left p-padding-sm text-muted-foreground fs-sm font-medium">
+                    <th class="text-left p-sm text-muted-foreground text-sm font-medium">Scale</th>
+                    <th class="text-left p-sm text-muted-foreground text-sm font-medium">
                       Min Width
                     </th>
-                    <th class="text-left p-padding-sm text-muted-foreground fs-sm font-medium">
+                    <th class="text-left p-sm text-muted-foreground text-sm font-medium">
                       UnoCSS Prefix
                     </th>
-                    <th class="text-left p-padding-sm text-muted-foreground fs-sm font-medium">
+                    <th class="text-left p-sm text-muted-foreground text-sm font-medium">
                       Description
                     </th>
-                    <th class="text-left p-padding-sm text-muted-foreground fs-sm font-medium">
-                      Status
-                    </th>
+                    <th class="text-left p-sm text-muted-foreground text-sm font-medium">Status</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -528,17 +522,17 @@ const deviceSyncInfo = computed<{ deviceType: string; breakpoint: BreakpointKey 
                     class="border-b-default surface-item behavior-hover-transition hover:bg-foreground/5"
                     :class="{ 'bg-accent/5': isBreakpointActive(item.value) }"
                   >
-                    <td class="p-padding-sm">
+                    <td class="p-sm">
                       <Tag
                         :value="item.key"
                         :severity="isBreakpointActive(item.value) ? 'success' : 'secondary'"
                       />
                     </td>
-                    <td class="p-padding-sm font-mono">{{ item.value }}px</td>
-                    <td class="p-padding-sm">
+                    <td class="p-sm font-mono">{{ item.value }}px</td>
+                    <td class="p-sm">
                       <div class="layout-wrap gap-xs">
                         <div
-                          class="interactive-tag hover:bg-success/20 hover:text-success interactive-focus-ring"
+                          class="text-xs font-mono bg-muted/30 px-xs py-xs rounded-xs cursor-pointer select-none transition-all duration-lg ease-in-out hover:bg-primary/20 hover:text-primary active:scale-95 text-muted-foreground hover:bg-success/20 hover:text-success interactive-focus-ring"
                           tabindex="0"
                           @click="copyToClipboard(item.minWidthClass)"
                           @keydown.enter.prevent="copyToClipboard(item.minWidthClass)"
@@ -547,7 +541,7 @@ const deviceSyncInfo = computed<{ deviceType: string; breakpoint: BreakpointKey 
                           {{ item.minWidthClass }}
                         </div>
                         <div
-                          class="interactive-tag hover:bg-warn/20 hover:text-warn interactive-focus-ring"
+                          class="text-xs font-mono bg-muted/30 px-xs py-xs rounded-xs cursor-pointer select-none transition-all duration-lg ease-in-out hover:bg-primary/20 hover:text-primary active:scale-95 text-muted-foreground hover:bg-warn/20 hover:text-warn interactive-focus-ring"
                           tabindex="0"
                           @click="copyToClipboard(item.maxWidthClass)"
                           @keydown.enter.prevent="copyToClipboard(item.maxWidthClass)"
@@ -557,10 +551,10 @@ const deviceSyncInfo = computed<{ deviceType: string; breakpoint: BreakpointKey 
                         </div>
                       </div>
                     </td>
-                    <td class="p-padding-sm text-muted-foreground fs-sm text-single-line-ellipsis">
+                    <td class="p-sm text-muted-foreground text-sm text-single-line-ellipsis">
                       {{ item.description }}
                     </td>
-                    <td class="p-padding-sm">
+                    <td class="p-sm">
                       <div
                         class="w-[var(--spacing-sm)] h-[var(--spacing-sm)] rounded-full"
                         :class="isBreakpointActive(item.value) ? 'bg-success' : 'bg-muted'"
@@ -574,7 +568,7 @@ const deviceSyncInfo = computed<{ deviceType: string; breakpoint: BreakpointKey 
         </Card>
 
         <!-- Grid Demo -->
-        <Card class="panel-base">
+        <Card class="bg-card rounded-md shadow-soft py-md px-lg flex flex-col gap-lg">
           <template #title>
             <div class="row-y-center gap-sm">
               <Icons
@@ -590,7 +584,7 @@ const deviceSyncInfo = computed<{ deviceType: string; breakpoint: BreakpointKey 
           </template>
           <template #content>
             <div class="col-stack-md">
-              <p class="text-muted-foreground fs-sm">
+              <p class="text-muted-foreground text-sm">
                 模拟视窗宽度为
                 <span class="font-mono font-bold">{{ effectiveWidth }}px</span>
                 ， 当前断点
@@ -602,27 +596,27 @@ const deviceSyncInfo = computed<{ deviceType: string; breakpoint: BreakpointKey 
               </p>
 
               <!-- Simulated Viewport -->
-              <CScrollbar class="row-center pb-padding-md min-w-0">
+              <CScrollbar class="row-center pb-md min-w-0">
                 <div
-                  class="column shrink-0 rounded-scale-lg component-border surface-elevated transition-all duration-scale-lg w-full"
+                  class="column shrink-0 rounded-lg shadow-soft surface-elevated transition-all duration-lg w-full"
                 >
                   <div
-                    class="border-b-default px-padding-md py-padding-sm text-center fs-sm text-muted-foreground center gap-sm"
+                    class="border-b-default px-md py-sm text-center text-sm text-muted-foreground center gap-sm"
                   >
                     <Icons
                       name="i-lucide-monitor"
-                      class="fs-lg"
+                      class="text-lg"
                     />
                     <span>Viewport {{ effectiveWidth }}px · Grid {{ gridCols }} col</span>
                   </div>
                   <div
-                    class="grid gap-sm p-padding-md"
+                    class="grid gap-sm p-md"
                     :style="gridTemplateStyle"
                   >
                     <div
                       v-for="n in 12"
                       :key="n"
-                      class="center aspect-video rounded-scale-md component-border bg-muted/50 font-mono fs-lg font-medium text-foreground interactive-hover-tile behavior-hover-transition"
+                      class="center aspect-video rounded-md shadow-soft bg-muted/50 font-mono text-lg font-medium text-foreground shadow-soft transition-all duration-xl ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)] behavior-hover-transition"
                     >
                       {{ n }}
                     </div>
@@ -634,7 +628,7 @@ const deviceSyncInfo = computed<{ deviceType: string; breakpoint: BreakpointKey 
         </Card>
 
         <!-- Usage Examples -->
-        <Card class="panel-base">
+        <Card class="bg-card rounded-md shadow-soft py-md px-lg flex flex-col gap-lg">
           <template #title>
             <div class="row-y-center gap-sm">
               <Icons
@@ -647,11 +641,11 @@ const deviceSyncInfo = computed<{ deviceType: string; breakpoint: BreakpointKey 
           <template #content>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-lg">
               <div class="col-stack-sm">
-                <h4 class="fs-sm font-semibold text-foreground mb-margin-xs">
+                <h4 class="text-sm font-semibold text-foreground mb-xs">
                   最小宽度 (Min-Width Mobile First)
                 </h4>
                 <div
-                  class="rounded-scale-md cursor-pointer hover:bg-muted/70 transition-colors duration-scale-lg interactive-focus-ring"
+                  class="rounded-md cursor-pointer hover:bg-muted/70 transition-colors duration-lg interactive-focus-ring"
                   tabindex="0"
                   @click="copyToClipboard('md:hidden lg:block')"
                   @keydown.enter.prevent="copyToClipboard('md:hidden lg:block')"
@@ -659,7 +653,7 @@ const deviceSyncInfo = computed<{ deviceType: string; breakpoint: BreakpointKey 
                 >
                   <CScrollbar class="min-w-0">
                     <pre
-                      class="m-0 bg-background/50 backdrop-blur-sm rounded-scale-md component-border p-padding-md fs-sm"
+                      class="m-0 bg-background/50 backdrop-blur-sm rounded-md shadow-soft p-md text-sm"
                     >
     <code class="text-foreground font-mono">
                     &lt;div class="hidden md:block"&gt;
@@ -673,11 +667,9 @@ const deviceSyncInfo = computed<{ deviceType: string; breakpoint: BreakpointKey 
                 </div>
               </div>
               <div class="col-stack-sm">
-                <h4 class="fs-sm font-semibold text-foreground mb-margin-xs">
-                  最大宽度 (Max-Width)
-                </h4>
+                <h4 class="text-sm font-semibold text-foreground mb-xs">最大宽度 (Max-Width)</h4>
                 <div
-                  class="rounded-scale-md cursor-pointer hover:bg-muted/70 transition-colors duration-scale-lg interactive-focus-ring"
+                  class="rounded-md cursor-pointer hover:bg-muted/70 transition-colors duration-lg interactive-focus-ring"
                   tabindex="0"
                   @click="copyToClipboard('<md:text-sm')"
                   @keydown.enter.prevent="copyToClipboard('<md:text-sm')"
@@ -685,7 +677,7 @@ const deviceSyncInfo = computed<{ deviceType: string; breakpoint: BreakpointKey 
                 >
                   <CScrollbar class="min-w-0">
                     <pre
-                      class="m-0 bg-background/50 backdrop-blur-sm rounded-scale-md component-border p-padding-md fs-sm"
+                      class="m-0 bg-background/50 backdrop-blur-sm rounded-md shadow-soft p-md text-sm"
                     ><code class="text-foreground font-mono">&lt;div class="&lt;md:text-sm"&gt;
   移动端小号文字
 &lt;/div&gt;
@@ -697,11 +689,11 @@ const deviceSyncInfo = computed<{ deviceType: string; breakpoint: BreakpointKey 
                 </div>
               </div>
               <div class="col-stack-sm">
-                <h4 class="fs-sm font-semibold text-foreground mb-margin-xs">
+                <h4 class="text-sm font-semibold text-foreground mb-xs">
                   响应式网格 (Responsive Grid)
                 </h4>
                 <div
-                  class="rounded-scale-md cursor-pointer hover:bg-muted/70 transition-colors duration-scale-lg interactive-focus-ring"
+                  class="rounded-md cursor-pointer hover:bg-muted/70 transition-colors duration-lg interactive-focus-ring"
                   tabindex="0"
                   @click="copyToClipboard('grid-cols-1 sm:grid-cols-2 lg:grid-cols-4')"
                   @keydown.enter.prevent="
@@ -713,7 +705,7 @@ const deviceSyncInfo = computed<{ deviceType: string; breakpoint: BreakpointKey 
                 >
                   <CScrollbar class="min-w-0">
                     <pre
-                      class="m-0 bg-background/50 backdrop-blur-sm rounded-scale-md component-border p-padding-md fs-sm"
+                      class="m-0 bg-background/50 backdrop-blur-sm rounded-md shadow-soft p-md text-sm"
                     ><code class="text-foreground font-mono">&lt;div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4"&gt;
   &lt;!-- 响应式网格项 --&gt;
 &lt;/div&gt;</code></pre>
@@ -721,24 +713,20 @@ const deviceSyncInfo = computed<{ deviceType: string; breakpoint: BreakpointKey 
                 </div>
               </div>
               <div class="col-stack-sm">
-                <h4 class="fs-sm font-semibold text-foreground mb-margin-xs">
+                <h4 class="text-sm font-semibold text-foreground mb-xs">
                   响应式间距 (Responsive Spacing)
                 </h4>
                 <div
-                  class="rounded-scale-md cursor-pointer hover:bg-muted/70 transition-colors duration-scale-lg interactive-focus-ring"
+                  class="rounded-md cursor-pointer hover:bg-muted/70 transition-colors duration-lg interactive-focus-ring"
                   tabindex="0"
-                  @click="copyToClipboard('p-padding-sm md:p-padding-md lg:p-padding-lg')"
-                  @keydown.enter.prevent="
-                    copyToClipboard('p-padding-sm md:p-padding-md lg:p-padding-lg')
-                  "
-                  @keydown.space.prevent="
-                    copyToClipboard('p-padding-sm md:p-padding-md lg:p-padding-lg')
-                  "
+                  @click="copyToClipboard('p-sm md:p-md lg:p-lg')"
+                  @keydown.enter.prevent="copyToClipboard('p-sm md:p-md lg:p-lg')"
+                  @keydown.space.prevent="copyToClipboard('p-sm md:p-md lg:p-lg')"
                 >
                   <CScrollbar class="min-w-0">
                     <pre
-                      class="m-0 bg-background/50 backdrop-blur-sm rounded-scale-md component-border p-padding-md fs-sm"
-                    ><code class="text-foreground font-mono">&lt;div class="p-padding-sm md:p-padding-md lg:p-padding-lg"&gt;
+                      class="m-0 bg-background/50 backdrop-blur-sm rounded-md shadow-soft p-md text-sm"
+                    ><code class="text-foreground font-mono">&lt;div class="p-sm md:p-md lg:p-lg"&gt;
   响应式内边距
 &lt;/div&gt;</code></pre>
                   </CScrollbar>
@@ -749,7 +737,7 @@ const deviceSyncInfo = computed<{ deviceType: string; breakpoint: BreakpointKey 
         </Card>
 
         <!-- Quick Reference -->
-        <Card class="panel-base">
+        <Card class="bg-card rounded-md shadow-soft py-md px-lg flex flex-col gap-lg">
           <template #title>
             <div class="row-y-center gap-sm">
               <Icons
@@ -764,7 +752,7 @@ const deviceSyncInfo = computed<{ deviceType: string; breakpoint: BreakpointKey 
               <div
                 v-for="[key, value] in breakpointEntries"
                 :key="key"
-                class="col-stack-xs p-padding-md surface-item rounded-scale-lg interactive-hover-tile behavior-hover-transition cursor-pointer interactive-focus-ring"
+                class="col-stack-xs p-md surface-item rounded-lg shadow-soft transition-all duration-xl ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)] behavior-hover-transition cursor-pointer interactive-focus-ring"
                 tabindex="0"
                 @click="copyToClipboard(`${key}:`)"
                 @keydown.enter.prevent="copyToClipboard(`${key}:`)"
@@ -775,14 +763,14 @@ const deviceSyncInfo = computed<{ deviceType: string; breakpoint: BreakpointKey 
                     :value="key"
                     severity="info"
                   />
-                  <span class="font-mono fs-xs text-muted-foreground">{{ value }}px</span>
+                  <span class="font-mono text-xs text-muted-foreground">{{ value }}px</span>
                 </div>
-                <div class="font-mono fs-sm text-foreground">{{ key }}:class</div>
+                <div class="font-mono text-sm text-foreground">{{ key }}:class</div>
               </div>
             </div>
-            <p class="mt-margin-md text-muted-foreground fs-sm">
+            <p class="mt-md text-muted-foreground text-sm">
               断点前缀遵循 Mobile-First 设计原则：
-              <span class="bg-muted px-padding-xs rounded-scale-xs">md:</span>
+              <span class="bg-muted px-xs rounded-xs">md:</span>
               表示 ≥768px 时应用样式
             </p>
           </template>

@@ -215,20 +215,20 @@ function handleClearFilters(): void {
 <template>
   <div
     data-archetype="A1-toolbar-content"
-    class="layout-full px-padding-md md:px-padding-lg col-stack-sm min-h-0"
+    class="layout-full px-md md:px-lg col-stack-sm min-h-0"
   >
     <!-- Toolbar: Hero Header (Transparent Root Policy: Inherit canvas) -->
     <header class="shrink-0 border-b-default">
-      <div class="w-full py-padding-sm row-y-center gap-md">
-        <div class="p-padding-md bg-primary/10 rounded-scale-lg shrink-0">
+      <div class="w-full py-sm row-y-center gap-md">
+        <div class="p-md bg-primary/10 rounded-lg shrink-0">
           <Icons
             name="i-lucide-code-xml"
-            class="text-primary fs-2xl"
+            class="text-primary text-2xl"
           />
         </div>
         <div class="col-stack-xs">
-          <h1 class="fs-2xl font-bold text-foreground m-0">ProTable — API 与事件</h1>
-          <p class="text-muted fs-sm m-0">
+          <h1 class="text-2xl font-bold text-foreground m-0">ProTable — API 与事件</h1>
+          <p class="text-muted text-sm m-0">
             捕获并展示表格全部内部事件；演示通过 Ref 调用程序化接口。
           </p>
         </div>
@@ -239,15 +239,15 @@ function handleClearFilters(): void {
     <div class="row-start items-start gap-lg layout-full min-h-0">
       <!-- Main Table Area -->
       <div class="flex-1 min-w-0 h-full col-stack-sm">
-        <div class="shrink-0 panel-base">
-          <div class="row-between w-full pb-padding-sm gap-sm flex-wrap">
+        <div class="shrink-0 bg-card rounded-md shadow-soft py-md px-lg flex flex-col gap-lg">
+          <div class="row-between w-full pb-sm gap-sm flex-wrap">
             <div class="row-y-center gap-xs shrink-0">
               <Icons
                 name="i-lucide-terminal"
                 size="xs"
                 class="text-muted-foreground"
               />
-              <span class="fs-xs text-muted-foreground font-semibold uppercase tracking-wider">
+              <span class="text-xs text-muted-foreground font-semibold uppercase tracking-wider">
                 接口演示
               </span>
             </div>
@@ -299,17 +299,19 @@ function handleClearFilters(): void {
 
       <!-- Right Event Log Panel -->
       <div class="layout-sidepanel shrink-0 h-full">
-        <div class="panel-base h-full col-stack-sm">
-          <div class="row-between w-full pb-padding-sm border-b-default">
+        <div
+          class="bg-card rounded-md shadow-soft py-md px-lg flex flex-col gap-lg h-full col-stack-sm"
+        >
+          <div class="row-between w-full pb-sm border-b-default">
             <div class="row-y-center gap-sm">
               <Icons
                 name="i-lucide-scroll-text"
                 size="sm"
                 class="text-primary"
               />
-              <span class="fs-sm font-semibold text-foreground">
+              <span class="text-sm font-semibold text-foreground">
                 事件日志
-                <span class="text-muted fs-xs font-normal">({{ eventLog.length }} 条)</span>
+                <span class="text-muted text-xs font-normal">({{ eventLog.length }} 条)</span>
               </span>
             </div>
             <Button
@@ -320,18 +322,18 @@ function handleClearFilters(): void {
               @click="clearLog"
             />
           </div>
-          <CScrollbar class="flex-1 min-h-0 surface-sunken font-mono rounded-scale-md p-padding-sm">
+          <CScrollbar class="flex-1 min-h-0 surface-sunken font-mono rounded-md p-sm">
             <div
               v-if="eventLog.length === 0"
-              class="h-full col-center gap-xs py-padding-xl text-center"
+              class="h-full col-center gap-xs py-xl text-center"
             >
               <Icons
                 name="i-lucide-inbox"
                 size="xl"
                 class="text-secondary mb-padding-xs"
               />
-              <div class="text-secondary fs-sm">暂无 API 调用日志</div>
-              <div class="text-muted fs-xs">
+              <div class="text-secondary text-sm">暂无 API 调用日志</div>
+              <div class="text-muted text-xs">
                 对表格进行筛选、排序、翻页或刷新操作后，这里会实时显示相关事件。
               </div>
             </div>
@@ -339,16 +341,16 @@ function handleClearFilters(): void {
               <div
                 v-for="(entry, idx) in eventLog"
                 :key="idx"
-                class="row-y-center gap-md py-padding-xs border-b-default border-border/40 last:border-b-0 hover:bg-foreground/5 behavior-hover-transition"
+                class="row-y-center gap-md py-xs border-b-default border-border/40 last:border-b-0 hover:bg-foreground/5 behavior-hover-transition"
               >
-                <span class="fs-xs text-muted shrink-0 w-[var(--spacing-4xl)] text-right">
+                <span class="text-xs text-muted shrink-0 w-[var(--spacing-4xl)] text-right">
                   {{ entry.time }}
                 </span>
-                <span class="fs-xs text-primary font-bold shrink-0 min-w-[var(--spacing-5xl)]">
+                <span class="text-xs text-primary font-bold shrink-0 min-w-[var(--spacing-5xl)]">
                   {{ entry.event }}
                 </span>
                 <pre
-                  class="fs-xs text-foreground/80 m-0 break-words whitespace-pre-wrap flex-1 min-w-0"
+                  class="text-xs text-foreground/80 m-0 break-words whitespace-pre-wrap flex-1 min-w-0"
                   >{{ entry.detail }}</pre
                 >
               </div>

@@ -279,16 +279,18 @@ function onAccordionActiveIndexChange(value: number | number[] | undefined): voi
         @initialized="onScrollbarInitialized"
         @scroll="throttledComputeActiveSection"
       >
-        <div class="p-padding-lg layout-content-wide col-stack-xl">
+        <div
+          class="p-lg py-sm md:py-md xl:py-lg 2xl:py-xl mx-auto max-w-[92%] sm:max-w-[94%] md:max-w-[92%] lg:max-w-[90%] xl:max-w-[88%] 2xl:max-w-[86%] 3xl:max-w-[84%] col-stack-xl"
+        >
           <!-- 1. Button -->
           <section
             :id="sections[0].id"
             class="scroll-mt-gap-lg"
           >
             <div
-              class="bg-card component-border rounded-scale-md interactive-hover-card p-padding-lg col-stack-md"
+              class="bg-card shadow-soft rounded-md transition-all duration-md ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)] p-lg col-stack-md"
             >
-              <h2 class="fs-xl font-semibold text-foreground row-y-center gap-sm m-0">
+              <h2 class="text-xl font-semibold text-foreground row-y-center gap-sm m-0">
                 {{ sectionMeta[0].indexLabel }} {{ sectionMeta[0].label }}
               </h2>
               <div class="row-y-center flex-wrap gap-md">
@@ -694,16 +696,18 @@ function onAccordionActiveIndexChange(value: number | number[] | undefined): voi
             class="scroll-mt-gap-lg"
           >
             <div
-              class="bg-card component-border rounded-scale-md interactive-hover-card p-padding-lg col-stack-md"
+              class="bg-card shadow-soft rounded-md transition-all duration-md ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)] p-lg col-stack-md"
             >
-              <h2 class="fs-xl font-semibold text-foreground row-y-center gap-sm m-0">
+              <h2 class="text-xl font-semibold text-foreground row-y-center gap-sm m-0">
                 {{ sectionMeta[1].indexLabel }} {{ sectionMeta[1].label }}
               </h2>
-              <div class="col-stack-md layout-content">
+              <div
+                class="col-stack-md py-sm md:py-md xl:py-lg 2xl:py-xl mx-auto max-w-[90%] sm:max-w-[88%] md:max-w-[86%] lg:max-w-[84%] xl:max-w-[82%] 2xl:max-w-[80%]"
+              >
                 <div class="col-stack-xs">
                   <label
                     for="input-text"
-                    class="text-foreground fs-sm"
+                    class="text-foreground text-sm"
                   >
                     InputText
                   </label>
@@ -717,7 +721,7 @@ function onAccordionActiveIndexChange(value: number | number[] | undefined): voi
                 <div class="col-stack-xs">
                   <label
                     for="input-pwd"
-                    class="text-foreground fs-sm"
+                    class="text-foreground text-sm"
                   >
                     Password
                   </label>
@@ -732,7 +736,7 @@ function onAccordionActiveIndexChange(value: number | number[] | undefined): voi
                 <div class="col-stack-xs">
                   <label
                     for="input-textarea"
-                    class="text-foreground fs-sm"
+                    class="text-foreground text-sm"
                   >
                     Textarea
                   </label>
@@ -746,7 +750,7 @@ function onAccordionActiveIndexChange(value: number | number[] | undefined): voi
                 <div class="col-stack-xs">
                   <label
                     for="input-num"
-                    class="text-foreground fs-sm"
+                    class="text-foreground text-sm"
                   >
                     InputNumber
                   </label>
@@ -806,14 +810,14 @@ function onAccordionActiveIndexChange(value: number | number[] | undefined): voi
             class="scroll-mt-gap-lg"
           >
             <div
-              class="bg-card component-border rounded-scale-md interactive-hover-card p-padding-lg col-stack-md"
+              class="bg-card shadow-soft rounded-md transition-all duration-md ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)] p-lg col-stack-md"
             >
-              <h2 class="fs-xl font-semibold text-foreground row-y-center gap-sm m-0">
+              <h2 class="text-xl font-semibold text-foreground row-y-center gap-sm m-0">
                 {{ sectionMeta[2].indexLabel }} {{ sectionMeta[2].label }}
               </h2>
               <div class="layout-wrap gap-lg">
                 <div class="col-stack-xs min-w-[var(--spacing-4xl)]">
-                  <label class="text-foreground fs-sm">Select 单选</label>
+                  <label class="text-foreground text-sm">Select 单选</label>
                   <Select
                     v-model="selectCity"
                     :options="cities"
@@ -824,7 +828,7 @@ function onAccordionActiveIndexChange(value: number | number[] | undefined): voi
                   />
                 </div>
                 <div class="col-stack-xs min-w-[var(--spacing-5xl)]">
-                  <label class="text-foreground fs-sm">MultiSelect</label>
+                  <label class="text-foreground text-sm">MultiSelect</label>
                   <MultiSelect
                     v-model="multiSelectVal"
                     :options="multiOptions"
@@ -843,9 +847,9 @@ function onAccordionActiveIndexChange(value: number | number[] | undefined): voi
             class="scroll-mt-gap-lg"
           >
             <div
-              class="bg-card component-border rounded-scale-md interactive-hover-card p-padding-lg col-stack-md"
+              class="bg-card shadow-soft rounded-md transition-all duration-md ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)] p-lg col-stack-md"
             >
-              <h2 class="fs-xl font-semibold text-foreground row-y-center gap-sm m-0">
+              <h2 class="text-xl font-semibold text-foreground row-y-center gap-sm m-0">
                 {{ sectionMeta[3].indexLabel }} {{ sectionMeta[3].label }}
               </h2>
               <div class="layout-wrap gap-md">
@@ -872,14 +876,14 @@ function onAccordionActiveIndexChange(value: number | number[] | undefined): voi
             class="scroll-mt-gap-lg"
           >
             <div
-              class="bg-card component-border rounded-scale-md interactive-hover-card p-padding-lg col-stack-md"
+              class="bg-card shadow-soft rounded-md transition-all duration-md ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)] p-lg col-stack-md"
             >
-              <h2 class="fs-xl font-semibold text-foreground row-y-center gap-sm m-0">
+              <h2 class="text-xl font-semibold text-foreground row-y-center gap-sm m-0">
                 {{ sectionMeta[4].indexLabel }} {{ sectionMeta[4].label }}
               </h2>
               <div class="layout-wrap gap-lg">
                 <div class="col-stack-xs min-w-[var(--spacing-5xl)]">
-                  <label class="text-foreground fs-sm">AutoComplete</label>
+                  <label class="text-foreground text-sm">AutoComplete</label>
                   <AutoComplete
                     v-model="autoCompleteVal"
                     placeholder="输入搜索"
@@ -888,7 +892,7 @@ function onAccordionActiveIndexChange(value: number | number[] | undefined): voi
                   />
                 </div>
                 <div class="col-stack-xs min-w-[var(--spacing-4xl)]">
-                  <label class="text-foreground fs-sm">Listbox</label>
+                  <label class="text-foreground text-sm">Listbox</label>
                   <Listbox
                     v-model="listboxVal"
                     :options="listboxOptions"
@@ -905,15 +909,17 @@ function onAccordionActiveIndexChange(value: number | number[] | undefined): voi
             class="scroll-mt-gap-lg"
           >
             <div
-              class="bg-card component-border rounded-scale-md interactive-hover-card p-padding-lg col-stack-md"
+              class="bg-card shadow-soft rounded-md transition-all duration-md ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)] p-lg col-stack-md"
             >
-              <h2 class="fs-xl font-semibold text-foreground row-y-center gap-sm m-0">
+              <h2 class="text-xl font-semibold text-foreground row-y-center gap-sm m-0">
                 {{ sectionMeta[5].indexLabel }} {{ sectionMeta[5].label }}
               </h2>
-              <div class="layout-wrap gap-xl layout-content">
+              <div
+                class="layout-wrap gap-xl py-sm md:py-md xl:py-lg 2xl:py-xl mx-auto max-w-[90%] sm:max-w-[88%] md:max-w-[86%] lg:max-w-[84%] xl:max-w-[82%] 2xl:max-w-[80%]"
+              >
                 <div class="col-stack-xs flex-1 min-w-[var(--spacing-5xl)]">
-                  <span class="text-foreground fs-sm font-medium">Checkbox</span>
-                  <span class="text-muted-foreground fs-xs">二元 + 多选组示例</span>
+                  <span class="text-foreground text-sm font-medium">Checkbox</span>
+                  <span class="text-muted-foreground text-xs">二元 + 多选组示例</span>
                   <div class="col-stack-xs">
                     <div class="row-y-center gap-xs">
                       <Checkbox
@@ -929,7 +935,7 @@ function onAccordionActiveIndexChange(value: number | number[] | undefined): voi
                       </label>
                     </div>
                     <div class="col-stack-xs">
-                      <span class="text-foreground fs-xs">Checkbox 多选组</span>
+                      <span class="text-foreground text-xs">Checkbox 多选组</span>
                       <div class="layout-wrap gap-md">
                         <div class="row-y-center gap-xs">
                           <Checkbox
@@ -952,8 +958,8 @@ function onAccordionActiveIndexChange(value: number | number[] | undefined): voi
                   </div>
                 </div>
                 <div class="col-stack-xs flex-1 min-w-[var(--spacing-5xl)]">
-                  <span class="text-foreground fs-sm font-medium">RadioButton</span>
-                  <span class="text-muted-foreground fs-xs">单选按钮组</span>
+                  <span class="text-foreground text-sm font-medium">RadioButton</span>
+                  <span class="text-muted-foreground text-xs">单选按钮组</span>
                   <div class="layout-wrap gap-md">
                     <div class="row-y-center gap-xs">
                       <RadioButton
@@ -974,8 +980,8 @@ function onAccordionActiveIndexChange(value: number | number[] | undefined): voi
                   </div>
                 </div>
                 <div class="col-stack-xs flex-1 min-w-[var(--spacing-5xl)]">
-                  <span class="text-foreground fs-sm font-medium">ToggleSwitch</span>
-                  <span class="text-muted-foreground fs-xs">开关控件</span>
+                  <span class="text-foreground text-sm font-medium">ToggleSwitch</span>
+                  <span class="text-muted-foreground text-xs">开关控件</span>
                   <div class="row-y-center gap-sm">
                     <ToggleSwitch
                       v-model="toggleVal"
@@ -999,14 +1005,14 @@ function onAccordionActiveIndexChange(value: number | number[] | undefined): voi
             class="scroll-mt-gap-lg"
           >
             <div
-              class="bg-card component-border rounded-scale-md interactive-hover-card p-padding-lg col-stack-md"
+              class="bg-card shadow-soft rounded-md transition-all duration-md ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)] p-lg col-stack-md"
             >
-              <h2 class="fs-xl font-semibold text-foreground row-y-center gap-sm m-0">
+              <h2 class="text-xl font-semibold text-foreground row-y-center gap-sm m-0">
                 {{ sectionMeta[6].indexLabel }} {{ sectionMeta[6].label }}
               </h2>
               <div class="layout-wrap gap-md">
                 <div class="col-stack-xs">
-                  <label class="text-foreground fs-sm">日期</label>
+                  <label class="text-foreground text-sm">日期</label>
                   <DatePicker
                     v-model="dateVal"
                     date-format="yy-mm-dd"
@@ -1032,16 +1038,16 @@ function onAccordionActiveIndexChange(value: number | number[] | undefined): voi
             class="scroll-mt-gap-lg"
           >
             <div
-              class="bg-card component-border rounded-scale-md interactive-hover-card p-padding-lg col-stack-md"
+              class="bg-card shadow-soft rounded-md transition-all duration-md ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)] p-lg col-stack-md"
             >
-              <h2 class="fs-xl font-semibold text-foreground row-y-center gap-sm m-0">
+              <h2 class="text-xl font-semibold text-foreground row-y-center gap-sm m-0">
                 {{ sectionMeta[7].indexLabel }} {{ sectionMeta[7].label }}
               </h2>
               <div class="layout-wrap gap-xl">
                 <div class="col-stack-xs flex-1 min-w-[var(--spacing-5xl)]">
                   <div class="row-between gap-sm">
-                    <label class="text-foreground fs-sm">Slider</label>
-                    <span class="text-muted-foreground fs-xs">{{ sliderVal }}</span>
+                    <label class="text-foreground text-sm">Slider</label>
+                    <span class="text-muted-foreground text-xs">{{ sliderVal }}</span>
                   </div>
                   <Slider
                     v-model="sliderVal"
@@ -1051,8 +1057,8 @@ function onAccordionActiveIndexChange(value: number | number[] | undefined): voi
                 </div>
                 <div class="col-stack-xs flex-1 min-w-[var(--spacing-5xl)]">
                   <div class="row-between gap-sm">
-                    <label class="text-foreground fs-sm">Slider Range</label>
-                    <span class="text-muted-foreground fs-xs">
+                    <label class="text-foreground text-sm">Slider Range</label>
+                    <span class="text-muted-foreground text-xs">
                       {{ sliderRangeVal }}
                     </span>
                   </div>
@@ -1064,7 +1070,7 @@ function onAccordionActiveIndexChange(value: number | number[] | undefined): voi
                   />
                 </div>
                 <div class="col-stack-xs flex-1 min-w-[var(--spacing-5xl)]">
-                  <label class="text-foreground fs-sm">Rating</label>
+                  <label class="text-foreground text-sm">Rating</label>
                   <Rating v-model="ratingVal" />
                 </div>
               </div>
@@ -1077,9 +1083,9 @@ function onAccordionActiveIndexChange(value: number | number[] | undefined): voi
             class="scroll-mt-gap-lg"
           >
             <div
-              class="bg-card component-border rounded-scale-md interactive-hover-card p-padding-lg col-stack-md"
+              class="bg-card shadow-soft rounded-md transition-all duration-md ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)] p-lg col-stack-md"
             >
-              <h2 class="fs-xl font-semibold text-foreground row-y-center gap-sm m-0">
+              <h2 class="text-xl font-semibold text-foreground row-y-center gap-sm m-0">
                 {{ sectionMeta[8].indexLabel }} {{ sectionMeta[8].label }}
               </h2>
               <div class="row-y-center flex-wrap gap-md">
@@ -1127,29 +1133,31 @@ function onAccordionActiveIndexChange(value: number | number[] | undefined): voi
             class="scroll-mt-gap-lg"
           >
             <div
-              class="bg-card component-border rounded-scale-md interactive-hover-card p-padding-lg col-stack-md"
+              class="bg-card shadow-soft rounded-md transition-all duration-md ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)] p-lg col-stack-md"
             >
-              <h2 class="fs-xl font-semibold text-foreground row-y-center gap-sm m-0">
+              <h2 class="text-xl font-semibold text-foreground row-y-center gap-sm m-0">
                 {{ sectionMeta[9].indexLabel }} {{ sectionMeta[9].label }}
               </h2>
               <div class="col-stack-md">
                 <div class="row-y-center gap-sm">
-                  <span class="text-foreground fs-sm">左侧</span>
+                  <span class="text-foreground text-sm">左侧</span>
                   <Divider layout="vertical" />
-                  <span class="text-foreground fs-sm">右侧</span>
+                  <span class="text-foreground text-sm">右侧</span>
                 </div>
                 <Divider align="center">
-                  <span class="text-muted-foreground fs-sm">分割线文字</span>
+                  <span class="text-muted-foreground text-sm">分割线文字</span>
                 </Divider>
-                <div class="layout-content">
+                <div
+                  class="py-sm md:py-md xl:py-lg 2xl:py-xl mx-auto max-w-[90%] sm:max-w-[88%] md:max-w-[86%] lg:max-w-[84%] xl:max-w-[82%] 2xl:max-w-[80%]"
+                >
                   <InlineMessage severity="info">InlineMessage 内联提示</InlineMessage>
                 </div>
                 <Fieldset
                   legend="Fieldset 图例"
-                  class="layout-content"
+                  class="py-sm md:py-md xl:py-lg 2xl:py-xl mx-auto max-w-[90%] sm:max-w-[88%] md:max-w-[86%] lg:max-w-[84%] xl:max-w-[82%] 2xl:max-w-[80%]"
                   toggleable
                 >
-                  <p class="text-muted-foreground fs-sm m-0">可折叠的 Fieldset 内容区域。</p>
+                  <p class="text-muted-foreground text-sm m-0">可折叠的 Fieldset 内容区域。</p>
                 </Fieldset>
               </div>
             </div>
@@ -1161,17 +1169,19 @@ function onAccordionActiveIndexChange(value: number | number[] | undefined): voi
             class="scroll-mt-gap-lg"
           >
             <div
-              class="bg-card component-border rounded-scale-md interactive-hover-card p-padding-lg col-stack-md"
+              class="bg-card shadow-soft rounded-md transition-all duration-md ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)] p-lg col-stack-md"
             >
-              <h2 class="fs-xl font-semibold text-foreground row-y-center gap-sm m-0">
+              <h2 class="text-xl font-semibold text-foreground row-y-center gap-sm m-0">
                 {{ sectionMeta[10].indexLabel }} {{ sectionMeta[10].label }}
               </h2>
               <div class="layout-wrap gap-lg">
-                <Card class="flex-1 min-w-[var(--spacing-5xl)] layout-content">
+                <Card
+                  class="flex-1 min-w-[var(--spacing-5xl)] py-sm md:py-md xl:py-lg 2xl:py-xl mx-auto max-w-[90%] sm:max-w-[88%] md:max-w-[86%] lg:max-w-[84%] xl:max-w-[82%] 2xl:max-w-[80%]"
+                >
                   <template #title>Card 标题</template>
                   <template #subtitle>副标题</template>
                   <template #content>
-                    <p class="text-muted-foreground fs-sm m-0">
+                    <p class="text-muted-foreground text-sm m-0">
                       卡片内容区域，可使用默认 slot 或自定义。
                     </p>
                   </template>
@@ -1192,10 +1202,10 @@ function onAccordionActiveIndexChange(value: number | number[] | undefined): voi
                 </Card>
                 <Panel
                   header="Panel 可折叠"
-                  class="flex-1 min-w-[var(--spacing-5xl)] layout-content"
+                  class="flex-1 min-w-[var(--spacing-5xl)] py-sm md:py-md xl:py-lg 2xl:py-xl mx-auto max-w-[90%] sm:max-w-[88%] md:max-w-[86%] lg:max-w-[84%] xl:max-w-[82%] 2xl:max-w-[80%]"
                   toggleable
                 >
-                  <p class="text-muted-foreground fs-sm m-0">Panel 内容，点击标题可折叠/展开。</p>
+                  <p class="text-muted-foreground text-sm m-0">Panel 内容，点击标题可折叠/展开。</p>
                 </Panel>
               </div>
             </div>
@@ -1207,12 +1217,14 @@ function onAccordionActiveIndexChange(value: number | number[] | undefined): voi
             class="scroll-mt-gap-lg"
           >
             <div
-              class="bg-card component-border rounded-scale-md interactive-hover-card p-padding-lg col-stack-md"
+              class="bg-card shadow-soft rounded-md transition-all duration-md ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)] p-lg col-stack-md"
             >
-              <h2 class="fs-xl font-semibold text-foreground row-y-center gap-sm m-0">
+              <h2 class="text-xl font-semibold text-foreground row-y-center gap-sm m-0">
                 {{ sectionMeta[11].indexLabel }} {{ sectionMeta[11].label }}
               </h2>
-              <div class="col-stack-md layout-content">
+              <div
+                class="col-stack-md py-sm md:py-md xl:py-lg 2xl:py-xl mx-auto max-w-[90%] sm:max-w-[88%] md:max-w-[86%] lg:max-w-[84%] xl:max-w-[82%] 2xl:max-w-[80%]"
+              >
                 <Message
                   severity="info"
                   :closable="true"
@@ -1264,16 +1276,16 @@ function onAccordionActiveIndexChange(value: number | number[] | undefined): voi
             class="scroll-mt-gap-lg"
           >
             <div
-              class="bg-card component-border rounded-scale-md interactive-hover-card p-padding-lg col-stack-md"
+              class="bg-card shadow-soft rounded-md transition-all duration-md ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)] p-lg col-stack-md"
             >
-              <h2 class="fs-xl font-semibold text-foreground row-y-center gap-sm m-0">
+              <h2 class="text-xl font-semibold text-foreground row-y-center gap-sm m-0">
                 {{ sectionMeta[12].indexLabel }} {{ sectionMeta[12].label }}
               </h2>
-              <p class="text-muted-foreground fs-sm">
+              <p class="text-muted-foreground text-sm">
                 业务中自定义弹窗/确认请使用
-                <span class="px-padding-xs rounded-scale-md bg-muted">useDialog()</span>
+                <span class="px-xs rounded-md bg-muted">useDialog()</span>
                 /
-                <span class="px-padding-xs rounded-scale-md bg-muted">window.$toast</span>
+                <span class="px-xs rounded-md bg-muted">window.$toast</span>
                 。
               </p>
               <div class="layout-wrap gap-sm">
@@ -1294,12 +1306,12 @@ function onAccordionActiveIndexChange(value: number | number[] | undefined): voi
                 draggable
                 class="w-dialog-settings"
                 :pt="{
-                  root: { class: 'rounded-scale-md' },
+                  root: { class: 'rounded-md' },
                   content: { class: 'pt-0' },
                 }"
                 @hide="dialogVisible = false"
               >
-                <p class="text-muted-foreground fs-sm m-0">
+                <p class="text-muted-foreground text-sm m-0">
                   Dialog 内容。可设置 modal、draggable、maximizable 等。
                 </p>
                 <template #footer>
@@ -1320,9 +1332,9 @@ function onAccordionActiveIndexChange(value: number | number[] | undefined): voi
             class="scroll-mt-gap-lg"
           >
             <div
-              class="bg-card component-border rounded-scale-md interactive-hover-card p-padding-lg col-stack-md"
+              class="bg-card shadow-soft rounded-md transition-all duration-md ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)] p-lg col-stack-md"
             >
-              <h2 class="fs-xl font-semibold text-foreground row-y-center gap-sm m-0">
+              <h2 class="text-xl font-semibold text-foreground row-y-center gap-sm m-0">
                 {{ sectionMeta[13].indexLabel }} {{ sectionMeta[13].label }}
               </h2>
               <div class="layout-wrap gap-md">
@@ -1335,9 +1347,11 @@ function onAccordionActiveIndexChange(value: number | number[] | undefined): voi
                   @click="togglePopover"
                 />
                 <Popover ref="popoverRef">
-                  <div class="col-stack-sm layout-content-narrow">
-                    <span class="fs-sm font-semibold text-foreground">Popover 内容</span>
-                    <p class="text-muted-foreground fs-sm m-0">自定义浮层内容。</p>
+                  <div
+                    class="col-stack-sm py-sm md:py-md xl:py-lg 2xl:py-xl mx-auto max-w-[88%] sm:max-w-[84%] md:max-w-[82%] lg:max-w-[80%] xl:max-w-[78%] 2xl:max-w-[76%]"
+                  >
+                    <span class="text-sm font-semibold text-foreground">Popover 内容</span>
+                    <p class="text-muted-foreground text-sm m-0">自定义浮层内容。</p>
                   </div>
                 </Popover>
               </div>
@@ -1347,7 +1361,7 @@ function onAccordionActiveIndexChange(value: number | number[] | undefined): voi
                 header="Drawer 标题"
                 class="layout-sidepanel"
               >
-                <p class="text-muted-foreground fs-sm m-0">侧边抽屉内容，可从右滑出。</p>
+                <p class="text-muted-foreground text-sm m-0">侧边抽屉内容，可从右滑出。</p>
               </Drawer>
             </div>
           </section>
@@ -1358,9 +1372,9 @@ function onAccordionActiveIndexChange(value: number | number[] | undefined): voi
             class="scroll-mt-gap-lg"
           >
             <div
-              class="bg-card component-border rounded-scale-md interactive-hover-card p-padding-lg col-stack-md"
+              class="bg-card shadow-soft rounded-md transition-all duration-md ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)] p-lg col-stack-md"
             >
-              <h2 class="fs-xl font-semibold text-foreground row-y-center gap-sm m-0">
+              <h2 class="text-xl font-semibold text-foreground row-y-center gap-sm m-0">
                 {{ sectionMeta[14].indexLabel }} {{ sectionMeta[14].label }}
               </h2>
               <div class="col-stack-lg">
@@ -1377,7 +1391,7 @@ function onAccordionActiveIndexChange(value: number | number[] | undefined): voi
                   />
                   <Menubar
                     :model="menuItems"
-                    class="flex-1 min-w-0 layout-content"
+                    class="flex-1 min-w-0 py-sm md:py-md xl:py-lg 2xl:py-xl mx-auto max-w-[90%] sm:max-w-[88%] md:max-w-[86%] lg:max-w-[84%] xl:max-w-[82%] 2xl:max-w-[80%]"
                   />
                 </div>
               </div>
@@ -1390,13 +1404,15 @@ function onAccordionActiveIndexChange(value: number | number[] | undefined): voi
             class="scroll-mt-gap-lg"
           >
             <div
-              class="bg-card component-border rounded-scale-md interactive-hover-card p-padding-lg col-stack-md"
+              class="bg-card shadow-soft rounded-md transition-all duration-md ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)] p-lg col-stack-md"
             >
-              <h2 class="fs-xl font-semibold text-foreground row-y-center gap-sm m-0">
+              <h2 class="text-xl font-semibold text-foreground row-y-center gap-sm m-0">
                 {{ sectionMeta[15].indexLabel }} {{ sectionMeta[15].label }}
               </h2>
               <div class="layout-wrap gap-xl">
-                <div class="flex-1 min-w-0 layout-content">
+                <div
+                  class="flex-1 min-w-0 py-sm md:py-md xl:py-lg 2xl:py-xl mx-auto max-w-[90%] sm:max-w-[88%] md:max-w-[86%] lg:max-w-[84%] xl:max-w-[82%] 2xl:max-w-[80%]"
+                >
                   <Tabs v-model:value="activeTab">
                     <TabList>
                       <Tab value="0">Tab 1</Tab>
@@ -1405,18 +1421,20 @@ function onAccordionActiveIndexChange(value: number | number[] | undefined): voi
                     </TabList>
                     <TabPanels>
                       <TabPanel value="0">
-                        <p class="text-muted-foreground fs-sm">Tab 1 内容</p>
+                        <p class="text-muted-foreground text-sm">Tab 1 内容</p>
                       </TabPanel>
                       <TabPanel value="1">
-                        <p class="text-muted-foreground fs-sm">Tab 2 内容</p>
+                        <p class="text-muted-foreground text-sm">Tab 2 内容</p>
                       </TabPanel>
                       <TabPanel value="2">
-                        <p class="text-muted-foreground fs-sm">Tab 3 内容</p>
+                        <p class="text-muted-foreground text-sm">Tab 3 内容</p>
                       </TabPanel>
                     </TabPanels>
                   </Tabs>
                 </div>
-                <div class="flex-1 min-w-0 layout-content">
+                <div
+                  class="flex-1 min-w-0 py-sm md:py-md xl:py-lg 2xl:py-xl mx-auto max-w-[90%] sm:max-w-[88%] md:max-w-[86%] lg:max-w-[84%] xl:max-w-[82%] 2xl:max-w-[80%]"
+                >
                   <Accordion
                     :active-index="activeAccordion ?? 0"
                     @update:active-index="onAccordionActiveIndexChange"
@@ -1424,13 +1442,13 @@ function onAccordionActiveIndexChange(value: number | number[] | undefined): voi
                     <AccordionPanel value="0">
                       <AccordionHeader>Accordion 1</AccordionHeader>
                       <AccordionContent>
-                        <p class="text-muted-foreground fs-sm m-0">手风琴内容 1</p>
+                        <p class="text-muted-foreground text-sm m-0">手风琴内容 1</p>
                       </AccordionContent>
                     </AccordionPanel>
                     <AccordionPanel value="1">
                       <AccordionHeader>Accordion 2</AccordionHeader>
                       <AccordionContent>
-                        <p class="text-muted-foreground fs-sm m-0">手风琴内容 2</p>
+                        <p class="text-muted-foreground text-sm m-0">手风琴内容 2</p>
                       </AccordionContent>
                     </AccordionPanel>
                   </Accordion>
@@ -1445,14 +1463,16 @@ function onAccordionActiveIndexChange(value: number | number[] | undefined): voi
             class="scroll-mt-gap-lg"
           >
             <div
-              class="bg-card component-border rounded-scale-md interactive-hover-card p-padding-lg col-stack-md"
+              class="bg-card shadow-soft rounded-md transition-all duration-md ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)] p-lg col-stack-md"
             >
-              <h2 class="fs-xl font-semibold text-foreground row-y-center gap-sm m-0">
+              <h2 class="text-xl font-semibold text-foreground row-y-center gap-sm m-0">
                 {{ sectionMeta[16].indexLabel }} {{ sectionMeta[16].label }}
               </h2>
               <div class="layout-wrap gap-xl">
-                <div class="col-stack-xs layout-content-narrow">
-                  <label class="text-foreground fs-sm">Tree</label>
+                <div
+                  class="col-stack-xs py-sm md:py-md xl:py-lg 2xl:py-xl mx-auto max-w-[88%] sm:max-w-[84%] md:max-w-[82%] lg:max-w-[80%] xl:max-w-[78%] 2xl:max-w-[76%]"
+                >
+                  <label class="text-foreground text-sm">Tree</label>
                   <Tree
                     v-model:selection-keys="selectedNodeKeys"
                     :value="treeNodes"
@@ -1461,7 +1481,7 @@ function onAccordionActiveIndexChange(value: number | number[] | undefined): voi
                   />
                 </div>
                 <div class="col-stack-xs">
-                  <label class="text-foreground fs-sm">Paginator 独立分页</label>
+                  <label class="text-foreground text-sm">Paginator 独立分页</label>
                   <Paginator
                     :first="paginatorFirst"
                     :rows="paginatorRows"
@@ -1480,14 +1500,14 @@ function onAccordionActiveIndexChange(value: number | number[] | undefined): voi
             class="scroll-mt-gap-lg"
           >
             <div
-              class="bg-card component-border rounded-scale-md interactive-hover-card p-padding-lg col-stack-md"
+              class="bg-card shadow-soft rounded-md transition-all duration-md ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)] p-lg col-stack-md"
             >
-              <h2 class="fs-xl font-semibold text-foreground row-y-center gap-sm m-0">
+              <h2 class="text-xl font-semibold text-foreground row-y-center gap-sm m-0">
                 {{ sectionMeta[17].indexLabel }} {{ sectionMeta[17].label }}
               </h2>
               <div class="layout-wrap gap-lg items-start">
                 <div class="col-stack-xs">
-                  <label class="text-foreground fs-sm">FileUpload</label>
+                  <label class="text-foreground text-sm">FileUpload</label>
                   <FileUpload
                     mode="basic"
                     choose-label="选择文件"
@@ -1495,7 +1515,7 @@ function onAccordionActiveIndexChange(value: number | number[] | undefined): voi
                   />
                 </div>
                 <div class="col-stack-sm">
-                  <span class="text-foreground fs-sm">ProgressSpinner</span>
+                  <span class="text-foreground text-sm">ProgressSpinner</span>
                   <ProgressSpinner class="w-[var(--spacing-2xl)] h-[var(--spacing-2xl)]" />
                 </div>
               </div>
@@ -1508,18 +1528,22 @@ function onAccordionActiveIndexChange(value: number | number[] | undefined): voi
             class="scroll-mt-gap-lg"
           >
             <div
-              class="bg-card component-border rounded-scale-md interactive-hover-card p-padding-lg col-stack-md"
+              class="bg-card shadow-soft rounded-md transition-all duration-md ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)] p-lg col-stack-md"
             >
-              <h2 class="fs-xl font-semibold text-foreground row-y-center gap-sm m-0">
+              <h2 class="text-xl font-semibold text-foreground row-y-center gap-sm m-0">
                 {{ sectionMeta[18].indexLabel }} {{ sectionMeta[18].label }}
               </h2>
-              <div class="col-stack-lg layout-content">
+              <div
+                class="col-stack-lg py-sm md:py-md xl:py-lg 2xl:py-xl mx-auto max-w-[90%] sm:max-w-[88%] md:max-w-[86%] lg:max-w-[84%] xl:max-w-[82%] 2xl:max-w-[80%]"
+              >
                 <div class="col-stack-sm">
-                  <span class="text-foreground fs-sm font-medium">FloatLabel</span>
-                  <span class="text-muted-foreground fs-xs">
+                  <span class="text-foreground text-sm font-medium">FloatLabel</span>
+                  <span class="text-muted-foreground text-xs">
                     标签会在输入聚焦或有值时上浮，适合紧凑表单。
                   </span>
-                  <div class="layout-content-narrow">
+                  <div
+                    class="py-sm md:py-md xl:py-lg 2xl:py-xl mx-auto max-w-[88%] sm:max-w-[84%] md:max-w-[82%] lg:max-w-[80%] xl:max-w-[78%] 2xl:max-w-[76%]"
+                  >
                     <FloatLabel>
                       <InputText
                         id="float-input"
@@ -1532,11 +1556,13 @@ function onAccordionActiveIndexChange(value: number | number[] | undefined): voi
                 </div>
 
                 <div class="col-stack-sm">
-                  <span class="text-foreground fs-sm font-medium">Splitter</span>
-                  <span class="text-muted-foreground fs-xs">
+                  <span class="text-foreground text-sm font-medium">Splitter</span>
+                  <span class="text-muted-foreground text-xs">
                     可拖拽的分栏容器，用于在同一视图中对比展示两个区域。
                   </span>
-                  <Splitter class="layout-content">
+                  <Splitter
+                    class="py-sm md:py-md xl:py-lg 2xl:py-xl mx-auto max-w-[90%] sm:max-w-[88%] md:max-w-[86%] lg:max-w-[84%] xl:max-w-[82%] 2xl:max-w-[80%]"
+                  >
                     <SplitterPanel
                       :size="50"
                       :min-size="20"
@@ -1561,23 +1587,25 @@ function onAccordionActiveIndexChange(value: number | number[] | undefined): voi
             class="scroll-mt-gap-lg"
           >
             <div
-              class="bg-card component-border rounded-scale-md interactive-hover-card p-padding-lg col-stack-md"
+              class="bg-card shadow-soft rounded-md transition-all duration-md ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)] p-lg col-stack-md"
             >
-              <h2 class="fs-xl font-semibold text-foreground row-y-center gap-sm m-0">
+              <h2 class="text-xl font-semibold text-foreground row-y-center gap-sm m-0">
                 {{ sectionMeta[19].indexLabel }} {{ sectionMeta[19].label }}
               </h2>
               <div class="col-stack-lg">
                 <Breadcrumb :model="breadcrumbItems" />
-                <div class="col-stack-xs layout-content">
-                  <label class="text-foreground fs-sm">ProgressBar: {{ progressVal }}%</label>
+                <div
+                  class="col-stack-xs py-sm md:py-md xl:py-lg 2xl:py-xl mx-auto max-w-[90%] sm:max-w-[88%] md:max-w-[86%] lg:max-w-[84%] xl:max-w-[82%] 2xl:max-w-[80%]"
+                >
+                  <label class="text-foreground text-sm">ProgressBar: {{ progressVal }}%</label>
                   <ProgressBar :value="progressVal" />
                   <ProgressBar
                     mode="indeterminate"
-                    class="mt-margin-sm"
+                    class="mt-sm"
                   />
                 </div>
                 <div class="col-stack-sm w-full max-w-xs">
-                  <span class="text-foreground fs-sm">Skeleton 占位</span>
+                  <span class="text-foreground text-sm">Skeleton 占位</span>
                   <Skeleton
                     width="100%"
                     height="var(--spacing-xl)"
@@ -1604,27 +1632,25 @@ function onAccordionActiveIndexChange(value: number | number[] | undefined): voi
       class="basis-1/5 min-w-0 h-full flex flex-col bg-card hidden xl:flex"
     >
       <!-- 目录标题 -->
-      <div class="p-padding-md border-b-default bg-card backdrop-blur-sm">
-        <h2 class="fs-md font-bold text-foreground uppercase tracking-wider">目录</h2>
+      <div class="p-md border-b-default bg-card backdrop-blur-sm">
+        <h2 class="text-md font-bold text-foreground uppercase tracking-wider">目录</h2>
       </div>
 
       <CScrollbar class="flex-1 min-h-0">
-        <div class="p-padding-sm">
+        <div class="p-sm">
           <!-- 右侧目录树：使用 PrimeVue Tree -->
           <Tree
             v-model:selection-keys="tocSelectionKeys"
             :value="tocTreeNodes"
             selection-mode="single"
-            class="w-full border-none p-0 fs-sm"
+            class="w-full border-none p-0 text-sm"
             :pt="{
               root: { class: 'bg-transparent' },
               content: {
-                class:
-                  'rounded-scale-md hover:bg-accent transition-colors duration-scale-md cursor-pointer',
+                class: 'rounded-md hover:bg-accent transition-colors duration-md cursor-pointer',
               },
               label: {
-                class:
-                  'text-muted-foreground hover:text-foreground transition-colors duration-scale-md',
+                class: 'text-muted-foreground hover:text-foreground transition-colors duration-md',
               },
             }"
             @node-select="onTocNodeSelect"

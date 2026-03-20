@@ -48,9 +48,9 @@ function renderBreadcrumbMenuItem(slotProps: unknown) {
 <template>
   <div
     v-if="show"
-    class="admin-breadcrumb w-full h-breadcrumbHeight row-y-center px-padding-md overflow-hidden select-none border-b-default"
+    class="admin-breadcrumb w-full h-breadcrumbHeight row-y-center px-md overflow-hidden select-none border-b-default"
   >
-    <div class="row-y-center fs-sm text-muted-foreground whitespace-nowrap">
+    <div class="row-y-center text-sm text-muted-foreground whitespace-nowrap">
       <TransitionGroup name="breadcrumb">
         <div
           v-for="(item, index) in breadcrumbs"
@@ -60,7 +60,7 @@ function renderBreadcrumbMenuItem(slotProps: unknown) {
           <!-- Breadcrumb Item -->
           <span
             :class="[
-              'transition-all duration-scale-md row-y-center gap-xs rounded-scale-sm',
+              'transition-all duration-md row-y-center gap-xs rounded-sm',
               index === breadcrumbs.length - 1
                 ? 'text-foreground font-semibold cursor-default'
                 : 'cursor-pointer hover:text-primary',
@@ -85,7 +85,7 @@ function renderBreadcrumbMenuItem(slotProps: unknown) {
                   ? 'i-lucide-panel-bottom-close'
                   : 'i-lucide-panel-bottom-open'
               "
-              :class="[MENU_ICON_COMMON_CLASS, 'ml-margin-xs text-current! shrink-0']"
+              :class="[MENU_ICON_COMMON_CLASS, 'ml-xs text-current! shrink-0']"
               :size="getIconSize('breadcrumb')"
             />
           </span>
@@ -94,7 +94,7 @@ function renderBreadcrumbMenuItem(slotProps: unknown) {
           <Icons
             v-if="index !== breadcrumbs.length - 1"
             name="i-lucide-chevron-right"
-            class="mx-margin-sm text-muted-foreground/30"
+            class="mx-sm text-muted-foreground/30"
             :size="getIconSize('breadcrumb')"
           />
 

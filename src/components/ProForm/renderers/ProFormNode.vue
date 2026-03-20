@@ -153,7 +153,7 @@ const getGroupLabelText = (node: FormSchemaNode): string => {
     <Tabs
       v-if="props.node.type === 'tabs'"
       value="0"
-      class="w-full mb-margin-md rounded-scale-md"
+      class="w-full mb-md rounded-md"
     >
       <TabList>
         <Tab
@@ -196,7 +196,7 @@ const getGroupLabelText = (node: FormSchemaNode): string => {
     <Stepper
       v-else-if="props.node.type === 'step'"
       v-model:value="activeStep"
-      class="w-full mb-margin-md rounded-scale-md"
+      class="w-full mb-md rounded-md"
     >
       <StepList>
         <Step
@@ -213,7 +213,7 @@ const getGroupLabelText = (node: FormSchemaNode): string => {
           :key="getNodeKey(step, index)"
           v-slot="{ activateCallback }"
           :value="String(index)"
-          class="p-padding-md"
+          class="p-md"
         >
           <div
             :class="groupGridClass"
@@ -234,14 +234,14 @@ const getGroupLabelText = (node: FormSchemaNode): string => {
               <ProFormNode :node="child" />
             </div>
           </div>
-          <div class="row-between w-full mt-margin-md pt-padding-md">
+          <div class="row-between w-full mt-md pt-md">
             <Button
               v-if="index > 0"
               severity="secondary"
               @click="activateCallback(String(index - 1))"
             >
               <template #default>
-                <span class="inline-flex items-center gap-scale-xs">
+                <span class="inline-flex items-center gap-xs">
                   <Icons
                     name="i-lucide-arrow-left"
                     size="sm"
@@ -256,7 +256,7 @@ const getGroupLabelText = (node: FormSchemaNode): string => {
               @click="activateCallback(String(index + 1))"
             >
               <template #default>
-                <span class="inline-flex items-center gap-scale-xs">
+                <span class="inline-flex items-center gap-xs">
                   <span>下一页</span>
                   <Icons
                     name="i-lucide-arrow-right"
@@ -272,13 +272,13 @@ const getGroupLabelText = (node: FormSchemaNode): string => {
 
     <Card
       v-else-if="props.node.type === 'card'"
-      class="w-full mb-margin-md surface-elevated rounded-scale-md"
+      class="w-full mb-md surface-elevated rounded-md"
     >
       <template
         v-if="props.node.label"
         #title
       >
-        <span class="fs-md font-semibold text-secondary-foreground">
+        <span class="text-md font-semibold text-secondary-foreground">
           {{ props.node.label }}
         </span>
       </template>
@@ -309,7 +309,7 @@ const getGroupLabelText = (node: FormSchemaNode): string => {
       v-else-if="props.node.type === 'collapse'"
       :header="props.node.label"
       toggleable
-      class="w-full mb-margin-md rounded-scale-md"
+      class="w-full mb-md rounded-md"
     >
       <div
         :class="groupGridClass"
@@ -334,11 +334,11 @@ const getGroupLabelText = (node: FormSchemaNode): string => {
 
     <div
       v-else
-      class="w-full mb-margin-md"
+      class="w-full mb-md"
     >
       <div
         v-if="getGroupLabelText(props.node)"
-        class="mb-margin-sm fs-md font-semibold text-secondary-foreground"
+        class="mb-sm text-md font-semibold text-secondary-foreground"
       >
         {{ getGroupLabelText(props.node) }}
       </div>

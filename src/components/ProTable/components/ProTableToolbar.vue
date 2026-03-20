@@ -41,11 +41,11 @@ function toggleCol(id: string): void {
 </script>
 
 <template>
-  <div class="row-between pb-padding-sm border-b-default">
+  <div class="row-between pb-sm border-b-default">
     <div class="row-y-center gap-md">
       <span
         v-if="title"
-        class="fs-md font-semibold text-foreground"
+        class="text-md font-semibold text-foreground"
       >
         {{ title }}
       </span>
@@ -63,7 +63,7 @@ function toggleCol(id: string): void {
       <Button
         v-if="serverMode"
         text
-        class="header-icon-btn"
+        class="cursor-pointer border-none outline-none duration-sm hover:scale-110 active:scale-100 shadow-sm hover:shadow-float hover:text-primary p-sm center rounded-sm bg-sidebar"
         :aria-label="$t('proTable.refresh')"
         @click="emit('refresh')"
       >
@@ -72,7 +72,7 @@ function toggleCol(id: string): void {
 
       <Button
         text
-        class="header-icon-btn"
+        class="cursor-pointer border-none outline-none duration-sm hover:scale-110 active:scale-100 shadow-sm hover:shadow-float hover:text-primary p-sm center rounded-sm bg-sidebar"
         :aria-label="$t('proTable.columnSettings')"
         @click="settingsPanel?.toggle($event)"
       >
@@ -80,13 +80,13 @@ function toggleCol(id: string): void {
       </Button>
 
       <Popover ref="settingsPanel">
-        <div class="col-stack-xs p-padding-sm min-w-[var(--spacing-5xl)]">
+        <div class="col-stack-xs p-sm min-w-[var(--spacing-5xl)]">
           <div
             v-for="col in columns"
             :key="col.id"
-            class="row-between py-padding-xs border-b-default"
+            class="row-between py-xs border-b-default"
           >
-            <span class="fs-sm">{{ typeof col.title === 'string' ? col.title : col.id }}</span>
+            <span class="text-sm">{{ typeof col.title === 'string' ? col.title : col.id }}</span>
             <ToggleSwitch
               :model-value="isColVisible(col.id)"
               @update:model-value="toggleCol(col.id)"

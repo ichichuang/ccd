@@ -181,11 +181,13 @@ const metricsConfig = computed(() => [
 
 <template>
   <div data-archetype="A3-stats-grid">
-    <div class="col-stack-xl layout-content-wide">
+    <div
+      class="col-stack-xl py-sm md:py-md xl:py-lg 2xl:py-xl mx-auto max-w-[92%] sm:max-w-[94%] md:max-w-[92%] lg:max-w-[90%] xl:max-w-[88%] 2xl:max-w-[86%] 3xl:max-w-[84%]"
+    >
       <!-- Header Section -->
       <header class="col-stack-sm">
-        <h1 class="fs-2xl font-bold text-foreground m-0 tracking-tight">System Data Overview</h1>
-        <p class="fs-sm text-muted-foreground m-0">
+        <h1 class="text-2xl font-bold text-foreground m-0 tracking-tight">System Data Overview</h1>
+        <p class="text-sm text-muted-foreground m-0">
           Real-time performance monitoring and analytics.
         </p>
       </header>
@@ -197,10 +199,10 @@ const metricsConfig = computed(() => [
         <div
           v-for="m in metricsConfig"
           :key="m.label"
-          class="bg-accent/10 dark:bg-accent/5 rounded-scale-xl shadow-soft interactive-hover-card p-padding-lg row-y-center gap-lg group"
+          class="bg-accent/10 dark:bg-accent/5 rounded-xl shadow-soft transition-all duration-md ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)] p-lg row-y-center gap-lg group"
         >
           <div
-            class="shrink-0 w-[var(--spacing-3xl)] h-[var(--spacing-3xl)] rounded-scale-lg surface-item center transition-fluid group-hover:scale-105"
+            class="shrink-0 w-[var(--spacing-3xl)] h-[var(--spacing-3xl)] rounded-lg surface-item center transition-[transform,opacity] duration-md ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-105"
           >
             <Icons
               :name="m.icon"
@@ -209,10 +211,10 @@ const metricsConfig = computed(() => [
             />
           </div>
           <div class="column">
-            <span class="fs-xs font-medium text-accent uppercase tracking-wider">
+            <span class="text-xs font-medium text-accent uppercase tracking-wider">
               {{ m.label }}
             </span>
-            <span class="fs-2xl font-bold text-foreground tabular-nums">{{ m.value }}</span>
+            <span class="text-2xl font-bold text-foreground tabular-nums">{{ m.value }}</span>
           </div>
         </div>
       </div>
@@ -222,19 +224,21 @@ const metricsConfig = computed(() => [
         data-region="chart-grid"
         class="grid grid-cols-1 gap-lg"
       >
-        <div class="panel-base min-h-[50vh]">
+        <div class="bg-card rounded-md shadow-soft py-md px-lg flex flex-col gap-lg min-h-[50vh]">
           <div class="row-between shrink-0">
             <div class="col-stack-xs">
-              <h3 class="fs-lg font-semibold text-foreground m-0">Performance Analytics</h3>
-              <p class="fs-xs text-muted-foreground m-0">Live telemetry of core system resources</p>
+              <h3 class="text-lg font-semibold text-foreground m-0">Performance Analytics</h3>
+              <p class="text-xs text-muted-foreground m-0">
+                Live telemetry of core system resources
+              </p>
             </div>
             <div
-              class="bg-primary/10 text-primary rounded-full px-padding-md py-padding-xs row-y-center gap-sm shadow-soft"
+              class="bg-primary/10 text-primary rounded-full px-md py-xs row-y-center gap-sm shadow-soft"
             >
               <span
                 class="w-[var(--spacing-sm)] h-[var(--spacing-sm)] rounded-full bg-primary animate-pulse shrink-0"
               />
-              <span class="fs-xs font-medium">Live Data</span>
+              <span class="text-xs font-medium">Live Data</span>
             </div>
           </div>
 
@@ -251,13 +255,13 @@ const metricsConfig = computed(() => [
       >
         <!-- Recent System Events (Left, 2/3) -->
         <div
-          class="bg-primary/20 dark:bg-primary/10 rounded-scale-xl shadow-soft p-padding-xl col-stack-lg lg:col-span-2 interactive-hover-card"
+          class="bg-primary/20 dark:bg-primary/10 rounded-xl shadow-soft p-xl col-stack-lg lg:col-span-2 transition-all duration-md ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)]"
         >
           <div class="row-between shrink-0">
-            <h3 class="fs-lg font-semibold text-foreground m-0">Recent System Events</h3>
+            <h3 class="text-lg font-semibold text-foreground m-0">Recent System Events</h3>
             <a
               href="#"
-              class="fs-sm text-primary interactive-click"
+              class="text-sm text-primary interactive-click"
               @click.prevent
             >
               View All
@@ -267,11 +271,11 @@ const metricsConfig = computed(() => [
             <div
               v-for="evt in systemEvents"
               :key="evt.id"
-              class="surface-item rounded-scale-md p-padding-md row-between behavior-hover-transition hover:bg-foreground/5"
+              class="surface-item rounded-md p-md row-between behavior-hover-transition hover:bg-foreground/5"
             >
               <div class="row-y-center gap-md min-w-0 flex-1">
                 <div
-                  class="shrink-0 w-[var(--spacing-2xl)] h-[var(--spacing-2xl)] rounded-scale-md center"
+                  class="shrink-0 w-[var(--spacing-2xl)] h-[var(--spacing-2xl)] rounded-md center"
                   :class="eventTypeStyles[evt.type]"
                 >
                   <Icons
@@ -281,13 +285,13 @@ const metricsConfig = computed(() => [
                   />
                 </div>
                 <div class="column min-w-0 flex-1">
-                  <span class="fs-sm font-medium text-foreground">{{ evt.title }}</span>
-                  <span class="text-muted text-single-line-ellipsis fs-xs">
+                  <span class="text-sm font-medium text-foreground">{{ evt.title }}</span>
+                  <span class="text-muted text-single-line-ellipsis text-xs">
                     {{ evt.description }}
                   </span>
                 </div>
               </div>
-              <span class="text-secondary fs-xs whitespace-nowrap shrink-0 ml-margin-md">
+              <span class="text-secondary text-xs whitespace-nowrap shrink-0 ml-md">
                 {{ evt.time }}
               </span>
             </div>
@@ -296,10 +300,10 @@ const metricsConfig = computed(() => [
 
         <!-- Active Service Nodes (Right, 1/3) -->
         <div
-          class="bg-primary/20 dark:bg-primary/10 rounded-scale-xl shadow-soft p-padding-xl col-stack-lg lg:col-span-1 interactive-hover-card"
+          class="bg-primary/20 dark:bg-primary/10 rounded-xl shadow-soft p-xl col-stack-lg lg:col-span-1 transition-all duration-md ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)]"
         >
           <div class="row-between shrink-0">
-            <h3 class="fs-lg font-semibold text-foreground m-0">Active Service Nodes</h3>
+            <h3 class="text-lg font-semibold text-foreground m-0">Active Service Nodes</h3>
             <span
               class="w-[var(--spacing-sm)] h-[var(--spacing-sm)] rounded-full bg-success animate-pulse shrink-0"
             />
@@ -308,15 +312,15 @@ const metricsConfig = computed(() => [
             <div
               v-for="node in serviceNodes"
               :key="node.id"
-              class="surface-item rounded-scale-md p-padding-md row-between behavior-hover-transition hover:bg-foreground/5"
+              class="surface-item rounded-md p-md row-between behavior-hover-transition hover:bg-foreground/5"
             >
               <div class="column min-w-0">
-                <span class="fs-sm font-medium text-foreground">{{ node.name }}</span>
-                <span class="text-muted fs-xs">{{ node.region }}</span>
+                <span class="text-sm font-medium text-foreground">{{ node.name }}</span>
+                <span class="text-muted text-xs">{{ node.region }}</span>
               </div>
               <div class="column items-end shrink-0">
                 <span
-                  class="fs-xs px-padding-sm py-padding-xs rounded-full font-medium"
+                  class="text-xs px-sm py-xs rounded-full font-medium"
                   :class="
                     node.status === 'Healthy'
                       ? 'bg-success/20 text-success'
@@ -325,7 +329,7 @@ const metricsConfig = computed(() => [
                 >
                   {{ node.status }}
                 </span>
-                <span class="text-secondary fs-xs mt-padding-xs">{{ node.uptime }}</span>
+                <span class="text-secondary text-xs mt-padding-xs">{{ node.uptime }}</span>
               </div>
             </div>
           </div>

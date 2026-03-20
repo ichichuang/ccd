@@ -17,7 +17,7 @@ const handleUpdate = (value: number | null): void => {
 <template>
   <span
     v-if="props.readonly"
-    class="block py-padding-xs text-foreground leading-normal"
+    class="block py-xs text-foreground leading-normal"
   >
     <Rating
       :model-value="props.modelValue ?? 0"

@@ -191,20 +191,20 @@ async function onAsyncSubmit(values: Record<string, unknown>): Promise<void> {
 <template>
   <div
     data-archetype="A1-toolbar-content"
-    class="layout-full px-padding-md md:px-padding-lg col-stack-sm min-h-0"
+    class="layout-full px-md md:px-lg col-stack-sm min-h-0"
   >
     <!-- Toolbar: Hero Header (Transparent Root Policy: Inherit canvas) -->
     <header class="shrink-0 border-b-default border-border/15">
-      <div class="w-full py-padding-sm row-y-center gap-md">
-        <div class="p-padding-md bg-primary/10 rounded-scale-lg shrink-0">
+      <div class="w-full py-sm row-y-center gap-md">
+        <div class="p-md bg-primary/10 rounded-lg shrink-0">
           <Icons
             name="i-lucide-shield-check"
-            class="text-primary fs-2xl"
+            class="text-primary text-2xl"
           />
         </div>
         <div class="col-stack-xs">
-          <h1 class="fs-2xl font-bold text-foreground m-0">ProForm 校验管线</h1>
-          <p class="text-muted fs-sm m-0">
+          <h1 class="text-2xl font-bold text-foreground m-0">ProForm 校验管线</h1>
+          <p class="text-muted text-sm m-0">
             演示同步规则 / 异步 API 检查 / 触发模式（blur · change · submit）全链路校验能力。
           </p>
         </div>
@@ -213,12 +213,14 @@ async function onAsyncSubmit(values: Record<string, unknown>): Promise<void> {
 
     <!-- Scrollable content -->
     <CScrollbar class="flex-1 min-h-0">
-      <div class="w-full p-padding-md md:p-padding-lg col-stack-xl pb-padding-xl">
+      <div class="w-full p-md md:p-lg col-stack-xl pb-xl">
         <!-- 触发模式选择 -->
-        <div class="panel-base bg-primary/10 dark:bg-primary/5 border-primary/20">
+        <div
+          class="bg-card rounded-md shadow-soft py-md px-lg flex flex-col gap-lg bg-primary/10 dark:bg-primary/5 border-primary/20"
+        >
           <div class="row-between gap-md flex-wrap">
             <div class="row-y-center gap-md">
-              <div class="p-padding-sm bg-primary/10 rounded-scale-md">
+              <div class="p-sm bg-primary/10 rounded-md">
                 <Icons
                   name="i-lucide-sliders-horizontal"
                   class="text-primary"
@@ -226,7 +228,7 @@ async function onAsyncSubmit(values: Record<string, unknown>): Promise<void> {
               </div>
               <div class="col-stack-xs">
                 <span class="font-bold text-foreground uppercase tracking-tight">校验触发策略</span>
-                <span class="fs-xs text-muted-foreground">
+                <span class="text-xs text-muted-foreground">
                   全局切换 blur / change / submit 触发行为。
                 </span>
               </div>
@@ -242,9 +244,9 @@ async function onAsyncSubmit(values: Record<string, unknown>): Promise<void> {
         </div>
 
         <!-- 同步规则演示 -->
-        <div class="panel-base">
+        <div class="bg-card rounded-md shadow-soft py-md px-lg flex flex-col gap-lg">
           <div
-            class="row-between items-start mb-padding-md border-b-default border-border/40 pb-padding-sm"
+            class="row-between items-start mb-padding-md border-b-default border-border/40 pb-sm"
           >
             <div class="row-y-center gap-sm">
               <Icons
@@ -258,12 +260,14 @@ async function onAsyncSubmit(values: Record<string, unknown>): Promise<void> {
             <Tag
               value="SYNC ENGINE"
               severity="success"
-              class="fs-xs font-bold"
+              class="text-xs font-bold"
             />
           </div>
 
           <div class="col-stack-md">
-            <p class="text-muted fs-sm m-0 italic">必填检查 · 正则格式 · 跨字段联动 (确认密码)。</p>
+            <p class="text-muted text-sm m-0 italic">
+              必填检查 · 正则格式 · 跨字段联动 (确认密码)。
+            </p>
 
             <ProForm
               ref="syncFormRef"
@@ -273,9 +277,7 @@ async function onAsyncSubmit(values: Record<string, unknown>): Promise<void> {
               @submit="onSyncSubmit"
             >
               <template #footer="{ submit, formState }">
-                <div
-                  class="row-end gap-sm pt-padding-md border-t-default border-border/15 mt-padding-md"
-                >
+                <div class="row-end gap-sm pt-md border-t-default border-border/15 mt-padding-md">
                   <Button
                     label="重置校验"
                     variant="text"
@@ -295,10 +297,10 @@ async function onAsyncSubmit(values: Record<string, unknown>): Promise<void> {
 
             <div
               v-if="syncResult"
-              class="surface-sunken rounded-scale-md p-padding-md border-default border-border/40"
+              class="surface-sunken rounded-md p-md border-default border-border/40"
             >
-              <div class="fs-xs font-bold text-muted uppercase mb-margin-xs">Submit Result:</div>
-              <pre class="m-0 whitespace-pre-wrap break-words fs-xs font-mono text-success">{{
+              <div class="text-xs font-bold text-muted uppercase mb-xs">Submit Result:</div>
+              <pre class="m-0 whitespace-pre-wrap break-words text-xs font-mono text-success">{{
                 syncResult
               }}</pre>
             </div>
@@ -306,9 +308,9 @@ async function onAsyncSubmit(values: Record<string, unknown>): Promise<void> {
         </div>
 
         <!-- 异步规则演示 -->
-        <div class="panel-base">
+        <div class="bg-card rounded-md shadow-soft py-md px-lg flex flex-col gap-lg">
           <div
-            class="row-between items-start mb-padding-md border-b-default border-border/40 pb-padding-sm"
+            class="row-between items-start mb-padding-md border-b-default border-border/40 pb-sm"
           >
             <div class="row-y-center gap-sm">
               <Icons
@@ -322,27 +324,25 @@ async function onAsyncSubmit(values: Record<string, unknown>): Promise<void> {
             <Tag
               value="ASYNC ENGINE"
               severity="info"
-              class="fs-xs font-bold"
+              class="text-xs font-bold"
             />
           </div>
 
           <div class="col-stack-md">
-            <p class="text-muted fs-sm m-0 italic">
+            <p class="text-muted text-sm m-0 italic">
               自动处理竞态安全，支持 Promise 返回。尝试输入 admin 或 root。
             </p>
 
-            <div
-              class="surface-sunken rounded-scale-md px-padding-md py-padding-sm border-default border-border/40"
-            >
-              <div class="fs-xs text-muted-foreground col-stack-xs">
-                <div class="font-bold text-foreground fs-xs uppercase tracking-tighter">
+            <div class="surface-sunken rounded-md px-md py-sm border-default border-border/40">
+              <div class="text-xs text-muted-foreground col-stack-xs">
+                <div class="font-bold text-foreground text-xs uppercase tracking-tighter">
                   不可用资源清单 (模拟 DB)：
                 </div>
                 <div class="row-y-center gap-xs flex-wrap">
                   <span
                     v-for="name in ['admin', 'root', 'superuser', 'test']"
                     :key="name"
-                    class="px-padding-xs py-0.5 rounded-scale-sm bg-danger/10 text-danger border-danger/20 border-default"
+                    class="px-xs py-0.5 rounded-sm bg-danger/10 text-danger border-danger/20 border-default"
                   >
                     {{ name }}
                   </span>
@@ -350,7 +350,7 @@ async function onAsyncSubmit(values: Record<string, unknown>): Promise<void> {
                   <span
                     v-for="mail in ['admin@example.com', 'root@example.com']"
                     :key="mail"
-                    class="px-padding-xs py-0.5 rounded-scale-sm bg-danger/10 text-danger border-danger/20 border-default"
+                    class="px-xs py-0.5 rounded-sm bg-danger/10 text-danger border-danger/20 border-default"
                   >
                     {{ mail }}
                   </span>
@@ -365,9 +365,7 @@ async function onAsyncSubmit(values: Record<string, unknown>): Promise<void> {
               @submit="onAsyncSubmit"
             >
               <template #footer="{ submit, formState }">
-                <div
-                  class="row-end gap-sm pt-padding-md border-t-default border-border/15 mt-padding-md"
-                >
+                <div class="row-end gap-sm pt-md border-t-default border-border/15 mt-padding-md">
                   <Button
                     label="异步校验并提交"
                     icon="i-lucide-cloud-lightning"
@@ -380,10 +378,10 @@ async function onAsyncSubmit(values: Record<string, unknown>): Promise<void> {
 
             <div
               v-if="asyncResult"
-              class="surface-sunken rounded-scale-md p-padding-md border-default border-border/40"
+              class="surface-sunken rounded-md p-md border-default border-border/40"
             >
-              <div class="fs-xs font-bold text-muted uppercase mb-margin-xs">Submit Result:</div>
-              <pre class="m-0 whitespace-pre-wrap break-words fs-xs font-mono text-primary">{{
+              <div class="text-xs font-bold text-muted uppercase mb-xs">Submit Result:</div>
+              <pre class="m-0 whitespace-pre-wrap break-words text-xs font-mono text-primary">{{
                 asyncResult
               }}</pre>
             </div>

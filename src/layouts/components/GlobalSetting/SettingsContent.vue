@@ -159,10 +159,10 @@ function onThemeModeChange(value: ThemeMode) {
 </script>
 
 <template>
-  <div class="column px-padding-md gap-xl">
+  <div class="column px-md gap-xl">
     <!-- 深色 / 浅色 -->
     <div class="column gap-sm">
-      <label class="fs-sm font-medium text-muted-foreground">
+      <label class="text-sm font-medium text-muted-foreground">
         {{ t('settings.themeMode') }}
       </label>
       <div class="layout-full">
@@ -184,7 +184,7 @@ function onThemeModeChange(value: ThemeMode) {
 
     <!-- 系统配色 -->
     <div class="column gap-sm">
-      <label class="fs-sm font-medium text-muted-foreground">
+      <label class="text-sm font-medium text-muted-foreground">
         {{ t('settings.themePreset') }}
       </label>
       <div class="w-full layout-wrap gap-md">
@@ -196,7 +196,7 @@ function onThemeModeChange(value: ThemeMode) {
           :style="{
             backgroundColor: getPresetPrimaryColor(preset, themeStore.isDark),
           }"
-          class="size-theme-swatch shadow-sm cursor-pointer select-none center transition-all duration-scale-md ease-in-out hover:scale-110 hover:-translate-y-1 hover:shadow-lg hover:z-10 active:scale-95 border-2"
+          class="size-theme-swatch shadow-sm cursor-pointer select-none center transition-all duration-md ease-in-out hover:scale-110 hover:-translate-y-1 hover:shadow-lg hover:z-10 active:scale-95 border-2"
           :class="[
             themeStore.themeName === preset.name
               ? 'border-primary bg-primary/10 shadow-md'
@@ -207,7 +207,7 @@ function onThemeModeChange(value: ThemeMode) {
           <Icons
             v-if="themeStore.themeName === preset.name"
             name="i-lucide-check"
-            class="transition-all duration-scale-md ease-in-out text-primary-foreground! fs-xs drop-shadow-sm"
+            class="transition-all duration-md ease-in-out text-primary-foreground! text-xs drop-shadow-sm"
           />
         </div>
       </div>
@@ -217,7 +217,7 @@ function onThemeModeChange(value: ThemeMode) {
 
     <!-- 尺寸 -->
     <div class="column gap-sm">
-      <label class="fs-sm font-medium text-muted-foreground">
+      <label class="text-sm font-medium text-muted-foreground">
         {{ t('settings.size') }}
       </label>
       <div>
@@ -238,7 +238,7 @@ function onThemeModeChange(value: ThemeMode) {
 
     <!-- 语言 -->
     <div class="column gap-sm">
-      <label class="fs-sm font-medium text-muted-foreground">
+      <label class="text-sm font-medium text-muted-foreground">
         {{ t('settings.locale') }}
       </label>
       <div>
@@ -262,7 +262,7 @@ function onThemeModeChange(value: ThemeMode) {
 
     <!-- 布局模式（始终展示：控制用户偏好 preferredMode） -->
     <div class="column main-between cross-start col-stack-sm">
-      <label class="fs-sm font-medium text-muted-foreground">
+      <label class="text-sm font-medium text-muted-foreground">
         {{ t('settings.layoutMode') }}
       </label>
       <SelectButton
@@ -279,7 +279,7 @@ function onThemeModeChange(value: ThemeMode) {
 
     <!-- 布局模块显示（按 preferredMode 配置，不随 effectiveMode 跳变） -->
     <div class="column main-between cross-start col-stack-sm">
-      <label class="fs-sm font-medium text-muted-foreground">
+      <label class="text-sm font-medium text-muted-foreground">
         {{ t('settings.layoutModules') }}
       </label>
       <div class="layout-full layout-stack gap-sm">
@@ -288,7 +288,7 @@ function onThemeModeChange(value: ThemeMode) {
           :key="item.key"
           class="row-between gap-md"
         >
-          <span class="fs-sm text-foreground">
+          <span class="text-sm text-foreground">
             {{ t(item.labelKey) }}
           </span>
           <ToggleSwitch
@@ -299,7 +299,7 @@ function onThemeModeChange(value: ThemeMode) {
         </div>
         <!-- 侧边栏手风琴模式 -->
         <div class="row-between gap-md">
-          <span class="fs-sm text-foreground">
+          <span class="text-sm text-foreground">
             {{ t('settings.sidebarAccordion') }}
           </span>
           <ToggleSwitch
@@ -314,7 +314,7 @@ function onThemeModeChange(value: ThemeMode) {
 
     <!-- 切换动画 -->
     <div class="column gap-sm">
-      <label class="fs-sm font-medium text-muted-foreground">
+      <label class="text-sm font-medium text-muted-foreground">
         {{ t('settings.transitionEffect') }}
       </label>
       <div class="w-full layout-wrap gap-md">
@@ -324,12 +324,12 @@ function onThemeModeChange(value: ThemeMode) {
           v-tooltip.top="t(opt.labelKey)"
           :aria-pressed="themeStore.transitionMode === opt.value"
           :aria-label="t(opt.labelKey)"
-          class="interactive-click transition-all duration-scale-md ease-in-out hover:-translate-y-1 p-xs rounded-scale-md"
+          class="interactive-click transition-all duration-md ease-in-out hover:-translate-y-1 p-xs rounded-md"
           :class="[themeStore.transitionMode === opt.value && 'bg-primary/10 shadow-sm']"
           @click="themeStore.setTransitionMode(opt.value)"
         >
           <Icons
-            class="transition-colors duration-scale-md ease-in-out"
+            class="transition-colors duration-md ease-in-out"
             :class="[
               themeStore.transitionMode === opt.value ? 'text-primary!' : 'text-muted-foreground',
             ]"
@@ -343,10 +343,10 @@ function onThemeModeChange(value: ThemeMode) {
     <!-- 过渡时长 -->
     <div class="layout-full column gap-sm">
       <div class="row-between">
-        <label class="fs-sm font-medium text-muted-foreground">
+        <label class="text-sm font-medium text-muted-foreground">
           {{ t('settings.transitionDuration') }}
         </label>
-        <span class="fs-sm font-medium text-accent">
+        <span class="text-sm font-medium text-accent">
           {{ t(currentDurationLabel) }}
         </span>
       </div>

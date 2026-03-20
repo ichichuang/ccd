@@ -31,7 +31,7 @@ export default defineComponent({
       if (!props.show) return null
 
       return (
-        <footer class="w-full h-footerHeight center px-padding-lg fs-xs text-muted-foreground">
+        <footer class="w-full h-footerHeight center px-lg text-xs text-muted-foreground">
           <div class="center flex-wrap gap-x-gap-md gap-y-gap-xs">
             <span>{brand.displayName}</span>
             {version && (

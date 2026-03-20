@@ -167,17 +167,17 @@ function handleSetScale(value: string): void {
 
 <template>
   <div class="col-stack-lg">
-    <h3 class="fs-md font-semibold text-foreground">图标控制</h3>
+    <h3 class="text-md font-semibold text-foreground">图标控制</h3>
 
     <div class="col-stack-sm">
-      <label class="fs-sm font-medium text-foreground">当前图标</label>
-      <div class="p-padding-sm bg-muted rounded-scale-md">
-        <div class="fs-xs font-mono text-foreground break-all">{{ iconName }}</div>
+      <label class="text-sm font-medium text-foreground">当前图标</label>
+      <div class="p-sm bg-muted rounded-md">
+        <div class="text-xs font-mono text-foreground break-all">{{ iconName }}</div>
       </div>
     </div>
 
     <div class="col-stack-md">
-      <label class="fs-sm font-medium text-foreground">尺寸 (Size)</label>
+      <label class="text-sm font-medium text-foreground">尺寸 (Size)</label>
       <div class="flex gap-sm">
         <Button
           label="标准尺寸"
@@ -214,7 +214,7 @@ function handleSetScale(value: string): void {
     </div>
 
     <div class="col-stack-md">
-      <label class="fs-sm font-medium text-foreground">颜色 (Color)</label>
+      <label class="text-sm font-medium text-foreground">颜色 (Color)</label>
       <div class="row-y-center gap-sm">
         <InputText
           v-model="colorInput"
@@ -226,7 +226,7 @@ function handleSetScale(value: string): void {
           v-if="colorInput && /^#[0-9A-Fa-f]{6}$/.test(colorInput)"
           type="color"
           :value="colorInput"
-          class="w-[var(--spacing-xl)] h-[var(--spacing-lg)] rounded-scale-md cursor-pointer"
+          class="w-[var(--spacing-xl)] h-[var(--spacing-lg)] rounded-md cursor-pointer"
           @input="handleColorInputChange"
         />
       </div>
@@ -277,7 +277,7 @@ function handleSetScale(value: string): void {
     </div>
 
     <div class="col-stack-md">
-      <label class="fs-sm font-medium text-foreground">动画 (Animation)</label>
+      <label class="text-sm font-medium text-foreground">动画 (Animation)</label>
       <div class="layout-wrap gap-sm">
         <Button
           v-for="opt in animationOptions"
@@ -291,7 +291,7 @@ function handleSetScale(value: string): void {
     </div>
 
     <div class="col-stack-md">
-      <label class="fs-sm font-medium text-foreground">翻转 (Flip)</label>
+      <label class="text-sm font-medium text-foreground">翻转 (Flip)</label>
       <div class="layout-wrap gap-sm">
         <Button
           v-for="opt in flipOptions"
@@ -305,7 +305,7 @@ function handleSetScale(value: string): void {
     </div>
 
     <div class="col-stack-md">
-      <label class="fs-sm font-medium text-foreground">旋转 (Rotate)</label>
+      <label class="text-sm font-medium text-foreground">旋转 (Rotate)</label>
       <div class="row-y-center flex-wrap gap-sm">
         <InputText
           v-model="rotateInput"
@@ -343,7 +343,7 @@ function handleSetScale(value: string): void {
     </div>
 
     <div class="col-stack-md">
-      <label class="fs-sm font-medium text-foreground">缩放 (Scale)</label>
+      <label class="text-sm font-medium text-foreground">缩放 (Scale)</label>
       <div class="row-y-center flex-wrap gap-sm">
         <InputText
           v-model="scaleInput"

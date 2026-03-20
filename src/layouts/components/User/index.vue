@@ -71,10 +71,10 @@ const onLogout = async () => {
             class="w-[var(--spacing-3xl)]! h-[var(--spacing-3xl)]! rounded-full"
           />
           <div class="h-full column justify-between py-xs">
-            <span class="fs-2xl font-black text-foreground">
+            <span class="text-2xl font-black text-foreground">
               {{ userInfo.username || t('user.unnamedUser') }}
             </span>
-            <span class="fs-xs text-muted-foreground">
+            <span class="text-xs text-muted-foreground">
               {{ (userInfo.roles || []).join(' / ') || t('user.noRole') }}
             </span>
           </div>

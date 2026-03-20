@@ -2,7 +2,7 @@ import type { VNode } from 'vue'
 import type { ProTableColumn, ColumnRenderParams } from '@/components/ProTable'
 import type { DummyProductDTO } from '@/api/example/dummy'
 
-const BADGE = 'rounded-scale-sm px-padding-sm py-padding-xs fs-xs font-semibold'
+const BADGE = 'rounded-sm px-sm py-xs text-xs font-semibold'
 
 function stockBadge(stock: number): VNode {
   if (stock === 0) {
@@ -18,12 +18,12 @@ function ratingStars(rating: number): VNode {
   const filled = Math.round(rating)
   return (
     <div class="row-y-center gap-xs">
-      <span class="fs-xs font-semibold text-foreground">{rating.toFixed(1)}</span>
+      <span class="text-xs font-semibold text-foreground">{rating.toFixed(1)}</span>
       <div class="row-y-center gap-[var(--spacing-xs)]">
         {Array.from({ length: 5 }).map((_, i) => (
           <span
             key={i}
-            class={i < filled ? 'text-warn fs-xs' : 'text-muted-foreground/40 fs-xs'}
+            class={i < filled ? 'text-warn text-xs' : 'text-muted-foreground/40 text-xs'}
           >
             ★
           </span>
@@ -51,13 +51,13 @@ export const productColumns: ProTableColumn<DummyProductDTO>[] = [
         <img
           src={row.thumbnail}
           alt={row.title}
-          class="w-[var(--spacing-2xl)] h-[var(--spacing-2xl)] rounded-scale-md object-cover shrink-0 shadow-sm"
+          class="w-[var(--spacing-2xl)] h-[var(--spacing-2xl)] rounded-md object-cover shrink-0 shadow-sm"
         />
         <div class="col-stack-xs min-w-0">
-          <span class="fs-sm font-medium text-foreground text-single-line-ellipsis">
+          <span class="text-sm font-medium text-foreground text-single-line-ellipsis">
             {row.title}
           </span>
-          <span class="fs-xs text-muted-foreground text-single-line-ellipsis">{row.brand}</span>
+          <span class="text-xs text-muted-foreground text-single-line-ellipsis">{row.brand}</span>
         </div>
       </div>
     ),
@@ -79,9 +79,9 @@ export const productColumns: ProTableColumn<DummyProductDTO>[] = [
     align: 'right',
     render: ({ row }: ColumnRenderParams<DummyProductDTO>) => (
       <div class="col-stack-xs items-end">
-        <span class="fs-sm font-semibold text-foreground">${row.price.toFixed(2)}</span>
+        <span class="text-sm font-semibold text-foreground">${row.price.toFixed(2)}</span>
         {row.discountPercentage > 0 && (
-          <span class="fs-xs text-danger">-{row.discountPercentage.toFixed(0)}%</span>
+          <span class="text-xs text-danger">-{row.discountPercentage.toFixed(0)}%</span>
         )}
       </div>
     ),

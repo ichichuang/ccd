@@ -4,8 +4,8 @@
 </script>
 
 <template>
-  <div class="p-padding-lg space-y-margin-md">
-    <h2 class="fs-xl font-semibold row-y-center gap-sm">
+  <div class="p-lg space-y-margin-md">
+    <h2 class="text-xl font-semibold row-y-center gap-sm">
       <Icons
         name="i-lucide-sparkles"
         size="lg"
@@ -14,9 +14,9 @@
       <span>路由过渡动画示例（meta.transition）</span>
     </h2>
 
-    <div class="component-border rounded-scale p-padding-md space-y-margin-sm">
-      <div class="fs-md font-medium">本路由 meta.transition 配置</div>
-      <pre class="text-muted-foreground fs-sm font-mono whitespace-pre-wrap">{{
+    <div class="shadow-soft rounded-scale p-md space-y-margin-sm">
+      <div class="text-md font-medium">本路由 meta.transition 配置</div>
+      <pre class="text-muted-foreground text-sm font-mono whitespace-pre-wrap">{{
         JSON.stringify(
           {
             name: 'fade-slide',
@@ -28,7 +28,7 @@
           2
         )
       }}</pre>
-      <p class="text-muted-foreground fs-sm">
+      <p class="text-muted-foreground text-sm">
         进出本页时应有「右进左出」的滑动效果，与默认的淡入淡出不同。需确保布局设置中已开启「路由过渡」。
       </p>
     </div>

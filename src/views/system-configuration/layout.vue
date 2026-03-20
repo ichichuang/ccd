@@ -69,17 +69,19 @@ const adaptiveTriggerDesc = [
   >
     <!-- Toolbar: Header (Transparent Root · Nested Canvas) -->
     <div class="shrink-0 border-b-default border-primary/50 bg-primary/5">
-      <div class="layout-content-wide col-stack-sm py-padding-sm">
+      <div
+        class="py-sm md:py-md xl:py-lg 2xl:py-xl mx-auto max-w-[92%] sm:max-w-[94%] md:max-w-[92%] lg:max-w-[90%] xl:max-w-[88%] 2xl:max-w-[86%] 3xl:max-w-[84%] col-stack-sm py-sm"
+      >
         <div class="row-y-center gap-md">
-          <div class="p-padding-md bg-primary/10 rounded-scale-lg shrink-0">
+          <div class="p-md bg-primary/10 rounded-lg shrink-0">
             <Icons
               name="i-lucide-layout-dashboard"
-              class="text-primary fs-2xl"
+              class="text-primary text-2xl"
             />
           </div>
           <div class="col-stack-xs">
-            <h1 class="fs-2xl font-bold text-foreground">Layout & Device System</h1>
-            <p class="text-muted-foreground fs-sm">
+            <h1 class="text-2xl font-bold text-foreground">Layout & Device System</h1>
+            <p class="text-muted-foreground text-sm">
               布局/设备 Store 演示 · useDeviceStore、useLayoutStore、runAdaptive 与有效显隐
             </p>
           </div>
@@ -87,19 +89,17 @@ const adaptiveTriggerDesc = [
         <Tag
           value="核心文档: ADAPTIVE_LAYOUT.md"
           severity="info"
-          class="self-start mt-margin-xs"
+          class="self-start mt-xs"
         />
         <!-- 架构提示 -->
-        <div
-          class="surface-item p-padding-md rounded-scale-md row-start gap-md component-border mt-margin-sm"
-        >
+        <div class="surface-item p-md rounded-md row-start gap-md shadow-soft mt-sm">
           <Icons
             name="i-lucide-info"
-            class="text-primary fs-xl shrink-0 mt-margin-xs"
+            class="text-primary text-xl shrink-0 mt-xs"
           />
           <div class="col-stack-xs">
-            <div class="font-semibold text-primary fs-sm">Architectural Guide 架构引导</div>
-            <div class="text-muted-foreground fs-xs leading-relaxed">
+            <div class="font-semibold text-primary text-sm">Architectural Guide 架构引导</div>
+            <div class="text-muted-foreground text-xs leading-relaxed">
               业务视图组件应当仅读取 Store 状态，禁止通过逻辑手动触发适配函数。所有适配逻辑应由
               Layout 核心驱动。
             </div>
@@ -110,11 +110,15 @@ const adaptiveTriggerDesc = [
 
     <!-- Scrollable content -->
     <CScrollbar class="flex-1 min-h-0">
-      <div class="layout-content-wide col-stack-xl">
+      <div
+        class="py-sm md:py-md xl:py-lg 2xl:py-xl mx-auto max-w-[92%] sm:max-w-[94%] md:max-w-[92%] lg:max-w-[90%] xl:max-w-[88%] 2xl:max-w-[86%] 3xl:max-w-[84%] col-stack-xl"
+      >
         <!-- Device Store (Dashboard KPI Style) -->
-        <Card class="panel-base bg-accent/10 dark:bg-accent/5">
+        <Card
+          class="bg-card rounded-md shadow-soft py-md px-lg flex flex-col gap-lg bg-accent/10 dark:bg-accent/5"
+        >
           <template #title>
-            <div class="row-y-center gap-sm border-b-default pb-padding-sm mb-padding-sm">
+            <div class="row-y-center gap-sm border-b-default pb-sm mb-padding-sm">
               <Icons
                 name="i-lucide-smartphone"
                 class="text-primary"
@@ -129,10 +133,10 @@ const adaptiveTriggerDesc = [
           <template #content>
             <div class="layout-wrap gap-lg">
               <div
-                class="surface-item rounded-scale-lg p-padding-xl row-y-center gap-lg group interactive-hover-tile behavior-hover-transition min-w-0 shrink-0"
+                class="surface-item rounded-lg p-xl row-y-center gap-lg group shadow-soft transition-all duration-xl ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)] behavior-hover-transition min-w-0 shrink-0"
               >
                 <div
-                  class="shrink-0 w-[var(--spacing-3xl)] h-[var(--spacing-3xl)] rounded-scale-lg surface-item center transition-fluid group-hover:scale-105"
+                  class="shrink-0 w-[var(--spacing-3xl)] h-[var(--spacing-3xl)] rounded-lg surface-item center transition-[transform,opacity] duration-md ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-105"
                 >
                   <Icons
                     name="i-lucide-smartphone"
@@ -141,19 +145,19 @@ const adaptiveTriggerDesc = [
                   />
                 </div>
                 <div class="column">
-                  <span class="fs-xs font-medium text-muted-foreground uppercase tracking-wider">
+                  <span class="text-xs font-medium text-muted-foreground uppercase tracking-wider">
                     type
                   </span>
-                  <span class="fs-xl font-bold text-foreground tabular-nums">
+                  <span class="text-xl font-bold text-foreground tabular-nums">
                     {{ deviceStore.type }}
                   </span>
                 </div>
               </div>
               <div
-                class="surface-item rounded-scale-lg p-padding-xl row-y-center gap-lg group interactive-hover-tile behavior-hover-transition min-w-0 shrink-0"
+                class="surface-item rounded-lg p-xl row-y-center gap-lg group shadow-soft transition-all duration-xl ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)] behavior-hover-transition min-w-0 shrink-0"
               >
                 <div
-                  class="shrink-0 w-[var(--spacing-3xl)] h-[var(--spacing-3xl)] rounded-scale-lg surface-item center transition-fluid group-hover:scale-105"
+                  class="shrink-0 w-[var(--spacing-3xl)] h-[var(--spacing-3xl)] rounded-lg surface-item center transition-[transform,opacity] duration-md ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-105"
                 >
                   <Icons
                     name="i-lucide-layout-grid"
@@ -162,19 +166,19 @@ const adaptiveTriggerDesc = [
                   />
                 </div>
                 <div class="column">
-                  <span class="fs-xs font-medium text-muted-foreground uppercase tracking-wider">
+                  <span class="text-xs font-medium text-muted-foreground uppercase tracking-wider">
                     currentBreakpoint
                   </span>
-                  <span class="fs-xl font-bold text-foreground tabular-nums">
+                  <span class="text-xl font-bold text-foreground tabular-nums">
                     {{ deviceStore.currentBreakpoint }}
                   </span>
                 </div>
               </div>
               <div
-                class="surface-item rounded-scale-lg p-padding-xl row-y-center gap-lg group interactive-hover-tile behavior-hover-transition min-w-0 shrink-0"
+                class="surface-item rounded-lg p-xl row-y-center gap-lg group shadow-soft transition-all duration-xl ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)] behavior-hover-transition min-w-0 shrink-0"
               >
                 <div
-                  class="shrink-0 w-[var(--spacing-3xl)] h-[var(--spacing-3xl)] rounded-scale-lg surface-item center transition-fluid group-hover:scale-105"
+                  class="shrink-0 w-[var(--spacing-3xl)] h-[var(--spacing-3xl)] rounded-lg surface-item center transition-[transform,opacity] duration-md ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-105"
                 >
                   <Icons
                     name="i-lucide-monitor-smartphone"
@@ -183,19 +187,19 @@ const adaptiveTriggerDesc = [
                   />
                 </div>
                 <div class="column">
-                  <span class="fs-xs font-medium text-muted-foreground uppercase tracking-wider">
+                  <span class="text-xs font-medium text-muted-foreground uppercase tracking-wider">
                     isMobileLayout
                   </span>
-                  <span class="fs-xl font-bold text-foreground tabular-nums">
+                  <span class="text-xl font-bold text-foreground tabular-nums">
                     {{ deviceStore.isMobileLayout }}
                   </span>
                 </div>
               </div>
               <div
-                class="surface-item rounded-scale-lg p-padding-xl row-y-center gap-lg group interactive-hover-tile behavior-hover-transition min-w-0 shrink-0"
+                class="surface-item rounded-lg p-xl row-y-center gap-lg group shadow-soft transition-all duration-xl ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)] behavior-hover-transition min-w-0 shrink-0"
               >
                 <div
-                  class="shrink-0 w-[var(--spacing-3xl)] h-[var(--spacing-3xl)] rounded-scale-lg surface-item center transition-fluid group-hover:scale-105"
+                  class="shrink-0 w-[var(--spacing-3xl)] h-[var(--spacing-3xl)] rounded-lg surface-item center transition-[transform,opacity] duration-md ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-105"
                 >
                   <Icons
                     name="i-lucide-tablet"
@@ -204,19 +208,19 @@ const adaptiveTriggerDesc = [
                   />
                 </div>
                 <div class="column">
-                  <span class="fs-xs font-medium text-muted-foreground uppercase tracking-wider">
+                  <span class="text-xs font-medium text-muted-foreground uppercase tracking-wider">
                     isTabletLayout
                   </span>
-                  <span class="fs-xl font-bold text-foreground tabular-nums">
+                  <span class="text-xl font-bold text-foreground tabular-nums">
                     {{ deviceStore.isTabletLayout }}
                   </span>
                 </div>
               </div>
               <div
-                class="surface-item rounded-scale-lg p-padding-xl row-y-center gap-lg group interactive-hover-tile behavior-hover-transition min-w-0 shrink-0"
+                class="surface-item rounded-lg p-xl row-y-center gap-lg group shadow-soft transition-all duration-xl ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)] behavior-hover-transition min-w-0 shrink-0"
               >
                 <div
-                  class="shrink-0 w-[var(--spacing-3xl)] h-[var(--spacing-3xl)] rounded-scale-lg surface-item center transition-fluid group-hover:scale-105"
+                  class="shrink-0 w-[var(--spacing-3xl)] h-[var(--spacing-3xl)] rounded-lg surface-item center transition-[transform,opacity] duration-md ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-105"
                 >
                   <Icons
                     name="i-lucide-monitor"
@@ -225,19 +229,19 @@ const adaptiveTriggerDesc = [
                   />
                 </div>
                 <div class="column">
-                  <span class="fs-xs font-medium text-muted-foreground uppercase tracking-wider">
+                  <span class="text-xs font-medium text-muted-foreground uppercase tracking-wider">
                     isPCLayout
                   </span>
-                  <span class="fs-xl font-bold text-foreground tabular-nums">
+                  <span class="text-xl font-bold text-foreground tabular-nums">
                     {{ deviceStore.isPCLayout }}
                   </span>
                 </div>
               </div>
               <div
-                class="surface-item rounded-scale-lg p-padding-xl row-y-center gap-lg group interactive-hover-tile behavior-hover-transition min-w-0 shrink-0"
+                class="surface-item rounded-lg p-xl row-y-center gap-lg group shadow-soft transition-all duration-xl ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)] behavior-hover-transition min-w-0 shrink-0"
               >
                 <div
-                  class="shrink-0 w-[var(--spacing-3xl)] h-[var(--spacing-3xl)] rounded-scale-lg surface-item center transition-fluid group-hover:scale-105"
+                  class="shrink-0 w-[var(--spacing-3xl)] h-[var(--spacing-3xl)] rounded-lg surface-item center transition-[transform,opacity] duration-md ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-105"
                 >
                   <Icons
                     name="i-lucide-rotate-cw"
@@ -246,19 +250,19 @@ const adaptiveTriggerDesc = [
                   />
                 </div>
                 <div class="column">
-                  <span class="fs-xs font-medium text-muted-foreground uppercase tracking-wider">
+                  <span class="text-xs font-medium text-muted-foreground uppercase tracking-wider">
                     orientation
                   </span>
-                  <span class="fs-xl font-bold text-foreground tabular-nums">
+                  <span class="text-xl font-bold text-foreground tabular-nums">
                     {{ deviceStore.orientation }}
                   </span>
                 </div>
               </div>
               <div
-                class="surface-item rounded-scale-lg p-padding-xl row-y-center gap-lg group interactive-hover-tile behavior-hover-transition min-w-0 shrink-0"
+                class="surface-item rounded-lg p-xl row-y-center gap-lg group shadow-soft transition-all duration-xl ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)] behavior-hover-transition min-w-0 shrink-0"
               >
                 <div
-                  class="shrink-0 w-[var(--spacing-3xl)] h-[var(--spacing-3xl)] rounded-scale-lg surface-item center transition-fluid group-hover:scale-105"
+                  class="shrink-0 w-[var(--spacing-3xl)] h-[var(--spacing-3xl)] rounded-lg surface-item center transition-[transform,opacity] duration-md ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-105"
                 >
                   <Icons
                     name="i-lucide-maximize-2"
@@ -267,10 +271,10 @@ const adaptiveTriggerDesc = [
                   />
                 </div>
                 <div class="column">
-                  <span class="fs-xs font-medium text-muted-foreground uppercase tracking-wider">
+                  <span class="text-xs font-medium text-muted-foreground uppercase tracking-wider">
                     视口
                   </span>
-                  <span class="fs-xl font-bold text-foreground tabular-nums">
+                  <span class="text-xl font-bold text-foreground tabular-nums">
                     {{ deviceStore.width }} × {{ deviceStore.height }}
                   </span>
                 </div>
@@ -280,9 +284,11 @@ const adaptiveTriggerDesc = [
         </Card>
 
         <!-- Layout Store (Dashboard KPI Style) -->
-        <Card class="panel-base bg-accent/10 dark:bg-accent/5">
+        <Card
+          class="bg-card rounded-md shadow-soft py-md px-lg flex flex-col gap-lg bg-accent/10 dark:bg-accent/5"
+        >
           <template #title>
-            <div class="row-y-center gap-sm border-b-default pb-padding-sm mb-padding-sm">
+            <div class="row-y-center gap-sm border-b-default pb-sm mb-padding-sm">
               <Icons
                 name="i-lucide-panel-left"
                 class="text-primary"
@@ -297,10 +303,10 @@ const adaptiveTriggerDesc = [
           <template #content>
             <div class="layout-wrap gap-lg">
               <div
-                class="surface-item rounded-scale-lg p-padding-xl row-y-center gap-lg group interactive-hover-tile behavior-hover-transition min-w-0 shrink-0"
+                class="surface-item rounded-lg p-xl row-y-center gap-lg group shadow-soft transition-all duration-xl ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)] behavior-hover-transition min-w-0 shrink-0"
               >
                 <div
-                  class="shrink-0 w-[var(--spacing-3xl)] h-[var(--spacing-3xl)] rounded-scale-lg surface-item center transition-fluid group-hover:scale-105"
+                  class="shrink-0 w-[var(--spacing-3xl)] h-[var(--spacing-3xl)] rounded-lg surface-item center transition-[transform,opacity] duration-md ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-105"
                 >
                   <Icons
                     name="i-lucide-layout-dashboard"
@@ -309,19 +315,19 @@ const adaptiveTriggerDesc = [
                   />
                 </div>
                 <div class="column">
-                  <span class="fs-xs font-medium text-muted-foreground uppercase tracking-wider">
+                  <span class="text-xs font-medium text-muted-foreground uppercase tracking-wider">
                     mode
                   </span>
-                  <span class="fs-xl font-bold text-foreground tabular-nums">
+                  <span class="text-xl font-bold text-foreground tabular-nums">
                     {{ layoutStore.mode }}
                   </span>
                 </div>
               </div>
               <div
-                class="surface-item rounded-scale-lg p-padding-xl row-y-center gap-lg group interactive-hover-tile behavior-hover-transition min-w-0 shrink-0"
+                class="surface-item rounded-lg p-xl row-y-center gap-lg group shadow-soft transition-all duration-xl ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)] behavior-hover-transition min-w-0 shrink-0"
               >
                 <div
-                  class="shrink-0 w-[var(--spacing-3xl)] h-[var(--spacing-3xl)] rounded-scale-lg surface-item center transition-fluid group-hover:scale-105"
+                  class="shrink-0 w-[var(--spacing-3xl)] h-[var(--spacing-3xl)] rounded-lg surface-item center transition-[transform,opacity] duration-md ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-105"
                 >
                   <Icons
                     name="i-lucide-panel-left-close"
@@ -330,19 +336,19 @@ const adaptiveTriggerDesc = [
                   />
                 </div>
                 <div class="column">
-                  <span class="fs-xs font-medium text-muted-foreground uppercase tracking-wider">
+                  <span class="text-xs font-medium text-muted-foreground uppercase tracking-wider">
                     sidebarCollapse
                   </span>
-                  <span class="fs-xl font-bold text-foreground tabular-nums">
+                  <span class="text-xl font-bold text-foreground tabular-nums">
                     {{ layoutStore.sidebarCollapse }}
                   </span>
                 </div>
               </div>
               <div
-                class="surface-item rounded-scale-lg p-padding-xl row-y-center gap-lg group interactive-hover-tile behavior-hover-transition min-w-0 shrink-0"
+                class="surface-item rounded-lg p-xl row-y-center gap-lg group shadow-soft transition-all duration-xl ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)] behavior-hover-transition min-w-0 shrink-0"
               >
                 <div
-                  class="shrink-0 w-[var(--spacing-3xl)] h-[var(--spacing-3xl)] rounded-scale-lg surface-item center transition-fluid group-hover:scale-105"
+                  class="shrink-0 w-[var(--spacing-3xl)] h-[var(--spacing-3xl)] rounded-lg surface-item center transition-[transform,opacity] duration-md ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-105"
                 >
                   <Icons
                     name="i-lucide-panel-left"
@@ -351,19 +357,19 @@ const adaptiveTriggerDesc = [
                   />
                 </div>
                 <div class="column">
-                  <span class="fs-xs font-medium text-muted-foreground uppercase tracking-wider">
+                  <span class="text-xs font-medium text-muted-foreground uppercase tracking-wider">
                     showSidebar
                   </span>
-                  <span class="fs-xl font-bold text-foreground tabular-nums">
+                  <span class="text-xl font-bold text-foreground tabular-nums">
                     {{ layoutStore.showSidebar }}
                   </span>
                 </div>
               </div>
               <div
-                class="surface-item rounded-scale-lg p-padding-xl row-y-center gap-lg group interactive-hover-tile behavior-hover-transition min-w-0 shrink-0"
+                class="surface-item rounded-lg p-xl row-y-center gap-lg group shadow-soft transition-all duration-xl ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)] behavior-hover-transition min-w-0 shrink-0"
               >
                 <div
-                  class="shrink-0 w-[var(--spacing-3xl)] h-[var(--spacing-3xl)] rounded-scale-lg surface-item center transition-fluid group-hover:scale-105"
+                  class="shrink-0 w-[var(--spacing-3xl)] h-[var(--spacing-3xl)] rounded-lg surface-item center transition-[transform,opacity] duration-md ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-105"
                 >
                   <Icons
                     name="i-lucide-user"
@@ -372,22 +378,20 @@ const adaptiveTriggerDesc = [
                   />
                 </div>
                 <div class="column">
-                  <span class="fs-xs font-medium text-muted-foreground uppercase tracking-wider">
+                  <span class="text-xs font-medium text-muted-foreground uppercase tracking-wider">
                     userAdjusted
                   </span>
-                  <span class="fs-xl font-bold text-foreground tabular-nums">
+                  <span class="text-xl font-bold text-foreground tabular-nums">
                     {{ layoutStore.userAdjusted }}
                   </span>
                 </div>
               </div>
             </div>
-            <div
-              class="mt-margin-md p-padding-sm surface-item rounded-scale-md fs-sm text-muted-foreground"
-            >
+            <div class="mt-md p-sm surface-item rounded-md text-sm text-muted-foreground">
               showHeader / showMenu / showSidebar / showBreadcrumb / showTabs / showFooter
               由设置面板与 visibilitySettings[mode] 控制；对应的 headerHeight / sidebarWidth
               等尺寸来源于
-              <span class="bg-muted px-padding-xs rounded-scale-xs font-mono">
+              <span class="bg-muted px-xs rounded-xs font-mono">
                 Size 预设 LAYOUT_DIMENSION_KEYS
               </span>
               ，禁止在业务中直接硬编码 px。
@@ -396,9 +400,11 @@ const adaptiveTriggerDesc = [
         </Card>
 
         <!-- Live Wireframe Preview (Hero: accent tint + title strip) -->
-        <Card class="panel-base bg-accent/10 dark:bg-accent/5">
+        <Card
+          class="bg-card rounded-md shadow-soft py-md px-lg flex flex-col gap-lg bg-accent/10 dark:bg-accent/5"
+        >
           <template #title>
-            <div class="row-y-center gap-sm border-b-default pb-padding-sm mb-padding-sm">
+            <div class="row-y-center gap-sm border-b-default pb-sm mb-padding-sm">
               <Icons
                 name="i-lucide-app-window"
                 class="text-primary"
@@ -412,16 +418,16 @@ const adaptiveTriggerDesc = [
           </template>
           <template #content>
             <div class="col-stack-md">
-              <p class="text-muted-foreground fs-sm">
+              <p class="text-muted-foreground text-sm">
                 实时反映当前 Store 状态的布局线框图 · 勾选/取消左侧开关可即时观察布局变化
               </p>
               <div class="grid grid-cols-1 lg:grid-cols-2 gap-lg">
                 <!-- 左：开关面板 -->
                 <div class="col-stack-md">
-                  <h4 class="fs-sm font-semibold text-foreground row-y-center gap-xs">
+                  <h4 class="text-sm font-semibold text-foreground row-y-center gap-xs">
                     <Icons
                       name="i-lucide-toggle-left"
-                      class="text-primary fs-xs"
+                      class="text-primary text-xs"
                     />
                     布局模块开关 (setModuleVisible)
                   </h4>
@@ -460,7 +466,7 @@ const adaptiveTriggerDesc = [
                         },
                       ]"
                       :key="item.key"
-                      class="row-between p-padding-sm surface-item rounded-scale-lg behavior-hover-transition hover:bg-foreground/5"
+                      class="row-between p-sm surface-item rounded-lg behavior-hover-transition hover:bg-foreground/5"
                     >
                       <div class="row-y-center gap-sm">
                         <Checkbox
@@ -473,7 +479,7 @@ const adaptiveTriggerDesc = [
                         />
                         <label
                           :for="`wireframe-${item.key}`"
-                          class="cursor-pointer select-none row-y-center gap-xs fs-sm"
+                          class="cursor-pointer select-none row-y-center gap-xs text-sm"
                         >
                           <Icons
                             :name="item.icon"
@@ -486,12 +492,12 @@ const adaptiveTriggerDesc = [
                       <Tag
                         :value="item.effective ? '可见' : '隐藏'"
                         :severity="item.effective ? 'success' : 'secondary'"
-                        class="fs-xs"
+                        class="text-xs"
                       />
                     </div>
                   </div>
                   <div
-                    class="row-y-center gap-sm p-padding-sm surface-item rounded-scale-lg behavior-hover-transition hover:bg-foreground/5"
+                    class="row-y-center gap-sm p-sm surface-item rounded-lg behavior-hover-transition hover:bg-foreground/5"
                   >
                     <Checkbox
                       :model-value="layoutStore.sidebarCollapse"
@@ -501,7 +507,7 @@ const adaptiveTriggerDesc = [
                     />
                     <label
                       for="wireframe-collapse"
-                      class="cursor-pointer select-none row-y-center gap-xs fs-sm"
+                      class="cursor-pointer select-none row-y-center gap-xs text-sm"
                     >
                       <Icons
                         name="i-lucide-panel-left-close"
@@ -511,9 +517,9 @@ const adaptiveTriggerDesc = [
                       Sidebar Collapse 侧栏收起
                     </label>
                   </div>
-                  <p class="fs-xs text-muted-foreground">
+                  <p class="text-xs text-muted-foreground">
                     开关调用
-                    <span class="bg-muted px-padding-xs rounded-scale-xs font-mono">
+                    <span class="bg-muted px-xs rounded-xs font-mono">
                       layoutStore.setModuleVisible(key, bool)
                     </span>
                     ，与设置面板行为一致。
@@ -522,26 +528,26 @@ const adaptiveTriggerDesc = [
 
                 <!-- 右：线框图 -->
                 <div class="col-stack-sm">
-                  <h4 class="fs-sm font-semibold text-foreground row-y-center gap-xs">
+                  <h4 class="text-sm font-semibold text-foreground row-y-center gap-xs">
                     <Icons
                       name="i-lucide-layout-dashboard"
-                      class="text-primary fs-xs"
+                      class="text-primary text-xs"
                     />
                     线框预览
                   </h4>
                   <div
-                    class="relative rounded-scale-lg component-border bg-muted/30 overflow-hidden"
+                    class="relative rounded-lg shadow-soft bg-muted/30 overflow-hidden"
                     style="min-height: 220px"
                   >
                     <!-- Header -->
                     <div
-                      class="transition-fluid overflow-hidden border-b border-primary/20"
+                      class="transition-[transform,opacity] duration-md ease-[cubic-bezier(0.16,1,0.3,1)] overflow-hidden border-b border-primary/20"
                       :style="{
                         height: showHeaderEffective ? '32px' : '0px',
                         opacity: showHeaderEffective ? 1 : 0,
                       }"
                     >
-                      <div class="h-full bg-primary/15 row-y-center px-padding-sm gap-sm">
+                      <div class="h-full bg-primary/15 row-y-center px-sm gap-sm">
                         <div
                           class="w-[var(--spacing-sm)] h-[var(--spacing-sm)] rounded-full bg-primary/40"
                         />
@@ -550,10 +556,10 @@ const adaptiveTriggerDesc = [
                         />
                         <div class="flex-1" />
                         <div
-                          class="w-[var(--spacing-sm)] h-[var(--spacing-sm)] rounded-scale-xs bg-primary/20"
+                          class="w-[var(--spacing-sm)] h-[var(--spacing-sm)] rounded-xs bg-primary/20"
                         />
                         <div
-                          class="w-[var(--spacing-sm)] h-[var(--spacing-sm)] rounded-scale-xs bg-primary/20"
+                          class="w-[var(--spacing-sm)] h-[var(--spacing-sm)] rounded-xs bg-primary/20"
                         />
                       </div>
                     </div>
@@ -564,7 +570,7 @@ const adaptiveTriggerDesc = [
                     >
                       <!-- Sidebar -->
                       <div
-                        class="transition-fluid overflow-hidden border-r border-primary/20 shrink-0"
+                        class="transition-[transform,opacity] duration-md ease-[cubic-bezier(0.16,1,0.3,1)] overflow-hidden border-r border-primary/20 shrink-0"
                         :style="{
                           width: showSidebarEffective
                             ? layoutStore.sidebarCollapse
@@ -574,11 +580,11 @@ const adaptiveTriggerDesc = [
                           opacity: showSidebarEffective ? 1 : 0,
                         }"
                       >
-                        <div class="h-full bg-primary/10 col-stack-sm p-padding-xs pt-padding-sm">
+                        <div class="h-full bg-primary/10 col-stack-sm p-xs pt-sm">
                           <div
                             v-for="n in 4"
                             :key="n"
-                            class="rounded-scale-xs bg-primary/20 shrink-0"
+                            class="rounded-xs bg-primary/20 shrink-0"
                             :style="{
                               height: '12px',
                               width: layoutStore.sidebarCollapse ? '16px' : '90%',
@@ -586,7 +592,7 @@ const adaptiveTriggerDesc = [
                           />
                           <div class="flex-1" />
                           <div
-                            class="rounded-scale-xs bg-primary/15 shrink-0"
+                            class="rounded-xs bg-primary/15 shrink-0"
                             :style="{
                               height: '12px',
                               width: layoutStore.sidebarCollapse ? '16px' : '70%',
@@ -599,25 +605,25 @@ const adaptiveTriggerDesc = [
                       <div class="flex-1 column min-w-0">
                         <!-- Tabs -->
                         <div
-                          class="transition-fluid overflow-hidden border-b border-primary/15"
+                          class="transition-[transform,opacity] duration-md ease-[cubic-bezier(0.16,1,0.3,1)] overflow-hidden border-b border-primary/15"
                           :style="{
                             height: showTabsEffective ? '24px' : '0px',
                             opacity: showTabsEffective ? 1 : 0,
                           }"
                         >
-                          <div class="h-full bg-primary/8 row-y-center px-padding-xs gap-xs">
+                          <div class="h-full bg-primary/8 row-y-center px-xs gap-xs">
                             <div
-                              class="px-padding-xs py-padding-xs rounded-t-scale-xs bg-primary/20 fs-xs text-primary/60"
+                              class="px-xs py-xs rounded-t-xs bg-primary/20 text-xs text-primary/60"
                             >
                               Tab 1
                             </div>
                             <div
-                              class="px-padding-xs py-padding-xs rounded-t-scale-xs bg-primary/10 fs-xs text-primary/40"
+                              class="px-xs py-xs rounded-t-xs bg-primary/10 text-xs text-primary/40"
                             >
                               Tab 2
                             </div>
                             <div
-                              class="px-padding-xs py-padding-xs rounded-t-scale-xs bg-primary/10 fs-xs text-primary/40"
+                              class="px-xs py-xs rounded-t-xs bg-primary/10 text-xs text-primary/40"
                             >
                               Tab 3
                             </div>
@@ -626,35 +632,35 @@ const adaptiveTriggerDesc = [
 
                         <!-- Breadcrumb -->
                         <div
-                          class="transition-fluid overflow-hidden"
+                          class="transition-[transform,opacity] duration-md ease-[cubic-bezier(0.16,1,0.3,1)] overflow-hidden"
                           :style="{
                             height: showBreadcrumbEffective ? '20px' : '0px',
                             opacity: showBreadcrumbEffective ? 1 : 0,
                           }"
                         >
-                          <div class="h-full row-y-center px-padding-sm gap-xs">
+                          <div class="h-full row-y-center px-sm gap-xs">
                             <div class="w-[var(--spacing-lg)] h-[4px] rounded-full bg-primary/15" />
-                            <span class="fs-xs text-primary/30">/</span>
+                            <span class="text-xs text-primary/30">/</span>
                             <div class="w-[var(--spacing-xl)] h-[4px] rounded-full bg-primary/20" />
-                            <span class="fs-xs text-primary/30">/</span>
+                            <span class="text-xs text-primary/30">/</span>
                             <div class="w-[var(--spacing-md)] h-[4px] rounded-full bg-primary/25" />
                           </div>
                         </div>
 
                         <!-- Content -->
-                        <div class="flex-1 p-padding-sm center">
+                        <div class="flex-1 p-sm center">
                           <div class="col-stack-xs items-center opacity-50">
                             <Icons
                               name="i-lucide-layout-dashboard"
-                              class="text-primary/40 fs-xl"
+                              class="text-primary/40 text-xl"
                             />
-                            <span class="fs-xs text-primary/40 font-mono">Content</span>
+                            <span class="text-xs text-primary/40 font-mono">Content</span>
                           </div>
                         </div>
 
                         <!-- Footer -->
                         <div
-                          class="transition-fluid overflow-hidden border-t border-primary/15"
+                          class="transition-[transform,opacity] duration-md ease-[cubic-bezier(0.16,1,0.3,1)] overflow-hidden border-t border-primary/15"
                           :style="{
                             height: showFooterEffective ? '20px' : '0px',
                             opacity: showFooterEffective ? 1 : 0,
@@ -669,7 +675,7 @@ const adaptiveTriggerDesc = [
                       </div>
                     </div>
                   </div>
-                  <div class="row-y-center gap-sm fs-xs text-muted-foreground">
+                  <div class="row-y-center gap-sm text-xs text-muted-foreground">
                     <Tag
                       :value="`mode: ${layoutStore.mode}`"
                       severity="info"
@@ -690,9 +696,11 @@ const adaptiveTriggerDesc = [
         </Card>
 
         <!-- runAdaptive 与有效显隐 -->
-        <Card class="panel-base bg-primary/10 dark:bg-primary/5">
+        <Card
+          class="bg-card rounded-md shadow-soft py-md px-lg flex flex-col gap-lg bg-primary/10 dark:bg-primary/5"
+        >
           <template #title>
-            <div class="row-y-center gap-sm border-b-default pb-padding-sm mb-padding-sm">
+            <div class="row-y-center gap-sm border-b-default pb-sm mb-padding-sm">
               <Icons
                 name="i-lucide-rotate-ccw"
                 class="text-primary"
@@ -707,10 +715,8 @@ const adaptiveTriggerDesc = [
           <template #content>
             <div class="col-stack-md">
               <div>
-                <h4 class="fs-sm font-semibold text-foreground mb-margin-xs">
-                  runAdaptive 触发时机
-                </h4>
-                <ul class="col-stack-xs list-disc pl-padding-lg fs-sm text-muted">
+                <h4 class="text-sm font-semibold text-foreground mb-xs">runAdaptive 触发时机</h4>
+                <ul class="col-stack-xs list-disc pl-lg text-sm text-muted">
                   <li
                     v-for="(item, i) in adaptiveTriggerDesc"
                     :key="i"
@@ -720,8 +726,8 @@ const adaptiveTriggerDesc = [
                 </ul>
               </div>
               <div>
-                <h4 class="fs-sm font-semibold text-foreground mb-margin-xs">有效显隐规则</h4>
-                <p class="text-muted-foreground fs-sm mb-margin-sm">
+                <h4 class="text-sm font-semibold text-foreground mb-xs">有效显隐规则</h4>
+                <p class="text-muted-foreground text-sm mb-sm">
                   PC：直接使用 layoutStore.showXxx；非 PC 且 isMobileLayout 时强制 false；非 PC 且
                   !isMobileLayout 时使用 layoutStore.showXxx。
                 </p>
@@ -734,9 +740,9 @@ const adaptiveTriggerDesc = [
                       { label: 'showFooterEffective', val: showFooterEffective },
                     ]"
                     :key="item.label"
-                    class="row-between p-padding-sm surface-item rounded-scale-lg interactive-hover-tile behavior-hover-transition hover:bg-foreground/5"
+                    class="row-between p-sm surface-item rounded-lg shadow-soft transition-all duration-xl ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)] behavior-hover-transition hover:bg-foreground/5"
                   >
-                    <span class="fs-xs text-muted-foreground font-mono">{{ item.label }}</span>
+                    <span class="text-xs text-muted-foreground font-mono">{{ item.label }}</span>
                     <Tag
                       :value="String(item.val)"
                       :severity="item.val ? 'success' : 'secondary'"
@@ -749,7 +755,7 @@ const adaptiveTriggerDesc = [
         </Card>
 
         <!-- 架构规则与详细逻辑 -->
-        <Card class="panel-base">
+        <Card class="bg-card rounded-md shadow-soft py-md px-lg flex flex-col gap-lg">
           <template #title>
             <div class="row-y-center gap-sm">
               <Icons
@@ -766,14 +772,14 @@ const adaptiveTriggerDesc = [
                 :key="i"
                 class="col-stack-sm"
               >
-                <h4 class="fs-sm font-semibold text-foreground row-y-center gap-xs">
+                <h4 class="text-sm font-semibold text-foreground row-y-center gap-xs">
                   <Icons
                     name="i-lucide-check-circle-2"
-                    class="text-success fs-xs"
+                    class="text-success text-xs"
                   />
                   {{ item.rule }}
                 </h4>
-                <p class="fs-xs text-muted-foreground leading-relaxed pl-padding-lg">
+                <p class="text-xs text-muted-foreground leading-relaxed pl-lg">
                   {{ item.reason }}
                 </p>
               </div>

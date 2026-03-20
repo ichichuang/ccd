@@ -39,18 +39,18 @@ const handleUpdate = (value: unknown): void => {
 <template>
   <span
     v-if="props.readonly"
-    class="block py-padding-xs text-foreground leading-normal break-words"
+    class="block py-xs text-foreground leading-normal break-words"
   >
     {{ displayValue }}
   </span>
   <div
     v-else
-    class="layout-wrap gap-scale-xs"
+    class="layout-wrap gap-xs"
   >
     <label
       v-for="option in options"
       :key="String(option.value)"
-      class="inline-flex items-center gap-scale-xs cursor-pointer text-foreground fs-sm"
+      class="inline-flex items-center gap-xs cursor-pointer text-foreground text-sm"
     >
       <RadioButton
         :value="option.value"

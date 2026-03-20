@@ -290,16 +290,16 @@ async function onSubmit(values: Record<string, unknown>): Promise<void> {
   >
     <!-- Toolbar: Hero Header (Transparent Root Policy: Inherit canvas) -->
     <header class="shrink-0 border-b-default border-primary/20">
-      <div class="w-full px-padding-md md:px-padding-lg py-padding-sm row-y-center gap-md">
-        <div class="p-padding-md bg-primary/10 rounded-scale-lg shrink-0">
+      <div class="w-full px-md md:px-lg py-sm row-y-center gap-md">
+        <div class="p-md bg-primary/10 rounded-lg shrink-0">
           <Icons
             name="i-lucide-git-branch"
-            class="text-primary fs-2xl"
+            class="text-primary text-2xl"
           />
         </div>
         <div class="col-stack-xs">
-          <h1 class="fs-2xl font-bold text-foreground m-0">ProForm 动态联动与计算 (DAG)</h1>
-          <p class="text-muted fs-sm m-0">
+          <h1 class="text-2xl font-bold text-foreground m-0">ProForm 动态联动与计算 (DAG)</h1>
+          <p class="text-muted text-sm m-0">
             演示 DAG 引擎的联动模式：visibleIf 条件显隐、disabledIf 条件禁用、computed
             计算字段及跨字段校验。
           </p>
@@ -312,18 +312,18 @@ async function onSubmit(values: Record<string, unknown>): Promise<void> {
       <div class="row-start items-start gap-lg layout-full min-h-0">
         <div class="flex-1 min-w-0 h-full">
           <CScrollbar class="layout-full">
-            <div class="w-full p-padding-md md:p-padding-lg col-stack-xl pb-padding-xl">
-              <div class="panel-base">
-                <div class="row-y-center gap-sm border-b-default pb-padding-sm mb-padding-sm">
+            <div class="w-full p-md md:p-lg col-stack-xl pb-xl">
+              <div class="bg-card rounded-md shadow-soft py-md px-lg flex flex-col gap-lg">
+                <div class="row-y-center gap-sm border-b-default pb-sm mb-padding-sm">
                   <Icons
                     name="i-lucide-git-branch"
                     class="text-primary"
                   />
                   <div class="col-stack-xs">
-                    <span class="fs-md font-semibold text-foreground uppercase tracking-tight">
+                    <span class="text-md font-semibold text-foreground uppercase tracking-tight">
                       云服务器配置表单
                     </span>
-                    <span class="fs-xs text-muted-foreground">
+                    <span class="text-xs text-muted-foreground">
                       依赖图驱动：服务商区域显隐、开关禁用控制、资源自动计价、磁盘跨字段校验。
                     </span>
                   </div>
@@ -338,7 +338,7 @@ async function onSubmit(values: Record<string, unknown>): Promise<void> {
                 >
                   <template #footer="{ formState: slotFormState, submit }">
                     <div
-                      class="row-end gap-sm pt-padding-md border-t-default border-border/15 mt-padding-md"
+                      class="row-end gap-sm pt-md border-t-default border-border/15 mt-padding-md"
                     >
                       <Button
                         :label="targetFieldDisabled ? '启用目标字段' : '禁用目标字段'"
@@ -359,18 +359,20 @@ async function onSubmit(values: Record<string, unknown>): Promise<void> {
               </div>
 
               <!-- Mobile debug panel -->
-              <div class="panel-base xl:hidden">
+              <div
+                class="bg-card rounded-md shadow-soft py-md px-lg flex flex-col gap-lg xl:hidden"
+              >
                 <div class="row-y-center gap-sm mb-padding-sm">
                   <Icons
                     name="i-lucide-database"
                     class="text-primary"
                   />
-                  <span class="fs-sm font-semibold text-foreground uppercase">实时 Values</span>
+                  <span class="text-sm font-semibold text-foreground uppercase">实时 Values</span>
                 </div>
                 <div
-                  class="surface-sunken rounded-scale-md p-padding-md border-default border-border/40 text-muted-foreground"
+                  class="surface-sunken rounded-md p-md border-default border-border/40 text-muted-foreground"
                 >
-                  <pre class="m-0 whitespace-pre-wrap break-words fs-xs">{{ valuesJson }}</pre>
+                  <pre class="m-0 whitespace-pre-wrap break-words text-xs">{{ valuesJson }}</pre>
                 </div>
               </div>
             </div>
@@ -381,20 +383,18 @@ async function onSubmit(values: Record<string, unknown>): Promise<void> {
           class="hidden xl:block layout-sidepanel shrink-0 h-full border-l-default border-border/20"
         >
           <div class="layout-full layout-stack">
-            <div
-              class="shrink-0 px-padding-md py-padding-sm border-b-default border-border/20 row-y-center gap-sm"
-            >
+            <div class="shrink-0 px-md py-sm border-b-default border-border/20 row-y-center gap-sm">
               <Icons
                 name="i-lucide-braces"
                 size="sm"
                 class="text-accent"
               />
-              <span class="fs-xs font-bold text-muted uppercase tracking-widest">
+              <span class="text-xs font-bold text-muted uppercase tracking-widest">
                 Calculated Form State
               </span>
             </div>
-            <CScrollbar class="flex-1 min-h-0 surface-sunken px-padding-md py-padding-sm">
-              <pre class="m-0 fs-xs text-muted-foreground font-mono leading-relaxed">{{
+            <CScrollbar class="flex-1 min-h-0 surface-sunken px-md py-sm">
+              <pre class="m-0 text-xs text-muted-foreground font-mono leading-relaxed">{{
                 valuesJson
               }}</pre>
             </CScrollbar>

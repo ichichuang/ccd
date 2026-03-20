@@ -69,20 +69,20 @@ async function onSubmit(values: Record<string, unknown>): Promise<void> {
 <template>
   <div
     data-archetype="A1-toolbar-content"
-    class="layout-full px-padding-md md:px-padding-lg col-stack-sm min-h-0"
+    class="layout-full px-md md:px-lg col-stack-sm min-h-0"
   >
     <!-- Toolbar: Hero Header (Transparent Root Policy: Inherit canvas) -->
     <header class="shrink-0 border-b-default border-border/15">
-      <div class="w-full py-padding-sm row-y-center gap-md">
-        <div class="p-padding-md bg-primary/10 rounded-scale-lg shrink-0">
+      <div class="w-full py-sm row-y-center gap-md">
+        <div class="p-md bg-primary/10 rounded-lg shrink-0">
           <Icons
             name="i-lucide-puzzle"
-            class="text-primary fs-2xl"
+            class="text-primary text-2xl"
           />
         </div>
         <div class="col-stack-xs">
-          <h1 class="fs-2xl font-bold text-foreground m-0">ProForm 插件与底层 Hooks</h1>
-          <p class="text-muted fs-sm m-0">
+          <h1 class="text-2xl font-bold text-foreground m-0">ProForm 插件与底层 Hooks</h1>
+          <p class="text-muted text-sm m-0">
             演示无头插件系统 (ProFormPlugins.use) 与 useField()
             组合用法；自定义字段类型注册与双向绑定。
           </p>
@@ -92,12 +92,12 @@ async function onSubmit(values: Record<string, unknown>): Promise<void> {
 
     <!-- Scrollable content -->
     <CScrollbar class="flex-1 min-h-0">
-      <div class="layout-full min-h-0 pt-padding-md pb-padding-xl">
+      <div class="layout-full min-h-0 pt-md pb-xl">
         <div class="row-start items-start gap-lg layout-full min-h-0">
           <!-- Plugin Showcase (Left) -->
           <div class="flex-1 min-w-0 h-full col-stack-md">
-            <div class="panel-base">
-              <div class="row-y-center gap-sm border-b-default pb-padding-sm mb-padding-sm">
+            <div class="bg-card rounded-md shadow-soft py-md px-lg flex flex-col gap-lg">
+              <div class="row-y-center gap-sm border-b-default pb-sm mb-padding-sm">
                 <Icons
                   name="i-lucide-box"
                   class="text-primary"
@@ -119,7 +119,7 @@ async function onSubmit(values: Record<string, unknown>): Promise<void> {
                   </template>
                   <template #footer="{ submit, formState: slotFormState }">
                     <div
-                      class="row-end gap-sm pt-padding-md border-t-default border-border/15 mt-padding-md"
+                      class="row-end gap-sm pt-md border-t-default border-border/15 mt-padding-md"
                     >
                       <Button
                         label="提交数据"
@@ -137,20 +137,20 @@ async function onSubmit(values: Record<string, unknown>): Promise<void> {
           <!-- Right Column (JSON) -->
           <div class="layout-sidepanel shrink-0 h-full">
             <div class="sticky top-4">
-              <div class="panel-base">
+              <div class="bg-card rounded-md shadow-soft py-md px-lg flex flex-col gap-lg">
                 <div class="row-y-center gap-sm mb-padding-sm">
                   <Icons
                     name="i-lucide-database"
                     class="text-primary"
                   />
-                  <span class="fs-sm font-semibold text-foreground uppercase tracking-wider">
+                  <span class="text-sm font-semibold text-foreground uppercase tracking-wider">
                     实时表单数据 (JSON)
                   </span>
                 </div>
                 <div
-                  class="surface-sunken rounded-scale-md p-padding-md border-default border-border/40 text-muted-foreground"
+                  class="surface-sunken rounded-md p-md border-default border-border/40 text-muted-foreground"
                 >
-                  <pre class="m-0 whitespace-pre-wrap break-words fs-xs font-mono">{{
+                  <pre class="m-0 whitespace-pre-wrap break-words text-xs font-mono">{{
                     JSON.stringify(formState.values, null, 2)
                   }}</pre>
                 </div>

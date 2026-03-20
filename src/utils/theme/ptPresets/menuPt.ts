@@ -2,26 +2,26 @@
  * 菜单组件全局 PassThrough 配置
  *
  * 集中 tieredmenu / panelmenu 的共享 pt，减少各组件重复。
- * action/link 显式注入 transition-colors + duration-scale-md + ease-out-expo，
+ * action/link 显式注入 transition-colors + duration-md + ease-out-expo，
  * 与 wrapper/图标/文字同节奏过渡，覆盖 PrimeVue 默认 transition。
  */
 
 const MENU_ACTION_TRANSITION =
-  'p-0 bg-transparent hover:bg-transparent focus:bg-transparent active:bg-transparent border-none outline-none transition-colors! duration-scale-md! ease-out-expo!'
+  'p-0 bg-transparent hover:bg-transparent focus:bg-transparent active:bg-transparent border-none outline-none transition-colors! duration-md! ease-out-expo!'
 
 export const menuPt = {
   tieredmenu: {
     root: {
-      class: 'component-border rounded-scale-md shadow-float outline-none',
+      class: 'shadow-soft rounded-md shadow-float outline-none',
     },
     menu: {
-      class: 'bg-card py-padding-xs rounded-scale-md outline-none',
+      class: 'bg-card py-xs rounded-md outline-none',
     },
     menuitem: {
-      class: 'rounded-scale-sm outline-none',
+      class: 'rounded-sm outline-none',
     },
     content: {
-      class: 'rounded-scale-md outline-none',
+      class: 'rounded-md outline-none',
     },
     action: {
       class: MENU_ACTION_TRANSITION,

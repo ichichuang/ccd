@@ -63,17 +63,17 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="layout-full px-padding-md md:px-padding-lg col-stack-sm min-h-0">
-    <div class="row-between gap-scale-md">
+  <div class="layout-full px-md md:px-lg col-stack-sm min-h-0">
+    <div class="row-between gap-md">
       <div class="col-stack-xs">
-        <div class="fs-lg font-semibold">百万级虚拟网格引擎</div>
-        <div class="text-muted fs-sm">
+        <div class="text-lg font-semibold">百万级虚拟网格引擎</div>
+        <div class="text-muted text-sm">
           纯前端内存生成 100,000 行数据，用于验证 `&lt;ProTable :virtual-scroll="true"&gt;`
           的零卡顿渲染能力
         </div>
       </div>
 
-      <div class="row-y-center gap-scale-sm">
+      <div class="row-y-center gap-sm">
         <Badge value="Total Rows: 100,000" />
         <Badge
           v-if="isGenerating"

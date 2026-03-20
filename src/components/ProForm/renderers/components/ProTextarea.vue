@@ -32,7 +32,7 @@ const handleUpdate = (value: string | null | undefined): void => {
 <template>
   <span
     v-if="props.readonly"
-    class="block py-padding-xs text-foreground leading-normal break-words whitespace-pre-wrap"
+    class="block py-xs text-foreground leading-normal break-words whitespace-pre-wrap"
   >
     {{ displayValue }}
   </span>

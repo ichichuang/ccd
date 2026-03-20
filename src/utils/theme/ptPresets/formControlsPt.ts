@@ -11,9 +11,9 @@
  */
 
 const PREMIUM_INPUT_ROOT =
-  '!border-0 !shadow-none bg-muted/30 hover:bg-muted/40 behavior-hover-transition rounded-scale-md interactive-focus-ring'
+  '!border-0 !shadow-none bg-muted/30 hover:bg-muted/40 behavior-hover-transition rounded-md interactive-focus-ring'
 
-const PREMIUM_OVERLAY = 'surface-elevated rounded-scale-md'
+const PREMIUM_OVERLAY = 'surface-elevated rounded-md'
 
 export const formControlsPt = {
   inputtext: {
@@ -62,7 +62,7 @@ export const formControlsPt = {
       return {
         class: [
           '!border-0 !ring-0',
-          'transition-all duration-scale-sm',
+          'transition-all duration-sm',
           active
             ? 'bg-primary text-primary-foreground'
             : 'bg-muted/40 dark:bg-muted/20 hover:bg-muted/60 dark:hover:bg-muted/40',

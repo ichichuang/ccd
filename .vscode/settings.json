@@ -7,7 +7,7 @@
     "vite.config.ts": "vite.config.*.ts,vitest.config.ts,index.html",
     "tsconfig.json": "tsconfig.*.json",
     "eslint.config.ts": ".eslintignore,eslint.config.js,eslint.config.mjs,.eslintrc-auto-import.json",
-    "uno.config.ts": "uno.config.*.ts",
+    "uno.config.ts": "uno.config.*.ts,uno.theme.ts,uno.shortcuts.ts",
     ".env": ".env.*"
   },
 

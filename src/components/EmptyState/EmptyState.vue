@@ -23,7 +23,7 @@ const props = withDefaults(
 </script>
 
 <template>
-  <div class="column-center gap-md py-padding-2xl px-padding-lg text-center">
+  <div class="column-center gap-md py-2xl px-lg text-center">
     <!-- Watermark icon -->
     <Icons
       :name="props.icon"
@@ -31,13 +31,13 @@ const props = withDefaults(
       class="text-muted-foreground opacity-25"
     />
     <!-- Primary title -->
-    <p class="fs-md font-semibold text-foreground m-0">
+    <p class="text-md font-semibold text-foreground m-0">
       {{ props.title }}
     </p>
     <!-- Secondary description -->
     <p
       v-if="props.description"
-      class="fs-sm text-muted-foreground m-0 max-w-[60ch]"
+      class="text-sm text-muted-foreground m-0 max-w-[60ch]"
     >
       {{ props.description }}
     </p>
@@ -46,7 +46,7 @@ const props = withDefaults(
       v-if="props.actionLabel && props.actionTo"
       :label="props.actionLabel"
       severity="secondary"
-      class="mt-margin-md"
+      class="mt-md"
       @click="router.push(props.actionTo)"
     />
   </div>

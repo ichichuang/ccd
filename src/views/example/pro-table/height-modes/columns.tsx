@@ -15,7 +15,7 @@ const STATUS_CFG: Record<HeightModeRow['status'], { label: string; cls: string }
   pending: { label: '待处理', cls: 'bg-warn/15 text-warn' },
 }
 
-const BADGE = 'rounded-scale-sm px-padding-sm py-padding-xs fs-xs font-semibold'
+const BADGE = 'rounded-sm px-sm py-xs text-xs font-semibold'
 
 export const heightModeColumns: ProTableColumn<HeightModeRow>[] = [
   {
@@ -34,9 +34,11 @@ export const heightModeColumns: ProTableColumn<HeightModeRow>[] = [
       <div class="row-y-center gap-sm">
         <Icons
           name="i-lucide-activity"
-          class="text-primary fs-sm"
+          class="text-primary text-sm"
         />
-        <span class="fs-sm font-medium text-foreground text-single-line-ellipsis">{row.title}</span>
+        <span class="text-sm font-medium text-foreground text-single-line-ellipsis">
+          {row.title}
+        </span>
       </div>
     ),
   },

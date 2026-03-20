@@ -45,21 +45,21 @@ const tables: { mode: HeightMode; label: string; desc: string; icon: string }[] 
 <template>
   <div
     data-archetype="A1-toolbar-content"
-    class="layout-full px-padding-md md:px-padding-lg col-stack-sm min-h-0"
+    class="layout-full px-md md:px-lg col-stack-sm min-h-0"
   >
     <!-- Toolbar: Hero Header (Inherit canvas color) -->
     <header class="shrink-0 border-b-default">
-      <div class="w-full py-padding-sm row-between gap-md flex-wrap">
+      <div class="w-full py-sm row-between gap-md flex-wrap">
         <div class="row-y-center gap-md">
-          <div class="p-padding-md bg-primary/10 rounded-scale-lg shrink-0">
+          <div class="p-md bg-primary/10 rounded-lg shrink-0">
             <Icons
               name="i-lucide-proportions"
-              class="text-primary fs-2xl"
+              class="text-primary text-2xl"
             />
           </div>
           <div class="col-stack-xs">
-            <h1 class="fs-2xl font-bold text-foreground m-0">ProTable — 高度模式</h1>
-            <p class="text-muted fs-sm m-0">
+            <h1 class="text-2xl font-bold text-foreground m-0">ProTable — 高度模式</h1>
+            <p class="text-muted text-sm m-0">
               对比演示 fill / auto / fixed 三种高度策略的表现差异。
             </p>
           </div>
@@ -68,7 +68,7 @@ const tables: { mode: HeightMode; label: string; desc: string; icon: string }[] 
         <!-- Control Area -->
         <div class="row-y-center gap-md flex-wrap shrink-0">
           <div class="row-y-center gap-xs">
-            <span class="fs-sm text-muted">固定高度值:</span>
+            <span class="text-sm text-muted">固定高度值:</span>
             <Select
               v-model="fixedHeight"
               :options="HEIGHT_OPTIONS"
@@ -80,7 +80,7 @@ const tables: { mode: HeightMode; label: string; desc: string; icon: string }[] 
           <div class="row-y-center gap-xs">
             <label
               for="ctrl-show-all"
-              class="fs-sm text-muted cursor-pointer"
+              class="text-sm text-muted cursor-pointer"
             >
               同时显示三种
             </label>
@@ -96,22 +96,22 @@ const tables: { mode: HeightMode; label: string; desc: string; icon: string }[] 
 
     <!-- Content -->
     <CScrollbar class="flex-1 min-h-0">
-      <div class="w-full col-stack-sm py-padding-sm">
+      <div class="w-full col-stack-sm py-sm">
         <template v-if="showAllThree">
           <div
             v-for="table in tables"
             :key="table.mode"
-            class="panel-base col-stack-sm"
+            class="bg-card rounded-md shadow-soft py-md px-lg flex flex-col gap-lg col-stack-sm"
           >
-            <div class="row-y-center gap-sm border-b-default pb-padding-sm mb-padding-sm">
+            <div class="row-y-center gap-sm border-b-default pb-sm mb-padding-sm">
               <Icons
                 :name="table.icon"
                 class="text-primary"
                 size="sm"
               />
               <div class="col-stack-xs">
-                <span class="fs-md font-semibold text-foreground">{{ table.label }}</span>
-                <span class="fs-xs text-muted">{{ table.desc }}</span>
+                <span class="text-md font-semibold text-foreground">{{ table.label }}</span>
+                <span class="text-xs text-muted">{{ table.desc }}</span>
               </div>
             </div>
             <div class="flex-1 min-h-0">
@@ -129,14 +129,14 @@ const tables: { mode: HeightMode; label: string; desc: string; icon: string }[] 
         </template>
 
         <template v-else>
-          <div class="panel-base col-stack-sm">
-            <div class="row-y-center gap-sm border-b-default pb-padding-sm mb-padding-sm">
+          <div class="bg-card rounded-md shadow-soft py-md px-lg flex flex-col gap-lg col-stack-sm">
+            <div class="row-y-center gap-sm border-b-default pb-sm mb-padding-sm">
               <Icons
                 name="i-lucide-proportions"
                 class="text-primary"
                 size="sm"
               />
-              <span class="fs-md font-semibold text-foreground">单独展示 — fill 模式</span>
+              <span class="text-md font-semibold text-foreground">单独展示 — fill 模式</span>
             </div>
             <div class="flex-1 min-h-0">
               <ProTable

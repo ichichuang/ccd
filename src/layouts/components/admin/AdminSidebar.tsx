@@ -54,7 +54,7 @@ export default defineComponent({
         >
           <AdminSidebarLogo />
           <div class="col-fill">
-            <CScrollbar class="col-fill px-padding-sm">
+            <CScrollbar class="col-fill px-sm">
               <AdminSidebarMenu sidebarCollapse={props.sidebarCollapse} />
             </CScrollbar>
           </div>

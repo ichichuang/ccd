@@ -267,13 +267,14 @@ const semanticColors = [
 // Menu shortcuts：与 uno.config.ts 菜单交互语义保持一致
 const menuShortcuts = [
   {
-    name: 'menu-item-base',
-    classes: 'menu-item-base border border-dashed border-border',
+    name: 'flex items-center gap-sm cursor-pointer select-none transition-all duration-md ease-in-out border-none bg-transparent',
+    classes:
+      'flex items-center gap-sm cursor-pointer select-none transition-all duration-md ease-in-out border-none bg-transparent border border-dashed border-border',
     desc: '菜单项基础样式（gap-sm + cursor-pointer + transition-all）',
   },
   {
-    name: 'menu-item-hover',
-    classes: 'menu-item-hover',
+    name: 'bg-primary/12! dark:bg-primary/30! text-primary!',
+    classes: 'bg-primary/12! dark:bg-primary/30! text-primary!',
     desc: '菜单项悬停态（bg-primary/12 + text-primary，暗色模式 text-primary-foreground）',
   },
   {
@@ -291,40 +292,36 @@ const menuShortcuts = [
   >
     <!-- Toolbar: Header (Transparent Root · Nested Canvas) -->
     <div class="shrink-0 border-b-default border-primary/50 bg-primary/5">
-      <div class="layout-content-wide col-stack-sm py-padding-sm">
+      <div
+        class="py-sm md:py-md xl:py-lg 2xl:py-xl mx-auto max-w-[92%] sm:max-w-[94%] md:max-w-[92%] lg:max-w-[90%] xl:max-w-[88%] 2xl:max-w-[86%] 3xl:max-w-[84%] col-stack-sm py-sm"
+      >
         <div class="row-y-center gap-md">
-          <div class="p-padding-md bg-primary/10 rounded-scale-lg shrink-0">
+          <div class="p-md bg-primary/10 rounded-lg shrink-0">
             <Icons
               name="i-lucide-palette"
-              class="text-primary fs-2xl"
+              class="text-primary text-2xl"
             />
           </div>
           <div class="col-stack-xs">
-            <h1 class="fs-2xl font-bold text-foreground">Theme System 主题系统</h1>
-            <p class="text-muted-foreground fs-sm">
+            <h1 class="text-2xl font-bold text-foreground">Theme System 主题系统</h1>
+            <p class="text-muted-foreground text-sm">
               包含：颜色 token + Store 模式/预设 · 亮/暗/自动 + THEME_PRESETS ·
               点击任意类名或变量即可复制
             </p>
           </div>
         </div>
-        <div
-          class="surface-item p-padding-md rounded-scale-md row-start gap-md component-border mt-margin-sm"
-        >
+        <div class="surface-item p-md rounded-md row-start gap-md shadow-soft mt-sm">
           <Icons
             name="i-lucide-info"
-            class="text-primary fs-xl shrink-0 mt-margin-xs"
+            class="text-primary text-xl shrink-0 mt-xs"
           />
           <div class="col-stack-xs">
-            <div class="font-semibold text-primary fs-sm">Architectural Guide 架构引导</div>
-            <div class="text-muted-foreground fs-xs leading-relaxed">
+            <div class="font-semibold text-primary text-sm">Architectural Guide 架构引导</div>
+            <div class="text-muted-foreground text-xs leading-relaxed">
               配色方案由
-              <span class="bg-muted px-padding-xs rounded-scale-xs font-mono">
-                src/constants/theme/
-              </span>
+              <span class="bg-muted px-xs rounded-xs font-mono">src/constants/theme/</span>
               与
-              <span class="bg-muted px-padding-xs rounded-scale-xs font-mono">
-                src/utils/theme/metadata.ts
-              </span>
+              <span class="bg-muted px-xs rounded-xs font-mono">src/utils/theme/metadata.ts</span>
               定义。如需修改全局色盘，请编辑相应常量。
             </div>
           </div>
@@ -334,11 +331,15 @@ const menuShortcuts = [
 
     <!-- Scrollable content -->
     <CScrollbar class="flex-1 min-h-0">
-      <div class="layout-content-wide col-stack-xl">
+      <div
+        class="py-sm md:py-md xl:py-lg 2xl:py-xl mx-auto max-w-[92%] sm:max-w-[94%] md:max-w-[92%] lg:max-w-[90%] xl:max-w-[88%] 2xl:max-w-[86%] 3xl:max-w-[84%] col-stack-xl"
+      >
         <!-- Theme Store 主题 Store -->
-        <Card class="panel-base bg-primary/10 dark:bg-primary/5">
+        <Card
+          class="bg-card rounded-md shadow-soft py-md px-lg flex flex-col gap-lg bg-primary/10 dark:bg-primary/5"
+        >
           <template #title>
-            <div class="row-y-center gap-sm border-b-default pb-padding-sm mb-padding-sm">
+            <div class="row-y-center gap-sm border-b-default pb-sm mb-padding-sm">
               <Icons
                 name="i-lucide-settings-2"
                 class="text-primary"
@@ -353,7 +354,7 @@ const menuShortcuts = [
           <template #content>
             <div class="col-stack-lg">
               <div class="col-stack-sm">
-                <span class="text-muted-foreground fs-sm">模式 (Theme Mode)</span>
+                <span class="text-muted-foreground text-sm">模式 (Theme Mode)</span>
                 <SelectButton
                   :model-value="mode"
                   :options="themeModeOptions"
@@ -362,17 +363,19 @@ const menuShortcuts = [
                   :disabled="!!isAnimating"
                   @update:model-value="(v: ThemeMode) => setThemeWithAnimation(v)"
                 />
-                <p class="text-muted-foreground fs-xs">
+                <p class="text-muted-foreground text-xs">
                   useThemeSwitch：setThemeWithAnimation(mode) · 切换时带动画
                 </p>
               </div>
               <div class="col-stack-sm">
-                <span class="text-muted-foreground fs-sm">切换动画时长 (Transition Duration)</span>
+                <span class="text-muted-foreground text-sm">
+                  切换动画时长 (Transition Duration)
+                </span>
                 <div class="layout-wrap gap-sm">
                   <div
                     v-for="opt in transitionOptions"
                     :key="opt.value"
-                    class="p-padding-sm py-padding-xs rounded-scale-md cursor-pointer select-none transition-all duration-scale-lg ease-in-out fs-sm active:scale-95"
+                    class="p-sm py-xs rounded-md cursor-pointer select-none transition-all duration-lg ease-in-out text-sm active:scale-95"
                     :class="[
                       themeStore.transitionDuration === opt.value
                         ? 'bg-primary text-primary-foreground shadow-soft'
@@ -389,9 +392,11 @@ const menuShortcuts = [
         </Card>
 
         <!-- Device Store 当前设备/断点 -->
-        <Card class="panel-base bg-accent/10 dark:bg-accent/5">
+        <Card
+          class="bg-card rounded-md shadow-soft py-md px-lg flex flex-col gap-lg bg-accent/10 dark:bg-accent/5"
+        >
           <template #title>
-            <div class="row-y-center gap-sm border-b-default pb-padding-sm mb-padding-sm">
+            <div class="row-y-center gap-sm border-b-default pb-sm mb-padding-sm">
               <Icons
                 name="i-lucide-smartphone"
                 class="text-primary"
@@ -406,42 +411,42 @@ const menuShortcuts = [
           <template #content>
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-md">
               <div
-                class="col-stack-xs p-padding-md surface-item rounded-scale-lg interactive-hover-tile behavior-hover-transition"
+                class="col-stack-xs p-md surface-item rounded-lg shadow-soft transition-all duration-xl ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)] behavior-hover-transition"
               >
-                <span class="text-muted-foreground fs-xs">type</span>
+                <span class="text-muted-foreground text-xs">type</span>
                 <Tag
                   :value="deviceStore.type"
                   severity="info"
                 />
               </div>
               <div
-                class="col-stack-xs p-padding-md surface-item rounded-scale-lg interactive-hover-tile behavior-hover-transition"
+                class="col-stack-xs p-md surface-item rounded-lg shadow-soft transition-all duration-xl ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)] behavior-hover-transition"
               >
-                <span class="text-muted-foreground fs-xs">currentBreakpoint</span>
+                <span class="text-muted-foreground text-xs">currentBreakpoint</span>
                 <Tag
                   :value="deviceStore.currentBreakpoint"
                   severity="success"
                 />
               </div>
               <div
-                class="col-stack-xs p-padding-md surface-item rounded-scale-lg interactive-hover-tile behavior-hover-transition"
+                class="col-stack-xs p-md surface-item rounded-lg shadow-soft transition-all duration-xl ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)] behavior-hover-transition"
               >
-                <span class="text-muted-foreground fs-xs">isMobileLayout</span>
+                <span class="text-muted-foreground text-xs">isMobileLayout</span>
                 <Tag
                   :value="String(deviceStore.isMobileLayout)"
                   :severity="deviceStore.isMobileLayout ? 'warn' : 'secondary'"
                 />
               </div>
               <div
-                class="col-stack-xs p-padding-md surface-item rounded-scale-lg interactive-hover-tile behavior-hover-transition"
+                class="col-stack-xs p-md surface-item rounded-lg shadow-soft transition-all duration-xl ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)] behavior-hover-transition"
               >
-                <span class="text-muted-foreground fs-xs">width × height</span>
-                <span class="font-mono fs-sm">
+                <span class="text-muted-foreground text-xs">width × height</span>
+                <span class="font-mono text-sm">
                   {{ deviceStore.width }} × {{ deviceStore.height }}
                 </span>
               </div>
             </div>
-            <p class="mt-margin-md text-muted-foreground fs-xs">
+            <p class="mt-md text-muted-foreground text-xs">
               布局判定应使用 useDeviceStore 的 getters，详见
               <RouterLink
                 to="/system-configuration/layout"
@@ -455,7 +460,9 @@ const menuShortcuts = [
         </Card>
 
         <!-- THEME_PRESETS 预设展示 -->
-        <Card class="panel-base bg-primary/10 dark:bg-primary/5">
+        <Card
+          class="bg-card rounded-md shadow-soft py-md px-lg flex flex-col gap-lg bg-primary/10 dark:bg-primary/5"
+        >
           <template #title>
             <div class="row-y-center gap-sm">
               <Icons
@@ -471,12 +478,10 @@ const menuShortcuts = [
           </template>
           <template #content>
             <div class="col-stack-md">
-              <div class="border-b-default pb-padding-sm mb-padding-sm">
-                <p class="text-muted-foreground fs-sm">
+              <div class="border-b-default pb-sm mb-padding-sm">
+                <p class="text-muted-foreground text-sm">
                   来自
-                  <span class="bg-muted px-padding-xs rounded-scale-xs">
-                    src/constants/theme.ts
-                  </span>
+                  <span class="bg-muted px-xs rounded-xs">src/constants/theme.ts</span>
                   · 点击色块切换 preset，themeStore.setTheme 实时生效
                 </p>
               </div>
@@ -484,7 +489,7 @@ const menuShortcuts = [
                 <div
                   v-for="item in presetSwatchColors"
                   :key="item.name"
-                  class="relative column items-center gap-xs p-padding-md rounded-scale-lg shadow-soft interactive-hover-tile cursor-pointer group active:scale-95"
+                  class="relative column items-center gap-xs p-md rounded-lg shadow-soft shadow-soft transition-all duration-xl ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)] cursor-pointer group active:scale-95"
                   :class="
                     themeStore.themeName === item.name
                       ? 'bg-primary/10 -translate-y-0.5'
@@ -505,11 +510,11 @@ const menuShortcuts = [
                   </div>
 
                   <div
-                    class="w-[var(--spacing-3xl)] h-[var(--spacing-3xl)] rounded-scale-lg shrink-0 transition-fluid group-hover:scale-110"
+                    class="w-[var(--spacing-3xl)] h-[var(--spacing-3xl)] rounded-lg shrink-0 transition-[transform,opacity] duration-md ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-110"
                     :style="{ background: item.color }"
                   />
                   <span
-                    class="font-mono fs-xs transition-colors"
+                    class="font-mono text-xs transition-colors"
                     :class="
                       themeStore.themeName === item.name
                         ? 'text-primary font-bold'
@@ -525,7 +530,7 @@ const menuShortcuts = [
         </Card>
 
         <!-- Single Token Colors -->
-        <Card class="panel-base">
+        <Card class="bg-card rounded-md shadow-soft py-md px-lg flex flex-col gap-lg">
           <template #title>
             <div class="row-y-center gap-sm">
               <Icons
@@ -541,18 +546,18 @@ const menuShortcuts = [
           </template>
           <template #content>
             <div class="col-stack-md">
-              <div class="border-b-default pb-padding-sm mb-padding-sm">
-                <p class="text-muted-foreground fs-sm">基础颜色变量，直接对应单个 CSS 变量</p>
+              <div class="border-b-default pb-sm mb-padding-sm">
+                <p class="text-muted-foreground text-sm">基础颜色变量，直接对应单个 CSS 变量</p>
               </div>
               <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-md">
                 <div
                   v-for="item in singleTokens"
                   :key="item.token"
-                  class="col-stack-sm p-padding-md surface-item rounded-scale-lg interactive-hover-tile"
+                  class="col-stack-sm p-md surface-item rounded-lg shadow-soft transition-all duration-xl ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)]"
                 >
                   <div class="row-y-center gap-sm">
                     <div
-                      class="w-[var(--spacing-xl)] h-[var(--spacing-xl)] rounded-scale-sm component-border"
+                      class="w-[var(--spacing-xl)] h-[var(--spacing-xl)] rounded-sm shadow-soft"
                       :class="item.bgClass"
                     />
                     <span class="font-semibold text-foreground">
@@ -561,20 +566,20 @@ const menuShortcuts = [
                   </div>
                   <div class="layout-wrap gap-xs">
                     <div
-                      class="interactive-tag"
+                      class="text-xs font-mono bg-muted/30 px-xs py-xs rounded-xs cursor-pointer select-none transition-all duration-lg ease-in-out hover:bg-primary/20 hover:text-primary active:scale-95 text-muted-foreground"
                       @click="copyToClipboard(`var(${item.cssVar})`, item.cssVar)"
                     >
                       {{ item.cssVar }}
                     </div>
                     <div
-                      class="interactive-tag hover:bg-success/20 hover:text-success"
+                      class="text-xs font-mono bg-muted/30 px-xs py-xs rounded-xs cursor-pointer select-none transition-all duration-lg ease-in-out hover:bg-primary/20 hover:text-primary active:scale-95 text-muted-foreground hover:bg-success/20 hover:text-success"
                       @click="copyToClipboard(item.bgClass)"
                     >
                       {{ item.bgClass }}
                     </div>
                     <div
                       v-if="item.borderClass"
-                      class="interactive-tag hover:bg-warn/20 hover:text-warn"
+                      class="text-xs font-mono bg-muted/30 px-xs py-xs rounded-xs cursor-pointer select-none transition-all duration-lg ease-in-out hover:bg-primary/20 hover:text-primary active:scale-95 text-muted-foreground hover:bg-warn/20 hover:text-warn"
                       @click="copyToClipboard(item.borderClass!)"
                     >
                       {{ item.borderClass }}
@@ -587,7 +592,7 @@ const menuShortcuts = [
         </Card>
 
         <!-- Pair Family Colors -->
-        <Card class="panel-base">
+        <Card class="bg-card rounded-md shadow-soft py-md px-lg flex flex-col gap-lg">
           <template #title>
             <div class="row-y-center gap-sm">
               <Icons
@@ -603,20 +608,20 @@ const menuShortcuts = [
           </template>
           <template #content>
             <div class="col-stack-md">
-              <div class="border-b-default pb-padding-sm mb-padding-sm">
-                <p class="text-muted-foreground fs-sm">包含 DEFAULT 和 foreground 两个变体</p>
+              <div class="border-b-default pb-sm mb-padding-sm">
+                <p class="text-muted-foreground text-sm">包含 DEFAULT 和 foreground 两个变体</p>
               </div>
               <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-lg">
                 <div
                   v-for="family in pairFamilies"
                   :key="family.family"
-                  class="col-stack-md p-padding-lg surface-item rounded-scale-lg interactive-hover-tile"
+                  class="col-stack-md p-lg surface-item rounded-lg shadow-soft transition-all duration-xl ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)]"
                 >
                   <h4
-                    class="fs-sm font-semibold text-foreground capitalize row-y-center gap-sm mb-margin-xs"
+                    class="text-sm font-semibold text-foreground capitalize row-y-center gap-sm mb-xs"
                   >
                     <div
-                      class="w-[var(--spacing-md)] h-[var(--spacing-md)] rounded-full component-border"
+                      class="w-[var(--spacing-md)] h-[var(--spacing-md)] rounded-full shadow-soft"
                       :class="`bg-${family.family}`"
                     />
                     {{ family.family }}
@@ -631,26 +636,26 @@ const menuShortcuts = [
                         <Tag
                           :value="variant.name"
                           severity="info"
-                          class="fs-xs"
+                          class="text-xs"
                         />
                       </div>
                       <div class="layout-wrap gap-xs">
                         <div
-                          class="interactive-tag"
+                          class="text-xs font-mono bg-muted/30 px-xs py-xs rounded-xs cursor-pointer select-none transition-all duration-lg ease-in-out hover:bg-primary/20 hover:text-primary active:scale-95 text-muted-foreground"
                           @click="copyToClipboard(`var(${variant.cssVar})`, variant.cssVar)"
                         >
                           {{ variant.cssVar }}
                         </div>
                         <div
                           v-if="variant.bgClass"
-                          class="interactive-tag hover:bg-success/20 hover:text-success"
+                          class="text-xs font-mono bg-muted/30 px-xs py-xs rounded-xs cursor-pointer select-none transition-all duration-lg ease-in-out hover:bg-primary/20 hover:text-primary active:scale-95 text-muted-foreground hover:bg-success/20 hover:text-success"
                           @click="copyToClipboard(variant.bgClass!)"
                         >
                           {{ variant.bgClass }}
                         </div>
                         <div
                           v-if="variant.textClass"
-                          class="interactive-tag hover:bg-warn/20 hover:text-warn"
+                          class="text-xs font-mono bg-muted/30 px-xs py-xs rounded-xs cursor-pointer select-none transition-all duration-lg ease-in-out hover:bg-primary/20 hover:text-primary active:scale-95 text-muted-foreground hover:bg-warn/20 hover:text-warn"
                           @click="copyToClipboard(variant.textClass!)"
                         >
                           {{ variant.textClass }}
@@ -660,7 +665,7 @@ const menuShortcuts = [
                   </div>
                   <!-- Preview -->
                   <div
-                    :class="`bg-${family.family} text-${family.family}-foreground p-padding-md rounded-scale-md text-center`"
+                    :class="`bg-${family.family} text-${family.family}-foreground p-md rounded-md text-center`"
                   >
                     预览文本
                   </div>
@@ -671,7 +676,7 @@ const menuShortcuts = [
         </Card>
 
         <!-- Quad Family Colors -->
-        <Card class="panel-base">
+        <Card class="bg-card rounded-md shadow-soft py-md px-lg flex flex-col gap-lg">
           <template #title>
             <div class="row-y-center gap-sm">
               <Icons
@@ -687,28 +692,26 @@ const menuShortcuts = [
           </template>
           <template #content>
             <div class="col-stack-md">
-              <div class="border-b-default pb-padding-sm mb-padding-sm">
-                <p class="text-muted-foreground fs-sm">
+              <div class="border-b-default pb-sm mb-padding-sm">
+                <p class="text-muted-foreground text-sm">
                   包含 DEFAULT, foreground, hover, hover-foreground, light, light-foreground
                   六个变体。
                   <span class="text-foreground">*-light</span>
                   用于 PrimeVue Button text/outlined 变体 hover 背景，详见
-                  <span class="bg-muted px-padding-xs rounded-scale-xs fs-xs">
-                    docs/PRIMEVUE_THEME.md
-                  </span>
+                  <span class="bg-muted px-xs rounded-xs text-xs">docs/PRIMEVUE_THEME.md</span>
                 </p>
               </div>
               <div class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-lg">
                 <div
                   v-for="family in quadFamilies"
                   :key="family.family"
-                  class="col-stack-md p-padding-lg surface-item rounded-scale-lg interactive-hover-tile"
+                  class="col-stack-md p-lg surface-item rounded-lg shadow-soft transition-all duration-xl ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)]"
                 >
                   <h4
-                    class="fs-sm font-semibold text-foreground capitalize row-y-center gap-sm mb-margin-xs"
+                    class="text-sm font-semibold text-foreground capitalize row-y-center gap-sm mb-xs"
                   >
                     <div
-                      class="w-[var(--spacing-md)] h-[var(--spacing-md)] rounded-full component-border"
+                      class="w-[var(--spacing-md)] h-[var(--spacing-md)] rounded-full shadow-soft"
                       :class="`bg-${family.family}`"
                     />
                     {{ family.family }}
@@ -717,7 +720,7 @@ const menuShortcuts = [
                   <!-- Color Swatch Row -->
                   <div class="flex gap-xs">
                     <div
-                      :class="`bg-${family.family} flex-1 h-[var(--spacing-xl)] rounded-l-scale-lg cursor-pointer hover:scale-105 transition-transform`"
+                      :class="`bg-${family.family} flex-1 h-[var(--spacing-xl)] rounded-l-lg cursor-pointer hover:scale-105 transition-transform`"
                       :title="`bg-${family.family}`"
                       @click="copyToClipboard(`bg-${family.family}`)"
                     />
@@ -727,7 +730,7 @@ const menuShortcuts = [
                       @click="copyToClipboard(`bg-${family.family}-hover`)"
                     />
                     <div
-                      :class="`bg-${family.family}-light flex-1 h-[var(--spacing-xl)] rounded-r-scale-lg cursor-pointer hover:scale-105 transition-transform`"
+                      :class="`bg-${family.family}-light flex-1 h-[var(--spacing-xl)] rounded-r-lg cursor-pointer hover:scale-105 transition-transform`"
                       :title="`bg-${family.family}-light`"
                       @click="copyToClipboard(`bg-${family.family}-light`)"
                     />
@@ -739,29 +742,29 @@ const menuShortcuts = [
                       <div
                         v-for="variant in family.variants"
                         :key="variant.name"
-                        class="layout-wrap items-center gap-xs p-padding-xs rounded-scale-sm hover:bg-muted/30 transition-colors duration-scale-lg"
+                        class="layout-wrap items-center gap-xs p-xs rounded-sm hover:bg-muted/30 transition-colors duration-lg"
                       >
                         <Tag
                           :value="variant.name"
                           severity="info"
-                          class="fs-xs shrink-0"
+                          class="text-xs shrink-0"
                         />
                         <div
-                          class="interactive-tag"
+                          class="text-xs font-mono bg-muted/30 px-xs py-xs rounded-xs cursor-pointer select-none transition-all duration-lg ease-in-out hover:bg-primary/20 hover:text-primary active:scale-95 text-muted-foreground"
                           @click="copyToClipboard(`var(${variant.cssVar})`, variant.cssVar)"
                         >
                           {{ variant.cssVar }}
                         </div>
                         <div
                           v-if="variant.bgClass"
-                          class="interactive-tag hover:bg-success/20 hover:text-success"
+                          class="text-xs font-mono bg-muted/30 px-xs py-xs rounded-xs cursor-pointer select-none transition-all duration-lg ease-in-out hover:bg-primary/20 hover:text-primary active:scale-95 text-muted-foreground hover:bg-success/20 hover:text-success"
                           @click="copyToClipboard(variant.bgClass!)"
                         >
                           {{ variant.bgClass }}
                         </div>
                         <div
                           v-if="variant.borderClass"
-                          class="interactive-tag hover:bg-warn/20 hover:text-warn"
+                          class="text-xs font-mono bg-muted/30 px-xs py-xs rounded-xs cursor-pointer select-none transition-all duration-lg ease-in-out hover:bg-primary/20 hover:text-primary active:scale-95 text-muted-foreground hover:bg-warn/20 hover:text-warn"
                           @click="copyToClipboard(variant.borderClass!)"
                         >
                           {{ variant.borderClass }}
@@ -773,17 +776,17 @@ const menuShortcuts = [
                   <!-- Preview Cards -->
                   <div class="grid grid-cols-3 gap-sm">
                     <div
-                      :class="`bg-${family.family} text-${family.family}-foreground p-padding-sm rounded-scale-sm text-center fs-xs`"
+                      :class="`bg-${family.family} text-${family.family}-foreground p-sm rounded-sm text-center text-xs`"
                     >
                       默认
                     </div>
                     <div
-                      :class="`bg-${family.family}-hover text-${family.family}-hover-foreground p-padding-sm rounded-scale-sm text-center fs-xs`"
+                      :class="`bg-${family.family}-hover text-${family.family}-hover-foreground p-sm rounded-sm text-center text-xs`"
                     >
                       悬停
                     </div>
                     <div
-                      :class="`bg-${family.family}-light text-${family.family}-light-foreground p-padding-sm rounded-scale-sm text-center fs-xs`"
+                      :class="`bg-${family.family}-light text-${family.family}-light-foreground p-sm rounded-sm text-center text-xs`"
                     >
                       浅色
                     </div>
@@ -795,7 +798,7 @@ const menuShortcuts = [
         </Card>
 
         <!-- Color Usage Contract 颜色使用约定 -->
-        <Card class="panel-base">
+        <Card class="bg-card rounded-md shadow-soft py-md px-lg flex flex-col gap-lg">
           <template #title>
             <div class="row-y-center gap-sm">
               <Icons
@@ -811,57 +814,47 @@ const menuShortcuts = [
           </template>
           <template #content>
             <div class="col-stack-md">
-              <p class="text-muted-foreground fs-sm">
+              <p class="text-muted-foreground text-sm">
                 所有 hover / focus / 选中 / 强调色使用必须遵守
-                <span class="bg-muted px-padding-xs rounded-scale-xs font-mono">
+                <span class="bg-muted px-xs rounded-xs font-mono">
                   src/constants/theme/colorUsage.ts
                 </span>
                 约定，禁止在业务中自行选择 primary / accent / ring 语义。
               </p>
-              <div class="grid grid-cols-1 md:grid-cols-2 gap-md fs-xs text-muted-foreground">
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-md text-xs text-muted-foreground">
                 <div class="col-stack-xs">
                   <div class="font-semibold text-foreground">交互反馈 (Hover / Active)</div>
                   <div class="row-y-center gap-xs">
-                    <span class="bg-muted px-padding-xs rounded-scale-xs font-mono">
-                      bg-primary-hover
-                    </span>
+                    <span class="bg-muted px-xs rounded-xs font-mono">bg-primary-hover</span>
                     <span>：hover 背景（按钮/菜单等统一用 primary-hover）</span>
                   </div>
                   <div class="row-y-center gap-xs">
-                    <span class="bg-muted px-padding-xs rounded-scale-xs font-mono">
-                      text-primary-hover
-                    </span>
+                    <span class="bg-muted px-xs rounded-xs font-mono">text-primary-hover</span>
                     <span>：交互文字颜色（text-interactive）</span>
                   </div>
                 </div>
                 <div class="col-stack-xs">
                   <div class="font-semibold text-foreground">焦点与选中 (Focus / Selection)</div>
                   <div class="row-y-center gap-xs">
-                    <span class="bg-muted px-padding-xs rounded-scale-xs font-mono">
-                      interactive-focus-ring
-                    </span>
+                    <span class="bg-muted px-xs rounded-xs font-mono">interactive-focus-ring</span>
                     <span>：焦点使用 box-shadow + --primary，禁止 ring/outline</span>
                   </div>
                   <div class="row-y-center gap-xs">
-                    <span class="bg-muted px-padding-xs rounded-scale-xs font-mono">
-                      bg-primary
-                    </span>
+                    <span class="bg-muted px-xs rounded-xs font-mono">bg-primary</span>
                     <span>：选中态 / Tab 激活指示线（PRIMARY_USAGE）</span>
                   </div>
                 </div>
                 <div class="col-stack-xs">
                   <div class="font-semibold text-foreground">聚焦预选 (Focus Highlight)</div>
                   <div class="row-y-center gap-xs">
-                    <span class="bg-muted px-padding-xs rounded-scale-xs font-mono">
-                      bg-primary-light
-                    </span>
+                    <span class="bg-muted px-xs rounded-xs font-mono">bg-primary-light</span>
                     <span>：列表项键盘聚焦、高亮预选背景</span>
                   </div>
                 </div>
                 <div class="col-stack-xs">
                   <div class="font-semibold text-foreground">强调色 (Accent)</div>
                   <div class="row-y-center gap-xs">
-                    <span class="bg-muted px-padding-xs rounded-scale-xs font-mono">bg-accent</span>
+                    <span class="bg-muted px-xs rounded-xs font-mono">bg-accent</span>
                     <span>：特殊标记 / badge / feature callout，高亮但非 hover</span>
                   </div>
                 </div>
@@ -874,7 +867,9 @@ const menuShortcuts = [
 
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-xl">
           <!-- Semantic Colors -->
-          <Card class="panel-base bg-primary/5 dark:bg-primary/10 h-full">
+          <Card
+            class="bg-card rounded-md shadow-soft py-md px-lg flex flex-col gap-lg bg-primary/5 dark:bg-primary/10 h-full"
+          >
             <template #title>
               <div class="row-y-center gap-sm">
                 <Icons
@@ -890,14 +885,16 @@ const menuShortcuts = [
             </template>
             <template #content>
               <div class="col-stack-md">
-                <div class="border-b-default pb-padding-sm mb-padding-sm">
-                  <p class="text-muted-foreground fs-sm">映射业务意图到主题颜色 (uno.config.ts)</p>
+                <div class="border-b-default pb-sm mb-padding-sm">
+                  <p class="text-muted-foreground text-sm">
+                    映射业务意图到主题颜色 (uno.config.ts)
+                  </p>
                 </div>
                 <div class="col-stack-md">
                   <div
                     v-for="item in semanticColors"
                     :key="item.name"
-                    class="row-y-center gap-md p-padding-md surface-item rounded-scale-lg behavior-hover-transition hover:bg-foreground/5 cursor-pointer"
+                    class="row-y-center gap-md p-md surface-item rounded-lg behavior-hover-transition hover:bg-foreground/5 cursor-pointer"
                     @click="copyToClipboard(item.name)"
                   >
                     <div
@@ -906,7 +903,7 @@ const menuShortcuts = [
                     />
                     <div class="column flex-1">
                       <span class="font-semibold text-foreground">{{ item.name }}</span>
-                      <span class="fs-xs text-muted-foreground">{{ item.desc }}</span>
+                      <span class="text-xs text-muted-foreground">{{ item.desc }}</span>
                     </div>
                   </div>
                 </div>
@@ -915,7 +912,9 @@ const menuShortcuts = [
           </Card>
 
           <!-- Menu Shortcuts -->
-          <Card class="panel-base bg-accent/5 dark:bg-accent/10 h-full">
+          <Card
+            class="bg-card rounded-md shadow-soft py-md px-lg flex flex-col gap-lg bg-accent/5 dark:bg-accent/10 h-full"
+          >
             <template #title>
               <div class="row-y-center gap-sm">
                 <Icons
@@ -927,8 +926,8 @@ const menuShortcuts = [
             </template>
             <template #content>
               <div class="col-stack-md">
-                <div class="border-b-default pb-padding-sm mb-padding-sm">
-                  <p class="text-muted-foreground fs-sm">
+                <div class="border-b-default pb-sm mb-padding-sm">
+                  <p class="text-muted-foreground text-sm">
                     组合类名：
                     <span class="text-foreground">bg-primary/20! text-primary!</span>
                   </p>
@@ -937,17 +936,17 @@ const menuShortcuts = [
                   <div
                     v-for="item in menuShortcuts"
                     :key="item.name"
-                    class="col-stack-sm p-padding-md surface-item rounded-scale-lg behavior-hover-transition hover:bg-foreground/5 cursor-pointer"
+                    class="col-stack-sm p-md surface-item rounded-lg behavior-hover-transition hover:bg-foreground/5 cursor-pointer"
                     @click="copyToClipboard(item.name)"
                   >
                     <div class="row-between">
                       <span class="font-semibold text-foreground text-primary">
                         {{ item.name }}
                       </span>
-                      <span class="fs-xs text-muted-foreground">{{ item.desc }}</span>
+                      <span class="text-xs text-muted-foreground">{{ item.desc }}</span>
                     </div>
                     <div
-                      class="p-padding-sm rounded-scale-sm text-center fs-sm"
+                      class="p-sm rounded-sm text-center text-sm"
                       :class="item.classes"
                     >
                       Menu Item Preview
@@ -960,7 +959,7 @@ const menuShortcuts = [
         </div>
 
         <!-- PrimeVue Button 配色 -->
-        <Card class="panel-base">
+        <Card class="bg-card rounded-md shadow-soft py-md px-lg flex flex-col gap-lg">
           <template #title>
             <div class="row-y-center gap-sm">
               <Icons
@@ -976,21 +975,19 @@ const menuShortcuts = [
           </template>
           <template #content>
             <div class="col-stack-md">
-              <p class="text-muted-foreground fs-sm">
+              <p class="text-muted-foreground text-sm">
                 Button
-                <span class="bg-muted px-padding-xs rounded-scale-xs">variant="text"</span>
+                <span class="bg-muted px-xs rounded-xs">variant="text"</span>
                 与
-                <span class="bg-muted px-padding-xs rounded-scale-xs">variant="outlined"</span>
+                <span class="bg-muted px-xs rounded-xs">variant="outlined"</span>
                 使用
-                <span class="bg-muted px-padding-xs rounded-scale-xs">*-light</span>
+                <span class="bg-muted px-xs rounded-xs">*-light</span>
                 作为 hover 背景，避免黑底彩字/红底红字。详见
-                <span class="bg-muted px-padding-xs rounded-scale-xs fs-xs">
-                  docs/PRIMEVUE_THEME.md
-                </span>
+                <span class="bg-muted px-xs rounded-xs text-xs">docs/PRIMEVUE_THEME.md</span>
               </p>
               <div class="col-stack-lg">
                 <div>
-                  <h4 class="fs-sm font-semibold text-foreground mb-margin-sm">variant="text"</h4>
+                  <h4 class="text-sm font-semibold text-foreground mb-sm">variant="text"</h4>
                   <div class="row-y-center flex-wrap gap-md">
                     <Button
                       label="Primary"
@@ -1034,9 +1031,7 @@ const menuShortcuts = [
                   </div>
                 </div>
                 <div>
-                  <h4 class="fs-sm font-semibold text-foreground mb-margin-sm">
-                    variant="outlined"
-                  </h4>
+                  <h4 class="text-sm font-semibold text-foreground mb-sm">variant="outlined"</h4>
                   <div class="row-y-center flex-wrap gap-md">
                     <Button
                       label="Primary"
@@ -1085,7 +1080,7 @@ const menuShortcuts = [
         </Card>
 
         <!-- Opacity Variants（使用 CSS 变量 + style，不依赖 UnoCSS safelist） -->
-        <Card class="panel-base">
+        <Card class="bg-card rounded-md shadow-soft py-md px-lg flex flex-col gap-lg">
           <template #title>
             <div class="row-y-center gap-sm">
               <Icons
@@ -1097,9 +1092,9 @@ const menuShortcuts = [
           </template>
           <template #content>
             <div class="col-stack-md">
-              <p class="text-muted-foreground fs-sm">
+              <p class="text-muted-foreground text-sm">
                 所有颜色都支持透明度语法，格式:
-                <span class="bg-muted px-padding-xs rounded-scale-xs">bg-{color}/{opacity}</span>
+                <span class="bg-muted px-xs rounded-xs">bg-{color}/{opacity}</span>
                 · 色块使用 CSS 变量渲染，无需 UNO_DEMO 即可完整显示
               </p>
               <div class="col-stack-lg">
@@ -1107,7 +1102,7 @@ const menuShortcuts = [
                   v-for="family in COLOR_FAMILIES.quadFamilies"
                   :key="family"
                 >
-                  <h4 class="font-semibold mb-margin-sm capitalize text-foreground">
+                  <h4 class="font-semibold mb-sm capitalize text-foreground">
                     {{ family }}
                   </h4>
                   <div class="layout-wrap gap-xs">
@@ -1118,11 +1113,11 @@ const menuShortcuts = [
                       @click="copyToClipboard(`bg-${family}/${opacity}`)"
                     >
                       <div
-                        class="w-[var(--spacing-2xl)] h-[var(--spacing-2xl)] rounded-scale-sm component-border group-hover:scale-110 transition-transform"
+                        class="w-[var(--spacing-2xl)] h-[var(--spacing-2xl)] rounded-sm shadow-soft group-hover:scale-110 transition-transform"
                         :style="{ background: `rgb(var(--${family}) / ${opacity / 100})` }"
                       />
                       <span
-                        class="font-mono fs-xs text-muted-foreground group-hover:text-foreground"
+                        class="font-mono text-xs text-muted-foreground group-hover:text-foreground"
                       >
                         {{ opacity }}%
                       </span>
@@ -1135,7 +1130,7 @@ const menuShortcuts = [
         </Card>
 
         <!-- Sidebar Colors -->
-        <Card class="panel-base">
+        <Card class="bg-card rounded-md shadow-soft py-md px-lg flex flex-col gap-lg">
           <template #title>
             <div class="row-y-center gap-sm">
               <Icons
@@ -1151,8 +1146,8 @@ const menuShortcuts = [
           </template>
           <template #content>
             <div class="col-stack-md">
-              <div class="border-b-default pb-padding-sm mb-padding-sm">
-                <p class="text-muted-foreground fs-sm">
+              <div class="border-b-default pb-sm mb-padding-sm">
+                <p class="text-muted-foreground text-sm">
                   允许侧边栏拥有独立的背景逻辑（如深色侧边栏+浅色内容）
                 </p>
               </div>
@@ -1160,12 +1155,12 @@ const menuShortcuts = [
                 <div
                   v-for="item in sidebarColors"
                   :key="item.key"
-                  class="col-stack-sm p-padding-md surface-item rounded-scale-lg interactive-hover-tile"
+                  class="col-stack-sm p-md surface-item rounded-lg shadow-soft transition-all duration-xl ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)]"
                 >
                   <div class="row-y-center gap-sm">
                     <div
-                      class="w-[var(--spacing-xl)] h-[var(--spacing-xl)] rounded-scale-sm shrink-0"
-                      :class="item.borderClass ? item.bgClass : ['component-border', item.bgClass]"
+                      class="w-[var(--spacing-xl)] h-[var(--spacing-xl)] rounded-sm shrink-0"
+                      :class="item.borderClass ? item.bgClass : ['shadow-soft', item.bgClass]"
                     />
                     <span class="font-medium text-foreground">
                       {{ item.key }}
@@ -1173,13 +1168,13 @@ const menuShortcuts = [
                   </div>
                   <div class="layout-wrap gap-xs">
                     <div
-                      class="interactive-tag"
+                      class="text-xs font-mono bg-muted/30 px-xs py-xs rounded-xs cursor-pointer select-none transition-all duration-lg ease-in-out hover:bg-primary/20 hover:text-primary active:scale-95 text-muted-foreground"
                       @click="copyToClipboard(`var(${item.cssVar})`, item.cssVar)"
                     >
                       {{ item.cssVar }}
                     </div>
                     <div
-                      class="interactive-tag hover:bg-success/20 hover:text-success"
+                      class="text-xs font-mono bg-muted/30 px-xs py-xs rounded-xs cursor-pointer select-none transition-all duration-lg ease-in-out hover:bg-primary/20 hover:text-primary active:scale-95 text-muted-foreground hover:bg-success/20 hover:text-success"
                       @click="copyToClipboard(item.copyClass)"
                     >
                       {{ item.copyClass }}
@@ -1192,7 +1187,9 @@ const menuShortcuts = [
         </Card>
 
         <!-- Quick Reference -->
-        <Card class="panel-base bg-gradient-to-br from-primary/5 to-accent/5">
+        <Card
+          class="bg-card rounded-md shadow-soft py-md px-lg flex flex-col gap-lg bg-gradient-to-br from-primary/5 to-accent/5"
+        >
           <template #title>
             <div class="row-y-center gap-sm">
               <Icons
@@ -1208,25 +1205,25 @@ const menuShortcuts = [
                 <div class="col-stack-sm">
                   <h4 class="font-semibold text-foreground">背景 (Background)</h4>
                   <div
-                    class="bg-muted p-padding-sm rounded-scale-sm fs-sm cursor-pointer hover:bg-muted/80 active:scale-95 transition-all duration-scale-lg"
+                    class="bg-muted p-sm rounded-sm text-sm cursor-pointer hover:bg-muted/80 active:scale-95 transition-all duration-lg"
                     @click="copyToClipboard('bg-{color}')"
                   >
                     bg-{color}
                   </div>
                   <div
-                    class="bg-muted p-padding-sm rounded-scale-sm fs-sm cursor-pointer hover:bg-muted/80 active:scale-95 transition-all duration-scale-lg"
+                    class="bg-muted p-sm rounded-sm text-sm cursor-pointer hover:bg-muted/80 active:scale-95 transition-all duration-lg"
                     @click="copyToClipboard('bg-{color}/{opacity}')"
                   >
                     bg-{color}/{opacity}
                   </div>
                   <div
-                    class="bg-muted p-padding-sm rounded-scale-sm fs-sm cursor-pointer hover:bg-muted/80 active:scale-95 transition-all duration-scale-lg"
+                    class="bg-muted p-sm rounded-sm text-sm cursor-pointer hover:bg-muted/80 active:scale-95 transition-all duration-lg"
                     @click="copyToClipboard('bg-{color}-hover')"
                   >
                     bg-{color}-hover
                   </div>
                   <div
-                    class="bg-muted p-padding-sm rounded-scale-sm fs-sm cursor-pointer hover:bg-muted/80 active:scale-95 transition-all duration-scale-lg"
+                    class="bg-muted p-sm rounded-sm text-sm cursor-pointer hover:bg-muted/80 active:scale-95 transition-all duration-lg"
                     title="Button text/outlined hover"
                     @click="copyToClipboard('bg-{color}-light')"
                   >
@@ -1236,19 +1233,19 @@ const menuShortcuts = [
                 <div class="col-stack-sm">
                   <h4 class="font-semibold text-foreground">文本 (Text)</h4>
                   <div
-                    class="bg-muted p-padding-sm rounded-scale-sm fs-sm cursor-pointer hover:bg-muted/80 active:scale-95 transition-all duration-scale-lg"
+                    class="bg-muted p-sm rounded-sm text-sm cursor-pointer hover:bg-muted/80 active:scale-95 transition-all duration-lg"
                     @click="copyToClipboard('text-{color}')"
                   >
                     text-{color}
                   </div>
                   <div
-                    class="bg-muted p-padding-sm rounded-scale-sm fs-sm cursor-pointer hover:bg-muted/80 active:scale-95 transition-all duration-scale-lg"
+                    class="bg-muted p-sm rounded-sm text-sm cursor-pointer hover:bg-muted/80 active:scale-95 transition-all duration-lg"
                     @click="copyToClipboard('text-{color}-foreground')"
                   >
                     text-{color}-foreground
                   </div>
                   <div
-                    class="bg-muted p-padding-sm rounded-scale-sm fs-sm cursor-pointer hover:bg-muted/80 active:scale-95 transition-all duration-scale-lg"
+                    class="bg-muted p-sm rounded-sm text-sm cursor-pointer hover:bg-muted/80 active:scale-95 transition-all duration-lg"
                     @click="copyToClipboard('text-muted-foreground')"
                   >
                     text-muted-foreground
@@ -1257,42 +1254,44 @@ const menuShortcuts = [
                 <div class="col-stack-sm">
                   <h4 class="font-semibold text-foreground">边框 (Border)</h4>
                   <div
-                    class="bg-muted p-padding-sm rounded-scale-sm fs-sm cursor-pointer hover:bg-muted/80 active:scale-95 transition-all duration-scale-lg"
+                    class="bg-muted p-sm rounded-sm text-sm cursor-pointer hover:bg-muted/80 active:scale-95 transition-all duration-lg"
                     @click="copyToClipboard('border-{color}')"
                   >
                     border-{color}
                   </div>
                   <div
-                    class="bg-muted p-padding-sm rounded-scale-sm fs-sm cursor-pointer hover:bg-muted/80 active:scale-95 transition-all duration-scale-lg"
+                    class="bg-muted p-sm rounded-sm text-sm cursor-pointer hover:bg-muted/80 active:scale-95 transition-all duration-lg"
                     @click="copyToClipboard('border-border')"
                   >
                     border-border
                   </div>
                   <div
-                    class="bg-muted p-padding-sm rounded-scale-sm fs-sm cursor-pointer hover:bg-muted/80 active:scale-95 transition-all duration-scale-lg"
+                    class="bg-muted p-sm rounded-sm text-sm cursor-pointer hover:bg-muted/80 active:scale-95 transition-all duration-lg"
                     @click="copyToClipboard('border-{color}/50')"
                   >
                     border-{color}/50
                   </div>
                 </div>
               </div>
-              <p class="text-muted fs-sm">
+              <p class="text-muted text-sm">
                 <span class="font-semibold">可用颜色:</span>
-                <span class="font-mono ml-margin-xs text-primary">
+                <span class="font-mono ml-xs text-primary">
                   primary | accent | danger | warn | success | info | muted | secondary | card |
                   popover
                 </span>
               </p>
-              <p class="text-muted fs-sm mt-margin-xs">
+              <p class="text-muted text-sm mt-xs">
                 <span class="font-semibold">语义别名:</span>
-                <span class="font-mono ml-margin-xs text-primary">
+                <span class="font-mono ml-xs text-primary">
                   bg-brand | bg-interactive | text-interactive
                 </span>
               </p>
-              <p class="text-muted fs-sm mt-margin-xs">
+              <p class="text-muted text-sm mt-xs">
                 <span class="font-semibold">菜单快捷键:</span>
-                <span class="font-mono ml-margin-xs text-primary">
-                  menu-item-base | menu-item-hover
+                <span class="font-mono ml-xs text-primary">
+                  flex items-center gap-sm cursor-pointer select-none transition-all duration-md
+                  ease-in-out border-none bg-transparent | bg-primary/12! dark:bg-primary/30!
+                  text-primary!
                 </span>
               </p>
             </div>

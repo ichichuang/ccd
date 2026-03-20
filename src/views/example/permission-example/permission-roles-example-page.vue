@@ -6,8 +6,8 @@ const userPermissions = computed<string[]>(() => userStore.getUserPermissions)
 </script>
 
 <template>
-  <div class="p-padding-lg space-y-margin-md">
-    <h2 class="fs-xl font-semibold row-y-center gap-sm">
+  <div class="p-lg space-y-margin-md">
+    <h2 class="text-xl font-semibold row-y-center gap-sm">
       <Icons
         name="i-lucide-shield-check"
         size="lg"
@@ -16,24 +16,24 @@ const userPermissions = computed<string[]>(() => userStore.getUserPermissions)
       <span>页面级权限示例（meta.roles）</span>
     </h2>
 
-    <div class="component-border rounded-scale p-padding-md space-y-margin-sm bg-card">
-      <div class="fs-md">
+    <div class="shadow-soft rounded-scale p-md space-y-margin-sm bg-card">
+      <div class="text-md">
         <span class="font-medium">当前登录用户：</span>
         <span>{{ userStore.getUserInfo.username || '未登录' }}</span>
       </div>
-      <div class="fs-md">
+      <div class="text-md">
         <span class="font-medium">当前角色（roles）：</span>
         <span>{{ userRoles.join(', ') || '[]' }}</span>
       </div>
-      <div class="fs-md">
+      <div class="text-md">
         <span class="font-medium">当前按钮权限（permissions）：</span>
         <span>{{ userPermissions.join(', ') || '[]' }}</span>
       </div>
     </div>
 
-    <div class="component-border rounded-scale p-padding-md space-y-margin-xs bg-muted">
-      <div class="fs-md font-medium">本路由 meta.roles = ['admin']</div>
-      <p class="text-muted-foreground fs-sm">
+    <div class="shadow-soft rounded-scale p-md space-y-margin-xs bg-muted">
+      <div class="text-md font-medium">本路由 meta.roles = ['admin']</div>
+      <p class="text-muted-foreground text-sm">
         - 使用账号
         <span>admin / 123456</span>
         登录：可以正常访问本页面。

@@ -106,10 +106,14 @@ function handleMessage(type: (typeof MESSAGE_TYPES)[number]['handler'], withTitl
 </script>
 
 <template>
-  <CScrollbar class="h-full p-padding-lg">
-    <div class="layout-content-wide col-stack-xl">
-      <section class="component-card-base density-normal col-stack-xs">
-        <h1 class="fs-2xl font-bold text-foreground">Toast 完整演示</h1>
+  <CScrollbar class="h-full p-lg">
+    <div
+      class="py-sm md:py-md xl:py-lg 2xl:py-xl mx-auto max-w-[92%] sm:max-w-[94%] md:max-w-[92%] lg:max-w-[90%] xl:max-w-[88%] 2xl:max-w-[86%] 3xl:max-w-[84%] col-stack-xl"
+    >
+      <section
+        class="rounded-md bg-card text-card-foreground shadow-soft density-normal col-stack-xs"
+      >
+        <h1 class="text-2xl font-bold text-foreground">Toast 完整演示</h1>
         <p class="text-muted-foreground">
           window.$message 居中纯提示（success / danger / info / warn）；window.$toast 6 种
           severity、6 种位置、add() 原始 API、清除。可在非组件环境（拦截器、errorHandler）使用。
@@ -117,9 +121,11 @@ function handleMessage(type: (typeof MESSAGE_TYPES)[number]['handler'], withTitl
       </section>
 
       <!-- 1. Message 居中纯提示（4 种类型） -->
-      <section class="component-card-base density-normal col-stack-md">
-        <h2 class="fs-lg font-semibold">1. Message 居中纯提示（4 种类型）</h2>
-        <p class="text-muted-foreground fs-sm">
+      <section
+        class="rounded-md bg-card text-card-foreground shadow-soft density-normal col-stack-md"
+      >
+        <h2 class="text-lg font-semibold">1. Message 居中纯提示（4 种类型）</h2>
+        <p class="text-muted-foreground text-sm">
           window.$message.success / danger / info / warn(message,
           title?)；正中央展示、无关闭按钮、纯提示
         </p>
@@ -127,9 +133,9 @@ function handleMessage(type: (typeof MESSAGE_TYPES)[number]['handler'], withTitl
           <div
             v-for="t in MESSAGE_TYPES"
             :key="t.key"
-            class="row-y-center flex-wrap gap-md rounded-scale-sm bg-muted p-padding-sm"
+            class="row-y-center flex-wrap gap-md rounded-sm bg-muted p-sm"
           >
-            <span class="text-muted-foreground fs-sm min-w-[var(--spacing-4xl)]">
+            <span class="text-muted-foreground text-sm min-w-[var(--spacing-4xl)]">
               {{ t.label }}:
             </span>
             <Button
@@ -151,9 +157,11 @@ function handleMessage(type: (typeof MESSAGE_TYPES)[number]['handler'], withTitl
       </section>
 
       <!-- 2. 6 种 severity 快捷方法 + 6 种位置 -->
-      <section class="component-card-base density-normal col-stack-md">
-        <h2 class="fs-lg font-semibold">2. 快捷方法 *In（6 种 severity × 6 种位置）</h2>
-        <p class="text-muted-foreground fs-sm">
+      <section
+        class="rounded-md bg-card text-card-foreground shadow-soft density-normal col-stack-md"
+      >
+        <h2 class="text-lg font-semibold">2. 快捷方法 *In（6 种 severity × 6 种位置）</h2>
+        <p class="text-muted-foreground text-sm">
           dangerIn / successIn / infoIn / warnIn / secondaryIn / contrastIn (position, summary,
           detail?)
         </p>
@@ -161,9 +169,9 @@ function handleMessage(type: (typeof MESSAGE_TYPES)[number]['handler'], withTitl
           <div
             v-for="sev in TOAST_SEVERITIES"
             :key="sev.key"
-            class="row-y-center flex-wrap gap-md rounded-scale-sm bg-muted p-padding-sm"
+            class="row-y-center flex-wrap gap-md rounded-sm bg-muted p-sm"
           >
-            <span class="text-muted-foreground fs-sm min-w-[var(--spacing-4xl)]">
+            <span class="text-muted-foreground text-sm min-w-[var(--spacing-4xl)]">
               {{ sev.label }}:
             </span>
             <Button
@@ -187,9 +195,11 @@ function handleMessage(type: (typeof MESSAGE_TYPES)[number]['handler'], withTitl
       </section>
 
       <!-- 3. add() 原始 API - 6 种 severity -->
-      <section class="component-card-base density-normal col-stack-md">
-        <h2 class="fs-lg font-semibold">3. add() 原始 API（6 种 severity）</h2>
-        <p class="text-muted-foreground fs-sm">
+      <section
+        class="rounded-md bg-card text-card-foreground shadow-soft density-normal col-stack-md"
+      >
+        <h2 class="text-lg font-semibold">3. add() 原始 API（6 种 severity）</h2>
+        <p class="text-muted-foreground text-sm">
           add({ severity?, summary?, detail?, life?, group? })
         </p>
         <div class="flex flex-wrap gap-md">
@@ -229,8 +239,10 @@ function handleMessage(type: (typeof MESSAGE_TYPES)[number]['handler'], withTitl
       </section>
 
       <!-- 4. add() 扩展：粘性、自定义 life、group -->
-      <section class="component-card-base density-normal col-stack-md">
-        <h2 class="fs-lg font-semibold">4. add() 扩展：粘性、自定义 life、group</h2>
+      <section
+        class="rounded-md bg-card text-card-foreground shadow-soft density-normal col-stack-md"
+      >
+        <h2 class="text-lg font-semibold">4. add() 扩展：粘性、自定义 life、group</h2>
         <div class="flex flex-wrap gap-md">
           <Button
             label="粘性 Toast (无 life)"
@@ -257,9 +269,13 @@ function handleMessage(type: (typeof MESSAGE_TYPES)[number]['handler'], withTitl
       </section>
 
       <!-- 5. 清除 -->
-      <section class="component-card-base density-normal col-stack-md">
-        <h2 class="fs-lg font-semibold">5. 清除</h2>
-        <p class="text-muted-foreground fs-sm">clear() 清除所有；removeGroup(group) 清除指定位置</p>
+      <section
+        class="rounded-md bg-card text-card-foreground shadow-soft density-normal col-stack-md"
+      >
+        <h2 class="text-lg font-semibold">5. 清除</h2>
+        <p class="text-muted-foreground text-sm">
+          clear() 清除所有；removeGroup(group) 清除指定位置
+        </p>
         <div class="row-y-center flex-wrap gap-md">
           <Button
             label="Clear All"
@@ -267,7 +283,7 @@ function handleMessage(type: (typeof MESSAGE_TYPES)[number]['handler'], withTitl
             outlined
             @click="handleClear"
           />
-          <span class="text-muted-foreground fs-sm">按 group：</span>
+          <span class="text-muted-foreground text-sm">按 group：</span>
           <Button
             v-for="g in TOAST_GROUPS"
             :key="g"

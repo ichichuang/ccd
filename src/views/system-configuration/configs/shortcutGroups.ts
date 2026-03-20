@@ -20,9 +20,9 @@ export const shortcutGroups: ShortcutGroup[] = [
     category: 'Density 密度语义',
     icon: 'i-lucide-rows-3',
     items: [
-      { name: 'density-compact', classes: 'gap-sm p-padding-sm', desc: '紧凑模式' },
-      { name: 'density-normal', classes: 'gap-md p-padding-md', desc: '标准模式' },
-      { name: 'density-comfortable', classes: 'gap-lg p-padding-lg', desc: '舒适模式' },
+      { name: 'density-compact', classes: 'gap-sm p-sm', desc: '紧凑模式' },
+      { name: 'density-normal', classes: 'gap-md p-md', desc: '标准模式' },
+      { name: 'density-comfortable', classes: 'gap-lg p-lg', desc: '舒适模式' },
       { name: 'density-responsive', classes: 'density-compact md:density-normal', desc: '响应式' },
     ],
   },
@@ -95,21 +95,21 @@ export const shortcutGroups: ShortcutGroup[] = [
         classes: 'absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2',
       },
       {
-        name: 'layout-content-narrow',
+        name: 'py-sm md:py-md xl:py-lg 2xl:py-xl mx-auto max-w-[88%] sm:max-w-[84%] md:max-w-[82%] lg:max-w-[80%] xl:max-w-[78%] 2xl:max-w-[76%]',
         classes:
-          'py-padding-sm md:py-padding-md xl:py-padding-lg 2xl:py-padding-xl mx-auto max-w-[88%] sm:max-w-[84%] md:max-w-[82%] lg:max-w-[80%] xl:max-w-[78%] 2xl:max-w-[76%]',
+          'py-sm md:py-md xl:py-lg 2xl:py-xl mx-auto max-w-[88%] sm:max-w-[84%] md:max-w-[82%] lg:max-w-[80%] xl:max-w-[78%] 2xl:max-w-[76%]',
         desc: '极窄内容容器 (流体)',
       },
       {
-        name: 'layout-content',
+        name: 'py-sm md:py-md xl:py-lg 2xl:py-xl mx-auto max-w-[90%] sm:max-w-[88%] md:max-w-[86%] lg:max-w-[84%] xl:max-w-[82%] 2xl:max-w-[80%]',
         classes:
-          'py-padding-sm md:py-padding-md xl:py-padding-lg 2xl:py-padding-xl mx-auto max-w-[90%] sm:max-w-[88%] md:max-w-[86%] lg:max-w-[84%] xl:max-w-[82%] 2xl:max-w-[80%]',
+          'py-sm md:py-md xl:py-lg 2xl:py-xl mx-auto max-w-[90%] sm:max-w-[88%] md:max-w-[86%] lg:max-w-[84%] xl:max-w-[82%] 2xl:max-w-[80%]',
         desc: '标准内容容器 (流体)',
       },
       {
-        name: 'layout-content-wide',
+        name: 'py-sm md:py-md xl:py-lg 2xl:py-xl mx-auto max-w-[92%] sm:max-w-[94%] md:max-w-[92%] lg:max-w-[90%] xl:max-w-[88%] 2xl:max-w-[86%] 3xl:max-w-[84%]',
         classes:
-          'py-padding-sm md:py-padding-md xl:py-padding-lg 2xl:py-padding-xl mx-auto max-w-[92%] sm:max-w-[94%] md:max-w-[92%] lg:max-w-[90%] xl:max-w-[88%] 2xl:max-w-[86%] 3xl:max-w-[84%]',
+          'py-sm md:py-md xl:py-lg 2xl:py-xl mx-auto max-w-[92%] sm:max-w-[94%] md:max-w-[92%] lg:max-w-[90%] xl:max-w-[88%] 2xl:max-w-[86%] 3xl:max-w-[84%]',
         desc: '加宽内容容器 (流体)',
       },
       { name: 'layout-dialog-sm', classes: 'w-full max-w-[var(--dialog-sm,30vw)]' },
@@ -136,13 +136,12 @@ export const shortcutGroups: ShortcutGroup[] = [
     category: 'Interaction 交互行为',
     icon: 'i-lucide-pointer',
     items: [
-      { name: 'behavior-hover-transition', classes: 'transition-all duration-scale-md' },
+      { name: 'behavior-hover-transition', classes: 'transition-all duration-md' },
       { name: 'hover-elevated', classes: 'hover:shadow-md' },
       { name: 'interactive-hover', classes: 'behavior-hover-transition hover-elevated' },
       {
         name: 'interactive-click',
-        classes:
-          'cursor-pointer select-none active:scale-95 transition-transform duration-scale-md',
+        classes: 'cursor-pointer select-none active:scale-95 transition-transform duration-md',
       },
       {
         name: 'interactive-focus-ring',
@@ -150,36 +149,36 @@ export const shortcutGroups: ShortcutGroup[] = [
           'focus-visible:shadow-[0_0_0_2px_rgb(var(--primary)/0.3)] focus-visible:outline-none',
       },
       {
-        name: 'touch-target',
+        name: 'min-w-[44px] min-h-[44px] flex items-center justify-center',
         classes: 'min-w-[44px] min-h-[44px] flex items-center justify-center',
       },
       {
-        name: 'header-icon-btn',
+        name: 'cursor-pointer border-none outline-none duration-sm hover:scale-110 active:scale-100 shadow-sm hover:shadow-float hover:text-primary p-sm center rounded-sm bg-sidebar',
         classes:
-          'cursor-pointer bg-transparent border-none outline-none duration-scale-sm hover:scale-110 hover:text-accent active:scale-105',
+          'cursor-pointer bg-transparent border-none outline-none duration-sm hover:scale-110 hover:text-accent active:scale-105',
       },
       {
-        name: 'interactive-tag',
+        name: 'text-xs font-mono bg-muted/30 px-xs py-xs rounded-xs cursor-pointer select-none transition-all duration-lg ease-in-out hover:bg-primary/20 hover:text-primary active:scale-95 text-muted-foreground',
         classes:
-          'fs-xs font-mono bg-muted/30 px-padding-xs py-padding-xs rounded-scale-xs cursor-pointer select-none transition-all duration-scale-lg ease-in-out hover:bg-primary/20 hover:text-primary active:scale-95 text-muted-foreground',
+          'text-xs font-mono bg-muted/30 px-xs py-xs rounded-xs cursor-pointer select-none transition-all duration-lg ease-in-out hover:bg-primary/20 hover:text-primary active:scale-95 text-muted-foreground',
         desc: '标签按钮',
       },
       {
-        name: 'interactive-tile',
+        name: 'row-y-center gap-sm px-sm py-xs rounded-md cursor-pointer select-none transition-all duration-lg ease-in-out text-sm active:scale-95 surface-item shadow-soft transition-all duration-xl ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)] interactive-focus-ring',
         classes:
-          'row-y-center gap-sm px-padding-sm py-padding-xs rounded-scale-md cursor-pointer select-none transition-all duration-scale-lg ease-in-out fs-sm active:scale-95 surface-item interactive-hover-tile interactive-focus-ring',
+          'row-y-center gap-sm px-sm py-xs rounded-md cursor-pointer select-none transition-all duration-lg ease-in-out text-sm active:scale-95 surface-item shadow-soft transition-all duration-xl ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)] interactive-focus-ring',
         desc: '列表项/磁贴',
       },
       {
-        name: 'interactive-hover-card',
+        name: 'transition-all duration-md ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)]',
         classes:
-          'transition-all duration-scale-md ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)]',
+          'transition-all duration-md ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)]',
         desc: '卡片悬浮特效',
       },
       {
-        name: 'interactive-hover-tile',
+        name: 'shadow-soft transition-all duration-xl ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)]',
         classes:
-          'shadow-soft transition-all duration-scale-xl ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)]',
+          'shadow-soft transition-all duration-xl ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)]',
         desc: '磁贴悬浮特效',
       },
       { name: 'pt-hairline', classes: 'pt-px' },
@@ -193,13 +192,13 @@ export const shortcutGroups: ShortcutGroup[] = [
     icon: 'i-lucide-menu',
     items: [
       {
-        name: 'menu-item-base',
+        name: 'flex items-center gap-sm cursor-pointer select-none transition-all duration-md ease-in-out border-none bg-transparent',
         classes:
-          'flex items-center gap-sm cursor-pointer select-none transition-all duration-scale-md ease-in-out border-none bg-transparent',
+          'flex items-center gap-sm cursor-pointer select-none transition-all duration-md ease-in-out border-none bg-transparent',
         desc: '菜单项基础样式',
       },
       {
-        name: 'menu-item-hover',
+        name: 'bg-primary/12! dark:bg-primary/30! text-primary!',
         classes: 'bg-primary/12! dark:bg-primary/30! text-primary!',
         desc: '菜单项悬停态',
       },
@@ -214,7 +213,7 @@ export const shortcutGroups: ShortcutGroup[] = [
     category: 'Component 组件基础',
     icon: 'i-lucide-component',
     items: [
-      { name: 'component-border', classes: 'shadow-soft' },
+      { name: 'shadow-soft', classes: 'shadow-soft' },
       {
         name: 'border-b-default',
         classes: 'border-0 border-b border-solid border-border/15',
@@ -236,16 +235,19 @@ export const shortcutGroups: ShortcutGroup[] = [
         desc: '右侧弱边框',
       },
       {
-        name: 'component-card-base',
-        classes: 'rounded-scale-md bg-card text-card-foreground component-border',
+        name: 'rounded-md bg-card text-card-foreground shadow-soft',
+        classes: 'rounded-md bg-card text-card-foreground shadow-soft',
       },
-      { name: 'component-card-hoverable', classes: 'behavior-hover-transition hover-elevated' },
-      { name: 'component-card-layout', classes: 'density-normal' },
-      { name: 'component-card-content', classes: 'row-center' },
       {
-        name: 'component-card',
+        name: 'behavior-hover-transition hover-elevated',
+        classes: 'behavior-hover-transition hover-elevated',
+      },
+      { name: 'density-normal', classes: 'density-normal' },
+      { name: 'row-center', classes: 'row-center' },
+      {
+        name: 'rounded-md bg-card text-card-foreground shadow-soft behavior-hover-transition hover-elevated density-normal row-center',
         classes:
-          'component-card-base component-card-hoverable component-card-layout component-card-content',
+          'rounded-md bg-card text-card-foreground shadow-soft behavior-hover-transition hover-elevated density-normal row-center',
       },
     ],
   },
@@ -253,8 +255,8 @@ export const shortcutGroups: ShortcutGroup[] = [
     category: 'Premium 视觉系统',
     icon: 'i-lucide-sparkles',
     items: [
-      { name: 'glass-surface', classes: 'bg-background/70 backdrop-blur-md' },
-      { name: 'glass-surface-lg', classes: 'bg-background/80 backdrop-blur-lg' },
+      { name: 'bg-background/70 backdrop-blur-md', classes: 'bg-background/70 backdrop-blur-md' },
+      { name: 'bg-background/80 backdrop-blur-lg', classes: 'bg-background/80 backdrop-blur-lg' },
       {
         name: 'shadow-soft',
         classes:
@@ -270,28 +272,30 @@ export const shortcutGroups: ShortcutGroup[] = [
       { name: 'surface-base', classes: 'bg-background' },
       { name: 'surface-elevated', classes: 'bg-card shadow-soft' },
       {
-        name: 'panel-base',
-        classes: 'bg-card rounded-scale-xl shadow-soft p-padding-xl flex flex-col gap-lg',
+        name: 'bg-card rounded-md shadow-soft py-md px-lg flex flex-col gap-lg',
+        classes: 'bg-card rounded-xl shadow-soft p-xl flex flex-col gap-lg',
         desc: '大圆角面板',
       },
       {
-        name: 'panel-base-md',
-        classes: 'bg-card rounded-scale-lg shadow-soft p-padding-lg flex flex-col gap-md',
+        name: 'bg-card rounded-lg shadow-soft p-lg flex flex-col gap-md',
+        classes: 'bg-card rounded-lg shadow-soft p-lg flex flex-col gap-md',
         desc: '中圆角面板',
       },
       { name: 'surface-sunken', classes: 'bg-muted', desc: '凹陷背景' },
       { name: 'surface-item', classes: 'bg-muted/60 dark:bg-muted', desc: '列表项背景' },
       { name: 'brand-primary', classes: 'text-primary' },
       {
-        name: 'transition-fluid',
-        classes:
-          'transition-[transform,opacity] duration-scale-md ease-[cubic-bezier(0.16,1,0.3,1)]',
+        name: 'transition-[transform,opacity] duration-md ease-[cubic-bezier(0.16,1,0.3,1)]',
+        classes: 'transition-[transform,opacity] duration-md ease-[cubic-bezier(0.16,1,0.3,1)]',
       },
       {
-        name: 'transition-fade',
-        classes: 'transition-opacity duration-scale-sm ease-[cubic-bezier(0.4,0,0.2,1)]',
+        name: 'transition-opacity duration-sm ease-[cubic-bezier(0.4,0,0.2,1)]',
+        classes: 'transition-opacity duration-sm ease-[cubic-bezier(0.4,0,0.2,1)]',
       },
-      { name: 'min-h-kpi-card', classes: 'min-h-[var(--kpi-card-height,20vh)]' },
+      {
+        name: 'min-h-[var(--kpi-card-height,20vh)]',
+        classes: 'min-h-[var(--kpi-card-height,20vh)]',
+      },
     ],
   },
   {
@@ -300,7 +304,7 @@ export const shortcutGroups: ShortcutGroup[] = [
     items: [
       {
         name: 'size-theme-swatch',
-        classes: 'w-[var(--spacing-xl)] h-[var(--spacing-xl)] rounded-scale-md',
+        classes: 'w-[var(--spacing-xl)] h-[var(--spacing-xl)] rounded-md',
       },
       { name: 'size-select-min', classes: 'min-w-[var(--spacing-3xl)]' },
       { name: 'w-table-actions', classes: 'w-[var(--spacing-5xl)]' },
@@ -308,7 +312,7 @@ export const shortcutGroups: ShortcutGroup[] = [
       { name: 'h-spacing-lg', classes: 'h-[var(--spacing-lg)]' },
       {
         name: 'sidebar-width-transition',
-        classes: 'transition-[width] duration-scale-md ease-in-out',
+        classes: 'transition-[width] duration-md ease-in-out',
       },
     ],
   },
@@ -316,12 +320,12 @@ export const shortcutGroups: ShortcutGroup[] = [
     category: 'Design Defaults 设计默认值',
     icon: 'i-lucide-settings',
     items: [
-      { name: 'def-rounded', classes: 'rounded-scale-md!' },
-      { name: 'def-duration', classes: 'duration-scale-md!' },
-      { name: 'def-padding', classes: 'p-padding-md!' },
-      { name: 'def-margin', classes: 'm-margin-md!' },
-      { name: 'def-gap', classes: 'gap-md!' },
-      { name: 'def-fs', classes: 'fs-md!' },
+      { name: 'rounded-md!', classes: 'rounded-md!' },
+      { name: 'duration-md!', classes: 'duration-md!' },
+      { name: 'p-md!', classes: 'p-md!' },
+      { name: 'm-md!', classes: 'm-md!' },
+      { name: 'gap-md!', classes: 'gap-md!' },
+      { name: 'text-md!', classes: 'text-md!' },
     ],
   },
   {

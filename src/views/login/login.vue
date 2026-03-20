@@ -184,7 +184,7 @@ async function handleLoginSubmit(): Promise<void> {
   >
     <!-- Left Background -->
     <div
-      class="hidden lg:flex flex-col justify-between w-[55%] surface-base text-foreground p-padding-xl relative overflow-hidden"
+      class="hidden lg:flex flex-col justify-between w-[55%] surface-base text-foreground p-xl relative overflow-hidden"
     >
       <div
         class="absolute inset-0 bg-gradient-to-br from-primary/20 via-transparent to-transparent pointer-events-none"
@@ -196,19 +196,19 @@ async function handleLoginSubmit(): Promise<void> {
           class="text-primary"
           size="3xl"
         />
-        <span class="fs-xl font-bold tracking-wider">
+        <span class="text-xl font-bold tracking-wider">
           {{ t('login.brandTitle') }}
         </span>
       </div>
 
       <div class="relative z-10 mb-[var(--spacing-2xl)]">
         <blockquote class="col-stack-md">
-          <p class="fs-2xl font-medium leading-relaxed text-foreground/90">
+          <p class="text-2xl font-medium leading-relaxed text-foreground/90">
             "{{ t('login.brandSloganLine1') }}
             <br />
             {{ t('login.brandSloganLine2') }}"
           </p>
-          <footer class="fs-sm text-muted-foreground">— {{ t('login.brandQuoteAuthor') }}</footer>
+          <footer class="text-sm text-muted-foreground">— {{ t('login.brandQuoteAuthor') }}</footer>
         </blockquote>
       </div>
     </div>
@@ -223,7 +223,7 @@ async function handleLoginSubmit(): Promise<void> {
           text
           rounded
           severity="secondary"
-          class="fs-lg!"
+          class="text-lg!"
           @click="toggleThemeWithAnimation"
         />
         <Select
@@ -237,23 +237,25 @@ async function handleLoginSubmit(): Promise<void> {
         />
       </div>
 
-      <div class="layout-full center p-padding-sm md:p-padding-md lg:p-padding-lg">
-        <div class="w-full layout-content-narrow col-stack-xl">
+      <div class="layout-full center p-sm md:p-md lg:p-lg">
+        <div
+          class="w-full py-sm md:py-md xl:py-lg 2xl:py-xl mx-auto max-w-[88%] sm:max-w-[84%] md:max-w-[82%] lg:max-w-[80%] xl:max-w-[78%] 2xl:max-w-[76%] col-stack-xl"
+        >
           <div class="col-stack-sm text-left">
-            <h2 class="fs-3xl font-bold text-foreground">
+            <h2 class="text-3xl font-bold text-foreground">
               {{ t('login.heading') }}
             </h2>
-            <p class="fs-sm text-muted-foreground">
+            <p class="text-sm text-muted-foreground">
               {{ t('login.description') }}
             </p>
           </div>
 
           <!-- Quick Fill / Role Switch -->
-          <div class="mb-margin-md column-between gap-scale-sm">
-            <div class="fs-xs text-muted-foreground">
+          <div class="mb-md column-between gap-sm">
+            <div class="text-xs text-muted-foreground">
               {{ t('login.quickFillTips') }}
             </div>
-            <div class="row-start gap-scale-xs">
+            <div class="row-start gap-xs">
               <Button
                 size="small"
                 text
@@ -262,9 +264,9 @@ async function handleLoginSubmit(): Promise<void> {
                 <Icons
                   name="i-lucide-shield-check"
                   size="sm"
-                  class="mr-margin-xs text-current"
+                  class="mr-xs text-current"
                 />
-                <span class="fs-xs">
+                <span class="text-xs">
                   {{ t('login.quickAdmin') }}
                 </span>
               </Button>
@@ -277,9 +279,9 @@ async function handleLoginSubmit(): Promise<void> {
                 <Icons
                   name="i-lucide-user-round"
                   size="sm"
-                  class="mr-margin-xs text-current"
+                  class="mr-xs text-current"
                 />
-                <span class="fs-xs">
+                <span class="text-xs">
                   {{ t('login.quickUser') }}
                 </span>
               </Button>
@@ -295,7 +297,7 @@ async function handleLoginSubmit(): Promise<void> {
             @submit="login"
           >
             <template #footer="{ formState }">
-              <div class="mt-margin-xl">
+              <div class="mt-xl">
                 <Button
                   class="w-full"
                   :label="t('login.submit')"
@@ -308,7 +310,7 @@ async function handleLoginSubmit(): Promise<void> {
           </ProForm>
 
           <div class="col-stack-md text-center mt-[var(--spacing-xl)]">
-            <div class="text-muted-foreground fs-sm">
+            <div class="text-muted-foreground text-sm">
               {{ t('login.noAccount') }}
               <a
                 href="#"
@@ -317,7 +319,7 @@ async function handleLoginSubmit(): Promise<void> {
                 {{ t('login.register') }}
               </a>
             </div>
-            <p class="text-muted-foreground/50 fs-xs mt-[var(--spacing-2xl)]">
+            <p class="text-muted-foreground/50 text-xs mt-[var(--spacing-2xl)]">
               {{ t('login.footerText', { version: '1.0.0', year: '2026' }) }}
             </p>
           </div>

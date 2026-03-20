@@ -29,6 +29,6 @@ export const defaultAnimateConfig: AnimateWrapperProps = {
   appear: true,
   /** 默认是否列表模式 */
   group: false,
-  /** 默认队列延迟（ms），group 模式队列延迟，使用设计系统 duration-scale-sm */
+  /** 默认队列延迟（ms），group 模式队列延迟，使用设计系统 duration-sm */
   stagger: TRANSITION_SCALE_VALUES.sm,
 }

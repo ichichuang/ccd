@@ -22,7 +22,7 @@ const myColorCustomInput = defineComponent({
           placeholder='useField("myColor") 双向绑定'
         />
         {errors.value.length ? (
-          <div class="fs-xs text-danger">{errors.value.join(', ')}</div>
+          <div class="text-xs text-danger">{errors.value.join(', ')}</div>
         ) : null}
       </div>
     )

@@ -452,7 +452,7 @@ export default defineComponent({
       const iconButton = (
         <button
           type="button"
-          class={`center group ${MENU_COLLAPSED_BUTTON_PADDING} rounded-md ${ROUNDED_NAV} cursor-pointer transition-[background-color,color,opacity,transform] duration-scale-md aspect-square ${MENU_COLLAPSED_BUTTON_SIZE} border-none bg-transparent p-0 outline-none interactive-focus-ring ${stateClasses}`}
+          class={`center group ${MENU_COLLAPSED_BUTTON_PADDING} rounded-md ${ROUNDED_NAV} cursor-pointer transition-[background-color,color,opacity,transform] duration-md aspect-square ${MENU_COLLAPSED_BUTTON_SIZE} border-none bg-transparent p-0 outline-none interactive-focus-ring ${stateClasses}`}
           onClick={e => onCollapsedItemClick(e, item)}
         >
           {item.icon ? (
@@ -511,7 +511,7 @@ export default defineComponent({
       return (
         <div
           ref={menuContainerRef}
-          class="w-full overflow-hidden pt-padding-xs"
+          class="w-full overflow-hidden pt-xs"
         >
           {!props.sidebarCollapse ? (
             <PanelMenu

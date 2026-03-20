@@ -104,20 +104,20 @@ function rowClassName(row: EmployeeRow): string {
 <template>
   <div
     data-archetype="A1-toolbar-content"
-    class="layout-full px-padding-md md:px-padding-lg col-stack-sm min-h-0"
+    class="layout-full px-md md:px-lg col-stack-sm min-h-0"
   >
     <!-- Toolbar: Hero Header (Transparent Root Policy: Inherit canvas) -->
     <header class="shrink-0 border-b-default">
-      <div class="w-full py-padding-sm row-y-center gap-md">
-        <div class="p-padding-md bg-primary/10 rounded-scale-lg shrink-0">
+      <div class="w-full py-sm row-y-center gap-md">
+        <div class="p-md bg-primary/10 rounded-lg shrink-0">
           <Icons
             name="i-lucide-settings-2"
-            class="text-primary fs-2xl"
+            class="text-primary text-2xl"
           />
         </div>
         <div class="col-stack-xs">
-          <h1 class="fs-2xl font-bold text-foreground m-0">ProTable — 全量能力展示</h1>
-          <p class="text-muted fs-sm m-0">
+          <h1 class="text-2xl font-bold text-foreground m-0">ProTable — 全量能力展示</h1>
+          <p class="text-muted text-sm m-0">
             斑马纹 · 网格线 · 行选择 · 工具栏 · 高度模式 · 固定列 · 自定义行样式
           </p>
         </div>
@@ -128,15 +128,15 @@ function rowClassName(row: EmployeeRow): string {
     <div class="flex-1 min-h-0 col-stack-sm">
       <!-- Control Panel -->
       <div class="shrink-0 border-b-default">
-        <div class="w-full py-padding-sm">
-          <div class="panel-base">
-            <div class="row-y-center gap-sm border-b-default pb-padding-sm mb-padding-sm">
+        <div class="w-full py-sm">
+          <div class="bg-card rounded-md shadow-soft py-md px-lg flex flex-col gap-lg">
+            <div class="row-y-center gap-sm border-b-default pb-sm mb-padding-sm">
               <Icons
                 name="i-lucide-settings-2"
                 class="text-primary"
                 size="sm"
               />
-              <span class="fs-sm font-semibold text-foreground tracking-wider uppercase">
+              <span class="text-sm font-semibold text-foreground tracking-wider uppercase">
                 能力控制台 / Playground Controls
               </span>
             </div>
@@ -144,21 +144,23 @@ function rowClassName(row: EmployeeRow): string {
             <!-- 3-column grid -->
             <div class="grid grid-cols-1 md:grid-cols-3 gap-xl">
               <!-- Group: 外观 -->
-              <div class="bg-muted/5 rounded-scale-md p-padding-md col-stack-md">
+              <div class="bg-muted/5 rounded-md p-md col-stack-md">
                 <div class="row-y-center gap-xs mb-padding-xs">
                   <Icons
                     name="i-lucide-palette"
                     size="xs"
                     class="text-muted-foreground shrink-0"
                   />
-                  <p class="fs-xs font-semibold text-muted-foreground uppercase tracking-wider m-0">
+                  <p
+                    class="text-xs font-semibold text-muted-foreground uppercase tracking-wider m-0"
+                  >
                     外观
                   </p>
                 </div>
                 <div class="row-between">
                   <label
                     for="ctrl-striped"
-                    class="fs-sm text-foreground cursor-pointer"
+                    class="text-sm text-foreground cursor-pointer"
                   >
                     斑马纹
                   </label>
@@ -171,7 +173,7 @@ function rowClassName(row: EmployeeRow): string {
                 <div class="row-between">
                   <label
                     for="ctrl-hlines"
-                    class="fs-sm text-foreground cursor-pointer"
+                    class="text-sm text-foreground cursor-pointer"
                   >
                     横向分割线
                   </label>
@@ -184,7 +186,7 @@ function rowClassName(row: EmployeeRow): string {
                 <div class="row-between">
                   <label
                     for="ctrl-vlines"
-                    class="fs-sm text-foreground cursor-pointer"
+                    class="text-sm text-foreground cursor-pointer"
                   >
                     纵向分割线
                   </label>
@@ -197,19 +199,21 @@ function rowClassName(row: EmployeeRow): string {
               </div>
 
               <!-- Group: 交互 -->
-              <div class="bg-muted/5 rounded-scale-md p-padding-md col-stack-md">
+              <div class="bg-muted/5 rounded-md p-md col-stack-md">
                 <div class="row-y-center gap-xs mb-padding-xs">
                   <Icons
                     name="i-lucide-mouse-pointer"
                     size="xs"
                     class="text-muted-foreground shrink-0"
                   />
-                  <p class="fs-xs font-semibold text-muted-foreground uppercase tracking-wider m-0">
+                  <p
+                    class="text-xs font-semibold text-muted-foreground uppercase tracking-wider m-0"
+                  >
                     交互
                   </p>
                 </div>
                 <div class="row-y-center gap-md">
-                  <label class="fs-sm text-foreground shrink-0 w-[var(--spacing-3xl)]">
+                  <label class="text-sm text-foreground shrink-0 w-[var(--spacing-3xl)]">
                     选择模式
                   </label>
                   <Select
@@ -221,7 +225,7 @@ function rowClassName(row: EmployeeRow): string {
                   />
                 </div>
                 <div class="row-y-center gap-md">
-                  <label class="fs-sm text-foreground shrink-0 w-[var(--spacing-3xl)]">
+                  <label class="text-sm text-foreground shrink-0 w-[var(--spacing-3xl)]">
                     固定选择列
                   </label>
                   <Select
@@ -235,7 +239,7 @@ function rowClassName(row: EmployeeRow): string {
                 <div class="row-between mt-padding-xs">
                   <label
                     for="ctrl-toolbar"
-                    class="fs-sm text-foreground cursor-pointer"
+                    class="text-sm text-foreground cursor-pointer"
                   >
                     工具栏
                   </label>
@@ -248,7 +252,7 @@ function rowClassName(row: EmployeeRow): string {
                 <div class="row-between">
                   <label
                     for="ctrl-filter"
-                    class="fs-sm text-foreground cursor-pointer"
+                    class="text-sm text-foreground cursor-pointer"
                   >
                     全局搜索
                   </label>
@@ -261,7 +265,7 @@ function rowClassName(row: EmployeeRow): string {
                 <div class="row-between">
                   <label
                     for="ctrl-loading"
-                    class="fs-sm text-foreground cursor-pointer"
+                    class="text-sm text-foreground cursor-pointer"
                   >
                     加载中（模拟）
                   </label>
@@ -272,7 +276,7 @@ function rowClassName(row: EmployeeRow): string {
                   />
                 </div>
                 <div class="row-between">
-                  <label class="fs-sm text-foreground shrink-0">悬停高亮</label>
+                  <label class="text-sm text-foreground shrink-0">悬停高亮</label>
                   <ToggleSwitch
                     v-model="rowHover"
                     class="shrink-0"
@@ -281,19 +285,21 @@ function rowClassName(row: EmployeeRow): string {
               </div>
 
               <!-- Group: 布局 -->
-              <div class="bg-muted/5 rounded-scale-md p-padding-md col-stack-md">
+              <div class="bg-muted/5 rounded-md p-md col-stack-md">
                 <div class="row-y-center gap-xs mb-padding-xs">
                   <Icons
                     name="i-lucide-layout"
                     size="xs"
                     class="text-muted-foreground shrink-0"
                   />
-                  <p class="fs-xs font-semibold text-muted-foreground uppercase tracking-wider m-0">
+                  <p
+                    class="text-xs font-semibold text-muted-foreground uppercase tracking-wider m-0"
+                  >
                     布局
                   </p>
                 </div>
                 <div class="row-y-center gap-md">
-                  <label class="fs-sm text-foreground shrink-0 w-[var(--spacing-3xl)]">
+                  <label class="text-sm text-foreground shrink-0 w-[var(--spacing-3xl)]">
                     高度模式
                   </label>
                   <Select
@@ -305,7 +311,7 @@ function rowClassName(row: EmployeeRow): string {
                   />
                 </div>
                 <div class="row-y-center gap-md">
-                  <label class="fs-sm text-foreground shrink-0 w-[var(--spacing-3xl)]">
+                  <label class="text-sm text-foreground shrink-0 w-[var(--spacing-3xl)]">
                     表格分布
                   </label>
                   <Select

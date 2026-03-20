@@ -6,7 +6,7 @@ import type { SizeScaleKey } from '@/constants/sizeScale'
 
 /**
  * Icons 组件 (UnoCSS preset-icons)
- * 尺寸：标准阶梯 xs～5xl 通过 fs-* 联动 SizeStore；数字/字符串通过内联样式。
+ * 尺寸：标准阶梯 xs～5xl 通过 text-* 联动 SizeStore；数字/字符串通过内联样式。
  */
 const props = withDefaults(defineProps<IconsProps>(), {
   size: 'md',
@@ -30,11 +30,11 @@ const iconClass = computed(() => {
   return `i-lucide-${toIconName(n)}`
 })
 
-// 2. 尺寸类名：仅标准阶梯（xs～5xl）使用 fs-*
+// 2. 尺寸类名：仅标准阶梯（xs～5xl）使用 text-*
 const sizeClass = computed(() => {
   const s = props.size
   if (typeof s === 'string' && SIZE_SCALE_KEYS.includes(s as SizeScaleKey)) {
-    return `fs-${s}`
+    return `text-${s}`
   }
   return ''
 })

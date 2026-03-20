@@ -26,20 +26,20 @@ const TABLE_LAYOUT_OPTIONS: { label: string; value: 'auto' | 'fixed' }[] = [
 <template>
   <div
     data-archetype="A1-toolbar-content"
-    class="layout-full px-padding-md md:px-padding-lg col-stack-sm min-h-0"
+    class="layout-full px-md md:px-lg col-stack-sm min-h-0"
   >
     <!-- Toolbar: Hero Header (Transparent Root Policy: Inherit canvas) -->
     <header class="shrink-0 border-b-default">
-      <div class="w-full py-padding-sm row-y-center gap-md">
-        <div class="p-padding-md bg-primary/10 rounded-scale-lg shrink-0">
+      <div class="w-full py-sm row-y-center gap-md">
+        <div class="p-md bg-primary/10 rounded-lg shrink-0">
           <Icons
             name="i-lucide-move-horizontal"
-            class="text-primary fs-2xl"
+            class="text-primary text-2xl"
           />
         </div>
         <div class="col-stack-xs">
-          <h1 class="fs-2xl font-bold text-foreground m-0">ProTable — 列宽与尺寸</h1>
-          <p class="text-muted fs-sm m-0">
+          <h1 class="text-2xl font-bold text-foreground m-0">ProTable — 列宽与尺寸</h1>
+          <p class="text-muted text-sm m-0">
             演示 width / minWidth / maxWidth 约束、resizable 拖拽缩放以及 tableLayout auto / fixed
             切换。
           </p>
@@ -51,28 +51,28 @@ const TABLE_LAYOUT_OPTIONS: { label: string; value: 'auto' | 'fixed' }[] = [
     <div class="flex-1 min-h-0 col-stack-sm">
       <!-- Control panel -->
       <div class="shrink-0 border-b-default">
-        <div class="w-full py-padding-sm">
-          <div class="panel-base">
-            <div class="row-y-center gap-sm border-b-default pb-padding-sm mb-padding-sm">
+        <div class="w-full py-sm">
+          <div class="bg-card rounded-md shadow-soft py-md px-lg flex flex-col gap-lg">
+            <div class="row-y-center gap-sm border-b-default pb-sm mb-padding-sm">
               <Icons
                 name="i-lucide-settings-2"
                 class="text-primary"
                 size="sm"
               />
-              <span class="fs-sm font-semibold text-foreground tracking-wider uppercase">
+              <span class="text-sm font-semibold text-foreground tracking-wider uppercase">
                 列宽控制台 / Column Sizing
               </span>
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-3 gap-xl">
-              <div class="bg-muted/5 rounded-scale-md p-padding-md col-stack-md">
-                <p class="fs-xs font-semibold text-muted-foreground uppercase tracking-wider m-0">
+              <div class="bg-muted/5 rounded-md p-md col-stack-md">
+                <p class="text-xs font-semibold text-muted-foreground uppercase tracking-wider m-0">
                   拖拽缩放
                 </p>
                 <div class="row-between">
                   <label
                     for="ctrl-resize"
-                    class="fs-sm text-foreground cursor-pointer"
+                    class="text-sm text-foreground cursor-pointer"
                   >
                     启用状态
                   </label>
@@ -84,12 +84,14 @@ const TABLE_LAYOUT_OPTIONS: { label: string; value: 'auto' | 'fixed' }[] = [
                 </div>
               </div>
 
-              <div class="bg-muted/5 rounded-scale-md p-padding-md col-stack-md">
-                <p class="fs-xs font-semibold text-muted-foreground uppercase tracking-wider m-0">
+              <div class="bg-muted/5 rounded-md p-md col-stack-md">
+                <p class="text-xs font-semibold text-muted-foreground uppercase tracking-wider m-0">
                   缩放模式
                 </p>
                 <div class="row-y-center gap-md">
-                  <label class="fs-sm text-foreground shrink-0 w-[var(--spacing-2xl)]">Mode</label>
+                  <label class="text-sm text-foreground shrink-0 w-[var(--spacing-2xl)]">
+                    Mode
+                  </label>
                   <Select
                     v-model="columnResizeMode"
                     :options="RESIZE_MODE_OPTIONS"
@@ -100,12 +102,12 @@ const TABLE_LAYOUT_OPTIONS: { label: string; value: 'auto' | 'fixed' }[] = [
                 </div>
               </div>
 
-              <div class="bg-muted/5 rounded-scale-md p-padding-md col-stack-md">
-                <p class="fs-xs font-semibold text-muted-foreground uppercase tracking-wider m-0">
+              <div class="bg-muted/5 rounded-md p-md col-stack-md">
+                <p class="text-xs font-semibold text-muted-foreground uppercase tracking-wider m-0">
                   Table Layout
                 </p>
                 <div class="row-y-center gap-md">
-                  <label class="fs-sm text-foreground shrink-0 w-[var(--spacing-2xl)]">
+                  <label class="text-sm text-foreground shrink-0 w-[var(--spacing-2xl)]">
                     Layout
                   </label>
                   <Select

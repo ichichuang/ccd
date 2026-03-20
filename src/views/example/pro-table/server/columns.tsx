@@ -6,7 +6,7 @@ const GENDER_CFG: Record<string, { label: string; cls: string }> = {
   female: { label: '女', cls: 'bg-accent/15 text-accent' },
 }
 
-const BADGE = 'rounded-scale-sm px-padding-sm py-padding-xs fs-xs font-semibold'
+const BADGE = 'rounded-sm px-sm py-xs text-xs font-semibold'
 
 export const serverTableColumns: ProTableColumn<DummyUserDTO>[] = [
   {
@@ -32,10 +32,10 @@ export const serverTableColumns: ProTableColumn<DummyUserDTO>[] = [
           class="w-[var(--spacing-xl)] h-[var(--spacing-xl)] rounded-full object-cover shrink-0 shadow-sm"
         />
         <div class="col-stack-xs min-w-0">
-          <span class="fs-sm font-medium text-foreground text-single-line-ellipsis">
+          <span class="text-sm font-medium text-foreground text-single-line-ellipsis">
             {row.firstName} {row.lastName}
           </span>
-          <span class="fs-xs text-muted-foreground">@{row.username}</span>
+          <span class="text-xs text-muted-foreground">@{row.username}</span>
         </div>
       </div>
     ),
@@ -81,8 +81,8 @@ export const serverTableColumns: ProTableColumn<DummyUserDTO>[] = [
       const company = row.company
       return (
         <div class="col-stack-xs min-w-0">
-          <span class="fs-sm text-single-line-ellipsis">{company.name}</span>
-          <span class="fs-xs text-muted-foreground text-single-line-ellipsis">
+          <span class="text-sm text-single-line-ellipsis">{company.name}</span>
+          <span class="text-xs text-muted-foreground text-single-line-ellipsis">
             {company.department} · {company.title}
           </span>
         </div>
@@ -96,7 +96,7 @@ export const serverTableColumns: ProTableColumn<DummyUserDTO>[] = [
     render: ({ row }: ColumnRenderParams<DummyUserDTO>) => {
       const addr = row.address
       return (
-        <span class="fs-sm text-muted-foreground">
+        <span class="text-sm text-muted-foreground">
           {addr.city}, {addr.country}
         </span>
       )

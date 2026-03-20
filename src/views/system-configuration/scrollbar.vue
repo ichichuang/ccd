@@ -165,39 +165,39 @@ const state = scrollbarRef.value?.state()`,
   >
     <!-- Toolbar: Header (Transparent Root · Nested Canvas) -->
     <div class="shrink-0 border-b-default border-primary/50 bg-primary/5">
-      <div class="layout-content-wide col-stack-sm py-padding-sm">
+      <div
+        class="py-sm md:py-md xl:py-lg 2xl:py-xl mx-auto max-w-[92%] sm:max-w-[94%] md:max-w-[92%] lg:max-w-[90%] xl:max-w-[88%] 2xl:max-w-[86%] 3xl:max-w-[84%] col-stack-sm py-sm"
+      >
         <div class="row-y-center gap-md">
-          <div class="p-padding-md bg-primary/10 rounded-scale-lg shrink-0">
+          <div class="p-md bg-primary/10 rounded-lg shrink-0">
             <Icons
               name="i-lucide-scroll"
-              class="text-primary fs-2xl"
+              class="text-primary text-2xl"
             />
           </div>
           <div class="col-stack-xs">
-            <h1 class="fs-2xl font-bold text-foreground">CScrollbar 滚动条组件</h1>
-            <p class="text-muted-foreground fs-sm">基于 OverlayScrollbars 的高性能滚动容器组件</p>
+            <h1 class="text-2xl font-bold text-foreground">CScrollbar 滚动条组件</h1>
+            <p class="text-muted-foreground text-sm">基于 OverlayScrollbars 的高性能滚动容器组件</p>
           </div>
         </div>
         <div
-          class="border-l-4 border-primary bg-primary/5 p-padding-md rounded-r-scale-md flex gap-md items-start mt-margin-sm"
+          class="border-l-4 border-primary bg-primary/5 p-md rounded-r-md flex gap-md items-start mt-sm"
         >
           <Icons
             name="i-lucide-info"
-            class="text-primary fs-xl shrink-0 mt-margin-xs"
+            class="text-primary text-xl shrink-0 mt-xs"
           />
           <div class="col-stack-xs">
-            <div class="font-semibold text-primary fs-sm">Architectural Guide 架构引导</div>
-            <div class="text-muted-foreground fs-xs leading-relaxed">
+            <div class="font-semibold text-primary text-sm">Architectural Guide 架构引导</div>
+            <div class="text-muted-foreground text-xs leading-relaxed">
               本组件是对
-              <span class="bg-muted px-padding-xs rounded-scale-xs font-mono">
-                overlayscrollbars
-              </span>
+              <span class="bg-muted px-xs rounded-xs font-mono">overlayscrollbars</span>
               的 Vue 封装。如需修改全局滚动条样式，请通过 UnoCSS 的
-              <span class="bg-muted px-padding-xs rounded-scale-xs font-mono">scrollbar</span>
+              <span class="bg-muted px-xs rounded-xs font-mono">scrollbar</span>
               插件进行全局配置。滚动安全区与滚动区域外间距建议使用
-              <span class="bg-muted px-padding-xs rounded-scale-xs font-mono">scroll-m-gap-*</span>
+              <span class="bg-muted px-xs rounded-xs font-mono">scroll-m-gap-*</span>
               /
-              <span class="bg-muted px-padding-xs rounded-scale-xs font-mono">m-gap-*</span>
+              <span class="bg-muted px-xs rounded-xs font-mono">m-gap-*</span>
               语义类，详细说明见 Size / UnoCSS 配置页。
             </div>
           </div>
@@ -206,7 +206,7 @@ const state = scrollbarRef.value?.state()`,
 
         <div class="row-y-center flex-wrap gap-lg">
           <div class="col-stack-sm">
-            <span class="text-muted-foreground fs-sm">可见性模式 (Visibility Mode)</span>
+            <span class="text-muted-foreground text-sm">可见性模式 (Visibility Mode)</span>
             <SelectButton
               v-model="visibility"
               :options="visibilityOptions"
@@ -216,7 +216,7 @@ const state = scrollbarRef.value?.state()`,
           </div>
           <div class="h-[var(--spacing-xl)] w-px bg-border mx-gap-md hidden md:block" />
           <div class="col-stack-sm">
-            <span class="text-muted-foreground fs-sm">定位到指定项 (Scroll To Item)</span>
+            <span class="text-muted-foreground text-sm">定位到指定项 (Scroll To Item)</span>
             <div class="row-y-center gap-sm">
               <InputNumber
                 v-model="targetItemIndex"
@@ -228,7 +228,7 @@ const state = scrollbarRef.value?.state()`,
                 class="w-[var(--spacing-4xl)]"
               />
               <div
-                class="interactive-tile"
+                class="row-y-center gap-sm px-sm py-xs rounded-md cursor-pointer select-none transition-all duration-lg ease-in-out text-sm active:scale-95 surface-item shadow-soft transition-all duration-xl ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)] interactive-focus-ring"
                 tabindex="0"
                 @click="scrollToItem"
                 @keydown.enter.prevent="scrollToItem"
@@ -236,7 +236,7 @@ const state = scrollbarRef.value?.state()`,
               >
                 <Icons
                   name="i-lucide-locate-fixed"
-                  class="fs-sm"
+                  class="text-sm"
                 />
                 <span>定位</span>
               </div>
@@ -245,7 +245,7 @@ const state = scrollbarRef.value?.state()`,
           <div class="h-[var(--spacing-xl)] w-px bg-border mx-gap-md hidden md:block" />
           <div class="flex gap-sm flex-wrap items-center">
             <div
-              class="interactive-tile"
+              class="row-y-center gap-sm px-sm py-xs rounded-md cursor-pointer select-none transition-all duration-lg ease-in-out text-sm active:scale-95 surface-item shadow-soft transition-all duration-xl ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)] interactive-focus-ring"
               tabindex="0"
               @click="scrollToTop"
               @keydown.enter.prevent="scrollToTop"
@@ -253,12 +253,12 @@ const state = scrollbarRef.value?.state()`,
             >
               <Icons
                 name="i-lucide-arrow-up-to-line"
-                class="fs-sm"
+                class="text-sm"
               />
               <span>滚动至顶部</span>
             </div>
             <div
-              class="interactive-tile"
+              class="row-y-center gap-sm px-sm py-xs rounded-md cursor-pointer select-none transition-all duration-lg ease-in-out text-sm active:scale-95 surface-item shadow-soft transition-all duration-xl ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)] interactive-focus-ring"
               tabindex="0"
               @click="scrollToBottom"
               @keydown.enter.prevent="scrollToBottom"
@@ -266,12 +266,12 @@ const state = scrollbarRef.value?.state()`,
             >
               <Icons
                 name="i-lucide-arrow-down-to-line"
-                class="fs-sm"
+                class="text-sm"
               />
               <span>滚动至底部</span>
             </div>
             <div
-              class="interactive-tile bg-info text-info-foreground shadow-soft hover:opacity-90"
+              class="row-y-center gap-sm px-sm py-xs rounded-md cursor-pointer select-none transition-all duration-lg ease-in-out text-sm active:scale-95 surface-item shadow-soft transition-all duration-xl ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)] interactive-focus-ring bg-info text-info-foreground shadow-soft hover:opacity-90"
               tabindex="0"
               @click="checkState"
               @keydown.enter.prevent="checkState"
@@ -279,12 +279,12 @@ const state = scrollbarRef.value?.state()`,
             >
               <Icons
                 name="i-lucide-bug"
-                class="fs-sm"
+                class="text-sm"
               />
               <span>检查状态</span>
             </div>
             <div
-              class="interactive-tile text-danger hover:bg-danger/10"
+              class="row-y-center gap-sm px-sm py-xs rounded-md cursor-pointer select-none transition-all duration-lg ease-in-out text-sm active:scale-95 surface-item shadow-soft transition-all duration-xl ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)] interactive-focus-ring text-danger hover:bg-danger/10"
               tabindex="0"
               @click="logs = []"
               @keydown.enter.prevent="logs = []"
@@ -292,7 +292,7 @@ const state = scrollbarRef.value?.state()`,
             >
               <Icons
                 name="i-lucide-trash-2"
-                class="fs-sm"
+                class="text-sm"
               />
               <span>清空日志</span>
             </div>
@@ -303,13 +303,13 @@ const state = scrollbarRef.value?.state()`,
 
     <!-- Scrollable content -->
     <CScrollbar class="flex-1 min-h-0">
-      <div class="layout-content-wide col-stack-xl">
+      <div
+        class="py-sm md:py-md xl:py-lg 2xl:py-xl mx-auto max-w-[92%] sm:max-w-[94%] md:max-w-[92%] lg:max-w-[90%] xl:max-w-[88%] 2xl:max-w-[86%] 3xl:max-w-[84%] col-stack-xl"
+      >
         <!-- Device Store 当前设备/断点 (Hero: accent tint + title strip) -->
-        <Card
-          class="bg-accent/10 dark:bg-accent/5 rounded-scale-xl shadow-soft p-padding-xl col-stack-lg"
-        >
+        <Card class="bg-accent/10 dark:bg-accent/5 rounded-xl shadow-soft p-xl col-stack-lg">
           <template #title>
-            <div class="row-y-center gap-sm border-b-default pb-padding-sm mb-padding-sm">
+            <div class="row-y-center gap-sm border-b-default pb-sm mb-padding-sm">
               <Icons
                 name="i-lucide-smartphone"
                 class="text-primary"
@@ -324,42 +324,42 @@ const state = scrollbarRef.value?.state()`,
           <template #content>
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-md">
               <div
-                class="col-stack-xs p-padding-md surface-item rounded-scale-lg interactive-hover-tile behavior-hover-transition"
+                class="col-stack-xs p-md surface-item rounded-lg shadow-soft transition-all duration-xl ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)] behavior-hover-transition"
               >
-                <span class="text-muted-foreground fs-xs">type</span>
+                <span class="text-muted-foreground text-xs">type</span>
                 <Tag
                   :value="deviceStore.type"
                   severity="info"
                 />
               </div>
               <div
-                class="col-stack-xs p-padding-md surface-item rounded-scale-lg interactive-hover-tile behavior-hover-transition"
+                class="col-stack-xs p-md surface-item rounded-lg shadow-soft transition-all duration-xl ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)] behavior-hover-transition"
               >
-                <span class="text-muted-foreground fs-xs">currentBreakpoint</span>
+                <span class="text-muted-foreground text-xs">currentBreakpoint</span>
                 <Tag
                   :value="deviceStore.currentBreakpoint"
                   severity="success"
                 />
               </div>
               <div
-                class="col-stack-xs p-padding-md surface-item rounded-scale-lg interactive-hover-tile behavior-hover-transition"
+                class="col-stack-xs p-md surface-item rounded-lg shadow-soft transition-all duration-xl ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)] behavior-hover-transition"
               >
-                <span class="text-muted-foreground fs-xs">isMobileLayout</span>
+                <span class="text-muted-foreground text-xs">isMobileLayout</span>
                 <Tag
                   :value="String(deviceStore.isMobileLayout)"
                   :severity="deviceStore.isMobileLayout ? 'warn' : 'secondary'"
                 />
               </div>
               <div
-                class="col-stack-xs p-padding-md surface-item rounded-scale-lg interactive-hover-tile behavior-hover-transition"
+                class="col-stack-xs p-md surface-item rounded-lg shadow-soft transition-all duration-xl ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)] behavior-hover-transition"
               >
-                <span class="text-muted-foreground fs-xs">width × height</span>
-                <span class="font-mono fs-sm">
+                <span class="text-muted-foreground text-xs">width × height</span>
+                <span class="font-mono text-sm">
                   {{ deviceStore.width }} × {{ deviceStore.height }}
                 </span>
               </div>
             </div>
-            <p class="mt-margin-md text-muted-foreground fs-xs">
+            <p class="mt-md text-muted-foreground text-xs">
               布局判定应使用 useDeviceStore 的 getters，详见
               <RouterLink
                 to="/system-configuration/layout"
@@ -375,7 +375,9 @@ const state = scrollbarRef.value?.state()`,
         <!-- Demo Section -->
         <div class="grid grid-cols-1 lg:grid-cols-5 gap-lg">
           <!-- Vertical Scroll Demo (数据区：固定高度以触发纵向滚动) -->
-          <Card class="panel-base lg:col-span-2">
+          <Card
+            class="bg-card rounded-md shadow-soft py-md px-lg flex flex-col gap-lg lg:col-span-2"
+          >
             <template #title>
               <div class="row-between">
                 <div class="row-y-center gap-sm">
@@ -400,21 +402,21 @@ const state = scrollbarRef.value?.state()`,
                 @updated="handleUpdated"
                 @scroll="handleScroll"
               >
-                <div class="p-padding-sm col-stack-md">
+                <div class="p-sm col-stack-md">
                   <div
                     v-for="item in items"
                     :key="item.id"
-                    class="p-padding-md rounded-scale-lg surface-item behavior-hover-transition hover:bg-foreground/5 group cursor-default"
+                    class="p-md rounded-lg surface-item behavior-hover-transition hover:bg-foreground/5 group cursor-default"
                   >
-                    <div class="row main-between cross-start mb-margin-xs">
-                      <span class="font-medium fs-sm group-hover:text-primary transition-colors">
+                    <div class="row main-between cross-start mb-xs">
+                      <span class="font-medium text-sm group-hover:text-primary transition-colors">
                         {{ item.title }}
                       </span>
-                      <span class="fs-xs text-muted-foreground">
+                      <span class="text-xs text-muted-foreground">
                         {{ item.date }}
                       </span>
                     </div>
-                    <p class="fs-xs text-muted-foreground leading-relaxed">
+                    <p class="text-xs text-muted-foreground leading-relaxed">
                       {{ item.desc }}
                     </p>
                   </div>
@@ -426,7 +428,7 @@ const state = scrollbarRef.value?.state()`,
           <!-- Right Side -->
           <div class="col-stack-lg lg:col-span-3">
             <!-- Horizontal Scroll Demo (数据区：title 无 strip) -->
-            <Card class="panel-base">
+            <Card class="bg-card rounded-md shadow-soft py-md px-lg flex flex-col gap-lg">
               <template #title>
                 <div class="row-y-center gap-sm">
                   <Icons
@@ -437,16 +439,16 @@ const state = scrollbarRef.value?.state()`,
                 </div>
               </template>
               <template #content>
-                <div class="-mt-margin-sm scroll-m-gap-md">
+                <div class="-mt-sm scroll-m-gap-md">
                   <CScrollbar
                     :visibility="visibility"
                     class="layout-scroll-panel min-h-[var(--spacing-3xl)]"
                   >
-                    <div class="row-y-center p-padding-md gap-lg w-max h-full">
+                    <div class="row-y-center p-md gap-lg w-max h-full">
                       <div
                         v-for="item in horizontalItems"
                         :key="item"
-                        class="min-w-[var(--spacing-4xl)] h-[var(--spacing-2xl)] p-padding-md rounded-scale-lg interactive-hover-tile surface-item center shrink-0 behavior-hover-transition"
+                        class="min-w-[var(--spacing-4xl)] h-[var(--spacing-2xl)] p-md rounded-lg shadow-soft transition-all duration-xl ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)] surface-item center shrink-0 behavior-hover-transition"
                       >
                         <span class="font-medium text-muted-foreground">
                           {{ item }}
@@ -460,10 +462,10 @@ const state = scrollbarRef.value?.state()`,
 
             <!-- Event Logs (Hero: primary tint + title strip) -->
             <Card
-              class="bg-primary/10 dark:bg-primary/5 rounded-scale-xl shadow-soft p-padding-xl col-stack-lg flex-1"
+              class="bg-primary/10 dark:bg-primary/5 rounded-xl shadow-soft p-xl col-stack-lg flex-1"
             >
               <template #title>
-                <div class="row-between border-b-default pb-padding-sm mb-padding-sm">
+                <div class="row-between border-b-default pb-sm mb-padding-sm">
                   <div class="row-y-center gap-sm">
                     <Icons
                       name="i-lucide-terminal"
@@ -478,19 +480,19 @@ const state = scrollbarRef.value?.state()`,
                 </div>
               </template>
               <template #content>
-                <div class="bg-card rounded-scale-md -mt-margin-sm">
+                <div class="bg-card rounded-md -mt-sm">
                   <CScrollbar class="layout-scroll-panel min-h-[var(--spacing-4xl)]">
-                    <div class="p-padding-md font-mono fs-xs col-stack-xs">
+                    <div class="p-md font-mono text-xs col-stack-xs">
                       <div
                         v-if="logs.length === 0"
-                        class="text-muted-foreground italic select-none py-padding-2xl text-center"
+                        class="text-muted-foreground italic select-none py-2xl text-center"
                       >
                         等待事件...
                       </div>
                       <div
                         v-for="(log, i) in logs"
                         :key="i"
-                        class="break-all pb-padding-xs mb-padding-xs last:mb-0"
+                        class="break-all pb-xs mb-padding-xs last:mb-0"
                         :class="log.includes('Action') ? 'text-info font-bold' : 'text-success/80'"
                       >
                         {{ log }}
@@ -504,7 +506,7 @@ const state = scrollbarRef.value?.state()`,
         </div>
 
         <!-- Code Examples (数据区：title 无 strip) -->
-        <Card class="panel-base">
+        <Card class="bg-card rounded-md shadow-soft py-md px-lg flex flex-col gap-lg">
           <template #title>
             <div class="row-y-center gap-sm">
               <Icons
@@ -525,25 +527,25 @@ const state = scrollbarRef.value?.state()`,
                 :key="example.title"
                 class="col-stack-sm"
               >
-                <h4 class="fs-sm font-semibold text-foreground mb-margin-xs row-y-center gap-sm">
+                <h4 class="text-sm font-semibold text-foreground mb-xs row-y-center gap-sm">
                   {{ example.title }}
                   <div
-                    class="p-padding-xs rounded-scale-sm cursor-pointer select-none transition-all duration-scale-lg ease-in-out hover:bg-primary/10 hover:text-primary active:scale-90"
+                    class="p-xs rounded-sm cursor-pointer select-none transition-all duration-lg ease-in-out hover:bg-primary/10 hover:text-primary active:scale-90"
                     @click.stop="copyToClipboard(example.code, example.title)"
                   >
                     <Icons
                       name="i-lucide-copy"
-                      class="fs-xs"
+                      class="text-xs"
                     />
                   </div>
                 </h4>
                 <div
-                  class="rounded-scale-md cursor-pointer hover:bg-muted/70 transition-colors duration-scale-lg"
+                  class="rounded-md cursor-pointer hover:bg-muted/70 transition-colors duration-lg"
                   @click="copyToClipboard(example.code, example.title)"
                 >
                   <CScrollbar class="min-w-0">
                     <pre
-                      class="m-0 bg-background/50 backdrop-blur-sm rounded-scale-md component-border p-padding-md fs-sm"
+                      class="m-0 bg-background/50 backdrop-blur-sm rounded-md shadow-soft p-md text-sm"
                     ><code class="text-foreground">{{ example.code }}</code></pre>
                   </CScrollbar>
                 </div>
@@ -553,7 +555,7 @@ const state = scrollbarRef.value?.state()`,
         </Card>
 
         <!-- Props Reference (数据区：title 无 strip) -->
-        <Card class="panel-base">
+        <Card class="bg-card rounded-md shadow-soft py-md px-lg flex flex-col gap-lg">
           <template #title>
             <div class="row-y-center gap-sm">
               <Icons
@@ -569,61 +571,57 @@ const state = scrollbarRef.value?.state()`,
           </template>
           <template #content>
             <CScrollbar class="w-full min-w-0">
-              <table class="w-full border-collapse fs-sm">
+              <table class="w-full border-collapse text-sm">
                 <thead>
                   <tr class="border-b-default">
-                    <th class="text-left p-padding-sm text-muted-foreground font-medium">属性名</th>
-                    <th class="text-left p-padding-sm text-muted-foreground font-medium">类型</th>
-                    <th class="text-left p-padding-sm text-muted-foreground font-medium">默认值</th>
-                    <th class="text-left p-padding-sm text-muted-foreground font-medium">描述</th>
+                    <th class="text-left p-sm text-muted-foreground font-medium">属性名</th>
+                    <th class="text-left p-sm text-muted-foreground font-medium">类型</th>
+                    <th class="text-left p-sm text-muted-foreground font-medium">默认值</th>
+                    <th class="text-left p-sm text-muted-foreground font-medium">描述</th>
                   </tr>
                 </thead>
                 <tbody>
                   <tr
                     class="border-b-default surface-item behavior-hover-transition hover:bg-foreground/5"
                   >
-                    <td class="p-padding-sm font-mono text-primary">options</td>
-                    <td class="p-padding-sm font-mono text-muted-foreground">
-                      OverlayScrollbarsOptions
-                    </td>
-                    <td class="p-padding-sm font-mono">-</td>
-                    <td class="p-padding-sm">OverlayScrollbars 配置对象</td>
+                    <td class="p-sm font-mono text-primary">options</td>
+                    <td class="p-sm font-mono text-muted-foreground">OverlayScrollbarsOptions</td>
+                    <td class="p-sm font-mono">-</td>
+                    <td class="p-sm">OverlayScrollbars 配置对象</td>
                   </tr>
                   <tr
                     class="border-b-default surface-item behavior-hover-transition hover:bg-foreground/5"
                   >
-                    <td class="p-padding-sm font-mono text-primary">visibility</td>
-                    <td class="p-padding-sm font-mono text-muted-foreground">
+                    <td class="p-sm font-mono text-primary">visibility</td>
+                    <td class="p-sm font-mono text-muted-foreground">
                       'auto' | 'visible' | 'hidden'
                     </td>
-                    <td class="p-padding-sm font-mono">'auto'</td>
-                    <td class="p-padding-sm">滚动条可见性模式</td>
+                    <td class="p-sm font-mono">'auto'</td>
+                    <td class="p-sm">滚动条可见性模式</td>
                   </tr>
                   <tr
                     class="border-b-default surface-item behavior-hover-transition hover:bg-foreground/5"
                   >
-                    <td class="p-padding-sm font-mono text-primary">@initialized</td>
-                    <td class="p-padding-sm font-mono text-muted-foreground">(instance) => void</td>
-                    <td class="p-padding-sm font-mono">-</td>
-                    <td class="p-padding-sm">初始化完成事件</td>
+                    <td class="p-sm font-mono text-primary">@initialized</td>
+                    <td class="p-sm font-mono text-muted-foreground">(instance) => void</td>
+                    <td class="p-sm font-mono">-</td>
+                    <td class="p-sm">初始化完成事件</td>
                   </tr>
                   <tr
                     class="border-b-default surface-item behavior-hover-transition hover:bg-foreground/5"
                   >
-                    <td class="p-padding-sm font-mono text-primary">@updated</td>
-                    <td class="p-padding-sm font-mono text-muted-foreground">(instance) => void</td>
-                    <td class="p-padding-sm font-mono">-</td>
-                    <td class="p-padding-sm">更新事件</td>
+                    <td class="p-sm font-mono text-primary">@updated</td>
+                    <td class="p-sm font-mono text-muted-foreground">(instance) => void</td>
+                    <td class="p-sm font-mono">-</td>
+                    <td class="p-sm">更新事件</td>
                   </tr>
                   <tr
                     class="border-b-default surface-item behavior-hover-transition hover:bg-foreground/5"
                   >
-                    <td class="p-padding-sm font-mono text-primary">@scroll</td>
-                    <td class="p-padding-sm font-mono text-muted-foreground">
-                      (instance, event) => void
-                    </td>
-                    <td class="p-padding-sm font-mono">-</td>
-                    <td class="p-padding-sm">滚动事件</td>
+                    <td class="p-sm font-mono text-primary">@scroll</td>
+                    <td class="p-sm font-mono text-muted-foreground">(instance, event) => void</td>
+                    <td class="p-sm font-mono">-</td>
+                    <td class="p-sm">滚动事件</td>
                   </tr>
                 </tbody>
               </table>

@@ -362,16 +362,16 @@ async function onSubmit(label: string, values: Record<string, unknown>): Promise
   >
     <!-- Toolbar: Hero Header (Transparent Root Policy: Inherit canvas) -->
     <header class="shrink-0 border-b-default border-primary/20">
-      <div class="w-full px-padding-md md:px-padding-lg py-padding-sm row-y-center gap-md">
-        <div class="p-padding-md bg-primary/10 rounded-scale-lg shrink-0">
+      <div class="w-full px-md md:px-lg py-sm row-y-center gap-md">
+        <div class="p-md bg-primary/10 rounded-lg shrink-0">
           <Icons
             name="i-lucide-layout-panel-top"
-            class="text-primary fs-2xl"
+            class="text-primary text-2xl"
           />
         </div>
         <div class="col-stack-xs">
-          <h1 class="fs-2xl font-bold text-foreground m-0">ProForm 容器分组与向导</h1>
-          <p class="text-muted fs-sm m-0">
+          <h1 class="text-2xl font-bold text-foreground m-0">ProForm 容器分组与向导</h1>
+          <p class="text-muted text-sm m-0">
             演示六种分组容器：Card 卡片、Collapse 折叠、Tabs 标签页、Step 向导、Group 纯分组与
             Section 区块。
           </p>
@@ -381,10 +381,10 @@ async function onSubmit(label: string, values: Record<string, unknown>): Promise
 
     <!-- Scrollable content -->
     <CScrollbar class="flex-1 min-h-0">
-      <div class="w-full p-padding-md md:p-padding-lg col-stack-xl pb-padding-xl">
+      <div class="w-full p-md md:p-lg col-stack-xl pb-xl">
         <!-- Card 分组 -->
-        <div class="panel-base">
-          <div class="row-y-center gap-sm border-b-default pb-padding-sm mb-padding-sm">
+        <div class="bg-card rounded-md shadow-soft py-md px-lg flex flex-col gap-lg">
+          <div class="row-y-center gap-sm border-b-default pb-sm mb-padding-sm">
             <Icons
               name="i-lucide-layout-panel-top"
               class="text-primary"
@@ -395,7 +395,7 @@ async function onSubmit(label: string, values: Record<string, unknown>): Promise
           </div>
           <div class="col-stack-md">
             <p
-              class="text-muted fs-sm m-0 border-b-default border-border/40 pb-padding-sm mb-padding-xs italic"
+              class="text-muted text-sm m-0 border-b-default border-border/40 pb-sm mb-padding-xs italic"
             >
               视觉分区清晰，通过 Card 容器对字段进行物理隔离。
             </p>
@@ -405,7 +405,7 @@ async function onSubmit(label: string, values: Record<string, unknown>): Promise
               @submit="v => onSubmit('Card', v)"
             >
               <template #footer="{ submit, formState }">
-                <div class="row-end pt-padding-md mt-padding-md border-t-default border-border/15">
+                <div class="row-end pt-md mt-padding-md border-t-default border-border/15">
                   <Button
                     label="保存个人资料"
                     icon="i-lucide-save"
@@ -419,8 +419,8 @@ async function onSubmit(label: string, values: Record<string, unknown>): Promise
         </div>
 
         <!-- Collapse 分组 -->
-        <div class="panel-base">
-          <div class="row-y-center gap-sm border-b-default pb-padding-sm mb-padding-sm">
+        <div class="bg-card rounded-md shadow-soft py-md px-lg flex flex-col gap-lg">
+          <div class="row-y-center gap-sm border-b-default pb-sm mb-padding-sm">
             <Icons
               name="i-lucide-panel-top-close"
               class="text-primary"
@@ -431,7 +431,7 @@ async function onSubmit(label: string, values: Record<string, unknown>): Promise
           </div>
           <div class="col-stack-md">
             <p
-              class="text-muted fs-sm m-0 border-b-default border-border/40 pb-padding-sm mb-padding-xs italic"
+              class="text-muted text-sm m-0 border-b-default border-border/40 pb-sm mb-padding-xs italic"
             >
               适合将高级或非必要设置项默认收起。
             </p>
@@ -441,7 +441,7 @@ async function onSubmit(label: string, values: Record<string, unknown>): Promise
               @submit="v => onSubmit('Collapse', v)"
             >
               <template #footer="{ submit, formState }">
-                <div class="row-end pt-padding-md mt-padding-md border-t-default border-border/15">
+                <div class="row-end pt-md mt-padding-md border-t-default border-border/15">
                   <Button
                     label="更新站点配置"
                     icon="i-lucide-refresh-cw"
@@ -455,8 +455,8 @@ async function onSubmit(label: string, values: Record<string, unknown>): Promise
         </div>
 
         <!-- Tabs 分组 -->
-        <div class="panel-base">
-          <div class="row-y-center gap-sm border-b-default pb-padding-sm mb-padding-sm">
+        <div class="bg-card rounded-md shadow-soft py-md px-lg flex flex-col gap-lg">
+          <div class="row-y-center gap-sm border-b-default pb-sm mb-padding-sm">
             <Icons
               name="i-lucide-panel-top"
               class="text-primary"
@@ -467,7 +467,7 @@ async function onSubmit(label: string, values: Record<string, unknown>): Promise
           </div>
           <div class="col-stack-md">
             <p
-              class="text-muted fs-sm m-0 border-b-default border-border/40 pb-padding-sm mb-padding-xs italic"
+              class="text-muted text-sm m-0 border-b-default border-border/40 pb-sm mb-padding-xs italic"
             >
               水平轴分区，适合信息维度较广的大型表单。
             </p>
@@ -477,7 +477,7 @@ async function onSubmit(label: string, values: Record<string, unknown>): Promise
               @submit="v => onSubmit('Tabs', v)"
             >
               <template #footer="{ submit, formState }">
-                <div class="row-end pt-padding-md mt-padding-md border-t-default border-border/15">
+                <div class="row-end pt-md mt-padding-md border-t-default border-border/15">
                   <Button
                     label="同步账号设置"
                     icon="i-lucide-user-cog"
@@ -491,8 +491,8 @@ async function onSubmit(label: string, values: Record<string, unknown>): Promise
         </div>
 
         <!-- Step 向导 -->
-        <div class="panel-base">
-          <div class="row-y-center gap-sm border-b-default pb-padding-sm mb-padding-sm">
+        <div class="bg-card rounded-md shadow-soft py-md px-lg flex flex-col gap-lg">
+          <div class="row-y-center gap-sm border-b-default pb-sm mb-padding-sm">
             <Icons
               name="i-lucide-footprints"
               class="text-primary"
@@ -503,7 +503,7 @@ async function onSubmit(label: string, values: Record<string, unknown>): Promise
           </div>
           <div class="col-stack-md">
             <p
-              class="text-muted fs-sm m-0 border-b-default border-border/40 pb-padding-sm mb-padding-xs italic"
+              class="text-muted text-sm m-0 border-b-default border-border/40 pb-sm mb-padding-xs italic"
             >
               线性引导式交互，自动驱动 PrimeVue Stepper。
             </p>
@@ -513,7 +513,7 @@ async function onSubmit(label: string, values: Record<string, unknown>): Promise
               @submit="v => onSubmit('Step', v)"
             >
               <template #footer="{ submit, formState }">
-                <div class="row-end pt-padding-md mt-padding-md border-t-default border-border/15">
+                <div class="row-end pt-md mt-padding-md border-t-default border-border/15">
                   <Button
                     label="完成注册流程"
                     icon="i-lucide-user-plus"
@@ -528,8 +528,8 @@ async function onSubmit(label: string, values: Record<string, unknown>): Promise
 
         <!-- type: group 纯分组 & section 区块 -->
         <div class="grid grid-cols-1 md:grid-cols-2 gap-xl">
-          <div class="panel-base">
-            <div class="row-y-center gap-sm border-b-default pb-padding-sm mb-padding-sm">
+          <div class="bg-card rounded-md shadow-soft py-md px-lg flex flex-col gap-lg">
+            <div class="row-y-center gap-sm border-b-default pb-sm mb-padding-sm">
               <Icons
                 name="i-lucide-braces"
                 class="text-primary"
@@ -539,7 +539,7 @@ async function onSubmit(label: string, values: Record<string, unknown>): Promise
               </span>
             </div>
             <div class="col-stack-md">
-              <p class="text-muted fs-sm m-0 mb-padding-sm italic">
+              <p class="text-muted text-sm m-0 mb-padding-sm italic">
                 无卡片边框，适合轻量级内部布局。
               </p>
               <ProForm
@@ -548,9 +548,7 @@ async function onSubmit(label: string, values: Record<string, unknown>): Promise
                 @submit="v => onSubmit('Group', v)"
               >
                 <template #footer="{ submit, formState }">
-                  <div
-                    class="row-end pt-padding-md mt-padding-md border-t-default border-border/15"
-                  >
+                  <div class="row-end pt-md mt-padding-md border-t-default border-border/15">
                     <Button
                       label="提交保存"
                       icon="i-lucide-send"
@@ -563,8 +561,8 @@ async function onSubmit(label: string, values: Record<string, unknown>): Promise
             </div>
           </div>
 
-          <div class="panel-base">
-            <div class="row-y-center gap-sm border-b-default pb-padding-sm mb-padding-sm">
+          <div class="bg-card rounded-md shadow-soft py-md px-lg flex flex-col gap-lg">
+            <div class="row-y-center gap-sm border-b-default pb-sm mb-padding-sm">
               <Icons
                 name="i-lucide-section"
                 class="text-primary"
@@ -574,7 +572,7 @@ async function onSubmit(label: string, values: Record<string, unknown>): Promise
               </span>
             </div>
             <div class="col-stack-md">
-              <p class="text-muted fs-sm m-0 mb-padding-sm italic">
+              <p class="text-muted text-sm m-0 mb-padding-sm italic">
                 常用于表单末尾的辅助信息区块。
               </p>
               <ProForm
@@ -583,9 +581,7 @@ async function onSubmit(label: string, values: Record<string, unknown>): Promise
                 @submit="v => onSubmit('Section', v)"
               >
                 <template #footer="{ submit, formState }">
-                  <div
-                    class="row-end pt-padding-md mt-padding-md border-t-default border-border/15"
-                  >
+                  <div class="row-end pt-md mt-padding-md border-t-default border-border/15">
                     <Button
                       label="保存审计备注"
                       icon="i-lucide-file-check"

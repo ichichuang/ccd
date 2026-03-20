@@ -47,7 +47,7 @@ const handleModalTrue = () => {
   openDialog({
     header: '模态弹窗 (Modal: True)',
     modal: true,
-    contentRenderer: () => <div class="p-padding-lg">背面内容不可点击，有遮罩层。</div>,
+    contentRenderer: () => <div class="p-lg">背面内容不可点击，有遮罩层。</div>,
   })
 }
 
@@ -56,7 +56,7 @@ const handleModalFalse = () => {
     header: '非模态弹窗 (Modal: False)',
     modal: false,
     position: 'topleft',
-    contentRenderer: () => <div class="p-padding-lg">你可以点击背面的按钮！</div>,
+    contentRenderer: () => <div class="p-lg">你可以点击背面的按钮！</div>,
   })
 }
 
@@ -66,7 +66,7 @@ const handleCloseOnMask = () => {
     header: '点击遮罩关闭',
     modal: true,
     closeOnMask: true,
-    contentRenderer: () => <div class="p-padding-lg">点击弹窗外部的遮罩层可以直接关闭此弹窗。</div>,
+    contentRenderer: () => <div class="p-lg">点击弹窗外部的遮罩层可以直接关闭此弹窗。</div>,
   })
 }
 
@@ -76,7 +76,7 @@ const handleEscControl = (enabled: boolean) => {
     header: `ESC 关闭: ${enabled}`,
     closeOnEscape: enabled,
     contentRenderer: () => (
-      <div class="p-padding-lg">
+      <div class="p-lg">
         {enabled ? '按下 ESC 键可以关闭此弹窗。' : '按下 ESC 键无法关闭此弹窗 (请点击按钮关闭)。'}
       </div>
     ),
@@ -89,9 +89,7 @@ const handleDraggable = (enabled: boolean) => {
     header: `拖拽: ${enabled}`,
     draggable: enabled,
     contentRenderer: () => (
-      <div class="p-padding-lg">
-        {enabled ? '按住标题栏可以拖动我。' : '我是固定的，无法拖动。'}
-      </div>
+      <div class="p-lg">{enabled ? '按住标题栏可以拖动我。' : '我是固定的，无法拖动。'}</div>
     ),
   })
 }
@@ -101,7 +99,7 @@ const handleMaximizable = () => {
   openDialog({
     header: '最大化演示',
     maximizable: true,
-    contentRenderer: () => <div class="p-padding-lg h-32">点击右上角的最大化图标看看。</div>,
+    contentRenderer: () => <div class="p-lg h-32">点击右上角的最大化图标看看。</div>,
   })
 }
 
@@ -112,8 +110,8 @@ const handleNoHeader = () => {
   openDialog({
     hideHeader: true,
     contentRenderer: ({ index }) => (
-      <div class="p-padding-xl text-center col-stack-md items-center">
-        <span class="fs-lg font-bold">没有标题栏</span>
+      <div class="p-xl text-center col-stack-md items-center">
+        <span class="text-lg font-bold">没有标题栏</span>
         <p>适合用于自定义程度很高的弹窗。</p>
         <Button
           label="关闭"
@@ -130,7 +128,7 @@ const handleNoCloseIcon = () => {
     header: '无关闭图标',
     closable: false,
     contentRenderer: () => (
-      <div class="p-padding-lg">
+      <div class="p-lg">
         <p>右上角没有 X 按钮。</p>
         <p>你必须通过底部按钮或 ESC (如果开启) 关闭。</p>
       </div>
@@ -144,7 +142,7 @@ const handleNoFooter = () => {
   openDialog({
     header: '无底部按钮',
     hideFooter: true,
-    contentRenderer: () => <div class="p-padding-lg">这个弹窗没有底部按钮区。</div>,
+    contentRenderer: () => <div class="p-lg">这个弹窗没有底部按钮区。</div>,
   })
 }
 
@@ -155,7 +153,7 @@ const handleHeaderRenderer = () => {
     maximizable: true,
     headerRenderer: ({ close, maximize }) => (
       <div class="row-between w-full gap-md">
-        <span class="fs-lg font-semibold text-primary row-y-center gap-xs">
+        <span class="text-lg font-semibold text-primary row-y-center gap-xs">
           <Icons
             name="i-lucide-sparkles"
             size="sm"
@@ -181,7 +179,7 @@ const handleHeaderRenderer = () => {
       </div>
     ),
     contentRenderer: () => (
-      <div class="p-padding-lg">使用 headerRenderer 完全自定义标题栏，可接入 close/maximize。</div>
+      <div class="p-lg">使用 headerRenderer 完全自定义标题栏，可接入 close/maximize。</div>
     ),
   })
 }
@@ -192,7 +190,7 @@ const handleFooterRenderer = () => {
     header: '自定义底部',
     footerRenderer: ({ index }) => (
       <div class="row-between w-full gap-md">
-        <span class="text-muted-foreground fs-sm">自定义 Footer 布局</span>
+        <span class="text-muted-foreground text-sm">自定义 Footer 布局</span>
         <div class="flex gap-sm">
           <Button
             label="稍后"
@@ -209,7 +207,7 @@ const handleFooterRenderer = () => {
       </div>
     ),
     contentRenderer: () => (
-      <div class="p-padding-lg">使用 footerRenderer 完全自定义底部，替代默认 footerButtons。</div>
+      <div class="p-lg">使用 footerRenderer 完全自定义底部，替代默认 footerButtons。</div>
     ),
   })
 }
@@ -220,9 +218,7 @@ const handleFooterRenderer = () => {
 const handleBeforeCancel = () => {
   openDialog({
     header: '取消前二次确认',
-    contentRenderer: () => (
-      <div class="p-padding-lg">点击取消按钮时会二次确认，确认后才会关闭。</div>
-    ),
+    contentRenderer: () => <div class="p-lg">点击取消按钮时会二次确认，确认后才会关闭。</div>,
     beforeCancel: done => {
       const ok = window.confirm('确定要放弃当前操作吗？')
       if (ok) done()
@@ -234,7 +230,7 @@ const handleBeforeCancel = () => {
 const handleIntercept = () => {
   openDialog({
     header: '输入验证拦截',
-    contentRenderer: () => <div class="p-padding-lg">点击确定时会模拟验证，2秒后通过。</div>,
+    contentRenderer: () => <div class="p-lg">点击确定时会模拟验证，2秒后通过。</div>,
     beforeSure: (done, { closeLoading }) => {
       setTimeout(() => {
         const pass = Math.random() > 0.5
@@ -257,7 +253,7 @@ const handleOpenCloseCallbacks = () => {
   openDialog({
     header: '生命周期回调',
     contentRenderer: () => (
-      <div class="p-padding-lg">打开和关闭时会在控制台输出日志，可在 DevTools Console 查看。</div>
+      <div class="p-lg">打开和关闭时会在控制台输出日志，可在 DevTools Console 查看。</div>
     ),
     open: () => console.log('[Dialog] opened'),
     close: () => console.log('[Dialog] closed'),
@@ -269,7 +265,7 @@ const handleUpdateHeader = () => {
   const idx = openDialog({
     header: '初始标题',
     contentRenderer: () => (
-      <div class="p-padding-lg">
+      <div class="p-lg">
         <p>点击下方按钮可动态更新标题。</p>
         <Button
           label="改为新标题"
@@ -287,9 +283,7 @@ const handleOpenDelay = () => {
   openDialog({
     header: '延迟打开',
     openDelay: 800,
-    contentRenderer: () => (
-      <div class="p-padding-lg">此弹窗在 800ms 后才显示，可用于配合动画。</div>
-    ),
+    contentRenderer: () => <div class="p-lg">此弹窗在 800ms 后才显示，可用于配合动画。</div>,
   })
 }
 
@@ -299,15 +293,15 @@ const handleOpenDelay = () => {
 const handleOpenMultiple = () => {
   openDialog({
     header: 'Dialog 1',
-    contentRenderer: () => <div class="p-padding-lg">第一个弹窗</div>,
+    contentRenderer: () => <div class="p-lg">第一个弹窗</div>,
   })
   openDialog({
     header: 'Dialog 2',
-    contentRenderer: () => <div class="p-padding-lg">第二个弹窗</div>,
+    contentRenderer: () => <div class="p-lg">第二个弹窗</div>,
   })
   openDialog({
     header: 'Dialog 3',
-    contentRenderer: () => <div class="p-padding-lg">第三个弹窗</div>,
+    contentRenderer: () => <div class="p-lg">第三个弹窗</div>,
   })
 }
 
@@ -316,7 +310,7 @@ const handleAsyncConfirm = () => {
   openDialog({
     header: '手动异步 Loading',
     sureBtnLoading: true,
-    contentRenderer: () => <div class="p-padding-lg">点击确定按钮触发 Loading，1.5 秒后完成。</div>,
+    contentRenderer: () => <div class="p-lg">点击确定按钮触发 Loading，1.5 秒后完成。</div>,
     beforeSure: done => {
       setTimeout(() => {
         done()
@@ -331,11 +325,11 @@ const handleCustomContent = () => {
   openDialog({
     header: '自定义 TSX 内容',
     contentRenderer: () => (
-      <div class="p-padding-lg col-stack-md">
-        <div class="row-y-center gap-md bg-card p-padding-md rounded-scale-md">
+      <div class="p-lg col-stack-md">
+        <div class="row-y-center gap-md bg-card p-md rounded-md">
           <Icons
             name="i-lucide-box"
-            class="text-primary fs-xl"
+            class="text-primary text-xl"
           />
           <span>完全自定义的内容区域</span>
         </div>
@@ -356,14 +350,14 @@ const handleNested = () => {
   openDialog({
     header: 'Level 1',
     contentRenderer: () => (
-      <div class="p-padding-lg text-center">
+      <div class="p-lg text-center">
         <Button
           label="Open Level 2"
           onClick={() => {
             openDialog({
               header: 'Level 2',
               modal: true,
-              contentRenderer: () => <div class="p-padding-lg">最上层弹窗</div>,
+              contentRenderer: () => <div class="p-lg">最上层弹窗</div>,
             })
           }}
         />
@@ -378,24 +372,28 @@ const handlePosition = (pos: DialogPosition) => {
     header: `Position: ${pos}`,
     position: pos,
     modal: false,
-    contentRenderer: () => <div class="p-padding-lg">Located at {pos}</div>,
+    contentRenderer: () => <div class="p-lg">Located at {pos}</div>,
   })
 }
 </script>
 
 <template>
-  <CScrollbar class="h-full p-padding-lg">
+  <CScrollbar class="h-full p-lg">
     <div class="w-full max-w-[80vw] mx-auto col-stack-xl">
-      <section class="component-card-base density-normal col-stack-xs">
-        <h1 class="fs-2xl font-bold text-foreground">Dialog Component Full Demo</h1>
+      <section
+        class="rounded-md bg-card text-card-foreground shadow-soft density-normal col-stack-xs"
+      >
+        <h1 class="text-2xl font-bold text-foreground">Dialog Component Full Demo</h1>
         <p class="text-muted-foreground">
           全功能演示：基于 useDialog 的二次封装，涵盖所有 Props 控制与交互模式。
         </p>
       </section>
 
       <!-- 1. 常用预设 -->
-      <section class="component-card-base density-normal col-stack-md">
-        <h2 class="fs-lg font-semibold">1. 常用预设 (Presets)</h2>
+      <section
+        class="rounded-md bg-card text-card-foreground shadow-soft density-normal col-stack-md"
+      >
+        <h2 class="text-lg font-semibold">1. 常用预设 (Presets)</h2>
         <div class="layout-wrap gap-md">
           <Button
             label="Info"
@@ -432,12 +430,14 @@ const handlePosition = (pos: DialogPosition) => {
       </section>
 
       <!-- 2. 交互控制 -->
-      <section class="component-card-base density-normal col-stack-md">
-        <h2 class="fs-lg font-semibold">2. 交互控制 (Behaviors)</h2>
+      <section
+        class="rounded-md bg-card text-card-foreground shadow-soft density-normal col-stack-md"
+      >
+        <h2 class="text-lg font-semibold">2. 交互控制 (Behaviors)</h2>
 
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-md">
           <!-- Mask -->
-          <div class="p-padding-md rounded-scale-md bg-muted col-stack-sm">
+          <div class="p-md rounded-md bg-muted col-stack-sm">
             <h3 class="font-medium text-foreground">遮罩层 (Mask/Modal)</h3>
             <div class="layout-wrap gap-sm">
               <Button
@@ -461,7 +461,7 @@ const handlePosition = (pos: DialogPosition) => {
           </div>
 
           <!-- ESC & Close Icon -->
-          <div class="p-padding-md rounded-scale-md bg-muted col-stack-sm">
+          <div class="p-md rounded-md bg-muted col-stack-sm">
             <h3 class="font-medium text-foreground">关闭方式 (Closing)</h3>
             <div class="layout-wrap gap-sm">
               <Button
@@ -485,7 +485,7 @@ const handlePosition = (pos: DialogPosition) => {
           </div>
 
           <!-- Drag & Resize -->
-          <div class="p-padding-md rounded-scale-md bg-muted col-stack-sm">
+          <div class="p-md rounded-md bg-muted col-stack-sm">
             <h3 class="font-medium text-foreground">拖拽与缩放 (Drag & Resize)</h3>
             <div class="layout-wrap gap-sm">
               <Button
@@ -511,8 +511,10 @@ const handlePosition = (pos: DialogPosition) => {
       </section>
 
       <!-- 3. 界面显示 -->
-      <section class="component-card-base density-normal col-stack-md">
-        <h2 class="fs-lg font-semibold">3. 界面显示 (Visibility)</h2>
+      <section
+        class="rounded-md bg-card text-card-foreground shadow-soft density-normal col-stack-md"
+      >
+        <h2 class="text-lg font-semibold">3. 界面显示 (Visibility)</h2>
         <div class="layout-wrap gap-md">
           <Button
             label="Hide Header"
@@ -545,8 +547,10 @@ const handlePosition = (pos: DialogPosition) => {
       </section>
 
       <!-- 4. 逻辑控制 -->
-      <section class="component-card-base density-normal col-stack-md">
-        <h2 class="fs-lg font-semibold">4. 逻辑控制 (Logic)</h2>
+      <section
+        class="rounded-md bg-card text-card-foreground shadow-soft density-normal col-stack-md"
+      >
+        <h2 class="text-lg font-semibold">4. 逻辑控制 (Logic)</h2>
         <div class="layout-wrap gap-md">
           <Button
             label="Async Button Loading"
@@ -575,8 +579,10 @@ const handlePosition = (pos: DialogPosition) => {
       </section>
 
       <!-- 5. 生命周期回调 -->
-      <section class="component-card-base density-normal col-stack-md">
-        <h2 class="fs-lg font-semibold">5. 生命周期回调 (Lifecycle)</h2>
+      <section
+        class="rounded-md bg-card text-card-foreground shadow-soft density-normal col-stack-md"
+      >
+        <h2 class="text-lg font-semibold">5. 生命周期回调 (Lifecycle)</h2>
         <div class="layout-wrap gap-md">
           <Button
             label="open/close 回调"
@@ -600,8 +606,10 @@ const handlePosition = (pos: DialogPosition) => {
       </section>
 
       <!-- 6. 多弹窗管理 -->
-      <section class="component-card-base density-normal col-stack-md">
-        <h2 class="fs-lg font-semibold">6. 多弹窗管理 (Multi-Dialog)</h2>
+      <section
+        class="rounded-md bg-card text-card-foreground shadow-soft density-normal col-stack-md"
+      >
+        <h2 class="text-lg font-semibold">6. 多弹窗管理 (Multi-Dialog)</h2>
         <div class="row-y-center flex-wrap gap-md">
           <Button
             label="Open 3 Dialogs"
@@ -621,13 +629,15 @@ const handlePosition = (pos: DialogPosition) => {
             outlined
             @click="() => closeAll()"
           />
-          <span class="text-muted-foreground fs-sm">当前弹窗数: {{ getDialogCount() }}</span>
+          <span class="text-muted-foreground text-sm">当前弹窗数: {{ getDialogCount() }}</span>
         </div>
       </section>
 
       <!-- 7. 位置控制 -->
-      <section class="component-card-base density-normal col-stack-md">
-        <h2 class="fs-lg font-semibold">7. 位置控制 (Position)</h2>
+      <section
+        class="rounded-md bg-card text-card-foreground shadow-soft density-normal col-stack-md"
+      >
+        <h2 class="text-lg font-semibold">7. 位置控制 (Position)</h2>
         <div class="layout-wrap gap-sm">
           <Button
             label="Top"

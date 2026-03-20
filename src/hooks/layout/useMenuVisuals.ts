@@ -17,10 +17,10 @@ import {
 
 export type MenuVisualContext = 'header' | 'sidebar' | 'breadcrumb'
 
-/** 返回指定上下文的 base 类（使用 MENU_PANEL_PADDING 统一内边距；过渡统一 duration-scale-md + ease-out-expo，与 layout-menu / uno.config 菜单交互语义一致） */
+/** 返回指定上下文的 base 类（使用 MENU_PANEL_PADDING 统一内边距；过渡统一 duration-md + ease-out-expo，与 layout-menu / uno.config 菜单交互语义一致） */
 export function getMenuItemBase(context: MenuVisualContext): string {
-  const base: string = `${MENU_ITEM_BASE} ${MENU_PANEL_PADDING} text-foreground text-current! group flex items-center rounded-scale-md transition-all duration-scale-md ease-out-expo`
-  return context === 'breadcrumb' ? `${base} fs-sm` : base
+  const base: string = `${MENU_ITEM_BASE} ${MENU_PANEL_PADDING} text-foreground text-current! group flex items-center rounded-md transition-all duration-md ease-out-expo`
+  return context === 'breadcrumb' ? `${base} text-sm` : base
 }
 
 /**
@@ -47,7 +47,7 @@ export interface MenuStateOptions {
 /**
  * 统一菜单 stateClasses 计算逻辑：
  * - distance >= 0：使用 getMenuItemActive（激活路径统一样式）
- * - 其余按优先级：isFocused → isSubmenuOpen → 根级/子级 inactive 文案 + hover:menu-item-hover
+ * - 其余按优先级：isFocused → isSubmenuOpen → 根级/子级 inactive 文案 + hover:bg-primary/12! dark:hover:bg-primary/30! hover:text-primary!
  */
 export function getMenuStateClasses(options: MenuStateOptions): string {
   const {
@@ -64,11 +64,11 @@ export function getMenuStateClasses(options: MenuStateOptions): string {
   }
 
   if (isFocused) {
-    return 'menu-item-hover'
+    return 'bg-primary/12! dark:bg-primary/30! text-primary!'
   }
 
   if (isSubmenuOpen) {
-    return 'menu-item-hover'
+    return 'bg-primary/12! dark:bg-primary/30! text-primary!'
   }
 
   const rootClass: string = inactiveRootClass ?? MENU_INACTIVE_TEXT_ROOT
@@ -76,7 +76,7 @@ export function getMenuStateClasses(options: MenuStateOptions): string {
   const isRoot: boolean = typeof level === 'number' ? level <= 0 : true
 
   const baseInactiveClass: string = isRoot ? rootClass : childClass
-  return `${baseInactiveClass} hover:menu-item-hover`
+  return `${baseInactiveClass} hover:bg-primary/12! dark:hover:bg-primary/30! hover:text-primary!`
 }
 
 /** 返回指定上下文的图标 size（Icons 组件用） */

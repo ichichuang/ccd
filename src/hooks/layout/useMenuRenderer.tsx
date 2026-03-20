@@ -62,7 +62,7 @@ export interface TieredMenuItemRendererOptions {
 
 function getLabelClassByContext(context: MenuVisualContext): string {
   if (context === 'breadcrumb') {
-    return 'truncate flex-1 text-left pt-[1px] fs-sm text-current!'
+    return 'truncate flex-1 text-left pt-[1px] text-sm text-current!'
   }
   if (context === 'header') {
     return `truncate flex-1 text-left text-current! ${MENU_TEXT_CLASS} font-medium pt-[1px]`

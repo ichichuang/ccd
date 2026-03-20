@@ -29,8 +29,8 @@ function onPageChange(event: { page: number; rows: number }): void {
 </script>
 
 <template>
-  <div class="row-between pt-padding-sm">
-    <span class="fs-sm text-muted-foreground">
+  <div class="row-between pt-sm">
+    <span class="text-sm text-muted-foreground">
       {{ $t('proTable.total', { total }) }}
     </span>
     <Paginator

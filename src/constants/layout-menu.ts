@@ -34,18 +34,18 @@ export const MENU_ICON_SIZE = 'lg' as const
 export const BREADCRUMB_ICON_SIZE = 'sm' as const
 export const TAB_ICON_SIZE = 'xs' as const
 
-/** 菜单项 base（与 uno.config menu-item-base 完全一致） */
+/** 菜单项 base（与 uno.config flex items-center gap-sm cursor-pointer select-none transition-all duration-md ease-in-out border-none bg-transparent 完全一致） */
 export const MENU_ITEM_BASE =
-  'flex items-center gap-sm cursor-pointer select-none transition-all duration-scale-md ease-in-out border-none bg-transparent'
+  'flex items-center gap-sm cursor-pointer select-none transition-all duration-md ease-in-out border-none bg-transparent'
 
 /** 菜单项间距 */
 export const MENU_ITEM_GAP = 'gap-sm'
 /** 文字字重 */
 export const MENU_TEXT_WEIGHT = 'font-medium'
 /** 面板项内边距 */
-export const MENU_PANEL_PADDING = 'px-padding-md py-padding-sm'
+export const MENU_PANEL_PADDING = 'px-md py-sm'
 /** 文字样式 */
-export const MENU_TEXT_CLASS = 'fs-md font-sans'
+export const MENU_TEXT_CLASS = 'text-md font-sans'
 /** 图标通用 class（transition-none 使图标随 wrapper 同帧变化，不独立过渡） */
 export const MENU_ICON_COMMON_CLASS = 'w-5 text-center flex-shrink-0 center transition-none!'
 
@@ -60,24 +60,24 @@ export const MENU_PANEL_INDENT_ROOT = 'pl-md'
 export const MENU_PANEL_INDENT_CHILD = 'pl-md'
 
 /** 收缩态按钮内边距（仅图标，适当放大点击热区） */
-export const MENU_COLLAPSED_BUTTON_PADDING = 'p-padding-sm'
+export const MENU_COLLAPSED_BUTTON_PADDING = 'p-sm'
 /** 收缩态按钮尺寸（使用 spacing 变量） */
 export const MENU_COLLAPSED_BUTTON_SIZE =
   'min-w-[var(--spacing-2xl)] min-h-[var(--spacing-2xl)] aspect-square'
 /** 收缩态无图标时的 fallback 圆圈尺寸（略小于按钮本身） */
 export const MENU_COLLAPSED_FALLBACK_SIZE = 'min-w-[var(--spacing-2xl)] min-h-[var(--spacing-2xl)]'
 /** 收缩态 fallback 文字（更大一档，让首字母不显得拥挤） */
-export const MENU_COLLAPSED_FALLBACK_TEXT = 'fs-md'
+export const MENU_COLLAPSED_FALLBACK_TEXT = 'text-md'
 
 /** 收缩态侧栏一级菜单图标尺寸：比 TieredMenu 子项（lg）大 2 档，仅用于收缩态图标按钮 */
 export const MENU_ICON_SIZE_COLLAPSED = '2xl' as const
 
-/** Typography scale：标题 fs-2xl、正文 fs-md、辅助 fs-sm */
-export const TYPO_TITLE = 'fs-2xl' as const
-export const TYPO_BODY = 'fs-md' as const
-export const TYPO_CAPTION = 'fs-sm' as const
+/** Typography scale：标题 text-2xl、正文 text-md、辅助 text-sm */
+export const TYPO_TITLE = 'text-2xl' as const
+export const TYPO_BODY = 'text-md' as const
+export const TYPO_CAPTION = 'text-sm' as const
 
-/** 圆角规范：导航/Tab/菜单 rounded-scale-md、表单/卡片 rounded-scale-sm */
-export const ROUNDED_NAV = 'rounded-scale-md' as const
-export const ROUNDED_TAB = 'rounded-scale-md' as const
-export const ROUNDED_CARD = 'rounded-scale-sm' as const
+/** 圆角规范：导航/Tab/菜单 rounded-md、表单/卡片 rounded-sm */
+export const ROUNDED_NAV = 'rounded-md' as const
+export const ROUNDED_TAB = 'rounded-md' as const
+export const ROUNDED_CARD = 'rounded-sm' as const

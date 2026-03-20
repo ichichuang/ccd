@@ -19,18 +19,18 @@ const emit = defineEmits<{
 
 <template>
   <div class="col-stack-md">
-    <h3 class="fs-md font-semibold text-foreground border-b-default pb-padding-xs">全局控制</h3>
+    <h3 class="text-md font-semibold text-foreground border-b-default pb-xs">全局控制</h3>
     <div class="row-between flex-wrap gap-sm">
       <div class="row-y-center gap-sm">
         <ToggleSwitch
           :model-value="themeEnabled"
           @update:model-value="value => emit('update:themeEnabled', value)"
         />
-        <span class="text-foreground fs-sm">启用主题</span>
+        <span class="text-foreground text-sm">启用主题</span>
       </div>
     </div>
     <div class="col-stack-xs">
-      <span class="text-muted-foreground fs-sm">
+      <span class="text-muted-foreground text-sm">
         lineArea 透明度 {{ lineAreaOpacity }}（对带面积填充的折线图生效）
       </span>
       <Slider
@@ -57,7 +57,7 @@ const emit = defineEmits<{
       />
     </div>
     <div class="row-between">
-      <span class="text-foreground fs-sm">Loading</span>
+      <span class="text-foreground text-sm">Loading</span>
       <ToggleSwitch
         :model-value="chartLoading"
         @update:model-value="value => emit('update:chartLoading', value)"

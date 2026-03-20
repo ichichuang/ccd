@@ -10,8 +10,8 @@ const id = computed<string>(() => {
 </script>
 
 <template>
-  <div class="p-padding-lg space-y-margin-md">
-    <h2 class="fs-xl font-semibold row-y-center gap-sm">
+  <div class="p-lg space-y-margin-md">
+    <h2 class="text-xl font-semibold row-y-center gap-sm">
       <Icons
         name="i-lucide-file-text"
         size="lg"
@@ -20,9 +20,9 @@ const id = computed<string>(() => {
       <span>DataTable 详情示例（meta.activeMenu）</span>
     </h2>
 
-    <div class="component-border rounded-scale p-padding-md space-y-margin-sm">
-      <div class="fs-md font-medium">当前 ID：{{ id || '-' }}</div>
-      <p class="text-muted-foreground fs-sm">
+    <div class="shadow-soft rounded-scale p-md space-y-margin-sm">
+      <div class="text-md font-medium">当前 ID：{{ id || '-' }}</div>
+      <p class="text-muted-foreground text-sm">
         本路由 meta.activeMenu =
         '/example/tables/data-table'，访问时左侧菜单应高亮「DataTable」而非本详情页（因 showLink:
         false 本页不在菜单中）。

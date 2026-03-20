@@ -342,16 +342,16 @@ function clearDraft(): void {
   >
     <!-- Toolbar: Hero Header (Transparent Root Policy: Inherit canvas) -->
     <header class="shrink-0 border-b-default border-primary/20">
-      <div class="w-full px-padding-md md:px-padding-lg py-padding-sm row-y-center gap-md">
-        <div class="p-padding-md bg-primary/10 rounded-scale-lg shrink-0">
+      <div class="w-full px-md md:px-lg py-sm row-y-center gap-md">
+        <div class="p-md bg-primary/10 rounded-lg shrink-0">
           <Icons
             name="i-lucide-list-plus"
-            class="text-primary fs-2xl"
+            class="text-primary text-2xl"
           />
         </div>
         <div class="col-stack-xs">
-          <h1 class="fs-2xl font-bold text-foreground m-0">ProForm 动态数组与高级扩展</h1>
-          <p class="text-muted fs-sm m-0">
+          <h1 class="text-2xl font-bold text-foreground m-0">ProForm 动态数组与高级扩展</h1>
+          <p class="text-muted text-sm m-0">
             演示
             <code>useFieldArray</code>
             动态字段列表（append / remove / move）与
@@ -364,10 +364,10 @@ function clearDraft(): void {
 
     <!-- Scrollable content -->
     <CScrollbar class="flex-1 min-h-0">
-      <div class="w-full p-padding-md md:p-padding-lg col-stack-xl pb-padding-xl">
+      <div class="w-full p-md md:p-lg col-stack-xl pb-xl">
         <!-- Section A: 动态字段数组 -->
-        <div class="panel-base">
-          <div class="row-y-center gap-sm border-b-default pb-padding-sm mb-padding-sm">
+        <div class="bg-card rounded-md shadow-soft py-md px-lg flex flex-col gap-lg">
+          <div class="row-y-center gap-sm border-b-default pb-sm mb-padding-sm">
             <Icons
               name="i-lucide-list-plus"
               class="text-primary"
@@ -378,8 +378,8 @@ function clearDraft(): void {
           </div>
 
           <div class="col-stack-md">
-            <div class="border-b-default pb-padding-sm mb-padding-sm">
-              <p class="text-muted fs-sm m-0">
+            <div class="border-b-default pb-sm mb-padding-sm">
+              <p class="text-muted text-sm m-0">
                 通过
                 <code>append / remove / move</code>
                 动态管理联系方式列表。字段渲染通过
@@ -405,9 +405,7 @@ function clearDraft(): void {
               </template>
 
               <template #footer="{ submit, formState: slotFormState }">
-                <div
-                  class="row-end gap-sm pt-padding-md border-t-default border-border/15 mt-padding-md"
-                >
+                <div class="row-end gap-sm pt-md border-t-default border-border/15 mt-padding-md">
                   <Button
                     label="提交数据"
                     icon="i-lucide-send"
@@ -420,10 +418,10 @@ function clearDraft(): void {
 
             <div
               v-if="arraySubmitResult"
-              class="surface-sunken rounded-scale-md p-padding-md border-default border-border/40"
+              class="surface-sunken rounded-md p-md border-default border-border/40"
             >
-              <div class="fs-xs font-bold text-muted uppercase mb-margin-xs">Submit Result:</div>
-              <pre class="m-0 whitespace-pre-wrap break-words fs-xs text-muted-foreground">{{
+              <div class="text-xs font-bold text-muted uppercase mb-xs">Submit Result:</div>
+              <pre class="m-0 whitespace-pre-wrap break-words text-xs text-muted-foreground">{{
                 arraySubmitResult
               }}</pre>
             </div>
@@ -431,8 +429,8 @@ function clearDraft(): void {
         </div>
 
         <!-- Section B: persistKey + autoSave -->
-        <div class="panel-base">
-          <div class="row-between gap-sm border-b-default pb-padding-sm mb-padding-sm">
+        <div class="bg-card rounded-md shadow-soft py-md px-lg flex flex-col gap-lg">
+          <div class="row-between gap-sm border-b-default pb-sm mb-padding-sm">
             <div class="row-y-center gap-sm">
               <Icons
                 name="i-lucide-save"
@@ -444,7 +442,7 @@ function clearDraft(): void {
             </div>
             <div
               v-if="draftLastSaved"
-              class="bg-success/10 text-success rounded-scale-md px-padding-sm py-0.5 row-y-center gap-xs fs-xs"
+              class="bg-success/10 text-success rounded-md px-sm py-0.5 row-y-center gap-xs text-xs"
             >
               <Icons
                 name="i-lucide-check-circle"
@@ -454,7 +452,7 @@ function clearDraft(): void {
             </div>
             <div
               v-else
-              class="bg-muted/30 text-muted rounded-scale-md px-padding-sm py-0.5 row-y-center gap-xs fs-xs"
+              class="bg-muted/30 text-muted rounded-md px-sm py-0.5 row-y-center gap-xs text-xs"
             >
               <Icons
                 name="i-lucide-cloud"
@@ -465,8 +463,8 @@ function clearDraft(): void {
           </div>
 
           <div class="col-stack-md">
-            <div class="border-b-default pb-padding-sm mb-padding-sm">
-              <p class="text-muted fs-sm m-0">
+            <div class="border-b-default pb-sm mb-padding-sm">
+              <p class="text-muted text-sm m-0">
                 变更自动写入
                 <code>localStorage</code>
                 。刷新页面后草稿自愈。
@@ -481,9 +479,7 @@ function clearDraft(): void {
               @submit="onDraftSubmit"
             >
               <template #footer="{ submit, formState }">
-                <div
-                  class="row-end gap-sm pt-padding-md border-t-default border-border/15 mt-padding-md"
-                >
+                <div class="row-end gap-sm pt-md border-t-default border-border/15 mt-padding-md">
                   <Button
                     label="重置并清除"
                     severity="secondary"

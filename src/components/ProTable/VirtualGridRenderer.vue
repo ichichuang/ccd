@@ -102,13 +102,13 @@ const rowVirtualizer = useVirtualizer(
   >
     <div class="relative layout-full">
       <div
-        class="border-b-default border-border/15 bg-muted/30 font-medium py-padding-sm px-padding-md!"
+        class="border-b-default border-border/15 bg-muted/30 font-medium py-sm px-md!"
         :style="{ display: 'grid', gridTemplateColumns }"
       >
         <div
           v-for="col in columns"
           :key="getColumnKey(col)"
-          class="fs-xs! font-semibold text-muted-foreground py-padding-xs! px-padding-md! uppercase tracking-wider text-left"
+          class="text-xs! font-semibold text-muted-foreground py-xs! px-md! uppercase tracking-wider text-left"
         >
           {{ getColumnTitle(col) }}
         </div>
@@ -123,7 +123,7 @@ const rowVirtualizer = useVirtualizer(
         <div
           v-for="virtualRow in rowVirtualizer.getVirtualItems()"
           :key="String(virtualRow.key)"
-          class="pro-table-row absolute top-0 left-0 w-full surface-item behavior-hover-transition border-b-default border-border/15 py-padding-sm!"
+          class="pro-table-row absolute top-0 left-0 w-full surface-item behavior-hover-transition border-b-default border-border/15 py-sm!"
           :style="{
             transform: 'translateY(' + virtualRow.start + 'px)',
             display: 'grid',
@@ -142,7 +142,7 @@ const rowVirtualizer = useVirtualizer(
           <div
             v-for="col in columns"
             :key="getColumnKey(col)"
-            class="row-y-center px-padding-md! fs-sm text-single-line-ellipsis"
+            class="row-y-center px-md! text-sm text-single-line-ellipsis"
           >
             <ProTableCell
               :node="getBodyCellNodeByIndex(col, virtualRow.index)"

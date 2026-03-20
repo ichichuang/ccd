@@ -66,13 +66,13 @@ const handleSelect = (event: FileUploadFilesEvent): void => {
     <template v-if="props.readonly">
       <span
         v-if="fileNames.length === 0"
-        class="block py-padding-xs text-muted-foreground leading-normal break-words"
+        class="block py-xs text-muted-foreground leading-normal break-words"
       >
         {{ emptyPlaceholder }}
       </span>
       <ul
         v-else
-        class="fs-sm text-secondary-foreground leading-normal"
+        class="text-sm text-secondary-foreground leading-normal"
       >
         <li
           v-for="name in fileNames"

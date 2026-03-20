@@ -27,7 +27,7 @@ const STATUS_CFG: Record<ProductRow['status'], { label: string; cls: string }> =
   sold_out: { label: '已下架', cls: 'bg-muted/60 text-muted-foreground' },
 }
 
-const BADGE = 'rounded-scale-sm px-padding-sm py-padding-xs fs-xs font-semibold'
+const BADGE = 'rounded-sm px-sm py-xs text-xs font-semibold'
 
 export const productColumns: ProTableColumn<ProductRow>[] = [
   {
@@ -107,8 +107,8 @@ export const productColumns: ProTableColumn<ProductRow>[] = [
       return (
         <div class="col-stack-xs w-full">
           <div class="row-between">
-            <span class="fs-xs">{stock} 件</span>
-            <span class="fs-xs text-muted-foreground">{pct}%</span>
+            <span class="text-xs">{stock} 件</span>
+            <span class="text-xs text-muted-foreground">{pct}%</span>
           </div>
           <div class="w-full rounded-full bg-muted/30 h-1">
             <div

@@ -65,7 +65,7 @@ export default defineComponent({
       ]
 
       return (
-        <div class="w-full h-tabsHeight border-b-default px-padding-md overflow-hidden row items-end select-none z-10">
+        <div class="w-full h-tabsHeight border-b-default px-md overflow-hidden row items-end select-none z-10">
           <div class="relative row-y-center gap-1 h-full flex-1 min-w-0">
             <CScrollbar
               ref={scrollContainer}
@@ -103,7 +103,7 @@ export default defineComponent({
                       ref={el => setTabRef(el instanceof HTMLElement ? el : null, tab.path)}
                       data-path={tab.path}
                       class={[
-                        'group relative h-[calc(100%-var(--spacing-xs))] row-y-center px-padding-sm rounded-t-md cursor-pointer gap-scale-sm shrink-0',
+                        'group relative h-[calc(100%-var(--spacing-xs))] row-y-center px-sm rounded-t-md cursor-pointer gap-sm shrink-0',
                         active
                           ? 'bg-primary/10 text-primary font-medium backdrop-blur-md transition-all'
                           : 'bg-transparent text-muted-foreground hover:bg-muted/30 hover:text-foreground transition-all',
@@ -120,19 +120,19 @@ export default defineComponent({
                             'shrink-0 text-current!',
                             active
                               ? 'opacity-100'
-                              : 'opacity-70 transition-all duration-scale-md group-hover:opacity-100',
+                              : 'opacity-70 transition-all duration-md group-hover:opacity-100',
                           ]}
                         />
                       )}
 
                       {/* Label */}
-                      <span class="truncate fs-sm flex-1">{label}</span>
+                      <span class="truncate text-sm flex-1">{label}</span>
 
                       {/* Close Button */}
                       {!tab.fixed && tab.deletable && (
                         <div
                           class={[
-                            'center rounded-full p-0.5 transition-colors duration-scale-sm text-muted-foreground hover:text-danger hover:bg-danger/10',
+                            'center rounded-full p-0.5 transition-colors duration-sm text-muted-foreground hover:text-danger hover:bg-danger/10',
                             active ? 'opacity-100' : 'opacity-0 group-hover:opacity-100',
                           ]}
                           onClick={e => onCloseTab(e, tab)}
@@ -153,22 +153,22 @@ export default defineComponent({
 
           {/* Context Menu Portal/Overlay with Transition */}
           <Transition
-            enter-active-class="transition duration-scale-md ease-out"
+            enter-active-class="transition duration-md ease-out"
             enter-from-class="opacity-0 scale-95"
             enter-to-class="opacity-100 scale-100"
-            leave-active-class="transition duration-scale-md ease-in"
+            leave-active-class="transition duration-md ease-in"
             leave-from-class="opacity-100 scale-100"
             leave-to-class="opacity-0 scale-95"
           >
             {contextMenu.value.visible && (
               <div
-                class="fixed z-50 min-w-[var(--spacing-3xl)] bg-popover/95 backdrop-blur-md shadow-xl rounded-scale-md p-padding-xs col-stack-xs origin-top-left outline-none!"
+                class="fixed z-50 min-w-[var(--spacing-3xl)] bg-popover/95 backdrop-blur-md shadow-xl rounded-md p-xs col-stack-xs origin-top-left outline-none!"
                 style={{ top: `${contextMenu.value.y}px`, left: `${contextMenu.value.x}px` }}
               >
                 {contextMenuOptions.map(option => (
                   <div
                     key={option.label}
-                    class="menu-item-base px-padding-sm py-padding-xs rounded-scale-sm fs-sm text-popover-foreground hover:menu-item-hover group"
+                    class="flex items-center gap-sm cursor-pointer select-none transition-all duration-md ease-in-out border-none bg-transparent px-sm py-xs rounded-sm text-sm text-popover-foreground hover:bg-primary/12! dark:hover:bg-primary/30! hover:text-primary! group"
                     role="button"
                     tabindex="0"
                     onClick={e => {
@@ -184,7 +184,7 @@ export default defineComponent({
                   >
                     <Icons
                       name={option.icon}
-                      class="text-muted-foreground! transition-colors duration-scale-md group-hover:text-primary!"
+                      class="text-muted-foreground! transition-colors duration-md group-hover:text-primary!"
                       size={TAB_ICON_SIZE}
                     />
                     <span>{option.text}</span>

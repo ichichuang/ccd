@@ -52,7 +52,7 @@ const labelAlign = computed<'left' | 'center' | 'right'>(() => {
   return fieldAlign ?? layoutState?.labelAlign?.value ?? PRO_FORM_DEFAULTS.labelAlign
 })
 
-const labelClass = 'block font-medium text-secondary-foreground mb-margin-xs fs-sm'
+const labelClass = 'block font-medium text-secondary-foreground mb-xs text-sm'
 
 const customSlotName = computed<string>(() => `field-${props.field.name}`)
 const hasCustomSlot = computed<boolean>(() => {
@@ -154,7 +154,7 @@ const resolvedBindProps = computed<Record<string, unknown>>(() => {
     v-if="isVisible"
     class="w-full"
   >
-    <div :class="['w-full', layoutMode === 'horizontal' ? 'row-start gap-scale-sm' : 'column']">
+    <div :class="['w-full', layoutMode === 'horizontal' ? 'row-start gap-sm' : 'column']">
       <label
         v-if="field.label && field.component !== 'checkbox'"
         :class="labelClass"
@@ -167,7 +167,7 @@ const resolvedBindProps = computed<Record<string, unknown>>(() => {
       >
         <span
           v-if="isRequired"
-          class="text-danger mr-margin-xs"
+          class="text-danger mr-xs"
         >
           *
         </span>
@@ -182,7 +182,7 @@ const resolvedBindProps = computed<Record<string, unknown>>(() => {
         />
 
         <div
-          class="fs-xs flex items-end!"
+          class="text-xs flex items-end!"
           :style="{ height: 'var(--font-size-xl)' }"
         >
           <transition

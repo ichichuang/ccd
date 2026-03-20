@@ -328,10 +328,10 @@ export default defineComponent({
               class="w-sidebarWidth max-w-[80vw]"
               v-slots={{
                 container: () => (
-                  <div class="admin-sidebar--fixed py-padding-md col-fill select-none bg-background text-foreground">
+                  <div class="admin-sidebar--fixed py-md col-fill select-none bg-background text-foreground">
                     <AdminSidebarLogo />
                     <div class="col-fill">
-                      <CScrollbar class="col-fill px-padding-md">
+                      <CScrollbar class="col-fill px-md">
                         <AdminSidebarMenu sidebarCollapse={false} />
                       </CScrollbar>
                     </div>
@@ -348,10 +348,10 @@ export default defineComponent({
         scope="global"
         v-slots={{
           menu: ({ close, event }: { close: () => void; event: MouseEvent }) => (
-            <div class="min-w-[var(--spacing-4xl)] surface-elevated rounded-scale-md p-padding-xs col-stack-xs select-none">
+            <div class="min-w-[var(--spacing-4xl)] surface-elevated rounded-md p-xs col-stack-xs select-none">
               {/* 重新载入 */}
               <div
-                class="row-y-center gap-sm px-padding-sm py-padding-xs rounded-scale-md fs-sm text-foreground hover:bg-primary hover:text-primary-foreground cursor-pointer transition-colors duration-scale-md"
+                class="row-y-center gap-sm px-sm py-xs rounded-md text-sm text-foreground hover:bg-primary hover:text-primary-foreground cursor-pointer transition-colors duration-md"
                 onClick={() => {
                   onContextReload()
                   close()
@@ -367,7 +367,7 @@ export default defineComponent({
 
               {/* 设置 */}
               <div
-                class="row-y-center gap-sm px-padding-sm py-padding-xs rounded-scale-md fs-sm text-foreground hover:bg-primary hover:text-primary-foreground cursor-pointer transition-colors duration-scale-md"
+                class="row-y-center gap-sm px-sm py-xs rounded-md text-sm text-foreground hover:bg-primary hover:text-primary-foreground cursor-pointer transition-colors duration-md"
                 onClick={() => {
                   openGlobalSettings()
                   close()
@@ -383,7 +383,7 @@ export default defineComponent({
 
               {/* 动态切换深/浅色模式 */}
               <div
-                class="row-y-center gap-sm px-padding-sm py-padding-xs rounded-scale-md fs-sm text-foreground hover:bg-primary hover:text-primary-foreground cursor-pointer transition-colors duration-scale-md"
+                class="row-y-center gap-sm px-sm py-xs rounded-md text-sm text-foreground hover:bg-primary hover:text-primary-foreground cursor-pointer transition-colors duration-md"
                 onClick={() => {
                   onContextToggleTheme(event)
                   close()

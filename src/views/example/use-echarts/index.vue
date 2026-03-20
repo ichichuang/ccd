@@ -458,11 +458,11 @@ onBeforeUnmount(() => {
       <TabPanels class="col-fill overflow-hidden p-0">
         <TabPanel
           :value="activeTab"
-          class="col-fill p-padding-md"
+          class="col-fill p-md"
         >
           <div class="flex-1 min-h-0 row gap-md items-stretch overflow-hidden">
             <CScrollbar class="col-fill layout-full">
-              <div class="p-padding-md col-stack-xl">
+              <div class="p-md col-stack-xl">
                 <!-- 基础 -->
                 <template v-if="activeTab === 'basic'">
                   <ChartDemoCard
@@ -751,7 +751,7 @@ onBeforeUnmount(() => {
                     description="chartReady、finished、onClick、onLegendSelectChanged、onDataZoom。"
                     chart-height="24vh"
                   >
-                    <div class="layout-wrap gap-xs text-muted-foreground fs-sm mb-padding-xs">
+                    <div class="layout-wrap gap-xs text-muted-foreground text-sm mb-padding-xs">
                       <span>chartReady: {{ chartReadyFired ? '已触发' : '未触发' }}</span>
                       <span>finished: {{ finishedFired ? '已触发' : '未触发' }}</span>
                     </div>
@@ -818,7 +818,7 @@ onBeforeUnmount(() => {
               class="w-72 shrink-0 min-h-0 column hidden xl:flex"
             >
               <CScrollbar class="col-fill layout-full">
-                <div class="card bg-card component-border p-padding-md">
+                <div class="card bg-card shadow-soft p-md">
                   <GlobalControls
                     :theme-enabled="themeEnabled"
                     :line-area-opacity="lineAreaOpacity"
@@ -839,16 +839,14 @@ onBeforeUnmount(() => {
               class="w-72 shrink-0 min-h-0 column hidden xl:flex"
             >
               <CScrollbar class="col-fill layout-full">
-                <div class="card bg-card component-border p-padding-md">
+                <div class="card bg-card shadow-soft p-md">
                   <div class="col-stack-md">
-                    <div class="text-foreground fs-md font-semibold">联动操作日志</div>
-                    <div
-                      class="rounded-scale-md component-border bg-muted p-padding-sm fs-xs font-mono"
-                    >
+                    <div class="text-foreground text-md font-semibold">联动操作日志</div>
+                    <div class="rounded-md shadow-soft bg-muted p-sm text-xs font-mono">
                       <div
                         v-for="(line, i) in connectLog"
                         :key="i"
-                        class="text-foreground mb-margin-xs last:mb-0"
+                        class="text-foreground mb-xs last:mb-0"
                       >
                         {{ line }}
                       </div>
@@ -870,16 +868,14 @@ onBeforeUnmount(() => {
               class="w-72 shrink-0 min-h-0 column hidden xl:flex"
             >
               <CScrollbar class="col-fill layout-full">
-                <div class="card bg-card component-border p-padding-md">
+                <div class="card bg-card shadow-soft p-md">
                   <div class="col-stack-md">
-                    <div class="text-foreground fs-md font-semibold">事件日志</div>
-                    <div
-                      class="rounded-scale-md component-border bg-muted p-padding-sm fs-xs font-mono"
-                    >
+                    <div class="text-foreground text-md font-semibold">事件日志</div>
+                    <div class="rounded-md shadow-soft bg-muted p-sm text-xs font-mono">
                       <div
                         v-for="(line, i) in eventLog"
                         :key="i"
-                        class="text-foreground mb-margin-xs last:mb-0"
+                        class="text-foreground mb-xs last:mb-0"
                       >
                         {{ line }}
                       </div>
@@ -890,14 +886,12 @@ onBeforeUnmount(() => {
                         暂无
                       </div>
                     </div>
-                    <div class="text-foreground fs-md font-semibold mt-md">Ref 操作日志</div>
-                    <div
-                      class="rounded-scale-md component-border bg-muted p-padding-sm fs-xs font-mono"
-                    >
+                    <div class="text-foreground text-md font-semibold mt-md">Ref 操作日志</div>
+                    <div class="rounded-md shadow-soft bg-muted p-sm text-xs font-mono">
                       <div
                         v-for="(line, i) in refMethodsLog"
                         :key="i"
-                        class="text-foreground mb-margin-xs last:mb-0"
+                        class="text-foreground mb-xs last:mb-0"
                       >
                         {{ line }}
                       </div>

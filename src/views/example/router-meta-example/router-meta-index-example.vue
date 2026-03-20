@@ -67,8 +67,8 @@ function navigateTo(item: MetaExampleItem) {
 </script>
 
 <template>
-  <div class="p-padding-lg space-y-margin-md">
-    <h2 class="fs-xl font-semibold row-y-center gap-sm">
+  <div class="p-lg space-y-margin-md">
+    <h2 class="text-xl font-semibold row-y-center gap-sm">
       <Icons
         name="i-lucide-route"
         size="lg"
@@ -77,23 +77,23 @@ function navigateTo(item: MetaExampleItem) {
       <span>Router Meta 功能示例索引</span>
     </h2>
 
-    <div class="component-border rounded-scale p-padding-md space-y-margin-sm">
-      <div class="fs-md font-medium">当前路由 meta.parentPaths（自动注入）</div>
-      <p class="text-muted-foreground fs-sm">
+    <div class="shadow-soft rounded-scale p-md space-y-margin-sm">
+      <div class="text-md font-medium">当前路由 meta.parentPaths（自动注入）</div>
+      <p class="text-muted-foreground text-sm">
         parentPaths 由 addParentPathsToLeafRoutes 自动为叶子路由注入，用于面包屑、菜单展开等。
       </p>
-      <div class="fs-sm font-mono text-muted-foreground">
+      <div class="text-sm font-mono text-muted-foreground">
         {{ parentPaths.length ? parentPaths.join(' → ') : '[]' }}
       </div>
     </div>
 
-    <div class="component-border rounded-scale p-padding-md space-y-margin-md bg-muted">
-      <div class="fs-md font-medium">各 meta 字段示例入口</div>
+    <div class="shadow-soft rounded-scale p-md space-y-margin-md bg-muted">
+      <div class="text-md font-medium">各 meta 字段示例入口</div>
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-md">
         <div
           v-for="item in examples"
           :key="item.name"
-          class="component-border rounded-scale p-padding-md bg-card col-stack-sm"
+          class="shadow-soft rounded-scale p-md bg-card col-stack-sm"
         >
           <div class="row-y-center gap-sm">
             <Icons
@@ -105,7 +105,7 @@ function navigateTo(item: MetaExampleItem) {
               {{ item.title }}
             </span>
           </div>
-          <div class="fs-xs text-muted-foreground font-mono">
+          <div class="text-xs text-muted-foreground font-mono">
             {{ item.metaFields }}
           </div>
           <Button

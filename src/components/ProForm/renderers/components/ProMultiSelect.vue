@@ -57,7 +57,7 @@ const handleUpdate = (value: unknown): void => {
 <template>
   <span
     v-if="props.readonly"
-    class="block py-padding-xs text-foreground leading-normal break-words"
+    class="block py-xs text-foreground leading-normal break-words"
   >
     {{ displayLabel }}
   </span>

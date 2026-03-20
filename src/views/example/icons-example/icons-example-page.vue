@@ -164,24 +164,24 @@ function openExternalLink(url: string) {
       <TabPanels class="col-fill overflow-hidden p-0">
         <TabPanel
           :value="activeTab"
-          class="col-fill p-padding-md"
+          class="col-fill p-md"
         >
           <!-- Lite 模式提示 -->
           <div
             v-if="IS_LITE_MODE"
-            class="shrink-0 mb-md p-padding-md bg-warn/10 border border-warn/30 rounded-scale-md row-y-center gap-md"
+            class="shrink-0 mb-md p-md bg-warn/10 border border-warn/30 rounded-md row-y-center gap-md"
           >
             <Icons
               name="i-lucide-alert-circle"
               class="text-warn"
             />
             <div class="flex-1">
-              <span class="fs-sm font-medium text-warn">
+              <span class="text-sm font-medium text-warn">
                 当前处于构建优化模式（Lite），仅展示常用示例图标。
               </span>
-              <span class="fs-xs text-muted-foreground ml-margin-sm">
+              <span class="text-xs text-muted-foreground ml-sm">
                 运行
-                <code class="bg-muted px-padding-xs rounded-scale-sm">pnpm dev:demo</code>
+                <code class="bg-muted px-xs rounded-sm">pnpm dev:demo</code>
                 可查看完整库（Lucide / Solar / Phosphor 等多套图标库）。
               </span>
             </div>
@@ -189,7 +189,7 @@ function openExternalLink(url: string) {
               label="了解更多"
               size="small"
               text
-              class="fs-xs"
+              class="text-xs"
               @click="openExternalLink('https://antigravity.dev')"
             />
           </div>
@@ -199,16 +199,16 @@ function openExternalLink(url: string) {
             <div class="col-fill">
               <div
                 ref="searchBarRef"
-                class="shrink-0 p-padding-md"
+                class="shrink-0 p-md"
               >
                 <div class="row-y-center gap-sm">
-                  <span class="i-lucide-search fs-lg text-muted-foreground" />
+                  <span class="i-lucide-search text-lg text-muted-foreground" />
                   <InputText
                     v-model="searchKeyword"
                     placeholder="搜索图标..."
                     class="flex-1"
                   />
-                  <span class="text-muted-foreground fs-sm">
+                  <span class="text-muted-foreground text-sm">
                     <template v-if="hasMoreIcons">
                       已显示 {{ displayedIcons.length }} / 共 {{ currentIcons.length }} 个
                     </template>
@@ -222,7 +222,7 @@ function openExternalLink(url: string) {
                 class="min-h-0 overflow-hidden"
               >
                 <CScrollbar class="layout-full">
-                  <div class="p-padding-md col-stack-md">
+                  <div class="p-md col-stack-md">
                     <div
                       v-if="currentIcons.length > 0"
                       class="col-stack-md"
@@ -233,7 +233,7 @@ function openExternalLink(url: string) {
                         <div
                           v-for="icon in displayedIcons"
                           :key="icon"
-                          class="col-stack-sm items-center p-padding-md surface-elevated cursor-pointer transition-all duration-scale-md hover:border-accent hover:shadow-md"
+                          class="col-stack-sm items-center p-md surface-elevated cursor-pointer transition-all duration-md hover:border-accent hover:shadow-md"
                           :class="{ 'border-accent': selectedIcon === icon }"
                           @click="selectedIcon = icon"
                         >
@@ -249,7 +249,7 @@ function openExternalLink(url: string) {
                             />
                           </div>
                           <div class="text-center w-full">
-                            <div class="fs-xs font-mono text-foreground break-all line-clamp-2">
+                            <div class="text-xs font-mono text-foreground break-all line-clamp-2">
                               {{ icon }}
                             </div>
                           </div>
@@ -270,13 +270,13 @@ function openExternalLink(url: string) {
 
                     <div
                       v-if="currentIcons.length === 0"
-                      class="column-center py-padding-2xl gap-md text-muted-foreground"
+                      class="column-center py-2xl gap-md text-muted-foreground"
                     >
                       <Icons
                         name="i-lucide-search-x"
                         size="3xl"
                       />
-                      <span class="fs-lg">未找到匹配的图标</span>
+                      <span class="text-lg">未找到匹配的图标</span>
                     </div>
                   </div>
                 </CScrollbar>
@@ -294,7 +294,7 @@ function openExternalLink(url: string) {
                   class="col-stack-md"
                 >
                   <div class="row-between gap-sm">
-                    <label class="fs-sm font-medium text-foreground">代码示例</label>
+                    <label class="text-sm font-medium text-foreground">代码示例</label>
                     <Button
                       type="button"
                       size="small"
@@ -309,9 +309,9 @@ function openExternalLink(url: string) {
                       />
                     </Button>
                   </div>
-                  <div class="p-padding-md bg-muted rounded-scale-md border border-border/50">
+                  <div class="p-md bg-muted rounded-md border border-border/50">
                     <pre
-                      class="fs-xs font-mono text-foreground whitespace-pre-wrap break-all m-0"
+                      class="text-xs font-mono text-foreground whitespace-pre-wrap break-all m-0"
                       >{{ codeExampleText }}</pre
                     >
                   </div>
@@ -323,7 +323,7 @@ function openExternalLink(url: string) {
                 class="min-h-0 overflow-hidden"
               >
                 <CScrollbar class="layout-full">
-                  <div class="p-padding-md">
+                  <div class="p-md">
                     <IconControls
                       :icon-name="selectedIcon || '未选择'"
                       :size="iconSize"
@@ -347,10 +347,10 @@ function openExternalLink(url: string) {
                 ref="previewAreaRef"
                 class="shrink-0 col-stack-md"
               >
-                <h3 class="fs-md font-semibold text-foreground">预览</h3>
+                <h3 class="text-md font-semibold text-foreground">预览</h3>
                 <div
                   v-if="selectedIcon"
-                  class="column-center gap-md p-padding-xl bg-muted rounded-scale-md border border-border/50 min-h-[var(--spacing-5xl)]"
+                  class="column-center gap-md p-xl bg-muted rounded-md border border-border/50 min-h-[var(--spacing-5xl)]"
                 >
                   <Icons
                     :name="selectedIcon"
@@ -362,20 +362,20 @@ function openExternalLink(url: string) {
                     :scale="iconScale"
                   />
                   <div class="text-center">
-                    <div class="fs-sm font-mono text-muted-foreground break-all">
+                    <div class="text-sm font-mono text-muted-foreground break-all">
                       {{ selectedIcon }}
                     </div>
                   </div>
                 </div>
                 <div
                   v-else
-                  class="column-center gap-md p-padding-xl bg-muted rounded-scale-md border border-border/50 min-h-[var(--spacing-5xl)] text-muted-foreground"
+                  class="column-center gap-md p-xl bg-muted rounded-md border border-border/50 min-h-[var(--spacing-5xl)] text-muted-foreground"
                 >
                   <Icons
                     name="i-lucide-mouse-pointer-click"
                     size="2xl"
                   />
-                  <span class="fs-sm">请从左侧选择一个图标</span>
+                  <span class="text-sm">请从左侧选择一个图标</span>
                 </div>
               </div>
             </div>

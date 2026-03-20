@@ -65,28 +65,28 @@ const progressText = computed<string>(() => {
 <template>
   <div
     data-archetype="A1-toolbar-content"
-    class="layout-full px-padding-md md:px-padding-lg col-stack-sm min-h-0"
+    class="layout-full px-md md:px-lg col-stack-sm min-h-0"
   >
     <!-- Toolbar: Hero Header (Transparent Root Policy: Inherit canvas) -->
     <header class="shrink-0 border-b-default">
-      <div class="w-full py-padding-sm row-between gap-md flex-wrap">
+      <div class="w-full py-sm row-between gap-md flex-wrap">
         <div class="row-y-center gap-md">
-          <div class="p-padding-md bg-primary/10 rounded-scale-lg shrink-0">
+          <div class="p-md bg-primary/10 rounded-lg shrink-0">
             <Icons
               name="i-lucide-arrow-down-to-line"
-              class="text-primary fs-2xl"
+              class="text-primary text-2xl"
             />
           </div>
           <div class="col-stack-xs">
             <div class="row-y-center gap-sm flex-wrap">
-              <h1 class="fs-2xl font-bold text-foreground m-0">ProTable — 无限加载模式</h1>
+              <h1 class="text-2xl font-bold text-foreground m-0">ProTable — 无限加载模式</h1>
               <span
-                class="bg-accent/15 text-accent rounded-scale-md px-padding-sm py-padding-xs fs-xs font-semibold uppercase tracking-wider shrink-0"
+                class="bg-accent/15 text-accent rounded-md px-sm py-xs text-xs font-semibold uppercase tracking-wider shrink-0"
               >
                 Infinite Scroll
               </span>
             </div>
-            <p class="text-muted fs-sm m-0">
+            <p class="text-muted text-sm m-0">
               数据来自
               <code>dummyjson.com/products</code>
               （194 件）。滚动到底部自动加载下一页，数据追加到列表末尾。
@@ -97,7 +97,7 @@ const progressText = computed<string>(() => {
         <!-- Progress badge -->
         <div
           v-if="totalCount > 0"
-          class="surface-sunken rounded-scale-md px-padding-md py-padding-xs row-y-center gap-sm shrink-0"
+          class="surface-sunken rounded-md px-md py-xs row-y-center gap-sm shrink-0"
         >
           <div class="row-y-center gap-xs">
             <Icons
@@ -105,11 +105,11 @@ const progressText = computed<string>(() => {
               size="xs"
               class="text-accent!"
             />
-            <span class="fs-xs text-muted-foreground">{{ progressText }}</span>
+            <span class="text-xs text-muted-foreground">{{ progressText }}</span>
           </div>
           <span
             v-if="!hasMore"
-            class="bg-success text-success-foreground rounded-scale-sm px-padding-xs py-0.5 fs-xs font-semibold uppercase tracking-tighter"
+            class="bg-success text-success-foreground rounded-sm px-xs py-0.5 text-xs font-semibold uppercase tracking-tighter"
           >
             全部加载完毕
           </span>
@@ -123,7 +123,7 @@ const progressText = computed<string>(() => {
       <Transition name="error-bar">
         <div
           v-if="hasError"
-          class="shrink-0 row-between px-padding-lg py-padding-sm bg-danger/10 border-b-default"
+          class="shrink-0 row-between px-lg py-sm bg-danger/10 border-b-default"
         >
           <div class="row-y-center gap-sm">
             <Icons
@@ -131,7 +131,7 @@ const progressText = computed<string>(() => {
               size="sm"
               class="text-danger"
             />
-            <span class="fs-sm text-danger font-bold">{{ errorMessage }}</span>
+            <span class="text-sm text-danger font-bold">{{ errorMessage }}</span>
           </div>
           <Button
             label="重试"

@@ -63,7 +63,7 @@ export const transactionLedgerColumns: ProTableColumn<TransactionLedgerRow>[] = 
       <span
         class={[
           'row-y-center',
-          'px-padding-xs py-padding-xs rounded-scale-xs fs-xs font-medium',
+          'px-xs py-xs rounded-xs text-xs font-medium',
           statusClass(row.status),
         ].join(' ')}
       >
