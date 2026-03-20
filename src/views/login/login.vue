@@ -184,7 +184,7 @@ async function handleLoginSubmit(): Promise<void> {
   >
     <!-- Left Background -->
     <div
-      class="hidden lg:flex flex-col justify-between w-[55%] surface-base text-foreground p-xl relative overflow-hidden"
+      class="hidden lg:flex flex-col justify-between w-[55%] bg-background text-foreground p-xl relative overflow-hidden"
     >
       <div
         class="absolute inset-0 bg-gradient-to-br from-primary/20 via-transparent to-transparent pointer-events-none"
@@ -214,7 +214,7 @@ async function handleLoginSubmit(): Promise<void> {
     </div>
 
     <!-- Right Panel -->
-    <div class="flex-1 col-fill relative surface-base bg-card">
+    <div class="flex-1 col-fill relative bg-background bg-card">
       <div
         class="absolute top-[var(--spacing-xl)] right-[var(--spacing-xl)] row-y-center gap-md z-20"
       >

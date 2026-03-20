@@ -228,7 +228,7 @@ const state = scrollbarRef.value?.state()`,
                 class="w-[var(--spacing-4xl)]"
               />
               <div
-                class="row-y-center gap-sm px-sm py-xs rounded-md cursor-pointer select-none transition-all duration-lg ease-in-out text-sm active:scale-95 surface-item shadow-soft transition-all duration-xl ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)] interactive-focus-ring"
+                class="row-y-center gap-sm px-sm py-xs rounded-md cursor-pointer select-none transition-all duration-lg ease-in-out text-sm active:scale-95 surface-item shadow-sm dark:shadow-md transition-all duration-xl ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)] interactive-focus-ring"
                 tabindex="0"
                 @click="scrollToItem"
                 @keydown.enter.prevent="scrollToItem"
@@ -245,7 +245,7 @@ const state = scrollbarRef.value?.state()`,
           <div class="h-[var(--spacing-xl)] w-px bg-border mx-gap-md hidden md:block" />
           <div class="flex gap-sm flex-wrap items-center">
             <div
-              class="row-y-center gap-sm px-sm py-xs rounded-md cursor-pointer select-none transition-all duration-lg ease-in-out text-sm active:scale-95 surface-item shadow-soft transition-all duration-xl ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)] interactive-focus-ring"
+              class="row-y-center gap-sm px-sm py-xs rounded-md cursor-pointer select-none transition-all duration-lg ease-in-out text-sm active:scale-95 surface-item shadow-sm dark:shadow-md transition-all duration-xl ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)] interactive-focus-ring"
               tabindex="0"
               @click="scrollToTop"
               @keydown.enter.prevent="scrollToTop"
@@ -258,7 +258,7 @@ const state = scrollbarRef.value?.state()`,
               <span>滚动至顶部</span>
             </div>
             <div
-              class="row-y-center gap-sm px-sm py-xs rounded-md cursor-pointer select-none transition-all duration-lg ease-in-out text-sm active:scale-95 surface-item shadow-soft transition-all duration-xl ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)] interactive-focus-ring"
+              class="row-y-center gap-sm px-sm py-xs rounded-md cursor-pointer select-none transition-all duration-lg ease-in-out text-sm active:scale-95 surface-item shadow-sm dark:shadow-md transition-all duration-xl ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)] interactive-focus-ring"
               tabindex="0"
               @click="scrollToBottom"
               @keydown.enter.prevent="scrollToBottom"
@@ -271,7 +271,7 @@ const state = scrollbarRef.value?.state()`,
               <span>滚动至底部</span>
             </div>
             <div
-              class="row-y-center gap-sm px-sm py-xs rounded-md cursor-pointer select-none transition-all duration-lg ease-in-out text-sm active:scale-95 surface-item shadow-soft transition-all duration-xl ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)] interactive-focus-ring bg-info text-info-foreground shadow-soft hover:opacity-90"
+              class="row-y-center gap-sm px-sm py-xs rounded-md cursor-pointer select-none transition-all duration-lg ease-in-out text-sm active:scale-95 surface-item shadow-sm dark:shadow-md transition-all duration-xl ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)] interactive-focus-ring bg-info text-info-foreground shadow-sm dark:shadow-md hover:opacity-90"
               tabindex="0"
               @click="checkState"
               @keydown.enter.prevent="checkState"
@@ -284,7 +284,7 @@ const state = scrollbarRef.value?.state()`,
               <span>检查状态</span>
             </div>
             <div
-              class="row-y-center gap-sm px-sm py-xs rounded-md cursor-pointer select-none transition-all duration-lg ease-in-out text-sm active:scale-95 surface-item shadow-soft transition-all duration-xl ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)] interactive-focus-ring text-danger hover:bg-danger/10"
+              class="row-y-center gap-sm px-sm py-xs rounded-md cursor-pointer select-none transition-all duration-lg ease-in-out text-sm active:scale-95 surface-item shadow-sm dark:shadow-md transition-all duration-xl ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)] interactive-focus-ring text-danger hover:bg-danger/10"
               tabindex="0"
               @click="logs = []"
               @keydown.enter.prevent="logs = []"
@@ -307,7 +307,9 @@ const state = scrollbarRef.value?.state()`,
         class="py-sm md:py-md xl:py-lg 2xl:py-xl mx-auto max-w-[92%] sm:max-w-[94%] md:max-w-[92%] lg:max-w-[90%] xl:max-w-[88%] 2xl:max-w-[86%] 3xl:max-w-[84%] col-stack-xl"
       >
         <!-- Device Store 当前设备/断点 (Hero: accent tint + title strip) -->
-        <Card class="bg-accent/10 dark:bg-accent/5 rounded-xl shadow-soft p-xl col-stack-lg">
+        <Card
+          class="bg-accent/10 dark:bg-accent/5 rounded-xl shadow-sm dark:shadow-md p-xl col-stack-lg"
+        >
           <template #title>
             <div class="row-y-center gap-sm border-b-default pb-sm mb-padding-sm">
               <Icons
@@ -324,7 +326,7 @@ const state = scrollbarRef.value?.state()`,
           <template #content>
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-md">
               <div
-                class="col-stack-xs p-md surface-item rounded-lg shadow-soft transition-all duration-xl ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)] behavior-hover-transition"
+                class="col-stack-xs p-md surface-item rounded-lg shadow-sm dark:shadow-md transition-all duration-xl ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)] behavior-hover-transition"
               >
                 <span class="text-muted-foreground text-xs">type</span>
                 <Tag
@@ -333,7 +335,7 @@ const state = scrollbarRef.value?.state()`,
                 />
               </div>
               <div
-                class="col-stack-xs p-md surface-item rounded-lg shadow-soft transition-all duration-xl ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)] behavior-hover-transition"
+                class="col-stack-xs p-md surface-item rounded-lg shadow-sm dark:shadow-md transition-all duration-xl ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)] behavior-hover-transition"
               >
                 <span class="text-muted-foreground text-xs">currentBreakpoint</span>
                 <Tag
@@ -342,7 +344,7 @@ const state = scrollbarRef.value?.state()`,
                 />
               </div>
               <div
-                class="col-stack-xs p-md surface-item rounded-lg shadow-soft transition-all duration-xl ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)] behavior-hover-transition"
+                class="col-stack-xs p-md surface-item rounded-lg shadow-sm dark:shadow-md transition-all duration-xl ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)] behavior-hover-transition"
               >
                 <span class="text-muted-foreground text-xs">isMobileLayout</span>
                 <Tag
@@ -351,7 +353,7 @@ const state = scrollbarRef.value?.state()`,
                 />
               </div>
               <div
-                class="col-stack-xs p-md surface-item rounded-lg shadow-soft transition-all duration-xl ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)] behavior-hover-transition"
+                class="col-stack-xs p-md surface-item rounded-lg shadow-sm dark:shadow-md transition-all duration-xl ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)] behavior-hover-transition"
               >
                 <span class="text-muted-foreground text-xs">width × height</span>
                 <span class="font-mono text-sm">
@@ -376,7 +378,7 @@ const state = scrollbarRef.value?.state()`,
         <div class="grid grid-cols-1 lg:grid-cols-5 gap-lg">
           <!-- Vertical Scroll Demo (数据区：固定高度以触发纵向滚动) -->
           <Card
-            class="bg-card rounded-md shadow-soft py-md px-lg flex flex-col gap-lg lg:col-span-2"
+            class="bg-card rounded-md shadow-sm dark:shadow-md py-md px-lg flex flex-col gap-lg lg:col-span-2"
           >
             <template #title>
               <div class="row-between">
@@ -428,7 +430,9 @@ const state = scrollbarRef.value?.state()`,
           <!-- Right Side -->
           <div class="col-stack-lg lg:col-span-3">
             <!-- Horizontal Scroll Demo (数据区：title 无 strip) -->
-            <Card class="bg-card rounded-md shadow-soft py-md px-lg flex flex-col gap-lg">
+            <Card
+              class="bg-card rounded-md shadow-sm dark:shadow-md py-md px-lg flex flex-col gap-lg"
+            >
               <template #title>
                 <div class="row-y-center gap-sm">
                   <Icons
@@ -448,7 +452,7 @@ const state = scrollbarRef.value?.state()`,
                       <div
                         v-for="item in horizontalItems"
                         :key="item"
-                        class="min-w-[var(--spacing-4xl)] h-[var(--spacing-2xl)] p-md rounded-lg shadow-soft transition-all duration-xl ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)] surface-item center shrink-0 behavior-hover-transition"
+                        class="min-w-[var(--spacing-4xl)] h-[var(--spacing-2xl)] p-md rounded-lg shadow-sm dark:shadow-md transition-all duration-xl ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)] surface-item center shrink-0 behavior-hover-transition"
                       >
                         <span class="font-medium text-muted-foreground">
                           {{ item }}
@@ -462,7 +466,7 @@ const state = scrollbarRef.value?.state()`,
 
             <!-- Event Logs (Hero: primary tint + title strip) -->
             <Card
-              class="bg-primary/10 dark:bg-primary/5 rounded-xl shadow-soft p-xl col-stack-lg flex-1"
+              class="bg-primary/10 dark:bg-primary/5 rounded-xl shadow-sm dark:shadow-md p-xl col-stack-lg flex-1"
             >
               <template #title>
                 <div class="row-between border-b-default pb-sm mb-padding-sm">
@@ -506,7 +510,7 @@ const state = scrollbarRef.value?.state()`,
         </div>
 
         <!-- Code Examples (数据区：title 无 strip) -->
-        <Card class="bg-card rounded-md shadow-soft py-md px-lg flex flex-col gap-lg">
+        <Card class="bg-card rounded-md shadow-sm dark:shadow-md py-md px-lg flex flex-col gap-lg">
           <template #title>
             <div class="row-y-center gap-sm">
               <Icons
@@ -545,7 +549,7 @@ const state = scrollbarRef.value?.state()`,
                 >
                   <CScrollbar class="min-w-0">
                     <pre
-                      class="m-0 bg-background/50 backdrop-blur-sm rounded-md shadow-soft p-md text-sm"
+                      class="m-0 bg-background/50 backdrop-blur-sm rounded-md shadow-sm dark:shadow-md p-md text-sm"
                     ><code class="text-foreground">{{ example.code }}</code></pre>
                   </CScrollbar>
                 </div>
@@ -555,7 +559,7 @@ const state = scrollbarRef.value?.state()`,
         </Card>
 
         <!-- Props Reference (数据区：title 无 strip) -->
-        <Card class="bg-card rounded-md shadow-soft py-md px-lg flex flex-col gap-lg">
+        <Card class="bg-card rounded-md shadow-sm dark:shadow-md py-md px-lg flex flex-col gap-lg">
           <template #title>
             <div class="row-y-center gap-sm">
               <Icons

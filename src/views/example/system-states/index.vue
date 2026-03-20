@@ -93,7 +93,7 @@ const sizeScaleDisplayList = computed<{ key: SizeScaleKey; percent: number }[]>(
                   </span>
                 </template>
                 <template #content>
-                  <p class="text-sm text-muted m-0 mb-md">
+                  <p class="text-sm text-muted-foreground m-0 mb-md">
                     全屏遮罩，覆盖整个布局，使用
                     <span class="px-xs rounded bg-muted">Loading</span>
                     type 3（003.json）、size 5xl。触发后持续 3 秒自动关闭。
@@ -120,7 +120,7 @@ const sizeScaleDisplayList = computed<{ key: SizeScaleKey; percent: number }[]>(
                   </span>
                 </template>
                 <template #content>
-                  <p class="text-sm text-muted m-0 mb-md">
+                  <p class="text-sm text-muted-foreground m-0 mb-md">
                     内容区遮罩，仅覆盖主内容区域，使用
                     <span class="px-xs rounded bg-muted">Loading</span>
                     type 2（002.json）、size lg。触发后持续 3 秒自动关闭。
@@ -147,7 +147,7 @@ const sizeScaleDisplayList = computed<{ key: SizeScaleKey; percent: number }[]>(
                   </span>
                 </template>
                 <template #content>
-                  <p class="text-sm text-muted m-0 mb-md">
+                  <p class="text-sm text-muted-foreground m-0 mb-md">
                     PrimeVue Button 的 loading 状态。触发后持续 3 秒。
                   </p>
                   <Button
@@ -172,7 +172,7 @@ const sizeScaleDisplayList = computed<{ key: SizeScaleKey; percent: number }[]>(
                   </span>
                 </template>
                 <template #content>
-                  <p class="text-sm text-muted m-0 mb-md">
+                  <p class="text-sm text-muted-foreground m-0 mb-md">
                     <span class="px-xs rounded bg-muted">size</span>
                     使用 Design System 的 SizeScaleKey，对应 LOADING_SIZE_PERCENT。
                   </p>
@@ -182,7 +182,7 @@ const sizeScaleDisplayList = computed<{ key: SizeScaleKey; percent: number }[]>(
                       :key="item.key"
                       class="col-stack-sm items-center"
                     >
-                      <span class="text-xs font-mono text-muted">
+                      <span class="text-xs font-mono text-muted-foreground">
                         {{ item.key }} ({{ item.percent }}vw)
                       </span>
                     </div>
@@ -202,7 +202,9 @@ const sizeScaleDisplayList = computed<{ key: SizeScaleKey; percent: number }[]>(
                   </span>
                 </template>
                 <template #content>
-                  <p class="text-sm text-muted m-0 mb-md">模拟个人资料卡片的骨架占位。</p>
+                  <p class="text-sm text-muted-foreground m-0 mb-md">
+                    模拟个人资料卡片的骨架占位。
+                  </p>
                   <div
                     class="row-y-center gap-lg py-sm md:py-md xl:py-lg 2xl:py-xl mx-auto max-w-[88%] sm:max-w-[84%] md:max-w-[82%] lg:max-w-[80%] xl:max-w-[78%] 2xl:max-w-[76%]"
                   >
@@ -248,13 +250,13 @@ const sizeScaleDisplayList = computed<{ key: SizeScaleKey; percent: number }[]>(
                   <Icons
                     name="i-lucide-file-question"
                     size="sm"
-                    class="text-muted"
+                    class="text-muted-foreground"
                   />
                   错误页入口
                 </span>
               </template>
               <template #content>
-                <p class="text-sm text-muted m-0 mb-md">
+                <p class="text-sm text-muted-foreground m-0 mb-md">
                   通过路由可访问 403 / 404 / 500 等异常页，用于演示错误态与返回引导。
                 </p>
                 <div class="row-y-center layout-wrap gap-md">

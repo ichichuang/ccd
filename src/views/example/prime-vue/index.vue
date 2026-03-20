@@ -288,7 +288,7 @@ function onAccordionActiveIndexChange(value: number | number[] | undefined): voi
             class="scroll-mt-gap-lg"
           >
             <div
-              class="bg-card shadow-soft rounded-md transition-all duration-md ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)] p-lg col-stack-md"
+              class="bg-card shadow-sm dark:shadow-md rounded-md transition-all duration-md ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)] p-lg col-stack-md"
             >
               <h2 class="text-xl font-semibold text-foreground row-y-center gap-sm m-0">
                 {{ sectionMeta[0].indexLabel }} {{ sectionMeta[0].label }}
@@ -696,7 +696,7 @@ function onAccordionActiveIndexChange(value: number | number[] | undefined): voi
             class="scroll-mt-gap-lg"
           >
             <div
-              class="bg-card shadow-soft rounded-md transition-all duration-md ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)] p-lg col-stack-md"
+              class="bg-card shadow-sm dark:shadow-md rounded-md transition-all duration-md ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)] p-lg col-stack-md"
             >
               <h2 class="text-xl font-semibold text-foreground row-y-center gap-sm m-0">
                 {{ sectionMeta[1].indexLabel }} {{ sectionMeta[1].label }}
@@ -810,7 +810,7 @@ function onAccordionActiveIndexChange(value: number | number[] | undefined): voi
             class="scroll-mt-gap-lg"
           >
             <div
-              class="bg-card shadow-soft rounded-md transition-all duration-md ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)] p-lg col-stack-md"
+              class="bg-card shadow-sm dark:shadow-md rounded-md transition-all duration-md ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)] p-lg col-stack-md"
             >
               <h2 class="text-xl font-semibold text-foreground row-y-center gap-sm m-0">
                 {{ sectionMeta[2].indexLabel }} {{ sectionMeta[2].label }}
@@ -847,7 +847,7 @@ function onAccordionActiveIndexChange(value: number | number[] | undefined): voi
             class="scroll-mt-gap-lg"
           >
             <div
-              class="bg-card shadow-soft rounded-md transition-all duration-md ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)] p-lg col-stack-md"
+              class="bg-card shadow-sm dark:shadow-md rounded-md transition-all duration-md ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)] p-lg col-stack-md"
             >
               <h2 class="text-xl font-semibold text-foreground row-y-center gap-sm m-0">
                 {{ sectionMeta[3].indexLabel }} {{ sectionMeta[3].label }}
@@ -876,7 +876,7 @@ function onAccordionActiveIndexChange(value: number | number[] | undefined): voi
             class="scroll-mt-gap-lg"
           >
             <div
-              class="bg-card shadow-soft rounded-md transition-all duration-md ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)] p-lg col-stack-md"
+              class="bg-card shadow-sm dark:shadow-md rounded-md transition-all duration-md ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)] p-lg col-stack-md"
             >
               <h2 class="text-xl font-semibold text-foreground row-y-center gap-sm m-0">
                 {{ sectionMeta[4].indexLabel }} {{ sectionMeta[4].label }}
@@ -909,7 +909,7 @@ function onAccordionActiveIndexChange(value: number | number[] | undefined): voi
             class="scroll-mt-gap-lg"
           >
             <div
-              class="bg-card shadow-soft rounded-md transition-all duration-md ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)] p-lg col-stack-md"
+              class="bg-card shadow-sm dark:shadow-md rounded-md transition-all duration-md ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)] p-lg col-stack-md"
             >
               <h2 class="text-xl font-semibold text-foreground row-y-center gap-sm m-0">
                 {{ sectionMeta[5].indexLabel }} {{ sectionMeta[5].label }}
@@ -1005,7 +1005,7 @@ function onAccordionActiveIndexChange(value: number | number[] | undefined): voi
             class="scroll-mt-gap-lg"
           >
             <div
-              class="bg-card shadow-soft rounded-md transition-all duration-md ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)] p-lg col-stack-md"
+              class="bg-card shadow-sm dark:shadow-md rounded-md transition-all duration-md ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)] p-lg col-stack-md"
             >
               <h2 class="text-xl font-semibold text-foreground row-y-center gap-sm m-0">
                 {{ sectionMeta[6].indexLabel }} {{ sectionMeta[6].label }}
@@ -1038,7 +1038,7 @@ function onAccordionActiveIndexChange(value: number | number[] | undefined): voi
             class="scroll-mt-gap-lg"
           >
             <div
-              class="bg-card shadow-soft rounded-md transition-all duration-md ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)] p-lg col-stack-md"
+              class="bg-card shadow-sm dark:shadow-md rounded-md transition-all duration-md ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)] p-lg col-stack-md"
             >
               <h2 class="text-xl font-semibold text-foreground row-y-center gap-sm m-0">
                 {{ sectionMeta[7].indexLabel }} {{ sectionMeta[7].label }}
@@ -1083,7 +1083,7 @@ function onAccordionActiveIndexChange(value: number | number[] | undefined): voi
             class="scroll-mt-gap-lg"
           >
             <div
-              class="bg-card shadow-soft rounded-md transition-all duration-md ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)] p-lg col-stack-md"
+              class="bg-card shadow-sm dark:shadow-md rounded-md transition-all duration-md ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)] p-lg col-stack-md"
             >
               <h2 class="text-xl font-semibold text-foreground row-y-center gap-sm m-0">
                 {{ sectionMeta[8].indexLabel }} {{ sectionMeta[8].label }}
@@ -1133,7 +1133,7 @@ function onAccordionActiveIndexChange(value: number | number[] | undefined): voi
             class="scroll-mt-gap-lg"
           >
             <div
-              class="bg-card shadow-soft rounded-md transition-all duration-md ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)] p-lg col-stack-md"
+              class="bg-card shadow-sm dark:shadow-md rounded-md transition-all duration-md ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)] p-lg col-stack-md"
             >
               <h2 class="text-xl font-semibold text-foreground row-y-center gap-sm m-0">
                 {{ sectionMeta[9].indexLabel }} {{ sectionMeta[9].label }}
@@ -1169,7 +1169,7 @@ function onAccordionActiveIndexChange(value: number | number[] | undefined): voi
             class="scroll-mt-gap-lg"
           >
             <div
-              class="bg-card shadow-soft rounded-md transition-all duration-md ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)] p-lg col-stack-md"
+              class="bg-card shadow-sm dark:shadow-md rounded-md transition-all duration-md ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)] p-lg col-stack-md"
             >
               <h2 class="text-xl font-semibold text-foreground row-y-center gap-sm m-0">
                 {{ sectionMeta[10].indexLabel }} {{ sectionMeta[10].label }}
@@ -1217,7 +1217,7 @@ function onAccordionActiveIndexChange(value: number | number[] | undefined): voi
             class="scroll-mt-gap-lg"
           >
             <div
-              class="bg-card shadow-soft rounded-md transition-all duration-md ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)] p-lg col-stack-md"
+              class="bg-card shadow-sm dark:shadow-md rounded-md transition-all duration-md ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)] p-lg col-stack-md"
             >
               <h2 class="text-xl font-semibold text-foreground row-y-center gap-sm m-0">
                 {{ sectionMeta[11].indexLabel }} {{ sectionMeta[11].label }}
@@ -1276,7 +1276,7 @@ function onAccordionActiveIndexChange(value: number | number[] | undefined): voi
             class="scroll-mt-gap-lg"
           >
             <div
-              class="bg-card shadow-soft rounded-md transition-all duration-md ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)] p-lg col-stack-md"
+              class="bg-card shadow-sm dark:shadow-md rounded-md transition-all duration-md ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)] p-lg col-stack-md"
             >
               <h2 class="text-xl font-semibold text-foreground row-y-center gap-sm m-0">
                 {{ sectionMeta[12].indexLabel }} {{ sectionMeta[12].label }}
@@ -1332,7 +1332,7 @@ function onAccordionActiveIndexChange(value: number | number[] | undefined): voi
             class="scroll-mt-gap-lg"
           >
             <div
-              class="bg-card shadow-soft rounded-md transition-all duration-md ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)] p-lg col-stack-md"
+              class="bg-card shadow-sm dark:shadow-md rounded-md transition-all duration-md ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)] p-lg col-stack-md"
             >
               <h2 class="text-xl font-semibold text-foreground row-y-center gap-sm m-0">
                 {{ sectionMeta[13].indexLabel }} {{ sectionMeta[13].label }}
@@ -1372,7 +1372,7 @@ function onAccordionActiveIndexChange(value: number | number[] | undefined): voi
             class="scroll-mt-gap-lg"
           >
             <div
-              class="bg-card shadow-soft rounded-md transition-all duration-md ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)] p-lg col-stack-md"
+              class="bg-card shadow-sm dark:shadow-md rounded-md transition-all duration-md ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)] p-lg col-stack-md"
             >
               <h2 class="text-xl font-semibold text-foreground row-y-center gap-sm m-0">
                 {{ sectionMeta[14].indexLabel }} {{ sectionMeta[14].label }}
@@ -1404,7 +1404,7 @@ function onAccordionActiveIndexChange(value: number | number[] | undefined): voi
             class="scroll-mt-gap-lg"
           >
             <div
-              class="bg-card shadow-soft rounded-md transition-all duration-md ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)] p-lg col-stack-md"
+              class="bg-card shadow-sm dark:shadow-md rounded-md transition-all duration-md ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)] p-lg col-stack-md"
             >
               <h2 class="text-xl font-semibold text-foreground row-y-center gap-sm m-0">
                 {{ sectionMeta[15].indexLabel }} {{ sectionMeta[15].label }}
@@ -1463,7 +1463,7 @@ function onAccordionActiveIndexChange(value: number | number[] | undefined): voi
             class="scroll-mt-gap-lg"
           >
             <div
-              class="bg-card shadow-soft rounded-md transition-all duration-md ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)] p-lg col-stack-md"
+              class="bg-card shadow-sm dark:shadow-md rounded-md transition-all duration-md ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)] p-lg col-stack-md"
             >
               <h2 class="text-xl font-semibold text-foreground row-y-center gap-sm m-0">
                 {{ sectionMeta[16].indexLabel }} {{ sectionMeta[16].label }}
@@ -1500,7 +1500,7 @@ function onAccordionActiveIndexChange(value: number | number[] | undefined): voi
             class="scroll-mt-gap-lg"
           >
             <div
-              class="bg-card shadow-soft rounded-md transition-all duration-md ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)] p-lg col-stack-md"
+              class="bg-card shadow-sm dark:shadow-md rounded-md transition-all duration-md ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)] p-lg col-stack-md"
             >
               <h2 class="text-xl font-semibold text-foreground row-y-center gap-sm m-0">
                 {{ sectionMeta[17].indexLabel }} {{ sectionMeta[17].label }}
@@ -1528,7 +1528,7 @@ function onAccordionActiveIndexChange(value: number | number[] | undefined): voi
             class="scroll-mt-gap-lg"
           >
             <div
-              class="bg-card shadow-soft rounded-md transition-all duration-md ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)] p-lg col-stack-md"
+              class="bg-card shadow-sm dark:shadow-md rounded-md transition-all duration-md ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)] p-lg col-stack-md"
             >
               <h2 class="text-xl font-semibold text-foreground row-y-center gap-sm m-0">
                 {{ sectionMeta[18].indexLabel }} {{ sectionMeta[18].label }}
@@ -1587,7 +1587,7 @@ function onAccordionActiveIndexChange(value: number | number[] | undefined): voi
             class="scroll-mt-gap-lg"
           >
             <div
-              class="bg-card shadow-soft rounded-md transition-all duration-md ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)] p-lg col-stack-md"
+              class="bg-card shadow-sm dark:shadow-md rounded-md transition-all duration-md ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)] p-lg col-stack-md"
             >
               <h2 class="text-xl font-semibold text-foreground row-y-center gap-sm m-0">
                 {{ sectionMeta[19].indexLabel }} {{ sectionMeta[19].label }}

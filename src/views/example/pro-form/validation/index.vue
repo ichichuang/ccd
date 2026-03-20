@@ -204,7 +204,7 @@ async function onAsyncSubmit(values: Record<string, unknown>): Promise<void> {
         </div>
         <div class="col-stack-xs">
           <h1 class="text-2xl font-bold text-foreground m-0">ProForm 校验管线</h1>
-          <p class="text-muted text-sm m-0">
+          <p class="text-muted-foreground text-sm m-0">
             演示同步规则 / 异步 API 检查 / 触发模式（blur · change · submit）全链路校验能力。
           </p>
         </div>
@@ -216,7 +216,7 @@ async function onAsyncSubmit(values: Record<string, unknown>): Promise<void> {
       <div class="w-full p-md md:p-lg col-stack-xl pb-xl">
         <!-- 触发模式选择 -->
         <div
-          class="bg-card rounded-md shadow-soft py-md px-lg flex flex-col gap-lg bg-primary/10 dark:bg-primary/5 border-primary/20"
+          class="bg-card rounded-md shadow-sm dark:shadow-md py-md px-lg flex flex-col gap-lg bg-primary/10 dark:bg-primary/5 border-primary/20"
         >
           <div class="row-between gap-md flex-wrap">
             <div class="row-y-center gap-md">
@@ -244,7 +244,7 @@ async function onAsyncSubmit(values: Record<string, unknown>): Promise<void> {
         </div>
 
         <!-- 同步规则演示 -->
-        <div class="bg-card rounded-md shadow-soft py-md px-lg flex flex-col gap-lg">
+        <div class="bg-card rounded-md shadow-sm dark:shadow-md py-md px-lg flex flex-col gap-lg">
           <div
             class="row-between items-start mb-padding-md border-b-default border-border/40 pb-sm"
           >
@@ -265,7 +265,7 @@ async function onAsyncSubmit(values: Record<string, unknown>): Promise<void> {
           </div>
 
           <div class="col-stack-md">
-            <p class="text-muted text-sm m-0 italic">
+            <p class="text-muted-foreground text-sm m-0 italic">
               必填检查 · 正则格式 · 跨字段联动 (确认密码)。
             </p>
 
@@ -297,9 +297,11 @@ async function onAsyncSubmit(values: Record<string, unknown>): Promise<void> {
 
             <div
               v-if="syncResult"
-              class="surface-sunken rounded-md p-md border-default border-border/40"
+              class="bg-muted rounded-md p-md border-default border-border/40"
             >
-              <div class="text-xs font-bold text-muted uppercase mb-xs">Submit Result:</div>
+              <div class="text-xs font-bold text-muted-foreground uppercase mb-xs">
+                Submit Result:
+              </div>
               <pre class="m-0 whitespace-pre-wrap break-words text-xs font-mono text-success">{{
                 syncResult
               }}</pre>
@@ -308,7 +310,7 @@ async function onAsyncSubmit(values: Record<string, unknown>): Promise<void> {
         </div>
 
         <!-- 异步规则演示 -->
-        <div class="bg-card rounded-md shadow-soft py-md px-lg flex flex-col gap-lg">
+        <div class="bg-card rounded-md shadow-sm dark:shadow-md py-md px-lg flex flex-col gap-lg">
           <div
             class="row-between items-start mb-padding-md border-b-default border-border/40 pb-sm"
           >
@@ -329,11 +331,11 @@ async function onAsyncSubmit(values: Record<string, unknown>): Promise<void> {
           </div>
 
           <div class="col-stack-md">
-            <p class="text-muted text-sm m-0 italic">
+            <p class="text-muted-foreground text-sm m-0 italic">
               自动处理竞态安全，支持 Promise 返回。尝试输入 admin 或 root。
             </p>
 
-            <div class="surface-sunken rounded-md px-md py-sm border-default border-border/40">
+            <div class="bg-muted rounded-md px-md py-sm border-default border-border/40">
               <div class="text-xs text-muted-foreground col-stack-xs">
                 <div class="font-bold text-foreground text-xs uppercase tracking-tighter">
                   不可用资源清单 (模拟 DB)：
@@ -346,7 +348,7 @@ async function onAsyncSubmit(values: Record<string, unknown>): Promise<void> {
                   >
                     {{ name }}
                   </span>
-                  <span class="mx-2 text-muted/30">|</span>
+                  <span class="mx-2 text-muted-foreground/30">|</span>
                   <span
                     v-for="mail in ['admin@example.com', 'root@example.com']"
                     :key="mail"
@@ -378,9 +380,11 @@ async function onAsyncSubmit(values: Record<string, unknown>): Promise<void> {
 
             <div
               v-if="asyncResult"
-              class="surface-sunken rounded-md p-md border-default border-border/40"
+              class="bg-muted rounded-md p-md border-default border-border/40"
             >
-              <div class="text-xs font-bold text-muted uppercase mb-xs">Submit Result:</div>
+              <div class="text-xs font-bold text-muted-foreground uppercase mb-xs">
+                Submit Result:
+              </div>
               <pre class="m-0 whitespace-pre-wrap break-words text-xs font-mono text-primary">{{
                 asyncResult
               }}</pre>

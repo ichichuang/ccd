@@ -14,7 +14,7 @@
       <span>比例布局示例（meta.parent + meta.ratio）</span>
     </h2>
 
-    <div class="shadow-soft rounded-scale p-md space-y-margin-sm max-w-[80%]">
+    <div class="shadow-sm dark:shadow-md rounded-scale p-md space-y-margin-sm max-w-[80%]">
       <div class="text-md font-medium">本路由 meta 配置</div>
       <p class="text-muted-foreground text-sm">meta.parent = 'ratio'，meta.ratio = '16:9'</p>
       <p class="text-muted-foreground text-sm">

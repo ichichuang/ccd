@@ -22,7 +22,7 @@ function openLink() {
       <span>外链示例（meta.isLink + meta.linkUrl）</span>
     </h2>
 
-    <div class="shadow-soft rounded-scale p-md space-y-margin-sm">
+    <div class="shadow-sm dark:shadow-md rounded-scale p-md space-y-margin-sm">
       <div class="text-md font-medium">本路由 meta 配置</div>
       <p class="text-muted-foreground text-sm">
         meta.isLink = true, meta.linkUrl = 'https://vuejs.org'
@@ -33,7 +33,7 @@ function openLink() {
       </p>
     </div>
 
-    <div class="shadow-soft rounded-scale p-md space-y-margin-sm bg-muted">
+    <div class="shadow-sm dark:shadow-md rounded-scale p-md space-y-margin-sm bg-muted">
       <div class="text-md font-medium">直接访问本页时</div>
       <p class="text-muted-foreground text-sm mb-sm">
         若通过 URL 直接进入本页，可点击下方按钮打开外链：

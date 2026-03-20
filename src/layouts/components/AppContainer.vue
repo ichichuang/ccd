@@ -25,7 +25,7 @@ watch(
   <div class="layout-full relative">
     <CScrollbar
       ref="scrollbarRef"
-      class="layout-full shadow-soft"
+      class="layout-full shadow-sm dark:shadow-md"
     >
       <AnimateRouterView class="flex-1" />
     </CScrollbar>

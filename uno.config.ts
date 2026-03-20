@@ -10,7 +10,7 @@ import {
 } from 'unocss'
 import { getDynamicSafelist, getPresetIconsCollections } from './build/uno-icons'
 import { buildThemeDemoSafelist as buildThemeDemoSafelistFromTheme, theme } from './uno.theme'
-import { shortcuts } from './uno.shortcuts'
+import { rules as designEngineRules, shortcuts } from './src/design-engine'
 import { BREAKPOINTS } from './src/constants/breakpoints'
 import { LAYOUT_DIMENSION_KEYS, SIZE_BASE_VAR_KEYS } from './src/constants/size'
 import { SIZE_SCALE_KEYS } from './src/constants/sizeScale'
@@ -24,13 +24,13 @@ const scalePattern = SIZE_SCALE_KEYS.join('|')
 // Design System Rule Map (SSOT 与分层职责)
 // ----------------------------------------------------------------------
 // 语义尺寸（业务推荐）：p-padding-{scale} / m-margin-{scale} / gap-{scale} / gap-x-{scale} / gap-y-{scale} / m-gap-* / scroll-m-gap-*
-//   → var(--spacing-*)。业务组件只允许使用此类，禁止直接使用 p-scale-*。gap 仅支持 gap-* / gap-x-* / gap-y-*，不再使用 gap-gap-*。
-// 阶梯尺寸（Token 级）：fs-{scale} / p-scale-* / m-scale-* / gap-scale-* / rounded-scale-* / duration-scale-*
+//   → var(--spacing-*)。业务组件只允许使用此类，禁止直接使用 p-{scale}。gap 仅支持 gap-* / gap-x-* / gap-y-*，不再使用 gap-gap-*。
+// 阶梯尺寸（Token 级）：fs-{scale} / p-* / m-* / gap-* / rounded-* / duration-*
 //   → 对应 CSS 变量。与语义尺寸二选一，shortcuts 内部可用。
 // 布局变量：w-* / h-* / min-w-* / max-w-* / min-h-* / max-h-* 仅当 * 属于 LAYOUT_DIMENSION_KEYS 生效；新增 key 时勿与 presetUno 保留字冲突（如 full/screen），否则会覆盖默认 w-full 等行为。
 // 基础变量：p-* / px-* / py-* 等仅当 * 属于 SIZE_BASE_VAR_KEYS 的 kebab 形式生效。
 // SSOT：sizeScale.ts | size.ts | breakpoints.ts | src/utils/theme/metadata.ts
-// AI：业务层推荐只使用 shortcuts；spacing 推荐 p-padding-* / m-margin-* / gap-*，不直接使用 p-scale-*。
+// AI：业务层推荐只使用 shortcuts；spacing 推荐 p-padding-* / m-margin-* / gap-*，不直接使用 p-{scale}。
 
 // ----------------------------------------------------------------------
 // 1. 常量定义 (断点 SSOT: src/constants/breakpoints.ts)
@@ -160,7 +160,7 @@ function createScaleRules(): Rule[] {
   ]
 
   const paddingMarginRule: Rule = [
-    new RegExp(`^(?<type>[pm])(?<dir>[tblrxy])?-scale-(?<size>${scalePattern})(!)?$`),
+    new RegExp(`^(?<type>[pm])(?<dir>[tblrxy])?-(?<size>${scalePattern})(!)?$`),
     (match: RegExpMatchArray) => {
       const { type, dir, size } = (match.groups ?? {}) as {
         type: string
@@ -173,7 +173,7 @@ function createScaleRules(): Rule[] {
   ]
 
   const gapRule: Rule = [
-    new RegExp(`^gap(?<axisGroup>-(?<axis>x|y))?-scale-(?<size>${scalePattern})(!)?$`),
+    new RegExp(`^gap(?<axisGroup>-(?<axis>x|y))?-(?<size>${scalePattern})(!)?$`),
     (match: RegExpMatchArray) => {
       const { axis, size } = (match.groups ?? {}) as { axis?: string; size: string }
       const v = `var(--spacing-${size})`
@@ -184,14 +184,14 @@ function createScaleRules(): Rule[] {
   ]
 
   const roundedRule: Rule = [
-    new RegExp(`^rounded-scale-(?<size>${scalePattern})(!)?$`),
+    new RegExp(`^rounded-(?<size>${scalePattern})(!)?$`),
     (match: RegExpMatchArray) => {
       const { size } = (match.groups ?? {}) as { size: string }
       return { 'border-radius': `var(--radius-${size})` }
     },
   ]
 
-  /** 方向性 rounded-scale 规则：rounded-{dir}-scale-{size} → 对应角的 border-radius */
+  /** 方向性 rounded 规则：rounded-{dir}-{size} → 对应角的 border-radius */
   const ROUNDED_DIR_MAP: Record<string, string[]> = {
     t: ['border-top-left-radius', 'border-top-right-radius'],
     b: ['border-bottom-left-radius', 'border-bottom-right-radius'],
@@ -204,7 +204,7 @@ function createScaleRules(): Rule[] {
   }
 
   const roundedDirRule: Rule = [
-    new RegExp(`^rounded-(?<dir>tl|tr|bl|br|t|b|l|r)-scale-(?<size>${scalePattern})(!)?$`),
+    new RegExp(`^rounded-(?<dir>tl|tr|bl|br|t|b|l|r)-(?<size>${scalePattern})(!)?$`),
     (match: RegExpMatchArray) => {
       const { dir, size } = (match.groups ?? {}) as { dir: string; size: string }
       const props: string[] = ROUNDED_DIR_MAP[dir] ?? []
@@ -216,7 +216,7 @@ function createScaleRules(): Rule[] {
   ]
 
   const durationRule: Rule = [
-    new RegExp(`^duration-scale-(?<size>${scalePattern})(!)?$`),
+    new RegExp(`^duration-(?<size>${scalePattern})(!)?$`),
     (match: RegExpMatchArray) => {
       const { size } = (match.groups ?? {}) as { size: string }
       return { 'transition-duration': `var(--transition-${size})` }
@@ -319,34 +319,34 @@ function buildThemeDemoSafelist(): string[] {
       `gap-${k}`,
       `gap-x-${k}`,
       `gap-y-${k}`,
-      `p-scale-${k}`,
-      `m-scale-${k}`,
-      `gap-scale-${k}`,
-      `px-scale-${k}`,
-      `py-scale-${k}`,
-      `pl-scale-${k}`,
-      `pr-scale-${k}`,
-      `pt-scale-${k}`,
-      `pb-scale-${k}`,
-      `mx-scale-${k}`,
-      `my-scale-${k}`,
-      `ml-scale-${k}`,
-      `mr-scale-${k}`,
-      `mt-scale-${k}`,
-      `mb-scale-${k}`,
-      `gap-x-scale-${k}`,
-      `gap-y-scale-${k}`,
+      `p-${k}`,
+      `m-${k}`,
+      `gap-${k}`,
+      `px-${k}`,
+      `py-${k}`,
+      `pl-${k}`,
+      `pr-${k}`,
+      `pt-${k}`,
+      `pb-${k}`,
+      `mx-${k}`,
+      `my-${k}`,
+      `ml-${k}`,
+      `mr-${k}`,
+      `mt-${k}`,
+      `mb-${k}`,
+      `gap-x-${k}`,
+      `gap-y-${k}`,
       `text-${k}`,
-      `rounded-scale-${k}`,
-      `rounded-t-scale-${k}`,
-      `rounded-b-scale-${k}`,
-      `rounded-l-scale-${k}`,
-      `rounded-r-scale-${k}`,
-      `rounded-tl-scale-${k}`,
-      `rounded-tr-scale-${k}`,
-      `rounded-bl-scale-${k}`,
-      `rounded-br-scale-${k}`,
-      `duration-scale-${k}`,
+      `rounded-${k}`,
+      `rounded-t-${k}`,
+      `rounded-b-${k}`,
+      `rounded-l-${k}`,
+      `rounded-r-${k}`,
+      `rounded-tl-${k}`,
+      `rounded-tr-${k}`,
+      `rounded-bl-${k}`,
+      `rounded-br-${k}`,
+      `duration-${k}`,
       // margin + spacing 语义化类
       `m-gap-${k}`,
       `mx-gap-${k}`,
@@ -479,7 +479,7 @@ export default defineConfig({
   transformers: [transformerDirectives(), transformerVariantGroup()],
 
   // 业务层推荐只使用 shortcuts，不直接拼原子类。
-  // spacing 推荐 p-padding-* / m-margin-* / gap-*，禁止在业务中直接使用 p-scale-*。
+  // spacing 推荐 p-padding-* / m-margin-* / gap-*，禁止在业务中直接使用 p-{scale}。
   // Shortcuts 依赖规则：允许低层→高层（density/behavior/hover-* → layout-*/component-*）；严禁反向或形成环。
   shortcuts,
 
@@ -489,6 +489,7 @@ export default defineConfig({
     ['group', {}],
     ['safe-top', { 'padding-top': 'env(safe-area-inset-top)' }],
     ['safe-bottom', { 'padding-bottom': 'env(safe-area-inset-bottom)' }],
+    ...designEngineRules,
   ],
 
   theme,
@@ -497,7 +498,7 @@ export default defineConfig({
 // ---------------------------------------------------------------------------
 // The following declarations remain in this file for now, but are no longer
 // used by the runtime config after extracting logic into `uno.theme.ts` and
-// `uno.shortcuts.ts`. They are referenced to satisfy `noUnusedLocals` in tsconfig.node.json.
+// `src/design-engine`. They are referenced to satisfy `noUnusedLocals` in tsconfig.node.json.
 // ---------------------------------------------------------------------------
 void breakpoints
 void createSemanticSizeRules

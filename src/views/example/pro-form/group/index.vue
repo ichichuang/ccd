@@ -371,7 +371,7 @@ async function onSubmit(label: string, values: Record<string, unknown>): Promise
         </div>
         <div class="col-stack-xs">
           <h1 class="text-2xl font-bold text-foreground m-0">ProForm 容器分组与向导</h1>
-          <p class="text-muted text-sm m-0">
+          <p class="text-muted-foreground text-sm m-0">
             演示六种分组容器：Card 卡片、Collapse 折叠、Tabs 标签页、Step 向导、Group 纯分组与
             Section 区块。
           </p>
@@ -383,7 +383,7 @@ async function onSubmit(label: string, values: Record<string, unknown>): Promise
     <CScrollbar class="flex-1 min-h-0">
       <div class="w-full p-md md:p-lg col-stack-xl pb-xl">
         <!-- Card 分组 -->
-        <div class="bg-card rounded-md shadow-soft py-md px-lg flex flex-col gap-lg">
+        <div class="bg-card rounded-md shadow-sm dark:shadow-md py-md px-lg flex flex-col gap-lg">
           <div class="row-y-center gap-sm border-b-default pb-sm mb-padding-sm">
             <Icons
               name="i-lucide-layout-panel-top"
@@ -395,7 +395,7 @@ async function onSubmit(label: string, values: Record<string, unknown>): Promise
           </div>
           <div class="col-stack-md">
             <p
-              class="text-muted text-sm m-0 border-b-default border-border/40 pb-sm mb-padding-xs italic"
+              class="text-muted-foreground text-sm m-0 border-b-default border-border/40 pb-sm mb-padding-xs italic"
             >
               视觉分区清晰，通过 Card 容器对字段进行物理隔离。
             </p>
@@ -419,7 +419,7 @@ async function onSubmit(label: string, values: Record<string, unknown>): Promise
         </div>
 
         <!-- Collapse 分组 -->
-        <div class="bg-card rounded-md shadow-soft py-md px-lg flex flex-col gap-lg">
+        <div class="bg-card rounded-md shadow-sm dark:shadow-md py-md px-lg flex flex-col gap-lg">
           <div class="row-y-center gap-sm border-b-default pb-sm mb-padding-sm">
             <Icons
               name="i-lucide-panel-top-close"
@@ -431,7 +431,7 @@ async function onSubmit(label: string, values: Record<string, unknown>): Promise
           </div>
           <div class="col-stack-md">
             <p
-              class="text-muted text-sm m-0 border-b-default border-border/40 pb-sm mb-padding-xs italic"
+              class="text-muted-foreground text-sm m-0 border-b-default border-border/40 pb-sm mb-padding-xs italic"
             >
               适合将高级或非必要设置项默认收起。
             </p>
@@ -455,7 +455,7 @@ async function onSubmit(label: string, values: Record<string, unknown>): Promise
         </div>
 
         <!-- Tabs 分组 -->
-        <div class="bg-card rounded-md shadow-soft py-md px-lg flex flex-col gap-lg">
+        <div class="bg-card rounded-md shadow-sm dark:shadow-md py-md px-lg flex flex-col gap-lg">
           <div class="row-y-center gap-sm border-b-default pb-sm mb-padding-sm">
             <Icons
               name="i-lucide-panel-top"
@@ -467,7 +467,7 @@ async function onSubmit(label: string, values: Record<string, unknown>): Promise
           </div>
           <div class="col-stack-md">
             <p
-              class="text-muted text-sm m-0 border-b-default border-border/40 pb-sm mb-padding-xs italic"
+              class="text-muted-foreground text-sm m-0 border-b-default border-border/40 pb-sm mb-padding-xs italic"
             >
               水平轴分区，适合信息维度较广的大型表单。
             </p>
@@ -491,7 +491,7 @@ async function onSubmit(label: string, values: Record<string, unknown>): Promise
         </div>
 
         <!-- Step 向导 -->
-        <div class="bg-card rounded-md shadow-soft py-md px-lg flex flex-col gap-lg">
+        <div class="bg-card rounded-md shadow-sm dark:shadow-md py-md px-lg flex flex-col gap-lg">
           <div class="row-y-center gap-sm border-b-default pb-sm mb-padding-sm">
             <Icons
               name="i-lucide-footprints"
@@ -503,7 +503,7 @@ async function onSubmit(label: string, values: Record<string, unknown>): Promise
           </div>
           <div class="col-stack-md">
             <p
-              class="text-muted text-sm m-0 border-b-default border-border/40 pb-sm mb-padding-xs italic"
+              class="text-muted-foreground text-sm m-0 border-b-default border-border/40 pb-sm mb-padding-xs italic"
             >
               线性引导式交互，自动驱动 PrimeVue Stepper。
             </p>
@@ -528,7 +528,7 @@ async function onSubmit(label: string, values: Record<string, unknown>): Promise
 
         <!-- type: group 纯分组 & section 区块 -->
         <div class="grid grid-cols-1 md:grid-cols-2 gap-xl">
-          <div class="bg-card rounded-md shadow-soft py-md px-lg flex flex-col gap-lg">
+          <div class="bg-card rounded-md shadow-sm dark:shadow-md py-md px-lg flex flex-col gap-lg">
             <div class="row-y-center gap-sm border-b-default pb-sm mb-padding-sm">
               <Icons
                 name="i-lucide-braces"
@@ -539,7 +539,7 @@ async function onSubmit(label: string, values: Record<string, unknown>): Promise
               </span>
             </div>
             <div class="col-stack-md">
-              <p class="text-muted text-sm m-0 mb-padding-sm italic">
+              <p class="text-muted-foreground text-sm m-0 mb-padding-sm italic">
                 无卡片边框，适合轻量级内部布局。
               </p>
               <ProForm
@@ -561,7 +561,7 @@ async function onSubmit(label: string, values: Record<string, unknown>): Promise
             </div>
           </div>
 
-          <div class="bg-card rounded-md shadow-soft py-md px-lg flex flex-col gap-lg">
+          <div class="bg-card rounded-md shadow-sm dark:shadow-md py-md px-lg flex flex-col gap-lg">
             <div class="row-y-center gap-sm border-b-default pb-sm mb-padding-sm">
               <Icons
                 name="i-lucide-section"
@@ -572,7 +572,7 @@ async function onSubmit(label: string, values: Record<string, unknown>): Promise
               </span>
             </div>
             <div class="col-stack-md">
-              <p class="text-muted text-sm m-0 mb-padding-sm italic">
+              <p class="text-muted-foreground text-sm m-0 mb-padding-sm italic">
                 常用于表单末尾的辅助信息区块。
               </p>
               <ProForm

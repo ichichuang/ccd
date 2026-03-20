@@ -39,7 +39,7 @@ const TABLE_LAYOUT_OPTIONS: { label: string; value: 'auto' | 'fixed' }[] = [
         </div>
         <div class="col-stack-xs">
           <h1 class="text-2xl font-bold text-foreground m-0">ProTable — 列宽与尺寸</h1>
-          <p class="text-muted text-sm m-0">
+          <p class="text-muted-foreground text-sm m-0">
             演示 width / minWidth / maxWidth 约束、resizable 拖拽缩放以及 tableLayout auto / fixed
             切换。
           </p>
@@ -52,7 +52,7 @@ const TABLE_LAYOUT_OPTIONS: { label: string; value: 'auto' | 'fixed' }[] = [
       <!-- Control panel -->
       <div class="shrink-0 border-b-default">
         <div class="w-full py-sm">
-          <div class="bg-card rounded-md shadow-soft py-md px-lg flex flex-col gap-lg">
+          <div class="bg-card rounded-md shadow-sm dark:shadow-md py-md px-lg flex flex-col gap-lg">
             <div class="row-y-center gap-sm border-b-default pb-sm mb-padding-sm">
               <Icons
                 name="i-lucide-settings-2"

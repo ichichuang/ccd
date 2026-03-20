@@ -88,17 +88,17 @@
 /* Fix: Raised Text Buttons lose contrast in dark mode */
 .dark .p-button-raised.p-button-text {
   background-color: rgb(var(--primary) / 0.04) !important;
-  @apply shadow-soft behavior-hover-transition;
+  @apply shadow-sm shadow-md behavior-hover-transition;
 }
 
 .dark .p-button-raised.p-button-text:hover {
   background-color: rgb(var(--primary) / 0.08) !important;
-  @apply shadow-float -translate-y-0.2;
+  @apply shadow-md shadow-lg -translate-y-0.2;
 }
 
 .dark .p-button-raised.p-button-text:active {
   background-color: rgb(var(--primary) / 0.12) !important;
-  @apply shadow-soft translate-y-0;
+  @apply shadow-sm shadow-md translate-y-0;
 }
 
 .p-card {

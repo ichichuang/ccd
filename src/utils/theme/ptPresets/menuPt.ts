@@ -12,7 +12,7 @@ const MENU_ACTION_TRANSITION =
 export const menuPt = {
   tieredmenu: {
     root: {
-      class: 'shadow-soft rounded-md shadow-float outline-none',
+      class: 'shadow-sm dark:shadow-md rounded-md shadow-md dark:shadow-lg outline-none',
     },
     menu: {
       class: 'bg-card py-xs rounded-md outline-none',

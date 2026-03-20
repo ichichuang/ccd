@@ -77,7 +77,7 @@ function navigateTo(item: MetaExampleItem) {
       <span>Router Meta 功能示例索引</span>
     </h2>
 
-    <div class="shadow-soft rounded-scale p-md space-y-margin-sm">
+    <div class="shadow-sm dark:shadow-md rounded-scale p-md space-y-margin-sm">
       <div class="text-md font-medium">当前路由 meta.parentPaths（自动注入）</div>
       <p class="text-muted-foreground text-sm">
         parentPaths 由 addParentPathsToLeafRoutes 自动为叶子路由注入，用于面包屑、菜单展开等。
@@ -87,13 +87,13 @@ function navigateTo(item: MetaExampleItem) {
       </div>
     </div>
 
-    <div class="shadow-soft rounded-scale p-md space-y-margin-md bg-muted">
+    <div class="shadow-sm dark:shadow-md rounded-scale p-md space-y-margin-md bg-muted">
       <div class="text-md font-medium">各 meta 字段示例入口</div>
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-md">
         <div
           v-for="item in examples"
           :key="item.name"
-          class="shadow-soft rounded-scale p-md bg-card col-stack-sm"
+          class="shadow-sm dark:shadow-md rounded-scale p-md bg-card col-stack-sm"
         >
           <div class="row-y-center gap-sm">
             <Icons

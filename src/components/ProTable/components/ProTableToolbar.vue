@@ -63,7 +63,7 @@ function toggleCol(id: string): void {
       <Button
         v-if="serverMode"
         text
-        class="cursor-pointer border-none outline-none duration-sm hover:scale-110 active:scale-100 shadow-sm hover:shadow-float hover:text-primary p-sm center rounded-sm bg-sidebar"
+        class="cursor-pointer border-none outline-none duration-sm hover:scale-110 active:scale-100 shadow-sm hover:shadow-md dark:hover:shadow-lg hover:text-primary p-sm center rounded-sm bg-sidebar"
         :aria-label="$t('proTable.refresh')"
         @click="emit('refresh')"
       >
@@ -72,7 +72,7 @@ function toggleCol(id: string): void {
 
       <Button
         text
-        class="cursor-pointer border-none outline-none duration-sm hover:scale-110 active:scale-100 shadow-sm hover:shadow-float hover:text-primary p-sm center rounded-sm bg-sidebar"
+        class="cursor-pointer border-none outline-none duration-sm hover:scale-110 active:scale-100 shadow-sm hover:shadow-md dark:hover:shadow-lg hover:text-primary p-sm center rounded-sm bg-sidebar"
         :aria-label="$t('proTable.columnSettings')"
         @click="settingsPanel?.toggle($event)"
       >

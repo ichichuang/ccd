@@ -82,7 +82,7 @@ const FEATURE_TAGS: { label: string; cls: string }[] = [
         </div>
         <div class="col-stack-xs">
           <h1 class="text-2xl font-bold m-0">ProTable — 列定义与渲染</h1>
-          <p class="text-muted text-sm m-0">
+          <p class="text-muted-foreground text-sm m-0">
             演示列固定（pinned: 'left'/'right'）、 TSX
             自定义单元格渲染、headerRender、对齐方式与宽度约束。
           </p>

@@ -818,7 +818,7 @@ onBeforeUnmount(() => {
               class="w-72 shrink-0 min-h-0 column hidden xl:flex"
             >
               <CScrollbar class="col-fill layout-full">
-                <div class="card bg-card shadow-soft p-md">
+                <div class="card bg-card shadow-sm dark:shadow-md p-md">
                   <GlobalControls
                     :theme-enabled="themeEnabled"
                     :line-area-opacity="lineAreaOpacity"
@@ -839,10 +839,12 @@ onBeforeUnmount(() => {
               class="w-72 shrink-0 min-h-0 column hidden xl:flex"
             >
               <CScrollbar class="col-fill layout-full">
-                <div class="card bg-card shadow-soft p-md">
+                <div class="card bg-card shadow-sm dark:shadow-md p-md">
                   <div class="col-stack-md">
                     <div class="text-foreground text-md font-semibold">联动操作日志</div>
-                    <div class="rounded-md shadow-soft bg-muted p-sm text-xs font-mono">
+                    <div
+                      class="rounded-md shadow-sm dark:shadow-md bg-muted p-sm text-xs font-mono"
+                    >
                       <div
                         v-for="(line, i) in connectLog"
                         :key="i"
@@ -868,10 +870,12 @@ onBeforeUnmount(() => {
               class="w-72 shrink-0 min-h-0 column hidden xl:flex"
             >
               <CScrollbar class="col-fill layout-full">
-                <div class="card bg-card shadow-soft p-md">
+                <div class="card bg-card shadow-sm dark:shadow-md p-md">
                   <div class="col-stack-md">
                     <div class="text-foreground text-md font-semibold">事件日志</div>
-                    <div class="rounded-md shadow-soft bg-muted p-sm text-xs font-mono">
+                    <div
+                      class="rounded-md shadow-sm dark:shadow-md bg-muted p-sm text-xs font-mono"
+                    >
                       <div
                         v-for="(line, i) in eventLog"
                         :key="i"
@@ -887,7 +891,9 @@ onBeforeUnmount(() => {
                       </div>
                     </div>
                     <div class="text-foreground text-md font-semibold mt-md">Ref 操作日志</div>
-                    <div class="rounded-md shadow-soft bg-muted p-sm text-xs font-mono">
+                    <div
+                      class="rounded-md shadow-sm dark:shadow-md bg-muted p-sm text-xs font-mono"
+                    >
                       <div
                         v-for="(line, i) in refMethodsLog"
                         :key="i"

@@ -299,7 +299,7 @@ async function onSubmit(values: Record<string, unknown>): Promise<void> {
         </div>
         <div class="col-stack-xs">
           <h1 class="text-2xl font-bold text-foreground m-0">ProForm 动态联动与计算 (DAG)</h1>
-          <p class="text-muted text-sm m-0">
+          <p class="text-muted-foreground text-sm m-0">
             演示 DAG 引擎的联动模式：visibleIf 条件显隐、disabledIf 条件禁用、computed
             计算字段及跨字段校验。
           </p>
@@ -313,7 +313,9 @@ async function onSubmit(values: Record<string, unknown>): Promise<void> {
         <div class="flex-1 min-w-0 h-full">
           <CScrollbar class="layout-full">
             <div class="w-full p-md md:p-lg col-stack-xl pb-xl">
-              <div class="bg-card rounded-md shadow-soft py-md px-lg flex flex-col gap-lg">
+              <div
+                class="bg-card rounded-md shadow-sm dark:shadow-md py-md px-lg flex flex-col gap-lg"
+              >
                 <div class="row-y-center gap-sm border-b-default pb-sm mb-padding-sm">
                   <Icons
                     name="i-lucide-git-branch"
@@ -360,7 +362,7 @@ async function onSubmit(values: Record<string, unknown>): Promise<void> {
 
               <!-- Mobile debug panel -->
               <div
-                class="bg-card rounded-md shadow-soft py-md px-lg flex flex-col gap-lg xl:hidden"
+                class="bg-card rounded-md shadow-sm dark:shadow-md py-md px-lg flex flex-col gap-lg xl:hidden"
               >
                 <div class="row-y-center gap-sm mb-padding-sm">
                   <Icons
@@ -370,7 +372,7 @@ async function onSubmit(values: Record<string, unknown>): Promise<void> {
                   <span class="text-sm font-semibold text-foreground uppercase">实时 Values</span>
                 </div>
                 <div
-                  class="surface-sunken rounded-md p-md border-default border-border/40 text-muted-foreground"
+                  class="bg-muted rounded-md p-md border-default border-border/40 text-muted-foreground"
                 >
                   <pre class="m-0 whitespace-pre-wrap break-words text-xs">{{ valuesJson }}</pre>
                 </div>
@@ -389,11 +391,11 @@ async function onSubmit(values: Record<string, unknown>): Promise<void> {
                 size="sm"
                 class="text-accent"
               />
-              <span class="text-xs font-bold text-muted uppercase tracking-widest">
+              <span class="text-xs font-bold text-muted-foreground uppercase tracking-widest">
                 Calculated Form State
               </span>
             </div>
-            <CScrollbar class="flex-1 min-h-0 surface-sunken px-md py-sm">
+            <CScrollbar class="flex-1 min-h-0 bg-muted px-md py-sm">
               <pre class="m-0 text-xs text-muted-foreground font-mono leading-relaxed">{{
                 valuesJson
               }}</pre>

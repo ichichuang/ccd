@@ -249,7 +249,7 @@ async function onClickValidateOnly(): Promise<void> {
         </div>
         <div class="col-stack-xs">
           <h1 class="text-2xl font-bold text-foreground m-0">ProForm 基础组件与状态联动</h1>
-          <p class="text-muted text-sm m-0">
+          <p class="text-muted-foreground text-sm m-0">
             展示 ProForm 引擎已注册的全部基础字段，并演示全局 readonly / disabled 联动、校验与提交。
           </p>
         </div>
@@ -264,7 +264,7 @@ async function onClickValidateOnly(): Promise<void> {
             <div class="w-full p-md md:p-lg col-stack-xl">
               <!-- 吸附到顶部的控制面板 -->
               <div
-                class="bg-card rounded-md shadow-soft py-md px-lg flex flex-col gap-lg sticky top-0 z-10 surface-sunken/80 backdrop-blur-md border-primary/20"
+                class="bg-card rounded-md shadow-sm dark:shadow-md py-md px-lg flex flex-col gap-lg sticky top-0 z-10 bg-muted/80 backdrop-blur-md border-primary/20"
               >
                 <div class="row-between gap-md flex-wrap">
                   <div class="row-y-center gap-md">
@@ -275,7 +275,7 @@ async function onClickValidateOnly(): Promise<void> {
                     />
                     <div class="col-stack-xs">
                       <div class="font-semibold text-foreground">全局状态控制</div>
-                      <div class="text-xs text-muted">
+                      <div class="text-xs text-muted-foreground">
                         验证 readonly / disabled 对所有字段的影响。
                       </div>
                     </div>
@@ -283,11 +283,11 @@ async function onClickValidateOnly(): Promise<void> {
 
                   <div class="row-y-center gap-sm flex-wrap">
                     <div class="row-y-center gap-xs">
-                      <span class="text-sm text-muted">Disabled</span>
+                      <span class="text-sm text-muted-foreground">Disabled</span>
                       <ToggleSwitch v-model="isDisabled" />
                     </div>
                     <div class="row-y-center gap-xs pr-md border-r-default border-border/40">
-                      <span class="text-sm text-muted">Readonly</span>
+                      <span class="text-sm text-muted-foreground">Readonly</span>
                       <ToggleSwitch v-model="isReadonly" />
                     </div>
                     <div class="row-y-center gap-sm flex-wrap">
@@ -320,7 +320,9 @@ async function onClickValidateOnly(): Promise<void> {
               </div>
 
               <!-- 表单区域 -->
-              <div class="bg-card rounded-md shadow-soft py-md px-lg flex flex-col gap-lg">
+              <div
+                class="bg-card rounded-md shadow-sm dark:shadow-md py-md px-lg flex flex-col gap-lg"
+              >
                 <div class="row-y-center gap-sm border-b-default pb-sm mb-padding-sm">
                   <Icons
                     name="i-lucide-form-input"
@@ -364,7 +366,7 @@ async function onClickValidateOnly(): Promise<void> {
 
               <!-- Mobile JSON preview -->
               <div
-                class="bg-card rounded-md shadow-soft py-md px-lg flex flex-col gap-lg xl:hidden"
+                class="bg-card rounded-md shadow-sm dark:shadow-md py-md px-lg flex flex-col gap-lg xl:hidden"
               >
                 <div class="row-y-center gap-sm mb-padding-sm">
                   <Icons
@@ -373,7 +375,7 @@ async function onClickValidateOnly(): Promise<void> {
                   />
                   <span class="text-sm font-semibold text-foreground uppercase">实时 Values</span>
                 </div>
-                <div class="surface-sunken rounded-md p-md border-default border-border/40">
+                <div class="bg-muted rounded-md p-md border-default border-border/40">
                   <pre class="m-0 whitespace-pre-wrap break-words text-xs text-muted-foreground">{{
                     valuesJson
                   }}</pre>
@@ -393,11 +395,11 @@ async function onClickValidateOnly(): Promise<void> {
                 size="sm"
                 class="text-accent"
               />
-              <span class="text-xs font-bold text-muted uppercase tracking-widest">
+              <span class="text-xs font-bold text-muted-foreground uppercase tracking-widest">
                 Real-time Form State
               </span>
             </div>
-            <CScrollbar class="flex-1 min-h-0 surface-sunken px-md py-sm">
+            <CScrollbar class="flex-1 min-h-0 bg-muted px-md py-sm">
               <pre class="m-0 text-xs text-muted-foreground font-mono leading-relaxed">{{
                 valuesJson
               }}</pre>

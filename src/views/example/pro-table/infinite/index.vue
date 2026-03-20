@@ -86,7 +86,7 @@ const progressText = computed<string>(() => {
                 Infinite Scroll
               </span>
             </div>
-            <p class="text-muted text-sm m-0">
+            <p class="text-muted-foreground text-sm m-0">
               数据来自
               <code>dummyjson.com/products</code>
               （194 件）。滚动到底部自动加载下一页，数据追加到列表末尾。
@@ -97,7 +97,7 @@ const progressText = computed<string>(() => {
         <!-- Progress badge -->
         <div
           v-if="totalCount > 0"
-          class="surface-sunken rounded-md px-md py-xs row-y-center gap-sm shrink-0"
+          class="bg-muted rounded-md px-md py-xs row-y-center gap-sm shrink-0"
         >
           <div class="row-y-center gap-xs">
             <Icons

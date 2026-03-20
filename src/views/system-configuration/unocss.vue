@@ -100,7 +100,7 @@ function getShortcutDemoKind(category: string): ShortcutDemoKind {
 
 // 预览区通用尺寸与边框（relative 供 layout-absolute-center 等定位），子内容按 demoKind 填充
 const shortcutPreviewBoxClass =
-  'relative w-[var(--spacing-5xl)] h-[var(--spacing-xl)] shrink-0 rounded-sm overflow-visible shadow-soft bg-primary/5 row-y-center justify-center'
+  'relative w-[var(--spacing-5xl)] h-[var(--spacing-xl)] shrink-0 rounded-sm overflow-visible shadow-sm dark:shadow-md bg-primary/5 row-y-center justify-center'
 
 // ==================== 断点 / 安全区 ====================
 const breakpoints = computed<Array<{ key: string; value: string }>>(() =>
@@ -116,9 +116,9 @@ const safeAreaRules: Array<{ name: string; css: string; desc: string }> = [
 
 // ==================== 语义别名 ====================
 const semanticAliases: Array<{ name: string; classes: string; desc: string }> = [
-  { name: 'bg-brand', classes: 'bg-primary', desc: '品牌大背景' },
-  { name: 'bg-interactive', classes: 'bg-primary-hover', desc: '交互背景' },
-  { name: 'text-interactive', classes: 'text-primary-hover', desc: '交互文字颜色' },
+  { name: 'bg-primary', classes: 'bg-primary', desc: '品牌大背景' },
+  { name: 'bg-primary-hover', classes: 'bg-primary-hover', desc: '交互背景' },
+  { name: 'text-primary-hover', classes: 'text-primary-hover', desc: '交互文字颜色' },
 ]
 </script>
 
@@ -169,7 +169,7 @@ const semanticAliases: Array<{ name: string; classes: string; desc: string }> = 
               </p>
             </div>
           </div>
-          <div class="surface-item p-md rounded-md row-start gap-md shadow-soft mt-sm">
+          <div class="surface-item p-md rounded-md row-start gap-md shadow-sm dark:shadow-md mt-sm">
             <Icons
               name="i-lucide-info"
               class="text-primary text-xl shrink-0 mt-xs"
@@ -215,7 +215,7 @@ const semanticAliases: Array<{ name: string; classes: string; desc: string }> = 
           class="min-h-0"
         >
           <Card
-            class="bg-card rounded-md shadow-soft py-md px-lg flex flex-col gap-lg bg-primary/10 dark:bg-primary/5"
+            class="bg-card rounded-md shadow-sm dark:shadow-md py-md px-lg flex flex-col gap-lg bg-primary/10 dark:bg-primary/5"
           >
             <template #title>
               <div class="row-y-center gap-sm border-b-default pb-sm mb-padding-sm">
@@ -264,7 +264,7 @@ const semanticAliases: Array<{ name: string; classes: string; desc: string }> = 
                         <div
                           v-for="item in group.items"
                           :key="item.name"
-                          class="column rounded-lg overflow-hidden cursor-pointer surface-item shadow-soft transition-all duration-xl ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)] active:scale-95 behavior-hover-transition"
+                          class="column rounded-lg overflow-hidden cursor-pointer surface-item shadow-sm dark:shadow-md transition-all duration-xl ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)] active:scale-95 behavior-hover-transition"
                           @click="copyToClipboard(item.name)"
                         >
                           <!-- 示意图区域 -->
@@ -274,7 +274,7 @@ const semanticAliases: Array<{ name: string; classes: string; desc: string }> = 
                             <!-- layout-full: 四边锚点 + 填充块 -->
                             <template v-if="item.name === 'layout-full'">
                               <div
-                                class="absolute inset-[var(--spacing-xs)] bg-primary/20 rounded-sm shadow-soft center"
+                                class="absolute inset-[var(--spacing-xs)] bg-primary/20 rounded-sm shadow-sm dark:shadow-md center"
                               >
                                 <span class="text-xs text-primary font-mono">w-full h-full</span>
                               </div>
@@ -294,7 +294,7 @@ const semanticAliases: Array<{ name: string; classes: string; desc: string }> = 
                             <!-- layout-screen: 浏览器 chrome 示意 -->
                             <template v-else-if="item.name === 'layout-screen'">
                               <div
-                                class="absolute inset-[var(--spacing-xs)] rounded-sm shadow-soft bg-primary/10 column overflow-hidden"
+                                class="absolute inset-[var(--spacing-xs)] rounded-sm shadow-sm dark:shadow-md bg-primary/10 column overflow-hidden"
                               >
                                 <div
                                   class="shrink-0 h-[var(--spacing-md)] bg-primary/25 border-b-default row-y-center px-xs gap-xs"
@@ -347,7 +347,7 @@ const semanticAliases: Array<{ name: string; classes: string; desc: string }> = 
                                 <div
                                   v-for="i in 3"
                                   :key="i"
-                                  class="h-[var(--spacing-md)] rounded-sm bg-primary/30 shadow-soft w-full"
+                                  class="h-[var(--spacing-md)] rounded-sm bg-primary/30 shadow-sm dark:shadow-md w-full"
                                 />
                               </div>
                               <div
@@ -366,7 +366,7 @@ const semanticAliases: Array<{ name: string; classes: string; desc: string }> = 
                                 <div
                                   v-for="i in 6"
                                   :key="i"
-                                  class="w-[var(--spacing-xl)] h-[var(--spacing-lg)] rounded-sm shrink-0 shadow-soft"
+                                  class="w-[var(--spacing-xl)] h-[var(--spacing-lg)] rounded-sm shrink-0 shadow-sm dark:shadow-md"
                                   :class="
                                     i <= 3
                                       ? 'bg-primary/50 border-primary/40'
@@ -388,7 +388,7 @@ const semanticAliases: Array<{ name: string; classes: string; desc: string }> = 
                                 <div
                                   v-for="i in 9"
                                   :key="i"
-                                  class="rounded-sm shadow-soft"
+                                  class="rounded-sm shadow-sm dark:shadow-md"
                                   :class="
                                     i === 5
                                       ? 'bg-primary/70 border-primary/60'
@@ -416,7 +416,7 @@ const semanticAliases: Array<{ name: string; classes: string; desc: string }> = 
                             <!-- fallback -->
                             <template v-else>
                               <div
-                                class="absolute inset-[var(--spacing-xs)] rounded-sm bg-primary/15 shadow-soft center"
+                                class="absolute inset-[var(--spacing-xs)] rounded-sm bg-primary/15 shadow-sm dark:shadow-md center"
                               >
                                 <span class="text-xs text-primary/60">{{ item.name }}</span>
                               </div>
@@ -443,7 +443,7 @@ const semanticAliases: Array<{ name: string; classes: string; desc: string }> = 
                         <div
                           v-for="item in group.items"
                           :key="item.name"
-                          class="row-y-center gap-md p-md surface-item rounded-lg shadow-soft transition-all duration-xl ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)] cursor-pointer active:scale-95 behavior-hover-transition"
+                          class="row-y-center gap-md p-md surface-item rounded-lg shadow-sm dark:shadow-md transition-all duration-xl ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)] cursor-pointer active:scale-95 behavior-hover-transition"
                           @click="copyToClipboard(item.name)"
                         >
                           <!-- 文字信息 -->
@@ -469,7 +469,7 @@ const semanticAliases: Array<{ name: string; classes: string; desc: string }> = 
                             <!-- 左：默认态 -->
                             <div class="col-stack-xs items-center">
                               <div
-                                class="px-sm py-xs rounded-sm bg-card shadow-soft text-xs text-muted whitespace-nowrap min-w-[var(--spacing-2xl)] text-center"
+                                class="px-sm py-xs rounded-sm bg-card shadow-sm dark:shadow-md text-xs text-muted-foreground whitespace-nowrap min-w-[var(--spacing-2xl)] text-center"
                               >
                                 默认
                               </div>
@@ -487,7 +487,7 @@ const semanticAliases: Array<{ name: string; classes: string; desc: string }> = 
                               class="col-stack-xs items-center"
                             >
                               <div
-                                class="px-sm py-xs rounded-sm bg-card shadow-soft text-xs text-primary -translate-y-0.5 opacity-80 whitespace-nowrap min-w-[var(--spacing-2xl)] text-center transition-none"
+                                class="px-sm py-xs rounded-sm bg-card shadow-sm dark:shadow-md text-xs text-primary -translate-y-0.5 opacity-80 whitespace-nowrap min-w-[var(--spacing-2xl)] text-center transition-none"
                               >
                                 过渡中
                               </div>
@@ -499,7 +499,7 @@ const semanticAliases: Array<{ name: string; classes: string; desc: string }> = 
                               class="col-stack-xs items-center"
                             >
                               <div
-                                class="px-sm py-xs rounded-sm surface-elevated shadow-soft text-xs text-primary whitespace-nowrap min-w-[var(--spacing-2xl)] text-center"
+                                class="px-sm py-xs rounded-sm surface-elevated shadow-sm dark:shadow-md text-xs text-primary whitespace-nowrap min-w-[var(--spacing-2xl)] text-center"
                               >
                                 阴影浮起
                               </div>
@@ -511,7 +511,7 @@ const semanticAliases: Array<{ name: string; classes: string; desc: string }> = 
                               class="col-stack-xs items-center"
                             >
                               <div
-                                class="px-sm py-xs rounded-sm surface-elevated shadow-soft -translate-y-0.5 text-xs text-primary whitespace-nowrap min-w-[var(--spacing-2xl)] text-center transition-none"
+                                class="px-sm py-xs rounded-sm surface-elevated shadow-sm dark:shadow-md -translate-y-0.5 text-xs text-primary whitespace-nowrap min-w-[var(--spacing-2xl)] text-center transition-none"
                               >
                                 ↑ 悬浮提升
                               </div>
@@ -523,7 +523,7 @@ const semanticAliases: Array<{ name: string; classes: string; desc: string }> = 
                               class="col-stack-xs items-center"
                             >
                               <div
-                                class="px-sm py-xs rounded-sm bg-primary/20 shadow-soft scale-95 text-xs text-primary whitespace-nowrap min-w-[var(--spacing-2xl)] text-center transition-none"
+                                class="px-sm py-xs rounded-sm bg-primary/20 shadow-sm dark:shadow-md scale-95 text-xs text-primary whitespace-nowrap min-w-[var(--spacing-2xl)] text-center transition-none"
                               >
                                 ↓ 按下
                               </div>
@@ -548,7 +548,7 @@ const semanticAliases: Array<{ name: string; classes: string; desc: string }> = 
                               class="col-stack-xs items-center"
                             >
                               <div
-                                class="px-sm py-xs rounded-sm bg-primary/20 shadow-soft text-xs text-foreground whitespace-nowrap min-w-[var(--spacing-2xl)] text-center"
+                                class="px-sm py-xs rounded-sm bg-primary/20 shadow-sm dark:shadow-md text-xs text-foreground whitespace-nowrap min-w-[var(--spacing-2xl)] text-center"
                               >
                                 激活
                               </div>
@@ -563,7 +563,9 @@ const semanticAliases: Array<{ name: string; classes: string; desc: string }> = 
                     <template v-else-if="group.category === 'Menu 菜单交互'">
                       <div class="col-stack-xl">
                         <!-- 模拟菜单面板：三态对比 -->
-                        <div class="surface-elevated rounded-lg overflow-hidden shadow-soft">
+                        <div
+                          class="surface-elevated rounded-lg overflow-hidden shadow-sm dark:shadow-md"
+                        >
                           <div class="px-lg py-md border-b-default row-between gap-sm">
                             <div class="row-y-center gap-sm">
                               <Icons
@@ -637,7 +639,7 @@ const semanticAliases: Array<{ name: string; classes: string; desc: string }> = 
                           <div
                             v-for="item in group.items"
                             :key="`info-${item.name}`"
-                            class="col-stack-md p-lg surface-item rounded-lg shadow-soft transition-all duration-xl ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)] cursor-pointer active:scale-95 behavior-hover-transition"
+                            class="col-stack-md p-lg surface-item rounded-lg shadow-sm dark:shadow-md transition-all duration-xl ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)] cursor-pointer active:scale-95 behavior-hover-transition"
                             @click="copyToClipboard(item.name)"
                           >
                             <span class="font-semibold text-sm text-foreground">
@@ -667,7 +669,7 @@ const semanticAliases: Array<{ name: string; classes: string; desc: string }> = 
                       <div
                         v-for="item in group.items"
                         :key="item.name"
-                        class="row-y-center gap-md p-md surface-item rounded-lg shadow-soft transition-all duration-xl ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)] behavior-hover-transition cursor-pointer active:scale-95"
+                        class="row-y-center gap-md p-md surface-item rounded-lg shadow-sm dark:shadow-md transition-all duration-xl ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)] behavior-hover-transition cursor-pointer active:scale-95"
                         @click="copyToClipboard(item.name)"
                       >
                         <div class="column flex-1 min-w-0">
@@ -776,7 +778,7 @@ const semanticAliases: Array<{ name: string; classes: string; desc: string }> = 
                             </div>
                             <div
                               v-else-if="item.name === 'layout-screen'"
-                              class="w-full h-full overflow-hidden rounded-sm bg-primary/10 shadow-soft center"
+                              class="w-full h-full overflow-hidden rounded-sm bg-primary/10 shadow-sm dark:shadow-md center"
                             >
                               <div class="w-full h-full relative">
                                 <div class="absolute inset-0 bg-primary/10" />
@@ -832,7 +834,7 @@ const semanticAliases: Array<{ name: string; classes: string; desc: string }> = 
                               v-if="item.name === 'interactive-focus-ring'"
                               type="button"
                               :class="item.name"
-                              class="min-w-[var(--spacing-2xl)] min-h-[var(--spacing-md)] rounded-sm bg-primary/20 shadow-soft center cursor-pointer select-none text-xs text-foreground"
+                              class="min-w-[var(--spacing-2xl)] min-h-[var(--spacing-md)] rounded-sm bg-primary/20 shadow-sm dark:shadow-md center cursor-pointer select-none text-xs text-foreground"
                             >
                               Tab 聚焦
                             </button>
@@ -845,7 +847,7 @@ const semanticAliases: Array<{ name: string; classes: string; desc: string }> = 
                                   : '',
                                 item.name === 'interactive-hover' ? 'hover:-translate-y-0.5' : '',
                               ]"
-                              class="min-w-[var(--spacing-2xl)] min-h-[var(--spacing-md)] rounded-sm bg-primary/20 shadow-soft center cursor-pointer select-none text-xs text-foreground"
+                              class="min-w-[var(--spacing-2xl)] min-h-[var(--spacing-md)] rounded-sm bg-primary/20 shadow-sm dark:shadow-md center cursor-pointer select-none text-xs text-foreground"
                               tabindex="0"
                             >
                               预览
@@ -865,9 +867,7 @@ const semanticAliases: Array<{ name: string; classes: string; desc: string }> = 
                               item.name,
                               'w-full h-full p-xs center',
                               // 针对边框类示例，强制添加对比背景，让 /15 透明度的边线浮现出来
-                              item.name.includes('border-')
-                                ? 'bg-surface-sunken/50 rounded-xs'
-                                : '',
+                              item.name.includes('border-') ? 'bg-muted/50 rounded-xs' : '',
                             ]"
                           >
                             <span
@@ -988,7 +988,7 @@ const semanticAliases: Array<{ name: string; classes: string; desc: string }> = 
                               class="w-full h-full center"
                             >
                               <div
-                                class="w-full h-full overflow-hidden rounded-sm bg-primary/5 shadow-soft"
+                                class="w-full h-full overflow-hidden rounded-sm bg-primary/5 shadow-sm dark:shadow-md"
                               >
                                 <CScrollbar class="h-full">
                                   <div class="p-xs">
@@ -1038,7 +1038,7 @@ const semanticAliases: Array<{ name: string; classes: string; desc: string }> = 
 
         <!-- 断点系统 -->
         <Card
-          class="bg-card rounded-md shadow-soft py-md px-lg flex flex-col gap-lg bg-accent/10 dark:bg-accent/5"
+          class="bg-card rounded-md shadow-sm dark:shadow-md py-md px-lg flex flex-col gap-lg bg-accent/10 dark:bg-accent/5"
         >
           <template #title>
             <div class="row-y-center gap-sm border-b-default pb-sm mb-padding-sm">
@@ -1077,10 +1077,10 @@ const semanticAliases: Array<{ name: string; classes: string; desc: string }> = 
                 <div
                   v-for="bp in breakpoints"
                   :key="bp.key"
-                  class="col-stack-sm items-center p-md rounded-lg shadow-soft transition-all duration-xl ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)] cursor-pointer behavior-hover-transition"
+                  class="col-stack-sm items-center p-md rounded-lg shadow-sm dark:shadow-md transition-all duration-xl ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)] cursor-pointer behavior-hover-transition"
                   :class="
                     bp.key === deviceStore.currentBreakpoint
-                      ? 'bg-accent/10 shadow-soft interactive-focus-ring'
+                      ? 'bg-accent/10 shadow-sm dark:shadow-md interactive-focus-ring'
                       : 'surface-item'
                   "
                   @click="copyToClipboard(bp.key + ':', bp.key)"
@@ -1100,7 +1100,7 @@ const semanticAliases: Array<{ name: string; classes: string; desc: string }> = 
 
         <!-- 语义别名 (Semantic Aliases) -->
         <Card
-          class="bg-card rounded-md shadow-soft py-md px-lg flex flex-col gap-lg bg-primary/5 dark:bg-primary/10"
+          class="bg-card rounded-md shadow-sm dark:shadow-md py-md px-lg flex flex-col gap-lg bg-primary/5 dark:bg-primary/10"
         >
           <template #title>
             <div class="row-y-center gap-sm border-b-default pb-sm mb-padding-sm">
@@ -1127,11 +1127,11 @@ const semanticAliases: Array<{ name: string; classes: string; desc: string }> = 
                 <div
                   v-for="item in semanticAliases"
                   :key="item.name"
-                  class="row-y-center gap-md p-md surface-item rounded-lg shadow-soft transition-all duration-xl ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)] cursor-pointer behavior-hover-transition"
+                  class="row-y-center gap-md p-md surface-item rounded-lg shadow-sm dark:shadow-md transition-all duration-xl ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)] cursor-pointer behavior-hover-transition"
                   @click="copyToClipboard(item.name)"
                 >
                   <div
-                    class="w-[var(--spacing-xl)] h-[var(--spacing-xl)] rounded-full shrink-0 shadow-soft"
+                    class="w-[var(--spacing-xl)] h-[var(--spacing-xl)] rounded-full shrink-0 shadow-sm dark:shadow-md"
                     :class="item.classes"
                   />
                   <div class="column flex-1">
@@ -1145,7 +1145,7 @@ const semanticAliases: Array<{ name: string; classes: string; desc: string }> = 
         </Card>
 
         <!-- 安全区规则 -->
-        <Card class="bg-card rounded-md shadow-soft py-md px-lg flex flex-col gap-lg">
+        <Card class="bg-card rounded-md shadow-sm dark:shadow-md py-md px-lg flex flex-col gap-lg">
           <template #title>
             <div class="row-y-center gap-sm border-b-default pb-sm mb-padding-sm">
               <Icons
@@ -1167,7 +1167,7 @@ const semanticAliases: Array<{ name: string; classes: string; desc: string }> = 
                 <div
                   v-for="rule in safeAreaRules"
                   :key="rule.name"
-                  class="row-y-center gap-md p-md surface-item rounded-lg shadow-soft transition-all duration-xl ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)] cursor-pointer behavior-hover-transition"
+                  class="row-y-center gap-md p-md surface-item rounded-lg shadow-sm dark:shadow-md transition-all duration-xl ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)] cursor-pointer behavior-hover-transition"
                   @click="copyToClipboard(rule.name)"
                 >
                   <div class="column flex-1">
@@ -1189,7 +1189,7 @@ const semanticAliases: Array<{ name: string; classes: string; desc: string }> = 
         </Card>
 
         <!-- Surface & Elevation / Glassmorphism -->
-        <Card class="bg-card rounded-md shadow-soft py-md px-lg flex flex-col gap-lg">
+        <Card class="bg-card rounded-md shadow-sm dark:shadow-md py-md px-lg flex flex-col gap-lg">
           <template #title>
             <div class="row-y-center gap-sm border-b-default pb-sm mb-padding-sm">
               <Icons
@@ -1220,32 +1220,32 @@ const semanticAliases: Array<{ name: string; classes: string; desc: string }> = 
               </div>
               <div class="grid grid-cols-1 md:grid-cols-3 gap-md">
                 <div
-                  class="col-stack-xs p-md rounded-md surface-base shadow-soft surface-item shadow-soft transition-all duration-xl ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)] cursor-pointer behavior-hover-transition"
-                  @click="copyToClipboard('surface-base')"
+                  class="col-stack-xs p-md rounded-md bg-background shadow-sm dark:shadow-md surface-item shadow-sm dark:shadow-md transition-all duration-xl ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)] cursor-pointer behavior-hover-transition"
+                  @click="copyToClipboard('bg-background')"
                 >
-                  <span class="font-semibold text-xs text-foreground">surface-base</span>
+                  <span class="font-semibold text-xs text-foreground">bg-background</span>
                   <span class="text-xs text-muted-foreground">页面基础背景 · bg-background</span>
                 </div>
                 <div
-                  class="col-stack-xs p-md rounded-md surface-elevated shadow-soft transition-all duration-xl ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)] cursor-pointer"
+                  class="col-stack-xs p-md rounded-md surface-elevated shadow-sm dark:shadow-md transition-all duration-xl ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)] cursor-pointer"
                   @click="copyToClipboard('surface-elevated')"
                 >
                   <span class="font-semibold text-xs text-foreground">surface-elevated</span>
                   <span class="text-xs text-muted-foreground">
-                    提升卡片/面板 · bg-card + shadow-soft
+                    提升卡片/面板 · bg-card + shadow-sm dark:shadow-md
                   </span>
                 </div>
                 <div
-                  class="col-stack-xs p-md rounded-md surface-sunken surface-item shadow-soft transition-all duration-xl ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)] cursor-pointer behavior-hover-transition"
-                  @click="copyToClipboard('surface-sunken')"
+                  class="col-stack-xs p-md rounded-md bg-muted surface-item shadow-sm dark:shadow-md transition-all duration-xl ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)] cursor-pointer behavior-hover-transition"
+                  @click="copyToClipboard('bg-muted')"
                 >
-                  <span class="font-semibold text-xs text-foreground">surface-sunken</span>
+                  <span class="font-semibold text-xs text-foreground">bg-muted</span>
                   <span class="text-xs text-muted-foreground">次级背景/沉降区域 · bg-muted</span>
                 </div>
               </div>
               <div class="grid grid-cols-1 md:grid-cols-3 gap-md">
                 <div
-                  class="bg-background/70 backdrop-blur-md rounded-md p-md col-stack-xs shadow-soft surface-item shadow-soft transition-all duration-xl ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)] cursor-pointer behavior-hover-transition"
+                  class="bg-background/70 backdrop-blur-md rounded-md p-md col-stack-xs shadow-sm dark:shadow-md surface-item shadow-sm dark:shadow-md transition-all duration-xl ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)] cursor-pointer behavior-hover-transition"
                   @click="copyToClipboard('bg-background/70 backdrop-blur-md')"
                 >
                   <span class="font-semibold text-xs text-foreground">
@@ -1256,7 +1256,7 @@ const semanticAliases: Array<{ name: string; classes: string; desc: string }> = 
                   </span>
                 </div>
                 <div
-                  class="bg-background/80 backdrop-blur-lg rounded-md p-md col-stack-xs shadow-soft surface-item shadow-soft transition-all duration-xl ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)] cursor-pointer behavior-hover-transition"
+                  class="bg-background/80 backdrop-blur-lg rounded-md p-md col-stack-xs shadow-sm dark:shadow-md surface-item shadow-sm dark:shadow-md transition-all duration-xl ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)] cursor-pointer behavior-hover-transition"
                   @click="copyToClipboard('bg-background/80 backdrop-blur-lg')"
                 >
                   <span class="font-semibold text-xs text-foreground">
@@ -1266,18 +1266,18 @@ const semanticAliases: Array<{ name: string; classes: string; desc: string }> = 
                 </div>
                 <div class="col-stack-xs">
                   <span class="font-semibold text-xs text-foreground">
-                    shadow-soft / shadow-float
+                    shadow-sm dark:shadow-md / shadow-md dark:shadow-lg
                   </span>
                   <div class="row-y-center gap-md">
                     <div
-                      class="w-[var(--spacing-3xl)] h-[var(--spacing-2xl)] rounded-md surface-elevated cursor-pointer shadow-soft transition-all duration-xl ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)] behavior-hover-transition"
-                      title="点击复制 shadow-soft"
-                      @click="copyToClipboard('shadow-soft')"
+                      class="w-[var(--spacing-3xl)] h-[var(--spacing-2xl)] rounded-md surface-elevated cursor-pointer shadow-sm dark:shadow-md transition-all duration-xl ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)] behavior-hover-transition"
+                      title="点击复制 shadow-sm dark:shadow-md"
+                      @click="copyToClipboard('shadow-sm dark:shadow-md')"
                     />
                     <div
-                      class="w-[var(--spacing-3xl)] h-[var(--spacing-2xl)] surface-elevated cursor-pointer shadow-soft transition-all duration-xl ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)] behavior-hover-transition"
-                      title="点击复制 shadow-float"
-                      @click="copyToClipboard('shadow-float')"
+                      class="w-[var(--spacing-3xl)] h-[var(--spacing-2xl)] surface-elevated cursor-pointer shadow-md dark:shadow-lg transition-all duration-xl ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)] behavior-hover-transition"
+                      title="点击复制 shadow-md dark:shadow-lg"
+                      @click="copyToClipboard('shadow-md dark:shadow-lg')"
                     />
                   </div>
                   <span class="text-xs text-muted-foreground">
@@ -1292,7 +1292,7 @@ const semanticAliases: Array<{ name: string; classes: string; desc: string }> = 
                 </span>
                 <div class="row-y-center gap-md">
                   <div
-                    class="w-[var(--spacing-3xl)] h-[var(--spacing-2xl)] rounded-md bg-primary/40 transition-[transform,opacity] duration-md ease-[cubic-bezier(0.16,1,0.3,1)] cursor-pointer shadow-soft transition-all duration-xl ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)] behavior-hover-transition"
+                    class="w-[var(--spacing-3xl)] h-[var(--spacing-2xl)] rounded-md bg-primary/40 transition-[transform,opacity] duration-md ease-[cubic-bezier(0.16,1,0.3,1)] cursor-pointer shadow-sm dark:shadow-md transition-all duration-xl ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)] behavior-hover-transition"
                     title="点击复制 transition-[transform,opacity] duration-md ease-[cubic-bezier(0.16,1,0.3,1)]"
                     @click="
                       copyToClipboard(
@@ -1317,7 +1317,7 @@ const semanticAliases: Array<{ name: string; classes: string; desc: string }> = 
 
         <!-- 架构能力索引 -->
         <Card
-          class="bg-card rounded-md shadow-soft py-md px-lg flex flex-col gap-lg bg-primary/10 dark:bg-primary/5"
+          class="bg-card rounded-md shadow-sm dark:shadow-md py-md px-lg flex flex-col gap-lg bg-primary/10 dark:bg-primary/5"
         >
           <template #title>
             <div class="row-y-center gap-sm border-b-default pb-sm mb-padding-sm">
@@ -1343,7 +1343,7 @@ const semanticAliases: Array<{ name: string; classes: string; desc: string }> = 
               <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-md">
                 <RouterLink
                   to="/example/charts"
-                  class="row-y-center gap-sm p-md surface-item rounded-lg shadow-soft transition-all duration-xl ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)]"
+                  class="row-y-center gap-sm p-md surface-item rounded-lg shadow-sm dark:shadow-md transition-all duration-xl ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)]"
                 >
                   <Icons
                     name="i-lucide-chart-bar"
@@ -1353,7 +1353,7 @@ const semanticAliases: Array<{ name: string; classes: string; desc: string }> = 
                 </RouterLink>
                 <RouterLink
                   to="/example/basic-ui/icons"
-                  class="row-y-center gap-sm p-md surface-item rounded-lg shadow-soft transition-all duration-xl ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)]"
+                  class="row-y-center gap-sm p-md surface-item rounded-lg shadow-sm dark:shadow-md transition-all duration-xl ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)]"
                 >
                   <Icons
                     name="i-lucide-brush"
@@ -1363,7 +1363,7 @@ const semanticAliases: Array<{ name: string; classes: string; desc: string }> = 
                 </RouterLink>
                 <RouterLink
                   to="/example/pro-form/basic"
-                  class="row-y-center gap-sm p-md surface-item rounded-lg shadow-soft transition-all duration-xl ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)]"
+                  class="row-y-center gap-sm p-md surface-item rounded-lg shadow-sm dark:shadow-md transition-all duration-xl ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)]"
                 >
                   <Icons
                     name="i-lucide-clipboard-list"
@@ -1373,7 +1373,7 @@ const semanticAliases: Array<{ name: string; classes: string; desc: string }> = 
                 </RouterLink>
                 <RouterLink
                   to="/example/pro-table/playground"
-                  class="row-y-center gap-sm p-md surface-item rounded-lg shadow-soft transition-all duration-xl ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)]"
+                  class="row-y-center gap-sm p-md surface-item rounded-lg shadow-sm dark:shadow-md transition-all duration-xl ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)]"
                 >
                   <Icons
                     name="i-lucide-table"
@@ -1383,7 +1383,7 @@ const semanticAliases: Array<{ name: string; classes: string; desc: string }> = 
                 </RouterLink>
                 <RouterLink
                   to="/example/basic-ui/primevue-dialog"
-                  class="row-y-center gap-sm p-md surface-item rounded-lg shadow-soft transition-all duration-xl ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)]"
+                  class="row-y-center gap-sm p-md surface-item rounded-lg shadow-sm dark:shadow-md transition-all duration-xl ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)]"
                 >
                   <Icons
                     name="i-lucide-box"
@@ -1392,7 +1392,7 @@ const semanticAliases: Array<{ name: string; classes: string; desc: string }> = 
                   <span>PrimeDialog · useDialog</span>
                 </RouterLink>
                 <div
-                  class="row-y-center gap-sm p-md surface-item rounded-lg shadow-soft transition-all duration-xl ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)]"
+                  class="row-y-center gap-sm p-md surface-item rounded-lg shadow-sm dark:shadow-md transition-all duration-xl ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)]"
                 >
                   <Icons
                     name="i-lucide-layout"
@@ -1403,7 +1403,7 @@ const semanticAliases: Array<{ name: string; classes: string; desc: string }> = 
                   </span>
                 </div>
                 <div
-                  class="row-y-center gap-sm p-md surface-item rounded-lg shadow-soft transition-all duration-xl ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)]"
+                  class="row-y-center gap-sm p-md surface-item rounded-lg shadow-sm dark:shadow-md transition-all duration-xl ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)]"
                 >
                   <Icons
                     name="i-lucide-lock"
@@ -1420,7 +1420,7 @@ const semanticAliases: Array<{ name: string; classes: string; desc: string }> = 
 
         <!-- Quick Reference（仅 Uno 特性） -->
         <Card
-          class="bg-card rounded-md shadow-soft py-md px-lg flex flex-col gap-lg bg-gradient-to-br from-primary/5 to-accent/5"
+          class="bg-card rounded-md shadow-sm dark:shadow-md py-md px-lg flex flex-col gap-lg bg-gradient-to-br from-primary/5 to-accent/5"
         >
           <template #title>
             <div class="row-y-center gap-sm border-b-default pb-sm mb-padding-sm">

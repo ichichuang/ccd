@@ -16,7 +16,7 @@ const userPermissions = computed<string[]>(() => userStore.getUserPermissions)
       <span>页面级权限示例（meta.roles）</span>
     </h2>
 
-    <div class="shadow-soft rounded-scale p-md space-y-margin-sm bg-card">
+    <div class="shadow-sm dark:shadow-md rounded-scale p-md space-y-margin-sm bg-card">
       <div class="text-md">
         <span class="font-medium">当前登录用户：</span>
         <span>{{ userStore.getUserInfo.username || '未登录' }}</span>
@@ -31,7 +31,7 @@ const userPermissions = computed<string[]>(() => userStore.getUserPermissions)
       </div>
     </div>
 
-    <div class="shadow-soft rounded-scale p-md space-y-margin-xs bg-muted">
+    <div class="shadow-sm dark:shadow-md rounded-scale p-md space-y-margin-xs bg-muted">
       <div class="text-md font-medium">本路由 meta.roles = ['admin']</div>
       <p class="text-muted-foreground text-sm">
         - 使用账号

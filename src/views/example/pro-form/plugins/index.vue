@@ -82,7 +82,7 @@ async function onSubmit(values: Record<string, unknown>): Promise<void> {
         </div>
         <div class="col-stack-xs">
           <h1 class="text-2xl font-bold text-foreground m-0">ProForm 插件与底层 Hooks</h1>
-          <p class="text-muted text-sm m-0">
+          <p class="text-muted-foreground text-sm m-0">
             演示无头插件系统 (ProFormPlugins.use) 与 useField()
             组合用法；自定义字段类型注册与双向绑定。
           </p>
@@ -96,7 +96,9 @@ async function onSubmit(values: Record<string, unknown>): Promise<void> {
         <div class="row-start items-start gap-lg layout-full min-h-0">
           <!-- Plugin Showcase (Left) -->
           <div class="flex-1 min-w-0 h-full col-stack-md">
-            <div class="bg-card rounded-md shadow-soft py-md px-lg flex flex-col gap-lg">
+            <div
+              class="bg-card rounded-md shadow-sm dark:shadow-md py-md px-lg flex flex-col gap-lg"
+            >
               <div class="row-y-center gap-sm border-b-default pb-sm mb-padding-sm">
                 <Icons
                   name="i-lucide-box"
@@ -137,7 +139,9 @@ async function onSubmit(values: Record<string, unknown>): Promise<void> {
           <!-- Right Column (JSON) -->
           <div class="layout-sidepanel shrink-0 h-full">
             <div class="sticky top-4">
-              <div class="bg-card rounded-md shadow-soft py-md px-lg flex flex-col gap-lg">
+              <div
+                class="bg-card rounded-md shadow-sm dark:shadow-md py-md px-lg flex flex-col gap-lg"
+              >
                 <div class="row-y-center gap-sm mb-padding-sm">
                   <Icons
                     name="i-lucide-database"
@@ -148,7 +152,7 @@ async function onSubmit(values: Record<string, unknown>): Promise<void> {
                   </span>
                 </div>
                 <div
-                  class="surface-sunken rounded-md p-md border-default border-border/40 text-muted-foreground"
+                  class="bg-muted rounded-md p-md border-default border-border/40 text-muted-foreground"
                 >
                   <pre class="m-0 whitespace-pre-wrap break-words text-xs font-mono">{{
                     JSON.stringify(formState.values, null, 2)

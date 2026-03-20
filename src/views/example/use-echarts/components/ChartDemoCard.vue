@@ -7,7 +7,7 @@ defineProps<{
 </script>
 
 <template>
-  <div class="bg-card rounded-lg shadow-soft p-lg flex flex-col gap-md">
+  <div class="bg-card rounded-lg shadow-sm dark:shadow-md p-lg flex flex-col gap-md">
     <h2 class="text-xl font-semibold text-foreground m-0">
       {{ title }}
     </h2>

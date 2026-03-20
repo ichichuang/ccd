@@ -228,7 +228,7 @@ function handleClearFilters(): void {
         </div>
         <div class="col-stack-xs">
           <h1 class="text-2xl font-bold text-foreground m-0">ProTable — API 与事件</h1>
-          <p class="text-muted text-sm m-0">
+          <p class="text-muted-foreground text-sm m-0">
             捕获并展示表格全部内部事件；演示通过 Ref 调用程序化接口。
           </p>
         </div>
@@ -239,7 +239,9 @@ function handleClearFilters(): void {
     <div class="row-start items-start gap-lg layout-full min-h-0">
       <!-- Main Table Area -->
       <div class="flex-1 min-w-0 h-full col-stack-sm">
-        <div class="shrink-0 bg-card rounded-md shadow-soft py-md px-lg flex flex-col gap-lg">
+        <div
+          class="shrink-0 bg-card rounded-md shadow-sm dark:shadow-md py-md px-lg flex flex-col gap-lg"
+        >
           <div class="row-between w-full pb-sm gap-sm flex-wrap">
             <div class="row-y-center gap-xs shrink-0">
               <Icons
@@ -300,7 +302,7 @@ function handleClearFilters(): void {
       <!-- Right Event Log Panel -->
       <div class="layout-sidepanel shrink-0 h-full">
         <div
-          class="bg-card rounded-md shadow-soft py-md px-lg flex flex-col gap-lg h-full col-stack-sm"
+          class="bg-card rounded-md shadow-sm dark:shadow-md py-md px-lg flex flex-col gap-lg h-full col-stack-sm"
         >
           <div class="row-between w-full pb-sm border-b-default">
             <div class="row-y-center gap-sm">
@@ -311,7 +313,9 @@ function handleClearFilters(): void {
               />
               <span class="text-sm font-semibold text-foreground">
                 事件日志
-                <span class="text-muted text-xs font-normal">({{ eventLog.length }} 条)</span>
+                <span class="text-muted-foreground text-xs font-normal">
+                  ({{ eventLog.length }} 条)
+                </span>
               </span>
             </div>
             <Button
@@ -322,7 +326,7 @@ function handleClearFilters(): void {
               @click="clearLog"
             />
           </div>
-          <CScrollbar class="flex-1 min-h-0 surface-sunken font-mono rounded-md p-sm">
+          <CScrollbar class="flex-1 min-h-0 bg-muted font-mono rounded-md p-sm">
             <div
               v-if="eventLog.length === 0"
               class="h-full col-center gap-xs py-xl text-center"
@@ -330,10 +334,10 @@ function handleClearFilters(): void {
               <Icons
                 name="i-lucide-inbox"
                 size="xl"
-                class="text-secondary mb-padding-xs"
+                class="text-secondary-foreground mb-padding-xs"
               />
-              <div class="text-secondary text-sm">暂无 API 调用日志</div>
-              <div class="text-muted text-xs">
+              <div class="text-secondary-foreground text-sm">暂无 API 调用日志</div>
+              <div class="text-muted-foreground text-xs">
                 对表格进行筛选、排序、翻页或刷新操作后，这里会实时显示相关事件。
               </div>
             </div>
@@ -343,7 +347,9 @@ function handleClearFilters(): void {
                 :key="idx"
                 class="row-y-center gap-md py-xs border-b-default border-border/40 last:border-b-0 hover:bg-foreground/5 behavior-hover-transition"
               >
-                <span class="text-xs text-muted shrink-0 w-[var(--spacing-4xl)] text-right">
+                <span
+                  class="text-xs text-muted-foreground shrink-0 w-[var(--spacing-4xl)] text-right"
+                >
                   {{ entry.time }}
                 </span>
                 <span class="text-xs text-primary font-bold shrink-0 min-w-[var(--spacing-5xl)]">

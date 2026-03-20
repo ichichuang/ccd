@@ -117,7 +117,7 @@ function rowClassName(row: EmployeeRow): string {
         </div>
         <div class="col-stack-xs">
           <h1 class="text-2xl font-bold text-foreground m-0">ProTable — 全量能力展示</h1>
-          <p class="text-muted text-sm m-0">
+          <p class="text-muted-foreground text-sm m-0">
             斑马纹 · 网格线 · 行选择 · 工具栏 · 高度模式 · 固定列 · 自定义行样式
           </p>
         </div>
@@ -129,7 +129,7 @@ function rowClassName(row: EmployeeRow): string {
       <!-- Control Panel -->
       <div class="shrink-0 border-b-default">
         <div class="w-full py-sm">
-          <div class="bg-card rounded-md shadow-soft py-md px-lg flex flex-col gap-lg">
+          <div class="bg-card rounded-md shadow-sm dark:shadow-md py-md px-lg flex flex-col gap-lg">
             <div class="row-y-center gap-sm border-b-default pb-sm mb-padding-sm">
               <Icons
                 name="i-lucide-settings-2"

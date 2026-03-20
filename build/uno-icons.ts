@@ -342,71 +342,62 @@ function buildLayoutSafelistClasses(): string[] {
     `md:w-${k}`,
   ])
   const padding = SIZE_SCALE_KEYS.flatMap(s => [
-    `p-padding-${s}`,
-    `px-padding-${s}`,
-    `py-padding-${s}`,
-    `pt-padding-${s}`,
-    `pb-padding-${s}`,
-    `pl-padding-${s}`,
-    `pr-padding-${s}`,
-    `md:px-padding-${s}`,
+    `p-${s}`,
+    `px-${s}`,
+    `py-${s}`,
+    `pt-${s}`,
+    `pb-${s}`,
+    `pl-${s}`,
+    `pr-${s}`,
+    `md:px-${s}`,
   ])
   const margin = SIZE_SCALE_KEYS.flatMap(s => [
-    `m-margin-${s}`,
-    `mx-margin-${s}`,
-    `my-margin-${s}`,
-    `mt-margin-${s}`,
-    `mb-margin-${s}`,
-    `ml-margin-${s}`,
-    `mr-margin-${s}`,
-  ])
-  const marginGap = SIZE_SCALE_KEYS.flatMap(s => [
-    `m-gap-${s}`,
-    `mx-gap-${s}`,
-    `my-gap-${s}`,
-    `mt-gap-${s}`,
-    `mb-gap-${s}`,
-    `ml-gap-${s}`,
-    `mr-gap-${s}`,
+    `m-${s}`,
+    `mx-${s}`,
+    `my-${s}`,
+    `mt-${s}`,
+    `mb-${s}`,
+    `ml-${s}`,
+    `mr-${s}`,
   ])
   const scrollMarginGap = SIZE_SCALE_KEYS.flatMap(s => [
-    `scroll-m-gap-${s}`,
-    `scroll-mx-gap-${s}`,
-    `scroll-my-gap-${s}`,
-    `scroll-mt-gap-${s}`,
-    `scroll-mb-gap-${s}`,
-    `scroll-ml-gap-${s}`,
-    `scroll-mr-gap-${s}`,
+    `scroll-m-${s}`,
+    `scroll-mx-${s}`,
+    `scroll-my-${s}`,
+    `scroll-mt-${s}`,
+    `scroll-mb-${s}`,
+    `scroll-ml-${s}`,
+    `scroll-mr-${s}`,
   ])
   const gap = SIZE_SCALE_KEYS.map(s => `gap-${s}`)
-  return [...layout, ...padding, ...margin, ...marginGap, ...scrollMarginGap, ...gap]
+  return Array.from(new Set([...layout, ...padding, ...margin, ...scrollMarginGap, ...gap]))
 }
 
-/** 阶梯尺寸类 (fs / text / rounded-scale / duration-scale / p-scale / m-scale / gap-scale)，供 size.vue / unocss.vue 等动态类名使用 */
+/** 阶梯尺寸类（全部使用 native 命名），供 size.vue / unocss.vue 等动态类名使用 */
 function buildScaleSafelistClasses(): string[] {
-  return SIZE_SCALE_KEYS.flatMap(k => [
-    `fs-${k}`,
+  const classes = SIZE_SCALE_KEYS.flatMap(k => [
     `text-${k}`,
-    `rounded-scale-${k}`,
-    `duration-scale-${k}`,
-    `p-scale-${k}`,
-    `px-scale-${k}`,
-    `py-scale-${k}`,
-    `pt-scale-${k}`,
-    `pb-scale-${k}`,
-    `pl-scale-${k}`,
-    `pr-scale-${k}`,
-    `m-scale-${k}`,
-    `mx-scale-${k}`,
-    `my-scale-${k}`,
-    `mt-scale-${k}`,
-    `mb-scale-${k}`,
-    `ml-scale-${k}`,
-    `mr-scale-${k}`,
-    `gap-scale-${k}`,
-    `gap-x-scale-${k}`,
-    `gap-y-scale-${k}`,
+    `rounded-${k}`,
+    `duration-${k}`,
+    `p-${k}`,
+    `px-${k}`,
+    `py-${k}`,
+    `pt-${k}`,
+    `pb-${k}`,
+    `pl-${k}`,
+    `pr-${k}`,
+    `m-${k}`,
+    `mx-${k}`,
+    `my-${k}`,
+    `mt-${k}`,
+    `mb-${k}`,
+    `ml-${k}`,
+    `mr-${k}`,
+    `gap-${k}`,
+    `gap-x-${k}`,
+    `gap-y-${k}`,
   ])
+  return Array.from(new Set(classes))
 }
 
 /** 基础变量类 (p-container-padding 等)，供 unocss.vue baseVars 等动态类名使用，SSOT: SIZE_BASE_VAR_KEYS */
@@ -498,7 +489,7 @@ function buildShortcutGroupsSafelist(): string[] {
 
   // 2) Representative concrete classes for wildcard demo groups
   ;['gap-x-sm', 'gap-x-md', 'gap-x-lg', 'gap-y-sm', 'gap-y-md', 'gap-y-lg'].forEach(c => out.add(c))
-  ;['m-gap-md', 'scroll-m-gap-lg'].forEach(c => out.add(c))
+  ;['m-md', 'scroll-m-lg'].forEach(c => out.add(c))
 
   return Array.from(out)
 }

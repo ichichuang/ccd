@@ -14,7 +14,7 @@
       <span>路由过渡动画示例（meta.transition）</span>
     </h2>
 
-    <div class="shadow-soft rounded-scale p-md space-y-margin-sm">
+    <div class="shadow-sm dark:shadow-md rounded-scale p-md space-y-margin-sm">
       <div class="text-md font-medium">本路由 meta.transition 配置</div>
       <pre class="text-muted-foreground text-sm font-mono whitespace-pre-wrap">{{
         JSON.stringify(

@@ -59,7 +59,7 @@ const tables: { mode: HeightMode; label: string; desc: string; icon: string }[] 
           </div>
           <div class="col-stack-xs">
             <h1 class="text-2xl font-bold text-foreground m-0">ProTable — 高度模式</h1>
-            <p class="text-muted text-sm m-0">
+            <p class="text-muted-foreground text-sm m-0">
               对比演示 fill / auto / fixed 三种高度策略的表现差异。
             </p>
           </div>
@@ -68,7 +68,7 @@ const tables: { mode: HeightMode; label: string; desc: string; icon: string }[] 
         <!-- Control Area -->
         <div class="row-y-center gap-md flex-wrap shrink-0">
           <div class="row-y-center gap-xs">
-            <span class="text-sm text-muted">固定高度值:</span>
+            <span class="text-sm text-muted-foreground">固定高度值:</span>
             <Select
               v-model="fixedHeight"
               :options="HEIGHT_OPTIONS"
@@ -80,7 +80,7 @@ const tables: { mode: HeightMode; label: string; desc: string; icon: string }[] 
           <div class="row-y-center gap-xs">
             <label
               for="ctrl-show-all"
-              class="text-sm text-muted cursor-pointer"
+              class="text-sm text-muted-foreground cursor-pointer"
             >
               同时显示三种
             </label>
@@ -101,7 +101,7 @@ const tables: { mode: HeightMode; label: string; desc: string; icon: string }[] 
           <div
             v-for="table in tables"
             :key="table.mode"
-            class="bg-card rounded-md shadow-soft py-md px-lg flex flex-col gap-lg col-stack-sm"
+            class="bg-card rounded-md shadow-sm dark:shadow-md py-md px-lg flex flex-col gap-lg col-stack-sm"
           >
             <div class="row-y-center gap-sm border-b-default pb-sm mb-padding-sm">
               <Icons
@@ -111,7 +111,7 @@ const tables: { mode: HeightMode; label: string; desc: string; icon: string }[] 
               />
               <div class="col-stack-xs">
                 <span class="text-md font-semibold text-foreground">{{ table.label }}</span>
-                <span class="text-xs text-muted">{{ table.desc }}</span>
+                <span class="text-xs text-muted-foreground">{{ table.desc }}</span>
               </div>
             </div>
             <div class="flex-1 min-h-0">
@@ -129,7 +129,9 @@ const tables: { mode: HeightMode; label: string; desc: string; icon: string }[] 
         </template>
 
         <template v-else>
-          <div class="bg-card rounded-md shadow-soft py-md px-lg flex flex-col gap-lg col-stack-sm">
+          <div
+            class="bg-card rounded-md shadow-sm dark:shadow-md py-md px-lg flex flex-col gap-lg col-stack-sm"
+          >
             <div class="row-y-center gap-sm border-b-default pb-sm mb-padding-sm">
               <Icons
                 name="i-lucide-proportions"

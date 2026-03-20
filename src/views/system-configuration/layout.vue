@@ -92,7 +92,7 @@ const adaptiveTriggerDesc = [
           class="self-start mt-xs"
         />
         <!-- 架构提示 -->
-        <div class="surface-item p-md rounded-md row-start gap-md shadow-soft mt-sm">
+        <div class="surface-item p-md rounded-md row-start gap-md shadow-sm dark:shadow-md mt-sm">
           <Icons
             name="i-lucide-info"
             class="text-primary text-xl shrink-0 mt-xs"
@@ -115,7 +115,7 @@ const adaptiveTriggerDesc = [
       >
         <!-- Device Store (Dashboard KPI Style) -->
         <Card
-          class="bg-card rounded-md shadow-soft py-md px-lg flex flex-col gap-lg bg-accent/10 dark:bg-accent/5"
+          class="bg-card rounded-md shadow-sm dark:shadow-md py-md px-lg flex flex-col gap-lg bg-accent/10 dark:bg-accent/5"
         >
           <template #title>
             <div class="row-y-center gap-sm border-b-default pb-sm mb-padding-sm">
@@ -133,7 +133,7 @@ const adaptiveTriggerDesc = [
           <template #content>
             <div class="layout-wrap gap-lg">
               <div
-                class="surface-item rounded-lg p-xl row-y-center gap-lg group shadow-soft transition-all duration-xl ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)] behavior-hover-transition min-w-0 shrink-0"
+                class="surface-item rounded-lg p-xl row-y-center gap-lg group shadow-sm dark:shadow-md transition-all duration-xl ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)] behavior-hover-transition min-w-0 shrink-0"
               >
                 <div
                   class="shrink-0 w-[var(--spacing-3xl)] h-[var(--spacing-3xl)] rounded-lg surface-item center transition-[transform,opacity] duration-md ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-105"
@@ -154,7 +154,7 @@ const adaptiveTriggerDesc = [
                 </div>
               </div>
               <div
-                class="surface-item rounded-lg p-xl row-y-center gap-lg group shadow-soft transition-all duration-xl ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)] behavior-hover-transition min-w-0 shrink-0"
+                class="surface-item rounded-lg p-xl row-y-center gap-lg group shadow-sm dark:shadow-md transition-all duration-xl ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)] behavior-hover-transition min-w-0 shrink-0"
               >
                 <div
                   class="shrink-0 w-[var(--spacing-3xl)] h-[var(--spacing-3xl)] rounded-lg surface-item center transition-[transform,opacity] duration-md ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-105"
@@ -175,7 +175,7 @@ const adaptiveTriggerDesc = [
                 </div>
               </div>
               <div
-                class="surface-item rounded-lg p-xl row-y-center gap-lg group shadow-soft transition-all duration-xl ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)] behavior-hover-transition min-w-0 shrink-0"
+                class="surface-item rounded-lg p-xl row-y-center gap-lg group shadow-sm dark:shadow-md transition-all duration-xl ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)] behavior-hover-transition min-w-0 shrink-0"
               >
                 <div
                   class="shrink-0 w-[var(--spacing-3xl)] h-[var(--spacing-3xl)] rounded-lg surface-item center transition-[transform,opacity] duration-md ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-105"
@@ -196,7 +196,7 @@ const adaptiveTriggerDesc = [
                 </div>
               </div>
               <div
-                class="surface-item rounded-lg p-xl row-y-center gap-lg group shadow-soft transition-all duration-xl ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)] behavior-hover-transition min-w-0 shrink-0"
+                class="surface-item rounded-lg p-xl row-y-center gap-lg group shadow-sm dark:shadow-md transition-all duration-xl ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)] behavior-hover-transition min-w-0 shrink-0"
               >
                 <div
                   class="shrink-0 w-[var(--spacing-3xl)] h-[var(--spacing-3xl)] rounded-lg surface-item center transition-[transform,opacity] duration-md ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-105"
@@ -217,7 +217,7 @@ const adaptiveTriggerDesc = [
                 </div>
               </div>
               <div
-                class="surface-item rounded-lg p-xl row-y-center gap-lg group shadow-soft transition-all duration-xl ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)] behavior-hover-transition min-w-0 shrink-0"
+                class="surface-item rounded-lg p-xl row-y-center gap-lg group shadow-sm dark:shadow-md transition-all duration-xl ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)] behavior-hover-transition min-w-0 shrink-0"
               >
                 <div
                   class="shrink-0 w-[var(--spacing-3xl)] h-[var(--spacing-3xl)] rounded-lg surface-item center transition-[transform,opacity] duration-md ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-105"
@@ -238,7 +238,7 @@ const adaptiveTriggerDesc = [
                 </div>
               </div>
               <div
-                class="surface-item rounded-lg p-xl row-y-center gap-lg group shadow-soft transition-all duration-xl ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)] behavior-hover-transition min-w-0 shrink-0"
+                class="surface-item rounded-lg p-xl row-y-center gap-lg group shadow-sm dark:shadow-md transition-all duration-xl ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)] behavior-hover-transition min-w-0 shrink-0"
               >
                 <div
                   class="shrink-0 w-[var(--spacing-3xl)] h-[var(--spacing-3xl)] rounded-lg surface-item center transition-[transform,opacity] duration-md ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-105"
@@ -259,7 +259,7 @@ const adaptiveTriggerDesc = [
                 </div>
               </div>
               <div
-                class="surface-item rounded-lg p-xl row-y-center gap-lg group shadow-soft transition-all duration-xl ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)] behavior-hover-transition min-w-0 shrink-0"
+                class="surface-item rounded-lg p-xl row-y-center gap-lg group shadow-sm dark:shadow-md transition-all duration-xl ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)] behavior-hover-transition min-w-0 shrink-0"
               >
                 <div
                   class="shrink-0 w-[var(--spacing-3xl)] h-[var(--spacing-3xl)] rounded-lg surface-item center transition-[transform,opacity] duration-md ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-105"
@@ -285,7 +285,7 @@ const adaptiveTriggerDesc = [
 
         <!-- Layout Store (Dashboard KPI Style) -->
         <Card
-          class="bg-card rounded-md shadow-soft py-md px-lg flex flex-col gap-lg bg-accent/10 dark:bg-accent/5"
+          class="bg-card rounded-md shadow-sm dark:shadow-md py-md px-lg flex flex-col gap-lg bg-accent/10 dark:bg-accent/5"
         >
           <template #title>
             <div class="row-y-center gap-sm border-b-default pb-sm mb-padding-sm">
@@ -303,7 +303,7 @@ const adaptiveTriggerDesc = [
           <template #content>
             <div class="layout-wrap gap-lg">
               <div
-                class="surface-item rounded-lg p-xl row-y-center gap-lg group shadow-soft transition-all duration-xl ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)] behavior-hover-transition min-w-0 shrink-0"
+                class="surface-item rounded-lg p-xl row-y-center gap-lg group shadow-sm dark:shadow-md transition-all duration-xl ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)] behavior-hover-transition min-w-0 shrink-0"
               >
                 <div
                   class="shrink-0 w-[var(--spacing-3xl)] h-[var(--spacing-3xl)] rounded-lg surface-item center transition-[transform,opacity] duration-md ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-105"
@@ -324,7 +324,7 @@ const adaptiveTriggerDesc = [
                 </div>
               </div>
               <div
-                class="surface-item rounded-lg p-xl row-y-center gap-lg group shadow-soft transition-all duration-xl ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)] behavior-hover-transition min-w-0 shrink-0"
+                class="surface-item rounded-lg p-xl row-y-center gap-lg group shadow-sm dark:shadow-md transition-all duration-xl ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)] behavior-hover-transition min-w-0 shrink-0"
               >
                 <div
                   class="shrink-0 w-[var(--spacing-3xl)] h-[var(--spacing-3xl)] rounded-lg surface-item center transition-[transform,opacity] duration-md ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-105"
@@ -345,7 +345,7 @@ const adaptiveTriggerDesc = [
                 </div>
               </div>
               <div
-                class="surface-item rounded-lg p-xl row-y-center gap-lg group shadow-soft transition-all duration-xl ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)] behavior-hover-transition min-w-0 shrink-0"
+                class="surface-item rounded-lg p-xl row-y-center gap-lg group shadow-sm dark:shadow-md transition-all duration-xl ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)] behavior-hover-transition min-w-0 shrink-0"
               >
                 <div
                   class="shrink-0 w-[var(--spacing-3xl)] h-[var(--spacing-3xl)] rounded-lg surface-item center transition-[transform,opacity] duration-md ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-105"
@@ -366,7 +366,7 @@ const adaptiveTriggerDesc = [
                 </div>
               </div>
               <div
-                class="surface-item rounded-lg p-xl row-y-center gap-lg group shadow-soft transition-all duration-xl ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)] behavior-hover-transition min-w-0 shrink-0"
+                class="surface-item rounded-lg p-xl row-y-center gap-lg group shadow-sm dark:shadow-md transition-all duration-xl ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)] behavior-hover-transition min-w-0 shrink-0"
               >
                 <div
                   class="shrink-0 w-[var(--spacing-3xl)] h-[var(--spacing-3xl)] rounded-lg surface-item center transition-[transform,opacity] duration-md ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-105"
@@ -401,7 +401,7 @@ const adaptiveTriggerDesc = [
 
         <!-- Live Wireframe Preview (Hero: accent tint + title strip) -->
         <Card
-          class="bg-card rounded-md shadow-soft py-md px-lg flex flex-col gap-lg bg-accent/10 dark:bg-accent/5"
+          class="bg-card rounded-md shadow-sm dark:shadow-md py-md px-lg flex flex-col gap-lg bg-accent/10 dark:bg-accent/5"
         >
           <template #title>
             <div class="row-y-center gap-sm border-b-default pb-sm mb-padding-sm">
@@ -536,7 +536,7 @@ const adaptiveTriggerDesc = [
                     线框预览
                   </h4>
                   <div
-                    class="relative rounded-lg shadow-soft bg-muted/30 overflow-hidden"
+                    class="relative rounded-lg shadow-sm dark:shadow-md bg-muted/30 overflow-hidden"
                     style="min-height: 220px"
                   >
                     <!-- Header -->
@@ -697,7 +697,7 @@ const adaptiveTriggerDesc = [
 
         <!-- runAdaptive 与有效显隐 -->
         <Card
-          class="bg-card rounded-md shadow-soft py-md px-lg flex flex-col gap-lg bg-primary/10 dark:bg-primary/5"
+          class="bg-card rounded-md shadow-sm dark:shadow-md py-md px-lg flex flex-col gap-lg bg-primary/10 dark:bg-primary/5"
         >
           <template #title>
             <div class="row-y-center gap-sm border-b-default pb-sm mb-padding-sm">
@@ -716,7 +716,7 @@ const adaptiveTriggerDesc = [
             <div class="col-stack-md">
               <div>
                 <h4 class="text-sm font-semibold text-foreground mb-xs">runAdaptive 触发时机</h4>
-                <ul class="col-stack-xs list-disc pl-lg text-sm text-muted">
+                <ul class="col-stack-xs list-disc pl-lg text-sm text-muted-foreground">
                   <li
                     v-for="(item, i) in adaptiveTriggerDesc"
                     :key="i"
@@ -740,7 +740,7 @@ const adaptiveTriggerDesc = [
                       { label: 'showFooterEffective', val: showFooterEffective },
                     ]"
                     :key="item.label"
-                    class="row-between p-sm surface-item rounded-lg shadow-soft transition-all duration-xl ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)] behavior-hover-transition hover:bg-foreground/5"
+                    class="row-between p-sm surface-item rounded-lg shadow-sm dark:shadow-md transition-all duration-xl ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)] behavior-hover-transition hover:bg-foreground/5"
                   >
                     <span class="text-xs text-muted-foreground font-mono">{{ item.label }}</span>
                     <Tag
@@ -755,7 +755,7 @@ const adaptiveTriggerDesc = [
         </Card>
 
         <!-- 架构规则与详细逻辑 -->
-        <Card class="bg-card rounded-md shadow-soft py-md px-lg flex flex-col gap-lg">
+        <Card class="bg-card rounded-md shadow-sm dark:shadow-md py-md px-lg flex flex-col gap-lg">
           <template #title>
             <div class="row-y-center gap-sm">
               <Icons

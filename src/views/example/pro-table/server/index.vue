@@ -110,14 +110,14 @@ const requestEndpoint = computed<string>(() => {
                 Live API
               </span>
             </div>
-            <p class="text-muted text-sm m-0">
+            <p class="text-muted-foreground text-sm m-0">
               数据来自
               <code>dummyjson.com/users</code>
               （208 条）。分页、排序、全局搜索均为真实 HTTP 请求。
             </p>
           </div>
         </div>
-        <div class="surface-sunken rounded-md px-md py-xs row-y-center gap-xs shrink-0 min-w-0">
+        <div class="bg-muted rounded-md px-md py-xs row-y-center gap-xs shrink-0 min-w-0">
           <Icons
             name="i-lucide-globe"
             size="xs"

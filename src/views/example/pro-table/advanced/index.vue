@@ -46,7 +46,9 @@ const effectiveStateKey = computed<string | undefined>(() =>
           <h1 class="text-2xl font-bold text-foreground m-0">
             {{ $t('router.example.proTableAdvanced') }}
           </h1>
-          <p class="text-muted text-sm m-0">列宽拖拽 · 列重排 · 状态记忆（session/local）</p>
+          <p class="text-muted-foreground text-sm m-0">
+            列宽拖拽 · 列重排 · 状态记忆（session/local）
+          </p>
         </div>
       </div>
     </header>
@@ -56,7 +58,7 @@ const effectiveStateKey = computed<string | undefined>(() =>
       <!-- Control Panel -->
       <div class="shrink-0 border-b-default">
         <div class="w-full py-sm">
-          <div class="bg-card rounded-md shadow-soft py-md px-lg flex flex-col gap-lg">
+          <div class="bg-card rounded-md shadow-sm dark:shadow-md py-md px-lg flex flex-col gap-lg">
             <div class="row-y-center gap-sm border-b-default pb-sm mb-padding-sm">
               <Icons
                 name="i-lucide-settings-2"
@@ -186,7 +188,7 @@ const effectiveStateKey = computed<string | undefined>(() =>
               </div>
 
               <div class="p-md bg-muted/5 rounded-md">
-                <p class="text-xs text-muted m-0 leading-relaxed italic">
+                <p class="text-xs text-muted-foreground m-0 leading-relaxed italic">
                   <span class="font-bold not-italic">说明：</span>
                   开启「列宽拖拽」后拖动表头列边界可调整列宽；「列重排」可拖动表头改变列顺序。
                   启用「状态记忆」后，列宽与列顺序会写入浏览器存储，刷新或重新打开页面可恢复（stateKey:

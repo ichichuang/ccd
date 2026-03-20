@@ -270,7 +270,7 @@ const handleUpdateHeader = () => {
         <Button
           label="改为新标题"
           size="small"
-          class="mt-scale-sm"
+          class="mt-sm"
           onClick={() => update('已更新的标题', 'header', idx)}
         />
       </div>
@@ -381,7 +381,7 @@ const handlePosition = (pos: DialogPosition) => {
   <CScrollbar class="h-full p-lg">
     <div class="w-full max-w-[80vw] mx-auto col-stack-xl">
       <section
-        class="rounded-md bg-card text-card-foreground shadow-soft density-normal col-stack-xs"
+        class="rounded-md bg-card text-card-foreground shadow-sm dark:shadow-md density-normal col-stack-xs"
       >
         <h1 class="text-2xl font-bold text-foreground">Dialog Component Full Demo</h1>
         <p class="text-muted-foreground">
@@ -391,7 +391,7 @@ const handlePosition = (pos: DialogPosition) => {
 
       <!-- 1. 常用预设 -->
       <section
-        class="rounded-md bg-card text-card-foreground shadow-soft density-normal col-stack-md"
+        class="rounded-md bg-card text-card-foreground shadow-sm dark:shadow-md density-normal col-stack-md"
       >
         <h2 class="text-lg font-semibold">1. 常用预设 (Presets)</h2>
         <div class="layout-wrap gap-md">
@@ -431,7 +431,7 @@ const handlePosition = (pos: DialogPosition) => {
 
       <!-- 2. 交互控制 -->
       <section
-        class="rounded-md bg-card text-card-foreground shadow-soft density-normal col-stack-md"
+        class="rounded-md bg-card text-card-foreground shadow-sm dark:shadow-md density-normal col-stack-md"
       >
         <h2 class="text-lg font-semibold">2. 交互控制 (Behaviors)</h2>
 
@@ -512,7 +512,7 @@ const handlePosition = (pos: DialogPosition) => {
 
       <!-- 3. 界面显示 -->
       <section
-        class="rounded-md bg-card text-card-foreground shadow-soft density-normal col-stack-md"
+        class="rounded-md bg-card text-card-foreground shadow-sm dark:shadow-md density-normal col-stack-md"
       >
         <h2 class="text-lg font-semibold">3. 界面显示 (Visibility)</h2>
         <div class="layout-wrap gap-md">
@@ -548,7 +548,7 @@ const handlePosition = (pos: DialogPosition) => {
 
       <!-- 4. 逻辑控制 -->
       <section
-        class="rounded-md bg-card text-card-foreground shadow-soft density-normal col-stack-md"
+        class="rounded-md bg-card text-card-foreground shadow-sm dark:shadow-md density-normal col-stack-md"
       >
         <h2 class="text-lg font-semibold">4. 逻辑控制 (Logic)</h2>
         <div class="layout-wrap gap-md">
@@ -580,7 +580,7 @@ const handlePosition = (pos: DialogPosition) => {
 
       <!-- 5. 生命周期回调 -->
       <section
-        class="rounded-md bg-card text-card-foreground shadow-soft density-normal col-stack-md"
+        class="rounded-md bg-card text-card-foreground shadow-sm dark:shadow-md density-normal col-stack-md"
       >
         <h2 class="text-lg font-semibold">5. 生命周期回调 (Lifecycle)</h2>
         <div class="layout-wrap gap-md">
@@ -607,7 +607,7 @@ const handlePosition = (pos: DialogPosition) => {
 
       <!-- 6. 多弹窗管理 -->
       <section
-        class="rounded-md bg-card text-card-foreground shadow-soft density-normal col-stack-md"
+        class="rounded-md bg-card text-card-foreground shadow-sm dark:shadow-md density-normal col-stack-md"
       >
         <h2 class="text-lg font-semibold">6. 多弹窗管理 (Multi-Dialog)</h2>
         <div class="row-y-center flex-wrap gap-md">
@@ -635,7 +635,7 @@ const handlePosition = (pos: DialogPosition) => {
 
       <!-- 7. 位置控制 -->
       <section
-        class="rounded-md bg-card text-card-foreground shadow-soft density-normal col-stack-md"
+        class="rounded-md bg-card text-card-foreground shadow-sm dark:shadow-md density-normal col-stack-md"
       >
         <h2 class="text-lg font-semibold">7. 位置控制 (Position)</h2>
         <div class="layout-wrap gap-sm">

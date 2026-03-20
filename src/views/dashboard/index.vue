@@ -1,7 +1,7 @@
 <script setup lang="ts">
 /**
  * Dashboard — Phase 12.65: Absolute semantics & VH fluidity.
- * Uses vh for chart height, semantic spacing tokens, shadow-soft; no rem/em or raw shadow.
+ * Uses vh for chart height, semantic spacing tokens, shadow-sm/dark:shadow-md; no rem/em or raw shadow.
  */
 import { useChartOptions } from './hooks/useChartOptions'
 import type { SystemMetricsDTO } from './page.state'
@@ -199,7 +199,7 @@ const metricsConfig = computed(() => [
         <div
           v-for="m in metricsConfig"
           :key="m.label"
-          class="bg-accent/10 dark:bg-accent/5 rounded-xl shadow-soft transition-all duration-md ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)] p-lg row-y-center gap-lg group"
+          class="bg-accent/10 dark:bg-accent/5 rounded-xl shadow-sm dark:shadow-md transition-all duration-md ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)] p-lg row-y-center gap-lg group"
         >
           <div
             class="shrink-0 w-[var(--spacing-3xl)] h-[var(--spacing-3xl)] rounded-lg surface-item center transition-[transform,opacity] duration-md ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-105"
@@ -224,7 +224,9 @@ const metricsConfig = computed(() => [
         data-region="chart-grid"
         class="grid grid-cols-1 gap-lg"
       >
-        <div class="bg-card rounded-md shadow-soft py-md px-lg flex flex-col gap-lg min-h-[50vh]">
+        <div
+          class="bg-card rounded-md shadow-sm dark:shadow-md py-md px-lg flex flex-col gap-lg min-h-[50vh]"
+        >
           <div class="row-between shrink-0">
             <div class="col-stack-xs">
               <h3 class="text-lg font-semibold text-foreground m-0">Performance Analytics</h3>
@@ -233,7 +235,7 @@ const metricsConfig = computed(() => [
               </p>
             </div>
             <div
-              class="bg-primary/10 text-primary rounded-full px-md py-xs row-y-center gap-sm shadow-soft"
+              class="bg-primary/10 text-primary rounded-full px-md py-xs row-y-center gap-sm shadow-sm dark:shadow-md"
             >
               <span
                 class="w-[var(--spacing-sm)] h-[var(--spacing-sm)] rounded-full bg-primary animate-pulse shrink-0"
@@ -255,7 +257,7 @@ const metricsConfig = computed(() => [
       >
         <!-- Recent System Events (Left, 2/3) -->
         <div
-          class="bg-primary/20 dark:bg-primary/10 rounded-xl shadow-soft p-xl col-stack-lg lg:col-span-2 transition-all duration-md ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)]"
+          class="bg-primary/20 dark:bg-primary/10 rounded-xl shadow-sm dark:shadow-md p-xl col-stack-lg lg:col-span-2 transition-all duration-md ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)]"
         >
           <div class="row-between shrink-0">
             <h3 class="text-lg font-semibold text-foreground m-0">Recent System Events</h3>
@@ -286,12 +288,12 @@ const metricsConfig = computed(() => [
                 </div>
                 <div class="column min-w-0 flex-1">
                   <span class="text-sm font-medium text-foreground">{{ evt.title }}</span>
-                  <span class="text-muted text-single-line-ellipsis text-xs">
+                  <span class="text-muted-foreground text-single-line-ellipsis text-xs">
                     {{ evt.description }}
                   </span>
                 </div>
               </div>
-              <span class="text-secondary text-xs whitespace-nowrap shrink-0 ml-md">
+              <span class="text-secondary-foreground text-xs whitespace-nowrap shrink-0 ml-md">
                 {{ evt.time }}
               </span>
             </div>
@@ -300,7 +302,7 @@ const metricsConfig = computed(() => [
 
         <!-- Active Service Nodes (Right, 1/3) -->
         <div
-          class="bg-primary/20 dark:bg-primary/10 rounded-xl shadow-soft p-xl col-stack-lg lg:col-span-1 transition-all duration-md ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)]"
+          class="bg-primary/20 dark:bg-primary/10 rounded-xl shadow-sm dark:shadow-md p-xl col-stack-lg lg:col-span-1 transition-all duration-md ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)]"
         >
           <div class="row-between shrink-0">
             <h3 class="text-lg font-semibold text-foreground m-0">Active Service Nodes</h3>
@@ -316,7 +318,7 @@ const metricsConfig = computed(() => [
             >
               <div class="column min-w-0">
                 <span class="text-sm font-medium text-foreground">{{ node.name }}</span>
-                <span class="text-muted text-xs">{{ node.region }}</span>
+                <span class="text-muted-foreground text-xs">{{ node.region }}</span>
               </div>
               <div class="column items-end shrink-0">
                 <span
@@ -329,7 +331,9 @@ const metricsConfig = computed(() => [
                 >
                   {{ node.status }}
                 </span>
-                <span class="text-secondary text-xs mt-padding-xs">{{ node.uptime }}</span>
+                <span class="text-secondary-foreground text-xs mt-padding-xs">
+                  {{ node.uptime }}
+                </span>
               </div>
             </div>
           </div>

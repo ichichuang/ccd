@@ -102,8 +102,8 @@ const spacingItems = computed<
     gapXClass: `gap-x-${key}`,
     gapYClass: `gap-y-${key}`,
     scrollGapClass: `scroll-m-gap-${key}`,
-    pScaleClass: `p-scale-${key}`,
-    mScaleClass: `m-scale-${key}`,
+    pScaleClass: `p-${key}`,
+    mScaleClass: `m-${key}`,
     gapScaleClass: `gap-${key}`,
     ratio: SPACING_SCALE_RATIOS[key],
     units: SPACING_SCALE_RATIOS[key],
@@ -253,7 +253,7 @@ const marginDirMap = [
             </p>
           </div>
         </div>
-        <div class="surface-item p-md rounded-md row-start gap-md shadow-soft mt-sm">
+        <div class="surface-item p-md rounded-md row-start gap-md shadow-sm dark:shadow-md mt-sm">
           <Icons
             name="i-lucide-info"
             class="text-primary text-xl shrink-0 mt-xs"
@@ -277,7 +277,7 @@ const marginDirMap = [
       >
         <!-- Size Store 尺寸 Store (Hero: primary tint + title strip) -->
         <Card
-          class="bg-card rounded-md shadow-soft py-md px-lg flex flex-col gap-lg bg-primary/10 dark:bg-primary/5"
+          class="bg-card rounded-md shadow-sm dark:shadow-md py-md px-lg flex flex-col gap-lg bg-primary/10 dark:bg-primary/5"
         >
           <template #title>
             <div class="row-y-center gap-sm border-b-default pb-sm mb-padding-sm">
@@ -304,7 +304,7 @@ const marginDirMap = [
                   class="p-sm py-xs rounded-md cursor-pointer select-none transition-all duration-lg ease-in-out text-sm active:scale-95"
                   :class="[
                     sizeStore.sizeName === preset.name
-                      ? 'bg-primary text-primary-foreground shadow-soft'
+                      ? 'bg-primary text-primary-foreground shadow-sm dark:shadow-md'
                       : 'surface-item text-muted-foreground hover:bg-muted/60 dark:hover:bg-muted/40',
                   ]"
                   @click="sizeStore.setSize(preset.name)"
@@ -334,7 +334,7 @@ const marginDirMap = [
 
         <!-- Device Store 当前设备/断点 (Hero: accent tint + title strip) -->
         <Card
-          class="bg-card rounded-md shadow-soft py-md px-lg flex flex-col gap-lg bg-accent/10 dark:bg-accent/5"
+          class="bg-card rounded-md shadow-sm dark:shadow-md py-md px-lg flex flex-col gap-lg bg-accent/10 dark:bg-accent/5"
         >
           <template #title>
             <div class="row-y-center gap-sm border-b-default pb-sm mb-padding-sm">
@@ -352,7 +352,7 @@ const marginDirMap = [
           <template #content>
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-md">
               <div
-                class="col-stack-xs p-md surface-item rounded-lg shadow-soft transition-all duration-xl ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)] behavior-hover-transition"
+                class="col-stack-xs p-md surface-item rounded-lg shadow-sm dark:shadow-md transition-all duration-xl ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)] behavior-hover-transition"
               >
                 <span class="text-muted-foreground text-xs">type</span>
                 <Tag
@@ -361,7 +361,7 @@ const marginDirMap = [
                 />
               </div>
               <div
-                class="col-stack-xs p-md surface-item rounded-lg shadow-soft transition-all duration-xl ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)] behavior-hover-transition"
+                class="col-stack-xs p-md surface-item rounded-lg shadow-sm dark:shadow-md transition-all duration-xl ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)] behavior-hover-transition"
               >
                 <span class="text-muted-foreground text-xs">currentBreakpoint</span>
                 <Tag
@@ -370,7 +370,7 @@ const marginDirMap = [
                 />
               </div>
               <div
-                class="col-stack-xs p-md surface-item rounded-lg shadow-soft transition-all duration-xl ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)] behavior-hover-transition"
+                class="col-stack-xs p-md surface-item rounded-lg shadow-sm dark:shadow-md transition-all duration-xl ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)] behavior-hover-transition"
               >
                 <span class="text-muted-foreground text-xs">isMobileLayout</span>
                 <Tag
@@ -379,7 +379,7 @@ const marginDirMap = [
                 />
               </div>
               <div
-                class="col-stack-xs p-md surface-item rounded-lg shadow-soft transition-all duration-xl ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)] behavior-hover-transition"
+                class="col-stack-xs p-md surface-item rounded-lg shadow-sm dark:shadow-md transition-all duration-xl ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)] behavior-hover-transition"
               >
                 <span class="text-muted-foreground text-xs">width × height</span>
                 <span class="font-mono text-sm">
@@ -401,7 +401,7 @@ const marginDirMap = [
         </Card>
 
         <!-- Font Size Section (数据区：title 无 strip，与 theme 一致) -->
-        <Card class="bg-card rounded-md shadow-soft py-md px-lg flex flex-col gap-lg">
+        <Card class="bg-card rounded-md shadow-sm dark:shadow-md py-md px-lg flex flex-col gap-lg">
           <template #title>
             <div class="row-y-center gap-sm">
               <Icons
@@ -490,7 +490,7 @@ const marginDirMap = [
         </Card>
 
         <!-- Spacing Section (数据区：title 无 strip，与 theme 一致) -->
-        <Card class="bg-card rounded-md shadow-soft py-md px-lg flex flex-col gap-lg">
+        <Card class="bg-card rounded-md shadow-sm dark:shadow-md py-md px-lg flex flex-col gap-lg">
           <template #title>
             <div class="row-y-center gap-sm">
               <Icons
@@ -606,7 +606,7 @@ const marginDirMap = [
                       <td class="p-sm">
                         <div class="inline-flex">
                           <div
-                            class="bg-primary/20 shadow-soft rounded-xs h-spacing-lg"
+                            class="bg-primary/20 shadow-sm dark:shadow-md rounded-xs h-spacing-lg"
                             :style="{ width: `var(${item.cssVar})` }"
                           />
                         </div>
@@ -669,7 +669,7 @@ const marginDirMap = [
         </Card>
 
         <!-- Radius Section (数据区：title 无 strip，与 theme 一致) -->
-        <Card class="bg-card rounded-md shadow-soft py-md px-lg flex flex-col gap-lg">
+        <Card class="bg-card rounded-md shadow-sm dark:shadow-md py-md px-lg flex flex-col gap-lg">
           <template #title>
             <div class="row-y-center gap-sm">
               <Icons
@@ -698,7 +698,7 @@ const marginDirMap = [
                 <div
                   v-for="item in radiusItems"
                   :key="item.key"
-                  class="col-stack-sm items-center p-md surface-item rounded-lg shadow-soft transition-all duration-xl ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)] behavior-hover-transition cursor-pointer group"
+                  class="col-stack-sm items-center p-md surface-item rounded-lg shadow-sm dark:shadow-md transition-all duration-xl ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)] behavior-hover-transition cursor-pointer group"
                   @click="copyToClipboard(item.unoClass)"
                 >
                   <div
@@ -721,7 +721,7 @@ const marginDirMap = [
         </Card>
 
         <!-- Transition Duration Section (数据区：title 无 strip，与 theme 一致) -->
-        <Card class="bg-card rounded-md shadow-soft py-md px-lg flex flex-col gap-lg">
+        <Card class="bg-card rounded-md shadow-sm dark:shadow-md py-md px-lg flex flex-col gap-lg">
           <template #title>
             <div class="row-y-center gap-sm">
               <Icons
@@ -746,7 +746,7 @@ const marginDirMap = [
                 <div
                   v-for="item in transitionItems"
                   :key="item.key"
-                  class="row-y-center gap-md p-md surface-item rounded-lg shadow-soft transition-all duration-xl ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)] behavior-hover-transition cursor-pointer group"
+                  class="row-y-center gap-md p-md surface-item rounded-lg shadow-sm dark:shadow-md transition-all duration-xl ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)] behavior-hover-transition cursor-pointer group"
                   @click="copyToClipboard(item.unoClass)"
                 >
                   <div class="col-stack-xs flex-1">
@@ -779,7 +779,9 @@ const marginDirMap = [
 
         <!-- Layout Dimensions Section (数据区：title 无 strip，与 theme 一致) -->
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-xl">
-          <Card class="bg-card rounded-md shadow-soft py-md px-lg flex flex-col gap-lg h-full">
+          <Card
+            class="bg-card rounded-md shadow-sm dark:shadow-md py-md px-lg flex flex-col gap-lg h-full"
+          >
             <template #title>
               <div class="row-y-center gap-sm">
                 <Icons
@@ -802,7 +804,7 @@ const marginDirMap = [
                   <div
                     v-for="item in layoutItems"
                     :key="item.key"
-                    class="col-stack-sm p-md surface-item rounded-lg shadow-soft transition-all duration-xl ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)] behavior-hover-transition"
+                    class="col-stack-sm p-md surface-item rounded-lg shadow-sm dark:shadow-md transition-all duration-xl ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)] behavior-hover-transition"
                   >
                     <div class="row-between">
                       <span class="font-medium text-foreground text-xs">
@@ -834,7 +836,9 @@ const marginDirMap = [
           </Card>
 
           <!-- Base Variables Section (数据区：title 无 strip，与 theme 一致) -->
-          <Card class="bg-card rounded-md shadow-soft py-md px-lg flex flex-col gap-lg h-full">
+          <Card
+            class="bg-card rounded-md shadow-sm dark:shadow-md py-md px-lg flex flex-col gap-lg h-full"
+          >
             <template #title>
               <div class="row-y-center gap-sm">
                 <Icons
@@ -859,7 +863,7 @@ const marginDirMap = [
                   <div
                     v-for="item in baseVarItems"
                     :key="item.key"
-                    class="col-stack-sm p-md surface-item rounded-lg shadow-soft transition-all duration-xl ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)] behavior-hover-transition"
+                    class="col-stack-sm p-md surface-item rounded-lg shadow-sm dark:shadow-md transition-all duration-xl ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)] behavior-hover-transition"
                   >
                     <div class="row-between">
                       <span class="font-medium text-foreground">
@@ -882,7 +886,9 @@ const marginDirMap = [
                       </div>
                     </div>
                     <!-- Preview -->
-                    <div class="mt-xs p-container-padding bg-primary/10 rounded-sm shadow-soft">
+                    <div
+                      class="mt-xs p-container-padding bg-primary/10 rounded-sm shadow-sm dark:shadow-md"
+                    >
                       <div class="bg-primary/20 h-[var(--spacing-xl)] center text-xs text-primary">
                         Content with p-container-padding
                       </div>
@@ -896,7 +902,7 @@ const marginDirMap = [
 
         <!-- Size Presets Section (Hero: primary tint + title strip) -->
         <Card
-          class="bg-card rounded-md shadow-soft py-md px-lg flex flex-col gap-lg bg-primary/10 dark:bg-primary/5"
+          class="bg-card rounded-md shadow-sm dark:shadow-md py-md px-lg flex flex-col gap-lg bg-primary/10 dark:bg-primary/5"
         >
           <template #title>
             <div class="row-y-center gap-sm border-b-default pb-sm mb-padding-sm">
@@ -916,7 +922,7 @@ const marginDirMap = [
               <div
                 v-for="preset in SIZE_PRESETS"
                 :key="preset.name"
-                class="col-stack-md p-lg surface-item rounded-lg shadow-soft transition-all duration-xl ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)] behavior-hover-transition"
+                class="col-stack-md p-lg surface-item rounded-lg shadow-sm dark:shadow-md transition-all duration-xl ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)] behavior-hover-transition"
               >
                 <div class="row-between">
                   <h4 class="text-sm font-semibold text-foreground mb-xs">
@@ -960,7 +966,7 @@ const marginDirMap = [
 
         <!-- Quick Reference (末尾轻渐变，title 无 strip 无 font-semibold，与 theme 一致) -->
         <Card
-          class="bg-card rounded-md shadow-soft py-md px-lg flex flex-col gap-lg bg-gradient-to-br from-primary/5 to-accent/5"
+          class="bg-card rounded-md shadow-sm dark:shadow-md py-md px-lg flex flex-col gap-lg bg-gradient-to-br from-primary/5 to-accent/5"
         >
           <template #title>
             <div class="row-y-center gap-sm">

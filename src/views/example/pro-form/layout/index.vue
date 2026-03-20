@@ -227,7 +227,7 @@ async function onClickSubmit(): Promise<void> {
         </div>
         <div class="col-stack-xs">
           <h1 class="text-2xl font-bold text-foreground m-0">ProForm 响应式与排版引擎</h1>
-          <p class="text-muted text-sm m-0">
+          <p class="text-muted-foreground text-sm m-0">
             演示动态控制表单 Layout，以及
             <span class="text-primary font-bold">容器级自适应栅格</span>
             (无 CSS 媒体查询)，并演示具名插槽覆盖渲染。
@@ -244,7 +244,7 @@ async function onClickSubmit(): Promise<void> {
             <div class="w-full p-md md:p-lg col-stack-xl pb-xl">
               <!-- 排版控制台 -->
               <div
-                class="bg-card rounded-md shadow-soft py-md px-lg flex flex-col gap-lg sticky top-0 z-1 bg-background/80 backdrop-blur-md border-primary/20 shadow-sm!"
+                class="bg-card rounded-md shadow-sm dark:shadow-md py-md px-lg flex flex-col gap-lg sticky top-0 z-1 bg-background/80 backdrop-blur-md border-primary/20 shadow-sm!"
               >
                 <div class="row-between gap-md flex-wrap">
                   <div class="center gap-md">
@@ -261,7 +261,7 @@ async function onClickSubmit(): Promise<void> {
 
                   <div class="row-y-center gap-md flex-wrap">
                     <div class="center gap-xs">
-                      <span class="text-xs font-bold text-muted uppercase">Layout</span>
+                      <span class="text-xs font-bold text-muted-foreground uppercase">Layout</span>
                       <SelectButton
                         v-model="layoutMode"
                         :options="layoutOptions"
@@ -271,7 +271,7 @@ async function onClickSubmit(): Promise<void> {
                       />
                     </div>
                     <div class="center gap-xs">
-                      <span class="text-xs font-bold text-muted uppercase">Align</span>
+                      <span class="text-xs font-bold text-muted-foreground uppercase">Align</span>
                       <SelectButton
                         v-model="labelAlign"
                         :options="alignOptions"
@@ -293,7 +293,9 @@ async function onClickSubmit(): Promise<void> {
               </div>
 
               <!-- 容器级响应式测试区 -->
-              <div class="bg-card rounded-md shadow-soft py-md px-lg flex flex-col gap-lg">
+              <div
+                class="bg-card rounded-md shadow-sm dark:shadow-md py-md px-lg flex flex-col gap-lg"
+              >
                 <div class="row-y-center gap-sm border-b-default pb-sm mb-padding-sm">
                   <Icons
                     name="i-lucide-move-horizontal"
@@ -311,7 +313,7 @@ async function onClickSubmit(): Promise<void> {
 
                 <div
                   ref="resizableRef"
-                  class="relative overflow-hidden border-default border-dashed border-primary/30 p-lg rounded-lg surface-sunken transition-colors"
+                  class="relative overflow-hidden border-default border-dashed border-primary/30 p-lg rounded-lg bg-muted transition-colors"
                   :style="{
                     width: resizableWidthUnits
                       ? `calc(var(--spacing-md) * ${resizableWidthUnits})`
@@ -376,7 +378,7 @@ async function onClickSubmit(): Promise<void> {
 
               <!-- Mobile JSON preview -->
               <div
-                class="bg-card rounded-md shadow-soft py-md px-lg flex flex-col gap-lg xl:hidden"
+                class="bg-card rounded-md shadow-sm dark:shadow-md py-md px-lg flex flex-col gap-lg xl:hidden"
               >
                 <div class="row-y-center gap-sm mb-padding-sm">
                   <Icons
@@ -388,7 +390,7 @@ async function onClickSubmit(): Promise<void> {
                   </span>
                 </div>
                 <div
-                  class="surface-sunken rounded-md p-md border-default border-border/40 text-muted-foreground"
+                  class="bg-muted rounded-md p-md border-default border-border/40 text-muted-foreground"
                 >
                   <pre class="m-0 whitespace-pre-wrap break-words text-xs">{{ valuesJson }}</pre>
                 </div>
@@ -408,11 +410,11 @@ async function onClickSubmit(): Promise<void> {
                 size="sm"
                 class="text-accent"
               />
-              <span class="text-xs font-bold text-muted uppercase tracking-widest">
+              <span class="text-xs font-bold text-muted-foreground uppercase tracking-widest">
                 Calculated Result
               </span>
             </div>
-            <CScrollbar class="flex-1 min-h-0 surface-sunken px-md py-sm">
+            <CScrollbar class="flex-1 min-h-0 bg-muted px-md py-sm">
               <pre class="m-0 text-xs text-muted-foreground font-mono leading-relaxed">{{
                 valuesJson
               }}</pre>

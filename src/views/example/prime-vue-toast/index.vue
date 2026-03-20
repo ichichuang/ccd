@@ -111,7 +111,7 @@ function handleMessage(type: (typeof MESSAGE_TYPES)[number]['handler'], withTitl
       class="py-sm md:py-md xl:py-lg 2xl:py-xl mx-auto max-w-[92%] sm:max-w-[94%] md:max-w-[92%] lg:max-w-[90%] xl:max-w-[88%] 2xl:max-w-[86%] 3xl:max-w-[84%] col-stack-xl"
     >
       <section
-        class="rounded-md bg-card text-card-foreground shadow-soft density-normal col-stack-xs"
+        class="rounded-md bg-card text-card-foreground shadow-sm dark:shadow-md density-normal col-stack-xs"
       >
         <h1 class="text-2xl font-bold text-foreground">Toast 完整演示</h1>
         <p class="text-muted-foreground">
@@ -122,7 +122,7 @@ function handleMessage(type: (typeof MESSAGE_TYPES)[number]['handler'], withTitl
 
       <!-- 1. Message 居中纯提示（4 种类型） -->
       <section
-        class="rounded-md bg-card text-card-foreground shadow-soft density-normal col-stack-md"
+        class="rounded-md bg-card text-card-foreground shadow-sm dark:shadow-md density-normal col-stack-md"
       >
         <h2 class="text-lg font-semibold">1. Message 居中纯提示（4 种类型）</h2>
         <p class="text-muted-foreground text-sm">
@@ -158,7 +158,7 @@ function handleMessage(type: (typeof MESSAGE_TYPES)[number]['handler'], withTitl
 
       <!-- 2. 6 种 severity 快捷方法 + 6 种位置 -->
       <section
-        class="rounded-md bg-card text-card-foreground shadow-soft density-normal col-stack-md"
+        class="rounded-md bg-card text-card-foreground shadow-sm dark:shadow-md density-normal col-stack-md"
       >
         <h2 class="text-lg font-semibold">2. 快捷方法 *In（6 种 severity × 6 种位置）</h2>
         <p class="text-muted-foreground text-sm">
@@ -196,7 +196,7 @@ function handleMessage(type: (typeof MESSAGE_TYPES)[number]['handler'], withTitl
 
       <!-- 3. add() 原始 API - 6 种 severity -->
       <section
-        class="rounded-md bg-card text-card-foreground shadow-soft density-normal col-stack-md"
+        class="rounded-md bg-card text-card-foreground shadow-sm dark:shadow-md density-normal col-stack-md"
       >
         <h2 class="text-lg font-semibold">3. add() 原始 API（6 种 severity）</h2>
         <p class="text-muted-foreground text-sm">
@@ -240,7 +240,7 @@ function handleMessage(type: (typeof MESSAGE_TYPES)[number]['handler'], withTitl
 
       <!-- 4. add() 扩展：粘性、自定义 life、group -->
       <section
-        class="rounded-md bg-card text-card-foreground shadow-soft density-normal col-stack-md"
+        class="rounded-md bg-card text-card-foreground shadow-sm dark:shadow-md density-normal col-stack-md"
       >
         <h2 class="text-lg font-semibold">4. add() 扩展：粘性、自定义 life、group</h2>
         <div class="flex flex-wrap gap-md">
@@ -270,7 +270,7 @@ function handleMessage(type: (typeof MESSAGE_TYPES)[number]['handler'], withTitl
 
       <!-- 5. 清除 -->
       <section
-        class="rounded-md bg-card text-card-foreground shadow-soft density-normal col-stack-md"
+        class="rounded-md bg-card text-card-foreground shadow-sm dark:shadow-md density-normal col-stack-md"
       >
         <h2 class="text-lg font-semibold">5. 清除</h2>
         <p class="text-muted-foreground text-sm">

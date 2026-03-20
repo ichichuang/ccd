@@ -137,7 +137,7 @@ const renderRootItem = (item: PrimeMenuModelItem) => {
           class={`text-current! shrink-0 ${MENU_ICON_COMMON_CLASS}`}
         />
       )}
-      <span class={`truncate text-current! ${MENU_TEXT_CLASS} font-medium pt-hairline`}>
+      <span class={`truncate text-current! ${MENU_TEXT_CLASS} font-medium pt-px`}>
         {item.label}
       </span>
       {hasChildren && (
@@ -235,7 +235,7 @@ const renderRootItem = (item: PrimeMenuModelItem) => {
       <button
         v-if="showDrawerTrigger"
         type="button"
-        class="cursor-pointer border-none outline-none duration-sm hover:scale-110 active:scale-100 shadow-sm hover:shadow-float hover:text-primary p-sm center rounded-sm bg-sidebar"
+        class="cursor-pointer border-none outline-none duration-sm hover:scale-110 active:scale-100 shadow-sm hover:shadow-md dark:hover:shadow-lg hover:text-primary p-sm center rounded-sm bg-sidebar"
         @click="layoutStore.toggleMobileDrawer()"
       >
         <Icons
@@ -313,7 +313,7 @@ const renderRootItem = (item: PrimeMenuModelItem) => {
       <button
         v-if="showSidebarToggle"
         type="button"
-        class="cursor-pointer border-none outline-none duration-sm hover:scale-110 active:scale-100 shadow-sm hover:shadow-float hover:text-primary p-sm center rounded-sm bg-sidebar"
+        class="cursor-pointer border-none outline-none duration-sm hover:scale-110 active:scale-100 shadow-sm hover:shadow-md dark:hover:shadow-lg hover:text-primary p-sm center rounded-sm bg-sidebar"
         @click="emit('toggleCollapse', $event)"
       >
         <Icons
@@ -325,7 +325,7 @@ const renderRootItem = (item: PrimeMenuModelItem) => {
       <button
         v-if="deviceStore.type === 'PC'"
         type="button"
-        class="cursor-pointer border-none outline-none duration-sm hover:scale-110 active:scale-100 shadow-sm hover:shadow-float hover:text-primary p-sm center rounded-sm bg-sidebar"
+        class="cursor-pointer border-none outline-none duration-sm hover:scale-110 active:scale-100 shadow-sm hover:shadow-md dark:hover:shadow-lg hover:text-primary p-sm center rounded-sm bg-sidebar"
         @click="toggleFullscreen()"
       >
         <Icons
@@ -340,7 +340,7 @@ const renderRootItem = (item: PrimeMenuModelItem) => {
       </button>
       <button
         type="button"
-        class="cursor-pointer border-none outline-none duration-sm hover:scale-110 active:scale-100 shadow-sm hover:shadow-float hover:text-primary p-sm center rounded-sm bg-sidebar"
+        class="cursor-pointer border-none outline-none duration-sm hover:scale-110 active:scale-100 shadow-sm hover:shadow-md dark:hover:shadow-lg hover:text-primary p-sm center rounded-sm bg-sidebar"
         @click="emit('toggleTheme', $event)"
       >
         <Icons

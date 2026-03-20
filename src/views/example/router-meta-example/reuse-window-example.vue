@@ -14,7 +14,7 @@
       <span>窗口复用示例（meta.reuseWindow）</span>
     </h2>
 
-    <div class="shadow-soft rounded-scale p-md space-y-margin-sm max-w-[80%]">
+    <div class="shadow-sm dark:shadow-md rounded-scale p-md space-y-margin-sm max-w-[80%]">
       <div class="text-md font-medium">本路由 meta 配置</div>
       <p class="text-muted-foreground text-sm">
         meta.parent = 'fullscreen'，meta.reuseWindow = true

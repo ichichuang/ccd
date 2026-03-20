@@ -259,9 +259,9 @@ const presetSwatchColors = computed<Array<{ name: string; color: string }>>(() =
 
 // Semantic colors (Brand/Interactive)
 const semanticColors = [
-  { name: 'bg-brand', classes: 'bg-primary', desc: '品牌大背景 (SSOT: Primary)' },
-  { name: 'bg-interactive', classes: 'bg-primary-hover', desc: '交互背景 (Primary Hover)' },
-  { name: 'text-interactive', classes: 'text-primary-hover', desc: '交互文字颜色' },
+  { name: 'bg-primary', classes: 'bg-primary', desc: '品牌大背景 (SSOT: Primary)' },
+  { name: 'bg-primary-hover', classes: 'bg-primary-hover', desc: '交互背景 (Primary Hover)' },
+  { name: 'text-primary-hover', classes: 'text-primary-hover', desc: '交互文字颜色' },
 ]
 
 // Menu shortcuts：与 uno.config.ts 菜单交互语义保持一致
@@ -310,7 +310,7 @@ const menuShortcuts = [
             </p>
           </div>
         </div>
-        <div class="surface-item p-md rounded-md row-start gap-md shadow-soft mt-sm">
+        <div class="surface-item p-md rounded-md row-start gap-md shadow-sm dark:shadow-md mt-sm">
           <Icons
             name="i-lucide-info"
             class="text-primary text-xl shrink-0 mt-xs"
@@ -336,7 +336,7 @@ const menuShortcuts = [
       >
         <!-- Theme Store 主题 Store -->
         <Card
-          class="bg-card rounded-md shadow-soft py-md px-lg flex flex-col gap-lg bg-primary/10 dark:bg-primary/5"
+          class="bg-card rounded-md shadow-sm dark:shadow-md py-md px-lg flex flex-col gap-lg bg-primary/10 dark:bg-primary/5"
         >
           <template #title>
             <div class="row-y-center gap-sm border-b-default pb-sm mb-padding-sm">
@@ -378,7 +378,7 @@ const menuShortcuts = [
                     class="p-sm py-xs rounded-md cursor-pointer select-none transition-all duration-lg ease-in-out text-sm active:scale-95"
                     :class="[
                       themeStore.transitionDuration === opt.value
-                        ? 'bg-primary text-primary-foreground shadow-soft'
+                        ? 'bg-primary text-primary-foreground shadow-sm dark:shadow-md'
                         : 'surface-item text-muted-foreground hover:bg-muted/60 dark:hover:bg-muted/40',
                     ]"
                     @click="themeStore.setTransitionDuration(opt.value)"
@@ -393,7 +393,7 @@ const menuShortcuts = [
 
         <!-- Device Store 当前设备/断点 -->
         <Card
-          class="bg-card rounded-md shadow-soft py-md px-lg flex flex-col gap-lg bg-accent/10 dark:bg-accent/5"
+          class="bg-card rounded-md shadow-sm dark:shadow-md py-md px-lg flex flex-col gap-lg bg-accent/10 dark:bg-accent/5"
         >
           <template #title>
             <div class="row-y-center gap-sm border-b-default pb-sm mb-padding-sm">
@@ -411,7 +411,7 @@ const menuShortcuts = [
           <template #content>
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-md">
               <div
-                class="col-stack-xs p-md surface-item rounded-lg shadow-soft transition-all duration-xl ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)] behavior-hover-transition"
+                class="col-stack-xs p-md surface-item rounded-lg shadow-sm dark:shadow-md transition-all duration-xl ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)] behavior-hover-transition"
               >
                 <span class="text-muted-foreground text-xs">type</span>
                 <Tag
@@ -420,7 +420,7 @@ const menuShortcuts = [
                 />
               </div>
               <div
-                class="col-stack-xs p-md surface-item rounded-lg shadow-soft transition-all duration-xl ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)] behavior-hover-transition"
+                class="col-stack-xs p-md surface-item rounded-lg shadow-sm dark:shadow-md transition-all duration-xl ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)] behavior-hover-transition"
               >
                 <span class="text-muted-foreground text-xs">currentBreakpoint</span>
                 <Tag
@@ -429,7 +429,7 @@ const menuShortcuts = [
                 />
               </div>
               <div
-                class="col-stack-xs p-md surface-item rounded-lg shadow-soft transition-all duration-xl ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)] behavior-hover-transition"
+                class="col-stack-xs p-md surface-item rounded-lg shadow-sm dark:shadow-md transition-all duration-xl ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)] behavior-hover-transition"
               >
                 <span class="text-muted-foreground text-xs">isMobileLayout</span>
                 <Tag
@@ -438,7 +438,7 @@ const menuShortcuts = [
                 />
               </div>
               <div
-                class="col-stack-xs p-md surface-item rounded-lg shadow-soft transition-all duration-xl ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)] behavior-hover-transition"
+                class="col-stack-xs p-md surface-item rounded-lg shadow-sm dark:shadow-md transition-all duration-xl ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)] behavior-hover-transition"
               >
                 <span class="text-muted-foreground text-xs">width × height</span>
                 <span class="font-mono text-sm">
@@ -461,7 +461,7 @@ const menuShortcuts = [
 
         <!-- THEME_PRESETS 预设展示 -->
         <Card
-          class="bg-card rounded-md shadow-soft py-md px-lg flex flex-col gap-lg bg-primary/10 dark:bg-primary/5"
+          class="bg-card rounded-md shadow-sm dark:shadow-md py-md px-lg flex flex-col gap-lg bg-primary/10 dark:bg-primary/5"
         >
           <template #title>
             <div class="row-y-center gap-sm">
@@ -489,7 +489,7 @@ const menuShortcuts = [
                 <div
                   v-for="item in presetSwatchColors"
                   :key="item.name"
-                  class="relative column items-center gap-xs p-md rounded-lg shadow-soft shadow-soft transition-all duration-xl ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)] cursor-pointer group active:scale-95"
+                  class="relative column items-center gap-xs p-md rounded-lg shadow-sm dark:shadow-md shadow-sm dark:shadow-md transition-all duration-xl ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)] cursor-pointer group active:scale-95"
                   :class="
                     themeStore.themeName === item.name
                       ? 'bg-primary/10 -translate-y-0.5'
@@ -500,7 +500,7 @@ const menuShortcuts = [
                   <!-- Selected Indicator -->
                   <div
                     v-if="themeStore.themeName === item.name"
-                    class="absolute top-[var(--spacing-xs)] right-[var(--spacing-xs)] w-[var(--spacing-md)] h-[var(--spacing-md)] rounded-full bg-primary text-primary-foreground center shadow-soft"
+                    class="absolute top-[var(--spacing-xs)] right-[var(--spacing-xs)] w-[var(--spacing-md)] h-[var(--spacing-md)] rounded-full bg-primary text-primary-foreground center shadow-sm dark:shadow-md"
                   >
                     <Icons
                       name="i-lucide-check"
@@ -530,7 +530,7 @@ const menuShortcuts = [
         </Card>
 
         <!-- Single Token Colors -->
-        <Card class="bg-card rounded-md shadow-soft py-md px-lg flex flex-col gap-lg">
+        <Card class="bg-card rounded-md shadow-sm dark:shadow-md py-md px-lg flex flex-col gap-lg">
           <template #title>
             <div class="row-y-center gap-sm">
               <Icons
@@ -553,11 +553,11 @@ const menuShortcuts = [
                 <div
                   v-for="item in singleTokens"
                   :key="item.token"
-                  class="col-stack-sm p-md surface-item rounded-lg shadow-soft transition-all duration-xl ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)]"
+                  class="col-stack-sm p-md surface-item rounded-lg shadow-sm dark:shadow-md transition-all duration-xl ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)]"
                 >
                   <div class="row-y-center gap-sm">
                     <div
-                      class="w-[var(--spacing-xl)] h-[var(--spacing-xl)] rounded-sm shadow-soft"
+                      class="w-[var(--spacing-xl)] h-[var(--spacing-xl)] rounded-sm shadow-sm dark:shadow-md"
                       :class="item.bgClass"
                     />
                     <span class="font-semibold text-foreground">
@@ -592,7 +592,7 @@ const menuShortcuts = [
         </Card>
 
         <!-- Pair Family Colors -->
-        <Card class="bg-card rounded-md shadow-soft py-md px-lg flex flex-col gap-lg">
+        <Card class="bg-card rounded-md shadow-sm dark:shadow-md py-md px-lg flex flex-col gap-lg">
           <template #title>
             <div class="row-y-center gap-sm">
               <Icons
@@ -615,13 +615,13 @@ const menuShortcuts = [
                 <div
                   v-for="family in pairFamilies"
                   :key="family.family"
-                  class="col-stack-md p-lg surface-item rounded-lg shadow-soft transition-all duration-xl ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)]"
+                  class="col-stack-md p-lg surface-item rounded-lg shadow-sm dark:shadow-md transition-all duration-xl ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)]"
                 >
                   <h4
                     class="text-sm font-semibold text-foreground capitalize row-y-center gap-sm mb-xs"
                   >
                     <div
-                      class="w-[var(--spacing-md)] h-[var(--spacing-md)] rounded-full shadow-soft"
+                      class="w-[var(--spacing-md)] h-[var(--spacing-md)] rounded-full shadow-sm dark:shadow-md"
                       :class="`bg-${family.family}`"
                     />
                     {{ family.family }}
@@ -676,7 +676,7 @@ const menuShortcuts = [
         </Card>
 
         <!-- Quad Family Colors -->
-        <Card class="bg-card rounded-md shadow-soft py-md px-lg flex flex-col gap-lg">
+        <Card class="bg-card rounded-md shadow-sm dark:shadow-md py-md px-lg flex flex-col gap-lg">
           <template #title>
             <div class="row-y-center gap-sm">
               <Icons
@@ -705,13 +705,13 @@ const menuShortcuts = [
                 <div
                   v-for="family in quadFamilies"
                   :key="family.family"
-                  class="col-stack-md p-lg surface-item rounded-lg shadow-soft transition-all duration-xl ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)]"
+                  class="col-stack-md p-lg surface-item rounded-lg shadow-sm dark:shadow-md transition-all duration-xl ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)]"
                 >
                   <h4
                     class="text-sm font-semibold text-foreground capitalize row-y-center gap-sm mb-xs"
                   >
                     <div
-                      class="w-[var(--spacing-md)] h-[var(--spacing-md)] rounded-full shadow-soft"
+                      class="w-[var(--spacing-md)] h-[var(--spacing-md)] rounded-full shadow-sm dark:shadow-md"
                       :class="`bg-${family.family}`"
                     />
                     {{ family.family }}
@@ -798,7 +798,7 @@ const menuShortcuts = [
         </Card>
 
         <!-- Color Usage Contract 颜色使用约定 -->
-        <Card class="bg-card rounded-md shadow-soft py-md px-lg flex flex-col gap-lg">
+        <Card class="bg-card rounded-md shadow-sm dark:shadow-md py-md px-lg flex flex-col gap-lg">
           <template #title>
             <div class="row-y-center gap-sm">
               <Icons
@@ -830,7 +830,7 @@ const menuShortcuts = [
                   </div>
                   <div class="row-y-center gap-xs">
                     <span class="bg-muted px-xs rounded-xs font-mono">text-primary-hover</span>
-                    <span>：交互文字颜色（text-interactive）</span>
+                    <span>：交互文字颜色（text-primary-hover）</span>
                   </div>
                 </div>
                 <div class="col-stack-xs">
@@ -868,7 +868,7 @@ const menuShortcuts = [
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-xl">
           <!-- Semantic Colors -->
           <Card
-            class="bg-card rounded-md shadow-soft py-md px-lg flex flex-col gap-lg bg-primary/5 dark:bg-primary/10 h-full"
+            class="bg-card rounded-md shadow-sm dark:shadow-md py-md px-lg flex flex-col gap-lg bg-primary/5 dark:bg-primary/10 h-full"
           >
             <template #title>
               <div class="row-y-center gap-sm">
@@ -898,7 +898,7 @@ const menuShortcuts = [
                     @click="copyToClipboard(item.name)"
                   >
                     <div
-                      class="w-[var(--spacing-xl)] h-[var(--spacing-xl)] rounded-full shrink-0 shadow-soft"
+                      class="w-[var(--spacing-xl)] h-[var(--spacing-xl)] rounded-full shrink-0 shadow-sm dark:shadow-md"
                       :class="item.classes"
                     />
                     <div class="column flex-1">
@@ -913,7 +913,7 @@ const menuShortcuts = [
 
           <!-- Menu Shortcuts -->
           <Card
-            class="bg-card rounded-md shadow-soft py-md px-lg flex flex-col gap-lg bg-accent/5 dark:bg-accent/10 h-full"
+            class="bg-card rounded-md shadow-sm dark:shadow-md py-md px-lg flex flex-col gap-lg bg-accent/5 dark:bg-accent/10 h-full"
           >
             <template #title>
               <div class="row-y-center gap-sm">
@@ -959,7 +959,7 @@ const menuShortcuts = [
         </div>
 
         <!-- PrimeVue Button 配色 -->
-        <Card class="bg-card rounded-md shadow-soft py-md px-lg flex flex-col gap-lg">
+        <Card class="bg-card rounded-md shadow-sm dark:shadow-md py-md px-lg flex flex-col gap-lg">
           <template #title>
             <div class="row-y-center gap-sm">
               <Icons
@@ -1080,7 +1080,7 @@ const menuShortcuts = [
         </Card>
 
         <!-- Opacity Variants（使用 CSS 变量 + style，不依赖 UnoCSS safelist） -->
-        <Card class="bg-card rounded-md shadow-soft py-md px-lg flex flex-col gap-lg">
+        <Card class="bg-card rounded-md shadow-sm dark:shadow-md py-md px-lg flex flex-col gap-lg">
           <template #title>
             <div class="row-y-center gap-sm">
               <Icons
@@ -1113,7 +1113,7 @@ const menuShortcuts = [
                       @click="copyToClipboard(`bg-${family}/${opacity}`)"
                     >
                       <div
-                        class="w-[var(--spacing-2xl)] h-[var(--spacing-2xl)] rounded-sm shadow-soft group-hover:scale-110 transition-transform"
+                        class="w-[var(--spacing-2xl)] h-[var(--spacing-2xl)] rounded-sm shadow-sm dark:shadow-md group-hover:scale-110 transition-transform"
                         :style="{ background: `rgb(var(--${family}) / ${opacity / 100})` }"
                       />
                       <span
@@ -1130,7 +1130,7 @@ const menuShortcuts = [
         </Card>
 
         <!-- Sidebar Colors -->
-        <Card class="bg-card rounded-md shadow-soft py-md px-lg flex flex-col gap-lg">
+        <Card class="bg-card rounded-md shadow-sm dark:shadow-md py-md px-lg flex flex-col gap-lg">
           <template #title>
             <div class="row-y-center gap-sm">
               <Icons
@@ -1155,12 +1155,14 @@ const menuShortcuts = [
                 <div
                   v-for="item in sidebarColors"
                   :key="item.key"
-                  class="col-stack-sm p-md surface-item rounded-lg shadow-soft transition-all duration-xl ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)]"
+                  class="col-stack-sm p-md surface-item rounded-lg shadow-sm dark:shadow-md transition-all duration-xl ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)]"
                 >
                   <div class="row-y-center gap-sm">
                     <div
                       class="w-[var(--spacing-xl)] h-[var(--spacing-xl)] rounded-sm shrink-0"
-                      :class="item.borderClass ? item.bgClass : ['shadow-soft', item.bgClass]"
+                      :class="
+                        item.borderClass ? item.bgClass : ['shadow-sm dark:shadow-md', item.bgClass]
+                      "
                     />
                     <span class="font-medium text-foreground">
                       {{ item.key }}
@@ -1188,7 +1190,7 @@ const menuShortcuts = [
 
         <!-- Quick Reference -->
         <Card
-          class="bg-card rounded-md shadow-soft py-md px-lg flex flex-col gap-lg bg-gradient-to-br from-primary/5 to-accent/5"
+          class="bg-card rounded-md shadow-sm dark:shadow-md py-md px-lg flex flex-col gap-lg bg-gradient-to-br from-primary/5 to-accent/5"
         >
           <template #title>
             <div class="row-y-center gap-sm">
@@ -1273,20 +1275,20 @@ const menuShortcuts = [
                   </div>
                 </div>
               </div>
-              <p class="text-muted text-sm">
+              <p class="text-muted-foreground text-sm">
                 <span class="font-semibold">可用颜色:</span>
                 <span class="font-mono ml-xs text-primary">
                   primary | accent | danger | warn | success | info | muted | secondary | card |
                   popover
                 </span>
               </p>
-              <p class="text-muted text-sm mt-xs">
+              <p class="text-muted-foreground text-sm mt-xs">
                 <span class="font-semibold">语义别名:</span>
                 <span class="font-mono ml-xs text-primary">
-                  bg-brand | bg-interactive | text-interactive
+                  bg-primary | bg-primary-hover | text-primary-hover
                 </span>
               </p>
-              <p class="text-muted text-sm mt-xs">
+              <p class="text-muted-foreground text-sm mt-xs">
                 <span class="font-semibold">菜单快捷键:</span>
                 <span class="font-mono ml-xs text-primary">
                   flex items-center gap-sm cursor-pointer select-none transition-all duration-md

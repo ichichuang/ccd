@@ -67,7 +67,7 @@ onMounted(() => {
     <div class="row-between gap-md">
       <div class="col-stack-xs">
         <div class="text-lg font-semibold">百万级虚拟网格引擎</div>
-        <div class="text-muted text-sm">
+        <div class="text-muted-foreground text-sm">
           纯前端内存生成 100,000 行数据，用于验证 `&lt;ProTable :virtual-scroll="true"&gt;`
           的零卡顿渲染能力
         </div>

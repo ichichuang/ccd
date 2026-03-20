@@ -351,7 +351,7 @@ function clearDraft(): void {
         </div>
         <div class="col-stack-xs">
           <h1 class="text-2xl font-bold text-foreground m-0">ProForm 动态数组与高级扩展</h1>
-          <p class="text-muted text-sm m-0">
+          <p class="text-muted-foreground text-sm m-0">
             演示
             <code>useFieldArray</code>
             动态字段列表（append / remove / move）与
@@ -366,7 +366,7 @@ function clearDraft(): void {
     <CScrollbar class="flex-1 min-h-0">
       <div class="w-full p-md md:p-lg col-stack-xl pb-xl">
         <!-- Section A: 动态字段数组 -->
-        <div class="bg-card rounded-md shadow-soft py-md px-lg flex flex-col gap-lg">
+        <div class="bg-card rounded-md shadow-sm dark:shadow-md py-md px-lg flex flex-col gap-lg">
           <div class="row-y-center gap-sm border-b-default pb-sm mb-padding-sm">
             <Icons
               name="i-lucide-list-plus"
@@ -379,7 +379,7 @@ function clearDraft(): void {
 
           <div class="col-stack-md">
             <div class="border-b-default pb-sm mb-padding-sm">
-              <p class="text-muted text-sm m-0">
+              <p class="text-muted-foreground text-sm m-0">
                 通过
                 <code>append / remove / move</code>
                 动态管理联系方式列表。字段渲染通过
@@ -418,9 +418,11 @@ function clearDraft(): void {
 
             <div
               v-if="arraySubmitResult"
-              class="surface-sunken rounded-md p-md border-default border-border/40"
+              class="bg-muted rounded-md p-md border-default border-border/40"
             >
-              <div class="text-xs font-bold text-muted uppercase mb-xs">Submit Result:</div>
+              <div class="text-xs font-bold text-muted-foreground uppercase mb-xs">
+                Submit Result:
+              </div>
               <pre class="m-0 whitespace-pre-wrap break-words text-xs text-muted-foreground">{{
                 arraySubmitResult
               }}</pre>
@@ -429,7 +431,7 @@ function clearDraft(): void {
         </div>
 
         <!-- Section B: persistKey + autoSave -->
-        <div class="bg-card rounded-md shadow-soft py-md px-lg flex flex-col gap-lg">
+        <div class="bg-card rounded-md shadow-sm dark:shadow-md py-md px-lg flex flex-col gap-lg">
           <div class="row-between gap-sm border-b-default pb-sm mb-padding-sm">
             <div class="row-y-center gap-sm">
               <Icons
@@ -452,7 +454,7 @@ function clearDraft(): void {
             </div>
             <div
               v-else
-              class="bg-muted/30 text-muted rounded-md px-sm py-0.5 row-y-center gap-xs text-xs"
+              class="bg-muted/30 text-muted-foreground rounded-md px-sm py-0.5 row-y-center gap-xs text-xs"
             >
               <Icons
                 name="i-lucide-cloud"
@@ -464,7 +466,7 @@ function clearDraft(): void {
 
           <div class="col-stack-md">
             <div class="border-b-default pb-sm mb-padding-sm">
-              <p class="text-muted text-sm m-0">
+              <p class="text-muted-foreground text-sm m-0">
                 变更自动写入
                 <code>localStorage</code>
                 。刷新页面后草稿自愈。
