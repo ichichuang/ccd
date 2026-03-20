@@ -12,7 +12,7 @@ import {
   getIconifyIconNamesSubset,
   ICON_SUBSET_LIMITS,
   invalidateIconCaches,
-} from './uno-icons'
+} from '@/design-engine/safelist'
 import type { ViteEnv } from './utils'
 import { configLegacyPlugin } from './legacy'
 

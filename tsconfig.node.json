@@ -4,7 +4,8 @@
     // ✅ Node 侧仅负责工具链与构建脚本
     "vite.config.ts",
     "uno.config.ts",
-    "uno.theme.ts",
+    "src/design-engine/theme/index.ts",
+    "src/design-engine/safelist/index.ts",
     // Design Engine: pure parser/validator/resolver for UnoCSS
     "src/design-engine/index.ts",
     "src/design-engine/tokens/colorTokens.ts",

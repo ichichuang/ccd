@@ -1,28 +1,150 @@
-/**
- * UnoCSS 动态图标 safelist 与自定义图标集（供 uno.config.ts 与 build/plugins 使用）
- * - 扫描 router/api 中的 icon 字符串，纳入 safelist
- * - 本地 SVG 统一为 collection `custom`（src/assets/icons/*.svg），注入 fill="currentColor"
- * - 布局/尺寸类从 SSOT (constants/size, constants/sizeScale) 推导
- */
 import fs from 'node:fs'
 import path from 'node:path'
 import { createRequire } from 'node:module'
 import { fileURLToPath } from 'node:url'
 import { FileSystemIconLoader } from '@iconify/utils/lib/loader/node-loaders'
 import { globSync } from 'glob'
-import { LAYOUT_DIMENSION_KEYS, SIZE_BASE_VAR_KEYS } from '../src/constants/size'
-import { SIZE_SCALE_KEYS } from '../src/constants/sizeScale'
-import { COLOR_FAMILIES } from '../src/utils/theme/metadata'
-import { shortcutGroups } from '../src/views/system-configuration/configs/shortcutGroups'
+
+import { LAYOUT_DIMENSION_KEYS, SIZE_BASE_VAR_KEYS } from '@/constants/size'
+import { SIZE_SCALE_KEYS, type SizeScaleKey } from '@/constants/sizeScale'
+import { COLOR_FAMILIES } from '@/utils/theme/metadata'
+import { shortcutGroups } from '@/views/system-configuration/configs/shortcutGroups'
+
+// ---------------------------------------------------------------------------
+// Theme demo safelist (moved from `uno.theme.ts`)
+// ---------------------------------------------------------------------------
+
+const toKebab = (s: string) => s.replace(/([A-Z])/g, '-$1').toLowerCase()
+
+function buildThemeDemoSafelist(): string[] {
+  const list: string[] = []
+
+  // Color classes
+  for (const token of COLOR_FAMILIES.singleTokens) {
+    list.push(`bg-${token}`, `text-${token}`)
+    if (['border', 'input', 'ring'].includes(token)) list.push(`border-${token}`)
+  }
+
+  for (const family of COLOR_FAMILIES.pairFamilies) {
+    list.push(`bg-${family}`, `text-${family}-foreground`, `border-${family}`)
+  }
+
+  for (const family of COLOR_FAMILIES.quadFamilies) {
+    list.push(
+      `bg-${family}`,
+      `bg-${family}-hover`,
+      `bg-${family}-light`,
+      `text-${family}`,
+      `text-${family}-foreground`,
+      `text-${family}-hover-foreground`,
+      `text-${family}-light-foreground`,
+      `border-${family}`,
+      `border-${family}-hover`,
+      `border-${family}-light`
+    )
+  }
+
+  const sidebarKeys = Object.keys(COLOR_FAMILIES.sidebar) as (keyof typeof COLOR_FAMILIES.sidebar)[]
+  for (const key of sidebarKeys) {
+    const varName = COLOR_FAMILIES.sidebar[key]
+    list.push(`bg-${varName}`, `text-${varName}`)
+    if (key === 'border' || key === 'ring') list.push(`border-${varName}`)
+  }
+
+  list.push(
+    'border-danger/50',
+    'border-primary/20',
+    'border-primary/30',
+    'border-primary/50',
+    'dark:bg-primary-light',
+    'dark:border-primary/50',
+    'bg-info/10'
+  )
+
+  // PrimeVue Button hover/outlined background opacities.
+  list.push(
+    ...COLOR_FAMILIES.quadFamilies.flatMap(family =>
+      [5, 10, 15, 20, 30, 40, 50, 60, 70, 80, 90].map(v => `bg-${family}/${v}`)
+    )
+  )
+
+  // Spacing / typography / radius / duration (native prefixes)
+  for (const key of SIZE_BASE_VAR_KEYS) {
+    const kebab = toKebab(key)
+    list.push(
+      `p-${kebab}`,
+      `px-${kebab}`,
+      `py-${kebab}`,
+      `pt-${kebab}`,
+      `pb-${kebab}`,
+      `pl-${kebab}`,
+      `pr-${kebab}`
+    )
+  }
+
+  for (const k of SIZE_SCALE_KEYS) {
+    list.push(`text-${k}`)
+    list.push(`p-${k}`, `px-${k}`, `py-${k}`, `pt-${k}`, `pb-${k}`, `pl-${k}`, `pr-${k}`)
+    list.push(`m-${k}`, `mx-${k}`, `my-${k}`, `mt-${k}`, `mb-${k}`, `ml-${k}`, `mr-${k}`)
+    list.push(`gap-${k}`, `gap-x-${k}`, `gap-y-${k}`)
+    list.push(
+      `rounded-${k}`,
+      `rounded-t-${k}`,
+      `rounded-b-${k}`,
+      `rounded-l-${k}`,
+      `rounded-r-${k}`,
+      `rounded-tl-${k}`,
+      `rounded-tr-${k}`,
+      `rounded-bl-${k}`,
+      `rounded-br-${k}`
+    )
+    list.push(`duration-${k}`)
+    list.push(
+      `scroll-m-${k}`,
+      `scroll-mx-${k}`,
+      `scroll-my-${k}`,
+      `scroll-mt-${k}`,
+      `scroll-mb-${k}`,
+      `scroll-ml-${k}`,
+      `scroll-mr-${k}`
+    )
+  }
+
+  // Icons used by demos (keep old behavior)
+  list.push(
+    'i-lucide-circle-dot',
+    'i-lucide-panel-left',
+    'i-lucide-diamond',
+    'i-lucide-sun-moon',
+    'i-lucide-sparkles',
+    'i-lucide-minimize-2'
+  )
+
+  // PrimeVue hover backgrounds for text/outlined variants.
+  list.push(
+    'hover:bg-sidebar-accent/50',
+    'hover:bg-danger-light',
+    'hover:bg-primary-light',
+    'hover:bg-success-light',
+    'hover:bg-info-light',
+    'hover:bg-warn-light',
+    'hover:bg-help-light',
+    'bg-danger/10',
+    'bg-primary/5',
+    'bg-info/10'
+  )
+
+  return list
+}
+
+// ---------------------------------------------------------------------------
+// Icon safelist & custom preset collections (moved from `build/uno-icons.ts`)
+// ---------------------------------------------------------------------------
 
 const currentDir = path.dirname(fileURLToPath(import.meta.url))
-const projectRoot = path.resolve(currentDir, '..')
+const projectRoot = path.resolve(currentDir, '..', '..', '..')
 
 const ICONS_DIR = path.join(projectRoot, 'src/assets/icons')
-
-// ---------------------------------------------------------------------------
-// Types
-// ---------------------------------------------------------------------------
 
 type IconCacheTarget = 'route' | 'custom'
 
@@ -33,12 +155,9 @@ interface CacheEntry<T> {
 
 export type CustomIconLoader = ReturnType<typeof FileSystemIconLoader>
 
-// ---------------------------------------------------------------------------
-// Cache
-// ---------------------------------------------------------------------------
-
 let routeIconsCache: CacheEntry<string[]> | null = null
 let customIconsCache: CacheEntry<string[]> | null = null
+
 const iconifyJsonCache = new Map<string, IconifyIconsJson>()
 
 export function invalidateIconCaches(target: IconCacheTarget | 'all' = 'all'): void {
@@ -46,13 +165,6 @@ export function invalidateIconCaches(target: IconCacheTarget | 'all' = 'all'): v
   if (target === 'custom' || target === 'all') customIconsCache = null
 }
 
-// ---------------------------------------------------------------------------
-// Iconify 图标列表（从 @iconify-json 包动态读取）
-// ---------------------------------------------------------------------------
-
-const _require = createRequire(import.meta.url)
-
-/** Iconify icons.json 最小结构（仅需 prefix + icons 键名） */
 interface IconifyIconsJson {
   prefix?: string
   icons?: Record<string, unknown>
@@ -60,11 +172,8 @@ interface IconifyIconsJson {
 
 type IconifyCollectionName = 'lucide' | 'logos' | 'solar' | 'ph'
 
-/**
- * 从 @iconify-json 包读取图标名称列表
- * @param collectionName - 集合名称（lucide | logos | solar | ph）
- * @returns 图标类名数组，格式 i-{prefix}-{name}
- */
+const _require = createRequire(import.meta.url)
+
 export function getIconifyIconNames(collectionName: IconifyCollectionName): string[] {
   try {
     if (iconifyJsonCache.has(collectionName)) {
@@ -73,31 +182,31 @@ export function getIconifyIconNames(collectionName: IconifyCollectionName): stri
         name => `i-${iconSet.prefix ?? collectionName}-${name}`
       )
     }
+
     const iconSet = _require(`@iconify-json/${collectionName}/icons.json`) as IconifyIconsJson
     iconifyJsonCache.set(collectionName, iconSet)
     const prefix = iconSet.prefix ?? collectionName
     const icons = iconSet.icons ?? {}
     return Object.keys(icons).map(name => `i-${prefix}-${name}`)
   } catch (err) {
-    console.warn(`[uno-icons] Failed to load @iconify-json/${collectionName}:`, err)
+    console.warn(`[design-engine/safelist] Failed to load @iconify-json/${collectionName}:`, err)
     return []
   }
 }
 
-/** 示例页与 safelist 使用的子集数量，控制构建内存 */
-const ICON_SUBSET_LIMITS_DEV = {
+const ICON_SUBSET_LIMITS_DEV: Record<IconifyCollectionName, number> = {
   lucide: 300,
   logos: 80,
   solar: 300,
   ph: 300,
-} as const
+}
 
-const ICON_SUBSET_LIMITS_PROD = {
+const ICON_SUBSET_LIMITS_PROD: Record<IconifyCollectionName, number> = {
   lucide: 150,
   logos: 60,
   solar: 150,
   ph: 150,
-} as const
+}
 
 const isProdEnv = process.env.NODE_ENV === 'production'
 
@@ -110,19 +219,12 @@ export const ICON_SUBSET_LIMITS = (
   readonly ph: number
 }
 
-/**
- * 取某集合前 limit 个图标类名，供示例页与 safelist 使用，避免全量导致 OOM
- */
 export function getIconifyIconNamesSubset(
   collectionName: IconifyCollectionName,
   limit: number
 ): string[] {
   return getIconifyIconNames(collectionName).slice(0, limit)
 }
-
-// ---------------------------------------------------------------------------
-// Invalid icon names (filter false positives from route/api scan)
-// ---------------------------------------------------------------------------
 
 const invalidIcons = new Set<string>([
   'return',
@@ -174,10 +276,6 @@ const invalidIcons = new Set<string>([
   ...'abcdefghijklmnopqrstuvwxyz'.split(''),
 ])
 
-// ---------------------------------------------------------------------------
-// Route/API icon scanning
-// ---------------------------------------------------------------------------
-
 const iconPatterns: RegExp[] = [
   /meta\s*:\s*\{[^}]*icon\s*:\s*['"]([^'"]+)['"]/g,
   /meta\.icon\s*=\s*['"]([^'"]+)['"]/g,
@@ -198,6 +296,7 @@ function getTsAndVueFiles(dir: string): string[] {
   const files: string[] = []
   const fullDir = path.join(projectRoot, dir)
   if (!fs.existsSync(fullDir)) return files
+
   function traverse(currentPath: string): void {
     try {
       const items = fs.readdirSync(currentPath, { withFileTypes: true })
@@ -211,6 +310,7 @@ function getTsAndVueFiles(dir: string): string[] {
       // ignore
     }
   }
+
   traverse(fullDir)
   return files
 }
@@ -229,19 +329,14 @@ function createCacheKey(files: string[]): string {
   return `${files.length}-${latest}`
 }
 
-/**
- * 从 src/router 与 src/api 中扫描 meta.icon / icon: '...' 等字符串
- */
 export function getRouteMetaIcons(): string[] {
   const routerDir = path.join(projectRoot, 'src/router')
   const apiDir = path.join(projectRoot, 'src/api')
   const files: string[] = []
-  if (fs.existsSync(routerDir)) {
-    files.push(...getTsAndVueFiles('src/router'))
-  }
-  if (fs.existsSync(apiDir)) {
-    files.push(...getTsAndVueFiles('src/api'))
-  }
+
+  if (fs.existsSync(routerDir)) files.push(...getTsAndVueFiles('src/router'))
+  if (fs.existsSync(apiDir)) files.push(...getTsAndVueFiles('src/api'))
+
   const cacheKey = createCacheKey(files)
   if (routeIconsCache && routeIconsCache.key === cacheKey) return routeIconsCache.value
 
@@ -262,21 +357,16 @@ export function getRouteMetaIcons(): string[] {
       // ignore
     }
   }
+
   const result = Array.from(icons)
   routeIconsCache = { key: cacheKey, value: result }
   return result
 }
 
-// ---------------------------------------------------------------------------
-// Custom icons (src/assets/icons/**/*.svg) → collection name: custom
-// ---------------------------------------------------------------------------
-
-/** 注入 fill="currentColor" 以便图标继承文字颜色 */
 function transformSvgFill(svg: string): string {
   return svg.replace(/<svg\s/, '<svg fill="currentColor" ')
 }
 
-/** name -> absolute path，用于自定义 loader（支持子目录） */
 function getCustomIconPathMap(): Map<string, string> {
   const map = new Map<string, string>()
   try {
@@ -284,7 +374,6 @@ function getCustomIconPathMap(): Map<string, string> {
     const files = globSync('**/*.svg', { cwd: ICONS_DIR, nodir: true })
     for (const rel of files) {
       const fullPath = path.join(ICONS_DIR, rel)
-      // 图标名：相对路径去掉 .svg，斜杠改为横线，如 custom/juejin → custom-juejin
       const name = rel
         .replace(/\.svg$/i, '')
         .replace(/\\/g, '/')
@@ -298,10 +387,6 @@ function getCustomIconPathMap(): Map<string, string> {
   return map
 }
 
-/**
- * 返回本地自定义图标的 class 列表，格式 i-custom:<name>
- * 扫描 src/assets/icons 下所有 .svg（含子目录），name 为路径转横线，如 i-custom:custom-juejin
- */
 export function getCustomIconClasses(): string[] {
   if (customIconsCache) return customIconsCache.value
   const map = getCustomIconPathMap()
@@ -310,7 +395,6 @@ export function getCustomIconClasses(): string[] {
   return classes
 }
 
-/** 创建自定义 collection loader：按 name 读文件并注入 fill="currentColor" */
 function createCustomIconLoader(): CustomIconLoader {
   const pathMap = getCustomIconPathMap()
   return async (name: string): Promise<string | undefined> => {
@@ -327,10 +411,6 @@ function createCustomIconLoader(): CustomIconLoader {
   }
 }
 
-// ---------------------------------------------------------------------------
-// Layout/theme safelist classes (SSOT: constants/size, constants/sizeScale)
-// ---------------------------------------------------------------------------
-
 function buildLayoutSafelistClasses(): string[] {
   const layout = LAYOUT_DIMENSION_KEYS.flatMap(k => [
     `w-${k}`,
@@ -341,6 +421,7 @@ function buildLayoutSafelistClasses(): string[] {
     `max-h-${k}`,
     `md:w-${k}`,
   ])
+
   const padding = SIZE_SCALE_KEYS.flatMap(s => [
     `p-${s}`,
     `px-${s}`,
@@ -351,6 +432,7 @@ function buildLayoutSafelistClasses(): string[] {
     `pr-${s}`,
     `md:px-${s}`,
   ])
+
   const margin = SIZE_SCALE_KEYS.flatMap(s => [
     `m-${s}`,
     `mx-${s}`,
@@ -360,6 +442,7 @@ function buildLayoutSafelistClasses(): string[] {
     `ml-${s}`,
     `mr-${s}`,
   ])
+
   const scrollMarginGap = SIZE_SCALE_KEYS.flatMap(s => [
     `scroll-m-${s}`,
     `scroll-mx-${s}`,
@@ -369,11 +452,11 @@ function buildLayoutSafelistClasses(): string[] {
     `scroll-ml-${s}`,
     `scroll-mr-${s}`,
   ])
+
   const gap = SIZE_SCALE_KEYS.map(s => `gap-${s}`)
   return Array.from(new Set([...layout, ...padding, ...margin, ...scrollMarginGap, ...gap]))
 }
 
-/** 阶梯尺寸类（全部使用 native 命名），供 size.vue / unocss.vue 等动态类名使用 */
 function buildScaleSafelistClasses(): string[] {
   const classes = SIZE_SCALE_KEYS.flatMap(k => [
     `text-${k}`,
@@ -400,7 +483,6 @@ function buildScaleSafelistClasses(): string[] {
   return Array.from(new Set(classes))
 }
 
-/** 基础变量类 (p-container-padding 等)，供 unocss.vue baseVars 等动态类名使用，SSOT: SIZE_BASE_VAR_KEYS */
 function buildBaseVarSafelistClasses(): string[] {
   const list: string[] = []
   for (const key of SIZE_BASE_VAR_KEYS) {
@@ -418,16 +500,18 @@ function buildBaseVarSafelistClasses(): string[] {
   return list
 }
 
-/** 配色类 (bg/text/border)，供 theme.vue 等动态类名使用，SSOT: COLOR_FAMILIES */
 function buildColorSafelistClasses(): string[] {
   const list: string[] = []
+
   for (const token of COLOR_FAMILIES.singleTokens) {
     list.push(`bg-${token}`, `text-${token}`)
     if (['border', 'input', 'ring'].includes(token)) list.push(`border-${token}`)
   }
+
   for (const family of COLOR_FAMILIES.pairFamilies) {
     list.push(`bg-${family}`, `text-${family}-foreground`, `border-${family}`)
   }
+
   for (const family of COLOR_FAMILIES.quadFamilies) {
     list.push(
       `bg-${family}`,
@@ -442,7 +526,8 @@ function buildColorSafelistClasses(): string[] {
       `border-${family}-light`
     )
   }
-  // Sidebar：与 uno.config.ts buildThemeColors 一致
+
+  // Sidebar (keep aligned with theme generation / color mapping)
   list.push(
     'bg-sidebar',
     'bg-sidebar-foreground',
@@ -455,10 +540,7 @@ function buildColorSafelistClasses(): string[] {
     'border-sidebar-border',
     'border-sidebar-ring'
   )
-  // Remove brute-force opacity scaling from the standard safelist.
-  // We leave specific opacities to be picked up by UnoCSS JIT scanning of .vue files.
-  // Example: 'bg-primary/10' will be extracted by JIT dynamically when used in components.
-  // Only explicitly used dynamic string concatenations need to go here.
+
   return list
 }
 
@@ -467,27 +549,19 @@ const SCALE_SAFELIST_CLASSES = buildScaleSafelistClasses()
 const BASE_VAR_SAFELIST_CLASSES = buildBaseVarSafelistClasses()
 const COLOR_SAFELIST_CLASSES = buildColorSafelistClasses()
 
-// ---------------------------------------------------------------------------
-// System Configuration Demo (UnoCSS shortcut preview)
-// ---------------------------------------------------------------------------
-
 function buildShortcutGroupsSafelist(): string[] {
   const out = new Set<string>()
 
-  // 1) All shortcut names used as runtime classes (unocss.vue uses :class="item.name")
   for (const group of shortcutGroups) {
     for (const item of group.items) {
       const name = item.name?.trim()
       if (!name) continue
-      // Wildcard placeholders like "gap-x-*" are documentation-only; not valid classes
       if (name.includes('*')) continue
-      // Avoid whitespace / separators
       if (/\s|\|/.test(name)) continue
       out.add(name)
     }
   }
 
-  // 2) Representative concrete classes for wildcard demo groups
   ;['gap-x-sm', 'gap-x-md', 'gap-x-lg', 'gap-y-sm', 'gap-y-md', 'gap-y-lg'].forEach(c => out.add(c))
   ;['m-md', 'scroll-m-lg'].forEach(c => out.add(c))
 
@@ -496,30 +570,16 @@ function buildShortcutGroupsSafelist(): string[] {
 
 const SHORTCUT_GROUPS_SAFELIST_CLASSES = buildShortcutGroupsSafelist()
 
-// ---------------------------------------------------------------------------
-// Route icon name → UnoCSS class (与 Icons.vue iconClass 规则一致)
-// ---------------------------------------------------------------------------
-
 function toUnoIconClass(name: string): string {
   if (name.startsWith('i-')) return name
-  // custom 集合必须保留冒号，与 Icons.vue iconClass 规则一致
   if (name.startsWith('custom:')) return `i-${name}`
   return `i-${name.replace(':', '-')}`
 }
 
-// ---------------------------------------------------------------------------
-// Exports for uno.config.ts
-// ---------------------------------------------------------------------------
-
-/**
- * 动态 safelist：路由/API 扫描到的图标 + 本地 i-custom:xxx + 示例页图标子集（Lucide/MDI/Logos 各取前 N + Custom 全量）+ 布局/尺寸类 + …
- * 仅使用子集以避免全量导致 OOM。
- */
-export function getDynamicSafelist(): string[] {
+function getDynamicSafelist(isDemo: boolean): string[] {
   const routeIcons = getRouteMetaIcons().map(toUnoIconClass)
   const customIcons = getCustomIconClasses()
 
-  const isDemo = process.env.UNO_DEMO === 'true'
   const examplePageIcons = isDemo
     ? [
         ...getIconifyIconNamesSubset('lucide', ICON_SUBSET_LIMITS.lucide),
@@ -530,7 +590,6 @@ export function getDynamicSafelist(): string[] {
       ]
     : []
 
-  // 菜单激活态类（useMenuVisuals 动态拼接，JIT 可能遗漏，显式 safelist 确保编译）
   const menuVisualSafelist = [
     'bg-primary!',
     'text-primary-foreground!',
@@ -555,15 +614,22 @@ export function getDynamicSafelist(): string[] {
   ]
 }
 
-/**
- * 自定义图标集合：仅 collection `custom`，从 src/assets/icons 下所有 .svg 加载，并注入 fill="currentColor"
- * 子目录会映射为 name：如 custom/juejin.svg → i-custom:custom-juejin
- */
 export function getPresetIconsCollections(): Record<string, CustomIconLoader> {
   if (!fs.existsSync(ICONS_DIR)) return {}
   const pathMap = getCustomIconPathMap()
   if (pathMap.size === 0) return {}
+
   return {
     custom: createCustomIconLoader(),
   }
 }
+
+export function getEngineSafelist(isDemo: boolean): string[] {
+  const base = getDynamicSafelist(isDemo)
+  const shouldAppendThemeDemo = isDemo && process.env.NODE_ENV !== 'production'
+  return shouldAppendThemeDemo ? [...base, ...buildThemeDemoSafelist()] : base
+}
+
+// Keep file-local export surface minimal for engine usage.
+// Build plugins may also import the following identifiers.
+export type { SizeScaleKey }

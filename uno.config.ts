@@ -8,8 +8,8 @@ import {
   transformerVariantGroup,
   type Rule,
 } from 'unocss'
-import { getDynamicSafelist, getPresetIconsCollections } from './build/uno-icons'
-import { buildThemeDemoSafelist as buildThemeDemoSafelistFromTheme, theme } from './uno.theme'
+import { theme } from './src/design-engine/theme'
+import { getEngineSafelist, getPresetIconsCollections } from './src/design-engine/safelist'
 import { rules as designEngineRules, shortcuts } from './src/design-engine'
 import { BREAKPOINTS } from './src/constants/breakpoints'
 import { LAYOUT_DIMENSION_KEYS, SIZE_BASE_VAR_KEYS } from './src/constants/size'
@@ -395,8 +395,6 @@ function buildThemeDemoSafelist(): string[] {
 
 const themeDemoSafelist = buildThemeDemoSafelist()
 
-/** 生产环境仅保留必要动态类；日常 dev 不加 themeDemoSafelist，避免冷启动变慢 */
-const isProd = process.env.NODE_ENV === 'production'
 /** 仅需跑主题/配色 demo 页时设为 true（如 UNO_DEMO=true pnpm dev），此时才合并 themeDemoSafelist */
 const isDemo = process.env.UNO_DEMO === 'true'
 
@@ -464,11 +462,7 @@ export default defineConfig({
     }),
   ],
 
-  safelist: isProd
-    ? getDynamicSafelist()
-    : isDemo
-      ? [...getDynamicSafelist(), ...buildThemeDemoSafelistFromTheme()]
-      : getDynamicSafelist(),
+  safelist: getEngineSafelist(isDemo),
 
   content: {
     pipeline: {
