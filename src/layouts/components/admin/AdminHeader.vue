@@ -236,7 +236,7 @@ const renderRootItem = (item: PrimeMenuModelItem) => {
       <button
         v-if="showDrawerTrigger"
         type="button"
-        class="cursor-pointer border-none outline-none p-xs sm:p-sm center"
+        class="interactive-card border-none outline-none p-xs sm:p-sm center"
         @click="layoutStore.toggleMobileDrawer()"
       >
         <Icons
