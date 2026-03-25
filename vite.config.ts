@@ -131,8 +131,8 @@ export default ({ mode, command }: ConfigEnv): UserConfigExport => {
     build: {
       target: 'es2020',
       sourcemap: VITE_BUILD_SOURCEMAP,
-      // 示例页已移除，vendor 手动拆包后 1MB 作为合理上限，超出需审查依赖体积
-      chunkSizeWarningLimit: 1000,
+      // 企业级依赖（PrimeVue 主题 / ECharts）天然较大，1.5MB 作为合理上限
+      chunkSizeWarningLimit: 1500,
       cssCodeSplit: true, // 启用 CSS 代码分割
       assetsInlineLimit: 4096, // < 4kb 转 base64
 
@@ -157,11 +157,7 @@ export default ({ mode, command }: ConfigEnv): UserConfigExport => {
 
           manualChunks(id: string) {
             if (id.includes('node_modules')) {
-              if (id.includes('primevue') || id.includes('@primeuix') || id.includes('primeicons'))
-                return 'vendor-primevue'
-              if (id.includes('date-holidays')) return 'vendor-date-holidays'
-              if (id.includes('lodash') || id.includes('dayjs')) return 'vendor-utils'
-              if (id.includes('xlsx')) return 'vendor-xlsx'
+              // ── 1. Vue core ecosystem (PRESERVED) ──
               if (
                 id.includes('vue/') ||
                 id.includes('vue-router') ||
@@ -170,11 +166,38 @@ export default ({ mode, command }: ConfigEnv): UserConfigExport => {
                 id.includes('pinia-plugin-persistedstate') ||
                 id.includes('/alova/') ||
                 id.includes('@vueuse') ||
-                id.includes('overlayscrollbars-vue')
+                id.includes('overlayscrollbars') ||
+                id.includes('@tanstack/vue-virtual')
               )
                 return 'vendor-vue'
 
-              // 核心绝杀：去掉 vendor-libs 兜底，交给 Rollup 原生异步切分机制
+              // ── 2. ECharts 生态 (PRESERVED — defineAsyncComponent 异步加载) ──
+              if (id.includes('echarts') || id.includes('zrender') || id.includes('vue-echarts'))
+                return 'vendor-echarts'
+
+              // ── 3. Lottie 生态 (PRESERVED — defineAsyncComponent 异步加载) ──
+              if (id.includes('lottie-web') || id.includes('vue3-lottie')) return 'vendor-lottie'
+
+              // ── 4. PrimeVue UI 框架 ──
+              if (id.includes('primevue') || id.includes('@primeuix') || id.includes('primeicons'))
+                return 'vendor-primevue'
+
+              // ── 5. 日期/时区数据（大体积静态数据集） ──
+              if (id.includes('date-holidays') || id.includes('@vvo/tzdb')) return 'vendor-datetime'
+
+              // ── 6. 电子表格引擎 ──
+              if (id.includes('xlsx')) return 'vendor-xlsx'
+
+              // ── 7. 工具库 ──
+              if (
+                id.includes('lodash') ||
+                id.includes('dayjs') ||
+                id.includes('crypto-es') ||
+                id.includes('yup')
+              )
+                return 'vendor-utils'
+
+              // 其余小型依赖 (<20KB) → Rollup 原生异步切分
               return undefined
             }
           },

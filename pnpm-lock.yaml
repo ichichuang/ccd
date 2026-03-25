@@ -303,6 +303,9 @@ importers:
       vite-plugin-compression:
         specifier: ^0.5.1
         version: 0.5.1(vite@7.3.1(@types/node@22.19.7)(jiti@2.6.1)(sass@1.97.3)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.2))
+      vite-plugin-progress:
+        specifier: ^0.0.7
+        version: 0.0.7(vite@7.3.1(@types/node@22.19.7)(jiti@2.6.1)(sass@1.97.3)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.2))
       vitest:
         specifier: ^4.0.18
         version: 4.0.18(@types/node@22.19.7)(jiti@2.6.1)(jsdom@28.1.0)(sass@1.97.3)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.2)
@@ -1824,6 +1827,9 @@ packages:
 
   '@types/lodash@4.17.21':
     resolution: {integrity: sha512-FOvQ0YPD5NOfPgMzJihoT+Za5pdkDJWcbpuj1DjaKZIr/gxodQjY/uWEFlTNqW2ugXHUiL8lRQgw63dzKHZdeQ==}
+
+  '@types/node@10.17.60':
+    resolution: {integrity: sha512-F0KIgDJfy2nA3zMLmWGKxcH2ZVEtCZXHHdOQs2gSaQ27+lNeEfGxzkIw90aXswATX7AZ33tahPbzy6KAfUreVw==}
 
   '@types/node@22.19.7':
     resolution: {integrity: sha512-MciR4AKGHWl7xwxkBa6xUGxQJ4VBOmPTF7sL+iGzuahOFaO0jHCsuEfS80pan1ef4gWId1oWOweIhrDEYLuaOw==}
@@ -3815,6 +3821,10 @@ packages:
     resolution: {integrity: sha512-nTyEohZABFJhVIpeUxgP0EJ8vKcJAhD+Z7DYj95e7ie/MNUCjRNcGjqmE1cXtXi4z54qDfTSI9h2uJ51qz2DIw==}
     engines: {node: '>=12.11.0'}
 
+  progress@2.0.3:
+    resolution: {integrity: sha512-7PiHtLll5LdnKIMw100I+8xJXR5gW2QwWYkT6iJva0bXitZKa/XMrSbdmg3r2Xnaidz9Qumd0VPaMrZlF9V9sA==}
+    engines: {node: '>=0.4.0'}
+
   property-expr@2.0.6:
     resolution: {integrity: sha512-SVtmxhRE/CGkn3eZY1T6pC8Nln6Fr/lu1mKSgRud0eC73whjGfoAogbn78LkD8aFL0zz3bAFerKSnOl7NlErBA==}
 
@@ -3840,6 +3850,9 @@ packages:
 
   rate-limiter-flexible@5.0.5:
     resolution: {integrity: sha512-+/dSQfo+3FYwYygUs/V2BBdwGa9nFtakDwKt4l0bnvNB53TNT++QSFewwHX9qXrZJuMe9j+TUaU21lm5ARgqdQ==}
+
+  rd@2.0.1:
+    resolution: {integrity: sha512-/XdKU4UazUZTXFmI0dpABt8jSXPWcEyaGdk340KdHnsEOdkTctlX23aAK7ChQDn39YGNlAJr1M5uvaKt4QnpNw==}
 
   read-package-json-fast@4.0.0:
     resolution: {integrity: sha512-qpt8EwugBWDw2cgE2W+/3oxC+KTez2uSVR8JU9Q36TXPAGCaozfQUs59v4j4GFpWTaw0i6hAZSvOmu1J0uOEUg==}
@@ -4441,6 +4454,12 @@ packages:
     resolution: {integrity: sha512-5QJKBDc+gNYVqL/skgFAP81Yuzo9R+EAf19d+EtsMF/i8kFUpNi3J/H01QD3Oo8zBQn+NzoCIFkpPLynoOzaJg==}
     peerDependencies:
       vite: '>=2.0.0'
+
+  vite-plugin-progress@0.0.7:
+    resolution: {integrity: sha512-zyvKdcc/X+6hnw3J1HVV1TKrlFKC4Rh8GnDnWG/2qhRXjqytTcM++xZ+SAPnoDsSyWl8O93ymK0wZRgHAoglEQ==}
+    engines: {node: '>=14', pnpm: '>=7.0.0'}
+    peerDependencies:
+      vite: '>2.0.0-0'
 
   vite@7.3.1:
     resolution: {integrity: sha512-w+N7Hifpc3gRjZ63vYBXA56dvvRlNWRczTdmCBBa+CotUzAPf5b7YMdMR/8CQoeYE5LX3W4wj6RYTgonm1b9DA==}
@@ -6212,6 +6231,8 @@ snapshots:
       '@types/lodash': 4.17.21
 
   '@types/lodash@4.17.21': {}
+
+  '@types/node@10.17.60': {}
 
   '@types/node@22.19.7':
     dependencies:
@@ -8378,6 +8399,8 @@ snapshots:
     transitivePeerDependencies:
       - vue
 
+  progress@2.0.3: {}
+
   property-expr@2.0.6: {}
 
   proto-list@1.2.4: {}
@@ -8395,6 +8418,10 @@ snapshots:
   queue-microtask@1.2.3: {}
 
   rate-limiter-flexible@5.0.5: {}
+
+  rd@2.0.1:
+    dependencies:
+      '@types/node': 10.17.60
 
   read-package-json-fast@4.0.0:
     dependencies:
@@ -9036,6 +9063,13 @@ snapshots:
       vite: 7.3.1(@types/node@22.19.7)(jiti@2.6.1)(sass@1.97.3)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.2)
     transitivePeerDependencies:
       - supports-color
+
+  vite-plugin-progress@0.0.7(vite@7.3.1(@types/node@22.19.7)(jiti@2.6.1)(sass@1.97.3)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.2)):
+    dependencies:
+      picocolors: 1.1.1
+      progress: 2.0.3
+      rd: 2.0.1
+      vite: 7.3.1(@types/node@22.19.7)(jiti@2.6.1)(sass@1.97.3)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.2)
 
   vite@7.3.1(@types/node@22.19.7)(jiti@2.6.1)(sass@1.97.3)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.2):
     dependencies:

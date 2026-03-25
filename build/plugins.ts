@@ -3,6 +3,7 @@ import vueJsx from '@vitejs/plugin-vue-jsx'
 import fs from 'node:fs'
 import path from 'node:path'
 import UnoCSS from 'unocss/vite'
+import progress from 'vite-plugin-progress'
 import AutoImport from 'unplugin-auto-import/vite'
 import Components from 'unplugin-vue-components/vite'
 import { PrimeVueResolver } from '@primevue/auto-import-resolver'
@@ -30,6 +31,13 @@ export function getPluginsList(env: ViteEnv, command: 'build' | 'serve'): Plugin
   const plugins: (PluginOption | false)[] = [
     // ✅ 构建信息看板
     viteBuildInfo(),
+
+    // ✅ 构建阶段进度条（终端输出，仅 build）
+    isBuild &&
+      progress({
+        format: 'Building [:bar] :percent',
+        width: 60,
+      }),
 
     // ✅ HTML 注入品牌配置（来自 src/constants/brand.ts）
     configHtmlPlugin(),

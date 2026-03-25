@@ -23,6 +23,9 @@ export const alias: Record<string, string> = {
   '@': pathResolve('../src'),
   '@!': pathResolve('../src/api'),
   '@&': pathResolve('../src/layouts/components'),
+  // lottie-web → light 版本（无表达式引擎），节省 ~230KB
+  // 安全前提：所有 Lottie JSON 已验证 0 处 "e":1（无表达式）
+  'lottie-web': pathResolve('../node_modules/lottie-web/build/player/esm/lottie_light.min.js'),
 }
 
 /** 应用信息 */
