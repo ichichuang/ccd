@@ -5,137 +5,20 @@ import { fileURLToPath } from 'node:url'
 import { FileSystemIconLoader } from '@iconify/utils/lib/loader/node-loaders'
 import { globSync } from 'glob'
 
-import { LAYOUT_DIMENSION_KEYS, SIZE_BASE_VAR_KEYS } from '@/constants/size'
-import { SIZE_SCALE_KEYS, type SizeScaleKey } from '@/constants/sizeScale'
-import { COLOR_FAMILIES } from '@/utils/theme/metadata'
-import { shortcutGroups } from '@/views/system-configuration/configs/shortcutGroups'
+import { LAYOUT_DIMENSION_KEYS, SIZE_BASE_VAR_KEYS } from '../../constants/size'
+import { SIZE_SCALE_KEYS, type SizeScaleKey } from '../../constants/sizeScale'
+import { COLOR_FAMILIES } from '../../utils/theme/metadata'
+import { semanticShortcuts } from '../shortcuts/semanticShortcuts'
 
-// ---------------------------------------------------------------------------
-// Theme demo safelist (moved from `uno.theme.ts`)
-// ---------------------------------------------------------------------------
-
-const toKebab = (s: string) => s.replace(/([A-Z])/g, '-$1').toLowerCase()
-
-function buildThemeDemoSafelist(): string[] {
-  const list: string[] = []
-
-  // Color classes
-  for (const token of COLOR_FAMILIES.singleTokens) {
-    list.push(`bg-${token}`, `text-${token}`)
-    if (['border', 'input', 'ring'].includes(token)) list.push(`border-${token}`)
-  }
-
-  for (const family of COLOR_FAMILIES.pairFamilies) {
-    list.push(`bg-${family}`, `text-${family}-foreground`, `border-${family}`)
-  }
-
-  for (const family of COLOR_FAMILIES.quadFamilies) {
-    list.push(
-      `bg-${family}`,
-      `bg-${family}-hover`,
-      `bg-${family}-light`,
-      `text-${family}`,
-      `text-${family}-foreground`,
-      `text-${family}-hover-foreground`,
-      `text-${family}-light-foreground`,
-      `border-${family}`,
-      `border-${family}-hover`,
-      `border-${family}-light`
-    )
-  }
-
-  const sidebarKeys = Object.keys(COLOR_FAMILIES.sidebar) as (keyof typeof COLOR_FAMILIES.sidebar)[]
-  for (const key of sidebarKeys) {
-    const varName = COLOR_FAMILIES.sidebar[key]
-    list.push(`bg-${varName}`, `text-${varName}`)
-    if (key === 'border' || key === 'ring') list.push(`border-${varName}`)
-  }
-
-  list.push(
-    'border-danger/50',
-    'border-primary/20',
-    'border-primary/30',
-    'border-primary/50',
-    'dark:bg-primary-light',
-    'dark:border-primary/50',
-    'bg-info/10'
-  )
-
-  // PrimeVue Button hover/outlined background opacities.
-  list.push(
-    ...COLOR_FAMILIES.quadFamilies.flatMap(family =>
-      [5, 10, 15, 20, 30, 40, 50, 60, 70, 80, 90].map(v => `bg-${family}/${v}`)
-    )
-  )
-
-  // Spacing / typography / radius / duration (native prefixes)
-  for (const key of SIZE_BASE_VAR_KEYS) {
-    const kebab = toKebab(key)
-    list.push(
-      `p-${kebab}`,
-      `px-${kebab}`,
-      `py-${kebab}`,
-      `pt-${kebab}`,
-      `pb-${kebab}`,
-      `pl-${kebab}`,
-      `pr-${kebab}`
-    )
-  }
-
-  for (const k of SIZE_SCALE_KEYS) {
-    list.push(`text-${k}`)
-    list.push(`p-${k}`, `px-${k}`, `py-${k}`, `pt-${k}`, `pb-${k}`, `pl-${k}`, `pr-${k}`)
-    list.push(`m-${k}`, `mx-${k}`, `my-${k}`, `mt-${k}`, `mb-${k}`, `ml-${k}`, `mr-${k}`)
-    list.push(`gap-${k}`, `gap-x-${k}`, `gap-y-${k}`)
-    list.push(
-      `rounded-${k}`,
-      `rounded-t-${k}`,
-      `rounded-b-${k}`,
-      `rounded-l-${k}`,
-      `rounded-r-${k}`,
-      `rounded-tl-${k}`,
-      `rounded-tr-${k}`,
-      `rounded-bl-${k}`,
-      `rounded-br-${k}`
-    )
-    list.push(`duration-${k}`)
-    list.push(
-      `scroll-m-${k}`,
-      `scroll-mx-${k}`,
-      `scroll-my-${k}`,
-      `scroll-mt-${k}`,
-      `scroll-mb-${k}`,
-      `scroll-ml-${k}`,
-      `scroll-mr-${k}`
-    )
-  }
-
-  // Icons used by demos (keep old behavior)
-  list.push(
-    'i-lucide-circle-dot',
-    'i-lucide-panel-left',
-    'i-lucide-diamond',
-    'i-lucide-sun-moon',
-    'i-lucide-sparkles',
-    'i-lucide-minimize-2'
-  )
-
-  // PrimeVue hover backgrounds for text/outlined variants.
-  list.push(
-    'hover:bg-sidebar-accent/50',
-    'hover:bg-danger-light',
-    'hover:bg-primary-light',
-    'hover:bg-success-light',
-    'hover:bg-info-light',
-    'hover:bg-warn-light',
-    'hover:bg-help-light',
-    'bg-danger/10',
-    'bg-primary/5',
-    'bg-info/10'
-  )
-
-  return list
-}
+/** 布局/设置等处的 Lucide 图标名（非路由 meta 扫描可达时仍需 safelist） */
+const ENGINE_ICON_SAFELIST_CLASSES: readonly string[] = [
+  'i-lucide-circle-dot',
+  'i-lucide-panel-left',
+  'i-lucide-diamond',
+  'i-lucide-sun-moon',
+  'i-lucide-sparkles',
+  'i-lucide-minimize-2',
+]
 
 // ---------------------------------------------------------------------------
 // Icon safelist & custom preset collections (moved from `build/uno-icons.ts`)
@@ -459,8 +342,17 @@ function buildLayoutSafelistClasses(): string[] {
 
 function buildScaleSafelistClasses(): string[] {
   const classes = SIZE_SCALE_KEYS.flatMap(k => [
+    `fs-${k}`,
     `text-${k}`,
     `rounded-${k}`,
+    `rounded-t-${k}`,
+    `rounded-b-${k}`,
+    `rounded-l-${k}`,
+    `rounded-r-${k}`,
+    `rounded-tl-${k}`,
+    `rounded-tr-${k}`,
+    `rounded-bl-${k}`,
+    `rounded-br-${k}`,
     `duration-${k}`,
     `p-${k}`,
     `px-${k}`,
@@ -549,18 +441,9 @@ const SCALE_SAFELIST_CLASSES = buildScaleSafelistClasses()
 const BASE_VAR_SAFELIST_CLASSES = buildBaseVarSafelistClasses()
 const COLOR_SAFELIST_CLASSES = buildColorSafelistClasses()
 
-function buildShortcutGroupsSafelist(): string[] {
-  const out = new Set<string>()
-
-  for (const group of shortcutGroups) {
-    for (const item of group.items) {
-      const name = item.name?.trim()
-      if (!name) continue
-      if (name.includes('*')) continue
-      if (/\s|\|/.test(name)) continue
-      out.add(name)
-    }
-  }
+/** Semantic shortcut names from design-engine SSOT — prevents tree-shaking of macro classes. */
+function buildSemanticShortcutsSafelist(): string[] {
+  const out = new Set<string>(Object.keys(semanticShortcuts))
 
   ;['gap-x-sm', 'gap-x-md', 'gap-x-lg', 'gap-y-sm', 'gap-y-md', 'gap-y-lg'].forEach(c => out.add(c))
   ;['m-md', 'scroll-m-lg'].forEach(c => out.add(c))
@@ -568,7 +451,7 @@ function buildShortcutGroupsSafelist(): string[] {
   return Array.from(out)
 }
 
-const SHORTCUT_GROUPS_SAFELIST_CLASSES = buildShortcutGroupsSafelist()
+const SEMANTIC_SHORTCUTS_SAFELIST_CLASSES = buildSemanticShortcutsSafelist()
 
 function toUnoIconClass(name: string): string {
   if (name.startsWith('i-')) return name
@@ -599,17 +482,34 @@ function getDynamicSafelist(isDemo: boolean): string[] {
     'text-primary!',
     'text-current!',
     'dark:text-white!',
+    'border-danger/50',
+    'border-primary/20',
+    'border-primary/30',
+    'border-primary/50',
+    'dark:bg-primary-light',
+    'dark:border-primary/50',
+    'bg-info/10',
+    'hover:bg-sidebar-accent/50',
+    'hover:bg-danger-light',
+    'hover:bg-primary-light',
+    'hover:bg-success-light',
+    'hover:bg-info-light',
+    'hover:bg-warn-light',
+    'hover:bg-help-light',
+    'bg-danger/10',
+    'bg-primary/5',
   ]
 
   return [
     ...routeIcons,
     ...customIcons,
     ...examplePageIcons,
+    ...ENGINE_ICON_SAFELIST_CLASSES,
     ...LAYOUT_SAFELIST_CLASSES,
     ...SCALE_SAFELIST_CLASSES,
     ...BASE_VAR_SAFELIST_CLASSES,
     ...COLOR_SAFELIST_CLASSES,
-    ...SHORTCUT_GROUPS_SAFELIST_CLASSES,
+    ...SEMANTIC_SHORTCUTS_SAFELIST_CLASSES,
     ...menuVisualSafelist,
   ]
 }
@@ -624,10 +524,9 @@ export function getPresetIconsCollections(): Record<string, CustomIconLoader> {
   }
 }
 
-export function getEngineSafelist(isDemo: boolean): string[] {
-  const base = getDynamicSafelist(isDemo)
-  const shouldAppendThemeDemo = isDemo && process.env.NODE_ENV !== 'production'
-  return shouldAppendThemeDemo ? [...base, ...buildThemeDemoSafelist()] : base
+/** 主题演示页 Alpha 阶梯已改为内联 `rgb(var(--*) / α)`，不再合并数百条 demo 类名。 */
+export function getEngineSafelist(): string[] {
+  return getDynamicSafelist(true)
 }
 
 // Keep file-local export surface minimal for engine usage.

@@ -1,9 +1,14 @@
 import { defineStore } from 'pinia'
 import { SIZE_PRESETS, DEFAULT_SIZE_NAME, SIZE_PERSIST_KEY } from '@/constants/size'
-import { FONT_SCALE_RATIOS } from '@/constants/sizeScale'
 import { generateSizeVars, applySizeTheme } from '@/utils/theme/sizeEngine'
 import { createPiniaEncryptedSerializer } from '@/utils/safeStorage/piniaSerializer'
 
+/**
+ * 全局尺寸模式（compact / comfortable / loose）
+ *
+ * - 状态仅 `sizeName`；具体 px/阶梯由 `constants/size` + `sizeScale` + `sizeEngine` 注入 CSS。
+ * - 不在此 store 内做 `spacingBase * n`；若需 px 请用 `@/utils/theme/sizeMetrics` + `currentPreset`。
+ */
 export const useSizeStore = defineStore('size', {
   state: (): SizeStoreState => ({
     sizeName: DEFAULT_SIZE_NAME as SizeMode,
@@ -16,30 +21,6 @@ export const useSizeStore = defineStore('size', {
         SIZE_PRESETS.find(p => p.name === DEFAULT_SIZE_NAME) ||
         SIZE_PRESETS[0]
       )
-    },
-
-    // --- 图表专用动态 Getters (兼容旧逻辑) ---
-    getGap(): number {
-      return this.currentPreset.spacingBase * 1
-    },
-    getGapl(): number {
-      return this.currentPreset.spacingBase * 2
-    },
-    getPaddingsValue(): number {
-      return this.currentPreset.spacingBase * 1
-    },
-
-    // 字体大小动态化：直接读取当前预设的基准值 (SSOT，对应 --font-size-md)
-    getFontSizeValue(): number {
-      return this.currentPreset.fontSizeBase
-    },
-    // 小号字体：与尺寸阶梯 --font-size-sm 一致 (fontSizeBase × FONT_SCALE_RATIOS.sm)
-    getFontSizeSmValue(): number {
-      return this.currentPreset.fontSizeBase * FONT_SCALE_RATIOS.sm
-    },
-    // 标题字体动态化：保留兼容，等于 getFontSizeSmValue（原 fontSizeBase+2 语义接近 sm）
-    getFontSizesValue(): number {
-      return this.getFontSizeSmValue
     },
   },
 

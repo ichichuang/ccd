@@ -7,7 +7,7 @@ defineProps<{
 </script>
 
 <template>
-  <div class="bg-card rounded-lg shadow-sm dark:shadow-md p-lg flex flex-col gap-md">
+  <div class="material-elevated col-stretch gap-md p-lg">
     <h2 class="text-xl font-semibold text-foreground m-0">
       {{ title }}
     </h2>
@@ -25,7 +25,7 @@ defineProps<{
     </div>
     <div
       v-if="$slots.actions"
-      class="flex flex-wrap gap-sm"
+      class="row-start flex-wrap gap-sm"
     >
       <slot name="actions" />
     </div>

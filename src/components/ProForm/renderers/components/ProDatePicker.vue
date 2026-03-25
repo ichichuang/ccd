@@ -5,10 +5,12 @@ import { PRO_FORM_COMPONENT_DEFAULTS } from '../../engine/config'
 type SingleDateValue = Date | string | number | null | undefined
 type RangeDateValue = [SingleDateValue, SingleDateValue] | null | undefined
 type ModelValue = SingleDateValue | RangeDateValue
+type FormattableDateInput = Date | string | number
 
 type Props = FieldComponentProps<ModelValue>
 
 const props = defineProps<Props>()
+const { formatDate: formatDateValue, isInitialized } = useDateUtils()
 
 const emit = defineEmits<{
   (e: 'update:modelValue', value: ModelValue): void
@@ -21,45 +23,23 @@ const emptyPlaceholder = computed<string>(() => {
   return value && value.length > 0 ? value : PRO_FORM_COMPONENT_DEFAULTS.emptyTextFallback
 })
 
-const locale = computed<string | undefined>(() => {
-  const value = attrs.previewLocale as string | undefined
-  return value && value.length > 0 ? value : undefined
-})
-
-const dateStyle = computed<Intl.DateTimeFormatOptions['dateStyle']>(() => {
-  const value = attrs.previewDateStyle as Intl.DateTimeFormatOptions['dateStyle'] | undefined
-  return value ?? 'medium'
-})
-
-const coerceToDate = (value: SingleDateValue): Date | null => {
-  if (value == null) return null
-  if (value instanceof Date) return Number.isNaN(value.getTime()) ? null : value
-
-  if (typeof value === 'number') {
-    const d = new Date(value)
-    return Number.isNaN(d.getTime()) ? null : d
-  }
-
-  if (typeof value === 'string') {
-    const d = new Date(value)
-    return Number.isNaN(d.getTime()) ? null : d
-  }
-
-  return null
+const hasDateValue = (value: SingleDateValue): boolean => {
+  if (value == null) return false
+  if (typeof value === 'string') return value.trim().length > 0
+  return true
 }
 
-const formatDate = (value: SingleDateValue): string | null => {
-  const d = coerceToDate(value)
-  if (!d) return null
+const isDateInputValue = (value: SingleDateValue): value is FormattableDateInput => {
+  if (value == null) return false
+  if (typeof value === 'string') return value.trim().length > 0
+  return typeof value === 'number' || value instanceof Date
+}
 
-  try {
-    const formatter = new Intl.DateTimeFormat(locale.value, {
-      dateStyle: dateStyle.value,
-    })
-    return formatter.format(d)
-  } catch {
-    return d.toISOString()
-  }
+const formatSingleDate = (value: SingleDateValue): string | null => {
+  if (!hasDateValue(value) || !isDateInputValue(value) || !isInitialized.value) return null
+
+  const formatted = formatDateValue(value, 'YYYY-MM-DD')
+  return formatted.length > 0 ? formatted : null
 }
 
 const displayValue = computed<string>(() => {
@@ -68,8 +48,8 @@ const displayValue = computed<string>(() => {
   // 区间值
   if (Array.isArray(value)) {
     const [startRaw, endRaw] = value as [SingleDateValue, SingleDateValue]
-    const start = formatDate(startRaw)
-    const end = formatDate(endRaw)
+    const start = formatSingleDate(startRaw)
+    const end = formatSingleDate(endRaw)
 
     if (!start && !end) {
       return emptyPlaceholder.value
@@ -81,7 +61,7 @@ const displayValue = computed<string>(() => {
   }
 
   // 单值
-  const formatted = formatDate(value as SingleDateValue)
+  const formatted = formatSingleDate(value as SingleDateValue)
   if (!formatted) return emptyPlaceholder.value
   return formatted
 })

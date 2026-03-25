@@ -8,7 +8,9 @@ import 'uno.css'
 import App from '@/App.vue'
 import { setOnUnauthorized, setTokenProvider } from '@/infra/auth/tokenProvider'
 import { setupPlugins } from '@/plugins'
+import router from '@/router'
 import { useUserStoreWithOut } from '@/stores/modules/user'
+import { fadeOutNativePreloader } from '@/hooks/layout/useLoading'
 import { preload } from '@/utils/theme/sizeEngine'
 
 async function bootstrap() {
@@ -28,6 +30,9 @@ async function bootstrap() {
 
   // 挂载应用（loading 关闭由 router.afterEach 负责）
   app.mount('#app')
+  // Single-Owner Handoff: 首跳路由就绪后兜底移除原生 preloader（内部门闩保证只执行一次）
+  await router.isReady()
+  fadeOutNativePreloader()
 }
 
 // 启动应用

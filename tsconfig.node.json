@@ -5,6 +5,7 @@
     "vite.config.ts",
     "uno.config.ts",
     "src/design-engine/theme/index.ts",
+    "src/design-engine/theme/colors.ts",
     "src/design-engine/safelist/index.ts",
     // Design Engine: pure parser/validator/resolver for UnoCSS
     "src/design-engine/index.ts",
@@ -12,11 +13,7 @@
     "src/design-engine/validators/colorValidator.ts",
     "src/design-engine/validators/sizeValidator.ts",
     "src/design-engine/parser/parseBorder.ts",
-    "src/design-engine/parser/parseShadow.ts",
     "src/design-engine/resolvers/borderResolver.ts",
-    "src/design-engine/resolvers/shadowResolver.ts",
-    "src/design-engine/rules/borderRule.ts",
-    "src/design-engine/rules/shadowRule.ts",
     "src/design-engine/shortcuts/semanticShortcuts.ts",
     "eslint.config.ts",
     "vitest.config.ts",
@@ -32,6 +29,7 @@
     // ✅ 供 uno.config.ts 等工具链引用的浏览器常量与类型
     "src/constants/**/*.ts",
     "src/utils/theme/metadata.ts",
+    "src/utils/theme/engine.ts",
     "src/utils/theme/colors.ts",
     "src/views/system-configuration/configs/shortcutGroups.ts",
     "src/locales/**/*"

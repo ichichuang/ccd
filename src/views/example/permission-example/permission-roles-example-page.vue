@@ -6,8 +6,8 @@ const userPermissions = computed<string[]>(() => userStore.getUserPermissions)
 </script>
 
 <template>
-  <div class="p-lg space-y-margin-md">
-    <h2 class="text-xl font-semibold row-y-center gap-sm">
+  <div class="p-lg col-stretch gap-md">
+    <h2 class="text-xl font-semibold row-start items-center gap-sm">
       <Icons
         name="i-lucide-shield-check"
         size="lg"
@@ -16,7 +16,7 @@ const userPermissions = computed<string[]>(() => userStore.getUserPermissions)
       <span>页面级权限示例（meta.roles）</span>
     </h2>
 
-    <div class="shadow-sm dark:shadow-md rounded-scale p-md space-y-margin-sm bg-card">
+    <div class="material-elevated col-stretch gap-sm">
       <div class="text-md">
         <span class="font-medium">当前登录用户：</span>
         <span>{{ userStore.getUserInfo.username || '未登录' }}</span>
@@ -31,7 +31,7 @@ const userPermissions = computed<string[]>(() => userStore.getUserPermissions)
       </div>
     </div>
 
-    <div class="shadow-sm dark:shadow-md rounded-scale p-md space-y-margin-xs bg-muted">
+    <div class="col-stretch gap-xs rounded-md bg-muted p-md shadow-sm dark:shadow-md">
       <div class="text-md font-medium">本路由 meta.roles = ['admin']</div>
       <p class="text-muted-foreground text-sm">
         - 使用账号

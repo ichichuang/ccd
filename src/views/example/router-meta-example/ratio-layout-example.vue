@@ -4,8 +4,8 @@
 </script>
 
 <template>
-  <div class="p-lg space-y-margin-md h-full column-center">
-    <h2 class="text-xl font-semibold row-y-center gap-sm">
+  <div class="p-lg h-full col-center gap-md">
+    <h2 class="text-xl font-semibold row-start items-center gap-sm">
       <Icons
         name="i-lucide-aspect-ratio"
         size="lg"
@@ -14,7 +14,7 @@
       <span>比例布局示例（meta.parent + meta.ratio）</span>
     </h2>
 
-    <div class="shadow-sm dark:shadow-md rounded-scale p-md space-y-margin-sm max-w-[80%]">
+    <div class="material-elevated col-stretch gap-sm max-w-[80%]">
       <div class="text-md font-medium">本路由 meta 配置</div>
       <p class="text-muted-foreground text-sm">meta.parent = 'ratio'，meta.ratio = '16:9'</p>
       <p class="text-muted-foreground text-sm">

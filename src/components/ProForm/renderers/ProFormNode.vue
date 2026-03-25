@@ -241,7 +241,7 @@ const getGroupLabelText = (node: FormSchemaNode): string => {
               @click="activateCallback(String(index - 1))"
             >
               <template #default>
-                <span class="inline-flex items-center gap-xs">
+                <span class="row-center gap-xs">
                   <Icons
                     name="i-lucide-arrow-left"
                     size="sm"
@@ -256,7 +256,7 @@ const getGroupLabelText = (node: FormSchemaNode): string => {
               @click="activateCallback(String(index + 1))"
             >
               <template #default>
-                <span class="inline-flex items-center gap-xs">
+                <span class="row-center gap-xs">
                   <span>下一页</span>
                   <Icons
                     name="i-lucide-arrow-right"
@@ -272,7 +272,7 @@ const getGroupLabelText = (node: FormSchemaNode): string => {
 
     <Card
       v-else-if="props.node.type === 'card'"
-      class="w-full mb-md surface-elevated rounded-md"
+      class="w-full mb-md rounded-md"
     >
       <template
         v-if="props.node.label"

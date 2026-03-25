@@ -245,6 +245,15 @@ const proTableRoute: RouteConfig = {
       },
     },
     {
+      path: '/example/pro-table/alignment',
+      name: 'ExampleProTableAlignment',
+      component: () => import('@/views/example/pro-table/alignment/index.vue'),
+      meta: {
+        title: '列对齐方式',
+        icon: 'i-lucide-align-left',
+      },
+    },
+    {
       path: '/example/pro-table/column-sizing',
       name: 'ExampleProTableColumnSizing',
       component: () => import('@/views/example/pro-table/column-sizing/index.vue'),
@@ -312,6 +321,16 @@ const proFormRoute: RouteConfig = {
   },
   children: [
     {
+      path: '/example/pro-form/playground',
+      name: 'ExampleProFormPlayground',
+      component: () => import('@/views/example/pro-form/playground/index.vue'),
+      meta: {
+        titleKey: 'router.example.proFormPlayground',
+        rank: 0,
+        icon: 'i-lucide-flask-conical',
+      },
+    },
+    {
       path: '/example/pro-form/basic',
       name: 'ExampleProFormBasic',
       component: () => import('@/views/example/pro-form/basic/index.vue'),
@@ -369,6 +388,16 @@ const proFormRoute: RouteConfig = {
         titleKey: 'router.example.proFormAdvanced',
         rank: 6,
         icon: 'i-lucide-layers',
+      },
+    },
+    {
+      path: '/example/pro-form/api-events',
+      name: 'ExampleProFormApiEvents',
+      component: () => import('@/views/example/pro-form/api-events/index.vue'),
+      meta: {
+        titleKey: 'router.example.proFormApiEvents',
+        rank: 8,
+        icon: 'i-lucide-webhook',
       },
     },
     {

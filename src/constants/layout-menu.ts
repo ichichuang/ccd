@@ -5,18 +5,6 @@
  * 菜单样式常量集中在此，便于后续迁移到 menu-nav-misc Preset Token。
  */
 
-/**
- * 激活态背景映射（可选/扩展用）
- * 当前未使用，仅供未来按 distance 分级时参考；getMenuItemActive 对整条激活路径使用 MENU_ACTIVE_UNIFIED 统一样式。
- * distance 0=叶子, 1=直接父级, 2=祖父级...
- */
-export const MENU_ACTIVE_BG_MAPPING: Record<number, string> = {
-  0: 'bg-primary!',
-  1: 'bg-primary/30!',
-  2: 'bg-primary/20!',
-  3: 'bg-primary/10!',
-}
-
 /** 激活项及所有父级统一样式（菜单激活态单一权威）：primary 背景 + primary-foreground 文字/图标，用于侧栏/Header/面包屑等所有菜单场景 */
 export const MENU_ACTIVE_UNIFIED = 'bg-primary! text-primary-foreground!' as const
 
@@ -24,19 +12,17 @@ export const MENU_ACTIVE_UNIFIED = 'bg-primary! text-primary-foreground!' as con
 export const MENU_INACTIVE_TEXT = 'text-foreground'
 /** 未激活项文字（根级） */
 export const MENU_INACTIVE_TEXT_ROOT = 'text-foreground'
-/** 未激活项图标 */
-export const MENU_INACTIVE_ICON = 'text-foreground'
-/** 未激活项 chevron */
-export const MENU_INACTIVE_CHEVRON = 'text-foreground'
 
 /** Icons 组件 size 规范：nav=lg、breadcrumb=sm、tab=xs */
 export const MENU_ICON_SIZE = 'lg' as const
 export const BREADCRUMB_ICON_SIZE = 'sm' as const
 export const TAB_ICON_SIZE = 'xs' as const
 
-/** 菜单项 base（与 uno.config flex items-center gap-sm cursor-pointer select-none transition-all duration-md ease-in-out border-none bg-transparent 完全一致） */
+/** 菜单项 base（仅结构与交互语义，不含过渡，避免与场景层重复叠加） */
 export const MENU_ITEM_BASE =
-  'flex items-center gap-sm cursor-pointer select-none transition-all duration-md ease-in-out border-none bg-transparent'
+  'flex items-center gap-sm cursor-pointer select-none border-none bg-transparent'
+/** 菜单项统一过渡（单一真源，避免分散写 ease-*） */
+export const MENU_ITEM_TRANSITION = 'transition-all duration-md ease-out-expo'
 
 /** 菜单项间距 */
 export const MENU_ITEM_GAP = 'gap-sm'
@@ -71,13 +57,5 @@ export const MENU_COLLAPSED_FALLBACK_TEXT = 'text-md'
 
 /** 收缩态侧栏一级菜单图标尺寸：比 TieredMenu 子项（lg）大 2 档，仅用于收缩态图标按钮 */
 export const MENU_ICON_SIZE_COLLAPSED = '2xl' as const
-
-/** Typography scale：标题 text-2xl、正文 text-md、辅助 text-sm */
-export const TYPO_TITLE = 'text-2xl' as const
-export const TYPO_BODY = 'text-md' as const
-export const TYPO_CAPTION = 'text-sm' as const
-
-/** 圆角规范：导航/Tab/菜单 rounded-md、表单/卡片 rounded-sm */
+/** 圆角规范：导航/菜单 rounded-md */
 export const ROUNDED_NAV = 'rounded-md' as const
-export const ROUNDED_TAB = 'rounded-md' as const
-export const ROUNDED_CARD = 'rounded-sm' as const

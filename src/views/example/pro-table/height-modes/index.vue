@@ -8,17 +8,7 @@ defineOptions({ name: 'ExampleProTableHeightModesPage' })
 // Creates data sets
 const mockData = ref<HeightModeRow[]>(makeHeightMockData(40))
 
-// ── Demo controls ──────────────────────────────────────────────────────────
-// 使用语义化 spacing 变量而非 px/vh 作为固定高度值
-const fixedHeight = ref<string>('var(--spacing-5xl)')
-const showAllThree = ref<boolean>(true)
-
-const HEIGHT_OPTIONS = [
-  { label: '短 (≈200px)', value: 'calc(var(--spacing-5xl) * 1.5)' },
-  { label: '中 (≈300px)', value: 'calc(var(--spacing-5xl) * 2)' },
-  { label: '高 (≈400px)', value: 'calc(var(--spacing-5xl) * 2.5)' },
-  { label: '极高 (容器上限)', value: 'calc(var(--spacing-5xl) * 3)' },
-]
+const fixedHeight = '20vh'
 
 const tables: { mode: HeightMode; label: string; desc: string; icon: string }[] = [
   {
@@ -40,55 +30,35 @@ const tables: { mode: HeightMode; label: string; desc: string; icon: string }[] 
     icon: 'i-lucide-proportions',
   },
 ]
+
+function getTableContainerClass(mode: HeightMode): string {
+  if (mode === 'auto') {
+    return ''
+  }
+  return 'h-40vh min-h-0'
+}
 </script>
 
 <template>
   <div
     data-archetype="A1-toolbar-content"
-    class="layout-full px-md md:px-lg col-stack-sm min-h-0"
+    class="layout-full px-md md:px-lg flex flex-col gap-sm min-h-0"
   >
     <!-- Toolbar: Hero Header (Inherit canvas color) -->
     <header class="shrink-0 border-b-default">
       <div class="w-full py-sm row-between gap-md flex-wrap">
-        <div class="row-y-center gap-md">
+        <div class="flex flex-row items-center gap-md">
           <div class="p-md bg-primary/10 rounded-lg shrink-0">
             <Icons
               name="i-lucide-proportions"
               class="text-primary text-2xl"
             />
           </div>
-          <div class="col-stack-xs">
+          <div class="flex flex-col gap-xs">
             <h1 class="text-2xl font-bold text-foreground m-0">ProTable — 高度模式</h1>
             <p class="text-muted-foreground text-sm m-0">
               对比演示 fill / auto / fixed 三种高度策略的表现差异。
             </p>
-          </div>
-        </div>
-
-        <!-- Control Area -->
-        <div class="row-y-center gap-md flex-wrap shrink-0">
-          <div class="row-y-center gap-xs">
-            <span class="text-sm text-muted-foreground">固定高度值:</span>
-            <Select
-              v-model="fixedHeight"
-              :options="HEIGHT_OPTIONS"
-              option-label="label"
-              option-value="value"
-              class="w-[var(--spacing-5xl)]"
-            />
-          </div>
-          <div class="row-y-center gap-xs">
-            <label
-              for="ctrl-show-all"
-              class="text-sm text-muted-foreground cursor-pointer"
-            >
-              同时显示三种
-            </label>
-            <ToggleSwitch
-              v-model="showAllThree"
-              input-id="ctrl-show-all"
-              class="shrink-0"
-            />
           </div>
         </div>
       </div>
@@ -96,61 +66,35 @@ const tables: { mode: HeightMode; label: string; desc: string; icon: string }[] 
 
     <!-- Content -->
     <CScrollbar class="flex-1 min-h-0">
-      <div class="w-full col-stack-sm py-sm">
-        <template v-if="showAllThree">
-          <div
-            v-for="table in tables"
-            :key="table.mode"
-            class="bg-card rounded-md shadow-sm dark:shadow-md py-md px-lg flex flex-col gap-lg col-stack-sm"
-          >
-            <div class="row-y-center gap-sm border-b-default pb-sm mb-padding-sm">
-              <Icons
-                :name="table.icon"
-                class="text-primary"
-                size="sm"
-              />
-              <div class="col-stack-xs">
-                <span class="text-md font-semibold text-foreground">{{ table.label }}</span>
-                <span class="text-xs text-muted-foreground">{{ table.desc }}</span>
-              </div>
-            </div>
-            <div class="flex-1 min-h-0">
-              <ProTable
-                :columns="heightModeColumns"
-                :data="mockData"
-                row-key="id"
-                :height-mode="table.mode"
-                :height="table.mode === 'fixed' ? fixedHeight : undefined"
-                :show-toolbar="false"
-                :pagination="{ pageSize: 5 }"
-              />
+      <div class="w-full flex flex-col gap-sm py-sm">
+        <div
+          v-for="table in tables"
+          :key="table.mode"
+          class="bg-card rounded-md shadow-sm dark:shadow-md py-md px-lg flex flex-col gap-lg"
+        >
+          <div class="flex flex-row items-center gap-sm border-b-default pb-sm mb-padding-sm">
+            <Icons
+              :name="table.icon"
+              class="text-primary"
+              size="sm"
+            />
+            <div class="flex flex-col gap-xs">
+              <span class="text-md font-semibold text-foreground">{{ table.label }}</span>
+              <span class="text-xs text-muted-foreground">{{ table.desc }}</span>
             </div>
           </div>
-        </template>
-
-        <template v-else>
-          <div
-            class="bg-card rounded-md shadow-sm dark:shadow-md py-md px-lg flex flex-col gap-lg col-stack-sm"
-          >
-            <div class="row-y-center gap-sm border-b-default pb-sm mb-padding-sm">
-              <Icons
-                name="i-lucide-proportions"
-                class="text-primary"
-                size="sm"
-              />
-              <span class="text-md font-semibold text-foreground">单独展示 — fill 模式</span>
-            </div>
-            <div class="flex-1 min-h-0">
-              <ProTable
-                :columns="heightModeColumns"
-                :data="mockData"
-                row-key="id"
-                height-mode="fill"
-                :pagination="{ pageSize: 12 }"
-              />
-            </div>
+          <div :class="getTableContainerClass(table.mode)">
+            <ProTable
+              :columns="heightModeColumns"
+              :data="mockData"
+              row-key="id"
+              :height-mode="table.mode"
+              :height="table.mode === 'fixed' ? fixedHeight : undefined"
+              :show-toolbar="false"
+              :pagination="{ pageSize: 5 }"
+            />
           </div>
-        </template>
+        </div>
       </div>
     </CScrollbar>
   </div>

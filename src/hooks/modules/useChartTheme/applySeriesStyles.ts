@@ -1,5 +1,6 @@
 // ECharts 系列样式边界：参数与 ECharts 系列类型一致，内部使用 any 避免强依赖 echarts 内部类型。
 import type { ThemeConfig } from './types'
+import { withAlpha } from './utils'
 
 /**
  * 通用样式应用函数，用于设置 itemStyle 和 label
@@ -86,7 +87,7 @@ function applyOpacityConfig(series: any, opacityConfig: any): any {
     lines: 0.8,
     map: 0.8,
     parallel: 0.8,
-    pictorialBar: 0.8,
+    pictorialBar: opacityConfig.bar ?? 0.8,
     liquidFill: 0.8,
     wordCloud: 0.8,
   }
@@ -130,8 +131,53 @@ function applyOpacityConfig(series: any, opacityConfig: any): any {
         }
       }
       break
+    case 'bar':
+    case 'pictorialBar':
+      // 柱类：优先将透明度写入 color 的 rgba（ECharts fill 路径更稳）；渐变/非字符串 color 回退 itemStyle.opacity
+      // 用户显式设置 itemStyle.opacity 时保持用户值
+      {
+        const userOpacity = series.itemStyle?.opacity
+        if (userOpacity !== undefined && userOpacity !== null) {
+          result = {
+            ...result,
+            itemStyle: {
+              ...series.itemStyle,
+              opacity: userOpacity,
+            },
+          }
+          break
+        }
+        const baseColor = result.itemStyle?.color
+        if (typeof baseColor === 'string') {
+          const tinted = withAlpha(baseColor, defaultOpacity)
+          if (
+            tinted !== undefined &&
+            tinted !== baseColor &&
+            typeof tinted === 'string' &&
+            tinted.startsWith('rgba(')
+          ) {
+            result = {
+              ...result,
+              itemStyle: {
+                ...series.itemStyle,
+                color: tinted,
+                opacity: 1,
+              },
+            }
+            break
+          }
+        }
+        result = {
+          ...result,
+          itemStyle: {
+            ...series.itemStyle,
+            opacity: series.itemStyle?.opacity ?? defaultOpacity,
+          },
+        }
+      }
+      break
     default:
-      // 对于其他类型，应用到 itemStyle
+      // 对于其他类型，应用到 itemStyle（bar / pictorialBar 已单独处理）
       result = {
         ...result,
         itemStyle: {

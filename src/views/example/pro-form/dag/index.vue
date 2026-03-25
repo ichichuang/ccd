@@ -4,6 +4,19 @@ defineOptions({ name: 'ExampleProFormDagPage' })
 import type { FormSchema, FormState, ProFormExpose } from '@/components/ProForm'
 
 const formRef = ref<ProFormExpose | null>(null)
+const { formatDate, isInitialized } = useDateUtils()
+const waitFor = (ms: number): Promise<void> =>
+  new Promise(resolve => {
+    const { start, stop } = useTimeoutFn(
+      () => {
+        stop()
+        resolve()
+      },
+      ms,
+      { immediate: false }
+    )
+    start()
+  })
 
 const initialValues: Record<string, unknown> = {
   cloudProvider: 'aws',
@@ -207,7 +220,9 @@ const schema = reactive<FormSchema>({
           description: '提交时自动转为 YYYY-MM-DD 字符串',
           span: 12,
           transform: (value: unknown): unknown => {
-            if (value instanceof Date) return value.toISOString().slice(0, 10)
+            if (value instanceof Date) {
+              return isInitialized.value ? formatDate(value, 'YYYY-MM-DD') : ''
+            }
             return value
           },
           props: { placeholder: '选择日期' },
@@ -228,7 +243,7 @@ const schema = reactive<FormSchema>({
           description: '模拟接口延迟 600ms 后返回选项',
           span: 12,
           options: async (): Promise<{ label: string; value: string }[]> => {
-            await new Promise(resolve => setTimeout(resolve, 600))
+            await waitFor(600)
             return [
               { label: '北京', value: 'beijing' },
               { label: '上海', value: 'shanghai' },
@@ -290,14 +305,14 @@ async function onSubmit(values: Record<string, unknown>): Promise<void> {
   >
     <!-- Toolbar: Hero Header (Transparent Root Policy: Inherit canvas) -->
     <header class="shrink-0 border-b-default border-primary/20">
-      <div class="w-full px-md md:px-lg py-sm row-y-center gap-md">
+      <div class="layout-container py-sm row-center gap-md">
         <div class="p-md bg-primary/10 rounded-lg shrink-0">
           <Icons
             name="i-lucide-git-branch"
             class="text-primary text-2xl"
           />
         </div>
-        <div class="col-stack-xs">
+        <div class="col-stretch gap-xs">
           <h1 class="text-2xl font-bold text-foreground m-0">ProForm 动态联动与计算 (DAG)</h1>
           <p class="text-muted-foreground text-sm m-0">
             演示 DAG 引擎的联动模式：visibleIf 条件显隐、disabledIf 条件禁用、computed
@@ -306,22 +321,26 @@ async function onSubmit(values: Record<string, unknown>): Promise<void> {
         </div>
       </div>
     </header>
+    <div
+      class="shrink-0 px-md py-xs text-xs text-muted-foreground border-b-default border-border/15"
+    >
+      覆盖能力：visibleIf/disabledIf/computed/requiredIf/deps、transform、异步
+      options、setFieldProps。
+    </div>
 
     <!-- Content: split layout (form + JSON preview) -->
     <div class="flex-1 min-h-0">
       <div class="row-start items-start gap-lg layout-full min-h-0">
         <div class="flex-1 min-w-0 h-full">
           <CScrollbar class="layout-full">
-            <div class="w-full p-md md:p-lg col-stack-xl pb-xl">
-              <div
-                class="bg-card rounded-md shadow-sm dark:shadow-md py-md px-lg flex flex-col gap-lg"
-              >
-                <div class="row-y-center gap-sm border-b-default pb-sm mb-padding-sm">
+            <div class="layout-container py-md col-stretch gap-xl pb-xl">
+              <section class="material-elevated col-stretch gap-lg">
+                <div class="row-center gap-sm border-b-default pb-sm mb-sm">
                   <Icons
                     name="i-lucide-git-branch"
                     class="text-primary"
                   />
-                  <div class="col-stack-xs">
+                  <div class="col-stretch gap-xs">
                     <span class="text-md font-semibold text-foreground uppercase tracking-tight">
                       云服务器配置表单
                     </span>
@@ -339,9 +358,7 @@ async function onSubmit(values: Record<string, unknown>): Promise<void> {
                   @submit="onSubmit"
                 >
                   <template #footer="{ formState: slotFormState, submit }">
-                    <div
-                      class="row-end gap-sm pt-md border-t-default border-border/15 mt-padding-md"
-                    >
+                    <div class="row-end gap-sm pt-md border-t-default border-border/15 mt-md">
                       <Button
                         :label="targetFieldDisabled ? '启用目标字段' : '禁用目标字段'"
                         severity="secondary"
@@ -358,13 +375,11 @@ async function onSubmit(values: Record<string, unknown>): Promise<void> {
                     </div>
                   </template>
                 </ProForm>
-              </div>
+              </section>
 
               <!-- Mobile debug panel -->
-              <div
-                class="bg-card rounded-md shadow-sm dark:shadow-md py-md px-lg flex flex-col gap-lg xl:hidden"
-              >
-                <div class="row-y-center gap-sm mb-padding-sm">
+              <section class="material-elevated col-stretch gap-lg xl:hidden">
+                <div class="row-center gap-sm mb-sm">
                   <Icons
                     name="i-lucide-database"
                     class="text-primary"
@@ -376,7 +391,7 @@ async function onSubmit(values: Record<string, unknown>): Promise<void> {
                 >
                   <pre class="m-0 whitespace-pre-wrap break-words text-xs">{{ valuesJson }}</pre>
                 </div>
-              </div>
+              </section>
             </div>
           </CScrollbar>
         </div>
@@ -384,8 +399,8 @@ async function onSubmit(values: Record<string, unknown>): Promise<void> {
         <div
           class="hidden xl:block layout-sidepanel shrink-0 h-full border-l-default border-border/20"
         >
-          <div class="layout-full layout-stack">
-            <div class="shrink-0 px-md py-sm border-b-default border-border/20 row-y-center gap-sm">
+          <div class="layout-full col-stretch">
+            <div class="shrink-0 px-md py-sm border-b-default border-border/20 row-center gap-sm">
               <Icons
                 name="i-lucide-braces"
                 size="sm"

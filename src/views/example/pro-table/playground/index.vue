@@ -1,11 +1,9 @@
 <script setup lang="ts">
-import type { HeightMode } from '@/components/ProTable/engine/types/props'
 import { employeeColumns } from './columns'
 import type { EmployeeRow } from './columns'
 
 defineOptions({ name: 'ExampleProTablePlaygroundPage' })
 
-// ── Mock data ──────────────────────────────────────────────────────────────
 const DEPARTMENTS = ['工程', '设计', '产品', '运营'] as const
 const STATUSES = ['active', 'inactive', 'pending'] as const
 
@@ -59,298 +57,167 @@ function makeMockData(): EmployeeRow[] {
 
 const mockData = ref<EmployeeRow[]>(makeMockData())
 
-// ── Control panel state ────────────────────────────────────────────────────
-const stripedRows = ref<boolean>(false)
-const showHorizontalLines = ref<boolean>(true)
-const showVerticalLines = ref<boolean>(false)
-const selectable = ref<false | 'single' | 'checkbox'>(false)
-const showToolbar = ref<boolean>(true)
-const globalFilter = ref<boolean>(true)
-const isLoading = ref<boolean>(false)
-const rowHover = ref<boolean>(true)
-const heightMode = ref<HeightMode>('fill')
-const selectionPinned = ref<'left' | 'right' | false>(false)
-const tableLayout = ref<'auto' | 'fixed'>('auto')
-
-const HEIGHT_MODE_OPTIONS: { label: string; value: HeightMode }[] = [
-  { label: 'fill（撑满剩余空间）', value: 'fill' },
-  { label: 'auto（随内容自适应）', value: 'auto' },
-  { label: 'fixed（固定高度 50vh，响应式）', value: 'fixed' },
-]
-
-const TABLE_LAYOUT_OPTIONS: { label: string; value: 'auto' | 'fixed' }[] = [
-  { label: 'auto', value: 'auto' },
-  { label: 'fixed', value: 'fixed' },
-]
-
-const SELECTION_OPTIONS: { label: string; value: false | 'single' | 'checkbox' }[] = [
-  { label: '无选择', value: false },
-  { label: '单选', value: 'single' },
-  { label: '多选 (Checkbox)', value: 'checkbox' },
-]
-
-const SELECTION_PINNED_OPTIONS: { label: string; value: 'left' | 'right' | false }[] = [
-  { label: '不固定', value: false },
-  { label: '固定在左', value: 'left' },
-  { label: '固定在右', value: 'right' },
-]
-
-// ── Row class demo (not toggleable — constant demonstration) ───────────────
 function rowClassName(row: EmployeeRow): string {
   return row.status === 'inactive' ? 'opacity-60' : ''
 }
+
+const tableContainerRef = ref<HTMLElement | null>(null)
+const tableContainerHeight = ref<number | undefined>(undefined)
+onMounted(() => {
+  tableContainerHeight.value = tableContainerRef.value?.clientHeight ?? 0
+})
 </script>
 
 <template>
   <div
     data-archetype="A1-toolbar-content"
-    class="layout-full px-md md:px-lg col-stack-sm min-h-0"
+    class="col-fill gap-md"
   >
-    <!-- Toolbar: Hero Header (Transparent Root Policy: Inherit canvas) -->
-    <header class="shrink-0 border-b-default">
-      <div class="w-full py-sm row-y-center gap-md">
-        <div class="p-md bg-primary/10 rounded-lg shrink-0">
-          <Icons
-            name="i-lucide-settings-2"
-            class="text-primary text-2xl"
-          />
-        </div>
-        <div class="col-stack-xs">
-          <h1 class="text-2xl font-bold text-foreground m-0">ProTable — 全量能力展示</h1>
-          <p class="text-muted-foreground text-sm m-0">
-            斑马纹 · 网格线 · 行选择 · 工具栏 · 高度模式 · 固定列 · 自定义行样式
-          </p>
-        </div>
-      </div>
-    </header>
+    <section class="p-sm md:p-md col-stretch gap-sm">
+      <h1 class="text-xl font-bold text-foreground">ProTable Playground（Tabs Showcase）</h1>
+      <p class="text-xs text-muted-foreground">
+        默认基础 · 外观与网格 · 行状态与交互 · 单选机制 · 多选机制 · 工具栏与搜索 · 加载状态
+      </p>
+    </section>
+    <section class="flex-1">
+      <Tabs
+        value="0"
+        class="layout-full"
+      >
+        <TabList>
+          <Tab value="0">默认基础</Tab>
+          <Tab value="1">外观与网格</Tab>
+          <Tab value="2">行状态与交互</Tab>
+          <Tab value="3">单选机制</Tab>
+          <Tab value="4">多选机制</Tab>
+          <Tab value="5">工具栏与搜索</Tab>
+          <Tab value="6">加载状态</Tab>
+        </TabList>
 
-    <!-- Content -->
-    <div class="flex-1 min-h-0 col-stack-sm">
-      <!-- Control Panel -->
-      <div class="shrink-0 border-b-default">
-        <div class="w-full py-sm">
-          <div class="bg-card rounded-md shadow-sm dark:shadow-md py-md px-lg flex flex-col gap-lg">
-            <div class="row-y-center gap-sm border-b-default pb-sm mb-padding-sm">
-              <Icons
-                name="i-lucide-settings-2"
-                class="text-primary"
-                size="sm"
-              />
-              <span class="text-sm font-semibold text-foreground tracking-wider uppercase">
-                能力控制台 / Playground Controls
-              </span>
-            </div>
+        <TabPanels>
+          <TabPanel value="0">
+            <section
+              ref="tableContainerRef"
+              class="layout-full"
+            >
+              <template v-if="tableContainerHeight && tableContainerHeight > 0">
+                <div
+                  class="material-elevated"
+                  :style="{ height: tableContainerHeight + 'px' }"
+                >
+                  <ProTable
+                    :columns="employeeColumns"
+                    :data="mockData"
+                    row-key="id"
+                  />
+                </div>
+              </template>
+            </section>
+          </TabPanel>
 
-            <!-- 3-column grid -->
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-xl">
-              <!-- Group: 外观 -->
-              <div class="bg-muted/5 rounded-md p-md col-stack-md">
-                <div class="row-y-center gap-xs mb-padding-xs">
-                  <Icons
-                    name="i-lucide-palette"
-                    size="xs"
-                    class="text-muted-foreground shrink-0"
-                  />
-                  <p
-                    class="text-xs font-semibold text-muted-foreground uppercase tracking-wider m-0"
-                  >
-                    外观
-                  </p>
-                </div>
-                <div class="row-between">
-                  <label
-                    for="ctrl-striped"
-                    class="text-sm text-foreground cursor-pointer"
-                  >
-                    斑马纹
-                  </label>
-                  <ToggleSwitch
-                    v-model="stripedRows"
-                    input-id="ctrl-striped"
-                    class="shrink-0"
-                  />
-                </div>
-                <div class="row-between">
-                  <label
-                    for="ctrl-hlines"
-                    class="text-sm text-foreground cursor-pointer"
-                  >
-                    横向分割线
-                  </label>
-                  <ToggleSwitch
-                    v-model="showHorizontalLines"
-                    input-id="ctrl-hlines"
-                    class="shrink-0"
-                  />
-                </div>
-                <div class="row-between">
-                  <label
-                    for="ctrl-vlines"
-                    class="text-sm text-foreground cursor-pointer"
-                  >
-                    纵向分割线
-                  </label>
-                  <ToggleSwitch
-                    v-model="showVerticalLines"
-                    input-id="ctrl-vlines"
-                    class="shrink-0"
-                  />
-                </div>
+          <TabPanel value="1">
+            <template v-if="tableContainerHeight && tableContainerHeight > 0">
+              <div
+                class="material-elevated"
+                :style="{ height: tableContainerHeight + 'px' }"
+              >
+                <ProTable
+                  :columns="employeeColumns"
+                  :data="mockData"
+                  row-key="id"
+                  :striped-rows="true"
+                  :show-horizontal-lines="true"
+                  :show-vertical-lines="true"
+                />
               </div>
+            </template>
+          </TabPanel>
 
-              <!-- Group: 交互 -->
-              <div class="bg-muted/5 rounded-md p-md col-stack-md">
-                <div class="row-y-center gap-xs mb-padding-xs">
-                  <Icons
-                    name="i-lucide-mouse-pointer"
-                    size="xs"
-                    class="text-muted-foreground shrink-0"
-                  />
-                  <p
-                    class="text-xs font-semibold text-muted-foreground uppercase tracking-wider m-0"
-                  >
-                    交互
-                  </p>
-                </div>
-                <div class="row-y-center gap-md">
-                  <label class="text-sm text-foreground shrink-0 w-[var(--spacing-3xl)]">
-                    选择模式
-                  </label>
-                  <Select
-                    v-model="selectable"
-                    :options="SELECTION_OPTIONS"
-                    option-label="label"
-                    option-value="value"
-                    class="flex-1 min-w-0"
-                  />
-                </div>
-                <div class="row-y-center gap-md">
-                  <label class="text-sm text-foreground shrink-0 w-[var(--spacing-3xl)]">
-                    固定选择列
-                  </label>
-                  <Select
-                    v-model="selectionPinned"
-                    :options="SELECTION_PINNED_OPTIONS"
-                    option-label="label"
-                    option-value="value"
-                    class="flex-1 min-w-0"
-                  />
-                </div>
-                <div class="row-between mt-padding-xs">
-                  <label
-                    for="ctrl-toolbar"
-                    class="text-sm text-foreground cursor-pointer"
-                  >
-                    工具栏
-                  </label>
-                  <ToggleSwitch
-                    v-model="showToolbar"
-                    input-id="ctrl-toolbar"
-                    class="shrink-0"
-                  />
-                </div>
-                <div class="row-between">
-                  <label
-                    for="ctrl-filter"
-                    class="text-sm text-foreground cursor-pointer"
-                  >
-                    全局搜索
-                  </label>
-                  <ToggleSwitch
-                    v-model="globalFilter"
-                    input-id="ctrl-filter"
-                    class="shrink-0"
-                  />
-                </div>
-                <div class="row-between">
-                  <label
-                    for="ctrl-loading"
-                    class="text-sm text-foreground cursor-pointer"
-                  >
-                    加载中（模拟）
-                  </label>
-                  <ToggleSwitch
-                    v-model="isLoading"
-                    input-id="ctrl-loading"
-                    class="shrink-0"
-                  />
-                </div>
-                <div class="row-between">
-                  <label class="text-sm text-foreground shrink-0">悬停高亮</label>
-                  <ToggleSwitch
-                    v-model="rowHover"
-                    class="shrink-0"
-                  />
-                </div>
+          <TabPanel value="2">
+            <template v-if="tableContainerHeight && tableContainerHeight > 0">
+              <div
+                class="material-elevated"
+                :style="{ height: tableContainerHeight + 'px' }"
+              >
+                <ProTable
+                  :columns="employeeColumns"
+                  :data="mockData"
+                  row-key="id"
+                  :row-hover="true"
+                  :row-class-name="rowClassName"
+                />
               </div>
+            </template>
+          </TabPanel>
 
-              <!-- Group: 布局 -->
-              <div class="bg-muted/5 rounded-md p-md col-stack-md">
-                <div class="row-y-center gap-xs mb-padding-xs">
-                  <Icons
-                    name="i-lucide-layout"
-                    size="xs"
-                    class="text-muted-foreground shrink-0"
-                  />
-                  <p
-                    class="text-xs font-semibold text-muted-foreground uppercase tracking-wider m-0"
-                  >
-                    布局
-                  </p>
-                </div>
-                <div class="row-y-center gap-md">
-                  <label class="text-sm text-foreground shrink-0 w-[var(--spacing-3xl)]">
-                    高度模式
-                  </label>
-                  <Select
-                    v-model="heightMode"
-                    :options="HEIGHT_MODE_OPTIONS"
-                    option-label="label"
-                    option-value="value"
-                    class="flex-1 min-w-0"
-                  />
-                </div>
-                <div class="row-y-center gap-md">
-                  <label class="text-sm text-foreground shrink-0 w-[var(--spacing-3xl)]">
-                    表格分布
-                  </label>
-                  <Select
-                    v-model="tableLayout"
-                    :options="TABLE_LAYOUT_OPTIONS"
-                    option-label="label"
-                    option-value="value"
-                    class="flex-1 min-w-0"
-                  />
-                </div>
+          <TabPanel value="3">
+            <template v-if="tableContainerHeight && tableContainerHeight > 0">
+              <div
+                class="material-elevated"
+                :style="{ height: tableContainerHeight + 'px' }"
+              >
+                <ProTable
+                  :columns="employeeColumns"
+                  :data="mockData"
+                  row-key="id"
+                  selectable="single"
+                />
               </div>
-            </div>
-          </div>
-        </div>
-      </div>
+            </template>
+          </TabPanel>
 
-      <!-- ProTable -->
-      <div class="flex-1 min-h-0">
-        <ProTable
-          :columns="employeeColumns"
-          :data="mockData"
-          :loading="isLoading"
-          title="员工列表"
-          row-key="id"
-          :striped-rows="stripedRows"
-          :show-horizontal-lines="showHorizontalLines"
-          :show-vertical-lines="showVerticalLines"
-          :selectable="selectable"
-          :selection-pinned="selectionPinned"
-          :show-toolbar="showToolbar"
-          :global-filter="globalFilter"
-          :row-hover="rowHover"
-          :height-mode="heightMode"
-          :height="'var(--spacing-5xl)'"
-          :table-layout="tableLayout"
-          :row-class-name="rowClassName"
-          :pagination="{ pageSize: 10, pageSizeOptions: [10, 20, 50] }"
-        />
-      </div>
-    </div>
+          <TabPanel value="4">
+            <template v-if="tableContainerHeight && tableContainerHeight > 0">
+              <div
+                class="material-elevated"
+                :style="{ height: tableContainerHeight + 'px' }"
+              >
+                <ProTable
+                  :columns="employeeColumns"
+                  :data="mockData"
+                  row-key="id"
+                  selectable="checkbox"
+                  selection-pinned="left"
+                />
+              </div>
+            </template>
+          </TabPanel>
+
+          <TabPanel value="5">
+            <template v-if="tableContainerHeight && tableContainerHeight > 0">
+              <div
+                class="material-elevated"
+                :style="{ height: tableContainerHeight + 'px' }"
+              >
+                <ProTable
+                  :columns="employeeColumns"
+                  :data="mockData"
+                  row-key="id"
+                  title="员工列表"
+                  :show-toolbar="true"
+                  :global-filter="true"
+                />
+              </div>
+            </template>
+          </TabPanel>
+
+          <TabPanel value="6">
+            <template v-if="tableContainerHeight && tableContainerHeight > 0">
+              <div
+                class="material-elevated"
+                :style="{ height: tableContainerHeight + 'px' }"
+              >
+                <ProTable
+                  :columns="employeeColumns"
+                  :data="mockData"
+                  row-key="id"
+                  :loading="true"
+                />
+              </div>
+            </template>
+          </TabPanel>
+        </TabPanels>
+      </Tabs>
+    </section>
   </div>
 </template>

@@ -1,0 +1,176 @@
+---
+description: Enforces the useChartTheme wrapper for ECharts to ensure dark mode and theme color reactivity.
+globs: ["src/components/**/*.vue", "src/views/**/*.vue"]
+alwaysApply: true
+---
+
+# The ECharts Theme Law
+
+## Architecture
+
+All ECharts charts in this project are rendered through the `<UseEcharts>` component, which wraps `vue-echarts`. The `useChartTheme()` composable injects the correct text colors, grid lines, tooltip backgrounds, and brand color palettes based on the currently active theme. This ensures charts automatically respond to dark/light mode switches and brand color changes without any manual intervention.
+
+**Never bypass this system.**
+
+---
+
+## REQUIRED: Use `useChartTheme()` for All Chart Options
+
+Pass your raw series/axis data to `useChartTheme()`. The composable merges the theme contract onto your option object and returns a reactive computed ref that updates whenever the active theme changes.
+
+### Correct Pattern
+
+```typescript
+// In <script setup lang="ts">
+import { useChartTheme } from '@/hooks/modules/useChartTheme'
+
+// Define ONLY your data — no colors, no backgrounds
+const rawOption = computed(() => ({
+  xAxis: {
+    type: 'category',
+    data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'],
+  },
+  yAxis: {
+    type: 'value',
+  },
+  series: [
+    {
+      name: 'Sales',
+      type: 'bar',
+      data: [120, 200, 150, 80, 230],
+    },
+  ],
+}))
+
+// useChartTheme injects: textColor, axisLineColor, splitLineColor, backgroundColor,
+// tooltip styles, legend styles, and the brand color palette
+const { option } = useChartTheme(rawOption)
+```
+
+```vue
+<template>
+  <UseEcharts :option="option" class="w-full h-64" />
+</template>
+```
+
+### Advanced: Multiple Series with Brand Palette
+
+The brand palette from `useChartTheme` is automatically applied in order to your series. Define series shapes only — do not set `color` per series:
+
+```typescript
+const rawOption = computed(() => ({
+  legend: { show: true },   // useChartTheme injects legend text color
+  series: [
+    { name: 'Revenue', type: 'line', data: revenueData.value },
+    { name: 'Cost',    type: 'line', data: costData.value },
+    { name: 'Profit',  type: 'bar',  data: profitData.value },
+  ],
+}))
+
+const { option } = useChartTheme(rawOption)
+// Result: series[0] → brand[0], series[1] → brand[1], series[2] → brand[2]
+// All colors update reactively on theme switch
+```
+
+### Glassmorphism Tooltips
+
+For translucent tooltip backgrounds, use `withAlpha` from the chart theme utilities:
+
+```typescript
+import { useChartTheme, getChartSystemVariables } from '@/hooks/modules/useChartTheme'
+import { withAlpha } from '@/hooks/modules/useChartTheme/utils'
+
+const rawOption = computed(() => {
+  const vars = getChartSystemVariables()
+  return {
+    tooltip: {
+      // CORRECT: withAlpha pulls from the CSS variable system
+      backgroundColor: withAlpha(vars.card, 0.92),
+      borderColor: withAlpha(vars.border, 0.3),
+      textStyle: { color: vars.foreground },
+    },
+    series: [...],
+  }
+})
+```
+
+---
+
+## FORBIDDEN Patterns
+
+### FORBIDDEN: Hardcoded Colors in `option`
+
+```typescript
+// FORBIDDEN: static hex colors break dark mode and theme switching
+const option = {
+  color: ['#5470c6', '#91cc75', '#fac858'],
+  backgroundColor: '#ffffff',
+  textStyle: { color: '#333333' },
+  xAxis: {
+    axisLine: { lineStyle: { color: '#cccccc' } },
+  },
+  tooltip: {
+    backgroundColor: 'rgba(255,255,255,0.9)',
+    textStyle: { color: '#000' },
+  },
+}
+```
+
+### FORBIDDEN: Setting `backgroundColor` Directly
+
+```typescript
+// FORBIDDEN: chart canvas background must match the active theme surface
+const option = {
+  backgroundColor: '#1a1a2e',   // breaks in light mode
+  backgroundColor: 'transparent', // use only if you KNOW the container bg
+}
+```
+
+`useChartTheme` handles background injection. If you need transparent (e.g., chart floats over a card), pass `{ transparent: true }` in the options argument — do not set it directly.
+
+### FORBIDDEN: Raw `vue-echarts` Import
+
+```typescript
+// FORBIDDEN: bypasses UseEcharts wrapper and theme integration
+import VChart from 'vue-echarts'
+import * as echarts from 'echarts/core'
+
+echarts.init(domRef.value, 'dark')
+```
+
+Use `<UseEcharts>` exclusively. It handles resize observation, theme registration, and disposal lifecycle.
+
+### FORBIDDEN: Hardcoded Font Sizes or Font Families in `option`
+
+```typescript
+// FORBIDDEN: violates design token contract
+textStyle: { fontSize: 12, fontFamily: 'Arial' }
+axisLabel: { fontSize: 11 }
+```
+
+`useChartTheme` injects correct typography scaled to the user's font preference. Do not override it.
+
+---
+
+## Token → Chart Variable Mapping
+
+| Visual Need             | How `useChartTheme` Resolves It          |
+| ----------------------- | ---------------------------------------- |
+| Axis label color        | `text-muted-foreground` CSS variable     |
+| Grid / split line color | `border-border` at reduced opacity       |
+| Tooltip background      | `bg-card` via `withAlpha(vars.card, 0.92)` |
+| Series palette          | Brand colors from `colorTokens.ts`       |
+| Chart background        | `bg-background` or transparent           |
+| Legend text             | `text-foreground`                        |
+
+---
+
+## Reactivity Contract
+
+`useChartTheme` returns a **computed ref**. The option updates whenever:
+
+1. The user toggles dark / light mode
+2. The user switches brand color preset
+3. The `rawOption` computed dependency changes (your data updates)
+
+This means your chart re-renders correctly in all three scenarios with zero extra code.

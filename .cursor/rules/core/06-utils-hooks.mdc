@@ -1,0 +1,274 @@
+---
+description: Enforces the Search Before Writing rule for utility hooks and global events.
+globs: ["src/**/*.vue", "src/**/*.ts"]
+alwaysApply: true
+---
+
+# The Custom Hooks Mandate
+
+## Law 0 — The Hierarchy of Execution (SSOT)
+
+Before implementing any logic, you MUST follow this search order:
+
+1. **Project Hooks:** Check `@/hooks/modules/*` first (e.g., `useHttpRequest`, `useDateUtils`).
+2. **Common Utilities:** Check the root `@/utils/` directory first (e.g., `strings.ts`, `lodashes.ts`, `typeCasters.ts`), then inspect targeted sub-directories like `@/utils/http/`, `@/utils/date/`, and `@/utils/theme/`.
+3. **VueUse + Skills:** Use `@vueuse/core` composables, and consult the corresponding knowledge in `.cursor/skills/*/SKILL.md` for project-aligned usage.
+4. **Native JS:** Use native APIs only as the last resort when no project abstraction or VueUse solution exists.
+
+### Skills Bridge — Knowledge Tier
+
+`.cursor/skills/` is the **Knowledge Tier** (guidance layer), not a runtime code layer.  
+Before applying capability domains such as `pinia`, `unocss`, or `vueuse`, you MUST read the relevant `SKILL.md` to align implementation with the repository's expert-level conventions.
+
+## Law 1 — No Raw DOM Event Listeners
+
+**FORBIDDEN:**
+```typescript
+// FORBIDDEN: leaks memory, ignores SSR, skips cleanup
+window.addEventListener('resize', onResize)
+window.addEventListener('scroll', onScroll)
+document.addEventListener('keydown', onKey)
+element.addEventListener('click', onClick)
+```
+
+**REQUIRED — Use `@vueuse/core` composables:**
+```typescript
+import { useWindowSize, useScroll, useKeyStroke, useEventListener } from '@vueuse/core'
+
+// Reactive, SSR-safe, auto-cleanup on unmount
+const { width, height } = useWindowSize()
+const { y: scrollY } = useScroll(window)
+useKeyStroke('Escape', (e) => handleClose(e))
+```
+
+**For element-level resize (REQUIRED):**
+```typescript
+// Use project wrapper — not raw ResizeObserver
+import { useAppElementSize } from '@/hooks/modules/useAppElementSize'
+
+const containerRef = ref<HTMLElement>()
+const { width, height } = useAppElementSize(containerRef)
+```
+
+## Law 2 — No Raw Event Bus / CustomEvent
+
+**FORBIDDEN:**
+```typescript
+// FORBIDDEN: no TypeScript safety, no cleanup, no central registry
+window.dispatchEvent(new CustomEvent('my-event', { detail: payload }))
+window.addEventListener('my-event', handler)
+
+// FORBIDDEN: creating ad-hoc emitters
+const emitter = new EventEmitter()
+const bus = mitt()
+```
+
+**REQUIRED — Use the singleton `useMitt()` event bus:**
+```typescript
+import { useMitt } from '@/utils/mitt'
+
+// Emitting
+const { emit } = useMitt()
+emit('theme:changed', { mode: 'dark' })
+
+// Subscribing (auto-cleaned up in onUnmounted)
+const { on } = useMitt()
+on('theme:changed', (payload) => applyTheme(payload.mode))
+```
+
+The singleton instance is typed in `src/utils/mitt.ts` (where `type Events` is exported). All event names and payloads MUST be declared there before use.
+
+**[LAW] Event Bus Context:**
+- **Components (`<script setup>`):** MUST ALWAYS use `useAutoMitt()` to prevent memory leaks.
+- **Non-Components (Router/Utils/Stores):** `useMitt()` is allowed.
+
+## Law 3 — Search Before Implementing
+
+**Before writing ANY utility hook, verify it does not already exist:**
+
+| Need | Use |
+|---|---|
+| Window/element dimensions | `useWindowSize()` / `useAppElementSize()` |
+| Scroll position & direction | `useScroll()` from `@vueuse/core` |
+| Debounced function | `useDebounceFn()` from `@vueuse/core` |
+| Throttled function | `useThrottleFn()` from `@vueuse/core` |
+| Element visibility | `useIntersectionObserver()` from `@vueuse/core` |
+| Mouse position | `useMouse()` from `@vueuse/core` |
+| Clipboard | `useClipboard()` from `@vueuse/core` |
+| Global event bus | `useMitt()` from `@/utils/mitt` |
+| Theme switching | `useThemeSwitch()` from `@/hooks/modules/useThemeSwitch` |
+| Locale switching | `useLocale()` from `@/hooks/modules/useLocale` |
+| Date formatting | `useDateUtils()` from `@/hooks/modules/useDateUtils` |
+| HTTP state machine | `useHttpRequest()` from `@/hooks/modules/useHttpRequest` |
+| Loading overlay | `useLoading()` from `@/hooks/layout/useLoading` |
+| Page title | `usePageTitle()` from `@/hooks/layout/usePageTitle` |
+| NProgress bar | `useNprogress()` from `@/hooks/layout/useNprogress` |
+
+**If the utility above covers your need: use it. Do not re-implement.**
+
+## Law 4 — Composable Return Types Are Mandatory
+
+All composables MUST declare explicit return types to prevent "inferred type cannot be named" TypeScript errors:
+
+**FORBIDDEN:**
+```typescript
+export function useMyFeature() {
+  const count = ref(0) // return type inferred — breaks isolated declarations
+  return { count }
+}
+```
+
+**REQUIRED:**
+```typescript
+export interface UseMyFeatureReturn {
+  count: Ref<number>
+  increment: () => void
+}
+
+export function useMyFeature(): UseMyFeatureReturn {
+  const count = ref<number>(0)
+  const increment = (): void => { count.value++ }
+  return { count, increment }
+}
+```
+
+## Law 5 — No `setInterval` / `setTimeout` in Components
+
+**FORBIDDEN:**
+```typescript
+// FORBIDDEN: not cleaned up on unmount, causes memory leaks
+setInterval(() => fetchData(), 5000)
+setTimeout(() => doSomething(), 300)
+```
+
+**REQUIRED:**
+```typescript
+import { useIntervalFn, useTimeoutFn } from '@vueuse/core'
+
+// Auto-paused when component unmounts
+const { pause, resume } = useIntervalFn(fetchData, 5000)
+const { start } = useTimeoutFn(doSomething, 300)
+```
+
+---
+
+## Law 6 — Use `useAutoMitt` for Component Event Subscriptions
+
+**Source**: `src/hooks/modules/useAutoMitt.ts`
+
+When subscribing to the Mitt event bus **inside a component**, ALWAYS use `useAutoMitt` instead of `useMitt`. `useAutoMitt` registers an `onUnmounted` hook that automatically cancels all subscriptions when the component is destroyed — preventing memory leaks and Vue warnings from stale handlers.
+
+```typescript
+// ✅ REQUIRED inside <script setup> (component context)
+const { on, emit } = useAutoMitt()
+
+on('theme:changed', ({ mode }) => {
+  applyLocalTheme(mode)
+})
+// No manual cleanup needed — auto-unsubscribed on unmount
+```
+
+**FORBIDDEN inside components:**
+```typescript
+// ❌ FORBIDDEN: subscription leaks when component is destroyed
+import { useMitt } from '@/utils/mitt'
+const { on } = useMitt()
+on('theme:changed', handler) // never auto-cleaned
+```
+
+**When to use `useMitt` directly** (NOT `useAutoMitt`):
+- Router navigation guards (`src/router/utils/guards.ts`)
+- Plain utility functions, stores, or non-component TypeScript files
+- Anywhere `onUnmounted` is not available (outside component setup context)
+
+| Context | Use |
+|---|---|
+| Vue `<script setup>` | `useAutoMitt()` — auto-cleanup |
+| Router guards / utils / stores | `useMitt()` — manual or long-lived |
+
+---
+
+## Law 7 — `deviceSync` vs `useDeviceStore`: Know the Timing Boundary
+
+**Source**: `src/utils/deviceSync.ts`
+
+```typescript
+export function getDeviceTypeSync(): DeviceType       // 'Mobile' | 'Tablet' | 'PC'
+export function getBreakpointSync(width?: number): BreakpointKey
+```
+
+These are **synchronous, store-free** device detection utilities. They work by reading `navigator.userAgent` and `window.innerWidth` directly — no Pinia, no Vue reactivity.
+
+### When to use `deviceSync` (REQUIRED in pre-mount contexts)
+
+Use `getDeviceTypeSync()` / `getBreakpointSync()` ONLY when Pinia stores are not yet initialized:
+
+| Caller | Why |
+|---|---|
+| `sizeEngine.preload()` (runs before `createApp`) | Store does not exist yet |
+| `main.ts` / `setupPlugins` initialization | Store may not be mounted |
+| `index.html` inline bootstrap scripts | Pure browser context, no Vue |
+
+```typescript
+// ✅ CORRECT: pre-mount FOUC prevention (sizeEngine.ts)
+import { getDeviceTypeSync, getBreakpointSync } from '@/utils/deviceSync'
+
+const deviceType = getDeviceTypeSync()  // safe before createApp()
+const breakpoint = getBreakpointSync()
+```
+
+### When to use `useDeviceStore` (REQUIRED at runtime)
+
+After the app is mounted, ALWAYS use the reactive device store — never read `window.innerWidth` directly:
+
+```typescript
+// ✅ CORRECT: runtime device queries inside components / composables
+const deviceStore = useDeviceStore()
+const isMobile = computed(() => deviceStore.type === 'Mobile')
+```
+
+**FORBIDDEN**: Calling `getDeviceTypeSync()` inside `<script setup>` or composables after mount — it bypasses reactive state and will not update on window resize.
+
+---
+
+## Law 8 — `withLoading` vs `withPageLoading`: Global vs Content-Area
+
+**Source**: `src/hooks/layout/useLoading.ts`
+
+There are **two independent loading counter systems**. Using the wrong one shows the wrong UI layer.
+
+| API | Counter | UI effect | Typical use |
+|---|---|---|---|
+| `loadingStart()` / `loadingDone()` | `layoutStore.loadingCount` | Full-screen overlay (covers entire layout) | App init, auth check, critical global operations |
+| `withLoading(fn)` | same | Full-screen overlay (auto-paired) | Any async op needing full-screen block |
+| `pageLoadingStart()` / `pageLoadingDone()` | `layoutStore.pageLoadingCount` | Content-area skeleton (inside LayoutAdmin) | Route data fetching, page-level API calls |
+| `withPageLoading(fn)` | same | Content-area skeleton (auto-paired) | Preferred pattern for page data loading |
+
+**REQUIRED — Prefer auto-paired wrappers** (avoids missing `finally`):
+
+```typescript
+const { withLoading, withPageLoading } = useLoading()
+
+// ✅ Full-screen block (global auth, critical init)
+const result = await withLoading(async () => {
+  return await initializeApp()
+})
+
+// ✅ Content-area skeleton (page data fetch — MOST COMMON)
+const data = await withPageLoading(async () => {
+  return await fetchPageData()
+})
+```
+
+**FORBIDDEN — Manual start/done without finally protection:**
+```typescript
+// ❌ FORBIDDEN: loadingDone() may never be called if the await throws
+const { pageLoadingStart, pageLoadingDone } = useLoading()
+pageLoadingStart()
+const data = await fetchData() // if this throws, done() is never called → stuck spinner
+pageLoadingDone()
+```
+
+**Decision rule:**
+- Route guard / app bootstrap → `withLoading`
+- Page `onMounted` data fetch / table refresh → `withPageLoading`

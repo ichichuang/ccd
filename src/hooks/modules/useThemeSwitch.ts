@@ -115,14 +115,15 @@ function cleanupTransitionState(generation?: number) {
   // 仅清除 View Transition 临时变量（x/y/radius），保留尺寸系统 --transition-xs..5xl
   // ═══════════════════════════════════════════════════════════════
   const VIEW_TRANSITION_VARS = ['--transition-x', '--transition-y', '--transition-radius']
-  const currentCssText = root.style.cssText
-  const cleanedCssText = currentCssText
+  const currentCssText: string = root.style.cssText
+  const cleanedCssText: string = currentCssText
     .split(';')
+    .map(s => s.trim())
     .filter(part => {
-      const prop = part.split(':')[0]?.trim()
+      const prop: string | undefined = part.split(':')[0]?.trim()
       return prop && !VIEW_TRANSITION_VARS.includes(prop)
     })
-    .join(';')
+    .join('; ')
   root.style.cssText = cleanedCssText
 
   // ═══════════════════════════════════════════════════════════════

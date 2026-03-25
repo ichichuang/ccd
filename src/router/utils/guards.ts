@@ -6,6 +6,7 @@ import type { Router } from 'vue-router'
 import { processAsyncRoutes } from './transform'
 import type { createDynamicRouteManager } from './dynamic'
 import { usePermissionGuard } from './permission'
+import { registerGuardEffects } from './guardEffects'
 
 type DynamicRouteManager = ReturnType<typeof createDynamicRouteManager>
 
@@ -37,7 +38,10 @@ export const registerRouterGuards = ({
     routeUtils.updateRouteUtils(completeRoutes)
   }
 
-  // 注册权限守卫
+  // 1. UI 副作用钩子（必须先注册，NProgress 在异步权限检查前启动）
+  registerGuardEffects(router)
+
+  // 2. 权限守卫（纯访问控制）
   usePermissionGuard({ router, initDynamicRoutes })
 
   return dynamicRouteManager

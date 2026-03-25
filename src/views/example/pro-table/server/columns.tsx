@@ -25,13 +25,13 @@ export const serverTableColumns: ProTableColumn<DummyUserDTO>[] = [
     minWidth: '200px',
     sortable: true,
     render: ({ row }: ColumnRenderParams<DummyUserDTO>) => (
-      <div class="row-y-center gap-sm">
+      <div class="flex flex-row items-center gap-sm">
         <img
           src={row.image}
           alt={row.username}
           class="w-[var(--spacing-xl)] h-[var(--spacing-xl)] rounded-full object-cover shrink-0 shadow-sm"
         />
-        <div class="col-stack-xs min-w-0">
+        <div class="flex flex-col gap-xs min-w-0">
           <span class="text-sm font-medium text-foreground text-single-line-ellipsis">
             {row.firstName} {row.lastName}
           </span>
@@ -80,7 +80,7 @@ export const serverTableColumns: ProTableColumn<DummyUserDTO>[] = [
     render: ({ row }: ColumnRenderParams<DummyUserDTO>) => {
       const company = row.company
       return (
-        <div class="col-stack-xs min-w-0">
+        <div class="flex flex-col gap-xs min-w-0">
           <span class="text-sm text-single-line-ellipsis">{company.name}</span>
           <span class="text-xs text-muted-foreground text-single-line-ellipsis">
             {company.department} · {company.title}

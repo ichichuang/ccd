@@ -53,6 +53,7 @@ import { mergeAdvancedConfigs } from './mergeAdvancedConfigs'
  * 构建主题配置对象
  */
 function buildThemeConfig(): ThemeConfig {
+  const v = getChartSystemVariables()
   const {
     foreground,
     mutedForeground,
@@ -68,12 +69,10 @@ function buildThemeConfig(): ThemeConfig {
     danger,
     info,
     help,
-    paddings,
-    gap,
-    gapl,
-    fontSize,
-    fontSizeSmall,
-  } = getChartSystemVariables()
+    fontSizeMd,
+    fontSizeSm,
+    ...metricRest
+  } = v
 
   const size = getChartSizeTokens()
 
@@ -97,8 +96,8 @@ function buildThemeConfig(): ThemeConfig {
     font: {
       textColor: foreground,
       textColorSecondary: mutedForeground,
-      fontSize,
-      fontSizeSmall,
+      fontSizeMd,
+      fontSizeSm,
     },
     size,
     color: {
@@ -113,9 +112,6 @@ function buildThemeConfig(): ThemeConfig {
       secondaryColors,
     },
     opacity: DEFAULT_OPACITY_VALUES,
-    paddings,
-    gap,
-    gapl,
     foreground,
     mutedForeground,
     background,
@@ -123,6 +119,9 @@ function buildThemeConfig(): ThemeConfig {
     border,
     accent,
     primaryForeground,
+    fontSizeMd,
+    fontSizeSm,
+    ...metricRest,
   }
 }
 
@@ -222,8 +221,8 @@ function applyThemeToOption(
     })
     const finalLegend = styledLegend.map((legend: any) => ({
       ...legend,
-      right: legend.right ?? `${themeConfig.paddings}%`,
-      top: legend.top ?? themeConfig.gapl,
+      right: legend.right ?? `${themeConfig.gapXs}%`,
+      top: legend.top ?? themeConfig.gapSm,
     }))
 
     mergedOption.legend = isLegendArray ? finalLegend : finalLegend[0]
@@ -232,8 +231,8 @@ function applyThemeToOption(
   // 合并网格样式
   if (!mergedOption.grid) {
     mergedOption.grid = {
-      left: `${themeConfig.paddings}%`,
-      right: `${themeConfig.paddings}%`,
+      left: `${themeConfig.gapXs}%`,
+      right: `${themeConfig.gapXs}%`,
       top: '16%',
       bottom: '4%',
       backgroundColor: 'transparent',

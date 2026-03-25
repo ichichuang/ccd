@@ -240,14 +240,14 @@ async function onClickValidateOnly(): Promise<void> {
   >
     <!-- Toolbar: Hero Header (Transparent Root Policy: Inherit canvas) -->
     <header class="shrink-0 border-b-default border-primary/20">
-      <div class="w-full px-md md:px-lg py-sm row-y-center gap-md">
+      <div class="layout-container py-sm row-center gap-md">
         <div class="p-md bg-primary/10 rounded-lg shrink-0">
           <Icons
             name="i-lucide-form-input"
             class="text-primary text-2xl"
           />
         </div>
-        <div class="col-stack-xs">
+        <div class="col-stretch gap-xs">
           <h1 class="text-2xl font-bold text-foreground m-0">ProForm 基础组件与状态联动</h1>
           <p class="text-muted-foreground text-sm m-0">
             展示 ProForm 引擎已注册的全部基础字段，并演示全局 readonly / disabled 联动、校验与提交。
@@ -255,25 +255,30 @@ async function onClickValidateOnly(): Promise<void> {
         </div>
       </div>
     </header>
+    <div
+      class="shrink-0 px-md py-xs text-xs text-muted-foreground border-b-default border-border/15"
+    >
+      覆盖能力：全部内置字段、全局 readonly/disabled、提交与校验、实时状态观测。
+    </div>
 
     <!-- Content: split layout (form + JSON preview) -->
     <div class="flex-1 min-h-0">
       <div class="row-start items-start gap-lg layout-full min-h-0">
         <div class="flex-1 min-w-0 h-full">
           <CScrollbar class="layout-full">
-            <div class="w-full p-md md:p-lg col-stack-xl">
+            <div class="layout-container py-md col-stretch gap-xl">
               <!-- 吸附到顶部的控制面板 -->
               <div
-                class="bg-card rounded-md shadow-sm dark:shadow-md py-md px-lg flex flex-col gap-lg sticky top-0 z-10 bg-muted/80 backdrop-blur-md border-primary/20"
+                class="material-elevated col-stretch gap-lg sticky top-0 z-layout bg-muted/80 backdrop-blur-md border-primary/20"
               >
                 <div class="row-between gap-md flex-wrap">
-                  <div class="row-y-center gap-md">
+                  <div class="row-center gap-md">
                     <Icons
                       name="i-lucide-sliders-horizontal"
                       size="xl"
                       class="text-accent!"
                     />
-                    <div class="col-stack-xs">
+                    <div class="col-stretch gap-xs">
                       <div class="font-semibold text-foreground">全局状态控制</div>
                       <div class="text-xs text-muted-foreground">
                         验证 readonly / disabled 对所有字段的影响。
@@ -281,16 +286,16 @@ async function onClickValidateOnly(): Promise<void> {
                     </div>
                   </div>
 
-                  <div class="row-y-center gap-sm flex-wrap">
-                    <div class="row-y-center gap-xs">
+                  <div class="row-center gap-sm flex-wrap">
+                    <div class="row-center gap-xs">
                       <span class="text-sm text-muted-foreground">Disabled</span>
                       <ToggleSwitch v-model="isDisabled" />
                     </div>
-                    <div class="row-y-center gap-xs pr-md border-r-default border-border/40">
+                    <div class="row-center gap-xs pr-md border-r-default border-border/40">
                       <span class="text-sm text-muted-foreground">Readonly</span>
                       <ToggleSwitch v-model="isReadonly" />
                     </div>
-                    <div class="row-y-center gap-sm flex-wrap">
+                    <div class="row-center gap-sm flex-wrap">
                       <Button
                         label="重置"
                         severity="secondary"
@@ -320,15 +325,13 @@ async function onClickValidateOnly(): Promise<void> {
               </div>
 
               <!-- 表单区域 -->
-              <div
-                class="bg-card rounded-md shadow-sm dark:shadow-md py-md px-lg flex flex-col gap-lg"
-              >
-                <div class="row-y-center gap-sm border-b-default pb-sm mb-padding-sm">
+              <section class="material-elevated col-stretch gap-lg">
+                <div class="row-center gap-sm border-b-default pb-sm mb-sm">
                   <Icons
                     name="i-lucide-form-input"
                     class="text-primary"
                   />
-                  <div class="col-stack-xs">
+                  <div class="col-stretch gap-xs">
                     <span class="text-md font-semibold text-foreground uppercase tracking-tight">
                       表单配置与渲染
                     </span>
@@ -349,9 +352,7 @@ async function onClickValidateOnly(): Promise<void> {
                   @submit="onSubmit"
                 >
                   <template #footer="{ formState: slotFormState, submit }">
-                    <div
-                      class="row-end gap-sm pt-md border-t-default border-border/15 mt-padding-md"
-                    >
+                    <div class="row-end gap-sm pt-md border-t-default border-border/15 mt-md">
                       <Button
                         label="立即提交"
                         icon="i-lucide-send"
@@ -362,13 +363,11 @@ async function onClickValidateOnly(): Promise<void> {
                     </div>
                   </template>
                 </ProForm>
-              </div>
+              </section>
 
               <!-- Mobile JSON preview -->
-              <div
-                class="bg-card rounded-md shadow-sm dark:shadow-md py-md px-lg flex flex-col gap-lg xl:hidden"
-              >
-                <div class="row-y-center gap-sm mb-padding-sm">
+              <section class="material-elevated col-stretch gap-lg xl:hidden">
+                <div class="row-center gap-sm mb-sm">
                   <Icons
                     name="i-lucide-database"
                     class="text-primary"
@@ -380,7 +379,7 @@ async function onClickValidateOnly(): Promise<void> {
                     valuesJson
                   }}</pre>
                 </div>
-              </div>
+              </section>
             </div>
           </CScrollbar>
         </div>
@@ -388,8 +387,8 @@ async function onClickValidateOnly(): Promise<void> {
         <div
           class="hidden xl:block layout-sidepanel shrink-0 h-full border-l-default border-border/20"
         >
-          <div class="layout-full layout-stack">
-            <div class="shrink-0 px-md py-sm border-b-default border-border/20 row-y-center gap-sm">
+          <div class="layout-full col-stretch">
+            <div class="shrink-0 px-md py-sm border-b-default border-border/20 row-center gap-sm">
               <Icons
                 name="i-lucide-braces"
                 size="sm"

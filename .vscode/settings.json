@@ -56,6 +56,14 @@
   "unocss.enableIntelliSense": true, // 启用智能提示
   "unocss.remToPxPreview": true, // Hover 显示 px 值
   "unocss.colorPreview": true, // 显示颜色块
+  "unocss.languageIds": [
+    "vue",
+    "html",
+    "typescript",
+    "javascript",
+    "typescriptreact",
+    "javascriptreact"
+  ],
 
   // === 语言特定配置 ===
   "[vue]": {

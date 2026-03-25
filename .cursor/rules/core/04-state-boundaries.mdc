@@ -1,0 +1,114 @@
+---
+description: Enforces the API Call Isolation Law, Pinia store ownership matrix, and cross-layer data flow. Applies to all business logic in src/.
+globs: ["src/**/*.ts", "src/**/*.vue", "src/**/*.tsx"]
+---
+
+# State Boundaries & API Call Isolation Law
+
+## THE IMMUTABLE DATA FLOW — NO EXCEPTIONS
+
+```
+src/api/** → src/hooks/modules/use*.ts → src/stores/** → src/views/**
+```
+
+Every deviation from this chain is an **architectural violation**. There are no exceptions.
+
+## PINIA STORE ABSOLUTE PROHIBITIONS
+
+Pinia stores MUST NEVER:
+- Import `vue-router` or call `router.push()` / `router.replace()`
+- Import from `src/api/` or call any API function directly
+- Initiate HTTP requests of any kind
+
+❌ FORBIDDEN — API call inside a store action:
+```typescript
+// src/stores/modules/user.ts
+actions: {
+  async fetchUser() {
+    const data = await requestGetUserInfo() // VIOLATION: API belongs in a composable
+    this.userInfo = data
+  }
+}
+```
+
+✅ REQUIRED — composable orchestrates, store only receives result:
+```typescript
+// src/hooks/modules/useAuth.ts
+const restoreLoginFromToken = async () => {
+  const userInfo = await requestAuthCurrentUser(userStore.token) // API here
+  userStore.applyRestoredUserInfo(userInfo)                      // Store receives
+}
+```
+
+## STORE OWNERSHIP MATRIX
+
+Each piece of state has exactly ONE owner. Accessing the same data from two different stores is a violation.
+
+| Data | Owner Store | Required Access Pattern |
+|------|-------------|------------------------|
+| Token, UserInfo, isLogin | `useUserStore` | Read via getters only |
+| Roles, permissions | `useUserStore` (userInfo.roles/permissions) | `useAuth().hasRole/hasAuth` |
+| Static/Dynamic routes | `usePermissionStore` | Via router system only |
+| Open tabs (admin menu) | `usePermissionStore` | `addTab/removeTab` actions |
+| Window metadata (once-opened) | `usePermissionStore` | `registerWindow/markWindowClosed` |
+| Layout mode, sidebar, header visibility | `useLayoutStore` | Via getters (`effectiveMode`, `activeVisibility`) |
+| Global loading state | `useLayoutStore` (counter, NOT boolean) | `useLoading()` hook ONLY |
+| Viewport width, breakpoint, device type | `useDeviceStore` | Read-only getters |
+| Theme mode, preset name | `useThemeStore` | `useThemeSwitch()` hook |
+| Size mode (compact/comfortable/loose) | `useSizeStore` | `useSizeStore().setSize()` |
+| Current locale | `useLocaleStore` | `useLocale().switchLocale()` |
+| Table drawer open/selectedRow | `useTableDrawerStore` | Direct store access |
+
+## CROSS-STORE INTERACTION RULES
+
+**Allowed reads:**
+- `useLayoutStore` → may read `useDeviceStore` (lazy, cached) for `effectiveMode` computation only
+
+**Allowed writes (logout cleanup ONLY):**
+- `useUserStore.logout()` → may call `useLayoutStore().resetSetting()` + `usePermissionStore().reset()`
+
+**All other cross-store writes: FORBIDDEN.**
+
+## ROUTER INTERACTION LAW
+
+- ❌ FORBIDDEN: Direct `router.addRoute()` / `router.removeRoute()` calls anywhere in the codebase
+- ✅ REQUIRED: Use `DynamicRouteManager` from `src/router/utils/dynamic.ts` exclusively
+
+## COMPONENT STATE vs PINIA
+
+**Goes into Pinia:**
+- Cross-component shared UI state (loading, theme, locale)
+- Persisted user preferences
+- Auth/session data (token, roles, permissions)
+- Navigation state (tabs, breadcrumbs, dynamic routes)
+
+**Stays in component `ref/reactive`:**
+- Local form state before submission
+- Component-specific loading flags
+- Transient UI state (hover, focus, dropdown open/closed)
+- Pagination state not shared across routes
+
+## LOADING COUNTER LAW — NEVER A BOOLEAN TOGGLE
+
+`loadingCount` is a counter (starts at `1` for app startup). It MUST NOT be treated as a boolean.
+
+❌ FORBIDDEN — Boolean toggle destroys concurrent request safety:
+```typescript
+layoutStore.isLoading = true
+// ... await request ...
+layoutStore.isLoading = false  // Collapses if two requests run concurrently
+```
+
+✅ REQUIRED — use `useLoading()`:
+```typescript
+const { withLoading, loadingStart, loadingDone } = useLoading()
+
+// Pattern A: auto-pair wrapper (preferred — exception-safe)
+const result = await withLoading(() => fetchData())
+
+// Pattern B: classic pair — ALWAYS wrap in try/finally
+loadingStart()
+try { await fetchData() } finally { loadingDone() }
+```
+
+**Why:** `loadingCount` starts at `1` (app startup phase). Multiple concurrent requests increment/decrement atomically. Direct boolean assignment collapses this concurrency safety.

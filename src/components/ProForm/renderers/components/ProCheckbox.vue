@@ -70,7 +70,7 @@ const handleUpdate = (value: CheckboxValue): void => {
   </span>
   <div
     v-else-if="optionsList.length > 0"
-    class="layout-wrap gap-xs"
+    class="flex flex-wrap gap-xs"
   >
     <div
       v-for="opt in optionsList"

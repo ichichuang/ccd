@@ -4,6 +4,8 @@
 // 通用图表配置类型（供 useChartTheme 与 UseEcharts 共同使用）
 // ---------------------------------------------------------------------------
 
+import type { ChartMetricLadders, ChartSizeTokens } from '@/utils/theme/chartUtils'
+
 // 图表透明度配置类型
 export interface ChartOpacityConfig {
   /** 折线图区域填充透明度 (0-1) */
@@ -133,12 +135,12 @@ export interface ChartAdvancedConfig {
 // 透明度默认值类型
 export type DefaultOpacityValues = Required<ChartOpacityConfig>
 
-// 字体配置接口
+// 字体配置接口（与 `ChartFontSizeLadder` 的 md/sm 对齐）
 export interface FontConfig {
   textColor: string
   textColorSecondary: string
-  fontSize: number
-  fontSizeSmall: number
+  fontSizeMd: number
+  fontSizeSm: number
 }
 
 // 颜色配置接口
@@ -154,18 +156,13 @@ export interface ColorConfig {
   secondaryColors: string[]
 }
 
-// 主题配置接口（颜色字段与 theme.d.ts ThemeCssVars 命名对齐）
-import type { ChartSizeTokens } from '@/utils/theme/chartUtils'
-
-export interface ThemeConfig {
+// 主题配置（颜色字段与 theme.d.ts ThemeCssVars 命名对齐）+ 与 CSS 变量同源的度量全阶梯
+export type ThemeConfig = {
   font: FontConfig
   color: ColorConfig
   opacity: DefaultOpacityValues
   /** 图表尺寸 tokens（px），与 SizeMode 对齐，用于默认值补齐 */
   size: ChartSizeTokens
-  paddings: number
-  gap: number
-  gapl: number
   foreground: string
   mutedForeground: string
   background: string
@@ -173,4 +170,4 @@ export interface ThemeConfig {
   border: string
   accent: string
   primaryForeground: string
-}
+} & ChartMetricLadders

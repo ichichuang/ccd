@@ -6,6 +6,7 @@
 import type { RouteRecordRaw } from 'vue-router'
 import { loadView, generateNameByPath, isUsingFallbackComponent } from './resolver'
 import { filterTopLevelRoutesByParent, generateMenuTree, generateBreadcrumbMap } from './menu'
+import { checkRouteAccess } from './accessControl'
 
 /**
  * 为最底层路由添加 parentPaths 字段
@@ -322,23 +323,29 @@ export function findRouteByPath(routes: RouteConfig[], targetPath: string): Rout
 /**
  * 检查路由权限（角色）
  */
-export function checkRoutePermission(route: RouteConfig, userRoles: string[]): boolean {
-  const { roles } = route.meta || {}
-  if (!roles || roles.length === 0) return true
-  return roles.some(role => userRoles.includes(role))
+export function checkRoutePermission(
+  route: RouteConfig,
+  userRoles: string[],
+  userPermissions: string[] = []
+): boolean {
+  return checkRouteAccess(route.meta, userRoles, userPermissions)
 }
 
 /**
  * 过滤有权限的路由
  */
-export function filterAuthorizedRoutes(routes: RouteConfig[], userRoles: string[]): RouteConfig[] {
+export function filterAuthorizedRoutes(
+  routes: RouteConfig[],
+  userRoles: string[],
+  userPermissions: string[] = []
+): RouteConfig[] {
   return routes
-    .filter(route => checkRoutePermission(route, userRoles))
+    .filter(route => checkRoutePermission(route, userRoles, userPermissions))
     .map(route => {
       if (route.children && route.children.length > 0) {
         return {
           ...route,
-          children: filterAuthorizedRoutes(route.children, userRoles),
+          children: filterAuthorizedRoutes(route.children, userRoles, userPermissions),
         }
       }
       return { ...route }

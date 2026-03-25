@@ -7,6 +7,8 @@ defineOptions({ name: 'ExampleProTableVirtualPage' })
 const columns = transactionLedgerColumns
 const massiveData = ref<TransactionLedgerRow[]>([])
 const isGenerating = ref<boolean>(true)
+const tableContainerRef = ref<HTMLElement | null>(null)
+const tableContainerHeight = ref<number | undefined>(undefined)
 
 function pad2(n: number): string {
   return n < 10 ? `0${n}` : String(n)
@@ -53,6 +55,7 @@ function generateMassiveData(count: number = 100000): TransactionLedgerRow[] {
 }
 
 onMounted(() => {
+  tableContainerHeight.value = tableContainerRef.value?.clientHeight ?? 0
   isGenerating.value = true
   // 让出一帧，避免首屏阻塞造成视觉卡顿
   requestAnimationFrame(() => {
@@ -63,9 +66,9 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="layout-full px-md md:px-lg col-stack-sm min-h-0">
+  <div class="layout-full px-md md:px-lg flex flex-col gap-sm min-h-0">
     <div class="row-between gap-md">
-      <div class="col-stack-xs">
+      <div class="flex flex-col gap-xs">
         <div class="text-lg font-semibold">百万级虚拟网格引擎</div>
         <div class="text-muted-foreground text-sm">
           纯前端内存生成 100,000 行数据，用于验证 `&lt;ProTable :virtual-scroll="true"&gt;`
@@ -73,7 +76,7 @@ onMounted(() => {
         </div>
       </div>
 
-      <div class="row-y-center gap-sm">
+      <div class="flex flex-row items-center gap-sm">
         <Badge value="Total Rows: 100,000" />
         <Badge
           v-if="isGenerating"
@@ -83,15 +86,22 @@ onMounted(() => {
       </div>
     </div>
 
-    <div class="col-fill">
-      <ProTable
-        :virtual-scroll="true"
-        :pagination="false"
-        :columns="columns"
-        :data="massiveData"
-        :loading="isGenerating"
-        row-key="id"
-      />
-    </div>
+    <section
+      ref="tableContainerRef"
+      class="col-fill"
+    >
+      <template v-if="tableContainerHeight && tableContainerHeight > 0">
+        <div :style="{ height: tableContainerHeight + 'px' }">
+          <ProTable
+            :virtual-scroll="true"
+            :pagination="false"
+            :columns="columns"
+            :data="massiveData"
+            :loading="isGenerating"
+            row-key="id"
+          />
+        </div>
+      </template>
+    </section>
   </div>
 </template>

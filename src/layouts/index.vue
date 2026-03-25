@@ -5,18 +5,17 @@
  */
 import type { AnimateName } from '@/components/AnimateWrapper/utils/types'
 import { AnimateWrapper } from '@/components/AnimateWrapper'
-import Loading from '@&/Loading.vue'
-import AdminLayout from '@/layouts/modules/LayoutAdmin.tsx'
-import FullScreenLayout from '@/layouts/modules/LayoutFullScreen.vue'
-import RatioLayout from '@/layouts/modules/LayoutRatio.vue'
 import { useLayoutStore } from '@/stores/modules/layout'
-import { TRANSITION_SCALE_VALUES } from '@/constants/sizeScale'
 import { useRoute, useRouter } from 'vue-router'
 
 defineOptions({ name: 'LayoutIndex' })
 
-/** 加载层动画时长：使用尺寸系统过渡阶梯 sm（更快的遮罩响应，减轻底层闪烁感） */
-const loadingOverlayDuration = `${TRANSITION_SCALE_VALUES.sm}ms`
+// 异步布局边界：将大体量布局模块切分为独立 chunk，避免首帧主线程长任务
+const AdminLayout = defineAsyncComponent(() => import('@/layouts/modules/LayoutAdmin.tsx'))
+const FullScreenLayout = defineAsyncComponent(
+  () => import('@/layouts/modules/LayoutFullScreen.vue')
+)
+const RatioLayout = defineAsyncComponent(() => import('@/layouts/modules/LayoutRatio.vue'))
 
 const layoutStore = useLayoutStore()
 const isLoading = computed(() => layoutStore.isLoading)
@@ -42,6 +41,19 @@ watch(
     nextTick(() => {
       isLoadingRef.value = loading
     }),
+  { immediate: true }
+)
+
+// 启动边界：首屏阶段由 index.html 原生 Loader 独占，Vue Loading 仅在首屏结束后接管运行期全局任务
+const isAppBooted = ref(false)
+const unwatchBoot = watch(
+  () => isLoading.value,
+  loading => {
+    if (!loading) {
+      isAppBooted.value = true
+      unwatchBoot()
+    }
+  },
   { immediate: true }
 )
 
@@ -78,24 +90,8 @@ const currentLayoutComponent = computed(() => {
 </script>
 
 <template>
-  <div class="layout-full">
-    <!-- 1. 加载层 -->
-    <AnimateWrapper
-      :show="isLoadingRef"
-      enter="fadeIn"
-      leave="fadeOut"
-      :duration="loadingOverlayDuration"
-      delay="0s"
-    >
-      <div class="fixed inset-0 z-[999] center bg-background w-full h-full">
-        <Loading
-          :type="3"
-          size="5xl"
-        />
-      </div>
-    </AnimateWrapper>
-
-    <!-- 2. 主布局层 -->
+  <div class="relative flex flex-col layout-full overflow-hidden">
+    <!-- 单所有者预加载：启动阶段仅保留 index.html 原生 loader -->
     <AnimateWrapper
       :show="!isLoadingRef"
       :enter="getLayoutEnterAnimation(currentLayoutMode)"
@@ -105,5 +101,74 @@ const currentLayoutComponent = computed(() => {
     >
       <component :is="currentLayoutComponent" />
     </AnimateWrapper>
+
+    <Transition name="fade">
+      <div
+        v-if="isLoading && isAppBooted"
+        class="runtime-loading-overlay"
+      >
+        <div
+          class="pure-css-loader"
+          role="status"
+          aria-label="Loading"
+        ></div>
+      </div>
+    </Transition>
   </div>
 </template>
+
+<style scoped>
+.runtime-loading-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999999;
+  display: flex;
+  width: 100vw;
+  height: 100vh;
+  align-items: center;
+  justify-content: center;
+  background-color: rgb(var(--background));
+}
+
+.pure-css-loader {
+  position: relative;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+}
+
+.pure-css-loader::before,
+.pure-css-loader::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  box-sizing: border-box;
+}
+
+.pure-css-loader::before {
+  border: 4px solid rgb(var(--primary) / 0.2);
+  border-top-color: rgb(var(--primary));
+  animation: pure-spin 0.9s linear infinite;
+}
+
+.pure-css-loader::after {
+  border: 4px solid transparent;
+  border-right-color: rgb(var(--primary) / 0.65);
+  transform: scale(0.72);
+  animation: pure-spin-reverse 1.2s linear infinite;
+  opacity: 0.9;
+}
+
+@keyframes pure-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes pure-spin-reverse {
+  to {
+    transform: scale(0.72) rotate(-360deg);
+  }
+}
+</style>

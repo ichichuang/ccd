@@ -4,17 +4,63 @@
  * - 颜色一律从 ThemeCssVars（src/types/systems/theme.d.ts）对应的 :root CSS 变量解析，
  *   与 engine.ts、primevuePreset.ts 使用同一套 token；ECharts 需要 rgb(r,g,b)，
  *   故在此做「读 computedStyle → 规范化逗号格式」，而非 PrimeVue 的 rgb(var(--xxx))。
- * - 尺寸来自 SizeStore，与全局尺寸阶梯一致。
+ * - 尺寸：`getChartSizeTokens` / `getChartSystemVariables` 中的 px 一律由
+ *   `constants/sizeScale.ts` 倍率表 + `SizePreset`（spacingBase / radius / fontSizeBase）推导，
+ *   与 `sizeEngine.generateSizeVars` 公式一致；禁止 `spacingBase * 裸系数`。
+ *
+ * ChartSizeTokens 与阶梯映射（SSOT）：
+ * - 间距类 → `spacingPx(preset, key)`
+ * - 圆角类 → `radiusPx(preset, key)`
+ * - 字号类 → `fontPx(preset, key)`
+ * - 布局：`gapXs`/`paddingXs` 等与 `--spacing-*` 同阶；ECharts `${gapXs}%` 表示左右留白百分比数字
+ * - 线宽：ECharts 1px/2px 惯例常量，不经间距阶梯
+ * - px 阶梯：`@/utils/theme/sizeMetrics`（与 `generateSizeVars` 同源）
  */
+import { SIZE_SCALE_KEYS } from '@/constants/sizeScale'
+import type { SizeScaleKey } from '@/constants/sizeScale'
+import {
+  containerPaddingPx,
+  fontPx,
+  gapPx,
+  marginPx,
+  paddingPx,
+  radiusPx,
+  spacingPx,
+} from '@/utils/theme/sizeMetrics'
 import { useSizeStore } from '@/stores/modules/size'
+
+/** `SizeScaleKey` → camelCase 后缀（用于 `gapXs`、`gap2xl` 等属性名） */
+const CHART_SCALE_SUFFIX: Record<SizeScaleKey, string> = {
+  xs: 'Xs',
+  sm: 'Sm',
+  md: 'Md',
+  lg: 'Lg',
+  xl: 'Xl',
+  // SizeScaleKey 含 2xl…5xl，键名与 sizeScale 一致
+  /* eslint-disable @typescript-eslint/naming-convention -- 阶梯键名 */
+  '2xl': '2xl',
+  '3xl': '3xl',
+  '4xl': '4xl',
+  '5xl': '5xl',
+  /* eslint-enable @typescript-eslint/naming-convention */
+}
+
+/** 图表正文行高倍率（无全局行高 CSS 变量时与既有视觉对齐） */
+const CHART_LINE_HEIGHT_RATIO_MD = 1.4
+const CHART_LINE_HEIGHT_RATIO_LG = 1.4
+const CHART_LINE_HEIGHT_RATIO_SM = 1.35
+
+/** ECharts 线宽：不映射到 spacing 阶梯 */
+const CHART_STROKE_HAIRLINE_PX = 1
+const CHART_STROKE_AXIS_PX = 2
+const CHART_STROKE_GRID_PX = 1
+const CHART_STROKE_SERIES_PX = 2
 
 /** ThemeCssVars 的 key 去掉 '--' 后的 token 名，与 engine / primevuePreset 一致 */
 type ThemeCssVarName = keyof ThemeCssVars extends `--${infer T}` ? T : never
 
-/**
- * 图表系统变量：颜色与 theme.d.ts ThemeCssVars 命名对齐（camelCase），尺寸来自 SizeStore
- */
-export interface ChartSystemVariables {
+/** 主题色 token（与 ThemeCssVars 解析结果一致） */
+export type ChartColorTokens = {
   foreground: string
   mutedForeground: string
   background: string
@@ -29,13 +75,87 @@ export interface ChartSystemVariables {
   danger: string
   info: string
   help: string
-
-  fontSize: number
-  fontSizeSmall: number
-  paddings: number
-  gap: number
-  gapl: number
 }
+
+/** `gap-*` 全阶梯 px（与 `gapPx` / `--spacing-*` 同源） */
+export type ChartGapLadder = {
+  gapXs: number
+  gapSm: number
+  gapMd: number
+  gapLg: number
+  gapXl: number
+  gap2xl: number
+  gap3xl: number
+  gap4xl: number
+  gap5xl: number
+}
+
+/** `padding-*` 全阶梯 px */
+export type ChartPaddingLadder = {
+  paddingXs: number
+  paddingSm: number
+  paddingMd: number
+  paddingLg: number
+  paddingXl: number
+  padding2xl: number
+  padding3xl: number
+  padding4xl: number
+  padding5xl: number
+}
+
+/** `margin-*` 全阶梯 px */
+export type ChartMarginLadder = {
+  marginXs: number
+  marginSm: number
+  marginMd: number
+  marginLg: number
+  marginXl: number
+  margin2xl: number
+  margin3xl: number
+  margin4xl: number
+  margin5xl: number
+}
+
+/** `--font-size-*` 全阶梯 px */
+export type ChartFontSizeLadder = {
+  fontSizeXs: number
+  fontSizeSm: number
+  fontSizeMd: number
+  fontSizeLg: number
+  fontSizeXl: number
+  fontSize2xl: number
+  fontSize3xl: number
+  fontSize4xl: number
+  fontSize5xl: number
+}
+
+/** `--radius-*` 全阶梯 px */
+export type ChartRadiusLadder = {
+  radiusXs: number
+  radiusSm: number
+  radiusMd: number
+  radiusLg: number
+  radiusXl: number
+  radius2xl: number
+  radius3xl: number
+  radius4xl: number
+  radius5xl: number
+}
+
+/** 与 `sizeMetrics` / CSS 变量一致的度量阶梯（供图表与 ThemeConfig 共用） */
+export type ChartMetricLadders = ChartGapLadder &
+  ChartPaddingLadder &
+  ChartMarginLadder &
+  ChartFontSizeLadder &
+  ChartRadiusLadder & {
+    /** 与 `--container-padding` 一致 */
+    containerPadding: number
+  }
+
+/**
+ * 图表系统变量：主题色 + 全度量阶梯（无独立 legacy 字段）
+ */
+export type ChartSystemVariables = ChartColorTokens & ChartMetricLadders
 
 /**
  * 图表尺寸 Tokens（与 SizeStore / 尺寸系统对齐）
@@ -112,71 +232,69 @@ export interface ChartSizeTokens {
   dataZoomBorderWidth: number
 }
 
-const clamp = (min: number, value: number, max: number) => Math.min(max, Math.max(min, value))
-
 /**
  * 生成图表尺寸 Tokens（px）
  *
- * - spacingUnit 来自当前尺寸预设的 spacingBase（与 sizeEngine 注入的 --spacing-unit 等价）
- * - fontMd / fontSm 来自 SizeStore getters（与 --font-size-md / --font-size-sm 语义一致）
+ * - spacingUnit：`preset.spacingBase`（与 `--spacing-unit` 一致）
+ * - 其余 px 均通过 `spacingPx` / `radiusPx` / `fontPx` + `SizeScaleKey` 推导，与 `generateSizeVars` 同源
  */
 export function getChartSizeTokens(): ChartSizeTokens {
   const sizeStore = useSizeStore()
+  const preset = sizeStore.currentPreset
 
-  const spacingUnit = sizeStore.currentPreset.spacingBase
-  const fontMd = sizeStore.getFontSizeValue
-  const fontLg = Math.round(fontMd * 1.3)
-  const fontSm = sizeStore.getFontSizeSmValue
+  const spacingUnit = preset.spacingBase
+  const fontMd = fontPx(preset, 'md')
+  const fontLg = fontPx(preset, 'lg')
+  const fontSm = fontPx(preset, 'sm')
 
-  // 圆角：图表内部组件（tooltip 等）使用中号圆角语义；无需严格等同 rem，保持随 SizeMode 缩放即可
-  const radiusMd = Math.round(spacingUnit * 1.5)
-  const radiusSm = Math.round(spacingUnit * 1.0)
+  const radiusMd = radiusPx(preset, 'md')
+  const radiusSm = radiusPx(preset, 'sm')
 
-  const lineHeightMd = Math.round(fontMd * 1.4)
-  const lineHeightLg = Math.round(fontLg * 1.4)
-  const lineHeightSm = Math.round(fontSm * 1.35)
+  const lineHeightMd = Math.round(fontMd * CHART_LINE_HEIGHT_RATIO_MD)
+  const lineHeightLg = Math.round(fontLg * CHART_LINE_HEIGHT_RATIO_LG)
+  const lineHeightSm = Math.round(fontSm * CHART_LINE_HEIGHT_RATIO_SM)
 
-  const padSm = Math.round(spacingUnit * 1.5)
-  const padMd = Math.round(spacingUnit * 2)
-  const padLg = Math.round(spacingUnit * 3)
+  const padSm = spacingPx(preset, 'sm')
+  const padMd = spacingPx(preset, 'md')
+  const padLg = spacingPx(preset, 'lg')
 
-  const itemGapSm = Math.round(spacingUnit * 2)
-  const itemGapMd = Math.round(spacingUnit * 3)
+  const itemGapSm = spacingPx(preset, 'sm')
+  const itemGapMd = spacingPx(preset, 'md')
 
-  const axisLabelMargin = Math.round(spacingUnit * 2)
-  const axisLabelPadding = Math.round(spacingUnit * 1)
+  const axisLabelMargin = spacingPx(preset, 'sm')
+  const axisLabelPadding = spacingPx(preset, 'xs')
 
-  const strokeHairline = clamp(1, Math.round(spacingUnit / 4), 2)
-  const strokeAxis = clamp(1, Math.round(spacingUnit / 3), 2)
-  const strokeGrid = clamp(1, Math.round(spacingUnit / 4), 2)
-  const strokeSeries = clamp(2, Math.round(spacingUnit / 2), 4)
+  const strokeHairline = CHART_STROKE_HAIRLINE_PX
+  const strokeAxis = CHART_STROKE_AXIS_PX
+  const strokeGrid = CHART_STROKE_GRID_PX
+  const strokeSeries = CHART_STROKE_SERIES_PX
 
-  const symbolSm = clamp(6, Math.round(spacingUnit * 2), 16)
-  const symbolMd = clamp(8, Math.round(spacingUnit * 2.5), 20)
-  const symbolLg = clamp(10, Math.round(spacingUnit * 3), 24)
+  const symbolSm = spacingPx(preset, 'sm')
+  const symbolMd = spacingPx(preset, 'md')
+  const symbolLg = spacingPx(preset, 'lg')
 
-  const tickLen = Math.round(spacingUnit * 1.5)
-  const minorTickLen = Math.round(spacingUnit * 1.0)
+  const tickLen = spacingPx(preset, 'sm')
+  const minorTickLen = spacingPx(preset, 'xs')
 
-  const tooltipPadding = Math.round(spacingUnit * 2)
-  const tooltipRadius = radiusMd
+  const tooltipPadding = spacingPx(preset, 'md')
+  const tooltipRadius = radiusPx(preset, 'md')
   const tooltipBorderWidth = strokeHairline
 
-  const legendItemWidth = Math.round(spacingUnit * 6)
-  const legendItemHeight = Math.round(spacingUnit * 3.5)
-  const legendItemGap = Math.round(spacingUnit * 2.5)
+  const legendItemWidth = spacingPx(preset, 'lg')
+  const legendItemHeight = spacingPx(preset, 'md')
+  const legendItemGap = spacingPx(preset, 'sm')
   const legendPadding = padSm
 
-  const toolboxItemSize = Math.round(spacingUnit * 4)
-  const toolboxItemGap = Math.round(spacingUnit * 2.5)
+  const toolboxItemSize = spacingPx(preset, 'md')
+  const toolboxItemGap = spacingPx(preset, 'sm')
 
-  const visualMapItemWidth = Math.round(spacingUnit * 5)
-  const visualMapItemHeight = Math.round(spacingUnit * 3.5)
-  const visualMapItemGap = Math.round(spacingUnit * 2.5)
+  const visualMapItemWidth = spacingPx(preset, 'lg')
+  const visualMapItemHeight = spacingPx(preset, 'md')
+  const visualMapItemGap = spacingPx(preset, 'sm')
   const visualMapPadding = padSm
   const visualMapBorderWidth = strokeHairline
 
-  const dataZoomHeight = Math.round(spacingUnit * 6)
+  const dataZoomHeight = spacingPx(preset, 'lg')
   const dataZoomBorderWidth = strokeHairline
 
   return {
@@ -246,7 +364,7 @@ const CHART_THEME_TOKEN_NAMES: ThemeCssVarName[] = [
 function themeCssVarToCamel(
   token: ThemeCssVarName
 ): keyof Pick<
-  ChartSystemVariables,
+  ChartColorTokens,
   | 'foreground'
   | 'mutedForeground'
   | 'background'
@@ -263,7 +381,7 @@ function themeCssVarToCamel(
   | 'help'
 > {
   return token.replace(/-([a-z])/g, (_, c) => c.toUpperCase()) as keyof Pick<
-    ChartSystemVariables,
+    ChartColorTokens,
     | 'foreground'
     | 'mutedForeground'
     | 'background'
@@ -298,17 +416,36 @@ const getCssRgbColor = (token: ThemeCssVarName): string => {
 }
 
 /**
+ * 构建 gap / padding / margin / fontSize / radius 全阶梯及 `containerPadding`（与 `sizeMetrics` 同源）
+ */
+function buildChartMetricLadders(preset: SizePreset): ChartMetricLadders {
+  const out: Record<string, number> = {
+    containerPadding: containerPaddingPx(preset),
+  }
+  for (const k of SIZE_SCALE_KEYS) {
+    const suffix: string = CHART_SCALE_SUFFIX[k]
+    out[`gap${suffix}`] = gapPx(preset, k)
+    out[`padding${suffix}`] = paddingPx(preset, k)
+    out[`margin${suffix}`] = marginPx(preset, k)
+    out[`fontSize${suffix}`] = fontPx(preset, k)
+    out[`radius${suffix}`] = radiusPx(preset, k)
+  }
+  return out as ChartMetricLadders
+}
+
+/**
  * 统一抽取图表所需的系统级变量
  *
  * 颜色按 CHART_THEME_TOKEN_NAMES 从 ThemeCssVars 解析（key 为 camelCase）；
- * 尺寸从 SizeStore 读取，与全局 Size 系统一致。
+ * 度量全阶梯见 `ChartMetricLadders`（`gapXs`、`paddingMd`、`fontSizeSm`、`radiusMd` 等）。
  */
 export function getChartSystemVariables(): ChartSystemVariables {
   const sizeStore = useSizeStore()
+  const preset = sizeStore.currentPreset
   const colorPart = Object.fromEntries(
     CHART_THEME_TOKEN_NAMES.map(token => [themeCssVarToCamel(token), getCssRgbColor(token)])
   ) as Pick<
-    ChartSystemVariables,
+    ChartColorTokens,
     | 'foreground'
     | 'mutedForeground'
     | 'background'
@@ -327,11 +464,7 @@ export function getChartSystemVariables(): ChartSystemVariables {
 
   return {
     ...colorPart,
-    fontSize: sizeStore.getFontSizeValue,
-    fontSizeSmall: sizeStore.getFontSizeSmValue,
-    paddings: sizeStore.getPaddingsValue,
-    gap: sizeStore.getGap,
-    gapl: sizeStore.getGapl,
+    ...buildChartMetricLadders(preset),
   }
 }
 

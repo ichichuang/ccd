@@ -1,0 +1,146 @@
+---
+description: Enforces PrimeVue Styled Mode + Pass-Through (PT) for theming. Strictly bans scoped style overrides that break dark mode.
+globs: ["src/components/**/*.vue", "src/views/**/*.vue"]
+alwaysApply: true
+---
+
+> **Prerequisite**: Ensure you have selected the CORRECT component per `05-primevue-ecosystem.mdc`. This rule covers HOW to style; Rule 05 covers WHICH component to use and API verification.
+
+# The PrimeVue PT Law
+
+## Integration Architecture
+
+Our PrimeVue integration uses **Styled Mode** with a custom preset (`createCustomPreset`) defined in `src/utils/theme/primevuePreset`. This preset maps our CSS variable design tokens directly onto PrimeVue's internal theme contract. All PrimeVue components inherit brand colors, spacing, border radius, and dark mode variants automatically through this system.
+
+Global pass-through presets live in `src/utils/theme/ptPresets/` (e.g., `formControlsPt.ts`). These are registered at the app level and apply to every instance of a given component type. **Always check if a global PT already covers your use case before writing a local one.**
+
+---
+
+## REQUIRED: Use `:pt` for All Component Customization
+
+To customize any PrimeVue component beyond what the preset provides, you **MUST** use the `pt` (Pass-Through) prop. Combine it with UnoCSS semantic theme tokens to guarantee dark mode and theme-switch compatibility.
+
+### Correct Pattern
+
+```vue
+<!-- Inject UnoCSS tokens via :pt — guaranteed dark mode safe -->
+<InputText
+  v-model="value"
+  :pt="{
+    root: { class: 'bg-muted/30 hover:bg-muted/40 rounded-md transition-all duration-md' }
+  }"
+/>
+
+<Select
+  v-model="selected"
+  :options="options"
+  :pt="{
+    root: { class: 'w-full rounded-md' },
+    panel: { class: 'bg-card shadow-md rounded-md' },
+    item: { class: 'hover:bg-primary-light text-foreground' }
+  }"
+/>
+
+<Button
+  label="Submit"
+  :pt="{
+    root: { class: 'px-md py-sm rounded-md text-sm font-medium' }
+  }"
+/>
+```
+
+### Check Global PTs First
+
+Before writing any local `:pt`, check `src/utils/theme/ptPresets/`. If a global preset already handles the component, a local `:pt` is redundant or may conflict:
+
+```typescript
+// src/utils/theme/ptPresets/formControlsPt.ts — already handles Input, Select, etc.
+// Do NOT duplicate global PT logic in local :pt props
+```
+
+---
+
+## FORBIDDEN Patterns
+
+### FORBIDDEN: Hardcoded Inline Styles
+
+```vue
+<!-- FORBIDDEN: bypasses design system, breaks dark mode -->
+<InputText :style="{ background: '#ffffff', border: '1px solid #ccc' }" />
+<Select :style="{ color: 'rgb(0,0,0)' }" />
+```
+
+Use semantic tokens instead:
+
+```vue
+<!-- CORRECT -->
+<InputText :pt="{ root: { class: 'bg-background text-foreground border-border' } }" />
+```
+
+### FORBIDDEN: Overriding PrimeVue Internal Classes in `<style scoped>`
+
+```vue
+<!-- FORBIDDEN: breaks Central Theme Engine and dark mode cascade -->
+<style scoped>
+.p-button { background: #3b82f6 !important; }
+.p-select-panel { background: white; }
+.p-inputtext:focus { border-color: #6366f1; }
+</style>
+```
+
+This approach:
+1. **Breaks Dark Mode** — scoped styles cannot respond to `[data-theme="dark"]` CSS variable swaps
+2. **Breaks Theme Engine** — overrides applied via `createCustomPreset` are silently defeated
+3. **Creates Specificity Wars** — `!important` escalation degrades maintainability
+
+> **Exception list**: Three files have documented `:deep(.p-*)` exceptions — see `05-primevue-ecosystem.mdc` Section 3.2 for the exhaustive list and justification. ALL other `:deep(.p-*)` usage is prohibited.
+
+### FORBIDDEN: Raw CSS Variable References in Component Styles
+
+```vue
+<!-- FORBIDDEN: coupling directly to CSS var names bypasses the design engine contract -->
+<style scoped>
+.my-input { background: var(--surface-ground); color: var(--text-color); }
+</style>
+```
+
+Use the PT prop with UnoCSS tokens that map to the same variables:
+
+```vue
+<!-- CORRECT: tokens resolve via the same CSS variables, but through the design engine -->
+<InputText :pt="{ root: { class: 'bg-background text-foreground' } }" />
+```
+
+---
+
+## Token Reference for PT Props
+
+| Visual Need           | UnoCSS Token to Use                          |
+| --------------------- | -------------------------------------------- |
+| Input background      | `bg-background`, `bg-muted/30`               |
+| Hover feedback        | `hover:bg-muted/40`, `hover:bg-primary-light` |
+| Panel / dropdown bg   | `bg-card`                                    |
+| Border                | Use `shadow` utilities — NEVER `border-*` for decoration |
+| Focus ring            | `ring-focus-focus` shortcut                        |
+| Text foreground       | `text-foreground`, `text-muted-foreground`   |
+| Brand accent          | `text-primary`, `bg-primary`                 |
+| Disabled state        | `opacity-50 cursor-not-allowed`              |
+| Transition            | `transition-all duration-md ease-out`        |
+
+---
+
+## PT Structural Reference (Common Slots)
+
+Each PrimeVue component exposes named PT slots. Key slots for common components:
+
+| Component   | Key PT Slots                                                  |
+| ----------- | ------------------------------------------------------------- |
+| `InputText` | `root`                                                        |
+| `Select`    | `root`, `label`, `panel`, `list`, `item`, `overlay`          |
+| `Button`    | `root`, `label`, `icon`                                       |
+| `DataTable` | `root`, `header`, `tbody`, `row`, `column`, `footer`         |
+| `Dialog`    | `root`, `header`, `content`, `footer`, `closeButton`         |
+| `Drawer`    | `root`, `header`, `content`, `footer`                        |
+| `Tabs`      | `root`, `tablist`, `tab`, `tabpanel`                         |
+
+Consult the PrimeVue v4 documentation for the full PT slot map of any component.

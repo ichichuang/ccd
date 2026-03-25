@@ -68,12 +68,12 @@ const UsersFieldArray = defineComponent({
     const fieldsList = unref(this.fields)
 
     return (
-      <div class="col-stack-sm w-full">
+      <div class="col-stretch gap-sm w-full">
         {fieldsList.map(
           (item: { id: string; value: { username: string }; index: number }, i: number) => (
             <div
               key={item.id}
-              class="row-y-center gap-sm w-full"
+              class="row-center gap-sm w-full"
             >
               <InputText
                 modelValue={(item.value as { username: string }).username}
@@ -175,11 +175,11 @@ const ContactsFieldContent = defineComponent({
     const { contactList, CONTACT_TYPE_OPTIONS: opts, slotOnUpdate } = this
     const list = contactList as unknown as ContactItem[]
     return (
-      <div class="col-stack-sm w-full">
+      <div class="col-stretch gap-sm w-full">
         {list.map((item: ContactItem, index: number) => (
           <div
             key={index}
-            class="row-y-center gap-sm w-full"
+            class="row-center gap-sm w-full"
           >
             <Select
               modelValue={item.type}
@@ -259,6 +259,7 @@ const ContactsFieldContent = defineComponent({
 // ══════════════════════════════════════════════════════════════════
 
 const DRAFT_KEY = 'pro-form-advanced-draft-demo'
+const { formatDate, now, isInitialized } = useDateUtils()
 
 const draftSchema = reactive<FormSchema>({
   layout: { type: 'grid', gap: 'var(--spacing-md)' },
@@ -302,20 +303,30 @@ const draftSchema = reactive<FormSchema>({
 const draftFormRef = ref<ProFormExpose | null>(null)
 const draftLastSaved = ref<string>('')
 const draftSaveCount = ref<number>(0)
+const { pause: pauseDraftCounter, resume: resumeDraftCounter } = useIntervalFn(
+  () => {
+    const s = localStorage.getItem(DRAFT_KEY)
+    if (!s) return
+    draftSaveCount.value++
+    const current = now()
+    if (current && isInitialized.value) {
+      draftLastSaved.value = formatDate(current, 'HH:mm:ss')
+    }
+  },
+  1500,
+  { immediate: false }
+)
 
 onMounted(() => {
   const stored = localStorage.getItem(DRAFT_KEY)
   if (stored) {
     draftLastSaved.value = '（已有草稿）'
   }
-  const interval = setInterval(() => {
-    const s = localStorage.getItem(DRAFT_KEY)
-    if (s) {
-      draftSaveCount.value++
-      draftLastSaved.value = new Date().toLocaleTimeString()
-    }
-  }, 1500)
-  onUnmounted(() => clearInterval(interval))
+  resumeDraftCounter()
+})
+
+onUnmounted(() => {
+  pauseDraftCounter()
 })
 
 async function onDraftSubmit(values: Record<string, unknown>): Promise<void> {
@@ -342,14 +353,14 @@ function clearDraft(): void {
   >
     <!-- Toolbar: Hero Header (Transparent Root Policy: Inherit canvas) -->
     <header class="shrink-0 border-b-default border-primary/20">
-      <div class="w-full px-md md:px-lg py-sm row-y-center gap-md">
+      <div class="layout-container py-sm row-center gap-md">
         <div class="p-md bg-primary/10 rounded-lg shrink-0">
           <Icons
             name="i-lucide-list-plus"
             class="text-primary text-2xl"
           />
         </div>
-        <div class="col-stack-xs">
+        <div class="col-stretch gap-xs">
           <h1 class="text-2xl font-bold text-foreground m-0">ProForm 动态数组与高级扩展</h1>
           <p class="text-muted-foreground text-sm m-0">
             演示
@@ -361,13 +372,19 @@ function clearDraft(): void {
         </div>
       </div>
     </header>
+    <div
+      class="shrink-0 px-md py-xs text-xs text-muted-foreground border-b-default border-border/15"
+    >
+      覆盖能力：useFieldArray（append/remove/move）、具名插槽字段接管、persistKey + autoSave
+      草稿恢复。
+    </div>
 
     <!-- Scrollable content -->
-    <CScrollbar class="flex-1 min-h-0">
-      <div class="w-full p-md md:p-lg col-stack-xl pb-xl">
+    <CScrollbar class="col-fill">
+      <div class="layout-container py-md col-stretch gap-xl pb-xl">
         <!-- Section A: 动态字段数组 -->
-        <div class="bg-card rounded-md shadow-sm dark:shadow-md py-md px-lg flex flex-col gap-lg">
-          <div class="row-y-center gap-sm border-b-default pb-sm mb-padding-sm">
+        <section class="material-elevated col-stretch gap-lg">
+          <div class="row-center gap-sm border-b-default pb-sm mb-sm">
             <Icons
               name="i-lucide-list-plus"
               class="text-primary"
@@ -377,8 +394,8 @@ function clearDraft(): void {
             </span>
           </div>
 
-          <div class="col-stack-md">
-            <div class="border-b-default pb-sm mb-padding-sm">
+          <div class="col-stretch gap-md">
+            <div class="border-b-default pb-sm mb-sm">
               <p class="text-muted-foreground text-sm m-0">
                 通过
                 <code>append / remove / move</code>
@@ -405,7 +422,7 @@ function clearDraft(): void {
               </template>
 
               <template #footer="{ submit, formState: slotFormState }">
-                <div class="row-end gap-sm pt-md border-t-default border-border/15 mt-padding-md">
+                <div class="row-end gap-sm pt-md border-t-default border-border/15 mt-md">
                   <Button
                     label="提交数据"
                     icon="i-lucide-send"
@@ -428,12 +445,12 @@ function clearDraft(): void {
               }}</pre>
             </div>
           </div>
-        </div>
+        </section>
 
         <!-- Section B: persistKey + autoSave -->
-        <div class="bg-card rounded-md shadow-sm dark:shadow-md py-md px-lg flex flex-col gap-lg">
-          <div class="row-between gap-sm border-b-default pb-sm mb-padding-sm">
-            <div class="row-y-center gap-sm">
+        <section class="material-elevated col-stretch gap-lg">
+          <div class="row-between gap-sm border-b-default pb-sm mb-sm">
+            <div class="row-center gap-sm">
               <Icons
                 name="i-lucide-save"
                 class="text-success"
@@ -444,7 +461,7 @@ function clearDraft(): void {
             </div>
             <div
               v-if="draftLastSaved"
-              class="bg-success/10 text-success rounded-md px-sm py-0.5 row-y-center gap-xs text-xs"
+              class="bg-success/10 text-success rounded-md px-sm py-0.5 row-center gap-xs text-xs"
             >
               <Icons
                 name="i-lucide-check-circle"
@@ -454,7 +471,7 @@ function clearDraft(): void {
             </div>
             <div
               v-else
-              class="bg-muted/30 text-muted-foreground rounded-md px-sm py-0.5 row-y-center gap-xs text-xs"
+              class="bg-muted/30 text-muted-foreground rounded-md px-sm py-0.5 row-center gap-xs text-xs"
             >
               <Icons
                 name="i-lucide-cloud"
@@ -464,8 +481,8 @@ function clearDraft(): void {
             </div>
           </div>
 
-          <div class="col-stack-md">
-            <div class="border-b-default pb-sm mb-padding-sm">
+          <div class="col-stretch gap-md">
+            <div class="border-b-default pb-sm mb-sm">
               <p class="text-muted-foreground text-sm m-0">
                 变更自动写入
                 <code>localStorage</code>
@@ -481,7 +498,7 @@ function clearDraft(): void {
               @submit="onDraftSubmit"
             >
               <template #footer="{ submit, formState }">
-                <div class="row-end gap-sm pt-md border-t-default border-border/15 mt-padding-md">
+                <div class="row-end gap-sm pt-md border-t-default border-border/15 mt-md">
                   <Button
                     label="重置并清除"
                     severity="secondary"
@@ -499,7 +516,7 @@ function clearDraft(): void {
               </template>
             </ProForm>
           </div>
-        </div>
+        </section>
       </div>
     </CScrollbar>
   </div>

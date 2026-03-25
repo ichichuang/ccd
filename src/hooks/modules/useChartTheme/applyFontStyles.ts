@@ -15,17 +15,17 @@ export function applyFontStyles(target: any, config: FontConfig): any {
     textStyle: {
       ...target.textStyle,
       color: target.textStyle?.color ?? config.textColor,
-      fontSize: target.textStyle?.fontSize ?? config.fontSize,
+      fontSize: target.textStyle?.fontSize ?? config.fontSizeMd,
     },
     label: {
       ...target.label,
       color: target.label?.color ?? config.textColor,
-      fontSize: target.label?.fontSize ?? config.fontSizeSmall,
+      fontSize: target.label?.fontSize ?? config.fontSizeSm,
     },
     axisLabel: {
       ...target.axisLabel,
       color: target.axisLabel?.color ?? config.textColorSecondary,
-      fontSize: target.axisLabel?.fontSize ?? config.fontSizeSmall,
+      fontSize: target.axisLabel?.fontSize ?? config.fontSizeSm,
     },
   }
 }

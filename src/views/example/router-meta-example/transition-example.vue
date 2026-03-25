@@ -4,8 +4,8 @@
 </script>
 
 <template>
-  <div class="p-lg space-y-margin-md">
-    <h2 class="text-xl font-semibold row-y-center gap-sm">
+  <div class="p-lg col-stretch gap-md">
+    <h2 class="text-xl font-semibold row-start items-center gap-sm">
       <Icons
         name="i-lucide-sparkles"
         size="lg"
@@ -14,7 +14,7 @@
       <span>路由过渡动画示例（meta.transition）</span>
     </h2>
 
-    <div class="shadow-sm dark:shadow-md rounded-scale p-md space-y-margin-sm">
+    <div class="material-elevated col-stretch gap-sm">
       <div class="text-md font-medium">本路由 meta.transition 配置</div>
       <pre class="text-muted-foreground text-sm font-mono whitespace-pre-wrap">{{
         JSON.stringify(

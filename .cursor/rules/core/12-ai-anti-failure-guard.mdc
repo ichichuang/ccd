@@ -1,0 +1,33 @@
+---
+description: CRITICAL AI Execution Guardrails. Prevents UnoCSS purge, Vue reactivity loss, Type deadlocks, and Intent erasure. Includes Self-Check Loop.
+globs: *.vue, *.ts
+alwaysApply: true
+---
+# 🛡️ Architecture Law v2.1: Anti-Failure Layer
+
+> **AI MANDATE:** These are your execution guardrails. You MUST verify your output against these laws to prevent compilation failure and logic destruction.
+
+## 1. Build-Time Safe Classes (UnoCSS Protection)
+- **FORBIDDEN:** NEVER use template strings or dynamic concatenation for UnoCSS classes (e.g., `` `gap-${size}` ``). UnoCSS will purge these.
+- **REQUIRED:** You MUST use full static string literals (e.g., `const gapMap = { sm: 'gap-sm', md: 'gap-md' };`).
+
+## 2. Reactivity Integrity (Vue3 Protection)
+- **FORBIDDEN:** NEVER destructure reactive objects directly if they contain reactive state (e.g., `const { name } = props.user`).
+- **REQUIRED:** You MUST use `toRefs()`, `computed()`, or direct property access.
+
+## 3. The Type Escape Hatch
+- **FORBIDDEN:** NEVER hallucinate complex TypeScript interfaces to avoid `any` for opaque 3rd-party events.
+- **ALLOWED:** When type inference is blocking, type the payload as `unknown` and use a Type Guard (e.g., `if (isUserData(payload))`).
+
+## 4. Intent Preservation
+- **FORBIDDEN:** NEVER blindly replace a display-only component with a form component just because it contains data. Preserve the original business intent.
+
+---
+
+## 5. SELF-CHECK (MANDATORY BEFORE CODE OUTPUT)
+Before generating the final code block, you MUST output this verification list:
+- [ ] No dynamic UnoCSS classes exist.
+- [ ] No reactive destructuring without `toRefs()`.
+- [ ] No hallucinated TypeScript interfaces.
+- [ ] Original component intent is preserved.
+*(If any violation is found, you MUST fix it internally BEFORE outputting the final code).*

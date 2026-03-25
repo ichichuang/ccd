@@ -200,12 +200,12 @@ const slotCtx = computed<ContextMenuSlotContext | null>(() => {
       <Transition name="ctx-menu">
         <div
           v-if="visible"
-          class="fixed inset-0 z-50"
+          class="fixed inset-0 z-overlay"
           @contextmenu.prevent
         >
           <div
             ref="menuRef"
-            class="fixed z-50 min-w-[var(--spacing-3xl)] rounded-md bg-popover shadow-xl"
+            class="fixed z-overlay min-w-[var(--spacing-3xl)] rounded-md bg-popover shadow-sm shadow-primary!"
             :style="menuStyle"
             role="menu"
           >

@@ -48,19 +48,19 @@ function renderBreadcrumbMenuItem(slotProps: unknown) {
 <template>
   <div
     v-if="show"
-    class="admin-breadcrumb w-full h-breadcrumbHeight row-y-center px-md overflow-hidden select-none border-b-default"
+    class="w-full h-breadcrumbHeight px-md flex items-center select-none"
   >
-    <div class="row-y-center text-sm text-muted-foreground whitespace-nowrap">
+    <div class="flex items-center text-sm text-muted-foreground whitespace-nowrap">
       <TransitionGroup name="breadcrumb">
         <div
           v-for="(item, index) in breadcrumbs"
           :key="item.path"
-          class="row-y-center"
+          class="flex items-center min-w-0"
         >
           <!-- Breadcrumb Item -->
           <span
             :class="[
-              'transition-all duration-md row-y-center gap-xs rounded-sm',
+              'transition-all duration-md flex items-center gap-xs rounded-sm',
               index === breadcrumbs.length - 1
                 ? 'text-foreground font-semibold cursor-default'
                 : 'cursor-pointer hover:text-primary',

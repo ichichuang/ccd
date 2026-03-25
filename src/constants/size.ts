@@ -19,7 +19,7 @@ export const SIZE_PRESETS: SizePreset[] = [
     name: 'compact',
     label: '紧凑模式',
     radius: 6,
-    spacingBase: 4,
+    spacingBase: 3,
     fontSizeBase: 14,
 
     sidebarWidth: 200,
@@ -51,7 +51,7 @@ export const SIZE_PRESETS: SizePreset[] = [
     name: 'loose',
     label: '宽松模式',
     radius: 12,
-    spacingBase: 4,
+    spacingBase: 5,
     fontSizeBase: 18,
 
     sidebarWidth: 280,

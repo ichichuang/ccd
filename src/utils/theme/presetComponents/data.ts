@@ -7,21 +7,19 @@ export function buildDataComponents(): Record<string, unknown> {
   return {
     datatable: {
       headerCell: {
-        background: 'rgb(var(--background))',
+        background: 'color-mix(in srgb, rgb(var(--card)) 60%, rgb(var(--muted)) 40%)',
         borderColor: 'rgb(var(--border))',
         color: 'rgb(var(--foreground))',
-        hoverBackground: 'rgb(var(--muted))',
-        selectedBackground: 'rgb(var(--muted))',
       },
       bodyCell: {
         borderColor: 'rgb(var(--border))',
         color: 'rgb(var(--foreground))',
       },
       row: {
-        background: 'rgb(var(--background))',
+        background: 'rgb(var(--card))',
       },
       footerCell: {
-        background: 'rgb(var(--background))',
+        background: 'rgb(var(--muted))',
         borderColor: 'rgb(var(--border))',
         color: 'rgb(var(--foreground))',
       },
@@ -35,7 +33,7 @@ export function buildDataComponents(): Record<string, unknown> {
           borderRadius: 'var(--radius-md)',
           color: 'rgb(var(--popover-foreground))',
           shadow:
-            '0 4px 6px -1px rgb(var(--foreground) / 0.08), 0 2px 4px -2px rgb(var(--foreground) / 0.06)',
+            '0 4px 6px -1px rgb(var(--foreground)/0.08), 0 2px 4px -2px rgb(var(--foreground)/0.06)',
         },
         overlayPopover: {
           background: 'rgb(var(--popover))',
@@ -43,7 +41,7 @@ export function buildDataComponents(): Record<string, unknown> {
           borderRadius: 'var(--radius-md)',
           color: 'rgb(var(--popover-foreground))',
           shadow:
-            '0 4px 6px -1px rgb(var(--foreground) / 0.08), 0 2px 4px -2px rgb(var(--foreground) / 0.06)',
+            '0 4px 6px -1px rgb(var(--foreground)/0.08), 0 2px 4px -2px rgb(var(--foreground)/0.06)',
           padding: 'var(--spacing-sm)',
           gap: 'var(--spacing-xs)',
         },
@@ -55,11 +53,11 @@ export function buildDataComponents(): Record<string, unknown> {
           gap: 'var(--spacing-xs)',
         },
         constraint: {
-          focusBackground: 'rgb(var(--primary-light))',
+          focusBackground: 'rgb(var(--accent))',
           selectedBackground: 'rgb(var(--primary))',
           selectedFocusBackground: 'rgb(var(--primary))',
           color: 'rgb(var(--popover-foreground))',
-          focusColor: 'rgb(var(--primary-light-foreground))',
+          focusColor: 'rgb(var(--accent-foreground))',
           selectedColor: 'rgb(var(--primary-foreground))',
           selectedFocusColor: 'rgb(var(--primary-foreground))',
           separator: {
@@ -72,15 +70,27 @@ export function buildDataComponents(): Record<string, unknown> {
       colorScheme: {
         light: {
           row: {
-            stripedBackground: 'rgb(var(--muted-foreground)/0.1)',
-            hoverBackground: 'rgb(var(--primary-hover)/0.12)',
+            stripedBackground:
+              'color-mix(in srgb, rgb(var(--card)) 98%, rgb(var(--foreground)) 2%)',
+            hoverBackground: 'color-mix(in srgb, rgb(var(--card)) 95%, rgb(var(--primary)) 5%)',
+            selectedBackground: 'color-mix(in srgb, rgb(var(--card)) 90%, rgb(var(--primary)) 10%)',
+            selectedHoverBackground:
+              'color-mix(in srgb, rgb(var(--card)) 85%, rgb(var(--primary)) 15%)',
+            selectedColor: 'rgb(var(--foreground))',
           },
+          bodyCell: {},
         },
         dark: {
           row: {
-            stripedBackground: 'rgb(var(--muted))',
-            hoverBackground: 'rgb(var(--primary)/0.2)',
+            stripedBackground:
+              'color-mix(in srgb, rgb(var(--card)) 97%, rgb(var(--foreground)) 3%)',
+            hoverBackground: 'color-mix(in srgb, rgb(var(--card)) 92%, rgb(var(--primary)) 8%)',
+            selectedBackground: 'color-mix(in srgb, rgb(var(--card)) 85%, rgb(var(--primary)) 15%)',
+            selectedHoverBackground:
+              'color-mix(in srgb, rgb(var(--card)) 80%, rgb(var(--primary)) 20%)',
+            selectedColor: 'rgb(var(--foreground))',
           },
+          bodyCell: {},
         },
       },
     },

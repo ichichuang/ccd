@@ -83,9 +83,10 @@ export const employeeColumns: ProTableColumn<EmployeeRow>[] = [
     id: 'actions',
     title: '操作',
     pinned: 'right',
-    width: '140px',
+    width: '220px',
+    headerRender: () => <span class="w-full center">操作</span>,
     render: () => (
-      <div class="row-between">
+      <div class="center gap-sm w-full ">
         <Button size="small">编辑</Button>
         <Button
           size="small"

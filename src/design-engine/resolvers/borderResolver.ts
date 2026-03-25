@@ -1,5 +1,5 @@
-import type { SizeScaleKey } from '@/constants/sizeScale'
-import type { ParsedBorder } from '@/design-engine/parser/parseBorder'
+import type { SizeScaleKey } from '../../constants/sizeScale'
+import type { ParsedBorder } from '../parser/parseBorder'
 
 /**
  * BORDER_SIZE_MAP:

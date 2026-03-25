@@ -1,7 +1,7 @@
 import type { PluginOption } from 'vite'
 import { brand } from '../src/constants/brand'
 import { THEME_PRESETS, DEFAULT_THEME_NAME } from '../src/constants/theme'
-import { hexToRgb } from '../src/utils/theme/colors'
+import { generateThemeVars } from '../src/utils/theme/engine'
 
 /**
  * 在构建/开发时向 index.html 注入品牌配置
@@ -39,15 +39,16 @@ ${themeFallback}
  * 与 index.html theme-mode 脚本逻辑一致：默认 dark，:root.dark 覆盖 light 值
  */
 function generateThemeFallbackCss(): string {
-  const preset = THEME_PRESETS.find(p => p.name === DEFAULT_THEME_NAME) ?? THEME_PRESETS[0]
-  const light = preset.colors?.light
-  const dark = preset.colors?.dark
+  const defaultPreset = THEME_PRESETS.find(p => p.name === DEFAULT_THEME_NAME) ?? THEME_PRESETS[0]
 
-  const lightBg = light?.background ?? '#ffffff'
-  const lightFg = light?.foreground ?? '#09090b'
-  const darkBg = dark?.background ?? '#09090b'
-  const darkFg = dark?.foreground ?? '#fafafa'
+  const lightVars = generateThemeVars(defaultPreset, false)
+  const darkVars = generateThemeVars(defaultPreset, true)
 
-  return `    :root { --background: ${hexToRgb(lightBg)}; --foreground: ${hexToRgb(lightFg)}; }
-    :root.dark { --background: ${hexToRgb(darkBg)}; --foreground: ${hexToRgb(darkFg)}; }`
+  const varsToCssText = (vars: unknown): string =>
+    Object.entries(vars as Record<string, string>)
+      .map(([key, value]) => ` ${key}: ${value};`)
+      .join('')
+
+  return `    :root {${varsToCssText(lightVars)} }
+    :root.dark {${varsToCssText(darkVars)} }`
 }

@@ -22,7 +22,7 @@ const openSettings = () => {
 <template>
   <button
     type="button"
-    class="block w-full bg-transparent border-none p-0 text-left outline-none interactive-focus-ring"
+    class="block w-full bg-transparent border-none p-0 text-left outline-none interactive-item"
     @click="openSettings"
   >
     <slot></slot>

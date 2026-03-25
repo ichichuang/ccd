@@ -1,4 +1,4 @@
-import { VALID_COLORS } from '@/design-engine/tokens/colorTokens'
+import { VALID_COLORS } from '../tokens/colorTokens'
 
 /**
  * Validate UnoCSS "color suffix" tokens.

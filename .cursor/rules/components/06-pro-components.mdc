@@ -1,0 +1,314 @@
+---
+description: Governs all business views and ProTable/ProForm usage. Enforces PrimeVue purity, semantic layout shell, v-auth directive, and responsive patterns.
+globs: ["src/views/**/*.vue", "src/views/**/*.tsx", "src/components/ProTable/**", "src/components/ProForm/**"]
+alwaysApply: true
+---
+
+# Pro Components Law: Business Views, ProTable, ProForm
+
+Applies to all **business views** (CRUD, dashboards) and usage of the **ProTable** and **ProForm** engine components. Violations are architecture regressions.
+
+---
+
+## LAW 1 — PrimeVue Purity (The Iron Law)
+
+All tabular data and user input **MUST** use PrimeVue components. Native HTML elements are FORBIDDEN.
+
+```html
+<!-- ❌ FORBIDDEN -->
+<table><tr><td>Name</td></tr></table>
+<form @submit.prevent="onSubmit">
+  <input type="text" v-model="name" />
+  <select v-model="status">...</select>
+</form>
+
+<!-- ✅ REQUIRED -->
+<ProTable :columns="columns" :data="rows" :loading="loading" />
+<ProForm :schema="schema" @submit="onSubmit" />
+```
+
+**Allowed native HTML in views:** `<div>`, `<section>`, `<span>`, `<p>`, `<h1>`–`<h6>` — structural containers only.
+
+**NEVER use:** `<table>`, `<tr>`, `<td>`, `<th>`, `<thead>`, `<tbody>`, `<form>`, `<input>`, `<select>`, `<textarea>`, `<button>` (use PrimeVue `<Button>` instead).
+
+---
+
+## LAW 2 — Business View Shell (A1 Archetype)
+
+Every admin business view **MUST** follow the A1-toolbar-content archetype.
+
+### 2.1 — Root Wrapper
+
+```html
+<!-- ✅ REQUIRED: transparent root — Transparent Root Policy -->
+<!-- ❌ FORBIDDEN: any bg-* / surface-* / material-* on root wrapper -->
+<div class="col-stretch gap-md" data-archetype="A1-toolbar-content">
+  <div class="layout-narrow col-stretch gap-md">
+    <!-- content sections below -->
+  </div>
+</div>
+```
+
+**[LAW] View Root Wrappers:**
+- For standard flowing content (for example showcases, forms), the root wrapper MUST NOT constrain height. Use `col-stretch gap-md` or `layout-container` (for examples).
+- Do NOT wrap the entire view in `<CScrollbar>` if the parent `LayoutAdmin` already provides the main scrollable area.
+- Use `<CScrollbar>` only for local scrollable regions (for example inside a fixed-height sidebar, drawer panel, or a specific datatable wrapper).
+
+### 2.2 — Scrollable Container
+
+**MANDATORY:** All scrollable regions MUST use `<CScrollbar>`. NEVER use `overflow-auto`.
+
+```html
+<!-- ❌ FORBIDDEN -->
+<div class="overflow-auto h-full">...</div>
+
+<!-- ✅ REQUIRED -->
+<CScrollbar class="col-fill">...</CScrollbar>
+```
+
+### 2.3 — Content Sections
+
+Use `material-elevated` for each logical content section (search area, table area, detail card). Sections are separated by `gap-md` or `gap-lg` on the `layout-narrow` wrapper.
+
+```html
+<!-- ✅ Two-section view: search panel + table panel -->
+<div class="layout-narrow col-stretch gap-md">
+  <section class="material-elevated col-stretch gap-sm">
+    <!-- search form / filters -->
+  </section>
+
+  <section class="material-elevated col-stretch">
+    <!-- ProTable -->
+  </section>
+</div>
+```
+
+`material-elevated` = `bg-card text-card-foreground rounded-lg p-md shadow-sm hover:shadow-md transition-all duration-md`
+
+**FORBIDDEN on sections:**
+- ❌ `padding: 16px` inline — use `p-md`
+- ❌ `background: #fff` — use `bg-card`
+- ❌ `width: 800px` — use `w-full`, `layout-narrow`, `col-fill`
+- ❌ `text-gray-700`, `bg-white`, raw Tailwind colors
+
+---
+
+## LAW 3 — ProTable Usage
+
+### 3.1 — Column Definitions
+
+```typescript
+// ✅ REQUIRED: typed column array
+const columns: ProTableColumn<UserRow>[] = [
+  { id: 'name', field: 'name', title: 'Name', sortable: true, minWidth: '120px' },
+  {
+    id: 'actions',
+    title: 'Actions',
+    align: 'center',
+    width: '160px',
+    render: ({ row }) => (
+      // ✅ TSX — MANDATORY for VNode cell output
+      <div class="row-center gap-xs">
+        <Button v-auth="['system:user:edit']" size="small" label="Edit" onClick={() => openEdit(row)} />
+        <Button v-auth="['system:user:delete']" size="small" severity="danger" label="Delete" onClick={() => confirmDelete(row)} />
+      </div>
+    ),
+  },
+]
+```
+
+For tables with **>3 columns**, columns MUST live in a separate file:
+
+```
+src/views/system/user/
+├── index.vue
+├── configs/
+│   └── columns.tsx    ← column definitions here
+└── hooks/
+    └── useUserTable.ts
+```
+
+### 3.2 — HeightMode
+
+| Scenario | `height-mode` | Notes |
+|---|---|---|
+| Full-page data grid | `"fill"` | Standard for business views |
+| Fixed-size embed | `"fixed"` | Requires `:height="'400px'"` |
+| Content-driven | `"auto"` | Default |
+
+NEVER set explicit pixel height on the ProTable wrapper via inline style.
+
+### 3.3 — TSX Cell Renderers
+
+```tsx
+// ✅ REQUIRED: TSX
+render: ({ row }) => <Tag severity={row.active ? 'success' : 'danger'} value={row.status} />,
+
+// ❌ FORBIDDEN: h() function
+render: ({ row }) => h(Tag, { severity: 'success' }),
+
+// ❌ FORBIDDEN: string HTML return
+render: ({ row }) => `<span class="text-green-500">${row.status}</span>`,
+```
+
+### 3.4 — Standard Server-Mode Pattern
+
+```vue
+<ProTable
+  :columns="columns"
+  :data="tableData"
+  :loading="loading"
+  :total="total"
+  height-mode="fill"
+  server-mode
+  @load="fetchData"
+/>
+```
+
+ProTable manages PrimeVue DataTable's `scrollable`/`scrollHeight` internally — do NOT pass these directly.
+
+---
+
+## LAW 4 — ProForm Usage
+
+### 4.1 — Always Schema-Driven
+
+All forms with ≥2 fields **MUST** use `<ProForm>` with a typed `FormSchema`.
+
+```vue
+<script setup lang="ts">
+import type { FormSchema } from '@/components/ProForm'
+import { useForm } from '@/components/ProForm'
+
+const schema = reactive<FormSchema>({
+  fields: [
+    { name: 'username', component: 'input', label: 'Username', required: true, span: { xs: 12, md: 6 } },
+    { name: 'role', component: 'select', label: 'Role', options: roleOptions, span: { xs: 12, md: 6 } },
+    { name: 'email', component: 'input', label: 'Email', span: 12 },
+  ],
+})
+
+const { handleSubmit } = useForm({ schema })
+const onSubmit = handleSubmit(async (values) => { await saveUser(values) })
+</script>
+
+<template>
+  <ProForm :schema="schema" @submit="onSubmit" />
+</template>
+```
+
+### 4.2 — Responsive Grid via `span` (NOT UnoCSS grid)
+
+ProForm uses an **internal 12-column CSS grid**. Control layout with the `span` prop on each field.
+
+```typescript
+// ✅ REQUIRED: responsive span
+span: { xs: 12, md: 6, xl: 4 }   // full → half → third
+span: 12                           // always full width
+span: 6                            // always half width
+
+// ❌ FORBIDDEN: UnoCSS grid classes on ProForm or its wrapper
+// <div class="grid grid-cols-1 md:grid-cols-3">   ← do NOT wrap ProForm this way
+// ProForm manages its 12-col CSS grid via span prop
+```
+
+### 4.3 — Schema File Rule
+
+Forms with **>4 fields** MUST define schema in a separate file:
+
+```
+src/views/system/user/
+├── index.vue
+├── schemas/
+│   └── userFormSchema.ts
+└── hooks/
+    └── useUserForm.ts
+```
+
+---
+
+## LAW 5 — RBAC Enforcement
+
+### 5.1 — `v-auth` is Mandatory for All Action Elements
+
+Every privileged action button/icon **MUST** use `v-auth`. Using `v-if` with permission strings is FORBIDDEN.
+
+```vue
+<!-- ✅ REQUIRED -->
+<Button v-auth="['system:user:create']" label="New User" />
+<Button v-auth="['system:user:edit']" label="Edit" />
+<Button v-auth="['system:user:delete']" severity="danger" label="Delete" />
+
+<!-- ✅ Array = OR logic: any one permission grants access -->
+<Button v-auth="['system:user:edit', 'system:user:manage']" label="Manage" />
+
+<!-- ❌ FORBIDDEN -->
+<Button v-if="userStore.permissions.includes('system:user:edit')" label="Edit" />
+<Button v-if="hasPermission('system:user:edit')" label="Edit" />
+```
+
+### 5.2 — Programmatic Checks via `useAuth()`
+
+```typescript
+const { hasAuth, hasAllAuths, hasRole } = useAuth()
+
+// Single permission or OR logic (array)
+const canEdit = computed<boolean>(() => hasAuth('system:user:edit'))
+const canManage = computed<boolean>(() => hasAuth(['system:user:edit', 'system:user:manage']))
+
+// AND logic — all permissions required
+const canFullAccess = computed<boolean>(() => hasAllAuths(['system:user:edit', 'system:user:delete']))
+```
+
+### 5.3 — Permission String Convention
+
+`module:entity:action` format:
+
+| Action | String |
+|---|---|
+| Create | `system:user:create` |
+| Edit | `system:user:edit` |
+| Delete | `system:user:delete` |
+| Export | `system:user:export` |
+| Import | `system:user:import` |
+| Batch | `system:user:batch` |
+
+---
+
+## LAW 6 — Scroll & Virtual Scroll
+
+### 6.1 — Fill Mode for Full-Page Grids
+
+```vue
+<ProTable height-mode="fill" server-mode @load="fetchData" ... />
+```
+
+### 6.2 — Virtual Scroll for High-Volume Local Data
+
+For 1,000+ row local datasets (no server paging):
+
+```vue
+<ProTable :data="largeList" :virtual-scroll="true" :pagination="false" height-mode="fill" />
+```
+
+**CONSTRAINT:** `virtual-scroll`, `pagination`, and `infinite-scroll` are mutually exclusive. Never enable two simultaneously.
+
+---
+
+## Anti-Pattern Quick Reference
+
+| Pattern | Status | Correct Alternative |
+|---|---|---|
+| `<table><tr><td>` in views | ❌ FORBIDDEN | `<ProTable :columns :data />` |
+| `<form><input>` in business views | ❌ FORBIDDEN | `<ProForm :schema />` |
+| Bare `overflow-auto` | ❌ FORBIDDEN | `<CScrollbar>` |
+| `padding: 16px` inline | ❌ FORBIDDEN | `p-md` |
+| `background: #fff` / raw hex | ❌ FORBIDDEN | `bg-card` |
+| `text-gray-*`, `bg-blue-*` | ❌ FORBIDDEN | Semantic tokens (`text-muted-foreground`, `bg-primary`) |
+| `v-if` for permissions | ❌ FORBIDDEN | `v-auth="['perm:string']"` |
+| `h()` in cell renderers | ❌ FORBIDDEN | TSX `render: ({ row }) => <Tag />` |
+| Columns >3 inline in component | ❌ FORBIDDEN | `configs/columns.tsx` separate file |
+| Schema >4 fields inline | ❌ FORBIDDEN | `schemas/formSchema.ts` separate file |
+| `grid-cols-1 md:grid-cols-3` on ProForm | ❌ FORBIDDEN | `span: { xs: 12, md: 4 }` on field schema |
+| `material-elevated` on view root wrapper | ❌ FORBIDDEN | `col-stretch` or `layout-container` on root, `material-elevated` on inner sections |
+| `virtual-scroll` + `pagination` both true | ❌ FORBIDDEN | Pick one mode only |

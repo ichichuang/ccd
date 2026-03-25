@@ -123,7 +123,7 @@ const rowVirtualizer = useVirtualizer(
         <div
           v-for="virtualRow in rowVirtualizer.getVirtualItems()"
           :key="String(virtualRow.key)"
-          class="pro-table-row absolute top-0 left-0 w-full surface-item behavior-hover-transition border-b-default border-border/15 py-sm!"
+          class="pro-table-row absolute top-0 left-0 w-full surface-item transition-all duration-md ease-out border-b-default border-border/15 py-sm!"
           :style="{
             transform: 'translateY(' + virtualRow.start + 'px)',
             display: 'grid',
@@ -142,7 +142,7 @@ const rowVirtualizer = useVirtualizer(
           <div
             v-for="col in columns"
             :key="getColumnKey(col)"
-            class="row-y-center px-md! text-sm text-single-line-ellipsis"
+            class="flex flex-row items-center px-md! text-sm text-single-line-ellipsis"
           >
             <ProTableCell
               :node="getBodyCellNodeByIndex(col, virtualRow.index)"

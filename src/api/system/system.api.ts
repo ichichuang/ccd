@@ -42,15 +42,33 @@ export const requestSystemAsyncRoutesMock = async (): Promise<SystemAsyncRouteIt
 }
 
 /**
+ * 基础路由数据校验：确保 path 和 component 为字符串
+ */
+function validateRouteItems(routes: SystemAsyncRouteItem[]): SystemAsyncRouteItem[] {
+  return routes.filter((route: SystemAsyncRouteItem) => {
+    if (typeof route.path !== 'string' || route.path.length === 0) {
+      console.warn('🪒 Router: 跳过无效路由（path 缺失或非字符串）:', route)
+      return false
+    }
+    if (route.component !== undefined && typeof route.component !== 'string') {
+      console.warn(`🪒 Router: 跳过无效路由 ${route.path}（component 非字符串）:`, route)
+      return false
+    }
+    return true
+  })
+}
+
+/**
  * 真实请求实现（对接后端时启用）
  * 后端返回标准 ApiResponse<SystemAsyncRoutesRawRes>，解包 data 后提取路由数组
+ * 增强：基础字段校验，过滤无效路由项
  */
 export const requestSystemAsyncRoutesReal = async (): Promise<SystemAsyncRouteItem[]> => {
   const res = await get<ApiResponse<SystemAsyncRoutesRawRes>>(SYSTEM_ASYNC_ROUTES_URL)
-  const raw = res.data
-  const routes = extractRoutes(raw)
+  const raw: SystemAsyncRoutesRawRes = res.data
+  const routes: SystemAsyncRouteItem[] = extractRoutes(raw)
   if (!Array.isArray(routes)) {
     throw new Error('动态路由数据格式不正确，预期为数组或包含 routes 字段的对象')
   }
-  return routes
+  return validateRouteItems(routes)
 }

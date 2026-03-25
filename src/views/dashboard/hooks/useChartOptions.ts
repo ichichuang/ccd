@@ -32,23 +32,21 @@ export function useChartOptions(dataRef: Ref<SystemMetricsDTO[]>) {
     return {
       ...animationConfig,
       grid: {
-        top: vars.gapl,
-        bottom: vars.gapl,
-        left: vars.gapl,
-        right: vars.gapl,
+        top: vars.gapSm,
+        bottom: vars.gapSm,
+        left: vars.gapSm,
+        right: vars.gapSm,
         containLabel: true,
       },
       tooltip: {
         trigger: 'axis',
-        // Glass Tooltip Aesthetic
-        backgroundColor: vars.card.replace('rgb', 'rgba').replace(')', ', 0.92)'),
         borderColor: vars.border,
         borderWidth: 1,
         textStyle: {
           color: vars.foreground,
-          fontSize: vars.fontSizeSmall,
+          fontSize: vars.fontSizeSm,
         },
-        padding: vars.paddings,
+        padding: vars.paddingLg,
         transitionDuration: 0.3,
         shadowBlur: 10,
       },
@@ -56,13 +54,13 @@ export function useChartOptions(dataRef: Ref<SystemMetricsDTO[]>) {
         type: 'category',
         data: data.map(d => d.timestamp),
         axisLine: { lineStyle: { color: vars.border } },
-        axisLabel: { color: vars.mutedForeground, fontSize: vars.fontSizeSmall },
+        axisLabel: { color: vars.mutedForeground, fontSize: vars.fontSizeSm },
         splitLine: { show: false },
       },
       yAxis: {
         type: 'value',
         axisLine: { show: false },
-        axisLabel: { color: vars.mutedForeground, fontSize: vars.fontSizeSmall },
+        axisLabel: { color: vars.mutedForeground, fontSize: vars.fontSizeSm },
         splitLine: { lineStyle: { color: vars.border, type: 'dashed' } },
       },
       series: [

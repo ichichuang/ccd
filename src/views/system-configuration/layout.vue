@@ -1,792 +1,671 @@
 <script setup lang="ts">
-import { useDeviceStore } from '@/stores/modules/device'
-import { useLayoutStore } from '@/stores/modules/layout'
+defineOptions({ name: 'LayoutSystemPage' })
 
-const deviceStore: ReturnType<typeof useDeviceStore> = useDeviceStore()
-const layoutStore: ReturnType<typeof useLayoutStore> = useLayoutStore()
+import type Popover from 'primevue/popover'
 
-/** 有效显隐（与 LayoutAdmin 逻辑一致）：PC 用 store；非 PC 且小视口强制 false */
-const showSidebarEffective = computed<boolean>(() =>
-  deviceStore.type === 'PC'
-    ? layoutStore.showSidebar
-    : deviceStore.isMobileLayout
-      ? false
-      : layoutStore.showSidebar
-)
-const showTabsEffective = computed<boolean>(() =>
-  deviceStore.type === 'PC'
-    ? layoutStore.showTabs
-    : deviceStore.isMobileLayout
-      ? false
-      : layoutStore.showTabs
-)
-const showBreadcrumbEffective = computed<boolean>(() =>
-  deviceStore.type === 'PC'
-    ? layoutStore.showBreadcrumb
-    : deviceStore.isMobileLayout
-      ? false
-      : layoutStore.showBreadcrumb
-)
-const showFooterEffective = computed<boolean>(() =>
-  deviceStore.type === 'PC'
-    ? layoutStore.showFooter
-    : deviceStore.isMobileLayout
-      ? false
-      : layoutStore.showFooter
-)
-const showHeaderEffective = computed<boolean>(() =>
-  deviceStore.type === 'PC'
-    ? layoutStore.showHeader
-    : deviceStore.isMobileLayout
-      ? false
-      : layoutStore.showHeader
-)
+const layoutStore = useLayoutStore()
+const deviceStore = useDeviceStore()
+const router = useRouter()
 
-/** 架构约束：禁止在业务视图中直接调用适配函数 */
-const architecturalConstraints = [
-  {
-    rule: '禁止在 View 视图层直接调用 adaptToMobile / adaptToTablet 等函数',
-    reason: '这些函数属于 LayoutAdmin 的生命周期驱动，手动调用会破坏 SSOT 状态一致性。',
-  },
-  {
-    rule: 'userAdjusted 逻辑',
-    reason:
-      '当用户手动点击收展侧边栏后，userAdjusted 记录为 true，此时断点变化将不再自动强制同步侧边栏状态，以尊重用户意图。',
-  },
+const COPY_TOAST_GROUP = 'tr' as const
+
+type VisibilityKey = keyof LayoutVisibilitySetting
+
+interface VisibilityRowConfig {
+  key: VisibilityKey
+  label: string
+  hint: string
+  parentKey?: VisibilityKey
+  modeLocked: boolean
+}
+
+const fabPopoverRef = ref<InstanceType<typeof Popover> | null>(null)
+
+const modeOptions = computed<Array<{ label: string; value: AdminLayoutMode }>>(() => [
+  { label: 'Vertical（侧栏 + 内容区）', value: 'vertical' },
+  { label: 'Horizontal（顶栏菜单 + 内容区）', value: 'horizontal' },
+  { label: 'Mix（侧栏 + 顶栏菜单）', value: 'mix' },
+])
+
+const transitionOptions: Array<{ label: string; value: string }> = [
+  { label: 'layout-fixed', value: 'layout-fixed' },
+  { label: 'layout-spring', value: 'layout-spring' },
+  { label: 'layout-smooth', value: 'layout-smooth' },
 ]
 
-/** runAdaptive 触发时机简要说明 */
-const adaptiveTriggerDesc = [
-  'onMounted 执行一次',
-  'watch(deviceStore.isMobileLayout, isTabletLayout, isPCLayout, currentBreakpoint, type, orientation) 变化时执行',
-]
+const visibilityRows = computed<VisibilityRowConfig[]>(() => {
+  const mode: AdminLayoutMode = layoutStore.effectiveMode
+  return [
+    { key: 'showHeader', label: 'Header', hint: 'Header 壳是否渲染（父模块）', modeLocked: false },
+    {
+      key: 'showLogo',
+      label: 'Logo',
+      hint: 'Header 内 Logo（依赖 Header）',
+      parentKey: 'showHeader',
+      modeLocked: false,
+    },
+    {
+      key: 'showMenu',
+      label: 'Top Menu',
+      hint: 'Header 菜单通道（Vertical 模式锁定）',
+      parentKey: 'showHeader',
+      modeLocked: mode === 'vertical',
+    },
+    {
+      key: 'showSidebar',
+      label: 'Sidebar',
+      hint: '侧栏壳（Horizontal 模式锁定）',
+      modeLocked: mode === 'horizontal',
+    },
+    { key: 'showBreadcrumb', label: 'Breadcrumb', hint: '面包屑行（独立模块）', modeLocked: false },
+    {
+      key: 'showBreadcrumbIcon',
+      label: 'Breadcrumb Icon',
+      hint: '面包屑图标（依赖 Breadcrumb）',
+      parentKey: 'showBreadcrumb',
+      modeLocked: false,
+    },
+    { key: 'showTabs', label: 'Tabs', hint: 'Tabs 标签栏（独立模块）', modeLocked: false },
+    { key: 'showFooter', label: 'Footer', hint: '页脚（独立模块）', modeLocked: false },
+  ]
+})
+
+const isNavigationLost = computed<boolean>(() => {
+  const v: LayoutVisibilitySetting = layoutStore.activeVisibility
+  const mode: AdminLayoutMode = layoutStore.effectiveMode
+  if (mode === 'horizontal' && !v.showHeader) return true
+  if (mode === 'vertical' && !v.showSidebar) return true
+  if (mode === 'mix' && !v.showSidebar && (!v.showHeader || !v.showMenu)) return true
+  return false
+})
+
+function isRowDisabled(row: VisibilityRowConfig): boolean {
+  if (row.modeLocked) return true
+  if (!row.parentKey) return false
+  if (!layoutStore.activeVisibility[row.parentKey]) return true
+  // Transitive: check if parent is itself disabled
+  const parentRow = visibilityRows.value.find(r => r.key === row.parentKey)
+  return parentRow ? isRowDisabled(parentRow) : false
+}
+
+function handleVisibilityToggle(key: VisibilityKey, value: boolean): void {
+  layoutStore.setModuleVisible(key, value)
+}
+
+function handlePreferredModeChange(mode: AdminLayoutMode): void {
+  layoutStore.setPreferredMode(mode)
+}
+
+function toggleFabMenu(event: MouseEvent): void {
+  fabPopoverRef.value?.toggle(event)
+}
+
+function restoreNavigation(): void {
+  fabPopoverRef.value?.hide()
+  const mode: AdminLayoutMode = layoutStore.effectiveMode
+  if (mode === 'vertical') {
+    layoutStore.setModuleVisible('showSidebar', true)
+    layoutStore.setModuleVisible('showHeader', true)
+  } else if (mode === 'horizontal') {
+    layoutStore.setModuleVisible('showHeader', true)
+    layoutStore.setModuleVisible('showMenu', true)
+  } else {
+    layoutStore.setModuleVisible('showHeader', true)
+    layoutStore.setModuleVisible('showSidebar', true)
+    layoutStore.setModuleVisible('showMenu', true)
+  }
+}
+
+function fullReset(): void {
+  fabPopoverRef.value?.hide()
+  layoutStore.resetSetting()
+}
+
+function clearUserAdjusted(): void {
+  fabPopoverRef.value?.hide()
+  layoutStore.resetUserAdjusted()
+}
+
+async function copyText(text: string, label: string): Promise<void> {
+  try {
+    await navigator.clipboard.writeText(text)
+    window.$toast?.add({
+      severity: 'success',
+      summary: '已复制',
+      detail: `${label}: ${text}`,
+      life: 2000,
+      group: COPY_TOAST_GROUP,
+    })
+  } catch {
+    window.$toast?.add({
+      severity: 'error',
+      summary: '复制失败',
+      detail: '请检查剪贴板权限',
+      life: 2000,
+      group: COPY_TOAST_GROUP,
+    })
+  }
+}
 </script>
 
 <template>
   <div
-    class="h-full column overflow-hidden"
+    class="col-fill"
     data-archetype="A1-toolbar-content"
   >
-    <!-- Toolbar: Header (Transparent Root · Nested Canvas) -->
-    <div class="shrink-0 border-b-default border-primary/50 bg-primary/5">
-      <div
-        class="py-sm md:py-md xl:py-lg 2xl:py-xl mx-auto max-w-[92%] sm:max-w-[94%] md:max-w-[92%] lg:max-w-[90%] xl:max-w-[88%] 2xl:max-w-[86%] 3xl:max-w-[84%] col-stack-sm py-sm"
-      >
-        <div class="row-y-center gap-md">
-          <div class="p-md bg-primary/10 rounded-lg shrink-0">
-            <Icons
-              name="i-lucide-layout-dashboard"
-              class="text-primary text-2xl"
-            />
-          </div>
-          <div class="col-stack-xs">
-            <h1 class="text-2xl font-bold text-foreground">Layout & Device System</h1>
-            <p class="text-muted-foreground text-sm">
-              布局/设备 Store 演示 · useDeviceStore、useLayoutStore、runAdaptive 与有效显隐
-            </p>
-          </div>
-        </div>
-        <Tag
-          value="核心文档: ADAPTIVE_LAYOUT.md"
-          severity="info"
-          class="self-start mt-xs"
-        />
-        <!-- 架构提示 -->
-        <div class="surface-item p-md rounded-md row-start gap-md shadow-sm dark:shadow-md mt-sm">
-          <Icons
-            name="i-lucide-info"
-            class="text-primary text-xl shrink-0 mt-xs"
-          />
-          <div class="col-stack-xs">
-            <div class="font-semibold text-primary text-sm">Architectural Guide 架构引导</div>
-            <div class="text-muted-foreground text-xs leading-relaxed">
-              业务视图组件应当仅读取 Store 状态，禁止通过逻辑手动触发适配函数。所有适配逻辑应由
-              Layout 核心驱动。
+    <CScrollbar class="col-fill">
+      <div class="layout-narrow">
+        <div class="material-elevated col-stretch gap-lg md:p-lg xl:p-xl">
+          <!-- ═══════════ PAGE HEADER ═══════════ -->
+          <header class="col-stretch gap-sm">
+            <div class="flex flex-row justify-between gap-md items-start">
+              <div class="col-stretch gap-xs">
+                <div class="flex flex-row gap-sm items-center">
+                  <h1 class="text-2xl font-bold text-foreground m-0 tracking-tight">
+                    Layout Control Center
+                  </h1>
+                  <Tag
+                    value="LIVE"
+                    severity="danger"
+                  />
+                </div>
+                <p class="text-sm text-muted-foreground m-0">
+                  直接操作全局布局 Store — 所有变更即时生效于整个 Admin Shell
+                </p>
+              </div>
+              <div class="row-end gap-xs shrink-0 flex-wrap">
+                <Button
+                  text
+                  size="small"
+                  label="→ Breakpoints"
+                  class="p-0 h-auto text-xs"
+                  @click="router.push('/system-configuration/breakpoints')"
+                />
+                <Button
+                  text
+                  size="small"
+                  label="→ Scrollbar"
+                  class="p-0 h-auto text-xs"
+                  @click="router.push('/system-configuration/scrollbar')"
+                />
+              </div>
             </div>
-          </div>
-        </div>
-      </div>
-    </div>
+          </header>
 
-    <!-- Scrollable content -->
-    <CScrollbar class="flex-1 min-h-0">
-      <div
-        class="py-sm md:py-md xl:py-lg 2xl:py-xl mx-auto max-w-[92%] sm:max-w-[94%] md:max-w-[92%] lg:max-w-[90%] xl:max-w-[88%] 2xl:max-w-[86%] 3xl:max-w-[84%] col-stack-xl"
-      >
-        <!-- Device Store (Dashboard KPI Style) -->
-        <Card
-          class="bg-card rounded-md shadow-sm dark:shadow-md py-md px-lg flex flex-col gap-lg bg-accent/10 dark:bg-accent/5"
-        >
-          <template #title>
-            <div class="row-y-center gap-sm border-b-default pb-sm mb-padding-sm">
-              <Icons
-                name="i-lucide-smartphone"
-                class="text-primary"
-              />
-              <span class="font-semibold">Device Store (useDeviceStore)</span>
-              <Tag
-                value="type / isMobileLayout / currentBreakpoint"
-                severity="secondary"
-              />
-            </div>
-          </template>
-          <template #content>
-            <div class="layout-wrap gap-lg">
-              <div
-                class="surface-item rounded-lg p-xl row-y-center gap-lg group shadow-sm dark:shadow-md transition-all duration-xl ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)] behavior-hover-transition min-w-0 shrink-0"
-              >
-                <div
-                  class="shrink-0 w-[var(--spacing-3xl)] h-[var(--spacing-3xl)] rounded-lg surface-item center transition-[transform,opacity] duration-md ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-105"
-                >
-                  <Icons
-                    name="i-lucide-smartphone"
-                    size="lg"
-                    class="text-primary"
-                  />
-                </div>
-                <div class="column">
-                  <span class="text-xs font-medium text-muted-foreground uppercase tracking-wider">
-                    type
-                  </span>
-                  <span class="text-xl font-bold text-foreground tabular-nums">
-                    {{ deviceStore.type }}
+          <!-- ═══════════ DANGER BANNER ═══════════ -->
+          <Transition name="layout-fade">
+            <div
+              v-if="isNavigationLost"
+              class="rounded-lg bg-danger/10 border border-danger/30 p-md col-stretch gap-sm"
+            >
+              <div class="flex flex-row gap-sm items-start">
+                <Icons
+                  name="i-lucide-triangle-alert"
+                  size="sm"
+                  class="text-danger shrink-0 mt-xs"
+                />
+                <div class="col-stretch gap-xs">
+                  <span class="text-sm font-semibold text-danger">导航已全部隐藏！</span>
+                  <span class="text-xs text-muted-foreground">
+                    当前
+                    <span class="font-mono text-foreground">{{ layoutStore.effectiveMode }}</span>
+                    模式下所有导航路径均已关闭，用户将无法访问其他页面。
                   </span>
                 </div>
               </div>
-              <div
-                class="surface-item rounded-lg p-xl row-y-center gap-lg group shadow-sm dark:shadow-md transition-all duration-xl ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)] behavior-hover-transition min-w-0 shrink-0"
-              >
-                <div
-                  class="shrink-0 w-[var(--spacing-3xl)] h-[var(--spacing-3xl)] rounded-lg surface-item center transition-[transform,opacity] duration-md ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-105"
-                >
-                  <Icons
-                    name="i-lucide-layout-grid"
-                    size="lg"
-                    class="text-success"
-                  />
-                </div>
-                <div class="column">
-                  <span class="text-xs font-medium text-muted-foreground uppercase tracking-wider">
-                    currentBreakpoint
-                  </span>
-                  <span class="text-xl font-bold text-foreground tabular-nums">
-                    {{ deviceStore.currentBreakpoint }}
-                  </span>
-                </div>
-              </div>
-              <div
-                class="surface-item rounded-lg p-xl row-y-center gap-lg group shadow-sm dark:shadow-md transition-all duration-xl ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)] behavior-hover-transition min-w-0 shrink-0"
-              >
-                <div
-                  class="shrink-0 w-[var(--spacing-3xl)] h-[var(--spacing-3xl)] rounded-lg surface-item center transition-[transform,opacity] duration-md ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-105"
-                >
-                  <Icons
-                    name="i-lucide-monitor-smartphone"
-                    size="lg"
-                    :class="deviceStore.isMobileLayout ? 'text-warn' : 'text-muted-foreground'"
-                  />
-                </div>
-                <div class="column">
-                  <span class="text-xs font-medium text-muted-foreground uppercase tracking-wider">
-                    isMobileLayout
-                  </span>
-                  <span class="text-xl font-bold text-foreground tabular-nums">
-                    {{ deviceStore.isMobileLayout }}
-                  </span>
-                </div>
-              </div>
-              <div
-                class="surface-item rounded-lg p-xl row-y-center gap-lg group shadow-sm dark:shadow-md transition-all duration-xl ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)] behavior-hover-transition min-w-0 shrink-0"
-              >
-                <div
-                  class="shrink-0 w-[var(--spacing-3xl)] h-[var(--spacing-3xl)] rounded-lg surface-item center transition-[transform,opacity] duration-md ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-105"
-                >
-                  <Icons
-                    name="i-lucide-tablet"
-                    size="lg"
-                    :class="deviceStore.isTabletLayout ? 'text-warn' : 'text-muted-foreground'"
-                  />
-                </div>
-                <div class="column">
-                  <span class="text-xs font-medium text-muted-foreground uppercase tracking-wider">
-                    isTabletLayout
-                  </span>
-                  <span class="text-xl font-bold text-foreground tabular-nums">
-                    {{ deviceStore.isTabletLayout }}
-                  </span>
-                </div>
-              </div>
-              <div
-                class="surface-item rounded-lg p-xl row-y-center gap-lg group shadow-sm dark:shadow-md transition-all duration-xl ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)] behavior-hover-transition min-w-0 shrink-0"
-              >
-                <div
-                  class="shrink-0 w-[var(--spacing-3xl)] h-[var(--spacing-3xl)] rounded-lg surface-item center transition-[transform,opacity] duration-md ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-105"
-                >
-                  <Icons
-                    name="i-lucide-monitor"
-                    size="lg"
-                    :class="deviceStore.isPCLayout ? 'text-info' : 'text-muted-foreground'"
-                  />
-                </div>
-                <div class="column">
-                  <span class="text-xs font-medium text-muted-foreground uppercase tracking-wider">
-                    isPCLayout
-                  </span>
-                  <span class="text-xl font-bold text-foreground tabular-nums">
-                    {{ deviceStore.isPCLayout }}
-                  </span>
-                </div>
-              </div>
-              <div
-                class="surface-item rounded-lg p-xl row-y-center gap-lg group shadow-sm dark:shadow-md transition-all duration-xl ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)] behavior-hover-transition min-w-0 shrink-0"
-              >
-                <div
-                  class="shrink-0 w-[var(--spacing-3xl)] h-[var(--spacing-3xl)] rounded-lg surface-item center transition-[transform,opacity] duration-md ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-105"
-                >
-                  <Icons
-                    name="i-lucide-rotate-cw"
-                    size="lg"
-                    class="text-muted-foreground"
-                  />
-                </div>
-                <div class="column">
-                  <span class="text-xs font-medium text-muted-foreground uppercase tracking-wider">
-                    orientation
-                  </span>
-                  <span class="text-xl font-bold text-foreground tabular-nums">
-                    {{ deviceStore.orientation }}
-                  </span>
-                </div>
-              </div>
-              <div
-                class="surface-item rounded-lg p-xl row-y-center gap-lg group shadow-sm dark:shadow-md transition-all duration-xl ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)] behavior-hover-transition min-w-0 shrink-0"
-              >
-                <div
-                  class="shrink-0 w-[var(--spacing-3xl)] h-[var(--spacing-3xl)] rounded-lg surface-item center transition-[transform,opacity] duration-md ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-105"
-                >
-                  <Icons
-                    name="i-lucide-maximize-2"
-                    size="lg"
-                    class="text-muted-foreground"
-                  />
-                </div>
-                <div class="column">
-                  <span class="text-xs font-medium text-muted-foreground uppercase tracking-wider">
-                    视口
-                  </span>
-                  <span class="text-xl font-bold text-foreground tabular-nums">
-                    {{ deviceStore.width }} × {{ deviceStore.height }}
-                  </span>
-                </div>
+              <div class="row-start gap-xs">
+                <Button
+                  label="恢复导航"
+                  severity="danger"
+                  size="small"
+                  outlined
+                  @click="restoreNavigation"
+                />
+                <Button
+                  label="完全重置"
+                  severity="danger"
+                  size="small"
+                  @click="fullReset"
+                />
               </div>
             </div>
-          </template>
-        </Card>
+          </Transition>
 
-        <!-- Layout Store (Dashboard KPI Style) -->
-        <Card
-          class="bg-card rounded-md shadow-sm dark:shadow-md py-md px-lg flex flex-col gap-lg bg-accent/10 dark:bg-accent/5"
-        >
-          <template #title>
-            <div class="row-y-center gap-sm border-b-default pb-sm mb-padding-sm">
+          <!-- ═══════════ EFFECTIVE STATE BAR ═══════════ -->
+          <div
+            class="rounded-lg bg-primary/5 dark:bg-primary/10 border border-primary/20 p-sm row-between gap-md flex-wrap"
+          >
+            <div class="flex flex-row gap-xs items-center flex-wrap">
               <Icons
-                name="i-lucide-panel-left"
-                class="text-primary"
+                name="i-lucide-activity"
+                size="sm"
+                class="text-primary shrink-0"
               />
-              <span class="font-semibold">Layout Store (useLayoutStore)</span>
+              <span class="text-xs font-semibold text-foreground">实时状态</span>
+              <span class="text-xs text-muted-foreground">effectiveMode:</span>
               <Tag
-                value="mode / sidebarCollapse / showXxx"
-                severity="secondary"
-              />
-            </div>
-          </template>
-          <template #content>
-            <div class="layout-wrap gap-lg">
-              <div
-                class="surface-item rounded-lg p-xl row-y-center gap-lg group shadow-sm dark:shadow-md transition-all duration-xl ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)] behavior-hover-transition min-w-0 shrink-0"
-              >
-                <div
-                  class="shrink-0 w-[var(--spacing-3xl)] h-[var(--spacing-3xl)] rounded-lg surface-item center transition-[transform,opacity] duration-md ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-105"
-                >
-                  <Icons
-                    name="i-lucide-layout-dashboard"
-                    size="lg"
-                    class="text-primary"
-                  />
-                </div>
-                <div class="column">
-                  <span class="text-xs font-medium text-muted-foreground uppercase tracking-wider">
-                    mode
-                  </span>
-                  <span class="text-xl font-bold text-foreground tabular-nums">
-                    {{ layoutStore.mode }}
-                  </span>
-                </div>
-              </div>
-              <div
-                class="surface-item rounded-lg p-xl row-y-center gap-lg group shadow-sm dark:shadow-md transition-all duration-xl ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)] behavior-hover-transition min-w-0 shrink-0"
-              >
-                <div
-                  class="shrink-0 w-[var(--spacing-3xl)] h-[var(--spacing-3xl)] rounded-lg surface-item center transition-[transform,opacity] duration-md ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-105"
-                >
-                  <Icons
-                    name="i-lucide-panel-left-close"
-                    size="lg"
-                    class="text-muted-foreground"
-                  />
-                </div>
-                <div class="column">
-                  <span class="text-xs font-medium text-muted-foreground uppercase tracking-wider">
-                    sidebarCollapse
-                  </span>
-                  <span class="text-xl font-bold text-foreground tabular-nums">
-                    {{ layoutStore.sidebarCollapse }}
-                  </span>
-                </div>
-              </div>
-              <div
-                class="surface-item rounded-lg p-xl row-y-center gap-lg group shadow-sm dark:shadow-md transition-all duration-xl ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)] behavior-hover-transition min-w-0 shrink-0"
-              >
-                <div
-                  class="shrink-0 w-[var(--spacing-3xl)] h-[var(--spacing-3xl)] rounded-lg surface-item center transition-[transform,opacity] duration-md ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-105"
-                >
-                  <Icons
-                    name="i-lucide-panel-left"
-                    size="lg"
-                    :class="layoutStore.showSidebar ? 'text-success' : 'text-muted-foreground'"
-                  />
-                </div>
-                <div class="column">
-                  <span class="text-xs font-medium text-muted-foreground uppercase tracking-wider">
-                    showSidebar
-                  </span>
-                  <span class="text-xl font-bold text-foreground tabular-nums">
-                    {{ layoutStore.showSidebar }}
-                  </span>
-                </div>
-              </div>
-              <div
-                class="surface-item rounded-lg p-xl row-y-center gap-lg group shadow-sm dark:shadow-md transition-all duration-xl ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)] behavior-hover-transition min-w-0 shrink-0"
-              >
-                <div
-                  class="shrink-0 w-[var(--spacing-3xl)] h-[var(--spacing-3xl)] rounded-lg surface-item center transition-[transform,opacity] duration-md ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-105"
-                >
-                  <Icons
-                    name="i-lucide-user"
-                    size="lg"
-                    :class="layoutStore.userAdjusted ? 'text-info' : 'text-muted-foreground'"
-                  />
-                </div>
-                <div class="column">
-                  <span class="text-xs font-medium text-muted-foreground uppercase tracking-wider">
-                    userAdjusted
-                  </span>
-                  <span class="text-xl font-bold text-foreground tabular-nums">
-                    {{ layoutStore.userAdjusted }}
-                  </span>
-                </div>
-              </div>
-            </div>
-            <div class="mt-md p-sm surface-item rounded-md text-sm text-muted-foreground">
-              showHeader / showMenu / showSidebar / showBreadcrumb / showTabs / showFooter
-              由设置面板与 visibilitySettings[mode] 控制；对应的 headerHeight / sidebarWidth
-              等尺寸来源于
-              <span class="bg-muted px-xs rounded-xs font-mono">
-                Size 预设 LAYOUT_DIMENSION_KEYS
-              </span>
-              ，禁止在业务中直接硬编码 px。
-            </div>
-          </template>
-        </Card>
-
-        <!-- Live Wireframe Preview (Hero: accent tint + title strip) -->
-        <Card
-          class="bg-card rounded-md shadow-sm dark:shadow-md py-md px-lg flex flex-col gap-lg bg-accent/10 dark:bg-accent/5"
-        >
-          <template #title>
-            <div class="row-y-center gap-sm border-b-default pb-sm mb-padding-sm">
-              <Icons
-                name="i-lucide-app-window"
-                class="text-primary"
-              />
-              <span class="font-semibold">Live Wireframe 实时线框图</span>
-              <Tag
-                :value="layoutStore.mode"
+                :value="layoutStore.effectiveMode"
                 severity="info"
               />
+              <span class="text-xs text-muted-foreground">preferredMode:</span>
+              <Tag
+                :value="layoutStore.preferredMode"
+                severity="secondary"
+              />
             </div>
-          </template>
-          <template #content>
-            <div class="col-stack-md">
-              <p class="text-muted-foreground text-sm">
-                实时反映当前 Store 状态的布局线框图 · 勾选/取消左侧开关可即时观察布局变化
+            <div class="row-end gap-xs flex-wrap">
+              <span class="text-xs text-muted-foreground">Device:</span>
+              <Tag
+                :value="deviceStore.type"
+                severity="secondary"
+              />
+              <span class="text-xs text-muted-foreground">BP:</span>
+              <Tag
+                :value="deviceStore.currentBreakpoint"
+                severity="secondary"
+              />
+              <Tag
+                v-if="layoutStore.userAdjusted"
+                value="User Adjusted"
+                severity="warn"
+              />
+            </div>
+          </div>
+
+          <!-- ═══════════ 2-COLUMN CONTROL CENTER ═══════════ -->
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-lg">
+            <!-- ─── LEFT COLUMN ─── -->
+            <div class="col-stretch gap-md">
+              <!-- § Layout Mode -->
+              <div
+                class="bg-muted/30 dark:bg-muted/20 border border-border/40 rounded-lg p-md col-stretch gap-md"
+              >
+                <div class="row-between">
+                  <div class="flex flex-row gap-xs items-center">
+                    <Icons
+                      name="i-lucide-layout-template"
+                      size="sm"
+                      class="text-muted-foreground"
+                    />
+                    <span class="text-sm font-semibold text-foreground">Layout Mode</span>
+                  </div>
+                  <Button
+                    text
+                    size="small"
+                    icon="i-lucide-clipboard-copy"
+                    class="p-0 h-auto text-muted-foreground/40 hover:text-primary transition-colors duration-md"
+                    @click="copyText(layoutStore.preferredMode, 'preferredMode')"
+                  />
+                </div>
+                <div class="rounded-md bg-background/40 p-sm col-stretch gap-xs">
+                  <span class="text-xs text-muted-foreground">
+                    preferredMode（宽屏 ≥ 1280px 时生效）
+                  </span>
+                  <Select
+                    :model-value="layoutStore.preferredMode"
+                    :options="modeOptions"
+                    option-label="label"
+                    option-value="value"
+                    class="w-full"
+                    @update:model-value="handlePreferredModeChange"
+                  />
+                </div>
+              </div>
+
+              <!-- § Fixed Behavior -->
+              <div
+                class="bg-muted/30 dark:bg-muted/20 border border-border/40 rounded-lg p-md col-stretch gap-md"
+              >
+                <div class="row-between">
+                  <div class="flex flex-row gap-xs items-center">
+                    <Icons
+                      name="i-lucide-pin"
+                      size="sm"
+                      class="text-muted-foreground"
+                    />
+                    <span class="text-sm font-semibold text-foreground">Fixed Behavior</span>
+                  </div>
+                  <span class="text-xs text-muted-foreground">控制滚动时是否保持固定</span>
+                </div>
+                <div class="col-stretch gap-sm">
+                  <div class="rounded-md bg-background/40 p-sm row-between gap-md">
+                    <div class="col-stretch gap-xs">
+                      <span class="text-sm font-semibold text-foreground">headerFixed</span>
+                      <span class="text-xs text-muted-foreground">Header 在页面滚动时保持固定</span>
+                    </div>
+                    <div class="row-end gap-xs shrink-0">
+                      <Button
+                        text
+                        size="small"
+                        icon="i-lucide-clipboard-copy"
+                        class="p-0 h-auto text-muted-foreground/40 hover:text-primary transition-colors duration-md"
+                        @click="copyText('headerFixed', 'LayoutSetting')"
+                      />
+                      <ToggleSwitch
+                        :model-value="layoutStore.headerFixed"
+                        @update:model-value="
+                          (v: boolean) => layoutStore.updateSetting('headerFixed', v)
+                        "
+                      />
+                    </div>
+                  </div>
+                  <div class="rounded-md bg-background/40 p-sm row-between gap-md">
+                    <div class="col-stretch gap-xs">
+                      <span class="text-sm font-semibold text-foreground">sidebarFixed</span>
+                      <span class="text-xs text-muted-foreground">
+                        Sidebar 在页面滚动时保持固定
+                      </span>
+                    </div>
+                    <div class="row-end gap-xs shrink-0">
+                      <Button
+                        text
+                        size="small"
+                        icon="i-lucide-clipboard-copy"
+                        class="p-0 h-auto text-muted-foreground/40 hover:text-primary transition-colors duration-md"
+                        @click="copyText('sidebarFixed', 'LayoutSetting')"
+                      />
+                      <ToggleSwitch
+                        :model-value="layoutStore.sidebarFixed"
+                        @update:model-value="
+                          (v: boolean) => layoutStore.updateSetting('sidebarFixed', v)
+                        "
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- § Sidebar Behavior -->
+              <div
+                class="bg-muted/30 dark:bg-muted/20 border border-border/40 rounded-lg p-md col-stretch gap-md"
+              >
+                <div class="row-between">
+                  <div class="flex flex-row gap-xs items-center">
+                    <Icons
+                      name="i-lucide-panel-left"
+                      size="sm"
+                      class="text-muted-foreground"
+                    />
+                    <span class="text-sm font-semibold text-foreground">Sidebar Behavior</span>
+                  </div>
+                  <span class="text-xs text-muted-foreground">折叠与展开策略</span>
+                </div>
+                <div class="col-stretch gap-sm">
+                  <div class="rounded-md bg-background/40 p-sm row-between gap-md">
+                    <div class="col-stretch gap-xs">
+                      <span class="text-sm font-semibold text-foreground">sidebarCollapse</span>
+                      <span class="text-xs text-muted-foreground">侧栏是否处于收起状态</span>
+                    </div>
+                    <div class="row-end gap-xs shrink-0">
+                      <Button
+                        text
+                        size="small"
+                        icon="i-lucide-clipboard-copy"
+                        class="p-0 h-auto text-muted-foreground/40 hover:text-primary transition-colors duration-md"
+                        @click="copyText('sidebarCollapse', 'LayoutSetting')"
+                      />
+                      <ToggleSwitch
+                        :model-value="layoutStore.sidebarCollapse"
+                        @update:model-value="
+                          (v: boolean) => {
+                            layoutStore.updateSetting('sidebarCollapse', v)
+                            layoutStore.markUserAdjusted()
+                          }
+                        "
+                      />
+                    </div>
+                  </div>
+                  <div class="rounded-md bg-background/40 p-sm row-between gap-md">
+                    <div class="col-stretch gap-xs">
+                      <span class="text-sm font-semibold text-foreground">sidebarUniqueOpened</span>
+                      <span class="text-xs text-muted-foreground">
+                        手风琴模式：同时只展开一个菜单组
+                      </span>
+                    </div>
+                    <div class="row-end gap-xs shrink-0">
+                      <Button
+                        text
+                        size="small"
+                        icon="i-lucide-clipboard-copy"
+                        class="p-0 h-auto text-muted-foreground/40 hover:text-primary transition-colors duration-md"
+                        @click="copyText('sidebarUniqueOpened', 'LayoutSetting')"
+                      />
+                      <ToggleSwitch
+                        :model-value="layoutStore.sidebarUniqueOpened"
+                        @update:model-value="
+                          (v: boolean) => layoutStore.updateSetting('sidebarUniqueOpened', v)
+                        "
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- § Animation & Cache -->
+              <div
+                class="bg-muted/30 dark:bg-muted/20 border border-border/40 rounded-lg p-md col-stretch gap-md"
+              >
+                <div class="row-between">
+                  <div class="flex flex-row gap-xs items-center">
+                    <Icons
+                      name="i-lucide-zap"
+                      size="sm"
+                      class="text-muted-foreground"
+                    />
+                    <span class="text-sm font-semibold text-foreground">Animation & Cache</span>
+                  </div>
+                  <span class="text-xs text-muted-foreground">路由过渡与 KeepAlive</span>
+                </div>
+                <div class="col-stretch gap-sm">
+                  <div class="rounded-md bg-background/40 p-sm row-between gap-md">
+                    <div class="col-stretch gap-xs">
+                      <span class="text-sm font-semibold text-foreground">enableTransition</span>
+                      <span class="text-xs text-muted-foreground">路由切换时的过渡动画开关</span>
+                    </div>
+                    <div class="row-end gap-xs shrink-0">
+                      <Button
+                        text
+                        size="small"
+                        icon="i-lucide-clipboard-copy"
+                        class="p-0 h-auto text-muted-foreground/40 hover:text-primary transition-colors duration-md"
+                        @click="copyText('enableTransition', 'LayoutSetting')"
+                      />
+                      <ToggleSwitch
+                        :model-value="layoutStore.enableTransition"
+                        @update:model-value="
+                          (v: boolean) => layoutStore.updateSetting('enableTransition', v)
+                        "
+                      />
+                    </div>
+                  </div>
+                  <div class="rounded-md bg-background/40 p-sm col-stretch gap-sm">
+                    <div class="row-between gap-md">
+                      <div class="col-stretch gap-xs">
+                        <span class="text-sm font-semibold text-foreground">transitionName</span>
+                        <span class="text-xs text-muted-foreground">过渡动画效果名称</span>
+                      </div>
+                      <Button
+                        text
+                        size="small"
+                        icon="i-lucide-clipboard-copy"
+                        class="p-0 h-auto text-muted-foreground/40 hover:text-primary transition-colors duration-md"
+                        @click="copyText(layoutStore.transitionName, 'transitionName')"
+                      />
+                    </div>
+                    <Select
+                      :model-value="layoutStore.transitionName"
+                      :options="transitionOptions"
+                      option-label="label"
+                      option-value="value"
+                      class="w-full"
+                      :disabled="!layoutStore.enableTransition"
+                      @update:model-value="
+                        (v: string) => layoutStore.updateSetting('transitionName', v)
+                      "
+                    />
+                  </div>
+                  <div class="rounded-md bg-background/40 p-sm row-between gap-md">
+                    <div class="col-stretch gap-xs">
+                      <span class="text-sm font-semibold text-foreground">enableKeepAlive</span>
+                      <span class="text-xs text-muted-foreground">页面组件缓存（KeepAlive）</span>
+                    </div>
+                    <div class="row-end gap-xs shrink-0">
+                      <Button
+                        text
+                        size="small"
+                        icon="i-lucide-clipboard-copy"
+                        class="p-0 h-auto text-muted-foreground/40 hover:text-primary transition-colors duration-md"
+                        @click="copyText('enableKeepAlive', 'LayoutSetting')"
+                      />
+                      <ToggleSwitch
+                        :model-value="layoutStore.enableKeepAlive"
+                        @update:model-value="
+                          (v: boolean) => layoutStore.updateSetting('enableKeepAlive', v)
+                        "
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- ─── RIGHT COLUMN: Module Visibility ─── -->
+            <div
+              class="bg-muted/30 dark:bg-muted/20 border border-border/40 rounded-lg p-md col-stretch gap-md"
+            >
+              <div class="row-between">
+                <div class="flex flex-row gap-xs items-center">
+                  <Icons
+                    name="i-lucide-eye"
+                    size="sm"
+                    class="text-muted-foreground"
+                  />
+                  <span class="text-sm font-semibold text-foreground">Module Visibility</span>
+                </div>
+                <Tag
+                  value="Live Mutations"
+                  severity="info"
+                />
+              </div>
+              <p class="text-xs text-muted-foreground m-0">
+                直接写入当前 effectiveMode 的 visibilitySettings。受 mode
+                约束的项会锁定，依赖关系由父子禁用状态体现。
               </p>
-              <div class="grid grid-cols-1 lg:grid-cols-2 gap-lg">
-                <!-- 左：开关面板 -->
-                <div class="col-stack-md">
-                  <h4 class="text-sm font-semibold text-foreground row-y-center gap-xs">
-                    <Icons
-                      name="i-lucide-toggle-left"
-                      class="text-primary text-xs"
-                    />
-                    布局模块开关 (setModuleVisible)
-                  </h4>
-                  <div class="col-stack-sm">
-                    <div
-                      v-for="item in [
-                        {
-                          key: 'showHeader' as const,
-                          label: 'Header 顶栏',
-                          icon: 'i-lucide-panel-top',
-                          effective: showHeaderEffective,
-                        },
-                        {
-                          key: 'showSidebar' as const,
-                          label: 'Sidebar 侧边栏',
-                          icon: 'i-lucide-panel-left',
-                          effective: showSidebarEffective,
-                        },
-                        {
-                          key: 'showTabs' as const,
-                          label: 'Tabs 标签页',
-                          icon: 'i-lucide-panels-top-left',
-                          effective: showTabsEffective,
-                        },
-                        {
-                          key: 'showBreadcrumb' as const,
-                          label: 'Breadcrumb 面包屑',
-                          icon: 'i-lucide-chevrons-right',
-                          effective: showBreadcrumbEffective,
-                        },
-                        {
-                          key: 'showFooter' as const,
-                          label: 'Footer 页脚',
-                          icon: 'i-lucide-panel-bottom',
-                          effective: showFooterEffective,
-                        },
-                      ]"
-                      :key="item.key"
-                      class="row-between p-sm surface-item rounded-lg behavior-hover-transition hover:bg-foreground/5"
-                    >
-                      <div class="row-y-center gap-sm">
-                        <Checkbox
-                          :model-value="layoutStore[item.key]"
-                          :binary="true"
-                          :input-id="`wireframe-${item.key}`"
-                          @update:model-value="
-                            (v: boolean) => layoutStore.setModuleVisible(item.key, v)
-                          "
-                        />
-                        <label
-                          :for="`wireframe-${item.key}`"
-                          class="cursor-pointer select-none row-y-center gap-xs text-sm"
-                        >
-                          <Icons
-                            :name="item.icon"
-                            size="xs"
-                            class="text-primary"
-                          />
-                          {{ item.label }}
-                        </label>
-                      </div>
+
+              <div class="col-stretch gap-sm">
+                <div
+                  v-for="row in visibilityRows"
+                  :key="row.key"
+                  class="rounded-md bg-background/40 p-sm row-between gap-md transition-opacity duration-md"
+                  :class="{ 'opacity-50 pointer-events-none': isRowDisabled(row) }"
+                >
+                  <div class="col-stretch gap-xs min-w-0">
+                    <div class="flex flex-row gap-xs items-center flex-wrap">
+                      <span class="text-sm font-semibold text-foreground">{{ row.label }}</span>
                       <Tag
-                        :value="item.effective ? '可见' : '隐藏'"
-                        :severity="item.effective ? 'success' : 'secondary'"
-                        class="text-xs"
+                        v-if="row.modeLocked"
+                        value="Mode Locked"
+                        severity="warn"
+                      />
+                      <Tag
+                        v-if="row.parentKey && !layoutStore.activeVisibility[row.parentKey]"
+                        value="Parent Off"
+                        severity="secondary"
                       />
                     </div>
+                    <span class="text-xs text-muted-foreground">{{ row.hint }}</span>
                   </div>
-                  <div
-                    class="row-y-center gap-sm p-sm surface-item rounded-lg behavior-hover-transition hover:bg-foreground/5"
-                  >
-                    <Checkbox
-                      :model-value="layoutStore.sidebarCollapse"
-                      :binary="true"
-                      input-id="wireframe-collapse"
-                      @update:model-value="() => layoutStore.toggleCollapse()"
+                  <div class="row-end gap-xs shrink-0">
+                    <Button
+                      text
+                      size="small"
+                      icon="i-lucide-clipboard-copy"
+                      class="p-0 h-auto text-muted-foreground/40 hover:text-primary transition-colors duration-md"
+                      @click="copyText(row.key, 'LayoutVisibilitySetting')"
                     />
-                    <label
-                      for="wireframe-collapse"
-                      class="cursor-pointer select-none row-y-center gap-xs text-sm"
-                    >
-                      <Icons
-                        name="i-lucide-panel-left-close"
-                        size="xs"
-                        class="text-primary"
-                      />
-                      Sidebar Collapse 侧栏收起
-                    </label>
-                  </div>
-                  <p class="text-xs text-muted-foreground">
-                    开关调用
-                    <span class="bg-muted px-xs rounded-xs font-mono">
-                      layoutStore.setModuleVisible(key, bool)
-                    </span>
-                    ，与设置面板行为一致。
-                  </p>
-                </div>
-
-                <!-- 右：线框图 -->
-                <div class="col-stack-sm">
-                  <h4 class="text-sm font-semibold text-foreground row-y-center gap-xs">
-                    <Icons
-                      name="i-lucide-layout-dashboard"
-                      class="text-primary text-xs"
-                    />
-                    线框预览
-                  </h4>
-                  <div
-                    class="relative rounded-lg shadow-sm dark:shadow-md bg-muted/30 overflow-hidden"
-                    style="min-height: 220px"
-                  >
-                    <!-- Header -->
-                    <div
-                      class="transition-[transform,opacity] duration-md ease-[cubic-bezier(0.16,1,0.3,1)] overflow-hidden border-b border-primary/20"
-                      :style="{
-                        height: showHeaderEffective ? '32px' : '0px',
-                        opacity: showHeaderEffective ? 1 : 0,
-                      }"
-                    >
-                      <div class="h-full bg-primary/15 row-y-center px-sm gap-sm">
-                        <div
-                          class="w-[var(--spacing-sm)] h-[var(--spacing-sm)] rounded-full bg-primary/40"
-                        />
-                        <div
-                          class="w-[var(--spacing-3xl)] h-[var(--spacing-xs)] rounded-full bg-primary/25"
-                        />
-                        <div class="flex-1" />
-                        <div
-                          class="w-[var(--spacing-sm)] h-[var(--spacing-sm)] rounded-xs bg-primary/20"
-                        />
-                        <div
-                          class="w-[var(--spacing-sm)] h-[var(--spacing-sm)] rounded-xs bg-primary/20"
-                        />
-                      </div>
-                    </div>
-
-                    <div
-                      class="flex flex-1"
-                      style="min-height: 160px"
-                    >
-                      <!-- Sidebar -->
-                      <div
-                        class="transition-[transform,opacity] duration-md ease-[cubic-bezier(0.16,1,0.3,1)] overflow-hidden border-r border-primary/20 shrink-0"
-                        :style="{
-                          width: showSidebarEffective
-                            ? layoutStore.sidebarCollapse
-                              ? '32px'
-                              : '80px'
-                            : '0px',
-                          opacity: showSidebarEffective ? 1 : 0,
-                        }"
-                      >
-                        <div class="h-full bg-primary/10 col-stack-sm p-xs pt-sm">
-                          <div
-                            v-for="n in 4"
-                            :key="n"
-                            class="rounded-xs bg-primary/20 shrink-0"
-                            :style="{
-                              height: '12px',
-                              width: layoutStore.sidebarCollapse ? '16px' : '90%',
-                            }"
-                          />
-                          <div class="flex-1" />
-                          <div
-                            class="rounded-xs bg-primary/15 shrink-0"
-                            :style="{
-                              height: '12px',
-                              width: layoutStore.sidebarCollapse ? '16px' : '70%',
-                            }"
-                          />
-                        </div>
-                      </div>
-
-                      <!-- Main Area -->
-                      <div class="flex-1 column min-w-0">
-                        <!-- Tabs -->
-                        <div
-                          class="transition-[transform,opacity] duration-md ease-[cubic-bezier(0.16,1,0.3,1)] overflow-hidden border-b border-primary/15"
-                          :style="{
-                            height: showTabsEffective ? '24px' : '0px',
-                            opacity: showTabsEffective ? 1 : 0,
-                          }"
-                        >
-                          <div class="h-full bg-primary/8 row-y-center px-xs gap-xs">
-                            <div
-                              class="px-xs py-xs rounded-t-xs bg-primary/20 text-xs text-primary/60"
-                            >
-                              Tab 1
-                            </div>
-                            <div
-                              class="px-xs py-xs rounded-t-xs bg-primary/10 text-xs text-primary/40"
-                            >
-                              Tab 2
-                            </div>
-                            <div
-                              class="px-xs py-xs rounded-t-xs bg-primary/10 text-xs text-primary/40"
-                            >
-                              Tab 3
-                            </div>
-                          </div>
-                        </div>
-
-                        <!-- Breadcrumb -->
-                        <div
-                          class="transition-[transform,opacity] duration-md ease-[cubic-bezier(0.16,1,0.3,1)] overflow-hidden"
-                          :style="{
-                            height: showBreadcrumbEffective ? '20px' : '0px',
-                            opacity: showBreadcrumbEffective ? 1 : 0,
-                          }"
-                        >
-                          <div class="h-full row-y-center px-sm gap-xs">
-                            <div class="w-[var(--spacing-lg)] h-[4px] rounded-full bg-primary/15" />
-                            <span class="text-xs text-primary/30">/</span>
-                            <div class="w-[var(--spacing-xl)] h-[4px] rounded-full bg-primary/20" />
-                            <span class="text-xs text-primary/30">/</span>
-                            <div class="w-[var(--spacing-md)] h-[4px] rounded-full bg-primary/25" />
-                          </div>
-                        </div>
-
-                        <!-- Content -->
-                        <div class="flex-1 p-sm center">
-                          <div class="col-stack-xs items-center opacity-50">
-                            <Icons
-                              name="i-lucide-layout-dashboard"
-                              class="text-primary/40 text-xl"
-                            />
-                            <span class="text-xs text-primary/40 font-mono">Content</span>
-                          </div>
-                        </div>
-
-                        <!-- Footer -->
-                        <div
-                          class="transition-[transform,opacity] duration-md ease-[cubic-bezier(0.16,1,0.3,1)] overflow-hidden border-t border-primary/15"
-                          :style="{
-                            height: showFooterEffective ? '20px' : '0px',
-                            opacity: showFooterEffective ? 1 : 0,
-                          }"
-                        >
-                          <div class="h-full bg-primary/8 center">
-                            <div
-                              class="w-[var(--spacing-3xl)] h-[4px] rounded-full bg-primary/15"
-                            />
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="row-y-center gap-sm text-xs text-muted-foreground">
-                    <Tag
-                      :value="`mode: ${layoutStore.mode}`"
-                      severity="info"
-                    />
-                    <Tag
-                      :value="`collapse: ${layoutStore.sidebarCollapse}`"
-                      severity="secondary"
-                    />
-                    <Tag
-                      :value="`device: ${deviceStore.type}`"
-                      severity="secondary"
+                    <ToggleSwitch
+                      :model-value="layoutStore.activeVisibility[row.key]"
+                      :disabled="isRowDisabled(row)"
+                      @update:model-value="(v: boolean) => handleVisibilityToggle(row.key, v)"
                     />
                   </div>
                 </div>
               </div>
             </div>
-          </template>
-        </Card>
-
-        <!-- runAdaptive 与有效显隐 -->
-        <Card
-          class="bg-card rounded-md shadow-sm dark:shadow-md py-md px-lg flex flex-col gap-lg bg-primary/10 dark:bg-primary/5"
-        >
-          <template #title>
-            <div class="row-y-center gap-sm border-b-default pb-sm mb-padding-sm">
-              <Icons
-                name="i-lucide-rotate-ccw"
-                class="text-primary"
-              />
-              <span class="font-semibold">runAdaptive & 有效显隐</span>
-              <Tag
-                value="LayoutAdmin 驱动"
-                severity="info"
-              />
-            </div>
-          </template>
-          <template #content>
-            <div class="col-stack-md">
-              <div>
-                <h4 class="text-sm font-semibold text-foreground mb-xs">runAdaptive 触发时机</h4>
-                <ul class="col-stack-xs list-disc pl-lg text-sm text-muted-foreground">
-                  <li
-                    v-for="(item, i) in adaptiveTriggerDesc"
-                    :key="i"
-                  >
-                    {{ item }}
-                  </li>
-                </ul>
-              </div>
-              <div>
-                <h4 class="text-sm font-semibold text-foreground mb-xs">有效显隐规则</h4>
-                <p class="text-muted-foreground text-sm mb-sm">
-                  PC：直接使用 layoutStore.showXxx；非 PC 且 isMobileLayout 时强制 false；非 PC 且
-                  !isMobileLayout 时使用 layoutStore.showXxx。
-                </p>
-                <div class="grid grid-cols-2 md:grid-cols-4 gap-md">
-                  <div
-                    v-for="item in [
-                      { label: 'showSidebarEffective', val: showSidebarEffective },
-                      { label: 'showTabsEffective', val: showTabsEffective },
-                      { label: 'showBreadcrumbEffective', val: showBreadcrumbEffective },
-                      { label: 'showFooterEffective', val: showFooterEffective },
-                    ]"
-                    :key="item.label"
-                    class="row-between p-sm surface-item rounded-lg shadow-sm dark:shadow-md transition-all duration-xl ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)] behavior-hover-transition hover:bg-foreground/5"
-                  >
-                    <span class="text-xs text-muted-foreground font-mono">{{ item.label }}</span>
-                    <Tag
-                      :value="String(item.val)"
-                      :severity="item.val ? 'success' : 'secondary'"
-                    />
-                  </div>
-                </div>
-              </div>
-            </div>
-          </template>
-        </Card>
-
-        <!-- 架构规则与详细逻辑 -->
-        <Card class="bg-card rounded-md shadow-sm dark:shadow-md py-md px-lg flex flex-col gap-lg">
-          <template #title>
-            <div class="row-y-center gap-sm">
-              <Icons
-                name="i-lucide-shield-check"
-                class="text-primary"
-              />
-              <span class="font-semibold">Architectural Rules 架构规则</span>
-            </div>
-          </template>
-          <template #content>
-            <div class="col-stack-lg">
-              <div
-                v-for="(item, i) in architecturalConstraints"
-                :key="i"
-                class="col-stack-sm"
-              >
-                <h4 class="text-sm font-semibold text-foreground row-y-center gap-xs">
-                  <Icons
-                    name="i-lucide-check-circle-2"
-                    class="text-success text-xs"
-                  />
-                  {{ item.rule }}
-                </h4>
-                <p class="text-xs text-muted-foreground leading-relaxed pl-lg">
-                  {{ item.reason }}
-                </p>
-              </div>
-            </div>
-          </template>
-        </Card>
+          </div>
+        </div>
       </div>
     </CScrollbar>
+
+    <!-- ═══════════ FAB: Always-visible rescue button ═══════════ -->
+    <Teleport to="body">
+      <div
+        class="fixed z-toast"
+        style="bottom: calc(var(--footer-height) + var(--spacing-md)); right: var(--spacing-xl)"
+      >
+        <Button
+          rounded
+          severity="primary"
+          icon="i-lucide-rotate-ccw"
+          class="shadow-md hover:shadow-lg hover:scale-105 transition-all duration-md"
+          aria-label="布局救援"
+          @click="toggleFabMenu"
+        />
+        <Popover
+          ref="fabPopoverRef"
+          append-to="body"
+        >
+          <div class="col-stretch gap-xs p-xs">
+            <span
+              class="text-xs font-semibold text-muted-foreground px-sm pb-xs border-b border-border/30"
+            >
+              布局救援
+            </span>
+            <Button
+              text
+              size="small"
+              severity="secondary"
+              label="恢复导航路径"
+              icon="i-lucide-navigation"
+              class="w-full justify-start"
+              @click="restoreNavigation"
+            />
+            <Button
+              text
+              size="small"
+              severity="danger"
+              label="完全重置所有设置"
+              icon="i-lucide-rotate-ccw"
+              class="w-full justify-start"
+              @click="fullReset"
+            />
+            <Button
+              text
+              size="small"
+              severity="secondary"
+              label="清除 User Adjusted 标记"
+              icon="i-lucide-undo-2"
+              class="w-full justify-start"
+              @click="clearUserAdjusted"
+            />
+          </div>
+        </Popover>
+      </div>
+    </Teleport>
   </div>
 </template>
+
+<style lang="scss" scoped>
+.layout-fade-enter-active,
+.layout-fade-leave-active {
+  transition:
+    opacity var(--transition-md) ease,
+    transform var(--transition-md) ease;
+}
+
+.layout-fade-enter-from,
+.layout-fade-leave-to {
+  opacity: 0;
+  transform: translateY(calc(var(--spacing-xs) * -1));
+}
+</style>

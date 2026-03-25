@@ -1,1311 +1,1037 @@
 <script setup lang="ts">
-import { COLOR_FAMILIES } from '@/utils/theme/metadata'
-import { useThemeStore } from '@/stores/modules/theme'
-import { useThemeSwitch } from '@/hooks/modules/useThemeSwitch'
-import { useDeviceStore } from '@/stores/modules/device'
-import {
-  THEME_PRESETS,
-  getPresetPrimaryColor,
-  TRANSITION_DURATION_OPTIONS,
-} from '@/constants/theme'
+import { DEFAULT_THEME_NAME, THEME_PRESETS, getPresetPrimaryColor } from '@/constants/theme'
+import { ACCENT_USAGE, COLOR_USAGE, PRIMARY_USAGE } from '@/constants/theme/colorUsage'
+import { COLOR_FAMILIES, THEME_ENGINE } from '@/utils/theme/metadata'
+import { goToRoute } from '@/router/utils/helper'
 
-// Copy to clipboard utility（支持非安全上下文：HTTP IP / file:// 等）
-async function copyToClipboard(text: string, label?: string) {
-  try {
-    if (navigator.clipboard && window.isSecureContext) {
-      await navigator.clipboard.writeText(text)
-    } else {
-      const textArea = document.createElement('textarea')
-      textArea.value = text
-      textArea.style.position = 'absolute'
-      textArea.style.left = '-999999px'
-      textArea.style.top = '-999999px'
-      document.body.appendChild(textArea)
-      textArea.focus()
-      textArea.select()
+defineOptions({ name: 'ThemeSystemPage' })
 
-      const successful = document.execCommand('copy')
-      textArea.remove()
+const themeStore = useThemeStore()
+const { isDark } = useThemeSwitch()
 
-      if (!successful) throw new Error('Fallback copy failed')
+const activePreset = computed(
+  () => THEME_PRESETS.find(p => p.name === themeStore.themeName) ?? THEME_PRESETS[0]
+)
+
+function formatPresetName(name: string): string {
+  return name
+    .split('-')
+    .map(w => w.charAt(0).toUpperCase() + w.slice(1))
+    .join(' ')
+}
+
+function switchPreset(name: string): void {
+  themeStore.setTheme(name)
+}
+
+function cssVar(token: string): string {
+  return `rgb(var(--${token}))`
+}
+
+// Sidebar token CSS var names
+const sidebarVarNames = Object.values(COLOR_FAMILIES.sidebar) as string[]
+
+// Build the 5-variant token list for a quad family
+function quadTokens(family: string): { token: string; label: string }[] {
+  return [
+    { token: family, label: 'default' },
+    { token: `${family}-foreground`, label: 'fg' },
+    { token: `${family}-hover`, label: 'hover' },
+    { token: `${family}-light`, label: 'light' },
+    { token: `${family}-light-foreground`, label: 'light-fg' },
+  ]
+}
+
+/** Quad 色块：foreground 类 token 用「底 + 字色 Aa」内嵌展示，避免浅色字当背景块时隐形 */
+function quadSwatchCellStyle(family: string, item: { token: string }): Record<string, string> {
+  const { token } = item
+  if (token === `${family}-foreground`) {
+    return {
+      background: cssVar(family),
+      color: cssVar(`${family}-foreground`),
     }
-
-    window.$message?.success(`已复制: ${label || text}`)
-  } catch (_error) {
-    window.$message?.danger('复制失败')
+  }
+  if (token === `${family}-light-foreground`) {
+    return {
+      background: cssVar(`${family}-light`),
+      color: cssVar(`${family}-light-foreground`),
+    }
+  }
+  return {
+    background: cssVar(token),
   }
 }
 
-// Single token colors
-const singleTokens = computed<
-  Array<{
-    token: string
-    cssVar: string
-    bgClass: string
-    textClass: string
-    borderClass: string | null
-  }>
->(() =>
-  COLOR_FAMILIES.singleTokens.map(token => ({
-    token,
-    cssVar: `--${token}`,
-    bgClass: `bg-${token}`,
-    textClass: `text-${token}`,
-    borderClass: ['border', 'input', 'ring'].includes(token) ? `border-${token}` : null,
-  }))
-)
-
-// Pair family colors
-const pairFamilies = computed<
-  Array<{
-    family: string
-    variants: Array<{
-      name: string
-      cssVar: string
-      bgClass: string | null
-      textClass: string | null
-    }>
-  }>
->(() =>
-  COLOR_FAMILIES.pairFamilies.map(family => ({
-    family,
-    variants: [
-      {
-        name: 'DEFAULT',
-        cssVar: `--${family}`,
-        bgClass: `bg-${family}`,
-        textClass: `text-${family}`,
-      },
-      {
-        name: 'foreground',
-        cssVar: `--${family}-foreground`,
-        bgClass: null,
-        textClass: `text-${family}-foreground`,
-        borderClass: null,
-      },
-    ],
-  }))
-)
-
-// Quad family colors (extended families)
-const quadFamilies = computed<
-  Array<{
-    family: string
-    variants: Array<{
-      name: string
-      cssVar: string
-      bgClass: string | null
-      textClass: string | null
-      borderClass: string | null
-    }>
-  }>
->(() =>
-  COLOR_FAMILIES.quadFamilies.map(family => ({
-    family,
-    variants: [
-      {
-        name: 'DEFAULT',
-        cssVar: `--${family}`,
-        bgClass: `bg-${family}`,
-        textClass: `text-${family}`,
-        borderClass: `border-${family}`,
-      },
-      {
-        name: 'foreground',
-        cssVar: `--${family}-foreground`,
-        bgClass: null,
-        textClass: `text-${family}-foreground`,
-        borderClass: null,
-      },
-      {
-        name: 'hover',
-        cssVar: `--${family}-hover`,
-        bgClass: `bg-${family}-hover`,
-        textClass: null,
-        borderClass: `border-${family}-hover`,
-      },
-      {
-        name: 'hover-foreground',
-        cssVar: `--${family}-hover-foreground`,
-        bgClass: null,
-        textClass: `text-${family}-hover-foreground`,
-        borderClass: null,
-      },
-      {
-        name: 'light',
-        cssVar: `--${family}-light`,
-        bgClass: `bg-${family}-light`,
-        textClass: null,
-        borderClass: `border-${family}-light`,
-      },
-      {
-        name: 'light-foreground',
-        cssVar: `--${family}-light-foreground`,
-        bgClass: null,
-        textClass: `text-${family}-light-foreground`,
-        borderClass: null,
-      },
-    ],
-  }))
-)
-
-/** Sidebar 类名映射：uno.config.ts buildThemeColors 使用 DEFAULT/foreground/primary 等 key，对应 bg-sidebar、bg-sidebar-foreground 等 */
-const SIDEBAR_KEY_TO_CLASS: Record<
-  keyof typeof COLOR_FAMILIES.sidebar,
-  { bgClass: string; textClass: string; borderClass: string | null; copyClass: string }
-> = {
-  background: {
-    bgClass: 'bg-sidebar',
-    textClass: 'text-sidebar',
-    borderClass: null,
-    copyClass: 'bg-sidebar',
-  },
-  foreground: {
-    bgClass: 'bg-sidebar-foreground',
-    textClass: 'text-sidebar-foreground',
-    borderClass: null,
-    copyClass: 'bg-sidebar-foreground',
-  },
-  primary: {
-    bgClass: 'bg-sidebar-primary',
-    textClass: 'text-sidebar-primary-foreground',
-    borderClass: null,
-    copyClass: 'bg-sidebar-primary',
-  },
-  'primary-foreground': {
-    bgClass: 'bg-sidebar-primary-foreground',
-    textClass: 'text-sidebar-primary-foreground',
-    borderClass: null,
-    copyClass: 'bg-sidebar-primary-foreground',
-  },
-  accent: {
-    bgClass: 'bg-sidebar-accent',
-    textClass: 'text-sidebar-accent-foreground',
-    borderClass: null,
-    copyClass: 'bg-sidebar-accent',
-  },
-  'accent-foreground': {
-    bgClass: 'bg-sidebar-accent-foreground',
-    textClass: 'text-sidebar-accent-foreground',
-    borderClass: null,
-    copyClass: 'bg-sidebar-accent-foreground',
-  },
-  border: {
-    bgClass: 'border-4 border-sidebar-border bg-transparent',
-    textClass: 'text-sidebar-border',
-    borderClass: 'border-sidebar-border',
-    copyClass: 'border-sidebar-border',
-  },
-  ring: {
-    bgClass: 'border-4 border-sidebar-ring bg-transparent',
-    textClass: 'text-sidebar-ring',
-    borderClass: 'border-sidebar-ring',
-    copyClass: 'border-sidebar-ring',
-  },
+function quadSwatchShowAa(family: string, item: { token: string }): boolean {
+  return item.token === `${family}-foreground` || item.token === `${family}-light-foreground`
 }
 
-// Sidebar colors：使用与 uno.config.ts buildThemeColors 一致的类名
-const sidebarColors = computed<
-  Array<{
-    key: keyof typeof COLOR_FAMILIES.sidebar
-    varName: string
-    cssVar: string
-    bgClass: string
-    textClass: string
-    borderClass: string | null
-    copyClass: string
-  }>
->(() =>
-  (Object.keys(COLOR_FAMILIES.sidebar) as (keyof typeof COLOR_FAMILIES.sidebar)[]).map(key => {
-    const mapping = SIDEBAR_KEY_TO_CLASS[key]
-    const varName = COLOR_FAMILIES.sidebar[key]
+/** Z1 材质三格：default / hover / light（可抄 Uno `bg-*`） */
+function isQuadBgMaterialToken(family: string, item: { token: string }): boolean {
+  return (
+    item.token === family || item.token === `${family}-hover` || item.token === `${family}-light`
+  )
+}
+
+/** Sidebar CSS 变量名 → 演示用背景类名（与 `buildSemanticThemeColors` 一致） */
+function sidebarVarNameToUnoBgClass(varName: string): string {
+  if (varName === 'sidebar-background') return 'bg-sidebar'
+  return `bg-${varName}`
+}
+
+type QuadFamily = (typeof COLOR_FAMILIES.quadFamilies)[number]
+
+/** 与 AppPrimeVueGlobals 中 Toast `group="tr"` 对齐，否则多实例下无 group 不会展示 */
+const COPY_TOAST_GROUP = 'tr' as const
+
+async function copyClassName(cls: string, label: string): Promise<void> {
+  try {
+    await navigator.clipboard.writeText(cls)
+    window.$toast?.add({
+      severity: 'success',
+      summary: '已复制',
+      detail: `类名: ${cls} (${label})`,
+      life: 2000,
+      group: COPY_TOAST_GROUP,
+    })
+  } catch {
+    window.$toast?.add({
+      severity: 'error',
+      summary: '复制失败',
+      detail: '请检查剪贴板权限',
+      life: 2000,
+      group: COPY_TOAST_GROUP,
+    })
+  }
+}
+
+function onQuadSwatchBgClick(family: string, item: { token: string }): void {
+  if (!isQuadBgMaterialToken(family, item)) return
+  void copyClassName(`bg-${item.token}`, '卡片材质')
+}
+
+// PrimeVue demo state
+const demoInput = ref<string>('')
+const demoSelectValue = ref<string>('a')
+const demoToggle = ref<boolean>(false)
+const demoSelectOptions = [
+  { label: '选项一', value: 'a' },
+  { label: '选项二', value: 'b' },
+  { label: '选项三', value: 'c' },
+]
+
+// Build safe inline-style objects for the light/dark preview panel
+// (ThemeModeConfig fields are all optional — guard here, not in template)
+interface PreviewStyleMap {
+  root: { background: string; color: string }
+  card: { background: string }
+  muted: { background: string }
+  fg: { color: string }
+  mutedFg: { color: string }
+  icon: { color: string }
+}
+
+function buildPreviewStyles(
+  cfg: ThemeModeConfig | undefined,
+  mode: 'light' | 'dark'
+): PreviewStyleMap {
+  const isLight = mode === 'light'
+  const bg = cfg?.background ?? (isLight ? THEME_ENGINE.bgLight : THEME_ENGINE.bgDark)
+  const fg = cfg?.foreground ?? (isLight ? THEME_ENGINE.fgLight : THEME_ENGINE.fgDark)
+  const cardBg = cfg?.neutral?.bg ?? (isLight ? THEME_ENGINE.cardLight : THEME_ENGINE.cardDark)
+  const mutedBg =
+    cfg?.neutral?.base ?? (isLight ? THEME_ENGINE.neutralLight : THEME_ENGINE.neutralDark)
+  const mutedFg =
+    cfg?.neutral?.foreground ?? (isLight ? THEME_ENGINE.mutedFgLight : THEME_ENGINE.mutedFgDark)
+  const primBg = cfg?.primary?.default ?? THEME_ENGINE.infoDefault
+  return {
+    root: { background: bg, color: fg },
+    card: { background: cardBg },
+    muted: { background: mutedBg },
+    fg: { color: fg },
+    mutedFg: { color: mutedFg },
+    icon: { color: primBg },
+  }
+}
+
+function buildQuadChipStyles(
+  cfg: ThemeModeConfig | undefined,
+  mode: 'light' | 'dark'
+): Record<QuadFamily, { background: string; color: string }> {
+  const isLight = mode === 'light'
+  const fgFallback = isLight ? THEME_ENGINE.fgLight : THEME_ENGINE.fgDark
+  const fgOn = THEME_ENGINE.dangerDefaultFg
+  function pick(
+    tok: { default?: string; foreground?: string } | undefined,
+    defBg: string,
+    defFg: string
+  ): { background: string; color: string } {
     return {
-      key,
-      varName,
-      cssVar: `--${varName}`,
-      bgClass: mapping.bgClass,
-      textClass: mapping.textClass,
-      borderClass: mapping.borderClass,
-      copyClass: mapping.copyClass,
+      background: tok?.default ?? defBg,
+      color: tok?.foreground ?? defFg,
     }
-  })
+  }
+  return {
+    primary: pick(cfg?.primary, THEME_ENGINE.infoDefault, fgOn),
+    accent: pick(cfg?.accent, THEME_ENGINE.helpDefault, fgFallback),
+    danger: pick(cfg?.danger, THEME_ENGINE.dangerDefault, fgOn),
+    warn: pick(cfg?.warn, THEME_ENGINE.warnDefault, fgOn),
+    success: pick(cfg?.success, THEME_ENGINE.successDefault, fgOn),
+    info: pick(cfg?.info, THEME_ENGINE.infoDefault, fgOn),
+    help: pick(cfg?.help, THEME_ENGINE.helpDefault, fgOn),
+  }
+}
+
+const lightStyles = computed(() => buildPreviewStyles(activePreset.value.colors?.light, 'light'))
+const darkStyles = computed(() => buildPreviewStyles(activePreset.value.colors?.dark, 'dark'))
+
+const lightQuadChips = computed(() =>
+  buildQuadChipStyles(activePreset.value.colors?.light, 'light')
+)
+const darkQuadChips = computed(() => buildQuadChipStyles(activePreset.value.colors?.dark, 'dark'))
+
+/** 随主题刷新，供 Single Token 展示 rgb 通道值 */
+const cssVarSnapshotKey = computed(
+  () => `${themeStore.themeName}-${themeStore.mode}-${isDark.value}`
 )
 
-// Opacity variants helper
-const opacityVariants = [10, 20, 30, 40, 50, 60, 70, 80, 90] as const
+const singleTokenChannelValues = computed<Record<string, string>>(() => {
+  void cssVarSnapshotKey.value
+  const out: Record<string, string> = {}
+  if (typeof document === 'undefined') return out
+  const root: Element = document.documentElement
+  for (const token of COLOR_FAMILIES.singleTokens) {
+    const raw: string = getComputedStyle(root).getPropertyValue(`--${token}`).trim()
+    out[token] = raw.length > 0 ? raw : '—'
+  }
+  return out
+})
 
-// Theme Store & Switch
-const themeStore: ReturnType<typeof useThemeStore> = useThemeStore()
-const deviceStore = useDeviceStore()
-const { mode, isAnimating, setThemeWithAnimation }: ReturnType<typeof useThemeSwitch> =
-  useThemeSwitch()
-const themeModeOptions: Array<{ value: ThemeMode; label: string }> = [
-  { value: 'light', label: '亮色' },
-  { value: 'dark', label: '暗色' },
-  { value: 'auto', label: '跟随系统' },
+/** 随主题刷新，供 Pair Family 展示 rgb 通道值 */
+const pairTokenChannelValues = computed<Record<string, string>>(() => {
+  void cssVarSnapshotKey.value
+  const out: Record<string, string> = {}
+  if (typeof document === 'undefined') return out
+  const root: Element = document.documentElement
+  const styles: CSSStyleDeclaration = getComputedStyle(root)
+  for (const family of COLOR_FAMILIES.pairFamilies) {
+    for (const suffix of ['', '-foreground']) {
+      const token: string = `${family}${suffix}`
+      const raw: string = styles.getPropertyValue(`--${token}`).trim()
+      out[token] = raw.length > 0 ? raw : '—'
+    }
+  }
+  return out
+})
+
+/** Quad 区共用列标题（与 quadTokens 第一组 family 一致） */
+const quadLegendColumns = quadTokens('primary')
+
+/** 背景 Alpha 阶梯（百分比步进，内联 `rgb(var(--*) / step/100)`） */
+const SEMANTIC_ALPHA_STEPS = [5, 10, 15, 20, 30, 40, 50, 60, 70, 80, 90] as const
+
+const TEXT_ALPHA_STEPS = [40, 50, 60, 70, 80, 90, 100] as const
+const BORDER_ALPHA_STEPS = [10, 15, 20, 30, 50] as const
+
+interface AlphaBgLayerGroup {
+  title: string
+  families: readonly string[]
+}
+
+/** Uno `bg-sidebar` 对应 `--sidebar-background`，其余与 token 名一致 */
+function semanticColorVarBase(name: string): string {
+  if (name === 'sidebar') return 'sidebar-background'
+  return name
+}
+
+/** 背景透明度展示分组：仅 Quad 语义色（功能色透明阶梯有指导意义） */
+const ALPHA_BG_LAYER_GROUPS: AlphaBgLayerGroup[] = [
+  { title: 'Quad 语义色', families: COLOR_FAMILIES.quadFamilies },
 ]
-const transitionOptions = TRANSITION_DURATION_OPTIONS.map(o => ({
-  value: o.value,
-  label: `${o.value}ms`,
-}))
 
-// Preset primary color for swatch (light mode)
-const presetSwatchColors = computed<Array<{ name: string; color: string }>>(() =>
-  THEME_PRESETS.map(p => ({
-    name: p.name,
-    color: getPresetPrimaryColor(p, false),
-  }))
-)
-
-// Semantic colors (Brand/Interactive)
-const semanticColors = [
-  { name: 'bg-primary', classes: 'bg-primary', desc: '品牌大背景 (SSOT: Primary)' },
-  { name: 'bg-primary-hover', classes: 'bg-primary-hover', desc: '交互背景 (Primary Hover)' },
-  { name: 'text-primary-hover', classes: 'text-primary-hover', desc: '交互文字颜色' },
-]
-
-// Menu shortcuts：与 uno.config.ts 菜单交互语义保持一致
-const menuShortcuts = [
-  {
-    name: 'flex items-center gap-sm cursor-pointer select-none transition-all duration-md ease-in-out border-none bg-transparent',
-    classes:
-      'flex items-center gap-sm cursor-pointer select-none transition-all duration-md ease-in-out border-none bg-transparent border border-dashed border-border',
-    desc: '菜单项基础样式（gap-sm + cursor-pointer + transition-all）',
-  },
-  {
-    name: 'bg-primary/12! dark:bg-primary/30! text-primary!',
-    classes: 'bg-primary/12! dark:bg-primary/30! text-primary!',
-    desc: '菜单项悬停态（bg-primary/12 + text-primary，暗色模式 text-primary-foreground）',
-  },
-  {
-    name: 'menu-item-active-leaf',
-    classes: 'menu-item-active-leaf',
-    desc: '菜单项选中态（primary 背景 + primary-foreground 统一样式）',
-  },
-]
+function quadUsageFor(family: QuadFamily): readonly string[] {
+  if (family === 'primary') return PRIMARY_USAGE
+  if (family === 'accent') return ACCENT_USAGE
+  return [`severity="${family}"`, 'semantic-tag', 'status-chip']
+}
 </script>
 
 <template>
-  <div
-    class="h-full column overflow-hidden"
-    data-archetype="A1-toolbar-content"
-  >
-    <!-- Toolbar: Header (Transparent Root · Nested Canvas) -->
-    <div class="shrink-0 border-b-default border-primary/50 bg-primary/5">
-      <div
-        class="py-sm md:py-md xl:py-lg 2xl:py-xl mx-auto max-w-[92%] sm:max-w-[94%] md:max-w-[92%] lg:max-w-[90%] xl:max-w-[88%] 2xl:max-w-[86%] 3xl:max-w-[84%] col-stack-sm py-sm"
-      >
-        <div class="row-y-center gap-md">
-          <div class="p-md bg-primary/10 rounded-lg shrink-0">
-            <Icons
-              name="i-lucide-palette"
-              class="text-primary text-2xl"
-            />
-          </div>
-          <div class="col-stack-xs">
-            <h1 class="text-2xl font-bold text-foreground">Theme System 主题系统</h1>
-            <p class="text-muted-foreground text-sm">
-              包含：颜色 token + Store 模式/预设 · 亮/暗/自动 + THEME_PRESETS ·
-              点击任意类名或变量即可复制
+  <!-- Toast：AppPrimeVueGlobals 挂载多组 Toast；复制反馈须带 group（见 copyClassName） -->
+  <div data-archetype="A1-toolbar-content">
+    <!-- ── Scrollable canvas（与 Dashboard 同宽、同纵向节奏）── -->
+    <CScrollbar>
+      <div class="layout-narrow">
+        <!-- ── Page Header（留白分隔，无 border-b）── -->
+        <header class="row-between gap-md col-stretch sm:flex-row sm:items-start mb-md">
+          <div class="col-stretch gap-xs md:gap-sm min-w-0">
+            <h1 class="text-2xl font-bold text-foreground m-0 tracking-tight">主题系统</h1>
+            <p class="text-sm text-muted-foreground m-0">
+              配色架构：预设、语义 Token、亮/暗对比与 PrimeVue 主题链
+            </p>
+            <p class="text-xs text-muted-foreground m-0">
+              默认预设：
+              <span class="font-mono text-primary">{{ DEFAULT_THEME_NAME }}</span>
+            </p>
+            <p class="text-xs text-muted-foreground m-0 row-start gap-xs flex-wrap">
+              <span>尺寸与间距见</span>
+              <Button
+                label="尺寸系统"
+                link
+                size="small"
+                class="p-0 h-auto underline decoration-primary/40 underline-offset-2"
+                @click="goToRoute('size')"
+              />
+              <span>；UnoCSS 快捷方式见</span>
+              <Button
+                label="UnoCSS"
+                link
+                size="small"
+                class="p-0 h-auto underline decoration-primary/40 underline-offset-2"
+                @click="goToRoute('unocss')"
+              />
             </p>
           </div>
-        </div>
-        <div class="surface-item p-md rounded-md row-start gap-md shadow-sm dark:shadow-md mt-sm">
-          <Icons
-            name="i-lucide-info"
-            class="text-primary text-xl shrink-0 mt-xs"
-          />
-          <div class="col-stack-xs">
-            <div class="font-semibold text-primary text-sm">Architectural Guide 架构引导</div>
-            <div class="text-muted-foreground text-xs leading-relaxed">
-              配色方案由
-              <span class="bg-muted px-xs rounded-xs font-mono">src/constants/theme/</span>
-              与
-              <span class="bg-muted px-xs rounded-xs font-mono">src/utils/theme/metadata.ts</span>
-              定义。如需修改全局色盘，请编辑相应常量。
-            </div>
+          <div class="row-center gap-sm shrink-0 pt-xs sm:pt-0">
+            <span class="text-xs text-muted-foreground text-no-wrap">
+              {{ isDark ? '暗色模式' : '亮色模式' }}
+            </span>
+            <ToggleSwitch
+              :model-value="isDark"
+              @update:model-value="(v: boolean) => themeStore.setMode(v ? 'dark' : 'light')"
+            />
           </div>
-        </div>
-      </div>
-    </div>
+        </header>
 
-    <!-- Scrollable content -->
-    <CScrollbar class="flex-1 min-h-0">
-      <div
-        class="py-sm md:py-md xl:py-lg 2xl:py-xl mx-auto max-w-[92%] sm:max-w-[94%] md:max-w-[92%] lg:max-w-[90%] xl:max-w-[88%] 2xl:max-w-[86%] 3xl:max-w-[84%] col-stack-xl"
-      >
-        <!-- Theme Store 主题 Store -->
-        <Card
-          class="bg-card rounded-md shadow-sm dark:shadow-md py-md px-lg flex flex-col gap-lg bg-primary/10 dark:bg-primary/5"
-        >
-          <template #title>
-            <div class="row-y-center gap-sm border-b-default pb-sm mb-padding-sm">
-              <Icons
-                name="i-lucide-settings-2"
-                class="text-primary"
-              />
-              <span class="font-semibold">Theme Store 主题 Store</span>
-              <Tag
-                value="useThemeStore / useThemeSwitch"
-                severity="info"
-              />
-            </div>
-          </template>
-          <template #content>
-            <div class="col-stack-lg">
-              <div class="col-stack-sm">
-                <span class="text-muted-foreground text-sm">模式 (Theme Mode)</span>
-                <SelectButton
-                  :model-value="mode"
-                  :options="themeModeOptions"
-                  option-value="value"
-                  option-label="label"
-                  :disabled="!!isAnimating"
-                  @update:model-value="(v: ThemeMode) => setThemeWithAnimation(v)"
-                />
-                <p class="text-muted-foreground text-xs">
-                  useThemeSwitch：setThemeWithAnimation(mode) · 切换时带动画
-                </p>
-              </div>
-              <div class="col-stack-sm">
-                <span class="text-muted-foreground text-sm">
-                  切换动画时长 (Transition Duration)
-                </span>
-                <div class="layout-wrap gap-sm">
+        <!-- ═══ §1 Theme Preset Selector ═══ -->
+        <section class="col-stretch gap-md">
+          <div class="col-stretch gap-xs md:gap-sm">
+            <h2 class="text-lg font-semibold text-foreground m-0">主题预设</h2>
+            <p class="text-xs text-muted-foreground m-0">
+              7 套独立调配的预设方案，亮 / 暗模式色值完全分离
+            </p>
+          </div>
+
+          <div
+            class="material-elevated rounded-xl p-md md:p-xl lg:p-2xl col-stretch gap-md md:gap-lg xl:gap-xl"
+          >
+            <div
+              class="rounded-xl bg-muted/25 dark:bg-muted/40 border border-border/40 dark:border-border/30"
+            >
+              <div class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-sm md:gap-md">
+                <div
+                  v-for="preset in THEME_PRESETS"
+                  :key="preset.name"
+                  class="rounded-lg p-md col-center gap-sm group interactive-card"
+                  :class="
+                    themeStore.themeName === preset.name
+                      ? 'ring-2 ring-primary ring-offset-2 ring-offset-background'
+                      : ''
+                  "
+                  @click="switchPreset(preset.name)"
+                >
+                  <!-- Dual-color pill: left=light primary, right=dark primary -->
                   <div
-                    v-for="opt in transitionOptions"
-                    :key="opt.value"
-                    class="p-sm py-xs rounded-md cursor-pointer select-none transition-all duration-lg ease-in-out text-sm active:scale-95"
-                    :class="[
-                      themeStore.transitionDuration === opt.value
-                        ? 'bg-primary text-primary-foreground shadow-sm dark:shadow-md'
-                        : 'surface-item text-muted-foreground hover:bg-muted/60 dark:hover:bg-muted/40',
-                    ]"
-                    @click="themeStore.setTransitionDuration(opt.value)"
+                    class="relative w-[var(--spacing-2xl)] h-[var(--spacing-2xl)] rounded-full overflow-hidden shadow-sm shrink-0 transition-[transform,opacity] duration-sm ease-spring group-hover:scale-105"
                   >
-                    {{ opt.label }}
+                    <div
+                      class="absolute inset-y-0 left-0 w-1/2"
+                      :style="{ background: getPresetPrimaryColor(preset, false) }"
+                    />
+                    <div
+                      class="absolute inset-y-0 right-0 w-1/2"
+                      :style="{ background: getPresetPrimaryColor(preset, true) }"
+                    />
                   </div>
+                  <span class="text-xs text-foreground font-medium text-center leading-tight">
+                    {{ formatPresetName(preset.name) }}
+                  </span>
+                  <span
+                    v-if="themeStore.themeName === preset.name"
+                    class="w-[var(--spacing-sm)] h-[var(--spacing-sm)] rounded-full bg-primary shrink-0"
+                  />
                 </div>
               </div>
             </div>
-          </template>
-        </Card>
+          </div>
+        </section>
 
-        <!-- Device Store 当前设备/断点 -->
-        <Card
-          class="bg-card rounded-md shadow-sm dark:shadow-md py-md px-lg flex flex-col gap-lg bg-accent/10 dark:bg-accent/5"
-        >
-          <template #title>
-            <div class="row-y-center gap-sm border-b-default pb-sm mb-padding-sm">
-              <Icons
-                name="i-lucide-smartphone"
-                class="text-primary"
-              />
-              <span class="font-semibold">Device Store 当前设备/断点</span>
-              <Tag
-                value="useDeviceStore"
-                severity="info"
-              />
-            </div>
-          </template>
-          <template #content>
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-md">
-              <div
-                class="col-stack-xs p-md surface-item rounded-lg shadow-sm dark:shadow-md transition-all duration-xl ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)] behavior-hover-transition"
-              >
-                <span class="text-muted-foreground text-xs">type</span>
-                <Tag
-                  :value="deviceStore.type"
-                  severity="info"
-                />
-              </div>
-              <div
-                class="col-stack-xs p-md surface-item rounded-lg shadow-sm dark:shadow-md transition-all duration-xl ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)] behavior-hover-transition"
-              >
-                <span class="text-muted-foreground text-xs">currentBreakpoint</span>
-                <Tag
-                  :value="deviceStore.currentBreakpoint"
-                  severity="success"
-                />
-              </div>
-              <div
-                class="col-stack-xs p-md surface-item rounded-lg shadow-sm dark:shadow-md transition-all duration-xl ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)] behavior-hover-transition"
-              >
-                <span class="text-muted-foreground text-xs">isMobileLayout</span>
-                <Tag
-                  :value="String(deviceStore.isMobileLayout)"
-                  :severity="deviceStore.isMobileLayout ? 'warn' : 'secondary'"
-                />
-              </div>
-              <div
-                class="col-stack-xs p-md surface-item rounded-lg shadow-sm dark:shadow-md transition-all duration-xl ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)] behavior-hover-transition"
-              >
-                <span class="text-muted-foreground text-xs">width × height</span>
-                <span class="font-mono text-sm">
-                  {{ deviceStore.width }} × {{ deviceStore.height }}
-                </span>
-              </div>
-            </div>
-            <p class="mt-md text-muted-foreground text-xs">
-              布局判定应使用 useDeviceStore 的 getters，详见
-              <RouterLink
-                to="/system-configuration/layout"
-                class="text-primary hover:underline"
-              >
-                布局与设备
-              </RouterLink>
-              。
+        <!-- ═══ §2 Color Token Families ═══ -->
+        <section class="col-stretch gap-lg">
+          <div class="col-stretch gap-xs md:gap-sm">
+            <h2 class="text-lg font-semibold text-foreground m-0">语义色彩 Token 家族</h2>
+            <p class="text-xs text-muted-foreground m-0">
+              60+ 个 CSS 变量，按 Single / Pair / Quad / Sidebar 四层级管理
             </p>
-          </template>
-        </Card>
+          </div>
 
-        <!-- THEME_PRESETS 预设展示 -->
-        <Card
-          class="bg-card rounded-md shadow-sm dark:shadow-md py-md px-lg flex flex-col gap-lg bg-primary/10 dark:bg-primary/5"
-        >
-          <template #title>
-            <div class="row-y-center gap-sm">
-              <Icons
-                name="i-lucide-palette"
-                class="text-primary"
-              />
-              <span class="font-semibold">THEME_PRESETS 预设展示</span>
-              <Tag
-                :value="`${THEME_PRESETS.length} presets`"
-                severity="secondary"
-              />
+          <!-- 2a Single Tokens（5）+ 运行时通道值 -->
+          <div
+            class="material-elevated rounded-xl p-md md:p-xl lg:p-2xl col-stretch gap-md md:gap-lg xl:gap-xl"
+          >
+            <div class="col-stretch gap-xs">
+              <h3 class="text-lg font-semibold text-foreground m-0">Single Tokens（5）</h3>
+              <p class="text-xs text-muted-foreground m-0">
+                语义映射 SSOT 见
+                <span class="font-mono text-foreground">colorUsage.ts</span>
+                （如
+                <span class="font-mono">{{ COLOR_USAGE.focus }}</span>
+                → focus 环）
+              </p>
             </div>
-          </template>
-          <template #content>
-            <div class="col-stack-md">
-              <div class="border-b-default pb-sm mb-padding-sm">
-                <p class="text-muted-foreground text-sm">
-                  来自
-                  <span class="bg-muted px-xs rounded-xs">src/constants/theme.ts</span>
-                  · 点击色块切换 preset，themeStore.setTheme 实时生效
-                </p>
-              </div>
-              <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-md">
+            <div
+              class="rounded-xl bg-muted/25 dark:bg-muted/40 p-md md:p-lg border border-border/40 dark:border-border/30"
+            >
+              <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-sm md:gap-md">
                 <div
-                  v-for="item in presetSwatchColors"
-                  :key="item.name"
-                  class="relative column items-center gap-xs p-md rounded-lg shadow-sm dark:shadow-md shadow-sm dark:shadow-md transition-all duration-xl ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)] cursor-pointer group active:scale-95"
-                  :class="
-                    themeStore.themeName === item.name
-                      ? 'bg-primary/10 -translate-y-0.5'
-                      : 'surface-item'
-                  "
-                  @click="themeStore.setTheme(item.name)"
+                  v-for="token in COLOR_FAMILIES.singleTokens"
+                  :key="token"
+                  class="rounded-md p-sm col-stretch gap-xs interactive-item"
+                  @click="copyClassName(`--${token}`, 'CSS 变量')"
                 >
-                  <!-- Selected Indicator -->
                   <div
-                    v-if="themeStore.themeName === item.name"
-                    class="absolute top-[var(--spacing-xs)] right-[var(--spacing-xs)] w-[var(--spacing-md)] h-[var(--spacing-md)] rounded-full bg-primary text-primary-foreground center shadow-sm dark:shadow-md"
-                  >
-                    <Icons
-                      name="i-lucide-check"
-                      size="xs"
-                      :scale="0.85"
-                    />
-                  </div>
-
-                  <div
-                    class="w-[var(--spacing-3xl)] h-[var(--spacing-3xl)] rounded-lg shrink-0 transition-[transform,opacity] duration-md ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-110"
-                    :style="{ background: item.color }"
+                    class="w-full h-[var(--spacing-xl)] rounded-sm shadow-[inset_0_0_0_1px_rgb(var(--border)/0.5)]"
+                    :style="{ background: cssVar(token) }"
                   />
+                  <span class="text-xs font-mono text-foreground">--{{ token }}</span>
                   <span
-                    class="font-mono text-xs transition-colors"
-                    :class="
-                      themeStore.themeName === item.name
-                        ? 'text-primary font-bold'
-                        : 'text-foreground'
-                    "
+                    class="text-xs font-mono text-muted-foreground text-ellipsis-1"
+                    :title="singleTokenChannelValues[token]"
                   >
-                    {{ item.name }}
+                    {{ singleTokenChannelValues[token] ?? '—' }}
                   </span>
                 </div>
               </div>
             </div>
-          </template>
-        </Card>
+          </div>
 
-        <!-- Single Token Colors -->
-        <Card class="bg-card rounded-md shadow-sm dark:shadow-md py-md px-lg flex flex-col gap-lg">
-          <template #title>
-            <div class="row-y-center gap-sm">
-              <Icons
-                name="i-lucide-circle"
-                class="text-primary"
-              />
-              <span class="font-semibold">Single Tokens 单色令牌</span>
-              <Tag
-                :value="`${singleTokens.length} colors`"
-                severity="secondary"
-              />
-            </div>
-          </template>
-          <template #content>
-            <div class="col-stack-md">
-              <div class="border-b-default pb-sm mb-padding-sm">
-                <p class="text-muted-foreground text-sm">基础颜色变量，直接对应单个 CSS 变量</p>
-              </div>
-              <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-md">
+          <!-- 2b Pair Families (4 × 2) -->
+          <div
+            class="material-elevated rounded-xl p-md md:p-xl lg:p-2xl col-stretch gap-md md:gap-lg xl:gap-xl"
+          >
+            <h3 class="text-lg font-semibold text-foreground m-0">Pair Families</h3>
+            <p class="text-xs text-muted-foreground m-0">
+              card / popover / secondary / muted（背景 + 前景各一组）
+            </p>
+            <div
+              class="rounded-xl bg-muted/25 dark:bg-muted/40 p-md md:p-lg border border-border/40 dark:border-border/30"
+            >
+              <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-sm md:gap-md">
                 <div
-                  v-for="item in singleTokens"
-                  :key="item.token"
-                  class="col-stack-sm p-md surface-item rounded-lg shadow-sm dark:shadow-md transition-all duration-xl ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)]"
+                  v-for="family in COLOR_FAMILIES.pairFamilies"
+                  :key="family"
+                  class="rounded-md p-sm col-stretch gap-sm bg-background ring-1 ring-border/20 cursor-pointer transition-all duration-5xl"
                 >
-                  <div class="row-y-center gap-sm">
+                  <span class="text-xs font-semibold text-foreground capitalize">{{ family }}</span>
+                  <div class="row-start gap-xs">
+                    <!-- Background swatch -->
                     <div
-                      class="w-[var(--spacing-xl)] h-[var(--spacing-xl)] rounded-sm shadow-sm dark:shadow-md"
-                      :class="item.bgClass"
-                    />
-                    <span class="font-semibold text-foreground">
-                      {{ item.token }}
-                    </span>
-                  </div>
-                  <div class="layout-wrap gap-xs">
-                    <div
-                      class="text-xs font-mono bg-muted/30 px-xs py-xs rounded-xs cursor-pointer select-none transition-all duration-lg ease-in-out hover:bg-primary/20 hover:text-primary active:scale-95 text-muted-foreground"
-                      @click="copyToClipboard(`var(${item.cssVar})`, item.cssVar)"
+                      class="flex-1 h-[var(--spacing-2xl)] rounded-sm center shadow-[inset_0_0_0_1px_rgb(var(--border)/0.4)]"
+                      :style="{ background: cssVar(family) }"
                     >
-                      {{ item.cssVar }}
-                    </div>
-                    <div
-                      class="text-xs font-mono bg-muted/30 px-xs py-xs rounded-xs cursor-pointer select-none transition-all duration-lg ease-in-out hover:bg-primary/20 hover:text-primary active:scale-95 text-muted-foreground hover:bg-success/20 hover:text-success"
-                      @click="copyToClipboard(item.bgClass)"
-                    >
-                      {{ item.bgClass }}
-                    </div>
-                    <div
-                      v-if="item.borderClass"
-                      class="text-xs font-mono bg-muted/30 px-xs py-xs rounded-xs cursor-pointer select-none transition-all duration-lg ease-in-out hover:bg-primary/20 hover:text-primary active:scale-95 text-muted-foreground hover:bg-warn/20 hover:text-warn"
-                      @click="copyToClipboard(item.borderClass!)"
-                    >
-                      {{ item.borderClass }}
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </template>
-        </Card>
-
-        <!-- Pair Family Colors -->
-        <Card class="bg-card rounded-md shadow-sm dark:shadow-md py-md px-lg flex flex-col gap-lg">
-          <template #title>
-            <div class="row-y-center gap-sm">
-              <Icons
-                name="i-lucide-layers"
-                class="text-primary"
-              />
-              <span class="font-semibold">Pair Families 成对颜色族</span>
-              <Tag
-                :value="`${pairFamilies.length} families`"
-                severity="secondary"
-              />
-            </div>
-          </template>
-          <template #content>
-            <div class="col-stack-md">
-              <div class="border-b-default pb-sm mb-padding-sm">
-                <p class="text-muted-foreground text-sm">包含 DEFAULT 和 foreground 两个变体</p>
-              </div>
-              <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-lg">
-                <div
-                  v-for="family in pairFamilies"
-                  :key="family.family"
-                  class="col-stack-md p-lg surface-item rounded-lg shadow-sm dark:shadow-md transition-all duration-xl ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)]"
-                >
-                  <h4
-                    class="text-sm font-semibold text-foreground capitalize row-y-center gap-sm mb-xs"
-                  >
-                    <div
-                      class="w-[var(--spacing-md)] h-[var(--spacing-md)] rounded-full shadow-sm dark:shadow-md"
-                      :class="`bg-${family.family}`"
-                    />
-                    {{ family.family }}
-                  </h4>
-                  <div class="col-stack-sm">
-                    <div
-                      v-for="variant in family.variants"
-                      :key="variant.name"
-                      class="col-stack-xs"
-                    >
-                      <div class="row-y-center gap-sm">
-                        <Tag
-                          :value="variant.name"
-                          severity="info"
-                          class="text-xs"
-                        />
-                      </div>
-                      <div class="layout-wrap gap-xs">
-                        <div
-                          class="text-xs font-mono bg-muted/30 px-xs py-xs rounded-xs cursor-pointer select-none transition-all duration-lg ease-in-out hover:bg-primary/20 hover:text-primary active:scale-95 text-muted-foreground"
-                          @click="copyToClipboard(`var(${variant.cssVar})`, variant.cssVar)"
-                        >
-                          {{ variant.cssVar }}
-                        </div>
-                        <div
-                          v-if="variant.bgClass"
-                          class="text-xs font-mono bg-muted/30 px-xs py-xs rounded-xs cursor-pointer select-none transition-all duration-lg ease-in-out hover:bg-primary/20 hover:text-primary active:scale-95 text-muted-foreground hover:bg-success/20 hover:text-success"
-                          @click="copyToClipboard(variant.bgClass!)"
-                        >
-                          {{ variant.bgClass }}
-                        </div>
-                        <div
-                          v-if="variant.textClass"
-                          class="text-xs font-mono bg-muted/30 px-xs py-xs rounded-xs cursor-pointer select-none transition-all duration-lg ease-in-out hover:bg-primary/20 hover:text-primary active:scale-95 text-muted-foreground hover:bg-warn/20 hover:text-warn"
-                          @click="copyToClipboard(variant.textClass!)"
-                        >
-                          {{ variant.textClass }}
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  <!-- Preview -->
-                  <div
-                    :class="`bg-${family.family} text-${family.family}-foreground p-md rounded-md text-center`"
-                  >
-                    预览文本
-                  </div>
-                </div>
-              </div>
-            </div>
-          </template>
-        </Card>
-
-        <!-- Quad Family Colors -->
-        <Card class="bg-card rounded-md shadow-sm dark:shadow-md py-md px-lg flex flex-col gap-lg">
-          <template #title>
-            <div class="row-y-center gap-sm">
-              <Icons
-                name="i-lucide-layers-3"
-                class="text-primary"
-              />
-              <span class="font-semibold">Extended Families 扩展颜色族</span>
-              <Tag
-                :value="`${quadFamilies.length} families`"
-                severity="secondary"
-              />
-            </div>
-          </template>
-          <template #content>
-            <div class="col-stack-md">
-              <div class="border-b-default pb-sm mb-padding-sm">
-                <p class="text-muted-foreground text-sm">
-                  包含 DEFAULT, foreground, hover, hover-foreground, light, light-foreground
-                  六个变体。
-                  <span class="text-foreground">*-light</span>
-                  用于 PrimeVue Button text/outlined 变体 hover 背景，详见
-                  <span class="bg-muted px-xs rounded-xs text-xs">docs/PRIMEVUE_THEME.md</span>
-                </p>
-              </div>
-              <div class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-lg">
-                <div
-                  v-for="family in quadFamilies"
-                  :key="family.family"
-                  class="col-stack-md p-lg surface-item rounded-lg shadow-sm dark:shadow-md transition-all duration-xl ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)]"
-                >
-                  <h4
-                    class="text-sm font-semibold text-foreground capitalize row-y-center gap-sm mb-xs"
-                  >
-                    <div
-                      class="w-[var(--spacing-md)] h-[var(--spacing-md)] rounded-full shadow-sm dark:shadow-md"
-                      :class="`bg-${family.family}`"
-                    />
-                    {{ family.family }}
-                  </h4>
-
-                  <!-- Color Swatch Row -->
-                  <div class="flex gap-xs">
-                    <div
-                      :class="`bg-${family.family} flex-1 h-[var(--spacing-xl)] rounded-l-lg cursor-pointer hover:scale-105 transition-transform`"
-                      :title="`bg-${family.family}`"
-                      @click="copyToClipboard(`bg-${family.family}`)"
-                    />
-                    <div
-                      :class="`bg-${family.family}-hover flex-1 h-[var(--spacing-xl)] cursor-pointer hover:scale-105 transition-transform`"
-                      :title="`bg-${family.family}-hover`"
-                      @click="copyToClipboard(`bg-${family.family}-hover`)"
-                    />
-                    <div
-                      :class="`bg-${family.family}-light flex-1 h-[var(--spacing-xl)] rounded-r-lg cursor-pointer hover:scale-105 transition-transform`"
-                      :title="`bg-${family.family}-light`"
-                      @click="copyToClipboard(`bg-${family.family}-light`)"
-                    />
-                  </div>
-
-                  <!-- Variants -->
-                  <CScrollbar class="max-h-[var(--spacing-5xl)] min-h-0">
-                    <div class="col-stack-sm">
-                      <div
-                        v-for="variant in family.variants"
-                        :key="variant.name"
-                        class="layout-wrap items-center gap-xs p-xs rounded-sm hover:bg-muted/30 transition-colors duration-lg"
+                      <span
+                        class="text-xs font-mono"
+                        :style="{ color: cssVar(`${family}-foreground`) }"
                       >
-                        <Tag
-                          :value="variant.name"
-                          severity="info"
-                          class="text-xs shrink-0"
-                        />
-                        <div
-                          class="text-xs font-mono bg-muted/30 px-xs py-xs rounded-xs cursor-pointer select-none transition-all duration-lg ease-in-out hover:bg-primary/20 hover:text-primary active:scale-95 text-muted-foreground"
-                          @click="copyToClipboard(`var(${variant.cssVar})`, variant.cssVar)"
-                        >
-                          {{ variant.cssVar }}
-                        </div>
-                        <div
-                          v-if="variant.bgClass"
-                          class="text-xs font-mono bg-muted/30 px-xs py-xs rounded-xs cursor-pointer select-none transition-all duration-lg ease-in-out hover:bg-primary/20 hover:text-primary active:scale-95 text-muted-foreground hover:bg-success/20 hover:text-success"
-                          @click="copyToClipboard(variant.bgClass!)"
-                        >
-                          {{ variant.bgClass }}
-                        </div>
-                        <div
-                          v-if="variant.borderClass"
-                          class="text-xs font-mono bg-muted/30 px-xs py-xs rounded-xs cursor-pointer select-none transition-all duration-lg ease-in-out hover:bg-primary/20 hover:text-primary active:scale-95 text-muted-foreground hover:bg-warn/20 hover:text-warn"
-                          @click="copyToClipboard(variant.borderClass!)"
-                        >
-                          {{ variant.borderClass }}
-                        </div>
-                      </div>
-                    </div>
-                  </CScrollbar>
-
-                  <!-- Preview Cards -->
-                  <div class="grid grid-cols-3 gap-sm">
-                    <div
-                      :class="`bg-${family.family} text-${family.family}-foreground p-sm rounded-sm text-center text-xs`"
-                    >
-                      默认
-                    </div>
-                    <div
-                      :class="`bg-${family.family}-hover text-${family.family}-hover-foreground p-sm rounded-sm text-center text-xs`"
-                    >
-                      悬停
-                    </div>
-                    <div
-                      :class="`bg-${family.family}-light text-${family.family}-light-foreground p-sm rounded-sm text-center text-xs`"
-                    >
-                      浅色
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </template>
-        </Card>
-
-        <!-- Color Usage Contract 颜色使用约定 -->
-        <Card class="bg-card rounded-md shadow-sm dark:shadow-md py-md px-lg flex flex-col gap-lg">
-          <template #title>
-            <div class="row-y-center gap-sm">
-              <Icons
-                name="i-lucide-traffic-lights"
-                class="text-primary"
-              />
-              <span class="font-semibold">Color Usage Contract 颜色语义约定</span>
-              <Tag
-                value="SSOT: colorUsage.ts"
-                severity="info"
-              />
-            </div>
-          </template>
-          <template #content>
-            <div class="col-stack-md">
-              <p class="text-muted-foreground text-sm">
-                所有 hover / focus / 选中 / 强调色使用必须遵守
-                <span class="bg-muted px-xs rounded-xs font-mono">
-                  src/constants/theme/colorUsage.ts
-                </span>
-                约定，禁止在业务中自行选择 primary / accent / ring 语义。
-              </p>
-              <div class="grid grid-cols-1 md:grid-cols-2 gap-md text-xs text-muted-foreground">
-                <div class="col-stack-xs">
-                  <div class="font-semibold text-foreground">交互反馈 (Hover / Active)</div>
-                  <div class="row-y-center gap-xs">
-                    <span class="bg-muted px-xs rounded-xs font-mono">bg-primary-hover</span>
-                    <span>：hover 背景（按钮/菜单等统一用 primary-hover）</span>
-                  </div>
-                  <div class="row-y-center gap-xs">
-                    <span class="bg-muted px-xs rounded-xs font-mono">text-primary-hover</span>
-                    <span>：交互文字颜色（text-primary-hover）</span>
-                  </div>
-                </div>
-                <div class="col-stack-xs">
-                  <div class="font-semibold text-foreground">焦点与选中 (Focus / Selection)</div>
-                  <div class="row-y-center gap-xs">
-                    <span class="bg-muted px-xs rounded-xs font-mono">interactive-focus-ring</span>
-                    <span>：焦点使用 box-shadow + --primary，禁止 ring/outline</span>
-                  </div>
-                  <div class="row-y-center gap-xs">
-                    <span class="bg-muted px-xs rounded-xs font-mono">bg-primary</span>
-                    <span>：选中态 / Tab 激活指示线（PRIMARY_USAGE）</span>
-                  </div>
-                </div>
-                <div class="col-stack-xs">
-                  <div class="font-semibold text-foreground">聚焦预选 (Focus Highlight)</div>
-                  <div class="row-y-center gap-xs">
-                    <span class="bg-muted px-xs rounded-xs font-mono">bg-primary-light</span>
-                    <span>：列表项键盘聚焦、高亮预选背景</span>
-                  </div>
-                </div>
-                <div class="col-stack-xs">
-                  <div class="font-semibold text-foreground">强调色 (Accent)</div>
-                  <div class="row-y-center gap-xs">
-                    <span class="bg-muted px-xs rounded-xs font-mono">bg-accent</span>
-                    <span>：特殊标记 / badge / feature callout，高亮但非 hover</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </template>
-        </Card>
-
-        <!-- Semantic Colors & Shortcuts -->
-
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-xl">
-          <!-- Semantic Colors -->
-          <Card
-            class="bg-card rounded-md shadow-sm dark:shadow-md py-md px-lg flex flex-col gap-lg bg-primary/5 dark:bg-primary/10 h-full"
-          >
-            <template #title>
-              <div class="row-y-center gap-sm">
-                <Icons
-                  name="i-lucide-tags"
-                  class="text-primary"
-                />
-                <span class="font-semibold">Semantic Colors 语义颜色</span>
-                <Tag
-                  value="推荐使用"
-                  severity="success"
-                />
-              </div>
-            </template>
-            <template #content>
-              <div class="col-stack-md">
-                <div class="border-b-default pb-sm mb-padding-sm">
-                  <p class="text-muted-foreground text-sm">
-                    映射业务意图到主题颜色 (uno.config.ts)
-                  </p>
-                </div>
-                <div class="col-stack-md">
-                  <div
-                    v-for="item in semanticColors"
-                    :key="item.name"
-                    class="row-y-center gap-md p-md surface-item rounded-lg behavior-hover-transition hover:bg-foreground/5 cursor-pointer"
-                    @click="copyToClipboard(item.name)"
-                  >
-                    <div
-                      class="w-[var(--spacing-xl)] h-[var(--spacing-xl)] rounded-full shrink-0 shadow-sm dark:shadow-md"
-                      :class="item.classes"
-                    />
-                    <div class="column flex-1">
-                      <span class="font-semibold text-foreground">{{ item.name }}</span>
-                      <span class="text-xs text-muted-foreground">{{ item.desc }}</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </template>
-          </Card>
-
-          <!-- Menu Shortcuts -->
-          <Card
-            class="bg-card rounded-md shadow-sm dark:shadow-md py-md px-lg flex flex-col gap-lg bg-accent/5 dark:bg-accent/10 h-full"
-          >
-            <template #title>
-              <div class="row-y-center gap-sm">
-                <Icons
-                  name="i-lucide-menu"
-                  class="text-primary"
-                />
-                <span>Menu Shortcuts 菜单快捷键</span>
-              </div>
-            </template>
-            <template #content>
-              <div class="col-stack-md">
-                <div class="border-b-default pb-sm mb-padding-sm">
-                  <p class="text-muted-foreground text-sm">
-                    组合类名：
-                    <span class="text-foreground">bg-primary/20! text-primary!</span>
-                  </p>
-                </div>
-                <div class="col-stack-md">
-                  <div
-                    v-for="item in menuShortcuts"
-                    :key="item.name"
-                    class="col-stack-sm p-md surface-item rounded-lg behavior-hover-transition hover:bg-foreground/5 cursor-pointer"
-                    @click="copyToClipboard(item.name)"
-                  >
-                    <div class="row-between">
-                      <span class="font-semibold text-foreground text-primary">
-                        {{ item.name }}
+                        Aa
                       </span>
-                      <span class="text-xs text-muted-foreground">{{ item.desc }}</span>
                     </div>
+                    <!-- Foreground on card -->
                     <div
-                      class="p-sm rounded-sm text-center text-sm"
-                      :class="item.classes"
+                      class="flex-1 h-[var(--spacing-2xl)] rounded-sm center bg-muted/50 dark:bg-muted/60"
                     >
-                      Menu Item Preview
+                      <span
+                        class="text-sm font-bold"
+                        :style="{ color: cssVar(family) }"
+                      >
+                        Aa
+                      </span>
                     </div>
                   </div>
-                </div>
-              </div>
-            </template>
-          </Card>
-        </div>
-
-        <!-- PrimeVue Button 配色 -->
-        <Card class="bg-card rounded-md shadow-sm dark:shadow-md py-md px-lg flex flex-col gap-lg">
-          <template #title>
-            <div class="row-y-center gap-sm">
-              <Icons
-                name="i-lucide-mouse-pointer-click"
-                class="text-primary"
-              />
-              <span>PrimeVue Button 配色</span>
-              <Tag
-                value="text / outlined hover"
-                severity="info"
-              />
-            </div>
-          </template>
-          <template #content>
-            <div class="col-stack-md">
-              <p class="text-muted-foreground text-sm">
-                Button
-                <span class="bg-muted px-xs rounded-xs">variant="text"</span>
-                与
-                <span class="bg-muted px-xs rounded-xs">variant="outlined"</span>
-                使用
-                <span class="bg-muted px-xs rounded-xs">*-light</span>
-                作为 hover 背景，避免黑底彩字/红底红字。详见
-                <span class="bg-muted px-xs rounded-xs text-xs">docs/PRIMEVUE_THEME.md</span>
-              </p>
-              <div class="col-stack-lg">
-                <div>
-                  <h4 class="text-sm font-semibold text-foreground mb-sm">variant="text"</h4>
-                  <div class="row-y-center flex-wrap gap-md">
-                    <Button
-                      label="Primary"
-                      variant="text"
-                    />
-                    <Button
-                      label="Secondary"
-                      severity="secondary"
-                      variant="text"
-                    />
-                    <Button
-                      label="Success"
-                      severity="success"
-                      variant="text"
-                    />
-                    <Button
-                      label="Info"
-                      severity="info"
-                      variant="text"
-                    />
-                    <Button
-                      label="Warn"
-                      severity="warn"
-                      variant="text"
-                    />
-                    <Button
-                      label="Help"
-                      severity="help"
-                      variant="text"
-                    />
-                    <Button
-                      label="Danger"
-                      severity="danger"
-                      variant="text"
-                    />
-                    <Button
-                      label="Contrast"
-                      severity="contrast"
-                      variant="text"
-                    />
+                  <div class="row-between">
+                    <span class="text-xs font-mono text-muted-foreground">--{{ family }}</span>
+                    <span class="text-xs font-mono text-muted-foreground">foreground</span>
                   </div>
-                </div>
-                <div>
-                  <h4 class="text-sm font-semibold text-foreground mb-sm">variant="outlined"</h4>
-                  <div class="row-y-center flex-wrap gap-md">
-                    <Button
-                      label="Primary"
-                      variant="outlined"
-                    />
-                    <Button
-                      label="Secondary"
-                      severity="secondary"
-                      variant="outlined"
-                    />
-                    <Button
-                      label="Success"
-                      severity="success"
-                      variant="outlined"
-                    />
-                    <Button
-                      label="Info"
-                      severity="info"
-                      variant="outlined"
-                    />
-                    <Button
-                      label="Warn"
-                      severity="warn"
-                      variant="outlined"
-                    />
-                    <Button
-                      label="Help"
-                      severity="help"
-                      variant="outlined"
-                    />
-                    <Button
-                      label="Danger"
-                      severity="danger"
-                      variant="outlined"
-                    />
-                    <Button
-                      label="Contrast"
-                      severity="contrast"
-                      variant="outlined"
-                    />
+                  <div class="row-between text-xs font-mono text-muted-foreground/70">
+                    <span>{{ pairTokenChannelValues[family] }}</span>
+                    <span>{{ pairTokenChannelValues[`${family}-foreground`] }}</span>
                   </div>
                 </div>
               </div>
             </div>
-          </template>
-        </Card>
+          </div>
 
-        <!-- Opacity Variants（使用 CSS 变量 + style，不依赖 UnoCSS safelist） -->
-        <Card class="bg-card rounded-md shadow-sm dark:shadow-md py-md px-lg flex flex-col gap-lg">
-          <template #title>
-            <div class="row-y-center gap-sm">
-              <Icons
-                name="i-lucide-blend"
-                class="text-primary"
-              />
-              <span>Opacity Variants 透明度变体</span>
-            </div>
-          </template>
-          <template #content>
-            <div class="col-stack-md">
-              <p class="text-muted-foreground text-sm">
-                所有颜色都支持透明度语法，格式:
-                <span class="bg-muted px-xs rounded-xs">bg-{color}/{opacity}</span>
-                · 色块使用 CSS 变量渲染，无需 UNO_DEMO 即可完整显示
+          <!-- 2c Quad Families（统一列标题 + 双列栅格） -->
+          <div
+            class="material-elevated rounded-xl p-md md:p-xl lg:p-2xl col-stretch gap-md md:gap-lg xl:gap-xl"
+          >
+            <div class="col-stretch gap-xs">
+              <h3 class="text-lg font-semibold text-foreground m-0">Quad Families</h3>
+              <p class="text-xs text-muted-foreground m-0">
+                primary / accent / danger / warn / success / info / help — 下列每行 5
+                枚色块与表头一一对应
               </p>
-              <div class="col-stack-lg">
+            </div>
+            <div
+              class="rounded-xl bg-muted/25 dark:bg-muted/40 p-md md:p-lg border border-border/40 dark:border-border/30 col-stretch gap-md"
+            >
+              <div class="overflow-x-auto -mx-xs sm:mx-0">
+                <div
+                  class="grid w-full min-w-[var(--spacing-5xl)] grid-cols-5 gap-xs px-xs sm:px-0"
+                >
+                  <span
+                    v-for="col in quadLegendColumns"
+                    :key="col.label"
+                    class="text-xs text-muted-foreground text-center font-medium"
+                  >
+                    {{ col.label }}
+                  </span>
+                </div>
+              </div>
+              <div class="grid grid-cols-1 lg:grid-cols-2 gap-md">
                 <div
                   v-for="family in COLOR_FAMILIES.quadFamilies"
                   :key="family"
+                  class="rounded-md p-sm col-stretch gap-sm interactive-card"
                 >
-                  <h4 class="font-semibold mb-sm capitalize text-foreground">
-                    {{ family }}
-                  </h4>
-                  <div class="layout-wrap gap-xs">
+                  <div class="row-between">
+                    <span class="text-sm font-semibold text-foreground capitalize">
+                      {{ family }}
+                    </span>
                     <div
-                      v-for="opacity in opacityVariants"
-                      :key="opacity"
-                      class="column items-center gap-xs cursor-pointer group"
-                      @click="copyToClipboard(`bg-${family}/${opacity}`)"
+                      class="px-sm py-xs rounded-sm text-xs font-medium shrink-0"
+                      :style="{
+                        background: cssVar(family),
+                        color: cssVar(`${family}-foreground`),
+                      }"
+                    >
+                      Button
+                    </div>
+                  </div>
+                  <div class="grid grid-cols-5 gap-xs">
+                    <div
+                      v-for="item in quadTokens(family)"
+                      :key="item.token"
+                      class="h-[var(--spacing-xl)] w-full rounded-sm center overflow-hidden shadow-[inset_0_0_0_1px_rgb(var(--border)/0.3)]"
+                      :class="isQuadBgMaterialToken(family, item) ? 'interactive-item' : ''"
+                      :style="quadSwatchCellStyle(family, item)"
+                      @click="onQuadSwatchBgClick(family, item)"
+                    >
+                      <span
+                        v-if="quadSwatchShowAa(family, item)"
+                        class="text-sm font-bold leading-none interactive-item"
+                        @click.stop="copyClassName(`text-${item.token}`, '卡片字色')"
+                      >
+                        Aa
+                      </span>
+                    </div>
+                  </div>
+                  <div
+                    class="row-start flex-wrap gap-xs pt-xs shadow-[inset_0_1px_0_0_rgb(var(--border)/0.2)]"
+                  >
+                    <span
+                      v-for="u in quadUsageFor(family)"
+                      :key="u"
+                      class="text-xs px-xs py-xs rounded-full leading-none"
+                      :class="`bg-${family}/10 text-${family}`"
+                    >
+                      {{ u }}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 2c-b 配色 Alpha 全览（背景：内联 rgb(var(--*) / α)；字色/描边：Quad） -->
+          <div
+            class="material-elevated rounded-xl p-md md:p-xl lg:p-2xl col-stretch gap-md md:gap-lg xl:gap-xl w-full"
+          >
+            <div class="col-stretch gap-xs">
+              <h3 class="text-lg font-semibold text-foreground m-0">配色 Alpha 全览</h3>
+              <p class="text-xs text-muted-foreground m-0">
+                背景阶梯使用
+                <code class="text-xs font-mono text-primary/90">rgb(var(--token) / α)</code>
+                内联渲染（5–90），覆盖 Quad 七族功能色背景阶梯。
+                <code class="text-xs font-mono text-primary/90">text-* / 40–100</code>
+                与
+                <code class="text-xs font-mono text-primary/90">border-* / 10–50</code>
+                仅针对 Quad 七族。
+              </p>
+            </div>
+
+            <div
+              v-for="(group, gi) in ALPHA_BG_LAYER_GROUPS"
+              :key="group.title"
+              class="col-stretch gap-md"
+              :class="gi > 0 ? 'pt-md shadow-[inset_0_1px_0_0_rgb(var(--border)/0.15)]' : ''"
+            >
+              <h4 class="text-xs font-semibold text-muted-foreground m-0 tracking-wide">
+                {{ group.title }}
+              </h4>
+              <div class="col-stretch gap-lg">
+                <div
+                  v-for="name in group.families"
+                  :key="`${group.title}-${name}`"
+                  class="col-stretch gap-sm"
+                >
+                  <span class="text-xs font-mono text-foreground font-semibold">{{ name }}</span>
+                  <div
+                    class="row-start gap-xs overflow-x-auto pb-xs rounded-xl bg-muted/25 dark:bg-muted/40 p-md md:p-lg border border-border/40 dark:border-border/30"
+                  >
+                    <div
+                      v-for="step in SEMANTIC_ALPHA_STEPS"
+                      :key="`${name}-${step}`"
+                      class="col-stretch gap-xs items-center min-w-[var(--spacing-3xl)] shrink-0"
                     >
                       <div
-                        class="w-[var(--spacing-2xl)] h-[var(--spacing-2xl)] rounded-sm shadow-sm dark:shadow-md group-hover:scale-110 transition-transform"
-                        :style="{ background: `rgb(var(--${family}) / ${opacity / 100})` }"
+                        class="h-[var(--spacing-2xl)] w-full rounded-sm shadow-[inset_0_0_0_1px_rgb(var(--border)/0.12)] interactive-item"
+                        :style="{
+                          backgroundColor: `rgb(var(--${semanticColorVarBase(name)}) / ${step / 100})`,
+                        }"
+                        :title="`--${semanticColorVarBase(name)} / ${step}%`"
+                        @click="copyClassName(`bg-${name}/${step}`, '背景透明度')"
                       />
-                      <span
-                        class="font-mono text-xs text-muted-foreground group-hover:text-foreground"
-                      >
-                        {{ opacity }}%
+                      <span class="text-xs font-mono text-muted-foreground text-center">
+                        {{ step }}
                       </span>
                     </div>
                   </div>
                 </div>
               </div>
             </div>
-          </template>
-        </Card>
 
-        <!-- Sidebar Colors -->
-        <Card class="bg-card rounded-md shadow-sm dark:shadow-md py-md px-lg flex flex-col gap-lg">
-          <template #title>
-            <div class="row-y-center gap-sm">
-              <Icons
-                name="i-lucide-panel-left"
-                class="text-primary"
-              />
-              <span>Sidebar Colors 侧边栏专用色</span>
-              <Tag
-                :value="`${sidebarColors.length} colors`"
-                severity="secondary"
-              />
-            </div>
-          </template>
-          <template #content>
-            <div class="col-stack-md">
-              <div class="border-b-default pb-sm mb-padding-sm">
-                <p class="text-muted-foreground text-sm">
-                  允许侧边栏拥有独立的背景逻辑（如深色侧边栏+浅色内容）
-                </p>
-              </div>
-              <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-md">
+            <div class="col-stretch gap-md shadow-[inset_0_1px_0_0_rgb(var(--border)/0.2)] pt-md">
+              <h4 class="text-xs font-semibold text-muted-foreground m-0">
+                Quad 字色 text-* / n（40–100）
+              </h4>
+              <p class="text-xs text-muted-foreground m-0">
+                置于
+                <code class="font-mono text-xs">bg-card</code>
+                上；七族全覆盖。
+              </p>
+              <div class="col-stretch gap-md">
                 <div
-                  v-for="item in sidebarColors"
-                  :key="item.key"
-                  class="col-stack-sm p-md surface-item rounded-lg shadow-sm dark:shadow-md transition-all duration-xl ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)]"
+                  v-for="family in COLOR_FAMILIES.quadFamilies"
+                  :key="`text-alpha-${family}`"
+                  class="col-stretch gap-xs"
                 >
-                  <div class="row-y-center gap-sm">
-                    <div
-                      class="w-[var(--spacing-xl)] h-[var(--spacing-xl)] rounded-sm shrink-0"
-                      :class="
-                        item.borderClass ? item.bgClass : ['shadow-sm dark:shadow-md', item.bgClass]
-                      "
-                    />
-                    <span class="font-medium text-foreground">
-                      {{ item.key }}
+                  <span class="text-xs font-mono text-foreground font-semibold capitalize">
+                    {{ family }}
+                  </span>
+                  <div
+                    class="rounded-xl p-md md:p-lg row-start flex-wrap gap-sm border border-border/40 dark:border-border/30 bg-muted/15 dark:bg-muted/25"
+                  >
+                    <span
+                      v-for="t in TEXT_ALPHA_STEPS"
+                      :key="`${family}-text-${t}`"
+                      class="text-sm font-semibold font-mono interactive-item rounded-sm px-xs py-xs"
+                      :style="{ color: `rgb(var(--${family}) / ${t / 100})` }"
+                      :title="`--${family} / ${t}%`"
+                      @click="copyClassName(`text-${family}/${t}`, '字色透明度')"
+                    >
+                      {{ t }}
                     </span>
                   </div>
-                  <div class="layout-wrap gap-xs">
-                    <div
-                      class="text-xs font-mono bg-muted/30 px-xs py-xs rounded-xs cursor-pointer select-none transition-all duration-lg ease-in-out hover:bg-primary/20 hover:text-primary active:scale-95 text-muted-foreground"
-                      @click="copyToClipboard(`var(${item.cssVar})`, item.cssVar)"
-                    >
-                      {{ item.cssVar }}
-                    </div>
-                    <div
-                      class="text-xs font-mono bg-muted/30 px-xs py-xs rounded-xs cursor-pointer select-none transition-all duration-lg ease-in-out hover:bg-primary/20 hover:text-primary active:scale-95 text-muted-foreground hover:bg-success/20 hover:text-success"
-                      @click="copyToClipboard(item.copyClass)"
-                    >
-                      {{ item.copyClass }}
-                    </div>
-                  </div>
                 </div>
               </div>
             </div>
-          </template>
-        </Card>
 
-        <!-- Quick Reference -->
-        <Card
-          class="bg-card rounded-md shadow-sm dark:shadow-md py-md px-lg flex flex-col gap-lg bg-gradient-to-br from-primary/5 to-accent/5"
-        >
-          <template #title>
-            <div class="row-y-center gap-sm">
-              <Icons
-                name="i-lucide-zap"
-                class="text-primary"
-              />
-              <span>Quick Reference 快速参考</span>
-            </div>
-          </template>
-          <template #content>
-            <div class="col-stack-md">
-              <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-lg">
-                <div class="col-stack-sm">
-                  <h4 class="font-semibold text-foreground">背景 (Background)</h4>
-                  <div
-                    class="bg-muted p-sm rounded-sm text-sm cursor-pointer hover:bg-muted/80 active:scale-95 transition-all duration-lg"
-                    @click="copyToClipboard('bg-{color}')"
-                  >
-                    bg-{color}
-                  </div>
-                  <div
-                    class="bg-muted p-sm rounded-sm text-sm cursor-pointer hover:bg-muted/80 active:scale-95 transition-all duration-lg"
-                    @click="copyToClipboard('bg-{color}/{opacity}')"
-                  >
-                    bg-{color}/{opacity}
-                  </div>
-                  <div
-                    class="bg-muted p-sm rounded-sm text-sm cursor-pointer hover:bg-muted/80 active:scale-95 transition-all duration-lg"
-                    @click="copyToClipboard('bg-{color}-hover')"
-                  >
-                    bg-{color}-hover
-                  </div>
-                  <div
-                    class="bg-muted p-sm rounded-sm text-sm cursor-pointer hover:bg-muted/80 active:scale-95 transition-all duration-lg"
-                    title="Button text/outlined hover"
-                    @click="copyToClipboard('bg-{color}-light')"
-                  >
-                    bg-{color}-light
-                  </div>
-                </div>
-                <div class="col-stack-sm">
-                  <h4 class="font-semibold text-foreground">文本 (Text)</h4>
-                  <div
-                    class="bg-muted p-sm rounded-sm text-sm cursor-pointer hover:bg-muted/80 active:scale-95 transition-all duration-lg"
-                    @click="copyToClipboard('text-{color}')"
-                  >
-                    text-{color}
-                  </div>
-                  <div
-                    class="bg-muted p-sm rounded-sm text-sm cursor-pointer hover:bg-muted/80 active:scale-95 transition-all duration-lg"
-                    @click="copyToClipboard('text-{color}-foreground')"
-                  >
-                    text-{color}-foreground
-                  </div>
-                  <div
-                    class="bg-muted p-sm rounded-sm text-sm cursor-pointer hover:bg-muted/80 active:scale-95 transition-all duration-lg"
-                    @click="copyToClipboard('text-muted-foreground')"
-                  >
-                    text-muted-foreground
-                  </div>
-                </div>
-                <div class="col-stack-sm">
-                  <h4 class="font-semibold text-foreground">边框 (Border)</h4>
-                  <div
-                    class="bg-muted p-sm rounded-sm text-sm cursor-pointer hover:bg-muted/80 active:scale-95 transition-all duration-lg"
-                    @click="copyToClipboard('border-{color}')"
-                  >
-                    border-{color}
-                  </div>
-                  <div
-                    class="bg-muted p-sm rounded-sm text-sm cursor-pointer hover:bg-muted/80 active:scale-95 transition-all duration-lg"
-                    @click="copyToClipboard('border-border')"
-                  >
-                    border-border
-                  </div>
-                  <div
-                    class="bg-muted p-sm rounded-sm text-sm cursor-pointer hover:bg-muted/80 active:scale-95 transition-all duration-lg"
-                    @click="copyToClipboard('border-{color}/50')"
-                  >
-                    border-{color}/50
+            <div class="col-stretch gap-md">
+              <h4 class="text-xs font-semibold text-muted-foreground m-0">
+                Quad 描边 border-* / n（10–50）
+              </h4>
+              <p class="text-xs text-muted-foreground m-0">
+                <code class="font-mono text-xs">border-2</code>
+                + 语义色透明度；七族全覆盖。
+              </p>
+              <div class="col-stretch gap-md">
+                <div
+                  v-for="family in COLOR_FAMILIES.quadFamilies"
+                  :key="`border-alpha-${family}`"
+                  class="col-stretch gap-xs"
+                >
+                  <span class="text-xs font-mono text-foreground font-semibold capitalize">
+                    {{ family }}
+                  </span>
+                  <div class="row-start flex-wrap gap-sm">
+                    <div
+                      v-for="b in BORDER_ALPHA_STEPS"
+                      :key="`${family}-border-${b}`"
+                      class="h-[var(--spacing-3xl)] min-w-[var(--spacing-2xl)] flex-1 rounded-md bg-background center border-2 border-solid px-sm interactive-item"
+                      :style="{ borderColor: `rgb(var(--${family}) / ${b / 100})` }"
+                      :title="`--${family} / ${b}%`"
+                      @click="copyClassName(`border-${family}/${b}`, '描边透明度')"
+                    >
+                      <span class="text-xs font-mono text-muted-foreground text-center">
+                        {{ b }}
+                      </span>
+                    </div>
                   </div>
                 </div>
               </div>
-              <p class="text-muted-foreground text-sm">
-                <span class="font-semibold">可用颜色:</span>
-                <span class="font-mono ml-xs text-primary">
-                  primary | accent | danger | warn | success | info | muted | secondary | card |
-                  popover
-                </span>
-              </p>
-              <p class="text-muted-foreground text-sm mt-xs">
-                <span class="font-semibold">语义别名:</span>
-                <span class="font-mono ml-xs text-primary">
-                  bg-primary | bg-primary-hover | text-primary-hover
-                </span>
-              </p>
-              <p class="text-muted-foreground text-sm mt-xs">
-                <span class="font-semibold">菜单快捷键:</span>
-                <span class="font-mono ml-xs text-primary">
-                  flex items-center gap-sm cursor-pointer select-none transition-all duration-md
-                  ease-in-out border-none bg-transparent | bg-primary/12! dark:bg-primary/30!
-                  text-primary!
-                </span>
-              </p>
             </div>
-          </template>
-        </Card>
+          </div>
+
+          <!-- 2d Sidebar Tokens (8) -->
+          <div
+            class="material-elevated rounded-xl p-md md:p-xl lg:p-2xl col-stretch gap-md md:gap-lg xl:gap-xl"
+          >
+            <h3 class="text-lg font-semibold text-foreground m-0">Sidebar Tokens（8）</h3>
+            <div class="col-stretch gap-md md:flex md:flex-row md:items-start md:gap-lg">
+              <!-- Mini sidebar preview -->
+              <div
+                class="w-40 rounded-xl overflow-hidden shadow-md col-stretch shrink-0 shadow-[inset_0_0_0_1px_rgb(var(--sidebar-border))]"
+                :style="{ background: cssVar('sidebar-background') }"
+              >
+                <div
+                  class="px-sm py-xs text-xs font-semibold shadow-[0_1px_0_0_rgb(var(--sidebar-border))]"
+                  :style="{ color: cssVar('sidebar-foreground') }"
+                >
+                  Sidebar Preview
+                </div>
+                <div class="col-stretch gap-xs p-xs">
+                  <div
+                    class="px-sm py-xs rounded-sm text-xs font-medium"
+                    :style="{
+                      background: cssVar('sidebar-primary'),
+                      color: cssVar('sidebar-primary-foreground'),
+                    }"
+                  >
+                    Active Menu
+                  </div>
+                  <div
+                    class="px-sm py-xs rounded-sm text-xs"
+                    :style="{
+                      background: cssVar('sidebar-accent'),
+                      color: cssVar('sidebar-accent-foreground'),
+                    }"
+                  >
+                    Hovered Item
+                  </div>
+                  <div
+                    class="px-sm py-xs text-xs"
+                    :style="{ color: cssVar('sidebar-foreground') }"
+                  >
+                    Normal Item
+                  </div>
+                </div>
+              </div>
+              <!-- Token swatches -->
+              <div
+                class="grid grid-cols-2 sm:grid-cols-4 gap-sm flex-1 min-w-0 rounded-xl bg-muted/25 dark:bg-muted/40 p-md md:p-lg border border-border/40 dark:border-border/30"
+              >
+                <div
+                  v-for="varName in sidebarVarNames"
+                  :key="varName"
+                  class="col-stretch gap-xs rounded-md p-xs interactive-item"
+                  @click="copyClassName(sidebarVarNameToUnoBgClass(varName), 'Sidebar Token')"
+                >
+                  <div
+                    class="h-[var(--spacing-lg)] rounded-sm shadow-[inset_0_0_0_1px_rgb(var(--border)/0.3)]"
+                    :style="{ background: cssVar(varName) }"
+                  />
+                  <span
+                    class="text-xs font-mono text-muted-foreground leading-tight text-ellipsis-1"
+                    :title="`--${varName}`"
+                  >
+                    --{{ varName }}
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ═══ §3 Light / Dark Mode Comparison ═══ -->
+        <section class="col-stretch gap-md">
+          <div class="col-stretch gap-xs md:gap-sm">
+            <h2 class="text-lg font-semibold text-foreground m-0">亮色 / 暗色模式对比</h2>
+            <p class="text-xs text-muted-foreground m-0">
+              当前预设「{{ formatPresetName(themeStore.themeName) }}」双模式色值静态预览
+            </p>
+          </div>
+
+          <div
+            class="material-elevated rounded-xl p-md md:p-xl lg:p-2xl col-stretch gap-md md:gap-lg xl:gap-xl"
+          >
+            <div
+              class="rounded-xl bg-muted/25 dark:bg-muted/40 p-md md:p-lg border border-border/40 dark:border-border/30"
+            >
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-md">
+                <!-- Light preview -->
+                <div
+                  class="rounded-xl p-lg col-stretch gap-md shadow-sm"
+                  :style="lightStyles.root"
+                >
+                  <div class="row-between">
+                    <span class="text-sm font-semibold">亮色模式</span>
+                    <Icons
+                      name="i-lucide-sun"
+                      size="md"
+                      :style="lightStyles.icon"
+                    />
+                  </div>
+                  <div
+                    class="rounded-lg p-md col-stretch gap-sm"
+                    :style="lightStyles.card"
+                  >
+                    <span
+                      class="text-xs font-medium"
+                      :style="lightStyles.fg"
+                    >
+                      Card Surface
+                    </span>
+                    <div
+                      class="rounded-md p-sm"
+                      :style="lightStyles.muted"
+                    >
+                      <span
+                        class="text-xs"
+                        :style="lightStyles.mutedFg"
+                      >
+                        Muted Region
+                      </span>
+                    </div>
+                  </div>
+                  <div class="row-start gap-sm flex-wrap">
+                    <div
+                      v-for="family in COLOR_FAMILIES.quadFamilies"
+                      :key="`light-${family}`"
+                      class="px-md py-xs rounded-md text-xs font-medium capitalize"
+                      :style="lightQuadChips[family]"
+                    >
+                      {{ family }}
+                    </div>
+                  </div>
+                  <div class="col-stretch gap-xs">
+                    <span
+                      class="text-sm font-medium"
+                      :style="lightStyles.fg"
+                    >
+                      Foreground Text
+                    </span>
+                    <span
+                      class="text-xs"
+                      :style="lightStyles.mutedFg"
+                    >
+                      Muted / Secondary Text
+                    </span>
+                  </div>
+                </div>
+
+                <!-- Dark preview -->
+                <div
+                  class="rounded-xl p-lg col-stretch gap-md shadow-sm"
+                  :style="darkStyles.root"
+                >
+                  <div class="row-between">
+                    <span class="text-sm font-semibold">暗色模式</span>
+                    <Icons
+                      name="i-lucide-moon"
+                      size="md"
+                      :style="darkStyles.icon"
+                    />
+                  </div>
+                  <div
+                    class="rounded-lg p-md col-stretch gap-sm"
+                    :style="darkStyles.card"
+                  >
+                    <span
+                      class="text-xs font-medium"
+                      :style="darkStyles.fg"
+                    >
+                      Card Surface
+                    </span>
+                    <div
+                      class="rounded-md p-sm"
+                      :style="darkStyles.muted"
+                    >
+                      <span
+                        class="text-xs"
+                        :style="darkStyles.mutedFg"
+                      >
+                        Muted Region
+                      </span>
+                    </div>
+                  </div>
+                  <div class="row-start gap-sm flex-wrap">
+                    <div
+                      v-for="family in COLOR_FAMILIES.quadFamilies"
+                      :key="`dark-${family}`"
+                      class="px-md py-xs rounded-md text-xs font-medium capitalize"
+                      :style="darkQuadChips[family]"
+                    >
+                      {{ family }}
+                    </div>
+                  </div>
+                  <div class="col-stretch gap-xs">
+                    <span
+                      class="text-sm font-medium"
+                      :style="darkStyles.fg"
+                    >
+                      Foreground Text
+                    </span>
+                    <span
+                      class="text-xs"
+                      :style="darkStyles.mutedFg"
+                    >
+                      Muted / Secondary Text
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ═══ §4 PrimeVue Component Demos ═══ -->
+        <section class="col-stretch gap-md">
+          <div class="col-stretch gap-xs md:gap-sm">
+            <h2 class="text-lg font-semibold text-foreground m-0">PrimeVue 组件主题化演示</h2>
+            <p class="text-xs text-muted-foreground m-0">
+              PT Global 预设（PREMIUM_INPUT_ROOT）— 无边框输入框，背景 bg-muted/30
+            </p>
+          </div>
+
+          <div
+            class="material-elevated rounded-xl p-md md:p-xl lg:p-2xl col-stretch gap-md md:gap-lg xl:gap-xl"
+          >
+            <h3 class="text-lg font-semibold text-foreground m-0">输入控件</h3>
+            <div
+              class="rounded-xl bg-muted/25 dark:bg-muted/40 p-md md:p-lg border border-border/40 dark:border-border/30"
+            >
+              <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-md">
+                <div class="col-stretch gap-xs">
+                  <label class="text-xs text-muted-foreground">InputText</label>
+                  <InputText
+                    :model-value="demoInput"
+                    placeholder="输入内容…"
+                    class="w-full"
+                    @update:model-value="
+                      (v: string | undefined) => {
+                        demoInput = v ?? ''
+                      }
+                    "
+                  />
+                </div>
+                <div class="col-stretch gap-xs">
+                  <label class="text-xs text-muted-foreground">Select</label>
+                  <Select
+                    v-model="demoSelectValue"
+                    :options="demoSelectOptions"
+                    option-label="label"
+                    option-value="value"
+                    class="w-full"
+                  />
+                </div>
+                <div class="col-stretch gap-xs">
+                  <label class="text-xs text-muted-foreground">DatePicker</label>
+                  <DatePicker
+                    class="w-full"
+                    placeholder="选择日期"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div
+            class="material-elevated rounded-xl p-md md:p-xl lg:p-2xl col-stretch gap-md md:gap-lg xl:gap-xl"
+          >
+            <h3 class="text-lg font-semibold text-foreground m-0">按钮 Severity（8）与变体</h3>
+            <div class="row-start gap-sm flex-wrap">
+              <Button label="Primary" />
+              <Button
+                label="Secondary"
+                severity="secondary"
+              />
+              <Button
+                label="Success"
+                severity="success"
+              />
+              <Button
+                label="Info"
+                severity="info"
+              />
+              <Button
+                label="Warn"
+                severity="warn"
+              />
+              <Button
+                label="Help"
+                severity="help"
+              />
+              <Button
+                label="Danger"
+                severity="danger"
+              />
+              <Button
+                label="Contrast"
+                severity="contrast"
+              />
+            </div>
+            <div class="col-stretch gap-xs">
+              <span class="text-xs text-muted-foreground">变体</span>
+              <div class="row-start gap-sm flex-wrap">
+                <Button
+                  label="Outlined"
+                  outlined
+                />
+                <Button
+                  label="Text"
+                  text
+                />
+              </div>
+            </div>
+          </div>
+
+          <div
+            class="material-elevated rounded-xl p-md md:p-xl lg:p-2xl col-stretch gap-md md:gap-lg xl:gap-xl"
+          >
+            <h3 class="text-lg font-semibold text-foreground m-0">开关、Chip 与语义色块</h3>
+            <div class="col-stretch gap-md">
+              <div class="row-center gap-sm">
+                <ToggleSwitch v-model="demoToggle" />
+                <span class="text-sm text-foreground">{{ demoToggle ? '已启用' : '已禁用' }}</span>
+              </div>
+              <div class="row-start gap-sm flex-wrap">
+                <Chip label="Primary" />
+                <Chip label="Accent" />
+              </div>
+              <div class="row-start gap-xs flex-wrap">
+                <span
+                  class="px-sm py-xs rounded-full text-xs font-medium bg-success/15 text-success"
+                >
+                  成功
+                </span>
+                <span class="px-sm py-xs rounded-full text-xs font-medium bg-warn/15 text-warn">
+                  警告
+                </span>
+                <span class="px-sm py-xs rounded-full text-xs font-medium bg-danger/15 text-danger">
+                  危险
+                </span>
+                <span class="px-sm py-xs rounded-full text-xs font-medium bg-info/15 text-info">
+                  信息
+                </span>
+                <span class="px-sm py-xs rounded-full text-xs font-medium bg-help/15 text-help">
+                  帮助
+                </span>
+                <span
+                  class="px-sm py-xs rounded-full text-xs font-medium bg-primary/15 text-primary"
+                >
+                  品牌
+                </span>
+                <span class="px-sm py-xs rounded-full text-xs font-medium bg-accent/15 text-accent">
+                  强调
+                </span>
+              </div>
+            </div>
+          </div>
+        </section>
       </div>
     </CScrollbar>
   </div>
 </template>
 
-<style scoped>
-code {
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-}
-</style>
+<style lang="scss" scoped></style>

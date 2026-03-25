@@ -1,5 +1,7 @@
 import type { EChartsOption } from 'echarts'
 import type { Ref } from 'vue'
+import { useIntervalFn, useTimeoutFn } from '@vueuse/core'
+import DateUtils from '@/utils/date'
 
 type SeriesWithData = {
   data?: unknown
@@ -19,21 +21,26 @@ export function useDynamicChartOption(): {
 
   function refreshData() {
     loading.value = true
-    const next = () => {
-      option.value = {
-        xAxis: { type: 'category', data: ['A', 'B', 'C', 'D', 'E'] },
-        yAxis: { type: 'value' },
-        series: [
-          {
-            name: '数值',
-            type: 'bar',
-            data: Array.from({ length: 5 }, () => Math.round(Math.random() * 30)),
-          },
-        ],
-      } as EChartsOption
-      loading.value = false
-    }
-    setTimeout(next, 500)
+    const { start, stop } = useTimeoutFn(
+      () => {
+        option.value = {
+          xAxis: { type: 'category', data: ['A', 'B', 'C', 'D', 'E'] },
+          yAxis: { type: 'value' },
+          series: [
+            {
+              name: '数值',
+              type: 'bar',
+              data: Array.from({ length: 5 }, () => Math.round(Math.random() * 30)),
+            },
+          ],
+        } as EChartsOption
+        loading.value = false
+        stop()
+      },
+      500,
+      { immediate: false }
+    )
+    start()
   }
 
   return { option: option as Ref<EChartsOption>, loading, refreshData }
@@ -62,14 +69,15 @@ export function usePollingChartOption(): {
         type: 'line',
         data: [10, 12, 8, 15, 9],
         smooth: true,
+        areaStyle: {},
       },
     ],
   } as EChartsOption)
 
   const isRunning = ref(false)
-  const timerId = ref<number | null>(null)
+  const { pause, resume } = useIntervalFn(tick, 5000, { immediate: false })
 
-  const tick = () => {
+  function tick() {
     const cur = option.value as EChartsOption
     // 使用类型守卫确保类型安全
     const xAxis = Array.isArray(cur.xAxis) ? cur.xAxis[0] : cur.xAxis
@@ -93,7 +101,7 @@ export function usePollingChartOption(): {
       return
     }
 
-    const nowLabel = new Date().toLocaleTimeString().slice(3, 8)
+    const nowLabel = DateUtils.format(DateUtils.now(), 'HH:mm').slice(0, 5)
     const nextX = [...xData.slice(1), nowLabel]
     const nextData = [...dataArr.slice(1), Math.round(Math.random() * 30)]
 
@@ -115,16 +123,13 @@ export function usePollingChartOption(): {
   const start = () => {
     if (isRunning.value) return
     isRunning.value = true
-    timerId.value = window.setInterval(tick, 5000)
+    resume()
   }
 
   const stop = () => {
     if (!isRunning.value) return
     isRunning.value = false
-    if (timerId.value != null) {
-      clearInterval(timerId.value)
-      timerId.value = null
-    }
+    pause()
   }
 
   onUnmounted(stop)
@@ -158,7 +163,6 @@ export function useAutoHighlightChartOption(): {
   } as EChartsOption)
 
   const isRunning = ref(false)
-  let timerId: number | null = null
   const currentIndex = ref(0)
   let getInstanceFn: (() => unknown) | null = null
 
@@ -196,26 +200,38 @@ export function useAutoHighlightChartOption(): {
     // 切换到下一个索引（循环）
     currentIndex.value = (currentIndex.value + 1) % dataLength
   }
+  const { pause, resume } = useIntervalFn(highlightNext, 5000, { immediate: false })
 
   const start = (getInstance: () => unknown) => {
     if (isRunning.value) return
+    const instance = getInstance()
+    if (!instance || typeof instance !== 'object') {
+      console.warn('[useAutoHighlightChartOption] start aborted: chart instance is unavailable')
+      return
+    }
+
+    const echartsInst = instance as {
+      dispatchAction?: (action: { type: string; seriesIndex?: number; dataIndex?: number }) => void
+    }
+    if (!echartsInst.dispatchAction) {
+      console.warn('[useAutoHighlightChartOption] start aborted: dispatchAction is unavailable')
+      return
+    }
+
     getInstanceFn = getInstance
     isRunning.value = true
     currentIndex.value = 0
     // 立即执行一次，然后每 5 秒执行一次
     nextTick(() => {
       highlightNext()
-      timerId = window.setInterval(highlightNext, 5000)
+      resume()
     })
   }
 
   const stop = () => {
     if (!isRunning.value) return
     isRunning.value = false
-    if (timerId != null) {
-      clearInterval(timerId)
-      timerId = null
-    }
+    pause()
     // 清除高亮
     if (getInstanceFn) {
       const instance = getInstanceFn()

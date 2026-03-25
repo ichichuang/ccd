@@ -1,0 +1,208 @@
+---
+description: PrimeVue v4 Ecosystem — Component Substitution Law, API Zero-Hallucination Protocol, and PT Styling Mandate. Read BEFORE using any interactive or data UI element.
+globs: ["src/components/**/*.{vue,tsx}", "src/views/**/*.{vue,tsx}", "src/layouts/**/*.{vue,tsx}"]
+alwaysApply: true
+---
+
+# Rule 05 — PrimeVue Ecosystem Guardrails
+
+AI agents frequently (a) reach for native HTML elements instead of PrimeVue components, (b) hallucinate prop/event/slot names from outdated training data, and (c) use `:deep()` CSS overrides instead of the PT system. This rule enforces three pillars of defense.
+
+> **Stack**: PrimeVue v4.5+ Styled Mode. All components are auto-imported (Rule 08).
+> **Companion rule**: For PT styling methodology → `07-primevue-styled-pt.mdc`.
+
+---
+
+## PILLAR 1 — Strict Component Substitution
+
+### 1.1 ABSOLUTE RULE
+
+In `src/views/`, `src/components/`, and `src/layouts/`, native HTML interactive/data/feedback elements are **FORBIDDEN** when a PrimeVue equivalent exists.
+
+**Permitted native elements** (structural/semantic only): `<div>`, `<span>`, `<section>`, `<header>`, `<footer>`, `<main>`, `<nav>`, `<aside>`, `<article>`, `<ul>`, `<ol>`, `<li>`, `<label>`, `<form>`, `<h1>`–`<h6>`, `<p>`, `<a>` (external links only — internal navigation MUST use `<RouterLink>`).
+
+**[LAW] Form Sovereignty:**
+Inside `src/views/**` (Business Pages), native `<form>` is FORBIDDEN. MUST use `<ProForm>` for forms with 2+ fields. Single-field trivial cases may use standalone PrimeVue controls.
+
+### 1.2 Complete Substitution Table
+
+> Source of truth: `src/types/components.d.ts` (auto-generated registry).
+
+| FORBIDDEN Native Element | REQUIRED PrimeVue v4 Component | Notes |
+|---|---|---|
+| `<button>` | `<Button>` | `severity`, `text`, `outlined`, `icon` props |
+| `<input type="text">` | `<InputText>` | |
+| `<input type="number">` | `<InputNumber>` | `mode`, `min`, `max`, `step` |
+| `<input type="checkbox">` | `<Checkbox>` | Binary: boolean `v-model`; Group: array |
+| `<input type="radio">` | `<RadioButton>` | Always in a group with shared `v-model` |
+| `<textarea>` | `<Textarea>` | `autoResize` prop available |
+| `<select>` / `<option>` | `<Select>` | **v4 name** (NOT `Dropdown`) |
+| `<input type="date">` | `<DatePicker>` | **v4 name** (NOT `Calendar`) |
+| `<input type="range">` | `<Slider>` | |
+| `<input type="password">` | `<Password>` | Built-in strength meter |
+| `<input type="file">` | `<FileUpload>` | |
+| `<table>` / `<thead>` / `<tbody>` / `<tr>` / `<td>` / `<th>` | `<DataTable>` + `<Column>` | Or `<ProTable>` for project tables |
+| `<dialog>` | `<Dialog>` | Or `useDialog()` composable |
+| `<progress>` | `<ProgressBar>` | |
+| `<details>` / `<summary>` | `<Accordion>` + `<AccordionPanel>` + `<AccordionHeader>` + `<AccordionContent>` | v4 compound component API |
+| `<fieldset>` | `<Fieldset>` | |
+| Toggle/switch checkbox | `<ToggleSwitch>` | **v4 name** (NOT `InputSwitch`) |
+| `<img>` (zoomable) | `<Image>` | Bare `<img>` OK for simple static display |
+| `<a>` (internal navigation) | `<RouterLink>` | Not PrimeVue, but REQUIRED for SPA nav |
+
+### 1.3 v3 → v4 Name Migration Guard
+
+> **Silent-fail risk**: v3 names compile without errors but render **nothing** because no component is registered under the old name.
+
+| v3 Name (FORBIDDEN) | v4 Name (REQUIRED) |
+|---|---|
+| `Dropdown` | `Select` |
+| `Calendar` | `DatePicker` |
+| `InputSwitch` | `ToggleSwitch` |
+| `Sidebar` | `Drawer` |
+| `TabView` / `TabPanel` (monolithic) | `Tabs` + `TabList` + `Tab` + `TabPanels` + `TabPanel` |
+| `Steps` (monolithic) | `Stepper` + `StepList` + `Step` + `StepPanels` + `StepPanel` |
+
+### 1.4 Permitted Exceptions
+
+1. **System configuration demo pages** (`src/views/system-configuration/`) — native elements permitted for design token visualization that intentionally operates outside PrimeVue.
+2. **Custom ProForm field wrappers** (`src/components/ProForm/renderers/components/`) — may use native elements for fine-grained internal control.
+
+These exceptions do NOT extend to business pages or general components.
+
+### 1.5 🚨 Internal Abstraction Mandates (CRITICAL)
+
+- **Feedback Channel (ABSOLUTE RULE):** NEVER use raw PrimeVue `Toast` instances in business code and NEVER use native `alert` / `confirm` for user feedback. You MUST route feedback through the internal abstraction (`@/components/ProToast` or the project's configured toast service APIs such as `window.$toast` / `window.$message`) to preserve queue policy, theme consistency, and cross-module UX behavior.
+- **Dialogs (ARCHITECTURAL PRIORITY):** Prefer the internal dialog abstraction (`@/components/PrimeDialog` or equivalent architecture-approved wrapper / `useDialog`) over raw PrimeVue `Dialog` declarations when implementing business dialogs, so lifecycle orchestration, layout constraints, and close behaviors remain centralized.
+- **Scrolling (GLOBAL SSOT):** Cross-reference `06-pro-components.mdc`. All scrollable regions MUST use `<CScrollbar>`. **STRICT PROHIBITION:** NEVER use `overflow-auto` or `overflow-scroll` on generic containers for primary page scrolling. Use `<CScrollbar class="col-fill">...</CScrollbar>` as the canonical pattern.
+
+---
+
+## PILLAR 2 — Zero-Hallucination via Documentation Verification
+
+### 2.1 Verification Mandate
+
+> **ABSOLUTE RULE**: Before implementing any PrimeVue component with more than 3 props, the AI agent MUST verify the component's API against the official PrimeVue v4 documentation. Do NOT rely on memorized API surfaces — PrimeVue v4 introduced breaking changes in prop names, event names, slot names, and compound component structures.
+
+### 2.2 Verification Protocol
+
+When using a complex PrimeVue component (see Tiers below):
+
+1. **Fetch** the live docs page: `https://primevue.org/[component-name-lowercase]`
+2. **Verify** against the page:
+   - (a) Prop names and types
+   - (b) Event names — v4 uses `@update:modelValue` pattern
+   - (c) Slot names and scoped slot data shapes
+   - (d) PT section names
+3. **Cross-check** with the project's PT presets in `src/utils/theme/ptPresets/` and `src/utils/theme/presetComponents/` to confirm global configuration coverage
+
+### 2.3 Component Complexity Tiers
+
+**Tier 1 — Simple (memory OK, verification optional):**
+`Button` · `InputText` · `Textarea` · `Checkbox` · `RadioButton` · `ToggleSwitch` · `Badge` · `Tag` · `Chip` · `Divider` · `Skeleton` · `InlineMessage` · `Message` · `ProgressBar` · `ProgressSpinner` · `Image`
+
+**Tier 2 — Medium (verify if using advanced props or any slot):**
+`Select` · `MultiSelect` · `InputNumber` · `Password` · `DatePicker` · `Slider` · `InputMask` · `Rating` · `Card` · `Panel` · `Fieldset` · `Accordion` · `Dialog` · `Drawer` · `Popover` · `ConfirmPopup` · `Menu` · `Tabs` · `Stepper` · `FloatLabel` · `SelectButton` · `Paginator`
+
+**Tier 3 — Complex (MUST verify before implementing):**
+`DataTable` · `Tree` · `TreeSelect` · `FileUpload` · `AutoComplete` · `Menubar` · `TieredMenu` · `PanelMenu` · `Splitter` · `Listbox` · `VirtualScroller` · `Breadcrumb`
+
+### 2.4 Common Hallucination Patterns (Known AI Errors)
+
+| Hallucinated API | Correct v4 API |
+|---|---|
+| `<Tabs @tab-change="fn">` | `<Tabs v-model:value="activeTab">` — v4 compound component, no `@tab-change` event |
+| `<Dialog :visible="show">` | `<Dialog v-model:visible="show">` — must use `v-model` binding |
+| `<Accordion :activeIndex="0">` | `<Accordion :value="['0']">` — v4 uses `value` prop, array for multiple |
+| `<Steps :model="items">` | `<Stepper>` — v4 compound component, completely restructured |
+| `@change` on Select/DatePicker | `@update:modelValue` or just `v-model` — v4 standardized event naming |
+| `<DataTable :rows="10" :paginator="true">` | Props correct, but verify `paginatorTemplate` slot names changed in v4 |
+
+### 2.5 Migration Reinforcement — v3 → v4 + Internal Abstractions
+
+During any PrimeVue migration or refactor pass, API renaming is NOT enough. The following cleanups are mandatory whenever discovered:
+
+- Replace scattered raw Toast usage with the internal feedback abstraction (`ProToast` / configured service APIs).
+- Replace ad-hoc business dialogs with the internal dialog wrapper path (`PrimeDialog` / `useDialog`) where applicable.
+- Replace raw `overflow-auto` / `overflow-scroll` page containers with `<CScrollbar class="col-fill">`.
+
+---
+
+## PILLAR 3 — PT Styling Mandate
+
+### 3.1 PT-First Principle
+
+All visual customization of PrimeVue components MUST use the Pass-Through (`pt`) system. See `07-primevue-styled-pt.mdc` for the complete methodology, token reference, and correct patterns.
+
+### 3.2 `:deep()` Prohibition — Exhaustive Exception List
+
+`:deep(.p-*)` targeting PrimeVue internal classes is **FORBIDDEN** in business code. Exactly three files have documented exceptions:
+
+1. **`src/components/ProTable/ProTable.vue`** — DataTable frozen column z-index management, row selection coloring, and grid line control. These are CSS-variable overrides that cannot be expressed via PT.
+2. **`src/views/login/login.vue`** — Card transparency for glassmorphism effect.
+3. **`src/layouts/components/AnimateRouterView.vue`** — Animation library class positioning.
+
+Any NEW `:deep(.p-*)` usage requires explicit architectural justification and MUST be added to this exception list.
+
+### 3.3 Global PT Presets — Check Before Writing
+
+Before writing any local `:pt` prop, check if a global preset already covers the component:
+
+- `src/utils/theme/ptPresets/formControlsPt.ts` — InputText, InputNumber, InputChips, Password, Textarea, DatePicker, Select, MultiSelect, AutoComplete, SelectButton
+- `src/utils/theme/ptPresets/menuPt.ts` — TieredMenu, PanelMenu
+- `src/utils/theme/presetComponents/` — Preset-level styling for all component categories (base, form, overlay, data, menuNavMisc)
+
+If a global PT exists, your local `:pt` should only **ADD** classes, not **DUPLICATE** or **CONFLICT** with the global preset.
+
+---
+
+## AI Standard Operating Procedure — PrimeVue UI Tasks
+
+<ai_sop>
+
+### Step 1 — ELEMENT AUDIT
+
+For every element in `<template>`:
+1. Check the Substitution Table (Section 1.2). PrimeVue equivalent exists? → Use it.
+2. No equivalent? → Native element is permitted.
+3. Unsure about v4 name? → Check `src/types/components.d.ts`.
+
+### Step 2 — API VERIFICATION
+
+1. Classify the component by Tier (Section 2.3).
+2. **Tier 1** → Proceed from memory. Basic props (`label`, `icon`, `severity`, `disabled`, `v-model`) are stable.
+3. **Tier 2** → If using more than 3 props or any slot, fetch the docs page.
+4. **Tier 3** → ALWAYS fetch `https://primevue.org/[component]` before writing the first line.
+
+### Step 3 — PT PRESET CHECK
+
+1. Check `src/utils/theme/ptPresets/formControlsPt.ts` and `menuPt.ts`.
+2. Check `src/utils/theme/presetComponents/`.
+3. Global PT exists? → Local `:pt` should ADD, not DUPLICATE.
+4. Need visual customization? → Use `:pt` with UnoCSS semantic tokens (Rule 07).
+5. **NEVER** write `<style scoped>` with `:deep(.p-*)` selectors.
+
+### Step 4 — COMPOUND COMPONENT CHECK
+
+PrimeVue v4 restructured several components from monolithic to compound:
+- `Tabs` → `<Tabs>` + `<TabList>` + `<Tab>` + `<TabPanels>` + `<TabPanel>`
+- `Stepper` → `<Stepper>` + `<StepList>` + `<Step>` + `<StepPanels>` + `<StepPanel>`
+- `Accordion` → `<Accordion>` + `<AccordionPanel>` + `<AccordionHeader>` + `<AccordionContent>`
+
+Verify you are using the COMPOUND structure, not the legacy monolithic API.
+
+### Step 5 — PRE-OUTPUT CHECKLIST
+
+Before finalizing any PrimeVue template output:
+
+- [ ] No native `<button>`, `<input>`, `<select>`, `<textarea>`, `<table>`, `<dialog>`, `<progress>` in business code
+- [ ] No v3 component names (`Dropdown`, `Calendar`, `InputSwitch`, `Sidebar`, `TabView`, `Steps`)
+- [ ] All Tier 3 component APIs verified against PrimeVue v4 docs
+- [ ] No `:deep(.p-*)` in `<style scoped>` outside documented exceptions
+- [ ] Global PT presets checked — no conflict with local `:pt`
+- [ ] Compound component structure used for Tabs / Stepper / Accordion
+- [ ] `v-model` used for two-way binding (not `:value` + `@change` separately)
+- [ ] Complex forms use `<ProForm>` schema engine when appropriate (Rule 02)
+- [ ] Complex tables use `<ProTable>` when appropriate (Rule 02)
+
+</ai_sop>

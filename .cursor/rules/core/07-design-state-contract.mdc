@@ -1,0 +1,202 @@
+---
+description: Enforces the UIDesignState AI Design Contract for every new page. All page-level structural and visual decisions MUST be anchored to this read-only contract before writing any code.
+globs: ["src/views/**/*.{vue,tsx,ts}"]
+alwaysApply: true
+---
+
+# UIDesignState — The AI Design Contract
+
+## What Is This?
+
+`UIDesignState` (defined in `src/types/design-state.ts`) is the **read-only AI design contract** that constrains every structural and visual decision when creating a new page. It is not a runtime type — it is a specification language used during code generation.
+
+> **CRITICAL**: AI MUST NOT extend the `archetype` enum or add new `intent` values. Any change to this interface requires explicit architect approval. The file header states: *"AI 不得自行扩展 archetype 或新增 intent."*
+
+```typescript
+// src/types/design-state.ts — READ-ONLY
+export interface UIDesignState {
+  intent:     'dashboard' | 'data-management' | 'form-workflow' | 'detail-view' | 'settings'
+  context?:   'desktop-first' | 'mobile-first'
+  archetype:  'A1-toolbar-content' | 'A2-sidebar-inspector' | 'A3-stats-grid' | 'A4-table-drawer' | 'A5-form-wizard'
+  density:    'compact' | 'comfortable' | 'spacious'
+  hierarchy:  'data-first' | 'action-first' | 'reading-first'
+  emphasis:   'low' | 'medium' | 'high'
+  ctaPolicy:  'minimal' | 'single-primary' | 'dual-primary'
+}
+```
+
+---
+
+## Dimension 1 — `intent` (Page Business Purpose)
+
+| Value | Description | Default archetype |
+|---|---|---|
+| `'dashboard'` | KPI stats, real-time monitoring, metric overviews | `A3-stats-grid` |
+| `'data-management'` | CRUD tables, sortable/filterable list views | `A4-table-drawer` |
+| `'form-workflow'` | Multi-step forms, wizard flows, data entry | `A5-form-wizard` |
+| `'detail-view'` | Read-heavy profile, inspection, or document pages | `A2-sidebar-inspector` |
+| `'settings'` | Configuration panels, preferences, system setup | `A1-toolbar-content` |
+
+---
+
+## Dimension 2 — `context` (Responsive Bias, optional)
+
+| Value | Implication |
+|---|---|
+| `'desktop-first'` | Optimize layout for ≥ 1280px; mobile is graceful degradation |
+| `'mobile-first'` | Start from 375px viewport; progressive enhancement upward |
+| _(omitted)_ | Inherit from global layout default (`desktop-first` for admin) |
+
+---
+
+## Dimension 3 — `archetype` (Layout Blueprint)
+
+Pick the archetype matching the page's primary task. Do NOT mix archetypes on a single page.
+
+| Archetype | Macro structure | Primary use case |
+|---|---|---|
+| `A1-toolbar-content` | Toolbar strip at top, scrollable content below | Settings, simple dashboards |
+| `A2-sidebar-inspector` | Master list on the left, detail panel on the right | Profile detail, content inspection |
+| `A3-stats-grid` | Stats row at top, chart/widget grid below | KPI dashboards, monitoring boards |
+| `A4-table-drawer` | Full-width table, detail Drawer opens on row click | Data management, CRUD lists |
+| `A5-form-wizard` | Stepper header + contained form area | Multi-step forms, onboarding wizards |
+
+**[EXAMPLE] SKELETON OVERRIDE NOTICE:**
+The `overflow-auto` classes in the examples below are illustrative ONLY. Per L2 Architecture Laws, production business views MUST replace scroll containers with `<CScrollbar class="col-fill">`.
+
+**UnoCSS skeleton for each archetype:**
+
+```html
+<!-- A1: toolbar + scrollable content -->
+<div class="col-fill">
+  <div class="row-between p-sm bg-card border-b-default"><!-- toolbar / actions --></div>
+  <div class="col-fill overflow-auto p-md gap-md"><!-- main content --></div>
+</div>
+
+<!-- A2: master-detail split -->
+<div class="row-start col-fill">
+  <div class="col-fill w-72 border-r-default overflow-auto p-sm"><!-- master list --></div>
+  <div class="col-fill overflow-auto p-md"><!-- inspector / detail panel --></div>
+</div>
+
+<!-- A3: stats row + chart grid -->
+<div class="col-fill gap-md p-md overflow-auto">
+  <div class="row-start gap-md flex-wrap"><!-- stat cards --></div>
+  <div class="grid grid-cols-2 gap-md col-fill"><!-- chart widgets --></div>
+</div>
+
+<!-- A4: toolbar + table (Drawer managed by PrimeVue Drawer component) -->
+<div class="col-fill">
+  <div class="row-between p-sm bg-card border-b-default"><!-- search / filters / CTA --></div>
+  <div class="col-fill overflow-hidden"><!-- <ProTable> fills remaining height --></div>
+</div>
+
+<!-- A5: stepper + form -->
+<div class="col-center col-fill p-md overflow-auto">
+  <div class="row-start gap-sm mb-md w-full max-w-3xl"><!-- step indicators --></div>
+  <div class="bg-card rounded-md p-lg col-fill w-full max-w-3xl"><!-- <ProForm> --></div>
+</div>
+```
+
+---
+
+## Dimension 4 — `density` (Page-Level Spacing Intent)
+
+> **CRITICAL DISTINCTION**: `density` is a **page-level design decision** about information density. It is NOT the user's global `SizeMode` (`compact/comfortable/loose`). These are two independent systems. **NEVER** map `density` values to `useSizeStore().setSize()`.
+
+| Value | Meaning | Recommended spacing token tier |
+|---|---|---|
+| `'compact'` | Dense information; maximize data rows per viewport | `p-xs` / `p-sm` / `gap-xs` / `gap-sm` |
+| `'comfortable'` | Balanced layout (default for most admin pages) | `p-sm` / `p-md` / `gap-sm` / `gap-md` |
+| `'spacious'` | Generous whitespace; reading or marketing focus | `p-md` / `p-lg` / `gap-md` / `gap-lg` |
+
+`'spacious'` uses the `p-md`/`p-lg` token tier — **NOT** `useSizeStore().setSize('loose')`.
+
+---
+
+## Dimension 5 — `hierarchy` (Visual Priority)
+
+| Value | Structural implication |
+|---|---|
+| `'data-first'` | Tables and data visualizations are primary; CTAs/actions are toolbar-bound |
+| `'action-first'` | Primary CTA is visually dominant; data rows support the action decision |
+| `'reading-first'` | Typography legibility and content flow take precedence; wide margins |
+
+---
+
+## Dimension 6 — `emphasis` (Visual Weight)
+
+| Value | Shadow / Color guidance |
+|---|---|
+| `'low'` | `shadow-none` or omit; muted palette (`bg-muted`, `text-muted-foreground`); minimal contrast |
+| `'medium'` | `shadow-sm`; standard semantic tokens (`bg-card`, `text-foreground`); default contrast |
+| `'high'` | `shadow-md` / `shadow-lg` on key cards; accent colors; high-contrast CTA buttons |
+
+---
+
+## Dimension 7 — `ctaPolicy` (Call-to-Action Constraint)
+
+| Value | Rule |
+|---|---|
+| `'minimal'` | Only contextual inline actions (row edit/delete); no standalone primary buttons |
+| `'single-primary'` | Exactly one `severity="primary"` `<Button>` per logical section |
+| `'dual-primary'` | Exactly two co-equal primary actions per section (e.g., "Save Draft" / "Publish") |
+
+---
+
+## Decision Workflow (Ordered)
+
+When creating a new page, resolve all dimensions in this order before writing any markup:
+
+1. **Identify** `intent` from the business requirement description
+2. **Select** `archetype` — use the `intent` default mapping above unless overridden
+3. **Set** `density` based on information load (table rows? reading? forms?)
+4. **Set** `hierarchy` based on whether the user acts on or consumes the data
+5. **Set** `emphasis` based on the visual weight this section should carry in the app
+6. **Set** `ctaPolicy` based on the count of primary actions the page exposes
+
+---
+
+## Example Resolution
+
+> Requirement: "User Management page — list all users, click row to open edit drawer."
+
+```typescript
+const pageState: UIDesignState = {
+  intent:     'data-management',
+  archetype:  'A4-table-drawer',  // table + row-click drawer
+  density:    'compact',          // dense table: show maximum rows
+  hierarchy:  'data-first',       // table is the primary surface
+  emphasis:   'medium',           // standard admin page, no special urgency
+  ctaPolicy:  'single-primary',   // one "New User" button in toolbar
+}
+```
+
+This translates to:
+- Skeleton: `A4-table-drawer` HTML structure (see above)
+- Spacing: prefer `p-sm`, `gap-sm` for toolbar; `ProTable` fills remaining height
+- Shadow: `shadow-sm` on card wrapper; standard `bg-card`
+- Toolbar CTA: exactly one `<Button severity="primary" label="New User" />`
+
+---
+
+## Absolute Prohibitions
+
+```typescript
+// ❌ FORBIDDEN: extending archetype enum
+type ExtendedArchetype = UIDesignState['archetype'] | 'A6-my-custom-layout'
+
+// ❌ FORBIDDEN: adding new intent without architect approval
+// intent: 'reporting'  ← does not exist in UIDesignState
+
+// ❌ FORBIDDEN: mapping density to SizeMode — they are DIFFERENT systems
+if (state.density === 'spacious') {
+  useSizeStore().setSize('loose') // NEVER — density ≠ SizeMode
+}
+
+// ❌ FORBIDDEN: using UIDesignState as a Vue component prop type
+// defineProps<{ design: UIDesignState }>()  ← it is a spec, not runtime data
+
+// ❌ FORBIDDEN: mixing archetype skeletons on one page
+// Do not combine A3 stats grid AND A4 table as co-equal siblings at the root level
+```

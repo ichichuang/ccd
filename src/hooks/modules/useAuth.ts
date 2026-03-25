@@ -5,7 +5,7 @@ import type { LoginParams, LoginResult, UserInfo } from '@/types/dto/auth.dto'
 
 /**
  * 认证 composable
- * - 权限检查：hasRole / hasAuth
+ * - 权限检查：hasRole / hasAuth / hasAllAuths
  * - 登录流程：login（调用 API → 写入 Store）
  * - 恢复登录：restoreLoginFromToken（调用 API → 写入 Store）
  *
@@ -13,7 +13,8 @@ import type { LoginParams, LoginResult, UserInfo } from '@/types/dto/auth.dto'
  */
 export interface UseAuthReturn {
   hasRole: (roles: string[]) => boolean
-  hasAuth: (auth: string) => boolean
+  hasAuth: (auth: string | string[]) => boolean
+  hasAllAuths: (auths: string[]) => boolean
   login: (payload: LoginParams) => Promise<LoginResult>
   restoreLoginFromToken: () => Promise<UserInfo | null>
 }
@@ -27,11 +28,28 @@ export function useAuth(): UseAuthReturn {
     return roles.some(r => userStore.userInfo.roles.includes(r))
   }
 
-  /** 检查用户是否拥有指定操作权限（支持 *:*:* 超级权限） */
-  const hasAuth = (auth: string): boolean => {
+  /**
+   * 检查用户是否拥有指定操作权限（支持 *:*:* 超级权限）
+   * - 传入单个字符串：检查是否拥有该权限
+   * - 传入数组：OR 逻辑，拥有其中任意一个即返回 true
+   */
+  const hasAuth = (auth: string | string[]): boolean => {
     if (!AUTH_ENABLED) return true
     const perms: string[] = userStore.userInfo.permissions
-    return perms.includes('*:*:*') || perms.includes(auth)
+    if (perms.includes('*:*:*')) return true
+    const authList: string[] = Array.isArray(auth) ? auth : [auth]
+    return authList.some((a: string) => perms.includes(a))
+  }
+
+  /**
+   * 检查用户是否拥有所有指定操作权限（AND 逻辑，支持 *:*:* 超级权限）
+   * - 用户必须同时拥有数组中的每一个权限才返回 true
+   */
+  const hasAllAuths = (auths: string[]): boolean => {
+    if (!AUTH_ENABLED) return true
+    const perms: string[] = userStore.userInfo.permissions
+    if (perms.includes('*:*:*')) return true
+    return auths.every((a: string) => perms.includes(a))
   }
 
   /**
@@ -61,5 +79,5 @@ export function useAuth(): UseAuthReturn {
     }
   }
 
-  return { hasRole, hasAuth, login, restoreLoginFromToken }
+  return { hasRole, hasAuth, hasAllAuths, login, restoreLoginFromToken }
 }

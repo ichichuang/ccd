@@ -7,6 +7,7 @@
 
 import {
   MENU_ITEM_BASE,
+  MENU_ITEM_TRANSITION,
   MENU_PANEL_PADDING,
   MENU_ICON_SIZE,
   BREADCRUMB_ICON_SIZE,
@@ -19,12 +20,12 @@ export type MenuVisualContext = 'header' | 'sidebar' | 'breadcrumb'
 
 /** 返回指定上下文的 base 类（使用 MENU_PANEL_PADDING 统一内边距；过渡统一 duration-md + ease-out-expo，与 layout-menu / uno.config 菜单交互语义一致） */
 export function getMenuItemBase(context: MenuVisualContext): string {
-  const base: string = `${MENU_ITEM_BASE} ${MENU_PANEL_PADDING} text-foreground text-current! group flex items-center rounded-md transition-all duration-md ease-out-expo`
+  const base: string = `${MENU_ITEM_BASE} ${MENU_PANEL_PADDING} ${MENU_ITEM_TRANSITION} text-foreground text-current! group rounded-md`
   return context === 'breadcrumb' ? `${base} text-sm` : base
 }
 
 /**
- * 返回激活态类（bg + text），dark 模式强制 text-white 保证对比度。
+ * 返回激活态类（bg + text），统一使用 MENU_ACTIVE_UNIFIED（bg-primary + text-primary-foreground）保证对比度。
  * - 激活项（distance 0）及所有父级（distance 1/2/3+）统一：primary 背景 + primary-foreground 文字/图标
  * - distance < 0 表示未激活，仅用于 getMenuStateClasses 的输入，此时应由调用方根据 inactive/hover 规则自行处理
  */

@@ -35,6 +35,8 @@ const FONT_SIZE_VAR_PREFIX = '--font-size-'
  * 3. 间距阶梯：xs 到 5xl
  * 4. 圆角阶梯：xs 到 5xl
  * 5. 过渡阶梯：xs 到 5xl
+ *
+ * @see sizeMetrics.ts 同源 px 推导（供 TS / ECharts 等使用，与上式一致）
  */
 export function generateSizeVars(preset: SizePreset): Partial<SizeCssVars> {
   const vars: Partial<SizeCssVars> = {

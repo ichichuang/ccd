@@ -145,7 +145,7 @@ defineExpose(exposed)
   >
     <div
       v-if="!hasVisibleFields"
-      class="column-center p-xl text-muted-foreground surface-elevated rounded-md"
+      class="col-center p-xl text-muted-foreground rounded-md"
     >
       <Icons
         name="i-lucide-inbox"
@@ -158,7 +158,7 @@ defineExpose(exposed)
     <div
       v-else
       class="pv-input-fluid"
-      :class="isRootGrid ? 'layout-full grid' : 'layout-stack'"
+      :class="isRootGrid ? 'layout-full grid' : 'col-stretch'"
       :style="
         isRootGrid
           ? {

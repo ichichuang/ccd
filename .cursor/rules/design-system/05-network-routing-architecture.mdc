@@ -1,0 +1,352 @@
+---
+description: CRITICAL — Cross-concern anti-hallucination guardrails for HTTP networking (Alova) and Vue Router layers. Covers error handling responsibility split, DTO type-safety, navigation safety, connection awareness, and file operations.
+globs: ["src/api/**/*.ts", "src/hooks/**/*.ts", "src/views/**/*.vue", "src/router/**/*.ts", "src/stores/**/*.ts", "src/infra/**/*.ts"]
+alwaysApply: true
+---
+
+# The Network & Routing Architecture — Cross-Concern Guardrails
+
+> **Companion document** to:
+> - `04-http-alova.mdc` — HTTP client rules (Alova ONLY, builder patterns, useHttpRequest)
+> - `08-router-rbac.mdc` — Router & RBAC rules (DynamicRouteManager, meta contract, v-auth)
+> - `04-state-boundaries.mdc` — Data flow isolation (api → hooks → stores → views)
+>
+> This document covers the **gaps between those rules**: cross-layer interactions, error responsibility, type-safety anti-patterns, and operational patterns that AI agents commonly hallucinate.
+
+---
+
+## §1 — HTTP ↔ Router Cross-Layer Interaction Contract
+
+HTTP 层和 Router 层通过 **依赖注入 (DI)** 交互，**绝不**通过直接 import。
+
+### The DI Bridge
+
+`src/infra/auth/tokenProvider.ts` 提供两个注入点：
+
+```ts
+// 应用入口 (main.ts / plugin) 注入 —— 唯一合法的接线点
+import { setTokenProvider, setOnUnauthorized } from '@/infra/auth/tokenProvider'
+
+setTokenProvider(() => userStore.token)          // HTTP 层通过 getToken() 读取
+setOnUnauthorized(() => userStore.logout())       // 401 最终回调
+```
+
+### 401 → Logout → Login 完整链路
+
+```
+Interceptor 检测 401
+  → TokenRefreshCoordinator.acquireFreshToken()
+    → 刷新成功 → 自动重发排队请求
+    → 刷新失败 → triggerUnauthorized()
+      → 注入的回调 (userStore.logout()) 清除 token / 重置 stores
+        → 下一次导航时 beforeEach 检测 isLogin === false
+          → redirect → /login?redirect=...
+```
+
+**关键事实**: Pinia store `logout()` 绝不调用 `router.push('/login')`。重定向由 permission guard 自动完成。
+
+### FORBIDDEN — 跨层违规
+
+| FORBIDDEN | WHY | CORRECT |
+|-----------|-----|---------|
+| `import { useUserStore } from '...'` inside `interceptors.ts` | HTTP 层不得依赖 Pinia | `getToken()` / `triggerUnauthorized()` from `@/infra/auth/tokenProvider` |
+| `router.push('/login')` inside interceptor catch block | HTTP 层不得依赖 vue-router | `triggerUnauthorized()` 触发 logout；guard 自动重定向 |
+| `if (res.status === 401) { userStore.logout() }` in business code | 401 由 `TokenRefreshCoordinator` 独占处理 | 什么都不做；拦截器静默处理 |
+| `import router from '@/router'` inside Pinia store | Store 不得依赖 vue-router | 如需路由信息用 `@/infra/router/routeProvider` |
+
+---
+
+## §2 — Error Handling Responsibility Split
+
+### 拦截器已自动处理（DO NOT replicate）
+
+- HTTP status 错误通知 (`window.$message.danger()`)
+- 网络断线 / CORS / 超时错误通知
+- 401 token 刷新与请求重放
+- 业务错误 (`success: false`) → 抛出 `HttpRequestError`
+- 响应数据解包 (`{ success, data }` → return `data`)
+- 响应解密 (`isSafeStorage`)
+
+### 业务代码应处理的
+
+- 领域特定错误恢复（如 409 Conflict → 显示冲突解决对话框）
+- 特定 `error.type` 的自定义 UI
+- 服务端表单校验错误的回显
+- 特定业务失败后的重定向逻辑
+
+### FORBIDDEN — "Double-Toast" 反模式
+
+这是 AI 最常见的幻觉：在拦截器已弹出错误通知后，业务代码再次弹出。
+
+```ts
+// ❌ FORBIDDEN: 重复弹 toast —— 拦截器已经弹过了
+const { error, send } = useHttpRequest(...)
+watch(error, (e) => {
+  if (e) {
+    window.$toast.error(e.message)  // 冗余！拦截器已调用 $message.danger()
+  }
+})
+
+// ❌ FORBIDDEN: try-catch 仅为弹 toast
+try {
+  await send()
+} catch (e) {
+  window.$message.danger('请求失败')  // 冗余！拦截器已通知用户
+}
+
+// ✅ CORRECT: 仅处理领域特定逻辑，不重复通知
+const { error, data, send } = useHttpRequest(...)
+watch(error, (e) => {
+  if (e && isHttpRequestError(e) && e.type === ErrorType.CLIENT && e.status === 409) {
+    showConflictResolutionDialog()  // 领域特定：数据被其他用户修改
+  }
+})
+```
+
+### `globalError: 'silent'` — 静默模式
+
+在 `RequestConfig` 中设置 `globalError: 'silent'` 可抑制拦截器的全局错误通知。
+
+```ts
+// ✅ 后台健康检查 —— 失败不应打扰用户
+const result = await get<HealthStatus>('/api/health', { globalError: 'silent' })
+
+// ✅ 探测性 HEAD 请求 —— 404 是预期结果，成功返回 void
+await head('/api/resource/123', { globalError: 'silent' })  // throws on 4xx/5xx
+```
+
+**适用场景**: 后台轮询、健康检查、"检查是否存在"、预取请求 —— 任何「失败是预期结果」的请求。
+
+---
+
+## §3 — DTO Type-Safety Anti-Patterns
+
+### FORBIDDEN vs. CORRECT
+
+| FORBIDDEN | CORRECT |
+|-----------|---------|
+| `await get('/api/users')` (无泛型) | `await get<SystemUserListRes>('/api/system/user/list', ...)` |
+| `const data = res as any` | 定义具体 DTO：`interface SystemUserListRes { total: number; records: SystemUserDTO[] }` |
+| `interface Response { data: any }` | `interface SystemUserListRes { total: number; records: SystemUserDTO[] }` |
+| `useHttpRequest(...)` 省略泛型 | `useHttpRequest<SystemUserListRes>(...)` 显式声明 |
+| `ApiResponse<any>` | `ApiResponse<SystemUserListRes>` 使用具体类型 |
+| DTO 定义在 `.vue` 组件或 Pinia store 中 | DTO 放在 `src/types/dto/*.dto.ts` 或 `src/api/<module>/<feature>.ts` |
+
+### DTO 命名规范
+
+| 类型 | 命名模式 | 示例 |
+|------|----------|------|
+| 请求参数 | `<Domain><Feature>Req` | `SystemUserListReq` |
+| 响应体 | `<Domain><Feature>Res` | `SystemUserListRes` |
+| 数据记录 | `<Domain><Feature>DTO` | `SystemUserDTO` |
+
+### DTO 位置规则
+
+- **共享/复杂 DTO** → `src/types/dto/<module>.dto.ts`
+- **简单/局部 DTO** → 内联于 `src/api/<module>/<feature>.ts`
+- **FORBIDDEN**: DTO 定义在组件、视图或 Store 中
+
+---
+
+## §4 — Route View Lazy Loading Enforcement
+
+所有视图组件路由 **必须** 使用动态导入。
+
+```ts
+// ❌ FORBIDDEN: 同步导入视图组件
+import UserManagement from '@/views/system/user/index.vue'
+const routes = [{ path: '/system/user', component: UserManagement }]
+
+// ❌ FORBIDDEN: 缺少箭头函数包裹
+const routes = [{ path: '/system/user', component: import('@/views/system/user/index.vue') }]
+
+// ✅ REQUIRED: 箭头函数包裹动态导入
+const routes = [{
+  path: '/system/user',
+  component: () => import('@/views/system/user/index.vue'),
+}]
+```
+
+**后端路由**: `loadView()` resolver (`src/router/utils/resolver.ts`) 已处理字符串→异步组件的转换。AI 禁止绕过此机制自行拼接 import。
+
+**例外**: `src/layouts/` 下的布局包裹组件可以同步导入（因为它们总是必需的）。
+
+---
+
+## §5 — Navigation Safety: Names over Paths
+
+### FORBIDDEN — 硬编码路径和直接 router 调用
+
+```ts
+// ❌ FORBIDDEN: 业务代码中硬编码路径
+router.push('/system/user/detail/123')
+router.push({ path: '/system/user' })
+
+// ❌ FORBIDDEN: 直接使用 router.push()（绕过导航助手）
+import { useRouter } from 'vue-router'
+const router = useRouter()
+router.push({ name: 'SystemUser' })
+```
+
+### REQUIRED — 标准导航助手
+
+```ts
+import { goToRoute, goBack, replaceRoute, refreshCurrentRoute } from '@/router/utils/helper'
+
+goToRoute('SystemUser')                              // 按 name 导航
+goToRoute('SystemUserDetail', { id: userId })        // 带 query 参数: ?id=xxx
+goToRoute('DashboardRatio', undefined, true)          // 强制新窗口
+goBack()                                              // 智能返回
+replaceRoute('/login')                                // 仅限系统级重定向
+refreshCurrentRoute()                                 // 刷新当前路由
+```
+
+**`replaceRoute` 使用路径的唯一合法场景**: 系统级重定向（login / error 页面），路径应为 `src/constants/router.ts` 中的常量。业务导航 **必须** 使用 `goToRoute(name)`。
+
+**路由名自动生成规则** (`generateNameByPath`): `/system/user` → `SystemUser`，`/system/user/:id` → `SystemUserId`。优先在路由定义中显式设置 `name`。
+
+---
+
+## §6 — Connection State Awareness
+
+使用 `ConnectionManager` (`src/utils/http/connection.ts`) 提供的单例 API 感知网络状态。
+
+```ts
+import { getConnectionState, addConnectionListener } from '@/utils/http/connection'
+
+// 在 composable 或 setup 中：
+const connectionState: Ref<ConnectionState> = ref(getConnectionState())
+const removeListener = addConnectionListener((state: ConnectionState) => {
+  connectionState.value = state
+})
+onUnmounted(removeListener)
+```
+
+### FORBIDDEN
+
+```ts
+// ❌ FORBIDDEN: 手动监听 online/offline 事件
+window.addEventListener('online', handleOnline)
+
+// ❌ FORBIDDEN: 散落的 navigator.onLine 检查
+if (!navigator.onLine) { showOfflineMessage() }
+```
+
+**CORRECT**: 统一通过 `getConnectionState().isConnected` 和 `addConnectionListener()` 管理。
+
+---
+
+## §7 — Request Config Anti-Patterns
+
+| 配置项 | 默认值 | 常见错误 | 正确用法 |
+|--------|--------|----------|----------|
+| `enableCache` | `true` (GET) | 对 mutation 结果启用缓存 | POST/PUT/DELETE 显式 `enableCache: false` |
+| `cacheTTL` | 5 min | 对高频变化数据设置过长 TTL | 按数据时效性设置 |
+| `deduplicate` | `true` | 对文件上传启用去重 | 上传和 mutation 设置 `deduplicate: false` |
+| `retry` | `{ retries: 0 }` | 对非幂等请求设置重试 | **仅** 重试幂等请求 (GET/HEAD) |
+| `cancelStrategy` | `'none'` | 搜索即输入场景不取消旧请求 | `cancelStrategy: 'cancelPrevious'` |
+
+```ts
+// ✅ 搜索即输入 — 取消前一个请求
+const searchResults = await get<SearchRes>('/api/search', {
+  params: { q: keyword },
+  cancelStrategy: 'cancelPrevious',
+  enableCache: false,
+})
+
+// ✅ 幂等读请求的重试
+const data = await get<DashboardRes>('/api/dashboard/stats', {
+  retry: { retries: 2, retryDelay: 1000 },
+})
+
+// ❌ FORBIDDEN: 非幂等 mutation 重试 —— 可能创建重复数据
+const result = await post<OrderRes>('/api/orders', orderData, {
+  retry: { retries: 3, retryDelay: 500 },  // DANGER: 可能重复下单
+})
+```
+
+---
+
+## §8 — File Upload/Download Patterns
+
+### REQUIRED — 使用标准方法
+
+```ts
+import { uploadFile, uploadFiles, downloadFile } from '@/utils/http/methods'
+
+// 单文件上传
+const response = await uploadFile<UploadRes>('/api/upload', file)
+
+// 多文件上传
+const response = await uploadFiles<UploadRes>('/api/upload/batch', fileList)
+
+// 文件下载（自动触发浏览器保存）
+await downloadFile('/api/export/report', 'monthly-report.xlsx')
+```
+
+### FORBIDDEN
+
+```ts
+// ❌ FORBIDDEN: 手动构造 FormData
+const formData = new FormData()
+formData.append('file', file)
+await post('/api/upload', formData)
+
+// ❌ FORBIDDEN: 手动 blob 下载
+const res = await fetch('/api/export')
+const blob = await res.blob()
+
+// ❌ FORBIDDEN: 手动设置 Content-Type（浏览器必须自行设置 boundary）
+await post('/api/upload', formData, {
+  headers: { 'Content-Type': 'multipart/form-data' },
+})
+```
+
+---
+
+## §9 — Consolidated Anti-Pattern Quick-Reference Table
+
+> 合并本文件与 `04-http-alova` / `08-router-rbac` / `04-state-boundaries` 的全部网络/路由反模式。AI 单次扫描即可获得完整禁令列表。
+
+| # | Category | FORBIDDEN | CORRECT | Source |
+|---|----------|-----------|---------|--------|
+| 1 | HTTP Client | `axios` / `fetch` / `XMLHttpRequest` | `@/utils/http/methods` 或 `useHttpRequest` | `04-http-alova` |
+| 2 | HTTP Client | 组件中直接 `alovaInstance.Get()` | `useHttpRequest(() => buildXxxMethod(...))` | `04-http-alova` R3 |
+| 3 | Error UI | `try { await send() } catch { $toast.error(...) }` | 拦截器已处理；仅 react `error.type` 特定逻辑 | §2 |
+| 4 | Error UI | `watch(error, e => $message.danger(e.message))` | 拦截器已弹通知；仅处理领域错误 | §2 |
+| 5 | 401 Auth | `if (res.status === 401) { logout() }` | `TokenRefreshCoordinator` 自动处理 | `04-http-alova` R4 |
+| 6 | Auth DI | HTTP 层 `import { useUserStore }` | `getToken()` / `triggerUnauthorized()` from tokenProvider | §1 |
+| 7 | DTO Typing | `get('/api/users')` 无泛型 | `get<UserListRes>('/api/users')` | §3 |
+| 8 | DTO Typing | `interface Res { data: any }` | 命名 DTO + 具体类型 | §3 |
+| 9 | DTO Location | DTO 定义在组件或 Store 中 | `src/types/dto/` 或 `src/api/<module>/` | §3 |
+| 10 | Route Import | `import View from '@/views/...'` 同步 | `() => import('@/views/...')` 懒加载 | §4 |
+| 11 | Navigation | `router.push({ path: '/system/user' })` | `goToRoute('SystemUser')` | `08-router-rbac` R3 |
+| 12 | Navigation | `router.push('/dashboard')` 硬编码 | `goToRoute('Dashboard')` 按 name | §5 |
+| 13 | Route Reg | `router.addRoute()` / `router.removeRoute()` | `DynamicRouteManager.addRoute()` | `08-router-rbac` R1 |
+| 14 | Store↔Router | Pinia store 中 `import router from '@/router'` | `@/infra/router/routeProvider` 只读路由信息 | `04-state-boundaries` |
+| 15 | Store↔API | Pinia action 中 `requestXxx()` | composable 编排：`api → hook → store → view` | `04-state-boundaries` |
+| 16 | Connection | `window.addEventListener('online', ...)` | `addConnectionListener()` from connection.ts | §6 |
+| 17 | Connection | `if (!navigator.onLine)` 散落检查 | `getConnectionState().isConnected` | §6 |
+| 18 | Upload | 手动 `new FormData()` + `post()` | `uploadFile()` / `uploadFiles()` | §8 |
+| 19 | Download | `fetch().then(r => r.blob())` | `downloadFile()` | §8 |
+| 20 | Retry | 非幂等 POST 设置 `retry.retries > 0` | 仅重试幂等请求 (GET/HEAD) | §7 |
+| 21 | Silent Error | 后台轮询不使用 `globalError: 'silent'` | 后台/探测请求设置 `globalError: 'silent'` | §2 |
+
+---
+
+## §10 — Pre-Output Self-Verification Checklist
+
+在生成任何 HTTP 或 Router 代码之前，心理执行以下检查：
+
+- [ ] No `axios` / `fetch` / `XMLHttpRequest` — 仅 `@/utils/http/methods` 或 `useHttpRequest`
+- [ ] No redundant toast/message for errors — 拦截器已处理全局错误通知
+- [ ] No 401/token handling in business code — `TokenRefreshCoordinator` 独占处理
+- [ ] No `any` on API response types — 所有响应用 DTO 完整定义类型
+- [ ] No synchronous view imports in routes — 全部使用 `() => import(...)`
+- [ ] No hardcoded path strings — 使用路由 name + `goToRoute()`
+- [ ] No direct `router.addRoute()` — 使用 `DynamicRouteManager`
+- [ ] No Pinia store importing `vue-router` or `src/api/`
+- [ ] File uploads use `uploadFile()` / `uploadFiles()`
+- [ ] File downloads use `downloadFile()`
+- [ ] Background/polling requests use `globalError: 'silent'`
+- [ ] Non-idempotent requests (POST/PUT/DELETE) have `retry.retries = 0`

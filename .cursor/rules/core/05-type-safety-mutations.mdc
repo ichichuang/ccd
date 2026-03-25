@@ -1,0 +1,124 @@
+---
+description: Bans type assertions and in-place mutations in business logic. Mandates typeCasters.ts for casting and lodashes.ts for deep operations. Applies codebase-wide.
+globs: ["src/**/*.ts", "src/**/*.vue", "src/**/*.tsx"]
+---
+
+# Type Safety & Immutability Law
+
+## TYPE ASSERTION BAN — `as Type` IS FORBIDDEN IN BUSINESS LOGIC
+
+Type assertions in business code are invisible to reviewers and break silently during refactors. All casts must go through auditable, greppable wrappers.
+
+**[LAW] Type Assertion (`as`) Boundary:**
+- **FORBIDDEN:** Domain/business data casting (e.g., `item as UserInfo`). Use typeCasters.
+- **ALLOWED:** DOM event narrowing where no safer API exists (e.g., `e.target as HTMLInputElement`).
+
+| FORBIDDEN | REQUIRED REPLACEMENT | Location |
+|-----------|---------------------|----------|
+| `value as Type` | `castValue<Type>(value)` | `@/utils/typeCasters` |
+| `col as unknown as ColumnType` | `castColumn<ColumnType>(col)` | `@/utils/typeCasters` |
+| `arr as unknown as U[]` | `castArray<T, U>(arr)` | `@/utils/typeCasters` |
+| `obj as Record<string, unknown>` | `castRecord(obj)` | `@/utils/typeCasters` |
+| `anything as any` | Refactor — always wrong | — |
+
+❌ FORBIDDEN:
+```typescript
+const col = rawColumn as ColumnType          // invisible to reviewers, breaks silently
+const record = data as Record<string, any>   // hides type errors, pollutes inferred types
+```
+
+✅ REQUIRED:
+```typescript
+import { castColumn, castRecord } from '@/utils/typeCasters'
+
+const col = castColumn<ColumnType>(rawColumn)  // greppable, auditable, centralised
+const record = castRecord(data)                // reviewable in one file
+```
+
+**Files where `as` IS permitted (limited exceptions):**
+- `src/adapters/**`
+- `src/utils/http/interceptors.ts`
+- `src/utils/safeStorage/**`
+- `src/utils/date/**`
+- `src/components/UseEcharts/**`
+- `src/hooks/modules/useChartTheme/**`
+
+## `any` IS BANNED IN BUSINESS LOGIC
+
+TypeScript `any` is forbidden in all of:
+- `src/views/**`
+- `src/components/**` (except `UseEcharts/`)
+- `src/stores/**`
+- `src/hooks/**` (except `useChartTheme/`)
+- `src/api/**`
+
+**Generic types must be preserved through all layers without degradation.**
+`ApiResponse<UserInfo>` → `useHttpRequest<UserInfo>` → `data: Ref<UserInfo | undefined>`
+Generics MUST NOT degrade to `unknown` or `any` across layer boundaries.
+
+## IMMUTABILITY LAW — NEVER MUTATE SHARED OBJECTS IN PLACE
+
+Direct mutation of shared objects, reactive state, or function arguments is **FORBIDDEN**.
+
+| FORBIDDEN | REQUIRED REPLACEMENT | Location |
+|-----------|---------------------|----------|
+| `JSON.parse(JSON.stringify(x))` | `deepClone(x)` | `@/utils/lodashes` |
+| `Object.assign(target, source)` on reactive | `deepMerge(target, source)` or spread | `@/utils/lodashes` |
+| `array.sort()` (mutates in place) | `[...arr].sort()` or `deepClone(arr).sort()` | Pure |
+| `array.splice(i, 1)` | `arr.filter((_, idx) => idx !== i)` | Pure |
+| `route.children = []` | `{ ...route, children: [] }` | Spread |
+| `lodash.cloneDeep(x)` direct import | `deepClone(x)` | `@/utils/lodashes` |
+| `lodash.isEqual(a, b)` direct import | `deepEqual(a, b)` | `@/utils/lodashes` |
+
+❌ FORBIDDEN:
+```typescript
+const sorted = data.sort((a, b) => a.id - b.id)      // mutates original array!
+const copy = JSON.parse(JSON.stringify(complexObj))   // drops Dates, undefined, circular refs
+Object.assign(reactiveObj, newProps)                  // bypasses Vue reactivity tracking
+```
+
+✅ REQUIRED:
+```typescript
+import { deepClone, deepMerge } from '@/utils/lodashes'
+
+const sorted = [...data].sort((a, b) => a.id - b.id)  // pure — original untouched
+const copy = deepClone(complexObj)                     // typed, handles edge cases
+const merged = deepMerge({}, reactiveObj, newProps)    // non-destructive, reactive-safe
+```
+
+## DTO TRIPLE PATTERN — MANDATORY AT EVERY API BOUNDARY
+
+Every `src/api/<module>/<feature>.ts` file MUST export three types. No exceptions.
+
+```typescript
+export interface DomainFeatureReq { ... }  // Request payload shape sent to the server
+export interface DomainFeatureRes { ... }  // Raw response data shape from the server
+export interface DomainFeatureDTO { ... }  // Transformed/enriched shape used by the app
+```
+
+- All API responses are wrapped in `ApiResponse<T>` — `{ code, message, data: T }`
+- The Alova interceptor unwraps `data` — composables receive `T` directly, never the envelope
+- `any` is FORBIDDEN in all DTO definitions
+
+## TEMPLATE TYPE SAFETY — NO ASSERTIONS IN `<template>`
+
+Type assertions are **FORBIDDEN** inside `<template>` blocks. The Vue compiler does not enforce TypeScript in templates; errors are silent.
+
+❌ FORBIDDEN:
+```vue
+<template>
+  <span>{{ (item as UserDTO).name }}</span>
+</template>
+```
+
+✅ REQUIRED — narrow types in `<script setup>` via computed:
+```vue
+<script setup lang="ts">
+import { castValue } from '@/utils/typeCasters'
+const userName = computed(() => castValue<UserDTO>(item).name)
+</script>
+
+<template>
+  <span>{{ userName }}</span>
+</template>
+```

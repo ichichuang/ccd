@@ -11,7 +11,7 @@
 export const DEFAULT_LAYOUT_SETTING: LayoutSetting = {
   preferredMode: 'vertical' as AdminLayoutMode,
   sidebarCollapse: false,
-  sidebarUniqueOpened: true,
+  sidebarUniqueOpened: false,
   sidebarFixed: true,
   headerFixed: true,
   enableTransition: true,

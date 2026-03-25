@@ -1,5 +1,6 @@
 import Icons from '@/components/Icons/Icons.vue'
 import type { ProTableColumn, ColumnRenderParams } from '@/components/ProTable'
+import DateUtils from '@/utils/date'
 
 export interface HeightModeRow extends Record<string, unknown> {
   id: number
@@ -31,7 +32,7 @@ export const heightModeColumns: ProTableColumn<HeightModeRow>[] = [
     field: 'title',
     minWidth: '200px',
     render: ({ row }: ColumnRenderParams<HeightModeRow>) => (
-      <div class="row-y-center gap-sm">
+      <div class="flex flex-row items-center gap-sm">
         <Icons
           name="i-lucide-activity"
           class="text-primary text-sm"
@@ -73,6 +74,6 @@ export function makeHeightMockData(count: number): HeightModeRow[] {
     title: `探测器数据流 #${i + 1001}`,
     category: i % 2 === 0 ? '系统' : '网络',
     status: i % 3 === 0 ? 'active' : i % 3 === 1 ? 'inactive' : 'pending',
-    updatedAt: new Date().toISOString().split('T')[0],
+    updatedAt: DateUtils.format(DateUtils.now(), 'YYYY-MM-DD'),
   }))
 }

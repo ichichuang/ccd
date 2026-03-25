@@ -30,7 +30,7 @@ withDefaults(
     mode: AdminLayoutMode
     showHeader: boolean
     showLogo: boolean
-    /** 是否显示 Logo 文字（品牌名+副标题），由 LayoutAdmin 按设备与断点计算 */
+    /** 是否显示 Logo 文字区域（副标题在 AdminHeader 内用 max-xl:hidden 控制） */
     showLogoText?: boolean
     showMenu: boolean
     /** 顶栏菜单是否显示（horizontal/mix 且非 Drawer 模式） */
@@ -60,6 +60,7 @@ const layoutStore = useLayoutStore()
 const { isFullscreen, toggle: toggleFullscreen } = useFullscreen()
 
 const userRoles = computed(() => userStore.getUserRoles || [])
+const userPermissions = computed(() => userStore.getUserPermissions || [])
 const isLogin = computed(() => userStore.getIsLogin)
 const showUserEntry = computed(() => AUTH_ENABLED && isLogin.value)
 
@@ -70,7 +71,7 @@ const topContentRef = ref<HTMLElement | null>(null)
 const { width: topContentWidth } = useAppElementSize(topContentRef)
 const menuModel = computed(() => {
   const tree = getAdminMenuTree()
-  const authorizedTree = getAuthorizedMenuTree(userRoles.value, tree)
+  const authorizedTree = getAuthorizedMenuTree(userRoles.value, userPermissions.value, tree)
   return authorizedTree.map(item => menuItemToPrimeModel(item, t))
 })
 
@@ -225,7 +226,7 @@ const renderRootItem = (item: PrimeMenuModelItem) => {
   <header
     v-if="showHeader"
     :class="[
-      'w-full h-headerHeight row-between px-md py-sm transition-all duration-md gap-md select-none',
+      'w-full h-headerHeight row-between py-sm transition-all duration-md gap-md select-none',
     ]"
     @dragstart.prevent
   >
@@ -235,7 +236,7 @@ const renderRootItem = (item: PrimeMenuModelItem) => {
       <button
         v-if="showDrawerTrigger"
         type="button"
-        class="cursor-pointer border-none outline-none duration-sm hover:scale-110 active:scale-100 shadow-sm hover:shadow-md dark:hover:shadow-lg hover:text-primary p-sm center rounded-sm bg-sidebar"
+        class="cursor-pointer border-none outline-none p-xs sm:p-sm center"
         @click="layoutStore.toggleMobileDrawer()"
       >
         <Icons
@@ -246,35 +247,37 @@ const renderRootItem = (item: PrimeMenuModelItem) => {
       <a
         v-if="showLogo"
         href="/"
-        class="h-full row-y-center gap-sm cursor-pointer behavior-hover-transition py-xs hover:text-primary! bg-transparent border-none p-0 outline-none interactive-focus-ring"
+        class="h-full center gap-xs md:gap-sm cursor-pointer"
         @click.prevent="goToRoute('/')"
       >
-        <div class="h-full size-1-1 rounded-full center">
+        <div class="h-full size-1-1 rounded-full center shrink-0">
           <img
-            class="layout-full!"
+            class="layout-full"
             :src="logoSrc"
             draggable="false"
           />
         </div>
         <div
-          v-show="showLogoText"
-          class="h-full column justify-between"
+          v-if="showLogoText"
+          class="h-full col-stretch relative"
         >
-          <span class="text-xl font-bold tracking-tight duration-md">
+          <span class="text-xl font-bold">
             {{ brand.displayName }}
           </span>
-          <span class="text-xs text-muted-foreground font-medium">{{ brand.subtitle }}</span>
+          <span class="text-xs text-muted-foreground font-medium absolute bottom-0">
+            {{ brand.subtitle }}
+          </span>
         </div>
       </a>
     </div>
 
-    <!-- Middle: Top Menu — visibility 100% from v-if (no CSS hidden/lg:flex etc.) -->
+    <!-- Middle: Top Menu — 显隐由 LayoutAdmin 的 showTopMenuEffective 控制 -->
     <div
       ref="topContentRef"
       class="flex-1 h-full min-w-0 overflow-hidden"
     >
       <div
-        v-if="topContentWidth > 0"
+        v-if="showTopMenuEffective"
         :key="`${topContentWidth}-${windowWidth}`"
         class="layout-full"
         :style="{ width: `${topContentWidth}px` }"
@@ -293,7 +296,7 @@ const renderRootItem = (item: PrimeMenuModelItem) => {
           <div class="layout-full row-between gap-md">
             <nav
               v-if="showTopMenuEffective"
-              class="min-w-0 row-y-center"
+              class="min-w-0 flex items-center"
               role="menubar"
             >
               <component
@@ -308,12 +311,12 @@ const renderRootItem = (item: PrimeMenuModelItem) => {
       </div>
     </div>
 
-    <!-- Right: Actions (no responsive display classes; visibility from v-if only) -->
+    <!-- Right: Actions (fullscreen max-lg:hidden, theme max-md:hidden for responsive graceful degradation) -->
     <div class="h-full center gap-sm">
       <button
         v-if="showSidebarToggle"
         type="button"
-        class="cursor-pointer border-none outline-none duration-sm hover:scale-110 active:scale-100 shadow-sm hover:shadow-md dark:hover:shadow-lg hover:text-primary p-sm center rounded-sm bg-sidebar"
+        class="cursor-pointer material-elevated border-none outline-none duration-sm center ring-1 ring-border p-sm"
         @click="emit('toggleCollapse', $event)"
       >
         <Icons
@@ -325,7 +328,7 @@ const renderRootItem = (item: PrimeMenuModelItem) => {
       <button
         v-if="deviceStore.type === 'PC'"
         type="button"
-        class="cursor-pointer border-none outline-none duration-sm hover:scale-110 active:scale-100 shadow-sm hover:shadow-md dark:hover:shadow-lg hover:text-primary p-sm center rounded-sm bg-sidebar"
+        class="max-lg:hidden cursor-pointer material-elevated border-none outline-none duration-sm center ring-1 ring-border p-sm"
         @click="toggleFullscreen()"
       >
         <Icons
@@ -340,7 +343,7 @@ const renderRootItem = (item: PrimeMenuModelItem) => {
       </button>
       <button
         type="button"
-        class="cursor-pointer border-none outline-none duration-sm hover:scale-110 active:scale-100 shadow-sm hover:shadow-md dark:hover:shadow-lg hover:text-primary p-sm center rounded-sm bg-sidebar"
+        class="max-md:hidden cursor-pointer material-elevated border-none outline-none duration-sm center ring-1 ring-border p-sm"
         @click="emit('toggleTheme', $event)"
       >
         <Icons

@@ -1,4 +1,4 @@
-import { SIZE_SCALE_KEYS, type SizeScaleKey } from '@/constants/sizeScale'
+import { SIZE_SCALE_KEYS, type SizeScaleKey } from '../../constants/sizeScale'
 
 const VALID_SIZE_SET: ReadonlySet<string> = new Set<string>(SIZE_SCALE_KEYS)
 

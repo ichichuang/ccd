@@ -31,6 +31,25 @@ const MODULE_DEPENDENCIES: Partial<Record<LayoutModuleVisibilityKey, LayoutModul
     showBreadcrumb: ['showBreadcrumbIcon'],
   }
 
+const MODULE_PARENT_REQUIREMENTS: Partial<
+  Record<LayoutModuleVisibilityKey, LayoutModuleVisibilityKey>
+> = {
+  showLogo: 'showHeader',
+  showMenu: 'showHeader',
+  showBreadcrumbIcon: 'showBreadcrumb',
+}
+
+function enforceParentRequirements(visibility: LayoutVisibilitySetting): LayoutVisibilitySetting {
+  const next: LayoutVisibilitySetting = { ...visibility }
+  ;(Object.keys(MODULE_PARENT_REQUIREMENTS) as LayoutModuleVisibilityKey[]).forEach(key => {
+    const parentKey = MODULE_PARENT_REQUIREMENTS[key]
+    if (parentKey && !next[parentKey]) {
+      next[key] = false
+    }
+  })
+  return next
+}
+
 /**
  * 各布局模式下“不会被渲染”的模块开关，统一在 Store 层做兜底约束，
  * 避免出现“状态被打开但当前模式永远不渲染”的错配体验。
@@ -45,7 +64,7 @@ function enforceModeVisibilityConstraints(
   mode: AdminLayoutMode,
   visibility: LayoutVisibilitySetting
 ): LayoutVisibilitySetting {
-  const next: LayoutVisibilitySetting = { ...visibility }
+  const next: LayoutVisibilitySetting = enforceParentRequirements(visibility)
   MODE_HIDDEN_MODULES[mode].forEach(key => {
     next[key] = false
   })
@@ -224,6 +243,10 @@ export const useLayoutStore = defineStore('layout', {
      */
     setModuleVisible(key: LayoutModuleVisibilityKey, visible: boolean, mode?: AdminLayoutMode) {
       const targetMode = mode ?? this.preferredMode
+      const parentKey = MODULE_PARENT_REQUIREMENTS[key]
+      if (visible && parentKey && !this.visibilitySettings[targetMode][parentKey]) {
+        this.visibilitySettings[targetMode][parentKey] = true
+      }
       if (MODE_HIDDEN_MODULES[targetMode].includes(key)) {
         this.visibilitySettings[targetMode][key] = false
         this.markUserAdjusted()
@@ -421,26 +444,12 @@ export const useLayoutStore = defineStore('layout', {
       if (orientation === 'vertical') return
     },
     /**
-     * [NEW] PC/平板端按断点适配：仅当「展示侧边栏」时，根据断点动态设置展开/收缩；
-     * 不修改 visibilitySettings，完全遵循 SettingsContent 的布局模块显隐配置。
+     * [NEW] PC/平板端按断点适配（弃用写入）：
+     * 响应式阶段不再覆写持久化 sidebarCollapse，避免窗口尺寸变化破坏用户偏好。
      *
-     * @param breakpoint - 当前断点 (xs~5xl)
-     * @param force - 是否强制应用（忽略 userAdjusted）
+     * @deprecated 请在展示层使用派生态控制侧栏呈现，不要在 Store 中改写 sidebarCollapse。
      */
-    adaptPcByBreakpoint(breakpoint: BreakpointKey, force = false) {
-      if (!this.showSidebar) return
-      const collapseBreakpoints: BreakpointKey[] = ['xs', 'sm', 'md', 'lg']
-      const expandBreakpoints: BreakpointKey[] = ['xl', '2xl', '3xl', '4xl', '5xl']
-      if (collapseBreakpoints.includes(breakpoint)) {
-        // Narrow: ALWAYS collapse sidebar regardless of userAdjusted
-        this.updateSetting('sidebarCollapse', true)
-      } else if (expandBreakpoints.includes(breakpoint)) {
-        // Wide: uncollapse only when not user-adjusted (or force)
-        if (!this.userAdjusted || force) {
-          this.updateSetting('sidebarCollapse', false)
-        }
-      }
-    },
+    adaptPcByBreakpoint(_breakpoint: BreakpointKey, _force = false) {},
     /**
      * [NEW] 标记为用户手动调整（在用户手动操作时调用）
      */

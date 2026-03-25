@@ -1,0 +1,342 @@
+---
+description: Vue 3 Composition API Architecture — script setup macro discipline, reactivity primitives, typed component contracts, composable design axioms, performance patterns.
+globs: ['src/**/*.vue', 'src/**/*.ts', 'src/**/*.tsx']
+alwaysApply: true
+---
+
+# Rule 04 — Vue 3 + TypeScript Architecture
+
+> Governs component **logic & structure** ONLY. All visual/CSS output MUST obey `00-anti-hallucination-guardrails.mdc`.
+
+---
+
+## 1. Script Setup Macro Ordering (REQUIRED)
+
+Fixed declaration order within `<script setup lang="ts">`:
+
+```
+1. defineOptions()        — component name, inheritAttrs
+2. defineProps<T>()       — input contract
+3. defineEmits<T>()       — output contract
+4. defineModel<T>()       — v-model bindings (if used)
+5. defineSlots<T>()       — slot shape contract
+6. --- business logic --- — ref, reactive, computed, watch, onMounted, functions...
+7. defineExpose()         — imperative API (LAST, sparingly)
+```
+
+**Rules:**
+- FORBIDDEN: `defineExpose` before business logic — it is always the LAST declaration
+- FORBIDDEN: Business logic (ref, computed, watch) interleaved between macro declarations
+- `defineOptions` MUST set `name` matching the PascalCase component filename
+
+```vue
+<!-- CORRECT -->
+<script setup lang="ts">
+defineOptions({ name: 'UserProfile' })
+
+const props = defineProps<UserProfileProps>()
+const emit = defineEmits<{ update: [user: User] }>()
+
+// --- business logic starts here ---
+const fullName = computed(() => `${props.firstName} ${props.lastName}`)
+</script>
+```
+
+---
+
+## 2. Reactivity Primitives Decision Tree
+
+| Scenario | Use | Why |
+|----------|-----|-----|
+| Primitive (string, number, boolean) | `ref()` | `.value` is explicit, avoids accidental unwrap |
+| Replaceable object (DTO, API response) | `ref<T>()` | Needs full reassignment: `data.value = newDTO` |
+| Object never reassigned as whole | `reactive<T>()` | Avoids `.value` noise on deep property access |
+| Large non-reactive data (DOM, lib instance) | `shallowRef<T>()` | Prevents deep proxy overhead |
+| Object that must NEVER become reactive | `markRaw()` | Blocks Vue proxy wrapping (class instances, external lib objects) |
+| Template ref | `ref<HTMLElement \| null>(null)` or `useTemplateRef()` | Must be typed + nullable |
+
+### Absolute Rules
+
+- **FORBIDDEN**: Destructuring a `reactive()` object — breaks reactivity:
+  ```ts
+  // FORBIDDEN — x and y lose reactivity
+  const { x, y } = reactive({ x: 1, y: 2 })
+
+  // CORRECT — use toRefs or access directly
+  const state = reactive({ x: 1, y: 2 })
+  const { x, y } = toRefs(state)
+  ```
+
+- **REQUIRED**: Explicit generics ONLY when the initializer cannot infer the correct type (null, empty array, complex object). For primitives with initial values, prefer TS implicit inference:
+  ```ts
+  // Inference is fine for primitives
+  const loading = ref(false)           // Ref<boolean> ✅
+  const name = ref('')                 // Ref<string> ✅
+  const count = ref(0)                 // Ref<number> ✅
+
+  // Explicit generic REQUIRED when inference falls short
+  const user = ref<User | null>(null)  // ✅ — null alone infers Ref<null>
+  const items = ref<string[]>([])      // ✅ — [] alone infers Ref<never[]>
+  const data = ref<DashboardDTO>({ ... }) // ✅ — complex object needs named type
+  ```
+
+- **REQUIRED**: Use `toRef()` / `toRefs()` when passing reactive properties to composables
+- **REQUIRED**: Use `readonly()` wrapper when exposing store state to views
+
+---
+
+## 3. Props & Emits Type Contracts
+
+### 3a. defineProps
+
+- **REQUIRED**: Generic syntax `defineProps<T>()` — NOT runtime object form `defineProps({ ... })`
+- **REQUIRED**: Extract to a named interface when the type has > 3 properties
+- `withDefaults()` — only for simple defaults; **FORBIDDEN** with index signatures (Vue compiler crash)
+- Optional props: mark with `?` in the type, NOT with `required: false`
+
+```ts
+// CORRECT — named interface, generic syntax
+interface UserCardProps {
+  user: User
+  showAvatar?: boolean
+  size?: 'sm' | 'md' | 'lg'
+  loading?: boolean
+}
+const props = withDefaults(defineProps<UserCardProps>(), {
+  showAvatar: true,
+  size: 'md',
+})
+
+// FORBIDDEN — runtime object form (no type safety)
+const props = defineProps({
+  user: { type: Object, required: true },
+  showAvatar: { type: Boolean, default: true },
+})
+```
+
+### 3b. defineEmits
+
+- **REQUIRED**: Typed object syntax
+- Prefer named tuple syntax (Vue 3.3+): `{ 'update:value': [value: string] }`
+- **FORBIDDEN**: Untyped array form `defineEmits(['click', 'change'])` — zero type safety
+
+```ts
+// CORRECT — named tuple syntax (Vue 3.3+)
+const emit = defineEmits<{
+  'update:selected': [rows: User[]]
+  'row-click': [row: User]
+  refresh: []
+}>()
+
+// ALSO CORRECT — call signature syntax (pre-3.3 compat)
+const emit = defineEmits<{
+  (e: 'submit', values: FormValues): void
+}>()
+
+// FORBIDDEN — untyped array
+const emit = defineEmits(['click', 'change'])
+```
+
+### 3c. defineModel (Vue 3.4+)
+
+- Permitted but not required; existing manual v-model via props + emits is equally valid
+- When used, MUST include type: `defineModel<string>()`
+- Multiple models MUST have explicit names: `defineModel<string>('title')`
+
+### 3d. defineSlots
+
+- **REQUIRED** on any component that exposes scoped slots to consumers
+- Slot prop types MUST use named interfaces, not inline anonymous types
+
+```ts
+// CORRECT — named interface for slot props
+interface TableRowSlotProps<T> {
+  row: T
+  index: number
+  selected: boolean
+}
+
+defineSlots<{
+  default?: (props: TableRowSlotProps<T>) => unknown
+  header?: () => unknown
+  empty?: () => unknown
+}>()
+```
+
+### 3e. defineExpose
+
+- Use sparingly — ONLY for imperative APIs that cannot be expressed via props/emits
+- **REQUIRED**: Type-check with `satisfies` to prevent accidental exposure drift
+
+```ts
+// CORRECT — satisfies ensures type contract
+const exposed = {
+  validate: form.validate,
+  reset: form.reset,
+  getValues,
+} satisfies ProFormExpose<TValues>
+
+defineExpose(exposed)
+```
+
+- **FORBIDDEN**: Exposing internal reactive state — only expose methods and readonly computed values
+
+---
+
+## 4. Generic Components
+
+For data-driven components that need type-safe data flow through props, emits, and slots:
+
+```vue
+<script setup lang="ts" generic="T extends Record<string, unknown>">
+const props = defineProps<{
+  data: T[]
+  columns: Column<T>[]
+}>()
+
+const emit = defineEmits<{
+  'row-click': [row: T]
+}>()
+
+defineSlots<{
+  cell?: (props: { row: T; column: Column<T> }) => unknown
+}>()
+</script>
+```
+
+**Rules:**
+- Generic constraint MUST use `extends` — bare `T` without constraint is **FORBIDDEN**
+- Default type is allowed: `generic="T extends Record<string, unknown> = Record<string, unknown>"`
+- Generic MUST flow through props, emits, slots, AND expose — `any` degradation at boundaries is **FORBIDDEN**
+- Use for: data tables, form engines, list renderers, any component where the data shape is caller-defined
+
+---
+
+## 5. Composable Design Axioms
+
+### 5a. Extraction Criteria
+
+Extract logic from `<script setup>` into a composable (`use*.ts`) when ANY of these apply:
+- Logic exceeds ~30 lines in the component
+- Logic is reused across 2+ components
+- Logic owns its own lifecycle (onMounted / onUnmounted pairs)
+- Logic manages its own cleanup (event listeners, intervals, subscriptions)
+
+### 5b. Parameter & Cleanup Discipline
+
+- **MUST**: Accept reactive params via `MaybeRef<T>` or `Ref<T>`, unwrap internally with `toValue()`
+- **MUST**: Clean up all side effects (return cleanup function or use `onScopeDispose`)
+- **FORBIDDEN**: Calling `getCurrentInstance()` inside a composable — use provide/inject instead
+- **FORBIDDEN**: Modifying global state without going through a Pinia store
+
+### 5c. Naming Convention (reinforces `core/06-utils-hooks.mdc`)
+
+- File: `use<Domain>.ts` (camelCase, `use` prefix)
+- Return type: Named interface `Use<Domain>Return`
+- Explicit return type annotation is **REQUIRED** (enforced by `core/09-vue-template-strictness.mdc`)
+
+```ts
+// CORRECT
+interface UseCounterReturn {
+  count: Readonly<Ref<number>>
+  increment: () => void
+  reset: () => void
+}
+
+export function useCounter(initial: MaybeRef<number> = 0): UseCounterReturn {
+  const count = ref(toValue(initial))
+  const increment = (): void => { count.value++ }
+  const reset = (): void => { count.value = toValue(initial) }
+  return { count: readonly(count), increment, reset }
+}
+```
+
+---
+
+## 6. Provide/Inject Type Safety
+
+- **REQUIRED**: Use typed `InjectionKey<T>` constants, stored in a `keys.ts` or the component directory's `types.ts`
+- **FORBIDDEN**: String-based inject keys (`inject('theme')`) — no type safety
+- **REQUIRED**: Every `inject()` call MUST have a fallback value or explicit null guard
+
+```ts
+// keys.ts — typed injection key
+import type { InjectionKey } from 'vue'
+export const FORM_CONTEXT_KEY: InjectionKey<FormContext> = Symbol('FormContext')
+
+// Provider component
+provide(FORM_CONTEXT_KEY, context)
+
+// Consumer component — type is automatically FormContext | undefined
+const ctx = inject(FORM_CONTEXT_KEY)
+if (!ctx) throw new Error('Component must be used within <FormProvider>')
+```
+
+---
+
+## 7. Computed vs Watch vs WatchEffect Decision Tree
+
+| Need | Use | Why |
+|------|-----|-----|
+| Derive a new value from existing state | `computed()` | Auto-cached, lazy evaluation |
+| Track specific source(s) and run side effects | `watch(source, cb)` | Explicit deps, access to oldValue |
+| Auto-track all deps and run side effects | `watchEffect()` | Automatic dep collection, simple cases |
+| Access DOM after updates | `watchPostEffect()` | Guarantees DOM is updated |
+
+**Rules:**
+- **FORBIDDEN**: Side effects inside `computed()` — no API calls, no console.log, no mutating other refs
+- **FORBIDDEN**: Deep watching large objects without specifying `{ deep: false }` or a specific getter path
+- **REQUIRED**: Use `computed()` instead of methods for derived display data — leverage caching
+
+```ts
+// CORRECT — computed for derived state
+const fullName = computed(() => `${user.value.first} ${user.value.last}`)
+
+// CORRECT — watch with specific path for side effects
+watch(() => route.params.id, (newId) => { fetchUser(newId) })
+
+// FORBIDDEN — side effect in computed
+const data = computed(() => {
+  console.log('recomputing') // ❌ side effect
+  return items.value.filter(i => i.active)
+})
+```
+
+---
+
+## 8. Performance-Aware Reactivity
+
+| Tool | When to Use |
+|------|-------------|
+| `v-once` | Truly static content that will never change (static headers, icon sets) |
+| `v-memo` | List items with expensive rendering when key dependencies are known |
+| `shallowRef` | Large external objects (ECharts instances, editor instances, map objects) |
+| `markRaw` | Objects that must NEVER become reactive (third-party class instances, Web Workers) |
+
+- **FORBIDDEN**: Deep watchers on large objects without explicit `{ deep: false }` override or a specific getter
+- **REQUIRED**: Prefer `computed()` over methods for any value displayed in templates — caching prevents redundant recalculation
+
+```ts
+// CORRECT — shallowRef for chart instance (no need to proxy internals)
+const chartInstance = shallowRef<ECharts | null>(null)
+
+// CORRECT — markRaw for class instance
+const editor = markRaw(new ExternalEditor(config))
+
+// CORRECT — v-memo for list with known dependencies
+// <div v-for="item in list" :key="item.id" v-memo="[item.id, item.updated]">
+```
+
+---
+
+## Jurisdiction
+
+> **This file governs**: Vue 3 Composition API logic and TypeScript structure.
+>
+> **Styling / CSS output**: Unconditionally defers to `00-anti-hallucination-guardrails.mdc` and `01-design-engine-unocss.mdc`.
+>
+> **Data flow / Stores**: Defers to `core/04-state-boundaries.mdc`.
+>
+> **Template type safety**: Defers to `core/09-vue-template-strictness.mdc`.
+>
+> **Auto-imports**: Defers to `core/08-vue-auto-imports.mdc`.

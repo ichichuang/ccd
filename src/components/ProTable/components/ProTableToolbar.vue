@@ -41,8 +41,8 @@ function toggleCol(id: string): void {
 </script>
 
 <template>
-  <div class="row-between pb-sm border-b-default">
-    <div class="row-y-center gap-md">
+  <div class="row-between py-md border-b-default shrink-0">
+    <div class="flex items-center gap-md min-w-0">
       <span
         v-if="title"
         class="text-md font-semibold text-foreground"
@@ -53,11 +53,11 @@ function toggleCol(id: string): void {
         v-if="showGlobalFilter"
         v-model="filterVal"
         :placeholder="searchPlaceholder"
-        class="w-full sm:w-[var(--spacing-6xl)] flex-shrink"
+        class="w-full sm:w-[var(--spacing-6xl)] shrink"
       />
     </div>
 
-    <div class="row-y-center gap-xs">
+    <div class="flex items-center gap-xs flex-nowrap shrink-0">
       <slot name="toolbar-extra" />
 
       <Button
@@ -80,7 +80,7 @@ function toggleCol(id: string): void {
       </Button>
 
       <Popover ref="settingsPanel">
-        <div class="col-stack-xs p-sm min-w-[var(--spacing-5xl)]">
+        <div class="flex flex-col gap-xs p-sm min-w-[var(--spacing-5xl)]">
           <div
             v-for="col in columns"
             :key="col.id"

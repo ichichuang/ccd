@@ -1,0 +1,114 @@
+---
+description: Enforces strict usage of Semantic Colors and Size variables (Design Tokens). Forbids magic numbers and hardcoded colors.
+globs: ["src/**/*.{vue,tsx,ts,css,scss}"]
+---
+# Design Tokens: Color & Size System
+
+## Core Philosophy (CRITICAL)
+- Our system uses a centralized Design Token architecture driven by CSS Variables.
+- UnoCSS and PrimeVue are strictly mapped to these variables.
+- **NEVER** use raw hex codes, RGB values, or `rem`/`em` sizing in templates or styles.
+
+## 🎨 Color System Anti-Patterns (FORBIDDEN)
+- ❌ `class="text-[#333333]"` or `class="bg-[#F5F5F5]"` (No arbitrary UnoCSS hex colors).
+- ❌ `color: #ff0000;` in `<style>` blocks.
+- ❌ `class="text-red-500"`, `class="bg-blue-200"`, `class="text-gray-500"`, `class="bg-slate-100"` — ALL Tailwind built-in color palette classes are FORBIDDEN. These are static colors that do not respond to theme switching.
+- ❌ `class="text-white"`, `class="text-black"`, `class="bg-white"`, `class="bg-black"` — Tailwind color aliases, equally FORBIDDEN.
+- ❌ `dark:bg-gray-900`, `dark:text-white` — FORBIDDEN. Semantic tokens auto-respond to dark mode.
+- ✅ **DO:** Use semantic UnoCSS classes mapped to our theme: `text-primary`, `bg-background`, `text-muted-foreground`, `border-border`, `bg-muted`, `text-danger`, `bg-primary-light`.
+
+## 📏 Size & Spacing System Anti-Patterns (FORBIDDEN)
+- ❌ `class="w-4"`, `class="p-10"`, `class="mt-2"` — Unitless numeric shorthands (defaulting to `rem`) are **ABSOLUTELY FORBIDDEN**.
+- ❌ `class="w-[16rem]"`, `class="h-[2em]"` — `rem/em` units are **ABSOLUTELY FORBIDDEN**.
+- ❌ `font-size: 14px;` in `<style>` blocks.
+- ✅ **PERMITTED arbitrary forms for sizing**:
+  - `w-[var(--spacing-2xl)]` — CSS variable wrapper.
+  - Explicit units when token classes cannot express intent, with strict order: `vw/vh > % > px`.
+- ✅ **DO:** Use the established scale: `p-sm`, `m-md`, `gap-lg`, `text-sm`, `rounded-md`.
+
+> **ABSOLUTE RULE**: `rem/em` are forbidden for sizing and spacing. If a size cannot be expressed by token scale, use explicit units with priority `vw/vh > % > px`, or request token extension from the design engine (`src/design-engine/theme/index.ts`).
+
+## Integration Enforcement
+If you need a color or spacing that does not exist in the semantic token list, **STOP**. Do not hardcode it. Query the existing design engine constants or request a token extension.
+
+---
+
+## Complete Color Token Family Reference
+
+**SSOT**: `src/utils/theme/metadata.ts` (`COLOR_FAMILIES`)
+
+The design engine generates 62+ CSS custom properties organized in four tiers. Every UnoCSS color class (`bg-*`, `text-*`, `border-*`) maps to one of these tokens.
+
+### Tier 1 — Single Tokens (5 tokens)
+
+One CSS variable each. No variants.
+
+| Token | CSS variable | Usage |
+|---|---|---|
+| `background` | `--background` | Page canvas (`bg-background`) |
+| `foreground` | `--foreground` | Primary body text (`text-foreground`) |
+| `border` | `--border` | Structural dividers (`border-border`) |
+| `input` | `--input` | Input field borders |
+| `ring` | `--ring` | Focus rings (`focus:ring-ring`) |
+
+### Tier 2 — Pair Families (4 families × 2 = 8 tokens)
+
+Each family generates a DEFAULT token and a `-foreground` token:
+
+| Family | Tokens generated | Usage |
+|---|---|---|
+| `card` | `card`, `card-foreground` | Panel / card surfaces (`bg-card`) |
+| `popover` | `popover`, `popover-foreground` | Dropdowns, tooltips |
+| `secondary` | `secondary`, `secondary-foreground` | Secondary surfaces and text |
+| `muted` | `muted`, `muted-foreground` | Subtle backgrounds, de-emphasized text |
+
+Usage: `bg-card`, `text-card-foreground`, `bg-muted`, `text-muted-foreground`, `bg-secondary`, `text-secondary-foreground`
+
+### Tier 3 — Quad Families (7 families × 6 = 42 tokens)
+
+Each family generates 6 variant tokens:
+
+| State suffix | Example (primary) | Description |
+|---|---|---|
+| _(none)_ | `primary` | Default background / fill |
+| `-foreground` | `primary-foreground` | Text/icon on top of default fill |
+| `-hover` | `primary-hover` | Hover state background |
+| `-hover-foreground` | `primary-hover-foreground` | Text/icon on hover fill |
+| `-light` | `primary-light` | Subtle tinted background |
+| `-light-foreground` | `primary-light-foreground` | Text on light tinted background |
+
+Families: `primary`, `accent`, `danger`, `warn`, `success`, `info`, `help`
+
+Common usage patterns:
+```html
+<!-- Primary CTA button -->
+<div class="bg-primary text-primary-foreground hover:bg-primary-hover">
+
+<!-- Danger badge -->
+<span class="bg-danger-light text-danger-light-foreground">
+
+<!-- Focus preselection -->
+<div class="bg-primary-light text-primary">
+
+<!-- Accent tab indicator -->
+<div class="bg-accent text-accent-foreground">
+```
+
+> **Rule**: ALL hover feedback MUST use `primary-hover` / `*-hover`. NEVER use opacity hacks or arbitrary dark/light shifts.
+
+### Tier 4 — Sidebar Family (8 dedicated tokens)
+
+Sidebar uses its own isolated token family to allow independent theming from the main content area.
+
+| CSS variable | UnoCSS class | Usage |
+|---|---|---|
+| `--sidebar-background` | `bg-sidebar-background` | Sidebar panel background |
+| `--sidebar-foreground` | `text-sidebar-foreground` | Sidebar text and icons |
+| `--sidebar-primary` | `bg-sidebar-primary` | Active/selected item background |
+| `--sidebar-primary-foreground` | `text-sidebar-primary-foreground` | Text on active item |
+| `--sidebar-accent` | `bg-sidebar-accent` | Hover state for sidebar items |
+| `--sidebar-accent-foreground` | `text-sidebar-accent-foreground` | Text on hovered sidebar item |
+| `--sidebar-border` | `border-sidebar-border` | Sidebar internal borders |
+| `--sidebar-ring` | `ring-sidebar-ring` | Focus rings inside sidebar |
+
+> **Rule**: Sidebar components MUST use `sidebar-*` tokens, NOT `primary` or `card` tokens. This ensures sidebar and content area can be themed independently.

@@ -44,8 +44,8 @@ export function getDefaultToolboxConfig(t?: (key: string) => string): ChartToolb
 
   return {
     show: false,
-    right: `${systemVars.paddings}%`,
-    top: `${systemVars.gapl}px`,
+    right: `${systemVars.gapXs}%`,
+    top: `${systemVars.gapSm}px`,
     feature: {
       saveAsImage: {
         title: title('chart.toolbox.saveAsImage'),
@@ -153,7 +153,7 @@ export function getDefaultVisualMapConfig(): ChartVisualMapConfig {
       color: [systemVars.mutedForeground],
     },
     left: 'left',
-    bottom: `${systemVars.gap}%`,
+    bottom: `${systemVars.gapXs}%`,
     orient: 'horizontal',
     textStyle: {
       fontSize: size.fontSm,

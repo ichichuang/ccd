@@ -117,6 +117,18 @@ const syncResolver: ValidationResolver<Record<string, unknown>> = async values =
 // ── 异步规则 Schema ───────────────────────────────────────────────
 // 模拟已占用的用户名
 const TAKEN_USERNAMES = ['admin', 'root', 'superuser', 'test']
+const waitFor = (ms: number): Promise<void> =>
+  new Promise(resolve => {
+    const { start, stop } = useTimeoutFn(
+      () => {
+        stop()
+        resolve()
+      },
+      ms,
+      { immediate: false }
+    )
+    start()
+  })
 
 const asyncSchema = reactive<FormSchema>({
   layout: { type: 'grid', gap: 'var(--spacing-md)' },
@@ -133,12 +145,10 @@ const asyncSchema = reactive<FormSchema>({
         },
         {
           message: '该用户名已被占用（模拟 API 检查）',
-          validator: (v): Promise<boolean> =>
-            new Promise(resolve => {
-              setTimeout(() => {
-                resolve(!TAKEN_USERNAMES.includes(String(v).toLowerCase()))
-              }, 800)
-            }),
+          validator: async (v): Promise<boolean> => {
+            await waitFor(800)
+            return !TAKEN_USERNAMES.includes(String(v).toLowerCase())
+          },
         },
       ],
       props: { placeholder: '试试: admin / root / superuser' },
@@ -155,12 +165,10 @@ const asyncSchema = reactive<FormSchema>({
         },
         {
           message: '该邮箱已注册（模拟 API 检查）',
-          validator: (v): Promise<boolean> =>
-            new Promise(resolve => {
-              setTimeout(() => {
-                resolve(!['admin@example.com', 'root@example.com'].includes(String(v)))
-              }, 600)
-            }),
+          validator: async (v): Promise<boolean> => {
+            await waitFor(600)
+            return !['admin@example.com', 'root@example.com'].includes(String(v))
+          },
         },
       ],
       props: { placeholder: '试试: admin@example.com' },
@@ -191,18 +199,18 @@ async function onAsyncSubmit(values: Record<string, unknown>): Promise<void> {
 <template>
   <div
     data-archetype="A1-toolbar-content"
-    class="layout-full px-md md:px-lg col-stack-sm min-h-0"
+    class="col-fill"
   >
     <!-- Toolbar: Hero Header (Transparent Root Policy: Inherit canvas) -->
     <header class="shrink-0 border-b-default border-border/15">
-      <div class="w-full py-sm row-y-center gap-md">
+      <div class="layout-container py-sm row-center gap-md">
         <div class="p-md bg-primary/10 rounded-lg shrink-0">
           <Icons
             name="i-lucide-shield-check"
             class="text-primary text-2xl"
           />
         </div>
-        <div class="col-stack-xs">
+        <div class="col-stretch gap-xs">
           <h1 class="text-2xl font-bold text-foreground m-0">ProForm 校验管线</h1>
           <p class="text-muted-foreground text-sm m-0">
             演示同步规则 / 异步 API 检查 / 触发模式（blur · change · submit）全链路校验能力。
@@ -210,23 +218,26 @@ async function onAsyncSubmit(values: Record<string, unknown>): Promise<void> {
         </div>
       </div>
     </header>
+    <div
+      class="shrink-0 px-md py-xs text-xs text-muted-foreground border-b-default border-border/15"
+    >
+      覆盖能力：sync/async 规则、resolver 跨字段校验、validateOn 三种触发模式与结果观测。
+    </div>
 
     <!-- Scrollable content -->
     <CScrollbar class="flex-1 min-h-0">
-      <div class="w-full p-md md:p-lg col-stack-xl pb-xl">
+      <div class="layout-container py-md col-stretch gap-xl pb-xl">
         <!-- 触发模式选择 -->
-        <div
-          class="bg-card rounded-md shadow-sm dark:shadow-md py-md px-lg flex flex-col gap-lg bg-primary/10 dark:bg-primary/5 border-primary/20"
-        >
+        <section class="material-elevated col-stretch gap-lg bg-primary/10 border-primary/20">
           <div class="row-between gap-md flex-wrap">
-            <div class="row-y-center gap-md">
+            <div class="row-center gap-md">
               <div class="p-sm bg-primary/10 rounded-md">
                 <Icons
                   name="i-lucide-sliders-horizontal"
                   class="text-primary"
                 />
               </div>
-              <div class="col-stack-xs">
+              <div class="col-stretch gap-xs">
                 <span class="font-bold text-foreground uppercase tracking-tight">校验触发策略</span>
                 <span class="text-xs text-muted-foreground">
                   全局切换 blur / change / submit 触发行为。
@@ -241,14 +252,12 @@ async function onAsyncSubmit(values: Record<string, unknown>): Promise<void> {
               class="scale-90 origin-right"
             />
           </div>
-        </div>
+        </section>
 
         <!-- 同步规则演示 -->
-        <div class="bg-card rounded-md shadow-sm dark:shadow-md py-md px-lg flex flex-col gap-lg">
-          <div
-            class="row-between items-start mb-padding-md border-b-default border-border/40 pb-sm"
-          >
-            <div class="row-y-center gap-sm">
+        <section class="material-elevated col-stretch gap-lg">
+          <div class="row-between items-start mb-md border-b-default border-border/40 pb-sm">
+            <div class="row-center gap-sm">
               <Icons
                 name="i-lucide-zap"
                 class="text-primary"
@@ -264,7 +273,7 @@ async function onAsyncSubmit(values: Record<string, unknown>): Promise<void> {
             />
           </div>
 
-          <div class="col-stack-md">
+          <div class="col-stretch gap-md">
             <p class="text-muted-foreground text-sm m-0 italic">
               必填检查 · 正则格式 · 跨字段联动 (确认密码)。
             </p>
@@ -277,7 +286,7 @@ async function onAsyncSubmit(values: Record<string, unknown>): Promise<void> {
               @submit="onSyncSubmit"
             >
               <template #footer="{ submit, formState }">
-                <div class="row-end gap-sm pt-md border-t-default border-border/15 mt-padding-md">
+                <div class="row-end gap-sm pt-md border-t-default border-border/15 mt-md">
                   <Button
                     label="重置校验"
                     variant="text"
@@ -307,14 +316,12 @@ async function onAsyncSubmit(values: Record<string, unknown>): Promise<void> {
               }}</pre>
             </div>
           </div>
-        </div>
+        </section>
 
         <!-- 异步规则演示 -->
-        <div class="bg-card rounded-md shadow-sm dark:shadow-md py-md px-lg flex flex-col gap-lg">
-          <div
-            class="row-between items-start mb-padding-md border-b-default border-border/40 pb-sm"
-          >
-            <div class="row-y-center gap-sm">
+        <section class="material-elevated col-stretch gap-lg">
+          <div class="row-between items-start mb-md border-b-default border-border/40 pb-sm">
+            <div class="row-center gap-sm">
               <Icons
                 name="i-lucide-loader"
                 class="text-primary"
@@ -330,17 +337,17 @@ async function onAsyncSubmit(values: Record<string, unknown>): Promise<void> {
             />
           </div>
 
-          <div class="col-stack-md">
+          <div class="col-stretch gap-md">
             <p class="text-muted-foreground text-sm m-0 italic">
               自动处理竞态安全，支持 Promise 返回。尝试输入 admin 或 root。
             </p>
 
             <div class="bg-muted rounded-md px-md py-sm border-default border-border/40">
-              <div class="text-xs text-muted-foreground col-stack-xs">
+              <div class="text-xs text-muted-foreground col-stretch gap-xs">
                 <div class="font-bold text-foreground text-xs uppercase tracking-tighter">
                   不可用资源清单 (模拟 DB)：
                 </div>
-                <div class="row-y-center gap-xs flex-wrap">
+                <div class="row-center gap-xs flex-wrap">
                   <span
                     v-for="name in ['admin', 'root', 'superuser', 'test']"
                     :key="name"
@@ -367,7 +374,7 @@ async function onAsyncSubmit(values: Record<string, unknown>): Promise<void> {
               @submit="onAsyncSubmit"
             >
               <template #footer="{ submit, formState }">
-                <div class="row-end gap-sm pt-md border-t-default border-border/15 mt-padding-md">
+                <div class="row-end gap-sm pt-md border-t-default border-border/15 mt-md">
                   <Button
                     label="异步校验并提交"
                     icon="i-lucide-cloud-lightning"
@@ -390,7 +397,7 @@ async function onAsyncSubmit(values: Record<string, unknown>): Promise<void> {
               }}</pre>
             </div>
           </div>
-        </div>
+        </section>
       </div>
     </CScrollbar>
   </div>

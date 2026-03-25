@@ -10,11 +10,18 @@ import {
 } from 'unocss'
 import { theme } from './src/design-engine/theme'
 import { getEngineSafelist, getPresetIconsCollections } from './src/design-engine/safelist'
-import { rules as designEngineRules, shortcuts } from './src/design-engine'
+
+/** 与 shortcuts 中 `ease-spring` 对齐（Uno 从 `theme.easing` 解析） */
+const themeResolved = {
+  ...theme,
+  easing: {
+    spring: 'cubic-bezier(0.175, 0.885, 0.32, 1.275)',
+  },
+} as typeof theme & { easing: { spring: string } }
+import { shortcuts } from './src/design-engine'
 import { BREAKPOINTS } from './src/constants/breakpoints'
 import { LAYOUT_DIMENSION_KEYS, SIZE_BASE_VAR_KEYS } from './src/constants/size'
 import { SIZE_SCALE_KEYS } from './src/constants/sizeScale'
-import { COLOR_FAMILIES } from './src/utils/theme/metadata'
 
 // 约束：上述 src 下被引用的文件必须为纯数据（仅导出常量/类型），禁止 import .vue 或使用 window/document 等浏览器 API，否则 Node 构建会报错。
 /** 阶梯键模式 (xs|sm|...|5xl)，SSOT: SIZE_SCALE_KEYS；具名捕获用 (?<size>scalePattern)，避免依赖捕获顺序 */
@@ -23,14 +30,12 @@ const scalePattern = SIZE_SCALE_KEYS.join('|')
 // ----------------------------------------------------------------------
 // Design System Rule Map (SSOT 与分层职责)
 // ----------------------------------------------------------------------
-// 语义尺寸（业务推荐）：p-padding-{scale} / m-margin-{scale} / gap-{scale} / gap-x-{scale} / gap-y-{scale} / m-gap-* / scroll-m-gap-*
-//   → var(--spacing-*)。业务组件只允许使用此类，禁止直接使用 p-{scale}。gap 仅支持 gap-* / gap-x-* / gap-y-*，不再使用 gap-gap-*。
-// 阶梯尺寸（Token 级）：fs-{scale} / p-* / m-* / gap-* / rounded-* / duration-*
-//   → 对应 CSS 变量。与语义尺寸二选一，shortcuts 内部可用。
-// 布局变量：w-* / h-* / min-w-* / max-w-* / min-h-* / max-h-* 仅当 * 属于 LAYOUT_DIMENSION_KEYS 生效；新增 key 时勿与 presetUno 保留字冲突（如 full/screen），否则会覆盖默认 w-full 等行为。
-// 基础变量：p-* / px-* / py-* 等仅当 * 属于 SIZE_BASE_VAR_KEYS 的 kebab 形式生效。
+// 运行时配置使用 presetUno + `theme`（见 `src/design-engine/theme`）：标准 Uno 工具类映射到 CSS 变量。
+// Spacing：`p-*` / `m-*` / `gap-*` 等 → `var(--spacing-*)`（阶梯键见 SIZE_SCALE_KEYS）；颜色：`bg-*` / `text-*` → `theme.colors`（见 COLOR_FAMILIES）。
+// 布局尺寸：`w-*` / `h-*` 等仅当 token 属于 LAYOUT_DIMENSION_KEYS 时映射到布局变量；新增 key 时勿与 presetUno 保留字冲突（如 full/screen）。
+// 基础变量：`p-*` / `px-*` / `py-*` 等亦支持 SIZE_BASE_VAR_KEYS 的 kebab 形式（如 container-padding）。
+// 具名 shortcuts 仅来自 `src/design-engine/shortcuts/semanticShortcuts.ts`；禁止臆造未在仓库中定义的「宏类名」。
 // SSOT：sizeScale.ts | size.ts | breakpoints.ts | src/utils/theme/metadata.ts
-// AI：业务层推荐只使用 shortcuts；spacing 推荐 p-padding-* / m-margin-* / gap-*，不直接使用 p-{scale}。
 
 // ----------------------------------------------------------------------
 // 1. 常量定义 (断点 SSOT: src/constants/breakpoints.ts)
@@ -248,207 +253,7 @@ function createBaseVarRules(): Rule[] {
 
 const iconCollections = getPresetIconsCollections()
 
-/** Theme 示例页动态类名 safelist (SSOT: COLOR_FAMILIES, SIZE_SCALE_KEYS) */
-function buildThemeDemoSafelist(): string[] {
-  const list: string[] = []
-
-  // ====== 配色类（从 COLOR_FAMILIES 动态生成） ======
-  for (const token of COLOR_FAMILIES.singleTokens) {
-    list.push(`bg-${token}`, `text-${token}`)
-    if (['border', 'input', 'ring'].includes(token)) list.push(`border-${token}`)
-  }
-  for (const family of COLOR_FAMILIES.pairFamilies) {
-    list.push(`bg-${family}`, `text-${family}-foreground`, `border-${family}`)
-  }
-  // quadFamilies: *-light 用于 PrimeVue Button text/outlined 变体 hover 背景，详见 docs/PRIMEVUE_THEME.md
-  for (const family of COLOR_FAMILIES.quadFamilies) {
-    list.push(
-      `bg-${family}`,
-      `bg-${family}-hover`,
-      `bg-${family}-light`,
-      `text-${family}`,
-      `text-${family}-foreground`,
-      `text-${family}-hover-foreground`,
-      `text-${family}-light-foreground`,
-      `border-${family}`,
-      `border-${family}-hover`,
-      `border-${family}-light`
-    )
-  }
-  const sidebarKeys = Object.keys(COLOR_FAMILIES.sidebar) as (keyof typeof COLOR_FAMILIES.sidebar)[]
-  for (const key of sidebarKeys) {
-    const varName = COLOR_FAMILIES.sidebar[key]
-    list.push(`bg-${varName}`, `text-${varName}`)
-    if (key === 'border' || key === 'ring') list.push(`border-${varName}`)
-  }
-  list.push(
-    'border-danger/50',
-    'border-primary/20',
-    'border-primary/30',
-    'border-primary/50',
-    'dark:bg-primary-light',
-    'dark:border-primary/50',
-    'bg-info/10'
-  )
-
-  // Explicitly add specific opacity layers only generated dynamically in the documentation loops
-  list.push(
-    ...COLOR_FAMILIES.quadFamilies.flatMap(family =>
-      [5, 10, 15, 20, 30, 40, 50, 60, 70, 80, 90].map(v => `bg-${family}/${v}`)
-    )
-  )
-
-  // ====== 基础变量类 (SIZE_BASE_VAR_KEYS) ======
-  for (const key of SIZE_BASE_VAR_KEYS) {
-    const kebab = toKebab(key)
-    list.push(
-      `p-${kebab}`,
-      `px-${kebab}`,
-      `py-${kebab}`,
-      `pt-${kebab}`,
-      `pb-${kebab}`,
-      `pl-${kebab}`,
-      `pr-${kebab}`
-    )
-  }
-
-  // ====== 尺寸阶梯类 + 语义 gap（gap-* / gap-x-* / gap-y-*） ======
-  list.push(
-    ...SIZE_SCALE_KEYS.flatMap(k => [
-      `fs-${k}`,
-      `gap-${k}`,
-      `gap-x-${k}`,
-      `gap-y-${k}`,
-      `p-${k}`,
-      `m-${k}`,
-      `gap-${k}`,
-      `px-${k}`,
-      `py-${k}`,
-      `pl-${k}`,
-      `pr-${k}`,
-      `pt-${k}`,
-      `pb-${k}`,
-      `mx-${k}`,
-      `my-${k}`,
-      `ml-${k}`,
-      `mr-${k}`,
-      `mt-${k}`,
-      `mb-${k}`,
-      `gap-x-${k}`,
-      `gap-y-${k}`,
-      `text-${k}`,
-      `rounded-${k}`,
-      `rounded-t-${k}`,
-      `rounded-b-${k}`,
-      `rounded-l-${k}`,
-      `rounded-r-${k}`,
-      `rounded-tl-${k}`,
-      `rounded-tr-${k}`,
-      `rounded-bl-${k}`,
-      `rounded-br-${k}`,
-      `duration-${k}`,
-      // margin + spacing 语义化类
-      `m-gap-${k}`,
-      `mx-gap-${k}`,
-      `my-gap-${k}`,
-      `mt-gap-${k}`,
-      `mb-gap-${k}`,
-      `ml-gap-${k}`,
-      `mr-gap-${k}`,
-      // scroll-margin + spacing 语义化类
-      `scroll-m-gap-${k}`,
-      `scroll-mx-gap-${k}`,
-      `scroll-my-gap-${k}`,
-      `scroll-mt-gap-${k}`,
-      `scroll-mb-gap-${k}`,
-      `scroll-ml-gap-${k}`,
-      `scroll-mr-gap-${k}`,
-    ])
-  )
-
-  // ====== 主题切换动画图标 (Transition Effect) ======
-  list.push(
-    'i-lucide-circle-dot',
-    'i-lucide-panel-left',
-    'i-lucide-diamond',
-    'i-lucide-sun-moon',
-    'i-lucide-sparkles',
-    'i-lucide-minimize-2'
-  )
-
-  // ====== PrimeVue 组件悬停态（Button text/outlined 使用 *-light 作为 hover 背景） ======
-  list.push(
-    'hover:bg-sidebar-accent/50',
-    'hover:bg-danger-light',
-    'hover:bg-primary-light',
-    'hover:bg-success-light',
-    'hover:bg-info-light',
-    'hover:bg-warn-light',
-    'hover:bg-help-light',
-    'bg-danger/10',
-    'bg-primary/5',
-    'bg-info/10'
-  )
-
-  return list
-}
-
-const themeDemoSafelist = buildThemeDemoSafelist()
-
-/** 仅需跑主题/配色 demo 页时设为 true（如 UNO_DEMO=true pnpm dev），此时才合并 themeDemoSafelist */
-const isDemo = process.env.UNO_DEMO === 'true'
-
-// ----------------------------------------------------------------------
-// 4. 颜色系统动态映射 (与 ThemeEngine / COLOR_FAMILIES 对齐)
-// ----------------------------------------------------------------------
-
-const rgbVar = (name: string) => `rgb(var(--${name}) / <alpha-value>)`
-
-type ThemeColorValue = string | Record<string, string>
-
-function buildThemeColors(): Record<string, ThemeColorValue> {
-  const colors: Record<string, ThemeColorValue> = {}
-
-  // 单一 token：直接映射到同名 CSS 变量
-  for (const token of COLOR_FAMILIES.singleTokens) {
-    colors[token] = rgbVar(token)
-  }
-
-  // 成对家族：DEFAULT + foreground
-  for (const family of COLOR_FAMILIES.pairFamilies) {
-    colors[family] = {
-      DEFAULT: rgbVar(family),
-      foreground: rgbVar(`${family}-foreground`),
-    }
-  }
-
-  // 扩展家族：DEFAULT + foreground + hover + hover-foreground + light + light-foreground
-  // light 用于 PrimeVue Button text/outlined 变体 hover 背景，详见 docs/PRIMEVUE_THEME.md
-  for (const family of COLOR_FAMILIES.quadFamilies) {
-    colors[family] = {
-      DEFAULT: rgbVar(family),
-      foreground: rgbVar(`${family}-foreground`),
-      hover: rgbVar(`${family}-hover`),
-      'hover-foreground': rgbVar(`${family}-hover-foreground`),
-      light: rgbVar(`${family}-light`),
-      'light-foreground': rgbVar(`${family}-light-foreground`),
-    }
-  }
-
-  // Sidebar 家族：使用 sidebar 专用 CSS 变量
-  colors.sidebar = {
-    DEFAULT: rgbVar(COLOR_FAMILIES.sidebar.background),
-    foreground: rgbVar(COLOR_FAMILIES.sidebar.foreground),
-    primary: rgbVar(COLOR_FAMILIES.sidebar.primary),
-    'primary-foreground': rgbVar(COLOR_FAMILIES.sidebar['primary-foreground']),
-    accent: rgbVar(COLOR_FAMILIES.sidebar.accent),
-    'accent-foreground': rgbVar(COLOR_FAMILIES.sidebar['accent-foreground']),
-    border: rgbVar(COLOR_FAMILIES.sidebar.border),
-    ring: rgbVar(COLOR_FAMILIES.sidebar.ring),
-  }
-
-  return colors
-}
+// 颜色映射 SSOT：`src/design-engine/theme` + `theme/colors.ts` 的 `<alpha-value>` 占位符；下方合并 `easing.spring`。
 
 export default defineConfig({
   presets: [
@@ -462,31 +267,29 @@ export default defineConfig({
     }),
   ],
 
-  safelist: getEngineSafelist(isDemo),
+  safelist: getEngineSafelist(),
 
   content: {
     pipeline: {
-      include: [/\.(vue|svelte|[jt]sx|vine\.ts|mdx?|astro|elm|php|phtml|marko|html)($|\?)/],
+      include: [/\.(vue|svelte|[jt]s|[jt]sx|vine\.ts|mdx?|astro|elm|php|phtml|marko|html)($|\?)/],
     },
   },
 
   transformers: [transformerDirectives(), transformerVariantGroup()],
 
-  // 业务层推荐只使用 shortcuts，不直接拼原子类。
-  // spacing 推荐 p-padding-* / m-margin-* / gap-*，禁止在业务中直接使用 p-{scale}。
-  // Shortcuts 依赖规则：允许低层→高层（density/behavior/hover-* → layout-*/component-*）；严禁反向或形成环。
+  // 业务层：优先使用 `semanticShortcuts` 中的具名 shortcut + 标准 Uno 主题工具类（如 `p-md`、`gap-sm`、`bg-card`、`text-muted-foreground`）。
+  // 禁止臆造未在 theme/shortcuts 中定义的类名；详见 `.cursor/rules/design-system/01-design-tokens.mdc`。
   shortcuts,
 
   // 规则优先级设计：UnoCSS 按顺序匹配，新规则必须归入对应分组。
-  // ① 语义业务规则 > ② 布局变量 > ③ 设计系统阶梯 > ④ 基础变量 > ⑤ 安全区
+  // ① 安全区（静态）其余 DSL 映射走 shortcuts（含动态快捷规则）
   rules: [
     ['group', {}],
     ['safe-top', { 'padding-top': 'env(safe-area-inset-top)' }],
     ['safe-bottom', { 'padding-bottom': 'env(safe-area-inset-bottom)' }],
-    ...designEngineRules,
   ],
 
-  theme,
+  theme: themeResolved,
 })
 
 // ---------------------------------------------------------------------------
@@ -499,7 +302,3 @@ void createSemanticSizeRules
 void createLayoutVariableRules
 void createScaleRules
 void createBaseVarRules
-void buildThemeDemoSafelist
-void themeDemoSafelist
-void buildThemeColors
-void rgbVar

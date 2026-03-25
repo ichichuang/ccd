@@ -20,6 +20,7 @@ export interface ProTableColumn<T extends Record<string, unknown> = Record<strin
   filterOptions?: SelectOption[]
   pinned?: 'left' | 'right' | false
   hidden?: boolean
+  headerAlign?: 'left' | 'center' | 'right'
   align?: 'left' | 'center' | 'right'
   render?: (params: ColumnRenderParams<T>) => VNode | string | number | null
   headerRender?: () => VNode | string

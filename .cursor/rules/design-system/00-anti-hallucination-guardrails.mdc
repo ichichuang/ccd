@@ -1,0 +1,205 @@
+---
+description: CRITICAL — Highest-priority anti-hallucination guardrails for UnoCSS styling. Read BEFORE writing any class attribute.
+globs: ["src/**/*.{vue,tsx,ts,css,scss}"]
+alwaysApply: true
+---
+
+# Anti-Hallucination Guardrails — Absolute Styling Laws
+
+> Binary FORBIDDEN/REQUIRED rules with zero exceptions unless explicitly stated. These prevent the most common AI styling errors in this codebase.
+
+---
+
+## GUARDRAIL 1 — Closed Shortcut Registry
+
+Shortcuts are a **closed set**. If a shortcut is not in this list, it does not exist. Using or inventing it is a hallucination error.
+
+### All Permitted Shortcuts
+
+**Flex Layout**: `center` · `row-center` · `row-between` · `row-start` · `row-end` · `col-center` · `col-between` · `col-stretch` · `col-fill`
+
+**Container Layout**: `layout-screen` · `layout-full` · `layout-container` · `layout-narrow`
+
+**Positioning**: `absolute-center`
+
+**Utility**: `scrollbar-none`
+
+**Typography**: `text-no-wrap` · `text-ellipsis-1` · `text-ellipsis-2`
+
+**Interaction**: `motion-lift` · `interaction-shrink` · `ring-focus-focus` · `interactive-card` · `interactive-item`
+
+**Z-Index**: `z-base` · `z-content` · `z-layout` · `z-overlay` · `z-popover` · `z-toast`
+
+**Material**: `material-solid` · `material-elevated` · `glass-card` · `glass-icon-box` · `glass-panel` · `glass-capsule` · `glass-shell`
+
+**Documentation demo**: `demo-well` · `demo-stage`
+
+> `glass-base` = internal primitive — DO NOT use directly. See Guardrail 8.
+
+**FORBIDDEN invented shortcuts (non-exhaustive)**:
+`card-base` · `page-fill` · `content-wrap` · `panel-base` · `layout-stack` · `col-stack-*` · `density-*` · `fs-xs` · `surface-elevated` · `hover-bg-*` · `text-truncate`
+
+---
+
+## GUARDRAIL 2 — No Shortcut + Its Own Expansion (N-1)
+
+NEVER write a shortcut AND the atomic classes it expands into on the same element.
+
+```html
+<!-- FORBIDDEN -->
+<div class="flex items-center justify-center center">
+<div class="w-full h-full layout-full">
+<div class="flex-1 min-h-0 flex flex-col overflow-hidden col-fill">
+<div class="transition-all duration-md motion-lift">
+
+<!-- CORRECT -->
+<div class="center">
+<div class="layout-full">
+<div class="col-fill">
+<div class="motion-lift">
+```
+
+**Self-check**: Does any shortcut in your class list expand into other classes also on the same element? Remove the expansion.
+
+---
+
+## GUARDRAIL 3 — No `flex` Prefix on Flex Shortcuts (N-2)
+
+Flex shortcuts ALREADY contain `flex`. Prepending `flex`, `flex-row`, `flex-col`, `items-*`, `justify-*` is a duplicate.
+
+```html
+<!-- FORBIDDEN -->
+<div class="flex row-between">
+<div class="flex col-center">
+<div class="flex flex-col col-fill">
+
+<!-- CORRECT -->
+<div class="row-between">
+<div class="col-center">
+<div class="col-fill">
+```
+
+---
+
+## GUARDRAIL 4 — Colors: Semantic Tokens ONLY
+
+| FORBIDDEN | CORRECT |
+|-----------|---------|
+| `text-[#333]`, `bg-[#fff]`, `color: #ff0000` | `text-foreground`, `bg-background` |
+| `text-red-500`, `bg-blue-200`, `text-gray-500`, `bg-slate-100` | `text-danger`, `bg-primary-light`, `text-muted-foreground`, `bg-muted` |
+| `bg-white`, `bg-black`, `text-white`, `text-black` | `bg-background`, `text-foreground` |
+| `dark:bg-gray-900`, `dark:text-white` | semantic tokens auto-respond to dark mode |
+| `bg-white/50`, `bg-black/20` | `bg-background/50`, `bg-foreground/[0.04]` |
+| `shadow-[0_4px_rgba(0,0,0,0.5)]` | `shadow-sm`, `shadow-md` (no rgba) |
+
+**Available semantic tokens**:
+- Canvas: `bg-background` · `bg-card` · `bg-muted` · `bg-secondary` · `bg-popover`
+- Text: `text-foreground` · `text-muted-foreground` · `text-card-foreground` · `text-secondary-foreground`
+- Brand: `bg-primary` · `text-primary` · `bg-primary-hover` · `bg-primary-light`
+- Status: `bg-danger` · `bg-warn` · `bg-success` · `bg-info`
+- Sidebar: `bg-sidebar-background` · `text-sidebar-foreground` · `bg-sidebar-accent`
+
+---
+
+## GUARDRAIL 5 — Sizes: Token Scale ONLY
+
+**Rule scope — applies ONLY to sizing/spacing utilities** (`w-`, `h-`, `p-`, `m-`, `gap-`, `top-`, `left-`, `right-`, `bottom-`):
+
+| FORBIDDEN | CORRECT |
+|-----------|---------|
+| `w-4`, `p-10`, `mt-2` (unitless shorthand -> `rem`) | explicit units or token classes |
+| `w-[16rem]`, `h-[2em]` | convert by ladder: `vw/vh` -> `%` -> `px` |
+| `font-size: 14px` in `<style>` | `text-sm` |
+| `border-radius: 8px` in `<style>` | `rounded-md` |
+| `transition-duration: 300ms` | `duration-md` |
+| `duration-300`, `duration-200` | `duration-sm`, `duration-md` |
+
+- **ABSOLUTE BAN:** `rem` / `em` are forbidden for sizing and spacing.
+- **UNIT PRIORITY LADDER (NON-NEGOTIABLE):** `vw/vh > % > px`.
+- `px`, `%`, `vw`, `vh` are allowed when token classes cannot express the intent.
+- Prefer Design Engine tokens and layout classes first (`w-sidebarWidth`, `h-headerHeight`, `layout-*`, `p-*`, `gap-*`).
+- CSS variable form `w-[var(--spacing-lg)]` — **ALLOWED** (value must start with `var(--)`).
+
+**NOT in scope — always allowed**:
+- Opacity modifiers: `bg-foreground/[0.04]`, `border-primary/[0.15]` ✅
+- Complex shadows: `shadow-[inset_0_1px_1px_rgb(var(--foreground)/0.12)]` ✅
+- `blur-[...]`, `saturate-[...]`, `backdrop-blur-[...]`, and other non-sizing arbitrary values ✅
+
+> **RULE**: If a size does not exist in the token scale, first try `vw/vh`, then `%`, then `px`. Never use `rem`/`em` fallbacks.
+
+---
+
+## GUARDRAIL 6 — Z-Index: 6 Semantic Tokens Only
+
+| FORBIDDEN | CORRECT |
+|-----------|---------|
+| `z-0`, `z-10`, `z-20`, `z-30`, `z-40`, `z-50` | `z-base` / `z-content` / `z-layout` |
+| `z-[9999]`, `z-[100]`, `z-[999]` | `z-overlay` / `z-popover` / `z-toast` |
+| `style="z-index: 100"` | use semantic token class |
+
+Token reference: `z-base(0)` · `z-content(10)` · `z-layout(40)` · `z-overlay(50)` · `z-popover(60)` · `z-toast(100)`
+
+If 6 tokens cannot express the stacking order: **restructure DOM stacking context**. Do NOT invent values.
+
+---
+
+## GUARDRAIL 7 — Anti-Utility-Soup: Rule of 7
+
+Count raw utility classes on any single element. If > 7, it is a strong signal that a layout macro shortcut is being missed.
+
+```html
+<!-- WARNING: 8+ classes — check if a shortcut covers the layout portion -->
+<div class="flex flex-col flex-1 min-h-0 overflow-hidden gap-md p-md bg-card rounded-md shadow-sm border border-border text-foreground">
+<!-- Above: col-fill covers the first 5 classes -->
+
+<!-- BETTER: use shortcut for the structural part -->
+<div class="col-fill gap-md p-md bg-card rounded-md shadow-sm border border-border text-foreground">
+```
+
+**Intent**: Normal UI elements regularly have 5–7 utility classes (padding + bg + radius + shadow + border + flex = natural). This rule triggers only when shortcut opportunities are clearly being ignored. Prefer layout macros (`col-fill`, `center`, `layout-container`) for structural concerns, then layer visual classes freely.
+
+---
+
+## GUARDRAIL 8 — Material Shortcut Mapping
+
+| Surface | Required shortcut |
+|---------|------------------|
+| ProTable / Data Grid | `material-solid` |
+| ProForm / Form containers | `material-elevated` |
+| Dialogs / Modals / Dropdowns | `glass-panel` |
+| Layout Sidebar / Header shell | `glass-shell` |
+| Dashboard cards (glass style) | `glass-card` |
+| Icon boxes (glass style) | `glass-icon-box` |
+| Decorative floating pills | `glass-capsule` |
+| Large cards (interactive) | `interactive-card` |
+| List rows (interactive) | `interactive-item` |
+| **DO NOT USE directly** | `glass-base` ← internal primitive |
+
+**FORBIDDEN**: `glass-*` inside `<ProTable>`, virtual lists, or nested inside another `glass-*` element (GPU performance).
+
+---
+
+## GUARDRAIL 9 — Transition Duration: Named Tokens
+
+```
+FORBIDDEN: duration-300, duration-200, duration-150, duration-500
+CORRECT:   duration-xs (180ms) · duration-sm (280ms) · duration-md (320ms) · duration-lg (420ms)
+```
+
+---
+
+## GUARDRAIL 10 — Pre-Output Self-Verification Checklist
+
+Before finalizing ANY template or style output:
+
+- [ ] Every shortcut appears in the Closed Shortcut Registry (Guardrail 1)
+- [ ] No shortcut appears alongside its own expansion (N-1, Guardrail 2)
+- [ ] No `flex` prefix before a flex shortcut (N-2, Guardrail 3)
+- [ ] No Tailwind palette color (`text-red-*`, `bg-blue-*`, `text-gray-*`)
+- [ ] No `bg-white`, `bg-black`, `text-white`, `text-black`
+- [ ] No `rem` / `em` in sizing classes, style blocks, or arbitrary values
+- [ ] Unit priority respected for raw sizing: `vw/vh > % > px`
+- [ ] No raw z-index class — only 6 semantic tokens
+- [ ] No element has > 7 raw utility classes for a structural pattern (Rule of 7)
+- [ ] `glass-base` not used directly — use `glass-panel`, `glass-capsule`, `glass-shell`, `glass-card`, or `glass-icon-box`
+- [ ] `duration-300` / `duration-200` not present — use named duration tokens

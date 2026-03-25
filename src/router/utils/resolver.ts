@@ -92,46 +92,13 @@ function findComponentFile(
 ): (() => Promise<unknown>) | null {
   for (const basePath of possiblePaths) {
     for (const ext of extensions) {
-      const fullPath = `${basePath}${ext}`
+      const fullPath: string = `${basePath}${ext}`
       if (modules[fullPath]) {
         return modules[fullPath]
       }
-      const matchedPath = findClosestPath(fullPath)
-      if (matchedPath) {
-        return modules[matchedPath]
-      }
     }
   }
   return null
-}
-
-function findClosestPath(targetPath: string): string | null {
-  const availablePaths = Object.keys(modules)
-  if (availablePaths.includes(targetPath)) {
-    return targetPath
-  }
-  const targetParts = targetPath.split('/').filter(Boolean)
-  for (const availablePath of availablePaths) {
-    const availableParts = availablePath.split('/').filter(Boolean)
-    if (isPathSimilar(targetParts, availableParts)) {
-      return availablePath
-    }
-  }
-  return null
-}
-
-function isPathSimilar(path1: string[], path2: string[]): boolean {
-  if (Math.abs(path1.length - path2.length) > 2) {
-    return false
-  }
-  const minLength = Math.min(path1.length, path2.length)
-  let matchCount = 0
-  for (let i = 0; i < minLength; i++) {
-    if (path1[i] === path2[i] || path1[i].includes(path2[i]) || path2[i].includes(path1[i])) {
-      matchCount++
-    }
-  }
-  return matchCount / minLength >= 0.7
 }
 
 export function validateComponentFile(componentName: string): {

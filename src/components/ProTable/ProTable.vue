@@ -1,7 +1,7 @@
 <script setup lang="ts" generic="T extends Record<string, unknown>">
 import type { VNode } from 'vue'
 import ProTableCell from './components/ProTableCell'
-import { buildDataTablePt, buildColumnPt, type DataTablePtOptions } from './presets/dataTablePt'
+import { buildDataTablePt, type DataTablePtOptions } from './presets/dataTablePt'
 import type { ProTableColumn } from './engine/types/column'
 import type { SortState, FilterState } from './engine/types/tableState'
 import type { PaginationConfig, ProTableProps } from './engine/types/props'
@@ -58,6 +58,9 @@ const pagConfig = computed<PaginationConfig>(() => {
   return props.pagination as PaginationConfig
 })
 
+/** Snapshot at init — merged into pageSizeOptions so switching away (e.g. 5→10) does not drop the initial size. */
+const initialPageSizeSnapshot: number = pagConfig.value.pageSize ?? PAGINATION_DEFAULTS.pageSize
+
 const enginePaginationEnabled = computed<boolean>(() => {
   return !!props.pagination && !props.infiniteScroll && !props.virtualScroll
 })
@@ -68,7 +71,7 @@ const ctrl = new TableController<T>({
   rowKey: String(props.rowKey ?? PRO_TABLE_PROPS_DEFAULTS.rowKey),
   serverMode: props.serverMode,
   paginationEnabled: enginePaginationEnabled.value,
-  initialPageSize: pagConfig.value.pageSize ?? PAGINATION_DEFAULTS.pageSize,
+  initialPageSize: initialPageSizeSnapshot,
   onLoad: params => emit('load', params),
 })
 
@@ -154,9 +157,6 @@ const tablePt = computed<Record<string, unknown>>(() => {
   return buildDataTablePt(options)
 })
 
-// Column PT is static (spacing only) — gridlines handled by scoped CSS
-const columnPt: Record<string, unknown> = buildColumnPt()
-
 const rowClassFn = computed<((data: T) => string) | undefined>(() => {
   if (!props.rowClassName) return undefined
   const fn = props.rowClassName
@@ -166,8 +166,11 @@ const paginationEnabled = computed(
   () => !!props.pagination && !props.infiniteScroll && !props.virtualScroll
 )
 const pageSizeOptions = computed<number[]>(() => {
-  if (pagConfig.value.pageSizeOptions) return pagConfig.value.pageSizeOptions
-  return [...PAGINATION_DEFAULTS.pageSizeOptions]
+  const base: number[] = pagConfig.value.pageSizeOptions
+    ? [...pagConfig.value.pageSizeOptions]
+    : [...PAGINATION_DEFAULTS.pageSizeOptions]
+  const merged = new Set<number>([...base, initialPageSizeSnapshot, ctrl.state.pagination.pageSize])
+  return Array.from(merged).sort((a: number, b: number) => a - b)
 })
 
 const scrollHeightValue = computed<string | undefined>(() => {
@@ -247,6 +250,13 @@ function getAlignClass(col: ProTableColumn<T>): string {
   return 'text-left'
 }
 
+function getHeaderAlignClass(col: ProTableColumn<T>): string {
+  const headerAlign = col.headerAlign ?? col.align
+  if (headerAlign === 'center') return 'justify-center text-center'
+  if (headerAlign === 'right') return 'justify-end text-right'
+  return 'justify-start text-left'
+}
+
 function getColumnClass(col: ProTableColumn<T>, row: T): string {
   if (!col.className) return ''
   return typeof col.className === 'function' ? col.className(row) : col.className
@@ -292,12 +302,18 @@ defineExpose({
 </script>
 
 <template>
-  <div :class="heightMode === 'fill' ? 'col-fill gap-sm' : 'w-full col-stack-sm'">
+  <div
+    :class="
+      heightMode === 'fill'
+        ? 'layout-full flex flex-col gap-sm overflow-hidden'
+        : 'w-full flex flex-col gap-sm'
+    "
+  >
     <div
       :class="
         heightMode === 'fill'
-          ? 'surface-elevated rounded-xl col-fill px-md py-sm'
-          : 'surface-elevated rounded-xl w-full px-md py-sm'
+          ? ' rounded-xl col-fill px-md py-sm'
+          : ' rounded-xl w-full px-md py-sm'
       "
     >
       <ProTableToolbar
@@ -322,7 +338,7 @@ defineExpose({
       >
         <template v-if="!virtualScroll">
           <DataTable
-            v-model:selection="tableSelection"
+            :selection="selectable ? tableSelection : undefined"
             :value="ctrl.processedRows.value"
             :class="[
               showHorizontalLines ? 'pro-table-h-lines' : '',
@@ -340,6 +356,7 @@ defineExpose({
                   ? 'multiple'
                   : undefined
             "
+            :meta-key-selection="false"
             :data-key="String(rowKey)"
             :row-class="rowClassFn ?? undefined"
             :resizable-columns="resizableColumns"
@@ -347,6 +364,7 @@ defineExpose({
             :reorderable-columns="reorderableColumns"
             :state-storage="stateStorage === false ? undefined : stateStorage"
             :state-key="stateKey"
+            @update:selection="selectable ? (tableSelection = $event) : undefined"
             @row-click="emit('row-click', $event.data)"
           >
             <!-- Selection column: left or unpinned (before data columns) -->
@@ -355,7 +373,6 @@ defineExpose({
               column-key="selection-left"
               selection-mode="multiple"
               :header-style="{ width: UI_DEFAULTS.selectionColumnWidth }"
-              :pt="columnPt"
               :frozen="selectionPinned === 'left'"
               :align-frozen="selectionPinned === 'left' ? 'left' : undefined"
             />
@@ -365,7 +382,6 @@ defineExpose({
               v-for="col in ctrl.visibleColumns.value"
               :key="col.id"
               :column-key="col.id"
-              :pt="columnPt"
               :style="{
                 width: col.width,
                 minWidth: col.minWidth,
@@ -377,7 +393,10 @@ defineExpose({
             >
               <template #header>
                 <div
-                  class="row-y-center gap-xs select-none"
+                  :class="[
+                    'flex flex-row items-center gap-xs select-none w-full',
+                    getHeaderAlignClass(col),
+                  ]"
                   @click="handleSortClick(col)"
                 >
                   <ProTableCell :node="renderHeader(col)" />
@@ -404,7 +423,6 @@ defineExpose({
               column-key="selection-right"
               selection-mode="multiple"
               :header-style="{ width: UI_DEFAULTS.selectionColumnWidth }"
-              :pt="columnPt"
               :frozen="true"
               align-frozen="right"
             />
@@ -466,30 +484,11 @@ defineExpose({
 
 <style scoped>
 /* ==========================================================================
-   1. Backgrounds (Zebra & Hover) via PrimeVue Tokens
-   Using color-mix with var(--card) creates an OPAQUE color.
-   This guarantees that sticky frozen columns inherit the exact color from <tr>
-   without letting scrolling columns bleed through them.
-   ========================================================================== */
-:deep(.p-datatable) {
-  --p-datatable-row-hover-background: color-mix(in srgb, rgb(var(--primary)) 16%, rgb(var(--card)));
-}
-
-:deep(.p-datatable-striped) {
-  --p-datatable-row-striped-background: color-mix(in srgb, rgb(var(--muted)) 60%, rgb(var(--card)));
-}
-
-:deep(.dark .p-datatable-striped),
-:deep(html.dark .p-datatable-striped) {
-  --p-datatable-row-striped-background: color-mix(in srgb, rgb(var(--muted)) 12%, rgb(var(--card)));
-}
-
-/* ==========================================================================
    2. Horizontal Lines Hijack (Physical Override for Independent Control)
    ========================================================================== */
 :deep(.pro-table-h-lines .p-datatable-thead > tr > th),
 :deep(.pro-table-h-lines .p-datatable-tbody > tr > td) {
-  border-bottom: 1.5px solid rgb(var(--border)) !important;
+  border-bottom: 1px solid rgb(var(--border)) !important;
 }
 
 :deep(.p-datatable:not(.pro-table-h-lines) .p-datatable-thead > tr > th),
@@ -502,51 +501,11 @@ defineExpose({
    ========================================================================== */
 :deep(.pro-table-v-lines .p-datatable-thead > tr > th),
 :deep(.pro-table-v-lines .p-datatable-tbody > tr > td) {
-  border-right: 1.5px solid rgb(var(--border)) !important;
+  border-right: 1px solid rgb(var(--border)) !important;
 }
 
 :deep(.pro-table-v-lines .p-datatable-thead > tr > th:last-child),
 :deep(.pro-table-v-lines .p-datatable-tbody > tr > td:last-child) {
   border-right-width: 0 !important;
-}
-
-/* ==========================================================================
-   5. Selected Row Hijack (Bulletproof Opacity via color-mix)
-   ========================================================================== */
-/* Base selected state */
-:deep(.p-datatable-tbody > tr.p-highlight > td),
-:deep(.p-datatable-tbody > tr[data-p-selected='true'] > td) {
-  background-color: color-mix(in srgb, rgb(var(--accent)) 16%, rgb(var(--card))) !important;
-}
-
-:deep(.dark .p-datatable-tbody > tr.p-highlight > td),
-:deep(.dark .p-datatable-tbody > tr[data-p-selected='true'] > td) {
-  background-color: color-mix(in srgb, rgb(var(--accent)) 100%, rgb(var(--card))) !important;
-}
-
-/* Hover state FOR selected rows (slightly darker) */
-:deep(.p-datatable-hoverable-rows .p-datatable-tbody > tr.p-highlight:hover > td),
-:deep(.p-datatable-hoverable-rows .p-datatable-tbody > tr[data-p-selected='true']:hover > td) {
-  background-color: color-mix(in srgb, rgb(var(--accent)) 18%, rgb(var(--card))) !important;
-}
-
-:deep(.dark .p-datatable-hoverable-rows .p-datatable-tbody > tr.p-highlight:hover > td),
-:deep(
-  .dark .p-datatable-hoverable-rows .p-datatable-tbody > tr[data-p-selected='true']:hover > td
-) {
-  background-color: color-mix(in srgb, rgb(var(--accent)) 100%, rgb(var(--card))) !important;
-}
-
-/* ==========================================================================
-   6. Frozen Columns Z-Index Fortification (Anti Bleed-Through)
-   ========================================================================== */
-/* Elevate body frozen columns to suppress rogue z-indexes in scrolling cells */
-:deep(.p-datatable-tbody > tr > td.p-datatable-frozen-column) {
-  z-index: 10 !important;
-}
-
-/* Elevate header frozen columns even higher so they stay above both scrolling content AND scrolling headers */
-:deep(.p-datatable-thead > tr > th.p-datatable-frozen-column) {
-  z-index: 11 !important;
 }
 </style>

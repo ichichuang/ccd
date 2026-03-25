@@ -23,18 +23,15 @@ watch(
 
 <template>
   <div class="layout-full relative">
-    <CScrollbar
-      ref="scrollbarRef"
-      class="layout-full shadow-sm dark:shadow-md"
-    >
-      <AnimateRouterView class="flex-1" />
+    <CScrollbar ref="scrollbarRef">
+      <AnimateRouterView class="layout-full flex-1 min-h-0" />
     </CScrollbar>
 
     <!-- 内容区 Loading 遮罩：路由切换时显示 -->
     <Transition name="fade">
       <div
         v-show="isPageLoading && !isFullscreen"
-        class="absolute inset-0 z-10 center backdrop-blur-sm pointer-events-auto"
+        class="layout-full absolute-center z-10 backdrop-blur-sm pointer-events-auto"
       >
         <Loading size="xl" />
       </div>

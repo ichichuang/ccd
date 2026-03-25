@@ -58,9 +58,10 @@ export function fadeOutNativePreloader() {
   hasNativePreloaderHandedOff = true
   const el = typeof document !== 'undefined' ? document.getElementById('preloader-bg') : null
   if (!el) return
-  el.style.opacity = '0'
-  el.style.visibility = 'hidden'
-  setTimeout(() => el.remove(), 600)
+  el.classList.add('preloader-fade-out')
+  setTimeout(() => {
+    el.remove()
+  }, 400)
 }
 
 export function useLoading() {

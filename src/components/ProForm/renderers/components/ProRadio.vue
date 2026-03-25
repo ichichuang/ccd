@@ -45,12 +45,12 @@ const handleUpdate = (value: unknown): void => {
   </span>
   <div
     v-else
-    class="layout-wrap gap-xs"
+    class="flex flex-wrap gap-xs"
   >
     <label
       v-for="option in options"
       :key="String(option.value)"
-      class="inline-flex items-center gap-xs cursor-pointer text-foreground text-sm"
+      class="row-center gap-xs cursor-pointer text-foreground text-sm"
     >
       <RadioButton
         :value="option.value"

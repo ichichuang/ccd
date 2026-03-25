@@ -34,10 +34,10 @@ export const productColumns: ProTableColumn<ProductRow>[] = [
     id: 'sku',
     title: 'SKU',
     field: 'sku',
-    width: '110px',
+    width: '140px',
     pinned: 'left',
     headerRender: () => (
-      <div class="row-y-center gap-xs">
+      <div class="flex flex-row items-center gap-xs">
         <Icons name="i-lucide-hash" />
         <span>SKU</span>
       </div>
@@ -51,7 +51,7 @@ export const productColumns: ProTableColumn<ProductRow>[] = [
     sortable: true,
     filterable: true,
     render: ({ row }: ColumnRenderParams<ProductRow>) => (
-      <div class="row-y-center gap-xs">
+      <div class="flex flex-row items-center gap-xs">
         <Icons
           name="i-lucide-package"
           size="xs"
@@ -97,7 +97,7 @@ export const productColumns: ProTableColumn<ProductRow>[] = [
     id: 'stock',
     title: '库存',
     field: 'stock',
-    width: '160px',
+    width: '200px',
     sortable: true,
     render: ({ row }: ColumnRenderParams<ProductRow>) => {
       const stock = row.stock
@@ -105,7 +105,7 @@ export const productColumns: ProTableColumn<ProductRow>[] = [
       const pct = Math.min(100, Math.round((stock / maxStock) * 100))
       const barCls = pct > 40 ? 'bg-success' : pct > 15 ? 'bg-warn' : 'bg-danger'
       return (
-        <div class="col-stack-xs w-full">
+        <div class="flex flex-col gap-xs w-full">
           <div class="row-between">
             <span class="text-xs">{stock} 件</span>
             <span class="text-xs text-muted-foreground">{pct}%</span>
@@ -134,7 +134,7 @@ export const productColumns: ProTableColumn<ProductRow>[] = [
     id: 'createdAt',
     title: '上架日期',
     field: 'createdAt',
-    width: '120px',
+    width: '180px',
     filterable: true,
     filterType: 'date',
     render: ({ row }: ColumnRenderParams<ProductRow>) =>
@@ -143,11 +143,10 @@ export const productColumns: ProTableColumn<ProductRow>[] = [
   {
     id: 'actions',
     title: '操作',
-    width: '130px',
+    width: '200px',
     pinned: 'right',
-    align: 'center',
     render: ({ row }: ColumnRenderParams<ProductRow>) => (
-      <div class="center gap-xs">
+      <div class="center gap-sm w-full ">
         <Button
           size="small"
           onClick={() => window.$toast?.infoIn('top-right', '编辑', `商品：${row.name}`)}

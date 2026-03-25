@@ -20,6 +20,7 @@ import AdminSidebarLogo from '@/layouts/components/admin/AdminSidebarLogo'
 import AdminSidebarMenu from '@/layouts/components/admin/AdminSidebarMenu'
 import { Icons } from '@/components/Icons'
 import { CScrollbar } from '@/components/CScrollbar'
+import { BREAKPOINTS } from '@/constants/breakpoints'
 
 /**
  * LayoutAdmin（Admin 壳）- TSX 版本
@@ -86,58 +87,9 @@ export default defineComponent({
       { immediate: true }
     )
 
-    // --- 响应式适配：仅协调侧栏/抽屉；布局模式由 layoutStore.effectiveMode 派生 ---
-    function runAdaptive() {
-      const force = !layoutStore.userAdjusted
-      // runAdaptive 不再修改布局模式，mode 由 layoutStore.effectiveMode 响应式派生
-      if (deviceStore.type === 'PC') {
-        layoutStore.adaptPcByOrientation(deviceStore.orientation)
-        if (layoutStore.showSidebar) {
-          layoutStore.adaptPcByBreakpoint(deviceStore.currentBreakpoint, force)
-        }
-        return
-      }
-
-      if (deviceStore.type === 'Tablet') {
-        if (deviceStore.isMobileLayout) {
-          layoutStore.adaptToTablet(true, true)
-        } else {
-          layoutStore.adaptToTablet(false, true)
-          if (layoutStore.showSidebar) {
-            layoutStore.adaptPcByBreakpoint(deviceStore.currentBreakpoint, force)
-          }
-        }
-        return
-      }
-
-      if (deviceStore.isMobileLayout) {
-        layoutStore.adaptToMobile(true, true)
-        return
-      }
-
-      // Mobile 大视口：恢复侧栏模式，再按断点收展
-      layoutStore.adaptToMobile(false, true)
-      if (layoutStore.showSidebar) {
-        layoutStore.adaptPcByBreakpoint(deviceStore.currentBreakpoint, force)
-      }
-    }
-
     onMounted(() => {
       layoutStore.migrateLegacyVisibilityIfNeeded()
-      runAdaptive()
     })
-
-    watch(
-      () => [
-        deviceStore.isMobileLayout,
-        deviceStore.isTabletLayout,
-        deviceStore.isPCLayout,
-        deviceStore.currentBreakpoint,
-        deviceStore.type,
-        deviceStore.orientation,
-      ],
-      () => runAdaptive()
-    )
 
     watch(
       () => route.path,
@@ -148,78 +100,59 @@ export default defineComponent({
       }
     )
 
-    // --- AdminLayoutMode：结构模式（三态状态机）---
-    const mode = computed(() => layoutStore.mode)
-    const isHorizontal = computed(() => mode.value === 'horizontal')
-    // Drawer Zone (< 768px): xs and sm MUST trigger Drawer to avoid Top Menu overflow
-    const isDrawerMode = computed(
-      () =>
-        (deviceStore.type === 'Mobile' || ['xs', 'sm'].includes(deviceStore.currentBreakpoint)) &&
-        mode.value === 'horizontal'
-    )
+    // 1. The Strict Drawer Matrix
+    const isDrawerMode = computed<boolean>(() => {
+      if (deviceStore.type === 'Mobile') return true
+      if (deviceStore.type === 'Tablet') return deviceStore.width < BREAKPOINTS.md
+      return false // PC never uses Drawer
+    })
+
+    // 2. Effective Mode：Drawer 时强制 horizontal
+    const effectiveMode = computed<AdminLayoutMode>(() => {
+      if (isDrawerMode.value) return 'horizontal'
+      return layoutStore.preferredMode
+    })
+    const isHorizontal = computed(() => effectiveMode.value === 'horizontal')
     const showDrawerTrigger = computed(() => isDrawerMode.value)
 
     // --- 展示开关（store 仅由配置面板控制）---
     const showHeader = computed(() => layoutStore.showHeader)
     const showLogo = computed(() => layoutStore.showLogo)
     const showMenu = computed(() => layoutStore.showMenu)
-    // Top menu in header: horizontal/mix and not Drawer mode
-    const showTopMenuEffective = computed(
-      () =>
-        layoutStore.showMenu &&
-        (mode.value === 'horizontal' || mode.value === 'mix') &&
-        !isDrawerMode.value
-    )
-    // Logo text: Drawer Zone always show; Tablet always; PC narrow (md/lg) hide for Top Menu
-    const showLogoText = computed(() => {
-      const type = deviceStore.type
-      const bp = deviceStore.currentBreakpoint
-
-      // 1. Drawer Zone (< 768px or Mobile): ALWAYS show text
-      if (type === 'Mobile' || ['xs', 'sm'].includes(bp)) return true
-
-      // 2. Tablet: Always show text, even when falling back to Top Menu
-      if (type === 'Tablet') return true
-
-      // 3. PC Narrow (md, lg): HIDE text to save space for Top Menu
-      if (type === 'PC' && ['md', 'lg'].includes(bp)) return false
-
-      // 4. Wide screens: Show text
-      return true
+    // 首屏 handoff 期间禁止渲染高饱和度环境光球，避免在遮罩切换时出现整屏色洗
+    const showAmbientOrbs = computed<boolean>(() => !layoutStore.isLoading)
+    // 4. The Strict Logo Text Visibility
+    const showLogoText = computed<boolean>(() => {
+      // Show text ONLY on PC when width is large enough (>= lg).
+      // If PC is squeezed below lg, or if it's Tablet/Mobile, show ICON ONLY.
+      return deviceStore.type === 'PC' && deviceStore.width >= BREAKPOINTS.lg
     })
 
-    // --- 有效显隐：仅非 PC 且小视口时强制隐藏侧栏等；PC 端完全由配置面板控制，仅按断点收展 ---
-    const showSidebarEffective = computed(() =>
-      deviceStore.type === 'PC'
-        ? layoutStore.showSidebar
-        : isDrawerMode.value
-          ? false
-          : layoutStore.showSidebar
-    )
-    const showTabsEffective = computed(() =>
-      deviceStore.type === 'PC'
-        ? layoutStore.showTabs
-        : isDrawerMode.value
-          ? false
-          : layoutStore.showTabs
-    )
-    const showBreadcrumbEffective = computed(() =>
-      deviceStore.type === 'PC'
-        ? layoutStore.showBreadcrumb
-        : isDrawerMode.value
-          ? false
-          : layoutStore.showBreadcrumb
-    )
-    const showFooterEffective = computed(() =>
-      deviceStore.type === 'PC'
-        ? layoutStore.showFooter
-        : isDrawerMode.value
-          ? false
-          : layoutStore.showFooter
-    )
+    // 5. 面包屑：仅物理 PC 且视口宽度 ≥ lg
+    const showBreadcrumbEffective = computed<boolean>(() => {
+      return (
+        layoutStore.showBreadcrumb &&
+        deviceStore.type === 'PC' &&
+        deviceStore.width >= BREAKPOINTS.lg
+      )
+    })
+
+    // 2. The Strict Top Menu Visibility
+    const showTopMenuEffective = computed<boolean>(() => {
+      return layoutStore.showMenu && !isDrawerMode.value
+    })
+
+    // 3. The Strict Sidebar Visibility
+    const showSidebarEffective = computed<boolean>(() => {
+      return layoutStore.showSidebar && !isDrawerMode.value
+    })
+    const showTabsEffective = computed(() => layoutStore.showTabs)
+    const showFooterEffective = computed(() => layoutStore.showFooter)
 
     const showSidebarToggle = computed(
-      () => showSidebarEffective.value && (mode.value === 'vertical' || mode.value === 'mix')
+      () =>
+        showSidebarEffective.value &&
+        (effectiveMode.value === 'vertical' || effectiveMode.value === 'mix')
     )
 
     // --- 固定行为（当前仅输出 class 占位，sticky/calc 由后续样式完善） ---
@@ -236,13 +169,17 @@ export default defineComponent({
     const bodyTransitionDuration = 'var(--transition-md)'
 
     const renderContent = () => (
-      <main class="col-fill min-w-0 bg-sidebar">
-        <AdminBreadcrumbBar show={showBreadcrumbEffective.value} />
-        <AdminTabsBar show={showTabsEffective.value} />
-        <section class="flex-1 min-h-0 overflow-hidden rounded-2xl bg-background">
-          <AppContainer />
+      <main class="flex-1 layout-full flex flex-col min-w-0 min-h-0 overflow-hidden transition-all duration-md ease-spring bg-transparent">
+        <div class="backdrop-blur-md bg-sidebar">
+          <AdminBreadcrumbBar show={showBreadcrumbEffective.value} />
+        </div>
+        <div class="backdrop-blur-md bg-sidebar">
+          <AdminTabsBar show={showTabsEffective.value} />
+        </div>
+        <section class={['col-fill', 'min-w-0', 'bg-transparent']}>
+          <AppContainer class="min-w-0 overflow-hidden" />
         </section>
-        <div class="bg-sidebar shrink-0">
+        <div class="backdrop-blur-md bg-sidebar">
           <AdminFooterBar show={showFooterEffective.value} />
         </div>
       </main>
@@ -251,19 +188,23 @@ export default defineComponent({
     const renderBody = () => {
       // horizontal：header 下方直接 content
       if (isHorizontal.value) {
-        return <div class="col-fill bg-background">{renderContent()}</div>
+        return <div class="col-fill">{renderContent()}</div>
       }
 
       // vertical/mix：sidebar + content
       return (
-        <div class="flex-1 min-h-0 flex overflow-hidden bg-sidebar">
-          <AdminSidebar
-            mode={mode.value}
-            showSidebar={showSidebarEffective.value}
-            sidebarCollapse={layoutStore.sidebarCollapse}
-            sidebarFixed={sidebarFixed.value}
-            sidebarWidthClass={sidebarWidthClass.value}
-          />
+        <div class="flex-1 min-h-0 row-start overflow-hidden transition-all duration-md ease-out">
+          <div class="shrink-0 self-stretch overflow-hidden transition-all duration-md ease-out bg-sidebar backdrop-blur">
+            {showAmbientOrbs.value && (
+              <AdminSidebar
+                mode={effectiveMode.value}
+                showSidebar={showSidebarEffective.value}
+                sidebarCollapse={layoutStore.sidebarCollapse}
+                sidebarFixed={sidebarFixed.value}
+                sidebarWidthClass={sidebarWidthClass.value}
+              />
+            )}
+          </div>
           {renderContent()}
         </div>
       )
@@ -281,15 +222,15 @@ export default defineComponent({
           leaveActiveClass="animate__animated animate__fadeOut"
         >
           <div
-            key={mode.value}
-            class="col-fill bg-background"
+            key={effectiveMode.value}
+            class="col-fill"
             style={bodyTransitionStyle}
           >
             {renderBody()}
           </div>
         </Transition>
       ) : (
-        <div class="col-fill bg-background">{renderBody()}</div>
+        <div class="col-fill">{renderBody()}</div>
       )
       const drawerUpdateVisibleProps: Record<string, unknown> = {
         ['onUpdate:visible']: (val: boolean) => {
@@ -297,26 +238,44 @@ export default defineComponent({
         },
       }
       return (
-        <div class="flex flex-col  h-full">
-          <AdminHeader
-            mode={mode.value}
-            showHeader={showHeader.value}
-            showLogo={showLogo.value}
-            showLogoText={showLogoText.value}
-            showMenu={showMenu.value}
-            showTopMenuEffective={showTopMenuEffective.value}
-            showDrawerTrigger={showDrawerTrigger.value}
-            headerFixed={headerFixed.value}
-            isDark={isDark.value}
-            isAnimating={isAnimating.value}
-            onToggleTheme={(event: MouseEvent) => toggleThemeWithAnimation(event)}
-            showSidebarToggle={showSidebarToggle.value}
-            sidebarCollapse={layoutStore.sidebarCollapse}
-            onToggleCollapse={(_e: MouseEvent) => layoutStore.toggleCollapse()}
-          />
+        <div class="layout-screen flex flex-col relative overflow-hidden">
+          {/* Z0: Canvas base + ambient orbs — behind all content */}
+          <div
+            class="absolute inset-0 z-base pointer-events-none overflow-hidden"
+            aria-hidden="true"
+          >
+            <div class="absolute inset-0 bg-background" />
+            {showAmbientOrbs.value && (
+              <>
+                <div class="absolute -top-1/4 -left-1/4 w-[65vw] h-[65vw] rounded-full bg-primary/[0.06] blur-[100px] animate-orb-drift" />
+                <div class="absolute -bottom-1/4 -right-1/4 w-[55vw] h-[55vw] rounded-full bg-accent/[0.05] blur-[55px] animate-orb-drift-alt" />
+                <div class="absolute top-[35%] left-[25%] w-[42vw] h-[42vw] rounded-full bg-info/[0.035] blur-[45px] animate-orb-pulse" />
+              </>
+            )}
+          </div>
+          {showHeader.value && (
+            <div class="shrink-0 row-between h-headerHeight px-xs sm:px-sm md:px-md border-b-solid border-border bg-sidebar backdrop-blur">
+              <AdminHeader
+                mode={effectiveMode.value}
+                showHeader={showHeader.value}
+                showLogo={showLogo.value}
+                showLogoText={showLogoText.value}
+                showMenu={showMenu.value}
+                showTopMenuEffective={showTopMenuEffective.value}
+                showDrawerTrigger={showDrawerTrigger.value}
+                headerFixed={headerFixed.value}
+                isDark={isDark.value}
+                isAnimating={isAnimating.value}
+                onToggleTheme={(event: MouseEvent) => toggleThemeWithAnimation(event)}
+                showSidebarToggle={showSidebarToggle.value}
+                sidebarCollapse={layoutStore.sidebarCollapse}
+                onToggleCollapse={(_e: MouseEvent) => layoutStore.toggleCollapse()}
+              />
+            </div>
+          )}
           {bodyContent}
           {/* 移动端抽屉导航：仅在 Drawer 模式下挂载，避免桌面端无意义的 VNode 开销 */}
-          {isDrawerMode.value && (
+          {isDrawerMode.value && showAmbientOrbs.value && (
             <Drawer
               visible={layoutStore.mobileDrawerOpen}
               {...drawerUpdateVisibleProps}
@@ -328,13 +287,11 @@ export default defineComponent({
               class="w-sidebarWidth max-w-[80vw]"
               v-slots={{
                 container: () => (
-                  <div class="admin-sidebar--fixed py-md col-fill select-none bg-background text-foreground">
+                  <div class="admin-sidebar--fixed py-md layout-full flex flex-col select-none">
                     <AdminSidebarLogo />
-                    <div class="col-fill">
-                      <CScrollbar class="col-fill px-md">
-                        <AdminSidebarMenu sidebarCollapse={false} />
-                      </CScrollbar>
-                    </div>
+                    <CScrollbar class="col-fill px-md">
+                      <AdminSidebarMenu sidebarCollapse={false} />
+                    </CScrollbar>
                   </div>
                 ),
               }}
@@ -348,10 +305,10 @@ export default defineComponent({
         scope="global"
         v-slots={{
           menu: ({ close, event }: { close: () => void; event: MouseEvent }) => (
-            <div class="min-w-[var(--spacing-4xl)] surface-elevated rounded-md p-xs col-stack-xs select-none">
+            <div class="min-w-[var(--spacing-4xl)] rounded-md p-xs flex flex-col gap-xs select-none">
               {/* 重新载入 */}
               <div
-                class="row-y-center gap-sm px-sm py-xs rounded-md text-sm text-foreground hover:bg-primary hover:text-primary-foreground cursor-pointer transition-colors duration-md"
+                class="flex items-center gap-sm px-sm py-xs rounded-md text-sm hover:bg-primary hover:text-primary-foreground cursor-pointer transition-colors duration-md"
                 onClick={() => {
                   onContextReload()
                   close()
@@ -367,7 +324,7 @@ export default defineComponent({
 
               {/* 设置 */}
               <div
-                class="row-y-center gap-sm px-sm py-xs rounded-md text-sm text-foreground hover:bg-primary hover:text-primary-foreground cursor-pointer transition-colors duration-md"
+                class="flex items-center gap-sm px-sm py-xs rounded-md text-sm hover:bg-primary hover:text-primary-foreground cursor-pointer transition-colors duration-md"
                 onClick={() => {
                   openGlobalSettings()
                   close()
@@ -383,7 +340,7 @@ export default defineComponent({
 
               {/* 动态切换深/浅色模式 */}
               <div
-                class="row-y-center gap-sm px-sm py-xs rounded-md text-sm text-foreground hover:bg-primary hover:text-primary-foreground cursor-pointer transition-colors duration-md"
+                class="flex items-center gap-sm px-sm py-xs rounded-md text-sm hover:bg-primary hover:text-primary-foreground cursor-pointer transition-colors duration-md"
                 onClick={() => {
                   onContextToggleTheme(event)
                   close()

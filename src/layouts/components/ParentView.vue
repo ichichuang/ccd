@@ -8,5 +8,7 @@ defineOptions({ name: 'ParentView' })
 </script>
 
 <template>
-  <router-view />
+  <div class="layout-full min-h-0">
+    <router-view />
+  </div>
 </template>

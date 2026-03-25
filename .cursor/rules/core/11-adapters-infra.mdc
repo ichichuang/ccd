@@ -1,0 +1,22 @@
+---
+description: Enforces the architectural boundaries for Adapters (Anti-Corruption Layer), Infra (Dependency Injection), and Types taxonomy.
+globs: ["src/adapters/**/*.ts", "src/infra/**/*.ts", "src/types/**/*.ts", "src/**/*.ts"]
+alwaysApply: true
+---
+
+# Architecture Boundaries: Adapters, Infra & Types
+
+## 1. The Anti-Corruption Layer (`src/adapters/`)
+- **Purpose:** This is the ONLY layer where explicit type casting (`as Type`) from `unknown` or `any` is architecturally permitted.
+- **Trigger:** Create/use an adapter when external untrusted data (HTTP responses, raw localStorage, 3rd party library callbacks like ECharts) enters the system and needs structural validation before being strictly typed.
+
+## 2. Dependency Breakers (`src/infra/`)
+- **Purpose:** Dependency Injection (DI) containers used STRICTLY to break circular dependencies.
+- **Trigger:** Use this pattern when Module A needs Module B, but importing B into A causes a module initialization cycle (e.g., HTTP Interceptors needing Pinia Stores, or Pinia Layout Store needing Router functions).
+
+## 3. Type Taxonomy (`src/types/`)
+When creating new types, you MUST place them in the correct tier:
+- `dto/`: Backend API Request/Response shapes. (Standard `.ts` files, imported by `src/api`).
+- `systems/`: Core subsystem contracts (Theme, Size, Layout). (Must be `.d.ts` using `declare global`).
+- `modules/`: Third-party module augmentations (e.g., `vue-router` RouteMeta extensions). (Must be `.d.ts`).
+- **Root Files:** Files like `auto-imports.d.ts`, `components.d.ts`, and `env.d.ts` are Vite/TS toolchain outputs. **NEVER move or manually modify them.**

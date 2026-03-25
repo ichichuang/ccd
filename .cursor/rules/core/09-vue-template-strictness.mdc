@@ -1,0 +1,184 @@
+---
+description: Strict enforcement rules for Vue SFC template blocks and script setup type safety. Bans TypeScript syntax inside <template>, forbids any/unknown in component logic, and mandates computed-based type narrowing.
+globs: ["src/**/*.vue", "src/**/*.tsx"]
+alwaysApply: true
+---
+
+# Rule 09 — Vue Template & Component Type Strictness
+
+## Why This Rule Exists
+
+The Vue compiler processes `<template>` HTML blocks through its own AST parser **before** TypeScript sees them. TypeScript constructs inside the template are either silently ignored, produce runtime `undefined`, or crash the compiler. All type narrowing MUST happen in `<script setup>` before the template consumes a value.
+
+---
+
+## 1. Absolute Ban: TypeScript in `<template>`
+
+### ❌ FORBIDDEN — TypeScript casting in template
+
+```vue
+<template>
+  <!-- FORBIDDEN: 'as Type' assertion -->
+  <UserAvatar :user="item as UserInfo" />
+
+  <!-- FORBIDDEN: angle-bracket generic cast -->
+  <span>{{ (<string>value).toUpperCase() }}</span>
+
+  <!-- FORBIDDEN: typeof operator -->
+  <div v-if="typeof count === 'number'">{{ count }}</div>
+
+  <!-- FORBIDDEN: satisfies operator -->
+  <MyComponent :config="opts satisfies Config" />
+
+  <!-- FORBIDDEN: non-null assertion -->
+  <span>{{ user!.name }}</span>
+</template>
+```
+
+All of the above will either silently break, produce a compile error, or cause unexpected runtime behavior.
+
+### ✅ REQUIRED — Narrow types in `<script setup>` via computed
+
+```vue
+<script setup lang="ts">
+import type { UserInfo } from '@/types/UserTypes'
+
+// Cast once, safely, in script — template receives a clean typed value
+const typedUser = computed(() => props.item as UserInfo)
+const upperValue = computed(() => (value.value as string).toUpperCase())
+const isNumber = computed(() => typeof count.value === 'number')
+const userName = computed(() => user.value?.name ?? '')
+</script>
+
+<template>
+  <UserAvatar :user="typedUser" />
+  <span>{{ upperValue }}</span>
+  <div v-if="isNumber">{{ count }}</div>
+  <span>{{ userName }}</span>
+</template>
+```
+
+---
+
+## 2. Template Expressions — Allowed vs Forbidden Quick Reference
+
+| Expression type | Template allowed? | Correct location |
+|----------------|:-----------------:|-----------------|
+| `as Type` cast | ❌ Never | `computed()` in `<script setup>` |
+| `typeof x` | ❌ Never | `computed()` in `<script setup>` |
+| `x!` non-null assertion | ❌ Never | `computed()` or `x?.y ?? default` |
+| `<Type>x` angle-bracket cast | ❌ Never | `computed()` in `<script setup>` |
+| `x satisfies T` | ❌ Never | `computed()` in `<script setup>` |
+| Ternary `? :` | ✅ Allowed | Template fine for simple conditions |
+| Optional chain `?.` | ✅ Allowed | Template safe |
+| Nullish coalescing `??` | ✅ Allowed | Template safe |
+| Method calls `.toUpperCase()` | ✅ Allowed | Safe when value is already correctly typed |
+
+---
+
+## 3. Absolute Ban: `any` in Component Logic
+
+`any` destroys type safety silently — errors surface only at runtime, never at compile time.
+
+### ❌ FORBIDDEN
+
+```typescript
+const data = ref<any>(null)
+const items = ref<any[]>([])
+function process(val: any): any { /* ... */ }
+const handler = (e: any) => e.target.value
+```
+
+### ✅ REQUIRED — Explicit types or generics
+
+```typescript
+const data = ref<UserInfo | null>(null)
+const items = ref<UserInfo[]>([])
+function process(val: UserInfo): ProcessedResult { /* ... */ }
+const handler = (e: Event) => (e.target as HTMLInputElement).value
+```
+
+**`any` is permitted ONLY in these paths (per project governance):**
+
+- `src/adapters/**`
+- `src/utils/http/interceptors.ts`
+- `src/utils/safeStorage/**`
+- `src/utils/date/**`
+- `src/components/UseEcharts/**`
+- `src/hooks/modules/useChartTheme/**`
+
+---
+
+## 4. `unknown` Requires a Type Guard Before Use
+
+`unknown` is the correct type for external/untyped data, but must be narrowed before accessing any properties or methods.
+
+### ❌ FORBIDDEN
+
+```typescript
+function handle(val: unknown) {
+  return val.toString() // TS error — unknown has no methods
+}
+```
+
+### ✅ REQUIRED — Guard before access
+
+```typescript
+function handle(val: unknown): string {
+  if (typeof val === 'string') return val.toUpperCase()
+  if (typeof val === 'number') return String(val)
+  return ''
+}
+```
+
+---
+
+## 5. All Props Must Be Typed
+
+### ❌ FORBIDDEN — untyped runtime array syntax
+
+```typescript
+const props = defineProps(['name', 'value'])
+```
+
+### ✅ REQUIRED — generic type syntax
+
+```typescript
+const props = defineProps<{
+  name: string
+  value: number
+  optional?: boolean
+}>()
+```
+
+---
+
+## 6. Composables Must Declare Explicit Return Types
+
+Without an explicit return type, TypeScript infers a complex anonymous object type that consumers cannot reference — causing "inferred type cannot be named" build failures in `.d.ts` generation.
+
+### ❌ FORBIDDEN
+
+```typescript
+export function useMyFeature() {
+  const count = ref(0)
+  return { count } // return type inferred — will fail in declaration emit
+}
+```
+
+### ✅ REQUIRED
+
+```typescript
+import type { Ref } from 'vue'
+
+interface MyFeatureReturn {
+  count: Ref<number>
+  increment: () => void
+}
+
+export function useMyFeature(): MyFeatureReturn {
+  const count = ref(0)
+  const increment = () => count.value++
+  return { count, increment }
+}
+```

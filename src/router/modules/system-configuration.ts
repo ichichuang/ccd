@@ -14,7 +14,6 @@ const systemConfigurationRoutes: RouteConfig[] = [
         component: () => import('@/views/system-configuration/theme.vue'),
         meta: {
           titleKey: 'router.systemConfigurationTheme',
-          rank: 1,
           icon: 'i-lucide-palette',
         },
       },
@@ -24,8 +23,16 @@ const systemConfigurationRoutes: RouteConfig[] = [
         component: () => import('@/views/system-configuration/size.vue'),
         meta: {
           titleKey: 'router.systemConfigurationSize',
-          rank: 2,
           icon: 'i-lucide-maximize-2',
+        },
+      },
+      {
+        path: '/system-configuration/unocss',
+        name: 'unocss',
+        component: () => import('@/views/system-configuration/unocss.vue'),
+        meta: {
+          titleKey: 'router.systemConfigurationUnocss',
+          icon: 'i-lucide-diamond',
         },
       },
       {
@@ -34,7 +41,6 @@ const systemConfigurationRoutes: RouteConfig[] = [
         component: () => import('@/views/system-configuration/breakpoints.vue'),
         meta: {
           titleKey: 'router.systemConfigurationBreakpoints',
-          rank: 3,
           icon: 'i-lucide-monitor',
         },
       },
@@ -44,7 +50,6 @@ const systemConfigurationRoutes: RouteConfig[] = [
         component: () => import('@/views/system-configuration/layout.vue'),
         meta: {
           titleKey: 'router.systemConfigurationLayout',
-          rank: 4,
           icon: 'i-lucide-layout-dashboard',
         },
       },
@@ -54,18 +59,7 @@ const systemConfigurationRoutes: RouteConfig[] = [
         component: () => import('@/views/system-configuration/scrollbar.vue'),
         meta: {
           titleKey: 'router.systemConfigurationScrollbar',
-          rank: 5,
           icon: 'i-lucide-layout',
-        },
-      },
-      {
-        path: '/system-configuration/unocss',
-        name: 'unocss',
-        component: () => import('@/views/system-configuration/unocss.vue'),
-        meta: {
-          titleKey: 'router.systemConfigurationUnocss',
-          rank: 6,
-          icon: 'i-lucide-diamond',
         },
       },
     ],

@@ -1,1662 +1,487 @@
 <script setup lang="ts">
-import type { ScrollbarInstance } from '@/components/CScrollbar'
-import { usePrimeVueScrollSpy } from './composables/usePrimeVueScrollSpy'
-import { useConfirm } from 'primevue/useconfirm'
-import { useToast } from 'primevue/usetoast'
+defineOptions({ name: 'PrimeVueExampleView' })
 
-// --- 导航锚点（单一数据源，驱动左侧标题与右侧目录树） ---
-interface SectionMeta {
-  id: string
-  indexLabel: string
+interface OptionItem {
   label: string
+  value: string
 }
 
-const sectionMeta: SectionMeta[] = [
-  { id: 'section-button', indexLabel: '1.', label: 'Button' },
-  { id: 'section-input', indexLabel: '2.', label: '输入框' },
-  { id: 'section-select', indexLabel: '3.', label: 'Select / MultiSelect' },
-  { id: 'section-selectbutton', indexLabel: '3.1', label: 'SelectButton' },
-  { id: 'section-autocomplete', indexLabel: '3.2', label: 'AutoComplete / Listbox' },
-  { id: 'section-checkbox', indexLabel: '4.', label: 'Checkbox / Radio / ToggleSwitch' },
-  { id: 'section-date', indexLabel: '5.', label: 'DatePicker' },
-  { id: 'section-slider', indexLabel: '6.', label: 'Slider / Rating' },
-  { id: 'section-tag', indexLabel: '7.', label: 'Tag / Badge / Chip' },
-  {
-    id: 'section-divider',
-    indexLabel: '7.1',
-    label: 'Divider / InlineMessage / Fieldset',
-  },
-  { id: 'section-card', indexLabel: '8.', label: 'Card / Panel' },
-  { id: 'section-message', indexLabel: '9.', label: 'Message / Toast' },
-  { id: 'section-dialog', indexLabel: '10.', label: 'Dialog / ConfirmPopup' },
-  { id: 'section-drawer', indexLabel: '10.1', label: 'Drawer / Popover' },
-  { id: 'section-menu', indexLabel: '11.', label: 'Menu / Menubar / ContextMenu' },
-  { id: 'section-tab-accordion', indexLabel: '11.1', label: 'Tabs / Accordion' },
-  { id: 'section-tree', indexLabel: '11.2', label: 'Tree / Paginator' },
-  {
-    id: 'section-upload',
-    indexLabel: '11.3',
-    label: 'FileUpload / ProgressSpinner',
-  },
-  {
-    id: 'section-floatlabel',
-    indexLabel: '11.4',
-    label: 'FloatLabel / Splitter',
-  },
-  { id: 'section-other', indexLabel: '12.', label: 'Breadcrumb / ProgressBar / Skeleton' },
-]
-
-// --- Scroll Spy & 目录导航（逻辑已抽取至 composables/usePrimeVueScrollSpy） ---
-const scrollbarRef = ref<ScrollbarInstance | null>(null)
-const tocAsideRef = ref<HTMLElement | null>(null)
-const {
-  sections,
-  tocTreeNodes,
-  tocSelectionKeys,
-  onTocNodeSelect,
-  onScrollbarInitialized,
-  throttledComputeActiveSection,
-} = usePrimeVueScrollSpy(scrollbarRef, tocAsideRef, sectionMeta)
-
-// --- Button ---
-const loading = ref<boolean>(false)
-function load() {
-  loading.value = true
-  setTimeout(() => {
-    loading.value = false
-  }, 2000)
-}
-
-// --- Input ---（PrimeVue 部分组件 modelValue 类型含 undefined，此处统一允许）
-const inputText = ref<string | undefined>('')
-const inputPassword = ref<string | undefined>('')
-const textareaVal = ref<string | undefined>('')
-const inputNumberVal = ref<number | null>(null)
-
-// --- Select ---
-interface CityOption {
+interface MemberItem {
+  id: string
   name: string
-  code: string
+  role: string
+  status: string
 }
 
-const selectCity = ref<string | null>(null)
-const cities: CityOption[] = [
-  { name: '北京', code: 'bj' },
-  { name: '上海', code: 'sh' },
-  { name: '广州', code: 'gz' },
+const basicInput = ref<string | undefined>('')
+const iconInput = ref<string | undefined>('')
+const floatInput = ref<string | undefined>('')
+const maskValue = ref('')
+const numberValue = ref<number | null>(88)
+const passwordValue = ref('')
+const textareaValue = ref('')
+const selectedCity = ref<string | null>(null)
+const selectedTechs = ref<string[]>([])
+const selectedMember = ref<MemberItem | null>(null)
+const autoValue = ref<string | undefined>('')
+const autoItems = ref<OptionItem[]>([])
+const checked = ref(true)
+const selectedRadio = ref('A')
+const enabled = ref(true)
+const sliderValue = ref<number | number[]>(40)
+const knobValue = ref(56)
+const ratingValue = ref(3)
+const pickedDate = ref()
+const selectButtonValue = ref('day')
+const progressValue = ref(62)
+const tablePage = ref(0)
+const treeSelectionKeys = ref({})
+const activeAccordion = ref<string[] | string | null | undefined>(['0'])
+const activeTab = ref<string | number>('overview')
+const activeStep = ref<string | number>('1')
+const dialogVisible = ref(false)
+const drawerVisible = ref(false)
+const popoverRef = ref()
+const menuRef = ref()
+
+const cities: OptionItem[] = [
+  { label: '北京', value: 'bj' },
+  { label: '上海', value: 'sh' },
+  { label: '广州', value: 'gz' },
+  { label: '深圳', value: 'sz' },
 ]
-const multiSelectVal = ref<string[]>([])
-const multiOptions: string[] = ['Vue', 'React', 'Angular', 'Svelte']
 
-// --- Checkbox / Radio / Toggle ---
-const checkboxVal = ref<boolean>(false)
-const checkboxGroup = ref<string[]>([])
-const radioVal = ref<string>('')
-const toggleVal = ref<boolean>(false)
+const techs: OptionItem[] = [
+  { label: 'Vue', value: 'vue' },
+  { label: 'PrimeVue', value: 'primevue' },
+  { label: 'UnoCSS', value: 'unocss' },
+  { label: 'TypeScript', value: 'typescript' },
+]
 
-// --- DatePicker ---
-const dateVal = ref<Date | Date[] | (Date | null)[] | null | undefined>(null)
+const members: MemberItem[] = [
+  { id: '1', name: '张三', role: '前端', status: '启用' },
+  { id: '2', name: '李四', role: '后端', status: '启用' },
+  { id: '3', name: '王五', role: '设计', status: '停用' },
+  { id: '4', name: '赵六', role: '测试', status: '启用' },
+]
 
-// --- Slider / Rating ---
-const sliderVal = ref<number | number[]>(50)
-const sliderRangeVal = ref<number | number[]>([20, 80])
-const ratingVal = ref<number | undefined>(3)
+const breadcrumbHome = { icon: 'pi pi-home' }
+const breadcrumbItems = [{ label: '示例' }, { label: 'PrimeVue 全量' }]
 
-// --- Dialog ---
-const dialogVisible = ref<boolean>(false)
+const splitActions = [
+  { label: '复制链接', icon: 'pi pi-copy' },
+  { label: '导出截图', icon: 'pi pi-image' },
+]
 
-// --- Toast (useToast) ---
-const toast = useToast()
-function showToast(severity: 'success' | 'info' | 'warn' | 'danger') {
-  const pvSeverity = severity === 'danger' ? 'error' : severity
-  toast.add({
-    severity: pvSeverity,
-    summary:
-      severity === 'success'
-        ? '成功'
-        : severity === 'danger'
-          ? '错误'
-          : severity === 'warn'
-            ? '警告'
-            : '信息',
-    detail: '这是一条 PrimeVue useToast 消息',
-    life: 3000,
-  })
+const menuItems = [
+  { label: '刷新', icon: 'pi pi-refresh' },
+  { label: '导出', icon: 'pi pi-download' },
+]
+
+const menubarItems = [
+  {
+    label: '组件',
+    icon: 'pi pi-box',
+    items: [{ label: '表单' }, { label: '覆盖层' }, { label: '导航' }],
+  },
+  {
+    label: '主题',
+    icon: 'pi pi-palette',
+    items: [{ label: 'Light' }, { label: 'Dark' }],
+  },
+]
+
+const treeNodes = [
+  {
+    key: '0',
+    label: 'Frontend',
+    children: [
+      { key: '0-0', label: 'Vue' },
+      { key: '0-1', label: 'PrimeVue' },
+    ],
+  },
+  {
+    key: '1',
+    label: 'Backend',
+    children: [
+      { key: '1-0', label: 'Node.js' },
+      { key: '1-1', label: 'Alova' },
+    ],
+  },
+]
+
+const searchAuto = (event: { query: string }): void => {
+  const query = event.query.toLowerCase()
+  autoItems.value = techs.filter(item => item.label.toLowerCase().includes(query))
 }
 
-// --- ConfirmPopup ---
-const confirm = useConfirm()
-function confirmDelete() {
-  confirm.require({
-    message: '确定要删除该项吗？',
-    header: '删除确认',
-    icon: 'pi pi-exclamation-triangle',
-    rejectLabel: '取消',
-    acceptLabel: '删除',
-    acceptClass: 'p-button-danger',
-    accept: () => {
-      toast.add({ severity: 'info', summary: '已确认删除', life: 2000 })
-    },
-  })
-}
-
-// --- Menu ---
-interface SimpleMenuItem {
-  label?: string
-  icon?: string
-  separator?: boolean
-}
-
-interface PrimeMenuInstance {
-  toggle: (event: Event) => void
-}
-
-const menuItems = ref<SimpleMenuItem[]>([
-  { label: '新建', icon: 'pi pi-plus' },
-  { label: '打开', icon: 'pi pi-folder-open' },
-  { label: '保存', icon: 'pi pi-save' },
-  { separator: true },
-  { label: '退出', icon: 'pi pi-sign-out' },
-])
-const menuRef = ref<PrimeMenuInstance | null>(null)
-function toggleMenu(event: Event) {
+const openMenu = (event: Event): void => {
   menuRef.value?.toggle(event)
 }
 
-// --- Breadcrumb ---
-interface BreadcrumbItem {
-  label: string
-  route?: string
-}
-const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
-  { label: '首页', route: '/' },
-  { label: '示例', route: '/example' },
-  { label: 'PrimeVue' },
-])
-
-// --- ProgressBar ---
-const progressVal = ref<number>(60)
-
-// --- SelectButton ---
-const selectButtonVal = ref<string | string[]>('one')
-const selectButtonOptions: { label: string; value: string }[] = [
-  { label: '选项一', value: 'one' },
-  { label: '选项二', value: 'two' },
-  { label: '选项三', value: 'three' },
-]
-
-// --- AutoComplete ---
-const autoCompleteVal = ref<string | undefined>('')
-const autoCompleteSuggestions = ref<string[]>([])
-const allSuggestions: string[] = [
-  'Apple',
-  'Apricot',
-  'Banana',
-  'Berry',
-  'Cherry',
-  'Grape',
-  'Orange',
-]
-function onAutoCompleteSearch(event: { query: string }) {
-  const q = event.query.toLowerCase()
-  autoCompleteSuggestions.value = allSuggestions.filter(s => s.toLowerCase().includes(q))
-}
-
-// --- Listbox ---
-const listboxVal = ref<string | null>(null)
-const listboxOptions: string[] = ['选项 A', '选项 B', '选项 C', '选项 D']
-
-// --- Drawer ---
-const drawerVisible = ref<boolean>(false)
-
-// --- Popover ---
-interface PrimePopoverInstance {
-  toggle: (event: Event) => void
-}
-
-const popoverRef = ref<PrimePopoverInstance | null>(null)
-function togglePopover(event: Event) {
+const openPopover = (event: Event): void => {
   popoverRef.value?.toggle(event)
 }
 
-// --- ContextMenu ---
-// ContextMenu 示例暂未在模板中使用，移除未用声明以保持示例简洁
-
-// --- Tree ---
-interface TreeNode {
-  key: string
-  label: string
-  children?: TreeNode[]
-}
-const treeNodes = ref<TreeNode[]>([
-  {
-    key: '0',
-    label: '根节点',
-    children: [
-      { key: '0-0', label: '子节点 1' },
-      { key: '0-1', label: '子节点 2', children: [{ key: '0-1-0', label: '孙节点' }] },
-    ],
-  },
-])
-// Tree selection-keys 类型为 Record<string, unknown>，单选时为 { [key]: true }
-const selectedNodeKeys = ref<Record<string, boolean> | undefined>(undefined)
-
-// --- Paginator ---
-const paginatorFirst = ref<number>(0)
-const paginatorRows = ref<number>(5)
-const paginatorTotal = ref<number>(100)
-function onPaginatorPage(event: { first: number; rows: number }) {
-  paginatorFirst.value = event.first
-  paginatorRows.value = event.rows
-}
-
-// --- FileUpload ---
-function onFileUploadSelect() {
-  toast.add({ severity: 'info', summary: '已选择文件', life: 2000 })
-}
-
-// --- FloatLabel ---
-const floatLabelVal = ref<string | undefined>('')
-
-// --- Tabs (v4 替代 TabView) ---
-const activeTab = ref<string | number>('0')
-
-// --- Accordion ---（组件可能 emit undefined，用单绑 + 事件接收）
-const activeAccordion = ref<number | number[] | undefined>(0)
-function onAccordionActiveIndexChange(value: number | number[] | undefined): void {
-  activeAccordion.value = value
+const pulseProgress = (): void => {
+  progressValue.value = progressValue.value >= 95 ? 30 : progressValue.value + 15
 }
 </script>
 
 <template>
-  <!-- 最外层：全屏 Flex 容器 (80% / 20%) -->
-  <div class="layout-full flex overflow-hidden">
-    <!-- 左侧：主内容 (80%) -->
-    <div class="basis-4/5 min-w-0 h-full column">
-      <CScrollbar
-        ref="scrollbarRef"
-        class="h-full"
-        @initialized="onScrollbarInitialized"
-        @scroll="throttledComputeActiveSection"
-      >
-        <div
-          class="p-lg py-sm md:py-md xl:py-lg 2xl:py-xl mx-auto max-w-[92%] sm:max-w-[94%] md:max-w-[92%] lg:max-w-[90%] xl:max-w-[88%] 2xl:max-w-[86%] 3xl:max-w-[84%] col-stack-xl"
-        >
-          <!-- 1. Button -->
-          <section
-            :id="sections[0].id"
-            class="scroll-mt-gap-lg"
-          >
-            <div
-              class="bg-card shadow-sm dark:shadow-md rounded-md transition-all duration-md ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)] p-lg col-stack-md"
-            >
-              <h2 class="text-xl font-semibold text-foreground row-y-center gap-sm m-0">
-                {{ sectionMeta[0].indexLabel }} {{ sectionMeta[0].label }}
-              </h2>
-              <div class="row-y-center flex-wrap gap-md">
-                <Button label="Primary" />
-                <Button
-                  label="Secondary"
-                  severity="secondary"
-                />
-                <Button
-                  label="Success"
-                  severity="success"
-                />
-                <Button
-                  label="Info"
-                  severity="info"
-                />
-                <Button
-                  label="Warn"
-                  severity="warn"
-                />
-                <Button
-                  label="Help"
-                  severity="help"
-                />
-                <Button
-                  label="Danger"
-                  severity="danger"
-                />
-                <Button
-                  label="Contrast"
-                  severity="contrast"
-                />
-              </div>
-              <div class="row-y-center flex-wrap gap-md">
-                <Button
-                  label="Primary"
-                  raised
-                />
-                <Button
-                  label="Secondary"
-                  severity="secondary"
-                  raised
-                />
-                <Button
-                  label="Success"
-                  severity="success"
-                  raised
-                />
-                <Button
-                  label="Info"
-                  severity="info"
-                  raised
-                />
-                <Button
-                  label="Warn"
-                  severity="warn"
-                  raised
-                />
-                <Button
-                  label="Help"
-                  severity="help"
-                  raised
-                />
-                <Button
-                  label="Danger"
-                  severity="danger"
-                  raised
-                />
-                <Button
-                  label="Contrast"
-                  severity="contrast"
-                  raised
-                />
-              </div>
-              <div class="row-y-center flex-wrap gap-md">
-                <Button
-                  label="Primary"
-                  rounded
-                />
-                <Button
-                  label="Secondary"
-                  severity="secondary"
-                  rounded
-                />
-                <Button
-                  label="Success"
-                  severity="success"
-                  rounded
-                />
-                <Button
-                  label="Info"
-                  severity="info"
-                  rounded
-                />
-                <Button
-                  label="Warn"
-                  severity="warn"
-                  rounded
-                />
-                <Button
-                  label="Help"
-                  severity="help"
-                  rounded
-                />
-                <Button
-                  label="Danger"
-                  severity="danger"
-                  rounded
-                />
-                <Button
-                  label="Contrast"
-                  severity="contrast"
-                  rounded
-                />
-              </div>
-              <div class="row-y-center flex-wrap gap-md">
-                <Button
-                  label="Primary"
-                  variant="text"
-                />
-                <Button
-                  label="Secondary"
-                  severity="secondary"
-                  variant="text"
-                />
-                <Button
-                  label="Success"
-                  severity="success"
-                  variant="text"
-                />
-                <Button
-                  label="Info"
-                  severity="info"
-                  variant="text"
-                />
-                <Button
-                  label="Warn"
-                  severity="warn"
-                  variant="text"
-                />
-                <Button
-                  label="Help"
-                  severity="help"
-                  variant="text"
-                />
-                <Button
-                  label="Danger"
-                  severity="danger"
-                  variant="text"
-                />
-                <Button
-                  label="Contrast"
-                  severity="contrast"
-                  variant="text"
-                />
-              </div>
-              <div class="row-y-center flex-wrap gap-md">
-                <Button
-                  label="Primary"
-                  variant="text"
-                  raised
-                />
-                <Button
-                  label="Secondary"
-                  severity="secondary"
-                  variant="text"
-                  raised
-                />
-                <Button
-                  label="Success"
-                  severity="success"
-                  variant="text"
-                  raised
-                />
-                <Button
-                  label="Info"
-                  severity="info"
-                  variant="text"
-                  raised
-                />
-                <Button
-                  label="Warn"
-                  severity="warn"
-                  variant="text"
-                  raised
-                />
-                <Button
-                  label="Help"
-                  severity="help"
-                  variant="text"
-                  raised
-                />
-                <Button
-                  label="Danger"
-                  severity="danger"
-                  variant="text"
-                  raised
-                />
-                <Button
-                  label="Contrast"
-                  severity="contrast"
-                  variant="text"
-                  raised
-                />
-              </div>
-              <div class="row-y-center flex-wrap gap-md">
-                <Button
-                  label="Primary"
-                  variant="outlined"
-                />
-                <Button
-                  label="Secondary"
-                  severity="secondary"
-                  variant="outlined"
-                />
-                <Button
-                  label="Success"
-                  severity="success"
-                  variant="outlined"
-                />
-                <Button
-                  label="Info"
-                  severity="info"
-                  variant="outlined"
-                />
-                <Button
-                  label="Warn"
-                  severity="warn"
-                  variant="outlined"
-                />
-                <Button
-                  label="Help"
-                  severity="help"
-                  variant="outlined"
-                />
-                <Button
-                  label="Danger"
-                  severity="danger"
-                  variant="outlined"
-                />
-                <Button
-                  label="Contrast"
-                  severity="contrast"
-                  variant="outlined"
-                />
-              </div>
-              <div class="row-y-center flex-wrap gap-md">
-                <Button
-                  icon="pi pi-check"
-                  aria-label="Filter"
-                />
-                <Button
-                  icon="pi pi-bookmark"
-                  severity="secondary"
-                  aria-label="Bookmark"
-                />
-                <Button
-                  icon="pi pi-search"
-                  severity="success"
-                  aria-label="Search"
-                />
-                <Button
-                  icon="pi pi-user"
-                  severity="info"
-                  aria-label="User"
-                />
-                <Button
-                  icon="pi pi-bell"
-                  severity="warn"
-                  aria-label="Notification"
-                />
-                <Button
-                  icon="pi pi-heart"
-                  severity="help"
-                  aria-label="Favorite"
-                />
-                <Button
-                  icon="pi pi-times"
-                  severity="danger"
-                  aria-label="Cancel"
-                />
-                <Button
-                  icon="pi pi-star"
-                  severity="contrast"
-                  aria-label="Star"
-                />
-              </div>
-              <div class="row-y-center flex-wrap gap-md">
-                <Button label="Basic" />
-                <Button
-                  label="带图标"
-                  icon="pi pi-check"
-                />
-                <Button
-                  label="图标在右"
-                  icon="pi pi-arrow-right"
-                  icon-pos="right"
-                />
-                <Button
-                  label="Loading"
-                  icon="pi pi-search"
-                  :loading="loading"
-                  @click="load"
-                />
-                <Button
-                  label="Link 风格"
-                  variant="link"
-                />
-                <Button
-                  label="Disabled"
-                  disabled
-                />
-              </div>
-              <div class="row-y-center flex-wrap gap-sm">
-                <Button label="Primary" />
-                <Button
-                  label="Secondary"
-                  severity="secondary"
-                />
-                <Button
-                  label="Success"
-                  severity="success"
-                />
-                <Button
-                  label="Info"
-                  severity="info"
-                />
-                <Button
-                  label="Warn"
-                  severity="warn"
-                />
-                <Button
-                  label="Danger"
-                  severity="danger"
-                />
-              </div>
-              <div class="row-y-center flex-wrap gap-sm">
-                <Button
-                  label="Raised"
-                  raised
-                />
-                <Button
-                  label="Rounded"
-                  rounded
-                />
-                <Button
-                  label="Text"
-                  variant="text"
-                />
-                <Button
-                  label="Outlined"
-                  variant="outlined"
-                />
-              </div>
-              <div class="row-y-center flex-wrap gap-sm">
-                <Button
-                  icon="pi pi-check"
-                  aria-label="确定"
-                />
-                <Button
-                  icon="pi pi-times"
-                  severity="danger"
-                  rounded
-                  aria-label="关闭"
-                />
-                <Button
-                  label="Badge"
-                  badge="2"
-                />
-                <Button
-                  label="Small"
-                  size="small"
-                />
-                <Button
-                  label="Large"
-                  size="large"
-                />
-              </div>
-              <div class="row-y-center flex-wrap gap-sm">
-                <ButtonGroup>
-                  <Button
-                    label="保存"
-                    icon="pi pi-check"
-                  />
-                  <Button
-                    label="删除"
-                    icon="pi pi-trash"
-                    severity="danger"
-                  />
-                  <Button
-                    label="取消"
-                    icon="pi pi-times"
-                    severity="secondary"
-                  />
-                </ButtonGroup>
-              </div>
-            </div>
-          </section>
+  <div class="layout-container col-stretch gap-md">
+    <section class="material-elevated col-stretch gap-md">
+      <h2 class="text-lg font-semibold text-foreground">PrimeVue v4 全量官方组件示例</h2>
+      <p class="text-sm text-muted-foreground">
+        当前页面仅展示 PrimeVue 官方组件，不包含你指定的内部封装组件。
+      </p>
+    </section>
 
-          <!-- 2. 输入框 -->
-          <section
-            :id="sections[1].id"
-            class="scroll-mt-gap-lg"
-          >
-            <div
-              class="bg-card shadow-sm dark:shadow-md rounded-md transition-all duration-md ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)] p-lg col-stack-md"
-            >
-              <h2 class="text-xl font-semibold text-foreground row-y-center gap-sm m-0">
-                {{ sectionMeta[1].indexLabel }} {{ sectionMeta[1].label }}
-              </h2>
-              <div
-                class="col-stack-md py-sm md:py-md xl:py-lg 2xl:py-xl mx-auto max-w-[90%] sm:max-w-[88%] md:max-w-[86%] lg:max-w-[84%] xl:max-w-[82%] 2xl:max-w-[80%]"
-              >
-                <div class="col-stack-xs">
-                  <label
-                    for="input-text"
-                    class="text-foreground text-sm"
-                  >
-                    InputText
-                  </label>
-                  <InputText
-                    id="input-text"
-                    v-model="inputText"
-                    type="text"
-                    placeholder="请输入"
-                  />
-                </div>
-                <div class="col-stack-xs">
-                  <label
-                    for="input-pwd"
-                    class="text-foreground text-sm"
-                  >
-                    Password
-                  </label>
-                  <Password
-                    id="input-pwd"
-                    v-model="inputPassword"
-                    placeholder="密码"
-                    :feedback="false"
-                    toggle-mask
-                  />
-                </div>
-                <div class="col-stack-xs">
-                  <label
-                    for="input-textarea"
-                    class="text-foreground text-sm"
-                  >
-                    Textarea
-                  </label>
-                  <Textarea
-                    id="input-textarea"
-                    v-model="textareaVal"
-                    rows="3"
-                    placeholder="多行文本"
-                  />
-                </div>
-                <div class="col-stack-xs">
-                  <label
-                    for="input-num"
-                    class="text-foreground text-sm"
-                  >
-                    InputNumber
-                  </label>
-                  <InputNumber
-                    v-model="inputNumberVal"
-                    :min="0"
-                    :max="100"
-                    show-buttons
-                  />
-                </div>
-                <div class="layout-wrap gap-sm">
-                  <InputText
-                    v-model="inputText"
-                    size="small"
-                    placeholder="Small"
-                    class="flex-1 min-w-0"
-                  />
-                  <InputText
-                    v-model="inputText"
-                    placeholder="Normal"
-                    class="flex-1 min-w-0"
-                  />
-                  <InputText
-                    v-model="inputText"
-                    size="large"
-                    placeholder="Large"
-                    class="flex-1 min-w-0"
-                  />
-                </div>
-                <InputText
-                  v-model="inputText"
-                  fluid
-                  placeholder="Fluid 占满宽度"
-                />
-                <InputText
-                  v-model="inputText"
-                  variant="filled"
-                  placeholder="Filled 变体"
-                />
-                <InputText
-                  v-model="inputText"
-                  disabled
-                  placeholder="Disabled"
-                />
-                <InputText
-                  v-model="inputText"
-                  invalid
-                  placeholder="Invalid 校验状态"
-                />
-              </div>
-            </div>
-          </section>
-
-          <!-- 3. Select / MultiSelect -->
-          <section
-            :id="sections[2].id"
-            class="scroll-mt-gap-lg"
-          >
-            <div
-              class="bg-card shadow-sm dark:shadow-md rounded-md transition-all duration-md ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)] p-lg col-stack-md"
-            >
-              <h2 class="text-xl font-semibold text-foreground row-y-center gap-sm m-0">
-                {{ sectionMeta[2].indexLabel }} {{ sectionMeta[2].label }}
-              </h2>
-              <div class="layout-wrap gap-lg">
-                <div class="col-stack-xs min-w-[var(--spacing-4xl)]">
-                  <label class="text-foreground text-sm">Select 单选</label>
-                  <Select
-                    v-model="selectCity"
-                    :options="cities"
-                    option-label="name"
-                    option-value="code"
-                    placeholder="选择城市"
-                    show-clear
-                  />
-                </div>
-                <div class="col-stack-xs min-w-[var(--spacing-5xl)]">
-                  <label class="text-foreground text-sm">MultiSelect</label>
-                  <MultiSelect
-                    v-model="multiSelectVal"
-                    :options="multiOptions"
-                    placeholder="多选"
-                    :max-selected-labels="2"
-                    show-clear
-                  />
-                </div>
-              </div>
-            </div>
-          </section>
-
-          <!-- 3.1 SelectButton -->
-          <section
-            :id="sections[3].id"
-            class="scroll-mt-gap-lg"
-          >
-            <div
-              class="bg-card shadow-sm dark:shadow-md rounded-md transition-all duration-md ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)] p-lg col-stack-md"
-            >
-              <h2 class="text-xl font-semibold text-foreground row-y-center gap-sm m-0">
-                {{ sectionMeta[3].indexLabel }} {{ sectionMeta[3].label }}
-              </h2>
-              <div class="layout-wrap gap-md">
-                <SelectButton
-                  v-model="selectButtonVal"
-                  :options="selectButtonOptions"
-                  option-label="label"
-                  option-value="value"
-                />
-                <SelectButton
-                  v-model="selectButtonVal"
-                  :options="selectButtonOptions"
-                  option-label="label"
-                  option-value="value"
-                  multiple
-                />
-              </div>
-            </div>
-          </section>
-
-          <!-- 3.2 AutoComplete / Listbox -->
-          <section
-            :id="sections[4].id"
-            class="scroll-mt-gap-lg"
-          >
-            <div
-              class="bg-card shadow-sm dark:shadow-md rounded-md transition-all duration-md ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)] p-lg col-stack-md"
-            >
-              <h2 class="text-xl font-semibold text-foreground row-y-center gap-sm m-0">
-                {{ sectionMeta[4].indexLabel }} {{ sectionMeta[4].label }}
-              </h2>
-              <div class="layout-wrap gap-lg">
-                <div class="col-stack-xs min-w-[var(--spacing-5xl)]">
-                  <label class="text-foreground text-sm">AutoComplete</label>
-                  <AutoComplete
-                    v-model="autoCompleteVal"
-                    placeholder="输入搜索"
-                    :suggestions="autoCompleteSuggestions"
-                    @complete="onAutoCompleteSearch"
-                  />
-                </div>
-                <div class="col-stack-xs min-w-[var(--spacing-4xl)]">
-                  <label class="text-foreground text-sm">Listbox</label>
-                  <Listbox
-                    v-model="listboxVal"
-                    :options="listboxOptions"
-                    class="w-full"
-                  />
-                </div>
-              </div>
-            </div>
-          </section>
-
-          <!-- 4. Checkbox / Radio / ToggleSwitch -->
-          <section
-            :id="sections[5].id"
-            class="scroll-mt-gap-lg"
-          >
-            <div
-              class="bg-card shadow-sm dark:shadow-md rounded-md transition-all duration-md ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)] p-lg col-stack-md"
-            >
-              <h2 class="text-xl font-semibold text-foreground row-y-center gap-sm m-0">
-                {{ sectionMeta[5].indexLabel }} {{ sectionMeta[5].label }}
-              </h2>
-              <div
-                class="layout-wrap gap-xl py-sm md:py-md xl:py-lg 2xl:py-xl mx-auto max-w-[90%] sm:max-w-[88%] md:max-w-[86%] lg:max-w-[84%] xl:max-w-[82%] 2xl:max-w-[80%]"
-              >
-                <div class="col-stack-xs flex-1 min-w-[var(--spacing-5xl)]">
-                  <span class="text-foreground text-sm font-medium">Checkbox</span>
-                  <span class="text-muted-foreground text-xs">二元 + 多选组示例</span>
-                  <div class="col-stack-xs">
-                    <div class="row-y-center gap-xs">
-                      <Checkbox
-                        v-model="checkboxVal"
-                        input-id="cb1"
-                        :binary="true"
-                      />
-                      <label
-                        for="cb1"
-                        class="text-foreground"
-                      >
-                        Checkbox 二元
-                      </label>
-                    </div>
-                    <div class="col-stack-xs">
-                      <span class="text-foreground text-xs">Checkbox 多选组</span>
-                      <div class="layout-wrap gap-md">
-                        <div class="row-y-center gap-xs">
-                          <Checkbox
-                            v-model="checkboxGroup"
-                            input-id="cb-vue"
-                            value="Vue"
-                          />
-                          <label for="cb-vue">Vue</label>
-                        </div>
-                        <div class="row-y-center gap-xs">
-                          <Checkbox
-                            v-model="checkboxGroup"
-                            input-id="cb-react"
-                            value="React"
-                          />
-                          <label for="cb-react">React</label>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div class="col-stack-xs flex-1 min-w-[var(--spacing-5xl)]">
-                  <span class="text-foreground text-sm font-medium">RadioButton</span>
-                  <span class="text-muted-foreground text-xs">单选按钮组</span>
-                  <div class="layout-wrap gap-md">
-                    <div class="row-y-center gap-xs">
-                      <RadioButton
-                        v-model="radioVal"
-                        input-id="r1"
-                        value="A"
-                      />
-                      <label for="r1">A</label>
-                    </div>
-                    <div class="row-y-center gap-xs">
-                      <RadioButton
-                        v-model="radioVal"
-                        input-id="r2"
-                        value="B"
-                      />
-                      <label for="r2">B</label>
-                    </div>
-                  </div>
-                </div>
-                <div class="col-stack-xs flex-1 min-w-[var(--spacing-5xl)]">
-                  <span class="text-foreground text-sm font-medium">ToggleSwitch</span>
-                  <span class="text-muted-foreground text-xs">开关控件</span>
-                  <div class="row-y-center gap-sm">
-                    <ToggleSwitch
-                      v-model="toggleVal"
-                      input-id="sw1"
-                    />
-                    <label
-                      for="sw1"
-                      class="text-foreground"
-                    >
-                      ToggleSwitch
-                    </label>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </section>
-
-          <!-- 5. DatePicker -->
-          <section
-            :id="sections[6].id"
-            class="scroll-mt-gap-lg"
-          >
-            <div
-              class="bg-card shadow-sm dark:shadow-md rounded-md transition-all duration-md ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)] p-lg col-stack-md"
-            >
-              <h2 class="text-xl font-semibold text-foreground row-y-center gap-sm m-0">
-                {{ sectionMeta[6].indexLabel }} {{ sectionMeta[6].label }}
-              </h2>
-              <div class="layout-wrap gap-md">
-                <div class="col-stack-xs">
-                  <label class="text-foreground text-sm">日期</label>
-                  <DatePicker
-                    v-model="dateVal"
-                    date-format="yy-mm-dd"
-                    placeholder="选择日期"
-                    show-icon
-                  />
-                  <DatePicker
-                    v-model="dateVal"
-                    date-format="yy-mm-dd"
-                    show-time
-                    hour-format="24"
-                    placeholder="日期+时间"
-                    show-icon
-                  />
-                </div>
-              </div>
-            </div>
-          </section>
-
-          <!-- 6. Slider / Rating -->
-          <section
-            :id="sections[7].id"
-            class="scroll-mt-gap-lg"
-          >
-            <div
-              class="bg-card shadow-sm dark:shadow-md rounded-md transition-all duration-md ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)] p-lg col-stack-md"
-            >
-              <h2 class="text-xl font-semibold text-foreground row-y-center gap-sm m-0">
-                {{ sectionMeta[7].indexLabel }} {{ sectionMeta[7].label }}
-              </h2>
-              <div class="layout-wrap gap-xl">
-                <div class="col-stack-xs flex-1 min-w-[var(--spacing-5xl)]">
-                  <div class="row-between gap-sm">
-                    <label class="text-foreground text-sm">Slider</label>
-                    <span class="text-muted-foreground text-xs">{{ sliderVal }}</span>
-                  </div>
-                  <Slider
-                    v-model="sliderVal"
-                    :min="0"
-                    :max="100"
-                  />
-                </div>
-                <div class="col-stack-xs flex-1 min-w-[var(--spacing-5xl)]">
-                  <div class="row-between gap-sm">
-                    <label class="text-foreground text-sm">Slider Range</label>
-                    <span class="text-muted-foreground text-xs">
-                      {{ sliderRangeVal }}
-                    </span>
-                  </div>
-                  <Slider
-                    v-model="sliderRangeVal"
-                    :min="0"
-                    :max="100"
-                    range
-                  />
-                </div>
-                <div class="col-stack-xs flex-1 min-w-[var(--spacing-5xl)]">
-                  <label class="text-foreground text-sm">Rating</label>
-                  <Rating v-model="ratingVal" />
-                </div>
-              </div>
-            </div>
-          </section>
-
-          <!-- 7. Tag / Badge / Chip -->
-          <section
-            :id="sections[8].id"
-            class="scroll-mt-gap-lg"
-          >
-            <div
-              class="bg-card shadow-sm dark:shadow-md rounded-md transition-all duration-md ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)] p-lg col-stack-md"
-            >
-              <h2 class="text-xl font-semibold text-foreground row-y-center gap-sm m-0">
-                {{ sectionMeta[8].indexLabel }} {{ sectionMeta[8].label }}
-              </h2>
-              <div class="row-y-center flex-wrap gap-md">
-                <Tag value="Primary" />
-                <Tag
-                  value="Success"
-                  severity="success"
-                />
-                <Tag
-                  value="Info"
-                  severity="info"
-                />
-                <Tag
-                  value="Warn"
-                  severity="warn"
-                />
-                <Tag
-                  value="Danger"
-                  severity="danger"
-                />
-                <Tag
-                  value="Secondary"
-                  severity="secondary"
-                />
-                <Badge value="9" />
-                <Badge
-                  value="99+"
-                  severity="danger"
-                />
-                <Chip
-                  label="可删除 Chip"
-                  removable
-                />
-                <Chip
-                  label="带图标"
-                  icon="pi pi-prime"
-                />
-              </div>
-            </div>
-          </section>
-
-          <!-- 7.1 Divider / InlineMessage / Fieldset -->
-          <section
-            :id="sections[9].id"
-            class="scroll-mt-gap-lg"
-          >
-            <div
-              class="bg-card shadow-sm dark:shadow-md rounded-md transition-all duration-md ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)] p-lg col-stack-md"
-            >
-              <h2 class="text-xl font-semibold text-foreground row-y-center gap-sm m-0">
-                {{ sectionMeta[9].indexLabel }} {{ sectionMeta[9].label }}
-              </h2>
-              <div class="col-stack-md">
-                <div class="row-y-center gap-sm">
-                  <span class="text-foreground text-sm">左侧</span>
-                  <Divider layout="vertical" />
-                  <span class="text-foreground text-sm">右侧</span>
-                </div>
-                <Divider align="center">
-                  <span class="text-muted-foreground text-sm">分割线文字</span>
-                </Divider>
-                <div
-                  class="py-sm md:py-md xl:py-lg 2xl:py-xl mx-auto max-w-[90%] sm:max-w-[88%] md:max-w-[86%] lg:max-w-[84%] xl:max-w-[82%] 2xl:max-w-[80%]"
-                >
-                  <InlineMessage severity="info">InlineMessage 内联提示</InlineMessage>
-                </div>
-                <Fieldset
-                  legend="Fieldset 图例"
-                  class="py-sm md:py-md xl:py-lg 2xl:py-xl mx-auto max-w-[90%] sm:max-w-[88%] md:max-w-[86%] lg:max-w-[84%] xl:max-w-[82%] 2xl:max-w-[80%]"
-                  toggleable
-                >
-                  <p class="text-muted-foreground text-sm m-0">可折叠的 Fieldset 内容区域。</p>
-                </Fieldset>
-              </div>
-            </div>
-          </section>
-
-          <!-- 8. Card / Panel -->
-          <section
-            :id="sections[10].id"
-            class="scroll-mt-gap-lg"
-          >
-            <div
-              class="bg-card shadow-sm dark:shadow-md rounded-md transition-all duration-md ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)] p-lg col-stack-md"
-            >
-              <h2 class="text-xl font-semibold text-foreground row-y-center gap-sm m-0">
-                {{ sectionMeta[10].indexLabel }} {{ sectionMeta[10].label }}
-              </h2>
-              <div class="layout-wrap gap-lg">
-                <Card
-                  class="flex-1 min-w-[var(--spacing-5xl)] py-sm md:py-md xl:py-lg 2xl:py-xl mx-auto max-w-[90%] sm:max-w-[88%] md:max-w-[86%] lg:max-w-[84%] xl:max-w-[82%] 2xl:max-w-[80%]"
-                >
-                  <template #title>Card 标题</template>
-                  <template #subtitle>副标题</template>
-                  <template #content>
-                    <p class="text-muted-foreground text-sm m-0">
-                      卡片内容区域，可使用默认 slot 或自定义。
-                    </p>
-                  </template>
-                  <template #footer>
-                    <div class="flex gap-sm">
-                      <Button
-                        label="确定"
-                        size="small"
-                      />
-                      <Button
-                        label="取消"
-                        severity="secondary"
-                        size="small"
-                        variant="outlined"
-                      />
-                    </div>
-                  </template>
-                </Card>
-                <Panel
-                  header="Panel 可折叠"
-                  class="flex-1 min-w-[var(--spacing-5xl)] py-sm md:py-md xl:py-lg 2xl:py-xl mx-auto max-w-[90%] sm:max-w-[88%] md:max-w-[86%] lg:max-w-[84%] xl:max-w-[82%] 2xl:max-w-[80%]"
-                  toggleable
-                >
-                  <p class="text-muted-foreground text-sm m-0">Panel 内容，点击标题可折叠/展开。</p>
-                </Panel>
-              </div>
-            </div>
-          </section>
-
-          <!-- 9. Message / Toast -->
-          <section
-            :id="sections[11].id"
-            class="scroll-mt-gap-lg"
-          >
-            <div
-              class="bg-card shadow-sm dark:shadow-md rounded-md transition-all duration-md ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)] p-lg col-stack-md"
-            >
-              <h2 class="text-xl font-semibold text-foreground row-y-center gap-sm m-0">
-                {{ sectionMeta[11].indexLabel }} {{ sectionMeta[11].label }}
-              </h2>
-              <div
-                class="col-stack-md py-sm md:py-md xl:py-lg 2xl:py-xl mx-auto max-w-[90%] sm:max-w-[88%] md:max-w-[86%] lg:max-w-[84%] xl:max-w-[82%] 2xl:max-w-[80%]"
-              >
-                <Message
-                  severity="info"
-                  :closable="true"
-                >
-                  Info Message，可关闭
-                </Message>
-                <Message severity="success">Success Message</Message>
-                <Message severity="warn">Warn Message</Message>
-                <Message severity="error">Danger Message</Message>
-                <Message
-                  severity="secondary"
-                  variant="simple"
-                >
-                  Simple 变体 Message
-                </Message>
-                <div class="layout-wrap gap-sm">
-                  <Button
-                    label="Toast Success"
-                    severity="success"
-                    size="small"
-                    @click="showToast('success')"
-                  />
-                  <Button
-                    label="Toast Info"
-                    severity="info"
-                    size="small"
-                    @click="showToast('info')"
-                  />
-                  <Button
-                    label="Toast Warn"
-                    severity="warn"
-                    size="small"
-                    @click="showToast('warn')"
-                  />
-                  <Button
-                    label="Toast Danger"
-                    severity="danger"
-                    size="small"
-                    @click="showToast('danger')"
-                  />
-                </div>
-              </div>
-            </div>
-          </section>
-
-          <!-- 10. Dialog / ConfirmPopup -->
-          <section
-            :id="sections[12].id"
-            class="scroll-mt-gap-lg"
-          >
-            <div
-              class="bg-card shadow-sm dark:shadow-md rounded-md transition-all duration-md ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)] p-lg col-stack-md"
-            >
-              <h2 class="text-xl font-semibold text-foreground row-y-center gap-sm m-0">
-                {{ sectionMeta[12].indexLabel }} {{ sectionMeta[12].label }}
-              </h2>
-              <p class="text-muted-foreground text-sm">
-                业务中自定义弹窗/确认请使用
-                <span class="px-xs rounded-md bg-muted">useDialog()</span>
-                /
-                <span class="px-xs rounded-md bg-muted">window.$toast</span>
-                。
-              </p>
-              <div class="layout-wrap gap-sm">
-                <Button
-                  label="打开 Dialog"
-                  @click="dialogVisible = true"
-                />
-                <Button
-                  label="ConfirmPopup 确认"
-                  severity="danger"
-                  @click="confirmDelete"
-                />
-              </div>
-              <Dialog
-                v-model:visible="dialogVisible"
-                header="示例 Dialog"
-                modal
-                draggable
-                class="w-dialog-settings"
-                :pt="{
-                  root: { class: 'rounded-md' },
-                  content: { class: 'pt-0' },
-                }"
-                @hide="dialogVisible = false"
-              >
-                <p class="text-muted-foreground text-sm m-0">
-                  Dialog 内容。可设置 modal、draggable、maximizable 等。
-                </p>
-                <template #footer>
-                  <Button
-                    label="关闭"
-                    severity="secondary"
-                    @click="dialogVisible = false"
-                  />
-                </template>
-              </Dialog>
-              <ConfirmPopup />
-            </div>
-          </section>
-
-          <!-- 10.1 Drawer / Popover -->
-          <section
-            :id="sections[13].id"
-            class="scroll-mt-gap-lg"
-          >
-            <div
-              class="bg-card shadow-sm dark:shadow-md rounded-md transition-all duration-md ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)] p-lg col-stack-md"
-            >
-              <h2 class="text-xl font-semibold text-foreground row-y-center gap-sm m-0">
-                {{ sectionMeta[13].indexLabel }} {{ sectionMeta[13].label }}
-              </h2>
-              <div class="layout-wrap gap-md">
-                <Button
-                  label="打开 Drawer"
-                  @click="drawerVisible = true"
-                />
-                <Button
-                  label="打开 Popover"
-                  @click="togglePopover"
-                />
-                <Popover ref="popoverRef">
-                  <div
-                    class="col-stack-sm py-sm md:py-md xl:py-lg 2xl:py-xl mx-auto max-w-[88%] sm:max-w-[84%] md:max-w-[82%] lg:max-w-[80%] xl:max-w-[78%] 2xl:max-w-[76%]"
-                  >
-                    <span class="text-sm font-semibold text-foreground">Popover 内容</span>
-                    <p class="text-muted-foreground text-sm m-0">自定义浮层内容。</p>
-                  </div>
-                </Popover>
-              </div>
-              <Drawer
-                v-model:visible="drawerVisible"
-                position="right"
-                header="Drawer 标题"
-                class="layout-sidepanel"
-              >
-                <p class="text-muted-foreground text-sm m-0">侧边抽屉内容，可从右滑出。</p>
-              </Drawer>
-            </div>
-          </section>
-
-          <!-- 11. Menu / Menubar / ContextMenu -->
-          <section
-            :id="sections[14].id"
-            class="scroll-mt-gap-lg"
-          >
-            <div
-              class="bg-card shadow-sm dark:shadow-md rounded-md transition-all duration-md ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)] p-lg col-stack-md"
-            >
-              <h2 class="text-xl font-semibold text-foreground row-y-center gap-sm m-0">
-                {{ sectionMeta[14].indexLabel }} {{ sectionMeta[14].label }}
-              </h2>
-              <div class="col-stack-lg">
-                <div class="row-y-center flex-wrap gap-md">
-                  <Button
-                    label="打开 Menu"
-                    icon="pi pi-bars"
-                    @click="toggleMenu"
-                  />
-                  <Menu
-                    ref="menuRef"
-                    :model="menuItems"
-                    popup
-                  />
-                  <Menubar
-                    :model="menuItems"
-                    class="flex-1 min-w-0 py-sm md:py-md xl:py-lg 2xl:py-xl mx-auto max-w-[90%] sm:max-w-[88%] md:max-w-[86%] lg:max-w-[84%] xl:max-w-[82%] 2xl:max-w-[80%]"
-                  />
-                </div>
-              </div>
-            </div>
-          </section>
-
-          <!-- 11.1 Tabs / Accordion (v4 使用 Tabs 替代 TabView) -->
-          <section
-            :id="sections[15].id"
-            class="scroll-mt-gap-lg"
-          >
-            <div
-              class="bg-card shadow-sm dark:shadow-md rounded-md transition-all duration-md ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)] p-lg col-stack-md"
-            >
-              <h2 class="text-xl font-semibold text-foreground row-y-center gap-sm m-0">
-                {{ sectionMeta[15].indexLabel }} {{ sectionMeta[15].label }}
-              </h2>
-              <div class="layout-wrap gap-xl">
-                <div
-                  class="flex-1 min-w-0 py-sm md:py-md xl:py-lg 2xl:py-xl mx-auto max-w-[90%] sm:max-w-[88%] md:max-w-[86%] lg:max-w-[84%] xl:max-w-[82%] 2xl:max-w-[80%]"
-                >
-                  <Tabs v-model:value="activeTab">
-                    <TabList>
-                      <Tab value="0">Tab 1</Tab>
-                      <Tab value="1">Tab 2</Tab>
-                      <Tab value="2">Tab 3</Tab>
-                    </TabList>
-                    <TabPanels>
-                      <TabPanel value="0">
-                        <p class="text-muted-foreground text-sm">Tab 1 内容</p>
-                      </TabPanel>
-                      <TabPanel value="1">
-                        <p class="text-muted-foreground text-sm">Tab 2 内容</p>
-                      </TabPanel>
-                      <TabPanel value="2">
-                        <p class="text-muted-foreground text-sm">Tab 3 内容</p>
-                      </TabPanel>
-                    </TabPanels>
-                  </Tabs>
-                </div>
-                <div
-                  class="flex-1 min-w-0 py-sm md:py-md xl:py-lg 2xl:py-xl mx-auto max-w-[90%] sm:max-w-[88%] md:max-w-[86%] lg:max-w-[84%] xl:max-w-[82%] 2xl:max-w-[80%]"
-                >
-                  <Accordion
-                    :active-index="activeAccordion ?? 0"
-                    @update:active-index="onAccordionActiveIndexChange"
-                  >
-                    <AccordionPanel value="0">
-                      <AccordionHeader>Accordion 1</AccordionHeader>
-                      <AccordionContent>
-                        <p class="text-muted-foreground text-sm m-0">手风琴内容 1</p>
-                      </AccordionContent>
-                    </AccordionPanel>
-                    <AccordionPanel value="1">
-                      <AccordionHeader>Accordion 2</AccordionHeader>
-                      <AccordionContent>
-                        <p class="text-muted-foreground text-sm m-0">手风琴内容 2</p>
-                      </AccordionContent>
-                    </AccordionPanel>
-                  </Accordion>
-                </div>
-              </div>
-            </div>
-          </section>
-
-          <!-- 11.2 Tree / Paginator -->
-          <section
-            :id="sections[16].id"
-            class="scroll-mt-gap-lg"
-          >
-            <div
-              class="bg-card shadow-sm dark:shadow-md rounded-md transition-all duration-md ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)] p-lg col-stack-md"
-            >
-              <h2 class="text-xl font-semibold text-foreground row-y-center gap-sm m-0">
-                {{ sectionMeta[16].indexLabel }} {{ sectionMeta[16].label }}
-              </h2>
-              <div class="layout-wrap gap-xl">
-                <div
-                  class="col-stack-xs py-sm md:py-md xl:py-lg 2xl:py-xl mx-auto max-w-[88%] sm:max-w-[84%] md:max-w-[82%] lg:max-w-[80%] xl:max-w-[78%] 2xl:max-w-[76%]"
-                >
-                  <label class="text-foreground text-sm">Tree</label>
-                  <Tree
-                    v-model:selection-keys="selectedNodeKeys"
-                    :value="treeNodes"
-                    selection-mode="single"
-                    class="w-full"
-                  />
-                </div>
-                <div class="col-stack-xs">
-                  <label class="text-foreground text-sm">Paginator 独立分页</label>
-                  <Paginator
-                    :first="paginatorFirst"
-                    :rows="paginatorRows"
-                    :total-records="paginatorTotal"
-                    :rows-per-page-options="[5, 10, 20]"
-                    @page="onPaginatorPage"
-                  />
-                </div>
-              </div>
-            </div>
-          </section>
-
-          <!-- 11.3 FileUpload / ProgressSpinner  -->
-          <section
-            :id="sections[17].id"
-            class="scroll-mt-gap-lg"
-          >
-            <div
-              class="bg-card shadow-sm dark:shadow-md rounded-md transition-all duration-md ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)] p-lg col-stack-md"
-            >
-              <h2 class="text-xl font-semibold text-foreground row-y-center gap-sm m-0">
-                {{ sectionMeta[17].indexLabel }} {{ sectionMeta[17].label }}
-              </h2>
-              <div class="layout-wrap gap-lg items-start">
-                <div class="col-stack-xs">
-                  <label class="text-foreground text-sm">FileUpload</label>
-                  <FileUpload
-                    mode="basic"
-                    choose-label="选择文件"
-                    @select="onFileUploadSelect"
-                  />
-                </div>
-                <div class="col-stack-sm">
-                  <span class="text-foreground text-sm">ProgressSpinner</span>
-                  <ProgressSpinner class="w-[var(--spacing-2xl)] h-[var(--spacing-2xl)]" />
-                </div>
-              </div>
-            </div>
-          </section>
-
-          <!-- 11.4 FloatLabel / Splitter -->
-          <section
-            :id="sections[18].id"
-            class="scroll-mt-gap-lg"
-          >
-            <div
-              class="bg-card shadow-sm dark:shadow-md rounded-md transition-all duration-md ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)] p-lg col-stack-md"
-            >
-              <h2 class="text-xl font-semibold text-foreground row-y-center gap-sm m-0">
-                {{ sectionMeta[18].indexLabel }} {{ sectionMeta[18].label }}
-              </h2>
-              <div
-                class="col-stack-lg py-sm md:py-md xl:py-lg 2xl:py-xl mx-auto max-w-[90%] sm:max-w-[88%] md:max-w-[86%] lg:max-w-[84%] xl:max-w-[82%] 2xl:max-w-[80%]"
-              >
-                <div class="col-stack-sm">
-                  <span class="text-foreground text-sm font-medium">FloatLabel</span>
-                  <span class="text-muted-foreground text-xs">
-                    标签会在输入聚焦或有值时上浮，适合紧凑表单。
-                  </span>
-                  <div
-                    class="py-sm md:py-md xl:py-lg 2xl:py-xl mx-auto max-w-[88%] sm:max-w-[84%] md:max-w-[82%] lg:max-w-[80%] xl:max-w-[78%] 2xl:max-w-[76%]"
-                  >
-                    <FloatLabel>
-                      <InputText
-                        id="float-input"
-                        v-model="floatLabelVal"
-                        class="w-full"
-                      />
-                      <label for="float-input">FloatLabel</label>
-                    </FloatLabel>
-                  </div>
-                </div>
-
-                <div class="col-stack-sm">
-                  <span class="text-foreground text-sm font-medium">Splitter</span>
-                  <span class="text-muted-foreground text-xs">
-                    可拖拽的分栏容器，用于在同一视图中对比展示两个区域。
-                  </span>
-                  <Splitter
-                    class="py-sm md:py-md xl:py-lg 2xl:py-xl mx-auto max-w-[90%] sm:max-w-[88%] md:max-w-[86%] lg:max-w-[84%] xl:max-w-[82%] 2xl:max-w-[80%]"
-                  >
-                    <SplitterPanel
-                      :size="50"
-                      :min-size="20"
-                    >
-                      左侧内容
-                    </SplitterPanel>
-                    <SplitterPanel
-                      :size="50"
-                      :min-size="20"
-                    >
-                      右侧内容
-                    </SplitterPanel>
-                  </Splitter>
-                </div>
-              </div>
-            </div>
-          </section>
-
-          <!-- 12. Breadcrumb / ProgressBar / Skeleton -->
-          <section
-            :id="sections[19].id"
-            class="scroll-mt-gap-lg"
-          >
-            <div
-              class="bg-card shadow-sm dark:shadow-md rounded-md transition-all duration-md ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)] p-lg col-stack-md"
-            >
-              <h2 class="text-xl font-semibold text-foreground row-y-center gap-sm m-0">
-                {{ sectionMeta[19].indexLabel }} {{ sectionMeta[19].label }}
-              </h2>
-              <div class="col-stack-lg">
-                <Breadcrumb :model="breadcrumbItems" />
-                <div
-                  class="col-stack-xs py-sm md:py-md xl:py-lg 2xl:py-xl mx-auto max-w-[90%] sm:max-w-[88%] md:max-w-[86%] lg:max-w-[84%] xl:max-w-[82%] 2xl:max-w-[80%]"
-                >
-                  <label class="text-foreground text-sm">ProgressBar: {{ progressVal }}%</label>
-                  <ProgressBar :value="progressVal" />
-                  <ProgressBar
-                    mode="indeterminate"
-                    class="mt-sm"
-                  />
-                </div>
-                <div class="col-stack-sm w-full max-w-xs">
-                  <span class="text-foreground text-sm">Skeleton 占位</span>
-                  <Skeleton
-                    width="100%"
-                    height="var(--spacing-xl)"
-                  />
-                  <Skeleton
-                    width="80%"
-                    height="var(--spacing-xl)"
-                  />
-                  <Skeleton
-                    width="60%"
-                    height="var(--spacing-xl)"
-                  />
-                </div>
-              </div>
-            </div>
-          </section>
-        </div>
-      </CScrollbar>
-    </div>
-
-    <!-- 右侧：目录树 (20%) -->
-    <aside
-      ref="tocAsideRef"
-      class="basis-1/5 min-w-0 h-full flex flex-col bg-card hidden xl:flex"
-    >
-      <!-- 目录标题 -->
-      <div class="p-md border-b-default bg-card backdrop-blur-sm">
-        <h2 class="text-md font-bold text-foreground uppercase tracking-wider">目录</h2>
+    <section class="material-elevated col-stretch gap-md">
+      <h3 class="text-base font-semibold text-foreground">Button Family</h3>
+      <div class="row-start gap-sm flex-wrap">
+        <Button label="Primary" />
+        <Button
+          label="Secondary"
+          severity="secondary"
+        />
+        <Button
+          label="Success"
+          severity="success"
+        />
+        <Button
+          label="Warn"
+          severity="warn"
+        />
+        <Button
+          label="Danger"
+          severity="danger"
+        />
+        <Button
+          label="Outlined"
+          variant="outlined"
+        />
+        <Button
+          label="Text"
+          variant="text"
+        />
+        <Button
+          icon="pi pi-heart"
+          rounded
+        />
+        <SplitButton
+          label="SplitButton"
+          :model="splitActions"
+        />
+        <ButtonGroup>
+          <Button label="Left" />
+          <Button label="Center" />
+          <Button label="Right" />
+        </ButtonGroup>
       </div>
+    </section>
 
-      <CScrollbar class="flex-1 min-h-0">
-        <div class="p-sm">
-          <!-- 右侧目录树：使用 PrimeVue Tree -->
-          <Tree
-            v-model:selection-keys="tocSelectionKeys"
-            :value="tocTreeNodes"
-            selection-mode="single"
-            class="w-full border-none p-0 text-sm"
-            :pt="{
-              root: { class: 'bg-transparent' },
-              content: {
-                class: 'rounded-md hover:bg-accent transition-colors duration-md cursor-pointer',
-              },
-              label: {
-                class: 'text-muted-foreground hover:text-foreground transition-colors duration-md',
-              },
-            }"
-            @node-select="onTocNodeSelect"
+    <section class="material-elevated col-stretch gap-md">
+      <h3 class="text-base font-semibold text-foreground">Form Components</h3>
+      <div class="row-start gap-sm flex-wrap">
+        <InputText
+          v-model="basicInput"
+          placeholder="InputText"
+        />
+        <IconField>
+          <InputIcon class="pi pi-search" />
+          <InputText
+            v-model="iconInput"
+            placeholder="IconField + InputIcon"
+          />
+        </IconField>
+        <FloatLabel>
+          <InputText
+            id="float_input"
+            v-model="floatInput"
+          />
+          <label for="float_input">FloatLabel</label>
+        </FloatLabel>
+        <InputMask
+          v-model="maskValue"
+          mask="999-999"
+          placeholder="InputMask"
+        />
+        <InputNumber
+          v-model="numberValue"
+          show-buttons
+          placeholder="InputNumber"
+        />
+        <Password
+          v-model="passwordValue"
+          toggle-mask
+          placeholder="Password"
+        />
+        <Textarea
+          v-model="textareaValue"
+          auto-resize
+          rows="2"
+          placeholder="Textarea"
+        />
+        <Select
+          v-model="selectedCity"
+          :options="cities"
+          option-label="label"
+          option-value="value"
+          placeholder="Select"
+        />
+        <MultiSelect
+          v-model="selectedTechs"
+          :options="techs"
+          option-label="label"
+          option-value="value"
+          placeholder="MultiSelect"
+        />
+        <Listbox
+          v-model="selectedMember"
+          :options="members"
+          option-label="name"
+          class="w-[220px]"
+        />
+        <AutoComplete
+          v-model="autoValue"
+          :suggestions="autoItems"
+          option-label="label"
+          dropdown
+          placeholder="AutoComplete"
+          @complete="searchAuto"
+        />
+      </div>
+      <div class="row-start gap-md flex-wrap">
+        <div class="row-start gap-xs">
+          <Checkbox
+            v-model="checked"
+            binary
+          />
+          <span class="text-sm text-foreground">Checkbox</span>
+        </div>
+        <div class="row-start gap-xs">
+          <RadioButton
+            v-model="selectedRadio"
+            input-id="radio_a"
+            value="A"
+          />
+          <label
+            for="radio_a"
+            class="text-sm text-foreground"
+          >
+            Radio A
+          </label>
+        </div>
+        <ToggleSwitch v-model="enabled" />
+        <Slider
+          v-model="sliderValue"
+          class="w-[200px]"
+        />
+        <Knob v-model="knobValue" />
+        <Rating v-model="ratingValue" />
+        <DatePicker
+          v-model="pickedDate"
+          show-icon
+          placeholder="DatePicker"
+        />
+        <SelectButton
+          v-model="selectButtonValue"
+          :options="[
+            { label: 'Day', value: 'day' },
+            { label: 'Week', value: 'week' },
+            { label: 'Month', value: 'month' },
+          ]"
+          option-label="label"
+          option-value="value"
+        />
+        <FileUpload
+          mode="basic"
+          choose-label="FileUpload"
+        />
+      </div>
+    </section>
+
+    <section class="material-elevated col-stretch gap-md">
+      <h3 class="text-base font-semibold text-foreground">Data & Feedback</h3>
+      <div class="row-start gap-sm flex-wrap">
+        <Badge value="8" />
+        <Tag value="Tag" />
+        <Avatar
+          label="A"
+          shape="circle"
+        />
+        <Chip
+          label="Chip"
+          icon="pi pi-tag"
+        />
+        <Message severity="success">Message 组件</Message>
+        <InlineMessage severity="info">InlineMessage 组件</InlineMessage>
+      </div>
+      <div class="col-stretch gap-sm">
+        <ProgressBar :value="progressValue" />
+        <div class="row-start gap-sm">
+          <Button
+            label="推进进度"
+            @click="pulseProgress"
+          />
+          <ProgressSpinner
+            style="width: 40px; height: 40px"
+            stroke-width="6"
           />
         </div>
-      </CScrollbar>
-    </aside>
+      </div>
+      <div class="row-start gap-sm flex-wrap">
+        <Skeleton
+          width="120px"
+          height="20px"
+        />
+        <Skeleton
+          width="240px"
+          height="48px"
+        />
+      </div>
+    </section>
+
+    <section class="material-elevated col-stretch gap-md">
+      <h3 class="text-base font-semibold text-foreground">DataTable / Tree / Paginator</h3>
+      <DataTable
+        :value="members"
+        data-key="id"
+        class="w-full"
+      >
+        <Column
+          field="name"
+          header="姓名"
+        />
+        <Column
+          field="role"
+          header="角色"
+        />
+        <Column
+          field="status"
+          header="状态"
+        />
+      </DataTable>
+      <Tree
+        v-model:selection-keys="treeSelectionKeys"
+        :value="treeNodes"
+        selection-mode="single"
+      />
+      <Paginator
+        v-model:first="tablePage"
+        :rows="2"
+        :total-records="20"
+      />
+    </section>
+
+    <section class="material-elevated col-stretch gap-md">
+      <h3 class="text-base font-semibold text-foreground">Navigation / Menu</h3>
+      <Breadcrumb
+        :home="breadcrumbHome"
+        :model="breadcrumbItems"
+      />
+      <Menubar :model="menubarItems" />
+      <div class="row-start gap-sm">
+        <Button
+          label="Menu 弹出"
+          @click="openMenu"
+        />
+        <Menu
+          ref="menuRef"
+          :model="menuItems"
+          popup
+        />
+      </div>
+    </section>
+
+    <section class="material-elevated col-stretch gap-md">
+      <h3 class="text-base font-semibold text-foreground">Panel / Container</h3>
+      <Card>
+        <template #title>Card</template>
+        <template #content>Card 组件内容展示。</template>
+      </Card>
+      <Panel header="Panel">Panel 内容区域。</Panel>
+      <Fieldset legend="Fieldset">Fieldset 内容区域。</Fieldset>
+      <Divider />
+      <Accordion
+        v-model:value="activeAccordion"
+        multiple
+      >
+        <AccordionPanel value="0">
+          <AccordionHeader>Accordion 1</AccordionHeader>
+          <AccordionContent>AccordionContent 1</AccordionContent>
+        </AccordionPanel>
+        <AccordionPanel value="1">
+          <AccordionHeader>Accordion 2</AccordionHeader>
+          <AccordionContent>AccordionContent 2</AccordionContent>
+        </AccordionPanel>
+      </Accordion>
+      <Tabs v-model:value="activeTab">
+        <TabList>
+          <Tab value="overview">Overview</Tab>
+          <Tab value="tokens">Tokens</Tab>
+        </TabList>
+        <TabPanels>
+          <TabPanel value="overview">TabPanel Overview</TabPanel>
+          <TabPanel value="tokens">TabPanel Tokens</TabPanel>
+        </TabPanels>
+      </Tabs>
+      <Stepper v-model:value="activeStep">
+        <StepList>
+          <Step value="1">Step 1</Step>
+          <Step value="2">Step 2</Step>
+        </StepList>
+        <StepPanels>
+          <StepPanel value="1">StepPanel 1</StepPanel>
+          <StepPanel value="2">StepPanel 2</StepPanel>
+        </StepPanels>
+      </Stepper>
+      <Splitter style="height: 140px">
+        <SplitterPanel>SplitterPanel Left</SplitterPanel>
+        <SplitterPanel>SplitterPanel Right</SplitterPanel>
+      </Splitter>
+    </section>
+
+    <section class="material-elevated col-stretch gap-md">
+      <h3 class="text-base font-semibold text-foreground">Overlay Components</h3>
+      <div class="row-start gap-sm flex-wrap">
+        <Button
+          label="Dialog"
+          @click="dialogVisible = true"
+        />
+        <Button
+          label="Drawer"
+          @click="drawerVisible = true"
+        />
+        <Button
+          label="Popover"
+          @click="openPopover"
+        />
+        <Button label="ConfirmPopup 触发" />
+      </div>
+      <Dialog
+        v-model:visible="dialogVisible"
+        modal
+        header="Dialog 示例"
+        :style="{ width: '420px' }"
+      >
+        这是 Dialog 内容区域。
+      </Dialog>
+      <Drawer
+        v-model:visible="drawerVisible"
+        header="Drawer 示例"
+        position="right"
+      >
+        这是 Drawer 内容区域。
+      </Drawer>
+      <Popover ref="popoverRef">
+        <div class="col-stretch gap-xs">
+          <span class="text-sm text-foreground">Popover 内容</span>
+          <span class="text-xs text-muted-foreground">用于轻量悬浮说明</span>
+        </div>
+      </Popover>
+      <ConfirmPopup />
+    </section>
   </div>
 </template>

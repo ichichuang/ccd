@@ -11,6 +11,8 @@ const mockData = ref<ColumnSizingRow[]>(makeMockData())
 const resizableColumns = ref<boolean>(true)
 const columnResizeMode = ref<'fit' | 'expand'>('fit')
 const tableLayout = ref<'auto' | 'fixed'>('auto')
+const tableContainerRef = ref<HTMLElement | null>(null)
+const tableContainerHeight = ref<number | undefined>(undefined)
 
 const RESIZE_MODE_OPTIONS: { label: string; value: 'fit' | 'expand' }[] = [
   { label: 'fit', value: 'fit' },
@@ -21,23 +23,27 @@ const TABLE_LAYOUT_OPTIONS: { label: string; value: 'auto' | 'fixed' }[] = [
   { label: 'auto', value: 'auto' },
   { label: 'fixed', value: 'fixed' },
 ]
+
+onMounted(() => {
+  tableContainerHeight.value = tableContainerRef.value?.clientHeight ?? 0
+})
 </script>
 
 <template>
   <div
     data-archetype="A1-toolbar-content"
-    class="layout-full px-md md:px-lg col-stack-sm min-h-0"
+    class="layout-full px-md md:px-lg flex flex-col gap-sm min-h-0"
   >
     <!-- Toolbar: Hero Header (Transparent Root Policy: Inherit canvas) -->
     <header class="shrink-0 border-b-default">
-      <div class="w-full py-sm row-y-center gap-md">
+      <div class="w-full py-sm flex flex-row items-center gap-md">
         <div class="p-md bg-primary/10 rounded-lg shrink-0">
           <Icons
             name="i-lucide-move-horizontal"
             class="text-primary text-2xl"
           />
         </div>
-        <div class="col-stack-xs">
+        <div class="flex flex-col gap-xs">
           <h1 class="text-2xl font-bold text-foreground m-0">ProTable — 列宽与尺寸</h1>
           <p class="text-muted-foreground text-sm m-0">
             演示 width / minWidth / maxWidth 约束、resizable 拖拽缩放以及 tableLayout auto / fixed
@@ -48,12 +54,12 @@ const TABLE_LAYOUT_OPTIONS: { label: string; value: 'auto' | 'fixed' }[] = [
     </header>
 
     <!-- Content -->
-    <div class="flex-1 min-h-0 col-stack-sm">
+    <div class="flex-1 min-h-0 flex flex-col gap-sm">
       <!-- Control panel -->
       <div class="shrink-0 border-b-default">
         <div class="w-full py-sm">
           <div class="bg-card rounded-md shadow-sm dark:shadow-md py-md px-lg flex flex-col gap-lg">
-            <div class="row-y-center gap-sm border-b-default pb-sm mb-padding-sm">
+            <div class="flex flex-row items-center gap-sm border-b-default pb-sm mb-padding-sm">
               <Icons
                 name="i-lucide-settings-2"
                 class="text-primary"
@@ -88,7 +94,7 @@ const TABLE_LAYOUT_OPTIONS: { label: string; value: 'auto' | 'fixed' }[] = [
                 <p class="text-xs font-semibold text-muted-foreground uppercase tracking-wider m-0">
                   缩放模式
                 </p>
-                <div class="row-y-center gap-md">
+                <div class="flex flex-row items-center gap-md">
                   <label class="text-sm text-foreground shrink-0 w-[var(--spacing-2xl)]">
                     Mode
                   </label>
@@ -106,7 +112,7 @@ const TABLE_LAYOUT_OPTIONS: { label: string; value: 'auto' | 'fixed' }[] = [
                 <p class="text-xs font-semibold text-muted-foreground uppercase tracking-wider m-0">
                   Table Layout
                 </p>
-                <div class="row-y-center gap-md">
+                <div class="flex flex-row items-center gap-md">
                   <label class="text-sm text-foreground shrink-0 w-[var(--spacing-2xl)]">
                     Layout
                   </label>
@@ -125,18 +131,23 @@ const TABLE_LAYOUT_OPTIONS: { label: string; value: 'auto' | 'fixed' }[] = [
       </div>
 
       <!-- ProTable -->
-      <div class="flex-1 min-h-0">
-        <ProTable
-          :columns="columnSizingColumns"
-          :data="mockData"
-          title="列宽演示"
-          row-key="id"
-          :resizable-columns="resizableColumns"
-          :column-resize-mode="columnResizeMode"
-          :table-layout="tableLayout"
-          :pagination="{ pageSize: 12 }"
-        />
-      </div>
+      <section
+        ref="tableContainerRef"
+        class="col-fill"
+      >
+        <template v-if="tableContainerHeight && tableContainerHeight > 0">
+          <div :style="{ height: tableContainerHeight + 'px' }">
+            <ProTable
+              :columns="columnSizingColumns"
+              :data="mockData"
+              row-key="id"
+              :resizable-columns="resizableColumns"
+              :column-resize-mode="columnResizeMode"
+              :table-layout="tableLayout"
+            />
+          </div>
+        </template>
+      </section>
     </div>
   </div>
 </template>

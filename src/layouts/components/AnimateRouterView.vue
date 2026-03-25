@@ -111,7 +111,7 @@ const styleVars = computed(() => {
 <template>
   <router-view
     v-slot="{ Component, route: currentRoute }"
-    class="h-full min-h-0"
+    class="layout-full min-h-0"
   >
     <Transition
       appear
@@ -132,7 +132,7 @@ const styleVars = computed(() => {
     >
       <div
         :key="currentRoute.fullPath"
-        class="layout-full"
+        class="layout-full min-h-0"
       >
         <keep-alive
           v-if="enableKeepAlive"

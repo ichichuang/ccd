@@ -86,22 +86,32 @@ export function filterEmptyChildren(routes: RouteConfig[]): RouteConfig[] {
 }
 
 /**
- * 根据用户角色过滤无权限的菜单
+ * 根据用户角色和权限标识过滤无权限的菜单
+ * - roles: ANY 匹配（用户拥有任一角色即可）
+ * - auths: OR 匹配（用户拥有任一权限即可，'*:*:*' 为通配符）
  */
 export function filterNoPermissionTree(
   routes: RouteConfig[],
-  userRoles: string[] = []
+  userRoles: string[] = [],
+  userPermissions: string[] = []
 ): RouteConfig[] {
   return routes
     .filter(route => {
       if (route.meta?.roles && route.meta.roles.length > 0) {
         if (!isOneOfArray(route.meta.roles, userRoles)) return false
       }
+      if (route.meta?.auths && route.meta.auths.length > 0) {
+        if (
+          !userPermissions.includes('*:*:*') &&
+          !route.meta.auths.some(auth => userPermissions.includes(auth))
+        )
+          return false
+      }
       return true
     })
     .map(route => {
       if (route.children && route.children.length > 0) {
-        const filteredChildren = filterNoPermissionTree(route.children, userRoles)
+        const filteredChildren = filterNoPermissionTree(route.children, userRoles, userPermissions)
         return { ...route, children: filteredChildren }
       }
       return { ...route }

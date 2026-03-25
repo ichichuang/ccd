@@ -12,8 +12,8 @@ function openLink() {
 </script>
 
 <template>
-  <div class="p-lg space-y-margin-md">
-    <h2 class="text-xl font-semibold row-y-center gap-sm">
+  <div class="p-lg col-stretch gap-md">
+    <h2 class="text-xl font-semibold row-start items-center gap-sm">
       <Icons
         name="i-lucide-external-link"
         size="lg"
@@ -22,7 +22,7 @@ function openLink() {
       <span>外链示例（meta.isLink + meta.linkUrl）</span>
     </h2>
 
-    <div class="shadow-sm dark:shadow-md rounded-scale p-md space-y-margin-sm">
+    <div class="material-elevated col-stretch gap-sm">
       <div class="text-md font-medium">本路由 meta 配置</div>
       <p class="text-muted-foreground text-sm">
         meta.isLink = true, meta.linkUrl = 'https://vuejs.org'
@@ -33,9 +33,9 @@ function openLink() {
       </p>
     </div>
 
-    <div class="shadow-sm dark:shadow-md rounded-scale p-md space-y-margin-sm bg-muted">
+    <div class="col-stretch gap-sm rounded-md bg-muted p-md shadow-sm dark:shadow-md">
       <div class="text-md font-medium">直接访问本页时</div>
-      <p class="text-muted-foreground text-sm mb-sm">
+      <p class="text-muted-foreground text-sm m-0">
         若通过 URL 直接进入本页，可点击下方按钮打开外链：
       </p>
       <Button

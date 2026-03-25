@@ -77,7 +77,7 @@ const handleSelect = (event: FileUploadFilesEvent): void => {
         <li
           v-for="name in fileNames"
           :key="name"
-          class="text-single-line-ellipsis"
+          class="text-ellipsis-1"
         >
           {{ name }}
         </li>

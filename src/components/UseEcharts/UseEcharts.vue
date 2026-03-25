@@ -147,11 +147,11 @@ const emit = defineEmits<{
   chartReady: [instance: unknown, id?: string]
 }>()
 
-const chartContainerRef = ref<HTMLElement | HTMLDivElement | null>(null)
-const chartRef = ref()
+const chartContainerRef = shallowRef<HTMLElement | HTMLDivElement | null>(null)
+const chartRef = shallowRef()
 
 // 联动相关状态：传 group 或 connectConfig.enabled 即视为开启
-const connectState = ref<ChartConnectState>({})
+const connectState = shallowRef<ChartConnectState>({})
 const isConnectEnabled = computed(() => props.connectConfig?.enabled === true || !!props.group)
 const connectGroupId = computed(() => {
   const groupId = props.group || props.connectConfig?.groupId || 'default'
@@ -263,14 +263,15 @@ const mergedOption = computed((): EChartsOption => {
 })
 
 // 监听配置变化,手动更新图表
+// Note: { deep: true } removed — themedOption always returns a new object reference (deepCloneWithFunctions),
+// so shallow reference comparison is sufficient and avoids redundant deep traversal of the entire EChartsOption tree.
 watch(
   () => mergedOption.value,
   newOption => {
     if (props.manualUpdate && chartRef.value) {
       chartRef.value.setOption(newOption, true)
     }
-  },
-  { deep: true }
+  }
 )
 
 /**
@@ -352,7 +353,9 @@ const eventHandlers = computed(() => {
 
 /**
  * 获取 ECharts 实例
- * 使用 vue-echarts 官方推荐的方式获取实例
+ * 使用 vue-echarts 官方推荐的方式获取实例。
+ * toRaw() 作为防御层：确保返回的始终是原始 ECharts 实例，
+ * 而非 Vue 响应式 Proxy，防止 dispatchAction / on / off 静默失败。
  */
 const getEchartsInstance = () => {
   if (!chartRef.value) {
@@ -361,12 +364,12 @@ const getEchartsInstance = () => {
 
   // 优先使用 chart 属性（vue-echarts 8.x 推荐方式）
   if (chartRef.value.chart) {
-    return chartRef.value.chart
+    return toRaw(chartRef.value.chart)
   }
 
   // 回退到 getEchartsInstance 方法（兼容旧版本）
   if (typeof chartRef.value.getEchartsInstance === 'function') {
-    return chartRef.value.getEchartsInstance()
+    return toRaw(chartRef.value.getEchartsInstance())
   }
 
   return null

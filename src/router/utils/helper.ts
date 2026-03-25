@@ -9,6 +9,7 @@ import { generateIdFromKey } from '@/utils/ids'
 import { usePermissionStore } from '@/stores/modules/permission'
 import type { LocationQueryRaw, RouteLocationNormalized, RouteMeta } from 'vue-router'
 import type { MenuItem as PrimeMenuItem } from 'primevue/menuitem'
+import { filterMenuByAccess } from './accessControl'
 
 // ================= 窗口管理 =================
 
@@ -417,22 +418,13 @@ export const getFlatMenuTree = (): FlatRouteItem[] => {
  * 根据权限过滤菜单
  * 纯函数：返回新对象，不修改原菜单树
  */
-export const getAuthorizedMenuTree = (userRoles: string[], menuTree?: MenuItem[]): MenuItem[] => {
+export const getAuthorizedMenuTree = (
+  userRoles: string[],
+  userPermissions: string[] = [],
+  menuTree?: MenuItem[]
+): MenuItem[] => {
   const menus = menuTree || getMenuTree()
-  return menus
-    .filter(menu => {
-      if (menu.roles && menu.roles.length > 0) {
-        return menu.roles.some(role => userRoles.includes(role))
-      }
-      return true
-    })
-    .map(menu => ({
-      ...menu,
-      children:
-        menu.children && menu.children.length > 0
-          ? getAuthorizedMenuTree(userRoles, menu.children)
-          : menu.children,
-    }))
+  return filterMenuByAccess(menus, userRoles, userPermissions)
 }
 
 /**

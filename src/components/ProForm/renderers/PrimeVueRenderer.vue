@@ -154,7 +154,7 @@ const resolvedBindProps = computed<Record<string, unknown>>(() => {
     v-if="isVisible"
     class="w-full"
   >
-    <div :class="['w-full', layoutMode === 'horizontal' ? 'row-start gap-sm' : 'column']">
+    <div :class="['w-full', layoutMode === 'horizontal' ? 'row-start gap-sm' : 'col-stretch']">
       <label
         v-if="field.label && field.component !== 'checkbox'"
         :class="labelClass"
@@ -174,7 +174,7 @@ const resolvedBindProps = computed<Record<string, unknown>>(() => {
         {{ field.label }}
       </label>
 
-      <div class="flex-1 min-w-0 column w-full">
+      <div class="col-stretch flex-1 min-w-0 w-full">
         <component
           :is="resolvedIs"
           v-bind="resolvedBindProps"
@@ -182,7 +182,7 @@ const resolvedBindProps = computed<Record<string, unknown>>(() => {
         />
 
         <div
-          class="text-xs flex items-end!"
+          class="text-xs flex items-end"
           :style="{ height: 'var(--font-size-xl)' }"
         >
           <transition

@@ -31,18 +31,18 @@ export default defineComponent({
       if (!props.show) return null
 
       return (
-        <footer class="w-full h-footerHeight center px-lg text-xs text-muted-foreground">
-          <div class="center flex-wrap gap-x-gap-md gap-y-gap-xs">
+        <footer class="w-full min-h-footerHeight py-sm center px-lg text-xs text-muted-foreground">
+          <div class="center flex-wrap gap-x-md gap-y-xs">
             <span>{brand.displayName}</span>
             {version && (
               <>
-                <span class="text-border">·</span>
+                <span class="text-muted-foreground opacity-50">·</span>
                 <span>{version}</span>
               </>
             )}
             {brand.description && (
               <>
-                <span class="text-border">·</span>
+                <span class="text-muted-foreground opacity-50">·</span>
                 <span
                   class="max-w-[50vw] truncate"
                   title={brand.description}

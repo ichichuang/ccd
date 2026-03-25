@@ -13,45 +13,75 @@ const height = computed(() => deviceStore.getHeight)
 
 const route = useRoute()
 
-function parseRatioString(input?: unknown): number {
-  const fallback = 16 / 9
+type RatioParsed = {
+  ratio: number
+  /**
+   * CSS aspect-ratio 需要 <ratio>，这里统一生成成 "w / h" 格式，
+   * 避免把浮点直接塞给 aspect-ratio 导致浏览器兼容问题。
+   */
+  ratioText: string
+}
+
+function parseRatioString(input?: unknown): RatioParsed {
+  const fallbackW = 16
+  const fallbackH = 9
+  const fallback = fallbackW / fallbackH
+
   if (!input) {
-    return fallback
+    return {
+      ratio: fallback,
+      ratioText: `${fallbackW} / ${fallbackH}`,
+    }
   }
+
   const str = String(input).trim()
   const match = str.match(/^(\d+(?:\.\d+)?)\s*:\s*(\d+(?:\.\d+)?)$/)
   if (match) {
     const w = parseFloat(match[1])
     const h = parseFloat(match[2])
     if (w > 0 && h > 0) {
-      return w / h
+      return {
+        ratio: w / h,
+        ratioText: `${w} / ${h}`,
+      }
     }
   }
+
   const n = Number(str)
   if (!Number.isNaN(n) && n > 0) {
-    return n
+    return {
+      ratio: n,
+      ratioText: `${n} / 1`,
+    }
   }
-  return fallback
+
+  return {
+    ratio: fallback,
+    ratioText: `${fallbackW} / ${fallbackH}`,
+  }
 }
 
-const aspectRatio = computed<number>(() => parseRatioString(route.meta?.ratio))
+const aspectRatio = computed<RatioParsed>(() => parseRatioString(route.meta?.ratio))
 
 const wrapperRef = ref<HTMLDivElement>()
-const ratioRef = ref<HTMLDivElement>()
 
-const boxStyle = reactive<Record<string, string>>({
-  position: 'absolute',
-  left: '50%',
-  top: '50%',
-  transform: 'translate(-50%, -50%)',
-  width: '0',
-  height: '0',
-})
+/**
+ * 基于“最大化高度 + 按宽度缩放”的 contain 逻辑：
+ * - 基础画布高度固定为父容器高度（h-full）
+ * - 宽度由 aspect-ratio 推导：baseWidth = parentHeight * ratio
+ * - 若 baseWidth 超出可用宽度，则对画布缩放：scale = parentWidth / baseWidth
+ */
+const scale = ref<number>(1)
+
+const ratioCanvasStyle = computed<Record<string, string>>(() => ({
+  aspectRatio: aspectRatio.value.ratioText,
+  transform: `scale(${scale.value})`,
+}))
 
 let rafId = 0
 let ro: ResizeObserver | null = null
 
-function updateBoxSize() {
+function updateScale() {
   const wrapper = wrapperRef.value
   if (!wrapper) {
     return
@@ -62,24 +92,21 @@ function updateBoxSize() {
     return
   }
 
-  const r = aspectRatio.value || 16 / 9
-  // contain 逻辑：在父容器内尽可能大且保持比例
-  // 如果父容器更宽（宽高比更大），以高度为基准；否则以宽度为基准
-  const parentRatio = pw / ph
-  let w = 0
-  let h = 0
-  if (parentRatio > r) {
-    // 以高度为基准
-    h = ph
-    w = Math.round(h * r)
-  } else {
-    // 以宽度为基准
-    w = pw
-    h = Math.round(w / r)
+  const r = aspectRatio.value.ratio
+  if (r <= 0) {
+    scale.value = 1
+    return
   }
 
-  boxStyle.width = `${w}px`
-  boxStyle.height = `${h}px`
+  // baseWidth 对应“以高度为基准”的画布宽度（由 aspect-ratio 推导）
+  const baseWidth = ph * r
+  if (baseWidth <= 0) {
+    scale.value = 1
+    return
+  }
+
+  const nextScale = Math.min(1, pw / baseWidth)
+  scale.value = Number.isFinite(nextScale) && nextScale > 0 ? nextScale : 1
 }
 
 function scheduleUpdate() {
@@ -87,7 +114,7 @@ function scheduleUpdate() {
     cancelAnimationFrame(rafId)
   }
   rafId = requestAnimationFrame(() => {
-    updateBoxSize()
+    updateScale()
     rafId = 0
   })
 }
@@ -103,7 +130,7 @@ onMounted(() => {
       ro.observe(wrapper)
     }
     // 初始计算
-    updateBoxSize()
+    updateScale()
   })
 })
 
@@ -137,25 +164,27 @@ watch(
 <template>
   <div
     ref="wrapperRef"
-    class="ratio-wrapper relative w-full h-full"
+    class="layout-screen bg-background text-foreground relative"
   >
-    <div
-      ref="ratioRef"
-      class="ratio-box relative"
-      :style="boxStyle"
-    >
-      <AnimateRouterView />
-      <Transition name="fade">
-        <div
-          v-show="isPageLoading"
-          class="absolute inset-0 z-10 center backdrop-blur-sm bg-background/60 pointer-events-auto"
-        >
-          <Loading
-            :type="2"
-            size="lg"
-          />
-        </div>
-      </Transition>
+    <!-- translate 由 absolute-center 负责；scale 由内层 transform 负责 -->
+    <div class="absolute-center layout-full">
+      <div
+        class="h-full flex flex-col overflow-hidden min-w-0 relative"
+        :style="ratioCanvasStyle"
+      >
+        <AnimateRouterView />
+        <Transition name="fade">
+          <div
+            v-show="isPageLoading"
+            class="absolute inset-0 z-10 center backdrop-blur-sm bg-background/60 pointer-events-auto"
+          >
+            <Loading
+              :type="2"
+              size="lg"
+            />
+          </div>
+        </Transition>
+      </div>
     </div>
   </div>
 </template>

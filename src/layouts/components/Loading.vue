@@ -7,7 +7,7 @@
  */
 import type { SizeScaleKey } from '@/constants/sizeScale'
 import { LOADING_SIZE_CSS } from '@/constants/sizeScale'
-import loading001 from '@/assets/lottie/loading-001.json'
+import loading001 from '@/assets/lottie/airplane.json'
 import loading002 from '@/assets/lottie/loading-002.json'
 import loading003 from '@/assets/lottie/loading-003.json'
 import { BaseLottieLoader } from './BaseLottieLoader'
@@ -53,11 +53,13 @@ const resolvedAnimationData = computed(() => {
 </script>
 
 <template>
-  <BaseLottieLoader
-    :width="resolvedSize"
-    :height="resolvedSize"
-    :animation-data="resolvedAnimationData"
-    :loop="true"
-    :speed="1"
-  />
+  <div class="layout-full flex items-center justify-center">
+    <BaseLottieLoader
+      :width="resolvedSize"
+      :height="resolvedSize"
+      :animation-data="resolvedAnimationData"
+      :loop="true"
+      :speed="1"
+    />
+  </div>
 </template>

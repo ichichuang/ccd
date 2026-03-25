@@ -17,9 +17,9 @@ function stockBadge(stock: number): VNode {
 function ratingStars(rating: number): VNode {
   const filled = Math.round(rating)
   return (
-    <div class="row-y-center gap-xs">
+    <div class="flex flex-row items-center gap-xs">
       <span class="text-xs font-semibold text-foreground">{rating.toFixed(1)}</span>
-      <div class="row-y-center gap-[var(--spacing-xs)]">
+      <div class="flex flex-row items-center gap-[var(--spacing-xs)]">
         {Array.from({ length: 5 }).map((_, i) => (
           <span
             key={i}
@@ -47,13 +47,13 @@ export const productColumns: ProTableColumn<DummyProductDTO>[] = [
     field: 'title',
     minWidth: '220px',
     render: ({ row }: ColumnRenderParams<DummyProductDTO>) => (
-      <div class="row-y-center gap-sm">
+      <div class="flex flex-row items-center gap-sm">
         <img
           src={row.thumbnail}
           alt={row.title}
           class="w-[var(--spacing-2xl)] h-[var(--spacing-2xl)] rounded-md object-cover shrink-0 shadow-sm"
         />
-        <div class="col-stack-xs min-w-0">
+        <div class="flex flex-col gap-xs min-w-0">
           <span class="text-sm font-medium text-foreground text-single-line-ellipsis">
             {row.title}
           </span>
@@ -66,7 +66,8 @@ export const productColumns: ProTableColumn<DummyProductDTO>[] = [
     id: 'category',
     title: '分类',
     field: 'category',
-    width: '130px',
+    width: '200px',
+    align: 'center',
     render: ({ row }: ColumnRenderParams<DummyProductDTO>) => (
       <span class={`bg-accent/15 text-accent ${BADGE}`}>{row.category}</span>
     ),
@@ -78,7 +79,7 @@ export const productColumns: ProTableColumn<DummyProductDTO>[] = [
     width: '100px',
     align: 'right',
     render: ({ row }: ColumnRenderParams<DummyProductDTO>) => (
-      <div class="col-stack-xs items-end">
+      <div class="flex flex-col gap-xs items-end">
         <span class="text-sm font-semibold text-foreground">${row.price.toFixed(2)}</span>
         {row.discountPercentage > 0 && (
           <span class="text-xs text-danger">-{row.discountPercentage.toFixed(0)}%</span>
@@ -96,7 +97,7 @@ export const productColumns: ProTableColumn<DummyProductDTO>[] = [
     id: 'stock',
     title: '库存',
     field: 'stock',
-    width: '90px',
+    width: '160px',
     render: ({ row }: ColumnRenderParams<DummyProductDTO>) => stockBadge(row.stock),
   },
 ]

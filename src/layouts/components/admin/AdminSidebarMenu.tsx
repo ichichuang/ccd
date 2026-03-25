@@ -32,7 +32,6 @@ import { getMenuItemBase, getMenuStateClasses, getIconSize } from '@/hooks/layou
 import { createTieredMenuItemRenderer } from '@/hooks/layout/useMenuRenderer'
 import { useLayoutStore } from '@/stores/modules/layout'
 import { useUserStore } from '@/stores/modules/user'
-import { useThemeStore } from '@/stores/modules/theme'
 import { useAppElementSize } from '@/hooks/modules/useAppElementSize'
 
 /** Map/Record → Record，供 store 持久化 */
@@ -74,14 +73,12 @@ export default defineComponent({
     const route = useRoute()
     const layoutStore = useLayoutStore()
     const userStore = useUserStore()
-    const themeStore = useThemeStore()
-
-    const isDark = computed<boolean>(() => themeStore.isDark)
     const userRoles = computed(() => userStore.getUserRoles || [])
+    const userPermissions = computed(() => userStore.getUserPermissions || [])
 
     const panelMenuModel = computed(() => {
       const tree = getAdminMenuTree()
-      const authorizedTree = getAuthorizedMenuTree(userRoles.value, tree)
+      const authorizedTree = getAuthorizedMenuTree(userRoles.value, userPermissions.value, tree)
       return authorizedTree.map(item => menuItemToPrimeModel(item, t))
     })
 
@@ -251,27 +248,7 @@ export default defineComponent({
     })
 
     const getExpandedSidebarStateClasses = (distance: number, level: number): string => {
-      if (distance < 0) {
-        return getMenuStateClasses({ distance, level })
-      }
-      if (distance === 0) {
-        return getMenuStateClasses({ distance, level })
-      }
-      const bgByDistance: Record<number, string> = {
-        1: 'bg-primary/8!',
-        2: 'bg-primary/6!',
-        3: 'bg-primary/4!',
-      }
-      const bgByDistanceDark: Record<number, string> = {
-        1: 'bg-primary/30!',
-        2: 'bg-primary/20!',
-        3: 'bg-primary/10!',
-      }
-      const bgClass = bgByDistance[distance] ?? 'bg-primary/8!'
-      const bgClassDark = bgByDistanceDark[distance] ?? 'dark:bg-primary/10!'
-      const textClass = 'text-primary!'
-      const textClassDark = 'text-primary!'
-      return isDark.value ? `${bgClassDark} ${textClassDark}` : `${bgClass} ${textClass}`
+      return getMenuStateClasses({ distance, level })
     }
 
     const renderPanelMenuItem = ({ item }: { item: PrimeMenuModelItem }) => {
@@ -290,7 +267,7 @@ export default defineComponent({
         <span
           ref={el => setMenuLabelRef(key, el instanceof HTMLElement ? el : null)}
           data-menu-label-key={key}
-          class={`text-single-line-ellipsis text-left! flex-1 min-w-0 shrink text-current! ${MENU_TEXT_CLASS}`}
+          class={`text-ellipsis-1 text-left! flex-1 min-w-0 text-current! ${MENU_TEXT_CLASS}`}
         >
           {item.label}
         </span>
@@ -303,7 +280,7 @@ export default defineComponent({
 
       const content = (
         <span
-          class={`row-y-center ${MENU_ITEM_GAP} w-full min-w-0 shrink overflow-hidden text-current! ${MENU_TEXT_CLASS}`}
+          class={`flex items-center ${MENU_ITEM_GAP} w-full min-w-0 overflow-hidden text-current! ${MENU_TEXT_CLASS}`}
         >
           {item.icon ? (
             <Icons
@@ -452,7 +429,7 @@ export default defineComponent({
       const iconButton = (
         <button
           type="button"
-          class={`center group ${MENU_COLLAPSED_BUTTON_PADDING} rounded-md ${ROUNDED_NAV} cursor-pointer transition-[background-color,color,opacity,transform] duration-md aspect-square ${MENU_COLLAPSED_BUTTON_SIZE} border-none bg-transparent p-0 outline-none interactive-focus-ring ${stateClasses}`}
+          class={`center group ${MENU_COLLAPSED_BUTTON_PADDING} rounded-md ${ROUNDED_NAV} cursor-pointer transition-[background-color,color,opacity,transform] duration-md aspect-square ${MENU_COLLAPSED_BUTTON_SIZE} border-none bg-transparent p-0 outline-none interactive-item ${stateClasses}`}
           onClick={e => onCollapsedItemClick(e, item)}
         >
           {item.icon ? (
@@ -521,10 +498,10 @@ export default defineComponent({
               class={`w-full ${MENU_TEXT_CLASS}`}
               pt={{
                 item: {
-                  class: 'mb-padding-xs last:mb-0',
+                  class: 'mb-xs last:mb-0',
                 },
                 submenu: {
-                  class: 'mt-padding-xs',
+                  class: 'mt-xs',
                 },
               }}
               v-slots={{
@@ -532,7 +509,7 @@ export default defineComponent({
               }}
             />
           ) : (
-            <div class="col-stack-sm items-center">
+            <div class="flex flex-col gap-sm items-center">
               {panelMenuModel.value.map(item => renderCollapsedItem(item))}
             </div>
           )}

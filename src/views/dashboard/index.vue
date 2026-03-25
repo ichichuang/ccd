@@ -1,7 +1,7 @@
 <script setup lang="ts">
 /**
- * Dashboard — Phase 12.65: Absolute semantics & VH fluidity.
- * Uses vh for chart height, semantic spacing tokens, shadow-sm/dark:shadow-md; no rem/em or raw shadow.
+ * Dashboard — Phase 12.65: Absolute semantics & layout tokens.
+ * Chart min-height uses spacing CSS vars; semantic shortcuts from semanticShortcuts; no arbitrary %/vh sizing.
  */
 import { useChartOptions } from './hooks/useChartOptions'
 import type { SystemMetricsDTO } from './page.state'
@@ -150,29 +150,33 @@ const eventTypeStyles: Record<SystemEventItem['type'], string> = {
   error: 'bg-danger/90 text-danger-foreground',
 }
 
-// --- Summary Cards Definition ---
+// --- Summary Cards Definition (valueMain + unit for typographic hierarchy) ---
 const metricsConfig = computed(() => [
   {
     label: 'CPU Usage',
-    value: `${currentStats.value.cpu}%`,
+    valueMain: String(currentStats.value.cpu),
+    unit: '%',
     icon: 'i-lucide-cpu',
     color: 'text-primary',
   },
   {
     label: 'Memory Load',
-    value: `${currentStats.value.memory}%`,
+    valueMain: String(currentStats.value.memory),
+    unit: '%',
     icon: 'i-lucide-database',
     color: 'text-success',
   },
   {
     label: 'Network Traffic',
-    value: `${currentStats.value.network} Mbps`,
+    valueMain: String(currentStats.value.network),
+    unit: 'Mbps',
     icon: 'i-lucide-activity',
     color: 'text-info',
   },
   {
     label: 'Disk I/O',
-    value: `${currentStats.value.disk} MB/s`,
+    valueMain: String(currentStats.value.disk),
+    unit: 'MB/s',
     icon: 'i-lucide-hard-drive',
     color: 'text-warn',
   },
@@ -181,11 +185,9 @@ const metricsConfig = computed(() => [
 
 <template>
   <div data-archetype="A3-stats-grid">
-    <div
-      class="col-stack-xl py-sm md:py-md xl:py-lg 2xl:py-xl mx-auto max-w-[92%] sm:max-w-[94%] md:max-w-[92%] lg:max-w-[90%] xl:max-w-[88%] 2xl:max-w-[86%] 3xl:max-w-[84%]"
-    >
+    <div class="layout-narrow">
       <!-- Header Section -->
-      <header class="col-stack-sm">
+      <header class="col-stretch gap-xs md:gap-sm">
         <h1 class="text-2xl font-bold text-foreground m-0 tracking-tight">System Data Overview</h1>
         <p class="text-sm text-muted-foreground m-0">
           Real-time performance monitoring and analytics.
@@ -194,15 +196,15 @@ const metricsConfig = computed(() => [
       <!-- Metrics Header -->
       <div
         data-region="metrics-header"
-        class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-lg"
+        class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-sm md:gap-md lg:gap-lg"
       >
         <div
           v-for="m in metricsConfig"
           :key="m.label"
-          class="bg-accent/10 dark:bg-accent/5 rounded-xl shadow-sm dark:shadow-md transition-all duration-md ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)] p-lg row-y-center gap-lg group"
+          class="rounded-xl p-md md:p-lg xl:p-xl col-stretch gap-xs sm:flex-row sm:items-center sm:gap-md md:gap-lg group interactive-card"
         >
           <div
-            class="shrink-0 w-[var(--spacing-3xl)] h-[var(--spacing-3xl)] rounded-lg surface-item center transition-[transform,opacity] duration-md ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-105"
+            class="self-start shrink-0 w-[var(--spacing-3xl)] h-[var(--spacing-3xl)] rounded-lg center transition-[transform,opacity] duration-sm ease-spring group-hover:scale-105 sm:self-center"
           >
             <Icons
               :name="m.icon"
@@ -210,11 +212,20 @@ const metricsConfig = computed(() => [
               :class="m.color"
             />
           </div>
-          <div class="column">
-            <span class="text-xs font-medium text-accent uppercase tracking-wider">
+          <div class="col-stretch gap-sm min-w-0 flex-1">
+            <span class="text-xs font-medium text-muted-foreground uppercase tracking-wider">
               {{ m.label }}
             </span>
-            <span class="text-2xl font-bold text-foreground tabular-nums">{{ m.value }}</span>
+            <div class="inline-flex flex-wrap items-baseline gap-x-xs gap-y-0">
+              <span
+                class="text-2xl font-bold text-foreground tabular-nums leading-none tracking-tight"
+              >
+                {{ m.valueMain }}
+              </span>
+              <span class="text-sm font-medium text-muted-foreground tabular-nums shrink-0">
+                {{ m.unit }}
+              </span>
+            </div>
           </div>
         </div>
       </div>
@@ -222,29 +233,23 @@ const metricsConfig = computed(() => [
       <!-- Chart Grid -->
       <div
         data-region="chart-grid"
-        class="grid grid-cols-1 gap-lg"
+        class="grid grid-cols-1 gap-sm md:gap-md lg:gap-lg"
       >
-        <div
-          class="bg-card rounded-md shadow-sm dark:shadow-md py-md px-lg flex flex-col gap-lg min-h-[50vh]"
-        >
+        <div class="material-elevated col-stretch gap-xl">
           <div class="row-between shrink-0">
-            <div class="col-stack-xs">
-              <h3 class="text-lg font-semibold text-foreground m-0">Performance Analytics</h3>
-              <p class="text-xs text-muted-foreground m-0">
-                Live telemetry of core system resources
-              </p>
+            <div class="col-stretch gap-xs">
+              <p class="text-lg font-semibold">Performance Analytics</p>
+              <p class="text-xs text-muted-foreground">Live telemetry of core system resources</p>
             </div>
-            <div
-              class="bg-primary/10 text-primary rounded-full px-md py-xs row-y-center gap-sm shadow-sm dark:shadow-md"
-            >
+            <div class="glass-capsule bg-primary/10 dark:bg-primary/20 center gap-sm">
               <span
                 class="w-[var(--spacing-sm)] h-[var(--spacing-sm)] rounded-full bg-primary animate-pulse shrink-0"
               />
-              <span class="text-xs font-medium">Live Data</span>
+              <span class="text-xs">Live Data</span>
             </div>
           </div>
 
-          <div class="flex-1 w-full overflow-hidden">
+          <div class="h-30vh">
             <UseEcharts :option="chartOptions" />
           </div>
         </div>
@@ -253,29 +258,29 @@ const metricsConfig = computed(() => [
       <!-- Data Lists: 2:1 Asymmetric Grid (Phase 12.7) -->
       <div
         data-region="data-lists"
-        class="grid grid-cols-1 lg:grid-cols-3 gap-lg"
+        class="grid grid-cols-1 lg:grid-cols-3 gap-md lg:gap-lg xl:gap-xl"
       >
         <!-- Recent System Events (Left, 2/3) -->
         <div
-          class="bg-primary/20 dark:bg-primary/10 rounded-xl shadow-sm dark:shadow-md p-xl col-stack-lg lg:col-span-2 transition-all duration-md ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)]"
+          class="material-elevated rounded-xl p-md md:p-xl lg:p-2xl col-stretch gap-md md:gap-lg xl:gap-xl lg:col-span-2 interactive-card"
         >
-          <div class="row-between shrink-0">
+          <div class="row-between shrink-0 mb-md">
             <h3 class="text-lg font-semibold text-foreground m-0">Recent System Events</h3>
             <a
               href="#"
-              class="text-sm text-primary interactive-click"
+              class="text-sm text-primary interaction-shrink"
               @click.prevent
             >
               View All
             </a>
           </div>
-          <div class="layout-stack gap-md">
+          <div class="col-stretch gap-sm md:gap-md">
             <div
               v-for="evt in systemEvents"
               :key="evt.id"
-              class="surface-item rounded-md p-md row-between behavior-hover-transition hover:bg-foreground/5"
+              class="rounded-md p-md row-between interactive-item"
             >
-              <div class="row-y-center gap-md min-w-0 flex-1">
+              <div class="flex items-center gap-md min-w-0 flex-1">
                 <div
                   class="shrink-0 w-[var(--spacing-2xl)] h-[var(--spacing-2xl)] rounded-md center"
                   :class="eventTypeStyles[evt.type]"
@@ -286,14 +291,14 @@ const metricsConfig = computed(() => [
                     size="xl"
                   />
                 </div>
-                <div class="column min-w-0 flex-1">
+                <div class="col-stretch min-w-0 flex-1">
                   <span class="text-sm font-medium text-foreground">{{ evt.title }}</span>
-                  <span class="text-muted-foreground text-single-line-ellipsis text-xs">
+                  <span class="text-muted-foreground text-ellipsis-1 text-xs">
                     {{ evt.description }}
                   </span>
                 </div>
               </div>
-              <span class="text-secondary-foreground text-xs whitespace-nowrap shrink-0 ml-md">
+              <span class="text-secondary-foreground text-xs text-no-wrap shrink-0 ml-md">
                 {{ evt.time }}
               </span>
             </div>
@@ -302,25 +307,25 @@ const metricsConfig = computed(() => [
 
         <!-- Active Service Nodes (Right, 1/3) -->
         <div
-          class="bg-primary/20 dark:bg-primary/10 rounded-xl shadow-sm dark:shadow-md p-xl col-stack-lg lg:col-span-1 transition-all duration-md ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 hover:shadow-md dark:hover:shadow-[0_0_0_1px_rgb(var(--foreground)/0.12),0_8px_30px_rgb(var(--background)/0.85)]"
+          class="material-elevated rounded-xl p-md md:p-xl lg:p-2xl col-stretch gap-md md:gap-lg xl:gap-xl lg:col-span-1 interactive-card"
         >
-          <div class="row-between shrink-0">
+          <div class="row-between shrink-0 mb-md">
             <h3 class="text-lg font-semibold text-foreground m-0">Active Service Nodes</h3>
             <span
               class="w-[var(--spacing-sm)] h-[var(--spacing-sm)] rounded-full bg-success animate-pulse shrink-0"
             />
           </div>
-          <div class="layout-stack gap-md">
+          <div class="col-stretch gap-sm md:gap-md">
             <div
               v-for="node in serviceNodes"
               :key="node.id"
-              class="surface-item rounded-md p-md row-between behavior-hover-transition hover:bg-foreground/5"
+              class="rounded-md p-md row-between interactive-item"
             >
-              <div class="column min-w-0">
+              <div class="col-stretch min-w-0">
                 <span class="text-sm font-medium text-foreground">{{ node.name }}</span>
                 <span class="text-muted-foreground text-xs">{{ node.region }}</span>
               </div>
-              <div class="column items-end shrink-0">
+              <div class="flex flex-col items-end shrink-0">
                 <span
                   class="text-xs px-sm py-xs rounded-full font-medium"
                   :class="
@@ -331,7 +336,7 @@ const metricsConfig = computed(() => [
                 >
                   {{ node.status }}
                 </span>
-                <span class="text-secondary-foreground text-xs mt-padding-xs">
+                <span class="text-secondary-foreground text-xs mt-xs">
                   {{ node.uptime }}
                 </span>
               </div>

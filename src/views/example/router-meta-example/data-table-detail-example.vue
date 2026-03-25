@@ -10,8 +10,8 @@ const id = computed<string>(() => {
 </script>
 
 <template>
-  <div class="p-lg space-y-margin-md">
-    <h2 class="text-xl font-semibold row-y-center gap-sm">
+  <div class="p-lg col-stretch gap-md">
+    <h2 class="text-xl font-semibold row-start items-center gap-sm">
       <Icons
         name="i-lucide-file-text"
         size="lg"
@@ -20,7 +20,7 @@ const id = computed<string>(() => {
       <span>DataTable 详情示例（meta.activeMenu）</span>
     </h2>
 
-    <div class="shadow-sm dark:shadow-md rounded-scale p-md space-y-margin-sm">
+    <div class="material-elevated col-stretch gap-sm">
       <div class="text-md font-medium">当前 ID：{{ id || '-' }}</div>
       <p class="text-muted-foreground text-sm">
         本路由 meta.activeMenu =
@@ -29,7 +29,7 @@ const id = computed<string>(() => {
       </p>
     </div>
 
-    <div class="flex gap-sm">
+    <div class="row-start gap-sm">
       <Button
         label="返回 DataTable"
         severity="secondary"

@@ -2,6 +2,7 @@
 import { useRoute, useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 // import { AUTH_ENABLED } from '@/constants/router'
+import { brand } from '@/constants/brand'
 import { useDeviceStore } from '@/stores/modules/device'
 import { useLayoutStore } from '@/stores/modules/layout'
 import { useThemeSwitch } from '@/hooks/modules/useThemeSwitch'
@@ -17,14 +18,81 @@ const formRef = ref<ProFormExpose | null>(null)
 
 const deviceStore = useDeviceStore()
 const layoutStore = useLayoutStore()
-const isMobileLayout = computed(() => deviceStore.isMobileLayout)
+const isMobileLayout = computed<boolean>(() => deviceStore.isMobileLayout)
 const { toggleThemeWithAnimation } = useThemeSwitch()
 const { locale, switchLocale, supportedLocales } = useLocale()
 const { t } = useI18n({ useScope: 'global' })
 
-const localeOptions = computed(() =>
-  supportedLocales.map(l => ({ value: l.key as SupportedLocale, label: `${l.flag} ${l.name}` }))
+const localeOptions = computed<Array<{ value: SupportedLocale; label: string }>>(() =>
+  supportedLocales.map(l => ({ value: l.key, label: `${l.flag} ${l.name}` }))
 )
+
+function isSupportedLocale(value: unknown): value is SupportedLocale {
+  return value === 'zh-CN' || value === 'en-US'
+}
+
+function onLocaleChange(event: unknown): void {
+  if (typeof event !== 'object' || event === null) return
+  const nextValue = (event as { value?: unknown }).value
+  if (!isSupportedLocale(nextValue)) return
+  void switchLocale(nextValue)
+}
+
+function getErrorMessage(error: unknown): string {
+  if (typeof error !== 'object' || error === null) return ''
+
+  const maybeMessage = (error as { message?: unknown }).message
+  if (typeof maybeMessage === 'string' && maybeMessage.trim().length > 0) return maybeMessage
+
+  const maybeData = (error as { data?: unknown }).data
+  if (typeof maybeData === 'object' && maybeData !== null) {
+    const maybeDataMessage = (maybeData as { message?: unknown }).message
+    if (typeof maybeDataMessage === 'string' && maybeDataMessage.trim().length > 0)
+      return maybeDataMessage
+  }
+
+  return ''
+}
+
+type ParsedAppInfo = {
+  pkg?: { version?: string }
+  lastBuildTime?: string
+}
+
+function parseAppInfo(): ParsedAppInfo {
+  if (typeof __APP_INFO__ === 'object' && __APP_INFO__ !== null) {
+    return __APP_INFO__ as ParsedAppInfo
+  }
+
+  try {
+    const parsed = JSON.parse(__APP_INFO__ as string) as ParsedAppInfo
+    return parsed
+  } catch {
+    return {}
+  }
+}
+
+const parsedAppInfo: ParsedAppInfo = parseAppInfo()
+
+const appVersion: string =
+  typeof parsedAppInfo?.pkg?.version === 'string' ? parsedAppInfo.pkg.version : ''
+
+const versionLabel: string = appVersion ? `v${appVersion}` : ''
+
+const buildYear: string = (() => {
+  const lastBuildTime = parsedAppInfo?.lastBuildTime
+  if (typeof lastBuildTime !== 'string') return ''
+  const match = lastBuildTime.match(/^(\d{4})/)
+  return match?.[1] ?? ''
+})()
+
+const loginFooterText: string = (() => {
+  const parts: string[] = [brand.displayName]
+  if (versionLabel) parts.push(versionLabel)
+  const base = parts.join(' ')
+  if (!buildYear) return base
+  return `${base} © ${buildYear}`
+})()
 
 const loginSchema = computed<FormSchema>(() => {
   return {
@@ -102,7 +170,7 @@ function fillUserPreset(): void {
 }
 
 // LEGACY SchemaForm 已物理删除：登录页暂时进入“白地”占位状态
-const loading = ref(false)
+const loading = ref<boolean>(false)
 
 const route = useRoute()
 const router = useRouter()
@@ -120,13 +188,12 @@ async function login(values: Record<string, unknown>): Promise<void> {
 
   loading.value = true
 
-  let didStartGlobalLoading = false
+  let didStartGlobalLoading: boolean = false
 
   try {
-    const payload: LoginParams = {
-      username: String(values.username ?? '').trim(),
-      password: String(values.password ?? ''),
-    }
+    const username = typeof values.username === 'string' ? values.username.trim() : ''
+    const password = typeof values.password === 'string' ? values.password : ''
+    const payload: LoginParams = { username, password }
 
     await doLogin(payload)
 
@@ -143,11 +210,7 @@ async function login(values: Record<string, unknown>): Promise<void> {
     if (didStartGlobalLoading) {
       layoutStore.endGlobalLoading()
     }
-    const rawMessage =
-      (error as { message?: string })?.message ||
-      (error as { data?: { message?: string } })?.data?.message ||
-      ''
-    const message = rawMessage || t('login.errorMessageGeneric')
+    const message = getErrorMessage(error) || t('login.errorMessageGeneric')
 
     // 使用全局 Toast 提示错误（组件内可直接访问 window.$toast）
     if (window.$toast?.dangerIn) {
@@ -179,30 +242,42 @@ async function handleLoginSubmit(): Promise<void> {
 
 <template>
   <div
-    class="flex h-screen w-screen overflow-hidden bg-background"
+    class="layout-screen flex flex-row items-stretch bg-background"
     @keydown.enter.prevent="onEnterSubmit"
   >
-    <!-- Left Background -->
-    <div
-      class="hidden lg:flex flex-col justify-between w-[55%] bg-background text-foreground p-xl relative overflow-hidden"
-    >
+    <!-- Left Brand Panel (Desktop Only) -->
+    <div class="hidden lg:flex w-1/2 relative overflow-hidden">
       <div
         class="absolute inset-0 bg-gradient-to-br from-primary/20 via-transparent to-transparent pointer-events-none"
-      ></div>
+      />
+      <div
+        class="absolute inset-0 bg-gradient-to-tr from-accent/10 via-transparent to-info/5 pointer-events-none"
+      />
 
-      <div class="relative z-10 row-y-center gap-md">
+      <!-- Ambient Orbs -->
+      <div
+        class="absolute -top-1/4 -left-1/4 w-[65vw] h-[65vw] rounded-full bg-primary/10 blur-[80px] animate-orb-drift pointer-events-none z-base"
+      />
+      <div
+        class="absolute -bottom-1/4 -right-1/4 w-[55vw] h-[55vw] rounded-full bg-accent/10 blur-[70px] animate-orb-drift-alt pointer-events-none z-base"
+      />
+      <div
+        class="absolute top-[35%] left-[25%] w-[42vw] h-[42vw] rounded-full bg-info/10 blur-[60px] animate-orb-pulse pointer-events-none z-base"
+      />
+
+      <!-- Brand Content -->
+      <div class="absolute-center z-content text-center col-center gap-md">
         <Icons
           name="i-lucide-box"
           class="text-primary"
           size="3xl"
         />
-        <span class="text-xl font-bold tracking-wider">
+
+        <span class="text-xl font-bold tracking-wider text-foreground">
           {{ t('login.brandTitle') }}
         </span>
-      </div>
 
-      <div class="relative z-10 mb-[var(--spacing-2xl)]">
-        <blockquote class="col-stack-md">
+        <blockquote class="flex flex-col gap-md">
           <p class="text-2xl font-medium leading-relaxed text-foreground/90">
             "{{ t('login.brandSloganLine1') }}
             <br />
@@ -213,10 +288,11 @@ async function handleLoginSubmit(): Promise<void> {
       </div>
     </div>
 
-    <!-- Right Panel -->
-    <div class="flex-1 col-fill relative bg-background bg-card">
+    <!-- Right Login Panel -->
+    <div class="flex-1 col-center bg-muted/10 relative p-sm md:p-md">
+      <!-- Top-Right Controls -->
       <div
-        class="absolute top-[var(--spacing-xl)] right-[var(--spacing-xl)] row-y-center gap-md z-20"
+        class="absolute top-[var(--spacing-xl)] right-[var(--spacing-xl)] flex flex-row items-center gap-md z-layout"
       >
         <Button
           icon="i-lucide-sun dark:i-lucide-moon"
@@ -232,16 +308,17 @@ async function handleLoginSubmit(): Promise<void> {
           option-label="label"
           option-value="value"
           :size="isMobileLayout ? 'large' : 'small'"
-          class="size-select-min"
-          @change="e => e.value && switchLocale(e.value)"
+          class="min-w-[var(--spacing-2xl)]"
+          @change="onLocaleChange"
         />
       </div>
 
-      <div class="layout-full center p-sm md:p-md lg:p-lg">
-        <div
-          class="w-full py-sm md:py-md xl:py-lg 2xl:py-xl mx-auto max-w-[88%] sm:max-w-[84%] md:max-w-[82%] lg:max-w-[80%] xl:max-w-[78%] 2xl:max-w-[76%] col-stack-xl"
-        >
-          <div class="col-stack-sm text-left">
+      <!-- Glass Login Card -->
+      <section
+        class="material-elevated bg-card/85 backdrop-blur-md border border-border/50 rounded-2xl p-xl w-full max-w-[420px] z-content"
+      >
+        <div class="col-stretch gap-xl">
+          <div class="flex flex-col gap-sm text-left">
             <h2 class="text-3xl font-bold text-foreground">
               {{ t('login.heading') }}
             </h2>
@@ -251,7 +328,7 @@ async function handleLoginSubmit(): Promise<void> {
           </div>
 
           <!-- Quick Fill / Role Switch -->
-          <div class="mb-md column-between gap-sm">
+          <div class="flex flex-col gap-sm">
             <div class="text-xs text-muted-foreground">
               {{ t('login.quickFillTips') }}
             </div>
@@ -309,7 +386,7 @@ async function handleLoginSubmit(): Promise<void> {
             </template>
           </ProForm>
 
-          <div class="col-stack-md text-center mt-[var(--spacing-xl)]">
+          <div class="flex flex-col gap-md text-center">
             <div class="text-muted-foreground text-sm">
               {{ t('login.noAccount') }}
               <a
@@ -320,21 +397,16 @@ async function handleLoginSubmit(): Promise<void> {
               </a>
             </div>
             <p class="text-muted-foreground/50 text-xs mt-[var(--spacing-2xl)]">
-              {{ t('login.footerText', { version: '1.0.0', year: '2026' }) }}
+              {{ loginFooterText }}
             </p>
           </div>
         </div>
-      </div>
+      </section>
     </div>
   </div>
 </template>
 
 <style scoped lang="scss">
-:deep(.p-card) {
-  background: transparent;
-  box-shadow: none;
-}
-
 .fade-enter-active,
 .fade-leave-active {
   transition: opacity var(--transition-md) ease;

@@ -36,23 +36,26 @@ const togglePanel = (event: MouseEvent) => {
 const onLogout = async () => {
   await userStore.logout()
   popoverRef.value?.hide()
-  await router.push('/login')
+  // Nuclear Reset: use replace + physical reload to purge in-memory SPA state
+  void router.replace('/login').then(() => {
+    window.location.reload()
+  })
 }
 </script>
 
 <template>
   <div
     v-if="shouldRender"
-    class="h-full size-1-1 rounded-full center"
+    class="layout-full center"
   >
     <!-- 头像入口按钮 -->
     <button
       type="button"
-      class="layout-full! rounded-full bg-transparent border-none p-0 outline-none interactive-focus-ring cursor-pointer"
+      class="h-full size-1-1 rounded-full bg-transparent border-none p-0 outline-none cursor-pointer"
       @click="togglePanel"
     >
       <img
-        class="layout-full! rounded-full"
+        class="layout-full rounded-full"
         :src="avatarSrc"
       />
     </button>
@@ -62,7 +65,7 @@ const onLogout = async () => {
       :dismissable="true"
     >
       <div
-        class="column gap-md"
+        class="col-center gap-md"
         @dragstart.prevent
       >
         <div class="grid grid-cols-2 gap-md">
@@ -70,7 +73,7 @@ const onLogout = async () => {
             :src="avatarSrc"
             class="w-[var(--spacing-3xl)]! h-[var(--spacing-3xl)]! rounded-full"
           />
-          <div class="h-full column justify-between py-xs">
+          <div class="h-full flex flex-col justify-between py-xs">
             <span class="text-2xl font-black text-foreground">
               {{ userInfo.username || t('user.unnamedUser') }}
             </span>

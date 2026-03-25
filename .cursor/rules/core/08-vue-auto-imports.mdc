@@ -1,0 +1,144 @@
+---
+description: Canonical auto-import contract for this project. Defines exactly which APIs and components are globally available without import statements, and strictly forbids redundant manual imports.
+globs: ["src/**/*.vue", "src/**/*.ts", "src/**/*.tsx"]
+alwaysApply: true
+---
+
+# Rule 08 — Vue Auto-Import Contract
+
+## Source of Truth
+
+Auto-imports are configured in `build/plugins.ts` via `unplugin-auto-import` and `unplugin-vue-components`. The generated type declarations live in:
+
+- `src/types/auto-imports.d.ts` — API globals
+- `src/types/components.d.ts` — Component globals
+
+**Never import what is already globally available. Doing so creates duplicate bindings and lint errors.**
+
+---
+
+## 1. Auto-Imported APIs (unplugin-auto-import)
+
+The following packages are fully auto-imported in ALL `.vue` files and auto-import-aware `.ts` files under `src/hooks/**` and `src/stores/**`:
+
+| Package | Example globals available |
+|---------|--------------------------|
+| `vue` | `ref`, `computed`, `reactive`, `watch`, `watchEffect`, `onMounted`, `onUnmounted`, `nextTick`, `defineProps`, `defineEmits`, `defineModel`, `defineExpose`, `withDefaults`, `useSlots`, `useAttrs`, `inject`, `provide`, `toRef`, `toRefs`, `shallowRef`, `markRaw`, `readonly` |
+| `vue-router` | `useRouter`, `useRoute`, `useLink` |
+| `pinia` | `defineStore`, `storeToRefs`, `acceptHMRUpdate` |
+| `@vueuse/core` | All VueUse composables (`useStorage`, `useDark`, `useEventListener`, etc.) |
+| `@/locales` | `$t` (the i18n translation function, aliased from `t`) |
+
+### Auto-imported directories (composables & stores)
+
+All exports from these directories are globally available without an import statement:
+
+- `src/stores/modules/**` — Pinia store modules (e.g. `useLayoutStore`, `useUserStore`)
+- `src/hooks/**/*` — All composables at any depth (e.g. `useHttpRequest`, `useDateUtils`)
+
+---
+
+## 2. Forbidden — Redundant Manual Imports
+
+### ❌ FORBIDDEN — importing from auto-imported packages
+
+```typescript
+// FORBIDDEN in .vue files and src/hooks/**, src/stores/**
+import { ref, computed, watch } from 'vue'
+import { useRouter, useRoute } from 'vue-router'
+import { defineStore, storeToRefs } from 'pinia'
+import { useStorage, useDark } from '@vueuse/core'
+import { useLayoutStore } from '@/stores/modules/layout'
+import { useHttpRequest } from '@/hooks/modules/useHttpRequest'
+```
+
+### ✅ REQUIRED — use globals directly
+
+```typescript
+// In <script setup lang="ts"> — just use them, no import needed
+const count = ref(0)
+const router = useRouter()
+const store = useLayoutStore()
+const { data, loading } = useHttpRequest(buildMyMethod)
+```
+
+### ✅ ALLOWED EXCEPTION — type-only imports
+
+Type imports do NOT create runtime bindings and are always permitted:
+
+```typescript
+import type { Ref, ComputedRef, ComponentPublicInstance } from 'vue'
+import type { RouteLocationNormalized } from 'vue-router'
+import type { Store } from 'pinia'
+```
+
+---
+
+## 3. Auto-Registered Components (unplugin-vue-components)
+
+All `.vue` and `.tsx` files inside **`src/components/**`** are globally registered as components.
+
+All **PrimeVue v4 components** are resolved via `PrimeVueResolver()` — no import needed.
+
+### ❌ FORBIDDEN — importing globally registered components
+
+```typescript
+// FORBIDDEN in .vue files
+import Button from 'primevue/button'
+import Select from 'primevue/select'
+import Card from 'primevue/card'
+import DataTable from 'primevue/datatable'
+import ProForm from '@/components/ProForm/index.vue'
+import EmptyState from '@/components/EmptyState/EmptyState.vue'
+```
+
+### ✅ REQUIRED — use in template directly
+
+```vue
+<template>
+  <Card>
+    <template #content>
+      <ProForm :schema="schema" />
+      <EmptyState v-if="!items.length" />
+      <Select v-model="selected" :options="opts" />
+    </template>
+  </Card>
+</template>
+```
+
+---
+
+## 4. NOT Auto-Imported — Always Explicit
+
+These layers are intentionally **outside** the auto-import scope. The build comment in `plugins.ts` states it explicitly: *"api/constants 需显式 import"*. Always write explicit import statements:
+
+| Layer | Location | Why explicit |
+|-------|----------|--------------|
+| API methods | `src/api/**` | Prevents accidental API calls; keeps tree-shaking clean |
+| Constants | `src/constants/**` | Named imports make the dependency explicit |
+| Utilities | `src/utils/**` | Prevents namespace pollution |
+| Type definitions | `src/types/**` | Types are always explicit (`import type`) |
+| Router config | `src/router/**` | Route config is module-level, not a composable |
+
+```typescript
+// ✅ CORRECT — always explicit
+import { buildUserLoginMethod } from '@!/auth/login'
+import { ROUTE_NAMES } from '@/constants/router'
+import { deepClone } from '@/utils/lodashes'
+import type { UserInfo } from '@/types/UserTypes'
+```
+
+---
+
+## 5. Layout Components — ALWAYS Explicit
+
+`src/layouts/**` is **explicitly excluded** from `unplugin-vue-components` by an exclusion regex in `build/plugins.ts`. Layout components are NEVER auto-registered.
+
+All files under `src/layouts/`, `src/router/`, `src/utils/`, `src/api/`, and `src/plugins/` must import everything explicitly — including Vue primitives:
+
+```typescript
+// In src/layouts/** — explicit imports required for everything
+import { ref, computed } from 'vue'
+import { useRouter } from 'vue-router'
+import AdminSidebar from './admin/AdminSidebar'
+```

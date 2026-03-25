@@ -1,4 +1,4 @@
-import { COLOR_FAMILIES } from '@/utils/theme/metadata'
+import { COLOR_FAMILIES } from '../../utils/theme/metadata'
 
 /**
  * Color token constraints for the Design Engine.
@@ -33,9 +33,12 @@ for (const family of COLOR_FAMILIES.quadFamilies) {
   VALID_COLORS.add(`${family}-light-foreground`)
 }
 
-// Sidebar families: validate the UnoCSS CSS-var suffix (e.g. `sidebar-primary`)
-for (const key of Object.keys(COLOR_FAMILIES.sidebar) as Array<
-  keyof typeof COLOR_FAMILIES.sidebar
->) {
-  VALID_COLORS.add(COLOR_FAMILIES.sidebar[key])
-}
+// Sidebar utility keys (align with `theme.colors.sidebar` exposed UnoCSS keys)
+VALID_COLORS.add('sidebar') // Maps to sidebar.DEFAULT
+VALID_COLORS.add('sidebar-foreground')
+VALID_COLORS.add('sidebar-primary')
+VALID_COLORS.add('sidebar-primary-foreground')
+VALID_COLORS.add('sidebar-accent')
+VALID_COLORS.add('sidebar-accent-foreground')
+VALID_COLORS.add('sidebar-border')
+VALID_COLORS.add('sidebar-ring')

@@ -46,13 +46,26 @@ function makeData(): ProductRow[] {
 
 const tableData = ref<ProductRow[]>(makeData())
 const isLoading = ref<boolean>(false)
+const tableContainerRef = ref<HTMLElement | null>(null)
+const { height: tableContainerHeight } = useAppElementSize(tableContainerRef)
+const waitFor = (ms: number): Promise<void> =>
+  new Promise(resolve => {
+    const { start, stop } = useTimeoutFn(
+      () => {
+        stop()
+        resolve()
+      },
+      ms,
+      { immediate: false }
+    )
+    start()
+  })
 
-function handleRefresh(): void {
+async function handleRefresh(): Promise<void> {
   isLoading.value = true
-  setTimeout(() => {
-    tableData.value = makeData()
-    isLoading.value = false
-  }, 600)
+  await waitFor(600)
+  tableData.value = makeData()
+  isLoading.value = false
 }
 
 const FEATURE_TAGS: { label: string; cls: string }[] = [
@@ -69,24 +82,24 @@ const FEATURE_TAGS: { label: string; cls: string }[] = [
 <template>
   <div
     data-archetype="A1-toolbar-content"
-    class="layout-full px-md md:px-lg col-stack-sm min-h-0"
+    class="layout-full px-md md:px-lg flex flex-col gap-sm min-h-0"
   >
     <!-- Toolbar: Hero Header (Transparent Root Policy: Inherit canvas) -->
     <header class="shrink-0 border-b-default">
-      <div class="w-full py-sm row-y-center gap-md text-foreground">
+      <div class="w-full py-sm flex flex-row items-center gap-md text-foreground">
         <div class="p-md bg-primary/10 rounded-lg shrink-0">
           <Icons
             name="i-lucide-columns-3"
             class="text-primary text-2xl"
           />
         </div>
-        <div class="col-stack-xs">
+        <div class="flex flex-col gap-xs">
           <h1 class="text-2xl font-bold m-0">ProTable — 列定义与渲染</h1>
           <p class="text-muted-foreground text-sm m-0">
             演示列固定（pinned: 'left'/'right'）、 TSX
             自定义单元格渲染、headerRender、对齐方式与宽度约束。
           </p>
-          <div class="row-y-center gap-xs flex-wrap mt-padding-xs">
+          <div class="flex flex-row items-center gap-xs flex-wrap mt-padding-xs">
             <span
               v-for="tag in FEATURE_TAGS"
               :key="tag.label"
@@ -103,19 +116,24 @@ const FEATURE_TAGS: { label: string; cls: string }[] = [
     </header>
 
     <!-- Content -->
-    <div class="flex-1 min-h-0">
+    <div class="col-fill">
       <!-- Table (fills remaining height) -->
-      <div class="flex-1 min-h-0">
-        <ProTable
-          :columns="productColumns"
-          :data="tableData"
-          :loading="isLoading"
-          title="商品目录"
-          row-key="id"
-          :pagination="{ pageSize: 12, pageSizeOptions: [12, 24, 48] }"
-          @refresh="handleRefresh"
-        />
-      </div>
+      <section
+        ref="tableContainerRef"
+        class="layout-full"
+      >
+        <template v-if="tableContainerHeight > 0">
+          <div :style="{ height: `${tableContainerHeight}px` }">
+            <ProTable
+              :columns="productColumns"
+              :data="tableData"
+              :loading="isLoading"
+              row-key="id"
+              @refresh="handleRefresh"
+            />
+          </div>
+        </template>
+      </section>
     </div>
   </div>
 </template>

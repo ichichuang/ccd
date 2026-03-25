@@ -116,7 +116,7 @@ watch(
   <!-- 原生滚动条模式 -->
   <div
     v-if="native"
-    class="c-scrollbar-native layout-full overflow-auto"
+    class="c-scrollbar-native layout-full overflow-auto !bg-transparent"
     :class="$props.class"
   >
     <slot />
@@ -128,7 +128,7 @@ watch(
     ref="scrollbarRef"
     :options="osOptions"
     :defer="defer"
-    class="c-scrollbar layout-full"
+    class="c-scrollbar layout-full !bg-transparent"
     :class="$props.class"
     @os-initialized="instance => emit('initialized', instance)"
     @os-updated="(instance, args) => emit('updated', instance, args)"
@@ -174,6 +174,14 @@ watch(
 /* ============================================
  * OverlayScrollbars 主题覆盖
  * ============================================ */
+
+/* Optical tunnel: library defaults must not paint an opaque scroll viewport */
+.c-scrollbar.os-host,
+.c-scrollbar .os-viewport,
+.c-scrollbar .os-content,
+.c-scrollbar .os-content-glue {
+  background: transparent !important;
+}
 
 /* 滚动条轨道 */
 .os-scrollbar {

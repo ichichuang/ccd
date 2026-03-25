@@ -1,7 +1,7 @@
 /**
  * 表单控件全局 PassThrough 配置
  *
- * Premium Borderless UI：无实线边框，使用 bg-muted/30 背景 + interactive-focus-ring 焦点 shadow。
+ * Premium Borderless UI：无实线边框，使用 bg-muted/30 背景 + interactive-item 焦点 shadow。
  * 符合 101-premium-ui.mdc 与 29-focus-outline-styling.mdc。
  *
  * PT Merge 契约 (PrimeVue v4, mergeProps: true, mergeSections: true):
@@ -11,9 +11,9 @@
  */
 
 const PREMIUM_INPUT_ROOT =
-  '!border-0 !shadow-none bg-muted/30 hover:bg-muted/40 behavior-hover-transition rounded-md interactive-focus-ring'
+  '!border-0 !shadow-none bg-muted/30 hover:bg-muted/40 transition-colors duration-md ease-smooth rounded-md'
 
-const PREMIUM_OVERLAY = 'surface-elevated rounded-md'
+const PREMIUM_OVERLAY = ' rounded-md'
 
 export const formControlsPt = {
   inputtext: {

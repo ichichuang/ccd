@@ -13,6 +13,8 @@ const isLoading = ref<boolean>(false)
 const hasError = ref<boolean>(false)
 const errorMessage = ref<string>('')
 const hasMore = ref<boolean>(true)
+const tableContainerRef = ref<HTMLElement | null>(null)
+const tableContainerHeight = ref<number | undefined>(undefined)
 
 let currentPage = 1
 const PAGE_SIZE = 20
@@ -51,6 +53,7 @@ function handleRefresh(): void {
 }
 
 onMounted(() => {
+  tableContainerHeight.value = tableContainerRef.value?.clientHeight ?? 0
   void loadMore()
 })
 
@@ -65,20 +68,20 @@ const progressText = computed<string>(() => {
 <template>
   <div
     data-archetype="A1-toolbar-content"
-    class="layout-full px-md md:px-lg col-stack-sm min-h-0"
+    class="layout-full px-md md:px-lg flex flex-col gap-sm min-h-0"
   >
     <!-- Toolbar: Hero Header (Transparent Root Policy: Inherit canvas) -->
     <header class="shrink-0 border-b-default">
       <div class="w-full py-sm row-between gap-md flex-wrap">
-        <div class="row-y-center gap-md">
+        <div class="flex flex-row items-center gap-md">
           <div class="p-md bg-primary/10 rounded-lg shrink-0">
             <Icons
               name="i-lucide-arrow-down-to-line"
               class="text-primary text-2xl"
             />
           </div>
-          <div class="col-stack-xs">
-            <div class="row-y-center gap-sm flex-wrap">
+          <div class="flex flex-col gap-xs">
+            <div class="flex flex-row items-center gap-sm flex-wrap">
               <h1 class="text-2xl font-bold text-foreground m-0">ProTable — 无限加载模式</h1>
               <span
                 class="bg-accent/15 text-accent rounded-md px-sm py-xs text-xs font-semibold uppercase tracking-wider shrink-0"
@@ -97,9 +100,9 @@ const progressText = computed<string>(() => {
         <!-- Progress badge -->
         <div
           v-if="totalCount > 0"
-          class="bg-muted rounded-md px-md py-xs row-y-center gap-sm shrink-0"
+          class="bg-muted rounded-md px-md py-xs flex flex-row items-center gap-sm shrink-0"
         >
-          <div class="row-y-center gap-xs">
+          <div class="flex flex-row items-center gap-xs">
             <Icons
               name="i-lucide-layers"
               size="xs"
@@ -118,14 +121,14 @@ const progressText = computed<string>(() => {
     </header>
 
     <!-- Content -->
-    <div class="flex-1 min-h-0 col-stack-sm">
+    <div class="flex-1 min-h-0 flex flex-col gap-sm">
       <!-- Error banner -->
       <Transition name="error-bar">
         <div
           v-if="hasError"
           class="shrink-0 row-between px-lg py-sm bg-danger/10 border-b-default"
         >
-          <div class="row-y-center gap-sm">
+          <div class="flex flex-row items-center gap-sm">
             <Icons
               name="i-lucide-wifi-off"
               size="sm"
@@ -144,21 +147,27 @@ const progressText = computed<string>(() => {
       </Transition>
 
       <!-- ProTable with infiniteScroll -->
-      <div class="col-fill">
-        <ProTable
-          :columns="productColumns"
-          :data="allProducts"
-          :loading="isLoading"
-          :total="totalCount"
-          :server-mode="true"
-          :pagination="false"
-          :infinite-scroll="true"
-          title="商品列表"
-          row-key="id"
-          @load-more="loadMore"
-          @refresh="handleRefresh"
-        />
-      </div>
+      <section
+        ref="tableContainerRef"
+        class="col-fill"
+      >
+        <template v-if="tableContainerHeight && tableContainerHeight > 0">
+          <div :style="{ height: tableContainerHeight + 'px' }">
+            <ProTable
+              :columns="productColumns"
+              :data="allProducts"
+              :loading="isLoading"
+              :total="totalCount"
+              :server-mode="true"
+              :pagination="false"
+              :infinite-scroll="true"
+              row-key="id"
+              @load-more="loadMore"
+              @refresh="handleRefresh"
+            />
+          </div>
+        </template>
+      </section>
     </div>
   </div>
 </template>

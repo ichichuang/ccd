@@ -14,6 +14,8 @@ const isLoading = ref<boolean>(false)
 const hasError = ref<boolean>(false)
 const errorMessage = ref<string>('')
 const lastParams = ref<ProTableLoadParams | null>(null)
+const tableContainerRef = ref<HTMLElement | null>(null)
+const tableContainerHeight = ref<number | undefined>(undefined)
 
 // ── Data fetching ─────────────────────────────────────────────────────────────
 
@@ -65,6 +67,7 @@ function handleRefresh(): void {
 
 // Trigger initial load on mount — TableController watch has no `immediate` option
 onMounted(() => {
+  tableContainerHeight.value = tableContainerRef.value?.clientHeight ?? 0
   void loadData({
     page: 1,
     pageSize: 10,
@@ -89,20 +92,20 @@ const requestEndpoint = computed<string>(() => {
 <template>
   <div
     data-archetype="A1-toolbar-content"
-    class="layout-full px-md md:px-lg col-stack-sm min-h-0"
+    class="layout-full px-md md:px-lg flex flex-col gap-sm min-h-0"
   >
     <!-- Toolbar: Hero Header (Transparent Root Policy: Inherit canvas) -->
     <header class="shrink-0 border-b-default">
       <div class="w-full py-sm row-between gap-md flex-wrap">
-        <div class="row-y-center gap-md">
+        <div class="flex flex-row items-center gap-md">
           <div class="p-md bg-primary/10 rounded-lg shrink-0">
             <Icons
               name="i-lucide-cloud"
               class="text-primary text-2xl"
             />
           </div>
-          <div class="col-stack-xs">
-            <div class="row-y-center gap-sm flex-wrap">
+          <div class="flex flex-col gap-xs">
+            <div class="flex flex-row items-center gap-sm flex-wrap">
               <h1 class="text-2xl font-bold text-foreground m-0">ProTable — 真实服务端集成</h1>
               <span
                 class="bg-success/15 text-success rounded-md px-sm py-xs text-xs font-semibold uppercase tracking-wider shrink-0"
@@ -117,7 +120,9 @@ const requestEndpoint = computed<string>(() => {
             </p>
           </div>
         </div>
-        <div class="bg-muted rounded-md px-md py-xs row-y-center gap-xs shrink-0 min-w-0">
+        <div
+          class="bg-muted rounded-md px-md py-xs flex flex-row items-center gap-xs shrink-0 min-w-0"
+        >
           <Icons
             name="i-lucide-globe"
             size="xs"
@@ -131,14 +136,14 @@ const requestEndpoint = computed<string>(() => {
     </header>
 
     <!-- Content -->
-    <div class="flex-1 min-h-0 col-stack-sm">
+    <div class="flex-1 min-h-0 flex flex-col gap-sm">
       <!-- Error banner -->
       <Transition name="error-bar">
         <div
           v-if="hasError"
           class="shrink-0 row-between px-lg py-sm bg-danger/10 border-b-default"
         >
-          <div class="row-y-center gap-sm">
+          <div class="flex flex-row items-center gap-sm">
             <Icons
               name="i-lucide-wifi-off"
               size="sm"
@@ -157,21 +162,26 @@ const requestEndpoint = computed<string>(() => {
       </Transition>
 
       <!-- ProTable -->
-      <div class="col-fill">
-        <ProTable
-          :columns="serverTableColumns"
-          :data="tableData"
-          :loading="isLoading"
-          :total="totalCount"
-          :server-mode="true"
-          title="用户列表"
-          row-key="id"
-          selectable="checkbox"
-          :pagination="{ pageSize: 12, pageSizeOptions: [12, 24, 48] }"
-          @load="handleTableLoad"
-          @refresh="handleRefresh"
-        />
-      </div>
+      <section
+        ref="tableContainerRef"
+        class="col-fill"
+      >
+        <template v-if="tableContainerHeight && tableContainerHeight > 0">
+          <div :style="{ height: tableContainerHeight + 'px' }">
+            <ProTable
+              :columns="serverTableColumns"
+              :data="tableData"
+              :loading="isLoading"
+              :total="totalCount"
+              :server-mode="true"
+              row-key="id"
+              :pagination="{ pageSize: 12, pageSizeOptions: [12, 24, 48] }"
+              @load="handleTableLoad"
+              @refresh="handleRefresh"
+            />
+          </div>
+        </template>
+      </section>
     </div>
   </div>
 </template>

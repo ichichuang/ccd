@@ -57,7 +57,7 @@ const wrapperStyle = computed(() => {
 
 <template>
   <div
-    class="base-lottie-loader base-lottie-loader__wrapper relative z-[999]"
+    class="base-lottie-loader base-lottie-loader__wrapper"
     :style="wrapperStyle"
   >
     <Vue3Lottie

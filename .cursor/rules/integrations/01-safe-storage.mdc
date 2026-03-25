@@ -1,0 +1,83 @@
+---
+description: Bans all native browser storage APIs for business data. Mandates AES+LZ-String encrypted wrappers from @/utils/safeStorage and createPiniaEncryptedSerializer for Pinia persistence.
+globs: ["src/**/*.ts", "src/**/*.vue", "src/**/*.tsx"]
+---
+
+# Safe Storage Law — Encrypted Storage Only
+
+## NATIVE STORAGE APIs ARE BANNED FOR BUSINESS DATA
+
+The following native browser APIs are **STRICTLY FORBIDDEN** anywhere business data is involved:
+
+| FORBIDDEN | REQUIRED REPLACEMENT | Location |
+|-----------|---------------------|----------|
+| `localStorage.setItem(k, v)` | `packDataSync(value, secret)` then store result | `@/utils/safeStorage` |
+| `localStorage.getItem(k)` | `unpackDataSync<T>(raw, secret)` | `@/utils/safeStorage` |
+| `sessionStorage.setItem/getItem` | Same wrappers | `@/utils/safeStorage` |
+| `JSON.stringify(x)` for storage | `packDataSync` (handles JSON + compress + encrypt) | `@/utils/safeStorage` |
+| `JSON.parse(raw)` from storage | `unpackDataSync` (handles decrypt + decompress + parse) | `@/utils/safeStorage` |
+
+**Why:** All persisted data is AES-encrypted + LZ-String compressed. Bypassing these wrappers exposes tokens, route configs, and user preferences in plaintext localStorage — a direct security violation.
+
+## CORRECT USAGE
+
+```typescript
+import { packDataSync, unpackDataSync } from '@/utils/safeStorage'
+
+const secret = import.meta.env.VITE_APP_SECRET
+
+// Writing
+const encrypted = packDataSync(userData, secret)
+localStorage.setItem('my-key', encrypted)
+
+// Reading
+const raw = localStorage.getItem('my-key') ?? ''
+const data = unpackDataSync<UserData>(raw, secret)  // Returns T | null
+```
+
+## PINIA PERSISTENCE — ENCRYPTION MATRIX
+
+All Pinia stores that persist sensitive or preference data MUST use `createPiniaEncryptedSerializer()`.
+
+| Store | Encrypted? | Reason |
+|-------|-----------|--------|
+| `useUserStore` | ✅ YES | Token + UserInfo are sensitive |
+| `usePermissionStore` | ✅ YES (custom serializer) | Route configs, tab metadata |
+| `useLayoutStore` | ✅ YES | User preference fingerprinting risk |
+| `useSizeStore` | ✅ YES | Part of user profile |
+| `useThemeStore` | ❌ NO — plaintext | `index.html` pre-render script needs `theme-mode` before Vue mounts |
+| `useLocaleStore` | ❌ NO — plaintext | Simple string, pre-render access required |
+| `useDeviceStore` | ❌ NO persist | Transient hardware — always re-detect on mount |
+| `useTableDrawerStore` | ❌ NO persist | Ephemeral UI state |
+
+## PERMITTED EXCEPTIONS — DO NOT GENERALIZE
+
+### Exception 1 — Theme Mode
+`useThemeStore` calls `localStorage.setItem('theme-mode', this.mode)` directly. This is an intentional, documented exception: the `index.html` bootstrap script reads `theme-mode` before Vue mounts to prevent a flash of unstyled content.
+
+**This pattern is unique to `useThemeStore`. Do NOT copy it for any other key.**
+
+### Exception 2 — Locale
+`useLocaleStore` stores the locale string in plaintext for the same pre-render access reason.
+
+**This pattern is unique to `useLocaleStore`. Do NOT copy it for any other key.**
+
+## API LAYER PROHIBITION
+
+`src/api/**` modules are stateless method builders. They MUST NEVER import or reference any Pinia store.
+
+❌ FORBIDDEN:
+```typescript
+// src/api/user/profile.ts
+import { useUserStore } from '@/stores/modules/user'  // VIOLATION: api cannot import stores
+```
+
+✅ REQUIRED — Alova interceptors inject credentials transparently; API receives no store references:
+```typescript
+// src/api/user/profile.ts
+import type { alovaInstance } from '@/utils/http/instance'
+
+export const buildUserProfileMethod = (client: typeof alovaInstance) =>
+  client.Get<UserProfileRes>('/api/user/profile')
+// Token is injected by the Alova request interceptor — no store access needed here
+```

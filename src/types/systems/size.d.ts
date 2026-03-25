@@ -48,7 +48,6 @@ declare global {
     tabsHeight: number
   }
 
-  /* eslint-disable @typescript-eslint/naming-convention */
   /**
    * 尺寸系统 CSS 变量接口
    *
@@ -91,13 +90,13 @@ declare global {
     /** 字体大小：xl (超大) */
     '--font-size-xl': string
     /** 字体大小：2xl */
-    '--font-size-2xl': string
+    ['--font-size-2xl']: string
     /** 字体大小：3xl */
-    '--font-size-3xl': string
+    ['--font-size-3xl']: string
     /** 字体大小：4xl */
-    '--font-size-4xl': string
+    ['--font-size-4xl']: string
     /** 字体大小：5xl (最大) */
-    '--font-size-5xl': string
+    ['--font-size-5xl']: string
 
     // --- 间距阶梯 (xs-5xl) ---
     /** 间距：xs (最小) */
@@ -111,13 +110,13 @@ declare global {
     /** 间距：xl (超大) */
     '--spacing-xl': string
     /** 间距：2xl */
-    '--spacing-2xl': string
+    ['--spacing-2xl']: string
     /** 间距：3xl */
-    '--spacing-3xl': string
+    ['--spacing-3xl']: string
     /** 间距：4xl */
-    '--spacing-4xl': string
+    ['--spacing-4xl']: string
     /** 间距：5xl (最大) */
-    '--spacing-5xl': string
+    ['--spacing-5xl']: string
 
     // --- 圆角阶梯 (xs-5xl) ---
     /** 圆角：xs (最小) */
@@ -131,13 +130,13 @@ declare global {
     /** 圆角：xl (超大) */
     '--radius-xl': string
     /** 圆角：2xl */
-    '--radius-2xl': string
+    ['--radius-2xl']: string
     /** 圆角：3xl */
-    '--radius-3xl': string
+    ['--radius-3xl']: string
     /** 圆角：4xl */
-    '--radius-4xl': string
+    ['--radius-4xl']: string
     /** 圆角：5xl (最大) */
-    '--radius-5xl': string
+    ['--radius-5xl']: string
 
     // --- 过渡时长阶梯 (xs-5xl) ---
     /** 过渡时长：xs (微交互) */
@@ -151,15 +150,14 @@ declare global {
     /** 过渡时长：xl (页面过渡) */
     '--transition-xl': string
     /** 过渡时长：2xl */
-    '--transition-2xl': string
+    ['--transition-2xl']: string
     /** 过渡时长：3xl */
-    '--transition-3xl': string
+    ['--transition-3xl']: string
     /** 过渡时长：4xl */
-    '--transition-4xl': string
+    ['--transition-4xl']: string
     /** 过渡时长：5xl (戏剧效果) */
-    '--transition-5xl': string
+    ['--transition-5xl']: string
   }
-  /* eslint-enable @typescript-eslint/naming-convention */
 
   /**
    * Size Store 完整状态接口

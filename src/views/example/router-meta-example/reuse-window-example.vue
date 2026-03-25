@@ -4,8 +4,8 @@
 </script>
 
 <template>
-  <div class="p-lg space-y-margin-md column-center min-h-[60vh]">
-    <h2 class="text-xl font-semibold row-y-center gap-sm">
+  <div class="p-lg min-h-[60vh] col-center gap-md">
+    <h2 class="text-xl font-semibold row-start items-center gap-sm">
       <Icons
         name="i-lucide-window"
         size="lg"
@@ -14,7 +14,7 @@
       <span>窗口复用示例（meta.reuseWindow）</span>
     </h2>
 
-    <div class="shadow-sm dark:shadow-md rounded-scale p-md space-y-margin-sm max-w-[80%]">
+    <div class="material-elevated col-stretch gap-sm max-w-[80%]">
       <div class="text-md font-medium">本路由 meta 配置</div>
       <p class="text-muted-foreground text-sm">
         meta.parent = 'fullscreen'，meta.reuseWindow = true

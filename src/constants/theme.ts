@@ -14,9 +14,9 @@ export const THEME_PRESETS: ThemePreset[] = [
     name: 'classic-blue',
     colors: {
       light: {
-        background: '#ffffff',
+        background: '#f8fafc',
         foreground: '#0f172a',
-        neutral: { base: '#e2e8f0', bg: '#f8fafc', foreground: '#334155' },
+        neutral: { base: '#e2e8f0', bg: '#ffffff', foreground: '#334155' },
         primary: {
           default: '#0f62fe',
           foreground: '#ffffff',
@@ -68,9 +68,9 @@ export const THEME_PRESETS: ThemePreset[] = [
         },
       },
       dark: {
-        background: '#0d1117',
+        background: '#020617',
         foreground: '#e6edf3',
-        neutral: { base: '#30363d', bg: '#161b22', foreground: '#8b949e' },
+        neutral: { base: '#30363d', bg: '#0f172a', foreground: '#8b949e' },
         primary: {
           default: '#2f81f7',
           foreground: '#ffffff',
@@ -132,7 +132,7 @@ export const THEME_PRESETS: ThemePreset[] = [
     name: 'royal-violet',
     colors: {
       light: {
-        background: '#f8f9fa',
+        background: '#f3f4f6',
         foreground: '#111827',
         neutral: { base: '#e5e7eb', bg: '#ffffff', foreground: '#4b5563' },
         primary: {
@@ -186,7 +186,7 @@ export const THEME_PRESETS: ThemePreset[] = [
         },
       },
       dark: {
-        background: '#0b0f19',
+        background: '#030712',
         foreground: '#f3f4f6',
         neutral: { base: '#1f2937', bg: '#111827', foreground: '#9ca3af' },
         primary: {
@@ -250,9 +250,9 @@ export const THEME_PRESETS: ThemePreset[] = [
     name: 'aurora-cyan',
     colors: {
       light: {
-        background: '#ffffff',
+        background: '#f8fafc',
         foreground: '#164e63',
-        neutral: { base: '#cffafe', bg: '#f8fafc', foreground: '#155e75' },
+        neutral: { base: '#cffafe', bg: '#ffffff', foreground: '#155e75' },
         primary: {
           default: '#0891b2',
           foreground: '#ffffff',
@@ -304,9 +304,9 @@ export const THEME_PRESETS: ThemePreset[] = [
         },
       },
       dark: {
-        background: '#040d12', // 极深的青黑
+        background: '#020617',
         foreground: '#ecfeff',
-        neutral: { base: '#164e63', bg: '#0b1922', foreground: '#67e8f9' },
+        neutral: { base: '#164e63', bg: '#082f49', foreground: '#67e8f9' },
         primary: {
           default: '#22d3ee',
           foreground: '#000000',
@@ -368,7 +368,7 @@ export const THEME_PRESETS: ThemePreset[] = [
     name: 'sunset-amber',
     colors: {
       light: {
-        background: '#fffbf7',
+        background: '#fff7ed',
         foreground: '#431407',
         neutral: { base: '#fed7aa', bg: '#ffffff', foreground: '#9a3412' },
         primary: {
@@ -422,9 +422,9 @@ export const THEME_PRESETS: ThemePreset[] = [
         },
       },
       dark: {
-        background: '#0c0a09',
+        background: '#0a0a0a',
         foreground: '#fafaf9',
-        neutral: { base: '#292524', bg: '#1c1917', foreground: '#a8a29e' },
+        neutral: { base: '#292524', bg: '#171717', foreground: '#a8a29e' },
         primary: {
           default: '#fb923c',
           foreground: '#000000',
@@ -486,7 +486,7 @@ export const THEME_PRESETS: ThemePreset[] = [
     name: 'forest-eco',
     colors: {
       light: {
-        background: '#f8faf8',
+        background: '#f4fbf7',
         foreground: '#064e3b',
         neutral: { base: '#d1fae5', bg: '#ffffff', foreground: '#065f46' },
         primary: {
@@ -540,9 +540,9 @@ export const THEME_PRESETS: ThemePreset[] = [
         },
       },
       dark: {
-        background: '#021c15',
+        background: '#022c22',
         foreground: '#ecfdf5',
-        neutral: { base: '#064e3b', bg: '#032c22', foreground: '#6ee7b7' },
+        neutral: { base: '#065f46', bg: '#064e3b', foreground: '#6ee7b7' },
         primary: {
           default: '#10b981',
           foreground: '#000000',
@@ -604,7 +604,7 @@ export const THEME_PRESETS: ThemePreset[] = [
     name: 'ruby-phantom',
     colors: {
       light: {
-        background: '#fffbfc',
+        background: '#fff5f7',
         foreground: '#4c0519',
         neutral: { base: '#ffe4e6', bg: '#ffffff', foreground: '#9f1239' },
         primary: {
@@ -658,9 +658,9 @@ export const THEME_PRESETS: ThemePreset[] = [
         },
       },
       dark: {
-        background: '#150308',
+        background: '#2e020f',
         foreground: '#fff1f2',
-        neutral: { base: '#4c0519', bg: '#250611', foreground: '#fda4af' },
+        neutral: { base: '#881337', bg: '#4c0519', foreground: '#fda4af' },
         primary: {
           default: '#fb7185',
           foreground: '#000000',
@@ -722,9 +722,9 @@ export const THEME_PRESETS: ThemePreset[] = [
     name: 'space-graphite',
     colors: {
       light: {
-        background: '#ffffff',
+        background: '#f1f5f9',
         foreground: '#0f172a',
-        neutral: { base: '#e2e8f0', bg: '#f8fafc', foreground: '#475569' },
+        neutral: { base: '#e2e8f0', bg: '#ffffff', foreground: '#475569' },
         primary: {
           default: '#475569',
           foreground: '#ffffff',
@@ -776,9 +776,9 @@ export const THEME_PRESETS: ThemePreset[] = [
         },
       },
       dark: {
-        background: '#020617', // 极深的蓝黑
+        background: '#09090b',
         foreground: '#f8fafc',
-        neutral: { base: '#1e293b', bg: '#0f172a', foreground: '#94a3b8' }, // 卡片是 0f172a，完美与底色区分
+        neutral: { base: '#1e293b', bg: '#18181b', foreground: '#94a3b8' },
         primary: {
           default: '#94a3b8',
           foreground: '#020617',

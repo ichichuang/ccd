@@ -23,7 +23,7 @@ const props = withDefaults(
 </script>
 
 <template>
-  <div class="column-center gap-md py-2xl px-lg text-center">
+  <div class="col-center gap-md py-2xl px-lg text-center">
     <!-- Watermark icon -->
     <Icons
       :name="props.icon"

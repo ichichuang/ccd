@@ -1,4 +1,4 @@
-import type { EChartsOption } from 'echarts'
+import type { EChartsOption, EChartsType } from 'echarts'
 import type { ChartThemeConfig } from '@/hooks/modules/useChartTheme/types'
 
 /**
@@ -512,10 +512,10 @@ export interface UseEchartsProps extends ChartEventHandlers {
 
 // 图表实例方法类型
 export interface ChartInstance {
-  /** 获取 ECharts 实例（由 vue-echarts 提供） */
+  /** 获取 vue-echarts 组件实例（内部 ref，通常不需要直接操作） */
   getChartInstance: () => unknown
-  /** 获取 ECharts 实例（用于 setOption、resize、dispatchAction 等） */
-  getEchartsInstance: () => unknown
+  /** 获取原生 ECharts 实例（用于 setOption、resize、dispatchAction 等） */
+  getEchartsInstance: () => EChartsType | null
   /** 设置图表配置 */
   setOption: (option: EChartsOption, notMerge?: boolean) => void
   /** 调整图表大小 */

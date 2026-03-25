@@ -1,0 +1,138 @@
+---
+description: Enforces Alova + useHttpRequest for all network calls. Strictly bans Axios and raw fetch.
+globs: ["src/api/**/*.ts", "src/views/**/*.vue", "src/hooks/**/*.ts"]
+alwaysApply: true
+---
+
+# The Network Hub Law
+
+## FORBIDDEN — Zero Tolerance
+
+These patterns are **ABSOLUTELY FORBIDDEN**. Their presence in a PR is an automatic rejection.
+
+```ts
+// ❌ FORBIDDEN: axios
+import axios from 'axios'
+axios.get('/api/user')
+
+// ❌ FORBIDDEN: raw fetch
+fetch('/api/user').then(res => res.json())
+
+// ❌ FORBIDDEN: XMLHttpRequest
+const xhr = new XMLHttpRequest()
+xhr.open('GET', '/api/user')
+
+// ❌ FORBIDDEN: manual 401 handling or token refresh logic in any file
+if (res.status === 401) { refreshToken(); retry(); }
+```
+
+## REQUIRED — The One True Path
+
+### Rule 1 — Alova is the ONLY HTTP Client
+
+All HTTP traffic MUST flow through `alovaInstance` from `@/utils/http/instance`. This instance is pre-configured with:
+- `adapterFetch` transport
+- Request/response interceptors
+- `TokenRefreshCoordinator` for silent, queued 401 refresh (do NOT replicate this logic anywhere)
+
+### Rule 2 — Define APIs as Method Builders in `src/api/`
+
+Every endpoint MUST be expressed as a named builder function. Generic names (`get`, `post`, `request`, `service`) are FORBIDDEN.
+
+```ts
+// src/api/system/user.ts
+
+import type { alovaInstance } from '@/utils/http/instance'
+
+export interface SystemUserListReq {
+  pageNo: number
+  pageSize: number
+  keyword?: string
+}
+
+export interface SystemUserListRes {
+  total: number
+  records: SystemUserDTO[]
+}
+
+export interface SystemUserDTO {
+  id: string
+  username: string
+  roles: string[]
+  createdAt: string
+}
+
+// ✅ REQUIRED: named builder export
+export const buildSystemUserListMethod = (
+  client: typeof alovaInstance,
+  params: SystemUserListReq,
+) => client.Get<SystemUserListRes>('/api/system/user/list', { params })
+
+export const buildSystemUserDeleteMethod = (
+  client: typeof alovaInstance,
+  id: string,
+) => client.Delete<void>(`/api/system/user/${id}`)
+```
+
+### Rule 3 — Consume APIs via `useHttpRequest` in Hooks/Components
+
+NEVER call `alovaInstance.Get()` directly in a component. Route all consumption through the `useHttpRequest` composable.
+
+```ts
+// src/hooks/modules/useSystemUserList.ts
+import type { SystemUserListReq, SystemUserListRes } from '@!/system/user'
+import { buildSystemUserListMethod } from '@!/system/user'
+
+export function useSystemUserList() {
+  const params = reactive<SystemUserListReq>({ pageNo: 1, pageSize: 20 })
+
+  const { loading, data, error, send } = useHttpRequest<SystemUserListRes>(
+    () => buildSystemUserListMethod(alovaInstance, params),
+  )
+
+  return { loading, data, error, params, send }
+}
+```
+
+```vue
+<!-- src/views/system/user/index.vue -->
+<script setup lang="ts">
+const { loading, data, params, send } = useSystemUserList()
+onMounted(send)
+</script>
+```
+
+### Rule 4 — Token Refresh is Handled Automatically
+
+The `TokenRefreshCoordinator` inside `@/utils/http/interceptors.ts` detects 401 responses, silently refreshes the token, and replays the queued requests. **You MUST NOT:**
+
+- Catch 401 errors manually in any hook, view, or store
+- Implement any retry logic for auth failures
+- Import or call anything related to token refresh outside of `interceptors.ts`
+
+### Rule 5 — Error Handling Contract
+
+`useHttpRequest` normalizes all errors to `HttpRequestError`. The global interceptor **already displays** error notifications via `window.$message.danger()` — do NOT re-toast in business code (see `05-network-routing-architecture.mdc` §2 for the full error responsibility split).
+
+Use `error.value` only for **domain-specific** recovery logic:
+
+```ts
+import { ErrorType, isHttpRequestError } from '@/utils/http/errors'
+
+const { error } = useHttpRequest(...)
+watchEffect(() => {
+  if (error.value && isHttpRequestError(error.value)) {
+    // ✅ Domain-specific handling only — no redundant toast
+    if (error.value.type === ErrorType.CLIENT && error.value.status === 409) {
+      showConflictResolutionDialog()
+    }
+  }
+})
+```
+
+## API File Structure Rules
+
+- Location: `src/api/<module>/<feature>.ts` — **exactly 2 levels deep**. 3+ levels are FORBIDDEN.
+- Each file exports: DTO types + builder functions only.
+- Default exports from `src/api/**` are FORBIDDEN.
+- Use path alias `@!/<module>/<feature>` for all API imports.

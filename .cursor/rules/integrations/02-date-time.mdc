@@ -1,0 +1,93 @@
+---
+description: Bans native Date instantiation and forces useDateUtils/DateUtils.
+globs: ["src/**/*.ts", "src/**/*.vue", "src/**/*.tsx"]
+alwaysApply: true
+---
+
+# The Date & Time Law
+
+## Absolute Prohibitions
+
+**FORBIDDEN — Native Date APIs in business or display logic:**
+- `new Date()` — instantiation of native Date objects
+- `Date.now()` — native timestamp access
+- `date.toISOString()` — native serialization
+- `date.toLocaleDateString()` / `date.toLocaleTimeString()` — native locale formatting
+- `date.getFullYear()` / `date.getMonth()` / etc. — native property access for display
+
+These APIs are timezone-unaware, locale-ignorant, and bypass the centralized holiday/DST logic. Violations will cause silent rendering bugs in multi-timezone deployments.
+
+## Required Abstractions
+
+### In Vue Components (`.vue` files)
+**MUST** use `useDateUtils()` composable:
+
+```typescript
+import { useDateUtils } from '@/hooks/modules/useDateUtils'
+
+const { formatDate, formatDateTime, formatRelative, isInitialized } = useDateUtils()
+```
+
+### In Standalone TypeScript Files (`.ts`, `.tsx`)
+**MUST** use the `DateUtils` class (static API wrapping Day.js):
+
+```typescript
+import { DateUtils } from '@/utils/date/DateUtils'
+
+const formatted = DateUtils.format(isoString, 'YYYY-MM-DD')
+const relative = DateUtils.fromNow(isoString)
+```
+
+## Critical Initialization Guard
+
+**NEVER** call formatting functions before `isInitialized.value === true`.
+
+Timezone data, locale strings, and holiday calendars are loaded asynchronously at app boot. Calling format functions before initialization returns empty strings — causing blank UI with no error thrown.
+
+**FORBIDDEN:**
+```vue
+<template>
+  <!-- BUG: may render blank on first paint if locale not yet loaded -->
+  <span>{{ formatDate(row.createdAt) }}</span>
+</template>
+```
+
+**REQUIRED — Gate all date output behind isInitialized:**
+```vue
+<script setup lang="ts">
+import { useDateUtils } from '@/hooks/modules/useDateUtils'
+
+const props = defineProps<{ date: string }>()
+const { formatDate, isInitialized } = useDateUtils()
+
+const displayDate = computed<string>(() =>
+  isInitialized.value ? formatDate(props.date) : '—'
+)
+</script>
+
+<template>
+  <span>{{ displayDate }}</span>
+</template>
+```
+
+## Permitted Exceptions
+
+The following usages are **allowed** only in infrastructure code:
+
+| Location | Permitted Usage | Reason |
+|---|---|---|
+| `src/utils/date/**` | `new Date()`, `Date.now()` | DateUtils implementation internals |
+| `src/utils/http/interceptors.ts` | `Date.now()` | Request timestamp stamping |
+| Test files (`*.spec.ts`, `*.test.ts`) | `new Date()` with `vi.setSystemTime()` | Controlled test time mocking |
+
+All other locations: **zero tolerance**.
+
+## Rationale
+
+`DateUtils` / `useDateUtils()` implicitly handles:
+1. **Timezone normalization** — server UTC ↔ user local time
+2. **Locale formatting** — i18n-aware date strings (zh-CN, en-US, etc.)
+3. **Holiday awareness** — downstream calendar integrations
+4. **DST transitions** — Day.js plugins loaded centrally
+
+The native `Date` object handles none of these. One call to `new Date(isoString)` silently produces wrong output for users outside the server's timezone.

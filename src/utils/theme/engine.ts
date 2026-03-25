@@ -87,7 +87,7 @@ export function generateThemeVars(preset: ThemePreset, isDark: boolean): ThemeCs
     isDark ? E.secondaryFgDark : E.fgLight
   )
 
-  const mutedBase = secondaryBase
+  const mutedBase = baseNeutral
   const mutedFg = resolveToken(modeConfig?.neutral?.mutedForeground, () =>
     isDark ? E.mutedFgDark : E.mutedFgLight
   )

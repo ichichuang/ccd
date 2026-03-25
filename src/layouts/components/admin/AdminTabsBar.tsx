@@ -65,8 +65,8 @@ export default defineComponent({
       ]
 
       return (
-        <div class="w-full h-tabsHeight border-b-default px-md overflow-hidden row items-end select-none z-10">
-          <div class="relative row-y-center gap-1 h-full flex-1 min-w-0">
+        <div class="w-full h-tabsHeight select-none">
+          <div class="relative center gap-1 layout-full flex-1">
             <CScrollbar
               ref={scrollContainer}
               options={{
@@ -80,17 +80,17 @@ export default defineComponent({
             >
               <div
                 ref={tabsContainerRef}
-                class="row items-end gap-1 h-full relative min-w-max"
+                class="flex items-end px-md gap-1 h-full"
               >
                 {/* Smart sliding indicator */}
                 <div
-                  class="absolute bottom-0 bg-primary pointer-events-none rounded-t-sm z-10"
+                  class="absolute bottom-0 bg-primary pointer-events-none rounded-b-sm z-content"
                   style={{
-                    height: 'var(--spacing-xs, 2px)',
+                    height: 'var(--spacing-xs)',
                     left: activeTabStyle.value.left,
                     width: activeTabStyle.value.width,
                     opacity: activeTabStyle.value.opacity,
-                    transition: 'all var(--transition-lg, 0.4s) cubic-bezier(0.16, 1, 0.3, 1)',
+                    transition: 'all var(--transition-lg) cubic-bezier(0.16, 1, 0.3, 1)',
                   }}
                 />
                 {tabList.map(tab => {
@@ -103,10 +103,10 @@ export default defineComponent({
                       ref={el => setTabRef(el instanceof HTMLElement ? el : null, tab.path)}
                       data-path={tab.path}
                       class={[
-                        'group relative h-[calc(100%-var(--spacing-xs))] row-y-center px-sm rounded-t-md cursor-pointer gap-sm shrink-0',
+                        'h-full flex items-center px-sm rounded-t-lg cursor-pointer gap-sm shrink-0 duration-md',
                         active
-                          ? 'bg-primary/10 text-primary font-medium backdrop-blur-md transition-all'
-                          : 'bg-transparent text-muted-foreground hover:bg-muted/30 hover:text-foreground transition-all',
+                          ? 'bg-primary/10 dark:bg-primary/15 text-primary font-medium backdrop-blur-md transition-all'
+                          : 'bg-transparent text-muted-foreground hover:bg-muted/40 hover:text-foreground transition-all',
                       ]}
                       onClick={() => onTabClick(tab)}
                       onContextmenu={(e: MouseEvent) => onContextMenu(e, tab)}
@@ -116,12 +116,7 @@ export default defineComponent({
                         <Icons
                           name={tab.icon}
                           size={TAB_ICON_SIZE}
-                          class={[
-                            'shrink-0 text-current!',
-                            active
-                              ? 'opacity-100'
-                              : 'opacity-70 transition-all duration-md group-hover:opacity-100',
-                          ]}
+                          class={['text-inherit! ']}
                         />
                       )}
 
@@ -131,16 +126,13 @@ export default defineComponent({
                       {/* Close Button */}
                       {!tab.fixed && tab.deletable && (
                         <div
-                          class={[
-                            'center rounded-full p-0.5 transition-colors duration-sm text-muted-foreground hover:text-danger hover:bg-danger/10',
-                            active ? 'opacity-100' : 'opacity-0 group-hover:opacity-100',
-                          ]}
+                          class="center duration-md text-muted-foreground hover:text-danger"
                           onClick={e => onCloseTab(e, tab)}
                         >
                           <Icons
                             name="i-lucide-x"
                             size={TAB_ICON_SIZE}
-                            class="text-current!"
+                            class="text-inherit!"
                           />
                         </div>
                       )}
@@ -162,13 +154,13 @@ export default defineComponent({
           >
             {contextMenu.value.visible && (
               <div
-                class="fixed z-50 min-w-[var(--spacing-3xl)] bg-popover/95 backdrop-blur-md shadow-xl rounded-md p-xs col-stack-xs origin-top-left outline-none!"
+                class="fixed z-popover min-w-[var(--spacing-3xl)] bg-popover/95 backdrop-blur-md shadow-xl rounded-md p-xs flex flex-col gap-xs origin-top-left outline-none!"
                 style={{ top: `${contextMenu.value.y}px`, left: `${contextMenu.value.x}px` }}
               >
                 {contextMenuOptions.map(option => (
                   <div
                     key={option.label}
-                    class="flex items-center gap-sm cursor-pointer select-none transition-all duration-md ease-in-out border-none bg-transparent px-sm py-xs rounded-sm text-sm text-popover-foreground hover:bg-primary/12! dark:hover:bg-primary/30! hover:text-primary! group"
+                    class="flex items-center gap-sm cursor-pointer select-none transition-all duration-md ease-out-expo border-none bg-transparent px-sm py-xs rounded-sm text-sm text-popover-foreground hover:bg-primary/12! dark:hover:bg-primary/30! hover:text-primary! group"
                     role="button"
                     tabindex="0"
                     onClick={e => {

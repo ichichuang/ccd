@@ -67,6 +67,14 @@ export function usePrimeVueScrollSpy(
 
   const SCROLL_OFFSET = 80
   const DETECTION_BUFFER = 50
+  const { start: startScrollSettlingTimer, stop: stopScrollSettlingTimer } = useTimeoutFn(
+    () => {
+      isScrolling.value = false
+      stopScrollSettlingTimer()
+    },
+    500,
+    { immediate: false }
+  )
 
   function scrollToSection(id: string) {
     isScrolling.value = true
@@ -90,9 +98,7 @@ export function usePrimeVueScrollSpy(
         behavior: 'smooth',
       })
 
-      setTimeout(() => {
-        isScrolling.value = false
-      }, 500)
+      startScrollSettlingTimer()
     })
   }
 
@@ -184,6 +190,7 @@ export function usePrimeVueScrollSpy(
   }
 
   onBeforeUnmount(() => {
+    stopScrollSettlingTimer()
     intersectionObserver?.disconnect()
     intersectionObserver = null
   })

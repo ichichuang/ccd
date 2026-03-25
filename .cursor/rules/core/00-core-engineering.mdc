@@ -1,0 +1,47 @@
+---
+globs: ["**/*.vue", "**/*.ts", "**/*.tsx", "**/*.js"]
+---
+
+# Core Engineering Constitution
+
+## Tech Stack (MUST)
+- Vue 3 with **Composition API** and **`<script setup lang="ts">`**.
+- Vite + TypeScript.
+- UnoCSS as the styling layer.
+- **Styling Paradigm:** Prefer native UnoCSS utilities over custom styling DSLs unless explicitly documented in design-system rules.
+
+## Type Safety Mandate (STRICT)
+- ✅ **MUST forbid `any` in business code.**
+- ✅ **MUST preserve end-to-end generics** across helpers/state layers.
+  - Example pattern: `useFormContext<TValues>()` and keep `TValues` intact through composables/renderers.
+- ✅ **MUST use explicit types/return types** for non-trivial composables to avoid “inferred type cannot be named”.
+- ❌ **NEVER** introduce “temporary” `any` to silence type errors.
+
+## Directory Semantics (MUST)
+- `src/views/` is **assembly-only**:
+  - Compose existing components/composables.
+  - Wire events and data flow.
+  - Do **not** implement deep logic here.
+- Complex logic goes to:
+  - composables under `src/hooks/` or feature modules under `src/modules/` (when present).
+  - pure utilities under `src/utils/`.
+
+## Rendering Rules (MUST)
+- If code must construct/return VNodes dynamically: use **TSX**.
+- ❌ **NEVER** use legacy programmatic rendering helpers (`h()` / `resolveComponent()` in business code).
+
+## Build-Time vs Run-Time Boundary
+
+**ABSOLUTE FORBIDDEN — reverse dependencies from build tooling into the app:**
+
+- **DO NOT** `import` **business-layer** modules from **build-time configuration** files, including but not limited to:
+  - `vite.config.ts`, `uno.config.ts`
+  - `src/design-engine/safelist/*.ts` and other safelist / codegen entrypoints tied to the bundler or Uno pipeline
+- **FORBIDDEN targets** (non-exhaustive): `src/views/**`, `src/components/**`, any file that pulls in **Vue SFCs**, **Vue reactivity**, or **`<script setup>` macros** (or that transitively depends on them).
+
+**Why:** Those imports create a **fatal reverse dependency**: the compiler / design-engine layer must stay **acyclic** and **environment-pure**. Pulling UI or feature code into config makes the toolchain depend on the app graph → fragile resolution, circular imports, and **build / bundle collapse**.
+
+**ALLOWED in build-time configs:** shared **constants**, **ambient / type-only** contracts, and **tiny, dependency-free utilities** that do not drag the runtime Vue graph.
+
+**Rule of thumb:** If a file is executed to configure Vite or Uno, it may only import what could run in a **Node-only, non-Vue** context without loading the application.
+
