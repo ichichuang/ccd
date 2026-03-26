@@ -79,7 +79,7 @@ const sizeScaleDisplayList = computed<{ key: SizeScaleKey; percent: number }[]>(
       class="shrink-0 row-between gap-md px-lg py-md border-b-default"
     >
       <span class="text-md font-semibold text-foreground">
-        {{ $t('router.example.systemStates') }}
+        {{ $t('router.example.architecture.systemStates') }}
       </span>
     </div>
 

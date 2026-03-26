@@ -22,7 +22,7 @@ export const SIZE_PRESETS: SizePreset[] = [
     spacingBase: 3,
     fontSizeBase: 14,
 
-    sidebarWidth: 200,
+    sidebarWidth: 260,
     sidebarCollapsedWidth: 56,
     headerHeight: 48,
     breadcrumbHeight: 28,
@@ -38,7 +38,7 @@ export const SIZE_PRESETS: SizePreset[] = [
     spacingBase: 4,
     fontSizeBase: 16,
 
-    sidebarWidth: 240,
+    sidebarWidth: 280,
     sidebarCollapsedWidth: 60,
     headerHeight: 60,
     breadcrumbHeight: 32,
@@ -54,7 +54,7 @@ export const SIZE_PRESETS: SizePreset[] = [
     spacingBase: 5,
     fontSizeBase: 18,
 
-    sidebarWidth: 280,
+    sidebarWidth: 300,
     sidebarCollapsedWidth: 80,
     headerHeight: 66,
     breadcrumbHeight: 36,

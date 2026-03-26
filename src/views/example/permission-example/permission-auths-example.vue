@@ -1,7 +1,71 @@
 <script setup lang="ts">
-import PermissionAuthsExamplePage from './permission-auths-example-page.vue'
+import { hasAuth } from '@/router/utils/transform'
+
+const userStore = useUserStoreWithOut()
+
+const userPermissions = computed<string[]>(() => userStore.getUserPermissions)
+
+const canRead = computed<boolean>(() => hasAuth('demo:read', userPermissions.value))
+const canWrite = computed<boolean>(() => hasAuth('demo:write', userPermissions.value))
+
+const metaAuths: string[] = ['demo:read', 'demo:write']
 </script>
 
 <template>
-  <PermissionAuthsExamplePage />
+  <div class="p-lg col-stretch gap-md">
+    <h2 class="text-xl font-semibold row-start items-center gap-sm">
+      <Icons
+        name="i-lucide-badge-check"
+        size="lg"
+        class="text-primary"
+      />
+      <span>按钮级权限示例（meta.auths + hasAuth）</span>
+    </h2>
+
+    <div class="material-elevated col-stretch gap-sm">
+      <div class="text-md">
+        <span class="font-medium">当前用户：</span>
+        <span>{{ userStore.getUserInfo.username || '未登录' }}</span>
+      </div>
+      <div class="text-md">
+        <span class="font-medium">当前按钮权限（permissions）：</span>
+        <span>{{ userPermissions.join(', ') || '[]' }}</span>
+      </div>
+      <div class="text-md">
+        <span class="font-medium">本路由 meta.auths：</span>
+        <span>{{ metaAuths.join(', ') }}</span>
+      </div>
+    </div>
+
+    <div class="col-stretch gap-sm rounded-md bg-muted p-md shadow-sm dark:shadow-md">
+      <div class="text-md font-medium">示例操作按钮（基于权限控制显隐）</div>
+
+      <div class="row-start flex-wrap gap-sm">
+        <Button
+          v-if="canRead"
+          severity="primary"
+          class="px-md"
+          label="查看数据（需要 demo:read）"
+        />
+        <Button
+          v-if="canWrite"
+          severity="success"
+          class="px-md"
+          label="编辑数据（需要 demo:write）"
+        />
+        <span
+          v-if="!canRead && !canWrite"
+          class="text-muted-foreground text-sm"
+        >
+          当前账号没有任何本页按钮权限。
+        </span>
+      </div>
+
+      <p class="text-muted-foreground text-sm">
+        - admin / 123456：permissions = ['*:*:*']，两个按钮都可以看到。
+        <br />
+        - user / 123456：permissions = ['demo:read']，只能看到“查看数据”按钮。
+      </p>
+    </div>
+  </div>
 </template>
