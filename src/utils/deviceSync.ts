@@ -24,8 +24,15 @@ export function getDeviceTypeSync(): DeviceType {
   const screenShortSide: number = Math.min(window.screen.width, window.screen.height)
 
   const isMobileUA: boolean = /Android|webOS|iPhone|iPod|BlackBerry|IEMobile|Opera Mini/i.test(ua)
+
+  // iPadOS 13+ Safari 会将 UA 混淆为 Macintosh 桌面端，需要用多触点能力来兜底识别
+  const isMac: boolean = /Macintosh/i.test(ua)
+  const isIPadOS: boolean = isMac && navigator.maxTouchPoints > 1
+
   const isTabletUA: boolean =
-    /iPad/i.test(ua) || (isMobileUA && screenShortSide >= TABLET_DETECTION_MIN_SHORT_SIDE)
+    /iPad/i.test(ua) ||
+    isIPadOS ||
+    (isMobileUA && screenShortSide >= TABLET_DETECTION_MIN_SHORT_SIDE)
 
   if (isTabletUA) return 'Tablet'
   if (isMobileUA) return 'Mobile'

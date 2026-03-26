@@ -14,6 +14,7 @@ import {
   calculateCircleRadius,
   calculateDiamondRadius,
   setThemeLocked,
+  resolveTransitionMode,
 } from '@/utils/theme/transitions'
 
 type ViewTransition = {
@@ -84,6 +85,8 @@ function applyTransitionDurationVariable(durationMs: number) {
  * 支持 circle 和 diamond 两种模式
  */
 function applyTransitionVariables(event: MouseEvent | null, mode: ThemeTransitionMode) {
+  // fade 专用短路：不做任何几何半径计算，也不注入 --transition-x/y/radius
+  if (mode === 'fade') return
   if (event) {
     const { clientX, clientY } = event
     // 根据模式选择不同的半径计算方式
@@ -214,7 +217,7 @@ export function useThemeSwitch(): UseThemeSwitchReturn {
     // CRITICAL: Lock theme to prevent external refreshTheme calls
     setThemeLocked(true)
     isAnimating.value = true
-    const transitionModeToUse = mode || transitionMode.value
+    const transitionModeToUse = resolveTransitionMode(mode || transitionMode.value)
     const currentIsDark = isDark.value
     const systemPrefersDark = getSystemDarkModeQuery().matches
     const nextMode = getNextMode()
@@ -359,7 +362,9 @@ export function useThemeSwitch(): UseThemeSwitchReturn {
     // CRITICAL: Lock theme to prevent external refreshTheme calls
     setThemeLocked(true)
     isAnimating.value = true
-    const transitionModeToUse = transitionModeOverride || transitionMode.value
+    const transitionModeToUse = resolveTransitionMode(
+      transitionModeOverride || transitionMode.value
+    )
     const systemPrefersDark = getSystemDarkModeQuery().matches
 
     // 检查浏览器支持

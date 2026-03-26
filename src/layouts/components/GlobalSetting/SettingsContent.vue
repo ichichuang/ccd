@@ -3,6 +3,7 @@ import { useThemeSwitch } from '@/hooks/modules/useThemeSwitch'
 import { useThemeStore } from '@/stores/modules/theme'
 import { useSizeStore } from '@/stores/modules/size'
 import { useLayoutStore } from '@/stores/modules/layout'
+import { useDeviceStore } from '@/stores/modules/device'
 import { useLocale } from '@/hooks/modules/useLocale'
 import {
   THEME_PRESETS,
@@ -12,6 +13,7 @@ import {
 import { SIZE_PRESETS } from '@/constants/size'
 import type { SupportedLocale } from '@/locales'
 import { useI18n } from 'vue-i18n'
+import { storeToRefs } from 'pinia'
 import SelectButton from 'primevue/selectbutton'
 import Select from 'primevue/select'
 import Slider from 'primevue/slider'
@@ -23,9 +25,12 @@ defineEmits(['close'])
 const { t } = useI18n()
 const { mode, isAnimating, setThemeWithAnimation } = useThemeSwitch()
 const themeStore = useThemeStore()
+const deviceStore = useDeviceStore()
 const sizeStore = useSizeStore()
 const layoutStore = useLayoutStore()
 const { locale, switchLocale, supportedLocales } = useLocale()
+const { isMobile } = storeToRefs(deviceStore)
+const isPC = computed(() => !isMobile.value)
 
 // 主题模式选项 (light | dark | auto)
 const themeModeOptions: { value: ThemeMode; labelKey: string }[] = [
@@ -261,7 +266,10 @@ function onThemeModeChange(value: ThemeMode) {
     <div class="border-b opacity-50"></div>
 
     <!-- 布局模式（始终展示：控制用户偏好 preferredMode） -->
-    <div class="flex flex-col items-start justify-between gap-xs md:gap-sm">
+    <div
+      v-if="!isMobile"
+      class="flex flex-col items-start justify-between gap-xs md:gap-sm"
+    >
       <label class="text-sm font-medium text-muted-foreground">
         {{ t('settings.layoutMode') }}
       </label>
@@ -278,7 +286,10 @@ function onThemeModeChange(value: ThemeMode) {
     </div>
 
     <!-- 布局模块显示（按 preferredMode 配置，不随 effectiveMode 跳变） -->
-    <div class="flex flex-col items-start justify-between gap-xs md:gap-sm">
+    <div
+      v-if="!isMobile"
+      class="flex flex-col items-start justify-between gap-xs md:gap-sm"
+    >
       <label class="text-sm font-medium text-muted-foreground">
         {{ t('settings.layoutModules') }}
       </label>
@@ -313,7 +324,10 @@ function onThemeModeChange(value: ThemeMode) {
     </div>
 
     <!-- 切换动画 -->
-    <div class="flex flex-col gap-xs md:gap-sm">
+    <div
+      v-if="isPC"
+      class="flex flex-col gap-xs md:gap-sm"
+    >
       <label class="text-sm font-medium text-muted-foreground">
         {{ t('settings.transitionEffect') }}
       </label>
@@ -341,7 +355,10 @@ function onThemeModeChange(value: ThemeMode) {
     </div>
 
     <!-- 过渡时长 -->
-    <div class="layout-full flex flex-col gap-xs md:gap-sm">
+    <div
+      v-if="isPC"
+      class="layout-full flex flex-col gap-xs md:gap-sm"
+    >
       <div class="row-between">
         <label class="text-sm font-medium text-muted-foreground">
           {{ t('settings.transitionDuration') }}

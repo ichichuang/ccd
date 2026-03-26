@@ -8,6 +8,8 @@ import { RouterLink, useRoute } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { useFullscreen, useWindowSize } from '@vueuse/core'
 import { useAppElementSize } from '@/hooks/modules/useAppElementSize'
+import { useThemeSwitch } from '@/hooks/modules/useThemeSwitch'
+import { storeToRefs } from 'pinia'
 import {
   getAdminMenuTree,
   getAuthorizedMenuTree,
@@ -56,6 +58,8 @@ const route = useRoute()
 const userStore = useUserStore()
 const deviceStore = useDeviceStore()
 const layoutStore = useLayoutStore()
+const themeSwitch = useThemeSwitch()
+const { isMobileTerminal: isMobile } = storeToRefs(deviceStore)
 
 const { isFullscreen, toggle: toggleFullscreen } = useFullscreen()
 
@@ -345,6 +349,18 @@ const renderRootItem = (item: PrimeMenuModelItem) => {
         type="button"
         class="max-md:hidden cursor-pointer material-elevated border-none outline-none duration-sm center ring-1 ring-border p-sm"
         @click="emit('toggleTheme', $event)"
+      >
+        <Icons
+          :name="isDark ? 'i-solar-moon-bold-duotone' : 'i-solar-sun-2-bold-duotone'"
+          size="lg"
+          class="color-inherit"
+        />
+      </button>
+      <button
+        v-if="isMobile && showUserEntry"
+        type="button"
+        class="cursor-pointer material-elevated border-none outline-none duration-sm center ring-1 ring-border p-sm"
+        @click="themeSwitch.toggleThemeWithAnimation($event)"
       >
         <Icons
           :name="isDark ? 'i-solar-moon-bold-duotone' : 'i-solar-sun-2-bold-duotone'"

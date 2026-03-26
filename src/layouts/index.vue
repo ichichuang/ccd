@@ -125,6 +125,7 @@ const currentLayoutComponent = computed(() => {
   display: flex;
   width: 100vw;
   height: 100vh;
+  height: 100dvh;
   align-items: center;
   justify-content: center;
   background-color: rgb(var(--background));

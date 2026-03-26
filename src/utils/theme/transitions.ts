@@ -5,6 +5,7 @@
  */
 
 import { rgbToHex } from './colors'
+import { getDeviceTypeSync } from '@/utils/deviceSync'
 
 // 主题过渡锁：防止 store.refreshTheme 在动画期间被外部触发（从 useThemeSwitch 抽离，避免循环依赖）
 let isThemeTransitionLocked = false
@@ -103,4 +104,22 @@ export function getTransitionConfig(
       }
     }
   }
+}
+
+function isPrefersReducedMotion(): boolean {
+  if (typeof window === 'undefined' || typeof window.matchMedia !== 'function') return false
+  return window.matchMedia('(prefers-reduced-motion: reduce)').matches
+}
+
+/**
+ * Graceful Degradation:
+ * - Mobile/Tablet: 强制使用 fade（避免 clip-path/circle/diamond 等 CPU-bound 几何计算）
+ * - prefers-reduced-motion: 强制使用 fade
+ * - PC: 保持用户请求的 transitionMode
+ */
+export function resolveTransitionMode(requestedMode: ThemeTransitionMode): ThemeTransitionMode {
+  const deviceType = getDeviceTypeSync()
+  if (deviceType !== 'PC') return 'fade'
+  if (isPrefersReducedMotion()) return 'fade'
+  return requestedMode
 }

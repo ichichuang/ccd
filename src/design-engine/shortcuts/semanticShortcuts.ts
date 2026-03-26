@@ -16,7 +16,7 @@ export const semanticShortcuts = {
   'col-fill': 'flex-1 min-h-0 flex flex-col overflow-hidden',
 
   // Layout Containers (Layout Mode)
-  'layout-screen': 'w-screen h-screen overflow-hidden', // 全屏布局容器
+  'layout-screen': 'w-screen h-100dvh overflow-hidden', // 全屏布局容器（动态视口高度，避免移动端地址栏裁切）
   'layout-full': 'w-full h-full', // 全屏布局容器
   'layout-container':
     'w-full flex flex-col p-xs sm:p-sm md:p-md lg:p-lg gap-sm md:gap-md lg:gap-lg', // 响应式容器
