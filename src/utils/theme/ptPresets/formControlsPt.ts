@@ -1,8 +1,7 @@
 /**
  * 表单控件全局 PassThrough 配置
  *
- * Premium Borderless UI：无实线边框，使用 bg-muted/30 背景 + interactive-item 焦点 shadow。
- * 符合 101-premium-ui.mdc 与 29-focus-outline-styling.mdc。
+ * Enterprise Input UI：保留语义边框与焦点 ring（避免 !important 破坏组件级覆盖与主题 focus 语义）。
  *
  * PT Merge 契约 (PrimeVue v4, mergeProps: true, mergeSections: true):
  * - 全局 PT 类与组件级 :pt 类合并（非替换）
@@ -10,48 +9,48 @@
  * - ⚠️ HMR 不生效：修改此文件后需全页面刷新
  */
 
-const PREMIUM_INPUT_ROOT =
-  '!border-0 !shadow-none bg-muted/30 hover:bg-muted/40 transition-colors duration-md ease-smooth rounded-md'
+const GOLDEN_INPUT_ROOT =
+  'border border-border bg-background text-foreground rounded-md shadow-sm shadow-foreground/10 dark:shadow-foreground/20 transition-all duration-md ease-smooth hover:border-primary/50 focus:outline-none focus:border-primary/50 ring-focus-focus'
 
 const PREMIUM_OVERLAY = ' rounded-md'
 
 export const formControlsPt = {
   inputtext: {
-    root: { class: PREMIUM_INPUT_ROOT },
+    root: { class: GOLDEN_INPUT_ROOT },
   },
   inputnumber: {
-    root: { class: PREMIUM_INPUT_ROOT },
+    root: { class: GOLDEN_INPUT_ROOT },
     buttonGroup: { class: '!border-0 !bg-transparent' },
     incrementButton: {
-      class: '!border-0 !bg-transparent hover:!bg-muted/20 behavior-hover-transition',
+      class: '!border-0 !bg-transparent hover:!bg-muted/20 ',
     },
     decrementButton: {
-      class: '!border-0 !bg-transparent hover:!bg-muted/20 behavior-hover-transition',
+      class: '!border-0 !bg-transparent hover:!bg-muted/20 ',
     },
   },
   inputchips: {
-    root: { class: PREMIUM_INPUT_ROOT },
+    root: { class: GOLDEN_INPUT_ROOT },
   },
   password: {
-    root: { class: PREMIUM_INPUT_ROOT },
+    root: { class: GOLDEN_INPUT_ROOT },
   },
   textarea: {
-    root: { class: PREMIUM_INPUT_ROOT },
+    root: { class: GOLDEN_INPUT_ROOT },
   },
   datepicker: {
-    root: { class: PREMIUM_INPUT_ROOT },
+    root: { class: GOLDEN_INPUT_ROOT },
     panel: { class: PREMIUM_OVERLAY },
   },
   select: {
-    root: { class: PREMIUM_INPUT_ROOT },
+    root: { class: GOLDEN_INPUT_ROOT },
     overlay: { class: PREMIUM_OVERLAY },
   },
   multiselect: {
-    root: { class: PREMIUM_INPUT_ROOT },
+    root: { class: GOLDEN_INPUT_ROOT },
     overlay: { class: PREMIUM_OVERLAY },
   },
   autocomplete: {
-    root: { class: PREMIUM_INPUT_ROOT },
+    root: { class: GOLDEN_INPUT_ROOT },
     overlay: { class: PREMIUM_OVERLAY },
     list: { class: PREMIUM_OVERLAY },
   },

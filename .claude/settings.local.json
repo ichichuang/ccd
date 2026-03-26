@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(pnpm vue-tsc:*)",
+      "Bash(grep -A 5 '\"\"@\"\"' tsconfig.json)",
+      "Bash(grep -A 5 '\"\"@\"\"' tsconfig.app.json)"
+    ]
+  }
+}

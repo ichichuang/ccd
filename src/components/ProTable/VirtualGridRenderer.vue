@@ -102,7 +102,7 @@ const rowVirtualizer = useVirtualizer(
   >
     <div class="relative layout-full">
       <div
-        class="border-b-default border-border/15 bg-muted/30 font-medium py-sm px-md!"
+        class="border-border/15 bg-muted/30 font-medium py-sm px-md!"
         :style="{ display: 'grid', gridTemplateColumns }"
       >
         <div
@@ -123,7 +123,7 @@ const rowVirtualizer = useVirtualizer(
         <div
           v-for="virtualRow in rowVirtualizer.getVirtualItems()"
           :key="String(virtualRow.key)"
-          class="pro-table-row absolute top-0 left-0 w-full surface-item transition-all duration-md ease-out border-b-default border-border/15 py-sm!"
+          class="pro-table-row absolute top-0 left-0 w-full surface-item transition-all duration-md ease-out border-border/15 py-sm!"
           :style="{
             transform: 'translateY(' + virtualRow.start + 'px)',
             display: 'grid',

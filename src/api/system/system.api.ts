@@ -38,7 +38,11 @@ export const requestSystemAsyncRoutes = async (): Promise<SystemAsyncRouteItem[]
  */
 export const requestSystemAsyncRoutesMock = async (): Promise<SystemAsyncRouteItem[]> => {
   await new Promise(resolve => setTimeout(resolve, 100))
-  return []
+  return [
+    { path: '/example/hooks/use-date-utils', component: 'example/hooks/use-date-utils' },
+    { path: '/example/hooks/use-theme-switch', component: 'example/hooks/use-theme-switch' },
+    { path: '/example/hooks/use-http-request', component: 'example/hooks/use-http-request' },
+  ] as SystemAsyncRouteItem[]
 }
 
 /**

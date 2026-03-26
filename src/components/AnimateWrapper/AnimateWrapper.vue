@@ -53,26 +53,36 @@ const setElementDelay = (el: Element, delay: string | undefined) => {
   }
 }
 
+/** 列表模式下按子元素 index 叠加（实际为覆盖）队列延迟 */
+const applyGroupStaggerDelay = (el: Element): void => {
+  if (!props.group || props.stagger === undefined) return
+
+  const parent = el.parentNode
+  if (!parent) return
+
+  const children = Array.from(parent.children)
+  const index = children.indexOf(el)
+  if (index < 0) return
+
+  const extraDelay = index * props.stagger
+  ;(el as HTMLElement).style.setProperty('--animate-delay', `${extraDelay}ms`)
+}
+
 /** 队列延迟：进入阶段（enter/appear） */
 const handleBeforeEnter = (el: Element) => {
   // 先设置进入阶段的基础延迟（优先 enterDelay，其次 delay）
   setElementDelay(el, props.enterDelay || props.delay)
 
-  // 列表模式下叠加队列延迟
-  if (props.group && props.stagger) {
-    const parent = el.parentNode
-    if (parent) {
-      const children = Array.from(parent.children)
-      const index = children.indexOf(el)
-      const extraDelay = index * props.stagger
-      ;(el as HTMLElement).style.setProperty('--animate-delay', `${extraDelay}ms`)
-    }
-  }
+  // 列表模式下应用队列延迟（覆盖语义：index*stagger 将写入 --animate-delay）
+  applyGroupStaggerDelay(el)
 }
 
 /** 离开阶段延迟：使用 leaveDelay 优先，其次 delay */
 const handleBeforeLeave = (el: Element) => {
   setElementDelay(el, props.leaveDelay || props.delay)
+
+  // 列表模式下也应用队列延迟（修复：离开阶段之前未实现 stagger 错位）
+  applyGroupStaggerDelay(el)
 }
 </script>
 

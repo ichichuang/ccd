@@ -79,10 +79,9 @@ const enterActiveClass = computed(() => {
     return ''
   }
 
-  return (
-    rawTransition.value.enterTransition ||
-    'animate__animated animate__fadeIn animate__fast enter-active-class'
-  )
+  const custom = rawTransition.value.enterTransition
+  if (custom) return `${custom} enter-active-class`
+  return 'animate__animated animate__fadeIn animate__fast enter-active-class'
 })
 
 const leaveActiveClass = computed(() => {
@@ -90,10 +89,9 @@ const leaveActiveClass = computed(() => {
     return ''
   }
 
-  return (
-    rawTransition.value.leaveTransition ||
-    'animate__animated animate__fadeOut animate__fast leave-active-class'
-  )
+  const custom = rawTransition.value.leaveTransition
+  if (custom) return `${custom} leave-active-class`
+  return 'animate__animated animate__fadeOut animate__fast leave-active-class'
 })
 
 // 计算样式变量，支持自定义 duration
@@ -151,14 +149,6 @@ const styleVars = computed(() => {
   </router-view>
 </template>
 <style lang="scss" scoped>
-// 确保 animate.css 动画元素在路由切换时绝对定位，防止堆叠
-:deep(.animate__animated) {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-}
-
 .enter-active-class {
   position: absolute;
   top: 0;

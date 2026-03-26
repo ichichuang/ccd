@@ -266,9 +266,13 @@ export interface AnimateWrapperProps {
   group?: boolean
 
   /**
-   * 队列延迟（仅 group=true 时生效）
+   * 队列延迟（仅 group=true 且传入 stagger 时生效）
    *
-   * 列表模式下，每个列表项之间的动画延迟时间（毫秒）
+   * 列表模式下，按列表项在父容器中的 index 计算队列延迟（毫秒），并同时作用于
+   * `enter/appear` 与 `leave` 阶段（即进入与离开都能观察到错位）。
+   *
+   * 覆盖语义：当 `group && stagger` 生效时，最终用于动画的 `--animate-delay` 将由
+   * `index * stagger` 写入，从而覆盖 `delay/enterDelay/leaveDelay` 的结果。
    *
    * @default 120
    * @example

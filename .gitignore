@@ -76,5 +76,4 @@ Thumbs.db
 repair_list.txt
 
 # AI Context & Skills
-.cursor/skills
 .claude/skills

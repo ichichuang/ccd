@@ -88,7 +88,7 @@
 /* Fix: Raised Text Buttons lose contrast in dark mode */
 .dark .p-button-raised.p-button-text {
   background-color: rgb(var(--primary) / 0.04) !important;
-  @apply shadow-sm shadow-md behavior-hover-transition;
+  @apply shadow-sm shadow-md;
 }
 
 .dark .p-button-raised.p-button-text:hover {

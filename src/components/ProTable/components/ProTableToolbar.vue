@@ -41,7 +41,7 @@ function toggleCol(id: string): void {
 </script>
 
 <template>
-  <div class="row-between py-md border-b-default shrink-0">
+  <div class="row-between py-md shrink-0">
     <div class="flex items-center gap-md min-w-0">
       <span
         v-if="title"
@@ -84,7 +84,7 @@ function toggleCol(id: string): void {
           <div
             v-for="col in columns"
             :key="col.id"
-            class="row-between py-xs border-b-default"
+            class="row-between py-xs"
           >
             <span class="text-sm">{{ typeof col.title === 'string' ? col.title : col.id }}</span>
             <ToggleSwitch
