@@ -24,7 +24,7 @@ async function onSwitch(key: typeof locale.value): Promise<void> {
   >
     <div class="layout-narrow col-stretch gap-md">
       <section class="material-elevated col-stretch gap-md">
-        <div class="row-between items-center">
+        <div class="row-between">
           <div class="col-stretch gap-xs">
             <h2 class="text-lg font-semibold text-foreground m-0">Locale Store</h2>
             <p class="text-sm text-muted-foreground m-0">
@@ -45,7 +45,7 @@ async function onSwitch(key: typeof locale.value): Promise<void> {
         <Divider />
 
         <div class="col-stretch gap-md">
-          <div class="row-between items-center">
+          <div class="row-between">
             <span class="text-sm text-muted-foreground">Current Language</span>
             <Tag
               :value="currentLocale?.name ?? '—'"
@@ -71,28 +71,28 @@ async function onSwitch(key: typeof locale.value): Promise<void> {
         <Divider />
         <div class="grid grid-cols-1 md:grid-cols-2 gap-md">
           <div class="col-stretch gap-sm">
-            <div class="row-between items-center">
+            <div class="row-between">
               <span class="text-sm text-muted-foreground">isChineseLang</span>
               <Tag
                 :value="`${isChineseLang}`"
                 :severity="isChineseLang ? 'success' : 'secondary'"
               />
             </div>
-            <div class="row-between items-center">
+            <div class="row-between">
               <span class="text-sm text-muted-foreground">isRTL</span>
               <Tag
                 :value="`${isRTL}`"
                 :severity="isRTL ? 'warn' : 'secondary'"
               />
             </div>
-            <div class="row-between items-center">
+            <div class="row-between">
               <span class="text-sm text-muted-foreground">followTimezone</span>
               <Tag
                 :value="`${localeStore.isFollowTimezone}`"
                 severity="info"
               />
             </div>
-            <div class="row-between items-center">
+            <div class="row-between">
               <span class="text-sm text-muted-foreground">loading</span>
               <Tag
                 :value="`${localeStore.loading}`"

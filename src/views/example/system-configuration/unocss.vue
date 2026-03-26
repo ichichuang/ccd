@@ -569,7 +569,7 @@ async function copyClassName(className: string, label: string): Promise<void> {
             <p class="text-sm font-medium text-foreground m-0">absolute-center · 绝对居中定位</p>
             <p class="text-xs text-muted-foreground m-0">
               父容器需设置
-              <code class="font-mono bg-muted/40 px-xs rounded-sm">position: relative</code>
+              <code class="code-inline">position: relative</code>
               ，子元素使用此快捷类自动居中
             </p>
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-sm items-center">

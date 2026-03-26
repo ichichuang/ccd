@@ -12,13 +12,8 @@ Before implementing any logic, you MUST follow this search order:
 
 1. **Project Hooks:** Check `@/hooks/modules/*` first (e.g., `useHttpRequest`, `useDateUtils`).
 2. **Common Utilities:** Check the root `@/utils/` directory first (e.g., `strings.ts`, `lodashes.ts`, `typeCasters.ts`), then inspect targeted sub-directories like `@/utils/http/`, `@/utils/date/`, and `@/utils/theme/`.
-3. **VueUse + Skills:** Use `@vueuse/core` composables, and consult the corresponding knowledge in `.cursor/skills/*/SKILL.md` for project-aligned usage.
+3. **VueUse:** Use `@vueuse/core` composables for shared reactive capabilities.
 4. **Native JS:** Use native APIs only as the last resort when no project abstraction or VueUse solution exists.
-
-### Skills Bridge — Knowledge Tier
-
-`.cursor/skills/` is the **Knowledge Tier** (guidance layer), not a runtime code layer.  
-Before applying capability domains such as `pinia`, `unocss`, or `vueuse`, you MUST read the relevant `SKILL.md` to align implementation with the repository's expert-level conventions.
 
 ## Law 1 — No Raw DOM Event Listeners
 

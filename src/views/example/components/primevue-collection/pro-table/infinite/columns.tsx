@@ -17,9 +17,9 @@ function stockBadge(stock: number): VNode {
 function ratingStars(rating: number): VNode {
   const filled = Math.round(rating)
   return (
-    <div class="flex flex-row items-center gap-xs">
+    <div class="row-start items-center gap-xs">
       <span class="text-xs font-semibold text-foreground">{rating.toFixed(1)}</span>
-      <div class="flex flex-row items-center gap-[var(--spacing-xs)]">
+      <div class="row-start items-center gap-[var(--spacing-xs)]">
         {Array.from({ length: 5 }).map((_, i) => (
           <span
             key={i}
@@ -47,17 +47,15 @@ export const productColumns: ProTableColumn<DummyProductDTO>[] = [
     field: 'title',
     minWidth: '220px',
     render: ({ row }: ColumnRenderParams<DummyProductDTO>) => (
-      <div class="flex flex-row items-center gap-sm">
+      <div class="row-start items-center gap-sm">
         <img
           src={row.thumbnail}
           alt={row.title}
           class="w-[var(--spacing-2xl)] h-[var(--spacing-2xl)] rounded-md object-cover shrink-0 shadow-sm"
         />
-        <div class="flex flex-col gap-xs min-w-0">
-          <span class="text-sm font-medium text-foreground text-single-line-ellipsis">
-            {row.title}
-          </span>
-          <span class="text-xs text-muted-foreground text-single-line-ellipsis">{row.brand}</span>
+        <div class="col-stretch gap-xs min-w-0">
+          <span class="text-sm font-medium text-foreground text-ellipsis-1">{row.title}</span>
+          <span class="text-xs text-muted-foreground text-ellipsis-1">{row.brand}</span>
         </div>
       </div>
     ),
@@ -79,7 +77,7 @@ export const productColumns: ProTableColumn<DummyProductDTO>[] = [
     width: '100px',
     align: 'right',
     render: ({ row }: ColumnRenderParams<DummyProductDTO>) => (
-      <div class="flex flex-col gap-xs items-end">
+      <div class="col-stretch gap-xs items-end">
         <span class="text-sm font-semibold text-foreground">${row.price.toFixed(2)}</span>
         {row.discountPercentage > 0 && (
           <span class="text-xs text-danger">-{row.discountPercentage.toFixed(0)}%</span>

@@ -10,7 +10,7 @@ const myColorCustomInput = defineComponent({
     const errors = computed(() => state.errors ?? [])
 
     return (): VNode => (
-      <div class="col-stack-xs w-full">
+      <div class="col-stretch gap-xs w-full">
         <InputText
           modelValue={value.value}
           {...{

@@ -1,6 +1,6 @@
 ---
 description: Chief Architect Global Directives, Ledger tracking, and fundamental workflow constraints. Applies to all files and operations.
-globs: *
+globs: ["**/*"]
 ---
 # 👑 Chief Architect Global Directives
 

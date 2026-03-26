@@ -111,7 +111,7 @@ const hasTextStyle = computed(() => !!themedOption.value?.textStyle)
   >
     <div class="layout-narrow col-stretch gap-md">
       <section class="material-elevated col-stretch gap-md">
-        <div class="row-between items-center">
+        <div class="row-between">
           <div class="col-stretch gap-xs">
             <h2 class="text-lg font-semibold text-foreground m-0">useChartTheme Demo</h2>
             <p class="text-sm text-muted-foreground m-0">
@@ -129,7 +129,7 @@ const hasTextStyle = computed(() => !!themedOption.value?.textStyle)
         <Divider />
 
         <div class="col-stretch gap-md">
-          <div class="row-between items-center">
+          <div class="row-between">
             <span class="text-sm text-muted-foreground">Current State</span>
             <div class="row-start flex-wrap gap-sm">
               <Tag
@@ -147,7 +147,7 @@ const hasTextStyle = computed(() => !!themedOption.value?.textStyle)
             </div>
           </div>
 
-          <div class="row-between items-center">
+          <div class="row-between">
             <span class="text-sm text-muted-foreground">Action Triggers</span>
           </div>
 
@@ -189,7 +189,7 @@ const hasTextStyle = computed(() => !!themedOption.value?.textStyle)
       </section>
 
       <section class="material-elevated col-stretch gap-md">
-        <div class="row-between items-center">
+        <div class="row-between">
           <h3 class="text-md font-semibold text-foreground m-0">Chart Preview</h3>
           <span class="text-sm text-muted-foreground">{{ chartType }}</span>
         </div>

@@ -48,7 +48,7 @@ export const apiEventsColumns: ProTableColumn<ApiEventsRow>[] = [
       const tooltip = typeof column.meta?.tooltip === 'string' ? column.meta.tooltip : ''
       return (
         <span
-          class="text-single-line-ellipsis block"
+          class="text-ellipsis-1 block"
           title={tooltip}
         >
           {row.description || '—'}

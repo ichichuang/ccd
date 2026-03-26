@@ -211,9 +211,7 @@ const valueOptions = computed(() =>
                 <Message severity="warn">
                   这里展示的是“源代码片段”（静态字符串），用于阅读与对照；不要把展示当作运行期逻辑来源。
                 </Message>
-                <pre
-                  class="text-xs text-foreground m-0 bg-muted/30 rounded-md border border-border/30"
-                >
+                <pre class="code-block">
                   {{ selectedSource.sourceSnippet }}
                 </pre>
               </div>
@@ -246,7 +244,7 @@ const valueOptions = computed(() =>
                   </Column>
                 </DataTable>
 
-                <div class="row-between items-center">
+                <div class="row-between">
                   <span class="text-xs text-muted-foreground">当前映射：</span>
                   <span class="text-xs text-foreground text-ellipsis-1">
                     {{ currentRow ? `${currentRow.key} → ${currentRow.mappedSeverity}` : '—' }}

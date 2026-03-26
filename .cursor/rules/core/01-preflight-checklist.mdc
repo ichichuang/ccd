@@ -1,6 +1,6 @@
 ---
 description: MANDATORY Pre-execution Architect Checklist (Preflight 2.0). You MUST output a confirmed version of this list BEFORE proposing any implementation.
-globs: *
+globs: ["**/*"]
 alwaysApply: true
 ---
 # 🚀 Chief Architect Preflight Checklist v2.0

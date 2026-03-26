@@ -77,7 +77,7 @@ const contextMenuOptions = computed(() => {
   >
     <div class="layout-narrow col-stretch gap-md">
       <section class="material-elevated col-stretch gap-md">
-        <div class="row-between items-center">
+        <div class="row-between">
           <div class="col-stretch gap-xs">
             <h2 class="text-lg font-semibold text-foreground m-0">useAdminTabs Demo</h2>
             <div class="text-sm text-muted-foreground">Tabs / Active Indicator / Context Menu</div>
@@ -93,7 +93,7 @@ const contextMenuOptions = computed(() => {
         <Divider />
 
         <div class="col-stretch gap-sm">
-          <div class="row-between items-center">
+          <div class="row-between">
             <span class="text-sm text-muted-foreground">Current State</span>
             <Button
               size="small"
@@ -187,7 +187,7 @@ const contextMenuOptions = computed(() => {
       </section>
 
       <section class="material-elevated col-stretch gap-md">
-        <div class="row-between items-center">
+        <div class="row-between">
           <h3 class="text-md font-semibold text-foreground m-0">Action Triggers</h3>
           <div class="row-center gap-sm">
             <Button
@@ -239,7 +239,7 @@ const contextMenuOptions = computed(() => {
         >
           <div
             v-if="contextMenu.visible"
-            class="fixed z-popover min-w-[var(--spacing-3xl)] bg-popover/95 backdrop-blur-md shadow-xl rounded-md p-xs flex flex-col gap-xs origin-top-left outline-none"
+            class="fixed z-popover min-w-[var(--spacing-3xl)] bg-popover/95 backdrop-blur-md shadow-xl rounded-md p-xs col-stretch gap-xs origin-top-left outline-none"
             :style="{ top: `${contextMenu.y}px`, left: `${contextMenu.x}px` }"
             @click.stop
           >

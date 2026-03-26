@@ -82,24 +82,24 @@ const FEATURE_TAGS: { label: string; cls: string }[] = [
 <template>
   <div
     data-archetype="A1-toolbar-content"
-    class="layout-full px-md md:px-lg flex flex-col gap-sm min-h-0"
+    class="layout-full px-md md:px-lg col-stretch gap-sm min-h-0"
   >
     <!-- Toolbar: Hero Header (Transparent Root Policy: Inherit canvas) -->
     <header class="shrink-0">
-      <div class="w-full py-sm flex flex-row items-center gap-md text-foreground">
+      <div class="w-full py-sm row-start items-center gap-md text-foreground">
         <div class="p-md bg-primary/10 rounded-lg shrink-0">
           <Icons
             name="i-lucide-columns-3"
             class="text-primary text-2xl"
           />
         </div>
-        <div class="flex flex-col gap-xs">
+        <div class="col-stretch gap-xs">
           <h1 class="text-2xl font-bold m-0">ProTable — 列定义与渲染</h1>
           <p class="text-muted-foreground text-sm m-0">
             演示列固定（pinned: 'left'/'right'）、 TSX
             自定义单元格渲染、headerRender、对齐方式与宽度约束。
           </p>
-          <div class="flex flex-row items-center gap-xs flex-wrap mt-padding-xs">
+          <div class="row-start items-center gap-xs flex-wrap mt-padding-xs">
             <span
               v-for="tag in FEATURE_TAGS"
               :key="tag.label"

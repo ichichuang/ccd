@@ -32,14 +32,12 @@ export const heightModeColumns: ProTableColumn<HeightModeRow>[] = [
     field: 'title',
     minWidth: '200px',
     render: ({ row }: ColumnRenderParams<HeightModeRow>) => (
-      <div class="flex flex-row items-center gap-sm">
+      <div class="row-start items-center gap-sm">
         <Icons
           name="i-lucide-activity"
           class="text-primary text-sm"
         />
-        <span class="text-sm font-medium text-foreground text-single-line-ellipsis">
-          {row.title}
-        </span>
+        <span class="text-sm font-medium text-foreground text-ellipsis-1">{row.title}</span>
       </div>
     ),
   },

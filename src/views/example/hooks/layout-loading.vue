@@ -50,7 +50,7 @@ const runConcurrent = async () => {
   >
     <div class="layout-narrow col-stretch gap-md">
       <section class="material-elevated col-stretch gap-md">
-        <div class="row-between items-center">
+        <div class="row-between">
           <div class="col-stretch gap-xs">
             <h2 class="text-lg font-semibold text-foreground m-0">useLoading Demo</h2>
             <p class="text-sm text-muted-foreground m-0">
@@ -72,7 +72,7 @@ const runConcurrent = async () => {
         <Divider />
 
         <div class="col-stretch gap-md">
-          <div class="row-between items-center">
+          <div class="row-between">
             <span class="text-sm text-muted-foreground">Current State</span>
             <div class="row-start flex-wrap gap-sm">
               <Tag
@@ -106,7 +106,7 @@ const runConcurrent = async () => {
       </section>
 
       <section class="material-elevated col-stretch gap-md">
-        <div class="row-between items-center">
+        <div class="row-between">
           <h3 class="text-md font-semibold text-foreground m-0">Action Triggers</h3>
           <span class="text-sm text-muted-foreground">点击按钮触发对应 loading 状态</span>
         </div>

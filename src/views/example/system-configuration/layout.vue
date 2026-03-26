@@ -158,9 +158,9 @@ async function copyText(text: string, label: string): Promise<void> {
         <div class="material-elevated col-stretch gap-lg md:p-lg xl:p-xl">
           <!-- ═══════════ PAGE HEADER ═══════════ -->
           <header class="col-stretch gap-sm">
-            <div class="flex flex-row justify-between gap-md items-start">
+            <div class="row-between gap-md">
               <div class="col-stretch gap-xs">
-                <div class="flex flex-row gap-sm items-center">
+                <div class="row-start gap-sm">
                   <h1 class="text-2xl font-bold text-foreground m-0 tracking-tight">
                     Layout Control Center
                   </h1>
@@ -198,7 +198,7 @@ async function copyText(text: string, label: string): Promise<void> {
               v-if="isNavigationLost"
               class="rounded-lg bg-danger/10 border border-danger/30 p-md col-stretch gap-sm"
             >
-              <div class="flex flex-row gap-sm items-start">
+              <div class="row-start gap-sm">
                 <Icons
                   name="i-lucide-triangle-alert"
                   size="sm"
@@ -235,7 +235,7 @@ async function copyText(text: string, label: string): Promise<void> {
           <div
             class="rounded-lg bg-primary/5 dark:bg-primary/10 border border-primary/20 p-sm row-between gap-md flex-wrap"
           >
-            <div class="flex flex-row gap-xs items-center flex-wrap">
+            <div class="row-start gap-xs flex-wrap">
               <Icons
                 name="i-lucide-activity"
                 size="sm"
@@ -281,7 +281,7 @@ async function copyText(text: string, label: string): Promise<void> {
                 class="bg-muted/30 dark:bg-muted/20 border border-border/40 rounded-lg p-md col-stretch gap-md"
               >
                 <div class="row-between">
-                  <div class="flex flex-row gap-xs items-center">
+                  <div class="row-start gap-xs">
                     <Icons
                       name="i-lucide-layout-template"
                       size="sm"
@@ -317,7 +317,7 @@ async function copyText(text: string, label: string): Promise<void> {
                 class="bg-muted/30 dark:bg-muted/20 border border-border/40 rounded-lg p-md col-stretch gap-md"
               >
                 <div class="row-between">
-                  <div class="flex flex-row gap-xs items-center">
+                  <div class="row-start gap-xs">
                     <Icons
                       name="i-lucide-pin"
                       size="sm"
@@ -380,7 +380,7 @@ async function copyText(text: string, label: string): Promise<void> {
                 class="bg-muted/30 dark:bg-muted/20 border border-border/40 rounded-lg p-md col-stretch gap-md"
               >
                 <div class="row-between">
-                  <div class="flex flex-row gap-xs items-center">
+                  <div class="row-start gap-xs">
                     <Icons
                       name="i-lucide-panel-left"
                       size="sm"
@@ -446,7 +446,7 @@ async function copyText(text: string, label: string): Promise<void> {
                 class="bg-muted/30 dark:bg-muted/20 border border-border/40 rounded-lg p-md col-stretch gap-md"
               >
                 <div class="row-between">
-                  <div class="flex flex-row gap-xs items-center">
+                  <div class="row-start gap-xs">
                     <Icons
                       name="i-lucide-zap"
                       size="sm"
@@ -534,7 +534,7 @@ async function copyText(text: string, label: string): Promise<void> {
               class="bg-muted/30 dark:bg-muted/20 border border-border/40 rounded-lg p-md col-stretch gap-md"
             >
               <div class="row-between">
-                <div class="flex flex-row gap-xs items-center">
+                <div class="row-start gap-xs">
                   <Icons
                     name="i-lucide-eye"
                     size="sm"
@@ -560,7 +560,7 @@ async function copyText(text: string, label: string): Promise<void> {
                   :class="{ 'opacity-50 pointer-events-none': isRowDisabled(row) }"
                 >
                   <div class="col-stretch gap-xs min-w-0">
-                    <div class="flex flex-row gap-xs items-center flex-wrap">
+                    <div class="row-start gap-xs flex-wrap">
                       <span class="text-sm font-semibold text-foreground">{{ row.label }}</span>
                       <Tag
                         v-if="row.modeLocked"

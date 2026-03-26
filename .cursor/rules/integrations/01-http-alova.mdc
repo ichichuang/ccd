@@ -1,5 +1,5 @@
 ---
-description: Enforces Alova + useHttpRequest for all network calls. Strictly bans Axios and raw fetch.
+description: Enforces Alova + useHttpRequest for all network calls. Restores full 401 responsibility boundaries, API structure constraints, and detailed error contract.
 globs: ["src/api/**/*.ts", "src/views/**/*.vue", "src/hooks/**/*.ts"]
 alwaysApply: true
 ---
@@ -41,13 +41,22 @@ Every endpoint MUST be expressed as a named builder function. Generic names (`ge
 
 ```ts
 // src/api/system/user.ts
-
 import type { alovaInstance } from '@/utils/http/instance'
 
 export interface SystemUserListReq {
   pageNo: number
   pageSize: number
   keyword?: string
+  status?: 'active' | 'inactive'
+}
+
+export interface SystemUserDTO {
+  id: string
+  username: string
+  email: string
+  roles: string[]
+  status: 'active' | 'inactive'
+  createdAt: string
 }
 
 export interface SystemUserListRes {
@@ -55,23 +64,26 @@ export interface SystemUserListRes {
   records: SystemUserDTO[]
 }
 
-export interface SystemUserDTO {
-  id: string
+export interface SystemUserCreateReq {
   username: string
-  roles: string[]
-  createdAt: string
+  email: string
+  roleIds: string[]
 }
 
-// ✅ REQUIRED: named builder export
 export const buildSystemUserListMethod = (
   client: typeof alovaInstance,
   params: SystemUserListReq,
 ) => client.Get<SystemUserListRes>('/api/system/user/list', { params })
 
-export const buildSystemUserDeleteMethod = (
+export const buildSystemUserDetailMethod = (
   client: typeof alovaInstance,
   id: string,
-) => client.Delete<void>(`/api/system/user/${id}`)
+) => client.Get<SystemUserDTO>(`/api/system/user/${id}`)
+
+export const buildSystemUserCreateMethod = (
+  client: typeof alovaInstance,
+  data: SystemUserCreateReq,
+) => client.Post<SystemUserDTO>('/api/system/user', data)
 ```
 
 ### Rule 3 — Consume APIs via `useHttpRequest` in Hooks/Components
@@ -79,50 +91,48 @@ export const buildSystemUserDeleteMethod = (
 NEVER call `alovaInstance.Get()` directly in a component. Route all consumption through the `useHttpRequest` composable.
 
 ```ts
-// src/hooks/modules/useSystemUserList.ts
-import type { SystemUserListReq, SystemUserListRes } from '@!/system/user'
-import { buildSystemUserListMethod } from '@!/system/user'
-
 export function useSystemUserList() {
-  const params = reactive<SystemUserListReq>({ pageNo: 1, pageSize: 20 })
+  const params = reactive<SystemUserListReq>({ pageNo: 1, pageSize: 20, keyword: '' })
 
   const { loading, data, error, send } = useHttpRequest<SystemUserListRes>(
     () => buildSystemUserListMethod(alovaInstance, params),
+    {
+      immediate: false,
+      globalLoading: true,
+    },
   )
 
   return { loading, data, error, params, send }
 }
 ```
 
-```vue
-<!-- src/views/system/user/index.vue -->
-<script setup lang="ts">
-const { loading, data, params, send } = useSystemUserList()
-onMounted(send)
-</script>
-```
+### Rule 4 — 401/Token Refresh Boundaries (MUST NOT Cross)
 
-### Rule 4 — Token Refresh is Handled Automatically
+`TokenRefreshCoordinator` inside `@/utils/http/interceptors.ts` exclusively owns 401 handling. **You MUST NOT:**
 
-The `TokenRefreshCoordinator` inside `@/utils/http/interceptors.ts` detects 401 responses, silently refreshes the token, and replays the queued requests. **You MUST NOT:**
+- Catch 401 errors manually in hooks/views/stores
+- Implement any auth retry logic in business code
+- Call refresh APIs from components/composables/stores
+- Trigger logout/navigation directly from API module code
 
-- Catch 401 errors manually in any hook, view, or store
-- Implement any retry logic for auth failures
-- Import or call anything related to token refresh outside of `interceptors.ts`
+Allowed behavior in business code:
+- Let request fail/succeed through interceptor pipeline
+- Handle only domain-specific control flow (e.g., 409 conflict UI)
 
 ### Rule 5 — Error Handling Contract
 
-`useHttpRequest` normalizes all errors to `HttpRequestError`. The global interceptor **already displays** error notifications via `window.$message.danger()` — do NOT re-toast in business code (see `05-network-routing-architecture.mdc` §2 for the full error responsibility split).
-
-Use `error.value` only for **domain-specific** recovery logic:
+`useHttpRequest` normalizes all errors to `HttpRequestError`. Global interceptor already displays global notifications; business code must not duplicate toasts.
 
 ```ts
+import type { HttpRequestError } from '@/utils/http/types'
 import { ErrorType, isHttpRequestError } from '@/utils/http/errors'
 
 const { error } = useHttpRequest(...)
+
 watchEffect(() => {
-  if (error.value && isHttpRequestError(error.value)) {
-    // ✅ Domain-specific handling only — no redundant toast
+  if (!error.value) return
+  if (isHttpRequestError(error.value)) {
+    // Domain-only reaction; no duplicate global toast
     if (error.value.type === ErrorType.CLIENT && error.value.status === 409) {
       showConflictResolutionDialog()
     }
@@ -130,9 +140,23 @@ watchEffect(() => {
 })
 ```
 
-## API File Structure Rules
+---
+
+## `useHttpRequest` Options Reference
+
+| Option | Type | Default | Description |
+|---|---|---|---|
+| `immediate` | `boolean` | `true` | Auto-fetch on composable init |
+| `globalLoading` | `boolean` | `false` | Integrate with global loading/NProgress |
+| `retry` | `number` | `0` | Retry count on network error (NOT auth boundary bypass) |
+| `debounce` | `number` | `0` | Debounce delay in ms for rapid calls |
+
+---
+
+## API File Structure Rules (Strict)
 
 - Location: `src/api/<module>/<feature>.ts` — **exactly 2 levels deep**. 3+ levels are FORBIDDEN.
-- Each file exports: DTO types + builder functions only.
-- Default exports from `src/api/**` are FORBIDDEN.
-- Use path alias `@!/<module>/<feature>` for all API imports.
+- File contents: DTO types + builder functions only.
+- Default export from `src/api/**` is FORBIDDEN.
+- Builder naming must be specific (`buildSystemUserListMethod`) — generic names (`request`, `get`, `post`) are FORBIDDEN.
+- Use alias `@!/<module>/<feature>` for API imports where configured.

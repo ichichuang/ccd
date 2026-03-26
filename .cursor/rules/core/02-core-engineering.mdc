@@ -1,4 +1,5 @@
 ---
+description: Core engineering constitution for Vue3+TS architecture, type safety, rendering, and build/runtime boundaries.
 globs: ["**/*.vue", "**/*.ts", "**/*.tsx", "**/*.js"]
 ---
 

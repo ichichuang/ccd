@@ -1199,7 +1199,7 @@ function toggleDark(next: boolean): void {
 
           <div class="grid grid-cols-1 md:grid-cols-2 gap-md">
             <div class="demo-well col-stretch">
-              <div class="row-between items-center border-b border-border/30 px-sm py-xs">
+              <div class="row-between border-b border-border/30 px-sm py-xs">
                 <div class="row-start gap-xs items-center">
                   <Icons
                     name="i-lucide-terminal"
@@ -1260,7 +1260,7 @@ function toggleDark(next: boolean): void {
             </div>
 
             <div class="demo-well col-stretch">
-              <div class="row-between items-center border-b border-border/30 px-sm py-xs">
+              <div class="row-between border-b border-border/30 px-sm py-xs">
                 <div class="row-start gap-xs items-center">
                   <Icons
                     name="i-lucide-users"
@@ -1296,7 +1296,7 @@ function toggleDark(next: boolean): void {
                     <div
                       v-for="member in mockMembers"
                       :key="`member-${member.id}`"
-                      class="interactive-item rounded-md px-sm py-xs row-between items-center gap-sm"
+                      class="interactive-item rounded-md px-sm py-xs row-between gap-sm"
                     >
                       <div class="row-start gap-sm items-center min-w-0">
                         <div class="relative shrink-0">
@@ -1340,7 +1340,7 @@ function toggleDark(next: boolean): void {
             </p>
           </div>
           <div class="demo-well col-stretch gap-sm">
-            <div class="row-between gap-md items-center flex-wrap">
+            <div class="row-between gap-md flex-wrap">
               <div class="col-stretch gap-xs">
                 <span class="text-sm font-semibold text-foreground">Scroll To · Overlay</span>
                 <span class="text-xs text-muted-foreground">
@@ -1406,7 +1406,7 @@ function toggleDark(next: boolean): void {
 
           <div class="grid grid-cols-1 md:grid-cols-2 gap-md">
             <div class="col-stretch gap-sm">
-              <div class="row-between items-center">
+              <div class="row-between">
                 <span class="text-sm font-semibold text-foreground">Parent CScrollbar</span>
                 <Button
                   text
@@ -1459,7 +1459,7 @@ function toggleDark(next: boolean): void {
                       </div>
 
                       <div class="demo-well col-stretch gap-xs mt-xs">
-                        <div class="row-between items-center">
+                        <div class="row-between">
                           <span class="text-xs font-semibold text-muted-foreground">
                             Child container
                           </span>
@@ -1502,7 +1502,7 @@ function toggleDark(next: boolean): void {
             </div>
 
             <div class="col-stretch gap-sm">
-              <div class="row-between items-center">
+              <div class="row-between">
                 <span class="text-sm font-semibold text-foreground">Behavior Notes</span>
                 <Button
                   text

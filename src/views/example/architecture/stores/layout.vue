@@ -38,7 +38,7 @@ function toggle(key: LayoutToggleKey): void {
   >
     <div class="layout-narrow col-stretch gap-md">
       <section class="material-elevated col-stretch gap-md">
-        <div class="row-between items-center">
+        <div class="row-between">
           <div class="col-stretch gap-xs">
             <h2 class="text-lg font-semibold text-foreground m-0">Layout Store</h2>
             <p class="text-sm text-muted-foreground m-0">
@@ -65,7 +65,7 @@ function toggle(key: LayoutToggleKey): void {
             class="interactive-card rounded-xl p-md col-stretch gap-sm cursor-pointer"
             @click="toggle(mod.key)"
           >
-            <div class="row-between items-center">
+            <div class="row-between">
               <div class="row-start gap-sm items-center">
                 <Icons
                   :name="mod.icon"
@@ -85,7 +85,7 @@ function toggle(key: LayoutToggleKey): void {
       </section>
 
       <section class="material-elevated col-stretch gap-md">
-        <div class="row-between items-center">
+        <div class="row-between">
           <h3 class="text-md font-semibold text-foreground m-0">Preferred Layout Mode</h3>
           <span class="text-xs text-muted-foreground">setPreferredMode()</span>
         </div>

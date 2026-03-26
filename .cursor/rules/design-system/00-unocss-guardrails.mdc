@@ -1,12 +1,12 @@
 ---
-description: CRITICAL — Highest-priority anti-hallucination guardrails for UnoCSS styling. Read BEFORE writing any class attribute.
-globs: ["src/**/*.{vue,tsx,ts,css,scss}"]
+description: CRITICAL — Unified anti-hallucination and design-engine UnoCSS law. Contains closed shortcut registry, N-1/N-2/N-5 anti-patterns, unit/size/color/z-index constraints, and pre-output self-check.
+globs: ["**/*.vue", "**/*.tsx", "**/*.ts", "**/*.css", "**/*.scss", "**/uno.config.ts", "**/semanticShortcuts.ts"]
 alwaysApply: true
 ---
 
-# Anti-Hallucination Guardrails — Absolute Styling Laws
+# UnoCSS Guardrails & Design Engine Law
 
-> Binary FORBIDDEN/REQUIRED rules with zero exceptions unless explicitly stated. These prevent the most common AI styling errors in this codebase.
+> Binary FORBIDDEN/REQUIRED rules with zero exceptions unless explicitly stated. This file is the merged SSOT for UnoCSS generation safety and anti-hallucination constraints.
 
 ---
 
@@ -34,7 +34,9 @@ Shortcuts are a **closed set**. If a shortcut is not in this list, it does not e
 
 **Documentation demo**: `demo-well` · `demo-stage`
 
-> `glass-base` = internal primitive — DO NOT use directly. See Guardrail 8.
+**Code display**: `code-block` · `code-inline` · `code-preview`
+
+> `glass-base` = internal primitive — DO NOT use directly.
 
 **FORBIDDEN invented shortcuts (non-exhaustive)**:
 `card-base` · `page-fill` · `content-wrap` · `panel-base` · `layout-stack` · `col-stack-*` · `density-*` · `fs-xs` · `surface-elevated` · `hover-bg-*` · `text-truncate`
@@ -203,3 +205,46 @@ Before finalizing ANY template or style output:
 - [ ] No element has > 7 raw utility classes for a structural pattern (Rule of 7)
 - [ ] `glass-base` not used directly — use `glass-panel`, `glass-capsule`, `glass-shell`, `glass-card`, or `glass-icon-box`
 - [ ] `duration-300` / `duration-200` not present — use named duration tokens
+
+---
+
+## Design Engine Enforcement (Merged Supplemental)
+
+### Native Mandate (CRITICAL)
+
+- ✅ **MUST** prioritize theme-native UnoCSS utilities. Example: `p-md`, `gap-sm`, `text-lg`, `rounded-xl`.
+- ❌ **FORBIDDEN** to use dead legacy shortcuts. DO NOT use:
+  - ❌ `p-padding-*` or `m-margin-*` (Use native `p-*` / `m-*`)
+  - ❌ `col-stack-*` or `layout-stack` (Use `flex flex-col gap-*`)
+  - ❌ `density-*` (Decompose to paddings and gaps)
+  - ❌ `column-center` (Use `col-center` or `flex flex-col items-center justify-center`)
+
+### Removed DSL (CRITICAL)
+- ❌ **FORBIDDEN** to use removed custom DSL classes:
+  - ❌ `shadow-<size>-<color>` (e.g., `shadow-md-accent`)
+  - ❌ legacy custom `borderRule`-driven border DSL forms (e.g., `border-sm-primary`)
+- ✅ **MUST** use native UnoCSS composition instead:
+  - ✅ `shadow-sm shadow-primary` (or `shadow-primary/50`)
+  - ✅ `border border-primary/50`
+
+### Macro Containers (MUST for Structural Scaffolding)
+
+- ✅ `layout-full`: Pure full structural fill (`w-full h-full`).
+- ✅ `layout-container`: Standard responsive page container with built-in paddings.
+- ✅ `layout-narrow`: Centered narrow reading/form area.
+- ✅ `layout-screen`: Viewport lock (`w-screen h-screen overflow-hidden`).
+
+### The `col-fill` Scope Contract
+
+- **FORBIDDEN AS DEFAULT ROOT:** NEVER use `col-fill` as the root wrapper for standard flowing pages where the parent layout handles scrolling.
+- **PERMITTED ONLY WHEN VIEW TAKES OVER SCROLL:** Use `col-fill` at root ONLY if the view intentionally owns viewport-height + internal scrolling.
+- **ROW FALLBACK:** In horizontal row layouts, use `flex-1 min-w-0` instead of `col-fill`.
+
+### Transition Tokens
+
+- ✅ Use custom duration tokens (`duration-xs`, `duration-sm`, `duration-md`, `duration-lg`).
+- ❌ FORBIDDEN hardcoded timing literals (`duration-300`).
+
+### Shortcut Closed Set Contract
+
+The shortcuts in `src/design-engine/shortcuts/semanticShortcuts.ts` are a closed, audited set. Nonexistent shortcuts must never be invented.

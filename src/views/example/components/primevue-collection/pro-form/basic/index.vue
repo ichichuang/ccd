@@ -373,9 +373,7 @@ async function onClickValidateOnly(): Promise<void> {
                   <span class="text-sm font-semibold text-foreground uppercase">实时 Values</span>
                 </div>
                 <div class="bg-muted rounded-md p-md border-default border-border/40">
-                  <pre class="m-0 whitespace-pre-wrap break-words text-xs text-muted-foreground">{{
-                    valuesJson
-                  }}</pre>
+                  <pre class="code-preview text-muted-foreground">{{ valuesJson }}</pre>
                 </div>
               </section>
             </div>
@@ -397,9 +395,7 @@ async function onClickValidateOnly(): Promise<void> {
               </span>
             </div>
             <CScrollbar class="flex-1 min-h-0 bg-muted px-md py-sm">
-              <pre class="m-0 text-xs text-muted-foreground font-mono leading-relaxed">{{
-                valuesJson
-              }}</pre>
+              <pre class="code-preview text-muted-foreground leading-relaxed">{{ valuesJson }}</pre>
             </CScrollbar>
           </div>
         </div>

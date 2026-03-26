@@ -59,7 +59,7 @@ function isCaseAccepted(raw: unknown): boolean {
   <div class="animate__animated animate__fadeIn col-stretch gap-md">
     <div class="layout-narrow col-stretch gap-md">
       <section class="material-elevated col-stretch gap-md">
-        <div class="row-between items-center">
+        <div class="row-between">
           <div class="col-stretch gap-xs">
             <h2 class="text-lg font-semibold text-foreground m-0">HTTP Adapter</h2>
             <p class="text-sm text-muted-foreground m-0">
@@ -74,7 +74,7 @@ function isCaseAccepted(raw: unknown): boolean {
         <Divider />
         <p class="text-sm text-muted-foreground m-0">
           HTTP 数据进入业务逻辑前必须经过边界校验。
-          <code class="font-mono text-xs text-foreground">parseSafeObject</code>
+          <code class="code-inline">parseSafeObject</code>
           拒绝数组、null、原始类型，仅接受非数组对象；拒绝时返回 fallback
           默认值，确保下游始终拿到安全结构。
         </p>
@@ -89,7 +89,7 @@ function isCaseAccepted(raw: unknown): boolean {
           class="font-mono text-sm w-full"
           placeholder="Paste raw JSON here..."
         />
-        <div class="row-between items-center">
+        <div class="row-between">
           <span class="text-sm text-muted-foreground">parseSafeObject(raw, {}) →</span>
           <Tag
             :value="
@@ -111,7 +111,7 @@ function isCaseAccepted(raw: unknown): boolean {
         </Message>
         <pre
           v-else
-          class="text-xs font-mono text-foreground bg-muted rounded-md p-sm overflow-x-auto"
+          class="code-block"
           >{{ JSON.stringify(playgroundResult.result, null, 2) }}</pre
         >
       </section>
@@ -123,7 +123,7 @@ function isCaseAccepted(raw: unknown): boolean {
           <div
             v-for="tc in testCases"
             :key="tc.label"
-            class="row-between items-center py-xs border-b border-border last:border-0"
+            class="row-between py-xs border-b border-border last:border-0"
           >
             <div class="col-stretch gap-xs">
               <span class="text-sm font-medium text-foreground">{{ tc.label }}</span>
@@ -140,7 +140,7 @@ function isCaseAccepted(raw: unknown): boolean {
       <section class="material-elevated col-stretch gap-md">
         <h3 class="text-md font-semibold text-foreground m-0">Source</h3>
         <Divider />
-        <pre class="text-xs font-mono text-foreground bg-muted rounded-md p-sm overflow-x-auto">
+        <pre class="code-block">
 export function parseSafeObject&lt;T extends object&gt;(raw: unknown, fallback: T): T {
   if (!raw || typeof raw !== 'object' || Array.isArray(raw)) {
     return fallback
@@ -150,9 +150,9 @@ export function parseSafeObject&lt;T extends object&gt;(raw: unknown, fallback: 
         >
         <p class="text-sm text-muted-foreground m-0">
           泛型参数
-          <code class="font-mono text-xs text-foreground">T</code>
+          <code class="code-inline">T</code>
           让 TypeScript 自动推断返回类型。 在 API 边界处使用：
-          <code class="font-mono text-xs text-foreground">
+          <code class="code-inline">
             parseSafeObject&lt;UserInfo&gt;(res.data, defaultUserInfo)
           </code>
           。

@@ -551,11 +551,11 @@ function quadUsageFor(family: QuadFamily): readonly string[] {
               <h3 class="text-lg font-semibold text-foreground m-0">配色 Alpha 全览</h3>
               <p class="text-xs text-muted-foreground m-0">
                 背景阶梯使用
-                <code class="text-xs font-mono text-primary/90">rgb(var(--token) / α)</code>
+                <code class="code-inline">rgb(var(--token) / α)</code>
                 内联渲染（5–90），覆盖 Quad 七族功能色背景阶梯。
-                <code class="text-xs font-mono text-primary/90">text-* / 40–100</code>
+                <code class="code-inline">text-* / 40–100</code>
                 与
-                <code class="text-xs font-mono text-primary/90">border-* / 10–50</code>
+                <code class="code-inline">border-* / 10–50</code>
                 仅针对 Quad 七族。
               </p>
             </div>
@@ -607,7 +607,7 @@ function quadUsageFor(family: QuadFamily): readonly string[] {
               </h4>
               <p class="text-xs text-muted-foreground m-0">
                 置于
-                <code class="font-mono text-xs">bg-card</code>
+                <code class="code-inline">bg-card</code>
                 上；七族全覆盖。
               </p>
               <div class="col-stretch gap-md">
@@ -642,7 +642,7 @@ function quadUsageFor(family: QuadFamily): readonly string[] {
                 Quad 描边 border-* / n（10–50）
               </h4>
               <p class="text-xs text-muted-foreground m-0">
-                <code class="font-mono text-xs">border-2</code>
+                <code class="code-inline">border-2</code>
                 + 语义色透明度；七族全覆盖。
               </p>
               <div class="col-stretch gap-md">

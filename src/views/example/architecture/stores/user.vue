@@ -31,7 +31,7 @@ const stateJson = computed(() =>
   >
     <div class="layout-narrow col-stretch gap-md">
       <section class="material-elevated col-stretch gap-md">
-        <div class="row-between items-center">
+        <div class="row-between">
           <div class="col-stretch gap-xs">
             <h2 class="text-lg font-semibold text-foreground m-0">User Store</h2>
             <p class="text-sm text-muted-foreground m-0">
@@ -48,21 +48,21 @@ const stateJson = computed(() =>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-md">
           <div class="col-stretch gap-md">
             <div class="col-stretch gap-sm">
-              <div class="row-between items-center">
+              <div class="row-between">
                 <span class="text-sm text-muted-foreground">userId</span>
                 <span class="text-sm font-mono text-foreground">{{ userInfo.userId || '—' }}</span>
               </div>
-              <div class="row-between items-center">
+              <div class="row-between">
                 <span class="text-sm text-muted-foreground">username</span>
                 <span class="text-sm font-semibold text-foreground">
                   {{ userInfo.username || '未登录' }}
                 </span>
               </div>
-              <div class="row-between items-center">
+              <div class="row-between">
                 <span class="text-sm text-muted-foreground">email</span>
                 <span class="text-sm font-mono text-foreground">{{ userInfo.email || '—' }}</span>
               </div>
-              <div class="row-between items-center">
+              <div class="row-between">
                 <span class="text-sm text-muted-foreground">phone</span>
                 <span class="text-sm font-mono text-foreground">{{ userInfo.phone || '—' }}</span>
               </div>
@@ -112,10 +112,7 @@ const stateJson = computed(() =>
 
           <div class="col-stretch gap-sm">
             <span class="text-sm text-muted-foreground">Raw Store Snapshot</span>
-            <pre
-              class="text-xs font-mono text-foreground bg-muted rounded-md p-sm overflow-x-auto leading-relaxed"
-              >{{ stateJson }}</pre
-            >
+            <pre class="code-block leading-relaxed">{{ stateJson }}</pre>
           </div>
         </div>
       </section>
@@ -124,7 +121,7 @@ const stateJson = computed(() =>
         <h3 class="text-md font-semibold text-foreground m-0">Architecture Note</h3>
         <Divider />
         <div class="col-stretch gap-sm">
-          <div class="font-mono text-xs text-primary bg-muted rounded-md p-sm">
+          <div class="code-block text-primary">
             Auth API → useAuth composable → useUserStore (SSOT) → Views
           </div>
           <p class="text-sm text-muted-foreground m-0">

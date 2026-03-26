@@ -106,6 +106,14 @@ export const semanticShortcuts = {
     min-h-0
   `,
 
+  // Code Display
+  /** Pre block: monospaced, muted bg, horizontal scroll */
+  'code-block': 'text-xs font-mono text-foreground bg-muted rounded-md p-sm overflow-x-auto',
+  /** Inline code span: monospaced, minimal */
+  'code-inline': 'font-mono text-xs text-foreground',
+  /** Debug/preview pre: wrapping monospaced, no margin */
+  'code-preview': 'm-0 whitespace-pre-wrap break-words text-xs font-mono',
+
   // Z-Index System (Z-Index System)
   'z-base': 'z-0', // 背景层
   'z-content': 'z-10', // 内容层

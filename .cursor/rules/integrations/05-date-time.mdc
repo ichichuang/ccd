@@ -1,0 +1,128 @@
+---
+description: Bans native Date instantiation and forces useDateUtils/DateUtils. Restores full native ban list, initialization guard examples, and rationale.
+globs: ["src/**/*.ts", "src/**/*.vue", "src/**/*.tsx"]
+alwaysApply: true
+---
+
+# The Date & Time Law
+
+## Absolute Prohibitions
+
+**FORBIDDEN — Native Date APIs in business or display logic:**
+- `new Date()` — instantiation of native Date objects
+- `Date.now()` — native timestamp access
+- `date.toISOString()` — native serialization
+- `date.toLocaleDateString()` / `date.toLocaleTimeString()` — native locale formatting
+- `date.getFullYear()` / `date.getMonth()` / etc. — native property access for display
+
+These APIs are timezone-unaware, locale-ignorant, and bypass the centralized holiday/DST logic. Violations will cause silent rendering bugs in multi-timezone deployments.
+
+## Required Abstractions
+
+### In Vue Components (`.vue` files)
+**MUST** use `useDateUtils()` composable:
+
+```ts
+const { formatDate, formatDateTime, formatRelative, isInitialized } = useDateUtils()
+```
+
+### In Standalone TypeScript Files (`.ts`, `.tsx`)
+**MUST** use `DateUtils` static API:
+
+```ts
+import { DateUtils } from '@/utils/date/DateUtils'
+const formatted = DateUtils.format(isoString, 'YYYY-MM-DD')
+const relative = DateUtils.fromNow(isoString)
+```
+
+## Critical Initialization Guard
+
+**NEVER** call formatting functions before `isInitialized.value === true`.
+
+Timezone/locale/holiday data is loaded asynchronously at boot. Calling format methods early can produce empty strings and blank UI.
+
+### FORBIDDEN (Anti-Pattern)
+
+```vue
+<template>
+  <!-- BUG: may render blank if locale/timezone data not ready -->
+  <span>{{ formatDate(row.createdAt) }}</span>
+</template>
+```
+
+### REQUIRED (Positive Pattern)
+
+```vue
+<script setup lang="ts">
+const props = defineProps<{ date: string }>()
+const { formatDate, isInitialized } = useDateUtils()
+
+const displayDate = computed<string>(() =>
+  isInitialized.value ? formatDate(props.date) : '—'
+)
+</script>
+
+<template>
+  <span>{{ displayDate }}</span>
+</template>
+```
+
+## DateUtils Static API Reference
+
+```ts
+import { DateUtils } from '@/utils/date/DateUtils'
+
+const formatted = DateUtils.format(isoString, 'YYYY-MM-DD')
+const relative = DateUtils.fromNow(isoString)
+const isExpired = DateUtils.isBefore(isoString, DateUtils.now())
+const tsMs = DateUtils.nowMs()
+```
+
+## Available Format Tokens / Methods
+
+| Method | Output Example | Use Case |
+|---|---|---|
+| `formatDate(iso)` | `2026-03-22` | Table cells |
+| `formatDateTime(iso)` | `2026-03-22 14:30` | Audit timestamps |
+| `formatRelative(iso)` | `3 hours ago` | Feeds/notifications |
+| `formatShort(iso)` | `Mar 22` | Compact labels |
+| `formatFull(iso)` | `Sunday, March 22, 2026` | Detail headings |
+
+## Initialization Guard Patterns
+
+```ts
+// Pattern A — computed guard (preferred in templates)
+const display = computed<string>(() =>
+  isInitialized.value ? formatDate(props.date) : '—'
+)
+
+// Pattern B — watchEffect guard (imperative side-effects)
+watchEffect(() => {
+  if (!isInitialized.value) return
+  chart.setOption({ xAxis: { data: dates.map(formatDate) } })
+})
+
+// Pattern C — one-shot async wait
+await until(isInitialized).toBe(true)
+const value = formatDate(isoString)
+```
+
+## Permitted Exceptions
+
+| Location | Permitted Usage | Reason |
+|---|---|---|
+| `src/utils/date/**` | `new Date()`, `Date.now()` | DateUtils internals |
+| `src/utils/http/interceptors.ts` | `Date.now()` | Request timestamp stamping |
+| Test files (`*.spec.ts`, `*.test.ts`) | `new Date()` with time mocking | Controlled test behavior |
+
+All other locations: **zero tolerance**.
+
+## Rationale
+
+`DateUtils` / `useDateUtils()` implicitly handles:
+1. **Timezone normalization**
+2. **Locale formatting**
+3. **Holiday awareness**
+4. **DST transitions**
+
+Native Date handles none of these consistently in this architecture.

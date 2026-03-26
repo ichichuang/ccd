@@ -37,7 +37,7 @@ export const productColumns: ProTableColumn<ProductRow>[] = [
     width: '140px',
     pinned: 'left',
     headerRender: () => (
-      <div class="flex flex-row items-center gap-xs">
+      <div class="row-start items-center gap-xs">
         <Icons name="i-lucide-hash" />
         <span>SKU</span>
       </div>
@@ -51,13 +51,13 @@ export const productColumns: ProTableColumn<ProductRow>[] = [
     sortable: true,
     filterable: true,
     render: ({ row }: ColumnRenderParams<ProductRow>) => (
-      <div class="flex flex-row items-center gap-xs">
+      <div class="row-start items-center gap-xs">
         <Icons
           name="i-lucide-package"
           size="xs"
           class="text-accent!"
         />
-        <span class="text-single-line-ellipsis">{row.name}</span>
+        <span class="text-ellipsis-1">{row.name}</span>
       </div>
     ),
   },
@@ -105,7 +105,7 @@ export const productColumns: ProTableColumn<ProductRow>[] = [
       const pct = Math.min(100, Math.round((stock / maxStock) * 100))
       const barCls = pct > 40 ? 'bg-success' : pct > 15 ? 'bg-warn' : 'bg-danger'
       return (
-        <div class="flex flex-col gap-xs w-full">
+        <div class="col-stretch gap-xs w-full">
           <div class="row-between">
             <span class="text-xs">{stock} 件</span>
             <span class="text-xs text-muted-foreground">{pct}%</span>
@@ -138,7 +138,7 @@ export const productColumns: ProTableColumn<ProductRow>[] = [
     filterable: true,
     filterType: 'date',
     render: ({ row }: ColumnRenderParams<ProductRow>) =>
-      row.createdAt ? <span class="text-single-line-ellipsis">{row.createdAt}</span> : null,
+      row.createdAt ? <span class="text-ellipsis-1">{row.createdAt}</span> : null,
   },
   {
     id: 'actions',

@@ -117,7 +117,7 @@ const VNodeHost = defineComponent({
   >
     <div class="layout-narrow col-stretch gap-md">
       <section class="material-elevated col-stretch gap-md">
-        <div class="row-between items-center">
+        <div class="row-between">
           <div class="col-stretch gap-xs">
             <h2 class="text-lg font-semibold text-foreground m-0">
               useMenuVisuals + useMenuRenderer Demo
@@ -140,7 +140,7 @@ const VNodeHost = defineComponent({
         <Divider />
 
         <div class="col-stretch gap-md">
-          <div class="row-between items-center">
+          <div class="row-between">
             <span class="text-sm text-muted-foreground">Action Triggers</span>
           </div>
           <div class="row-start flex-wrap gap-sm">
@@ -186,7 +186,7 @@ const VNodeHost = defineComponent({
       </section>
 
       <section class="material-elevated col-stretch gap-md">
-        <div class="row-between items-center">
+        <div class="row-between">
           <h3 class="text-md font-semibold text-foreground m-0">Current State</h3>
           <span class="text-sm text-muted-foreground">base/state 输出</span>
         </div>
@@ -198,7 +198,7 @@ const VNodeHost = defineComponent({
             :key="ctx"
             class="material-elevated col-stretch gap-sm p-md"
           >
-            <div class="row-between items-center">
+            <div class="row-between">
               <div class="row-start gap-sm items-center">
                 <Icons
                   name="i-lucide-layout-grid"
@@ -216,15 +216,11 @@ const VNodeHost = defineComponent({
 
             <div class="col-stretch gap-xs">
               <div class="text-sm text-muted-foreground">base class</div>
-              <div
-                class="text-xs font-mono text-foreground/90 bg-muted/30 rounded-md p-sm text-ellipsis-1"
-              >
+              <div class="code-block text-foreground/90 text-ellipsis-1">
                 {{ getBaseByCtx(ctx) }}
               </div>
               <div class="text-sm text-muted-foreground">state class</div>
-              <div
-                class="text-xs font-mono text-foreground/90 bg-muted/30 rounded-md p-sm text-ellipsis-1"
-              >
+              <div class="code-block text-foreground/90 text-ellipsis-1">
                 {{ getStateByCtx(ctx) }}
               </div>
             </div>

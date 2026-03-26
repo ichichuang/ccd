@@ -1,6 +1,6 @@
 ---
 description: CRITICAL AI Execution Guardrails. Prevents UnoCSS purge, Vue reactivity loss, Type deadlocks, and Intent erasure. Includes Self-Check Loop.
-globs: *.vue, *.ts
+globs: ["**/*.vue", "**/*.ts"]
 alwaysApply: true
 ---
 # 🛡️ Architecture Law v2.1: Anti-Failure Layer

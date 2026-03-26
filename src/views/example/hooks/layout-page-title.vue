@@ -18,7 +18,7 @@ const previewTitle = computed(() => {
   >
     <div class="layout-narrow col-stretch gap-md">
       <section class="material-elevated col-stretch gap-md">
-        <div class="row-between items-center">
+        <div class="row-between">
           <div class="col-stretch gap-xs">
             <h2 class="text-lg font-semibold text-foreground m-0">usePageTitle Demo</h2>
             <p class="text-sm text-muted-foreground m-0">
@@ -36,7 +36,7 @@ const previewTitle = computed(() => {
         <Divider />
 
         <div class="col-stretch gap-md">
-          <div class="row-between items-center">
+          <div class="row-between">
             <span class="text-sm text-muted-foreground">Current State</span>
             <Tag
               :value="currentPageTitle"
@@ -45,7 +45,7 @@ const previewTitle = computed(() => {
           </div>
 
           <div class="col-stretch gap-sm">
-            <div class="row-between items-center">
+            <div class="row-between">
               <span class="text-sm text-muted-foreground">
                 getRouteTitle 预览（基于当前 route）
               </span>
@@ -55,7 +55,7 @@ const previewTitle = computed(() => {
               />
             </div>
 
-            <div class="row-between items-center gap-md">
+            <div class="row-between gap-md">
               <div class="col-stretch gap-xs w-full">
                 <span class="text-sm text-muted-foreground">appTitle 输入</span>
                 <InputText
@@ -69,7 +69,7 @@ const previewTitle = computed(() => {
       </section>
 
       <section class="material-elevated col-stretch gap-md">
-        <div class="row-between items-center">
+        <div class="row-between">
           <h3 class="text-md font-semibold text-foreground m-0">Action Triggers</h3>
           <span class="text-sm text-muted-foreground">手动刷新 useTitle 管理的 document.title</span>
         </div>

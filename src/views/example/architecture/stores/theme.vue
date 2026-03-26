@@ -38,7 +38,7 @@ function getAccentColor(preset: (typeof THEME_PRESETS)[number]): string {
   >
     <div class="layout-narrow col-stretch gap-md">
       <section class="material-elevated col-stretch gap-md">
-        <div class="row-between items-center">
+        <div class="row-between">
           <div class="col-stretch gap-xs">
             <h2 class="text-lg font-semibold text-foreground m-0">Theme Store</h2>
             <p class="text-sm text-muted-foreground m-0">
@@ -82,7 +82,7 @@ function getAccentColor(preset: (typeof THEME_PRESETS)[number]): string {
       </section>
 
       <section class="material-elevated col-stretch gap-md">
-        <div class="row-between items-center">
+        <div class="row-between">
           <h3 class="text-md font-semibold text-foreground m-0">Theme Presets</h3>
           <Tag
             :value="`active: ${themeStore.themeName}`"
@@ -103,7 +103,7 @@ function getAccentColor(preset: (typeof THEME_PRESETS)[number]): string {
             "
             @click="themeStore.setTheme(preset.name)"
           >
-            <div class="row-between items-center">
+            <div class="row-between">
               <span class="text-xs font-medium text-foreground text-ellipsis-1">
                 {{ formatName(preset.name) }}
               </span>

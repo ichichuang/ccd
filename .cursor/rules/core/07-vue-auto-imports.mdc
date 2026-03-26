@@ -4,7 +4,7 @@ globs: ["src/**/*.vue", "src/**/*.ts", "src/**/*.tsx"]
 alwaysApply: true
 ---
 
-# Rule 08 — Vue Auto-Import Contract
+# Rule 07 — Vue Auto-Import Contract
 
 ## Source of Truth
 

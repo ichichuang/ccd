@@ -387,7 +387,7 @@ async function onSubmit(values: Record<string, unknown>): Promise<void> {
                 <div
                   class="bg-muted rounded-md p-md border-default border-border/40 text-muted-foreground"
                 >
-                  <pre class="m-0 whitespace-pre-wrap break-words text-xs">{{ valuesJson }}</pre>
+                  <pre class="code-preview">{{ valuesJson }}</pre>
                 </div>
               </section>
             </div>
@@ -409,9 +409,7 @@ async function onSubmit(values: Record<string, unknown>): Promise<void> {
               </span>
             </div>
             <CScrollbar class="flex-1 min-h-0 bg-muted px-md py-sm">
-              <pre class="m-0 text-xs text-muted-foreground font-mono leading-relaxed">{{
-                valuesJson
-              }}</pre>
+              <pre class="code-preview text-muted-foreground leading-relaxed">{{ valuesJson }}</pre>
             </CScrollbar>
           </div>
         </div>

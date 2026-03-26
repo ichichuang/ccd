@@ -4,7 +4,7 @@ globs: ["src/**/*.vue", "src/**/*.tsx"]
 alwaysApply: true
 ---
 
-# Rule 09 — Vue Template & Component Type Strictness
+# Rule 08 — Vue Template & Component Type Strictness
 
 ## Why This Rule Exists
 

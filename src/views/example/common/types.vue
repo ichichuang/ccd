@@ -142,7 +142,7 @@ const activeTypes = ref<string | string[] | null | undefined>(['ApiResponse', 'U
         </section>
 
         <section class="material-elevated col-stretch gap-md">
-          <div class="row-between items-center">
+          <div class="row-between">
             <h2 class="text-lg font-semibold text-foreground m-0">TypeScript API Reference</h2>
             <Tag
               value="static-only"
@@ -175,9 +175,7 @@ const activeTypes = ref<string | string[] | null | undefined>(['ApiResponse', 'U
                   <Message severity="info">
                     {{ p.boundaryMessage }}
                   </Message>
-                  <pre
-                    class="text-xs text-foreground text-ellipsis-2 m-0 p-sm bg-muted/30 rounded-md border border-border/30"
-                  >
+                  <pre class="code-block">
                     {{ p.snippet }}
                   </pre>
                 </div>

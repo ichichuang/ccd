@@ -204,7 +204,7 @@ const sizeScaleDisplayList = computed<{ key: SizeScaleKey; percent: number }[]>(
                 <span
                   v-for="item in sizeScaleDisplayList"
                   :key="item.key"
-                  class="text-xs font-mono text-muted-foreground px-sm py-xs rounded bg-muted/40"
+                  class="code-inline text-muted-foreground px-sm py-xs rounded bg-muted/40"
                 >
                   {{ item.key }}: {{ item.percent }}vw
                 </span>

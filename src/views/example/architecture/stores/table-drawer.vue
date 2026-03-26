@@ -57,7 +57,7 @@ function closeDrawer(): void {
   >
     <div class="layout-narrow col-stretch gap-md">
       <section class="material-elevated col-stretch gap-md">
-        <div class="row-between items-center">
+        <div class="row-between">
           <div class="col-stretch gap-xs">
             <h2 class="text-lg font-semibold text-foreground m-0">TableDrawer Store</h2>
             <p class="text-sm text-muted-foreground m-0">
@@ -135,15 +135,15 @@ function closeDrawer(): void {
         class="col-stretch gap-md"
       >
         <div class="col-stretch gap-sm">
-          <div class="row-between items-center py-xs border-b border-border">
+          <div class="row-between py-xs border-b border-border">
             <span class="text-sm text-muted-foreground">ID</span>
             <span class="text-sm font-mono text-foreground">{{ selectedRow.id }}</span>
           </div>
-          <div class="row-between items-center py-xs border-b border-border">
+          <div class="row-between py-xs border-b border-border">
             <span class="text-sm text-muted-foreground">Name</span>
             <span class="text-sm font-semibold text-foreground">{{ selectedRow.name }}</span>
           </div>
-          <div class="row-between items-center py-xs border-b border-border">
+          <div class="row-between py-xs border-b border-border">
             <span class="text-sm text-muted-foreground">Role</span>
             <Tag
               :value="selectedRow.role"
@@ -156,18 +156,18 @@ function closeDrawer(): void {
               "
             />
           </div>
-          <div class="row-between items-center py-xs border-b border-border">
+          <div class="row-between py-xs border-b border-border">
             <span class="text-sm text-muted-foreground">Status</span>
             <Tag
               :value="selectedRow.status"
               :severity="selectedRow.status === 'active' ? 'success' : 'secondary'"
             />
           </div>
-          <div class="row-between items-center py-xs border-b border-border">
+          <div class="row-between py-xs border-b border-border">
             <span class="text-sm text-muted-foreground">Email</span>
             <span class="text-sm font-mono text-foreground">{{ selectedRow.email }}</span>
           </div>
-          <div class="row-between items-center py-xs">
+          <div class="row-between py-xs">
             <span class="text-sm text-muted-foreground">Department</span>
             <span class="text-sm text-foreground">{{ selectedRow.department }}</span>
           </div>
@@ -177,9 +177,7 @@ function closeDrawer(): void {
 
         <div class="col-stretch gap-xs">
           <span class="text-xs text-muted-foreground font-mono">tableDrawerStore.selectedRow</span>
-          <pre class="text-xs font-mono text-foreground bg-muted rounded-md p-sm overflow-x-auto">{{
-            JSON.stringify(selectedRow, null, 2)
-          }}</pre>
+          <pre class="code-block">{{ JSON.stringify(selectedRow, null, 2) }}</pre>
         </div>
 
         <Button

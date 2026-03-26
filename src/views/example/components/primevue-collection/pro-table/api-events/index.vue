@@ -234,18 +234,18 @@ onMounted(() => {
 <template>
   <div
     data-archetype="A1-toolbar-content"
-    class="layout-full px-md md:px-lg flex flex-col gap-sm min-h-0"
+    class="layout-full px-md md:px-lg col-stretch gap-sm min-h-0"
   >
     <!-- Toolbar: Hero Header (Transparent Root Policy: Inherit canvas) -->
     <header class="shrink-0 border-b-default">
-      <div class="w-full py-sm flex flex-row items-center gap-md">
+      <div class="w-full py-sm row-start items-center gap-md">
         <div class="p-md bg-primary/10 rounded-lg shrink-0">
           <Icons
             name="i-lucide-code-xml"
             class="text-primary text-2xl"
           />
         </div>
-        <div class="flex flex-col gap-xs">
+        <div class="col-stretch gap-xs">
           <h1 class="text-2xl font-bold text-foreground m-0">ProTable — API 与事件</h1>
           <p class="text-muted-foreground text-sm m-0">
             捕获并展示表格全部内部事件；演示通过 Ref 调用程序化接口。
@@ -265,12 +265,10 @@ onMounted(() => {
           :style="{ height: tableContainerHeight + 'px' }"
         >
           <!-- Main Table Area -->
-          <div class="flex-1 min-w-0 h-full flex flex-col gap-sm">
-            <div
-              class="shrink-0 bg-card rounded-md shadow-sm dark:shadow-md py-md px-lg flex flex-col gap-lg"
-            >
+          <div class="min-w-0 h-full col-fill gap-sm">
+            <div class="shrink-0 material-elevated col-stretch gap-lg px-lg py-md">
               <div class="row-between w-full pb-sm gap-sm flex-wrap">
-                <div class="flex flex-row items-center gap-xs shrink-0">
+                <div class="row-start items-center gap-xs shrink-0">
                   <Icons
                     name="i-lucide-terminal"
                     size="xs"
@@ -282,7 +280,7 @@ onMounted(() => {
                     接口演示
                   </span>
                 </div>
-                <div class="flex flex-row items-center gap-sm flex-wrap">
+                <div class="row-start items-center gap-sm flex-wrap">
                   <Button
                     label="清空选择"
                     size="small"
@@ -329,11 +327,9 @@ onMounted(() => {
 
           <!-- Right Event Log Panel -->
           <div class="layout-sidepanel shrink-0 h-full">
-            <div
-              class="bg-card rounded-md shadow-sm dark:shadow-md py-md px-lg flex flex-col gap-lg h-full"
-            >
+            <div class="material-elevated col-stretch gap-lg px-lg py-md h-full">
               <div class="row-between w-full pb-sm border-b-default">
-                <div class="flex flex-row items-center gap-sm">
+                <div class="row-start items-center gap-sm">
                   <Icons
                     name="i-lucide-scroll-text"
                     size="sm"
@@ -354,7 +350,7 @@ onMounted(() => {
                   @click="clearLog"
                 />
               </div>
-              <CScrollbar class="flex-1 min-h-0 bg-muted font-mono rounded-md p-sm">
+              <CScrollbar class="flex-1 min-h-0 code-block">
                 <div
                   v-if="eventLog.length === 0"
                   class="h-full col-center gap-xs py-xl text-center"
@@ -373,7 +369,7 @@ onMounted(() => {
                   <div
                     v-for="(entry, idx) in eventLog"
                     :key="idx"
-                    class="flex flex-row items-center gap-md py-xs border-border/40 last:border-b-0 hover:bg-foreground/5"
+                    class="row-start items-center gap-md py-xs border-border/40 last:border-b-0 hover:bg-foreground/5"
                   >
                     <span
                       class="text-xs text-muted-foreground shrink-0 w-[var(--spacing-4xl)] text-right"

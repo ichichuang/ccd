@@ -55,7 +55,7 @@ export const columnSizingColumns: ProTableColumn<ColumnSizingRow>[] = [
     headerRender: () => <span class="w-full center">操作</span>,
     render: () => (
       <div class="center w-full ">
-        <span class="text-xs text-primary text-xs font-mono bg-muted/30 px-xs py-xs rounded-xs cursor-pointer select-none transition-all duration-lg ease-in-out hover:bg-primary/20 hover:text-primary active:scale-95 text-muted-foreground">
+        <span class="text-xs text-primary text-xs code-inline bg-muted/30 px-xs py-xs rounded-xs cursor-pointer select-none transition-all duration-lg ease-in-out hover:bg-primary/20 hover:text-primary active:scale-95 text-muted-foreground">
           操作
         </span>
       </div>

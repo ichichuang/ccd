@@ -44,7 +44,7 @@ function renderBreadcrumbMenuItem(slotProps: unknown) {
   >
     <div class="layout-narrow col-stretch gap-md">
       <section class="material-elevated col-stretch gap-md">
-        <div class="row-between items-center">
+        <div class="row-between">
           <div class="col-stretch gap-xs">
             <h2 class="text-lg font-semibold text-foreground m-0">useAdminBreadcrumbs Demo</h2>
             <p class="text-sm text-muted-foreground m-0">当前路由面包屑 / 子项下拉 / 点击导航</p>
@@ -64,7 +64,7 @@ function renderBreadcrumbMenuItem(slotProps: unknown) {
         <Divider />
 
         <div class="col-stretch gap-sm">
-          <div class="row-between items-center">
+          <div class="row-between">
             <span class="text-sm text-muted-foreground">Current State</span>
           </div>
           <div class="col-stretch gap-xs">
@@ -92,7 +92,7 @@ function renderBreadcrumbMenuItem(slotProps: unknown) {
       </section>
 
       <section class="material-elevated col-stretch gap-md">
-        <div class="row-between items-center">
+        <div class="row-between">
           <h3 class="text-md font-semibold text-foreground m-0">Action Triggers</h3>
           <span class="text-sm text-muted-foreground">点击面包屑可导航；目录项打开下拉</span>
         </div>

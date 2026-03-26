@@ -33,6 +33,33 @@ If you need a color or spacing that does not exist in the semantic token list, *
 
 ---
 
+## Absorbed Blueprint Examples
+
+### Theme & Design Tokens Blueprint (Merged)
+
+When building UI components, strictly adhere to semantic classes mapped from central CSS variables.
+
+- **Backgrounds:** `bg-background`, `bg-card`, `bg-muted`
+- **Typography:** `text-foreground`, `text-muted-foreground`, `text-primary-foreground`
+- **Borders:** `border-border`, `border-input`
+- **States:** `text-primary`, `bg-success`, `text-destructive`, `bg-warning`
+
+```vue
+<div class="p-md bg-card border border-border rounded-lg flex flex-col gap-sm">
+  <h3 class="text-lg font-bold text-foreground">
+    User Profile
+  </h3>
+  <p class="text-sm text-muted-foreground">
+    Manage your account settings.
+  </p>
+  <Button class="px-md py-sm bg-primary text-primary-foreground rounded-md">
+    Save Changes
+  </Button>
+</div>
+```
+
+---
+
 ## Complete Color Token Family Reference
 
 **SSOT**: `src/utils/theme/metadata.ts` (`COLOR_FAMILIES`)

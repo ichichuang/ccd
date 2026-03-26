@@ -45,7 +45,7 @@ function resetToDefault(): void {
   <div class="animate__animated animate__fadeIn col-stretch gap-md">
     <div class="layout-narrow col-stretch gap-md">
       <section class="material-elevated col-stretch gap-md">
-        <div class="row-between items-center">
+        <div class="row-between">
           <div class="col-stretch gap-xs">
             <h2 class="text-lg font-semibold text-foreground m-0">ECharts Adapter</h2>
             <p class="text-sm text-muted-foreground m-0">
@@ -60,15 +60,15 @@ function resetToDefault(): void {
         <Divider />
         <p class="text-sm text-muted-foreground m-0">
           ECharts 配置来自 HTTP 或用户输入时，必须经过
-          <code class="font-mono text-xs text-foreground">parseEChartsOption</code>
+          <code class="code-inline">parseEChartsOption</code>
           校验。拒绝数组、null、原始类型；合法对象安全转型为
-          <code class="font-mono text-xs text-foreground">EChartsOption</code>
+          <code class="code-inline">EChartsOption</code>
           ； 非法输入返回空对象，图表渲染为空白。
         </p>
       </section>
 
       <section class="material-elevated col-stretch gap-md">
-        <div class="row-between items-center">
+        <div class="row-between">
           <h3 class="text-md font-semibold text-foreground m-0">Live Playground</h3>
           <Button
             label="Reset"
@@ -84,7 +84,7 @@ function resetToDefault(): void {
           class="font-mono text-sm w-full"
           placeholder="Paste ECharts option JSON here..."
         />
-        <div class="row-between items-center">
+        <div class="row-between">
           <span class="text-sm text-muted-foreground">parseEChartsOption(raw) →</span>
           <Tag
             :value="
@@ -127,7 +127,7 @@ function resetToDefault(): void {
       <section class="material-elevated col-stretch gap-md">
         <h3 class="text-md font-semibold text-foreground m-0">Source</h3>
         <Divider />
-        <pre class="text-xs font-mono text-foreground bg-muted rounded-md p-sm overflow-x-auto">
+        <pre class="code-block">
 import type { EChartsOption } from 'echarts'
 
 export function parseEChartsOption(raw: unknown): EChartsOption {
@@ -141,7 +141,7 @@ export function parseEChartsOption(raw: unknown): EChartsOption {
         >
         <p class="text-sm text-muted-foreground m-0">
           此处是架构中唯一允许使用
-          <code class="font-mono text-xs text-foreground">as EChartsOption</code>
+          <code class="code-inline">as EChartsOption</code>
           强制转型的地方。其余所有图表配置代码均应先经过此边界函数。
         </p>
       </section>

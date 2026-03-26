@@ -151,9 +151,7 @@ async function onSubmit(values: Record<string, unknown>): Promise<void> {
                 <div
                   class="bg-muted rounded-md p-md border-default border-border/40 text-muted-foreground"
                 >
-                  <pre class="m-0 whitespace-pre-wrap break-words text-xs font-mono">{{
-                    JSON.stringify(formState.values, null, 2)
-                  }}</pre>
+                  <pre class="code-preview">{{ JSON.stringify(formState.values, null, 2) }}</pre>
                 </div>
               </section>
             </div>

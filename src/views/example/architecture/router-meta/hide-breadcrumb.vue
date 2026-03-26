@@ -9,7 +9,7 @@ const hideBreadcrumb = computed<boolean>(() => route.meta?.hideBreadcrumb === tr
   <div class="animate__animated animate__fadeIn col-stretch gap-md">
     <div class="layout-narrow col-stretch gap-md">
       <section class="material-elevated col-stretch gap-md">
-        <div class="row-between items-center">
+        <div class="row-between">
           <div class="col-stretch gap-xs">
             <h2 class="text-lg font-semibold text-foreground m-0">Hide Breadcrumb</h2>
             <p class="text-sm text-muted-foreground m-0">
@@ -24,7 +24,7 @@ const hideBreadcrumb = computed<boolean>(() => route.meta?.hideBreadcrumb === tr
         <Divider />
 
         <div class="col-stretch gap-sm">
-          <div class="row-between items-center">
+          <div class="row-between">
             <span class="text-sm text-muted-foreground">Live: route.meta.hideBreadcrumb</span>
             <Tag
               :value="`${hideBreadcrumb}`"
@@ -41,7 +41,7 @@ const hideBreadcrumb = computed<boolean>(() => route.meta?.hideBreadcrumb === tr
       <section class="material-elevated col-stretch gap-md">
         <h3 class="text-md font-semibold text-foreground m-0">Route Config</h3>
         <Divider />
-        <pre class="text-xs font-mono text-foreground bg-muted rounded-md p-sm overflow-x-auto">{{
+        <pre class="code-block">{{
           JSON.stringify(
             {
               path: '/example/router-meta/hide-breadcrumb',

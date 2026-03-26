@@ -928,7 +928,7 @@ onBeforeUnmount(() => {
                 <div class="material-elevated col-stretch">
                   <div class="col-stretch gap-md">
                     <div class="text-foreground text-md font-semibold">联动操作日志</div>
-                    <div class="rounded-md shadow-sm bg-muted p-sm text-xs font-mono">
+                    <div class="code-block">
                       <div
                         v-for="(line, i) in connectLog"
                         :key="i"
@@ -958,7 +958,7 @@ onBeforeUnmount(() => {
                 <div class="material-elevated col-stretch">
                   <div class="col-stretch gap-md">
                     <div class="text-foreground text-md font-semibold">事件日志</div>
-                    <div class="rounded-md shadow-sm bg-muted p-sm text-xs font-mono">
+                    <div class="code-block">
                       <div
                         v-for="(line, i) in eventLog"
                         :key="i"
@@ -974,7 +974,7 @@ onBeforeUnmount(() => {
                       </div>
                     </div>
                     <div class="text-foreground text-md font-semibold mt-md">Ref 操作日志</div>
-                    <div class="rounded-md shadow-sm bg-muted p-sm text-xs font-mono">
+                    <div class="code-block">
                       <div
                         v-for="(line, i) in refMethodsLog"
                         :key="i"

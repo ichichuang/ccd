@@ -62,7 +62,7 @@ export const transactionLedgerColumns: ProTableColumn<TransactionLedgerRow>[] = 
     render: ({ row }) => (
       <span
         class={[
-          'flex flex-row items-center',
+          'row-start items-center',
           'px-xs py-xs rounded-xs text-xs font-medium',
           statusClass(row.status),
         ].join(' ')}

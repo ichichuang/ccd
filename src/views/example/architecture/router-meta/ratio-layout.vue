@@ -16,7 +16,7 @@ const metaRatio = computed<string>(() => {
   <div class="animate__animated animate__fadeIn col-stretch gap-md">
     <div class="layout-narrow col-stretch gap-md">
       <section class="material-elevated col-stretch gap-md">
-        <div class="row-between items-center">
+        <div class="row-between">
           <div class="col-stretch gap-xs">
             <h2 class="text-lg font-semibold text-foreground m-0">Ratio Layout</h2>
             <p class="text-sm text-muted-foreground m-0">
@@ -52,7 +52,7 @@ const metaRatio = computed<string>(() => {
         <h3 class="text-md font-semibold text-foreground m-0">16:9 Content Preview</h3>
         <Divider />
         <p class="text-sm text-muted-foreground m-0">
-          <code class="font-mono text-xs text-foreground">LayoutRatio</code>
+          <code class="code-inline">LayoutRatio</code>
           将内容区域包裹在固定宽高比容器中。本页面整体渲染于此容器内。下方模拟该容器效果：
         </p>
         <div class="aspect-video bg-muted rounded-xl border border-border col-center gap-md w-full">
@@ -69,7 +69,7 @@ const metaRatio = computed<string>(() => {
       <section class="material-elevated col-stretch gap-md">
         <h3 class="text-md font-semibold text-foreground m-0">Route Config</h3>
         <Divider />
-        <pre class="text-xs font-mono text-foreground bg-muted rounded-md p-sm overflow-x-auto">{{
+        <pre class="code-block">{{
           JSON.stringify(
             {
               path: '/example/router-meta/ratio-demo',
@@ -87,9 +87,9 @@ const metaRatio = computed<string>(() => {
           )
         }}</pre>
         <p class="text-sm text-muted-foreground m-0">
-          <code class="font-mono text-xs text-foreground">parent: 'ratio'</code>
+          <code class="code-inline">parent: 'ratio'</code>
           告知路由系统使用 LayoutRatio 作为外层容器；
-          <code class="font-mono text-xs text-foreground">ratio: '16:9'</code>
+          <code class="code-inline">ratio: '16:9'</code>
           设定具体比例。适合大屏展示、演示视频区等场景。
         </p>
       </section>

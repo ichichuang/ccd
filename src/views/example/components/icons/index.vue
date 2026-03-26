@@ -180,7 +180,7 @@ function openExternalLink(url: string) {
               </span>
               <span class="text-xs text-muted-foreground ml-sm">
                 运行
-                <code class="bg-muted px-xs rounded-sm">pnpm dev:demo</code>
+                <code class="code-inline">pnpm dev:demo</code>
                 可查看完整库（Lucide / Solar / Phosphor 等多套图标库）。
               </span>
             </div>

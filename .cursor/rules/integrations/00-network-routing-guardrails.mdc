@@ -7,9 +7,9 @@ alwaysApply: true
 # The Network & Routing Architecture — Cross-Concern Guardrails
 
 > **Companion document** to:
-> - `04-http-alova.mdc` — HTTP client rules (Alova ONLY, builder patterns, useHttpRequest)
-> - `08-router-rbac.mdc` — Router & RBAC rules (DynamicRouteManager, meta contract, v-auth)
-> - `04-state-boundaries.mdc` — Data flow isolation (api → hooks → stores → views)
+> - `01-http-alova.mdc` — HTTP client rules (Alova ONLY, builder patterns, useHttpRequest)
+> - `02-router-rbac.mdc` — Router & RBAC rules (DynamicRouteManager, meta contract, v-auth)
+> - `core/05-state-boundaries.mdc` — Data flow isolation (api → hooks → stores → views)
 >
 > This document covers the **gaps between those rules**: cross-layer interactions, error responsibility, type-safety anti-patterns, and operational patterns that AI agents commonly hallucinate.
 
@@ -306,23 +306,23 @@ await post('/api/upload', formData, {
 
 ## §9 — Consolidated Anti-Pattern Quick-Reference Table
 
-> 合并本文件与 `04-http-alova` / `08-router-rbac` / `04-state-boundaries` 的全部网络/路由反模式。AI 单次扫描即可获得完整禁令列表。
+> 合并本文件与 `01-http-alova` / `02-router-rbac` / `core/05-state-boundaries` 的全部网络/路由反模式。AI 单次扫描即可获得完整禁令列表。
 
 | # | Category | FORBIDDEN | CORRECT | Source |
 |---|----------|-----------|---------|--------|
-| 1 | HTTP Client | `axios` / `fetch` / `XMLHttpRequest` | `@/utils/http/methods` 或 `useHttpRequest` | `04-http-alova` |
-| 2 | HTTP Client | 组件中直接 `alovaInstance.Get()` | `useHttpRequest(() => buildXxxMethod(...))` | `04-http-alova` R3 |
+| 1 | HTTP Client | `axios` / `fetch` / `XMLHttpRequest` | `@/utils/http/methods` 或 `useHttpRequest` | `01-http-alova` |
+| 2 | HTTP Client | 组件中直接 `alovaInstance.Get()` | `useHttpRequest(() => buildXxxMethod(...))` | `01-http-alova` R3 |
 | 3 | Error UI | `try { await send() } catch { $toast.error(...) }` | 拦截器已处理；仅 react `error.type` 特定逻辑 | §2 |
 | 4 | Error UI | `watch(error, e => $message.danger(e.message))` | 拦截器已弹通知；仅处理领域错误 | §2 |
-| 5 | 401 Auth | `if (res.status === 401) { logout() }` | `TokenRefreshCoordinator` 自动处理 | `04-http-alova` R4 |
+| 5 | 401 Auth | `if (res.status === 401) { logout() }` | `TokenRefreshCoordinator` 自动处理 | `01-http-alova` R4 |
 | 6 | Auth DI | HTTP 层 `import { useUserStore }` | `getToken()` / `triggerUnauthorized()` from tokenProvider | §1 |
 | 7 | DTO Typing | `get('/api/users')` 无泛型 | `get<UserListRes>('/api/users')` | §3 |
 | 8 | DTO Typing | `interface Res { data: any }` | 命名 DTO + 具体类型 | §3 |
 | 9 | DTO Location | DTO 定义在组件或 Store 中 | `src/types/dto/` 或 `src/api/<module>/` | §3 |
 | 10 | Route Import | `import View from '@/views/...'` 同步 | `() => import('@/views/...')` 懒加载 | §4 |
-| 11 | Navigation | `router.push({ path: '/system/user' })` | `goToRoute('SystemUser')` | `08-router-rbac` R3 |
+| 11 | Navigation | `router.push({ path: '/system/user' })` | `goToRoute('SystemUser')` | `02-router-rbac` R3 |
 | 12 | Navigation | `router.push('/dashboard')` 硬编码 | `goToRoute('Dashboard')` 按 name | §5 |
-| 13 | Route Reg | `router.addRoute()` / `router.removeRoute()` | `DynamicRouteManager.addRoute()` | `08-router-rbac` R1 |
+| 13 | Route Reg | `router.addRoute()` / `router.removeRoute()` | `DynamicRouteManager.addRoute()` | `02-router-rbac` R1 |
 | 14 | Store↔Router | Pinia store 中 `import router from '@/router'` | `@/infra/router/routeProvider` 只读路由信息 | `04-state-boundaries` |
 | 15 | Store↔API | Pinia action 中 `requestXxx()` | composable 编排：`api → hook → store → view` | `04-state-boundaries` |
 | 16 | Connection | `window.addEventListener('online', ...)` | `addConnectionListener()` from connection.ts | §6 |

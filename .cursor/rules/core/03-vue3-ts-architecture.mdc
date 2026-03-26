@@ -1,12 +1,12 @@
 ---
 description: Vue 3 Composition API Architecture — script setup macro discipline, reactivity primitives, typed component contracts, composable design axioms, performance patterns.
-globs: ['src/**/*.vue', 'src/**/*.ts', 'src/**/*.tsx']
+globs: ["src/**/*.vue", "src/**/*.ts", "src/**/*.tsx"]
 alwaysApply: true
 ---
 
-# Rule 04 — Vue 3 + TypeScript Architecture
+# Rule 03 — Vue 3 + TypeScript Architecture
 
-> Governs component **logic & structure** ONLY. All visual/CSS output MUST obey `00-anti-hallucination-guardrails.mdc`.
+> Governs component **logic & structure** ONLY. All visual/CSS output MUST obey `00-unocss-guardrails.mdc`.
 
 ---
 
@@ -233,7 +233,7 @@ Extract logic from `<script setup>` into a composable (`use*.ts`) when ANY of th
 
 - File: `use<Domain>.ts` (camelCase, `use` prefix)
 - Return type: Named interface `Use<Domain>Return`
-- Explicit return type annotation is **REQUIRED** (enforced by `core/09-vue-template-strictness.mdc`)
+- Explicit return type annotation is **REQUIRED** (enforced by `core/08-vue-template-strictness.mdc`)
 
 ```ts
 // CORRECT
@@ -333,10 +333,10 @@ const editor = markRaw(new ExternalEditor(config))
 
 > **This file governs**: Vue 3 Composition API logic and TypeScript structure.
 >
-> **Styling / CSS output**: Unconditionally defers to `00-anti-hallucination-guardrails.mdc` and `01-design-engine-unocss.mdc`.
+> **Styling / CSS output**: Unconditionally defers to `00-unocss-guardrails.mdc`.
 >
-> **Data flow / Stores**: Defers to `core/04-state-boundaries.mdc`.
+> **Data flow / Stores**: Defers to `core/05-state-boundaries.mdc`.
 >
-> **Template type safety**: Defers to `core/09-vue-template-strictness.mdc`.
+> **Template type safety**: Defers to `core/08-vue-template-strictness.mdc`.
 >
-> **Auto-imports**: Defers to `core/08-vue-auto-imports.mdc`.
+> **Auto-imports**: Defers to `core/07-vue-auto-imports.mdc`.

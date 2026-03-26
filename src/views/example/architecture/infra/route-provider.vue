@@ -12,7 +12,7 @@ const isInitialized = computed<boolean>(() => flatRouteCount.value > 0 || menuTr
   <div class="animate__animated animate__fadeIn col-stretch gap-md">
     <div class="layout-narrow col-stretch gap-md">
       <section class="material-elevated col-stretch gap-md">
-        <div class="row-between items-center">
+        <div class="row-between">
           <div class="col-stretch gap-xs">
             <h2 class="text-lg font-semibold text-foreground m-0">Route Provider</h2>
             <p class="text-sm text-muted-foreground m-0">
@@ -109,9 +109,9 @@ const isInitialized = computed<boolean>(() => flatRouteCount.value > 0 || menuTr
         </div>
         <p class="text-sm text-muted-foreground m-0">
           Store 通过
-          <code class="font-mono text-xs text-foreground">getRouterCapabilities()</code>
+          <code class="code-inline">getRouterCapabilities()</code>
           查询路由数据，完全不依赖 vue-router。路由系统初始化完成后通过
-          <code class="font-mono text-xs text-foreground">setRouterCapabilities()</code>
+          <code class="code-inline">setRouterCapabilities()</code>
           注入实际能力，满足 Store → Infra 单向依赖，防止循环引用。
         </p>
       </section>
@@ -124,7 +124,7 @@ const isInitialized = computed<boolean>(() => flatRouteCount.value > 0 || menuTr
             <span class="text-xs font-semibold text-muted-foreground">
               setRouterCapabilities(caps)
             </span>
-            <pre class="text-xs font-mono text-foreground bg-muted rounded-md p-sm overflow-x-auto">
+            <pre class="code-block">
 // router/index.ts — 路由初始化完成后注入
 import { setRouterCapabilities } from '@/infra/router/routeProvider'
 setRouterCapabilities({
@@ -135,7 +135,7 @@ setRouterCapabilities({
           </div>
           <div class="col-stretch gap-xs">
             <span class="text-xs font-semibold text-muted-foreground">getRouterCapabilities()</span>
-            <pre class="text-xs font-mono text-foreground bg-muted rounded-md p-sm overflow-x-auto">
+            <pre class="code-block">
 // permissionStore — Store 消费路由能力
 import { getRouterCapabilities } from '@/infra/router/routeProvider'
 const routes = getRouterCapabilities().getFlatRouteList()

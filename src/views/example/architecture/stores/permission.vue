@@ -23,7 +23,7 @@ function onRowSelect(event: { data: TabItem }): void {
   >
     <div class="layout-narrow col-stretch gap-md">
       <section class="material-elevated col-stretch gap-md">
-        <div class="row-between items-center">
+        <div class="row-between">
           <div class="col-stretch gap-xs">
             <h2 class="text-lg font-semibold text-foreground m-0">Permission Store</h2>
             <p class="text-sm text-muted-foreground m-0">
@@ -114,35 +114,35 @@ function onRowSelect(event: { data: TabItem }): void {
         class="col-stretch gap-md"
       >
         <div class="col-stretch gap-sm">
-          <div class="row-between items-center py-xs border-b border-border">
+          <div class="row-between py-xs border-b border-border">
             <span class="text-sm text-muted-foreground">Route Name</span>
             <span class="text-sm font-mono text-foreground">{{ selectedTab.name }}</span>
           </div>
-          <div class="row-between items-center py-xs border-b border-border">
+          <div class="row-between py-xs border-b border-border">
             <span class="text-sm text-muted-foreground">Path</span>
             <span class="text-sm font-mono text-foreground">{{ selectedTab.path }}</span>
           </div>
-          <div class="row-between items-center py-xs border-b border-border">
+          <div class="row-between py-xs border-b border-border">
             <span class="text-sm text-muted-foreground">Label</span>
             <span class="text-sm text-foreground">
               {{ selectedTab.label || selectedTab.title || '—' }}
             </span>
           </div>
-          <div class="row-between items-center py-xs border-b border-border">
+          <div class="row-between py-xs border-b border-border">
             <span class="text-sm text-muted-foreground">Active</span>
             <Tag
               :value="`${selectedTab.active}`"
               :severity="selectedTab.active ? 'success' : 'secondary'"
             />
           </div>
-          <div class="row-between items-center py-xs border-b border-border">
+          <div class="row-between py-xs border-b border-border">
             <span class="text-sm text-muted-foreground">Fixed</span>
             <Tag
               :value="`${selectedTab.fixed}`"
               :severity="selectedTab.fixed ? 'warn' : 'secondary'"
             />
           </div>
-          <div class="row-between items-center py-xs">
+          <div class="row-between py-xs">
             <span class="text-sm text-muted-foreground">Deletable</span>
             <Tag
               :value="`${selectedTab.deletable}`"

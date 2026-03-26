@@ -1,0 +1,161 @@
+---
+description: Enforces DynamicRouteManager and RBAC contract. Restores complete transformation chain and full AppRouteMeta reference.
+globs: ["src/router/**/*.ts", "src/views/**/*.vue"]
+alwaysApply: true
+---
+
+# The Router & RBAC Law
+
+## FORBIDDEN — Zero Tolerance
+
+```ts
+// ❌ FORBIDDEN: direct router.addRoute() in business logic
+router.addRoute({ name: 'Dashboard', path: '/dashboard', component: Dashboard })
+
+// ❌ FORBIDDEN: direct router.removeRoute()
+router.removeRoute('Dashboard')
+
+// ❌ FORBIDDEN: manual role checks for UI visibility
+if (userStore.roles.includes('admin')) { /* ... */ }
+```
+
+## REQUIRED — Canonical Patterns
+
+### Rule 1 — All Route Registration MUST use DynamicRouteManager
+### Rule 2 — Static Routes Live in `src/router/modules/*.ts`
+### Rule 3 — Navigation Helpers are MANDATORY
+### Rule 4 — Element-Level RBAC via `v-auth` Directive
+### Rule 5 — Programmatic Permission Checks via `useAuth()`
+### Rule 6 — Route Meta MUST be Complete
+
+---
+
+## Element-Level RBAC Patterns
+
+```vue
+<Button v-auth="['system:user:create']" label="New User" />
+<Button v-auth="['system:user:edit']" label="Edit" />
+<Button v-auth="['system:user:delete']" severity="danger" label="Delete" />
+<Button v-auth="['system:role:edit', 'system:role:manage']" label="Manage Roles" />
+```
+
+### Table Row Actions (Common Pattern)
+
+```vue
+<DataTable :value="users">
+  <Column header="Actions">
+    <template #body="{ data }">
+      <div class="row-start gap-xs">
+        <Button v-auth="['system:user:edit']" icon="edit" text @click="editUser(data)" />
+        <Button v-auth="['system:user:delete']" icon="delete" text severity="danger" @click="deleteUser(data.id)" />
+      </div>
+    </template>
+  </Column>
+</DataTable>
+```
+
+## Role vs Permission — When to Use Which
+
+| Scenario | Use |
+|---|---|
+| Coarse-grained feature section visibility | `hasRole('admin')` |
+| Fine-grained button/action control | `hasAuth('module:resource:action')` |
+| Template element hiding | `v-auth` |
+| Script conditional logic | `useAuth().hasAuth()` |
+
+## Wildcard Super-Admin
+
+When user has `*:*:*`, all permission checks pass. This is handled centrally.
+
+## Auth Bypass in Development — `AUTH_ENABLED=false`
+
+`VITE_AUTH_ENABLED=false` in `.env.development` bypasses auth checks for local development only. Never in production.
+
+---
+
+## Rule 7 — Backend Route Transformation Chain
+
+Dynamic routes from backend MUST pass through a strict three-stage pipeline before registration.
+
+### Stage 1 — Normalize Response Shape
+
+```ts
+type SystemAsyncRoutesRawRes =
+  | SystemAsyncRouteItem[]
+  | { routes: SystemAsyncRouteItem[] }
+
+const backendRoutes = Array.isArray(rawRes) ? rawRes : rawRes.routes
+```
+
+### Stage 2 — `processAsyncRoutes()` (BackendRouteConfig -> RouteConfig)
+
+- Converts backend format to app `RouteConfig`
+- Resolves string component via `loadView(component)`
+- Sets `meta.backstage = true`
+- Auto-generates `name` if absent
+- Adds fallback metadata when view not found
+
+### Stage 3 — `transformToVueRoutes()` (RouteConfig -> RouteRecordRaw)
+
+Converts app route config into Vue Router native records for registration.
+
+### `loadView()` Contract
+
+`loadView(componentName: string)` resolves backend string to async component loader via `import.meta.glob`.
+
+```ts
+loadView('system/user')        // -> @/views/system/user/index.vue
+loadView('system-user')        // -> @/views/system/views/system-user.vue
+loadView('@system/user-list')  // -> @/views/system/views/user-list.vue
+loadView('dashboard')          // -> @/views/dashboard/index.vue
+```
+
+If target file is missing, it returns 404 fallback loader and route gets fallback marker.
+
+### Full Pipeline Example
+
+```ts
+const backendRoutes = Array.isArray(rawRes) ? rawRes : rawRes.routes
+const appRoutes = processAsyncRoutes(backendRoutes)
+const vueRoutes = transformToVueRoutes(appRoutes)
+createDynamicRouteManager(router).registerRoutes(vueRoutes)
+```
+
+---
+
+## Rule 8 — Complete `AppRouteMeta` Field Reference
+
+| Field | Type | Description |
+|---|---|---|
+| `title` | `string` | Page title |
+| `titleKey` | `string` | i18n key |
+| `parent` | `LayoutMode` | Layout shell |
+| `rank` | `number` | Sidebar order weight |
+| `roles` | `string[]` | Role-level route guard |
+| `auths` | `string[]` | Permission-level guard |
+| `keepAlive` | `boolean` | Cache component |
+| `icon` | `string` | Menu icon |
+| `showLink` | `boolean` | Sidebar visibility |
+| `hidden` | `boolean` | Hide route entirely |
+| `hideBreadcrumb` | `boolean` | Hide breadcrumb |
+| `fixedTag` | `boolean` | Pin tab |
+| `hiddenTag` | `boolean` | Hide tab |
+| `activeMenu` | `string` | Sidebar active menu path |
+| `isLink` | `boolean` | External URL route |
+| `linkUrl` | `string` | External URL |
+| `reuseWindow` | `boolean` | Reuse window |
+| `backstage` | `boolean` | Backend-sourced marker |
+| `ratio` | `string` | Ratio layout value |
+| `parentPaths` | `string[]` | Ancestor paths |
+| `transition` | `object` | Route transition override |
+
+### `transition` sub-fields
+
+```ts
+meta.transition = {
+  name?: string
+  enterTransition?: string
+  leaveTransition?: string
+  duration?: string
+}
+```

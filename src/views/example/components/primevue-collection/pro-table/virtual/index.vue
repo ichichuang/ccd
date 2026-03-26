@@ -66,9 +66,9 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="layout-full px-md md:px-lg flex flex-col gap-sm min-h-0">
+  <div class="layout-full px-md md:px-lg col-stretch gap-sm min-h-0">
     <div class="row-between gap-md">
-      <div class="flex flex-col gap-xs">
+      <div class="col-stretch gap-xs">
         <div class="text-lg font-semibold">百万级虚拟网格引擎</div>
         <div class="text-muted-foreground text-sm">
           纯前端内存生成 100,000 行数据，用于验证 `&lt;ProTable :virtual-scroll="true"&gt;`
@@ -76,7 +76,7 @@ onMounted(() => {
         </div>
       </div>
 
-      <div class="flex flex-row items-center gap-sm">
+      <div class="row-start items-center gap-sm">
         <Badge value="Total Rows: 100,000" />
         <Badge
           v-if="isGenerating"

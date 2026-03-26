@@ -1,0 +1,54 @@
+---
+description: Unified layout architecture and responsive matrix state-machine rules. Merged from core layout rule and responsive-matrix skill.
+globs: ["src/layouts/**/*.{vue,tsx}", "src/App.vue"]
+alwaysApply: true
+---
+
+# Layout Architecture & Responsive Matrix
+
+## Core Philosophy (CRITICAL)
+- Structural visibility (Sidebar/Top Menu/Drawer) MUST NOT rely on CSS media query visibility toggles.
+- Layout responsiveness is a JS state machine outcome, driven by device store + breakpoints.
+
+## [LAW] Layout Container Exclusivity
+- `layout-full`, `layout-container`, `layout-narrow`, `layout-screen` are mutually exclusive.
+- NEVER nest width archetypes.
+
+## Two-Dimensional Matrix
+- Mobile: always Drawer mode.
+- Tablet: Drawer only when `width < BREAKPOINTS.md`.
+- PC: never Drawer.
+
+## Canonical State Machine
+
+```ts
+import { BREAKPOINTS } from '@/constants/breakpoints'
+import { useDeviceStore } from '@/stores/modules/device'
+
+const isDrawerMode = computed<boolean>(() => {
+  const deviceStore = useDeviceStore()
+  if (deviceStore.type === 'Mobile') return true
+  if (deviceStore.type === 'Tablet') return deviceStore.width < BREAKPOINTS.md
+  return false
+})
+
+const showTopMenuEffective = computed<boolean>(() => {
+  return layoutStore.showMenu && !isDrawerMode.value
+})
+
+const showSidebarEffective = computed<boolean>(() => {
+  return layoutStore.showSidebar && !isDrawerMode.value
+})
+
+const showLogoText = computed<boolean>(() => {
+  return deviceStore.type === 'PC' && deviceStore.width >= BREAKPOINTS.lg
+})
+```
+
+## Integration Guidance
+- Pass computed booleans from layout orchestrator to structural components.
+- Use `v-if`/`v-show` with computed flags, never responsive utility classes on shell structures.
+
+## Anti-Patterns
+- `md:hidden`, `max-lg:flex` to control shell structure visibility.
+- Monolithic breakpoint logic forcing PC into Drawer/mobile shell.

@@ -13,7 +13,7 @@ const parentLayout = computed<string>(() => {
   <div class="animate__animated animate__fadeIn col-stretch gap-md">
     <div class="layout-narrow col-stretch gap-md">
       <section class="material-elevated col-stretch gap-md">
-        <div class="row-between items-center">
+        <div class="row-between">
           <div class="col-stretch gap-xs">
             <h2 class="text-lg font-semibold text-foreground m-0">Reuse Window</h2>
             <p class="text-sm text-muted-foreground m-0">
@@ -51,7 +51,7 @@ const parentLayout = computed<string>(() => {
         <p class="text-sm text-muted-foreground m-0">
           从侧边栏多次点击「窗口复用」菜单 —
           若已存在该路由的浏览器窗口，系统会聚焦该窗口而非重新打开。 本页使用
-          <code class="font-mono text-xs text-foreground">parent: 'fullscreen'</code>
+          <code class="code-inline">parent: 'fullscreen'</code>
           布局，即每次以新窗口全屏呈现。
         </p>
       </section>
@@ -59,7 +59,7 @@ const parentLayout = computed<string>(() => {
       <section class="material-elevated col-stretch gap-md">
         <h3 class="text-md font-semibold text-foreground m-0">Route Config</h3>
         <Divider />
-        <pre class="text-xs font-mono text-foreground bg-muted rounded-md p-sm overflow-x-auto">{{
+        <pre class="code-block">{{
           JSON.stringify(
             {
               path: '/example/router-meta/reuse-window',

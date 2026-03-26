@@ -42,19 +42,19 @@ function getTableContainerClass(mode: HeightMode): string {
 <template>
   <div
     data-archetype="A1-toolbar-content"
-    class="layout-full px-md md:px-lg flex flex-col gap-sm min-h-0"
+    class="layout-full px-md md:px-lg col-stretch gap-sm min-h-0"
   >
     <!-- Toolbar: Hero Header (Inherit canvas color) -->
     <header class="shrink-0">
       <div class="w-full py-sm row-between gap-md flex-wrap">
-        <div class="flex flex-row items-center gap-md">
+        <div class="row-start items-center gap-md">
           <div class="p-md bg-primary/10 rounded-lg shrink-0">
             <Icons
               name="i-lucide-proportions"
               class="text-primary text-2xl"
             />
           </div>
-          <div class="flex flex-col gap-xs">
+          <div class="col-stretch gap-xs">
             <h1 class="text-2xl font-bold text-foreground m-0">ProTable — 高度模式</h1>
             <p class="text-muted-foreground text-sm m-0">
               对比演示 fill / auto / fixed 三种高度策略的表现差异。
@@ -66,19 +66,19 @@ function getTableContainerClass(mode: HeightMode): string {
 
     <!-- Content -->
     <CScrollbar class="flex-1 min-h-0">
-      <div class="w-full flex flex-col gap-sm py-sm">
+      <div class="w-full col-stretch gap-sm py-sm">
         <div
           v-for="table in tables"
           :key="table.mode"
-          class="bg-card rounded-md shadow-sm dark:shadow-md py-md px-lg flex flex-col gap-lg"
+          class="material-elevated col-stretch gap-lg px-lg py-md"
         >
-          <div class="flex flex-row items-center gap-sm pb-sm mb-padding-sm">
+          <div class="row-start items-center gap-sm pb-sm mb-padding-sm">
             <Icons
               :name="table.icon"
               class="text-primary"
               size="sm"
             />
-            <div class="flex flex-col gap-xs">
+            <div class="col-stretch gap-xs">
               <span class="text-md font-semibold text-foreground">{{ table.label }}</span>
               <span class="text-xs text-muted-foreground">{{ table.desc }}</span>
             </div>

@@ -309,9 +309,7 @@ async function onAsyncSubmit(values: Record<string, unknown>): Promise<void> {
               <div class="text-xs font-bold text-muted-foreground uppercase mb-xs">
                 Submit Result:
               </div>
-              <pre class="m-0 whitespace-pre-wrap break-words text-xs font-mono text-success">{{
-                syncResult
-              }}</pre>
+              <pre class="code-preview text-success">{{ syncResult }}</pre>
             </div>
           </div>
         </section>
@@ -390,9 +388,7 @@ async function onAsyncSubmit(values: Record<string, unknown>): Promise<void> {
               <div class="text-xs font-bold text-muted-foreground uppercase mb-xs">
                 Submit Result:
               </div>
-              <pre class="m-0 whitespace-pre-wrap break-words text-xs font-mono text-primary">{{
-                asyncResult
-              }}</pre>
+              <pre class="code-preview text-primary">{{ asyncResult }}</pre>
             </div>
           </div>
         </section>

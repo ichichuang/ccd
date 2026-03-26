@@ -66,7 +66,7 @@ const doRestore = async () => {
   >
     <div class="layout-narrow col-stretch gap-md">
       <section class="material-elevated col-stretch gap-md">
-        <div class="row-between items-center">
+        <div class="row-between">
           <div class="col-stretch gap-xs">
             <h2 class="text-lg font-semibold text-foreground m-0">useAuth Demo</h2>
             <p class="text-sm text-muted-foreground m-0">
@@ -87,7 +87,7 @@ const doRestore = async () => {
         <Divider />
 
         <div class="col-stretch gap-md">
-          <div class="row-between items-center">
+          <div class="row-between">
             <span class="text-sm text-muted-foreground">Current State</span>
             <Tag
               :value="`roleCheck=${roleCheck}`"
@@ -172,7 +172,7 @@ const doRestore = async () => {
       </section>
 
       <section class="material-elevated col-stretch gap-md">
-        <div class="row-between items-center">
+        <div class="row-between">
           <h3 class="text-md font-semibold text-foreground m-0">Action Triggers</h3>
           <span class="text-sm text-muted-foreground">模拟登录 & 恢复登录（mock：admin/user）</span>
         </div>

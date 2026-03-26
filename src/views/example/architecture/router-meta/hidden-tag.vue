@@ -9,7 +9,7 @@ const hiddenTag = computed<boolean>(() => route.meta?.hiddenTag === true)
   <div class="animate__animated animate__fadeIn col-stretch gap-md">
     <div class="layout-narrow col-stretch gap-md">
       <section class="material-elevated col-stretch gap-md">
-        <div class="row-between items-center">
+        <div class="row-between">
           <div class="col-stretch gap-xs">
             <h2 class="text-lg font-semibold text-foreground m-0">Hidden Tag</h2>
             <p class="text-sm text-muted-foreground m-0">
@@ -24,7 +24,7 @@ const hiddenTag = computed<boolean>(() => route.meta?.hiddenTag === true)
         <Divider />
 
         <div class="col-stretch gap-sm">
-          <div class="row-between items-center">
+          <div class="row-between">
             <span class="text-sm text-muted-foreground">Live: route.meta.hiddenTag</span>
             <Tag
               :value="`${hiddenTag}`"
@@ -33,7 +33,7 @@ const hiddenTag = computed<boolean>(() => route.meta?.hiddenTag === true)
           </div>
           <p class="text-sm text-muted-foreground m-0">
             观察顶部标签栏 — 访问本页后应不会产生新标签，这正是
-            <code class="font-mono text-xs text-foreground">hiddenTag: true</code>
+            <code class="code-inline">hiddenTag: true</code>
             的效果。对比访问其他示例页面（如 Theme Store），标签栏会增加，而本页不会。
           </p>
         </div>
@@ -42,7 +42,7 @@ const hiddenTag = computed<boolean>(() => route.meta?.hiddenTag === true)
       <section class="material-elevated col-stretch gap-md">
         <h3 class="text-md font-semibold text-foreground m-0">Route Config</h3>
         <Divider />
-        <pre class="text-xs font-mono text-foreground bg-muted rounded-md p-sm overflow-x-auto">{{
+        <pre class="code-block">{{
           JSON.stringify(
             {
               path: '/example/router-meta/hidden-tag',

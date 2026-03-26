@@ -22,7 +22,7 @@ const tokenPreview = computed<string>(() => {
   <div class="animate__animated animate__fadeIn col-stretch gap-md">
     <div class="layout-narrow col-stretch gap-md">
       <section class="material-elevated col-stretch gap-md">
-        <div class="row-between items-center">
+        <div class="row-between">
           <div class="col-stretch gap-xs">
             <h2 class="text-lg font-semibold text-foreground m-0">Token Provider</h2>
             <p class="text-sm text-muted-foreground m-0">
@@ -115,9 +115,9 @@ const tokenPreview = computed<string>(() => {
         </div>
         <p class="text-sm text-muted-foreground m-0">
           HTTP 层完全不感知 Pinia。应用入口（main.ts）通过
-          <code class="font-mono text-xs text-foreground">setTokenProvider()</code>
+          <code class="code-inline">setTokenProvider()</code>
           注入 getter 函数；HTTP 拦截器调用
-          <code class="font-mono text-xs text-foreground">getToken()</code>
+          <code class="code-inline">getToken()</code>
           获取当前 Token，满足 Infra → State 单向依赖约束，避免循环导入。
         </p>
       </section>
@@ -128,7 +128,7 @@ const tokenPreview = computed<string>(() => {
         <div class="col-stretch gap-md">
           <div class="col-stretch gap-xs">
             <span class="text-xs font-semibold text-muted-foreground">setTokenProvider(fn)</span>
-            <pre class="text-xs font-mono text-foreground bg-muted rounded-md p-sm overflow-x-auto">
+            <pre class="code-block">
 // main.ts — 应用入口注入
 import { setTokenProvider } from '@/infra/auth/tokenProvider'
 setTokenProvider(() => useUserStoreWithOut().getToken)</pre
@@ -136,7 +136,7 @@ setTokenProvider(() => useUserStoreWithOut().getToken)</pre
           </div>
           <div class="col-stretch gap-xs">
             <span class="text-xs font-semibold text-muted-foreground">getToken()</span>
-            <pre class="text-xs font-mono text-foreground bg-muted rounded-md p-sm overflow-x-auto">
+            <pre class="code-block">
 // axios interceptor — HTTP 层消费
 import { getToken } from '@/infra/auth/tokenProvider'
 const token = getToken()
@@ -145,7 +145,7 @@ if (token) config.headers.Authorization = `Bearer ${token}`</pre
           </div>
           <div class="col-stretch gap-xs">
             <span class="text-xs font-semibold text-muted-foreground">setOnUnauthorized(fn)</span>
-            <pre class="text-xs font-mono text-foreground bg-muted rounded-md p-sm overflow-x-auto">
+            <pre class="code-block">
 // main.ts — 注入 401 回调
 import { setOnUnauthorized } from '@/infra/auth/tokenProvider'
 setOnUnauthorized(() => useUserStoreWithOut().logout())</pre

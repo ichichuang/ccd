@@ -86,7 +86,7 @@ const profileCards: readonly ProfileCard[] = [
                 />
               </div>
 
-              <div class="flex flex-row items-end gap-xs overflow-x-auto scrollbar-none pb-xs">
+              <div class="row-start items-end gap-xs overflow-x-auto scrollbar-none pb-xs">
                 <div
                   v-for="key in SIZE_SCALE_KEYS"
                   :key="key"

@@ -22,7 +22,7 @@ watchEffect(() => {
   >
     <div class="layout-narrow col-stretch gap-md">
       <div class="material-elevated rounded-xl p-md md:p-xl col-stretch gap-md">
-        <div class="row-between items-center">
+        <div class="row-between">
           <div class="col-stretch gap-xs">
             <h1 class="text-lg font-semibold text-foreground m-0">Device Sync Live Tester</h1>
             <p class="text-sm text-muted-foreground m-0">

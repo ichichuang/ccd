@@ -11,7 +11,7 @@ const deviceStore = useDeviceStore()
   >
     <div class="layout-narrow col-stretch gap-md">
       <section class="material-elevated col-stretch gap-md">
-        <div class="row-between items-center">
+        <div class="row-between">
           <div class="col-stretch gap-xs">
             <h2 class="text-lg font-semibold text-foreground m-0">Device Store</h2>
             <p class="text-sm text-muted-foreground m-0">
