@@ -405,8 +405,7 @@ const getRootStyle = () => {
 }
 
 /** 从 :root 读取 ThemeCssVars 并格式化为 ECharts 可用的 rgb(r,g,b) */
-const getCssRgbColor = (token: ThemeCssVarName): string => {
-  const style = getRootStyle()
+const getCssRgbColor = (style: ReturnType<typeof getRootStyle>, token: ThemeCssVarName): string => {
   if (!style) return ''
   const raw = style.getPropertyValue(`--${token}`).trim()
   if (!raw) return ''
@@ -442,8 +441,12 @@ function buildChartMetricLadders(preset: SizePreset): ChartMetricLadders {
 export function getChartSystemVariables(): ChartSystemVariables {
   const sizeStore = useSizeStore()
   const preset = sizeStore.currentPreset
+  const rootStyle = getRootStyle()
   const colorPart = Object.fromEntries(
-    CHART_THEME_TOKEN_NAMES.map(token => [themeCssVarToCamel(token), getCssRgbColor(token)])
+    CHART_THEME_TOKEN_NAMES.map(token => [
+      themeCssVarToCamel(token),
+      getCssRgbColor(rootStyle, token),
+    ])
   ) as Pick<
     ChartColorTokens,
     | 'foreground'
@@ -489,7 +492,8 @@ const CHART_PALETTE_LIGHT_TOKENS: ThemeCssVarName[] = [
  */
 export function generateChartPalette(baseColor: string, count: number): string[] {
   const vars = getChartSystemVariables()
-  const lightColors = CHART_PALETTE_LIGHT_TOKENS.map(token => getCssRgbColor(token))
+  const rootStyle = getRootStyle()
+  const lightColors = CHART_PALETTE_LIGHT_TOKENS.map(token => getCssRgbColor(rootStyle, token))
 
   const basePalette: string[] = [
     baseColor || vars.primary,

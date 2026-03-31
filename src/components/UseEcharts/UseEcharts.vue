@@ -6,133 +6,211 @@ import { useAppElementSize } from '@/hooks/modules/useAppElementSize'
 import { storeToRefs } from 'pinia'
 import { useThemeStore } from '@/stores/modules/theme'
 import { useSizeStore } from '@/stores/modules/size'
-import { createDefaultUseEchartsProps } from './utils/constants'
+import {
+  createDefaultUseEchartsProps,
+  SERIES_TYPE_TO_ECHARTS_CHART_EXPORT,
+} from './utils/constants'
 import type { EChartsOption } from 'echarts'
 import type { ChartAdvancedConfig } from '@/hooks/modules/useChartTheme/types'
 import type { ChartConnectState, ChartEventParams, UseEchartsProps } from './utils/types'
 
-let echartsRegistryPromise: Promise<void> | null = null
+const ALL_CHART_EXPORT_NAMES = [
+  'BarChart',
+  'BoxplotChart',
+  'CandlestickChart',
+  'EffectScatterChart',
+  'FunnelChart',
+  'GaugeChart',
+  'GraphChart',
+  'HeatmapChart',
+  'LineChart',
+  'LinesChart',
+  'ParallelChart',
+  'PictorialBarChart',
+  'PieChart',
+  'RadarChart',
+  'SankeyChart',
+  'ScatterChart',
+  'SunburstChart',
+  'ThemeRiverChart',
+  'TreeChart',
+  'TreemapChart',
+] as const
 
-const ensureEchartsRegistry = async (): Promise<void> => {
-  if (echartsRegistryPromise) {
-    return echartsRegistryPromise
+const ALL_COMPONENT_EXPORT_NAMES = [
+  'AriaComponent',
+  'BrushComponent',
+  'CalendarComponent',
+  'DatasetComponent',
+  'DataZoomComponent',
+  'GeoComponent',
+  'GraphicComponent',
+  'GridComponent',
+  'LegendComponent',
+  'MarkAreaComponent',
+  'MarkLineComponent',
+  'MarkPointComponent',
+  'ParallelComponent',
+  'PolarComponent',
+  'RadarComponent',
+  'SingleAxisComponent',
+  'TimelineComponent',
+  'TitleComponent',
+  'ToolboxComponent',
+  'TooltipComponent',
+  'TransformComponent',
+  'VisualMapComponent',
+] as const
+
+const echartsRegisteredChartExports = new Set<string>()
+const echartsRegisteredComponentExports = new Set<string>()
+let echartsRegistryChain: Promise<void> = Promise.resolve()
+
+function collectSeriesTypes(option: EChartsOption | undefined): Set<string> {
+  const types = new Set<string>()
+  if (!option) return types
+
+  type SeriesLike = { type?: unknown }
+  const series = (option as unknown as { series?: unknown }).series
+  if (Array.isArray(series)) {
+    for (const s of series) {
+      const t = (s as SeriesLike)?.type
+      if (typeof t === 'string' && t.trim()) types.add(t)
+    }
+    return types
   }
 
-  echartsRegistryPromise = (async () => {
-    const [
-      { use },
-      { CanvasRenderer, SVGRenderer },
-      {
-        BarChart,
-        BoxplotChart,
-        CandlestickChart,
-        EffectScatterChart,
-        FunnelChart,
-        GaugeChart,
-        GraphChart,
-        HeatmapChart,
-        LineChart,
-        LinesChart,
-        ParallelChart,
-        PictorialBarChart,
-        PieChart,
-        RadarChart,
-        SankeyChart,
-        ScatterChart,
-        SunburstChart,
-        ThemeRiverChart,
-        TreeChart,
-        TreemapChart,
-      },
-      {
-        AriaComponent,
-        BrushComponent,
-        CalendarComponent,
-        DatasetComponent,
-        DataZoomComponent,
-        GeoComponent,
-        GraphicComponent,
-        GridComponent,
-        LegendComponent,
-        MarkAreaComponent,
-        MarkLineComponent,
-        MarkPointComponent,
-        ParallelComponent,
-        PolarComponent,
-        RadarComponent,
-        SingleAxisComponent,
-        TimelineComponent,
-        TitleComponent,
-        ToolboxComponent,
-        TooltipComponent,
-        TransformComponent,
-        VisualMapComponent,
-      },
-    ] = await Promise.all([
-      import('echarts/core'),
-      import('echarts/renderers'),
-      import('echarts/charts'),
-      import('echarts/components'),
-    ])
+  const singleType = (series as SeriesLike | undefined)?.type
+  if (typeof singleType === 'string' && singleType.trim()) {
+    types.add(singleType)
+  }
 
+  return types
+}
+
+function inferComponentExports(
+  option: EChartsOption | undefined,
+  seriesTypes: Set<string>
+): Set<string> {
+  const components = new Set<string>()
+
+  // 通用兜底组件：大多数 cartesian/折线/柱状图都依赖这些组件存在
+  components.add('GridComponent')
+  components.add('SingleAxisComponent')
+  components.add('TooltipComponent')
+  components.add('LegendComponent')
+  components.add('TitleComponent')
+  components.add('DatasetComponent')
+  components.add('GraphicComponent')
+  components.add('TransformComponent')
+  components.add('ToolboxComponent')
+  components.add('VisualMapComponent')
+
+  if (!option) return components
+
+  const optionLike = option as unknown as {
+    dataZoom?: unknown
+    brush?: unknown
+    geo?: unknown
+    series?: unknown
+  }
+  if (optionLike.dataZoom) components.add('DataZoomComponent')
+  if (optionLike.brush) components.add('BrushComponent')
+  if (optionLike.geo) components.add('GeoComponent')
+
+  type SeriesWithMarksLike = {
+    markPoint?: unknown
+    markLine?: unknown
+    markArea?: unknown
+  }
+  const series = optionLike.series
+  const seriesArr = Array.isArray(series) ? series : series ? [series] : []
+  for (const s of seriesArr) {
+    const like = s as SeriesWithMarksLike
+    if (like?.markPoint) components.add('MarkPointComponent')
+    if (like?.markLine) components.add('MarkLineComponent')
+    if (like?.markArea) components.add('MarkAreaComponent')
+  }
+
+  if (seriesTypes.has('radar')) {
+    components.add('PolarComponent')
+    components.add('RadarComponent')
+  }
+  if (seriesTypes.has('parallel')) components.add('ParallelComponent')
+
+  return components
+}
+
+async function ensureEchartsRegistryFor(option: EChartsOption | undefined): Promise<void> {
+  const seriesTypes = collectSeriesTypes(option)
+  const componentExports = inferComponentExports(option, seriesTypes)
+
+  const unknownSeriesTypes = Array.from(seriesTypes).filter(
+    t => !(t in SERIES_TYPE_TO_ECHARTS_CHART_EXPORT)
+  )
+  const shouldFallbackAll = seriesTypes.size === 0 || unknownSeriesTypes.length > 0
+
+  echartsRegistryChain = echartsRegistryChain.then(async () => {
+    const [{ use }, { CanvasRenderer, SVGRenderer }, chartsModRaw, componentsModRaw] =
+      await Promise.all([
+        import('echarts/core'),
+        import('echarts/renderers'),
+        import('echarts/charts'),
+        import('echarts/components'),
+      ])
+    const chartsMod = chartsModRaw as Record<string, unknown>
+    const componentsMod = componentsModRaw as Record<string, unknown>
+
+    if (shouldFallbackAll) {
+      const allChartClasses = ALL_CHART_EXPORT_NAMES.map(e => chartsMod[e]).filter(Boolean)
+      const allComponentClasses = ALL_COMPONENT_EXPORT_NAMES.map(e => componentsMod[e]).filter(
+        Boolean
+      )
+      use([
+        CanvasRenderer,
+        SVGRenderer,
+        ...allChartClasses,
+        ...allComponentClasses,
+      ] as unknown as Parameters<typeof use>[0])
+
+      for (const e of ALL_CHART_EXPORT_NAMES) echartsRegisteredChartExports.add(e)
+      for (const e of ALL_COMPONENT_EXPORT_NAMES) echartsRegisteredComponentExports.add(e)
+      return
+    }
+
+    const requiredChartExports = new Set<string>()
+    for (const t of seriesTypes) {
+      const exp = (SERIES_TYPE_TO_ECHARTS_CHART_EXPORT as Record<string, string | undefined>)[t]
+      if (exp) requiredChartExports.add(exp)
+    }
+
+    const missingChartExports = Array.from(requiredChartExports).filter(
+      e => !echartsRegisteredChartExports.has(e)
+    )
+    const missingComponentExports = Array.from(componentExports).filter(
+      e => !echartsRegisteredComponentExports.has(e)
+    )
+
+    if (missingChartExports.length === 0 && missingComponentExports.length === 0) return
+
+    const chartClasses = missingChartExports.map(e => chartsMod[e]).filter(Boolean)
+    const componentClasses = missingComponentExports.map(e => componentsMod[e]).filter(Boolean)
     use([
       CanvasRenderer,
       SVGRenderer,
-      BarChart,
-      BoxplotChart,
-      CandlestickChart,
-      EffectScatterChart,
-      FunnelChart,
-      GaugeChart,
-      GraphChart,
-      HeatmapChart,
-      LineChart,
-      LinesChart,
-      ParallelChart,
-      PictorialBarChart,
-      PieChart,
-      RadarChart,
-      SankeyChart,
-      ScatterChart,
-      SunburstChart,
-      ThemeRiverChart,
-      TreeChart,
-      TreemapChart,
-      AriaComponent,
-      BrushComponent,
-      CalendarComponent,
-      DatasetComponent,
-      DataZoomComponent,
-      GeoComponent,
-      GraphicComponent,
-      GridComponent,
-      LegendComponent,
-      MarkAreaComponent,
-      MarkLineComponent,
-      MarkPointComponent,
-      ParallelComponent,
-      PolarComponent,
-      RadarComponent,
-      SingleAxisComponent,
-      TimelineComponent,
-      TitleComponent,
-      ToolboxComponent,
-      TooltipComponent,
-      TransformComponent,
-      VisualMapComponent,
-    ])
-  })()
+      ...chartClasses,
+      ...componentClasses,
+    ] as unknown as Parameters<typeof use>[0])
 
-  try {
-    await echartsRegistryPromise
-  } catch (error) {
-    echartsRegistryPromise = null
-    throw error
-  }
+    for (const e of missingChartExports) echartsRegisteredChartExports.add(e)
+    for (const e of missingComponentExports) echartsRegisteredComponentExports.add(e)
+  })
+
+  await echartsRegistryChain
 }
 
 const VEChartsAsync = defineAsyncComponent(async () => {
-  await ensureEchartsRegistry()
+  await ensureEchartsRegistryFor(props.option)
   const module = await import('vue-echarts')
   return module.default
 })
@@ -159,7 +237,7 @@ const connectGroupId = computed(() => {
 })
 
 // 监听容器尺寸变化，自动 resize 图表（根据 autoResize prop）
-useAppElementSize(
+const { width, height } = useAppElementSize(
   chartContainerRef,
   () => {
     // 仅在 autoResize 不为 false 时执行 resize
@@ -172,6 +250,9 @@ useAppElementSize(
   },
   { mode: 'throttle', delay: 300 }
 )
+
+// 容器尺寸就绪（避免 0×0 初始化导致“首次不出图/无报错”）
+const isContainerReady = computed<boolean>(() => width.value > 0 && height.value > 0)
 
 // 使用主题合并后的配置
 const optionRef = computed(() => props.option)
@@ -449,6 +530,7 @@ defineExpose({
     class="layout-full"
   >
     <VEChartsAsync
+      v-if="isContainerReady"
       :key="props.renderer"
       ref="chartRef"
       :option="mergedOption"

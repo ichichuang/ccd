@@ -1,0 +1,13 @@
+{
+  "version": 1,
+  "skills": {
+    "github": {
+      "version": "1.0.0",
+      "installedAt": 1774939144145
+    },
+    "playwright-mcp": {
+      "version": "1.0.0",
+      "installedAt": 1774939152414
+    }
+  }
+}

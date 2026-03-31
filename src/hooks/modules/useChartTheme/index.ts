@@ -18,7 +18,6 @@ import {
   getChartSystemVariables,
   generateChartPalette,
 } from '@/utils/theme/chartUtils'
-import { deepCloneWithFunctions } from './utils'
 import { applyFontStylesToTargets } from './applyFontStyles'
 import { applySeriesStyles } from './applySeriesStyles'
 import { applyAxisStyles } from './applyAxisStyles'
@@ -141,8 +140,9 @@ function applyThemeToOption(
     return rawOption as EChartsOption | undefined
   }
 
-  // 深拷贝原始配置，避免修改原始对象
-  const mergedOption = deepCloneWithFunctions(rawOption) as EChartsOption
+  // 轻量拷贝：主题化过程通过重新构建子结构的方式注入样式，
+  // 避免每次都对整棵 option 做深度递归克隆（显著降低 CPU/GC）。
+  const mergedOption = { ...(rawOption as Record<string, unknown>) } as EChartsOption
 
   // 合并透明度配置
   const finalOpacityConfig = { ...DEFAULT_OPACITY_VALUES, ...opacityConfig }
