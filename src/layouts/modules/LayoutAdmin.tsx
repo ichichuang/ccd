@@ -186,7 +186,7 @@ export default defineComponent({
             'relative',
             'overflow-hidden',
             'bg-background',
-            'rounded-l-xl',
+            'rounded-lg lg:rounded-l-xl',
           ]}
         >
           {/* Z-0: 光球层 (放置在底色板上) */}

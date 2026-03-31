@@ -39,11 +39,11 @@ export const semanticShortcuts = {
 
   // Interactive Card (交互式卡片)
   'interactive-card':
-    'bg-card cursor-pointer transition-all duration-5xl ease-spring ring-1 ring-offset-1 ring-border/20 ring-offset-border/20 dark:ring-border/40 dark:ring-offset-border/40 hover:ring-border/80 hover:ring-offset-border/80 dark:hover:ring-border dark:hover:ring-offset-border',
+    'bg-card rounded-lg p-md transition-all duration-5xl ease-spring ring-1 ring-offset-1 ring-border/20 ring-offset-border/20 dark:ring-border/40 dark:ring-offset-border/40 hover:ring-border/80 hover:ring-offset-border/80 dark:hover:ring-border dark:hover:ring-offset-border',
 
   // Interactive Item (交互式列表项)
   'interactive-item':
-    'cursor-pointer transition-all duration-md hover:bg-primary/5 dark:hover:bg-primary/15 active:bg-primary/10 dark:active:bg-primary/20 hover:scale-101 active:scale-99',
+    'cursor-pointer px-md py-sm rounded-sm transition-all duration-md hover:bg-primary/5 dark:hover:bg-primary/15 active:bg-primary/10 dark:active:bg-primary/20 hover:translate-y--1px',
 
   // 轻微浮起（hover 卡片 / 列表）
   'material-elevated': `
