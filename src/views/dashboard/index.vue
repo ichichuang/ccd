@@ -262,7 +262,7 @@ const metricsConfig = computed(() => [
       >
         <!-- Recent System Events (Left, 2/3) -->
         <div
-          class="material-elevated rounded-xl p-md md:p-xl lg:p-2xl col-stretch gap-md md:gap-lg xl:gap-xl lg:col-span-2 interactive-card"
+          class="glass-card rounded-xl p-md md:p-xl lg:p-2xl col-stretch gap-md md:gap-lg xl:gap-xl lg:col-span-2 interactive-card"
         >
           <div class="row-between shrink-0 mb-md">
             <h3 class="text-lg font-semibold text-foreground m-0">Recent System Events</h3>
@@ -306,7 +306,7 @@ const metricsConfig = computed(() => [
 
         <!-- Active Service Nodes (Right, 1/3) -->
         <div
-          class="material-elevated rounded-xl p-md md:p-xl lg:p-2xl col-stretch gap-md md:gap-lg xl:gap-xl lg:col-span-1 interactive-card"
+          class="glass-panel rounded-xl p-md md:p-xl lg:p-2xl col-stretch gap-md md:gap-lg xl:gap-xl lg:col-span-1 interactive-card"
         >
           <div class="row-between shrink-0 mb-md">
             <h3 class="text-lg font-semibold text-foreground m-0">Active Service Nodes</h3>

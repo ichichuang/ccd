@@ -141,6 +141,9 @@ export default defineComponent({
     const showTopMenuEffective = computed<boolean>(() => {
       return layoutStore.showMenu && !isDrawerMode.value
     })
+    const orbBlendClass = computed<string>(() =>
+      isDark.value ? 'mix-blend-screen' : 'mix-blend-multiply'
+    )
 
     // 3. The Strict Sidebar Visibility
     const showSidebarEffective = computed<boolean>(() => {
@@ -173,11 +176,47 @@ export default defineComponent({
         <div class="backdrop-blur-md bg-sidebar">
           <AdminBreadcrumbBar show={showBreadcrumbEffective.value} />
         </div>
-        <div class="backdrop-blur-md bg-sidebar">
+        <div class="relative overflow-hidden backdrop-blur-md bg-sidebar">
           <AdminTabsBar show={showTabsEffective.value} />
         </div>
-        <section class={['col-fill', 'min-w-0', 'bg-transparent']}>
-          <AppContainer class="min-w-0 overflow-hidden" />
+        <section
+          class={[
+            'col-fill',
+            'min-w-0',
+            'relative',
+            'overflow-hidden',
+            'bg-background',
+            'rounded-l-xl',
+          ]}
+        >
+          {/* Z-0: 光球层 (放置在底色板上) */}
+          <div
+            class={[
+              'absolute inset-0 z-base pointer-events-none overflow-hidden rounded-l-xl transition-opacity duration-md ease-out',
+              showAmbientOrbs.value ? 'opacity-100' : 'opacity-0',
+            ]}
+          >
+            <div
+              class={[
+                'absolute -top-1/4 -left-1/4 h-[60vw] w-[60vw] transform-gpu rounded-full will-change-transform blur-[60px] animate-orb-drift bg-primary/8',
+                orbBlendClass.value,
+              ]}
+            />
+            <div
+              class={[
+                'absolute -bottom-1/4 -right-1/4 h-[60vw] w-[60vw] transform-gpu rounded-full will-change-transform blur-[60px] animate-orb-drift-alt bg-accent/8',
+                orbBlendClass.value,
+              ]}
+            />
+            <div
+              class={[
+                'absolute bottom-[-30%] left-[25%] h-[40vw] w-[40vw] transform-gpu rounded-full will-change-transform blur-[40px] animate-orb-pulse bg-danger/6',
+                orbBlendClass.value,
+              ]}
+            />
+          </div>
+          {/* Z-content: 业务内容层 (必须透明才能让光球透出) */}
+          <AppContainer class="relative z-content min-w-0 overflow-hidden bg-transparent rounded-l-xl" />
         </section>
         <div class="backdrop-blur-md bg-sidebar">
           <AdminFooterBar show={showFooterEffective.value} />
@@ -244,17 +283,7 @@ export default defineComponent({
             class="absolute inset-0 z-base pointer-events-none overflow-hidden"
             aria-hidden="true"
           >
-            <div class="absolute inset-0 bg-background" />
-            <div
-              class={[
-                'absolute inset-0 transition-opacity duration-700 ease-out',
-                showAmbientOrbs.value ? 'opacity-100' : 'opacity-0',
-              ]}
-            >
-              <div class="absolute -top-1/4 -left-1/4 w-[65vw] h-[65vw] rounded-full bg-primary/[0.06] blur-[100px] animate-orb-drift" />
-              <div class="absolute -bottom-1/4 -right-1/4 w-[55vw] h-[55vw] rounded-full bg-accent/[0.05] blur-[55px] animate-orb-drift-alt" />
-              <div class="absolute top-[35%] left-[25%] w-[42vw] h-[42vw] rounded-full bg-info/[0.035] blur-[45px] animate-orb-pulse" />
-            </div>
+            <div class="absolute inset-0 bg-sidebar" />
           </div>
           {showHeader.value && (
             <div class="shrink-0 row-between h-headerHeight px-xs sm:px-sm md:px-md border-b-solid border-border bg-sidebar backdrop-blur">
