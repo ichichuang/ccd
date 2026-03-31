@@ -13,6 +13,7 @@ export type UseDialogCoreReturn = {
   dialogStore: Readonly<Ref<readonly DialogOptions[]>>
   addDialog: (options: DialogOptions) => number
   closeDialog: (index: number, args?: ArgsType) => void
+  removeDialogByInstanceId: (instanceId: string) => void
   updateDialog: (value: unknown, key?: string, index?: number) => void
   closeAllDialog: () => void
 }
@@ -60,12 +61,12 @@ export function useDialogCore(): UseDialogCoreReturn {
     if (instanceId && _closingInstanceIds.has(instanceId)) return
     if (instanceId) _closingInstanceIds.add(instanceId)
     options.visible = false
-    const delay = options?.closeDelay ?? defaultDialogProps.closeDelay ?? 200
-    setTimeout(() => {
-      const idx = _dialogStore.value.findIndex(d => d._instanceId === instanceId)
-      if (idx !== -1) _dialogStore.value.splice(idx, 1)
-      if (instanceId) _closingInstanceIds.delete(instanceId)
-    }, delay)
+  }
+
+  function removeDialogByInstanceId(instanceId: string) {
+    const idx = _dialogStore.value.findIndex(d => d._instanceId === instanceId)
+    if (idx !== -1) _dialogStore.value.splice(idx, 1)
+    _closingInstanceIds.delete(instanceId)
   }
 
   function updateDialog(value: unknown, key = 'header', index = 0) {
@@ -84,6 +85,7 @@ export function useDialogCore(): UseDialogCoreReturn {
     dialogStore,
     addDialog,
     closeDialog,
+    removeDialogByInstanceId,
     updateDialog,
     closeAllDialog,
   }

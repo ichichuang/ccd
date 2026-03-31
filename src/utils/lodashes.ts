@@ -12,7 +12,7 @@
  */
 
 // 按需引入，确保 Tree-shaking 生效
-import { cloneDeep, debounce, throttle, isEqual, merge, pick, omit } from 'lodash-es'
+import { cloneDeep, debounce, throttle, get, isEqual, merge, pick, omit } from 'lodash-es'
 
 // ----------------------------------------------------------------------
 // Core Wrappers
@@ -38,6 +38,13 @@ export function deepEqual(value: unknown, other: unknown): boolean {
  */
 export function deepMerge(object: unknown, ...sources: unknown[]): unknown {
   return merge(object as object, ...(sources as object[]))
+}
+
+/**
+ * 按路径读取嵌套属性（支持 `a.b.c` 点路径）
+ */
+export function objectGet(object: unknown, path: string): unknown {
+  return get(object as object, path)
 }
 
 /**

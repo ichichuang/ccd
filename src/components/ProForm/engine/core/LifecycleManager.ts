@@ -15,7 +15,8 @@ export interface LifecycleController<
       controller?: RecomputeCapableController
     ) => void
   }
-  loadAsyncOptions: (fieldName: string) => void
+  /** 无 deps 的 OptionsLoader 仅在 mount 时由生命周期触发首次加载（有 deps 的由 recomputeFields 统一处理） */
+  loadAsyncOptionsForFieldWithoutDeps: (fieldName: string) => void
   store: {
     getFieldState(field: string): FieldState<unknown> | undefined
     getFieldValue(field: string): unknown
@@ -36,7 +37,6 @@ export class LifecycleManager<TValues extends ValuesRecord = ValuesRecord> {
     this.controller.transactionManager.begin()
     this.controller.transactionManager.updateField(fieldName)
     this.controller.transactionManager.commit(() => {}, this.controller)
-
-    this.controller.loadAsyncOptions(fieldName)
+    this.controller.loadAsyncOptionsForFieldWithoutDeps(fieldName)
   }
 }

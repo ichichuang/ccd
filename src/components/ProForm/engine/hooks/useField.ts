@@ -34,6 +34,7 @@ export function useField<
       disabled: false,
       required: false,
       loadingOptions: false,
+      loadedOptions: undefined,
       touched: false,
       dirty: false,
       valid: true,
@@ -53,6 +54,7 @@ export function useField<
     state.disabled = latest.disabled
     state.required = latest.required
     state.loadingOptions = latest.loadingOptions
+    state.loadedOptions = latest.loadedOptions
     state.touched = latest.touched
     state.dirty = latest.dirty
     state.valid = latest.valid

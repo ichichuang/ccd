@@ -13,6 +13,7 @@ export interface UseDialogReturn {
   dialogStore: ReturnType<typeof useDialogCore>['dialogStore']
   openDialog: (options: DialogOptions) => number
   closeDialog: (index: number, args?: ArgsType) => void
+  removeDialog: (instanceId: string) => void
   closeDialogByIndex: (index: number, args?: ArgsType) => void
   closeDialogByObject: (dialog: DialogOptions, args?: ArgsType) => void
   closeLastDialog: (args?: ArgsType) => void
@@ -37,11 +38,19 @@ export interface UseDialogReturn {
 }
 
 export function useDialog(): UseDialogReturn {
-  const { dialogStore, addDialog, closeDialog, updateDialog, closeAllDialog } = useDialogCore()
+  const {
+    dialogStore,
+    addDialog,
+    closeDialog,
+    removeDialogByInstanceId,
+    updateDialog,
+    closeAllDialog,
+  } = useDialogCore()
 
   const openDialog = (options: DialogOptions): number => addDialog(options)
 
   const closeDialogByIndex = (index: number, args?: ArgsType) => closeDialog(index, args)
+  const removeDialog = (instanceId: string) => removeDialogByInstanceId(instanceId)
 
   const closeDialogByObject = (dialog: DialogOptions, args?: ArgsType) => {
     const foundIndex = dialogStore.value.findIndex(d => d === dialog)
@@ -224,6 +233,7 @@ export function useDialog(): UseDialogReturn {
     dialogStore,
     openDialog,
     closeDialog: closeDialogByIndex,
+    removeDialog,
     closeDialogByIndex,
     closeDialogByObject,
     closeLastDialog,

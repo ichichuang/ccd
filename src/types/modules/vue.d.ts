@@ -8,6 +8,7 @@ declare module '@vue/runtime-core' {
   /** 全局指令（PrimeVue Tooltip 等），供模板中 v-tooltip 等通过类型检查 */
   interface GlobalDirectives {
     vTooltip: object
+    vAuth: object
   }
 
   interface GlobalComponents {

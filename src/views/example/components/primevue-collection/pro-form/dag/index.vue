@@ -301,7 +301,7 @@ async function onSubmit(values: Record<string, unknown>): Promise<void> {
 <template>
   <div
     data-archetype="A1-toolbar-content"
-    class="col-fill"
+    class="flex flex-col"
   >
     <!-- Toolbar: Hero Header (Transparent Root Policy: Inherit canvas) -->
     <header class="shrink-0 border-primary/20">

@@ -76,6 +76,22 @@ const userName = computed(() => user.value?.name ?? '')
 
 ---
 
+## 2.5 No API Hallucination (Component + Hook)
+
+### ❌ FORBIDDEN
+
+- Guessing component props/events/slots in `<template>` without checking exported types.
+- Guessing hook return fields/method names in `<script setup>` without checking source exports.
+- Using undocumented aliases inferred from memory (for example fabricated prop names).
+
+### ✅ REQUIRED
+
+- Check component type exports before usage (props/events/slots contract).
+- Check hook/util type exports before usage (return interface and function signatures).
+- Use only verified API names from the corresponding source/type files.
+
+---
+
 ## 3. Absolute Ban: `any` in Component Logic
 
 `any` destroys type safety silently — errors surface only at runtime, never at compile time.

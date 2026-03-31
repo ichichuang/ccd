@@ -42,7 +42,7 @@ When building UI components, strictly adhere to semantic classes mapped from cen
 - **Backgrounds:** `bg-background`, `bg-card`, `bg-muted`
 - **Typography:** `text-foreground`, `text-muted-foreground`, `text-primary-foreground`
 - **Borders:** `border-border`, `border-input`
-- **States:** `text-primary`, `bg-success`, `text-destructive`, `bg-warning`
+- **States:** `text-primary`, `bg-success`, `text-danger`, `bg-warn`
 
 ```vue
 <div class="p-md bg-card border border-border rounded-lg flex flex-col gap-sm">

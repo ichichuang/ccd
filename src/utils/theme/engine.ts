@@ -290,11 +290,15 @@ export function applyTheme(vars: ThemeCssVars) {
   // 4. 单次原子更新 - 只触发 1 次 style mutation
   root.style.cssText = cssText
 
-  // 5. 持久化 --primary 供 index.html 预加载圈首帧读取（刷新后与主题一致）
+  // 5. 持久化 --primary / --background 供 index.html 预加载层首帧读取（刷新后与主题一致）
   try {
     const primary = vars['--primary']
     if (primary) {
       localStorage.setItem('theme-primary', primary)
+    }
+    const background = vars['--background']
+    if (background) {
+      localStorage.setItem('theme-background', background)
     }
   } catch (_) {
     /* ignore */

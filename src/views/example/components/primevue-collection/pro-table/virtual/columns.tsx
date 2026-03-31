@@ -22,9 +22,9 @@ function statusLabel(status: TransactionLedgerRow['status']): string {
 }
 
 function statusClass(status: TransactionLedgerRow['status']): string {
-  if (status === 'success') return 'text-success bg-success/10'
-  if (status === 'failed') return 'text-danger bg-danger/10'
-  return 'text-warning bg-warning/10'
+  if (status === 'success') return 'bg-success/10 text-success'
+  if (status === 'failed') return 'bg-danger/10 text-danger'
+  return 'bg-warn/10 text-warn'
 }
 
 export const transactionLedgerColumns: ProTableColumn<TransactionLedgerRow>[] = [
@@ -39,6 +39,8 @@ export const transactionLedgerColumns: ProTableColumn<TransactionLedgerRow>[] = 
     title: '日期',
     field: 'date',
     width: 'var(--spacing-5xl)',
+    headerAlign: 'center',
+    align: 'center',
   },
   {
     id: 'account',
@@ -50,6 +52,7 @@ export const transactionLedgerColumns: ProTableColumn<TransactionLedgerRow>[] = 
     id: 'amount',
     title: '金额',
     field: 'amount',
+    headerAlign: 'right',
     align: 'right',
     width: 'var(--spacing-5xl)',
     render: ({ row }) => formatAmount(row.amount),
@@ -58,17 +61,13 @@ export const transactionLedgerColumns: ProTableColumn<TransactionLedgerRow>[] = 
     id: 'status',
     title: '状态',
     field: 'status',
+    headerAlign: 'center',
+    align: 'center',
     width: 'var(--spacing-5xl)',
     render: ({ row }) => (
-      <span
-        class={[
-          'row-start items-center',
-          'px-xs py-xs rounded-xs text-xs font-medium',
-          statusClass(row.status),
-        ].join(' ')}
-      >
+      <div class={`px-xs py-xs rounded-lg center text-xs font-medium ${statusClass(row.status)}`}>
         {statusLabel(row.status)}
-      </span>
+      </div>
     ),
   },
   {

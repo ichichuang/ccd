@@ -193,6 +193,16 @@ export class FormController<TValues extends ValuesRecord = ValuesRecord> {
         required,
       })
 
+      // 有 deps 的 OptionsLoader：依赖链重算后按最新 form 上下文重新拉取（无 deps 的首次加载见 LifecycleManager）
+      if (
+        typeof schema.options === 'function' &&
+        visible &&
+        schema.deps &&
+        schema.deps.length > 0
+      ) {
+        this.loadAsyncOptions(fieldName)
+      }
+
       // DAG 触发的联动重算后，根据触摸状态与 validateOn 策略触发交叉字段校验
       const nextState = this.store.getFieldState(fieldName) as FieldState<unknown> | undefined
       const shouldValidate =
@@ -483,6 +493,16 @@ export class FormController<TValues extends ValuesRecord = ValuesRecord> {
     this.transactionManager.commit(() => {
       // 清理错误本身不需要额外的依赖调度，这里仅确保批量通知一次
     }, this)
+  }
+
+  /**
+   * 挂载后：对「无 deps」的 OptionsLoader 触发首次加载（有 deps 的已在 recomputeFields 中加载，避免重复请求）
+   */
+  loadAsyncOptionsForFieldWithoutDeps(fieldName: string): void {
+    const field = this.findFieldSchema(fieldName)
+    if (!field || typeof field.options !== 'function') return
+    if (field.deps && field.deps.length > 0) return
+    this.loadAsyncOptions(fieldName)
   }
 
   /**

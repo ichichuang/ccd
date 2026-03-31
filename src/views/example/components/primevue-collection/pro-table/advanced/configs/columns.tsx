@@ -20,7 +20,8 @@ const STATUS_LABELS: Record<string, string> = {
 
 export function createAdvancedColumns(
   onEdit: (event: MouseEvent, row: AdvancedRow) => void,
-  onDelete: (event: MouseEvent, row: AdvancedRow) => void
+  onDelete: (event: MouseEvent, row: AdvancedRow) => void,
+  hasAuth: (auths: string | string[]) => boolean
 ): ProTableColumn<AdvancedRow>[] {
   return [
     {
@@ -92,13 +93,13 @@ export function createAdvancedColumns(
       render: ({ row }) => (
         <div class="center gap-sm w-full ">
           <Button
-            v-auth={['demo:edit']}
+            disabled={!hasAuth(['example:advanced:edit'])}
             size="small"
             label="编辑"
             onClick={(e: MouseEvent) => onEdit(e, row)}
           />
           <Button
-            v-auth={['demo:delete']}
+            disabled={!hasAuth(['example:advanced:delete'])}
             size="small"
             severity="danger"
             label="删除"

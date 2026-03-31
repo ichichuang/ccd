@@ -136,6 +136,7 @@
     "getMenuItemBase": "readonly",
     "getMenuStateClasses": "readonly",
     "h": "readonly",
+    "hasAuthCodes": "readonly",
     "ignorableWatch": "readonly",
     "inject": "readonly",
     "injectLocal": "readonly",

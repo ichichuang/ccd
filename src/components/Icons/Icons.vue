@@ -105,7 +105,7 @@ const functionalClasses = computed(() => {
   <div
     :class="[iconClass, functionalClasses, sizeClass, defaultColorClass]"
     :style="{ ...style, ...sizeStyle }"
-    class="inline-block align-middle"
+    class="inline-block align-middle text-inherit"
     role="img"
     :aria-label="props.label"
     :title="props.title"

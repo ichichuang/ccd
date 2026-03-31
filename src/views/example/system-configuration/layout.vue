@@ -150,7 +150,7 @@ async function copyText(text: string, label: string): Promise<void> {
 
 <template>
   <div
-    class="col-fill"
+    class="flex flex-col"
     data-archetype="A1-toolbar-content"
   >
     <CScrollbar class="col-fill">

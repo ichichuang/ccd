@@ -43,7 +43,7 @@ export const requestAuthLoginMock = async (payload: LoginParams): Promise<LoginR
       userId: '2',
       username: 'user',
       roles: ['user'],
-      permissions: ['demo:read'],
+      permissions: ['example:architecture:read'],
       avatar: undefined,
     }
   } else {
@@ -88,7 +88,7 @@ export const requestAuthCurrentUserMock = async (token: string): Promise<UserInf
       userId: '2',
       username: 'user',
       roles: ['user'],
-      permissions: ['demo:read'],
+      permissions: ['example:architecture:read'],
     }
   }
 

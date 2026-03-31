@@ -1,19 +1,29 @@
 <script setup lang="ts" generic="T extends Record<string, unknown>">
-import type { VNode } from 'vue'
+import { h, resolveComponent, type VNode } from 'vue'
+import { objectGet } from '@/utils/lodashes'
 import ProTableCell from './components/ProTableCell'
 import { buildDataTablePt, type DataTablePtOptions } from './presets/dataTablePt'
 import type { ProTableColumn } from './engine/types/column'
 import type { SortState, FilterState } from './engine/types/tableState'
-import type { PaginationConfig, ProTableProps } from './engine/types/props'
+import type {
+  PaginationConfig,
+  ProTableApiQueryParams,
+  ProTableProps,
+  ProTableSearchParams,
+  RequestFn,
+} from './engine/types/props'
 import {
   INFINITE_SCROLL_DEFAULTS,
   PAGINATION_DEFAULTS,
   PRO_TABLE_PROPS_DEFAULTS,
   UI_DEFAULTS,
 } from './engine/config'
+import { formatRequestParams, formatResponseData, resolveApiUrl } from './engine/config/apiAdapter'
+import { get, post } from '@/utils/http/methods'
 import { TableController } from './engine/core/TableController'
 
 const props = withDefaults(defineProps<ProTableProps<T>>(), {
+  data: () => [] as T[],
   loading: PRO_TABLE_PROPS_DEFAULTS.loading,
   rowKey: PRO_TABLE_PROPS_DEFAULTS.rowKey,
   showToolbar: PRO_TABLE_PROPS_DEFAULTS.showToolbar,
@@ -40,7 +50,73 @@ const props = withDefaults(defineProps<ProTableProps<T>>(), {
   stateKey: PRO_TABLE_PROPS_DEFAULTS.stateKey,
   selected: PRO_TABLE_PROPS_DEFAULTS.selected,
   virtualScroll: PRO_TABLE_PROPS_DEFAULTS.virtualScroll,
+  request: undefined,
+  api: undefined,
+  dataKey: 'data',
+  totalKey: 'total',
+  requestConfig: undefined,
+  apiUrl: undefined,
+  apiMethod: 'GET',
+  apiConfig: undefined,
+  searchPathResolver: undefined,
+  searchParams: undefined,
 })
+
+function normalizeSearchParams(params: ProTableSearchParams | undefined): ProTableApiQueryParams {
+  if (!params) return {}
+
+  const merged: ProTableApiQueryParams = {}
+  for (const [key, value] of Object.entries(params)) {
+    if (value === undefined || value === null) continue
+    if (typeof value === 'string' || typeof value === 'number' || typeof value === 'boolean') {
+      merged[key] = value
+    }
+  }
+  return merged
+}
+
+function createUnifiedRequest(): RequestFn<T> | undefined {
+  // Priority: request > api > apiUrl
+  if (props.request) return props.request
+
+  if (props.api) {
+    return async params => {
+      const query: ProTableApiQueryParams = {
+        ...formatRequestParams(params),
+        ...normalizeSearchParams(props.searchParams),
+      }
+      const raw = await props.api!(query)
+      return formatResponseData<T>(raw, props.dataKey, props.totalKey)
+    }
+  }
+
+  if (props.apiUrl) {
+    return async params => {
+      const query: ProTableApiQueryParams = {
+        ...formatRequestParams(params),
+        ...normalizeSearchParams(props.searchParams),
+      }
+      const url = resolveApiUrl(props.apiUrl!, query, props.searchPathResolver)
+      const method = props.apiMethod ?? 'GET'
+
+      const httpConfig = {
+        ...props.apiConfig,
+        enableCache: props.apiConfig?.enableCache ?? false,
+        cancelStrategy: props.apiConfig?.cancelStrategy ?? ('cancelPrevious' as const),
+      }
+
+      let raw: unknown
+      if (method === 'POST') {
+        raw = await post(url, query, httpConfig)
+      } else {
+        raw = await get(url, { ...httpConfig, params: query })
+      }
+      return formatResponseData<T>(raw, props.dataKey, props.totalKey)
+    }
+  }
+
+  return undefined
+}
 
 const emit = defineEmits<{
   'update:selected': [rows: T[]]
@@ -51,6 +127,7 @@ const emit = defineEmits<{
   refresh: []
   'load-more': []
   'row-click': [row: T]
+  'request-error': [error: Error]
 }>()
 
 const pagConfig = computed<PaginationConfig>(() => {
@@ -69,11 +146,23 @@ const ctrl = new TableController<T>({
   columns: props.columns,
   data: props.data,
   rowKey: String(props.rowKey ?? PRO_TABLE_PROPS_DEFAULTS.rowKey),
-  serverMode: props.serverMode,
+  serverMode: props.serverMode ?? false,
   paginationEnabled: enginePaginationEnabled.value,
   initialPageSize: initialPageSizeSnapshot,
   onLoad: params => emit('load', params),
+  request: createUnifiedRequest(),
+  requestConfig: props.requestConfig,
+  onRequestError: err => emit('request-error', err),
 })
+
+const toolbarServerMode = computed(
+  () => !!(props.api || props.request || props.apiUrl) || props.serverMode
+)
+
+/** Resolved loading: request-mode uses internal fetch state, otherwise uses prop. */
+const isLoading = computed<boolean>(() =>
+  ctrl.requestMode ? ctrl.state.fetch.loading : props.loading
+)
 
 // ── Infinite scroll ──────────────────────────────────────────────────────────
 
@@ -90,16 +179,23 @@ function _setupInfiniteScroll(): void {
   if (!wrapper) return
   _scrollTarget = wrapper
   _scrollHandler = () => {
-    if (!_scrollTarget || props.loading) return
+    if (!_scrollTarget || isLoading.value) return
     const { scrollTop, scrollHeight, clientHeight } = _scrollTarget
     if (scrollHeight - scrollTop - clientHeight < INFINITE_SCROLL_DEFAULTS.bottomDistancePx) {
-      emit('load-more')
+      if (ctrl.requestMode) {
+        ctrl.fetchMore()
+      } else {
+        emit('load-more')
+      }
     }
   }
   wrapper.addEventListener('scroll', _scrollHandler, { passive: true })
 }
 
 onMounted(() => {
+  // Request mode: trigger initial fetch
+  ctrl.fetchInitial()
+
   if (props.infiniteScroll)
     nextTick(() => {
       _scrollTimeoutId = setTimeout(_setupInfiniteScroll, INFINITE_SCROLL_DEFAULTS.setupDelayMs)
@@ -117,18 +213,21 @@ onUnmounted(() => {
   }
 })
 
-watch(
-  () => props.data,
-  data => ctrl.setData(data),
-  { deep: false }
-)
-watch(
-  () => props.total,
-  total => {
-    if (total !== undefined) ctrl.setTotal(total)
-  },
-  { immediate: true }
-)
+// In request mode, data/total are managed internally — skip prop watchers
+if (!ctrl.requestMode) {
+  watch(
+    () => props.data,
+    data => ctrl.setData(data),
+    { deep: false }
+  )
+  watch(
+    () => props.total,
+    total => {
+      if (total !== undefined) ctrl.setTotal(total)
+    },
+    { immediate: true }
+  )
+}
 
 // Sync v-model:selected from parent into controller (two-way binding support)
 watch(
@@ -181,6 +280,28 @@ const scrollHeightValue = computed<string | undefined>(() => {
 
 const visibleColumnIds = computed(() => new Set(ctrl.visibleColumns.value.map(c => c.id)))
 
+// ── Pseudo-fullscreen：fixed + z-overlay；全屏时 Teleport 到 body，避免 Layout 内 overflow-hidden 裁切盖不住 footer
+const isFullscreen = ref(false)
+
+function toggleFullscreen(): void {
+  isFullscreen.value = !isFullscreen.value
+  if (typeof document !== 'undefined') {
+    document.body.style.overflow = isFullscreen.value ? 'hidden' : ''
+  }
+}
+
+onBeforeUnmount(() => {
+  if (typeof document !== 'undefined') {
+    document.body.style.overflow = ''
+  }
+})
+
+// ── Export ─────────────────────────────────────────────────────────────────────
+const hasSelection = computed(() => ctrl.state.selection.selectedRows.length > 0)
+function handleExport(mode: 'page' | 'selected'): void {
+  ctrl.exportData(mode)
+}
+
 // Native PrimeVue selection bridge
 const tableSelection = computed({
   get: (): T | T[] | undefined => {
@@ -229,6 +350,8 @@ function handlePageSizeChange(pageSize: number): void {
   emit('page-change', ctrl.state.pagination.page, ctrl.state.pagination.pageSize)
 }
 
+const ResolvedTag = resolveComponent('Tag')
+
 function renderHeader(col: ProTableColumn<T>): VNode | string {
   if (col.headerRender) return col.headerRender()
   if (typeof col.title === 'function') return col.title()
@@ -240,8 +363,19 @@ function renderCell(col: ProTableColumn<T>, row: T, index: number): VNode | stri
     return col.render({ row, index, column: col })
   }
   if (!col.field) return null
-  const val = row[col.field]
-  return val !== null && val !== undefined ? String(val) : ''
+
+  const val = col.field.includes('.') ? objectGet(row, col.field) : row[col.field]
+
+  if (col.valueEnum) {
+    const key = val != null ? String(val) : ''
+    const enumItem = col.valueEnum[key]
+    if (!enumItem) return key
+    if (typeof enumItem === 'string') return enumItem
+    if (!enumItem.severity) return enumItem.label
+    return h(ResolvedTag, { value: enumItem.label, severity: enumItem.severity })
+  }
+
+  return val != null ? String(val) : ''
 }
 
 function getAlignClass(col: ProTableColumn<T>): string {
@@ -279,8 +413,14 @@ function getBodyColumnClass(
 
 // --- API Exposure ---
 defineExpose({
-  /** Force the table to reload data (emits refresh; parent should refetch in serverMode) */
-  reload: () => emit('refresh'),
+  /** Force the table to reload data. In request mode, re-executes the request. Otherwise emits refresh. */
+  reload: () => {
+    if (ctrl.requestMode) {
+      ctrl.requestReload()
+    } else {
+      emit('refresh')
+    }
+  },
   /** Clear current selection */
   clearSelection: () => ctrl.clearSelection(),
   /** Set pagination page (1-based index) */
@@ -298,188 +438,239 @@ defineExpose({
     sort: { ...ctrl.state.sort },
     filter: { ...ctrl.state.filter },
   }),
+  /** Read-only: current fetch state (only meaningful in request mode) */
+  getFetchState: () => ({ ...ctrl.state.fetch }),
+  /** Export visible data to CSV. */
+  exportData: (mode: 'page' | 'selected' = 'page', filename?: string) =>
+    ctrl.exportData(mode, filename),
+  /** Toggle pseudo-fullscreen (CSS fixed + body scroll lock). */
+  toggleFullscreen,
 })
 </script>
 
 <template>
-  <div
-    :class="
-      heightMode === 'fill'
-        ? 'layout-full flex flex-col gap-sm overflow-hidden'
-        : 'w-full flex flex-col gap-sm'
-    "
+  <Teleport
+    to="body"
+    :disabled="!isFullscreen"
   >
     <div
-      :class="
-        heightMode === 'fill'
-          ? ' rounded-xl col-fill px-md py-sm'
-          : ' rounded-xl w-full px-md py-sm'
-      "
+      ref="proTableRootRef"
+      :class="[
+        isFullscreen
+          ? 'fixed inset-0 z-overlay h-screen w-screen m-0 flex flex-col gap-sm overflow-hidden rounded-none bg-card p-md shadow-none'
+          : heightMode === 'fill'
+            ? 'layout-full flex flex-col gap-sm overflow-hidden'
+            : 'w-full flex flex-col gap-sm',
+      ]"
     >
-      <ProTableToolbar
-        v-if="showToolbar"
-        :title="title"
-        :show-global-filter="globalFilter"
-        :columns="columns"
-        :visible-column-ids="visibleColumnIds"
-        :server-mode="serverMode"
-        @update:global-filter="handleGlobalFilterChange"
-        @toggle-column="ctrl.toggleColumnVisibility($event)"
-        @refresh="emit('refresh')"
-      >
-        <template #toolbar-extra>
-          <slot name="toolbar-extra" />
-        </template>
-      </ProTableToolbar>
-
       <div
-        ref="tableContainerRef"
-        :class="heightMode === 'fill' ? 'col-fill relative' : 'w-full relative'"
+        :class="
+          heightMode === 'fill'
+            ? ' rounded-xl col-fill px-md py-sm'
+            : ' rounded-xl w-full px-md py-sm'
+        "
       >
-        <template v-if="!virtualScroll">
-          <DataTable
-            :selection="selectable ? tableSelection : undefined"
-            :value="ctrl.processedRows.value"
-            :class="[
-              showHorizontalLines ? 'pro-table-h-lines' : '',
-              showVerticalLines ? 'pro-table-v-lines' : '',
-            ]"
-            :pt="tablePt"
-            :striped-rows="stripedRows"
-            :row-hover="rowHover"
-            :scroll-height="scrollHeightValue"
-            :scrollable="heightMode !== 'auto'"
-            :selection-mode="
-              selectable === 'single'
-                ? 'single'
-                : selectable === 'checkbox'
-                  ? 'multiple'
-                  : undefined
-            "
-            :meta-key-selection="false"
-            :data-key="String(rowKey)"
-            :row-class="rowClassFn ?? undefined"
-            :resizable-columns="resizableColumns"
-            :column-resize-mode="columnResizeMode"
-            :reorderable-columns="reorderableColumns"
-            :state-storage="stateStorage === false ? undefined : stateStorage"
-            :state-key="stateKey"
-            @update:selection="selectable ? (tableSelection = $event) : undefined"
-            @row-click="emit('row-click', $event.data)"
+        <Transition name="pro-table-fetch-error">
+          <div
+            v-if="ctrl.requestMode && ctrl.state.fetch.error"
+            class="shrink-0 row-between gap-sm px-lg py-sm bg-danger/10 rounded-md mb-sm"
           >
-            <!-- Selection column: left or unpinned (before data columns) -->
-            <Column
-              v-if="selectable === 'checkbox' && selectionPinned !== 'right'"
-              column-key="selection-left"
-              selection-mode="multiple"
-              :header-style="{ width: UI_DEFAULTS.selectionColumnWidth }"
-              :frozen="selectionPinned === 'left'"
-              :align-frozen="selectionPinned === 'left' ? 'left' : undefined"
+            <div class="row-start gap-sm min-w-0">
+              <Icons
+                name="i-lucide-wifi-off"
+                size="sm"
+                class="text-danger shrink-0"
+              />
+              <span class="text-sm text-danger font-bold text-ellipsis-1">
+                {{ ctrl.state.fetch.errorMessage || $t('proTable.requestFailed') }}
+              </span>
+            </div>
+            <Button
+              size="small"
+              severity="danger"
+              outlined
+              :label="$t('proTable.retry')"
+              class="shrink-0"
+              @click="ctrl.requestReload()"
             />
+          </div>
+        </Transition>
 
-            <!-- Data columns -->
-            <Column
-              v-for="col in ctrl.visibleColumns.value"
-              :key="col.id"
-              :column-key="col.id"
-              :style="{
-                width: col.width,
-                minWidth: col.minWidth,
-                maxWidth: col.maxWidth,
-                cursor: col.sortable ? 'pointer' : undefined,
-              }"
-              :frozen="col.pinned === 'left' || col.pinned === 'right'"
-              :align-frozen="col.pinned === 'right' ? 'right' : undefined"
-            >
-              <template #header>
-                <div
-                  :class="[
-                    'flex flex-row items-center gap-xs select-none w-full',
-                    getHeaderAlignClass(col),
-                  ]"
-                  @click="handleSortClick(col)"
-                >
-                  <ProTableCell :node="renderHeader(col)" />
-                  <Icons
-                    v-if="col.sortable"
-                    :name="sortIcon(col)"
-                    size="xs"
-                    class="text-muted-foreground"
-                  />
-                </div>
-              </template>
-              <template #body="slotProps">
-                <ProTableCell
-                  :node="getBodyCellNode(col, slotProps)"
-                  :align-class="getAlignClass(col)"
-                  :extra-class="getBodyColumnClass(col, slotProps)"
-                />
-              </template>
-            </Column>
+        <ProTableToolbar
+          v-if="showToolbar"
+          :title="title"
+          :show-global-filter="globalFilter"
+          :columns="columns"
+          :visible-column-ids="visibleColumnIds"
+          :server-mode="toolbarServerMode"
+          :is-fullscreen="isFullscreen"
+          :has-selection="hasSelection"
+          @update:global-filter="handleGlobalFilterChange"
+          @toggle-column="ctrl.toggleColumnVisibility($event)"
+          @refresh="ctrl.requestMode ? ctrl.requestReload() : emit('refresh')"
+          @toggle-fullscreen="toggleFullscreen"
+          @export="handleExport"
+        >
+          <template #toolbar-extra>
+            <slot name="toolbar-extra" />
+          </template>
+        </ProTableToolbar>
 
-            <!-- Selection column: right-pinned (after data columns) -->
-            <Column
-              v-if="selectable === 'checkbox' && selectionPinned === 'right'"
-              column-key="selection-right"
-              selection-mode="multiple"
-              :header-style="{ width: UI_DEFAULTS.selectionColumnWidth }"
-              :frozen="true"
-              align-frozen="right"
-            />
-          </DataTable>
-        </template>
-
-        <template v-else>
-          <VirtualGridRenderer
-            :controller="ctrl"
-            :columns="columns"
-            :data="data"
-            class="col-fill"
-          />
-        </template>
-
-        <!-- Loading overlay — suppressed when infinite-scroll is appending to existing data -->
         <div
-          v-if="loading && (!infiniteScroll || ctrl.processedRows.value.length === 0)"
-          class="absolute inset-0 center bg-background/70 backdrop-blur-md z-10"
+          ref="tableContainerRef"
+          :class="heightMode === 'fill' ? 'col-fill relative' : 'w-full relative'"
+        >
+          <template v-if="!virtualScroll">
+            <DataTable
+              :selection="selectable ? tableSelection : undefined"
+              :value="ctrl.processedRows.value"
+              :class="[
+                showHorizontalLines ? 'pro-table-h-lines' : '',
+                showVerticalLines ? 'pro-table-v-lines' : '',
+              ]"
+              :pt="tablePt"
+              :striped-rows="stripedRows"
+              :row-hover="rowHover"
+              :scroll-height="scrollHeightValue"
+              :scrollable="heightMode !== 'auto'"
+              :selection-mode="
+                selectable === 'single'
+                  ? 'single'
+                  : selectable === 'checkbox'
+                    ? 'multiple'
+                    : undefined
+              "
+              :meta-key-selection="false"
+              :data-key="String(rowKey)"
+              :row-class="rowClassFn ?? undefined"
+              :resizable-columns="resizableColumns"
+              :column-resize-mode="columnResizeMode"
+              :reorderable-columns="reorderableColumns"
+              :state-storage="stateStorage === false ? undefined : stateStorage"
+              :state-key="stateKey"
+              @update:selection="selectable ? (tableSelection = $event) : undefined"
+              @row-click="emit('row-click', $event.data)"
+            >
+              <!-- Selection column: left or unpinned (before data columns) -->
+              <Column
+                v-if="selectable === 'checkbox' && selectionPinned !== 'right'"
+                column-key="selection-left"
+                selection-mode="multiple"
+                :header-style="{ width: UI_DEFAULTS.selectionColumnWidth }"
+                :frozen="selectionPinned === 'left'"
+                :align-frozen="selectionPinned === 'left' ? 'left' : undefined"
+              />
+
+              <!-- Data columns -->
+              <Column
+                v-for="col in ctrl.visibleColumns.value"
+                :key="col.id"
+                :column-key="col.id"
+                :style="{
+                  width: col.width,
+                  minWidth: col.minWidth,
+                  maxWidth: col.maxWidth,
+                  cursor: col.sortable ? 'pointer' : undefined,
+                }"
+                :frozen="col.pinned === 'left' || col.pinned === 'right'"
+                :align-frozen="col.pinned === 'right' ? 'right' : undefined"
+              >
+                <template #header>
+                  <div
+                    :class="[
+                      'flex flex-row items-center gap-xs select-none w-full',
+                      getHeaderAlignClass(col),
+                    ]"
+                    @click="handleSortClick(col)"
+                  >
+                    <ProTableCell :node="renderHeader(col)" />
+                    <Icons
+                      v-if="col.sortable"
+                      :name="sortIcon(col)"
+                      size="xs"
+                      class="text-muted-foreground"
+                    />
+                  </div>
+                </template>
+                <template #body="slotProps">
+                  <ProTableCell
+                    :node="getBodyCellNode(col, slotProps)"
+                    :align-class="getAlignClass(col)"
+                    :extra-class="getBodyColumnClass(col, slotProps)"
+                  />
+                </template>
+              </Column>
+
+              <!-- Selection column: right-pinned (after data columns) -->
+              <Column
+                v-if="selectable === 'checkbox' && selectionPinned === 'right'"
+                column-key="selection-right"
+                selection-mode="multiple"
+                :header-style="{ width: UI_DEFAULTS.selectionColumnWidth }"
+                :frozen="true"
+                align-frozen="right"
+              />
+            </DataTable>
+          </template>
+
+          <template v-else>
+            <VirtualGridRenderer
+              :controller="ctrl"
+              :columns="ctrl.visibleColumns.value"
+              :data="data"
+              :striped-rows="stripedRows"
+              :show-horizontal-lines="showHorizontalLines"
+              :show-vertical-lines="showVerticalLines"
+              :row-hover="rowHover"
+              :row-class-name="rowClassName"
+              :selectable="selectable"
+              class="col-fill"
+            />
+          </template>
+
+          <!-- Loading overlay — suppressed when infinite-scroll is appending to existing data -->
+          <div
+            v-if="isLoading && (!infiniteScroll || ctrl.processedRows.value.length === 0)"
+            class="absolute inset-0 center bg-background/70 backdrop-blur-md z-10"
+          >
+            <ProgressSpinner />
+          </div>
+
+          <!-- Empty state -->
+          <div
+            v-if="!isLoading && ctrl.processedRows.value.length === 0"
+            class="absolute inset-0 center"
+          >
+            <slot name="empty">
+              <EmptyState
+                icon="i-lucide-table-2"
+                :title="$t('emptyState.noData')"
+              />
+            </slot>
+          </div>
+        </div>
+
+        <!-- Infinite scroll: bottom loading indicator while appending -->
+        <div
+          v-if="infiniteScroll && isLoading && ctrl.processedRows.value.length > 0"
+          class="shrink-0 py-sm center"
         >
           <ProgressSpinner />
         </div>
 
-        <!-- Empty state -->
-        <div
-          v-if="!loading && ctrl.processedRows.value.length === 0"
-          class="absolute inset-0 center"
-        >
-          <slot name="empty">
-            <EmptyState
-              icon="i-lucide-table-2"
-              :title="$t('emptyState.noData')"
-            />
-          </slot>
-        </div>
+        <!-- 架构互斥：virtualScroll 模式下必须卸载分页 UI（避免“虚拟滚动 + 翻页”造成心智与性能冲突） -->
+        <ProTablePagination
+          v-if="paginationEnabled && !virtualScroll"
+          :page="ctrl.state.pagination.page"
+          :page-size="ctrl.state.pagination.pageSize"
+          :total="ctrl.totalCount.value"
+          :page-size-options="pageSizeOptions"
+          @update:page="handlePageChange"
+          @update:page-size="handlePageSizeChange"
+        />
       </div>
-
-      <!-- Infinite scroll: bottom loading indicator while appending -->
-      <div
-        v-if="infiniteScroll && loading && ctrl.processedRows.value.length > 0"
-        class="shrink-0 py-sm center"
-      >
-        <ProgressSpinner />
-      </div>
-
-      <!-- 架构互斥：virtualScroll 模式下必须卸载分页 UI（避免“虚拟滚动 + 翻页”造成心智与性能冲突） -->
-      <ProTablePagination
-        v-if="paginationEnabled && !virtualScroll"
-        :page="ctrl.state.pagination.page"
-        :page-size="ctrl.state.pagination.pageSize"
-        :total="ctrl.totalCount.value"
-        :page-size-options="pageSizeOptions"
-        @update:page="handlePageChange"
-        @update:page-size="handlePageSizeChange"
-      />
     </div>
-  </div>
+  </Teleport>
 </template>
 
 <style scoped>
@@ -507,5 +698,19 @@ defineExpose({
 :deep(.pro-table-v-lines .p-datatable-thead > tr > th:last-child),
 :deep(.pro-table-v-lines .p-datatable-tbody > tr > td:last-child) {
   border-right-width: 0 !important;
+}
+
+.pro-table-fetch-error-enter-active,
+.pro-table-fetch-error-leave-active {
+  transition:
+    opacity var(--transition-md) ease,
+    max-height var(--transition-md) ease;
+  overflow: hidden;
+  max-height: var(--spacing-3xl);
+}
+.pro-table-fetch-error-enter-from,
+.pro-table-fetch-error-leave-to {
+  opacity: 0;
+  max-height: 0;
 }
 </style>

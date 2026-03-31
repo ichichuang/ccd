@@ -12,7 +12,9 @@ import { useForm } from './engine/hooks/useForm'
 import { registerBuiltinFields } from './renderers/registerBuiltinFields'
 import ProFormNode from './renderers/ProFormNode.vue'
 import { useAppElementSize } from '@/hooks/modules/useAppElementSize'
-import { getActiveBreakpoint } from './engine/utils/breakpoint'
+import { getActiveBreakpoint, resolveSpan } from './engine/utils/breakpoint'
+import type { BreakpointKey } from './engine/utils/breakpoint'
+import type { ResponsiveSpan } from './engine/types'
 import { deepClone } from '@/utils/lodashes'
 import {
   PRO_FORM_DEFAULTS,
@@ -86,6 +88,18 @@ const getNodeKey = (node: FormSchemaNode, index: number): string => {
   return `node:${index}`
 }
 
+/** 根级栅格：与 ProFormNode 内子字段一致，按 span / layout.span + 断点解析列宽 */
+type RootLayoutNode = { span?: ResponsiveSpan; layout?: { span?: ResponsiveSpan } }
+
+const getRootGridWrapperStyle = (node: FormSchemaNode): Record<string, string> => {
+  if (!isRootGrid.value) return {}
+  const n = node as RootLayoutNode
+  const spanConfig = n.span ?? n.layout?.span
+  const finalSpan = resolveSpan(spanConfig, activeBreakpoint.value as BreakpointKey)
+  const span = finalSpan > 0 ? finalSpan : PRO_FORM_DEFAULTS.gridSpan
+  return { gridColumn: `span ${span} / span ${span}` }
+}
+
 const internalSchema = reactive<FormSchema>(deepClone(props.schema))
 
 const hasVisibleFields = computed(() => internalSchema.fields.length > 0)
@@ -127,9 +141,17 @@ const emitSubmit = (values: TValues): void => {
   emit('submit', values)
 }
 
+/**
+ * 与根节点 `<form @submit="handleSubmit(emitSubmit)">` 同源：校验通过后 emit('submit')。
+ * 禁止透传 `form.submit`（FormController.submit 在未设置 submitCallback 时不会 emit）。
+ */
+const handleFooterSubmit = async (): Promise<void> => {
+  await handleSubmit(emitSubmit)()
+}
+
 const exposed = {
   form,
-  submit: form.submit,
+  submit: handleFooterSubmit,
   validate: form.validate,
   getValues,
   getFormState,
@@ -171,13 +193,7 @@ defineExpose(exposed)
       <div
         v-for="(node, index) in internalSchema.fields"
         :key="getNodeKey(node, index)"
-        :style="
-          isRootGrid
-            ? {
-                gridColumn: `span ${PRO_FORM_DEFAULTS.gridSpan} / span ${PRO_FORM_DEFAULTS.gridSpan}`,
-              }
-            : {}
-        "
+        :style="getRootGridWrapperStyle(node)"
       >
         <ProFormNode :node="node" />
       </div>
@@ -186,7 +202,7 @@ defineExpose(exposed)
     <slot
       name="footer"
       :form-state="getFormState()"
-      :submit="form.submit"
+      :submit="handleFooterSubmit"
     />
   </form>
 </template>

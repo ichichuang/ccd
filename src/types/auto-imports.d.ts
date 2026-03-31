@@ -88,6 +88,7 @@ declare global {
   const getMenuItemBase: typeof import('../hooks/layout/useMenuVisuals').getMenuItemBase
   const getMenuStateClasses: typeof import('../hooks/layout/useMenuVisuals').getMenuStateClasses
   const h: typeof import('vue').h
+  const hasAuthCodes: typeof import('../hooks/modules/useAuth').hasAuthCodes
   const ignorableWatch: typeof import('@vueuse/core').ignorableWatch
   const inject: typeof import('vue').inject
   const injectLocal: typeof import('@vueuse/core').injectLocal
@@ -229,6 +230,7 @@ declare global {
   const useDisplayMedia: typeof import('@vueuse/core').useDisplayMedia
   const useDocumentVisibility: typeof import('@vueuse/core').useDocumentVisibility
   const useDraggable: typeof import('@vueuse/core').useDraggable
+  const useDrawer: typeof import('../hooks/modules/useDrawer').useDrawer
   const useDropZone: typeof import('@vueuse/core').useDropZone
   const useElementBounding: typeof import('@vueuse/core').useElementBounding
   const useElementByPoint: typeof import('@vueuse/core').useElementByPoint

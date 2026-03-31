@@ -1,3 +1,32 @@
+/* ============================================
+ * CScrollbar 主题样式
+ * 完美融合项目主题系统 CSS 变量
+ * ============================================ */
+
+.c-scrollbar-native {
+  /* 原生滚动条样式 */
+  &::-webkit-scrollbar {
+    width: var(--spacing-sm);
+    height: var(--spacing-sm);
+  }
+
+  &::-webkit-scrollbar-track {
+    background: transparent !important;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: rgb(var(--muted) / 50%) !important;
+    border-radius: var(--radius-md) !important;
+    border: calc(var(--spacing-xs) / 2) solid transparent !important;
+    background-clip: content-box !important;
+
+    &:hover {
+      background: rgb(var(--muted) / 80%) !important;
+      background-clip: content-box !important;
+    }
+  }
+}
+
 /* Admin 侧栏 PanelMenu：多级菜单列表统一纵向间距（第三方组件覆盖，仅用变量） */
 .admin-sidebar--fixed {
   // Panel 容器：grid 子项与 wrapper 统一锁定在侧栏宽度内，允许内容收缩

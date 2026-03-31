@@ -1,4 +1,4 @@
-import { defineComponent, Transition } from 'vue'
+import { defineComponent, Teleport, Transition } from 'vue'
 import { CScrollbar } from '@/components/CScrollbar'
 import { Icons } from '@/components/Icons'
 import { TAB_ICON_SIZE } from '@/constants/layout-menu'
@@ -31,6 +31,26 @@ export default defineComponent({
       t,
     } = useAdminTabs()
 
+    const contextMenuPanelRef = ref<HTMLElement | null>(null)
+
+    const clampContextMenuToViewport = async () => {
+      if (!contextMenu.value.visible) return
+      await nextTick()
+
+      const el = contextMenuPanelRef.value
+      if (!el) return
+
+      const rect = el.getBoundingClientRect()
+      const vw = window.innerWidth
+      const vh = window.innerHeight
+
+      const nextX = Math.min(Math.max(0, contextMenu.value.x), Math.max(0, vw - rect.width))
+      const nextY = Math.min(Math.max(0, contextMenu.value.y), Math.max(0, vh - rect.height))
+
+      contextMenu.value.x = Math.round(nextX)
+      contextMenu.value.y = Math.round(nextY)
+    }
+
     // 监听显示状态，从隐藏变为显示时重新计算位置
     watch(
       () => props.show,
@@ -40,6 +60,13 @@ export default defineComponent({
             updateActiveTabPosition('auto')
           })
         }
+      }
+    )
+
+    watch(
+      () => contextMenu.value.visible,
+      visible => {
+        if (visible) void clampContextMenuToViewport()
       }
     )
 
@@ -65,7 +92,10 @@ export default defineComponent({
       ]
 
       return (
-        <div class="w-full h-tabsHeight select-none">
+        <div
+          class="w-full h-tabsHeight select-none"
+          data-admin-tabs-bar="true"
+        >
           <div class="relative center gap-1 layout-full flex-1">
             <CScrollbar
               ref={scrollContainer}
@@ -116,7 +146,6 @@ export default defineComponent({
                         <Icons
                           name={tab.icon}
                           size={TAB_ICON_SIZE}
-                          class={['text-inherit! ']}
                         />
                       )}
 
@@ -132,7 +161,6 @@ export default defineComponent({
                           <Icons
                             name="i-lucide-x"
                             size={TAB_ICON_SIZE}
-                            class="text-inherit!"
                           />
                         </div>
                       )}
@@ -144,47 +172,58 @@ export default defineComponent({
           </div>
 
           {/* Context Menu Portal/Overlay with Transition */}
-          <Transition
-            enter-active-class="transition duration-md ease-out"
-            enter-from-class="opacity-0 scale-95"
-            enter-to-class="opacity-100 scale-100"
-            leave-active-class="transition duration-md ease-in"
-            leave-from-class="opacity-100 scale-100"
-            leave-to-class="opacity-0 scale-95"
-          >
-            {contextMenu.value.visible && (
-              <div
-                class="fixed z-popover min-w-[var(--spacing-3xl)] bg-popover/95 backdrop-blur-md shadow-xl rounded-md p-xs flex flex-col gap-xs origin-top-left outline-none!"
-                style={{ top: `${contextMenu.value.y}px`, left: `${contextMenu.value.x}px` }}
-              >
-                {contextMenuOptions.map(option => (
+          <Teleport to="body">
+            <Transition
+              enter-active-class="transition duration-md ease-out"
+              enter-from-class="opacity-0 scale-95"
+              enter-to-class="opacity-100 scale-100"
+              leave-active-class="transition duration-md ease-in"
+              leave-from-class="opacity-100 scale-100"
+              leave-to-class="opacity-0 scale-95"
+            >
+              {contextMenu.value.visible && (
+                <div
+                  class="fixed inset-0 z-overlay"
+                  data-admin-tabs-context-menu="true"
+                  onContextmenu={(e: MouseEvent) => e.preventDefault()}
+                >
                   <div
-                    key={option.label}
-                    class="flex items-center gap-sm cursor-pointer select-none transition-all duration-md ease-out-expo border-none bg-transparent px-sm py-xs rounded-sm text-sm text-popover-foreground hover:bg-primary/12! dark:hover:bg-primary/30! hover:text-primary! group"
-                    role="button"
-                    tabindex="0"
-                    onClick={e => {
-                      e.stopPropagation()
-                      handleContextAction(option.label)
-                    }}
-                    onKeyup={(e: KeyboardEvent) => {
-                      if (e.key === 'Enter') {
-                        e.stopPropagation()
-                        handleContextAction(option.label)
-                      }
-                    }}
+                    ref={contextMenuPanelRef}
+                    class="fixed z-popover min-w-[var(--spacing-3xl)] bg-popover/95 backdrop-blur-md shadow-xl rounded-md p-xs flex flex-col gap-xs origin-top-left outline-none!"
+                    style={{ top: `${contextMenu.value.y}px`, left: `${contextMenu.value.x}px` }}
+                    onMousedown={(e: MouseEvent) => e.stopPropagation()}
+                    onClick={(e: MouseEvent) => e.stopPropagation()}
                   >
-                    <Icons
-                      name={option.icon}
-                      class="text-muted-foreground! transition-colors duration-md group-hover:text-primary!"
-                      size={TAB_ICON_SIZE}
-                    />
-                    <span>{option.text}</span>
+                    {contextMenuOptions.map(option => (
+                      <div
+                        key={option.label}
+                        class="flex items-center gap-sm cursor-pointer select-none transition-all duration-md ease-out-expo border-none bg-transparent px-sm py-xs rounded-sm text-sm text-popover-foreground hover:bg-primary/12! dark:hover:bg-primary/30! hover:text-primary! group"
+                        role="button"
+                        tabindex="0"
+                        onClick={e => {
+                          e.stopPropagation()
+                          handleContextAction(option.label)
+                        }}
+                        onKeyup={(e: KeyboardEvent) => {
+                          if (e.key === 'Enter') {
+                            e.stopPropagation()
+                            handleContextAction(option.label)
+                          }
+                        }}
+                      >
+                        <Icons
+                          name={option.icon}
+                          class="text-muted-foreground! transition-colors duration-md group-hover:text-primary!"
+                          size={TAB_ICON_SIZE}
+                        />
+                        <span>{option.text}</span>
+                      </div>
+                    ))}
                   </div>
-                ))}
-              </div>
-            )}
-          </Transition>
+                </div>
+              )}
+            </Transition>
+          </Teleport>
         </div>
       )
     }

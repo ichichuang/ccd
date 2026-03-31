@@ -3,8 +3,11 @@
  * PrimeVue Dialog 封装组件
  * 支持 hideHeader/hideClose/hideFooter、自定义渲染器、拖拽、最大化、响应式多语言
  */
+import type { PassThrough } from '@primevue/core'
+import type { DialogPassThroughOptions } from 'primevue/dialog'
 import { t } from '@/locales'
 import { useDeviceStore } from '@/stores/modules/device'
+import { defineComponent, type PropType } from 'vue'
 import type { Component, VNode } from 'vue'
 import type { ButtonProps, DialogOptions, EventType } from './utils/types'
 import type { ArgsType } from './utils/types'
@@ -12,6 +15,62 @@ import { DIALOG_BREAKPOINTS } from './utils/constants'
 
 function isFunction(value: unknown): value is (...args: unknown[]) => unknown {
   return typeof value === 'function'
+}
+
+/**
+ * V28.0：渲染结果类型（VNode / 组件 / null）。
+ * V34.0：缓存已求值的 VNode，退场动画期间不再重新执行 render，避免重内容 thrash。
+ */
+type RenderFnResult = VNode | Component | null
+
+const VNodeRenderer = defineComponent({
+  name: 'PrimeDialogVNodeRenderer',
+  props: {
+    vnode: {
+      type: [Object, Function] as PropType<RenderFnResult>,
+      default: null,
+    },
+  },
+  setup(props) {
+    return () => props.vnode ?? null
+  },
+})
+
+/** V34.0：按实例缓存已求值的 VNode；visible=false 时冻结上一帧，禁止重新执行 content/header/footer 渲染函数 */
+type CachedVNodes = {
+  header: RenderFnResult
+  content: RenderFnResult
+  footer: RenderFnResult
+}
+
+const vnodeCache = new Map<string, CachedVNodes>()
+
+function getMemoizedVNodes(options: DialogOptions, originalIndex: number): CachedVNodes {
+  const id = options._instanceId ?? String(originalIndex)
+
+  if (!vnodeCache.has(id)) {
+    vnodeCache.set(id, { header: null, content: null, footer: null })
+  }
+
+  const cache = vnodeCache.get(id)!
+
+  if (!options.visible) {
+    return cache
+  }
+
+  cache.header = options.headerRenderer
+    ? options.headerRenderer({ close: () => {}, maximize: () => {}, minimize: () => {} })
+    : null
+
+  cache.content = options.contentRenderer
+    ? options.contentRenderer({ options, index: originalIndex })
+    : null
+
+  cache.footer = options.footerRenderer
+    ? options.footerRenderer({ options, index: originalIndex })
+    : null
+
+  return cache
 }
 
 const deviceStore = useDeviceStore()
@@ -55,6 +114,7 @@ const effectiveCloseOnMask = (options: DialogOptions, index: number): boolean =>
 
 const emit = defineEmits<{
   close: [options: DialogOptions, index: number, args?: ArgsType]
+  afterHide: [instanceId: string]
   open: [options: DialogOptions, index: number]
   maximize: [options: DialogOptions, index: number]
 }>()
@@ -124,8 +184,20 @@ function handleClose(options: DialogOptions, index: number, args: ArgsType = { c
   setTimeout(() => closingIndexSet.delete(index), 0)
 }
 
+function handleAfterHide(options: DialogOptions) {
+  const instanceId = options._instanceId
+  if (instanceId) {
+    vnodeCache.delete(instanceId)
+  }
+  if (!instanceId) return
+  emit('afterHide', instanceId)
+}
+
 function handleVisibleUpdate(visible: boolean, options: DialogOptions, index: number) {
-  if (!visible) handleClose(options, index, { command: 'close' })
+  // V27.2: 与 PrimeVue 内部关闭信号绝对同步，避免同一 tick 内 store 仍为 true 导致重渲染把 Dialog 拉回打开态（闪一下）
+  if (!visible) {
+    handleClose(options, index, { command: 'close' })
+  }
 }
 
 function handleOpen(options: DialogOptions, index: number) {
@@ -159,50 +231,34 @@ onUnmounted(() => {
   window.removeEventListener('locale-changed', handleLocaleChange)
   window.removeEventListener('locale-store-changed', handleLocaleChange)
   document.removeEventListener('keydown', handleEscapeKeydown)
+  vnodeCache.clear()
 })
 
 const standardDialogs = computed(() =>
   props.dialogStore.map((options, originalIndex) => ({ options, originalIndex }))
 )
 
-const dialogContentRenderers = computed(() => {
-  const renderers: Record<number, { render: () => VNode | Component }> = {}
-  props.dialogStore.forEach((options, originalIndex) => {
-    if (options.contentRenderer) {
-      const renderer = options.contentRenderer
-      renderers[originalIndex] = {
-        render: () => renderer({ options, index: originalIndex }),
-      }
-    }
-  })
-  return renderers
-})
+type DialogPtValue = PassThrough<DialogPassThroughOptions>
 
-const dialogHeaderRenderers = computed(() => {
-  const renderers: Record<number, { render: () => VNode | Component }> = {}
-  props.dialogStore.forEach((options, originalIndex) => {
-    if (options.headerRenderer && !options.hideHeader) {
-      const renderer = options.headerRenderer
-      renderers[originalIndex] = {
-        render: () => renderer({ close: () => {}, maximize: () => {}, minimize: () => {} }),
-      }
-    }
-  })
-  return renderers
-})
+/** 合并 maskClass 与 pt 时缓存引用，避免每次 render 返回新对象导致 PrimeVue 在动画期间重 Patch DOM、打断 CSS 过渡 */
+const dialogPtCache = new WeakMap<DialogOptions, DialogPtValue>()
 
-const dialogFooterRenderers = computed(() => {
-  const renderers: Record<number, { render: () => VNode | Component }> = {}
-  props.dialogStore.forEach((options, originalIndex) => {
-    if (options.footerRenderer) {
-      const renderer = options.footerRenderer
-      renderers[originalIndex] = {
-        render: () => renderer({ options, index: originalIndex }),
-      }
-    }
-  })
-  return renderers
-})
+/**
+ * 将 maskClass 与既有 pt 合并。
+ * V27.3：无 maskClass 时直接返回 `options.pt` 引用；有 maskClass 时对合并结果按 options 实例缓存，保证 `:pt` 引用稳定。
+ */
+function getDialogPt(options: DialogOptions): DialogPtValue | undefined {
+  if (!options.maskClass) {
+    return options.pt
+  }
+  if (!dialogPtCache.has(options)) {
+    dialogPtCache.set(options, {
+      ...(options.pt ?? {}),
+      mask: { class: options.maskClass },
+    })
+  }
+  return dialogPtCache.get(options)
+}
 </script>
 
 <template>
@@ -213,6 +269,7 @@ const dialogFooterRenderers = computed(() => {
     :header="options.hideHeader ? undefined : getHeaderText(options)"
     :style="options.style"
     :class="options.class"
+    :pt="getDialogPt(options)"
     :maximizable="options.maximizable"
     :close-on-escape="false"
     :dismissable-mask="effectiveCloseOnMask(options, originalIndex)"
@@ -225,14 +282,14 @@ const dialogFooterRenderers = computed(() => {
     :breakpoints="effectiveBreakpoints(options)"
     @update:visible="(visible: boolean) => handleVisibleUpdate(visible, options, originalIndex)"
     @show="handleOpen(options, originalIndex)"
-    @hide="handleClose(options, originalIndex)"
+    @after-hide="handleAfterHide(options)"
     @maximize="handleMaximize(options, originalIndex)"
   >
     <template
       v-if="options?.headerRenderer && !options?.hideHeader"
       #header
     >
-      <component :is="dialogHeaderRenderers[originalIndex]" />
+      <VNodeRenderer :vnode="getMemoizedVNodes(options, originalIndex).header" />
     </template>
     <template
       v-else-if="!options?.hideHeader"
@@ -241,11 +298,9 @@ const dialogFooterRenderers = computed(() => {
       <span>{{ getHeaderText(options) }}</span>
     </template>
 
-    <component
-      :is="dialogContentRenderers[originalIndex]"
+    <VNodeRenderer
       v-if="options?.contentRenderer"
-      v-bind="options?.props"
-      @close="(args: ArgsType) => handleClose(options, originalIndex, args)"
+      :vnode="getMemoizedVNodes(options, originalIndex).content"
     />
 
     <template
@@ -253,7 +308,7 @@ const dialogFooterRenderers = computed(() => {
       #footer
     >
       <template v-if="options?.footerRenderer">
-        <component :is="dialogFooterRenderers[originalIndex]" />
+        <VNodeRenderer :vnode="getMemoizedVNodes(options, originalIndex).footer" />
       </template>
       <template v-else>
         <div class="flex gap-md justify-end">

@@ -5,9 +5,9 @@ const { hasRole, hasAuth, hasAllAuths, login, restoreLoginFromToken } = useAuth(
 const userStore = useUserStore()
 
 const roleDraft = ref<string | undefined>('admin')
-const authSingleDraft = ref<string | undefined>('demo:read')
-const authOrDraft = ref<string | undefined>('demo:read,system:user:list')
-const authAllDraft = ref<string | undefined>('demo:read')
+const authSingleDraft = ref<string | undefined>('example:architecture:read')
+const authOrDraft = ref<string | undefined>('example:architecture:read,system:user:list')
+const authAllDraft = ref<string | undefined>('example:architecture:read')
 
 const parseList = (s: string | undefined): string[] =>
   (s ?? '')
@@ -70,7 +70,19 @@ const doRestore = async () => {
           <div class="col-stretch gap-xs">
             <h2 class="text-lg font-semibold text-foreground m-0">useAuth Demo</h2>
             <p class="text-sm text-muted-foreground m-0">
-              hasRole / hasAuth / hasAllAuths 的输入验证 + 登录/恢复登录流程
+              hasRole / hasAuth / hasAllAuths 的输入验证 + 登录/恢复登录流程。权限码约定为
+              <code class="code-inline">module:feature:action</code>
+              （示例 mock 使用
+              <code class="code-inline">example:architecture:*</code>
+              ）。按钮级演示见
+              <code class="code-inline">architecture/directives/auth</code>
+              。权限校验与
+              <code class="code-inline">v-auth</code>
+              指令同源；非 setup 可复用
+              <code class="code-inline">hasAuthCodes()</code>
+              （
+              <code class="code-inline">@/hooks/modules/useAuth</code>
+              ）。
             </p>
           </div>
           <div class="row-center gap-sm">
@@ -118,7 +130,7 @@ const doRestore = async () => {
               <div class="text-sm text-muted-foreground">hasAuth（单权限）</div>
               <InputText
                 v-model="authSingleDraft"
-                placeholder="例：demo:read"
+                placeholder="例：example:architecture:read"
               />
               <div class="row-start flex-wrap gap-sm">
                 <Tag
@@ -136,7 +148,7 @@ const doRestore = async () => {
               <div class="text-sm text-muted-foreground">hasAuth（OR：任意命中）</div>
               <InputText
                 v-model="authOrDraft"
-                placeholder="例：demo:read,system:user:list"
+                placeholder="例：example:architecture:read,system:user:list"
               />
               <div class="row-start flex-wrap gap-sm">
                 <Tag
@@ -154,7 +166,7 @@ const doRestore = async () => {
               <div class="text-sm text-muted-foreground">hasAllAuths（AND：全部命中）</div>
               <InputText
                 v-model="authAllDraft"
-                placeholder="例：demo:read,system:user:list"
+                placeholder="例：example:architecture:read,system:user:list"
               />
               <div class="row-start flex-wrap gap-sm">
                 <Tag

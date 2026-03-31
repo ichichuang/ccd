@@ -125,7 +125,7 @@ function onClickReset(): void {
 <template>
   <div
     data-archetype="A1-toolbar-content"
-    class="col-fill"
+    class="flex flex-col"
   >
     <header class="shrink-0 border-border/20 px-md py-sm">
       <h1 class="text-lg text-foreground m-0">ProForm API 与事件观测</h1>

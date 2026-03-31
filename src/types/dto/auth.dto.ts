@@ -11,7 +11,7 @@ export interface UserInfo {
   username: string
   /** 角色列表，用于页面级权限控制 */
   roles: string[]
-  /** 按钮/操作级权限标识 */
+  /** 按钮/操作级权限标识（约定 `module:feature:action`，如 `system:user:create`） */
   permissions: string[]
   /** 头像地址（可选） */
   avatar?: string

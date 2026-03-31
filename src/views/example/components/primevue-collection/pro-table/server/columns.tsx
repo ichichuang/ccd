@@ -1,103 +1,129 @@
+import type { V1UserListItemDTO } from '@/api/example/users'
 import type { ProTableColumn, ColumnRenderParams } from '@/components/ProTable'
-import type { DummyUserDTO } from '@/api/example/dummy'
+import Tag from 'primevue/tag'
+import { DateUtils } from '@/utils/date/dateUtils'
 
-const GENDER_CFG: Record<string, { label: string; cls: string }> = {
-  male: { label: '男', cls: 'bg-info/15 text-info' },
-  female: { label: '女', cls: 'bg-accent/15 text-accent' },
-}
+const GENDER_PILL = 'rounded-sm px-sm py-xs text-xs font-semibold shrink-0'
 
-const BADGE = 'rounded-sm px-sm py-xs text-xs font-semibold'
-
-export const serverTableColumns: ProTableColumn<DummyUserDTO>[] = [
+export const serverTableColumns: ProTableColumn<V1UserListItemDTO>[] = [
   {
     id: 'id',
     title: 'ID',
     field: 'id',
-    width: '64px',
+    width: '80px',
     align: 'right',
     sortable: true,
   },
   {
-    id: 'name',
-    // field 指向 firstName，ProTable 排序时会发送 sortBy=firstName 给 API
-    field: 'firstName',
-    title: '用户',
-    minWidth: '200px',
+    id: 'user',
+    title: '用户信息',
+    field: 'name',
+    minWidth: '240px',
     sortable: true,
-    render: ({ row }: ColumnRenderParams<DummyUserDTO>) => (
-      <div class="row-start items-center gap-sm">
-        <img
-          src={row.image}
-          alt={row.username}
-          class="w-[var(--spacing-xl)] h-[var(--spacing-xl)] rounded-full object-cover shrink-0 shadow-sm"
-        />
-        <div class="col-stretch gap-xs min-w-0">
-          <span class="text-sm font-medium text-foreground text-ellipsis-1">
-            {row.firstName} {row.lastName}
-          </span>
-          <span class="text-xs text-muted-foreground">@{row.username}</span>
+    render: ({ row }: ColumnRenderParams<V1UserListItemDTO>) => {
+      const name = typeof row.name === 'string' ? row.name.trim() : ''
+      const email = typeof row.email === 'string' ? row.email.trim() : ''
+      const initial = name.length > 0 ? name.charAt(0).toUpperCase() : '?'
+      return (
+        <div class="row-start items-center gap-sm min-w-0">
+          <div class="center shrink-0 rounded-full bg-primary/10 text-primary font-bold text-sm w-[var(--spacing-2xl)] h-[var(--spacing-2xl)]">
+            {initial}
+          </div>
+          <div class="col-stretch min-w-0 gap-xs">
+            <span class="text-sm font-medium text-foreground text-ellipsis-1">
+              {name.length > 0 ? name : '—'}
+            </span>
+            <span class="text-xs text-muted-foreground text-ellipsis-1">
+              {email.length > 0 ? email : '—'}
+            </span>
+          </div>
         </div>
-      </div>
-    ),
+      )
+    },
   },
   {
     id: 'age',
     title: '年龄',
     field: 'age',
-    width: '80px',
-    align: 'right',
+    width: '100px',
+    align: 'center',
     sortable: true,
   },
   {
     id: 'gender',
     title: '性别',
     field: 'gender',
-    width: '88px',
-    render: ({ row }: ColumnRenderParams<DummyUserDTO>) => {
-      const cfg = GENDER_CFG[row.gender] ?? {
-        label: row.gender,
-        cls: 'bg-muted/60 text-muted-foreground',
-      }
-      return <span class={`${cfg.cls} ${BADGE}`}>{cfg.label}</span>
+    width: '100px',
+    align: 'center',
+    render: ({ row }: ColumnRenderParams<V1UserListItemDTO>) => {
+      const g = row.gender
+      const isFemale = g === 'female'
+      const label = isFemale ? '女' : g === 'male' ? '男' : String(g ?? '—')
+      return (
+        <span
+          class={
+            isFemale
+              ? `bg-accent/15 text-accent ${GENDER_PILL}`
+              : g === 'male'
+                ? `bg-primary/15 text-primary ${GENDER_PILL}`
+                : `bg-muted text-muted-foreground ${GENDER_PILL}`
+          }
+        >
+          {label}
+        </span>
+      )
     },
   },
   {
-    id: 'email',
-    title: '邮箱',
-    field: 'email',
-    minWidth: '210px',
-  },
-  {
     id: 'phone',
-    title: '电话',
+    title: '联系电话',
     field: 'phone',
-    width: '165px',
+    minWidth: '160px',
+    render: ({ row }: ColumnRenderParams<V1UserListItemDTO>) => (
+      <span class="text-sm text-foreground text-ellipsis-1">
+        {typeof row.phone === 'string' && row.phone.trim() ? row.phone : '—'}
+      </span>
+    ),
   },
   {
-    id: 'company',
-    title: '公司 / 职位',
-    minWidth: '180px',
-    render: ({ row }: ColumnRenderParams<DummyUserDTO>) => {
-      const company = row.company
+    id: 'status',
+    title: '状态',
+    field: 'status',
+    width: '140px',
+    align: 'center',
+    sortable: true,
+    render: ({ row }: ColumnRenderParams<V1UserListItemDTO>) => {
+      const active = row.status === 'active'
       return (
-        <div class="col-stretch gap-xs min-w-0">
-          <span class="text-sm text-ellipsis-1">{company.name}</span>
-          <span class="text-xs text-muted-foreground text-ellipsis-1">
-            {company.department} · {company.title}
-          </span>
+        <div class="row-start items-center gap-sm">
+          <span
+            class={
+              active
+                ? 'w-2 h-2 rounded-full bg-success shrink-0'
+                : 'w-2 h-2 rounded-full bg-muted-foreground shrink-0'
+            }
+          />
+          <Tag
+            value={active ? 'active' : 'inactive'}
+            severity={active ? 'success' : 'secondary'}
+            class="capitalize"
+          />
         </div>
       )
     },
   },
   {
-    id: 'address',
-    title: '所在地',
-    width: '160px',
-    render: ({ row }: ColumnRenderParams<DummyUserDTO>) => {
-      const addr = row.address
+    id: 'createdAt',
+    title: '创建时间',
+    field: 'createdAt',
+    minWidth: '180px',
+    sortable: true,
+    render: ({ row }: ColumnRenderParams<V1UserListItemDTO>) => {
+      const raw = typeof row.createdAt === 'string' ? row.createdAt.trim() : ''
+      if (!raw) return <span class="text-sm text-muted-foreground">—</span>
       return (
         <span class="text-sm text-muted-foreground">
-          {addr.city}, {addr.country}
+          {DateUtils.format(raw, 'YYYY-MM-DD HH:mm')}
         </span>
       )
     },

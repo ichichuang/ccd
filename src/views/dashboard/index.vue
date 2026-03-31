@@ -157,28 +157,28 @@ const metricsConfig = computed(() => [
     valueMain: String(currentStats.value.cpu),
     unit: '%',
     icon: 'i-lucide-cpu',
-    color: 'text-primary',
+    color: 'text-primary!',
   },
   {
     label: 'Memory Load',
     valueMain: String(currentStats.value.memory),
     unit: '%',
     icon: 'i-lucide-database',
-    color: 'text-success',
+    color: 'text-success!',
   },
   {
     label: 'Network Traffic',
     valueMain: String(currentStats.value.network),
     unit: 'Mbps',
     icon: 'i-lucide-activity',
-    color: 'text-info',
+    color: 'text-info!',
   },
   {
     label: 'Disk I/O',
     valueMain: String(currentStats.value.disk),
     unit: 'MB/s',
     icon: 'i-lucide-hard-drive',
-    color: 'text-warn',
+    color: 'text-warn!',
   },
 ])
 </script>
@@ -287,7 +287,6 @@ const metricsConfig = computed(() => [
                 >
                   <Icons
                     :name="evt.icon"
-                    class="text-inherit!"
                     size="xl"
                   />
                 </div>

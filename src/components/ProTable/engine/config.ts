@@ -44,6 +44,18 @@ export const FILTER_DEFAULTS = {
   initial: { global: '', columns: {} },
 } as const
 
+export const REQUEST_DEFAULTS = {
+  immediate: true,
+  accumulate: false,
+} as const
+
+export const FETCH_STATE_DEFAULTS = {
+  loading: false,
+  error: false,
+  errorMessage: '',
+  hasMore: true,
+} as const
+
 export const INFINITE_SCROLL_DEFAULTS = {
   setupDelayMs: 100,
   bottomDistancePx: 80,

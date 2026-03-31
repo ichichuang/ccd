@@ -1,5 +1,5 @@
 <script setup lang="ts">
-defineOptions({ name: 'ExampleProFormGroupPage' })
+defineOptions({ name: 'ExampleProFormLayoutGroupPage' })
 
 import type { FormSchema } from '@/components/ProForm'
 
@@ -358,7 +358,7 @@ async function onSubmit(label: string, values: Record<string, unknown>): Promise
 <template>
   <div
     data-archetype="A1-toolbar-content"
-    class="col-fill"
+    class="flex flex-col"
   >
     <!-- Toolbar: Hero Header (Transparent Root Policy: Inherit canvas) -->
     <header class="shrink-0 border-primary/20">
@@ -370,16 +370,16 @@ async function onSubmit(label: string, values: Record<string, unknown>): Promise
           />
         </div>
         <div class="col-stretch gap-xs">
-          <h1 class="text-2xl font-bold text-foreground m-0">ProForm 容器分组与向导</h1>
+          <h1 class="text-2xl font-bold text-foreground m-0">ProForm 布局、分组与向导</h1>
           <p class="text-muted-foreground text-sm m-0">
             演示六种分组容器：Card 卡片、Collapse 折叠、Tabs 标签页、Step 向导、Group 纯分组与
-            Section 区块。
+            Section 区块。同时涵盖响应式栅格 (span xs/sm/lg) 与排版引擎 (layoutMode/labelAlign)。
           </p>
         </div>
       </div>
     </header>
     <div class="shrink-0 px-md py-xs text-xs text-muted-foreground border-border/15">
-      覆盖能力：card/collapse/tabs/step/group/section 六类容器及向导式组织。
+      覆盖能力：card/collapse/tabs/step/group/section 六类容器、向导式组织与响应式布局。
     </div>
 
     <!-- Scrollable content -->

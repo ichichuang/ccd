@@ -195,7 +195,7 @@ export default defineComponent({
       return (
         <div class="flex-1 min-h-0 row-start overflow-hidden transition-all duration-md ease-out">
           <div class="shrink-0 self-stretch overflow-hidden transition-all duration-md ease-out bg-sidebar backdrop-blur">
-            {showAmbientOrbs.value && (
+            {showSidebarEffective.value && (
               <AdminSidebar
                 mode={effectiveMode.value}
                 showSidebar={showSidebarEffective.value}
@@ -245,13 +245,16 @@ export default defineComponent({
             aria-hidden="true"
           >
             <div class="absolute inset-0 bg-background" />
-            {showAmbientOrbs.value && (
-              <>
-                <div class="absolute -top-1/4 -left-1/4 w-[65vw] h-[65vw] rounded-full bg-primary/[0.06] blur-[100px] animate-orb-drift" />
-                <div class="absolute -bottom-1/4 -right-1/4 w-[55vw] h-[55vw] rounded-full bg-accent/[0.05] blur-[55px] animate-orb-drift-alt" />
-                <div class="absolute top-[35%] left-[25%] w-[42vw] h-[42vw] rounded-full bg-info/[0.035] blur-[45px] animate-orb-pulse" />
-              </>
-            )}
+            <div
+              class={[
+                'absolute inset-0 transition-opacity duration-700 ease-out',
+                showAmbientOrbs.value ? 'opacity-100' : 'opacity-0',
+              ]}
+            >
+              <div class="absolute -top-1/4 -left-1/4 w-[65vw] h-[65vw] rounded-full bg-primary/[0.06] blur-[100px] animate-orb-drift" />
+              <div class="absolute -bottom-1/4 -right-1/4 w-[55vw] h-[55vw] rounded-full bg-accent/[0.05] blur-[55px] animate-orb-drift-alt" />
+              <div class="absolute top-[35%] left-[25%] w-[42vw] h-[42vw] rounded-full bg-info/[0.035] blur-[45px] animate-orb-pulse" />
+            </div>
           </div>
           {showHeader.value && (
             <div class="shrink-0 row-between h-headerHeight px-xs sm:px-sm md:px-md border-b-solid border-border bg-sidebar backdrop-blur">
@@ -303,6 +306,12 @@ export default defineComponent({
     return () => (
       <ContextMenuProvider
         scope="global"
+        beforeOpen={({ target }) => {
+          if (!(target instanceof HTMLElement)) return true
+          if (target.closest('[data-admin-tabs-bar="true"]') != null) return false
+          if (target.closest('[data-admin-tabs-context-menu="true"]') != null) return false
+          return true
+        }}
         v-slots={{
           menu: ({ close, event }: { close: () => void; event: MouseEvent }) => (
             <div class="min-w-[var(--spacing-4xl)] rounded-md p-xs flex flex-col gap-xs select-none">
@@ -317,7 +326,6 @@ export default defineComponent({
                 <Icons
                   name="i-lucide-rotate-cw"
                   size="sm"
-                  class="text-inherit!"
                 />
                 <span>{t('layout.reload')}</span>
               </div>
@@ -333,7 +341,6 @@ export default defineComponent({
                 <Icons
                   name="i-lucide-settings-2"
                   size="sm"
-                  class="text-inherit!"
                 />
                 <span>{t('layout.globalSettings')}</span>
               </div>
@@ -349,7 +356,6 @@ export default defineComponent({
                 <Icons
                   name={isDark.value ? 'i-lucide-sun' : 'i-lucide-moon'}
                   size="sm"
-                  class="text-inherit!"
                 />
                 <span>{contextThemeToggleLabel.value}</span>
               </div>

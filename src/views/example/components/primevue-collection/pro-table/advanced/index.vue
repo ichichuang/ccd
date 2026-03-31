@@ -51,7 +51,13 @@ function onDelete(event: MouseEvent, row: AdvancedRow): void {
   })
 }
 
-const columns = createAdvancedColumns(onEdit, onDelete)
+const { hasAuth } = useAuth()
+const userStore = useUserStore()
+
+const columns = computed(() => {
+  void userStore.userInfo.permissions
+  return createAdvancedColumns(onEdit, onDelete, hasAuth)
+})
 
 onMounted(() => {
   tableContainerHeight.value = tableContainerRef.value?.clientHeight ?? 0

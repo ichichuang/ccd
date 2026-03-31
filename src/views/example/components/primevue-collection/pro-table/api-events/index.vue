@@ -42,6 +42,7 @@ interface ProTableApiRef {
   clearSelection?: () => void
   clearFilters?: () => void
   exportCSV?: () => void
+  toggleColumnVisibility?: (columnId: string, visible?: boolean) => void
 }
 
 function pushLog(event: string, detail: unknown): void {
@@ -226,6 +227,16 @@ function handleClearFilters(): void {
   pushLog('api:clearFilters', { message: '通过 ref 清空过滤' })
 }
 
+const descriptionHidden = ref<boolean>(false)
+function handleToggleDescription(): void {
+  descriptionHidden.value = !descriptionHidden.value
+  tableRef.value?.toggleColumnVisibility?.('description', !descriptionHidden.value)
+  pushLog('api:toggleColumnVisibility', {
+    columnId: 'description',
+    visible: !descriptionHidden.value,
+  })
+}
+
 onMounted(() => {
   tableContainerHeight.value = tableContainerRef.value?.clientHeight ?? 0
 })
@@ -292,6 +303,12 @@ onMounted(() => {
                     size="small"
                     severity="secondary"
                     @click="handleClearFilters"
+                  />
+                  <Button
+                    :label="descriptionHidden ? '显示描述列' : '隐藏描述列'"
+                    size="small"
+                    severity="secondary"
+                    @click="handleToggleDescription"
                   />
                   <Button
                     label="导出 CSV"

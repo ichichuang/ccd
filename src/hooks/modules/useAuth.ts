@@ -1,7 +1,20 @@
-import { useUserStore } from '@/stores/modules/user'
+import { useUserStore, useUserStoreWithOut } from '@/stores/modules/user'
 import { AUTH_ENABLED } from '@/constants/router'
 import { requestAuthLogin, requestAuthCurrentUser } from '@/api/auth/auth.api'
 import type { LoginParams, LoginResult, UserInfo } from '@/types/dto/auth.dto'
+
+/**
+ * 指令 / 非 setup 上下文可用的权限校验（与 composable `hasAuth` 逻辑一致，读 userStore SSOT）
+ */
+export function hasAuthCodes(auth: string | string[]): boolean {
+  if (!AUTH_ENABLED) return true
+  if (auth === '' || (Array.isArray(auth) && auth.length === 0)) return true
+
+  const perms: string[] = useUserStoreWithOut().userInfo.permissions
+  if (perms.includes('*:*:*')) return true
+  const authList: string[] = Array.isArray(auth) ? auth : [auth]
+  return authList.some((a: string) => perms.includes(a))
+}
 
 /**
  * 认证 composable
@@ -33,13 +46,7 @@ export function useAuth(): UseAuthReturn {
    * - 传入单个字符串：检查是否拥有该权限
    * - 传入数组：OR 逻辑，拥有其中任意一个即返回 true
    */
-  const hasAuth = (auth: string | string[]): boolean => {
-    if (!AUTH_ENABLED) return true
-    const perms: string[] = userStore.userInfo.permissions
-    if (perms.includes('*:*:*')) return true
-    const authList: string[] = Array.isArray(auth) ? auth : [auth]
-    return authList.some((a: string) => perms.includes(a))
-  }
+  const hasAuth = (auth: string | string[]): boolean => hasAuthCodes(auth)
 
   /**
    * 检查用户是否拥有所有指定操作权限（AND 逻辑，支持 *:*:* 超级权限）

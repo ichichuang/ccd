@@ -19,7 +19,7 @@ export default defineComponent({
       set: (v: string) => emit('update:modelValue', v),
     })
     return () => (
-      <div class="row-y-center gap-sm w-full">
+      <div class="flex items-center gap-sm w-full">
         <input
           type="color"
           value={color.value}

@@ -42,7 +42,10 @@ const validateAlovaConfig = () => {
  * 创建全局 Alova 实例
  */
 export const alovaInstance = createAlova({
-  // 连接到本地 server
+  /**
+   * development：`/api` 由 Vite 代理至 `VITE_API_BASE_URL`（见 vite.config.ts `server.proxy`），
+   * 避免直连外域 CORS；生产环境使用完整 `VITE_API_BASE_URL`。
+   */
   baseURL:
     import.meta.env.VITE_APP_ENV === 'development' ? '/api' : import.meta.env.VITE_API_BASE_URL,
 

@@ -33,6 +33,44 @@ All tabular data and user input **MUST** use PrimeVue components. Native HTML el
 
 ---
 
+## LAW 1.5 — Custom Wrapper Selection Matrix
+
+When a Pro wrapper exists, direct raw component usage is rejected by default.
+
+| Raw / Legacy usage | Required wrapper / API |
+|---|---|
+| `<DataTable>` + `<Column>` | `<ProTable>` |
+| Multi-field `<form>` (2+ fields) | `<ProForm :schema>` |
+| `<Dialog>` / `<Drawer>` for business flows | `useDialog().openDialog()` / `useDialog().confirm*()` |
+
+---
+
+## LAW 1.6 — Intent -> Wrapper Quick Mapping
+
+| Intent | MUST Use |
+|---|---|
+| CRUD / Server table / Infinite / Virtual list | `<ProTable>` |
+| Create / Edit / Validation / DAG form | `<ProForm>` |
+| Confirm / Delete confirm / Info prompt | `useDialog` |
+
+---
+
+## LAW 1.7 — Hard Reject Examples
+
+```vue
+<!-- ❌ FORBIDDEN -->
+<DataTable :value="rows"><Column field="name" header="Name" /></DataTable>
+<Dialog v-model:visible="visible" />
+<form><InputText v-model="form.name" /><Select v-model="form.type" /></form>
+
+<!-- ✅ REQUIRED -->
+<ProTable :columns="columns" :data="rows" />
+<!-- useDialog().openDialog(...) / useDialog().confirm(...) -->
+<ProForm :schema="schema" @submit="onSubmit" />
+```
+
+---
+
 ## LAW 2 — Business View Shell (A1 Archetype)
 
 Every admin business view **MUST** follow the A1-toolbar-content archetype.

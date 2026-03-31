@@ -1,0 +1,90 @@
+---
+description: 项目统一的 RBAC 权限控制标准（Vue 模板指令与 TSX 编程式鉴权）。
+globs: ["**/*.vue", "**/*.tsx"]
+---
+
+# Enterprise RBAC & Auth Guardrails (Architecture)
+
+## 核心原则 (Core Philosophy)
+
+本系统采用 SSOT（Single Source of Truth），所有权限数据来源于 `userStore`。绝不允许在组件或指令中重复定义权限 Store。权限校验必须严格区分 Vue 模板环境与 TSX 环境。
+
+路由级守卫、动态路由注册与 `meta.auths` 的完整约定见：[`integrations/02-router-rbac.mdc`](../integrations/02-router-rbac.mdc)。
+
+## 1. Vue 模板鉴权规范 (Template Environment)
+
+在 `.vue` 文件的 `<template>` 中，必须使用自定义指令 `v-auth`。
+
+### 默认隐藏模式
+
+无权限时直接隐藏 DOM（`display: none`）。
+
+```vue
+<Button v-auth="['system:user:create']" label="新建" />
+```
+
+### 优雅禁用模式（推荐用于关键操作）
+
+无权限时保留按钮，但附加 `disabled` 状态和变灰样式。必须使用 **`.disable` 修饰符**。
+
+```vue
+<Button v-auth.disable="['system:user:edit']" label="编辑" />
+```
+
+### 禁止事项
+
+- **禁止**使用 `v-if` 配合手写权限函数进行常规按钮显隐（例如 `v-if="checkPermission(...)"`），除非存在极少数无法用指令表达的嵌套业务逻辑；默认一律交由 `v-auth` / `v-auth.disable` 处理。
+
+## 2. TSX / Script 鉴权规范 (TSX / JS Environment)
+
+由于 JSX/TSX 编译器的限制，**绝对禁止**在 `.tsx` 文件中使用 `v-auth` 指令。必须使用编程式 Hook。
+
+### 获取 Hook
+
+```ts
+import { useAuth } from '@/hooks/modules/useAuth'
+
+const { hasAuth } = useAuth()
+```
+
+**必须在组件 `setup` 顶层调用** `useAuth()`，不可在普通函数内部调用后再当作 Hook 使用。
+
+### TSX 条件渲染
+
+```tsx
+// 方式一：无权限则不渲染
+{hasAuth(['system:user:delete']) && <Button label="删除" severity="danger" />}
+
+// 方式二（推荐）：保留占位但禁用
+<Button disabled={!hasAuth(['system:user:edit'])} label="编辑" />
+```
+
+`hasAuth` 签名为 `(auth: string | string[]) => boolean`：单权限传字符串，多权限 OR 传数组。
+
+### 列配置与工厂函数
+
+若 `columns` 在独立 `.tsx` 中通过工厂函数生成，**必须**将 `hasAuth`（或预先绑定的权限布尔值）从 `.vue` 的 `setup` **作为参数传入**工厂函数，避免在 TSX 模块顶层调用 `useAuth()`。
+
+## 3. 权限逻辑组合
+
+- **单个权限：** `'system:user:create'`
+- **数组（OR 逻辑）：** `['system:user:create', 'system:role:create']` — 拥有其中任意一个即通过
+- **权限码格式（约定）：** `module:feature:action`（示例：`system:role:add`）
+- **超级管理员：** `*:*:*` 已在 `useAuth` / `v-auth` 底层统一处理，业务代码**无需**再写通配符判断
+
+## 4. 与路由层规则的关系
+
+- **元素级 / 按钮级：** 以本文件为准（`v-auth`、`v-auth.disable`、`hasAuth`）。
+- **路由注册、后端菜单、`meta.auths`：** 以 [`integrations/02-router-rbac.mdc`](../integrations/02-router-rbac.mdc) 为准。
+
+## 5. 示例工程权限码约定（与 mock 对齐）
+
+演示页与 `requestAuthLoginMock` 使用同一套三段式字符串，仅 `module` 前缀区分场景，避免与真实业务权限混淆：
+
+| 前缀 | 用途 |
+|------|------|
+| `example:architecture:*` | 指令页、Hook 演示、mock `user` 账号默认权限 |
+| `example:enterprise:*` | Enterprise CRUD（角色表）工具栏与行内编辑 |
+| `example:advanced:*` | ProTable Advanced 示例列操作 |
+
+业务模块生成物请使用真实域前缀（如 `system:user:create`），见上文第 3 节。

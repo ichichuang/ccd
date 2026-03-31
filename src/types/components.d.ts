@@ -55,6 +55,7 @@ declare module 'vue' {
     Password: typeof import('primevue/password')['default']
     Popover: typeof import('primevue/popover')['default']
     PrimeVueDialog: typeof import('./../components/PrimeDialog/PrimeVueDialog.vue')['default']
+    PrimeVueDrawer: typeof import('./../components/PrimeDrawer/PrimeVueDrawer.vue')['default']
     PrimeVueRenderer: typeof import('./../components/ProForm/renderers/PrimeVueRenderer.vue')['default']
     ProCheckbox: typeof import('./../components/ProForm/renderers/components/ProCheckbox.vue')['default']
     ProDatePicker: typeof import('./../components/ProForm/renderers/components/ProDatePicker.vue')['default']
@@ -73,6 +74,8 @@ declare module 'vue' {
     ProSwitch: typeof import('./../components/ProForm/renderers/components/ProSwitch.vue')['default']
     ProTable: typeof import('./../components/ProTable/ProTable.vue')['default']
     ProTableCell: typeof import('./../components/ProTable/components/ProTableCell.tsx')['default']
+    ProTableCrudFormModalBody: typeof import('./../components/ProTable/components/ProTableCrudFormModalBody.tsx')['default']
+    ProTableCrudViewModalBody: typeof import('./../components/ProTable/components/ProTableCrudViewModalBody.tsx')['default']
     ProTablePagination: typeof import('./../components/ProTable/components/ProTablePagination.vue')['default']
     ProTableToolbar: typeof import('./../components/ProTable/components/ProTableToolbar.vue')['default']
     ProTextarea: typeof import('./../components/ProForm/renderers/components/ProTextarea.vue')['default']
@@ -103,6 +106,7 @@ declare module 'vue' {
     ToggleSwitch: typeof import('primevue/toggleswitch')['default']
     Tree: typeof import('primevue/tree')['default']
     UseEcharts: typeof import('./../components/UseEcharts/UseEcharts.vue')['default']
+    UseRecordOverlay: typeof import('./../components/ProTable/hooks/useRecordOverlay.tsx')['default']
     VirtualGridRenderer: typeof import('./../components/ProTable/VirtualGridRenderer.vue')['default']
   }
 }

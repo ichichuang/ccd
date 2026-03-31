@@ -24,7 +24,10 @@ watch(
 <template>
   <div class="layout-full relative">
     <CScrollbar ref="scrollbarRef">
-      <AnimateRouterView class="layout-full flex-1 min-h-0" />
+      <AnimateRouterView
+        class="layout-full flex-1 min-h-0"
+        :class="route.meta?.parent == 'admin' || !route.meta?.parent ? 'py-md' : ''"
+      />
     </CScrollbar>
 
     <!-- 内容区 Loading 遮罩：路由切换时显示 -->

@@ -19,6 +19,11 @@ AI agents frequently (a) reach for native HTML elements instead of PrimeVue comp
 
 In `src/views/`, `src/components/`, and `src/layouts/`, native HTML interactive/data/feedback elements are **FORBIDDEN** when a PrimeVue equivalent exists.
 
+When a project Pro-wrapper equivalent exists, direct raw PrimeVue usage is also **FORBIDDEN**:
+- `<DataTable>` / `<Column>` in business pages -> use `<ProTable>`
+- raw business `<Dialog>` / `<Drawer>` declarations -> use `useDialog` + `PrimeDialog`
+- multi-field business form built from raw controls -> use `<ProForm :schema>`
+
 **Permitted native elements** (structural/semantic only): `<div>`, `<span>`, `<section>`, `<header>`, `<footer>`, `<main>`, `<nav>`, `<aside>`, `<article>`, `<ul>`, `<ol>`, `<li>`, `<label>`, `<form>`, `<h1>`–`<h6>`, `<p>`, `<a>` (external links only — internal navigation MUST use `<RouterLink>`).
 
 **[LAW] Form Sovereignty:**

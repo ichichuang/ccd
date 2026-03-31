@@ -4,7 +4,7 @@ import type { ChartOpacityConfig } from '@/hooks/modules/useChartTheme/types'
 
 defineOptions({ name: 'UseChartTheme' })
 
-type ChartType = 'line' | 'bar' | 'pie'
+type ChartType = 'line' | 'bar' | 'pie' | 'radar' | 'gauge' | 'heatmap'
 
 const chartType = ref<ChartType>('line')
 const opacityEnabled = ref<boolean>(true)
@@ -20,66 +20,109 @@ const pieData = [
   { value: 484, name: 'Union Ads' },
 ]
 
-const rawOption = computed<EChartsOption>(() => {
-  if (chartType.value === 'pie') {
-    return {
-      legend: { show: true },
-      tooltip: { trigger: 'item' },
-      series: [
-        {
-          name: 'Visits',
-          type: 'pie',
-          radius: '60%',
-          center: ['50%', '50%'],
-          avoidLabelOverlap: true,
-          data: pieData,
-        },
-      ],
-    }
-  }
+const radarIndicators = [
+  { name: '销售', max: 6500 },
+  { name: '管理', max: 16000 },
+  { name: '信息', max: 30000 },
+  { name: '客服', max: 38000 },
+  { name: '研发', max: 52000 },
+  { name: '市场', max: 25000 },
+]
 
-  if (chartType.value === 'bar') {
-    return {
-      legend: { show: true },
-      tooltip: { trigger: 'axis' },
-      grid: { left: '10%', right: '10%', top: '18%', bottom: '8%', containLabel: true },
-      xAxis: {
-        type: 'category',
-        data: xLabels,
-        boundaryGap: true,
-      },
-      yAxis: { type: 'value' },
-      series: [
-        {
-          name: 'Revenue',
-          type: 'bar',
-          data: barData,
-        },
-      ],
-    }
+const heatmapHours = ['12a', '2a', '4a', '6a', '8a', '10a', '12p', '2p', '4p', '6p', '8p', '10p']
+const heatmapDays = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
+const heatmapData: [number, number, number][] = []
+for (let d = 0; d < 7; d++) {
+  for (let h = 0; h < 12; h++) {
+    heatmapData.push([h, d, Math.round(Math.random() * 10)])
   }
+}
 
-  return {
-    legend: { show: true },
-    tooltip: { trigger: 'axis' },
-    grid: { left: '10%', right: '10%', top: '18%', bottom: '8%', containLabel: true },
-    xAxis: {
-      type: 'category',
-      data: xLabels,
-      boundaryGap: true,
-    },
-    yAxis: { type: 'value' },
-    series: [
-      {
-        name: 'Revenue',
-        type: 'line',
-        data: lineData,
-        smooth: true,
-        areaStyle: {},
-      },
-    ],
+function buildChartOption(type: ChartType): EChartsOption {
+  const grid = { left: '10%', right: '10%', top: '18%', bottom: '8%', containLabel: true }
+
+  switch (type) {
+    case 'pie':
+      return {
+        legend: { show: true },
+        tooltip: { trigger: 'item' },
+        series: [
+          {
+            name: 'Visits',
+            type: 'pie',
+            radius: '60%',
+            center: ['50%', '50%'],
+            avoidLabelOverlap: true,
+            data: pieData,
+          },
+        ],
+      }
+    case 'bar':
+      return {
+        legend: { show: true },
+        tooltip: { trigger: 'axis' },
+        grid,
+        xAxis: { type: 'category', data: xLabels, boundaryGap: true },
+        yAxis: { type: 'value' },
+        series: [{ name: 'Revenue', type: 'bar', data: barData }],
+      }
+    case 'radar':
+      return {
+        legend: { show: true },
+        tooltip: {},
+        radar: { indicator: radarIndicators },
+        series: [
+          {
+            name: 'Budget vs Spending',
+            type: 'radar',
+            data: [
+              { value: [4200, 3000, 20000, 35000, 50000, 18000], name: 'Allocated' },
+              { value: [5000, 14000, 28000, 26000, 42000, 21000], name: 'Actual' },
+            ],
+          },
+        ],
+      }
+    case 'gauge':
+      return {
+        tooltip: { formatter: '{a} <br/>{b} : {c}%' },
+        series: [
+          {
+            name: 'System',
+            type: 'gauge',
+            detail: { formatter: '{value}%' },
+            data: [{ value: 68, name: 'CPU Usage' }],
+          },
+        ],
+      }
+    case 'heatmap':
+      return {
+        tooltip: { position: 'top' },
+        grid: { left: '15%', right: '5%', top: '5%', bottom: '15%' },
+        xAxis: { type: 'category', data: heatmapHours, splitArea: { show: true } },
+        yAxis: { type: 'category', data: heatmapDays, splitArea: { show: true } },
+        visualMap: {
+          min: 0,
+          max: 10,
+          calculable: true,
+          orient: 'horizontal',
+          left: 'center',
+          bottom: '0%',
+        },
+        series: [{ name: 'Activity', type: 'heatmap', data: heatmapData, label: { show: true } }],
+      }
+    default:
+      return {
+        legend: { show: true },
+        tooltip: { trigger: 'axis' },
+        grid,
+        xAxis: { type: 'category', data: xLabels, boundaryGap: true },
+        yAxis: { type: 'value' },
+        series: [{ name: 'Revenue', type: 'line', data: lineData, smooth: true, areaStyle: {} }],
+      }
   }
-})
+}
+
+const rawOption = computed<EChartsOption>(() => buildChartOption(chartType.value))
 
 const opacityConfig = computed<ChartOpacityConfig | undefined>(() => {
   if (!opacityEnabled.value) return undefined
@@ -171,6 +214,24 @@ const hasTextStyle = computed(() => !!themedOption.value?.textStyle)
                 :severity="chartType === 'pie' ? 'primary' : 'secondary'"
                 label="pie"
                 @click="chartType = 'pie'"
+              />
+              <Button
+                size="small"
+                :severity="chartType === 'radar' ? 'primary' : 'secondary'"
+                label="radar"
+                @click="chartType = 'radar'"
+              />
+              <Button
+                size="small"
+                :severity="chartType === 'gauge' ? 'primary' : 'secondary'"
+                label="gauge"
+                @click="chartType = 'gauge'"
+              />
+              <Button
+                size="small"
+                :severity="chartType === 'heatmap' ? 'primary' : 'secondary'"
+                label="heatmap"
+                @click="chartType = 'heatmap'"
               />
             </div>
           </div>

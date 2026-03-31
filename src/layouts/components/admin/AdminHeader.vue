@@ -325,7 +325,6 @@ const renderRootItem = (item: PrimeMenuModelItem) => {
       >
         <Icons
           :name="sidebarCollapse ? 'i-lucide-panel-left-open' : 'i-lucide-panel-left-close'"
-          class="color-inherit"
           size="lg"
         />
       </button>
@@ -341,7 +340,6 @@ const renderRootItem = (item: PrimeMenuModelItem) => {
               ? 'i-solar-quit-full-screen-bold-duotone'
               : 'i-solar-full-screen-bold-duotone'
           "
-          class="color-inherit"
           size="lg"
         />
       </button>
@@ -353,7 +351,6 @@ const renderRootItem = (item: PrimeMenuModelItem) => {
         <Icons
           :name="isDark ? 'i-solar-moon-bold-duotone' : 'i-solar-sun-2-bold-duotone'"
           size="lg"
-          class="color-inherit"
         />
       </button>
       <button
@@ -365,7 +362,6 @@ const renderRootItem = (item: PrimeMenuModelItem) => {
         <Icons
           :name="isDark ? 'i-solar-moon-bold-duotone' : 'i-solar-sun-2-bold-duotone'"
           size="lg"
-          class="color-inherit"
         />
       </button>
       <User v-if="showUserEntry" />

@@ -104,9 +104,10 @@ export function createTieredMenuItemRenderer(
       inactiveChildClass: inactiveClasses?.child,
     })
 
+    /** 铺满 PrimeVue `.p-tieredmenu-item-content`，避免首次点击落在空白处只触发外层 div、不触发本链接 */
     const mergedClass: string = [
       getMenuItemBase(context),
-      'w-full',
+      'w-full min-w-0 flex-1 self-stretch relative z-content',
       stateClasses,
       'interactive-item',
       actionClassStr,
@@ -119,7 +120,7 @@ export function createTieredMenuItemRenderer(
     const finalLabelClass: string =
       emphasizeActiveLabel && isActive ? `${labelClassBase} font-bold` : labelClassBase
 
-    const handleClick = (ev: Event): void => {
+    const runItemAction = (ev: Event): void => {
       if (onItemClick) {
         onItemClick(item, ev, action)
         return
@@ -135,10 +136,35 @@ export function createTieredMenuItemRenderer(
       }
     }
 
+    /** 同一手势内 pointerdown 已导航时跳过后续 click，避免重复；若无 click（个别环境），用 timeout 复位 */
+    let skipClickFromPointer = false
+
+    const handlePointerDown = (ev: PointerEvent): void => {
+      if (ev.pointerType === 'mouse' && ev.button !== 0) return
+      skipClickFromPointer = true
+      runItemAction(ev)
+    }
+
+    const handlePointerUp = (): void => {
+      setTimeout(() => {
+        if (skipClickFromPointer) skipClickFromPointer = false
+      }, 0)
+    }
+
+    const handleClick = (ev: Event): void => {
+      if (skipClickFromPointer) {
+        skipClickFromPointer = false
+        return
+      }
+      runItemAction(ev)
+    }
+
     return (
       <a
         {...action}
         class={mergedClass}
+        onPointerdown={handlePointerDown}
+        onPointerup={handlePointerUp}
         onClick={handleClick}
       >
         {item.icon && (

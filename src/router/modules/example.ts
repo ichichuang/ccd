@@ -52,7 +52,7 @@ const permissionRoute: RouteConfig = {
         rank: 2,
         icon: 'i-lucide-badge-check',
         roles: ['admin', 'user'],
-        auths: ['demo:read', 'demo:write'],
+        auths: ['example:architecture:read', 'example:architecture:write'],
       },
     },
   ],
@@ -177,53 +177,14 @@ const proTableRoute: RouteConfig = {
       },
     },
     {
-      path: '/example/primevue-collection/pro-table/playground',
-      name: 'ExampleProTablePlayground',
-      component: () =>
-        import('@/views/example/components/primevue-collection/pro-table/playground/index.vue'),
-      meta: {
-        titleKey: 'router.example.components.primevueCollection.proTable.playground',
-        icon: 'i-lucide-flask-conical',
-      },
-    },
-    {
-      path: '/example/primevue-collection/pro-table/height-modes',
-      name: 'ExampleProTableHeightModes',
-      component: () =>
-        import('@/views/example/components/primevue-collection/pro-table/height-modes/index.vue'),
-      meta: {
-        titleKey: 'router.example.components.primevueCollection.proTable.heightModes',
-        icon: 'i-lucide-maximize-2',
-      },
-    },
-    {
       path: '/example/primevue-collection/pro-table/columns',
       name: 'ExampleProTableColumns',
       component: () =>
         import('@/views/example/components/primevue-collection/pro-table/columns/index.vue'),
       meta: {
         titleKey: 'router.example.components.primevueCollection.proTable.columns',
+        rank: 1,
         icon: 'i-lucide-columns-3',
-      },
-    },
-    {
-      path: '/example/primevue-collection/pro-table/alignment',
-      name: 'ExampleProTableAlignment',
-      component: () =>
-        import('@/views/example/components/primevue-collection/pro-table/alignment/index.vue'),
-      meta: {
-        titleKey: 'router.example.components.primevueCollection.proTable.alignment',
-        icon: 'i-lucide-align-left',
-      },
-    },
-    {
-      path: '/example/primevue-collection/pro-table/column-sizing',
-      name: 'ExampleProTableColumnSizing',
-      component: () =>
-        import('@/views/example/components/primevue-collection/pro-table/column-sizing/index.vue'),
-      meta: {
-        titleKey: 'router.example.components.primevueCollection.proTable.columnSizing',
-        icon: 'i-lucide-columns',
       },
     },
     {
@@ -233,6 +194,7 @@ const proTableRoute: RouteConfig = {
         import('@/views/example/components/primevue-collection/pro-table/server/index.vue'),
       meta: {
         titleKey: 'router.example.components.primevueCollection.proTable.server',
+        rank: 2,
         icon: 'i-lucide-globe',
       },
     },
@@ -243,7 +205,19 @@ const proTableRoute: RouteConfig = {
         import('@/views/example/components/primevue-collection/pro-table/infinite/index.vue'),
       meta: {
         titleKey: 'router.example.components.primevueCollection.proTable.infinite',
+        rank: 3,
         icon: 'i-lucide-arrow-down-to-line',
+      },
+    },
+    {
+      path: '/example/primevue-collection/pro-table/virtual',
+      name: 'ExampleProTableVirtual',
+      component: () =>
+        import('@/views/example/components/primevue-collection/pro-table/virtual/index.vue'),
+      meta: {
+        titleKey: 'router.example.components.primevueCollection.proTable.virtual',
+        rank: 4,
+        icon: 'i-lucide-gauge',
       },
     },
     {
@@ -253,6 +227,7 @@ const proTableRoute: RouteConfig = {
         import('@/views/example/components/primevue-collection/pro-table/advanced/index.vue'),
       meta: {
         titleKey: 'router.example.components.primevueCollection.proTable.advanced',
+        rank: 5,
         icon: 'i-lucide-move-horizontal',
       },
     },
@@ -263,17 +238,19 @@ const proTableRoute: RouteConfig = {
         import('@/views/example/components/primevue-collection/pro-table/api-events/index.vue'),
       meta: {
         titleKey: 'router.example.components.primevueCollection.proTable.apiEvents',
+        rank: 6,
         icon: 'i-lucide-webhook',
       },
     },
     {
-      path: '/example/primevue-collection/pro-table/virtual',
-      name: 'ExampleProTableVirtual',
+      path: '/example/primevue-collection/pro-table/form-table-combo',
+      name: 'ExampleProTableFormTableCombo',
       component: () =>
-        import('@/views/example/components/primevue-collection/pro-table/virtual/index.vue'),
+        import('@/views/example/components/primevue-collection/pro-table/form-table-combo/index.vue'),
       meta: {
-        titleKey: 'router.example.components.primevueCollection.proTable.virtual',
-        icon: 'i-lucide-gauge',
+        titleKey: 'router.example.components.primevueCollection.proTable.formTableCombo',
+        rank: 8,
+        icon: 'i-lucide-layout-grid',
       },
     },
   ],
@@ -312,24 +289,13 @@ const proFormRoute: RouteConfig = {
       },
     },
     {
-      path: '/example/primevue-collection/pro-form/layout',
-      name: 'ExampleProFormLayout',
-      component: () =>
-        import('@/views/example/components/primevue-collection/pro-form/layout/index.vue'),
-      meta: {
-        titleKey: 'router.example.components.primevueCollection.proForm.layout',
-        rank: 2,
-        icon: 'i-lucide-layout-grid',
-      },
-    },
-    {
       path: '/example/primevue-collection/pro-form/group',
       name: 'ExampleProFormGroup',
       component: () =>
         import('@/views/example/components/primevue-collection/pro-form/group/index.vue'),
       meta: {
         titleKey: 'router.example.components.primevueCollection.proForm.group',
-        rank: 3,
+        rank: 2,
         icon: 'i-lucide-folder-tree',
       },
     },
@@ -340,7 +306,7 @@ const proFormRoute: RouteConfig = {
         import('@/views/example/components/primevue-collection/pro-form/validation/index.vue'),
       meta: {
         titleKey: 'router.example.components.primevueCollection.proForm.validation',
-        rank: 4,
+        rank: 3,
         icon: 'i-lucide-shield-check',
       },
     },
@@ -351,7 +317,7 @@ const proFormRoute: RouteConfig = {
         import('@/views/example/components/primevue-collection/pro-form/dag/index.vue'),
       meta: {
         titleKey: 'router.example.components.primevueCollection.proForm.dag',
-        rank: 5,
+        rank: 4,
         icon: 'i-lucide-align-center-vertical',
       },
     },
@@ -362,7 +328,7 @@ const proFormRoute: RouteConfig = {
         import('@/views/example/components/primevue-collection/pro-form/advanced/index.vue'),
       meta: {
         titleKey: 'router.example.components.primevueCollection.proForm.advanced',
-        rank: 6,
+        rank: 5,
         icon: 'i-lucide-layers',
       },
     },
@@ -373,7 +339,7 @@ const proFormRoute: RouteConfig = {
         import('@/views/example/components/primevue-collection/pro-form/plugins/index.vue'),
       meta: {
         titleKey: 'router.example.components.primevueCollection.proForm.plugins',
-        rank: 7,
+        rank: 6,
         icon: 'i-lucide-plug',
       },
     },
@@ -384,7 +350,7 @@ const proFormRoute: RouteConfig = {
         import('@/views/example/components/primevue-collection/pro-form/api-events/index.vue'),
       meta: {
         titleKey: 'router.example.components.primevueCollection.proForm.apiEvents',
-        rank: 8,
+        rank: 7,
         icon: 'i-lucide-webhook',
       },
     },
@@ -503,7 +469,7 @@ const systemConfigurationRootRoute: RouteConfig = {
 const hooksRootRoute: RouteConfig = {
   path: '/example/hooks',
   name: 'ExampleHooks',
-  redirect: '/example/hooks/use-date-utils',
+  redirect: '/example/hooks/composables/use-date-utils',
   meta: {
     titleKey: 'router.example.hooks.root',
     rank: 3,
@@ -511,118 +477,200 @@ const hooksRootRoute: RouteConfig = {
   },
   children: [
     {
-      path: '/example/hooks/use-date-utils',
-      name: 'ExampleHookUseDateUtils',
-      component: () => import('@/views/example/hooks/use-date-utils.vue'),
-      meta: { titleKey: 'router.example.hooks.useDateUtils', rank: 1, icon: 'i-lucide-calendar' },
-    },
-    {
-      path: '/example/hooks/use-theme-switch',
-      name: 'ExampleHookUseThemeSwitch',
-      component: () => import('@/views/example/hooks/use-theme-switch.vue'),
-      meta: { titleKey: 'router.example.hooks.useThemeSwitch', rank: 2, icon: 'i-lucide-brush' },
-    },
-    {
-      path: '/example/hooks/use-http-request',
-      name: 'ExampleHookUseHttpRequest',
-      component: () => import('@/views/example/hooks/use-http-request.vue'),
-      meta: { titleKey: 'router.example.hooks.useHttpRequest', rank: 3, icon: 'i-lucide-webhook' },
-    },
-    {
-      path: '/example/hooks/use-locale',
-      name: 'ExampleHookUseLocale',
-      component: () => import('@/views/example/hooks/use-locale.vue'),
-      meta: { titleKey: 'router.example.hooks.useLocale', rank: 4, icon: 'i-lucide-globe' },
-    },
-    {
-      path: '/example/hooks/use-auth',
-      name: 'ExampleHookUseAuth',
-      component: () => import('@/views/example/hooks/use-auth.vue'),
-      meta: { titleKey: 'router.example.hooks.useAuth', rank: 5, icon: 'i-lucide-shield' },
-    },
-    {
-      path: '/example/hooks/use-app-element-size',
-      name: 'ExampleHookUseAppElementSize',
-      component: () => import('@/views/example/hooks/use-app-element-size.vue'),
+      path: '/example/hooks/composables',
+      name: 'ExampleHooksComposables',
+      redirect: '/example/hooks/composables/use-date-utils',
       meta: {
-        titleKey: 'router.example.hooks.useAppElementSize',
-        rank: 6,
-        icon: 'i-lucide-maximize',
+        titleKey: 'router.example.hooks.composables.root',
+        rank: 0,
+        icon: 'i-lucide-code',
       },
+      children: [
+        {
+          path: '/example/hooks/composables/use-date-utils',
+          name: 'ExampleHookUseDateUtils',
+          component: () => import('@/views/example/hooks/use-date-utils.vue'),
+          meta: {
+            titleKey: 'router.example.hooks.composables.useDateUtils',
+            rank: 0,
+            icon: 'i-lucide-calendar',
+          },
+        },
+        {
+          path: '/example/hooks/composables/use-theme-switch',
+          name: 'ExampleHookUseThemeSwitch',
+          component: () => import('@/views/example/hooks/use-theme-switch.vue'),
+          meta: {
+            titleKey: 'router.example.hooks.composables.useThemeSwitch',
+            rank: 1,
+            icon: 'i-lucide-brush',
+          },
+        },
+        {
+          path: '/example/hooks/composables/use-http-request',
+          name: 'ExampleHookUseHttpRequest',
+          component: () => import('@/views/example/hooks/use-http-request.vue'),
+          meta: {
+            titleKey: 'router.example.hooks.composables.useHttpRequest',
+            rank: 2,
+            icon: 'i-lucide-webhook',
+          },
+        },
+        {
+          path: '/example/hooks/composables/use-locale',
+          name: 'ExampleHookUseLocale',
+          component: () => import('@/views/example/hooks/use-locale.vue'),
+          meta: {
+            titleKey: 'router.example.hooks.composables.useLocale',
+            rank: 3,
+            icon: 'i-lucide-globe',
+          },
+        },
+        {
+          path: '/example/hooks/composables/use-auth',
+          name: 'ExampleHookUseAuth',
+          component: () => import('@/views/example/hooks/use-auth.vue'),
+          meta: {
+            titleKey: 'router.example.hooks.composables.useAuth',
+            rank: 4,
+            icon: 'i-lucide-shield',
+          },
+        },
+        {
+          path: '/example/hooks/composables/use-auto-mitt',
+          name: 'ExampleHookUseAutoMitt',
+          component: () => import('@/views/example/hooks/use-auto-mitt.vue'),
+          meta: {
+            titleKey: 'router.example.hooks.composables.useAutoMitt',
+            rank: 5,
+            icon: 'i-lucide-radical',
+          },
+        },
+      ],
     },
     {
-      path: '/example/hooks/use-auto-mitt',
-      name: 'ExampleHookUseAutoMitt',
-      component: () => import('@/views/example/hooks/use-auto-mitt.vue'),
-      meta: { titleKey: 'router.example.hooks.useAutoMitt', rank: 7, icon: 'i-lucide-radical' },
-    },
-    {
-      path: '/example/hooks/use-permission-routes',
-      name: 'ExampleHookUsePermissionRoutes',
-      component: () => import('@/views/example/hooks/use-permission-routes.vue'),
+      path: '/example/hooks/layout',
+      name: 'ExampleHooksLayout',
+      redirect: '/example/hooks/layout/loading',
       meta: {
-        titleKey: 'router.example.hooks.usePermissionRoutes',
-        rank: 8,
-        icon: 'i-lucide-key-round',
-      },
-    },
-    {
-      path: '/example/hooks/use-chart-theme',
-      name: 'ExampleHookUseChartTheme',
-      component: () => import('@/views/example/hooks/use-chart-theme.vue'),
-      meta: { titleKey: 'router.example.hooks.useChartTheme', rank: 9, icon: 'i-lucide-chart-pie' },
-    },
-    {
-      path: '/example/hooks/layout-loading',
-      name: 'ExampleHookLayoutLoading',
-      component: () => import('@/views/example/hooks/layout-loading.vue'),
-      meta: { titleKey: 'router.example.hooks.layoutLoading', rank: 10, icon: 'i-lucide-loader' },
-    },
-    {
-      path: '/example/hooks/layout-page-title',
-      name: 'ExampleHookLayoutPageTitle',
-      component: () => import('@/views/example/hooks/layout-page-title.vue'),
-      meta: {
-        titleKey: 'router.example.hooks.layoutPageTitle',
-        rank: 11,
-        icon: 'i-lucide-heading',
-      },
-    },
-    {
-      path: '/example/hooks/layout-admin-tabs',
-      name: 'ExampleHookLayoutAdminTabs',
-      component: () => import('@/views/example/hooks/layout-admin-tabs.vue'),
-      meta: { titleKey: 'router.example.hooks.layoutAdminTabs', rank: 12, icon: 'i-lucide-tabs' },
-    },
-    {
-      path: '/example/hooks/layout-breadcrumbs',
-      name: 'ExampleHookLayoutBreadcrumbs',
-      component: () => import('@/views/example/hooks/layout-breadcrumbs.vue'),
-      meta: {
-        titleKey: 'router.example.hooks.layoutBreadcrumbs',
-        rank: 13,
-        icon: 'i-lucide-map-pin',
-      },
-    },
-    {
-      path: '/example/hooks/layout-nprogress',
-      name: 'ExampleHookLayoutNprogress',
-      component: () => import('@/views/example/hooks/layout-nprogress.vue'),
-      meta: {
-        titleKey: 'router.example.hooks.layoutNprogress',
-        rank: 14,
-        icon: 'i-lucide-loader-circle',
-      },
-    },
-    {
-      path: '/example/hooks/layout-menu-visuals',
-      name: 'ExampleHookLayoutMenuVisuals',
-      component: () => import('@/views/example/hooks/layout-menu-visuals.vue'),
-      meta: {
-        titleKey: 'router.example.hooks.layoutMenuVisuals',
-        rank: 15,
+        titleKey: 'router.example.hooks.layout.root',
+        rank: 1,
         icon: 'i-lucide-layout-dashboard',
       },
+      children: [
+        {
+          path: '/example/hooks/layout/loading',
+          name: 'ExampleHookLayoutLoading',
+          component: () => import('@/views/example/hooks/layout-loading.vue'),
+          meta: {
+            titleKey: 'router.example.hooks.layout.loading',
+            rank: 0,
+            icon: 'i-lucide-loader',
+          },
+        },
+        {
+          path: '/example/hooks/layout/page-title',
+          name: 'ExampleHookLayoutPageTitle',
+          component: () => import('@/views/example/hooks/layout-page-title.vue'),
+          meta: {
+            titleKey: 'router.example.hooks.layout.pageTitle',
+            rank: 1,
+            icon: 'i-lucide-heading',
+          },
+        },
+        {
+          path: '/example/hooks/layout/admin-tabs',
+          name: 'ExampleHookLayoutAdminTabs',
+          component: () => import('@/views/example/hooks/layout-admin-tabs.vue'),
+          meta: {
+            titleKey: 'router.example.hooks.layout.adminTabs',
+            rank: 2,
+            icon: 'i-lucide-layers',
+          },
+        },
+        {
+          path: '/example/hooks/layout/breadcrumbs',
+          name: 'ExampleHookLayoutBreadcrumbs',
+          component: () => import('@/views/example/hooks/layout-breadcrumbs.vue'),
+          meta: {
+            titleKey: 'router.example.hooks.layout.breadcrumbs',
+            rank: 3,
+            icon: 'i-lucide-map-pin',
+          },
+        },
+        {
+          path: '/example/hooks/layout/nprogress',
+          name: 'ExampleHookLayoutNprogress',
+          component: () => import('@/views/example/hooks/layout-nprogress.vue'),
+          meta: {
+            titleKey: 'router.example.hooks.layout.nprogress',
+            rank: 4,
+            icon: 'i-lucide-loader-circle',
+          },
+        },
+        {
+          path: '/example/hooks/layout/menu-visuals',
+          name: 'ExampleHookLayoutMenuVisuals',
+          component: () => import('@/views/example/hooks/layout-menu-visuals.vue'),
+          meta: {
+            titleKey: 'router.example.hooks.layout.menuVisuals',
+            rank: 5,
+            icon: 'i-lucide-layout-dashboard',
+          },
+        },
+      ],
+    },
+    {
+      path: '/example/hooks/component',
+      name: 'ExampleHooksComponent',
+      redirect: '/example/hooks/component/use-pro-table',
+      meta: {
+        titleKey: 'router.example.hooks.component.root',
+        rank: 2,
+        icon: 'i-lucide-component',
+      },
+      children: [
+        {
+          path: '/example/hooks/component/use-pro-table',
+          name: 'ExampleHookUseProTable',
+          component: () => import('@/views/example/hooks/use-pro-table.vue'),
+          meta: {
+            titleKey: 'router.example.hooks.component.useProTable',
+            rank: 0,
+            icon: 'i-lucide-table',
+          },
+        },
+        {
+          path: '/example/hooks/component/use-chart-theme',
+          name: 'ExampleHookUseChartTheme',
+          component: () => import('@/views/example/hooks/use-chart-theme.vue'),
+          meta: {
+            titleKey: 'router.example.hooks.component.useChartTheme',
+            rank: 1,
+            icon: 'i-lucide-chart-pie',
+          },
+        },
+        {
+          path: '/example/hooks/component/use-app-element-size',
+          name: 'ExampleHookUseAppElementSize',
+          component: () => import('@/views/example/hooks/use-app-element-size.vue'),
+          meta: {
+            titleKey: 'router.example.hooks.component.useAppElementSize',
+            rank: 2,
+            icon: 'i-lucide-maximize',
+          },
+        },
+        {
+          path: '/example/hooks/component/use-permission-routes',
+          name: 'ExampleHookUsePermissionRoutes',
+          component: () => import('@/views/example/hooks/use-permission-routes.vue'),
+          meta: {
+            titleKey: 'router.example.hooks.component.usePermissionRoutes',
+            rank: 3,
+            icon: 'i-lucide-key-round',
+          },
+        },
+      ],
     },
   ],
 }
@@ -641,37 +689,49 @@ const utilsRootRoute: RouteConfig = {
       path: '/example/utils/safe-storage',
       name: 'ExampleUtilSafeStorage',
       component: () => import('@/views/example/utils/safe-storage.vue'),
-      meta: { titleKey: 'router.example.utils.safeStorage', rank: 3, icon: 'i-lucide-lock' },
+      meta: { titleKey: 'router.example.utils.safeStorage', rank: 0, icon: 'i-lucide-lock' },
+    },
+    {
+      path: '/example/utils/http-advanced',
+      name: 'ExampleUtilHttpAdvanced',
+      component: () => import('@/views/example/utils/http-advanced.vue'),
+      meta: { titleKey: 'router.example.utils.httpAdvanced', rank: 1, icon: 'i-lucide-radar' },
     },
     {
       path: '/example/utils/lodash',
       name: 'ExampleUtilLodash',
       component: () => import('@/views/example/utils/lodash.vue'),
-      meta: { titleKey: 'router.example.utils.lodash', rank: 4, icon: 'i-lucide-braces' },
+      meta: { titleKey: 'router.example.utils.lodash', rank: 2, icon: 'i-lucide-braces' },
     },
     {
       path: '/example/utils/device-sync',
       name: 'ExampleUtilDeviceSync',
       component: () => import('@/views/example/utils/device-sync.vue'),
-      meta: { titleKey: 'router.example.utils.deviceSync', rank: 5, icon: 'i-lucide-smartphone' },
+      meta: { titleKey: 'router.example.utils.deviceSync', rank: 3, icon: 'i-lucide-smartphone' },
     },
     {
       path: '/example/utils/strings-format',
       name: 'ExampleUtilStringsFormat',
       component: () => import('@/views/example/utils/strings-format.vue'),
-      meta: { titleKey: 'router.example.utils.stringsFormat', rank: 6, icon: 'i-lucide-text' },
+      meta: { titleKey: 'router.example.utils.stringsFormat', rank: 4, icon: 'i-lucide-text' },
     },
     {
       path: '/example/utils/type-casters',
       name: 'ExampleUtilTypeCasters',
       component: () => import('@/views/example/utils/type-casters.vue'),
-      meta: { titleKey: 'router.example.utils.typeCasters', rank: 7, icon: 'i-lucide-shapes' },
+      meta: { titleKey: 'router.example.utils.typeCasters', rank: 5, icon: 'i-lucide-shapes' },
     },
     {
       path: '/example/utils/ids',
       name: 'ExampleUtilIds',
       component: () => import('@/views/example/utils/ids.vue'),
-      meta: { titleKey: 'router.example.utils.ids', rank: 8, icon: 'i-lucide-hash' },
+      meta: { titleKey: 'router.example.utils.ids', rank: 6, icon: 'i-lucide-hash' },
+    },
+    {
+      path: '/example/utils/color-utils',
+      name: 'ExampleUtilColorUtils',
+      component: () => import('@/views/example/utils/color-utils.vue'),
+      meta: { titleKey: 'router.example.utils.colorUtils', rank: 7, icon: 'i-lucide-palette' },
     },
   ],
 }
@@ -710,7 +770,7 @@ const commonRootRoute: RouteConfig = {
 const componentsRootRoute: RouteConfig = {
   path: '/example/components',
   name: 'ExampleComponents',
-  redirect: '/example/primevue-collection/overview',
+  redirect: '/example/charts',
   meta: {
     titleKey: 'router.example.components.root',
     rank: 2,
@@ -836,7 +896,7 @@ const infraRootRoute: RouteConfig = {
       meta: {
         titleKey: 'router.example.architecture.infra.routeProvider',
         rank: 1,
-        icon: 'i-lucide-sitemap',
+        icon: 'i-lucide-route',
       },
     },
     {
@@ -889,7 +949,7 @@ const storesRootRoute: RouteConfig = {
       meta: {
         titleKey: 'router.example.architecture.stores.tableDrawer',
         rank: 3,
-        icon: 'i-lucide-layout-sidebar',
+        icon: 'i-lucide-panel-right',
       },
     },
     {
@@ -944,7 +1004,7 @@ const storesRootRoute: RouteConfig = {
 const architectureAdvancedRootRoute: RouteConfig = {
   path: '/example/architecture',
   name: 'ExampleArchitectureAdvanced',
-  redirect: '/example/system-states',
+  redirect: '/example/permission/roles',
   meta: {
     titleKey: 'router.example.architecture.root',
     rank: 6,

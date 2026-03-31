@@ -7,6 +7,13 @@ export interface ColumnRenderParams<T extends Record<string, unknown>> {
   column: ProTableColumn<T>
 }
 
+export interface ProTableValueEnumItem {
+  label: string
+  severity?: 'secondary' | 'success' | 'info' | 'warn' | 'danger' | 'contrast'
+}
+
+export type ProTableValueEnum = Record<string | number, ProTableValueEnumItem | string>
+
 export interface ProTableColumn<T extends Record<string, unknown> = Record<string, unknown>> {
   id: string
   title: string | (() => VNode)
@@ -23,6 +30,7 @@ export interface ProTableColumn<T extends Record<string, unknown> = Record<strin
   headerAlign?: 'left' | 'center' | 'right'
   align?: 'left' | 'center' | 'right'
   render?: (params: ColumnRenderParams<T>) => VNode | string | number | null
+  valueEnum?: ProTableValueEnum
   headerRender?: () => VNode | string
   meta?: Record<string, unknown>
   className?: string | ((row: T) => string)

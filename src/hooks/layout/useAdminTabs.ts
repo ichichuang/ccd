@@ -33,6 +33,8 @@ export interface UseAdminTabsReturn {
   t: (key: string, ...args: unknown[]) => string
 }
 
+let routeReloadSeq = 0
+
 export function useAdminTabs(): UseAdminTabsReturn {
   const route = useRoute()
   const router = useRouter()
@@ -172,8 +174,19 @@ export function useAdminTabs(): UseAdminTabsReturn {
 
     switch (action) {
       case 'reload': {
-        // Reload current tab logic can be added here if needed
-        window.location.reload()
+        const refreshRouteView = async (): Promise<void> => {
+          const nextQuery = {
+            ...route.query,
+            _r: String(++routeReloadSeq),
+          }
+          await router.replace({ path: route.path, query: nextQuery })
+        }
+
+        if (targetPath && targetPath !== route.path) {
+          void router.push(targetPath).then(refreshRouteView)
+        } else {
+          void refreshRouteView()
+        }
         break
       }
       case 'close': {

@@ -23,10 +23,19 @@ export interface ColumnVisibilityState {
   hiddenColumns: Set<string>
 }
 
+export interface FetchState {
+  loading: boolean
+  error: boolean
+  errorMessage: string
+  /** Infinite-scroll: more pages available */
+  hasMore: boolean
+}
+
 export interface TableState<T extends Record<string, unknown>> {
   sort: SortState
   filter: FilterState
   pagination: PaginationState
   selection: SelectionState<T>
   columnVisibility: ColumnVisibilityState
+  fetch: FetchState
 }

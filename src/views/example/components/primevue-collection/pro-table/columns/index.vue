@@ -2,7 +2,7 @@
 import { productColumns } from './columns'
 import type { ProductRow } from './columns'
 
-defineOptions({ name: 'ExampleProTableColumnsPage' })
+defineOptions({ name: 'ExampleProTableColumnConfigPage' })
 
 const CATEGORIES = ['电子', '服装', '家居', '食品', '运动'] as const
 const STATUSES: ProductRow['status'][] = ['available', 'low', 'sold_out']
@@ -94,10 +94,10 @@ const FEATURE_TAGS: { label: string; cls: string }[] = [
           />
         </div>
         <div class="col-stretch gap-xs">
-          <h1 class="text-2xl font-bold m-0">ProTable — 列定义与渲染</h1>
+          <h1 class="text-2xl font-bold m-0">ProTable — 列配置全集</h1>
           <p class="text-muted-foreground text-sm m-0">
-            演示列固定（pinned: 'left'/'right'）、 TSX
-            自定义单元格渲染、headerRender、对齐方式与宽度约束。
+            演示列固定（pinned）、TSX
+            自定义渲染、headerRender、对齐方式（left/center/right）、宽度约束（width/minWidth/maxWidth）与拖拽缩放（resizable）。
           </p>
           <div class="row-start items-center gap-xs flex-wrap mt-padding-xs">
             <span

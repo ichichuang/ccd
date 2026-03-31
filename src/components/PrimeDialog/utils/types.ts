@@ -1,4 +1,6 @@
+import type { PassThrough } from '@primevue/core'
 import type { ButtonProps as PrimeButtonProps } from 'primevue/button'
+import type { DialogPassThroughOptions } from 'primevue/dialog'
 import type { Component, CSSProperties, VNode } from 'vue'
 
 /** 对话框事件类型 */
@@ -68,6 +70,10 @@ export interface DialogOptionsBase {
   hideFooter?: boolean
   hideHeader?: boolean
   hideClose?: boolean
+  /** 遮罩层 Uno 类名（毛玻璃 + 压暗，由 PrimeVueDialog 合成进 pt.mask，业务侧无需手写 pt） */
+  maskClass?: string
+  /** 透传 PrimeVue Dialog 的 PT（如玻璃弹窗材质） */
+  pt?: PassThrough<DialogPassThroughOptions>
   sureBtnLoading?: boolean
   footerButtons?: ButtonProps[]
   /** 传递给 contentRenderer 渲染组件的 props */

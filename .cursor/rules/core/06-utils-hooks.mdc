@@ -15,6 +15,13 @@ Before implementing any logic, you MUST follow this search order:
 3. **VueUse:** Use `@vueuse/core` composables for shared reactive capabilities.
 4. **Native JS:** Use native APIs only as the last resort when no project abstraction or VueUse solution exists.
 
+### Enforcement Protocol — Search -> Reuse -> Verify (MANDATORY)
+
+Before writing functional logic, follow these three steps in order:
+1. **Search**: confirm whether `src/hooks/**` or `src/utils/**` already provides the capability.
+2. **Reuse**: if it exists, use it directly; do not recreate a parallel implementation.
+3. **Verify**: check the exported type contract (`UseXxxReturn`, function signature, edge/error behavior) before integrating.
+
 ## Law 1 — No Raw DOM Event Listeners
 
 **FORBIDDEN:**
@@ -101,6 +108,17 @@ The singleton instance is typed in `src/utils/mitt.ts` (where `type Events` is e
 
 **If the utility above covers your need: use it. Do not re-implement.**
 
+### No Reinvention (Hard Requirement)
+
+For common categories, you MUST prefer these project assets:
+- Data utilities: `@/utils/lodashes`
+- Event bus: `@/utils/mitt` (`useAutoMitt` in components)
+- Secure storage: `@/utils/safeStorage`
+- HTTP state/request flow: `useHttpRequest`
+- Date/time formatting and locale-safe output: `useDateUtils`
+
+If these assets are applicable, custom replacement code is forbidden.
+
 ## Law 4 — Composable Return Types Are Mandatory
 
 All composables MUST declare explicit return types to prevent "inferred type cannot be named" TypeScript errors:
@@ -126,6 +144,15 @@ export function useMyFeature(): UseMyFeatureReturn {
   return { count, increment }
 }
 ```
+
+### Type Contract Check (MANDATORY before use)
+
+Before calling any hook/utility:
+- Read exported return interface (for hooks, e.g. `UseXxxReturn`)
+- Read callable signature (params, optional fields, defaults)
+- Read error/empty-state boundary behavior (what is returned on failure/uninitialized state)
+
+Do not guess API fields from memory.
 
 ## Law 5 — No `setInterval` / `setTimeout` in Components
 

@@ -1,14 +1,23 @@
 <script setup lang="ts" generic="T extends Record<string, unknown>">
+import { h, resolveComponent } from 'vue'
+import type { ComponentPublicInstance } from 'vue'
 import { useVirtualizer } from '@tanstack/vue-virtual'
 import type { TableController } from './engine/core/TableController'
 import type { ProTableColumn } from './engine/types/column'
 import ProTableCell from './components/ProTableCell'
 import { VIRTUAL_GRID_DEFAULTS } from './engine/config'
+import { objectGet } from '@/utils/lodashes'
 
 const props = defineProps<{
   controller: TableController<T>
   columns: ProTableColumn<T>[]
   data: T[]
+  stripedRows?: boolean
+  showHorizontalLines?: boolean
+  showVerticalLines?: boolean
+  rowHover?: boolean
+  rowClassName?: (row: T, index: number) => string
+  selectable?: false | 'single' | 'checkbox'
 }>()
 
 const scrollContainerRef = ref<HTMLElement | null>(null)
@@ -23,9 +32,10 @@ function isStripedVirtualRow(index: number): boolean {
 }
 
 function handleRowClick(virtualIndex: number): void {
+  if (!props.selectable) return
   const row = getRowByVirtualIndex(virtualIndex)
   if (!row) return
-  props.controller.selectRow(row, 'single')
+  props.controller.selectRow(row, props.selectable === 'checkbox' ? 'checkbox' : 'single')
 }
 
 function isRowSelectedByVirtualIndex(virtualIndex: number): boolean {
@@ -53,19 +63,52 @@ function getColumnTitle(col: ProTableColumn<T>): string {
   return String(col.field ?? col.id)
 }
 
+const ResolvedTag = resolveComponent('Tag')
+
 function renderCell(col: ProTableColumn<T>, row: T, index: number) {
   if (col.render) {
     return col.render({ row, index, column: col })
   }
   if (!col.field) return null
-  const val = row[col.field]
-  return val !== null && val !== undefined ? String(val) : ''
+
+  const val = col.field.includes('.') ? objectGet(row, col.field) : row[col.field]
+
+  if (col.valueEnum) {
+    const key = val != null ? String(val) : ''
+    const enumItem = col.valueEnum[key]
+    if (!enumItem) return key
+    if (typeof enumItem === 'string') return enumItem
+    if (!enumItem.severity) return enumItem.label
+    return h(ResolvedTag, { value: enumItem.label, severity: enumItem.severity })
+  }
+
+  return val != null ? String(val) : ''
+}
+
+function getHeaderAlignClass(col: ProTableColumn<T>): string {
+  const headerAlign = col.headerAlign ?? col.align
+  if (headerAlign === 'center') return 'justify-center text-center'
+  if (headerAlign === 'right') return 'justify-end text-right'
+  return 'justify-start text-left'
+}
+
+function getRowClassByVirtualIndex(index: number): string {
+  if (!props.rowClassName) return ''
+  const row = getRowByVirtualIndex(index)
+  if (!row) return ''
+  return props.rowClassName(row, index)
 }
 
 function getAlignClass(col: ProTableColumn<T>): string {
   if (col.align === 'center') return 'text-center'
   if (col.align === 'right') return 'text-right'
   return 'text-left'
+}
+
+function getBodyJustifyClass(col: ProTableColumn<T>): string {
+  if (col.align === 'center') return 'justify-center'
+  if (col.align === 'right') return 'justify-end'
+  return 'justify-start'
 }
 
 function getColumnClass(col: ProTableColumn<T>, row: T): string {
@@ -91,8 +134,18 @@ const rowVirtualizer = useVirtualizer(
     getScrollElement: () => scrollContainerRef.value,
     estimateSize: () => VIRTUAL_GRID_DEFAULTS.estimateRowHeightPx,
     overscan: VIRTUAL_GRID_DEFAULTS.overscan,
+    // Use real DOM height to avoid visual drift caused by estimateSize vs actual `py-*` row padding.
+    measureElement: element => element.getBoundingClientRect().height,
   }))
 )
+
+function setVirtualRowRef(node: Element | ComponentPublicInstance | null, index: number): void {
+  // Vue v-for ref callback can receive ComponentPublicInstance; we only measure real DOM elements.
+  if (!(node instanceof Element)) return
+
+  // Write back the real height to the virtualizer so `start/end` stays aligned.
+  rowVirtualizer.value.resizeItem(index, node.getBoundingClientRect().height)
+}
 </script>
 
 <template>
@@ -100,15 +153,22 @@ const rowVirtualizer = useVirtualizer(
     ref="scrollContainerRef"
     class="c-scrollbar-native layout-full overflow-auto"
   >
-    <div class="relative layout-full">
+    <div class="relative">
       <div
-        class="border-border/15 bg-muted/30 font-medium py-sm px-md!"
-        :style="{ display: 'grid', gridTemplateColumns }"
+        :class="[
+          'bg-muted font-medium py-sm px-md!',
+          { 'border-b border-border': showHorizontalLines },
+        ]"
+        :style="{ display: 'grid', gridTemplateColumns, position: 'sticky', top: '0px', zIndex: 1 }"
       >
         <div
-          v-for="col in columns"
+          v-for="(col, colIndex) in columns"
           :key="getColumnKey(col)"
-          class="text-xs! font-semibold text-muted-foreground py-xs! px-md! uppercase tracking-wider text-left"
+          :class="[
+            'text-xs! font-semibold text-muted-foreground py-xs! px-md! uppercase tracking-wider',
+            getHeaderAlignClass(col),
+            { 'pro-table-v-line': showVerticalLines && colIndex < columns.length - 1 },
+          ]"
         >
           {{ getColumnTitle(col) }}
         </div>
@@ -119,20 +179,27 @@ const rowVirtualizer = useVirtualizer(
           position: 'relative',
           width: '100%',
         }"
+        class="grid! grid-cols-1! gap-0!"
       >
         <div
           v-for="virtualRow in rowVirtualizer.getVirtualItems()"
           :key="String(virtualRow.key)"
-          class="pro-table-row absolute top-0 left-0 w-full surface-item transition-all duration-md ease-out border-border/15 py-sm!"
+          :ref="el => setVirtualRowRef(el, virtualRow.index)"
+          class="pro-table-row absolute top-0 left-0 w-full transition-all duration-md ease-out py-sm!"
           :style="{
             transform: 'translateY(' + virtualRow.start + 'px)',
             display: 'grid',
             gridTemplateColumns,
           }"
-          :class="{
-            'pro-table-row-striped': isStripedVirtualRow(virtualRow.index),
-            'pro-table-row-selected': isRowSelectedByVirtualIndex(virtualRow.index),
-          }"
+          :class="[
+            {
+              'pro-table-row-hoverable': rowHover,
+              'pro-table-row-striped': stripedRows && isStripedVirtualRow(virtualRow.index),
+              'pro-table-row-selected': isRowSelectedByVirtualIndex(virtualRow.index),
+              'pro-table-row-h-line': showHorizontalLines,
+            },
+            getRowClassByVirtualIndex(virtualRow.index),
+          ]"
           role="row"
           tabindex="0"
           :aria-selected="isRowSelectedByVirtualIndex(virtualRow.index)"
@@ -140,11 +207,16 @@ const rowVirtualizer = useVirtualizer(
           @keydown.enter.prevent="handleRowClick(virtualRow.index)"
         >
           <div
-            v-for="col in columns"
+            v-for="(col, colIndex) in columns"
             :key="getColumnKey(col)"
-            class="flex flex-row items-center px-md! text-sm text-single-line-ellipsis"
+            :class="[
+              'flex flex-row items-center px-md! text-sm text-ellipsis-1',
+              getBodyJustifyClass(col),
+              { 'pro-table-v-line': showVerticalLines && colIndex < columns.length - 1 },
+            ]"
           >
             <ProTableCell
+              class="w-full"
               :node="getBodyCellNodeByIndex(col, virtualRow.index)"
               :align-class="getAlignClass(col)"
               :extra-class="getBodyColumnClassByIndex(col, virtualRow.index)"
@@ -157,12 +229,13 @@ const rowVirtualizer = useVirtualizer(
 </template>
 
 <style scoped>
-.pro-table-row:hover {
+/* ── Hover (gated by .pro-table-row-hoverable) ─────────────────────────────── */
+.pro-table-row-hoverable:hover {
   background-color: color-mix(in srgb, rgb(var(--primary)) 16%, rgb(var(--card)));
 }
 
+/* ── Striped rows ──────────────────────────────────────────────────────────── */
 .pro-table-row-striped {
-  /* PrimeVue striped background */
   background-color: color-mix(in srgb, rgb(var(--muted)) 60%, rgb(var(--card))) !important;
 }
 
@@ -171,13 +244,12 @@ const rowVirtualizer = useVirtualizer(
   background-color: color-mix(in srgb, rgb(var(--muted)) 12%, rgb(var(--card))) !important;
 }
 
-.pro-table-row-striped:not(.pro-table-row-selected):hover {
-  /* 斑马纹行 hover 时必须覆盖 striped 背景（否则 hover 背景会被 !important 锁死） */
+.pro-table-row-hoverable.pro-table-row-striped:not(.pro-table-row-selected):hover {
   background-color: color-mix(in srgb, rgb(var(--primary)) 16%, rgb(var(--card))) !important;
 }
 
+/* ── Selected rows ─────────────────────────────────────────────────────────── */
 .pro-table-row-selected {
-  /* PrimeVue selected row (p-highlight / data-p-selected) */
   background-color: color-mix(in srgb, rgb(var(--accent)) 16%, rgb(var(--card))) !important;
 }
 
@@ -186,18 +258,25 @@ const rowVirtualizer = useVirtualizer(
   background-color: color-mix(in srgb, rgb(var(--accent)) 100%, rgb(var(--card))) !important;
 }
 
-.pro-table-row-selected:hover {
-  /* Hover state FOR selected rows */
+.pro-table-row-hoverable.pro-table-row-selected:hover {
   background-color: color-mix(in srgb, rgb(var(--accent)) 18%, rgb(var(--card))) !important;
 }
 
-:global(html.dark) .pro-table-row-selected:hover,
-:global(.dark) .pro-table-row-selected:hover {
+:global(html.dark) .pro-table-row-hoverable.pro-table-row-selected:hover,
+:global(.dark) .pro-table-row-hoverable.pro-table-row-selected:hover {
   background-color: color-mix(in srgb, rgb(var(--accent)) 100%, rgb(var(--card))) !important;
 }
 
-/* Selected cells: mimic PrimeVue highlight text shift */
 .pro-table-row-selected .text-muted-foreground {
   color: rgb(var(--primary));
+}
+
+/* ── Gridlines ─────────────────────────────────────────────────────────────── */
+.pro-table-row-h-line {
+  border-bottom: 1px solid rgb(var(--border));
+}
+
+.pro-table-v-line {
+  border-right: 1px solid rgb(var(--border));
 }
 </style>

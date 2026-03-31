@@ -20,7 +20,7 @@ import { PrimeVueDialog } from '@/components/PrimeDialog'
 import { useDialog } from '@/hooks/modules/useDialog'
 import ToastMessageContent from '@/layouts/components/ToastMessageContent.vue'
 
-const { dialogStore, closeDialog } = useDialog()
+const { dialogStore, closeDialog, removeDialog } = useDialog()
 const toast = useToast()
 const localeStore = useLocaleStore()
 const primevue = usePrimeVue()
@@ -223,6 +223,7 @@ onUnmounted(() => {
   <PrimeVueDialog
     :dialog-store="dialogStore"
     @close="(_options, index, args) => closeDialog(index, args)"
+    @after-hide="instanceId => removeDialog(instanceId)"
   />
 </template>
 <style lang="scss">

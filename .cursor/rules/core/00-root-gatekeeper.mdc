@@ -1,0 +1,30 @@
+---
+description: Root gatekeeper for rules lookup and tool/hook priority.
+globs: ["*"]
+alwaysApply: true
+---
+
+# Root Gatekeeper (Absolute Authority)
+
+**CRITICAL MANDATE:** Before writing ANY functional logic, you MUST consult the domain-specific files within `.cursor/rules/**`. If you fail to do so, halt code generation immediately.
+
+## 1. Absolute Priority Chain (Do Not Skip)
+1. **Project Assets First:** Search `src/hooks/**` and `src/utils/**` for existing implementations.
+2. **VueUse Second:** For reactive state, browser APIs, and sensors, you MUST use `@vueuse/core`.
+3. **Lodash-es Third:** For pure data manipulation (deep clone, merge, non-reactive debounce), use `lodash-es` (preferably via `@/utils/lodashes`).
+4. **Native Last:** Only permitted if the above three are unavailable. Native utilities MUST be extracted to `src/utils/**` and NEVER inlined in business files (`.vue` or `.ts`).
+
+## 2. Hard Blocks (Instant Rejection)
+- **FORBIDDEN:** Inlining generic utility functions (debounce, throttle, deepClone, eventBus, storage wrappers) within business files.
+- **FORBIDDEN:** Raw `fetch`, `axios`, or `XMLHttpRequest`. You MUST use the project's network stack (e.g., `useHttpRequest`).
+- **FORBIDDEN:** Using plaintext `localStorage` or `sessionStorage` in business logic. You MUST use `@/utils/safeStorage`.
+- **FORBIDDEN:** Subscribing to events directly via `useMitt().on` inside Vue components. You MUST use `useAutoMitt`.
+- **FORBIDDEN:** Using native `Date` APIs for UI display formatting. You MUST use `useDateUtils` or `DateUtils`.
+
+## 3. Type Verification Mandate
+- Before using ANY custom wrapper component, Hook, or Utility, you MUST read its TypeScript export signature and type definitions.
+- **FORBIDDEN:** Guessing or hallucinating props, events, slots, or return types.
+
+## 4. Fail-Fast Protocol
+- If an existing wrapper or utility exists, you MUST reuse it. Do not rewrite or bypass it.
+- In case of rule conflicts, the hard prohibitions in `core` and domain rules take absolute precedence.

@@ -7,6 +7,8 @@ import type { Directive } from 'vue'
 declare module 'vue' {
   export interface GlobalDirectives {
     vTooltip: Directive
+    /** v-auth / v-auth.disable — 权限控制（值：权限码或数组） */
+    vAuth: Directive<HTMLElement, string | string[]>
   }
 
   export interface HTMLAttributes {

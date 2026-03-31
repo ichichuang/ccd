@@ -7,6 +7,7 @@ import type {
   UseFormOptions,
   ValidationResolver,
 } from '@/components/ProForm'
+import { packDataSync, unpackDataSync } from '@/utils/safeStorage'
 
 // ── 验证触发模式 ──────────────────────────────────────────────────
 const validateOnMode = ref<UseFormOptions['validateOn']>('blur')
@@ -178,8 +179,94 @@ const asyncSchema = reactive<FormSchema>({
 
 // ── Refs ──────────────────────────────────────────────────────────
 const syncFormRef = ref<ProFormExpose | null>(null)
+const asyncFormRef = ref<ProFormExpose | null>(null)
+const draftFormRef = ref<ProFormExpose<DraftFormModel> | null>(null)
 const syncResult = ref<string>('')
 const asyncResult = ref<string>('')
+
+// ── 表单草稿持久化 / Draft Persistence ─────────────────────────────
+const DRAFT_STORAGE_KEY = 'example:proform:validation:draft'
+const draftSecret = import.meta.env.VITE_APP_SECRET
+
+type DraftFormModel = Record<string, unknown> & {
+  title: string
+  content: string
+}
+
+const draftSchema = reactive<FormSchema>({
+  layout: { type: 'grid', gap: 'var(--spacing-md)' },
+  fields: [
+    {
+      name: 'title',
+      component: 'input',
+      label: 'Article Title',
+      required: true,
+      rules: [
+        {
+          message: '标题不能为空',
+          validator: v => typeof v === 'string' && v.trim().length > 0,
+        },
+      ],
+      props: { placeholder: '输入标题...' },
+    },
+    {
+      name: 'content',
+      component: 'textarea',
+      label: 'Content',
+      required: true,
+      rules: [
+        {
+          message: '内容不能为空',
+          validator: v => typeof v === 'string' && v.trim().length > 0,
+        },
+      ],
+      props: { placeholder: '输入正文...' },
+    },
+  ],
+})
+
+const emptyDraftValues: DraftFormModel = { title: '', content: '' }
+
+const saveDraftDebounced = useDebounceFn((values: DraftFormModel): void => {
+  const encrypted = packDataSync(values, draftSecret)
+  localStorage.setItem(DRAFT_STORAGE_KEY, encrypted)
+}, 400)
+
+const draftFormValues = computed<DraftFormModel>(() => {
+  const state = draftFormRef.value?.getFormState()
+  const values = (state?.values ?? {}) as Record<string, unknown>
+  return {
+    title: typeof values['title'] === 'string' ? (values['title'] as string) : '',
+    content: typeof values['content'] === 'string' ? (values['content'] as string) : '',
+  }
+})
+
+watch(
+  () => draftFormValues.value,
+  values => {
+    saveDraftDebounced(values)
+  },
+  { deep: false }
+)
+
+onMounted(() => {
+  const raw = localStorage.getItem(DRAFT_STORAGE_KEY) ?? ''
+  const restored = unpackDataSync<DraftFormModel>(raw, draftSecret)
+  if (!restored) return
+  nextTick(() => {
+    draftFormRef.value?.form?.setFieldsValue({
+      title: restored.title ?? '',
+      content: restored.content ?? '',
+    })
+  })
+})
+
+function onClearDraft(): void {
+  localStorage.removeItem(DRAFT_STORAGE_KEY)
+  draftFormRef.value?.form?.setFieldsValue(emptyDraftValues)
+  draftFormRef.value?.form?.clearValidate()
+  window.$toast?.successIn('top-right', '已清除草稿', '草稿内容已重置')
+}
 
 function onClickClearSyncValidate(): void {
   syncFormRef.value?.form?.clearValidate()
@@ -199,7 +286,7 @@ async function onAsyncSubmit(values: Record<string, unknown>): Promise<void> {
 <template>
   <div
     data-archetype="A1-toolbar-content"
-    class="col-fill"
+    class="flex flex-col"
   >
     <!-- Toolbar: Hero Header (Transparent Root Policy: Inherit canvas) -->
     <header class="shrink-0 border-border/15">
@@ -391,6 +478,40 @@ async function onAsyncSubmit(values: Record<string, unknown>): Promise<void> {
               <pre class="code-preview text-primary">{{ asyncResult }}</pre>
             </div>
           </div>
+        </section>
+
+        <!-- 表单草稿持久化 / Draft Persistence -->
+        <section class="material-elevated col-stretch gap-md">
+          <div class="row-between gap-md flex-wrap">
+            <div class="row-center gap-sm">
+              <Icons
+                name="i-lucide-save"
+                class="text-primary"
+              />
+              <span class="font-bold text-foreground uppercase tracking-widest">
+                表单草稿持久化 / Draft Persistence
+              </span>
+            </div>
+            <Button
+              label="清除草稿 / Clear Draft"
+              severity="secondary"
+              variant="text"
+              icon="i-lucide-trash-2"
+              @click="onClearDraft"
+            />
+          </div>
+
+          <p class="text-muted-foreground text-sm m-0">
+            本示例会在输入时自动加密保存草稿（SafeStorage），刷新页面后自动恢复。存储 Key：
+            <span class="code-inline">{{ DRAFT_STORAGE_KEY }}</span>
+          </p>
+
+          <ProForm
+            ref="draftFormRef"
+            :schema="draftSchema"
+            :initial-values="emptyDraftValues"
+            :validate-on="validateOnMode"
+          />
         </section>
       </div>
     </CScrollbar>

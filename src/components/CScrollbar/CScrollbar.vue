@@ -143,35 +143,6 @@ watch(
 @use 'overlayscrollbars/overlayscrollbars.css';
 
 /* ============================================
- * CScrollbar 主题样式
- * 完美融合项目主题系统 CSS 变量
- * ============================================ */
-
-.c-scrollbar-native {
-  /* 原生滚动条样式 */
-  &::-webkit-scrollbar {
-    width: var(--spacing-sm);
-    height: var(--spacing-sm);
-  }
-
-  &::-webkit-scrollbar-track {
-    background: transparent;
-  }
-
-  &::-webkit-scrollbar-thumb {
-    background: rgb(var(--muted) / 50%);
-    border-radius: var(--radius-md);
-    border: calc(var(--spacing-xs) / 2) solid transparent;
-    background-clip: content-box;
-
-    &:hover {
-      background: rgb(var(--muted) / 80%);
-      background-clip: content-box;
-    }
-  }
-}
-
-/* ============================================
  * OverlayScrollbars 主题覆盖
  * ============================================ */
 
