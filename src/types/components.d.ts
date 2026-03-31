@@ -55,7 +55,6 @@ declare module 'vue' {
     Password: typeof import('primevue/password')['default']
     Popover: typeof import('primevue/popover')['default']
     PrimeVueDialog: typeof import('./../components/PrimeDialog/PrimeVueDialog.vue')['default']
-    PrimeVueDrawer: typeof import('./../components/PrimeDrawer/PrimeVueDrawer.vue')['default']
     PrimeVueRenderer: typeof import('./../components/ProForm/renderers/PrimeVueRenderer.vue')['default']
     ProCheckbox: typeof import('./../components/ProForm/renderers/components/ProCheckbox.vue')['default']
     ProDatePicker: typeof import('./../components/ProForm/renderers/components/ProDatePicker.vue')['default']

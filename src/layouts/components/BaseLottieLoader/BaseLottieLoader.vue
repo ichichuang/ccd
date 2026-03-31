@@ -5,8 +5,8 @@
  * Smart Wrapper 架构：外框严格约束宽高，内部 Vue3Lottie 100% 填满 + scale 抵消 JSON 内嵌 padding。
  * 用于全局 loading、页面 loading 等场景。
  */
-import { Vue3Lottie } from 'vue3-lottie'
 import loadingCircleJson from './loadingCircle.json'
+import LoadingFallback from '../LoadingFallback.vue'
 
 interface Props {
   /** Lottie 动画 JSON 数据，不传则使用默认 loading 圈 */
@@ -36,6 +36,14 @@ const props = withDefaults(defineProps<Props>(), {
 })
 
 const resolvedAnimationData = computed(() => props.animationData ?? loadingCircleJson)
+const Vue3LottieAsync = defineAsyncComponent({
+  loader: async () => {
+    const module = await import('vue3-lottie')
+    return module.Vue3Lottie
+  },
+  loadingComponent: LoadingFallback,
+  delay: 0,
+})
 
 const RENDERER_SETTINGS = { preserveAspectRatio: 'xMidYMid slice' as const }
 
@@ -60,7 +68,7 @@ const wrapperStyle = computed(() => {
     class="base-lottie-loader base-lottie-loader__wrapper"
     :style="wrapperStyle"
   >
-    <Vue3Lottie
+    <Vue3LottieAsync
       v-if="animationLink"
       :animation-link="animationLink"
       width="100%"
@@ -71,7 +79,7 @@ const wrapperStyle = computed(() => {
       :renderer-settings="RENDERER_SETTINGS"
       class="base-lottie-loader__player"
     />
-    <Vue3Lottie
+    <Vue3LottieAsync
       v-else
       :animation-data="resolvedAnimationData"
       width="100%"

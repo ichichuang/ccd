@@ -1,7 +1,7 @@
 /**
  * 日期工具常量与预设
  */
-import type { Holiday, Locale, TimestampPrecision } from './types'
+import type { Locale, TimestampPrecision } from './types'
 
 // ===== 默认值 =====
 export const DEFAULT_LOCALE: Locale = 'zh-CN'
@@ -62,53 +62,6 @@ export const DATE_RANGES = {
 } as const
 
 export type DateRangePreset = keyof typeof DATE_RANGES
-
-// ===== 节假日预设 =====
-export const CHINA_HOLIDAYS_2024: Holiday[] = [
-  { name: '元旦', date: '2024-01-01', type: 'national', recurring: false, country: 'CN' },
-  { name: '春节', date: '2024-02-10', type: 'national', recurring: false, country: 'CN' },
-  { name: '春节', date: '2024-02-11', type: 'national', recurring: false, country: 'CN' },
-  { name: '春节', date: '2024-02-12', type: 'national', recurring: false, country: 'CN' },
-  { name: '春节', date: '2024-02-13', type: 'national', recurring: false, country: 'CN' },
-  { name: '春节', date: '2024-02-14', type: 'national', recurring: false, country: 'CN' },
-  { name: '春节', date: '2024-02-15', type: 'national', recurring: false, country: 'CN' },
-  { name: '春节', date: '2024-02-16', type: 'national', recurring: false, country: 'CN' },
-  { name: '春节', date: '2024-02-17', type: 'national', recurring: false, country: 'CN' },
-  { name: '清明节', date: '2024-04-04', type: 'national', recurring: false, country: 'CN' },
-  { name: '清明节', date: '2024-04-05', type: 'national', recurring: false, country: 'CN' },
-  { name: '清明节', date: '2024-04-06', type: 'national', recurring: false, country: 'CN' },
-  { name: '劳动节', date: '2024-05-01', type: 'national', recurring: false, country: 'CN' },
-  { name: '劳动节', date: '2024-05-02', type: 'national', recurring: false, country: 'CN' },
-  { name: '劳动节', date: '2024-05-03', type: 'national', recurring: false, country: 'CN' },
-  { name: '劳动节', date: '2024-05-04', type: 'national', recurring: false, country: 'CN' },
-  { name: '劳动节', date: '2024-05-05', type: 'national', recurring: false, country: 'CN' },
-  { name: '端午节', date: '2024-06-10', type: 'national', recurring: false, country: 'CN' },
-  { name: '中秋节', date: '2024-09-15', type: 'national', recurring: false, country: 'CN' },
-  { name: '中秋节', date: '2024-09-16', type: 'national', recurring: false, country: 'CN' },
-  { name: '中秋节', date: '2024-09-17', type: 'national', recurring: false, country: 'CN' },
-  { name: '国庆节', date: '2024-10-01', type: 'national', recurring: false, country: 'CN' },
-  { name: '国庆节', date: '2024-10-02', type: 'national', recurring: false, country: 'CN' },
-  { name: '国庆节', date: '2024-10-03', type: 'national', recurring: false, country: 'CN' },
-  { name: '国庆节', date: '2024-10-04', type: 'national', recurring: false, country: 'CN' },
-  { name: '国庆节', date: '2024-10-05', type: 'national', recurring: false, country: 'CN' },
-  { name: '国庆节', date: '2024-10-06', type: 'national', recurring: false, country: 'CN' },
-  { name: '国庆节', date: '2024-10-07', type: 'national', recurring: false, country: 'CN' },
-  { name: '春节调休', date: '2024-02-04', type: 'workday', recurring: false, country: 'CN' },
-  { name: '春节调休', date: '2024-02-18', type: 'workday', recurring: false, country: 'CN' },
-  { name: '劳动节调休', date: '2024-04-28', type: 'workday', recurring: false, country: 'CN' },
-  { name: '劳动节调休', date: '2024-05-11', type: 'workday', recurring: false, country: 'CN' },
-  { name: '国庆节调休', date: '2024-09-29', type: 'workday', recurring: false, country: 'CN' },
-  { name: '国庆节调休', date: '2024-10-12', type: 'workday', recurring: false, country: 'CN' },
-]
-
-export const INTERNATIONAL_HOLIDAYS: Holiday[] = [
-  { name: "New Year's Day", date: '01-01', type: 'international', recurring: true },
-  { name: "Valentine's Day", date: '02-14', type: 'international', recurring: true },
-  { name: "International Women's Day", date: '03-08', type: 'international', recurring: true },
-  { name: 'Labor Day', date: '05-01', type: 'international', recurring: true },
-  { name: "Children's Day", date: '06-01', type: 'international', recurring: true },
-  { name: 'Christmas', date: '12-25', type: 'international', recurring: true },
-]
 
 // ===== 内部映射（dateUtils 使用） =====
 export const LOCALE_MODULES = {

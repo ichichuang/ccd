@@ -142,7 +142,6 @@ export default ({ mode, command }: ConfigEnv): UserConfigExport => {
           moduleSideEffects: id =>
             /\.(css|scss|sass)$/.test(id) ||
             id.includes('animate.css') ||
-            id.includes('primeicons/primeicons.css') ||
             id.includes('uno.css') ||
             id.startsWith('virtual:'),
         },
@@ -157,44 +156,109 @@ export default ({ mode, command }: ConfigEnv): UserConfigExport => {
 
           manualChunks(id: string) {
             if (id.includes('node_modules')) {
-              // ── 1. Vue core ecosystem (PRESERVED) ──
+              // ── 1. Vue Core (保持纯净) ──
+              if (id.includes('/vue/') || id.includes('vue-router') || id.includes('/pinia/'))
+                return 'vendor-vue'
+
+              // ── 2. Vue 生态扩展 ──
               if (
-                id.includes('vue/') ||
-                id.includes('vue-router') ||
-                id.includes('pinia') ||
                 id.includes('vue-i18n') ||
                 id.includes('pinia-plugin-persistedstate') ||
                 id.includes('/alova/') ||
-                id.includes('@vueuse') ||
                 id.includes('overlayscrollbars') ||
                 id.includes('@tanstack/vue-virtual')
               )
-                return 'vendor-vue'
+                return 'vendor-ecosystem'
 
-              // ── 2. ECharts 生态 (PRESERVED — defineAsyncComponent 异步加载) ──
+              // ── 3. ECharts 生态 (defineAsyncComponent 异步加载) ──
               if (id.includes('echarts') || id.includes('zrender') || id.includes('vue-echarts'))
                 return 'vendor-echarts'
 
-              // ── 3. Lottie 生态 (PRESERVED — defineAsyncComponent 异步加载) ──
+              // ── 4. Lottie 生态 (defineAsyncComponent 异步加载) ──
               if (id.includes('lottie-web') || id.includes('vue3-lottie')) return 'vendor-lottie'
 
-              // ── 4. PrimeVue UI 框架 ──
-              if (id.includes('primevue') || id.includes('@primeuix') || id.includes('primeicons'))
-                return 'vendor-primevue'
+              // ── 5. PrimeVue UI 框架（激进细粒度拆分） ──
+              if (id.includes('@primeuix') || id.includes('@primevue/themes'))
+                return 'vendor-primevue-theme'
+              if (id.includes('@primevue/icons')) return 'vendor-primevue-icons'
+              if (id.includes('primevue')) {
+                const modulePath = id.toLowerCase()
+                const formKeywords = [
+                  '/input',
+                  '/select',
+                  '/multiselect',
+                  '/datepicker',
+                  '/password',
+                  '/checkbox',
+                  '/radiobutton',
+                  '/toggleswitch',
+                  '/textarea',
+                  '/slider',
+                  '/autocomplete',
+                  '/cascadeselect',
+                  '/treeselect',
+                  '/rating',
+                  '/colorpicker',
+                ]
+                const overlayKeywords = [
+                  '/dialog',
+                  '/drawer',
+                  '/popover',
+                  '/tooltip',
+                  '/confirmpopup',
+                  '/dynamicdialog',
+                  '/overlay',
+                  '/menu',
+                  '/tieredmenu',
+                  '/panelmenu',
+                ]
+                const dataKeywords = [
+                  '/datatable',
+                  '/treetable',
+                  '/paginator',
+                  '/virtualscroller',
+                  '/timeline',
+                  '/organizationchart',
+                ]
+                const feedbackKeywords = [
+                  '/toast',
+                  '/message',
+                  '/progress',
+                  '/confirm',
+                  '/skeleton',
+                  '/inlinemessage',
+                ]
+                const rareKeywords = ['/tree', '/galleria', '/editor', '/terminal', '/fullcalendar']
+                const coreKeywords = [
+                  'primevue/config',
+                  'primevue/utils',
+                  'primevue/base',
+                  'primevue/usestyle',
+                  'primevue/ripple',
+                  'primevue/focustrap',
+                ]
 
-              // ── 5. 日期/时区数据（大体积静态数据集） ──
-              if (id.includes('date-holidays') || id.includes('@vvo/tzdb')) return 'vendor-datetime'
+                if (coreKeywords.some(key => modulePath.includes(key)))
+                  return 'vendor-primevue-core'
+                if (feedbackKeywords.some(key => modulePath.includes(key)))
+                  return 'vendor-primevue-feedback'
+                if (overlayKeywords.some(key => modulePath.includes(key)))
+                  return 'vendor-primevue-overlay'
+                if (dataKeywords.some(key => modulePath.includes(key)))
+                  return 'vendor-primevue-data'
+                if (formKeywords.some(key => modulePath.includes(key)))
+                  return 'vendor-primevue-form'
+                if (rareKeywords.some(key => modulePath.includes(key)))
+                  return 'vendor-primevue-rare'
+                return 'vendor-primevue-core'
+              }
 
-              // ── 6. 电子表格引擎 ──
+              // ── 7. 电子表格引擎 ──
               if (id.includes('xlsx')) return 'vendor-xlsx'
 
-              // ── 7. 工具库 ──
-              if (
-                id.includes('lodash') ||
-                id.includes('dayjs') ||
-                id.includes('crypto-es') ||
-                id.includes('yup')
-              )
+              // ── 8. 工具库（按需拆分，避免污染 vendor-vue） ──
+              if (id.includes('@vueuse') || id.includes('lodash-es')) return 'vendor-utils'
+              if (id.includes('dayjs') || id.includes('crypto-es') || id.includes('yup'))
                 return 'vendor-utils'
 
               // 其余小型依赖 (<20KB) → Rollup 原生异步切分

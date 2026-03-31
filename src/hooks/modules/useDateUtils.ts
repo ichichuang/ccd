@@ -2,18 +2,17 @@
  * DateUtils 集成 Composable
  *
  * 职责说明：
- * - 自动同步框架语言设置，提供响应式的日期/节假日/时区处理能力
+ * - 自动同步框架语言设置，提供响应式的日期/时区处理能力
  * - 仅作为 `DateUtils` 的响应式代理层，不负责初始化（初始化由 `setupDateUtils` 完成）
  *
  * 未初始化时（isInitialized === false）的统一返回约定：
  * - 字符串类 API（formatDate / fromNow / formatIntl / formatSmart / formatI18n / formatWithLocale）：
  *   返回空字符串 `''`
- * - 布尔类 API（isWorkingDay / isNonWorkingDay / isHoliday / isCountryHoliday）：
+ * - 布尔类 API（isWorkingDay）：
  *   返回 `false`
- * - 集合类 API（batchFormat / getHolidays / getAvailableTimezones / getTimezonesByCountry）：
+ * - 集合类 API（batchFormat / getAvailableTimezones / getTimezonesByCountry）：
  *   返回空数组 `[]`
- *   集合映射类（getSupportedHolidayCountries）：返回空对象 `{}`
- * - 对象/详情类 API（smartParse / now / nextWorkingDay / getCountryHolidays / getCountryHolidayInfo）：
+ * - 对象/详情类 API（smartParse / now / nextWorkingDay）：
  *   返回 `null`
  *
  * 如需区分“未初始化”与“真实结果”，请同时检查 `isInitialized`。
@@ -62,32 +61,15 @@ export interface UseDateUtilsReturn {
   smartParse: (input: string) => ReturnType<typeof DateUtils.smartParse> | null
   now: () => ReturnType<typeof DateUtils.now> | null
   isWorkingDay: (date: DateInput) => boolean
-  isNonWorkingDay: (date: DateInput) => boolean
-  isHoliday: (date: DateInput) => boolean
   nextWorkingDay: (date: DateInput) => ReturnType<typeof DateUtils.nextWorkingDay> | null
   getLocalizedFormats: () => Record<string, string>
   getSupportedLocales: () => Record<SupportedLocale, Locale>
   setLocale: (locale: Locale) => Promise<void>
   setTimezone: (timezone: string) => void
-  importHolidays: (year: number, country?: 'CN' | 'US' | 'INTL') => void
-  getHolidays: (year: number) => ReturnType<typeof DateUtils.getHolidays>
   getAvailableTimezones: (
     groupByContinent?: boolean
   ) => ReturnType<typeof DateUtils.getAvailableTimezones>
   getTimezonesByCountry: (countryCode: string) => ReturnType<typeof DateUtils.getTimezonesByCountry>
-  getCountryHolidays: (
-    countryCode: string,
-    year: number,
-    importToDateUtils?: boolean
-  ) => ReturnType<typeof DateUtils.getCountryHolidays> | null
-  isCountryHoliday: (date: DateInput, countryCode?: string) => boolean
-  getCountryHolidayInfo: (
-    date: DateInput,
-    countryCode?: string
-  ) => ReturnType<typeof DateUtils.getCountryHolidayInfo> | null
-  getSupportedHolidayCountries: () =>
-    | ReturnType<typeof DateUtils.getSupportedCountries>
-    | Record<string, never>
   DateUtils: typeof DateUtils
 }
 
@@ -235,30 +217,6 @@ export function useDateUtils(): UseDateUtilsReturn {
   }
 
   /**
-   * 检查是否为非工作日（节假日或周末，排除调休工作日）
-   *
-   * - 未初始化：返回 false
-   */
-  const isNonWorkingDay = (date: DateInput): boolean => {
-    if (!isInitialized.value) {
-      return false
-    }
-    return DateUtils.isNonWorkingDay(date)
-  }
-
-  /**
-   * 检查是否为节假日
-   *
-   * - 未初始化：返回 false
-   */
-  const isHoliday = (date: DateInput): boolean => {
-    if (!isInitialized.value) {
-      return false
-    }
-    return DateUtils.isHoliday(date)
-  }
-
-  /**
    * 获取下一个工作日
    *
    * - 未初始化：返回 null
@@ -381,28 +339,6 @@ export function useDateUtils(): UseDateUtilsReturn {
   }
 
   /**
-   * 导入预设节假日
-   */
-  const importHolidays = (year: number, country: 'CN' | 'US' | 'INTL' = 'CN') => {
-    try {
-      DateUtils.importPresetHolidays(year, country)
-      console.log(`🎉 已导入${year}年${country}节假日配置`)
-    } catch (error) {
-      console.error('Failed to import holidays:', error)
-    }
-  }
-
-  /**
-   * 获取指定年份的节假日
-   */
-  const getHolidays = (year: number) => {
-    if (!isInitialized.value) {
-      return []
-    }
-    return DateUtils.getHolidays(year)
-  }
-
-  /**
    * 获取所有可用时区
    */
   const getAvailableTimezones = (groupByContinent: boolean = false) => {
@@ -420,50 +356,6 @@ export function useDateUtils(): UseDateUtilsReturn {
       return []
     }
     return DateUtils.getTimezonesByCountry(countryCode)
-  }
-
-  /**
-   * 获取国家节假日
-   */
-  const getCountryHolidays = (
-    countryCode: string,
-    year: number,
-    importToDateUtils: boolean = false
-  ) => {
-    if (!isInitialized.value) {
-      return null
-    }
-    return DateUtils.getCountryHolidays(countryCode, year, importToDateUtils)
-  }
-
-  /**
-   * 检查特定日期是否为指定国家的节假日
-   */
-  const isCountryHoliday = (date: DateInput, countryCode: string = 'CN') => {
-    if (!isInitialized.value) {
-      return false
-    }
-    return DateUtils.isCountryHoliday(date, countryCode)
-  }
-
-  /**
-   * 获取特定日期的节假日详情
-   */
-  const getCountryHolidayInfo = (date: DateInput, countryCode: string = 'CN') => {
-    if (!isInitialized.value) {
-      return null
-    }
-    return DateUtils.getCountryHolidayInfo(date, countryCode)
-  }
-
-  /**
-   * 获取支持的节假日国家列表
-   */
-  const getSupportedHolidayCountries = () => {
-    if (!isInitialized.value) {
-      return {}
-    }
-    return DateUtils.getSupportedCountries()
   }
 
   /**
@@ -496,8 +388,6 @@ export function useDateUtils(): UseDateUtilsReturn {
 
     // 工作日相关
     isWorkingDay,
-    isNonWorkingDay,
-    isHoliday,
     nextWorkingDay,
 
     // 格式配置
@@ -507,14 +397,8 @@ export function useDateUtils(): UseDateUtilsReturn {
     // 工具方法
     setLocale,
     setTimezone,
-    importHolidays,
-    getHolidays,
     getAvailableTimezones,
     getTimezonesByCountry,
-    getCountryHolidays,
-    isCountryHoliday,
-    getCountryHolidayInfo,
-    getSupportedHolidayCountries,
 
     // 直接访问 DateUtils 的所有静态方法
     DateUtils,

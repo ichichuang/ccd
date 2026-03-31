@@ -5,5 +5,4 @@
 export * from './types'
 export * from './constants'
 export * from './timezone'
-export { getHolidaysApi } from './holidaysLoader'
 export { default, dayjs } from './dateUtils'

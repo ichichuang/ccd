@@ -101,34 +101,6 @@ export interface ValidationOptions {
   strictFormat?: boolean
 }
 
-// ===== 节假日 =====
-export interface Holiday {
-  name: string
-  date: string | DateInput
-  type: 'national' | 'international' | 'custom' | 'workday'
-  recurring?: boolean
-  description?: string
-  country?: string
-  region?: string
-}
-
-export interface HolidayConfig {
-  year: number
-  holidays: Holiday[]
-  country?: string
-  region?: string
-}
-
-/** date-holidays 返回结构 */
-export interface HolidayInfo {
-  name: string
-  start: Date
-  end: Date
-  type: string
-  note?: string
-  [key: string]: unknown
-}
-
 // ===== 信息接口 =====
 export interface TimePeriodInfo {
   start: Dayjs

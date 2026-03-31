@@ -1,6 +1,6 @@
 {
   "name": "app-template",
-  "version": "6.0.0",
+  "version": "6.0.1",
   "private": true,
   "type": "module",
   "sideEffects": [
@@ -8,7 +8,6 @@
     "**/*.scss",
     "**/*.sass",
     "animate.css",
-    "primeicons/primeicons.css",
     "uno.css",
     "virtual:*"
   ],
@@ -31,7 +30,6 @@
   "packageManager": "pnpm@10.28.2",
   "scripts": {
     "dev": "vite",
-    "dev:icons": "NODE_OPTIONS='--max-old-space-size=8192' vite",
     "dev:demo": "NODE_OPTIONS='--max-old-space-size=8192' UNO_DEMO=true vite",
     "build": "vue-tsc --build --force && vite build",
     "build:ci": "vite build",
@@ -80,11 +78,9 @@
     "@primevue/themes": "^4.5.4",
     "@tanstack/vue-virtual": "^3.13.23",
     "@vueuse/core": "^13.9.0",
-    "@vvo/tzdb": "^6.183.0",
     "alova": "^3.3.3",
     "animate.css": "^4.1.1",
     "crypto-es": "^3.1.2",
-    "date-holidays": "^3.26.1",
     "echarts": "^6.0.0",
     "lodash-es": "^4.17.21",
     "lz-string": "^1.5.0",
@@ -94,7 +90,6 @@
     "overlayscrollbars-vue": "^0.5.9",
     "pinia": "^3.0.3",
     "pinia-plugin-persistedstate": "^4.7.1",
-    "primeicons": "^7.0.0",
     "primevue": "^4.5.4",
     "uuid": "^13.0.0",
     "vue": "^3.5.12",

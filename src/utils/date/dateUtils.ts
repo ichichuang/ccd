@@ -12,17 +12,14 @@ import utc from 'dayjs/plugin/utc.js'
 import weekday from 'dayjs/plugin/weekday.js'
 import weekOfYear from 'dayjs/plugin/weekOfYear.js'
 import { useMitt } from '@/utils/mitt'
-import { getHolidaysApi } from './holidaysLoader'
 import { ALL_TIMEZONES } from './timezone'
 import {
   CACHE_DEFAULTS,
-  CHINA_HOLIDAYS_2024,
   DATE_FORMATS,
   type DateFormatValues,
   DAYJS_LOCALE_MAP,
   DEFAULT_LOCALE,
   DEFAULT_TIMEZONE,
-  INTERNATIONAL_HOLIDAYS,
   LOCALE_MAP,
   LOCALE_MODULES,
   PRECISION_FORMATS,
@@ -37,8 +34,6 @@ import type {
   DayjsManipulateType,
   DayjsOpUnitType,
   FormatOptions,
-  Holiday,
-  HolidayInfo,
   Locale,
   ParseOptions,
   SmartParseResult,
@@ -69,9 +64,6 @@ export class DateUtils {
   // ===== 私有静态属性 =====
   // 缓存已加载的语言包
   private static loadedLocales = new Set<Locale>(['en-US'])
-
-  // 节假日配置缓存
-  private static holidays: Map<string, Holiday[]> = new Map()
 
   // 性能缓存
   private static cache = new Map<string, { value: unknown; timestamp: number }>()
@@ -1115,277 +1107,6 @@ export class DateUtils {
   }
 
   // =================
-  // 节假日管理 - 完整的节假日功能
-  // =================
-
-  /**
-   * 设置节假日配置
-   * @param year - 年份
-   * @param holidays - 节假日数组
-   */
-  static setHolidays(year: number, holidays: Holiday[]): void {
-    this.holidays.set(year.toString(), holidays)
-  }
-
-  /**
-   * 批量导入预设节假日
-   * @param year - 年份
-   * @param country - 国家代码 ('CN' | 'US' | 'INTL')
-   */
-  static importPresetHolidays(year: number, country: 'CN' | 'US' | 'INTL' = 'CN'): void {
-    const yearKey = year.toString()
-    let presetHolidays: Holiday[] = []
-
-    switch (country) {
-      case 'CN':
-        // 导入中国节假日，调整年份
-        presetHolidays = CHINA_HOLIDAYS_2024.map(holiday => ({
-          ...holiday,
-          date: holiday.date.toString().replace('2024', year.toString()),
-        }))
-        break
-      case 'INTL':
-        // 导入国际节假日，添加年份
-        presetHolidays = INTERNATIONAL_HOLIDAYS.map(holiday => ({
-          ...holiday,
-          date: `${year}-${holiday.date}`,
-        }))
-        break
-      default:
-        console.warn(`Unsupported country: ${country}`)
-        return
-    }
-
-    // 合并现有节假日
-    const existing = this.holidays.get(yearKey) || []
-    const merged = [...existing, ...presetHolidays]
-
-    // 去重（基于日期）
-    const unique = merged.reduce((acc, current) => {
-      const dateStr = dayjs(current.date).format('YYYY-MM-DD')
-      const exists = acc.some(item => dayjs(item.date).format('YYYY-MM-DD') === dateStr)
-      if (!exists) {
-        acc.push(current)
-      }
-      return acc
-    }, [] as Holiday[])
-
-    this.holidays.set(yearKey, unique)
-  }
-
-  /**
-   * 使用 date-holidays 初始化指定国家/地区的节假日
-   * @param countryCode - 国家代码 (ISO 3166-1 alpha-2)
-   * @param state - 州/省代码 (可选)
-   * @param region - 地区代码 (可选)
-   * @returns 成功初始化返回true，失败返回false
-   */
-  static initCountryHolidays(countryCode: string, state?: string, region?: string): boolean {
-    try {
-      const api = getHolidaysApi()
-      if (!api) {
-        return false
-      }
-      const args: string[] = [countryCode]
-      if (state) {
-        args.push(state)
-      }
-      if (region) {
-        args.push(region)
-      }
-
-      const result = api.init(...args)
-      return result !== undefined ? true : false
-    } catch (error) {
-      console.error('Failed to initialize country holidays:', error)
-      return false
-    }
-  }
-
-  /**
-   * 获取指定国家和年份的所有节假日
-   * @param countryCode - 国家代码 (ISO 3166-1 alpha-2)
-   * @param year - 年份
-   * @param importToDateUtils - 是否将节假日导入到DateUtils
-   * @returns 节假日列表或null
-   */
-  static getCountryHolidays(
-    countryCode: string,
-    year: number,
-    importToDateUtils: boolean = false
-  ): HolidayInfo[] | null {
-    try {
-      const api = getHolidaysApi()
-      if (!api) {
-        return null
-      }
-
-      api.init(countryCode)
-      const holidays = (api.getHolidays?.(year) ?? []) as HolidayInfo[]
-
-      if (importToDateUtils && holidays && Array.isArray(holidays)) {
-        // 转换为DateUtils的Holiday格式并导入
-        const convertedHolidays: Holiday[] = holidays.map(h => ({
-          name: h.name,
-          date: h.start,
-          type: h.type === 'public' ? 'national' : 'international',
-          country: countryCode,
-          description: h.note || h.name,
-          recurring: false,
-        }))
-
-        this.setHolidays(year, convertedHolidays)
-      }
-
-      return holidays
-    } catch (error) {
-      console.error('Failed to get country holidays:', error)
-      return null
-    }
-  }
-
-  /**
-   * 获取支持的国家列表
-   * @returns 支持的国家列表
-   */
-  static getSupportedCountries(): Record<string, string> {
-    try {
-      const api = getHolidaysApi()
-      if (!api) {
-        return {}
-      }
-      return (api.getCountries?.() ?? {}) as Record<string, string>
-    } catch (error) {
-      console.error('Failed to get supported countries:', error)
-      return {}
-    }
-  }
-
-  /**
-   * 检查指定日期是否为特定国家的节假日
-   * @param date - 日期输入
-   * @param countryCode - 国家代码 (ISO 3166-1 alpha-2)
-   * @returns 如果是节假日返回节假日信息，否则返回false
-   */
-  static isCountryHoliday(date: DateInput, countryCode: string = 'CN'): boolean {
-    try {
-      const api = getHolidaysApi()
-      if (!api) {
-        return false
-      }
-      api.init(countryCode)
-      const d = this.validateDateInput(date, 'isCountryHoliday')
-      const result = api.isHoliday?.(d.toDate())
-      return result !== false && result !== undefined
-    } catch (error) {
-      console.error('Failed to check country holiday:', error)
-      return false
-    }
-  }
-
-  /**
-   * 获取指定日期的节假日详情（如果是节假日）
-   * @param date - 日期输入
-   * @param countryCode - 国家代码 (ISO 3166-1 alpha-2)
-   * @returns 节假日详情或null
-   */
-  static getCountryHolidayInfo(date: DateInput, countryCode: string = 'CN'): HolidayInfo | null {
-    try {
-      const api = getHolidaysApi()
-      if (!api) {
-        return null
-      }
-      api.init(countryCode)
-      const d = this.validateDateInput(date, 'getCountryHolidayInfo')
-      const result = api.isHoliday?.(d.toDate())
-      return result === false || result === undefined ? null : (result as unknown as HolidayInfo)
-    } catch (error) {
-      console.error('Failed to get holiday info:', error)
-      return null
-    }
-  }
-
-  /**
-   * 添加节假日
-   * @param year - 年份
-   * @param holiday - 节假日配置
-   */
-  static addHoliday(year: number, holiday: Holiday): void {
-    const yearKey = year.toString()
-    const existing = this.holidays.get(yearKey) || []
-    existing.push(holiday)
-    this.holidays.set(yearKey, existing)
-  }
-
-  /**
-   * 删除节假日
-   * @param year - 年份
-   * @param holidayName - 节假日名称
-   * @returns 是否删除成功
-   */
-  static removeHoliday(year: number, holidayName: string): boolean {
-    const yearKey = year.toString()
-    const existing = this.holidays.get(yearKey)
-    if (!existing) {
-      return false
-    }
-
-    const index = existing.findIndex(h => h.name === holidayName)
-    if (index === -1) {
-      return false
-    }
-
-    const next = [...existing]
-    next.splice(index, 1)
-    this.holidays.set(yearKey, next)
-    return true
-  }
-
-  /**
-   * 获取指定年份的节假日
-   * @param year - 年份
-   * @returns 节假日数组
-   */
-  static getHolidays(year: number): Holiday[] {
-    return this.holidays.get(year.toString()) || []
-  }
-
-  /**
-   * 清除指定年份的节假日配置
-   * @param year - 年份
-   */
-  static clearHolidays(year: number): void {
-    this.holidays.delete(year.toString())
-  }
-
-  /**
-   * 清除所有节假日配置
-   */
-  static clearAllHolidays(): void {
-    this.holidays.clear()
-  }
-
-  /**
-   * 检查是否为节假日
-   * @param date - 日期输入
-   * @param year - 指定年份（可选，默认使用日期的年份）
-   * @returns 是否为节假日
-   */
-  static isHoliday(date: DateInput, year?: number): boolean {
-    const d = this.validateDateInput(date, 'isHoliday')
-    const targetYear = year ?? d.year()
-    const dateStr = d.format('MM-DD')
-
-    const yearHolidays = this.holidays.get(targetYear.toString())
-    return (
-      yearHolidays?.some(holiday => {
-        const holidayDate = dayjs(holiday.date).format('MM-DD')
-        return holidayDate === dateStr
-      }) ?? false
-    )
-  }
-
-  // =================
   // 工作日处理 - 增强的工作日功能
   // =================
 
@@ -1410,69 +1131,12 @@ export class DateUtils {
   }
 
   /**
-   * 检查是否为工作日（排除节假日，包含调休工作日）
+   * 检查是否为工作日（模板壳：按周一到周五）
    * @param date - 日期输入
    * @returns 是否为工作日
    */
   static isWorkingDay(date: DateInput): boolean {
-    const d = this.validateDateInput(date, 'isWorkingDay')
-    const year = d.year()
-
-    // 检查是否为调休工作日
-    const yearHolidays = this.holidays.get(year.toString())
-    const isAdjustedWorkday =
-      yearHolidays?.some(holiday => {
-        return (
-          holiday.type === 'workday' &&
-          dayjs(holiday.date).format('YYYY-MM-DD') === d.format('YYYY-MM-DD')
-        )
-      }) ?? false
-
-    if (isAdjustedWorkday) {
-      return true // 调休工作日算作工作日
-    }
-
-    // 常规判断：是工作日且不是节假日
-    return this.isWeekday(date) && !this.isHoliday(date)
-  }
-
-  /**
-   * 检查是否为节假日（不包括调休工作日）
-   * @param date - 日期输入
-   * @returns 是否为节假日
-   */
-  static isNonWorkingDay(date: DateInput): boolean {
-    const d = this.validateDateInput(date, 'isNonWorkingDay')
-    const year = d.year()
-
-    // 检查是否为法定节假日
-    const yearHolidays = this.holidays.get(year.toString())
-    const isLegalHoliday =
-      yearHolidays?.some(holiday => {
-        return (
-          (holiday.type === 'national' || holiday.type === 'international') &&
-          dayjs(holiday.date).format('YYYY-MM-DD') === d.format('YYYY-MM-DD')
-        )
-      }) ?? false
-
-    if (isLegalHoliday) {
-      return true
-    }
-
-    // 周末且不是调休工作日
-    if (this.isWeekend(date)) {
-      const isAdjustedWorkday =
-        yearHolidays?.some(holiday => {
-          return (
-            holiday.type === 'workday' &&
-            dayjs(holiday.date).format('YYYY-MM-DD') === d.format('YYYY-MM-DD')
-          )
-        }) ?? false
-
-      return !isAdjustedWorkday
-    }
-
-    return false
+    return this.isWeekday(date)
   }
 
   /**

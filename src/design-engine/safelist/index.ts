@@ -1,6 +1,5 @@
 import fs from 'node:fs'
 import path from 'node:path'
-import { createRequire } from 'node:module'
 import { fileURLToPath } from 'node:url'
 import { FileSystemIconLoader } from '@iconify/utils/lib/loader/node-loaders'
 import { globSync } from 'glob'
@@ -41,72 +40,9 @@ export type CustomIconLoader = ReturnType<typeof FileSystemIconLoader>
 let routeIconsCache: CacheEntry<string[]> | null = null
 let customIconsCache: CacheEntry<string[]> | null = null
 
-const iconifyJsonCache = new Map<string, IconifyIconsJson>()
-
 export function invalidateIconCaches(target: IconCacheTarget | 'all' = 'all'): void {
   if (target === 'route' || target === 'all') routeIconsCache = null
   if (target === 'custom' || target === 'all') customIconsCache = null
-}
-
-interface IconifyIconsJson {
-  prefix?: string
-  icons?: Record<string, unknown>
-}
-
-type IconifyCollectionName = 'lucide' | 'logos' | 'solar' | 'ph'
-
-const _require = createRequire(import.meta.url)
-
-export function getIconifyIconNames(collectionName: IconifyCollectionName): string[] {
-  try {
-    if (iconifyJsonCache.has(collectionName)) {
-      const iconSet = iconifyJsonCache.get(collectionName)!
-      return Object.keys(iconSet.icons ?? {}).map(
-        name => `i-${iconSet.prefix ?? collectionName}-${name}`
-      )
-    }
-
-    const iconSet = _require(`@iconify-json/${collectionName}/icons.json`) as IconifyIconsJson
-    iconifyJsonCache.set(collectionName, iconSet)
-    const prefix = iconSet.prefix ?? collectionName
-    const icons = iconSet.icons ?? {}
-    return Object.keys(icons).map(name => `i-${prefix}-${name}`)
-  } catch (err) {
-    console.warn(`[design-engine/safelist] Failed to load @iconify-json/${collectionName}:`, err)
-    return []
-  }
-}
-
-const ICON_SUBSET_LIMITS_DEV: Record<IconifyCollectionName, number> = {
-  lucide: 300,
-  logos: 80,
-  solar: 300,
-  ph: 300,
-}
-
-const ICON_SUBSET_LIMITS_PROD: Record<IconifyCollectionName, number> = {
-  lucide: 150,
-  logos: 60,
-  solar: 150,
-  ph: 150,
-}
-
-const isProdEnv = process.env.NODE_ENV === 'production'
-
-export const ICON_SUBSET_LIMITS = (
-  isProdEnv ? ICON_SUBSET_LIMITS_PROD : ICON_SUBSET_LIMITS_DEV
-) as {
-  readonly lucide: number
-  readonly logos: number
-  readonly solar: number
-  readonly ph: number
-}
-
-export function getIconifyIconNamesSubset(
-  collectionName: IconifyCollectionName,
-  limit: number
-): string[] {
-  return getIconifyIconNames(collectionName).slice(0, limit)
 }
 
 const invalidIcons = new Set<string>([
@@ -459,19 +395,9 @@ function toUnoIconClass(name: string): string {
   return `i-${name.replace(':', '-')}`
 }
 
-function getDynamicSafelist(isDemo: boolean): string[] {
+function getDynamicSafelist(): string[] {
   const routeIcons = getRouteMetaIcons().map(toUnoIconClass)
   const customIcons = getCustomIconClasses()
-
-  const examplePageIcons = isDemo
-    ? [
-        ...getIconifyIconNamesSubset('lucide', ICON_SUBSET_LIMITS.lucide),
-        ...getIconifyIconNamesSubset('solar', ICON_SUBSET_LIMITS.solar),
-        ...getIconifyIconNamesSubset('ph', ICON_SUBSET_LIMITS.ph),
-        ...getIconifyIconNamesSubset('logos', ICON_SUBSET_LIMITS.logos),
-        ...customIcons,
-      ]
-    : []
 
   const menuVisualSafelist = [
     'bg-primary!',
@@ -503,7 +429,6 @@ function getDynamicSafelist(isDemo: boolean): string[] {
   return [
     ...routeIcons,
     ...customIcons,
-    ...examplePageIcons,
     ...ENGINE_ICON_SAFELIST_CLASSES,
     ...LAYOUT_SAFELIST_CLASSES,
     ...SCALE_SAFELIST_CLASSES,
@@ -526,7 +451,7 @@ export function getPresetIconsCollections(): Record<string, CustomIconLoader> {
 
 /** 主题演示页 Alpha 阶梯已改为内联 `rgb(var(--*) / α)`，不再合并数百条 demo 类名。 */
 export function getEngineSafelist(): string[] {
-  return getDynamicSafelist(true)
+  return getDynamicSafelist()
 }
 
 // Keep file-local export surface minimal for engine usage.

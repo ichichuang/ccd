@@ -2,8 +2,8 @@
  * 路由白名单配置
  * 不需要登录验证的页面路径
  */
-export const routeWhitePathList: readonly string[] = ['/login', '/register', '/example/**'] as const
-export const routeWhiteNameList: string[] = ['Login', 'Register', 'Example']
+export const routeWhitePathList: readonly string[] = ['/login', '/register'] as const
+export const routeWhiteNameList: string[] = ['Login', 'Register']
 
 /**
  * 是否启用登录/鉴权模式

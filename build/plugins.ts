@@ -8,12 +8,7 @@ import AutoImport from 'unplugin-auto-import/vite'
 import Components from 'unplugin-vue-components/vite'
 import { PrimeVueResolver } from '@primevue/auto-import-resolver'
 import type { PluginOption, ViteDevServer } from 'vite'
-import {
-  getCustomIconClasses,
-  getIconifyIconNamesSubset,
-  ICON_SUBSET_LIMITS,
-  invalidateIconCaches,
-} from '../src/design-engine/safelist'
+import { getCustomIconClasses, invalidateIconCaches } from '../src/design-engine/safelist'
 import type { ViteEnv } from './utils'
 import { configLegacyPlugin } from './legacy'
 
@@ -122,51 +117,176 @@ export function getPluginsList(env: ViteEnv, command: 'build' | 'serve'): Plugin
 
 /**
  * 图标示例页列表生成插件
- * 在构建/开发启动时从 @iconify-json 与 src/assets/icons 生成 iconLists.generated.ts（仅子集，与 safelist 一致）
+ *
+ * 约定：
+ * - 默认（UNO_DEMO=false）：仅生成精简子集，避免开发模式加载过多图标导致卡顿
+ * - demo 模式（UNO_DEMO=true）：生成更完整的图标列表，供 icons 示例页“加载更多”使用
  */
 function generateIconListsPlugin(): PluginOption {
+  const cwd = process.cwd()
   const generatedPath = path.resolve(
-    process.cwd(),
+    cwd,
     'src/views/example/components/icons/configs/iconLists.generated.ts'
   )
+
+  /**
+   * 从 @iconify-json/<collection>/icons.json 中提取前 N 个图标名
+   *
+   * 关键点：不能 JSON.parse（某些集合 icons.json 很大，会导致 dev:demo OOM）。
+   * 这里用增量扫描 + 简单状态机，只在 "icons": { ... } 的顶层抓取 key：
+   * depth === 1 时的 "name": 视为图标名，其余嵌套字段（body/width/height 等）忽略。
+   */
+  const readIconifyCollectionNames = (collection: string, limit: number): string[] => {
+    try {
+      const filePath = path.resolve(cwd, `node_modules/@iconify-json/${collection}/icons.json`)
+      if (!fs.existsSync(filePath)) return []
+
+      const fd = fs.openSync(filePath, 'r')
+      try {
+        const bufferSize = 256 * 1024
+        const buffer = Buffer.allocUnsafe(bufferSize)
+        const names: string[] = []
+        let bytesRead = 0
+        let position = 0
+        let carry = ''
+        let inIconsObject = false
+        let depth = 0
+        let i = 0
+
+        while ((bytesRead = fs.readSync(fd, buffer, 0, bufferSize, position)) > 0) {
+          position += bytesRead
+          const chunk = carry + buffer.toString('utf-8', 0, bytesRead)
+          // 只保留末尾一小段以覆盖边界截断
+          carry = chunk.slice(-1024)
+
+          const len = chunk.length
+          i = 0
+
+          while (i < len) {
+            if (!inIconsObject) {
+              // 查找 "icons":{
+              const idx = chunk.indexOf('"icons"', i)
+              if (idx === -1) break
+              let j = idx + '"icons"'.length
+              while (j < len && /\s|:/.test(chunk[j])) j++
+              if (chunk[j] === '{') {
+                inIconsObject = true
+                depth = 1
+                i = j + 1
+                continue
+              }
+              i = j
+              continue
+            }
+
+            const ch = chunk[i]
+
+            if (ch === '{') {
+              depth++
+              i++
+              continue
+            }
+            if (ch === '}') {
+              depth--
+              if (depth === 0) {
+                // 结束 icons 对象
+                return names
+              }
+              i++
+              continue
+            }
+
+            // 仅在 depth === 1 时采集 key，避免抓到内部字段 body/width/height 等
+            // 性能关键：禁止逐字符拼接字符串（会导致大量临时对象与 OOM）
+            if (depth === 1 && ch === '"') {
+              const j = chunk.indexOf('"', i + 1)
+              if (j === -1) break
+              const key = chunk.slice(i + 1, j)
+
+              // 跳过紧随其后的空白，确保是 "key":（不要求后面立刻是 {，但会进入深层后被 depth 保护）
+              let k = j + 1
+              while (k < len && /\s/.test(chunk[k])) k++
+              if (chunk[k] === ':') {
+                // 简单过滤合法 icon 名（与 preset-icons 约定一致）
+                if (/^[a-z0-9_-]+$/.test(key)) {
+                  names.push(key)
+                  if (names.length >= limit) return names
+                }
+                i = k + 1
+              } else {
+                i = j + 1
+              }
+              continue
+            }
+
+            i++
+          }
+        }
+
+        return names
+      } finally {
+        fs.closeSync(fd)
+      }
+    } catch {
+      return []
+    }
+  }
+
+  const toUnoIconClasses = (collection: string, names: string[], limit?: number): string[] => {
+    const sliced = typeof limit === 'number' ? names.slice(0, Math.max(0, limit)) : names
+    return sliced.map(n => `i-${collection}-${n}`)
+  }
+
+  const unique = <T>(items: readonly T[]): T[] => Array.from(new Set(items))
+
   return {
     name: 'generate-icon-lists',
     config() {
       const isDemo = process.env.UNO_DEMO === 'true'
 
-      let lucide: string[]
-      let solar: string[]
-      let ph: string[]
-      let logos: string[]
+      // Lite 模式只取少量子集；Demo 模式尽可能完整（仍保留上限避免极端 OOM）
+      const liteLimit = 32
+      // ⚠️ 注意：demo 模式下图标类会被 UnoCSS 扫描并触发 preset-icons 生成 SVG/CSS。
+      // 若每库数量过大（例如 800×4），dev 启动期容易出现内存爆炸（OOM）。
+      // 因此按集合分级限制数量：Lucide 相对轻；Solar/Logos 更重。
+      const demoLimits = {
+        lucide: 260,
+        solar: 80,
+        ph: 160,
+        logos: 120,
+      } as const
 
-      if (isDemo) {
-        lucide = getIconifyIconNamesSubset('lucide', ICON_SUBSET_LIMITS.lucide)
-        solar = getIconifyIconNamesSubset('solar', ICON_SUBSET_LIMITS.solar)
-        ph = getIconifyIconNamesSubset('ph', ICON_SUBSET_LIMITS.ph)
-        logos = getIconifyIconNamesSubset('logos', ICON_SUBSET_LIMITS.logos)
-      } else {
-        // UNO_DEMO=false 时使用精简子集，避免在开发模式加载过多图标
-        const liteLimit = 32
-        lucide = getIconifyIconNamesSubset('lucide', liteLimit)
-        solar = getIconifyIconNamesSubset('solar', liteLimit)
-        ph = getIconifyIconNamesSubset('ph', liteLimit)
-        logos = getIconifyIconNamesSubset('logos', liteLimit)
-      }
+      const lucideNames = unique(
+        readIconifyCollectionNames('lucide', isDemo ? demoLimits.lucide : liteLimit)
+      )
+      const solarNames = unique(
+        readIconifyCollectionNames('solar', isDemo ? demoLimits.solar : liteLimit)
+      )
+      const phNames = unique(readIconifyCollectionNames('ph', isDemo ? demoLimits.ph : liteLimit))
+      const logosNames = unique(
+        readIconifyCollectionNames('logos', isDemo ? demoLimits.logos : liteLimit)
+      )
 
-      const custom = getCustomIconClasses()
-      const content = `/** 由 build/plugins.ts generateIconListsPlugin 在构建时生成，请勿手改 */\n\nexport const LUCIDE_ICONS: string[] = ${JSON.stringify(
-        lucide
-      )}\nexport const SOLAR_ICONS: string[] = ${JSON.stringify(
-        solar
-      )}\nexport const PH_ICONS: string[] = ${JSON.stringify(
-        ph
-      )}\nexport const LOGOS_ICONS: string[] = ${JSON.stringify(
-        logos
-      )}\nexport const CUSTOM_ICONS: string[] = ${JSON.stringify(
-        custom
-      )}\nexport const IS_LITE_MODE: boolean = ${!isDemo}\n`
+      const LUCIDE_ICONS = unique(toUnoIconClasses('lucide', lucideNames))
+      const SOLAR_ICONS = unique(toUnoIconClasses('solar', solarNames))
+      const PH_ICONS = unique(toUnoIconClasses('ph', phNames))
+      const LOGOS_ICONS = unique(toUnoIconClasses('logos', logosNames))
+      const CUSTOM_ICONS = unique(getCustomIconClasses())
+
+      const content =
+        `/** 由 build/plugins.ts generateIconListsPlugin 在构建时生成，请勿手改 */\n\n` +
+        `export const LUCIDE_ICONS: string[] = ${JSON.stringify(LUCIDE_ICONS)}\n` +
+        `export const SOLAR_ICONS: string[] = ${JSON.stringify(SOLAR_ICONS)}\n` +
+        `export const PH_ICONS: string[] = ${JSON.stringify(PH_ICONS)}\n` +
+        `export const LOGOS_ICONS: string[] = ${JSON.stringify(LOGOS_ICONS)}\n` +
+        `export const CUSTOM_ICONS: string[] = ${JSON.stringify(CUSTOM_ICONS)}\n` +
+        `export const IS_LITE_MODE: boolean = ${JSON.stringify(!isDemo)}\n`
+
       fs.mkdirSync(path.dirname(generatedPath), { recursive: true })
       fs.writeFileSync(generatedPath, content, 'utf-8')
+
+      // 自定义图标缓存可能依赖文件系统状态，生成期刷新一次以保持一致
+      invalidateIconCaches('custom')
     },
   }
 }
