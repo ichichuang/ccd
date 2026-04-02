@@ -53,10 +53,26 @@ export default ({ mode, command }: ConfigEnv): UserConfigExport => {
 
   const isDev = mode === 'development'
 
-  // 2. 动态控制 esbuild 的 drop 选项
-  const esbuildDrop: Array<'console' | 'debugger'> = []
-  if (VITE_DROP_CONSOLE) esbuildDrop.push('console')
+  // 2. 动态控制 esbuild 的 drop / pure 选项
+  //    保留 console.error 和 console.warn 用于生产环境错误可见性
+  const esbuildDrop: Array<'debugger'> = []
   if (VITE_DROP_DEBUGGER) esbuildDrop.push('debugger')
+  const esbuildPure: string[] = []
+  if (VITE_DROP_CONSOLE) {
+    esbuildPure.push(
+      'console.log',
+      'console.info',
+      'console.debug',
+      'console.trace',
+      'console.dir',
+      'console.table',
+      'console.time',
+      'console.timeEnd',
+      'console.group',
+      'console.groupEnd',
+      'console.groupCollapsed'
+    )
+  }
 
   return defineConfig({
     base: VITE_PUBLIC_PATH,
@@ -101,6 +117,13 @@ export default ({ mode, command }: ConfigEnv): UserConfigExport => {
         : {},
     },
 
+    preview: {
+      port: 4173,
+      host: 'localhost',
+      open: true,
+      cors: true,
+    },
+
     // 3. 插件配置 (传入 command 以正确判断构建阶段)
     plugins: getPluginsList(
       {
@@ -125,6 +148,7 @@ export default ({ mode, command }: ConfigEnv): UserConfigExport => {
 
     esbuild: {
       drop: esbuildDrop.length ? esbuildDrop : undefined,
+      pure: esbuildPure.length ? esbuildPure : undefined,
     },
 
     // 5. 构建配置
@@ -177,81 +201,12 @@ export default ({ mode, command }: ConfigEnv): UserConfigExport => {
               // ── 4. Lottie 生态 (defineAsyncComponent 异步加载) ──
               if (id.includes('lottie-web') || id.includes('vue3-lottie')) return 'vendor-lottie'
 
-              // ── 5. PrimeVue UI 框架（激进细粒度拆分） ──
+              // ── 5. PrimeVue UI 框架 ──
+              // @primeuix / @primevue/themes 体积较大，单独拆包以便并行加载。
+              // 其余 primevue/* 交由 Rollup 自动共享依赖分割，无需手工合并，
+              // BaseStyle 初始化顺序由 Rollup 模块图内部保证。
               if (id.includes('@primeuix') || id.includes('@primevue/themes'))
                 return 'vendor-primevue-theme'
-              if (id.includes('@primevue/icons')) return 'vendor-primevue-icons'
-              if (id.includes('primevue')) {
-                const modulePath = id.toLowerCase()
-                const formKeywords = [
-                  '/input',
-                  '/select',
-                  '/multiselect',
-                  '/datepicker',
-                  '/password',
-                  '/checkbox',
-                  '/radiobutton',
-                  '/toggleswitch',
-                  '/textarea',
-                  '/slider',
-                  '/autocomplete',
-                  '/cascadeselect',
-                  '/treeselect',
-                  '/rating',
-                  '/colorpicker',
-                ]
-                const overlayKeywords = [
-                  '/dialog',
-                  '/drawer',
-                  '/popover',
-                  '/tooltip',
-                  '/confirmpopup',
-                  '/dynamicdialog',
-                  '/overlay',
-                  '/menu',
-                  '/tieredmenu',
-                  '/panelmenu',
-                ]
-                const dataKeywords = [
-                  '/datatable',
-                  '/treetable',
-                  '/paginator',
-                  '/virtualscroller',
-                  '/timeline',
-                  '/organizationchart',
-                ]
-                const feedbackKeywords = [
-                  '/toast',
-                  '/message',
-                  '/progress',
-                  '/confirm',
-                  '/skeleton',
-                  '/inlinemessage',
-                ]
-                const rareKeywords = ['/tree', '/galleria', '/editor', '/terminal', '/fullcalendar']
-                const coreKeywords = [
-                  'primevue/config',
-                  'primevue/utils',
-                  'primevue/base',
-                  'primevue/usestyle',
-                  'primevue/ripple',
-                  'primevue/focustrap',
-                ]
-
-                if (coreKeywords.some(key => modulePath.includes(key)))
-                  return 'vendor-primevue-core'
-                if (feedbackKeywords.some(key => modulePath.includes(key)))
-                  return 'vendor-primevue-feedback'
-                if (overlayKeywords.some(key => modulePath.includes(key)))
-                  return 'vendor-primevue-overlay'
-                if (dataKeywords.some(key => modulePath.includes(key)))
-                  return 'vendor-primevue-data'
-                if (formKeywords.some(key => modulePath.includes(key)))
-                  return 'vendor-primevue-form'
-                if (rareKeywords.some(key => modulePath.includes(key)))
-                  return 'vendor-primevue-rare'
-                return 'vendor-primevue-core'
-              }
 
               // ── 7. 电子表格引擎 ──
               if (id.includes('xlsx')) return 'vendor-xlsx'

@@ -24,6 +24,32 @@ export function getPluginsList(env: ViteEnv, command: 'build' | 'serve'): Plugin
   const isBuild = command === 'build'
 
   const plugins: (PluginOption | false)[] = [
+    // ECharts tree-shaking 增强：覆盖 echarts package.json 中 sideEffects 声明，
+    // 使 Rollup 能完全消除未使用的图表/组件安装模块
+    isBuild &&
+      ({
+        name: 'echarts-treeshake-enhance',
+        enforce: 'pre',
+        resolveId: {
+          order: 'pre',
+          async handler(source, importer, options) {
+            if (!importer || !source.includes('echarts')) return null
+            const resolved = await this.resolve(source, importer, {
+              ...options,
+              skipSelf: true,
+            })
+            if (
+              resolved &&
+              !resolved.external &&
+              /echarts[\\/]lib[\\/](chart|component)[\\/]/.test(resolved.id)
+            ) {
+              return { ...resolved, moduleSideEffects: false }
+            }
+            return null
+          },
+        },
+      } as PluginOption),
+
     // ✅ 构建信息看板
     viteBuildInfo(),
 
