@@ -211,8 +211,8 @@ export const createCustomPreset = (sizeStore: ReturnType<typeof useSizeStore>) =
 
   const toastDarkSemantic = {
     info: {
-      background: 'rgb(var(--info))',
-      borderColor: 'rgb(var(--info))',
+      background: 'rgb(var(--info) / 0.6)',
+      borderColor: 'rgb(var(--info) / 0.8)',
       color: 'rgb(var(--info-foreground))',
       detailColor: 'rgb(var(--info-foreground))',
       closeButton: {
@@ -221,8 +221,8 @@ export const createCustomPreset = (sizeStore: ReturnType<typeof useSizeStore>) =
       },
     },
     success: {
-      background: 'rgb(var(--success))',
-      borderColor: 'rgb(var(--success))',
+      background: 'rgb(var(--success) / 0.6)',
+      borderColor: 'rgb(var(--success) / 0.8)',
       color: 'rgb(var(--success-foreground))',
       detailColor: 'rgb(var(--success-foreground))',
       closeButton: {
@@ -231,8 +231,8 @@ export const createCustomPreset = (sizeStore: ReturnType<typeof useSizeStore>) =
       },
     },
     warn: {
-      background: 'rgb(var(--warn))',
-      borderColor: 'rgb(var(--warn))',
+      background: 'rgb(var(--warn) / 0.6)',
+      borderColor: 'rgb(var(--warn) / 0.8)',
       color: 'rgb(var(--warn-foreground))',
       detailColor: 'rgb(var(--warn-foreground))',
       closeButton: {
@@ -241,8 +241,8 @@ export const createCustomPreset = (sizeStore: ReturnType<typeof useSizeStore>) =
       },
     },
     error: {
-      background: 'rgb(var(--danger))',
-      borderColor: 'rgb(var(--danger))',
+      background: 'rgb(var(--danger) / 0.6)',
+      borderColor: 'rgb(var(--danger) / 0.8)',
       color: 'rgb(var(--danger-foreground))',
       detailColor: 'rgb(var(--danger-foreground))',
       closeButton: {
@@ -251,7 +251,7 @@ export const createCustomPreset = (sizeStore: ReturnType<typeof useSizeStore>) =
       },
     },
     secondary: {
-      background: 'rgb(var(--secondary))',
+      background: 'rgb(var(--secondary) / 0.8)',
       borderColor: 'rgb(var(--secondary))',
       color: 'rgb(var(--secondary-foreground))',
       detailColor: 'rgb(var(--secondary-foreground))',
@@ -261,7 +261,7 @@ export const createCustomPreset = (sizeStore: ReturnType<typeof useSizeStore>) =
       },
     },
     contrast: {
-      background: 'rgb(var(--foreground))',
+      background: 'rgb(var(--foreground) / 0.8)',
       borderColor: 'rgb(var(--foreground))',
       color: 'rgb(var(--background))',
       detailColor: 'rgb(var(--background))',
@@ -274,7 +274,7 @@ export const createCustomPreset = (sizeStore: ReturnType<typeof useSizeStore>) =
   if (components?.toast) {
     deepMergeStylesAdvancedInPlace(components.toast, {
       content: {
-        padding: 'var(--spacing-sm) var(--spacing-xs) var(--spacing-sm) var(--spacing-sm)',
+        padding: 'var(--spacing-xs)',
       },
       colorScheme: { dark: toastDarkSemantic },
     })

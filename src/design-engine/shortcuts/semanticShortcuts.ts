@@ -47,29 +47,29 @@ export const semanticShortcuts = {
 
   // 轻微浮起（hover 卡片 / 列表）
   'material-elevated':
-    'bg-card text-card-foreground rounded-lg p-md border border-transparent dark:border-border/15 shadow-sm transition-all duration-md hover:shadow-md dark:shadow-[inset_0_1px_0_0_rgb(var(--foreground)/0.05)] dark:hover:shadow-[inset_0_1px_0_0_rgb(var(--foreground)/0.1)]',
+    'bg-card text-card-foreground rounded-lg p-md border border-solid border-transparent dark:border-border/15 shadow-sm transition-all duration-md hover:shadow-md dark:shadow-[inset_0_1px_0_0_rgb(var(--foreground)/0.05)] dark:hover:shadow-[inset_0_1px_0_0_rgb(var(--foreground)/0.1)]',
 
   // Material Solid（表格/数据网格基础材质）
   'material-solid':
-    'bg-card text-card-foreground rounded-lg border border-transparent shadow-sm dark:border-border/15 dark:shadow-none',
+    'bg-card text-card-foreground rounded-lg border border-solid border-transparent shadow-sm dark:border-border/15 dark:shadow-none',
 
   // INTERNAL - DO NOT USE DIRECTLY
-  'glass-base': 'backdrop-blur-xl bg-background/70 dark:bg-card/40',
+  'glass-base': 'backdrop-blur-xl bg-card/20! dark:bg-card/40!',
 
   // Glass Panel（浮层面板）
   'glass-panel':
-    'glass-base rounded-xl p-md border border-border/15 dark:border-border/30 shadow-sm dark:shadow-[inset_0_1px_0_0_rgb(var(--foreground)/0.05)]',
+    'glass-base rounded-xl p-md border border-solid border-border/15 dark:border-border/30 shadow-sm dark:shadow-[inset_0_1px_0_0_rgb(var(--foreground)/0.05)]',
 
   // Glass Shell（布局壳层）
-  'glass-shell': 'glass-base rounded-2xl border border-border/5 dark:border-border/15',
+  'glass-shell': 'glass-base rounded-2xl border border-solid border-border/5 dark:border-border/15',
 
   // Glass Card（玻璃卡片）
   'glass-card':
-    'glass-base rounded-lg p-md border border-border/10 dark:border-border/20 shadow-sm dark:shadow-[inset_0_1px_0_0_rgb(var(--foreground)/0.05)]',
+    'glass-base rounded-lg p-md border border-solid border-border/10 dark:border-border/20 shadow-sm dark:shadow-[inset_0_1px_0_0_rgb(var(--foreground)/0.05)]',
 
   // Glass Icon Box（图标玻璃盒）
   'glass-icon-box':
-    'glass-base center rounded-lg p-sm border border-border/10 dark:border-border/20',
+    'glass-base center rounded-lg p-sm border border-solid border-border/10 dark:border-border/20',
 
   // 交互原子能力
   'motion-lift': 'transition-all duration-sm shadow-none hover:-translate-y-1 hover:shadow-md',
@@ -83,7 +83,7 @@ export const semanticShortcuts = {
   /** 文档页演示 Well：V6 材质槽位（系统配置 UnoCSS 页等） */
   'demo-well': `
     bg-muted
-    border border-border
+    border border-solid border-border
     rounded-xl
     p-md
     overflow-hidden

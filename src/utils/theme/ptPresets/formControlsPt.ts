@@ -48,6 +48,7 @@ export const formControlsPt = {
   multiselect: {
     root: { class: GOLDEN_INPUT_ROOT },
     overlay: { class: PREMIUM_OVERLAY },
+    list: { class: 'p-0' },
   },
   autocomplete: {
     root: { class: GOLDEN_INPUT_ROOT },

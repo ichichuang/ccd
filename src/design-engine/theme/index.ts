@@ -103,29 +103,6 @@ export const theme = (() => {
     duration,
     transitionDuration,
 
-    animation: {
-      keyframes: {
-        'orb-drift':
-          '{ 0% { transform: translate3d(0, 0, 0) scale(1); } 35% { transform: translate3d(28px, -20px, 0) scale(1.04); } 70% { transform: translate3d(16px, -56px, 0) scale(1.08); } 100% { transform: translate3d(42px, -68px, 0) scale(1.12); } }',
-        'orb-drift-alt':
-          '{ 0% { transform: translate3d(0, 0, 0) scale(1); } 30% { transform: translate3d(-34px, 18px, 0) scale(0.98); } 65% { transform: translate3d(-58px, 42px, 0) scale(0.95); } 100% { transform: translate3d(-78px, 56px, 0) scale(0.9); } }',
-        'orb-pulse':
-          '{ 0%, 100% { opacity: 0.7; transform: translate3d(0, 0, 0) scale(0.96); } 50% { opacity: 1; transform: translate3d(8px, -10px, 0) scale(1.08); } }',
-      },
-      durations: { 'orb-drift': '15s', 'orb-drift-alt': '25s', 'orb-pulse': '20s' },
-      timingFns: {
-        'orb-drift': 'cubic-bezier(0.4, 0, 0.2, 1)',
-        'orb-drift-alt': 'cubic-bezier(0.4, 0, 0.2, 1)',
-        'orb-pulse': 'ease-in-out',
-      },
-      counts: { 'orb-drift': 'infinite', 'orb-drift-alt': 'infinite', 'orb-pulse': 'infinite' },
-      directions: {
-        'orb-drift': 'alternate',
-        'orb-drift-alt': 'alternate',
-        'orb-pulse': 'alternate',
-      },
-    },
-
     // 布局维度变量，恢复 w-*/h-*/min-w-*/max-w-*/min-h-*/max-h-* 原生支持
     width: layoutDimensionEntries,
     height: layoutDimensionEntries,

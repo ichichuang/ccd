@@ -141,6 +141,11 @@ export function buildDataComponents(): Record<string, unknown> {
         background: 'rgb(var(--popover))',
         color: 'rgb(var(--muted-foreground))',
       },
+      list: {
+        header: {
+          padding: 'var(--spacing-sm) var(--spacing-md) 0 var(--spacing-md)',
+        },
+      },
     },
     cascadeselect: {
       root: {
@@ -173,7 +178,7 @@ export function buildDataComponents(): Record<string, unknown> {
         padding: 'var(--spacing-xs)',
       },
       node: {
-        padding: '0.25rem 0.5rem',
+        padding: 'var(--spacing-xs) var(--spacing-sm)',
         borderRadius: '{content.border.radius}',
         hoverBackground: '{content.hover.background}',
         selectedBackground: '{highlight.background}',

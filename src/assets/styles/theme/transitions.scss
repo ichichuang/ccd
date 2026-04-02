@@ -33,6 +33,13 @@ html.is-view-transitioning body {
   animation-iteration-count: 1 !important;
 }
 
+/* 窗口 Resize 期间：压制 CSS 过渡，防止布局撕裂 */
+html.app-resizing *,
+html.app-resizing *::before,
+html.app-resizing *::after {
+  transition-duration: 0s !important;
+}
+
 /* 过渡恢复期：防止动画结束后元素跳变 */
 html.theme-transition-recovery,
 html.theme-transition-recovery *,

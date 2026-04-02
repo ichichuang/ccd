@@ -108,4 +108,7 @@ declare module 'vue' {
     UseRecordOverlay: typeof import('./../components/ProTable/hooks/useRecordOverlay.tsx')['default']
     VirtualGridRenderer: typeof import('./../components/ProTable/VirtualGridRenderer.vue')['default']
   }
+  export interface GlobalDirectives {
+    Tooltip: typeof import('primevue/tooltip')['default']
+  }
 }

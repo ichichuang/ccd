@@ -220,6 +220,54 @@ export function buildMenuNavMiscComponents(): Record<string, unknown> {
         borderRadius: 'var(--radius-sm)',
       },
     },
+    tabs: {
+      root: {
+        transitionDuration: 'var(--transition-md)',
+      },
+      tablist: {
+        borderWidth: '0 0 1px 0',
+        background: 'transparent',
+        borderColor: 'rgb(var(--border))',
+      },
+      tab: {
+        background: 'transparent',
+        hoverBackground: 'transparent',
+        activeBackground: 'transparent',
+        borderWidth: '0 0 1px 0',
+        borderColor: 'rgb(var(--border))',
+        hoverBorderColor: 'rgb(var(--border))',
+        activeBorderColor: 'rgb(var(--primary))',
+        color: 'rgb(var(--muted-foreground))',
+        hoverColor: 'rgb(var(--foreground))',
+        activeColor: 'rgb(var(--primary))',
+        padding: 'var(--spacing-sm) var(--spacing-md)',
+        fontWeight: '600',
+        margin: '0 0 -1px 0',
+        gap: 'var(--spacing-xs)',
+        focusRing: {
+          offset: '-1px',
+        },
+      },
+      tabpanel: {
+        background: 'transparent',
+        color: 'rgb(var(--foreground))',
+        padding: 'var(--spacing-sm) var(--spacing-md)',
+      },
+      navButton: {
+        background: 'transparent',
+        color: 'rgb(var(--muted-foreground))',
+        hoverColor: 'rgb(var(--foreground))',
+        width: 'var(--spacing-3xl)',
+        focusRing: {
+          offset: '-1px',
+        },
+      },
+      activeBar: {
+        height: '1px',
+        bottom: '-1px',
+        background: 'rgb(var(--primary))',
+      },
+    },
     steps: {
       root: {
         background: 'transparent',
@@ -279,6 +327,24 @@ export function buildMenuNavMiscComponents(): Record<string, unknown> {
       },
     },
     togglebutton: {
+      root: {
+        padding: '0',
+        sm: {
+          padding: '0',
+        },
+        lg: {
+          padding: '0',
+        },
+      },
+      content: {
+        padding: 'var(--spacing-xs) var(--spacing-sm)',
+        sm: {
+          padding: 'var(--spacing-xs) var(--spacing-sm)',
+        },
+        lg: {
+          padding: 'var(--spacing-xs) var(--spacing-sm)',
+        },
+      },
       colorScheme: {
         light: {
           root: {
