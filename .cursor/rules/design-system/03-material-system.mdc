@@ -39,6 +39,7 @@ When generating or refactoring components, strictly follow this mapping:
   Use `bg-sidebar/80 backdrop-blur-xl` with `border-border` separators (semantic sidebar surface, not hardcoded white/black).
   **NEVER** use floating capsules (`glass-capsule`) for the main layout shell.
 - `glass-capsule` → Reserved for decorative, non-structural floating elements only.
+- **Soft Colored Surfaces**: Status badges, KPI cards, metric indicators → `surface-{status}` + structural classes (e.g., `surface-warn rounded-md p-sm`).
 
 ## 3. Performance Guards (GPU Protection)
 - **NEVER** use `glass-*` inside: `<ProTable>`, virtual lists, scrollable containers, or nested inside another `glass` element.

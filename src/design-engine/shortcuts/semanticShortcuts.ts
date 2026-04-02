@@ -39,42 +39,37 @@ export const semanticShortcuts = {
 
   // Interactive Card (交互式卡片)
   'interactive-card':
-    'bg-card rounded-lg p-md transition-all duration-5xl ease-spring ring-1 ring-offset-1 ring-border/20 ring-offset-border/20 dark:ring-border/40 dark:ring-offset-border/40 hover:ring-border/80 hover:ring-offset-border/80 dark:hover:ring-border dark:hover:ring-offset-border',
+    'bg-card rounded-lg p-md transition-all duration-lg ease-spring ring-1 ring-offset-1 ring-border/20 ring-offset-border/20 dark:ring-border/40 dark:ring-offset-border/40 hover:ring-border/80 hover:ring-offset-border/80 dark:hover:ring-border dark:hover:ring-offset-border',
 
   // Interactive Item (交互式列表项)
   'interactive-item':
-    'cursor-pointer px-md py-sm rounded-sm transition-all duration-md hover:bg-primary/5 dark:hover:bg-primary/15 active:bg-primary/10 dark:active:bg-primary/20 hover:translate-y--1px',
+    'cursor-pointer px-md py-sm rounded-sm transition-all duration-md hover:bg-primary/5 dark:hover:bg-foreground/[0.05] active:bg-primary/10 dark:active:bg-foreground/[0.08] hover:translate-y--1px',
 
   // 轻微浮起（hover 卡片 / 列表）
-  'material-elevated': `
-    bg-card text-card-foreground
-    rounded-lg
-    p-md
-    shadow-sm
-    shadow-foreground/20
-    dark:shadow-foreground/30
-    transition-all duration-md
-    hover:shadow-md
-  `,
+  'material-elevated':
+    'bg-card text-card-foreground rounded-lg p-md border border-transparent dark:border-border/15 shadow-sm transition-all duration-md hover:shadow-md dark:shadow-[inset_0_1px_0_0_rgb(var(--foreground)/0.05)] dark:hover:shadow-[inset_0_1px_0_0_rgb(var(--foreground)/0.1)]',
 
   // Material Solid（表格/数据网格基础材质）
   'material-solid':
-    'bg-card text-card-foreground rounded-lg shadow-sm shadow-foreground/10 dark:shadow-foreground/20',
+    'bg-card text-card-foreground rounded-lg border border-transparent shadow-sm dark:border-border/15 dark:shadow-none',
 
   // INTERNAL - DO NOT USE DIRECTLY
   'glass-base': 'backdrop-blur-xl bg-background/70 dark:bg-card/40',
 
   // Glass Panel（浮层面板）
-  'glass-panel': 'glass-base rounded-xl p-md border border-border/10',
+  'glass-panel':
+    'glass-base rounded-xl p-md border border-border/15 dark:border-border/30 shadow-sm dark:shadow-[inset_0_1px_0_0_rgb(var(--foreground)/0.05)]',
 
   // Glass Shell（布局壳层）
-  'glass-shell': 'glass-base rounded-2xl',
+  'glass-shell': 'glass-base rounded-2xl border border-border/5 dark:border-border/15',
 
   // Glass Card（玻璃卡片）
-  'glass-card': 'glass-base rounded-lg p-md shadow-sm',
+  'glass-card':
+    'glass-base rounded-lg p-md border border-border/10 dark:border-border/20 shadow-sm dark:shadow-[inset_0_1px_0_0_rgb(var(--foreground)/0.05)]',
 
   // Glass Icon Box（图标玻璃盒）
-  'glass-icon-box': 'glass-base rounded-lg p-sm flex items-center justify-center',
+  'glass-icon-box':
+    'glass-base center rounded-lg p-sm border border-border/10 dark:border-border/20',
 
   // 交互原子能力
   'motion-lift': 'transition-all duration-sm shadow-none hover:-translate-y-1 hover:shadow-md',
@@ -83,12 +78,7 @@ export const semanticShortcuts = {
     'focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background',
 
   // 胶囊（Header / Sidebar）
-  'glass-capsule': `
-    bg-background/70 dark:bg-card/40
-    backdrop-blur-[20px]
-    rounded-2xl
-    px-[var(--spacing-md)] py-[var(--spacing-sm)]
-  `,
+  'glass-capsule': 'glass-base rounded-2xl px-md py-sm',
 
   /** 文档页演示 Well：V6 材质槽位（系统配置 UnoCSS 页等） */
   'demo-well': `
@@ -113,6 +103,13 @@ export const semanticShortcuts = {
   'code-inline': 'font-mono text-xs text-foreground',
   /** Debug/preview pre: wrapping monospaced, no margin */
   'code-preview': 'm-0 whitespace-pre-wrap break-words text-xs font-mono',
+
+  // Soft Colored Surfaces (柔和彩色信息面)
+  'surface-primary': 'bg-primary/10 text-primary dark:bg-primary/15',
+  'surface-success': 'bg-success/10 text-success dark:bg-success/15',
+  'surface-warn': 'bg-warn/10 text-warn dark:bg-warn/15',
+  'surface-danger': 'bg-danger/10 text-danger dark:bg-danger/15',
+  'surface-info': 'bg-info/10 text-info dark:bg-info/15',
 
   // Z-Index System (Z-Index System)
   'z-base': 'z-0', // 背景层

@@ -32,6 +32,8 @@ Shortcuts are a **closed set**. If a shortcut is not in this list, it does not e
 
 **Material**: `material-solid` · `material-elevated` · `glass-card` · `glass-icon-box` · `glass-panel` · `glass-capsule` · `glass-shell`
 
+**Surface**: `surface-primary` · `surface-success` · `surface-warn` · `surface-danger` · `surface-info`
+
 **Documentation demo**: `demo-well` · `demo-stage`
 
 **Code display**: `code-block` · `code-inline` · `code-preview`
@@ -175,6 +177,7 @@ Count raw utility classes on any single element. If > 7, it is a strong signal t
 | Decorative floating pills | `glass-capsule` |
 | Large cards (interactive) | `interactive-card` |
 | List rows (interactive) | `interactive-item` |
+| Status indicators / Soft badges | `surface-primary` · `surface-success` · `surface-warn` · `surface-danger` · `surface-info` |
 | **DO NOT USE directly** | `glass-base` ← internal primitive |
 
 **FORBIDDEN**: `glass-*` inside `<ProTable>`, virtual lists, or nested inside another `glass-*` element (GPU performance).
