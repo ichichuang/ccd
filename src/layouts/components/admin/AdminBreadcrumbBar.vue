@@ -3,6 +3,7 @@ import TieredMenu from 'primevue/tieredmenu'
 import { Icons } from '@/components/Icons'
 import { useAdminBreadcrumbs } from '@/hooks/layout/useAdminBreadcrumbs'
 import type { PrimeMenuModelItem } from '@/router/utils/helper'
+import { goToRoute } from '@/router/utils/helper'
 import { MENU_ICON_COMMON_CLASS } from '@/constants/layout-menu'
 import { getIconSize } from '@/hooks/layout/useMenuVisuals'
 import {
@@ -51,6 +52,25 @@ function renderBreadcrumbMenuItem(slotProps: unknown) {
     class="w-full h-breadcrumbHeight px-md flex items-center select-none"
   >
     <div class="flex items-center text-sm text-muted-foreground whitespace-nowrap">
+      <span
+        role="button"
+        tabindex="0"
+        class="transition-all duration-md flex items-center cursor-pointer hover:text-primary"
+        @click="goToRoute('/')"
+        @keyup.enter="goToRoute('/')"
+      >
+        <Icons
+          name="i-lucide-house"
+          :class="[MENU_ICON_COMMON_CLASS, 'shrink-0 text-current!']"
+          :size="getIconSize('breadcrumb')"
+        />
+      </span>
+      <Icons
+        v-if="breadcrumbs.length > 0"
+        name="i-lucide-chevron-right"
+        class="mx-sm text-muted-foreground/30"
+        :size="getIconSize('breadcrumb')"
+      />
       <TransitionGroup name="breadcrumb">
         <div
           v-for="(item, index) in breadcrumbs"
@@ -60,7 +80,7 @@ function renderBreadcrumbMenuItem(slotProps: unknown) {
           <!-- Breadcrumb Item -->
           <span
             :class="[
-              'transition-all duration-md flex items-center gap-xs rounded-sm',
+              'transition-all duration-md flex items-center gap-xs',
               index === breadcrumbs.length - 1
                 ? 'text-foreground font-semibold cursor-default'
                 : 'cursor-pointer hover:text-primary',

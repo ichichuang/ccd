@@ -178,7 +178,6 @@ function onThemeModeChange(value: ThemeMode) {
           :option-label="opt => t(opt.labelKey)"
           :allow-empty="false"
           :disabled="isAnimating"
-          size="small"
           class="w-full"
           @update:model-value="onThemeModeChange"
         />
@@ -233,7 +232,6 @@ function onThemeModeChange(value: ThemeMode) {
           option-label="label"
           :allow-empty="false"
           class="w-full"
-          size="small"
           @update:model-value="(v: SizeMode) => sizeStore.setSize(v)"
         />
       </div>
@@ -279,7 +277,6 @@ function onThemeModeChange(value: ThemeMode) {
         option-value="value"
         :option-label="opt => t(opt.labelKey)"
         :allow-empty="false"
-        size="small"
         class="w-full"
         @update:model-value="onLayoutModeChange"
       />

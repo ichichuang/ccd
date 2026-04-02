@@ -57,7 +57,7 @@ export default defineComponent({
       openDialog({
         header: t('layout.globalSettingsTitle'),
         position: 'right',
-        width: 'auto',
+        class: 'w-[82vw]! sm:w-[60vw]! md:w-[40vw]! lg:w-[36vw]!',
         contentRenderer: () => <SettingsContent />,
       })
     }
@@ -112,6 +112,46 @@ export default defineComponent({
       if (isDrawerMode.value) return 'horizontal'
       return layoutStore.preferredMode
     })
+
+    // --- Resize-safe key: 防止断点跨越时 key 变化导致整棵 VDOM 子树被销毁重建 ---
+    // 时序问题：isResizing 在 150ms 空闲后清除，但 detectViewportInfo 在 300ms 后才执行
+    // 需要额外 settle 窗口确保 width 已更新后再解冻 key
+    const isResizeSettled = ref(true)
+    let settleTimer: ReturnType<typeof setTimeout> | undefined
+
+    watch(
+      () => deviceStore.isResizing,
+      resizing => {
+        if (resizing) {
+          isResizeSettled.value = false
+          if (settleTimer !== undefined) {
+            clearTimeout(settleTimer)
+            settleTimer = undefined
+          }
+        } else {
+          // 150ms(idle) + 200ms(settle) = 350ms > 300ms(debounce)
+          settleTimer = setTimeout(() => {
+            isResizeSettled.value = true
+            settleTimer = undefined
+          }, 200)
+        }
+      }
+    )
+    onUnmounted(() => {
+      if (settleTimer !== undefined) clearTimeout(settleTimer)
+    })
+
+    // stableKey: resize 期间冻结旧值，防止 Transition key 变化触发 unmount
+    // 严禁在 computed 中产生副作用，使用 watch 监听状态变化
+    const stableKey = ref<AdminLayoutMode>(effectiveMode.value)
+
+    watch([effectiveMode, isResizeSettled], ([newMode, settled]) => {
+      // 只有在 resize 彻底平息后，才允许更新 key
+      if (settled) {
+        stableKey.value = newMode
+      }
+    })
+
     const isHorizontal = computed(() => effectiveMode.value === 'horizontal')
     const showDrawerTrigger = computed(() => isDrawerMode.value)
 
@@ -119,8 +159,6 @@ export default defineComponent({
     const showHeader = computed(() => layoutStore.showHeader)
     const showLogo = computed(() => layoutStore.showLogo)
     const showMenu = computed(() => layoutStore.showMenu)
-    // 首屏 handoff 期间禁止渲染高饱和度环境光球，避免在遮罩切换时出现整屏色洗
-    const showAmbientOrbs = computed<boolean>(() => !layoutStore.isLoading)
     // 4. The Strict Logo Text Visibility
     const showLogoText = computed<boolean>(() => {
       // Show text ONLY on PC when width is large enough (>= lg).
@@ -141,9 +179,6 @@ export default defineComponent({
     const showTopMenuEffective = computed<boolean>(() => {
       return layoutStore.showMenu && !isDrawerMode.value
     })
-    const orbBlendClass = computed<string>(() =>
-      isDark.value ? 'mix-blend-screen' : 'mix-blend-multiply'
-    )
 
     // 3. The Strict Sidebar Visibility
     const showSidebarEffective = computed<boolean>(() => {
@@ -168,57 +203,25 @@ export default defineComponent({
     )
 
     // --- 布局模式切换过渡：与 AnimateRouterView / AnimateWrapper 一致使用 animate.css ---
-    const enableTransition = computed(() => layoutStore.enableTransition)
+    // Resize 拖拽期间必须保持 Transition 子树不被卸载重建（Transition Trap）
+    const transitionName = computed(() =>
+      layoutStore.enableTransition && isResizeSettled.value ? 'animate__animated' : 'no-transition'
+    )
     const bodyTransitionDuration = 'var(--transition-md)'
 
     const renderContent = () => (
       <main class="flex-1 layout-full flex flex-col min-w-0 min-h-0 overflow-hidden transition-all duration-md ease-spring bg-transparent">
-        <div class="backdrop-blur-md bg-sidebar">
+        <div class="glass-base bg-sidebar/32! dark:bg-sidebar/40! ">
           <AdminBreadcrumbBar show={showBreadcrumbEffective.value} />
         </div>
-        <div class="relative overflow-hidden backdrop-blur-md bg-sidebar">
+        <div class="relative overflow-hidden glass-base bg-sidebar/32! dark:bg-sidebar/40! ">
           <AdminTabsBar show={showTabsEffective.value} />
         </div>
-        <section
-          class={[
-            'col-fill',
-            'min-w-0',
-            'relative',
-            'overflow-hidden',
-            'bg-background',
-            'rounded-lg lg:rounded-l-xl',
-          ]}
-        >
-          {/* Z-0: 光球层 (放置在底色板上) */}
-          <div
-            class={[
-              'absolute inset-0 z-base pointer-events-none overflow-hidden rounded-l-xl transition-opacity duration-md ease-out',
-              showAmbientOrbs.value ? 'opacity-100' : 'opacity-0',
-            ]}
-          >
-            <div
-              class={[
-                'absolute -top-1/4 -left-1/4 h-[60vw] w-[60vw] transform-gpu rounded-full will-change-transform blur-[60px] animate-orb-drift bg-primary/8',
-                orbBlendClass.value,
-              ]}
-            />
-            <div
-              class={[
-                'absolute -bottom-1/4 -right-1/4 h-[60vw] w-[60vw] transform-gpu rounded-full will-change-transform blur-[60px] animate-orb-drift-alt bg-accent/8',
-                orbBlendClass.value,
-              ]}
-            />
-            <div
-              class={[
-                'absolute bottom-[-30%] left-[25%] h-[40vw] w-[40vw] transform-gpu rounded-full will-change-transform blur-[40px] animate-orb-pulse bg-danger/6',
-                orbBlendClass.value,
-              ]}
-            />
-          </div>
-          {/* Z-content: 业务内容层 (必须透明才能让光球透出) */}
-          <AppContainer class="relative z-content min-w-0 overflow-hidden bg-transparent rounded-l-xl" />
+        <section class={['col-fill', 'min-w-0', 'relative', 'overflow-hidden']}>
+          {/* Layer 3: 业务内容（透明以承接光晕与点阵） */}
+          <AppContainer class="relative z-content min-w-0 overflow-hidden bg-transparent" />
         </section>
-        <div class="backdrop-blur-md bg-sidebar">
+        <div class="glass-base bg-sidebar/32! dark:bg-sidebar/40! ">
           <AdminFooterBar show={showFooterEffective.value} />
         </div>
       </main>
@@ -233,7 +236,7 @@ export default defineComponent({
       // vertical/mix：sidebar + content
       return (
         <div class="flex-1 min-h-0 row-start overflow-hidden transition-all duration-md ease-out">
-          <div class="shrink-0 self-stretch overflow-hidden transition-all duration-md ease-out bg-sidebar backdrop-blur">
+          <div class="shrink-0 self-stretch overflow-hidden transition-all duration-md ease-out glass-base bg-sidebar/32! dark:bg-sidebar/40! ">
             {showSidebarEffective.value && (
               <AdminSidebar
                 mode={effectiveMode.value}
@@ -254,22 +257,25 @@ export default defineComponent({
         '--animate-duration': bodyTransitionDuration,
       }
       // vertical / horizontal / mix 三种模式都渲染 Header，Body 按 mode 切换并做过渡
-      const bodyContent = enableTransition.value ? (
+      // 禁止通过 v-if/三元动态拆除 Transition：否则会导致内部路由组件 Unmount/Remount
+      const bodyContent = (
         <Transition
           mode="out-in"
-          enterActiveClass="animate__animated animate__fadeIn"
-          leaveActiveClass="animate__animated animate__fadeOut"
+          enterActiveClass={
+            transitionName.value === 'animate__animated' ? 'animate__animated animate__fadeIn' : ''
+          }
+          leaveActiveClass={
+            transitionName.value === 'animate__animated' ? 'animate__animated animate__fadeOut' : ''
+          }
         >
           <div
-            key={effectiveMode.value}
+            key={stableKey.value}
             class="col-fill"
             style={bodyTransitionStyle}
           >
             {renderBody()}
           </div>
         </Transition>
-      ) : (
-        <div class="col-fill">{renderBody()}</div>
       )
       const drawerUpdateVisibleProps: Record<string, unknown> = {
         ['onUpdate:visible']: (val: boolean) => {
@@ -278,17 +284,10 @@ export default defineComponent({
       }
       return (
         <div class="layout-screen flex flex-col relative overflow-hidden">
-          {/* Z0: Canvas base + ambient orbs — behind all content */}
-          <div
-            class="absolute inset-0 z-base pointer-events-none overflow-hidden"
-            aria-hidden="true"
-          >
-            <div class="absolute inset-0 bg-sidebar" />
-          </div>
           {showHeader.value && (
-            <div class="shrink-0 row-between h-headerHeight px-xs sm:px-sm md:px-md border-b-solid border-border bg-sidebar backdrop-blur">
+            <div class="shrink-0 row-between h-headerHeight px-xs sm:px-sm md:px-md border-b-solid border-sidebar border-1px glass-base bg-sidebar/32! dark:bg-sidebar/40!">
               <AdminHeader
-                mode={effectiveMode.value}
+                mode={stableKey.value}
                 showHeader={showHeader.value}
                 showLogo={showLogo.value}
                 showLogoText={showLogoText.value}
@@ -307,7 +306,7 @@ export default defineComponent({
           )}
           {bodyContent}
           {/* 移动端抽屉导航：仅在 Drawer 模式下挂载，避免桌面端无意义的 VNode 开销 */}
-          {isDrawerMode.value && showAmbientOrbs.value && (
+          {isDrawerMode.value && !layoutStore.isLoading && (
             <Drawer
               visible={layoutStore.mobileDrawerOpen}
               {...drawerUpdateVisibleProps}

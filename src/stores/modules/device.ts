@@ -11,6 +11,8 @@ import type { DeviceState } from '@/types/systems/device'
 
 // 防抖间隔，300ms 比较温和，适合 resize
 const RESIZE_INTERVAL = 300
+/** 最后一次原生 resize 事件后多久视为"拖拽结束" */
+const RESIZE_IDLE_TIMEOUT = 150
 
 /** 模块级缓存：断点按阈值降序排列，避免每次 resize 重复排序 */
 const SORTED_BREAKPOINTS: [string, number][] = [...Object.entries(BREAKPOINTS)].sort(
@@ -41,6 +43,7 @@ export const useDeviceStore = defineStore('device', {
     screenLongSide: 0,
     navHeight: 0,
     tabHeight: 0,
+    isResizing: false,
   }),
 
   getters: {
@@ -148,6 +151,17 @@ export const useDeviceStore = defineStore('device', {
       this.initHardwareInfo()
       this.detectViewportInfo()
 
+      // --- isResizing 标记：原生 resize 立即置 true，空闲后恢复 ---
+      let resizeIdleTimer: ReturnType<typeof setTimeout> | undefined
+      const markResizing = () => {
+        this.isResizing = true
+        if (resizeIdleTimer !== undefined) clearTimeout(resizeIdleTimer)
+        resizeIdleTimer = setTimeout(() => {
+          this.isResizing = false
+          resizeIdleTimer = undefined
+        }, RESIZE_IDLE_TIMEOUT)
+      }
+
       // 绑定的全都是纯净的视口计算函数
       const handleResize = debounce(() => {
         this.detectViewportInfo()
@@ -170,12 +184,15 @@ export const useDeviceStore = defineStore('device', {
         visibility: handleVisibility,
       }
 
+      window.addEventListener('resize', markResizing)
       window.addEventListener('resize', handlers.resize)
       window.addEventListener('orientationchange', handlers.orientation)
       window.addEventListener('pageshow', handlers.pageshow)
       window.addEventListener('visibilitychange', handlers.visibility)
 
       return () => {
+        window.removeEventListener('resize', markResizing)
+        if (resizeIdleTimer !== undefined) clearTimeout(resizeIdleTimer)
         window.removeEventListener('resize', handlers.resize)
         window.removeEventListener('orientationchange', handlers.orientation)
         window.removeEventListener('pageshow', handlers.pageshow)

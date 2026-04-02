@@ -3,43 +3,79 @@ import { useRoute } from 'vue-router'
 import AnimateRouterView from '@&/AnimateRouterView.vue'
 import Loading from '@&/Loading.vue'
 import { useLayoutStore } from '@/stores/modules/layout'
-import { CScrollbar } from '@/components/CScrollbar'
-import type CScrollbarComponent from '@/components/CScrollbar/CScrollbar.vue'
 
 const layoutStore = useLayoutStore()
+const isPageLoading = computed(() => layoutStore.isPageLoading)
+
 const route = useRoute()
 
-const scrollbarRef = ref<InstanceType<typeof CScrollbarComponent> | null>(null)
+type RatioParsed = {
+  ratio: number
+  /**
+   * CSS aspect-ratio 需要 <ratio>，这里统一生成成 "w / h" 格式，
+   * 避免把浮点直接塞给 aspect-ratio 导致浏览器兼容问题。
+   */
+  ratioText: string
+}
 
-const isPageLoading = computed(() => layoutStore.isPageLoading)
-const isFullscreen = computed(() => route.meta?.parent === 'fullscreen')
+function parseRatioString(input?: unknown): RatioParsed {
+  const fallbackW = 16
+  const fallbackH = 9
+  const fallback = fallbackW / fallbackH
 
-watch(
-  () => route.fullPath,
-  () => {
-    // 路由切换时滚动到顶部（复刻 AppContainer 的行为）
-    scrollbarRef.value?.scrollTo({ top: 0, behavior: 'auto' })
+  if (!input) {
+    return {
+      ratio: fallback,
+      ratioText: `${fallbackW} / ${fallbackH}`,
+    }
   }
-)
+
+  const str = String(input).trim()
+  const match = str.match(/^(\d+(?:\.\d+)?)\s*:\s*(\d+(?:\.\d+)?)$/)
+  if (match) {
+    const w = parseFloat(match[1])
+    const h = parseFloat(match[2])
+    if (w > 0 && h > 0) {
+      return {
+        ratio: w / h,
+        ratioText: `${w} / ${h}`,
+      }
+    }
+  }
+
+  const n = Number(str)
+  if (!Number.isNaN(n) && n > 0) {
+    return {
+      ratio: n,
+      ratioText: `${n} / 1`,
+    }
+  }
+
+  return {
+    ratio: fallback,
+    ratioText: `${fallbackW} / ${fallbackH}`,
+  }
+}
+
+const aspectRatio = computed<RatioParsed>(() => parseRatioString(route.meta?.ratio))
 </script>
-
 <template>
-  <div class="layout-screen bg-background text-foreground flex flex-col relative">
-    <CScrollbar
-      ref="scrollbarRef"
-      class="col-fill shadow-sm dark:shadow-md"
+  <div class="layout-screen text-foreground center relative">
+    <!-- 使用 CSS aspect-ratio + max-* 做 contain，严格按路由 meta.ratio 渲染 -->
+    <div
+      class="relative z-content w-full max-w-full max-h-full overflow-hidden bg-transparent"
+      :style="{ aspectRatio: aspectRatio.ratioText }"
     >
-      <!-- 让 router-view 根节点拿到 col-fill，保证子内容可安全拉伸 -->
-      <AnimateRouterView class="layout-full min-h-0" />
-    </CScrollbar>
-
-    <Transition name="fade">
-      <div
-        v-show="isPageLoading && !isFullscreen"
-        class="layout-full absolute-center z-10 backdrop-blur-sm pointer-events-auto"
-      >
-        <Loading size="xl" />
-      </div>
-    </Transition>
+      <AnimateRouterView />
+      <Transition name="fade">
+        <div
+          v-show="isPageLoading"
+          class="layout-full absolute-center z-overlay backdrop-blur-sm pointer-events-auto"
+        >
+          <Loading size="xl" />
+        </div>
+      </Transition>
+    </div>
   </div>
 </template>
+<style lang="scss" scoped></style>

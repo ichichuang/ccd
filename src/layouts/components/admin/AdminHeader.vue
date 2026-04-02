@@ -6,7 +6,7 @@ import { brand } from '@/constants/brand'
 import { AUTH_ENABLED } from '@/constants/router'
 import { RouterLink, useRoute } from 'vue-router'
 import { useI18n } from 'vue-i18n'
-import { useFullscreen, useWindowSize } from '@vueuse/core'
+import { useFullscreen } from '@vueuse/core'
 import { useAppElementSize } from '@/hooks/modules/useAppElementSize'
 import { useThemeSwitch } from '@/hooks/modules/useThemeSwitch'
 import { storeToRefs } from 'pinia'
@@ -68,11 +68,12 @@ const userPermissions = computed(() => userStore.getUserPermissions || [])
 const isLogin = computed(() => userStore.getIsLogin)
 const showUserEntry = computed(() => AUTH_ENABLED && isLogin.value)
 
-const { width: windowWidth } = useWindowSize()
-
 // --- Menu Logic ---
 const topContentRef = ref<HTMLElement | null>(null)
-const { width: topContentWidth } = useAppElementSize(topContentRef)
+const { width: topContentWidth } = useAppElementSize(topContentRef, undefined, {
+  mode: 'throttle',
+  delay: 200,
+})
 const menuModel = computed(() => {
   const tree = getAdminMenuTree()
   const authorizedTree = getAuthorizedMenuTree(userRoles.value, userPermissions.value, tree)
@@ -282,12 +283,11 @@ const renderRootItem = (item: PrimeMenuModelItem) => {
     >
       <div
         v-if="showTopMenuEffective"
-        :key="`${topContentWidth}-${windowWidth}`"
+        :key="mode"
         class="layout-full"
         :style="{ width: `${topContentWidth}px` }"
       >
         <CScrollbar
-          :key="`${topContentWidth}-${windowWidth}`"
           :options="{
             scrollbars: {
               visibility: 'hidden',

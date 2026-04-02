@@ -5,6 +5,7 @@
  */
 import type { AnimateName } from '@/components/AnimateWrapper/utils/types'
 import { AnimateWrapper } from '@/components/AnimateWrapper'
+import AmbientBackground from '@/layouts/components/AmbientBackground.vue'
 import { useLayoutStore } from '@/stores/modules/layout'
 import { useRoute, useRouter } from 'vue-router'
 
@@ -46,12 +47,18 @@ watch(
 
 // 启动边界：首屏阶段由 index.html 原生 Loader 独占，Vue Loading 仅在首屏结束后接管运行期全局任务
 const isAppBooted = ref(false)
-const unwatchBoot = watch(
+let unwatchBoot: (() => void) | null = null
+unwatchBoot = watch(
   () => isLoading.value,
   loading => {
     if (!loading) {
       isAppBooted.value = true
-      unwatchBoot()
+      nextTick(() => {
+        if (unwatchBoot) {
+          unwatchBoot()
+          unwatchBoot = null
+        }
+      })
     }
   },
   { immediate: true }
@@ -91,6 +98,7 @@ const currentLayoutComponent = computed(() => {
 
 <template>
   <div class="relative flex flex-col layout-full overflow-hidden">
+    <AmbientBackground :variant="currentLayoutMode" />
     <!-- 单所有者预加载：启动阶段仅保留 index.html 原生 loader -->
     <AnimateWrapper
       :show="!isLoadingRef"
@@ -99,7 +107,10 @@ const currentLayoutComponent = computed(() => {
       :duration="getAnimationDuration()"
       delay="0s"
     >
-      <component :is="currentLayoutComponent" />
+      <component
+        :is="currentLayoutComponent"
+        class="relative z-content min-h-0"
+      />
     </AnimateWrapper>
 
     <Transition name="fade">

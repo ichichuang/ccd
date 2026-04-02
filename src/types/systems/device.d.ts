@@ -31,6 +31,10 @@ export interface DeviceState {
   // --- 移动端预估 ---
   navHeight: number
   tabHeight: number
+
+  // --- Resize 状态 ---
+  /** 用户正在拖拽窗口，空闲后自动清除 */
+  isResizing: boolean
 }
 
 // 保留旧的 DeviceInfo 类型定义以保持向后兼容（但建议迁移到 DeviceState）

@@ -9,11 +9,10 @@ const { openDialog } = useDialog()
 const deviceStore = useDeviceStore()
 
 const openSettings = () => {
-  const isMobile = deviceStore.isMobileLayout
   openDialog({
     header: t('layout.globalSettingsTitle'),
-    position: isMobile ? 'center' : 'right',
-    width: isMobile ? '95vw' : 'auto',
+    class: 'w-[82vw]! sm:w-[60vw]! md:w-[40vw]! lg:w-[36vw]!',
+    position: deviceStore.isMobileLayout ? 'center' : 'right',
     contentRenderer: () => <SettingsContent />,
   })
 }

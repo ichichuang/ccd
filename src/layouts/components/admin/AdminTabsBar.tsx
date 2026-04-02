@@ -135,7 +135,7 @@ export default defineComponent({
                       class={[
                         'h-full flex items-center px-sm rounded-t-lg cursor-pointer gap-sm shrink-0 duration-md',
                         active
-                          ? 'bg-primary/10 dark:bg-primary/15 text-primary font-medium backdrop-blur-md transition-all'
+                          ? 'bg-primary/10 dark:bg-primary/15 text-primary backdrop-blur-md transition-all'
                           : 'bg-transparent text-muted-foreground hover:bg-muted/40 hover:text-foreground transition-all',
                       ]}
                       onClick={() => onTabClick(tab)}
@@ -146,6 +146,10 @@ export default defineComponent({
                         <Icons
                           name={tab.icon}
                           size={TAB_ICON_SIZE}
+                          class={[
+                            active ? 'scale-120' : 'scale-100',
+                            'transition-transform duration-md',
+                          ]}
                         />
                       )}
 

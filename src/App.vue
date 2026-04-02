@@ -35,6 +35,14 @@ watchEffect(() => {
   applyRuntimeSizeUpdate(decision, layoutDimensions)
 })
 
+// Resize 期间在 <html> 上挂 class，供 CSS 压制过渡
+watch(
+  () => deviceStore.isResizing,
+  resizing => {
+    document.documentElement.classList.toggle('app-resizing', resizing)
+  }
+)
+
 onMounted(() => {
   sizeStore.init()
   cleanupDeviceListener = deviceStore.init()

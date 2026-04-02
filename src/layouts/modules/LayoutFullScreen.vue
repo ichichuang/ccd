@@ -12,7 +12,6 @@ const route = useRoute()
 const scrollbarRef = ref<InstanceType<typeof CScrollbarComponent> | null>(null)
 
 const isPageLoading = computed(() => layoutStore.isPageLoading)
-const isFullscreen = computed(() => route.meta?.parent === 'fullscreen')
 
 watch(
   () => route.fullPath,
@@ -24,10 +23,10 @@ watch(
 </script>
 
 <template>
-  <div class="layout-screen bg-background text-foreground flex flex-col relative">
+  <div class="layout-screen text-foreground flex flex-col relative overflow-hidden">
     <CScrollbar
       ref="scrollbarRef"
-      class="col-fill shadow-sm dark:shadow-md"
+      class="relative z-content col-fill bg-transparent shadow-sm dark:shadow-md"
     >
       <!-- 让 router-view 根节点拿到 col-fill，保证子内容可安全拉伸 -->
       <AnimateRouterView class="layout-full min-h-0" />
@@ -35,8 +34,8 @@ watch(
 
     <Transition name="fade">
       <div
-        v-show="isPageLoading && !isFullscreen"
-        class="absolute inset-0 z-10 center backdrop-blur-sm pointer-events-auto"
+        v-show="isPageLoading"
+        class="layout-full absolute-center z-overlay backdrop-blur-sm pointer-events-auto"
       >
         <Loading size="xl" />
       </div>
