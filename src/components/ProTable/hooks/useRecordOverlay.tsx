@@ -162,8 +162,6 @@ export function useRecordOverlay<TRow extends Record<string, unknown>>(
     if (presentation === 'modal') {
       const idx = openDialog({
         header: title,
-        width: 'min(90vw, 500px)',
-        class: 'z-popover',
         ...(isEdit ? options.dialogOptions?.edit : options.dialogOptions?.create),
         // Sticky Footer 强制：Dialog 自带 footer 必须隐藏
         modal: true,
@@ -200,8 +198,6 @@ export function useRecordOverlay<TRow extends Record<string, unknown>>(
     if (presentation === 'modal') {
       const idx = openDialog({
         header: title,
-        width: 'min(90vw, 500px)',
-        class: 'z-popover',
         ...options.dialogOptions?.view,
         // Sticky Footer 强制：Dialog 自带 footer 必须隐藏
         modal: true,

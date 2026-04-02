@@ -31,6 +31,7 @@ export function useDialogCore(): UseDialogCoreReturn {
       ...clonedOptions,
       visible: !hasOpenDelay,
     }
+    mergedOptions.class = [mergedOptions.sizeClass, clonedOptions.class].filter(Boolean).join(' ')
 
     mergedOptions.contentRenderer = options.contentRenderer ?? defaultContentRenderer
     if (options.headerRenderer) mergedOptions.headerRenderer = options.headerRenderer

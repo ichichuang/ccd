@@ -60,7 +60,7 @@ const toolbarBtnClass =
 </script>
 
 <template>
-  <div class="row-between py-md shrink-0">
+  <div class="row-between p-sm shrink-0">
     <div class="flex items-center gap-md min-w-0">
       <span
         v-if="title"

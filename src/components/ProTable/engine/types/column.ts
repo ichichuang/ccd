@@ -26,6 +26,12 @@ export interface ProTableColumn<T extends Record<string, unknown> = Record<strin
   filterType?: 'text' | 'select' | 'date' | 'number'
   filterOptions?: SelectOption[]
   pinned?: 'left' | 'right' | false
+  /**
+   * Virtual grid only (`VirtualGridRenderer`): this column’s track uses `minmax(base, 1fr)` in its
+   * section (left / center / right) to absorb remaining horizontal space. Ignored when `width` is set.
+   * Prefer at most one `true` per section; if multiple are set, only the last eligible column applies.
+   */
+  virtualFill?: boolean
   hidden?: boolean
   headerAlign?: 'left' | 'center' | 'right'
   align?: 'left' | 'center' | 'right'

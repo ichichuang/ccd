@@ -457,23 +457,18 @@ defineExpose({
       ref="proTableRootRef"
       :class="[
         isFullscreen
-          ? 'fixed inset-0 z-overlay h-screen w-screen m-0 flex flex-col gap-sm overflow-hidden rounded-none bg-card p-md shadow-none'
+          ? 'fixed inset-0 z-overlay h-screen w-screen m-0 flex flex-col gap-sm overflow-hidden rounded-none! bg-card p-md shadow-none'
           : heightMode === 'fill'
             ? 'layout-full flex flex-col gap-sm overflow-hidden'
             : 'w-full flex flex-col gap-sm',
       ]"
+      class="bg-card rounded-md overflow-hidden border border-solid border-border px-xs"
     >
-      <div
-        :class="
-          heightMode === 'fill'
-            ? ' rounded-xl col-fill px-md py-sm'
-            : ' rounded-xl w-full px-md py-sm'
-        "
-      >
+      <div :class="heightMode === 'fill' ? 'col-fill' : 'w-full'">
         <Transition name="pro-table-fetch-error">
           <div
             v-if="ctrl.requestMode && ctrl.state.fetch.error"
-            class="shrink-0 row-between gap-sm px-lg py-sm bg-danger/10 rounded-md mb-sm"
+            class="shrink-0 row-between gap-sm px-lg py-sm bg-danger/10 mb-sm"
           >
             <div class="row-start gap-sm min-w-0">
               <Icons
@@ -625,6 +620,7 @@ defineExpose({
               :row-class-name="rowClassName"
               :selectable="selectable"
               class="col-fill"
+              @sort-change="emit('sort-change', $event)"
             />
           </template>
 

@@ -35,7 +35,7 @@ function handlePageSizeChange(next: number): void {
 </script>
 
 <template>
-  <div class="row-between pt-sm">
+  <div class="row-between px-sm">
     <span class="text-sm text-muted-foreground">
       {{ $t('proTable.total', { total }) }}
     </span>

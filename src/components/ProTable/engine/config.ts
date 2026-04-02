@@ -64,7 +64,12 @@ export const INFINITE_SCROLL_DEFAULTS = {
 export const VIRTUAL_GRID_DEFAULTS = {
   estimateRowHeightPx: 48,
   overscan: 5,
+  /** Legacy fallback string; virtual grid column templates use `flexColumnMinBase` + `virtualFill` rules. */
   gridColumnFallback: 'minmax(var(--spacing-5xl), 1fr)',
+  /** When center has no column with `virtualFill: true` (and no `width`), auto-apply flex track to last center column. */
+  virtualFillLastCenterColumn: true,
+  /** Minimum base in `minmax(base, 1fr)` for flex column; also default fixed track when no width/min/max. */
+  flexColumnMinBase: '120px',
 } as const
 
 export const TOOLBAR_DEFAULTS = {

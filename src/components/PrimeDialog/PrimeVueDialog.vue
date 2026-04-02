@@ -11,7 +11,6 @@ import { defineComponent, type PropType } from 'vue'
 import type { Component, VNode } from 'vue'
 import type { ButtonProps, DialogOptions, EventType } from './utils/types'
 import type { ArgsType } from './utils/types'
-import { DIALOG_BREAKPOINTS } from './utils/constants'
 
 function isFunction(value: unknown): value is (...args: unknown[]) => unknown {
   return typeof value === 'function'
@@ -86,7 +85,7 @@ const effectiveDraggable = (options: DialogOptions): boolean => {
   return deviceStore.isPCLayout || deviceStore.isTabletLayout
 }
 
-const effectiveBreakpoints = (options: DialogOptions) => options.breakpoints ?? DIALOG_BREAKPOINTS
+const effectiveBreakpoints = (options: DialogOptions) => options.breakpoints
 
 const getHeaderText = (options: DialogOptions): string => {
   if (isFunction(options.header)) {
@@ -244,16 +243,28 @@ type DialogPtValue = PassThrough<DialogPassThroughOptions>
 const dialogPtCache = new WeakMap<DialogOptions, DialogPtValue>()
 
 /**
+ * 默认 Dialog 面板 glass 外观（mask-only）。
+ * padding 仍由 PrimeVue 自己的 header/content/footer 规则控制；
+ * business 侧 options.pt 的优先级高于默认值。
+ */
+const defaultDialogPt: DialogPtValue = {
+  root: { class: 'glass-shell' },
+  header: { class: 'bg-transparent' },
+  content: { class: 'bg-transparent' },
+  footer: { class: 'bg-transparent' },
+  mask: { class: '!bg-transparent' },
+}
+
+/**
  * 将 maskClass 与既有 pt 合并。
  * V27.3：无 maskClass 时直接返回 `options.pt` 引用；有 maskClass 时对合并结果按 options 实例缓存，保证 `:pt` 引用稳定。
  */
 function getDialogPt(options: DialogOptions): DialogPtValue | undefined {
-  if (!options.maskClass) {
-    return options.pt
-  }
+  const basePt = { ...defaultDialogPt, ...(options.pt ?? {}) } as DialogPtValue
+  if (!options.maskClass) return basePt
   if (!dialogPtCache.has(options)) {
     dialogPtCache.set(options, {
-      ...(options.pt ?? {}),
+      ...basePt,
       mask: { class: options.maskClass },
     })
   }

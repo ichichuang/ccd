@@ -1,9 +1,10 @@
 <script setup lang="ts" generic="T extends Record<string, unknown>">
 import { h, resolveComponent } from 'vue'
-import type { ComponentPublicInstance } from 'vue'
+import type { ComponentPublicInstance, VNode } from 'vue'
 import { useVirtualizer } from '@tanstack/vue-virtual'
 import type { TableController } from './engine/core/TableController'
 import type { ProTableColumn } from './engine/types/column'
+import type { SortState } from './engine/types/tableState'
 import ProTableCell from './components/ProTableCell'
 import { VIRTUAL_GRID_DEFAULTS } from './engine/config'
 import { objectGet } from '@/utils/lodashes'
@@ -20,7 +21,13 @@ const props = defineProps<{
   selectable?: false | 'single' | 'checkbox'
 }>()
 
+const emit = defineEmits<{
+  'sort-change': [sort: SortState]
+}>()
+
 const scrollContainerRef = ref<HTMLElement | null>(null)
+const centerHeaderScrollRef = ref<HTMLElement | null>(null)
+const centerBodyScrollRef = ref<HTMLElement | null>(null)
 const processedRows = computed<T[]>(() => props.controller.processedRows.value)
 
 function getRowByVirtualIndex(index: number): T | undefined {
@@ -44,23 +51,96 @@ function isRowSelectedByVirtualIndex(virtualIndex: number): boolean {
   return props.controller.isRowSelected(row)
 }
 
-const gridTemplateColumns = computed<string>(() => {
-  const parts = props.columns.map(col => {
-    if (col.width) return col.width
-    if (col.minWidth && col.maxWidth) return `minmax(${col.minWidth}, ${col.maxWidth})`
-    if (col.minWidth) return `minmax(${col.minWidth}, 1fr)`
-    return VIRTUAL_GRID_DEFAULTS.gridColumnFallback
-  })
-  return parts.join(' ')
-})
+const leftPinnedColumns = computed<ProTableColumn<T>[]>(() =>
+  props.columns.filter(col => col.pinned === 'left')
+)
+const rightPinnedColumns = computed<ProTableColumn<T>[]>(() =>
+  props.columns.filter(col => col.pinned === 'right')
+)
+const centerColumns = computed<ProTableColumn<T>[]>(() =>
+  props.columns.filter(col => col.pinned !== 'left' && col.pinned !== 'right')
+)
+
+type VirtualGridSection = 'left' | 'center' | 'right'
+
+function buildFixedGridTrack(col: ProTableColumn<T>): string {
+  if (col.width) return col.width
+  if (col.minWidth) return col.minWidth
+  if (col.maxWidth) return col.maxWidth
+  return VIRTUAL_GRID_DEFAULTS.flexColumnMinBase
+}
+
+function buildGridTemplate(cols: ProTableColumn<T>[], section: VirtualGridSection): string {
+  if (cols.length === 0) return ''
+
+  if (section !== 'center') {
+    return cols.map(col => buildFixedGridTrack(col)).join(' ')
+  }
+
+  const flexMinBase = VIRTUAL_GRID_DEFAULTS.flexColumnMinBase
+  const explicitFlexIndices = cols
+    .map((_, i) => i)
+    .filter(i => cols[i].virtualFill === true && !cols[i].width)
+
+  let flexIndex: number | null = null
+  if (explicitFlexIndices.length > 0) {
+    flexIndex = explicitFlexIndices[explicitFlexIndices.length - 1]
+    if (import.meta.env.DEV && explicitFlexIndices.length > 1) {
+      console.warn(
+        '[VirtualGridRenderer] Multiple center columns have virtualFill:true without width; only the last one uses minmax(..., 1fr).'
+      )
+    }
+  } else if (VIRTUAL_GRID_DEFAULTS.virtualFillLastCenterColumn) {
+    for (let i = cols.length - 1; i >= 0; i--) {
+      if (!cols[i].width) {
+        flexIndex = i
+        break
+      }
+    }
+  }
+
+  return cols
+    .map((col, i) => {
+      if (flexIndex === i) {
+        const base = col.minWidth ?? flexMinBase
+        return `minmax(${base}, 1fr)`
+      }
+      return buildFixedGridTrack(col)
+    })
+    .join(' ')
+}
+
+const leftGridTemplateColumns = computed<string>(() =>
+  buildGridTemplate(leftPinnedColumns.value, 'left')
+)
+const centerGridTemplateColumns = computed<string>(() =>
+  buildGridTemplate(centerColumns.value, 'center')
+)
+const rightGridTemplateColumns = computed<string>(() =>
+  buildGridTemplate(rightPinnedColumns.value, 'right')
+)
 
 function getColumnKey(col: ProTableColumn<T>): string {
   return String(col.field ?? col.id)
 }
 
-function getColumnTitle(col: ProTableColumn<T>): string {
-  if (typeof col.title === 'string') return col.title
-  return String(col.field ?? col.id)
+function renderHeader(col: ProTableColumn<T>): VNode | string {
+  if (col.headerRender) return col.headerRender()
+  if (typeof col.title === 'function') return col.title()
+  return col.title ?? col.id
+}
+
+function handleSortClick(col: ProTableColumn<T>): void {
+  if (!col.sortable) return
+  props.controller.updateSort(String(col.field ?? col.id))
+  emit('sort-change', { ...props.controller.state.sort })
+}
+
+function sortIcon(col: ProTableColumn<T>): string {
+  const field = String(col.field ?? col.id)
+  if (props.controller.state.sort.field !== field) return 'i-lucide-chevrons-up-down'
+  if (props.controller.state.sort.direction === 'asc') return 'i-lucide-chevron-up'
+  return 'i-lucide-chevron-down'
 }
 
 const ResolvedTag = resolveComponent('Tag')
@@ -128,6 +208,8 @@ function getBodyColumnClassByIndex(col: ProTableColumn<T>, index: number): strin
   return getColumnClass(col, row)
 }
 
+const measuredRowHeights = new Map<number, number>()
+
 const rowVirtualizer = useVirtualizer(
   computed(() => ({
     count: processedRows.value.length,
@@ -139,13 +221,64 @@ const rowVirtualizer = useVirtualizer(
   }))
 )
 
+/**
+ * TanStack updates internal scrollOffset from scroll events only. scrollToOffset() can no-op when DOM
+ * is already at the target (no scroll event → stale offset → blank body). Double rAF waits for clamp;
+ * synthetic scroll forces observeElementOffset to re-read element.scrollTop.
+ */
+/**
+ * Guard against "blank viewport after resize" without causing recursive updates.
+ * We only force a scroll-sync when virtualItems is unexpectedly empty.
+ */
+const _resizeSyncPending = ref(false)
+useResizeObserver(scrollContainerRef, () => {
+  if (_resizeSyncPending.value) return
+  const scroller = scrollContainerRef.value
+  if (!scroller) return
+
+  _resizeSyncPending.value = true
+  nextTick(() => {
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        _resizeSyncPending.value = false
+        const el = scrollContainerRef.value
+        if (!el) return
+        const items = rowVirtualizer.value.getVirtualItems()
+        if (processedRows.value.length > 0 && items.length === 0) {
+          el.dispatchEvent(new Event('scroll', { bubbles: false }))
+        }
+      })
+    })
+  })
+})
+
 function setVirtualRowRef(node: Element | ComponentPublicInstance | null, index: number): void {
   // Vue v-for ref callback can receive ComponentPublicInstance; we only measure real DOM elements.
   if (!(node instanceof Element)) return
 
   // Write back the real height to the virtualizer so `start/end` stays aligned.
-  rowVirtualizer.value.resizeItem(index, node.getBoundingClientRect().height)
+  const height = node.getBoundingClientRect().height
+  if (measuredRowHeights.get(index) === height) return
+  measuredRowHeights.set(index, height)
+  rowVirtualizer.value.resizeItem(index, height)
 }
+
+// Sync horizontal scroll between center header and center body.
+useEventListener(centerHeaderScrollRef, 'scroll', () => {
+  const header = centerHeaderScrollRef.value
+  const body = centerBodyScrollRef.value
+  if (!header || !body) return
+  if (Math.abs(body.scrollLeft - header.scrollLeft) < 1) return
+  body.scrollLeft = header.scrollLeft
+})
+
+useEventListener(centerBodyScrollRef, 'scroll', () => {
+  const header = centerHeaderScrollRef.value
+  const body = centerBodyScrollRef.value
+  if (!header || !body) return
+  if (Math.abs(header.scrollLeft - body.scrollLeft) < 1) return
+  header.scrollLeft = body.scrollLeft
+})
 </script>
 
 <template>
@@ -154,73 +287,315 @@ function setVirtualRowRef(node: Element | ComponentPublicInstance | null, index:
     class="c-scrollbar-native layout-full overflow-auto"
   >
     <div class="relative">
+      <!-- Header: left / center (x-scroll) / right -->
       <div
-        :class="[
-          'bg-muted font-medium py-sm px-md!',
-          { 'border-b border-border': showHorizontalLines },
-        ]"
-        :style="{ display: 'grid', gridTemplateColumns, position: 'sticky', top: '0px', zIndex: 1 }"
+        :class="[{ 'border-b border-border': showHorizontalLines }]"
+        class="sticky top-0 z-layout"
       >
-        <div
-          v-for="(col, colIndex) in columns"
-          :key="getColumnKey(col)"
-          :class="[
-            'text-xs! font-semibold text-muted-foreground py-xs! px-md! uppercase tracking-wider',
-            getHeaderAlignClass(col),
-            { 'pro-table-v-line': showVerticalLines && colIndex < columns.length - 1 },
-          ]"
-        >
-          {{ getColumnTitle(col) }}
+        <div class="row-start w-full">
+          <!-- Left pinned header -->
+          <div
+            v-if="leftPinnedColumns.length"
+            class="shrink-0 relative z-layout bg-muted border-r border-border shadow-sm"
+            :style="{ display: 'grid', gridTemplateColumns: leftGridTemplateColumns }"
+          >
+            <div
+              v-for="(col, colIndex) in leftPinnedColumns"
+              :key="'lh-' + getColumnKey(col)"
+              :class="[
+                'px-md min-w-0 bg-muted font-medium py-sm',
+                {
+                  'pro-table-v-line': showVerticalLines && colIndex < leftPinnedColumns.length - 1,
+                },
+              ]"
+            >
+              <div
+                :class="[
+                  'flex flex-row items-center gap-xs w-full text-xs! font-semibold text-muted-foreground uppercase tracking-wider',
+                  getHeaderAlignClass(col),
+                  { 'cursor-pointer': col.sortable },
+                ]"
+                @click="handleSortClick(col)"
+              >
+                <ProTableCell :node="renderHeader(col)" />
+                <Icons
+                  v-if="col.sortable"
+                  :name="sortIcon(col)"
+                  size="xs"
+                  class="text-muted-foreground shrink-0"
+                />
+              </div>
+            </div>
+          </div>
+
+          <!-- Center header -->
+          <div
+            ref="centerHeaderScrollRef"
+            class="flex-1 min-w-0 overflow-x-auto scrollbar-none"
+          >
+            <div
+              :style="{
+                display: 'inline-grid',
+                gridTemplateColumns: centerGridTemplateColumns,
+                width: 'max-content',
+                minWidth: '100%',
+              }"
+            >
+              <div
+                v-for="(col, colIndex) in centerColumns"
+                :key="'ch-' + getColumnKey(col)"
+                :class="[
+                  'px-md min-w-0 bg-muted font-medium py-sm',
+                  { 'pro-table-v-line': showVerticalLines && colIndex < centerColumns.length - 1 },
+                ]"
+              >
+                <div
+                  :class="[
+                    'flex flex-row items-center gap-xs w-full text-xs! font-semibold text-muted-foreground uppercase tracking-wider',
+                    getHeaderAlignClass(col),
+                    { 'cursor-pointer': col.sortable },
+                  ]"
+                  @click="handleSortClick(col)"
+                >
+                  <ProTableCell :node="renderHeader(col)" />
+                  <Icons
+                    v-if="col.sortable"
+                    :name="sortIcon(col)"
+                    size="xs"
+                    class="text-muted-foreground shrink-0"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Right pinned header -->
+          <div
+            v-if="rightPinnedColumns.length"
+            class="shrink-0 relative z-layout bg-muted border-l border-border shadow-sm"
+            :style="{ display: 'grid', gridTemplateColumns: rightGridTemplateColumns }"
+          >
+            <div
+              v-for="(col, colIndex) in rightPinnedColumns"
+              :key="'rh-' + getColumnKey(col)"
+              :class="[
+                'px-md min-w-0 bg-muted font-medium py-sm',
+                {
+                  'pro-table-v-line': showVerticalLines && colIndex < rightPinnedColumns.length - 1,
+                },
+              ]"
+            >
+              <div
+                :class="[
+                  'flex flex-row items-center gap-xs w-full text-xs! font-semibold text-muted-foreground uppercase tracking-wider',
+                  getHeaderAlignClass(col),
+                  { 'cursor-pointer': col.sortable },
+                ]"
+                @click="handleSortClick(col)"
+              >
+                <ProTableCell :node="renderHeader(col)" />
+                <Icons
+                  v-if="col.sortable"
+                  :name="sortIcon(col)"
+                  size="xs"
+                  class="text-muted-foreground shrink-0"
+                />
+              </div>
+            </div>
+          </div>
         </div>
       </div>
-      <div
-        :style="{
-          height: rowVirtualizer.getTotalSize() + 'px',
-          position: 'relative',
-          width: '100%',
-        }"
-        class="grid! grid-cols-1! gap-0!"
-      >
+
+      <!-- Body: left / center (x-scroll) / right -->
+      <div class="row-start w-full">
+        <!-- Left pinned body -->
         <div
-          v-for="virtualRow in rowVirtualizer.getVirtualItems()"
-          :key="String(virtualRow.key)"
-          :ref="el => setVirtualRowRef(el, virtualRow.index)"
-          class="pro-table-row absolute top-0 left-0 w-full transition-all duration-md ease-out py-sm!"
+          v-if="leftPinnedColumns.length"
+          class="shrink-0 relative z-content bg-card border-r border-border overflow-hidden shadow-sm"
           :style="{
-            transform: 'translateY(' + virtualRow.start + 'px)',
             display: 'grid',
-            gridTemplateColumns,
+            gridTemplateColumns: leftGridTemplateColumns,
+            width: 'max-content',
           }"
-          :class="[
-            {
-              'pro-table-row-hoverable': rowHover,
-              'pro-table-row-striped': stripedRows && isStripedVirtualRow(virtualRow.index),
-              'pro-table-row-selected': isRowSelectedByVirtualIndex(virtualRow.index),
-              'pro-table-row-h-line': showHorizontalLines,
-            },
-            getRowClassByVirtualIndex(virtualRow.index),
-          ]"
-          role="row"
-          tabindex="0"
-          :aria-selected="isRowSelectedByVirtualIndex(virtualRow.index)"
-          @click="handleRowClick(virtualRow.index)"
-          @keydown.enter.prevent="handleRowClick(virtualRow.index)"
         >
           <div
-            v-for="(col, colIndex) in columns"
-            :key="getColumnKey(col)"
-            :class="[
-              'flex flex-row items-center px-md! text-sm text-ellipsis-1',
-              getBodyJustifyClass(col),
-              { 'pro-table-v-line': showVerticalLines && colIndex < columns.length - 1 },
-            ]"
+            :style="{
+              height: rowVirtualizer.getTotalSize() + 'px',
+              position: 'relative',
+              width: '100%',
+            }"
           >
-            <ProTableCell
-              class="w-full"
-              :node="getBodyCellNodeByIndex(col, virtualRow.index)"
-              :align-class="getAlignClass(col)"
-              :extra-class="getBodyColumnClassByIndex(col, virtualRow.index)"
-            />
+            <div
+              v-for="virtualRow in rowVirtualizer.getVirtualItems()"
+              :key="'lb-' + String(virtualRow.key)"
+              class="pro-table-row absolute top-0 left-0 w-full transition-all duration-md ease-out"
+              :style="{
+                transform: 'translateY(' + virtualRow.start + 'px)',
+                display: 'grid',
+                gridTemplateColumns: leftGridTemplateColumns,
+                height: virtualRow.size + 'px',
+              }"
+              :class="[
+                {
+                  'pro-table-row-hoverable': rowHover,
+                  'pro-table-row-striped': stripedRows && isStripedVirtualRow(virtualRow.index),
+                  'pro-table-row-selected': isRowSelectedByVirtualIndex(virtualRow.index),
+                  'pro-table-row-h-line': showHorizontalLines,
+                },
+                getRowClassByVirtualIndex(virtualRow.index),
+              ]"
+              role="row"
+              tabindex="0"
+              :aria-selected="isRowSelectedByVirtualIndex(virtualRow.index)"
+              @click="handleRowClick(virtualRow.index)"
+              @keydown.enter.prevent="handleRowClick(virtualRow.index)"
+            >
+              <div
+                v-for="(col, colIndex) in leftPinnedColumns"
+                :key="'lbc-' + getColumnKey(col)"
+                :class="[
+                  'flex flex-row items-center text-sm text-ellipsis-1 px-md py-sm',
+                  getBodyJustifyClass(col),
+                  {
+                    'pro-table-v-line':
+                      showVerticalLines && colIndex < leftPinnedColumns.length - 1,
+                  },
+                ]"
+              >
+                <ProTableCell
+                  class="w-full"
+                  :node="getBodyCellNodeByIndex(col, virtualRow.index)"
+                  :align-class="getAlignClass(col)"
+                  :extra-class="getBodyColumnClassByIndex(col, virtualRow.index)"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Center body -->
+        <div
+          ref="centerBodyScrollRef"
+          class="flex-1 min-w-0 overflow-x-auto scrollbar-none"
+        >
+          <div
+            :style="{
+              height: rowVirtualizer.getTotalSize() + 'px',
+              position: 'relative',
+              width: 'max-content',
+              minWidth: '100%',
+            }"
+            class="grid! grid-cols-1! gap-0!"
+          >
+            <div
+              v-for="virtualRow in rowVirtualizer.getVirtualItems()"
+              :key="'cb-' + String(virtualRow.key)"
+              :ref="el => setVirtualRowRef(el, virtualRow.index)"
+              class="pro-table-row absolute top-0 left-0 transition-all duration-md ease-out"
+              :style="{
+                transform: 'translateY(' + virtualRow.start + 'px)',
+                display: 'grid',
+                gridTemplateColumns: centerGridTemplateColumns,
+                width: 'max-content',
+                minWidth: '100%',
+              }"
+              :class="[
+                {
+                  'pro-table-row-hoverable': rowHover,
+                  'pro-table-row-striped': stripedRows && isStripedVirtualRow(virtualRow.index),
+                  'pro-table-row-selected': isRowSelectedByVirtualIndex(virtualRow.index),
+                  'pro-table-row-h-line': showHorizontalLines,
+                },
+                getRowClassByVirtualIndex(virtualRow.index),
+              ]"
+              role="row"
+              tabindex="0"
+              :aria-selected="isRowSelectedByVirtualIndex(virtualRow.index)"
+              @click="handleRowClick(virtualRow.index)"
+              @keydown.enter.prevent="handleRowClick(virtualRow.index)"
+            >
+              <div
+                v-for="(col, colIndex) in centerColumns"
+                :key="'cbc-' + getColumnKey(col)"
+                :class="[
+                  'flex flex-row items-center text-sm text-ellipsis-1 px-md py-sm',
+                  getBodyJustifyClass(col),
+                  { 'pro-table-v-line': showVerticalLines && colIndex < centerColumns.length - 1 },
+                ]"
+              >
+                <ProTableCell
+                  class="w-full"
+                  :node="getBodyCellNodeByIndex(col, virtualRow.index)"
+                  :align-class="getAlignClass(col)"
+                  :extra-class="getBodyColumnClassByIndex(col, virtualRow.index)"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right pinned body -->
+        <div
+          v-if="rightPinnedColumns.length"
+          class="shrink-0 relative z-content bg-card border-l border-border overflow-hidden shadow-sm"
+          :style="{
+            display: 'grid',
+            gridTemplateColumns: rightGridTemplateColumns,
+            width: 'max-content',
+          }"
+        >
+          <div
+            :style="{
+              height: rowVirtualizer.getTotalSize() + 'px',
+              position: 'relative',
+              width: '100%',
+            }"
+          >
+            <div
+              v-for="virtualRow in rowVirtualizer.getVirtualItems()"
+              :key="'rb-' + String(virtualRow.key)"
+              class="pro-table-row absolute top-0 left-0 w-full transition-all duration-md ease-out"
+              :style="{
+                transform: 'translateY(' + virtualRow.start + 'px)',
+                display: 'grid',
+                gridTemplateColumns: rightGridTemplateColumns,
+                height: virtualRow.size + 'px',
+              }"
+              :class="[
+                {
+                  'pro-table-row-hoverable': rowHover,
+                  'pro-table-row-striped': stripedRows && isStripedVirtualRow(virtualRow.index),
+                  'pro-table-row-selected': isRowSelectedByVirtualIndex(virtualRow.index),
+                  'pro-table-row-h-line': showHorizontalLines,
+                },
+                getRowClassByVirtualIndex(virtualRow.index),
+              ]"
+              role="row"
+              tabindex="0"
+              :aria-selected="isRowSelectedByVirtualIndex(virtualRow.index)"
+              @click="handleRowClick(virtualRow.index)"
+              @keydown.enter.prevent="handleRowClick(virtualRow.index)"
+            >
+              <div
+                v-for="(col, colIndex) in rightPinnedColumns"
+                :key="'rbc-' + getColumnKey(col)"
+                :class="[
+                  'flex flex-row items-center text-sm text-ellipsis-1 px-md py-sm',
+                  getBodyJustifyClass(col),
+                  {
+                    'pro-table-v-line':
+                      showVerticalLines && colIndex < rightPinnedColumns.length - 1,
+                  },
+                ]"
+              >
+                <ProTableCell
+                  class="w-full"
+                  :node="getBodyCellNodeByIndex(col, virtualRow.index)"
+                  :align-class="getAlignClass(col)"
+                  :extra-class="getBodyColumnClassByIndex(col, virtualRow.index)"
+                />
+              </div>
+            </div>
           </div>
         </div>
       </div>

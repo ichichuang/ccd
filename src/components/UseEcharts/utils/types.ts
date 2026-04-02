@@ -283,30 +283,6 @@ export interface UseEchartsProps extends ChartEventHandlers {
   option?: EChartsOption
 
   /**
-   * 图表宽度
-   *
-   * 支持字符串（如 '800px', '100%'）或数字（像素值）
-   *
-   * @default undefined（自适应容器）
-   * @example
-   * - :width="800" - 800px
-   * - width="100%" - 100% 宽度
-   */
-  width?: string | number
-
-  /**
-   * 图表高度
-   *
-   * 支持字符串（如 '600px', '80vh'）或数字（像素值）
-   *
-   * @default undefined（自适应容器）
-   * @example
-   * - :height="600" - 600px
-   * - height="80vh" - 80% 视口高度
-   */
-  height?: string | number
-
-  /**
    * 图表主题
    *
    * 使用 ECharts 的主题配置，可以是内置主题或自定义主题名称

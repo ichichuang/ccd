@@ -43,8 +43,8 @@ export interface DialogOptionsBase {
   _instanceId?: string
   visible?: boolean
   header?: string | (() => string)
-  width?: string | number
-  height?: string | number
+  /** 默认尺寸类（UnoCSS），由 useDialogCore 与 class 合并后透传给 Dialog */
+  sizeClass?: string
   /**
    * 响应式断点配置（透传给 PrimeVue Dialog）
    * @example { '960px': '50%', '768px': '80vw', '360px': '95vw' }

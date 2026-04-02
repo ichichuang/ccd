@@ -8,17 +8,17 @@ import type { DialogOptions } from './types'
  * 与 device store 的 isMobileLayout/isTabletLayout/isPCLayout 对齐
  */
 export const DIALOG_BREAKPOINTS: Record<string, string> = {
-  [`${BREAKPOINTS.lg}px`]: '50%',
-  [`${BREAKPOINTS.md}px`]: '80vw',
-  [`${BREAKPOINTS.xs}px`]: '95vw',
+  [`${BREAKPOINTS['5xl']}px`]: '46%',
+  [`${BREAKPOINTS['2xl']}px`]: '50%',
+  [`${BREAKPOINTS.xl}px`]: '60%',
+  [`${BREAKPOINTS.lg}px`]: '80%',
+  [`${BREAKPOINTS.md}px`]: '96vw',
 }
 
 export const defaultDialogProps: Partial<DialogOptions> = {
   visible: false,
   header: '',
-  width: '50%',
-  height: 'auto',
-  breakpoints: DIALOG_BREAKPOINTS,
+  sizeClass: 'w-[96vw] sm:w-[88vw] md:w-[82vw] lg:w-[60vw] xl:w-[50vw] 2xl:w-[48vw] max-h-90vh',
   draggable: false,
   modal: true,
   position: 'center',
