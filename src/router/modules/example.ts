@@ -421,6 +421,7 @@ const systemConfigurationRootRoute: RouteConfig = {
         titleKey: 'router.example.systemConfiguration.theme',
         rank: 1,
         icon: 'i-lucide-palette',
+        parent: 'fullscreen',
       },
     },
     {
@@ -431,6 +432,7 @@ const systemConfigurationRootRoute: RouteConfig = {
         titleKey: 'router.example.systemConfiguration.size',
         rank: 2,
         icon: 'i-lucide-maximize-2',
+        parent: 'fullscreen',
       },
     },
     {
@@ -441,6 +443,7 @@ const systemConfigurationRootRoute: RouteConfig = {
         titleKey: 'router.example.systemConfiguration.unocss',
         rank: 3,
         icon: 'i-lucide-diamond',
+        parent: 'fullscreen',
       },
     },
     {
@@ -451,6 +454,7 @@ const systemConfigurationRootRoute: RouteConfig = {
         titleKey: 'router.example.systemConfiguration.breakpoints',
         rank: 4,
         icon: 'i-lucide-monitor',
+        parent: 'fullscreen',
       },
     },
     {
@@ -461,6 +465,7 @@ const systemConfigurationRootRoute: RouteConfig = {
         titleKey: 'router.example.systemConfiguration.layout',
         rank: 5,
         icon: 'i-lucide-layout-dashboard',
+        parent: 'fullscreen',
       },
     },
   ],

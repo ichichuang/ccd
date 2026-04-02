@@ -179,7 +179,6 @@ const asyncSchema = reactive<FormSchema>({
 
 // ── Refs ──────────────────────────────────────────────────────────
 const syncFormRef = ref<ProFormExpose | null>(null)
-const asyncFormRef = ref<ProFormExpose | null>(null)
 const draftFormRef = ref<ProFormExpose<DraftFormModel> | null>(null)
 const syncResult = ref<string>('')
 const asyncResult = ref<string>('')

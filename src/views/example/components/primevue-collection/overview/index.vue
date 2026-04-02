@@ -1,5 +1,6 @@
 <script setup lang="ts">
 defineOptions({ name: 'PrimeVueExampleView' })
+import { useConfirm } from 'primevue/useconfirm'
 
 interface OptionItem {
   label: string
@@ -34,8 +35,6 @@ const ratingValue = ref(3)
 const pickedDate = ref()
 const selectButtonValue = ref('day')
 const progressValue = ref(62)
-const tablePage = ref(0)
-const treeSelectionKeys = ref({})
 const activeAccordion = ref<string[] | string | null | undefined>(['0'])
 const activeTab = ref<string | number>('overview')
 const activeStep = ref<string | number>('1')
@@ -43,6 +42,8 @@ const dialogVisible = ref(false)
 const drawerVisible = ref(false)
 const popoverRef = ref()
 const menuRef = ref()
+const confirm = useConfirm()
+const confirmVisible = ref(false)
 
 const cities: OptionItem[] = [
   { label: '北京', value: 'bj' },
@@ -65,49 +66,17 @@ const members: MemberItem[] = [
   { id: '4', name: '赵六', role: '测试', status: '启用' },
 ]
 
-const breadcrumbHome = { icon: 'pi pi-home' }
+const breadcrumbHome = { icon: 'i-lucide-house' }
 const breadcrumbItems = [{ label: '示例' }, { label: 'PrimeVue 全量' }]
 
 const splitActions = [
-  { label: '复制链接', icon: 'pi pi-copy' },
-  { label: '导出截图', icon: 'pi pi-image' },
+  { label: '复制链接', icon: 'i-lucide-copy' },
+  { label: '导出截图', icon: 'i-lucide-image' },
 ]
 
 const menuItems = [
-  { label: '刷新', icon: 'pi pi-refresh' },
-  { label: '导出', icon: 'pi pi-download' },
-]
-
-const menubarItems = [
-  {
-    label: '组件',
-    icon: 'pi pi-box',
-    items: [{ label: '表单' }, { label: '覆盖层' }, { label: '导航' }],
-  },
-  {
-    label: '主题',
-    icon: 'pi pi-palette',
-    items: [{ label: 'Light' }, { label: 'Dark' }],
-  },
-]
-
-const treeNodes = [
-  {
-    key: '0',
-    label: 'Frontend',
-    children: [
-      { key: '0-0', label: 'Vue' },
-      { key: '0-1', label: 'PrimeVue' },
-    ],
-  },
-  {
-    key: '1',
-    label: 'Backend',
-    children: [
-      { key: '1-0', label: 'Node.js' },
-      { key: '1-1', label: 'Alova' },
-    ],
-  },
+  { label: '刷新', icon: 'i-lucide-refresh-cw' },
+  { label: '导出', icon: 'i-lucide-download' },
 ]
 
 const searchAuto = (event: { query: string }): void => {
@@ -123,6 +92,23 @@ const openPopover = (event: Event): void => {
   popoverRef.value?.toggle(event)
 }
 
+const openConfirmPopup = (event: Event): void => {
+  confirm.require({
+    target: event.currentTarget as HTMLElement,
+    message: '确认执行该操作吗？',
+    header: '确认操作',
+    icon: 'i-lucide-circle-alert',
+    acceptLabel: '确认',
+    rejectLabel: '取消',
+    onShow: () => {
+      confirmVisible.value = true
+    },
+    onHide: () => {
+      confirmVisible.value = false
+    },
+  })
+}
+
 const pulseProgress = (): void => {
   progressValue.value = progressValue.value >= 95 ? 30 : progressValue.value + 15
 }
@@ -130,14 +116,14 @@ const pulseProgress = (): void => {
 
 <template>
   <div class="layout-container col-stretch gap-md">
-    <section class="material-elevated col-stretch gap-md">
+    <section class="col-stretch gap-md">
       <h2 class="text-lg font-semibold text-foreground">PrimeVue v4 全量官方组件示例</h2>
       <p class="text-sm text-muted-foreground">
         当前页面仅展示 PrimeVue 官方组件，不包含你指定的内部封装组件。
       </p>
     </section>
 
-    <section class="material-elevated col-stretch gap-md">
+    <section class="col-stretch gap-md">
       <h3 class="text-base font-semibold text-foreground">Button Family</h3>
       <div class="row-start gap-sm flex-wrap">
         <Button label="Primary" />
@@ -166,7 +152,7 @@ const pulseProgress = (): void => {
           variant="text"
         />
         <Button
-          icon="pi pi-heart"
+          icon="i-lucide-heart"
           rounded
         />
         <SplitButton
@@ -181,7 +167,7 @@ const pulseProgress = (): void => {
       </div>
     </section>
 
-    <section class="material-elevated col-stretch gap-md">
+    <section class="col-stretch gap-md">
       <h3 class="text-base font-semibold text-foreground">Form Components</h3>
       <div class="row-start gap-sm flex-wrap">
         <InputText
@@ -189,7 +175,7 @@ const pulseProgress = (): void => {
           placeholder="InputText"
         />
         <IconField>
-          <InputIcon class="pi pi-search" />
+          <InputIcon class="i-lucide-search" />
           <InputText
             v-model="iconInput"
             placeholder="IconField + InputIcon"
@@ -302,7 +288,7 @@ const pulseProgress = (): void => {
       </div>
     </section>
 
-    <section class="material-elevated col-stretch gap-md">
+    <section class="col-stretch gap-md">
       <h3 class="text-base font-semibold text-foreground">Data & Feedback</h3>
       <div class="row-start gap-sm flex-wrap">
         <Badge value="8" />
@@ -313,7 +299,7 @@ const pulseProgress = (): void => {
         />
         <Chip
           label="Chip"
-          icon="pi pi-tag"
+          icon="i-lucide-tag"
         />
         <Message severity="success">Message 组件</Message>
         <InlineMessage severity="info">InlineMessage 组件</InlineMessage>
@@ -343,45 +329,12 @@ const pulseProgress = (): void => {
       </div>
     </section>
 
-    <section class="material-elevated col-stretch gap-md">
-      <h3 class="text-base font-semibold text-foreground">DataTable / Tree / Paginator</h3>
-      <DataTable
-        :value="members"
-        data-key="id"
-        class="w-full"
-      >
-        <Column
-          field="name"
-          header="姓名"
-        />
-        <Column
-          field="role"
-          header="角色"
-        />
-        <Column
-          field="status"
-          header="状态"
-        />
-      </DataTable>
-      <Tree
-        v-model:selection-keys="treeSelectionKeys"
-        :value="treeNodes"
-        selection-mode="single"
-      />
-      <Paginator
-        v-model:first="tablePage"
-        :rows="2"
-        :total-records="20"
-      />
-    </section>
-
-    <section class="material-elevated col-stretch gap-md">
+    <section class="col-stretch gap-md">
       <h3 class="text-base font-semibold text-foreground">Navigation / Menu</h3>
       <Breadcrumb
         :home="breadcrumbHome"
         :model="breadcrumbItems"
       />
-      <Menubar :model="menubarItems" />
       <div class="row-start gap-sm">
         <Button
           label="Menu 弹出"
@@ -395,14 +348,19 @@ const pulseProgress = (): void => {
       </div>
     </section>
 
-    <section class="material-elevated col-stretch gap-md">
+    <section class="col-stretch gap-md">
       <h3 class="text-base font-semibold text-foreground">Panel / Container</h3>
       <Card>
         <template #title>Card</template>
         <template #content>Card 组件内容展示。</template>
       </Card>
       <Panel header="Panel">Panel 内容区域。</Panel>
-      <Fieldset legend="Fieldset">Fieldset 内容区域。</Fieldset>
+      <Fieldset
+        legend="Fieldset"
+        :toggleable="true"
+      >
+        Fieldset 内容区域。
+      </Fieldset>
       <Divider />
       <Accordion
         v-model:value="activeAccordion"
@@ -411,10 +369,6 @@ const pulseProgress = (): void => {
         <AccordionPanel value="0">
           <AccordionHeader>Accordion 1</AccordionHeader>
           <AccordionContent>AccordionContent 1</AccordionContent>
-        </AccordionPanel>
-        <AccordionPanel value="1">
-          <AccordionHeader>Accordion 2</AccordionHeader>
-          <AccordionContent>AccordionContent 2</AccordionContent>
         </AccordionPanel>
       </Accordion>
       <Tabs v-model:value="activeTab">
@@ -437,14 +391,58 @@ const pulseProgress = (): void => {
           <StepPanel value="2">StepPanel 2</StepPanel>
         </StepPanels>
       </Stepper>
-      <Splitter style="height: 140px">
-        <SplitterPanel>SplitterPanel Left</SplitterPanel>
-        <SplitterPanel>SplitterPanel Right</SplitterPanel>
+      <Splitter class="h-40vh">
+        <SplitterPanel>
+          <div class="layout-full center">SplitterPanel Left</div>
+        </SplitterPanel>
+        <SplitterPanel>
+          <div class="layout-full center">SplitterPanel Right</div>
+        </SplitterPanel>
       </Splitter>
     </section>
 
-    <section class="material-elevated col-stretch gap-md">
+    <section class="col-stretch gap-md">
       <h3 class="text-base font-semibold text-foreground">Overlay Components</h3>
+      <div class="col-stretch gap-sm">
+        <span class="text-sm text-muted-foreground">Tooltip</span>
+        <div class="row-start gap-sm flex-wrap">
+          <InputText
+            v-tooltip="'默认：右侧提示'"
+            placeholder="Tooltip Right"
+          />
+          <InputText
+            v-tooltip.top="'Top 提示'"
+            placeholder="Tooltip Top"
+          />
+          <InputText
+            v-tooltip.focus.bottom="'Focus 触发（Bottom）'"
+            placeholder="Tooltip Focus"
+          />
+          <Button
+            v-tooltip="{
+              value: '延迟显示 600ms',
+              showDelay: 600,
+              hideDelay: 200,
+            }"
+            label="Tooltip Delay"
+            severity="secondary"
+          />
+          <Button
+            v-tooltip.bottom="{
+              value: '自定义 Tooltip',
+              pt: {
+                text: '!bg-primary !text-primary-foreground !font-medium',
+                arrow: {
+                  style: {
+                    borderBottomColor: 'rgb(var(--primary))',
+                  },
+                },
+              },
+            }"
+            label="Tooltip Custom"
+          />
+        </div>
+      </div>
       <div class="row-start gap-sm flex-wrap">
         <Button
           label="Dialog"
@@ -458,7 +456,12 @@ const pulseProgress = (): void => {
           label="Popover"
           @click="openPopover"
         />
-        <Button label="ConfirmPopup 触发" />
+        <Button
+          id="confirmPopupTrigger"
+          label="ConfirmPopup 触发"
+          :aria-expanded="confirmVisible"
+          @click="openConfirmPopup"
+        />
       </div>
       <Dialog
         v-model:visible="dialogVisible"

@@ -494,7 +494,7 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <div class="h-full col-stretch min-h-0">
+  <div class="h-full col-stretch min-h-0 p-xl">
     <Tabs
       v-model:value="activeTabModel"
       class="col-fill"

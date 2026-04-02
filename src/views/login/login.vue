@@ -256,13 +256,13 @@ async function handleLoginSubmit(): Promise<void> {
 
       <!-- Ambient Orbs -->
       <div
-        class="absolute -top-1/4 -left-1/4 w-[65vw] h-[65vw] rounded-full bg-primary/10 blur-[80px] animate-orb-drift pointer-events-none z-base"
+        class="ambient-orb-drift absolute -top-1/4 -left-1/4 w-[65vw] h-[65vw] rounded-full bg-primary/10 blur-[80px] pointer-events-none z-base"
       />
       <div
-        class="absolute -bottom-1/4 -right-1/4 w-[55vw] h-[55vw] rounded-full bg-accent/10 blur-[70px] animate-orb-drift-alt pointer-events-none z-base"
+        class="ambient-orb-drift-alt absolute -bottom-1/4 -right-1/4 w-[55vw] h-[55vw] rounded-full bg-accent/10 blur-[70px] pointer-events-none z-base"
       />
       <div
-        class="absolute top-[35%] left-[25%] w-[42vw] h-[42vw] rounded-full bg-info/10 blur-[60px] animate-orb-pulse pointer-events-none z-base"
+        class="ambient-orb-pulse absolute top-[35%] left-[25%] w-[42vw] h-[42vw] rounded-full bg-info/10 blur-[60px] opacity-80 pointer-events-none z-base"
       />
 
       <!-- Brand Content -->
@@ -405,6 +405,8 @@ async function handleLoginSubmit(): Promise<void> {
     </div>
   </div>
 </template>
+
+<style lang="scss"></style>
 
 <style scoped lang="scss">
 .fade-enter-active,
