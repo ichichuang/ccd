@@ -14,6 +14,9 @@ importers:
       '@primeuix/themes':
         specifier: ^2.0.3
         version: 2.0.3
+      '@primevue/core':
+        specifier: ^4.5.4
+        version: 4.5.4(vue@3.5.25(typescript@5.9.3))
       '@primevue/forms':
         specifier: ^4.5.4
         version: 4.5.4(vue@3.5.25(typescript@5.9.3))
