@@ -199,17 +199,20 @@ export default ({ mode, command }: ConfigEnv): UserConfigExport => {
               if (id.includes('echarts') || id.includes('zrender') || id.includes('vue-echarts'))
                 return 'vendor-echarts'
 
-              // ── 4. Lottie 生态 (defineAsyncComponent 异步加载) ──
+              // ── 4. GSAP 动画库 (仅登录页使用，独立拆包避免污染首屏) ──
+              if (id.includes('/gsap/')) return 'vendor-gsap'
+
+              // ── 5. Lottie 生态 (defineAsyncComponent 异步加载) ──
               if (id.includes('lottie-web') || id.includes('vue3-lottie')) return 'vendor-lottie'
 
-              // ── 5. PrimeVue UI 框架 ──
+              // ── 6. PrimeVue UI 框架 ──
               // @primeuix / @primevue/themes 体积较大，单独拆包以便并行加载。
               // 其余 primevue/* 交由 Rollup 自动共享依赖分割，无需手工合并，
               // BaseStyle 初始化顺序由 Rollup 模块图内部保证。
               if (id.includes('@primeuix') || id.includes('@primevue/themes'))
                 return 'vendor-primevue-theme'
 
-              // ── 7. 工具库（按需拆分，避免污染 vendor-vue） ──
+              // ── 8. 工具库（按需拆分，避免污染 vendor-vue） ──
               if (id.includes('@vueuse') || id.includes('lodash-es')) return 'vendor-utils'
               if (id.includes('dayjs') || id.includes('crypto-es') || id.includes('yup'))
                 return 'vendor-utils'

@@ -1,12 +1,13 @@
 {
   "name": "app-template",
-  "version": "6.0.22",
+  "version": "6.0.23",
   "private": true,
   "type": "module",
   "sideEffects": [
     "**/*.css",
     "**/*.scss",
     "**/*.sass",
+    "animate.css",
     "uno.css",
     "virtual:*"
   ],
@@ -81,6 +82,7 @@
     "alova": "^3.3.3",
     "animate.css": "^4.1.1",
     "crypto-es": "^3.1.2",
+    "dayjs": "^1.11.13",
     "echarts": "^6.0.0",
     "gsap": "^3.14.2",
     "lodash-es": "^4.17.21",
@@ -136,7 +138,6 @@
     "concurrently": "^9.1.0",
     "cross-env": "^7.0.3",
     "cz-conventional-changelog": "^3.3.0",
-    "dayjs": "^1.11.13",
     "eslint": "^9.39.2",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-vue": "^9.31.0",
