@@ -9,36 +9,36 @@ export function buildOverlayComponents(): Record<string, unknown> {
       colorScheme: {
         light: {
           root: {
-            background: 'rgb(var(--popover))',
+            background: 'rgb(var(--card))',
             borderColor: 'rgb(var(--border))',
           },
           header: {
-            background: 'rgb(var(--popover))',
-            color: 'rgb(var(--popover-foreground))',
+            background: 'rgb(var(--card))',
+            color: 'rgb(var(--card-foreground))',
           },
           content: {
-            background: 'rgb(var(--popover))',
-            color: 'rgb(var(--popover-foreground))',
+            background: 'rgb(var(--card))',
+            color: 'rgb(var(--card-foreground))',
           },
           footer: {
-            background: 'rgb(var(--popover))',
+            background: 'rgb(var(--card))',
           },
         },
         dark: {
           root: {
-            background: 'rgb(var(--popover))',
+            background: 'rgb(var(--card))',
             borderColor: 'rgb(var(--border))',
           },
           header: {
-            background: 'rgb(var(--popover))',
-            color: 'rgb(var(--popover-foreground))',
+            background: 'rgb(var(--card))',
+            color: 'rgb(var(--card-foreground))',
           },
           content: {
-            background: 'rgb(var(--popover))',
-            color: 'rgb(var(--popover-foreground))',
+            background: 'rgb(var(--card))',
+            color: 'rgb(var(--card-foreground))',
           },
           footer: {
-            background: 'rgb(var(--popover))',
+            background: 'rgb(var(--card))',
           },
         },
       },

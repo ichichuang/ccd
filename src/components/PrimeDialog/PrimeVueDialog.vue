@@ -243,21 +243,19 @@ type DialogPtValue = PassThrough<DialogPassThroughOptions>
 const dialogPtCache = new WeakMap<DialogOptions, DialogPtValue>()
 
 /**
- * 默认 Dialog 面板 glass 外观（mask-only）。
- * padding 仍由 PrimeVue 自己的 header/content/footer 规则控制；
- * business 侧 options.pt 的优先级高于默认值。
+ * 默认 Dialog：遮罩磨砂，面板 interactive-card（非 glass-shell）。
+ * business 侧 options.pt 覆盖在默认值之上；options.maskClass 追加在默认遮罩类之后以便覆盖。
  */
 const defaultDialogPt: DialogPtValue = {
-  root: { class: 'glass-shell transform-gpu will-change-transform' },
+  root: { class: 'glass-base bg-card/60! dark:bg-card/80! transform-gpu will-change-transform' },
   header: { class: 'bg-transparent' },
   content: { class: 'bg-transparent' },
   footer: { class: 'bg-transparent' },
-  mask: { class: '!bg-transparent' },
 }
 
 /**
  * 将 maskClass 与既有 pt 合并。
- * V27.3：无 maskClass 时直接返回 `options.pt` 引用；有 maskClass 时对合并结果按 options 实例缓存，保证 `:pt` 引用稳定。
+ * V27.3：有 maskClass 时对合并结果按 options 实例缓存，保证 `:pt` 引用稳定。
  */
 function getDialogPt(options: DialogOptions): DialogPtValue | undefined {
   const basePt = { ...defaultDialogPt, ...(options.pt ?? {}) } as DialogPtValue
@@ -265,7 +263,6 @@ function getDialogPt(options: DialogOptions): DialogPtValue | undefined {
   if (!dialogPtCache.has(options)) {
     dialogPtCache.set(options, {
       ...basePt,
-      mask: { class: options.maskClass },
     })
   }
   return dialogPtCache.get(options)
