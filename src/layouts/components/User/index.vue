@@ -49,8 +49,7 @@ const onLogout = async () => {
     class="layout-full center"
   >
     <!-- 头像入口按钮 -->
-    <button
-      type="button"
+    <div
       class="h-full size-1-1 rounded-full bg-transparent border-none p-0 outline-none cursor-pointer"
       @click="togglePanel"
     >
@@ -58,7 +57,7 @@ const onLogout = async () => {
         class="layout-full rounded-full"
         :src="avatarSrc"
       />
-    </button>
+    </div>
     <!-- 用户信息下拉面板（PrimeVue Popover） -->
     <Popover
       ref="popoverRef"

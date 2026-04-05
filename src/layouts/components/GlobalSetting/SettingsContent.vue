@@ -29,7 +29,7 @@ const deviceStore = useDeviceStore()
 const sizeStore = useSizeStore()
 const layoutStore = useLayoutStore()
 const { locale, switchLocale, supportedLocales } = useLocale()
-const { isMobile } = storeToRefs(deviceStore)
+const { isMobile, isMobileTerminal } = storeToRefs(deviceStore)
 const isPC = computed(() => !isMobile.value)
 
 // 主题模式选项 (light | dark | auto)
@@ -166,25 +166,27 @@ function onThemeModeChange(value: ThemeMode) {
 <template>
   <div class="flex flex-col px-sm md:px-md gap-md md:gap-lg xl:gap-xl">
     <!-- 深色 / 浅色 -->
-    <div class="flex flex-col gap-xs md:gap-sm">
-      <label class="text-sm font-medium text-muted-foreground">
-        {{ t('settings.themeMode') }}
-      </label>
-      <div class="layout-full">
-        <SelectButton
-          :model-value="mode"
-          :options="themeModeOptions"
-          option-value="value"
-          :option-label="opt => t(opt.labelKey)"
-          :allow-empty="false"
-          :disabled="isAnimating"
-          class="w-full"
-          @update:model-value="onThemeModeChange"
-        />
+    <template v-if="!isMobileTerminal">
+      <div class="flex flex-col gap-xs md:gap-sm">
+        <label class="text-sm font-medium text-muted-foreground">
+          {{ t('settings.themeMode') }}
+        </label>
+        <div class="layout-full">
+          <SelectButton
+            :model-value="mode"
+            :options="themeModeOptions"
+            option-value="value"
+            :option-label="opt => t(opt.labelKey)"
+            :allow-empty="false"
+            :disabled="isAnimating"
+            class="w-full"
+            @update:model-value="onThemeModeChange"
+          />
+        </div>
       </div>
-    </div>
 
-    <div class="border-b opacity-50"></div>
+      <div class="border-b opacity-50"></div>
+    </template>
 
     <!-- 系统配色 -->
     <div class="flex flex-col gap-xs md:gap-sm">

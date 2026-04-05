@@ -23,7 +23,11 @@ watch(
 
 <template>
   <div class="layout-full relative">
-    <CScrollbar ref="scrollbarRef">
+    <CScrollbar
+      ref="scrollbarRef"
+      back-to-top
+      :back-to-top-threshold="400"
+    >
       <AnimateRouterView class="layout-full flex-1 min-h-0" />
     </CScrollbar>
 

@@ -51,7 +51,7 @@ function renderBreadcrumbMenuItem(slotProps: unknown) {
     v-if="show"
     class="w-full h-breadcrumbHeight px-md flex items-center select-none"
   >
-    <div class="flex items-center text-sm text-muted-foreground whitespace-nowrap">
+    <div class="flex items-center text-sm whitespace-nowrap">
       <span
         role="button"
         tabindex="0"
@@ -82,7 +82,7 @@ function renderBreadcrumbMenuItem(slotProps: unknown) {
             :class="[
               'transition-all duration-md flex items-center gap-xs',
               index === breadcrumbs.length - 1
-                ? 'text-foreground font-semibold cursor-default'
+                ? 'text-primary font-semibold cursor-default'
                 : 'cursor-pointer hover:text-primary',
               openDropdownPath === item.path ? 'text-primary' : '',
             ]"
@@ -105,8 +105,8 @@ function renderBreadcrumbMenuItem(slotProps: unknown) {
                   ? 'i-lucide-panel-bottom-close'
                   : 'i-lucide-panel-bottom-open'
               "
-              :class="[MENU_ICON_COMMON_CLASS, 'ml-xs text-current! shrink-0']"
-              :size="getIconSize('breadcrumb')"
+              :class="[MENU_ICON_COMMON_CLASS, 'text-current! shrink-0']"
+              :size="'xs'"
             />
           </span>
 
@@ -114,7 +114,7 @@ function renderBreadcrumbMenuItem(slotProps: unknown) {
           <Icons
             v-if="index !== breadcrumbs.length - 1"
             name="i-lucide-chevron-right"
-            class="mx-sm text-muted-foreground/30"
+            class="mx-xs"
             :size="getIconSize('breadcrumb')"
           />
 

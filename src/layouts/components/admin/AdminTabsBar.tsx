@@ -135,8 +135,8 @@ export default defineComponent({
                       class={[
                         'h-full flex items-center px-sm rounded-t-lg cursor-pointer gap-sm shrink-0 duration-md',
                         active
-                          ? 'bg-primary/10 dark:bg-primary/15 text-primary backdrop-blur-md transition-all'
-                          : 'bg-transparent text-muted-foreground hover:bg-muted/40 hover:text-foreground transition-all',
+                          ? 'bg-primary/20 dark:bg-primary/22 text-primary backdrop-blur-md transition-all'
+                          : 'bg-transparent hover:bg-muted/40 hover:text-primary transition-all',
                       ]}
                       onClick={() => onTabClick(tab)}
                       onContextmenu={(e: MouseEvent) => onContextMenu(e, tab)}

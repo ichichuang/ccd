@@ -333,13 +333,12 @@ export default defineComponent({
         )
       }
       return (
-        <button
-          type="button"
+        <div
           class={linkClass}
           onClick={(e: Event) => handleParentItemClick(e, item)}
         >
           {content}
-        </button>
+        </div>
       )
     }
 
@@ -427,8 +426,7 @@ export default defineComponent({
       const hasChildren = Array.isArray(item.items) && item.items.length > 0
 
       const iconButton = (
-        <button
-          type="button"
+        <div
           class={`center group ${MENU_COLLAPSED_BUTTON_PADDING} rounded-md ${ROUNDED_NAV} cursor-pointer transition-[background-color,color,opacity,transform] duration-md aspect-square ${MENU_COLLAPSED_BUTTON_SIZE} border-none bg-transparent p-0 outline-none interactive-item ${stateClasses}`}
           onClick={e => onCollapsedItemClick(e, item)}
         >
@@ -445,7 +443,7 @@ export default defineComponent({
               {label.substring(0, 1)}
             </div>
           )}
-        </button>
+        </div>
       )
 
       const iconWithTooltip = withDirectives(iconButton, [[Tooltip, label, '', { right: true }]])

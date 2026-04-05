@@ -238,9 +238,8 @@ const renderRootItem = (item: PrimeMenuModelItem) => {
     <!-- Left: Mobile Menu + Logo -->
     <div class="h-full center gap-sm">
       <!-- State 1 only: 抽屉触发按钮（由 LayoutAdmin 传入 showDrawerTrigger） -->
-      <button
+      <div
         v-if="showDrawerTrigger"
-        type="button"
         class="interactive-card border-none outline-none p-xs sm:p-sm center"
         @click="layoutStore.toggleMobileDrawer()"
       >
@@ -248,7 +247,7 @@ const renderRootItem = (item: PrimeMenuModelItem) => {
           name="i-lucide-menu"
           size="2xl"
         />
-      </button>
+      </div>
       <a
         v-if="showLogo"
         href="/"
@@ -317,9 +316,8 @@ const renderRootItem = (item: PrimeMenuModelItem) => {
 
     <!-- Right: Actions (fullscreen max-lg:hidden, theme max-md:hidden for responsive graceful degradation) -->
     <div class="h-full center gap-sm">
-      <button
+      <div
         v-if="showSidebarToggle"
-        type="button"
         class="cursor-pointer material-elevated border-none outline-none duration-sm center ring-1 ring-border p-sm"
         @click="emit('toggleCollapse', $event)"
       >
@@ -327,10 +325,9 @@ const renderRootItem = (item: PrimeMenuModelItem) => {
           :name="sidebarCollapse ? 'i-lucide-panel-left-open' : 'i-lucide-panel-left-close'"
           size="lg"
         />
-      </button>
-      <button
+      </div>
+      <div
         v-if="deviceStore.type === 'PC'"
-        type="button"
         class="max-lg:hidden cursor-pointer material-elevated border-none outline-none duration-sm center ring-1 ring-border p-sm"
         @click="toggleFullscreen()"
       >
@@ -342,9 +339,8 @@ const renderRootItem = (item: PrimeMenuModelItem) => {
           "
           size="lg"
         />
-      </button>
-      <button
-        type="button"
+      </div>
+      <div
         class="max-md:hidden cursor-pointer material-elevated border-none outline-none duration-sm center ring-1 ring-border p-sm"
         @click="emit('toggleTheme', $event)"
       >
@@ -352,10 +348,9 @@ const renderRootItem = (item: PrimeMenuModelItem) => {
           :name="isDark ? 'i-solar-moon-bold-duotone' : 'i-solar-sun-2-bold-duotone'"
           size="lg"
         />
-      </button>
-      <button
+      </div>
+      <div
         v-if="isMobile && showUserEntry"
-        type="button"
         class="cursor-pointer material-elevated border-none outline-none duration-sm center ring-1 ring-border p-sm"
         @click="themeSwitch.toggleThemeWithAnimation($event)"
       >
@@ -363,7 +358,7 @@ const renderRootItem = (item: PrimeMenuModelItem) => {
           :name="isDark ? 'i-solar-moon-bold-duotone' : 'i-solar-sun-2-bold-duotone'"
           size="lg"
         />
-      </button>
+      </div>
       <User v-if="showUserEntry" />
     </div>
   </header>
