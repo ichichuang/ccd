@@ -11,7 +11,7 @@ const coreRoutes: RouteConfig[] = [
   {
     path: '/login',
     name: 'Login',
-    component: () => import('@/views/login/login.vue'),
+    component: () => import('@/views/login/index.vue'),
     meta: {
       titleKey: 'router.core.login',
       showLink: false,

@@ -241,167 +241,172 @@ async function handleLoginSubmit(): Promise<void> {
 </script>
 
 <template>
+  <!-- 背景由根布局 AmbientBackground 提供；与 index.vue 单栏 glass-card 策略对齐 -->
   <div
-    class="layout-screen flex flex-row items-stretch bg-background"
+    class="relative z-content w-full min-h-full col-stretch items-center px-sm pt-[calc(var(--spacing-3xl)+env(safe-area-inset-top,0px))] pb-[calc(var(--spacing-lg)+env(safe-area-inset-bottom,0px))] md:px-md text-foreground"
     @keydown.enter.prevent="onEnterSubmit"
   >
-    <!-- Left Brand Panel (Desktop Only) -->
-    <div class="hidden lg:flex w-1/2 relative overflow-hidden">
-      <div
-        class="absolute inset-0 bg-gradient-to-br from-primary/20 via-transparent to-transparent pointer-events-none"
+    <div
+      class="absolute z-layout row-end gap-md right-sm top-[calc(var(--spacing-sm)+env(safe-area-inset-top,0px))] md:right-md md:top-[calc(var(--spacing-md)+env(safe-area-inset-top,0px))]"
+    >
+      <Button
+        icon="i-lucide-sun dark:i-lucide-moon"
+        text
+        rounded
+        severity="secondary"
+        class="text-lg!"
+        @click="toggleThemeWithAnimation"
       />
-      <div
-        class="absolute inset-0 bg-gradient-to-tr from-accent/10 via-transparent to-info/5 pointer-events-none"
+      <Select
+        :model-value="locale"
+        :options="localeOptions"
+        option-label="label"
+        option-value="value"
+        :size="isMobileLayout ? 'large' : 'small'"
+        class="max-w-[min(48vw,220px)] min-w-[var(--spacing-2xl)] shrink-0"
+        @change="onLocaleChange"
       />
-
-      <!-- Ambient Orbs -->
-      <div
-        class="ambient-orb-drift absolute -top-1/4 -left-1/4 w-[65vw] h-[65vw] rounded-full bg-primary/10 blur-[80px] pointer-events-none z-base"
-      />
-      <div
-        class="ambient-orb-drift-alt absolute -bottom-1/4 -right-1/4 w-[55vw] h-[55vw] rounded-full bg-accent/10 blur-[70px] pointer-events-none z-base"
-      />
-      <div
-        class="ambient-orb-pulse absolute top-[35%] left-[25%] w-[42vw] h-[42vw] rounded-full bg-info/10 blur-[60px] opacity-80 pointer-events-none z-base"
-      />
-
-      <!-- Brand Content -->
-      <div class="absolute-center z-content text-center col-center gap-md">
-        <Icons
-          name="i-lucide-box"
-          class="text-primary"
-          size="3xl"
-        />
-
-        <span class="text-xl font-bold tracking-wider text-foreground">
-          {{ t('login.brandTitle') }}
-        </span>
-
-        <blockquote class="flex flex-col gap-md">
-          <p class="text-2xl font-medium leading-relaxed text-foreground/90">
-            "{{ t('login.brandSloganLine1') }}
-            <br />
-            {{ t('login.brandSloganLine2') }}"
-          </p>
-          <footer class="text-sm text-muted-foreground">— {{ t('login.brandQuoteAuthor') }}</footer>
-        </blockquote>
-      </div>
     </div>
 
-    <!-- Right Login Panel -->
-    <div class="flex-1 col-center bg-muted/10 relative p-sm md:p-md">
-      <!-- Top-Right Controls -->
+    <div
+      class="col-stretch mx-auto w-full max-w-[min(92vw,1024px)] gap-lg lg:max-w-[min(96vw,1024px)] xl:max-w-[min(96vw,1200px)] 2xl:max-w-[min(96vw,1320px)]"
+    >
       <div
-        class="absolute top-[var(--spacing-xl)] right-[var(--spacing-xl)] flex flex-row items-center gap-md z-layout"
+        class="w-full min-h-0 max-lg:col-stretch max-lg:gap-lg lg:row-center lg:min-h-[min(52vh,480px)] lg:gap-x-2xl xl:gap-x-3xl 2xl:gap-x-4xl"
       >
-        <Button
-          icon="i-lucide-sun dark:i-lucide-moon"
-          text
-          rounded
-          severity="secondary"
-          class="text-lg!"
-          @click="toggleThemeWithAnimation"
-        />
-        <Select
-          :model-value="locale"
-          :options="localeOptions"
-          option-label="label"
-          option-value="value"
-          :size="isMobileLayout ? 'large' : 'small'"
-          class="min-w-[var(--spacing-2xl)]"
-          @change="onLocaleChange"
-        />
-      </div>
-
-      <!-- Glass Login Card -->
-      <section
-        class="material-elevated bg-card/85 backdrop-blur-md border border-border/50 rounded-2xl p-xl w-full max-w-[420px] z-content"
-      >
-        <div class="col-stretch gap-xl">
-          <div class="flex flex-col gap-sm text-left">
-            <h2 class="text-3xl font-bold text-foreground">
-              {{ t('login.heading') }}
-            </h2>
-            <p class="text-sm text-muted-foreground">
-              {{ t('login.description') }}
+        <!-- ≥lg：左栏品牌文案两端对齐左区；<lg 纵向堆叠 -->
+        <div
+          class="col-center w-full gap-md text-center lg:min-h-0 lg:min-w-0 lg:max-h-[min(68vh,520px)] lg:max-w-[min(58vw,560px)] lg:flex-1 lg:overflow-hidden lg:px-sm"
+        >
+          <Icons
+            name="i-lucide-box"
+            class="text-primary"
+            size="3xl"
+          />
+          <span class="text-xl font-bold tracking-wider text-foreground">
+            {{ t('login.brandTitle') }}
+          </span>
+          <blockquote class="col-stretch gap-md">
+            <p class="text-lg font-medium leading-relaxed text-foreground/90 lg:text-2xl">
+              "{{ t('login.brandSloganLine1') }}
+              <br />
+              {{ t('login.brandSloganLine2') }}"
             </p>
-          </div>
+            <footer class="text-sm text-muted-foreground">
+              — {{ t('login.brandQuoteAuthor') }}
+            </footer>
+          </blockquote>
+        </div>
 
-          <!-- Quick Fill / Role Switch -->
-          <div class="flex flex-col gap-sm">
-            <div class="text-xs text-muted-foreground">
-              {{ t('login.quickFillTips') }}
-            </div>
-            <div class="row-start gap-xs">
-              <Button
-                size="small"
-                text
-                @click="fillAdminPreset"
-              >
-                <Icons
-                  name="i-lucide-shield-check"
-                  size="sm"
-                  class="mr-xs text-current"
-                />
-                <span class="text-xs">
-                  {{ t('login.quickAdmin') }}
-                </span>
-              </Button>
-              <Button
-                size="small"
-                severity="success"
-                text
-                @click="fillUserPreset"
-              >
-                <Icons
-                  name="i-lucide-user-round"
-                  size="sm"
-                  class="mr-xs text-current"
-                />
-                <span class="text-xs">
-                  {{ t('login.quickUser') }}
-                </span>
-              </Button>
-            </div>
-          </div>
-
-          <ProForm
-            :key="locale"
-            ref="formRef"
-            :schema="loginSchema"
-            :validate-on="'submit'"
-            :disabled="loading"
-            @submit="login"
-          >
-            <template #footer="{ formState }">
-              <div class="mt-xl">
-                <Button
-                  class="w-full"
-                  :label="t('login.submit')"
-                  :loading="formState.submitting || loading"
-                  size="large"
-                  @click="handleLoginSubmit"
-                />
+        <div
+          class="col-stretch mx-auto w-[max(320px,min(92vw,440px))] shrink-0 gap-md md:w-[max(340px,min(88vw,440px))] lg:mx-0 lg:w-[max(360px,min(45vw,520px))] lg:gap-lg"
+        >
+          <section class="glass-card z-content w-full text-card-foreground">
+            <div class="col-stretch gap-lg px-sm py-lg lg:gap-xl">
+              <div class="col-stretch min-w-0 gap-sm text-left">
+                <h2
+                  class="text-pretty text-2xl font-bold tracking-tight text-foreground sm:text-3xl"
+                >
+                  {{ t('login.heading') }}
+                </h2>
+                <p class="text-sm leading-relaxed text-muted-foreground">
+                  {{ t('login.description') }}
+                </p>
               </div>
-            </template>
-          </ProForm>
 
-          <div class="flex flex-col gap-md text-center">
-            <div class="text-muted-foreground text-sm">
-              {{ t('login.noAccount') }}
-              <a
-                href="#"
-                class="text-primary hover:underline"
-              >
-                {{ t('login.register') }}
-              </a>
+              <div class="col-stretch gap-sm">
+                <div class="text-xs text-muted-foreground">
+                  {{ t('login.quickFillTips') }}
+                </div>
+                <div class="row-start gap-xs">
+                  <Button
+                    size="small"
+                    text
+                    @click="fillAdminPreset"
+                  >
+                    <Icons
+                      name="i-lucide-shield-check"
+                      size="sm"
+                      class="mr-xs text-current"
+                    />
+                    <span class="text-xs">
+                      {{ t('login.quickAdmin') }}
+                    </span>
+                  </Button>
+                  <Button
+                    size="small"
+                    severity="success"
+                    text
+                    @click="fillUserPreset"
+                  >
+                    <Icons
+                      name="i-lucide-user-round"
+                      size="sm"
+                      class="mr-xs text-current"
+                    />
+                    <span class="text-xs">
+                      {{ t('login.quickUser') }}
+                    </span>
+                  </Button>
+                </div>
+              </div>
+
+              <div class="col-stretch mt-md">
+                <ProForm
+                  :key="locale"
+                  ref="formRef"
+                  :schema="loginSchema"
+                  :validate-on="'submit'"
+                  :disabled="loading"
+                  @submit="login"
+                >
+                  <template #footer="{ formState }">
+                    <div class="mt-xl">
+                      <Button
+                        class="w-full"
+                        :label="t('login.submit')"
+                        :loading="formState.submitting || loading"
+                        size="large"
+                        @click="handleLoginSubmit"
+                      />
+                    </div>
+                  </template>
+                </ProForm>
+              </div>
+
+              <div class="col-center gap-md text-center">
+                <div class="text-sm text-muted-foreground">
+                  {{ t('login.noAccount') }}
+                  <a
+                    href="#"
+                    class="text-primary hover:underline"
+                  >
+                    {{ t('login.register') }}
+                  </a>
+                </div>
+                <p class="mt-[var(--spacing-2xl)] text-xs text-muted-foreground/50">
+                  {{ loginFooterText }}
+                </p>
+              </div>
             </div>
-            <p class="text-muted-foreground/50 text-xs mt-[var(--spacing-2xl)]">
-              {{ loginFooterText }}
-            </p>
+          </section>
+
+          <div class="row-center gap-lg text-sm">
+            <a
+              href="#"
+              class="text-muted-foreground transition-colors duration-sm ease-out hover:text-foreground"
+            >
+              {{ t('login.helpCenter') }}
+            </a>
+            <a
+              href="#"
+              class="text-muted-foreground transition-colors duration-sm ease-out hover:text-foreground"
+            >
+              {{ t('login.privacyPolicy') }}
+            </a>
           </div>
         </div>
-      </section>
+      </div>
     </div>
   </div>
 </template>
