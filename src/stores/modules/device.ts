@@ -14,6 +14,16 @@ const RESIZE_INTERVAL = 300
 /** 最后一次原生 resize 事件后多久视为"拖拽结束" */
 const RESIZE_IDLE_TIMEOUT = 150
 
+/**
+ * iOS Safari：地址栏显隐 / 滚动锁定（blockScroll）常引起仅纵向 innerHeight 抖动。
+ * 若宽度未变且高度变化小于此阈值，视为噪声，不触发 `isResizing`（避免 app-resizing 误杀全局过渡）。
+ */
+const VIEWPORT_HEIGHT_NOISE_THRESHOLD_PX = 100
+
+/** 供 markResizing 与上一次原生 resize 比对（独立于 store，避免与 debounce 的 detectViewportInfo 竞态） */
+let lastResizeViewportWidth = typeof window === 'undefined' ? 0 : window.innerWidth
+let lastResizeViewportHeight = typeof window === 'undefined' ? 0 : window.innerHeight
+
 /** 模块级缓存：断点按阈值降序排列，避免每次 resize 重复排序 */
 const SORTED_BREAKPOINTS: [string, number][] = [...Object.entries(BREAKPOINTS)].sort(
   (a, b) => b[1] - a[1]
@@ -151,9 +161,28 @@ export const useDeviceStore = defineStore('device', {
       this.initHardwareInfo()
       this.detectViewportInfo()
 
+      lastResizeViewportWidth = window.innerWidth
+      lastResizeViewportHeight = window.innerHeight
+
       // --- isResizing 标记：原生 resize 立即置 true，空闲后恢复 ---
       let resizeIdleTimer: ReturnType<typeof setTimeout> | undefined
       const markResizing = () => {
+        const w = window.innerWidth
+        const h = window.innerHeight
+
+        const widthChanged = w !== lastResizeViewportWidth
+        if (!widthChanged) {
+          const dh = Math.abs(h - lastResizeViewportHeight)
+          if (dh > 0 && dh < VIEWPORT_HEIGHT_NOISE_THRESHOLD_PX) {
+            lastResizeViewportWidth = w
+            lastResizeViewportHeight = h
+            return
+          }
+        }
+
+        lastResizeViewportWidth = w
+        lastResizeViewportHeight = h
+
         this.isResizing = true
         if (resizeIdleTimer !== undefined) clearTimeout(resizeIdleTimer)
         resizeIdleTimer = setTimeout(() => {

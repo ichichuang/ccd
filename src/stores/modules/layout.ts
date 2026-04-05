@@ -10,7 +10,6 @@ import { deepClone } from '@/utils/lodashes'
 import store from '@/stores'
 /** 缓存 deviceStore，避免 effectiveMode getter 每次求值都调用 useDeviceStore() */
 let _deviceStore: ReturnType<typeof useDeviceStore> | null = null
-import { createPiniaEncryptedSerializer } from '@/utils/safeStorage/piniaSerializer'
 import { defineStore } from 'pinia'
 
 type LayoutModuleVisibilityKey =
@@ -474,7 +473,6 @@ export const useLayoutStore = defineStore('layout', {
   persist: {
     key: `${import.meta.env.VITE_PINIA_PERSIST_KEY_PREFIX}-layout`,
     storage: localStorage,
-    serializer: createPiniaEncryptedSerializer(),
     pick: LAYOUT_PERSIST_PICK,
   },
 })
