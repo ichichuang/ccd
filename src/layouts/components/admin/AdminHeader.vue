@@ -25,7 +25,7 @@ import { useUserStore } from '@/stores/modules/user'
 import { useDeviceStore } from '@/stores/modules/device'
 import { useLayoutStore } from '@/stores/modules/layout'
 
-import logoSrc from '@/assets/images/face.png'
+import logoSrc from '@/assets/images/face.webp'
 
 withDefaults(
   defineProps<{

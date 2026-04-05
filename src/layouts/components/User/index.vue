@@ -4,7 +4,7 @@ import Popover from 'primevue/popover'
 import Button from 'primevue/button'
 import { AUTH_ENABLED } from '@/constants/router'
 import { useUserStore } from '@/stores/modules/user'
-import defaultAvatar from '@/assets/images/default-avatar.jpeg'
+import defaultAvatar from '@/assets/images/default-avatar.webp'
 import GlobalSetting from '@/layouts/components/GlobalSetting/index.vue'
 
 const { t } = useI18n()
