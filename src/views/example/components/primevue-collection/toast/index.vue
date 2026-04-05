@@ -4,6 +4,8 @@
  * - 禁用 raw `window.$toast.add/clear/removeGroup`
  * - 统一走内部抽象：`window.$message.*` 与 `window.$toast.*In`
  */
+const pageReady = ref<boolean>(true)
+
 const TOAST_SEVERITIES = [
   { key: 'danger', label: 'Danger', handler: 'dangerIn', severity: 'danger' as const },
   { key: 'success', label: 'Success', handler: 'successIn', severity: 'success' as const },
@@ -61,75 +63,108 @@ function handleMessage(type: (typeof MESSAGE_TYPES)[number]['handler'], withTitl
 </script>
 
 <template>
-  <div class="layout-container">
-    <div class="col-stretch gap-lg p-lg">
-      <section class="material-elevated col-stretch gap-md">
-        <h1 class="text-2xl font-bold text-foreground">Toast & Message 示例（V2）</h1>
-        <p class="text-muted-foreground">
-          当前示例仅保留内部抽象接口：`window.$message.*` 与 `window.$toast.*In`，不再演示 raw
-          `add/clear/removeGroup`。
-        </p>
-      </section>
+  <div
+    class="col-stretch"
+    data-archetype="A1-toolbar-content"
+  >
+    <AnimateWrapper
+      :show="pageReady"
+      enter="fadeInUp"
+      leave="fadeOut"
+    >
+      <div class="col-stretch gap-md min-h-0 min-w-0">
+        <div class="layout-narrow col-stretch gap-md min-w-0">
+          <header class="shrink-0 glass-panel col-stretch gap-md min-w-0">
+            <div class="row-between gap-md min-w-0">
+              <div class="row-start gap-sm min-w-0 flex-wrap">
+                <div class="glass-icon-box shrink-0">
+                  <Icons
+                    name="i-lucide-bell"
+                    size="xl"
+                    class="text-primary"
+                  />
+                </div>
+                <div class="col-stretch gap-xs min-w-0">
+                  <div class="row-start gap-xs min-w-0 flex-wrap">
+                    <span class="text-lg font-bold text-foreground text-no-wrap">
+                      Toast Notifications
+                    </span>
+                    <span
+                      class="surface-primary rounded-md px-sm py-xs text-xs font-semibold uppercase"
+                    >
+                      COMPONENT
+                    </span>
+                  </div>
+                  <span class="text-sm text-muted-foreground text-ellipsis-1">
+                    当前示例仅保留内部抽象接口：`window.$message.*` 与 `window.$toast.*In`，不再演示
+                    raw `add/clear/removeGroup`。
+                  </span>
+                </div>
+              </div>
+            </div>
+          </header>
 
-      <section class="material-elevated col-stretch gap-md">
-        <h2 class="text-lg font-semibold">1. Message 居中纯提示（4 种类型）</h2>
-        <div class="col-stretch gap-md">
-          <div
-            v-for="t in MESSAGE_TYPES"
-            :key="t.key"
-            class="row-start flex-wrap gap-md rounded-sm bg-muted p-sm"
-          >
-            <span class="text-muted-foreground text-sm min-w-[var(--spacing-4xl)]">
-              {{ t.label }}:
-            </span>
-            <Button
-              label="纯消息"
-              size="small"
-              :severity="t.severity"
-              outlined
-              @click="handleMessage(t.handler, false)"
-            />
-            <Button
-              label="消息 + 标题"
-              size="small"
-              :severity="t.severity"
-              outlined
-              @click="handleMessage(t.handler, true)"
-            />
-          </div>
-        </div>
-      </section>
+          <section class="material-elevated col-stretch gap-md min-w-0">
+            <h2 class="text-lg font-semibold">1. Message 居中纯提示（4 种类型）</h2>
+            <div class="col-stretch gap-md min-w-0">
+              <div
+                v-for="t in MESSAGE_TYPES"
+                :key="t.key"
+                class="row-start flex-wrap gap-md rounded-sm bg-muted p-sm min-w-0"
+              >
+                <span class="text-muted-foreground text-sm min-w-[var(--spacing-4xl)]">
+                  {{ t.label }}:
+                </span>
+                <Button
+                  label="纯消息"
+                  size="small"
+                  :severity="t.severity"
+                  outlined
+                  @click="handleMessage(t.handler, false)"
+                />
+                <Button
+                  label="消息 + 标题"
+                  size="small"
+                  :severity="t.severity"
+                  outlined
+                  @click="handleMessage(t.handler, true)"
+                />
+              </div>
+            </div>
+          </section>
 
-      <section class="material-elevated col-stretch gap-md">
-        <h2 class="text-lg font-semibold">2. Toast 快捷方法（6 种 severity × 6 种位置）</h2>
-        <div class="col-stretch gap-md">
-          <div
-            v-for="sev in TOAST_SEVERITIES"
-            :key="sev.key"
-            class="row-start flex-wrap gap-md rounded-sm bg-muted p-sm"
-          >
-            <span class="text-muted-foreground text-sm min-w-[var(--spacing-4xl)]">
-              {{ sev.label }}:
-            </span>
-            <Button
-              v-for="pos in TOAST_POSITIONS"
-              :key="pos"
-              :label="POSITION_LABELS[pos]"
-              size="small"
-              :severity="sev.severity"
-              outlined
-              @click="
-                handleSeverityIn(
-                  sev.handler,
-                  pos,
-                  `${sev.label} 提示`,
-                  `位置: ${POSITION_LABELS[pos]}`
-                )
-              "
-            />
-          </div>
+          <section class="material-elevated col-stretch gap-md min-w-0">
+            <h2 class="text-lg font-semibold">2. Toast 快捷方法（6 种 severity × 6 种位置）</h2>
+            <div class="col-stretch gap-md min-w-0">
+              <div
+                v-for="sev in TOAST_SEVERITIES"
+                :key="sev.key"
+                class="row-start flex-wrap gap-md rounded-sm bg-muted p-sm min-w-0"
+              >
+                <span class="text-muted-foreground text-sm min-w-[var(--spacing-4xl)]">
+                  {{ sev.label }}:
+                </span>
+                <Button
+                  v-for="pos in TOAST_POSITIONS"
+                  :key="pos"
+                  :label="POSITION_LABELS[pos]"
+                  size="small"
+                  :severity="sev.severity"
+                  outlined
+                  @click="
+                    handleSeverityIn(
+                      sev.handler,
+                      pos,
+                      `${sev.label} 提示`,
+                      `位置: ${POSITION_LABELS[pos]}`
+                    )
+                  "
+                />
+              </div>
+            </div>
+          </section>
         </div>
-      </section>
-    </div>
+      </div>
+    </AnimateWrapper>
   </div>
 </template>

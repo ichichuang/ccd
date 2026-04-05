@@ -71,27 +71,32 @@ async function onSubmit(values: Record<string, unknown>): Promise<void> {
     data-archetype="A1-toolbar-content"
     class="flex flex-col"
   >
-    <!-- Toolbar: Hero Header (Transparent Root Policy: Inherit canvas) -->
-    <header class="shrink-0 border-border/15">
-      <div class="layout-container py-sm row-center gap-md">
-        <div class="p-md bg-primary/10 rounded-lg shrink-0">
-          <Icons
-            name="i-lucide-puzzle"
-            class="text-primary text-2xl"
-          />
-        </div>
-        <div class="col-stretch gap-xs">
-          <h1 class="text-2xl font-bold text-foreground m-0">ProForm 插件与底层 Hooks</h1>
-          <p class="text-muted-foreground text-sm m-0">
-            演示无头插件系统 (ProFormPlugins.use) 与 useField()
-            组合用法；自定义字段类型注册与双向绑定。
-          </p>
+    <header class="shrink-0 glass-panel col-stretch gap-md min-w-0">
+      <div class="row-between gap-md min-w-0">
+        <div class="row-start gap-sm min-w-0 flex-wrap">
+          <div class="glass-icon-box shrink-0">
+            <Icons
+              name="i-lucide-puzzle"
+              size="xl"
+              class="text-primary"
+            />
+          </div>
+          <div class="col-stretch gap-xs min-w-0">
+            <div class="row-start gap-xs min-w-0 flex-wrap">
+              <span class="text-lg font-bold text-foreground text-no-wrap">ProForm 插件系统</span>
+              <span class="surface-success rounded-md px-sm py-xs text-xs font-semibold uppercase">
+                PRO-FORM
+              </span>
+            </div>
+            <span class="text-sm text-muted-foreground text-ellipsis-1">
+              演示无头插件系统 (ProFormPlugins.use) 与 useField()
+              组合用法；自定义字段类型注册与双向绑定。覆盖能力：ProFormPlugins.use、registerField、自定义字段适配器、useField
+              插槽接入。
+            </span>
+          </div>
         </div>
       </div>
     </header>
-    <div class="shrink-0 px-md py-xs text-xs text-muted-foreground border-border/15">
-      覆盖能力：ProFormPlugins.use、registerField、自定义字段适配器、useField 插槽接入。
-    </div>
 
     <!-- Scrollable content -->
     <CScrollbar class="flex-1 min-h-0">

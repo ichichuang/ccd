@@ -120,23 +120,34 @@ onMounted(() => {
     data-archetype="A1-toolbar-content"
   >
     <div class="col-fill px-md md:px-lg py-md gap-md">
-      <!-- ── Section 1: Hero + Badge ── -->
-      <div class="row-between gap-md shrink-0">
-        <div class="col-stretch gap-xs">
-          <div class="text-lg font-semibold">百万级虚拟网格引擎 Playground</div>
-          <div class="text-muted-foreground text-sm">
-            纯前端内存生成 100,000 行数据，交互式验证虚拟表格的全部 UI 特性
+      <!-- ── Section 1: Glass Header ── -->
+      <header class="shrink-0 glass-panel col-stretch gap-md min-w-0">
+        <div class="row-between gap-md min-w-0">
+          <div class="row-start gap-sm min-w-0 flex-wrap">
+            <div class="glass-icon-box shrink-0">
+              <Icons
+                name="i-lucide-rows-3"
+                size="xl"
+                class="text-primary"
+              />
+            </div>
+            <div class="col-stretch gap-xs min-w-0">
+              <div class="row-start gap-xs min-w-0 flex-wrap">
+                <span class="text-lg font-bold text-foreground text-no-wrap">
+                  ProTable 虚拟滚动
+                </span>
+                <span class="surface-info rounded-md px-sm py-xs text-xs font-semibold uppercase">
+                  PRO-TABLE
+                </span>
+              </div>
+              <span class="text-sm text-muted-foreground text-ellipsis-1">
+                纯前端内存生成 100,000
+                行数据，交互式验证虚拟表格的斑马纹、行悬停、选择模式、对齐方式等全部 UI 特性。
+              </span>
+            </div>
           </div>
         </div>
-        <div class="row-start items-center gap-sm shrink-0">
-          <Badge value="Total Rows: 100,000" />
-          <Badge
-            v-if="isGenerating"
-            severity="secondary"
-            value="Generating..."
-          />
-        </div>
-      </div>
+      </header>
 
       <!-- ── Section 2: Control Panel ── -->
       <section class="material-elevated shrink-0 col-stretch gap-sm">

@@ -155,106 +155,132 @@ const valueOptions = computed(() =>
     value: r.value,
   }))
 )
+
+const pageReady = ref<boolean>(true)
 </script>
 
 <template>
-  <div data-archetype="A1-toolbar-content">
-    <CScrollbar>
-      <div class="layout-narrow col-stretch gap-md">
-        <header class="row-between gap-md col-stretch mb-md sm:flex-row sm:items-start">
-          <div class="col-stretch gap-xs min-w-0">
-            <h1 class="text-2xl font-bold text-foreground m-0 tracking-tight">Common Enums</h1>
-            <p class="text-sm text-muted-foreground m-0">
-              Enums 在运行期表现为对象。本页把枚举成员映射成 PrimeVue `Tag` 的
-              severity，帮助理解语义层级。
-            </p>
-          </div>
-
-          <div class="row-center gap-sm shrink-0">
-            <Tag
-              :value="currentRow ? currentRow.key : '—'"
-              :severity="currentRow?.mappedSeverity ?? 'secondary'"
-            />
-          </div>
-        </header>
-
-        <section class="material-elevated col-stretch gap-md">
-          <div class="row-between items-end gap-md flex-wrap">
-            <div class="col-stretch gap-xs">
-              <label class="text-xs text-muted-foreground">枚举选择</label>
-              <Select
-                v-model="selectedEnumId"
-                :options="enumSources.map(s => ({ label: s.label, value: s.id }))"
-                option-label="label"
-                option-value="value"
-                class="w-[260px]"
-              />
-            </div>
-
-            <div class="col-stretch gap-xs flex-1 min-w-0">
-              <label class="text-xs text-muted-foreground">当前成员</label>
-              <Select
-                v-model="currentValue"
-                :options="valueOptions"
-                option-label="label"
-                option-value="value"
-                class="w-full"
-              />
-            </div>
-          </div>
-
-          <Divider />
-
-          <div class="grid grid-cols-1 lg:grid-cols-2 gap-md">
-            <Panel header="Enum Source">
-              <div class="col-stretch gap-xs">
-                <Message severity="warn">
-                  这里展示的是“源代码片段”（静态字符串），用于阅读与对照；不要把展示当作运行期逻辑来源。
-                </Message>
-                <pre class="code-block">
-                  {{ selectedSource.sourceSnippet }}
-                </pre>
-              </div>
-            </Panel>
-
-            <Panel header="Mapping Demo · Enum → Tag(severity)">
-              <div class="col-stretch gap-sm">
-                <DataTable
-                  :value="enumRows"
-                  :paginator="false"
-                  :row-hover="true"
-                  class="w-full"
-                >
-                  <Column
-                    header="Key"
-                    field="key"
-                  ></Column>
-                  <Column
-                    header="Value"
-                    field="value"
-                  ></Column>
-                  <Column header="UI">
-                    <template #body="slotProps">
-                      <Tag
-                        :value="slotProps.data.mappedSeverity"
-                        :severity="slotProps.data.mappedSeverity"
-                        rounded
-                      />
-                    </template>
-                  </Column>
-                </DataTable>
-
-                <div class="row-between">
-                  <span class="text-xs text-muted-foreground">当前映射：</span>
-                  <span class="text-xs text-foreground text-ellipsis-1">
-                    {{ currentRow ? `${currentRow.key} → ${currentRow.mappedSeverity}` : '—' }}
+  <div
+    class="col-stretch"
+    data-archetype="A1-toolbar-content"
+  >
+    <AnimateWrapper
+      :show="pageReady"
+      enter="fadeInUp"
+      leave="fadeOut"
+    >
+      <div class="col-stretch gap-md min-h-0 min-w-0">
+        <div class="layout-narrow col-stretch gap-md min-w-0">
+          <header class="shrink-0 glass-panel col-stretch gap-md min-w-0">
+            <div class="row-between gap-md min-w-0">
+              <div class="row-start gap-sm min-w-0 flex-wrap">
+                <div class="glass-icon-box shrink-0">
+                  <Icons
+                    name="i-lucide-list-ordered"
+                    size="xl"
+                    class="text-primary"
+                  />
+                </div>
+                <div class="col-stretch gap-xs min-w-0">
+                  <div class="row-start gap-xs min-w-0 flex-wrap">
+                    <span class="text-lg font-bold text-foreground text-no-wrap">Enums</span>
+                    <span
+                      class="surface-primary rounded-md px-sm py-xs text-xs font-semibold uppercase"
+                    >
+                      COMMON
+                    </span>
+                  </div>
+                  <span class="text-sm text-muted-foreground text-ellipsis-1">
+                    Enums 在运行期表现为对象。本页把枚举成员映射成 PrimeVue Tag 的
+                    severity，帮助理解语义层级。
                   </span>
                 </div>
               </div>
-            </Panel>
-          </div>
-        </section>
+              <div class="row-center gap-sm shrink-0">
+                <Tag
+                  :value="currentRow ? currentRow.key : '—'"
+                  :severity="currentRow?.mappedSeverity ?? 'secondary'"
+                />
+              </div>
+            </div>
+          </header>
+
+          <section class="material-elevated col-stretch gap-md min-w-0">
+            <div class="row-between items-end gap-md flex-wrap min-w-0">
+              <div class="col-stretch gap-xs min-w-0">
+                <label class="text-xs text-muted-foreground">枚举选择</label>
+                <Select
+                  v-model="selectedEnumId"
+                  :options="enumSources.map(s => ({ label: s.label, value: s.id }))"
+                  option-label="label"
+                  option-value="value"
+                  class="w-[260px]"
+                />
+              </div>
+
+              <div class="col-stretch gap-xs flex-1 min-w-0">
+                <label class="text-xs text-muted-foreground">当前成员</label>
+                <Select
+                  v-model="currentValue"
+                  :options="valueOptions"
+                  option-label="label"
+                  option-value="value"
+                  class="w-full"
+                />
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-md min-w-0">
+              <Panel header="Enum Source">
+                <div class="col-stretch gap-xs min-w-0">
+                  <Message severity="warn">
+                    这里展示的是"源代码片段"（静态字符串），用于阅读与对照；不要把展示当作运行期逻辑来源。
+                  </Message>
+                  <pre class="code-block">
+                    {{ selectedSource.sourceSnippet }}
+                  </pre>
+                </div>
+              </Panel>
+
+              <Panel header="Mapping Demo · Enum → Tag(severity)">
+                <div class="col-stretch gap-sm min-w-0">
+                  <DataTable
+                    :value="enumRows"
+                    :paginator="false"
+                    :row-hover="true"
+                    class="w-full"
+                  >
+                    <Column
+                      header="Key"
+                      field="key"
+                    ></Column>
+                    <Column
+                      header="Value"
+                      field="value"
+                    ></Column>
+                    <Column header="UI">
+                      <template #body="slotProps">
+                        <Tag
+                          :value="slotProps.data.mappedSeverity"
+                          :severity="slotProps.data.mappedSeverity"
+                          rounded
+                        />
+                      </template>
+                    </Column>
+                  </DataTable>
+
+                  <div class="row-between min-w-0">
+                    <span class="text-xs text-muted-foreground">当前映射：</span>
+                    <span class="text-xs text-foreground text-ellipsis-1">
+                      {{ currentRow ? `${currentRow.key} → ${currentRow.mappedSeverity}` : '—' }}
+                    </span>
+                  </div>
+                </div>
+              </Panel>
+            </div>
+          </section>
+        </div>
       </div>
-    </CScrollbar>
+    </AnimateWrapper>
   </div>
 </template>

@@ -247,20 +247,29 @@ onMounted(() => {
     data-archetype="A1-toolbar-content"
     class="layout-full px-md md:px-lg col-stretch gap-sm min-h-0"
   >
-    <!-- Toolbar: Hero Header (Transparent Root Policy: Inherit canvas) -->
-    <header class="shrink-0 border-b-default">
-      <div class="w-full py-sm row-start items-center gap-md">
-        <div class="p-md bg-primary/10 rounded-lg shrink-0">
-          <Icons
-            name="i-lucide-code-xml"
-            class="text-primary text-2xl"
-          />
-        </div>
-        <div class="col-stretch gap-xs">
-          <h1 class="text-2xl font-bold text-foreground m-0">ProTable — API 与事件</h1>
-          <p class="text-muted-foreground text-sm m-0">
-            捕获并展示表格全部内部事件；演示通过 Ref 调用程序化接口。
-          </p>
+    <header class="shrink-0 glass-panel col-stretch gap-md min-w-0">
+      <div class="row-between gap-md min-w-0">
+        <div class="row-start gap-sm min-w-0 flex-wrap">
+          <div class="glass-icon-box shrink-0">
+            <Icons
+              name="i-lucide-webhook"
+              size="xl"
+              class="text-primary"
+            />
+          </div>
+          <div class="col-stretch gap-xs min-w-0">
+            <div class="row-start gap-xs min-w-0 flex-wrap">
+              <span class="text-lg font-bold text-foreground text-no-wrap">
+                ProTable API & Events
+              </span>
+              <span class="surface-info rounded-md px-sm py-xs text-xs font-semibold uppercase">
+                PRO-TABLE
+              </span>
+            </div>
+            <span class="text-sm text-muted-foreground text-ellipsis-1">
+              捕获并展示表格全部内部事件；演示通过 Ref 调用程序化接口。
+            </span>
+          </div>
         </div>
       </div>
     </header>

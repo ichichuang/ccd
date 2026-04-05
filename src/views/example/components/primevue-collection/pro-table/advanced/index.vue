@@ -72,6 +72,34 @@ onMounted(() => {
   >
     <!-- Inner padding wrapper (col-fill preserves height budget; gap-md separates sections) -->
     <div class="col-fill px-md md:px-lg py-md gap-md">
+      <!-- ── Section 0: Glass Header ── -->
+      <header class="shrink-0 glass-panel col-stretch gap-md min-w-0">
+        <div class="row-between gap-md min-w-0">
+          <div class="row-start gap-sm min-w-0 flex-wrap">
+            <div class="glass-icon-box shrink-0">
+              <Icons
+                name="i-lucide-settings-2"
+                size="xl"
+                class="text-primary"
+              />
+            </div>
+            <div class="col-stretch gap-xs min-w-0">
+              <div class="row-start gap-xs min-w-0 flex-wrap">
+                <span class="text-lg font-bold text-foreground text-no-wrap">
+                  ProTable 高级用法
+                </span>
+                <span class="surface-info rounded-md px-sm py-xs text-xs font-semibold uppercase">
+                  PRO-TABLE
+                </span>
+              </div>
+              <span class="text-sm text-muted-foreground text-ellipsis-1">
+                列宽拖拽、列重排、状态记忆、RBAC 权限控制等高级功能演示。
+              </span>
+            </div>
+          </div>
+        </div>
+      </header>
+
       <!-- ── Section 1: Control Panel ── -->
       <!-- LAW 2.3: material-elevated card; shrink-0 stays at content height -->
       <section class="material-elevated shrink-0 col-stretch gap-sm">

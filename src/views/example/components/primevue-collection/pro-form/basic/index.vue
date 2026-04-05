@@ -238,26 +238,32 @@ async function onClickValidateOnly(): Promise<void> {
     data-archetype="A1-toolbar-content"
     class="flex flex-col"
   >
-    <!-- Toolbar: Hero Header (Transparent Root Policy: Inherit canvas) -->
-    <header class="shrink-0 border-primary/20">
-      <div class="layout-container py-sm row-center gap-md">
-        <div class="p-md bg-primary/10 rounded-lg shrink-0">
-          <Icons
-            name="i-lucide-form-input"
-            class="text-primary text-2xl"
-          />
-        </div>
-        <div class="col-stretch gap-xs">
-          <h1 class="text-2xl font-bold text-foreground m-0">ProForm 基础组件与状态联动</h1>
-          <p class="text-muted-foreground text-sm m-0">
-            展示 ProForm 引擎已注册的全部基础字段，并演示全局 readonly / disabled 联动、校验与提交。
-          </p>
+    <header class="shrink-0 glass-panel col-stretch gap-md min-w-0">
+      <div class="row-between gap-md min-w-0">
+        <div class="row-start gap-sm min-w-0 flex-wrap">
+          <div class="glass-icon-box shrink-0">
+            <Icons
+              name="i-lucide-form-input"
+              size="xl"
+              class="text-primary"
+            />
+          </div>
+          <div class="col-stretch gap-xs min-w-0">
+            <div class="row-start gap-xs min-w-0 flex-wrap">
+              <span class="text-lg font-bold text-foreground text-no-wrap">ProForm 基础用法</span>
+              <span class="surface-success rounded-md px-sm py-xs text-xs font-semibold uppercase">
+                PRO-FORM
+              </span>
+            </div>
+            <span class="text-sm text-muted-foreground text-ellipsis-1">
+              展示 ProForm 引擎已注册的全部基础字段，并演示全局 readonly / disabled
+              联动、校验与提交。覆盖能力：全部内置字段、全局
+              readonly/disabled、提交与校验、实时状态观测。
+            </span>
+          </div>
         </div>
       </div>
     </header>
-    <div class="shrink-0 px-md py-xs text-xs text-muted-foreground border-border/15">
-      覆盖能力：全部内置字段、全局 readonly/disabled、提交与校验、实时状态观测。
-    </div>
 
     <!-- Content: split layout (form + JSON preview) -->
     <div class="flex-1 min-h-0">

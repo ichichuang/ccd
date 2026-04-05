@@ -360,27 +360,32 @@ async function onSubmit(label: string, values: Record<string, unknown>): Promise
     data-archetype="A1-toolbar-content"
     class="flex flex-col"
   >
-    <!-- Toolbar: Hero Header (Transparent Root Policy: Inherit canvas) -->
-    <header class="shrink-0 border-primary/20">
-      <div class="layout-container py-sm row-center gap-md">
-        <div class="p-md bg-primary/10 rounded-lg shrink-0">
-          <Icons
-            name="i-lucide-layout-panel-top"
-            class="text-primary text-2xl"
-          />
-        </div>
-        <div class="col-stretch gap-xs">
-          <h1 class="text-2xl font-bold text-foreground m-0">ProForm 布局、分组与向导</h1>
-          <p class="text-muted-foreground text-sm m-0">
-            演示六种分组容器：Card 卡片、Collapse 折叠、Tabs 标签页、Step 向导、Group 纯分组与
-            Section 区块。同时涵盖响应式栅格 (span xs/sm/lg) 与排版引擎 (layoutMode/labelAlign)。
-          </p>
+    <header class="shrink-0 glass-panel col-stretch gap-md min-w-0">
+      <div class="row-between gap-md min-w-0">
+        <div class="row-start gap-sm min-w-0 flex-wrap">
+          <div class="glass-icon-box shrink-0">
+            <Icons
+              name="i-lucide-group"
+              size="xl"
+              class="text-primary"
+            />
+          </div>
+          <div class="col-stretch gap-xs min-w-0">
+            <div class="row-start gap-xs min-w-0 flex-wrap">
+              <span class="text-lg font-bold text-foreground text-no-wrap">ProForm 分组布局</span>
+              <span class="surface-success rounded-md px-sm py-xs text-xs font-semibold uppercase">
+                PRO-FORM
+              </span>
+            </div>
+            <span class="text-sm text-muted-foreground text-ellipsis-1">
+              演示六种分组容器：Card 卡片、Collapse 折叠、Tabs 标签页、Step 向导、Group 纯分组与
+              Section 区块。覆盖能力：card/collapse/tabs/step/group/section
+              六类容器、向导式组织与响应式布局。
+            </span>
+          </div>
         </div>
       </div>
     </header>
-    <div class="shrink-0 px-md py-xs text-xs text-muted-foreground border-border/15">
-      覆盖能力：card/collapse/tabs/step/group/section 六类容器、向导式组织与响应式布局。
-    </div>
 
     <!-- Scrollable content -->
     <CScrollbar class="col-fill">

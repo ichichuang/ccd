@@ -118,11 +118,29 @@ function jumpTo(routeName: string): void {
     data-archetype="A1-toolbar-content"
     class="flex flex-col"
   >
-    <header class="shrink-0 border-border/20 px-md py-sm">
-      <h1 class="text-lg text-foreground m-0">ProForm 全量能力总览</h1>
-      <p class="text-sm text-muted-foreground m-0">
-        这个页面提供能力地图与最小可运行示例，便于快速跳转到专题页深看。
-      </p>
+    <header class="shrink-0 glass-panel col-stretch gap-md min-w-0">
+      <div class="row-between gap-md min-w-0">
+        <div class="row-start gap-sm min-w-0 flex-wrap">
+          <div class="glass-icon-box shrink-0">
+            <Icons
+              name="i-lucide-play"
+              size="xl"
+              class="text-primary"
+            />
+          </div>
+          <div class="col-stretch gap-xs min-w-0">
+            <div class="row-start gap-xs min-w-0 flex-wrap">
+              <span class="text-lg font-bold text-foreground text-no-wrap">ProForm Playground</span>
+              <span class="surface-success rounded-md px-sm py-xs text-xs font-semibold uppercase">
+                PRO-FORM
+              </span>
+            </div>
+            <span class="text-sm text-muted-foreground text-ellipsis-1">
+              这个页面提供能力地图与最小可运行示例，便于快速跳转到专题页深看。
+            </span>
+          </div>
+        </div>
+      </div>
     </header>
 
     <CScrollbar class="col-fill">

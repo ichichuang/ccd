@@ -67,16 +67,6 @@ async function handleRefresh(): Promise<void> {
   tableData.value = makeData()
   isLoading.value = false
 }
-
-const FEATURE_TAGS: { label: string; cls: string }[] = [
-  { label: 'pinned: left  (SKU)', cls: 'bg-primary/15 text-primary' },
-  { label: 'pinned: right  (操作)', cls: 'bg-primary/15 text-primary' },
-  { label: 'headerRender()', cls: 'bg-accent/15 text-accent' },
-  { label: 'render() — TSX', cls: 'bg-accent/15 text-accent' },
-  { label: 'align: right', cls: 'bg-info/15 text-info' },
-  { label: 'minWidth / width', cls: 'bg-info/15 text-info' },
-  { label: 'sortable + filterable', cls: 'bg-success/15 text-success' },
-]
 </script>
 
 <template>
@@ -84,31 +74,26 @@ const FEATURE_TAGS: { label: string; cls: string }[] = [
     data-archetype="A1-toolbar-content"
     class="layout-full px-md md:px-lg col-stretch gap-sm min-h-0"
   >
-    <!-- Toolbar: Hero Header (Transparent Root Policy: Inherit canvas) -->
-    <header class="shrink-0">
-      <div class="w-full py-sm row-start items-center gap-md text-foreground">
-        <div class="p-md bg-primary/10 rounded-lg shrink-0">
-          <Icons
-            name="i-lucide-columns-3"
-            class="text-primary text-2xl"
-          />
-        </div>
-        <div class="col-stretch gap-xs">
-          <h1 class="text-2xl font-bold m-0">ProTable — 列配置全集</h1>
-          <p class="text-muted-foreground text-sm m-0">
-            演示列固定（pinned）、TSX
-            自定义渲染、headerRender、对齐方式（left/center/right）、宽度约束（width/minWidth/maxWidth）与拖拽缩放（resizable）。
-          </p>
-          <div class="row-start items-center gap-xs flex-wrap mt-padding-xs">
-            <span
-              v-for="tag in FEATURE_TAGS"
-              :key="tag.label"
-              :class="[
-                'rounded-md px-sm py-xs text-xs font-semibold uppercase tracking-wider',
-                tag.cls,
-              ]"
-            >
-              {{ tag.label }}
+    <header class="shrink-0 glass-panel col-stretch gap-md min-w-0">
+      <div class="row-between gap-md min-w-0">
+        <div class="row-start gap-sm min-w-0 flex-wrap">
+          <div class="glass-icon-box shrink-0">
+            <Icons
+              name="i-lucide-columns-3"
+              size="xl"
+              class="text-primary"
+            />
+          </div>
+          <div class="col-stretch gap-xs min-w-0">
+            <div class="row-start gap-xs min-w-0 flex-wrap">
+              <span class="text-lg font-bold text-foreground text-no-wrap">ProTable 列定义</span>
+              <span class="surface-info rounded-md px-sm py-xs text-xs font-semibold uppercase">
+                PRO-TABLE
+              </span>
+            </div>
+            <span class="text-sm text-muted-foreground text-ellipsis-1">
+              演示列固定（pinned）、TSX
+              自定义渲染、headerRender、对齐方式、宽度约束与拖拽缩放（resizable）。
             </span>
           </div>
         </div>

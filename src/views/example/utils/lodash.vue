@@ -58,32 +58,56 @@ const debouncedRun = debounceFn((val: string) => {
 function triggerDebounce(): void {
   debouncedRun(debouncePayload.value ?? '')
 }
+
+const pageReady = ref<boolean>(true)
 </script>
 
 <template>
   <div
-    class="col-stretch gap-md"
+    class="col-stretch"
     data-archetype="A1-toolbar-content"
   >
-    <div class="layout-narrow col-stretch gap-md">
-      <div class="material-elevated rounded-xl p-md md:p-xl col-stretch gap-md">
-        <div class="row-between">
-          <div class="col-stretch gap-xs">
-            <h1 class="text-lg font-semibold text-foreground m-0">Lodash Live Tester</h1>
-            <p class="text-sm text-muted-foreground m-0">
-              deepClone / deepEqual / debounceFn 交互演示
-            </p>
-          </div>
-        </div>
+    <AnimateWrapper
+      :show="pageReady"
+      enter="fadeInUp"
+      leave="fadeOut"
+    >
+      <div class="col-stretch gap-md min-h-0 min-w-0">
+        <div class="layout-narrow col-stretch gap-md min-w-0">
+          <header class="shrink-0 glass-panel col-stretch gap-md min-w-0">
+            <div class="row-between gap-md min-w-0">
+              <div class="row-start gap-sm min-w-0 flex-wrap">
+                <div class="glass-icon-box shrink-0">
+                  <Icons
+                    name="i-lucide-package"
+                    size="xl"
+                    class="text-primary"
+                  />
+                </div>
+                <div class="col-stretch gap-xs min-w-0">
+                  <div class="row-start gap-xs min-w-0 flex-wrap">
+                    <span class="text-lg font-bold text-foreground text-no-wrap">
+                      Lodash Utilities
+                    </span>
+                    <span
+                      class="surface-info rounded-md px-sm py-xs text-xs font-semibold uppercase"
+                    >
+                      UTIL
+                    </span>
+                  </div>
+                  <span class="text-sm text-muted-foreground text-ellipsis-1">
+                    deepClone / deepEqual / debounceFn 交互演示
+                  </span>
+                </div>
+              </div>
+            </div>
+          </header>
 
-        <Divider />
-
-        <section class="col-stretch gap-md">
-          <section class="material-elevated rounded-xl p-md col-stretch gap-md">
+          <section class="material-elevated col-stretch gap-md min-w-0">
             <h2 class="text-base font-semibold text-foreground m-0">deepClone</h2>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-md">
-              <div class="col-stretch gap-xs">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-md min-w-0">
+              <div class="col-stretch gap-xs min-w-0">
                 <label class="text-xs text-muted-foreground">Input</label>
                 <Textarea
                   v-model="deepCloneInput"
@@ -93,7 +117,7 @@ function triggerDebounce(): void {
                 />
               </div>
 
-              <div class="col-stretch gap-xs">
+              <div class="col-stretch gap-xs min-w-0">
                 <label class="text-xs text-muted-foreground">Cloned Output</label>
                 <Textarea
                   :model-value="deepCloneOutput"
@@ -105,11 +129,11 @@ function triggerDebounce(): void {
             </div>
           </section>
 
-          <section class="material-elevated rounded-xl p-md col-stretch gap-md">
+          <section class="material-elevated col-stretch gap-md min-w-0">
             <h2 class="text-base font-semibold text-foreground m-0">deepEqual</h2>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-md">
-              <div class="col-stretch gap-xs">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-md min-w-0">
+              <div class="col-stretch gap-xs min-w-0">
                 <label class="text-xs text-muted-foreground">A</label>
                 <Textarea
                   v-model="deepEqualInputA"
@@ -118,7 +142,7 @@ function triggerDebounce(): void {
                   placeholder="JSON A"
                 />
               </div>
-              <div class="col-stretch gap-xs">
+              <div class="col-stretch gap-xs min-w-0">
                 <label class="text-xs text-muted-foreground">B</label>
                 <Textarea
                   v-model="deepEqualInputB"
@@ -134,11 +158,11 @@ function triggerDebounce(): void {
             </Message>
           </section>
 
-          <section class="material-elevated rounded-xl p-md col-stretch gap-md">
+          <section class="material-elevated col-stretch gap-md min-w-0">
             <h2 class="text-base font-semibold text-foreground m-0">debounceFn</h2>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-md">
-              <div class="col-stretch gap-xs">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-md min-w-0">
+              <div class="col-stretch gap-xs min-w-0">
                 <label class="text-xs text-muted-foreground">Payload</label>
                 <InputText
                   v-model="debouncePayload"
@@ -146,9 +170,9 @@ function triggerDebounce(): void {
                 />
               </div>
 
-              <div class="col-stretch gap-xs">
+              <div class="col-stretch gap-xs min-w-0">
                 <label class="text-xs text-muted-foreground">Result</label>
-                <div class="row-start gap-sm flex-wrap">
+                <div class="row-start gap-sm flex-wrap min-w-0">
                   <Tag
                     :value="`count=${debounceCount}`"
                     severity="info"
@@ -167,11 +191,11 @@ function triggerDebounce(): void {
               @click="triggerDebounce"
             />
             <p class="text-xs text-muted-foreground m-0">
-              连续点击会被“抖动合并”：只有最后一次在等待 500ms 后才会真正更新 count。
+              连续点击会被"抖动合并"：只有最后一次在等待 500ms 后才会真正更新 count。
             </p>
           </section>
-        </section>
+        </div>
       </div>
-    </div>
+    </AnimateWrapper>
   </div>
 </template>

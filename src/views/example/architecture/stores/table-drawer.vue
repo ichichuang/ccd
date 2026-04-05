@@ -39,6 +39,8 @@ const sampleData: SampleRow[] = [
 
 const tableDrawerStore = useTableDrawerStore()
 
+const pageReady = ref<boolean>(true)
+
 const selectedRow = computed(() => tableDrawerStore.selectedRow as SampleRow | null)
 
 function openRow(row: SampleRow): void {
@@ -52,78 +54,110 @@ function closeDrawer(): void {
 
 <template>
   <div
-    class="animate__animated animate__fadeIn col-stretch gap-md"
+    class="col-stretch"
     data-archetype="A4-table-drawer"
   >
-    <div class="layout-narrow col-stretch gap-md">
-      <section class="material-elevated col-stretch gap-md">
-        <div class="row-between">
-          <div class="col-stretch gap-xs">
-            <h2 class="text-lg font-semibold text-foreground m-0">TableDrawer Store</h2>
+    <AnimateWrapper
+      :show="pageReady"
+      enter="fadeInUp"
+      leave="fadeOut"
+    >
+      <div class="col-stretch gap-md min-h-0 min-w-0">
+        <div class="layout-narrow col-stretch gap-md min-w-0">
+          <header class="shrink-0 glass-panel col-stretch gap-md min-w-0">
+            <div class="row-between gap-md min-w-0">
+              <div class="row-start gap-sm min-w-0 flex-wrap">
+                <div class="glass-icon-box shrink-0">
+                  <Icons
+                    name="i-lucide-panel-right"
+                    size="xl"
+                    class="text-primary"
+                  />
+                </div>
+                <div class="col-stretch gap-xs min-w-0">
+                  <div class="row-start gap-xs min-w-0 flex-wrap">
+                    <span class="text-lg font-bold text-foreground text-no-wrap">
+                      TableDrawer Store
+                    </span>
+                    <span
+                      class="surface-primary rounded-md px-sm py-xs text-xs font-semibold uppercase"
+                    >
+                      STORE
+                    </span>
+                  </div>
+                  <span class="text-sm text-muted-foreground text-ellipsis-1">
+                    A4 页面状态管理 — 行点击触发 openDrawer()，关闭按钮调用 closeDrawer()
+                  </span>
+                </div>
+              </div>
+              <Tag
+                :value="tableDrawerStore.drawerVisible ? 'Drawer Open' : 'Drawer Closed'"
+                :severity="tableDrawerStore.drawerVisible ? 'success' : 'secondary'"
+                class="shrink-0"
+              />
+            </div>
+          </header>
+
+          <section class="material-elevated col-stretch gap-md min-w-0">
+            <DataTable
+              :value="sampleData"
+              selection-mode="single"
+              size="small"
+              @row-select="e => openRow(e.data)"
+            >
+              <Column
+                field="id"
+                header="ID"
+              />
+              <Column
+                field="name"
+                header="Name"
+              />
+              <Column
+                field="role"
+                header="Role"
+              >
+                <template #body="{ data }">
+                  <Tag
+                    :value="data.role"
+                    :severity="
+                      data.role === 'admin'
+                        ? 'danger'
+                        : data.role === 'editor'
+                          ? 'warn'
+                          : 'secondary'
+                    "
+                  />
+                </template>
+              </Column>
+              <Column
+                field="status"
+                header="Status"
+              >
+                <template #body="{ data }">
+                  <Tag
+                    :value="data.status"
+                    :severity="data.status === 'active' ? 'success' : 'secondary'"
+                  />
+                </template>
+              </Column>
+              <Column
+                field="department"
+                header="Department"
+              />
+            </DataTable>
+
             <p class="text-sm text-muted-foreground m-0">
-              A4 页面状态管理 — 行点击触发 openDrawer()，关闭按钮调用 closeDrawer()
+              点击任意行 →
+              <span class="font-mono text-foreground text-xs">
+                useTableDrawerStore().openDrawer(row)
+              </span>
+              → 侧边抽屉展开展示详情。
             </p>
-          </div>
-          <Tag
-            :value="tableDrawerStore.drawerVisible ? 'Drawer Open' : 'Drawer Closed'"
-            :severity="tableDrawerStore.drawerVisible ? 'success' : 'secondary'"
-          />
+          </section>
         </div>
-        <Divider />
-
-        <DataTable
-          :value="sampleData"
-          selection-mode="single"
-          size="small"
-          @row-select="e => openRow(e.data)"
-        >
-          <Column
-            field="id"
-            header="ID"
-          />
-          <Column
-            field="name"
-            header="Name"
-          />
-          <Column
-            field="role"
-            header="Role"
-          >
-            <template #body="{ data }">
-              <Tag
-                :value="data.role"
-                :severity="
-                  data.role === 'admin' ? 'danger' : data.role === 'editor' ? 'warn' : 'secondary'
-                "
-              />
-            </template>
-          </Column>
-          <Column
-            field="status"
-            header="Status"
-          >
-            <template #body="{ data }">
-              <Tag
-                :value="data.status"
-                :severity="data.status === 'active' ? 'success' : 'secondary'"
-              />
-            </template>
-          </Column>
-          <Column
-            field="department"
-            header="Department"
-          />
-        </DataTable>
-
-        <p class="text-sm text-muted-foreground m-0">
-          点击任意行 →
-          <span class="font-mono text-foreground text-xs">
-            useTableDrawerStore().openDrawer(row)
-          </span>
-          → 侧边抽屉展开展示详情。
-        </p>
-      </section>
-    </div>
+      </div>
+    </AnimateWrapper>
 
     <Drawer
       v-model:visible="tableDrawerStore.drawerVisible"

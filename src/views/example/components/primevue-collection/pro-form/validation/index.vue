@@ -287,26 +287,32 @@ async function onAsyncSubmit(values: Record<string, unknown>): Promise<void> {
     data-archetype="A1-toolbar-content"
     class="flex flex-col"
   >
-    <!-- Toolbar: Hero Header (Transparent Root Policy: Inherit canvas) -->
-    <header class="shrink-0 border-border/15">
-      <div class="layout-container py-sm row-center gap-md">
-        <div class="p-md bg-primary/10 rounded-lg shrink-0">
-          <Icons
-            name="i-lucide-shield-check"
-            class="text-primary text-2xl"
-          />
-        </div>
-        <div class="col-stretch gap-xs">
-          <h1 class="text-2xl font-bold text-foreground m-0">ProForm 校验管线</h1>
-          <p class="text-muted-foreground text-sm m-0">
-            演示同步规则 / 异步 API 检查 / 触发模式（blur · change · submit）全链路校验能力。
-          </p>
+    <header class="shrink-0 glass-panel col-stretch gap-md min-w-0">
+      <div class="row-between gap-md min-w-0">
+        <div class="row-start gap-sm min-w-0 flex-wrap">
+          <div class="glass-icon-box shrink-0">
+            <Icons
+              name="i-lucide-shield-check"
+              size="xl"
+              class="text-primary"
+            />
+          </div>
+          <div class="col-stretch gap-xs min-w-0">
+            <div class="row-start gap-xs min-w-0 flex-wrap">
+              <span class="text-lg font-bold text-foreground text-no-wrap">ProForm 表单验证</span>
+              <span class="surface-success rounded-md px-sm py-xs text-xs font-semibold uppercase">
+                PRO-FORM
+              </span>
+            </div>
+            <span class="text-sm text-muted-foreground text-ellipsis-1">
+              演示同步规则 / 异步 API 检查 / 触发模式（blur / change /
+              submit）全链路校验能力。覆盖能力：sync/async 规则、resolver 跨字段校验、validateOn
+              三种触发模式与结果观测。
+            </span>
+          </div>
         </div>
       </div>
     </header>
-    <div class="shrink-0 px-md py-xs text-xs text-muted-foreground border-border/15">
-      覆盖能力：sync/async 规则、resolver 跨字段校验、validateOn 三种触发模式与结果观测。
-    </div>
 
     <!-- Scrollable content -->
     <CScrollbar class="flex-1 min-h-0">

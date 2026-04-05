@@ -17,6 +17,8 @@ interface WorkingDayDemoResult {
   nextWorkingDay: string
 }
 
+const pageReady = ref<boolean>(true)
+
 const { formatDate, fromNow, now, isInitialized, currentTimezone, DateUtils } = useDateUtils()
 
 // =========================
@@ -170,7 +172,7 @@ const workingBaseDate = computed<ReturnType<typeof DateUtils.safeParse> | null>(
 
 function addWorkingDays(base: DateInput, offset: number): ReturnType<typeof DateUtils.safeParse> {
   // 演示逻辑，建议后续沉淀至 DateUtils：
-  // 这里用 DateUtils.isWorkingDay + dayjs add/subtract 实现“跳过非工作日”的推算，
+  // 这里用 DateUtils.isWorkingDay + dayjs add/subtract 实现"跳过非工作日"的推算，
   // 严禁原生 Date。
   const step = offset >= 0 ? 1 : -1
   let remaining = Math.abs(offset)
@@ -224,185 +226,221 @@ const handleWorkingBaseInputUpdate = (value: string | undefined): void => {
 
 <template>
   <div
-    class="animate__animated animate__fadeIn col-stretch gap-md"
+    class="col-stretch"
     data-archetype="A1-toolbar-content"
   >
-    <div class="layout-narrow col-stretch gap-md">
-      <Card class="material-elevated">
-        <template #title>实时时钟与基础格式化</template>
-        <template #content>
-          <div class="col-stretch gap-sm">
-            <div class="row-between gap-sm">
-              <div class="col-stretch gap-xs">
-                <div class="text-sm text-muted-foreground">当前时区</div>
-                <div class="text-base text-foreground text-ellipsis-1">{{ currentTimezone }}</div>
+    <AnimateWrapper
+      :show="pageReady"
+      enter="fadeInUp"
+      leave="fadeOut"
+    >
+      <div class="col-stretch gap-md min-h-0 min-w-0">
+        <div class="layout-narrow col-stretch gap-md min-w-0">
+          <header class="shrink-0 glass-panel col-stretch gap-md min-w-0">
+            <div class="row-between gap-md min-w-0">
+              <div class="row-start gap-sm min-w-0 flex-wrap">
+                <div class="glass-icon-box shrink-0">
+                  <Icons
+                    name="i-lucide-calendar"
+                    size="xl"
+                    class="text-primary"
+                  />
+                </div>
+                <div class="col-stretch gap-xs min-w-0">
+                  <div class="row-start gap-xs min-w-0 flex-wrap">
+                    <span class="text-lg font-bold text-foreground text-no-wrap">useDateUtils</span>
+                    <span
+                      class="surface-success rounded-md px-sm py-xs text-xs font-semibold uppercase"
+                    >
+                      HOOK
+                    </span>
+                  </div>
+                  <span class="text-sm text-muted-foreground text-ellipsis-1">
+                    实时时钟 / 相对时间 / 时区转换 / 工作日推算
+                  </span>
+                </div>
               </div>
-              <Tag
-                :value="isInitialized ? 'DateUtils 已初始化' : '初始化中…'"
-                :severity="isInitialized ? 'success' : 'warn'"
-              />
-            </div>
-
-            <Divider />
-
-            <div class="col-stretch gap-xs">
-              <div class="row-between gap-sm">
-                <div class="text-sm text-muted-foreground">当前时间（ISO）</div>
-                <div class="text-base text-foreground text-ellipsis-1">{{ nowIso || '—' }}</div>
-              </div>
-              <div class="row-between gap-sm">
-                <div class="text-sm text-muted-foreground">formatDate（YYYY-MM-DD）</div>
-                <div class="text-base text-foreground">{{ displayYmd }}</div>
-              </div>
-              <div class="row-between gap-sm">
-                <div class="text-sm text-muted-foreground">formatDate（YYYY-MM-DD HH:mm:ss）</div>
-                <div class="text-base text-foreground">{{ displayDateTime }}</div>
-              </div>
-              <div class="row-between gap-sm">
-                <div class="text-sm text-muted-foreground">Unix 时间戳（秒）</div>
-                <div class="text-base text-foreground">{{ displayUnixSeconds }}</div>
-              </div>
-            </div>
-          </div>
-        </template>
-      </Card>
-
-      <Card class="material-elevated">
-        <template #title>相对时间引擎</template>
-        <template #content>
-          <div class="col-stretch gap-sm">
-            <div class="text-sm text-muted-foreground">
-              为严格遵守 Date Law，本页不使用原生 Date/Intl，因此用字符串输入 + DateUtils.smartParse
-              解析为 dayjs。
-            </div>
-
-            <div class="row-between gap-sm">
-              <InputText
-                :model-value="relativeInput"
-                placeholder="例如：2026-03-26 12:30:00"
-                class="w-full"
-                @update:model-value="handleRelativeInputUpdate"
-              />
-              <div class="row-center gap-xs">
-                <Button
-                  label="前 3 小时"
-                  severity="secondary"
-                  @click="setRelativePreset('past3h')"
-                />
-                <Button
-                  label="后 2 天"
-                  severity="secondary"
-                  @click="setRelativePreset('future2d')"
-                />
-              </div>
-            </div>
-
-            <Divider />
-
-            <div class="row-between gap-sm">
-              <div class="text-sm text-muted-foreground">解析结果（ISO）</div>
-              <Tag
-                :value="relativeTargetIso || '—'"
-                severity="secondary"
-              />
-            </div>
-            <div class="row-between gap-sm">
-              <div class="text-sm text-muted-foreground">相对时间（fromNow）</div>
-              <Tag
-                :value="relativeDisplay"
-                severity="info"
-              />
-            </div>
-          </div>
-        </template>
-      </Card>
-
-      <Card class="material-elevated">
-        <template #title>时区转换与国际化</template>
-        <template #content>
-          <div class="col-stretch gap-sm">
-            <div class="text-sm text-muted-foreground">
-              通过 DateUtils + dayjs-timezone 的 `timezone`
-              选项格式化同一时刻在不同城市的时间展示（不触碰 Intl）。
-            </div>
-            <Divider />
-            <div class="col-stretch gap-xs">
-              <div
-                v-for="item in timezones"
-                :key="item.tz"
-                class="row-between gap-sm"
-              >
-                <div class="text-sm text-muted-foreground">{{ item.label }}（{{ item.tz }}）</div>
+              <div class="row-center gap-sm min-w-0">
                 <Tag
-                  :value="tzDisplays[item.tz]"
-                  severity="secondary"
+                  :value="isInitialized ? 'DateUtils 已初始化' : '初始化中…'"
+                  :severity="isInitialized ? 'success' : 'warn'"
                 />
               </div>
             </div>
-          </div>
-        </template>
-      </Card>
+          </header>
 
-      <Card class="material-elevated">
-        <template #title>企业级日历推算</template>
-        <template #content>
-          <div class="col-stretch gap-sm">
-            <div class="text-sm text-muted-foreground">
-              展示工作日推算（跳过周末与节假日/调休）。底层判断依赖 DateUtils.isWorkingDay /
-              nextWorkingDay。
-            </div>
+          <Card class="material-elevated">
+            <template #title>实时时钟与基础格式化</template>
+            <template #content>
+              <div class="col-stretch gap-sm min-w-0">
+                <div class="row-between gap-sm min-w-0">
+                  <div class="col-stretch gap-xs min-w-0">
+                    <div class="text-sm text-muted-foreground">当前时区</div>
+                    <div class="text-base text-foreground text-ellipsis-1">
+                      {{ currentTimezone }}
+                    </div>
+                  </div>
+                </div>
 
-            <div class="row-between gap-sm">
-              <InputText
-                :model-value="workingBaseInput"
-                placeholder="基准时间：YYYY-MM-DD HH:mm:ss（留空则用当前时间）"
-                class="w-full"
-                @update:model-value="handleWorkingBaseInputUpdate"
-              />
-              <Button
-                label="设为现在"
-                severity="secondary"
-                @click="setWorkingBaseNow"
-              />
-            </div>
-
-            <div class="row-between gap-sm">
-              <div class="text-sm text-muted-foreground">工作日偏移（天，可负数）</div>
-              <InputNumber
-                v-model="offsetWorkingDays"
-                :min="-30"
-                :max="30"
-              />
-            </div>
-
-            <Divider />
-
-            <div class="col-stretch gap-xs">
-              <div class="row-between gap-sm">
-                <div class="text-sm text-muted-foreground">基准时间</div>
-                <Tag
-                  :value="workingDemo.base"
-                  severity="secondary"
-                />
+                <div class="col-stretch gap-xs min-w-0">
+                  <div class="row-between gap-sm min-w-0">
+                    <div class="text-sm text-muted-foreground">当前时间（ISO）</div>
+                    <div class="text-base text-foreground text-ellipsis-1">{{ nowIso || '—' }}</div>
+                  </div>
+                  <div class="row-between gap-sm min-w-0">
+                    <div class="text-sm text-muted-foreground">formatDate（YYYY-MM-DD）</div>
+                    <div class="text-base text-foreground">{{ displayYmd }}</div>
+                  </div>
+                  <div class="row-between gap-sm min-w-0">
+                    <div class="text-sm text-muted-foreground">
+                      formatDate（YYYY-MM-DD HH:mm:ss）
+                    </div>
+                    <div class="text-base text-foreground">{{ displayDateTime }}</div>
+                  </div>
+                  <div class="row-between gap-sm min-w-0">
+                    <div class="text-sm text-muted-foreground">Unix 时间戳（秒）</div>
+                    <div class="text-base text-foreground">{{ displayUnixSeconds }}</div>
+                  </div>
+                </div>
               </div>
-              <div class="row-between gap-sm">
-                <div class="text-sm text-muted-foreground">偏移结果（+/- 工作日）</div>
-                <Tag
-                  :value="workingDemo.result"
-                  severity="success"
-                />
+            </template>
+          </Card>
+
+          <Card class="material-elevated">
+            <template #title>相对时间引擎</template>
+            <template #content>
+              <div class="col-stretch gap-sm min-w-0">
+                <div class="text-sm text-muted-foreground">
+                  为严格遵守 Date Law，本页不使用原生 Date/Intl，因此用字符串输入 +
+                  DateUtils.smartParse 解析为 dayjs。
+                </div>
+
+                <div class="row-between gap-sm min-w-0">
+                  <InputText
+                    :model-value="relativeInput"
+                    placeholder="例如：2026-03-26 12:30:00"
+                    class="w-full"
+                    @update:model-value="handleRelativeInputUpdate"
+                  />
+                  <div class="row-center gap-xs min-w-0">
+                    <Button
+                      label="前 3 小时"
+                      severity="secondary"
+                      @click="setRelativePreset('past3h')"
+                    />
+                    <Button
+                      label="后 2 天"
+                      severity="secondary"
+                      @click="setRelativePreset('future2d')"
+                    />
+                  </div>
+                </div>
+
+                <div class="row-between gap-sm min-w-0">
+                  <div class="text-sm text-muted-foreground">解析结果（ISO）</div>
+                  <Tag
+                    :value="relativeTargetIso || '—'"
+                    severity="secondary"
+                  />
+                </div>
+                <div class="row-between gap-sm min-w-0">
+                  <div class="text-sm text-muted-foreground">相对时间（fromNow）</div>
+                  <Tag
+                    :value="relativeDisplay"
+                    severity="info"
+                  />
+                </div>
               </div>
-              <div class="row-between gap-sm">
-                <div class="text-sm text-muted-foreground">下一个工作日</div>
-                <Tag
-                  :value="workingDemo.nextWorkingDay"
-                  severity="info"
-                />
+            </template>
+          </Card>
+
+          <Card class="material-elevated">
+            <template #title>时区转换与国际化</template>
+            <template #content>
+              <div class="col-stretch gap-sm min-w-0">
+                <div class="text-sm text-muted-foreground">
+                  通过 DateUtils + dayjs-timezone 的 `timezone`
+                  选项格式化同一时刻在不同城市的时间展示（不触碰 Intl）。
+                </div>
+                <div class="col-stretch gap-xs min-w-0">
+                  <div
+                    v-for="item in timezones"
+                    :key="item.tz"
+                    class="row-between gap-sm min-w-0"
+                  >
+                    <div class="text-sm text-muted-foreground">
+                      {{ item.label }}（{{ item.tz }}）
+                    </div>
+                    <Tag
+                      :value="tzDisplays[item.tz]"
+                      severity="secondary"
+                    />
+                  </div>
+                </div>
               </div>
-            </div>
-          </div>
-        </template>
-      </Card>
-    </div>
+            </template>
+          </Card>
+
+          <Card class="material-elevated">
+            <template #title>企业级日历推算</template>
+            <template #content>
+              <div class="col-stretch gap-sm min-w-0">
+                <div class="text-sm text-muted-foreground">
+                  展示工作日推算（跳过周末与节假日/调休）。底层判断依赖 DateUtils.isWorkingDay /
+                  nextWorkingDay。
+                </div>
+
+                <div class="row-between gap-sm min-w-0">
+                  <InputText
+                    :model-value="workingBaseInput"
+                    placeholder="基准时间：YYYY-MM-DD HH:mm:ss（留空则用当前时间）"
+                    class="w-full"
+                    @update:model-value="handleWorkingBaseInputUpdate"
+                  />
+                  <Button
+                    label="设为现在"
+                    severity="secondary"
+                    @click="setWorkingBaseNow"
+                  />
+                </div>
+
+                <div class="row-between gap-sm min-w-0">
+                  <div class="text-sm text-muted-foreground">工作日偏移（天，可负数）</div>
+                  <InputNumber
+                    v-model="offsetWorkingDays"
+                    :min="-30"
+                    :max="30"
+                  />
+                </div>
+
+                <div class="col-stretch gap-xs min-w-0">
+                  <div class="row-between gap-sm min-w-0">
+                    <div class="text-sm text-muted-foreground">基准时间</div>
+                    <Tag
+                      :value="workingDemo.base"
+                      severity="secondary"
+                    />
+                  </div>
+                  <div class="row-between gap-sm min-w-0">
+                    <div class="text-sm text-muted-foreground">偏移结果（+/- 工作日）</div>
+                    <Tag
+                      :value="workingDemo.result"
+                      severity="success"
+                    />
+                  </div>
+                  <div class="row-between gap-sm min-w-0">
+                    <div class="text-sm text-muted-foreground">下一个工作日</div>
+                    <Tag
+                      :value="workingDemo.nextWorkingDay"
+                      severity="info"
+                    />
+                  </div>
+                </div>
+              </div>
+            </template>
+          </Card>
+        </div>
+      </div>
+    </AnimateWrapper>
   </div>
 </template>

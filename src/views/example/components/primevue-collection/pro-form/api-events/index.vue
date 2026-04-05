@@ -127,12 +127,32 @@ function onClickReset(): void {
     data-archetype="A1-toolbar-content"
     class="flex flex-col"
   >
-    <header class="shrink-0 border-border/20 px-md py-sm">
-      <h1 class="text-lg text-foreground m-0">ProForm API 与事件观测</h1>
-      <p class="text-sm text-muted-foreground m-0">
-        演示 expose
-        API：validate/getValues/setValue/setFieldProps/resetFields/clearValidate/setValidateOn。
-      </p>
+    <header class="shrink-0 glass-panel col-stretch gap-md min-w-0">
+      <div class="row-between gap-md min-w-0">
+        <div class="row-start gap-sm min-w-0 flex-wrap">
+          <div class="glass-icon-box shrink-0">
+            <Icons
+              name="i-lucide-webhook"
+              size="xl"
+              class="text-primary"
+            />
+          </div>
+          <div class="col-stretch gap-xs min-w-0">
+            <div class="row-start gap-xs min-w-0 flex-wrap">
+              <span class="text-lg font-bold text-foreground text-no-wrap">
+                ProForm API & Events
+              </span>
+              <span class="surface-success rounded-md px-sm py-xs text-xs font-semibold uppercase">
+                PRO-FORM
+              </span>
+            </div>
+            <span class="text-sm text-muted-foreground text-ellipsis-1">
+              演示 expose
+              API：validate/getValues/setValue/setFieldProps/resetFields/clearValidate/setValidateOn。
+            </span>
+          </div>
+        </div>
+      </div>
     </header>
 
     <CScrollbar class="col-fill">

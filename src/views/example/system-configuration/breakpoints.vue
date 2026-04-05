@@ -15,6 +15,8 @@ type ProfileCard = {
 
 const deviceStore = useDeviceStore()
 
+const pageReady = ref<boolean>(true)
+
 const sandboxRef = ref<HTMLElement | null>(null)
 const { width: sandboxWidth } = useAppElementSize(sandboxRef, undefined, {
   mode: 'throttle',
@@ -55,129 +57,191 @@ const profileCards: readonly ProfileCard[] = [
 </script>
 
 <template>
-  <div data-archetype="A1-toolbar-content">
-    <CScrollbar>
-      <div class="layout-narrow">
-        <section class="material-elevated col-stretch gap-lg">
-          <header class="col-stretch gap-xs mb-md">
-            <h1 class="text-2xl font-bold text-foreground m-0 tracking-tight">
-              Responsive Engine · Breakpoints Lab
-            </h1>
-            <p class="text-sm text-muted-foreground m-0">
-              SSOT：断点阈值来自 `BREAKPOINTS`；Active 来自 `deviceStore.currentBreakpoint`；Sandbox
-              来自容器实际宽度。
-            </p>
+  <div
+    class="col-stretch"
+    data-archetype="A1-toolbar-content"
+  >
+    <AnimateWrapper
+      :show="pageReady"
+      enter="fadeInUp"
+      leave="fadeOut"
+    >
+      <div class="col-stretch gap-md min-h-0 min-w-0">
+        <div class="layout-narrow col-stretch gap-md min-w-0">
+          <!-- Page header -->
+          <header class="shrink-0 glass-panel col-stretch gap-md min-w-0">
+            <div class="row-between gap-md min-w-0">
+              <div class="col-between min-w-0 flex-1 gap-xs">
+                <div class="flex flex-row flex-wrap items-center justify-start gap-sm min-w-0">
+                  <div class="glass-icon-box shrink-0">
+                    <Icons
+                      name="i-lucide-monitor-smartphone"
+                      size="xl"
+                      class="text-primary"
+                    />
+                  </div>
+                  <div class="flex flex-row flex-wrap items-center justify-start gap-xs min-w-0">
+                    <span class="text-lg font-bold text-foreground text-no-wrap">
+                      Responsive Engine · Breakpoints Lab
+                    </span>
+                    <span
+                      class="surface-info rounded-md px-sm py-xs text-xs font-semibold uppercase"
+                    >
+                      Lab
+                    </span>
+                  </div>
+                </div>
+                <p class="col-start-2 m-0 text-sm text-muted-foreground">
+                  SSOT：断点阈值来自 `BREAKPOINTS`；Active 来自
+                  `deviceStore.currentBreakpoint`；Sandbox 来自容器实际宽度。
+                </p>
+              </div>
+            </div>
           </header>
 
-          <!-- Section 1: SSOT ladder -->
-          <section class="bg-muted/30 dark:bg-muted/20 border border-border/40 rounded-lg p-md">
-            <div class="col-stretch gap-md">
-              <div class="row-between gap-md flex-wrap">
-                <div class="col-stretch gap-xs">
-                  <h2 class="text-lg font-semibold text-foreground m-0">Breakpoint Ruler Bar</h2>
-                  <p class="text-xs text-muted-foreground m-0">
-                    Active：
-                    <span class="font-mono text-foreground">{{ activeDeviceBreakpoint }}</span>
-                  </p>
+          <!-- Section 1: Ruler -->
+          <section class="col-stretch gap-md">
+            <div class="row-between gap-sm min-w-0 shrink-0">
+              <div class="col-between min-w-0 flex-1 gap-xs">
+                <div class="flex flex-row items-center justify-start gap-xs min-w-0">
+                  <Icons
+                    name="i-lucide-ruler"
+                    class="shrink-0 text-muted-foreground"
+                  />
+                  <h2 class="m-0 min-w-0 text-lg font-semibold text-ellipsis-1">
+                    Breakpoint Ruler Bar
+                  </h2>
                 </div>
-                <Tag
-                  value="xs..5xl"
-                  severity="info"
-                />
+                <p class="m-0 min-w-0 text-xs text-muted-foreground">
+                  各档断点阈值与当前 Active 状态对照
+                </p>
               </div>
+              <Tag
+                value="xs..5xl"
+                severity="info"
+              />
+            </div>
+            <div class="glass-card rounded-xl p-md col-stretch gap-md">
+              <div
+                class="rounded-xl bg-muted/25 dark:bg-muted/40 border border-border/40 p-md col-stretch gap-md"
+              >
+                <p class="text-xs text-muted-foreground m-0">
+                  Active：
+                  <span class="font-mono text-foreground">{{ activeDeviceBreakpoint }}</span>
+                </p>
 
-              <div class="row-start items-end gap-xs overflow-x-auto scrollbar-none pb-xs">
-                <div
-                  v-for="key in SIZE_SCALE_KEYS"
-                  :key="key"
-                  class="col-center gap-xs shrink-0 min-w-[var(--spacing-4xl)]"
-                >
-                  <div
-                    class="w-full h-[var(--spacing-xs)] rounded-md border border-border/30 bg-muted/20"
-                    :class="activeDeviceBreakpoint === key ? 'bg-primary/20 border-primary/30' : ''"
-                  />
-                  <Tag
-                    :value="key"
-                    :severity="activeDeviceBreakpoint === key ? 'info' : 'secondary'"
-                  />
-                  <span class="text-xs text-muted-foreground font-mono">
-                    {{ BREAKPOINTS[key] }}px
-                  </span>
-                </div>
+                <CScrollbar class="w-full min-w-0 !h-auto max-h-[var(--spacing-5xl)] pb-xs">
+                  <div class="row-start items-end gap-xs min-w-max">
+                    <div
+                      v-for="key in SIZE_SCALE_KEYS"
+                      :key="key"
+                      class="col-center gap-xs shrink-0 min-w-[var(--spacing-4xl)]"
+                    >
+                      <div
+                        class="w-full h-[var(--spacing-xs)] rounded-md border border-border/30 bg-muted/20"
+                        :class="
+                          activeDeviceBreakpoint === key ? 'bg-primary/20 border-primary/30' : ''
+                        "
+                      />
+                      <Tag
+                        :value="key"
+                        :severity="activeDeviceBreakpoint === key ? 'info' : 'secondary'"
+                      />
+                      <span class="text-xs text-muted-foreground font-mono">
+                        {{ BREAKPOINTS[key] }}px
+                      </span>
+                    </div>
+                  </div>
+                </CScrollbar>
               </div>
             </div>
           </section>
 
-          <!-- Section 2: Resize sandbox -->
-          <section class="bg-muted/30 dark:bg-muted/20 border border-border/40 rounded-lg p-md">
-            <div class="col-stretch gap-md">
-              <div class="row-between gap-md flex-wrap">
-                <div class="col-stretch gap-xs">
-                  <h2 class="text-lg font-semibold text-foreground m-0">Resizable Sandbox</h2>
-                  <p class="text-xs text-muted-foreground m-0">
-                    拖拽右边缘改变容器宽度；Sandbox BP：
-                    <span class="font-mono text-foreground">{{ sandboxBreakpoint }}</span>
-                  </p>
+          <!-- Section 2: Sandbox -->
+          <section class="col-stretch gap-md">
+            <div class="row-between gap-sm min-w-0 shrink-0">
+              <div class="col-between min-w-0 flex-1 gap-xs">
+                <div class="flex flex-row items-center justify-start gap-xs min-w-0">
+                  <Icons
+                    name="i-lucide-move-horizontal"
+                    class="shrink-0 text-muted-foreground"
+                  />
+                  <h2 class="m-0 min-w-0 text-lg font-semibold text-ellipsis-1">
+                    Resizable Sandbox
+                  </h2>
                 </div>
+                <p class="m-0 min-w-0 text-xs text-muted-foreground">
+                  拖拽右边缘改变容器宽度；Sandbox BP 随宽度解析
+                </p>
               </div>
-
+            </div>
+            <div class="glass-card rounded-xl p-md col-stretch gap-md">
               <div
-                ref="sandboxRef"
-                class="resize-x overflow-hidden max-w-full min-w-[320px] w-sidebarWidth rounded-lg bg-background/40 border border-border/30 p-md"
+                class="rounded-xl bg-muted/25 dark:bg-muted/40 border border-border/40 p-md col-stretch gap-md"
               >
-                <div class="row-between gap-md flex-wrap">
-                  <div class="row-start gap-xs">
-                    <Tag
-                      value="Sandbox"
-                      severity="secondary"
-                    />
-                    <Tag
-                      :value="sandboxBreakpoint"
-                      severity="info"
-                    />
-                  </div>
-                  <span class="text-xs text-muted-foreground font-mono shrink-0">
-                    width: {{ sandboxWidthRounded }}px
-                  </span>
-                </div>
+                <p class="text-xs text-muted-foreground m-0">
+                  拖拽右边缘改变容器宽度；Sandbox BP：
+                  <span class="font-mono text-foreground">{{ sandboxBreakpoint }}</span>
+                </p>
 
                 <div
-                  class="grid gap-md"
-                  :class="sandboxGridColsClass"
+                  ref="sandboxRef"
+                  class="resize-x overflow-hidden max-w-full min-w-[320px] w-sidebarWidth rounded-lg bg-background/40 border border-border/30 p-md"
                 >
-                  <div
-                    v-for="card in profileCards"
-                    :key="card.id"
-                    class="interactive-item rounded-lg bg-background/40 border border-border/30 p-md col-stretch gap-xs"
-                  >
-                    <div class="row-between gap-md">
-                      <div class="row-start gap-sm min-w-0">
-                        <Avatar
-                          :label="card.initials"
-                          shape="circle"
-                        />
-                        <div class="col-stretch gap-xs min-w-0">
-                          <span class="text-sm font-semibold text-foreground text-ellipsis-1">
-                            {{ card.name }}
-                          </span>
-                          <span class="text-xs text-muted-foreground text-ellipsis-1">
-                            {{ card.department }}
-                          </span>
-                        </div>
-                      </div>
+                  <div class="row-between gap-md flex-wrap">
+                    <div class="row-start gap-xs">
                       <Tag
-                        :value="card.title"
+                        value="Sandbox"
+                        severity="secondary"
+                      />
+                      <Tag
+                        :value="sandboxBreakpoint"
                         severity="info"
                       />
+                    </div>
+                    <span class="text-xs text-muted-foreground font-mono shrink-0">
+                      width: {{ sandboxWidthRounded }}px
+                    </span>
+                  </div>
+
+                  <div
+                    class="grid gap-md"
+                    :class="sandboxGridColsClass"
+                  >
+                    <div
+                      v-for="card in profileCards"
+                      :key="card.id"
+                      class="interactive-item rounded-lg bg-background/40 border border-border/30 p-md col-stretch gap-xs"
+                    >
+                      <div class="row-between gap-md">
+                        <div class="row-start gap-sm min-w-0">
+                          <Avatar
+                            :label="card.initials"
+                            shape="circle"
+                          />
+                          <div class="col-stretch gap-xs min-w-0">
+                            <span class="text-sm font-semibold text-foreground text-ellipsis-1">
+                              {{ card.name }}
+                            </span>
+                            <span class="text-xs text-muted-foreground text-ellipsis-1">
+                              {{ card.department }}
+                            </span>
+                          </div>
+                        </div>
+                        <Tag
+                          :value="card.title"
+                          severity="info"
+                        />
+                      </div>
                     </div>
                   </div>
                 </div>
               </div>
             </div>
           </section>
-        </section>
+        </div>
       </div>
-    </CScrollbar>
+    </AnimateWrapper>
   </div>
 </template>
 

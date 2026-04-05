@@ -9,43 +9,28 @@ defineOptions({ name: 'ExampleProTableInfinitePage' })
     data-archetype="A1-toolbar-content"
     class="layout-full px-md md:px-lg col-stretch gap-sm min-h-0"
   >
-    <header class="shrink-0">
-      <div class="w-full py-sm row-between gap-md flex-wrap">
-        <div class="row-start items-center gap-md">
-          <div class="p-md bg-primary/10 rounded-lg shrink-0">
+    <header class="shrink-0 glass-panel col-stretch gap-md min-w-0">
+      <div class="row-between gap-md min-w-0">
+        <div class="row-start gap-sm min-w-0 flex-wrap">
+          <div class="glass-icon-box shrink-0">
             <Icons
-              name="i-lucide-arrow-down-to-line"
-              class="text-primary text-2xl"
+              name="i-lucide-infinity"
+              size="xl"
+              class="text-primary"
             />
           </div>
-          <div class="col-stretch gap-xs">
-            <div class="row-start items-center gap-sm flex-wrap">
-              <h1 class="text-2xl font-bold text-foreground m-0">ProTable — 无限加载模式</h1>
-              <span
-                class="bg-accent/15 text-accent rounded-md px-sm py-xs text-xs font-semibold uppercase tracking-wider shrink-0"
-              >
-                Infinite Scroll
+          <div class="col-stretch gap-xs min-w-0">
+            <div class="row-start gap-xs min-w-0 flex-wrap">
+              <span class="text-lg font-bold text-foreground text-no-wrap">ProTable 无限滚动</span>
+              <span class="surface-info rounded-md px-sm py-xs text-xs font-semibold uppercase">
+                PRO-TABLE
               </span>
             </div>
-            <p class="text-muted-foreground text-sm m-0">
-              数据来自本地 Hono
-              <code class="code-inline text-muted-foreground">GET /api/v1/users</code>
-              。滚动到底部自动追加下一页；使用
-              <code class="code-inline text-muted-foreground">api-url</code>
-              与
-              <code class="code-inline text-muted-foreground">request-config.accumulate</code>
-              ，无需手写拼接列表状态。
-            </p>
+            <span class="text-sm text-muted-foreground text-ellipsis-1">
+              数据来自本地 Hono GET /api/v1/users。滚动到底部自动追加下一页；使用 api-url 与
+              request-config.accumulate，无需手写拼接列表状态。
+            </span>
           </div>
-        </div>
-
-        <div class="bg-muted rounded-md px-md py-xs row-start items-center gap-sm shrink-0">
-          <Icons
-            name="i-lucide-layers"
-            size="xs"
-            class="text-accent!"
-          />
-          <span class="text-xs text-muted-foreground">向下滚动加载更多</span>
         </div>
       </div>
     </header>
