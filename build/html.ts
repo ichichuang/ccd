@@ -2,6 +2,23 @@ import type { PluginOption } from 'vite'
 import { brand } from '../src/constants/brand'
 import { THEME_PRESETS, DEFAULT_THEME_NAME } from '../src/constants/theme'
 import { generateThemeVars } from '../src/utils/theme/engine'
+import type { ViteEnv } from './utils'
+
+/**
+ * 从 API 基址生成 preconnect + dns-prefetch（仅绝对 http(s) URL）
+ */
+function buildApiOriginResourceHints(apiBaseUrl: string): string {
+  const trimmed = apiBaseUrl?.trim()
+  if (!trimmed) return ''
+  try {
+    const u = new URL(trimmed)
+    if (u.protocol !== 'http:' && u.protocol !== 'https:') return ''
+    const origin = u.origin
+    return `    <link rel="preconnect" href="${origin}" crossorigin />\n    <link rel="dns-prefetch" href="${origin}" />\n\n`
+  } catch {
+    return ''
+  }
+}
 
 /**
  * 在构建/开发时向 index.html 注入品牌配置
@@ -10,7 +27,9 @@ import { generateThemeVars } from '../src/utils/theme/engine'
  * Phase 13.33: 注入主题变量 fallback，消除 First Paint 时的 CSS 变量真空期 (Anti-FOIT)
  * 数据源：src/constants/theme.ts，无硬编码颜色
  */
-export function configHtmlPlugin(): PluginOption {
+export function configHtmlPlugin(env: ViteEnv): PluginOption {
+  const resourceHints = buildApiOriginResourceHints(env.VITE_API_BASE_URL ?? '')
+
   return {
     name: 'vite:html-inject',
     transformIndexHtml(html: string) {
@@ -22,8 +41,8 @@ ${themeFallback}
     </style>
 
 `
-      // 注入到 <title> 之后、第一个 <script> 之前
-      html = html.replace(/(<title>[^<]+<\/title>\s*)/, `$1\n${themeFallbackBlock}`)
+      // 注入到 <title> 之后：API 资源提示（可选）+ theme fallback
+      html = html.replace(/(<title>[^<]+<\/title>\s*)/, `$1\n${resourceHints}${themeFallbackBlock}`)
 
       // 2. 品牌配置占位符替换
       return html

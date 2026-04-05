@@ -60,8 +60,8 @@ export function getPluginsList(env: ViteEnv, command: 'build' | 'serve'): Plugin
         width: 60,
       }),
 
-    // ✅ HTML 注入品牌配置（来自 src/constants/brand.ts）
-    configHtmlPlugin(),
+    // ✅ HTML 注入品牌配置 + API 域名资源提示（VITE_API_BASE_URL）
+    configHtmlPlugin(env),
 
     // 图标示例页列表：从 @iconify-json 与 src/assets/icons 动态生成
     generateIconListsPlugin(),

@@ -159,6 +159,7 @@ export default ({ mode, command }: ConfigEnv): UserConfigExport => {
       chunkSizeWarningLimit: 1500,
       cssCodeSplit: true, // 启用 CSS 代码分割
       assetsInlineLimit: 4096, // < 4kb 转 base64
+      modulePreload: { polyfill: false },
 
       rollupOptions: {
         treeshake: {
@@ -208,10 +209,7 @@ export default ({ mode, command }: ConfigEnv): UserConfigExport => {
               if (id.includes('@primeuix') || id.includes('@primevue/themes'))
                 return 'vendor-primevue-theme'
 
-              // ── 7. 电子表格引擎 ──
-              if (id.includes('xlsx')) return 'vendor-xlsx'
-
-              // ── 8. 工具库（按需拆分，避免污染 vendor-vue） ──
+              // ── 7. 工具库（按需拆分，避免污染 vendor-vue） ──
               if (id.includes('@vueuse') || id.includes('lodash-es')) return 'vendor-utils'
               if (id.includes('dayjs') || id.includes('crypto-es') || id.includes('yup'))
                 return 'vendor-utils'
