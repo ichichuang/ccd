@@ -14,7 +14,9 @@ import {
   getDefaultToolboxConfig,
   getDefaultVisualMapConfig,
 } from './defaults'
-import type { ChartAdvancedConfig } from './types'
+import type { ChartAdvancedConfig, ThemeConfig } from './types'
+import { applyToolboxStyles } from './applyToolboxStyles'
+import { applyVisualMapStyles } from './applyVisualMapStyles'
 
 /**
  * 合并高级配置到 ECharts 选项
@@ -24,7 +26,8 @@ import type { ChartAdvancedConfig } from './types'
 export function mergeAdvancedConfigs(
   option: any,
   advancedConfig?: ChartAdvancedConfig,
-  t?: (key: string) => string
+  t?: (key: string) => string,
+  themeConfig?: ThemeConfig
 ): any {
   if (!advancedConfig || !option || typeof option !== 'object') {
     return option
@@ -56,9 +59,31 @@ export function mergeAdvancedConfigs(
         ? (advancedConfig.toolboxConfig as any)()
         : advancedConfig.toolboxConfig
     if (toolboxConfig && toolboxConfig.show) {
+      const prevToolbox = mergedOption.toolbox ?? {}
+      const baseToolbox = getDefaultToolboxConfig(t)
+      const mergedToolbox = {
+        ...baseToolbox,
+        ...prevToolbox,
+        ...toolboxConfig,
+        iconStyle: {
+          ...baseToolbox.iconStyle,
+          ...prevToolbox.iconStyle,
+          ...toolboxConfig.iconStyle,
+        },
+        emphasis: {
+          ...baseToolbox.emphasis,
+          ...prevToolbox.emphasis,
+          ...toolboxConfig.emphasis,
+        },
+        feature: {
+          ...baseToolbox.feature,
+          ...prevToolbox.feature,
+          ...toolboxConfig.feature,
+        },
+      }
       mergedOption = {
         ...mergedOption,
-        toolbox: { ...getDefaultToolboxConfig(t), ...toolboxConfig },
+        toolbox: themeConfig ? applyToolboxStyles(mergedToolbox, themeConfig) : mergedToolbox,
       }
     }
   }
@@ -114,9 +139,41 @@ export function mergeAdvancedConfigs(
         ? (advancedConfig.visualMapConfig as any)()
         : advancedConfig.visualMapConfig
     if (visualMapConfig && visualMapConfig.show) {
+      const prevVisualMap = mergedOption.visualMap
+      const baseVisualMap = getDefaultVisualMapConfig()
+
+      const mergeVisualMap = (prev: any) => {
+        const mergedVisualMap = {
+          ...baseVisualMap,
+          ...prev,
+          ...visualMapConfig,
+          textStyle: {
+            ...(baseVisualMap.textStyle ?? {}),
+            ...(prev?.textStyle ?? {}),
+            ...(visualMapConfig?.textStyle ?? {}),
+          },
+          inRange: {
+            ...(baseVisualMap.inRange ?? {}),
+            ...(prev?.inRange ?? {}),
+            ...(visualMapConfig?.inRange ?? {}),
+          },
+          outOfRange: {
+            ...(baseVisualMap.outOfRange ?? {}),
+            ...(prev?.outOfRange ?? {}),
+            ...(visualMapConfig?.outOfRange ?? {}),
+          },
+          pieces: visualMapConfig?.pieces ?? prev?.pieces,
+          categories: visualMapConfig?.categories ?? prev?.categories,
+        }
+        return themeConfig ? applyVisualMapStyles(mergedVisualMap, themeConfig) : mergedVisualMap
+      }
+
+      // 兼容 visualMap 为数组（ECharts 允许）
       mergedOption = {
         ...mergedOption,
-        visualMap: { ...getDefaultVisualMapConfig(), ...visualMapConfig },
+        visualMap: Array.isArray(prevVisualMap)
+          ? prevVisualMap.map((vm: any, idx: number) => (idx === 0 ? mergeVisualMap(vm) : vm))
+          : mergeVisualMap(prevVisualMap),
       }
     }
   }
@@ -135,17 +192,37 @@ export function mergeAdvancedConfigs(
     }
   }
 
-  // 合并坐标轴指示器配置
+  // 合并坐标轴指示器配置（深合并，保留 applyTooltipStyles 已注入的 lineStyle/label 等）
   if (advancedConfig.axisPointerConfig) {
     const axisPointerConfig =
       typeof advancedConfig.axisPointerConfig === 'function'
         ? (advancedConfig.axisPointerConfig as any)()
         : { ...getDefaultAxisPointerConfig(), ...advancedConfig.axisPointerConfig }
+    const prevAp = mergedOption.tooltip?.axisPointer ?? {}
     mergedOption = {
       ...mergedOption,
       tooltip: {
         ...mergedOption.tooltip,
-        axisPointer: axisPointerConfig,
+        axisPointer: {
+          ...prevAp,
+          ...axisPointerConfig,
+          lineStyle: {
+            ...prevAp.lineStyle,
+            ...axisPointerConfig?.lineStyle,
+          },
+          crossStyle: {
+            ...prevAp.crossStyle,
+            ...axisPointerConfig?.crossStyle,
+          },
+          shadowStyle: {
+            ...prevAp.shadowStyle,
+            ...axisPointerConfig?.shadowStyle,
+          },
+          label: {
+            ...prevAp.label,
+            ...axisPointerConfig?.label,
+          },
+        },
       },
     }
   }

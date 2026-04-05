@@ -33,7 +33,7 @@ export function applyTooltipStyles(
       },
       axisPointer: {
         lineStyle: {
-          color: withAlpha(config.mutedForeground, 0.5),
+          color: withAlpha(config.accent, 0.5),
           width: config.size.strokeHairline,
         },
         crossStyle: {
@@ -61,7 +61,7 @@ export function applyTooltipStyles(
       ...tooltip.axisPointer,
       lineStyle: {
         ...tooltip.axisPointer?.lineStyle,
-        color: tooltip.axisPointer?.lineStyle?.color ?? withAlpha(config.mutedForeground, 0.5),
+        color: tooltip.axisPointer?.lineStyle?.color ?? withAlpha(config.accent, 0.5),
         width: tooltip.axisPointer?.lineStyle?.width ?? config.size.strokeHairline,
       },
       crossStyle: {

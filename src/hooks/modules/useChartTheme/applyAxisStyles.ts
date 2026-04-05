@@ -15,6 +15,24 @@ export function applyAxisStyles(axis: any, config: ThemeConfig): any {
 
   result = {
     ...result,
+    axisPointer: {
+      ...result.axisPointer,
+      lineStyle: {
+        ...result.axisPointer?.lineStyle,
+        color: result.axisPointer?.lineStyle?.color ?? withAlpha(config.accent, 0.5),
+        width: result.axisPointer?.lineStyle?.width ?? config.size.strokeHairline,
+        type: result.axisPointer?.lineStyle?.type ?? 'dashed',
+      },
+      label: {
+        ...result.axisPointer?.label,
+        backgroundColor:
+          result.axisPointer?.label?.backgroundColor ?? withAlpha(config.accent, 0.92),
+        borderColor: result.axisPointer?.label?.borderColor ?? withAlpha(config.accent, 0.45),
+        borderWidth: result.axisPointer?.label?.borderWidth ?? config.size.strokeHairline,
+        color: result.axisPointer?.label?.color ?? config.primaryForeground,
+        fontSize: result.axisPointer?.label?.fontSize ?? config.size.fontSm,
+      },
+    },
     axisLine: {
       ...result.axisLine,
       lineStyle: {

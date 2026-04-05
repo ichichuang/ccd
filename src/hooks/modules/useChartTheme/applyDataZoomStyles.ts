@@ -30,14 +30,14 @@ export function applyDataZoomStyles(dataZoom: any, config: ThemeConfig): any {
       color: dataZoom.handleStyle?.color ?? config.color.primaryColors[0],
       borderColor: dataZoom.handleStyle?.borderColor ?? config.color.primaryColors[0],
       borderWidth: dataZoom.handleStyle?.borderWidth ?? 2,
-      borderRadius: dataZoom.handleStyle?.borderRadius ?? 4,
+      borderRadius: dataZoom.handleStyle?.borderRadius ?? config.size.radiusSm,
     },
     moveHandleStyle: {
       ...dataZoom.moveHandleStyle,
       color: dataZoom.moveHandleStyle?.color ?? config.color.primaryColors[0],
       borderColor: dataZoom.moveHandleStyle?.borderColor ?? config.color.primaryColors[0],
       borderWidth: dataZoom.moveHandleStyle?.borderWidth ?? 2,
-      borderRadius: dataZoom.moveHandleStyle?.borderRadius ?? 4,
+      borderRadius: dataZoom.moveHandleStyle?.borderRadius ?? config.size.radiusSm,
     },
     dataBackground: {
       ...dataZoom.dataBackground,

@@ -1,6 +1,7 @@
 // ECharts 系列样式边界：参数与 ECharts 系列类型一致，内部使用 any 避免强依赖 echarts 内部类型。
 import type { ThemeConfig } from './types'
 import { withAlpha } from './utils'
+import { DEFAULT_OPACITY_VALUES } from './constants'
 
 /**
  * 通用样式应用函数，用于设置 itemStyle 和 label
@@ -67,32 +68,34 @@ function applyOpacityConfig(series: any, opacityConfig: any): any {
 
   // 透明度配置映射表
   const opacityMap: { [key: string]: number } = {
-    line: opacityConfig.lineArea ?? opacityConfig.area ?? 0.8,
-    area: opacityConfig.area ?? 0.8,
-    bar: opacityConfig.bar ?? 0.8,
-    scatter: opacityConfig.scatter ?? 0.8,
-    effectScatter: opacityConfig.scatter ?? 0.8,
-    radar: opacityConfig.radar ?? 0.8,
-    funnel: opacityConfig.funnel ?? 0.8,
-    gauge: opacityConfig.gauge ?? 0.8,
-    pie: 0.8,
-    heatmap: 0.8,
-    treemap: 0.8,
-    sunburst: 0.8,
-    sankey: 0.8,
-    themeRiver: 0.8,
-    boxplot: 0.8,
-    candlestick: 0.8,
-    graph: 0.8,
-    lines: 0.8,
-    map: 0.8,
-    parallel: 0.8,
-    pictorialBar: opacityConfig.bar ?? 0.8,
-    liquidFill: 0.8,
-    wordCloud: 0.8,
+    line: opacityConfig.lineArea ?? opacityConfig.area ?? DEFAULT_OPACITY_VALUES.area,
+    area: opacityConfig.area ?? DEFAULT_OPACITY_VALUES.area,
+    bar: opacityConfig.bar ?? DEFAULT_OPACITY_VALUES.bar,
+    scatter: opacityConfig.scatter ?? DEFAULT_OPACITY_VALUES.scatter,
+    effectScatter:
+      opacityConfig.effectScatter ?? opacityConfig.scatter ?? DEFAULT_OPACITY_VALUES.effectScatter,
+    radar: opacityConfig.radar ?? DEFAULT_OPACITY_VALUES.radar,
+    funnel: opacityConfig.funnel ?? DEFAULT_OPACITY_VALUES.funnel,
+    gauge: opacityConfig.gauge ?? DEFAULT_OPACITY_VALUES.gauge,
+    // 其它类型在默认 token 中未显式覆盖时，保持原行为（0.8）避免影响既有视觉预期
+    pie: DEFAULT_OPACITY_VALUES.funnel,
+    heatmap: DEFAULT_OPACITY_VALUES.funnel,
+    treemap: DEFAULT_OPACITY_VALUES.funnel,
+    sunburst: DEFAULT_OPACITY_VALUES.funnel,
+    sankey: DEFAULT_OPACITY_VALUES.funnel,
+    themeRiver: DEFAULT_OPACITY_VALUES.funnel,
+    boxplot: DEFAULT_OPACITY_VALUES.funnel,
+    candlestick: DEFAULT_OPACITY_VALUES.funnel,
+    graph: DEFAULT_OPACITY_VALUES.funnel,
+    lines: DEFAULT_OPACITY_VALUES.funnel,
+    map: DEFAULT_OPACITY_VALUES.funnel,
+    parallel: DEFAULT_OPACITY_VALUES.funnel,
+    pictorialBar: opacityConfig.bar ?? DEFAULT_OPACITY_VALUES.bar,
+    liquidFill: DEFAULT_OPACITY_VALUES.funnel,
+    wordCloud: DEFAULT_OPACITY_VALUES.funnel,
   }
 
-  const defaultOpacity = opacityMap[type] ?? 0.8
+  const defaultOpacity = opacityMap[type] ?? DEFAULT_OPACITY_VALUES.bar
 
   // 应用透明度到不同的样式属性
   let result = { ...series }
@@ -206,6 +209,48 @@ function applyOpacityConfig(series: any, opacityConfig: any): any {
 }
 
 /**
+ * 应用 markArea 样式到系列（填充/边框/标签），避免保留 ECharts 默认颜色与尺寸
+ */
+function applyMarkAreaStyles(series: any, config: ThemeConfig): any {
+  const markArea = series?.markArea
+  if (!markArea) return series
+
+  const styled = {
+    ...markArea,
+    itemStyle: {
+      ...markArea.itemStyle,
+      color: markArea.itemStyle?.color ?? withAlpha(config.accent, 0.12),
+      borderColor: markArea.itemStyle?.borderColor ?? withAlpha(config.border, 0.35),
+      borderWidth: markArea.itemStyle?.borderWidth ?? config.size.strokeHairline,
+    },
+    label: {
+      ...markArea.label,
+      color: markArea.label?.color ?? config.foreground,
+      fontSize: markArea.label?.fontSize ?? config.size.fontSm,
+    },
+    emphasis: markArea.emphasis
+      ? {
+          ...markArea.emphasis,
+          itemStyle: {
+            ...markArea.emphasis.itemStyle,
+            color: markArea.emphasis.itemStyle?.color ?? withAlpha(config.accent, 0.18),
+            borderColor: markArea.emphasis.itemStyle?.borderColor ?? withAlpha(config.border, 0.45),
+          },
+          label: {
+            ...markArea.emphasis.label,
+            color: markArea.emphasis.label?.color ?? config.foreground,
+          },
+        }
+      : markArea.emphasis,
+  }
+
+  return {
+    ...series,
+    markArea: styled,
+  }
+}
+
+/**
  * 基础系列样式应用函数（函数式版本）
  */
 export function applySeriesStyles(series: any, index: number, config: ThemeConfig): any {
@@ -240,6 +285,9 @@ export function applySeriesStyles(series: any, index: number, config: ThemeConfi
 
   // 应用透明度配置
   result = applyOpacityConfig(result, config.opacity)
+
+  // 应用 markArea（系列的辅助区间标注）
+  result = applyMarkAreaStyles(result, config)
 
   return result
 }

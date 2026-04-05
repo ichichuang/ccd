@@ -10,6 +10,21 @@ export function applyToolboxStyles(toolbox: any, config: ThemeConfig): any {
     return toolbox
   }
 
+  const applyToolboxFeatureBase = (feature: any): any => {
+    if (!feature || typeof feature !== 'object') return feature
+    return {
+      ...feature,
+      textStyle: {
+        ...feature.textStyle,
+        color: feature.textStyle?.color ?? config.foreground,
+        fontSize: feature.textStyle?.fontSize ?? config.size.fontSm,
+      },
+      backgroundColor: feature.backgroundColor ?? config.card,
+      borderColor: feature.borderColor ?? config.border,
+      borderWidth: feature.borderWidth ?? config.size.strokeHairline,
+    }
+  }
+
   return {
     ...toolbox,
     itemSize: toolbox.itemSize ?? config.size.toolboxItemSize,
@@ -34,15 +49,10 @@ export function applyToolboxStyles(toolbox: any, config: ThemeConfig): any {
         ...toolbox.feature?.saveAsImage,
         backgroundColor: toolbox.feature?.saveAsImage?.backgroundColor ?? config.background,
       },
-      restore: {
-        ...toolbox.feature?.restore,
-      },
-      dataZoom: {
-        ...toolbox.feature?.dataZoom,
-      },
-      brush: {
-        ...toolbox.feature?.brush,
-      },
+      restore: applyToolboxFeatureBase(toolbox.feature?.restore),
+      dataZoom: applyToolboxFeatureBase(toolbox.feature?.dataZoom),
+      reset: applyToolboxFeatureBase(toolbox.feature?.reset),
+      brush: applyToolboxFeatureBase(toolbox.feature?.brush),
     },
   }
 }

@@ -1,7 +1,10 @@
 import { describe, it, expect } from 'vitest'
+import { createPinia, setActivePinia } from 'pinia'
 import type { ThemeConfig } from './types'
 import { DEFAULT_OPACITY_VALUES } from './constants'
 import { applySeriesStyles } from './applySeriesStyles'
+import { applyDataZoomStyles } from './applyDataZoomStyles'
+import { applyVisualMapStyles } from './applyVisualMapStyles'
 
 function mockTheme(overrides: Partial<ThemeConfig['opacity']>): ThemeConfig {
   const metricLadders = {
@@ -144,5 +147,70 @@ describe('applySeriesStyles — bar opacity', () => {
     const config = mockTheme({ bar: 0.2 })
     const out = applySeriesStyles(series, 0, config)
     expect(out.itemStyle?.opacity).toBe(0.5)
+  })
+})
+
+describe('useChartTheme — fusion helpers', () => {
+  it('applyDataZoomStyles should use config.size.radiusSm for handle radius', () => {
+    const config = mockTheme({})
+    const out = applyDataZoomStyles(
+      {
+        handleStyle: {},
+        moveHandleStyle: {},
+      },
+      config
+    )
+    expect(out.handleStyle?.borderRadius).toBe(config.size.radiusSm)
+    expect(out.moveHandleStyle?.borderRadius).toBe(config.size.radiusSm)
+  })
+
+  it('applyVisualMapStyles continuous should write inRange/outOfRange colors', () => {
+    const config = mockTheme({})
+    config.color.primaryColors = ['rgb(1,2,3)']
+    config.color.successColors = ['rgb(4,5,6)']
+    config.color.warnColors = ['rgb(7,8,9)']
+    config.color.dangerColors = ['rgb(10,11,12)']
+
+    const out = applyVisualMapStyles(
+      {
+        type: 'continuous',
+        inRange: {},
+        outOfRange: {},
+      },
+      config
+    )
+
+    expect(out.inRange?.color).toEqual(['rgb(1,2,3)', 'rgb(4,5,6)', 'rgb(7,8,9)', 'rgb(10,11,12)'])
+    expect(out.outOfRange?.color).toEqual([config.mutedForeground])
+    expect(out.color).toBeUndefined()
+  })
+
+  it('mergeAdvancedConfigs should deep-merge toolbox and keep prev itemSize', async () => {
+    const config = mockTheme({})
+    const option = {
+      toolbox: {
+        show: true,
+        itemSize: 9,
+      },
+    }
+
+    const advancedConfig = {
+      toolboxConfig: {
+        show: true,
+      },
+    }
+
+    // mergeAdvancedConfigs 依赖 defaults/chartUtils/sizeStore，需要 active Pinia + localStorage
+    setActivePinia(createPinia())
+    ;(globalThis as any).localStorage = {
+      getItem: () => null,
+      setItem: () => {},
+      removeItem: () => {},
+      clear: () => {},
+    }
+
+    const { mergeAdvancedConfigs } = await import('./mergeAdvancedConfigs')
+    const out = mergeAdvancedConfigs(option, advancedConfig as any, undefined, config)
+    expect(out.toolbox?.itemSize).toBe(9)
   })
 })

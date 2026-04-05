@@ -233,9 +233,9 @@ function applyThemeToOption(
     mergedOption.grid = {
       left: `${themeConfig.gapXs}%`,
       right: `${themeConfig.gapXs}%`,
-      top: '16%',
-      bottom: '4%',
-      backgroundColor: 'transparent',
+      top: `${themeConfig.gapMd}%`,
+      bottom: `${themeConfig.gapXs}%`,
+      backgroundColor: withAlpha(themeConfig.background, 0) ?? 'transparent',
       containLabel: true,
     }
   } else {
@@ -264,6 +264,116 @@ function applyThemeToOption(
       applyAxisStyles(axis, themeConfig)
     )
     mergedOption.yAxis = Array.isArray(mergedOption.yAxis) ? styledYAxis : styledYAxis[0]
+  }
+
+  // 合并 parallelAxis（平行坐标维度轴）
+  if (mergedOption.parallelAxis) {
+    const parallelAxisArray = Array.isArray(mergedOption.parallelAxis)
+      ? mergedOption.parallelAxis
+      : [mergedOption.parallelAxis]
+    const styled = applyStylesToArray(parallelAxisArray, (axis: any) =>
+      applyAxisStyles(axis, themeConfig)
+    )
+    mergedOption.parallelAxis = Array.isArray(mergedOption.parallelAxis) ? styled : styled[0]
+  }
+
+  // 合并 polar（极坐标：angleAxis / radiusAxis）
+  if (mergedOption.polar) {
+    const polarArray = Array.isArray(mergedOption.polar) ? mergedOption.polar : [mergedOption.polar]
+    polarArray.forEach((p: any) => {
+      if (p?.angleAxis) p.angleAxis = applyAxisStyles(p.angleAxis, themeConfig)
+      if (p?.radiusAxis) p.radiusAxis = applyAxisStyles(p.radiusAxis, themeConfig)
+    })
+    mergedOption.polar = Array.isArray(mergedOption.polar) ? polarArray : polarArray[0]
+  }
+
+  // 合并 singleAxis（单轴）
+  if (mergedOption.singleAxis) {
+    const singleAxisArray = Array.isArray(mergedOption.singleAxis)
+      ? mergedOption.singleAxis
+      : [mergedOption.singleAxis]
+    const styled = applyStylesToArray(singleAxisArray, (axis: any) =>
+      applyAxisStyles(axis, themeConfig)
+    )
+    mergedOption.singleAxis = Array.isArray(mergedOption.singleAxis) ? styled : styled[0]
+  }
+
+  // 合并 calendar（月/日/年标签与网格线）
+  if (mergedOption.calendar) {
+    const calendarArray = Array.isArray(mergedOption.calendar)
+      ? mergedOption.calendar
+      : [mergedOption.calendar]
+    const styledCalendars = calendarArray.map((cal: any) => {
+      if (!cal) return cal
+      return {
+        ...cal,
+        itemStyle: {
+          ...cal.itemStyle,
+          // calendar 背景用于“格子”读感：用极弱透明卡片色避免与 canvas 融合丢层次
+          color: cal.itemStyle?.color ?? withAlpha(themeConfig.card, 0.03),
+          borderColor: cal.itemStyle?.borderColor ?? withAlpha(themeConfig.border, 0.22),
+        },
+        splitLine: {
+          ...cal.splitLine,
+          lineStyle: {
+            ...cal.splitLine?.lineStyle,
+            color: cal.splitLine?.lineStyle?.color ?? withAlpha(themeConfig.border, 0.35),
+          },
+        },
+        dayLabel: {
+          ...cal.dayLabel,
+          color: cal.dayLabel?.color ?? themeConfig.foreground,
+          fontSize: cal.dayLabel?.fontSize ?? themeConfig.size.fontSm,
+        },
+        monthLabel: {
+          ...cal.monthLabel,
+          color: cal.monthLabel?.color ?? themeConfig.foreground,
+          fontSize: cal.monthLabel?.fontSize ?? themeConfig.size.fontSm,
+        },
+        yearLabel: {
+          ...cal.yearLabel,
+          color: cal.yearLabel?.color ?? themeConfig.foreground,
+          fontSize: cal.yearLabel?.fontSize ?? themeConfig.size.fontSm,
+        },
+      }
+    })
+    mergedOption.calendar = Array.isArray(mergedOption.calendar)
+      ? styledCalendars
+      : styledCalendars[0]
+  }
+
+  // 合并 geo（地图组件：基础填充色与标签色）
+  if (mergedOption.geo) {
+    const geoArray = Array.isArray(mergedOption.geo) ? mergedOption.geo : [mergedOption.geo]
+    const styledGeos = geoArray.map((g: any) => {
+      if (!g) return g
+      return {
+        ...g,
+        itemStyle: {
+          ...g.itemStyle,
+          areaColor: g.itemStyle?.areaColor ?? withAlpha(themeConfig.card, 0.03),
+        },
+        label: {
+          ...g.label,
+          color: g.label?.color ?? themeConfig.foreground,
+          fontSize: g.label?.fontSize ?? themeConfig.size.fontSm,
+        },
+        regions: Array.isArray(g.regions)
+          ? g.regions.map((r: any) => ({
+              ...r,
+              itemStyle: {
+                ...r.itemStyle,
+                areaColor: r.itemStyle?.areaColor ?? withAlpha(themeConfig.card, 0.03),
+              },
+              label: {
+                ...r.label,
+                color: r.label?.color ?? themeConfig.foreground,
+              },
+            }))
+          : g.regions,
+      }
+    })
+    mergedOption.geo = Array.isArray(mergedOption.geo) ? styledGeos : styledGeos[0]
   }
 
   // 合并雷达坐标系样式（根级别的 radar 配置）
@@ -439,8 +549,106 @@ function applyThemeToOption(
     mergedOption.brush = applyBrushStyles(mergedOption.brush, themeConfig)
   }
 
+  // 合并 timeline 控制器样式（统一文本、控制条、进度线与按钮风格）
+  if (mergedOption.timeline) {
+    const timelineArray = Array.isArray(mergedOption.timeline)
+      ? mergedOption.timeline
+      : [mergedOption.timeline]
+    const styledTimelines = timelineArray.map((tl: any) => {
+      if (!tl) return tl
+      return {
+        ...tl,
+        backgroundColor: tl.backgroundColor ?? withAlpha(themeConfig.card, 0.02),
+        borderColor: tl.borderColor ?? withAlpha(themeConfig.border, 0.35),
+        borderWidth: tl.borderWidth ?? themeConfig.size.strokeHairline,
+        lineStyle: {
+          ...tl.lineStyle,
+          color: tl.lineStyle?.color ?? withAlpha(themeConfig.mutedForeground, 0.45),
+        },
+        itemStyle: {
+          ...tl.itemStyle,
+          color: tl.itemStyle?.color ?? withAlpha(themeConfig.card, 0.05),
+          borderColor: tl.itemStyle?.borderColor ?? withAlpha(themeConfig.border, 0.25),
+        },
+        controlStyle: {
+          ...tl.controlStyle,
+          color: tl.controlStyle?.color ?? withAlpha(themeConfig.accent, 0.18),
+          borderColor: tl.controlStyle?.borderColor ?? withAlpha(themeConfig.accent, 0.5),
+          itemSize: tl.controlStyle?.itemSize ?? themeConfig.size.symbolSm,
+        },
+        checkpointStyle: {
+          ...tl.checkpointStyle,
+          color: tl.checkpointStyle?.color ?? withAlpha(themeConfig.accent, 0.75),
+          borderColor: tl.checkpointStyle?.borderColor ?? withAlpha(themeConfig.accent, 0.85),
+          borderWidth: tl.checkpointStyle?.borderWidth ?? themeConfig.size.strokeHairline,
+        },
+        label: {
+          ...tl.label,
+          color: tl.label?.color ?? themeConfig.foreground,
+          fontSize: tl.label?.fontSize ?? themeConfig.size.fontSm,
+        },
+        progress: {
+          ...tl.progress,
+          lineStyle: {
+            ...tl.progress?.lineStyle,
+            color: tl.progress?.lineStyle?.color ?? withAlpha(themeConfig.accent, 0.65),
+          },
+          itemStyle: {
+            ...tl.progress?.itemStyle,
+            borderColor: tl.progress?.itemStyle?.borderColor ?? withAlpha(themeConfig.accent, 0.65),
+          },
+          label: {
+            ...tl.progress?.label,
+            color: tl.progress?.label?.color ?? themeConfig.foreground,
+            fontSize: tl.progress?.label?.fontSize ?? themeConfig.size.fontSm,
+          },
+        },
+      }
+    })
+
+    mergedOption.timeline = Array.isArray(mergedOption.timeline)
+      ? styledTimelines
+      : styledTimelines[0]
+  }
+
+  // 合并根级 axisPointer（用于 axisPointer.link 联动时的统一指示器外观）
+  if (mergedOption.axisPointer) {
+    const ap: any = mergedOption.axisPointer
+    mergedOption.axisPointer = {
+      ...ap,
+      lineStyle: {
+        ...ap.lineStyle,
+        color: ap.lineStyle?.color ?? withAlpha(themeConfig.mutedForeground, 0.5),
+        width: ap.lineStyle?.width ?? themeConfig.size.strokeHairline,
+        type: ap.lineStyle?.type ?? 'dashed',
+      },
+      crossStyle: {
+        ...ap.crossStyle,
+        color: ap.crossStyle?.color ?? withAlpha(themeConfig.accent, 0.6),
+        width: ap.crossStyle?.width ?? themeConfig.size.strokeHairline,
+      },
+      shadowStyle: {
+        ...ap.shadowStyle,
+        color: ap.shadowStyle?.color ?? withAlpha(themeConfig.mutedForeground, 0.19),
+      },
+      label: {
+        ...ap.label,
+        backgroundColor: ap.label?.backgroundColor ?? withAlpha(themeConfig.card, 0.92),
+        borderColor: ap.label?.borderColor ?? withAlpha(themeConfig.border, 0.45),
+        borderWidth: ap.label?.borderWidth ?? themeConfig.size.strokeHairline,
+        color: ap.label?.color ?? themeConfig.foreground,
+        fontSize: ap.label?.fontSize ?? themeConfig.size.fontSm,
+      },
+    }
+  }
+
   // 合并高级配置（动画、工具箱、标记点等）
-  const finalOption = mergeAdvancedConfigs(mergedOption, advancedConfig, t) as EChartsOption
+  const finalOption = mergeAdvancedConfigs(
+    mergedOption,
+    advancedConfig,
+    t,
+    themeConfig
+  ) as EChartsOption
 
   return finalOption
 }

@@ -1,8 +1,9 @@
-<script setup lang="ts">
+<script setup lang="tsx">
 import type { EChartsOption } from 'echarts'
 import type { ProTableColumn } from '@/components/ProTable'
 import type { FormSchema, FormState } from '@/components/ProForm'
-import { h, resolveComponent } from 'vue'
+import ProForm from '@/components/ProForm/index.vue'
+import Button from 'primevue/button'
 
 defineOptions({ name: 'DashboardGoldenShowcase' })
 
@@ -19,7 +20,7 @@ const kpiCards = [
     label: '总吞吐',
     value: '128.4',
     unit: 'Gbps',
-    icon: 'i-lucide-wave-square',
+    icon: 'i-solar-accumulator-outline',
     surface: 'surface-primary',
     iconColor: 'text-primary',
     trend: '+12.3%',
@@ -83,14 +84,48 @@ const alarmBuckets = ['Core', 'Edge', 'Region', 'Tenant'] as const
 const alarmCounts = [18, 42, 26, 9] as const
 
 const chartsThroughputLatencyOption = computed<EChartsOption>(() => ({
-  tooltip: { trigger: 'axis' },
-  legend: { show: true },
-  xAxis: { type: 'category', data: [...CHART_LABELS] },
+  tooltip: {
+    trigger: 'axis',
+  },
+  legend: {
+    show: true,
+    top: 2,
+    right: 8,
+    orient: 'horizontal',
+    align: 'right',
+    itemGap: 20,
+    padding: [0, 0, 14, 0],
+  },
+  xAxis: { type: 'category', data: [...CHART_LABELS], boundaryGap: false },
   yAxis: { type: 'value' },
-  grid: { left: 10, right: 10, top: 24, bottom: 10 },
+  grid: {
+    left: 12,
+    right: 12,
+    top: 54,
+    bottom: 12,
+    containLabel: true,
+  },
   series: [
-    { name: '吞吐(Gbps)', type: 'line', smooth: true, data: [...throughputSeries] },
-    { name: '延迟(ms)', type: 'line', smooth: true, data: [...latencySeries] },
+    {
+      name: '吞吐(Gbps)',
+      type: 'line',
+      smooth: true,
+      data: [...throughputSeries],
+      symbol: 'circle',
+      symbolSize: 6,
+      showSymbol: true,
+      emphasis: { focus: 'series' },
+    },
+    {
+      name: '延迟(ms)',
+      type: 'line',
+      smooth: true,
+      data: [...latencySeries],
+      symbol: 'circle',
+      symbolSize: 6,
+      showSymbol: true,
+      emphasis: { focus: 'series' },
+    },
   ],
 }))
 
@@ -318,7 +353,8 @@ const alertColumns = computed<ProTableColumn<AlertRow>[]>(() => {
       title: '最后更新',
       field: 'lastSeenAt',
       sortable: true,
-      width: '160px',
+      width: '260px',
+      minWidth: '220px',
       render: ({ row }) => {
         if (!isInitialized.value) return '—'
         return formatI18n(String(row.lastSeenAt), 'datetime') || '—'
@@ -376,8 +412,8 @@ const quickActionSchema = reactive<FormSchema>({
     {
       type: 'card',
       name: 'task_meta',
-      label: '任务创建',
-      layout: { type: 'grid', gap: 'var(--spacing-md)', span: { xs: 12, sm: 6 } },
+      label: '任务信息',
+      layout: { type: 'grid', gap: 'var(--spacing-md)', span: { xs: 12, sm: 12 } },
       children: [
         {
           name: 'taskTitle',
@@ -435,7 +471,7 @@ const quickActionSchema = reactive<FormSchema>({
           component: 'textarea',
           label: '备注',
           span: { xs: 12, sm: 12 },
-          props: { rows: 3, placeholder: '补充上下文（可选）' },
+          props: { rows: 4, placeholder: '补充上下文（可选）' },
         },
       ],
     },
@@ -458,41 +494,59 @@ function handleQuickActionOpen(): void {
     header: 'Quick Action',
     modal: true,
     hideFooter: true,
-    maskClass: 'bg-background/70 backdrop-blur-md',
     contentRenderer: ({ index }) => {
-      return h('div', { class: 'col-stretch gap-md min-w-0' }, [
-        h(
-          resolveComponent('ProForm'),
-          {
-            schema: quickActionSchema,
-            initialValues: quickActionInitialValues,
-            validateOn: 'submit',
-            onSubmit: (values: QuickActionValues) => {
+      return (
+        <div class="layout-full col-stretch gap-sm min-w-0">
+          <p class="text-xs text-muted-foreground leading-relaxed">
+            填写下方字段以模拟创建一条战术任务；提交后关闭弹窗。
+          </p>
+          <ProForm
+            schema={quickActionSchema}
+            initialValues={quickActionInitialValues}
+            validateOn="submit"
+            onSubmit={(values: QuickActionValues) => {
               void values
               closeDialogByIndex(index, { command: 'sure' })
-            },
-          },
-          {
-            footer: (slotProps: {
-              formState: FormState<QuickActionValues>
-              submit: () => Promise<void>
-            }) =>
-              h('div', { class: 'row-end gap-sm pt-sm border-t-default border-border/15 mt-md' }, [
-                h(resolveComponent('Button'), {
-                  label: '创建任务',
-                  icon: 'i-lucide-send',
-                  severity: 'primary',
-                  size: 'small',
-                  loading: slotProps.formState.submitting,
-                  disabled: slotProps.formState.submitting,
-                  onClick: () => {
-                    void slotProps.submit()
-                  },
-                }),
-              ]),
-          }
-        ),
-      ])
+            }}
+            v-slots={{
+              footer: (slotProps: {
+                formState: FormState<QuickActionValues>
+                submit: () => Promise<void>
+              }) => (
+                <div class="row-between gap-sm pt-sm border-t-default border-border/15 mt-md">
+                  <span class="text-xs text-muted-foreground">必填项已标注 *</span>
+                  <div class="row-end gap-sm shrink-0">
+                    <Button
+                      type="button"
+                      label="取消"
+                      severity="secondary"
+                      outlined
+                      size="small"
+                      disabled={slotProps.formState.submitting}
+                      class="duration-sm"
+                      onClick={() => {
+                        closeDialogByIndex(index)
+                      }}
+                    />
+                    <Button
+                      type="button"
+                      label="创建任务"
+                      icon="i-lucide-send"
+                      severity="primary"
+                      size="small"
+                      loading={slotProps.formState.submitting}
+                      disabled={slotProps.formState.submitting}
+                      onClick={() => {
+                        void slotProps.submit()
+                      }}
+                    />
+                  </div>
+                </div>
+              ),
+            }}
+          />
+        </div>
+      )
     },
   })
 }
@@ -527,9 +581,7 @@ function handleQuickActionOpen(): void {
                   <span class="text-lg font-bold text-foreground text-no-wrap">
                     Tactical Command Console
                   </span>
-                  <span
-                    class="surface-info rounded-md px-sm py-xs text-xs font-semibold uppercase tracking-wider"
-                  >
+                  <span class="surface-info rounded-md px-sm py-xs text-xs font-semibold uppercase">
                     Live Mock
                   </span>
                 </div>
@@ -542,7 +594,6 @@ function handleQuickActionOpen(): void {
             <Button
               v-auth="['example:architecture:write']"
               label="Quick Action"
-              icon="i-lucide-flash"
               severity="primary"
               size="small"
               class="shrink-0 interaction-shrink"
@@ -592,7 +643,7 @@ function handleQuickActionOpen(): void {
         <section class="grid grid-cols-12 gap-md min-w-0">
           <!-- Throughput & Latency (8 cols on xl) -->
           <div
-            class="col-span-12 xl:col-span-8 material-elevated col-stretch gap-sm min-w-0 min-h-[300px] !overflow-visible"
+            class="col-span-12 xl:col-span-8 material-elevated col-stretch gap-sm min-h-[300px] !overflow-visible"
           >
             <div class="row-between gap-sm min-w-0 shrink-0">
               <div class="row-start gap-xs min-w-0">
@@ -609,7 +660,7 @@ function handleQuickActionOpen(): void {
                 Hourly
               </span>
             </div>
-            <div class="col-fill min-w-0">
+            <div class="col-fill min-w-0 !overflow-visible">
               <UseEcharts
                 :option="chartsThroughputLatencyOption"
                 :auto-resize="true"
@@ -638,7 +689,7 @@ function handleQuickActionOpen(): void {
                   Buckets
                 </span>
               </div>
-              <div class="col-fill min-w-0">
+              <div class="col-fill min-w-0 !overflow-visible">
                 <UseEcharts
                   :option="chartsAlarmDistributionOption"
                   :auto-resize="true"
@@ -667,7 +718,7 @@ function handleQuickActionOpen(): void {
                   Live
                 </span>
               </div>
-              <div class="col-fill min-w-0">
+              <div class="col-fill min-w-0 !overflow-visible">
                 <UseEcharts
                   :option="chartsNodeDistributionOption"
                   :auto-resize="true"
@@ -822,7 +873,7 @@ function handleQuickActionOpen(): void {
              Section 4: Alerts Table — FULL WIDTH (独占一行)
              material-solid + CScrollbar + ProTable
              ═══════════════════════════════════════════════════════════════════ -->
-        <section class="material-solid col-stretch gap-md min-w-0">
+        <section class="material-solid col-stretch p-md gap-md min-w-0">
           <div class="row-between gap-md min-w-0 shrink-0">
             <div class="row-start gap-sm min-w-0">
               <div class="glass-icon-box shrink-0">
@@ -844,19 +895,17 @@ function handleQuickActionOpen(): void {
             </span>
           </div>
 
-          <CScrollbar class="col-fill min-w-0">
-            <div class="min-w-0">
-              <ProTable
-                :columns="alertColumns"
-                :data="mockRows"
-                row-key="id"
-                height-mode="auto"
-                :pagination="false"
-                :show-toolbar="false"
-                :loading="false"
-              />
-            </div>
-          </CScrollbar>
+          <div class="min-w-0">
+            <ProTable
+              :columns="alertColumns"
+              :data="mockRows"
+              row-key="id"
+              height-mode="auto"
+              :pagination="false"
+              :show-toolbar="false"
+              :loading="false"
+            />
+          </div>
         </section>
 
         <!-- ═══════════════════════════════════════════════════════════════════

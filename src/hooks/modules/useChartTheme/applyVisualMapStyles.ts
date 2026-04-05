@@ -10,26 +10,37 @@ export function applyVisualMapStyles(visualMap: any, config: ThemeConfig): any {
     return visualMap
   }
 
-  // 如果用户未提供 color，使用架构配色生成连续/分段颜色数组
-  let colorArray = visualMap.color
-  if (!colorArray || (Array.isArray(colorArray) && colorArray.length === 0)) {
-    if (visualMap.type === 'continuous') {
-      // 连续型：使用 primary -> success -> warn -> danger 渐变
-      colorArray = [
-        config.color.primaryColors[0],
-        config.color.successColors[0],
-        config.color.warnColors[0],
-        config.color.dangerColors[0],
-      ]
-    } else {
-      // 分段型：使用调色盘前 N 个颜色
-      colorArray = config.color.colors.slice(0, 8)
-    }
+  const visualMapType = visualMap.type ?? 'continuous'
+
+  // 连续型：优先写入 inRange/outOfRange，顶层 color 仅作为兼容（尽量不作为主语义）
+  const continuousInRangeColor =
+    visualMap.inRange?.color ??
+    (visualMap.color && Array.isArray(visualMap.color) && visualMap.color.length > 0
+      ? visualMap.color
+      : [
+          config.color.primaryColors[0],
+          config.color.successColors[0],
+          config.color.warnColors[0],
+          config.color.dangerColors[0],
+        ])
+
+  const continuousOutOfRangeColor = visualMap.outOfRange?.color
+    ? Array.isArray(visualMap.outOfRange.color)
+      ? visualMap.outOfRange.color
+      : [visualMap.outOfRange.color]
+    : [config.mutedForeground]
+
+  // 分段型：pieces/categories 使用调色盘自动补色
+  let piecewiseColorArray = visualMap.color
+  if (
+    !piecewiseColorArray ||
+    (Array.isArray(piecewiseColorArray) && piecewiseColorArray.length === 0)
+  ) {
+    piecewiseColorArray = config.color.colors.slice(0, 8)
   }
 
   const result: any = {
     ...visualMap,
-    color: colorArray,
     backgroundColor: visualMap.backgroundColor ?? config.card,
     borderColor: visualMap.borderColor ?? config.border,
     borderWidth: visualMap.borderWidth ?? config.size.visualMapBorderWidth,
@@ -42,6 +53,19 @@ export function applyVisualMapStyles(visualMap: any, config: ThemeConfig): any {
       color: visualMap.textStyle?.color ?? config.foreground,
       fontSize: visualMap.textStyle?.fontSize ?? config.size.fontSm,
     },
+    ...(visualMapType !== 'continuous' ? { color: piecewiseColorArray } : {}),
+    ...(visualMapType === 'continuous'
+      ? {
+          inRange: {
+            ...(visualMap.inRange ?? {}),
+            color: continuousInRangeColor,
+          },
+          outOfRange: {
+            ...(visualMap.outOfRange ?? {}),
+            color: continuousOutOfRangeColor,
+          },
+        }
+      : {}),
   }
 
   // pieces 和 categories 中的 color 如果用户已指定则保留，否则从调色盘按 index 分配
