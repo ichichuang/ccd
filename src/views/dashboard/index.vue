@@ -410,7 +410,7 @@ const quickActionSchema = reactive<FormSchema>({
   layout: { type: 'grid', gap: 'var(--spacing-md)' },
   fields: [
     {
-      type: 'card',
+      type: 'section',
       name: 'task_meta',
       label: '任务信息',
       layout: { type: 'grid', gap: 'var(--spacing-md)', span: { xs: 12, sm: 12 } },
@@ -513,7 +513,7 @@ function handleQuickActionOpen(): void {
                 formState: FormState<QuickActionValues>
                 submit: () => Promise<void>
               }) => (
-                <div class="row-between gap-sm pt-sm border-t-default border-border/15 mt-md">
+                <div class="row-between gap-sm pt-sm  border-border/15 mt-md">
                   <span class="text-xs text-muted-foreground">必填项已标注 *</span>
                   <div class="row-end gap-sm shrink-0">
                     <Button
