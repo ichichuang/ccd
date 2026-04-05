@@ -9,6 +9,9 @@ declare module '@vue/runtime-core' {
   interface GlobalDirectives {
     vTooltip: object
     vAuth: object
+    vTap: object
+    vSwipe: object
+    vLongPress: object
   }
 
   interface GlobalComponents {

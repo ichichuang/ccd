@@ -229,6 +229,7 @@ declare global {
   const useDialog: typeof import('../hooks/modules/useDialog').useDialog
   const useDisplayMedia: typeof import('@vueuse/core').useDisplayMedia
   const useDocumentVisibility: typeof import('@vueuse/core').useDocumentVisibility
+  const useDragAction: typeof import('../hooks/modules/useInteraction/useDragAction').useDragAction
   const useDraggable: typeof import('@vueuse/core').useDraggable
   const useDrawer: typeof import('../hooks/modules/useDrawer').useDrawer
   const useDropZone: typeof import('@vueuse/core').useDropZone
@@ -256,6 +257,7 @@ declare global {
   const useIdle: typeof import('@vueuse/core').useIdle
   const useImage: typeof import('@vueuse/core').useImage
   const useInfiniteScroll: typeof import('@vueuse/core').useInfiniteScroll
+  const useInteraction: typeof import('../hooks/modules/useInteraction/useInteraction').useInteraction
   const useIntersectionObserver: typeof import('@vueuse/core').useIntersectionObserver
   const useInterval: typeof import('@vueuse/core').useInterval
   const useIntervalFn: typeof import('@vueuse/core').useIntervalFn
@@ -269,6 +271,7 @@ declare global {
   const useLocale: typeof import('../hooks/modules/useLocale').useLocale
   const useLocaleStore: typeof import('../stores/modules/locale').useLocaleStore
   const useLocaleStoreWithOut: typeof import('../stores/modules/locale').useLocaleStoreWithOut
+  const useLongPressAction: typeof import('../hooks/modules/useInteraction/useLongPressAction').useLongPressAction
   const useMagicKeys: typeof import('@vueuse/core').useMagicKeys
   const useManualRefHistory: typeof import('@vueuse/core').useManualRefHistory
   const useMediaControls: typeof import('@vueuse/core').useMediaControls
@@ -331,7 +334,9 @@ declare global {
   const useStyleTag: typeof import('@vueuse/core').useStyleTag
   const useSupported: typeof import('@vueuse/core').useSupported
   const useSwipe: typeof import('@vueuse/core').useSwipe
+  const useSwipeAction: typeof import('../hooks/modules/useInteraction/useSwipeAction').useSwipeAction
   const useTableDrawerStore: typeof import('../stores/modules/tableDrawer').useTableDrawerStore
+  const useTap: typeof import('../hooks/modules/useInteraction/useTap').useTap
   const useTemplateRef: typeof import('vue').useTemplateRef
   const useTemplateRefsList: typeof import('@vueuse/core').useTemplateRefsList
   const useTextDirection: typeof import('@vueuse/core').useTextDirection
@@ -428,6 +433,9 @@ declare global {
   // @ts-ignore
   export type { UseHttpRequestOptions, UseHttpRequestResult } from '../hooks/modules/useHttpRequest'
   import('../hooks/modules/useHttpRequest')
+  // @ts-ignore
+  export type { InteractionTarget, SwipeDirection, UseTapOptions, UseTapReturn, UseSwipeActionOptions, UseSwipeActionReturn, UseDragActionOptions, UseDragActionReturn, UseLongPressActionOptions, UseLongPressActionReturn, UseInteractionReturn } from '../hooks/modules/useInteraction/types'
+  import('../hooks/modules/useInteraction/types')
   // @ts-ignore
   export type { UseLocaleReturn } from '../hooks/modules/useLocale'
   import('../hooks/modules/useLocale')
