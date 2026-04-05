@@ -6,6 +6,9 @@ import { setupErrorHandler } from '@/plugins/modules/errorHandler'
 import { setupPrimeVue } from '@/plugins/modules/primevue'
 import { setupScrollbar } from '@/plugins/modules/scrollbar'
 import { vAuth } from '@/directives/auth'
+import { vTap } from '@/directives/tap'
+import { vSwipe } from '@/directives/swipe'
+import { vLongPress } from '@/directives/longPress'
 
 /**
  * 统一设置所有插件
@@ -29,4 +32,7 @@ export const setupPlugins = async (app: App) => {
 
   // 全局指令
   app.directive('auth', vAuth)
+  app.directive('tap', vTap)
+  app.directive('swipe', vSwipe)
+  app.directive('long-press', vLongPress)
 }

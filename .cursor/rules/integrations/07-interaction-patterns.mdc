@@ -1,0 +1,87 @@
+---
+description: Cross-platform interaction patterns — touch/pointer event handling, hover boundary, gesture composables, and PrimeVue touch workarounds.
+globs: ["src/**/*.vue", "src/**/*.tsx", "src/**/*.ts"]
+alwaysApply: true
+---
+
+# Interaction Patterns — Cross-Platform Event Law
+
+## Law 0 — The Interaction Hierarchy
+
+When handling cross-platform interactions, apply solutions in this order:
+
+1. **CSS boundary** first (`interaction.scss` media queries)
+2. **Composables** for logic (`useTap`, `useSwipeAction`, `useDragAction`, `useLongPressAction`)
+3. **Directives** for declarative template use (`v-tap`, `v-swipe`, `v-long-press`)
+4. **Component swap** for PrimeVue incompatibility (`v-if="deviceStore.isPCLayout"`)
+
+## Law 1 — No Raw Touch/Pointer Event Listeners
+
+### FORBIDDEN in templates:
+- `@touchstart`, `@touchend`, `@touchmove`
+- `@pointerdown`, `@pointerup`, `@pointermove`
+- `@mouseenter`, `@mouseleave` (use CSS `:hover` gated by media query)
+
+### REQUIRED alternatives:
+- `v-tap="handler"` — unified tap (replaces explicit touch+click dual-bind)
+- `v-swipe:left="handler"` — directional swipe
+- `v-long-press="handler"` — long press (default 500ms)
+- Or the composable equivalents: `useTap()`, `useSwipeAction()`, `useDragAction()`, `useLongPressAction()`
+
+### `@click` exception:
+`@click` remains valid for simple click handlers — it works on both mouse and touch. Only use `v-tap` when you need `isTapping` state or must differentiate touch-tap from mouse-click.
+
+## Law 2 — Hover is PC-Only
+
+- All hover effects are gated by `@media (hover: hover) and (pointer: fine)` in `interaction.scss`
+- Touch devices get `:active` feedback only
+- UnoCSS `hover:` variants in shortcuts remain; `interaction.scss` overrides them on touch
+- NEVER add new hover-dependent UX without considering the touch fallback
+
+## Law 3 — PrimeVue Touch Workarounds
+
+- **DataTable drag**: Component swap pattern (`v-if="deviceStore.isPCLayout"` / `v-else`)
+- **Tooltip**: Use `{ event: 'focus' }` config on `v-tooltip` for touch devices
+- **Carousel/Tabs horizontal**: `touch-action: pan-x` (handled in `interaction.scss`)
+- **DataTable scroll**: `touch-action: pan-y` (handled in `interaction.scss`)
+- NEVER use `:deep(.p-*)` for interaction overrides
+
+## Law 4 — VueUse is the Only Gesture Foundation
+
+`@vueuse/core` is the ONLY permitted gesture/pointer library. FORBIDDEN:
+
+- `vue3-touch-events`
+- `hammerjs` / `@nicepkg/hammer-vue3`
+- `@vueuse/gesture` (separate package, not installed)
+- Any other touch/gesture library
+
+All interaction composables in `src/hooks/modules/useInteraction/` are built on `@vueuse/core` internals.
+
+## Law 5 — Interaction Shortcut Registry
+
+Only these interaction-related UnoCSS shortcuts exist (closed set):
+
+- `interactive-card` — card with hover ring escalation
+- `interactive-item` — list row with hover highlight + translate
+- `motion-lift` — hover lift effect
+- `interaction-shrink` — active scale-down
+- `ring-focus-focus` — keyboard focus ring
+
+Adding new interaction shortcuts requires extending `semanticShortcuts.ts` AND updating the Closed Shortcut Registry in `00-unocss-guardrails.mdc`.
+
+## Quick Reference
+
+| Directive       | Usage                           | Description                          |
+|-----------------|---------------------------------|--------------------------------------|
+| `v-tap`         | `v-tap="handler"`              | Unified tap (mouse + touch + pen)    |
+| `v-swipe`       | `v-swipe:left="handler"`       | Directional swipe (arg = direction)  |
+| `v-long-press`  | `v-long-press="handler"`       | Long press (default 500ms)           |
+| `v-long-press`  | `v-long-press:800="handler"`   | Long press with custom delay         |
+
+| Composable            | Returns                                  |
+|-----------------------|------------------------------------------|
+| `useTap()`            | `{ isTapping }`                          |
+| `useSwipeAction()`    | `{ isSwiping, direction, distanceX, distanceY, stop }` |
+| `useDragAction()`     | `{ x, y, style, isDragging }`            |
+| `useLongPressAction()`| `{ isPressing }`                         |
+| `useInteraction()`    | `{ tap, swipe, drag, longPress }` facade |
