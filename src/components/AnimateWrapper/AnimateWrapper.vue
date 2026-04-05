@@ -98,7 +98,7 @@ const handleBeforeLeave = (el: Element) => {
   >
     <div
       v-if="show"
-      class="layout-full"
+      :class="omitLayoutFull ? '' : 'layout-full'"
       v-bind="$attrs"
     >
       <slot />

@@ -248,7 +248,7 @@ const dialogPtCache = new WeakMap<DialogOptions, DialogPtValue>()
  * business 侧 options.pt 的优先级高于默认值。
  */
 const defaultDialogPt: DialogPtValue = {
-  root: { class: 'glass-shell' },
+  root: { class: 'glass-shell transform-gpu will-change-transform' },
   header: { class: 'bg-transparent' },
   content: { class: 'bg-transparent' },
   footer: { class: 'bg-transparent' },

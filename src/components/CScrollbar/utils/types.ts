@@ -45,6 +45,30 @@ export interface ScrollbarProps {
   native?: boolean
 
   /**
+   * 是否显示「返回顶部」浮动按钮（与 PrimeVue ScrollTop 行为对齐：scrollTop 超过阈值后显示）
+   * @default false
+   */
+  backToTop?: boolean
+
+  /**
+   * 从内容顶部向下滚动的距离（px）超过该值时显示返回顶部按钮；语义为 scrollTop，非距底部剩余距离
+   * @default 400（与 PrimeVue ScrollTop 默认 threshold 一致）
+   */
+  backToTopThreshold?: number
+
+  /**
+   * 返回顶部按钮距定位容器底部（px）；按钮位于滚动视口外层的定位层，不随内容滚动
+   * @default 40
+   */
+  backToTopOffsetBottom?: number
+
+  /**
+   * 返回顶部按钮距定位容器右侧（px）
+   * @default 40
+   */
+  backToTopOffsetRight?: number
+
+  /**
    * OverlayScrollbars options
    */
   options?: PartialOptions

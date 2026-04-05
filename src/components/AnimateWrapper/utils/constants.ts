@@ -31,4 +31,6 @@ export const defaultAnimateConfig: AnimateWrapperProps = {
   group: false,
   /** 默认队列延迟（ms），group 模式队列延迟，使用设计系统 duration-sm */
   stagger: TRANSITION_SCALE_VALUES.sm,
+  /** 默认内层是否占满容器（FAB 等场景使用 omitLayoutFull） */
+  omitLayoutFull: false,
 }

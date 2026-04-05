@@ -18,7 +18,7 @@ export const DIALOG_BREAKPOINTS: Record<string, string> = {
 export const defaultDialogProps: Partial<DialogOptions> = {
   visible: false,
   header: '',
-  sizeClass: 'w-[96vw] sm:w-[88vw] md:w-[82vw] lg:w-[60vw] xl:w-[50vw] 2xl:w-[48vw] max-h-90vh',
+  sizeClass: 'w-[92vw] sm:w-[88vw] md:w-[82vw] lg:w-[60vw] xl:w-[50vw] 2xl:w-[48vw] max-h-90vh',
   draggable: false,
   modal: true,
   position: 'center',

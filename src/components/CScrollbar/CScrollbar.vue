@@ -3,8 +3,9 @@
  * CScrollbar - 全局滚动容器组件
  *
  * 基于 OverlayScrollbars，完美融合主题系统和尺寸系统：
- * - 滚动条颜色：使用 --muted / --primary CSS 变量
- * - 滚动条圆角：使用尺寸系统圆角阶梯变量 (如 --radius-md)
+ * - 滚动条颜色：主色系 --primary（轨道/滑块低透明度叠色；hover/active 略加强）
+ * - native 模式：Firefox scrollbar-color + WebKit 伪元素与 OS 模式对齐（含 html.dark）
+ * - 滚动条圆角：滑块胶囊形（与轨道宽度联动）+ 轨道圆角
  * - 自动适配深色/浅色模式
  *
  * @example
@@ -13,16 +14,21 @@
  * </CScrollbar>
  */
 import type { ComputedRef } from 'vue'
+import { usePrimeVue } from 'primevue/config'
 import { type OverlayScrollbars } from 'overlayscrollbars'
 import { OverlayScrollbarsComponent } from 'overlayscrollbars-vue'
 import { useThemeStore } from '@/stores/modules/theme'
-import { TRANSITION_SCALE_VALUES } from '@/constants/sizeScale'
+import {
+  DEFAULT_SCROLLBAR_AUTO_HIDE_DELAY_MS,
+  defaultScrollbarProps,
+  resolveScrollbarAutoHide,
+} from './utils/constants'
 import type { ScrollbarProps, OnUpdatedEventListenerArgs } from './utils/types'
 
+defineOptions({ name: 'CScrollbar' })
+
 const props = withDefaults(defineProps<ScrollbarProps>(), {
-  visibility: 'auto',
-  defer: true,
-  native: false,
+  ...defaultScrollbarProps,
 })
 
 const emit = defineEmits<{
@@ -32,6 +38,17 @@ const emit = defineEmits<{
   (e: 'scroll', instance: OverlayScrollbars, event: Event): void
 }>()
 
+const primevue = usePrimeVue()
+const backToTopAriaLabel = computed(() => primevue.config.locale?.aria?.scrollTop ?? 'Scroll Top')
+
+const backToTopFabStyle = computed(() => ({
+  bottom: `${props.backToTopOffsetBottom}px`,
+  right: `${props.backToTopOffsetRight}px`,
+}))
+
+const nativeScrollRef = ref<HTMLDivElement | null>(null)
+const backToTopVisible = ref(false)
+
 const themeStore = useThemeStore()
 const scrollbarRef = ref<InstanceType<typeof OverlayScrollbarsComponent> | null>(null)
 
@@ -40,9 +57,8 @@ const osOptions: ComputedRef<Record<string, unknown>> = computed(() => {
   const baseOptions = {
     scrollbars: {
       visibility: props.visibility,
-      autoHide: props.visibility === 'auto' ? ('leave' as const) : ('never' as const),
-      // 与尺寸系统 --transition-xl 一致（TRANSITION_SCALE_VALUES.xl）
-      autoHideDelay: TRANSITION_SCALE_VALUES.xl,
+      autoHide: resolveScrollbarAutoHide(props.visibility),
+      autoHideDelay: DEFAULT_SCROLLBAR_AUTO_HIDE_DELAY_MS,
       theme: themeStore.isDark ? 'os-theme-dark' : 'os-theme-light',
     },
   }
@@ -62,12 +78,65 @@ const osOptions: ComputedRef<Record<string, unknown>> = computed(() => {
   return baseOptions
 })
 
+function syncBackToTopVisibility(scrollEl: HTMLElement) {
+  if (!props.backToTop) {
+    backToTopVisible.value = false
+    return
+  }
+  backToTopVisible.value = scrollEl.scrollTop > props.backToTopThreshold
+}
+
+function handleOsScroll(instance: OverlayScrollbars, event: Event) {
+  emit('scroll', instance, event)
+  if (props.backToTop) {
+    syncBackToTopVisibility(instance.elements().scrollOffsetElement)
+  }
+}
+
+function handleNativeScroll() {
+  const el = nativeScrollRef.value
+  if (el) {
+    syncBackToTopVisibility(el)
+  }
+}
+
+function onOsInitialized(instance: OverlayScrollbars) {
+  emit('initialized', instance)
+  if (props.backToTop) {
+    nextTick(() => {
+      syncBackToTopVisibility(instance.elements().scrollOffsetElement)
+    })
+  }
+}
+
+function onOsUpdated(instance: OverlayScrollbars, args: OnUpdatedEventListenerArgs) {
+  emit('updated', instance, args)
+  if (props.backToTop) {
+    syncBackToTopVisibility(instance.elements().scrollOffsetElement)
+  }
+}
+
 /** 暴露 scrollTo 方法供外部调用 */
 function scrollTo(options: ScrollToOptions) {
+  if (props.native) {
+    nativeScrollRef.value?.scrollTo(options)
+    return
+  }
   const instance = scrollbarRef.value?.osInstance()
   if (instance) {
     const { scrollOffsetElement } = instance.elements()
     scrollOffsetElement.scrollTo(options)
+  }
+}
+
+function scrollToTop() {
+  scrollTo({ top: 0, behavior: 'smooth' })
+}
+
+function onBackToTopKeydown(event: KeyboardEvent) {
+  if (event.key === 'Enter' || event.key === ' ') {
+    event.preventDefault()
+    scrollToTop()
   }
 }
 
@@ -88,14 +157,6 @@ function elements() {
   return scrollbarRef.value?.osInstance()?.elements()
 }
 
-defineExpose({
-  scrollTo,
-  getInstance,
-  update,
-  state,
-  elements,
-})
-
 // 监听主题变化，更新滚动条主题
 watch(
   () => themeStore.isDark,
@@ -110,33 +171,99 @@ watch(
     }
   }
 )
+
+watch(
+  () => [props.backToTop, props.backToTopThreshold] as const,
+  () => {
+    if (!props.backToTop) {
+      backToTopVisible.value = false
+      return
+    }
+    if (props.native && nativeScrollRef.value) {
+      syncBackToTopVisibility(nativeScrollRef.value)
+    } else if (!props.native) {
+      const inst = scrollbarRef.value?.osInstance()
+      if (inst) {
+        syncBackToTopVisibility(inst.elements().scrollOffsetElement)
+      }
+    }
+  }
+)
+
+onMounted(() => {
+  nextTick(() => {
+    if (!props.backToTop) return
+    if (props.native && nativeScrollRef.value) {
+      syncBackToTopVisibility(nativeScrollRef.value)
+    }
+  })
+})
+
+defineExpose({
+  scrollTo,
+  getInstance,
+  update,
+  state,
+  elements,
+})
 </script>
 
 <template>
-  <!-- 原生滚动条模式 -->
-  <div
-    v-if="native"
-    class="c-scrollbar-native layout-full overflow-auto !bg-transparent"
-    :class="$props.class"
-  >
-    <slot />
-  </div>
+  <div class="relative layout-full min-h-0">
+    <!-- 原生滚动条模式 -->
+    <div
+      v-if="native"
+      ref="nativeScrollRef"
+      class="c-scrollbar-native layout-full overflow-auto !bg-transparent"
+      :class="$props.class"
+      @scroll="handleNativeScroll"
+    >
+      <slot />
+    </div>
 
-  <!-- OverlayScrollbars 模式；options 与 PartialOptions 类型定义不完全一致，传参处使用边界层断言 -->
-  <OverlayScrollbarsComponent
-    v-else
-    ref="scrollbarRef"
-    :options="osOptions"
-    :defer="defer"
-    class="c-scrollbar layout-full !bg-transparent"
-    :class="$props.class"
-    @os-initialized="instance => emit('initialized', instance)"
-    @os-updated="(instance, args) => emit('updated', instance, args)"
-    @os-destroyed="(instance, canceled) => emit('destroyed', instance, canceled)"
-    @os-scroll="(instance, event) => emit('scroll', instance, event)"
-  >
-    <slot />
-  </OverlayScrollbarsComponent>
+    <!-- OverlayScrollbars 模式；options 与 PartialOptions 类型定义不完全一致，传参处使用边界层断言 -->
+    <OverlayScrollbarsComponent
+      v-else
+      ref="scrollbarRef"
+      :options="osOptions"
+      :defer="defer"
+      class="c-scrollbar layout-full !bg-transparent"
+      :class="$props.class"
+      @os-initialized="onOsInitialized"
+      @os-updated="onOsUpdated"
+      @os-destroyed="(instance, canceled) => emit('destroyed', instance, canceled)"
+      @os-scroll="handleOsScroll"
+    >
+      <slot />
+    </OverlayScrollbarsComponent>
+
+    <!-- 位于滚动视口外层定位层；omitLayoutFull 避免内层 layout-full 全屏遮挡滚动 -->
+    <AnimateWrapper
+      v-if="backToTop"
+      :show="backToTopVisible"
+      omit-layout-full
+      enter="zoomIn"
+      leave="zoomOut"
+      speed="fast"
+      :appear="true"
+      class="center absolute z-content"
+      :style="backToTopFabStyle"
+    >
+      <div
+        role="button"
+        tabindex="0"
+        class="center cursor-pointer rounded-full p-sm! border-accent! bg-accent! text-accent-foreground! hover:bg-accent-hover! transition-all duration-md hover:scale-105 active:scale-95"
+        :aria-label="backToTopAriaLabel"
+        @click="scrollToTop"
+        @keydown="onBackToTopKeydown"
+      >
+        <Icons
+          name="i-lucide-circle-arrow-up"
+          size="xl"
+        />
+      </div>
+    </AnimateWrapper>
+  </div>
 </template>
 
 <style lang="scss">
@@ -154,71 +281,126 @@ watch(
   background: transparent !important;
 }
 
-/* 滚动条轨道 */
-.os-scrollbar {
-  /* 滚动条宽度/高度 */
+/* 仅作用于本组件实例，避免污染页面内其它 OverlayScrollbars */
+.c-scrollbar .os-scrollbar {
   --os-size: var(--spacing-sm);
 
-  /* 滚动条内边距 */
   --os-padding-perpendicular: calc(var(--spacing-xs) / 2);
   --os-padding-axis: calc(var(--spacing-xs) / 2);
 
-  /* 轨道背景色 */
-  background: rgb(var(--muted-foreground) / 8%);
+  /* 轨道：主色极淡铺底 */
+  background: rgb(var(--primary) / 6%);
 
-  --os-track-bg-hover: rgb(var(--muted) / 12%);
-  --os-track-bg-active: rgb(var(--muted) / 18%);
+  --os-track-bg-hover: rgb(var(--primary) / 10%);
+  --os-track-bg-active: rgb(var(--primary) / 14%);
 
-  /* 滑块背景色 */
-  --os-handle-bg: rgb(var(--muted-foreground) / 20%);
-  --os-handle-bg-hover: rgb(var(--primary) / 60%);
-  --os-handle-bg-active: rgb(var(--primary) / 80%);
+  /* 滑块：默认主色低不透明度；悬停/拖拽再抬一档 */
+  --os-handle-bg: rgb(var(--primary) / 20%);
+  --os-handle-bg-hover: rgb(var(--primary) / 44%);
+  --os-handle-bg-active: rgb(var(--primary) / 58%);
 
-  /* 滑块圆角 - 使用尺寸系统阶梯变量 */
-  --os-handle-border-radius: var(--radius-md);
+  --os-handle-border-radius: calc(var(--os-size) / 2);
 
-  /* 滑块最小尺寸 */
   --os-handle-min-size: calc(var(--spacing-lg) * 2);
-
-  /* 滑块最大尺寸 */
   --os-handle-max-size: none;
 
-  /* 滑块垂直方向边距 */
   --os-handle-perpendicular-size: 100%;
   --os-handle-perpendicular-size-hover: 100%;
   --os-handle-perpendicular-size-active: 100%;
 
-  /* 过渡动画 */
   transition: var(--transition-md) ease-out;
 }
 
-/* 深色模式下的调整 */
-.os-scrollbar.os-theme-dark {
-  --os-handle-bg: rgb(var(--muted-foreground) / 20%);
-  --os-handle-bg-hover: rgb(var(--primary) / 75%);
-  --os-handle-bg-active: rgb(var(--primary) / 90%);
-  --os-track-bg-hover: rgb(var(--muted) / 18%);
-  --os-track-bg-active: rgb(var(--muted) / 24%);
+.c-scrollbar .os-scrollbar.os-theme-dark {
+  background: rgb(var(--primary) / 8%);
+
+  --os-handle-bg: rgb(var(--primary) / 18%);
+  --os-handle-bg-hover: rgb(var(--primary) / 48%);
+  --os-handle-bg-active: rgb(var(--primary) / 64%);
+  --os-track-bg-hover: rgb(var(--primary) / 12%);
+  --os-track-bg-active: rgb(var(--primary) / 18%);
 }
 
-/* 滚动条滑块 */
-.os-scrollbar-handle {
+.c-scrollbar .os-scrollbar-handle {
   cursor: pointer;
-  transition: var(--transition-md) ease-out !important;
+  transition:
+    var(--transition-md) ease-out,
+    box-shadow var(--transition-md) ease-out !important;
+  box-shadow: none;
 }
 
-/* 水平滚动条特殊处理 */
-.os-scrollbar-horizontal {
+.c-scrollbar .os-scrollbar-handle:hover,
+.c-scrollbar .os-scrollbar-handle:active {
+  box-shadow: 0 0 0 1px rgb(var(--primary) / 32%);
+}
+
+.c-scrollbar .os-scrollbar-horizontal {
   height: var(--os-size);
+  border-radius: var(--radius-lg);
 }
 
-/* 垂直滚动条特殊处理 */
-.os-scrollbar-vertical {
+.c-scrollbar .os-scrollbar-vertical {
   width: var(--os-size);
+  border-radius: var(--radius-lg);
 }
 
-/* 角落区域 */
-.os-scrollbar-corner {
+.c-scrollbar .os-scrollbar-corner {
   background: transparent;
+}
+
+/* native 模式：与 Overlay 分支一致的主色系 */
+.c-scrollbar-native {
+  scrollbar-gutter: stable;
+  scrollbar-width: thin;
+  scrollbar-color: rgb(var(--primary) / 20%) rgb(var(--primary) / 6%);
+}
+
+.c-scrollbar-native::-webkit-scrollbar {
+  width: var(--spacing-sm);
+  height: var(--spacing-sm);
+}
+
+.c-scrollbar-native::-webkit-scrollbar-track {
+  background: rgb(var(--primary) / 6%);
+  border-radius: var(--radius-lg);
+}
+
+.c-scrollbar-native::-webkit-scrollbar-thumb {
+  background: rgb(var(--primary) / 20%);
+  border-radius: calc(var(--spacing-sm) / 2);
+  box-shadow: none;
+  transition:
+    background var(--transition-md) ease-out,
+    box-shadow var(--transition-md) ease-out;
+}
+
+.c-scrollbar-native::-webkit-scrollbar-thumb:hover {
+  background: rgb(var(--primary) / 44%);
+  box-shadow: 0 0 0 1px rgb(var(--primary) / 32%);
+}
+
+.c-scrollbar-native::-webkit-scrollbar-thumb:active {
+  background: rgb(var(--primary) / 58%);
+}
+
+html.dark .c-scrollbar-native {
+  scrollbar-color: rgb(var(--primary) / 18%) rgb(var(--primary) / 8%);
+}
+
+html.dark .c-scrollbar-native::-webkit-scrollbar-track {
+  background: rgb(var(--primary) / 8%);
+}
+
+html.dark .c-scrollbar-native::-webkit-scrollbar-thumb {
+  background: rgb(var(--primary) / 18%);
+}
+
+html.dark .c-scrollbar-native::-webkit-scrollbar-thumb:hover {
+  background: rgb(var(--primary) / 48%);
+  box-shadow: 0 0 0 1px rgb(var(--primary) / 36%);
+}
+
+html.dark .c-scrollbar-native::-webkit-scrollbar-thumb:active {
+  background: rgb(var(--primary) / 64%);
 }
 </style>
