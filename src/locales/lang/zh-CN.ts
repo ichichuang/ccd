@@ -36,6 +36,8 @@ const zhCN = {
     errorTitle: '登录失败',
     errorMessageGeneric: '登录失败，请检查账号和密码',
     footerText: 'Enterprise Vue Admin v{version} © {year}',
+    helpCenter: '帮助中心',
+    privacyPolicy: '隐私政策',
   },
   router: {
     core: {

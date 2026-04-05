@@ -37,6 +37,8 @@ const enUS = {
     errorTitle: 'Login failed',
     errorMessageGeneric: 'Login failed, please check your username and password',
     footerText: 'Enterprise Vue Admin v{version} © {year}',
+    helpCenter: 'Help center',
+    privacyPolicy: 'Privacy policy',
   },
   router: {
     core: {
