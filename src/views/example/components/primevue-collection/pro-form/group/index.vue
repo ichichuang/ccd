@@ -411,7 +411,7 @@ async function onSubmit(label: string, values: Record<string, unknown>): Promise
               @submit="v => onSubmit('Card', v)"
             >
               <template #footer="{ submit, formState }">
-                <div class="row-end pt-md mt-md border-t-default border-border/15">
+                <div class="row-end pt-md mt-md border-border/15">
                   <Button
                     label="保存个人资料"
                     icon="i-lucide-save"
@@ -445,7 +445,7 @@ async function onSubmit(label: string, values: Record<string, unknown>): Promise
               @submit="v => onSubmit('Collapse', v)"
             >
               <template #footer="{ submit, formState }">
-                <div class="row-end pt-md mt-md border-t-default border-border/15">
+                <div class="row-end pt-md mt-md border-border/15">
                   <Button
                     label="更新站点配置"
                     icon="i-lucide-refresh-cw"
@@ -479,7 +479,7 @@ async function onSubmit(label: string, values: Record<string, unknown>): Promise
               @submit="v => onSubmit('Tabs', v)"
             >
               <template #footer="{ submit, formState }">
-                <div class="row-end pt-md mt-md border-t-default border-border/15">
+                <div class="row-end pt-md mt-md border-border/15">
                   <Button
                     label="同步账号设置"
                     icon="i-lucide-user-cog"
@@ -513,7 +513,7 @@ async function onSubmit(label: string, values: Record<string, unknown>): Promise
               @submit="v => onSubmit('Step', v)"
             >
               <template #footer="{ submit, formState }">
-                <div class="row-end pt-md mt-md border-t-default border-border/15">
+                <div class="row-end pt-md mt-md border-border/15">
                   <Button
                     label="完成注册流程"
                     icon="i-lucide-user-plus"
@@ -548,7 +548,7 @@ async function onSubmit(label: string, values: Record<string, unknown>): Promise
                 @submit="v => onSubmit('Group', v)"
               >
                 <template #footer="{ submit, formState }">
-                  <div class="row-end pt-md mt-md border-t-default border-border/15">
+                  <div class="row-end pt-md mt-md border-border/15">
                     <Button
                       label="提交保存"
                       icon="i-lucide-send"
@@ -581,7 +581,7 @@ async function onSubmit(label: string, values: Record<string, unknown>): Promise
                 @submit="v => onSubmit('Section', v)"
               >
                 <template #footer="{ submit, formState }">
-                  <div class="row-end pt-md mt-md border-t-default border-border/15">
+                  <div class="row-end pt-md mt-md border-border/15">
                     <Button
                       label="保存审计备注"
                       icon="i-lucide-file-check"

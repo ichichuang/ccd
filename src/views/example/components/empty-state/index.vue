@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { goBack } from '@/router/utils/helper'
 
-import faceImg from '@/assets/images/face.png'
-import avatarImg from '@/assets/images/default-avatar.jpeg'
+import faceImg from '@/assets/images/face.webp'
+import avatarImg from '@/assets/images/default-avatar.webp'
 
 defineOptions({ name: 'ViewsEmptyState' })
 

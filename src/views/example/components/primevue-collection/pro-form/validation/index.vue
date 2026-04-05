@@ -376,7 +376,7 @@ async function onAsyncSubmit(values: Record<string, unknown>): Promise<void> {
               @submit="onSyncSubmit"
             >
               <template #footer="{ submit, formState }">
-                <div class="row-end gap-sm pt-md border-t-default border-border/15 mt-md">
+                <div class="row-end gap-sm pt-md border-border/15 mt-md">
                   <Button
                     label="重置校验"
                     variant="text"
@@ -462,7 +462,7 @@ async function onAsyncSubmit(values: Record<string, unknown>): Promise<void> {
               @submit="onAsyncSubmit"
             >
               <template #footer="{ submit, formState }">
-                <div class="row-end gap-sm pt-md border-t-default border-border/15 mt-md">
+                <div class="row-end gap-sm pt-md border-border/15 mt-md">
                   <Button
                     label="异步校验并提交"
                     icon="i-lucide-cloud-lightning"

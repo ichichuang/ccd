@@ -228,7 +228,7 @@ async function copyClassName(cls: string, label: string): Promise<void> {
                         link
                         size="small"
                         class="p-0 h-auto underline decoration-primary/40 underline-offset-2"
-                        @click="goToRoute('theme')"
+                        @click="goToRoute('ExampleSystemConfigurationTheme')"
                       />
                     </p>
                   </div>

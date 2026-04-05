@@ -360,7 +360,7 @@ async function onSubmit(values: Record<string, unknown>): Promise<void> {
                   @submit="onSubmit"
                 >
                   <template #footer="{ formState: slotFormState, submit }">
-                    <div class="row-end gap-sm pt-md border-t-default border-border/15 mt-md">
+                    <div class="row-end gap-sm pt-md border-border/15 mt-md">
                       <Button
                         :label="targetFieldDisabled ? '启用目标字段' : '禁用目标字段'"
                         severity="secondary"

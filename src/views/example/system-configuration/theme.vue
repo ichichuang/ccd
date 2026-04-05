@@ -317,7 +317,7 @@ function quadUsageFor(family: QuadFamily): readonly string[] {
                         link
                         size="small"
                         class="p-0 h-auto underline decoration-primary/40 underline-offset-2"
-                        @click="goToRoute('size')"
+                        @click="goToRoute('ExampleSystemConfigurationSize')"
                       />
                       <span>；UnoCSS 快捷方式见</span>
                       <Button
@@ -325,7 +325,7 @@ function quadUsageFor(family: QuadFamily): readonly string[] {
                         link
                         size="small"
                         class="p-0 h-auto underline decoration-primary/40 underline-offset-2"
-                        @click="goToRoute('unocss')"
+                        @click="goToRoute('ExampleSystemConfigurationUnocss')"
                       />
                     </p>
                   </div>

@@ -421,7 +421,7 @@ function clearDraft(): void {
               </template>
 
               <template #footer="{ submit, formState: slotFormState }">
-                <div class="row-end gap-sm pt-md border-t-default border-border/15 mt-md">
+                <div class="row-end gap-sm pt-md border-border/15 mt-md">
                   <Button
                     label="提交数据"
                     icon="i-lucide-send"
@@ -497,7 +497,7 @@ function clearDraft(): void {
               @submit="onDraftSubmit"
             >
               <template #footer="{ submit, formState }">
-                <div class="row-end gap-sm pt-md border-t-default border-border/15 mt-md">
+                <div class="row-end gap-sm pt-md border-border/15 mt-md">
                   <Button
                     label="重置并清除"
                     severity="secondary"

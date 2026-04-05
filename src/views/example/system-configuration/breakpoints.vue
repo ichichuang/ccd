@@ -2,6 +2,7 @@
 import { BREAKPOINTS, type BreakpointKey } from '@/constants/breakpoints'
 import { SIZE_SCALE_KEYS } from '@/constants/sizeScale'
 import { useAppElementSize } from '@/hooks/modules/useAppElementSize'
+import { goToRoute } from '@/router/utils/helper'
 
 defineOptions({ name: 'BreakpointsSystemPage' })
 
@@ -95,6 +96,36 @@ const profileCards: readonly ProfileCard[] = [
                   SSOT：断点阈值来自 `BREAKPOINTS`；Active 来自
                   `deviceStore.currentBreakpoint`；Sandbox 来自容器实际宽度。
                 </p>
+              </div>
+              <div class="row-end gap-xs shrink-0 flex-wrap">
+                <Button
+                  text
+                  size="small"
+                  label="→ 主题"
+                  class="p-0 h-auto text-xs"
+                  @click="goToRoute('ExampleSystemConfigurationTheme')"
+                />
+                <Button
+                  text
+                  size="small"
+                  label="→ 尺寸"
+                  class="p-0 h-auto text-xs"
+                  @click="goToRoute('ExampleSystemConfigurationSize')"
+                />
+                <Button
+                  text
+                  size="small"
+                  label="→ 布局"
+                  class="p-0 h-auto text-xs"
+                  @click="goToRoute('ExampleSystemConfigurationLayout')"
+                />
+                <Button
+                  text
+                  size="small"
+                  label="→ UnoCSS"
+                  class="p-0 h-auto text-xs"
+                  @click="goToRoute('ExampleSystemConfigurationUnocss')"
+                />
               </div>
             </div>
           </header>
