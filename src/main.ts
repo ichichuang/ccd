@@ -1,6 +1,6 @@
 // 导入功能样式
 import '@/assets/styles/reset.scss'
-import 'animate.css'
+import '@/assets/styles/animate-custom.scss'
 import 'uno.css'
 
 // 导入应用
