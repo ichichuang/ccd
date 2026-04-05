@@ -270,15 +270,12 @@ const getGroupLabelText = (node: FormSchemaNode): string => {
       </StepPanels>
     </Stepper>
 
-    <Card
-      v-else-if="props.node.type === 'card'"
-      class="w-full mb-md rounded-md"
-    >
+    <Card v-else-if="props.node.type === 'card'">
       <template
         v-if="props.node.label"
         #title
       >
-        <span class="text-md font-semibold text-secondary-foreground">
+        <span class="text-sm font-semibold">
           {{ props.node.label }}
         </span>
       </template>
