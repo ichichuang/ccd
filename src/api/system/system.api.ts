@@ -68,7 +68,10 @@ function validateRouteItems(routes: SystemAsyncRouteItem[]): SystemAsyncRouteIte
  * 增强：基础字段校验，过滤无效路由项
  */
 export const requestSystemAsyncRoutesReal = async (): Promise<SystemAsyncRouteItem[]> => {
-  const res = await get<ApiResponse<SystemAsyncRoutesRawRes>>(SYSTEM_ASYNC_ROUTES_URL)
+  const res = await get<ApiResponse<SystemAsyncRoutesRawRes>>(SYSTEM_ASYNC_ROUTES_URL, {
+    enableCache: false,
+    cacheFor: { mode: 'memory', expire: 300000 },
+  })
   const raw: SystemAsyncRoutesRawRes = res.data
   const routes: SystemAsyncRouteItem[] = extractRoutes(raw)
   if (!Array.isArray(routes)) {
