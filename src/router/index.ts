@@ -13,7 +13,16 @@ import { autoImportModulesSync } from '@/router/utils/moduleLoader'
 import { registerRouterGuards } from './utils/guards'
 import { rootRedirect } from '@/constants/router'
 
-const routeModules = import.meta.glob('./modules/**/*.ts', { eager: true })
+// 核心业务路由（始终同步加载），生产构建排除 example 示例模块以压缩入口 chunk
+const routeModules = import.meta.glob(['./modules/**/*.ts', '!./modules/example.ts'], {
+  eager: true,
+})
+
+// 开发环境：补入示例路由（生产构建时 Vite dead-code 消除 + Rollup tree-shake 完全移除）
+if (import.meta.env.DEV) {
+  const exampleModules = import.meta.glob('./modules/example.ts', { eager: true })
+  Object.assign(routeModules, exampleModules)
+}
 const importedRoutes = autoImportModulesSync<RouteModule>(
   routeModules as Record<string, { default?: unknown; [key: string]: unknown }>,
   './modules/'
