@@ -7,9 +7,6 @@
  */
 import type { SizeScaleKey } from '@/constants/sizeScale'
 import { LOADING_SIZE_CSS } from '@/constants/sizeScale'
-import loading001 from '@/assets/lottie/airplane.json'
-import loading002 from '@/assets/lottie/loading-002.json'
-import loading003 from '@/assets/lottie/loading-003.json'
 import { BaseLottieLoader } from './BaseLottieLoader'
 import { applyThemeToLottieJson } from '@/utils/theme/lottieThemeUtils'
 import { useThemeStore } from '@/stores/modules/theme'
@@ -29,14 +26,19 @@ const props = withDefaults(defineProps<LoadingProps>(), {
   size: 'md',
 })
 
-const LOADING_ANIMATION_MAP: Record<LoadingType, object> = {
-  1: loading001,
-  2: loading002,
-  3: loading003,
+/** Lottie JSON 文件路径映射（public/ 目录，运行时 fetch 加载） */
+const LOADING_JSON_URL: Record<LoadingType, string> = {
+  1: `${import.meta.env.BASE_URL}lottie/airplane.json`,
+  2: `${import.meta.env.BASE_URL}lottie/loading-002.json`,
+  3: `${import.meta.env.BASE_URL}lottie/loading-003.json`,
 }
+
+/** 内存缓存：同一 type 不重复 fetch */
+const jsonCache = new Map<LoadingType, object>()
 
 const themeStore = useThemeStore()
 const resolvedSize = computed(() => LOADING_SIZE_CSS[props.size])
+const rawAnimationData = shallowRef<object | null>(null)
 
 const normalizedType = computed((): LoadingType => {
   const t = props.type
@@ -44,8 +46,25 @@ const normalizedType = computed((): LoadingType => {
   return 1
 })
 
+watchEffect(async () => {
+  const type = normalizedType.value
+  if (jsonCache.has(type)) {
+    rawAnimationData.value = jsonCache.get(type)!
+    return
+  }
+  try {
+    const res = await fetch(LOADING_JSON_URL[type])
+    const json = await res.json()
+    jsonCache.set(type, json)
+    rawAnimationData.value = json
+  } catch (e) {
+    console.error(`Failed to load Lottie animation (type=${type}):`, e)
+  }
+})
+
 const resolvedAnimationData = computed(() => {
-  const raw = LOADING_ANIMATION_MAP[normalizedType.value] as object
+  const raw = rawAnimationData.value
+  if (!raw) return null
   void themeStore.themeName
   void themeStore.isDark
   return applyThemeToLottieJson(raw, { loadingType: normalizedType.value })
@@ -55,6 +74,7 @@ const resolvedAnimationData = computed(() => {
 <template>
   <div class="layout-full flex items-center justify-center">
     <BaseLottieLoader
+      v-if="resolvedAnimationData"
       :width="resolvedSize"
       :height="resolvedSize"
       :animation-data="resolvedAnimationData"
