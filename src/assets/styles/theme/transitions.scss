@@ -33,10 +33,19 @@ html.is-view-transitioning body {
   animation-iteration-count: 1 !important;
 }
 
-/* 窗口 Resize 期间：压制 CSS 过渡，防止布局撕裂 */
-html.app-resizing *,
-html.app-resizing *::before,
-html.app-resizing *::after {
+/* 窗口 Resize 期间：压制底层过渡，但豁免 PrimeVue 浮层（避免误触 app-resizing 时掐断弹层出入场动画） */
+html.app-resizing
+  *:not(.p-dialog):not(.p-dialog *):not(.p-drawer):not(.p-drawer *):not(.p-popover):not(
+    .p-popover *
+  ):not(.p-tieredmenu):not(.p-tieredmenu *),
+html.app-resizing
+  *:not(.p-dialog):not(.p-dialog *):not(.p-drawer):not(.p-drawer *):not(.p-popover):not(
+    .p-popover *
+  ):not(.p-tieredmenu):not(.p-tieredmenu *)::before,
+html.app-resizing
+  *:not(.p-dialog):not(.p-dialog *):not(.p-drawer):not(.p-drawer *):not(.p-popover):not(
+    .p-popover *
+  ):not(.p-tieredmenu):not(.p-tieredmenu *)::after {
   transition-duration: 0s !important;
 }
 

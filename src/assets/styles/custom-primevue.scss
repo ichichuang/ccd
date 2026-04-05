@@ -147,3 +147,8 @@
     background-color: color-mix(in srgb, rgb(var(--primary)) 16%, rgb(var(--card))) !important;
   }
 }
+.p-inputnumber-button-group {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}

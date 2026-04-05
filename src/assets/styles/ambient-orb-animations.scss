@@ -61,3 +61,18 @@ $ambient-orb-ease: cubic-bezier(0.4, 0, 0.2, 1);
 .ambient-orb-pulse {
   animation: ambient-orb-pulse 20s $ambient-orb-ease infinite alternate;
 }
+
+/* 当 PrimeVue 锁定 body 滚动时（通常意味着弹窗/抽屉已打开），暂停底层光球动画，降低 GPU 压力 */
+body.p-overflow-hidden .ambient-orb-drift,
+body.p-overflow-hidden .ambient-orb-pulse,
+body.p-overflow-hidden .ambient-orb-drift-alt {
+  animation-play-state: paused !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ambient-orb-drift,
+  .ambient-orb-pulse,
+  .ambient-orb-drift-alt {
+    animation: none !important;
+  }
+}

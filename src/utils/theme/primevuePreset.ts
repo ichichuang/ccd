@@ -73,7 +73,15 @@ const ROOT_SIZE_TOKENS: RootSizeTokens = {
 
 const getRootSizeTokensByMode = (_mode: SizeMode): RootSizeTokens => ROOT_SIZE_TOKENS
 
+let _cachedPreset: Record<string, unknown> | null = null
+let _cachedSizeMode: SizeMode | null = null
+
 export const createCustomPreset = (sizeStore: ReturnType<typeof useSizeStore>) => {
+  const mode = sizeStore.sizeName
+  if (_cachedPreset !== null && _cachedSizeMode === mode) {
+    return _cachedPreset
+  }
+
   const colors = createColorAdapter()
   const primitiveColors = buildPrimitiveLayer()
   const semanticColors = buildSemanticLayer()
@@ -280,5 +288,7 @@ export const createCustomPreset = (sizeStore: ReturnType<typeof useSizeStore>) =
     })
   }
 
+  _cachedPreset = resultPreset
+  _cachedSizeMode = mode
   return resultPreset
 }

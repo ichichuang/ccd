@@ -3,6 +3,7 @@
 @use '@/assets/styles/custom-nprogress';
 @use '@/assets/styles/custom-primevue';
 @use '@/assets/styles/ambient-orb-animations';
+@use '@/assets/styles/interaction';
 
 // -----------------------------------------------------------------------------
 // 1. 基础重置 (Global Font Inheritance Fix)
@@ -50,7 +51,7 @@ textarea {
 
 a {
   text-decoration: none;
-  color: inherit;
+  color: inherit !important;
 }
 
 img {
@@ -59,32 +60,69 @@ img {
   vertical-align: middle;
 }
 
-/* 系统默认滚动条设置 （兼容性） */
+/* 系统默认滚动条：与 CScrollbar native / WebKit 分支主色系一致 */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgb(var(--primary) / 20%) rgb(var(--primary) / 6%);
+}
+
+html.dark * {
+  scrollbar-color: rgb(var(--primary) / 18%) rgb(var(--primary) / 8%);
+}
+
 ::-webkit-scrollbar {
   width: var(--spacing-sm);
   height: var(--spacing-sm);
   background: transparent !important;
-} // 滚动条整体部分
-::-webkit-scrollbar-track {
-  background: transparent !important;
-} // 外层轨道
+}
+
+::-webkit-scrollbar-track,
 ::-webkit-scrollbar-track-piece {
-  background: transparent !important;
-} // 内层轨道，滚动条中间部分（除去）
+  background: rgb(var(--primary) / 6%) !important;
+  border-radius: var(--radius-lg);
+}
+
 ::-webkit-scrollbar-thumb {
-  background: rgb(var(--input)) !important;
-  border-radius: var(--radius-md) !important;
+  background: rgb(var(--primary) / 20%) !important;
+  border-radius: calc(var(--spacing-sm) / 2) !important;
+  box-shadow: none;
   cursor: pointer;
-} // 滚动条里面可以拖动的那个
+  transition:
+    background var(--transition-md) ease-out,
+    box-shadow var(--transition-md) ease-out;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgb(var(--primary) / 44%) !important;
+  box-shadow: 0 0 0 1px rgb(var(--primary) / 32%);
+}
+
+::-webkit-scrollbar-thumb:active {
+  background: rgb(var(--primary) / 58%) !important;
+}
+
+html.dark ::-webkit-scrollbar-track,
+html.dark ::-webkit-scrollbar-track-piece {
+  background: rgb(var(--primary) / 8%) !important;
+}
+
+html.dark ::-webkit-scrollbar-thumb {
+  background: rgb(var(--primary) / 18%) !important;
+}
+
+html.dark ::-webkit-scrollbar-thumb:hover {
+  background: rgb(var(--primary) / 48%) !important;
+  box-shadow: 0 0 0 1px rgb(var(--primary) / 36%);
+}
+
+html.dark ::-webkit-scrollbar-thumb:active {
+  background: rgb(var(--primary) / 64%) !important;
+}
+
 ::-webkit-scrollbar-corner {
-  background: transparent !important;
-} // 边角
-::-webkit-resizer {
   background: transparent !important;
 }
 
-.p-inputnumber-button-group {
-  display: flex;
-  align-items: center;
-  justify-content: center;
+::-webkit-resizer {
+  background: transparent !important;
 }

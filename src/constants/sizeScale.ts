@@ -10,19 +10,19 @@ export type SizeScaleKey = (typeof SIZE_SCALE_KEYS)[number]
 
 /**
  * 字体大小倍率表 (相对于 --font-size-base)
- * 假设 base (md) = 16px
- * 遵循 Minor Third (1.2) 或 Major Third (1.25) 调性
+ * 实际像素由 sizeEngine：`round(fontSizeBase × ratio)`（见 comfortable 预设 fontSizeBase=16）
+ * 大档位阶梯近似 Minor Third (1.2) / Major Third (1.25)，xs–lg 为 UI 可读性做了压缩与微调
  */
 export const FONT_SCALE_RATIOS: Record<SizeScaleKey, number> = {
-  xs: 0.85, // 12px
-  sm: 0.95, // 14px
-  md: 1, // 16px (Base)
-  lg: 1.125, // 18px
-  xl: 1.25, // 20px
-  '2xl': 1.5, // 24px
-  '3xl': 1.875, // 30px
-  '4xl': 2.25, // 36px
-  '5xl': 3, // 48px
+  xs: 0.82, // round → 13px @16
+  sm: 0.96, // round → 15px @16
+  md: 1, // 16px (Base @16)
+  lg: 1.125, // 18px @16
+  xl: 1.2, // round → 19px @16
+  '2xl': 1.5, // 24px @16
+  '3xl': 1.875, // 30px @16
+  '4xl': 2.25, // 36px @16
+  '5xl': 3, // 48px @16
 }
 
 /**
@@ -64,8 +64,8 @@ export const RADIUS_SCALE_RATIOS: Record<SizeScaleKey, number> = {
  * 布局比字体更保守：xl 起才略放大，大屏逐步加至 1.25
  */
 export const LAYOUT_SCALE_RATIOS: Record<SizeScaleKey, number> = {
-  xs: 1,
-  sm: 1,
+  xs: 0.95,
+  sm: 0.98,
   md: 1,
   lg: 1,
   xl: 1.05,
