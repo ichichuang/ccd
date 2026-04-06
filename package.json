@@ -131,7 +131,7 @@
     "@vue/test-utils": "^2.4.6",
     "@vue/tsconfig": "^0.7.0",
     "autoprefixer": "^10.4.23",
-    "baseline-browser-mapping": "^2.9.19",
+    "baseline-browser-mapping": "^2.10.15",
     "chokidar": "^4.0.3",
     "commitizen": "^4.3.1",
     "concurrently": "^9.1.0",
