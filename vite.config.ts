@@ -206,11 +206,10 @@ export default ({ mode, command }: ConfigEnv): UserConfigExport => {
               if (id.includes('lottie-web') || id.includes('vue3-lottie')) return 'vendor-lottie'
 
               // ── 6. PrimeVue UI 框架 ──
-              // @primeuix / @primevue/themes 体积较大，单独拆包以便并行加载。
+              // @primeuix/themes 体积较大，单独拆包以便并行加载。
               // 其余 primevue/* 交由 Rollup 自动共享依赖分割，无需手工合并，
               // BaseStyle 初始化顺序由 Rollup 模块图内部保证。
-              if (id.includes('@primeuix') || id.includes('@primevue/themes'))
-                return 'vendor-primevue-theme'
+              if (id.includes('@primeuix')) return 'vendor-primevue-theme'
 
               // ── 8. 工具库（按需拆分，避免污染 vendor-vue） ──
               if (id.includes('@vueuse') || id.includes('lodash-es')) return 'vendor-utils'

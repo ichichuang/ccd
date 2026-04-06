@@ -1,5 +1,6 @@
-import { definePreset } from '@primevue/themes'
-import Aura from '@primevue/themes/aura'
+import { definePreset } from '@primeuix/themes'
+import type { ComponentsDesignTokens } from '@primeuix/themes/types'
+import Aura from '@primeuix/themes/aura'
 import {
   deepMergeStylesAdvanced,
   deepMergeStylesAdvancedInPlace,
@@ -14,7 +15,7 @@ import { buildAllComponents } from './presetComponents'
 // 🧱 PrimeVue Preset 架构说明
 // -----------------------------------------------------------------------------
 //
-// 1. 本文件是 PrimeVue @primevue/themes Aura 的“适配层”主入口。
+// 1. 本文件是 PrimeVue @primeuix/themes Aura 的“适配层”主入口。
 //    - 只复用 Aura 的 primitive / semantic / components 结构，
 //      不再直接依赖 semantic.json / primitive.json / components.json 里的色值。
 //    - 真正的数据源是：
@@ -47,6 +48,10 @@ type RootSizeTokens = {
   lg: Record<string, string>
 }
 
+/** PrimeUIX Preset 组件 Token 允许的标量/嵌套形状（排除 unknown / null / 函数等） */
+type PrimeTokenValue = string | number | object | undefined
+type PrimePresetRecord = Record<string, PrimeTokenValue>
+
 const ROOT_SIZE_TOKENS: RootSizeTokens = {
   sm: {
     gap: 'var(--spacing-xs)',
@@ -73,7 +78,7 @@ const ROOT_SIZE_TOKENS: RootSizeTokens = {
 
 const getRootSizeTokensByMode = (_mode: SizeMode): RootSizeTokens => ROOT_SIZE_TOKENS
 
-let _cachedPreset: Record<string, unknown> | null = null
+let _cachedPreset: PrimePresetRecord | null = null
 let _cachedSizeMode: SizeMode | null = null
 
 export const createCustomPreset = (sizeStore: ReturnType<typeof useSizeStore>) => {
@@ -88,9 +93,9 @@ export const createCustomPreset = (sizeStore: ReturnType<typeof useSizeStore>) =
   const componentColors = buildAllComponents(colors)
 
   const basePreset = definePreset(Aura, {
-    primitive: primitiveColors,
-    semantic: semanticColors,
-    components: componentColors,
+    primitive: primitiveColors as Record<string, PrimeTokenValue>,
+    semantic: semanticColors as Record<string, PrimeTokenValue>,
+    components: componentColors as ComponentsDesignTokens,
   })
 
   const globalSizeTokens: Record<string, string> = {
@@ -99,7 +104,7 @@ export const createCustomPreset = (sizeStore: ReturnType<typeof useSizeStore>) =
   const resultPreset = deepMergeStylesAdvanced(basePreset, globalSizeTokens, {
     deepMerge: true,
     override: true,
-  }) as Record<string, unknown>
+  }) as PrimePresetRecord
 
   const ROOT_SIZE_EXCLUDE = new Set<string>([
     'tag',
@@ -124,14 +129,16 @@ export const createCustomPreset = (sizeStore: ReturnType<typeof useSizeStore>) =
   )
 
   const { sm: rootSm, md: rootMd, lg: rootLg } = getRootSizeTokensByMode(sizeStore.sizeName)
-  const components = resultPreset.components as Record<string, Record<string, unknown>> | undefined
+  const components = resultPreset.components as
+    | Record<string, Record<string, PrimeTokenValue>>
+    | undefined
   if (components && typeof components === 'object') {
     for (const [name, config] of Object.entries(components)) {
       if (ROOT_SIZE_EXCLUDE.has(name)) continue
-      const c = config as Record<string, unknown> | null
+      const c = config as Record<string, PrimeTokenValue> | null
       if (c && typeof c === 'object' && c.root != null) {
-        c.root = (c.root as Record<string, unknown>) || {}
-        const root = c.root as Record<string, unknown>
+        c.root = (c.root as Record<string, PrimeTokenValue>) || {}
+        const root = c.root as Record<string, PrimeTokenValue>
         const rootSmObj = (root.sm as Record<string, string>) || {}
         const rootLgObj = (root.lg as Record<string, string>) || {}
         root.sm = rootSmObj
