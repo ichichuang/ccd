@@ -76,7 +76,6 @@
     "@primevue/core": "^4.5.4",
     "@primevue/forms": "^4.5.4",
     "@primevue/icons": "^4.5.4",
-    "@primevue/themes": "^4.5.4",
     "@tanstack/vue-virtual": "^3.13.23",
     "@vueuse/core": "^13.9.0",
     "alova": "^3.3.3",
