@@ -55,15 +55,15 @@ flowchart LR
 
 以下为仓库内 **可指向源码** 的优化手段（非口号清单）：
 
-| 能力                          | 说明                                                                                                                                                                                               |
-| ----------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **生产环境剔除 Example 路由** | `src/router/index.ts` 对 `./modules/example.ts` 使用 glob 排除；仅 `import.meta.env.DEV` 时合并示例路由，生产构建由死代码消除 + Rollup 摇树移除大块演示代码。                                      |
-| **细粒度 manualChunks**       | `vite.config.ts` 将 `vue`/`vue-router`/`pinia`、`alova`/`vue-i18n`/`@vueuse`、**ECharts**、**GSAP**、**Lottie**、`@primeuix` 主题、工具库等拆入独立 vendor chunk，利于缓存与并行加载。             |
-| **ECharts 额外摇树**          | `build/plugins.ts` 在构建期对 `echarts/lib` 下 `chart` 与 `component` 子路径增强 `moduleSideEffects: false`，配合按需注册，减小未用图表残留。                                                      |
-| **Lottie 体积与运行时**       | `build/utils.ts` 将 `lottie-web` 指向 **light** 构建（无表达式引擎，显著减包）；`LoadingLottie.vue` 对 JSON **`fetch` + `Map` 缓存**；`BaseLottieLoader` **动态 import** `vue3-lottie`。           |
-| **Gzip + Brotli**             | `vite-plugin-compression`（见 `build/compress.ts`）；通过环境变量 **`VITE_COMPRESSION`** 选择 `gzip` / `brotli` / **`both`**（生产建议在 `.env.production` 中设为 `both` 以产出双份预压缩资源）。  |
-| **连接与首屏**                | `build/html.ts` 根据 **`VITE_API_BASE_URL`** 注入 **`preconnect` + `dns-prefetch`**；主题 fallback 样式注入减轻 FOIT。                                                                             |
-| **静态资源**                  | 布局与业务广泛使用 **WebP** 位图；构建侧 `assetsInlineLimit`、**`treeshake.preset: 'smallest'`**、Vue SFC **`hoistStatic` / `cacheHandlers`**；生产可按 env 剔除 `debugger` 与大部分 `console.*`。 |
+| 能力                                   | 说明                                                                                                                                                                                                                           |
+| -------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **示例路由全量打包（线上 Demo 策略）** | `src/router/index.ts` 通过 `import.meta.glob('./modules/**/*.ts', { eager: true })` 统一加载路由模块。`example.ts` 默认参与生产构建，作为 Clean Architecture 架构约束（如 RBAC、adapters、infra 等）的可视化文档与在线演练场。 |
+| **细粒度 manualChunks**                | `vite.config.ts` 将 `vue`/`vue-router`/`pinia`、`alova`/`vue-i18n`/`@vueuse`、**ECharts**、**GSAP**、**Lottie**、`@primeuix` 主题、工具库等拆入独立 vendor chunk，利于缓存与并行加载。                                         |
+| **ECharts 额外摇树**                   | `build/plugins.ts` 在构建期对 `echarts/lib` 下 `chart` 与 `component` 子路径增强 `moduleSideEffects: false`，配合按需注册，减小未用图表残留。                                                                                  |
+| **Lottie 体积与运行时**                | `build/utils.ts` 将 `lottie-web` 指向 **light** 构建（无表达式引擎，显著减包）；`LoadingLottie.vue` 对 JSON **`fetch` + `Map` 缓存**；`BaseLottieLoader` **动态 import** `vue3-lottie`。                                       |
+| **Gzip + Brotli**                      | `vite-plugin-compression`（见 `build/compress.ts`）；通过环境变量 **`VITE_COMPRESSION`** 选择 `gzip` / `brotli` / **`both`**（生产建议在 `.env.production` 中设为 `both` 以产出双份预压缩资源）。                              |
+| **连接与首屏**                         | `build/html.ts` 根据 **`VITE_API_BASE_URL`** 注入 **`preconnect` + `dns-prefetch`**；主题 fallback 样式注入减轻 FOIT。                                                                                                         |
+| **静态资源**                           | 布局与业务广泛使用 **WebP** 位图；构建侧 `assetsInlineLimit`、**`treeshake.preset: 'smallest'`**、Vue SFC **`hoistStatic` / `cacheHandlers`**；生产可按 env 剔除 `debugger` 与大部分 `console.*`。                             |
 
 ---
 
@@ -100,6 +100,12 @@ src/
 ├── utils/             # 工具（http、date、safeStorage、theme 等）
 └── views/             # 页面视图（dashboard、login、example 等）
 ```
+
+### 💡 Example 模块定位声明
+
+- 本仓库作为企业级架构模板，包含丰富的在线演示能力。因此 `src/router/modules/example.ts` 默认参与生产构建。
+- `src/views/example/architecture/**` 目录下的页面并非废代码，而是与 `.cursor/rules/architecture/**` 规则强映射的**活体架构文档**（承载权限控制、网络桥接、状态机等核心规约的演示）。
+- **落地建议**：在实际衍生业务线时，建议开发者直接删除 `example` 目录，或通过环境变量（如 `VITE_ENABLE_DEMO`）配合 `import.meta.glob` 自行实施生产剔除。
 
 ---
 
