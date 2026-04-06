@@ -9,6 +9,7 @@
   <img src="https://img.shields.io/badge/PrimeVue-4.5-41B883?logo=primevue" alt="PrimeVue 4.5" />
   <img src="https://img.shields.io/badge/UnoCSS-66-333?logo=unocss" alt="UnoCSS" />
   <img src="https://img.shields.io/badge/Alova-3.3-5C6BC0" alt="Alova" />
+  <img src="https://img.shields.io/badge/License-GPL_v3-blue.svg" alt="License: GPL v3" />
 </p>
 
 ---
@@ -66,6 +67,15 @@ flowchart LR
 
 ---
 
+## DevOps & Open Source Workflow (工程化与自动化)
+
+- **全自动发版引擎**：集成 Google **`release-please`**，基于 [Conventional Commits](https://www.conventionalcommits.org/) 规范，全自动计算 SemVer 版本号、打 Git Tag，并生成维护良好的 **`CHANGELOG.md`**。
+- **依赖智能更新**：配置 **`dependabot`**，每周按需自动拉取依赖更新 PR，保持技术栈的前沿性与安全基线。
+- **企业级主干保护**：**Husky** 与强约束 **CI**（Type-Check & Lint Guardian）协同 **GitHub 分支保护**，拦截带病代码合入 **`main`**。
+- **开源社区规范**：内置 **Bug Report**、**Feature Request** 与 **Pull Request** 模板，规范化全球开发者的贡献流程。
+
+---
+
 ## Project Structure
 
 精简版 `src` 导览（完整模块见 `.cursor/rules` 与源码树）：
@@ -116,4 +126,4 @@ pnpm build:analyze   # 构建并配合 analyze 模式（见脚本）
 
 ## 许可证
 
-根目录未包含 `LICENSE` 文件；`package.json` 中 `private` 为 `true`。若对外开源或二次分发，请自行补充许可证与版权声明。
+本项目采用 **GNU General Public License v3.0（GPL-3.0）** 开源协议。完整条款与副本说明请参阅项目根目录下的 [`LICENSE`](LICENSE) 文件。
