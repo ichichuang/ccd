@@ -11,7 +11,7 @@ import store from '@/stores'
 import { useLocaleStore } from '@/stores/modules/locale'
 import { useSizeStore } from '@/stores/modules/size'
 import { createCustomPreset } from '@/utils/theme/primevuePreset'
-import { formControlsPt } from '@/utils/theme/ptPresets/formControlsPt'
+import { formControlsPt, OVERLAY_GLASS_CLASS } from '@/utils/theme/ptPresets/formControlsPt'
 import { menuPt } from '@/utils/theme/ptPresets/menuPt'
 
 const OVERLAY_GLASS_SHELL_CLASS = 'glass-shell'
@@ -57,7 +57,7 @@ const tabsPt = {
  */
 const overlayPt = {
   drawer: {
-    root: { class: OVERLAY_GLASS_SHELL_CLASS },
+    root: { class: OVERLAY_GLASS_CLASS },
     header: { class: BG_TRANSPARENT },
     title: { class: BG_TRANSPARENT },
     content: { class: BG_TRANSPARENT },
@@ -65,15 +65,15 @@ const overlayPt = {
     mask: { class: BG_TRANSPARENT_IMPORTANT },
   },
   popover: {
-    root: { class: OVERLAY_GLASS_SHELL_CLASS },
+    root: { class: OVERLAY_GLASS_CLASS },
     content: { class: BG_TRANSPARENT },
   },
   overlaypanel: {
-    root: { class: OVERLAY_GLASS_SHELL_CLASS },
+    root: { class: OVERLAY_GLASS_CLASS },
     content: { class: BG_TRANSPARENT },
   },
   confirmpopup: {
-    root: { class: OVERLAY_GLASS_SHELL_CLASS },
+    root: { class: OVERLAY_GLASS_CLASS },
     content: { class: BG_TRANSPARENT },
     message: { class: TEXT_FOREGROUND },
     footer: { class: BG_TRANSPARENT },

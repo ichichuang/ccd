@@ -12,7 +12,8 @@
 const GOLDEN_INPUT_ROOT =
   'border border-border bg-background text-foreground rounded-md shadow-sm shadow-foreground/10 dark:shadow-foreground/20 transition-all duration-md ease-smooth hover:border-primary/50 focus:outline-none focus:border-primary/50 ring-focus-focus'
 
-const PREMIUM_OVERLAY = ' rounded-md'
+export const OVERLAY_GLASS_CLASS =
+  'glass-panel rounded-md transform-gpu will-change-[transform,opacity] transition-[opacity,transform,backdrop-filter] duration-md ease-smooth [&.p-connected-overlay-enter-from]:opacity-0 [&.p-connected-overlay-leave-to]:opacity-0 [&.p-connected-overlay-leave-to]:backdrop-blur-none'
 
 export const formControlsPt = {
   inputtext: {
@@ -31,29 +32,36 @@ export const formControlsPt = {
   inputchips: {
     root: { class: GOLDEN_INPUT_ROOT },
   },
-  password: {
-    root: { class: GOLDEN_INPUT_ROOT },
-  },
   textarea: {
     root: { class: GOLDEN_INPUT_ROOT },
   },
   datepicker: {
     root: { class: GOLDEN_INPUT_ROOT },
-    panel: { class: PREMIUM_OVERLAY },
+    panel: { class: OVERLAY_GLASS_CLASS },
   },
   select: {
     root: { class: GOLDEN_INPUT_ROOT },
-    overlay: { class: PREMIUM_OVERLAY },
+    overlay: { class: OVERLAY_GLASS_CLASS },
   },
   multiselect: {
     root: { class: GOLDEN_INPUT_ROOT },
-    overlay: { class: PREMIUM_OVERLAY },
+    overlay: { class: OVERLAY_GLASS_CLASS },
     list: { class: 'p-0' },
   },
   autocomplete: {
     root: { class: GOLDEN_INPUT_ROOT },
-    overlay: { class: PREMIUM_OVERLAY },
-    list: { class: PREMIUM_OVERLAY },
+    overlay: { class: OVERLAY_GLASS_CLASS },
+    list: { class: OVERLAY_GLASS_CLASS },
+  },
+  treeselect: {
+    root: { class: GOLDEN_INPUT_ROOT },
+    panel: { class: OVERLAY_GLASS_CLASS },
+    overlay: { class: OVERLAY_GLASS_CLASS },
+  },
+  password: {
+    root: { class: GOLDEN_INPUT_ROOT },
+    panel: { class: OVERLAY_GLASS_CLASS },
+    overlay: { class: OVERLAY_GLASS_CLASS },
   },
   // 104-anti-flicker-ring-less: no ring/border on hover; use bg for feedback
   selectbutton: {
