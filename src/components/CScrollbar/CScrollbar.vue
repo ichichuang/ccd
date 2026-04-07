@@ -15,7 +15,7 @@
  */
 import type { ComputedRef } from 'vue'
 import { usePrimeVue } from 'primevue/config'
-import { type OverlayScrollbars } from 'overlayscrollbars'
+import { type Elements, type OverlayScrollbars, type State } from 'overlayscrollbars'
 import { OverlayScrollbarsComponent } from 'overlayscrollbars-vue'
 import { useThemeStore } from '@/stores/modules/theme'
 import {
@@ -149,11 +149,11 @@ function update(force?: boolean): boolean {
   return scrollbarRef.value?.osInstance()?.update(force) ?? false
 }
 
-function state() {
+function state(): State | undefined {
   return scrollbarRef.value?.osInstance()?.state()
 }
 
-function elements() {
+function elements(): Elements | undefined {
   return scrollbarRef.value?.osInstance()?.elements()
 }
 
@@ -252,7 +252,7 @@ defineExpose({
       <div
         role="button"
         tabindex="0"
-        class="center cursor-pointer rounded-full p-sm! border-accent! bg-accent! text-accent-foreground! hover:bg-accent-hover! transition-all duration-md hover:scale-105 active:scale-95"
+        class="center cursor-pointer rounded-full p-sm border border-primary/25 bg-primary text-primary-foreground transition-all duration-md hover:bg-primary-hover active:scale-95"
         :aria-label="backToTopAriaLabel"
         @click="scrollToTop"
         @keydown="onBackToTopKeydown"
@@ -288,16 +288,16 @@ defineExpose({
   --os-padding-perpendicular: calc(var(--spacing-xs) / 2);
   --os-padding-axis: calc(var(--spacing-xs) / 2);
 
-  /* 轨道：主色极淡铺底 */
-  background: rgb(var(--primary) / 6%);
+  /* 轨道：中性前景低透明铺底，避免品牌色侵入 */
+  background: rgb(var(--foreground) / 4%);
 
-  --os-track-bg-hover: rgb(var(--primary) / 10%);
-  --os-track-bg-active: rgb(var(--primary) / 14%);
+  --os-track-bg-hover: rgb(var(--foreground) / 7%);
+  --os-track-bg-active: rgb(var(--foreground) / 10%);
 
-  /* 滑块：默认主色低不透明度；悬停/拖拽再抬一档 */
-  --os-handle-bg: rgb(var(--primary) / 20%);
-  --os-handle-bg-hover: rgb(var(--primary) / 44%);
-  --os-handle-bg-active: rgb(var(--primary) / 58%);
+  /* 滑块：使用中性色阶，降低主题品牌耦合 */
+  --os-handle-bg: rgb(var(--foreground) / 16%);
+  --os-handle-bg-hover: rgb(var(--foreground) / 28%);
+  --os-handle-bg-active: rgb(var(--foreground) / 36%);
 
   --os-handle-border-radius: calc(var(--os-size) / 2);
 
@@ -312,13 +312,13 @@ defineExpose({
 }
 
 .c-scrollbar .os-scrollbar.os-theme-dark {
-  background: rgb(var(--primary) / 8%);
+  background: rgb(var(--foreground) / 6%);
 
-  --os-handle-bg: rgb(var(--primary) / 18%);
-  --os-handle-bg-hover: rgb(var(--primary) / 48%);
-  --os-handle-bg-active: rgb(var(--primary) / 64%);
-  --os-track-bg-hover: rgb(var(--primary) / 12%);
-  --os-track-bg-active: rgb(var(--primary) / 18%);
+  --os-handle-bg: rgb(var(--foreground) / 14%);
+  --os-handle-bg-hover: rgb(var(--foreground) / 24%);
+  --os-handle-bg-active: rgb(var(--foreground) / 34%);
+  --os-track-bg-hover: rgb(var(--foreground) / 9%);
+  --os-track-bg-active: rgb(var(--foreground) / 14%);
 }
 
 .c-scrollbar .os-scrollbar-handle {
@@ -331,7 +331,7 @@ defineExpose({
 
 .c-scrollbar .os-scrollbar-handle:hover,
 .c-scrollbar .os-scrollbar-handle:active {
-  box-shadow: 0 0 0 1px rgb(var(--primary) / 32%);
+  box-shadow: 0 0 0 1px rgb(var(--foreground) / 22%);
 }
 
 .c-scrollbar .os-scrollbar-horizontal {
@@ -352,7 +352,7 @@ defineExpose({
 .c-scrollbar-native {
   scrollbar-gutter: stable;
   scrollbar-width: thin;
-  scrollbar-color: rgb(var(--primary) / 20%) rgb(var(--primary) / 6%);
+  scrollbar-color: rgb(var(--foreground) / 16%) rgb(var(--foreground) / 4%);
 }
 
 .c-scrollbar-native::-webkit-scrollbar {
@@ -361,12 +361,12 @@ defineExpose({
 }
 
 .c-scrollbar-native::-webkit-scrollbar-track {
-  background: rgb(var(--primary) / 6%);
+  background: rgb(var(--foreground) / 4%);
   border-radius: var(--radius-lg);
 }
 
 .c-scrollbar-native::-webkit-scrollbar-thumb {
-  background: rgb(var(--primary) / 20%);
+  background: rgb(var(--foreground) / 16%);
   border-radius: calc(var(--spacing-sm) / 2);
   box-shadow: none;
   transition:
@@ -375,32 +375,32 @@ defineExpose({
 }
 
 .c-scrollbar-native::-webkit-scrollbar-thumb:hover {
-  background: rgb(var(--primary) / 44%);
-  box-shadow: 0 0 0 1px rgb(var(--primary) / 32%);
+  background: rgb(var(--foreground) / 28%);
+  box-shadow: 0 0 0 1px rgb(var(--foreground) / 22%);
 }
 
 .c-scrollbar-native::-webkit-scrollbar-thumb:active {
-  background: rgb(var(--primary) / 58%);
+  background: rgb(var(--foreground) / 36%);
 }
 
 html.dark .c-scrollbar-native {
-  scrollbar-color: rgb(var(--primary) / 18%) rgb(var(--primary) / 8%);
+  scrollbar-color: rgb(var(--foreground) / 14%) rgb(var(--foreground) / 6%);
 }
 
 html.dark .c-scrollbar-native::-webkit-scrollbar-track {
-  background: rgb(var(--primary) / 8%);
+  background: rgb(var(--foreground) / 6%);
 }
 
 html.dark .c-scrollbar-native::-webkit-scrollbar-thumb {
-  background: rgb(var(--primary) / 18%);
+  background: rgb(var(--foreground) / 14%);
 }
 
 html.dark .c-scrollbar-native::-webkit-scrollbar-thumb:hover {
-  background: rgb(var(--primary) / 48%);
-  box-shadow: 0 0 0 1px rgb(var(--primary) / 36%);
+  background: rgb(var(--foreground) / 24%);
+  box-shadow: 0 0 0 1px rgb(var(--foreground) / 24%);
 }
 
 html.dark .c-scrollbar-native::-webkit-scrollbar-thumb:active {
-  background: rgb(var(--primary) / 64%);
+  background: rgb(var(--foreground) / 34%);
 }
 </style>

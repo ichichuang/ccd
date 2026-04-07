@@ -2,8 +2,10 @@
  * CScrollbar type definitions
  */
 import type {
+  Elements,
   OverlayScrollbars,
   PartialOptions,
+  State,
   OnUpdatedEventListenerArgs,
 } from 'overlayscrollbars'
 
@@ -97,12 +99,12 @@ export interface ScrollbarInstance {
   /**
    * Get current state
    */
-  state: () => any
+  state: () => State | undefined
 
   /**
    * Get elements structure
    */
-  elements: () => any
+  elements: () => Elements | undefined
 }
 
 /**

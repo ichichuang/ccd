@@ -284,7 +284,7 @@ export interface AnimateWrapperProps {
   /**
    * 为 true 时内层不添加 `layout-full`，适用于 FAB 等不占满父级的浮动节点（避免全屏挡交互）
    *
-   * @default false
+   * @default true
    */
   omitLayoutFull?: boolean
 }

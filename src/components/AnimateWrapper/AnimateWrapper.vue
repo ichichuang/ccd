@@ -3,6 +3,7 @@ import { defaultAnimateConfig } from './utils/constants'
 import type { AnimateName, AnimateWrapperProps } from './utils/types'
 
 defineOptions({
+  name: 'AnimateWrapper',
   inheritAttrs: false,
 })
 
@@ -107,6 +108,7 @@ const handleBeforeLeave = (el: Element) => {
   <TransitionGroup
     v-else
     tag="div"
+    v-bind="$attrs"
     :enter-active-class="enterClass"
     :leave-active-class="leaveClass"
     :style="styleVars"
