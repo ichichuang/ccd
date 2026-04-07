@@ -247,10 +247,11 @@ const dialogPtCache = new WeakMap<DialogOptions, DialogPtValue>()
  * business 侧 options.pt 覆盖在默认值之上；options.maskClass 追加在默认遮罩类之后以便覆盖。
  */
 const defaultDialogPt: DialogPtValue = {
-  root: { class: 'glass-base bg-card/60! dark:bg-card/80! transform-gpu will-change-transform' },
+  root: { class: 'glass-panel bg-card/60! dark:bg-card/80! transform-gpu will-change-transform' },
   header: { class: 'bg-transparent' },
-  content: { class: 'bg-transparent' },
+  content: { class: 'bg-transparent overflow-y-auto' },
   footer: { class: 'bg-transparent' },
+  mask: { class: 'bg-background/55 backdrop-blur-sm' },
 }
 
 /**
@@ -259,11 +260,22 @@ const defaultDialogPt: DialogPtValue = {
  */
 function getDialogPt(options: DialogOptions): DialogPtValue | undefined {
   const basePt = { ...defaultDialogPt, ...(options.pt ?? {}) } as DialogPtValue
-  if (!options.maskClass) return basePt
+  const maskClassFromPt = (() => {
+    const mask = (basePt as Record<string, unknown>).mask
+    if (typeof mask === 'string') return mask
+    if (mask && typeof mask === 'object') {
+      const cls = (mask as { class?: unknown }).class
+      if (typeof cls === 'string') return cls
+    }
+    return ''
+  })()
+  const mergedMaskClass = [maskClassFromPt, options.maskClass].filter(Boolean).join(' ').trim()
+  const mergedPt = {
+    ...basePt,
+    mask: { class: mergedMaskClass },
+  } as DialogPtValue
   if (!dialogPtCache.has(options)) {
-    dialogPtCache.set(options, {
-      ...basePt,
-    })
+    dialogPtCache.set(options, mergedPt)
   }
   return dialogPtCache.get(options)
 }

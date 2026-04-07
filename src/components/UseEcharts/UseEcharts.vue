@@ -29,6 +29,7 @@ const emit = defineEmits<{
 
 const chartContainerRef = shallowRef<HTMLElement | HTMLDivElement | null>(null)
 const chartRef = shallowRef()
+const chartReadyTimer = ref<ReturnType<typeof setTimeout> | null>(null)
 
 // 联动相关状态：传 group 或 connectConfig.enabled 即视为开启
 const connectState = shallowRef<ChartConnectState>({})
@@ -271,7 +272,7 @@ const isChartInitialized = ref(false)
 
 // 组件挂载后通知图表已就绪（renderer 通过 init-options + key 在挂载时已生效）
 onMounted(() => {
-  setTimeout(() => {
+  chartReadyTimer.value = setTimeout(() => {
     const chartInstance = getEchartsInstance()
     if (chartInstance) {
       isChartInitialized.value = true
@@ -281,7 +282,13 @@ onMounted(() => {
 })
 
 // 组件卸载时清理
-onUnmounted(() => {
+onBeforeUnmount(() => {
+  if (chartReadyTimer.value !== null) {
+    clearTimeout(chartReadyTimer.value)
+    chartReadyTimer.value = null
+  }
+  const chartInstance = getEchartsInstance()
+  chartInstance?.dispose?.()
   isChartInitialized.value = false
 })
 
