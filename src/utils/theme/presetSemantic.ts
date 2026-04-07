@@ -43,7 +43,7 @@ export function buildSemanticLayer(): Record<string, unknown> {
     },
 
     list: {
-      padding: 'var(--spacing-xs) var(--spacing-sm)',
+      padding: 'var(--spacing-xs)',
       gap: 'var(--spacing-xs)',
       header: {
         padding: 'var(--spacing-xs) var(--spacing-sm)',

@@ -4,6 +4,11 @@
  */
 
 export function buildDataComponents(): Record<string, unknown> {
+  // Keep "Select All" row aligned with option text baseline.
+  // Do not simplify this padding unless option structure changes.
+  const MULTISELECT_HEADER_ALIGN_PADDING =
+    'var(--spacing-sm) calc(var(--spacing-sm) + var(--spacing-xs)) 0px calc(var(--spacing-sm) + var(--spacing-xs))'
+
   return {
     datatable: {
       headerCell: {
@@ -108,10 +113,12 @@ export function buildDataComponents(): Record<string, unknown> {
         selectedColor: 'rgb(var(--primary-foreground))',
         selectedFocusBackground: 'rgb(var(--primary))',
         selectedFocusColor: 'rgb(var(--primary-foreground))',
+        padding: '{list.option.padding}',
       },
       optionGroup: {
         background: 'rgb(var(--popover))',
         color: 'rgb(var(--muted-foreground))',
+        padding: '{list.option.group.padding}',
       },
     },
     multiselect: {
@@ -136,14 +143,18 @@ export function buildDataComponents(): Record<string, unknown> {
         focusColor: 'rgb(var(--primary-light-foreground))',
         selectedBackground: 'rgb(var(--primary))',
         selectedColor: 'rgb(var(--primary-foreground))',
+        padding: '{list.option.padding}',
+        gap: 'var(--spacing-xs)',
       },
       optionGroup: {
         background: 'rgb(var(--popover))',
         color: 'rgb(var(--muted-foreground))',
+        padding: '{list.option.group.padding}',
       },
       list: {
+        padding: '{list.padding}',
         header: {
-          padding: 'var(--spacing-sm) var(--spacing-md) 0 var(--spacing-md)',
+          padding: MULTISELECT_HEADER_ALIGN_PADDING,
         },
       },
     },
@@ -171,14 +182,15 @@ export function buildDataComponents(): Record<string, unknown> {
         color: 'rgb(var(--popover-foreground))',
         focusBackground: 'rgb(var(--primary-light))',
         focusColor: 'rgb(var(--primary-light-foreground))',
+        padding: '{list.option.padding}',
       },
     },
     tree: {
       root: {
-        padding: 'var(--spacing-xs)',
+        padding: '{navigation.item.padding}',
       },
       node: {
-        padding: 'var(--spacing-xs) var(--spacing-sm)',
+        padding: 'var(--spacing-xs)',
         borderRadius: '{content.border.radius}',
         hoverBackground: '{content.hover.background}',
         selectedBackground: '{highlight.background}',
@@ -219,6 +231,7 @@ export function buildDataComponents(): Record<string, unknown> {
           hoverBackground: 'rgb(var(--primary-hover) / 0.15)',
           selectedBackground: 'rgb(var(--primary))',
           selectedColor: 'rgb(var(--primary-foreground))',
+          padding: '{navigation.item.padding}',
         },
       },
     },
@@ -241,6 +254,7 @@ export function buildDataComponents(): Record<string, unknown> {
       list: {
         background: 'rgb(var(--popover))',
         borderColor: 'rgb(var(--border))',
+        padding: '{list.padding}',
       },
       option: {
         color: 'rgb(var(--popover-foreground))',
@@ -248,6 +262,7 @@ export function buildDataComponents(): Record<string, unknown> {
         focusColor: 'rgb(var(--primary-light-foreground))',
         selectedBackground: 'rgb(var(--primary))',
         selectedColor: 'rgb(var(--primary-foreground))',
+        padding: '{list.option.padding}',
       },
       colorScheme: {
         light: {

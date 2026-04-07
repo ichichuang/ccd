@@ -290,6 +290,9 @@ export function buildFormComponents(colors: ColorAdapter): Record<string, unknow
         color: 'rgb(var(--popover-foreground))',
         borderRadius: 'var(--radius-md)',
       },
+      list: {
+        padding: '{list.padding}',
+      },
       option: {
         color: 'rgb(var(--popover-foreground))',
         focusBackground: 'rgb(var(--primary-light))',
@@ -298,10 +301,12 @@ export function buildFormComponents(colors: ColorAdapter): Record<string, unknow
         selectedColor: 'rgb(var(--primary-foreground))',
         selectedFocusBackground: 'rgb(var(--primary))',
         selectedFocusColor: 'rgb(var(--primary-foreground))',
+        padding: '{list.option.padding}',
       },
       optionGroup: {
         background: 'rgb(var(--popover))',
         color: 'rgb(var(--muted-foreground))',
+        padding: '{list.option.group.padding}',
       },
       colorScheme: {
         dark: {
@@ -322,6 +327,7 @@ export function buildFormComponents(colors: ColorAdapter): Record<string, unknow
         background: 'rgb(var(--popover))',
         borderColor: 'rgb(var(--border))',
         color: 'rgb(var(--popover-foreground))',
+        padding: '{overlay.popover.padding}',
       },
       strengthMeter: {
         background: 'rgb(var(--muted))',

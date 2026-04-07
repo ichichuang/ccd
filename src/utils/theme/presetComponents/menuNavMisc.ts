@@ -17,6 +17,7 @@ export function buildMenuNavMiscComponents(): Record<string, unknown> {
         color: 'rgb(var(--popover-foreground))',
         focusBackground: 'rgb(var(--primary-light))',
         focusColor: 'rgb(var(--primary-light-foreground))',
+        padding: 'var(--spacing-xs) var(--spacing-sm)',
       },
     },
     menubar: {
@@ -101,6 +102,12 @@ export function buildMenuNavMiscComponents(): Record<string, unknown> {
       root: {
         background: 'transparent',
         borderColor: 'rgb(var(--border))',
+        padding: 'var(--spacing-xs)',
+        gap: 'var(--spacing-xs)',
+      },
+      navButton: {
+        width: 'calc(var(--spacing-2xl) - var(--spacing-sm))',
+        height: 'calc(var(--spacing-2xl) - var(--spacing-sm))',
       },
       current: {
         background: 'rgb(var(--secondary))',
@@ -126,9 +133,9 @@ export function buildMenuNavMiscComponents(): Record<string, unknown> {
         color: 'rgb(var(--foreground))',
         focusColor: 'inherit',
         activeColor: 'inherit',
-        padding: 'var(--spacing-sm) var(--spacing-md)',
+        padding: '{navigation.item.padding}',
         borderRadius: 'var(--radius-sm)',
-        gap: 'var(--spacing-sm)',
+        gap: '{navigation.item.gap}',
         icon: {
           color: 'rgb(var(--foreground))',
           focusColor: 'inherit',

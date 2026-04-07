@@ -40,6 +40,13 @@ import { buildAllComponents } from './presetComponents'
 //      --radius-* 及布局变量（--sidebar-width、--header-height 等）均随模式更新。
 //    - Preset 仅引用变量名（如 var(--font-size-md)），不随尺寸切换重建；控件根尺寸
 //      （按钮/输入框的 sm/md/lg）与布局均由 :root 变量值变化而缩放，无需按 mode 区分 token 名。
+//
+// 6. SSOT 管辖矩阵（必须遵守）：
+//    - PT 层（ptPresets/* + plugins/modules/primevue.ts）:
+//      仅负责视觉材质与动效（glass/motion/transition），禁止密度类覆盖（p-*/px-*/py-*）。
+//    - Token 层（presetSemantic.ts + presetComponents/*）:
+//      负责尺寸与密度（padding/gap/radius），作为全局紧凑度单一真源。
+//    - 若同一属性在两层同时定义，以 PT 最终 CSS 优先，属于治理违规，应回收至 Token 层。
 // -----------------------------------------------------------------------------
 
 type RootSizeTokens = {

@@ -86,6 +86,7 @@ export function buildOverlayComponents(): Record<string, unknown> {
           content: {
             background: 'rgb(var(--popover))',
             color: 'rgb(var(--popover-foreground))',
+            padding: '{overlay.popover.padding}',
           },
         },
         dark: {
@@ -97,6 +98,7 @@ export function buildOverlayComponents(): Record<string, unknown> {
           content: {
             background: 'rgb(var(--popover))',
             color: 'rgb(var(--popover-foreground))',
+            padding: '{overlay.popover.padding}',
           },
         },
       },
@@ -111,12 +113,13 @@ export function buildOverlayComponents(): Record<string, unknown> {
       content: {
         background: 'rgb(var(--popover))',
         color: 'rgb(var(--popover-foreground))',
+        padding: '{overlay.popover.padding}',
       },
       icon: {
         color: 'rgb(var(--popover-foreground))',
       },
       footer: {
-        padding: 'var(--spacing-md) var(--spacing-md)',
+        padding: '0 {overlay.popover.padding} {overlay.popover.padding} {overlay.popover.padding}',
       },
     },
     tooltip: {
@@ -131,6 +134,9 @@ export function buildOverlayComponents(): Record<string, unknown> {
         borderColor: 'rgb(var(--border))',
         color: 'rgb(var(--popover-foreground))',
         borderRadius: 'var(--radius-md)',
+      },
+      content: {
+        padding: '{overlay.popover.padding}',
       },
     },
   }

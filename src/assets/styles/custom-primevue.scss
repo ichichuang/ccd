@@ -3,6 +3,15 @@
  * 完美融合项目主题系统 CSS 变量
  * ============================================ */
 
+/* .pv-input-fluid: PrimeVue 专属上下文类，强制输入组件宽度 100%。
+   仅用于包裹 InputText / Select 等 PrimeVue 输入组件。
+   禁止用于通用容器（通用全宽请用 w-full 或 layout-full）。 */
+.pv-input-fluid {
+  .p-inputtext {
+    width: 100% !important;
+  }
+}
+
 .c-scrollbar-native {
   /* 原生滚动条样式 */
   &::-webkit-scrollbar {
@@ -101,15 +110,6 @@
     background: rgb(var(--card)) !important;
     border-color: rgb(var(--border)) !important;
     color: rgb(var(--card-foreground)) !important;
-  }
-}
-
-/* .pv-input-fluid: PrimeVue 专属上下文类，强制输入组件宽度 100%。
-   仅用于包裹 InputText / Select 等 PrimeVue 输入组件。
-   禁止用于通用容器（通用全宽请用 w-full 或 layout-full）。 */
-.pv-input-fluid {
-  .p-inputtext {
-    width: 100% !important;
   }
 }
 

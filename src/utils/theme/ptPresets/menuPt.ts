@@ -6,18 +6,18 @@
  * 与 wrapper/图标/文字同节奏过渡，覆盖 PrimeVue 默认 transition。
  */
 
-import { OPTION_TRANSITION_CLASS, OVERLAY_GLASS_CLASS } from './formControlsPt'
+import { OPTION_TRANSITION_CLASS, OVERLAY_GLASS_COMPACT_CLASS } from './formControlsPt'
 
 const MENU_ACTION_BASE =
-  'p-0 bg-transparent hover:bg-transparent focus:bg-transparent active:bg-transparent border-none outline-none'
+  'bg-transparent hover:bg-transparent focus:bg-transparent active:bg-transparent border-none outline-none'
 
 export const menuPt = {
   tieredmenu: {
     root: {
-      class: `${OVERLAY_GLASS_CLASS} shadow-sm dark:shadow-md rounded-md shadow-md dark:shadow-lg outline-none`,
+      class: `${OVERLAY_GLASS_COMPACT_CLASS} shadow-sm dark:shadow-md rounded-md shadow-md dark:shadow-lg outline-none`,
     },
     menu: {
-      class: 'bg-transparent py-xs rounded-md outline-none',
+      class: 'bg-transparent rounded-md outline-none',
     },
     menuitem: {
       class: 'rounded-sm outline-none',
@@ -25,7 +25,7 @@ export const menuPt = {
     content: {
       class: 'rounded-md outline-none',
     },
-    action: {
+    itemContent: {
       class: `${MENU_ACTION_BASE} ${OPTION_TRANSITION_CLASS}`,
     },
   },
@@ -43,10 +43,10 @@ export const menuPt = {
       class: 'outline-none',
     },
     content: {
-      class: 'py-0 px-0 outline-none',
+      class: 'outline-none',
     },
     menu: {
-      class: 'gap-xs p-0 m-0 list-none outline-none',
+      class: 'gap-xs m-0 list-none outline-none',
     },
     menuitem: {
       class: 'outline-none',
@@ -54,17 +54,17 @@ export const menuPt = {
   },
   menu: {
     root: {
-      class: OVERLAY_GLASS_CLASS,
+      class: OVERLAY_GLASS_COMPACT_CLASS,
     },
     list: {
       class: 'bg-transparent',
     },
-    action: {
+    itemContent: {
       class: `${MENU_ACTION_BASE} ${OPTION_TRANSITION_CLASS}`,
     },
   },
   contextmenu: {
-    action: {
+    itemContent: {
       class: `${MENU_ACTION_BASE} ${OPTION_TRANSITION_CLASS}`,
     },
   },

@@ -400,3 +400,30 @@ export function preload(): void {
   // 单次 cssText 写入：阶梯 + 字体 + 布局，消除首帧 FOUC
   applyAllSizeVars(vars, decision, layoutDimensions)
 }
+
+/**
+ * 解析尺寸模式对应的预设（与 size store / preload 同源回退链）
+ */
+export function getPresetBySizeMode(mode: SizeMode): SizePreset {
+  return (
+    SIZE_PRESETS.find(p => p.name === mode) ??
+    SIZE_PRESETS.find(p => p.name === DEFAULT_SIZE_NAME) ??
+    SIZE_PRESETS[0]
+  )
+}
+
+/**
+ * ProTable 等组件在子树根上局部覆盖「内容区」尺寸变量（不修改 :root），
+ * 与 `generateSizeVars(preset)` 同源，含间距/圆角/过渡/字体阶梯及 `--font-size-root`。
+ * 不含布局壳层变量（侧栏、顶栏高度等），故不影响全局 Shell。
+ */
+export function getScopedContentSizeVars(mode: SizeMode): Record<string, string> {
+  const preset = getPresetBySizeMode(mode)
+  const vars = generateSizeVars(preset)
+  const out: Record<string, string> = {}
+  for (const [key, value] of Object.entries(vars)) {
+    if (value != null) out[key] = value
+  }
+  out['--font-size-root'] = `${preset.fontSizeBase}px`
+  return out
+}
