@@ -11,6 +11,7 @@ import { SchemaNormalizer } from '../schema/SchemaNormalizer'
 import { LifecycleManager } from './LifecycleManager'
 import { DraftStorage } from '../persistence/DraftStorage'
 import { PRO_FORM_TIMING_DEFAULTS } from '../config'
+import { deepClone } from '@/utils/lodashes'
 import type {
   FieldSchema,
   FormSchema,
@@ -60,11 +61,12 @@ export class FormController<TValues extends ValuesRecord = ValuesRecord> {
     this.schema = SchemaNormalizer.normalize(options.schema) as FormSchema
 
     // 持久化草稿恢复：draft 覆盖 initialValues（必须在 SubscriptionStore 初始化之前完成）
-    const baseInitialValues = (options.initialValues ?? {}) as Partial<TValues>
-    const draft =
+    const baseInitialValues = deepClone((options.initialValues ?? {}) as Partial<TValues>)
+    const draftRaw =
       options.persistKey && options.persistKey.length > 0
         ? DraftStorage.load(options.persistKey)
         : null
+    const draft = draftRaw ? (deepClone(draftRaw) as Partial<TValues>) : null
     const effectiveInitialValues = {
       ...baseInitialValues,
       ...(draft ?? {}),
@@ -105,11 +107,12 @@ export class FormController<TValues extends ValuesRecord = ValuesRecord> {
       const hasInitial =
         Object.prototype.hasOwnProperty.call(initialValues, fieldName) &&
         (initialValues as ValuesRecord)[fieldName] !== undefined
-      const value = (
+      const sourceValue = (
         hasInitial
           ? (initialValues as ValuesRecord)[fieldName]
           : (field as FieldSchema<unknown>).defaultValue
       ) as TValues[keyof TValues] | undefined
+      const value = deepClone(sourceValue) as TValues[keyof TValues] | undefined
 
       const initialState: FieldState<unknown> = {
         value,
@@ -316,9 +319,10 @@ export class FormController<TValues extends ValuesRecord = ValuesRecord> {
    */
   reset(initialValues?: Partial<TValues>): void {
     if (initialValues && Object.keys(initialValues as ValuesRecord).length > 0) {
+      const clonedInitials = deepClone(initialValues) as Partial<TValues>
       this.effectiveInitials = {
         ...this.effectiveInitials,
-        ...initialValues,
+        ...clonedInitials,
       }
     }
 
@@ -333,11 +337,12 @@ export class FormController<TValues extends ValuesRecord = ValuesRecord> {
         Object.prototype.hasOwnProperty.call(source, fieldName) &&
         (source as ValuesRecord)[fieldName] !== undefined
 
-      const nextValue = (
+      const sourceValue = (
         hasInitial
           ? (source as ValuesRecord)[fieldName]
           : (schema as FieldSchema<unknown> | undefined)?.defaultValue
       ) as TValues[typeof fieldName] | undefined
+      const nextValue = deepClone(sourceValue) as TValues[typeof fieldName] | undefined
 
       const existingState = (this.store.getFieldState(fieldName) as
         | FieldState<unknown>
@@ -417,7 +422,10 @@ export class FormController<TValues extends ValuesRecord = ValuesRecord> {
       if (!this.fieldNames.includes(fieldName)) return
       const value = values[fieldName]
 
-      this.store.setFieldValue(fieldName, value as TValues[typeof fieldName])
+      this.store.setFieldValue(
+        fieldName,
+        deepClone(value as TValues[typeof fieldName]) as TValues[typeof fieldName]
+      )
       this.transactionManager.updateField(fieldName)
     })
 

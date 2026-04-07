@@ -102,6 +102,16 @@ const getRootGridWrapperStyle = (node: FormSchemaNode): Record<string, string> =
 
 const internalSchema = reactive<FormSchema>(deepClone(props.schema))
 
+watch(
+  () => props.schema,
+  nextSchema => {
+    const cloned = deepClone(nextSchema)
+    internalSchema.layout = cloned.layout
+    internalSchema.fields = cloned.fields
+  },
+  { deep: true }
+)
+
 const hasVisibleFields = computed(() => internalSchema.fields.length > 0)
 
 const emit = defineEmits<{

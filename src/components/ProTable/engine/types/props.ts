@@ -37,6 +37,21 @@ export interface RequestConfig {
 export type ProTableApiMethod = 'GET' | 'POST'
 
 /**
+ * apiUrl 模式下的外部请求执行器上下文（防腐层注入）
+ */
+export interface ProTableApiExecutorContext {
+  url: string
+  method: ProTableApiMethod
+  query: ProTableApiQueryParams
+  config?: HttpRequestConfig
+}
+
+/**
+ * apiUrl 模式下的请求执行器（由业务层注入，避免 ProTable 耦合具体请求库）
+ */
+export type ProTableApiExecutor = (ctx: ProTableApiExecutorContext) => Promise<unknown>
+
+/**
  * Configurable search-path resolver.
  * Receives the base URL and the current formatted query params.
  * Returns the final URL to call (e.g., '/users' -> '/users/search').
@@ -48,6 +63,29 @@ export type SearchPathResolver = (
 ) => string
 
 export type HeightMode = 'fill' | 'auto' | 'fixed'
+
+export interface ProTableUrlSyncOptions {
+  /**
+   * 是否启用 URL query 同步（分页/排序/关键字）
+   * @default true
+   */
+  enabled?: boolean
+  /**
+   * query key 映射，可用于同页多表隔离
+   */
+  keys?: {
+    page?: string
+    pageSize?: string
+    sortField?: string
+    sortDirection?: string
+    keyword?: string
+  }
+  /**
+   * 路由写回方式
+   * @default 'replace'
+   */
+  mode?: 'replace' | 'push'
+}
 
 /**
  * Extra query params merged into api/apiUrl requests (e.g. ProForm filter object).
@@ -62,6 +100,8 @@ export interface ProTableProps<T extends Record<string, unknown> = Record<string
   loading?: boolean
   rowKey?: keyof T | string
   showToolbar?: boolean
+  /** 工具栏是否显示表格区域尺寸密度切换（紧凑 / 适中 / 宽松）；仅在 ProTable 内容子树覆盖 CSS 变量，不改全局 `useSizeStore`。 @default true */
+  showDensityControl?: boolean
   title?: string
   selectable?: false | 'single' | 'checkbox'
   /**
@@ -104,6 +144,11 @@ export interface ProTableProps<T extends Record<string, unknown> = Record<string
 
   /** Optional controlled selection (v-model:selected). Single mode: T | undefined; checkbox: T[] */
   selected?: T[] | T
+  /**
+   * Checkbox 多选时的最大条数；超出时不再追加选中，且从父级同步 / DataTable 回写时会截断。
+   * 不传则不限制。
+   */
+  maxSelection?: number
   /** Enable Virtual Grid engine (bypass PrimeVue DataTable) */
   virtualScroll?: boolean
 
@@ -115,7 +160,7 @@ export interface ProTableProps<T extends Record<string, unknown> = Record<string
   request?: RequestFn<T>
   /**
    * 黑盒 API：返回原始响应，配合 `dataKey` / `totalKey` 解包。
-   * 若同时提供 `api` 与 `request`，优先使用 `api`。
+   * 若同时提供 `api` 与 `request`，优先使用 `request`。
    */
   api?: ProTableApiFn
   /** 列表数据在响应中的路径，默认 `data`（支持 `data.records` 等点路径）。 */
@@ -127,14 +172,19 @@ export interface ProTableProps<T extends Record<string, unknown> = Record<string
 
   /**
    * Config-driven API mode: HTTP endpoint URL.
-   * When set, ProTable internally imports and calls the HTTP layer.
+   * 当设置该字段时，ProTable 会通过 `apiExecutor` 执行请求。
    * Priority: request > api > apiUrl.
    */
   apiUrl?: string
   /** HTTP method for config-driven mode. @default 'GET' */
   apiMethod?: ProTableApiMethod
-  /** Extra HTTP config passed to the underlying get()/post() call (headers, timeout, enableCache, retry, etc.) */
+  /** Extra HTTP config passed to external apiExecutor (headers, timeout, enableCache, retry, etc.) */
   apiConfig?: HttpRequestConfig
+  /**
+   * apiUrl 模式的请求执行器（防腐层）
+   * 未提供时，apiUrl 模式将抛错，避免组件直接绑定底层请求库
+   */
+  apiExecutor?: ProTableApiExecutor
   /**
    * Custom search-path resolver for config-driven mode.
    * Called when filter.global is non-empty.
@@ -144,6 +194,13 @@ export interface ProTableProps<T extends Record<string, unknown> = Record<string
   searchPathResolver?: SearchPathResolver | false
   /** Additional query params merged with formatted table params (api/apiUrl modes only). */
   searchParams?: ProTableSearchParams
+  /**
+   * URL query 同步配置：
+   * - true: 使用默认 keys 与 replace
+   * - false/undefined: 禁用
+   * - object: 自定义策略
+   */
+  urlSync?: boolean | ProTableUrlSyncOptions
 }
 
 export interface ProTableLoadParams {

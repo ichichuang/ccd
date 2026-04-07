@@ -302,3 +302,39 @@ export interface ProFormPlugin {
   name: string
   install: (ctx: ProFormPluginContext) => void
 }
+
+export type TypedFieldSchema<
+  TValues extends Record<string, unknown>,
+  K extends keyof TValues & string,
+> = Omit<
+  FieldSchema<TValues[K]>,
+  'name' | 'computed' | 'visibleIf' | 'disabledIf' | 'requiredIf'
+> & {
+  name: K
+  computed?: ComputedFunction<TValues[K], TValues>
+  visibleIf?: LogicFunction<TValues>
+  disabledIf?: LogicFunction<TValues>
+  requiredIf?: LogicFunction<TValues>
+}
+
+export type TypedFormSchemaNode<TValues extends Record<string, unknown>> =
+  | {
+      [K in keyof TValues & string]: TypedFieldSchema<TValues, K>
+    }[keyof TValues & string]
+  | (Omit<GroupSchema, 'children'> & { children: TypedFormSchemaNode<TValues>[] })
+
+export interface TypedFormSchema<TValues extends Record<string, unknown>> extends Omit<
+  FormSchema,
+  'fields'
+> {
+  fields: TypedFormSchemaNode<TValues>[]
+}
+
+/**
+ * 编译期 schema 收敛辅助函数（运行时零开销）
+ */
+export function defineFormSchema<TValues extends Record<string, unknown>>(
+  schema: TypedFormSchema<TValues>
+): TypedFormSchema<TValues> {
+  return schema
+}
