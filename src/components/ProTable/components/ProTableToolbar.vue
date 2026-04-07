@@ -7,18 +7,43 @@ interface ColumnMeta {
   title: string | (() => VNode)
 }
 
-const props = defineProps<{
-  title?: string
-  showGlobalFilter?: boolean
-  columns: ColumnMeta[]
-  visibleColumnIds: Set<string>
-  serverMode?: boolean
-  isFullscreen?: boolean
-  hasSelection?: boolean
-}>()
+const props = withDefaults(
+  defineProps<{
+    title?: string
+    /** 是否显示表格区域尺寸密度切换（紧凑 / 适中 / 宽松），仅影响 ProTable 内容区 */
+    showDensityControl?: boolean
+    /** 当前表格密度（与父级 v-model 同步） */
+    density?: SizeMode
+    showGlobalFilter?: boolean
+    columns: ColumnMeta[]
+    visibleColumnIds: Set<string>
+    serverMode?: boolean
+    isFullscreen?: boolean
+    hasSelection?: boolean
+  }>(),
+  {
+    title: undefined,
+    showDensityControl: true,
+    density: 'comfortable',
+  }
+)
+
+const densityOptions = computed(() => [
+  { value: 'compact' as SizeMode, label: ($t('proTable.densityCompact') as string) || '' },
+  { value: 'comfortable' as SizeMode, label: ($t('proTable.densityComfortable') as string) || '' },
+  { value: 'loose' as SizeMode, label: ($t('proTable.densityLoose') as string) || '' },
+])
+
+const densityPanel = ref<{ toggle: (e: Event) => void; hide: () => void } | null>(null)
+
+function pickDensity(mode: SizeMode): void {
+  emit('update:density', mode)
+  densityPanel.value?.hide()
+}
 
 const emit = defineEmits<{
   'update:globalFilter': [val: string]
+  'update:density': [mode: SizeMode]
   'toggle-column': [id: string]
   refresh: []
   'toggle-fullscreen': []
@@ -79,6 +104,30 @@ const toolbarBtnClass =
     <div class="flex items-center gap-xs flex-nowrap shrink-0">
       <slot name="toolbar-extra" />
 
+      <!-- Table row density -->
+      <Button
+        v-if="showDensityControl"
+        text
+        :class="toolbarBtnClass"
+        :aria-label="$t('proTable.densityAria')"
+        @click="densityPanel?.toggle($event)"
+      >
+        <Icons name="i-lucide-rows-3" />
+      </Button>
+      <Popover ref="densityPanel">
+        <div class="col-between gap-xs">
+          <div
+            v-for="opt in densityOptions"
+            :key="opt.value"
+            class="cursor-pointer px-md py-sm rounded-md hover:bg-muted transition-all duration-md"
+            :class="density === opt.value ? '!bg-primary/20 text-primary font-semibold' : ''"
+            @click="pickDensity(opt.value)"
+          >
+            <span class="text-sm">{{ opt.label }}</span>
+          </div>
+        </div>
+      </Popover>
+
       <!-- Export -->
       <Button
         text
@@ -127,11 +176,11 @@ const toolbarBtnClass =
       </Button>
 
       <Popover ref="settingsPanel">
-        <div class="flex flex-col gap-xs p-sm min-w-[var(--spacing-5xl)]">
+        <div class="flex flex-col gap-sm min-w-[var(--spacing-5xl)]">
           <div
             v-for="col in columns"
             :key="col.id"
-            class="row-between py-xs"
+            class="row-between gap-md"
           >
             <span class="text-sm">{{ typeof col.title === 'string' ? col.title : col.id }}</span>
             <ToggleSwitch

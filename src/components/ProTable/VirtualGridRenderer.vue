@@ -9,21 +9,69 @@ import ProTableCell from './components/ProTableCell'
 import { VIRTUAL_GRID_DEFAULTS } from './engine/config'
 import { objectGet } from '@/utils/lodashes'
 
-const props = defineProps<{
-  controller: TableController<T>
-  columns: ProTableColumn<T>[]
-  data: T[]
-  stripedRows?: boolean
-  showHorizontalLines?: boolean
-  showVerticalLines?: boolean
-  rowHover?: boolean
-  rowClassName?: (row: T, index: number) => string
-  selectable?: false | 'single' | 'checkbox'
-}>()
+const props = withDefaults(
+  defineProps<{
+    controller: TableController<T>
+    columns: ProTableColumn<T>[]
+    data: T[]
+    /** 与 ProTable 表格区密度一致，驱动虚拟行 padding / 字号 */
+    density?: SizeMode
+    stripedRows?: boolean
+    showHorizontalLines?: boolean
+    showVerticalLines?: boolean
+    rowHover?: boolean
+    rowClassName?: (row: T, index: number) => string
+    selectable?: false | 'single' | 'checkbox'
+  }>(),
+  { density: 'comfortable', rowClassName: undefined, selectable: false }
+)
 
 const emit = defineEmits<{
   'sort-change': [sort: SortState]
 }>()
+
+const virtualHeaderShellClass = computed(() => {
+  const d = props.density ?? 'comfortable'
+  const map: Record<SizeMode, string> = {
+    compact: 'px-sm min-w-0 bg-muted font-medium py-xs',
+    comfortable: 'px-md min-w-0 bg-muted font-medium py-sm',
+    loose: 'px-lg min-w-0 bg-muted font-medium py-md',
+  }
+  return map[d]
+})
+
+const virtualHeaderTitleClass = computed(() => {
+  const d = props.density ?? 'comfortable'
+  const map: Record<SizeMode, string> = {
+    compact:
+      'flex flex-row items-center gap-xs w-full text-xs! font-semibold text-muted-foreground uppercase tracking-wider',
+    comfortable:
+      'flex flex-row items-center gap-xs w-full text-xs! font-semibold text-muted-foreground uppercase tracking-wider',
+    loose:
+      'flex flex-row items-center gap-xs w-full text-sm! font-semibold text-muted-foreground uppercase tracking-wider',
+  }
+  return map[d]
+})
+
+const virtualBodyCellClass = computed(() => {
+  const d = props.density ?? 'comfortable'
+  const map: Record<SizeMode, string> = {
+    compact: 'flex flex-row items-center text-xs text-ellipsis-1 px-sm py-xs',
+    comfortable: 'flex flex-row items-center text-sm text-ellipsis-1 px-md py-sm',
+    loose: 'flex flex-row items-center text-base text-ellipsis-1 px-lg py-md',
+  }
+  return map[d]
+})
+
+const virtualEstimateRowPx = computed(() => {
+  const d = props.density ?? 'comfortable'
+  const map: Record<SizeMode, number> = {
+    compact: 40,
+    comfortable: VIRTUAL_GRID_DEFAULTS.estimateRowHeightPx,
+    loose: 56,
+  }
+  return map[d]
+})
 
 const scrollContainerRef = ref<HTMLElement | null>(null)
 const centerHeaderScrollRef = ref<HTMLElement | null>(null)
@@ -143,6 +191,15 @@ function sortIcon(col: ProTableColumn<T>): string {
   return 'i-lucide-chevron-down'
 }
 
+function getAriaSort(col: ProTableColumn<T>): 'ascending' | 'descending' | 'none' | undefined {
+  if (!col.sortable) return undefined
+  const field = String(col.field ?? col.id)
+  if (props.controller.state.sort.field !== field) return 'none'
+  if (props.controller.state.sort.direction === 'asc') return 'ascending'
+  if (props.controller.state.sort.direction === 'desc') return 'descending'
+  return 'none'
+}
+
 const ResolvedTag = resolveComponent('Tag')
 
 function renderCell(col: ProTableColumn<T>, row: T, index: number) {
@@ -214,7 +271,7 @@ const rowVirtualizer = useVirtualizer(
   computed(() => ({
     count: processedRows.value.length,
     getScrollElement: () => scrollContainerRef.value,
-    estimateSize: () => VIRTUAL_GRID_DEFAULTS.estimateRowHeightPx,
+    estimateSize: () => virtualEstimateRowPx.value,
     overscan: VIRTUAL_GRID_DEFAULTS.overscan,
     // Use real DOM height to avoid visual drift caused by estimateSize vs actual `py-*` row padding.
     measureElement: element => element.getBoundingClientRect().height,
@@ -284,6 +341,7 @@ useEventListener(centerBodyScrollRef, 'scroll', () => {
 <template>
   <div
     ref="scrollContainerRef"
+    role="grid"
     class="c-scrollbar-native layout-full overflow-auto"
   >
     <div class="relative">
@@ -302,8 +360,10 @@ useEventListener(centerBodyScrollRef, 'scroll', () => {
             <div
               v-for="(col, colIndex) in leftPinnedColumns"
               :key="'lh-' + getColumnKey(col)"
+              role="columnheader"
+              :aria-sort="getAriaSort(col)"
               :class="[
-                'px-md min-w-0 bg-muted font-medium py-sm',
+                virtualHeaderShellClass,
                 {
                   'pro-table-v-line': showVerticalLines && colIndex < leftPinnedColumns.length - 1,
                 },
@@ -311,11 +371,14 @@ useEventListener(centerBodyScrollRef, 'scroll', () => {
             >
               <div
                 :class="[
-                  'flex flex-row items-center gap-xs w-full text-xs! font-semibold text-muted-foreground uppercase tracking-wider',
+                  virtualHeaderTitleClass,
                   getHeaderAlignClass(col),
                   { 'cursor-pointer': col.sortable },
                 ]"
+                :tabindex="col.sortable ? 0 : -1"
                 @click="handleSortClick(col)"
+                @keydown.enter.prevent="handleSortClick(col)"
+                @keydown.space.prevent="handleSortClick(col)"
               >
                 <ProTableCell :node="renderHeader(col)" />
                 <Icons
@@ -344,18 +407,23 @@ useEventListener(centerBodyScrollRef, 'scroll', () => {
               <div
                 v-for="(col, colIndex) in centerColumns"
                 :key="'ch-' + getColumnKey(col)"
+                role="columnheader"
+                :aria-sort="getAriaSort(col)"
                 :class="[
-                  'px-md min-w-0 bg-muted font-medium py-sm',
+                  virtualHeaderShellClass,
                   { 'pro-table-v-line': showVerticalLines && colIndex < centerColumns.length - 1 },
                 ]"
               >
                 <div
                   :class="[
-                    'flex flex-row items-center gap-xs w-full text-xs! font-semibold text-muted-foreground uppercase tracking-wider',
+                    virtualHeaderTitleClass,
                     getHeaderAlignClass(col),
                     { 'cursor-pointer': col.sortable },
                   ]"
+                  :tabindex="col.sortable ? 0 : -1"
                   @click="handleSortClick(col)"
+                  @keydown.enter.prevent="handleSortClick(col)"
+                  @keydown.space.prevent="handleSortClick(col)"
                 >
                   <ProTableCell :node="renderHeader(col)" />
                   <Icons
@@ -378,8 +446,10 @@ useEventListener(centerBodyScrollRef, 'scroll', () => {
             <div
               v-for="(col, colIndex) in rightPinnedColumns"
               :key="'rh-' + getColumnKey(col)"
+              role="columnheader"
+              :aria-sort="getAriaSort(col)"
               :class="[
-                'px-md min-w-0 bg-muted font-medium py-sm',
+                virtualHeaderShellClass,
                 {
                   'pro-table-v-line': showVerticalLines && colIndex < rightPinnedColumns.length - 1,
                 },
@@ -387,11 +457,14 @@ useEventListener(centerBodyScrollRef, 'scroll', () => {
             >
               <div
                 :class="[
-                  'flex flex-row items-center gap-xs w-full text-xs! font-semibold text-muted-foreground uppercase tracking-wider',
+                  virtualHeaderTitleClass,
                   getHeaderAlignClass(col),
                   { 'cursor-pointer': col.sortable },
                 ]"
+                :tabindex="col.sortable ? 0 : -1"
                 @click="handleSortClick(col)"
+                @keydown.enter.prevent="handleSortClick(col)"
+                @keydown.space.prevent="handleSortClick(col)"
               >
                 <ProTableCell :node="renderHeader(col)" />
                 <Icons
@@ -454,7 +527,7 @@ useEventListener(centerBodyScrollRef, 'scroll', () => {
                 v-for="(col, colIndex) in leftPinnedColumns"
                 :key="'lbc-' + getColumnKey(col)"
                 :class="[
-                  'flex flex-row items-center text-sm text-ellipsis-1 px-md py-sm',
+                  virtualBodyCellClass,
                   getBodyJustifyClass(col),
                   {
                     'pro-table-v-line':
@@ -518,7 +591,7 @@ useEventListener(centerBodyScrollRef, 'scroll', () => {
                 v-for="(col, colIndex) in centerColumns"
                 :key="'cbc-' + getColumnKey(col)"
                 :class="[
-                  'flex flex-row items-center text-sm text-ellipsis-1 px-md py-sm',
+                  virtualBodyCellClass,
                   getBodyJustifyClass(col),
                   { 'pro-table-v-line': showVerticalLines && colIndex < centerColumns.length - 1 },
                 ]"
@@ -580,7 +653,7 @@ useEventListener(centerBodyScrollRef, 'scroll', () => {
                 v-for="(col, colIndex) in rightPinnedColumns"
                 :key="'rbc-' + getColumnKey(col)"
                 :class="[
-                  'flex flex-row items-center text-sm text-ellipsis-1 px-md py-sm',
+                  virtualBodyCellClass,
                   getBodyJustifyClass(col),
                   {
                     'pro-table-v-line':

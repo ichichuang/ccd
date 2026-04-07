@@ -141,6 +141,13 @@ const emit = defineEmits<{
   'request-error': [error: Error]
 }>()
 
+if (import.meta.env.DEV && props.apiUrl && !props.apiExecutor) {
+  console.error(
+    '[ProTable] apiUrl mode requires `apiExecutor` prop. ' +
+      'Provide a function that wraps your HTTP client.'
+  )
+}
+
 const pagConfig = computed<PaginationConfig>(() => {
   if (!props.pagination || props.pagination === true) return {}
   return props.pagination as PaginationConfig

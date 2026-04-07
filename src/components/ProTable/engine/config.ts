@@ -2,6 +2,7 @@ export const PRO_TABLE_PROPS_DEFAULTS = {
   loading: false,
   rowKey: 'id',
   showToolbar: true,
+  showDensityControl: true,
   title: undefined,
   selectable: false,
   selectionPinned: false,
@@ -24,6 +25,7 @@ export const PRO_TABLE_PROPS_DEFAULTS = {
   stateStorage: false,
   stateKey: undefined,
   selected: undefined,
+  maxSelection: undefined,
   virtualScroll: false,
 } as const
 

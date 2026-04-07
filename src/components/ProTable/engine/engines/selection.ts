@@ -28,14 +28,21 @@ export function toggleRowSelection<T extends Record<string, unknown>>(
 export function toggleAllSelection<T extends Record<string, unknown>>(
   state: SelectionState<T>,
   rows: T[],
-  getKey: (row: T) => string
+  getKey: (row: T) => string,
+  max?: number
 ): SelectionState<T> {
-  if (state.selectedRowKeys.length === rows.length && rows.length > 0) {
+  const capRows = max != null && max > 0 && rows.length > max ? rows.slice(0, max) : rows
+  const capKeys = capRows.map(getKey)
+  const allCapSelected =
+    capKeys.length > 0 &&
+    capKeys.length === state.selectedRowKeys.length &&
+    capKeys.every((k, i) => state.selectedRowKeys[i] === k)
+  if (allCapSelected) {
     return { selectedRows: [], selectedRowKeys: [] }
   }
   return {
-    selectedRows: [...rows],
-    selectedRowKeys: rows.map(getKey),
+    selectedRows: [...capRows],
+    selectedRowKeys: capKeys,
   }
 }
 

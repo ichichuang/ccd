@@ -17,7 +17,7 @@ export function buildDataTablePt(options?: DataTablePtOptions): Record<string, u
       ...(Object.keys(tableStyle).length > 0 ? { style: tableStyle } : {}),
     },
     headerRow: {
-      class: 'border-b-default!',
+      class: 'border-b-solid border-b-px border-border',
     },
     emptyMessage: { class: 'hidden' },
     mask: { class: 'hidden' },

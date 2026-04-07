@@ -16,6 +16,7 @@ import { applyPagination } from '../engines/pagination'
 import { toggleRowSelection, toggleAllSelection, clearSelection } from '../engines/selection'
 import { setColumnVisibility, getVisibleColumns } from '../engines/columnVisibility'
 import { exportToCsv } from '../engines/export'
+import { objectGet } from '@/utils/lodashes'
 
 export interface TableControllerOptions<T extends Record<string, unknown>> {
   columns: ProTableColumn<T>[]
@@ -39,6 +40,8 @@ export interface TableControllerOptions<T extends Record<string, unknown>> {
   requestConfig?: RequestConfig
   /** Emitted when request() rejects. */
   onRequestError?: (error: Error) => void
+  /** Checkbox 多选最大条数；不传不限制 */
+  maxSelection?: number
 }
 
 function getRowKey<T extends Record<string, unknown>>(row: T, keyField: string): string {
@@ -65,6 +68,7 @@ export class TableController<T extends Record<string, unknown>> {
   private _requestConfig: Required<RequestConfig>
   private _onRequestError?: (error: Error) => void
   private _fetchVersion = 0
+  private _maxSelection: number | undefined
 
   /** True when ProTable is in request mode (autonomous fetch). */
   get requestMode(): boolean {
@@ -89,6 +93,7 @@ export class TableController<T extends Record<string, unknown>> {
       accumulate: options.requestConfig?.accumulate ?? REQUEST_DEFAULTS.accumulate,
     }
     this._onRequestError = options.onRequestError
+    this._maxSelection = options.maxSelection
 
     const initialHidden = new Set<string>(options.columns.filter(c => c.hidden).map(c => c.id))
 
@@ -109,7 +114,9 @@ export class TableController<T extends Record<string, unknown>> {
       this.filteredAndSorted = computed<T[]>(() => {
         if (this._serverMode) return this._data.value
         const filtered = applyFilter(this._data.value, this.state.filter, this._columns)
-        return applySort(filtered, this.state.sort, (row, field) => row[field])
+        return applySort(filtered, this.state.sort, (row, field) =>
+          field.includes('.') ? objectGet(row, field) : row[field]
+        )
       })
 
       this.totalCount = computed<number>(() => {
@@ -190,6 +197,27 @@ export class TableController<T extends Record<string, unknown>> {
     this._data.value = data
   }
 
+  /**
+   * Replace column definitions (e.g. parent passes new `render` closures).
+   * Preserves user toggled visibility for ids that still exist; applies `hidden` from new defs.
+   */
+  setColumns(next: ProTableColumn<T>[]): void {
+    this._columns = next
+    const newIds = new Set(next.map(c => c.id))
+    const merged = new Set<string>()
+    for (const id of this.state.columnVisibility.hiddenColumns) {
+      if (newIds.has(id)) {
+        merged.add(id)
+      }
+    }
+    for (const c of next) {
+      if (c.hidden) {
+        merged.add(c.id)
+      }
+    }
+    this.state.columnVisibility = { hiddenColumns: merged }
+  }
+
   setTotal(total: number): void {
     if (this.state.pagination.total === total) return
     // shallowReactive 不追踪嵌套对象的原地修改，必须替换 `pagination` 引用才能驱动 totalCount / 分页 UI
@@ -232,13 +260,37 @@ export class TableController<T extends Record<string, unknown>> {
 
   selectRow(row: T, mode: 'single' | 'checkbox'): void {
     const key = getRowKey(row, this._rowKey)
+    if (mode === 'checkbox' && this._maxSelection != null && this._maxSelection > 0) {
+      const idx = this.state.selection.selectedRowKeys.indexOf(key)
+      if (idx === -1 && this.state.selection.selectedRowKeys.length >= this._maxSelection) {
+        return
+      }
+    }
     this.state.selection = toggleRowSelection(this.state.selection, row, key, mode)
   }
 
   selectAll(): void {
-    this.state.selection = toggleAllSelection(this.state.selection, this.processedRows.value, r =>
-      getRowKey(r, this._rowKey)
+    this.state.selection = toggleAllSelection(
+      this.state.selection,
+      this.processedRows.value,
+      r => getRowKey(r, this._rowKey),
+      this._maxSelection
     )
+  }
+
+  /**
+   * 更新多选上限；若当前选中超过上限则截断。返回是否发生了截断。
+   */
+  setMaxSelection(max: number | undefined): boolean {
+    this._maxSelection = max
+    if (max != null && max > 0 && this.state.selection.selectedRowKeys.length > max) {
+      this.state.selection = {
+        selectedRows: this.state.selection.selectedRows.slice(0, max),
+        selectedRowKeys: this.state.selection.selectedRowKeys.slice(0, max),
+      }
+      return true
+    }
+    return false
   }
 
   clearSelection(): void {
