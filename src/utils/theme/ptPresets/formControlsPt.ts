@@ -13,6 +13,7 @@ const GOLDEN_INPUT_ROOT =
   'border border-border bg-background text-foreground rounded-md shadow-sm shadow-foreground/10 dark:shadow-foreground/20 transition-all duration-md ease-smooth hover:border-primary/50 focus:outline-none focus:border-primary/50 ring-focus-focus'
 
 export const OVERLAY_GLASS_CLASS = 'glass-panel transform-gpu will-change-transform'
+export const OPTION_TRANSITION_CLASS = 'transition-colors! duration-sm ease-smooth'
 
 export const formControlsPt = {
   inputtext: {
@@ -41,20 +42,24 @@ export const formControlsPt = {
   select: {
     root: { class: GOLDEN_INPUT_ROOT },
     overlay: { class: OVERLAY_GLASS_CLASS },
+    item: { class: OPTION_TRANSITION_CLASS },
   },
   multiselect: {
     root: { class: GOLDEN_INPUT_ROOT },
     overlay: { class: OVERLAY_GLASS_CLASS },
     list: { class: 'p-0' },
+    item: { class: OPTION_TRANSITION_CLASS },
   },
   autocomplete: {
     root: { class: GOLDEN_INPUT_ROOT },
     overlay: { class: OVERLAY_GLASS_CLASS },
+    item: { class: OPTION_TRANSITION_CLASS },
   },
   treeselect: {
     root: { class: GOLDEN_INPUT_ROOT },
     panel: { class: OVERLAY_GLASS_CLASS },
     overlay: { class: OVERLAY_GLASS_CLASS },
+    content: { class: OPTION_TRANSITION_CLASS },
   },
   password: {
     root: { class: GOLDEN_INPUT_ROOT },

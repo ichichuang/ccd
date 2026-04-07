@@ -6,10 +6,10 @@
  * 与 wrapper/图标/文字同节奏过渡，覆盖 PrimeVue 默认 transition。
  */
 
-import { OVERLAY_GLASS_CLASS } from './formControlsPt'
+import { OPTION_TRANSITION_CLASS, OVERLAY_GLASS_CLASS } from './formControlsPt'
 
-const MENU_ACTION_TRANSITION =
-  'p-0 bg-transparent hover:bg-transparent focus:bg-transparent active:bg-transparent border-none outline-none transition-colors! duration-md! ease-out-expo!'
+const MENU_ACTION_BASE =
+  'p-0 bg-transparent hover:bg-transparent focus:bg-transparent active:bg-transparent border-none outline-none'
 
 export const menuPt = {
   tieredmenu: {
@@ -26,7 +26,7 @@ export const menuPt = {
       class: 'rounded-md outline-none',
     },
     action: {
-      class: MENU_ACTION_TRANSITION,
+      class: `${MENU_ACTION_BASE} ${OPTION_TRANSITION_CLASS}`,
     },
   },
   panelmenu: {
@@ -58,6 +58,14 @@ export const menuPt = {
     },
     list: {
       class: 'bg-transparent',
+    },
+    action: {
+      class: `${MENU_ACTION_BASE} ${OPTION_TRANSITION_CLASS}`,
+    },
+  },
+  contextmenu: {
+    action: {
+      class: `${MENU_ACTION_BASE} ${OPTION_TRANSITION_CLASS}`,
     },
   },
 } as const
