@@ -13,7 +13,7 @@ const GOLDEN_INPUT_ROOT =
   'border border-border bg-background text-foreground rounded-md shadow-sm shadow-foreground/10 dark:shadow-foreground/20 transition-all duration-md ease-smooth hover:border-primary/50 focus:outline-none focus:border-primary/50 ring-focus-focus'
 
 export const OVERLAY_GLASS_CLASS =
-  'glass-panel rounded-md transform-gpu will-change-[transform,opacity] transition-[opacity,transform,backdrop-filter] duration-md ease-smooth [&.p-connected-overlay-enter-from]:opacity-0 [&.p-connected-overlay-leave-to]:opacity-0 [&.p-connected-overlay-leave-to]:backdrop-blur-none'
+  'glass-panel transform-gpu will-change-[transform,opacity] transition-[backdrop-filter] duration-md ease-smooth [&.p-anchored-overlay-leave-active]:backdrop-blur-none'
 
 export const formControlsPt = {
   inputtext: {
