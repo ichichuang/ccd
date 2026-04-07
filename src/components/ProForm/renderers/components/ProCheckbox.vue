@@ -6,6 +6,7 @@ type CheckboxValue = boolean | unknown[] | null | undefined
 
 type Props = FieldComponentProps<CheckboxValue> & {
   options?: SelectOption[]
+  inputId?: string
 }
 
 const props = defineProps<Props>()
@@ -96,6 +97,7 @@ const handleUpdate = (value: CheckboxValue): void => {
   <Checkbox
     v-else
     :model-value="props.modelValue"
+    :input-id="props.inputId"
     binary
     :disabled="props.disabled || props.readonly"
     :invalid="!!props.error && props.error.length > 0"

@@ -100,19 +100,23 @@ const getRootGridWrapperStyle = (node: FormSchemaNode): Record<string, string> =
   return { gridColumn: `span ${span} / span ${span}` }
 }
 
-const internalSchema = reactive<FormSchema>(deepClone(props.schema))
+const internalSchema = shallowRef<FormSchema>(deepClone(props.schema))
+
+if (import.meta.env.DEV) {
+  if (!Array.isArray(props.schema.fields) || props.schema.fields.length === 0) {
+    console.warn('[ProForm] schema.fields is empty or missing — form will render nothing.')
+  }
+}
 
 watch(
   () => props.schema,
   nextSchema => {
-    const cloned = deepClone(nextSchema)
-    internalSchema.layout = cloned.layout
-    internalSchema.fields = cloned.fields
+    internalSchema.value = deepClone(nextSchema)
   },
   { deep: true }
 )
 
-const hasVisibleFields = computed(() => internalSchema.fields.length > 0)
+const hasVisibleFields = computed(() => internalSchema.value.fields.length > 0)
 
 const emit = defineEmits<{
   (e: 'submit', values: TValues): void
@@ -131,7 +135,7 @@ defineSlots<
 >()
 
 const { form, handleSubmit, getValues, getFormState } = useForm<TValues>({
-  schema: internalSchema,
+  schema: internalSchema.value,
   initialValues: props.initialValues,
   validateOn: props.validateOn,
   resolver: props.resolver,

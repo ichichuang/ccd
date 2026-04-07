@@ -27,7 +27,10 @@ type ExtendedFieldSchema = FieldSchema<unknown> & {
   options?: unknown
 }
 
-type FieldStateWithOptions = FieldState<unknown> & { loadedOptions?: unknown[] }
+type FieldStateWithOptions = FieldState<unknown> & {
+  loadedOptions?: unknown[]
+  optionsError?: string
+}
 
 const fieldExt = computed<ExtendedFieldSchema>(() => props.field as ExtendedFieldSchema)
 const stateExt = computed<FieldStateWithOptions>(() => state as unknown as FieldStateWithOptions)
@@ -68,6 +71,12 @@ const registryItem = computed<FieldRegistryItem | null>(() => {
 
 const resolvedComponent = computed(() => {
   const item = registryItem.value
+  if (!item && import.meta.env.DEV) {
+    console.warn(
+      `[ProForm] Component "${props.field.component}" is not registered. ` +
+        `Falling back to native <input>. Did you forget to register it?`
+    )
+  }
   return item?.component ?? 'input'
 })
 
@@ -81,6 +90,7 @@ const componentProps = computed<FieldComponentProps<unknown>>(() => ({
   disabled: isDisabled.value,
   readonly: globalState?.readonly.value ?? false,
   loading: state.loadingOptions ?? false,
+  inputId: props.field.name,
   'onUpdate:modelValue': (v: unknown) => {
     setValue(v)
   },
@@ -147,6 +157,13 @@ const resolvedBindProps = computed<Record<string, unknown>>(() => {
   if (hasCustomSlot.value && formSlots) return slotBindProps.value
   return componentBindProps.value
 })
+
+const ariaDescribedBy = computed<string | undefined>(() => {
+  const ids: string[] = []
+  if (state.errors.length > 0 || stateExt.value.optionsError) ids.push(`${props.field.name}-error`)
+  else if (props.field.description) ids.push(`${props.field.name}-desc`)
+  return ids.length > 0 ? ids.join(' ') : undefined
+})
 </script>
 
 <template>
@@ -178,6 +195,9 @@ const resolvedBindProps = computed<Record<string, unknown>>(() => {
         <component
           :is="resolvedIs"
           v-bind="resolvedBindProps"
+          :aria-describedby="ariaDescribedBy"
+          :aria-invalid="state.errors.length > 0 || undefined"
+          :aria-required="isRequired || undefined"
           class="w-full"
         />
 
@@ -191,12 +211,23 @@ const resolvedBindProps = computed<Record<string, unknown>>(() => {
           >
             <span
               v-if="state.errors.length > 0"
+              :id="`${field.name}-error`"
+              role="alert"
               class="text-danger block"
             >
               {{ state.errors[0] }}
             </span>
             <span
+              v-else-if="stateExt.optionsError"
+              :id="`${field.name}-error`"
+              role="alert"
+              class="text-danger block"
+            >
+              {{ stateExt.optionsError }}
+            </span>
+            <span
               v-else-if="field.description"
+              :id="`${field.name}-desc`"
               class="text-muted-foreground block"
             >
               {{ field.description }}

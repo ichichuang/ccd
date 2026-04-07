@@ -116,6 +116,8 @@ export interface FieldState<T = unknown> {
    * Select/MultiSelect 等组件可优先消费该值。
    */
   loadedOptions?: unknown[]
+  /** 异步选项加载失败时的错误信息 */
+  optionsError?: string
   touched: boolean
   dirty: boolean
   valid: boolean
@@ -130,6 +132,8 @@ export interface FormState<TValues extends Record<string, unknown> = Record<stri
   dirty: boolean
   valid: boolean
   submitting: boolean
+  /** 上一次提交的错误（网络失败、后端校验等），提交成功后自动清除 */
+  submitError?: Error | null
 }
 
 /**

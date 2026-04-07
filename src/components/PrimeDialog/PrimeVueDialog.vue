@@ -251,7 +251,10 @@ const defaultDialogPt: DialogPtValue = {
   header: { class: 'bg-transparent' },
   content: { class: 'bg-transparent overflow-y-auto' },
   footer: { class: 'bg-transparent' },
-  mask: { class: 'bg-background/55 backdrop-blur-sm' },
+  mask: {
+    class:
+      'glass-base backdrop-blur-sm transition-[opacity,backdrop-filter] duration-md opacity-100 [&.p-overlay-mask-leave-active]:opacity-0 [&.p-overlay-mask-leave-active]:backdrop-blur-none',
+  },
 }
 
 /**

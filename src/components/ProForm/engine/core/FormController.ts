@@ -12,6 +12,7 @@ import { LifecycleManager } from './LifecycleManager'
 import { DraftStorage } from '../persistence/DraftStorage'
 import { PRO_FORM_TIMING_DEFAULTS } from '../config'
 import { deepClone } from '@/utils/lodashes'
+import { PRO_FORM_LOGGER } from '../utils/logger'
 import type {
   FieldSchema,
   FormSchema,
@@ -388,7 +389,12 @@ export class FormController<TValues extends ValuesRecord = ValuesRecord> {
     for (const [key, value] of Object.entries(rawValues)) {
       const field = this.findFieldSchema(key) as FieldSchema<unknown> | undefined
       if (field && typeof field.transform === 'function') {
-        submitValues[key] = field.transform(value, rawValues)
+        try {
+          submitValues[key] = field.transform(value, rawValues)
+        } catch (err) {
+          PRO_FORM_LOGGER.error(`transform() failed for field "${key}"`, err)
+          submitValues[key] = value
+        }
       } else {
         submitValues[key] = value
       }
@@ -571,19 +577,24 @@ export class FormController<TValues extends ValuesRecord = ValuesRecord> {
             ...latestState,
             loadingOptions: false,
             loadedOptions: options as unknown[],
+            optionsError: undefined,
           })
         })
-        .catch(() => {
+        .catch((err: unknown) => {
           const latestToken = this.optionsRequestToken.get(fieldName)
           if (latestToken !== requestId) {
             return
           }
+
+          const errorMsg = err instanceof Error ? err.message : String(err)
+          PRO_FORM_LOGGER.warn(`Async options load failed for "${fieldName}"`, err)
 
           const latestState =
             (this.store.getFieldState(fieldName) as FieldState<unknown> | undefined) ?? currentState
           this.store.setFieldState(fieldName, {
             ...latestState,
             loadingOptions: false,
+            optionsError: errorMsg,
           })
         })
         .finally(() => {

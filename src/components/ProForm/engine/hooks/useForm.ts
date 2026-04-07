@@ -94,6 +94,7 @@ export function useForm<TValues extends Record<string, unknown> = Record<string,
       e?.preventDefault()
 
       state.submitting = true
+      state.submitError = null
 
       try {
         const isValid = await controller.validateForm(options.resolver)
@@ -109,6 +110,8 @@ export function useForm<TValues extends Record<string, unknown> = Record<string,
           DraftStorage.clear(options.persistKey)
         }
       } catch (error) {
+        const err = error instanceof Error ? error : new Error(String(error))
+        state.submitError = err
         PRO_FORM_LOGGER.error('Submission error', error)
         throw error
       } finally {
