@@ -1,53 +1,89 @@
 <!--
   Industrial Empty State component.
   Use for tables, charts, overview when no data. Follows EMPTY_STATE_AND_ROBUSTNESS.md.
-  Props: icon, title, description, actionLabel, actionTo (route path or href).
+  Props: icon, title/titleKey, description/descriptionKey, actionLabel.
 -->
 <script setup lang="ts">
-const router = useRouter()
-const props = withDefaults(
-  defineProps<{
-    icon?: string
-    title: string
-    description?: string
-    actionLabel?: string
-    actionTo?: string
-  }>(),
-  {
-    icon: 'i-lucide-inbox',
-    description: '',
-    actionLabel: '',
-    actionTo: '',
-  }
-)
+interface EmptyStateProps {
+  icon?: string
+  title?: string
+  titleKey?: string
+  description?: string
+  descriptionKey?: string
+  actionLabel?: string
+}
+
+interface EmptyStateEmits {
+  (e: 'action'): void
+}
+
+interface EmptyStateSlots {
+  icon?: () => unknown
+  title?: () => unknown
+  description?: () => unknown
+  action?: () => unknown
+}
+
+const props = withDefaults(defineProps<EmptyStateProps>(), {
+  icon: 'i-lucide-inbox',
+  title: '',
+  titleKey: '',
+  description: '',
+  descriptionKey: '',
+  actionLabel: '',
+})
+
+const emit = defineEmits<EmptyStateEmits>()
+defineSlots<EmptyStateSlots>()
+
+const resolvedTitle = computed<string>(() => {
+  if (props.titleKey) return String($t(props.titleKey))
+  return props.title
+})
+
+const resolvedDescription = computed<string>(() => {
+  if (props.descriptionKey) return String($t(props.descriptionKey))
+  return props.description
+})
 </script>
 
 <template>
   <div class="col-center gap-md py-2xl px-lg text-center">
     <!-- Watermark icon -->
-    <Icons
-      :name="props.icon"
-      size="5xl"
-      class="text-muted-foreground opacity-25"
-    />
+    <slot name="icon">
+      <Icons
+        :name="props.icon"
+        size="5xl"
+        class="text-muted-foreground opacity-25"
+      />
+    </slot>
     <!-- Primary title -->
-    <p class="text-md font-semibold text-foreground m-0">
-      {{ props.title }}
-    </p>
+    <slot name="title">
+      <p
+        v-if="resolvedTitle"
+        class="text-md font-semibold text-foreground m-0"
+      >
+        {{ resolvedTitle }}
+      </p>
+    </slot>
     <!-- Secondary description -->
-    <p
-      v-if="props.description"
-      class="text-sm text-muted-foreground m-0 max-w-[60ch]"
-    >
-      {{ props.description }}
-    </p>
+    <slot name="description">
+      <p
+        v-if="resolvedDescription"
+        class="text-sm text-muted-foreground m-0 max-w-[60ch]"
+      >
+        {{ resolvedDescription }}
+      </p>
+    </slot>
     <!-- Optional action button -->
-    <Button
-      v-if="props.actionLabel && props.actionTo"
-      :label="props.actionLabel"
-      severity="secondary"
-      class="mt-md"
-      @click="router.push(props.actionTo)"
-    />
+    <slot name="action">
+      <Button
+        v-if="props.actionLabel"
+        :label="props.actionLabel"
+        severity="secondary"
+        class="mt-md"
+        @click="emit('action')"
+      />
+    </slot>
   </div>
 </template>

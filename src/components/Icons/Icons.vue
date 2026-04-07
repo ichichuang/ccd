@@ -4,6 +4,39 @@ import { toIconName } from './utils/helper'
 import { SIZE_SCALE_KEYS } from '@/constants/sizeScale'
 import type { SizeScaleKey } from '@/constants/sizeScale'
 
+const SIZE_CLASS_MAP: Record<SizeScaleKey, string> = {
+  xs: 'text-xs',
+  sm: 'text-sm',
+  md: 'text-md',
+  lg: 'text-lg',
+  xl: 'text-xl',
+  '2xl': 'text-2xl',
+  '3xl': 'text-3xl',
+  '4xl': 'text-4xl',
+  '5xl': 'text-5xl',
+}
+
+const ALLOWED_SIZE_UNIT_PATTERN = /^-?\d+(\.\d+)?(px|%|vw|vh)$/
+const CSS_VAR_PATTERN = /^var\(--[a-zA-Z0-9-_]+\)$/
+const UNO_TEXT_COLOR_CLASS_PATTERN = /^!?text-[a-zA-Z0-9_:/.[\]-]+$/
+const HARDCODED_COLOR_PATTERN = /^#|^rgb\(|^rgba\(|^hsl\(|^hsla\(/i
+const warnedMessages = new Set<string>()
+
+function warnDev(message: string): void {
+  if (!import.meta.env.DEV) return
+  if (warnedMessages.has(message)) return
+  warnedMessages.add(message)
+  console.warn(`[Icons] ${message}`)
+}
+
+function isSizeScaleKey(value: string): value is SizeScaleKey {
+  return (SIZE_SCALE_KEYS as readonly string[]).includes(value)
+}
+
+function isAllowedSizeString(value: string): boolean {
+  return ALLOWED_SIZE_UNIT_PATTERN.test(value) || CSS_VAR_PATTERN.test(value)
+}
+
 /**
  * Icons 组件 (UnoCSS preset-icons)
  * 尺寸：标准阶梯 xs～5xl 通过 text-* 联动 SizeStore；数字/字符串通过内联样式。
@@ -33,8 +66,8 @@ const iconClass = computed(() => {
 // 2. 尺寸类名：仅标准阶梯（xs～5xl）使用 text-*
 const sizeClass = computed(() => {
   const s = props.size
-  if (typeof s === 'string' && SIZE_SCALE_KEYS.includes(s as SizeScaleKey)) {
-    return `text-${s}`
+  if (typeof s === 'string' && isSizeScaleKey(s)) {
+    return SIZE_CLASS_MAP[s]
   }
   return ''
 })
@@ -42,7 +75,7 @@ const sizeClass = computed(() => {
 // 3. 尺寸样式：仅数字或带单位字符串
 const sizeStyle = computed(() => {
   const s = props.size
-  if (typeof s === 'string' && SIZE_SCALE_KEYS.includes(s as SizeScaleKey)) {
+  if (typeof s === 'string' && isSizeScaleKey(s)) {
     return {}
   }
   // 数字或纯数字字符串统一按 px 处理，避免 rem/em 心智负担
@@ -55,14 +88,44 @@ const sizeStyle = computed(() => {
     const px = Math.round(numeric)
     return { fontSize: `${px}px` }
   }
-  if (typeof s === 'string') return { fontSize: s }
+  if (typeof s === 'string') {
+    if (isAllowedSizeString(s)) return { fontSize: s }
+    warnDev(`Invalid size "${s}". Allowed units: px, %, vw, vh, var(--*).`)
+  }
   return {}
 })
 
 // 4. 颜色、旋转、缩放
-const style = computed(() => {
+const colorClass = computed(() => {
+  if (!props.color) return ''
+  const colorValue = props.color.trim()
+  if (UNO_TEXT_COLOR_CLASS_PATTERN.test(colorValue)) return colorValue
+  return ''
+})
+
+const colorStyle = computed(() => {
   const css: Record<string, string> = {}
-  if (props.color) css.color = props.color
+  if (!props.color) return css
+
+  const colorValue = props.color.trim()
+  if (colorClass.value) return css
+
+  if (CSS_VAR_PATTERN.test(colorValue)) {
+    css.color = colorValue
+    return css
+  }
+
+  if (HARDCODED_COLOR_PATTERN.test(colorValue)) {
+    warnDev(`Hardcoded color "${colorValue}" is forbidden. Use semantic tokens or text-* class.`)
+    return css
+  }
+
+  warnDev(`Invalid color "${colorValue}". Use var(--*) or UnoCSS text-* color class.`)
+  return css
+})
+
+const style = computed(() => {
+  const css: Record<string, string> = { ...colorStyle.value }
   const transforms: string[] = []
   if (props.rotate !== undefined && props.rotate !== '') {
     transforms.push(`rotate(${props.rotate}deg)`)
@@ -81,7 +144,7 @@ function hasTextCurrent(cls: unknown): boolean {
   return false
 }
 const defaultColorClass = computed(() => {
-  if (props.color) return ''
+  if (colorClass.value || colorStyle.value.color) return ''
   if (hasTextCurrent(attrs.class)) return ''
   return 'text-foreground'
 })
@@ -103,7 +166,7 @@ const functionalClasses = computed(() => {
 
 <template>
   <div
-    :class="[iconClass, functionalClasses, sizeClass, defaultColorClass]"
+    :class="[iconClass, functionalClasses, sizeClass, colorClass, defaultColorClass]"
     :style="{ ...style, ...sizeStyle }"
     class="inline-block align-middle text-inherit"
     role="img"

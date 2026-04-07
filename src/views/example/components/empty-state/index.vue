@@ -20,7 +20,6 @@ const description = ref<string | undefined>('请调整筛选条件。')
 // Icon mode props (real EmptyState.vue props)
 const icon = ref<string>('i-lucide-inbox')
 const actionLabel = ref<string | undefined>('刷新')
-const actionTo = ref<string | undefined>('') // empty => hidden by EmptyState internal v-if
 
 // Image mode props (illustration only)
 const imageChoice = ref<'face' | 'avatar'>('face')
@@ -38,7 +37,6 @@ function resetPlayground(): void {
   description.value = '请调整筛选条件。'
   icon.value = 'i-lucide-inbox'
   actionLabel.value = '刷新'
-  actionTo.value = ''
   imageChoice.value = 'face'
   retryCount.value = 0
 }
@@ -67,7 +65,6 @@ const imageOptions: { label: string; value: 'face' | 'avatar' }[] = [
 const resolvedTitle = computed<string>(() => title.value ?? '暂无数据')
 const resolvedDescription = computed<string>(() => description.value ?? '')
 const resolvedActionLabel = computed<string>(() => actionLabel.value ?? '')
-const resolvedActionTo = computed<string>(() => actionTo.value ?? '')
 </script>
 
 <template>
@@ -177,12 +174,10 @@ const resolvedActionTo = computed<string>(() => actionTo.value ?? '')
                   v-if="mode === 'icon'"
                   class="col-stretch gap-sm min-w-0"
                 >
-                  <label class="text-sm font-semibold text-foreground">按钮路径</label>
-                  <InputText
-                    v-model="actionTo"
-                    placeholder="例如：/ 或 /home（留空则隐藏按钮）"
-                    class="w-full"
-                  />
+                  <label class="text-sm font-semibold text-foreground">动作事件</label>
+                  <p class="text-sm text-muted-foreground m-0">
+                    点击按钮将触发 EmptyState 的 `action` 事件，由父组件决定导航或业务行为。
+                  </p>
                 </div>
 
                 <div
@@ -222,7 +217,7 @@ const resolvedActionTo = computed<string>(() => actionTo.value ?? '')
                         :title="resolvedTitle"
                         :description="resolvedDescription"
                         :action-label="resolvedActionLabel"
-                        :action-to="resolvedActionTo"
+                        @action="retry"
                       />
                     </div>
 
