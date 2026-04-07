@@ -28,6 +28,20 @@ const sizeScale = ref<IconSize>('md')
 const sizeCustom = ref<string | undefined>('')
 
 const colorInput = ref<string | undefined>('')
+const CSS_VAR_PATTERN = /^var\(--[a-zA-Z0-9-_]+\)$/
+const UNO_TEXT_COLOR_CLASS_PATTERN = /^!?text-[a-zA-Z0-9_:/.[\]-]+$/
+
+const normalizedColorInput = computed<string>(() => (colorInput.value ?? '').trim())
+const isColorInputValid = computed<boolean>(() => {
+  if (!normalizedColorInput.value) return true
+  return (
+    CSS_VAR_PATTERN.test(normalizedColorInput.value) ||
+    UNO_TEXT_COLOR_CLASS_PATTERN.test(normalizedColorInput.value)
+  )
+})
+const colorInputError = computed<string>(() =>
+  isColorInputValid.value ? '' : '仅支持 var(--*) 或 text-*（例如 var(--primary)、text-primary）'
+)
 
 watch(
   () => props.size,
@@ -63,7 +77,8 @@ function updateSize() {
 }
 
 function updateColor() {
-  const newColor = colorInput.value || undefined
+  const value = normalizedColorInput.value
+  const newColor = value && isColorInputValid.value ? value : undefined
   if (props.color !== newColor) emit('update:color', newColor)
 }
 
@@ -212,47 +227,59 @@ function handleSetScale(value: string): void {
       <div class="row-center gap-sm">
         <InputText
           v-model="colorInput"
-          placeholder="例如: rgb(var(--primary))"
+          placeholder="例如: var(--primary) 或 text-primary"
           size="small"
           class="flex-1"
         />
       </div>
+      <InlineMessage
+        v-if="colorInputError"
+        severity="warn"
+      >
+        {{ colorInputError }}
+      </InlineMessage>
       <div class="row-start flex-wrap gap-sm">
         <Button
           label="主色"
           size="small"
           severity="secondary"
-          @click="handleSetColor('rgb(var(--primary))')"
+          @click="handleSetColor('var(--primary)')"
         />
         <Button
           label="前景色"
           size="small"
           severity="secondary"
-          @click="handleSetColor('rgb(var(--foreground))')"
+          @click="handleSetColor('var(--foreground)')"
         />
         <Button
           label="信息色"
           size="small"
           severity="secondary"
-          @click="handleSetColor('rgb(var(--info))')"
+          @click="handleSetColor('var(--info)')"
         />
         <Button
           label="成功色"
           size="small"
           severity="secondary"
-          @click="handleSetColor('rgb(var(--success))')"
+          @click="handleSetColor('var(--success)')"
         />
         <Button
           label="警告色"
           size="small"
           severity="secondary"
-          @click="handleSetColor('rgb(var(--warn))')"
+          @click="handleSetColor('var(--warn)')"
         />
         <Button
           label="危险色"
           size="small"
           severity="secondary"
-          @click="handleSetColor('rgb(var(--danger))')"
+          @click="handleSetColor('var(--danger)')"
+        />
+        <Button
+          label="语义类"
+          size="small"
+          severity="secondary"
+          @click="handleSetColor('text-primary')"
         />
         <Button
           label="清除"

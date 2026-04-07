@@ -124,6 +124,7 @@ export const productColumns: ProTableColumn<ProductRow>[] = [
     id: 'status',
     title: '状态',
     field: 'status',
+    minWidth: '100px',
     width: '100px',
     render: ({ row }: ColumnRenderParams<ProductRow>) => {
       const cfg = STATUS_CFG[row.status]

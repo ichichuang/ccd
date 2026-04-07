@@ -20,6 +20,8 @@ const description = ref<string | undefined>('请调整筛选条件。')
 // Icon mode props (real EmptyState.vue props)
 const icon = ref<string>('i-lucide-inbox')
 const actionLabel = ref<string | undefined>('刷新')
+const useI18nKey = ref<boolean>(false)
+const useSlotOverride = ref<boolean>(false)
 
 // Image mode props (illustration only)
 const imageChoice = ref<'face' | 'avatar'>('face')
@@ -37,6 +39,8 @@ function resetPlayground(): void {
   description.value = '请调整筛选条件。'
   icon.value = 'i-lucide-inbox'
   actionLabel.value = '刷新'
+  useI18nKey.value = false
+  useSlotOverride.value = false
   imageChoice.value = 'face'
   retryCount.value = 0
 }
@@ -65,6 +69,12 @@ const imageOptions: { label: string; value: 'face' | 'avatar' }[] = [
 const resolvedTitle = computed<string>(() => title.value ?? '暂无数据')
 const resolvedDescription = computed<string>(() => description.value ?? '')
 const resolvedActionLabel = computed<string>(() => actionLabel.value ?? '')
+const titleKey = computed<string | undefined>(() =>
+  useI18nKey.value ? 'emptyState.noData' : undefined
+)
+const descriptionKey = computed<string | undefined>(() =>
+  useI18nKey.value ? 'emptyState.noSearchResultDesc' : undefined
+)
 </script>
 
 <template>
@@ -181,6 +191,48 @@ const resolvedActionLabel = computed<string>(() => actionLabel.value ?? '')
                 </div>
 
                 <div
+                  v-if="mode === 'icon'"
+                  class="col-stretch gap-sm min-w-0"
+                >
+                  <label class="text-sm font-semibold text-foreground">标题来源</label>
+                  <div class="row-start gap-sm min-w-0">
+                    <Button
+                      label="纯文本 Props"
+                      size="small"
+                      :severity="useI18nKey ? 'secondary' : 'primary'"
+                      @click="useI18nKey = false"
+                    />
+                    <Button
+                      label="i18n Key"
+                      size="small"
+                      :severity="useI18nKey ? 'primary' : 'secondary'"
+                      @click="useI18nKey = true"
+                    />
+                  </div>
+                </div>
+
+                <div
+                  v-if="mode === 'icon'"
+                  class="col-stretch gap-sm min-w-0"
+                >
+                  <label class="text-sm font-semibold text-foreground">渲染优先级演示</label>
+                  <div class="row-start gap-sm min-w-0">
+                    <Button
+                      label="默认渲染"
+                      size="small"
+                      :severity="useSlotOverride ? 'secondary' : 'primary'"
+                      @click="useSlotOverride = false"
+                    />
+                    <Button
+                      label="启用 Slots 覆盖"
+                      size="small"
+                      :severity="useSlotOverride ? 'primary' : 'secondary'"
+                      @click="useSlotOverride = true"
+                    />
+                  </div>
+                </div>
+
+                <div
                   v-else
                   class="col-stretch gap-sm min-w-0"
                 >
@@ -214,11 +266,54 @@ const resolvedActionLabel = computed<string>(() => actionLabel.value ?? '')
                     >
                       <EmptyState
                         :icon="icon"
+                        :title-key="titleKey"
+                        :description-key="descriptionKey"
                         :title="resolvedTitle"
                         :description="resolvedDescription"
                         :action-label="resolvedActionLabel"
                         @action="retry"
-                      />
+                      >
+                        <template
+                          v-if="useSlotOverride"
+                          #icon
+                        >
+                          <Icons
+                            name="i-lucide-sparkles"
+                            size="5xl"
+                            class="text-primary opacity-80"
+                          />
+                        </template>
+
+                        <template
+                          v-if="useSlotOverride"
+                          #title
+                        >
+                          <p class="text-md font-semibold text-foreground m-0">
+                            Slot 标题（优先级最高）
+                          </p>
+                        </template>
+
+                        <template
+                          v-if="useSlotOverride"
+                          #description
+                        >
+                          <p class="text-sm text-muted-foreground m-0">
+                            当前演示顺序：插槽内容 > i18n Key > 纯文本属性。
+                          </p>
+                        </template>
+
+                        <template
+                          v-if="useSlotOverride"
+                          #action
+                        >
+                          <Button
+                            :label="`Slot Retry（${retryCount}）`"
+                            severity="secondary"
+                            class="mt-md"
+                            @click="retry()"
+                          />
+                        </template>
+                      </EmptyState>
                     </div>
 
                     <div

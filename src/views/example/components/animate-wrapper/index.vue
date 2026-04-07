@@ -149,6 +149,10 @@ function resetGroupItems(): void {
                     受控状态触发进入/离开动画，并通过 `overflow-hidden`
                     容器防止动画外溢重叠破坏布局。
                   </span>
+                  <span class="text-xs text-muted-foreground">
+                    默认 `omitLayoutFull=true`，包装层不会强制注入
+                    `layout-full`；仅在需要占满父容器时显式传入 `:omit-layout-full=\"false\"`。
+                  </span>
                 </div>
               </div>
             </div>
@@ -412,7 +416,8 @@ function resetGroupItems(): void {
             <p class="text-sm text-muted-foreground m-0">
               通过添加/删除条目触发队列错位动画；切换"显示条目"即可观察整组的错位进入与错位离开。 在
               `group && stagger` 下，最终动画延迟由 `index * stagger` 决定，并覆盖
-              `delay/enterDelay/leaveDelay` 的结果。
+              `delay/enterDelay/leaveDelay` 的结果。attrs 透传在非 `group`
+              模式作用于内层包裹容器，在 `group` 模式作用于 `TransitionGroup` 根节点。
             </p>
 
             <div class="col-stretch gap-md min-w-0">

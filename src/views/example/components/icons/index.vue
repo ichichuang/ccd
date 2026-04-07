@@ -59,11 +59,29 @@ const middleContentStyle = computed(() => {
   return { height: `calc(100% - ${totalFixedHeight}px)`, minHeight: 0 }
 })
 
+const CSS_VAR_PATTERN = /^var\(--[a-zA-Z0-9-_]+\)$/
+const UNO_TEXT_COLOR_CLASS_PATTERN = /^!?text-[a-zA-Z0-9_:/.[\]-]+$/
+const normalizedIconColor = computed<string>(() => (iconColor.value ?? '').trim())
+const isIconColorValid = computed<boolean>(() => {
+  if (!normalizedIconColor.value) return true
+  return (
+    CSS_VAR_PATTERN.test(normalizedIconColor.value) ||
+    UNO_TEXT_COLOR_CLASS_PATTERN.test(normalizedIconColor.value)
+  )
+})
+const effectiveIconColor = computed<string | undefined>(() =>
+  normalizedIconColor.value && isIconColorValid.value ? normalizedIconColor.value : undefined
+)
+const iconColorHint = computed<string>(() => {
+  if (!normalizedIconColor.value || isIconColorValid.value) return ''
+  return '当前 color 输入不符合 Icons 约束，预览与代码示例已自动忽略该值。'
+})
+
 const codeExampleText = computed<string>(() => {
   if (!selectedIcon.value || selectedIcon.value === '未选择') return ''
   return `<Icons
   name="${selectedIcon.value}"
-${iconSize.value ? `  size="${iconSize.value}"` : ''}${iconColor.value ? `\n  color="${iconColor.value}"` : ''}${iconAnimation.value ? `\n  animation="${iconAnimation.value}"` : ''}${iconFlip.value ? `\n  flip="${iconFlip.value}"` : ''}${iconRotate.value !== undefined && iconRotate.value !== '' ? `\n  rotate="${iconRotate.value}"` : ''}${iconScale.value !== undefined ? `\n  scale="${iconScale.value}"` : ''}
+${iconSize.value ? `  size="${iconSize.value}"` : ''}${effectiveIconColor.value ? `\n  color="${effectiveIconColor.value}"` : ''}${iconAnimation.value ? `\n  animation="${iconAnimation.value}"` : ''}${iconFlip.value ? `\n  flip="${iconFlip.value}"` : ''}${iconRotate.value !== undefined && iconRotate.value !== '' ? `\n  rotate="${iconRotate.value}"` : ''}${iconScale.value !== undefined ? `\n  scale="${iconScale.value}"` : ''}
 />`
 })
 
@@ -285,7 +303,7 @@ function openExternalLink(url: string) {
                                     <Icons
                                       :name="icon"
                                       :size="iconSize"
-                                      :color="iconColor"
+                                      :color="effectiveIconColor"
                                       :animation="iconAnimation"
                                       :flip="iconFlip"
                                       :rotate="iconRotate"
@@ -361,6 +379,12 @@ function openExternalLink(url: string) {
                               >{{ codeExampleText }}</pre
                             >
                           </div>
+                          <InlineMessage
+                            v-if="iconColorHint"
+                            severity="warn"
+                          >
+                            {{ iconColorHint }}
+                          </InlineMessage>
                         </div>
                       </div>
 
@@ -402,7 +426,7 @@ function openExternalLink(url: string) {
                           <Icons
                             :name="selectedIcon"
                             :size="iconSize"
-                            :color="iconColor"
+                            :color="effectiveIconColor"
                             :animation="iconAnimation"
                             :flip="iconFlip"
                             :rotate="iconRotate"

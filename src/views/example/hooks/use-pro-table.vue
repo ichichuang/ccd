@@ -95,10 +95,10 @@ const {
 
 // ── Local UI State ────────────────────────────────────────────────
 const pageReady = ref<boolean>(true)
-const filterText = ref<string>('')
+const filterText = ref<string | undefined>('')
 
 function onFilterInput(): void {
-  setGlobalFilter(filterText.value)
+  setGlobalFilter(filterText.value ?? '')
 }
 
 function onRowClick(row: TaskRow): void {
@@ -275,7 +275,7 @@ const stateJson = computed<string>(() => {
                 <div class="overflow-x-auto min-w-0">
                   <table class="w-full text-sm">
                     <thead>
-                      <tr class="border-b-default border-border/40">
+                      <tr class="border-b-solid border-b-px border-border">
                         <th
                           v-for="col in visibleColumns"
                           :key="col.id"
@@ -304,7 +304,7 @@ const stateJson = computed<string>(() => {
                         v-for="row in processedRows"
                         :key="row.id"
                         v-tap="() => onRowClick(row)"
-                        class="border-b-default border-border/20 cursor-pointer hover:bg-foreground/5 transition-colors"
+                        class="border-b-solid border-b-px border-border cursor-pointer hover:bg-foreground/5 transition-colors"
                         :class="{ 'bg-primary/5': isRowSelected(row) }"
                       >
                         <td

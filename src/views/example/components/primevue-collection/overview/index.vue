@@ -507,6 +507,9 @@ const pageReady = ref<boolean>(true)
             <ConfirmPopup />
           </section>
         </div>
+        <div class="p-md text-muted-foreground text-center text-sm">
+          primevue - component overview
+        </div>
       </div>
     </AnimateWrapper>
   </div>

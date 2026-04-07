@@ -39,6 +39,9 @@ interface MockNotification {
 
 const visibility = ref<ScrollbarVisibility>('auto')
 const deferInit = ref<boolean>(true)
+const backToTopThreshold = ref<number>(220)
+const backToTopOffsetBottom = ref<number>(24)
+const backToTopOffsetRight = ref<number>(24)
 
 const overlayScrollbarRef = ref<ScrollbarInstance | null>(null)
 const overlayInitialized = ref<boolean>(false)
@@ -1030,6 +1033,12 @@ const mockNotifications = computed<MockNotification[]>(() => [
 
 const visibilityToken = computed<string>(() => `visibility='${visibility.value}'`)
 const deferToken = computed<string>(() => `defer=${deferInit.value ? 'true' : 'false'}`)
+const backToTopToken = computed<string>(
+  () => `back-to-top=true threshold=${backToTopThreshold.value}`
+)
+const backToTopComparatorToken = computed<string>(
+  () => `native=[false|true] back-to-top=true threshold=${backToTopThreshold.value}`
+)
 
 function levelToSeverity(level: LogLevel): 'info' | 'success' | 'warn' | 'danger' {
   const map: Record<LogLevel, 'info' | 'success' | 'warn' | 'danger'> = {
@@ -1421,6 +1430,118 @@ const pageReady = ref<boolean>(true)
                 </div>
               </div>
             </div>
+
+            <div class="demo-well col-stretch gap-sm min-w-0">
+              <div class="row-between gap-md flex-wrap">
+                <div class="col-stretch gap-xs">
+                  <span class="text-sm font-semibold text-foreground">Back To Top Demo</span>
+                  <span class="text-xs text-muted-foreground">
+                    向下滚动超过阈值后显示回顶按钮，点击后平滑回到顶部。下面同时展示 Overlay 与
+                    Native。
+                  </span>
+                </div>
+                <Button
+                  text
+                  size="small"
+                  label="copy"
+                  class="p-0 h-auto text-muted-foreground/40 hover:text-foreground"
+                  @click="
+                    copyText(backToTopComparatorToken, 'CScrollbar backToTop comparator props')
+                  "
+                />
+              </div>
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-md">
+                <div class="demo-stage p-sm h-40vh col-stretch gap-xs">
+                  <div class="row-between gap-sm">
+                    <span class="text-xs font-semibold text-foreground">Overlay mode</span>
+                    <Button
+                      text
+                      size="small"
+                      label="copy"
+                      class="p-0 h-auto text-muted-foreground/40 hover:text-foreground"
+                      @click="copyText(backToTopToken, 'Overlay backToTop props')"
+                    />
+                  </div>
+                  <CScrollbar
+                    :native="false"
+                    :visibility="visibility"
+                    :defer="deferInit"
+                    :back-to-top="true"
+                    :back-to-top-threshold="backToTopThreshold"
+                    :back-to-top-offset-bottom="backToTopOffsetBottom"
+                    :back-to-top-offset-right="backToTopOffsetRight"
+                  >
+                    <div class="col-stretch gap-xs p-xs">
+                      <div
+                        v-for="entry in mockLogs.slice(0, 30)"
+                        :key="`backtop-overlay-log-${entry.id}`"
+                        class="interactive-item row-start gap-sm items-start rounded-md px-xs py-xs"
+                        :class="logRowBg(entry.level)"
+                      >
+                        <span
+                          class="text-xs font-mono text-muted-foreground shrink-0 w-[var(--spacing-4xl)]"
+                        >
+                          {{ entry.timestamp }}
+                        </span>
+                        <div class="col-stretch gap-xs min-w-0">
+                          <span class="text-xs font-semibold text-foreground">
+                            {{ entry.source }}
+                          </span>
+                          <span class="text-xs text-muted-foreground text-ellipsis-1">
+                            {{ entry.message }}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  </CScrollbar>
+                </div>
+
+                <div class="demo-stage p-sm h-40vh col-stretch gap-xs">
+                  <div class="row-between gap-sm">
+                    <span class="text-xs font-semibold text-foreground">Native mode</span>
+                    <Button
+                      text
+                      size="small"
+                      label="copy"
+                      class="p-0 h-auto text-muted-foreground/40 hover:text-foreground"
+                      @click="copyText(`${backToTopToken} native=true`, 'Native backToTop props')"
+                    />
+                  </div>
+                  <CScrollbar
+                    :native="true"
+                    :visibility="visibility"
+                    :defer="deferInit"
+                    :back-to-top="true"
+                    :back-to-top-threshold="backToTopThreshold"
+                    :back-to-top-offset-bottom="backToTopOffsetBottom"
+                    :back-to-top-offset-right="backToTopOffsetRight"
+                  >
+                    <div class="col-stretch gap-xs p-xs">
+                      <div
+                        v-for="entry in mockLogs.slice(0, 30)"
+                        :key="`backtop-native-log-${entry.id}`"
+                        class="interactive-item row-start gap-sm items-start rounded-md px-xs py-xs"
+                        :class="logRowBg(entry.level)"
+                      >
+                        <span
+                          class="text-xs font-mono text-muted-foreground shrink-0 w-[var(--spacing-4xl)]"
+                        >
+                          {{ entry.timestamp }}
+                        </span>
+                        <div class="col-stretch gap-xs min-w-0">
+                          <span class="text-xs font-semibold text-foreground">
+                            {{ entry.source }}
+                          </span>
+                          <span class="text-xs text-muted-foreground text-ellipsis-1">
+                            {{ entry.message }}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  </CScrollbar>
+                </div>
+              </div>
+            </div>
           </section>
 
           <section class="material-elevated col-stretch gap-lg min-w-0">
@@ -1429,7 +1550,8 @@ const pageReady = ref<boolean>(true)
                 Section 3 · Nested Scrollbars + Behavior Notes
               </h2>
               <p class="text-xs text-muted-foreground m-0">
-                父子容器均使用 Overlay，验证 thumb 独立性、自动隐藏与主题响应行为。
+                父子容器均使用 Overlay，验证 thumb 独立性、自动隐藏与主题响应行为（轨道/滑块采用
+                `--foreground` 透明度中性色，不与品牌主色绑定）。
               </p>
             </div>
 
@@ -1544,35 +1666,35 @@ const pageReady = ref<boolean>(true)
                 <div class="demo-well col-stretch gap-sm min-w-0">
                   <div class="demo-stage p-md col-stretch gap-sm">
                     <div class="row-start gap-sm items-start">
-                      <span class="text-xs font-mono text-primary shrink-0 mt-xs">01</span>
+                      <span class="text-xs font-mono text-muted-foreground shrink-0 mt-xs">01</span>
                       <span class="text-xs text-muted-foreground">
                         <span class="font-semibold text-foreground">Overlay auto-hide：</span>
                         `visibility=auto` 时，thumb 在鼠标移开后自动淡出。
                       </span>
                     </div>
                     <div class="row-start gap-sm items-start">
-                      <span class="text-xs font-mono text-primary shrink-0 mt-xs">02</span>
+                      <span class="text-xs font-mono text-muted-foreground shrink-0 mt-xs">02</span>
                       <span class="text-xs text-muted-foreground">
                         <span class="font-semibold text-foreground">Native 对比基准：</span>
                         Native 行为由浏览器与系统实现决定，不受该参数控制。
                       </span>
                     </div>
                     <div class="row-start gap-sm items-start">
-                      <span class="text-xs font-mono text-primary shrink-0 mt-xs">03</span>
+                      <span class="text-xs font-mono text-muted-foreground shrink-0 mt-xs">03</span>
                       <span class="text-xs text-muted-foreground">
                         <span class="font-semibold text-foreground">主题响应：</span>
-                        Overlay 使用语义 token，深浅模式切换后 thumb 自动匹配。
+                        Overlay 基于 `--foreground` 透明度中性色，深浅模式切换后 thumb 自动匹配。
                       </span>
                     </div>
                     <div class="row-start gap-sm items-start">
-                      <span class="text-xs font-mono text-primary shrink-0 mt-xs">04</span>
+                      <span class="text-xs font-mono text-muted-foreground shrink-0 mt-xs">04</span>
                       <span class="text-xs text-muted-foreground">
                         <span class="font-semibold text-foreground">Nested 独立性：</span>
                         父子容器持有独立实例，滚动与 thumb 渲染互不干扰。
                       </span>
                     </div>
                     <div class="row-start gap-sm items-start">
-                      <span class="text-xs font-mono text-primary shrink-0 mt-xs">05</span>
+                      <span class="text-xs font-mono text-muted-foreground shrink-0 mt-xs">05</span>
                       <span class="text-xs text-muted-foreground">
                         <span class="font-semibold text-foreground">Scroll To API：</span>
                         使用 `scrollTo({ top })` 可精确控制 Overlay 滚动位置。

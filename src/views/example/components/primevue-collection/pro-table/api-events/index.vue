@@ -354,7 +354,7 @@ onMounted(() => {
           <!-- Right Event Log Panel -->
           <div class="layout-sidepanel shrink-0 h-full">
             <div class="material-elevated col-stretch gap-lg px-lg py-md h-full">
-              <div class="row-between w-full pb-sm border-b-default">
+              <div class="row-between w-full pb-sm border-b-solid border-b-px border-border">
                 <div class="row-start items-center gap-sm">
                   <Icons
                     name="i-lucide-scroll-text"

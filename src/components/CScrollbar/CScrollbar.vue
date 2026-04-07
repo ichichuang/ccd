@@ -3,7 +3,7 @@
  * CScrollbar - 全局滚动容器组件
  *
  * 基于 OverlayScrollbars，完美融合主题系统和尺寸系统：
- * - 滚动条颜色：主色系 --primary（轨道/滑块低透明度叠色；hover/active 略加强）
+ * - 滚动条颜色：中性前景 --foreground（轨道/滑块低透明度叠色；hover/active 略加强）
  * - native 模式：Firefox scrollbar-color + WebKit 伪元素与 OS 模式对齐（含 html.dark）
  * - 滚动条圆角：滑块胶囊形（与轨道宽度联动）+ 轨道圆角
  * - 自动适配深色/浅色模式
@@ -348,7 +348,7 @@ defineExpose({
   background: transparent;
 }
 
-/* native 模式：与 Overlay 分支一致的主色系 */
+/* native 模式：与 Overlay 分支一致的中性色系 */
 .c-scrollbar-native {
   scrollbar-gutter: stable;
   scrollbar-width: thin;
