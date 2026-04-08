@@ -11,10 +11,21 @@ jobs:
     runs-on: ubuntu-latest
     env:
       NODE_OPTIONS: '--max-old-space-size=4096'
+      VITE_APP_SECRET: ${{ secrets.VITE_APP_SECRET }}
 
     steps:
       - name: Checkout codebase
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Block WIP commits on main
+        if: github.event_name == 'pull_request'
+        run: |
+          if git log --format='%s' origin/main..HEAD | grep -qiE '^wip(\(.*\))?:'; then
+            echo "::error::❌ WIP commits detected! Please squash or reword before merging to main."
+            exit 1
+          fi
 
       - name: Install pnpm
         uses: pnpm/action-setup@v3
@@ -24,7 +35,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 24.3.0
+          node-version: 22.16.0
           cache: 'pnpm'
 
       - name: Install dependencies
@@ -32,6 +43,9 @@ jobs:
 
       - name: Strict Type Check
         run: pnpm type-check
+
+      - name: Unit Tests
+        run: pnpm test:run
 
       - name: Strict Lint Check
         run: pnpm lint:check

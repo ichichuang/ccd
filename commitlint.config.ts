@@ -70,8 +70,6 @@ const configuration: UserConfig = {
   // -------------------- 忽略规则 --------------------
   // 匹配以下模式的提交信息将跳过 lint 检查
   ignores: [
-    commit => commit.includes('WIP'), // 忽略包含 WIP 的提交
-    commit => commit.includes('wip'), // 忽略包含 wip 的提交
     commit => /^Merge/.test(commit), // 忽略合并提交
     commit => /^Initial commit/.test(commit), // 忽略初始化提交
     commit => /^v\d+\.\d+\.\d+/.test(commit), // 忽略版本发布提交 (如: v1.0.0)

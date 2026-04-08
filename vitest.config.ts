@@ -11,6 +11,13 @@ export default mergeConfig(base as UserConfig, {
     environment: 'node',
     include: ['src/**/*.spec.ts', 'src/**/*.test.ts'],
     exclude: ['node_modules', 'dist'],
-    passWithNoTests: true,
+    // ⚠️ 不再允许无测试通过 — 强制要求核心模块必须有测试覆盖
+    passWithNoTests: false,
+    // 覆盖率配置（可选开启）
+    coverage: {
+      provider: 'v8',
+      include: ['src/utils/**', 'src/components/**/engine/**'],
+      exclude: ['src/**/*.d.ts', 'src/types/**'],
+    },
   },
 })

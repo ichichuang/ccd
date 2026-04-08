@@ -3,8 +3,15 @@ export default {
     "eslint --fix",
     "prettier --write"
   ],
-  "*.{css,scss,html,md,json}": [
+  "*.{css,scss}": [
+    "stylelint --fix",
     "prettier --write"
-  ]
+  ],
+  "*.vue": [
+    "stylelint --fix"
+  ],
+  "*.{html,md,json}": [
+    "prettier --write"
+  ],
 };
 
