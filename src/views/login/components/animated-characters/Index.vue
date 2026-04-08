@@ -180,6 +180,31 @@ function killAllPupilTweens(): void {
   }
 }
 
+/** 组件卸载时清理所有 GSAP 补间，防止 "not eligible for reset" 警告 */
+function killAllGsapTweens(): void {
+  const bodyEls = [
+    totemRef.value,
+    purpleRef.value,
+    blackRef.value,
+    orangeRef.value,
+    yellowRef.value,
+    purpleFaceRef.value,
+    blackFaceRef.value,
+    orangeFaceRef.value,
+    yellowFaceRef.value,
+    yellowMouthRef.value,
+  ]
+  for (const el of bodyEls) {
+    if (el) gsap.killTweensOf(el)
+  }
+  // 复用已有的 pupil 清理
+  killAllPupilTweens()
+  // 清理 blink 层上的补间
+  for (const { blinkLayerEl } of [...collectPurpleEyeballs(), ...collectSuccessEyeballs()]) {
+    if (blinkLayerEl) gsap.killTweensOf(blinkLayerEl)
+  }
+}
+
 // ── Helpers: collect exposed elements from child component refs ──
 function collectPupilEls(): HTMLElement[] {
   const els: HTMLElement[] = []
@@ -645,11 +670,20 @@ onMounted(() => {
 })
 
 onBeforeUnmount(() => {
+  // 1. 先停止 RAF 循环 — 阻止新的 quickTo 调用
   cancelAnimationFrame(rafIdRef.value)
+
+  // 2. 清除所有定时器
   clearTimeout(purpleBlinkTimerRef.value)
   clearTimeout(blackBlinkTimerRef.value)
   clearTimeout(purplePeekTimerRef.value)
   clearTimeout(lookingTimerRef.value)
+
+  // 3. Kill 所有 GSAP 补间（quickTo + gsap.to），防止 "not eligible for reset" 警告
+  killAllGsapTweens()
+
+  // 4. 清空引用，防止残留闭包调用
+  quickToRef.value = null
   pupilQuickToMapRef.value = null
 })
 
@@ -886,17 +920,14 @@ watch(
   --char-primary-w: 180px;
   --char-primary-h: 400px;
   --char-primary-r: 10px;
-
   --char-success-left: 240px;
   --char-success-w: 120px;
   --char-success-h: 310px;
   --char-success-r: 8px;
-
   --char-warn-left: 0px;
   --char-warn-w: 240px;
   --char-warn-h: 200px;
   --char-warn-r: 120px;
-
   --char-accent-left: 310px;
   --char-accent-w: 140px;
   --char-accent-h: 230px;
@@ -906,19 +937,15 @@ watch(
   --face-primary-l: 45px;
   --face-primary-t: 40px;
   --face-primary-gap: 32px;
-
   --face-success-l: 26px;
   --face-success-t: 32px;
   --face-success-gap: 24px;
-
   --face-warn-l: 82px;
   --face-warn-t: 90px;
   --face-warn-gap: 32px;
-
   --face-accent-l: 52px;
   --face-accent-t: 40px;
   --face-accent-gap: 24px;
-
   --mouth-l: 40px;
   --mouth-t: 88px;
   --mouth-h: 4px;

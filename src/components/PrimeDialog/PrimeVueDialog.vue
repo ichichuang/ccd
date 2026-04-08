@@ -247,10 +247,13 @@ const dialogPtCache = new WeakMap<DialogOptions, DialogPtValue>()
  * business 侧 options.pt 覆盖在默认值之上；options.maskClass 追加在默认遮罩类之后以便覆盖。
  */
 const defaultDialogPt: DialogPtValue = {
-  root: { class: 'glass-panel bg-card/60! dark:bg-card/80! transform-gpu will-change-transform' },
-  header: { class: 'bg-transparent' },
-  content: { class: 'bg-transparent overflow-y-auto' },
-  footer: { class: 'bg-transparent' },
+  root: {
+    class:
+      'glass-panel bg-card/82! dark:bg-card/76! border border-border/30 transform-gpu will-change-transform',
+  },
+  header: { class: 'bg-transparent px-md py-sm' },
+  content: { class: 'bg-transparent overflow-y-auto px-md py-sm' },
+  footer: { class: 'bg-transparent px-md py-sm' },
   mask: {
     class:
       'glass-base backdrop-blur-sm transition-[opacity,backdrop-filter] duration-md opacity-100 [&.p-overlay-mask-leave-active]:opacity-0 [&.p-overlay-mask-leave-active]:backdrop-blur-none',

@@ -46,6 +46,9 @@ import {
   ParallelComponent,
 } from 'echarts/components'
 
+// ── ECharts 6.x 兼容：containLabel 弃用适配 ──
+import { LegacyGridContainLabel } from 'echarts/features'
+
 use([
   CanvasRenderer,
   SVGRenderer,
@@ -77,4 +80,7 @@ use([
   PolarComponent,
   RadarComponent,
   ParallelComponent,
+  // ECharts 6.x: containLabel 已弃用，注册兼容组件消除控制台警告
+  // TODO: 迁移到 outerBounds API 后可移除
+  LegacyGridContainLabel,
 ])

@@ -120,6 +120,7 @@ export const createCustomPreset = (sizeStore: ReturnType<typeof useSizeStore>) =
     'stepper',
     'breadcrumb',
     'paginator',
+    'dialog',
     'confirmpopup',
     'overlaypanel',
     'tooltip',

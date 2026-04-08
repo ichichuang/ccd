@@ -66,7 +66,7 @@ export function buildSemanticLayer(): Record<string, unknown> {
         padding: 'var(--spacing-md)',
       },
       modal: {
-        padding: 'var(--spacing-md)',
+        padding: 'var(--spacing-sm)',
       },
     },
 
