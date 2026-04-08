@@ -55,6 +55,8 @@ export class FormController<TValues extends ValuesRecord = ValuesRecord> {
   private readonly optionsDebounceTimers = new Map<string, number>()
   private nextOptionsRequestId = 0
   private saveDraftTimer: number | null = null
+  private isRecomputing = false
+  private pendingRecompute: string[] = []
   public submitCallback?: (values: Record<string, unknown>) => Promise<void> | void
 
   constructor(options: UseFormOptions<TValues>) {
@@ -148,6 +150,70 @@ export class FormController<TValues extends ValuesRecord = ValuesRecord> {
   recomputeFields(orderedFields: string[]): void {
     if (!orderedFields || orderedFields.length === 0) return
 
+    // ── 重入保护 ──────────────────────────────────────────────────
+    // 若 computed() 副作用触发 setFieldsValue → commit → recomputeFields，
+    // 缓冲字段到 pendingRecompute，由外层循环统一排空
+    if (this.isRecomputing) {
+      this.pendingRecompute.push(...orderedFields)
+      return
+    }
+
+    this.isRecomputing = true
+    const MAX_RECOMPUTE_PASSES = 10
+    let pass = 0
+
+    try {
+      let fieldsToProcess: string[] = orderedFields
+
+      while (fieldsToProcess.length > 0) {
+        pass++
+        if (pass > MAX_RECOMPUTE_PASSES) {
+          PRO_FORM_LOGGER.warn(
+            `recomputeFields: safety limit reached (${MAX_RECOMPUTE_PASSES} passes). ` +
+              `Possible infinite loop caused by computed() side-effects. ` +
+              `Pending fields: [${this.pendingRecompute.join(', ')}]`
+          )
+          this.pendingRecompute.length = 0
+          break
+        }
+
+        this.executeRecomputePass(fieldsToProcess)
+
+        // 排空缓冲区（副作用在 executeRecomputePass 期间累积）
+        if (this.pendingRecompute.length > 0) {
+          fieldsToProcess = [...new Set(this.pendingRecompute)]
+          this.pendingRecompute.length = 0
+        } else {
+          fieldsToProcess = []
+        }
+      }
+    } finally {
+      this.isRecomputing = false
+      this.pendingRecompute.length = 0
+    }
+
+    // 自动草稿保存：所有 pass 完成后触发（去抖 500ms）
+    if (
+      this.options.autoSave === true &&
+      this.options.persistKey &&
+      this.options.persistKey.length > 0
+    ) {
+      if (this.saveDraftTimer !== null) {
+        window.clearTimeout(this.saveDraftTimer)
+      }
+
+      this.saveDraftTimer = window.setTimeout(() => {
+        DraftStorage.save(this.options.persistKey as string, this.getValues() as ValuesRecord)
+        this.saveDraftTimer = null
+      }, PRO_FORM_TIMING_DEFAULTS.autoSaveDebounceMs)
+    }
+  }
+
+  /**
+   * 内部：执行一次字段重算遍历。
+   * 从 recomputeFields() 提取，以支持重入保护 + 多 pass 排空。
+   */
+  private executeRecomputePass(orderedFields: string[]): void {
     for (const fieldName of orderedFields) {
       const schema = this.findFieldSchema(fieldName)
       if (!schema) continue
@@ -215,22 +281,6 @@ export class FormController<TValues extends ValuesRecord = ValuesRecord> {
       if (shouldValidate && nextState?.visible !== false) {
         void this.validationEngine.validateField(fieldName)
       }
-    }
-
-    // 自动草稿保存：每次事务提交 flush 后触发（去抖 500ms）
-    if (
-      this.options.autoSave === true &&
-      this.options.persistKey &&
-      this.options.persistKey.length > 0
-    ) {
-      if (this.saveDraftTimer !== null) {
-        window.clearTimeout(this.saveDraftTimer)
-      }
-
-      this.saveDraftTimer = window.setTimeout(() => {
-        DraftStorage.save(this.options.persistKey as string, this.getValues() as ValuesRecord)
-        this.saveDraftTimer = null
-      }, PRO_FORM_TIMING_DEFAULTS.autoSaveDebounceMs)
     }
   }
 
