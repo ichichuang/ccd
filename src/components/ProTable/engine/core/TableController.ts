@@ -68,6 +68,7 @@ export class TableController<T extends Record<string, unknown>> {
   private _requestConfig: Required<RequestConfig>
   private _onRequestError?: (error: Error) => void
   private _fetchVersion = 0
+  private _abortController: AbortController | null = null
   private _maxSelection: number | undefined
 
   /** True when ProTable is in request mode (autonomous fetch). */
@@ -320,6 +321,13 @@ export class TableController<T extends Record<string, unknown>> {
   private async executeFetchInternal(append: boolean): Promise<void> {
     if (!this._request) return
 
+    // 取消前一个正在进行的请求
+    if (this._abortController) {
+      this._abortController.abort()
+    }
+    const abortController = new AbortController()
+    this._abortController = abortController
+
     const version = ++this._fetchVersion
     this.state.fetch = { ...this.state.fetch, loading: true, error: false, errorMessage: '' }
 
@@ -329,6 +337,7 @@ export class TableController<T extends Record<string, unknown>> {
         pageSize: this.state.pagination.pageSize,
         sort: { ...this.state.sort },
         filter: { ...this.state.filter },
+        signal: abortController.signal,
       }
 
       const result = await this._request(params)
@@ -350,6 +359,9 @@ export class TableController<T extends Record<string, unknown>> {
         hasMore: this._data.value.length < result.total,
       }
     } catch (err) {
+      // AbortError 是预期行为（请求被新请求取代），静默丢弃
+      if (err instanceof DOMException && err.name === 'AbortError') return
+
       if (version !== this._fetchVersion) return
       const error = err instanceof Error ? err : new Error(String(err))
       this.state.fetch = {
@@ -359,6 +371,11 @@ export class TableController<T extends Record<string, unknown>> {
         errorMessage: error.message,
       }
       this._onRequestError?.(error)
+    } finally {
+      // 仅清理属于本次请求的 controller 引用
+      if (this._abortController === abortController) {
+        this._abortController = null
+      }
     }
   }
 
@@ -409,6 +426,11 @@ export class TableController<T extends Record<string, unknown>> {
   }
 
   destroy(): void {
+    // 取消任何进行中的请求
+    if (this._abortController) {
+      this._abortController.abort()
+      this._abortController = null
+    }
     this._scope.stop()
   }
 }

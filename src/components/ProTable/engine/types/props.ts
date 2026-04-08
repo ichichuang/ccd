@@ -208,6 +208,12 @@ export interface ProTableLoadParams {
   pageSize: number
   sort: SortState
   filter: FilterState
+  /**
+   * 当前请求的 AbortSignal。消费方应传递给 HTTP 客户端
+   * （如 `fetch(url, { signal })` 或 `axios.get(url, { signal })`）
+   * 以实现过期请求的自动取消。
+   */
+  signal?: AbortSignal
 }
 
 /** 与 `ProTableLoadParams` 同构 — 表格标准请求参数（分页 / 排序 / 筛选）。 */

@@ -103,7 +103,17 @@ export class DependencyGraph {
     }
 
     if (result.length !== this.nodes.size) {
-      throw new Error('Circular dependency detected in form schema')
+      // 未被 Kahn 算法处理的节点 = 环参与者（入度始终 > 0）
+      const processed = new Set(result)
+      const cycleFields: string[] = []
+      this.nodes.forEach((_node, field) => {
+        if (!processed.has(field)) {
+          cycleFields.push(field)
+        }
+      })
+      throw new Error(
+        `Circular dependency detected in form schema. Fields involved: [${cycleFields.join(', ')}]`
+      )
     }
 
     return result
