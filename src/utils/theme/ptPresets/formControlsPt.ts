@@ -14,9 +14,8 @@ const GOLDEN_INPUT_ROOT =
 
 export const OVERLAY_GLASS_CLASS = 'glass-panel transform-gpu will-change-transform'
 export const OVERLAY_GLASS_COMPACT_CLASS =
-  'backdrop-blur-sm md:backdrop-blur-xl bg-card/60! md:bg-card/36! dark:bg-card/70! md:dark:bg-card/40! rounded-xl border border-solid border-border/15 dark:border-border/30 shadow-sm dark:shadow-[inset_0_1px_0_0_rgb(var(--foreground)/0.05)] transform-gpu will-change-transform'
-export const OPTION_TRANSITION_CLASS =
-  'transition-[background-color,color]! duration-md! ease-smooth!'
+  'backdrop-blur-sm md:backdrop-blur-xl bg-card/60 md:bg-card/36 dark:bg-card/70 md:dark:bg-card/40 rounded-xl border border-solid border-border/15 dark:border-border/30 shadow-sm dark:shadow-[inset_0_1px_0_0_rgb(var(--foreground)/0.05)] transform-gpu will-change-transform'
+export const OPTION_TRANSITION_CLASS = 'transition-[background-color,color] duration-md ease-smooth'
 // Governance: PT layer owns visuals/motion only.
 // Density (padding/gap/radius) must be controlled by semantic/components tokens.
 
@@ -78,7 +77,7 @@ export const formControlsPt = {
       const active = opts?.context?.active ?? false
       return {
         class: [
-          '!border-0 !ring-0',
+          '!border-0 ring-0 focus-visible:ring-2 focus-visible:ring-ring',
           'transition-all duration-sm',
           active
             ? 'bg-primary text-primary-foreground'

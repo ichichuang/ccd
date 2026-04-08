@@ -56,7 +56,7 @@ export const semanticShortcuts = {
   // INTERNAL - DO NOT USE DIRECTLY
   // 移动端降低 blur 强度并提升底色不透明度；md+ 恢复完整玻璃模糊。
   'glass-base':
-    'backdrop-blur-sm md:backdrop-blur-xl bg-card/60! md:bg-card/36! dark:bg-card/70! md:dark:bg-card/40! transform-gpu',
+    'backdrop-blur-sm md:backdrop-blur-xl bg-card/60 md:bg-card/36 dark:bg-card/70 md:dark:bg-card/40 transform-gpu',
 
   // Glass Panel（浮层面板）
   'glass-panel':
