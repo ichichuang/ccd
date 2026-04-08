@@ -30,6 +30,8 @@ const emit = defineEmits<{
 const chartContainerRef = shallowRef<HTMLElement | HTMLDivElement | null>(null)
 const chartRef = shallowRef()
 const chartReadyTimer = ref<ReturnType<typeof setTimeout> | null>(null)
+const resizeRafId = ref(0)
+const isUnmounting = ref(false)
 
 // 联动相关状态：传 group 或 connectConfig.enabled 即视为开启
 const connectState = shallowRef<ChartConnectState>({})
@@ -45,8 +47,15 @@ const { width, height } = useAppElementSize(
   () => {
     if (props.autoResize === false) return
     if (!chartRef.value) return
-    requestAnimationFrame(() => {
-      chartRef.value?.resize()
+    if (isUnmounting.value) return
+    // 取消上一帧未执行的 resize，防止积压
+    cancelAnimationFrame(resizeRafId.value)
+    resizeRafId.value = requestAnimationFrame(() => {
+      if (isUnmounting.value) return
+      const instance = getEchartsInstance()
+      if (instance && !instance.isDisposed()) {
+        instance.resize()
+      }
     })
   },
   { mode: 'debounce', delay: 150 }
@@ -283,6 +292,10 @@ onMounted(() => {
 
 // 组件卸载时清理
 onBeforeUnmount(() => {
+  isUnmounting.value = true
+  // 取消待执行的 resize rAF，防止 dispose 后调用
+  cancelAnimationFrame(resizeRafId.value)
+
   if (chartReadyTimer.value !== null) {
     clearTimeout(chartReadyTimer.value)
     chartReadyTimer.value = null
@@ -303,7 +316,7 @@ const setConnectState = (state: Partial<ChartConnectState>) => {
 const triggerConnect = (eventType: string, params: Record<string, unknown>) => {
   if (isConnectEnabled.value) {
     const chartInstance = getEchartsInstance()
-    if (chartInstance) {
+    if (chartInstance && !chartInstance.isDisposed()) {
       chartInstance.dispatchAction({
         type: eventType,
         ...params,
@@ -316,23 +329,27 @@ defineExpose({
   getChartInstance,
   getEchartsInstance,
   setOption: (option: EChartsOption, notMerge = false) => {
-    if (chartRef.value) {
-      chartRef.value.setOption(option, notMerge)
+    const instance = getEchartsInstance()
+    if (instance && !instance.isDisposed()) {
+      instance.setOption(option, notMerge)
     }
   },
   resize: () => {
-    if (chartRef.value) {
-      chartRef.value.resize()
+    const instance = getEchartsInstance()
+    if (instance && !instance.isDisposed()) {
+      instance.resize()
     }
   },
   clear: () => {
-    if (chartRef.value) {
-      chartRef.value.clear()
+    const instance = getEchartsInstance()
+    if (instance && !instance.isDisposed()) {
+      instance.clear()
     }
   },
   dispose: () => {
-    if (chartRef.value) {
-      chartRef.value.dispose()
+    const instance = getEchartsInstance()
+    if (instance && !instance.isDisposed()) {
+      instance.dispose()
     }
   },
   getConnectState,
