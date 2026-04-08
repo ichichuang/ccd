@@ -179,19 +179,23 @@ export default ({ mode, command }: ConfigEnv): UserConfigExport => {
           entryFileNames: 'static/js/[name]-[hash].js',
           assetFileNames: 'static/[ext]/[name]-[hash].[ext]',
 
+          // Rollup 4 碎片合并：<2KB 的 chunk 自动归并到最近的父模块
+          // 消除 40+ 个微型碎片，减少 HTTP 请求数和压缩文件数
+          experimentalMinChunkSize: 2 * 1024,
+
           manualChunks(id: string) {
             if (id.includes('node_modules')) {
               // ── 1. Vue Core (保持纯净) ──
               if (id.includes('/vue/') || id.includes('vue-router') || id.includes('/pinia/'))
                 return 'vendor-vue'
 
-              // ── 2. Vue 生态扩展 ──
+              // ── 2. Vue 生态核心 (首屏同步: i18n + persistedstate + HTTP 客户端) ──
+              // overlayscrollbars / @tanstack/vue-virtual 为非首屏依赖，
+              // 交由 Rollup 按需切分到对应路由 chunk，减轻首屏同步负载
               if (
                 id.includes('vue-i18n') ||
                 id.includes('pinia-plugin-persistedstate') ||
-                id.includes('/alova/') ||
-                id.includes('overlayscrollbars') ||
-                id.includes('@tanstack/vue-virtual')
+                id.includes('/alova/')
               )
                 return 'vendor-ecosystem'
 
@@ -205,13 +209,13 @@ export default ({ mode, command }: ConfigEnv): UserConfigExport => {
               // ── 5. Lottie 生态 (defineAsyncComponent 异步加载) ──
               if (id.includes('lottie-web') || id.includes('vue3-lottie')) return 'vendor-lottie'
 
-              // ── 6. PrimeVue UI 框架 ──
-              // @primeuix/themes 体积较大，单独拆包以便并行加载。
-              // 其余 primevue/* 交由 Rollup 自动共享依赖分割，无需手工合并，
-              // BaseStyle 初始化顺序由 Rollup 模块图内部保证。
-              if (id.includes('@primeuix')) return 'vendor-primevue-theme'
+              // ── 6. PrimeVue UI 框架 (主题数据 + 核心运行时统一打包) ──
+              // @primeuix/themes 与 @primevue/core、primevue/* 组件基础模块高度耦合，
+              // 合并为单一 chunk 避免 BaseStyle/utils 碎片散落在各路由 chunk 中
+              if (id.includes('@primeuix') || id.includes('@primevue') || id.includes('/primevue/'))
+                return 'vendor-primevue'
 
-              // ── 8. 工具库（按需拆分，避免污染 vendor-vue） ──
+              // ── 7. 工具库（按需拆分，避免污染 vendor-vue） ──
               if (id.includes('@vueuse') || id.includes('lodash-es')) return 'vendor-utils'
               if (id.includes('dayjs') || id.includes('crypto-es') || id.includes('yup'))
                 return 'vendor-utils'
