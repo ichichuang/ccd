@@ -169,8 +169,12 @@ const mergedOption = computed((): EChartsOption => {
 watch(
   () => mergedOption.value,
   newOption => {
+    if (isUnmounting.value) return
     if (props.manualUpdate && chartRef.value) {
-      chartRef.value.setOption(newOption, true)
+      const instance = getEchartsInstance()
+      if (instance && !instance.isDisposed()) {
+        instance.setOption(newOption, true)
+      }
     }
   }
 )
@@ -300,8 +304,8 @@ onBeforeUnmount(() => {
     clearTimeout(chartReadyTimer.value)
     chartReadyTimer.value = null
   }
-  const chartInstance = getEchartsInstance()
-  chartInstance?.dispose?.()
+  // 不再手动 dispose — vue-echarts 子组件会在自身 onBeforeUnmount 中调用 dispose()
+  // 父组件重复调用会触发 "[ECharts] Instance has been disposed" 警告
   isChartInitialized.value = false
 })
 
