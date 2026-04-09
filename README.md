@@ -1,135 +1,284 @@
+<div align="center">
+
 # CCD — Enterprise Vue 3 Architecture
 
-> **本仓库代号 CCD**（npm 包名：`app-template`）— 一套以 **Vue 3 + PrimeVue + UnoCSS** 为核心、追求 **极致性能、类型安全与可维护边界** 的企业级后台管理前端架构模板。
+### 超越模板，重塑基建 —— 2026 世代企业级 Vue 3 中后台架构底座
 
-<p align="center">
-  <img src="https://img.shields.io/badge/Vue-3.5-42b883?logo=vuedotjs" alt="Vue 3.5" />
-  <img src="https://img.shields.io/badge/TypeScript-5.8-3178c6?logo=typescript&logoColor=white" alt="TypeScript 5.8" />
-  <img src="https://img.shields.io/badge/Vite-7.3-646cff?logo=vite" alt="Vite 7" />
-  <img src="https://img.shields.io/badge/PrimeVue-4.5-41B883?logo=primevue" alt="PrimeVue 4.5" />
-  <img src="https://img.shields.io/badge/UnoCSS-66-333?logo=unocss" alt="UnoCSS" />
-  <img src="https://img.shields.io/badge/Alova-3.3-5C6BC0" alt="Alova" />
-  <img src="https://img.shields.io/badge/License-GPL_v3-blue.svg" alt="License: GPL v3" />
-</p>
+<br />
+
+[![Vue 3.5](https://img.shields.io/badge/Vue-3.5+-42b883?style=flat-square&logo=vuedotjs&logoColor=white)](https://vuejs.org/)
+[![Vite 7](https://img.shields.io/badge/Vite-7-646cff?style=flat-square&logo=vite&logoColor=white)](https://vite.dev/)
+[![PrimeVue 4](https://img.shields.io/badge/PrimeVue-4-41B883?style=flat-square)](https://primevue.org/)
+[![UnoCSS](https://img.shields.io/badge/UnoCSS-66-333?style=flat-square&logo=unocss&logoColor=white)](https://unocss.dev/)
+[![TypeScript 5.8](https://img.shields.io/badge/TypeScript-5.8-3178c6?style=flat-square&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![Pinia 3](https://img.shields.io/badge/Pinia-3-ffd859?style=flat-square)](https://pinia.vuejs.org/)
+[![ECharts 6](https://img.shields.io/badge/ECharts-6-aa344d?style=flat-square)](https://echarts.apache.org/)
+
+[![Node.js >= 22](https://img.shields.io/badge/Node.js-%3E%3D22-339933?style=flat-square&logo=nodedotjs&logoColor=white)](https://nodejs.org/)
+[![pnpm](https://img.shields.io/badge/pnpm-10-f69220?style=flat-square&logo=pnpm&logoColor=white)](https://pnpm.io/)
+[![License: GPL v3](https://img.shields.io/badge/License-GPL_v3-blue?style=flat-square)](./LICENSE)
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen?style=flat-square)](https://github.com/ichichuang/ccd/pulls)
+
+<br />
+
+**CCD** 不是又一个后台模板。它是一套以 **Clean Architecture + DDD 边界思想** 为骨架、以 **ProForm DAG 引擎** 和 **ProTable 低代码引擎** 为核心生产力、以 **三层零硬编码设计系统** 为视觉基座的 **企业级前端架构底座**。
+
+[在线演示](https://ichichuang.github.io/ccd/) · [快速开始](#-快速开始) · [架构概览](#-架构拓扑) · [特性矩阵](#-核心特性矩阵)
+
+</div>
 
 ---
 
-## Core Architecture
-
-我们在前端侧对齐 **Clean Architecture** 与 **DDD** 的边界思想：不追求教科书式的全套战术模式，而是把 **依赖方向** 和 **脏数据隔离** 写进目录与规则里。
-
-### Adapters（防腐层）
-
-外部 HTTP 响应、存储回读等 **不可信数据** 在进入领域模型前，应在 `src/adapters` 收敛结构（例如 `parseSafeObject`），避免把 `unknown` 直接泄漏到业务层。业务代码以 **命名 DTO** 与 **Alova 方法构建器**（`src/api`）表达契约，在边界处完成校验与收窄。
-
-### Infra（依赖注入）
-
-`src/infra` 提供 **tokenProvider、路由只读桥** 等注入点，使 **HTTP 拦截器 ↔ Pinia ↔ Vue Router** 之间 **禁止循环 import**。401 刷新、登出与导航解耦由架构规则统一约束，业务模块只消费稳定 API。
-
-### Directives（DOM 与交互隔离）
-
-跨端手势（`v-tap`、`v-swipe`、`v-long-press`）与 **RBAC 鉴权**（`v-auth`）沉淀在 `src/directives`，组件内优先表达业务与展示，降低模板噪音与重复监听逻辑。
+## 📐 架构拓扑
 
 ```mermaid
-flowchart LR
-  HTTP[HTTP_JSON] --> Adapters[adapters]
-  Adapters --> ApiBuilders[api]
-  ApiBuilders --> Hooks[hooks]
-  Hooks --> Stores[stores]
-  Stores --> Views[views]
-  Infra[infra_DI] -.->|inject| ApiBuilders
-  Infra -.->|inject| Stores
+graph TD
+    subgraph Presentation["🖥️ Presentation Layer"]
+        Views["Views<br/><small>RBAC 路由守卫 + v-auth 指令</small>"]
+        ProTable["ProTable Engine<br/><small>配置驱动 · 自治 HTTP · 虚拟滚动</small>"]
+        ProForm["ProForm DAG Engine<br/><small>拓扑排序 · 三级逻辑流水线</small>"]
+    end
+
+    subgraph Composition["⚙️ Composition Layer"]
+        useAuth["useAuth"]
+        useChartTheme["useChartTheme"]
+        useHttpRequest["useHttpRequest"]
+        useLoading["useLoading"]
+    end
+
+    subgraph State["📦 State Layer — Pinia"]
+        UserStore["useUserStore<br/><small>Token · Profile · Permissions</small>"]
+        ThemeStore["useThemeStore<br/><small>Dark/Light · Palette</small>"]
+        PermStore["usePermissionStore<br/><small>Dynamic Routes · Menu</small>"]
+        OtherStores["layout · device · locale · size"]
+    end
+
+    subgraph API["🌐 API Layer"]
+        Alova["Alova Method Builders<br/><small>按模块拆分 · DTO 契约</small>"]
+        TokenCoord["TokenRefreshCoordinator<br/><small>401 静默刷新 · 并发队列</small>"]
+    end
+
+    subgraph AntiCorruption["🛡️ Anti-Corruption Layer"]
+        Adapters["Adapters<br/><small>parseSafeObject · DTO 校验</small>"]
+    end
+
+    subgraph Infra["🔌 Infrastructure — DI"]
+        TokenProvider["tokenProvider"]
+        RouteProvider["routeProvider"]
+    end
+
+    subgraph DesignSystem["🎨 3-Tier Design System (Cross-Cutting)"]
+        Tier1["Tier 1: CSS Variables<br/><small>60+ 语义变量</small>"]
+        Tier2["Tier 2: UnoCSS Tokens<br/><small>可审计闭集快捷方式</small>"]
+        Tier3["Tier 3: PrimeVue PT<br/><small>全局 Pass-Through 预设</small>"]
+        Tier1 --> Tier2 --> Tier3
+    end
+
+    Views --> ProTable & ProForm
+    ProTable & ProForm --> Composition
+    Composition --> State
+    State --> API
+    API --> AntiCorruption
+    AntiCorruption --> Infra
+
+    Infra -.->|inject| API
+    Infra -.->|inject| State
+    DesignSystem -.->|theme sync| Views
+    DesignSystem -.->|chart palette| useChartTheme
+
+    style Presentation fill:#e8f5e9,stroke:#2e7d32,color:#1b5e20
+    style Composition fill:#e3f2fd,stroke:#1565c0,color:#0d47a1
+    style State fill:#fff3e0,stroke:#e65100,color:#bf360c
+    style API fill:#f3e5f5,stroke:#6a1b9a,color:#4a148c
+    style AntiCorruption fill:#fce4ec,stroke:#b71c1c,color:#b71c1c
+    style Infra fill:#efebe9,stroke:#4e342e,color:#3e2723
+    style DesignSystem fill:#e0f7fa,stroke:#00695c,color:#004d40
+```
+
+> **数据流方向**：`HTTP → Adapters → API Builders → Hooks → Stores → Views`，**严禁反向依赖**。Infra 层通过 DI 注入打破 HTTP ↔ Pinia ↔ Router 的循环引用。
+
+---
+
+## 🚀 核心特性矩阵
+
+### 🧠 ProForm DAG 引擎
+
+> 告别回调地狱 —— 用**有向无环图**编排表单字段依赖
+
+- **Kahn 拓扑排序** — 解析时自动检测循环依赖，运行时按安全顺序更新
+- **三级逻辑流水线** — `DisableEngine → RequiredEngine → VisibilityEngine`，条件规则 (`disabledIf` / `requiredIf` / `visibleIf`) 响应式求值
+- **碎片原子更新** — 50+ 互相依赖字段零手动编排，省 → 市 → 区 → 邮编自动级联
+- **插件系统 + 状态持久化** — 可扩展的 Schema 驱动架构
+
+### 📊 ProTable 低代码引擎
+
+> 纯 Prop 声明 → 全自治表格，业务代码不碰 `ref(data)` / `ref(loading)`
+
+- **配置驱动** — `:api` + `:columns` + `:data-key` 三行 Prop 即出完整 CRUD 表格
+- **自治 HTTP** — 分页参数映射、错误重试 UI、竞态请求取消，全部内置
+- **valueEnum 声明式渲染** — 枚举列自动 Tag/Badge，拒绝 render 函数膨胀
+- **TanStack Virtual** — 万行级虚拟滚动 + 无限滚动双模式
+- **URL 状态同步** — 筛选/排序/分页可书签化
+
+### 🎨 三层零硬编码设计系统
+
+> 整个仓库 **零 `#fff`、零 `text-red-500`、零裸 `rem`** —— 全量语义 Token
+
+| 层级       | 载体                   | 职责                                                                           |
+| ---------- | ---------------------- | ------------------------------------------------------------------------------ |
+| **Tier 1** | CSS Custom Properties  | 60+ 语义变量（`--primary`, `--background`, `--sidebar-*`...）                  |
+| **Tier 2** | UnoCSS Semantic Tokens | 可审计闭集快捷方式（`bg-background`, `text-foreground`, `surface-primary`...） |
+| **Tier 3** | PrimeVue Pass-Through  | 全局 PT 预设（`formControlsPt`, `menuPt`），组件零 boilerplate                 |
+
+- **9 种语义材质** — `glass-panel` · `glass-shell` · `glass-card` · `glass-icon-box` · `glass-capsule` · `material-solid` · `material-elevated` · `interactive-card` · `interactive-item`
+- **6 种主题切换动画** — Curtain · Diamond · Fade · Circle · Glitch · Implosion
+- **暗色光学物理** — 亮色用阴影，暗色用内发光 + 锐利边框，拒绝一刀切
+- **6 级语义 Z-Index** — `z-base(0)` → `z-content(10)` → `z-layout(40)` → `z-overlay(50)` → `z-popover(60)` → `z-toast(100)`
+
+### 🛡️ 安全隔离
+
+- **RBAC 双轨执行** — 模板环境 `v-auth` 指令（支持 `.disable` 修饰符） + TSX/Script 环境 `useAuth()` Hook
+- **Anti-Corruption Layer** — `src/adapters` 防腐层 + `src/infra` 依赖注入，外部脏数据在边界处收敛
+- **SafeStorage** — 加密本地存储（crypto-es AES） + LZ-string 压缩，Pinia 持久化自动走安全通道
+- **TokenRefreshCoordinator** — 401 静默刷新 + 并发请求自动排队，业务代码永远不处理 auth 逻辑
+
+### ⚡ 极致性能
+
+| 策略                 | 实现                                                                                               |
+| -------------------- | -------------------------------------------------------------------------------------------------- |
+| **精细拆包**         | 7 类 `manualChunks`：vue · ecosystem · echarts · gsap · lottie · primevue · utils                  |
+| **ECharts 深度摇树** | `moduleSideEffects: false` 构建插件 + 按需注册，未用图表零残留                                     |
+| **Lottie 极限瘦身**  | Light Build（~60KB 减包）+ JSON `Map` 缓存 + 动态 `import()`                                       |
+| **微碎片自动合并**   | `experimentalMinChunkSize: 2KB`，< 2KB 的碎片 chunk 自动聚合                                       |
+| **双重预压缩**       | Gzip + Brotli 同时产出，`VITE_COMPRESSION=both`                                                    |
+| **首屏加速**         | `preconnect` + `dns-prefetch` 注入 · 主题 FOIT fallback · 纯 CSS Loader                            |
+| **静态资源**         | WebP 位图 · 4KB base64 内联 · `treeshake.preset: 'smallest'` · SFC `hoistStatic` + `cacheHandlers` |
+
+### ⚙️ ECharts 防竞态主题注入
+
+```ts
+// 数据层：纯数据，不含任何颜色/样式
+const rawOption = computed(() => ({
+  series: [{ name: 'Sales', type: 'bar', data: [120, 200, 150] }],
+}))
+
+// useChartTheme 响应式注入品牌调色盘 + 暗色适配
+const { option } = useChartTheme(rawOption)
+// 主题切换时图表自动重绘，零竞态、零闪烁
+```
+
+支持 20+ 图表类型的样式适配（Bar, Line, Pie, Radar, Tree, Treemap, Graph, Candlestick, Sunburst...）
+
+### 🔧 工程化全家桶
+
+- **release-please** — 基于 Conventional Commits 全自动 SemVer 发版 + CHANGELOG 生成
+- **CI Guardian** — Type-Check (`vue-tsc`) + Unit Tests (`vitest`) + Lint (`eslint`) + Production Build
+- **Git 规范** — Husky + CommitLint + lint-staged + WIP commit 拦截
+- **依赖巡检** — Dependabot 每周自动拉取安全更新 PR
+- **i18n** — vue-i18n 双语（zh-CN / en-US）+ PrimeVue 组件级本地化
+- **GitHub Pages** — 自动化部署工作流，推送即上线
+
+---
+
+## ⚡ 快速开始
+
+### 环境要求
+
+| 工具        | 版本       |
+| ----------- | ---------- |
+| **Node.js** | >= 22.12.0 |
+| **pnpm**    | >= 10.0.0  |
+
+### 启动
+
+```bash
+# 克隆仓库
+git clone https://github.com/ichichuang/ccd.git
+cd ccd
+
+# 安装依赖
+pnpm install
+
+# 启动开发服务器
+pnpm dev
+
+# 类型检查 + 生产构建
+pnpm build
+
+# 预览构建产物
+pnpm preview
+```
+
+### 常用命令
+
+```bash
+pnpm type-check       # vue-tsc 严格类型检查
+pnpm lint             # ESLint 代码检查
+pnpm lint:fix         # ESLint 自动修复
+pnpm test             # Vitest 交互式测试
+pnpm test:run         # Vitest 单次运行
+pnpm build:analyze    # 构建 + Bundle 分析
+pnpm commit           # Commitizen 规范提交
 ```
 
 ---
 
-## Design System & Animation
-
-- **Theme Engine**：设计令牌由 **CSS 变量** 驱动；**PrimeVue** 采用 Styled Mode 与全局/局部 **Pass Through (`pt`)** 映射到语义 Token；**UnoCSS** 侧由 `src/design-engine`（含 `semanticShortcuts` 等）维护 **可审计的快捷方式闭集**，避免原子类失控。
-- **Glass & Surfaces**：玻璃态、材质与 Z 轴语义在 `.cursor/rules/design-system` 中有硬约束，保证暗色模式与主题切换下的可读性与性能底线。
-- **Motion**：登录场景 **`animated-characters`** 使用 **GSAP** 驱动图腾式多角色场景（视差、眨眼、密码显隐姿态等），与布局坐标系解耦；全站 **Lottie** 经 `lottieThemeUtils` 与主题同步，加载器侧 **`vue3-lottie` 异步导入**，避免首屏被动画运行时拖垮。
-
----
-
-## Ultimate Performance
-
-以下为仓库内 **可指向源码** 的优化手段（非口号清单）：
-
-| 能力                                   | 说明                                                                                                                                                                                                                           |
-| -------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| **示例路由全量打包（线上 Demo 策略）** | `src/router/index.ts` 通过 `import.meta.glob('./modules/**/*.ts', { eager: true })` 统一加载路由模块。`example.ts` 默认参与生产构建，作为 Clean Architecture 架构约束（如 RBAC、adapters、infra 等）的可视化文档与在线演练场。 |
-| **细粒度 manualChunks**                | `vite.config.ts` 将 `vue`/`vue-router`/`pinia`、`alova`/`vue-i18n`/`@vueuse`、**ECharts**、**GSAP**、**Lottie**、`@primeuix` 主题、工具库等拆入独立 vendor chunk，利于缓存与并行加载。                                         |
-| **ECharts 额外摇树**                   | `build/plugins.ts` 在构建期对 `echarts/lib` 下 `chart` 与 `component` 子路径增强 `moduleSideEffects: false`，配合按需注册，减小未用图表残留。                                                                                  |
-| **Lottie 体积与运行时**                | `build/utils.ts` 将 `lottie-web` 指向 **light** 构建（无表达式引擎，显著减包）；`LoadingLottie.vue` 对 JSON **`fetch` + `Map` 缓存**；`BaseLottieLoader` **动态 import** `vue3-lottie`。                                       |
-| **Gzip + Brotli**                      | `vite-plugin-compression`（见 `build/compress.ts`）；通过环境变量 **`VITE_COMPRESSION`** 选择 `gzip` / `brotli` / **`both`**（生产建议在 `.env.production` 中设为 `both` 以产出双份预压缩资源）。                              |
-| **连接与首屏**                         | `build/html.ts` 根据 **`VITE_API_BASE_URL`** 注入 **`preconnect` + `dns-prefetch`**；主题 fallback 样式注入减轻 FOIT。                                                                                                         |
-| **静态资源**                           | 布局与业务广泛使用 **WebP** 位图；构建侧 `assetsInlineLimit`、**`treeshake.preset: 'smallest'`**、Vue SFC **`hoistStatic` / `cacheHandlers`**；生产可按 env 剔除 `debugger` 与大部分 `console.*`。                             |
-
----
-
-## DevOps & Open Source Workflow (工程化与自动化)
-
-- **全自动发版引擎**：集成 Google **`release-please`**，基于 [Conventional Commits](https://www.conventionalcommits.org/) 规范，全自动计算 SemVer 版本号、打 Git Tag，并生成维护良好的 **`CHANGELOG.md`**。
-- **依赖智能更新**：配置 **`dependabot`**，每周按需自动拉取依赖更新 PR，保持技术栈的前沿性与安全基线。
-- **企业级主干保护**：**Husky** 与强约束 **CI**（Type-Check & Lint Guardian）协同 **GitHub 分支保护**，拦截带病代码合入 **`main`**。
-- **开源社区规范**：内置 **Bug Report**、**Feature Request** 与 **Pull Request** 模板，规范化全球开发者的贡献流程。
-
----
-
-## Project Structure
-
-精简版 `src` 导览（完整模块见 `.cursor/rules` 与源码树）：
+## 📁 目录规约
 
 ```text
 src/
-├── adapters/          # 防腐层：外部数据进入领域前的结构收敛
-├── api/               # Alova 方法构建器（按模块/特性拆分，仅两层目录）
-├── assets/            # 图标、图片、Lottie、全局样式
-├── components/        # 全局业务组件（ProTable、ProForm、PrimeDialog、UseEcharts 等）
-├── constants/         # 应用常量（路由、布局、主题名等）
-├── design-engine/     # UnoCSS：tokens、shortcuts、safelist、校验
-├── directives/        # 手势与鉴权等指令
-├── hooks/             # 可复用组合式逻辑（含 layout、HTTP、图表主题等）
-├── infra/             # DI：auth、router 等基础设施桥接
-├── layouts/           # 布局壳（需显式 import，不参与自动注册）
-├── locales/           # i18n 语言包
-├── plugins/           # 应用插件入口
-├── router/            # 路由模块与动态路由、守卫
-├── stores/            # Pinia 模块
-├── types/             # dto / systems / modules 等类型分层
-├── utils/             # 工具（http、date、safeStorage、theme 等）
-└── views/             # 页面视图（dashboard、login、example 等）
+├── adapters/          # 防腐层：外部不可信数据的结构收敛与 DTO 校验
+├── api/               # Alova 方法构建器（按模块拆分，严格两层目录）
+├── assets/            # 静态资源（图标、图片、全局样式、主题动画）
+├── components/        # 全局业务组件（ProForm · ProTable · UseEcharts · PrimeDialog · Icons）
+├── constants/         # 应用常量（路由、布局、主题、断点、品牌）
+├── design-engine/     # UnoCSS 设计引擎（tokens · shortcuts · safelist · validators）
+├── directives/        # 自定义指令（v-auth · v-tap · v-swipe · v-long-press）
+├── hooks/             # 组合式逻辑（layout · useChartTheme · useInteraction）
+├── infra/             # 基础设施 DI（tokenProvider · routeProvider）
+├── layouts/           # 布局壳（Admin · Ratio · FullScreen，需显式 import）
+├── locales/           # i18n 语言包（zh-CN · en-US · PrimeVue 本地化）
+├── plugins/           # Vue 插件注册入口（router · stores · primevue · i18n · date）
+├── router/            # 路由模块 + 动态路由 + 守卫 + 权限控制
+├── stores/            # Pinia 状态模块（user · theme · permission · layout · device · locale · size）
+├── types/             # TypeScript 类型分层（dto · systems · modules）
+├── utils/             # 工具库（http · date · safeStorage · theme engine）
+└── views/             # 页面视图（dashboard · login · example · notfound）
 ```
-
-### 💡 Example 模块定位声明
-
-- 本仓库作为企业级架构模板，包含丰富的在线演示能力。因此 `src/router/modules/example.ts` 默认参与生产构建。
-- `src/views/example/architecture/**` 目录下的页面并非废代码，而是与 `.cursor/rules/architecture/**` 规则强映射的**活体架构文档**（承载权限控制、网络桥接、状态机等核心规约的演示）。
-- **落地建议**：在实际衍生业务线时，建议开发者直接删除 `example` 目录，或通过环境变量（如 `VITE_ENABLE_DEMO`）配合 `import.meta.glob` 自行实施生产剔除。
 
 ---
 
-## Quick Start
+## 📖 Example 模块说明
 
-**环境要求**（见 `package.json` 的 `engines`）：
+`src/views/example/` 包含 **100+ 个演示页面**，它是与 `.cursor/rules/` 架构规则**强映射**的活体架构文档，涵盖：
 
-- **Node.js** ≥ 24.3.0
-- **pnpm** ≥ 10.0.0
+- **ProForm 全场景** — 基础 / 高级 / DAG 依赖 / 验证 / 分组 / 插件 / Playground
+- **ProTable 全场景** — 基础 / 高级 / 列配置 / 服务端分页 / 虚拟滚动 / 无限滚动 / Form+Table 联动
+- **架构模式演练** — RBAC 权限 / Adapters 防腐 / Infra DI / Router Meta / Stores / 指令
+- **组件库展示** — Icons (300+) / ECharts 图表 / 动画 / 滚动条 / Dialog / Toast
 
-仓库根目录未提供 `.env.example`；请基于团队约定或现有 **`.env` / `.env.development` / `.env.production`** 配置 `VITE_*` 变量（如 `VITE_API_BASE_URL`、`VITE_COMPRESSION`、`VITE_PUBLIC_PATH` 等）。
-
-```bash
-pnpm install
-pnpm dev          # 本地开发
-pnpm build        # 类型检查 + 生产构建
-pnpm preview      # 预览 dist
-pnpm build:analyze   # 构建并配合 analyze 模式（见脚本）
-```
-
-其他常用脚本：`pnpm type-check`、`pnpm lint`、`pnpm test` — 详见 `package.json` 的 `scripts`。
+> **落地建议**：在实际业务衍生时，可直接删除 `example/` 目录，或通过环境变量 `VITE_ENABLE_DEMO` 配合 `import.meta.glob` 实施生产剔除。
 
 ---
 
-## 许可证
+## 🤝 贡献
 
-本项目采用 **GNU General Public License v3.0（GPL-3.0）** 开源协议。完整条款与副本说明请参阅项目根目录下的 [`LICENSE`](LICENSE) 文件。
+欢迎提交 Issue 和 Pull Request！请确保：
+
+1. 遵循 [Conventional Commits](https://www.conventionalcommits.org/) 规范
+2. 通过 `pnpm check`（类型检查 + Lint）
+3. 通过 `pnpm test:run`（单元测试）
+
+---
+
+## 📄 许可证
+
+本项目基于 [**GNU General Public License v3.0**](./LICENSE) 开源。
+
+---
+
+<div align="center">
+
+**如果这个项目对你有帮助，请给一个 Star ⭐**
+
+</div>
