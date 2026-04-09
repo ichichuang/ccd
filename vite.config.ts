@@ -87,6 +87,7 @@ export default ({ mode, command }: ConfigEnv): UserConfigExport => {
     root,
     logLevel: isDev ? 'info' : 'warn',
     clearScreen: false,
+    envPrefix: ['VITE_', 'TAURI_ENV_'],
 
     resolve: {
       alias,

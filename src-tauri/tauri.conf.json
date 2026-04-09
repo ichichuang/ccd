@@ -17,11 +17,12 @@
         "height": 600,
         "resizable": true,
         "maximized": true,
-        "fullscreen": false
+        "fullscreen": false,
+        "devtools": false
       }
     ],
     "security": {
-      "csp": null
+      "csp": "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' asset: https://asset.localhost data:; font-src 'self' data:; connect-src 'self' ipc: http://ipc.localhost"
     }
   },
   "bundle": {
