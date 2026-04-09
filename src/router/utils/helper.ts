@@ -6,7 +6,9 @@ import {
 } from '@/constants/router'
 import router, { routeUtils } from '@/router'
 import { generateIdFromKey } from '@/utils/ids'
+import { isTauri } from '@/utils/env'
 import { usePermissionStore } from '@/stores/modules/permission'
+import { open as openExternal } from '@tauri-apps/plugin-shell'
 import type { LocationQueryRaw, RouteLocationNormalized, RouteMeta } from 'vue-router'
 import type { MenuItem as PrimeMenuItem } from 'primevue/menuitem'
 import { filterMenuByAccess } from './accessControl'
@@ -257,10 +259,16 @@ export const goToRoute = (
   const linkUrl = targetRoute?.meta?.linkUrl as string | undefined
   if (isLink) {
     const url = linkUrl || targetRoute.path
-    try {
-      window.open(url, '_blank')
-    } catch {
-      console.warn('外链打开失败：', url)
+    if (isTauri()) {
+      void openExternal(url).catch(() => {
+        console.warn('外链打开失败：', url)
+      })
+    } else {
+      try {
+        window.open(url, '_blank')
+      } catch {
+        console.warn('外链打开失败：', url)
+      }
     }
     return
   }
@@ -284,6 +292,11 @@ export const goToRoute = (
   }
 
   if (shouldOpenNewWindow) {
+    if (isTauri()) {
+      router.push({ path: targetRoute.path, query })
+      return
+    }
+
     const permissionStore = usePermissionStore()
     const windowKey = generateWindowKey(String(targetRoute.name), query)
     const shouldReuse = targetRoute.meta?.reuseWindow === true

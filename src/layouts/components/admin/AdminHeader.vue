@@ -7,8 +7,10 @@ import { AUTH_ENABLED } from '@/constants/router'
 import { RouterLink, useRoute } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { useFullscreen } from '@vueuse/core'
+import { getCurrentWindow } from '@tauri-apps/api/window'
 import { useAppElementSize } from '@/hooks/modules/useAppElementSize'
 import { useThemeSwitch } from '@/hooks/modules/useThemeSwitch'
+import { isTauri } from '@/utils/env'
 import { storeToRefs } from 'pinia'
 import {
   getAdminMenuTree,
@@ -61,7 +63,37 @@ const layoutStore = useLayoutStore()
 const themeSwitch = useThemeSwitch()
 const { isMobileTerminal: isMobile } = storeToRefs(deviceStore)
 
-const { isFullscreen, toggle: toggleFullscreen } = useFullscreen()
+const { isFullscreen: webIsFullscreen, toggle: toggleWebFullscreen } = useFullscreen()
+const tauriIsFullscreen = ref(false)
+
+const syncTauriFullscreenState = async (): Promise<void> => {
+  if (!isTauri()) return
+  try {
+    tauriIsFullscreen.value = await getCurrentWindow().isFullscreen()
+  } catch {
+    tauriIsFullscreen.value = false
+  }
+}
+
+const isFullscreen = computed<boolean>(() => {
+  if (isTauri()) return tauriIsFullscreen.value
+  return webIsFullscreen.value
+})
+
+const toggleFullscreen = async (): Promise<void> => {
+  if (isTauri()) {
+    const appWindow = getCurrentWindow()
+    const current = await appWindow.isFullscreen()
+    await appWindow.setFullscreen(!current)
+    tauriIsFullscreen.value = !current
+    return
+  }
+  await toggleWebFullscreen()
+}
+
+onMounted(() => {
+  void syncTauriFullscreenState()
+})
 
 const userRoles = computed(() => userStore.getUserRoles || [])
 const userPermissions = computed(() => userStore.getUserPermissions || [])
