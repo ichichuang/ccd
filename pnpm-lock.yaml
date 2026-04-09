@@ -111,9 +111,6 @@ importers:
       '@eslint/js':
         specifier: ^9.39.2
         version: 9.39.2
-      '@faker-js/faker':
-        specifier: ^9.9.0
-        version: 9.9.0
       '@iconify-json/logos':
         specifier: ^1.2.10
         version: 1.2.10
@@ -1402,10 +1399,6 @@ packages:
     peerDependenciesMeta:
       '@noble/hashes':
         optional: true
-
-  '@faker-js/faker@9.9.0':
-    resolution: {integrity: sha512-OEl393iCOoo/z8bMezRlJu+GlRGlsKbUAN7jKB6LhnKoqKve5DXRpalbItIIcwnCjs1k/FOPjFzcA6Qn+H+YbA==}
-    engines: {node: '>=18.0.0', npm: '>=9.0.0'}
 
   '@humanfs/core@0.19.1':
     resolution: {integrity: sha512-5DyQ4+1JEUzejeK1JGICcideyfUbGixgS9jNgex5nqkW+cY7WZhxBigmieN5Qnw9ZosSNVC9KQKyb+GUaGyKUA==}
@@ -5877,8 +5870,6 @@ snapshots:
       levn: 0.4.1
 
   '@exodus/bytes@1.14.1': {}
-
-  '@faker-js/faker@9.9.0': {}
 
   '@humanfs/core@0.19.1': {}
 

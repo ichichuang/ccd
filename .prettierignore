@@ -14,8 +14,5 @@ src/types/auto-imports.d.ts
 src/components.d.ts
 src/auto-imports.d.ts
 
-# 图标清单（由构建插件生成，保持单行数组便于 diff 与提交）
-src/views/example/components/icons/configs/iconLists.generated.ts
-
 .cursor/
 .claude/

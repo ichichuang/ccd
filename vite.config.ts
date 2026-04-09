@@ -2,7 +2,14 @@ import postcssPxToRem from 'postcss-pxtorem'
 import { defineConfig, loadEnv, type ConfigEnv, type UserConfigExport } from 'vite'
 import { exclude, include } from './build/optimize'
 import { getPluginsList } from './build/plugins'
-import { __APP_INFO__, alias, pathResolve, root, wrapperEnv } from './build/utils'
+import {
+  __APP_INFO__,
+  alias,
+  ensureTauriDevUrlSync,
+  pathResolve,
+  root,
+  wrapperEnv,
+} from './build/utils'
 
 // ----------------------------------------------------------------------
 // PostCSS PxToRem 忽略选择器配置
@@ -52,6 +59,7 @@ export default ({ mode, command }: ConfigEnv): UserConfigExport => {
   } = env
 
   const isDev = mode === 'development'
+  ensureTauriDevUrlSync(VITE_PORT)
 
   // 2. 动态控制 esbuild 的 drop / pure 选项
   //    保留 console.error 和 console.warn 用于生产环境错误可见性
@@ -102,12 +110,6 @@ export default ({ mode, command }: ConfigEnv): UserConfigExport => {
       },
       proxy: isDev
         ? {
-            '/api/jsonplaceholder': {
-              target: 'https://jsonplaceholder.typicode.com',
-              changeOrigin: true,
-              rewrite: path => path.replace(/^\/api\/jsonplaceholder/, ''),
-              timeout: VITE_PROXY_TIMEOUT ?? 15000,
-            },
             '/api': {
               target: VITE_API_BASE_URL,
               changeOrigin: true,
