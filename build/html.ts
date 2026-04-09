@@ -49,6 +49,7 @@ ${themeFallback}
         .replace(/%BRAND_NAME%/g, brand.name)
         .replace(/%BRAND_SLOGAN%/g, brand.slogan)
         .replace(/%BRAND_AUTHOR%/g, brand.author)
+        .replace(/%BRAND_FAVICON%/g, `${env.BASE_URL ?? '/'}face.png`)
     },
   }
 }

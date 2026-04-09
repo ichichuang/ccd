@@ -5,8 +5,10 @@
  * 同步说明：修改品牌后，需手动同步 package.json 的 name / description / author 与 brand 一致
  */
 export const brand = {
+  /** 应用唯一标识（反向域名格式，用于 Tauri bundle identifier） */
+  id: 'com.ichichuang.ccd',
   /** 项目标识（小写，用于 package、URL、浏览器标题、og:title） */
-  name: 'app-template',
+  name: 'ccd-desktop',
   /** Header 展示主标题 */
   displayName: 'Enterprise Vue Admin',
   /** Header 展示副标题 */
