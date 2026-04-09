@@ -4,10 +4,10 @@ import { fileURLToPath } from 'node:url'
 import { FileSystemIconLoader } from '@iconify/utils/lib/loader/node-loaders'
 import { globSync } from 'glob'
 
-import { LAYOUT_DIMENSION_KEYS, SIZE_BASE_VAR_KEYS } from '../../constants/size'
-import { SIZE_SCALE_KEYS, type SizeScaleKey } from '../../constants/sizeScale'
-import { COLOR_FAMILIES } from '../../utils/theme/metadata'
-import { semanticShortcuts } from '../shortcuts/semanticShortcuts'
+import { LAYOUT_DIMENSION_KEYS, SIZE_BASE_VAR_KEYS } from '../../../src/constants/size'
+import { SIZE_SCALE_KEYS, type SizeScaleKey } from '../../../src/constants/sizeScale'
+import { COLOR_FAMILIES } from '../../../src/utils/theme/metadata'
+import { semanticShortcuts } from '../../../src/design-engine/shortcuts/semanticShortcuts'
 
 /** 布局/设置等处的 Lucide 图标名（非路由 meta 扫描可达时仍需 safelist） */
 const ENGINE_ICON_SAFELIST_CLASSES: readonly string[] = [

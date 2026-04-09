@@ -7,7 +7,7 @@ import AutoImport from 'unplugin-auto-import/vite'
 import Components from 'unplugin-vue-components/vite'
 import { PrimeVueResolver } from '@primevue/auto-import-resolver'
 import type { PluginOption, ViteDevServer } from 'vite'
-import { invalidateIconCaches } from '../src/design-engine/safelist'
+import { invalidateIconCaches } from './design-engine/safelist'
 import type { ViteEnv } from './utils'
 import { configLegacyPlugin } from './legacy'
 

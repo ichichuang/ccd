@@ -9,7 +9,7 @@ import {
   type Rule,
 } from 'unocss'
 import { theme } from './src/design-engine/theme'
-import { getEngineSafelist, getPresetIconsCollections } from './src/design-engine/safelist'
+import { getEngineSafelist, getPresetIconsCollections } from './build/design-engine/safelist'
 
 /** 与 shortcuts 中 `ease-spring` 对齐（Uno 从 `theme.easing` 解析） */
 const themeResolved = {
