@@ -78,6 +78,7 @@ export default ({ mode, command }: ConfigEnv): UserConfigExport => {
     base: VITE_PUBLIC_PATH,
     root,
     logLevel: isDev ? 'info' : 'warn',
+    clearScreen: false,
 
     resolve: {
       alias,
@@ -85,10 +86,10 @@ export default ({ mode, command }: ConfigEnv): UserConfigExport => {
 
     server: {
       port: VITE_PORT,
-      host: '0.0.0.0',
+      host: process.env.TAURI_DEV_HOST || false,
       open: true,
       cors: true,
-      strictPort: false,
+      strictPort: true,
       warmup: {
         clientFiles: ['./index.html', './src/{views,components}/*'],
       },

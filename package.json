@@ -30,6 +30,9 @@
   "packageManager": "pnpm@10.28.2",
   "scripts": {
     "dev": "vite",
+    "tauri": "tauri",
+    "dev:desktop": "tauri dev",
+    "build:desktop": "tauri build",
     "dev:demo": "NODE_OPTIONS='--max-old-space-size=8192' UNO_DEMO=true vite",
     "build": "vue-tsc --build --force && vite build",
     "build:ci": "vite build",
@@ -112,6 +115,7 @@
     "@iconify-json/solar": "^1.2.5",
     "@iconify/utils": "^3.1.0",
     "@primevue/auto-import-resolver": "^4.5.4",
+    "@tauri-apps/cli": "^2.10.1",
     "@tsconfig/node22": "^22.0.2",
     "@types/lodash-es": "^4.17.12",
     "@types/node": "^22.19.7",
