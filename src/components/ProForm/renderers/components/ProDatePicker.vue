@@ -9,12 +9,9 @@ type FormattableDateInput = Date | string | number
 
 type Props = FieldComponentProps<ModelValue>
 
-const props = defineProps<Props>()
+const props = defineProps<Omit<Props, 'modelValue'>>()
+const model = defineModel<ModelValue>()
 const { formatDate: formatDateValue, isInitialized } = useDateUtils()
-
-const emit = defineEmits<{
-  (e: 'update:modelValue', value: ModelValue): void
-}>()
 
 const attrs = useAttrs()
 
@@ -43,7 +40,7 @@ const formatSingleDate = (value: SingleDateValue): string | null => {
 }
 
 const displayValue = computed<string>(() => {
-  const value = props.modelValue
+  const value = model.value
 
   // 区间值
   if (Array.isArray(value)) {
@@ -67,11 +64,11 @@ const displayValue = computed<string>(() => {
 })
 
 const handleUpdate = (value: unknown): void => {
-  emit('update:modelValue', value as ModelValue)
+  model.value = value as ModelValue
 }
 
 type DatePickerModel = Date | Date[] | (Date | null)[] | null | undefined
-const datePickerModelValue = computed<DatePickerModel>(() => props.modelValue as DatePickerModel)
+const datePickerModelValue = computed<DatePickerModel>(() => model.value as DatePickerModel)
 </script>
 
 <template>

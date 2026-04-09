@@ -9,11 +9,8 @@ type Props = FieldComponentProps<CheckboxValue> & {
   inputId?: string
 }
 
-const props = defineProps<Props>()
-
-const emit = defineEmits<{
-  (e: 'update:modelValue', value: CheckboxValue): void
-}>()
+const props = defineProps<Omit<Props, 'modelValue'>>()
+const model = defineModel<CheckboxValue>()
 
 const attrs = useAttrs()
 
@@ -25,7 +22,7 @@ const emptyPlaceholder = computed<string>(() => {
 const optionsList = computed<SelectOption[]>(() => props.options ?? [])
 
 const displayLabel = computed<string>(() => {
-  const value = props.modelValue
+  const value = model.value
 
   if (value === null || value === undefined) {
     return emptyPlaceholder.value
@@ -58,7 +55,7 @@ const displayLabel = computed<string>(() => {
 })
 
 const handleUpdate = (value: CheckboxValue): void => {
-  emit('update:modelValue', value)
+  model.value = value
 }
 </script>
 
@@ -79,7 +76,7 @@ const handleUpdate = (value: CheckboxValue): void => {
       class="row-center gap-xs"
     >
       <Checkbox
-        :model-value="props.modelValue"
+        :model-value="model"
         :input-id="`cb-${String(opt.value)}`"
         :value="opt.value"
         :disabled="props.disabled || props.readonly"
@@ -96,7 +93,7 @@ const handleUpdate = (value: CheckboxValue): void => {
   </div>
   <Checkbox
     v-else
-    :model-value="props.modelValue"
+    :model-value="model"
     :input-id="props.inputId"
     binary
     :disabled="props.disabled || props.readonly"

@@ -3,11 +3,8 @@ import type { FieldComponentProps } from '../../engine/types'
 
 type Props = FieldComponentProps<string | null | undefined>
 
-const props = defineProps<Props>()
-
-const emit = defineEmits<{
-  (e: 'update:modelValue', value: string | null): void
-}>()
+const props = defineProps<Omit<Props, 'modelValue'>>()
+const model = defineModel<string | null | undefined>()
 
 const attrs = useAttrs()
 
@@ -17,13 +14,13 @@ const emptyPlaceholder = computed<string>(() => {
 })
 
 const displayValue = computed<string>(() => {
-  const value = props.modelValue
+  const value = model.value
   if (value == null || value === '') return emptyPlaceholder.value
   return String(value)
 })
 
 const handleUpdate = (value: string | null): void => {
-  emit('update:modelValue', value ?? null)
+  model.value = value ?? null
 }
 </script>
 
@@ -36,7 +33,7 @@ const handleUpdate = (value: string | null): void => {
   </span>
   <InputMask
     v-else
-    :model-value="props.modelValue ?? ''"
+    :model-value="model ?? ''"
     :disabled="props.disabled || props.readonly"
     :invalid="!!props.error && props.error.length > 0"
     class="w-full"

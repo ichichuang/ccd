@@ -28,7 +28,7 @@ const STATE_STORAGE_OPTIONS: { label: string; value: 'session' | 'local' | false
 const effectiveStateKey = computed<string | undefined>(() =>
   stateStorage.value !== false ? 'pro-table-advanced-demo' : undefined
 )
-const tableContainerRef = ref<HTMLElement | null>(null)
+const tableContainerRef = useTemplateRef<HTMLElement>('tableContainerRef')
 const tableContainerHeight = ref<number | undefined>(undefined)
 
 // ── RBAC action handlers ─────────────────────────────────────────────────────

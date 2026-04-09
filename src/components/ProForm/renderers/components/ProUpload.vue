@@ -5,11 +5,8 @@ type UploadValue = File | File[] | string | null
 
 type Props = FieldComponentProps<UploadValue>
 
-const props = defineProps<Props>()
-
-const emit = defineEmits<{
-  (e: 'update:modelValue', value: UploadValue): void
-}>()
+const props = defineProps<Omit<Props, 'modelValue'>>()
+const model = defineModel<UploadValue>()
 
 const attrs = useAttrs()
 
@@ -21,14 +18,14 @@ const emptyPlaceholder = computed<string>(() => {
 const uploadMode = computed<string>(() => (attrs.mode as string | undefined) ?? 'basic')
 
 const isMultiple = computed<boolean>(() => {
-  if (Array.isArray(props.modelValue)) return true
+  if (Array.isArray(model.value)) return true
   const multipleAttr = attrs.multiple as string | boolean | undefined
   if (multipleAttr === '' || multipleAttr === 'true' || multipleAttr === true) return true
   return false
 })
 
 const fileNames = computed<string[]>(() => {
-  const value = props.modelValue
+  const value = model.value
   if (value == null) return []
 
   if (Array.isArray(value)) {
@@ -53,11 +50,11 @@ const handleSelect = (event: FileUploadFilesEvent): void => {
   const files: File[] = rawFiles == null ? [] : Array.isArray(rawFiles) ? rawFiles : [rawFiles]
 
   if (isMultiple.value) {
-    emit('update:modelValue', files)
+    model.value = files
     return
   }
 
-  emit('update:modelValue', files[0] ?? null)
+  model.value = files[0] ?? null
 }
 </script>
 

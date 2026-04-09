@@ -23,9 +23,9 @@ const pupilStyle = computed<Record<string, string>>(() => ({
   height: props.pupilSize,
 }))
 
-const eyeballEl = ref<HTMLElement | null>(null)
-const blinkLayerEl = ref<HTMLElement | null>(null)
-const pupilEl = ref<HTMLElement | null>(null)
+const eyeballEl = useTemplateRef<HTMLElement>('eyeballEl')
+const blinkLayerEl = useTemplateRef<HTMLElement>('blinkLayerEl')
+const pupilEl = useTemplateRef<HTMLElement>('pupilEl')
 
 watchPostEffect(() => {
   const el = eyeballEl.value

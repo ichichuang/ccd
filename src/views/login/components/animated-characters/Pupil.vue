@@ -16,7 +16,7 @@ const sizeStyle = computed<Record<string, string>>(() => ({
   height: props.size,
 }))
 
-const pupilEl = ref<HTMLElement | null>(null)
+const pupilEl = useTemplateRef<HTMLElement>('pupilEl')
 
 watchPostEffect(() => {
   const el = pupilEl.value

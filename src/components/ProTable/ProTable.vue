@@ -206,7 +206,7 @@ const isLoading = computed<boolean>(() =>
 
 // ── Infinite scroll ──────────────────────────────────────────────────────────
 
-const tableContainerRef = ref<HTMLDivElement | null>(null)
+const tableContainerRef = useTemplateRef<HTMLDivElement>('tableContainerRef')
 let _scrollTarget: HTMLElement | null = null
 let _scrollHandler: (() => void) | null = null
 let _scrollTimeoutId: ReturnType<typeof setTimeout> | null = null
@@ -967,6 +967,7 @@ defineExpose({
   overflow: hidden;
   max-height: var(--spacing-3xl);
 }
+
 .pro-table-fetch-error-enter-from,
 .pro-table-fetch-error-leave-to {
   opacity: 0;

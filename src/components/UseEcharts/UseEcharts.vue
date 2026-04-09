@@ -27,7 +27,7 @@ const emit = defineEmits<{
   chartReady: [instance: unknown, id?: string]
 }>()
 
-const chartContainerRef = shallowRef<HTMLElement | HTMLDivElement | null>(null)
+const chartContainerRef = useTemplateRef<HTMLElement>('chartContainerRef')
 const chartRef = shallowRef()
 const chartReadyTimer = ref<ReturnType<typeof setTimeout> | null>(null)
 const resizeRafId = ref(0)

@@ -6,11 +6,8 @@ type Props = FieldComponentProps<unknown[] | null> & {
   options?: SelectOption[] | Record<string, unknown>[]
 }
 
-const props = defineProps<Props>()
-
-const emit = defineEmits<{
-  (e: 'update:modelValue', value: unknown[] | null): void
-}>()
+const props = defineProps<Omit<Props, 'modelValue'>>()
+const model = defineModel<unknown[] | null>()
 
 const attrs = useAttrs()
 
@@ -29,7 +26,7 @@ const optionValue = computed<string>(() => {
   return value ?? PRO_FORM_COMPONENT_DEFAULTS.defaultValueField
 })
 
-const safeModelValue = computed<unknown[]>(() => (props.modelValue as unknown[]) ?? [])
+const safeModelValue = computed<unknown[]>(() => (model.value as unknown[]) ?? [])
 
 const displayMode = computed<'comma' | 'chip'>(() => (attrs.display === 'chip' ? 'chip' : 'comma'))
 
@@ -55,7 +52,7 @@ function commaLabels(selected: unknown[] | null | undefined): string {
 }
 
 const displayLabel = computed<string>(() => {
-  const val = props.modelValue
+  const val = model.value
   if (val == null || !Array.isArray(val) || val.length === 0) return emptyPlaceholder.value
 
   const opts = props.options
@@ -73,7 +70,7 @@ const displayLabel = computed<string>(() => {
 })
 
 const handleUpdate = (value: unknown): void => {
-  emit('update:modelValue', (value as unknown[] | null) ?? null)
+  model.value = (value as unknown[] | null) ?? null
 }
 </script>
 

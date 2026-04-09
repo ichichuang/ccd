@@ -46,7 +46,7 @@ function makeData(): ProductRow[] {
 
 const tableData = ref<ProductRow[]>(makeData())
 const isLoading = ref<boolean>(false)
-const tableContainerRef = ref<HTMLElement | null>(null)
+const tableContainerRef = useTemplateRef<HTMLElement>('tableContainerRef')
 const { height: tableContainerHeight } = useAppElementSize(tableContainerRef)
 const waitFor = (ms: number): Promise<void> =>
   new Promise(resolve => {

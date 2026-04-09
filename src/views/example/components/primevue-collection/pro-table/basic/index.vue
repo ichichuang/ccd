@@ -43,7 +43,7 @@ const ALL_ORDERS = makeMockData()
 
 // ── Layout measurement ──────────────────────────────────────────────────────
 
-const tableContainerRef = ref<HTMLElement | null>(null)
+const tableContainerRef = useTemplateRef<HTMLElement>('tableContainerRef')
 const tableContainerHeight = ref<number | undefined>(undefined)
 
 onMounted(() => {

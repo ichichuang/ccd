@@ -46,11 +46,11 @@ const backToTopFabStyle = computed(() => ({
   right: `${props.backToTopOffsetRight}px`,
 }))
 
-const nativeScrollRef = ref<HTMLDivElement | null>(null)
+const nativeScrollRef = useTemplateRef<HTMLDivElement>('nativeScrollRef')
 const backToTopVisible = ref(false)
 
 const themeStore = useThemeStore()
-const scrollbarRef = ref<InstanceType<typeof OverlayScrollbarsComponent> | null>(null)
+const scrollbarRef = useTemplateRef<InstanceType<typeof OverlayScrollbarsComponent>>('scrollbarRef')
 
 /** 根据当前主题模式返回配置 */
 const osOptions: ComputedRef<Record<string, unknown>> = computed(() => {
@@ -284,7 +284,6 @@ defineExpose({
 /* 仅作用于本组件实例，避免污染页面内其它 OverlayScrollbars */
 .c-scrollbar .os-scrollbar {
   --os-size: var(--spacing-sm);
-
   --os-padding-perpendicular: calc(var(--spacing-xs) / 2);
   --os-padding-axis: calc(var(--spacing-xs) / 2);
 
@@ -298,12 +297,9 @@ defineExpose({
   --os-handle-bg: rgb(var(--foreground) / 16%);
   --os-handle-bg-hover: rgb(var(--foreground) / 28%);
   --os-handle-bg-active: rgb(var(--foreground) / 36%);
-
   --os-handle-border-radius: calc(var(--os-size) / 2);
-
   --os-handle-min-size: calc(var(--spacing-lg) * 2);
   --os-handle-max-size: none;
-
   --os-handle-perpendicular-size: 100%;
   --os-handle-perpendicular-size-hover: 100%;
   --os-handle-perpendicular-size-active: 100%;

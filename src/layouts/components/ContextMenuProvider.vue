@@ -45,8 +45,8 @@ const props = withDefaults(defineProps<Props>(), {
 
 const route = useRoute()
 
-const rootRef = ref<HTMLElement | null>(null)
-const menuRef = ref<HTMLElement | null>(null)
+const rootRef = useTemplateRef<HTMLElement>('rootRef')
+const menuRef = useTemplateRef<HTMLElement>('menuRef')
 
 const visible = ref(false)
 const x = ref(0)

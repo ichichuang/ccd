@@ -18,7 +18,7 @@ const deviceStore = useDeviceStore()
 
 const pageReady = ref<boolean>(true)
 
-const sandboxRef = ref<HTMLElement | null>(null)
+const sandboxRef = useTemplateRef<HTMLElement>('sandboxRef')
 const { width: sandboxWidth } = useAppElementSize(sandboxRef, undefined, {
   mode: 'throttle',
   delay: 120,

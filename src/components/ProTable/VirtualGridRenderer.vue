@@ -73,9 +73,9 @@ const virtualEstimateRowPx = computed(() => {
   return map[d]
 })
 
-const scrollContainerRef = ref<HTMLElement | null>(null)
-const centerHeaderScrollRef = ref<HTMLElement | null>(null)
-const centerBodyScrollRef = ref<HTMLElement | null>(null)
+const scrollContainerRef = useTemplateRef<HTMLElement>('scrollContainerRef')
+const centerHeaderScrollRef = useTemplateRef<HTMLElement>('centerHeaderScrollRef')
+const centerBodyScrollRef = useTemplateRef<HTMLElement>('centerBodyScrollRef')
 const processedRows = computed<T[]>(() => props.controller.processedRows.value)
 
 function getRowByVirtualIndex(index: number): T | undefined {

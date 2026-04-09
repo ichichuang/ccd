@@ -3,11 +3,8 @@ import type { FieldComponentProps } from '../../engine/types'
 
 type Props = FieldComponentProps<string | null | undefined>
 
-const props = defineProps<Props>()
-
-const emit = defineEmits<{
-  (e: 'update:modelValue', value: string | null | undefined): void
-}>()
+const props = defineProps<Omit<Props, 'modelValue'>>()
+const model = defineModel<string | null | undefined>()
 
 const attrs = useAttrs()
 
@@ -27,7 +24,7 @@ const isPassword = computed<boolean>(() => {
 })
 
 const displayValue = computed<string>(() => {
-  const value = props.modelValue
+  const value = model.value
 
   if (value == null || value === '') {
     return emptyPlaceholder.value
@@ -42,7 +39,7 @@ const displayValue = computed<string>(() => {
 })
 
 const handleUpdate = (value: string | null | undefined): void => {
-  emit('update:modelValue', value)
+  model.value = value
 }
 </script>
 
@@ -55,7 +52,7 @@ const handleUpdate = (value: string | null | undefined): void => {
   </span>
   <InputText
     v-else
-    :model-value="props.modelValue"
+    :model-value="model"
     :disabled="props.disabled"
     :invalid="!!props.error && props.error.length > 0"
     @update:model-value="handleUpdate"

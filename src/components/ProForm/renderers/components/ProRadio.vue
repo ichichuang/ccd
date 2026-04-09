@@ -5,11 +5,8 @@ type Props = FieldComponentProps<unknown> & {
   options?: SelectOption[]
 }
 
-const props = defineProps<Props>()
-
-const emit = defineEmits<{
-  (e: 'update:modelValue', value: unknown): void
-}>()
+const props = defineProps<Omit<Props, 'modelValue'>>()
+const model = defineModel<unknown>()
 
 const attrs = useAttrs()
 
@@ -19,7 +16,7 @@ const emptyPlaceholder = computed<string>(() => {
 })
 
 const displayValue = computed<string>(() => {
-  const value = props.modelValue
+  const value = model.value
 
   if (value === null || value === undefined || value === '') {
     return emptyPlaceholder.value
@@ -32,7 +29,7 @@ const displayValue = computed<string>(() => {
 })
 
 const handleUpdate = (value: unknown): void => {
-  emit('update:modelValue', value)
+  model.value = value
 }
 </script>
 
@@ -54,7 +51,7 @@ const handleUpdate = (value: unknown): void => {
     >
       <RadioButton
         :value="option.value"
-        :model-value="props.modelValue"
+        :model-value="model"
         :disabled="props.disabled || props.readonly"
         @update:model-value="handleUpdate"
       />

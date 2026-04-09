@@ -4,11 +4,8 @@ import { PRO_FORM_COMPONENT_DEFAULTS } from '../../engine/config'
 
 type Props = FieldComponentProps<number | null | undefined>
 
-const props = defineProps<Props>()
-
-const emit = defineEmits<{
-  (e: 'update:modelValue', value: number | null | undefined): void
-}>()
+const props = defineProps<Omit<Props, 'modelValue'>>()
+const model = defineModel<number | null | undefined>()
 
 const attrs = useAttrs()
 
@@ -33,7 +30,7 @@ const currency = computed<string | undefined>(() => {
 })
 
 const displayValue = computed<string>(() => {
-  const raw = props.modelValue
+  const raw = model.value
 
   if (raw === null || raw === undefined || Number.isNaN(raw)) {
     return emptyPlaceholder.value
@@ -72,7 +69,7 @@ const displayValue = computed<string>(() => {
 })
 
 const handleUpdate = (value: number | null | undefined): void => {
-  emit('update:modelValue', value)
+  model.value = value
 }
 </script>
 
@@ -85,7 +82,7 @@ const handleUpdate = (value: number | null | undefined): void => {
   </span>
   <InputNumber
     v-else
-    :model-value="props.modelValue"
+    :model-value="model"
     :disabled="props.disabled"
     :invalid="!!props.error && props.error.length > 0"
     @update:model-value="handleUpdate"

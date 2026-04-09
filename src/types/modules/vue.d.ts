@@ -29,11 +29,4 @@ declare module 'vue' {
   }
 }
 
-/** PrimeVue 组件类型扩展：补充 v-model 事件声明，避免模板 @update:model-value 报错 */
-declare module 'primevue/dropdown' {
-  interface DropdownProps {
-    /** 与 v-model 对应的更新事件；使用宽松类型以兼容业务侧具体类型回调（SizeMode、SupportedLocale 等） */
-    /* eslint-disable-next-line @typescript-eslint/naming-convention -- PrimeVue v-model 事件名包含 ':'，无法满足 camelCase */
-    'onUpdate:modelValue'?: (value: any) => void | Promise<void>
-  }
-}
+// PrimeVue v4：Dropdown 已迁移为 Select，此处移除旧模块增强避免误导与未来冲突。

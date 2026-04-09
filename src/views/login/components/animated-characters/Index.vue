@@ -34,8 +34,8 @@ const TOTEM_REF_W = 550
 const TOTEM_REF_H = 400
 
 // ── Element refs ──────────────────────────────────────────────
-const containerRef = ref<HTMLElement | null>(null)
-const totemRef = ref<HTMLElement | null>(null)
+const containerRef = useTemplateRef<HTMLElement>('containerRef')
+const totemRef = useTemplateRef<HTMLElement>('totemRef')
 const rafIdRef = ref<number>(0)
 
 const { width: containerWidth, height: containerHeight } = useAppElementSize(containerRef)
@@ -66,17 +66,17 @@ const totemInnerScaleStyle = computed<Record<string, string>>(() => {
   }
 })
 
-const purpleRef = ref<HTMLElement | null>(null)
-const blackRef = ref<HTMLElement | null>(null)
-const yellowRef = ref<HTMLElement | null>(null)
-const orangeRef = ref<HTMLElement | null>(null)
+const purpleRef = useTemplateRef<HTMLElement>('purpleRef')
+const blackRef = useTemplateRef<HTMLElement>('blackRef')
+const yellowRef = useTemplateRef<HTMLElement>('yellowRef')
+const orangeRef = useTemplateRef<HTMLElement>('orangeRef')
 
-const purpleFaceRef = ref<HTMLElement | null>(null)
-const blackFaceRef = ref<HTMLElement | null>(null)
-const yellowFaceRef = ref<HTMLElement | null>(null)
-const orangeFaceRef = ref<HTMLElement | null>(null)
+const purpleFaceRef = useTemplateRef<HTMLElement>('purpleFaceRef')
+const blackFaceRef = useTemplateRef<HTMLElement>('blackFaceRef')
+const yellowFaceRef = useTemplateRef<HTMLElement>('yellowFaceRef')
+const orangeFaceRef = useTemplateRef<HTMLElement>('orangeFaceRef')
 
-const yellowMouthRef = ref<HTMLElement | null>(null)
+const yellowMouthRef = useTemplateRef<HTMLElement>('yellowMouthRef')
 
 // ── Eye / Pupil component refs (replace DOM queries) ──────────
 const purpleLeftEyeRef = ref<InstanceType<typeof EyeBall> | null>(null)

@@ -4,11 +4,8 @@ import { PRO_FORM_COMPONENT_DEFAULTS, PRO_FORM_TEXT_DEFAULTS } from '../../engin
 
 type Props = FieldComponentProps<boolean | null | undefined>
 
-const props = defineProps<Props>()
-
-const emit = defineEmits<{
-  (e: 'update:modelValue', value: boolean | null | undefined): void
-}>()
+const props = defineProps<Omit<Props, 'modelValue'>>()
+const model = defineModel<boolean | null | undefined>()
 
 const attrs = useAttrs()
 
@@ -28,13 +25,13 @@ const emptyPlaceholder = computed<string>(() => {
 })
 
 const displayValue = computed<string>(() => {
-  if (props.modelValue === true) return trueLabel.value
-  if (props.modelValue === false) return falseLabel.value
+  if (model.value === true) return trueLabel.value
+  if (model.value === false) return falseLabel.value
   return emptyPlaceholder.value
 })
 
 const handleUpdate = (value: boolean): void => {
-  emit('update:modelValue', value)
+  model.value = value
 }
 </script>
 
@@ -47,7 +44,7 @@ const handleUpdate = (value: boolean): void => {
   </span>
   <ToggleSwitch
     v-else
-    :model-value="props.modelValue ?? false"
+    :model-value="model ?? false"
     :disabled="props.disabled || props.readonly"
     @update:model-value="handleUpdate"
   />

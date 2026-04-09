@@ -33,7 +33,7 @@ registerBuiltinFields()
 const props = defineProps<ProFormProps<TValues>>()
 const slots = useSlots()
 
-const rootFormEl = ref<HTMLFormElement | null>(null)
+const rootFormEl = useTemplateRef<HTMLFormElement>('rootFormEl')
 const { width } = useAppElementSize(rootFormEl, undefined, {
   mode: 'debounce',
   delay: PRO_FORM_TIMING_DEFAULTS.resizeDebounceMs,

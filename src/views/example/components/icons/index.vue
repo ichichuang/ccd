@@ -40,7 +40,7 @@ const iconRotate = ref<string | number>('')
 const iconScale = ref<number | undefined>(undefined)
 const searchKeyword = ref<string | undefined>('')
 
-const searchBarRef = ref<HTMLElement | null>(null)
+const searchBarRef = useTemplateRef<HTMLElement>('searchBarRef')
 const { height: searchBarHeight } = useAppElementSize(searchBarRef)
 
 const leftContentStyle = computed(() => {
@@ -48,8 +48,8 @@ const leftContentStyle = computed(() => {
   return { height: `calc(100% - ${searchBarHeight.value}px)`, minHeight: 0 }
 })
 
-const codeAreaRef = ref<HTMLElement | null>(null)
-const previewAreaRef = ref<HTMLElement | null>(null)
+const codeAreaRef = useTemplateRef<HTMLElement>('codeAreaRef')
+const previewAreaRef = useTemplateRef<HTMLElement>('previewAreaRef')
 const { height: codeAreaHeight } = useAppElementSize(codeAreaRef)
 const { height: previewAreaHeight } = useAppElementSize(previewAreaRef)
 

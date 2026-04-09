@@ -6,14 +6,11 @@ type Props = FieldComponentProps<unknown> & {
   options?: SelectOption[]
 }
 
-const props = defineProps<Props>()
-
-const emit = defineEmits<{
-  (e: 'update:modelValue', value: unknown): void
-}>()
+const props = defineProps<Omit<Props, 'modelValue'>>()
+const model = defineModel<unknown>()
 
 const handleUpdate = (value: unknown): void => {
-  emit('update:modelValue', value)
+  model.value = value
 }
 
 const showAsyncValueFallback = computed(
@@ -28,13 +25,13 @@ function resolveLabel(modelValue: unknown): string {
 }
 
 const displayLabel = computed(() => {
-  if (props.modelValue == null || props.modelValue === '')
+  if (model.value == null || model.value === '')
     return PRO_FORM_COMPONENT_DEFAULTS.emptyTextFallback
 
-  const option = props.options?.find(o => o.value === props.modelValue)
+  const option = props.options?.find(o => o.value === model.value)
   if (option) return option.label
 
-  return String(props.modelValue)
+  return String(model.value)
 })
 </script>
 
@@ -47,7 +44,7 @@ const displayLabel = computed(() => {
   </span>
   <Select
     v-else
-    :model-value="props.modelValue"
+    :model-value="model"
     :options="props.options"
     :option-label="PRO_FORM_COMPONENT_DEFAULTS.defaultLabelField"
     :option-value="PRO_FORM_COMPONENT_DEFAULTS.defaultValueField"

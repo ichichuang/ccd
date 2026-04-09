@@ -3,14 +3,11 @@ import type { FieldComponentProps } from '../../engine/types'
 
 type Props = FieldComponentProps<number | null>
 
-const props = defineProps<Props>()
-
-const emit = defineEmits<{
-  (e: 'update:modelValue', value: number | null): void
-}>()
+const props = defineProps<Omit<Props, 'modelValue'>>()
+const model = defineModel<number | null>()
 
 const handleUpdate = (value: number | null): void => {
-  emit('update:modelValue', value ?? null)
+  model.value = value ?? null
 }
 </script>
 
@@ -20,13 +17,13 @@ const handleUpdate = (value: number | null): void => {
     class="block py-xs text-foreground leading-normal"
   >
     <Rating
-      :model-value="props.modelValue ?? 0"
+      :model-value="model ?? 0"
       readonly
     />
   </span>
   <Rating
     v-else
-    :model-value="props.modelValue ?? 0"
+    :model-value="model ?? 0"
     :disabled="props.disabled || props.readonly"
     @update:model-value="handleUpdate"
   />

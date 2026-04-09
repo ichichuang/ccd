@@ -12,7 +12,7 @@ const isLoading = ref<boolean>(false)
 const lastParams = ref<ProTableLoadParams | null>(null)
 
 const selectedRows = ref<ApiEventsRow[]>([])
-const tableContainerRef = ref<HTMLElement | null>(null)
+const tableContainerRef = useTemplateRef<HTMLElement>('tableContainerRef')
 const tableContainerHeight = ref<number | undefined>(undefined)
 
 // ── Event log ──────────────────────────────────────────────────────────────
