@@ -5,6 +5,7 @@ import 'uno.css'
 
 // 导入应用
 import App from '@/App.vue'
+import { isTauri } from '@/utils/env'
 import { setOnUnauthorized, setTokenProvider } from '@/infra/auth/tokenProvider'
 import { setupPlugins } from '@/plugins'
 import router from '@/router'
@@ -46,6 +47,12 @@ async function bootstrap() {
   // Single-Owner Handoff: 首跳路由就绪后兜底移除原生 preloader（内部门闩保证只执行一次）
   await router.isReady()
   fadeOutNativePreloader()
+
+  // Tauri 桌面端：注入原生 UX 增强（屏蔽刷新/右键菜单/文本选中）
+  if (isTauri()) {
+    const { initTauriNativeUx } = await import('@/utils/tauriNativeUx')
+    initTauriNativeUx()
+  }
 }
 
 // 启动应用

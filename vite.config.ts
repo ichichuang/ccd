@@ -83,7 +83,7 @@ export default ({ mode, command }: ConfigEnv): UserConfigExport => {
   }
 
   return defineConfig({
-    base: VITE_PUBLIC_PATH,
+    base: process.env.TAURI_ENV_PLATFORM ? './' : VITE_PUBLIC_PATH,
     root,
     logLevel: isDev ? 'info' : 'warn',
     clearScreen: false,

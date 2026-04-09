@@ -1,4 +1,5 @@
 // Router 统一管理入口
+import { isTauri } from '@/utils/env'
 import {
   addParentPathsToLeafRoutes,
   createRouteUtils,
@@ -76,11 +77,11 @@ const initialRoutes: RouteRecordRaw[] = createInitialRoutes([
 ])
 
 // 创建路由实例
+// Tauri 桌面端强制 Hash 模式：tauri:// 协议不支持 HTML5 History，刷新会白屏
 const router = createRouter({
-  // history 模式
   history:
-    import.meta.env.VITE_ROUTER_MODE === 'hash'
-      ? createWebHashHistory(import.meta.env.VITE_PUBLIC_PATH)
+    isTauri() || import.meta.env.VITE_ROUTER_MODE === 'hash'
+      ? createWebHashHistory()
       : createWebHistory(import.meta.env.VITE_PUBLIC_PATH),
   routes: initialRoutes,
   scrollBehavior(_to, _from, savedPosition) {

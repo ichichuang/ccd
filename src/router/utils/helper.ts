@@ -102,7 +102,7 @@ function buildRouteUrl(
 ): string {
   let url = ''
 
-  if (import.meta.env.VITE_ROUTER_MODE === 'hash') {
+  if (isTauri() || import.meta.env.VITE_ROUTER_MODE === 'hash') {
     const location = window.location
     const publicPath = import.meta.env.VITE_PUBLIC_PATH
     url = location.origin + publicPath + '#' + targetRoute.path
