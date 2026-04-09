@@ -54,6 +54,10 @@ coverage
 # TypeScript
 *.tsbuildinfo
 
+# Linter caches
+.eslintcache
+.stylelintcache
+
 # Auto-generated type declaration files
 # 这些 d.ts 作为工程类型契约需要提交到版本控制
 

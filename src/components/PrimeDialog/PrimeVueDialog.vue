@@ -173,6 +173,7 @@ function eventsCallBack(event: EventType, options: DialogOptions, index: number)
   if (isFunction(handler)) {
     return handler({ options, index })
   }
+  return undefined
 }
 
 function handleClose(options: DialogOptions, index: number, args: ArgsType = { command: 'close' }) {

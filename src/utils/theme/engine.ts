@@ -1,3 +1,4 @@
+/// <reference lib="dom" />
 import { adjustBrightness, hexToRgb, isDarkColor, mixHex, normalizeHex, shiftHue } from './colors'
 import { COLOR_FAMILIES, THEME_ENGINE } from './metadata'
 
