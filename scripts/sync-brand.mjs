@@ -24,6 +24,8 @@ const SOURCE_LOGO_PATH = join(SOURCE_DIR, 'logo-source.png')
 const SOURCE_LOGO_SQUARE_TEMP_PATH = join(SOURCE_DIR, 'logo-source.square-temp.png')
 const PUBLIC_FAVICON_PATH = join(ROOT, 'public', 'face.png')
 const APP_LOGO_PATH = join(ROOT, 'src', 'assets', 'images', 'face.webp')
+const SHOULD_SKIP_TAURI_ICON =
+  process.env.SKIP_TAURI_ICON === '1' || process.env.SKIP_TAURI_ICON === 'true'
 
 /**
  * 从 brand.ts 提取指定键值（仅支持单引号字符串字面量，满足当前仓库格式）
@@ -171,6 +173,11 @@ function prepareSquareLogoSource() {
 }
 
 function generateTauriIcons() {
+  if (SHOULD_SKIP_TAURI_ICON) {
+    console.warn('[brand-sync] 已跳过 tauri icon 生成（SKIP_TAURI_ICON=1）。')
+    return
+  }
+
   if (!existsSync(SOURCE_LOGO_PATH)) {
     console.warn(
       '[brand-sync] 跳过图标工厂：未检测到 src/assets/brand/source/logo-source.png。'
