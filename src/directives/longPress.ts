@@ -1,5 +1,5 @@
 import type { EffectScope, ObjectDirective } from 'vue'
-import { useLongPressAction } from '@/hooks/modules/useInteraction'
+import { useLongPressAction } from '@/hooks/modules/useInteraction/useLongPressAction'
 
 /**
  * v-long-press 指令：长按手势检测

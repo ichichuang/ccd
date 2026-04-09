@@ -68,7 +68,7 @@ export const DEFAULT_SIZE_NAME: SizeMode = 'comfortable'
 
 /** Size Store 持久化 key（与 stores/modules/size.ts persist.key 一致，供 preload 等 mount 前逻辑使用；config 加载阶段 env 未注入时用默认前缀避免报错） */
 export const SIZE_PERSIST_KEY = `${
-  (import.meta as any).env?.VITE_PINIA_PERSIST_KEY_PREFIX ?? 'app-template-storage-kernel'
+  (import.meta as any).env?.VITE_PINIA_PERSIST_KEY_PREFIX ?? 'ccd-storage-kernel'
 }-size`
 
 /**

@@ -14,7 +14,7 @@ function resolveObfuscationKey(): string {
   if (injected && injected !== '${VITE_APP_SECRET:-}') return injected
   // 运行时指纹：基于 origin 生成，同源同密钥，跨域不同密钥
   if (typeof window !== 'undefined') return `obfs:${window.location.origin}:v1`
-  return 'app-template-fallback-key'
+  return 'ccd-fallback-key'
 }
 
 const DEFAULT_SECRET: string = resolveObfuscationKey()

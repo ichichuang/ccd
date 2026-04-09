@@ -231,7 +231,6 @@ declare global {
   const useDocumentVisibility: typeof import('@vueuse/core').useDocumentVisibility
   const useDragAction: typeof import('../hooks/modules/useInteraction/useDragAction').useDragAction
   const useDraggable: typeof import('@vueuse/core').useDraggable
-  const useDrawer: typeof import('../hooks/modules/useDrawer').useDrawer
   const useDropZone: typeof import('@vueuse/core').useDropZone
   const useElementBounding: typeof import('@vueuse/core').useElementBounding
   const useElementByPoint: typeof import('@vueuse/core').useElementByPoint

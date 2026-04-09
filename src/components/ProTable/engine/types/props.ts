@@ -244,6 +244,4 @@ export interface ProTableExposed {
   }
   getFetchState: () => { loading: boolean; error: boolean; errorMessage: string; hasMore: boolean }
   exportData: (mode?: 'page' | 'selected', filename?: string) => void
-  /** CSS 伪全屏切换（非原生 Fullscreen API） */
-  toggleFullscreen: () => void
 }

@@ -18,7 +18,6 @@ const props = withDefaults(
     columns: ColumnMeta[]
     visibleColumnIds: Set<string>
     serverMode?: boolean
-    isFullscreen?: boolean
     hasSelection?: boolean
   }>(),
   {
@@ -46,7 +45,6 @@ const emit = defineEmits<{
   'update:density': [mode: SizeMode]
   'toggle-column': [id: string]
   refresh: []
-  'toggle-fullscreen': []
   export: [mode: 'page' | 'selected']
 }>()
 
@@ -143,16 +141,6 @@ const toolbarBtnClass =
         :model="exportMenuItems"
         popup
       />
-
-      <!-- Fullscreen -->
-      <Button
-        text
-        :class="toolbarBtnClass"
-        :aria-label="$t('proTable.fullscreen')"
-        @click="emit('toggle-fullscreen')"
-      >
-        <Icons :name="isFullscreen ? 'i-lucide-minimize-2' : 'i-lucide-maximize-2'" />
-      </Button>
 
       <!-- Refresh -->
       <Button

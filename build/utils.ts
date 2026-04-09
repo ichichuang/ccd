@@ -1,4 +1,4 @@
-import { readdirSync, statSync } from 'node:fs'
+import { readFileSync, readdirSync, statSync } from 'node:fs'
 import { dirname, join, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { dependencies, devDependencies, engines, name, version } from '../package.json'
@@ -113,6 +113,30 @@ export const wrapperEnv = (envConf: Record<string, any>): ViteEnv => {
     VITE_API_TIMEOUT: ret.VITE_API_TIMEOUT ?? 10000,
     VITE_PROXY_TIMEOUT: ret.VITE_PROXY_TIMEOUT ?? 15000,
     ...ret,
+  }
+}
+
+/**
+ * 校验 Tauri devUrl 与 Vite 端口是否一致，避免桌面端因端口漂移启动失败。
+ */
+export const ensureTauriDevUrlSync = (vitePort: number): void => {
+  try {
+    const tauriConfPath = pathResolve('../src-tauri/tauri.conf.json', import.meta.url)
+    const tauriRaw = readFileSync(tauriConfPath, 'utf-8')
+    const tauriConf = JSON.parse(tauriRaw) as { build?: { devUrl?: string } }
+    const devUrl = tauriConf.build?.devUrl
+    if (!devUrl) return
+    const tauriPort = new URL(devUrl).port
+    if (!tauriPort) return
+    if (Number(tauriPort) !== vitePort) {
+      throw new Error(
+        `[Tauri Port Drift] src-tauri/tauri.conf.json devUrl=${devUrl} 与 VITE_PORT=${vitePort} 不一致，请保持同步。`
+      )
+    }
+  } catch (error) {
+    if (error instanceof Error && error.message.includes('[Tauri Port Drift]')) {
+      throw error
+    }
   }
 }
 

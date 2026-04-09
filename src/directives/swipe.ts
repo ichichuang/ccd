@@ -1,6 +1,6 @@
 import type { EffectScope, ObjectDirective } from 'vue'
-import { useSwipeAction } from '@/hooks/modules/useInteraction'
-import type { SwipeDirection } from '@/hooks/modules/useInteraction'
+import { useSwipeAction } from '@/hooks/modules/useInteraction/useSwipeAction'
+import type { SwipeDirection } from '@/hooks/modules/useInteraction/types'
 
 /**
  * v-swipe 指令：滑动手势检测

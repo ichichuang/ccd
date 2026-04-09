@@ -1,0 +1,139 @@
+---
+description: Vite + Tauri v2 双端桥接规则，强制 OS 能力采用 isTauri 双分支与 Web fallback。
+globs: ["src/**/*.vue", "src/**/*.ts", "src/**/*.tsx"]
+alwaysApply: true
+---
+
+# Cross-Platform Tauri Bridge Law
+
+<rule>
+name: cross-platform-tauri
+description: Enforce universal bridge patterns for Web/Desktop dual-runtime with Vite + Tauri v2.
+globs:
+  - "src/**/*.vue"
+  - "src/**/*.ts"
+  - "src/**/*.tsx"
+triggerKeywords:
+  - "tauri"
+  - "desktop"
+  - "isTauri"
+  - "fullscreen"
+  - "window.open"
+  - "clipboard"
+  - "file read"
+  - "file write"
+  - "notification"
+  - "invoke"
+  - "external link"
+</rule>
+
+## 1. 架构认知（Architecture Cognition）
+
+本项目是基于 **Vite 7 + Tauri v2** 的 Web/Desktop 双栖架构：
+
+- 同一套前端代码在浏览器与桌面 WebView 两端运行。
+- 任何涉及 OS 级能力的实现都必须遵循“桥接而非分裂”的双轨设计。
+- 平台探针 SSOT 为 `@/utils/env` 中的 `isTauri()`。
+
+---
+
+## 2. 强制桥接原则（The Bridge Mandate）
+
+当需求涉及以下能力时，**绝对禁止**只写浏览器独占实现，必须引入：
+
+```ts
+import { isTauri } from '@/utils/env'
+```
+
+并采用双分支桥接：
+
+```ts
+if (isTauri()) {
+  // Tauri 分支
+} else {
+  // Web 分支（fallback）
+}
+```
+
+适用能力范围（非穷举）：
+
+- 系统剪贴板
+- 本地文件读写
+- 系统级通知
+- 窗口操作（全屏 / 新窗 / 尺寸 / 焦点）
+- 外部链接唤起
+
+---
+
+## 3. API 规范（Tauri v2 + Web Fallback）
+
+### 3.1 Tauri 分支（必选）
+
+- 必须使用 `@tauri-apps/api`（v2）或 `@tauri-apps/plugin-*`。
+- 必须使用异步调用（`async/await` 或 Promise）。
+- 必须处理失败路径（`try/catch` 或 `.catch`），不得假设调用恒成功。
+
+### 3.2 Web 分支（必选）
+
+- 必须提供纯浏览器环境 fallback（不可留空）。
+- fallback 需可运行且可降级，不得以“桌面端专用”为由省略（除非需求明确标注 Desktop only）。
+
+---
+
+## 4. 禁止污染（No Node API in Frontend）
+
+在前端 `src/` 目录中，绝对禁止混入 Node.js 原生 API：
+
+- `fs`
+- `path`
+- `os`
+- `child_process`
+- 以及任何 Node-only runtime 模块
+
+Tauri 底层能力只能通过以下路径触达：
+
+1. Rust `invoke`
+2. 官方 `@tauri-apps/api` / `@tauri-apps/plugin-*`
+
+---
+
+## 5. 规范示例（Canonical Bridge Patterns）
+
+### 5.1 Fullscreen（正确）
+
+```ts
+if (isTauri()) {
+  const appWindow = getCurrentWindow()
+  const current = await appWindow.isFullscreen()
+  await appWindow.setFullscreen(!current)
+} else {
+  await toggleWebFullscreen()
+}
+```
+
+### 5.2 External Link（正确）
+
+```ts
+if (isTauri()) {
+  await openExternal(url)
+} else {
+  window.open(url, '_blank')
+}
+```
+
+### 5.3 反例（错误）
+
+```ts
+window.open(url, '_blank') // 缺少 Tauri 分支
+```
+
+---
+
+## 6. 提交前自检（PR / AI Checklist）
+
+- [ ] 是否引入并使用 `isTauri()` 进行双分支判断
+- [ ] Tauri 分支是否使用官方 v2 API / plugin
+- [ ] Web 分支是否提供可运行 fallback
+- [ ] 异步失败路径是否处理
+- [ ] 前端 `src/` 是否未引入 Node.js 原生模块
+
