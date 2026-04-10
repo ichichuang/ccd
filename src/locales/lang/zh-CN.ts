@@ -1,3 +1,5 @@
+import { brand } from '@/constants/brand'
+
 /**
  * 中文语言包 (zh-CN)
  */
@@ -27,7 +29,7 @@ const zhCN = {
     quickFillTips: '快捷账号',
     quickAdmin: '管理员',
     quickUser: '普通用户',
-    brandTitle: 'Enterprise Vue Admin',
+    brandTitle: brand.displayName,
     brandSloganLine1: '打造极致顺滑的工业级中后台前端解决方案。',
     brandSloganLine2: '从底层架构到像素级 UI，重新定义企业级开发标准。',
     brandQuoteAuthor: '核心架构团队',
@@ -35,7 +37,7 @@ const zhCN = {
     description: '请输入您的凭据以继续访问系统',
     errorTitle: '登录失败',
     errorMessageGeneric: '登录失败，请检查账号和密码',
-    footerText: 'Enterprise Vue Admin v{version} © {year}',
+    footerText: `${brand.displayName} v{version} © {year}`,
     helpCenter: '帮助中心',
     privacyPolicy: '隐私政策',
   },

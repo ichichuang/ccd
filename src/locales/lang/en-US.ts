@@ -1,3 +1,5 @@
+import { brand } from '@/constants/brand'
+
 /**
  * 英文语言包 (en-US)
  */
@@ -27,7 +29,7 @@ const enUS = {
     quickFillTips: 'Quick accounts',
     quickAdmin: 'Admin',
     quickUser: 'User',
-    brandTitle: 'Enterprise Vue Admin',
+    brandTitle: brand.displayName,
     brandSloganLine1: 'Crafting a silky-smooth, industrial-grade admin frontend.',
     brandSloganLine2:
       'From core architecture to pixel-perfect UI, redefining enterprise standards.',
@@ -36,7 +38,7 @@ const enUS = {
     description: 'Enter your credentials to continue',
     errorTitle: 'Login failed',
     errorMessageGeneric: 'Login failed, please check your username and password',
-    footerText: 'Enterprise Vue Admin v{version} © {year}',
+    footerText: `${brand.displayName} v{version} © {year}`,
     helpCenter: 'Help center',
     privacyPolicy: 'Privacy policy',
   },
