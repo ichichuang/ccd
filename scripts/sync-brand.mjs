@@ -45,8 +45,11 @@ function pickStringLiteral(content, key) {
 
 function readBrandSnapshot() {
   const raw = readFileSync(BRAND_TS_PATH, 'utf-8')
+  // id 仅桌面端 brand.ts 存在，Web 端可选
+  let id = null
+  try { id = pickStringLiteral(raw, 'id') } catch { /* web-only: no id field */ }
   const snapshot = {
-    id: pickStringLiteral(raw, 'id'),
+    id,
     name: pickStringLiteral(raw, 'name'),
     displayName: pickStringLiteral(raw, 'displayName'),
     description: pickStringLiteral(raw, 'description'),
@@ -67,6 +70,8 @@ function syncPackageJson(brand) {
 }
 
 function syncTauriConfig(brand) {
+  if (!existsSync(TAURI_CONF_PATH)) return
+
   const raw = readFileSync(TAURI_CONF_PATH, 'utf-8')
   const json = JSON.parse(raw)
 
@@ -239,8 +244,10 @@ function main() {
     const assetResult = checkAssets()
     const logs = [
       `[brand-sync] 已同步 package.json <- ${brand.name}/${brand.description}/${brand.author}`,
-      `[brand-sync] 已同步 src-tauri/tauri.conf.json <- identifier=${brand.id}, productName=${brand.name}, window.title=${brand.displayName}`,
     ]
+    if (existsSync(TAURI_CONF_PATH)) {
+      logs.push(`[brand-sync] 已同步 src-tauri/tauri.conf.json <- identifier=${brand.id}, productName=${brand.name}, window.title=${brand.displayName}`)
+    }
     if (existsSync(CARGO_TOML_PATH)) {
       logs.push(`[brand-sync] 已同步 src-tauri/Cargo.toml <- description=${brand.description}, authors=[${brand.author}]`)
     }

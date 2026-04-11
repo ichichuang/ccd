@@ -2,7 +2,7 @@
 /**
  * Version Sync Pipeline
  * - SSOT: package.json → version
- * - Sync targets: src-tauri/tauri.conf.json, src-tauri/Cargo.toml
+ * - Sync targets: src-tauri/tauri.conf.json, src-tauri/Cargo.toml, .release-please-manifest.json
  */
 
 import { existsSync, readFileSync, writeFileSync } from 'node:fs'
@@ -66,12 +66,17 @@ function main() {
     const hasTauri = existsSync(TAURI_CONF_PATH) && existsSync(CARGO_TOML_PATH)
 
     if (!hasTauri) {
-      console.log(
-        [
-          `[version-sync] SSOT: package.json → v${version}`,
-          `[version-sync] ⏭️  Skipped: Tauri workspace not found.`,
-        ].join('\n')
-      )
+      const prevManifest = syncReleaseManifest(version)
+      const logs = [
+        `[version-sync] SSOT: package.json → v${version}`,
+        `[version-sync] ⏭️  Skipped: Tauri workspace not found.`,
+      ]
+      if (prevManifest !== null) {
+        logs.push(
+          `[version-sync] ✔ .release-please-manifest   ${prevManifest === version ? '(already aligned)' : `${prevManifest} → ${version}`}`
+        )
+      }
+      console.log(logs.join('\n'))
       return
     }
 
