@@ -5,7 +5,7 @@
  * - Sync targets: src-tauri/tauri.conf.json, src-tauri/Cargo.toml
  */
 
-import { readFileSync, writeFileSync } from 'node:fs'
+import { existsSync, readFileSync, writeFileSync } from 'node:fs'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
@@ -50,6 +50,18 @@ function syncCargoToml(version) {
 function main() {
   try {
     const version = readSourceVersion()
+    const hasTauri = existsSync(TAURI_CONF_PATH) && existsSync(CARGO_TOML_PATH)
+
+    if (!hasTauri) {
+      console.log(
+        [
+          `[version-sync] SSOT: package.json → v${version}`,
+          `[version-sync] ⏭️  Skipped: Tauri workspace not found.`,
+        ].join('\n')
+      )
+      return
+    }
+
     const prevTauri = syncTauriConf(version)
     const prevCargo = syncCargoToml(version)
 
