@@ -95,7 +95,7 @@ export const theme = (() => {
 
     fontSize,
     fontFamily: {
-      sans: '"PingFang SC", "Microsoft YaHei", "Source Han Sans CN", "Source Han Sans SC", system-ui, -apple-system, sans-serif',
+      sans: '-apple-system, "Segoe UI", "PingFang SC", "Microsoft YaHei", "Source Han Sans CN", "Source Han Sans SC", system-ui, sans-serif',
     },
 
     spacing,

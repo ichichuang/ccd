@@ -1,6 +1,6 @@
 {
   "name": "app-template",
-  "version": "1.0.15",
+  "version": "1.0.16",
   "private": true,
   "type": "module",
   "sideEffects": [
@@ -11,7 +11,7 @@
     "uno.css",
     "virtual:*"
   ],
-  "author": "",
+  "author": "AppTemplate Team",
   "description": "企业级 Vue 3 后台管理模板",
   "keywords": [
     "vue3",
@@ -29,6 +29,9 @@
   },
   "packageManager": "pnpm@10.28.2",
   "scripts": {
+    "sync:brand": "node scripts/sync-brand.mjs",
+    "sync:version": "node scripts/sync-version.mjs",
+    "prebuild": "pnpm sync:brand && pnpm sync:version",
     "dev": "vite",
     "dev:demo": "NODE_OPTIONS='--max-old-space-size=8192' UNO_DEMO=true vite",
     "build": "vue-tsc --build --force && vite build",
