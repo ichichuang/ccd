@@ -30,7 +30,8 @@
   "packageManager": "pnpm@10.28.2",
   "scripts": {
     "sync:brand": "node scripts/sync-brand.mjs",
-    "prebuild": "pnpm sync:brand",
+    "sync:version": "node scripts/sync-version.mjs",
+    "prebuild": "pnpm sync:brand && pnpm sync:version",
     "dev": "vite",
     "tauri": "tauri",
     "dev:desktop": "tauri dev",
