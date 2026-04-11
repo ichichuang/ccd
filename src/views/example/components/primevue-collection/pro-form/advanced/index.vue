@@ -3,7 +3,9 @@ defineOptions({ name: 'ExampleProFormAdvancedPage' })
 
 import type { PropType, VNode } from 'vue'
 import type { FormSchema, ProFormExpose } from '@/components/ProForm'
+import { DraftStorage } from '@/components/ProForm/engine/persistence/DraftStorage'
 import { useFieldArray, useFormContext } from '@/components/ProForm'
+import { DateFormatEnum } from '@/constants/dateFormats'
 import Button from 'primevue/button'
 import InputText from 'primevue/inputtext'
 import Select from 'primevue/select'
@@ -305,12 +307,11 @@ const draftLastSaved = ref<string>('')
 const draftSaveCount = ref<number>(0)
 const { pause: pauseDraftCounter, resume: resumeDraftCounter } = useIntervalFn(
   () => {
-    const s = localStorage.getItem(DRAFT_KEY)
-    if (!s) return
+    if (DraftStorage.load(DRAFT_KEY) == null) return
     draftSaveCount.value++
     const current = now()
     if (current && isInitialized.value) {
-      draftLastSaved.value = formatDate(current, 'HH:mm:ss')
+      draftLastSaved.value = formatDate(current, DateFormatEnum.Time)
     }
   },
   1500,
@@ -318,8 +319,7 @@ const { pause: pauseDraftCounter, resume: resumeDraftCounter } = useIntervalFn(
 )
 
 onMounted(() => {
-  const stored = localStorage.getItem(DRAFT_KEY)
-  if (stored) {
+  if (DraftStorage.load(DRAFT_KEY) != null) {
     draftLastSaved.value = '（已有草稿）'
   }
   resumeDraftCounter()
@@ -330,7 +330,7 @@ onUnmounted(() => {
 })
 
 async function onDraftSubmit(values: Record<string, unknown>): Promise<void> {
-  localStorage.removeItem(DRAFT_KEY)
+  DraftStorage.clear(DRAFT_KEY)
   draftLastSaved.value = ''
   draftSaveCount.value = 0
   console.log('Draft form submitted:', values)
@@ -338,7 +338,7 @@ async function onDraftSubmit(values: Record<string, unknown>): Promise<void> {
 }
 
 function clearDraft(): void {
-  localStorage.removeItem(DRAFT_KEY)
+  DraftStorage.clear(DRAFT_KEY)
   draftLastSaved.value = ''
   draftSaveCount.value = 0
   draftFormRef.value?.form?.reset()

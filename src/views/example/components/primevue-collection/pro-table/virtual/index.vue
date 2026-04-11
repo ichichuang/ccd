@@ -380,6 +380,7 @@ onMounted(() => {
           <div :style="{ height: tableContainerHeight + 'px' }">
             <ProTable
               :key="tableRenderKey"
+              state-key="example-pro-table-virtual"
               :virtual-scroll="true"
               :pagination="false"
               :columns="resolvedColumns"

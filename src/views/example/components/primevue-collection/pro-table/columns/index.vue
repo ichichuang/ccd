@@ -112,6 +112,7 @@ async function handleRefresh(): Promise<void> {
         <template v-if="tableContainerHeight > 0">
           <div :style="{ height: `${tableContainerHeight}px` }">
             <ProTable
+              state-key="example-pro-table-columns"
               :columns="productColumns"
               :data="tableData"
               :loading="isLoading"

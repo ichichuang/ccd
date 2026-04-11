@@ -1,4 +1,6 @@
 import type { ProTableColumn, ColumnRenderParams } from '@/components/ProTable'
+import { DateFormatEnum } from '@/constants/dateFormats'
+import { DateUtils } from '@/utils/date/dateUtils'
 
 export interface ApiEventsRow extends Record<string, unknown> {
   id: number
@@ -63,6 +65,15 @@ export const apiEventsColumns: ProTableColumn<ApiEventsRow>[] = [
     width: '120px',
     sortable: true,
     hidden: true,
+    render: ({ row }: ColumnRenderParams<ApiEventsRow>) => {
+      const raw = typeof row.createdAt === 'string' ? row.createdAt.trim() : ''
+      if (!raw) return <span class="text-muted-foreground">—</span>
+      return (
+        <span class="text-sm text-muted-foreground">
+          {DateUtils.format(raw, DateFormatEnum.Date)}
+        </span>
+      )
+    },
   },
 ]
 
@@ -86,6 +97,6 @@ export function makeApiMockData(): ApiEventsRow[] {
     name,
     salary: 8000 + (i % 4) * 4000 + Math.floor((i * 13) % 3000),
     description: DESCRIPTIONS[i % DESCRIPTIONS.length] ?? '',
-    createdAt: `2025-${String((i % 12) + 1).padStart(2, '0')}-${String((i % 28) + 1).padStart(2, '0')}`,
+    createdAt: `2026-${String((i % 12) + 1).padStart(2, '0')}-${String((i % 28) + 1).padStart(2, '0')}`,
   }))
 }

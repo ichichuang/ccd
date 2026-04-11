@@ -26,7 +26,7 @@ const STATE_STORAGE_OPTIONS: { label: string; value: 'session' | 'local' | false
 ]
 
 const effectiveStateKey = computed<string | undefined>(() =>
-  stateStorage.value !== false ? 'pro-table-advanced-demo' : undefined
+  stateStorage.value !== false ? 'example-pro-table-advanced' : undefined
 )
 const tableContainerRef = useTemplateRef<HTMLElement>('tableContainerRef')
 const tableContainerHeight = ref<number | undefined>(undefined)
@@ -216,7 +216,7 @@ onMounted(() => {
           <span class="font-bold not-italic">说明：</span>
           开启「列宽拖拽」后拖动表头列边界可调整列宽；「列重排」可拖动表头改变列顺序。
           启用「状态记忆」后，列宽与列顺序会写入浏览器存储，刷新或重新打开页面可恢复 （stateKey:
-          pro-table-advanced-demo）。
+          example-pro-table-advanced）。
         </p>
       </section>
 

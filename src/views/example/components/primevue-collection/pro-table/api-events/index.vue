@@ -332,6 +332,7 @@ onMounted(() => {
             <div class="flex-1 min-h-0">
               <ProTable
                 ref="tableRef"
+                state-key="example-pro-table-api-events"
                 :columns="apiEventsColumns"
                 :data="tableData"
                 :total="totalCount"

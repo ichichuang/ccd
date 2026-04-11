@@ -4,6 +4,7 @@ defineOptions({ name: 'ExampleProFormPluginsPage' })
 import type { FormSchema, ProFormExpose, ProFormPlugin } from '@/components/ProForm'
 import { ProFormPlugins } from '@/components/ProForm'
 import type { FieldRegistryItem } from '@/components/ProForm/engine/types'
+import { DEMO_COLOR_PICKER_DEFAULT_HEX } from '@/constants/theme'
 import ColorPickerFieldAdapter from './components/ColorPickerFieldAdapter'
 import MyColorCustomInput from './components/MyColorCustomInput'
 
@@ -49,7 +50,7 @@ const schema = reactive<FormSchema>({
       component: 'color-picker',
       label: '主题色 (插件 color-picker)',
       description: '由插件注册的 color-picker 类型渲染。',
-      defaultValue: '#3b82f6',
+      defaultValue: DEMO_COLOR_PICKER_DEFAULT_HEX,
       props: {},
     },
   ],
@@ -119,7 +120,11 @@ async function onSubmit(values: Record<string, unknown>): Promise<void> {
                 <ProForm
                   ref="formRef"
                   :schema="schema"
-                  :initial-values="{ title: '', myColor: '', favoriteColor: '#3b82f6' }"
+                  :initial-values="{
+                    title: '',
+                    myColor: '',
+                    favoriteColor: DEMO_COLOR_PICKER_DEFAULT_HEX,
+                  }"
                   @submit="onSubmit"
                 >
                   <template #field-myColor>

@@ -113,6 +113,7 @@ defineExpose({
   <div class="col-fill min-h-0 material-elevated rounded-md">
     <ProTable
       ref="tableRef"
+      state-key="example-pro-table-form-table-combo"
       height-mode="fill"
       :columns="columns"
       api-url="/api/v1/users"

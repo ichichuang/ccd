@@ -141,6 +141,6 @@ export function makeAdvancedMockData(): AdvancedRow[] {
     department: EMPLOYEE_DEPARTMENTS[i % EMPLOYEE_DEPARTMENTS.length],
     status: EMPLOYEE_WORK_STATUSES[i % EMPLOYEE_WORK_STATUSES.length],
     salary: 8000 + (i % 5) * 3000 + Math.floor((i * 17) % 2000),
-    joinedAt: `202${Math.floor(i / 12)}-${String((i % 12) + 1).padStart(2, '0')}-01`,
+    joinedAt: `2026-${String((i % 12) + 1).padStart(2, '0')}-01`,
   }))
 }

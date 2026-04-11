@@ -39,6 +39,7 @@ defineOptions({ name: 'ExampleProTableServerPage' })
 
     <section class="col-fill min-h-0">
       <ProTable
+        state-key="example-pro-table-server"
         api-url="/api/v1/users"
         data-key="data.list"
         total-key="data.total"

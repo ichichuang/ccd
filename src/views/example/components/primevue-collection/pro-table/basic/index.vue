@@ -76,9 +76,9 @@ onMounted(() => {
               </span>
             </div>
             <span class="text-sm text-muted-foreground text-ellipsis-1">
-              最小可用表格：列定义、本地 :data 数据源、客户端分页、排序与行悬停。覆盖能力：columns /
-              data（本地数组）/ rowKey / pagination / sortable / render / heightMode:fill /
-              rowHover。
+              最小可用表格：列定义、本地 :data 数据源、客户端分页、排序与行悬停；已绑定 stateKey
+              以演示列显隐与顺序持久化。覆盖能力：columns / data（本地数组）/ rowKey / pagination /
+              sortable / render / heightMode:fill / rowHover。
             </span>
           </div>
         </div>
@@ -96,6 +96,7 @@ onMounted(() => {
           :style="{ height: tableContainerHeight + 'px' }"
         >
           <ProTable
+            state-key="example-pro-table-basic"
             :columns="basicColumns"
             :data="ALL_ORDERS"
             :server-mode="false"
