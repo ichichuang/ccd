@@ -1,11 +1,12 @@
 import type { FormSchema } from '@/components/ProForm'
 import type { ProTableColumn, ColumnRenderParams } from '@/components/ProTable'
 import type { V1UserListItemDTO } from '@/api/example/users'
-
-const GENDER_BADGE: Record<string, { label: string; cls: string }> = {
-  male: { label: '男', cls: 'bg-info/15 text-info' },
-  female: { label: '女', cls: 'bg-accent/15 text-accent' },
-}
+import {
+  GENDER_BADGE,
+  GENDER_SELECT_OPTIONS,
+  GENDER_SELECT_OPTIONS_BILINGUAL,
+  USER_STATUS_FORM_OPTIONS,
+} from '@/constants/enums'
 
 const BADGE = 'rounded-sm px-sm py-xs text-xs font-semibold'
 
@@ -28,10 +29,7 @@ export const searchFormSchema: FormSchema = {
       props: {
         placeholder: '全部',
         showClear: true,
-        options: [
-          { label: '男 / Male', value: 'male' },
-          { label: '女 / Female', value: 'female' },
-        ],
+        options: [...GENDER_SELECT_OPTIONS_BILINGUAL],
       },
     },
   ],
@@ -60,10 +58,7 @@ export const userFormSchema: FormSchema = {
       component: 'select',
       label: '性别',
       span: 6,
-      options: [
-        { label: '男', value: 'male' },
-        { label: '女', value: 'female' },
-      ],
+      options: [...GENDER_SELECT_OPTIONS],
       props: { placeholder: '选择性别', showClear: true },
     },
     {
@@ -112,10 +107,7 @@ export const userViewFormSchema: FormSchema = {
       component: 'select',
       label: '性别',
       span: 6,
-      options: [
-        { label: '男', value: 'male' },
-        { label: '女', value: 'female' },
-      ],
+      options: [...GENDER_SELECT_OPTIONS],
       props: { placeholder: '—', showClear: false },
     },
     {
@@ -142,10 +134,7 @@ export const userViewFormSchema: FormSchema = {
       component: 'select',
       label: '状态',
       span: 12,
-      options: [
-        { label: '活跃', value: 'active' },
-        { label: '未活跃', value: 'inactive' },
-      ],
+      options: [...USER_STATUS_FORM_OPTIONS],
       props: { showClear: false },
     },
     {

@@ -7,6 +7,16 @@ import type {
   UseFormOptions,
   ValidationResolver,
 } from '@/components/ProForm'
+import {
+  REGEX_EMAIL,
+  REGEX_HAS_DIGIT,
+  REGEX_HAS_LOWERCASE,
+  REGEX_HAS_UPPERCASE,
+  REGEX_USERNAME,
+  RESERVED_REGISTERED_EMAILS,
+  RESERVED_USERNAMES,
+  validationMessage,
+} from '@/constants/validation'
 import { packDataSync, unpackDataSync } from '@/utils/safeStorage'
 
 // ── 验证触发模式 ──────────────────────────────────────────────────
@@ -28,16 +38,16 @@ const syncSchema = reactive<FormSchema>({
       required: true,
       rules: [
         {
-          message: '用户名不能为空',
+          message: validationMessage.username_required,
           validator: v => typeof v === 'string' && v.trim().length > 0,
         },
         {
-          message: '用户名长度 3-20 字符',
+          message: validationMessage.username_length,
           validator: v => typeof v === 'string' && v.trim().length >= 3 && v.trim().length <= 20,
         },
         {
-          message: '只允许字母、数字和下划线',
-          validator: v => typeof v === 'string' && /^[a-zA-Z0-9_]+$/.test(v),
+          message: validationMessage.username_pattern,
+          validator: v => typeof v === 'string' && REGEX_USERNAME.test(v),
         },
       ],
       props: { placeholder: '输入用户名...' },
@@ -49,12 +59,12 @@ const syncSchema = reactive<FormSchema>({
       required: true,
       rules: [
         {
-          message: '邮箱不能为空',
+          message: validationMessage.email_required,
           validator: v => typeof v === 'string' && v.trim().length > 0,
         },
         {
-          message: '请输入合法的邮箱地址',
-          validator: v => typeof v === 'string' && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v),
+          message: validationMessage.email_invalid,
+          validator: v => typeof v === 'string' && REGEX_EMAIL.test(v),
         },
       ],
       props: { placeholder: 'user@example.com' },
@@ -66,17 +76,20 @@ const syncSchema = reactive<FormSchema>({
       required: true,
       rules: [
         {
-          message: '密码不能为空',
+          message: validationMessage.password_required,
           validator: v => typeof v === 'string' && v.trim().length > 0,
         },
         {
-          message: '密码至少 8 位',
+          message: validationMessage.password_min_length,
           validator: v => typeof v === 'string' && v.length >= 8,
         },
         {
-          message: '密码需包含大写字母、小写字母和数字',
+          message: validationMessage.password_complexity,
           validator: v =>
-            typeof v === 'string' && /[A-Z]/.test(v) && /[a-z]/.test(v) && /[0-9]/.test(v),
+            typeof v === 'string' &&
+            REGEX_HAS_UPPERCASE.test(v) &&
+            REGEX_HAS_LOWERCASE.test(v) &&
+            REGEX_HAS_DIGIT.test(v),
         },
       ],
       props: { type: 'password', placeholder: '至少8位，含大小写与数字' },
@@ -89,7 +102,7 @@ const syncSchema = reactive<FormSchema>({
       deps: ['password'],
       rules: [
         {
-          message: '请确认密码',
+          message: validationMessage.confirm_password_required,
           validator: v => typeof v === 'string' && v.trim().length > 0,
         },
       ],
@@ -109,15 +122,13 @@ const syncResolver: ValidationResolver<Record<string, unknown>> = async values =
   if (password !== confirmPassword) {
     return {
       valid: false,
-      errors: { confirmPassword: ['两次输入的密码不一致'] },
+      errors: { confirmPassword: [validationMessage.password_mismatch] },
     }
   }
   return { valid: true, errors: {} as Record<string, string[]> }
 }
 
 // ── 异步规则 Schema ───────────────────────────────────────────────
-// 模拟已占用的用户名
-const TAKEN_USERNAMES = ['admin', 'root', 'superuser', 'test']
 const waitFor = (ms: number): Promise<void> =>
   new Promise(resolve => {
     const { start, stop } = useTimeoutFn(
@@ -141,14 +152,14 @@ const asyncSchema = reactive<FormSchema>({
       required: true,
       rules: [
         {
-          message: '用户名不能为空',
+          message: validationMessage.username_required,
           validator: v => typeof v === 'string' && v.trim().length > 0,
         },
         {
-          message: '该用户名已被占用（模拟 API 检查）',
+          message: validationMessage.username_taken,
           validator: async (v): Promise<boolean> => {
             await waitFor(800)
-            return !TAKEN_USERNAMES.includes(String(v).toLowerCase())
+            return !(RESERVED_USERNAMES as readonly string[]).includes(String(v).toLowerCase())
           },
         },
       ],
@@ -161,14 +172,14 @@ const asyncSchema = reactive<FormSchema>({
       required: true,
       rules: [
         {
-          message: '请输入合法邮箱',
-          validator: v => typeof v === 'string' && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v),
+          message: validationMessage.email_async_invalid,
+          validator: v => typeof v === 'string' && REGEX_EMAIL.test(v),
         },
         {
-          message: '该邮箱已注册（模拟 API 检查）',
+          message: validationMessage.email_taken,
           validator: async (v): Promise<boolean> => {
             await waitFor(600)
-            return !['admin@example.com', 'root@example.com'].includes(String(v))
+            return !(RESERVED_REGISTERED_EMAILS as readonly string[]).includes(String(v))
           },
         },
       ],

@@ -1,6 +1,7 @@
 <script setup lang="ts">
 defineOptions({ name: 'UseDateUtils' })
 
+import { DateFormatEnum, DATETIME_LOCAL_ISO } from '@/constants/dateFormats'
 import type { DateInput } from '@/utils/date'
 
 type TimezoneId = 'Asia/Shanghai' | 'America/New_York' | 'Europe/London' | 'Asia/Tokyo'
@@ -53,21 +54,21 @@ const nowIso = computed<string>(() => {
   if (!isInitialized.value) return ''
   if (!nowValue.value) return ''
   // Avoid native Date .toISOString(): DateUtils.formatDate is the approved display path.
-  return formatDate(nowValue.value, 'YYYY-MM-DDTHH:mm:ss')
+  return formatDate(nowValue.value, DATETIME_LOCAL_ISO)
 })
 const nowUnixSeconds = computed<string>(() => (nowValue.value ? String(nowValue.value.unix()) : ''))
 
 const displayYmd = computed<string>(() => {
   if (!isInitialized.value) return '—'
   if (!nowIso.value) return '—'
-  const out = formatDate(nowIso.value, 'YYYY-MM-DD')
+  const out = formatDate(nowIso.value, DateFormatEnum.Date)
   return out || '—'
 })
 
 const displayDateTime = computed<string>(() => {
   if (!isInitialized.value) return '—'
   if (!nowIso.value) return '—'
-  const out = formatDate(nowIso.value, 'YYYY-MM-DD HH:mm:ss')
+  const out = formatDate(nowIso.value, DateFormatEnum.Datetime)
   return out || '—'
 })
 
@@ -96,14 +97,14 @@ const relativeTarget = computed<ReturnType<typeof DateUtils.safeParse> | null>((
 const relativeTargetIso = computed<string>(() => {
   if (!isInitialized.value) return ''
   if (!relativeTarget.value) return ''
-  const out = formatDate(relativeTarget.value, 'YYYY-MM-DDTHH:mm:ss')
+  const out = formatDate(relativeTarget.value, DATETIME_LOCAL_ISO)
   return out || ''
 })
 
 const relativeDisplay = computed<string>(() => {
   if (!isInitialized.value) return '—'
   if (!relativeInput.value.trim()) return '请输入或选择一个时间点'
-  if (!relativeTarget.value) return '解析失败：请使用更明确的格式（如 YYYY-MM-DD HH:mm:ss）'
+  if (!relativeTarget.value) return `解析失败：请使用更明确的格式（如 ${DateFormatEnum.Datetime}）`
   const out = fromNow(relativeTarget.value)
   return out || '—'
 })
@@ -112,7 +113,7 @@ const setRelativePreset = (preset: 'past3h' | 'future2d'): void => {
   const base = now()
   if (!base) return
   const target = preset === 'past3h' ? base.subtract(3, 'hour') : base.add(2, 'day')
-  relativeInput.value = target.format('YYYY-MM-DD HH:mm:ss')
+  relativeInput.value = target.format(DateFormatEnum.Datetime)
 }
 
 const handleRelativeInputUpdate = (value: string | undefined): void => {
@@ -140,7 +141,7 @@ const tzDisplays = computed<Record<TimezoneId, string>>(() => {
   if (!nowValue.value) return empty
   const base = nowValue.value
 
-  const format = 'YYYY-MM-DD HH:mm:ss'
+  const format = DateFormatEnum.Datetime
   const build = (tz: TimezoneId): string => {
     const out = formatDate(base, format, { timezone: tz })
     return out || '—'
@@ -201,9 +202,9 @@ const workingDemo = computed<WorkingDayDemoResult>(() => {
   const resultDate = addWorkingDays(base, offset)
   const nextDate = DateUtils.nextWorkingDay(base)
 
-  const baseText = formatDate(base, 'YYYY-MM-DD HH:mm:ss') || '—'
-  const resultText = resultDate ? formatDate(resultDate, 'YYYY-MM-DD HH:mm:ss') || '—' : '—'
-  const nextText = nextDate ? formatDate(nextDate, 'YYYY-MM-DD HH:mm:ss') || '—' : '—'
+  const baseText = formatDate(base, DateFormatEnum.Datetime) || '—'
+  const resultText = resultDate ? formatDate(resultDate, DateFormatEnum.Datetime) || '—' : '—'
+  const nextText = nextDate ? formatDate(nextDate, DateFormatEnum.Datetime) || '—' : '—'
 
   return {
     base: baseText,
@@ -216,7 +217,7 @@ const workingDemo = computed<WorkingDayDemoResult>(() => {
 const setWorkingBaseNow = (): void => {
   const n = now()
   if (!n) return
-  workingBaseInput.value = n.format('YYYY-MM-DD HH:mm:ss')
+  workingBaseInput.value = n.format(DateFormatEnum.Datetime)
 }
 
 const handleWorkingBaseInputUpdate = (value: string | undefined): void => {
@@ -288,12 +289,14 @@ const handleWorkingBaseInputUpdate = (value: string | undefined): void => {
                     <div class="text-base text-foreground text-ellipsis-1">{{ nowIso || '—' }}</div>
                   </div>
                   <div class="row-between gap-sm min-w-0">
-                    <div class="text-sm text-muted-foreground">formatDate（YYYY-MM-DD）</div>
+                    <div class="text-sm text-muted-foreground">
+                      formatDate（{{ DateFormatEnum.Date }}）
+                    </div>
                     <div class="text-base text-foreground">{{ displayYmd }}</div>
                   </div>
                   <div class="row-between gap-sm min-w-0">
                     <div class="text-sm text-muted-foreground">
-                      formatDate（YYYY-MM-DD HH:mm:ss）
+                      formatDate（{{ DateFormatEnum.Datetime }}）
                     </div>
                     <div class="text-base text-foreground">{{ displayDateTime }}</div>
                   </div>
@@ -393,7 +396,7 @@ const handleWorkingBaseInputUpdate = (value: string | undefined): void => {
                 <div class="row-between gap-sm min-w-0">
                   <InputText
                     :model-value="workingBaseInput"
-                    placeholder="基准时间：YYYY-MM-DD HH:mm:ss（留空则用当前时间）"
+                    :placeholder="`基准时间：${DateFormatEnum.Datetime}（留空则用当前时间）`"
                     class="w-full"
                     @update:model-value="handleWorkingBaseInputUpdate"
                   />

@@ -1,10 +1,12 @@
 <script setup lang="ts">
+import { ID_PREFIX } from '@/constants/business'
+import { PRODUCT_CATEGORIES } from '@/constants/enums'
+import { formatSerialId } from '@/utils/business/idGenerator'
 import { productColumns } from './columns'
 import type { ProductRow } from './columns'
 
 defineOptions({ name: 'ExampleProTableColumnConfigPage' })
 
-const CATEGORIES = ['电子', '服装', '家居', '食品', '运动'] as const
 const STATUSES: ProductRow['status'][] = ['available', 'low', 'sold_out']
 
 const PRODUCTS = [
@@ -33,9 +35,9 @@ const PRODUCTS = [
 function makeData(): ProductRow[] {
   return PRODUCTS.map((name, i) => ({
     id: i + 1,
-    sku: `SKU-${String(i + 1001).padStart(4, '0')}`,
+    sku: formatSerialId(ID_PREFIX.SKU, i + 1001, 4),
     name,
-    category: CATEGORIES[i % CATEGORIES.length],
+    category: PRODUCT_CATEGORIES[i % PRODUCT_CATEGORIES.length],
     price: Math.round((29.9 + (i % 8) * 120 + ((i * 37) % 300) / 10) * 10) / 10,
     stock: Math.floor((i * 47 + 13) % 200),
     maxStock: 200,

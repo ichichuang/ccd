@@ -1,5 +1,7 @@
 import type { V1UserListItemDTO } from '@/api/example/users'
 import type { ProTableColumn, ColumnRenderParams } from '@/components/ProTable'
+import { DateFormatEnum } from '@/constants/dateFormats'
+import { GENDER, USER_ACCOUNT_STATUS } from '@/constants/enums'
 import Tag from 'primevue/tag'
 import { DateUtils } from '@/utils/date/dateUtils'
 
@@ -57,14 +59,14 @@ export const serverTableColumns: ProTableColumn<V1UserListItemDTO>[] = [
     align: 'center',
     render: ({ row }: ColumnRenderParams<V1UserListItemDTO>) => {
       const g = row.gender
-      const isFemale = g === 'female'
-      const label = isFemale ? '女' : g === 'male' ? '男' : String(g ?? '—')
+      const isFemale = g === GENDER.FEMALE
+      const label = isFemale ? '女' : g === GENDER.MALE ? '男' : String(g ?? '—')
       return (
         <span
           class={
             isFemale
               ? `bg-accent/15 text-accent ${GENDER_PILL}`
-              : g === 'male'
+              : g === GENDER.MALE
                 ? `bg-primary/15 text-primary ${GENDER_PILL}`
                 : `bg-muted text-muted-foreground ${GENDER_PILL}`
           }
@@ -93,7 +95,7 @@ export const serverTableColumns: ProTableColumn<V1UserListItemDTO>[] = [
     align: 'center',
     sortable: true,
     render: ({ row }: ColumnRenderParams<V1UserListItemDTO>) => {
-      const active = row.status === 'active'
+      const active = row.status === USER_ACCOUNT_STATUS.ACTIVE
       return (
         <div class="row-start items-center gap-sm">
           <span
@@ -123,7 +125,7 @@ export const serverTableColumns: ProTableColumn<V1UserListItemDTO>[] = [
       if (!raw) return <span class="text-sm text-muted-foreground">—</span>
       return (
         <span class="text-sm text-muted-foreground">
-          {DateUtils.format(raw, 'YYYY-MM-DD HH:mm')}
+          {DateUtils.format(raw, DateFormatEnum.DatetimeMinute)}
         </span>
       )
     },

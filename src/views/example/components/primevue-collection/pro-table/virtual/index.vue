@@ -1,5 +1,7 @@
 <script setup lang="tsx">
 import type { ProTableColumn } from '@/components/ProTable'
+import { ID_PREFIX } from '@/constants/business'
+import { formatSerialId } from '@/utils/business/idGenerator'
 import type { TransactionLedgerRow } from './columns'
 import { transactionLedgerColumns } from './columns'
 
@@ -43,7 +45,7 @@ function generateMassiveData(count: number = 100000): TransactionLedgerRow[] {
     const description = `${descSeeds[i % descSeeds.length] ?? '系统生成'} #${i}`
 
     rows.push({
-      id: `TX-${String(i).padStart(6, '0')}`,
+      id: formatSerialId(ID_PREFIX.TX, i, 6),
       date,
       account,
       amount: signed,

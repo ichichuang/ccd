@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { ID_PREFIX } from '@/constants/business'
+import { formatSerialId } from '@/utils/business/idGenerator'
 import { basicColumns } from './columns'
 import type { OrderRow } from './columns'
 
@@ -26,7 +28,7 @@ function makeMockData(): OrderRow[] {
     const day = (i % 28) + 1
     rows.push({
       id: i + 1,
-      orderNo: `ORD-${String(i + 1).padStart(4, '0')}`,
+      orderNo: formatSerialId(ID_PREFIX.ORDER, i + 1, 4),
       customer: CUSTOMERS[i % CUSTOMERS.length] as string,
       product: PRODUCTS[i % PRODUCTS.length] as string,
       quantity: qty,

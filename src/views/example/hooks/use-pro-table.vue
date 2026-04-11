@@ -1,6 +1,7 @@
 <script setup lang="tsx">
 import type { ProTableColumn, ColumnRenderParams } from '@/components/ProTable'
 import { useProTable } from '@/components/ProTable'
+import { TASK_BOARD_STATUS_DISPLAY, TASK_PRIORITY_CLASS } from '@/constants/enums'
 
 defineOptions({ name: 'ExampleHookUseProTable' })
 
@@ -11,18 +12,6 @@ interface TaskRow extends Record<string, unknown> {
   assignee: string
   priority: 'high' | 'medium' | 'low'
   status: 'done' | 'active' | 'todo'
-}
-
-const PRIORITY_CLS: Record<string, string> = {
-  high: 'text-danger font-medium',
-  medium: 'text-warn font-medium',
-  low: 'text-muted-foreground',
-}
-
-const STATUS_CLS: Record<string, { label: string; cls: string }> = {
-  done: { label: '完成', cls: 'text-success font-medium' },
-  active: { label: '进行中', cls: 'text-primary font-medium' },
-  todo: { label: '待办', cls: 'text-muted-foreground' },
 }
 
 // ── Columns ───────────────────────────────────────────────────────
@@ -37,7 +26,7 @@ const columns: ProTableColumn<TaskRow>[] = [
     width: '100px',
     sortable: true,
     render: ({ row }: ColumnRenderParams<TaskRow>) => (
-      <span class={PRIORITY_CLS[row.priority]}>{row.priority}</span>
+      <span class={TASK_PRIORITY_CLASS[row.priority]}>{row.priority}</span>
     ),
   },
   {
@@ -46,7 +35,7 @@ const columns: ProTableColumn<TaskRow>[] = [
     field: 'status',
     width: '100px',
     render: ({ row }: ColumnRenderParams<TaskRow>) => {
-      const cfg = STATUS_CLS[row.status] ?? STATUS_CLS.todo
+      const cfg = TASK_BOARD_STATUS_DISPLAY[row.status] ?? TASK_BOARD_STATUS_DISPLAY.todo
       return <span class={cfg.cls}>{cfg.label}</span>
     },
   },

@@ -2,6 +2,7 @@
 defineOptions({ name: 'ExampleProFormDagPage' })
 
 import type { FormSchema, FormState, ProFormExpose } from '@/components/ProForm'
+import { DateFormatEnum } from '@/constants/dateFormats'
 
 const formRef = ref<ProFormExpose | null>(null)
 const { formatDate, isInitialized } = useDateUtils()
@@ -216,12 +217,12 @@ const schema = reactive<FormSchema>({
         {
           name: 'startDate',
           component: 'date',
-          label: '开始日期 (transform → YYYY-MM-DD)',
-          description: '提交时自动转为 YYYY-MM-DD 字符串',
+          label: `开始日期 (transform → ${DateFormatEnum.Date})`,
+          description: `提交时自动转为 ${DateFormatEnum.Date} 字符串`,
           span: 12,
           transform: (value: unknown): unknown => {
             if (value instanceof Date) {
-              return isInitialized.value ? formatDate(value, 'YYYY-MM-DD') : ''
+              return isInitialized.value ? formatDate(value, DateFormatEnum.Date) : ''
             }
             return value
           },

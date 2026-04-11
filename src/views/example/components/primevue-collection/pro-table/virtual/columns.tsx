@@ -1,4 +1,9 @@
 import type { ProTableColumn } from '@/components/ProTable'
+import {
+  TRANSACTION_LEDGER_STATUS_CLASS,
+  TRANSACTION_LEDGER_STATUS_LABEL,
+  type TransactionLedgerStatus,
+} from '@/constants/enums'
 
 export interface TransactionLedgerRow extends Record<string, unknown> {
   id: string
@@ -16,15 +21,11 @@ function formatAmount(val: number): string {
 }
 
 function statusLabel(status: TransactionLedgerRow['status']): string {
-  if (status === 'success') return '成功'
-  if (status === 'failed') return '失败'
-  return '处理中'
+  return TRANSACTION_LEDGER_STATUS_LABEL[status as TransactionLedgerStatus]
 }
 
 function statusClass(status: TransactionLedgerRow['status']): string {
-  if (status === 'success') return 'bg-success/10 text-success'
-  if (status === 'failed') return 'bg-danger/10 text-danger'
-  return 'bg-warn/10 text-warn'
+  return TRANSACTION_LEDGER_STATUS_CLASS[status as TransactionLedgerStatus]
 }
 
 export const transactionLedgerColumns: ProTableColumn<TransactionLedgerRow>[] = [

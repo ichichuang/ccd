@@ -1,5 +1,10 @@
 import Button from 'primevue/button'
 import type { ProTableColumn, ColumnRenderParams } from '@/components/ProTable'
+import {
+  EMPLOYEE_DEPARTMENTS,
+  EMPLOYEE_STATUS_LABELS,
+  EMPLOYEE_WORK_STATUSES,
+} from '@/constants/enums'
 
 export interface AdvancedRow extends Record<string, unknown> {
   id: number
@@ -8,14 +13,6 @@ export interface AdvancedRow extends Record<string, unknown> {
   status: string
   salary: number
   joinedAt: string
-}
-
-const DEPARTMENTS = ['工程', '设计', '产品', '运营', '市场'] as const
-const STATUSES = ['active', 'inactive', 'pending'] as const
-const STATUS_LABELS: Record<string, string> = {
-  active: '在职',
-  inactive: '离职',
-  pending: '待入职',
 }
 
 export function createAdvancedColumns(
@@ -47,7 +44,7 @@ export function createAdvancedColumns(
       minWidth: '100px',
       filterable: true,
       filterType: 'select',
-      filterOptions: DEPARTMENTS.map(d => ({ label: d, value: d })),
+      filterOptions: EMPLOYEE_DEPARTMENTS.map(d => ({ label: d, value: d })),
     },
     {
       id: 'status',
@@ -56,12 +53,15 @@ export function createAdvancedColumns(
       minWidth: '90px',
       filterable: true,
       filterType: 'select',
-      filterOptions: STATUSES.map(s => ({ label: STATUS_LABELS[s] ?? s, value: s })),
+      filterOptions: EMPLOYEE_WORK_STATUSES.map(s => ({
+        label: EMPLOYEE_STATUS_LABELS[s] ?? s,
+        value: s,
+      })),
       render: ({ row }) => (
         <span
           class={row.status === 'active' ? 'text-success font-medium' : 'text-muted-foreground'}
         >
-          {STATUS_LABELS[row.status] ?? row.status}
+          {EMPLOYEE_STATUS_LABELS[row.status as keyof typeof EMPLOYEE_STATUS_LABELS] ?? row.status}
         </span>
       ),
     },
@@ -138,8 +138,8 @@ export function makeAdvancedMockData(): AdvancedRow[] {
   return NAMES.map((name, i) => ({
     id: i + 1,
     name,
-    department: DEPARTMENTS[i % DEPARTMENTS.length],
-    status: STATUSES[i % STATUSES.length],
+    department: EMPLOYEE_DEPARTMENTS[i % EMPLOYEE_DEPARTMENTS.length],
+    status: EMPLOYEE_WORK_STATUSES[i % EMPLOYEE_WORK_STATUSES.length],
     salary: 8000 + (i % 5) * 3000 + Math.floor((i * 17) % 2000),
     joinedAt: `202${Math.floor(i / 12)}-${String((i % 12) + 1).padStart(2, '0')}-01`,
   }))

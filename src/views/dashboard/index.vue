@@ -2,6 +2,9 @@
 import type { EChartsOption } from 'echarts'
 import type { ProTableColumn } from '@/components/ProTable'
 import type { FormSchema, FormState } from '@/components/ProForm'
+import { ID_PREFIX } from '@/constants/business'
+import { ALERT_LEVEL_VALUE_ENUM, NODE_STATE_VALUE_ENUM } from '@/constants/enums'
+import { formatSerialId } from '@/utils/business/idGenerator'
 import ProForm from '@/components/ProForm/index.vue'
 import Button from 'primevue/button'
 
@@ -246,7 +249,7 @@ interface AlertRow extends Record<string, unknown> {
 
 const mockRows = ref<AlertRow[]>([
   {
-    id: 'A-001',
+    id: formatSerialId(ID_PREFIX.ALERT, 1, 3),
     nodeName: 'RZ-Edge-01',
     level: 'critical',
     state: 'degraded',
@@ -254,7 +257,7 @@ const mockRows = ref<AlertRow[]>([
     message: '请求队列积压，建议检查上游拥塞。',
   },
   {
-    id: 'A-002',
+    id: formatSerialId(ID_PREFIX.ALERT, 2, 3),
     nodeName: 'Core-Scheduler-03',
     level: 'warning',
     state: 'online',
@@ -262,7 +265,7 @@ const mockRows = ref<AlertRow[]>([
     message: '任务完成率下降，监控重试策略。',
   },
   {
-    id: 'A-003',
+    id: formatSerialId(ID_PREFIX.ALERT, 3, 3),
     nodeName: 'Region-NY-02',
     level: 'info',
     state: 'online',
@@ -270,7 +273,7 @@ const mockRows = ref<AlertRow[]>([
     message: '拓扑健康检查通过。',
   },
   {
-    id: 'A-004',
+    id: formatSerialId(ID_PREFIX.ALERT, 4, 3),
     nodeName: 'Tenant-Portal-07',
     level: 'warning',
     state: 'degraded',
@@ -278,7 +281,7 @@ const mockRows = ref<AlertRow[]>([
     message: '缓存命中率波动，建议观察热 key。',
   },
   {
-    id: 'A-005',
+    id: formatSerialId(ID_PREFIX.ALERT, 5, 3),
     nodeName: 'Edge-Gateway-09',
     level: 'critical',
     state: 'offline',
@@ -286,7 +289,7 @@ const mockRows = ref<AlertRow[]>([
     message: '心跳丢失，可能存在网络隔离。',
   },
   {
-    id: 'A-006',
+    id: formatSerialId(ID_PREFIX.ALERT, 6, 3),
     nodeName: 'Core-API-01',
     level: 'info',
     state: 'online',
@@ -294,7 +297,7 @@ const mockRows = ref<AlertRow[]>([
     message: '接口延迟稳定在阈值内。',
   },
   {
-    id: 'A-007',
+    id: formatSerialId(ID_PREFIX.ALERT, 7, 3),
     nodeName: 'Region-SG-04',
     level: 'warning',
     state: 'online',
@@ -302,26 +305,16 @@ const mockRows = ref<AlertRow[]>([
     message: '配置变更已生效，等待二次验证。',
   },
   {
-    id: 'A-008',
+    id: formatSerialId(ID_PREFIX.ALERT, 8, 3),
     nodeName: 'Tenant-Data-11',
     level: 'info',
     state: 'degraded',
     lastSeenAt: '2026-04-02T03:01:25Z',
     message: '写入吞吐下降，建议检查磁盘 I/O。',
   },
-] as const)
+])
 
 const alertColumns = computed<ProTableColumn<AlertRow>[]>(() => {
-  const LEVEL_ENUM: ProTableColumn<AlertRow>['valueEnum'] = {
-    critical: { label: 'Critical', severity: 'danger' },
-    warning: { label: 'Warning', severity: 'warn' },
-    info: { label: 'Info', severity: 'info' },
-  }
-  const STATE_ENUM: ProTableColumn<AlertRow>['valueEnum'] = {
-    online: { label: 'Online', severity: 'success' },
-    degraded: { label: 'Degraded', severity: 'warn' },
-    offline: { label: 'Offline', severity: 'danger' },
-  }
   return [
     {
       id: 'nodeName',
@@ -338,7 +331,7 @@ const alertColumns = computed<ProTableColumn<AlertRow>[]>(() => {
       field: 'level',
       sortable: true,
       width: '120px',
-      valueEnum: LEVEL_ENUM,
+      valueEnum: ALERT_LEVEL_VALUE_ENUM,
     },
     {
       id: 'state',
@@ -346,7 +339,7 @@ const alertColumns = computed<ProTableColumn<AlertRow>[]>(() => {
       field: 'state',
       sortable: true,
       width: '140px',
-      valueEnum: STATE_ENUM,
+      valueEnum: NODE_STATE_VALUE_ENUM,
     },
     {
       id: 'lastSeenAt',

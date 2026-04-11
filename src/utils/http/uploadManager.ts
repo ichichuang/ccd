@@ -3,6 +3,7 @@
  * 业务层当前无引用；属基础设施，供未来上传功能使用。
  * 若无上传需求可考虑懒加载引入以减小首包。
  */
+import { UPLOAD_TASK_PREFIX } from '@/constants/business'
 import { HTTP_CONFIG } from '@/constants/http'
 import { post } from './methods'
 import type {
@@ -472,7 +473,7 @@ export class UploadManager implements IUploadManager {
    * 生成任务ID
    */
   private generateTaskId(): string {
-    return `upload_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
+    return `${UPLOAD_TASK_PREFIX}${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
   }
 }
 

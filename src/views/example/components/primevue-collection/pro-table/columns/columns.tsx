@@ -1,5 +1,10 @@
 import Icons from '@/components/Icons/Icons.vue'
 import type { ProTableColumn, ColumnRenderParams } from '@/components/ProTable'
+import {
+  PRODUCT_CATEGORY_CLASS,
+  PRODUCT_CATEGORY_FILTER_OPTIONS,
+  PRODUCT_STATUS_DISPLAY,
+} from '@/constants/enums'
 import Button from 'primevue/button'
 export interface ProductRow extends Record<string, unknown> {
   id: number
@@ -11,20 +16,6 @@ export interface ProductRow extends Record<string, unknown> {
   maxStock: number
   status: 'available' | 'low' | 'sold_out'
   createdAt?: string
-}
-
-const CATEGORY_CLS: Record<string, string> = {
-  电子: 'bg-primary/15 text-primary',
-  服装: 'bg-accent/15 text-accent',
-  家居: 'bg-info/15 text-info',
-  食品: 'bg-success/15 text-success',
-  运动: 'bg-warn/15 text-warn',
-}
-
-const STATUS_CFG: Record<ProductRow['status'], { label: string; cls: string }> = {
-  available: { label: '上架', cls: 'bg-success/15 text-success' },
-  low: { label: '库存低', cls: 'bg-warn/15 text-warn' },
-  sold_out: { label: '已下架', cls: 'bg-muted/60 text-muted-foreground' },
 }
 
 const BADGE = 'rounded-sm px-sm py-xs text-xs font-semibold'
@@ -68,15 +59,11 @@ export const productColumns: ProTableColumn<ProductRow>[] = [
     width: '100px',
     filterable: true,
     filterType: 'select',
-    filterOptions: [
-      { label: '电子', value: '电子' },
-      { label: '服装', value: '服装' },
-      { label: '家居', value: '家居' },
-      { label: '食品', value: '食品' },
-      { label: '运动', value: '运动' },
-    ],
+    filterOptions: [...PRODUCT_CATEGORY_FILTER_OPTIONS],
     render: ({ row }: ColumnRenderParams<ProductRow>) => {
-      const cls = CATEGORY_CLS[row.category] ?? 'bg-muted/60 text-muted-foreground'
+      const cls =
+        PRODUCT_CATEGORY_CLASS[row.category as keyof typeof PRODUCT_CATEGORY_CLASS] ??
+        'bg-muted/60 text-muted-foreground'
       return <span class={`${cls} ${BADGE}`}>{row.category}</span>
     },
   },
@@ -127,7 +114,7 @@ export const productColumns: ProTableColumn<ProductRow>[] = [
     minWidth: '100px',
     width: '100px',
     render: ({ row }: ColumnRenderParams<ProductRow>) => {
-      const cfg = STATUS_CFG[row.status]
+      const cfg = PRODUCT_STATUS_DISPLAY[row.status]
       return <span class={`${cfg.cls} ${BADGE}`}>{cfg.label}</span>
     },
   },

@@ -1,4 +1,5 @@
 import type { ProTableColumn, ColumnRenderParams } from '@/components/ProTable'
+import { ORDER_STATUS_VALUE_ENUM } from '@/constants/enums'
 
 export interface OrderRow extends Record<string, unknown> {
   id: number
@@ -69,11 +70,7 @@ export const basicColumns: ProTableColumn<OrderRow>[] = [
     title: '状态',
     field: 'status',
     minWidth: '120px',
-    valueEnum: {
-      completed: { label: '已完成', severity: 'success' },
-      processing: { label: '处理中', severity: 'info' },
-      cancelled: { label: '已取消', severity: 'danger' },
-    },
+    valueEnum: ORDER_STATUS_VALUE_ENUM,
   },
   {
     id: 'createdAt',

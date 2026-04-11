@@ -28,6 +28,8 @@
 
     // ✅ 供 uno.config.ts 等工具链引用的浏览器常量与类型
     "src/constants/**/*.ts",
+    // dateFormats 再导出 DateFormatEnum（与 app 共用，无运行时代码）
+    "src/utils/date/types.ts",
     "src/utils/theme/metadata.ts",
     // ⚠️ engine.ts 的 applyTheme() 使用 document（DOM API），但 generateThemeVars() 被 build/html.ts 在 Node 侧引用
     // 因此必须保留在 Node file list 中；DOM 类型由文件级 triple-slash directive 自行声明
