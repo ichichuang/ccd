@@ -33,7 +33,6 @@
  * ```
  */
 import NProgress from 'nprogress'
-import 'nprogress/nprogress.css'
 
 // 配置只需在应用生命周期内执行一次，避免重复调用
 let nprogressConfigured = false
