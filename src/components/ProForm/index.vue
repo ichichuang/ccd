@@ -9,7 +9,6 @@ import type {
   ProFormProps,
 } from './engine/types'
 import { useForm } from './engine/hooks/useForm'
-import { registerBuiltinFields } from './renderers/registerBuiltinFields'
 import ProFormNode from './renderers/ProFormNode.vue'
 import { useAppElementSize } from '@/hooks/modules/useAppElementSize'
 import { getActiveBreakpoint, resolveSpan } from './engine/utils/breakpoint'
@@ -26,9 +25,6 @@ import {
   PRO_FORM_LAYOUT_KEY,
   PRO_FORM_SLOTS_KEY,
 } from './engine/constants'
-
-// 预注册基础字段组件
-registerBuiltinFields()
 
 const props = defineProps<ProFormProps<TValues>>()
 const slots = useSlots()

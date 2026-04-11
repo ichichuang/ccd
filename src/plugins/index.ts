@@ -1,5 +1,6 @@
 import { setupDateUtils } from '@/plugins/modules/date'
 import { setupLocales } from '@/plugins/modules/locales'
+import { setupProForm } from '@/plugins/modules/proform'
 import { setupRouter } from '@/plugins/modules/router'
 import { setupStores } from '@/plugins/modules/stores'
 import { setupErrorHandler } from '@/plugins/modules/errorHandler'
@@ -24,6 +25,7 @@ export const setupPlugins = async (app: App) => {
   setupStores(app)
   setupPrimeVue(app)
   setupScrollbar(app)
+  setupProForm()
 
   setupRouter(app)
 

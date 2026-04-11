@@ -1,7 +1,8 @@
-// 导入功能样式
+// 导入功能样式（全局样式统一在入口注册，避免散落在 composable 中被摇树遗漏）
 import '@/assets/styles/reset.scss'
 import 'animate.css'
 import 'uno.css'
+import 'nprogress/nprogress.css'
 
 // 导入应用
 import App from '@/App.vue'
