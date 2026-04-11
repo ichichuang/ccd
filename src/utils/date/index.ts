@@ -5,4 +5,4 @@
 export * from './types'
 export * from './constants'
 export * from './timezone'
-export { default, dayjs } from './dateUtils'
+export { default, dayjs, initDayjs } from './dateUtils'

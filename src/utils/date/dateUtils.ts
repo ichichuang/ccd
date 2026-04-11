@@ -44,19 +44,30 @@ import type {
   ValidationResult,
 } from './types'
 
-dayjs.extend(relativeTime)
-dayjs.extend(utc)
-dayjs.extend(timezone)
-dayjs.extend(duration)
-dayjs.extend(isSameOrBefore)
-dayjs.extend(isSameOrAfter)
-dayjs.extend(isBetween)
-dayjs.extend(weekday)
-dayjs.extend(weekOfYear)
-dayjs.extend(isoWeek)
-dayjs.extend(quarterOfYear)
-dayjs.extend(dayOfYear)
-dayjs.locale('en')
+let _dayjsInitialized = false
+
+/**
+ * 显式初始化 dayjs 插件与默认 locale。
+ * 由 setupDateUtils 插件在应用启动阶段调用，避免依赖模块导入时序的隐式副作用。
+ */
+export function initDayjs(): void {
+  if (_dayjsInitialized) return
+  _dayjsInitialized = true
+
+  dayjs.extend(relativeTime)
+  dayjs.extend(utc)
+  dayjs.extend(timezone)
+  dayjs.extend(duration)
+  dayjs.extend(isSameOrBefore)
+  dayjs.extend(isSameOrAfter)
+  dayjs.extend(isBetween)
+  dayjs.extend(weekday)
+  dayjs.extend(weekOfYear)
+  dayjs.extend(isoWeek)
+  dayjs.extend(quarterOfYear)
+  dayjs.extend(dayOfYear)
+  dayjs.locale('en')
+}
 
 let timezoneState = DEFAULT_TIMEZONE
 
