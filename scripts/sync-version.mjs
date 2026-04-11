@@ -15,6 +15,7 @@ const ROOT = join(__dirname, '..')
 const PACKAGE_JSON_PATH = join(ROOT, 'package.json')
 const TAURI_CONF_PATH = join(ROOT, 'src-tauri', 'tauri.conf.json')
 const CARGO_TOML_PATH = join(ROOT, 'src-tauri', 'Cargo.toml')
+const RELEASE_MANIFEST_PATH = join(ROOT, '.release-please-manifest.json')
 
 function readSourceVersion() {
   const raw = readFileSync(PACKAGE_JSON_PATH, 'utf-8')
@@ -47,6 +48,18 @@ function syncCargoToml(version) {
   return prev
 }
 
+function syncReleaseManifest(version) {
+  if (!existsSync(RELEASE_MANIFEST_PATH)) {
+    return null
+  }
+  const raw = readFileSync(RELEASE_MANIFEST_PATH, 'utf-8')
+  const json = JSON.parse(raw)
+  const prev = json['.']
+  json['.'] = version
+  writeFileSync(RELEASE_MANIFEST_PATH, `${JSON.stringify(json, null, 2)}\n`, 'utf-8')
+  return prev
+}
+
 function main() {
   try {
     const version = readSourceVersion()
@@ -64,15 +77,22 @@ function main() {
 
     const prevTauri = syncTauriConf(version)
     const prevCargo = syncCargoToml(version)
+    const prevManifest = syncReleaseManifest(version)
 
-    console.log(
-      [
-        `[version-sync] SSOT: package.json → v${version}`,
-        `[version-sync] ✔ src-tauri/tauri.conf.json  ${prevTauri === version ? '(already aligned)' : `${prevTauri} → ${version}`}`,
-        `[version-sync] ✔ src-tauri/Cargo.toml        ${prevCargo === version ? '(already aligned)' : `${prevCargo} → ${version}`}`,
-        `[version-sync] Version aligned to v${version} across all workspaces.`,
-      ].join('\n')
-    )
+    const logs = [
+      `[version-sync] SSOT: package.json → v${version}`,
+      `[version-sync] ✔ src-tauri/tauri.conf.json  ${prevTauri === version ? '(already aligned)' : `${prevTauri} → ${version}`}`,
+      `[version-sync] ✔ src-tauri/Cargo.toml        ${prevCargo === version ? '(already aligned)' : `${prevCargo} → ${version}`}`,
+    ]
+
+    if (prevManifest !== null) {
+      logs.push(
+        `[version-sync] ✔ .release-please-manifest   ${prevManifest === version ? '(already aligned)' : `${prevManifest} → ${version}`}`
+      )
+    }
+
+    logs.push(`[version-sync] Version aligned to v${version} across all workspaces.`)
+    console.log(logs.join('\n'))
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error)
     console.error(`[version-sync] 失败: ${message}`)

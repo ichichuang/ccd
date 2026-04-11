@@ -19,6 +19,8 @@ const ROOT = join(__dirname, '..')
 const BRAND_TS_PATH = join(ROOT, 'src', 'constants', 'brand.ts')
 const PACKAGE_JSON_PATH = join(ROOT, 'package.json')
 const TAURI_CONF_PATH = join(ROOT, 'src-tauri', 'tauri.conf.json')
+const CARGO_TOML_PATH = join(ROOT, 'src-tauri', 'Cargo.toml')
+const CAPABILITIES_PATH = join(ROOT, 'src-tauri', 'capabilities', 'default.json')
 const SOURCE_DIR = join(ROOT, 'src', 'assets', 'brand', 'source')
 const SOURCE_LOGO_PATH = join(SOURCE_DIR, 'logo-source.png')
 const SOURCE_LOGO_SQUARE_TEMP_PATH = join(SOURCE_DIR, 'logo-source.square-temp.png')
@@ -196,21 +198,57 @@ function generateTauriIcons() {
   })
 }
 
+function syncCargoTomlMeta(brand) {
+  if (!existsSync(CARGO_TOML_PATH)) return
+
+  let raw = readFileSync(CARGO_TOML_PATH, 'utf-8')
+
+  const descPattern = /^description\s*=\s*"[^"]*"/m
+  if (descPattern.test(raw)) {
+    raw = raw.replace(descPattern, `description = "${brand.description}"`)
+  }
+
+  const authorsPattern = /^authors\s*=\s*\[.*?\]/m
+  if (authorsPattern.test(raw)) {
+    raw = raw.replace(authorsPattern, `authors = ["${brand.author}"]`)
+  }
+
+  writeFileSync(CARGO_TOML_PATH, raw, 'utf-8')
+}
+
+function syncTauriCapabilities(brand) {
+  if (!existsSync(CAPABILITIES_PATH)) return
+
+  const raw = readFileSync(CAPABILITIES_PATH, 'utf-8')
+  const json = JSON.parse(raw)
+
+  json.description = `Minimum required permissions for ${brand.name}`
+
+  writeFileSync(CAPABILITIES_PATH, `${JSON.stringify(json, null, 2)}\n`, 'utf-8')
+}
+
 function main() {
   try {
     const brand = readBrandSnapshot()
     syncPackageJson(brand)
     syncTauriConfig(brand)
+    syncCargoTomlMeta(brand)
+    syncTauriCapabilities(brand)
     generateTauriIcons()
 
     const assetResult = checkAssets()
-    console.log(
-      [
-        `[brand-sync] 已同步 package.json <- ${brand.name}/${brand.description}/${brand.author}`,
-        `[brand-sync] 已同步 src-tauri/tauri.conf.json <- identifier=${brand.id}, productName=${brand.name}, window.title=${brand.displayName}`,
-        ...assetResult.reports,
-      ].join('\n')
-    )
+    const logs = [
+      `[brand-sync] 已同步 package.json <- ${brand.name}/${brand.description}/${brand.author}`,
+      `[brand-sync] 已同步 src-tauri/tauri.conf.json <- identifier=${brand.id}, productName=${brand.name}, window.title=${brand.displayName}`,
+    ]
+    if (existsSync(CARGO_TOML_PATH)) {
+      logs.push(`[brand-sync] 已同步 src-tauri/Cargo.toml <- description=${brand.description}, authors=[${brand.author}]`)
+    }
+    if (existsSync(CAPABILITIES_PATH)) {
+      logs.push(`[brand-sync] 已同步 src-tauri/capabilities/default.json <- description for ${brand.name}`)
+    }
+    logs.push(...assetResult.reports)
+    console.log(logs.join('\n'))
 
     if (assetResult.hasMismatch) {
       process.exit(1)
