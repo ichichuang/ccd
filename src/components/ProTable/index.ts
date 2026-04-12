@@ -15,8 +15,11 @@ export type {
   FilterState,
   PaginationState,
   SelectionState,
-  ColumnVisibilityState,
+  ColumnSettingsState,
 } from './engine/types/tableState'
+
+/** @deprecated 使用 ColumnSettingsState */
+export type { ColumnSettingsState as ColumnVisibilityState } from './engine/types/tableState'
 export type {
   ProTableProps,
   PaginationConfig,

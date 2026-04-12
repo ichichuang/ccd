@@ -139,6 +139,10 @@ const zhCN = {
     search: '搜索...',
     refresh: '刷新',
     columnSettings: '列设置',
+    columnSettingsHint:
+      '拖拽左侧手柄调整顺序，开关控制列显隐。若已配置 stateKey，刷新后仍会保留列设置。',
+    columnSettingsDragHandle: '拖动以调整列顺序',
+    columnSettingsToggleAria: '「{title}」列显示开关',
     total: '共 {total} 条',
     requestFailed: '请求失败，请检查网络后重试',
     retry: '重试',

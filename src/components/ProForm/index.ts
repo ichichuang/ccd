@@ -13,6 +13,7 @@ export { useFormContext } from './engine/hooks/useFormContext'
 export type {
   FieldArrayItem,
   FieldArrayReturn,
+  FieldReaction,
   FieldSchema,
   FieldState,
   FormContext,
@@ -21,6 +22,8 @@ export type {
   FormState,
   ProFormExpose,
   ProFormProps,
+  ReactionAction,
+  ReactionContext,
   UseFormOptions,
   UseFormReturn,
   UseFieldReturn,

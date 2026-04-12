@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { DateFormatEnum } from '@/constants/dateFormats'
 import type { FieldComponentProps } from '../../engine/types'
 import { PRO_FORM_COMPONENT_DEFAULTS } from '../../engine/config'
 
@@ -35,7 +36,7 @@ const isDateInputValue = (value: SingleDateValue): value is FormattableDateInput
 const formatSingleDate = (value: SingleDateValue): string | null => {
   if (!hasDateValue(value) || !isDateInputValue(value) || !isInitialized.value) return null
 
-  const formatted = formatDateValue(value, 'YYYY-MM-DD')
+  const formatted = formatDateValue(value, DateFormatEnum.Date)
   return formatted.length > 0 ? formatted : null
 }
 

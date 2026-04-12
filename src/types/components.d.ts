@@ -50,6 +50,7 @@ declare module 'vue' {
     ProSwitch: typeof import('./../components/ProForm/renderers/components/ProSwitch.vue')['default']
     ProTable: typeof import('./../components/ProTable/ProTable.vue')['default']
     ProTableCell: typeof import('./../components/ProTable/components/ProTableCell.tsx')['default']
+    ProTableColumnSettings: typeof import('./../components/ProTable/components/ProTableColumnSettings.vue')['default']
     ProTableCrudFormModalBody: typeof import('./../components/ProTable/components/ProTableCrudFormModalBody.tsx')['default']
     ProTableCrudViewModalBody: typeof import('./../components/ProTable/components/ProTableCrudViewModalBody.tsx')['default']
     ProTablePagination: typeof import('./../components/ProTable/components/ProTablePagination.vue')['default']

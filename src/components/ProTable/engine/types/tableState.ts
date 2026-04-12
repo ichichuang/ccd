@@ -19,8 +19,10 @@ export interface SelectionState<T extends Record<string, unknown>> {
   selectedRowKeys: string[]
 }
 
-export interface ColumnVisibilityState {
-  hiddenColumns: Set<string>
+/** 列显隐 + 顺序（orderedKeys 为空表示沿用 columns 定义顺序） */
+export interface ColumnSettingsState {
+  orderedKeys: string[]
+  hiddenKeys: string[]
 }
 
 export interface FetchState {
@@ -36,6 +38,6 @@ export interface TableState<T extends Record<string, unknown>> {
   filter: FilterState
   pagination: PaginationState
   selection: SelectionState<T>
-  columnVisibility: ColumnVisibilityState
+  columnSettings: ColumnSettingsState
   fetch: FetchState
 }
