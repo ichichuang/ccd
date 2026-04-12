@@ -1,5 +1,5 @@
 import type { ComputedRef, ShallowRef, EffectScope } from 'vue'
-import type { TableState, SortState, FilterState } from '../types/tableState'
+import type { TableState, SortState, FilterState, ColumnSettingsState } from '../types/tableState'
 import type { ProTableColumn } from '../types/column'
 import type { ProTableLoadParams, RequestFn, RequestConfig } from '../types/props'
 import {
@@ -14,7 +14,12 @@ import { applySort, nextSortDirection } from '../engines/sorting'
 import { applyFilter } from '../engines/filtering'
 import { applyPagination } from '../engines/pagination'
 import { toggleRowSelection, toggleAllSelection, clearSelection } from '../engines/selection'
-import { setColumnVisibility, getVisibleColumns } from '../engines/columnVisibility'
+import {
+  buildVisibleColumns,
+  mergeColumnSettingsWithColumns,
+  setColumnVisibility,
+  normalizeColumnSettingsKeys,
+} from '../engines/columnVisibility'
 import { exportToCsv } from '../engines/export'
 import { objectGet } from '@/utils/lodashes'
 
@@ -42,6 +47,11 @@ export interface TableControllerOptions<T extends Record<string, unknown>> {
   onRequestError?: (error: Error) => void
   /** Checkbox 多选最大条数；不传不限制 */
   maxSelection?: number
+
+  /** 初始列顺序与显隐（如自 LocalStorage 恢复）；缺省由列定义推导 */
+  initialColumnSettings?: ColumnSettingsState
+  /** 列设置变化时回调（用于持久化） */
+  onColumnSettingsChange?: (state: ColumnSettingsState) => void
 }
 
 function getRowKey<T extends Record<string, unknown>>(row: T, keyField: string): string {
@@ -70,6 +80,7 @@ export class TableController<T extends Record<string, unknown>> {
   private _fetchVersion = 0
   private _abortController: AbortController | null = null
   private _maxSelection: number | undefined
+  private _onColumnSettingsChange?: (state: ColumnSettingsState) => void
 
   /** True when ProTable is in request mode (autonomous fetch). */
   get requestMode(): boolean {
@@ -95,8 +106,12 @@ export class TableController<T extends Record<string, unknown>> {
     }
     this._onRequestError = options.onRequestError
     this._maxSelection = options.maxSelection
+    this._onColumnSettingsChange = options.onColumnSettingsChange
 
-    const initialHidden = new Set<string>(options.columns.filter(c => c.hidden).map(c => c.id))
+    const initialColumnSettings = mergeColumnSettingsWithColumns(
+      options.columns,
+      options.initialColumnSettings ?? null
+    )
 
     this.state = shallowReactive<TableState<T>>({
       sort: SORT_DEFAULTS.initial,
@@ -107,7 +122,7 @@ export class TableController<T extends Record<string, unknown>> {
         total: 0,
       },
       selection: { selectedRows: [], selectedRowKeys: [] },
-      columnVisibility: { hiddenColumns: initialHidden },
+      columnSettings: initialColumnSettings,
       fetch: { ...FETCH_STATE_DEFAULTS },
     })
 
@@ -134,7 +149,7 @@ export class TableController<T extends Record<string, unknown>> {
       })
 
       this.visibleColumns = computed<ProTableColumn<T>[]>(() => {
-        return getVisibleColumns(this._columns, this.state.columnVisibility)
+        return buildVisibleColumns(this._columns, this.state.columnSettings)
       })
 
       const fetchTriggerSources = () => [
@@ -204,19 +219,16 @@ export class TableController<T extends Record<string, unknown>> {
    */
   setColumns(next: ProTableColumn<T>[]): void {
     this._columns = next
-    const newIds = new Set(next.map(c => c.id))
-    const merged = new Set<string>()
-    for (const id of this.state.columnVisibility.hiddenColumns) {
-      if (newIds.has(id)) {
-        merged.add(id)
-      }
-    }
-    for (const c of next) {
-      if (c.hidden) {
-        merged.add(c.id)
-      }
-    }
-    this.state.columnVisibility = { hiddenColumns: merged }
+    this.state.columnSettings = mergeColumnSettingsWithColumns(next, this.state.columnSettings)
+    this.notifyColumnSettingsChange()
+  }
+
+  private notifyColumnSettingsChange(): void {
+    const s = this.state.columnSettings
+    this._onColumnSettingsChange?.({
+      orderedKeys: [...s.orderedKeys],
+      hiddenKeys: [...s.hiddenKeys],
+    })
   }
 
   setTotal(total: number): void {
@@ -304,11 +316,20 @@ export class TableController<T extends Record<string, unknown>> {
   }
 
   toggleColumnVisibility(id: string, visible?: boolean): void {
-    this.state.columnVisibility = setColumnVisibility(this.state.columnVisibility, id, visible)
+    this.state.columnSettings = setColumnVisibility(this.state.columnSettings, id, visible)
+    this.notifyColumnSettingsChange()
   }
 
   isColumnVisible(id: string): boolean {
-    return !this.state.columnVisibility.hiddenColumns.has(id)
+    return !this.state.columnSettings.hiddenKeys.includes(id)
+  }
+
+  /**
+   * 更新列顺序与显隐（供后续列设置 UI / 拖拽使用）
+   */
+  updateColumnSettings(newOrder: string[], newHidden: string[]): void {
+    this.state.columnSettings = normalizeColumnSettingsKeys(this._columns, newOrder, newHidden)
+    this.notifyColumnSettingsChange()
   }
 
   // ── Request engine ──────────────────────────────────────────────────────────

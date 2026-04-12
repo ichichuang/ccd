@@ -236,11 +236,13 @@ export interface ProTableExposed {
   setPage: (page: number) => void
   setPageSize: (pageSize: number) => void
   toggleColumnVisibility: (columnId: string, visible?: boolean) => void
+  updateColumnSettings: (newOrder: string[], newHidden: string[]) => void
   getSelection: () => Record<string, unknown>[]
   getState: () => {
     pagination: { page: number; pageSize: number; total: number }
     sort: SortState
     filter: FilterState
+    columnSettings: { orderedKeys: string[]; hiddenKeys: string[] }
   }
   getFetchState: () => { loading: boolean; error: boolean; errorMessage: string; hasMore: boolean }
   exportData: (mode?: 'page' | 'selected', filename?: string) => void
