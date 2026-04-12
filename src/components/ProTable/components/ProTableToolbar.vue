@@ -1,11 +1,7 @@
 <script setup lang="ts">
-import type { VNode } from 'vue'
 import { TOOLBAR_DEFAULTS } from '../engine/config'
-
-interface ColumnMeta {
-  id: string
-  title: string | (() => VNode)
-}
+import type { ColumnSettingItem } from './ProTableColumnSettings.vue'
+import ProTableColumnSettings from './ProTableColumnSettings.vue'
 
 const props = withDefaults(
   defineProps<{
@@ -15,8 +11,9 @@ const props = withDefaults(
     /** 当前表格密度（与父级 v-model 同步） */
     density?: SizeMode
     showGlobalFilter?: boolean
-    columns: ColumnMeta[]
-    visibleColumnIds: Set<string>
+    /** 列设置面板：全量列元数据（顺序由 columnSettingsItems 表达） */
+    columnSettingsItems: ColumnSettingItem[]
+    columnHiddenKeys: string[]
     serverMode?: boolean
     isFullscreen?: boolean
     hasSelection?: boolean
@@ -44,14 +41,15 @@ function pickDensity(mode: SizeMode): void {
 const emit = defineEmits<{
   'update:globalFilter': [val: string]
   'update:density': [mode: SizeMode]
-  'toggle-column': [id: string]
+  'update-column-settings': [orderedIds: string[], hiddenIds: string[]]
   refresh: []
   'toggle-fullscreen': []
   export: [mode: 'page' | 'selected']
 }>()
 
 const filterVal = ref<string | undefined>('')
-const settingsPanel = ref()
+const settingsPanel = ref<{ toggle: (e: Event) => void } | null>(null)
+const columnSettingsRef = ref<InstanceType<typeof ProTableColumnSettings> | null>(null)
 const exportMenu = ref()
 const searchPlaceholder = computed((): string => ($t('proTable.search') as string) || '')
 
@@ -61,12 +59,8 @@ const debouncedEmitFilter = useDebounceFn((val: string) => {
 
 watch(filterVal, val => debouncedEmitFilter(val ?? ''))
 
-function isColVisible(id: string): boolean {
-  return props.visibleColumnIds.has(id)
-}
-
-function toggleCol(id: string): void {
-  emit('toggle-column', id)
+function onColumnSettingsPanelShow(): void {
+  columnSettingsRef.value?.syncFromParent()
 }
 
 const exportMenuItems = computed(() => {
@@ -175,20 +169,16 @@ const toolbarBtnClass =
         <Icons name="i-lucide-settings-2" />
       </Button>
 
-      <Popover ref="settingsPanel">
-        <div class="flex flex-col gap-sm min-w-[var(--spacing-5xl)]">
-          <div
-            v-for="col in columns"
-            :key="col.id"
-            class="row-between gap-md"
-          >
-            <span class="text-sm">{{ typeof col.title === 'string' ? col.title : col.id }}</span>
-            <ToggleSwitch
-              :model-value="isColVisible(col.id)"
-              @update:model-value="toggleCol(col.id)"
-            />
-          </div>
-        </div>
+      <Popover
+        ref="settingsPanel"
+        @show="onColumnSettingsPanelShow"
+      >
+        <ProTableColumnSettings
+          ref="columnSettingsRef"
+          :items="columnSettingsItems"
+          :hidden-keys="columnHiddenKeys"
+          @update="(order, hidden) => emit('update-column-settings', order, hidden)"
+        />
       </Popover>
     </div>
   </div>

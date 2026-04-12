@@ -23,6 +23,8 @@ import {
 import { formatRequestParams, formatResponseData, resolveApiUrl } from './engine/config/apiAdapter'
 import { getScopedContentSizeVars } from '@/utils/theme/sizeEngine'
 import { TableController } from './engine/core/TableController'
+import { resolveColumnIdOrder } from './engine/engines/columnVisibility'
+import { useProTableColumnSettingsStorage } from './engine/hooks/useProTableColumnSettingsStorage'
 
 const props = withDefaults(defineProps<ProTableProps<T>>(), {
   data: () => [] as T[],
@@ -160,6 +162,8 @@ const enginePaginationEnabled = computed<boolean>(() => {
   return !!props.pagination && !props.infiniteScroll && !props.virtualScroll
 })
 
+const columnSettingsPersistence = useProTableColumnSettingsStorage(() => props.stateKey)
+
 const ctrl = new TableController<T>({
   columns: props.columns,
   data: props.data,
@@ -172,6 +176,8 @@ const ctrl = new TableController<T>({
   requestConfig: props.requestConfig,
   onRequestError: err => emit('request-error', err),
   maxSelection: props.maxSelection,
+  initialColumnSettings: columnSettingsPersistence.getInitialColumnSettings(props.columns),
+  onColumnSettingsChange: columnSettingsPersistence.onColumnSettingsChange,
 })
 
 const toolbarServerMode = computed(
@@ -527,7 +533,22 @@ const scrollHeightValue = computed<string | undefined>(() => {
   return undefined
 })
 
-const visibleColumnIds = computed(() => new Set(ctrl.visibleColumns.value.map(c => c.id)))
+const toolbarColumnSettingsItems = computed(() => {
+  const ids = resolveColumnIdOrder(props.columns, ctrl.state.columnSettings.orderedKeys)
+  return ids.map(id => {
+    const col = props.columns.find(c => c.id === id)
+    let title: string = id
+    if (col) {
+      if (typeof col.title === 'string') {
+        title = col.title
+      } else if (typeof col.title === 'function') {
+        const rendered = col.title()
+        title = typeof rendered === 'string' ? rendered : id
+      }
+    }
+    return { id, title }
+  })
+})
 
 // ── Pseudo-fullscreen：fixed + z-overlay；全屏时 Teleport 到 body，避免 Layout 内 overflow-hidden 裁切盖不住 footer
 const isFullscreen = ref(false)
@@ -690,7 +711,14 @@ defineExpose({
     pagination: { ...ctrl.state.pagination },
     sort: { ...ctrl.state.sort },
     filter: { ...ctrl.state.filter },
+    columnSettings: {
+      orderedKeys: [...ctrl.state.columnSettings.orderedKeys],
+      hiddenKeys: [...ctrl.state.columnSettings.hiddenKeys],
+    },
   }),
+  /** 更新列顺序与显隐（与持久化联动，当 `stateKey` 存在时写入 LocalStorage） */
+  updateColumnSettings: (newOrder: string[], newHidden: string[]) =>
+    ctrl.updateColumnSettings(newOrder, newHidden),
   /** Read-only: current fetch state (only meaningful in request mode) */
   getFetchState: () => ({ ...ctrl.state.fetch }),
   /** Export visible data to CSV. */
@@ -750,14 +778,16 @@ defineExpose({
           :show-density-control="showDensityControl"
           :density="tableDensity"
           :show-global-filter="globalFilter"
-          :columns="columns"
-          :visible-column-ids="visibleColumnIds"
+          :column-settings-items="toolbarColumnSettingsItems"
+          :column-hidden-keys="ctrl.state.columnSettings.hiddenKeys"
           :server-mode="toolbarServerMode"
           :is-fullscreen="isFullscreen"
           :has-selection="hasSelection"
           @update:global-filter="handleGlobalFilterChange"
           @update:density="onTableDensityChange"
-          @toggle-column="ctrl.toggleColumnVisibility($event)"
+          @update-column-settings="
+            (orderedIds, hiddenIds) => ctrl.updateColumnSettings(orderedIds, hiddenIds)
+          "
           @refresh="ctrl.requestMode ? ctrl.requestReload() : emit('refresh')"
           @toggle-fullscreen="toggleFullscreen"
           @export="handleExport"

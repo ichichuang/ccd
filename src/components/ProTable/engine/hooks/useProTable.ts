@@ -1,15 +1,18 @@
 import type { ComputedRef, Ref } from 'vue'
 import { TableController } from '../core/TableController'
 import type { TableControllerOptions } from '../core/TableController'
-import type { TableState } from '../types/tableState'
+import type { ColumnSettingsState, TableState } from '../types/tableState'
 import type { ProTableColumn } from '../types/column'
 import type { ProTableLoadParams } from '../types/props'
+import { useProTableColumnSettingsStorage } from './useProTableColumnSettingsStorage'
 
 export interface UseProTableOptions<
   T extends Record<string, unknown>,
 > extends TableControllerOptions<T> {
   dataRef?: Ref<T[]>
   totalRef?: Ref<number>
+  /** 与 ProTable `stateKey` 一致，用于列顺序/显隐 LocalStorage 分桶 */
+  columnStateKey?: string
 }
 
 export interface UseProTableReturn<T extends Record<string, unknown>> {
@@ -29,21 +32,36 @@ export interface UseProTableReturn<T extends Record<string, unknown>> {
   setPageSize: (s: number) => void
   emitLoad: (params: ProTableLoadParams) => void
   destroy: () => void
+  updateColumnSettings: (newOrder: string[], newHidden: string[]) => void
 }
 
 export function useProTable<T extends Record<string, unknown>>(
   options: UseProTableOptions<T>
 ): UseProTableReturn<T> {
-  const ctrl = new TableController<T>(options)
+  const { dataRef, totalRef, columnStateKey, ...controllerOpts } = options
+  const persistence = useProTableColumnSettingsStorage(() => columnStateKey)
 
-  if (options.dataRef) {
-    ctrl.setData(options.dataRef.value)
-    watch(options.dataRef, data => ctrl.setData(data), { deep: false })
+  const mergedOnColumnSettingsChange = (next: ColumnSettingsState): void => {
+    persistence.onColumnSettingsChange(next)
+    controllerOpts.onColumnSettingsChange?.(next)
   }
 
-  if (options.totalRef) {
-    ctrl.setTotal(options.totalRef.value)
-    watch(options.totalRef, total => ctrl.setTotal(total))
+  const ctrl = new TableController<T>({
+    ...controllerOpts,
+    initialColumnSettings:
+      controllerOpts.initialColumnSettings ??
+      persistence.getInitialColumnSettings(controllerOpts.columns),
+    onColumnSettingsChange: mergedOnColumnSettingsChange,
+  })
+
+  if (dataRef) {
+    ctrl.setData(dataRef.value)
+    watch(dataRef, data => ctrl.setData(data), { deep: false })
+  }
+
+  if (totalRef) {
+    ctrl.setTotal(totalRef.value)
+    watch(totalRef, total => ctrl.setTotal(total))
   }
 
   onUnmounted(() => ctrl.destroy())
@@ -70,5 +88,7 @@ export function useProTable<T extends Record<string, unknown>>(
     setPageSize: (s: number) => ctrl.setPageSize(s),
     emitLoad,
     destroy: () => ctrl.destroy(),
+    updateColumnSettings: (newOrder: string[], newHidden: string[]) =>
+      ctrl.updateColumnSettings(newOrder, newHidden),
   }
 }
