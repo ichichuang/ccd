@@ -7,6 +7,7 @@ import { VisibilityEngine } from '../logic/VisibilityEngine'
 import { DisableEngine } from '../logic/DisableEngine'
 import { RequiredEngine } from '../logic/RequiredEngine'
 import { ComputedEngine } from '../logic/ComputedEngine'
+import { ReactionEngine } from '../logic/ReactionEngine'
 import { SchemaNormalizer } from '../schema/SchemaNormalizer'
 import { LifecycleManager } from './LifecycleManager'
 import { DraftStorage } from '../persistence/DraftStorage'
@@ -51,6 +52,7 @@ export class FormController<TValues extends ValuesRecord = ValuesRecord> {
   private readonly disableEngine: DisableEngine<TValues>
   private readonly requiredEngine: RequiredEngine<TValues>
   private readonly computedEngine: ComputedEngine<TValues>
+  private readonly reactionEngine: ReactionEngine<TValues>
   private readonly optionsRequestToken = new Map<string, number>()
   private readonly optionsDebounceTimers = new Map<string, number>()
   private nextOptionsRequestId = 0
@@ -86,6 +88,9 @@ export class FormController<TValues extends ValuesRecord = ValuesRecord> {
     this.disableEngine = new DisableEngine<TValues>()
     this.requiredEngine = new RequiredEngine<TValues>()
     this.computedEngine = new ComputedEngine<TValues>()
+    this.reactionEngine = new ReactionEngine<TValues>(this.store, (name, props) =>
+      this.setFieldProps(name, props)
+    )
     this.lifecycle = new LifecycleManager<TValues>(this as unknown as LifecycleController<TValues>)
 
     const flatFields: FieldSchema[] = []
@@ -214,6 +219,9 @@ export class FormController<TValues extends ValuesRecord = ValuesRecord> {
    * 从 recomputeFields() 提取，以支持重入保护 + 多 pass 排空。
    */
   private executeRecomputePass(orderedFields: string[]): void {
+    // 构建本次事务中参与重算的字段集合，用于 reaction watch 匹配
+    const changedFieldsSet = new Set(orderedFields)
+
     for (const fieldName of orderedFields) {
       const schema = this.findFieldSchema(fieldName)
       if (!schema) continue
@@ -262,6 +270,12 @@ export class FormController<TValues extends ValuesRecord = ValuesRecord> {
         disabled,
         required,
       })
+
+      // 3) 声明式联动引擎：在 visibleIf/disabledIf/requiredIf 之后、OptionsLoader 之前执行
+      if (schema.reactions && schema.reactions.length > 0) {
+        const reactionValues = this.getValues()
+        this.reactionEngine.evaluate(schema, reactionValues, fieldName, changedFieldsSet)
+      }
 
       // 有 deps 的 OptionsLoader：依赖链重算后按最新 form 上下文重新拉取（无 deps 的首次加载见 LifecycleManager）
       if (

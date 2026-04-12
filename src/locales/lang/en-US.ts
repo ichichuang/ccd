@@ -90,6 +90,7 @@ const enUS = {
             group: 'Layout, Grouping & Wizard',
             validation: 'Validation & Persistence',
             dag: 'Dynamic DAG',
+            reactions: 'Declarative Reactions',
             advanced: 'Array & Advanced',
             apiEvents: 'API & Event Observer',
             plugins: 'Plugins & Hooks',
@@ -277,6 +278,10 @@ const enUS = {
     search: 'Search...',
     refresh: 'Refresh',
     columnSettings: 'Column settings',
+    columnSettingsHint:
+      'Drag the handle to reorder columns. Toggle visibility. Settings persist when stateKey is configured.',
+    columnSettingsDragHandle: 'Drag to reorder column',
+    columnSettingsToggleAria: 'Toggle visibility for column "{title}"',
     total: 'Total {total} records',
     requestFailed: 'Request failed. Check your network and try again.',
     retry: 'Retry',

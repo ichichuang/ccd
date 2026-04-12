@@ -44,6 +44,42 @@ export type OptionsLoader<TValues extends Record<string, unknown> = Record<strin
 ) => Promise<SelectOption[]>
 
 /**
+ * 声明式跨字段联动引擎 (Reaction Engine) 类型
+ */
+
+/** Reaction 回调可访问的富上下文 */
+export interface ReactionContext<
+  TValues extends Record<string, unknown> = Record<string, unknown>,
+> {
+  /** 当前表单所有字段值的快照 */
+  form: TValues
+  /** 当前拥有 reactions 的字段名 */
+  field: string
+  /** 读取任意字段的 FieldState */
+  getFieldState: (name: string) => FieldState | undefined
+  /** 设置任意字段的值（在同一事务内，不会触发额外调度） */
+  setFieldValue: (name: string, value: unknown) => void
+  /** 设置任意字段的 props（浅层合并） */
+  setFieldProps: (name: string, props: Record<string, unknown>) => void
+}
+
+/** 内置原子动作枚举 */
+export type ReactionAction = 'clearValue' | 'hide' | 'show' | 'disable' | 'enable' | 'custom'
+
+/** 声明式联动规则 */
+export interface FieldReaction<TValues extends Record<string, unknown> = Record<string, unknown>> {
+  /** 监听的上游字段名（必须已声明在 deps 中） */
+  watch: string | string[]
+  /** 内置动作或 'custom' */
+  action: ReactionAction
+  /**
+   * 当 action 为 'custom' 时执行的自定义副作用。
+   * 也可与内置 action 组合：先执行内置动作，再执行 effect。
+   */
+  effect?: (ctx: ReactionContext<TValues>) => void | Promise<void>
+}
+
+/**
  * 表单 Schema 定义
  */
 export interface ValidationRule {
@@ -70,6 +106,12 @@ export interface FieldSchema<TValue = unknown> {
   requiredIf?: LogicFunction
   computed?: ComputedFunction<TValue>
   options?: SelectOption[] | OptionsLoader
+  /**
+   * 声明式跨字段联动规则。当 deps 中声明的上游字段值变化时，
+   * 引擎按数组顺序执行匹配的 reaction（在 recomputeFields 管线中，
+   * 于 visibleIf/disabledIf/requiredIf 之后、OptionsLoader 之前执行）。
+   */
+  reactions?: FieldReaction[]
   /**
    * 网格布局中占用的列数（12 栅格制），仅用于渲染层布局，不参与业务逻辑
    * @default 参考 PRO_FORM_DEFAULTS.gridSpan
@@ -312,13 +354,14 @@ export type TypedFieldSchema<
   K extends keyof TValues & string,
 > = Omit<
   FieldSchema<TValues[K]>,
-  'name' | 'computed' | 'visibleIf' | 'disabledIf' | 'requiredIf'
+  'name' | 'computed' | 'visibleIf' | 'disabledIf' | 'requiredIf' | 'reactions'
 > & {
   name: K
   computed?: ComputedFunction<TValues[K], TValues>
   visibleIf?: LogicFunction<TValues>
   disabledIf?: LogicFunction<TValues>
   requiredIf?: LogicFunction<TValues>
+  reactions?: FieldReaction<TValues>[]
 }
 
 export type TypedFormSchemaNode<TValues extends Record<string, unknown>> =

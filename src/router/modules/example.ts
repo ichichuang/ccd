@@ -322,13 +322,24 @@ const proFormRoute: RouteConfig = {
       },
     },
     {
+      path: '/example/primevue-collection/pro-form/reactions',
+      name: 'ExampleProFormReactions',
+      component: () =>
+        import('@/views/example/components/primevue-collection/pro-form/reactions/index.vue'),
+      meta: {
+        titleKey: 'router.example.components.primevueCollection.proForm.reactions',
+        rank: 5,
+        icon: 'i-lucide-link',
+      },
+    },
+    {
       path: '/example/primevue-collection/pro-form/advanced',
       name: 'ExampleProFormAdvanced',
       component: () =>
         import('@/views/example/components/primevue-collection/pro-form/advanced/index.vue'),
       meta: {
         titleKey: 'router.example.components.primevueCollection.proForm.advanced',
-        rank: 5,
+        rank: 6,
         icon: 'i-lucide-layers',
       },
     },
@@ -339,7 +350,7 @@ const proFormRoute: RouteConfig = {
         import('@/views/example/components/primevue-collection/pro-form/plugins/index.vue'),
       meta: {
         titleKey: 'router.example.components.primevueCollection.proForm.plugins',
-        rank: 6,
+        rank: 7,
         icon: 'i-lucide-plug',
       },
     },
@@ -350,7 +361,7 @@ const proFormRoute: RouteConfig = {
         import('@/views/example/components/primevue-collection/pro-form/api-events/index.vue'),
       meta: {
         titleKey: 'router.example.components.primevueCollection.proForm.apiEvents',
-        rank: 7,
+        rank: 8,
         icon: 'i-lucide-webhook',
       },
     },

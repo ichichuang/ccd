@@ -89,6 +89,7 @@ const zhCN = {
             group: '布局、分组与向导',
             validation: '校验管线与持久化',
             dag: '动态联动 (DAG)',
+            reactions: '声明式联动 (Reactions)',
             advanced: '动态数组与高级扩展',
             apiEvents: 'API 与事件观测',
             plugins: '插件与底层 Hooks',
@@ -276,6 +277,10 @@ const zhCN = {
     search: '搜索...',
     refresh: '刷新',
     columnSettings: '列设置',
+    columnSettingsHint:
+      '拖拽左侧手柄调整顺序，开关控制列显隐。若已配置 stateKey，刷新后仍会保留列设置。',
+    columnSettingsDragHandle: '拖动以调整列顺序',
+    columnSettingsToggleAria: '「{title}」列显示开关',
     total: '共 {total} 条',
     requestFailed: '请求失败，请检查网络后重试',
     retry: '重试',
