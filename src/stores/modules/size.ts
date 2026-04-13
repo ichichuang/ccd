@@ -23,6 +23,10 @@ export const useSizeStore = defineStore('size', {
   },
 
   actions: {
+    resetState() {
+      this.setSize(DEFAULT_SIZE_NAME as SizeMode)
+    },
+
     setSize(name: SizeMode) {
       let preset = SIZE_PRESETS.find(p => p.name === name)
 

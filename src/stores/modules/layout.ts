@@ -327,6 +327,9 @@ export const useLayoutStore = defineStore('layout', {
         userAdjusted: false,
       })
     },
+    resetState() {
+      this.resetSetting()
+    },
     /**
      * @deprecated 请优先使用 beginGlobalLoading / endGlobalLoading（并发安全）
      * 仅用于兼容旧调用：true => 置 count>=1；false => 清零 count

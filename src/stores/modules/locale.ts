@@ -40,6 +40,13 @@ export const useLocaleStore = defineStore('locale', {
   },
 
   actions: {
+    resetState() {
+      this.loading = false
+      this.followTimezone = true
+      this.locale = DEFAULT_LOCALE
+      this.initLocale()
+    },
+
     // 切换语言
     async switchLocale(newLocale: SupportedLocale) {
       if (this.locale === newLocale) {
