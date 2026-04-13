@@ -1,13 +1,16 @@
 {
-  // === 文件嵌套 (保持原样，非常好) ===
+  // === 文件嵌套：分层锚点（包与脚本 / 发版 / 格式化 / TS 工程 / 治理元数据 / 构建） ===
   "explorer.fileNesting.enabled": true,
   "explorer.fileNesting.expand": false,
   "explorer.fileNesting.patterns": {
-    "package.json": "pnpm-lock.yaml,.npmrc,.nvmrc,pnpm-workspace.yaml,.editorconfig,.gitattributes,.gitignore,.prettierrc.json,commitlint.config.ts,README.md,LICENSE,CHANGELOG.md",
+    "package.json": "pnpm-lock.yaml,.npmrc,.nvmrc,pnpm-workspace.yaml,.editorconfig,.gitattributes,.gitignore,.prettierrc.json,commitlint.config.ts,README.md,LICENSE,CHANGELOG.md,lint-staged.config.mjs,stylelint.config.mjs",
     "vite.config.ts": "vite.config.*.ts,vitest.config.ts,index.html",
-    "tsconfig.json": "tsconfig.*.json",
+    "tsconfig.json": "tsconfig.*.json,tsconfig.tsbuildinfo",
     "eslint.config.ts": ".eslintignore,eslint.config.js,eslint.config.mjs,.eslintrc-auto-import.json",
     "uno.config.ts": "uno.config.*.ts,uno.theme.ts,uno.shortcuts.ts",
+    "release-please-config.json": ".release-please-manifest.json",
+    ".prettierrc.json": ".prettierignore",
+    "CLAUDE.md": "repair_list.txt,skills-lock.json",
     ".env": ".env.*"
   },
 
