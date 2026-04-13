@@ -148,7 +148,7 @@
     "globals": "^17.1.0",
     "husky": "^9.1.7",
     "jsdom": "^28.1.0",
-    "lint-staged": "^15.2.11",
+    "lint-staged": "^16.4.0",
     "magic-string": "^0.30.21",
     "npm-run-all2": "^7.0.2",
     "picocolors": "^1.1.1",
