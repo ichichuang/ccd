@@ -14,10 +14,20 @@ import { useUserStoreWithOut } from '@/stores/modules/user'
 import { fadeOutNativePreloader } from '@/hooks/layout/useLoading'
 import { preload } from '@/utils/theme/sizeEngine'
 
+const VITE_PRELOAD_RELOAD_KEY = 'vite-preload-error-reloaded'
+let isUnauthorizedHandling = false
+
 // Handle Vite module preload failures gracefully (e.g., stale cache, transient network)
 window.addEventListener('vite:preloadError', event => {
   event.preventDefault()
-  window.location.reload()
+  const reloadedFlag = sessionStorage.getItem(VITE_PRELOAD_RELOAD_KEY)
+  if (!reloadedFlag) {
+    sessionStorage.setItem(VITE_PRELOAD_RELOAD_KEY, 'true')
+    window.location.reload()
+    return
+  }
+  console.error('Vite chunk preload failed permanently.')
+  sessionStorage.removeItem(VITE_PRELOAD_RELOAD_KEY)
 })
 
 async function bootstrap() {
@@ -31,16 +41,25 @@ async function bootstrap() {
   // 依赖注入：HTTP 层通过 TokenProvider 取 token / 401 回调，不直接依赖 Store
   setTokenProvider(() => useUserStoreWithOut().getToken)
   setOnUnauthorized(async () => {
-    await useUserStoreWithOut().logout()
-    // Guard against infinite reload loops: if reloaded within 5s, redirect to login instead
-    const RELOAD_KEY = '__auth_reload_ts'
-    const lastReload = Number(sessionStorage.getItem(RELOAD_KEY) || 0)
-    if (Date.now() - lastReload < 5000) {
-      window.location.hash = '#/login'
+    if (isUnauthorizedHandling) {
       return
     }
-    sessionStorage.setItem(RELOAD_KEY, String(Date.now()))
-    window.location.reload()
+    isUnauthorizedHandling = true
+    const userStore = useUserStoreWithOut()
+    try {
+      await userStore.logout()
+      const currentPath = router.currentRoute.value.fullPath
+      if (currentPath !== '/login') {
+        await router.replace({
+          path: '/login',
+          query: { redirect: currentPath },
+        })
+      }
+    } finally {
+      setTimeout(() => {
+        isUnauthorizedHandling = false
+      }, 1000)
+    }
   })
 
   // 挂载应用（loading 关闭由 router.afterEach 负责）

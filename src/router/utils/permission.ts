@@ -94,7 +94,10 @@ export const usePermissionGuard = ({
           return
         } catch (error: unknown) {
           console.error('动态路由初始化失败', error)
-          next('/login')
+          next({
+            path: '/login',
+            query: to.fullPath !== '/login' ? { redirect: to.fullPath } : {},
+          })
           return
         }
       }

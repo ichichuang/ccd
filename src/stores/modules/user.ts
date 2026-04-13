@@ -1,6 +1,9 @@
 import store from '@/stores'
 import { AUTH_ENABLED } from '@/constants/router'
 import { useLayoutStore } from '@/stores/modules/layout'
+import { useThemeStore } from '@/stores/modules/theme'
+import { useSizeStore } from '@/stores/modules/size'
+import { useLocaleStore } from '@/stores/modules/locale'
 import { usePermissionStore } from '@/stores/modules/permission'
 import { createPiniaEncryptedSerializer } from '@/utils/safeStorage/piniaSerializer'
 import { encryptAndCompressSync } from '@/utils/safeStorage/safeStorage'
@@ -111,8 +114,6 @@ export const useUserStore = defineStore('user', {
         return
       }
       this.clearUserInfo()
-      useLayoutStore(store).resetSetting()
-      usePermissionStore(store).reset()
       const basePrefix = `${import.meta.env.VITE_PINIA_PERSIST_KEY_PREFIX}-`
       const prefixKeys: string[] = [basePrefix, 'schemaform:']
       const exactKeys: string[] = ['theme-mode']
@@ -137,6 +138,18 @@ export const useUserStore = defineStore('user', {
       for (const key of keysToRemove) {
         localStorage.removeItem(key)
       }
+
+      const themeStore = useThemeStore(store)
+      const sizeStore = useSizeStore(store)
+      const localeStore = useLocaleStore(store)
+      const layoutStore = useLayoutStore(store)
+      const permissionStore = usePermissionStore(store)
+
+      themeStore.resetState()
+      sizeStore.resetState()
+      localeStore.resetState()
+      layoutStore.resetState()
+      permissionStore.reset()
     },
   },
 

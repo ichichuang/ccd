@@ -39,6 +39,15 @@ export const useThemeStore = defineStore('theme', {
   },
 
   actions: {
+    resetState() {
+      this.mode = 'auto'
+      this.themeName = DEFAULT_THEME_NAME
+      this.accentColor = null
+      this.transitionMode = 'curtain'
+      this.transitionDuration = DEFAULT_TRANSITION_DURATION
+      this.refreshTheme()
+    },
+
     setMode(mode: ThemeMode) {
       this.mode = mode
       this.refreshTheme()

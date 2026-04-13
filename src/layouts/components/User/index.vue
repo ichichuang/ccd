@@ -36,9 +36,11 @@ const togglePanel = (event: MouseEvent) => {
 const onLogout = async () => {
   await userStore.logout()
   popoverRef.value?.hide()
-  // Nuclear Reset: use replace + physical reload to purge in-memory SPA state
-  void router.replace('/login').then(() => {
-    window.location.reload()
+  // Smooth reset via Vue Router
+  const currentPath = router.currentRoute.value.fullPath
+  await router.replace({
+    path: '/login',
+    query: currentPath !== '/login' ? { redirect: currentPath } : {},
   })
 }
 </script>
