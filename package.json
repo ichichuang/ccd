@@ -87,7 +87,7 @@
     "dayjs": "^1.11.13",
     "echarts": "^6.0.0",
     "gsap": "^3.14.2",
-    "lodash-es": "^4.17.21",
+    "lodash-es": "^4.18.1",
     "lz-string": "^1.5.0",
     "mitt": "^3.0.1",
     "nprogress": "^0.2.0",
