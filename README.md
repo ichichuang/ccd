@@ -130,6 +130,118 @@ pnpm build
 
 ---
 
+## 新项目初始化配置教程
+
+如果你是基于当前桌面端分支启动一个新产品项目，建议按下面顺序初始化，不要分散修改多个文件。
+
+### 第一步：修改品牌源
+
+编辑 `src/constants/brand.ts`，这是品牌相关配置的唯一源头。
+
+你通常会改这些字段：
+
+- `id`
+  - 例如：`com.yourcompany.desktopapp`
+  - 用于 Tauri bundle identifier
+- `name`
+  - 例如：`your-desktop-app`
+  - 用于 `package.json.name` 与 `tauri.conf.json.productName`
+- `displayName`
+  - 例如：`Your Desktop App`
+  - 用于窗口标题和界面展示名称
+- `description`
+  - 用于应用描述、包描述
+- `author`
+  - 用于作者信息
+
+修改后执行：
+
+```bash
+pnpm sync:brand
+```
+
+这会自动同步：
+
+- `package.json`
+- `src-tauri/tauri.conf.json`
+- `src-tauri/Cargo.toml`
+
+### 第二步：修改版本号源
+
+编辑 `package.json` 的 `version`。
+
+例如：
+
+```json
+{
+  "version": "1.0.0"
+}
+```
+
+修改后执行：
+
+```bash
+pnpm sync:version
+```
+
+这会自动同步：
+
+- `src-tauri/tauri.conf.json`
+- `src-tauri/Cargo.toml`
+
+### 第三步：修改开发端口源
+
+编辑 `.env` 或 `.env.development` 中的 `VITE_PORT`。
+
+例如：
+
+```bash
+VITE_PORT=9001
+```
+
+修改后执行：
+
+```bash
+pnpm sync:desktop-config
+```
+
+这会自动同步：
+
+- `src-tauri/tauri.conf.json` 的 `build.devUrl`
+- `.vscode/launch.json` 的调试地址
+
+### 第四步：执行一次完整对齐
+
+初始化一个新桌面端项目后，建议统一执行一遍：
+
+```bash
+pnpm sync:brand
+pnpm sync:version
+pnpm sync:desktop-config
+pnpm ai:sync
+pnpm ai:doctor
+pnpm codex:preflight
+```
+
+### 第五步：开始开发前做一次校验
+
+```bash
+pnpm check
+pnpm test:run
+pnpm build:ci
+```
+
+### 初始化阶段的禁止事项
+
+- 不要手改 `src-tauri/tauri.conf.json` 的 `version`
+- 不要手改 `src-tauri/tauri.conf.json` 的 `build.devUrl`
+- 不要手改 `.vscode/launch.json` 的调试端口
+- 不要手改 `package.json` 的 `name` / `description` / `author` 作为品牌初始化入口
+
+正确做法是始终回到单一源修改。
+
+---
+
 ## 配置单一源
 
 桌面端分支已经收敛为“改一处，同步其余配置”的模式。
