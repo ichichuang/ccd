@@ -1,0 +1,91 @@
+name: Sync Desktop Branch From Main
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - package.json
+      - scripts/sync-main-to-desktop.mjs
+      - src/locales/lang/**
+      - src/router/**
+      - .github/workflows/sync-desktop-from-main.yml
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: sync-desktop-from-main
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    env:
+      NODE_OPTIONS: '--max-old-space-size=4096'
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v3
+        with:
+          version: 10.28.2
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22.16.0
+          cache: pnpm
+
+      - name: Detect package version bump
+        id: version
+        shell: bash
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+            echo "Manual dispatch: force sync."
+            exit 0
+          fi
+
+          BEFORE="${{ github.event.before }}"
+          if [ -z "$BEFORE" ] || [ "$BEFORE" = "0000000000000000000000000000000000000000" ]; then
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+            echo "No previous commit SHA found: force sync."
+            exit 0
+          fi
+
+          OLD_VERSION=$(git show "$BEFORE:package.json" | node -e "let s='';process.stdin.on('data',d=>s+=d);process.stdin.on('end',()=>{const j=JSON.parse(s);process.stdout.write(String(j.version||''));});")
+          NEW_VERSION=$(node -e "const fs=require('fs');const j=JSON.parse(fs.readFileSync('package.json','utf8'));process.stdout.write(String(j.version||''));")
+
+          echo "old=$OLD_VERSION new=$NEW_VERSION"
+          if [ "$OLD_VERSION" != "$NEW_VERSION" ]; then
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Install dependencies
+        if: steps.version.outputs.changed == 'true'
+        run: pnpm install --frozen-lockfile
+
+      - name: Configure git identity
+        if: steps.version.outputs.changed == 'true'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+      - name: Sync main to desktop branch
+        if: steps.version.outputs.changed == 'true'
+        env:
+          MAIN_BRANCH: main
+          DESKTOP_BRANCH: feat/tauri-integration
+        run: node scripts/sync-main-to-desktop.mjs
+
+      - name: Skip sync (version unchanged)
+        if: steps.version.outputs.changed != 'true'
+        run: echo "package.json version unchanged, skip desktop sync."
+
