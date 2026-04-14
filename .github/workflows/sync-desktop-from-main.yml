@@ -85,7 +85,32 @@ jobs:
           DESKTOP_BRANCH: feat/tauri-integration
         run: node scripts/sync-main-to-desktop.mjs
 
+      - name: Create desktop release tag
+        if: steps.version.outputs.changed == 'true'
+        env:
+          DESKTOP_BRANCH: feat/tauri-integration
+        shell: bash
+        run: |
+          VERSION=$(node -e "const fs=require('fs');const j=JSON.parse(fs.readFileSync('package.json','utf8'));process.stdout.write(String(j.version||''));")
+          if [ -z "$VERSION" ]; then
+            echo "::error::package.json version is empty."
+            exit 1
+          fi
+
+          TAG="desktop-v${VERSION}"
+          echo "Prepare desktop tag: $TAG"
+
+          if git ls-remote --exit-code --tags origin "refs/tags/${TAG}" >/dev/null 2>&1; then
+            echo "Tag ${TAG} already exists. Skip tagging."
+            exit 0
+          fi
+
+          git fetch origin "${DESKTOP_BRANCH}" --tags
+          git checkout -B "${DESKTOP_BRANCH}" "origin/${DESKTOP_BRANCH}"
+          git tag -a "${TAG}" -m "release(desktop): ${TAG}"
+          git push origin "refs/tags/${TAG}"
+          echo "Desktop release tag pushed: ${TAG}"
+
       - name: Skip sync (version unchanged)
         if: steps.version.outputs.changed != 'true'
         run: echo "package.json version unchanged, skip desktop sync."
-
