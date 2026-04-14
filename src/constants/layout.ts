@@ -15,7 +15,7 @@ export const DEFAULT_LAYOUT_SETTING: LayoutSetting = {
   sidebarFixed: true,
   headerFixed: true,
   enableTransition: true,
-  transitionName: 'fade-slide',
+  transitionName: 'cinematic-fade',
   enableKeepAlive: true,
 }
 

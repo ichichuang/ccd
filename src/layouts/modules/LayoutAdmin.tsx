@@ -210,18 +210,16 @@ export default defineComponent({
     const bodyTransitionDuration = 'var(--transition-md)'
 
     const renderContent = () => (
-      <main class="flex-1 layout-full flex flex-col min-w-0 min-h-0 overflow-hidden transition-all duration-md ease-spring bg-transparent">
-        <div class="glass-base bg-sidebar/36! dark:bg-sidebar/20!">
+      <main class="flex-1 layout-full col-between min-w-0 min-h-0 overflow-hidden">
+        <div class="bg-sidebar/36! dark:bg-sidebar/40!">
           <AdminBreadcrumbBar show={showBreadcrumbEffective.value} />
-        </div>
-        <div class="relative overflow-hidden glass-base bg-sidebar/36! dark:bg-sidebar/20!">
           <AdminTabsBar show={showTabsEffective.value} />
         </div>
         <section class={['col-fill', 'min-w-0', 'relative', 'overflow-hidden']}>
           {/* Layer 3: 业务内容（透明以承接光晕与点阵） */}
-          <AppContainer class="relative z-content min-w-0 overflow-hidden bg-transparent" />
+          <AppContainer class="relative z-content min-w-0 overflow-hidden transition-all duration-md ease-spring " />
         </section>
-        <div class="glass-base bg-sidebar/36! dark:bg-sidebar/20! ">
+        <div class="bg-sidebar/36! dark:bg-sidebar/40!">
           <AdminFooterBar show={showFooterEffective.value} />
         </div>
       </main>
@@ -235,8 +233,8 @@ export default defineComponent({
 
       // vertical/mix：sidebar + content
       return (
-        <div class="flex-1 min-h-0 row-start overflow-hidden transition-all duration-md ease-out">
-          <div class="shrink-0 self-stretch overflow-hidden transition-all duration-md ease-out glass-base bg-sidebar/36! dark:bg-sidebar/20! ">
+        <div class="flex-1 min-h-0 row-start overflow-hidden">
+          <div class="shrink-0 self-stretch overflow-hidden bg-sidebar/36! dark:bg-sidebar/40!">
             {showSidebarEffective.value && (
               <AdminSidebar
                 mode={effectiveMode.value}
@@ -285,7 +283,7 @@ export default defineComponent({
       return (
         <div class="layout-screen flex flex-col relative overflow-hidden">
           {showHeader.value && (
-            <div class="shrink-0 row-between h-headerHeight px-sm md:px-md border-b-solid border-sidebar border-1px glass-base bg-sidebar/36! dark:bg-sidebar/20!">
+            <div class="shrink-0 row-between h-headerHeight px-sm md:px-md border-b-solid border-sidebar border-px bg-sidebar/36! dark:bg-sidebar/40!">
               <AdminHeader
                 mode={stableKey.value}
                 showHeader={showHeader.value}

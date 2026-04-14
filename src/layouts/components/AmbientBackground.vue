@@ -1,9 +1,9 @@
 <script setup lang="ts">
 /**
- * 全局环境光：Z0 底色 + 径向晕影 + mesh + Primary 柔光 + 四象限光球 + 点阵。
- * 浅色：mesh 补左下薄弱区、角球略大略实、边缘晕影略收；中央柔光略降以突出四角。深色仍克制。
+ * 全局环境光：Z0 底色 + 主光 + 状态辅光 + 网格。
+ * 目标：保持 primary 主导，同时引入多状态色氛围层，提升深色模式色彩冲击力。
+ * 优化：冷暖分区，边缘溢光，极致雾化，中心留白。
  */
-import { useDeviceStore } from '@/stores/modules/device'
 
 defineOptions({ name: 'AmbientBackground' })
 
@@ -16,10 +16,6 @@ const props = withDefaults(defineProps<AmbientBackgroundProps>(), {
 })
 
 const layoutStore = useLayoutStore()
-const deviceStore = useDeviceStore()
-
-/** 仅非 Mobile 挂载高成本 blur 光球（设备类型判定，避免横屏误伤与 PC 窄窗误卸） */
-const allowHeavyOrbs = computed(() => deviceStore.type !== 'Mobile')
 
 const showAmbientOrbs = computed<boolean>(() => !layoutStore.isLoading)
 
@@ -36,20 +32,15 @@ const layer12OuterClass = computed(() => {
   return base
 })
 
-const dotLayerClass = computed(() => {
+const gridLayerClass = computed(() => {
   const base: string[] = [
     'transition-all duration-md',
-    'absolute inset-0 z-content overflow-hidden opacity-26 dark:opacity-48',
+    'absolute inset-0 z-base overflow-hidden opacity-70 dark:opacity-86',
   ]
   if (props.variant === 'admin') {
     base.push(adminClipClass)
   }
-  base.push(
-    'bg-[radial-gradient(circle_at_center,rgba(var(--foreground),0.05)_1px,transparent_1px)] [background-size:28px_28px] bg-repeat',
-    '[mask-image:radial-gradient(ellipse_at_center,black_50%,transparent_100%)]',
-    '[-webkit-mask-image:radial-gradient(ellipse_at_center,black_50%,transparent_100%)]',
-    '[mask-repeat:no-repeat] [-webkit-mask-repeat:no-repeat]'
-  )
+  base.push('ambient-primary-grid')
   return base
 })
 </script>
@@ -62,44 +53,59 @@ const dotLayerClass = computed(() => {
     <div class="absolute inset-0 z-base pointer-events-none overflow-hidden">
       <div class="absolute inset-0 bg-background transition-colors duration-md" />
     </div>
+
     <div :class="layer12OuterClass">
       <div class="absolute inset-0 z-base overflow-hidden pointer-events-none">
         <div
-          class="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(var(--primary),0.22)_0%,rgba(var(--primary),0.11)_40%,transparent_76%)] transition-opacity duration-md dark:bg-[radial-gradient(ellipse_at_center,rgba(var(--primary),0.07)_0%,rgba(var(--primary),0.035)_36%,transparent_74%)]"
+          class="absolute inset-0 bg-[radial-gradient(ellipse_at_58%_42%,rgb(var(--primary)/0.44)_0%,rgb(var(--primary)/0.2)_40%,transparent_78%)] transition-opacity duration-md dark:bg-[radial-gradient(ellipse_at_58%_42%,rgb(var(--primary)/0.52)_0%,rgb(var(--primary)/0.26)_42%,transparent_80%)]"
         />
         <div
-          class="absolute inset-0 bg-gradient-to-br from-primary/24 via-primary/10 to-info/28 opacity-58 transition-opacity duration-md dark:from-primary/10 dark:via-transparent dark:to-info/16 dark:opacity-40"
+          class="absolute inset-0 bg-[linear-gradient(135deg,rgb(var(--primary)/0.18)_0%,rgb(var(--info)/0.08)_42%,rgb(var(--help)/0.12)_100%)] opacity-58 transition-opacity duration-md dark:bg-[linear-gradient(135deg,rgb(var(--primary)/0.24)_0%,rgb(var(--info)/0.14)_42%,rgb(var(--help)/0.18)_100%)] dark:opacity-72"
         />
         <div
-          class="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_0%,transparent_46%,rgba(var(--foreground),0.032)_100%)] transition-opacity duration-md dark:bg-[radial-gradient(ellipse_at_center,transparent_0%,transparent_44%,rgba(var(--foreground),0.07)_100%)]"
+          class="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_0%,transparent_52%,rgb(var(--foreground)/0.026)_100%)] transition-opacity duration-md dark:bg-[radial-gradient(ellipse_at_center,transparent_0%,transparent_48%,rgb(var(--foreground)/0.06)_100%)]"
         />
       </div>
-      <div
-        v-if="allowHeavyOrbs"
-        class="absolute left-1/2 top-[16%] z-base h-[min(44vw,460px)] w-[min(72vw,720px)] -translate-x-1/2 pointer-events-none"
-      >
+
+      <div class="absolute inset-0 z-content overflow-hidden pointer-events-none">
         <div
-          class="ambient-orb-pulse h-full w-full transform-gpu rounded-full blur-[62px] bg-primary/34 opacity-72 transition-opacity duration-md ease-out will-change-transform dark:blur-[96px] dark:bg-primary/16 dark:opacity-60"
+          class="absolute -top-[10%] -right-[5%] h-[45vw] w-[45vw] rounded-full blur-[110px] bg-info/20 opacity-60 transition-opacity duration-md dark:bg-info/40 dark:opacity-85"
+        />
+        <div
+          class="absolute bottom-[5%] right-[10%] h-[35vw] w-[35vw] rounded-full blur-[90px] bg-help/20 opacity-50 transition-opacity duration-md dark:bg-help/35 dark:opacity-80"
+        />
+        <div
+          class="absolute -top-[5%] -left-[10%] h-[40vw] w-[40vw] rounded-full blur-[100px] bg-warn/15 opacity-50 transition-opacity duration-md dark:bg-warn/30 dark:opacity-75"
+        />
+        <div
+          class="absolute bottom-[15%] -left-[5%] h-[25vw] w-[25vw] rounded-full blur-[80px] bg-danger/15 opacity-50 transition-opacity duration-md dark:bg-danger/25 dark:opacity-70"
+        />
+        <div
+          class="absolute -bottom-[15%] left-[25%] h-[30vw] w-[30vw] rounded-full blur-[90px] bg-success/15 opacity-40 transition-opacity duration-md dark:bg-success/25 dark:opacity-60"
         />
       </div>
-      <div
-        v-if="allowHeavyOrbs"
-        class="absolute inset-0 z-base overflow-hidden pointer-events-none"
-      >
-        <div
-          class="ambient-orb-drift absolute -top-[10%] -left-[10%] h-[58vw] w-[58vw] transform-gpu rounded-full will-change-transform blur-[72px] bg-primary/56 saturate-[1.14] transition-colors transition-opacity duration-lg ease-out opacity-84 dark:blur-[100px] dark:bg-primary/42 dark:opacity-92 dark:saturate-100"
-        />
-        <div
-          class="ambient-orb-pulse absolute bottom-[2%] left-[12%] h-[50vw] w-[50vw] transform-gpu rounded-full will-change-transform blur-[66px] saturate-[1.1] bg-success/36 transition-colors transition-opacity duration-lg ease-out opacity-62 dark:bottom-[5%] dark:left-[20%] dark:h-[45vw] dark:w-[45vw] dark:blur-[90px] dark:bg-success/28 dark:opacity-92 dark:saturate-100"
-        />
-        <div
-          class="ambient-orb-pulse absolute top-[12%] -right-[12%] h-[48vw] w-[48vw] transform-gpu rounded-full will-change-transform blur-[60px] saturate-[1.1] bg-danger/36 transition-colors transition-opacity duration-lg ease-out opacity-62 dark:top-[15%] dark:-right-[10%] dark:h-[40vw] dark:w-[40vw] dark:blur-[80px] dark:bg-danger/28 dark:opacity-92 dark:saturate-100"
-        />
-        <div
-          class="ambient-orb-drift-alt absolute -bottom-[15%] -right-[5%] h-[52vw] w-[52vw] transform-gpu rounded-full will-change-transform blur-[72px] bg-info/34 saturate-[1.1] transition-colors transition-opacity duration-lg ease-out opacity-56 dark:blur-[100px] dark:bg-info/34 dark:opacity-92 dark:saturate-100"
-        />
-      </div>
-      <div :class="dotLayerClass" />
+
+      <div :class="gridLayerClass" />
     </div>
   </div>
 </template>
+
+<style scoped lang="scss">
+.ambient-primary-grid {
+  background:
+    linear-gradient(rgb(var(--primary) / 22%) 1px, transparent 1px),
+    linear-gradient(90deg, rgb(var(--primary) / 16%) 1px, transparent 1px);
+  background-size: var(--spacing-xl) var(--spacing-xl);
+  mask-image: radial-gradient(ellipse at center, black 78%, transparent 100%);
+  mask-repeat: no-repeat;
+}
+
+:global(.dark) {
+  .ambient-primary-grid {
+    background:
+      linear-gradient(rgb(var(--primary) / 28%) 1px, transparent 1px),
+      linear-gradient(90deg, rgb(var(--primary) / 22%) 1px, transparent 1px);
+    background-size: var(--spacing-xl) var(--spacing-xl);
+  }
+}
+</style>

@@ -8,12 +8,7 @@ import { formatSerialId } from '@/utils/business/idGenerator'
 import ProForm from '@/components/ProForm/index.vue'
 import Button from 'primevue/button'
 
-defineOptions({ name: 'DashboardGoldenShowcase' })
-
-// ──────────────────────────────────────────────────────────────────────────────
-// Page lifecycle
-// ──────────────────────────────────────────────────────────────────────────────
-const pageReady = ref<boolean>(true)
+defineOptions({ name: 'Dashboard' })
 
 // ──────────────────────────────────────────────────────────────────────────────
 // KPI data (static mock)
@@ -546,404 +541,390 @@ function handleQuickActionOpen(): void {
 </script>
 
 <template>
-  <AnimateWrapper
-    :show="pageReady"
-    enter="fadeInUp"
-    leave="fadeOut"
+  <div
+    data-archetype="A3-stats-grid"
+    class="col-stretch gap-md min-h-0 min-w-0"
   >
-    <div
-      data-archetype="A3-stats-grid"
-      class="col-stretch gap-md min-h-0 min-w-0"
-    >
-      <div class="layout-container col-stretch gap-md min-w-0">
-        <!-- ═══════════════════════════════════════════════════════════════════
+    <div class="layout-container col-stretch gap-md min-w-0">
+      <!-- ═══════════════════════════════════════════════════════════════════
              Section 1: Header — glass-panel + glass-icon-box + surface-info
              ═══════════════════════════════════════════════════════════════════ -->
-        <header class="shrink-0 glass-panel col-stretch gap-md min-w-0">
-          <div class="row-between gap-md min-w-0">
-            <div class="row-start gap-sm min-w-0 flex-wrap">
-              <div class="glass-icon-box shrink-0">
-                <Icons
-                  name="i-lucide-radar"
-                  size="xl"
-                  class="text-accent!"
-                />
-              </div>
-              <div class="col-stretch gap-xs min-w-0">
-                <div class="row-start gap-xs min-w-0 flex-wrap">
-                  <span class="text-lg font-bold text-foreground text-no-wrap">
-                    Tactical Command Console
-                  </span>
-                  <span class="surface-info rounded-md px-sm py-xs text-xs font-semibold uppercase">
-                    Live Mock
-                  </span>
-                </div>
-                <span class="text-sm text-muted-foreground text-ellipsis-1">
-                  语义快捷类全量演示：图表、告警列表、节点拓扑、系统健康、活动时间线与交互弹窗。
+      <header class="shrink-0 glass-panel col-stretch gap-md min-w-0">
+        <div class="row-between gap-md min-w-0">
+          <div class="row-start gap-sm min-w-0 flex-wrap">
+            <div class="glass-icon-box shrink-0">
+              <Icons
+                name="i-lucide-radar"
+                size="xl"
+                class="text-accent!"
+              />
+            </div>
+            <div class="col-stretch gap-xs min-w-0">
+              <div class="row-start gap-xs min-w-0 flex-wrap">
+                <span class="text-lg font-bold text-foreground text-no-wrap">
+                  Tactical Command Console
+                </span>
+                <span class="surface-info rounded-md px-sm py-xs text-xs font-semibold uppercase">
+                  Live Mock
                 </span>
               </div>
+              <span class="text-sm text-muted-foreground text-ellipsis-1">
+                语义快捷类全量演示：图表、告警列表、节点拓扑、系统健康、活动时间线与交互弹窗。
+              </span>
             </div>
-
-            <Button
-              v-auth="['example:architecture:write']"
-              label="Quick Action"
-              severity="primary"
-              size="small"
-              class="shrink-0 interaction-shrink"
-              @click="handleQuickActionOpen"
-            />
           </div>
 
-          <!-- KPI Grid — material-elevated + surface-* + glass-icon-box -->
-          <div class="grid grid-cols-12 gap-md min-w-0">
-            <div
-              v-for="(kpi, idx) in kpiCards"
-              :key="idx"
-              class="col-span-12 md:col-span-6 xl:col-span-3 min-w-0 interactive-card motion-lift"
-              :class="kpi.surface"
-            >
-              <div class="row-start gap-sm min-w-0">
-                <div class="glass-icon-box shrink-0">
-                  <Icons
-                    :name="kpi.icon"
-                    size="xl"
-                    :class="kpi.iconColor"
-                  />
+          <Button
+            v-auth="['example:architecture:write']"
+            label="Quick Action"
+            severity="primary"
+            size="small"
+            class="shrink-0 interaction-shrink"
+            @click="handleQuickActionOpen"
+          />
+        </div>
+
+        <!-- KPI Grid — material-elevated + surface-* + glass-icon-box -->
+        <div class="grid grid-cols-12 gap-md min-w-0">
+          <div
+            v-for="(kpi, idx) in kpiCards"
+            :key="idx"
+            class="col-span-12 md:col-span-6 xl:col-span-3 min-w-0 interactive-card motion-lift"
+            :class="kpi.surface"
+          >
+            <div class="row-start gap-sm min-w-0">
+              <div class="glass-icon-box shrink-0">
+                <Icons
+                  :name="kpi.icon"
+                  size="xl"
+                  :class="kpi.iconColor"
+                />
+              </div>
+              <div class="col-stretch gap-xs min-w-0 flex-1">
+                <span class="text-xs text-muted-foreground text-no-wrap">{{ kpi.label }}</span>
+                <div class="row-start gap-xs min-w-0">
+                  <span class="text-2xl font-bold text-foreground leading-none">
+                    {{ kpi.value }}
+                  </span>
+                  <span
+                    class="text-xs font-semibold"
+                    :class="kpi.trendUp ? 'text-success' : 'text-danger'"
+                  >
+                    {{ kpi.trend }}
+                  </span>
                 </div>
-                <div class="col-stretch gap-xs min-w-0 flex-1">
-                  <span class="text-xs text-muted-foreground text-no-wrap">{{ kpi.label }}</span>
-                  <div class="row-start gap-xs min-w-0">
-                    <span class="text-2xl font-bold text-foreground leading-none">
-                      {{ kpi.value }}
-                    </span>
-                    <span
-                      class="text-xs font-semibold"
-                      :class="kpi.trendUp ? 'text-success' : 'text-danger'"
-                    >
-                      {{ kpi.trend }}
-                    </span>
-                  </div>
-                  <span class="text-xs text-muted-foreground">{{ kpi.unit }}</span>
-                </div>
+                <span class="text-xs text-muted-foreground">{{ kpi.unit }}</span>
               </div>
             </div>
           </div>
-        </header>
+        </div>
+      </header>
 
-        <!-- ═══════════════════════════════════════════════════════════════════
+      <!-- ═══════════════════════════════════════════════════════════════════
              Section 2: Charts — material-elevated + col-fill + surface badges
              ═══════════════════════════════════════════════════════════════════ -->
-        <section class="grid grid-cols-12 gap-md min-w-0">
-          <!-- Throughput & Latency (8 cols on xl) -->
+      <section class="grid grid-cols-12 gap-md min-w-0">
+        <!-- Throughput & Latency (8 cols on xl) -->
+        <div
+          class="col-span-12 xl:col-span-8 material-elevated col-stretch gap-sm min-h-[300px] !overflow-visible"
+        >
+          <div class="row-between gap-sm min-w-0 shrink-0">
+            <div class="row-start gap-xs min-w-0">
+              <Icons
+                name="i-lucide-chart-line"
+                size="sm"
+                class="text-primary"
+              />
+              <span class="text-sm font-semibold text-foreground text-no-wrap">
+                Throughput & Latency
+              </span>
+            </div>
+            <span class="surface-info rounded-md px-sm py-xs text-xs font-semibold uppercase">
+              Hourly
+            </span>
+          </div>
+          <div class="col-fill min-w-0 !overflow-visible">
+            <UseEcharts
+              :option="chartsThroughputLatencyOption"
+              :auto-resize="true"
+            />
+          </div>
+        </div>
+
+        <!-- Right side: Alarm Distribution + Node Distribution pie -->
+        <div class="col-span-12 xl:col-span-4 col-stretch gap-md min-w-0">
+          <!-- Alarm Distribution -->
           <div
-            class="col-span-12 xl:col-span-8 material-elevated col-stretch gap-sm min-h-[300px] !overflow-visible"
+            class="material-elevated col-stretch gap-sm min-w-0 flex-1 min-h-[200px] !overflow-visible"
           >
             <div class="row-between gap-sm min-w-0 shrink-0">
               <div class="row-start gap-xs min-w-0">
                 <Icons
-                  name="i-lucide-chart-line"
+                  name="i-lucide-chart-bar"
                   size="sm"
-                  class="text-primary"
+                  class="text-accent!"
                 />
                 <span class="text-sm font-semibold text-foreground text-no-wrap">
-                  Throughput & Latency
+                  Alarm Distribution
                 </span>
               </div>
-              <span class="surface-info rounded-md px-sm py-xs text-xs font-semibold uppercase">
-                Hourly
+              <span class="surface-warn rounded-md px-sm py-xs text-xs font-semibold uppercase">
+                Buckets
               </span>
             </div>
             <div class="col-fill min-w-0 !overflow-visible">
               <UseEcharts
-                :option="chartsThroughputLatencyOption"
+                :option="chartsAlarmDistributionOption"
                 :auto-resize="true"
               />
             </div>
           </div>
 
-          <!-- Right side: Alarm Distribution + Node Distribution pie -->
-          <div class="col-span-12 xl:col-span-4 col-stretch gap-md min-w-0">
-            <!-- Alarm Distribution -->
-            <div
-              class="material-elevated col-stretch gap-sm min-w-0 flex-1 min-h-[200px] !overflow-visible"
-            >
-              <div class="row-between gap-sm min-w-0 shrink-0">
-                <div class="row-start gap-xs min-w-0">
-                  <Icons
-                    name="i-lucide-chart-bar"
-                    size="sm"
-                    class="text-accent!"
-                  />
-                  <span class="text-sm font-semibold text-foreground text-no-wrap">
-                    Alarm Distribution
-                  </span>
-                </div>
-                <span class="surface-warn rounded-md px-sm py-xs text-xs font-semibold uppercase">
-                  Buckets
+          <!-- Node Distribution Pie -->
+          <div class="glass-card col-stretch gap-sm min-w-0 flex-1 min-h-[200px] !overflow-visible">
+            <div class="row-between gap-sm min-w-0 shrink-0">
+              <div class="row-start gap-xs min-w-0">
+                <Icons
+                  name="i-lucide-pie-chart"
+                  size="sm"
+                  class="text-success"
+                />
+                <span class="text-sm font-semibold text-foreground text-no-wrap">
+                  Node Distribution
                 </span>
               </div>
-              <div class="col-fill min-w-0 !overflow-visible">
-                <UseEcharts
-                  :option="chartsAlarmDistributionOption"
-                  :auto-resize="true"
-                />
-              </div>
+              <span class="surface-success rounded-md px-sm py-xs text-xs font-semibold uppercase">
+                Live
+              </span>
             </div>
-
-            <!-- Node Distribution Pie -->
-            <div
-              class="glass-card col-stretch gap-sm min-w-0 flex-1 min-h-[200px] !overflow-visible"
-            >
-              <div class="row-between gap-sm min-w-0 shrink-0">
-                <div class="row-start gap-xs min-w-0">
-                  <Icons
-                    name="i-lucide-pie-chart"
-                    size="sm"
-                    class="text-success"
-                  />
-                  <span class="text-sm font-semibold text-foreground text-no-wrap">
-                    Node Distribution
-                  </span>
-                </div>
-                <span
-                  class="surface-success rounded-md px-sm py-xs text-xs font-semibold uppercase"
-                >
-                  Live
-                </span>
-              </div>
-              <div class="col-fill min-w-0 !overflow-visible">
-                <UseEcharts
-                  :option="chartsNodeDistributionOption"
-                  :auto-resize="true"
-                />
-              </div>
+            <div class="col-fill min-w-0 !overflow-visible">
+              <UseEcharts
+                :option="chartsNodeDistributionOption"
+                :auto-resize="true"
+              />
             </div>
           </div>
-        </section>
+        </div>
+      </section>
 
-        <!-- ═══════════════════════════════════════════════════════════════════
+      <!-- ═══════════════════════════════════════════════════════════════════
              Section 3: Node Topology + System Health
              interactive-card + motion-lift + glass-card + progress bars
              ═══════════════════════════════════════════════════════════════════ -->
-        <section class="grid grid-cols-12 gap-md min-w-0">
-          <!-- Node Topology Cards -->
-          <div class="col-span-12 lg:col-span-8 col-stretch gap-md min-w-0">
-            <div class="glass-panel col-stretch gap-md min-w-0">
-              <div class="row-between gap-sm min-w-0 shrink-0">
-                <div class="row-start gap-xs min-w-0">
-                  <Icons
-                    name="i-lucide-network"
-                    size="sm"
-                    class="text-primary"
-                  />
-                  <span class="text-sm font-semibold text-foreground text-no-wrap">
-                    Node Topology
-                  </span>
-                </div>
-                <span
-                  class="surface-primary rounded-md px-sm py-xs text-xs font-semibold uppercase"
-                >
-                  {{ nodeTopology.reduce((s, n) => s + n.count, 0) }} Total
+      <section class="grid grid-cols-12 gap-md min-w-0">
+        <!-- Node Topology Cards -->
+        <div class="col-span-12 lg:col-span-8 col-stretch gap-md min-w-0">
+          <div class="glass-panel col-stretch gap-md min-w-0">
+            <div class="row-between gap-sm min-w-0 shrink-0">
+              <div class="row-start gap-xs min-w-0">
+                <Icons
+                  name="i-lucide-network"
+                  size="sm"
+                  class="text-primary"
+                />
+                <span class="text-sm font-semibold text-foreground text-no-wrap">
+                  Node Topology
                 </span>
               </div>
-              <div class="grid grid-cols-12 gap-md min-w-0">
-                <div
-                  v-for="(node, idx) in nodeTopology"
-                  :key="idx"
-                  class="col-span-12 sm:col-span-6 xl:col-span-3 interactive-card motion-lift min-w-0"
-                >
-                  <div class="col-center gap-sm min-w-0">
-                    <div class="glass-icon-box">
-                      <Icons
-                        :name="node.icon"
-                        size="lg"
-                        :class="node.color"
-                      />
-                    </div>
-                    <span class="text-sm font-semibold text-foreground text-no-wrap">
-                      {{ node.name }}
-                    </span>
-                    <span class="text-2xl font-bold text-foreground leading-none">
-                      {{ node.count }}
-                    </span>
-                    <span
-                      class="rounded-md px-sm py-xs text-xs font-semibold uppercase"
-                      :class="node.status === 'healthy' ? 'surface-success' : 'surface-warn'"
-                    >
-                      {{ node.status }}
-                    </span>
-                  </div>
-                </div>
-              </div>
+              <span class="surface-primary rounded-md px-sm py-xs text-xs font-semibold uppercase">
+                {{ nodeTopology.reduce((s, n) => s + n.count, 0) }} Total
+              </span>
             </div>
-          </div>
-
-          <!-- System Health + Activity Timeline -->
-          <div class="col-span-12 lg:col-span-4 col-stretch gap-md min-w-0">
-            <!-- System Health -->
-            <div class="glass-card col-stretch gap-md min-w-0">
-              <div class="row-between gap-sm min-w-0 shrink-0">
-                <div class="row-start gap-xs min-w-0">
-                  <Icons
-                    name="i-lucide-heart-pulse"
-                    size="sm"
-                    class="text-danger"
-                  />
-                  <span class="text-sm font-semibold text-foreground text-no-wrap">
-                    System Health
-                  </span>
-                </div>
-                <span class="surface-danger rounded-md px-sm py-xs text-xs font-semibold uppercase">
-                  Real-time
-                </span>
-              </div>
-              <div class="col-stretch gap-sm min-w-0">
-                <div
-                  v-for="(metric, idx) in systemHealth"
-                  :key="idx"
-                  class="col-stretch gap-xs min-w-0"
-                >
-                  <div class="row-between min-w-0">
-                    <span class="text-xs text-muted-foreground">{{ metric.label }}</span>
-                    <span class="text-xs font-semibold text-foreground">{{ metric.value }}%</span>
-                  </div>
-                  <div class="h-1.5 rounded-full bg-muted overflow-hidden">
-                    <div
-                      class="h-full rounded-full transition-all duration-lg"
-                      :class="metric.color"
-                      :style="{ width: `${metric.value}%` }"
-                    />
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <!-- Activity Timeline -->
-            <div class="glass-card col-stretch gap-md min-w-0 flex-1">
-              <div class="row-between gap-sm min-w-0 shrink-0">
-                <div class="row-start gap-xs min-w-0">
-                  <Icons
-                    name="i-lucide-clock"
-                    size="sm"
-                    class="text-info"
-                  />
-                  <span class="text-sm font-semibold text-foreground text-no-wrap">Activity</span>
-                </div>
-                <span class="surface-info rounded-md px-sm py-xs text-xs font-semibold uppercase">
-                  Latest
-                </span>
-              </div>
-              <CScrollbar class="col-fill min-w-0">
-                <div class="col-stretch gap-xs min-w-0">
-                  <div
-                    v-for="(item, idx) in activityTimeline"
-                    :key="idx"
-                    class="interactive-item row-start gap-sm min-w-0"
-                  >
+            <div class="grid grid-cols-12 gap-md min-w-0">
+              <div
+                v-for="(node, idx) in nodeTopology"
+                :key="idx"
+                class="col-span-12 sm:col-span-6 xl:col-span-3 interactive-card motion-lift min-w-0"
+              >
+                <div class="col-center gap-sm min-w-0">
+                  <div class="glass-icon-box">
                     <Icons
-                      :name="item.icon"
-                      size="sm"
-                      :class="
-                        item.level === 'critical'
-                          ? 'text-danger'
-                          : item.level === 'success'
-                            ? 'text-success'
-                            : 'text-info'
-                      "
+                      :name="node.icon"
+                      size="lg"
+                      :class="node.color"
                     />
-                    <div class="col-stretch gap-xs min-w-0 flex-1">
-                      <span class="text-xs text-foreground text-ellipsis-1">{{ item.event }}</span>
-                      <span class="text-xs text-muted-foreground">{{ item.time }}</span>
-                    </div>
                   </div>
+                  <span class="text-sm font-semibold text-foreground text-no-wrap">
+                    {{ node.name }}
+                  </span>
+                  <span class="text-2xl font-bold text-foreground leading-none">
+                    {{ node.count }}
+                  </span>
+                  <span
+                    class="rounded-md px-sm py-xs text-xs font-semibold uppercase"
+                    :class="node.status === 'healthy' ? 'surface-success' : 'surface-warn'"
+                  >
+                    {{ node.status }}
+                  </span>
                 </div>
-              </CScrollbar>
+              </div>
             </div>
           </div>
-        </section>
+        </div>
 
-        <!-- ═══════════════════════════════════════════════════════════════════
+        <!-- System Health + Activity Timeline -->
+        <div class="col-span-12 lg:col-span-4 col-stretch gap-md min-w-0">
+          <!-- System Health -->
+          <div class="glass-card col-stretch gap-md min-w-0">
+            <div class="row-between gap-sm min-w-0 shrink-0">
+              <div class="row-start gap-xs min-w-0">
+                <Icons
+                  name="i-lucide-heart-pulse"
+                  size="sm"
+                  class="text-danger"
+                />
+                <span class="text-sm font-semibold text-foreground text-no-wrap">
+                  System Health
+                </span>
+              </div>
+              <span class="surface-danger rounded-md px-sm py-xs text-xs font-semibold uppercase">
+                Real-time
+              </span>
+            </div>
+            <div class="col-stretch gap-sm min-w-0">
+              <div
+                v-for="(metric, idx) in systemHealth"
+                :key="idx"
+                class="col-stretch gap-xs min-w-0"
+              >
+                <div class="row-between min-w-0">
+                  <span class="text-xs text-muted-foreground">{{ metric.label }}</span>
+                  <span class="text-xs font-semibold text-foreground">{{ metric.value }}%</span>
+                </div>
+                <div class="h-1.5 rounded-full bg-muted overflow-hidden">
+                  <div
+                    class="h-full rounded-full transition-all duration-lg"
+                    :class="metric.color"
+                    :style="{ width: `${metric.value}%` }"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Activity Timeline -->
+          <div class="glass-card col-stretch gap-md min-w-0 flex-1">
+            <div class="row-between gap-sm min-w-0 shrink-0">
+              <div class="row-start gap-xs min-w-0">
+                <Icons
+                  name="i-lucide-clock"
+                  size="sm"
+                  class="text-info"
+                />
+                <span class="text-sm font-semibold text-foreground text-no-wrap">Activity</span>
+              </div>
+              <span class="surface-info rounded-md px-sm py-xs text-xs font-semibold uppercase">
+                Latest
+              </span>
+            </div>
+            <CScrollbar class="col-fill min-w-0">
+              <div class="col-stretch gap-xs min-w-0">
+                <div
+                  v-for="(item, idx) in activityTimeline"
+                  :key="idx"
+                  class="interactive-item row-start gap-sm min-w-0"
+                >
+                  <Icons
+                    :name="item.icon"
+                    size="sm"
+                    :class="
+                      item.level === 'critical'
+                        ? 'text-danger'
+                        : item.level === 'success'
+                          ? 'text-success'
+                          : 'text-info'
+                    "
+                  />
+                  <div class="col-stretch gap-xs min-w-0 flex-1">
+                    <span class="text-xs text-foreground text-ellipsis-1">{{ item.event }}</span>
+                    <span class="text-xs text-muted-foreground">{{ item.time }}</span>
+                  </div>
+                </div>
+              </div>
+            </CScrollbar>
+          </div>
+        </div>
+      </section>
+
+      <!-- ═══════════════════════════════════════════════════════════════════
              Section 4: Alerts Table — FULL WIDTH (独占一行)
              material-solid + CScrollbar + ProTable
              ═══════════════════════════════════════════════════════════════════ -->
-        <section class="material-solid col-stretch p-md gap-md min-w-0">
-          <div class="row-between gap-md min-w-0 shrink-0">
-            <div class="row-start gap-sm min-w-0">
-              <div class="glass-icon-box shrink-0">
-                <Icons
-                  name="i-lucide-bell-ring"
-                  size="sm"
-                  class="text-warn"
-                />
-              </div>
-              <div class="col-stretch gap-xs min-w-0">
-                <span class="text-sm font-semibold text-foreground text-no-wrap">
-                  Recent Alerts
-                </span>
-                <span class="text-xs text-muted-foreground">实时告警事件流，点击行查看详情</span>
-              </div>
+      <section class="material-solid col-stretch p-md gap-md min-w-0">
+        <div class="row-between gap-md min-w-0 shrink-0">
+          <div class="row-start gap-sm min-w-0">
+            <div class="glass-icon-box shrink-0">
+              <Icons
+                name="i-lucide-bell-ring"
+                size="sm"
+                class="text-warn"
+              />
             </div>
-            <span class="surface-warn rounded-md px-sm py-xs text-xs font-semibold uppercase">
-              {{ mockRows.length }} Events
-            </span>
+            <div class="col-stretch gap-xs min-w-0">
+              <span class="text-sm font-semibold text-foreground text-no-wrap">Recent Alerts</span>
+              <span class="text-xs text-muted-foreground">实时告警事件流，点击行查看详情</span>
+            </div>
           </div>
+          <span class="surface-warn rounded-md px-sm py-xs text-xs font-semibold uppercase">
+            {{ mockRows.length }} Events
+          </span>
+        </div>
 
-          <div class="min-w-0">
-            <ProTable
-              :columns="alertColumns"
-              :data="mockRows"
-              row-key="id"
-              height-mode="auto"
-              :pagination="false"
-              :show-toolbar="false"
-              :loading="false"
-            />
-          </div>
-        </section>
+        <div class="min-w-0">
+          <ProTable
+            :columns="alertColumns"
+            :data="mockRows"
+            row-key="id"
+            height-mode="auto"
+            :pagination="false"
+            :show-toolbar="false"
+            :loading="false"
+          />
+        </div>
+      </section>
 
-        <!-- ═══════════════════════════════════════════════════════════════════
+      <!-- ═══════════════════════════════════════════════════════════════════
              Section 5: Empty State Demo — glass-panel + EmptyState
              ═══════════════════════════════════════════════════════════════════ -->
-        <section class="glass-panel col-stretch gap-md min-w-0">
-          <div class="row-between gap-md min-w-0 shrink-0">
-            <div class="row-start gap-sm min-w-0">
-              <Icons
-                name="i-lucide-box"
-                size="sm"
-                class="text-accent!"
-              />
-              <span class="text-sm font-semibold text-foreground">演示区</span>
-            </div>
-
-            <div class="row-start gap-xs flex-wrap min-w-0">
-              <Button
-                size="small"
-                class="interaction-shrink"
-                :severity="activeEmptyMode === 'alerts' ? 'primary' : 'secondary'"
-                outlined
-                label="Alerts"
-                @click="activeEmptyMode = 'alerts'"
-              />
-              <Button
-                size="small"
-                class="interaction-shrink"
-                :severity="activeEmptyMode === 'nodes' ? 'primary' : 'secondary'"
-                outlined
-                label="Nodes"
-                @click="activeEmptyMode = 'nodes'"
-              />
-            </div>
+      <section class="glass-panel col-stretch gap-md min-w-0">
+        <div class="row-between gap-md min-w-0 shrink-0">
+          <div class="row-start gap-sm min-w-0">
+            <Icons
+              name="i-lucide-box"
+              size="sm"
+              class="text-accent!"
+            />
+            <span class="text-sm font-semibold text-foreground">演示区</span>
           </div>
 
-          <EmptyState
-            :icon="emptyStateConfig.icon"
-            :title="emptyStateConfig.title"
-            :description="emptyStateConfig.description"
-          />
-        </section>
-      </div>
+          <div class="row-start gap-xs flex-wrap min-w-0">
+            <Button
+              size="small"
+              class="interaction-shrink"
+              :severity="activeEmptyMode === 'alerts' ? 'primary' : 'secondary'"
+              outlined
+              label="Alerts"
+              @click="activeEmptyMode = 'alerts'"
+            />
+            <Button
+              size="small"
+              class="interaction-shrink"
+              :severity="activeEmptyMode === 'nodes' ? 'primary' : 'secondary'"
+              outlined
+              label="Nodes"
+              @click="activeEmptyMode = 'nodes'"
+            />
+          </div>
+        </div>
+
+        <EmptyState
+          :icon="emptyStateConfig.icon"
+          :title="emptyStateConfig.title"
+          :description="emptyStateConfig.description"
+        />
+      </section>
     </div>
-  </AnimateWrapper>
+  </div>
 </template>
 
 <style lang="scss" scoped></style>

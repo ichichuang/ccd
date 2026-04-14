@@ -1,4 +1,25 @@
 import 'vue-router'
+import type { AnimateName } from '@/components/AnimateWrapper/utils/types'
+
+export type CssTime = `${number}ms` | `${number}s`
+export type PhaseValue<T> = T | { enter?: T; leave?: T }
+
+export interface RouteTransition {
+  /** 原生具名过渡 (如 cinematic-fade / fade-slide) */
+  name?: string
+  /** animate.css 进场动画类名 (可省略 animate__ 前缀) */
+  enterClass?: AnimateName | string
+  /** animate.css 出场动画类名 (可省略 animate__ 前缀) */
+  leaveClass?: AnimateName | string
+  /** 过渡时长 (支持全局或分阶段) */
+  duration?: PhaseValue<CssTime>
+  /** 过渡延迟 (支持全局或分阶段) */
+  delay?: PhaseValue<CssTime>
+  /** Vue Transition 初始渲染动画 */
+  appear?: boolean
+  /** Vue Transition 模式 */
+  mode?: 'default' | 'out-in' | 'in-out'
+}
 
 /** 应用路由元信息基础接口（严格类型策略） */
 export interface AppRouteMeta {
@@ -59,16 +80,7 @@ declare module 'vue-router' {
      */
     reuseWindow?: boolean
     /** 页面加载动画配置 */
-    transition?: {
-      /** 当前路由动画效果 */
-      name?: string
-      /** 进场动画 */
-      enterTransition?: string
-      /** 离场动画 */
-      leaveTransition?: string
-      /** 动画时长 (e.g. '0.5s' or '500ms') */
-      duration?: string
-    }
+    transition?: RouteTransition
   }
 }
 
