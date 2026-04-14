@@ -6,8 +6,6 @@ import { goToRoute } from '@/router/utils/helper'
 
 defineOptions({ name: 'ThemeSystemPage' })
 
-const pageReady = ref<boolean>(true)
-
 const themeStore = useThemeStore()
 const { isDark } = useThemeSwitch()
 
@@ -275,11 +273,7 @@ function quadUsageFor(family: QuadFamily): readonly string[] {
 <template>
   <!-- Toast：AppPrimeVueGlobals 挂载多组 Toast；复制反馈须带 group（见 copyClassName） -->
   <div data-archetype="A1-toolbar-content">
-    <AnimateWrapper
-      :show="pageReady"
-      enter="fadeInUp"
-      leave="fadeOut"
-    >
+    <AnimateWrapper enter="fadeInUp">
       <div class="col-stretch gap-md min-h-0 min-w-0">
         <div class="layout-narrow col-stretch gap-md min-w-0">
           <!-- Page header — glass-panel + glass-icon-box（与 Dashboard 同节奏） -->

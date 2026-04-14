@@ -1,5 +1,6 @@
 // 导入功能样式（全局样式统一在入口注册，避免散落在 composable 中被摇树遗漏）
 import '@/assets/styles/reset.scss'
+import '@/assets/styles/ambient-orb-animations.scss'
 import 'animate.css'
 import 'uno.css'
 import 'nprogress/nprogress.css'
@@ -15,6 +16,16 @@ import { preload } from '@/utils/theme/sizeEngine'
 
 const VITE_PRELOAD_RELOAD_KEY = 'vite-preload-error-reloaded'
 let isUnauthorizedHandling = false
+/**
+ * Wait two paints to ensure mounted DOM + CSS var updates
+ * are fully committed before visual handoff.
+ */
+const nextFrame = () =>
+  new Promise<void>(resolve => {
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => resolve())
+    })
+  })
 
 // Handle Vite module preload failures gracefully (e.g., stale cache, transient network)
 window.addEventListener('vite:preloadError', event => {
@@ -64,7 +75,9 @@ async function bootstrap() {
   // 挂载应用（loading 关闭由 router.afterEach 负责）
   app.mount('#app')
   // Single-Owner Handoff: 首跳路由就绪后兜底移除原生 preloader（内部门闩保证只执行一次）
+  // Double rAF ensures theme/size CSS vars are applied and first paint is stable.
   await router.isReady()
+  await nextFrame()
   fadeOutNativePreloader()
 }
 

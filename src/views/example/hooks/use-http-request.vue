@@ -83,8 +83,6 @@ const runError = async (): Promise<void> => {
     // error is exposed by errorReq.error
   }
 }
-
-const pageReady = ref<boolean>(true)
 </script>
 
 <template>
@@ -92,162 +90,148 @@ const pageReady = ref<boolean>(true)
     class="col-stretch"
     data-archetype="A1-toolbar-content"
   >
-    <AnimateWrapper
-      :show="pageReady"
-      enter="fadeInUp"
-      leave="fadeOut"
-    >
-      <div class="col-stretch gap-md min-h-0 min-w-0">
-        <div class="layout-narrow col-stretch gap-md min-w-0">
-          <header class="shrink-0 glass-panel col-stretch gap-md min-w-0">
-            <div class="row-between gap-md min-w-0">
-              <div class="row-start gap-sm min-w-0 flex-wrap">
-                <div class="glass-icon-box shrink-0">
-                  <Icons
-                    name="i-lucide-globe"
-                    size="xl"
-                    class="text-primary"
-                  />
-                </div>
-                <div class="col-stretch gap-xs min-w-0">
-                  <div class="row-start gap-xs min-w-0 flex-wrap">
-                    <span class="text-lg font-bold text-foreground text-no-wrap">
-                      useHttpRequest
-                    </span>
-                    <span
-                      class="surface-success rounded-md px-sm py-xs text-xs font-semibold uppercase"
-                    >
-                      HOOK
-                    </span>
-                  </div>
-                  <span class="text-sm text-muted-foreground text-ellipsis-1">
-                    全部请求使用绝对 URL（https），并禁用 globalLoading，避免触发布局级重挂载循环。
+    <div class="col-stretch gap-md min-h-0 min-w-0">
+      <div class="layout-narrow col-stretch gap-md min-w-0">
+        <header class="shrink-0 glass-panel col-stretch gap-md min-w-0">
+          <div class="row-between gap-md min-w-0">
+            <div class="row-start gap-sm min-w-0 flex-wrap">
+              <div class="glass-icon-box shrink-0">
+                <Icons
+                  name="i-lucide-globe"
+                  size="xl"
+                  class="text-primary"
+                />
+              </div>
+              <div class="col-stretch gap-xs min-w-0">
+                <div class="row-start gap-xs min-w-0 flex-wrap">
+                  <span class="text-lg font-bold text-foreground text-no-wrap">useHttpRequest</span>
+                  <span
+                    class="surface-success rounded-md px-sm py-xs text-xs font-semibold uppercase"
+                  >
+                    HOOK
                   </span>
                 </div>
-              </div>
-              <div class="row-start flex-wrap gap-sm min-w-0">
-                <Tag
-                  value="manual: immediate=false"
-                  severity="secondary"
-                />
-                <Tag
-                  value="immediate card: immediate=true"
-                  severity="secondary"
-                />
-                <Tag
-                  value="globalLoading=false"
-                  severity="info"
-                />
+                <span class="text-sm text-muted-foreground text-ellipsis-1">
+                  全部请求使用绝对 URL（https），并禁用 globalLoading，避免触发布局级重挂载循环。
+                </span>
               </div>
             </div>
-          </header>
+            <div class="row-start flex-wrap gap-sm min-w-0">
+              <Tag
+                value="manual: immediate=false"
+                severity="secondary"
+              />
+              <Tag
+                value="immediate card: immediate=true"
+                severity="secondary"
+              />
+              <Tag
+                value="globalLoading=false"
+                severity="info"
+              />
+            </div>
+          </div>
+        </header>
 
-          <section class="material-elevated col-stretch gap-md min-w-0">
-            <h3 class="text-md font-semibold text-foreground m-0">
-              Card 1 - Manual Trigger (Success)
-            </h3>
-            <div class="col-stretch gap-md min-w-0">
-              <div class="row-start flex-wrap gap-sm min-w-0">
-                <Button
-                  label="请求成功接口"
-                  size="small"
-                  severity="primary"
-                  :loading="successLoading"
-                  :disabled="successLoading"
-                  @click="runSuccess"
-                />
-                <Tag
-                  :value="successLoading ? 'loading' : 'idle'"
-                  severity="secondary"
-                />
-              </div>
-              <div class="col-stretch gap-xs min-w-0">
-                <div class="text-sm text-muted-foreground">error</div>
-                <Tag
-                  :value="successErrorText"
-                  :severity="successReq.error.value ? 'warn' : 'secondary'"
-                />
-              </div>
-              <div class="col-stretch gap-xs min-w-0">
-                <div class="text-sm text-muted-foreground">data</div>
-                <div
-                  class="material-elevated col-stretch p-md gap-sm bg-muted/30 rounded-md min-w-0"
-                >
-                  <pre class="text-xs text-foreground text-no-wrap m-0">{{ successJson }}</pre>
-                </div>
+        <section class="material-elevated col-stretch gap-md min-w-0">
+          <h3 class="text-md font-semibold text-foreground m-0">
+            Card 1 - Manual Trigger (Success)
+          </h3>
+          <div class="col-stretch gap-md min-w-0">
+            <div class="row-start flex-wrap gap-sm min-w-0">
+              <Button
+                label="请求成功接口"
+                size="small"
+                severity="primary"
+                :loading="successLoading"
+                :disabled="successLoading"
+                @click="runSuccess"
+              />
+              <Tag
+                :value="successLoading ? 'loading' : 'idle'"
+                severity="secondary"
+              />
+            </div>
+            <div class="col-stretch gap-xs min-w-0">
+              <div class="text-sm text-muted-foreground">error</div>
+              <Tag
+                :value="successErrorText"
+                :severity="successReq.error.value ? 'warn' : 'secondary'"
+              />
+            </div>
+            <div class="col-stretch gap-xs min-w-0">
+              <div class="text-sm text-muted-foreground">data</div>
+              <div class="material-elevated col-stretch p-md gap-sm bg-muted/30 rounded-md min-w-0">
+                <pre class="text-xs text-foreground text-no-wrap m-0">{{ successJson }}</pre>
               </div>
             </div>
-          </section>
+          </div>
+        </section>
 
-          <section class="material-elevated col-stretch gap-md min-w-0">
-            <h3 class="text-md font-semibold text-foreground m-0">Card 2 - Error Handling (404)</h3>
-            <div class="col-stretch gap-md min-w-0">
-              <div class="row-start flex-wrap gap-sm min-w-0">
-                <Button
-                  label="触发 404 请求"
-                  size="small"
-                  severity="secondary"
-                  :loading="errorLoading"
-                  :disabled="errorLoading"
-                  @click="runError"
-                />
-                <Tag
-                  :value="errorLoading ? 'loading' : 'idle'"
-                  severity="secondary"
-                />
-              </div>
-              <div class="col-stretch gap-xs min-w-0">
-                <div class="text-sm text-muted-foreground">error</div>
-                <Tag
-                  :value="errorErrorText"
-                  :severity="errorReq.error.value ? 'warn' : 'secondary'"
-                />
-              </div>
-              <div class="col-stretch gap-xs min-w-0">
-                <div class="text-sm text-muted-foreground">data</div>
-                <div
-                  class="material-elevated col-stretch p-md gap-sm bg-muted/30 rounded-md min-w-0"
-                >
-                  <pre class="text-xs text-foreground text-no-wrap m-0">{{ errorJson }}</pre>
-                </div>
+        <section class="material-elevated col-stretch gap-md min-w-0">
+          <h3 class="text-md font-semibold text-foreground m-0">Card 2 - Error Handling (404)</h3>
+          <div class="col-stretch gap-md min-w-0">
+            <div class="row-start flex-wrap gap-sm min-w-0">
+              <Button
+                label="触发 404 请求"
+                size="small"
+                severity="secondary"
+                :loading="errorLoading"
+                :disabled="errorLoading"
+                @click="runError"
+              />
+              <Tag
+                :value="errorLoading ? 'loading' : 'idle'"
+                severity="secondary"
+              />
+            </div>
+            <div class="col-stretch gap-xs min-w-0">
+              <div class="text-sm text-muted-foreground">error</div>
+              <Tag
+                :value="errorErrorText"
+                :severity="errorReq.error.value ? 'warn' : 'secondary'"
+              />
+            </div>
+            <div class="col-stretch gap-xs min-w-0">
+              <div class="text-sm text-muted-foreground">data</div>
+              <div class="material-elevated col-stretch p-md gap-sm bg-muted/30 rounded-md min-w-0">
+                <pre class="text-xs text-foreground text-no-wrap m-0">{{ errorJson }}</pre>
               </div>
             </div>
-          </section>
+          </div>
+        </section>
 
-          <section class="material-elevated col-stretch gap-md min-w-0">
-            <h3 class="text-md font-semibold text-foreground m-0">
-              Card 3 - Immediate Fetch (Hook Immediate)
-            </h3>
-            <div class="col-stretch gap-md min-w-0">
-              <div class="row-start flex-wrap gap-sm min-w-0">
-                <Tag
-                  :value="immediateLoading ? 'loading' : 'idle'"
-                  severity="secondary"
-                />
-                <Tag
-                  value="immediate=true"
-                  severity="info"
-                />
-              </div>
-              <div class="col-stretch gap-xs min-w-0">
-                <div class="text-sm text-muted-foreground">error</div>
-                <Tag
-                  :value="immediateErrorText"
-                  :severity="immediateReq.error.value ? 'warn' : 'secondary'"
-                />
-              </div>
-              <div class="col-stretch gap-xs min-w-0">
-                <div class="text-sm text-muted-foreground">data</div>
-                <div
-                  class="material-elevated col-stretch p-md gap-sm bg-muted/30 rounded-md min-w-0"
-                >
-                  <pre class="text-xs text-foreground text-no-wrap m-0">{{ immediateJson }}</pre>
-                </div>
+        <section class="material-elevated col-stretch gap-md min-w-0">
+          <h3 class="text-md font-semibold text-foreground m-0">
+            Card 3 - Immediate Fetch (Hook Immediate)
+          </h3>
+          <div class="col-stretch gap-md min-w-0">
+            <div class="row-start flex-wrap gap-sm min-w-0">
+              <Tag
+                :value="immediateLoading ? 'loading' : 'idle'"
+                severity="secondary"
+              />
+              <Tag
+                value="immediate=true"
+                severity="info"
+              />
+            </div>
+            <div class="col-stretch gap-xs min-w-0">
+              <div class="text-sm text-muted-foreground">error</div>
+              <Tag
+                :value="immediateErrorText"
+                :severity="immediateReq.error.value ? 'warn' : 'secondary'"
+              />
+            </div>
+            <div class="col-stretch gap-xs min-w-0">
+              <div class="text-sm text-muted-foreground">data</div>
+              <div class="material-elevated col-stretch p-md gap-sm bg-muted/30 rounded-md min-w-0">
+                <pre class="text-xs text-foreground text-no-wrap m-0">{{ immediateJson }}</pre>
               </div>
             </div>
-          </section>
-        </div>
+          </div>
+        </section>
       </div>
-    </AnimateWrapper>
+    </div>
   </div>
 </template>

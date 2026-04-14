@@ -179,6 +179,7 @@ const enUS = {
           ratioLayout: 'Ratio Layout (16:9)',
           reuseWindow: 'Reuse Window',
           transition: 'Route Transition',
+          keepAlive: 'Page KeepAlive',
         },
         directives: {
           root: 'Directive Examples',

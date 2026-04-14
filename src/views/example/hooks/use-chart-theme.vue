@@ -4,8 +4,6 @@ import type { ChartOpacityConfig } from '@/hooks/modules/useChartTheme/types'
 
 defineOptions({ name: 'UseChartTheme' })
 
-const pageReady = ref<boolean>(true)
-
 type ChartType = 'line' | 'bar' | 'pie' | 'radar' | 'gauge' | 'heatmap'
 
 const chartType = ref<ChartType>('line')
@@ -154,143 +152,135 @@ const hasTextStyle = computed(() => !!themedOption.value?.textStyle)
     class="col-stretch"
     data-archetype="A1-toolbar-content"
   >
-    <AnimateWrapper
-      :show="pageReady"
-      enter="fadeInUp"
-      leave="fadeOut"
-    >
-      <div class="col-stretch gap-md min-h-0 min-w-0">
-        <div class="layout-narrow col-stretch gap-md min-w-0">
-          <header class="shrink-0 glass-panel col-stretch gap-md min-w-0">
-            <div class="row-between gap-md min-w-0">
-              <div class="row-start gap-sm min-w-0 flex-wrap">
-                <div class="glass-icon-box shrink-0">
-                  <Icons
-                    name="i-lucide-palette"
-                    size="xl"
-                    class="text-primary"
-                  />
-                </div>
-                <div class="col-stretch gap-xs min-w-0">
-                  <div class="row-start gap-xs min-w-0 flex-wrap">
-                    <span class="text-lg font-bold text-foreground text-no-wrap">
-                      useChartTheme
-                    </span>
-                    <span
-                      class="surface-success rounded-md px-sm py-xs text-xs font-semibold uppercase"
-                    >
-                      HOOK
-                    </span>
-                  </div>
-                  <span class="text-sm text-muted-foreground text-ellipsis-1">
-                    rawOption -> useChartTheme -> themedOption（主题 + 透明度合并）
+    <div class="col-stretch gap-md min-h-0 min-w-0">
+      <div class="layout-narrow col-stretch gap-md min-w-0">
+        <header class="shrink-0 glass-panel col-stretch gap-md min-w-0">
+          <div class="row-between gap-md min-w-0">
+            <div class="row-start gap-sm min-w-0 flex-wrap">
+              <div class="glass-icon-box shrink-0">
+                <Icons
+                  name="i-lucide-palette"
+                  size="xl"
+                  class="text-primary"
+                />
+              </div>
+              <div class="col-stretch gap-xs min-w-0">
+                <div class="row-start gap-xs min-w-0 flex-wrap">
+                  <span class="text-lg font-bold text-foreground text-no-wrap">useChartTheme</span>
+                  <span
+                    class="surface-success rounded-md px-sm py-xs text-xs font-semibold uppercase"
+                  >
+                    HOOK
                   </span>
                 </div>
+                <span class="text-sm text-muted-foreground text-ellipsis-1">
+                  rawOption -> useChartTheme -> themedOption（主题 + 透明度合并）
+                </span>
               </div>
-              <div class="row-center gap-sm min-w-0">
+            </div>
+            <div class="row-center gap-sm min-w-0">
+              <Tag
+                :value="themedOption ? 'themedOption: ready' : 'themedOption: —'"
+                severity="secondary"
+              />
+            </div>
+          </div>
+        </header>
+
+        <section class="material-elevated col-stretch gap-md min-w-0">
+          <div class="col-stretch gap-md min-w-0">
+            <div class="row-between min-w-0">
+              <span class="text-sm text-muted-foreground">Current State</span>
+              <div class="row-start flex-wrap gap-sm min-w-0">
                 <Tag
-                  :value="themedOption ? 'themedOption: ready' : 'themedOption: —'"
+                  :value="`seriesCount=${seriesCount}`"
                   severity="secondary"
+                />
+                <Tag
+                  :value="hasBackground ? 'backgroundColor: yes' : 'backgroundColor: no'"
+                  severity="info"
+                />
+                <Tag
+                  :value="hasTextStyle ? 'textStyle: yes' : 'textStyle: no'"
+                  severity="info"
                 />
               </div>
             </div>
-          </header>
 
-          <section class="material-elevated col-stretch gap-md min-w-0">
-            <div class="col-stretch gap-md min-w-0">
-              <div class="row-between min-w-0">
-                <span class="text-sm text-muted-foreground">Current State</span>
-                <div class="row-start flex-wrap gap-sm min-w-0">
-                  <Tag
-                    :value="`seriesCount=${seriesCount}`"
-                    severity="secondary"
-                  />
-                  <Tag
-                    :value="hasBackground ? 'backgroundColor: yes' : 'backgroundColor: no'"
-                    severity="info"
-                  />
-                  <Tag
-                    :value="hasTextStyle ? 'textStyle: yes' : 'textStyle: no'"
-                    severity="info"
-                  />
-                </div>
-              </div>
-
-              <div class="row-between min-w-0">
-                <span class="text-sm text-muted-foreground">Action Triggers</span>
-              </div>
-
-              <div class="col-stretch gap-sm min-w-0">
-                <div class="text-sm text-muted-foreground">切换图表类型</div>
-                <div class="row-start flex-wrap gap-sm min-w-0">
-                  <Button
-                    size="small"
-                    :severity="chartType === 'line' ? 'primary' : 'secondary'"
-                    label="line"
-                    @click="chartType = 'line'"
-                  />
-                  <Button
-                    size="small"
-                    :severity="chartType === 'bar' ? 'primary' : 'secondary'"
-                    label="bar"
-                    @click="chartType = 'bar'"
-                  />
-                  <Button
-                    size="small"
-                    :severity="chartType === 'pie' ? 'primary' : 'secondary'"
-                    label="pie"
-                    @click="chartType = 'pie'"
-                  />
-                  <Button
-                    size="small"
-                    :severity="chartType === 'radar' ? 'primary' : 'secondary'"
-                    label="radar"
-                    @click="chartType = 'radar'"
-                  />
-                  <Button
-                    size="small"
-                    :severity="chartType === 'gauge' ? 'primary' : 'secondary'"
-                    label="gauge"
-                    @click="chartType = 'gauge'"
-                  />
-                  <Button
-                    size="small"
-                    :severity="chartType === 'heatmap' ? 'primary' : 'secondary'"
-                    label="heatmap"
-                    @click="chartType = 'heatmap'"
-                  />
-                </div>
-              </div>
-
-              <div class="col-stretch gap-sm min-w-0">
-                <div class="text-sm text-muted-foreground">透明度合并（opacityConfig）</div>
-                <div class="row-start flex-wrap gap-sm items-center min-w-0">
-                  <ToggleSwitch v-model="opacityEnabled" />
-                  <Tag
-                    :value="opacityEnabled ? 'opacityConfig: on' : 'opacityConfig: off'"
-                    :severity="opacityEnabled ? 'success' : 'secondary'"
-                  />
-                </div>
-              </div>
-            </div>
-          </section>
-
-          <section class="material-elevated col-stretch gap-md min-w-0">
             <div class="row-between min-w-0">
-              <h3 class="text-md font-semibold text-foreground m-0">Chart Preview</h3>
-              <span class="text-sm text-muted-foreground">{{ chartType }}</span>
+              <span class="text-sm text-muted-foreground">Action Triggers</span>
             </div>
 
-            <div class="w-full h-[40vh] col-stretch min-w-0">
-              <UseEcharts
-                :option="themedOption"
-                :theme-config="{ enableTheme: false }"
-                :manual-update="false"
-              />
+            <div class="col-stretch gap-sm min-w-0">
+              <div class="text-sm text-muted-foreground">切换图表类型</div>
+              <div class="row-start flex-wrap gap-sm min-w-0">
+                <Button
+                  size="small"
+                  :severity="chartType === 'line' ? 'primary' : 'secondary'"
+                  label="line"
+                  @click="chartType = 'line'"
+                />
+                <Button
+                  size="small"
+                  :severity="chartType === 'bar' ? 'primary' : 'secondary'"
+                  label="bar"
+                  @click="chartType = 'bar'"
+                />
+                <Button
+                  size="small"
+                  :severity="chartType === 'pie' ? 'primary' : 'secondary'"
+                  label="pie"
+                  @click="chartType = 'pie'"
+                />
+                <Button
+                  size="small"
+                  :severity="chartType === 'radar' ? 'primary' : 'secondary'"
+                  label="radar"
+                  @click="chartType = 'radar'"
+                />
+                <Button
+                  size="small"
+                  :severity="chartType === 'gauge' ? 'primary' : 'secondary'"
+                  label="gauge"
+                  @click="chartType = 'gauge'"
+                />
+                <Button
+                  size="small"
+                  :severity="chartType === 'heatmap' ? 'primary' : 'secondary'"
+                  label="heatmap"
+                  @click="chartType = 'heatmap'"
+                />
+              </div>
             </div>
-          </section>
-        </div>
+
+            <div class="col-stretch gap-sm min-w-0">
+              <div class="text-sm text-muted-foreground">透明度合并（opacityConfig）</div>
+              <div class="row-start flex-wrap gap-sm items-center min-w-0">
+                <ToggleSwitch v-model="opacityEnabled" />
+                <Tag
+                  :value="opacityEnabled ? 'opacityConfig: on' : 'opacityConfig: off'"
+                  :severity="opacityEnabled ? 'success' : 'secondary'"
+                />
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="material-elevated col-stretch gap-md min-w-0">
+          <div class="row-between min-w-0">
+            <h3 class="text-md font-semibold text-foreground m-0">Chart Preview</h3>
+            <span class="text-sm text-muted-foreground">{{ chartType }}</span>
+          </div>
+
+          <div class="w-full h-[40vh] col-stretch min-w-0">
+            <UseEcharts
+              :option="themedOption"
+              :theme-config="{ enableTheme: false }"
+              :manual-update="false"
+            />
+          </div>
+        </section>
       </div>
-    </AnimateWrapper>
+    </div>
   </div>
 </template>

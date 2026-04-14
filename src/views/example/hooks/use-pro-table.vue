@@ -83,7 +83,6 @@ const {
 })
 
 // ── Local UI State ────────────────────────────────────────────────
-const pageReady = ref<boolean>(true)
 const filterText = ref<string | undefined>('')
 
 function onFilterInput(): void {
@@ -114,226 +113,220 @@ const stateJson = computed<string>(() => {
     class="col-stretch"
     data-archetype="A1-toolbar-content"
   >
-    <AnimateWrapper
-      :show="pageReady"
-      enter="fadeInUp"
-      leave="fadeOut"
-    >
-      <div class="col-stretch gap-md min-h-0 min-w-0">
-        <div class="layout-narrow col-stretch gap-md min-w-0">
-          <header class="shrink-0 glass-panel col-stretch gap-md min-w-0">
-            <div class="row-between gap-md min-w-0">
-              <div class="row-start gap-sm min-w-0 flex-wrap">
-                <div class="glass-icon-box shrink-0">
-                  <Icons
-                    name="i-lucide-table-2"
-                    size="xl"
-                    class="text-primary"
-                  />
-                </div>
-                <div class="col-stretch gap-xs min-w-0">
-                  <div class="row-start gap-xs min-w-0 flex-wrap">
-                    <span class="text-lg font-bold text-foreground text-no-wrap">useProTable</span>
-                    <span
-                      class="surface-success rounded-md px-sm py-xs text-xs font-semibold uppercase"
-                    >
-                      HOOK
-                    </span>
-                  </div>
-                  <span class="text-sm text-muted-foreground text-ellipsis-1">
-                    不使用 &lt;ProTable&gt; 组件，直接通过 Hook
-                    控制排序、过滤、分页与选中状态，自行渲染表格。
+    <div class="col-stretch gap-md min-h-0 min-w-0">
+      <div class="layout-narrow col-stretch gap-md min-w-0">
+        <header class="shrink-0 glass-panel col-stretch gap-md min-w-0">
+          <div class="row-between gap-md min-w-0">
+            <div class="row-start gap-sm min-w-0 flex-wrap">
+              <div class="glass-icon-box shrink-0">
+                <Icons
+                  name="i-lucide-table-2"
+                  size="xl"
+                  class="text-primary"
+                />
+              </div>
+              <div class="col-stretch gap-xs min-w-0">
+                <div class="row-start gap-xs min-w-0 flex-wrap">
+                  <span class="text-lg font-bold text-foreground text-no-wrap">useProTable</span>
+                  <span
+                    class="surface-success rounded-md px-sm py-xs text-xs font-semibold uppercase"
+                  >
+                    HOOK
                   </span>
                 </div>
+                <span class="text-sm text-muted-foreground text-ellipsis-1">
+                  不使用 &lt;ProTable&gt; 组件，直接通过 Hook
+                  控制排序、过滤、分页与选中状态，自行渲染表格。
+                </span>
               </div>
             </div>
-            <div class="text-xs text-muted-foreground min-w-0">
-              覆盖能力：useProTable · processedRows · visibleColumns · toggleSort · setGlobalFilter
-              · selectRow · toggleColumnVisibility · setPage · setPageSize。
-            </div>
-          </header>
+          </div>
+          <div class="text-xs text-muted-foreground min-w-0">
+            覆盖能力：useProTable · processedRows · visibleColumns · toggleSort · setGlobalFilter ·
+            selectRow · toggleColumnVisibility · setPage · setPageSize。
+          </div>
+        </header>
 
-          <CScrollbar class="flex-1 min-h-0">
-            <div class="col-stretch gap-md min-w-0">
-              <!-- Controls -->
-              <section class="material-elevated col-stretch gap-lg min-w-0">
-                <div class="row-center gap-sm pb-sm mb-sm min-w-0">
+        <CScrollbar class="flex-1 min-h-0">
+          <div class="col-stretch gap-md min-w-0">
+            <!-- Controls -->
+            <section class="material-elevated col-stretch gap-lg min-w-0">
+              <div class="row-center gap-sm pb-sm mb-sm min-w-0">
+                <Icons
+                  name="i-lucide-sliders-horizontal"
+                  class="text-primary"
+                />
+                <span class="font-bold text-foreground uppercase tracking-tight">
+                  Hook API 控制面板
+                </span>
+              </div>
+
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-md min-w-0">
+                <!-- Filter -->
+                <div class="col-stretch gap-sm min-w-0">
+                  <span class="text-xs text-muted-foreground font-bold uppercase">
+                    setGlobalFilter
+                  </span>
+                  <InputText
+                    v-model="filterText"
+                    placeholder="输入关键词过滤..."
+                    size="small"
+                    @input="onFilterInput"
+                  />
+                </div>
+
+                <!-- Pagination -->
+                <div class="col-stretch gap-sm min-w-0">
+                  <span class="text-xs text-muted-foreground font-bold uppercase">
+                    setPage / setPageSize
+                  </span>
+                  <div class="row-start gap-sm flex-wrap min-w-0">
+                    <Button
+                      v-for="p in Math.min(4, Math.ceil(totalCount / state.pagination.pageSize))"
+                      :key="p"
+                      :label="`Page ${p}`"
+                      size="small"
+                      :severity="state.pagination.page === p ? 'primary' : 'secondary'"
+                      @click="setPage(p)"
+                    />
+                    <Select
+                      :model-value="state.pagination.pageSize"
+                      :options="[5, 8, 15]"
+                      size="small"
+                      class="w-20"
+                      @update:model-value="(v: unknown) => setPageSize(Number(v))"
+                    />
+                  </div>
+                </div>
+
+                <!-- Column Visibility -->
+                <div class="col-stretch gap-sm min-w-0">
+                  <span class="text-xs text-muted-foreground font-bold uppercase">
+                    toggleColumnVisibility
+                  </span>
+                  <div class="row-start gap-sm flex-wrap min-w-0">
+                    <Button
+                      v-for="col in columns"
+                      :key="col.id"
+                      :label="typeof col.title === 'string' ? col.title : col.id"
+                      size="small"
+                      :severity="isColumnVisible(col.id) ? 'primary' : 'secondary'"
+                      @click="toggleColumnVisibility(col.id)"
+                    />
+                  </div>
+                </div>
+
+                <!-- Selection -->
+                <div class="col-stretch gap-sm min-w-0">
+                  <span class="text-xs text-muted-foreground font-bold uppercase">
+                    clearSelection
+                  </span>
+                  <div class="row-start gap-sm items-center min-w-0">
+                    <Button
+                      label="清空选中"
+                      size="small"
+                      severity="secondary"
+                      @click="clearSelection"
+                    />
+                    <Tag
+                      :value="`已选 ${state.selection.selectedRows.length} 行`"
+                      severity="info"
+                    />
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            <!-- Custom Rendered Table -->
+            <section class="material-elevated col-stretch gap-lg min-w-0">
+              <div class="row-between gap-sm pb-sm mb-sm min-w-0">
+                <div class="row-center gap-sm min-w-0">
                   <Icons
-                    name="i-lucide-sliders-horizontal"
+                    name="i-lucide-table"
                     class="text-primary"
                   />
                   <span class="font-bold text-foreground uppercase tracking-tight">
-                    Hook API 控制面板
+                    自渲染表格 ({{ processedRows.length }} / {{ totalCount }})
                   </span>
                 </div>
+                <Tag
+                  :value="`Page ${state.pagination.page}`"
+                  severity="secondary"
+                />
+              </div>
 
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-md min-w-0">
-                  <!-- Filter -->
-                  <div class="col-stretch gap-sm min-w-0">
-                    <span class="text-xs text-muted-foreground font-bold uppercase">
-                      setGlobalFilter
-                    </span>
-                    <InputText
-                      v-model="filterText"
-                      placeholder="输入关键词过滤..."
-                      size="small"
-                      @input="onFilterInput"
-                    />
-                  </div>
-
-                  <!-- Pagination -->
-                  <div class="col-stretch gap-sm min-w-0">
-                    <span class="text-xs text-muted-foreground font-bold uppercase">
-                      setPage / setPageSize
-                    </span>
-                    <div class="row-start gap-sm flex-wrap min-w-0">
-                      <Button
-                        v-for="p in Math.min(4, Math.ceil(totalCount / state.pagination.pageSize))"
-                        :key="p"
-                        :label="`Page ${p}`"
-                        size="small"
-                        :severity="state.pagination.page === p ? 'primary' : 'secondary'"
-                        @click="setPage(p)"
-                      />
-                      <Select
-                        :model-value="state.pagination.pageSize"
-                        :options="[5, 8, 15]"
-                        size="small"
-                        class="w-20"
-                        @update:model-value="(v: unknown) => setPageSize(Number(v))"
-                      />
-                    </div>
-                  </div>
-
-                  <!-- Column Visibility -->
-                  <div class="col-stretch gap-sm min-w-0">
-                    <span class="text-xs text-muted-foreground font-bold uppercase">
-                      toggleColumnVisibility
-                    </span>
-                    <div class="row-start gap-sm flex-wrap min-w-0">
-                      <Button
-                        v-for="col in columns"
+              <div class="overflow-x-auto min-w-0">
+                <table class="w-full text-sm">
+                  <thead>
+                    <tr class="border-b-solid border-b-px border-border">
+                      <th
+                        v-for="col in visibleColumns"
                         :key="col.id"
-                        :label="typeof col.title === 'string' ? col.title : col.id"
-                        size="small"
-                        :severity="isColumnVisible(col.id) ? 'primary' : 'secondary'"
-                        @click="toggleColumnVisibility(col.id)"
-                      />
-                    </div>
-                  </div>
-
-                  <!-- Selection -->
-                  <div class="col-stretch gap-sm min-w-0">
-                    <span class="text-xs text-muted-foreground font-bold uppercase">
-                      clearSelection
-                    </span>
-                    <div class="row-start gap-sm items-center min-w-0">
-                      <Button
-                        label="清空选中"
-                        size="small"
-                        severity="secondary"
-                        @click="clearSelection"
-                      />
-                      <Tag
-                        :value="`已选 ${state.selection.selectedRows.length} 行`"
-                        severity="info"
-                      />
-                    </div>
-                  </div>
-                </div>
-              </section>
-
-              <!-- Custom Rendered Table -->
-              <section class="material-elevated col-stretch gap-lg min-w-0">
-                <div class="row-between gap-sm pb-sm mb-sm min-w-0">
-                  <div class="row-center gap-sm min-w-0">
-                    <Icons
-                      name="i-lucide-table"
-                      class="text-primary"
-                    />
-                    <span class="font-bold text-foreground uppercase tracking-tight">
-                      自渲染表格 ({{ processedRows.length }} / {{ totalCount }})
-                    </span>
-                  </div>
-                  <Tag
-                    :value="`Page ${state.pagination.page}`"
-                    severity="secondary"
-                  />
-                </div>
-
-                <div class="overflow-x-auto min-w-0">
-                  <table class="w-full text-sm">
-                    <thead>
-                      <tr class="border-b-solid border-b-px border-border">
-                        <th
-                          v-for="col in visibleColumns"
-                          :key="col.id"
-                          class="px-md py-sm text-left text-xs text-muted-foreground font-bold uppercase cursor-pointer hover:text-foreground"
-                          :class="{ 'text-right': col.align === 'right' }"
-                          @click="col.sortable ? toggleSort(col.field ?? col.id) : undefined"
-                        >
-                          <div class="row-center gap-xs min-w-0">
-                            <span>{{ typeof col.title === 'string' ? col.title : col.id }}</span>
-                            <Icons
-                              v-if="col.sortable && state.sort.field === (col.field ?? col.id)"
-                              :name="
-                                state.sort.direction === 'asc'
-                                  ? 'i-lucide-arrow-up'
-                                  : 'i-lucide-arrow-down'
-                              "
-                              size="xs"
-                              class="text-primary"
-                            />
-                          </div>
-                        </th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <tr
-                        v-for="row in processedRows"
-                        :key="row.id"
-                        v-tap="() => onRowClick(row)"
-                        class="border-b-solid border-b-px border-border cursor-pointer hover:bg-foreground/5 transition-colors"
-                        :class="{ 'bg-primary/5': isRowSelected(row) }"
+                        class="px-md py-sm text-left text-xs text-muted-foreground font-bold uppercase cursor-pointer hover:text-foreground"
+                        :class="{ 'text-right': col.align === 'right' }"
+                        @click="col.sortable ? toggleSort(col.field ?? col.id) : undefined"
                       >
-                        <td
-                          v-for="col in visibleColumns"
-                          :key="col.id"
-                          class="px-md py-sm"
-                          :class="{ 'text-right': col.align === 'right' }"
-                        >
-                          <component
-                            :is="
-                              () =>
-                                col.render
-                                  ? col.render({ row, column: col, index: 0 })
-                                  : String(row[col.field ?? col.id] ?? '')
+                        <div class="row-center gap-xs min-w-0">
+                          <span>{{ typeof col.title === 'string' ? col.title : col.id }}</span>
+                          <Icons
+                            v-if="col.sortable && state.sort.field === (col.field ?? col.id)"
+                            :name="
+                              state.sort.direction === 'asc'
+                                ? 'i-lucide-arrow-up'
+                                : 'i-lucide-arrow-down'
                             "
+                            size="xs"
+                            class="text-primary"
                           />
-                        </td>
-                      </tr>
-                    </tbody>
-                  </table>
-                </div>
-              </section>
+                        </div>
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr
+                      v-for="row in processedRows"
+                      :key="row.id"
+                      v-tap="() => onRowClick(row)"
+                      class="border-b-solid border-b-px border-border cursor-pointer hover:bg-foreground/5 transition-colors"
+                      :class="{ 'bg-primary/5': isRowSelected(row) }"
+                    >
+                      <td
+                        v-for="col in visibleColumns"
+                        :key="col.id"
+                        class="px-md py-sm"
+                        :class="{ 'text-right': col.align === 'right' }"
+                      >
+                        <component
+                          :is="
+                            () =>
+                              col.render
+                                ? col.render({ row, column: col, index: 0 })
+                                : String(row[col.field ?? col.id] ?? '')
+                          "
+                        />
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </section>
 
-              <!-- State Inspector -->
-              <section class="material-elevated col-stretch gap-md min-w-0">
-                <div class="row-center gap-sm mb-sm min-w-0">
-                  <Icons
-                    name="i-lucide-braces"
-                    class="text-accent"
-                  />
-                  <span class="font-bold text-foreground uppercase tracking-tight text-sm">
-                    Hook State (JSON)
-                  </span>
-                </div>
-                <pre class="code-preview text-xs text-muted-foreground m-0">{{ stateJson }}</pre>
-              </section>
-            </div>
-          </CScrollbar>
-        </div>
+            <!-- State Inspector -->
+            <section class="material-elevated col-stretch gap-md min-w-0">
+              <div class="row-center gap-sm mb-sm min-w-0">
+                <Icons
+                  name="i-lucide-braces"
+                  class="text-accent"
+                />
+                <span class="font-bold text-foreground uppercase tracking-tight text-sm">
+                  Hook State (JSON)
+                </span>
+              </div>
+              <pre class="code-preview text-xs text-muted-foreground m-0">{{ stateJson }}</pre>
+            </section>
+          </div>
+        </CScrollbar>
       </div>
-    </AnimateWrapper>
+    </div>
   </div>
 </template>

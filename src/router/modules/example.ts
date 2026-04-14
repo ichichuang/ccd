@@ -137,18 +137,28 @@ const routerMetaRoute: RouteConfig = {
       },
     },
     {
+      path: '/example/router-meta/keep-alive',
+      name: 'ExampleKeepAlive',
+      component: () => import('@/views/example/architecture/router-meta/keep-alive.vue'),
+      meta: {
+        titleKey: 'router.example.architecture.routerMeta.keepAlive',
+        rank: 7,
+        icon: 'i-lucide-database',
+        keepAlive: true,
+      },
+    },
+    {
       path: '/example/router-meta/transition-demo',
       name: 'ExampleTransitionDemo',
       component: () => import('@/views/example/architecture/router-meta/transition.vue'),
       meta: {
         titleKey: 'router.example.architecture.routerMeta.transition',
-        rank: 7,
+        rank: 8,
         icon: 'i-lucide-sparkles',
         transition: {
-          name: 'fade-slide',
-          enterTransition: 'animate__animated animate__fadeInRight animate__fast',
-          leaveTransition: 'animate__animated animate__fadeOutLeft animate__fast',
-          duration: '400ms',
+          enterClass: 'zoomIn',
+          leaveClass: 'zoomOut',
+          duration: { enter: '600ms', leave: '400ms' },
         },
       },
     },

@@ -6,8 +6,6 @@ import { radiusPx, spacingPx } from '@/utils/theme/sizeMetrics'
 
 defineOptions({ name: 'SizeSystemPage' })
 
-const pageReady = ref<boolean>(true)
-
 const COPY_TOAST_GROUP = 'tr' as const
 const sizeStore = useSizeStore()
 
@@ -185,11 +183,7 @@ async function copyClassName(cls: string, label: string): Promise<void> {
 
 <template>
   <div data-archetype="A1-toolbar-content">
-    <AnimateWrapper
-      :show="pageReady"
-      enter="fadeInUp"
-      leave="fadeOut"
-    >
+    <AnimateWrapper enter="fadeInUp">
       <div class="col-stretch gap-md min-h-0 min-w-0">
         <div class="layout-narrow col-stretch gap-md min-w-0">
           <header class="shrink-0 glass-panel col-stretch gap-md min-w-0">

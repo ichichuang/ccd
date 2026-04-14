@@ -89,8 +89,6 @@ const SizeProbe = defineComponent({
     )
   },
 })
-
-const pageReady = ref<boolean>(true)
 </script>
 
 <template>
@@ -98,124 +96,118 @@ const pageReady = ref<boolean>(true)
     class="col-stretch"
     data-archetype="A1-toolbar-content"
   >
-    <AnimateWrapper
-      :show="pageReady"
-      enter="fadeInUp"
-      leave="fadeOut"
-    >
-      <div class="col-stretch gap-md min-h-0 min-w-0">
-        <div class="layout-narrow col-stretch gap-md min-w-0">
-          <header class="shrink-0 glass-panel col-stretch gap-md min-w-0">
-            <div class="row-between gap-md min-w-0">
-              <div class="row-start gap-sm min-w-0 flex-wrap">
-                <div class="glass-icon-box shrink-0">
-                  <Icons
-                    name="i-lucide-maximize"
-                    size="xl"
-                    class="text-primary"
-                  />
-                </div>
-                <div class="col-stretch gap-xs min-w-0">
-                  <div class="row-start gap-xs min-w-0 flex-wrap">
-                    <span class="text-lg font-bold text-foreground text-no-wrap">
-                      useAppElementSize
-                    </span>
-                    <span
-                      class="surface-success rounded-md px-sm py-xs text-xs font-semibold uppercase"
-                    >
-                      HOOK
-                    </span>
-                  </div>
-                  <span class="text-sm text-muted-foreground text-ellipsis-1">
-                    实时监听宽高变化，并展示 callback 触发情况
+    <div class="col-stretch gap-md min-h-0 min-w-0">
+      <div class="layout-narrow col-stretch gap-md min-w-0">
+        <header class="shrink-0 glass-panel col-stretch gap-md min-w-0">
+          <div class="row-between gap-md min-w-0">
+            <div class="row-start gap-sm min-w-0 flex-wrap">
+              <div class="glass-icon-box shrink-0">
+                <Icons
+                  name="i-lucide-maximize"
+                  size="xl"
+                  class="text-primary"
+                />
+              </div>
+              <div class="col-stretch gap-xs min-w-0">
+                <div class="row-start gap-xs min-w-0 flex-wrap">
+                  <span class="text-lg font-bold text-foreground text-no-wrap">
+                    useAppElementSize
+                  </span>
+                  <span
+                    class="surface-success rounded-md px-sm py-xs text-xs font-semibold uppercase"
+                  >
+                    HOOK
                   </span>
                 </div>
-              </div>
-              <div class="row-center gap-sm min-w-0">
-                <Tag
-                  :value="`mode=${mode}`"
-                  severity="secondary"
-                />
-                <Tag
-                  :value="`delay=${delay}ms`"
-                  severity="secondary"
-                />
+                <span class="text-sm text-muted-foreground text-ellipsis-1">
+                  实时监听宽高变化，并展示 callback 触发情况
+                </span>
               </div>
             </div>
-          </header>
-
-          <section class="material-elevated col-stretch gap-md min-w-0">
-            <div class="row-between min-w-0">
-              <span class="text-sm text-muted-foreground">Action Triggers</span>
-            </div>
-
-            <div class="col-stretch gap-sm min-w-0">
-              <div class="text-sm text-muted-foreground">切换 mode</div>
-              <div class="row-start flex-wrap gap-sm min-w-0">
-                <Button
-                  size="small"
-                  severity="primary"
-                  label="none"
-                  @click="mode = 'none'"
-                />
-                <Button
-                  size="small"
-                  severity="secondary"
-                  label="throttle"
-                  @click="mode = 'throttle'"
-                />
-                <Button
-                  size="small"
-                  severity="secondary"
-                  label="debounce"
-                  @click="mode = 'debounce'"
-                />
-              </div>
-            </div>
-
-            <div class="col-stretch gap-sm min-w-0">
-              <div class="text-sm text-muted-foreground">delay（ms）</div>
-              <InputNumber
-                v-model="delay"
-                :min="0"
-                :step="50"
-                :max="2000"
+            <div class="row-center gap-sm min-w-0">
+              <Tag
+                :value="`mode=${mode}`"
+                severity="secondary"
+              />
+              <Tag
+                :value="`delay=${delay}ms`"
+                severity="secondary"
               />
             </div>
+          </div>
+        </header>
 
-            <div class="col-stretch gap-sm min-w-0">
-              <div class="text-sm text-muted-foreground">改变容器尺寸（触发 ResizeObserver）</div>
-              <div class="row-start flex-wrap gap-sm min-w-0">
-                <Button
-                  v-for="(p, i) in sizePresets"
-                  :key="p.label"
-                  size="small"
-                  :severity="presetIndex === i ? 'primary' : 'secondary'"
-                  :label="p.label"
-                  @click="presetIndex = i"
-                />
-              </div>
+        <section class="material-elevated col-stretch gap-md min-w-0">
+          <div class="row-between min-w-0">
+            <span class="text-sm text-muted-foreground">Action Triggers</span>
+          </div>
+
+          <div class="col-stretch gap-sm min-w-0">
+            <div class="text-sm text-muted-foreground">切换 mode</div>
+            <div class="row-start flex-wrap gap-sm min-w-0">
+              <Button
+                size="small"
+                severity="primary"
+                label="none"
+                @click="mode = 'none'"
+              />
+              <Button
+                size="small"
+                severity="secondary"
+                label="throttle"
+                @click="mode = 'throttle'"
+              />
+              <Button
+                size="small"
+                severity="secondary"
+                label="debounce"
+                @click="mode = 'debounce'"
+              />
             </div>
-          </section>
+          </div>
 
-          <section class="material-elevated col-stretch gap-md min-w-0">
-            <div class="row-between min-w-0">
-              <h3 class="text-md font-semibold text-foreground m-0">Current State</h3>
-              <span class="text-sm text-muted-foreground">
-                {{ activeSize.label }}
-              </span>
-            </div>
-
-            <SizeProbe
-              :key="`${mode}-${delay}`"
-              :box-mode="mode"
-              :box-delay="delay"
-              :box-width="activeSize.w"
-              :box-height="activeSize.h"
+          <div class="col-stretch gap-sm min-w-0">
+            <div class="text-sm text-muted-foreground">delay（ms）</div>
+            <InputNumber
+              v-model="delay"
+              :min="0"
+              :step="50"
+              :max="2000"
             />
-          </section>
-        </div>
+          </div>
+
+          <div class="col-stretch gap-sm min-w-0">
+            <div class="text-sm text-muted-foreground">改变容器尺寸（触发 ResizeObserver）</div>
+            <div class="row-start flex-wrap gap-sm min-w-0">
+              <Button
+                v-for="(p, i) in sizePresets"
+                :key="p.label"
+                size="small"
+                :severity="presetIndex === i ? 'primary' : 'secondary'"
+                :label="p.label"
+                @click="presetIndex = i"
+              />
+            </div>
+          </div>
+        </section>
+
+        <section class="material-elevated col-stretch gap-md min-w-0">
+          <div class="row-between min-w-0">
+            <h3 class="text-md font-semibold text-foreground m-0">Current State</h3>
+            <span class="text-sm text-muted-foreground">
+              {{ activeSize.label }}
+            </span>
+          </div>
+
+          <SizeProbe
+            :key="`${mode}-${delay}`"
+            :box-mode="mode"
+            :box-delay="delay"
+            :box-width="activeSize.w"
+            :box-height="activeSize.h"
+          />
+        </section>
       </div>
-    </AnimateWrapper>
+    </div>
   </div>
 </template>

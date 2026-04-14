@@ -4,8 +4,6 @@ import { goToRoute } from '@/router/utils/helper'
 
 defineOptions({ name: 'UnoCssSystemPage' })
 
-const pageReady = ref<boolean>(true)
-
 const LAYOUT_MACRO_KEYS = [
   'layout-screen',
   'layout-full',
@@ -514,11 +512,7 @@ async function copyClassName(className: string, label: string): Promise<void> {
     class="col-stretch"
     data-archetype="A1-toolbar-content"
   >
-    <AnimateWrapper
-      :show="pageReady"
-      enter="fadeInUp"
-      leave="fadeOut"
-    >
+    <AnimateWrapper enter="fadeInUp">
       <div class="col-stretch gap-md min-h-0 min-w-0">
         <div class="layout-narrow col-stretch gap-md min-w-0">
           <!-- Header -->
@@ -1424,7 +1418,7 @@ semanticShortcuts.center = 'flex justify-center items-center'
                     style="
                       background-image: radial-gradient(
                         circle,
-                        rgb(var(--foreground) / 0.045) 1px,
+                        rgb(var(--foreground) / 4.5%) 1px,
                         transparent 1px
                       );
                       background-size: var(--spacing-lg) var(--spacing-lg);

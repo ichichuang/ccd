@@ -119,7 +119,6 @@ export interface SecurityConfig {
 ]
 
 const activeTypes = ref<string | string[] | null | undefined>(['ApiResponse', 'UIDesignState'])
-const pageReady = ref<boolean>(true)
 </script>
 
 <template>
@@ -127,91 +126,86 @@ const pageReady = ref<boolean>(true)
     class="col-stretch"
     data-archetype="A1-toolbar-content"
   >
-    <AnimateWrapper
-      :show="pageReady"
-      enter="fadeInUp"
-      leave="fadeOut"
-    >
-      <div class="col-stretch gap-md min-h-0 min-w-0">
-        <div class="layout-narrow col-stretch gap-md min-w-0">
-          <header class="shrink-0 glass-panel col-stretch gap-md min-w-0">
-            <div class="row-between gap-md min-w-0">
-              <div class="row-start gap-sm min-w-0 flex-wrap">
-                <div class="glass-icon-box shrink-0">
-                  <Icons
-                    name="i-lucide-type"
-                    size="xl"
-                    class="text-primary"
-                  />
-                </div>
-                <div class="col-stretch gap-xs min-w-0">
-                  <div class="row-start gap-xs min-w-0 flex-wrap">
-                    <span class="text-lg font-bold text-foreground text-no-wrap">
-                      Type Definitions
-                    </span>
-                    <span
-                      class="surface-primary rounded-md px-sm py-xs text-xs font-semibold uppercase"
-                    >
-                      COMMON
-                    </span>
-                  </div>
-                  <span class="text-sm text-muted-foreground text-ellipsis-1">
-                    Types 只在编译期存在，运行期无法直接枚举。此页以"静态代码片段"的方式做类型参考。
+    <div class="col-stretch gap-md min-h-0 min-w-0">
+      <div class="layout-narrow col-stretch gap-md min-w-0">
+        <header class="shrink-0 glass-panel col-stretch gap-md min-w-0">
+          <div class="row-between gap-md min-w-0">
+            <div class="row-start gap-sm min-w-0 flex-wrap">
+              <div class="glass-icon-box shrink-0">
+                <Icons
+                  name="i-lucide-type"
+                  size="xl"
+                  class="text-primary"
+                />
+              </div>
+              <div class="col-stretch gap-xs min-w-0">
+                <div class="row-start gap-xs min-w-0 flex-wrap">
+                  <span class="text-lg font-bold text-foreground text-no-wrap">
+                    Type Definitions
+                  </span>
+                  <span
+                    class="surface-primary rounded-md px-sm py-xs text-xs font-semibold uppercase"
+                  >
+                    COMMON
                   </span>
                 </div>
+                <span class="text-sm text-muted-foreground text-ellipsis-1">
+                  Types 只在编译期存在，运行期无法直接枚举。此页以"静态代码片段"的方式做类型参考。
+                </span>
               </div>
             </div>
-          </header>
+          </div>
+        </header>
 
-          <section class="material-elevated col-stretch gap-md min-w-0">
-            <Message severity="warn">
-              提示：TypeScript 类型擦除后无法在运行期获取该类型定义。
-              因此本页展示的只是从源码提取/复制的字符串片段，作为阅读与对照用。
-            </Message>
-          </section>
+        <section class="material-elevated col-stretch gap-md min-w-0">
+          <Message severity="warn">
+            提示：TypeScript 类型擦除后无法在运行期获取该类型定义。
+            因此本页展示的只是从源码提取/复制的字符串片段，作为阅读与对照用。
+          </Message>
+        </section>
 
-          <section class="material-elevated col-stretch gap-md min-w-0">
-            <div class="row-between min-w-0">
-              <h2 class="text-lg font-semibold text-foreground m-0">TypeScript API Reference</h2>
-              <Tag
-                value="static-only"
-                severity="secondary"
-                rounded
-              />
-            </div>
+        <section class="material-elevated col-stretch gap-md min-w-0">
+          <div class="row-between min-w-0">
+            <h2 class="text-lg font-semibold text-foreground m-0">TypeScript API Reference</h2>
+            <Tag
+              value="static-only"
+              severity="secondary"
+              rounded
+            />
+          </div>
 
-            <Accordion
-              v-model:value="activeTypes"
-              multiple
-              :pt="{
-                header: {
-                  toggleIcon: { class: 'pointer-events-none' },
-                },
-              }"
+          <Accordion
+            v-model:value="activeTypes"
+            multiple
+            :pt="{
+              header: {
+                toggleIcon: { class: 'pointer-events-none' },
+              },
+            }"
+          >
+            <AccordionPanel
+              v-for="p in typePanels"
+              :key="p.id"
+              :value="p.id"
             >
-              <AccordionPanel
-                v-for="p in typePanels"
-                :key="p.id"
-                :value="p.id"
-              >
-                <AccordionHeader>
-                  <span class="pointer-events-none">{{ p.title }}</span>
-                </AccordionHeader>
-                <AccordionContent>
-                  <div class="col-stretch gap-md min-w-0">
-                    <Message severity="info">
-                      {{ p.boundaryMessage }}
-                    </Message>
-                    <pre class="code-block">
+              <AccordionHeader>
+                <span class="pointer-events-none">{{ p.title }}</span>
+              </AccordionHeader>
+              <AccordionContent>
+                <div class="col-stretch gap-md min-w-0">
+                  <Message severity="info">
+                    {{ p.boundaryMessage }}
+                  </Message>
+                  <pre class="code-block">
                       {{ p.snippet }}
-                    </pre>
-                  </div>
-                </AccordionContent>
-              </AccordionPanel>
-            </Accordion>
-          </section>
-        </div>
+                    </pre
+                  >
+                </div>
+              </AccordionContent>
+            </AccordionPanel>
+          </Accordion>
+        </section>
       </div>
-    </AnimateWrapper>
+    </div>
   </div>
 </template>

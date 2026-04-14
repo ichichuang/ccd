@@ -389,8 +389,6 @@ const handlePosition = (pos: DialogPosition) => {
     contentRenderer: () => <div class="p-lg">Located at {pos}</div>,
   })
 }
-
-const pageReady = ref<boolean>(true)
 </script>
 
 <template>
@@ -398,336 +396,330 @@ const pageReady = ref<boolean>(true)
     class="col-stretch"
     data-archetype="A1-toolbar-content"
   >
-    <AnimateWrapper
-      :show="pageReady"
-      enter="fadeInUp"
-      leave="fadeOut"
-    >
-      <div class="col-stretch gap-md min-h-0 min-w-0">
-        <div class="layout-narrow col-stretch gap-md min-w-0">
-          <header class="shrink-0 glass-panel col-stretch gap-md min-w-0">
-            <div class="row-between gap-md min-w-0">
-              <div class="row-start gap-sm min-w-0 flex-wrap">
-                <div class="glass-icon-box shrink-0">
-                  <Icons
-                    name="i-lucide-panel-top"
-                    size="xl"
-                    class="text-primary"
-                  />
-                </div>
-                <div class="col-stretch gap-xs min-w-0">
-                  <div class="row-start gap-xs min-w-0 flex-wrap">
-                    <span class="text-lg font-bold text-foreground text-no-wrap">
-                      PrimeVue Dialog
-                    </span>
-                    <span
-                      class="surface-primary rounded-md px-sm py-xs text-xs font-semibold uppercase"
-                    >
-                      COMPONENT
-                    </span>
-                  </div>
-                  <span class="text-sm text-muted-foreground text-ellipsis-1">
-                    全功能演示：基于 useDialog 的二次封装，涵盖所有 Props 控制与交互模式。
+    <div class="col-stretch gap-md min-h-0 min-w-0">
+      <div class="layout-narrow col-stretch gap-md min-w-0">
+        <header class="shrink-0 glass-panel col-stretch gap-md min-w-0">
+          <div class="row-between gap-md min-w-0">
+            <div class="row-start gap-sm min-w-0 flex-wrap">
+              <div class="glass-icon-box shrink-0">
+                <Icons
+                  name="i-lucide-panel-top"
+                  size="xl"
+                  class="text-primary"
+                />
+              </div>
+              <div class="col-stretch gap-xs min-w-0">
+                <div class="row-start gap-xs min-w-0 flex-wrap">
+                  <span class="text-lg font-bold text-foreground text-no-wrap">
+                    PrimeVue Dialog
+                  </span>
+                  <span
+                    class="surface-primary rounded-md px-sm py-xs text-xs font-semibold uppercase"
+                  >
+                    COMPONENT
                   </span>
                 </div>
+                <span class="text-sm text-muted-foreground text-ellipsis-1">
+                  全功能演示：基于 useDialog 的二次封装，涵盖所有 Props 控制与交互模式。
+                </span>
               </div>
             </div>
-          </header>
+          </div>
+        </header>
 
-          <!-- 1. 常用预设 -->
-          <section class="material-elevated col-stretch gap-md min-w-0">
-            <h2 class="text-lg font-semibold">1. 常用预设 (Presets)</h2>
-            <div class="row-start flex-wrap gap-md">
-              <Button
-                label="Info (info)"
-                severity="info"
-                @click="handleInfo"
-              />
-              <Button
-                label="Success (success)"
-                severity="success"
-                @click="handleSuccess"
-              />
-              <Button
-                label="Warn (warn)"
-                severity="warn"
-                @click="handleWarn"
-              />
-              <Button
-                label="Error (danger)"
-                severity="danger"
-                @click="handleDanger"
-              />
-              <Button
-                label="Confirm (confirm)"
-                severity="help"
-                @click="handleConfirm"
-              />
-              <Button
-                label="Delete (confirmDelete)"
-                severity="danger"
-                outlined
-                @click="handleConfirmDelete"
-              />
-            </div>
-          </section>
+        <!-- 1. 常用预设 -->
+        <section class="material-elevated col-stretch gap-md min-w-0">
+          <h2 class="text-lg font-semibold">1. 常用预设 (Presets)</h2>
+          <div class="row-start flex-wrap gap-md">
+            <Button
+              label="Info (info)"
+              severity="info"
+              @click="handleInfo"
+            />
+            <Button
+              label="Success (success)"
+              severity="success"
+              @click="handleSuccess"
+            />
+            <Button
+              label="Warn (warn)"
+              severity="warn"
+              @click="handleWarn"
+            />
+            <Button
+              label="Error (danger)"
+              severity="danger"
+              @click="handleDanger"
+            />
+            <Button
+              label="Confirm (confirm)"
+              severity="help"
+              @click="handleConfirm"
+            />
+            <Button
+              label="Delete (confirmDelete)"
+              severity="danger"
+              outlined
+              @click="handleConfirmDelete"
+            />
+          </div>
+        </section>
 
-          <!-- 2. 交互控制 -->
-          <section class="material-elevated col-stretch gap-md min-w-0">
-            <h2 class="text-lg font-semibold">2. 交互控制 (Behaviors)</h2>
+        <!-- 2. 交互控制 -->
+        <section class="material-elevated col-stretch gap-md min-w-0">
+          <h2 class="text-lg font-semibold">2. 交互控制 (Behaviors)</h2>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-md">
-              <!-- Mask -->
-              <div class="p-md rounded-md bg-muted col-stretch gap-sm">
-                <h3 class="font-medium text-foreground">遮罩层 (Mask/Modal)</h3>
-                <div class="row-start flex-wrap gap-sm">
-                  <Button
-                    label="Modal (Default)"
-                    size="small"
-                    @click="handleModalTrue"
-                  />
-                  <Button
-                    label="No Modal"
-                    size="small"
-                    severity="secondary"
-                    @click="handleModalFalse"
-                  />
-                  <Button
-                    label="Click Mask to Close"
-                    size="small"
-                    severity="contrast"
-                    @click="handleCloseOnMask"
-                  />
-                </div>
-              </div>
-
-              <!-- ESC & Close Icon -->
-              <div class="p-md rounded-md bg-muted col-stretch gap-sm">
-                <h3 class="font-medium text-foreground">关闭方式 (Closing)</h3>
-                <div class="row-start flex-wrap gap-sm">
-                  <Button
-                    label="Enable ESC"
-                    size="small"
-                    @click="handleEscControl(true)"
-                  />
-                  <Button
-                    label="Disable ESC"
-                    size="small"
-                    severity="secondary"
-                    @click="handleEscControl(false)"
-                  />
-                  <Button
-                    label="No Close Icon"
-                    size="small"
-                    severity="danger"
-                    @click="handleNoCloseIcon"
-                  />
-                </div>
-              </div>
-
-              <!-- Drag & Resize -->
-              <div class="p-md rounded-md bg-muted col-stretch gap-sm">
-                <h3 class="font-medium text-foreground">拖拽与缩放 (Drag & Resize)</h3>
-                <div class="row-start flex-wrap gap-sm">
-                  <Button
-                    label="Draggable"
-                    size="small"
-                    @click="handleDraggable(true)"
-                  />
-                  <Button
-                    label="Not Draggable"
-                    size="small"
-                    severity="secondary"
-                    @click="handleDraggable(false)"
-                  />
-                  <Button
-                    label="Maximizable"
-                    size="small"
-                    severity="info"
-                    @click="handleMaximizable"
-                  />
-                </div>
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-md">
+            <!-- Mask -->
+            <div class="p-md rounded-md bg-muted col-stretch gap-sm">
+              <h3 class="font-medium text-foreground">遮罩层 (Mask/Modal)</h3>
+              <div class="row-start flex-wrap gap-sm">
+                <Button
+                  label="Modal (Default)"
+                  size="small"
+                  @click="handleModalTrue"
+                />
+                <Button
+                  label="No Modal"
+                  size="small"
+                  severity="secondary"
+                  @click="handleModalFalse"
+                />
+                <Button
+                  label="Click Mask to Close"
+                  size="small"
+                  severity="contrast"
+                  @click="handleCloseOnMask"
+                />
               </div>
             </div>
-          </section>
 
-          <!-- 3. 界面显示 -->
-          <section class="material-elevated col-stretch gap-md min-w-0">
-            <h2 class="text-lg font-semibold">3. 界面显示 (Visibility)</h2>
-            <div class="row-start flex-wrap gap-md">
-              <Button
-                label="Hide Header"
-                severity="secondary"
-                @click="handleNoHeader"
-              />
-              <Button
-                label="Hide Footer"
-                severity="secondary"
-                @click="handleNoFooter"
-              />
-              <Button
-                label="Custom Content (TSX)"
-                severity="primary"
-                @click="handleCustomContent"
-              />
-              <Button
-                label="Custom Header (headerRenderer)"
-                severity="secondary"
-                outlined
-                @click="handleHeaderRenderer"
-              />
-              <Button
-                label="Custom Footer (footerRenderer)"
-                severity="secondary"
-                outlined
-                @click="handleFooterRenderer"
-              />
+            <!-- ESC & Close Icon -->
+            <div class="p-md rounded-md bg-muted col-stretch gap-sm">
+              <h3 class="font-medium text-foreground">关闭方式 (Closing)</h3>
+              <div class="row-start flex-wrap gap-sm">
+                <Button
+                  label="Enable ESC"
+                  size="small"
+                  @click="handleEscControl(true)"
+                />
+                <Button
+                  label="Disable ESC"
+                  size="small"
+                  severity="secondary"
+                  @click="handleEscControl(false)"
+                />
+                <Button
+                  label="No Close Icon"
+                  size="small"
+                  severity="danger"
+                  @click="handleNoCloseIcon"
+                />
+              </div>
             </div>
-          </section>
 
-          <!-- 4. 逻辑控制 -->
-          <section class="material-elevated col-stretch gap-md min-w-0">
-            <h2 class="text-lg font-semibold">4. 逻辑控制 (Logic)</h2>
-            <div class="row-start flex-wrap gap-md">
-              <Button
-                label="Async Button Loading"
-                outlined
-                @click="handleAsyncConfirm"
-              />
-              <Button
-                label="Interceptor (beforeSure)"
-                outlined
-                severity="warn"
-                @click="handleIntercept"
-              />
-              <Button
-                label="Interceptor (beforeCancel)"
-                outlined
-                severity="secondary"
-                @click="handleBeforeCancel"
-              />
-              <Button
-                label="Nested Dialogs"
-                outlined
-                severity="info"
-                @click="handleNested"
-              />
+            <!-- Drag & Resize -->
+            <div class="p-md rounded-md bg-muted col-stretch gap-sm">
+              <h3 class="font-medium text-foreground">拖拽与缩放 (Drag & Resize)</h3>
+              <div class="row-start flex-wrap gap-sm">
+                <Button
+                  label="Draggable"
+                  size="small"
+                  @click="handleDraggable(true)"
+                />
+                <Button
+                  label="Not Draggable"
+                  size="small"
+                  severity="secondary"
+                  @click="handleDraggable(false)"
+                />
+                <Button
+                  label="Maximizable"
+                  size="small"
+                  severity="info"
+                  @click="handleMaximizable"
+                />
+              </div>
             </div>
-          </section>
+          </div>
+        </section>
 
-          <!-- 5. 生命周期回调 -->
-          <section class="material-elevated col-stretch gap-md min-w-0">
-            <h2 class="text-lg font-semibold">5. 生命周期回调 (Lifecycle)</h2>
-            <div class="row-start flex-wrap gap-md">
-              <Button
-                label="open/close 回调"
-                severity="secondary"
-                outlined
-                @click="handleOpenCloseCallbacks"
-              />
-              <Button
-                label="动态更新 (update)"
-                severity="secondary"
-                outlined
-                @click="handleUpdateHeader"
-              />
-              <Button
-                label="延迟打开 (openDelay)"
-                severity="secondary"
-                outlined
-                @click="handleOpenDelay"
-              />
-            </div>
-          </section>
+        <!-- 3. 界面显示 -->
+        <section class="material-elevated col-stretch gap-md min-w-0">
+          <h2 class="text-lg font-semibold">3. 界面显示 (Visibility)</h2>
+          <div class="row-start flex-wrap gap-md">
+            <Button
+              label="Hide Header"
+              severity="secondary"
+              @click="handleNoHeader"
+            />
+            <Button
+              label="Hide Footer"
+              severity="secondary"
+              @click="handleNoFooter"
+            />
+            <Button
+              label="Custom Content (TSX)"
+              severity="primary"
+              @click="handleCustomContent"
+            />
+            <Button
+              label="Custom Header (headerRenderer)"
+              severity="secondary"
+              outlined
+              @click="handleHeaderRenderer"
+            />
+            <Button
+              label="Custom Footer (footerRenderer)"
+              severity="secondary"
+              outlined
+              @click="handleFooterRenderer"
+            />
+          </div>
+        </section>
 
-          <!-- 6. 多弹窗管理 -->
-          <section class="material-elevated col-stretch gap-md min-w-0">
-            <h2 class="text-lg font-semibold">6. 多弹窗管理 (Multi-Dialog)</h2>
-            <div class="row-start flex-wrap gap-md">
-              <Button
-                label="Open 3 Dialogs (openDialog x3)"
-                severity="info"
-                outlined
-                @click="handleOpenMultiple"
-              />
-              <Button
-                label="Close Last (closeLastDialog)"
-                severity="secondary"
-                outlined
-                @click="() => closeLastDialog()"
-              />
-              <Button
-                label="Close All (closeAll)"
-                severity="danger"
-                outlined
-                @click="() => closeAll()"
-              />
-              <span class="text-muted-foreground text-sm">当前弹窗数: {{ getDialogCount() }}</span>
-            </div>
-          </section>
+        <!-- 4. 逻辑控制 -->
+        <section class="material-elevated col-stretch gap-md min-w-0">
+          <h2 class="text-lg font-semibold">4. 逻辑控制 (Logic)</h2>
+          <div class="row-start flex-wrap gap-md">
+            <Button
+              label="Async Button Loading"
+              outlined
+              @click="handleAsyncConfirm"
+            />
+            <Button
+              label="Interceptor (beforeSure)"
+              outlined
+              severity="warn"
+              @click="handleIntercept"
+            />
+            <Button
+              label="Interceptor (beforeCancel)"
+              outlined
+              severity="secondary"
+              @click="handleBeforeCancel"
+            />
+            <Button
+              label="Nested Dialogs"
+              outlined
+              severity="info"
+              @click="handleNested"
+            />
+          </div>
+        </section>
 
-          <!-- 7. 位置控制 -->
-          <section class="material-elevated col-stretch gap-md min-w-0">
-            <h2 class="text-lg font-semibold">7. 位置控制 (Position)</h2>
-            <div class="row-start flex-wrap gap-sm">
-              <Button
-                label="Top"
-                size="small"
-                severity="secondary"
-                @click="handlePosition('top')"
-              />
-              <Button
-                label="Center"
-                size="small"
-                severity="secondary"
-                @click="handlePosition('center')"
-              />
-              <Button
-                label="Bottom"
-                size="small"
-                severity="secondary"
-                @click="handlePosition('bottom')"
-              />
-              <Button
-                label="Left"
-                size="small"
-                severity="secondary"
-                @click="handlePosition('left')"
-              />
-              <Button
-                label="Right"
-                size="small"
-                severity="secondary"
-                @click="handlePosition('right')"
-              />
-              <Button
-                label="Top Right"
-                size="small"
-                severity="secondary"
-                @click="handlePosition('topright')"
-              />
-              <Button
-                label="Bottom Right"
-                size="small"
-                severity="secondary"
-                @click="handlePosition('bottomright')"
-              />
-              <Button
-                label="Top Left"
-                size="small"
-                severity="secondary"
-                @click="handlePosition('topleft')"
-              />
-              <Button
-                label="Bottom Left"
-                size="small"
-                severity="secondary"
-                @click="handlePosition('bottomleft')"
-              />
-            </div>
-          </section>
-        </div>
+        <!-- 5. 生命周期回调 -->
+        <section class="material-elevated col-stretch gap-md min-w-0">
+          <h2 class="text-lg font-semibold">5. 生命周期回调 (Lifecycle)</h2>
+          <div class="row-start flex-wrap gap-md">
+            <Button
+              label="open/close 回调"
+              severity="secondary"
+              outlined
+              @click="handleOpenCloseCallbacks"
+            />
+            <Button
+              label="动态更新 (update)"
+              severity="secondary"
+              outlined
+              @click="handleUpdateHeader"
+            />
+            <Button
+              label="延迟打开 (openDelay)"
+              severity="secondary"
+              outlined
+              @click="handleOpenDelay"
+            />
+          </div>
+        </section>
+
+        <!-- 6. 多弹窗管理 -->
+        <section class="material-elevated col-stretch gap-md min-w-0">
+          <h2 class="text-lg font-semibold">6. 多弹窗管理 (Multi-Dialog)</h2>
+          <div class="row-start flex-wrap gap-md">
+            <Button
+              label="Open 3 Dialogs (openDialog x3)"
+              severity="info"
+              outlined
+              @click="handleOpenMultiple"
+            />
+            <Button
+              label="Close Last (closeLastDialog)"
+              severity="secondary"
+              outlined
+              @click="() => closeLastDialog()"
+            />
+            <Button
+              label="Close All (closeAll)"
+              severity="danger"
+              outlined
+              @click="() => closeAll()"
+            />
+            <span class="text-muted-foreground text-sm">当前弹窗数: {{ getDialogCount() }}</span>
+          </div>
+        </section>
+
+        <!-- 7. 位置控制 -->
+        <section class="material-elevated col-stretch gap-md min-w-0">
+          <h2 class="text-lg font-semibold">7. 位置控制 (Position)</h2>
+          <div class="row-start flex-wrap gap-sm">
+            <Button
+              label="Top"
+              size="small"
+              severity="secondary"
+              @click="handlePosition('top')"
+            />
+            <Button
+              label="Center"
+              size="small"
+              severity="secondary"
+              @click="handlePosition('center')"
+            />
+            <Button
+              label="Bottom"
+              size="small"
+              severity="secondary"
+              @click="handlePosition('bottom')"
+            />
+            <Button
+              label="Left"
+              size="small"
+              severity="secondary"
+              @click="handlePosition('left')"
+            />
+            <Button
+              label="Right"
+              size="small"
+              severity="secondary"
+              @click="handlePosition('right')"
+            />
+            <Button
+              label="Top Right"
+              size="small"
+              severity="secondary"
+              @click="handlePosition('topright')"
+            />
+            <Button
+              label="Bottom Right"
+              size="small"
+              severity="secondary"
+              @click="handlePosition('bottomright')"
+            />
+            <Button
+              label="Top Left"
+              size="small"
+              severity="secondary"
+              @click="handlePosition('topleft')"
+            />
+            <Button
+              label="Bottom Left"
+              size="small"
+              severity="secondary"
+              @click="handlePosition('bottomleft')"
+            />
+          </div>
+        </section>
       </div>
-    </AnimateWrapper>
+    </div>
   </div>
 </template>

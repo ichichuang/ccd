@@ -38,8 +38,7 @@ export const semanticShortcuts = {
     '[-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden', // 禁止滚动条
 
   // Interactive Card (交互式卡片)
-  'interactive-card':
-    'bg-card rounded-lg p-md transition-all duration-lg ease-spring ring-1 ring-offset-1 ring-border/20 ring-offset-border/20 dark:ring-border/40 dark:ring-offset-border/40 hover:ring-border/80 hover:ring-offset-border/80 dark:hover:ring-border dark:hover:ring-offset-border',
+  'interactive-card': 'bg-card rounded-lg p-md',
 
   // Interactive Item (交互式列表项)
   'interactive-item':
@@ -106,11 +105,11 @@ export const semanticShortcuts = {
   'code-preview': 'm-0 whitespace-pre-wrap break-words text-xs font-mono',
 
   // Soft Colored Surfaces (柔和彩色信息面)
-  'surface-primary': 'bg-primary/10 text-primary dark:bg-primary/15',
-  'surface-success': 'bg-success/10 text-success dark:bg-success/15',
-  'surface-warn': 'bg-warn/10 text-warn dark:bg-warn/15',
-  'surface-danger': 'bg-danger/10 text-danger dark:bg-danger/15',
-  'surface-info': 'bg-info/10 text-info dark:bg-info/15',
+  'surface-primary': 'bg-primary/18 text-primary dark:bg-primary/16',
+  'surface-success': 'bg-success/18 text-success dark:bg-success/16',
+  'surface-warn': 'bg-warn/18 text-warn dark:bg-warn/16',
+  'surface-danger': 'bg-danger/18 text-danger dark:bg-danger/16',
+  'surface-info': 'bg-info/18 text-info dark:bg-info/16',
 
   // Z-Index System (Z-Index System)
   'z-base': 'z-0', // 背景层

@@ -147,15 +147,48 @@ createDynamicRouteManager(router).registerRoutes(vueRoutes)
 | `backstage` | `boolean` | Backend-sourced marker |
 | `ratio` | `string` | Ratio layout value |
 | `parentPaths` | `string[]` | Ancestor paths |
-| `transition` | `object` | Route transition override |
+| `transition` | `RouteTransition` | Page enter/leave transition; SSOT `src/types/modules/router.d.ts`, runtime `AnimateRouterView` |
 
-### `transition` sub-fields
+### `transition` — `RouteTransition`
+
+**SSOT:** `src/types/modules/router.d.ts` (`RouteTransition`, `CssTime`, `PhaseValue`). **Runtime:** `src/layouts/components/AnimateRouterView.vue`. Transitions apply only when the layout store has route transitions enabled (`enableTransition`).
+
+#### Priority and mutual exclusion
+
+1. **Class mode (animate.css):** If `enterClass` and/or `leaveClass` is set, `<Transition>` uses active classes, `type` is `animation`, and **`meta.transition.name` is ignored** (no named transition).
+2. **Named CSS transition mode:** Otherwise, transition name resolves in order: `meta.transition.name` → `layoutStore.transitionName` → `'cinematic-fade'`.
+3. **`mode`:** `undefined` defaults to `'out-in'` at runtime. Use `'default'` to omit the `mode` prop (Vue’s default behavior).
+4. **`appear`:** When transitions are enabled, `appear` is **on** unless explicitly set to `false`.
+
+#### CSS variables and timing
+
+- **Global** `duration` / `delay` (string `CssTime`): set on the wrapper as `--route-transition-duration`, `--animate-duration`, `--route-transition-delay`, `--animate-delay`.
+- **Per-phase** `{ enter?, leave? }`: applied on the transitioning element in `before-appear` / `before-enter` / `before-leave` (overrides globals for that phase when set).
+- **Class tokens:** `enterClass` / `leaveClass` may omit the `animate__` prefix; `animate__animated` is added when missing.
+
+#### Shape (reference)
+
+```ts
+type CssTime = `${number}ms` | `${number}s`
+type PhaseValue<T> = T | { enter?: T; leave?: T }
+
+meta.transition = {
+  name?: string // named CSS transition, e.g. cinematic-fade | fade-slide | fade
+  enterClass?: string // animate.css enter, e.g. zoomIn or animate__zoomIn
+  leaveClass?: string // animate.css leave
+  duration?: PhaseValue<CssTime>
+  delay?: PhaseValue<CssTime>
+  appear?: boolean
+  mode?: 'default' | 'out-in' | 'in-out'
+}
+```
+
+#### Example (class mode + phased duration)
 
 ```ts
 meta.transition = {
-  name?: string
-  enterTransition?: string
-  leaveTransition?: string
-  duration?: string
+  enterClass: 'zoomIn',
+  leaveClass: 'zoomOut',
+  duration: { enter: '600ms', leave: '400ms' },
 }
 ```

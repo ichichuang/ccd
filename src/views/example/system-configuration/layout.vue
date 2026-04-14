@@ -7,8 +7,6 @@ import { goToRoute } from '@/router/utils/helper'
 const layoutStore = useLayoutStore()
 const deviceStore = useDeviceStore()
 
-const pageReady = ref<boolean>(true)
-
 const COPY_TOAST_GROUP = 'tr' as const
 
 const { copy: copyToClipboard, isSupported: isClipboardSupported } = useClipboard({
@@ -34,9 +32,9 @@ const modeOptions = computed<Array<{ label: string; value: AdminLayoutMode }>>((
 ])
 
 const transitionOptions: Array<{ label: string; value: string }> = [
-  { label: 'layout-fixed', value: 'layout-fixed' },
-  { label: 'layout-spring', value: 'layout-spring' },
-  { label: 'layout-smooth', value: 'layout-smooth' },
+  { label: 'Cinematic（影视级模糊阻尼）', value: 'cinematic-fade' },
+  { label: 'Fade slide（横向位移）', value: 'fade-slide' },
+  { label: 'Fade（透明度）', value: 'fade' },
 ]
 
 const visibilityRows = computed<VisibilityRowConfig[]>(() => {
@@ -169,11 +167,7 @@ async function copyText(text: string, label: string): Promise<void> {
     class="col-stretch"
     data-archetype="A1-toolbar-content"
   >
-    <AnimateWrapper
-      :show="pageReady"
-      enter="fadeInUp"
-      leave="fadeOut"
-    >
+    <AnimateWrapper enter="fadeInUp">
       <div class="col-stretch gap-md min-h-0 min-w-0">
         <div class="layout-narrow col-stretch gap-md min-w-0">
           <!-- Page header — glass-panel -->

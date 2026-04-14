@@ -178,6 +178,7 @@ const zhCN = {
           ratioLayout: '固定比例布局 (16:9)',
           reuseWindow: '窗口级复用机制',
           transition: '路由级过渡动画',
+          keepAlive: '页面缓存 (KeepAlive)',
         },
         directives: {
           root: 'Vue 指令合集',

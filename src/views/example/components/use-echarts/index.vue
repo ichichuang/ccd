@@ -491,8 +491,6 @@ onBeforeUnmount(() => {
   if (cleanupConnectHandlers) cleanupConnectHandlers()
   if (cleanupPieConnectHandlers) cleanupPieConnectHandlers()
 })
-
-const pageReady = ref<boolean>(true)
 </script>
 
 <template>
@@ -500,548 +498,538 @@ const pageReady = ref<boolean>(true)
     class="col-stretch"
     data-archetype="A1-toolbar-content"
   >
-    <AnimateWrapper
-      :show="pageReady"
-      enter="fadeInUp"
-      leave="fadeOut"
-    >
-      <div class="col-stretch gap-md min-h-0 min-w-0">
-        <div class="layout-narrow col-stretch gap-md min-w-0">
-          <header class="shrink-0 glass-panel col-stretch gap-md min-w-0">
-            <div class="row-between gap-md min-w-0">
-              <div class="row-start gap-sm min-w-0 flex-wrap">
-                <div class="glass-icon-box shrink-0">
-                  <Icons
-                    name="i-lucide-chart-area"
-                    size="xl"
-                    class="text-primary"
-                  />
-                </div>
-                <div class="col-stretch gap-xs min-w-0">
-                  <div class="row-start gap-xs min-w-0 flex-wrap">
-                    <span class="text-lg font-bold text-foreground text-no-wrap">UseEcharts</span>
-                    <span
-                      class="surface-primary rounded-md px-sm py-xs text-xs font-semibold uppercase"
-                    >
-                      COMPONENT
-                    </span>
-                  </div>
-                  <span class="text-sm text-muted-foreground text-ellipsis-1">
-                    ECharts 集成示例：基础、动态、高级、多图表联动、自定义配色、事件与 Ref。
+    <div class="col-stretch gap-md min-h-0 min-w-0">
+      <div class="layout-narrow col-stretch gap-md min-w-0">
+        <header class="shrink-0 glass-panel col-stretch gap-md min-w-0">
+          <div class="row-between gap-md min-w-0">
+            <div class="row-start gap-sm min-w-0 flex-wrap">
+              <div class="glass-icon-box shrink-0">
+                <Icons
+                  name="i-lucide-chart-area"
+                  size="xl"
+                  class="text-primary"
+                />
+              </div>
+              <div class="col-stretch gap-xs min-w-0">
+                <div class="row-start gap-xs min-w-0 flex-wrap">
+                  <span class="text-lg font-bold text-foreground text-no-wrap">UseEcharts</span>
+                  <span
+                    class="surface-primary rounded-md px-sm py-xs text-xs font-semibold uppercase"
+                  >
+                    COMPONENT
                   </span>
                 </div>
+                <span class="text-sm text-muted-foreground text-ellipsis-1">
+                  ECharts 集成示例：基础、动态、高级、多图表联动、自定义配色、事件与 Ref。
+                </span>
               </div>
             </div>
-          </header>
+          </div>
+        </header>
 
-          <Tabs
-            v-model:value="activeTabModel"
-            class="col-fill"
-          >
-            <div class="shrink-0 row-between border-b border-border pr-md">
-              <TabList class="border-0!">
-                <Tab value="basic">基础</Tab>
-                <Tab value="dynamic">动态</Tab>
-                <Tab value="advanced">高级</Tab>
-                <Tab value="connect">多图表联动</Tab>
-                <Tab value="customTheme">自定义配色</Tab>
-                <Tab value="eventsRef">事件与 Ref</Tab>
-              </TabList>
-            </div>
+        <Tabs
+          v-model:value="activeTabModel"
+          class="col-fill"
+        >
+          <div class="shrink-0 row-between border-b border-border pr-md">
+            <TabList class="border-0!">
+              <Tab value="basic">基础</Tab>
+              <Tab value="dynamic">动态</Tab>
+              <Tab value="advanced">高级</Tab>
+              <Tab value="connect">多图表联动</Tab>
+              <Tab value="customTheme">自定义配色</Tab>
+              <Tab value="eventsRef">事件与 Ref</Tab>
+            </TabList>
+          </div>
 
-            <TabPanels class="col-fill overflow-hidden p-0">
-              <TabPanel
-                v-for="tab in TAB_KEYS"
-                :key="tab"
-                :value="tab"
-                class="col-fill"
-              >
-                <div class="flex-1 min-h-0 row-start gap-md items-stretch overflow-hidden min-w-0">
-                  <!-- 局部滚动：图表示例区内容长度远超单屏，保持本区独立滚动避免影响右侧面板定位 -->
-                  <!-- activeTab === tab：仅挂载当前激活分舵，避免隐藏 Tab 内 ECharts 在 0×0 容器初始化 -->
-                  <CScrollbar>
-                    <div class="col-stretch gap-md p-md min-w-0">
-                      <!-- 基础 -->
-                      <template v-if="tab === 'basic' && activeTab === tab">
-                        <ChartDemoCard
-                          title="基础用法"
-                          description="单图折线，width/height 默认，主题由 useChartTheme 自动合并。无 series.areaStyle 的折线不受右侧 lineArea 透明度滑块影响。"
-                          chart-height="26vh"
-                        >
-                          <UseEcharts
-                            :option="lineOptionComputed"
-                            :theme-config="themeConfig"
-                            :renderer="renderer"
-                            :loading="chartLoading"
-                          />
-                        </ChartDemoCard>
-                        <ChartDemoCard
-                          title="多类型与尺寸"
-                          description="折线、柱状、饼图。无面积折线请用 lineArea 滑块（见下方卡片）；中间柱图用「柱状图透明度」；饼图不适用柱图透明度滑块。"
-                          chart-height="28vh"
-                        >
-                          <div class="layout-full grid grid-cols-1 md:grid-cols-3 gap-md">
-                            <div class="layout-full">
-                              <UseEcharts
-                                :option="lineOptionComputed"
-                                :theme-config="themeConfig"
-                                :renderer="renderer"
-                                :loading="chartLoading"
-                              />
-                            </div>
-                            <div class="layout-full">
-                              <UseEcharts
-                                :option="barOptionComputed"
-                                :theme-config="themeConfig"
-                                :renderer="renderer"
-                                :loading="chartLoading"
-                              />
-                            </div>
-                            <div class="layout-full">
-                              <UseEcharts
-                                :option="pieOptionComputed"
-                                :theme-config="themeConfig"
-                                :renderer="renderer"
-                                :loading="chartLoading"
-                              />
-                            </div>
+          <TabPanels class="col-fill overflow-hidden p-0">
+            <TabPanel
+              v-for="tab in TAB_KEYS"
+              :key="tab"
+              :value="tab"
+              class="col-fill"
+            >
+              <div class="flex-1 min-h-0 row-start gap-md items-stretch overflow-hidden min-w-0">
+                <!-- 局部滚动：图表示例区内容长度远超单屏，保持本区独立滚动避免影响右侧面板定位 -->
+                <!-- activeTab === tab：仅挂载当前激活分舵，避免隐藏 Tab 内 ECharts 在 0×0 容器初始化 -->
+                <CScrollbar>
+                  <div class="col-stretch gap-md p-md min-w-0">
+                    <!-- 基础 -->
+                    <template v-if="tab === 'basic' && activeTab === tab">
+                      <ChartDemoCard
+                        title="基础用法"
+                        description="单图折线，width/height 默认，主题由 useChartTheme 自动合并。无 series.areaStyle 的折线不受右侧 lineArea 透明度滑块影响。"
+                        chart-height="26vh"
+                      >
+                        <UseEcharts
+                          :option="lineOptionComputed"
+                          :theme-config="themeConfig"
+                          :renderer="renderer"
+                          :loading="chartLoading"
+                        />
+                      </ChartDemoCard>
+                      <ChartDemoCard
+                        title="多类型与尺寸"
+                        description="折线、柱状、饼图。无面积折线请用 lineArea 滑块（见下方卡片）；中间柱图用「柱状图透明度」；饼图不适用柱图透明度滑块。"
+                        chart-height="28vh"
+                      >
+                        <div class="layout-full grid grid-cols-1 md:grid-cols-3 gap-md">
+                          <div class="layout-full">
+                            <UseEcharts
+                              :option="lineOptionComputed"
+                              :theme-config="themeConfig"
+                              :renderer="renderer"
+                              :loading="chartLoading"
+                            />
                           </div>
-                        </ChartDemoCard>
-                        <ChartDemoCard
-                          title="lineArea 透明度（带面积填充的折线）"
-                          description="右侧「lineArea 透明度」滑块控制本图面积填充透明度。"
-                          chart-height="40vh"
-                        >
-                          <UseEcharts
-                            :option="basicLineWithAreaOption"
-                            :theme-config="themeConfig"
-                            :renderer="renderer"
-                            :loading="chartLoading"
-                          />
-                        </ChartDemoCard>
-                      </template>
+                          <div class="layout-full">
+                            <UseEcharts
+                              :option="barOptionComputed"
+                              :theme-config="themeConfig"
+                              :renderer="renderer"
+                              :loading="chartLoading"
+                            />
+                          </div>
+                          <div class="layout-full">
+                            <UseEcharts
+                              :option="pieOptionComputed"
+                              :theme-config="themeConfig"
+                              :renderer="renderer"
+                              :loading="chartLoading"
+                            />
+                          </div>
+                        </div>
+                      </ChartDemoCard>
+                      <ChartDemoCard
+                        title="lineArea 透明度（带面积填充的折线）"
+                        description="右侧「lineArea 透明度」滑块控制本图面积填充透明度。"
+                        chart-height="40vh"
+                      >
+                        <UseEcharts
+                          :option="basicLineWithAreaOption"
+                          :theme-config="themeConfig"
+                          :renderer="renderer"
+                          :loading="chartLoading"
+                        />
+                      </ChartDemoCard>
+                    </template>
 
-                      <!-- 动态 -->
-                      <template v-if="tab === 'dynamic' && activeTab === tab">
-                        <ChartDemoCard
-                          title="动态数据"
-                          description="点击刷新随机数据；Loading 由全局控制或本 Tab 控制。柱状图受右侧「柱状图透明度」滑块调节（opacity.bar）。"
-                          chart-height="30vh"
-                        >
-                          <UseEcharts
-                            :option="dynamicOption"
-                            :theme-config="themeConfig"
-                            :loading="dynamicLoading || chartLoading"
-                            :renderer="renderer"
+                    <!-- 动态 -->
+                    <template v-if="tab === 'dynamic' && activeTab === tab">
+                      <ChartDemoCard
+                        title="动态数据"
+                        description="点击刷新随机数据；Loading 由全局控制或本 Tab 控制。柱状图受右侧「柱状图透明度」滑块调节（opacity.bar）。"
+                        chart-height="30vh"
+                      >
+                        <UseEcharts
+                          :option="dynamicOption"
+                          :theme-config="themeConfig"
+                          :loading="dynamicLoading || chartLoading"
+                          :renderer="renderer"
+                        />
+                        <template #actions>
+                          <Button
+                            label="刷新数据"
+                            size="small"
+                            @click="refreshData"
                           />
-                          <template #actions>
-                            <Button
-                              label="刷新数据"
-                              size="small"
-                              @click="refreshData"
-                            />
-                          </template>
-                        </ChartDemoCard>
-                        <ChartDemoCard
-                          title="轮询更新（每 5 秒）"
-                          description="模拟后台轮询：每 5 秒平滑追加一条数据，不打断主题与尺寸系统。折线带面积填充，可配合右侧 lineArea 透明度观察效果。"
-                          chart-height="30vh"
-                        >
-                          <UseEcharts
-                            :option="pollingOption"
-                            :theme-config="themeConfig"
-                            :renderer="renderer"
-                            :loading="chartLoading"
+                        </template>
+                      </ChartDemoCard>
+                      <ChartDemoCard
+                        title="轮询更新（每 5 秒）"
+                        description="模拟后台轮询：每 5 秒平滑追加一条数据，不打断主题与尺寸系统。折线带面积填充，可配合右侧 lineArea 透明度观察效果。"
+                        chart-height="30vh"
+                      >
+                        <UseEcharts
+                          :option="pollingOption"
+                          :theme-config="themeConfig"
+                          :renderer="renderer"
+                          :loading="chartLoading"
+                        />
+                        <template #actions>
+                          <Button
+                            :label="pollingRunning ? '停止轮询' : '开始轮询'"
+                            size="small"
+                            @click="pollingRunning ? stopPolling() : startPolling()"
                           />
-                          <template #actions>
-                            <Button
-                              :label="pollingRunning ? '停止轮询' : '开始轮询'"
-                              size="small"
-                              @click="pollingRunning ? stopPolling() : startPolling()"
-                            />
-                          </template>
-                        </ChartDemoCard>
-                        <ChartDemoCard
-                          title="自动切换悬停高亮（每 5 秒）"
-                          description="柱状图自动循环高亮每个数据项，展示程序化控制图表交互的能力。柱条透明度由右侧「柱状图透明度」控制。"
-                          chart-height="30vh"
-                        >
-                          <UseEcharts
-                            ref="autoHighlightChartRef"
-                            :option="autoHighlightOption"
-                            :theme-config="themeConfig"
-                            :renderer="renderer"
-                            :loading="chartLoading"
+                        </template>
+                      </ChartDemoCard>
+                      <ChartDemoCard
+                        title="自动切换悬停高亮（每 5 秒）"
+                        description="柱状图自动循环高亮每个数据项，展示程序化控制图表交互的能力。柱条透明度由右侧「柱状图透明度」控制。"
+                        chart-height="30vh"
+                      >
+                        <UseEcharts
+                          ref="autoHighlightChartRef"
+                          :option="autoHighlightOption"
+                          :theme-config="themeConfig"
+                          :renderer="renderer"
+                          :loading="chartLoading"
+                        />
+                        <template #actions>
+                          <Button
+                            :label="autoHighlightRunning ? '停止高亮' : '开始高亮'"
+                            size="small"
+                            @click="handleToggleAutoHighlight"
                           />
-                          <template #actions>
-                            <Button
-                              :label="autoHighlightRunning ? '停止高亮' : '开始高亮'"
-                              size="small"
-                              @click="handleToggleAutoHighlight"
-                            />
-                          </template>
-                        </ChartDemoCard>
-                      </template>
+                        </template>
+                      </ChartDemoCard>
+                    </template>
 
-                      <!-- 高级 -->
-                      <template v-if="tab === 'advanced' && activeTab === tab">
-                        <ChartDemoCard
-                          title="工具箱与标记点/线"
-                          description="toolboxConfig、markPointConfig、markLineConfig。柱状图可配合右侧「柱状图透明度」滑块。"
-                          chart-height="32vh"
-                        >
-                          <UseEcharts
-                            :option="advancedBarWithMarkOption"
-                            :theme-config="themeConfig"
-                            :renderer="renderer"
-                            :loading="chartLoading"
-                            :toolbox-config="toolboxConfig"
-                            :mark-point-config="markPointConfig"
-                            :mark-line-config="markLineConfig"
-                          />
-                        </ChartDemoCard>
-                        <ChartDemoCard
-                          title="热力图（VisualMap）"
-                          description="visualMapConfig。"
-                          chart-height="28vh"
-                        >
-                          <UseEcharts
-                            :option="advancedHeatmapOption"
-                            :theme-config="themeConfig"
-                            :renderer="renderer"
-                            :loading="chartLoading"
-                            :visual-map-config="visualMapConfig"
-                          />
-                        </ChartDemoCard>
-                        <ChartDemoCard
-                          title="多系列折线（Brush）"
-                          description="toolboxConfig、brushConfig。"
-                          chart-height="34vh"
-                        >
-                          <UseEcharts
-                            :option="advancedMultiSeriesLineOption"
-                            :theme-config="themeConfig"
-                            :renderer="renderer"
-                            :loading="chartLoading"
-                            :toolbox-config="toolboxConfig"
-                            :brush-config="brushConfig"
-                          />
-                        </ChartDemoCard>
-                      </template>
+                    <!-- 高级 -->
+                    <template v-if="tab === 'advanced' && activeTab === tab">
+                      <ChartDemoCard
+                        title="工具箱与标记点/线"
+                        description="toolboxConfig、markPointConfig、markLineConfig。柱状图可配合右侧「柱状图透明度」滑块。"
+                        chart-height="32vh"
+                      >
+                        <UseEcharts
+                          :option="advancedBarWithMarkOption"
+                          :theme-config="themeConfig"
+                          :renderer="renderer"
+                          :loading="chartLoading"
+                          :toolbox-config="toolboxConfig"
+                          :mark-point-config="markPointConfig"
+                          :mark-line-config="markLineConfig"
+                        />
+                      </ChartDemoCard>
+                      <ChartDemoCard
+                        title="热力图（VisualMap）"
+                        description="visualMapConfig。"
+                        chart-height="28vh"
+                      >
+                        <UseEcharts
+                          :option="advancedHeatmapOption"
+                          :theme-config="themeConfig"
+                          :renderer="renderer"
+                          :loading="chartLoading"
+                          :visual-map-config="visualMapConfig"
+                        />
+                      </ChartDemoCard>
+                      <ChartDemoCard
+                        title="多系列折线（Brush）"
+                        description="toolboxConfig、brushConfig。"
+                        chart-height="34vh"
+                      >
+                        <UseEcharts
+                          :option="advancedMultiSeriesLineOption"
+                          :theme-config="themeConfig"
+                          :renderer="renderer"
+                          :loading="chartLoading"
+                          :toolbox-config="toolboxConfig"
+                          :brush-config="brushConfig"
+                        />
+                      </ChartDemoCard>
+                    </template>
 
-                      <!-- 多图联动 -->
-                      <template v-if="tab === 'connect' && activeTab === tab">
-                        <ChartDemoCard
-                          title="多图表联动"
-                          description="同一组数据：左折线、中柱状、右面积折线；鼠标悬停同步，按钮可程序化高亮与查看状态。"
-                          chart-height="26vh"
-                        >
-                          <template #actions>
+                    <!-- 多图联动 -->
+                    <template v-if="tab === 'connect' && activeTab === tab">
+                      <ChartDemoCard
+                        title="多图表联动"
+                        description="同一组数据：左折线、中柱状、右面积折线；鼠标悬停同步，按钮可程序化高亮与查看状态。"
+                        chart-height="26vh"
+                      >
+                        <template #actions>
+                          <Button
+                            label="同步高亮第 3 点"
+                            size="small"
+                            @click="handleTriggerConnect"
+                          />
+                          <Button
+                            label="getConnectState"
+                            size="small"
+                            severity="secondary"
+                            @click="handleGetConnectState"
+                          />
+                        </template>
+                        <div class="layout-full grid grid-cols-1 md:grid-cols-3 gap-md">
+                          <div class="layout-full">
+                            <UseEcharts
+                              ref="chartRef"
+                              :option="connectLineOption"
+                              :theme-config="themeConfig"
+                              :renderer="renderer"
+                              :loading="chartLoading"
+                              :group="CONNECT_GROUP_ID"
+                              @chart-ready="onConnectChartReady"
+                            />
+                          </div>
+                          <div class="layout-full">
+                            <UseEcharts
+                              ref="chartRef2"
+                              :option="connectBarOption"
+                              :theme-config="themeConfig"
+                              :renderer="renderer"
+                              :loading="chartLoading"
+                              :group="CONNECT_GROUP_ID"
+                              @chart-ready="onConnectChartReady"
+                            />
+                          </div>
+                          <div class="layout-full">
+                            <UseEcharts
+                              ref="chartRef3"
+                              :option="connectAreaOption"
+                              :theme-config="themeConfig"
+                              :renderer="renderer"
+                              :loading="chartLoading"
+                              :group="CONNECT_GROUP_ID"
+                              @chart-ready="onConnectChartReady"
+                            />
+                          </div>
+                        </div>
+                      </ChartDemoCard>
+
+                      <ChartDemoCard
+                        title="多图表联动（折线 + 柱状 + 饼图）"
+                        description="同一组数据：折线、柱状、饼图三个视角；悬停与高亮相互联动。"
+                        chart-height="28vh"
+                      >
+                        <template #actions>
+                          <Button
+                            label="同步高亮第 3 点（线/柱/饼）"
+                            size="small"
+                            @click="handleTriggerConnectPieGroup"
+                          />
+                        </template>
+                        <div class="layout-full grid grid-cols-1 md:grid-cols-3 gap-md">
+                          <div class="layout-full">
+                            <UseEcharts
+                              ref="pieLineRef"
+                              :option="connectLineOption"
+                              :theme-config="themeConfig"
+                              :renderer="renderer"
+                              :loading="chartLoading"
+                              :group="CONNECT_GROUP_ID"
+                              @chart-ready="onPieChartReady"
+                            />
+                          </div>
+                          <div class="layout-full">
+                            <UseEcharts
+                              ref="pieBarRef"
+                              :option="connectBarOption"
+                              :theme-config="themeConfig"
+                              :renderer="renderer"
+                              :loading="chartLoading"
+                              :group="CONNECT_GROUP_ID"
+                              @chart-ready="onPieChartReady"
+                            />
+                          </div>
+                          <div class="layout-full">
+                            <UseEcharts
+                              ref="pieRef"
+                              :option="connectPieOption"
+                              :theme-config="themeConfig"
+                              :renderer="renderer"
+                              :loading="chartLoading"
+                              :group="CONNECT_GROUP_ID"
+                              @chart-ready="onPieChartReady"
+                            />
+                          </div>
+                        </div>
+                      </ChartDemoCard>
+                    </template>
+
+                    <!-- 自定义配色：option.color 覆盖调色盘；右侧全局控制仍作用于主题合并（lineArea、渲染器、Loading 等） -->
+                    <template v-if="tab === 'customTheme' && activeTab === tab">
+                      <ChartDemoCard
+                        title="自定义配色"
+                        description="通过 option.color 传入自定义调色盘（红、橙、黄、绿）。该配置会优先覆盖默认主题色，但依然能响应右侧全局控制面板的透明度 (lineArea) 调节。"
+                        chart-height="36vh"
+                      >
+                        <UseEcharts
+                          :option="customThemeOption"
+                          :theme-config="themeConfig"
+                          :renderer="renderer"
+                          :loading="chartLoading"
+                        />
+                      </ChartDemoCard>
+                    </template>
+
+                    <!-- 事件与 Ref -->
+                    <template v-if="tab === 'eventsRef' && activeTab === tab">
+                      <ChartDemoCard
+                        title="事件"
+                        description="chartReady、finished、onClick、onLegendSelectChanged、onDataZoom。"
+                        chart-height="40vh"
+                      >
+                        <div class="row-start flex-wrap gap-xs text-muted-foreground text-sm mb-xs">
+                          <span>chartReady: {{ chartReadyFired ? '已触发' : '未触发' }}</span>
+                          <span>finished: {{ finishedFired ? '已触发' : '未触发' }}</span>
+                        </div>
+                        <UseEcharts
+                          :option="eventsRefOption"
+                          :theme-config="themeConfig"
+                          :renderer="renderer"
+                          :loading="chartLoading"
+                          :on-click="onChartClick"
+                          :on-legend-select-changed="onLegendSelectChanged"
+                          :on-data-zoom="onDataZoom"
+                          @chart-ready="onChartReady"
+                          @finished="onFinished"
+                        />
+                      </ChartDemoCard>
+                      <ChartDemoCard
+                        title="Ref 方法"
+                        description="通过下方按钮调用组件暴露的方法。"
+                        chart-height="40vh"
+                      >
+                        <div class="layout-full col-stretch gap-md">
+                          <div class="row-start flex-wrap gap-sm">
                             <Button
-                              label="同步高亮第 3 点"
+                              label="getChartInstance"
                               size="small"
-                              @click="handleTriggerConnect"
+                              @click="handleGetChartInstance"
                             />
                             <Button
-                              label="getConnectState"
+                              label="getEchartsInstance"
+                              size="small"
+                              @click="handleGetEchartsInstance"
+                            />
+                            <Button
+                              label="setOption(新数据)"
                               size="small"
                               severity="secondary"
-                              @click="handleGetConnectState"
+                              @click="handleSetOption"
                             />
-                          </template>
-                          <div class="layout-full grid grid-cols-1 md:grid-cols-3 gap-md">
-                            <div class="layout-full">
-                              <UseEcharts
-                                ref="chartRef"
-                                :option="connectLineOption"
-                                :theme-config="themeConfig"
-                                :renderer="renderer"
-                                :loading="chartLoading"
-                                :group="CONNECT_GROUP_ID"
-                                @chart-ready="onConnectChartReady"
-                              />
-                            </div>
-                            <div class="layout-full">
-                              <UseEcharts
-                                ref="chartRef2"
-                                :option="connectBarOption"
-                                :theme-config="themeConfig"
-                                :renderer="renderer"
-                                :loading="chartLoading"
-                                :group="CONNECT_GROUP_ID"
-                                @chart-ready="onConnectChartReady"
-                              />
-                            </div>
-                            <div class="layout-full">
-                              <UseEcharts
-                                ref="chartRef3"
-                                :option="connectAreaOption"
-                                :theme-config="themeConfig"
-                                :renderer="renderer"
-                                :loading="chartLoading"
-                                :group="CONNECT_GROUP_ID"
-                                @chart-ready="onConnectChartReady"
-                              />
-                            </div>
-                          </div>
-                        </ChartDemoCard>
-
-                        <ChartDemoCard
-                          title="多图表联动（折线 + 柱状 + 饼图）"
-                          description="同一组数据：折线、柱状、饼图三个视角；悬停与高亮相互联动。"
-                          chart-height="28vh"
-                        >
-                          <template #actions>
                             <Button
-                              label="同步高亮第 3 点（线/柱/饼）"
+                              label="resize"
                               size="small"
-                              @click="handleTriggerConnectPieGroup"
+                              severity="secondary"
+                              @click="handleResize"
                             />
-                          </template>
-                          <div class="layout-full grid grid-cols-1 md:grid-cols-3 gap-md">
-                            <div class="layout-full">
-                              <UseEcharts
-                                ref="pieLineRef"
-                                :option="connectLineOption"
-                                :theme-config="themeConfig"
-                                :renderer="renderer"
-                                :loading="chartLoading"
-                                :group="CONNECT_GROUP_ID"
-                                @chart-ready="onPieChartReady"
-                              />
-                            </div>
-                            <div class="layout-full">
-                              <UseEcharts
-                                ref="pieBarRef"
-                                :option="connectBarOption"
-                                :theme-config="themeConfig"
-                                :renderer="renderer"
-                                :loading="chartLoading"
-                                :group="CONNECT_GROUP_ID"
-                                @chart-ready="onPieChartReady"
-                              />
-                            </div>
-                            <div class="layout-full">
-                              <UseEcharts
-                                ref="pieRef"
-                                :option="connectPieOption"
-                                :theme-config="themeConfig"
-                                :renderer="renderer"
-                                :loading="chartLoading"
-                                :group="CONNECT_GROUP_ID"
-                                @chart-ready="onPieChartReady"
-                              />
-                            </div>
-                          </div>
-                        </ChartDemoCard>
-                      </template>
-
-                      <!-- 自定义配色：option.color 覆盖调色盘；右侧全局控制仍作用于主题合并（lineArea、渲染器、Loading 等） -->
-                      <template v-if="tab === 'customTheme' && activeTab === tab">
-                        <ChartDemoCard
-                          title="自定义配色"
-                          description="通过 option.color 传入自定义调色盘（红、橙、黄、绿）。该配置会优先覆盖默认主题色，但依然能响应右侧全局控制面板的透明度 (lineArea) 调节。"
-                          chart-height="36vh"
-                        >
-                          <UseEcharts
-                            :option="customThemeOption"
-                            :theme-config="themeConfig"
-                            :renderer="renderer"
-                            :loading="chartLoading"
-                          />
-                        </ChartDemoCard>
-                      </template>
-
-                      <!-- 事件与 Ref -->
-                      <template v-if="tab === 'eventsRef' && activeTab === tab">
-                        <ChartDemoCard
-                          title="事件"
-                          description="chartReady、finished、onClick、onLegendSelectChanged、onDataZoom。"
-                          chart-height="40vh"
-                        >
-                          <div
-                            class="row-start flex-wrap gap-xs text-muted-foreground text-sm mb-xs"
-                          >
-                            <span>chartReady: {{ chartReadyFired ? '已触发' : '未触发' }}</span>
-                            <span>finished: {{ finishedFired ? '已触发' : '未触发' }}</span>
+                            <Button
+                              label="clear"
+                              size="small"
+                              severity="danger"
+                              @click="handleClear"
+                            />
                           </div>
                           <UseEcharts
+                            ref="chartRefMethods"
                             :option="eventsRefOption"
                             :theme-config="themeConfig"
                             :renderer="renderer"
                             :loading="chartLoading"
-                            :on-click="onChartClick"
-                            :on-legend-select-changed="onLegendSelectChanged"
-                            :on-data-zoom="onDataZoom"
-                            @chart-ready="onChartReady"
-                            @finished="onFinished"
+                            :manual-update="true"
                           />
-                        </ChartDemoCard>
-                        <ChartDemoCard
-                          title="Ref 方法"
-                          description="通过下方按钮调用组件暴露的方法。"
-                          chart-height="40vh"
-                        >
-                          <div class="layout-full col-stretch gap-md">
-                            <div class="row-start flex-wrap gap-sm">
-                              <Button
-                                label="getChartInstance"
-                                size="small"
-                                @click="handleGetChartInstance"
-                              />
-                              <Button
-                                label="getEchartsInstance"
-                                size="small"
-                                @click="handleGetEchartsInstance"
-                              />
-                              <Button
-                                label="setOption(新数据)"
-                                size="small"
-                                severity="secondary"
-                                @click="handleSetOption"
-                              />
-                              <Button
-                                label="resize"
-                                size="small"
-                                severity="secondary"
-                                @click="handleResize"
-                              />
-                              <Button
-                                label="clear"
-                                size="small"
-                                severity="danger"
-                                @click="handleClear"
-                              />
-                            </div>
-                            <UseEcharts
-                              ref="chartRefMethods"
-                              :option="eventsRefOption"
-                              :theme-config="themeConfig"
-                              :renderer="renderer"
-                              :loading="chartLoading"
-                              :manual-update="true"
-                            />
-                          </div>
-                        </ChartDemoCard>
-                      </template>
+                        </div>
+                      </ChartDemoCard>
+                    </template>
+                  </div>
+                </CScrollbar>
+
+                <!-- 右侧：全局控制（basic/dynamic/customTheme/connect/advanced/eventsRef） -->
+                <div
+                  v-if="
+                    activeTab === tab &&
+                    (tab === 'basic' ||
+                      tab === 'customTheme' ||
+                      tab === 'dynamic' ||
+                      tab === 'connect' ||
+                      tab === 'advanced' ||
+                      tab === 'eventsRef')
+                  "
+                  class="w-72 shrink-0 min-h-0 col-stretch hidden xl:flex min-w-0"
+                >
+                  <!-- 局部滚动：右侧全局控制区需独立滚动，避免与左侧主内容滚动耦合 -->
+                  <CScrollbar class="col-fill layout-full">
+                    <div class="material-elevated col-stretch">
+                      <GlobalControls
+                        :theme-enabled="themeEnabled"
+                        :line-area-opacity="lineAreaOpacity"
+                        :bar-opacity="barOpacity"
+                        :renderer="renderer"
+                        :chart-loading="chartLoading"
+                        @update:theme-enabled="themeEnabled = $event"
+                        @update:line-area-opacity="lineAreaOpacity = $event"
+                        @update:bar-opacity="barOpacity = $event"
+                        @update:renderer="renderer = $event"
+                        @update:chart-loading="chartLoading = $event"
+                      />
                     </div>
                   </CScrollbar>
-
-                  <!-- 右侧：全局控制（basic/dynamic/customTheme/connect/advanced/eventsRef） -->
-                  <div
-                    v-if="
-                      activeTab === tab &&
-                      (tab === 'basic' ||
-                        tab === 'customTheme' ||
-                        tab === 'dynamic' ||
-                        tab === 'connect' ||
-                        tab === 'advanced' ||
-                        tab === 'eventsRef')
-                    "
-                    class="w-72 shrink-0 min-h-0 col-stretch hidden xl:flex min-w-0"
-                  >
-                    <!-- 局部滚动：右侧全局控制区需独立滚动，避免与左侧主内容滚动耦合 -->
-                    <CScrollbar class="col-fill layout-full">
-                      <div class="material-elevated col-stretch">
-                        <GlobalControls
-                          :theme-enabled="themeEnabled"
-                          :line-area-opacity="lineAreaOpacity"
-                          :bar-opacity="barOpacity"
-                          :renderer="renderer"
-                          :chart-loading="chartLoading"
-                          @update:theme-enabled="themeEnabled = $event"
-                          @update:line-area-opacity="lineAreaOpacity = $event"
-                          @update:bar-opacity="barOpacity = $event"
-                          @update:renderer="renderer = $event"
-                          @update:chart-loading="chartLoading = $event"
-                        />
-                      </div>
-                    </CScrollbar>
-                  </div>
-
-                  <!-- 右侧：联动操作日志（仅 connect 显示） -->
-                  <div
-                    v-if="tab === 'connect' && activeTab === tab"
-                    class="w-72 shrink-0 min-h-0 col-stretch hidden xl:flex min-w-0"
-                  >
-                    <!-- 局部滚动：联动日志为独立面板，保留独立滚动便于长日志查看 -->
-                    <CScrollbar class="col-fill layout-full">
-                      <div class="material-elevated col-stretch">
-                        <div class="col-stretch gap-md">
-                          <div class="text-foreground text-md font-semibold">联动操作日志</div>
-                          <div class="code-block">
-                            <div
-                              v-for="(line, i) in connectLog"
-                              :key="i"
-                              class="text-foreground mb-xs last:mb-0"
-                            >
-                              {{ line }}
-                            </div>
-                            <div
-                              v-if="connectLog.length === 0"
-                              class="text-muted-foreground"
-                            >
-                              暂无操作
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </CScrollbar>
-                  </div>
-
-                  <!-- 右侧：事件与 Ref 日志（仅 eventsRef 显示） -->
-                  <div
-                    v-if="tab === 'eventsRef' && activeTab === tab"
-                    class="w-72 shrink-0 min-h-0 col-stretch hidden xl:flex min-w-0"
-                  >
-                    <!-- 局部滚动：事件与 Ref 日志独立滚动，确保操作区持续可见 -->
-                    <CScrollbar class="col-fill layout-full">
-                      <div class="material-elevated col-stretch">
-                        <div class="col-stretch gap-md">
-                          <div class="text-foreground text-md font-semibold">事件日志</div>
-                          <div class="code-block">
-                            <div
-                              v-for="(line, i) in eventLog"
-                              :key="i"
-                              class="text-foreground mb-xs last:mb-0"
-                            >
-                              {{ line }}
-                            </div>
-                            <div
-                              v-if="eventLog.length === 0"
-                              class="text-muted-foreground"
-                            >
-                              暂无
-                            </div>
-                          </div>
-                          <div class="text-foreground text-md font-semibold mt-md">
-                            Ref 操作日志
-                          </div>
-                          <div class="code-block">
-                            <div
-                              v-for="(line, i) in refMethodsLog"
-                              :key="i"
-                              class="text-foreground mb-xs last:mb-0"
-                            >
-                              {{ line }}
-                            </div>
-                            <div
-                              v-if="refMethodsLog.length === 0"
-                              class="text-muted-foreground"
-                            >
-                              暂无
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </CScrollbar>
-                  </div>
                 </div>
-              </TabPanel>
-            </TabPanels>
-          </Tabs>
-        </div>
+
+                <!-- 右侧：联动操作日志（仅 connect 显示） -->
+                <div
+                  v-if="tab === 'connect' && activeTab === tab"
+                  class="w-72 shrink-0 min-h-0 col-stretch hidden xl:flex min-w-0"
+                >
+                  <!-- 局部滚动：联动日志为独立面板，保留独立滚动便于长日志查看 -->
+                  <CScrollbar class="col-fill layout-full">
+                    <div class="material-elevated col-stretch">
+                      <div class="col-stretch gap-md">
+                        <div class="text-foreground text-md font-semibold">联动操作日志</div>
+                        <div class="code-block">
+                          <div
+                            v-for="(line, i) in connectLog"
+                            :key="i"
+                            class="text-foreground mb-xs last:mb-0"
+                          >
+                            {{ line }}
+                          </div>
+                          <div
+                            v-if="connectLog.length === 0"
+                            class="text-muted-foreground"
+                          >
+                            暂无操作
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </CScrollbar>
+                </div>
+
+                <!-- 右侧：事件与 Ref 日志（仅 eventsRef 显示） -->
+                <div
+                  v-if="tab === 'eventsRef' && activeTab === tab"
+                  class="w-72 shrink-0 min-h-0 col-stretch hidden xl:flex min-w-0"
+                >
+                  <!-- 局部滚动：事件与 Ref 日志独立滚动，确保操作区持续可见 -->
+                  <CScrollbar class="col-fill layout-full">
+                    <div class="material-elevated col-stretch">
+                      <div class="col-stretch gap-md">
+                        <div class="text-foreground text-md font-semibold">事件日志</div>
+                        <div class="code-block">
+                          <div
+                            v-for="(line, i) in eventLog"
+                            :key="i"
+                            class="text-foreground mb-xs last:mb-0"
+                          >
+                            {{ line }}
+                          </div>
+                          <div
+                            v-if="eventLog.length === 0"
+                            class="text-muted-foreground"
+                          >
+                            暂无
+                          </div>
+                        </div>
+                        <div class="text-foreground text-md font-semibold mt-md">Ref 操作日志</div>
+                        <div class="code-block">
+                          <div
+                            v-for="(line, i) in refMethodsLog"
+                            :key="i"
+                            class="text-foreground mb-xs last:mb-0"
+                          >
+                            {{ line }}
+                          </div>
+                          <div
+                            v-if="refMethodsLog.length === 0"
+                            class="text-muted-foreground"
+                          >
+                            暂无
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </CScrollbar>
+                </div>
+              </div>
+            </TabPanel>
+          </TabPanels>
+        </Tabs>
       </div>
-    </AnimateWrapper>
+    </div>
   </div>
 </template>

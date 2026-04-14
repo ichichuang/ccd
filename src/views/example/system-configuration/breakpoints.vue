@@ -16,8 +16,6 @@ type ProfileCard = {
 
 const deviceStore = useDeviceStore()
 
-const pageReady = ref<boolean>(true)
-
 const sandboxRef = useTemplateRef<HTMLElement>('sandboxRef')
 const { width: sandboxWidth } = useAppElementSize(sandboxRef, undefined, {
   mode: 'throttle',
@@ -62,11 +60,7 @@ const profileCards: readonly ProfileCard[] = [
     class="col-stretch"
     data-archetype="A1-toolbar-content"
   >
-    <AnimateWrapper
-      :show="pageReady"
-      enter="fadeInUp"
-      leave="fadeOut"
-    >
+    <AnimateWrapper enter="fadeInUp">
       <div class="col-stretch gap-md min-h-0 min-w-0">
         <div class="layout-narrow col-stretch gap-md min-w-0">
           <!-- Page header -->

@@ -176,8 +176,6 @@ onMounted(() => {
   refreshCacheStats()
   refreshReqStats()
 })
-
-const pageReady = ref<boolean>(true)
 </script>
 
 <template>
@@ -185,286 +183,275 @@ const pageReady = ref<boolean>(true)
     class="col-stretch"
     data-archetype="A1-toolbar-content"
   >
-    <AnimateWrapper
-      :show="pageReady"
-      enter="fadeInUp"
-      leave="fadeOut"
-    >
-      <div class="col-stretch gap-md min-h-0 min-w-0">
-        <div class="layout-narrow col-stretch gap-md min-w-0">
-          <header class="shrink-0 glass-panel col-stretch gap-md min-w-0">
-            <div class="row-between gap-md min-w-0">
-              <div class="row-start gap-sm min-w-0 flex-wrap">
-                <div class="glass-icon-box shrink-0">
-                  <Icons
-                    name="i-lucide-radar"
-                    size="xl"
-                    class="text-primary"
-                  />
-                </div>
-                <div class="col-stretch gap-xs min-w-0">
-                  <div class="row-start gap-xs min-w-0 flex-wrap">
-                    <span class="text-lg font-bold text-foreground text-no-wrap">
-                      HTTP Advanced
-                    </span>
-                    <span
-                      class="surface-info rounded-md px-sm py-xs text-xs font-semibold uppercase"
-                    >
-                      UTIL
-                    </span>
-                  </div>
-                  <span class="text-sm text-muted-foreground text-ellipsis-1">
-                    演示缓存 / 去重 / 重试 / 中止 / 请求统计 — 全部基于 @/utils/http 模块。
+    <div class="col-stretch gap-md min-h-0 min-w-0">
+      <div class="layout-narrow col-stretch gap-md min-w-0">
+        <header class="shrink-0 glass-panel col-stretch gap-md min-w-0">
+          <div class="row-between gap-md min-w-0">
+            <div class="row-start gap-sm min-w-0 flex-wrap">
+              <div class="glass-icon-box shrink-0">
+                <Icons
+                  name="i-lucide-radar"
+                  size="xl"
+                  class="text-primary"
+                />
+              </div>
+              <div class="col-stretch gap-xs min-w-0">
+                <div class="row-start gap-xs min-w-0 flex-wrap">
+                  <span class="text-lg font-bold text-foreground text-no-wrap">HTTP Advanced</span>
+                  <span class="surface-info rounded-md px-sm py-xs text-xs font-semibold uppercase">
+                    UTIL
                   </span>
                 </div>
+                <span class="text-sm text-muted-foreground text-ellipsis-1">
+                  演示缓存 / 去重 / 重试 / 中止 / 请求统计 — 全部基于 @/utils/http 模块。
+                </span>
               </div>
             </div>
-            <div class="text-xs text-muted-foreground">
-              覆盖能力：enableCache · cacheTTL · getCacheStats · deduplicate · RetryConfig ·
-              AbortController · getRequestStats。
-            </div>
-          </header>
+          </div>
+          <div class="text-xs text-muted-foreground">
+            覆盖能力：enableCache · cacheTTL · getCacheStats · deduplicate · RetryConfig ·
+            AbortController · getRequestStats。
+          </div>
+        </header>
 
-          <!-- Live Stats Bar -->
-          <section
-            class="material-elevated row-between gap-lg flex-wrap bg-primary/5 border-primary/20 min-w-0"
-          >
-            <div class="row-center gap-md min-w-0">
-              <Icons
-                name="i-lucide-activity"
-                class="text-primary"
-              />
-              <span class="font-bold text-foreground uppercase tracking-tight text-sm">
-                实时状态
+        <!-- Live Stats Bar -->
+        <section
+          class="material-elevated row-between gap-lg flex-wrap bg-primary/5 border-primary/20 min-w-0"
+        >
+          <div class="row-center gap-md min-w-0">
+            <Icons
+              name="i-lucide-activity"
+              class="text-primary"
+            />
+            <span class="font-bold text-foreground uppercase tracking-tight text-sm">实时状态</span>
+          </div>
+          <div class="row-center gap-lg flex-wrap min-w-0">
+            <div class="col-stretch gap-xs items-center">
+              <span class="text-xs text-muted-foreground">缓存条目</span>
+              <span class="text-lg font-bold text-foreground font-mono">
+                {{ cacheStats.size }}
               </span>
             </div>
-            <div class="row-center gap-lg flex-wrap min-w-0">
-              <div class="col-stretch gap-xs items-center">
-                <span class="text-xs text-muted-foreground">缓存条目</span>
-                <span class="text-lg font-bold text-foreground font-mono">
-                  {{ cacheStats.size }}
-                </span>
-              </div>
-              <div class="col-stretch gap-xs items-center">
-                <span class="text-xs text-muted-foreground">排队</span>
-                <span class="text-lg font-bold text-foreground font-mono">
-                  {{ reqStats.queueLength }}
-                </span>
-              </div>
-              <div class="col-stretch gap-xs items-center">
-                <span class="text-xs text-muted-foreground">运行中</span>
-                <span class="text-lg font-bold text-foreground font-mono">
-                  {{ reqStats.runningCount }}
-                </span>
-              </div>
-              <div class="col-stretch gap-xs items-center">
-                <span class="text-xs text-muted-foreground">并发上限</span>
-                <span class="text-lg font-bold text-foreground font-mono">
-                  {{ reqStats.maxConcurrent }}
-                </span>
-              </div>
-              <div class="row-center gap-sm min-w-0">
-                <Button
-                  label="清缓存"
-                  size="small"
-                  severity="secondary"
-                  variant="text"
-                  @click="onClearCache"
-                />
-                <Button
-                  label="清队列"
-                  size="small"
-                  severity="secondary"
-                  variant="text"
-                  @click="onClearRequests"
-                />
-              </div>
+            <div class="col-stretch gap-xs items-center">
+              <span class="text-xs text-muted-foreground">排队</span>
+              <span class="text-lg font-bold text-foreground font-mono">
+                {{ reqStats.queueLength }}
+              </span>
             </div>
-          </section>
-
-          <div class="grid grid-cols-1 xl:grid-cols-2 gap-md min-w-0">
-            <!-- Section 1: Cache -->
-            <section class="material-elevated col-stretch gap-lg min-w-0">
-              <div class="row-center gap-sm pb-sm mb-sm min-w-0">
-                <Icons
-                  name="i-lucide-database"
-                  class="text-primary"
-                />
-                <div class="col-stretch gap-xs min-w-0">
-                  <span class="font-bold text-foreground uppercase tracking-tight">
-                    缓存 / enableCache + cacheTTL
-                  </span>
-                  <span class="text-xs text-muted-foreground">
-                    第一次请求走网络，第二次命中缓存（30s TTL）。
-                  </span>
-                </div>
-              </div>
-
-              <div class="col-stretch gap-md min-w-0">
-                <div class="row-start gap-sm min-w-0">
-                  <Button
-                    label="GET /posts/1"
-                    size="small"
-                    :loading="cacheLoading"
-                    @click="runCacheDemo"
-                  />
-                  <Tag
-                    v-if="cacheElapsed > 0"
-                    :value="`${cacheElapsed}ms`"
-                    :severity="cacheElapsed < 10 ? 'success' : 'info'"
-                  />
-                </div>
-                <pre
-                  v-if="cacheResult"
-                  class="code-preview text-xs text-muted-foreground m-0"
-                  >{{ cacheResult }}</pre
-                >
-              </div>
-            </section>
-
-            <!-- Section 2: Dedup -->
-            <section class="material-elevated col-stretch gap-lg min-w-0">
-              <div class="row-center gap-sm pb-sm mb-sm min-w-0">
-                <Icons
-                  name="i-lucide-copy-check"
-                  class="text-primary"
-                />
-                <div class="col-stretch gap-xs min-w-0">
-                  <span class="font-bold text-foreground uppercase tracking-tight">
-                    去重 / deduplicate
-                  </span>
-                  <span class="text-xs text-muted-foreground">
-                    同时发起 5 个相同请求，实际仅执行 1 次网络调用。
-                  </span>
-                </div>
-              </div>
-
-              <div class="col-stretch gap-md min-w-0">
-                <Button
-                  label="发起 5 个并发 GET /posts/2"
-                  size="small"
-                  :loading="dedupLoading"
-                  @click="runDedupDemo"
-                />
-                <div
-                  v-if="dedupResults.length > 0"
-                  class="col-stretch gap-xs min-w-0"
-                >
-                  <div
-                    v-for="(r, i) in dedupResults"
-                    :key="i"
-                    class="text-xs text-muted-foreground row-center gap-xs min-w-0"
-                  >
-                    <Tag
-                      :value="`P${i + 1}`"
-                      severity="secondary"
-                      class="text-xs"
-                    />
-                    <span>{{ r }}</span>
-                  </div>
-                </div>
-              </div>
-            </section>
-
-            <!-- Section 3: Retry -->
-            <section class="material-elevated col-stretch gap-lg min-w-0">
-              <div class="row-center gap-sm pb-sm mb-sm min-w-0">
-                <Icons
-                  name="i-lucide-refresh-cw"
-                  class="text-primary"
-                />
-                <div class="col-stretch gap-xs min-w-0">
-                  <span class="font-bold text-foreground uppercase tracking-tight">
-                    重试 / RetryConfig
-                  </span>
-                  <span class="text-xs text-muted-foreground">
-                    请求无效端点，配置 2 次重试 + 500ms 延迟。
-                  </span>
-                </div>
-              </div>
-
-              <div class="col-stretch gap-md min-w-0">
-                <div class="bg-muted rounded-md px-md py-sm text-xs text-muted-foreground">
-                  <code>{ retries: 2, retryDelay: 500, retryCondition: () => true }</code>
-                </div>
-                <Button
-                  label="GET /posts/99999 (触发重试)"
-                  size="small"
-                  severity="warn"
-                  :loading="retryLoading"
-                  @click="runRetryDemo"
-                />
-                <div
-                  v-if="retryLog"
-                  class="text-xs text-muted-foreground"
-                >
-                  {{ retryLog }}
-                </div>
-              </div>
-            </section>
-
-            <!-- Section 4: Cancel -->
-            <section class="material-elevated col-stretch gap-lg min-w-0">
-              <div class="row-center gap-sm pb-sm mb-sm min-w-0">
-                <Icons
-                  name="i-lucide-x-circle"
-                  class="text-primary"
-                />
-                <div class="col-stretch gap-xs min-w-0">
-                  <span class="font-bold text-foreground uppercase tracking-tight">
-                    中止 / AbortController
-                  </span>
-                  <span class="text-xs text-muted-foreground">
-                    发起请求后立即中止，观测 AbortError。
-                  </span>
-                </div>
-              </div>
-
-              <div class="col-stretch gap-md min-w-0">
-                <div class="row-start gap-sm min-w-0">
-                  <Button
-                    label="发起请求"
-                    size="small"
-                    :loading="cancelLoading"
-                    @click="runCancelDemo"
-                  />
-                  <Button
-                    label="中止请求"
-                    size="small"
-                    severity="danger"
-                    :disabled="!cancelLoading"
-                    @click="abortRequest"
-                  />
-                </div>
-                <div
-                  v-if="cancelResult"
-                  class="text-xs text-muted-foreground"
-                >
-                  {{ cancelResult }}
-                </div>
-              </div>
-            </section>
+            <div class="col-stretch gap-xs items-center">
+              <span class="text-xs text-muted-foreground">运行中</span>
+              <span class="text-lg font-bold text-foreground font-mono">
+                {{ reqStats.runningCount }}
+              </span>
+            </div>
+            <div class="col-stretch gap-xs items-center">
+              <span class="text-xs text-muted-foreground">并发上限</span>
+              <span class="text-lg font-bold text-foreground font-mono">
+                {{ reqStats.maxConcurrent }}
+              </span>
+            </div>
+            <div class="row-center gap-sm min-w-0">
+              <Button
+                label="清缓存"
+                size="small"
+                severity="secondary"
+                variant="text"
+                @click="onClearCache"
+              />
+              <Button
+                label="清队列"
+                size="small"
+                severity="secondary"
+                variant="text"
+                @click="onClearRequests"
+              />
+            </div>
           </div>
+        </section>
 
-          <!-- Section 5: API Reference -->
+        <div class="grid grid-cols-1 xl:grid-cols-2 gap-md min-w-0">
+          <!-- Section 1: Cache -->
           <section class="material-elevated col-stretch gap-lg min-w-0">
             <div class="row-center gap-sm pb-sm mb-sm min-w-0">
               <Icons
-                name="i-lucide-upload"
+                name="i-lucide-database"
                 class="text-primary"
               />
               <div class="col-stretch gap-xs min-w-0">
                 <span class="font-bold text-foreground uppercase tracking-tight">
-                  文件上传 / 下载 API
+                  缓存 / enableCache + cacheTTL
                 </span>
                 <span class="text-xs text-muted-foreground">
-                  uploadFile / uploadFiles / downloadFile — 需要后端支持，此处展示 API 签名。
+                  第一次请求走网络，第二次命中缓存（30s TTL）。
                 </span>
               </div>
             </div>
 
-            <div class="bg-muted rounded-md p-md border-default border-border/40">
-              <pre class="code-preview text-xs text-muted-foreground m-0">
+            <div class="col-stretch gap-md min-w-0">
+              <div class="row-start gap-sm min-w-0">
+                <Button
+                  label="GET /posts/1"
+                  size="small"
+                  :loading="cacheLoading"
+                  @click="runCacheDemo"
+                />
+                <Tag
+                  v-if="cacheElapsed > 0"
+                  :value="`${cacheElapsed}ms`"
+                  :severity="cacheElapsed < 10 ? 'success' : 'info'"
+                />
+              </div>
+              <pre
+                v-if="cacheResult"
+                class="code-preview text-xs text-muted-foreground m-0"
+                >{{ cacheResult }}</pre
+              >
+            </div>
+          </section>
+
+          <!-- Section 2: Dedup -->
+          <section class="material-elevated col-stretch gap-lg min-w-0">
+            <div class="row-center gap-sm pb-sm mb-sm min-w-0">
+              <Icons
+                name="i-lucide-copy-check"
+                class="text-primary"
+              />
+              <div class="col-stretch gap-xs min-w-0">
+                <span class="font-bold text-foreground uppercase tracking-tight">
+                  去重 / deduplicate
+                </span>
+                <span class="text-xs text-muted-foreground">
+                  同时发起 5 个相同请求，实际仅执行 1 次网络调用。
+                </span>
+              </div>
+            </div>
+
+            <div class="col-stretch gap-md min-w-0">
+              <Button
+                label="发起 5 个并发 GET /posts/2"
+                size="small"
+                :loading="dedupLoading"
+                @click="runDedupDemo"
+              />
+              <div
+                v-if="dedupResults.length > 0"
+                class="col-stretch gap-xs min-w-0"
+              >
+                <div
+                  v-for="(r, i) in dedupResults"
+                  :key="i"
+                  class="text-xs text-muted-foreground row-center gap-xs min-w-0"
+                >
+                  <Tag
+                    :value="`P${i + 1}`"
+                    severity="secondary"
+                    class="text-xs"
+                  />
+                  <span>{{ r }}</span>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- Section 3: Retry -->
+          <section class="material-elevated col-stretch gap-lg min-w-0">
+            <div class="row-center gap-sm pb-sm mb-sm min-w-0">
+              <Icons
+                name="i-lucide-refresh-cw"
+                class="text-primary"
+              />
+              <div class="col-stretch gap-xs min-w-0">
+                <span class="font-bold text-foreground uppercase tracking-tight">
+                  重试 / RetryConfig
+                </span>
+                <span class="text-xs text-muted-foreground">
+                  请求无效端点，配置 2 次重试 + 500ms 延迟。
+                </span>
+              </div>
+            </div>
+
+            <div class="col-stretch gap-md min-w-0">
+              <div class="bg-muted rounded-md px-md py-sm text-xs text-muted-foreground">
+                <code>{ retries: 2, retryDelay: 500, retryCondition: () => true }</code>
+              </div>
+              <Button
+                label="GET /posts/99999 (触发重试)"
+                size="small"
+                severity="warn"
+                :loading="retryLoading"
+                @click="runRetryDemo"
+              />
+              <div
+                v-if="retryLog"
+                class="text-xs text-muted-foreground"
+              >
+                {{ retryLog }}
+              </div>
+            </div>
+          </section>
+
+          <!-- Section 4: Cancel -->
+          <section class="material-elevated col-stretch gap-lg min-w-0">
+            <div class="row-center gap-sm pb-sm mb-sm min-w-0">
+              <Icons
+                name="i-lucide-x-circle"
+                class="text-primary"
+              />
+              <div class="col-stretch gap-xs min-w-0">
+                <span class="font-bold text-foreground uppercase tracking-tight">
+                  中止 / AbortController
+                </span>
+                <span class="text-xs text-muted-foreground">
+                  发起请求后立即中止，观测 AbortError。
+                </span>
+              </div>
+            </div>
+
+            <div class="col-stretch gap-md min-w-0">
+              <div class="row-start gap-sm min-w-0">
+                <Button
+                  label="发起请求"
+                  size="small"
+                  :loading="cancelLoading"
+                  @click="runCancelDemo"
+                />
+                <Button
+                  label="中止请求"
+                  size="small"
+                  severity="danger"
+                  :disabled="!cancelLoading"
+                  @click="abortRequest"
+                />
+              </div>
+              <div
+                v-if="cancelResult"
+                class="text-xs text-muted-foreground"
+              >
+                {{ cancelResult }}
+              </div>
+            </div>
+          </section>
+        </div>
+
+        <!-- Section 5: API Reference -->
+        <section class="material-elevated col-stretch gap-lg min-w-0">
+          <div class="row-center gap-sm pb-sm mb-sm min-w-0">
+            <Icons
+              name="i-lucide-upload"
+              class="text-primary"
+            />
+            <div class="col-stretch gap-xs min-w-0">
+              <span class="font-bold text-foreground uppercase tracking-tight">
+                文件上传 / 下载 API
+              </span>
+              <span class="text-xs text-muted-foreground">
+                uploadFile / uploadFiles / downloadFile — 需要后端支持，此处展示 API 签名。
+              </span>
+            </div>
+          </div>
+
+          <div class="bg-muted rounded-md p-md border-default border-border/40">
+            <pre class="code-preview text-xs text-muted-foreground m-0">
 // 单文件上传
 uploadFile&lt;T&gt;(url: string, file: File, config?: UploadConfig): Promise&lt;T&gt;
 
@@ -479,50 +466,49 @@ addUploadTask(file: File, config?: UploadChunkConfig): string  // taskId
 pauseUploadTask(taskId: string): void
 resumeUploadTask(taskId: string): void
 cancelUploadTask(taskId: string): void</pre
-              >
-            </div>
-          </section>
+            >
+          </div>
+        </section>
 
-          <!-- Event Log -->
-          <section class="material-elevated col-stretch gap-md min-w-0">
-            <div class="row-between gap-sm min-w-0">
-              <div class="row-center gap-sm min-w-0">
-                <Icons
-                  name="i-lucide-terminal"
-                  class="text-accent"
-                />
-                <span class="font-bold text-foreground uppercase tracking-tight text-sm">
-                  事件日志
-                </span>
-              </div>
-              <Button
-                label="清空"
-                size="small"
-                severity="secondary"
-                variant="text"
-                @click="eventLog = []"
+        <!-- Event Log -->
+        <section class="material-elevated col-stretch gap-md min-w-0">
+          <div class="row-between gap-sm min-w-0">
+            <div class="row-center gap-sm min-w-0">
+              <Icons
+                name="i-lucide-terminal"
+                class="text-accent"
               />
+              <span class="font-bold text-foreground uppercase tracking-tight text-sm">
+                事件日志
+              </span>
+            </div>
+            <Button
+              label="清空"
+              size="small"
+              severity="secondary"
+              variant="text"
+              @click="eventLog = []"
+            />
+          </div>
+          <div
+            class="bg-muted rounded-md p-md border-default border-border/40 max-h-48 overflow-y-auto"
+          >
+            <div
+              v-for="(log, i) in eventLog"
+              :key="i"
+              class="text-xs text-muted-foreground leading-relaxed"
+            >
+              {{ log }}
             </div>
             <div
-              class="bg-muted rounded-md p-md border-default border-border/40 max-h-48 overflow-y-auto"
+              v-if="eventLog.length === 0"
+              class="text-xs text-muted-foreground italic"
             >
-              <div
-                v-for="(log, i) in eventLog"
-                :key="i"
-                class="text-xs text-muted-foreground leading-relaxed"
-              >
-                {{ log }}
-              </div>
-              <div
-                v-if="eventLog.length === 0"
-                class="text-xs text-muted-foreground italic"
-              >
-                点击上方按钮开始操作...
-              </div>
+              点击上方按钮开始操作...
             </div>
-          </section>
-        </div>
+          </div>
+        </section>
       </div>
-    </AnimateWrapper>
+    </div>
   </div>
 </template>
