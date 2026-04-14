@@ -3,14 +3,15 @@
   "explorer.fileNesting.enabled": true,
   "explorer.fileNesting.expand": false,
   "explorer.fileNesting.patterns": {
+    "AGENTS.md": "CLAUDE.md,.ai/README.md,.ai/config/cursor.settings.json,.ai/config/claude.settings.local.json,.ai/protocol/AI.entry.md,.ai/protocol/AGENTS.core.md,.ai/protocol/adapters/README.md,.ai/protocol/adapters/codex.md,.ai/protocol/adapters/claude.md,.ai/protocol/adapters/cursor.md,.ai/runtime/repair_list.template.txt,.ai/runtime/repair_list.txt,.ai/manifests/skills-lock.json",
     "package.json": "pnpm-lock.yaml,.npmrc,.nvmrc,pnpm-workspace.yaml,.editorconfig,.gitattributes,.gitignore,.prettierrc.json,commitlint.config.ts,README.md,LICENSE,CHANGELOG.md,lint-staged.config.mjs,stylelint.config.mjs",
+    "ai-doctor.mjs": "ai-sync.mjs,codex-preflight.mjs,lint-staged-safe.mjs,drift-check.mjs,sync-brand.mjs,sync-version.mjs",
     "vite.config.ts": "vite.config.*.ts,vitest.config.ts,index.html",
     "tsconfig.json": "tsconfig.*.json,tsconfig.tsbuildinfo",
     "eslint.config.ts": ".eslintignore,eslint.config.js,eslint.config.mjs,.eslintrc-auto-import.json",
     "uno.config.ts": "uno.config.*.ts,uno.theme.ts,uno.shortcuts.ts",
     "release-please-config.json": ".release-please-manifest.json",
     ".prettierrc.json": ".prettierignore",
-    "CLAUDE.md": "repair_list.txt,skills-lock.json",
     ".env": ".env.*"
   },
 
@@ -105,7 +106,7 @@
   "typescript.suggest.autoImports": true,
 
   // === i18n Ally (国际化插件) ===
-  "i18n-ally.localesPaths": ["src/locales/lang"],
+  "i18n-ally.localesPaths": ["src/locales/lang/core", "src/locales/lang/example"],
   "i18n-ally.keystyle": "nested",
   "i18n-ally.sortKeys": true,
   "i18n-ally.namespace": false,

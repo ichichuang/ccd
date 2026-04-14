@@ -1,6 +1,6 @@
 {
   "name": "ccd-desktop",
-  "version": "1.0.21",
+  "version": "1.0.23",
   "private": true,
   "type": "module",
   "sideEffects": [
@@ -33,9 +33,7 @@
     "sync:version": "node scripts/sync-version.mjs",
     "prebuild": "pnpm sync:brand && pnpm sync:version",
     "dev": "vite",
-    "tauri": "tauri",
-    "dev:desktop": "tauri dev",
-    "build:desktop": "tauri build",
+    "dev:demo": "NODE_OPTIONS='--max-old-space-size=8192' UNO_DEMO=true vite",
     "build": "vue-tsc --build --force && vite build",
     "build:ci": "vite build",
     "build:analyze": "vue-tsc --build --force && vite build --mode analyze",
@@ -46,17 +44,24 @@
     "lint": "eslint \"src/**/*.{vue,ts,tsx,js,jsx}\" \"*.{ts,js,mjs,cjs}\"",
     "lint:check": "eslint \"src/**/*.{vue,ts,tsx,js,jsx}\" \"*.{ts,js,mjs,cjs}\"",
     "lint:fix": "eslint \"src/**/*.{vue,ts,tsx,js,jsx}\" \"*.{ts,js,mjs,cjs}\" --fix",
+    "lint:staged:safe": "node scripts/lint-staged-safe.mjs",
     "lint:style": "stylelint \"src/**/*.{css,scss,vue}\" --fix",
     "format": "prettier --write src/",
     "fix": "pnpm format && pnpm lint:fix",
     "check": "pnpm type-check && pnpm lint:check",
+    "ai:doctor": "node scripts/ai-doctor.mjs",
+    "ai:sync": "node scripts/ai-sync.mjs",
+    "codex:preflight": "node scripts/codex-preflight.mjs",
     "drift-check": "node scripts/drift-check.mjs",
     "check:drift": "node scripts/drift-check.mjs",
     "test": "vitest",
     "test:run": "vitest run",
     "test:coverage": "vitest run --coverage",
     "commit": "git-cz",
-    "prepare": "husky"
+    "prepare": "pnpm ai:sync && husky",
+    "tauri": "tauri",
+    "dev:desktop": "tauri dev",
+    "build:desktop": "tauri build"
   },
   "config": {
     "commitizen": {
@@ -82,10 +87,6 @@
     "@primevue/forms": "^4.5.4",
     "@primevue/icons": "^4.5.4",
     "@tanstack/vue-virtual": "^3.13.23",
-    "@tauri-apps/api": "^2.10.1",
-    "@tauri-apps/plugin-log": "^2.8.0",
-    "@tauri-apps/plugin-shell": "^2.3.5",
-    "@tauri-apps/plugin-window-state": "^2.4.1",
     "@vueuse/core": "^13.9.0",
     "alova": "^3.3.3",
     "animate.css": "^4.1.1",
@@ -108,7 +109,11 @@
     "vue-i18n": "^10.0.8",
     "vue-router": "^4.4.5",
     "vue3-lottie": "^3.3.1",
-    "yup": "^1.7.1"
+    "yup": "^1.7.1",
+    "@tauri-apps/api": "^2.10.1",
+    "@tauri-apps/plugin-log": "^2.8.0",
+    "@tauri-apps/plugin-shell": "^2.3.5",
+    "@tauri-apps/plugin-window-state": "^2.4.1"
   },
   "devDependencies": {
     "@commitlint/cli": "^19.6.0",
@@ -120,7 +125,6 @@
     "@iconify-json/solar": "^1.2.5",
     "@iconify/utils": "^3.1.0",
     "@primevue/auto-import-resolver": "^4.5.4",
-    "@tauri-apps/cli": "^2.10.1",
     "@tsconfig/node22": "^22.0.2",
     "@types/lodash-es": "^4.17.12",
     "@types/node": "^22.19.7",
@@ -180,6 +184,7 @@
     "vite-plugin-progress": "^0.0.7",
     "vitest": "^4.0.18",
     "vue-eslint-parser": "^10.2.0",
-    "vue-tsc": "^2.2.10"
+    "vue-tsc": "^2.2.10",
+    "@tauri-apps/cli": "^2.10.1"
   }
 }

@@ -3,12 +3,6 @@ name: Sync Desktop Branch From Main
 on:
   push:
     branches: [main]
-    paths:
-      - package.json
-      - scripts/sync-main-to-desktop.mjs
-      - src/locales/lang/**
-      - src/router/**
-      - .github/workflows/sync-desktop-from-main.yml
   workflow_dispatch:
 
 permissions:
@@ -46,15 +40,15 @@ jobs:
         shell: bash
         run: |
           if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
-            echo "changed=true" >> "$GITHUB_OUTPUT"
-            echo "Manual dispatch: force sync."
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+            echo "Manual dispatch: skip version tag decision."
             exit 0
           fi
 
           BEFORE="${{ github.event.before }}"
           if [ -z "$BEFORE" ] || [ "$BEFORE" = "0000000000000000000000000000000000000000" ]; then
-            echo "changed=true" >> "$GITHUB_OUTPUT"
-            echo "No previous commit SHA found: force sync."
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+            echo "No previous commit SHA found: skip version tag decision."
             exit 0
           fi
 
@@ -69,17 +63,14 @@ jobs:
           fi
 
       - name: Install dependencies
-        if: steps.version.outputs.changed == 'true'
         run: pnpm install --frozen-lockfile
 
       - name: Configure git identity
-        if: steps.version.outputs.changed == 'true'
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
       - name: Sync main to desktop branch
-        if: steps.version.outputs.changed == 'true'
         env:
           MAIN_BRANCH: main
           DESKTOP_BRANCH: feat/tauri-integration
@@ -111,6 +102,6 @@ jobs:
           git push origin "refs/tags/${TAG}"
           echo "Desktop release tag pushed: ${TAG}"
 
-      - name: Skip sync (version unchanged)
+      - name: Skip desktop release tag (version unchanged)
         if: steps.version.outputs.changed != 'true'
-        run: echo "package.json version unchanged, skip desktop sync."
+        run: echo "package.json version unchanged, skip desktop release tag."

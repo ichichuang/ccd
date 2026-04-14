@@ -1,6 +1,6 @@
 ---
 description: AI semantic color contract for theme system and UnoCSS field usage
-globs: ["src/**/*.{vue,tsx,ts,css,scss}", ".cursor/rules/**/*.mdc"]
+globs: ["src/**/*.{vue,tsx,ts,css,scss}", ".ai/rules/**/*.mdc"]
 alwaysApply: false
 ---
 # Semantic Color Usage Contract (AI)

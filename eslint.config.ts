@@ -199,7 +199,7 @@ export default tseslint.config(
   // ----------------------------------------------------------------------
   // [待评估] body/formatter 返回模板字符串反模式：no-restricted-syntax 可检测
   // `return \`<tag>${x}</tag>\`` 等写法，但需评估误报率（如合法模板字符串、纯文本返回）。
-  // 暂不启用，由 .cursor/rules/24-tsx-rendering.mdc、27-ai-tsx-decision.mdc 规范约束。
+  // 暂不启用，由 .ai/rules/core 与 .ai/rules/components 的 TSX 约束统一覆盖。
   //
   // 8.1 针对 TS/TSX 的规则 (开启严格检查)
   {

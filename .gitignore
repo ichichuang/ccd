@@ -79,5 +79,14 @@ temp/
 # OS generated files
 Thumbs.db
 
-# 本地修复清单，不提交
-repair_list.txt
+# Generated AI adapters
+AGENTS.md
+CLAUDE.md
+.cursor/settings.json
+.cursor/rules/
+.cursor/skills/
+.claude/settings.local.json
+.claude/skills/
+
+# Local AI runtime state
+.ai/runtime/repair_list.txt

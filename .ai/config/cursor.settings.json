@@ -1,12 +1,10 @@
 {
-  // === 基础环境配置 ===
   "npm.packageManager": "pnpm",
   "terminal.integrated.defaultProfile.osx": "zsh",
   "terminal.integrated.env.osx": {
     "FORCE_COLOR": "1"
   },
 
-  // === 编辑器外观与行为 ===
   "editor.fontFamily": "'JetBrains Mono', 'Fira Code', Monaco, 'Courier New', monospace",
   "editor.fontLigatures": true,
   "editor.fontSize": 14,
@@ -22,7 +20,6 @@
   "editor.bracketPairColorization.enabled": true,
   "editor.guides.bracketPairs": true,
 
-  // === 文件与搜索排除 ===
   "files.exclude": {
     "**/node_modules": true,
     "**/dist": true,
@@ -39,12 +36,10 @@
   "search.useIgnoreFiles": true,
   "search.smartCase": true,
 
-  // === ESLint & Prettier ===
   "eslint.workingDirectories": ["./"],
   "eslint.validate": ["javascript", "javascriptreact", "typescript", "typescriptreact", "vue"],
   "prettier.requireConfig": true,
 
-  // === TypeScript 智能增强 ===
   "typescript.preferences.importModuleSpecifier": "non-relative",
   "typescript.suggest.autoImports": true,
   "typescript.updateImportsOnFileMove.enabled": "always",
@@ -55,7 +50,6 @@
   "typescript.inlayHints.parameterTypes.enabled": true,
   "typescript.inlayHints.variableTypes.enabled": true,
 
-  // === Vue ===
   "files.associations": {
     "*.vue": "vue",
     "uno.config.ts": "typescript",
@@ -66,7 +60,6 @@
   "vue.complete.casing.props": "camel",
   "vue.updateImportsOnFileMove.enabled": true,
 
-  // === UnoCSS 核心配置 ===
   "unocss.root": "./",
   "unocss.configFile": "uno.config.ts",
   "unocss.enableIntelliSense": true,
@@ -83,8 +76,7 @@
     "json"
   ],
 
-  // === i18n Ally (国际化) ===
-  "i18n-ally.localesPaths": ["src/locales/lang"],
+  "i18n-ally.localesPaths": ["src/locales/lang/core", "src/locales/lang/example"],
   "i18n-ally.keystyle": "nested",
   "i18n-ally.sortKeys": true,
   "i18n-ally.namespace": false,
@@ -99,10 +91,8 @@
   "i18n-ally.extract.keyPrefix": "",
   "i18n-ally.usage.scanningDirs": ["src"],
 
-  // === Cursor 真实有效的配置 ===
-  // 这些是 Cursor 确实支持的配置项
   "cursor.chat.showInEditor": true,
-  "cursor.cpp.enableIntelliSense": true, // CPP 指的是 Cursor Prediction Protocol (代码预测)
+  "cursor.cpp.enableIntelliSense": true,
   "cursor.general.enableCodeActions": true,
   "github.copilot.enable": {
     "*": true

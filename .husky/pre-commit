@@ -4,7 +4,6 @@ pnpm type-check
 echo "🔍 Running Enterprise Guardian: Drift Check..."
 pnpm drift-check
 
-echo "🧹 Running Enterprise Guardian: Lint Staged..."
-pnpm exec lint-staged
+pnpm lint:staged:safe
 
 echo "✅ 本地检查通过，准备提交..."

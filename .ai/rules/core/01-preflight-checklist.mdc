@@ -8,7 +8,7 @@ alwaysApply: true
 > **AI MANDATE:** Before providing ANY code implementation or refactoring plan, you MUST output this checklist, marking each item as `[✅]` once explicitly verified against the current workspace. **Any `[❌]` means you MUST NOT proceed.**
 
 ## 1. Rule Sync & Context
-- [ ] **Ledger:** Read `repair_list.txt`. Current task is tracked.
+- [ ] **Ledger:** Read `.ai/runtime/repair_list.txt`. Current task is tracked.
 - [ ] **Phantom Check:** All UnoCSS shortcuts used MUST exist in `semanticShortcuts.ts` (No hallucinations).
 
 ## 2. UI & Design Engine Gates

@@ -1,7 +1,25 @@
 ---
 name: playwright-mcp
 description: Browser automation via Playwright MCP server. Navigate websites, click elements, fill forms, extract data, take screenshots, and perform full browser automation workflows.
-metadata: {"openclaw":{"emoji":"🎭","os":["linux","darwin","win32"],"requires":{"bins":["playwright-mcp","npx"]},"install":[{"id":"npm-playwright-mcp","kind":"npm","package":"@playwright/mcp","bins":["playwright-mcp"],"label":"Install Playwright MCP"}]}}
+metadata:
+  {
+    'openclaw':
+      {
+        'emoji': '🎭',
+        'os': ['linux', 'darwin', 'win32'],
+        'requires': { 'bins': ['playwright-mcp', 'npx'] },
+        'install':
+          [
+            {
+              'id': 'npm-playwright-mcp',
+              'kind': 'npm',
+              'package': '@playwright/mcp',
+              'bins': ['playwright-mcp'],
+              'label': 'Install Playwright MCP',
+            },
+          ],
+      },
+  }
 ---
 
 # Playwright MCP Skill
@@ -17,6 +35,7 @@ npx @playwright/mcp
 ```
 
 Install browsers (first time):
+
 ```bash
 npx playwright install chromium
 ```
@@ -24,11 +43,13 @@ npx playwright install chromium
 ## Quick Start
 
 ### Start MCP Server (STDIO mode)
+
 ```bash
 npx @playwright/mcp
 ```
 
 ### Start with Options
+
 ```bash
 # Headless mode
 npx @playwright/mcp --headless
@@ -46,6 +67,7 @@ npx @playwright/mcp --ignore-https-errors
 ## Common Use Cases
 
 ### 1. Navigate and Extract Data
+
 ```python
 # MCP tools available:
 # - browser_navigate: Open URL
@@ -59,6 +81,7 @@ npx @playwright/mcp --ignore-https-errors
 ```
 
 ### 2. Form Interaction
+
 ```
 1. browser_navigate to form URL
 2. browser_type into input fields
@@ -67,6 +90,7 @@ npx @playwright/mcp --ignore-https-errors
 ```
 
 ### 3. Data Extraction
+
 ```
 1. browser_navigate to page
 2. browser_evaluate to run extraction script
@@ -75,18 +99,18 @@ npx @playwright/mcp --ignore-https-errors
 
 ## MCP Tools Reference
 
-| Tool | Description |
-|------|-------------|
-| `browser_navigate` | Navigate to URL |
-| `browser_click` | Click element by selector |
-| `browser_type` | Type text into input |
-| `browser_select_option` | Select dropdown option |
-| `browser_get_text` | Get text content |
-| `browser_evaluate` | Execute JavaScript |
-| `browser_snapshot` | Get accessible page snapshot |
-| `browser_close` | Close browser context |
-| `browser_choose_file` | Upload file |
-| `browser_press` | Press keyboard key |
+| Tool                    | Description                  |
+| ----------------------- | ---------------------------- |
+| `browser_navigate`      | Navigate to URL              |
+| `browser_click`         | Click element by selector    |
+| `browser_type`          | Type text into input         |
+| `browser_select_option` | Select dropdown option       |
+| `browser_get_text`      | Get text content             |
+| `browser_evaluate`      | Execute JavaScript           |
+| `browser_snapshot`      | Get accessible page snapshot |
+| `browser_close`         | Close browser context        |
+| `browser_choose_file`   | Upload file                  |
+| `browser_press`         | Press keyboard key           |
 
 ## Configuration Options
 
@@ -115,6 +139,7 @@ npx @playwright/mcp --ignore-https-errors
 ## Examples
 
 ### Login to Website
+
 ```
 browser_navigate: { url: "https://example.com/login" }
 browser_type: { selector: "#username", text: "user" }
@@ -124,14 +149,16 @@ browser_get_text: { selector: ".welcome-message" }
 ```
 
 ### Extract Table Data
+
 ```
 browser_navigate: { url: "https://example.com/data" }
-browser_evaluate: { 
-  script: "() => { return Array.from(document.querySelectorAll('table tr')).map(r => r.textContent); }" 
+browser_evaluate: {
+  script: "() => { return Array.from(document.querySelectorAll('table tr')).map(r => r.textContent); }"
 }
 ```
 
 ### Screenshot
+
 ```
 browser_navigate: { url: "https://example.com" }
 browser_evaluate: { script: "() => { document.body.style.zoom = 1; return true; }" }
