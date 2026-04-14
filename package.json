@@ -58,7 +58,7 @@
     "test:run": "vitest run",
     "test:coverage": "vitest run --coverage",
     "commit": "git-cz",
-    "prepare": "husky"
+    "prepare": "pnpm ai:sync && husky"
   },
   "config": {
     "commitizen": {

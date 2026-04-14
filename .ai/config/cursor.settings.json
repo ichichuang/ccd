@@ -102,7 +102,7 @@
   // === Cursor 真实有效的配置 ===
   // 这些是 Cursor 确实支持的配置项
   "cursor.chat.showInEditor": true,
-  "cursor.cpp.enableIntelliSense": true, // CPP 指的是 Cursor Prediction Protocol (代码预测)
+  "cursor.cpp.enableIntelliSense": true,
   "cursor.general.enableCodeActions": true,
   "github.copilot.enable": {
     "*": true

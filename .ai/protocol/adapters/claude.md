@@ -3,14 +3,14 @@
 ## Discovery Entry
 
 - Claude tools read root `CLAUDE.md`.
-- In this repo, `CLAUDE.md` must link to `.ai/protocol/AI.entry.md`.
+- In this repo, `CLAUDE.md` is generated from `.ai/protocol/AI.entry.md`.
 
 ## Skill Path Compatibility
 
-- Runtime compatibility path: `.claude/skills/*`
+- Generated compatibility path: `.claude/skills/*`
 - Canonical path: `.ai/skills/claude/*`
 
-Do not edit `.claude/skills/*` directly if it is an adapter link.
+Do not edit generated `.claude/**` files directly. Run `pnpm ai:sync` after changing canonical `.ai/**` sources.
 
 ## Rule Loading
 

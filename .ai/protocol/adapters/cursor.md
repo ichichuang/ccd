@@ -10,12 +10,13 @@ Cursor expects:
 
 In this repo:
 
-- `.cursor/rules` -> adapter link to `.ai/rules`
-- `.cursor/skills` -> adapter link to `.ai/skills/cursor`
+- `.cursor/settings.json` <= `.ai/config/cursor.settings.json`
+- `.cursor/rules/**` <= `.ai/rules/**`
+- `.cursor/skills/**` <= `.ai/skills/cursor/**`
 
 ## Canonical Policy
 
-Edit only `.ai/**` as source-of-truth. Adapter paths are compatibility mirrors.
+Edit only `.ai/**` as source-of-truth. `.cursor/**` is generated compatibility output.
 
 ## Health Commands
 

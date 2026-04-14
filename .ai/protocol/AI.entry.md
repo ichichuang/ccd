@@ -18,4 +18,5 @@ Per-AI adapter guidance:
 Core mandate:
 
 - `.ai/**` is the only source of truth.
-- Adapter paths (`AGENTS.md`, `CLAUDE.md`, `.cursor/**`, `.claude/**`) are compatibility entrypoints only.
+- Adapter paths (`AGENTS.md`, `CLAUDE.md`, `.cursor/**`, `.claude/**`) are generated compatibility entrypoints only.
+- Materialize adapters locally with `pnpm ai:sync`.

@@ -5,11 +5,18 @@ This guide is for CCD architecture projects only.
 ## 1) One-Time Setup Per Repo
 
 1. Ensure these paths exist:
+   - `.ai/config/**`
    - `.ai/rules/**`
    - `.ai/skills/**`
    - `.ai/protocol/**`
-2. Ensure root adapters exist (generated): `AGENTS.md`, `CLAUDE.md`.
-3. Run:
+2. Generate local adapters:
+
+```bash
+pnpm ai:sync
+```
+
+3. Ensure generated adapters now exist: `AGENTS.md`, `CLAUDE.md`, `.cursor/**`, `.claude/**`.
+4. Run:
 
 ```bash
 pnpm ai:doctor
@@ -81,8 +88,11 @@ Output format:
 Copy these files into the new repo root:
 
 - `.ai/README.md`
+- `.ai/config/cursor.settings.json`
+- `.ai/config/claude.settings.local.json`
 - `.ai/protocol/AI.entry.md`
 - `.ai/protocol/AGENTS.core.md`
+- `.ai/runtime/repair_list.template.txt`
 - `docs/codex/quickstart.md`
 - `scripts/ai-doctor.mjs`
 - `scripts/ai-sync.mjs`

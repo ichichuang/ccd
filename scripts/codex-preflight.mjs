@@ -4,6 +4,8 @@ import path from 'node:path'
 const cwd = process.cwd()
 
 const requiredPaths = [
+  '.ai/config/cursor.settings.json',
+  '.ai/config/claude.settings.local.json',
   '.ai/rules/architecture',
   '.ai/rules/components',
   '.ai/rules/core',
@@ -18,8 +20,11 @@ const requiredPaths = [
   '.cursor/rules',
   '.cursor/skills',
   '.claude/skills',
+  '.cursor/settings.json',
+  '.claude/settings.local.json',
   'AGENTS.md',
   'CLAUDE.md',
+  '.ai/runtime/repair_list.template.txt',
   '.ai/runtime/repair_list.txt',
   '.ai/manifests/skills-lock.json',
   'uno.config.ts',

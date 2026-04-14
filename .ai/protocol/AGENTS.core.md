@@ -6,13 +6,14 @@ Canonical AI collaboration contract for all CCD-based projects.
 
 All AI governance assets live under `.ai/`:
 
+- `.ai/config/**` -> canonical tool/editor configuration
 - `.ai/rules/**` -> architecture and implementation rules
 - `.ai/skills/**` -> skill catalogs and references
 - `.ai/protocol/**` -> execution protocol and adapters
-- `.ai/runtime/**` -> runtime task ledgers and mutable coordination files
+- `.ai/runtime/*.template.txt` -> versioned runtime templates
 - `.ai/manifests/**` -> lock/manifests
 
-Compatibility paths (`AGENTS.md`, `CLAUDE.md`, `.cursor/**`, `.claude/**`) are adapters only. Do not treat them as source-of-truth.
+Compatibility paths (`AGENTS.md`, `CLAUDE.md`, `.cursor/**`, `.claude/**`) are generated adapters only. Do not treat them as source-of-truth.
 
 ## 1) Non-Negotiable Constraints
 
@@ -25,7 +26,7 @@ Compatibility paths (`AGENTS.md`, `CLAUDE.md`, `.cursor/**`, `.claude/**`) are a
 - Preserve type safety:
   - No `any` in business code
   - No assertion-driven business logic shortcuts
-- For large refactors, keep runtime ledger synchronized via `.ai/runtime/repair_list.txt`.
+- For large refactors, keep the local runtime ledger synchronized via `.ai/runtime/repair_list.txt`.
 
 ## 2) Rule Priority
 

@@ -3,7 +3,7 @@
 ## Discovery Entry
 
 - Codex reads root `AGENTS.md`.
-- In this repo, `AGENTS.md` must link to `.ai/protocol/AI.entry.md`.
+- In this repo, `AGENTS.md` is generated from `.ai/protocol/AI.entry.md`.
 
 ## What to Load First
 

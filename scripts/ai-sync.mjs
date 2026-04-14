@@ -2,50 +2,66 @@ import fs from 'node:fs'
 import path from 'node:path'
 
 const cwd = process.cwd()
-const force = process.argv.includes('--force')
-
-const adapters = [
-  { linkPath: 'AGENTS.md', target: '.ai/protocol/AI.entry.md' },
-  { linkPath: 'CLAUDE.md', target: '.ai/protocol/AI.entry.md' },
-  { linkPath: '.cursor/rules', target: '../.ai/rules' },
-  { linkPath: '.cursor/skills', target: '../.ai/skills/cursor' },
-  { linkPath: '.claude/skills', target: '../.ai/skills/claude' },
+const fileAdapters = [
+  { source: '.ai/protocol/AI.entry.md', target: 'AGENTS.md' },
+  { source: '.ai/protocol/AI.entry.md', target: 'CLAUDE.md' },
+  { source: '.ai/config/cursor.settings.json', target: '.cursor/settings.json' },
+  { source: '.ai/config/claude.settings.local.json', target: '.claude/settings.local.json' },
 ]
 
-const ensureDir = p => fs.mkdirSync(path.dirname(path.join(cwd, p)), { recursive: true })
+const dirAdapters = [
+  { source: '.ai/rules', target: '.cursor/rules' },
+  { source: '.ai/skills/cursor', target: '.cursor/skills' },
+  { source: '.ai/skills/claude', target: '.claude/skills' },
+]
 
-const ensureSymlink = ({ linkPath, target }) => {
-  const absLink = path.join(cwd, linkPath)
-  ensureDir(linkPath)
+const localRuntimeFiles = [
+  {
+    source: '.ai/runtime/repair_list.template.txt',
+    target: '.ai/runtime/repair_list.txt',
+  },
+]
 
-  if (fs.existsSync(absLink) || fs.lstatSync(absLink, { throwIfNoEntry: false })) {
-    const st = fs.lstatSync(absLink)
-    if (st.isSymbolicLink()) {
-      const current = fs.readlinkSync(absLink)
-      if (current === target) {
-        console.log(`[OK] ${linkPath} -> ${target}`)
-        return
-      }
-      if (!force) {
-        console.log(`[WARN] ${linkPath} points to ${current}, expected ${target}. Use --force to fix.`)
-        return
-      }
-      fs.rmSync(absLink, { force: true })
-    } else {
-      if (!force) {
-        console.log(`[WARN] ${linkPath} exists and is not a symlink. Use --force to replace.`)
-        return
-      }
-      fs.rmSync(absLink, { recursive: true, force: true })
-    }
+const ensureParentDir = relPath => fs.mkdirSync(path.dirname(path.join(cwd, relPath)), { recursive: true })
+
+const removePathIfExists = relPath => {
+  const absPath = path.join(cwd, relPath)
+  const stat = fs.lstatSync(absPath, { throwIfNoEntry: false })
+  if (stat) fs.rmSync(absPath, { recursive: true, force: true })
+}
+
+const syncFile = ({ source, target }) => {
+  const absSource = path.join(cwd, source)
+  const absTarget = path.join(cwd, target)
+  ensureParentDir(target)
+  removePathIfExists(target)
+  fs.copyFileSync(absSource, absTarget)
+  console.log(`[SYNC] ${target} <= ${source}`)
+}
+
+const syncDir = ({ source, target }) => {
+  const absSource = path.join(cwd, source)
+  const absTarget = path.join(cwd, target)
+  ensureParentDir(target)
+  removePathIfExists(target)
+  fs.cpSync(absSource, absTarget, { recursive: true })
+  console.log(`[SYNC] ${target} <= ${source}`)
+}
+
+const ensureLocalRuntimeFile = ({ source, target }) => {
+  const absSource = path.join(cwd, source)
+  const absTarget = path.join(cwd, target)
+  ensureParentDir(target)
+  if (!fs.existsSync(absTarget)) {
+    fs.copyFileSync(absSource, absTarget)
+    console.log(`[CREATE] ${target} <= ${source}`)
+    return
   }
-
-  fs.symlinkSync(target, absLink)
-  console.log(`[FIXED] ${linkPath} -> ${target}`)
+  console.log(`[OK] ${target}`)
 }
 
 console.log('AI adapter sync')
 console.log('===============')
-for (const adapter of adapters) {
-  ensureSymlink(adapter)
-}
+for (const fileAdapter of fileAdapters) syncFile(fileAdapter)
+for (const dirAdapter of dirAdapters) syncDir(dirAdapter)
+for (const runtimeFile of localRuntimeFiles) ensureLocalRuntimeFile(runtimeFile)
