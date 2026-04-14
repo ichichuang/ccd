@@ -44,6 +44,7 @@
     "lint": "eslint \"src/**/*.{vue,ts,tsx,js,jsx}\" \"*.{ts,js,mjs,cjs}\"",
     "lint:check": "eslint \"src/**/*.{vue,ts,tsx,js,jsx}\" \"*.{ts,js,mjs,cjs}\"",
     "lint:fix": "eslint \"src/**/*.{vue,ts,tsx,js,jsx}\" \"*.{ts,js,mjs,cjs}\" --fix",
+    "lint:staged:safe": "node scripts/lint-staged-safe.mjs",
     "lint:style": "stylelint \"src/**/*.{css,scss,vue}\" --fix",
     "format": "prettier --write src/",
     "fix": "pnpm format && pnpm lint:fix",
