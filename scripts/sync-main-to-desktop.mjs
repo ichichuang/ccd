@@ -81,6 +81,19 @@ function output(cmd, args) {
   return (result.stdout || '').trim()
 }
 
+function capture(cmd, args) {
+  const result = spawnSync(cmd, args, {
+    cwd: ROOT,
+    stdio: ['ignore', 'pipe', 'pipe'],
+    encoding: 'utf8',
+  })
+  if (result.status !== 0) {
+    const stderr = result.stderr?.trim() || ''
+    throw new Error(`[sync-main-to-desktop] Command failed: ${cmd} ${args.join(' ')} ${stderr}`)
+  }
+  return result.stdout || ''
+}
+
 function hasMergeInProgress() {
   return existsSync(join(ROOT, '.git', 'MERGE_HEAD'))
 }
@@ -128,6 +141,37 @@ function writeDesktopLocalePlaceholders() {
   writeFileSync(enPath, DESKTOP_LOCALE_EXAMPLE_EN, 'utf8')
 }
 
+function mergeDesktopPackageJson(baseSha) {
+  const mainPkg = JSON.parse(capture('git', ['show', `origin/${MAIN_BRANCH}:package.json`]))
+  const desktopBasePkg = JSON.parse(capture('git', ['show', `${baseSha}:package.json`]))
+
+  const mergedPkg = {
+    ...mainPkg,
+    name: desktopBasePkg.name,
+    version: mainPkg.version,
+    author: desktopBasePkg.author,
+    description: desktopBasePkg.description,
+    keywords: desktopBasePkg.keywords,
+    scripts: {
+      ...mainPkg.scripts,
+      tauri: desktopBasePkg.scripts.tauri,
+      'dev:desktop': desktopBasePkg.scripts['dev:desktop'],
+      'build:desktop': desktopBasePkg.scripts['build:desktop'],
+    },
+    dependencies: {
+      ...mainPkg.dependencies,
+      ...desktopBasePkg.dependencies,
+    },
+    devDependencies: {
+      ...mainPkg.devDependencies,
+      ...desktopBasePkg.devDependencies,
+    },
+  }
+
+  delete mergedPkg.devDependencies['@faker-js/faker']
+  writeFileSync(join(ROOT, 'package.json'), `${JSON.stringify(mergedPkg, null, 2)}\n`, 'utf8')
+}
+
 function main() {
   const originalBranch = output('git', ['branch', '--show-current'])
 
@@ -159,6 +203,13 @@ function main() {
     // 3) 若 main 引入示例目录但桌面端历史无该目录，确保不会残留新示例文件
     runAllowFail('git', ['rm', '-r', '-f', '--ignore-unmatch', '--', 'src/views/example'])
     runAllowFail('git', ['rm', '-f', '--ignore-unmatch', '--', 'src/router/modules/example.ts'])
+
+    // 4) README 由桌面端分支独立维护，自动同步时保留桌面端版本
+    restorePathFromBase(baseSha, 'README.md')
+
+    // 5) package.json 采用“主分支基础 + 桌面端增量”的合并策略
+    mergeDesktopPackageJson(baseSha)
+    run('git', ['add', 'README.md', 'package.json'])
 
     const unresolved = output('git', ['diff', '--name-only', '--diff-filter=U'])
     if (unresolved) {
