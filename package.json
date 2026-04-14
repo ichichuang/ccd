@@ -30,8 +30,10 @@
   "packageManager": "pnpm@10.28.2",
   "scripts": {
     "sync:brand": "node scripts/sync-brand.mjs",
+    "sync:desktop-config": "node scripts/sync-desktop-config.mjs",
     "sync:version": "node scripts/sync-version.mjs",
-    "prebuild": "pnpm sync:brand && pnpm sync:version",
+    "predev": "pnpm sync:version && pnpm sync:desktop-config",
+    "prebuild": "pnpm sync:brand && pnpm sync:version && pnpm sync:desktop-config",
     "dev": "vite",
     "dev:demo": "NODE_OPTIONS='--max-old-space-size=8192' UNO_DEMO=true vite",
     "build": "vue-tsc --build --force && vite build",

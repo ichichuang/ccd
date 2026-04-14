@@ -91,6 +91,14 @@ pnpm codex:preflight
 pnpm dev:desktop
 ```
 
+`pnpm dev:desktop` 会通过 Tauri 的 `beforeDevCommand` 触发 `pnpm dev`。
+当前分支已接入 `predev`，启动前会自动执行：
+
+```bash
+pnpm sync:version
+pnpm sync:desktop-config
+```
+
 ### 仅调试前端
 
 ```bash
@@ -103,6 +111,14 @@ pnpm dev
 pnpm build:desktop
 ```
 
+当前分支已接入 `prebuild`，构建前会自动执行：
+
+```bash
+pnpm sync:brand
+pnpm sync:version
+pnpm sync:desktop-config
+```
+
 ### 类型检查与 Web 产物构建
 
 ```bash
@@ -111,6 +127,61 @@ pnpm build
 ```
 
 `pnpm build` 仅产出前端静态资源；可安装的桌面包请使用 `pnpm build:desktop`。
+
+---
+
+## 配置单一源
+
+桌面端分支已经收敛为“改一处，同步其余配置”的模式。
+
+### 开发端口
+
+- 单一源：`.env` / `.env.development` 中的 `VITE_PORT`
+- 自动同步目标：
+  - `src-tauri/tauri.conf.json` 的 `build.devUrl`
+  - `.vscode/launch.json` 的前端调试 `url`
+- 同步命令：
+
+```bash
+pnpm sync:desktop-config
+```
+
+也就是说，之后调整桌面端开发端口时，只改 `VITE_PORT`，不要再手改 `src-tauri/tauri.conf.json` 或 `.vscode/launch.json`。
+
+### 版本号
+
+- 单一源：`package.json` 的 `version`
+- 自动同步目标：
+  - `src-tauri/tauri.conf.json` 的 `version`
+  - `src-tauri/Cargo.toml` 的 `version`
+- 同步命令：
+
+```bash
+pnpm sync:version
+```
+
+### 品牌与桌面元数据
+
+- 单一源：`src/constants/brand.ts`
+- 自动同步目标：
+  - `package.json` 的 `name` / `description` / `author`
+  - `src-tauri/tauri.conf.json` 的 `identifier` / `productName` / `window.title`
+  - `src-tauri/Cargo.toml` 的 `description` / `authors`
+- 同步命令：
+
+```bash
+pnpm sync:brand
+```
+
+### 当前桌面端配置链路
+
+```text
+VITE_PORT (.env)               -> pnpm sync:desktop-config -> tauri.conf.json / .vscode/launch.json
+version (package.json)         -> pnpm sync:version        -> tauri.conf.json / Cargo.toml
+brand (src/constants/brand.ts) -> pnpm sync:brand          -> package.json / tauri.conf.json / Cargo.toml
+```
+
+如果仍然遇到端口漂移，`vite.config.ts` 中保留了最后一道保护校验，会直接提示先执行 `pnpm sync:desktop-config`。
 
 ---
 
@@ -162,6 +233,26 @@ pnpm check           # type-check + lint:check
 pnpm ai:sync         # 生成 AI 兼容适配层
 pnpm ai:doctor       # 检查 AI 工作区结构
 pnpm codex:preflight # 检查 Codex 开发前置条件
+pnpm sync:brand      # 同步品牌元数据
+pnpm sync:version    # 同步版本号到 Tauri / Cargo
+pnpm sync:desktop-config # 同步桌面端开发端口到 Tauri / VS Code
+```
+
+---
+
+## 已验证链路
+
+本分支当前 README 对应的桌面端流程，已实际通过以下命令校验：
+
+```bash
+pnpm ai:sync
+pnpm ai:doctor
+pnpm codex:preflight
+pnpm sync:desktop-config
+pnpm sync:version
+pnpm check
+pnpm test:run
+pnpm build:ci
 ```
 
 ---

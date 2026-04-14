@@ -40,8 +40,8 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Sync brand metadata
-        run: pnpm sync:brand
+      - name: Sync desktop metadata
+        run: pnpm sync:brand && pnpm sync:version && pnpm sync:desktop-config
 
       - name: Build Tauri app for Windows
         uses: tauri-apps/tauri-action@v0

@@ -117,7 +117,7 @@ export const wrapperEnv = (envConf: Record<string, any>): ViteEnv => {
 }
 
 /**
- * 校验 Tauri devUrl 与 Vite 端口是否一致，避免桌面端因端口漂移启动失败。
+ * 最后一层保护：校验 Tauri devUrl 与 Vite 端口是否一致，避免桌面端因端口漂移启动失败。
  */
 export const ensureTauriDevUrlSync = (vitePort: number): void => {
   try {
@@ -130,7 +130,7 @@ export const ensureTauriDevUrlSync = (vitePort: number): void => {
     if (!tauriPort) return
     if (Number(tauriPort) !== vitePort) {
       throw new Error(
-        `[Tauri Port Drift] src-tauri/tauri.conf.json devUrl=${devUrl} 与 VITE_PORT=${vitePort} 不一致，请保持同步。`
+        `[Tauri Port Drift] src-tauri/tauri.conf.json devUrl=${devUrl} 与 VITE_PORT=${vitePort} 不一致，请先运行 pnpm sync:desktop-config。`
       )
     }
   } catch (error) {
