@@ -152,6 +152,8 @@ function main() {
   }
 
   if (!SKIP_TYPECHECK) {
+    // Ensure dependencies match desktop branch after merge (desktop may have extra packages).
+    run('pnpm', ['install', '--frozen-lockfile'])
     run('pnpm', ['type-check'])
   }
 
