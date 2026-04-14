@@ -6,7 +6,7 @@ alwaysApply: true
 
 # Root Gatekeeper (Absolute Authority)
 
-**CRITICAL MANDATE:** Before writing ANY functional logic, you MUST consult the domain-specific files within `.cursor/rules/**`. If you fail to do so, halt code generation immediately.
+**CRITICAL MANDATE:** Before writing ANY functional logic, you MUST consult the domain-specific files within `.ai/rules/**`. If you fail to do so, halt code generation immediately.
 
 ## 1. Absolute Priority Chain (Do Not Skip)
 1. **Project Assets First:** Search `src/hooks/**` and `src/utils/**` for existing implementations.

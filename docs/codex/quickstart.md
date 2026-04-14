@@ -8,7 +8,7 @@ This guide is for CCD architecture projects only.
    - `.ai/rules/**`
    - `.ai/skills/**`
    - `.ai/protocol/**`
-2. Ensure root `AGENTS.md` exists and is up to date.
+2. Ensure root adapters exist (generated): `AGENTS.md`, `CLAUDE.md`.
 3. Run:
 
 ```bash
@@ -79,8 +79,9 @@ Output format:
 ## 5) Reuse in New CCD-Based Product Repos
 
 Copy these files into the new repo root:
-- `AGENTS.md`
+
 - `.ai/README.md`
+- `.ai/protocol/AI.entry.md`
 - `.ai/protocol/AGENTS.core.md`
 - `docs/codex/quickstart.md`
 - `scripts/ai-doctor.mjs`
@@ -91,5 +92,6 @@ Then add `ai:doctor`, `ai:sync`, and `codex:preflight` to `package.json` scripts
 
 ```bash
 pnpm ai:doctor
+pnpm ai:sync
 pnpm codex:preflight
 ```

@@ -278,7 +278,7 @@ export default defineConfig({
   transformers: [transformerDirectives(), transformerVariantGroup()],
 
   // 业务层：优先使用 `semanticShortcuts` 中的具名 shortcut + 标准 Uno 主题工具类（如 `p-md`、`gap-sm`、`bg-card`、`text-muted-foreground`）。
-  // 禁止臆造未在 theme/shortcuts 中定义的类名；详见 `.cursor/rules/design-system/01-design-tokens.mdc`。
+  // 禁止臆造未在 theme/shortcuts 中定义的类名；详见 `.ai/rules/design-system/01-design-tokens.mdc`。
   shortcuts,
 
   // 规则优先级设计：UnoCSS 按顺序匹配，新规则必须归入对应分组。

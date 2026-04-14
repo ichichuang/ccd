@@ -5,7 +5,12 @@ const cwd = process.cwd()
 
 const canonicalMustExist = [
   '.ai/README.md',
+  '.ai/protocol/AI.entry.md',
   '.ai/protocol/AGENTS.core.md',
+  '.ai/protocol/adapters/README.md',
+  '.ai/protocol/adapters/codex.md',
+  '.ai/protocol/adapters/claude.md',
+  '.ai/protocol/adapters/cursor.md',
   '.ai/rules/core/00-global-architect.mdc',
   '.ai/rules/core/00-root-gatekeeper.mdc',
   '.ai/rules/core/01-preflight-checklist.mdc',
@@ -20,11 +25,11 @@ const canonicalMustExist = [
 ]
 
 const adapters = [
+  { linkPath: 'AGENTS.md', target: '.ai/protocol/AI.entry.md' },
+  { linkPath: 'CLAUDE.md', target: '.ai/protocol/AI.entry.md' },
   { linkPath: '.cursor/rules', target: '../.ai/rules' },
   { linkPath: '.cursor/skills', target: '../.ai/skills/cursor' },
   { linkPath: '.claude/skills', target: '../.ai/skills/claude' },
-  { linkPath: 'repair_list.txt', target: '.ai/runtime/repair_list.txt' },
-  { linkPath: 'skills-lock.json', target: '.ai/manifests/skills-lock.json' },
 ]
 
 let hasError = false

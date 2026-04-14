@@ -19,10 +19,9 @@ const requiredPaths = [
   '.cursor/skills',
   '.claude/skills',
   'AGENTS.md',
+  'CLAUDE.md',
   '.ai/runtime/repair_list.txt',
   '.ai/manifests/skills-lock.json',
-  'repair_list.txt',
-  'skills-lock.json',
   'uno.config.ts',
   'vite.config.ts',
 ]

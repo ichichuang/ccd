@@ -193,7 +193,7 @@ src/
 
 ## Example 模块
 
-`src/views/example/` 提供大量演示页，与 `.cursor/rules/` 中的架构约定对应，便于对照学习：
+`src/views/example/` 提供大量演示页，与 `.ai/rules/` 中的架构约定对应（`.cursor/rules` 为兼容入口），便于对照学习：
 
 - ProForm：基础、高级、DAG、校验、分组、插件、Playground
 - ProTable：列配置、服务端分页、虚拟/无限滚动、与表单联动

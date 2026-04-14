@@ -10,7 +10,7 @@
     "uno.config.ts": "uno.config.*.ts,uno.theme.ts,uno.shortcuts.ts",
     "release-please-config.json": ".release-please-manifest.json",
     ".prettierrc.json": ".prettierignore",
-    "CLAUDE.md": "repair_list.txt,skills-lock.json",
+    "CLAUDE.md": ".ai/runtime/repair_list.txt,.ai/manifests/skills-lock.json",
     ".env": ".env.*"
   },
 

@@ -5,13 +5,14 @@ Canonical AI collaboration contract for all CCD-based projects.
 ## 0) Canonical Structure
 
 All AI governance assets live under `.ai/`:
+
 - `.ai/rules/**` -> architecture and implementation rules
 - `.ai/skills/**` -> skill catalogs and references
 - `.ai/protocol/**` -> execution protocol and adapters
 - `.ai/runtime/**` -> runtime task ledgers and mutable coordination files
 - `.ai/manifests/**` -> lock/manifests
 
-Compatibility paths (`.cursor/**`, `.claude/**`, root aliases) are adapters only. Do not treat them as source-of-truth.
+Compatibility paths (`AGENTS.md`, `CLAUDE.md`, `.cursor/**`, `.claude/**`) are adapters only. Do not treat them as source-of-truth.
 
 ## 1) Non-Negotiable Constraints
 
@@ -24,17 +25,19 @@ Compatibility paths (`.cursor/**`, `.claude/**`, root aliases) are adapters only
 - Preserve type safety:
   - No `any` in business code
   - No assertion-driven business logic shortcuts
-- For large refactors, keep runtime ledger synchronized via `repair_list.txt` (alias to `.ai/runtime/repair_list.txt`).
+- For large refactors, keep runtime ledger synchronized via `.ai/runtime/repair_list.txt`.
 
 ## 2) Rule Priority
 
 Apply precedence from `core/00-global-architect.mdc`:
+
 1. L1 Runtime and Data Safety
 2. L2 Architecture Laws
 3. L3 Implementation Rules
 4. L4 Examples (non-authoritative)
 
 Bootstrap order per task:
+
 1. `.ai/rules/core/00-global-architect.mdc`
 2. `.ai/rules/core/00-root-gatekeeper.mdc`
 3. `.ai/rules/core/01-preflight-checklist.mdc`
@@ -43,16 +46,19 @@ Bootstrap order per task:
 ## 3) Skill Routing Strategy
 
 Core implementation skills:
+
 - `@.claude/skills/vue`
 - `@.claude/skills/vueuse-functions`
 - `@.claude/skills/unocss`
 - `@.claude/skills/vite`
 
 Tooling skills:
+
 - `@.cursor/skills/github`
 - `@.cursor/skills/playwright-mcp`
 
 Policy:
+
 - Select the minimal required skill set for the task.
 - Avoid unrelated skill mixing.
 - Apply in sequence: rules -> implementation skills -> delivery/testing skills.
@@ -70,6 +76,7 @@ Policy:
 ## 5) Validation Baseline
 
 Run when relevant:
+
 - `pnpm ai:doctor`
 - `pnpm codex:preflight`
 - `pnpm type-check`

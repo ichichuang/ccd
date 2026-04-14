@@ -5,11 +5,11 @@ const cwd = process.cwd()
 const force = process.argv.includes('--force')
 
 const adapters = [
+  { linkPath: 'AGENTS.md', target: '.ai/protocol/AI.entry.md' },
+  { linkPath: 'CLAUDE.md', target: '.ai/protocol/AI.entry.md' },
   { linkPath: '.cursor/rules', target: '../.ai/rules' },
   { linkPath: '.cursor/skills', target: '../.ai/skills/cursor' },
   { linkPath: '.claude/skills', target: '../.ai/skills/claude' },
-  { linkPath: 'repair_list.txt', target: '.ai/runtime/repair_list.txt' },
-  { linkPath: 'skills-lock.json', target: '.ai/manifests/skills-lock.json' },
 ]
 
 const ensureDir = p => fs.mkdirSync(path.dirname(path.join(cwd, p)), { recursive: true })

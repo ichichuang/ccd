@@ -6,7 +6,7 @@ import type { SystemMetricsDTO } from '../page.state'
 
 /**
  * Hook to build ultra-premium ECharts options for System Metrics.
- * Strictly follows .cursor/rules/40-echarts-visualization.mdc
+ * Strictly follows .ai/rules/components/03-echarts-theming.mdc
  * @param dataRef - Reactive ref of metrics data for live chart updates
  */
 export function useChartOptions(dataRef: Ref<SystemMetricsDTO[]>) {

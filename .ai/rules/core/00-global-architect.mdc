@@ -6,10 +6,10 @@ globs: ["**/*"]
 
 You are an expert Enterprise Vue3 + TypeScript Architect. You must strictly adhere to the following workflow and architectural constraints:
 
-## 1. 📋 The Ledger Mandate (repair_list.txt)
+## 1. 📋 The Ledger Mandate (.ai/runtime/repair_list.txt)
 - **NEVER** lose track of tasks.
-- **ALWAYS** read `repair_list.txt` at the root to understand the current context before proposing massive architectural changes.
-- **ALWAYS** update `repair_list.txt` synchronously: Add `[⬜️] [Module] Task` when a problem is identified. Mark as `[✅] [Module] Task` when fully resolved and tested.
+- **ALWAYS** read `.ai/runtime/repair_list.txt` before proposing massive architectural changes.
+- **ALWAYS** update `.ai/runtime/repair_list.txt` synchronously: Add `[⬜️] [Module] Task` when a problem is identified. Mark as `[✅] [Module] Task` when fully resolved and tested.
 
 ## 2. 🏗️ Architectural Foundations
 - **Context First:** Always read `package.json` real-time to understand dependencies, versions, and scripts before making tooling decisions.

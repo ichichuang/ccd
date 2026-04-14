@@ -1,0 +1,15 @@
+[✅] [useChartTheme] mergeAdvancedConfigs：`toolboxConfig` / `visualMapConfig` 采用整段替换，导致前序的 `applyToolboxStyles` / `applyVisualMapStyles` 融合结果可能丢失；改为深合并或在合并后再二次执行对应主题化
+[✅] [useChartTheme] 坐标系轴未覆盖：`parallelAxis`（当前只处理 `series.type === 'parallel'` 的 series，不处理根级 `parallelAxis[]`）
+[✅] [useChartTheme] 坐标系轴未覆盖：`polar` 的 `angleAxis` / `radiusAxis`（当前仅 `radar` 根级有手写融合，其他极坐标轴走不到 `applyAxisStyles`）
+[✅] [useChartTheme] 坐标系轴未覆盖：`singleAxis`（缺少统一 `applyAxisStyles`/轴语义注入）
+[✅] [useChartTheme] 坐标系轴未覆盖：`calendar`（缺少与轴相关的字体/线/填充 token 融合）
+[✅] [useChartTheme] 坐标系轴未覆盖：`geo` / `map` 场景（如业务使用，需补齐区域/坐标轴/标签的主题化入口）
+[✅] [useChartTheme] 控制器未覆盖：`timeline`（缺少 timeline 组件的文字/控制条/高亮状态尺寸与语义色 token 注入）
+[✅] [useChartTheme] `axisPointer` 覆盖面不足：除 `tooltip.axisPointer` 外，若业务 option 使用到其他位置/链路（例如根级 axisPointer link 语义），需统一主题化
+[✅] [useChartTheme] 未覆盖层：`markArea`（当前无专门 `applyMarkAreaStyles`/高级配置 `markAreaConfig`，依赖业务 option 时可能保留 ECharts 默认配色/尺寸）
+[✅] [useChartTheme] applyDataZoomStyles 尺寸系统缺口：`handleStyle` / `moveHandleStyle` 的 `borderRadius: 4` 写死，改为 `config.size.radiusSm` / 对齐 chart 尺寸 token
+[✅] [useChartTheme] applyVisualMapStyles API 一致性：避免使用顶层 `visualMap.color`（ECharts 标注 deprecated 风格），优先使用 `inRange.color` / `outOfRange.color` 维持与 `getDefaultVisualMapConfig()` 的语义一致
+[✅] [useChartTheme] applySeriesStyles 透明度语义漂移：`applySeriesStyles` 内部 `opacityMap` 多处回退 `0.8` 魔术数；建议收敛到 `DEFAULT_OPACITY_VALUES` / `opacityConfig`，减少透明度体系不一致
+[✅] [useChartTheme] applyToolboxStyles feature 范围不足：除 `dataView` 等少数 feature 外，其它 toolbox feature 的 textStyle/background/边框等未做统一融合（与 `getDefaultToolboxConfig` 的默认行为可能出现不一致）
+[✅] [useChartTheme] grid/top-bottom/layout 轻度硬编码：已将 `grid.top/bottom/backgroundColor` 从字面量调整为基于 `themeConfig` 的 token 化值
+[✅] [useChartTheme] graphic / aria 主题化缺口：已通过 `rg` 确认 ECharts 层 `graphic:` 在 `src/views` 未出现（`aria` 仅存在于 PrimeVue locale），本轮无需补齐主题化入口
