@@ -84,7 +84,7 @@
   ],
 
   // === i18n Ally (国际化) ===
-  "i18n-ally.localesPaths": ["src/locales/lang"],
+  "i18n-ally.localesPaths": ["src/locales/lang/core", "src/locales/lang/example"],
   "i18n-ally.keystyle": "nested",
   "i18n-ally.sortKeys": true,
   "i18n-ally.namespace": false,
