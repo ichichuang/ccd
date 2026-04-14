@@ -47,15 +47,19 @@ Bootstrap order per task:
 
 Core implementation skills:
 
-- `@.claude/skills/vue`
-- `@.claude/skills/vueuse-functions`
-- `@.claude/skills/unocss`
-- `@.claude/skills/vite`
+- `.ai/skills/claude/vue`
+- `.ai/skills/claude/vueuse-functions`
+- `.ai/skills/claude/unocss`
+- `.ai/skills/claude/vite`
 
 Tooling skills:
 
-- `@.cursor/skills/github`
-- `@.cursor/skills/playwright-mcp`
+- `.ai/skills/cursor/github`
+- `.ai/skills/cursor/playwright-mcp`
+
+Adapter note:
+
+- Some tools expose aliases like `@.claude/skills/*` or `@.cursor/skills/*`; these are aliases of `.ai/skills/**`.
 
 Policy:
 
@@ -83,4 +87,4 @@ Run when relevant:
 - `pnpm lint:check`
 - `pnpm test:run`
 
-For UI-critical changes, run e2e via `@.cursor/skills/playwright-mcp`.
+For UI-critical changes, run e2e via `.ai/skills/cursor/playwright-mcp`.

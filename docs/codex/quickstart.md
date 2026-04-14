@@ -33,17 +33,17 @@ codex -a never -s danger-full-access
 ## 3) Skill Decision Matrix
 
 - Component/page/composable implementation:
-  - `@.claude/skills/vue`
+  - `.ai/skills/claude/vue`
 - Reusable logic, sensors, state helpers:
-  - `@.claude/skills/vueuse-functions`
+  - `.ai/skills/claude/vueuse-functions`
 - Styling/theme/token/shortcut updates:
-  - `@.claude/skills/unocss`
+  - `.ai/skills/claude/unocss`
 - Build/config/plugin/env/toolchain updates:
-  - `@.claude/skills/vite`
+  - `.ai/skills/claude/vite`
 - GitHub workflow (issue/PR/checks):
-  - `@.cursor/skills/github`
+  - `.ai/skills/cursor/github`
 - UI flow regression/e2e:
-  - `@.cursor/skills/playwright-mcp`
+  - `.ai/skills/cursor/playwright-mcp`
 
 ## 4) Task Prompt Template (Copy and Fill)
 
@@ -60,12 +60,12 @@ Must follow:
 
 Skill policy:
 - Select only required skills from:
-  @.claude/skills/vue
-  @.claude/skills/vueuse-functions
-  @.claude/skills/unocss
-  @.claude/skills/vite
-  @.cursor/skills/github
-  @.cursor/skills/playwright-mcp
+  .ai/skills/claude/vue
+  .ai/skills/claude/vueuse-functions
+  .ai/skills/claude/unocss
+  .ai/skills/claude/vite
+  .ai/skills/cursor/github
+  .ai/skills/cursor/playwright-mcp
 - Explain selection briefly before implementation.
 
 Output format:
