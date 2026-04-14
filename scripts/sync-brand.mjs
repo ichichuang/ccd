@@ -7,11 +7,13 @@
  */
 
 import { createHash } from 'node:crypto'
-import { execSync } from 'node:child_process'
+import { execSync, spawnSync } from 'node:child_process'
 import { existsSync, readFileSync, writeFileSync } from 'node:fs'
 import { dirname, join } from 'node:path'
 import process from 'node:process'
 import { fileURLToPath } from 'node:url'
+import vm from 'node:vm'
+import ts from 'typescript'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 const ROOT = join(__dirname, '..')
@@ -28,32 +30,45 @@ const PUBLIC_FAVICON_PATH = join(ROOT, 'public', 'face.png')
 const APP_LOGO_PATH = join(ROOT, 'src', 'assets', 'images', 'face.webp')
 const SHOULD_SKIP_TAURI_ICON =
   process.env.SKIP_TAURI_ICON === '1' || process.env.SKIP_TAURI_ICON === 'true'
+const HAS_TAURI_WORKSPACE = existsSync(TAURI_CONF_PATH) && existsSync(CARGO_TOML_PATH)
 
-/**
- * 从 brand.ts 提取指定键值（仅支持单引号字符串字面量，满足当前仓库格式）
- * @param {string} content
- * @param {string} key
- */
-function pickStringLiteral(content, key) {
-  const pattern = new RegExp(`${key}\\s*:\\s*'([^']*)'`)
-  const matched = content.match(pattern)
-  if (!matched) {
-    throw new Error(`[brand-sync] 无法在 brand.ts 中解析字段: ${key}`)
+function assertStringField(target, key, { optional = false } = {}) {
+  const value = target[key]
+  if (optional && (value === undefined || value === null || value === '')) {
+    return null
   }
-  return matched[1]
+  if (typeof value !== 'string' || value.trim() === '') {
+    throw new Error(`[brand-sync] brand.${key} 必须是非空字符串`)
+  }
+  return value
 }
 
 function readBrandSnapshot() {
   const raw = readFileSync(BRAND_TS_PATH, 'utf-8')
-  // id 仅桌面端 brand.ts 存在，Web 端可选
-  let id = null
-  try { id = pickStringLiteral(raw, 'id') } catch { /* web-only: no id field */ }
+  const transpiled = ts.transpileModule(raw, {
+    compilerOptions: {
+      module: ts.ModuleKind.CommonJS,
+      target: ts.ScriptTarget.ES2020,
+    },
+    fileName: BRAND_TS_PATH,
+  })
+  const sandbox = {
+    exports: {},
+    module: { exports: {} },
+  }
+  vm.runInNewContext(transpiled.outputText, sandbox, { filename: BRAND_TS_PATH })
+  const brand = sandbox.exports.brand ?? sandbox.module.exports.brand
+
+  if (!brand || typeof brand !== 'object') {
+    throw new Error('[brand-sync] brand.ts 必须导出 brand 常量对象')
+  }
+
   const snapshot = {
-    id,
-    name: pickStringLiteral(raw, 'name'),
-    displayName: pickStringLiteral(raw, 'displayName'),
-    description: pickStringLiteral(raw, 'description'),
-    author: pickStringLiteral(raw, 'author'),
+    id: assertStringField(brand, 'id', { optional: true }),
+    name: assertStringField(brand, 'name'),
+    displayName: assertStringField(brand, 'displayName'),
+    description: assertStringField(brand, 'description'),
+    author: assertStringField(brand, 'author'),
   }
   return snapshot
 }
@@ -113,6 +128,13 @@ function checkAssets() {
     if (hasSourceLogo) {
       reports.push(
         '[brand-sync] 警告: public/face.png 与 src/assets/images/face.webp 摘要不一致（可能由跨格式导致），已检测到 source/logo-source.png，按非阻塞处理。'
+      )
+      return { hasMismatch: false, reports }
+    }
+
+    if (!HAS_TAURI_WORKSPACE) {
+      reports.push(
+        '[brand-sync] 警告: 当前为无 Tauri workspace 的主分支环境，public/face.png 与 src/assets/images/face.webp 摘要不一致按非阻塞处理。'
       )
       return { hasMismatch: false, reports }
     }
@@ -180,6 +202,11 @@ function prepareSquareLogoSource() {
 }
 
 function generateTauriIcons() {
+  if (!HAS_TAURI_WORKSPACE) {
+    console.warn('[brand-sync] 跳过 tauri icon：未检测到完整的 Tauri workspace。')
+    return
+  }
+
   if (SHOULD_SKIP_TAURI_ICON) {
     console.warn('[brand-sync] 已跳过 tauri icon 生成（SKIP_TAURI_ICON=1）。')
     return
@@ -196,6 +223,16 @@ function generateTauriIcons() {
   const iconSourceArg = iconSourcePath.startsWith(ROOT)
     ? iconSourcePath.slice(ROOT.length + 1)
     : iconSourcePath
+
+  const tauriVersion = spawnSync('pnpm', ['exec', 'tauri', '--version'], {
+    cwd: ROOT,
+    stdio: 'pipe',
+    encoding: 'utf8',
+  })
+  if (tauriVersion.status !== 0) {
+    console.warn('[brand-sync] 跳过 tauri icon：当前工作区未安装 Tauri CLI。')
+    return
+  }
 
   execSync(`pnpm tauri icon "${iconSourceArg}"`, {
     cwd: ROOT,
@@ -236,22 +273,24 @@ function main() {
   try {
     const brand = readBrandSnapshot()
     syncPackageJson(brand)
-    syncTauriConfig(brand)
-    syncCargoTomlMeta(brand)
-    syncTauriCapabilities(brand)
+    if (HAS_TAURI_WORKSPACE) {
+      syncTauriConfig(brand)
+      syncCargoTomlMeta(brand)
+      syncTauriCapabilities(brand)
+    }
     generateTauriIcons()
 
     const assetResult = checkAssets()
     const logs = [
       `[brand-sync] 已同步 package.json <- ${brand.name}/${brand.description}/${brand.author}`,
     ]
-    if (existsSync(TAURI_CONF_PATH)) {
+    if (HAS_TAURI_WORKSPACE && existsSync(TAURI_CONF_PATH)) {
       logs.push(`[brand-sync] 已同步 src-tauri/tauri.conf.json <- identifier=${brand.id}, productName=${brand.name}, window.title=${brand.displayName}`)
     }
-    if (existsSync(CARGO_TOML_PATH)) {
+    if (HAS_TAURI_WORKSPACE && existsSync(CARGO_TOML_PATH)) {
       logs.push(`[brand-sync] 已同步 src-tauri/Cargo.toml <- description=${brand.description}, authors=[${brand.author}]`)
     }
-    if (existsSync(CAPABILITIES_PATH)) {
+    if (HAS_TAURI_WORKSPACE && existsSync(CAPABILITIES_PATH)) {
       logs.push(`[brand-sync] 已同步 src-tauri/capabilities/default.json <- description for ${brand.name}`)
     }
     logs.push(...assetResult.reports)

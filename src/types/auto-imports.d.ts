@@ -407,9 +407,6 @@ declare global {
   export type { ContextMenuAction, ContextMenuState, UseAdminTabsReturn } from '../hooks/layout/useAdminTabs'
   import('../hooks/layout/useAdminTabs')
   // @ts-ignore
-  export type { TieredMenuItemSlotProps, TieredMenuInactiveClasses, TieredMenuItemRendererOptions } from '../hooks/layout/useMenuRenderer'
-  import('../hooks/layout/useMenuRenderer')
-  // @ts-ignore
   export type { MenuVisualContext, MenuStateOptions } from '../hooks/layout/useMenuVisuals'
   import('../hooks/layout/useMenuVisuals')
   // @ts-ignore
@@ -419,17 +416,11 @@ declare global {
   export type { UseAuthReturn } from '../hooks/modules/useAuth'
   import('../hooks/modules/useAuth')
   // @ts-ignore
-  export type { UseChartThemeReturn } from '../hooks/modules/useChartTheme/index'
-  import('../hooks/modules/useChartTheme/index')
-  // @ts-ignore
   export type { ChartOpacityConfig, ChartThemeConfig, ChartAnimationConfig, ChartToolboxConfig, ChartMarkPointConfig, ChartMarkLineConfig, ChartVisualMapConfig, ChartBrushConfig, ChartAxisPointerConfig, ChartAdvancedConfig, DefaultOpacityValues, FontConfig, ColorConfig, ThemeConfig } from '../hooks/modules/useChartTheme/types'
   import('../hooks/modules/useChartTheme/types')
   // @ts-ignore
   export type { UseDateUtilsReturn } from '../hooks/modules/useDateUtils'
   import('../hooks/modules/useDateUtils')
-  // @ts-ignore
-  export type { UseDialogReturn, ArgsType, ButtonProps, DialogOptions } from '../hooks/modules/useDialog'
-  import('../hooks/modules/useDialog')
   // @ts-ignore
   export type { UseHttpRequestOptions, UseHttpRequestResult } from '../hooks/modules/useHttpRequest'
   import('../hooks/modules/useHttpRequest')

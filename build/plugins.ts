@@ -89,6 +89,11 @@ export function getPluginsList(env: ViteEnv, command: 'build' | 'serve'): Plugin
     AutoImport({
       imports: ['vue', 'vue-router', 'pinia', '@vueuse/core', { '@/locales': [['t', '$t']] }],
       dirs: ['src/stores/modules', 'src/hooks/**/*'],
+      dirsScanOptions: {
+        filePatterns: ['*.ts'],
+        fileFilter: file => file.endsWith('.ts') && !file.endsWith('/index.ts'),
+        types: true,
+      },
       dts: 'src/types/auto-imports.d.ts',
       eslintrc: {
         enabled: true,

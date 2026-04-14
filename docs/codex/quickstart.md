@@ -101,7 +101,7 @@ Copy these files into the new repo root:
 Then add `ai:doctor`, `ai:sync`, and `codex:preflight` to `package.json` scripts and run:
 
 ```bash
-pnpm ai:doctor
 pnpm ai:sync
+pnpm ai:doctor
 pnpm codex:preflight
 ```
