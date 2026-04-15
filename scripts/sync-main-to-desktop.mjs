@@ -37,7 +37,6 @@ const DESKTOP_ONLY_PATHS = [
   'src/assets/brand/source',
   'src/utils/env.ts',
   'src/utils/tauriNativeUx.ts',
-  'src/utils/env.ts',
 ]
 
 const DESKTOP_LOCALE_EXAMPLE_ZH = `/**
