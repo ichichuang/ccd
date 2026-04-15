@@ -53,6 +53,8 @@ coverage
 
 # TypeScript
 *.tsbuildinfo
+__pycache__/
+*.pyc
 
 # Linter caches
 .eslintcache
