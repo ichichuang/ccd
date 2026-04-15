@@ -17,7 +17,7 @@
 **CCD** 不是模板堆砌，而是一套可持续演进的中后台前端架构。
 它把分层边界、设计系统、低代码表单表格引擎、AI 协作规范和多分支交付流程收敛到一个统一仓库中。
 
-[在线演示](https://ichichuang.github.io/ccd/) · [架构文档](./docs/architecture.md) · [AI 工作区规范](./.ai/README.md)
+[在线演示](https://ichichuang.github.io/ccd/) · [架构文档](./docs/architecture.md) · [AI 工作区总览](./docs/ai-workspace.md) · [AI 工作区规范](./.ai/README.md)
 
 </div>
 
@@ -275,13 +275,15 @@ pnpm ai:doctor
 
 ## 关键文档
 
-| 文档                                                                 | 说明                                      |
-| -------------------------------------------------------------------- | ----------------------------------------- |
-| [README.md](./README.md)                                             | 仓库入口、分支模型、启动方式、AI 统一规范 |
-| [docs/architecture.md](./docs/architecture.md)                       | 架构拓扑、目录规约、核心能力细节          |
-| [.ai/README.md](./.ai/README.md)                                     | AI 工作区标准与生成适配规则               |
-| [.ai/protocol/AI.entry.md](./.ai/protocol/AI.entry.md)               | AI 协议统一入口                           |
-| [.ai/protocol/adapters/README.md](./.ai/protocol/adapters/README.md) | Codex / Claude / Cursor 适配说明索引      |
+| 文档                                                                 | 说明                                        |
+| -------------------------------------------------------------------- | ------------------------------------------- |
+| [README.md](./README.md)                                             | 仓库入口、分支模型、启动方式、AI 统一规范   |
+| [docs/architecture.md](./docs/architecture.md)                       | 架构拓扑、目录规约、核心能力细节            |
+| [docs/ai-workspace.md](./docs/ai-workspace.md)                       | AI 工作区、技能拓扑、浏览器自动化、清理策略 |
+| [docs/codex/quickstart.md](./docs/codex/quickstart.md)               | Codex 启动、技能路由、CRX 录制与回放        |
+| [.ai/README.md](./.ai/README.md)                                     | AI 工作区标准与生成适配规则                 |
+| [.ai/protocol/AI.entry.md](./.ai/protocol/AI.entry.md)               | AI 协议统一入口                             |
+| [.ai/protocol/adapters/README.md](./.ai/protocol/adapters/README.md) | Codex / Cursor 适配说明索引                 |
 
 ---
 
@@ -305,6 +307,17 @@ pnpm ai:doctor
 - 用 `flow-run` 复用同一条自动化流，并结合 `state-save/state-load` 复用登录态
 
 这让 AI 负责高层编排与结果判断，本地脚本负责重复浏览器动作，从而显著减少反复读取 DOM、截图和日志带来的 token 开销。
+
+### 文档系统升级后的阅读顺序
+
+如果你想完整理解这套架构，建议按这个顺序阅读：
+
+1. [README.md](./README.md)
+2. [docs/architecture.md](./docs/architecture.md)
+3. [docs/ai-workspace.md](./docs/ai-workspace.md)
+4. [docs/codex/quickstart.md](./docs/codex/quickstart.md)
+
+这样可以把产品架构、AI 工作区、Codex 操作流程和桌面交付同步放在同一套认知模型里，而不是分散理解。
 
 ---
 

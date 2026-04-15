@@ -2,6 +2,13 @@
 
 This guide is for CCD architecture projects only.
 
+Read this together with:
+
+- `README.md`
+- `docs/architecture.md`
+- `docs/ai-workspace.md`
+- `.ai/README.md`
+
 ## 1) One-Time Setup Per Repo
 
 1. Ensure these paths exist:
@@ -73,6 +80,24 @@ This returns:
 
 Use this when the task is vague, spans multiple surfaces, or might involve browser/GitHub workflows.
 
+## 4.5) Cleanup And Residue
+
+Codex browser work can create local runtime state, especially when you save auth state or keep named sessions.
+
+Common locations:
+
+- `artifacts/browser/**`
+- `~/.codex/tmp/architecture-browser-master/**`
+
+Cleanup commands:
+
+```bash
+pnpm ai:clean
+pnpm ai:clean -- --all
+```
+
+Use the conservative mode by default. Use `--all` only when you explicitly want to drop local browser evidence and cache state.
+
 ## 5) Browser Recorder Workflow
 
 For repeated UI tasks, stop re-describing browser steps to the model.
@@ -99,6 +124,12 @@ python3 .ai/skills/codex/architecture-browser-master/scripts/browser_automator.p
 4. If login is involved, add `--state-in` or `--state-out` so the session becomes reusable.
 
 This keeps Codex at the orchestration layer while the browser work runs through local scripts and compact summaries.
+
+## 5.5) Desktop Sync Context
+
+If your change lands on `main`, the desktop delivery branch is expected to consume it through `scripts/sync-main-to-desktop.mjs` and `.github/workflows/sync-desktop-from-main.yml`.
+
+That sync path is now worktree-aware and should correctly detect merge conflict state before applying desktop-specific resolution rules.
 
 ## 6) Task Prompt Template (Copy and Fill)
 

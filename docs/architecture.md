@@ -201,3 +201,82 @@ src/
 - 组件示例：图标、ECharts、动画、滚动条、Dialog、Toast
 
 业务落地时可删除 `example/`，或通过 `VITE_ENABLE_DEMO` 与 `import.meta.glob` 在生产构建中剔除。
+
+---
+
+## AI 架构系统
+
+CCD 现在不是“项目代码 + 零散 AI 配置”，而是把 AI 治理也视为架构的一部分。
+
+### 分层
+
+| 层级          | 位置                                                            | 职责                               |
+| ------------- | --------------------------------------------------------------- | ---------------------------------- |
+| Canonical     | `.ai/**`                                                        | 规则、技能、协议、清单、运行态模板 |
+| Generated     | `AGENTS.md`、`.cursor/**`                                       | 兼容适配输出，不是源文件           |
+| Local runtime | `~/.codex/skills/**`、`artifacts/browser/**`、`~/.codex/tmp/**` | 本机执行入口与浏览器运行态         |
+
+### Skill 拓扑
+
+- `.ai/skills/core/**`
+  - Vue、VueUse、UnoCSS、Vite 这类实现型能力
+- `.ai/skills/codex/**`
+  - `task-orchestrator`
+  - `architecture-browser-master`
+  - `github-ops`
+- `.ai/skills/cursor/**`
+  - 兼容 Cursor 的技能映射
+
+这个拆分让实现能力、操作能力、兼容层各自演进，不再相互污染。
+
+### 浏览器自动化
+
+CCD 的浏览器链路已经升级为：
+
+`Playwright CRX -> Python export -> flow-import -> flow-run -> summary.json`
+
+原则是：
+
+- AI 负责高层决策和结果判断
+- 本地脚本负责重复浏览器动作
+- 浏览器证据先读摘要，再读截图或原始日志
+
+更完整的运行说明见 [docs/ai-workspace.md](./ai-workspace.md) 和 [docs/codex/quickstart.md](./codex/quickstart.md)。
+
+---
+
+## 交付系统
+
+除了应用运行时，CCD 还把交付同步也纳入架构能力。
+
+### Main -> Desktop
+
+- `main` 是能力源
+- `feat/tauri-integration` 是派生交付分支
+- 同步由 `scripts/sync-main-to-desktop.mjs` 和 GitHub Actions workflow 驱动
+
+当前同步机制具备：
+
+- `git worktree` 隔离
+- demo 内容剥离
+- desktop-only 资产保留
+- `package.json` 合并策略
+- 同步前依赖刷新与 `pnpm type-check`
+- worktree 场景下的 merge conflict 检测修复
+
+这意味着桌面交付线不是手工平行维护，而是围绕主分支架构持续收敛。
+
+---
+
+## 文档系统
+
+CCD 的文档现在也按架构层次组织，而不是只有一个 README。
+
+| 文档                                              | 定位                                    |
+| ------------------------------------------------- | --------------------------------------- |
+| [README.md](../README.md)                         | 对外入口与项目导航                      |
+| [docs/architecture.md](./architecture.md)         | 运行时架构与引擎设计                    |
+| [docs/ai-workspace.md](./ai-workspace.md)         | AI 工作区、浏览器自动化、清理和交付同步 |
+| [docs/codex/quickstart.md](./codex/quickstart.md) | Codex 日常操作与低 token 工作流         |
+
+这样产品架构、AI 治理和交付系统都能被单独阅读，又能拼成完整系统。
