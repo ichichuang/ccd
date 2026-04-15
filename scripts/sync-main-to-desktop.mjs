@@ -119,8 +119,14 @@ function captureIn(cwd, cmd, args) {
   return result.stdout || ''
 }
 
+function resolveGitDir(cwd) {
+  const gitDir = outputIn(cwd, 'git', ['rev-parse', '--git-dir'])
+  return gitDir.startsWith('/') ? gitDir : join(cwd, gitDir)
+}
+
 function hasMergeInProgressAt(cwd) {
-  return existsSync(join(cwd, '.git', 'MERGE_HEAD'))
+  if (!cwd) return false
+  return existsSync(join(resolveGitDir(cwd), 'MERGE_HEAD'))
 }
 
 function ensureCleanWorktree(cwd = ROOT) {
@@ -133,6 +139,7 @@ function ensureCleanWorktree(cwd = ROOT) {
 }
 
 function abortMergeIfNeeded(cwd = ROOT) {
+  if (!cwd) return
   if (!hasMergeInProgressAt(cwd)) return
   runAllowFailIn(cwd, 'git', ['merge', '--abort'])
 }
