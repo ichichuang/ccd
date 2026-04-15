@@ -5,8 +5,10 @@
  */
 import type { AnimateName } from '@/components/AnimateWrapper/utils/types'
 import { AnimateWrapper } from '@/components/AnimateWrapper'
+import { RUNTIME_E2E_EVENTS } from '@/constants/runtime'
 import AmbientBackground from '@/layouts/components/AmbientBackground.vue'
-import { useLayoutStore } from '@/stores/modules/layout'
+import { useLayoutStore } from '@/stores/modules/system'
+import { dispatchRuntimeE2EEvent } from '@/utils/runtime/e2e'
 import { useRoute, useRouter } from 'vue-router'
 
 defineOptions({ name: 'LayoutIndex' })
@@ -36,12 +38,29 @@ onUnmounted(() => {
 })
 
 const isLoadingRef = ref(true)
+const runtimeLoadingState = ref<'true' | 'false'>('true')
+
+function syncRuntimeLoadingState(loading: boolean): void {
+  if (typeof document === 'undefined') return
+
+  const nextState = loading ? 'true' : 'false'
+  if (runtimeLoadingState.value === nextState) return
+
+  runtimeLoadingState.value = nextState
+  document.documentElement.dataset.runtimeLoading = nextState
+  dispatchRuntimeE2EEvent(
+    loading ? RUNTIME_E2E_EVENTS.runtimeLoadingStart : RUNTIME_E2E_EVENTS.runtimeLoadingIdle
+  )
+}
+
 watch(
   () => isLoading.value,
-  loading =>
+  loading => {
+    syncRuntimeLoadingState(loading)
     nextTick(() => {
       isLoadingRef.value = loading
-    }),
+    })
+  },
   { immediate: true }
 )
 
@@ -97,7 +116,10 @@ const currentLayoutComponent = computed(() => {
 </script>
 
 <template>
-  <div class="relative flex flex-col layout-full overflow-hidden">
+  <div
+    id="app-shell"
+    class="relative flex flex-col layout-full overflow-hidden"
+  >
     <AmbientBackground :variant="currentLayoutMode" />
     <!-- 单所有者预加载：启动阶段仅保留 index.html 原生 loader -->
     <AnimateWrapper
@@ -116,6 +138,7 @@ const currentLayoutComponent = computed(() => {
     <Transition name="fade">
       <div
         v-if="isLoading && isAppBooted"
+        id="runtime-loading-overlay"
         class="runtime-loading-overlay"
       >
         <div
@@ -159,14 +182,14 @@ const currentLayoutComponent = computed(() => {
 }
 
 .pure-css-loader::before {
-  border: 4px solid rgb(var(--primary) / 0.2);
+  border: 4px solid rgb(var(--primary) / 20%);
   border-top-color: rgb(var(--primary));
   animation: pure-spin 0.9s linear infinite;
 }
 
 .pure-css-loader::after {
   border: 4px solid transparent;
-  border-right-color: rgb(var(--primary) / 0.65);
+  border-right-color: rgb(var(--primary) / 65%);
   transform: scale(0.72);
   animation: pure-spin-reverse 1.2s linear infinite;
   opacity: 0.9;

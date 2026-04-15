@@ -3,9 +3,10 @@ import { getChartSystemVariables } from '@/utils/theme/chartUtils'
 import { withAlpha } from '@/hooks/modules/useChartTheme/utils'
 import { useChartTheme } from '@/hooks/modules/useChartTheme/index'
 import { useAppElementSize } from '@/hooks/modules/useAppElementSize'
+import type { EChartsType } from 'echarts'
 import { storeToRefs } from 'pinia'
-import { useThemeStore } from '@/stores/modules/theme'
-import { useSizeStore } from '@/stores/modules/size'
+import { useThemeStore } from '@/stores/modules/system'
+import { useSizeStore } from '@/stores/modules/system'
 import { createDefaultUseEchartsProps } from './utils/constants'
 import type { EChartsOption } from 'echarts'
 import type { ChartAdvancedConfig } from '@/hooks/modules/useChartTheme/types'
@@ -27,9 +28,14 @@ const emit = defineEmits<{
   chartReady: [instance: unknown, id?: string]
 }>()
 
+type VEChartsExpose = {
+  chart?: EChartsType | null
+  getEchartsInstance?: () => EChartsType | null
+}
+
 const chartContainerRef = useTemplateRef<HTMLElement>('chartContainerRef')
-const chartRef = shallowRef()
-const chartReadyTimer = ref<ReturnType<typeof setTimeout> | null>(null)
+const chartRef = shallowRef<VEChartsExpose | null>(null)
+const chartReadyTimer = ref<ReturnType<typeof globalThis.setTimeout> | null>(null)
 const resizeRafId = ref(0)
 const isUnmounting = ref(false)
 
@@ -283,27 +289,47 @@ const getEchartsInstance = () => {
 // 图表初始化标志
 const isChartInitialized = ref(false)
 
-// 组件挂载后通知图表已就绪（renderer 通过 init-options + key 在挂载时已生效）
-onMounted(() => {
-  chartReadyTimer.value = setTimeout(() => {
+function clearChartReadyTimer(): void {
+  if (chartReadyTimer.value !== null) {
+    globalThis.clearTimeout(chartReadyTimer.value)
+    chartReadyTimer.value = null
+  }
+}
+
+function scheduleChartReadyEmit(): void {
+  if (!hasChartMounted.value || isUnmounting.value || isChartInitialized.value) {
+    return
+  }
+
+  clearChartReadyTimer()
+  chartReadyTimer.value = globalThis.setTimeout(() => {
+    chartReadyTimer.value = null
     const chartInstance = getEchartsInstance()
-    if (chartInstance) {
+    if (chartInstance && !chartInstance.isDisposed()) {
       isChartInitialized.value = true
-      emit('chartReady', chartInstance)
+      emit('chartReady', chartInstance, props.group || props.connectConfig?.groupId)
     }
-  }, 100)
-})
+  }, 0)
+}
+
+watch(
+  () => [hasChartMounted.value, chartRef.value, props.renderer] as const,
+  ([mounted, chartInstance], [, previousChartInstance, previousRenderer]) => {
+    if (!mounted || !chartInstance) return
+    if (chartInstance !== previousChartInstance || props.renderer !== previousRenderer) {
+      isChartInitialized.value = false
+    }
+    scheduleChartReadyEmit()
+  },
+  { flush: 'post' }
+)
 
 // 组件卸载时清理
 onBeforeUnmount(() => {
   isUnmounting.value = true
   // 取消待执行的 resize rAF，防止 dispose 后调用
   cancelAnimationFrame(resizeRafId.value)
-
-  if (chartReadyTimer.value !== null) {
-    clearTimeout(chartReadyTimer.value)
-    chartReadyTimer.value = null
-  }
+  clearChartReadyTimer()
   // 不再手动 dispose — vue-echarts 子组件会在自身 onBeforeUnmount 中调用 dispose()
   // 父组件重复调用会触发 "[ECharts] Instance has been disposed" 警告
   isChartInitialized.value = false

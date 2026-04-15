@@ -1,7 +1,7 @@
 import { useRoute, useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { storeToRefs } from 'pinia'
-import { usePermissionStore } from '@/stores/modules/permission'
+import { usePermissionStore } from '@/stores/modules/session'
 import { useAppElementSize } from '@/hooks/modules/useAppElementSize'
 import type { CScrollbar } from '@/components/CScrollbar'
 import type { Ref } from 'vue'

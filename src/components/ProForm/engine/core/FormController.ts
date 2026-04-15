@@ -28,6 +28,7 @@ import type {
 import type { LifecycleController } from './LifecycleManager'
 
 type ValuesRecord = Record<string, unknown>
+type TimerHandle = ReturnType<typeof globalThis.setTimeout>
 
 /**
  * 单个表单实例的核心控制器，聚合 Engine 子模块：
@@ -37,7 +38,7 @@ type ValuesRecord = Record<string, unknown>
  * - TransactionManager：批量更新事务
  */
 export class FormController<TValues extends ValuesRecord = ValuesRecord> {
-  readonly schema: FormSchema
+  schema: FormSchema
   readonly store: SubscriptionStore<TValues>
   readonly graph: DependencyGraph
   readonly scheduler: Scheduler
@@ -54,9 +55,9 @@ export class FormController<TValues extends ValuesRecord = ValuesRecord> {
   private readonly computedEngine: ComputedEngine<TValues>
   private readonly reactionEngine: ReactionEngine<TValues>
   private readonly optionsRequestToken = new Map<string, number>()
-  private readonly optionsDebounceTimers = new Map<string, number>()
+  private readonly optionsDebounceTimers = new Map<string, TimerHandle>()
   private nextOptionsRequestId = 0
-  private saveDraftTimer: number | null = null
+  private saveDraftTimer: TimerHandle | null = null
   private isRecomputing = false
   private pendingRecompute: string[] = []
   public submitCallback?: (values: Record<string, unknown>) => Promise<void> | void
@@ -144,6 +145,99 @@ export class FormController<TValues extends ValuesRecord = ValuesRecord> {
     )
   }
 
+  updateSchema(nextSchema: FormSchema): void {
+    const normalizedSchema = SchemaNormalizer.normalize(nextSchema) as FormSchema
+    const flatFields: FieldSchema[] = []
+    this.collectFields(normalizedSchema.fields, flatFields)
+
+    const previousFieldNames = [...this.fieldNames]
+    const nextFieldNames = flatFields.map(field => field.name as keyof TValues & string)
+    const nextFieldNameSet = new Set(nextFieldNames)
+
+    this.transactionManager.reset()
+    this.pendingRecompute.length = 0
+    this.isRecomputing = false
+
+    this.optionsDebounceTimers.forEach(timerId => {
+      globalThis.clearTimeout(timerId)
+    })
+    this.optionsDebounceTimers.clear()
+    this.optionsRequestToken.clear()
+    this.nextOptionsRequestId = 0
+
+    this.schema = normalizedSchema
+
+    this.graph.reset()
+    flatFields.forEach(field => {
+      this.graph.addNode(field.name)
+      if (field.deps && field.deps.length > 0) {
+        field.deps.forEach(dep => {
+          this.graph.addDependency(dep, field.name)
+        })
+      }
+    })
+
+    this.fieldNames.length = 0
+    this.fieldNames.push(...nextFieldNames)
+    this.validationEngine.replaceSchema(this.schema)
+
+    previousFieldNames.forEach(fieldName => {
+      if (!nextFieldNameSet.has(fieldName)) {
+        this.store.deleteFieldState(fieldName)
+      }
+    })
+
+    flatFields.forEach(field => {
+      const fieldName = field.name as keyof TValues & string
+      const existingState = this.store.getFieldState(fieldName) as FieldState<unknown> | undefined
+
+      const hasInitial =
+        Object.prototype.hasOwnProperty.call(this.effectiveInitials, fieldName) &&
+        (this.effectiveInitials as ValuesRecord)[fieldName] !== undefined
+      const sourceValue = (
+        hasInitial
+          ? (this.effectiveInitials as ValuesRecord)[fieldName]
+          : (field as FieldSchema<unknown>).defaultValue
+      ) as TValues[keyof TValues] | undefined
+
+      const nextValue = deepClone(existingState ? existingState.value : sourceValue) as
+        | TValues[keyof TValues]
+        | undefined
+      const nextInitialValue = deepClone(
+        existingState ? existingState.initialValue : sourceValue
+      ) as TValues[keyof TValues] | undefined
+
+      const nextState: FieldState<unknown> = {
+        value: nextValue,
+        initialValue: nextInitialValue,
+        visible: existingState?.visible ?? true,
+        disabled: existingState?.disabled ?? false,
+        required: existingState?.required ?? field.required === true,
+        loadingOptions: false,
+        loadedOptions: existingState?.loadedOptions,
+        optionsError: undefined,
+        touched: existingState?.touched ?? false,
+        dirty: existingState?.dirty ?? false,
+        valid: true,
+        validating: false,
+        errors: [],
+      }
+
+      this.store.setFieldState(fieldName, nextState)
+    })
+
+    if (nextFieldNames.length > 0) {
+      const orderedFields = this.scheduler.getUpdateOrder(nextFieldNames)
+      this.recomputeFields(orderedFields)
+    }
+
+    flatFields.forEach(field => {
+      if (typeof field.options === 'function' && (!field.deps || field.deps.length === 0)) {
+        this.loadAsyncOptionsForFieldWithoutDeps(field.name)
+      }
+    })
+  }
+
   /**
    * 按调度器给出的拓扑顺序，重算字段逻辑并写回 Store：
    * - computed：写回 value（同一 flush 内可影响后续字段的逻辑计算）
@@ -204,10 +298,10 @@ export class FormController<TValues extends ValuesRecord = ValuesRecord> {
       this.options.persistKey.length > 0
     ) {
       if (this.saveDraftTimer !== null) {
-        window.clearTimeout(this.saveDraftTimer)
+        globalThis.clearTimeout(this.saveDraftTimer)
       }
 
-      this.saveDraftTimer = window.setTimeout(() => {
+      this.saveDraftTimer = globalThis.setTimeout(() => {
         DraftStorage.save(this.options.persistKey as string, this.getValues() as ValuesRecord)
         this.saveDraftTimer = null
       }, PRO_FORM_TIMING_DEFAULTS.autoSaveDebounceMs)
@@ -596,10 +690,10 @@ export class FormController<TValues extends ValuesRecord = ValuesRecord> {
 
     const existingTimer = this.optionsDebounceTimers.get(fieldName)
     if (existingTimer !== undefined) {
-      window.clearTimeout(existingTimer)
+      globalThis.clearTimeout(existingTimer)
     }
 
-    const timerId = window.setTimeout(() => {
+    const timerId = globalThis.setTimeout(() => {
       const requestId = this.nextOptionsRequestId++
       this.optionsRequestToken.set(fieldName, requestId)
 
@@ -740,13 +834,13 @@ export class FormController<TValues extends ValuesRecord = ValuesRecord> {
 
     // 草稿自动保存去抖定时器
     if (this.saveDraftTimer !== null) {
-      window.clearTimeout(this.saveDraftTimer)
+      globalThis.clearTimeout(this.saveDraftTimer)
       this.saveDraftTimer = null
     }
 
     // 选项加载去抖定时器
     this.optionsDebounceTimers.forEach(timerId => {
-      window.clearTimeout(timerId)
+      globalThis.clearTimeout(timerId)
     })
     this.optionsDebounceTimers.clear()
 

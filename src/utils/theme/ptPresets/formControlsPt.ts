@@ -9,57 +9,87 @@
  * - ⚠️ HMR 不生效：修改此文件后需全页面刷新
  */
 
-const GOLDEN_INPUT_ROOT =
-  'border border-border bg-background text-foreground rounded-md shadow-sm shadow-foreground/10 dark:shadow-foreground/20 transition-all duration-md ease-smooth hover:border-primary/50 focus:outline-none focus:border-primary/50 ring-focus-focus'
+const GOLDEN_SINGLE_INPUT_ROOT =
+  'border border-border bg-background text-foreground shadow-sm shadow-foreground/10 dark:shadow-foreground/20 transition-all duration-md ease-smooth hover:border-primary/50 focus:outline-none focus:border-primary/50 ring-focus-focus'
+const GOLDEN_COMPOUND_INPUT_ROOT =
+  '!rounded-md !border !border-border !bg-background text-foreground transition-all duration-md ease-smooth hover:!border-primary-hover focus-within:!outline-none focus-within:!border-primary focus-within:hover:!border-primary focus-within:[box-shadow:var(--p-form-field-focus-ring-shadow)] overflow-hidden'
+const GOLDEN_COMPOUND_INPUT_TEXT_RESET =
+  'w-full !border-none !shadow-none !rounded-none !bg-transparent !ring-0 !outline-none focus:!border-none focus:!ring-0 focus:!outline-none focus-visible:!ring-0 focus-visible:!ring-offset-0'
+const GOLDEN_COMPOUND_ACTION_RESET =
+  '!border-0 !border-none !rounded-none !bg-transparent !shadow-none !ring-0 !outline-none hover:!bg-transparent focus:!bg-transparent active:!bg-transparent focus-visible:!ring-0 focus-visible:!ring-offset-0'
+const GOLDEN_COMPOUND_ROOT_STYLE = 'border-width: 1px !important; border-style: solid !important;'
+const GOLDEN_COMPOUND_ACTION_STYLE =
+  'background: transparent !important; border: 0 !important; border-radius: 0 !important; box-shadow: none !important; appearance: none !important; -webkit-appearance: none !important;'
 
 export const OVERLAY_GLASS_CLASS = 'glass-panel transform-gpu will-change-transform'
 export const OVERLAY_GLASS_COMPACT_CLASS =
-  'backdrop-blur-sm md:backdrop-blur-xl bg-card/60 md:bg-card/36 dark:bg-card/70 md:dark:bg-card/40 rounded-xl border border-solid border-border/15 dark:border-border/30 shadow-sm dark:shadow-[inset_0_1px_0_0_rgb(var(--foreground)/0.05)] transform-gpu will-change-transform'
+  'backdrop-blur-sm md:backdrop-blur-xl bg-card/60 md:bg-card/36 dark:bg-card/70 md:dark:bg-card/40 border border-solid border-border/15 dark:border-border/30 shadow-sm dark:shadow-[inset_0_1px_0_0_rgb(var(--foreground)/0.05)] transform-gpu will-change-transform'
 export const OPTION_TRANSITION_CLASS = 'transition-[background-color,color] duration-md ease-smooth'
 // Governance: PT layer owns visuals/motion only.
 // Density (padding/gap/radius) must be controlled by semantic/components tokens.
+// Compound controls with nested pcInputText must have a single visible shell.
+// Do not reuse single-input shell classes directly on compound roots.
 
 export const formControlsPt = {
   inputtext: {
-    root: { class: GOLDEN_INPUT_ROOT },
+    root: { class: GOLDEN_SINGLE_INPUT_ROOT },
   },
   inputnumber: {
-    root: { class: GOLDEN_INPUT_ROOT },
+    root: { class: GOLDEN_COMPOUND_INPUT_ROOT, style: GOLDEN_COMPOUND_ROOT_STYLE },
+    pcInputText: {
+      root: { class: GOLDEN_COMPOUND_INPUT_TEXT_RESET },
+    },
     buttonGroup: { class: '!border-0 !bg-transparent' },
     incrementButton: {
-      class: '!border-0 !bg-transparent hover:!bg-muted/20 ',
+      class: `${GOLDEN_COMPOUND_ACTION_RESET} hover:!bg-muted/20`,
+      style: GOLDEN_COMPOUND_ACTION_STYLE,
     },
     decrementButton: {
-      class: '!border-0 !bg-transparent hover:!bg-muted/20 ',
+      class: `${GOLDEN_COMPOUND_ACTION_RESET} hover:!bg-muted/20`,
+      style: GOLDEN_COMPOUND_ACTION_STYLE,
     },
   },
   inputchips: {
-    root: { class: GOLDEN_INPUT_ROOT },
+    root: { class: GOLDEN_SINGLE_INPUT_ROOT },
   },
   textarea: {
-    root: { class: GOLDEN_INPUT_ROOT },
+    root: { class: GOLDEN_SINGLE_INPUT_ROOT },
   },
   datepicker: {
-    root: { class: GOLDEN_INPUT_ROOT },
+    root: { class: GOLDEN_COMPOUND_INPUT_ROOT, style: GOLDEN_COMPOUND_ROOT_STYLE },
+    pcInputText: {
+      root: { class: GOLDEN_COMPOUND_INPUT_TEXT_RESET },
+    },
+    dropdown: {
+      class: GOLDEN_COMPOUND_ACTION_RESET,
+      style: GOLDEN_COMPOUND_ACTION_STYLE,
+    },
     panel: { class: OVERLAY_GLASS_CLASS },
   },
   select: {
-    root: { class: GOLDEN_INPUT_ROOT },
+    root: { class: GOLDEN_SINGLE_INPUT_ROOT },
     overlay: { class: OVERLAY_GLASS_COMPACT_CLASS },
     option: { class: OPTION_TRANSITION_CLASS },
   },
   multiselect: {
-    root: { class: GOLDEN_INPUT_ROOT },
+    root: { class: GOLDEN_SINGLE_INPUT_ROOT },
     overlay: { class: OVERLAY_GLASS_COMPACT_CLASS },
     option: { class: OPTION_TRANSITION_CLASS },
   },
   autocomplete: {
-    root: { class: GOLDEN_INPUT_ROOT },
+    root: { class: GOLDEN_COMPOUND_INPUT_ROOT, style: GOLDEN_COMPOUND_ROOT_STYLE },
+    pcInputText: {
+      root: { class: GOLDEN_COMPOUND_INPUT_TEXT_RESET },
+    },
+    dropdown: {
+      class: GOLDEN_COMPOUND_ACTION_RESET,
+      style: GOLDEN_COMPOUND_ACTION_STYLE,
+    },
     overlay: { class: OVERLAY_GLASS_COMPACT_CLASS },
     option: { class: OPTION_TRANSITION_CLASS },
   },
   treeselect: {
-    root: { class: GOLDEN_INPUT_ROOT },
+    root: { class: GOLDEN_SINGLE_INPUT_ROOT },
     panel: { class: OVERLAY_GLASS_COMPACT_CLASS },
     overlay: { class: OVERLAY_GLASS_COMPACT_CLASS },
     pcTree: {
@@ -67,7 +97,10 @@ export const formControlsPt = {
     },
   },
   password: {
-    root: { class: GOLDEN_INPUT_ROOT },
+    root: { class: GOLDEN_COMPOUND_INPUT_ROOT, style: GOLDEN_COMPOUND_ROOT_STYLE },
+    pcInputText: {
+      root: { class: GOLDEN_COMPOUND_INPUT_TEXT_RESET },
+    },
     panel: { class: OVERLAY_GLASS_CLASS },
     overlay: { class: OVERLAY_GLASS_CLASS },
   },

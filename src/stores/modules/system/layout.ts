@@ -5,7 +5,7 @@ import {
   DEFAULT_LAYOUT_VISIBILITY_SETTINGS,
   LAYOUT_PERSIST_PICK,
 } from '@/constants/layout'
-import { useDeviceStore } from '@/stores/modules/device'
+import { useDeviceStore } from '@/stores/modules/system/device'
 import { deepClone } from '@/utils/lodashes'
 import store from '@/stores'
 /** 缓存 deviceStore，避免 effectiveMode getter 每次求值都调用 useDeviceStore() */

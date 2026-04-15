@@ -17,7 +17,7 @@ import type { ComputedRef } from 'vue'
 import { usePrimeVue } from 'primevue/config'
 import { type Elements, type OverlayScrollbars, type State } from 'overlayscrollbars'
 import { OverlayScrollbarsComponent } from 'overlayscrollbars-vue'
-import { useThemeStore } from '@/stores/modules/theme'
+import { useThemeStore } from '@/stores/modules/system'
 import {
   DEFAULT_SCROLLBAR_AUTO_HIDE_DELAY_MS,
   defaultScrollbarProps,

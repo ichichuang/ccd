@@ -4,25 +4,32 @@ import { PRO_FORM_LOGGER } from '../utils/logger'
 export class DraftStorage {
   private static PREFIX = 'pro-form-draft:'
 
+  private static getStorageKey(key: string): string {
+    return this.PREFIX + key
+  }
+
   static save(key: string, data: Record<string, unknown>): void {
+    if (typeof window === 'undefined') return
     try {
-      const packed = packDataSync(data)
-      localStorage.setItem(this.PREFIX + key, packed)
+      const packed = packDataSync(data, import.meta.env.VITE_APP_SECRET)
+      if (!packed) return
+      window.localStorage.setItem(this.getStorageKey(key), packed)
     } catch (e) {
       PRO_FORM_LOGGER.warn('Failed to save draft', e)
     }
   }
 
   static load(key: string): Record<string, unknown> | null {
+    if (typeof window === 'undefined') return null
     try {
-      const raw = localStorage.getItem(this.PREFIX + key)
+      const raw = window.localStorage.getItem(this.getStorageKey(key)) ?? ''
       if (!raw) return null
 
-      // 优先尝试解密（新格式）
-      const unpacked = unpackDataSync<Record<string, unknown>>(raw)
-      if (unpacked) return unpacked
+      const unpacked = unpackDataSync<Record<string, unknown>>(raw, import.meta.env.VITE_APP_SECRET)
+      if (unpacked !== null) {
+        return unpacked
+      }
 
-      // 降级：兼容旧版明文 JSON 草稿
       return JSON.parse(raw) as Record<string, unknown>
     } catch (e) {
       PRO_FORM_LOGGER.warn('Failed to load draft', e)
@@ -31,6 +38,7 @@ export class DraftStorage {
   }
 
   static clear(key: string): void {
-    localStorage.removeItem(this.PREFIX + key)
+    if (typeof window === 'undefined') return
+    window.localStorage.removeItem(this.getStorageKey(key))
   }
 }

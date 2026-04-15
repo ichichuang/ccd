@@ -10,7 +10,7 @@ import {
   createTieredMenuItemRenderer,
   type TieredMenuItemSlotProps,
 } from '@/hooks/layout/useMenuRenderer'
-import { useLayoutStore } from '@/stores/modules/layout'
+import { useLayoutStore } from '@/stores/modules/system'
 
 defineProps<{
   show: boolean

@@ -230,6 +230,7 @@ export interface UseFormReturn<TValues extends Record<string, unknown> = Record<
   handleSubmit: (fn: (values: TValues) => void | Promise<void>) => (e?: Event) => Promise<void>
   getValues: () => TValues
   getFormState: () => FormState<TValues>
+  updateSchema: (schema: FormSchema) => void
   /**
    * 释放当前表单实例持有的资源（定时器等），通常在组件卸载时调用
    */

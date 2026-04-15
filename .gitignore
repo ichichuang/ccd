@@ -68,6 +68,8 @@ yarn.lock
 # Testing
 /tests/e2e/videos/
 /tests/e2e/screenshots/
+/playwright-report/
+/test-results/
 
 # Local Netlify folder
 .netlify

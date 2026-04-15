@@ -27,7 +27,7 @@ import {
   radiusPx,
   spacingPx,
 } from '@/utils/theme/sizeMetrics'
-import { useSizeStore } from '@/stores/modules/size'
+import { useSizeStore } from '@/stores/modules/system'
 
 /** `SizeScaleKey` → camelCase 后缀（用于 `gapXs`、`gap2xl` 等属性名） */
 const CHART_SCALE_SUFFIX: Record<SizeScaleKey, string> = {

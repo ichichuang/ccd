@@ -44,6 +44,25 @@ const styleVars = computed(() => ({
   '--animate-duration': props.duration,
 }))
 
+function parseDelayToMs(delay: string | undefined): number {
+  if (!delay) return 0
+  const normalized = delay.trim()
+  if (!normalized) return 0
+
+  if (normalized.endsWith('ms')) {
+    const value = Number.parseFloat(normalized.slice(0, -2))
+    return Number.isFinite(value) ? value : 0
+  }
+
+  if (normalized.endsWith('s')) {
+    const value = Number.parseFloat(normalized.slice(0, -1))
+    return Number.isFinite(value) ? value * 1000 : 0
+  }
+
+  const value = Number.parseFloat(normalized)
+  return Number.isFinite(value) ? value : 0
+}
+
 /** 设置当前元素的动画延迟（统一函数） */
 const setElementDelay = (el: Element, delay: string | undefined) => {
   const element = el as HTMLElement
@@ -54,36 +73,39 @@ const setElementDelay = (el: Element, delay: string | undefined) => {
   }
 }
 
-/** 列表模式下按子元素 index 叠加（实际为覆盖）队列延迟 */
-const applyGroupStaggerDelay = (el: Element): void => {
-  if (!props.group || props.stagger === undefined) return
+/** 列表模式下按子元素 index 叠加队列延迟 */
+const applyGroupStaggerDelay = (el: Element, baseDelay: string | undefined): void => {
+  if (!props.group || props.stagger === undefined) {
+    setElementDelay(el, baseDelay)
+    return
+  }
 
   const parent = el.parentNode
-  if (!parent) return
+  if (!parent) {
+    setElementDelay(el, baseDelay)
+    return
+  }
 
   const children = Array.from(parent.children)
   const index = children.indexOf(el)
-  if (index < 0) return
+  if (index < 0) {
+    setElementDelay(el, baseDelay)
+    return
+  }
 
   const extraDelay = index * props.stagger
-  ;(el as HTMLElement).style.setProperty('--animate-delay', `${extraDelay}ms`)
+  const totalDelay = parseDelayToMs(baseDelay) + extraDelay
+  ;(el as HTMLElement).style.setProperty('--animate-delay', `${totalDelay}ms`)
 }
 
 /** 队列延迟：进入阶段（enter/appear） */
 const handleBeforeEnter = (el: Element) => {
-  // 先设置进入阶段的基础延迟（优先 enterDelay，其次 delay）
-  setElementDelay(el, props.enterDelay || props.delay)
-
-  // 列表模式下应用队列延迟（覆盖语义：index*stagger 将写入 --animate-delay）
-  applyGroupStaggerDelay(el)
+  applyGroupStaggerDelay(el, props.enterDelay || props.delay)
 }
 
 /** 离开阶段延迟：使用 leaveDelay 优先，其次 delay */
 const handleBeforeLeave = (el: Element) => {
-  setElementDelay(el, props.leaveDelay || props.delay)
-
-  // 列表模式下也应用队列延迟（修复：离开阶段之前未实现 stagger 错位）
-  applyGroupStaggerDelay(el)
+  applyGroupStaggerDelay(el, props.leaveDelay || props.delay)
 }
 </script>
 

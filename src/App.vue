@@ -6,10 +6,11 @@ import {
 } from '@/utils/theme/sizeEngine'
 import LayoutManager from '@/layouts/index.vue'
 import AppPrimeVueGlobals from '@/layouts/components/AppPrimeVueGlobals.vue'
-import { usePermissionStore } from '@/stores/modules/permission'
+import { usePermissionStore } from '@/stores/modules/session'
 
 const sizeStore = useSizeStore()
 const deviceStore = useDeviceStore()
+const themeStore = useThemeStore()
 
 let cleanupDeviceListener: (() => void) | undefined
 
@@ -58,6 +59,8 @@ onMounted(() => {
 
 onUnmounted(() => {
   if (cleanupDeviceListener) cleanupDeviceListener()
+  document.documentElement.classList.remove('app-resizing')
+  themeStore.dispose()
 })
 </script>
 

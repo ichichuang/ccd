@@ -224,7 +224,7 @@ declare global {
   const useDeviceMotion: typeof import('@vueuse/core').useDeviceMotion
   const useDeviceOrientation: typeof import('@vueuse/core').useDeviceOrientation
   const useDevicePixelRatio: typeof import('@vueuse/core').useDevicePixelRatio
-  const useDeviceStore: typeof import('../stores/modules/device').useDeviceStore
+  const useDeviceStore: typeof import('../stores/modules/system/device').useDeviceStore
   const useDevicesList: typeof import('@vueuse/core').useDevicesList
   const useDialog: typeof import('../hooks/modules/useDialog').useDialog
   const useDisplayMedia: typeof import('@vueuse/core').useDisplayMedia
@@ -262,14 +262,14 @@ declare global {
   const useIntervalFn: typeof import('@vueuse/core').useIntervalFn
   const useKeyModifier: typeof import('@vueuse/core').useKeyModifier
   const useLastChanged: typeof import('@vueuse/core').useLastChanged
-  const useLayoutStore: typeof import('../stores/modules/layout').useLayoutStore
-  const useLayoutStoreWithOut: typeof import('../stores/modules/layout').useLayoutStoreWithOut
+  const useLayoutStore: typeof import('../stores/modules/system/layout').useLayoutStore
+  const useLayoutStoreWithOut: typeof import('../stores/modules/system/layout').useLayoutStoreWithOut
   const useLink: typeof import('vue-router').useLink
   const useLoading: typeof import('../hooks/layout/useLoading').useLoading
   const useLocalStorage: typeof import('@vueuse/core').useLocalStorage
   const useLocale: typeof import('../hooks/modules/useLocale').useLocale
-  const useLocaleStore: typeof import('../stores/modules/locale').useLocaleStore
-  const useLocaleStoreWithOut: typeof import('../stores/modules/locale').useLocaleStoreWithOut
+  const useLocaleStore: typeof import('../stores/modules/system/locale').useLocaleStore
+  const useLocaleStoreWithOut: typeof import('../stores/modules/system/locale').useLocaleStoreWithOut
   const useLongPressAction: typeof import('../hooks/modules/useInteraction/useLongPressAction').useLongPressAction
   const useMagicKeys: typeof import('@vueuse/core').useMagicKeys
   const useManualRefHistory: typeof import('@vueuse/core').useManualRefHistory
@@ -297,8 +297,8 @@ declare global {
   const usePerformanceObserver: typeof import('@vueuse/core').usePerformanceObserver
   const usePermission: typeof import('@vueuse/core').usePermission
   const usePermissionRoutes: typeof import('../hooks/modules/usePermissionRoutes').usePermissionRoutes
-  const usePermissionStore: typeof import('../stores/modules/permission').usePermissionStore
-  const usePermissionStoreWithOut: typeof import('../stores/modules/permission').usePermissionStoreWithOut
+  const usePermissionStore: typeof import('../stores/modules/session/permission').usePermissionStore
+  const usePermissionStoreWithOut: typeof import('../stores/modules/session/permission').usePermissionStoreWithOut
   const usePointer: typeof import('@vueuse/core').usePointer
   const usePointerLock: typeof import('@vueuse/core').usePointerLock
   const usePointerSwipe: typeof import('@vueuse/core').usePointerSwipe
@@ -322,7 +322,7 @@ declare global {
   const useScrollLock: typeof import('@vueuse/core').useScrollLock
   const useSessionStorage: typeof import('@vueuse/core').useSessionStorage
   const useShare: typeof import('@vueuse/core').useShare
-  const useSizeStore: typeof import('../stores/modules/size').useSizeStore
+  const useSizeStore: typeof import('../stores/modules/system/size').useSizeStore
   const useSlots: typeof import('vue').useSlots
   const useSorted: typeof import('@vueuse/core').useSorted
   const useSpeechRecognition: typeof import('@vueuse/core').useSpeechRecognition
@@ -334,14 +334,14 @@ declare global {
   const useSupported: typeof import('@vueuse/core').useSupported
   const useSwipe: typeof import('@vueuse/core').useSwipe
   const useSwipeAction: typeof import('../hooks/modules/useInteraction/useSwipeAction').useSwipeAction
-  const useTableDrawerStore: typeof import('../stores/modules/tableDrawer').useTableDrawerStore
+  const useTableDrawerStore: typeof import('../stores/modules/ui/tableDrawer').useTableDrawerStore
   const useTap: typeof import('../hooks/modules/useInteraction/useTap').useTap
   const useTemplateRef: typeof import('vue').useTemplateRef
   const useTemplateRefsList: typeof import('@vueuse/core').useTemplateRefsList
   const useTextDirection: typeof import('@vueuse/core').useTextDirection
   const useTextSelection: typeof import('@vueuse/core').useTextSelection
   const useTextareaAutosize: typeof import('@vueuse/core').useTextareaAutosize
-  const useThemeStore: typeof import('../stores/modules/theme').useThemeStore
+  const useThemeStore: typeof import('../stores/modules/system/theme').useThemeStore
   const useThemeSwitch: typeof import('../hooks/modules/useThemeSwitch').useThemeSwitch
   const useThrottle: typeof import('@vueuse/core').useThrottle
   const useThrottleFn: typeof import('@vueuse/core').useThrottleFn
@@ -359,8 +359,8 @@ declare global {
   const useTransition: typeof import('@vueuse/core').useTransition
   const useUrlSearchParams: typeof import('@vueuse/core').useUrlSearchParams
   const useUserMedia: typeof import('@vueuse/core').useUserMedia
-  const useUserStore: typeof import('../stores/modules/user').useUserStore
-  const useUserStoreWithOut: typeof import('../stores/modules/user').useUserStoreWithOut
+  const useUserStore: typeof import('../stores/modules/session/user').useUserStore
+  const useUserStoreWithOut: typeof import('../stores/modules/session/user').useUserStoreWithOut
   const useVModel: typeof import('@vueuse/core').useVModel
   const useVModels: typeof import('@vueuse/core').useVModels
   const useVibrate: typeof import('@vueuse/core').useVibrate
@@ -397,8 +397,8 @@ declare global {
   export type { Component, Slot, Slots, ComponentPublicInstance, ComputedRef, DirectiveBinding, ExtractDefaultPropTypes, ExtractPropTypes, ExtractPublicPropTypes, InjectionKey, PropType, Ref, ShallowRef, MaybeRef, MaybeRefOrGetter, VNode, WritableComputedRef } from 'vue'
   import('vue')
   // @ts-ignore
-  export type { TableDrawerState } from '../stores/modules/tableDrawer'
-  import('../stores/modules/tableDrawer')
+  export type { TableDrawerState } from '../stores/modules/ui/tableDrawer'
+  import('../stores/modules/ui/tableDrawer')
   // @ts-ignore
   export type { BreadcrumbChildItem, AdminBreadcrumbItem } from '../hooks/layout/useAdminBreadcrumbs'
   import('../hooks/layout/useAdminBreadcrumbs')

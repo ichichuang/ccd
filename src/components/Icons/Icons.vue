@@ -124,6 +124,8 @@ const colorStyle = computed(() => {
   return css
 })
 
+const accessibleLabel = computed(() => props.label ?? props.title ?? undefined)
+
 const style = computed(() => {
   const css: Record<string, string> = { ...colorStyle.value }
   const transforms: string[] = []
@@ -165,13 +167,13 @@ const functionalClasses = computed(() => {
 </script>
 
 <template>
-  <div
+  <span
     :class="[iconClass, functionalClasses, sizeClass, colorClass, defaultColorClass]"
     :style="{ ...style, ...sizeStyle }"
     class="inline-block align-middle text-inherit"
-    role="img"
-    :aria-label="props.label"
+    :role="accessibleLabel ? 'img' : undefined"
+    :aria-label="accessibleLabel"
     :title="props.title"
-    :aria-hidden="!props.label"
+    :aria-hidden="!accessibleLabel"
   />
 </template>

@@ -1,6 +1,6 @@
 import type { Ref } from 'vue'
 import type { EChartsOption } from 'echarts'
-import { useThemeStore } from '@/stores/modules/theme'
+import { useThemeStore } from '@/stores/modules/system'
 import { getChartSystemVariables } from '@/utils/theme/chartUtils'
 import type { SystemMetricsDTO } from '../page.state'
 

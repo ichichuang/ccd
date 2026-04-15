@@ -81,10 +81,15 @@ export function getPluginsList(env: ViteEnv, command: 'build' | 'serve'): Plugin
     // JSX/TSX 语法支持
     vueJsx(),
 
-    // 自动导入 API（仅 hooks + stores，减少噪音；api/constants 需显式 import）
+    // 自动导入 API（仅 hooks + 分组 stores，减少噪音；api/constants 需显式 import）
     AutoImport({
       imports: ['vue', 'vue-router', 'pinia', '@vueuse/core', { '@/locales': [['t', '$t']] }],
-      dirs: ['src/stores/modules', 'src/hooks/**/*'],
+      dirs: [
+        'src/stores/modules/system',
+        'src/stores/modules/session',
+        'src/stores/modules/ui',
+        'src/hooks/**/*',
+      ],
       dirsScanOptions: {
         filePatterns: ['*.ts'],
         fileFilter: file => file.endsWith('.ts') && !file.endsWith('/index.ts'),

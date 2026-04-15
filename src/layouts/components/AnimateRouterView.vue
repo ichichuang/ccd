@@ -4,7 +4,7 @@ defineOptions({ name: 'AnimateRouterView' })
 import { routeWhitePathList } from '@/router/utils/helper'
 import { routeUtils } from '@/router'
 import { useRoute } from 'vue-router'
-import { useLayoutStore } from '@/stores/modules/layout'
+import { useLayoutStore } from '@/stores/modules/system'
 import type { CssTime, PhaseValue, RouteTransition } from '@/types/modules/router'
 import type { ComponentPublicInstance } from 'vue'
 

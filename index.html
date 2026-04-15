@@ -23,8 +23,21 @@
     <script>
       ;(function () {
         try {
-          var mode = localStorage.getItem('theme-mode') || 'dark'
+          var params = new URLSearchParams(window.location.search)
+          var e2eMode =
+            params.get('%E2E_MODE_QUERY_KEY%') ||
+            localStorage.getItem('%E2E_MODE_STORAGE_KEY%') ||
+            ''
+          var mode = localStorage.getItem('%THEME_MODE_STORAGE_KEY%') || '%DEFAULT_THEME_MODE%'
           var html = document.documentElement
+          if (e2eMode) {
+            html.dataset.e2eMode = e2eMode
+          }
+          if (params.get('%E2E_PRELOADER_HOLD_QUERY_KEY%') === '1') {
+            html.dataset.e2ePreloaderHold = 'true'
+          }
+          html.dataset.appReady = 'false'
+          html.dataset.preloaderState = 'visible'
           var isDark =
             mode === 'dark' ||
             (mode === 'auto' && window.matchMedia('(prefers-color-scheme: dark)').matches) ||
@@ -46,14 +59,9 @@
         width: 100%;
         height: 100%;
         overflow: hidden;
-        /* Hardcoded fallback for first-ever visit (no localStorage yet) */
-        background-color: #030712; /* royal-violet dark */
-        color: rgb(var(--foreground));
-      }
-
-      html:not(.dark),
-      html:not(.dark) body {
-        background-color: #f3f4f6; /* royal-violet light */
+        /* Theme fallback vars are injected by Vite HTML plugin; inline fallbacks only cover catastrophic injection failure. */
+        background-color: rgb(var(--background, 3 7 18));
+        color: rgb(var(--foreground, 243 244 246));
       }
 
       #preloader-bg {
@@ -77,6 +85,12 @@
         opacity: 0;
         visibility: hidden;
         pointer-events: none;
+      }
+
+      html[data-e2e-mode='visual'] #preloader-bg,
+      html[data-e2e-mode='visual'] #preloader-bg * {
+        transition: none !important;
+        animation: none !important;
       }
 
       .pure-css-loader {
@@ -125,11 +139,11 @@
     <script>
       ;(function () {
         try {
-          var savedPrimary = localStorage.getItem('theme-primary')
+          var savedPrimary = localStorage.getItem('%THEME_PRIMARY_STORAGE_KEY%')
           if (savedPrimary) {
             document.documentElement.style.setProperty('--primary', savedPrimary)
           }
-          var savedBg = localStorage.getItem('theme-background')
+          var savedBg = localStorage.getItem('%THEME_BACKGROUND_STORAGE_KEY%')
           if (savedBg) {
             document.documentElement.style.setProperty('--background', savedBg)
           }
@@ -140,7 +154,10 @@
 
   <body>
     <!-- 101 Handoff: 预加载层置于 #app 外，避免 Vue mount 时被销毁，由 loadingDone 淡出后移除 -->
-    <div id="preloader-bg">
+    <div
+      id="preloader-bg"
+      data-testid="native-preloader"
+    >
       <div
         class="pure-css-loader"
         role="status"

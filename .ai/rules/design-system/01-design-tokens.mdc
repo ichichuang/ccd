@@ -121,7 +121,7 @@ Common usage patterns:
 <div class="bg-accent text-accent-foreground">
 ```
 
-> **Rule**: ALL hover feedback MUST use `primary-hover` / `*-hover`. NEVER use opacity hacks or arbitrary dark/light shifts.
+> **Rule**: Solid interactive surfaces SHOULD prefer `primary-hover` / `*-hover`. For translucent material layers, low-emphasis list hover, glass surfaces, and tokenized overlays, semantic token opacity forms such as `bg-primary/10` or `bg-foreground/[0.04]` are allowed. Arbitrary palette colors and raw non-semantic hover colors remain forbidden.
 
 ### Tier 4 — Sidebar Family (8 dedicated tokens)
 

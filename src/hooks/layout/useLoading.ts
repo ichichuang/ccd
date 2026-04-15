@@ -47,7 +47,9 @@
  * })
  * ```
  */
-import { useLayoutStoreWithOut } from '@/stores/modules/layout'
+import { useLayoutStoreWithOut } from '@/stores/modules/system'
+import { RUNTIME_E2E_EVENTS } from '@/constants/runtime'
+import { dispatchRuntimeE2EEvent, shouldHoldPreloaderForE2E } from '@/utils/runtime/e2e'
 
 /** 101 Handoff: 原生 HTML 预加载层是否已淡出（仅执行一次） */
 let hasNativePreloaderHandedOff = false
@@ -55,13 +57,40 @@ let hasNativePreloaderHandedOff = false
 /** 淡出并移除 index.html 中的 #preloader-bg，实现与 Vue 的无缝切换（供 loadingDone 及兜底逻辑调用） */
 export function fadeOutNativePreloader() {
   if (hasNativePreloaderHandedOff) return
-  hasNativePreloaderHandedOff = true
+  const root = typeof document !== 'undefined' ? document.documentElement : null
   const el = typeof document !== 'undefined' ? document.getElementById('preloader-bg') : null
-  if (!el) return
-  el.classList.add('preloader-fade-out')
-  setTimeout(() => {
-    el.remove()
-  }, 400)
+  const finalizeHandoff = () => {
+    root?.setAttribute('data-preloader-state', 'hidden')
+    root?.setAttribute('data-app-ready', 'true')
+    dispatchRuntimeE2EEvent(RUNTIME_E2E_EVENTS.preloaderHidden)
+    dispatchRuntimeE2EEvent(RUNTIME_E2E_EVENTS.appReady)
+  }
+
+  if (!el) {
+    hasNativePreloaderHandedOff = true
+    finalizeHandoff()
+    return
+  }
+
+  const doFadeOut = () => {
+    if (hasNativePreloaderHandedOff) return
+    hasNativePreloaderHandedOff = true
+    root?.setAttribute('data-preloader-state', 'hiding')
+    el.classList.add('preloader-fade-out')
+    setTimeout(() => {
+      el.remove()
+      finalizeHandoff()
+    }, 400)
+  }
+
+  if (shouldHoldPreloaderForE2E()) {
+    root?.setAttribute('data-preloader-state', 'held')
+    dispatchRuntimeE2EEvent(RUNTIME_E2E_EVENTS.preloaderReady)
+    window.addEventListener(RUNTIME_E2E_EVENTS.releasePreloader, doFadeOut, { once: true })
+    return
+  }
+
+  doFadeOut()
 }
 
 export function useLoading() {

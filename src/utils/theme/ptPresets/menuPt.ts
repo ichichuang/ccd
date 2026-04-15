@@ -14,16 +14,16 @@ const MENU_ACTION_BASE =
 export const menuPt = {
   tieredmenu: {
     root: {
-      class: `${OVERLAY_GLASS_COMPACT_CLASS} shadow-sm dark:shadow-md rounded-md shadow-md dark:shadow-lg outline-none`,
+      class: `${OVERLAY_GLASS_COMPACT_CLASS} shadow-md dark:shadow-lg outline-none`,
     },
     menu: {
-      class: 'bg-transparent rounded-md outline-none',
+      class: 'bg-transparent outline-none',
     },
     menuitem: {
-      class: 'rounded-sm outline-none',
+      class: 'outline-none',
     },
     content: {
-      class: 'rounded-md outline-none',
+      class: 'outline-none',
     },
     itemContent: {
       class: `${MENU_ACTION_BASE} ${OPTION_TRANSITION_CLASS}`,
@@ -31,7 +31,7 @@ export const menuPt = {
   },
   panelmenu: {
     root: {
-      class: 'gap-xs outline-none',
+      class: 'outline-none',
     },
     panel: {
       class: 'outline-none',
@@ -46,7 +46,7 @@ export const menuPt = {
       class: 'outline-none',
     },
     menu: {
-      class: 'gap-xs m-0 list-none outline-none',
+      class: 'm-0 list-none outline-none',
     },
     menuitem: {
       class: 'outline-none',

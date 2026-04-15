@@ -6,7 +6,7 @@ import {
   deepMergeStylesAdvancedInPlace,
   deepFindAndReplaceProperty,
 } from './primevueThemeEngine'
-import type { useSizeStore } from '@/stores/modules/size'
+import type { useSizeStore } from '@/stores/modules/system'
 import { createColorAdapter } from './colorAdapter'
 import { buildPrimitiveLayer } from './presetPrimitive'
 import { buildSemanticLayer } from './presetSemantic'

@@ -1,0 +1,43 @@
+---
+description: Pinia store grouping contract for system/session/ui ownership and backwards-compatible import surfaces.
+globs: ["src/stores/**/*.ts", "src/**/*.ts", "src/**/*.vue", "src/**/*.tsx"]
+---
+
+# Store Organization Contract
+
+## Goal
+
+Keep Pinia stores discoverable and maintainable as the app grows. Grouped domains are the only allowed public organization model under `src/stores/modules/`.
+
+## Canonical Groups
+
+- `src/stores/modules/system/`
+  - framework-level runtime state
+  - examples: theme, size, locale, layout, device
+- `src/stores/modules/session/`
+  - authenticated session and permission context
+  - examples: user, permission
+- `src/stores/modules/ui/`
+  - ephemeral cross-view presentation state
+  - examples: tableDrawer
+
+## Import Policy
+
+- Shared imports MUST come from grouped entrypoints when the caller is outside `src/stores/modules/**`:
+  - `@/stores/modules/system`
+  - `@/stores/modules/session`
+  - `@/stores/modules/ui`
+- Internal store implementation files may import sibling grouped files directly when needed to avoid circular barrel dependencies.
+- Do not create new unrelated stores directly in `src/stores/modules/` root without first assigning them to one of the canonical groups.
+
+## Ownership Heuristics
+
+- Put a store in `system` when it models app shell/runtime preferences or environment state.
+- Put a store in `session` when it depends on login, permissions, or current-user identity.
+- Put a store in `ui` when it is presentation-only, short-lived, and not part of platform/runtime state.
+
+## Root Directory Rule
+
+- `src/stores/modules/` root only keeps grouped directories such as `system/`, `session/`, and `ui/`.
+- Do not add flat compatibility re-export files back into `src/stores/modules/`.
+- Do not add a root barrel for grouped stores unless a build tool cannot target grouped directories directly.

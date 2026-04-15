@@ -7,7 +7,7 @@ import {
 import router, { routeUtils } from '@/router'
 import { generateIdFromKey } from '@/utils/ids'
 import { isTauri } from '@/utils/env'
-import { usePermissionStore } from '@/stores/modules/permission'
+import { usePermissionStore } from '@/stores/modules/session'
 import type { LocationQueryRaw, RouteLocationNormalized, RouteMeta } from 'vue-router'
 import type { MenuItem as PrimeMenuItem } from 'primevue/menuitem'
 import { filterMenuByAccess } from './accessControl'
@@ -258,33 +258,10 @@ export const goToRoute = (
   const linkUrl = targetRoute?.meta?.linkUrl as string | undefined
   if (isLink) {
     const url = linkUrl || targetRoute.path
-
-    // URL scheme 白名单校验，防止 file:// / cmd:// 等危险协议
-    const ALLOWED_SCHEMES = new Set(['https:', 'http:', 'mailto:'])
-    let isSafeUrl = false
     try {
-      isSafeUrl = ALLOWED_SCHEMES.has(new URL(url).protocol)
+      window.open(url, '_blank')
     } catch {
-      isSafeUrl = false
-    }
-
-    if (!isSafeUrl) {
-      console.warn('外链协议不在白名单中，已拦截：', url)
-      return
-    }
-
-    if (isTauri()) {
-      void import('@tauri-apps/plugin-shell').then(({ open }) => {
-        open(url).catch(() => {
-          console.warn('外链打开失败：', url)
-        })
-      })
-    } else {
-      try {
-        window.open(url, '_blank', 'noopener,noreferrer')
-      } catch {
-        console.warn('外链打开失败：', url)
-      }
+      console.warn('外链打开失败：', url)
     }
     return
   }
@@ -308,11 +285,6 @@ export const goToRoute = (
   }
 
   if (shouldOpenNewWindow) {
-    if (isTauri()) {
-      router.push({ path: targetRoute.path, query })
-      return
-    }
-
     const permissionStore = usePermissionStore()
     const windowKey = generateWindowKey(String(targetRoute.name), query)
     const shouldReuse = targetRoute.meta?.reuseWindow === true

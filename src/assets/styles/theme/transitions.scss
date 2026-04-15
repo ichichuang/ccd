@@ -21,6 +21,15 @@
   color-scheme: dark;
 }
 
+html[data-e2e-mode='visual'],
+html[data-e2e-mode='visual'] *,
+html[data-e2e-mode='visual'] *::before,
+html[data-e2e-mode='visual'] *::after {
+  transition: none !important;
+  animation: none !important;
+  scroll-behavior: auto !important;
+}
+
 /* 防御：View Transition 期间禁用所有原生 CSS 过渡 */
 html.is-view-transitioning,
 html.is-view-transitioning *,

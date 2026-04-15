@@ -1,4 +1,5 @@
 /// <reference lib="dom" />
+import { RUNTIME_STORAGE_KEYS } from '../../constants/runtime'
 import { adjustBrightness, hexToRgb, isDarkColor, mixHex, normalizeHex, shiftHue } from './colors'
 import { COLOR_FAMILIES, THEME_ENGINE } from './metadata'
 
@@ -31,7 +32,7 @@ export function generateThemeVars(preset: ThemePreset, isDark: boolean): ThemeCs
 
   const fgBase = resolveToken(modeConfig?.foreground, () => (isDark ? E.fgDark : E.fgLight))
 
-  // 2. 中性色基调 (用于 Border/Input/Ring)
+  // 2. 中性色基调 (用于 Border/Input)
   const defaultNeutral = isDark ? E.neutralDark : E.neutralLight
   const baseNeutral = resolveToken(
     modeConfig?.neutral?.base,
@@ -93,7 +94,10 @@ export function generateThemeVars(preset: ThemePreset, isDark: boolean): ThemeCs
     isDark ? E.mutedFgDark : E.mutedFgLight
   )
 
-  // 6. Accent
+  // 6. Focus Ring
+  const ringBase = resolveToken(modeConfig?.ring, () => primaryBase)
+
+  // 7. Accent
   const accentBase = resolveToken(
     modeConfig?.accent?.default,
     () => preset.accent ?? shiftHue(primaryBase, E.accentHueShift)
@@ -116,7 +120,7 @@ export function generateThemeVars(preset: ThemePreset, isDark: boolean): ThemeCs
     isDark ? E.fgDark : getRobustLightFg(accentBase)
   )
 
-  // 7. Status Colors (Danger, Warn, Success)
+  // 8. Status Colors (Danger, Warn, Success)
   const generateStatusFamily = (
     config: Partial<ColorTokenState> | undefined,
     baseDefault: string
@@ -147,7 +151,7 @@ export function generateThemeVars(preset: ThemePreset, isDark: boolean): ThemeCs
   const info = generateStatusFamily(modeConfig?.info, preset.info ?? E.infoDefault)
   const help = generateStatusFamily(modeConfig?.help, preset.help ?? E.helpDefault)
 
-  // 8. Sidebar
+  // 9. Sidebar
   const sidebarConfig = modeConfig?.sidebar
 
   let sidebarBase = isDark ? E.sidebarDark : E.sidebarLight
@@ -248,7 +252,7 @@ export function generateThemeVars(preset: ThemePreset, isDark: boolean): ThemeCs
 
     '--border': safeToRgb(baseNeutral),
     '--input': safeToRgb(baseNeutral),
-    '--ring': safeToRgb(primaryBase),
+    '--ring': safeToRgb(ringBase),
 
     '--sidebar-background': safeToRgb(sidebarBase),
     '--sidebar-foreground': safeToRgb(sidebarFg),
@@ -291,15 +295,16 @@ export function applyTheme(vars: ThemeCssVars) {
   // 4. 单次原子更新 - 只触发 1 次 style mutation
   root.style.cssText = cssText
 
-  // 5. 持久化 --primary / --background 供 index.html 预加载层首帧读取（刷新后与主题一致）
+  // 5. 持久化预加载视觉 token，供 index.html 在 Vue 挂载前恢复首帧主题色。
+  // 这是 safe-storage 规则中的显式例外：仅允许 theme-primary/theme-background 这类视觉启动 token 明文存在。
   try {
     const primary = vars['--primary']
     if (primary) {
-      localStorage.setItem('theme-primary', primary)
+      localStorage.setItem(RUNTIME_STORAGE_KEYS.themePrimary, primary)
     }
     const background = vars['--background']
     if (background) {
-      localStorage.setItem('theme-background', background)
+      localStorage.setItem(RUNTIME_STORAGE_KEYS.themeBackground, background)
     }
   } catch (_) {
     /* ignore */

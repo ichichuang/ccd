@@ -1,6 +1,6 @@
 {
   "name": "ccd-desktop",
-  "version": "1.0.23",
+  "version": "1.0.27",
   "private": true,
   "type": "module",
   "sideEffects": [
@@ -30,9 +30,7 @@
   "packageManager": "pnpm@10.28.2",
   "scripts": {
     "sync:brand": "node scripts/sync-brand.mjs",
-    "sync:desktop-config": "node scripts/sync-desktop-config.mjs",
     "sync:version": "node scripts/sync-version.mjs",
-    "predev": "pnpm sync:version && pnpm sync:desktop-config",
     "prebuild": "pnpm sync:brand && pnpm sync:version && pnpm sync:desktop-config",
     "dev": "vite",
     "dev:demo": "NODE_OPTIONS='--max-old-space-size=8192' UNO_DEMO=true vite",
@@ -59,8 +57,14 @@
     "test": "vitest",
     "test:run": "vitest run",
     "test:coverage": "vitest run --coverage",
+    "e2e": "playwright test",
+    "e2e:update": "playwright test --update-snapshots",
+    "e2e:headed": "playwright test --headed",
+    "e2e:ui": "playwright test --ui",
     "commit": "git-cz",
     "prepare": "pnpm ai:sync && husky",
+    "sync:desktop-config": "node scripts/sync-desktop-config.mjs",
+    "predev": "pnpm sync:version && pnpm sync:desktop-config",
     "tauri": "tauri",
     "dev:desktop": "tauri dev",
     "build:desktop": "tauri build"
@@ -126,6 +130,7 @@
     "@iconify-json/ph": "^1.2.2",
     "@iconify-json/solar": "^1.2.5",
     "@iconify/utils": "^3.1.0",
+    "@playwright/test": "^1.59.1",
     "@primevue/auto-import-resolver": "^4.5.4",
     "@tsconfig/node22": "^22.0.2",
     "@types/lodash-es": "^4.17.12",

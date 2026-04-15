@@ -3,7 +3,7 @@ import { useI18n } from 'vue-i18n'
 import Popover from 'primevue/popover'
 import Button from 'primevue/button'
 import { AUTH_ENABLED } from '@/constants/router'
-import { useUserStore } from '@/stores/modules/user'
+import { useUserStore } from '@/stores/modules/session'
 import defaultAvatar from '@/assets/images/default-avatar.webp'
 import GlobalSetting from '@/layouts/components/GlobalSetting/index.vue'
 
@@ -52,6 +52,7 @@ const onLogout = async () => {
   >
     <!-- 头像入口按钮 -->
     <div
+      id="user-entry-trigger"
       class="h-full size-1-1 rounded-full bg-transparent border-none p-0 outline-none cursor-pointer"
       @click="togglePanel"
     >
@@ -87,6 +88,7 @@ const onLogout = async () => {
         <div v-if="userInfo.phone">{{ t('user.phone') }}：{{ userInfo.phone }}</div>
         <GlobalSetting>
           <Button
+            id="user-open-global-settings"
             class="w-full"
             :label="t('layout.openGlobalSettings')"
           />

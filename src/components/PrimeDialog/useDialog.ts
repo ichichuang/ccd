@@ -9,22 +9,37 @@ import { defaultContentRenderer } from './defaultContentRenderer'
 import { defaultDialogProps } from './utils/constants'
 import type { ArgsType, DialogOptions } from './utils/types'
 
+type DialogOptionKey = keyof DialogOptions
+
 export type UseDialogCoreReturn = {
   dialogStore: Readonly<Ref<readonly DialogOptions[]>>
   addDialog: (options: DialogOptions) => number
   closeDialog: (index: number, args?: ArgsType) => void
   removeDialogByInstanceId: (instanceId: string) => void
-  updateDialog: (value: unknown, key?: string, index?: number) => void
+  updateDialog: <TKey extends DialogOptionKey>(
+    value: DialogOptions[TKey],
+    key?: TKey,
+    index?: number
+  ) => void
   closeAllDialog: () => void
 }
 
 const _dialogStore = ref<DialogOptions[]>([])
 const _closingInstanceIds = new Set<string>()
+const _pendingOpenTimers = new Map<string, ReturnType<typeof globalThis.setTimeout>>()
+
+function clearPendingOpenTimer(instanceId: string): void {
+  const timerId = _pendingOpenTimers.get(instanceId)
+  if (timerId !== undefined) {
+    globalThis.clearTimeout(timerId)
+    _pendingOpenTimers.delete(instanceId)
+  }
+}
 
 export function useDialogCore(): UseDialogCoreReturn {
   function addDialog(options: DialogOptions): number {
     const clonedOptions: DialogOptions = deepClone(options)
-    const clonedDefaults: DialogOptions = deepClone(defaultDialogProps) as DialogOptions
+    const clonedDefaults = deepClone(defaultDialogProps) as DialogOptions
     const hasOpenDelay = (options?.openDelay ?? 0) > 0
     const mergedOptions: DialogOptions = {
       ...clonedDefaults,
@@ -44,12 +59,14 @@ export function useDialogCore(): UseDialogCoreReturn {
 
     if (hasOpenDelay) {
       const delay = options.openDelay!
-      setTimeout(() => {
+      const timerId = globalThis.setTimeout(() => {
+        _pendingOpenTimers.delete(instanceId)
         const dialog = _dialogStore.value.find(d => d._instanceId === instanceId)
         if (dialog) {
           dialog.visible = true
         }
       }, delay)
+      _pendingOpenTimers.set(instanceId, timerId)
     }
 
     return index
@@ -65,19 +82,29 @@ export function useDialogCore(): UseDialogCoreReturn {
   }
 
   function removeDialogByInstanceId(instanceId: string) {
+    clearPendingOpenTimer(instanceId)
     const idx = _dialogStore.value.findIndex(d => d._instanceId === instanceId)
     if (idx !== -1) _dialogStore.value.splice(idx, 1)
     _closingInstanceIds.delete(instanceId)
   }
 
-  function updateDialog(value: unknown, key = 'header', index = 0) {
+  function updateDialog<TKey extends DialogOptionKey>(
+    value: DialogOptions[TKey],
+    key: TKey = 'header' as TKey,
+    index = 0
+  ) {
     const item = _dialogStore.value[index]
     if (item && key in item) {
-      ;(item as Record<string, unknown>)[key] = value
+      item[key] = value
     }
   }
 
   function closeAllDialog() {
+    _pendingOpenTimers.forEach(timerId => {
+      globalThis.clearTimeout(timerId)
+    })
+    _pendingOpenTimers.clear()
+    _closingInstanceIds.clear()
     _dialogStore.value = []
   }
 

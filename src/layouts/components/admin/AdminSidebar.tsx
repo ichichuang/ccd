@@ -1,4 +1,4 @@
-import { useLayoutStore } from '@/stores/modules/layout'
+import { useLayoutStore } from '@/stores/modules/system'
 import AdminSidebarLogo from '@/layouts/components/admin/AdminSidebarLogo'
 import AdminSidebarMenu from '@/layouts/components/admin/AdminSidebarMenu'
 import { CScrollbar } from '@/components/CScrollbar'

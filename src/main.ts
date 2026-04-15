@@ -7,15 +7,16 @@ import 'nprogress/nprogress.css'
 
 // 导入应用
 import App from '@/App.vue'
-import { isTauri } from '@/utils/env'
+import { RUNTIME_STORAGE_KEYS } from '@/constants/runtime'
 import { setOnUnauthorized, setTokenProvider } from '@/infra/auth/tokenProvider'
 import { setupPlugins } from '@/plugins'
 import router from '@/router'
-import { useUserStoreWithOut } from '@/stores/modules/user'
+import { useLayoutStoreWithOut } from '@/stores/modules/system'
+import { useUserStoreWithOut } from '@/stores/modules/session'
 import { fadeOutNativePreloader } from '@/hooks/layout/useLoading'
+import { isTauri } from '@/utils/env'
 import { preload } from '@/utils/theme/sizeEngine'
 
-const VITE_PRELOAD_RELOAD_KEY = 'vite-preload-error-reloaded'
 let isUnauthorizedHandling = false
 /**
  * Wait two paints to ensure mounted DOM + CSS var updates
@@ -31,17 +32,21 @@ const nextFrame = () =>
 // Handle Vite module preload failures gracefully (e.g., stale cache, transient network)
 window.addEventListener('vite:preloadError', event => {
   event.preventDefault()
-  const reloadedFlag = sessionStorage.getItem(VITE_PRELOAD_RELOAD_KEY)
+  const reloadedFlag = sessionStorage.getItem(RUNTIME_STORAGE_KEYS.vitePreloadReload)
   if (!reloadedFlag) {
-    sessionStorage.setItem(VITE_PRELOAD_RELOAD_KEY, 'true')
+    sessionStorage.setItem(RUNTIME_STORAGE_KEYS.vitePreloadReload, 'true')
     window.location.reload()
     return
   }
   console.error('Vite chunk preload failed permanently.')
-  sessionStorage.removeItem(VITE_PRELOAD_RELOAD_KEY)
+  sessionStorage.removeItem(RUNTIME_STORAGE_KEYS.vitePreloadReload)
 })
 
 async function bootstrap() {
+  if (typeof document !== 'undefined') {
+    document.documentElement.dataset.appReady = 'false'
+    document.documentElement.dataset.runtimeLoading = 'true'
+  }
   if (typeof document !== 'undefined') preload()
 
   const app = createApp(App)
@@ -73,12 +78,16 @@ async function bootstrap() {
     }
   })
 
-  // 挂载应用（loading 关闭由 router.afterEach 负责）
+  // 挂载应用
   app.mount('#app')
-  // Single-Owner Handoff: 首跳路由就绪后兜底移除原生 preloader（内部门闩保证只执行一次）
+  // Single-Owner Handoff: 首跳路由就绪后结束启动期默认 loading，并移除原生 preloader。
   // Double rAF ensures theme/size CSS vars are applied and first paint is stable.
   await router.isReady()
   await nextFrame()
+  const layoutStore = useLayoutStoreWithOut()
+  if (layoutStore.loadingCount > 0) {
+    layoutStore.endGlobalLoading()
+  }
   fadeOutNativePreloader()
 
   // Tauri 桌面端：注入原生 UX 增强（屏蔽刷新/右键菜单/文本选中）

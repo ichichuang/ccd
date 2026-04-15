@@ -9,7 +9,7 @@ import type { SizeScaleKey } from '@/constants/sizeScale'
 import { LOADING_SIZE_CSS } from '@/constants/sizeScale'
 import { BaseLottieLoader } from './BaseLottieLoader'
 import { applyThemeToLottieJson } from '@/utils/theme/lottieThemeUtils'
-import { useThemeStore } from '@/stores/modules/theme'
+import { useThemeStore } from '@/stores/modules/system'
 
 /** 加载动画样式：1 | 2 | 3 对应 loading-001 / 002 / 003.json */
 type LoadingType = 1 | 2 | 3

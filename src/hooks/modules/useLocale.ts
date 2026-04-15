@@ -13,7 +13,7 @@ import type { ComputedRef } from 'vue'
 import type { SupportedLocale } from '@/locales'
 import { supportedLocales } from '@/locales'
 import { useI18n } from 'vue-i18n'
-import { useLocaleStore } from '@/stores/modules/locale'
+import { useLocaleStore } from '@/stores/modules/system'
 
 export interface UseLocaleReturn {
   locale: ComputedRef<SupportedLocale>

@@ -18,7 +18,11 @@ export interface UseDialogReturn {
   closeDialogByObject: (dialog: DialogOptions, args?: ArgsType) => void
   closeLastDialog: (args?: ArgsType) => void
   closeAll: () => void
-  update: (value: unknown, key?: string, index?: number) => void
+  update: <TKey extends keyof DialogOptions>(
+    value: DialogOptions[TKey],
+    key?: TKey,
+    index?: number
+  ) => void
   getDialogCount: () => number
   isDialogExists: (index: number) => boolean
   info: (message: string, title?: string, options?: Partial<DialogOptions>) => number
@@ -65,7 +69,11 @@ export function useDialog(): UseDialogReturn {
 
   const closeAll = () => closeAllDialog()
 
-  const update = (value: unknown, key = 'header', index = 0) => updateDialog(value, key, index)
+  const update = <TKey extends keyof DialogOptions>(
+    value: DialogOptions[TKey],
+    key: TKey = 'header' as TKey,
+    index = 0
+  ) => updateDialog(value, key, index)
 
   const getDialogCount = () => dialogStore.value.length
 

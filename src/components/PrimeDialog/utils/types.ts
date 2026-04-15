@@ -4,7 +4,7 @@ import type { DialogPassThroughOptions } from 'primevue/dialog'
 import type { Component, CSSProperties, VNode } from 'vue'
 
 /** 对话框事件类型 */
-export type EventType = 'open' | 'close' | 'maximize' | 'minimize' | 'fullscreen'
+export type EventType = 'open' | 'close' | 'maximize'
 
 /** 关闭参数类型 */
 export type ArgsType = {
@@ -80,6 +80,7 @@ export interface DialogOptionsBase {
   props?: Record<string, unknown>
   open?: (params: { options: DialogOptionsBase; index: number }) => void
   close?: (params: { options: DialogOptionsBase; index: number }) => void
+  maximize?: (params: { options: DialogOptionsBase; index: number }) => void
   closeCallBack?: (params: { options: DialogOptionsBase; index: number; args: ArgsType }) => void
   beforeCancel?: (done: () => void, params: { options: DialogOptionsBase; index: number }) => void
   beforeSure?: (

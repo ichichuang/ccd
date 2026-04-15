@@ -4,8 +4,8 @@
  * UI 副作用（NProgress、Loading、标题更新）已解耦至 guardEffects.ts。
  */
 import { AUTH_ENABLED, routeWhitePathList } from '@/constants/router'
-import { usePermissionStore } from '@/stores/modules/permission'
-import { useUserStoreWithOut } from '@/stores/modules/user'
+import { usePermissionStore } from '@/stores/modules/session'
+import { useUserStoreWithOut } from '@/stores/modules/session'
 import type { Router } from 'vue-router'
 import { checkRouteAccess, isWhiteListed, parseSafeRedirect } from './accessControl'
 
@@ -52,6 +52,7 @@ export const usePermissionGuard = ({
           next()
           return
         }
+        let stopGlobalLoading: (() => void) | null = null
         try {
           // 竞态保护：多次并发导航共享同一个初始化 Promise，防止重复发起 API 请求
           routeInitializingPromise ??= initDynamicRoutes().finally(() => {
@@ -76,8 +77,8 @@ export const usePermissionGuard = ({
           const shouldShowGlobalLoading: boolean =
             !isLoginToNonFullscreen && toParent !== 'fullscreen'
           if (shouldShowGlobalLoading) {
-            const { loadingStart } = useLoading()
-            loadingStart()
+            const { startLoading } = useLoading()
+            stopGlobalLoading = startLoading()
           }
 
           // 避免多跳：如果是从登录页跳转，且目标一致，直接放行
@@ -99,6 +100,8 @@ export const usePermissionGuard = ({
             query: to.fullPath !== '/login' ? { redirect: to.fullPath } : {},
           })
           return
+        } finally {
+          stopGlobalLoading?.()
         }
       }
     } else {

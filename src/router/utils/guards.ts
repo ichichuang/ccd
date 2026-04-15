@@ -1,6 +1,6 @@
 /* 注册路由 */
 import { rootRedirect } from '@/constants/router'
-import { usePermissionStore } from '@/stores/modules/permission'
+import { usePermissionStore } from '@/stores/modules/session'
 import { usePermissionRoutes } from '@/hooks/modules/usePermissionRoutes'
 import type { Router } from 'vue-router'
 import { processAsyncRoutes } from './transform'

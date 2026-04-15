@@ -15,15 +15,16 @@ import DynamicDialog from 'primevue/dynamicdialog'
 import { useToast } from 'primevue/usetoast'
 import { usePrimeVue } from 'primevue/config'
 import { PRIMEVUE_LOCALE_MAP } from '@/locales/primevue-locales'
-import { useLocaleStore } from '@/stores/modules/locale'
+import { useLocaleStore } from '@/stores/modules/system'
 import { PrimeVueDialog } from '@/components/PrimeDialog'
 import { useDialog } from '@/hooks/modules/useDialog'
 import ToastMessageContent from '@/layouts/components/ToastMessageContent.vue'
 
-const { dialogStore, closeDialog, removeDialog } = useDialog()
+const { dialogStore, closeDialog, removeDialog, closeAll } = useDialog()
 const toast = useToast()
 const localeStore = useLocaleStore()
 const primevue = usePrimeVue()
+const route = useRoute()
 
 watch(
   () => localeStore.locale,
@@ -31,6 +32,15 @@ watch(
     primevue.config.locale = PRIMEVUE_LOCALE_MAP[locale] ?? PRIMEVUE_LOCALE_MAP['zh-CN']
   },
   { immediate: true }
+)
+
+// Route transitions must not carry global dialog state across pages.
+watch(
+  () => route.fullPath,
+  (to, from) => {
+    if (!from || to === from || dialogStore.value.length === 0) return
+    closeAll()
+  }
 )
 
 const DEFAULT_LIFE = 3000
@@ -129,6 +139,8 @@ onUnmounted(() => {
     window.$toast = undefined
     window.$message = undefined
   }
+  closeAll()
+  ;(toast as { removeAllGroups?: () => void }).removeAllGroups?.()
 })
 </script>
 
@@ -240,7 +252,7 @@ onUnmounted(() => {
 
 /* Message 居中 Toast：强制正中央（top/left 50% + transform 居中对齐） */
 .p-toast.p-toast-center {
-  inset: var(--spacing-3xl) auto auto 50% !important;
+  inset: 50% auto auto 50% !important;
   transform: translate(-50%, -50%) !important;
 }
 

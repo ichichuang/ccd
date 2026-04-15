@@ -88,6 +88,11 @@ export function useForm<TValues extends Record<string, unknown> = Record<string,
 
   const getFormState: UseFormReturn<TValues>['getFormState'] = () => state
 
+  const updateSchema: UseFormReturn<TValues>['updateSchema'] = schema => {
+    controller.updateSchema(schema)
+    syncFormState()
+  }
+
   const handleSubmit: UseFormReturn<TValues>['handleSubmit'] =
     onSubmit =>
     async (e?: Event): Promise<void> => {
@@ -128,6 +133,7 @@ export function useForm<TValues extends Record<string, unknown> = Record<string,
     handleSubmit,
     getValues,
     getFormState,
+    updateSchema,
     teardown: () => controller.teardown(),
   }
 }

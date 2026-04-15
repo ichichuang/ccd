@@ -834,6 +834,7 @@ export const THEME_PRESETS: ThemePreset[] = [
 ]
 
 export const DEFAULT_THEME_NAME = 'royal-violet'
+export const DEFAULT_THEME_MODE = 'auto' as const
 
 /**
  * ProForm ColorPicker 插件示例默认 hex（与 `DEFAULT_THEME_NAME` 下 light.primary.default 一致，避免示例散落任意色值）

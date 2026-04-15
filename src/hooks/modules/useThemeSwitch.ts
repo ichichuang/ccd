@@ -5,10 +5,13 @@
  */
 
 import type { Ref, ComputedRef } from 'vue'
-import { useThemeStore } from '@/stores/modules/theme'
+import { useThemeStore } from '@/stores/modules/system'
 import { THEME_PRESETS, DEFAULT_THEME_NAME } from '@/constants/theme'
+import { RUNTIME_STORAGE_KEYS } from '@/constants/runtime'
+import { RUNTIME_E2E_EVENTS } from '@/constants/runtime'
 import { generateThemeVars, applyTheme } from '@/utils/theme/engine'
 import { rgbToHex } from '@/utils/theme/colors'
+import { dispatchRuntimeE2EEvent, isVisualE2EMode } from '@/utils/runtime/e2e'
 import {
   getTransitionConfig,
   calculateCircleRadius,
@@ -22,12 +25,20 @@ type ViewTransition = {
   finished: Promise<void>
 }
 
+interface ThemeTransitionRequest {
+  targetMode: ThemeMode
+  event: MouseEvent | null
+  transitionModeOverride: ThemeTransitionMode | null
+}
+
 // 主题过渡"代际"计数：清理时仅当仍是当前代才移除 data-transition / is-view-transitioning，避免上一轮 cleanup 误删下一轮已设置的属性导致闪动
 let themeTransitionGeneration = 0
 
-// 过渡结束时间戳:动画结束后 500ms 内不启动新过渡，避免双击/快速连点触发「切回去再切回来」的闪动
-const THEME_TRANSITION_COOLDOWN_MS = 500
-let lastTransitionEndAt = 0
+// 主题动画状态需要在所有 useThemeSwitch() 调用点之间共享，否则 Settings/Header/Login
+// 会各自认为“当前没在动画”，导致一部分入口锁住、一部分入口还能继续触发。
+const sharedIsAnimating = ref(false)
+let activeTransitionTarget: ThemeMode | null = null
+let pendingThemeTransitionRequest: ThemeTransitionRequest | null = null
 
 // 过渡锁已抽离至 @/utils/theme/transitions，避免 theme store ↔ useThemeSwitch 循环依赖
 export { isThemeLocked } from '@/utils/theme/transitions'
@@ -39,6 +50,15 @@ function getSystemDarkModeQuery(): MediaQueryList {
     systemDarkModeQuery = window.matchMedia('(prefers-color-scheme: dark)')
   }
   return systemDarkModeQuery
+}
+
+function resolveModeIsDark(mode: ThemeMode, systemPrefersDark: boolean): boolean {
+  return mode === 'dark' || ((mode === 'auto' || mode === 'glass') && systemPrefersDark)
+}
+
+function syncRootThemeClasses(mode: ThemeMode, isDark: boolean): void {
+  document.documentElement.classList.toggle('dark', isDark)
+  document.documentElement.classList.toggle('glass', mode === 'glass')
 }
 
 /**
@@ -63,15 +83,20 @@ function createFadeOverlay(_color: string, duration: number) {
  */
 function cleanupOverlay(overlay: HTMLElement, duration: number): Promise<void> {
   return new Promise(resolve => {
+    let cleaned = false
+    let fallbackTimer: ReturnType<typeof globalThis.setTimeout> | null = null
     overlay.style.opacity = '0'
-    // 监听 transitionend 事件（更准确）
     const cleanup = () => {
+      if (cleaned) return
+      cleaned = true
+      if (fallbackTimer !== null) {
+        globalThis.clearTimeout(fallbackTimer)
+      }
       overlay.remove()
       resolve()
     }
     overlay.addEventListener('transitionend', cleanup, { once: true })
-    // 备用：固定延迟（防止事件未触发）
-    setTimeout(cleanup, duration + 50)
+    fallbackTimer = globalThis.setTimeout(cleanup, duration + 50)
   })
 }
 
@@ -110,38 +135,46 @@ function applyTransitionVariables(event: MouseEvent | null, mode: ThemeTransitio
  * 原子化全局清理（Grand Unified Fix v5.0）：
  * 统一收尾：此时 recovery class 已在主流程中添加，仅需最终解锁
  */
-function cleanupTransitionState(generation?: number) {
+function cleanupTransitionState(generation?: number): Promise<void> {
   const root = document.documentElement
-  if (generation !== undefined && generation !== themeTransitionGeneration) return
+  if (generation !== undefined && generation !== themeTransitionGeneration) {
+    return Promise.resolve()
+  }
 
-  // ═══════════════════════════════════════════════════════════════
-  // 仅清除 View Transition 临时变量（x/y/radius），保留尺寸系统 --transition-xs..5xl
-  // ═══════════════════════════════════════════════════════════════
-  const VIEW_TRANSITION_VARS = ['--transition-x', '--transition-y', '--transition-radius']
-  const currentCssText: string = root.style.cssText
-  const cleanedCssText: string = currentCssText
-    .split(';')
-    .map(s => s.trim())
-    .filter(part => {
-      const prop: string | undefined = part.split(':')[0]?.trim()
-      return prop && !VIEW_TRANSITION_VARS.includes(prop)
-    })
-    .join('; ')
-  root.style.cssText = cleanedCssText
+  return new Promise(resolve => {
+    // ═══════════════════════════════════════════════════════════════
+    // 仅清除 View Transition 临时变量（x/y/radius），保留尺寸系统 --transition-xs..5xl
+    // ═══════════════════════════════════════════════════════════════
+    const VIEW_TRANSITION_VARS = ['--transition-x', '--transition-y', '--transition-radius']
+    const currentCssText: string = root.style.cssText
+    const cleanedCssText: string = currentCssText
+      .split(';')
+      .map(s => s.trim())
+      .filter(part => {
+        const prop: string | undefined = part.split(':')[0]?.trim()
+        return prop && !VIEW_TRANSITION_VARS.includes(prop)
+      })
+      .join('; ')
+    root.style.cssText = cleanedCssText
 
-  // ═══════════════════════════════════════════════════════════════
-  // 多帧等待后最终解锁 - 确保所有样式计算完成
-  // ═══════════════════════════════════════════════════════════════
-  requestAnimationFrame(() => {
+    // ═══════════════════════════════════════════════════════════════
+    // 多帧等待后最终解锁 - 确保所有样式计算完成
+    // ═══════════════════════════════════════════════════════════════
     requestAnimationFrame(() => {
       requestAnimationFrame(() => {
-        setTimeout(() => {
-          if (generation !== undefined && generation !== themeTransitionGeneration) return
-          root.classList.remove('theme-transition-recovery')
-          root.classList.remove('theme-transition')
-          root.removeAttribute('data-transition')
-          setThemeLocked(false)
-        }, 100)
+        requestAnimationFrame(() => {
+          setTimeout(() => {
+            if (generation !== undefined && generation !== themeTransitionGeneration) {
+              resolve()
+              return
+            }
+            root.classList.remove('theme-transition-recovery')
+            root.classList.remove('theme-transition')
+            root.removeAttribute('data-transition')
+            setThemeLocked(false)
+            resolve()
+          }, 100)
+        })
       })
     })
   })
@@ -168,18 +201,55 @@ export interface UseThemeSwitchReturn {
 
 export function useThemeSwitch(): UseThemeSwitchReturn {
   const themeStore = useThemeStore()
-  const isAnimating = ref(false)
+  const isAnimating = computed(() => sharedIsAnimating.value)
 
   // 计算属性
   const mode = computed(() => themeStore.mode)
-  const isDark = computed(() => {
-    if (themeStore.mode === 'auto') {
-      return getSystemDarkModeQuery().matches
-    }
-    return themeStore.mode === 'dark'
-  })
+  const isDark = computed(() =>
+    resolveModeIsDark(themeStore.mode, getSystemDarkModeQuery().matches)
+  )
   const transitionMode = computed(() => themeStore.transitionMode)
   const transitionDuration = computed(() => themeStore.transitionDuration)
+
+  const beginThemeTransitionSignal = (transition: ThemeTransitionMode): void => {
+    const root = document.documentElement
+    root.dataset.themeTransitioning = 'true'
+    root.dataset.themeTransitionMode = transition
+    dispatchRuntimeE2EEvent(RUNTIME_E2E_EVENTS.themeTransitionStart, {
+      mode: themeStore.mode,
+      transition,
+    })
+  }
+
+  const endThemeTransitionSignal = (targetMode: ThemeMode): void => {
+    const root = document.documentElement
+    root.dataset.themeTransitioning = 'false'
+    root.dataset.themeMode = targetMode
+    dispatchRuntimeE2EEvent(RUNTIME_E2E_EVENTS.themeTransitionEnd, {
+      mode: targetMode,
+    })
+  }
+
+  const applyModeSnapshot = (targetMode: ThemeMode, systemPrefersDark: boolean): void => {
+    themeStore.mode = targetMode
+
+    const isDarkNow = resolveModeIsDark(targetMode, systemPrefersDark)
+    const preset =
+      THEME_PRESETS.find(p => p.name === themeStore.themeName) ||
+      THEME_PRESETS.find(p => p.name === DEFAULT_THEME_NAME) ||
+      THEME_PRESETS[0]
+    const vars = generateThemeVars(preset, isDarkNow)
+
+    applyTheme(vars)
+    syncRootThemeClasses(targetMode, isDarkNow)
+    void document.documentElement.offsetHeight
+
+    try {
+      localStorage.setItem(RUNTIME_STORAGE_KEYS.themeMode, targetMode)
+    } catch (_) {
+      /* ignore */
+    }
+  }
 
   /**
    * 设置主题模式（无动画）
@@ -192,7 +262,8 @@ export function useThemeSwitch(): UseThemeSwitchReturn {
    * 获取下一个模式（排除 auto）
    */
   const getNextMode = (): ThemeMode => {
-    const currentIsDark = isDark.value
+    const currentMode = activeTransitionTarget ?? mode.value
+    const currentIsDark = resolveModeIsDark(currentMode, getSystemDarkModeQuery().matches)
     return currentIsDark ? 'light' : 'dark'
   }
 
@@ -204,39 +275,45 @@ export function useThemeSwitch(): UseThemeSwitchReturn {
     setMode(nextMode)
   }
 
-  /**
-   * 核心动画逻辑：使用 View Transition API 切换到指定模式
-   */
-  const toggleThemeWithAnimation = async (
+  const queueThemeTransition = (
+    targetMode: ThemeMode,
+    event: MouseEvent | null,
+    transitionModeOverride: ThemeTransitionMode | null
+  ): void => {
+    pendingThemeTransitionRequest = {
+      targetMode,
+      event,
+      transitionModeOverride,
+    }
+  }
+
+  const dequeueThemeTransition = (): ThemeTransitionRequest | null => {
+    const request = pendingThemeTransitionRequest
+    pendingThemeTransitionRequest = null
+    return request
+  }
+
+  const runThemeTransition = async (
+    targetMode: ThemeMode,
     event: MouseEvent | null = null,
-    mode: ThemeTransitionMode | null = null
-  ) => {
-    if (isAnimating.value) return
-    if (Date.now() - lastTransitionEndAt < THEME_TRANSITION_COOLDOWN_MS) return
-
-    // CRITICAL: Lock theme to prevent external refreshTheme calls
-    setThemeLocked(true)
-    isAnimating.value = true
-    const transitionModeToUse = resolveTransitionMode(mode || transitionMode.value)
-    const currentIsDark = isDark.value
+    transitionModeOverride: ThemeTransitionMode | null = null
+  ): Promise<void> => {
+    const transitionModeToUse = resolveTransitionMode(
+      transitionModeOverride || transitionMode.value
+    )
     const systemPrefersDark = getSystemDarkModeQuery().matches
-    const nextMode = getNextMode()
+    const visualE2EMode = isVisualE2EMode()
 
-    // 切换到 auto 且当前已是深色且系统也是深色时，直接切换不播动画
-    const shouldSkipAnimation = nextMode === 'auto' && currentIsDark && systemPrefersDark
-    if (shouldSkipAnimation) {
-      setMode(nextMode)
-      isAnimating.value = false
+    if (!document?.startViewTransition || visualE2EMode) {
+      beginThemeTransitionSignal(transitionModeToUse)
+      setMode(targetMode)
+      endThemeTransitionSignal(targetMode)
       return
     }
 
-    // 检查浏览器支持
-    if (!document?.startViewTransition) {
-      setMode(nextMode)
-      isAnimating.value = false
-      return
-    }
-
+    setThemeLocked(true)
+    sharedIsAnimating.value = true
+    activeTransitionTarget = targetMode
     themeTransitionGeneration++
     const myGeneration = themeTransitionGeneration
 
@@ -251,47 +328,15 @@ export function useThemeSwitch(): UseThemeSwitchReturn {
 
     // 注入动态坐标变量，供 CSS keyframes 使用（支持 diamond 模式）
     applyTransitionVariables(event, transitionModeToUse)
+    beginThemeTransitionSignal(transitionModeToUse)
 
     const applyModeChange = () => {
-      // CRITICAL: Bypass store's setMode() to avoid triggering refreshTheme()
-      // We manually handle theme application to prevent double-refresh flicker
-      themeStore.mode = nextMode
-
-      // Manually apply the theme (same logic as store's refreshTheme)
-      const isDarkNow = nextMode === 'dark' || (nextMode === 'auto' && systemPrefersDark)
-
-      // ═════════════════════════════════════════════════════════════════
-      // 关键修复：同步更新 CSS 变量、dark 类和 color-scheme
-      // 必须在同一个同步块中完成，避免单帧不同步
-      // ═════════════════════════════════════════════════════════════════
-      const preset =
-        THEME_PRESETS.find(p => p.name === themeStore.themeName) ||
-        THEME_PRESETS.find(p => p.name === DEFAULT_THEME_NAME) ||
-        THEME_PRESETS[0]
-      const vars = generateThemeVars(preset, isDarkNow)
-
-      // 1. 先应用 CSS 变量
-      applyTheme(vars)
-
-      // 2. 再切换 dark 类（同步）
-      document.documentElement.classList.toggle('dark', isDarkNow)
-
-      // 3. 强制同步布局
-      void document.documentElement.offsetHeight
-
-      // Update localStorage
-      try {
-        localStorage.setItem('theme-mode', nextMode)
-      } catch (_) {
-        /* ignore */
-      }
+      applyModeSnapshot(targetMode, systemPrefersDark)
     }
 
     try {
       // ═══════════════════════════════════════════════════════════════
       // 关键修复（v6.0）：在 startViewTransition 之前添加 recovery class
-      // 这确保当浏览器捕获 "new" 快照时，元素不会因 CSS transition 而处于
-      // 中间状态。元素会立即跳到最终值，快照捕获的就是正确的最终状态。
       // ═══════════════════════════════════════════════════════════════
       document.documentElement.classList.add('theme-transition')
       document.documentElement.classList.add('is-view-transitioning')
@@ -307,7 +352,7 @@ export function useThemeSwitch(): UseThemeSwitchReturn {
       // 计算目标颜色用于蒙层（如果需要）
       let overlay: HTMLElement | null = null
       if (config.overlay && config.overlay.opacity > 0) {
-        const willBeDark = nextMode === 'dark' || (nextMode === 'auto' && systemPrefersDark)
+        const willBeDark = resolveModeIsDark(targetMode, systemPrefersDark)
         const preset =
           THEME_PRESETS.find(p => p.name === themeStore.themeName) ||
           THEME_PRESETS.find(p => p.name === DEFAULT_THEME_NAME) ||
@@ -322,29 +367,64 @@ export function useThemeSwitch(): UseThemeSwitchReturn {
         })
       }
 
-      // ═══════════════════════════════════════════════════════════════
-      // v6.0: recovery class 已在 startViewTransition 之前添加
-      // 只需等待动画完成，然后清理
-      // ═══════════════════════════════════════════════════════════════
       await transition.finished
 
-      // 移除过渡状态类（recovery 保持到 cleanup 完成）
       document.documentElement.classList.remove('is-view-transitioning')
 
-      // 3. CLEANUP BEHIND THE MASK - 遮罩后方进行清理工作
       if (overlay) {
         await cleanupOverlay(overlay, config.duration)
       }
 
-      cleanupTransitionState(myGeneration)
+      await cleanupTransitionState(myGeneration)
     } catch (error) {
       console.error('Theme transition failed:', error)
       applyModeChange()
-      cleanupTransitionState(myGeneration)
+      await cleanupTransitionState(myGeneration)
     } finally {
-      isAnimating.value = false
-      lastTransitionEndAt = Date.now()
+      sharedIsAnimating.value = false
+      activeTransitionTarget = null
+      endThemeTransitionSignal(targetMode)
+
+      const queuedRequest = dequeueThemeTransition()
+      if (queuedRequest && queuedRequest.targetMode !== themeStore.mode) {
+        queueMicrotask(() => {
+          void requestThemeTransition(
+            queuedRequest.targetMode,
+            queuedRequest.event,
+            queuedRequest.transitionModeOverride
+          )
+        })
+      }
     }
+  }
+
+  const requestThemeTransition = async (
+    targetMode: ThemeMode,
+    event: MouseEvent | null = null,
+    transitionModeOverride: ThemeTransitionMode | null = null
+  ): Promise<void> => {
+    if (sharedIsAnimating.value) {
+      const effectiveMode = activeTransitionTarget ?? mode.value
+      if (targetMode !== effectiveMode) {
+        queueThemeTransition(targetMode, event, transitionModeOverride)
+      }
+      return
+    }
+
+    if (mode.value === targetMode) return
+
+    await runThemeTransition(targetMode, event, transitionModeOverride)
+  }
+
+  /**
+   * 核心动画逻辑：使用 View Transition API 切换到指定模式
+   */
+  const toggleThemeWithAnimation = async (
+    event: MouseEvent | null = null,
+    mode: ThemeTransitionMode | null = null
+  ) => {
+    const nextMode = getNextMode()
+    await requestThemeTransition(nextMode, event, mode)
   }
 
   /**
@@ -355,128 +435,7 @@ export function useThemeSwitch(): UseThemeSwitchReturn {
     event: MouseEvent | null = null,
     transitionModeOverride: ThemeTransitionMode | null = null
   ) => {
-    // 合并 early return 检查；过渡结束后 500ms 内不启动新过渡，避免双击/快速连点导致「切回去再切回来」闪动
-    if (mode.value === targetMode || isAnimating.value) return
-    if (Date.now() - lastTransitionEndAt < THEME_TRANSITION_COOLDOWN_MS) return
-
-    // CRITICAL: Lock theme to prevent external refreshTheme calls
-    setThemeLocked(true)
-    isAnimating.value = true
-    const transitionModeToUse = resolveTransitionMode(
-      transitionModeOverride || transitionMode.value
-    )
-    const systemPrefersDark = getSystemDarkModeQuery().matches
-
-    // 检查浏览器支持
-    if (!document?.startViewTransition) {
-      setMode(targetMode)
-      isAnimating.value = false
-      return
-    }
-
-    themeTransitionGeneration++
-    const myGeneration = themeTransitionGeneration
-
-    // 获取过渡模式配置（含自定义时长）
-    const config = getTransitionConfig(transitionModeToUse, event, transitionDuration.value)
-
-    // 注入过渡时长 CSS 变量，供各 mode 的 SCSS animation 使用
-    applyTransitionDurationVariable(config.duration)
-
-    // 设置 data-transition 属性
-    document.documentElement.setAttribute('data-transition', transitionModeToUse)
-
-    // 注入动态坐标变量，供 CSS keyframes 使用（支持 diamond 模式）
-    applyTransitionVariables(event, transitionModeToUse)
-
-    const applyModeChange = () => {
-      // CRITICAL: Bypass store's setMode() to avoid triggering refreshTheme()
-      themeStore.mode = targetMode
-
-      // Manually apply the theme (same logic as store's refreshTheme)
-      const isDarkNow = targetMode === 'dark' || (targetMode === 'auto' && systemPrefersDark)
-
-      // ═══════════════════════════════════════════════════════════════
-      // 关键修复：同步更新 CSS 变量、dark 类
-      // 必须在同一个同步块中完成，避免单帧不同步
-      // ═══════════════════════════════════════════════════════════════
-      const preset =
-        THEME_PRESETS.find(p => p.name === themeStore.themeName) ||
-        THEME_PRESETS.find(p => p.name === DEFAULT_THEME_NAME) ||
-        THEME_PRESETS[0]
-      const vars = generateThemeVars(preset, isDarkNow)
-
-      // 1. 先应用 CSS 变量
-      applyTheme(vars)
-
-      // 2. 再切换 dark 类（同步）
-      document.documentElement.classList.toggle('dark', isDarkNow)
-
-      // 3. 强制同步布局
-      void document.documentElement.offsetHeight
-
-      // Update localStorage
-      try {
-        localStorage.setItem('theme-mode', targetMode)
-      } catch (_) {
-        /* ignore */
-      }
-    }
-
-    try {
-      // ═══════════════════════════════════════════════════════════════
-      // 关键修复（v6.0）：在 startViewTransition 之前添加 recovery class
-      // ═══════════════════════════════════════════════════════════════
-      document.documentElement.classList.add('theme-transition')
-      document.documentElement.classList.add('is-view-transitioning')
-      document.documentElement.classList.add('theme-transition-recovery') // 关键：提前添加
-
-      const transition = document.startViewTransition(async () => {
-        applyModeChange()
-        await nextTick()
-      }) as ViewTransition
-
-      await transition.ready
-
-      // 计算目标颜色用于蒙层（如果需要）
-      let overlay: HTMLElement | null = null
-      if (config.overlay && config.overlay.opacity > 0) {
-        const willBeDark = targetMode === 'dark' || (targetMode === 'auto' && systemPrefersDark)
-        const preset =
-          THEME_PRESETS.find(p => p.name === themeStore.themeName) ||
-          THEME_PRESETS.find(p => p.name === DEFAULT_THEME_NAME) ||
-          THEME_PRESETS[0]
-        const newBg = rgbToHex(generateThemeVars(preset, willBeDark)['--background'])
-        const { opacity } = config.overlay
-        overlay = createFadeOverlay(newBg, config.duration)
-        requestAnimationFrame(() => {
-          if (overlay && typeof opacity === 'number') {
-            overlay.style.opacity = String(opacity)
-          }
-        })
-      }
-
-      // ═══════════════════════════════════════════════════════════════
-      // v6.0: recovery class 已在 startViewTransition 之前添加
-      // ═══════════════════════════════════════════════════════════════
-      await transition.finished
-
-      document.documentElement.classList.remove('is-view-transitioning')
-
-      // 3. CLEANUP BEHIND THE MASK
-      if (overlay) {
-        await cleanupOverlay(overlay, config.duration)
-      }
-
-      cleanupTransitionState(myGeneration)
-    } catch (error) {
-      console.error('Theme transition failed:', error)
-      applyModeChange()
-      cleanupTransitionState(myGeneration)
-    } finally {
-      isAnimating.value = false
-      lastTransitionEndAt = Date.now()
-    }
+    await requestThemeTransition(targetMode, event, transitionModeOverride)
   }
 
   return {

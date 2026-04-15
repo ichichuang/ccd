@@ -1,6 +1,7 @@
 import type { PluginOption } from 'vite'
 import { brand } from '../src/constants/brand'
-import { THEME_PRESETS, DEFAULT_THEME_NAME } from '../src/constants/theme'
+import { RUNTIME_QUERY_KEYS, RUNTIME_STORAGE_KEYS } from '../src/constants/runtime'
+import { THEME_PRESETS, DEFAULT_THEME_MODE, DEFAULT_THEME_NAME } from '../src/constants/theme'
 import { generateThemeVars } from '../src/utils/theme/engine'
 import type { ViteEnv } from './utils'
 
@@ -50,13 +51,20 @@ ${themeFallback}
         .replace(/%BRAND_SLOGAN%/g, brand.slogan)
         .replace(/%BRAND_AUTHOR%/g, brand.author)
         .replace(/%BRAND_FAVICON%/g, `${env.BASE_URL ?? '/'}face.png`)
+        .replace(/%DEFAULT_THEME_MODE%/g, DEFAULT_THEME_MODE)
+        .replace(/%THEME_MODE_STORAGE_KEY%/g, RUNTIME_STORAGE_KEYS.themeMode)
+        .replace(/%THEME_PRIMARY_STORAGE_KEY%/g, RUNTIME_STORAGE_KEYS.themePrimary)
+        .replace(/%THEME_BACKGROUND_STORAGE_KEY%/g, RUNTIME_STORAGE_KEYS.themeBackground)
+        .replace(/%E2E_MODE_STORAGE_KEY%/g, RUNTIME_STORAGE_KEYS.e2eMode)
+        .replace(/%E2E_MODE_QUERY_KEY%/g, RUNTIME_QUERY_KEYS.e2eMode)
+        .replace(/%E2E_PRELOADER_HOLD_QUERY_KEY%/g, RUNTIME_QUERY_KEYS.e2ePreloaderHold)
     },
   }
 }
 
 /**
  * 从 theme.ts 读取默认主题的 light/dark 色值，生成 CSS 变量 fallback
- * 与 index.html theme-mode 脚本逻辑一致：默认 dark，:root.dark 覆盖 light 值
+ * 与 index.html theme-mode 脚本逻辑一致：按 DEFAULT_THEME_MODE 进行系统暗色判断
  */
 function generateThemeFallbackCss(): string {
   const defaultPreset = THEME_PRESETS.find(p => p.name === DEFAULT_THEME_NAME) ?? THEME_PRESETS[0]

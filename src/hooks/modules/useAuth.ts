@@ -1,4 +1,4 @@
-import { useUserStore, useUserStoreWithOut } from '@/stores/modules/user'
+import { useUserStore, useUserStoreWithOut } from '@/stores/modules/session'
 import { AUTH_ENABLED } from '@/constants/router'
 import { requestAuthLogin, requestAuthCurrentUser } from '@/api/auth/auth.api'
 import type { LoginParams, LoginResult, UserInfo } from '@/types/dto/auth.dto'

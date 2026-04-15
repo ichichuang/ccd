@@ -1,0 +1,38 @@
+---
+description: Visual regression stability contract for Playwright first-paint, runtime loading, and theme-switch flows.
+globs: ["index.html", "build/**/*.ts", "playwright.config.ts", "e2e/**/*.ts", "src/**/*.{vue,ts,tsx}"]
+---
+
+# Playwright Visual Regression Contract
+
+## Goal
+
+Keep first-paint and theme-switch screenshots deterministic without relying on sleeps or ad-hoc page timing guesses.
+
+## [LAW] Runtime Signals
+
+- Visual E2E mode keys, query params, and custom events MUST be centralized in `src/constants/runtime.ts`.
+- Native preloader readiness, app bootstrap readiness, and runtime loading readiness MUST expose separate runtime signals.
+- Prefer `document.documentElement.dataset.*` plus typed custom events over `setTimeout`/`waitForTimeout`.
+
+## [LAW] Transition Discipline
+
+- Visual E2E mode MUST disable non-deterministic transitions and animations that can affect screenshots.
+- Theme switching code MUST provide an E2E-safe path that bypasses view-transition animation when screenshots require stable pixels.
+- Do not introduce random motion, delayed entrance effects, or loader animations in visual mode unless they are explicitly frozen.
+
+## [LAW] Loading Ownership
+
+- `index.html` native preloader and Vue runtime loading overlay are different owners and MUST NOT share a single readiness flag.
+- Any manual `beginGlobalLoading()` or equivalent must have a guaranteed paired release path in the same feature flow.
+- First-paint tests capture the native preloader only; route/dashboard stability tests must wait for runtime loading idle.
+
+## [PATTERN] Selector Strategy
+
+- Pages used by visual regression SHOULD expose a stable root selector (`id` or approved test hook) for screenshots.
+- Critical overlays such as preloader and runtime loading SHOULD expose stable selectors for assertions.
+
+## [PATTERN] E2E Helpers
+
+- Navigation, readiness waiting, and login setup SHOULD be reused via `e2e/helpers/**`.
+- Prefer helper-level readiness contracts over spec-local waiting logic so all snapshots share the same stability definition.

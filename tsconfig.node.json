@@ -6,6 +6,7 @@
     "uno.config.ts",
     "src/design-engine/theme/index.ts",
     "src/design-engine/theme/colors.ts",
+    "src/design-engine/safelist/index.ts",
     "build/design-engine/safelist/index.ts",
     // Design Engine: pure parser/validator/resolver for UnoCSS
     "src/design-engine/index.ts",
@@ -19,6 +20,7 @@
     "vitest.config.ts",
     "cypress.config.ts",
     "playwright.config.ts",
+    "e2e/**/*.ts",
     "commitlint.config.ts",
     "build/**/*",
     "scripts/**/*.ts",
