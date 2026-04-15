@@ -58,6 +58,7 @@ Codex-first tooling skills:
 - `.ai/skills/codex/task-orchestrator`
 - `.ai/skills/codex/architecture-browser-master`
 - `.ai/skills/codex/github-ops`
+- `.ai/skills/codex/desktop-tauri-guard`
 
 Cursor compatibility skills:
 
@@ -78,6 +79,7 @@ Automatic trigger heuristics:
 - For ambiguous, multi-step, or cross-module tasks, route to `.ai/skills/codex/task-orchestrator` before editing.
 - For GitHub, PR, issue, review comment, Actions, workflow, CI, release, branch protection, or `.github/**` tasks, route to `.ai/skills/codex/github-ops`.
 - For GitHub tasks, inspect `.github/**`, current git remotes, and workflow files before acting so the chosen automation matches repo reality.
+- For Tauri, desktop bridge, capability sync, `src-tauri/**`, `desktopWindow`, or desktop drift-cleanup tasks, route to `.ai/skills/codex/desktop-tauri-guard`.
 
 Policy:
 
@@ -105,6 +107,7 @@ Run when relevant:
 - `pnpm type-check`
 - `pnpm lint:check`
 - `pnpm test:run`
+- `pnpm sync:desktop-config` + `pnpm check:drift` for desktop bridge/capability changes
 
 For UI-critical changes, prefer Playwright CLI plus `.ai/skills/codex/architecture-browser-master`.
 Fall back to `.ai/skills/cursor/playwright-mcp` only when the CLI route cannot satisfy the scenario.

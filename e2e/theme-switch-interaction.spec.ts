@@ -1,15 +1,5 @@
 import { expect, test } from '@playwright/test'
-import { waitForAppReady, waitForRuntimeLoadingIdle } from './helpers/app'
-
-async function loginAsAdmin(page: import('@playwright/test').Page): Promise<void> {
-  await page.goto('/#/login')
-  await page.locator('#username').fill('admin')
-  await page.locator('#password').fill('123456')
-  await page.locator('#login-submit').click()
-  await page.waitForURL(/#\/dashboard$/)
-  await waitForAppReady(page)
-  await waitForRuntimeLoadingIdle(page)
-}
+import { loginAsAdmin, openGlobalSettings } from './helpers/app'
 
 async function waitForThemeState(
   page: import('@playwright/test').Page,
@@ -30,12 +20,9 @@ test.describe('theme switch interaction', () => {
     page,
   }) => {
     await loginAsAdmin(page)
-
-    await page.locator('#user-entry-trigger').click()
-    await page.locator('#user-open-global-settings').click()
+    await openGlobalSettings(page)
 
     const settings = page.locator('#global-settings-content')
-    await expect(settings).toBeVisible()
 
     const darkButton = settings.getByRole('button', { name: '深色' })
     const lightButton = settings.getByRole('button', { name: '浅色' })

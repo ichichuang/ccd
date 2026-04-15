@@ -7,6 +7,11 @@ import {
 import router, { routeUtils } from '@/router'
 import { generateIdFromKey } from '@/utils/ids'
 import { isTauri } from '@/utils/env'
+import {
+  focusDesktopRouteWindow,
+  openDesktopRouteWindow,
+  openExternalLink,
+} from '@/utils/desktopWindow'
 import { usePermissionStore } from '@/stores/modules/session'
 import type { LocationQueryRaw, RouteLocationNormalized, RouteMeta } from 'vue-router'
 import type { MenuItem as PrimeMenuItem } from 'primevue/menuitem'
@@ -47,7 +52,7 @@ function initWindowChannel() {
 }
 
 function generateWindowKey(routeName: string, query?: LocationQueryRaw): string {
-  return generateIdFromKey(`${routeName}:${JSON.stringify(query ?? {})}`)
+  return `route-${generateIdFromKey(`${routeName}:${JSON.stringify(query ?? {})}`)}`
 }
 
 /**
@@ -258,11 +263,9 @@ export const goToRoute = (
   const linkUrl = targetRoute?.meta?.linkUrl as string | undefined
   if (isLink) {
     const url = linkUrl || targetRoute.path
-    try {
-      window.open(url, '_blank')
-    } catch {
+    void openExternalLink(url).catch(() => {
       console.warn('外链打开失败：', url)
-    }
+    })
     return
   }
 
@@ -288,6 +291,43 @@ export const goToRoute = (
     const permissionStore = usePermissionStore()
     const windowKey = generateWindowKey(String(targetRoute.name), query)
     const shouldReuse = targetRoute.meta?.reuseWindow === true
+    const windowTitle = String(targetRoute.meta?.title || targetRoute.name || targetRoute.path)
+
+    if (shouldReuse && isTauri()) {
+      void focusDesktopRouteWindow(windowKey)
+        .then(existed => {
+          if (existed) {
+            return
+          }
+
+          const url = buildRouteUrl(targetRoute, query, windowKey)
+          void openDesktopRouteWindow(
+            {
+              label: windowKey,
+              title: windowTitle,
+              url,
+            },
+            () => {
+              permissionStore.markWindowClosed(windowKey)
+            }
+          )
+            .then(() => {
+              permissionStore.registerWindow(String(targetRoute.name), query, url)
+            })
+            .catch(error => {
+              console.warn('桌面子窗口打开失败，回退浏览器窗口：', error)
+              const fallback = window.open(url, '_blank')
+              if (fallback) {
+                setRouteWindowRef(windowKey, fallback)
+                permissionStore.registerWindow(String(targetRoute.name), query, url)
+              }
+            })
+        })
+        .catch(error => {
+          console.warn('桌面子窗口复用失败：', error)
+        })
+      return
+    }
 
     if (shouldReuse) {
       const existed = getRouteWindowRef(windowKey)
@@ -299,6 +339,32 @@ export const goToRoute = (
 
     // === 新开窗口 ===
     const url = buildRouteUrl(targetRoute, query, windowKey)
+
+    if (isTauri()) {
+      void openDesktopRouteWindow(
+        {
+          label: windowKey,
+          title: windowTitle,
+          url,
+        },
+        () => {
+          permissionStore.markWindowClosed(windowKey)
+        }
+      )
+        .then(() => {
+          permissionStore.registerWindow(String(targetRoute.name), query, url)
+        })
+        .catch(error => {
+          console.warn('桌面子窗口打开失败，回退浏览器窗口：', error)
+          const fallback = window.open(url, '_blank')
+          if (fallback) {
+            setRouteWindowRef(windowKey, fallback)
+            permissionStore.registerWindow(String(targetRoute.name), query, url)
+          }
+        })
+      return
+    }
+
     const win = window.open(url, '_blank')
 
     if (win) {

@@ -577,7 +577,7 @@ function handleQuickActionOpen(): void {
           </div>
 
           <Button
-            v-auth="['example:architecture:write']"
+            v-auth="['dashboard:quick-action:write']"
             label="Quick Action"
             severity="primary"
             size="small"

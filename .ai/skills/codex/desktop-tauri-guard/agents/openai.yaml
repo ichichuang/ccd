@@ -1,0 +1,4 @@
+interface:
+  display_name: "Desktop Tauri Guard"
+  short_description: "Protect Vue 3 + Tauri v2 desktop bridge, capability sync, and drift hygiene"
+  default_prompt: "Use $desktop-tauri-guard to enforce Tauri bridge rules, desktop drift checks, and snapshot cleanup discipline."

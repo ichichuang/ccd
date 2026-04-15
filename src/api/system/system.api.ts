@@ -34,15 +34,11 @@ export const requestSystemAsyncRoutes = async (): Promise<SystemAsyncRouteItem[]
 
 /**
  * 模拟「获取动态路由」
- * 返回空数组，表示当前仅使用静态路由；对接后端时切换为 requestSystemAsyncRoutesReal
+ * 桌面端分支已移除 example 路由，当前仅使用静态路由；对接后端时切换为 requestSystemAsyncRoutesReal
  */
 export const requestSystemAsyncRoutesMock = async (): Promise<SystemAsyncRouteItem[]> => {
   await new Promise(resolve => setTimeout(resolve, 100))
-  return [
-    { path: '/example/hooks/use-date-utils', component: 'example/hooks/use-date-utils' },
-    { path: '/example/hooks/use-theme-switch', component: 'example/hooks/use-theme-switch' },
-    { path: '/example/hooks/use-http-request', component: 'example/hooks/use-http-request' },
-  ] as SystemAsyncRouteItem[]
+  return [] as SystemAsyncRouteItem[]
 }
 
 /**

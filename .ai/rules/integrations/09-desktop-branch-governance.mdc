@@ -1,0 +1,43 @@
+---
+description: Desktop branch governance for Vue 3 + Tauri v2 bridge, capability drift control, and snapshot hygiene.
+globs:
+  - "src/**/*.ts"
+  - "src/**/*.vue"
+  - "src-tauri/**"
+  - "scripts/drift-check.mjs"
+  - "scripts/sync-desktop-config.mjs"
+  - "e2e/**"
+  - "test-results/**"
+alwaysApply: true
+---
+
+# Desktop Branch Governance Law
+
+## [LAW] Bridge SSOT
+
+- Desktop window/open-external behavior MUST be routed through `src/utils/desktopWindow.ts` or approved bridge wrappers.
+- Business modules MUST NOT reintroduce desktop-only raw calls when a bridge helper already exists.
+- Cross-platform behavior MUST keep `isTauri()` + Web fallback paths together.
+
+## [LAW] Capability & Config Pairing
+
+- Any Tauri capability or desktop runtime behavior change MUST review both:
+  - `src-tauri/capabilities/default.json`
+  - `src-tauri/tauri.conf.json`
+- Desktop config drift-sensitive tasks MUST run:
+  - `pnpm sync:desktop-config`
+  - `pnpm check:drift`
+
+## [LAW] Snapshot Residue Hygiene
+
+- If desktop branch cleanup removes routes/pages/features, stale visual baselines MUST be pruned from:
+  - `e2e/__snapshots__/**`
+  - `test-results/**`
+- `example`-related residue is forbidden after cleanup; do not keep dead baseline assets.
+
+## [PATTERN] Validation Ladder
+
+- Prefer targeted checks first:
+  - `pnpm check:drift`
+  - `pnpm type-check`
+- Run Playwright snapshot update/check only when visual baselines changed.

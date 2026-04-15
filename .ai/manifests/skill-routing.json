@@ -151,6 +151,42 @@
       ]
     },
     {
+      "id": "desktop-tauri",
+      "description": "Tauri v2 desktop bridge, capabilities, config sync, and desktop drift/snapshot cleanup",
+      "keywords": [
+        "tauri",
+        "desktop",
+        "desktop bridge",
+        "guest bindings",
+        "capabilities",
+        "window.open",
+        "openexternal",
+        "desktopwindow",
+        "src-tauri",
+        "桌面端",
+        "桌面分支",
+        "能力权限",
+        "漂移检查",
+        "快照清理"
+      ],
+      "path_globs": [
+        "src-tauri/**",
+        "src/utils/desktopWindow.ts",
+        "src/router/utils/helper.ts",
+        "scripts/sync-desktop-config.mjs",
+        "scripts/drift-check.mjs",
+        "e2e/__snapshots__/**",
+        "test-results/**"
+      ],
+      "skills": [".ai/skills/codex/desktop-tauri-guard"],
+      "prechecks": ["pnpm sync:desktop-config", "pnpm check:drift"],
+      "token_strategy": [
+        "Inspect desktop bridge helpers and src-tauri capabilities before writing code",
+        "Keep web fallback and Tauri branch in one bridged implementation",
+        "Prune obsolete example-related visual baselines when desktop routes/pages are removed"
+      ]
+    },
+    {
       "id": "complex-or-ambiguous",
       "description": "Cross-module, vague, architectural, or high-risk tasks that benefit from routing first",
       "keywords": [

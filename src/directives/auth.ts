@@ -7,7 +7,7 @@ import type { DirectiveBinding, ObjectDirective } from 'vue'
  * 用法：
  *   v-auth="'system:user:create'"
  *   v-auth="['system:user:create', 'system:user:edit']" — 数组 OR（任一满足）
- *   v-auth.disable="'example:architecture:edit'" — 无权限时禁用并展示（不隐藏 DOM）
+ *   v-auth.disable="'dashboard:quick-action:write'" — 无权限时禁用并展示（不隐藏 DOM）
  *
  * 行为：
  *   - 默认：无权限 display:none（可恢复）

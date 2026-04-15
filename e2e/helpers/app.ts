@@ -52,3 +52,9 @@ export async function loginAsAdmin(page: Page): Promise<void> {
   await waitForRuntimeLoadingIdle(page)
   await expect(page.locator('#dashboard-page')).toBeVisible({ timeout: 15000 })
 }
+
+export async function openGlobalSettings(page: Page): Promise<void> {
+  await page.locator('#user-entry-trigger').click()
+  await page.locator('#user-open-global-settings').click()
+  await expect(page.locator('#global-settings-content')).toBeVisible()
+}

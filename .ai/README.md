@@ -46,6 +46,7 @@ Repo-managed Codex operations currently center on:
 - `task-orchestrator`
 - `architecture-browser-master`
 - `github-ops`
+- `desktop-tauri-guard`
 
 ## Runtime Residue
 

@@ -297,7 +297,7 @@ export const usePermissionStore = defineStore('permission', {
 function generateWindowKey(routeName: string, query?: LocationQueryRaw): string {
   const queryString = query ? JSON.stringify(query) : ''
   const keySource = `${routeName}:${queryString}`
-  return generateIdFromKey(keySource)
+  return `route-${generateIdFromKey(keySource)}`
 }
 
 export const usePermissionStoreWithOut = () => {

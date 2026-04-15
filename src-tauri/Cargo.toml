@@ -1,6 +1,6 @@
 [package]
 name = "app"
-version = "1.0.23"
+version = "1.0.28"
 description = "企业级 Vue 3 后台管理模板"
 authors = ["AppTemplate Team"]
 license = ""

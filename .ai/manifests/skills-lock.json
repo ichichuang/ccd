@@ -48,6 +48,10 @@
       "source": "repo:.ai/skills/codex/github-ops",
       "sourceType": "local"
     },
+    "desktop-tauri-guard": {
+      "source": "repo:.ai/skills/codex/desktop-tauri-guard",
+      "sourceType": "local"
+    },
     "skill-routing": {
       "source": "repo:.ai/manifests/skill-routing.json",
       "sourceType": "local"

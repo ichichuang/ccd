@@ -81,7 +81,7 @@ const initialRoutes: RouteRecordRaw[] = createInitialRoutes([
 const router = createRouter({
   history:
     isTauri() || import.meta.env.VITE_ROUTER_MODE === 'hash'
-      ? createWebHashHistory()
+      ? createWebHashHistory(import.meta.env.VITE_PUBLIC_PATH)
       : createWebHistory(import.meta.env.VITE_PUBLIC_PATH),
   routes: initialRoutes,
   scrollBehavior(_to, _from, savedPosition) {

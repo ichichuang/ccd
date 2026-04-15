@@ -19,6 +19,7 @@ const requiredPaths = [
   '.ai/skills/codex/architecture-browser-master/SKILL.md',
   '.ai/skills/codex/task-orchestrator/SKILL.md',
   '.ai/skills/codex/github-ops/SKILL.md',
+  '.ai/skills/codex/desktop-tauri-guard/SKILL.md',
   '.ai/skills/cursor/github/SKILL.md',
   '.ai/skills/cursor/playwright-mcp/SKILL.md',
   '.cursor/rules',
@@ -43,6 +44,7 @@ const requiredLocalCodexSkills = [
   'architecture-browser-master',
   'task-orchestrator',
   'github-ops',
+  'desktop-tauri-guard',
 ]
 
 const requiredDeps = [

@@ -13,9 +13,17 @@ const __dirname = dirname(fileURLToPath(import.meta.url))
 const ROOT = join(__dirname, '..')
 const SRC_DIR = join(ROOT, 'src')
 const VIEWS_DIR = join(ROOT, 'src', 'views')
+const E2E_DIR = join(ROOT, 'e2e')
 const BUILD_SYSTEM_MD = join(ROOT, 'docs', 'ai-specs', 'BUILD_SYSTEM.md')
 const VITE_CONFIG = join(ROOT, 'vite.config.ts')
 const BUILD_PLUGINS = join(ROOT, 'build', 'plugins.ts')
+const PACKAGE_JSON = join(ROOT, 'package.json')
+const TAURI_CONF = join(ROOT, 'src-tauri', 'tauri.conf.json')
+const CARGO_TOML = join(ROOT, 'src-tauri', 'Cargo.toml')
+const VSCODE_LAUNCH = join(ROOT, '.vscode', 'launch.json')
+const AUTH_API = join(ROOT, 'src', 'api', 'auth', 'auth.api.ts')
+const SYSTEM_API = join(ROOT, 'src', 'api', 'system', 'system.api.ts')
+const EXAMPLE_VIEWS_DIR = join(VIEWS_DIR, 'example')
 
 /** 禁止：十六进制颜色 #fff, #ff0000, #ff0000ff */
 const HEX_REGEX = /#([0-9a-fA-F]{3}|[0-9a-fA-F]{6}|[0-9a-fA-F]{8})\b/g
@@ -39,6 +47,24 @@ function walkVueFiles(dir, base = '') {
       if (e.isDirectory()) {
         files.push(...walkVueFiles(join(dir, e.name), rel))
       } else if (e.name.endsWith('.vue')) {
+        files.push(rel)
+      }
+    }
+  } catch {
+    // ignore
+  }
+  return files
+}
+
+function walkFiles(dir, matcher, base = '') {
+  const files = []
+  try {
+    const names = readdirSync(dir, { withFileTypes: true })
+    for (const e of names) {
+      const rel = base ? `${base}/${e.name}` : e.name
+      if (e.isDirectory()) {
+        files.push(...walkFiles(join(dir, e.name), matcher, rel))
+      } else if (matcher(e.name)) {
         files.push(rel)
       }
     }
@@ -191,6 +217,103 @@ function checkBuildPluginsDrift() {
   return errors
 }
 
+function readTomlVersion(raw) {
+  const match = raw.match(/^version\s*=\s*"([^"]+)"/m)
+  return match ? match[1] : null
+}
+
+function readEnvPort() {
+  const envCandidates = [join(ROOT, '.env.development'), join(ROOT, '.env')]
+  for (const file of envCandidates) {
+    if (!existsSync(file)) continue
+    const content = readFileSync(file, 'utf-8')
+    const match = content.match(/^VITE_PORT=(\d+)$/m)
+    if (match) {
+      return Number(match[1])
+    }
+  }
+  return 8888
+}
+
+function readUrlPort(rawUrl) {
+  try {
+    return Number(new URL(rawUrl).port)
+  } catch {
+    return null
+  }
+}
+
+function checkDesktopConfigDrift() {
+  const errors = []
+  if (!existsSync(TAURI_CONF) || !existsSync(CARGO_TOML)) {
+    return errors
+  }
+
+  const pkg = JSON.parse(readFileSync(PACKAGE_JSON, 'utf-8'))
+  const tauri = JSON.parse(readFileSync(TAURI_CONF, 'utf-8'))
+  const cargoRaw = readFileSync(CARGO_TOML, 'utf-8')
+  const cargoVersion = readTomlVersion(cargoRaw)
+  const pkgVersion = pkg.version
+  const tauriVersion = tauri.version
+
+  if (pkgVersion !== tauriVersion || pkgVersion !== cargoVersion) {
+    errors.push(
+      `桌面端版本漂移: package.json=${pkgVersion}, tauri.conf.json=${tauriVersion}, Cargo.toml=${cargoVersion}. 请运行 pnpm sync:version。`
+    )
+  }
+
+  const sourcePort = readEnvPort()
+  const tauriPort = readUrlPort(tauri.build?.devUrl ?? '')
+  if (tauriPort !== null && tauriPort !== sourcePort) {
+    errors.push(
+      `桌面端端口漂移: VITE_PORT=${sourcePort}, tauri.conf.json build.devUrl=${tauri.build?.devUrl}. 请运行 pnpm sync:desktop-config。`
+    )
+  }
+
+  if (existsSync(VSCODE_LAUNCH)) {
+    const launchRaw = readFileSync(VSCODE_LAUNCH, 'utf-8')
+    const match = launchRaw.match(/"url"\s*:\s*"([^"]+)"/)
+    const launchPort = match ? readUrlPort(match[1]) : null
+    if (launchPort !== null && launchPort !== sourcePort) {
+      errors.push(
+        `桌面端调试地址漂移: VITE_PORT=${sourcePort}, .vscode/launch.json url=${match?.[1]}. 请运行 pnpm sync:desktop-config。`
+      )
+    }
+  }
+
+  return errors
+}
+
+function checkDesktopExampleDrift() {
+  const errors = []
+  if (existsSync(EXAMPLE_VIEWS_DIR)) {
+    return errors
+  }
+
+  const systemApiRaw = existsSync(SYSTEM_API) ? readFileSync(SYSTEM_API, 'utf-8') : ''
+  if (systemApiRaw.includes('/example/') || systemApiRaw.includes('example/')) {
+    errors.push(
+      '桌面端分支已移除 src/views/example，但 src/api/system/system.api.ts 仍引用 example 路由或组件。'
+    )
+  }
+
+  const authApiRaw = existsSync(AUTH_API) ? readFileSync(AUTH_API, 'utf-8') : ''
+  if (authApiRaw.includes('example:')) {
+    errors.push('桌面端分支已移除 example 页面，但 auth mock 仍保留 example 权限码。')
+  }
+
+  const e2eFiles = walkFiles(E2E_DIR, name => name.endsWith('.ts'))
+  for (const rel of e2eFiles) {
+    const absPath = join(E2E_DIR, rel)
+    const content = readFileSync(absPath, 'utf-8')
+    if (content.includes('/example/')) {
+      errors.push(`桌面端分支已移除 example 页面，但 e2e/${rel} 仍访问 /example/* 路由。`)
+    }
+  }
+
+  return errors
+}
+
 function main() {
   const errors = []
 
@@ -235,6 +358,13 @@ function main() {
   // ---------- 4. AutoImport / Components vs .cursor 规则 ----------
   const buildPluginsErrors = checkBuildPluginsDrift()
   errors.push(...buildPluginsErrors)
+
+  // ---------- 5. Desktop branch drift (version / devUrl / stale examples) ----------
+  const desktopConfigErrors = checkDesktopConfigDrift()
+  errors.push(...desktopConfigErrors)
+
+  const desktopExampleErrors = checkDesktopExampleDrift()
+  errors.push(...desktopExampleErrors)
 
   if (errors.length > 0) {
     console.error('❌ Drift Check 失败:\n')

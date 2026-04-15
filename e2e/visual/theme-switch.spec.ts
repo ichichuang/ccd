@@ -1,7 +1,7 @@
 import { expect, test } from '@playwright/test'
 import {
-  gotoVisual,
   loginAsAdmin,
+  openGlobalSettings,
   waitForAppReady,
   waitForThemeTransitionEnd,
 } from '../helpers/app'
@@ -16,35 +16,34 @@ test.describe('theme switching visual regression', () => {
     await expect(page.locator('#dashboard-page')).toHaveScreenshot('dashboard-ready.png')
   })
 
-  test('theme switch example reaches stable dark and light states', async ({ page }) => {
+  test('global settings reaches stable dark and light states', async ({ page }) => {
     await page.addInitScript(() => {
       window.localStorage.setItem('ccd-e2e-mode', 'visual')
     })
 
     await loginAsAdmin(page)
-    await gotoVisual(page, '/example/hooks/composables/use-theme-switch')
-    await waitForAppReady(page)
+    await openGlobalSettings(page)
 
-    const pageRoot = page.locator('#use-theme-switch-page')
+    const pageRoot = page.locator('#global-settings-content')
 
-    await expect(pageRoot).toHaveScreenshot('use-theme-switch-light.png')
+    await expect(pageRoot).toHaveScreenshot('global-settings-light.png')
 
-    await page.locator('#theme-mode-dark-animated').click()
+    await page.getByRole('button', { name: '深色' }).click()
     await waitForThemeTransitionEnd(page)
-    await expect(pageRoot).toHaveScreenshot('use-theme-switch-dark.png')
+    await expect(pageRoot).toHaveScreenshot('global-settings-dark.png')
 
-    await page.locator('#theme-mode-light-animated').click()
+    await page.getByRole('button', { name: '浅色' }).click()
     await waitForThemeTransitionEnd(page)
-    await expect(pageRoot).toHaveScreenshot('use-theme-switch-light-return.png')
+    await expect(pageRoot).toHaveScreenshot('global-settings-light-return.png')
   })
 
-  test('global settings content renders stable preset controls', async ({ page }) => {
+  test('global settings overlay renders stable with dashboard shell', async ({ page }) => {
     await page.addInitScript(() => {
       window.localStorage.setItem('ccd-e2e-mode', 'visual')
     })
 
     await loginAsAdmin(page)
-    await gotoVisual(page, '/example/system-configuration/theme')
+    await openGlobalSettings(page)
     await waitForAppReady(page)
 
     await expect(page).toHaveScreenshot('theme-system-page.png', {
