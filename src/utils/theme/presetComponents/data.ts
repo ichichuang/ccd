@@ -241,6 +241,7 @@ export function buildDataComponents(): Record<string, unknown> {
         borderColor: 'rgb(var(--input))',
         hoverBorderColor: 'rgb(var(--primary-hover))',
         focusBorderColor: 'rgb(var(--ring))',
+        borderRadius: 'var(--radius-md)',
         color: 'rgb(var(--foreground))',
         disabledBackground: 'rgb(var(--muted))',
         disabledColor: 'rgb(var(--muted-foreground))',

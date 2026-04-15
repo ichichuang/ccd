@@ -150,7 +150,7 @@ const loginShellInputPt = {
 const loginPasswordPt = {
   root: {
     class:
-      'min-h-0 w-full min-w-0 flex-1 self-stretch items-center !border-none !shadow-none !rounded-none !bg-transparent !ring-0 !outline-none focus:!ring-0',
+      'min-h-0 w-full min-w-0 flex-1 self-stretch items-center !border-none !shadow-none !rounded-none !bg-transparent !ring-0 !outline-none focus:!ring-0 focus-within:!border-none focus-within:!ring-0 focus-within:!ring-offset-0',
   },
   pcInputText: {
     root: {
