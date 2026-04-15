@@ -20,6 +20,8 @@ const BUILD_PLUGINS = join(ROOT, 'build', 'plugins.ts')
 const PACKAGE_JSON = join(ROOT, 'package.json')
 const TAURI_CONF = join(ROOT, 'src-tauri', 'tauri.conf.json')
 const CARGO_TOML = join(ROOT, 'src-tauri', 'Cargo.toml')
+const BRAND_TS = join(ROOT, 'src', 'constants', 'brand.ts')
+const CAPABILITIES_JSON = join(ROOT, 'src-tauri', 'capabilities', 'default.json')
 const VSCODE_LAUNCH = join(ROOT, '.vscode', 'launch.json')
 const AUTH_API = join(ROOT, 'src', 'api', 'auth', 'auth.api.ts')
 const SYSTEM_API = join(ROOT, 'src', 'api', 'system', 'system.api.ts')
@@ -243,6 +245,36 @@ function readUrlPort(rawUrl) {
   }
 }
 
+function readBrandSnapshot() {
+  if (!existsSync(BRAND_TS)) {
+    return null
+  }
+
+  const content = readFileSync(BRAND_TS, 'utf-8')
+  const pick = (field) => {
+    const pattern = new RegExp(`${field}\\s*:\\s*['"\`]([^'"\`]+)['"\`]`)
+    const matched = content.match(pattern)
+    return matched ? matched[1].trim() : null
+  }
+
+  return {
+    id: pick('id'),
+    name: pick('name'),
+    displayName: pick('displayName'),
+    description: pick('description'),
+    author: pick('author'),
+  }
+}
+
+function readCargoAuthors(rawToml) {
+  const matched = rawToml.match(/^authors\s*=\s*\[(.*)\]/m)
+  if (!matched) return []
+  return matched[1]
+    .split(',')
+    .map((item) => item.trim().replace(/^"/, '').replace(/"$/, ''))
+    .filter(Boolean)
+}
+
 function checkDesktopConfigDrift() {
   const errors = []
   if (!existsSync(TAURI_CONF) || !existsSync(CARGO_TOML)) {
@@ -253,12 +285,95 @@ function checkDesktopConfigDrift() {
   const tauri = JSON.parse(readFileSync(TAURI_CONF, 'utf-8'))
   const cargoRaw = readFileSync(CARGO_TOML, 'utf-8')
   const cargoVersion = readTomlVersion(cargoRaw)
+  const cargoDescription = cargoRaw.match(/^description\s*=\s*"([^"]*)"/m)?.[1] ?? null
+  const cargoAuthors = readCargoAuthors(cargoRaw)
   const pkgVersion = pkg.version
   const tauriVersion = tauri.version
 
   if (pkgVersion !== tauriVersion || pkgVersion !== cargoVersion) {
     errors.push(
       `桌面端版本漂移: package.json=${pkgVersion}, tauri.conf.json=${tauriVersion}, Cargo.toml=${cargoVersion}. 请运行 pnpm sync:version。`
+    )
+  }
+
+  const brand = readBrandSnapshot()
+  if (brand) {
+    if (pkg.name !== brand.name) {
+      errors.push(
+        `桌面端产品信息漂移: package.json name=${pkg.name}, brand.name=${brand.name}. 请运行 pnpm sync:brand。`
+      )
+    }
+
+    if (pkg.description !== brand.description) {
+      errors.push(
+        `桌面端产品信息漂移: package.json description=${pkg.description}, brand.description=${brand.description}. 请运行 pnpm sync:brand。`
+      )
+    }
+
+    if (pkg.author !== brand.author) {
+      errors.push(
+        `桌面端产品信息漂移: package.json author=${pkg.author}, brand.author=${brand.author}. 请运行 pnpm sync:brand。`
+      )
+    }
+
+    if (tauri.productName !== brand.name) {
+      errors.push(
+        `桌面端产品信息漂移: tauri.conf.json productName=${tauri.productName}, brand.name=${brand.name}. 请运行 pnpm sync:brand。`
+      )
+    }
+
+    if (tauri.identifier !== brand.id) {
+      errors.push(
+        `桌面端产品信息漂移: tauri.conf.json identifier=${tauri.identifier}, brand.id=${brand.id}. 请运行 pnpm sync:brand。`
+      )
+    }
+
+    const tauriWindowTitle = tauri.app?.windows?.[0]?.title ?? null
+    if (tauriWindowTitle !== brand.displayName) {
+      errors.push(
+        `桌面端产品信息漂移: tauri.conf.json window.title=${tauriWindowTitle}, brand.displayName=${brand.displayName}. 请运行 pnpm sync:brand。`
+      )
+    }
+
+    if (cargoDescription !== brand.description) {
+      errors.push(
+        `桌面端产品信息漂移: Cargo.toml description=${cargoDescription}, brand.description=${brand.description}. 请运行 pnpm sync:brand。`
+      )
+    }
+
+    if (!cargoAuthors.includes(brand.author)) {
+      errors.push(
+        `桌面端产品信息漂移: Cargo.toml authors=[${cargoAuthors.join(', ')}], brand.author=${brand.author}. 请运行 pnpm sync:brand。`
+      )
+    }
+
+    if (existsSync(CAPABILITIES_JSON)) {
+      const capability = JSON.parse(readFileSync(CAPABILITIES_JSON, 'utf-8'))
+      const expectedCapabilityDesc = `Minimum required permissions for ${brand.name}`
+      if (capability.description !== expectedCapabilityDesc) {
+        errors.push(
+          `桌面端产品信息漂移: capabilities/default.json description=${capability.description}, expected=${expectedCapabilityDesc}. 请运行 pnpm sync:brand。`
+        )
+      }
+    }
+  }
+
+  const tauriBuild = tauri.build ?? {}
+  if (tauriBuild.beforeDevCommand !== 'pnpm dev') {
+    errors.push(
+      `桌面端开发命令漂移: tauri.conf.json build.beforeDevCommand=${tauriBuild.beforeDevCommand}. 预期为 pnpm dev。`
+    )
+  }
+
+  if (tauriBuild.beforeBuildCommand !== 'pnpm build') {
+    errors.push(
+      `桌面端构建命令漂移: tauri.conf.json build.beforeBuildCommand=${tauriBuild.beforeBuildCommand}. 预期为 pnpm build。`
+    )
+  }
+
+  if (tauriBuild.frontendDist !== '../dist') {
+    errors.push(
+      `桌面端产物路径漂移: tauri.conf.json build.frontendDist=${tauriBuild.frontendDist}. 预期为 ../dist。`
     )
   }
 
