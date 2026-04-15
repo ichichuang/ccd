@@ -3,8 +3,8 @@ import { useI18n } from 'vue-i18n'
 import Drawer from 'primevue/drawer'
 import { useRoute } from 'vue-router'
 import AppContainer from '@&/AppContainer.vue'
-import { useLayoutStore } from '@/stores/modules/layout'
-import { useDeviceStore } from '@/stores/modules/device'
+import { useLayoutStore } from '@/stores/modules/system'
+import { useDeviceStore } from '@/stores/modules/system'
 import { useDateUtils } from '@/hooks/modules/useDateUtils'
 import { useThemeSwitch } from '@/hooks/modules/useThemeSwitch'
 import ContextMenuProvider from '@/layouts/components/ContextMenuProvider.vue'
@@ -63,7 +63,6 @@ export default defineComponent({
     }
 
     const onContextToggleTheme = (event: MouseEvent) => {
-      if (isAnimating.value) return
       void toggleThemeWithAnimation(event)
     }
 

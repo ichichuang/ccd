@@ -21,9 +21,9 @@ import {
 import { MENU_TEXT_CLASS, MENU_TEXT_WEIGHT, MENU_ICON_COMMON_CLASS } from '@/constants/layout-menu'
 import { getMenuItemBase, getMenuStateClasses, getIconSize } from '@/hooks/layout/useMenuVisuals'
 import { createTieredMenuItemRenderer } from '@/hooks/layout/useMenuRenderer'
-import { useUserStore } from '@/stores/modules/user'
-import { useDeviceStore } from '@/stores/modules/device'
-import { useLayoutStore } from '@/stores/modules/layout'
+import { useUserStore } from '@/stores/modules/session'
+import { useDeviceStore } from '@/stores/modules/system'
+import { useLayoutStore } from '@/stores/modules/system'
 
 import logoSrc from '@/assets/images/face.webp'
 

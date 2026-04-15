@@ -8,8 +8,8 @@ import { primevueZhCN } from '@/locales/primevue-zh-CN'
 import { PRIMEVUE_LOCALE_MAP } from '@/locales/primevue-locales'
 import type { SupportedLocale } from '@/locales'
 import store from '@/stores'
-import { useLocaleStore } from '@/stores/modules/locale'
-import { useSizeStore } from '@/stores/modules/size'
+import { useLocaleStore } from '@/stores/modules/system'
+import { useSizeStore } from '@/stores/modules/system'
 import { createCustomPreset } from '@/utils/theme/primevuePreset'
 import {
   formControlsPt,
@@ -18,7 +18,8 @@ import {
 } from '@/utils/theme/ptPresets/formControlsPt'
 import { menuPt } from '@/utils/theme/ptPresets/menuPt'
 
-const OVERLAY_GLASS_SHELL_CLASS = 'glass-shell'
+const OVERLAY_GLASS_SHELL_CLASS =
+  'glass-base border border-solid border-border/5 dark:border-border/15 transform-gpu will-change-transform'
 const BG_TRANSPARENT = 'bg-transparent'
 // Tabs 内部的默认样式使用 `background: ...`（而非 background-color）
 // 因此仅用 bg-transparent 可能会被 PrimeVue 的 background 覆盖。
@@ -34,7 +35,7 @@ const TEXT_FOREGROUND = 'text-foreground'
  */
 const tabsPt = {
   tabs: {
-    root: { class: `${OVERLAY_GLASS_SHELL_CLASS} rounded-none!` },
+    root: { class: OVERLAY_GLASS_SHELL_CLASS },
   },
   tablist: {
     root: { class: BG_TRANSPARENT_IMPORTANT },
@@ -78,15 +79,15 @@ const overlayPt = {
   },
   confirmpopup: {
     root: { class: OVERLAY_GLASS_COMPACT_CLASS },
-    content: { class: `${BG_TRANSPARENT} p-sm!` },
+    content: { class: BG_TRANSPARENT },
     message: { class: TEXT_FOREGROUND },
-    footer: { class: `${BG_TRANSPARENT} p-sm! pt-0!` },
+    footer: { class: BG_TRANSPARENT },
   },
 } as const
 
 const splitterPt = {
   splitter: {
-    root: { class: 'glass-shell !rounded-md border border-border overflow-hidden' },
+    root: { class: `${OVERLAY_GLASS_SHELL_CLASS} border-border overflow-hidden` },
     handle: { class: 'bg-transparent' },
   },
 } as const

@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { useThemeSwitch } from '@/hooks/modules/useThemeSwitch'
-import { useThemeStore } from '@/stores/modules/theme'
-import { useSizeStore } from '@/stores/modules/size'
-import { useLayoutStore } from '@/stores/modules/layout'
-import { useDeviceStore } from '@/stores/modules/device'
+import { useThemeStore } from '@/stores/modules/system'
+import { useSizeStore } from '@/stores/modules/system'
+import { useLayoutStore } from '@/stores/modules/system'
+import { useDeviceStore } from '@/stores/modules/system'
 import { useLocale } from '@/hooks/modules/useLocale'
 import {
   THEME_PRESETS,
@@ -23,7 +23,7 @@ import { Icons } from '@/components/Icons'
 defineEmits(['close'])
 
 const { t } = useI18n()
-const { mode, isAnimating, setThemeWithAnimation } = useThemeSwitch()
+const { mode, setThemeWithAnimation } = useThemeSwitch()
 const themeStore = useThemeStore()
 const deviceStore = useDeviceStore()
 const sizeStore = useSizeStore()
@@ -164,7 +164,10 @@ function onThemeModeChange(value: ThemeMode) {
 </script>
 
 <template>
-  <div class="flex flex-col px-sm md:px-md gap-md md:gap-lg xl:gap-xl">
+  <div
+    id="global-settings-content"
+    class="flex flex-col px-sm md:px-md gap-md md:gap-lg xl:gap-xl"
+  >
     <!-- 深色 / 浅色 -->
     <template v-if="!isMobileTerminal">
       <div class="flex flex-col gap-xs md:gap-sm">
@@ -178,7 +181,6 @@ function onThemeModeChange(value: ThemeMode) {
             option-value="value"
             :option-label="opt => t(opt.labelKey)"
             :allow-empty="false"
-            :disabled="isAnimating"
             class="w-full"
             @update:model-value="onThemeModeChange"
           />
@@ -196,6 +198,7 @@ function onThemeModeChange(value: ThemeMode) {
       <div class="flex flex-wrap gap-lg">
         <div
           v-for="preset in THEME_PRESETS"
+          :id="`theme-preset-${preset.name}`"
           :key="preset.name"
           :aria-pressed="themeStore.themeName === preset.name"
           :aria-label="preset.name"
@@ -333,6 +336,7 @@ function onThemeModeChange(value: ThemeMode) {
       <div class="flex flex-wrap gap-sm md:gap-md">
         <div
           v-for="opt in transitionOptions"
+          :id="`theme-transition-${opt.value}`"
           :key="opt.value"
           v-tooltip.top="t(opt.labelKey)"
           :aria-pressed="themeStore.transitionMode === opt.value"

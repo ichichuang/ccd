@@ -1,8 +1,8 @@
 import store from '@/stores'
-import { useThemeStore } from '@/stores/modules/theme'
-import { useSizeStore } from '@/stores/modules/size'
-import { useDeviceStore } from '@/stores/modules/device'
-import { useLocaleStore } from '@/stores/modules/locale'
+import { useThemeStore } from '@/stores/modules/system'
+import { useSizeStore } from '@/stores/modules/system'
+import { useDeviceStore } from '@/stores/modules/system'
+import { useLocaleStore } from '@/stores/modules/system'
 
 export const setupStores = (app: App) => {
   app.use(store)

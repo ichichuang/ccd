@@ -2,7 +2,7 @@
 import { useRoute } from 'vue-router'
 import AnimateRouterView from '@&/AnimateRouterView.vue'
 import Loading from '@&/Loading.vue'
-import { useLayoutStore } from '@/stores/modules/layout'
+import { useLayoutStore } from '@/stores/modules/system'
 import { CScrollbar } from '@/components/CScrollbar'
 import type CScrollbarComponent from '@/components/CScrollbar/CScrollbar.vue'
 

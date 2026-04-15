@@ -2,8 +2,8 @@
 import { useRoute, useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { brand } from '@/constants/brand'
-import { useDeviceStore } from '@/stores/modules/device'
-import { useLayoutStore } from '@/stores/modules/layout'
+import { useDeviceStore } from '@/stores/modules/system'
+import { useLoading } from '@/hooks/layout/useLoading'
 import { useThemeSwitch } from '@/hooks/modules/useThemeSwitch'
 import { useLocale } from '@/hooks/modules/useLocale'
 import type { SupportedLocale } from '@/locales'
@@ -51,11 +51,11 @@ const passwordLength = computed<number>(() => {
 })
 
 const deviceStore = useDeviceStore()
-const layoutStore = useLayoutStore()
 const isMobileLayout = computed<boolean>(() => deviceStore.isMobileLayout)
 const { toggleThemeWithAnimation } = useThemeSwitch()
 const { locale, switchLocale, supportedLocales } = useLocale()
 const { t } = useI18n({ useScope: 'global' })
+const { startLoading } = useLoading()
 
 const localeOptions = computed<Array<{ value: SupportedLocale; label: string }>>(() =>
   supportedLocales.map(l => ({ value: l.key, label: `${l.flag} ${l.name}` }))
@@ -263,8 +263,6 @@ async function login(values: Record<string, unknown>): Promise<void> {
 
   loading.value = true
 
-  let didStartGlobalLoading: boolean = false
-
   try {
     const username = typeof values.username === 'string' ? values.username.trim() : ''
     const password = typeof values.password === 'string' ? values.password : ''
@@ -272,17 +270,17 @@ async function login(values: Record<string, unknown>): Promise<void> {
 
     await doLogin(payload)
 
-    layoutStore.beginGlobalLoading()
-    didStartGlobalLoading = true
-
     const redirectPath = route.query.redirect as string | undefined
     const fallbackPath = import.meta.env.VITE_ROOT_REDIRECT || '/'
+    const stopGlobalLoading = startLoading()
 
-    await router.replace(redirectPath || fallbackPath)
-  } catch (error) {
-    if (didStartGlobalLoading) {
-      layoutStore.endGlobalLoading()
+    try {
+      await router.replace(redirectPath || fallbackPath)
+      await nextTick()
+    } finally {
+      stopGlobalLoading()
     }
+  } catch (error) {
     const message = getErrorMessage(error) || t('login.errorMessageGeneric')
 
     if (window.$toast?.dangerIn) {
@@ -407,6 +405,7 @@ async function handleLoginSubmit(): Promise<void> {
                 </div>
                 <div class="row-start gap-xs">
                   <Button
+                    id="login-fill-admin"
                     size="small"
                     text
                     @click="fillAdminPreset"
@@ -421,6 +420,7 @@ async function handleLoginSubmit(): Promise<void> {
                     </span>
                   </Button>
                   <Button
+                    id="login-fill-user"
                     size="small"
                     severity="success"
                     text
@@ -522,6 +522,7 @@ async function handleLoginSubmit(): Promise<void> {
                   <template #footer="{ formState }">
                     <div class="mt-xl">
                       <Button
+                        id="login-submit"
                         class="w-full"
                         :label="t('login.submit')"
                         :loading="formState.submitting || loading"
@@ -576,6 +577,7 @@ async function handleLoginSubmit(): Promise<void> {
     linear-gradient(90deg, rgb(var(--primary) / 12%) 1px, transparent 1px);
   background-size: var(--spacing-2xl) var(--spacing-2xl);
 }
+
 .dark {
   .command-center-container-gradient {
     background:

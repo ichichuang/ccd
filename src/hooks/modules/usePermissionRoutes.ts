@@ -1,6 +1,6 @@
 import { requestSystemAsyncRoutes } from '@/api/system/system.api'
 import { deepClone } from '@/utils/lodashes'
-import { usePermissionStore } from '@/stores/modules/permission'
+import { usePermissionStore } from '@/stores/modules/session'
 
 /** 路由拉取配置 */
 const FETCH_TIMEOUT_MS: number = 10_000

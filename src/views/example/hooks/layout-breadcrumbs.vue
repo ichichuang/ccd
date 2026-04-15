@@ -8,7 +8,7 @@ import {
 } from '@/hooks/layout/useMenuRenderer'
 import { getIconSize } from '@/hooks/layout/useMenuVisuals'
 import { MENU_ICON_COMMON_CLASS } from '@/constants/layout-menu'
-import { useLayoutStore } from '@/stores/modules/layout'
+import { useLayoutStore } from '@/stores/modules/system'
 
 defineOptions({ name: 'LayoutBreadcrumbs' })
 

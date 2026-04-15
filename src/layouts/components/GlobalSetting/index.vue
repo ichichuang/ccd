@@ -1,6 +1,6 @@
 <script setup lang="tsx">
 import { useDialog } from '@/hooks/modules/useDialog'
-import { useDeviceStore } from '@/stores/modules/device'
+import { useDeviceStore } from '@/stores/modules/system'
 import { useI18n } from 'vue-i18n'
 import SettingsContent from './SettingsContent.vue'
 

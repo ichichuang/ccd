@@ -21,7 +21,7 @@ import type { DeepReadonly, Ref } from 'vue'
 import DateUtils from '@/utils/date'
 import type { DateFormat, DateInput, FormatOptions, Locale } from '@/utils/date'
 import type { SupportedLocale } from '@/locales'
-import { useLocaleStore } from '@/stores/modules/locale'
+import { useLocaleStore } from '@/stores/modules/system'
 import { useMitt } from '@/utils/mitt'
 
 // 使用浏览器本地时区作为默认值（不强绑语言）

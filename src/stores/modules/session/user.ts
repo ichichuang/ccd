@@ -1,10 +1,11 @@
 import store from '@/stores'
 import { AUTH_ENABLED } from '@/constants/router'
-import { useLayoutStore } from '@/stores/modules/layout'
-import { useThemeStore } from '@/stores/modules/theme'
-import { useSizeStore } from '@/stores/modules/size'
-import { useLocaleStore } from '@/stores/modules/locale'
-import { usePermissionStore } from '@/stores/modules/permission'
+import { THEME_PRELOAD_STORAGE_KEYS } from '@/constants/runtime'
+import { useLayoutStore } from '@/stores/modules/system/layout'
+import { useThemeStore } from '@/stores/modules/system/theme'
+import { useSizeStore } from '@/stores/modules/system/size'
+import { useLocaleStore } from '@/stores/modules/system/locale'
+import { usePermissionStore } from '@/stores/modules/session/permission'
 import { createPiniaEncryptedSerializer } from '@/utils/safeStorage/piniaSerializer'
 import { encryptAndCompressSync } from '@/utils/safeStorage/safeStorage'
 import { defineStore } from 'pinia'
@@ -115,8 +116,8 @@ export const useUserStore = defineStore('user', {
       }
       this.clearUserInfo()
       const basePrefix = `${import.meta.env.VITE_PINIA_PERSIST_KEY_PREFIX}-`
-      const prefixKeys: string[] = [basePrefix, 'schemaform:']
-      const exactKeys: string[] = ['theme-mode']
+      const prefixKeys: string[] = [basePrefix, 'schemaform:', 'pro-form-draft:']
+      const exactKeys: readonly string[] = THEME_PRELOAD_STORAGE_KEYS
 
       const shouldRemove = (key: string): boolean => {
         if (exactKeys.includes(key)) return true

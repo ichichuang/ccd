@@ -1,5 +1,11 @@
 import { defineStore } from 'pinia'
-import { THEME_PRESETS, DEFAULT_THEME_NAME, DEFAULT_TRANSITION_DURATION } from '@/constants/theme'
+import {
+  THEME_PRESETS,
+  DEFAULT_THEME_NAME,
+  DEFAULT_THEME_MODE,
+  DEFAULT_TRANSITION_DURATION,
+} from '@/constants/theme'
+import { RUNTIME_STORAGE_KEYS } from '@/constants/runtime'
 import { generateThemeVars, applyTheme } from '@/utils/theme/engine'
 import { isThemeLocked } from '@/utils/theme/transitions'
 
@@ -19,7 +25,7 @@ interface ThemeState {
 
 export const useThemeStore = defineStore('theme', {
   state: (): ThemeState => ({
-    mode: 'auto',
+    mode: DEFAULT_THEME_MODE,
     themeName: DEFAULT_THEME_NAME,
     accentColor: null,
     transitionMode: 'curtain',
@@ -40,7 +46,7 @@ export const useThemeStore = defineStore('theme', {
 
   actions: {
     resetState() {
-      this.mode = 'auto'
+      this.mode = DEFAULT_THEME_MODE
       this.themeName = DEFAULT_THEME_NAME
       this.accentColor = null
       this.transitionMode = 'curtain'
@@ -90,6 +96,7 @@ export const useThemeStore = defineStore('theme', {
 
       document.documentElement.classList.toggle('dark', isDark)
       document.documentElement.classList.toggle('glass', this.mode === 'glass')
+      document.documentElement.dataset.themeMode = this.mode
 
       // 2. 查找预设，如果失效则自动纠正 Store 状态
       let preset = THEME_PRESETS.find(p => p.name === this.themeName)
@@ -105,7 +112,7 @@ export const useThemeStore = defineStore('theme', {
 
       // 4. 写入明文 theme-mode 供 index.html 首帧脚本读取，避免首屏闪屏
       try {
-        localStorage.setItem('theme-mode', this.mode)
+        localStorage.setItem(RUNTIME_STORAGE_KEYS.themeMode, this.mode)
       } catch (_) {
         /* ignore */
       }

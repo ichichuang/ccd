@@ -30,8 +30,8 @@ import {
 } from '@/constants/layout-menu'
 import { getMenuItemBase, getMenuStateClasses, getIconSize } from '@/hooks/layout/useMenuVisuals'
 import { createTieredMenuItemRenderer } from '@/hooks/layout/useMenuRenderer'
-import { useLayoutStore } from '@/stores/modules/layout'
-import { useUserStore } from '@/stores/modules/user'
+import { useLayoutStore } from '@/stores/modules/system'
+import { useUserStore } from '@/stores/modules/session'
 import { useAppElementSize } from '@/hooks/modules/useAppElementSize'
 
 /** Map/Record → Record，供 store 持久化 */

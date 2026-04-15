@@ -3,10 +3,11 @@
  * PrimeVue Dialog 封装组件
  * 支持 hideHeader/hideClose/hideFooter、自定义渲染器、拖拽、最大化、响应式多语言
  */
+import { useEventListener } from '@vueuse/core'
 import type { PassThrough } from '@primevue/core'
 import type { DialogPassThroughOptions } from 'primevue/dialog'
 import { t } from '@/locales'
-import { useDeviceStore } from '@/stores/modules/device'
+import { useDeviceStore } from '@/stores/modules/system'
 import { defineComponent, type PropType } from 'vue'
 import type { Component, VNode } from 'vue'
 import type { ButtonProps, DialogOptions, EventType } from './utils/types'
@@ -43,9 +44,11 @@ type CachedVNodes = {
 }
 
 const vnodeCache = new Map<string, CachedVNodes>()
+const getDialogInstanceId = (options: DialogOptions, index: number): string =>
+  options._instanceId ?? `dialog-${index}`
 
 function getMemoizedVNodes(options: DialogOptions, originalIndex: number): CachedVNodes {
-  const id = options._instanceId ?? String(originalIndex)
+  const id = getDialogInstanceId(options, originalIndex)
 
   if (!vnodeCache.has(id)) {
     vnodeCache.set(id, { header: null, content: null, footer: null })
@@ -58,7 +61,9 @@ function getMemoizedVNodes(options: DialogOptions, originalIndex: number): Cache
   }
 
   cache.header = options.headerRenderer
-    ? options.headerRenderer({ close: () => {}, maximize: () => {}, minimize: () => {} })
+    ? options.headerRenderer({
+        close: () => handleClose(options, originalIndex, { command: 'close' }),
+      })
     : null
 
   cache.content = options.contentRenderer
@@ -88,19 +93,19 @@ const effectiveDraggable = (options: DialogOptions): boolean => {
 const effectiveBreakpoints = (options: DialogOptions) => options.breakpoints
 
 const getHeaderText = (options: DialogOptions): string => {
-  if (isFunction(options.header)) {
+  if (typeof options.header === 'function') {
     void localeTrigger.value
     return options.header()
   }
-  return (options.header as string) ?? ''
+  return options.header ?? ''
 }
 
 const getButtonLabel = (btn: ButtonProps): string => {
-  if (isFunction(btn.label)) {
+  if (typeof btn.label === 'function') {
     void localeTrigger.value
     return btn.label()
   }
-  return (btn.label as string) ?? ''
+  return btn.label
 }
 
 const props = withDefaults(defineProps<{ dialogStore: readonly DialogOptions[] }>(), {
@@ -118,8 +123,12 @@ const emit = defineEmits<{
   maximize: [options: DialogOptions, index: number]
 }>()
 
-const sureBtnMap = ref<Record<number, { loading: boolean }>>({})
-const closingIndexSet = new Set<number>()
+const sureBtnMap = ref<Record<string, { loading: boolean }>>({})
+const closingInstanceIds = new Set<string>()
+
+function getSureButtonLoading(options: DialogOptions, index: number): boolean {
+  return sureBtnMap.value[getDialogInstanceId(options, index)]?.loading === true
+}
 
 const defaultButtons = computed(() => {
   return (options: DialogOptions): ButtonProps[] => {
@@ -131,7 +140,7 @@ const defaultButtons = computed(() => {
         severity: 'secondary',
         text: true,
         btnClick: ({ dialog: { options: opt, index } }) => {
-          const done = () => emit('close', opt, index, { command: 'cancel' })
+          const done = () => handleClose(opt, index, { command: 'cancel' })
           if (opt?.beforeCancel && isFunction(opt.beforeCancel)) {
             opt.beforeCancel(done, { options: opt, index })
           } else {
@@ -144,17 +153,21 @@ const defaultButtons = computed(() => {
         severity: 'primary',
         text: true,
         btnClick: ({ dialog: { options: opt, index } }) => {
+          const instanceId = getDialogInstanceId(opt, index)
           if (opt?.sureBtnLoading && index !== undefined) {
-            sureBtnMap.value[index] = { ...sureBtnMap.value[index], loading: true }
+            sureBtnMap.value[instanceId] = { ...sureBtnMap.value[instanceId], loading: true }
           }
           const closeLoading = () => {
             if (opt?.sureBtnLoading && index !== undefined) {
-              sureBtnMap.value[index].loading = false
+              sureBtnMap.value[instanceId] = {
+                ...sureBtnMap.value[instanceId],
+                loading: false,
+              }
             }
           }
           const done = () => {
             closeLoading()
-            emit('close', opt, index, { command: 'sure' })
+            handleClose(opt, index, { command: 'sure' })
           }
           if (opt?.beforeSure && isFunction(opt.beforeSure)) {
             opt.beforeSure(done, { options: opt, index, closeLoading })
@@ -167,29 +180,39 @@ const defaultButtons = computed(() => {
   }
 })
 
-function eventsCallBack(event: EventType, options: DialogOptions, index: number) {
-  const opts = options as Record<string, unknown>
-  const handler = opts[event]
-  if (isFunction(handler)) {
-    return handler({ options, index })
+function eventsCallBack(
+  event: EventType,
+  options: DialogOptions,
+  index: number,
+  args: ArgsType = { command: 'close' }
+) {
+  if (event === 'open') {
+    options.open?.({ options, index })
+    return
   }
-  return undefined
+  if (event === 'close') {
+    options.close?.({ options, index })
+    options.closeCallBack?.({ options, index, args })
+    return
+  }
+  if (event === 'maximize') {
+    options.maximize?.({ options, index })
+  }
 }
 
 function handleClose(options: DialogOptions, index: number, args: ArgsType = { command: 'close' }) {
-  if (closingIndexSet.has(index)) return
-  closingIndexSet.add(index)
+  const instanceId = getDialogInstanceId(options, index)
+  if (closingInstanceIds.has(instanceId)) return
+  closingInstanceIds.add(instanceId)
   emit('close', options, index, args)
-  eventsCallBack('close', options, index)
-  setTimeout(() => closingIndexSet.delete(index), 0)
+  eventsCallBack('close', options, index, args)
 }
 
-function handleAfterHide(options: DialogOptions) {
-  const instanceId = options._instanceId
-  if (instanceId) {
-    vnodeCache.delete(instanceId)
-  }
-  if (!instanceId) return
+function handleAfterHide(options: DialogOptions, index: number) {
+  const instanceId = getDialogInstanceId(options, index)
+  vnodeCache.delete(instanceId)
+  closingInstanceIds.delete(instanceId)
+  delete sureBtnMap.value[instanceId]
   emit('afterHide', instanceId)
 }
 
@@ -222,15 +245,10 @@ function handleEscapeKeydown(e: KeyboardEvent) {
   }
 }
 
-onMounted(() => {
-  window.addEventListener('locale-changed', handleLocaleChange)
-  window.addEventListener('locale-store-changed', handleLocaleChange)
-  document.addEventListener('keydown', handleEscapeKeydown)
-})
+useEventListener(window, 'locale-changed', handleLocaleChange)
+useEventListener(window, 'locale-store-changed', handleLocaleChange)
+useEventListener(document, 'keydown', handleEscapeKeydown)
 onUnmounted(() => {
-  window.removeEventListener('locale-changed', handleLocaleChange)
-  window.removeEventListener('locale-store-changed', handleLocaleChange)
-  document.removeEventListener('keydown', handleEscapeKeydown)
   vnodeCache.clear()
 })
 
@@ -239,9 +257,14 @@ const standardDialogs = computed(() =>
 )
 
 type DialogPtValue = PassThrough<DialogPassThroughOptions>
+type CachedDialogPt = {
+  merged: DialogPtValue
+  maskClass: string
+  ptSource: DialogOptions['pt']
+}
 
 /** 合并 maskClass 与 pt 时缓存引用，避免每次 render 返回新对象导致 PrimeVue 在动画期间重 Patch DOM、打断 CSS 过渡 */
-const dialogPtCache = new WeakMap<DialogOptions, DialogPtValue>()
+const dialogPtCache = new WeakMap<DialogOptions, CachedDialogPt>()
 
 /**
  * 默认 Dialog：遮罩磨砂，面板 interactive-card（非 glass-shell）。
@@ -257,7 +280,7 @@ const defaultDialogPt: DialogPtValue = {
   footer: { class: 'bg-transparent px-md py-sm' },
   mask: {
     class:
-      'glass-base backdrop-blur-sm transition-[opacity,backdrop-filter] duration-md opacity-100 [&.p-overlay-mask-leave-active]:opacity-0 [&.p-overlay-mask-leave-active]:backdrop-blur-none',
+      'bg-background/40 backdrop-blur-sm transition-[opacity,backdrop-filter] duration-md opacity-100 [&.p-overlay-mask-leave-active]:opacity-0 [&.p-overlay-mask-leave-active]:backdrop-blur-none',
   },
 }
 
@@ -277,14 +300,20 @@ function getDialogPt(options: DialogOptions): DialogPtValue | undefined {
     return ''
   })()
   const mergedMaskClass = [maskClassFromPt, options.maskClass].filter(Boolean).join(' ').trim()
+  const cached = dialogPtCache.get(options)
+  if (cached && cached.maskClass === mergedMaskClass && cached.ptSource === options.pt) {
+    return cached.merged
+  }
   const mergedPt = {
     ...basePt,
     mask: { class: mergedMaskClass },
   } as DialogPtValue
-  if (!dialogPtCache.has(options)) {
-    dialogPtCache.set(options, mergedPt)
-  }
-  return dialogPtCache.get(options)
+  dialogPtCache.set(options, {
+    merged: mergedPt,
+    maskClass: mergedMaskClass,
+    ptSource: options.pt,
+  })
+  return mergedPt
 }
 </script>
 
@@ -309,7 +338,7 @@ function getDialogPt(options: DialogOptions): DialogPtValue | undefined {
     :breakpoints="effectiveBreakpoints(options)"
     @update:visible="(visible: boolean) => handleVisibleUpdate(visible, options, originalIndex)"
     @show="handleOpen(options, originalIndex)"
-    @after-hide="handleAfterHide(options)"
+    @after-hide="handleAfterHide(options, originalIndex)"
     @maximize="handleMaximize(options, originalIndex)"
   >
     <template
@@ -345,7 +374,7 @@ function getDialogPt(options: DialogOptions): DialogPtValue | undefined {
           >
             <Button
               :severity="btn.severity"
-              :loading="(key === 1 && sureBtnMap[originalIndex]?.loading) || btn.loading"
+              :loading="(key === 1 && getSureButtonLoading(options, originalIndex)) || btn.loading"
               :disabled="btn.disabled"
               :icon="btn.icon"
               :text="btn.text"

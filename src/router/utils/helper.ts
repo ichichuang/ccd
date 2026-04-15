@@ -6,7 +6,7 @@ import {
 } from '@/constants/router'
 import router, { routeUtils } from '@/router'
 import { generateIdFromKey } from '@/utils/ids'
-import { usePermissionStore } from '@/stores/modules/permission'
+import { usePermissionStore } from '@/stores/modules/session'
 import type { LocationQueryRaw, RouteLocationNormalized, RouteMeta } from 'vue-router'
 import type { MenuItem as PrimeMenuItem } from 'primevue/menuitem'
 import { filterMenuByAccess } from './accessControl'
