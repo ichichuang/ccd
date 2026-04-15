@@ -54,6 +54,48 @@ CCD 面向“需要长期维护”的 Vue 3 产品项目，而不是一次性 De
 
 ---
 
+## 主分支到桌面端同步
+
+桌面端分支不是手工长期维护的平行代码线，而是从 `main` 派生出来的交付分支。
+
+默认同步命令：
+
+```bash
+node scripts/sync-main-to-desktop.mjs
+```
+
+同步脚本当前行为：
+
+- 先要求当前主工作区是干净状态
+- 从 `origin/main` 与 `origin/feat/tauri-integration` 获取最新远端状态
+- 使用临时 `git worktree` 在隔离目录内完成桌面端同步，不污染当前 `main` 工作区
+- 在桌面端分支内执行 `merge main -> feat/tauri-integration`
+- 自动剥离示例模块：`src/views/example`、`src/router/modules/example.ts`
+- 自动把示例 locale 写回桌面端占位内容，避免主分支示例内容泄漏到桌面交付线
+- 保留桌面端专属资产，例如 `src-tauri/**`、`scripts/sync-desktop-config.mjs`、`src/utils/env.ts`、`src/utils/tauriNativeUx.ts`、桌面端 CI 工作流等
+- `package.json` 采用“主分支基础 + 桌面端增量”合并策略：版本号跟随 `main`，桌面端脚本和依赖继续保留
+- 同步后自动执行桌面端分支的 `pnpm install --no-frozen-lockfile` 与 `pnpm type-check`
+- 有改动时自动提交并推送到 `origin/feat/tauri-integration`
+
+并发保护：
+
+- 如果同步窗口内远端桌面端分支被别的进程推进，但最终树内容与本次同步结果一致，脚本会把它判定为“已同步”，不会再把这种场景误报为失败
+
+使用约束：
+
+- 同步前先把通用优化提交到 `main`
+- 不要在脏工作区直接运行同步脚本
+- 不要把桌面端分支当成示例页的承载分支；示例内容会被同步策略主动剥离
+- 如果你要修改同步规则，应直接修改 [scripts/sync-main-to-desktop.mjs](./scripts/sync-main-to-desktop.mjs)
+
+常见结果判断：
+
+- 当前工作区始终留在 `main`：说明 worktree 隔离正常
+- 桌面端分支与 `main` 不完全一致：这是预期行为，因为 README、Tauri 资产、桌面端脚本和部分运行时桥接文件会被保留
+- 示例页面没有进入桌面端：这是同步策略，不是漏合并
+
+---
+
 ## 核心能力
 
 ### 1. 分层架构
