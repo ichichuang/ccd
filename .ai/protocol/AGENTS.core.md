@@ -13,7 +13,7 @@ All AI governance assets live under `.ai/`:
 - `.ai/runtime/*.template.txt` -> versioned runtime templates
 - `.ai/manifests/**` -> lock/manifests
 
-Compatibility paths (`AGENTS.md`, `CLAUDE.md`, `.cursor/**`, `.claude/**`) are generated adapters only. Do not treat them as source-of-truth.
+Compatibility paths (`AGENTS.md`, `.cursor/**`) are generated adapters only. Do not treat them as source-of-truth.
 
 ## 1) Non-Negotiable Constraints
 
@@ -48,24 +48,42 @@ Bootstrap order per task:
 
 Core implementation skills:
 
-- `.ai/skills/claude/vue`
-- `.ai/skills/claude/vueuse-functions`
-- `.ai/skills/claude/unocss`
-- `.ai/skills/claude/vite`
+- `.ai/skills/core/vue`
+- `.ai/skills/core/vueuse-functions`
+- `.ai/skills/core/unocss`
+- `.ai/skills/core/vite`
 
-Tooling skills:
+Codex-first tooling skills:
+
+- `.ai/skills/codex/task-orchestrator`
+- `.ai/skills/codex/architecture-browser-master`
+- `.ai/skills/codex/github-ops`
+
+Cursor compatibility skills:
 
 - `.ai/skills/cursor/github`
 - `.ai/skills/cursor/playwright-mcp`
 
 Adapter note:
 
-- Some tools expose aliases like `@.claude/skills/*` or `@.cursor/skills/*`; these are aliases of `.ai/skills/**`.
+- `.cursor/skills/**` is a generated merge of `.ai/skills/core/**` and `.ai/skills/cursor/**`.
+- `~/.codex/skills/**` is a local materialization of `.ai/skills/core/**` and `.ai/skills/codex/**`.
+
+Automatic trigger heuristics:
+
+- Run `.ai/skills/codex/task-orchestrator/scripts/skill_router.py` first for ambiguous or multi-surface tasks so only the minimum skill set is loaded.
+- For Vue SFCs, composables, UnoCSS, Vite, or toolchain edits, load the matching `.ai/skills/core/*` skill for the touched surface.
+- For UI flows, screenshots, layout regressions, interaction bugs, or browser verification, route to `.ai/skills/codex/architecture-browser-master` first.
+- For Playwright CRX recordings, codegen exports, traces, or recorded-flow replay, route to `.ai/skills/codex/architecture-browser-master` and prefer local flow import or replay over manual browser rediscovery.
+- For ambiguous, multi-step, or cross-module tasks, route to `.ai/skills/codex/task-orchestrator` before editing.
+- For GitHub, PR, issue, review comment, Actions, workflow, CI, release, branch protection, or `.github/**` tasks, route to `.ai/skills/codex/github-ops`.
+- For GitHub tasks, inspect `.github/**`, current git remotes, and workflow files before acting so the chosen automation matches repo reality.
 
 Policy:
 
 - Select the minimal required skill set for the task.
 - Avoid unrelated skill mixing.
+- Prefer machine-readable summaries and route manifests before opening large reference trees.
 - Apply in sequence: rules -> implementation skills -> delivery/testing skills.
 
 ## 4) Mandatory Workflow
@@ -88,4 +106,18 @@ Run when relevant:
 - `pnpm lint:check`
 - `pnpm test:run`
 
-For UI-critical changes, run e2e via `.ai/skills/cursor/playwright-mcp`.
+For UI-critical changes, prefer Playwright CLI plus `.ai/skills/codex/architecture-browser-master`.
+Fall back to `.ai/skills/cursor/playwright-mcp` only when the CLI route cannot satisfy the scenario.
+
+## 6) Stack Defaults
+
+- Current repo truth: Vue 3, TypeScript, Vite, UnoCSS, PrimeVue, Pinia, Alova, Vitest, and Playwright.
+- Preserve existing repository patterns before introducing React or Tailwind-specific abstractions.
+- Keep performance work measurable and bias toward Lighthouse 90+ for user-facing routes.
+
+## 7) Cross-Project Full-Stack Defaults
+
+- When a touched workspace is React or Next.js based, prefer TypeScript, Tailwind, React Server Components, Prisma, and tRPC.
+- Keep database work schema-first and centralize error handling at API boundaries.
+- Require unit tests plus Playwright E2E coverage for risky user flows.
+- Use Conventional Commits and keep diffs reviewable.

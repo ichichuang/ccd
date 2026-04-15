@@ -1,0 +1,4 @@
+interface:
+  display_name: "GitHub Ops"
+  short_description: "Repo-aware GitHub, PR, CI, and .github automation"
+  default_prompt: "Use $github-ops for GitHub, PR, issue, review, release, workflow, and .github tasks. Inspect local repo GitHub context before acting."

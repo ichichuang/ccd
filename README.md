@@ -129,8 +129,9 @@ node scripts/sync-main-to-desktop.mjs
 ### 5. AI 协作治理
 
 - `.ai/**` 是唯一规范源
-- `AGENTS.md`、`CLAUDE.md`、`.cursor/**`、`.claude/**` 都只是兼容适配输出
-- Codex、Claude、Cursor 在同一套规则和技能体系下工作
+- `AGENTS.md`、`.cursor/**` 都只是兼容适配输出
+- Codex 通过仓库 canonical source 驱动，并把本机 `~/.codex/skills/**` 当作执行入口
+- Cursor 作为兼容层继续可用，但不再主导技能源目录结构
 
 ---
 
@@ -157,13 +158,15 @@ pnpm install
 
 ```bash
 pnpm ai:sync
+pnpm ai:sync:codex
 pnpm ai:doctor
 pnpm codex:preflight
 ```
 
 说明：
 
-- `pnpm ai:sync`：从 `.ai/**` 生成 `AGENTS.md`、`CLAUDE.md`、`.cursor/**`、`.claude/**`
+- `pnpm ai:sync`：从 `.ai/**` 生成 `AGENTS.md` 与 `.cursor/**`
+- `pnpm ai:sync:codex`：把 `.ai/skills/core/** + .ai/skills/codex/**` 安装到本机 `~/.codex/skills/**`
 - `pnpm ai:doctor`：检查 canonical 资产与适配器是否漂移
 - `pnpm codex:preflight`：检查 Codex 工作所需规则、技能、依赖是否齐备
 
@@ -203,19 +206,16 @@ pnpm preview
 以下文件或目录属于生成出来的兼容适配层，不应作为源文件直接维护：
 
 - [AGENTS.md](./AGENTS.md)
-- [CLAUDE.md](./CLAUDE.md)
 - [.cursor/settings.json](./.cursor/settings.json)
-- [.claude/settings.local.json](./.claude/settings.local.json)
 - `.cursor/rules/**`
 - `.cursor/skills/**`
-- `.claude/skills/**`
 
 ### 本地运行态文件
 
 - versioned template: [.ai/runtime/repair_list.template.txt](./.ai/runtime/repair_list.template.txt)
 - local generated state: `.ai/runtime/repair_list.txt`
 
-这意味着仓库现在已经摆脱“规则、技能、入口文件四处分散维护”的状态，所有 AI 工具都回到同一个源头。
+这意味着仓库现在已经摆脱“规则、技能、入口文件四处分散维护”的状态，所有 AI 工具都回到同一个源头。Codex 使用本机 `~/.codex/skills/**` 作为技能发现入口，但这些技能同样由仓库里的 `.ai/skills/core/** + .ai/skills/codex/**` 统一生成。
 
 更多细节见：[.ai/README.md](./.ai/README.md)
 
@@ -232,6 +232,10 @@ pnpm lint:check      # ESLint 检查
 pnpm test:run        # Vitest 单次运行
 pnpm check           # type-check + lint:check
 pnpm ai:sync         # 生成 AI 兼容适配层
+pnpm ai:sync:codex   # 安装本机 Codex skills
+pnpm ai:clean        # 保守清理空会话目录与本地 AI/浏览器残留
+pnpm ai:clean -- --all # 激进清理 browser artifacts、tmp 与本机 Codex 浏览器缓存
+pnpm ai:route:skills "任务描述" # 低 token 选择最小 skill 集合
 pnpm ai:doctor       # 检查 AI 工作区结构
 pnpm codex:preflight # 检查 Codex 开发前置条件
 ```
@@ -290,7 +294,17 @@ pnpm ai:doctor
 - 优先复用现有抽象，不为单个需求破坏模块边界
 - 用规则约束生成质量，而不是依赖一次性 prompt 运气
 
-这样 Codex、Claude、Cursor 才能在你的项目里真正成为“遵守架构的工程执行者”，而不是随机生成器。
+这样 Codex 与 Cursor 才能在你的项目里真正成为“遵守架构的工程执行者”，而不是随机生成器。
+
+### 低 Token 浏览器自动化
+
+当前推荐链路：
+
+- 用 Playwright CRX 录制真实浏览器操作并导出 Python
+- 用 `.ai/skills/codex/architecture-browser-master/scripts/browser_automator.py flow-import` 导入为本地 flow JSON
+- 用 `flow-run` 复用同一条自动化流，并结合 `state-save/state-load` 复用登录态
+
+这让 AI 负责高层编排与结果判断，本地脚本负责重复浏览器动作，从而显著减少反复读取 DOM、截图和日志带来的 token 开销。
 
 ---
 

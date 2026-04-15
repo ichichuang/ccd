@@ -1,0 +1,4 @@
+interface:
+  display_name: "Task Orchestrator"
+  short_description: "Route simple and complex coding tasks efficiently"
+  default_prompt: "Use $task-orchestrator to classify the task, choose the execution path, and coordinate validation."

@@ -1,0 +1,193 @@
+{
+  "version": 1,
+  "default_route": {
+    "skills": [".ai/skills/codex/task-orchestrator"],
+    "prechecks": ["pnpm codex:preflight"],
+    "token_strategy": [
+      "Load only AGENTS.core and the selected skill SKILL.md first",
+      "Avoid loading unrelated skill references until a route is chosen",
+      "Prefer machine-readable summaries before screenshots, logs, or large docs"
+    ]
+  },
+  "routes": [
+    {
+      "id": "github-ops",
+      "description": "GitHub, remote repo, review, release, CI, and .github workflows",
+      "keywords": [
+        "github",
+        "gh",
+        "pull request",
+        "pr",
+        "issue",
+        "workflow",
+        "actions",
+        "review",
+        "review comment",
+        "review thread",
+        "checks",
+        "release",
+        "remote",
+        "push",
+        "merge",
+        "tag",
+        "workflow dispatch",
+        "branch protection",
+        ".github",
+        "ci",
+        "代码审查",
+        "评审意见",
+        "工作流",
+        "发布",
+        "远程仓库",
+        "分支保护"
+      ],
+      "path_globs": [".github/**"],
+      "skills": [".ai/skills/codex/github-ops"],
+      "prechecks": ["python3 .ai/skills/codex/github-ops/scripts/github_context.py"],
+      "token_strategy": [
+        "Inspect local .github and git remote context before loading workflow YAML bodies",
+        "Prefer gh --json output over broad gh text output",
+        "Do not load browser or UI skills unless the task also changes frontend behavior"
+      ]
+    },
+    {
+      "id": "browser-validation",
+      "description": "UI regressions, screenshots, browser debugging, layout, and interaction validation",
+      "keywords": [
+        "ui",
+        "layout",
+        "browser",
+        "visual",
+        "playwright",
+        "crx",
+        "recorder",
+        "recording",
+        "record",
+        "trace",
+        "codegen",
+        "devtools",
+        "replay",
+        "automation",
+        "screenshot",
+        "interaction",
+        "accessibility",
+        "homepage",
+        "浏览器",
+        "录制",
+        "回放",
+        "自动化",
+        "轨迹",
+        "追踪",
+        "截图",
+        "交互",
+        "可访问性",
+        "首屏回归",
+        "首页回归",
+        "布局",
+        "回归验证"
+      ],
+      "path_globs": ["e2e/**"],
+      "skills": [".ai/skills/codex/architecture-browser-master"],
+      "prechecks": ["pnpm codex:preflight"],
+      "token_strategy": [
+        "Use browser_automator summary.json before opening screenshots or raw console/network logs",
+        "Prefer named browser sessions and saved state over repeated fresh sessions",
+        "Keep browser artifact inspection bounded to the failing surface",
+        "Import CRX or codegen recordings once, then replay local flow JSON instead of re-describing long browser steps"
+      ]
+    },
+    {
+      "id": "core-vue",
+      "description": "Vue SFCs, components, views, and router-facing frontend structure",
+      "keywords": ["vue", "script setup", "组件", "页面", "视图", "router", "路由页面"],
+      "path_globs": ["src/**/*.vue", "src/views/**", "src/components/**", "src/router/**"],
+      "skills": [".ai/skills/core/vue"],
+      "prechecks": ["pnpm codex:preflight"],
+      "token_strategy": [
+        "Load only the Vue skill first for SFC and component work",
+        "Do not load UnoCSS, Vite, or VueUse skills unless the touched files or requirements point there"
+      ]
+    },
+    {
+      "id": "core-vueuse",
+      "description": "Composable logic, reusable state helpers, and VueUse-heavy utility work",
+      "keywords": ["composable", "vueuse", "hook", "hooks", "组合式", "复用逻辑", "状态辅助"],
+      "path_globs": ["src/hooks/**", "src/stores/**"],
+      "skills": [".ai/skills/core/vueuse-functions"],
+      "prechecks": ["pnpm codex:preflight"],
+      "token_strategy": [
+        "Load VueUse references only when hooks or reusable reactivity helpers are involved"
+      ]
+    },
+    {
+      "id": "core-unocss",
+      "description": "UnoCSS tokens, shortcuts, themes, utility rules, and design-system styling",
+      "keywords": [
+        "unocss",
+        "design token",
+        "design tokens",
+        "css variable",
+        "css variables",
+        "shortcut",
+        "theme",
+        "样式",
+        "设计令牌",
+        "快捷类"
+      ],
+      "path_globs": ["uno.config.ts", "src/design-engine/**", "src/**/*.css", "src/**/*.scss"],
+      "skills": [".ai/skills/core/unocss"],
+      "prechecks": ["pnpm codex:preflight"],
+      "token_strategy": ["Load UnoCSS references only for token, shortcut, utility, or theme work"]
+    },
+    {
+      "id": "core-vite",
+      "description": "Vite config, build system, plugins, env handling, and toolchain changes",
+      "keywords": ["vite", "build", "bundler", "plugin", "env", "构建", "打包", "插件", "工具链"],
+      "path_globs": ["vite.config.ts", "build/**", "scripts/**"],
+      "skills": [".ai/skills/core/vite"],
+      "prechecks": ["pnpm codex:preflight"],
+      "token_strategy": [
+        "Load Vite references only for config, plugin, env, or build-pipeline work"
+      ]
+    },
+    {
+      "id": "complex-or-ambiguous",
+      "description": "Cross-module, vague, architectural, or high-risk tasks that benefit from routing first",
+      "keywords": [
+        "refactor",
+        "architecture",
+        "migration",
+        "performance",
+        "optimize",
+        "auth",
+        "routing",
+        "state",
+        "schema",
+        "database",
+        "api",
+        "regression",
+        "lighthouse",
+        "design-system",
+        "重构",
+        "架构",
+        "迁移",
+        "性能",
+        "优化",
+        "认证",
+        "鉴权",
+        "路由",
+        "状态",
+        "数据库",
+        "接口",
+        "回归",
+        "设计系统"
+      ],
+      "skills": [".ai/skills/codex/task-orchestrator"],
+      "prechecks": ["pnpm codex:preflight"],
+      "token_strategy": [
+        "Route first, then load only the selected downstream skills",
+        "Keep the first response action-oriented and avoid reading multiple skill trees prematurely"
+      ]
+    }
+  ]
+}

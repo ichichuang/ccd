@@ -4,19 +4,39 @@ Canonical AI protocol is:
 
 - `.ai/protocol/AGENTS.core.md`
 
+Load this entrypoint, then continue with:
+
+1. `.ai/protocol/AGENTS.core.md`
+2. `.ai/rules/core/00-global-architect.mdc`
+3. `.ai/rules/core/00-root-gatekeeper.mdc`
+4. `.ai/rules/core/01-preflight-checklist.mdc`
+5. Domain rules under `.ai/rules/**`
+
 This file is the shared entrypoint target for:
 
-- `AGENTS.md` (Codex and other agent CLIs)
-- `CLAUDE.md` (Claude family tools)
+- `AGENTS.md` (Codex and other AGENTS-aware agent CLIs)
 
 Per-AI adapter guidance:
 
 - Codex: `.ai/protocol/adapters/codex.md`
-- Claude: `.ai/protocol/adapters/claude.md`
 - Cursor: `.ai/protocol/adapters/cursor.md`
+
+Current repo defaults:
+
+- Treat this repository as `Vue 3 + TypeScript + Vite + UnoCSS + PrimeVue + Playwright`.
+- Prefer Playwright CLI plus `.ai/skills/codex/architecture-browser-master`.
+- Prefer Playwright CRX for recording browser flows, then import the exported Python into `.ai/skills/codex/architecture-browser-master` flow assets.
+- Fall back to `.ai/skills/cursor/playwright-mcp` only when the CLI route cannot satisfy the task.
+- Keep user-facing pages within Lighthouse 90+ budgets unless the task explicitly says otherwise.
+
+Cross-project full-stack defaults:
+
+- When a touched workspace uses React or Next.js, prefer TypeScript, Tailwind, React Server Components, Prisma, and tRPC.
+- Keep schema-first data design, unified error handling, unit tests, and Playwright E2E coverage.
+- Apply the same performance target of Lighthouse 90+ for user-facing routes.
 
 Core mandate:
 
 - `.ai/**` is the only source of truth.
-- Adapter paths (`AGENTS.md`, `CLAUDE.md`, `.cursor/**`, `.claude/**`) are generated compatibility entrypoints only.
-- Materialize adapters locally with `pnpm ai:sync`.
+- Adapter paths (`AGENTS.md`, `.cursor/**`) are generated compatibility entrypoints only.
+- Materialize repo adapters with `pnpm ai:sync` and local Codex skills with `pnpm ai:sync:codex`.
