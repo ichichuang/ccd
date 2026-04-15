@@ -31,6 +31,35 @@ Local runtime file:
 
 Do not manually maintain generated adapters.
 
+## Skill Topology
+
+CCD uses three skill layers:
+
+| Layer  | Location               | Purpose                                                            |
+| ------ | ---------------------- | ------------------------------------------------------------------ |
+| Core   | `.ai/skills/core/**`   | Implementation skills for Vue, VueUse, UnoCSS, and Vite            |
+| Codex  | `.ai/skills/codex/**`  | Low-token orchestration, browser automation, and GitHub operations |
+| Cursor | `.ai/skills/cursor/**` | Compatibility-only Cursor skill surface                            |
+
+Repo-managed Codex operations currently center on:
+
+- `task-orchestrator`
+- `architecture-browser-master`
+- `github-ops`
+
+## Runtime Residue
+
+Generated adapters are expected.
+Local runtime residue is also expected, but it is not source of truth.
+
+Common local runtime paths:
+
+- `.ai/runtime/repair_list.txt`
+- `artifacts/browser/**`
+- `~/.codex/tmp/architecture-browser-master/**`
+
+Browser automation intentionally writes compact summaries and optional evidence under `artifacts/browser/**`.
+
 ## Maintenance
 
 - Generate adapters: `pnpm ai:sync`
@@ -39,3 +68,12 @@ Do not manually maintain generated adapters.
 - Aggressive cleanup when needed: `pnpm ai:clean -- --all`
 - Validate structure: `pnpm ai:doctor`
 - Run Codex preflight: `pnpm codex:preflight`
+
+Recommended maintenance order:
+
+```bash
+pnpm ai:sync
+pnpm ai:sync:codex
+pnpm ai:doctor
+pnpm codex:preflight
+```
