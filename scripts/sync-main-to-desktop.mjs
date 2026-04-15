@@ -10,8 +10,9 @@
  */
 
 import { dirname, join } from 'node:path'
+import process from 'node:process'
 import { fileURLToPath } from 'node:url'
-import { existsSync, mkdirSync, writeFileSync } from 'node:fs'
+import { existsSync, mkdirSync, rmSync, writeFileSync } from 'node:fs'
 import { spawnSync } from 'node:child_process'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
@@ -21,6 +22,20 @@ const MAIN_BRANCH = process.env.MAIN_BRANCH || 'main'
 const DESKTOP_BRANCH = process.env.DESKTOP_BRANCH || 'feat/tauri-integration'
 const SKIP_TYPECHECK = process.env.SKIP_TYPECHECK === '1'
 const DRY_RUN = process.env.DRY_RUN === '1'
+const GENERATED_CONTRACT_PATHS = [
+  '.eslintrc-auto-import.json',
+  'src/types/auto-imports.d.ts',
+  'src/types/components.d.ts',
+]
+const GENERATED_OUTPUT_PATHS = ['playwright-report', 'test-results']
+const DESKTOP_ONLY_PATHS = [
+  '.github/workflows/build-desktop-windows.yml',
+  '.ai/rules/integrations/08-cross-platform-tauri.mdc',
+  'scripts/sync-desktop-config.mjs',
+  'src-tauri',
+  'src/assets/brand/source',
+  'src/utils/tauriNativeUx.ts',
+]
 
 const DESKTOP_LOCALE_EXAMPLE_ZH = `/**
  * zh-CN Example Locale Messages (桌面端占位：无示例内容)
@@ -119,6 +134,10 @@ function abortMergeIfNeeded() {
   runAllowFail('git', ['merge', '--abort'])
 }
 
+function removePath(targetPath) {
+  rmSync(join(ROOT, targetPath), { recursive: true, force: true })
+}
+
 function restorePathFromBase(baseSha, targetPath) {
   const restore = runAllowFail('git', [
     'restore',
@@ -133,6 +152,24 @@ function restorePathFromBase(baseSha, targetPath) {
   runAllowFail('git', ['rm', '-r', '-f', '--ignore-unmatch', '--', targetPath])
 }
 
+function normalizeDesktopWorkspaceAfterCheckout() {
+  for (const targetPath of GENERATED_CONTRACT_PATHS) {
+    runAllowFail('git', ['restore', '--source', 'HEAD', '--staged', '--worktree', '--', targetPath])
+  }
+
+  for (const targetPath of GENERATED_OUTPUT_PATHS) {
+    runAllowFail('git', ['rm', '-r', '-f', '--cached', '--ignore-unmatch', '--', targetPath])
+    removePath(targetPath)
+  }
+
+  const status = output('git', ['status', '--porcelain'])
+  if (status) {
+    throw new Error(
+      `[sync-main-to-desktop] Dirty worktree remains after desktop checkout:\n${status}`
+    )
+  }
+}
+
 function writeDesktopLocalePlaceholders() {
   const zhPath = join(ROOT, 'src/locales/lang/example/zh-CN.ts')
   const enPath = join(ROOT, 'src/locales/lang/example/en-US.ts')
@@ -144,6 +181,11 @@ function writeDesktopLocalePlaceholders() {
 function mergeDesktopPackageJson(baseSha) {
   const mainPkg = JSON.parse(capture('git', ['show', `origin/${MAIN_BRANCH}:package.json`]))
   const desktopBasePkg = JSON.parse(capture('git', ['show', `${baseSha}:package.json`]))
+  const mainScripts = mainPkg.scripts ?? {}
+  const desktopScripts = desktopBasePkg.scripts ?? {}
+  const mergedPrebuild = desktopScripts['sync:desktop-config']
+    ? `${mainScripts.prebuild} && pnpm sync:desktop-config`
+    : mainScripts.prebuild
 
   const mergedPkg = {
     ...mainPkg,
@@ -153,10 +195,19 @@ function mergeDesktopPackageJson(baseSha) {
     description: desktopBasePkg.description,
     keywords: desktopBasePkg.keywords,
     scripts: {
-      ...mainPkg.scripts,
-      tauri: desktopBasePkg.scripts.tauri,
-      'dev:desktop': desktopBasePkg.scripts['dev:desktop'],
-      'build:desktop': desktopBasePkg.scripts['build:desktop'],
+      ...mainScripts,
+      ...(desktopScripts['sync:desktop-config']
+        ? { 'sync:desktop-config': desktopScripts['sync:desktop-config'] }
+        : {}),
+      ...(desktopScripts.predev ? { predev: desktopScripts.predev } : {}),
+      ...(mergedPrebuild ? { prebuild: mergedPrebuild } : {}),
+      ...(desktopScripts.tauri ? { tauri: desktopScripts.tauri } : {}),
+      ...(desktopScripts['dev:desktop']
+        ? { 'dev:desktop': desktopScripts['dev:desktop'] }
+        : {}),
+      ...(desktopScripts['build:desktop']
+        ? { 'build:desktop': desktopScripts['build:desktop'] }
+        : {}),
     },
     dependencies: {
       ...mainPkg.dependencies,
@@ -183,12 +234,19 @@ function main() {
     ensureCleanWorktree()
     run('git', ['fetch', 'origin', MAIN_BRANCH, DESKTOP_BRANCH])
     run('git', ['checkout', '-B', DESKTOP_BRANCH, `origin/${DESKTOP_BRANCH}`])
+    normalizeDesktopWorkspaceAfterCheckout()
 
     const baseSha = output('git', ['rev-parse', 'HEAD'])
     console.log(`[sync-main-to-desktop] Desktop base SHA: ${baseSha}`)
 
     const merge = runAllowFail('git', ['merge', '--no-ff', '--no-commit', `origin/${MAIN_BRANCH}`])
     if (merge.status !== 0) {
+      if (!hasMergeInProgress()) {
+        const status = output('git', ['status', '--short'])
+        throw new Error(
+          `[sync-main-to-desktop] Merge failed before conflict state:\n${status || '(no local diff)'}`
+        )
+      }
       console.log('[sync-main-to-desktop] Merge reported conflicts, applying auto-resolution policy...')
     }
 
@@ -207,7 +265,12 @@ function main() {
     // 4) README 由桌面端分支独立维护，自动同步时保留桌面端版本
     restorePathFromBase(baseSha, 'README.md')
 
-    // 5) package.json 采用“主分支基础 + 桌面端增量”的合并策略
+    // 5) 桌面端专属文件保持由桌面分支维护，避免被 main 误删
+    for (const targetPath of DESKTOP_ONLY_PATHS) {
+      restorePathFromBase(baseSha, targetPath)
+    }
+
+    // 6) package.json 采用“主分支基础 + 桌面端增量”的合并策略
     mergeDesktopPackageJson(baseSha)
     run('git', ['add', 'README.md', 'package.json'])
 
@@ -232,8 +295,8 @@ function main() {
     }
 
     if (!SKIP_TYPECHECK) {
-      // Ensure dependencies match desktop branch after merge (desktop may have extra packages).
-      run('pnpm', ['install', '--frozen-lockfile'])
+      // Desktop branch intentionally diverges in dependencies/scripts; refresh lockfile before type-check.
+      run('pnpm', ['install', '--no-frozen-lockfile'])
       run('pnpm', ['type-check'])
     }
 
