@@ -4,6 +4,10 @@
   Props: icon, title/titleKey, description/descriptionKey, actionLabel.
 -->
 <script setup lang="ts">
+import { useI18n } from 'vue-i18n'
+
+defineOptions({ name: 'EmptyState' })
+
 interface EmptyStateProps {
   icon?: string
   title?: string
@@ -35,14 +39,15 @@ const props = withDefaults(defineProps<EmptyStateProps>(), {
 
 const emit = defineEmits<EmptyStateEmits>()
 defineSlots<EmptyStateSlots>()
+const { t } = useI18n()
 
 const resolvedTitle = computed<string>(() => {
-  if (props.titleKey) return String($t(props.titleKey))
+  if (props.titleKey) return t(props.titleKey)
   return props.title
 })
 
 const resolvedDescription = computed<string>(() => {
-  if (props.descriptionKey) return String($t(props.descriptionKey))
+  if (props.descriptionKey) return t(props.descriptionKey)
   return props.description
 })
 </script>

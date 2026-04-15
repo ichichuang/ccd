@@ -15,6 +15,10 @@ const {
 
 const transitionModeDraft = ref<ThemeTransitionMode>(transitionMode.value)
 
+watch(transitionMode, nextMode => {
+  transitionModeDraft.value = nextMode
+})
+
 const transitionOptions = computed(() => [
   { label: 'curtain', value: 'curtain' as ThemeTransitionMode, icon: 'i-lucide-panel-left' },
   { label: 'diamond', value: 'diamond' as ThemeTransitionMode, icon: 'i-lucide-diamond' },
@@ -24,21 +28,18 @@ const transitionOptions = computed(() => [
   { label: 'circle', value: 'circle' as ThemeTransitionMode, icon: 'i-lucide-circle-dot' },
 ])
 
-const canRun = computed(() => !isAnimating.value)
-
 const runToggleWithAnimation = async () => {
-  if (!canRun.value) return
   await toggleThemeWithAnimation(null, transitionModeDraft.value)
 }
 
 const runSetWithAnimation = async (targetMode: ThemeMode) => {
-  if (!canRun.value) return
   await setThemeWithAnimation(targetMode, null, transitionModeDraft.value)
 }
 </script>
 
 <template>
   <div
+    id="use-theme-switch-page"
     class="col-stretch"
     data-archetype="A1-toolbar-content"
   >
@@ -109,28 +110,26 @@ const runSetWithAnimation = async (targetMode: ThemeMode) => {
                   size="small"
                   severity="secondary"
                   label="toggleMode()"
-                  :disabled="!canRun"
                   @click="toggleMode"
                 />
                 <Button
+                  id="theme-mode-light-direct"
                   size="small"
                   severity="secondary"
                   label="setMode(light)"
-                  :disabled="!canRun"
                   @click="setMode('light')"
                 />
                 <Button
+                  id="theme-mode-dark-direct"
                   size="small"
                   severity="secondary"
                   label="setMode(dark)"
-                  :disabled="!canRun"
                   @click="setMode('dark')"
                 />
                 <Button
                   size="small"
                   severity="secondary"
                   label="setMode(auto)"
-                  :disabled="!canRun"
                   @click="setMode('auto')"
                 />
               </div>
@@ -155,36 +154,36 @@ const runSetWithAnimation = async (targetMode: ThemeMode) => {
               </div>
               <div class="row-start flex-wrap gap-sm min-w-0">
                 <Button
+                  id="theme-toggle-animated"
                   size="small"
                   severity="primary"
                   label="toggleThemeWithAnimation()"
-                  :disabled="!canRun"
                   @click="runToggleWithAnimation"
                 />
                 <Button
+                  id="theme-mode-light-animated"
                   size="small"
                   severity="secondary"
                   label="setThemeWithAnimation('light')"
-                  :disabled="!canRun"
                   @click="runSetWithAnimation('light')"
                 />
                 <Button
+                  id="theme-mode-dark-animated"
                   size="small"
                   severity="secondary"
                   label="setThemeWithAnimation('dark')"
-                  :disabled="!canRun"
                   @click="runSetWithAnimation('dark')"
                 />
                 <Button
+                  id="theme-mode-auto-animated"
                   size="small"
                   severity="secondary"
                   label="setThemeWithAnimation('auto')"
-                  :disabled="!canRun"
                   @click="runSetWithAnimation('auto')"
                 />
               </div>
               <div class="text-sm text-muted-foreground">
-                当 isAnimating=true 时按钮会禁用，避免重复触发导致状态错乱。
+                当 isAnimating=true 时，请求会按“最新一次为准”排队，避免快速反向点击被吞掉。
               </div>
             </div>
           </div>

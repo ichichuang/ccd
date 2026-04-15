@@ -21,6 +21,10 @@ export class DependencyNode {
 export class DependencyGraph {
   private readonly nodes = new Map<string, DependencyNode>()
 
+  reset(): void {
+    this.nodes.clear()
+  }
+
   addNode(field: string): DependencyNode {
     const existing = this.nodes.get(field)
     if (existing) {

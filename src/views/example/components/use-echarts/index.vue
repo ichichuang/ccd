@@ -499,7 +499,7 @@ onBeforeUnmount(() => {
     data-archetype="A1-toolbar-content"
   >
     <div class="col-stretch gap-md min-h-0 min-w-0">
-      <div class="layout-narrow col-stretch gap-md min-w-0">
+      <div class="layout-full p-md col-stretch gap-md min-w-0">
         <header class="shrink-0 glass-panel col-stretch gap-md min-w-0">
           <div class="row-between gap-md min-w-0">
             <div class="row-start gap-sm min-w-0 flex-wrap">

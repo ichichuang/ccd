@@ -1,6 +1,6 @@
 <script setup lang="tsx">
-import type { DefineComponent } from 'vue'
 import type { UseElementSizeOptions } from '@/hooks/modules/useAppElementSize'
+import Tag from 'primevue/tag'
 
 defineOptions({ name: 'UseAppElementSize' })
 
@@ -46,11 +46,6 @@ const SizeProbe = defineComponent({
       }
     )
 
-    const TagComp = resolveComponent('Tag') as DefineComponent<{
-      value: string
-      severity?: string
-    }>
-
     return () => (
       <div class="col-stretch gap-md min-w-0">
         <div
@@ -66,15 +61,15 @@ const SizeProbe = defineComponent({
 
         <div class="col-stretch gap-sm min-w-0">
           <div class="row-start flex-wrap gap-sm min-w-0">
-            <TagComp
+            <Tag
               value={`width=${width.value}`}
               severity="secondary"
             />
-            <TagComp
+            <Tag
               value={`height=${height.value}`}
               severity="secondary"
             />
-            <TagComp
+            <Tag
               value={`callbackCount=${callbackCount.value}`}
               severity="info"
             />

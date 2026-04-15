@@ -13,7 +13,7 @@ import { PRO_FORM_LOGGER } from '../utils/logger'
 export class ValidationEngine<TValues extends Record<string, unknown> = Record<string, unknown>> {
   private readonly fieldMap = new Map<string, FieldSchema<unknown>>()
   private readonly fieldNames: string[] = []
-  private readonly validationTimers = new Map<string, number>()
+  private readonly validationTimers = new Map<string, ReturnType<typeof globalThis.setTimeout>>()
   private readonly validationTokens = new Map<string, number>()
   private nextValidationToken = 0
 
@@ -51,6 +51,19 @@ export class ValidationEngine<TValues extends Record<string, unknown> = Record<s
     return (node as { children?: FormSchemaNode[] }).children !== undefined
   }
 
+  replaceSchema(schema: FormSchema): void {
+    this.teardown()
+    this.fieldMap.clear()
+    this.fieldNames.length = 0
+
+    const flatFields: FieldSchema<unknown>[] = []
+    this.collectFields(schema.fields, flatFields)
+    flatFields.forEach(field => {
+      this.fieldMap.set(field.name, field)
+      this.fieldNames.push(field.name)
+    })
+  }
+
   async validateField(name: string): Promise<boolean> {
     const schema = this.fieldMap.get(name)
     if (!schema || !schema.rules || schema.rules.length === 0) {
@@ -59,14 +72,14 @@ export class ValidationEngine<TValues extends Record<string, unknown> = Record<s
 
     const existingTimer = this.validationTimers.get(name)
     if (existingTimer !== undefined) {
-      window.clearTimeout(existingTimer)
+      globalThis.clearTimeout(existingTimer)
     }
 
     const requestId = this.nextValidationToken++
     this.validationTokens.set(name, requestId)
 
     return new Promise<boolean>(resolve => {
-      const timerId = window.setTimeout(async () => {
+      const timerId = globalThis.setTimeout(async () => {
         // 若在等待期间产生了新的校验请求，则丢弃本次结果，避免竞态覆盖最新错误信息
         if (this.validationTokens.get(name) !== requestId) {
           this.validationTimers.delete(name)
@@ -175,7 +188,7 @@ export class ValidationEngine<TValues extends Record<string, unknown> = Record<s
    */
   teardown(): void {
     this.validationTimers.forEach(timerId => {
-      window.clearTimeout(timerId)
+      globalThis.clearTimeout(timerId)
     })
     this.validationTimers.clear()
     this.validationTokens.clear()

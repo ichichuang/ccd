@@ -10,11 +10,11 @@
  */
 
 const GOLDEN_INPUT_ROOT =
-  'border border-border bg-background text-foreground rounded-md shadow-sm shadow-foreground/10 dark:shadow-foreground/20 transition-all duration-md ease-smooth hover:border-primary/50 focus:outline-none focus:border-primary/50 ring-focus-focus'
+  'border border-border bg-background text-foreground shadow-sm shadow-foreground/10 dark:shadow-foreground/20 transition-all duration-md ease-smooth hover:border-primary/50 focus:outline-none focus:border-primary/50 ring-focus-focus'
 
 export const OVERLAY_GLASS_CLASS = 'glass-panel transform-gpu will-change-transform'
 export const OVERLAY_GLASS_COMPACT_CLASS =
-  'backdrop-blur-sm md:backdrop-blur-xl bg-card/60 md:bg-card/36 dark:bg-card/70 md:dark:bg-card/40 rounded-xl border border-solid border-border/15 dark:border-border/30 shadow-sm dark:shadow-[inset_0_1px_0_0_rgb(var(--foreground)/0.05)] transform-gpu will-change-transform'
+  'backdrop-blur-sm md:backdrop-blur-xl bg-card/60 md:bg-card/36 dark:bg-card/70 md:dark:bg-card/40 border border-solid border-border/15 dark:border-border/30 shadow-sm dark:shadow-[inset_0_1px_0_0_rgb(var(--foreground)/0.05)] transform-gpu will-change-transform'
 export const OPTION_TRANSITION_CLASS = 'transition-[background-color,color] duration-md ease-smooth'
 // Governance: PT layer owns visuals/motion only.
 // Density (padding/gap/radius) must be controlled by semantic/components tokens.

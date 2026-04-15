@@ -1,7 +1,9 @@
 <script setup lang="ts">
 import type { VNode } from 'vue'
 import type { MenuVisualContext } from '@/hooks/layout/useMenuVisuals'
+import { getMenuItemBase, getMenuStateClasses } from '@/hooks/layout/useMenuVisuals'
 import { type TieredMenuItemSlotProps } from '@/hooks/layout/useMenuRenderer'
+import { createTieredMenuItemRenderer } from '@/hooks/layout/useMenuRenderer'
 import type { PrimeMenuModelItem } from '@/router/utils/helper'
 
 defineOptions({ name: 'LayoutMenuVisuals' })

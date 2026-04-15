@@ -438,6 +438,7 @@ function resetGroupItems(): void {
             <div class="demo-well col-stretch gap-sm p-md min-h-[120px] relative min-w-0">
               <!-- TransitionGroup 通过 v-for 的增删触发 enter/leave；在 group 模式下 show 不是控制项 -->
               <AnimateWrapper
+                :show="groupVisible"
                 enter="slideInLeft"
                 leave="slideOutRight"
                 duration="0.5s"

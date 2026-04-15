@@ -278,7 +278,6 @@ function buildLayoutSafelistClasses(): string[] {
 
 function buildScaleSafelistClasses(): string[] {
   const classes = SIZE_SCALE_KEYS.flatMap(k => [
-    `fs-${k}`,
     `text-${k}`,
     `rounded-${k}`,
     `rounded-t-${k}`,

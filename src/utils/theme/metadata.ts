@@ -12,6 +12,10 @@
  *
  * Sidebar 家族：单独使用 sidebar- 前缀的 CSS 变量
  *
+ * 说明：
+ * 1. `ring` 虽然是 single token，但默认由主题引擎回退到 `primary`
+ * 2. 若主题需要独立 focus ring，可在 ThemeModeConfig.ring 中显式覆盖
+ *
  * 该元数据仅用于：
  * 1. 约束 generateThemeVars 返回的 CSS 变量命名规范
  * 2. 提供给 UnoCSS 配置做动态 colors 映射（避免硬编码）

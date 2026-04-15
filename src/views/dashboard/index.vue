@@ -5,6 +5,7 @@ import type { FormSchema, FormState } from '@/components/ProForm'
 import { ID_PREFIX } from '@/constants/business'
 import { ALERT_LEVEL_VALUE_ENUM, NODE_STATE_VALUE_ENUM } from '@/constants/enums'
 import { formatSerialId } from '@/utils/business/idGenerator'
+import { useDialog } from '@/hooks/modules/useDialog'
 import ProForm from '@/components/ProForm/index.vue'
 import Button from 'primevue/button'
 
@@ -542,6 +543,7 @@ function handleQuickActionOpen(): void {
 
 <template>
   <div
+    id="dashboard-page"
     data-archetype="A3-stats-grid"
     class="col-stretch gap-md min-h-0 min-w-0"
   >

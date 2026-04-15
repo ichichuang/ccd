@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { EChartsOption } from 'echarts'
 import type { ChartOpacityConfig } from '@/hooks/modules/useChartTheme/types'
+import { useChartTheme } from '@/hooks/modules/useChartTheme'
 
 defineOptions({ name: 'UseChartTheme' })
 

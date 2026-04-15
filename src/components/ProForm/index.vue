@@ -130,7 +130,7 @@ defineSlots<
   }
 >()
 
-const { form, handleSubmit, getValues, getFormState } = useForm<TValues>({
+const { form, handleSubmit, getValues, getFormState, updateSchema } = useForm<TValues>({
   schema: internalSchema.value,
   initialValues: props.initialValues,
   validateOn: props.validateOn,
@@ -145,6 +145,14 @@ watch(
     form.setValidateOn(validateOn)
   },
   { immediate: true }
+)
+
+watch(
+  internalSchema,
+  schema => {
+    updateSchema(schema)
+  },
+  { deep: true }
 )
 
 const emitSubmit = (values: TValues): void => {

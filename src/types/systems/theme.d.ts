@@ -46,14 +46,17 @@ declare global {
     background?: string
     foreground?: string
 
-    /* 中性色系统 (Border, Input, Ring, Secondary, Muted) */
+    /* 中性色系统 (Border, Input, Secondary, Muted) */
     neutral?: {
-      base?: string // 用于 border, input, ring
+      base?: string // 用于 border, input
       bg?: string // 用于 card, popover, secondary, muted
       foreground?: string // 用于 card-foreground, popover-foreground
       secondaryForeground?: string
       mutedForeground?: string
     }
+
+    /* 聚焦环：默认回退到 primary，可按主题单独覆盖 */
+    ring?: string
 
     /* 侧边栏专用 */
     sidebar?: {

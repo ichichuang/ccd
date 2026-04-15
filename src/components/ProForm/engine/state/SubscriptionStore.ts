@@ -39,6 +39,11 @@ export class SubscriptionStore<TValues extends Record<string, unknown> = Record<
     return this.fieldStates.get(field)
   }
 
+  deleteFieldState(field: string): void {
+    this.fieldStates.delete(field)
+    this.notify(field)
+  }
+
   setFieldState(field: string, state: FieldState<unknown>): void {
     this.fieldStates.set(field, state)
     this.notify(field)
