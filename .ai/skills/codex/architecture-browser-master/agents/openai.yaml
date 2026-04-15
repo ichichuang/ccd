@@ -1,0 +1,4 @@
+interface:
+  display_name: "Architecture Browser Master"
+  short_description: "Playwright CLI browser automation and debugging"
+  default_prompt: "Use $architecture-browser-master to validate UI, debug the browser, and repair failures with Playwright CLI."

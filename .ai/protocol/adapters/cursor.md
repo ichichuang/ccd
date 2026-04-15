@@ -12,7 +12,7 @@ In this repo:
 
 - `.cursor/settings.json` <= `.ai/config/cursor.settings.json`
 - `.cursor/rules/**` <= `.ai/rules/**`
-- `.cursor/skills/**` <= `.ai/skills/cursor/**`
+- `.cursor/skills/**` <= `.ai/skills/core/** + .ai/skills/cursor/**`
 
 ## Canonical Policy
 

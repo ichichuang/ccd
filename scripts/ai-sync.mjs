@@ -4,15 +4,12 @@ import path from 'node:path'
 const cwd = process.cwd()
 const fileAdapters = [
   { source: '.ai/protocol/AI.entry.md', target: 'AGENTS.md' },
-  { source: '.ai/protocol/AI.entry.md', target: 'CLAUDE.md' },
   { source: '.ai/config/cursor.settings.json', target: '.cursor/settings.json' },
-  { source: '.ai/config/claude.settings.local.json', target: '.claude/settings.local.json' },
 ]
 
 const dirAdapters = [
-  { source: '.ai/rules', target: '.cursor/rules' },
-  { source: '.ai/skills/cursor', target: '.cursor/skills' },
-  { source: '.ai/skills/claude', target: '.claude/skills' },
+  { sources: ['.ai/rules'], target: '.cursor/rules' },
+  { sources: ['.ai/skills/core', '.ai/skills/cursor'], target: '.cursor/skills' },
 ]
 
 const localRuntimeFiles = [
@@ -21,6 +18,8 @@ const localRuntimeFiles = [
     target: '.ai/runtime/repair_list.txt',
   },
 ]
+
+const legacyPaths = ['CLAUDE.md', '.claude']
 
 const ensureParentDir = relPath => fs.mkdirSync(path.dirname(path.join(cwd, relPath)), { recursive: true })
 
@@ -39,13 +38,24 @@ const syncFile = ({ source, target }) => {
   console.log(`[SYNC] ${target} <= ${source}`)
 }
 
-const syncDir = ({ source, target }) => {
-  const absSource = path.join(cwd, source)
+const syncMergedDir = ({ sources, target }) => {
   const absTarget = path.join(cwd, target)
   ensureParentDir(target)
   removePathIfExists(target)
-  fs.cpSync(absSource, absTarget, { recursive: true })
-  console.log(`[SYNC] ${target} <= ${source}`)
+  fs.mkdirSync(absTarget, { recursive: true })
+
+  for (const source of sources) {
+    const absSource = path.join(cwd, source)
+    if (!fs.existsSync(absSource)) continue
+
+    for (const entry of fs.readdirSync(absSource, { withFileTypes: true })) {
+      const sourceEntry = path.join(absSource, entry.name)
+      const targetEntry = path.join(absTarget, entry.name)
+      fs.cpSync(sourceEntry, targetEntry, { recursive: true })
+    }
+  }
+
+  console.log(`[SYNC] ${target} <= ${sources.join(' + ')}`)
 }
 
 const ensureLocalRuntimeFile = ({ source, target }) => {
@@ -63,5 +73,9 @@ const ensureLocalRuntimeFile = ({ source, target }) => {
 console.log('AI adapter sync')
 console.log('===============')
 for (const fileAdapter of fileAdapters) syncFile(fileAdapter)
-for (const dirAdapter of dirAdapters) syncDir(dirAdapter)
+for (const dirAdapter of dirAdapters) syncMergedDir(dirAdapter)
 for (const runtimeFile of localRuntimeFiles) ensureLocalRuntimeFile(runtimeFile)
+for (const legacyPath of legacyPaths) {
+  removePathIfExists(legacyPath)
+  console.log(`[CLEAN] removed legacy adapter: ${legacyPath}`)
+}

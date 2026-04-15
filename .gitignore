@@ -53,6 +53,8 @@ coverage
 
 # TypeScript
 *.tsbuildinfo
+__pycache__/
+*.pyc
 
 # Linter caches
 .eslintcache
@@ -77,6 +79,7 @@ yarn.lock
 # Temporary folders
 tmp/
 temp/
+artifacts/browser/
 
 # OS generated files
 Thumbs.db

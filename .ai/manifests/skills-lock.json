@@ -35,6 +35,30 @@
       "source": "antfu/skills",
       "sourceType": "github",
       "computedHash": "fedfc78f035a88fe3e9d823f44725fe8981486c55b966c17fbd0d7c28339e49a"
+    },
+    "architecture-browser-master": {
+      "source": "repo:.ai/skills/codex/architecture-browser-master",
+      "sourceType": "local"
+    },
+    "task-orchestrator": {
+      "source": "repo:.ai/skills/codex/task-orchestrator",
+      "sourceType": "local"
+    },
+    "github-ops": {
+      "source": "repo:.ai/skills/codex/github-ops",
+      "sourceType": "local"
+    },
+    "skill-routing": {
+      "source": "repo:.ai/manifests/skill-routing.json",
+      "sourceType": "local"
+    },
+    "github": {
+      "source": "repo:.ai/skills/cursor/github",
+      "sourceType": "local"
+    },
+    "playwright-mcp": {
+      "source": "repo:.ai/skills/cursor/playwright-mcp",
+      "sourceType": "local"
     }
   }
 }
