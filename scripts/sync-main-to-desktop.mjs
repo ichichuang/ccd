@@ -12,7 +12,8 @@
 import { dirname, join } from 'node:path'
 import process from 'node:process'
 import { fileURLToPath } from 'node:url'
-import { existsSync, mkdirSync, rmSync, writeFileSync } from 'node:fs'
+import { existsSync, mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs'
+import { tmpdir } from 'node:os'
 import { spawnSync } from 'node:child_process'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
@@ -34,6 +35,7 @@ const DESKTOP_ONLY_PATHS = [
   'scripts/sync-desktop-config.mjs',
   'src-tauri',
   'src/assets/brand/source',
+  'src/utils/env.ts',
   'src/utils/tauriNativeUx.ts',
   'src/utils/env.ts',
 ]
@@ -65,8 +67,12 @@ export default enUSExample
 `
 
 function run(cmd, args, options = {}) {
+  return runIn(ROOT, cmd, args, options)
+}
+
+function runIn(cwd, cmd, args, options = {}) {
   const result = spawnSync(cmd, args, {
-    cwd: ROOT,
+    cwd,
     stdio: 'inherit',
     ...options,
   })
@@ -77,16 +83,20 @@ function run(cmd, args, options = {}) {
 }
 
 function runAllowFail(cmd, args, options = {}) {
+  return runAllowFailIn(ROOT, cmd, args, options)
+}
+
+function runAllowFailIn(cwd, cmd, args, options = {}) {
   return spawnSync(cmd, args, {
-    cwd: ROOT,
+    cwd,
     stdio: 'inherit',
     ...options,
   })
 }
 
-function output(cmd, args) {
+function outputIn(cwd, cmd, args) {
   const result = spawnSync(cmd, args, {
-    cwd: ROOT,
+    cwd,
     stdio: ['ignore', 'pipe', 'pipe'],
     encoding: 'utf8',
   })
@@ -97,9 +107,9 @@ function output(cmd, args) {
   return (result.stdout || '').trim()
 }
 
-function capture(cmd, args) {
+function captureIn(cwd, cmd, args) {
   const result = spawnSync(cmd, args, {
-    cwd: ROOT,
+    cwd,
     stdio: ['ignore', 'pipe', 'pipe'],
     encoding: 'utf8',
   })
@@ -110,12 +120,12 @@ function capture(cmd, args) {
   return result.stdout || ''
 }
 
-function hasMergeInProgress() {
-  return existsSync(join(ROOT, '.git', 'MERGE_HEAD'))
+function hasMergeInProgressAt(cwd) {
+  return existsSync(join(cwd, '.git', 'MERGE_HEAD'))
 }
 
-function ensureCleanWorktree() {
-  const status = output('git', ['status', '--porcelain'])
+function ensureCleanWorktree(cwd = ROOT) {
+  const status = outputIn(cwd, 'git', ['status', '--porcelain'])
   if (status) {
     throw new Error(
       '[sync-main-to-desktop] Refuse to run with a dirty worktree. Commit, stash, or discard local changes first.'
@@ -123,24 +133,17 @@ function ensureCleanWorktree() {
   }
 }
 
-function restoreOriginalBranch(originalBranch) {
-  if (!originalBranch) return
-  const currentBranch = output('git', ['branch', '--show-current'])
-  if (currentBranch === originalBranch) return
-  run('git', ['checkout', originalBranch])
+function abortMergeIfNeeded(cwd = ROOT) {
+  if (!hasMergeInProgressAt(cwd)) return
+  runAllowFailIn(cwd, 'git', ['merge', '--abort'])
 }
 
-function abortMergeIfNeeded() {
-  if (!hasMergeInProgress()) return
-  runAllowFail('git', ['merge', '--abort'])
+function removePath(cwd, targetPath) {
+  rmSync(join(cwd, targetPath), { recursive: true, force: true })
 }
 
-function removePath(targetPath) {
-  rmSync(join(ROOT, targetPath), { recursive: true, force: true })
-}
-
-function restorePathFromBase(baseSha, targetPath) {
-  const restore = runAllowFail('git', [
+function restorePathFromBase(cwd, baseSha, targetPath) {
+  const restore = runAllowFailIn(cwd, 'git', [
     'restore',
     '--source',
     baseSha,
@@ -150,20 +153,20 @@ function restorePathFromBase(baseSha, targetPath) {
     targetPath,
   ])
   if (restore.status === 0) return
-  runAllowFail('git', ['rm', '-r', '-f', '--ignore-unmatch', '--', targetPath])
+  runAllowFailIn(cwd, 'git', ['rm', '-r', '-f', '--ignore-unmatch', '--', targetPath])
 }
 
-function normalizeDesktopWorkspaceAfterCheckout() {
+function normalizeDesktopWorkspaceAfterCheckout(cwd) {
   for (const targetPath of GENERATED_CONTRACT_PATHS) {
-    runAllowFail('git', ['restore', '--source', 'HEAD', '--staged', '--worktree', '--', targetPath])
+    runAllowFailIn(cwd, 'git', ['restore', '--source', 'HEAD', '--staged', '--worktree', '--', targetPath])
   }
 
   for (const targetPath of GENERATED_OUTPUT_PATHS) {
-    runAllowFail('git', ['rm', '-r', '-f', '--cached', '--ignore-unmatch', '--', targetPath])
-    removePath(targetPath)
+    runAllowFailIn(cwd, 'git', ['rm', '-r', '-f', '--cached', '--ignore-unmatch', '--', targetPath])
+    removePath(cwd, targetPath)
   }
 
-  const status = output('git', ['status', '--porcelain'])
+  const status = outputIn(cwd, 'git', ['status', '--porcelain'])
   if (status) {
     throw new Error(
       `[sync-main-to-desktop] Dirty worktree remains after desktop checkout:\n${status}`
@@ -171,17 +174,17 @@ function normalizeDesktopWorkspaceAfterCheckout() {
   }
 }
 
-function writeDesktopLocalePlaceholders() {
-  const zhPath = join(ROOT, 'src/locales/lang/example/zh-CN.ts')
-  const enPath = join(ROOT, 'src/locales/lang/example/en-US.ts')
+function writeDesktopLocalePlaceholders(cwd) {
+  const zhPath = join(cwd, 'src/locales/lang/example/zh-CN.ts')
+  const enPath = join(cwd, 'src/locales/lang/example/en-US.ts')
   mkdirSync(dirname(zhPath), { recursive: true })
   writeFileSync(zhPath, DESKTOP_LOCALE_EXAMPLE_ZH, 'utf8')
   writeFileSync(enPath, DESKTOP_LOCALE_EXAMPLE_EN, 'utf8')
 }
 
-function mergeDesktopPackageJson(baseSha) {
-  const mainPkg = JSON.parse(capture('git', ['show', `origin/${MAIN_BRANCH}:package.json`]))
-  const desktopBasePkg = JSON.parse(capture('git', ['show', `${baseSha}:package.json`]))
+function mergeDesktopPackageJson(cwd, baseSha) {
+  const mainPkg = JSON.parse(captureIn(cwd, 'git', ['show', `origin/${MAIN_BRANCH}:package.json`]))
+  const desktopBasePkg = JSON.parse(captureIn(cwd, 'git', ['show', `${baseSha}:package.json`]))
   const mainScripts = mainPkg.scripts ?? {}
   const desktopScripts = desktopBasePkg.scripts ?? {}
   const mergedPrebuild = desktopScripts['sync:desktop-config']
@@ -221,11 +224,23 @@ function mergeDesktopPackageJson(baseSha) {
   }
 
   delete mergedPkg.devDependencies['@faker-js/faker']
-  writeFileSync(join(ROOT, 'package.json'), `${JSON.stringify(mergedPkg, null, 2)}\n`, 'utf8')
+  writeFileSync(join(cwd, 'package.json'), `${JSON.stringify(mergedPkg, null, 2)}\n`, 'utf8')
+}
+
+function createDesktopWorktree() {
+  const worktreePath = mkdtempSync(join(tmpdir(), 'ccd-sync-main-to-desktop-'))
+  run('git', ['worktree', 'add', '--detach', worktreePath, `origin/${DESKTOP_BRANCH}`])
+  return worktreePath
+}
+
+function removeDesktopWorktree(worktreePath) {
+  if (!worktreePath) return
+  runAllowFail('git', ['worktree', 'remove', '--force', worktreePath])
+  rmSync(worktreePath, { recursive: true, force: true })
 }
 
 function main() {
-  const originalBranch = output('git', ['branch', '--show-current'])
+  let worktreePath = ''
 
   console.log(
     `[sync-main-to-desktop] Start: main=${MAIN_BRANCH}, desktop=${DESKTOP_BRANCH}, skipTypecheck=${SKIP_TYPECHECK}, dryRun=${DRY_RUN}`
@@ -234,16 +249,17 @@ function main() {
   try {
     ensureCleanWorktree()
     run('git', ['fetch', 'origin', MAIN_BRANCH, DESKTOP_BRANCH])
-    run('git', ['checkout', '-B', DESKTOP_BRANCH, `origin/${DESKTOP_BRANCH}`])
-    normalizeDesktopWorkspaceAfterCheckout()
+    worktreePath = createDesktopWorktree()
+    runIn(worktreePath, 'git', ['checkout', '-B', DESKTOP_BRANCH, `origin/${DESKTOP_BRANCH}`])
+    normalizeDesktopWorkspaceAfterCheckout(worktreePath)
 
-    const baseSha = output('git', ['rev-parse', 'HEAD'])
+    const baseSha = outputIn(worktreePath, 'git', ['rev-parse', 'HEAD'])
     console.log(`[sync-main-to-desktop] Desktop base SHA: ${baseSha}`)
 
-    const merge = runAllowFail('git', ['merge', '--no-ff', '--no-commit', `origin/${MAIN_BRANCH}`])
+    const merge = runAllowFailIn(worktreePath, 'git', ['merge', '--no-ff', '--no-commit', `origin/${MAIN_BRANCH}`])
     if (merge.status !== 0) {
-      if (!hasMergeInProgress()) {
-        const status = output('git', ['status', '--short'])
+      if (!hasMergeInProgressAt(worktreePath)) {
+        const status = outputIn(worktreePath, 'git', ['status', '--short'])
         throw new Error(
           `[sync-main-to-desktop] Merge failed before conflict state:\n${status || '(no local diff)'}`
         )
@@ -252,67 +268,71 @@ function main() {
     }
 
     // 1) 全量剥离示例页面与示例路由模块（桌面端不保留）
-    restorePathFromBase(baseSha, 'src/views/example')
-    restorePathFromBase(baseSha, 'src/router/modules/example.ts')
+    restorePathFromBase(worktreePath, baseSha, 'src/views/example')
+    restorePathFromBase(worktreePath, baseSha, 'src/router/modules/example.ts')
 
     // 2) 桌面端示例 locale 内容置空（保留文件以兼容主分支 locale 聚合导入）
-    writeDesktopLocalePlaceholders()
-    run('git', ['add', 'src/locales/lang/example/zh-CN.ts', 'src/locales/lang/example/en-US.ts'])
+    writeDesktopLocalePlaceholders(worktreePath)
+    runIn(worktreePath, 'git', [
+      'add',
+      'src/locales/lang/example/zh-CN.ts',
+      'src/locales/lang/example/en-US.ts',
+    ])
 
     // 3) 若 main 引入示例目录但桌面端历史无该目录，确保不会残留新示例文件
-    runAllowFail('git', ['rm', '-r', '-f', '--ignore-unmatch', '--', 'src/views/example'])
-    runAllowFail('git', ['rm', '-f', '--ignore-unmatch', '--', 'src/router/modules/example.ts'])
+    runAllowFailIn(worktreePath, 'git', ['rm', '-r', '-f', '--ignore-unmatch', '--', 'src/views/example'])
+    runAllowFailIn(worktreePath, 'git', ['rm', '-f', '--ignore-unmatch', '--', 'src/router/modules/example.ts'])
 
     // 4) README 由桌面端分支独立维护，自动同步时保留桌面端版本
-    restorePathFromBase(baseSha, 'README.md')
+    restorePathFromBase(worktreePath, baseSha, 'README.md')
 
     // 5) 桌面端专属文件保持由桌面分支维护，避免被 main 误删
     for (const targetPath of DESKTOP_ONLY_PATHS) {
-      restorePathFromBase(baseSha, targetPath)
+      restorePathFromBase(worktreePath, baseSha, targetPath)
     }
 
     // 6) package.json 采用“主分支基础 + 桌面端增量”的合并策略
-    mergeDesktopPackageJson(baseSha)
-    run('git', ['add', 'README.md', 'package.json'])
+    mergeDesktopPackageJson(worktreePath, baseSha)
+    runIn(worktreePath, 'git', ['add', 'README.md', 'package.json'])
 
-    const unresolved = output('git', ['diff', '--name-only', '--diff-filter=U'])
+    const unresolved = outputIn(worktreePath, 'git', ['diff', '--name-only', '--diff-filter=U'])
     if (unresolved) {
       throw new Error(`[sync-main-to-desktop] Unresolved conflicts remain:\n${unresolved}`)
     }
 
-    run('git', ['add', '-A'])
+    runIn(worktreePath, 'git', ['add', '-A'])
 
-    const hasChanges = runAllowFail('git', ['diff', '--cached', '--quiet']).status !== 0
+    const hasChanges = runAllowFailIn(worktreePath, 'git', ['diff', '--cached', '--quiet']).status !== 0
     if (!hasChanges) {
       console.log('[sync-main-to-desktop] No changes after policy filtering. Skip commit/push.')
-      abortMergeIfNeeded()
+      abortMergeIfNeeded(worktreePath)
       return
     }
 
     if (DRY_RUN) {
       console.log('[sync-main-to-desktop] DRY_RUN enabled: skip type-check/commit/push.')
-      abortMergeIfNeeded()
+      abortMergeIfNeeded(worktreePath)
       return
     }
 
     if (!SKIP_TYPECHECK) {
       // Desktop branch intentionally diverges in dependencies/scripts; refresh lockfile before type-check.
-      run('pnpm', ['install', '--no-frozen-lockfile'])
-      run('pnpm', ['type-check'])
+      runIn(worktreePath, 'pnpm', ['install', '--no-frozen-lockfile'])
+      runIn(worktreePath, 'pnpm', ['type-check'])
     }
 
-    run('git', [
+    runIn(worktreePath, 'git', [
       'commit',
       '-m',
       `chore(sync): merge ${MAIN_BRANCH} into ${DESKTOP_BRANCH} (exclude demos)`,
     ])
-    run('git', ['push', 'origin', DESKTOP_BRANCH])
+    runIn(worktreePath, 'git', ['push', 'origin', DESKTOP_BRANCH])
     console.log('[sync-main-to-desktop] Sync completed and pushed.')
   } catch (error) {
-    abortMergeIfNeeded()
+    abortMergeIfNeeded(worktreePath)
     throw error
   } finally {
-    restoreOriginalBranch(originalBranch)
+    removeDesktopWorktree(worktreePath)
   }
 }
 
