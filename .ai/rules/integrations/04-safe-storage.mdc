@@ -57,6 +57,14 @@ All Pinia stores that persist sensitive or preference data MUST use `createPinia
 
 **This pattern is unique to `useThemeStore`. Do NOT copy it for any other key.**
 
+### Exception 1.1 — Theme Preloader Tokens
+`src/utils/theme/engine.ts` may write plaintext `theme-primary` and `theme-background`. This is an intentional preload-only cache used by `index.html` to paint the native preloader with the latest resolved theme before Vue mounts.
+
+Constraints:
+- These keys are limited to visual bootstrap tokens only.
+- Do not store user/business payloads under this exception.
+- If a new preload key is introduced, the matching `index.html` reader and this rule must be updated together.
+
 ### Exception 2 — Locale
 `useLocaleStore` stores the locale string in plaintext for the same pre-render access reason.
 

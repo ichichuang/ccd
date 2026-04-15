@@ -155,9 +155,15 @@ function checkBuildPluginsDrift() {
   const content = readFileSync(BUILD_PLUGINS, 'utf-8')
 
   if (content.includes('AutoImport({')) {
-    if (!content.includes("dirs: ['src/stores/modules', 'src/hooks/**/*']")) {
+    const hasStoreGroups =
+      content.includes("'src/stores/modules/system'") &&
+      content.includes("'src/stores/modules/session'") &&
+      content.includes("'src/stores/modules/ui'") &&
+      content.includes("'src/hooks/**/*'")
+
+    if (!hasStoreGroups) {
       errors.push(
-        'build/plugins.ts: AutoImport.dirs 与 BUILD_SYSTEM/.cursor 规则不一致，应至少包含 "src/stores/modules" 与 "src/hooks/**/*"。'
+        'build/plugins.ts: AutoImport.dirs 需显式包含 "src/stores/modules/system"、"src/stores/modules/session"、"src/stores/modules/ui" 与 "src/hooks/**/*"。'
       )
     }
   }

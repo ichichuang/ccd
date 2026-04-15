@@ -1,0 +1,31 @@
+---
+description: Runtime bootstrap contract for index.html first-paint scripts, preload cache keys, and startup handoff consistency.
+globs: ["index.html", "build/**/*.ts", "src/main.ts", "src/constants/**/*.ts", "src/utils/theme/**/*.ts", "src/stores/**/*.ts"]
+---
+
+# Runtime Bootstrap Contract
+
+## Goal
+
+Keep first-paint behavior deterministic across `index.html`, Vite HTML transforms, stores, and runtime utilities.
+
+## Source Of Truth
+
+- Startup storage keys MUST be centralized in `src/constants/runtime.ts`.
+- Default theme bootstrap mode MUST be centralized in `src/constants/theme.ts`.
+- `index.html` inline scripts MUST consume placeholders injected by `build/html.ts` instead of duplicating raw string keys or default values.
+
+## Allowed Plaintext Bootstrap Data
+
+- Plaintext bootstrap storage is limited to technical runtime markers and visual preload tokens only.
+- Allowed examples:
+  - theme bootstrap mode
+  - preload theme color tokens
+  - one-shot Vite preload reload markers
+- Do not store user/session/business payloads under this bootstrap exception.
+
+## First Paint Rules
+
+- `index.html` must not hardcode theme colors that duplicate canonical theme constants when Vite can inject fallback variables.
+- First-paint theme resolution must stay aligned with store defaults; do not let `index.html` drift from Pinia initial state.
+- When adding a new bootstrap placeholder, update both `build/html.ts` and `index.html` in the same change.

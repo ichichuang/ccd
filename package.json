@@ -1,6 +1,6 @@
 {
   "name": "app-template",
-  "version": "1.0.23",
+  "version": "1.0.24",
   "private": true,
   "type": "module",
   "sideEffects": [
@@ -57,6 +57,10 @@
     "test": "vitest",
     "test:run": "vitest run",
     "test:coverage": "vitest run --coverage",
+    "e2e": "playwright test",
+    "e2e:update": "playwright test --update-snapshots",
+    "e2e:headed": "playwright test --headed",
+    "e2e:ui": "playwright test --ui",
     "commit": "git-cz",
     "prepare": "pnpm ai:sync && husky"
   },
@@ -118,6 +122,7 @@
     "@iconify-json/ph": "^1.2.2",
     "@iconify-json/solar": "^1.2.5",
     "@iconify/utils": "^3.1.0",
+    "@playwright/test": "^1.59.1",
     "@primevue/auto-import-resolver": "^4.5.4",
     "@tsconfig/node22": "^22.0.2",
     "@types/lodash-es": "^4.17.12",
