@@ -232,6 +232,25 @@ function createDesktopWorktree() {
   return worktreePath
 }
 
+function pushDesktopBranch(worktreePath) {
+  const push = runAllowFailIn(worktreePath, 'git', ['push', 'origin', DESKTOP_BRANCH])
+  if (push.status === 0) return
+
+  runIn(worktreePath, 'git', ['fetch', 'origin', DESKTOP_BRANCH])
+
+  const localTree = outputIn(worktreePath, 'git', ['rev-parse', 'HEAD^{tree}'])
+  const remoteTree = outputIn(worktreePath, 'git', ['rev-parse', `origin/${DESKTOP_BRANCH}^{tree}`])
+
+  if (localTree === remoteTree) {
+    console.log(
+      '[sync-main-to-desktop] Remote desktop branch already advanced to an identical tree. Treat as synced.'
+    )
+    return
+  }
+
+  throw new Error(`[sync-main-to-desktop] Command failed: git push origin ${DESKTOP_BRANCH}`)
+}
+
 function removeDesktopWorktree(worktreePath) {
   if (!worktreePath) return
   runAllowFail('git', ['worktree', 'remove', '--force', worktreePath])
@@ -325,7 +344,7 @@ function main() {
       '-m',
       `chore(sync): merge ${MAIN_BRANCH} into ${DESKTOP_BRANCH} (exclude demos)`,
     ])
-    runIn(worktreePath, 'git', ['push', 'origin', DESKTOP_BRANCH])
+    pushDesktopBranch(worktreePath)
     console.log('[sync-main-to-desktop] Sync completed and pushed.')
   } catch (error) {
     abortMergeIfNeeded(worktreePath)
