@@ -6,28 +6,28 @@
       "sourceType": "local",
       "layer": "codex",
       "syncTargets": ["codex"],
-      "computedHash": "56548f4c265560d95a3ed1b0b6766338f1e037448f1fb70a4b1035a376646b80"
+      "computedHash": "d06a80c7a816a55c295dad4a1ddb265300527320b83e5adbd7d35add52b0653c"
     },
     "github": {
       "source": "repo:.ai/skills/cursor/github",
       "sourceType": "local",
       "layer": "cursor",
       "syncTargets": ["cursor"],
-      "computedHash": "1f0a2fe8b96db595b82a716a0a6aa5429eabb9a90843927341104e89b762b695"
+      "computedHash": "496b3a45b0584f61060ed7667ea60227f9ab5d34cdc664730997fe7b7ea5eb2b"
     },
     "github-ops": {
       "source": "repo:.ai/skills/codex/github-ops",
       "sourceType": "local",
       "layer": "codex",
       "syncTargets": ["codex"],
-      "computedHash": "bcb3c43b7e638f4a1409dd9d9b31a13223fd0634c3561739196598398066e41b"
+      "computedHash": "1d8be046d9269b3f322c71641007e3112193fe6214147d997be776594eda4c12"
     },
     "playwright-mcp": {
       "source": "repo:.ai/skills/cursor/playwright-mcp",
       "sourceType": "local",
       "layer": "cursor",
       "syncTargets": ["cursor"],
-      "computedHash": "6b1a08c70f7e63bdd1eaff87155f0e6a2019b1249679f78bd15705ed05e9cc2d"
+      "computedHash": "307653bd679c63d51fcc8d74938be969c9c917780580c153f241920029cf0250"
     },
     "skill-routing": {
       "source": "repo:.ai/manifests/skill-routing.json",
@@ -40,35 +40,35 @@
       "sourceType": "local",
       "layer": "codex",
       "syncTargets": ["codex"],
-      "computedHash": "e166f8f5aa88a992593247e90a4c82ed714cc7c42e8bf0d355771e1fbb661406"
+      "computedHash": "b4092ff8ca07c22b64a15769009454e9b452480b106ae5f12654143e9a276574"
     },
     "unocss": {
       "source": "repo:.ai/skills/core/unocss",
       "sourceType": "local",
       "layer": "core",
       "syncTargets": ["codex", "cursor"],
-      "computedHash": "90ee3b42a70ef850523d6726d178f09c51a215732e0bb38916dbbd86d55f56d7"
+      "computedHash": "66c9ee74a59e2d2767379332bf701210d05e54fc2577f1f5cbc7b328c28ff51b"
     },
     "vite": {
       "source": "repo:.ai/skills/core/vite",
       "sourceType": "local",
       "layer": "core",
       "syncTargets": ["codex", "cursor"],
-      "computedHash": "130eab90a88da230b75bfdc2e666afe001fc7f2ce6543a3704b4b4b2545f59fe"
+      "computedHash": "d1f166382979a51d7ed682046c55aef3c3a47fe834c60d3e29ba4ab93a968d1f"
     },
     "vue": {
       "source": "repo:.ai/skills/core/vue",
       "sourceType": "local",
       "layer": "core",
       "syncTargets": ["codex", "cursor"],
-      "computedHash": "83a0ece743473b23a9f621626281e6eecd0ec2064dc57cad98da290d6670e8c0"
+      "computedHash": "ccb554becddd5e72cc7e536d7319411e3ad8985fc7fac6aec55290f02ef86dd8"
     },
     "vueuse-functions": {
       "source": "repo:.ai/skills/core/vueuse-functions",
       "sourceType": "local",
       "layer": "core",
       "syncTargets": ["codex", "cursor"],
-      "computedHash": "99dc1dbcf712a9c23e568e32604e0b05f725540e9ba76a6ffb3893613d31f799"
+      "computedHash": "db6c79aeda36ab16a4997297b4d39dd65d4294fb0de8cfb9633f97de67990c04"
     }
   }
 }
