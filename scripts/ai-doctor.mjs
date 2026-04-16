@@ -2,7 +2,6 @@ import fs from 'node:fs'
 import path from 'node:path'
 import {
   generateSkillsLock,
-  stringifySkillsLock,
   validateSkillRoutingTargets,
 } from './skill-lock-utils.mjs'
 
@@ -199,9 +198,9 @@ for (const { target, sources } of dirAdapters) {
 
 const skillsLockPath = '.ai/manifests/skills-lock.json'
 try {
-  const expectedSkillsLock = stringifySkillsLock(generateSkillsLock(cwd))
-  const currentSkillsLock = fs.readFileSync(path.join(cwd, skillsLockPath), 'utf8')
-  if (currentSkillsLock !== expectedSkillsLock) {
+  const expectedSkillsLock = generateSkillsLock(cwd)
+  const currentSkillsLock = JSON.parse(fs.readFileSync(path.join(cwd, skillsLockPath), 'utf8'))
+  if (JSON.stringify(currentSkillsLock) !== JSON.stringify(expectedSkillsLock)) {
     fail(`stale generated skill lock: ${skillsLockPath} (run pnpm ai:sync:codex)`)
   } else {
     ok(`generated skill lock: ${skillsLockPath}`)
