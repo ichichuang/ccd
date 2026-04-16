@@ -1,6 +1,6 @@
 [package]
 name = "app"
-version = "1.0.31"
+version = "1.0.32"
 description = "CCD Desktop Client"
 authors = ["Chris Chi"]
 license = "GPL-3.0-only"

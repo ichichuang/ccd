@@ -25,11 +25,15 @@ jobs:
         include:
           - name: Windows
             os: windows-latest
-            args: --target x86_64-pc-windows-msvc
+            target: x86_64-pc-windows-msvc
             rust_targets: x86_64-pc-windows-msvc
-          - name: macOS Universal
+          - name: macOS Apple Silicon
             os: macos-latest
-            args: --target universal-apple-darwin
+            target: aarch64-apple-darwin
+            rust_targets: aarch64-apple-darwin,x86_64-apple-darwin
+          - name: macOS Intel
+            os: macos-latest
+            target: x86_64-apple-darwin
             rust_targets: aarch64-apple-darwin,x86_64-apple-darwin
     env:
       SKIP_TAURI_ICON: ${{ matrix.os == 'windows-latest' && '1' || '' }}
@@ -60,5 +64,5 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Smoke build desktop bundles
-        run: pnpm build:desktop -- ${{ matrix.args }}
+      - name: Smoke build desktop targets without bundling
+        run: pnpm exec tauri build --no-bundle --target ${{ matrix.target }}

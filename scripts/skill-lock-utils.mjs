@@ -12,8 +12,27 @@ export const SKILL_ROUTING_MANIFEST = '.ai/manifests/skill-routing.json'
 
 const TRANSIENT_DIRS = new Set(['__pycache__'])
 const TRANSIENT_FILE_SUFFIXES = ['.pyc']
+const TEXT_FILE_EXTENSIONS = new Set([
+  '.cjs',
+  '.css',
+  '.html',
+  '.js',
+  '.json',
+  '.md',
+  '.mdc',
+  '.mjs',
+  '.py',
+  '.sh',
+  '.ts',
+  '.tsx',
+  '.txt',
+  '.vue',
+  '.yaml',
+  '.yml',
+])
 
 const toPosixPath = relPath => relPath.split(path.sep).join(path.posix.sep)
+const compareStrings = (a, b) => (a === b ? 0 : a < b ? -1 : 1)
 
 const shouldIgnoreFile = relPath => {
   const base = path.basename(relPath)
@@ -23,7 +42,19 @@ const shouldIgnoreFile = relPath => {
 
 const hashBuffer = buffer => crypto.createHash('sha256').update(buffer).digest('hex')
 
-const hashFile = absPath => hashBuffer(fs.readFileSync(absPath))
+const normalizeTextBuffer = buffer => Buffer.from(buffer.toString('utf8').replace(/\r\n/g, '\n'), 'utf8')
+
+const isLikelyTextFile = absPath => TEXT_FILE_EXTENSIONS.has(path.extname(absPath).toLowerCase())
+
+const readHashableContent = absPath => {
+  const buffer = fs.readFileSync(absPath)
+  if (isLikelyTextFile(absPath) || !buffer.includes(0)) {
+    return normalizeTextBuffer(buffer)
+  }
+  return buffer
+}
+
+const hashFile = absPath => hashBuffer(readHashableContent(absPath))
 
 const hashDirectory = absRoot => {
   const files = []
@@ -46,13 +77,13 @@ const hashDirectory = absRoot => {
   }
 
   walk(absRoot)
-  files.sort(([a], [b]) => a.localeCompare(b))
+  files.sort(([a], [b]) => compareStrings(a, b))
 
   const hash = crypto.createHash('sha256')
   for (const [relPath, absPath] of files) {
     hash.update(relPath)
     hash.update('\0')
-    hash.update(fs.readFileSync(absPath))
+    hash.update(readHashableContent(absPath))
     hash.update('\0')
   }
   return hash.digest('hex')
@@ -69,7 +100,7 @@ export const scanSkillDirectories = cwd => {
     const entries = fs
       .readdirSync(absRoot, { withFileTypes: true })
       .filter(entry => entry.isDirectory())
-      .sort((a, b) => a.name.localeCompare(b.name))
+      .sort((a, b) => compareStrings(a.name, b.name))
 
     for (const entry of entries) {
       if (seenNames.has(entry.name)) {
@@ -87,7 +118,7 @@ export const scanSkillDirectories = cwd => {
     }
   }
 
-  return skills.sort((a, b) => a.name.localeCompare(b.name))
+  return skills.sort((a, b) => compareStrings(a.name, b.name))
 }
 
 export const generateSkillsLock = cwd => {
@@ -112,7 +143,7 @@ export const generateSkillsLock = cwd => {
 
   return {
     version: 2,
-    skills: Object.fromEntries(Object.entries(entries).sort(([a], [b]) => a.localeCompare(b))),
+    skills: Object.fromEntries(Object.entries(entries).sort(([a], [b]) => compareStrings(a, b))),
   }
 }
 
@@ -134,7 +165,7 @@ export const collectRouteSkillTargets = routing => {
     }
   }
 
-  return [...targets].sort()
+  return [...targets].sort(compareStrings)
 }
 
 export const validateSkillRoutingTargets = cwd => {

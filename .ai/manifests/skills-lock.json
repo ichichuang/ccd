@@ -6,35 +6,35 @@
       "sourceType": "local",
       "layer": "codex",
       "syncTargets": ["codex"],
-      "computedHash": "56548f4c265560d95a3ed1b0b6766338f1e037448f1fb70a4b1035a376646b80"
+      "computedHash": "d06a80c7a816a55c295dad4a1ddb265300527320b83e5adbd7d35add52b0653c"
     },
     "desktop-tauri-guard": {
       "source": "repo:.ai/skills/codex/desktop-tauri-guard",
       "sourceType": "local",
       "layer": "codex",
       "syncTargets": ["codex"],
-      "computedHash": "0b6f6821c453992350970b74fbce7b1faab4c0c26f2a76f593c2c7bdc566f4f7"
+      "computedHash": "5a6474af81494d9eb2c7f3bd8b5c8ec975f3c4daf6b1ff716493d9ae96e50ba0"
     },
     "github": {
       "source": "repo:.ai/skills/cursor/github",
       "sourceType": "local",
       "layer": "cursor",
       "syncTargets": ["cursor"],
-      "computedHash": "f277b832dfc0e95a9a756b24833753edb3190ef8fca81cf6bb81fe50c08209e3"
+      "computedHash": "067317f63772d9112e3a7bf77b97713b5cd559613bde3b841da035e608f55162"
     },
     "github-ops": {
       "source": "repo:.ai/skills/codex/github-ops",
       "sourceType": "local",
       "layer": "codex",
       "syncTargets": ["codex"],
-      "computedHash": "bcb3c43b7e638f4a1409dd9d9b31a13223fd0634c3561739196598398066e41b"
+      "computedHash": "1d8be046d9269b3f322c71641007e3112193fe6214147d997be776594eda4c12"
     },
     "playwright-mcp": {
       "source": "repo:.ai/skills/cursor/playwright-mcp",
       "sourceType": "local",
       "layer": "cursor",
       "syncTargets": ["cursor"],
-      "computedHash": "e2178afad58272b5c3cf2c41d61cdeaff9f72a78f3c504374bd68032e62aa6fe"
+      "computedHash": "66faf3a7c4829c15942cda3d93696968722a45f5a392e7beea023591577d5939"
     },
     "skill-routing": {
       "source": "repo:.ai/manifests/skill-routing.json",
@@ -47,35 +47,35 @@
       "sourceType": "local",
       "layer": "codex",
       "syncTargets": ["codex"],
-      "computedHash": "e166f8f5aa88a992593247e90a4c82ed714cc7c42e8bf0d355771e1fbb661406"
+      "computedHash": "b4092ff8ca07c22b64a15769009454e9b452480b106ae5f12654143e9a276574"
     },
     "unocss": {
       "source": "repo:.ai/skills/core/unocss",
       "sourceType": "local",
       "layer": "core",
       "syncTargets": ["codex", "cursor"],
-      "computedHash": "90ee3b42a70ef850523d6726d178f09c51a215732e0bb38916dbbd86d55f56d7"
+      "computedHash": "66c9ee74a59e2d2767379332bf701210d05e54fc2577f1f5cbc7b328c28ff51b"
     },
     "vite": {
       "source": "repo:.ai/skills/core/vite",
       "sourceType": "local",
       "layer": "core",
       "syncTargets": ["codex", "cursor"],
-      "computedHash": "130eab90a88da230b75bfdc2e666afe001fc7f2ce6543a3704b4b4b2545f59fe"
+      "computedHash": "d1f166382979a51d7ed682046c55aef3c3a47fe834c60d3e29ba4ab93a968d1f"
     },
     "vue": {
       "source": "repo:.ai/skills/core/vue",
       "sourceType": "local",
       "layer": "core",
       "syncTargets": ["codex", "cursor"],
-      "computedHash": "83a0ece743473b23a9f621626281e6eecd0ec2064dc57cad98da290d6670e8c0"
+      "computedHash": "ccb554becddd5e72cc7e536d7319411e3ad8985fc7fac6aec55290f02ef86dd8"
     },
     "vueuse-functions": {
       "source": "repo:.ai/skills/core/vueuse-functions",
       "sourceType": "local",
       "layer": "core",
       "syncTargets": ["codex", "cursor"],
-      "computedHash": "99dc1dbcf712a9c23e568e32604e0b05f725540e9ba76a6ffb3893613d31f799"
+      "computedHash": "db6c79aeda36ab16a4997297b4d39dd65d4294fb0de8cfb9633f97de67990c04"
     }
   }
 }
