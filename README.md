@@ -15,7 +15,7 @@
 [![License: GPL v3](https://img.shields.io/badge/License-GPL_v3-blue?style=flat-square)](./LICENSE)
 
 **CCD** 不是模板堆砌，而是一套可持续演进的中后台前端架构。
-它把分层边界、设计系统、低代码表单表格引擎、AI 协作规范和多分支交付流程收敛到一个统一仓库中。
+它把分层边界、设计系统、低代码表单表格引擎、AI 协作规范和交付治理收敛到一个统一仓库中。
 
 [在线演示](https://ichichuang.github.io/ccd/) · [架构文档](./docs/architecture.md) · [AI 工作区总览](./docs/ai-workspace.md) · [AI 工作区规范](./.ai/README.md)
 
@@ -33,66 +33,20 @@ CCD 面向“需要长期维护”的 Vue 3 产品项目，而不是一次性 De
 - 可复用的中后台能力：`ProForm`、`ProTable`、RBAC、主题系统、图表主题管线
 - 严格的 TypeScript 与工程化校验
 - 面向多 AI 工具统一治理的协作协议
-- 主分支到桌面端分支的同步交付机制
+- 可审计、可阻断的生成层与架构治理链路
 
 ---
 
-## 分支模型
+## 交付模型
 
-仓库采用“主分支为核心源，桌面端分支为派生交付”的模型：
+仓库以 `main` 作为唯一架构主线：
 
-- `main`
-  - 核心分支
-  - 保留 CCD 架构主体、示例模块、规范文档、AI 治理配置
-  - 所有通用能力优化都应优先在 `main` 完成
-- `feat/tauri-integration`
-  - 桌面端派生分支
-  - 基于 `main` 的架构能力进行 Tauri 集成与桌面端交付
-  - 通过仓库脚本从 `main` 同步，避免把桌面端特化逻辑反向污染核心分支
+- CCD 架构主体、示例模块、规范文档、AI 治理配置都直接在 `main` 演进
+- Desktop / Tauri 运行时资产如果存在，也直接随仓库维护，不再通过派生分支同步脚本下发
+- 生成层与治理层变更统一通过 `pnpm ai:sync`、`pnpm ai:sync:codex`、`pnpm ai:doctor`、`pnpm codex:preflight` 收敛
+- CI 会重新执行生成同步并对 `AGENTS.md`、`.cursor/**`、`skills-lock.json` 做防漂移阻断
 
-如果你要做架构层优化，默认应该先在 `main` 改，再通过同步流程下发到桌面端分支。
-
----
-
-## 主分支到桌面端同步
-
-桌面端分支不是手工长期维护的平行代码线，而是从 `main` 派生出来的交付分支。
-
-默认同步命令：
-
-```bash
-node scripts/sync-main-to-desktop.mjs
-```
-
-同步脚本当前行为：
-
-- 先要求当前主工作区是干净状态
-- 从 `origin/main` 与 `origin/feat/tauri-integration` 获取最新远端状态
-- 使用临时 `git worktree` 在隔离目录内完成桌面端同步，不污染当前 `main` 工作区
-- 在桌面端分支内执行 `merge main -> feat/tauri-integration`
-- 自动剥离示例模块：`src/views/example`、`src/router/modules/example.ts`
-- 自动把示例 locale 写回桌面端占位内容，避免主分支示例内容泄漏到桌面交付线
-- 保留桌面端专属资产，例如 `src-tauri/**`、`scripts/sync-desktop-config.mjs`、`src/utils/env.ts`、`src/utils/tauriNativeUx.ts`、桌面端 CI 工作流等
-- `package.json` 采用“主分支基础 + 桌面端增量”合并策略：版本号跟随 `main`，桌面端脚本和依赖继续保留
-- 同步后自动执行桌面端分支的 `pnpm install --no-frozen-lockfile` 与 `pnpm type-check`
-- 有改动时自动提交并推送到 `origin/feat/tauri-integration`
-
-并发保护：
-
-- 如果同步窗口内远端桌面端分支被别的进程推进，但最终树内容与本次同步结果一致，脚本会把它判定为“已同步”，不会再把这种场景误报为失败
-
-使用约束：
-
-- 同步前先把通用优化提交到 `main`
-- 不要在脏工作区直接运行同步脚本
-- 不要把桌面端分支当成示例页的承载分支；示例内容会被同步策略主动剥离
-- 如果你要修改同步规则，应直接修改 [scripts/sync-main-to-desktop.mjs](./scripts/sync-main-to-desktop.mjs)
-
-常见结果判断：
-
-- 当前工作区始终留在 `main`：说明 worktree 隔离正常
-- 桌面端分支与 `main` 不完全一致：这是预期行为，因为 README、Tauri 资产、桌面端脚本和部分运行时桥接文件会被保留
-- 示例页面没有进入桌面端：这是同步策略，不是漏合并
+如果你要做架构层优化，默认直接在当前主线完成，并让本地门禁和 CI 门禁验证结果。
 
 ---
 

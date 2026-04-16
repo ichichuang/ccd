@@ -42,4 +42,4 @@ If rules conflict, MUST apply this order:
 - **Utility Maximization:** Prefer built-in `Utils` and `common` tools within the architecture. Combine them intelligently with `VueUse` composables.@.cursorignore @.cursorrules 
 
 ## 🛑 The Execution Gate
-MANDATORY: Before outputting any code changes, you MUST trigger the 01-preflight-checklist.mdc and present the filled-out checklist to the user as a "Ready for Action" signal.
+MANDATORY: Before outputting any code changes, you MUST trigger `01-global-preflight.mdc` and, when visual surfaces are touched, `02-ui-preflight.mdc`, then present the applicable filled-out checklist(s) to the user as a "Ready for Action" signal.

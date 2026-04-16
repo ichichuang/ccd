@@ -1,64 +1,74 @@
 {
-  "version": 1,
+  "version": 2,
   "skills": {
-    "pinia": {
-      "source": "antfu/skills",
-      "sourceType": "github",
-      "computedHash": "897b6b0982956f41f5cc85128ca638b625e1b3c8bc619e303cd1e7661c95b7de"
-    },
-    "pnpm": {
-      "source": "antfu/skills",
-      "sourceType": "github",
-      "computedHash": "318f9fca2441a3e06fedc336e195dd18be5dbe901064e4fa71b76b40b096ab3a"
-    },
-    "unocss": {
-      "source": "antfu/skills",
-      "sourceType": "github",
-      "computedHash": "4b7a9f7b89994d5aef70b9d55cb7f65d6e80cea437d5786cd33bb5cf7231c7c4"
-    },
-    "vite": {
-      "source": "antfu/skills",
-      "sourceType": "github",
-      "computedHash": "867ff66238f3152e9c494339ad08dc432dd0df5bcf5cc7a00b61a72b580eb908"
-    },
-    "vue": {
-      "source": "antfu/skills",
-      "sourceType": "github",
-      "computedHash": "9c241141e07e836e4f0537c63e8f929fba3767c2997250be38e699f19b75e3f2"
-    },
-    "vue-router-best-practices": {
-      "source": "antfu/skills",
-      "sourceType": "github",
-      "computedHash": "e27384f4e6c8c70a612e76b74e4387efb8e291a6a1e3aa14a69102a4ce4b4654"
-    },
-    "vueuse-functions": {
-      "source": "antfu/skills",
-      "sourceType": "github",
-      "computedHash": "fedfc78f035a88fe3e9d823f44725fe8981486c55b966c17fbd0d7c28339e49a"
-    },
     "architecture-browser-master": {
       "source": "repo:.ai/skills/codex/architecture-browser-master",
-      "sourceType": "local"
-    },
-    "task-orchestrator": {
-      "source": "repo:.ai/skills/codex/task-orchestrator",
-      "sourceType": "local"
-    },
-    "github-ops": {
-      "source": "repo:.ai/skills/codex/github-ops",
-      "sourceType": "local"
-    },
-    "skill-routing": {
-      "source": "repo:.ai/manifests/skill-routing.json",
-      "sourceType": "local"
+      "sourceType": "local",
+      "layer": "codex",
+      "syncTargets": ["codex"],
+      "computedHash": "56548f4c265560d95a3ed1b0b6766338f1e037448f1fb70a4b1035a376646b80"
     },
     "github": {
       "source": "repo:.ai/skills/cursor/github",
-      "sourceType": "local"
+      "sourceType": "local",
+      "layer": "cursor",
+      "syncTargets": ["cursor"],
+      "computedHash": "1f0a2fe8b96db595b82a716a0a6aa5429eabb9a90843927341104e89b762b695"
+    },
+    "github-ops": {
+      "source": "repo:.ai/skills/codex/github-ops",
+      "sourceType": "local",
+      "layer": "codex",
+      "syncTargets": ["codex"],
+      "computedHash": "bcb3c43b7e638f4a1409dd9d9b31a13223fd0634c3561739196598398066e41b"
     },
     "playwright-mcp": {
       "source": "repo:.ai/skills/cursor/playwright-mcp",
-      "sourceType": "local"
+      "sourceType": "local",
+      "layer": "cursor",
+      "syncTargets": ["cursor"],
+      "computedHash": "6b1a08c70f7e63bdd1eaff87155f0e6a2019b1249679f78bd15705ed05e9cc2d"
+    },
+    "skill-routing": {
+      "source": "repo:.ai/manifests/skill-routing.json",
+      "sourceType": "local",
+      "kind": "manifest",
+      "computedHash": "152334b694c246678389635fa223ebe6e189be71471a2334cef93f4bd8e2737d"
+    },
+    "task-orchestrator": {
+      "source": "repo:.ai/skills/codex/task-orchestrator",
+      "sourceType": "local",
+      "layer": "codex",
+      "syncTargets": ["codex"],
+      "computedHash": "e166f8f5aa88a992593247e90a4c82ed714cc7c42e8bf0d355771e1fbb661406"
+    },
+    "unocss": {
+      "source": "repo:.ai/skills/core/unocss",
+      "sourceType": "local",
+      "layer": "core",
+      "syncTargets": ["codex", "cursor"],
+      "computedHash": "90ee3b42a70ef850523d6726d178f09c51a215732e0bb38916dbbd86d55f56d7"
+    },
+    "vite": {
+      "source": "repo:.ai/skills/core/vite",
+      "sourceType": "local",
+      "layer": "core",
+      "syncTargets": ["codex", "cursor"],
+      "computedHash": "130eab90a88da230b75bfdc2e666afe001fc7f2ce6543a3704b4b4b2545f59fe"
+    },
+    "vue": {
+      "source": "repo:.ai/skills/core/vue",
+      "sourceType": "local",
+      "layer": "core",
+      "syncTargets": ["codex", "cursor"],
+      "computedHash": "83a0ece743473b23a9f621626281e6eecd0ec2064dc57cad98da290d6670e8c0"
+    },
+    "vueuse-functions": {
+      "source": "repo:.ai/skills/core/vueuse-functions",
+      "sourceType": "local",
+      "layer": "core",
+      "syncTargets": ["codex", "cursor"],
+      "computedHash": "99dc1dbcf712a9c23e568e32604e0b05f725540e9ba76a6ffb3893613d31f799"
     }
   }
 }

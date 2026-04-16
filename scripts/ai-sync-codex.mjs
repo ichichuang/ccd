@@ -1,10 +1,12 @@
 import fs from 'node:fs'
 import os from 'node:os'
 import path from 'node:path'
+import { generateSkillsLock, stringifySkillsLock } from './skill-lock-utils.mjs'
 
 const cwd = process.cwd()
 const targetRoot = path.join(os.homedir(), '.codex', 'skills')
 const sourceRoots = ['.ai/skills/core', '.ai/skills/codex']
+const skillsLockPath = path.join(cwd, '.ai', 'manifests', 'skills-lock.json')
 
 const syncSkill = (sourceRoot, skillName) => {
   const sourceDir = path.join(cwd, sourceRoot, skillName)
@@ -17,6 +19,15 @@ const syncSkill = (sourceRoot, skillName) => {
 console.log('Codex skill sync')
 console.log('================')
 fs.mkdirSync(targetRoot, { recursive: true })
+
+const nextSkillsLock = stringifySkillsLock(generateSkillsLock(cwd))
+const currentSkillsLock = fs.existsSync(skillsLockPath) ? fs.readFileSync(skillsLockPath, 'utf8') : null
+if (currentSkillsLock !== nextSkillsLock) {
+  fs.writeFileSync(skillsLockPath, nextSkillsLock)
+  console.log('[SYNC] .ai/manifests/skills-lock.json <= scanned .ai/skills/**')
+} else {
+  console.log('[OK] .ai/manifests/skills-lock.json')
+}
 
 for (const sourceRoot of sourceRoots) {
   const absSourceRoot = path.join(cwd, sourceRoot)

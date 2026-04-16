@@ -41,8 +41,9 @@ Bootstrap order per task:
 
 1. `.ai/rules/core/00-global-architect.mdc`
 2. `.ai/rules/core/00-root-gatekeeper.mdc`
-3. `.ai/rules/core/01-preflight-checklist.mdc`
-4. Domain rules by touched modules
+3. `.ai/rules/core/01-global-preflight.mdc`
+4. `.ai/rules/core/02-ui-preflight.mdc` when visual surfaces are touched
+5. Domain rules by touched modules
 
 ## 3) Skill Routing Strategy
 
@@ -91,7 +92,7 @@ Policy:
 1. Understand requirement and map touched modules.
 2. Load rules and extract hard constraints.
 3. Select skills and state why each is required.
-4. Execute preflight checklist (`core/01-preflight-checklist.mdc`).
+4. Execute applicable preflight checklists (`core/01-global-preflight.mdc`, plus `core/02-ui-preflight.mdc` for visual surfaces).
 5. Implement with boundary/type discipline.
 6. Validate with targeted checks.
 7. Report changed files, rules/skills used, validation results, and residual risks.

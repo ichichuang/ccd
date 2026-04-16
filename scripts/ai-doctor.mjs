@@ -1,5 +1,10 @@
 import fs from 'node:fs'
 import path from 'node:path'
+import {
+  generateSkillsLock,
+  stringifySkillsLock,
+  validateSkillRoutingTargets,
+} from './skill-lock-utils.mjs'
 
 const cwd = process.cwd()
 
@@ -13,7 +18,9 @@ const canonicalMustExist = [
   '.ai/protocol/adapters/cursor.md',
   '.ai/rules/core/00-global-architect.mdc',
   '.ai/rules/core/00-root-gatekeeper.mdc',
-  '.ai/rules/core/01-preflight-checklist.mdc',
+  '.ai/rules/core/01-global-preflight.mdc',
+  '.ai/rules/core/02-ui-preflight.mdc',
+  'scripts/skill-lock-utils.mjs',
   '.ai/skills/core/unocss/SKILL.md',
   '.ai/skills/core/vite/SKILL.md',
   '.ai/skills/core/vue/SKILL.md',
@@ -23,6 +30,9 @@ const canonicalMustExist = [
   '.ai/skills/codex/github-ops/SKILL.md',
   '.ai/skills/cursor/github/SKILL.md',
   '.ai/skills/cursor/playwright-mcp/SKILL.md',
+  'scripts/ai-sync.mjs',
+  'scripts/ai-doctor.mjs',
+  'scripts/codex-preflight.mjs',
   'scripts/ai-clean.mjs',
   'scripts/ai-sync-codex.mjs',
   '.ai/runtime/repair_list.template.txt',
@@ -42,6 +52,18 @@ const dirAdapters = [
 
 const localRuntimeFiles = ['.ai/runtime/repair_list.txt']
 const legacyShouldBeAbsent = ['CLAUDE.md', '.claude', '.ai/config/claude.settings.local.json', '.ai/protocol/adapters/claude.md']
+const architectureGateChecks = [
+  {
+    rel: '.husky/pre-commit',
+    label: 'local architecture gate',
+    acceptedCommands: ['pnpm ai:doctor', 'node scripts/ai-doctor.mjs'],
+  },
+  {
+    rel: '.github/workflows/ci.yml',
+    label: 'ci architecture gate',
+    acceptedCommands: ['pnpm ai:doctor', 'node scripts/ai-doctor.mjs'],
+  },
+]
 
 let hasError = false
 
@@ -53,6 +75,7 @@ const fail = msg => {
 const ok = msg => console.log(`[OK] ${msg}`)
 
 const readBuffer = rel => fs.readFileSync(path.join(cwd, rel))
+const readText = rel => fs.readFileSync(path.join(cwd, rel), 'utf8')
 
 const listFilesInAbsDir = root => {
   if (!fs.existsSync(root)) return []
@@ -112,6 +135,24 @@ for (const rel of legacyShouldBeAbsent) {
   else ok(`legacy path removed: ${rel}`)
 }
 
+for (const { rel, label, acceptedCommands } of architectureGateChecks) {
+  const abs = path.join(cwd, rel)
+  if (!fs.existsSync(abs)) {
+    fail(`missing ${label}: ${rel}`)
+    continue
+  }
+
+  const content = readText(rel)
+  if (!acceptedCommands.some(command => content.includes(command))) {
+    fail(
+      `${label} does not invoke ai:doctor: ${rel} (expected one of: ${acceptedCommands.join(', ')})`
+    )
+    continue
+  }
+
+  ok(`${label}: ${rel}`)
+}
+
 for (const { target, source } of fileAdapters) {
   const absTarget = path.join(cwd, target)
   if (!fs.existsSync(absTarget)) {
@@ -154,6 +195,30 @@ for (const { target, sources } of dirAdapters) {
   }
 
   ok(`generated adapter directory: ${target}`)
+}
+
+const skillsLockPath = '.ai/manifests/skills-lock.json'
+try {
+  const expectedSkillsLock = stringifySkillsLock(generateSkillsLock(cwd))
+  const currentSkillsLock = fs.readFileSync(path.join(cwd, skillsLockPath), 'utf8')
+  if (currentSkillsLock !== expectedSkillsLock) {
+    fail(`stale generated skill lock: ${skillsLockPath} (run pnpm ai:sync:codex)`)
+  } else {
+    ok(`generated skill lock: ${skillsLockPath}`)
+  }
+} catch (error) {
+  fail(`unable to validate skill lock: ${error instanceof Error ? error.message : String(error)}`)
+}
+
+try {
+  const invalidRouteTargets = validateSkillRoutingTargets(cwd)
+  if (invalidRouteTargets.length > 0) {
+    fail(`invalid skill-routing targets: ${invalidRouteTargets.join(', ')}`)
+  } else {
+    ok('skill routing targets: .ai/manifests/skill-routing.json')
+  }
+} catch (error) {
+  fail(`unable to validate skill routing manifest: ${error instanceof Error ? error.message : String(error)}`)
 }
 
 process.exit(hasError ? 1 : 0)
