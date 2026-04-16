@@ -1,3 +1,9 @@
+#!/usr/bin/env sh
+set -e
+
+echo "🏛️  Running Enterprise Guardian: Architecture Doctor..."
+pnpm ai:doctor
+
 echo "🛡️  Running Enterprise Guardian: TypeScript Check..."
 pnpm type-check
 

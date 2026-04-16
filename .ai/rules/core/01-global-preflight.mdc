@@ -1,0 +1,21 @@
+---
+description: MANDATORY global pre-execution architect checklist for protocol, logic, and cross-layer safety checks.
+globs: ["**/*"]
+alwaysApply: true
+---
+# 🚀 Chief Architect Global Preflight
+
+> **AI MANDATE:** Before providing ANY implementation or refactoring plan, you MUST confirm this global checklist against the current workspace. **Any `[❌]` means you MUST NOT proceed.**
+
+## 1. Rule Sync & Context
+- [ ] **Ledger:** Read `.ai/runtime/repair_list.txt`. Current task is tracked.
+
+## 2. Architecture & State Boundaries
+- [ ] **Data Flow:** Strictly `api -> hooks -> stores -> views`. No cross-layer import violations.
+- [ ] **Event Bus:** Vue component subscriptions use `useAutoMitt()` only. No direct `useMitt().on` in `<script setup>`.
+
+## 3. Type Safety & Integrations
+- [ ] **Type Casting:** No business logic domain casting using `as` (DOM narrowing like `e.target as HTMLInputElement` is okay).
+- [ ] **Network/Storage:** Alova is used (No raw `fetch`/`axios`). `safeStorage` is used (No raw `localStorage`).
+- [ ] **Date Safety:** `DateUtils` is used (No `new Date()`). UI displays are gated by `isInitialized` where required.
+- [ ] **Reactivity Safe:** No direct destructuring of reactive properties without `toRefs()`.

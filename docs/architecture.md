@@ -247,24 +247,23 @@ CCD 的浏览器链路已经升级为：
 
 ## 交付系统
 
-除了应用运行时，CCD 还把交付同步也纳入架构能力。
+除了应用运行时，CCD 还把交付治理也纳入架构能力。
 
-### Main -> Desktop
+### Runtime Delivery Governance
 
 - `main` 是能力源
-- `feat/tauri-integration` 是派生交付分支
-- 同步由 `scripts/sync-main-to-desktop.mjs` 和 GitHub Actions workflow 驱动
+- Desktop / Tauri 运行时资产在仓库内直接维护
+- 生成层与治理层通过本地门禁和 CI 门禁统一校验
 
-当前同步机制具备：
+当前交付治理机制具备：
 
-- `git worktree` 隔离
-- demo 内容剥离
-- desktop-only 资产保留
-- `package.json` 合并策略
-- 同步前依赖刷新与 `pnpm type-check`
-- worktree 场景下的 merge conflict 检测修复
+- `pnpm ai:doctor` 门禁自检
+- Husky 本地阻断
+- GitHub Actions 防漂移校验
+- `AGENTS.md`、`.cursor/**`、`skills-lock.json` 自动同步一致性检查
+- 运行时与治理层漂移分离审计
 
-这意味着桌面交付线不是手工平行维护，而是围绕主分支架构持续收敛。
+这意味着交付链路不再依赖派生桌面分支，而是围绕同一条主线和同一套可审计门禁持续收敛。
 
 ---
 

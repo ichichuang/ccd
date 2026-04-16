@@ -1,0 +1,22 @@
+---
+description: MANDATORY UI pre-execution architect checklist for views, components, layouts, and design-engine constraints.
+globs: ["src/views/**/*", "src/components/**/*", "src/layouts/**/*"]
+alwaysApply: true
+---
+# 🎨 Chief Architect UI Preflight
+
+> **AI MANDATE:** When the task touches visual surfaces, you MUST confirm this UI checklist in addition to the global preflight. **Any `[❌]` means you MUST NOT proceed.**
+
+## 1. Design Engine Integrity
+- [ ] **Phantom Check:** All UnoCSS shortcuts used MUST exist in `semanticShortcuts.ts` (No hallucinations).
+- [ ] **Internal Primitives:** `glass-base` is NOT used directly in templates.
+- [ ] **Units:** Priority is `vw/vh > % > px`. Absolutely NO `rem/em`. NO hex codes (uses Theme tokens).
+- [ ] **Class Statics:** All UnoCSS classes are static string literals (No dynamic template strings).
+
+## 2. Layout & Visual Contracts
+- [ ] **Scroll Contract:** `overflow-auto/scroll` is NOT used for main layouts. `<CScrollbar class="col-fill">` is used.
+- [ ] **Layout Exclusivity:** `layout-*` classes (e.g., `layout-container`, `layout-narrow`) are NEVER nested.
+- [ ] **Rule of 7:** Raw utility count on any element is `<= 7`.
+
+## 3. View Assembly Boundaries
+- [ ] **Form Boundary:** Inside `src/views/**`, `<form>` is NOT used. Use `<ProForm>` for 2+ fields.

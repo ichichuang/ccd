@@ -41,6 +41,19 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      - name: Run Architecture Doctor
+        run: pnpm ai:doctor
+
+      - name: Verify Generated AI Artifacts Are Synced
+        run: |
+          pnpm ai:sync
+          pnpm ai:sync:codex
+          if ! git diff --quiet -- AGENTS.md .cursor .ai/manifests/skills-lock.json; then
+            echo "::error::Generated AI artifacts are stale. Run pnpm ai:sync && pnpm ai:sync:codex and commit the results."
+            git diff -- AGENTS.md .cursor .ai/manifests/skills-lock.json
+            exit 1
+          fi
+
       - name: Strict Type Check
         run: pnpm type-check
 

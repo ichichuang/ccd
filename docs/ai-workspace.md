@@ -158,25 +158,17 @@ Use aggressive cleanup only when you intentionally want to discard local evidenc
 
 ---
 
-## Desktop Delivery Synchronization
+## Desktop Runtime Governance
 
-CCD keeps `main` as the architecture source and treats `feat/tauri-integration` as a derived delivery branch.
+The old derived desktop branch sync path has been retired.
 
-The sync path is automated through:
+Current rules are:
 
-- `scripts/sync-main-to-desktop.mjs`
-- `.github/workflows/sync-desktop-from-main.yml`
-
-Important properties of the current sync pipeline:
-
-- uses temporary `git worktree` isolation
-- preserves desktop-only assets and scripts
-- strips demo pages from the desktop branch
-- merges `package.json` using a main-base-plus-desktop-delta policy
-- runs desktop dependency refresh and type-check before pushing
-- now detects merge conflict state correctly inside git worktrees
-
-That last point matters because README and package conflicts are expected during branch sync and must be resolved by policy rather than treated as fatal before conflict state exists.
+- `main` is the only architecture source line
+- desktop / Tauri runtime assets, when present, are maintained directly in-repo
+- AI governance adapters must stay synced through `pnpm ai:sync` and `pnpm ai:sync:codex`
+- `pnpm ai:doctor` verifies both the generated adapters and whether Husky / CI still invoke the doctor gate
+- CI reruns sync and blocks drift if `AGENTS.md`, `.cursor/**`, or `skills-lock.json` would change
 
 ---
 
@@ -203,6 +195,6 @@ For architecture releases:
 1. update canonical docs and skills
 2. run local validation
 3. commit to `main`
-4. let desktop sync consume the new baseline
+4. confirm CI drift defense stays clean after re-running sync in automation
 
-This keeps documentation, automation, and branch delivery aligned around the same source of truth.
+This keeps documentation, automation, and generated adapters aligned around the same source of truth.

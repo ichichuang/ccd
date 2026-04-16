@@ -1,3 +1,4 @@
+import { spawnSync } from 'node:child_process'
 import fs from 'node:fs'
 import os from 'node:os'
 import path from 'node:path'
@@ -26,8 +27,12 @@ const requiredPaths = [
   '.cursor/skills',
   '.cursor/settings.json',
   'AGENTS.md',
+  'scripts/skill-lock-utils.mjs',
+  'scripts/ai-sync.mjs',
+  'scripts/ai-doctor.mjs',
   'scripts/ai-clean.mjs',
   'scripts/ai-sync-codex.mjs',
+  'scripts/codex-preflight.mjs',
   '.ai/runtime/repair_list.template.txt',
   '.ai/runtime/repair_list.txt',
   '.ai/manifests/skill-routing.json',
@@ -76,6 +81,15 @@ const deps = {
 const missingDeps = requiredDeps.filter(dep => !deps[dep])
 const missingLocalCodexSkills = requiredLocalCodexSkills.filter(name => !fs.existsSync(path.join(home, '.codex', 'skills', name, 'SKILL.md')))
 
+const runNodeScript = relPath => {
+  const absPath = path.join(cwd, relPath)
+  return spawnSync(process.execPath, [absPath], {
+    cwd,
+    encoding: 'utf8',
+    stdio: 'pipe',
+  })
+}
+
 const printCheck = (label, ok) => {
   const mark = ok ? '[OK]' : '[FAIL]'
   console.log(`${mark} ${label}`)
@@ -100,11 +114,33 @@ for (const name of missingLocalCodexSkills) {
   console.log(`  - missing local codex skill: ${name} (run pnpm ai:sync:codex)`)
 }
 
+const doctorScript = 'scripts/ai-doctor.mjs'
+const canRunDoctor =
+  Boolean(packageJson) &&
+  missingPaths.length === 0 &&
+  fs.existsSync(path.join(cwd, doctorScript))
+
+let doctorPassed = false
+if (!canRunDoctor) {
+  printCheck('ai workspace doctor', false)
+  console.log(`  - unable to run ${doctorScript}; fix required paths above and then run pnpm ai:doctor`)
+} else {
+  const doctorResult = runNodeScript(doctorScript)
+  if (doctorResult.stdout) process.stdout.write(doctorResult.stdout)
+  if (doctorResult.stderr) process.stderr.write(doctorResult.stderr)
+  doctorPassed = doctorResult.status === 0
+  printCheck('ai workspace doctor', doctorPassed)
+  if (!doctorPassed) {
+    console.log('  - architecture drift detected. Run pnpm ai:sync, then pnpm ai:doctor.')
+  }
+}
+
 const passed =
   Boolean(packageJson) &&
   missingPaths.length === 0 &&
   missingDeps.length === 0 &&
-  missingLocalCodexSkills.length === 0
+  missingLocalCodexSkills.length === 0 &&
+  doctorPassed
 console.log('--------------------')
 console.log(passed ? 'Preflight passed.' : 'Preflight failed.')
 

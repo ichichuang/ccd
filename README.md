@@ -1,8 +1,8 @@
 <div align="center">
 
-> 🚧 **本分支为 Tauri 桌面客户端分支**，基于 [`main`](https://github.com/ichichuang/ccd/tree/main) 的 CCD Web 架构封装原生壳。若你只需要浏览器内的中后台，请直接使用 **main**。
-
 # CCD Desktop
+
+> 🚧 **当前分支为 Tauri 桌面客户端分支**，持续吸收 `main` 的架构治理、门禁链路与动画层演进。
 
 ### 企业级 Vue 3 架构底座 · Tauri 桌面端衍生版
 
@@ -17,58 +17,95 @@
 [![pnpm](https://img.shields.io/badge/pnpm-10-f69220?style=flat-square&logo=pnpm&logoColor=white)](https://pnpm.io/)
 [![License: GPL v3](https://img.shields.io/badge/License-GPL_v3-blue?style=flat-square)](./LICENSE)
 
-**CCD Desktop** 在 CCD Web 基座上集成 **Tauri 2**，用于交付安装包形态的桌面应用。
-业务与 UI 仍由 Vue + Vite 驱动，原生侧负责窗口、系统集成与桌面能力桥接。
+**CCD Desktop** 在 CCD Web 架构基座上集成 **Tauri 2**，用于交付安装包形态的桌面应用。
+它继承 `main` 分支的分层边界、AI 治理、门禁链路与交付规范，同时保留桌面端原生窗口与系统能力桥接。
 
-[主分支架构文档](https://github.com/ichichuang/ccd/blob/main/docs/architecture.md) · [AI 工作区规范](./.ai/README.md) · [Tauri 官方文档](https://v2.tauri.app/)
+[主分支架构文档](https://github.com/ichichuang/ccd/blob/main/docs/architecture.md) · [AI 工作区总览](./docs/ai-workspace.md) · [AI 工作区规范](./.ai/README.md) · [Tauri 官方文档](https://v2.tauri.app/)
 
 </div>
 
 ---
 
-## 分支定位
+## 项目定位
 
-仓库采用“`main` 为核心源，`feat/tauri-integration` 为桌面端派生交付”的模型：
+CCD Desktop 面向“需要长期维护”的桌面端产品项目，而不是一次性 Demo。
 
-- `main`
-  - 保留 CCD 核心架构、示例模块、AI 治理配置、通用规范
-  - 所有通用能力优化应优先在 `main` 完成
-- `feat/tauri-integration`
-  - 基于 `main` 的能力承接 Tauri 2 桌面端集成
-  - 删除示例页面与示例路由，只保留桌面端交付所需实现
-  - 通过同步脚本从 `main` 下发更新
+你可以把它理解为一套“`main` 负责通用架构演进，当前分支负责 Tauri 桌面壳与桥接”的工程底座：
 
-如果你要做通用架构演进，应先改 `main`，再同步到当前分支。
+- 明确的分层与依赖方向：`HTTP -> Adapters -> API -> Hooks -> Stores -> Views`
+- 可复用的中后台能力：`ProForm`、`ProTable`、RBAC、主题系统、图表主题管线
+- Tauri 2 原生窗口、外链打开与桌面状态桥接
+- 严格的 TypeScript 与工程化校验
+- 面向多 AI 工具统一治理的协作协议
+- 可审计、可阻断的生成层与架构治理链路
 
 ---
 
-## 桌面端环境准备
+## 交付模型
 
-在安装 Node 依赖前，请先满足 **Rust 工具链** 与当前操作系统的 **原生构建依赖**。
-以 [Tauri 官方 Prerequisites](https://v2.tauri.app/start/prerequisites/) 为准。
+当前分支遵循“`main` 为通用架构源，`feat/tauri-integration` 为桌面端交付线”的同步模型：
 
-### 通用
+- 通用架构、AI 治理、门禁脚本、动画层与文档规范优先在 `main` 演进
+- 当前分支在吸收 `main` 的同时，保留 `src-tauri/**`、桌面桥接脚本与 Tauri 依赖
+- 生成层与治理层变更统一通过 `pnpm ai:sync`、`pnpm ai:sync:codex`、`pnpm ai:doctor`、`pnpm codex:preflight` 收敛
+- CI 会重新执行生成同步并对 `AGENTS.md`、`.cursor/**`、`skills-lock.json` 做防漂移阻断
+- 桌面端额外通过 `pnpm sync:version`、`pnpm sync:desktop-config`、`pnpm check:drift` 维持 Web 与 Tauri 配置一致
 
-| 项目          | 要求                                                                     |
-| ------------- | ------------------------------------------------------------------------ |
-| Rust          | 安装 [rustup](https://rustup.rs/)，使用 stable，`rustc` / `cargo` 可执行 |
-| Rust 最低版本 | 与 `src-tauri/Cargo.toml` 中 `rust-version` 一致                         |
-| Node.js       | `>= 22.12.0`                                                             |
-| pnpm          | `>= 10.0.0`                                                              |
+如果你要做通用架构优化，应先在 `main` 完成，再合并到当前分支；如果你要做桌面端特有能力，则在当前分支内维护并保持漂移检查通过。
 
-### 按平台
+---
 
-| 平台    | 需要                                                          |
-| ------- | ------------------------------------------------------------- |
-| macOS   | Xcode Command Line Tools：`xcode-select --install`            |
-| Windows | MSVC、Windows SDK、可用的 WebView2                            |
-| Linux   | 发行版对应的 `webkit2gtk`、`build-essential`、`libssl-dev` 等 |
+## 核心能力
+
+### 1. 分层架构
+
+- `src/adapters` 负责防腐层与 DTO 收敛
+- `src/api` 负责 Alova 方法构建与模块边界
+- `src/hooks` 负责组合式逻辑复用
+- `src/stores` 负责 Pinia 状态管理
+- `src/views` 负责业务与示例承载
+
+### 2. ProForm DAG 引擎
+
+- 使用拓扑排序管理字段依赖
+- 内建 `disabledIf`、`requiredIf`、`visibleIf` 逻辑流水线
+- 适合复杂联动表单而不是散乱的 watch 链
+
+### 3. ProTable 配置驱动引擎
+
+- 以配置描述列表页而不是重复样板
+- 内建分页、筛选、排序、枚举渲染、虚拟滚动
+- 让 CRUD 页面具备一致的实现边界
+
+### 4. 三层设计系统
+
+- Tier 1：CSS Variables 语义变量
+- Tier 2：UnoCSS 语义 token 与 shortcuts
+- Tier 3：PrimeVue Pass-Through 预设
+
+目标不是“换皮”，而是让 UI 语言可审计、可约束、可复用。
+
+### 5. AI 协作治理
+
+- `.ai/**` 是唯一规范源
+- `AGENTS.md`、`.cursor/**` 都只是兼容适配输出
+- Codex 通过仓库 canonical source 驱动，并把本机 `~/.codex/skills/**` 当作执行入口
+- Cursor 作为兼容层继续可用，但不再主导技能源目录结构
 
 ---
 
 ## 快速开始
 
-### 克隆并切换到桌面端分支
+### 环境要求
+
+| 工具    | 版本         |
+| ------- | ------------ |
+| Node.js | `>= 22.12.0` |
+| pnpm    | `>= 10.0.0`  |
+
+在安装 Node 依赖前，请先满足当前操作系统所需的 Rust 与原生构建依赖，具体以 [Tauri Prerequisites](https://v2.tauri.app/start/prerequisites/) 为准。
+
+### 安装
 
 ```bash
 git clone git@github.com:ichichuang/ccd.git
@@ -79,20 +116,29 @@ pnpm install
 
 ### 初始化 AI 工作区
 
+首次安装依赖后，先生成本地兼容适配文件：
+
 ```bash
 pnpm ai:sync
+pnpm ai:sync:codex
 pnpm ai:doctor
 pnpm codex:preflight
 ```
 
-### 调试桌面应用
+说明：
+
+- `pnpm ai:sync`：从 `.ai/**` 生成 `AGENTS.md` 与 `.cursor/**`
+- `pnpm ai:sync:codex`：把 `.ai/skills/core/** + .ai/skills/codex/**` 安装到本机 `~/.codex/skills/**`
+- `pnpm ai:doctor`：检查 canonical 资产与适配器是否漂移
+- `pnpm codex:preflight`：检查 Codex 工作所需规则、技能、依赖是否齐备
+
+### 启动桌面开发
 
 ```bash
 pnpm dev:desktop
 ```
 
-`pnpm dev:desktop` 会通过 Tauri 的 `beforeDevCommand` 触发 `pnpm dev`。
-当前分支已接入 `predev`，启动前会自动执行：
+`pnpm dev:desktop` 会触发 `predev`，先执行：
 
 ```bash
 pnpm sync:version
@@ -111,7 +157,7 @@ pnpm dev
 pnpm build:desktop
 ```
 
-当前分支已接入 `prebuild`，构建前会自动执行：
+`pnpm build:desktop` 会触发 `prebuild`，先执行：
 
 ```bash
 pnpm sync:brand
@@ -119,187 +165,20 @@ pnpm sync:version
 pnpm sync:desktop-config
 ```
 
-### 类型检查与 Web 产物构建
+### Web 产物构建与预览
 
 ```bash
-pnpm type-check
 pnpm build
+pnpm preview
 ```
 
-`pnpm build` 仅产出前端静态资源；可安装的桌面包请使用 `pnpm build:desktop`。
-
----
-
-## 新项目初始化配置教程
-
-如果你是基于当前桌面端分支启动一个新产品项目，建议按下面顺序初始化，不要分散修改多个文件。
-
-### 第一步：修改品牌源
-
-编辑 `src/constants/brand.ts`，这是品牌相关配置的唯一源头。
-
-你通常会改这些字段：
-
-- `id`
-  - 例如：`com.yourcompany.desktopapp`
-  - 用于 Tauri bundle identifier
-- `name`
-  - 例如：`your-desktop-app`
-  - 用于 `package.json.name` 与 `tauri.conf.json.productName`
-- `displayName`
-  - 例如：`Your Desktop App`
-  - 用于窗口标题和界面展示名称
-- `description`
-  - 用于应用描述、包描述
-- `author`
-  - 用于作者信息
-
-修改后执行：
-
-```bash
-pnpm sync:brand
-```
-
-这会自动同步：
-
-- `package.json`
-- `src-tauri/tauri.conf.json`
-- `src-tauri/Cargo.toml`
-
-### 第二步：修改版本号源
-
-编辑 `package.json` 的 `version`。
-
-例如：
-
-```json
-{
-  "version": "1.0.0"
-}
-```
-
-修改后执行：
-
-```bash
-pnpm sync:version
-```
-
-这会自动同步：
-
-- `src-tauri/tauri.conf.json`
-- `src-tauri/Cargo.toml`
-
-### 第三步：修改开发端口源
-
-编辑 `.env` 或 `.env.development` 中的 `VITE_PORT`。
-
-例如：
-
-```bash
-VITE_PORT=9001
-```
-
-修改后执行：
-
-```bash
-pnpm sync:desktop-config
-```
-
-这会自动同步：
-
-- `src-tauri/tauri.conf.json` 的 `build.devUrl`
-- `.vscode/launch.json` 的调试地址
-
-### 第四步：执行一次完整对齐
-
-初始化一个新桌面端项目后，建议统一执行一遍：
-
-```bash
-pnpm sync:brand
-pnpm sync:version
-pnpm sync:desktop-config
-pnpm ai:sync
-pnpm ai:doctor
-pnpm codex:preflight
-```
-
-### 第五步：开始开发前做一次校验
-
-```bash
-pnpm check
-pnpm test:run
-pnpm build:ci
-```
-
-### 初始化阶段的禁止事项
-
-- 不要手改 `src-tauri/tauri.conf.json` 的 `version`
-- 不要手改 `src-tauri/tauri.conf.json` 的 `build.devUrl`
-- 不要手改 `.vscode/launch.json` 的调试端口
-- 不要手改 `package.json` 的 `name` / `description` / `author` 作为品牌初始化入口
-
-正确做法是始终回到单一源修改。
-
----
-
-## 配置单一源
-
-桌面端分支已经收敛为“改一处，同步其余配置”的模式。
-
-### 开发端口
-
-- 单一源：`.env` / `.env.development` 中的 `VITE_PORT`
-- 自动同步目标：
-  - `src-tauri/tauri.conf.json` 的 `build.devUrl`
-  - `.vscode/launch.json` 的前端调试 `url`
-- 同步命令：
-
-```bash
-pnpm sync:desktop-config
-```
-
-也就是说，之后调整桌面端开发端口时，只改 `VITE_PORT`，不要再手改 `src-tauri/tauri.conf.json` 或 `.vscode/launch.json`。
-
-### 版本号
-
-- 单一源：`package.json` 的 `version`
-- 自动同步目标：
-  - `src-tauri/tauri.conf.json` 的 `version`
-  - `src-tauri/Cargo.toml` 的 `version`
-- 同步命令：
-
-```bash
-pnpm sync:version
-```
-
-### 品牌与桌面元数据
-
-- 单一源：`src/constants/brand.ts`
-- 自动同步目标：
-  - `package.json` 的 `name` / `description` / `author`
-  - `src-tauri/tauri.conf.json` 的 `identifier` / `productName` / `window.title`
-  - `src-tauri/Cargo.toml` 的 `description` / `authors`
-- 同步命令：
-
-```bash
-pnpm sync:brand
-```
-
-### 当前桌面端配置链路
-
-```text
-VITE_PORT (.env)               -> pnpm sync:desktop-config -> tauri.conf.json / .vscode/launch.json
-version (package.json)         -> pnpm sync:version        -> tauri.conf.json / Cargo.toml
-brand (src/constants/brand.ts) -> pnpm sync:brand          -> package.json / tauri.conf.json / Cargo.toml
-```
-
-如果仍然遇到端口漂移，`vite.config.ts` 中保留了最后一道保护校验，会直接提示先执行 `pnpm sync:desktop-config`。
+`pnpm build` 仅生成前端静态资源；可安装桌面包请使用 `pnpm build:desktop`。
 
 ---
 
 ## AI 工作区规范
 
-当前分支已经跟随主分支收敛为统一 AI 工作区：
+仓库已经完成 AI 配置统一收敛，当前标准如下：
 
 - 唯一源目录：`.ai/`
 - 规则目录：`.ai/rules/**`
@@ -309,75 +188,134 @@ brand (src/constants/brand.ts) -> pnpm sync:brand          -> package.json / tau
 - 清单与锁文件：`.ai/manifests/**`
 - 本地运行态：`.ai/runtime/**`
 
+### 你应该编辑什么
+
 只编辑 `.ai/**` 下的 canonical 文件。
 
-以下路径只是本地兼容适配输出，不应手动维护：
+### 你不应该手动维护什么
 
-- `AGENTS.md`
-- `CLAUDE.md`
-- `.cursor/settings.json`
-- `.claude/settings.local.json`
+以下文件或目录属于生成出来的兼容适配层，不应作为源文件直接维护：
+
+- [AGENTS.md](./AGENTS.md)
+- [.cursor/settings.json](./.cursor/settings.json)
 - `.cursor/rules/**`
 - `.cursor/skills/**`
-- `.claude/skills/**`
 
-维护命令：
+### 本地运行态文件
 
-```bash
-pnpm ai:sync
-pnpm ai:doctor
-pnpm codex:preflight
-```
+- versioned template: [.ai/runtime/repair_list.template.txt](./.ai/runtime/repair_list.template.txt)
+- local generated state: `.ai/runtime/repair_list.txt`
+
+这意味着仓库现在已经摆脱“规则、技能、入口文件四处分散维护”的状态，所有 AI 工具都回到同一个源头。Codex 使用本机 `~/.codex/skills/**` 作为技能发现入口，但这些技能同样由仓库里的 `.ai/skills/core/** + .ai/skills/codex/**` 统一生成。
+
+更多细节见：[.ai/README.md](./.ai/README.md)
 
 ---
 
 ## 日常开发命令
 
 ```bash
-pnpm dev             # Web 开发模式
-pnpm dev:desktop     # Tauri 桌面开发模式
-pnpm build           # Web 构建
-pnpm build:desktop   # 桌面安装包构建
+pnpm dev             # Web 本地开发
+pnpm dev:desktop     # Tauri 桌面开发
+pnpm build           # Web 生产构建
+pnpm build:desktop   # Tauri 桌面安装包
+pnpm preview         # Web 本地预览
 pnpm type-check      # vue-tsc
 pnpm lint:check      # ESLint 检查
 pnpm test:run        # Vitest 单次运行
 pnpm check           # type-check + lint:check
 pnpm ai:sync         # 生成 AI 兼容适配层
+pnpm ai:sync:codex   # 安装本机 Codex skills
+pnpm ai:clean        # 保守清理空会话目录与本地 AI/浏览器残留
+pnpm ai:clean -- --all # 激进清理 browser artifacts、tmp 与本机 Codex 浏览器缓存
+pnpm ai:route:skills "任务描述" # 低 token 选择最小 skill 集合
 pnpm ai:doctor       # 检查 AI 工作区结构
 pnpm codex:preflight # 检查 Codex 开发前置条件
-pnpm sync:brand      # 同步品牌元数据
-pnpm sync:version    # 同步版本号到 Tauri / Cargo
-pnpm sync:desktop-config # 同步桌面端开发端口到 Tauri / VS Code
+pnpm sync:brand      # 同步品牌到 package / Tauri / Cargo
+pnpm sync:version    # 同步版本到 Tauri / Cargo
+pnpm sync:desktop-config # 同步桌面端 devUrl 与 VS Code 调试地址
+pnpm check:drift     # 检查桌面端配置漂移
 ```
 
 ---
 
-## 已验证链路
+## 推荐开发流程
 
-本分支当前 README 对应的桌面端流程，已实际通过以下命令校验：
+### 新环境启动
+
+```bash
+pnpm install
+pnpm ai:sync
+pnpm ai:sync:codex
+pnpm ai:doctor
+pnpm codex:preflight
+pnpm dev:desktop
+```
+
+### 提交前最少检查
+
+```bash
+pnpm check
+pnpm test:run
+pnpm ai:doctor
+```
+
+### 当你修改了 `.ai/**`
 
 ```bash
 pnpm ai:sync
 pnpm ai:doctor
-pnpm codex:preflight
-pnpm sync:desktop-config
-pnpm sync:version
-pnpm check
-pnpm test:run
-pnpm build:ci
 ```
+
+不要直接改生成适配器，否则后续同步时一定会被覆盖。
 
 ---
 
 ## 关键文档
 
-| 文档                                                                                          | 说明                             |
-| --------------------------------------------------------------------------------------------- | -------------------------------- |
-| [README.md](./README.md)                                                                      | 当前桌面端分支说明               |
-| [main/docs/architecture.md](https://github.com/ichichuang/ccd/blob/main/docs/architecture.md) | CCD 主架构拓扑与核心能力         |
-| [.ai/README.md](./.ai/README.md)                                                              | AI 工作区标准                    |
-| [docs/codex/quickstart.md](./docs/codex/quickstart.md)                                        | CCD 架构下的 Codex 使用说明      |
-| [Tauri 官方文档](https://v2.tauri.app/)                                                       | Tauri 配置、插件、打包与平台细节 |
+| 文档                                                                 | 说明                                        |
+| -------------------------------------------------------------------- | ------------------------------------------- |
+| [README.md](./README.md)                                             | 仓库入口、分支模型、启动方式、AI 统一规范   |
+| [docs/architecture.md](./docs/architecture.md)                       | 架构拓扑、目录规约、核心能力细节            |
+| [docs/ai-workspace.md](./docs/ai-workspace.md)                       | AI 工作区、技能拓扑、浏览器自动化、清理策略 |
+| [docs/codex/quickstart.md](./docs/codex/quickstart.md)               | Codex 启动、技能路由、CRX 录制与回放        |
+| [.ai/README.md](./.ai/README.md)                                     | AI 工作区标准与生成适配规则                 |
+| [.ai/protocol/AI.entry.md](./.ai/protocol/AI.entry.md)               | AI 协议统一入口                             |
+| [.ai/protocol/adapters/README.md](./.ai/protocol/adapters/README.md) | Codex / Cursor 适配说明索引                 |
+
+---
+
+## 面向产品项目的使用方式
+
+如果你是基于 CCD 孵化业务项目，建议遵循以下原则：
+
+- 把 `main` 视为架构能力源，不在业务分支里反向定义核心规范
+- 保持 `.ai/**` 为单一事实来源，让不同 AI 工具共享同一套边界
+- 优先复用现有抽象，不为单个需求破坏模块边界
+- 用规则约束生成质量，而不是依赖一次性 prompt 运气
+
+这样 Codex 与 Cursor 才能在你的项目里真正成为“遵守架构的工程执行者”，而不是随机生成器。
+
+### 低 Token 浏览器自动化
+
+当前推荐链路：
+
+- 用 Playwright CRX 录制真实浏览器操作并导出 Python
+- 用 `.ai/skills/codex/architecture-browser-master/scripts/browser_automator.py flow-import` 导入为本地 flow JSON
+- 用 `flow-run` 复用同一条自动化流，并结合 `state-save/state-load` 复用登录态
+
+这让 AI 负责高层编排与结果判断，本地脚本负责重复浏览器动作，从而显著减少反复读取 DOM、截图和日志带来的 token 开销。
+
+### 文档系统升级后的阅读顺序
+
+如果你想完整理解这套架构，建议按这个顺序阅读：
+
+1. [README.md](./README.md)
+2. [docs/architecture.md](./docs/architecture.md)
+3. [docs/ai-workspace.md](./docs/ai-workspace.md)
+4. [docs/codex/quickstart.md](./docs/codex/quickstart.md)
+
+这样可以把产品架构、AI 工作区、Codex 操作流程和桌面交付同步放在同一套认知模型里，而不是分散理解。
 
 ---
 
@@ -387,8 +325,11 @@ pnpm build:ci
 
 1. 遵守 [Conventional Commits](https://www.conventionalcommits.org/)
 2. 本地通过 `pnpm check`
-3. 本地通过 `pnpm test:run`
-4. 如涉及 AI 配置更新，执行 `pnpm ai:sync` 与 `pnpm ai:doctor`
+3. 本地通过 `pnpm ai:doctor`
+4. 如涉及 AI 配置更新，执行 `pnpm ai:sync` 与 `pnpm ai:sync:codex`
+5. 如涉及桌面端配置更新，执行 `pnpm sync:version` / `pnpm sync:desktop-config` 与 `pnpm check:drift`
+
+欢迎基于 `main` 提交通用架构优化，再将其合并到当前桌面分支。
 
 ---
 

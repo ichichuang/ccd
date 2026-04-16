@@ -125,11 +125,11 @@ python3 .ai/skills/codex/architecture-browser-master/scripts/browser_automator.p
 
 This keeps Codex at the orchestration layer while the browser work runs through local scripts and compact summaries.
 
-## 5.5) Desktop Sync Context
+## 5.5) Generated Artifact Drift Context
 
-If your change lands on `main`, the desktop delivery branch is expected to consume it through `scripts/sync-main-to-desktop.mjs` and `.github/workflows/sync-desktop-from-main.yml`.
+If your change touches canonical AI governance assets, expect CI to rerun `pnpm ai:sync` and `pnpm ai:sync:codex`.
 
-That sync path is now worktree-aware and should correctly detect merge conflict state before applying desktop-specific resolution rules.
+If those commands would modify `AGENTS.md`, `.cursor/**`, or `skills-lock.json`, CI will fail and require you to commit the synced artifacts first.
 
 ## 6) Task Prompt Template (Copy and Fill)
 
@@ -141,8 +141,9 @@ Must follow:
 2) .ai/protocol/AGENTS.core.md
 3) .ai/rules/core/00-global-architect.mdc
 4) .ai/rules/core/00-root-gatekeeper.mdc
-5) .ai/rules/core/01-preflight-checklist.mdc
-6) Domain rules under .ai/rules/{architecture,components,core,design-system,integrations}
+5) .ai/rules/core/01-global-preflight.mdc
+6) .ai/rules/core/02-ui-preflight.mdc when visual surfaces are touched
+7) Domain rules under .ai/rules/{architecture,components,core,design-system,integrations}
 
 Skill policy:
 - Select only required skills from:
