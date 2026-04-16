@@ -30,6 +30,28 @@ html[data-e2e-mode='visual'] *::after {
   scroll-behavior: auto !important;
 }
 
+/* Windows WebView2: large backdrop blur / gaussian blur surfaces are prone to repaint storms. */
+html.is-windows,
+html.is-windows *,
+html.is-windows *::before,
+html.is-windows *::after {
+  backdrop-filter: none !important;
+}
+
+html.is-windows [class*='blur-'],
+html.is-windows .cinematic-fade-enter-active,
+html.is-windows .cinematic-fade-leave-active,
+html.is-windows .cinematic-fade-enter-from,
+html.is-windows .cinematic-fade-leave-to {
+  filter: none !important;
+}
+
+html.is-windows .cinematic-fade-enter-active,
+html.is-windows .cinematic-fade-leave-active {
+  transition-property: opacity, transform !important;
+  will-change: transform, opacity;
+}
+
 /* 防御：View Transition 期间禁用所有原生 CSS 过渡 */
 html.is-view-transitioning,
 html.is-view-transitioning *,

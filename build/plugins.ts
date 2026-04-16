@@ -17,7 +17,11 @@ import { configHtmlPlugin } from './html'
 import { viteBuildInfo } from './info'
 import { viteBuildPerformancePlugin } from './performance'
 
-export function getPluginsList(env: ViteEnv, command: 'build' | 'serve'): PluginOption[] {
+export function getPluginsList(
+  env: ViteEnv,
+  command: 'build' | 'serve',
+  resolvedBase: string
+): PluginOption[] {
   const { VITE_COMPRESSION, VITE_BUILD_ANALYZE, VITE_LEGACY } = env
   const isDev = command === 'serve'
   const isBuild = command === 'build'
@@ -60,7 +64,7 @@ export function getPluginsList(env: ViteEnv, command: 'build' | 'serve'): Plugin
       }),
 
     // ✅ HTML 注入品牌配置 + API 域名资源提示（VITE_API_BASE_URL）
-    configHtmlPlugin(env),
+    configHtmlPlugin(env, resolvedBase),
 
     // 图标变更监听（仅开发环境启用）
     isDev && createIconsWatcherPlugin(),

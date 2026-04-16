@@ -44,6 +44,18 @@ const PX_TO_REM_SELECTOR_BLACKLIST: (string | RegExp)[] = [
   /no-rem/,
 ]
 
+function normalizeBasePath(basePath: string): string {
+  if (!basePath) {
+    return '/'
+  }
+
+  if (basePath === './' || basePath === '/') {
+    return basePath
+  }
+
+  return basePath.endsWith('/') ? basePath : `${basePath}/`
+}
+
 export default ({ mode, command }: ConfigEnv): UserConfigExport => {
   // 1. 加载环境变量
   const env = wrapperEnv(loadEnv(mode, root))
@@ -59,6 +71,8 @@ export default ({ mode, command }: ConfigEnv): UserConfigExport => {
   } = env
 
   const isDev = mode === 'development'
+  const isTauriBuild = Boolean(process.env.TAURI_ENV_PLATFORM || process.env.TAURI_ENV_ARCH)
+  const resolvedBase = isTauriBuild ? './' : normalizeBasePath(VITE_PUBLIC_PATH)
   ensureTauriDevUrlSync(VITE_PORT)
 
   // 2. 动态控制 esbuild 的 drop / pure 选项
@@ -83,7 +97,7 @@ export default ({ mode, command }: ConfigEnv): UserConfigExport => {
   }
 
   return defineConfig({
-    base: process.env.TAURI_ENV_PLATFORM ? './' : VITE_PUBLIC_PATH,
+    base: resolvedBase,
     root,
     logLevel: isDev ? 'info' : 'warn',
     clearScreen: false,
@@ -136,7 +150,8 @@ export default ({ mode, command }: ConfigEnv): UserConfigExport => {
           ? VITE_COMPRESSION
           : 'none') as 'none' | 'gzip' | 'brotli' | 'both',
       },
-      command
+      command,
+      resolvedBase
     ),
 
     // 4. 依赖优化 (清理了僵尸依赖后的 clean version)

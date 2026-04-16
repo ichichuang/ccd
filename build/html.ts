@@ -5,6 +5,18 @@ import { THEME_PRESETS, DEFAULT_THEME_MODE, DEFAULT_THEME_NAME } from '../src/co
 import { generateThemeVars } from '../src/utils/theme/engine'
 import type { ViteEnv } from './utils'
 
+function resolveHtmlAssetPath(basePath: string, assetPath: string): string {
+  if (basePath === './') {
+    return `./${assetPath}`
+  }
+
+  if (!basePath || basePath === '/') {
+    return `/${assetPath}`
+  }
+
+  return `${basePath.endsWith('/') ? basePath : `${basePath}/`}${assetPath}`
+}
+
 /**
  * 从 API 基址生成 preconnect + dns-prefetch（仅绝对 http(s) URL）
  */
@@ -28,7 +40,7 @@ function buildApiOriginResourceHints(apiBaseUrl: string): string {
  * Phase 13.33: 注入主题变量 fallback，消除 First Paint 时的 CSS 变量真空期 (Anti-FOIT)
  * 数据源：src/constants/theme.ts，无硬编码颜色
  */
-export function configHtmlPlugin(env: ViteEnv): PluginOption {
+export function configHtmlPlugin(env: ViteEnv, basePath: string): PluginOption {
   const resourceHints = buildApiOriginResourceHints(env.VITE_API_BASE_URL ?? '')
 
   return {
@@ -50,7 +62,7 @@ ${themeFallback}
         .replace(/%BRAND_NAME%/g, brand.name)
         .replace(/%BRAND_SLOGAN%/g, brand.slogan)
         .replace(/%BRAND_AUTHOR%/g, brand.author)
-        .replace(/%BRAND_FAVICON%/g, `${env.BASE_URL ?? '/'}face.png`)
+        .replace(/%BRAND_FAVICON%/g, resolveHtmlAssetPath(basePath, 'face.png'))
         .replace(/%DEFAULT_THEME_MODE%/g, DEFAULT_THEME_MODE)
         .replace(/%THEME_MODE_STORAGE_KEY%/g, RUNTIME_STORAGE_KEYS.themeMode)
         .replace(/%THEME_PRIMARY_STORAGE_KEY%/g, RUNTIME_STORAGE_KEYS.themePrimary)

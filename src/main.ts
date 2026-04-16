@@ -14,8 +14,14 @@ import router from '@/router'
 import { useLayoutStoreWithOut } from '@/stores/modules/system'
 import { useUserStoreWithOut } from '@/stores/modules/session'
 import { fadeOutNativePreloader } from '@/hooks/layout/useLoading'
-import { isTauri } from '@/utils/env'
+import { isTauri, isTauriWindows } from '@/utils/env'
 import { preload } from '@/utils/theme/sizeEngine'
+
+if (typeof document !== 'undefined') {
+  const root = document.documentElement
+  root.classList.toggle('is-tauri', isTauri())
+  root.classList.toggle('is-windows', isTauriWindows())
+}
 
 let isUnauthorizedHandling = false
 /**
