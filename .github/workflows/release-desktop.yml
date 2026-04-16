@@ -34,14 +34,6 @@ jobs:
             rust_targets: aarch64-apple-darwin,x86_64-apple-darwin
     env:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
-      TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
-      APPLE_CERTIFICATE: ${{ secrets.APPLE_CERTIFICATE }}
-      APPLE_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
-      APPLE_SIGNING_IDENTITY: ${{ secrets.APPLE_SIGNING_IDENTITY }}
-      APPLE_ID: ${{ secrets.APPLE_ID }}
-      APPLE_PASSWORD: ${{ secrets.APPLE_PASSWORD }}
-      APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
       SKIP_TAURI_ICON: ${{ matrix.os == 'windows-latest' && '1' || '' }}
 
     steps:
@@ -72,6 +64,69 @@ jobs:
 
       - name: Validate desktop build without bundling
         run: pnpm exec tauri build --no-bundle --target ${{ matrix.target }}
+
+      - name: Export updater signing key when configured
+        shell: bash
+        env:
+          TAURI_SIGNING_PRIVATE_KEY_SECRET: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
+          TAURI_SIGNING_PRIVATE_KEY_PASSWORD_SECRET: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
+        run: |
+          if [ -z "$TAURI_SIGNING_PRIVATE_KEY_SECRET" ]; then
+            echo "Tauri updater signing key not configured; release artifacts will be published without updater metadata."
+            exit 0
+          fi
+
+          {
+            echo "TAURI_SIGNING_PRIVATE_KEY<<EOF"
+            printf '%s\n' "$TAURI_SIGNING_PRIVATE_KEY_SECRET"
+            echo "EOF"
+          } >> "$GITHUB_ENV"
+
+          if [ -n "$TAURI_SIGNING_PRIVATE_KEY_PASSWORD_SECRET" ]; then
+            echo "TAURI_SIGNING_PRIVATE_KEY_PASSWORD=$TAURI_SIGNING_PRIVATE_KEY_PASSWORD_SECRET" >> "$GITHUB_ENV"
+          fi
+
+      - name: Export Apple signing secrets when configured
+        if: runner.os == 'macOS'
+        shell: bash
+        env:
+          APPLE_CERTIFICATE_SECRET: ${{ secrets.APPLE_CERTIFICATE }}
+          APPLE_CERTIFICATE_PASSWORD_SECRET: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
+          APPLE_SIGNING_IDENTITY_SECRET: ${{ secrets.APPLE_SIGNING_IDENTITY }}
+          APPLE_ID_SECRET: ${{ secrets.APPLE_ID }}
+          APPLE_PASSWORD_SECRET: ${{ secrets.APPLE_PASSWORD }}
+          APPLE_TEAM_ID_SECRET: ${{ secrets.APPLE_TEAM_ID }}
+        run: |
+          if [ -z "$APPLE_CERTIFICATE_SECRET" ]; then
+            echo "Apple signing secrets not configured; publishing unsigned macOS bundles."
+            exit 0
+          fi
+
+          {
+            echo "APPLE_CERTIFICATE<<EOF"
+            printf '%s\n' "$APPLE_CERTIFICATE_SECRET"
+            echo "EOF"
+          } >> "$GITHUB_ENV"
+
+          if [ -n "$APPLE_CERTIFICATE_PASSWORD_SECRET" ]; then
+            echo "APPLE_CERTIFICATE_PASSWORD=$APPLE_CERTIFICATE_PASSWORD_SECRET" >> "$GITHUB_ENV"
+          fi
+
+          if [ -n "$APPLE_SIGNING_IDENTITY_SECRET" ]; then
+            echo "APPLE_SIGNING_IDENTITY=$APPLE_SIGNING_IDENTITY_SECRET" >> "$GITHUB_ENV"
+          fi
+
+          if [ -n "$APPLE_ID_SECRET" ]; then
+            echo "APPLE_ID=$APPLE_ID_SECRET" >> "$GITHUB_ENV"
+          fi
+
+          if [ -n "$APPLE_PASSWORD_SECRET" ]; then
+            echo "APPLE_PASSWORD=$APPLE_PASSWORD_SECRET" >> "$GITHUB_ENV"
+          fi
+
+          if [ -n "$APPLE_TEAM_ID_SECRET" ]; then
+            echo "APPLE_TEAM_ID=$APPLE_TEAM_ID_SECRET" >> "$GITHUB_ENV"
+          fi
 
       - name: Create GitHub release and upload bundles
         uses: tauri-apps/tauri-action@v0
