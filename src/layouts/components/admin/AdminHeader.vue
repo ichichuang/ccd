@@ -8,6 +8,7 @@ import { RouterLink, useRoute } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { useAppElementSize } from '@/hooks/modules/useAppElementSize'
 import { useThemeSwitch } from '@/hooks/modules/useThemeSwitch'
+import { useWindowAdapter } from '@/utils/windowAdapter'
 import { storeToRefs } from 'pinia'
 import {
   getAdminMenuTree,
@@ -58,6 +59,7 @@ const userStore = useUserStore()
 const deviceStore = useDeviceStore()
 const layoutStore = useLayoutStore()
 const themeSwitch = useThemeSwitch()
+const { isFullscreen, toggleFullscreen } = useWindowAdapter()
 const { isMobileTerminal: isMobile } = storeToRefs(deviceStore)
 
 const userRoles = computed(() => userStore.getUserRoles || [])
@@ -311,7 +313,7 @@ const renderRootItem = (item: PrimeMenuModelItem) => {
       </div>
     </div>
 
-    <!-- Right: Actions (theme max-md:hidden for responsive graceful degradation) -->
+    <!-- Right: Actions (fullscreen max-lg:hidden, theme max-md:hidden for responsive graceful degradation) -->
     <div class="h-full center gap-sm">
       <div
         v-if="showSidebarToggle"
@@ -320,6 +322,20 @@ const renderRootItem = (item: PrimeMenuModelItem) => {
       >
         <Icons
           :name="sidebarCollapse ? 'i-lucide-panel-left-open' : 'i-lucide-panel-left-close'"
+          size="lg"
+        />
+      </div>
+      <div
+        v-if="deviceStore.type === 'PC'"
+        class="max-lg:hidden cursor-pointer material-elevated border-none outline-none duration-sm center ring-1 ring-border p-sm"
+        @click="toggleFullscreen()"
+      >
+        <Icons
+          :name="
+            isFullscreen
+              ? 'i-solar-quit-full-screen-bold-duotone'
+              : 'i-solar-full-screen-bold-duotone'
+          "
           size="lg"
         />
       </div>

@@ -5,129 +5,11 @@ import {
   routeWhitePathList,
 } from '@/constants/router'
 import router, { routeUtils } from '@/router'
-import { generateIdFromKey } from '@/utils/ids'
-import { isTauri } from '@/utils/env'
-import {
-  focusDesktopRouteWindow,
-  openDesktopRouteWindow,
-  openExternalLink,
-} from '@/utils/desktopWindow'
+import { windowAdapter, type WindowMode } from '@/utils/windowAdapter'
 import { usePermissionStore } from '@/stores/modules/session'
 import type { LocationQueryRaw, RouteLocationNormalized, RouteMeta } from 'vue-router'
 import type { MenuItem as PrimeMenuItem } from 'primevue/menuitem'
 import { filterMenuByAccess } from './accessControl'
-
-// ================= 窗口管理 =================
-
-/**
- * 运行时窗口引用表
- * ⚠️ 判断窗口是否存在的唯一可信来源
- */
-const routeWindowRefMap = new Map<string, Window>()
-
-/**
- * 仅用于通知窗口关闭
- */
-let windowChannel: BroadcastChannel | null = null
-
-function initWindowChannel() {
-  if (!windowChannel && typeof BroadcastChannel !== 'undefined') {
-    windowChannel = new BroadcastChannel('route-window-channel')
-    windowChannel.addEventListener('message', e => {
-      if (e.data?.type === 'window-closed') {
-        const { key } = e.data
-        routeWindowRefMap.delete(key)
-        // 此模块在 app 入口 import 时即执行，BroadcastChannel 消息有极小概率在
-        // app.use(pinia) 初始化完成之前到达，需防御性捕获 "getActivePinia() was called
-        // without an active Pinia" 错误，避免窗口管理状态损坏。
-        try {
-          const permissionStore = usePermissionStore()
-          permissionStore.markWindowClosed(key)
-        } catch {
-          // Pinia 尚未初始化，忽略此次窗口关闭通知（窗口状态将在下次访问时自动修正）
-        }
-      }
-    })
-  }
-}
-
-function generateWindowKey(routeName: string, query?: LocationQueryRaw): string {
-  return `route-${generateIdFromKey(`${routeName}:${JSON.stringify(query ?? {})}`)}`
-}
-
-/**
- * 获取窗口引用（唯一可信）
- */
-function getRouteWindowRef(key: string): Window | null {
-  const win = routeWindowRefMap.get(key)
-  if (!win) {
-    return null
-  }
-
-  if (win.closed) {
-    routeWindowRefMap.delete(key)
-    const permissionStore = usePermissionStore()
-    permissionStore.markWindowClosed(key)
-    windowChannel?.postMessage({ type: 'window-closed', key })
-    return null
-  }
-
-  return win
-}
-
-/**
- * 注册窗口引用
- */
-function setRouteWindowRef(key: string, win: Window): void {
-  routeWindowRefMap.set(key, win)
-
-  try {
-    win.addEventListener('beforeunload', () => {
-      routeWindowRefMap.delete(key)
-      const permissionStore = usePermissionStore()
-      permissionStore.markWindowClosed(key)
-      windowChannel?.postMessage({ type: 'window-closed', key })
-    })
-  } catch {
-    // 跨域限制，忽略
-  }
-}
-
-if (typeof window !== 'undefined') {
-  initWindowChannel()
-}
-
-/**
- * 构建路由 URL（包含窗口标识）
- */
-function buildRouteUrl(
-  targetRoute: FlatRouteItem,
-  query: LocationQueryRaw | undefined,
-  windowKey: string
-): string {
-  let url = ''
-
-  if (isTauri() || import.meta.env.VITE_ROUTER_MODE === 'hash') {
-    const location = window.location
-    const publicPath = import.meta.env.VITE_PUBLIC_PATH
-    url = location.origin + publicPath + '#' + targetRoute.path
-    if (query && Object.keys(query).length > 0) {
-      const queryString = new URLSearchParams(query as Record<string, string>).toString()
-      url += (url.includes('?') ? '&' : '?') + queryString
-    }
-    url += (url.includes('?') ? '&' : '?') + `_windowKey=${encodeURIComponent(windowKey)}`
-  } else {
-    const publicPath = import.meta.env.VITE_PUBLIC_PATH
-    url = publicPath + targetRoute.path.replace(/^\//, '')
-    if (query && Object.keys(query).length > 0) {
-      const queryString = new URLSearchParams(query as Record<string, string>).toString()
-      url += (url.includes('?') ? '&' : '?') + queryString
-    }
-    url += (url.includes('?') ? '&' : '?') + `_windowKey=${encodeURIComponent(windowKey)}`
-  }
-
-  return url
-}
 
 // ================= 默认变量 =================
 export { errorPagesNameList, errorPagesPathList, routeWhiteNameList, routeWhitePathList }
@@ -212,11 +94,58 @@ export const getRouteByPath = (path: string): FlatRouteItem | null => {
   return flatRoutes.find(route => route.path === path) || null
 }
 
+function createFallbackRouteTarget(path: string): FlatRouteItem {
+  return {
+    path,
+    name: undefined,
+    meta: {
+      windowMode: 'current',
+    },
+  }
+}
+
+function resolveRouteTarget(name?: string | null): FlatRouteItem | null {
+  if (!name) {
+    return createFallbackRouteTarget(import.meta.env.VITE_ROOT_REDIRECT)
+  }
+
+  if (typeof name === 'string' && name.startsWith('/')) {
+    return getRouteByPath(name) || createFallbackRouteTarget(name)
+  }
+
+  const namedRoute = getRouteByName(name)[0]
+  if (namedRoute) {
+    return namedRoute
+  }
+
+  return null
+}
+
+function isSameRouteRequest(
+  targetRoute: FlatRouteItem,
+  query: LocationQueryRaw | undefined,
+  mode: WindowMode
+): boolean {
+  if (mode !== 'current') {
+    return false
+  }
+
+  const currentRoute = router.currentRoute.value
+  const sameName =
+    typeof targetRoute.name === 'string' &&
+    typeof currentRoute.name === 'string' &&
+    currentRoute.name === targetRoute.name
+  const samePath = currentRoute.path === targetRoute.path
+  const sameQuery = JSON.stringify(currentRoute.query ?? {}) === JSON.stringify(query ?? {})
+
+  return sameQuery && (sameName || samePath)
+}
+
 /**
  * 跳转到指定路由
  * @param name - 路由名称
  * @param query - 查询参数
- * @param newWindow - 是否强制新窗口打开（可选，默认根据路由parent属性自动判断）
+ * @param newWindow - 是否强制新窗口打开（可选，默认根据路由 windowMode 自动判断）
  * @param checkPermission - 是否检查权限
  */
 export const goToRoute = (
@@ -225,162 +154,58 @@ export const goToRoute = (
   newWindow?: boolean,
   checkPermission = false
 ): void => {
-  if (!name) {
-    router.push(import.meta.env.VITE_ROOT_REDIRECT)
-    return
-  }
-  // 当传入的是以 '/' 开头的路径时，直接按路径跳转
-  if (typeof name === 'string' && name.startsWith('/')) {
-    router.push({ path: name, query })
-    return
-  }
-  if (router.currentRoute.value.name === name) {
-    return
-  }
-  const targetRoutes = getRouteByName(name)
-  if (targetRoutes.length === 0) {
-    try {
-      // 如果按名称未找到，则尝试直接跳转（可能传的是可解析的路径或路由定位对象）
-      // 加固：纯字符串且不以 '/' 开头时，视为路径片段，强制拼成绝对路径，避免相对路径如 '/example/403'
-      if (typeof name === 'string' && !name.startsWith('/')) {
-        router.push({ path: `/${name}`, query })
-      } else {
-        router.push(name)
-      }
-      return
-    } catch {
-      console.warn(`路由 "${name}" 未找到`)
-      return
-    }
-  }
-  const targetRoute = targetRoutes[0]
+  const targetRoute = resolveRouteTarget(name)
   if (!targetRoute) {
+    console.warn(`[goToRoute] 路由名 "${name}" 未命中合法路由记录，请使用正确的 name 或显式 path。`)
     return
   }
 
-  // 外链处理：优先根据 meta.isLink/linkUrl 处理
   const isLink = targetRoute?.meta?.isLink === true
   const linkUrl = targetRoute?.meta?.linkUrl as string | undefined
-  if (isLink) {
-    const url = linkUrl || targetRoute.path
-    void openExternalLink(url).catch(() => {
-      console.warn('外链打开失败：', url)
-    })
-    return
-  }
 
   // 权限检查（如需集成可在此处）
   if (checkPermission) {
     // ...
   }
 
-  // 判断是否需要新窗口打开
-  // 1. 如果明确指定了 newWindow 参数，则按指定值执行
-  // 2. 如果未指定（undefined），则根据路由的 parent 属性自动判断
-  let shouldOpenNewWindow = newWindow
+  const requestedMode: WindowMode = isLink
+    ? 'external'
+    : newWindow === true
+      ? 'new-window'
+      : newWindow === false
+        ? 'current'
+        : (targetRoute.meta?.windowMode ?? 'current')
 
-  if (newWindow === undefined) {
-    // 获取路由的 parent 属性，默认为 'admin'
-    const parent = (targetRoute.meta?.parent as LayoutMode) || 'admin'
-
-    // ratio 和 fullscreen 模式需要新窗口打开
-    shouldOpenNewWindow = parent === 'fullscreen' || parent === 'ratio'
+  if (isSameRouteRequest(targetRoute, query, requestedMode)) {
+    return
   }
 
-  if (shouldOpenNewWindow) {
-    const permissionStore = usePermissionStore()
-    const windowKey = generateWindowKey(String(targetRoute.name), query)
-    const shouldReuse = targetRoute.meta?.reuseWindow === true
-    const windowTitle = String(targetRoute.meta?.title || targetRoute.name || targetRoute.path)
-
-    if (shouldReuse && isTauri()) {
-      void focusDesktopRouteWindow(windowKey)
-        .then(existed => {
-          if (existed) {
-            return
-          }
-
-          const url = buildRouteUrl(targetRoute, query, windowKey)
-          void openDesktopRouteWindow(
-            {
-              label: windowKey,
-              title: windowTitle,
-              url,
-            },
-            () => {
-              permissionStore.markWindowClosed(windowKey)
-            }
-          )
-            .then(() => {
-              permissionStore.registerWindow(String(targetRoute.name), query, url)
-            })
-            .catch(error => {
-              console.warn('桌面子窗口打开失败，回退浏览器窗口：', error)
-              const fallback = window.open(url, '_blank')
-              if (fallback) {
-                setRouteWindowRef(windowKey, fallback)
-                permissionStore.registerWindow(String(targetRoute.name), query, url)
-              }
-            })
-        })
-        .catch(error => {
-          console.warn('桌面子窗口复用失败：', error)
-        })
-      return
-    }
-
-    if (shouldReuse) {
-      const existed = getRouteWindowRef(windowKey)
-      if (existed) {
-        existed.focus()
-        return
-      }
-    }
-
-    // === 新开窗口 ===
-    const url = buildRouteUrl(targetRoute, query, windowKey)
-
-    if (isTauri()) {
-      void openDesktopRouteWindow(
-        {
-          label: windowKey,
-          title: windowTitle,
-          url,
+  const permissionStore = requestedMode === 'new-window' ? usePermissionStore() : null
+  void windowAdapter
+    .openRoute({
+      route: {
+        name: typeof targetRoute.name === 'string' ? targetRoute.name : undefined,
+        path: targetRoute.path,
+        meta: {
+          title: targetRoute.meta?.title,
+          windowMode: requestedMode,
+          reuseWindow: targetRoute.meta?.reuseWindow,
         },
-        () => {
-          permissionStore.markWindowClosed(windowKey)
-        }
-      )
-        .then(() => {
-          permissionStore.registerWindow(String(targetRoute.name), query, url)
-        })
-        .catch(error => {
-          console.warn('桌面子窗口打开失败，回退浏览器窗口：', error)
-          const fallback = window.open(url, '_blank')
-          if (fallback) {
-            setRouteWindowRef(windowKey, fallback)
-            permissionStore.registerWindow(String(targetRoute.name), query, url)
-          }
-        })
-      return
-    }
-
-    const win = window.open(url, '_blank')
-
-    if (win) {
-      try {
-        win.name = windowKey
-      } catch {
-        // 跨域限制，忽略
-      }
-      setRouteWindowRef(windowKey, win)
-      permissionStore.registerWindow(String(targetRoute.name), query, url)
-    } else {
-      console.warn('新窗口打开失败，可能被浏览器阻止')
-    }
-  } else {
-    router.push({ path: targetRoute.path, query })
-  }
+      },
+      query,
+      mode: requestedMode,
+      reuse: targetRoute.meta?.reuseWindow === true,
+      externalUrl: isLink ? linkUrl || targetRoute.path : undefined,
+      onOpened: ({ url }) => {
+        permissionStore?.registerWindow(String(targetRoute.name || targetRoute.path), query, url)
+      },
+      onClosed: key => {
+        permissionStore?.markWindowClosed(key)
+      },
+    })
+    .catch(error => {
+      console.warn('路由窗口打开失败：', error)
+    })
 }
 
 /**
@@ -421,7 +246,7 @@ export const getMenuTree = (): MenuItem[] => {
 }
 
 /**
- * 仅 admin 布局下的菜单树（供侧边栏/顶栏使用，已过滤 fullscreen/ratio）
+ * 仅 admin 布局下的菜单树（供侧边栏/顶栏使用，已过滤非 admin 布局节点）
  */
 export const getAdminMenuTree = (): MenuItem[] => {
   return routeUtils.getAdminMenuTree()
@@ -436,7 +261,7 @@ export interface PrimeMenuModelItem extends PrimeMenuItem {
 
 /**
  * 将项目 MenuItem 转为 PrimeVue Menu/PanelMenu 的 model 项
- * 叶子节点携带 path + name，供 goToRoute 统一处理（含 fullscreen/ratio 新窗口等）
+ * 叶子节点携带 path + name，供 goToRoute 统一处理（含 windowMode 等窗口策略）
  */
 export function menuItemToPrimeModel(
   item: MenuItem,

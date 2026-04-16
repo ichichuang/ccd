@@ -42,6 +42,38 @@ window.addEventListener('vite:preloadError', event => {
   sessionStorage.removeItem(RUNTIME_STORAGE_KEYS.vitePreloadReload)
 })
 
+function renderBootstrapErrorFallback(preloader: HTMLElement, message: string): void {
+  preloader.replaceChildren()
+
+  const container = document.createElement('div')
+  container.style.cssText =
+    'text-align:center;color:rgb(var(--foreground,156 163 175));font-family:system-ui,sans-serif;padding:2rem;'
+
+  const title = document.createElement('p')
+  title.textContent = '应用启动失败'
+  title.style.cssText = 'font-size:1.125rem;margin-bottom:0.5rem;'
+
+  const detail = document.createElement('p')
+  detail.textContent = message
+  detail.style.cssText = 'font-size:0.875rem;opacity:0.7;'
+
+  const reloadButton = document.createElement('button')
+  reloadButton.type = 'button'
+  reloadButton.textContent = '刷新页面'
+  reloadButton.style.cssText =
+    'margin-top:1rem;padding:0.5rem 1.5rem;border-radius:0.375rem;border:1px solid rgb(var(--border,229 231 235));background:transparent;color:inherit;cursor:pointer;'
+  reloadButton.addEventListener(
+    'click',
+    () => {
+      window.location.reload()
+    },
+    { once: true }
+  )
+
+  container.append(title, detail, reloadButton)
+  preloader.append(container)
+}
+
 async function bootstrap() {
   if (typeof document !== 'undefined') {
     document.documentElement.dataset.appReady = 'false'
@@ -104,11 +136,6 @@ bootstrap().catch(error => {
   const preloader = document.getElementById('preloader-bg')
   if (preloader) {
     const msg = error instanceof Error ? error.message : String(error)
-    preloader.innerHTML = `
-      <div style="text-align:center;color:rgb(var(--foreground,156 163 175));font-family:system-ui,sans-serif;padding:2rem;">
-        <p style="font-size:1.125rem;margin-bottom:0.5rem;">应用启动失败</p>
-        <p style="font-size:0.875rem;opacity:0.7;">${msg}</p>
-        <button onclick="location.reload()" style="margin-top:1rem;padding:0.5rem 1.5rem;border-radius:0.375rem;border:1px solid rgb(var(--border,229 231 235));background:transparent;color:inherit;cursor:pointer;">刷新页面</button>
-      </div>`
+    renderBootstrapErrorFallback(preloader, msg)
   }
 })

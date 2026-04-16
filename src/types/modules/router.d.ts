@@ -30,8 +30,16 @@ export interface AppRouteMeta {
   requiresAuth?: boolean
   roles?: string[]
   rank?: number
-  /** 布局模式 */
+  /** 布局模式，仅用于布局渲染；禁止用于窗口策略判断。 */
   parent?: LayoutMode
+  /** 窗口打开策略，业务层必须显式声明，不得从布局字段推断。 */
+  windowMode?: 'current' | 'new-window' | 'external'
+  /**
+   * 打开新窗口时是否复用已存在窗口（默认 false）
+   * - true：存在相同路由窗口时聚焦
+   * - false：始终打开新窗口
+   */
+  reuseWindow?: boolean
 }
 
 // 扩展 Vue Router 的 RouteMeta 接口
@@ -41,7 +49,7 @@ declare module 'vue-router' {
     title?: string
     /** 页面标题国际化 key（首选） */
     titleKey?: string
-    /** 布局模式 */
+    /** 布局模式，仅用于布局渲染；禁止用于窗口策略判断。 */
     parent?: LayoutMode
     /** 固定比例（只有ratio布局模式下有效：16:9） */
     ratio?: '16:9' | '4:3' | '1:1' | string
@@ -73,12 +81,6 @@ declare module 'vue-router' {
     hiddenTag?: boolean
     /** 当前菜单名称是否固定显示在标签页且不可关闭（默认false） */
     fixedTag?: boolean
-    /**
-     * 打开新窗口时是否复用已存在窗口（默认 false）
-     * - true：存在相同路由窗口时聚焦
-     * - false：始终打开新窗口
-     */
-    reuseWindow?: boolean
     /** 页面加载动画配置 */
     transition?: RouteTransition
   }

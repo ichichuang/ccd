@@ -14,11 +14,11 @@ export const brand = {
   /** Header 展示副标题 */
   subtitle: 'Boilerplate',
   /** 简短描述（package.json description、meta description） */
-  description: '企业级 Vue 3 后台管理模板',
+  description: 'CCD Desktop Client',
   /** 分享用 slogan（og:description） */
   slogan: '先进的架构，优雅的代码，高效的开发体验',
   /** 作者（og:author、meta author） */
-  author: 'AppTemplate Team',
+  author: 'Chris Chi',
 } as const
 
 export type Brand = typeof brand

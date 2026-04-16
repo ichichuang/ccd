@@ -20,36 +20,16 @@
     />
     <title>%BRAND_NAME%</title>
 
-    <script>
-      ;(function () {
-        try {
-          var params = new URLSearchParams(window.location.search)
-          var e2eMode =
-            params.get('%E2E_MODE_QUERY_KEY%') ||
-            localStorage.getItem('%E2E_MODE_STORAGE_KEY%') ||
-            ''
-          var mode = localStorage.getItem('%THEME_MODE_STORAGE_KEY%') || '%DEFAULT_THEME_MODE%'
-          var html = document.documentElement
-          if (e2eMode) {
-            html.dataset.e2eMode = e2eMode
-          }
-          if (params.get('%E2E_PRELOADER_HOLD_QUERY_KEY%') === '1') {
-            html.dataset.e2ePreloaderHold = 'true'
-          }
-          html.dataset.appReady = 'false'
-          html.dataset.preloaderState = 'visible'
-          var isDark =
-            mode === 'dark' ||
-            (mode === 'auto' && window.matchMedia('(prefers-color-scheme: dark)').matches) ||
-            mode === 'glass'
-          if (isDark) {
-            html.classList.add('dark')
-          } else {
-            html.classList.remove('dark')
-          }
-        } catch (e) {}
-      })()
-    </script>
+    <script
+      src="./bootstrap-preload.js"
+      data-default-theme-mode="%DEFAULT_THEME_MODE%"
+      data-theme-mode-storage-key="%THEME_MODE_STORAGE_KEY%"
+      data-theme-primary-storage-key="%THEME_PRIMARY_STORAGE_KEY%"
+      data-theme-background-storage-key="%THEME_BACKGROUND_STORAGE_KEY%"
+      data-e2e-mode-storage-key="%E2E_MODE_STORAGE_KEY%"
+      data-e2e-mode-query-key="%E2E_MODE_QUERY_KEY%"
+      data-e2e-preloader-hold-query-key="%E2E_PRELOADER_HOLD_QUERY_KEY%"
+    ></script>
 
     <style>
       html,
@@ -135,21 +115,6 @@
         }
       }
     </style>
-
-    <script>
-      ;(function () {
-        try {
-          var savedPrimary = localStorage.getItem('%THEME_PRIMARY_STORAGE_KEY%')
-          if (savedPrimary) {
-            document.documentElement.style.setProperty('--primary', savedPrimary)
-          }
-          var savedBg = localStorage.getItem('%THEME_BACKGROUND_STORAGE_KEY%')
-          if (savedBg) {
-            document.documentElement.style.setProperty('--background', savedBg)
-          }
-        } catch (e) {}
-      })()
-    </script>
   </head>
 
   <body>

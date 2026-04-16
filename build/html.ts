@@ -64,7 +64,7 @@ ${themeFallback}
 
 /**
  * 从 theme.ts 读取默认主题的 light/dark 色值，生成 CSS 变量 fallback
- * 与 index.html theme-mode 脚本逻辑一致：按 DEFAULT_THEME_MODE 进行系统暗色判断
+ * 与 index.html 的 bootstrap-preload.js 逻辑一致：按 DEFAULT_THEME_MODE 进行系统暗色判断
  */
 function generateThemeFallbackCss(): string {
   const defaultPreset = THEME_PRESETS.find(p => p.name === DEFAULT_THEME_NAME) ?? THEME_PRESETS[0]

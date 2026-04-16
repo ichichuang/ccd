@@ -9,12 +9,12 @@ function flattenMenuPaths(items: MenuItem[]): string[] {
   ])
 }
 import { createPiniaEncryptedSerializer } from '@/utils/safeStorage/piniaSerializer'
+import { createWindowKey } from '@/utils/windowKey'
 import { defineStore } from 'pinia'
 
 // 单例序列化器：避免每次持久化时重复实例化加密上下文（成本较高）
 const _permissionSerializer = createPiniaEncryptedSerializer()
 import type { LocationQueryRaw } from 'vue-router'
-import { generateIdFromKey } from '@/utils/ids'
 
 /**
  * 窗口元数据接口
@@ -185,7 +185,7 @@ export const usePermissionStore = defineStore('permission', {
      * 注册新窗口元数据
      */
     registerWindow(routeName: string, query: LocationQueryRaw | undefined, url: string): string {
-      const key = generateWindowKey(routeName, query)
+      const key = createWindowKey(routeName, query)
       const existing = this.windows.find(w => w.key === key)
 
       if (existing) {
@@ -290,15 +290,6 @@ export const usePermissionStore = defineStore('permission', {
     },
   },
 })
-
-/**
- * 生成窗口唯一标识
- */
-function generateWindowKey(routeName: string, query?: LocationQueryRaw): string {
-  const queryString = query ? JSON.stringify(query) : ''
-  const keySource = `${routeName}:${queryString}`
-  return `route-${generateIdFromKey(keySource)}`
-}
 
 export const usePermissionStoreWithOut = () => {
   return usePermissionStore(store)

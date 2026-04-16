@@ -1,10 +1,10 @@
 [package]
 name = "app"
-version = "1.0.29"
-description = "企业级 Vue 3 后台管理模板"
-authors = ["AppTemplate Team"]
-license = ""
-repository = ""
+version = "1.0.30"
+description = "CCD Desktop Client"
+authors = ["Chris Chi"]
+license = "GPL-3.0-only"
+repository = "https://github.com/ichichuang/ccd"
 edition = "2021"
 rust-version = "1.77.2"
 

@@ -1,6 +1,6 @@
 {
   "name": "ccd-desktop",
-  "version": "1.0.29",
+  "version": "1.0.30",
   "private": true,
   "type": "module",
   "sideEffects": [
@@ -11,8 +11,8 @@
     "uno.css",
     "virtual:*"
   ],
-  "author": "AppTemplate Team",
-  "description": "企业级 Vue 3 后台管理模板",
+  "author": "Chris Chi",
+  "description": "CCD Desktop Client",
   "keywords": [
     "vue3",
     "typescript",

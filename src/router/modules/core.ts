@@ -16,6 +16,7 @@ const coreRoutes: RouteConfig[] = [
       titleKey: 'router.core.login',
       showLink: false,
       parent: 'fullscreen',
+      windowMode: 'current',
     },
   },
 ]

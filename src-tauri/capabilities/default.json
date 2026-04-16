@@ -8,9 +8,6 @@
     "core:webview:default",
     "core:window:allow-create",
     "core:webview:allow-create-webview-window",
-    "core:app:default",
-    "core:resources:default",
-    "core:event:default",
     "shell:allow-open",
     "window-state:default"
   ]

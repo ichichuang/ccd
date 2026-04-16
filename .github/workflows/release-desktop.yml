@@ -1,0 +1,81 @@
+name: Release Desktop
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: release-desktop-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  release:
+    name: Release ${{ matrix.name }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: Windows
+            os: windows-latest
+            args: --target x86_64-pc-windows-msvc
+            rust_targets: x86_64-pc-windows-msvc
+          - name: macOS Universal
+            os: macos-latest
+            args: --target universal-apple-darwin
+            rust_targets: aarch64-apple-darwin,x86_64-apple-darwin
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
+      TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
+      APPLE_CERTIFICATE: ${{ secrets.APPLE_CERTIFICATE }}
+      APPLE_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
+      APPLE_SIGNING_IDENTITY: ${{ secrets.APPLE_SIGNING_IDENTITY }}
+      APPLE_ID: ${{ secrets.APPLE_ID }}
+      APPLE_PASSWORD: ${{ secrets.APPLE_PASSWORD }}
+      APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+      SKIP_TAURI_ICON: ${{ matrix.os == 'windows-latest' && '1' || '' }}
+
+    steps:
+      - name: Checkout codebase
+        uses: actions/checkout@v4
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v3
+        with:
+          version: 10.28.2
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22.16.0
+          cache: pnpm
+
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: ${{ matrix.rust_targets }}
+
+      - name: Restore Rust cache
+        uses: Swatinem/rust-cache@v2
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Validate desktop build
+        run: pnpm build:desktop -- ${{ matrix.args }}
+
+      - name: Create GitHub release and upload bundles
+        uses: tauri-apps/tauri-action@v0
+        with:
+          tagName: ${{ github.ref_name }}
+          releaseName: CCD Desktop ${{ github.ref_name }}
+          releaseBody: |
+            Automated desktop release for ${{ github.ref_name }}.
+          releaseDraft: false
+          prerelease: false
+          args: ${{ matrix.args }}

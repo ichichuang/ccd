@@ -6,8 +6,11 @@ Read this together with:
 
 - `README.md`
 - `docs/architecture.md`
+- `docs/desktop-guide.md`
 - `docs/ai-workspace.md`
 - `.ai/README.md`
+
+For `feat/tauri-integration`, treat `docs/desktop-guide.md` as the primary runtime manual and `docs/architecture.md` as the branch-level index.
 
 ## 1) One-Time Setup Per Repo
 

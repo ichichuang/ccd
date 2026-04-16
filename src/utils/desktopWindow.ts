@@ -14,6 +14,19 @@ interface DesktopRouteWindowOptions {
   url: string
 }
 
+const ALLOWED_EXTERNAL_PROTOCOLS = new Set(['http:', 'https:'])
+
+function normalizeExternalHttpUrl(url: string): string {
+  const normalizedUrl = url.trim()
+  const parsedUrl = new URL(normalizedUrl)
+
+  if (!ALLOWED_EXTERNAL_PROTOCOLS.has(parsedUrl.protocol)) {
+    throw new Error(`[DesktopWindow] 不允许打开非 HTTP(S) 外链: ${parsedUrl.protocol}`)
+  }
+
+  return parsedUrl.toString()
+}
+
 async function persistDesktopWindowState(): Promise<void> {
   if (!isTauri()) {
     return
@@ -29,13 +42,15 @@ async function persistDesktopWindowState(): Promise<void> {
 }
 
 export async function openExternalLink(url: string): Promise<void> {
+  const safeUrl = normalizeExternalHttpUrl(url)
+
   if (isTauri()) {
     const { open } = await import('@tauri-apps/plugin-shell')
-    await open(url)
+    await open(safeUrl)
     return
   }
 
-  window.open(url, '_blank', 'noopener,noreferrer')
+  window.open(safeUrl, '_blank', 'noopener,noreferrer')
 }
 
 export async function getDesktopRouteWindow(label: string): Promise<TauriRouteWindow | null> {

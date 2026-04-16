@@ -1,7 +1,7 @@
 {
   "$schema": "../node_modules/@tauri-apps/cli/config.schema.json",
   "productName": "ccd-desktop",
-  "version": "1.0.29",
+  "version": "1.0.30",
   "identifier": "com.ichichuang.ccd",
   "build": {
     "frontendDist": "../dist",
@@ -23,6 +23,11 @@
     ],
     "security": {
       "csp": "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' asset: https://asset.localhost data:; font-src 'self' data:; connect-src 'self' ipc: http://ipc.localhost https://www.server.wzdxcc.cloudns.org/"
+    }
+  },
+  "plugins": {
+    "shell": {
+      "open": "https?://\\S+"
     }
   },
   "bundle": {

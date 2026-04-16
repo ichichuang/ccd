@@ -1,6 +1,7 @@
 <script setup lang="ts">
 defineOptions({ name: 'AnimateRouterView' })
 
+import { isDesktop } from '@/utils/env'
 import { routeWhitePathList } from '@/router/utils/helper'
 import { routeUtils } from '@/router'
 import { useRoute } from 'vue-router'
@@ -140,7 +141,14 @@ const isClassMode = computed(() => !!enterActiveClass.value || !!leaveActiveClas
 
 const finalTransitionName = computed(() => {
   if (!enableTransition.value || isClassMode.value) return undefined
-  return rawTransition.value.name || layoutStore.transitionName || 'cinematic-fade'
+
+  const transitionName = rawTransition.value.name || layoutStore.transitionName || 'cinematic-fade'
+
+  if (isDesktop() && transitionName === 'cinematic-fade') {
+    return 'fade-slide'
+  }
+
+  return transitionName
 })
 
 const transitionMode = computed(() => {

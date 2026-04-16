@@ -1,0 +1,64 @@
+name: Smoke Desktop
+
+on:
+  push:
+    branches:
+      - feat/tauri-integration
+  pull_request:
+    branches:
+      - feat/tauri-integration
+
+permissions:
+  contents: read
+
+concurrency:
+  group: smoke-desktop-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  smoke:
+    name: Smoke ${{ matrix.name }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: Windows
+            os: windows-latest
+            args: --target x86_64-pc-windows-msvc
+            rust_targets: x86_64-pc-windows-msvc
+          - name: macOS Universal
+            os: macos-latest
+            args: --target universal-apple-darwin
+            rust_targets: aarch64-apple-darwin,x86_64-apple-darwin
+    env:
+      SKIP_TAURI_ICON: ${{ matrix.os == 'windows-latest' && '1' || '' }}
+
+    steps:
+      - name: Checkout codebase
+        uses: actions/checkout@v4
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v3
+        with:
+          version: 10.28.2
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22.16.0
+          cache: pnpm
+
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: ${{ matrix.rust_targets }}
+
+      - name: Restore Rust cache
+        uses: Swatinem/rust-cache@v2
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Smoke build desktop bundles
+        run: pnpm build:desktop -- ${{ matrix.args }}
