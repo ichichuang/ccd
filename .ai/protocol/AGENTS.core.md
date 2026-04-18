@@ -59,6 +59,7 @@ Codex-first tooling skills:
 - `.ai/skills/codex/task-orchestrator`
 - `.ai/skills/codex/architecture-browser-master`
 - `.ai/skills/codex/github-ops`
+- `.ai/skills/codex/desktop-tauri-guard`
 
 Cursor compatibility skills:
 
@@ -79,6 +80,7 @@ Automatic trigger heuristics:
 - For ambiguous, multi-step, or cross-module tasks, route to `.ai/skills/codex/task-orchestrator` before editing.
 - For GitHub, PR, issue, review comment, Actions, workflow, CI, release, branch protection, or `.github/**` tasks, route to `.ai/skills/codex/github-ops`.
 - For GitHub tasks, inspect `.github/**`, current git remotes, and workflow files before acting so the chosen automation matches repo reality.
+- For Tauri, desktop bridge, capability sync, `src-tauri/**`, `desktopWindow`, or desktop drift-cleanup tasks, route to `.ai/skills/codex/desktop-tauri-guard`.
 
 Policy:
 
@@ -106,6 +108,7 @@ Run when relevant:
 - `pnpm type-check`
 - `pnpm lint:check`
 - `pnpm test:run`
+- `pnpm sync:desktop-config` + `pnpm check:drift` for desktop bridge/capability changes
 
 For UI-critical changes, prefer Playwright CLI plus `.ai/skills/codex/architecture-browser-master`.
 Fall back to `.ai/skills/cursor/playwright-mcp` only when the CLI route cannot satisfy the scenario.
@@ -122,3 +125,33 @@ Fall back to `.ai/skills/cursor/playwright-mcp` only when the CLI route cannot s
 - Keep database work schema-first and centralize error handling at API boundaries.
 - Require unit tests plus Playwright E2E coverage for risky user flows.
 - Use Conventional Commits and keep diffs reviewable.
+
+## 8) AICC Loader Mode (Gemini-Compatible)
+
+Use this mode when an AI is acting as an architecture loader + prompt compiler rather than a direct coding agent.
+
+Mandatory context loading sequence:
+
+1. Load `.ai/` as the only AI-native source.
+2. Apply priority: `.ai/rules/**` -> `.ai/skills/**` -> `.ai/manifests/{skill-routing.json,gemini-skill-index.json}` -> `.ai/protocol/**`.
+3. Load minimally by intent; do not bulk-read unrelated modules.
+
+Mandatory pre-execution protocol:
+
+1. Dependency audit: inspect `package.json` and reuse existing dependencies first.
+2. Internal asset discovery: inspect `src/hooks/**`, `src/utils/**`, and `src/components/**`.
+3. Skill matching: map requirement to skills through `skill-routing.json` and `gemini-skill-index.json`.
+4. Gap justification: if proposing a new pattern/dependency, explain why current assets fail.
+
+Prompt-compiler output contract:
+
+1. Chinese analysis: requirement essence, matched skills/rules, capability gaps.
+2. English execution prompt that MUST start with:
+   - `CRITICAL: You MUST strictly adhere to all architectural rules located in the @.ai/rules directory before and during execution.`
+3. Chinese next steps: concise actionable checklist.
+
+Hard constraints in this mode:
+
+- Never bypass `.ai/rules/**`.
+- Never skip mapped skills without explicit gap justification.
+- Never create parallel architecture when an approved path already exists.

@@ -21,13 +21,21 @@ Per-AI adapter guidance:
 
 - Codex: `.ai/protocol/adapters/codex.md`
 - Cursor: `.ai/protocol/adapters/cursor.md`
+- Gemini: `.ai/protocol/adapters/gemini.md`
+
+Gemini AICC routing assets:
+
+- `.ai/manifests/skill-routing.json`
+- `.ai/manifests/gemini-skill-index.json`
 
 Current repo defaults:
 
 - Treat this repository as `Vue 3 + TypeScript + Vite + UnoCSS + PrimeVue + Playwright`.
+- Treat desktop-runtime changes as `Tauri v2 + guest bindings` bridge work; route to `.ai/skills/codex/desktop-tauri-guard`.
 - Prefer Playwright CLI plus `.ai/skills/codex/architecture-browser-master`.
 - Prefer Playwright CRX for recording browser flows, then import the exported Python into `.ai/skills/codex/architecture-browser-master` flow assets.
 - Fall back to `.ai/skills/cursor/playwright-mcp` only when the CLI route cannot satisfy the task.
+- For desktop branch drift-sensitive changes, run `pnpm sync:desktop-config` and `pnpm check:drift`.
 - Keep user-facing pages within Lighthouse 90+ budgets unless the task explicitly says otherwise.
 
 Cross-project full-stack defaults:

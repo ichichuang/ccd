@@ -151,6 +151,68 @@
       ]
     },
     {
+      "id": "desktop-tauri",
+      "description": "Tauri v2 desktop bridge, capabilities, config sync, and desktop drift/snapshot cleanup",
+      "keywords": [
+        "tauri",
+        "desktop",
+        "desktop bridge",
+        "guest bindings",
+        "capabilities",
+        "window.open",
+        "openexternal",
+        "desktopwindow",
+        "src-tauri",
+        "桌面端",
+        "桌面分支",
+        "能力权限",
+        "漂移检查",
+        "快照清理"
+      ],
+      "path_globs": [
+        "src-tauri/**",
+        "src/utils/desktopWindow.ts",
+        "src/router/utils/helper.ts",
+        "scripts/sync-desktop-config.mjs",
+        "scripts/drift-check.mjs",
+        "e2e/__snapshots__/**",
+        "test-results/**"
+      ],
+      "skills": [".ai/skills/codex/desktop-tauri-guard"],
+      "prechecks": ["pnpm sync:desktop-config", "pnpm check:drift"],
+      "token_strategy": [
+        "Inspect desktop bridge helpers and src-tauri capabilities before writing code",
+        "Keep web fallback and Tauri branch in one bridged implementation",
+        "Prune obsolete example-related visual baselines when desktop routes/pages are removed"
+      ]
+    },
+    {
+      "id": "ai-protocol-aicc",
+      "description": "AI protocol, Gemini Gems, context loading contracts, and .ai architecture orchestration config",
+      "keywords": [
+        "gemini",
+        "gems",
+        "aicc",
+        "prompt compiler",
+        "architecture loader",
+        "context loader",
+        "agent protocol",
+        "ai protocol",
+        "skill index",
+        "规则注入",
+        "上下文加载",
+        "协议升级",
+        ".ai"
+      ],
+      "path_globs": [".ai/protocol/**", ".ai/manifests/**", "AGENTS.md"],
+      "skills": [".ai/skills/codex/task-orchestrator"],
+      "prechecks": ["pnpm codex:preflight"],
+      "token_strategy": [
+        "Load protocol adapter docs and manifests before opening unrelated implementation skills",
+        "Keep updates architecture-first and avoid introducing coding-agent-only assumptions into Gemini AICC flows"
+      ]
+    },
+    {
       "id": "complex-or-ambiguous",
       "description": "Cross-module, vague, architectural, or high-risk tasks that benefit from routing first",
       "keywords": [

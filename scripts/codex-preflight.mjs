@@ -20,8 +20,10 @@ const requiredPaths = [
   '.ai/skills/codex/architecture-browser-master/SKILL.md',
   '.ai/skills/codex/task-orchestrator/SKILL.md',
   '.ai/skills/codex/github-ops/SKILL.md',
+  '.ai/skills/codex/desktop-tauri-guard/SKILL.md',
   '.ai/skills/cursor/github/SKILL.md',
   '.ai/skills/cursor/playwright-mcp/SKILL.md',
+  '.ai/protocol/adapters/gemini.md',
   '.cursor/rules',
   '.cursor/skills',
   '.cursor/settings.json',
@@ -35,6 +37,7 @@ const requiredPaths = [
   '.ai/runtime/repair_list.template.txt',
   '.ai/runtime/repair_list.txt',
   '.ai/manifests/skill-routing.json',
+  '.ai/manifests/gemini-skill-index.json',
   '.ai/manifests/skills-lock.json',
   'uno.config.ts',
   'vite.config.ts',
@@ -48,6 +51,7 @@ const requiredLocalCodexSkills = [
   'architecture-browser-master',
   'task-orchestrator',
   'github-ops',
+  'desktop-tauri-guard',
 ]
 
 const requiredDeps = [

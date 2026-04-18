@@ -37,7 +37,7 @@ globs: ["**/*.vue", "**/*.ts", "**/*.tsx", "**/*.js"]
 
 - **DO NOT** `import` **business-layer** modules from **build-time configuration** files, including but not limited to:
   - `vite.config.ts`, `uno.config.ts`
-  - `src/design-engine/safelist/*.ts` and other safelist / codegen entrypoints tied to the bundler or Uno pipeline
+  - `build/design-engine/safelist/*.ts` and other safelist / codegen entrypoints tied to the bundler or Uno pipeline
 - **FORBIDDEN targets** (non-exhaustive): `src/views/**`, `src/components/**`, any file that pulls in **Vue SFCs**, **Vue reactivity**, or **`<script setup>` macros** (or that transitively depends on them).
 
 **Why:** Those imports create a **fatal reverse dependency**: the compiler / design-engine layer must stay **acyclic** and **environment-pure**. Pulling UI or feature code into config makes the toolchain depend on the app graph → fragile resolution, circular imports, and **build / bundle collapse**.

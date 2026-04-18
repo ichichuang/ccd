@@ -1,0 +1,30 @@
+---
+description: MANDATORY Tauri desktop preflight checklist for runtime security, capability minimization, frameless drag safety, and release metadata alignment.
+globs:
+  - "src-tauri/**"
+  - "src/utils/desktopWindow.ts"
+  - "src/utils/env.ts"
+  - "src/main.ts"
+  - "index.html"
+  - "package.json"
+alwaysApply: true
+---
+# 🖥️ Chief Architect Desktop Preflight
+
+> **AI MANDATE:** When the task touches Tauri runtime, desktop bridge helpers, or desktop release metadata, you MUST confirm this desktop checklist before changing code or config. **Any `[❌]` means you MUST NOT proceed.**
+
+## 1. CSP Closure
+- [ ] **No Inline Execution:** Never introduce inline `<script>...</script>` into `index.html` or Vue-rendered HTML strings.
+- [ ] **No Inline Events:** Never introduce `onclick=` / `on*=` inline handlers; bind through module code or `addEventListener`.
+
+## 2. Capability Minimization
+- [ ] **Permission Pairing:** Any new Tauri API or plugin usage MUST review and update `src-tauri/capabilities/default.json`.
+- [ ] **Smallest Surface:** Do NOT grant broad default permissions when a narrower capability or plugin scope can satisfy the requirement.
+
+## 3. Frameless Drag Safety
+- [ ] **Drag Region Contract:** If `decorations: false` or a custom title bar is introduced, the top navigation/title bar MUST expose `data-tauri-drag-region`.
+- [ ] **Window UX Guard:** Frameless changes MUST preserve click targets and avoid blocking desktop window controls.
+
+## 4. Release Metadata Alignment
+- [ ] **Version Lock:** `src-tauri/Cargo.toml` version MUST stay aligned with root `package.json`.
+- [ ] **Desktop Identity:** Desktop-facing metadata changes MUST keep `package.json`, `src-tauri/tauri.conf.json`, `src-tauri/Cargo.toml`, and brand-derived desktop assets in sync.

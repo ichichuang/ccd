@@ -25,6 +25,11 @@ Local Codex materialization:
 - `~/.codex/skills/**` <= `.ai/skills/core/** + .ai/skills/codex/**`
 - Generate with `pnpm ai:sync:codex`
 
+Gemini AICC references:
+
+- Adapter: `.ai/protocol/adapters/gemini.md`
+- Skill index: `.ai/manifests/gemini-skill-index.json`
+
 Local runtime file:
 
 - `.ai/runtime/repair_list.txt` is local working state generated from `.ai/runtime/repair_list.template.txt`.
@@ -46,6 +51,7 @@ Repo-managed Codex operations currently center on:
 - `task-orchestrator`
 - `architecture-browser-master`
 - `github-ops`
+- `desktop-tauri-guard`
 
 ## Runtime Residue
 

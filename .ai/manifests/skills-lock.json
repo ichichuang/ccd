@@ -10,6 +10,15 @@
       ],
       "computedHash": "d06a80c7a816a55c295dad4a1ddb265300527320b83e5adbd7d35add52b0653c"
     },
+    "desktop-tauri-guard": {
+      "source": "repo:.ai/skills/codex/desktop-tauri-guard",
+      "sourceType": "local",
+      "layer": "codex",
+      "syncTargets": [
+        "codex"
+      ],
+      "computedHash": "5a6474af81494d9eb2c7f3bd8b5c8ec975f3c4daf6b1ff716493d9ae96e50ba0"
+    },
     "github": {
       "source": "repo:.ai/skills/cursor/github",
       "sourceType": "local",
@@ -41,7 +50,7 @@
       "source": "repo:.ai/manifests/skill-routing.json",
       "sourceType": "local",
       "kind": "manifest",
-      "computedHash": "152334b694c246678389635fa223ebe6e189be71471a2334cef93f4bd8e2737d"
+      "computedHash": "763888056c29e630e57d69331de6d8d9ae95c4852ac50282aa3edf8d6f4c2fc9"
     },
     "task-orchestrator": {
       "source": "repo:.ai/skills/codex/task-orchestrator",
