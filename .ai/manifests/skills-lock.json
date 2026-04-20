@@ -50,7 +50,7 @@
       "source": "repo:.ai/manifests/skill-routing.json",
       "sourceType": "local",
       "kind": "manifest",
-      "computedHash": "763888056c29e630e57d69331de6d8d9ae95c4852ac50282aa3edf8d6f4c2fc9"
+      "computedHash": "8446a3341e5bc4bc72a77bd2c33abbaf083346f0148939dad9911082a4949c01"
     },
     "task-orchestrator": {
       "source": "repo:.ai/skills/codex/task-orchestrator",
