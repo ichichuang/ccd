@@ -1,3 +1,4 @@
+import { spawnSync } from 'node:child_process'
 import fs from 'node:fs'
 import path from 'node:path'
 import process from 'node:process'
@@ -21,7 +22,10 @@ const canonicalMustExist = [
   '.ai/rules/core/00-root-gatekeeper.mdc',
   '.ai/rules/core/01-global-preflight.mdc',
   '.ai/rules/core/02-ui-preflight.mdc',
+  '.ai/rules/core/10-ai-generation-workflow.mdc',
   'scripts/skill-lock-utils.mjs',
+  'scripts/ai-architecture-guard.mjs',
+  'scripts/ai-route-view-scaffold.mjs',
   '.ai/skills/core/unocss/SKILL.md',
   '.ai/skills/core/vite/SKILL.md',
   '.ai/skills/core/vue/SKILL.md',
@@ -222,6 +226,21 @@ try {
   }
 } catch (error) {
   fail(`unable to validate skill routing manifest: ${error instanceof Error ? error.message : String(error)}`)
+}
+
+try {
+  const guard = path.join(cwd, 'scripts', 'ai-architecture-guard.mjs')
+  const guardResult = spawnSync(process.execPath, [guard], {
+    cwd,
+    encoding: 'utf8',
+    stdio: 'pipe',
+  })
+  if (guardResult.stdout) process.stdout.write(guardResult.stdout)
+  if (guardResult.stderr) process.stderr.write(guardResult.stderr)
+  if (guardResult.status !== 0) fail('architecture guard failed: pnpm ai:guard')
+  else ok('architecture guard: pnpm ai:guard')
+} catch (error) {
+  fail(`unable to run architecture guard: ${error instanceof Error ? error.message : String(error)}`)
 }
 
 process.exit(hasError ? 1 : 0)

@@ -38,6 +38,8 @@ Run this sequence before proposing a solution:
    - Route through `skill-routing.json` and `gemini-skill-index.json`.
 4. Gap justification:
    - If introducing a new pattern/dependency, explain why existing assets fail.
+5. New route/page generation:
+   - If the task creates a new business route or page, require downstream execution to start with `pnpm ai:scaffold:view-route ...` before manual edits.
 
 ## 2) Execution Model
 
@@ -78,6 +80,7 @@ Phase 4: Prompt Compilation
      - explicit prohibitions
 3. `下一步（中文）`
    - concise actionable guidance only
+   - include `pnpm ai:guard` whenever routes/pages/hooks were created or restructured
 
 ## 4) Forced Trigger Syntax
 
@@ -92,3 +95,4 @@ Use these explicit directives in compiled prompts when needed:
 - Never skip `.ai` context loading.
 - Never bypass mapped skills.
 - Never create parallel architecture without justified gaps.
+- Never skip scaffold-first workflow for new routes/pages when the repo scaffold command applies.

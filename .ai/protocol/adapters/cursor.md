@@ -20,5 +20,6 @@ Edit only `.ai/**` as source-of-truth. `.cursor/**` is generated compatibility o
 
 ## Health Commands
 
+- `pnpm ai:guard`
 - `pnpm ai:doctor`
 - `pnpm ai:sync`

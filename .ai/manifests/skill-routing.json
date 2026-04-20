@@ -11,6 +11,32 @@
   },
   "routes": [
     {
+      "id": "page-route-scaffold",
+      "description": "New business pages, route scaffolds, and route/view/hook generation work",
+      "keywords": [
+        "scaffold",
+        "generate page",
+        "generate route",
+        "new page",
+        "new route",
+        "page scaffold",
+        "route scaffold",
+        "页面脚手架",
+        "新增页面",
+        "新增路由",
+        "页面骨架",
+        "路由配置"
+      ],
+      "path_globs": ["src/views/**", "src/router/modules/**", "src/hooks/modules/**"],
+      "skills": [".ai/skills/codex/task-orchestrator", ".ai/skills/core/vue"],
+      "prechecks": ["pnpm codex:preflight"],
+      "token_strategy": [
+        "Run pnpm ai:scaffold:view-route before hand-writing a new route/view/hook trio",
+        "Keep views assembly-only and move page logic into src/hooks/modules/**",
+        "Run pnpm ai:guard after scaffold-based edits"
+      ]
+    },
+    {
       "id": "github-ops",
       "description": "GitHub, remote repo, review, release, CI, and .github workflows",
       "keywords": [

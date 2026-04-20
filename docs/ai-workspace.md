@@ -120,6 +120,12 @@ pnpm ai:sync
 pnpm ai:sync:codex
 ```
 
+Business route/page generation is validated by:
+
+```bash
+pnpm ai:guard
+```
+
 ### Runtime State
 
 - `.ai/runtime/repair_list.txt`
@@ -179,9 +185,20 @@ For normal development:
 ```bash
 pnpm ai:sync
 pnpm ai:sync:codex
+pnpm ai:guard
 pnpm ai:doctor
 pnpm codex:preflight
 ```
+
+For new business routes/pages:
+
+```bash
+pnpm ai:scaffold:view-route -- --segment system/user --title-key router.system.user.index --kind table
+pnpm ai:guard
+pnpm ai:doctor
+```
+
+This is now the required scaffold-first path. Do not hand-write a fresh business route/view/hook trio when the scaffold command fits.
 
 For browser-heavy work:
 

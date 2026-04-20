@@ -43,7 +43,8 @@ Bootstrap order per task:
 2. `.ai/rules/core/00-root-gatekeeper.mdc`
 3. `.ai/rules/core/01-global-preflight.mdc`
 4. `.ai/rules/core/02-ui-preflight.mdc` when visual surfaces are touched
-5. Domain rules by touched modules
+5. `.ai/rules/core/10-ai-generation-workflow.mdc` when creating or restructuring routes/pages/hooks
+6. Domain rules by touched modules
 
 ## 3) Skill Routing Strategy
 
@@ -95,14 +96,16 @@ Policy:
 2. Load rules and extract hard constraints.
 3. Select skills and state why each is required.
 4. Execute applicable preflight checklists (`core/01-global-preflight.mdc`, plus `core/02-ui-preflight.mdc` for visual surfaces).
-5. Implement with boundary/type discipline.
-6. Validate with targeted checks.
-7. Report changed files, rules/skills used, validation results, and residual risks.
+5. For new routes/pages, scaffold first with `pnpm ai:scaffold:view-route`, then edit the generated files.
+6. Implement with boundary/type discipline.
+7. Validate with targeted checks.
+8. Report changed files, rules/skills used, validation results, and residual risks.
 
 ## 5) Validation Baseline
 
 Run when relevant:
 
+- `pnpm ai:guard`
 - `pnpm ai:doctor`
 - `pnpm codex:preflight`
 - `pnpm type-check`

@@ -27,6 +27,7 @@ pnpm ai:sync:codex
 4. Run:
 
 ```bash
+pnpm ai:guard
 pnpm ai:doctor
 pnpm codex:preflight
 ```
@@ -79,6 +80,24 @@ This returns:
 - token-saving guidance for that route
 
 Use this when the task is vague, spans multiple surfaces, or might involve browser/GitHub workflows.
+
+## 4.2) New Route/Page Workflow
+
+When Codex creates a new business page or route, start with the scaffold command instead of freehand generation:
+
+```bash
+pnpm ai:scaffold:view-route -- --segment system/user --title-key router.system.user.index --kind table
+pnpm ai:guard
+pnpm ai:doctor
+```
+
+Rules enforced by `pnpm ai:guard` include:
+
+- no direct `router.push/replace` in business views
+- no direct `@/api/**` imports in business views
+- no native `<form>` in business views
+- no sync `@/views/**` imports inside route modules
+- no route records missing `name` or `meta.titleKey/title`
 
 ## 4.5) Cleanup And Residue
 
@@ -186,6 +205,7 @@ Then add `ai:doctor`, `ai:sync`, `ai:sync:codex`, and `codex:preflight` to `pack
 ```bash
 pnpm ai:sync
 pnpm ai:sync:codex
+pnpm ai:guard
 pnpm ai:clean
 pnpm ai:doctor
 pnpm codex:preflight

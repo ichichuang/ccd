@@ -53,6 +53,11 @@ Repo-managed Codex operations currently center on:
 - `github-ops`
 - `desktop-tauri-guard`
 
+Generation guardrails for business routes/pages:
+
+- `pnpm ai:scaffold:view-route -- --segment <segment> --title-key <i18n.key> --kind <table|form|detail>`
+- `pnpm ai:guard`
+
 ## Runtime Residue
 
 Generated adapters are expected.
@@ -73,6 +78,7 @@ Browser automation intentionally writes compact summaries and optional evidence 
 - Clean local AI/browser runtime residue: `pnpm ai:clean`
 - Aggressive cleanup when needed: `pnpm ai:clean -- --all`
 - Validate structure: `pnpm ai:doctor`
+- Validate generated business surfaces: `pnpm ai:guard`
 - Run Codex preflight: `pnpm codex:preflight`
 
 Recommended maintenance order:
@@ -80,6 +86,7 @@ Recommended maintenance order:
 ```bash
 pnpm ai:sync
 pnpm ai:sync:codex
+pnpm ai:guard
 pnpm ai:doctor
 pnpm codex:preflight
 ```

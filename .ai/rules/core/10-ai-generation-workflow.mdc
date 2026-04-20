@@ -1,0 +1,39 @@
+---
+description: Enforces scaffold-first workflow for new routes/pages and hard validation for AI-generated business surfaces.
+globs: ["src/router/modules/**/*.ts", "src/views/**/*.vue", "src/hooks/modules/**/*.ts", ".ai/protocol/**/*.md", "scripts/**/*.mjs"]
+alwaysApply: true
+---
+# AI Generation Workflow Law
+
+## 1. Scaffold First for New Routes and Pages
+
+- **REQUIRED:** When creating a new page + route pair, AI MUST run:
+  - `pnpm ai:scaffold:view-route -- --segment <segment> --title-key <i18n.key> --kind <table|form|detail>`
+- **REQUIRED:** Start from generated skeletons, then refine them.
+- **FORBIDDEN:** Freehand-creating a new business page, hook, and route trio from scratch when the scaffold command can cover the use case.
+
+## 2. File Ownership Contract
+
+- New static routes live in `src/router/modules/*.ts`.
+- New page assembly lives in `src/views/**/index.vue`.
+- Page logic and bootstrap data live in `src/hooks/modules/**/use*Page.ts`.
+- **FORBIDDEN:** Adding new static business routes directly in `src/router/index.ts`.
+- **FORBIDDEN:** Putting business request flow, DTO contracts, or store definitions directly in `src/views/**`.
+
+## 3. Route Contract for Generated Surfaces
+
+- **REQUIRED:** Every new static route must define `path`, `name`, and `meta`.
+- **REQUIRED:** `meta` must include `titleKey` or `title`.
+- **REQUIRED:** View components in routes must resolve through `() => import('...')`.
+- **FORBIDDEN:** Synchronous `@/views/**` imports in route modules.
+
+## 4. Validation Gate
+
+- After creating or editing page/route scaffold output, AI MUST run `pnpm ai:guard`.
+- Before handing off substantial scaffold-based changes, AI MUST run `pnpm ai:doctor`.
+- If `pnpm ai:guard` fails, AI MUST treat the result as a hard stop and fix the violations before proceeding.
+
+## 5. Adapter Discipline
+
+- Edit `.ai/**` as the source of truth, then sync generated adapters with `pnpm ai:sync`.
+- **FORBIDDEN:** Directly hand-editing `AGENTS.md` or `.cursor/**` to introduce workflow changes.

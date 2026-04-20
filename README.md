@@ -121,6 +121,7 @@ pnpm codex:preflight
 
 - `pnpm ai:sync`：从 `.ai/**` 生成 `AGENTS.md` 与 `.cursor/**`
 - `pnpm ai:sync:codex`：把 `.ai/skills/core/** + .ai/skills/codex/**` 安装到本机 `~/.codex/skills/**`
+- `pnpm ai:guard`：检查业务页面、路由模块、stores 是否违反架构生成约束
 - `pnpm ai:doctor`：检查 canonical 资产与适配器是否漂移
 - `pnpm codex:preflight`：检查 Codex 工作所需规则、技能、依赖是否齐备
 
@@ -190,6 +191,8 @@ pnpm ai:sync:codex   # 安装本机 Codex skills
 pnpm ai:clean        # 保守清理空会话目录与本地 AI/浏览器残留
 pnpm ai:clean -- --all # 激进清理 browser artifacts、tmp 与本机 Codex 浏览器缓存
 pnpm ai:route:skills "任务描述" # 低 token 选择最小 skill 集合
+pnpm ai:scaffold:view-route -- --segment system/user --title-key router.system.user.index --kind table # 生成页面/路由/Hook 骨架
+pnpm ai:guard        # 检查 AI 生成结果是否违反架构约束
 pnpm ai:doctor       # 检查 AI 工作区结构
 pnpm codex:preflight # 检查 Codex 开发前置条件
 ```
@@ -213,6 +216,7 @@ pnpm dev
 ```bash
 pnpm check
 pnpm test:run
+pnpm ai:guard
 pnpm ai:doctor
 ```
 
@@ -224,6 +228,16 @@ pnpm ai:doctor
 ```
 
 不要直接改生成适配器，否则后续同步时一定会被覆盖。
+
+### 当你让 AI 新增业务页面/路由
+
+```bash
+pnpm ai:scaffold:view-route -- --segment system/user --title-key router.system.user.index --kind table
+pnpm ai:guard
+pnpm ai:doctor
+```
+
+先生成骨架，再让 AI 在骨架上填充业务逻辑；不要让 AI 自由生成整套 page/route/hook。
 
 ---
 

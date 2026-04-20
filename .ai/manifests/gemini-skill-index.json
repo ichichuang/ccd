@@ -15,6 +15,7 @@
         "skills": [".ai/skills/core/vue"],
         "rules": [
           ".ai/rules/core/03-vue3-ts-architecture.mdc",
+          ".ai/rules/core/10-ai-generation-workflow.mdc",
           ".ai/rules/core/08-vue-template-strictness.mdc",
           ".ai/rules/components/00-primevue-ecosystem.mdc"
         ]
@@ -59,6 +60,15 @@
       }
     ],
     "workflow": [
+      {
+        "id": "page-route-generation",
+        "skills": [".ai/skills/codex/task-orchestrator", ".ai/skills/core/vue"],
+        "rules": [
+          ".ai/rules/core/01-global-preflight.mdc",
+          ".ai/rules/core/10-ai-generation-workflow.mdc"
+        ],
+        "route_id": "page-route-scaffold"
+      },
       {
         "id": "task-routing",
         "skills": [".ai/skills/codex/task-orchestrator"],

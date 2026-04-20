@@ -11,7 +11,8 @@ Load this entrypoint, then continue with:
 3. `.ai/rules/core/00-root-gatekeeper.mdc`
 4. `.ai/rules/core/01-global-preflight.mdc`
 5. `.ai/rules/core/02-ui-preflight.mdc` when visual surfaces are touched
-6. Domain rules under `.ai/rules/**`
+6. `.ai/rules/core/10-ai-generation-workflow.mdc` when creating or restructuring routes/pages/hooks
+7. Domain rules under `.ai/rules/**`
 
 This file is the shared entrypoint target for:
 
@@ -49,3 +50,4 @@ Core mandate:
 - `.ai/**` is the only source of truth.
 - Adapter paths (`AGENTS.md`, `.cursor/**`) are generated compatibility entrypoints only.
 - Materialize repo adapters with `pnpm ai:sync` and local Codex skills with `pnpm ai:sync:codex`.
+- For new page/route work, scaffold first with `pnpm ai:scaffold:view-route`, then enforce `pnpm ai:guard`.

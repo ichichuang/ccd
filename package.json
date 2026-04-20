@@ -49,6 +49,8 @@
     "format": "prettier --write src/",
     "fix": "pnpm format && pnpm lint:fix",
     "check": "pnpm type-check && pnpm lint:check",
+    "ai:guard": "node scripts/ai-architecture-guard.mjs",
+    "ai:scaffold:view-route": "node scripts/ai-route-view-scaffold.mjs",
     "ai:doctor": "node scripts/ai-doctor.mjs",
     "ai:sync": "node scripts/ai-sync.mjs",
     "ai:sync:codex": "node scripts/ai-sync-codex.mjs",
