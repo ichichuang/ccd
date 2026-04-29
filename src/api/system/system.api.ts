@@ -5,11 +5,29 @@
  */
 
 import { get } from '@/utils/http/methods'
-import type { ApiResponse } from '@/types/api'
 import type { SystemAsyncRouteItem, SystemAsyncRoutesRawRes } from '@/types/dto/system.dto'
+import { z } from 'zod'
 
 /** 动态路由 API 路径（对接后端时使用） */
 const SYSTEM_ASYNC_ROUTES_URL = '/system/menu/routes'
+
+const routeMetaSchema = z.record(z.string(), z.unknown())
+
+const systemAsyncRouteItemSchema: z.ZodType<SystemAsyncRouteItem> = z.lazy(() =>
+  z.object({
+    path: z.string().min(1),
+    name: z.string().min(1).optional(),
+    component: z.string().min(1).optional(),
+    redirect: z.string().min(1).optional(),
+    meta: routeMetaSchema,
+    children: z.array(systemAsyncRouteItemSchema).optional(),
+  })
+)
+
+const systemAsyncRoutesRawSchema: z.ZodType<SystemAsyncRoutesRawRes> = z.union([
+  z.array(systemAsyncRouteItemSchema),
+  z.object({ routes: z.array(systemAsyncRouteItemSchema) }),
+])
 
 /**
  * 从原始响应中提取路由数组
@@ -26,7 +44,7 @@ function extractRoutes(raw: SystemAsyncRoutesRawRes): SystemAsyncRouteItem[] {
 
 /**
  * 获取动态路由 API
- * 当前为 mock 实现；对接后端时改为 get<ApiResponse<SystemAsyncRoutesRawRes>> 并解包 data
+ * 当前为 mock 实现；对接后端时改为 requestSystemAsyncRoutesReal。
  */
 export const requestSystemAsyncRoutes = async (): Promise<SystemAsyncRouteItem[]> => {
   return requestSystemAsyncRoutesMock()
@@ -39,9 +57,21 @@ export const requestSystemAsyncRoutes = async (): Promise<SystemAsyncRouteItem[]
 export const requestSystemAsyncRoutesMock = async (): Promise<SystemAsyncRouteItem[]> => {
   await new Promise(resolve => setTimeout(resolve, 100))
   return [
-    { path: '/example/hooks/use-date-utils', component: 'example/hooks/use-date-utils' },
-    { path: '/example/hooks/use-theme-switch', component: 'example/hooks/use-theme-switch' },
-    { path: '/example/hooks/use-http-request', component: 'example/hooks/use-http-request' },
+    {
+      path: '/example/hooks/use-date-utils',
+      component: 'example/hooks/use-date-utils',
+      meta: { titleKey: 'router.example.hooks.composables.useDateUtils' },
+    },
+    {
+      path: '/example/hooks/use-theme-switch',
+      component: 'example/hooks/use-theme-switch',
+      meta: { titleKey: 'router.example.hooks.composables.useThemeSwitch' },
+    },
+    {
+      path: '/example/hooks/use-http-request',
+      component: 'example/hooks/use-http-request',
+      meta: { titleKey: 'router.example.hooks.composables.useHttpRequest' },
+    },
   ] as SystemAsyncRouteItem[]
 }
 
@@ -64,15 +94,15 @@ function validateRouteItems(routes: SystemAsyncRouteItem[]): SystemAsyncRouteIte
 
 /**
  * 真实请求实现（对接后端时启用）
- * 后端返回标准 ApiResponse<SystemAsyncRoutesRawRes>，解包 data 后提取路由数组
+ * 响应拦截器已统一解包标准 ApiResponse.data，本函数只接收并校验业务 payload。
  * 增强：基础字段校验，过滤无效路由项
  */
 export const requestSystemAsyncRoutesReal = async (): Promise<SystemAsyncRouteItem[]> => {
-  const res = await get<ApiResponse<SystemAsyncRoutesRawRes>>(SYSTEM_ASYNC_ROUTES_URL, {
+  const raw = await get<SystemAsyncRoutesRawRes>(SYSTEM_ASYNC_ROUTES_URL, {
     enableCache: false,
     cacheFor: { mode: 'memory', expire: 300000 },
+    responseSchema: systemAsyncRoutesRawSchema,
   })
-  const raw: SystemAsyncRoutesRawRes = res.data
   const routes: SystemAsyncRouteItem[] = extractRoutes(raw)
   if (!Array.isArray(routes)) {
     throw new Error('动态路由数据格式不正确，预期为数组或包含 routes 字段的对象')

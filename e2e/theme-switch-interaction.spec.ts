@@ -3,10 +3,15 @@ import { waitForAppReady, waitForRuntimeLoadingIdle } from './helpers/app'
 
 async function loginAsAdmin(page: import('@playwright/test').Page): Promise<void> {
   await page.goto('/#/login')
+  await waitForAppReady(page)
+  await waitForRuntimeLoadingIdle(page)
+  await expect(page.locator('#username')).toBeVisible({ timeout: 15000 })
   await page.locator('#username').fill('admin')
   await page.locator('#password').fill('123456')
-  await page.locator('#login-submit').click()
-  await page.waitForURL(/#\/dashboard$/)
+  const submit = page.locator('#login-submit')
+  await expect(submit).toBeEnabled()
+  await submit.click()
+  await expect(page).toHaveURL(/#\/dashboard$/, { timeout: 30000 })
   await waitForAppReady(page)
   await waitForRuntimeLoadingIdle(page)
 }

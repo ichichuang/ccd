@@ -3,6 +3,7 @@ import {
   gotoVisual,
   loginAsAdmin,
   waitForAppReady,
+  waitForRuntimeLoadingIdle,
   waitForThemeTransitionEnd,
 } from '../helpers/app'
 
@@ -24,6 +25,7 @@ test.describe('theme switching visual regression', () => {
     await loginAsAdmin(page)
     await gotoVisual(page, '/example/hooks/composables/use-theme-switch')
     await waitForAppReady(page)
+    await waitForRuntimeLoadingIdle(page)
 
     const pageRoot = page.locator('#use-theme-switch-page')
 
@@ -46,6 +48,8 @@ test.describe('theme switching visual regression', () => {
     await loginAsAdmin(page)
     await gotoVisual(page, '/example/system-configuration/theme')
     await waitForAppReady(page)
+    await waitForRuntimeLoadingIdle(page)
+    await expect(page.locator('#theme-system-page')).toBeVisible({ timeout: 15000 })
 
     await expect(page).toHaveScreenshot('theme-system-page.png', {
       fullPage: true,

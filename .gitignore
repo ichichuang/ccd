@@ -23,6 +23,10 @@ dist-ssr
 coverage
 *.local
 
+# Tauri/Rust generated outputs (main branch treats src-tauri artifacts as local build cache)
+src-tauri/target/
+src-tauri/gen/
+
 # Environment variables
 # 忽略包含敏感信息的环境变量文件
 .env.local
@@ -72,6 +76,7 @@ yarn.lock
 /tests/e2e/screenshots/
 /playwright-report/
 /test-results/
+.playwright-cli/
 
 # Local Netlify folder
 .netlify
@@ -95,3 +100,4 @@ CLAUDE.md
 
 # Local AI runtime state
 .ai/runtime/repair_list.txt
+.ai/runtime/*.json

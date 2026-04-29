@@ -9,16 +9,16 @@ import {
 import { createDynamicRouteManager } from '@/router/utils/dynamic'
 import type { RouteRecordRaw } from 'vue-router'
 import { createRouter, createWebHashHistory, createWebHistory } from 'vue-router'
-import { autoImportModulesSync } from '@/router/utils/moduleLoader'
+import { autoImportModules } from '@/router/utils/moduleLoader'
 import { registerRouterGuards } from './utils/guards'
 import { rootRedirect } from '@/constants/router'
 
-// 核心业务路由与示例路由全量打包（用于线上 Demo 展示）
-const routeModules = import.meta.glob('./modules/**/*.ts', { eager: true })
-const importedRoutes = autoImportModulesSync<RouteModule>(
-  routeModules as Record<string, { default?: unknown; [key: string]: unknown }>,
-  './modules/'
-)
+type RouteModuleFile = { default?: RouteModule; [key: string]: unknown }
+
+// 静态路由模块以 lazy manifest 暴露，由 setupRouter 在 app.use(router) 前加载。
+const routeModuleLoaders = import.meta.glob<RouteModuleFile>('./modules/**/*.ts')
+let normalizedStaticRoutes: RouteConfig[] = []
+let staticRoutesLoadPromise: Promise<RouteConfig[]> | null = null
 
 // 类型安全的路由模块处理函数
 function processRouteModules(modules: Record<string, RouteModule>): RouteConfig[] {
@@ -53,27 +53,22 @@ function processRouteModules(modules: Record<string, RouteModule>): RouteConfig[
   return routes
 }
 
-// 将所有路由模块合并为一个数组并排序
-const staticRoutes: RouteConfig[] = processRouteModules(importedRoutes)
-const sortedStaticRoutes: RouteConfig[] = sortRoutes(staticRoutes)
-// 添加 parentPaths 并归一化 ratio 默认值
-const routesWithParentPaths = addParentPathsToLeafRoutes(sortedStaticRoutes)
-const normalizedStaticRoutes = normalizeRatioMetaOnRoutes(routesWithParentPaths)
+function normalizeStaticRoutes(routes: RouteConfig[]): RouteConfig[] {
+  const sortedStaticRoutes = sortRoutes(routes)
+  const routesWithParentPaths = addParentPathsToLeafRoutes(sortedStaticRoutes)
+  return normalizeRatioMetaOnRoutes(routesWithParentPaths)
+}
 
-// 创建路由工具集（用于菜单渲染、面包屑等）
-export const routeUtils = createRouteUtils(normalizedStaticRoutes)
+// 创建路由工具集（用于菜单渲染、面包屑等），静态模块加载后原地更新。
+export const routeUtils = createRouteUtils([])
 
 // 类型安全的路由转换函数
 function createInitialRoutes(routes: RouteConfig[]): RouteRecordRaw[] {
   return transformToVueRoutes(routes)
 }
 
-// 转换为 Vue Router 兼容格式
-// 将错误页与 CatchAll 的 rootRedirect 一并纳入初始静态路由，避免依赖鉴权动态注入
-const initialRoutes: RouteRecordRaw[] = createInitialRoutes([
-  ...normalizedStaticRoutes,
-  ...rootRedirect,
-])
+// 初始只保留错误页与 CatchAll；静态业务路由通过 lazy manifest 注册。
+const initialRoutes: RouteRecordRaw[] = createInitialRoutes(rootRedirect)
 
 // 创建路由实例
 const router = createRouter({
@@ -95,12 +90,32 @@ const router = createRouter({
 // 创建动态路由管理器
 export const dynamicRouteManager = createDynamicRouteManager(router)
 
+export async function ensureStaticRoutesLoaded(): Promise<RouteConfig[]> {
+  if (staticRoutesLoadPromise) {
+    return staticRoutesLoadPromise
+  }
+
+  staticRoutesLoadPromise = autoImportModules<RouteModule>(routeModuleLoaders, './modules/').then(
+    importedRoutes => {
+      normalizedStaticRoutes = normalizeStaticRoutes(processRouteModules(importedRoutes))
+      dynamicRouteManager.addRoutes(normalizedStaticRoutes)
+      routeUtils.updateRouteUtils(normalizedStaticRoutes)
+      return normalizedStaticRoutes
+    }
+  )
+
+  return staticRoutesLoadPromise
+}
+
+export function getStaticRoutesSnapshot(): RouteConfig[] {
+  return [...normalizedStaticRoutes]
+}
+
 // 注册路由
 registerRouterGuards({
   router,
   routeUtils,
-  // 向权限系统与菜单暴露的 staticRoutes 也包含错误页与 CatchAll
-  staticRoutes: [...normalizedStaticRoutes, ...rootRedirect],
+  loadStaticRoutes: ensureStaticRoutesLoaded,
   dynamicRouteManager,
 })
 

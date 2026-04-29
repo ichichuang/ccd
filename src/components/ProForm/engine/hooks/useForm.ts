@@ -3,6 +3,7 @@ import { FormController } from '../core/FormController'
 import { DraftStorage } from '../persistence/DraftStorage'
 import { FORM_CONTROLLER_KEY, PRO_FORM_STATE_KEY } from '../constants'
 import { PRO_FORM_LOGGER } from '../utils/logger'
+import { castValue } from '@/utils/typeCasters'
 
 /**
  * ProForm 表单入口 Hook
@@ -21,7 +22,7 @@ export function useForm<TValues extends Record<string, unknown> = Record<string,
 
   // 基础表单状态（后续可接入验证与提交中的状态）
   const baseState: FormState<TValues> = controller.getFormState()
-  const state = reactive(baseState) as unknown as FormState<TValues>
+  const state = castValue<FormState<TValues>>(reactive(baseState))
 
   // 向渲染层暴露实时表单状态，支持 visibleIf 等逻辑读取
   provide(PRO_FORM_STATE_KEY, state)

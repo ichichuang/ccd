@@ -8,10 +8,16 @@ globs:
   - "scripts/sync-desktop-config.mjs"
   - "e2e/**"
   - "test-results/**"
-alwaysApply: true
+alwaysApply: false
 ---
 
 # Desktop Branch Governance Law
+
+This rule is branch/path aware:
+
+- `main`: pure frontend governance by default. Do not require desktop/Tauri drift checks unless a task explicitly touches desktop bridge files.
+- `feat/tauri-integration`: desktop runtime governance is active for Tauri bridge/capability/config changes.
+- Any direct edit under `src-tauri/**`, `src/utils/desktopWindow.ts`, `scripts/sync-desktop-config.mjs`, or desktop visual snapshots activates this rule regardless of branch.
 
 ## [LAW] Bridge SSOT
 

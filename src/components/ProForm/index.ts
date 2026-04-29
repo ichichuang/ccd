@@ -9,6 +9,7 @@ export { useForm } from './engine/hooks/useForm'
 export { useField } from './engine/hooks/useField'
 export { useFieldArray } from './engine/hooks/useFieldArray'
 export { useFormContext } from './engine/hooks/useFormContext'
+export { createSchemaValidationResolver } from './engine/validation/schemaResolver'
 
 export type {
   FieldArrayItem,

@@ -43,7 +43,6 @@ export interface ViteEnv {
   VITE_COMPRESSION: 'none' | 'gzip' | 'brotli' | 'both'
   VITE_BUILD_SOURCEMAP: boolean
   VITE_BUILD_ANALYZE: boolean
-  VITE_LEGACY: boolean
   VITE_API_BASE_URL: string
   VITE_APP_TITLE: string
   VITE_APP_ENV: 'development' | 'production'
@@ -72,7 +71,6 @@ export const wrapperEnv = (envConf: Record<string, any>): ViteEnv => {
     'VITE_CDN',
     'VITE_BUILD_SOURCEMAP',
     'VITE_BUILD_ANALYZE',
-    'VITE_LEGACY',
     'VITE_DROP_DEBUGGER',
     'VITE_DROP_CONSOLE',
     'VITE_DEV_TOOLS',
@@ -101,7 +99,6 @@ export const wrapperEnv = (envConf: Record<string, any>): ViteEnv => {
     VITE_COMPRESSION: ret.VITE_COMPRESSION ?? 'none',
     VITE_BUILD_SOURCEMAP: ret.VITE_BUILD_SOURCEMAP ?? false,
     VITE_BUILD_ANALYZE: ret.VITE_BUILD_ANALYZE ?? false,
-    VITE_LEGACY: ret.VITE_LEGACY ?? false,
     VITE_API_BASE_URL: ret.VITE_API_BASE_URL ?? '',
     VITE_APP_TITLE: ret.VITE_APP_TITLE ?? '',
     VITE_APP_ENV: ret.VITE_APP_ENV ?? 'development',

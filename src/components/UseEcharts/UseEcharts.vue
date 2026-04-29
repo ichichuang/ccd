@@ -82,6 +82,22 @@ watch(
 
 // 使用主题合并后的配置
 const optionRef = computed(() => props.option)
+const chartModulesReady = ref(false)
+let chartModuleRequestId = 0
+
+watch(
+  () => optionRef.value,
+  async option => {
+    const requestId = ++chartModuleRequestId
+    chartModulesReady.value = false
+    const { ensureEChartsModulesForOption } = await import('./echarts-registry')
+    await ensureEChartsModulesForOption(option)
+    if (requestId === chartModuleRequestId) {
+      chartModulesReady.value = true
+    }
+  },
+  { immediate: true }
+)
 const opacityConfigRef = computed(() => props.themeConfig?.opacity)
 const advancedConfigRef = computed<ChartAdvancedConfig>(() => ({
   animationConfig: props.animationConfig,
@@ -394,7 +410,7 @@ defineExpose({
     class="layout-full relative overflow-visible min-h-1"
   >
     <VEChartsAsync
-      v-if="hasChartMounted"
+      v-if="hasChartMounted && chartModulesReady"
       :key="props.renderer"
       ref="chartRef"
       :option="mergedOption"

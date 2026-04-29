@@ -1,7 +1,7 @@
 ---
 description: Vite + Tauri v2 双端桥接规则，强制 OS 能力采用 isTauri 双分支与 Web fallback。
 globs: ["src/**/*.vue", "src/**/*.ts", "src/**/*.tsx"]
-alwaysApply: true
+alwaysApply: false
 ---
 
 # Cross-Platform Tauri Bridge Law
@@ -29,7 +29,10 @@ triggerKeywords:
 
 ## 1. 架构认知（Architecture Cognition）
 
-本项目是基于 **Vite 7 + Tauri v2** 的 Web/Desktop 双栖架构：
+本规则仅在 Tauri / desktop / OS bridge 能力被触发时适用。
+
+主线 `main` 分支默认按纯前端 Vite 应用处理；不得把 Tauri 能力当作所有任务的默认前提。
+`feat/tauri-integration` 或显式触碰 `src-tauri/**` / desktop bridge 代码时，才进入 Web/Desktop 双栖架构语境：
 
 - 同一套前端代码在浏览器与桌面 WebView 两端运行。
 - 任何涉及 OS 级能力的实现都必须遵循“桥接而非分裂”的双轨设计。
@@ -136,4 +139,3 @@ window.open(url, '_blank') // 缺少 Tauri 分支
 - [ ] Web 分支是否提供可运行 fallback
 - [ ] 异步失败路径是否处理
 - [ ] 前端 `src/` 是否未引入 Node.js 原生模块
-

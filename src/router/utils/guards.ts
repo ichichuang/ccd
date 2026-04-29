@@ -13,12 +13,12 @@ type DynamicRouteManager = ReturnType<typeof createDynamicRouteManager>
 export const registerRouterGuards = ({
   router,
   routeUtils,
-  staticRoutes,
+  loadStaticRoutes,
   dynamicRouteManager,
 }: {
   router: Router
   routeUtils: RouteUtils
-  staticRoutes: RouteConfig[]
+  loadStaticRoutes: () => Promise<RouteConfig[]>
   dynamicRouteManager: DynamicRouteManager
 }) => {
   // 加载动态路由：通过 usePermissionRoutes composable 拉取（遵循 api→hook→store 数据流），
@@ -26,6 +26,7 @@ export const registerRouterGuards = ({
   const initDynamicRoutes = async (): Promise<void> => {
     const permissionStore = usePermissionStore()
     const { fetchRoutes } = usePermissionRoutes()
+    const staticRoutes = await loadStaticRoutes()
     permissionStore.setStaticRoutes([...staticRoutes, ...rootRedirect])
 
     const rawRoutes = await fetchRoutes()

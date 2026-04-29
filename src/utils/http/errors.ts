@@ -15,6 +15,7 @@ export enum ErrorType {
   AUTH = 'AUTH',
   SERVER = 'SERVER',
   CLIENT = 'CLIENT',
+  VALIDATION = 'VALIDATION',
   SECURITY = 'SECURITY',
   UNKNOWN = 'UNKNOWN',
 }
@@ -25,6 +26,7 @@ const ERROR_TYPE_TO_CODE_KEY: Record<ErrorType, keyof typeof HTTP_CONFIG.errorCo
   [ErrorType.AUTH]: 'authError',
   [ErrorType.SERVER]: 'serverError',
   [ErrorType.CLIENT]: 'clientError',
+  [ErrorType.VALIDATION]: 'validationError',
   [ErrorType.SECURITY]: 'securityError',
   [ErrorType.UNKNOWN]: 'unknownError',
 }

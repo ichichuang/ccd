@@ -301,7 +301,7 @@ const paletteOutput = computed<string[]>(() =>
             >
               <span
                 class="text-xs font-bold"
-                :style="{ color: darkResult ? '#ffffff' : '#000000' }"
+                :class="darkResult ? 'text-background' : 'text-foreground'"
               >
                 {{ darkResult ? 'Dark' : 'Light' }}
               </span>

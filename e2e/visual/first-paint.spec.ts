@@ -1,5 +1,10 @@
 import { expect, test } from '@playwright/test'
-import { gotoVisualFirstPaint, releasePreloader, waitForAppReady } from '../helpers/app'
+import {
+  gotoVisualFirstPaint,
+  releasePreloader,
+  waitForAppReady,
+  waitForRuntimeLoadingIdle,
+} from '../helpers/app'
 
 test.describe('first paint visual regression', () => {
   test('light-mode native preloader matches snapshot', async ({ page }) => {
@@ -13,6 +18,7 @@ test.describe('first paint visual regression', () => {
 
     await releasePreloader(page)
     await waitForAppReady(page)
+    await waitForRuntimeLoadingIdle(page)
   })
 
   test('dark-mode native preloader matches snapshot', async ({ page }) => {
@@ -26,5 +32,6 @@ test.describe('first paint visual regression', () => {
 
     await releasePreloader(page)
     await waitForAppReady(page)
+    await waitForRuntimeLoadingIdle(page)
   })
 })

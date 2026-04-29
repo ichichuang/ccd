@@ -2,6 +2,7 @@
  * Pure semantic shortcut object for UnoCSS.
  *
  * NO dynamic regex here. All dynamic/validated generation lives in `src/design-engine/rules/**`.
+ * DX usage contract: `docs/codex/dx-contracts.md`.
  */
 export const semanticShortcuts = {
   // Flex 9-grid (9个高频 flex 定位语义)

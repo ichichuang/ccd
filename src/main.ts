@@ -1,22 +1,18 @@
 // 导入功能样式（全局样式统一在入口注册，避免散落在 composable 中被摇树遗漏）
 import '@/assets/styles/reset.scss'
 import '@/assets/styles/ambient-orb-animations.scss'
-import 'animate.css'
+import '@/assets/styles/animate-lite.scss'
 import 'uno.css'
-import 'nprogress/nprogress.css'
 
 // 导入应用
 import App from '@/App.vue'
 import { RUNTIME_STORAGE_KEYS } from '@/constants/runtime'
-import { setOnUnauthorized, setTokenProvider } from '@/infra/auth/tokenProvider'
 import { setupPlugins } from '@/plugins'
 import router from '@/router'
 import { useLayoutStoreWithOut } from '@/stores/modules/system'
-import { useUserStoreWithOut } from '@/stores/modules/session'
 import { fadeOutNativePreloader } from '@/hooks/layout/useLoading'
 import { preload } from '@/utils/theme/sizeEngine'
 
-let isUnauthorizedHandling = false
 /**
  * Wait two paints to ensure mounted DOM + CSS var updates
  * are fully committed before visual handoff.
@@ -52,30 +48,6 @@ async function bootstrap() {
 
   // 设置插件（支持异步，含 Pinia）
   await setupPlugins(app)
-
-  // 依赖注入：HTTP 层通过 TokenProvider 取 token / 401 回调，不直接依赖 Store
-  setTokenProvider(() => useUserStoreWithOut().getToken)
-  setOnUnauthorized(async () => {
-    if (isUnauthorizedHandling) {
-      return
-    }
-    isUnauthorizedHandling = true
-    const userStore = useUserStoreWithOut()
-    try {
-      await userStore.logout()
-      const currentPath = router.currentRoute.value.fullPath
-      if (currentPath !== '/login') {
-        await router.replace({
-          path: '/login',
-          query: { redirect: currentPath },
-        })
-      }
-    } finally {
-      setTimeout(() => {
-        isUnauthorizedHandling = false
-      }, 1000)
-    }
-  })
 
   // 挂载应用
   app.mount('#app')

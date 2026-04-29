@@ -33,17 +33,15 @@ export function setupErrorHandler(app: App) {
   const showUserFriendlyToast = () => {
     if (!isProd || typeof window === 'undefined') return
     try {
-      const anyWindow = window as any
-
       // 优先使用全局 $message（与现有类型声明对齐）
-      if (anyWindow.$message?.danger) {
-        anyWindow.$message.danger('系统遇到问题，请刷新页面重试。')
+      if (window.$message?.danger) {
+        window.$message.danger('系统遇到问题，请刷新页面重试。')
         return
       }
 
       // 兼容历史上的 $toast.dangerIn 调用方式
-      if (anyWindow.$toast?.dangerIn) {
-        anyWindow.$toast.dangerIn('top-left', '系统错误', '系统遇到问题，请刷新页面重试。')
+      if (window.$toast?.dangerIn) {
+        window.$toast.dangerIn('top-left', '系统错误', '系统遇到问题，请刷新页面重试。')
         return
       }
 

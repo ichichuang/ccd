@@ -1,8 +1,21 @@
 import type { Ref } from 'vue'
 import type { EChartsOption } from 'echarts'
+import type { AnimationEasing } from 'zrender/lib/animation/easing.js'
 import { useThemeStore } from '@/stores/modules/system'
 import { getChartSystemVariables } from '@/utils/theme/chartUtils'
+import { parseEChartsOption } from '@/adapters/echarts.adapter'
 import type { SystemMetricsDTO } from '../page.state'
+
+const DASHBOARD_CHART_EASING: AnimationEasing = 'cubicOut'
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null && !Array.isArray(value)
+}
+
+function firstOptionRecord(value: unknown): Record<string, unknown> {
+  const first = Array.isArray(value) ? value[0] : value
+  return isRecord(first) ? first : {}
+}
 
 /**
  * Hook to build ultra-premium ECharts options for System Metrics.
@@ -24,15 +37,11 @@ export function useChartOptions(dataRef: Ref<SystemMetricsDTO[]>) {
   const baseOption = computed<EChartsOption>(() => {
     const vars = chartVars.value
 
-    const animationConfig = {
-      animationEasing: 'cubic-bezier(0.16, 1, 0.3, 1)' as any,
+    return {
+      animationEasing: DASHBOARD_CHART_EASING,
       animationDuration: 1000,
       animationDurationUpdate: 400,
-      animationEasingUpdate: 'cubic-bezier(0.16, 1, 0.3, 1)' as any,
-    }
-
-    return {
-      ...animationConfig,
+      animationEasingUpdate: DASHBOARD_CHART_EASING,
       grid: {
         top: vars.gapSm,
         bottom: vars.gapSm,
@@ -129,13 +138,13 @@ export function useChartOptions(dataRef: Ref<SystemMetricsDTO[]>) {
     const memoryData = data.map(d => d.memoryLoad)
 
     const seriesArr = Array.isArray(base.series) ? base.series : []
-    const cpuSeries = seriesArr[0] ?? { type: 'line', name: 'CPU Usage' }
-    const memSeries = seriesArr[1] ?? { type: 'line', name: 'Memory Load' }
+    const cpuSeries = firstOptionRecord(seriesArr[0] ?? { type: 'line', name: 'CPU Usage' })
+    const memSeries = firstOptionRecord(seriesArr[1] ?? { type: 'line', name: 'Memory Load' })
 
-    return {
+    return parseEChartsOption({
       ...base,
       xAxis: {
-        ...(base.xAxis as any),
+        ...firstOptionRecord(base.xAxis),
         data: xData,
       },
       series: [
@@ -148,7 +157,7 @@ export function useChartOptions(dataRef: Ref<SystemMetricsDTO[]>) {
           data: memoryData,
         },
       ],
-    } as unknown as EChartsOption
+    })
   })
 
   return {

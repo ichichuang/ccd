@@ -11,7 +11,7 @@ const props = withDefaults(defineProps<AnimateWrapperProps>(), {
   ...defaultAnimateConfig,
 })
 
-/** 构造动画类（根据 animate.css 规范生成类名） */
+/** 构造动画类（根据本地 animate-lite 规范生成类名） */
 const buildClass = (name?: AnimateName) => {
   if (!name) {
     return ''
@@ -28,7 +28,7 @@ const buildClass = (name?: AnimateName) => {
     classes.push(`animate__repeat-${props.repeat}`)
   }
 
-  // 无限循环使用 animate.css 官方类名
+  // 无限循环使用 animate-lite 兼容类名
   if (props.repeat === 'infinite') {
     classes.push('animate__infinite')
   }
@@ -141,10 +141,3 @@ const handleBeforeLeave = (el: Element) => {
     <slot />
   </TransitionGroup>
 </template>
-
-<style>
-.animate__animated {
-  animation-duration: var(--animate-duration, 1s);
-  animation-delay: var(--animate-delay, 0s);
-}
-</style>

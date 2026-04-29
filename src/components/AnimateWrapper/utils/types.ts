@@ -1,113 +1,40 @@
 /**
- * animate.css 动画类型声明
+ * Local animate-lite animation contract.
+ * Keep this list aligned with `src/assets/styles/animate-lite.scss`.
  */
+export const SUPPORTED_ANIMATE_NAMES = [
+  'bounceIn',
+  'bounceOut',
+  'fadeIn',
+  'fadeInUp',
+  'fadeOut',
+  'fadeOutDown',
+  'fadeOutUp',
+  'flipInX',
+  'flipOutX',
+  'rotateIn',
+  'rotateOut',
+  'slideInDown',
+  'slideInLeft',
+  'slideOutRight',
+  'slideOutUp',
+  'zoomIn',
+  'zoomOut',
+] as const
 
-/** animate.css 动画名称类型 */
-export type AnimateName =
-  | 'bounce'
-  | 'flash'
-  | 'pulse'
-  | 'rubberBand'
-  | 'shakeX'
-  | 'shakeY'
-  | 'headShake'
-  | 'swing'
-  | 'tada'
-  | 'wobble'
-  | 'jello'
-  | 'heartBeat'
-  | 'backInDown'
-  | 'backInLeft'
-  | 'backInRight'
-  | 'backInUp'
-  | 'backOutDown'
-  | 'backOutLeft'
-  | 'backOutRight'
-  | 'backOutUp'
-  | 'bounceIn'
-  | 'bounceInDown'
-  | 'bounceInLeft'
-  | 'bounceInRight'
-  | 'bounceInUp'
-  | 'bounceOut'
-  | 'bounceOutDown'
-  | 'bounceOutLeft'
-  | 'bounceOutRight'
-  | 'bounceOutUp'
-  | 'fadeIn'
-  | 'fadeInDown'
-  | 'fadeInDownBig'
-  | 'fadeInLeft'
-  | 'fadeInLeftBig'
-  | 'fadeInRight'
-  | 'fadeInRightBig'
-  | 'fadeInUp'
-  | 'fadeInUpBig'
-  | 'fadeInTopLeft'
-  | 'fadeInTopRight'
-  | 'fadeInBottomLeft'
-  | 'fadeInBottomRight'
-  | 'fadeOut'
-  | 'fadeOutDown'
-  | 'fadeOutDownBig'
-  | 'fadeOutLeft'
-  | 'fadeOutLeftBig'
-  | 'fadeOutRight'
-  | 'fadeOutRightBig'
-  | 'fadeOutUp'
-  | 'fadeOutUpBig'
-  | 'fadeOutTopLeft'
-  | 'fadeOutTopRight'
-  | 'fadeOutBottomRight'
-  | 'fadeOutBottomLeft'
-  | 'flip'
-  | 'flipInX'
-  | 'flipInY'
-  | 'flipOutX'
-  | 'flipOutY'
-  | 'lightSpeedInRight'
-  | 'lightSpeedInLeft'
-  | 'lightSpeedOutRight'
-  | 'lightSpeedOutLeft'
-  | 'rotateIn'
-  | 'rotateInDownLeft'
-  | 'rotateInDownRight'
-  | 'rotateInUpLeft'
-  | 'rotateInUpRight'
-  | 'rotateOut'
-  | 'rotateOutDownLeft'
-  | 'rotateOutDownRight'
-  | 'rotateOutUpLeft'
-  | 'rotateOutUpRight'
-  | 'zoomIn'
-  | 'zoomInDown'
-  | 'zoomInLeft'
-  | 'zoomInRight'
-  | 'zoomInUp'
-  | 'zoomOut'
-  | 'zoomOutDown'
-  | 'zoomOutLeft'
-  | 'zoomOutRight'
-  | 'zoomOutUp'
-  | 'slideInDown'
-  | 'slideInLeft'
-  | 'slideInRight'
-  | 'slideInUp'
-  | 'slideOutDown'
-  | 'slideOutLeft'
-  | 'slideOutRight'
-  | 'slideOutUp'
+/** Local animate-lite animation name. */
+export type AnimateName = (typeof SUPPORTED_ANIMATE_NAMES)[number]
 
-/** animate.css 动画速度类型 */
+/** animate-lite 动画速度类型 */
 export type AnimateSpeed = '' | 'slower' | 'slow' | 'fast' | 'faster'
 
-/** animate.css 动画重复次数类型 */
+/** animate-lite 动画重复次数类型 */
 export type AnimateRepeat = 1 | 2 | 3 | 'infinite'
 
 /**
  * AnimateWrapper 组件 Props 接口
  *
- * 基于 animate.css 的动画包装器组件属性
+ * 基于本地 animate-lite 子集的动画包装器组件属性
  *
  * @example
  * ```vue
@@ -148,7 +75,7 @@ export interface AnimateWrapperProps {
   /**
    * 进入动画
    *
-   * 元素显示时使用的动画名称（animate.css 动画类名）
+   * 元素显示时使用的动画名称（animate-lite 动画类名）
    *
    * @default 'fadeIn'
    * @example
@@ -161,7 +88,7 @@ export interface AnimateWrapperProps {
   /**
    * 离开动画
    *
-   * 元素隐藏时使用的动画名称（animate.css 动画类名）
+   * 元素隐藏时使用的动画名称（animate-lite 动画类名）
    *
    * @default 'fadeOut'
    * @example
@@ -219,7 +146,7 @@ export interface AnimateWrapperProps {
   /**
    * 动画速度
    *
-   * 控制动画的播放速度（对应 animate.css 的速度类）
+   * 控制动画的播放速度（对应 animate-lite 的速度类）
    *
    * @default 'fast'
    * @example

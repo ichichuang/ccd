@@ -10,7 +10,6 @@ import { PrimeVueResolver } from '@primevue/auto-import-resolver'
 import type { PluginOption, ViteDevServer } from 'vite'
 import { getCustomIconClasses, invalidateIconCaches } from '../src/design-engine/safelist'
 import type { ViteEnv } from './utils'
-import { configLegacyPlugin } from './legacy'
 
 // ✅ 引入模块化的构建插件
 import { configCompressPlugin } from './compress'
@@ -19,7 +18,7 @@ import { viteBuildInfo } from './info'
 import { viteBuildPerformancePlugin } from './performance'
 
 export function getPluginsList(env: ViteEnv, command: 'build' | 'serve'): PluginOption[] {
-  const { VITE_COMPRESSION, VITE_BUILD_ANALYZE, VITE_LEGACY } = env
+  const { VITE_COMPRESSION, VITE_BUILD_ANALYZE } = env
   const isDev = command === 'serve'
   const isBuild = command === 'build'
 
@@ -128,11 +127,6 @@ export function getPluginsList(env: ViteEnv, command: 'build' | 'serve'): Plugin
       resolvers: [PrimeVueResolver()],
     }),
   ]
-
-  // Legacy 浏览器兼容（仅构建阶段且显式开启时）
-  if (isBuild && VITE_LEGACY) {
-    plugins.push(configLegacyPlugin())
-  }
 
   // 构建阶段的压缩与体积分析
   if (isBuild && VITE_COMPRESSION !== 'none') {

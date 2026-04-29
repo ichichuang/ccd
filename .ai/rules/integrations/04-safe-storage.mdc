@@ -70,6 +70,16 @@ Constraints:
 
 **This pattern is unique to `useLocaleStore`. Do NOT copy it for any other key.**
 
+### Exception 3 — Vite Preload Reload Flag
+`src/main.ts` may use `sessionStorage` for `vite-preload-error-reloaded`.
+This key is a transient runtime coordination flag used to avoid infinite reload loops after stale chunk preload failures.
+It is not user, auth, route, or business payload data.
+
+### Exception 4 — Size First-Paint Preload
+`src/utils/theme/sizeEngine.ts` may synchronously read `SIZE_PERSIST_KEY` before Vue/Pinia mounts to avoid first-frame layout/size flash.
+The persisted value MUST still be written by `useSizeStore` through `createPiniaEncryptedSerializer()`.
+Plain JSON parsing in this path is migration-only fallback for older local persisted values.
+
 ## API LAYER PROHIBITION
 
 `src/api/**` modules are stateless method builders. They MUST NEVER import or reference any Pinia store.

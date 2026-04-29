@@ -52,6 +52,7 @@ export default ({ mode, command }: ConfigEnv): UserConfigExport => {
   } = env
 
   const isDev = mode === 'development'
+  const isBuild = command === 'build'
 
   // 2. 动态控制 esbuild 的 drop / pure 选项
   //    保留 console.error 和 console.warn 用于生产环境错误可见性
@@ -97,7 +98,13 @@ export default ({ mode, command }: ConfigEnv): UserConfigExport => {
         timeout: 30000,
       },
       watch: {
-        ignored: ['**/node_modules/**', '**/.git/**', '**/dist/**'],
+        ignored: [
+          '**/node_modules/**',
+          '**/.git/**',
+          '**/dist/**',
+          '**/src-tauri/target/**',
+          '**/src-tauri/gen/**',
+        ],
       },
       proxy: isDev
         ? {
@@ -165,10 +172,7 @@ export default ({ mode, command }: ConfigEnv): UserConfigExport => {
         treeshake: {
           preset: 'smallest',
           moduleSideEffects: id =>
-            /\.(css|scss|sass)$/.test(id) ||
-            id.includes('animate.css') ||
-            id.includes('uno.css') ||
-            id.startsWith('virtual:'),
+            /\.(css|scss|sass)$/.test(id) || id.includes('uno.css') || id.startsWith('virtual:'),
         },
         input: {
           index: pathResolve('./index.html', import.meta.url),
@@ -179,48 +183,36 @@ export default ({ mode, command }: ConfigEnv): UserConfigExport => {
           entryFileNames: 'static/js/[name]-[hash].js',
           assetFileNames: 'static/[ext]/[name]-[hash].[ext]',
 
-          // Rollup 4 碎片合并：<2KB 的 chunk 自动归并到最近的父模块
-          // 消除 40+ 个微型碎片，减少 HTTP 请求数和压缩文件数
+          // Rollup 4 碎片合并：<2KB 的 chunk 自动归并到最近的父模块。
+          // Vite 7 当前仍走 Rollup output；迁移 Rolldown 时需复核该实验选项是否仍被支持。
+          // 消除 40+ 个微型碎片，减少 HTTP 请求数和压缩文件数。
           experimentalMinChunkSize: 2 * 1024,
 
           manualChunks(id: string) {
             if (id.includes('node_modules')) {
-              // ── 1. Vue Core (保持纯净) ──
+              // ── 1. Core framework: startup-critical and shared by most routes ──
               if (id.includes('/vue/') || id.includes('vue-router') || id.includes('/pinia/'))
-                return 'vendor-vue'
+                return 'vendor-core'
 
-              // ── 2. Vue 生态核心 (首屏同步: i18n + persistedstate + HTTP 客户端) ──
-              // overlayscrollbars / @tanstack/vue-virtual 为非首屏依赖，
-              // 交由 Rollup 按需切分到对应路由 chunk，减轻首屏同步负载
+              // ── 2. Heavy visual runtimes: async-only consumers should not leak into core ──
               if (
-                id.includes('vue-i18n') ||
-                id.includes('pinia-plugin-persistedstate') ||
-                id.includes('/alova/')
+                id.includes('echarts') ||
+                id.includes('zrender') ||
+                id.includes('vue-echarts') ||
+                id.includes('/gsap/') ||
+                id.includes('lottie-web') ||
+                id.includes('vue3-lottie')
               )
-                return 'vendor-ecosystem'
+                return 'vendor-heavy'
 
-              // ── 3. ECharts 生态 (defineAsyncComponent 异步加载) ──
-              if (id.includes('echarts') || id.includes('zrender') || id.includes('vue-echarts'))
-                return 'vendor-echarts'
-
-              // ── 4. GSAP 动画库 (仅登录页使用，独立拆包避免污染首屏) ──
-              if (id.includes('/gsap/')) return 'vendor-gsap'
-
-              // ── 5. Lottie 生态 (defineAsyncComponent 异步加载) ──
-              if (id.includes('lottie-web') || id.includes('vue3-lottie')) return 'vendor-lottie'
-
-              // ── 6. PrimeVue UI 框架 (主题数据 + 核心运行时统一打包) ──
+              // ── 3. PrimeVue UI framework and theme runtime ──
               // @primeuix/themes 与 @primevue/core、primevue/* 组件基础模块高度耦合，
               // 合并为单一 chunk 避免 BaseStyle/utils 碎片散落在各路由 chunk 中
               if (id.includes('@primeuix') || id.includes('@primevue') || id.includes('/primevue/'))
-                return 'vendor-primevue'
+                return 'vendor-ui'
 
-              // ── 7. 工具库（按需拆分，避免污染 vendor-vue） ──
-              if (id.includes('@vueuse') || id.includes('lodash-es')) return 'vendor-utils'
-              if (id.includes('dayjs') || id.includes('crypto-es') || id.includes('yup'))
-                return 'vendor-utils'
-
-              // 其余小型依赖 (<20KB) → Rollup 原生异步切分
+              // Other dependencies are left to Rollup so small async chains can co-locate
+              // with the route or feature that actually imports them.
               return undefined
             }
           },
@@ -243,8 +235,6 @@ export default ({ mode, command }: ConfigEnv): UserConfigExport => {
         pkg: { name: __APP_INFO__.pkg.name, version: __APP_INFO__.pkg.version },
         lastBuildTime: __APP_INFO__.lastBuildTime,
       }),
-      // 仅在非常必要时保留 processEnv，通常 import.meta.env 足够使用
-      processEnv: env,
     },
 
     // 7. CSS 配置
@@ -261,24 +251,28 @@ export default ({ mode, command }: ConfigEnv): UserConfigExport => {
               },
             },
           },
-          postcssPxToRem({
-            rootValue: 16,
-            propList: [
-              '*',
-              '!border',
-              '!border-width',
-              '!border-top-width',
-              '!border-right-width',
-              '!border-bottom-width',
-              '!border-left-width',
-            ],
-            selectorBlackList: PX_TO_REM_SELECTOR_BLACKLIST,
-            replace: true,
-            mediaQuery: true,
-            minPixelValue: 1,
-            unitPrecision: 4,
-            exclude: /node_modules/i,
-          }),
+          ...(isBuild
+            ? [
+                postcssPxToRem({
+                  rootValue: 16,
+                  propList: [
+                    '*',
+                    '!border',
+                    '!border-width',
+                    '!border-top-width',
+                    '!border-right-width',
+                    '!border-bottom-width',
+                    '!border-left-width',
+                  ],
+                  selectorBlackList: PX_TO_REM_SELECTOR_BLACKLIST,
+                  replace: true,
+                  mediaQuery: true,
+                  minPixelValue: 1,
+                  unitPrecision: 4,
+                  exclude: /node_modules/i,
+                }),
+              ]
+            : []),
         ],
       },
       preprocessorOptions: {

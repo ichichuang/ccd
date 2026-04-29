@@ -1,5 +1,11 @@
 import type { ProTableLoadParams, ProTableRequestResult, SearchPathResolver } from '../types/props'
 import { objectGet } from '@/utils/lodashes'
+import { castArray } from '@/utils/typeCasters'
+import type { RequestConfig as HttpRequestConfig } from '@/utils/http/types'
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null && !Array.isArray(value)
+}
 
 /**
  * ProTable 自治拉取：将表格标准参数转为通用 REST 风格 query。
@@ -30,6 +36,9 @@ export function formatResponseData<T extends Record<string, unknown>>(
   if (!Array.isArray(dataRaw)) {
     throw new Error(`ProTable: data-key "${dataKey}" did not resolve to an array`)
   }
+  if (!dataRaw.every(isRecord)) {
+    throw new Error(`ProTable: data-key "${dataKey}" resolved to an array with invalid row shape`)
+  }
 
   let total = 0
   if (totalKey) {
@@ -40,7 +49,7 @@ export function formatResponseData<T extends Record<string, unknown>>(
     total = dataRaw.length > 0 ? 100 : 0
   }
 
-  return { data: dataRaw as T[], total }
+  return { data: castArray<Record<string, unknown>, T>(dataRaw), total }
 }
 
 /**
@@ -63,4 +72,16 @@ export function resolveApiUrl(
 ): string {
   if (resolver === false) return baseUrl
   return (resolver ?? defaultSearchPathResolver)(baseUrl, query)
+}
+
+export function buildApiExecutorConfig(
+  apiConfig: HttpRequestConfig | undefined,
+  signal?: AbortSignal
+): HttpRequestConfig {
+  return {
+    ...apiConfig,
+    enableCache: apiConfig?.enableCache ?? false,
+    cancelStrategy: apiConfig?.cancelStrategy ?? 'cancelPrevious',
+    ...(signal ? { signal } : {}),
+  }
 }

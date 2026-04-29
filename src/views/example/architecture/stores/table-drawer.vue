@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { castRecord, castValue } from '@/utils/typeCasters'
+
 defineOptions({ name: 'ArchitectureStoreTableDrawer' })
 
 interface SampleRow {
@@ -39,10 +41,10 @@ const sampleData: SampleRow[] = [
 
 const tableDrawerStore = useTableDrawerStore()
 
-const selectedRow = computed(() => tableDrawerStore.selectedRow as SampleRow | null)
+const selectedRow = computed(() => castValue<SampleRow | null>(tableDrawerStore.selectedRow))
 
 function openRow(row: SampleRow): void {
-  tableDrawerStore.openDrawer(row as unknown as Record<string, unknown>)
+  tableDrawerStore.openDrawer(castRecord(row))
 }
 
 function closeDrawer(): void {

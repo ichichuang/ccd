@@ -201,7 +201,7 @@ export default defineComponent({
       layoutStore.sidebarCollapse ? 'w-sidebarCollapsedWidth' : 'w-sidebarWidth'
     )
 
-    // --- 布局模式切换过渡：与 AnimateRouterView / AnimateWrapper 一致使用 animate.css ---
+    // --- 布局模式切换过渡：与 AnimateRouterView / AnimateWrapper 一致使用 animate-lite ---
     // Resize 拖拽期间必须保持 Transition 子树不被卸载重建（Transition Trap）
     const transitionName = computed(() =>
       layoutStore.enableTransition && isResizeSettled.value ? 'animate__animated' : 'no-transition'

@@ -3,6 +3,7 @@ import type { FieldState, FormState, UseFieldReturn } from '../types'
 import { SubscriptionStore } from '../state/SubscriptionStore'
 import { PRO_FORM_STATE_KEY } from '../constants'
 import { useFormContext } from './useFormContext'
+import { castValue } from '@/utils/typeCasters'
 
 /**
  * 字段级 Hook：使用 SubscriptionStore 进行字段级订阅
@@ -23,25 +24,27 @@ export function useField<
     | undefined
 
   const value = ref(
-    initialStateFromStore ? (initialStateFromStore.value as T) : (undefined as unknown as T)
+    initialStateFromStore ? (initialStateFromStore.value as T) : castValue<T>(undefined)
   ) as Ref<T>
 
-  const state = reactive(
-    initialStateFromStore ?? {
-      value: value.value,
-      initialValue: value.value,
-      visible: true,
-      disabled: false,
-      required: false,
-      loadingOptions: false,
-      loadedOptions: undefined,
-      touched: false,
-      dirty: false,
-      valid: true,
-      validating: false,
-      errors: [],
-    }
-  ) as unknown as FieldState<T>
+  const state = castValue<FieldState<T>>(
+    reactive(
+      initialStateFromStore ?? {
+        value: value.value,
+        initialValue: value.value,
+        visible: true,
+        disabled: false,
+        required: false,
+        loadingOptions: false,
+        loadedOptions: undefined,
+        touched: false,
+        dirty: false,
+        valid: true,
+        validating: false,
+        errors: [],
+      }
+    )
+  )
 
   const syncFromStore = (): void => {
     const latest = store.getFieldState(name as keyof TValues & string) as FieldState<T> | undefined

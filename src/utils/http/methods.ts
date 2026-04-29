@@ -1,6 +1,7 @@
 // src/utils/http/methods.ts
 import { HTTP_CONFIG } from '@/constants/http'
-import { getToken } from '@/infra/auth/tokenProvider'
+import { parseZodHttpPayload } from '@/adapters/http.adapter'
+import { readAuthToken } from '@/infra/auth/tokenProvider'
 import { t } from '@/locales'
 import { alovaInstance } from './instance'
 import { HttpRequestError, isRetryableError, ErrorType } from './errors'
@@ -298,7 +299,9 @@ async function acquireRateLimitSlot(): Promise<void> {
  * - 剥离 RequestConfig 中仅供本模块使用的字段（enableCache/cacheTTL/retry）
  * - 其余字段透传给 alova 作为 AlovaRequestConfig
  */
-function convertRequestConfig(config?: RequestConfig): AlovaRequestConfig {
+function convertRequestConfig<TResponse = unknown>(
+  config?: RequestConfig<TResponse>
+): AlovaRequestConfig<TResponse> {
   if (!config) {
     return {}
   }
@@ -364,7 +367,7 @@ async function executeWithRetry<T>(
  * - 显式 .send(true)
  * - 只缓存数据，不缓存 Method
  */
-export const get = async <T = unknown>(url: string, config?: RequestConfig): Promise<T> => {
+export const get = async <T = unknown>(url: string, config?: RequestConfig<T>): Promise<T> => {
   // 缓存键必须包含查询参数，否则不同分页/条件会命中同一缓存
   const cacheKey = buildRequestKey('GET', url, config?.params ?? {})
   const cacheEnabled = config?.enableCache !== false
@@ -398,11 +401,13 @@ export const get = async <T = unknown>(url: string, config?: RequestConfig): Pro
 
 /**
  * GET 请求 - 返回原始响应（包含头信息）
- * 绕过 Alova 拦截器，直接使用 fetch 以获取 Headers
+ * Infrastructure exception: direct fetch is limited to this header-preserving helper.
+ * It must keep auth injection, abort handling, cache policy, unified errors, and global
+ * error notifications aligned with the normal Alova path.
  */
 export const getRaw = async <T = unknown>(
   url: string,
-  config?: RequestConfig
+  config?: RequestConfig<T>
 ): Promise<{ data: T; headers: Headers }> => {
   // 缓存键
   const cacheKey = buildRequestKey('GET_RAW', url, config?.params ?? {})
@@ -426,8 +431,8 @@ export const getRaw = async <T = unknown>(
   // 构建 Headers
   const headers = new Headers(config?.headers as Record<string, string>)
 
-  // 手动添加 Auth Token（绕过 Alova 拦截器时通过 TokenProvider 获取，不依赖 Store）
-  const token = getToken()
+  // 手动添加 Auth Token（绕过 Alova 拦截器时通过 AuthBridge 获取，不依赖 Store）
+  const token = readAuthToken()
   if (token && String(token).trim()) {
     headers.set('Authorization', `Bearer ${token}`)
   }
@@ -470,7 +475,10 @@ export const getRaw = async <T = unknown>(
       )
     }
 
-    const data = (await response.json()) as T
+    const rawData = await response.json()
+    const data = config?.responseSchema
+      ? parseZodHttpPayload(config.responseSchema, rawData)
+      : (rawData as T)
     const result: { data: T; headers: Headers } = { data, headers: response.headers }
 
     if (cacheEnabled) {
@@ -506,7 +514,7 @@ export const getRaw = async <T = unknown>(
 export const post = <T = unknown>(
   url: string,
   data?: unknown,
-  config?: RequestConfig
+  config?: RequestConfig<T>
 ): Promise<T> => {
   const requestKey = buildRequestKey('POST', url, data)
   const alovaConfig = convertRequestConfig(config)
@@ -530,7 +538,7 @@ export const post = <T = unknown>(
 export const put = <T = unknown>(
   url: string,
   data?: unknown,
-  config?: RequestConfig
+  config?: RequestConfig<T>
 ): Promise<T> => {
   const requestKey = buildRequestKey('PUT', url, data)
   const alovaConfig = convertRequestConfig(config)
@@ -550,7 +558,7 @@ export const put = <T = unknown>(
 /**
  * DELETE 请求
  */
-export const del = <T = unknown>(url: string, config?: RequestConfig): Promise<T> => {
+export const del = <T = unknown>(url: string, config?: RequestConfig<T>): Promise<T> => {
   const requestKey = buildRequestKey('DELETE', url, config?.params ?? {})
   const alovaConfig = convertRequestConfig(config)
   const requestFn = (signal?: AbortSignal) =>
@@ -570,7 +578,7 @@ export const del = <T = unknown>(url: string, config?: RequestConfig): Promise<T
 export const patch = <T = unknown>(
   url: string,
   data?: unknown,
-  config?: RequestConfig
+  config?: RequestConfig<T>
 ): Promise<T> => {
   const requestKey = buildRequestKey('PATCH', url, data)
   const alovaConfig = convertRequestConfig(config)
@@ -591,7 +599,7 @@ export const patch = <T = unknown>(
  * HEAD 请求
  * 用于检查资源是否存在，不返回响应体
  */
-export const head = (url: string, config?: RequestConfig): Promise<void> => {
+export const head = (url: string, config?: RequestConfig<void>): Promise<void> => {
   const requestKey = buildRequestKey('HEAD', url, config?.params ?? {})
   const alovaConfig = convertRequestConfig(config)
   const requestFn = async (signal?: AbortSignal): Promise<void> => {
@@ -612,12 +620,12 @@ export const head = (url: string, config?: RequestConfig): Promise<void> => {
 export const uploadFile = <T = unknown>(
   url: string,
   file: File,
-  config?: UploadConfig
+  config?: UploadConfig<T>
 ): Promise<T> => {
   const formData = new FormData()
   formData.append('file', file)
 
-  const uploadConfig: UploadConfig = {
+  const uploadConfig: UploadConfig<T> = {
     ...config,
     headers: {
       ...config?.headers,
@@ -635,14 +643,14 @@ export const uploadFile = <T = unknown>(
 export const uploadFiles = <T = unknown>(
   url: string,
   files: File[],
-  config?: UploadConfig
+  config?: UploadConfig<T>
 ): Promise<T> => {
   const formData = new FormData()
   files.forEach((file, index) => {
     formData.append(`files[${index}]`, file)
   })
 
-  const uploadConfig: UploadConfig = {
+  const uploadConfig: UploadConfig<T> = {
     ...config,
     headers: {
       ...config?.headers,
@@ -660,7 +668,7 @@ export const uploadFiles = <T = unknown>(
 export const downloadFile = async (
   url: string,
   filename?: string,
-  config?: RequestConfig
+  config?: RequestConfig<Blob>
 ): Promise<void> => {
   const alovaConfig = convertRequestConfig({
     ...(config || {}),

@@ -35,6 +35,15 @@ All HTTP traffic MUST flow through `alovaInstance` from `@/utils/http/instance`.
 - Request/response interceptors
 - `TokenRefreshCoordinator` for silent, queued 401 refresh (do NOT replicate this logic anywhere)
 
+### Infrastructure-Only Raw Transport Exceptions
+
+Raw `fetch` is still forbidden in API, store, hook, and view business code. The only approved infrastructure exceptions are:
+
+- `src/utils/http/interceptors.ts#defaultRefreshTokenExecutor`: refresh-token bootstrap fallback. It cannot call `alovaInstance` from inside the response interceptor without risking recursive 401 handling. The normal path should inject `setRefreshTokenExecutor()` when an app-specific refresh method is available.
+- `src/utils/http/methods.ts#getRaw`: header-preserving GET for endpoints where callers must inspect `Headers`. It must manually preserve auth token injection, unified `HttpRequestError`, abort handling, cache policy, and global error behavior.
+
+Do not create new raw transports outside the approved infrastructure boundary. Extend the approved helper or add a documented rule/guard exception before introducing a new case.
+
 ### Rule 2 — Define APIs as Method Builders in `src/api/`
 
 Every endpoint MUST be expressed as a named builder function. Generic names (`get`, `post`, `request`, `service`) are FORBIDDEN.

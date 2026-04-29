@@ -25,12 +25,51 @@ export function generateThemeVars(preset: ThemePreset, isDark: boolean): ThemeCs
     return value ? normalizeHex(value) : fallbackGenerator()
   }
 
+  const linearizeChannel = (channel: number): number => {
+    const normalized = channel / 255
+    return normalized <= 0.03928 ? normalized / 12.92 : Math.pow((normalized + 0.055) / 1.055, 2.4)
+  }
+
+  const luminance = (hex: string): number => {
+    const normalized = normalizeHex(hex).replace('#', '')
+    const r = Number.parseInt(normalized.slice(0, 2), 16)
+    const g = Number.parseInt(normalized.slice(2, 4), 16)
+    const b = Number.parseInt(normalized.slice(4, 6), 16)
+    return (
+      0.2126 * linearizeChannel(r) + 0.7152 * linearizeChannel(g) + 0.0722 * linearizeChannel(b)
+    )
+  }
+
+  const contrastRatio = (a: string, b: string): number => {
+    const left = luminance(a)
+    const right = luminance(b)
+    const lighter = Math.max(left, right)
+    const darker = Math.min(left, right)
+    return (lighter + 0.05) / (darker + 0.05)
+  }
+
+  const ensureReadableForeground = (background: string, preferredForeground: string): string => {
+    const preferred = normalizeHex(preferredForeground)
+    if (contrastRatio(background, preferred) >= 4.6) {
+      return preferred
+    }
+
+    const darkText = '#000000'
+    const lightText = '#ffffff'
+    return contrastRatio(background, darkText) >= contrastRatio(background, lightText)
+      ? darkText
+      : lightText
+  }
+
   // 1. 基础背景与前景色
   const bgBase = resolveToken(modeConfig?.background, () =>
     isDark ? (preset.backgroundDark ?? E.bgDark) : (preset.backgroundLight ?? E.bgLight)
   )
 
-  const fgBase = resolveToken(modeConfig?.foreground, () => (isDark ? E.fgDark : E.fgLight))
+  const fgBase = ensureReadableForeground(
+    bgBase,
+    resolveToken(modeConfig?.foreground, () => (isDark ? E.fgDark : E.fgLight))
+  )
 
   // 2. 中性色基调 (用于 Border/Input)
   const defaultNeutral = isDark ? E.neutralDark : E.neutralLight
@@ -51,7 +90,10 @@ export function generateThemeVars(preset: ThemePreset, isDark: boolean): ThemeCs
       : (E.cardLight ?? E.bgLight)
   })
 
-  const cardFg = resolveToken(modeConfig?.neutral?.foreground, () => fgBase)
+  const cardFg = ensureReadableForeground(
+    cardBase,
+    resolveToken(modeConfig?.neutral?.foreground, () => fgBase)
+  )
 
   // 4. Primary (核心逻辑: Config -> Legacy String -> Default)
   const primaryBase = resolveToken(
@@ -59,15 +101,21 @@ export function generateThemeVars(preset: ThemePreset, isDark: boolean): ThemeCs
     () => preset.primary || E.fallbackPrimary
   )
 
-  const primaryFg = resolveToken(modeConfig?.primary?.foreground, () =>
-    isDarkColor(primaryBase) ? E.fgDark : E.fgLight
+  const primaryFg = ensureReadableForeground(
+    primaryBase,
+    resolveToken(modeConfig?.primary?.foreground, () =>
+      isDarkColor(primaryBase) ? E.fgDark : E.fgLight
+    )
   )
 
   const primaryHover = resolveToken(modeConfig?.primary?.hover, () =>
     adjustBrightness(primaryBase, isDark ? E.hoverBrightnessDark : E.hoverBrightnessLight)
   )
 
-  const primaryHoverFg = isDarkColor(primaryHover) ? E.fgDark : E.fgLight
+  const primaryHoverFg = ensureReadableForeground(
+    primaryHover,
+    isDarkColor(primaryHover) ? E.fgDark : E.fgLight
+  )
 
   const primaryLight = resolveToken(modeConfig?.primary?.light, () =>
     isDark
@@ -79,19 +127,28 @@ export function generateThemeVars(preset: ThemePreset, isDark: boolean): ThemeCs
     return mixHex(baseColor, E.darkForeground, 0.6)
   }
 
-  const primaryLightFg = resolveToken(modeConfig?.primary?.lightForeground, () =>
-    isDark ? E.fgDark : getRobustLightFg(primaryBase)
+  const primaryLightFg = ensureReadableForeground(
+    primaryLight,
+    resolveToken(modeConfig?.primary?.lightForeground, () =>
+      isDark ? E.fgDark : getRobustLightFg(primaryBase)
+    )
   )
 
   // 5. Secondary / Muted
   const secondaryBase = resolveToken(modeConfig?.neutral?.bg, () => baseNeutral)
-  const secondaryFg = resolveToken(modeConfig?.neutral?.secondaryForeground, () =>
-    isDark ? E.secondaryFgDark : E.fgLight
+  const secondaryFg = ensureReadableForeground(
+    secondaryBase,
+    resolveToken(modeConfig?.neutral?.secondaryForeground, () =>
+      isDark ? E.secondaryFgDark : E.fgLight
+    )
   )
 
   const mutedBase = baseNeutral
-  const mutedFg = resolveToken(modeConfig?.neutral?.mutedForeground, () =>
-    isDark ? E.mutedFgDark : E.mutedFgLight
+  const mutedFg = ensureReadableForeground(
+    mutedBase,
+    resolveToken(modeConfig?.neutral?.mutedForeground, () =>
+      isDark ? E.mutedFgDark : E.mutedFgLight
+    )
   )
 
   // 6. Focus Ring
@@ -102,13 +159,19 @@ export function generateThemeVars(preset: ThemePreset, isDark: boolean): ThemeCs
     modeConfig?.accent?.default,
     () => preset.accent ?? shiftHue(primaryBase, E.accentHueShift)
   )
-  const accentFg = resolveToken(modeConfig?.accent?.foreground, () =>
-    isDarkColor(accentBase) ? E.fgDark : E.fgLight
+  const accentFg = ensureReadableForeground(
+    accentBase,
+    resolveToken(modeConfig?.accent?.foreground, () =>
+      isDarkColor(accentBase) ? E.fgDark : E.fgLight
+    )
   )
   const accentHover = resolveToken(modeConfig?.accent?.hover, () =>
     adjustBrightness(accentBase, isDark ? E.hoverBrightnessDark : E.hoverBrightnessLight)
   )
-  const accentHoverFg = isDarkColor(accentHover) ? E.fgDark : E.fgLight
+  const accentHoverFg = ensureReadableForeground(
+    accentHover,
+    isDarkColor(accentHover) ? E.fgDark : E.fgLight
+  )
 
   // Accent Light
   const accentLight = resolveToken(modeConfig?.accent?.light, () =>
@@ -116,8 +179,11 @@ export function generateThemeVars(preset: ThemePreset, isDark: boolean): ThemeCs
       ? adjustBrightness(accentBase, E.lightBrightnessDark)
       : mixHex(accentBase, E.lightMixWhite, 1 - E.lightMixWhiteWeight)
   )
-  const accentLightFg = resolveToken(modeConfig?.accent?.lightForeground, () =>
-    isDark ? E.fgDark : getRobustLightFg(accentBase)
+  const accentLightFg = ensureReadableForeground(
+    accentLight,
+    resolveToken(modeConfig?.accent?.lightForeground, () =>
+      isDark ? E.fgDark : getRobustLightFg(accentBase)
+    )
   )
 
   // 8. Status Colors (Danger, Warn, Success)
@@ -126,20 +192,24 @@ export function generateThemeVars(preset: ThemePreset, isDark: boolean): ThemeCs
     baseDefault: string
   ) => {
     const base = resolveToken(config?.default, () => baseDefault)
-    const fg = resolveToken(config?.foreground, () => (isDarkColor(base) ? E.fgDark : E.fgLight))
+    const fg = ensureReadableForeground(
+      base,
+      resolveToken(config?.foreground, () => (isDarkColor(base) ? E.fgDark : E.fgLight))
+    )
 
     const hover = resolveToken(config?.hover, () =>
       adjustBrightness(base, isDark ? E.hoverBrightnessDark : E.hoverBrightnessLight)
     )
-    const hoverFg = isDarkColor(hover) ? E.fgDark : E.fgLight
+    const hoverFg = ensureReadableForeground(hover, isDarkColor(hover) ? E.fgDark : E.fgLight)
 
     const light = resolveToken(config?.light, () =>
       isDark
         ? adjustBrightness(base, E.lightBrightnessDark)
         : mixHex(base, E.lightMixWhite, 1 - E.lightMixWhiteWeight)
     )
-    const lightFg = resolveToken(config?.lightForeground, () =>
-      isDark ? E.fgDark : getRobustLightFg(base)
+    const lightFg = ensureReadableForeground(
+      light,
+      resolveToken(config?.lightForeground, () => (isDark ? E.fgDark : getRobustLightFg(base)))
     )
 
     return { base, fg, hover, hoverFg, light, lightFg }
@@ -163,15 +233,20 @@ export function generateThemeVars(preset: ThemePreset, isDark: boolean): ThemeCs
     sidebarBase = adjustBrightness(preset.backgroundLight, -Math.abs(E.sidebarBrightnessOffset))
   }
 
-  const sidebarFg = sidebarConfig?.foreground ? extractHex(sidebarConfig.foreground) : fgBase
+  const sidebarFg = ensureReadableForeground(
+    sidebarBase,
+    sidebarConfig?.foreground ? extractHex(sidebarConfig.foreground) : fgBase
+  )
   const sidebarPrimary = sidebarConfig?.primary ? extractHex(sidebarConfig.primary) : primaryBase
-  const sidebarPrimaryFg = sidebarConfig?.primaryForeground
-    ? extractHex(sidebarConfig.primaryForeground)
-    : primaryFg
+  const sidebarPrimaryFg = ensureReadableForeground(
+    sidebarPrimary,
+    sidebarConfig?.primaryForeground ? extractHex(sidebarConfig.primaryForeground) : primaryFg
+  )
   const sidebarAccent = sidebarConfig?.accent ? extractHex(sidebarConfig.accent) : accentBase
-  const sidebarAccentFg = sidebarConfig?.accentForeground
-    ? extractHex(sidebarConfig.accentForeground)
-    : accentFg
+  const sidebarAccentFg = ensureReadableForeground(
+    sidebarAccent,
+    sidebarConfig?.accentForeground ? extractHex(sidebarConfig.accentForeground) : accentFg
+  )
   const sidebarBorder = sidebarConfig?.border ? extractHex(sidebarConfig.border) : baseNeutral
   const sidebarRing = sidebarConfig?.ring ? extractHex(sidebarConfig.ring) : accentBase
 

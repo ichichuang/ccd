@@ -6,6 +6,8 @@ import fs from 'node:fs'
 import path from 'node:path'
 import tseslint from 'typescript-eslint'
 import vueEslintParser from 'vue-eslint-parser'
+// @ts-ignore local runtime ESLint rule module does not publish TS declarations
+import localArchitectureRules from './scripts/eslint-rules/no-hardcoded-colors.mjs'
 
 // Auto-Import Shield: 禁止手动导入 Vue 组合式 API（允许 import type）
 const VUE_AUTO_IMPORT_FORBIDDEN_VALUE_IMPORTS = [
@@ -267,6 +269,16 @@ export default tseslint.config(
       ],
     },
   },
+  {
+    name: 'app/design-token-color-guard',
+    files: ['src/**/*.{vue,ts,tsx,js,jsx}'],
+    plugins: {
+      'app-architecture': localArchitectureRules,
+    },
+    rules: {
+      'app-architecture/no-hardcoded-colors': 'error',
+    },
+  },
 
   // 8.2 针对 Vue 的规则
   {
@@ -295,13 +307,10 @@ export default tseslint.config(
       'src/utils/http/**/*.{ts,tsx}',
       // 以下为临时保留，待迁移为 unknown 后从白名单移除
       'src/hooks/modules/useChartTheme/**/*.{ts,tsx}',
-      'src/hooks/modules/useHttpRequest.ts',
       'build/**/*.ts',
       '**/*.config.ts',
       '**/*.d.ts',
-      'src/locales/**/*.ts',
       'src/hooks/modules/useLocale.ts',
-      'src/plugins/**/*.ts',
       'src/components/CScrollbar/**/*.ts',
       'src/constants/**/*.ts',
       'src/views/**/useChartOptions.ts',
@@ -340,7 +349,7 @@ export default tseslint.config(
           leadingUnderscore: 'allow',
           filter: {
             regex:
-              '^(@|vue/|/.*|no-|prefer-|eqeqeq|curly|VITE_|__.*__|drop_|AtRule|content-type|access-control-allow-origin|access-control-allow-methods|access-control-allow-headers|Content-Type|Access-Control-Allow-Origin|Access-Control-Allow-Methods|Access-Control-Allow-Headers|^[0-9]+$|^[a-z-]+$|^-[a-z-]+$|CustomScrollbar|zh-CN|en-US|zh-TW)',
+              '^(@|vue/|app-architecture/|/.*|no-|prefer-|eqeqeq|curly|VITE_|__.*__|drop_|AtRule|content-type|access-control-allow-origin|access-control-allow-methods|access-control-allow-headers|Content-Type|Access-Control-Allow-Origin|Access-Control-Allow-Methods|Access-Control-Allow-Headers|^[0-9]+$|^[a-z-]+$|^-[a-z-]+$|CustomScrollbar|zh-CN|en-US|zh-TW)',
             match: false,
           },
         },

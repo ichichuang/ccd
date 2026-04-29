@@ -1,4 +1,5 @@
 // src/utils/http/types.ts
+import type { ZodType } from 'zod'
 import type { HttpRequestError } from './errors'
 
 /**
@@ -21,7 +22,7 @@ export interface ApiResponse<T = unknown> {
 }
 
 // 扩展的请求配置，包含自定义属性
-export interface RequestConfig {
+export interface RequestConfig<TResponse = unknown> {
   headers?: Record<string, string>
   timeout?: number
   enableCache?: boolean // 是否启用缓存（避免与 fetch cache 冲突）
@@ -29,15 +30,18 @@ export interface RequestConfig {
   retry?: RetryConfig // 重试配置
   deduplicate?: boolean // 是否启用请求去重
   cancelStrategy?: 'none' | 'cancelPrevious' // 请求取消策略
+  signal?: AbortSignal // 请求取消信号
   security?: SecurityConfig // 安全配置
+  responseSchema?: ZodType<TResponse> // Alova 响应边界 Zod DTO 校验
   [key: string]: unknown
 }
 
 // Alova 兼容的请求配置
-export interface AlovaRequestConfig {
+export interface AlovaRequestConfig<TResponse = unknown> {
   headers?: Record<string, string>
   timeout?: number
   cache?: RequestCache // 使用标准的 RequestCache 类型
+  responseSchema?: ZodType<TResponse>
   [key: string]: unknown
 }
 
@@ -50,7 +54,7 @@ export interface SecurityConfig {
   sensitiveFields?: string[] // 敏感字段列表
 }
 
-export interface UploadConfig extends RequestConfig {
+export interface UploadConfig<TResponse = unknown> extends RequestConfig<TResponse> {
   onProgress?: (progress: number) => void
   onSuccess?: (response: unknown) => void
   onError?: (error: Error) => void

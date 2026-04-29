@@ -1,6 +1,7 @@
 import { BREAKPOINTS } from '@/constants/breakpoints'
-import { TRANSITION_SCALE_VALUES } from '@/constants/sizeScale'
 import type { DialogOptions } from './types'
+
+const DEFAULT_DIALOG_CLOSE_DELAY_MS = 320
 
 /**
  * 对话框响应式 breakpoints
@@ -33,5 +34,5 @@ export const defaultDialogProps: Partial<DialogOptions> = {
   hideClose: false,
   sureBtnLoading: false,
   openDelay: 0,
-  closeDelay: TRANSITION_SCALE_VALUES.md,
+  closeDelay: DEFAULT_DIALOG_CLOSE_DELAY_MS,
 }

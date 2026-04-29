@@ -1,5 +1,6 @@
-import { TRANSITION_SCALE_VALUES } from '@/constants/sizeScale'
 import type { AnimateWrapperProps } from './types'
+
+const DEFAULT_GROUP_STAGGER_MS = 280
 
 /**
  * AnimateWrapper 组件默认配置
@@ -29,8 +30,8 @@ export const defaultAnimateConfig: AnimateWrapperProps = {
   appear: true,
   /** 默认是否列表模式 */
   group: false,
-  /** 默认队列延迟（ms），group 模式队列延迟，使用设计系统 duration-sm */
-  stagger: TRANSITION_SCALE_VALUES.sm,
+  /** 默认队列延迟（ms），group 模式队列延迟，与 --transition-sm 对齐 */
+  stagger: DEFAULT_GROUP_STAGGER_MS,
   /** 默认内层不占满容器，降低包装组件布局侵入性 */
   omitLayoutFull: true,
 }

@@ -6,6 +6,7 @@ from __future__ import annotations
 import argparse
 import json
 import re
+import subprocess
 from dataclasses import dataclass
 from fnmatch import fnmatch
 from pathlib import Path
@@ -27,6 +28,21 @@ def repo_root() -> Path:
 
 def manifest_path() -> Path:
     return repo_root() / ".ai" / "manifests" / "skill-routing.json"
+
+
+def current_branch() -> str:
+    try:
+        result = subprocess.run(
+            ["git", "branch", "--show-current"],
+            cwd=repo_root(),
+            check=False,
+            text=True,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.DEVNULL,
+        )
+        return result.stdout.strip() or "unknown"
+    except OSError:
+        return "unknown"
 
 
 def parse_args() -> argparse.Namespace:
@@ -66,6 +82,20 @@ def match_route(task: str, paths: list[str], route: dict[str, object]) -> Match 
 
     if score == 0:
         return None
+
+    branch_modes = route.get("branch_modes")
+    if isinstance(branch_modes, dict):
+        active_branches = {str(branch) for branch in branch_modes.get("active_branches", [])}
+        branch = current_branch()
+        has_explicit_keyword = any(reason.startswith("keyword:") for reason in reasons)
+        has_forced_path = any(
+            fnmatch(path, pattern)
+            for pattern in route.get("path_globs", [])
+            for path in paths
+        )
+        if branch not in active_branches and not has_forced_path and not has_explicit_keyword:
+            # On pure frontend branches, branch-gated routes never activate implicitly.
+            return None
 
     return Match(
         route_id=str(route["id"]),
@@ -112,6 +142,7 @@ def route_task(task: str, paths: list[str]) -> dict[str, object]:
     payload = {
         "task": task,
         "paths": paths,
+        "branch": current_branch(),
         "selected_skills": dedupe(selected_skills),
         "prechecks": dedupe(prechecks),
         "token_strategy": dedupe(token_strategy),

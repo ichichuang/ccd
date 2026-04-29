@@ -47,6 +47,7 @@ export const HTTP_CONFIG = {
     authError: 'AUTH_ERROR',
     serverError: 'SERVER_ERROR',
     clientError: 'CLIENT_ERROR',
+    validationError: 'VALIDATION_ERROR',
     securityError: 'SECURITY_ERROR',
     unknownError: 'UNKNOWN_ERROR',
   },

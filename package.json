@@ -7,7 +7,6 @@
     "**/*.css",
     "**/*.scss",
     "**/*.sass",
-    "animate.css",
     "uno.css",
     "virtual:*"
   ],
@@ -37,6 +36,7 @@
     "build": "vue-tsc --build --force && vite build",
     "build:ci": "vite build",
     "build:analyze": "vue-tsc --build --force && vite build --mode analyze",
+    "budget:bundles": "node scripts/check-bundle-budgets.mjs",
     "preview": "vite preview",
     "preview:dist": "pnpm build && pnpm dlx serve dist",
     "report": "npx vite-bundle-analyzer dist/stats.html",
@@ -52,6 +52,10 @@
     "ai:guard": "node scripts/ai-architecture-guard.mjs",
     "ai:scaffold:view-route": "node scripts/ai-route-view-scaffold.mjs",
     "ai:doctor": "node scripts/ai-doctor.mjs",
+    "ai:doctor:open": "node scripts/ai-doctor.mjs --open",
+    "ai:rule-index": "node scripts/generate-rule-index.mjs",
+    "ai:ledger:json": "node scripts/migrate-ledger.mjs",
+    "validate:tokens": "tsx scripts/validate-token-contrast.ts",
     "ai:sync": "node scripts/ai-sync.mjs",
     "ai:sync:codex": "node scripts/ai-sync-codex.mjs",
     "ai:setup:codex": "pnpm ai:sync && pnpm ai:sync:codex && pnpm ai:doctor && pnpm codex:preflight",
@@ -96,7 +100,6 @@
     "@tanstack/vue-virtual": "^3.13.23",
     "@vueuse/core": "^13.9.0",
     "alova": "^3.3.3",
-    "animate.css": "^4.1.1",
     "crypto-es": "^3.1.2",
     "dayjs": "^1.11.13",
     "echarts": "^6.0.0",
@@ -116,7 +119,8 @@
     "vue-i18n": "^10.0.8",
     "vue-router": "^4.4.5",
     "vue3-lottie": "^3.3.1",
-    "yup": "^1.7.1"
+    "yup": "^1.7.1",
+    "zod": "^4.3.6"
   },
   "devDependencies": {
     "@commitlint/cli": "^19.6.0",
@@ -142,7 +146,6 @@
     "@unocss/reset": "^66.6.0",
     "@unocss/transformer-directives": "^66.6.0",
     "@unocss/transformer-variant-group": "^66.6.0",
-    "@vitejs/plugin-legacy": "^7.0.0",
     "@vitejs/plugin-vue": "^6.0.3",
     "@vitejs/plugin-vue-jsx": "^5.1.3",
     "@vue/compiler-sfc": "^3.5.29",

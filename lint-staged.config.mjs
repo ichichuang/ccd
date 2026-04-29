@@ -1,5 +1,6 @@
 export default {
   "*.{vue,ts,tsx}": [
+    "pnpm ai:guard --staged",
     "eslint --fix",
     "prettier --write"
   ],
@@ -14,4 +15,3 @@ export default {
     "prettier --write"
   ],
 };
-

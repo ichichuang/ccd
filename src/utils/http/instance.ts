@@ -1,8 +1,11 @@
 // src/utils/http/instance.ts
 import { HTTP_CONFIG } from '@/constants/http'
 import { createAlova } from 'alova'
+import type { AlovaDefaultCacheAdapter } from 'alova'
 import adapterFetch from 'alova/fetch'
+import type { FetchRequestInit } from 'alova/fetch'
 import VueHook from 'alova/vue'
+import type { VueHookExportType } from 'alova/vue'
 import { addConnectionListener } from './connection'
 import { beforeRequest, responseHandler } from './interceptors'
 
@@ -41,7 +44,14 @@ const validateAlovaConfig = () => {
 /**
  * 创建全局 Alova 实例
  */
-export const alovaInstance = createAlova({
+export const alovaInstance = createAlova<
+  FetchRequestInit,
+  Response,
+  Headers,
+  AlovaDefaultCacheAdapter,
+  AlovaDefaultCacheAdapter,
+  VueHookExportType<unknown>
+>({
   /**
    * development：`/api` 由 Vite 代理至 `VITE_API_BASE_URL`（见 vite.config.ts `server.proxy`），
    * 避免直连外域 CORS；生产环境使用完整 `VITE_API_BASE_URL`。
@@ -58,7 +68,7 @@ export const alovaInstance = createAlova({
   // FIX: 全局禁用 Alova 的默认缓存
   // 因为我们在 methods.ts 中已经封装了自定义的 EnhancedCache
   // 这里设置为 null 可以防止双重缓存和刷新失效的问题
-  localCache: null,
+  cacheFor: null,
 
   // 全局请求拦截器
   beforeRequest,
@@ -68,7 +78,7 @@ export const alovaInstance = createAlova({
 
   // 全局超时时间 (毫秒)
   timeout: HTTP_CONFIG.timeout,
-} as Parameters<typeof createAlova>[0])
+})
 
 // 验证配置
 validateAlovaConfig()

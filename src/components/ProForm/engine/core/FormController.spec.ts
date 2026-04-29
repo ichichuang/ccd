@@ -1,6 +1,10 @@
-import { describe, expect, it } from 'vitest'
+import { afterEach, describe, expect, it, vi } from 'vitest'
 import { FormController } from './FormController'
 import type { FormSchema } from '../types'
+
+afterEach(() => {
+  vi.useRealTimers()
+})
 
 describe('FormController.updateSchema', () => {
   it('rebuilds field registry and validation engine after schema changes', async () => {
@@ -84,5 +88,84 @@ describe('FormController.updateSchema', () => {
       foo: 'schema:keep',
       bar: 'added',
     })
+  })
+})
+
+describe('FormController async options', () => {
+  it('does not let stale options overwrite the latest dependency state', async () => {
+    vi.useFakeTimers()
+
+    let resolveFirst: (value: Array<{ label: string; value: string }>) => void = () => {}
+    let resolveSecond: (value: Array<{ label: string; value: string }>) => void = () => {}
+
+    const first = new Promise<Array<{ label: string; value: string }>>(resolve => {
+      resolveFirst = resolve
+    })
+    const second = new Promise<Array<{ label: string; value: string }>>(resolve => {
+      resolveSecond = resolve
+    })
+
+    const schema: FormSchema = {
+      fields: [
+        { name: 'country', component: 'InputText', defaultValue: 'A' },
+        {
+          name: 'city',
+          component: 'Select',
+          deps: ['country'],
+          options: ({ form }) => (form.country === 'A' ? first : second),
+        },
+      ],
+    }
+
+    const controller = new FormController<{ country?: string; city?: string }>({ schema })
+
+    controller.setFieldsValue({ country: 'A' })
+    await vi.advanceTimersByTimeAsync(200)
+    controller.setFieldsValue({ country: 'B' })
+    await vi.advanceTimersByTimeAsync(200)
+
+    resolveSecond([{ label: 'Berlin', value: 'berlin' }])
+    await vi.runAllTicks()
+    resolveFirst([{ label: 'Athens', value: 'athens' }])
+    await vi.runAllTicks()
+
+    expect(controller.store.getFieldState('city')?.loadedOptions).toEqual([
+      { label: 'Berlin', value: 'berlin' },
+    ])
+  })
+
+  it('does not write async options into fields removed by schema update', async () => {
+    vi.useFakeTimers()
+
+    let resolveOptions: (value: Array<{ label: string; value: string }>) => void = () => {}
+    const pending = new Promise<Array<{ label: string; value: string }>>(resolve => {
+      resolveOptions = resolve
+    })
+
+    const controller = new FormController<{ country?: string; city?: string }>({
+      schema: {
+        fields: [
+          { name: 'country', component: 'InputText', defaultValue: 'A' },
+          {
+            name: 'city',
+            component: 'Select',
+            deps: ['country'],
+            options: () => pending,
+          },
+        ],
+      },
+    })
+
+    controller.setFieldsValue({ country: 'B' })
+    await vi.advanceTimersByTimeAsync(200)
+
+    controller.updateSchema({
+      fields: [{ name: 'country', component: 'InputText' }],
+    })
+
+    resolveOptions([{ label: 'Ghost', value: 'ghost' }])
+    await vi.runAllTicks()
+
+    expect(controller.store.getFieldState('city')).toBeUndefined()
   })
 })

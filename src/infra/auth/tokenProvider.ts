@@ -1,29 +1,96 @@
 /**
- * Token Provider（依赖注入）
- * 基础设施层提供 token 的抽象，避免 HTTP 层直接依赖 Pinia store，满足 Infra → State 边界约束。
+ * Auth Bridge
+ *
+ * Infrastructure-only cycle breaker between the HTTP runtime and the session/router
+ * runtime. HTTP code may read token state and notify final 401 handling through this
+ * typed bridge, without importing Pinia stores or vue-router directly.
  */
 
-export type TokenProvider = () => string | undefined | null
+export type AuthToken = string | undefined | null
+export type AuthTokenReader = () => AuthToken
+export type UnauthorizedHandler = () => void | Promise<void>
 
-let provider: TokenProvider | null = null
-
-export function setTokenProvider(fn: TokenProvider): void {
-  provider = fn
+export interface AuthBridge {
+  readToken: AuthTokenReader
+  onUnauthorized: UnauthorizedHandler
 }
 
-export function getToken(): string | undefined | null {
-  return provider?.()
+const UNAUTHORIZED_NOTIFY_COOLDOWN_MS = 1000
+
+let authBridge: Readonly<AuthBridge> | null = null
+let unauthorizedPromise: Promise<void> | null = null
+let lastUnauthorizedHandledAt: number | null = null
+
+function assertAuthBridge(candidate: AuthBridge): void {
+  if (typeof candidate.readToken !== 'function') {
+    throw new TypeError('[AuthBridge] readToken must be a function')
+  }
+  if (typeof candidate.onUnauthorized !== 'function') {
+    throw new TypeError('[AuthBridge] onUnauthorized must be a function')
+  }
 }
 
-/** 401 未授权时的回调（由应用入口注入，如调用 userStore.logout） */
-export type OnUnauthorized = () => void | Promise<void>
-
-let onUnauthorized: OnUnauthorized | null = null
-
-export function setOnUnauthorized(fn: OnUnauthorized): void {
-  onUnauthorized = fn
+function createMissingBridgeError(): Error {
+  return new Error('[AuthBridge] Unauthorized handler is not installed')
 }
 
-export function triggerUnauthorized(): void {
-  onUnauthorized?.()
+export function installAuthBridge(bridge: AuthBridge): void {
+  assertAuthBridge(bridge)
+  authBridge = Object.freeze({
+    readToken: bridge.readToken,
+    onUnauthorized: bridge.onUnauthorized,
+  })
+}
+
+export function isAuthBridgeInstalled(): boolean {
+  return authBridge !== null
+}
+
+export function readAuthToken(): AuthToken {
+  return authBridge?.readToken() ?? null
+}
+
+export function notifyUnauthorized(): Promise<void> {
+  const bridge = authBridge
+  if (!bridge) {
+    return Promise.reject(createMissingBridgeError())
+  }
+
+  if (unauthorizedPromise) {
+    return unauthorizedPromise
+  }
+
+  const now = Date.now()
+  if (
+    lastUnauthorizedHandledAt !== null &&
+    now - lastUnauthorizedHandledAt < UNAUTHORIZED_NOTIFY_COOLDOWN_MS
+  ) {
+    return Promise.resolve()
+  }
+
+  lastUnauthorizedHandledAt = now
+  unauthorizedPromise = Promise.resolve()
+    .then(() => bridge.onUnauthorized())
+    .finally(() => {
+      unauthorizedPromise = null
+    })
+
+  return unauthorizedPromise
+}
+
+/**
+ * Compatibility alias for architecture demo pages and older non-production examples.
+ * New runtime code should use readAuthToken().
+ */
+export function getToken(): AuthToken {
+  return readAuthToken()
+}
+
+export function resetAuthBridgeForTest(): void {
+  if (import.meta.env.MODE !== 'test') {
+    throw new Error('[AuthBridge] resetAuthBridgeForTest is test-only')
+  }
+  authBridge = null
+  unauthorizedPromise = null
+  lastUnauthorizedHandledAt = null
 }

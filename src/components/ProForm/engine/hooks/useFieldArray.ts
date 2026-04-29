@@ -1,6 +1,7 @@
 import type { FieldArrayReturn, FormState } from '../types'
 import { PRO_FORM_STATE_KEY } from '../constants'
 import { useFormContext } from './useFormContext'
+import { castValue } from '@/utils/typeCasters'
 
 export function useFieldArray<
   TItem = unknown,
@@ -52,13 +53,13 @@ export function useFieldArray<
   const append = (value: TItem): void => {
     const newArray = [...currentValues.value, value]
     keyMap.value.push(generateKey())
-    controller.setFieldsValue({ [name]: newArray } as unknown as Partial<TValues>)
+    controller.setFieldsValue(castValue<Partial<TValues>>({ [name]: newArray }))
   }
 
   const remove = (index: number): void => {
     const newArray = currentValues.value.filter((_, i) => i !== index)
     keyMap.value = keyMap.value.filter((_, i) => i !== index)
-    controller.setFieldsValue({ [name]: newArray } as unknown as Partial<TValues>)
+    controller.setFieldsValue(castValue<Partial<TValues>>({ [name]: newArray }))
   }
 
   const move = (from: number, to: number): void => {
@@ -78,7 +79,7 @@ export function useFieldArray<
     const newKeyMap = [...keysWithoutFrom.slice(0, to), keyItem, ...keysWithoutFrom.slice(to)]
 
     keyMap.value = newKeyMap
-    controller.setFieldsValue({ [name]: newArray } as unknown as Partial<TValues>)
+    controller.setFieldsValue(castValue<Partial<TValues>>({ [name]: newArray }))
   }
 
   return {

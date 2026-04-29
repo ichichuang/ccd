@@ -1,6 +1,7 @@
 import { requestSystemAsyncRoutes } from '@/api/system/system.api'
 import { deepClone } from '@/utils/lodashes'
 import { usePermissionStore } from '@/stores/modules/session'
+import { parseBackendRoutes } from '@/adapters/http.adapter'
 
 /** 路由拉取配置 */
 const FETCH_TIMEOUT_MS: number = 10_000
@@ -87,10 +88,7 @@ export function usePermissionRoutes(): { fetchRoutes: () => Promise<BackendRoute
         () => withTimeout(requestSystemAsyncRoutes(), FETCH_TIMEOUT_MS),
         MAX_RETRIES
       )
-      if (!Array.isArray(routes)) {
-        throw new Error('动态路由数据格式不正确，预期为数组或包含 routes 字段的对象')
-      }
-      const typedRoutes: BackendRouteConfig[] = routes as BackendRouteConfig[]
+      const typedRoutes: BackendRouteConfig[] = parseBackendRoutes(routes)
       permissionStore.setDynamicRoutes(typedRoutes)
       lastFetchTimestamp = Date.now()
       return typedRoutes

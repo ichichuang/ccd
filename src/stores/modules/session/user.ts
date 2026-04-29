@@ -6,7 +6,7 @@ import { useThemeStore } from '@/stores/modules/system/theme'
 import { useSizeStore } from '@/stores/modules/system/size'
 import { useLocaleStore } from '@/stores/modules/system/locale'
 import { usePermissionStore } from '@/stores/modules/session/permission'
-import { createPiniaEncryptedSerializer } from '@/utils/safeStorage/piniaSerializer'
+import { createPiniaEncryptedSerializer, removeLocalStorageKeysWhere } from '@/utils/safeStorage'
 import { encryptAndCompressSync } from '@/utils/safeStorage/safeStorage'
 import { defineStore } from 'pinia'
 import type { LoginResult, UserInfo } from '@/types/dto/auth.dto'
@@ -108,7 +108,7 @@ export const useUserStore = defineStore('user', {
     },
     /**
      * 仅做状态清理，不包含 UI 副作用或导航。
-     * 刷新/跳转由调用方负责（如 main.ts 的 setOnUnauthorized、User 组件的退出按钮、路由守卫）。
+     * 刷新/跳转由调用方负责（如 AuthBridge、User 组件的退出按钮、路由守卫）。
      */
     async logout() {
       if (!AUTH_ENABLED) {
@@ -124,21 +124,7 @@ export const useUserStore = defineStore('user', {
         return prefixKeys.some(prefix => key.startsWith(prefix))
       }
 
-      const keysToRemove = new Set<string>()
-
-      for (let i = localStorage.length - 1; i >= 0; i -= 1) {
-        const key = localStorage.key(i)
-        if (!key) {
-          continue
-        }
-        if (shouldRemove(key)) {
-          keysToRemove.add(key)
-        }
-      }
-
-      for (const key of keysToRemove) {
-        localStorage.removeItem(key)
-      }
+      removeLocalStorageKeysWhere(shouldRemove)
 
       const themeStore = useThemeStore(store)
       const sizeStore = useSizeStore(store)

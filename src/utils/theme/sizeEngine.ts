@@ -9,13 +9,26 @@ import {
   LAYOUT_SCALE_RATIOS,
   SPACING_SCALE_RATIOS,
   RADIUS_SCALE_RATIOS,
-  TRANSITION_SCALE_VALUES,
   SIZE_SCALE_KEYS,
 } from '@/constants/sizeScale'
 import { unpackDataSync } from '@/utils/safeStorage/core'
 import { getDeviceTypeSync, getBreakpointSync } from '@/utils/deviceSync'
 
 type ScaleKey = (typeof SIZE_SCALE_KEYS)[number]
+
+/* eslint-disable @typescript-eslint/naming-convention -- SizeScaleKey includes 2xl/3xl/4xl/5xl by design. */
+const TRANSITION_SCALE_MS: Record<ScaleKey, number> = {
+  xs: 180,
+  sm: 280,
+  md: 320,
+  lg: 420,
+  xl: 480,
+  '2xl': 580,
+  '3xl': 680,
+  '4xl': 780,
+  '5xl': 880,
+}
+/* eslint-enable @typescript-eslint/naming-convention */
 
 /** 字体阶梯变量前缀：由 applyRootFontSize 负责写入，applySizeTheme 跳过 */
 const FONT_SIZE_VAR_PREFIX = '--font-size-'
@@ -66,7 +79,7 @@ export function generateSizeVars(preset: SizePreset): Partial<SizeCssVars> {
 
   // --- 过渡时长阶梯变量 (xs-5xl) ---
   SIZE_SCALE_KEYS.forEach(key => {
-    vars[`--transition-${key}` as keyof SizeCssVars] = `${TRANSITION_SCALE_VALUES[key]}ms`
+    vars[`--transition-${key}` as keyof SizeCssVars] = `${TRANSITION_SCALE_MS[key]}ms`
   })
 
   return vars
@@ -365,6 +378,8 @@ export function preload(): void {
   let sizeName: SizeMode | undefined
   let raw: string | null = null
   try {
+    // Technical first-paint exception: preload must read before Pinia mounts.
+    // Payload is still safeStorage-packed by useSizeStore's encrypted serializer.
     raw = localStorage.getItem(SIZE_PERSIST_KEY)
   } catch {
     // Safari 隐私模式旧版本可能抛出异常，使用默认值

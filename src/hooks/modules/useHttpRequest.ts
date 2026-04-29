@@ -1,22 +1,28 @@
 import type { ComputedRef, Ref } from 'vue'
 import { useRequest } from 'alova/client'
-import type { AlovaGenerics, Method } from 'alova'
+import type { Alova, AlovaGenerics, Method, RespondedAlovaGenerics } from 'alova'
 import type { RequestHookConfig } from 'alova/client'
 
 import { alovaInstance } from '@/utils/http/instance'
 import { isHttpRequestError } from '@/utils/http/errors'
 import type { HttpRequestError } from '@/utils/http/types'
+import { validateResponse } from '@/utils/http/validation'
+import type { HttpResponseSchema } from '@/utils/http/validation'
 import { useLoading } from '@/hooks/layout/useLoading'
 
 /**
  * useHttpRequest 扩展配置
  */
-export interface UseHttpRequestOptions<TData = unknown> extends RequestHookConfig<
-  HttpAG<TData>,
-  any
-> {
+type BaseAlovaAG = typeof alovaInstance extends Alova<infer AG> ? AG : AlovaGenerics
+type HttpAG<TData> = RespondedAlovaGenerics<BaseAlovaAG, TData, unknown>
+type HttpArgs = unknown[]
+type HttpRequestHookConfig<TData> = RequestHookConfig<HttpAG<TData>, HttpArgs>
+
+export interface UseHttpRequestOptions<TData = unknown> extends HttpRequestHookConfig<TData> {
   /** 是否与全局 loading 联动：true 时在请求前调用 loadingStart()，请求结束后调用 loadingDone() */
   globalLoading?: boolean
+  /** API/HTTP boundary schema. Invalid payloads throw HttpRequestError(ErrorType.VALIDATION). */
+  responseSchema?: HttpResponseSchema<TData>
 }
 
 /**
@@ -31,8 +37,6 @@ export interface UseHttpRequestResult<TData> {
   // 可以根据需要暴露更多 alova 原生返回值，如 onSuccess 等
 }
 
-type HttpAG<TData> = AlovaGenerics<TData, any, any, any, any, any, any, any>
-
 /**
  * useHttpRequest
  * 对 Alova useRequest 的强类型封装
@@ -44,25 +48,37 @@ export function useHttpRequest<TData = unknown>(
   buildMethod: (client: typeof alovaInstance) => Method<HttpAG<TData>>,
   options?: UseHttpRequestOptions<TData>
 ): UseHttpRequestResult<TData> {
-  const { globalLoading = false, middleware: userMiddleware, ...alovaOptions } = options ?? {}
+  const {
+    globalLoading = false,
+    middleware: userMiddleware,
+    responseSchema,
+    ...alovaOptions
+  } = options ?? {}
 
-  const { loadingStart, loadingDone } = useLoading()
+  const { startLoading } = useLoading()
 
-  const mergedMiddleware = globalLoading
-    ? async (
-        context: Parameters<NonNullable<RequestHookConfig<HttpAG<TData>, any>['middleware']>>[0],
-        next: Parameters<NonNullable<RequestHookConfig<HttpAG<TData>, any>['middleware']>>[1]
-      ) => {
-        loadingStart()
+  const runMiddleware: NonNullable<HttpRequestHookConfig<TData>['middleware']> = async (
+    context,
+    next
+  ) => {
+    const result = await (userMiddleware ? userMiddleware(context, next) : next())
+    return responseSchema ? validateResponse(responseSchema, result) : result
+  }
+
+  const mergedMiddleware: HttpRequestHookConfig<TData>['middleware'] = globalLoading
+    ? async (context, next) => {
+        const stopLoading = startLoading()
         try {
-          return await (userMiddleware ? userMiddleware(context, next) : next())
+          return await runMiddleware(context, next)
         } finally {
-          loadingDone()
+          stopLoading()
         }
       }
-    : userMiddleware
+    : responseSchema
+      ? runMiddleware
+      : userMiddleware
 
-  const mergedOptions: RequestHookConfig<HttpAG<TData>, any> = {
+  const mergedOptions: HttpRequestHookConfig<TData> = {
     ...alovaOptions,
     ...(mergedMiddleware ? { middleware: mergedMiddleware } : {}),
   }
@@ -83,6 +99,6 @@ export function useHttpRequest<TData = unknown>(
     loading: base.loading,
     data: base.data,
     error: typedError,
-    send: base.send as unknown as (...args: unknown[]) => Promise<TData>,
+    send: base.send,
   }
 }

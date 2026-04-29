@@ -76,22 +76,6 @@ export const LAYOUT_SCALE_RATIOS: Record<SizeScaleKey, number> = {
 }
 
 /**
- * Loading 动画尺寸映射（vw）
- * 用于 Lottie 等固定像素渲染，与 SizeScaleKey 一一对应
- */
-export const LOADING_SIZE_PERCENT: Record<SizeScaleKey, number> = {
-  xs: 8, // 内联/按钮旁
-  sm: 18, // 小区域
-  md: 28, // 中等
-  lg: 36, // 页面 loading
-  xl: 48, // 大区域
-  '2xl': 60, // 全局 loading 偏小
-  '3xl': 72, // 全局 loading 推荐
-  '4xl': 86, // 大屏/强调
-  '5xl': 100, // 全屏/hero
-}
-
-/**
  * Loading 动画尺寸（正方形，避免宽高比失真）
  * 与 SizeScaleKey 一一对应；完全基于视口短边自适应，确保任何设备下绝对可控且不溢出
  */
@@ -105,21 +89,4 @@ export const LOADING_SIZE_CSS: Record<SizeScaleKey, number | string> = {
   '3xl': 'min(82vw, 82vh)',
   '4xl': 'min(90vw, 90vh)',
   '5xl': 'min(100vw, 100vh)',
-}
-
-/**
- * 过渡时长表 (毫秒)
- * 从微交互到慢动画的完整阶梯
- * 遵循 Material Design 动效时长指南
- */
-export const TRANSITION_SCALE_VALUES: Record<SizeScaleKey, number> = {
-  xs: 180, // 微交互 (hover 高亮)
-  sm: 280, // 快速反馈
-  md: 320, // 标准过渡
-  lg: 420, // 展开/收起
-  xl: 480, // 页面过渡
-  '2xl': 580, // 复杂动画
-  '3xl': 680, // 慢动画
-  '4xl': 780, // 强调动画
-  '5xl': 880, // 戏剧效果
 }

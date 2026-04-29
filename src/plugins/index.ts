@@ -6,6 +6,7 @@ import { setupStores } from '@/plugins/modules/stores'
 import { setupErrorHandler } from '@/plugins/modules/errorHandler'
 import { setupPrimeVue } from '@/plugins/modules/primevue'
 import { setupScrollbar } from '@/plugins/modules/scrollbar'
+import { setupAuthBridge } from '@/plugins/modules/authBridge'
 import { vAuth } from '@/directives/auth'
 import { vTap } from '@/directives/tap'
 import { vSwipe } from '@/directives/swipe'
@@ -23,11 +24,12 @@ export const setupPlugins = async (app: App) => {
   // 先挂载 i18n，再初始化 Stores（initLocale 依赖 i18n 已挂载）
   setupLocales(app)
   setupStores(app)
+  setupAuthBridge()
   setupPrimeVue(app)
   setupScrollbar(app)
   setupProForm()
 
-  setupRouter(app)
+  await setupRouter(app)
 
   // 在语言系统之后初始化 DateUtils，确保语言设置已就绪
   await setupDateUtils(app)

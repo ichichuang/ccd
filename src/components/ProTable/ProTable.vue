@@ -20,7 +20,12 @@ import {
   PRO_TABLE_PROPS_DEFAULTS,
   UI_DEFAULTS,
 } from './engine/config'
-import { formatRequestParams, formatResponseData, resolveApiUrl } from './engine/config/apiAdapter'
+import {
+  buildApiExecutorConfig,
+  formatRequestParams,
+  formatResponseData,
+  resolveApiUrl,
+} from './engine/config/apiAdapter'
 import { getScopedContentSizeVars } from '@/utils/theme/sizeEngine'
 import { TableController } from './engine/core/TableController'
 import { resolveColumnIdOrder } from './engine/engines/columnVisibility'
@@ -107,11 +112,7 @@ function createUnifiedRequest(): RequestFn<T> | undefined {
       const url = resolveApiUrl(props.apiUrl!, query, props.searchPathResolver)
       const method = props.apiMethod ?? 'GET'
 
-      const httpConfig = {
-        ...props.apiConfig,
-        enableCache: props.apiConfig?.enableCache ?? false,
-        cancelStrategy: props.apiConfig?.cancelStrategy ?? ('cancelPrevious' as const),
-      }
+      const httpConfig = buildApiExecutorConfig(props.apiConfig, params.signal)
 
       if (!props.apiExecutor) {
         throw new Error(

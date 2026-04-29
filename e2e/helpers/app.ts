@@ -11,8 +11,16 @@ export function withVisualMode(hashPath: string, options?: { holdPreloader?: boo
   return `/?${query}#${hashPath.startsWith('/') ? hashPath : `/${hashPath}`}`
 }
 
+function normalizeHashPath(hashPath: string): string {
+  return hashPath.startsWith('/') ? hashPath : `/${hashPath}`
+}
+
 export async function gotoVisual(page: Page, hashPath: string): Promise<void> {
   await page.goto(withVisualMode(hashPath))
+  await page.waitForFunction(
+    path => window.location.hash === `#${path}`,
+    normalizeHashPath(hashPath)
+  )
 }
 
 export async function gotoVisualFirstPaint(page: Page, hashPath: string): Promise<void> {
@@ -44,10 +52,15 @@ export async function waitForThemeTransitionEnd(page: Page): Promise<void> {
 
 export async function loginAsAdmin(page: Page): Promise<void> {
   await gotoVisual(page, '/login')
+  await waitForAppReady(page)
+  await waitForRuntimeLoadingIdle(page)
+  await expect(page.locator('#username')).toBeVisible({ timeout: 15000 })
   await page.locator('#username').fill('admin')
   await page.locator('#password').fill('123456')
-  await page.locator('#login-submit').click()
-  await page.waitForURL(/#\/dashboard$/)
+  const submit = page.locator('#login-submit')
+  await expect(submit).toBeEnabled()
+  await submit.click()
+  await expect(page).toHaveURL(/#\/dashboard$/, { timeout: 30000 })
   await waitForAppReady(page)
   await waitForRuntimeLoadingIdle(page)
   await expect(page.locator('#dashboard-page')).toBeVisible({ timeout: 15000 })

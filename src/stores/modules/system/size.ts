@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia'
 import { SIZE_PRESETS, DEFAULT_SIZE_NAME, SIZE_PERSIST_KEY } from '@/constants/size'
 import { generateSizeVars, applySizeTheme } from '@/utils/theme/sizeEngine'
+import { createPiniaEncryptedSerializer } from '@/utils/safeStorage/piniaSerializer'
 /**
  * 全局尺寸模式（compact / comfortable / loose）
  *
@@ -50,5 +51,6 @@ export const useSizeStore = defineStore('size', {
   persist: {
     key: SIZE_PERSIST_KEY,
     storage: localStorage,
+    serializer: createPiniaEncryptedSerializer(),
   },
 })

@@ -216,7 +216,7 @@ function onThemeModeChange(value: ThemeMode) {
           <Icons
             v-if="themeStore.themeName === preset.name"
             name="i-lucide-check"
-            class="text-white drop-shadow-md text-sm transition-transform duration-sm ease-out-expo"
+            class="text-primary-foreground drop-shadow-md text-sm transition-transform duration-sm ease-out-expo"
           />
         </div>
       </div>

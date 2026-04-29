@@ -213,6 +213,10 @@ ProTable manages PrimeVue DataTable's `scrollable`/`scrollHeight` internally —
 
 All forms with ≥2 fields **MUST** use `<ProForm>` with a typed `FormSchema`.
 
+Internal implementation note: native `<form>` is allowed inside `src/components/ProForm/**`
+because it is the component boundary that provides the approved business form abstraction.
+This exception must not be copied into `src/views/**`.
+
 ### 4.2 — Responsive Grid via `span` (NOT UnoCSS grid)
 ProForm uses an internal 12-column CSS grid. Control layout with field `span`.
 

@@ -7,9 +7,9 @@ export type PhaseValue<T> = T | { enter?: T; leave?: T }
 export interface RouteTransition {
   /** 原生具名过渡 (如 cinematic-fade / fade-slide) */
   name?: string
-  /** animate.css 进场动画类名 (可省略 animate__ 前缀) */
+  /** animate-lite 进场动画类名 (可省略 animate__ 前缀) */
   enterClass?: AnimateName | string
-  /** animate.css 出场动画类名 (可省略 animate__ 前缀) */
+  /** animate-lite 出场动画类名 (可省略 animate__ 前缀) */
   leaveClass?: AnimateName | string
   /** 过渡时长 (支持全局或分阶段) */
   duration?: PhaseValue<CssTime>

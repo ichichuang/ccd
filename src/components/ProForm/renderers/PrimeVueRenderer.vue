@@ -14,6 +14,7 @@ import {
   PRO_FORM_LAYOUT_KEY,
   PRO_FORM_SLOTS_KEY,
 } from '../engine/constants'
+import { castValue } from '@/utils/typeCasters'
 
 const props = defineProps<ProFormPrimeVueRendererProps>()
 
@@ -33,7 +34,7 @@ type FieldStateWithOptions = FieldState<unknown> & {
 }
 
 const fieldExt = computed<ExtendedFieldSchema>(() => props.field as ExtendedFieldSchema)
-const stateExt = computed<FieldStateWithOptions>(() => state as unknown as FieldStateWithOptions)
+const stateExt = computed<FieldStateWithOptions>(() => castValue<FieldStateWithOptions>(state))
 
 const globalState = inject(PRO_FORM_GLOBAL_STATE_KEY, null)
 

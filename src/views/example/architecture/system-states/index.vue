@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { LOADING_SIZE_PERCENT, SIZE_SCALE_KEYS, type SizeScaleKey } from '@/constants/sizeScale'
+import { SIZE_SCALE_KEYS, type SizeScaleKey } from '@/constants/sizeScale'
 import { useLoading } from '@/hooks/layout/useLoading'
 import Loading from '@/layouts/components/Loading.vue'
 import { goToRoute } from '@/router/utils/helper'
@@ -12,6 +12,18 @@ const btnLoading = ref(false)
 
 /** 尺寸预览按 sizeScale 常量完整展示（xs -> 5xl） */
 const sizeScalePreviewKeys = SIZE_SCALE_KEYS
+
+const DEMO_LOADING_SIZE_PERCENT: Record<SizeScaleKey, number> = {
+  xs: 8,
+  sm: 18,
+  md: 28,
+  lg: 36,
+  xl: 48,
+  '2xl': 60,
+  '3xl': 72,
+  '4xl': 86,
+  '5xl': 100,
+}
 
 /** Lottie 样式 type，供模板绑定避免 string 收窄 */
 const loadingPreviewType = 1 as const
@@ -65,7 +77,7 @@ function goToServerError() {
 }
 
 const sizeScaleDisplayList = computed<{ key: SizeScaleKey; percent: number }[]>(() =>
-  SIZE_SCALE_KEYS.map(key => ({ key, percent: LOADING_SIZE_PERCENT[key] }))
+  SIZE_SCALE_KEYS.map(key => ({ key, percent: DEMO_LOADING_SIZE_PERCENT[key] }))
 )
 </script>
 
@@ -203,7 +215,7 @@ const sizeScaleDisplayList = computed<{ key: SizeScaleKey; percent: number }[]>(
                 使用 Design System 的 SizeScaleKey；动画边长由
                 <span class="px-xs rounded bg-muted">LOADING_SIZE_CSS</span>
                 控制，下表为
-                <span class="px-xs rounded bg-muted">LOADING_SIZE_PERCENT</span>
+                <span class="px-xs rounded bg-muted">DEMO_LOADING_SIZE_PERCENT</span>
                 （vw 占比参考）。
               </p>
               <div class="row-start flex-wrap gap-md items-end min-w-0">
@@ -221,7 +233,7 @@ const sizeScaleDisplayList = computed<{ key: SizeScaleKey; percent: number }[]>(
                     />
                   </div>
                   <span class="text-xs font-mono text-muted-foreground text-no-wrap">
-                    {{ key }} ({{ LOADING_SIZE_PERCENT[key] }}vw)
+                    {{ key }} ({{ DEMO_LOADING_SIZE_PERCENT[key] }}vw)
                   </span>
                 </div>
               </div>

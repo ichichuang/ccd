@@ -3,7 +3,6 @@
  *
  * 注意：此处的默认值需要与 types.ts 中文档注释保持一致
  */
-import { TRANSITION_SCALE_VALUES } from '@/constants/sizeScale'
 import type { ScrollbarProps, ScrollbarVisibility } from './types'
 
 /** 与 PrimeVue ScrollTop 默认 threshold 一致 */
@@ -36,9 +35,9 @@ export const defaultScrollbarProps: Required<
 
 /**
  * OverlayScrollbars 自动隐藏延迟（ms）
- * 与尺寸系统 --transition-xl 一致（TRANSITION_SCALE_VALUES.xl）
+ * 与尺寸系统 --transition-xl 一致
  */
-export const DEFAULT_SCROLLBAR_AUTO_HIDE_DELAY_MS = TRANSITION_SCALE_VALUES.xl
+export const DEFAULT_SCROLLBAR_AUTO_HIDE_DELAY_MS = 480
 
 /**
  * 由 visibility 解析 OverlayScrollbars 的 autoHide 策略

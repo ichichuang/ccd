@@ -272,7 +272,10 @@ function quadUsageFor(family: QuadFamily): readonly string[] {
 
 <template>
   <!-- Toast：AppPrimeVueGlobals 挂载多组 Toast；复制反馈须带 group（见 copyClassName） -->
-  <div data-archetype="A1-toolbar-content">
+  <div
+    id="theme-system-page"
+    data-archetype="A1-toolbar-content"
+  >
     <AnimateWrapper enter="fadeInUp">
       <div class="col-stretch gap-md min-h-0 min-w-0">
         <div class="layout-narrow col-stretch gap-md min-w-0">

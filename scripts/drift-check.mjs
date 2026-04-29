@@ -24,6 +24,10 @@ const RAW_RGB_REGEX = /rgb\(\s*\d+/g
 const RAW_RGBA_REGEX = /rgba\(\s*\d+/g
 const RAW_HSL_REGEX = /hsl\(\s*\d+/g
 const RAW_HSLA_REGEX = /hsla\(\s*\d+/g
+const RAW_PALETTE_CLASS_REGEX =
+  /(?:^|\s)(?:[\w!:-]+:)*(?:text|bg|border|ring|from|via|to|decoration|accent|outline|divide|placeholder|caret)-(?:slate|gray|zinc|neutral|stone|red|orange|amber|yellow|lime|green|emerald|teal|cyan|sky|blue|indigo|violet|purple|fuchsia|pink|rose|white|black)(?:-|\/|!|\s|$)/
+const UNO_ARBITRARY_COLOR_REGEX =
+  /(?:text|bg|border|ring|from|via|to|decoration|accent|outline|divide|placeholder|caret)-\[#(?:[0-9a-fA-F]{3}|[0-9a-fA-F]{6}|[0-9a-fA-F]{8})\b/
 
 const STATE_FILE = 'page.state.ts'
 
@@ -39,6 +43,24 @@ function walkVueFiles(dir, base = '') {
       if (e.isDirectory()) {
         files.push(...walkVueFiles(join(dir, e.name), rel))
       } else if (e.name.endsWith('.vue')) {
+        files.push(rel)
+      }
+    }
+  } catch {
+    // ignore
+  }
+  return files
+}
+
+function walkFilesByExtension(dir, extensions, base = '') {
+  const files = []
+  try {
+    const names = readdirSync(dir, { withFileTypes: true })
+    for (const e of names) {
+      const rel = base ? `${base}/${e.name}` : e.name
+      if (e.isDirectory()) {
+        files.push(...walkFilesByExtension(join(dir, e.name), extensions, rel))
+      } else if (extensions.some(ext => e.name.endsWith(ext))) {
         files.push(rel)
       }
     }
@@ -89,6 +111,23 @@ function checkStyleDrift(filePath, content) {
       if (line.match(RAW_HSLA_REGEX) && !line.includes('hsla(var(')) {
         errors.push(`${filePath}:${lineNum} - Style Drift: raw hsla() detected. Use Design Tokens instead.`)
       }
+    }
+  }
+  return errors
+}
+
+function checkClassColorDrift(filePath, content) {
+  const errors = []
+  const classAttrRegex = /\b(?:class|className)\s*=\s*(["'`])([\s\S]*?)\1/g
+  let match
+  while ((match = classAttrRegex.exec(content)) !== null) {
+    const value = match[2]
+    const lineNum = 1 + (content.slice(0, match.index).match(/\n/g) || []).length
+    if (RAW_PALETTE_CLASS_REGEX.test(value)) {
+      errors.push(`${filePath}:${lineNum} - Class Color Drift: raw palette color class detected. Use semantic color tokens.`)
+    }
+    if (UNO_ARBITRARY_COLOR_REGEX.test(value)) {
+      errors.push(`${filePath}:${lineNum} - Class Color Drift: arbitrary hex color class detected. Use semantic color tokens.`)
     }
   }
   return errors
@@ -226,6 +265,13 @@ function main() {
     const content = readFileSync(absPath, 'utf-8')
     const styleErrors = checkStyleDrift(`src/${rel}`, content)
     errors.push(...styleErrors)
+    errors.push(...checkClassColorDrift(`src/${rel}`, content))
+  }
+
+  for (const rel of walkFilesByExtension(SRC_DIR, ['.tsx'])) {
+    const absPath = join(SRC_DIR, rel)
+    const content = readFileSync(absPath, 'utf-8')
+    errors.push(...checkClassColorDrift(`src/${rel}`, content))
   }
 
   // ---------- 3. Build System vs vite.config.ts (manualChunks) ----------

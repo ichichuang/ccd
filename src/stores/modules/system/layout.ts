@@ -7,6 +7,8 @@ import {
 } from '@/constants/layout'
 import { useDeviceStore } from '@/stores/modules/system/device'
 import { deepClone } from '@/utils/lodashes'
+import { createPiniaEncryptedSerializer } from '@/utils/safeStorage/piniaSerializer'
+import { castValue } from '@/utils/typeCasters'
 import store from '@/stores'
 /** 缓存 deviceStore，避免 effectiveMode getter 每次求值都调用 useDeviceStore() */
 let _deviceStore: ReturnType<typeof useDeviceStore> | null = null
@@ -171,7 +173,7 @@ export const useLayoutStore = defineStore('layout', {
      * - 新结构：visibilitySettings[mode].showXxx
      */
     migrateLegacyVisibilityIfNeeded() {
-      const legacy = this.$state as unknown as Record<string, unknown>
+      const legacy = castValue<Record<string, unknown>>(this.$state)
       const hasLegacy =
         typeof legacy.showHeader === 'boolean' ||
         typeof legacy.showMenu === 'boolean' ||
@@ -306,7 +308,7 @@ export const useLayoutStore = defineStore('layout', {
       this.mobileDrawerOpen = open
     },
     updateSetting<K extends keyof LayoutSetting>(key: K, value: LayoutSetting[K]) {
-      ;(this.$state as unknown as Record<string, unknown>)[key] = value
+      castValue<Record<string, unknown>>(this.$state)[key] = value
     },
     resetSetting() {
       // resetSetting 不触碰运行时 loading 计数器
@@ -476,6 +478,7 @@ export const useLayoutStore = defineStore('layout', {
   persist: {
     key: `${import.meta.env.VITE_PINIA_PERSIST_KEY_PREFIX}-layout`,
     storage: localStorage,
+    serializer: createPiniaEncryptedSerializer(),
     pick: LAYOUT_PERSIST_PICK,
   },
 })

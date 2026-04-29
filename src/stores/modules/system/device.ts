@@ -1,11 +1,11 @@
 // src/stores/modules/device.ts
 import { defineStore } from 'pinia'
-import { debounce } from 'lodash-es'
 import {
   BREAKPOINTS,
   TABLET_DETECTION_MIN_SHORT_SIDE,
   type BreakpointKey,
 } from '@/constants/breakpoints'
+import { debounceFn } from '@/utils/lodashes'
 import { useMitt } from '@/utils/mitt'
 import type { DeviceState } from '@/types/systems/device'
 
@@ -192,7 +192,7 @@ export const useDeviceStore = defineStore('device', {
       }
 
       // 绑定的全都是纯净的视口计算函数
-      const handleResize = debounce(() => {
+      const handleResize = debounceFn(() => {
         this.detectViewportInfo()
       }, RESIZE_INTERVAL)
 

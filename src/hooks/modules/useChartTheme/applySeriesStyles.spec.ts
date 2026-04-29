@@ -6,6 +6,13 @@ import { applySeriesStyles } from './applySeriesStyles'
 import { applyDataZoomStyles } from './applyDataZoomStyles'
 import { applyVisualMapStyles } from './applyVisualMapStyles'
 
+const TEST_TEXT_HEX = '#000'
+const TEST_MUTED_HEX = '#666'
+const TEST_FOREGROUND_HEX = '#111'
+const TEST_SURFACE_HEX = '#fff'
+const TEST_BORDER_HEX = '#eee'
+const TEST_ACCENT_HEX = '#14b8a6'
+
 function mockTheme(overrides: Partial<ThemeConfig['opacity']>): ThemeConfig {
   const metricLadders = {
     containerPadding: 20,
@@ -58,13 +65,13 @@ function mockTheme(overrides: Partial<ThemeConfig['opacity']>): ThemeConfig {
 
   return {
     font: {
-      textColor: '#000',
-      textColorSecondary: '#666',
+      textColor: TEST_TEXT_HEX,
+      textColorSecondary: TEST_MUTED_HEX,
       fontSizeMd: 14,
       fontSizeSm: 12,
     },
     color: {
-      colors: ['#14b8a6'],
+      colors: [TEST_ACCENT_HEX],
       primaryColors: [],
       successColors: [],
       infoColors: [],
@@ -74,7 +81,7 @@ function mockTheme(overrides: Partial<ThemeConfig['opacity']>): ThemeConfig {
       contrastColors: [],
       secondaryColors: [],
     },
-    foreground: '#111',
+    foreground: TEST_FOREGROUND_HEX,
     opacity: { ...DEFAULT_OPACITY_VALUES, ...overrides },
     size: {
       spacingUnit: 4,
@@ -119,12 +126,12 @@ function mockTheme(overrides: Partial<ThemeConfig['opacity']>): ThemeConfig {
       dataZoomHeight: 24,
       dataZoomBorderWidth: 1,
     },
-    mutedForeground: '#666',
-    background: '#fff',
-    card: '#fff',
-    border: '#eee',
-    accent: '#14b8a6',
-    primaryForeground: '#fff',
+    mutedForeground: TEST_MUTED_HEX,
+    background: TEST_SURFACE_HEX,
+    card: TEST_SURFACE_HEX,
+    border: TEST_BORDER_HEX,
+    accent: TEST_ACCENT_HEX,
+    primaryForeground: TEST_SURFACE_HEX,
     ...metricLadders,
   }
 }

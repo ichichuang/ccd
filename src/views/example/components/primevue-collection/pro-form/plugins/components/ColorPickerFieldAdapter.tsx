@@ -1,10 +1,11 @@
 import { defineComponent, type PropType } from 'vue'
+import { castValue } from '@/utils/typeCasters'
 import ColorPickerField from './ColorPickerField'
 
 const colorPickerFieldAdapter = defineComponent({
   name: 'ColorPickerFieldAdapter',
   props: {
-    modelValue: { type: null as unknown as PropType<unknown>, required: true },
+    modelValue: { type: castValue<PropType<unknown>>(null), required: true },
     disabled: { type: Boolean, default: false },
     readonly: { type: Boolean, default: false },
     error: { type: Array as PropType<string[] | undefined>, default: undefined },

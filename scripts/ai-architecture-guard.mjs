@@ -1,10 +1,18 @@
 import fs from 'node:fs'
 import path from 'node:path'
 import process from 'node:process'
+import { spawnSync } from 'node:child_process'
 import fg from 'fast-glob'
 import ts from 'typescript'
 
 const cwd = process.cwd()
+const outputFormat = process.argv.includes('--format=json') ? 'json' : 'text'
+const stagedOnly = process.argv.includes('--staged')
+const outputLogPath = path.join(cwd, '.ai', 'runtime', 'architecture-guard-report.json')
+const cliFileArgs = process.argv
+  .slice(2)
+  .filter(arg => !arg.startsWith('--'))
+  .map(arg => path.relative(cwd, path.resolve(cwd, arg)).split(path.sep).join(path.posix.sep))
 
 const businessViewPatterns = ['src/views/**/*.vue']
 const businessViewIgnore = [
@@ -14,8 +22,28 @@ const businessViewIgnore = [
   'src/views/**/components/**',
 ]
 
-const readText = rel => fs.readFileSync(path.join(cwd, rel), 'utf8')
 const normalizePath = rel => rel.split(path.sep).join(path.posix.sep)
+const readText = rel => fs.readFileSync(path.join(cwd, rel), 'utf8')
+
+const readGitStagedFiles = () => {
+  const result = spawnSync('git', ['diff', '--name-only', '--cached', '--diff-filter=ACMR'], {
+    cwd,
+    encoding: 'utf8',
+    stdio: 'pipe',
+  })
+
+  if (result.status !== 0) {
+    return []
+  }
+
+  return result.stdout
+    .split('\n')
+    .map(line => normalizePath(line.trim()))
+    .filter(Boolean)
+}
+
+const scanScope = stagedOnly ? new Set(cliFileArgs.length > 0 ? cliFileArgs : readGitStagedFiles()) : null
+const shouldScanFile = relPath => !scanScope || scanScope.has(normalizePath(relPath))
 
 const findings = []
 
@@ -23,20 +51,68 @@ const fail = (ruleId, relPath, message) => {
   findings.push({ ruleId, relPath: normalizePath(relPath), message })
 }
 
-const scanFiles = patterns =>
+const scanFiles = (patterns, options = {}) =>
   fg.sync(patterns, {
     cwd,
     onlyFiles: true,
     dot: false,
     unique: true,
-  })
-const businessViews = fg.sync(businessViewPatterns, {
-  cwd,
-  onlyFiles: true,
-  dot: false,
-  unique: true,
+    ...options,
+  }).filter(shouldScanFile)
+const businessViews = scanFiles(businessViewPatterns, {
   ignore: businessViewIgnore,
 })
+
+const shouldRunSingletonCheck = relPath => {
+  if (!stagedOnly) return true
+  return shouldScanFile(relPath)
+}
+
+const readTextIfExists = relPath => {
+  const absPath = path.join(cwd, relPath)
+  return fs.existsSync(absPath) ? readText(relPath) : ''
+}
+
+const approvedRawNetworkFiles = new Set([
+  'src/utils/http/methods.ts',
+  'src/utils/http/interceptors.ts',
+  'src/utils/http/connection.ts',
+  'src/utils/date/timezone.ts',
+])
+
+const approvedRawStorageFiles = new Set([
+  'src/main.ts',
+  'src/hooks/modules/useThemeSwitch.ts',
+  'src/stores/modules/session/permission.ts',
+  'src/stores/modules/session/user.ts',
+  'src/stores/modules/system/layout.ts',
+  'src/stores/modules/system/size.ts',
+  'src/utils/theme/engine.ts',
+  'src/utils/theme/sizeEngine.ts',
+  'src/utils/runtime/e2e.ts',
+])
+
+const rawStorageInfraPatterns = [
+  'src/utils/safeStorage/**',
+  'src/components/ProForm/engine/persistence/**',
+  'src/stores/modules/system/theme.ts',
+  'src/stores/modules/system/locale.ts',
+]
+
+const isGlobAllowed = (relPath, patterns) =>
+  patterns.some(pattern => {
+    if (pattern.endsWith('/**')) {
+      return relPath.startsWith(pattern.slice(0, -3))
+    }
+    return relPath === pattern
+  })
+
+const hasHardcodedColor = content =>
+  /#(?:[0-9a-fA-F]{3}|[0-9a-fA-F]{6}|[0-9a-fA-F]{8})\b/.test(content) ||
+  /\b(?:text|bg|border|ring|from|via|to|decoration|accent|outline|divide|placeholder|caret)-(?:slate|gray|zinc|neutral|stone|red|orange|amber|yellow|lime|green|emerald|teal|cyan|sky|blue|indigo|violet|purple|fuchsia|pink|rose|white|black)(?:-|\/|\b)/.test(content)
+
+const stripJsComments = content =>
+  content.replace(/\/\*[\s\S]*?\*\//g, '').replace(/(^|[^:])\/\/.*$/gm, '$1')
 
 for (const relPath of businessViews) {
   const content = readText(relPath)
@@ -52,6 +128,12 @@ for (const relPath of businessViews) {
   if (/\b(fetch|axios|XMLHttpRequest)\b/.test(content)) {
     fail('view-raw-network', relPath, 'business views must not use raw fetch/axios/XMLHttpRequest')
   }
+  if (/\b(localStorage|sessionStorage)\b/.test(content)) {
+    fail('view-raw-storage', relPath, 'business views must not use raw localStorage/sessionStorage')
+  }
+  if (hasHardcodedColor(content)) {
+    fail('view-hardcoded-color', relPath, 'business views must use semantic design tokens instead of hardcoded colors/raw palette classes')
+  }
   if (/<form\b/i.test(content)) {
     fail('view-native-form', relPath, 'business views must not use native <form>; use <ProForm>')
   }
@@ -60,6 +142,61 @@ for (const relPath of businessViews) {
   }
   if (/(interface|type)\s+\w+(DTO|Req|Res)\b/.test(content)) {
     fail('view-dto-definition', relPath, 'DTO/Req/Res contracts must not be defined inside business views')
+  }
+}
+
+const networkBoundaryFiles = scanFiles(['src/api/**/*.{ts,tsx}', 'src/hooks/**/*.{ts,tsx}', 'src/stores/**/*.{ts,tsx}'])
+for (const relPath of networkBoundaryFiles) {
+  if (approvedRawNetworkFiles.has(relPath)) continue
+  const content = stripJsComments(readText(relPath))
+  if (/\b(fetch|axios|XMLHttpRequest)\b/.test(content)) {
+    fail('raw-network', relPath, 'raw network clients are only allowed in approved HTTP/runtime infrastructure')
+  }
+}
+
+const storageBoundaryFiles = scanFiles(['src/views/**/*.{vue,ts,tsx}', 'src/hooks/**/*.{ts,tsx}', 'src/stores/**/*.{ts,tsx}', 'src/components/**/*.{vue,ts,tsx}'])
+for (const relPath of storageBoundaryFiles) {
+  if (/\.(spec|test)\.ts$/.test(relPath)) continue
+  if (approvedRawStorageFiles.has(relPath)) continue
+  if (isGlobAllowed(relPath, rawStorageInfraPatterns)) continue
+  if (relPath.includes('/example/')) continue
+  const content = stripJsComments(readText(relPath))
+  if (/\b(localStorage|sessionStorage)\b/.test(content)) {
+    fail('raw-storage', relPath, 'raw browser storage is only allowed in safeStorage/runtime bootstrap exceptions')
+  }
+}
+
+const layoutStorePath = 'src/stores/modules/system/layout.ts'
+const layoutStore = shouldRunSingletonCheck(layoutStorePath) ? readTextIfExists(layoutStorePath) : ''
+if (
+  layoutStore &&
+  /persist\s*:\s*\{[\s\S]*?key:\s*`[^`]*-layout`[\s\S]*?\}/.test(layoutStore) &&
+  !layoutStore.includes('serializer: createPiniaEncryptedSerializer()')
+) {
+  fail('store-persist-serializer', layoutStorePath, 'useLayoutStore persistence must use createPiniaEncryptedSerializer()')
+}
+
+const sizeStorePath = 'src/stores/modules/system/size.ts'
+const sizeStore = shouldRunSingletonCheck(sizeStorePath) ? readTextIfExists(sizeStorePath) : ''
+if (
+  sizeStore &&
+  /persist\s*:\s*\{[\s\S]*?SIZE_PERSIST_KEY[\s\S]*?\}/.test(sizeStore) &&
+  !sizeStore.includes('serializer: createPiniaEncryptedSerializer()')
+) {
+  fail('store-persist-serializer', sizeStorePath, 'useSizeStore persistence must use createPiniaEncryptedSerializer()')
+}
+
+const eslintConfigPath = 'eslint.config.ts'
+const eslintConfig = shouldRunSingletonCheck(eslintConfigPath) ? readTextIfExists(eslintConfigPath) : ''
+if (eslintConfig) {
+  for (const removedAnyOverride of [
+    'src/hooks/modules/useHttpRequest.ts',
+    'src/locales/**/*.ts',
+    'src/plugins/**/*.ts',
+  ]) {
+    if (eslintConfig.includes(`'${removedAnyOverride}'`) || eslintConfig.includes(`"${removedAnyOverride}"`)) {
+      fail('any-exemption-drift', eslintConfigPath, `${removedAnyOverride} must not return to no-explicit-any override list`)
+    }
   }
 }
 
@@ -212,20 +349,39 @@ function getRoutePath(pathNode, sourceFile) {
   return pathNode.getText(sourceFile)
 }
 
-if (findings.length === 0) {
+const sortedFindings = findings.sort((a, b) => {
+  if (a.relPath === b.relPath) return a.ruleId.localeCompare(b.ruleId)
+  return a.relPath.localeCompare(b.relPath)
+})
+
+const report = {
+  ok: sortedFindings.length === 0,
+  mode: stagedOnly ? 'staged' : 'full',
+  scannedFiles: scanScope ? [...scanScope].sort() : null,
+  findings: sortedFindings,
+}
+
+fs.mkdirSync(path.dirname(outputLogPath), { recursive: true })
+fs.writeFileSync(outputLogPath, `${JSON.stringify(report, null, 2)}\n`)
+
+if (outputFormat === 'json') {
+  console.log(JSON.stringify(report, null, 2))
+  process.exit(sortedFindings.length === 0 ? 0 : 1)
+}
+
+if (sortedFindings.length === 0) {
   console.log('AI architecture guard')
   console.log('====================')
   console.log('[OK] no actionable architecture violations detected in guarded surfaces')
+  console.log(`[LOG] ${path.relative(cwd, outputLogPath)}`)
   process.exit(0)
 }
 
 console.log('AI architecture guard')
 console.log('====================')
-for (const finding of findings.sort((a, b) => {
-  if (a.relPath === b.relPath) return a.ruleId.localeCompare(b.ruleId)
-  return a.relPath.localeCompare(b.relPath)
-})) {
+for (const finding of sortedFindings) {
   console.log(`[FAIL] ${finding.ruleId}: ${finding.relPath}`)
   console.log(`  - ${finding.message}`)
 }
+console.log(`[LOG] ${path.relative(cwd, outputLogPath)}`)
 process.exit(1)

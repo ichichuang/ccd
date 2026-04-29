@@ -8,6 +8,13 @@ import {
 } from './skill-lock-utils.mjs'
 
 const cwd = process.cwd()
+const openOnly = process.argv.includes('--open')
+const currentBranch = spawnSync('git', ['branch', '--show-current'], {
+  cwd,
+  encoding: 'utf8',
+  stdio: 'pipe',
+}).stdout.trim() || 'unknown'
+const isDesktopBranch = currentBranch === 'feat/tauri-integration'
 
 const canonicalMustExist = [
   '.ai/README.md',
@@ -45,6 +52,7 @@ const canonicalMustExist = [
   '.ai/manifests/skill-routing.json',
   '.ai/manifests/gemini-skill-index.json',
   '.ai/manifests/skills-lock.json',
+  '.ai/manifests/rule-index.json',
 ]
 
 const fileAdapters = [
@@ -57,7 +65,7 @@ const dirAdapters = [
   { target: '.cursor/skills', sources: ['.ai/skills/core', '.ai/skills/cursor'] },
 ]
 
-const localRuntimeFiles = ['.ai/runtime/repair_list.txt']
+const localRuntimeFiles = ['.ai/runtime/repair_list.txt', '.ai/runtime/repair-ledger.json']
 const legacyShouldBeAbsent = ['CLAUDE.md', '.claude', '.ai/config/claude.settings.local.json', '.ai/protocol/adapters/claude.md']
 const architectureGateChecks = [
   {
@@ -83,6 +91,40 @@ const ok = msg => console.log(`[OK] ${msg}`)
 
 const readBuffer = rel => fs.readFileSync(path.join(cwd, rel))
 const readText = rel => fs.readFileSync(path.join(cwd, rel), 'utf8')
+
+const printOpenLedgerTasks = () => {
+  const ledgerPath = '.ai/runtime/repair_list.txt'
+  const absLedger = path.join(cwd, ledgerPath)
+  if (!fs.existsSync(absLedger)) {
+    console.error(`[FAIL] missing local runtime file: ${ledgerPath}`)
+    process.exit(1)
+  }
+
+  const groups = new Map()
+  for (const line of readText(ledgerPath).split('\n')) {
+    const match = line.match(/^\[⬜️\]\s+\[([^\]]+)\]\s+(.+)$/)
+    if (!match) continue
+    const [, module, task] = match
+    const priority = module.match(/^P\d+/)?.[0] ?? 'PX'
+    const key = `${priority} ${module}`
+    const items = groups.get(key) ?? []
+    items.push(task)
+    groups.set(key, items)
+  }
+
+  console.log('Open repair ledger')
+  console.log('==================')
+  for (const [group, items] of [...groups.entries()].sort(([a], [b]) => a.localeCompare(b))) {
+    console.log(`\n${group}`)
+    items.forEach(item => console.log(`  - ${item}`))
+  }
+  console.log(`\n${[...groups.values()].reduce((total, items) => total + items.length, 0)} open tasks`)
+}
+
+if (openOnly) {
+  printOpenLedgerTasks()
+  process.exit(0)
+}
 
 const listFilesInAbsDir = root => {
   if (!fs.existsSync(root)) return []
@@ -123,6 +165,9 @@ const listMergedFiles = relDirs => {
 
 console.log('AI workspace doctor')
 console.log('===================')
+ok(
+  `branch governance: ${currentBranch} (${isDesktopBranch ? 'desktop/Tauri checks active' : 'pure frontend checks active'})`
+)
 
 for (const rel of canonicalMustExist) {
   const abs = path.join(cwd, rel)
@@ -241,6 +286,20 @@ try {
   else ok('architecture guard: pnpm ai:guard')
 } catch (error) {
   fail(`unable to run architecture guard: ${error instanceof Error ? error.message : String(error)}`)
+}
+
+try {
+  const tokenContrastResult = spawnSync('pnpm', ['validate:tokens'], {
+    cwd,
+    encoding: 'utf8',
+    stdio: 'pipe',
+  })
+  if (tokenContrastResult.stdout) process.stdout.write(tokenContrastResult.stdout)
+  if (tokenContrastResult.stderr) process.stderr.write(tokenContrastResult.stderr)
+  if (tokenContrastResult.status !== 0) fail('token contrast validation failed: pnpm validate:tokens')
+  else ok('token contrast validation: pnpm validate:tokens')
+} catch (error) {
+  fail(`unable to run token contrast validation: ${error instanceof Error ? error.message : String(error)}`)
 }
 
 process.exit(hasError ? 1 : 0)

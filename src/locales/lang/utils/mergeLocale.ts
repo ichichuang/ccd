@@ -1,14 +1,13 @@
-type LocaleRecord = Record<string, unknown>
+export type LocaleMessageValue = string | LocaleRecord
+export interface LocaleRecord {
+  [key: string]: LocaleMessageValue
+}
 
 const isPlainObject = (value: unknown): value is LocaleRecord => {
   return Object.prototype.toString.call(value) === '[object Object]'
 }
 
-const cloneValue = (value: unknown): unknown => {
-  if (Array.isArray(value)) {
-    return value.map(item => cloneValue(item))
-  }
-
+const cloneValue = (value: LocaleMessageValue): LocaleMessageValue => {
   if (isPlainObject(value)) {
     const result: LocaleRecord = {}
 

@@ -70,7 +70,7 @@
                   <code class="text-xs">--route-transition-delay</code>
                   与
                   <code class="text-xs">--animate-delay</code>
-                  。 当同时配置了 class 时，优先走 animate.css；否则回退到具名过渡链路（meta.name →
+                  。 当同时配置了 class 时，优先走 animate-lite；否则回退到具名过渡链路（meta.name →
                   layout.transitionName → cinematic-fade）。请确保布局设置中已开启「路由过渡」。
                 </span>
               </div>
@@ -102,7 +102,7 @@
             <code class="text-xs">transition.enterClass</code>
             /
             <code class="text-xs">transition.leaveClass</code>
-            后，将自动切换到 animate.css 过渡模式。并且
+            后，将自动切换到 animate-lite 过渡模式。并且
             <code class="text-xs">transition.duration</code>
             /
             <code class="text-xs">transition.delay</code>

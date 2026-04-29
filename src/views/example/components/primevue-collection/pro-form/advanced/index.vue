@@ -6,6 +6,7 @@ import type { FormSchema, ProFormExpose } from '@/components/ProForm'
 import { DraftStorage } from '@/components/ProForm/engine/persistence/DraftStorage'
 import { useFieldArray, useFormContext } from '@/components/ProForm'
 import { DateFormatEnum } from '@/constants/dateFormats'
+import { castValue } from '@/utils/typeCasters'
 import Button from 'primevue/button'
 import InputText from 'primevue/inputtext'
 import Select from 'primevue/select'
@@ -175,7 +176,7 @@ const ContactsFieldContent = defineComponent({
   },
   render() {
     const { contactList, CONTACT_TYPE_OPTIONS: opts, slotOnUpdate } = this
-    const list = contactList as unknown as ContactItem[]
+    const list = castValue<ContactItem[]>(contactList)
     return (
       <div class="col-stretch gap-sm w-full">
         {list.map((item: ContactItem, index: number) => (

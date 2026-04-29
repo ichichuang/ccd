@@ -13,6 +13,7 @@ import { LifecycleManager } from './LifecycleManager'
 import { DraftStorage } from '../persistence/DraftStorage'
 import { PRO_FORM_TIMING_DEFAULTS } from '../config'
 import { deepClone } from '@/utils/lodashes'
+import { castValue } from '@/utils/typeCasters'
 import { PRO_FORM_LOGGER } from '../utils/logger'
 import type {
   FieldSchema,
@@ -92,7 +93,7 @@ export class FormController<TValues extends ValuesRecord = ValuesRecord> {
     this.reactionEngine = new ReactionEngine<TValues>(this.store, (name, props) =>
       this.setFieldProps(name, props)
     )
-    this.lifecycle = new LifecycleManager<TValues>(this as unknown as LifecycleController<TValues>)
+    this.lifecycle = new LifecycleManager<TValues>(castValue<LifecycleController<TValues>>(this))
 
     const flatFields: FieldSchema[] = []
     this.collectFields(this.schema.fields, flatFields)

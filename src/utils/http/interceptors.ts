@@ -1,8 +1,11 @@
 import { HTTP_CONFIG } from '@/constants/http'
 import { AUTH_ENABLED } from '@/constants/router'
-import { getToken, triggerUnauthorized } from '@/infra/auth/tokenProvider'
+import { parseZodHttpPayload } from '@/adapters/http.adapter'
+import { notifyUnauthorized, readAuthToken } from '@/infra/auth/tokenProvider'
 import { decompressAndDecryptSync, encryptAndCompressSync } from '@/utils/safeStorage'
+import { castValue } from '@/utils/typeCasters'
 import type { Method } from 'alova'
+import type { ZodType } from 'zod'
 import { ErrorType, HttpRequestError } from './errors'
 
 type RefreshTokenExecutor = () => Promise<string>
@@ -26,6 +29,8 @@ function isRefreshEndpoint(url: string): boolean {
 }
 
 async function defaultRefreshTokenExecutor(): Promise<string> {
+  // Infrastructure exception: this fallback runs inside Alova's response interceptor.
+  // Calling alovaInstance here would recurse through the same 401 refresh pipeline.
   const response = await fetch(REFRESH_ENDPOINT, {
     method: 'POST',
     credentials: 'include',
@@ -81,7 +86,9 @@ class TokenRefreshCoordinator {
 
     this.unauthorizedNotified = true
     try {
-      triggerUnauthorized()
+      void notifyUnauthorized().catch(error => {
+        console.error('[HTTP] Unauthorized handler failed:', error)
+      })
     } finally {
       queueMicrotask(() => {
         this.unauthorizedNotified = false
@@ -132,9 +139,24 @@ function markRetriedAfterRefresh(method: Method): void {
   getMethodConfigRecord(method)[RETRIED_AFTER_REFRESH_FLAG] = true
 }
 
+function getResponseSchema(method: Method): ZodType<unknown> | undefined {
+  const schema = getMethodConfigRecord(method).responseSchema
+  if (schema && typeof schema === 'object' && 'safeParse' in schema) {
+    return schema as ZodType<unknown>
+  }
+  return undefined
+}
+
+function validateResponsePayload(method: Method, payload: unknown): unknown {
+  const schema = getResponseSchema(method)
+  return schema ? parseZodHttpPayload(schema, payload) : payload
+}
+
 async function handle401WithRefresh(method: Method): Promise<unknown> {
   if (isRefreshEndpoint(method.url)) {
-    triggerUnauthorized()
+    void notifyUnauthorized().catch(error => {
+      console.error('[HTTP] Unauthorized handler failed:', error)
+    })
     throw new HttpRequestError(
       $t('http.error.unauthorized'),
       ErrorType.AUTH,
@@ -146,7 +168,9 @@ async function handle401WithRefresh(method: Method): Promise<unknown> {
   }
 
   if (isRetriedAfterRefresh(method)) {
-    triggerUnauthorized()
+    void notifyUnauthorized().catch(error => {
+      console.error('[HTTP] Unauthorized handler failed:', error)
+    })
     throw new HttpRequestError(
       $t('http.error.unauthorized'),
       ErrorType.AUTH,
@@ -215,7 +239,7 @@ export const processRequestData = <T extends Record<string, unknown>>(data: T): 
         }
       }
 
-      return encryptedData as unknown as T
+      return castValue<T>(encryptedData)
     } catch (error) {
       console.error('[RequestEncrypt] 加密请求数据失败:', error)
     }
@@ -245,8 +269,8 @@ export const beforeRequest = (method: Method) => {
     // 示例：method.config.headers['X-Request-Signature'] = signRequest(method)
   }
 
-  // 添加认证头（通过 TokenProvider 获取，不依赖 Store）
-  const token = getToken()
+  // 添加认证头（通过 AuthBridge 获取，不依赖 Store）
+  const token = readAuthToken()
 
   if (AUTH_ENABLED && token && String(token).trim()) {
     method.config.headers['Authorization'] = `Bearer ${token}`
@@ -447,15 +471,15 @@ export const responseHandler = async (response: Response, method: Method) => {
           }
         }
 
-        return responseData
+        return validateResponsePayload(method, responseData)
       }
 
       // 如果没有 success 字段，返回整个响应对象
-      return json
+      return validateResponsePayload(method, json)
     } else {
       // 不是 JSON，但状态码正常，直接返回文本
       if (response.ok) {
-        return text
+        return validateResponsePayload(method, text)
       }
       // 不是 JSON 且状态码错误，抛出包含文本内容的错误
       throw new HttpRequestError(

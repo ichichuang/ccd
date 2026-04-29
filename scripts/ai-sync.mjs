@@ -1,5 +1,6 @@
 import fs from 'node:fs'
 import path from 'node:path'
+import { spawnSync } from 'node:child_process'
 
 const cwd = process.cwd()
 const fileAdapters = [
@@ -70,11 +71,26 @@ const ensureLocalRuntimeFile = ({ source, target }) => {
   console.log(`[OK] ${target}`)
 }
 
+const runNodeScript = script => {
+  const result = spawnSync(process.execPath, [path.join(cwd, script)], {
+    cwd,
+    encoding: 'utf8',
+    stdio: 'pipe',
+  })
+  if (result.stdout) process.stdout.write(result.stdout)
+  if (result.stderr) process.stderr.write(result.stderr)
+  if (result.status !== 0) {
+    process.exit(result.status ?? 1)
+  }
+}
+
 console.log('AI adapter sync')
 console.log('===============')
+runNodeScript('scripts/generate-rule-index.mjs')
 for (const fileAdapter of fileAdapters) syncFile(fileAdapter)
 for (const dirAdapter of dirAdapters) syncMergedDir(dirAdapter)
 for (const runtimeFile of localRuntimeFiles) ensureLocalRuntimeFile(runtimeFile)
+runNodeScript('scripts/migrate-ledger.mjs')
 for (const legacyPath of legacyPaths) {
   removePathIfExists(legacyPath)
   console.log(`[CLEAN] removed legacy adapter: ${legacyPath}`)

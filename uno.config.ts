@@ -34,6 +34,25 @@ const themeResolved = {
 
 const iconCollections = getPresetIconsCollections()
 
+// Keep TS/JS extraction project-local. Broad `[jt]s` pipeline scans dependency
+// internals such as Zod's `$constructor(...)` helpers, which Attributify can
+// misread as attribute utilities and emit invalid CSS in `/__uno.css`.
+const PROJECT_TS_JS_GLOB = 'src/**/*.{js,ts}'
+const PIPELINE_INCLUDE = [
+  /\.(vue|svelte|[jt]sx|vine\.ts|mdx?|astro|elm|php|phtml|marko|html)($|\?)/,
+  PROJECT_TS_JS_GLOB,
+]
+const PIPELINE_EXCLUDE = [
+  /[\\/]node_modules[\\/]/,
+  /[\\/]\.pnpm[\\/]/,
+  /[\\/]dist[\\/]/,
+  /[\\/]\.git[\\/]/,
+  /[\\/]\.ai[\\/]/,
+  /[\\/]\.cursor[\\/]/,
+  /[\\/]src-tauri[\\/]target[\\/]/,
+  /\.d\.ts($|\?)/,
+]
+
 export default defineConfig({
   presets: [
     presetUno({ dark: 'class' }),
@@ -50,7 +69,8 @@ export default defineConfig({
 
   content: {
     pipeline: {
-      include: [/\.(vue|svelte|[jt]s|[jt]sx|vine\.ts|mdx?|astro|elm|php|phtml|marko|html)($|\?)/],
+      include: PIPELINE_INCLUDE,
+      exclude: PIPELINE_EXCLUDE,
     },
   },
 

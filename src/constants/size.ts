@@ -66,10 +66,21 @@ export const SIZE_PRESETS: SizePreset[] = [
 /** 默认尺寸模式 */
 export const DEFAULT_SIZE_NAME: SizeMode = 'comfortable'
 
-/** Size Store 持久化 key（与 stores/modules/size.ts persist.key 一致，供 preload 等 mount 前逻辑使用；config 加载阶段 env 未注入时用默认前缀避免报错） */
-export const SIZE_PERSIST_KEY = `${
-  (import.meta as any).env?.VITE_PINIA_PERSIST_KEY_PREFIX ?? 'app-template-storage-kernel'
-}-size`
+function resolveSizePersistKey(): string {
+  const prefix = import.meta.env?.VITE_PINIA_PERSIST_KEY_PREFIX?.trim()
+  if (prefix) {
+    return `${prefix}-size`
+  }
+
+  if (import.meta.env?.DEV) {
+    throw new Error('VITE_PINIA_PERSIST_KEY_PREFIX is required for size persistence in dev.')
+  }
+
+  return 'ccd-storage-size'
+}
+
+/** Size Store 持久化 key（与 stores/modules/size.ts persist.key 一致，供 preload 等 mount 前逻辑使用） */
+export const SIZE_PERSIST_KEY = resolveSizePersistKey()
 
 /**
  * 布局尺寸字段名（与 SizePreset / SizeCssVars 一一对应，SSOT for UnoCSS）
@@ -89,5 +100,3 @@ export const SIZE_BASE_VAR_KEYS = ['containerPadding'] as const
 
 /** 全局设置弹窗宽度（px），SSOT；由 sizeEngine 注入为 --dialog-settings-width */
 export const DIALOG_SETTINGS_WIDTH_PX = 400
-/** 供 openDialog width 使用的 CSS 变量名，避免业务硬编码 px */
-export const DIALOG_SETTINGS_WIDTH = 'var(--dialog-settings-width)'
