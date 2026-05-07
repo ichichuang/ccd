@@ -1,12 +1,11 @@
 import type { Ref } from 'vue'
 import type { EChartsOption } from 'echarts'
-import type { AnimationEasing } from 'zrender/lib/animation/easing.js'
 import { useThemeStore } from '@/stores/modules/system'
 import { getChartSystemVariables } from '@/utils/theme/chartUtils'
 import { parseEChartsOption } from '@/adapters/echarts.adapter'
 import type { SystemMetricsDTO } from '../page.state'
 
-const DASHBOARD_CHART_EASING: AnimationEasing = 'cubicOut'
+const DASHBOARD_CHART_EASING = 'cubicOut'
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null && !Array.isArray(value)
