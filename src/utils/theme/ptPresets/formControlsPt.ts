@@ -10,16 +10,13 @@
  */
 
 const GOLDEN_SINGLE_INPUT_ROOT =
-  'border border-border bg-background text-foreground shadow-sm shadow-foreground/10 dark:shadow-foreground/20 transition-all duration-md ease-smooth hover:border-primary/50 focus:outline-none focus:border-primary/50 ring-focus-focus'
+  'border border-solid border-border bg-background text-foreground shadow-sm shadow-foreground/10 dark:shadow-foreground/20 transition-[background-color,border-color,box-shadow,color] duration-md ease-smooth hover:border-primary/50 focus:outline-none focus:border-primary/50 ring-focus-focus'
 const GOLDEN_COMPOUND_INPUT_ROOT =
-  '!rounded-md !border !border-border !bg-background text-foreground transition-all duration-md ease-smooth hover:!border-primary-hover focus-within:!outline-none focus-within:!border-primary focus-within:hover:!border-primary focus-within:[box-shadow:var(--p-form-field-focus-ring-shadow)] overflow-hidden'
+  '!rounded-md !border !border-solid !border-border !bg-background text-foreground transition-[background-color,border-color,box-shadow,color] duration-md ease-smooth hover:!border-primary-hover focus-within:!outline-none focus-within:!border-primary focus-within:hover:!border-primary focus-within:[box-shadow:var(--p-form-field-focus-ring-shadow)] overflow-hidden'
 const GOLDEN_COMPOUND_INPUT_TEXT_RESET =
-  'w-full !border-none !shadow-none !rounded-none !bg-transparent !ring-0 !outline-none focus:!border-none focus:!ring-0 focus:!outline-none focus-visible:!ring-0 focus-visible:!ring-offset-0'
+  'w-full !border-0 !shadow-none !rounded-none !bg-transparent !ring-0 !outline-none focus:!border-0 focus:!ring-0 focus:!outline-none focus-visible:!ring-0 focus-visible:!ring-offset-0'
 const GOLDEN_COMPOUND_ACTION_RESET =
-  '!border-0 !border-none !rounded-none !bg-transparent !shadow-none !ring-0 !outline-none hover:!bg-transparent focus:!bg-transparent active:!bg-transparent focus-visible:!ring-0 focus-visible:!ring-offset-0'
-const GOLDEN_COMPOUND_ROOT_STYLE = 'border-width: 1px !important; border-style: solid !important;'
-const GOLDEN_COMPOUND_ACTION_STYLE =
-  'background: transparent !important; border: 0 !important; border-radius: 0 !important; box-shadow: none !important; appearance: none !important; -webkit-appearance: none !important;'
+  '!border-0 !rounded-none !bg-transparent !shadow-none !ring-0 !outline-none hover:!bg-transparent focus:!bg-transparent active:!bg-transparent focus-visible:!ring-0 focus-visible:!ring-offset-0'
 
 export const OVERLAY_GLASS_CLASS = 'glass-panel transform-gpu will-change-transform'
 export const OVERLAY_GLASS_COMPACT_CLASS =
@@ -35,18 +32,16 @@ export const formControlsPt = {
     root: { class: GOLDEN_SINGLE_INPUT_ROOT },
   },
   inputnumber: {
-    root: { class: GOLDEN_COMPOUND_INPUT_ROOT, style: GOLDEN_COMPOUND_ROOT_STYLE },
+    root: { class: GOLDEN_COMPOUND_INPUT_ROOT },
     pcInputText: {
       root: { class: GOLDEN_COMPOUND_INPUT_TEXT_RESET },
     },
     buttonGroup: { class: '!border-0 !bg-transparent' },
     incrementButton: {
       class: `${GOLDEN_COMPOUND_ACTION_RESET} hover:!bg-muted/20`,
-      style: GOLDEN_COMPOUND_ACTION_STYLE,
     },
     decrementButton: {
       class: `${GOLDEN_COMPOUND_ACTION_RESET} hover:!bg-muted/20`,
-      style: GOLDEN_COMPOUND_ACTION_STYLE,
     },
   },
   inputchips: {
@@ -56,13 +51,12 @@ export const formControlsPt = {
     root: { class: GOLDEN_SINGLE_INPUT_ROOT },
   },
   datepicker: {
-    root: { class: GOLDEN_COMPOUND_INPUT_ROOT, style: GOLDEN_COMPOUND_ROOT_STYLE },
+    root: { class: GOLDEN_COMPOUND_INPUT_ROOT },
     pcInputText: {
       root: { class: GOLDEN_COMPOUND_INPUT_TEXT_RESET },
     },
     dropdown: {
       class: GOLDEN_COMPOUND_ACTION_RESET,
-      style: GOLDEN_COMPOUND_ACTION_STYLE,
     },
     panel: { class: OVERLAY_GLASS_CLASS },
   },
@@ -77,13 +71,12 @@ export const formControlsPt = {
     option: { class: OPTION_TRANSITION_CLASS },
   },
   autocomplete: {
-    root: { class: GOLDEN_COMPOUND_INPUT_ROOT, style: GOLDEN_COMPOUND_ROOT_STYLE },
+    root: { class: GOLDEN_COMPOUND_INPUT_ROOT },
     pcInputText: {
       root: { class: GOLDEN_COMPOUND_INPUT_TEXT_RESET },
     },
     dropdown: {
       class: GOLDEN_COMPOUND_ACTION_RESET,
-      style: GOLDEN_COMPOUND_ACTION_STYLE,
     },
     overlay: { class: OVERLAY_GLASS_COMPACT_CLASS },
     option: { class: OPTION_TRANSITION_CLASS },
@@ -97,7 +90,7 @@ export const formControlsPt = {
     },
   },
   password: {
-    root: { class: GOLDEN_COMPOUND_INPUT_ROOT, style: GOLDEN_COMPOUND_ROOT_STYLE },
+    root: { class: GOLDEN_COMPOUND_INPUT_ROOT },
     pcInputText: {
       root: { class: GOLDEN_COMPOUND_INPUT_TEXT_RESET },
     },
@@ -111,7 +104,7 @@ export const formControlsPt = {
       return {
         class: [
           '!border-0 ring-0 focus-visible:ring-2 focus-visible:ring-ring',
-          'transition-all duration-sm',
+          'transition-[background-color,color,box-shadow] duration-sm',
           active
             ? 'bg-primary text-primary-foreground'
             : 'bg-muted/40 dark:bg-muted/20 hover:bg-muted/60 dark:hover:bg-muted/40',

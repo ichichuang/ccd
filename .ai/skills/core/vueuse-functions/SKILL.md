@@ -15,14 +15,16 @@ This skill is a decision-and-implementation guide for VueUse composables in Vue.
 ## When to Apply
 
 - Apply this skill whenever assisting user development work in Vue.js / Nuxt.
-- Always check first whether a VueUse function can implement the requirement.
-- Prefer VueUse composables over custom code to improve readability, maintainability, and performance.
+- Always check first whether a VueUse function can implement the requirement without violating project architecture rules.
+- Prefer VueUse composables over custom code to improve readability, maintainability, and performance when they stay inside the approved data, storage, and UI boundaries.
+- Project architecture overrides this skill: CCD business HTTP must use Alova/API modules/hooks, and business persistence must use SafeStorage or approved Pinia persistence.
 - Map requirements to the most appropriate VueUse function and follow the function’s invocation rule.
 - Please refer to the `Invocation` field in the below functions table. For example:
   - `AUTO`: Use automatically when applicable.
+  - `PROJECT_RESTRICTED`: Do not use for CCD business HTTP/storage; use only for explicitly approved infrastructure or non-business surfaces.
   - `EXTERNAL`: Use only if the user already installed the required external dependency; otherwise reconsider, and ask to install only if truly needed.
   - `EXPLICIT_ONLY`: Use only when explicitly requested by the user.
-    > _NOTE_ User instructions in the prompt or `AGENTS.md` may override a function’s default `Invocation` rule.
+    > _NOTE_ User instructions in the prompt or `AGENTS.md` may override a function’s default `Invocation` rule, but project `.ai/rules/**` still have higher precedence.
 
 ## Functions
 
@@ -32,23 +34,23 @@ IMPORTANT: Each function entry includes a short `Description` and a detailed `Re
 
 ### State
 
-| Function                                                         | Description                                                                                                                                                                                                                                | Invocation |
-| ---------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ---------- |
-| [`createGlobalState`](references/createGlobalState.md)           | Keep states in the global scope to be reusable across Vue instances                                                                                                                                                                        | AUTO       |
-| [`createInjectionState`](references/createInjectionState.md)     | Create global state that can be injected into components                                                                                                                                                                                   | AUTO       |
-| [`createSharedComposable`](references/createSharedComposable.md) | Make a composable function usable with multiple Vue instances                                                                                                                                                                              | AUTO       |
-| [`injectLocal`](references/injectLocal.md)                       | Extended `inject` with ability to call `provideLocal` to provide the value in the same component                                                                                                                                           | AUTO       |
-| [`provideLocal`](references/provideLocal.md)                     | Extended `provide` with ability to call `injectLocal` to obtain the value in the same component                                                                                                                                            | AUTO       |
-| [`useAsyncState`](references/useAsyncState.md)                   | Reactive async state                                                                                                                                                                                                                       | AUTO       |
-| [`useDebouncedRefHistory`](references/useDebouncedRefHistory.md) | Shorthand for `useRefHistory` with debounced filter                                                                                                                                                                                        | AUTO       |
-| [`useLastChanged`](references/useLastChanged.md)                 | Records the timestamp of the last change                                                                                                                                                                                                   | AUTO       |
-| [`useLocalStorage`](references/useLocalStorage.md)               | Reactive [LocalStorage](https://developer.mozilla.org/en-US/docs/Web/API/Window/localStorage)                                                                                                                                              | AUTO       |
-| [`useManualRefHistory`](references/useManualRefHistory.md)       | Manually track the change history of a ref when the using calls `commit()`                                                                                                                                                                 | AUTO       |
-| [`useRefHistory`](references/useRefHistory.md)                   | Track the change history of a ref                                                                                                                                                                                                          | AUTO       |
-| [`useSessionStorage`](references/useSessionStorage.md)           | Reactive [SessionStorage](https://developer.mozilla.org/en-US/docs/Web/API/Window/sessionStorage)                                                                                                                                          | AUTO       |
-| [`useStorage`](references/useStorage.md)                         | Create a reactive ref that can be used to access & modify [LocalStorage](https://developer.mozilla.org/en-US/docs/Web/API/Window/localStorage) or [SessionStorage](https://developer.mozilla.org/en-US/docs/Web/API/Window/sessionStorage) | AUTO       |
-| [`useStorageAsync`](references/useStorageAsync.md)               | Reactive Storage in with async support                                                                                                                                                                                                     | AUTO       |
-| [`useThrottledRefHistory`](references/useThrottledRefHistory.md) | Shorthand for `useRefHistory` with throttled filter                                                                                                                                                                                        | AUTO       |
+| Function                                                         | Description                                                                                                          | Invocation         |
+| ---------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------- | ------------------ |
+| [`createGlobalState`](references/createGlobalState.md)           | Keep states in the global scope to be reusable across Vue instances                                                  | AUTO               |
+| [`createInjectionState`](references/createInjectionState.md)     | Create global state that can be injected into components                                                             | AUTO               |
+| [`createSharedComposable`](references/createSharedComposable.md) | Make a composable function usable with multiple Vue instances                                                        | AUTO               |
+| [`injectLocal`](references/injectLocal.md)                       | Extended `inject` with ability to call `provideLocal` to provide the value in the same component                     | AUTO               |
+| [`provideLocal`](references/provideLocal.md)                     | Extended `provide` with ability to call `injectLocal` to obtain the value in the same component                      | AUTO               |
+| [`useAsyncState`](references/useAsyncState.md)                   | Reactive async state                                                                                                 | AUTO               |
+| [`useDebouncedRefHistory`](references/useDebouncedRefHistory.md) | Shorthand for `useRefHistory` with debounced filter                                                                  | AUTO               |
+| [`useLastChanged`](references/useLastChanged.md)                 | Records the timestamp of the last change                                                                             | AUTO               |
+| [`useLocalStorage`](references/useLocalStorage.md)               | Reactive LocalStorage. CCD business persistence must use SafeStorage or approved Pinia persistence instead.          | PROJECT_RESTRICTED |
+| [`useManualRefHistory`](references/useManualRefHistory.md)       | Manually track the change history of a ref when the using calls `commit()`                                           | AUTO               |
+| [`useRefHistory`](references/useRefHistory.md)                   | Track the change history of a ref                                                                                    | AUTO               |
+| [`useSessionStorage`](references/useSessionStorage.md)           | Reactive SessionStorage. CCD business persistence must use SafeStorage or approved Pinia persistence instead.        | PROJECT_RESTRICTED |
+| [`useStorage`](references/useStorage.md)                         | Reactive browser storage. CCD business persistence must use SafeStorage or approved Pinia persistence instead.       | PROJECT_RESTRICTED |
+| [`useStorageAsync`](references/useStorageAsync.md)               | Async reactive browser storage. CCD business persistence must use SafeStorage or approved Pinia persistence instead. | PROJECT_RESTRICTED |
+| [`useThrottledRefHistory`](references/useThrottledRefHistory.md) | Shorthand for `useRefHistory` with throttled filter                                                                  | AUTO               |
 
 ### Elements
 
@@ -165,11 +167,11 @@ IMPORTANT: Each function entry includes a short `Description` and a detailed `Re
 
 ### Network
 
-| Function                                         | Description                                                                                                                                                                                                                          | Invocation |
-| ------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ---------- |
-| [`useEventSource`](references/useEventSource.md) | An [EventSource](https://developer.mozilla.org/en-US/docs/Web/API/EventSource) or [Server-Sent-Events](https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events) instance opens a persistent connection to an HTTP server | AUTO       |
-| [`useFetch`](references/useFetch.md)             | Reactive [Fetch API](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API) provides the ability to abort requests                                                                                                              | AUTO       |
-| [`useWebSocket`](references/useWebSocket.md)     | Reactive [WebSocket](https://developer.mozilla.org/en-US/docs/Web/API/WebSocket/WebSocket) client                                                                                                                                    | AUTO       |
+| Function                                         | Description                                                                                                                                                                                                                          | Invocation         |
+| ------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------ |
+| [`useEventSource`](references/useEventSource.md) | An [EventSource](https://developer.mozilla.org/en-US/docs/Web/API/EventSource) or [Server-Sent-Events](https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events) instance opens a persistent connection to an HTTP server | AUTO               |
+| [`useFetch`](references/useFetch.md)             | Reactive Fetch API. CCD business HTTP must use Alova API modules and project hooks instead.                                                                                                                                          | PROJECT_RESTRICTED |
+| [`useWebSocket`](references/useWebSocket.md)     | Reactive [WebSocket](https://developer.mozilla.org/en-US/docs/Web/API/WebSocket/WebSocket) client                                                                                                                                    | AUTO               |
 
 ### Animation
 

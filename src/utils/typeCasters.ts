@@ -14,21 +14,6 @@ export function castValue<T>(value: unknown): T {
 }
 
 /**
- * Bridge for a single DataTable column (covariant cast).
- * Use when column config comes from mixed sources or generic boundaries.
- */
-export function castColumn<T = unknown>(col: unknown): T {
-  return col as T
-}
-
-/**
- * Bridge for column arrays (e.g. DataTableColumn<object>[]).
- */
-export function castColumns<T = unknown>(cols: unknown): T[] {
-  return (Array.isArray(cols) ? cols : []) as T[]
-}
-
-/**
  * Bridge for generic records/objects (e.g. row as Record<string, unknown>).
  */
 export function castRecord<T extends object>(obj: T): Record<string, unknown> {

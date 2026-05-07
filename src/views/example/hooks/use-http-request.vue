@@ -112,7 +112,8 @@ const runError = async (): Promise<void> => {
                   </span>
                 </div>
                 <span class="text-sm text-muted-foreground text-ellipsis-1">
-                  全部请求使用绝对 URL（https），并禁用 globalLoading，避免触发布局级重挂载循环。
+                  教育性 Hook 边界示例：使用绝对 URL 演示 useHttpRequest 行为，并禁用
+                  globalLoading；生产业务请求必须放在 API 模块与业务 Hook 中。
                 </span>
               </div>
             </div>

@@ -57,6 +57,9 @@ jobs:
       - name: Run Architecture Doctor
         run: pnpm ai:doctor
 
+      - name: Drift Check
+        run: pnpm drift-check
+
       - name: Verify Generated AI Artifacts Are Synced
         run: |
           pnpm ai:sync

@@ -36,7 +36,7 @@ When generating or refactoring components, strictly follow this mapping:
 - `<ProForm>` / Forms → `material-elevated`.
 - Dialogs / Modals / Dropdowns / ContextMenus → `glass-panel` (floating overlays only).
 - **Layout Shell (LayoutHeader, LayoutSidebar):** Edge-to-edge glass ONLY.
-  Use `bg-sidebar/80 backdrop-blur-xl` with `border-border` separators (semantic sidebar surface, not hardcoded white/black).
+  Use `bg-sidebar/80 backdrop-blur-xl` with complete semantic separators such as `border-b border-b-solid border-border` or `border-r border-r-solid border-sidebar-border`.
   **NEVER** use floating capsules (`glass-capsule`) for the main layout shell.
 - `glass-capsule` → Reserved for decorative, non-structural floating elements only.
 - **Soft Colored Surfaces**: Status badges, KPI cards, metric indicators → `surface-{status}` + structural classes (e.g., `surface-warn rounded-md p-sm`).
@@ -76,14 +76,14 @@ Z-index tokens (Section 4) solve **stacking order**. This section governs **perc
 ### Dark Mode — Absorbed Shadow & Inset Glow
 
 - **Physical law:** Ordinary **outer** box-shadows are **visually absorbed** on dark canvases; they fail to separate layers reliably.
-- **REQUIRED pattern:** Communicate elevation with **top-edge internal luminosity (inset highlight)** plus a **sharp, high-contrast border** on neutral dark rails (e.g. `neutral-700` class tier), not with “light-mode style” drop shadows alone.
+- **REQUIRED pattern:** Communicate elevation with **top-edge internal luminosity (inset highlight)** plus a **sharp semantic border** (`border border-solid border-border` or `border border-solid border-foreground/20`), not with “light-mode style” drop shadows alone.
 - **FORBIDDEN:** Relying on conventional outer shadows as the **primary** depth signal on dark surfaces when building floating / elevated UI.
 
 ### Example Constraint (Dark Elevation)
 
 Dark floating / elevated surfaces SHOULD follow a scheme structurally similar to:
 
-`dark:shadow-[inset_0_1px_0_0_rgba(255,255,255,0.05)] dark:border-neutral-700`
+`border border-solid border-border dark:shadow-[inset_0_1px_0_0_rgb(var(--foreground)/0.05)] dark:border-border/30`
 
 — **inset glow + border**, not dark-mode `shadow-sm` as the sole hierarchy cue. Prefer centralizing such patterns in `semanticShortcuts.ts` / theme presets when reused, so templates stay token-driven.
 
@@ -95,7 +95,7 @@ These rules are **physical laws** for UnoCSS-emitted CSS and dark-mode elevation
 
 - **FORBIDDEN:** Any single element that combines Tailwind/Uno `ring-*` utilities **and** arbitrary-value shadows `shadow-[...]` (bracket syntax).
 - **Why:** Arbitrary `shadow-[...]` emits a **full `box-shadow` replacement**. It **silently overwrites** the entire property, **destroying** the ring implementation (the ring’s shadow layers never paint — **complete ring failure**).
-- **REQUIRED — full decoupling:** If you need both an edge read and a complex shadow stack, **do not use `ring`**. Use an explicit border (e.g. `border border-border` / `border-foreground/20` per theme) **plus** `shadow-[...]` alone, or encode the full pattern in `semanticShortcuts.ts` / theme presets.
+- **REQUIRED — full decoupling:** If you need both an edge read and a complex shadow stack, **do not use `ring`**. Use an explicit border (e.g. `border border-solid border-border` / `border border-solid border-foreground/20` per theme) **plus** `shadow-[...]` alone, or encode the full pattern in `semanticShortcuts.ts` / theme presets.
 
 #### Anti-Flicker Interpolation Law — `box-shadow` layer-count parity on hover transitions
 

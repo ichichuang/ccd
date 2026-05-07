@@ -86,3 +86,23 @@ export function isRetryableError(error: HttpRequestError): boolean {
 export function isHttpRequestError(error: unknown): error is HttpRequestError {
   return error instanceof HttpRequestError
 }
+
+export function isAbortError(error: unknown): boolean {
+  return error instanceof DOMException && error.name === 'AbortError'
+}
+
+export function getErrorTypeByStatus(status: number): ErrorType {
+  if (status >= 500) {
+    return ErrorType.SERVER
+  }
+  if (status === 401 || status === 403) {
+    return ErrorType.AUTH
+  }
+  if (status >= 400 && status < 500) {
+    return ErrorType.CLIENT
+  }
+  if (status >= 300 && status < 400) {
+    return ErrorType.CLIENT
+  }
+  return ErrorType.UNKNOWN
+}

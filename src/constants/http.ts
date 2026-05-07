@@ -3,8 +3,6 @@ const timeout = Number(import.meta.env.VITE_API_TIMEOUT) || 10000
 export const HTTP_CONFIG = {
   // 基础配置
   timeout,
-  // 代理超时（仅用于配置一致性说明；vite.config 使用 VITE_PROXY_TIMEOUT，不依赖此处）
-  proxyTimeout: Number(import.meta.env.VITE_PROXY_TIMEOUT) || 15000,
   maxConcurrentRequests: 10, // 最大并发请求数
   maxCacheSize: 1000, // 最大缓存条目数
   defaultCacheTtl: 5 * 60 * 1000, // 默认缓存时间（5分钟）
@@ -30,6 +28,7 @@ export const HTTP_CONFIG = {
   maxReconnectAttempts: 5, // 最大重连次数
   reconnectDelay: 2000, // 重连延迟（毫秒）
   healthCheckInterval: 30000, // 健康检查间隔（毫秒）
+  healthCheckUrl: '/api/health', // 健康检查端点
 
   // 安全配置（可被 RequestConfig.security 覆盖）
   enableCsrf: false, // 是否启用 CSRF 保护（预留：拦截器逻辑已就位，对接后端时改为 true）

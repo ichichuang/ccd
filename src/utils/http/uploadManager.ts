@@ -5,6 +5,7 @@
  */
 import { UPLOAD_TASK_PREFIX } from '@/constants/business'
 import { HTTP_CONFIG } from '@/constants/http'
+import { t } from '@/locales'
 import { post } from './methods'
 import type {
   ChunkInfo,
@@ -15,40 +16,46 @@ import type {
 
 type InternalUploadTask = UploadTask & { config?: UploadChunkConfig }
 
-/**
- * 计算文件哈希值 - 使用更高效的方式
- */
 async function calculateFileHash(file: File): Promise<string> {
-  // 对于大文件，只计算前1MB的哈希
-  const maxSize = 1024 * 1024 // 1MB
-  const chunk = file.slice(0, Math.min(file.size, maxSize))
+  if (file.size === 0) {
+    return `empty_${file.name}_0`
+  }
 
+  if (typeof crypto !== 'undefined' && crypto.subtle) {
+    try {
+      const buffer = await file.arrayBuffer()
+      const hashBuffer = await crypto.subtle.digest('SHA-256', buffer)
+      const hashArray = new Uint8Array(hashBuffer)
+      const hashHex = Array.from(hashArray)
+        .map(b => b.toString(16).padStart(2, '0'))
+        .join('')
+      return `${file.name}_${file.size}_${hashHex}`
+    } catch {
+      // fall through to fallback
+    }
+  }
+
+  const maxSize = 1024 * 1024
+  const chunk = file.slice(0, Math.min(file.size, maxSize))
   return new Promise((resolve, reject) => {
     const reader = new FileReader()
-
     reader.onload = (e: ProgressEvent<FileReader>) => {
       try {
         const arrayBuffer = e.target?.result as ArrayBuffer
         const uint8Array = new Uint8Array(arrayBuffer)
-
-        // 使用简单的哈希算法
         let hash = 0
         for (let i = 0; i < uint8Array.length; i++) {
           hash = ((hash << 5) - hash + uint8Array[i]) & 0xffffffff
         }
-
-        // 转换为16进制字符串
         const hashString = hash.toString(16).padStart(8, '0')
         resolve(`${file.name}_${file.size}_${hashString}`)
       } catch (_error) {
-        reject(new Error($t('http.upload.hashCalculationFailed')))
+        reject(new Error(t('http.upload.hashCalculationFailed')))
       }
     }
-
-    reader.onerror = (_error: ProgressEvent<FileReader>) => {
-      reject(new Error($t('http.upload.fileReadFailed')))
+    reader.onerror = () => {
+      reject(new Error(t('http.upload.fileReadFailed')))
     }
-
     reader.readAsArrayBuffer(chunk)
   })
 }
@@ -131,7 +138,7 @@ export class UploadManager implements IUploadManager {
   addTask(file: File, config?: UploadChunkConfig): string {
     if (file.size > HTTP_CONFIG.maxFileSize) {
       throw new Error(
-        $t('http.upload.fileSizeExceeded', {
+        t('http.upload.fileSizeExceeded', {
           max: String(Math.round(HTTP_CONFIG.maxFileSize / (1024 * 1024))),
         })
       )
@@ -210,7 +217,7 @@ export class UploadManager implements IUploadManager {
   pauseTask(taskId: string): void {
     const task = this.tasks.get(taskId)
     if (task && (task.status === 'uploading' || task.status === 'pending')) {
-      task.status = 'pending'
+      task.status = 'paused'
       if (task.cancelToken) {
         task.cancelToken.abort()
         task.cancelToken = new AbortController()
@@ -223,7 +230,7 @@ export class UploadManager implements IUploadManager {
    */
   resumeTask(taskId: string): void {
     const task = this.tasks.get(taskId)
-    if (task && task.status === 'pending') {
+    if (task && (task.status === 'pending' || task.status === 'paused')) {
       // 重新加入队列
       if (!this.uploadQueue.includes(taskId)) {
         this.uploadQueue.push(taskId)
@@ -324,9 +331,14 @@ export class UploadManager implements IUploadManager {
 
       for (let i = 0; i < chunks.length; i += concurrentChunks) {
         const batch = chunks.slice(i, i + concurrentChunks)
-        await Promise.all(batch.map(chunk => this.uploadChunk(task, chunk)))
+        const results = await Promise.allSettled(batch.map(chunk => this.uploadChunk(task, chunk)))
+        const failures = results.filter((r): r is PromiseRejectedResult => r.status === 'rejected')
+        if (failures.length > 0) {
+          task.status = 'failed'
+          this.updateTaskProgress(task)
+          throw failures[0].reason
+        }
 
-        // 检查任务状态
         if (task.status !== 'uploading') {
           return
         }
@@ -401,7 +413,7 @@ export class UploadManager implements IUploadManager {
       taskConfig?.onChunkProgress?.(chunk.chunkIndex, 0)
       taskConfig?.onChunkError?.(
         chunk.chunkIndex,
-        error instanceof Error ? error : new Error($t('http.upload.chunkUploadFailed'))
+        error instanceof Error ? error : new Error(t('http.upload.chunkUploadFailed'))
       )
 
       throw error
@@ -477,16 +489,21 @@ export class UploadManager implements IUploadManager {
   }
 }
 
-// 创建全局上传管理器实例
-export const uploadManager = new UploadManager()
+let _uploadManager: UploadManager | undefined
 
-// 导出便捷方法
+export function getUploadManager(): UploadManager {
+  if (!_uploadManager) {
+    _uploadManager = new UploadManager()
+  }
+  return _uploadManager
+}
+
 export const addUploadTask = (file: File, config?: UploadChunkConfig) =>
-  uploadManager.addTask(file, config)
-export const removeUploadTask = (taskId: string) => uploadManager.removeTask(taskId)
-export const cancelUploadTask = (taskId: string) => uploadManager.cancelTask(taskId)
-export const pauseUploadTask = (taskId: string) => uploadManager.pauseTask(taskId)
-export const resumeUploadTask = (taskId: string) => uploadManager.resumeTask(taskId)
-export const getUploadTask = (taskId: string) => uploadManager.getTask(taskId)
-export const getAllUploadTasks = () => uploadManager.getAllTasks()
+  getUploadManager().addTask(file, config)
+export const removeUploadTask = (taskId: string) => getUploadManager().removeTask(taskId)
+export const cancelUploadTask = (taskId: string) => getUploadManager().cancelTask(taskId)
+export const pauseUploadTask = (taskId: string) => getUploadManager().pauseTask(taskId)
+export const resumeUploadTask = (taskId: string) => getUploadManager().resumeTask(taskId)
+export const getUploadTask = (taskId: string) => getUploadManager().getTask(taskId)
+export const getAllUploadTasks = () => getUploadManager().getAllTasks()
 export type { UploadTask } from './types'

@@ -15,7 +15,7 @@ globs: ["src/**/*.{vue,tsx,ts,css,scss}"]
 - ❌ `class="text-red-500"`, `class="bg-blue-200"`, `class="text-gray-500"`, `class="bg-slate-100"` — ALL Tailwind built-in color palette classes are FORBIDDEN. These are static colors that do not respond to theme switching.
 - ❌ `class="text-white"`, `class="text-black"`, `class="bg-white"`, `class="bg-black"` — Tailwind color aliases, equally FORBIDDEN.
 - ❌ `dark:bg-gray-900`, `dark:text-white` — FORBIDDEN. Semantic tokens auto-respond to dark mode.
-- ✅ **DO:** Use semantic UnoCSS classes mapped to our theme: `text-primary`, `bg-background`, `text-muted-foreground`, `border-border`, `bg-muted`, `text-danger`, `bg-primary-light`.
+- ✅ **DO:** Use semantic UnoCSS classes mapped to our theme: `text-primary`, `bg-background`, `text-muted-foreground`, `border border-solid border-border`, `bg-muted`, `text-danger`, `bg-primary-light`.
 
 ## 📏 Size & Spacing System Anti-Patterns (FORBIDDEN)
 - ❌ `class="w-4"`, `class="p-10"`, `class="mt-2"` — Unitless numeric shorthands (defaulting to `rem`) are **ABSOLUTELY FORBIDDEN**.
@@ -41,11 +41,11 @@ When building UI components, strictly adhere to semantic classes mapped from cen
 
 - **Backgrounds:** `bg-background`, `bg-card`, `bg-muted`
 - **Typography:** `text-foreground`, `text-muted-foreground`, `text-primary-foreground`
-- **Borders:** `border-border`, `border-input`
+- **Borders:** `border border-solid border-border`, `border border-solid border-input`, `border-b border-b-solid border-border`
 - **States:** `text-primary`, `bg-success`, `text-danger`, `bg-warn`
 
 ```vue
-<div class="p-md bg-card border border-border rounded-lg flex flex-col gap-sm">
+<div class="p-md bg-card border border-solid border-border rounded-lg flex flex-col gap-sm">
   <h3 class="text-lg font-bold text-foreground">
     User Profile
   </h3>
@@ -57,6 +57,17 @@ When building UI components, strictly adhere to semantic classes mapped from cen
   </Button>
 </div>
 ```
+
+## Border Composition Contract
+
+Semantic border color classes are not complete drawing instructions by themselves. Any drawing border MUST include explicit style:
+
+- Full shell: `border border-solid border-border`
+- Transparent shell: `border border-solid border-transparent`
+- Divider: `border-b border-b-solid border-border`
+- Sidebar separator: `border-r border-r-solid border-sidebar-border`
+
+`border` alone is forbidden in this architecture even though UnoCSS can generate CSS for it.
 
 ---
 

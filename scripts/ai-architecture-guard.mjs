@@ -95,9 +95,30 @@ const approvedRawStorageFiles = new Set([
 const rawStorageInfraPatterns = [
   'src/utils/safeStorage/**',
   'src/components/ProForm/engine/persistence/**',
+  'src/components/ProTable/engine/hooks/useProTableColumnSettingsStorage.ts',
   'src/stores/modules/system/theme.ts',
   'src/stores/modules/system/locale.ts',
 ]
+
+const approvedVueUseStorageFiles = new Set([
+  'src/components/ProTable/engine/hooks/useProTableColumnSettingsStorage.ts',
+])
+
+const approvedGlassBaseFiles = new Set([
+  'src/design-engine/shortcuts/semanticShortcuts.ts',
+])
+
+const approvedRawZIndexFiles = new Set([
+  'index.html',
+  'src/assets/styles/custom-nprogress.scss',
+  'src/assets/styles/theme/transitions.scss',
+  'src/assets/styles/theme/modes/circle.scss',
+  'src/assets/styles/theme/modes/curtain.scss',
+  'src/assets/styles/theme/modes/diamond.scss',
+  'src/assets/styles/theme/modes/fade.scss',
+  'src/assets/styles/theme/modes/glitch.scss',
+  'src/assets/styles/theme/modes/implosion.scss',
+])
 
 const isGlobAllowed = (relPath, patterns) =>
   patterns.some(pattern => {
@@ -113,6 +134,128 @@ const hasHardcodedColor = content =>
 
 const stripJsComments = content =>
   content.replace(/\/\*[\s\S]*?\*\//g, '').replace(/(^|[^:])\/\/.*$/gm, '$1')
+
+const COLOR_SINGLE_TOKENS = ['border', 'input', 'ring', 'background', 'foreground']
+const COLOR_PAIR_FAMILIES = ['card', 'popover', 'secondary', 'muted']
+const COLOR_QUAD_FAMILIES = ['primary', 'accent', 'danger', 'warn', 'success', 'info', 'help']
+const VALID_COLOR_SUFFIXES = new Set([
+  ...COLOR_SINGLE_TOKENS,
+  ...COLOR_PAIR_FAMILIES.flatMap(family => [family, `${family}-foreground`]),
+  ...COLOR_QUAD_FAMILIES.flatMap(family => [
+    family,
+    `${family}-foreground`,
+    `${family}-hover`,
+    `${family}-hover-foreground`,
+    `${family}-light`,
+    `${family}-light-foreground`,
+  ]),
+  'sidebar',
+  'sidebar-foreground',
+  'sidebar-primary',
+  'sidebar-primary-foreground',
+  'sidebar-accent',
+  'sidebar-accent-foreground',
+  'sidebar-border',
+  'sidebar-ring',
+])
+const BORDER_RESET_TOKENS = new Set(['border-0', 'border-none'])
+const BORDER_WIDTH_TOKENS = new Set(['border-px', 'border-1', 'border-2', 'border-4', 'border-8'])
+const BORDER_STYLE_TOKENS = new Set(['border-solid', 'border-dashed', 'border-dotted', 'border-double'])
+const DIRECTIONAL_BORDER_STYLE_TOKENS = {
+  'border-t': new Set(['border-t-solid', 'border-t-dashed', 'border-t-dotted', 'border-t-double']),
+  'border-r': new Set(['border-r-solid', 'border-r-dashed', 'border-r-dotted', 'border-r-double']),
+  'border-b': new Set(['border-b-solid', 'border-b-dashed', 'border-b-dotted', 'border-b-double']),
+  'border-l': new Set(['border-l-solid', 'border-l-dashed', 'border-l-dotted', 'border-l-double']),
+}
+
+function normalizeClassToken(token) {
+  const cleaned = token.trim().replace(/^!+/, '').replace(/!+$/, '')
+  if (!cleaned || cleaned.includes('[')) return cleaned
+  const parts = cleaned.split(':')
+  return (parts.at(-1) || cleaned).replace(/^!+/, '').replace(/!+$/, '')
+}
+
+function semanticBorderColorSuffix(token) {
+  if (!token.startsWith('border-')) return null
+  if (Object.hasOwn(DIRECTIONAL_BORDER_STYLE_TOKENS, token)) return null
+  if (BORDER_RESET_TOKENS.has(token) || BORDER_WIDTH_TOKENS.has(token) || BORDER_STYLE_TOKENS.has(token)) {
+    return null
+  }
+  if (/^border-[trbl]-(?:solid|dashed|dotted|double|0|none|px|\d+)$/.test(token)) {
+    return null
+  }
+  return token.slice('border-'.length).split('/')[0]
+}
+
+function hasSemanticBorderColor(tokens) {
+  return tokens.some(token => {
+    const suffix = semanticBorderColorSuffix(token)
+    return suffix === 'transparent' || (suffix !== null && VALID_COLOR_SUFFIXES.has(suffix))
+  })
+}
+
+function findStaticStringValues(relPath, content) {
+  if (/\.(md|mdc|vue)$/.test(relPath)) {
+    const values = []
+    const classAttrPattern = /\bclass\s*=\s*["']([^"']+)["']/g
+    let classMatch
+    while ((classMatch = classAttrPattern.exec(content)) !== null) {
+      values.push(classMatch[1])
+    }
+    return values
+  }
+
+  const values = []
+  const pattern = /(['"`])((?:\\.|(?!\1)[\s\S])*?)\1/g
+  let match
+  while ((match = pattern.exec(content)) !== null) {
+    const value = match[2]
+    if (value.includes('${')) continue
+    values.push(value)
+  }
+  return values
+}
+
+function reportBorderContractIssues(relPath, content) {
+  for (const value of findStaticStringValues(relPath, stripJsComments(content))) {
+    if (!/\bborder(?:-|$)/.test(value)) continue
+    const tokens = value.split(/\s+/).map(normalizeClassToken).filter(Boolean)
+    if (tokens.length === 0) continue
+
+    for (const token of tokens) {
+      const suffix = semanticBorderColorSuffix(token)
+      if (
+        suffix !== null &&
+        suffix !== 'transparent' &&
+        !VALID_COLOR_SUFFIXES.has(suffix)
+      ) {
+        fail(
+          'unocss-border-color-token',
+          relPath,
+          `border color token "${token}" must use a semantic suffix from VALID_COLORS`
+        )
+      }
+    }
+
+    for (const token of tokens) {
+      if (token !== 'border' && !Object.hasOwn(DIRECTIONAL_BORDER_STYLE_TOKENS, token)) continue
+
+      const hasStyle =
+        token === 'border'
+          ? tokens.some(candidate => BORDER_STYLE_TOKENS.has(candidate))
+          : tokens.some(candidate => DIRECTIONAL_BORDER_STYLE_TOKENS[token].has(candidate))
+      const hasColor = hasSemanticBorderColor(tokens)
+
+      if (!hasStyle || !hasColor) {
+        fail(
+          'unocss-no-naked-border',
+          relPath,
+          `"${token}" must be paired with explicit border style and semantic border color`
+        )
+      }
+    }
+  }
+}
 
 for (const relPath of businessViews) {
   const content = readText(relPath)
@@ -166,6 +309,49 @@ for (const relPath of storageBoundaryFiles) {
   }
 }
 
+const vueUseBoundaryFiles = scanFiles(['src/views/**/*.{vue,ts,tsx}', 'src/hooks/**/*.{ts,tsx}', 'src/stores/**/*.{ts,tsx}', 'src/components/**/*.{vue,ts,tsx}'])
+for (const relPath of vueUseBoundaryFiles) {
+  if (/\.(spec|test)\.ts$/.test(relPath)) continue
+  if (relPath.includes('/example/')) continue
+  if (approvedVueUseStorageFiles.has(relPath)) continue
+  const content = stripJsComments(readText(relPath))
+  if (/\buseFetch\b/.test(content)) {
+    fail('vueuse-fetch-restricted', relPath, 'business HTTP must use Alova API modules and project hooks instead of VueUse useFetch')
+  }
+  if (/\b(useLocalStorage|useSessionStorage|useStorage|useStorageAsync)\b/.test(content)) {
+    fail('vueuse-storage-restricted', relPath, 'business persistence must use safeStorage or approved Pinia persistence instead of VueUse storage composables')
+  }
+}
+
+const designSystemFiles = scanFiles(['index.html', 'src/**/*.{vue,ts,tsx,css,scss}'])
+for (const relPath of designSystemFiles) {
+  const content = stripJsComments(readText(relPath))
+  if (!approvedGlassBaseFiles.has(relPath) && /\bglass-base\b/.test(content)) {
+    fail('unocss-glass-base-internal', relPath, 'glass-base is an internal primitive; use glass-panel, glass-shell, glass-card, glass-icon-box, or glass-capsule')
+  }
+  if (/\bdark:text-white!?\b/.test(content)) {
+    fail('unocss-dark-text-white', relPath, 'dark:text-white is forbidden; semantic text tokens must adapt to dark mode')
+  }
+  if (!approvedRawZIndexFiles.has(relPath) && /\bz-index\s*:|\bz-\[(?:\d+)/.test(content)) {
+    fail('unocss-raw-z-index', relPath, 'raw z-index values are forbidden outside documented infrastructure exceptions')
+  }
+}
+
+const borderContractFiles = scanFiles(
+  [
+    'src/design-engine/shortcuts/**/*.ts',
+    'src/utils/theme/ptPresets/**/*.ts',
+    'src/utils/theme/presetComponents/**/*.ts',
+    'src/layouts/**/*.{vue,tsx}',
+    '.ai/rules/design-system/**/*.mdc',
+    '.ai/rules/components/**/*.mdc',
+  ],
+  { dot: true }
+)
+for (const relPath of borderContractFiles) {
+  reportBorderContractIssues(relPath, readText(relPath))
+}
+
 const layoutStorePath = 'src/stores/modules/system/layout.ts'
 const layoutStore = shouldRunSingletonCheck(layoutStorePath) ? readTextIfExists(layoutStorePath) : ''
 if (
@@ -217,6 +403,54 @@ for (const relPath of storeFiles) {
       fail('store-api-import', relPath, 'stores must not import @/api directly')
     }
   }
+}
+
+const apiFiles = scanFiles(['src/api/**/*.{ts,tsx}'])
+const schemaRequiredHttpHelpers = new Set([
+  'get',
+  'post',
+  'put',
+  'patch',
+  'del',
+  'getRaw',
+  'uploadFile',
+  'uploadFiles',
+])
+for (const relPath of apiFiles) {
+  const sourceText = readText(relPath)
+  const sourceFile = ts.createSourceFile(relPath, sourceText, ts.ScriptTarget.Latest, true, ts.ScriptKind.TS)
+  const importedHttpHelpers = new Set()
+
+  for (const statement of sourceFile.statements) {
+    if (!ts.isImportDeclaration(statement)) continue
+    const moduleText = statement.moduleSpecifier.getText(sourceFile).slice(1, -1)
+    if (moduleText !== '@/utils/http/methods') continue
+    const namedBindings = statement.importClause?.namedBindings
+    if (!namedBindings || !ts.isNamedImports(namedBindings)) continue
+    for (const element of namedBindings.elements) {
+      const importedName = element.propertyName?.text ?? element.name.text
+      if (schemaRequiredHttpHelpers.has(importedName)) {
+        importedHttpHelpers.add(element.name.text)
+      }
+    }
+  }
+
+  if (importedHttpHelpers.size === 0) continue
+
+  const visitApiCall = node => {
+    if (ts.isCallExpression(node) && ts.isIdentifier(node.expression) && importedHttpHelpers.has(node.expression.text)) {
+      if (!httpHelperCallHasResponseSchema(node, node.expression.text, sourceFile)) {
+        fail(
+          'api-response-schema',
+          relPath,
+          `${node.expression.text}() calls in src/api must pass a config object with responseSchema`
+        )
+      }
+    }
+    ts.forEachChild(node, visitApiCall)
+  }
+
+  visitApiCall(sourceFile)
 }
 
 const routerModuleFiles = scanFiles(['src/router/modules/**/*.ts'])
@@ -347,6 +581,43 @@ function getRoutePath(pathNode, sourceFile) {
   if (!pathNode) return '<unknown>'
   if (ts.isStringLiteral(pathNode) || ts.isNoSubstitutionTemplateLiteral(pathNode)) return pathNode.text
   return pathNode.getText(sourceFile)
+}
+
+function httpHelperCallHasResponseSchema(callNode, helperName, sourceFile) {
+  const configArgIndex = ['post', 'put', 'patch', 'uploadFile', 'uploadFiles'].includes(helperName) ? 2 : 1
+  const configNode = callNode.arguments[configArgIndex]
+  if (!configNode) return false
+
+  if (ts.isObjectLiteralExpression(configNode)) {
+    return objectLiteralHasProperty(configNode, 'responseSchema', sourceFile)
+  }
+
+  if (ts.isIdentifier(configNode)) {
+    const declaration = findVariableObjectLiteral(sourceFile, configNode.text)
+    return declaration ? objectLiteralHasProperty(declaration, 'responseSchema', sourceFile) : false
+  }
+
+  return false
+}
+
+function findVariableObjectLiteral(sourceFile, variableName) {
+  for (const statement of sourceFile.statements) {
+    if (!ts.isVariableStatement(statement)) continue
+    for (const declaration of statement.declarationList.declarations) {
+      if (!ts.isIdentifier(declaration.name) || declaration.name.text !== variableName) continue
+      if (declaration.initializer && ts.isObjectLiteralExpression(declaration.initializer)) {
+        return declaration.initializer
+      }
+    }
+  }
+  return null
+}
+
+function objectLiteralHasProperty(node, propertyName, sourceFile) {
+  return node.properties.some(property => {
+    if (!ts.isPropertyAssignment(property) && !ts.isShorthandPropertyAssignment(property)) return false
+    return getPropertyName(property.name, sourceFile) === propertyName
+  })
 }
 
 const sortedFindings = findings.sort((a, b) => {

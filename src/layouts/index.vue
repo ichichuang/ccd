@@ -139,7 +139,7 @@ const currentLayoutComponent = computed(() => {
       <div
         v-if="isLoading && isAppBooted"
         id="runtime-loading-overlay"
-        class="runtime-loading-overlay"
+        class="runtime-loading-overlay z-toast"
       >
         <div
           class="pure-css-loader"
@@ -155,7 +155,6 @@ const currentLayoutComponent = computed(() => {
 .runtime-loading-overlay {
   position: fixed;
   inset: 0;
-  z-index: 9999999;
   display: flex;
   width: 100vw;
   height: 100vh;

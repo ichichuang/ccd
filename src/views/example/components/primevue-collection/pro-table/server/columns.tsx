@@ -1,6 +1,6 @@
 import type { V1UserListItemDTO } from '@/api/example/users'
 import type { ProTableColumn, ColumnRenderParams } from '@/components/ProTable'
-import { DateFormatEnum } from '@/constants/dateFormats'
+import { DateFormatEnum } from '@/utils/date/types'
 import { GENDER, USER_ACCOUNT_STATUS } from '@/constants/enums'
 import Tag from 'primevue/tag'
 import { DateUtils } from '@/utils/date/dateUtils'

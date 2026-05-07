@@ -4,7 +4,13 @@ import { parseZodHttpPayload } from '@/adapters/http.adapter'
 import { readAuthToken } from '@/infra/auth/tokenProvider'
 import { t } from '@/locales'
 import { alovaInstance } from './instance'
-import { HttpRequestError, isRetryableError, ErrorType } from './errors'
+import {
+  HttpRequestError,
+  isRetryableError,
+  ErrorType,
+  getErrorTypeByStatus,
+  isAbortError,
+} from './errors'
 import type {
   AlovaRequestConfig,
   CacheStats,
@@ -68,23 +74,6 @@ function buildRequestKey(method: string, url: string, payload?: unknown): string
   return `${method}:${url}:${body}`
 }
 
-function isAbortError(error: unknown): boolean {
-  return error instanceof DOMException && error.name === 'AbortError'
-}
-
-function getErrorTypeByStatus(status: number): ErrorType {
-  if (status >= 500) {
-    return ErrorType.SERVER
-  }
-  if (status === 401 || status === 403) {
-    return ErrorType.AUTH
-  }
-  if (status >= 400 && status < 500) {
-    return ErrorType.CLIENT
-  }
-  return ErrorType.UNKNOWN
-}
-
 function shouldShowRawGlobalError(config?: RequestConfig): boolean {
   const globalError = config?.globalError
   return globalError !== 'silent'
@@ -101,9 +90,11 @@ function showRawGlobalError(status: number, message: string, config?: RequestCon
       window.$message.danger(message, statusTitle)
     } else if (window.$toast?.dangerIn) {
       window.$toast.dangerIn('top-left', statusTitle, message)
+    } else {
+      console.error(`[HTTP ${status}] ${message}`)
     }
   } catch (_error) {
-    // no-op: UI 通知失败不应影响主流程
+    console.error(`[HTTP ${status}] ${message}`)
   }
 }
 
@@ -240,6 +231,9 @@ class EnhancedCache {
     }
 
     this.hitCount++
+    // LRU: move to end by re-inserting (Map iteration order = insertion order)
+    this.cache.delete(key)
+    this.cache.set(key, item)
     return item.data
   }
 
@@ -282,14 +276,15 @@ async function acquireRateLimitSlot(): Promise<void> {
   const valid = rateLimitTimestamps.filter(t => t > windowStart)
   rateLimitTimestamps.length = 0
   rateLimitTimestamps.push(...valid)
-  while (rateLimitTimestamps.length >= max) {
-    await new Promise(r => setTimeout(r, 500))
-    const n = Date.now()
-    const w = n - windowMs
-    const stillValid = rateLimitTimestamps.filter(t => t > w)
+  if (rateLimitTimestamps.length >= max) {
+    const oldestInWindow = rateLimitTimestamps[0]
+    const waitMs = oldestInWindow + windowMs - now + 1
+    if (waitMs > 0) {
+      await new Promise(r => setTimeout(r, waitMs))
+    }
+    const refreshed = rateLimitTimestamps.filter(t => t > Date.now() - windowMs)
     rateLimitTimestamps.length = 0
-    rateLimitTimestamps.push(...stillValid)
-    if (rateLimitTimestamps.length < max) break
+    rateLimitTimestamps.push(...refreshed)
   }
   rateLimitTimestamps.push(Date.now())
 }
@@ -340,7 +335,7 @@ async function executeWithRetry<T>(
       await acquireRateLimitSlot()
       return await requestFn(signal)
     } catch (error) {
-      if (isAbortError(error) || signal?.aborted) {
+      if (isAbortError(error)) {
         throw error
       }
       const httpError = error as HttpRequestError
@@ -400,10 +395,18 @@ export const get = async <T = unknown>(url: string, config?: RequestConfig<T>): 
 }
 
 /**
- * GET 请求 - 返回原始响应（包含头信息）
- * Infrastructure exception: direct fetch is limited to this header-preserving helper.
- * It must keep auth injection, abort handling, cache policy, unified errors, and global
- * error notifications aligned with the normal Alova path.
+ * GET request returning raw response with headers.
+ *
+ * **Infrastructure exception**: Uses native `fetch` because Alova does not expose
+ * raw response headers. Bypassed protections (by design):
+ * - sanitizeData (N/A for GET), processRequestData (N/A for GET)
+ * - CSRF/signature injection, response decryption
+ * - Global error toast (uses showRawGlobalError instead)
+ *
+ * Applied protections: auth header, AbortController, Zod schema validation,
+ * retry with backoff, cache, network error classification.
+ *
+ * Do NOT use for isSafeStorage requests — those require interceptor-level encryption.
  */
 export const getRaw = async <T = unknown>(
   url: string,
@@ -599,11 +602,13 @@ export const patch = <T = unknown>(
  * HEAD 请求
  * 用于检查资源是否存在，不返回响应体
  */
-export const head = (url: string, config?: RequestConfig<void>): Promise<void> => {
+export const head = (url: string, config?: RequestConfig<void>): Promise<{ headers: Headers }> => {
   const requestKey = buildRequestKey('HEAD', url, config?.params ?? {})
   const alovaConfig = convertRequestConfig(config)
-  const requestFn = async (signal?: AbortSignal): Promise<void> => {
-    await alovaInstance.Head(url, { ...alovaConfig, ...(signal ? { signal } : {}) }).send(true)
+  const requestFn = async (signal?: AbortSignal): Promise<{ headers: Headers }> => {
+    return alovaInstance
+      .Head(url, { ...alovaConfig, ...(signal ? { signal } : {}) })
+      .send(true) as Promise<{ headers: Headers }>
   }
 
   return requestManager.execute(

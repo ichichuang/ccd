@@ -4,15 +4,14 @@ export * from './instance'
 export * from './interceptors'
 export * from './methods'
 export * from './types'
-// 显式导出 uploadManager 相关，避免与 types 中的 UploadManager 接口冲突
 export {
   addUploadTask,
   cancelUploadTask,
   getAllUploadTasks,
+  getUploadManager,
   getUploadTask,
   pauseUploadTask,
   removeUploadTask,
   resumeUploadTask,
-  uploadManager,
 } from './uploadManager'
 export type { UploadTask } from './uploadManager'

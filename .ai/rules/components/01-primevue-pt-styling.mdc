@@ -14,6 +14,12 @@ Our PrimeVue integration uses **Styled Mode** with a custom preset (`createCusto
 
 Global pass-through presets live in `src/utils/theme/ptPresets/` (e.g., `formControlsPt.ts`). These are registered at the app level and apply to every instance of a given component type. **Always check if a global PT already covers your use case before writing a local one.**
 
+## Ownership Boundary
+
+- PrimeVue preset tokens own density and sizing: height, width, padding, gap, radius, action/dropdown button sizes, and size-mode variables.
+- Global PT owns visual state and motion: semantic background/border/text classes, focus ring, disabled/invalid affordance, overlay material, and transition properties.
+- Local `:pt` may only add non-conflicting visual/motion extensions. Do not use local PT to fight global token sizing.
+
 ---
 
 ## Step 0: Check Global PTs Before Writing Local Ones
@@ -41,7 +47,7 @@ To customize any PrimeVue component beyond what the preset provides, you **MUST*
 <InputText
   v-model="value"
   :pt="{
-    root: { class: 'bg-muted/30 hover:bg-muted/40 rounded-md transition-all duration-md' }
+    root: { class: 'bg-muted/30 hover:bg-muted/40 transition-[background-color,border-color,box-shadow,color] duration-md' }
   }"
 />
 
@@ -49,9 +55,9 @@ To customize any PrimeVue component beyond what the preset provides, you **MUST*
   v-model="selected"
   :options="options"
   :pt="{
-    root: { class: 'w-full rounded-md' },
-    panel: { class: 'bg-card shadow-md rounded-md' },
-    item: { class: 'hover:bg-primary-light text-foreground' }
+    root: { class: 'text-foreground' },
+    panel: { class: 'bg-card shadow-md border border-solid border-border' },
+    item: { class: 'hover:bg-primary-light text-foreground transition-[background-color,color] duration-md' }
   }"
 />
 ```
@@ -64,7 +70,7 @@ To customize any PrimeVue component beyond what the preset provides, you **MUST*
   type="email"
   :pt="{
     root: {
-      class: 'bg-background rounded-md ring-focus-focus transition-all duration-md'
+      class: 'bg-background ring-focus-focus transition-[background-color,border-color,box-shadow,color] duration-md'
     }
   }"
 />
@@ -79,11 +85,11 @@ To customize any PrimeVue component beyond what the preset provides, you **MUST*
   option-label="name"
   placeholder="Select region"
   :pt="{
-    root: { class: 'w-full rounded-md' },
+    root: { class: 'text-foreground' },
     label: { class: 'text-foreground text-sm' },
-    panel: { class: 'bg-card shadow-md rounded-md border-none' },
-    item: { class: 'text-sm text-foreground hover:bg-primary-light px-md py-sm cursor-pointer' },
-    emptyMessage: { class: 'text-muted-foreground text-sm px-md py-sm' }
+    panel: { class: 'bg-card shadow-md border border-solid border-border' },
+    item: { class: 'text-sm text-foreground hover:bg-primary-light transition-[background-color,color] duration-md' },
+    emptyMessage: { class: 'text-muted-foreground text-sm' }
   }"
 />
 ```
@@ -155,7 +161,7 @@ Outside these files, targeting PrimeVue internal `.p-*` selectors is prohibited.
 | Text foreground | `text-foreground`, `text-muted-foreground` |
 | Brand accent | `text-primary`, `bg-primary` |
 | Disabled state | `opacity-50 cursor-not-allowed` |
-| Transition | `transition-all duration-md ease-out` |
+| Transition | `transition-[background-color,border-color,box-shadow,color] duration-md ease-smooth` |
 
 ---
 

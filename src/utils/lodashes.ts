@@ -12,7 +12,7 @@
  */
 
 // 按需引入，确保 Tree-shaking 生效
-import { cloneDeep, debounce, throttle, get, isEqual, merge, pick, omit } from 'lodash-es'
+import { cloneDeep, debounce, throttle, get, isEqual, merge } from 'lodash-es'
 
 // ----------------------------------------------------------------------
 // Core Wrappers
@@ -45,20 +45,6 @@ export function deepMerge(object: unknown, ...sources: unknown[]): unknown {
  */
 export function objectGet(object: unknown, path: string): unknown {
   return get(object as object, path)
-}
-
-/**
- * 对象属性摘取
- */
-export function objectPick<T extends object, K extends keyof T>(object: T, paths: K[]): Pick<T, K> {
-  return pick(object, paths)
-}
-
-/**
- * 对象属性剔除
- */
-export function objectOmit<T extends object, K extends keyof T>(object: T, paths: K[]): Omit<T, K> {
-  return omit(object, paths)
 }
 
 // ----------------------------------------------------------------------

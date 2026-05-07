@@ -187,7 +187,7 @@ function onThemeModeChange(value: ThemeMode) {
         </div>
       </div>
 
-      <div class="border-b opacity-50"></div>
+      <div class="border-b border-b-solid border-border opacity-50"></div>
     </template>
 
     <!-- 系统配色 -->
@@ -222,7 +222,7 @@ function onThemeModeChange(value: ThemeMode) {
       </div>
     </div>
 
-    <div class="border-b opacity-50"></div>
+    <div class="border-b border-b-solid border-border opacity-50"></div>
 
     <!-- 尺寸 -->
     <div class="flex flex-col gap-xs md:gap-sm">
@@ -242,7 +242,7 @@ function onThemeModeChange(value: ThemeMode) {
       </div>
     </div>
 
-    <div class="border-b opacity-50"></div>
+    <div class="border-b border-b-solid border-border opacity-50"></div>
 
     <!-- 语言 -->
     <div class="flex flex-col gap-xs md:gap-sm">
@@ -266,7 +266,7 @@ function onThemeModeChange(value: ThemeMode) {
       </div>
     </div>
 
-    <div class="border-b opacity-50"></div>
+    <div class="border-b border-b-solid border-border opacity-50"></div>
 
     <!-- 布局模式（始终展示：控制用户偏好 preferredMode） -->
     <div

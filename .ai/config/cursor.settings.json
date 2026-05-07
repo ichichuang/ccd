@@ -65,6 +65,7 @@
   "unocss.enableIntelliSense": true,
   "unocss.remToPxPreview": true,
   "unocss.colorPreview": true,
+  "html.customData": [".vscode/unocss-semantic-shortcuts.html-data.json"],
   "unocss.languageIds": [
     "javascript",
     "typescript",

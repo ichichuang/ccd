@@ -104,11 +104,8 @@ const paletteOutput = computed<string[]>(() =>
                   </span>
                 </div>
                 <span class="text-sm text-muted-foreground text-ellipsis-1">
-                  交互式演示
-                  <code>src/utils/theme/colors.ts</code>
-                  全部导出函数与
-                  <code>generateChartPalette</code>
-                  。
+                  教育性色彩算法实验室：刻意输入 hex 以演示颜色工具函数；生产业务 UI
+                  必须使用语义色彩 token。
                 </span>
               </div>
             </div>

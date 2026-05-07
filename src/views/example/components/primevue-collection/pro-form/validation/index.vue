@@ -17,7 +17,7 @@ import {
   RESERVED_USERNAMES,
   validationMessage,
 } from '@/constants/validation'
-import { packDataSync, unpackDataSync } from '@/utils/safeStorage'
+import { DraftStorage } from '@/components/ProForm/engine/persistence/DraftStorage'
 
 // ── 验证触发模式 ──────────────────────────────────────────────────
 const validateOnMode = ref<UseFormOptions['validateOn']>('blur')
@@ -196,7 +196,6 @@ const asyncResult = ref<string>('')
 
 // ── 表单草稿持久化 / Draft Persistence ─────────────────────────────
 const DRAFT_STORAGE_KEY = 'example:proform:validation:draft'
-const draftSecret = import.meta.env.VITE_APP_SECRET
 
 type DraftFormModel = Record<string, unknown> & {
   title: string
@@ -238,8 +237,7 @@ const draftSchema = reactive<FormSchema>({
 const emptyDraftValues: DraftFormModel = { title: '', content: '' }
 
 const saveDraftDebounced = useDebounceFn((values: DraftFormModel): void => {
-  const encrypted = packDataSync(values, draftSecret)
-  localStorage.setItem(DRAFT_STORAGE_KEY, encrypted)
+  DraftStorage.save(DRAFT_STORAGE_KEY, values)
 }, 400)
 
 const draftFormValues = computed<DraftFormModel>(() => {
@@ -260,8 +258,7 @@ watch(
 )
 
 onMounted(() => {
-  const raw = localStorage.getItem(DRAFT_STORAGE_KEY) ?? ''
-  const restored = unpackDataSync<DraftFormModel>(raw, draftSecret)
+  const restored = DraftStorage.load(DRAFT_STORAGE_KEY) as DraftFormModel | null
   if (!restored) return
   nextTick(() => {
     draftFormRef.value?.form?.setFieldsValue({
@@ -272,7 +269,7 @@ onMounted(() => {
 })
 
 function onClearDraft(): void {
-  localStorage.removeItem(DRAFT_STORAGE_KEY)
+  DraftStorage.clear(DRAFT_STORAGE_KEY)
   draftFormRef.value?.form?.setFieldsValue(emptyDraftValues)
   draftFormRef.value?.form?.clearValidate()
   window.$toast?.successIn('top-right', '已清除草稿', '草稿内容已重置')

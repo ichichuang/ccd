@@ -11,6 +11,15 @@ export type WithSafeStorage<T> = T & {
   isSafeStorage?: boolean
 }
 
+export function isWithSafeStorage(data: unknown): data is WithSafeStorage<Record<string, unknown>> {
+  return (
+    data !== null &&
+    typeof data === 'object' &&
+    'isSafeStorage' in data &&
+    (data as Record<string, unknown>).isSafeStorage === true
+  )
+}
+
 export interface ApiResponse<T = unknown> {
   success: boolean
   data?: T
@@ -33,6 +42,7 @@ export interface RequestConfig<TResponse = unknown> {
   signal?: AbortSignal // 请求取消信号
   security?: SecurityConfig // 安全配置
   responseSchema?: ZodType<TResponse> // Alova 响应边界 Zod DTO 校验
+  /** @deprecated Prefer explicitly typed keys above. Kept for Alova config pass-through. */
   [key: string]: unknown
 }
 
@@ -159,7 +169,7 @@ export interface UploadTask {
   chunks: ChunkInfo[]
   uploadedChunks: Set<number>
   failedChunks: Set<number>
-  status: 'pending' | 'uploading' | 'merging' | 'completed' | 'failed' | 'cancelled'
+  status: 'pending' | 'uploading' | 'merging' | 'completed' | 'failed' | 'cancelled' | 'paused'
   progress: number
   startTime: Date
   cancelToken?: AbortController

@@ -8,6 +8,24 @@ import type { ColorAdapter } from '../colorAdapter'
 import { initComponentButtonColorSchemeOptionsItems } from '../colorAdapter'
 
 export function buildFormComponents(colors: ColorAdapter): Record<string, unknown> {
+  const controlActionSize = {
+    width: 'var(--control-action-size)',
+    sm: { width: 'var(--control-action-size-sm)' },
+    lg: { width: 'var(--control-action-size-lg)' },
+  }
+  const compoundActionTokens = {
+    ...controlActionSize,
+    background: 'transparent',
+    hoverBackground: 'rgb(var(--muted))',
+    activeBackground: 'rgb(var(--muted))',
+    borderColor: 'rgb(var(--input))',
+    hoverBorderColor: 'rgb(var(--input))',
+    activeBorderColor: 'rgb(var(--input))',
+    color: 'rgb(var(--muted-foreground))',
+    hoverColor: 'rgb(var(--foreground))',
+    activeColor: 'rgb(var(--foreground))',
+  }
+
   return {
     button: {
       colorScheme: {
@@ -149,6 +167,7 @@ export function buildFormComponents(colors: ColorAdapter): Record<string, unknow
         disabledBackground: 'rgb(var(--muted))',
         disabledColor: 'rgb(var(--muted-foreground))',
       },
+      button: compoundActionTokens,
       colorScheme: {
         light: {
           button: {
@@ -176,6 +195,46 @@ export function buildFormComponents(colors: ColorAdapter): Record<string, unknow
             activeColor: 'rgb(var(--foreground))',
           },
         },
+      },
+    },
+    autocomplete: {
+      root: {
+        background: 'rgb(var(--background))',
+        borderColor: 'rgb(var(--input))',
+        hoverBorderColor: 'rgb(var(--primary-hover))',
+        focusBorderColor: 'rgb(var(--ring))',
+        borderRadius: 'var(--radius-md)',
+        color: 'rgb(var(--foreground))',
+        placeholderColor: 'rgb(var(--muted-foreground))',
+        disabledBackground: 'rgb(var(--muted))',
+        disabledColor: 'rgb(var(--muted-foreground))',
+      },
+      dropdown: compoundActionTokens,
+      overlay: {
+        background: 'rgb(var(--popover))',
+        borderColor: 'rgb(var(--border))',
+        color: 'rgb(var(--popover-foreground))',
+        borderRadius: 'var(--radius-md)',
+      },
+      list: {
+        padding: '{list.padding}',
+        gap: '{list.gap}',
+      },
+      option: {
+        color: 'rgb(var(--popover-foreground))',
+        focusBackground: 'rgb(var(--primary-light))',
+        focusColor: 'rgb(var(--primary-light-foreground))',
+        selectedBackground: 'rgb(var(--primary))',
+        selectedColor: 'rgb(var(--primary-foreground))',
+        selectedFocusBackground: 'rgb(var(--primary))',
+        selectedFocusColor: 'rgb(var(--primary-foreground))',
+        padding: '{list.option.padding}',
+        borderRadius: '{list.option.border.radius}',
+      },
+      optionGroup: {
+        background: 'rgb(var(--popover))',
+        color: 'rgb(var(--muted-foreground))',
+        padding: '{list.option.group.padding}',
       },
     },
     inputchips: {
@@ -281,6 +340,7 @@ export function buildFormComponents(colors: ColorAdapter): Record<string, unknow
         disabledColor: 'rgb(var(--muted-foreground))',
       },
       dropdown: {
+        ...controlActionSize,
         background: 'rgb(var(--background))',
         borderColor: 'rgb(var(--input))',
         color: 'rgb(var(--muted-foreground))',
@@ -314,6 +374,48 @@ export function buildFormComponents(colors: ColorAdapter): Record<string, unknow
           root: { background: 'rgb(var(--background))', borderColor: 'rgb(var(--input))' },
           overlay: { background: 'rgb(var(--popover))', color: 'rgb(var(--popover-foreground))' },
         },
+      },
+    },
+    multiselect: {
+      root: {
+        background: 'rgb(var(--background))',
+        borderColor: 'rgb(var(--input))',
+        hoverBorderColor: 'rgb(var(--primary-hover))',
+        focusBorderColor: 'rgb(var(--ring))',
+        color: 'rgb(var(--foreground))',
+        disabledBackground: 'rgb(var(--muted))',
+        disabledColor: 'rgb(var(--muted-foreground))',
+      },
+      dropdown: {
+        width: 'var(--control-action-size)',
+        color: 'rgb(var(--muted-foreground))',
+      },
+      overlay: {
+        background: 'rgb(var(--popover))',
+        borderColor: 'rgb(var(--border))',
+        color: 'rgb(var(--popover-foreground))',
+        borderRadius: 'var(--radius-md)',
+      },
+      list: {
+        padding: '{list.padding}',
+        gap: '{list.gap}',
+      },
+      option: {
+        color: 'rgb(var(--popover-foreground))',
+        focusBackground: 'rgb(var(--primary-light))',
+        focusColor: 'rgb(var(--primary-light-foreground))',
+        selectedBackground: 'rgb(var(--primary))',
+        selectedColor: 'rgb(var(--primary-foreground))',
+        selectedFocusBackground: 'rgb(var(--primary))',
+        selectedFocusColor: 'rgb(var(--primary-foreground))',
+        padding: '{list.option.padding}',
+        borderRadius: '{list.option.border.radius}',
+        gap: '{list.gap}',
+      },
+      optionGroup: {
+        background: 'rgb(var(--popover))',
+        color: 'rgb(var(--muted-foreground))',
+        padding: '{list.option.group.padding}',
       },
     },
     password: {
@@ -350,6 +452,9 @@ export function buildFormComponents(colors: ColorAdapter): Record<string, unknow
         background: 'rgb(var(--popover))',
         borderColor: 'rgb(var(--border))',
         color: 'rgb(var(--popover-foreground))',
+      },
+      dropdown: {
+        ...compoundActionTokens,
       },
       header: {
         background: 'rgb(var(--popover))',

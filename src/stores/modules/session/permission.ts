@@ -75,11 +75,11 @@ export const usePermissionStore = defineStore('permission', {
   actions: {
     // 设置静态路由
     setStaticRoutes(routes: RouteConfig[]) {
-      this.staticRoutes = routes
+      this.staticRoutes = markRaw([...routes])
     },
     // 设置动态路由
     setDynamicRoutes(routes: BackendRouteConfig[]) {
-      this.dynamicRoutes = routes
+      this.dynamicRoutes = markRaw([...routes])
     },
     // 设置动态路由加载状态
     setDynamicRoutesLoaded(loaded: boolean) {
@@ -241,7 +241,7 @@ export const usePermissionStore = defineStore('permission', {
   persist: {
     key: `${import.meta.env.VITE_PINIA_PERSIST_KEY_PREFIX}-permission`,
     storage: localStorage,
-    pick: ['staticRoutes', 'dynamicRoutes', 'tabs', 'windows'],
+    pick: ['tabs', 'windows'],
     serializer: {
       serialize: (value: unknown) => {
         try {

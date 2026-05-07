@@ -8,6 +8,23 @@ export function buildDataComponents(): Record<string, unknown> {
   // Do not simplify this padding unless option structure changes.
   const MULTISELECT_HEADER_ALIGN_PADDING =
     'var(--spacing-sm) calc(var(--spacing-sm) + var(--spacing-xs)) 0px calc(var(--spacing-sm) + var(--spacing-xs))'
+  const controlActionSize = {
+    width: 'var(--control-action-size)',
+    sm: { width: 'var(--control-action-size-sm)' },
+    lg: { width: 'var(--control-action-size-lg)' },
+  }
+  const compoundActionTokens = {
+    ...controlActionSize,
+    background: 'transparent',
+    hoverBackground: 'rgb(var(--muted))',
+    activeBackground: 'rgb(var(--muted))',
+    borderColor: 'rgb(var(--input))',
+    hoverBorderColor: 'rgb(var(--input))',
+    activeBorderColor: 'rgb(var(--input))',
+    color: 'rgb(var(--muted-foreground))',
+    hoverColor: 'rgb(var(--foreground))',
+    activeColor: 'rgb(var(--foreground))',
+  }
 
   return {
     datatable: {
@@ -137,6 +154,10 @@ export function buildDataComponents(): Record<string, unknown> {
         color: 'rgb(var(--popover-foreground))',
         borderRadius: 'var(--radius-md)',
       },
+      dropdown: {
+        ...controlActionSize,
+        color: 'rgb(var(--muted-foreground))',
+      },
       option: {
         color: 'rgb(var(--popover-foreground))',
         focusBackground: 'rgb(var(--primary-light))',
@@ -252,6 +273,7 @@ export function buildDataComponents(): Record<string, unknown> {
         color: 'rgb(var(--popover-foreground))',
         borderRadius: 'var(--radius-md)',
       },
+      dropdown: compoundActionTokens,
       list: {
         background: 'rgb(var(--popover))',
         borderColor: 'rgb(var(--border))',

@@ -1,12 +1,13 @@
 import { HTTP_CONFIG } from '@/constants/http'
 import { AUTH_ENABLED } from '@/constants/router'
+import { t } from '@/locales'
 import { parseZodHttpPayload } from '@/adapters/http.adapter'
 import { notifyUnauthorized, readAuthToken } from '@/infra/auth/tokenProvider'
 import { decompressAndDecryptSync, encryptAndCompressSync } from '@/utils/safeStorage'
 import { castValue } from '@/utils/typeCasters'
 import type { Method } from 'alova'
 import type { ZodType } from 'zod'
-import { ErrorType, HttpRequestError } from './errors'
+import { ErrorType, HttpRequestError, getErrorTypeByStatus } from './errors'
 
 type RefreshTokenExecutor = () => Promise<string>
 
@@ -28,9 +29,21 @@ function isRefreshEndpoint(url: string): boolean {
   return url.includes(REFRESH_ENDPOINT)
 }
 
+/**
+ * Fallback token refresh executor using raw `fetch`.
+ *
+ * ⚠️ INFRASTRUCTURE EXCEPTION — intentionally bypasses all interceptor protections:
+ * - CSRF / signature injection (N/A for refresh endpoint)
+ * - request body encryption (refresh token must be plaintext)
+ * - response body decryption (refresh response is plaintext)
+ * - request body sanitization (no sensitive fields in refresh request)
+ * - rate limiting (refresh is triggered by 401, not user action)
+ * - deduplication (handled by TokenRefreshCoordinator instead)
+ *
+ * DO NOT replace with `alovaInstance.Post()` — it would recurse through this
+ * same 401 refresh pipeline, causing infinite recursion.
+ */
 async function defaultRefreshTokenExecutor(): Promise<string> {
-  // Infrastructure exception: this fallback runs inside Alova's response interceptor.
-  // Calling alovaInstance here would recurse through the same 401 refresh pipeline.
   const response = await fetch(REFRESH_ENDPOINT, {
     method: 'POST',
     credentials: 'include',
@@ -90,9 +103,12 @@ class TokenRefreshCoordinator {
         console.error('[HTTP] Unauthorized handler failed:', error)
       })
     } finally {
-      queueMicrotask(() => {
+      // Use setTimeout(,0) instead of queueMicrotask: ensures the flag resets
+      // after the current macro-task batch, preventing rapid-fire 401 notifications
+      // from the same event loop turn while still allowing new batches to notify.
+      setTimeout(() => {
         this.unauthorizedNotified = false
-      })
+      }, 0)
     }
   }
 
@@ -158,7 +174,7 @@ async function handle401WithRefresh(method: Method): Promise<unknown> {
       console.error('[HTTP] Unauthorized handler failed:', error)
     })
     throw new HttpRequestError(
-      $t('http.error.unauthorized'),
+      t('http.error.unauthorized'),
       ErrorType.AUTH,
       401,
       'Unauthorized',
@@ -172,7 +188,7 @@ async function handle401WithRefresh(method: Method): Promise<unknown> {
       console.error('[HTTP] Unauthorized handler failed:', error)
     })
     throw new HttpRequestError(
-      $t('http.error.unauthorized'),
+      t('http.error.unauthorized'),
       ErrorType.AUTH,
       401,
       'Unauthorized',
@@ -187,7 +203,13 @@ async function handle401WithRefresh(method: Method): Promise<unknown> {
 }
 
 /**
- * 安全检查和数据清理
+ * Security sanitization: redact sensitive fields from request payloads.
+ *
+ * **Design decision**: Only applies to absolute URLs (external requests).
+ * Relative paths (/api/...) are treated as own-backend requests and skip
+ * sanitization to preserve the real request body for backend debugging.
+ * If backend logs expose request bodies, consider enabling sanitization
+ * for internal routes via per-request security config.
  */
 function sanitizeData(
   data: unknown,
@@ -300,6 +322,17 @@ export const beforeRequest = (method: Method) => {
   }
 }
 
+function showHttpNotification(title: string, message: string): void {
+  if (typeof window === 'undefined') return
+
+  if (window.$message?.danger) {
+    window.$message.danger(message, title)
+    return
+  }
+
+  window.$toast?.dangerIn?.('top-left', title, message)
+}
+
 /**
  * 全局响应拦截器 - 适配 server 的响应格式
  */
@@ -327,8 +360,8 @@ export const responseHandler = async (response: Response, method: Method) => {
         )
       }
 
-      // HEAD 请求成功，返回 void 或空对象
-      return undefined
+      // HEAD 请求成功，返回响应头供调用方使用
+      return { headers: response.headers }
     }
 
     // 检查响应类型
@@ -415,7 +448,7 @@ export const responseHandler = async (response: Response, method: Method) => {
       // server 使用 success 字段而不是 code
       if (json.success === false) {
         throw new HttpRequestError(
-          String(json.message ?? $t('http.error.requestFailed')),
+          String(json.message ?? t('http.error.requestFailed')),
           ErrorType.SERVER,
           response.status,
           response.statusText,
@@ -453,7 +486,9 @@ export const responseHandler = async (response: Response, method: Method) => {
                   if (decrypted !== null) {
                     decryptedData[key] = decrypted
                   } else {
-                    // 如果解密失败，保留原始值
+                    console.warn(
+                      `[ResponseDecrypt] Failed to decrypt field "${key}", using raw value`
+                    )
                     decryptedData[key] = value
                   }
                 } else {
@@ -520,19 +555,10 @@ export const responseHandler = async (response: Response, method: Method) => {
 
     if (isNetworkError) {
       console.error('❌ 网络连接错误:', errorMessage || errorName)
-      const statusMessage = $t('http.error.networkConnectionFailed')
-      const _networkErrorMessage = errorMessage || $t('http.error.networkConnectionFailed')
+      const statusMessage = t('http.error.networkConnectionFailed')
+      const _networkErrorMessage = errorMessage || t('http.error.networkConnectionFailed')
 
-      // 显示网络错误提示
-      try {
-        if (window.$message?.danger) {
-          window.$message.danger(_networkErrorMessage, statusMessage)
-        } else if (window.$toast?.dangerIn) {
-          window.$toast.dangerIn('top-left', statusMessage, _networkErrorMessage)
-        }
-      } catch (toastError) {
-        console.error('❌ 显示网络错误提示失败:', toastError)
-      }
+      showHttpNotification(statusMessage, _networkErrorMessage)
 
       throw new HttpRequestError(
         statusMessage,
@@ -548,7 +574,7 @@ export const responseHandler = async (response: Response, method: Method) => {
     if (error instanceof TypeError && errorMessage.includes('CORS')) {
       console.error('❌ CORS 错误:', errorMessage)
       throw new HttpRequestError(
-        $t('http.error.corsBlocked'),
+        t('http.error.corsBlocked'),
         ErrorType.CLIENT,
         undefined,
         undefined,
@@ -560,7 +586,7 @@ export const responseHandler = async (response: Response, method: Method) => {
     // 处理超时错误
     if (error instanceof TypeError && errorMessage.includes('timeout')) {
       throw new HttpRequestError(
-        $t('http.error.requestTimeout'),
+        t('http.error.requestTimeout'),
         ErrorType.TIMEOUT,
         undefined,
         undefined,
@@ -572,7 +598,7 @@ export const responseHandler = async (response: Response, method: Method) => {
     // 处理安全错误
     if (error instanceof TypeError && errorMessage.includes('security')) {
       throw new HttpRequestError(
-        $t('http.error.securityVerificationFailed'),
+        t('http.error.securityVerificationFailed'),
         ErrorType.SECURITY,
         undefined,
         undefined,
@@ -583,7 +609,7 @@ export const responseHandler = async (response: Response, method: Method) => {
 
     handleRequestError(error as Error)
     throw new HttpRequestError(
-      errorMessage || $t('http.error.unknownError'),
+      errorMessage || t('http.error.unknownError'),
       ErrorType.UNKNOWN,
       undefined,
       undefined,
@@ -594,71 +620,49 @@ export const responseHandler = async (response: Response, method: Method) => {
 }
 
 /**
- * 根据状态码获取错误类型
- */
-function getErrorTypeByStatus(status: number): ErrorType {
-  if (status >= 500) {
-    return ErrorType.SERVER
-  } else if (status === 401 || status === 403) {
-    return ErrorType.AUTH
-  } else if (status >= 400 && status < 500) {
-    return ErrorType.CLIENT
-  }
-  return ErrorType.UNKNOWN
-}
-
-/**
  * 处理 HTTP 状态码错误
  */
 const handleHttpError = (status: number, data: { message?: string } | undefined) => {
-  const errorMessage = data?.message || $t('http.error.httpError', { status })
+  const errorMessage = data?.message || t('http.error.httpError', { status })
   let statusMessage = `HTTP ${status}`
 
   switch (status) {
     case 400:
       // 处理请求错误
-      statusMessage = $t('http.error.badRequest')
+      statusMessage = t('http.error.badRequest')
       console.warn('请求错误')
       break
     case 401:
       // 401 刷新与未授权处理由 TokenRefreshCoordinator 统一负责
-      statusMessage = $t('http.error.unauthorized')
+      statusMessage = t('http.error.unauthorized')
       break
     case 403:
       // 处理权限不足错误
-      statusMessage = $t('http.error.forbidden')
+      statusMessage = t('http.error.forbidden')
       console.warn('权限不足')
       break
     case 404:
       // 处理资源不存在错误
-      statusMessage = $t('http.error.notFound')
+      statusMessage = t('http.error.notFound')
       console.warn('请求的资源不存在')
       break
     case 500:
       // 处理服务器内部错误
-      statusMessage = $t('http.error.internalServerError')
+      statusMessage = t('http.error.internalServerError')
       console.error('服务器内部错误')
       break
     case 502:
     case 503:
     case 504:
-      statusMessage = $t('http.error.serviceUnavailable')
+      statusMessage = t('http.error.serviceUnavailable')
       console.error('服务器暂时不可用')
       break
     default:
-      statusMessage = $t('http.error.httpError', { status })
+      statusMessage = t('http.error.httpError', { status })
       console.error(`HTTP ${status} 错误`)
   }
 
-  try {
-    if (window.$message?.danger) {
-      window.$message.danger(errorMessage, statusMessage)
-    } else if (window.$toast?.dangerIn) {
-      window.$toast.dangerIn('top-left', statusMessage, errorMessage)
-    }
-  } catch (error) {
-    console.error('❌ 显示错误提示失败:', error)
-  }
+  showHttpNotification(statusMessage, errorMessage)
 }
 
 /**

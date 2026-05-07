@@ -70,16 +70,18 @@ const registryItem = computed<FieldRegistryItem | null>(() => {
   return item ?? null
 })
 
-const resolvedComponent = computed(() => {
+const missingComponentMessage = computed<string | null>(() => {
   const item = registryItem.value
-  if (!item && import.meta.env.DEV) {
-    console.warn(
-      `[ProForm] Component "${props.field.component}" is not registered. ` +
-        `Falling back to native <input>. Did you forget to register it?`
-    )
+  if (item) return null
+
+  const message = `[ProForm] Component "${props.field.component}" is not registered.`
+  if (import.meta.env.DEV) {
+    throw new Error(`${message} Register a PrimeVue renderer or provide a custom field slot.`)
   }
-  return item?.component ?? 'input'
+  return message
 })
+
+const resolvedComponent = computed<unknown>(() => registryItem.value?.component ?? null)
 
 const isVisible = computed(() => state.visible)
 const isDisabled = computed(() => (globalState?.disabled.value ?? false) || state.disabled)
@@ -193,8 +195,17 @@ const ariaDescribedBy = computed<string | undefined>(() => {
       </label>
 
       <div class="col-stretch flex-1 min-w-0 w-full">
+        <div
+          v-if="missingComponentMessage"
+          :id="`${field.name}-error`"
+          role="alert"
+          class="w-full rounded-md border border-solid border-danger/40 bg-danger/10 p-sm text-sm text-danger"
+        >
+          {{ missingComponentMessage }}
+        </div>
         <component
           :is="resolvedIs"
+          v-else
           v-bind="resolvedBindProps"
           :aria-describedby="ariaDescribedBy"
           :aria-invalid="state.errors.length > 0 || undefined"

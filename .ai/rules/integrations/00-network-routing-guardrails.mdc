@@ -113,8 +113,8 @@ watch(error, (e) => {
 // ✅ 后台健康检查 —— 失败不应打扰用户
 const result = await get<HealthStatus>('/api/health', { globalError: 'silent' })
 
-// ✅ 探测性 HEAD 请求 —— 404 是预期结果，成功返回 void
-await head('/api/resource/123', { globalError: 'silent' })  // throws on 4xx/5xx
+// ✅ 探测性 HEAD 请求 —— 404 是预期结果，成功返回 { headers: Headers }
+const { headers } = await head('/api/resource/123', { globalError: 'silent' })  // throws on 4xx/5xx
 ```
 
 **适用场景**: 后台轮询、健康检查、"检查是否存在"、预取请求 —— 任何「失败是预期结果」的请求。

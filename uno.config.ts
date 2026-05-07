@@ -7,17 +7,18 @@ import {
   transformerDirectives,
   transformerVariantGroup,
 } from 'unocss'
-import { shortcuts } from './src/design-engine'
+import { semanticShortcuts } from './src/design-engine/shortcuts/semanticShortcuts'
 import { getEngineSafelist, getPresetIconsCollections } from './src/design-engine/safelist'
 import { theme } from './src/design-engine/theme'
 
-/** 与 shortcuts 中 `ease-spring` 对齐（Uno 从 `theme.easing` 解析） */
+/** Uno easing utilities resolve from `theme.easing`; keep it aligned with the design engine motion map. */
+const transitionTimingFunction = theme.transitionTimingFunction as Record<string, string>
 const themeResolved = {
   ...theme,
   easing: {
-    spring: 'cubic-bezier(0.175, 0.885, 0.32, 1.275)',
+    ...transitionTimingFunction,
   },
-} as typeof theme & { easing: { spring: string } }
+} as typeof theme & { easing: Record<string, string> }
 
 // 约束：上述 src 下被引用的文件必须为纯数据（仅导出常量/类型），禁止 import .vue 或使用 window/document 等浏览器 API，否则 Node 构建会报错。
 //
@@ -77,7 +78,7 @@ export default defineConfig({
   transformers: [transformerDirectives(), transformerVariantGroup()],
 
   // 业务层：优先使用 semantic shortcuts + theme-native token utilities（如 p-md、gap-sm、bg-card、text-muted-foreground）
-  shortcuts,
+  shortcuts: [semanticShortcuts],
 
   rules: [
     ['group', {}],

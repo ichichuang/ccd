@@ -59,7 +59,7 @@
       "syncTargets": [
         "codex"
       ],
-      "computedHash": "4cd22d4a553b8eb30ba1be56130f5e69cee0495e06b1f823387a8ee05989117e"
+      "computedHash": "c4b4a3f73fd42a6fda71942406b8975bb162027e5442e6a82d65103fb21b7529"
     },
     "unocss": {
       "source": "repo:.ai/skills/core/unocss",
@@ -99,7 +99,7 @@
         "codex",
         "cursor"
       ],
-      "computedHash": "db6c79aeda36ab16a4997297b4d39dd65d4294fb0de8cfb9633f97de67990c04"
+      "computedHash": "cb2be45d9d432dcb64564a414a801a710ee2e7af029b719dc9565d3ab736c275"
     }
   }
 }

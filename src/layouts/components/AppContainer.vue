@@ -35,7 +35,7 @@ watch(
     <Transition name="fade">
       <div
         v-show="isPageLoading && !isFullscreen"
-        class="layout-full absolute-center z-10 backdrop-blur-sm pointer-events-auto"
+        class="layout-full absolute-center z-content backdrop-blur-sm pointer-events-auto"
       >
         <Loading size="xl" />
       </div>

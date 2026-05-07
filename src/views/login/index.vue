@@ -9,7 +9,7 @@ import { useLocale } from '@/hooks/modules/useLocale'
 import type { SupportedLocale } from '@/locales'
 import { useAuth } from '@/hooks/modules/useAuth'
 import type { LoginParams } from '@/types/dto/auth.dto'
-import type { FieldSchema, FormSchema, ProFormExpose } from '@/components/ProForm'
+import type { FormSchema, ProFormExpose } from '@/components/ProForm'
 
 defineOptions({ name: 'LoginPage' })
 
@@ -40,7 +40,6 @@ type LoginFormValues = LoginParams
 
 const formRef = ref<ProFormExpose | null>(null)
 
-const showPassword = ref<boolean>(false)
 const isUsernameFocused = ref<boolean>(false)
 
 const passwordLength = computed<number>(() => {
@@ -128,38 +127,6 @@ const loginFooterText: string = (() => {
   return `${base} © ${buildYear}`
 })()
 
-/** 登录凭证行外壳：半透明以透出 glass-card；focus-within 整行高亮（含左侧图标区）。 */
-const loginShellRowValid =
-  'row-start layout-full self-stretch overflow-hidden rounded-md border border-border bg-card/50 shadow-sm shadow-foreground/10 transition-all duration-md ease-smooth dark:shadow-foreground/20 hover:border-primary/50 focus-within:border-primary/50 focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2 focus-within:ring-offset-background'
-
-const loginShellRowInvalid =
-  'row-start layout-full self-stretch overflow-hidden rounded-md border !border-danger bg-card/50 shadow-sm shadow-foreground/10 transition-all duration-md ease-smooth dark:shadow-foreground/20 hover:!border-danger focus-within:!border-danger focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2 focus-within:ring-offset-background'
-
-const loginShellIconCol =
-  'row-center shrink-0 self-stretch min-h-0 border-r border-border bg-transparent px-sm'
-
-/** InputText：! 覆盖 Prime 主题 background 简写，与 Shell 融为一体。 */
-const loginShellInputPt = {
-  root: {
-    class:
-      'w-full !border-none !shadow-none !rounded-none !bg-transparent !ring-0 !outline-none focus:!border-none focus:!ring-0 focus:!outline-none focus-visible:!ring-0 focus-visible:!ring-offset-0',
-  },
-} as const
-
-/** Password：外层去壳撑满；pcInputText 剥离 GOLDEN_INPUT 实底与边框。 */
-const loginPasswordPt = {
-  root: {
-    class:
-      'min-h-0 w-full min-w-0 flex-1 self-stretch items-center !border-none !shadow-none !rounded-none !bg-transparent !ring-0 !outline-none focus:!ring-0 focus-within:!border-none focus-within:!ring-0 focus-within:!ring-offset-0',
-  },
-  pcInputText: {
-    root: {
-      class:
-        'w-full !border-none !shadow-none !rounded-none !bg-transparent !ring-0 !outline-none focus:!border-none focus:!ring-0 focus:!outline-none focus-visible:!ring-0 focus-visible:!ring-offset-0',
-    },
-  },
-} as const
-
 const loginSchema = computed<FormSchema>(() => ({
   fields: [
     {
@@ -179,8 +146,13 @@ const loginSchema = computed<FormSchema>(() => ({
       ],
       props: {
         placeholder: t('login.usernamePlaceholder'),
-        prefixIcon: 'i-lucide-user',
         size: 'large',
+        onFocus: () => {
+          isUsernameFocused.value = true
+        },
+        onBlur: () => {
+          isUsernameFocused.value = false
+        },
       },
     },
     {
@@ -201,7 +173,6 @@ const loginSchema = computed<FormSchema>(() => ({
       props: {
         type: 'password',
         placeholder: t('login.passwordPlaceholder'),
-        prefixIcon: 'i-lucide-lock',
         size: 'large',
       },
     },
@@ -237,26 +208,6 @@ const loading = ref<boolean>(false)
 const route = useRoute()
 const router = useRouter()
 const { login: doLogin } = useAuth()
-
-function onUnmaskToggle(toggleCallback: () => void): void {
-  toggleCallback()
-  showPassword.value = true
-}
-
-function onMaskToggle(toggleCallback: () => void): void {
-  toggleCallback()
-  showPassword.value = false
-}
-
-function fieldPrefixIcon(field: FieldSchema<unknown>): string {
-  const icon = field.props?.prefixIcon
-  return typeof icon === 'string' && icon.length > 0 ? icon : 'i-lucide-circle'
-}
-
-function fieldPlaceholder(field: FieldSchema<unknown>): string {
-  const ph = field.props?.placeholder
-  return typeof ph === 'string' ? ph : ''
-}
 
 async function login(values: Record<string, unknown>): Promise<void> {
   if (loading.value) return
@@ -351,7 +302,7 @@ async function handleLoginSubmit(): Promise<void> {
           </div>
           <AnimatedCharacters
             :is-typing="isUsernameFocused"
-            :show-password="showPassword"
+            :show-password="false"
             :password-length="passwordLength"
           />
         </div>
@@ -400,130 +351,46 @@ async function handleLoginSubmit(): Promise<void> {
               </div>
 
               <div class="col-stretch gap-sm">
-                <div class="text-xs text-muted-foreground">
-                  {{ t('login.quickFillTips') }}
-                </div>
-                <div class="row-start gap-xs">
+                <div class="grid grid-cols-2 gap-sm">
                   <Button
                     id="login-fill-admin"
                     size="small"
-                    text
+                    icon="i-lucide-shield-check"
+                    :label="t('login.quickAdmin')"
+                    severity="secondary"
+                    outlined
+                    class="w-full"
                     @click="fillAdminPreset"
-                  >
-                    <Icons
-                      name="i-lucide-shield-check"
-                      size="sm"
-                      class="mr-xs text-current"
-                    />
-                    <span class="text-xs">
-                      {{ t('login.quickAdmin') }}
-                    </span>
-                  </Button>
+                  />
                   <Button
                     id="login-fill-user"
                     size="small"
+                    icon="i-lucide-user-round"
+                    :label="t('login.quickUser')"
                     severity="success"
-                    text
+                    outlined
+                    class="w-full"
                     @click="fillUserPreset"
-                  >
-                    <Icons
-                      name="i-lucide-user-round"
-                      size="sm"
-                      class="mr-xs text-current"
-                    />
-                    <span class="text-xs">
-                      {{ t('login.quickUser') }}
-                    </span>
-                  </Button>
+                  />
                 </div>
               </div>
 
-              <div class="col-stretch mt-md">
+              <div class="col-stretch mt-sm">
                 <ProForm
                   :key="locale"
                   ref="formRef"
                   :schema="loginSchema"
                   validate-on="submit"
                   :disabled="loading"
+                  gap="var(--spacing-sm)"
                   @submit="login"
                 >
-                  <template #field-username="{ field, state, onUpdate }">
-                    <div
-                      :class="state.errors.length > 0 ? loginShellRowInvalid : loginShellRowValid"
-                    >
-                      <div :class="loginShellIconCol">
-                        <Icons
-                          :name="fieldPrefixIcon(field)"
-                          class="text-lg text-muted-foreground"
-                        />
-                      </div>
-                      <div class="min-w-0 flex-1 self-stretch min-h-0">
-                        <InputText
-                          :id="field.name"
-                          :pt="loginShellInputPt"
-                          :model-value="state.value == null ? '' : String(state.value)"
-                          autocomplete="username"
-                          :placeholder="fieldPlaceholder(field)"
-                          :invalid="state.errors.length > 0"
-                          size="large"
-                          @update:model-value="v => onUpdate(v)"
-                          @focus="isUsernameFocused = true"
-                          @blur="isUsernameFocused = false"
-                        />
-                      </div>
-                    </div>
-                  </template>
-
-                  <template #field-password="{ field, state, onUpdate }">
-                    <div
-                      :class="state.errors.length > 0 ? loginShellRowInvalid : loginShellRowValid"
-                    >
-                      <div :class="loginShellIconCol">
-                        <Icons
-                          :name="fieldPrefixIcon(field)"
-                          class="text-lg text-muted-foreground"
-                        />
-                      </div>
-                      <div class="min-w-0 flex-1 self-stretch min-h-0">
-                        <Password
-                          fluid
-                          :pt="loginPasswordPt"
-                          :model-value="state.value == null ? '' : String(state.value)"
-                          toggle-mask
-                          :feedback="false"
-                          size="large"
-                          :placeholder="fieldPlaceholder(field)"
-                          :invalid="state.errors.length > 0"
-                          autocomplete="current-password"
-                          :input-id="field.name"
-                          @update:model-value="v => onUpdate(v)"
-                        >
-                          <template #unmaskicon="{ toggleCallback }">
-                            <span
-                              class="mr-sm inline-flex shrink-0 cursor-pointer items-center text-muted-foreground"
-                              @click.stop="onUnmaskToggle(toggleCallback)"
-                            >
-                              <Icons name="i-lucide-eye" />
-                            </span>
-                          </template>
-                          <template #maskicon="{ toggleCallback }">
-                            <span
-                              class="mr-sm inline-flex shrink-0 cursor-pointer items-center text-muted-foreground"
-                              @click.stop="onMaskToggle(toggleCallback)"
-                            >
-                              <Icons name="i-lucide-eye-off" />
-                            </span>
-                          </template>
-                        </Password>
-                      </div>
-                    </div>
-                  </template>
-
                   <template #footer="{ formState }">
-                    <div class="mt-xl">
+                    <div class="col-stretch gap-md pt-md border-t border-t-solid border-border/60">
                       <Button
                         id="login-submit"
                         class="w-full"
+                        icon="i-lucide-log-in"
                         :label="t('login.submit')"
                         :loading="formState.submitting || loading"
                         size="large"

@@ -1,4 +1,5 @@
 import { HTTP_CONFIG } from '@/constants/http'
+import { t } from '@/locales'
 import type { ConnectionConfig, ConnectionState } from './types'
 
 /**
@@ -29,6 +30,7 @@ export class ConnectionManager {
       maxReconnectAttempts: HTTP_CONFIG.maxReconnectAttempts,
       reconnectDelay: HTTP_CONFIG.reconnectDelay,
       healthCheckInterval: HTTP_CONFIG.healthCheckInterval,
+      healthCheckUrl: HTTP_CONFIG.healthCheckUrl,
       ...config,
     }
 
@@ -36,7 +38,7 @@ export class ConnectionManager {
       isConnected: navigator.onLine,
       isReconnecting: false,
       lastConnectedAt: navigator.onLine ? new Date() : undefined,
-      disconnectReason: navigator.onLine ? undefined : $t('http.connection.networkUnavailable'),
+      disconnectReason: navigator.onLine ? undefined : t('http.connection.networkUnavailable'),
       reconnectAttempts: 0,
       maxReconnectAttempts: this.config.maxReconnectAttempts,
     }
@@ -76,7 +78,7 @@ export class ConnectionManager {
     }
 
     this.state.isConnected = false
-    this.state.disconnectReason = reason || $t('http.connection.manualDisconnect')
+    this.state.disconnectReason = reason || t('http.connection.manualDisconnect')
     this.state.lastConnectedAt = undefined
 
     this.stopHealthCheck()
@@ -92,7 +94,7 @@ export class ConnectionManager {
     }
 
     if (this.state.reconnectAttempts >= this.config.maxReconnectAttempts) {
-      this.state.disconnectReason = $t('http.connection.maxReconnectAttemptsReached')
+      this.state.disconnectReason = t('http.connection.maxReconnectAttemptsReached')
       this.notifyListeners()
       return false
     }
@@ -160,7 +162,7 @@ export class ConnectionManager {
    */
   private onReconnectFailed(): void {
     this.state.isReconnecting = false
-    this.state.disconnectReason = $t('http.connection.reconnectFailed')
+    this.state.disconnectReason = t('http.connection.reconnectFailed')
 
     this.notifyListeners()
 
@@ -213,7 +215,7 @@ export class ConnectionManager {
       const isHealthy = await this.performHealthCheck()
       if (!isHealthy && this.state.isConnected) {
         this.state.isConnected = false
-        this.state.disconnectReason = $t('http.connection.healthCheckFailed')
+        this.state.disconnectReason = t('http.connection.healthCheckFailed')
         this.notifyListeners()
 
         // 如果启用了自动重连，尝试重连
@@ -260,7 +262,7 @@ export class ConnectionManager {
       }
 
       this.state.isConnected = false
-      this.state.disconnectReason = $t('http.connection.networkDisconnected')
+      this.state.disconnectReason = t('http.connection.networkDisconnected')
       this.state.lastConnectedAt = undefined
 
       this.stopHealthCheck()
@@ -330,12 +332,17 @@ export class ConnectionManager {
   private cleanup?: () => void
 }
 
-// 创建全局连接管理器实例
-export const connectionManager = new ConnectionManager()
+let _connectionManager: ConnectionManager | undefined
 
-// 导出便捷函数（getConnectionState/disconnect/reconnect 供未来网络状态 UI、重连按钮等使用）
-export const getConnectionState = () => connectionManager.getConnectionState()
+export function getConnectionManager(): ConnectionManager {
+  if (!_connectionManager) {
+    _connectionManager = new ConnectionManager()
+  }
+  return _connectionManager
+}
+
+export const getConnectionState = () => getConnectionManager().getConnectionState()
 export const addConnectionListener = (listener: (state: ConnectionState) => void) =>
-  connectionManager.addListener(listener)
-export const disconnect = (reason?: string) => connectionManager.disconnect(reason)
-export const reconnect = () => connectionManager.reconnect()
+  getConnectionManager().addListener(listener)
+export const disconnect = (reason?: string) => getConnectionManager().disconnect(reason)
+export const reconnect = () => getConnectionManager().reconnect()

@@ -10,25 +10,12 @@ import {
   SPACING_SCALE_RATIOS,
   RADIUS_SCALE_RATIOS,
   SIZE_SCALE_KEYS,
+  TRANSITION_SCALE_MS,
 } from '@/constants/sizeScale'
 import { unpackDataSync } from '@/utils/safeStorage/core'
 import { getDeviceTypeSync, getBreakpointSync } from '@/utils/deviceSync'
 
 type ScaleKey = (typeof SIZE_SCALE_KEYS)[number]
-
-/* eslint-disable @typescript-eslint/naming-convention -- SizeScaleKey includes 2xl/3xl/4xl/5xl by design. */
-const TRANSITION_SCALE_MS: Record<ScaleKey, number> = {
-  xs: 180,
-  sm: 280,
-  md: 320,
-  lg: 420,
-  xl: 480,
-  '2xl': 580,
-  '3xl': 680,
-  '4xl': 780,
-  '5xl': 880,
-}
-/* eslint-enable @typescript-eslint/naming-convention */
 
 /** 字体阶梯变量前缀：由 applyRootFontSize 负责写入，applySizeTheme 跳过 */
 const FONT_SIZE_VAR_PREFIX = '--font-size-'
@@ -52,10 +39,20 @@ const FONT_SIZE_VAR_PREFIX = '--font-size-'
  * @see sizeMetrics.ts 同源 px 推导（供 TS / ECharts 等使用，与上式一致）
  */
 export function generateSizeVars(preset: SizePreset): Partial<SizeCssVars> {
+  const controlHeight = Math.round(preset.fontSizeBase + preset.spacingBase * 5)
+  const controlHeightSm = Math.round(preset.fontSizeBase * 0.96 + preset.spacingBase * 4)
+  const controlHeightLg = Math.round(preset.fontSizeBase * 1.125 + preset.spacingBase * 6)
+
   const vars: Partial<SizeCssVars> = {
     // --- 基础变量 ---
     '--spacing-unit': `${preset.spacingBase}px`,
     '--container-padding': `${preset.spacingBase * 5}px`,
+    '--control-height': `${controlHeight}px`,
+    '--control-height-sm': `${controlHeightSm}px`,
+    '--control-height-lg': `${controlHeightLg}px`,
+    '--control-action-size': `${controlHeight}px`,
+    '--control-action-size-sm': `${controlHeightSm}px`,
+    '--control-action-size-lg': `${controlHeightLg}px`,
   }
 
   // --- 字体阶梯占位（applySizeTheme 会跳过，由 applyRootFontSize 写入）---

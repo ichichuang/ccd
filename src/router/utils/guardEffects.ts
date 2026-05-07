@@ -10,6 +10,8 @@ import { useLoading } from '@/hooks/layout/useLoading'
 import { useNprogress } from '@/hooks/layout/useNprogress'
 import type { RouteLocationNormalized, Router } from 'vue-router'
 
+const ROUTE_PAGE_LOADING_DELAY_MS = 180
+
 /**
  * 使用纯函数与全局 i18n 更新页面标题
  * 避免在守卫中调用 useI18n/useRoute 等 Composition API
@@ -28,8 +30,26 @@ function updatePageTitle(to: RouteLocationNormalized): void {
  */
 export function registerGuardEffects(router: Router): void {
   let pendingRoutePageLoads = 0
+  let routePageLoadingTimer: ReturnType<typeof setTimeout> | null = null
+
+  const clearRoutePageLoadingTimer = (): void => {
+    if (routePageLoadingTimer === null) return
+    clearTimeout(routePageLoadingTimer)
+    routePageLoadingTimer = null
+  }
+
+  const scheduleRoutePageLoading = (): void => {
+    clearRoutePageLoadingTimer()
+    routePageLoadingTimer = setTimeout(() => {
+      routePageLoadingTimer = null
+      const { pageLoadingStart } = useLoading()
+      pendingRoutePageLoads += 1
+      pageLoadingStart()
+    }, ROUTE_PAGE_LOADING_DELAY_MS)
+  }
 
   const clearOwnedPageLoading = (): void => {
+    clearRoutePageLoadingTimer()
     if (pendingRoutePageLoads === 0) return
     const { pageLoadingDone } = useLoading()
 
@@ -41,12 +61,10 @@ export function registerGuardEffects(router: Router): void {
 
   router.beforeEach((to, _from) => {
     const { startProgress } = useNprogress()
-    const { pageLoadingStart } = useLoading()
 
     startProgress()
     updatePageTitle(to)
-    pendingRoutePageLoads += 1
-    pageLoadingStart()
+    scheduleRoutePageLoading()
   })
 
   router.afterEach((to, _from) => {

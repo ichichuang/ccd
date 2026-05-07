@@ -1,7 +1,7 @@
 <script setup lang="ts">
 defineOptions({ name: 'UseDateUtils' })
 
-import { DateFormatEnum, DATETIME_LOCAL_ISO } from '@/constants/dateFormats'
+import { DateFormatEnum } from '@/utils/date/types'
 import type { DateInput } from '@/utils/date'
 
 type TimezoneId = 'Asia/Shanghai' | 'America/New_York' | 'Europe/London' | 'Asia/Tokyo'
@@ -19,6 +19,7 @@ interface WorkingDayDemoResult {
 }
 
 const { formatDate, fromNow, now, isInitialized, currentTimezone, DateUtils } = useDateUtils()
+const DATETIME_LOCAL_ISO = 'YYYY-MM-DDTHH:mm:ss'
 
 // =========================
 // Section 1: 实时时钟与基础格式化

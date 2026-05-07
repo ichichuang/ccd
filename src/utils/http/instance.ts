@@ -1,5 +1,6 @@
 // src/utils/http/instance.ts
 import { HTTP_CONFIG } from '@/constants/http'
+import { t } from '@/locales'
 import { createAlova } from 'alova'
 import type { AlovaDefaultCacheAdapter } from 'alova'
 import adapterFetch from 'alova/fetch'
@@ -19,7 +20,7 @@ const validateAlovaConfig = () => {
   // 检查超时配置
   const timeout = HTTP_CONFIG.timeout
   if (timeout < 1000) {
-    errors.push($t('http.config.timeoutTooShort'))
+    errors.push(t('http.config.timeoutTooShort'))
   }
 
   // 检查环境配置
@@ -27,13 +28,13 @@ const validateAlovaConfig = () => {
     import.meta.env.VITE_APP_ENV !== 'development' &&
     import.meta.env.VITE_APP_ENV !== 'production'
   ) {
-    errors.push($t('http.config.invalidAppEnv', { env: import.meta.env.VITE_APP_ENV }))
+    errors.push(t('http.config.invalidAppEnv', { env: import.meta.env.VITE_APP_ENV }))
   }
 
   // 输出错误和警告
   if (errors.length > 0) {
     console.error('❌ Alova 配置错误:', errors)
-    throw new Error($t('http.config.alovaConfigError', { errors: errors.join(', ') }))
+    throw new Error(t('http.config.alovaConfigError', { errors: errors.join(', ') }))
   }
 
   if (warnings.length > 0) {

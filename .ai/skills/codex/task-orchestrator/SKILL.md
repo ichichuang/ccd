@@ -17,6 +17,7 @@ Before loading multiple skills, prefer the repo skill router so you only open th
   - `python3 scripts/task_router.py "optimize my homepage performance and validate the UI"`
 - Select the smallest useful skill set first:
   - `python3 scripts/skill_router.py "处理 GitHub PR review comments 并检查 .github workflows" --json`
+  - Node-first fallback: `node scripts/skill_router.mjs "处理 GitHub PR review comments 并检查 .github workflows" --json`
 - Force a route:
   - `python3 scripts/task_router.py "refactor the auth flow" --force-complex`
 - Print a compact machine-readable plan:

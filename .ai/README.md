@@ -75,10 +75,14 @@ Browser automation intentionally writes compact summaries and optional evidence 
 
 - Generate adapters: `pnpm ai:sync`
 - Install local Codex skills: `pnpm ai:sync:codex`
+- One-shot Codex setup: `pnpm ai:setup:codex`
 - Clean local AI/browser runtime residue: `pnpm ai:clean`
 - Aggressive cleanup when needed: `pnpm ai:clean -- --all`
-- Validate structure: `pnpm ai:doctor`
+- Validate structure: `pnpm ai:doctor` (runs `ai:guard` and `validate:tokens`)
 - Validate generated business surfaces: `pnpm ai:guard`
+- Validate theme token contrast: `pnpm validate:tokens`
+- Check drift-sensitive docs/config/style contracts: `pnpm drift-check`
+- Check desktop/Tauri config surface when relevant: `pnpm sync:desktop-config`
 - Run Codex preflight: `pnpm codex:preflight`
 
 Recommended maintenance order:
@@ -86,7 +90,6 @@ Recommended maintenance order:
 ```bash
 pnpm ai:sync
 pnpm ai:sync:codex
-pnpm ai:guard
 pnpm ai:doctor
 pnpm codex:preflight
 ```

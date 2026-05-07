@@ -47,6 +47,7 @@ src-tauri/gen/
 !.vscode/launch.json
 !.vscode/extensions.json
 !.vscode/*.code-snippets
+!.vscode/*.html-data.json
 .idea
 .DS_Store
 *.suo

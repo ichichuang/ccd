@@ -5,29 +5,16 @@
  */
 
 import { get } from '@/utils/http/methods'
-import type { SystemAsyncRouteItem, SystemAsyncRoutesRawRes } from '@/types/dto/system.dto'
-import { z } from 'zod'
+import {
+  systemAsyncRouteItemSchema,
+  systemAsyncRoutesRawSchema,
+  type SystemAsyncRouteItem,
+  type SystemAsyncRoutesRawRes,
+} from '@/types/dto/system.dto'
+import { parseZodHttpPayload } from '@/adapters/http.adapter'
 
 /** 动态路由 API 路径（对接后端时使用） */
 const SYSTEM_ASYNC_ROUTES_URL = '/system/menu/routes'
-
-const routeMetaSchema = z.record(z.string(), z.unknown())
-
-const systemAsyncRouteItemSchema: z.ZodType<SystemAsyncRouteItem> = z.lazy(() =>
-  z.object({
-    path: z.string().min(1),
-    name: z.string().min(1).optional(),
-    component: z.string().min(1).optional(),
-    redirect: z.string().min(1).optional(),
-    meta: routeMetaSchema,
-    children: z.array(systemAsyncRouteItemSchema).optional(),
-  })
-)
-
-const systemAsyncRoutesRawSchema: z.ZodType<SystemAsyncRoutesRawRes> = z.union([
-  z.array(systemAsyncRouteItemSchema),
-  z.object({ routes: z.array(systemAsyncRouteItemSchema) }),
-])
 
 /**
  * 从原始响应中提取路由数组
@@ -56,7 +43,7 @@ export const requestSystemAsyncRoutes = async (): Promise<SystemAsyncRouteItem[]
  */
 export const requestSystemAsyncRoutesMock = async (): Promise<SystemAsyncRouteItem[]> => {
   await new Promise(resolve => setTimeout(resolve, 100))
-  return [
+  const routes: SystemAsyncRouteItem[] = [
     {
       path: '/example/hooks/use-date-utils',
       component: 'example/hooks/use-date-utils',
@@ -72,7 +59,8 @@ export const requestSystemAsyncRoutesMock = async (): Promise<SystemAsyncRouteIt
       component: 'example/hooks/use-http-request',
       meta: { titleKey: 'router.example.hooks.composables.useHttpRequest' },
     },
-  ] as SystemAsyncRouteItem[]
+  ]
+  return parseZodHttpPayload(systemAsyncRouteItemSchema.array(), routes)
 }
 
 /**

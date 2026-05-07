@@ -155,6 +155,7 @@ export const useLocaleStore = defineStore('locale', {
   persist: {
     key: `${import.meta.env.VITE_PINIA_PERSIST_KEY_PREFIX}-locale`,
     storage: localStorage,
+    pick: ['locale', 'followTimezone'],
   },
 })
 

@@ -32,10 +32,78 @@
  * }
  * ```
  */
-import NProgress from 'nprogress'
 
 // 配置只需在应用生命周期内执行一次，避免重复调用
 let nprogressConfigured = false
+let trickleTimer: ReturnType<typeof setInterval> | null = null
+let removeTimer: ReturnType<typeof setTimeout> | null = null
+const progressStatus = ref<number | null>(null)
+
+const progressOptions = {
+  minimum: 0.05,
+  trickleSpeed: 150,
+}
+
+function clampProgress(progress: number): number {
+  return Math.min(1, Math.max(0, progress))
+}
+
+function ensureProgressElement(): HTMLDivElement | null {
+  if (typeof document === 'undefined') return null
+
+  const existing = document.getElementById('nprogress')
+  if (existing instanceof HTMLDivElement) return existing
+
+  const root = document.createElement('div')
+  root.id = 'nprogress'
+
+  const bar = document.createElement('div')
+  bar.className = 'bar'
+  bar.setAttribute('role', 'bar')
+
+  const peg = document.createElement('div')
+  peg.className = 'peg'
+
+  bar.appendChild(peg)
+  root.appendChild(bar)
+  document.body.appendChild(root)
+  return root
+}
+
+function renderProgress(): void {
+  const root = ensureProgressElement()
+  const status = progressStatus.value
+  if (!root || status === null) return
+
+  const bar = root.querySelector<HTMLDivElement>('.bar')
+  if (!bar) return
+  bar.style.transform = `translate3d(${(-1 + status) * 100}%, 0, 0)`
+  bar.style.transition = 'transform 200ms ease'
+}
+
+function clearTrickle(): void {
+  if (!trickleTimer) return
+  clearInterval(trickleTimer)
+  trickleTimer = null
+}
+
+function scheduleTrickle(): void {
+  clearTrickle()
+  trickleTimer = setInterval(() => {
+    if (progressStatus.value === null) {
+      clearTrickle()
+      return
+    }
+    if (progressStatus.value >= 0.94) return
+    progressStatus.value = clampProgress(progressStatus.value + 0.03)
+    renderProgress()
+  }, progressOptions.trickleSpeed)
+}
+
+function removeProgressElement(): void {
+  if (typeof document === 'undefined') return
+  document.getElementById('nprogress')?.remove()
+}
 
 export function useNprogress() {
   /**
@@ -44,14 +112,6 @@ export function useNprogress() {
    */
   const configureNProgress = () => {
     if (nprogressConfigured) return
-    NProgress.configure({
-      easing: 'ease-in-out', // 缓动更顺滑
-      speed: 700, // 稍微慢一点，更有节奏感
-      trickle: true, // 保持涓流推进
-      trickleSpeed: 150, // 更平滑的涓流速度
-      showSpinner: false, // 不显示右上角小圈
-      minimum: 0.05, // 从更低的值开始
-    })
     nprogressConfigured = true
   }
 
@@ -62,14 +122,28 @@ export function useNprogress() {
    * 开始进度条
    */
   const startProgress = () => {
-    NProgress.start()
+    if (removeTimer) {
+      clearTimeout(removeTimer)
+      removeTimer = null
+    }
+    progressStatus.value = progressOptions.minimum
+    renderProgress()
+    scheduleTrickle()
   }
 
   /**
    * 结束进度条
    */
   const doneProgress = () => {
-    NProgress.done()
+    if (progressStatus.value === null) return
+    clearTrickle()
+    progressStatus.value = 1
+    renderProgress()
+    removeTimer = setTimeout(() => {
+      removeProgressElement()
+      progressStatus.value = null
+      removeTimer = null
+    }, 200)
   }
 
   /**
@@ -77,7 +151,9 @@ export function useNprogress() {
    * @param progress 进度值 (0-1)
    */
   const setProgress = (progress: number) => {
-    NProgress.set(progress)
+    progressStatus.value = clampProgress(progress)
+    renderProgress()
+    if (progressStatus.value < 1) scheduleTrickle()
   }
 
   /**
@@ -85,14 +161,22 @@ export function useNprogress() {
    * @param amount 增加的进度值
    */
   const incProgress = (amount?: number) => {
-    NProgress.inc(amount)
+    const next = (progressStatus.value ?? progressOptions.minimum) + (amount ?? 0.03)
+    progressStatus.value = clampProgress(next)
+    renderProgress()
   }
 
   /**
    * 移除进度条
    */
   const removeProgress = () => {
-    NProgress.remove()
+    clearTrickle()
+    if (removeTimer) {
+      clearTimeout(removeTimer)
+      removeTimer = null
+    }
+    removeProgressElement()
+    progressStatus.value = null
   }
 
   /**
@@ -100,7 +184,7 @@ export function useNprogress() {
    * @returns 当前进度值（0-1），未开始时为 null
    */
   const getCurrentProgress = () => {
-    return NProgress.status
+    return progressStatus.value
   }
 
   /**
@@ -108,7 +192,7 @@ export function useNprogress() {
    * @returns 响应式布尔值：当前是否 started
    */
   const isProgressRunning = computed(() => {
-    return NProgress.isStarted()
+    return progressStatus.value !== null
   })
 
   /**

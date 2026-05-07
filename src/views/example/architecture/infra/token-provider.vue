@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { getToken } from '@/infra/auth/tokenProvider'
+import { readAuthToken } from '@/infra/auth/tokenProvider'
 
 defineOptions({ name: 'ArchitectureInfraTokenProvider' })
 
@@ -8,7 +8,7 @@ const userStore = useUserStoreWithOut()
 // Re-read through the provider whenever the store token changes
 const tokenValue = computed<string | null | undefined>(() => {
   void userStore.token // reactive dependency
-  return getToken()
+  return readAuthToken()
 })
 const hasToken = computed<boolean>(() => !!tokenValue.value)
 const tokenPreview = computed<string>(() => {
@@ -85,7 +85,7 @@ const tokenPreview = computed<string>(() => {
               </div>
               <div class="col-center gap-xs px-xs min-w-0">
                 <span class="text-xs text-muted-foreground font-mono text-ellipsis-1">
-                  setTokenProvider(fn)
+                  installAuthBridge(bridge)
                 </span>
                 <div class="w-full border-t border-border" />
                 <Icons
@@ -94,7 +94,7 @@ const tokenPreview = computed<string>(() => {
                   class="text-primary"
                 />
                 <span class="text-xs text-muted-foreground font-mono text-ellipsis-1">
-                  getToken()
+                  readAuthToken()
                 </span>
               </div>
               <div
@@ -126,17 +126,17 @@ const tokenPreview = computed<string>(() => {
                 class="text-foreground mx-auto"
               />
               <span class="text-xs font-semibold text-foreground">HTTP Layer</span>
-              <span class="text-xs text-muted-foreground">
-                axios interceptor → Authorization header
-              </span>
+              <span class="text-xs text-muted-foreground">Alova interceptor → Authorization</span>
             </div>
           </div>
           <p class="text-sm text-muted-foreground m-0">
             HTTP 层完全不感知 Pinia。应用入口（main.ts）通过
-            <code class="code-inline">setTokenProvider()</code>
-            注入 getter 函数；HTTP 拦截器调用
-            <code class="code-inline">getToken()</code>
-            获取当前 Token，满足 Infra → State 单向依赖约束，避免循环导入。
+            <code class="code-inline">installAuthBridge()</code>
+            注入 typed bridge；HTTP 拦截器调用
+            <code class="code-inline">readAuthToken()</code>
+            获取当前 Token，401 处理通过
+            <code class="code-inline">notifyUnauthorized()</code>
+            回到 session 边界，避免 HTTP 直接依赖 Pinia。
           </p>
         </section>
 
@@ -144,28 +144,33 @@ const tokenPreview = computed<string>(() => {
           <h3 class="text-md font-semibold text-foreground m-0">API Reference</h3>
           <div class="col-stretch gap-md min-w-0">
             <div class="col-stretch gap-xs min-w-0">
-              <span class="text-xs font-semibold text-muted-foreground">setTokenProvider(fn)</span>
+              <span class="text-xs font-semibold text-muted-foreground">
+                installAuthBridge(bridge)
+              </span>
               <pre class="code-block">
 // main.ts — 应用入口注入
-import { setTokenProvider } from '@/infra/auth/tokenProvider'
-setTokenProvider(() => useUserStoreWithOut().getToken)</pre
+import { installAuthBridge } from '@/infra/auth/tokenProvider'
+installAuthBridge({
+  readToken: () => useUserStoreWithOut().getToken,
+  onUnauthorized: () => useUserStoreWithOut().logout(),
+})</pre
               >
             </div>
             <div class="col-stretch gap-xs min-w-0">
-              <span class="text-xs font-semibold text-muted-foreground">getToken()</span>
+              <span class="text-xs font-semibold text-muted-foreground">readAuthToken()</span>
               <pre class="code-block">
-// axios interceptor — HTTP 层消费
-import { getToken } from '@/infra/auth/tokenProvider'
-const token = getToken()
+// Alova interceptor — HTTP 层消费
+import { readAuthToken } from '@/infra/auth/tokenProvider'
+const token = readAuthToken()
 if (token) config.headers.Authorization = `Bearer ${token}`</pre
               >
             </div>
             <div class="col-stretch gap-xs min-w-0">
-              <span class="text-xs font-semibold text-muted-foreground">setOnUnauthorized(fn)</span>
+              <span class="text-xs font-semibold text-muted-foreground">notifyUnauthorized()</span>
               <pre class="code-block">
-// main.ts — 注入 401 回调
-import { setOnUnauthorized } from '@/infra/auth/tokenProvider'
-setOnUnauthorized(() => useUserStoreWithOut().logout())</pre
+// Alova response interceptor — 触发统一 401 处理
+import { notifyUnauthorized } from '@/infra/auth/tokenProvider'
+await notifyUnauthorized()</pre
               >
             </div>
           </div>

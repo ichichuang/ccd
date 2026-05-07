@@ -5,14 +5,22 @@
  * 对接后端时响应使用 ApiResponse<LoginResult> / ApiResponse<UserInfo>，解包 data 后返回
  */
 
-import type { LoginParams, LoginResult, UserInfo } from '@/types/dto/auth.dto'
+import {
+  loginParamsSchema,
+  loginResultSchema,
+  userInfoSchema,
+  type LoginParams,
+  type LoginResult,
+  type UserInfo,
+} from '@/types/dto/auth.dto'
+import { parseZodHttpPayload } from '@/adapters/http.adapter'
 
 /**
  * 登录 API
  * 当前为 mock 实现；对接后端时改为 post<ApiResponse<LoginResult>> 并返回 res.data
  */
 export const requestAuthLogin = async (data: LoginParams): Promise<LoginResult> => {
-  return requestAuthLoginMock(data)
+  return requestAuthLoginMock(parseZodHttpPayload(loginParamsSchema, data))
 }
 
 /**
@@ -50,10 +58,10 @@ export const requestAuthLoginMock = async (payload: LoginParams): Promise<LoginR
     throw new Error('当前测试环境只支持 admin / user 两个账号')
   }
 
-  return {
+  return parseZodHttpPayload(loginResultSchema, {
     token: `mock-token-${userInfo.userId}`,
     userInfo,
-  }
+  })
 }
 
 /**
@@ -75,21 +83,21 @@ export const requestAuthCurrentUserMock = async (token: string): Promise<UserInf
   }
 
   if (token.includes('mock-token-1')) {
-    return {
+    return parseZodHttpPayload(userInfoSchema, {
       userId: '1',
       username: 'admin',
       roles: ['admin'],
       permissions: ['*:*:*'],
-    }
+    })
   }
 
   if (token.includes('mock-token-2')) {
-    return {
+    return parseZodHttpPayload(userInfoSchema, {
       userId: '2',
       username: 'user',
       roles: ['user'],
       permissions: ['example:architecture:read'],
-    }
+    })
   }
 
   throw new Error('无效的登录状态，请重新登录')

@@ -145,12 +145,11 @@ const { option } = useChartTheme(rawOption)
 
 ### 工程化
 
-- **release-please**：Conventional Commits、SemVer、CHANGELOG
-- **CI**：`vue-tsc`、Vitest、ESLint、生产构建
+- **AI / Architecture Gates**：`ai:doctor`、`ai:guard`、`validate:tokens`、`drift-check`
+- **CI**：AI adapter sync、Architecture Doctor、Drift Check、`vue-tsc`、Vitest、ESLint、生产构建
 - **Git**：Husky、CommitLint、lint-staged
-- **Dependabot**：依赖安全更新
 - **i18n**：vue-i18n（zh-CN / en-US）与 PrimeVue 本地化
-- **GitHub Pages**：演示站点自动部署
+- **GitHub Actions**：CI 与演示站点部署工作流
 
 ### 常用命令（参考）
 
@@ -200,7 +199,7 @@ src/
 - 架构示例：RBAC、Adapters、Infra、Router Meta、Stores、指令
 - 组件示例：图标、ECharts、动画、滚动条、Dialog、Toast
 
-业务落地时可删除 `example/`，或通过 `VITE_ENABLE_DEMO` 与 `import.meta.glob` 在生产构建中剔除。
+业务落地时可删除 `example/`，或通过 `UNO_DEMO` 与 `import.meta.glob` 在生产构建中剔除。
 
 ---
 
@@ -276,9 +275,10 @@ CCD 的浏览器链路已经升级为：
 当前交付治理机制具备：
 
 - `pnpm ai:doctor` 门禁自检
+- `pnpm drift-check` 运行时与文档/样式漂移检查
 - Husky 本地阻断
 - GitHub Actions 防漂移校验
-- `AGENTS.md`、`.cursor/**`、`skills-lock.json` 自动同步一致性检查
+- `AGENTS.md`、`.cursor/**`、`.ai/manifests/skills-lock.json` 自动同步一致性检查
 - 运行时与治理层漂移分离审计
 
 这意味着交付链路不再依赖派生桌面分支，而是围绕同一条主线和同一套可审计门禁持续收敛。

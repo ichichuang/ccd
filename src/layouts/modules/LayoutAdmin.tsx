@@ -200,6 +200,133 @@ export default defineComponent({
     const sidebarWidthClass = computed(() =>
       layoutStore.sidebarCollapse ? 'w-sidebarCollapsedWidth' : 'w-sidebarWidth'
     )
+    const sidebarShellRef = ref<HTMLElement | null>(null)
+    const sidebarMenuCollapse = ref(layoutStore.sidebarCollapse)
+    const sidebarMotionVisible = ref(false)
+    const sidebarMotionActive = ref(false)
+    const sidebarMotionWidth = ref('0px')
+    const sidebarMotionScale = ref(1)
+    const contentMotionOffset = ref('0px')
+    const contentMotionActive = ref(false)
+    const contentMotionTargetRef = ref<HTMLElement | null>(null)
+    let deferExpandedMenuRender = false
+    let sidebarMotionTimer: ReturnType<typeof setTimeout> | undefined
+    let sidebarMotionFrame: number | undefined
+    let contentMotionTimer: ReturnType<typeof setTimeout> | undefined
+    let contentMotionFrame: number | undefined
+
+    const clearSidebarMotion = () => {
+      if (sidebarMotionTimer !== undefined) {
+        clearTimeout(sidebarMotionTimer)
+        sidebarMotionTimer = undefined
+      }
+      if (sidebarMotionFrame !== undefined) {
+        cancelAnimationFrame(sidebarMotionFrame)
+        sidebarMotionFrame = undefined
+      }
+    }
+
+    const clearContentMotion = () => {
+      if (contentMotionTimer !== undefined) {
+        clearTimeout(contentMotionTimer)
+        contentMotionTimer = undefined
+      }
+      if (contentMotionFrame !== undefined) {
+        cancelAnimationFrame(contentMotionFrame)
+        contentMotionFrame = undefined
+      }
+    }
+
+    const syncSidebarMenuRender = () => {
+      deferExpandedMenuRender = false
+      sidebarMenuCollapse.value = layoutStore.sidebarCollapse
+    }
+
+    watch(
+      () => layoutStore.sidebarCollapse,
+      collapsed => {
+        if (deferExpandedMenuRender && !collapsed) return
+        sidebarMenuCollapse.value = collapsed
+      }
+    )
+
+    const runSidebarMotion = (beforeWidth: number, afterWidth: number): boolean => {
+      const maxWidth = Math.max(beforeWidth, afterWidth)
+      if (maxWidth < 1 || Math.abs(beforeWidth - afterWidth) < 1) return false
+
+      clearSidebarMotion()
+      sidebarMotionVisible.value = true
+      sidebarMotionActive.value = false
+      sidebarMotionWidth.value = `${maxWidth}px`
+      sidebarMotionScale.value = beforeWidth / maxWidth
+
+      sidebarMotionFrame = requestAnimationFrame(() => {
+        sidebarMotionFrame = undefined
+        sidebarMotionActive.value = true
+        sidebarMotionScale.value = afterWidth / maxWidth
+      })
+
+      sidebarMotionTimer = setTimeout(() => {
+        sidebarMotionVisible.value = false
+        sidebarMotionActive.value = false
+        sidebarMotionScale.value = 1
+        syncSidebarMenuRender()
+        sidebarMotionTimer = undefined
+      }, 320)
+
+      return true
+    }
+
+    const runContentMotion = (beforeLeft: number, afterLeft: number) => {
+      const offset = beforeLeft - afterLeft
+      if (Math.abs(offset) < 1) return
+
+      clearContentMotion()
+      contentMotionActive.value = false
+      contentMotionOffset.value = `${offset}px`
+
+      contentMotionFrame = requestAnimationFrame(() => {
+        contentMotionFrame = undefined
+        contentMotionActive.value = true
+        contentMotionOffset.value = '0px'
+      })
+
+      contentMotionTimer = setTimeout(() => {
+        contentMotionActive.value = false
+        contentMotionOffset.value = '0px'
+        contentMotionTimer = undefined
+      }, 320)
+    }
+
+    const runSidebarLayoutMotion = async (beforeLeft: number, beforeWidth: number) => {
+      await nextTick()
+      const afterLeft = contentMotionTargetRef.value?.getBoundingClientRect().left ?? beforeLeft
+      const afterWidth = sidebarShellRef.value?.getBoundingClientRect().width ?? beforeWidth
+
+      const didRunSidebarMotion = runSidebarMotion(beforeWidth, afterWidth)
+      runContentMotion(beforeLeft, afterLeft)
+      if (!didRunSidebarMotion) syncSidebarMenuRender()
+    }
+
+    const onToggleSidebarCollapse = () => {
+      const beforeLeft = contentMotionTargetRef.value?.getBoundingClientRect().left ?? 0
+      const beforeWidth = sidebarShellRef.value?.getBoundingClientRect().width ?? 0
+      const nextCollapsed = !layoutStore.sidebarCollapse
+      if (nextCollapsed) {
+        deferExpandedMenuRender = false
+        sidebarMenuCollapse.value = true
+      } else {
+        deferExpandedMenuRender = true
+        sidebarMenuCollapse.value = true
+      }
+      layoutStore.toggleCollapse()
+      void runSidebarLayoutMotion(beforeLeft, beforeWidth)
+    }
+
+    onUnmounted(() => {
+      clearSidebarMotion()
+      clearContentMotion()
+    })
 
     // --- 布局模式切换过渡：与 AnimateRouterView / AnimateWrapper 一致使用 animate-lite ---
     // Resize 拖拽期间必须保持 Transition 子树不被卸载重建（Transition Trap）
@@ -209,14 +336,23 @@ export default defineComponent({
     const bodyTransitionDuration = 'var(--transition-md)'
 
     const renderContent = () => (
-      <main class="flex-1 layout-full col-between min-w-0 min-h-0 overflow-hidden">
+      <main
+        ref={contentMotionTargetRef}
+        class={[
+          'flex-1 layout-full col-between min-w-0 min-h-0 overflow-hidden transform-gpu will-change-transform',
+          contentMotionActive.value ? 'transition-transform duration-md ease-smooth' : '',
+        ]}
+        style={{
+          transform: `translate3d(${contentMotionOffset.value}, 0, 0)`,
+        }}
+      >
         <div class="bg-sidebar/36! dark:bg-sidebar/40!">
           <AdminBreadcrumbBar show={showBreadcrumbEffective.value} />
           <AdminTabsBar show={showTabsEffective.value} />
         </div>
         <section class={['col-fill', 'min-w-0', 'relative', 'overflow-hidden']}>
           {/* Layer 3: 业务内容（透明以承接光晕与点阵） */}
-          <AppContainer class="relative z-content min-w-0 overflow-hidden transition-all duration-md ease-spring " />
+          <AppContainer class="relative z-content min-w-0 overflow-hidden" />
         </section>
         <div class="bg-sidebar/36! dark:bg-sidebar/40!">
           <AdminFooterBar show={showFooterEffective.value} />
@@ -232,18 +368,38 @@ export default defineComponent({
 
       // vertical/mix：sidebar + content
       return (
-        <div class="flex-1 min-h-0 row-start overflow-hidden">
-          <div class="shrink-0 self-stretch overflow-hidden bg-sidebar/36! dark:bg-sidebar/40!">
+        <div class="flex-1 min-h-0 row-start overflow-hidden relative">
+          <div
+            ref={sidebarShellRef}
+            class={[
+              'shrink-0 self-stretch overflow-hidden bg-sidebar/36! dark:bg-sidebar/40!',
+              sidebarMotionVisible.value
+                ? 'opacity-0'
+                : 'opacity-100 transition-opacity duration-xs ease-smooth',
+            ]}
+          >
             {showSidebarEffective.value && (
               <AdminSidebar
                 mode={effectiveMode.value}
                 showSidebar={showSidebarEffective.value}
-                sidebarCollapse={layoutStore.sidebarCollapse}
+                sidebarCollapse={sidebarMenuCollapse.value}
                 sidebarFixed={sidebarFixed.value}
                 sidebarWidthClass={sidebarWidthClass.value}
               />
             )}
           </div>
+          {sidebarMotionVisible.value && (
+            <div
+              class={[
+                'absolute left-0 top-0 bottom-0 z-layout pointer-events-none bg-sidebar/36! dark:bg-sidebar/40! transform-gpu origin-left',
+                sidebarMotionActive.value ? 'transition-transform duration-md ease-smooth' : '',
+              ]}
+              style={{
+                width: sidebarMotionWidth.value,
+                transform: `scaleX(${sidebarMotionScale.value})`,
+              }}
+            />
+          )}
           {renderContent()}
         </div>
       )
@@ -297,7 +453,7 @@ export default defineComponent({
                 onToggleTheme={(event: MouseEvent) => toggleThemeWithAnimation(event)}
                 showSidebarToggle={showSidebarToggle.value}
                 sidebarCollapse={layoutStore.sidebarCollapse}
-                onToggleCollapse={(_e: MouseEvent) => layoutStore.toggleCollapse()}
+                onToggleCollapse={onToggleSidebarCollapse}
               />
             </div>
           )}
@@ -317,7 +473,10 @@ export default defineComponent({
                 container: () => (
                   <div class="admin-sidebar--fixed py-md layout-full flex flex-col select-none">
                     <AdminSidebarLogo />
-                    <CScrollbar class="col-fill px-md">
+                    <CScrollbar
+                      native
+                      class="col-fill px-md"
+                    >
                       <AdminSidebarMenu sidebarCollapse={false} />
                     </CScrollbar>
                   </div>

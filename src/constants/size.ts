@@ -72,6 +72,16 @@ function resolveSizePersistKey(): string {
     return `${prefix}-size`
   }
 
+  const nodePrefix =
+    typeof process === 'undefined' ? undefined : process.env.VITE_PINIA_PERSIST_KEY_PREFIX?.trim()
+  if (nodePrefix) {
+    return `${nodePrefix}-size`
+  }
+
+  if (import.meta.env?.MODE === 'test') {
+    return 'ccd-test-storage-size'
+  }
+
   if (import.meta.env?.DEV) {
     throw new Error('VITE_PINIA_PERSIST_KEY_PREFIX is required for size persistence in dev.')
   }

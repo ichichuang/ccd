@@ -86,7 +86,9 @@ const runNodeScript = script => {
 
 console.log('AI adapter sync')
 console.log('===============')
+runNodeScript('scripts/generate-ai-protocol-adapters.mjs')
 runNodeScript('scripts/generate-rule-index.mjs')
+runNodeScript('scripts/generate-unocss-ide-data.mjs')
 for (const fileAdapter of fileAdapters) syncFile(fileAdapter)
 for (const dirAdapter of dirAdapters) syncMergedDir(dirAdapter)
 for (const runtimeFile of localRuntimeFiles) ensureLocalRuntimeFile(runtimeFile)

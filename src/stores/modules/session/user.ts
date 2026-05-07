@@ -7,36 +7,34 @@ import { useSizeStore } from '@/stores/modules/system/size'
 import { useLocaleStore } from '@/stores/modules/system/locale'
 import { usePermissionStore } from '@/stores/modules/session/permission'
 import { createPiniaEncryptedSerializer, removeLocalStorageKeysWhere } from '@/utils/safeStorage'
-import { encryptAndCompressSync } from '@/utils/safeStorage/safeStorage'
 import { defineStore } from 'pinia'
 import type { LoginResult, UserInfo } from '@/types/dto/auth.dto'
 
 interface UserState {
   token: string
-  safeStorageToken: string
   userInfo: UserInfo
   isLogin: boolean
 }
 
+const createEmptyUserInfo = (): UserInfo => ({
+  userId: '',
+  username: '',
+  roles: [],
+  permissions: [],
+  avatar: undefined,
+  email: undefined,
+  phone: undefined,
+})
+
 export const useUserStore = defineStore('user', {
   state: (): UserState => ({
     token: '',
-    safeStorageToken: '',
-    userInfo: {
-      userId: '', // 用户ID
-      username: '', // 用户名
-      roles: [], // 用户角色
-      permissions: [], // 用户权限
-      avatar: undefined, // 用户头像
-      email: undefined, // 用户邮箱
-      phone: undefined, // 用户手机号
-    },
+    userInfo: createEmptyUserInfo(),
     isLogin: false, // 是否登录
   }),
 
   getters: {
     getToken: (state: UserState) => state.token,
-    getSafeStorageToken: (state: UserState) => state.safeStorageToken,
     getUserInfo: (state: UserState) => state.userInfo,
     // 获取页面权限
     getUserRoles: (state: UserState) => state.userInfo.roles,
@@ -54,7 +52,7 @@ export const useUserStore = defineStore('user', {
       if (!AUTH_ENABLED) {
         return
       }
-      await this.setToken(result.token)
+      this.setToken(result.token)
       this.setUserInfo(result.userInfo)
     },
 
@@ -69,13 +67,12 @@ export const useUserStore = defineStore('user', {
       this.setUserInfo(userInfo)
     },
 
-    async setToken(token: string) {
+    setToken(token: string) {
       // 未启用登录/鉴权模式时，跳过一切登录相关逻辑
       if (!AUTH_ENABLED) {
         return
       }
       this.token = token
-      this.safeStorageToken = encryptAndCompressSync(token, import.meta.env.VITE_APP_SECRET)
     },
     setUserInfo(userInfo: UserInfo) {
       if (!AUTH_ENABLED) {
@@ -94,21 +91,12 @@ export const useUserStore = defineStore('user', {
         return
       }
       this.token = ''
-      this.safeStorageToken = ''
-      this.userInfo = {
-        userId: '',
-        username: '',
-        roles: [],
-        permissions: [],
-        avatar: undefined,
-        email: undefined,
-        phone: undefined,
-      }
+      this.userInfo = createEmptyUserInfo()
       this.isLogin = false
     },
     /**
      * 仅做状态清理，不包含 UI 副作用或导航。
-     * 刷新/跳转由调用方负责（如 AuthBridge、User 组件的退出按钮、路由守卫）。
+     * 刷新/跳转由调用方负责（如 User 组件的退出按钮、路由守卫）。
      */
     async logout() {
       if (!AUTH_ENABLED) {
@@ -143,6 +131,7 @@ export const useUserStore = defineStore('user', {
   persist: {
     key: `${import.meta.env.VITE_PINIA_PERSIST_KEY_PREFIX}-user`,
     storage: localStorage,
+    pick: ['token', 'userInfo', 'isLogin'],
     serializer: createPiniaEncryptedSerializer(), // 用户信息需要加密存储
   },
 })

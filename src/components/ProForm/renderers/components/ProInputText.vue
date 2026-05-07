@@ -1,9 +1,14 @@
 <script setup lang="ts">
 import type { FieldComponentProps } from '../../engine/types'
 
-type Props = FieldComponentProps<string | null | undefined>
+defineOptions({ inheritAttrs: false })
 
-const props = defineProps<Omit<Props, 'modelValue'>>()
+type Props = FieldComponentProps<string | null | undefined>
+type InputTextProps = Omit<Props, 'modelValue'> & {
+  inputId?: string
+}
+
+const props = defineProps<InputTextProps>()
 const model = defineModel<string | null | undefined>()
 
 const attrs = useAttrs()
@@ -52,6 +57,8 @@ const handleUpdate = (value: string | null | undefined): void => {
   </span>
   <InputText
     v-else
+    v-bind="attrs"
+    :id="props.inputId"
     :model-value="model"
     :disabled="props.disabled"
     :invalid="!!props.error && props.error.length > 0"

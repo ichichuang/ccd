@@ -121,7 +121,7 @@ Use `material-elevated` for each logical content section (search area, table are
 </div>
 ```
 
-`material-elevated` = `bg-card text-card-foreground rounded-lg p-md shadow-sm hover:shadow-md transition-all duration-md`
+`material-elevated` = `bg-card text-card-foreground rounded-lg p-md border border-solid border-transparent dark:border-border/15 shadow-sm hover:shadow-md transition-all duration-md`
 
 **FORBIDDEN on sections:**
 - ❌ `padding: 16px` inline — use `p-md`

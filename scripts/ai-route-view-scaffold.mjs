@@ -298,9 +298,18 @@ const { title, description, columns, rows } = ${hookName}()
 
 function renderHook({ kind, routeName, hookName, titleLabel, description, stateKey }) {
   if (kind === 'form') {
+    const returnTypeName = `${routeName}PageState`
     return `import type { FormSchema } from '@/components/ProForm'
 
-export function ${hookName}() {
+interface ${returnTypeName} {
+  title: string
+  description: string
+  schema: FormSchema
+  initialValues: Record<string, unknown>
+  handleSubmit: (values: Record<string, unknown>) => Promise<void>
+}
+
+export function ${hookName}(): ${returnTypeName} {
   const title = '${titleLabel}'
   const description = '${description}'
 
@@ -377,6 +386,7 @@ export function ${hookName}() {
   }
 
   if (kind === 'detail') {
+    const returnTypeName = `${routeName}PageState`
     return `interface ${routeName}DetailItem {
   label: string
   value: string
@@ -386,6 +396,12 @@ interface ${routeName}DetailSection {
   id: string
   label: string
   items: ${routeName}DetailItem[]
+}
+
+interface ${returnTypeName} {
+  title: string
+  description: string
+  sections: readonly ${routeName}DetailSection[]
 }
 
 const sections = [
@@ -409,7 +425,7 @@ const sections = [
   },
 ] as const satisfies ${routeName}DetailSection[]
 
-export function ${hookName}() {
+export function ${hookName}(): ${returnTypeName} {
   const title = '${titleLabel}'
   const description = '${description}'
 
@@ -423,6 +439,7 @@ export function ${hookName}() {
   }
 
   return `import type { ProTableColumn } from '@/components/ProTable'
+import type { ComputedRef, Ref } from 'vue'
 
 interface ${routeName}Row extends Record<string, unknown> {
   id: string
@@ -430,6 +447,14 @@ interface ${routeName}Row extends Record<string, unknown> {
   owner: string
   status: 'draft' | 'active'
   updatedAt: string
+}
+
+interface ${routeName}PageState {
+  title: string
+  description: string
+  stateKey: string
+  columns: ComputedRef<ProTableColumn<${routeName}Row>[]>
+  rows: Ref<${routeName}Row[]>
 }
 
 const rows = ref<${routeName}Row[]>([
@@ -476,7 +501,7 @@ const columns = computed<ProTableColumn<${routeName}Row>[]>(() => [
   },
 ])
 
-export function ${hookName}() {
+export function ${hookName}(): ${routeName}PageState {
   const title = '${titleLabel}'
   const description = '${description}'
 

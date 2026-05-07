@@ -19,15 +19,14 @@ Read this together with:
 2. Generate local adapters and install repo-managed Codex skills:
 
 ```bash
-pnpm ai:sync
-pnpm ai:sync:codex
+pnpm ai:setup:codex
 ```
 
-3. Ensure generated adapters now exist: `AGENTS.md`, `.cursor/**`, and `~/.codex/skills/**` contains the repo skills.
-4. Run:
+Equivalent expanded sequence:
 
 ```bash
-pnpm ai:guard
+pnpm ai:sync
+pnpm ai:sync:codex
 pnpm ai:doctor
 pnpm codex:preflight
 ```
@@ -70,7 +69,7 @@ codex --profile yolo
 Before opening multiple skill docs, route the task first:
 
 ```bash
-python3 .ai/skills/codex/task-orchestrator/scripts/skill_router.py "处理 GitHub PR review comments 并检查 .github workflows" --json
+pnpm ai:route:skills "处理 GitHub PR review comments 并检查 .github workflows" --json
 ```
 
 This returns:
@@ -148,7 +147,7 @@ This keeps Codex at the orchestration layer while the browser work runs through 
 
 If your change touches canonical AI governance assets, expect CI to rerun `pnpm ai:sync` and `pnpm ai:sync:codex`.
 
-If those commands would modify `AGENTS.md`, `.cursor/**`, or `skills-lock.json`, CI will fail and require you to commit the synced artifacts first.
+If those commands would modify `AGENTS.md`, `.cursor/**`, or `.ai/manifests/skills-lock.json`, CI will fail and require you to commit the synced artifacts first.
 
 ## 6) Task Prompt Template (Copy and Fill)
 
@@ -191,24 +190,31 @@ Copy these files into the new repo root:
 
 - `.ai/README.md`
 - `.ai/config/cursor.settings.json`
+- `.ai/protocol/adapter-manifest.json`
 - `.ai/protocol/AI.entry.md`
 - `.ai/protocol/AGENTS.core.md`
 - `.ai/runtime/repair_list.template.txt`
 - `docs/codex/quickstart.md`
 - `scripts/ai-doctor.mjs`
+- `scripts/ai-architecture-guard.mjs`
+- `scripts/ai-route-view-scaffold.mjs`
 - `scripts/ai-sync.mjs`
 - `scripts/ai-sync-codex.mjs`
 - `scripts/codex-preflight.mjs`
+- `scripts/drift-check.mjs`
+- `scripts/validate-token-contrast.ts`
 
-Then add `ai:doctor`, `ai:sync`, `ai:sync:codex`, and `codex:preflight` to `package.json` scripts and run:
+Then add the AI governance scripts to `package.json` and run:
 
 ```bash
-pnpm ai:sync
-pnpm ai:sync:codex
-pnpm ai:guard
-pnpm ai:clean
-pnpm ai:doctor
-pnpm codex:preflight
+pnpm ai:setup:codex
+pnpm drift-check
+```
+
+If the product repo has desktop/Tauri runtime assets, also add and run:
+
+```bash
+pnpm sync:desktop-config
 ```
 
 `pnpm ai:clean` is conservative by default. Use `pnpm ai:clean -- --all` only when you explicitly want to drop local browser artifacts, `tmp/`, and Codex browser session caches.

@@ -1,5 +1,5 @@
-/* eslint-disable @typescript-eslint/naming-convention */
 // src/constants/sizeScale.ts
+import { z } from 'zod'
 
 /**
  * 尺寸阶梯键名定义 (xs -> 5xl)
@@ -8,85 +8,173 @@
 export const SIZE_SCALE_KEYS = ['xs', 'sm', 'md', 'lg', 'xl', '2xl', '3xl', '4xl', '5xl'] as const
 export type SizeScaleKey = (typeof SIZE_SCALE_KEYS)[number]
 
+const sizeScaleMatrixEntrySchema = z.object({
+  key: z.enum(SIZE_SCALE_KEYS),
+  fontRatio: z.number().positive(),
+  spacingRatio: z.number().positive(),
+  radiusRatio: z.number().positive(),
+  layoutRatio: z.number().positive(),
+  loadingSizeCss: z.union([z.number(), z.string().min(1)]),
+  transitionMs: z.number().int().positive(),
+})
+
+const sizeScaleMatrixSchema = z
+  .array(sizeScaleMatrixEntrySchema)
+  .length(SIZE_SCALE_KEYS.length)
+  .superRefine((entries, ctx) => {
+    const seen = new Set<SizeScaleKey>()
+    entries.forEach((entry, index) => {
+      if (entry.key !== SIZE_SCALE_KEYS[index]) {
+        ctx.addIssue({
+          code: 'custom',
+          path: [index, 'key'],
+          message: `Size scale key order must match SIZE_SCALE_KEYS[${index}]`,
+        })
+      }
+      if (seen.has(entry.key)) {
+        ctx.addIssue({
+          code: 'custom',
+          path: [index, 'key'],
+          message: `Duplicate size scale key: ${entry.key}`,
+        })
+      }
+      seen.add(entry.key)
+    })
+  })
+
+export type SizeScaleMatrixEntry = z.infer<typeof sizeScaleMatrixEntrySchema>
+
 /**
- * 字体大小倍率表 (相对于 --font-size-base)
- * 实际像素由 sizeEngine：`round(fontSizeBase × ratio)`（见 comfortable 预设 fontSizeBase=16）
- * 大档位阶梯近似 Minor Third (1.2) / Major Third (1.25)，xs–lg 为 UI 可读性做了压缩与微调
+ * 尺寸阶梯矩阵 SSOT。
+ * - fontRatio：相对于 --font-size-base
+ * - spacingRatio：相对于 --spacing-unit
+ * - radiusRatio：相对于 SizePreset.radius
+ * - layoutRatio：PC 断点布局缩放，Mobile/Tablet 固定 1
+ * - loadingSizeCss：Loading 动画正方形边长
+ * - transitionMs：过渡时长阶梯
  */
-export const FONT_SCALE_RATIOS: Record<SizeScaleKey, number> = {
-  xs: 0.82, // round → 13px @16
-  sm: 0.96, // round → 15px @16
-  md: 1, // 16px (Base @16)
-  lg: 1.125, // 18px @16
-  xl: 1.2, // round → 19px @16
-  '2xl': 1.5, // 24px @16
-  '3xl': 1.875, // 30px @16
-  '4xl': 2.25, // 36px @16
-  '5xl': 3, // 48px @16
+export const SIZE_SCALE_MATRIX = sizeScaleMatrixSchema.parse([
+  {
+    key: 'xs',
+    fontRatio: 0.82,
+    spacingRatio: 1,
+    radiusRatio: 0.25,
+    layoutRatio: 0.95,
+    loadingSizeCss: 'min(12vw, 12vh)',
+    transitionMs: 180,
+  },
+  {
+    key: 'sm',
+    fontRatio: 0.96,
+    spacingRatio: 2,
+    radiusRatio: 0.5,
+    layoutRatio: 0.98,
+    loadingSizeCss: 'min(20vw, 20vh)',
+    transitionMs: 280,
+  },
+  {
+    key: 'md',
+    fontRatio: 1,
+    spacingRatio: 4,
+    radiusRatio: 1,
+    layoutRatio: 1,
+    loadingSizeCss: 'min(32vw, 32vh)',
+    transitionMs: 320,
+  },
+  {
+    key: 'lg',
+    fontRatio: 1.125,
+    spacingRatio: 6,
+    radiusRatio: 1.5,
+    layoutRatio: 1,
+    loadingSizeCss: 'min(42vw, 42vh)',
+    transitionMs: 420,
+  },
+  {
+    key: 'xl',
+    fontRatio: 1.2,
+    spacingRatio: 8,
+    radiusRatio: 2,
+    layoutRatio: 1.05,
+    loadingSizeCss: 'min(60vw, 60vh)',
+    transitionMs: 480,
+  },
+  {
+    key: '2xl',
+    fontRatio: 1.5,
+    spacingRatio: 12,
+    radiusRatio: 2.5,
+    layoutRatio: 1.1,
+    loadingSizeCss: 'min(78vw, 78vh)',
+    transitionMs: 580,
+  },
+  {
+    key: '3xl',
+    fontRatio: 1.875,
+    spacingRatio: 16,
+    radiusRatio: 3,
+    layoutRatio: 1.15,
+    loadingSizeCss: 'min(82vw, 82vh)',
+    transitionMs: 680,
+  },
+  {
+    key: '4xl',
+    fontRatio: 2.25,
+    spacingRatio: 24,
+    radiusRatio: 3.5,
+    layoutRatio: 1.2,
+    loadingSizeCss: 'min(90vw, 90vh)',
+    transitionMs: 780,
+  },
+  {
+    key: '5xl',
+    fontRatio: 3,
+    spacingRatio: 32,
+    radiusRatio: 999,
+    layoutRatio: 1.25,
+    loadingSizeCss: 'min(100vw, 100vh)',
+    transitionMs: 880,
+  },
+])
+
+function deriveSizeScaleRecord<K extends Exclude<keyof SizeScaleMatrixEntry, 'key'>>(
+  field: K
+): Record<SizeScaleKey, SizeScaleMatrixEntry[K]> {
+  return SIZE_SCALE_MATRIX.reduce(
+    (acc, entry) => ({
+      ...acc,
+      [entry.key]: entry[field],
+    }),
+    {} as Record<SizeScaleKey, SizeScaleMatrixEntry[K]>
+  )
 }
 
 /**
- * 间距倍率表 (相对于 --spacing-unit)
- * 假设 unit = 4px
- * 遵循 8pt Grid System
+ * @deprecated Prefer SIZE_SCALE_MATRIX as the SSOT.
  */
-export const SPACING_SCALE_RATIOS: Record<SizeScaleKey, number> = {
-  xs: 1, // 4px (1 unit)
-  sm: 2, // 8px
-  md: 4, // 16px (Standard Gap)
-  lg: 6, // 24px
-  xl: 8, // 32px
-  '2xl': 12, // 48px
-  '3xl': 16, // 64px
-  '4xl': 24, // 96px
-  '5xl': 32, // 128px
-}
+export const FONT_SCALE_RATIOS = deriveSizeScaleRecord('fontRatio')
 
 /**
- * 圆角倍率表 (相对于 SizePreset.radius，对应 --radius-md 的基准值)
- * 假设 base (md) = 8px
- * 从微圆角到全圆角的完整阶梯
+ * @deprecated Prefer SIZE_SCALE_MATRIX as the SSOT.
  */
-export const RADIUS_SCALE_RATIOS: Record<SizeScaleKey, number> = {
-  xs: 0.25, // 2px
-  sm: 0.5, // 4px
-  md: 1, // 8px (Base)
-  lg: 1.5, // 12px
-  xl: 2, // 16px
-  '2xl': 2.5, // 20px
-  '3xl': 3, // 24px
-  '4xl': 3.5, // 28px
-  '5xl': 999, // 极大值，用于胶囊/全圆角效果
-}
+export const SPACING_SCALE_RATIOS = deriveSizeScaleRecord('spacingRatio')
 
 /**
- * 布局尺寸倍率表 (按断点缩放，仅 PC 使用；Mobile/Tablet 固定 1)
- * 布局比字体更保守：xl 起才略放大，大屏逐步加至 1.25
+ * @deprecated Prefer SIZE_SCALE_MATRIX as the SSOT.
  */
-export const LAYOUT_SCALE_RATIOS: Record<SizeScaleKey, number> = {
-  xs: 0.95,
-  sm: 0.98,
-  md: 1,
-  lg: 1,
-  xl: 1.05,
-  '2xl': 1.1,
-  '3xl': 1.15,
-  '4xl': 1.2,
-  '5xl': 1.25,
-}
+export const RADIUS_SCALE_RATIOS = deriveSizeScaleRecord('radiusRatio')
 
 /**
- * Loading 动画尺寸（正方形，避免宽高比失真）
- * 与 SizeScaleKey 一一对应；完全基于视口短边自适应，确保任何设备下绝对可控且不溢出
+ * @deprecated Prefer SIZE_SCALE_MATRIX as the SSOT.
  */
-export const LOADING_SIZE_CSS: Record<SizeScaleKey, number | string> = {
-  xs: 'min(12vw, 12vh)',
-  sm: 'min(20vw, 20vh)',
-  md: 'min(32vw, 32vh)',
-  lg: 'min(42vw, 42vh)',
-  xl: 'min(60vw, 60vh)',
-  '2xl': 'min(78vw, 78vh)',
-  '3xl': 'min(82vw, 82vh)',
-  '4xl': 'min(90vw, 90vh)',
-  '5xl': 'min(100vw, 100vh)',
-}
+export const LAYOUT_SCALE_RATIOS = deriveSizeScaleRecord('layoutRatio')
+
+/**
+ * @deprecated Prefer SIZE_SCALE_MATRIX as the SSOT.
+ */
+export const LOADING_SIZE_CSS = deriveSizeScaleRecord('loadingSizeCss')
+
+/**
+ * @deprecated Prefer SIZE_SCALE_MATRIX as the SSOT.
+ */
+export const TRANSITION_SCALE_MS = deriveSizeScaleRecord('transitionMs')

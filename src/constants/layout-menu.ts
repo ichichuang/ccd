@@ -5,8 +5,13 @@
  * 菜单样式常量集中在此，便于后续迁移到 menu-nav-misc Preset Token。
  */
 
-/** 激活项及所有父级统一样式（菜单激活态单一权威）：primary 背景 + primary-foreground 文字/图标，用于侧栏/Header/面包屑等所有菜单场景 */
-export const MENU_ACTIVE_UNIFIED = 'bg-primary! text-primary-foreground!' as const
+/** 激活项及所有父级统一样式（菜单激活态单一权威）：暗色使用 primary-light 避免亮紫底黑字的突兀感 */
+export const MENU_ACTIVE_UNIFIED =
+  'bg-primary! text-primary-foreground! dark:bg-primary-light! dark:text-primary-light-foreground!' as const
+
+/** 打开/聚焦/hover 态：弱于激活态，用于未命中当前路由但已展开的父级菜单 */
+export const MENU_OPEN_UNIFIED =
+  'bg-primary/12! text-primary! dark:bg-primary-light/70! dark:text-primary-light-foreground!' as const
 
 /** 未激活项文字（子级） */
 export const MENU_INACTIVE_TEXT = 'text-foreground'
@@ -22,7 +27,7 @@ export const TAB_ICON_SIZE = 'xs' as const
 export const MENU_ITEM_BASE =
   'flex items-center gap-sm cursor-pointer select-none border-none bg-transparent'
 /** 菜单项统一过渡（单一真源，避免分散写 ease-*） */
-export const MENU_ITEM_TRANSITION = 'transition-all duration-md ease-out-expo'
+export const MENU_ITEM_TRANSITION = 'transition-[background-color,color] duration-xs ease-out-expo'
 
 /** 菜单项间距 */
 export const MENU_ITEM_GAP = 'gap-sm'
@@ -57,5 +62,3 @@ export const MENU_COLLAPSED_FALLBACK_TEXT = 'text-md'
 
 /** 收缩态侧栏一级菜单图标尺寸：比 TieredMenu 子项（lg）大 2 档，仅用于收缩态图标按钮 */
 export const MENU_ICON_SIZE_COLLAPSED = '2xl' as const
-/** 圆角规范：导航/菜单 rounded-md */
-export const ROUNDED_NAV = 'rounded-md' as const

@@ -158,7 +158,8 @@ async function copyAll(): Promise<void> {
                   </span>
                 </div>
                 <span class="text-sm text-muted-foreground text-ellipsis-1">
-                  Constants 是运行期对象，支持遍历展示：选定对象后可按 key 过滤并查看结构化值。
+                  教育性运行期对象展示：使用 PrimeVue DataTable 展示 Constants
+                  结构；生产业务表格必须使用 ProTable。
                 </span>
               </div>
             </div>

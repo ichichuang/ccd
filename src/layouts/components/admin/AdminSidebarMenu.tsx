@@ -26,7 +26,6 @@ import {
   MENU_PANEL_INDENT_CHILD,
   MENU_TEXT_CLASS,
   MENU_ICON_COMMON_CLASS,
-  ROUNDED_NAV,
 } from '@/constants/layout-menu'
 import { getMenuItemBase, getMenuStateClasses, getIconSize } from '@/hooks/layout/useMenuVisuals'
 import { createTieredMenuItemRenderer } from '@/hooks/layout/useMenuRenderer'
@@ -103,7 +102,9 @@ export default defineComponent({
 
       if (!props.sidebarCollapse) {
         nextTick(() => {
-          scheduleMeasureTruncation(0)
+          // 延迟到展开动画完成后再测量（动画 250ms + 缓冲），
+          // 避免在 grid-template-rows 动画期间读取 scrollWidth/clientWidth 导致 layout thrashing
+          scheduleMeasureTruncation(300)
         })
       }
     }
@@ -146,6 +147,7 @@ export default defineComponent({
 
     const truncatedKeys = shallowRef<Set<string>>(new Set())
     const menuLabelRefs = shallowRef<Map<string, HTMLElement>>(new Map())
+    const isSidebarWidthAnimating = ref(false)
 
     const setMenuLabelRef = (key: string, el: HTMLElement | null) => {
       const map = menuLabelRefs.value
@@ -157,10 +159,12 @@ export default defineComponent({
     }
 
     let measureTimeoutId: number | null = null
+    let sidebarAnimationTimeoutId: number | null = null
     let fontsReadyHooked = false
 
     function scheduleMeasureTruncation(delayMs: number): void {
       if (props.sidebarCollapse) return
+      if (isSidebarWidthAnimating.value) return
       if (measureTimeoutId !== null) {
         window.clearTimeout(measureTimeoutId)
         measureTimeoutId = null
@@ -178,6 +182,7 @@ export default defineComponent({
 
     function measureTruncation(): void {
       if (props.sidebarCollapse) return
+      if (isSidebarWidthAnimating.value) return
       const next: Set<string> = new Set<string>()
       menuLabelRefs.value.forEach((node, key) => {
         if (!node.isConnected) return
@@ -224,6 +229,19 @@ export default defineComponent({
     watch(
       () => props.sidebarCollapse,
       collapsed => {
+        isSidebarWidthAnimating.value = true
+        if (sidebarAnimationTimeoutId !== null) {
+          window.clearTimeout(sidebarAnimationTimeoutId)
+          sidebarAnimationTimeoutId = null
+        }
+        sidebarAnimationTimeoutId = window.setTimeout(() => {
+          isSidebarWidthAnimating.value = false
+          sidebarAnimationTimeoutId = null
+          if (!props.sidebarCollapse) {
+            scheduleMeasureTruncation(0)
+          }
+        }, 280)
+
         if (collapsed) {
           if (measureTimeoutId !== null) {
             window.clearTimeout(measureTimeoutId)
@@ -231,11 +249,6 @@ export default defineComponent({
           }
           truncatedKeys.value = new Set<string>()
           return
-        }
-        if (!collapsed) {
-          nextTick(() => {
-            scheduleMeasureTruncation(200)
-          })
         }
       }
     )
@@ -245,29 +258,34 @@ export default defineComponent({
         window.clearTimeout(measureTimeoutId)
         measureTimeoutId = null
       }
+      if (sidebarAnimationTimeoutId !== null) {
+        window.clearTimeout(sidebarAnimationTimeoutId)
+        sidebarAnimationTimeoutId = null
+      }
     })
-
-    const getExpandedSidebarStateClasses = (distance: number, level: number): string => {
-      return getMenuStateClasses({ distance, level })
-    }
 
     const renderPanelMenuItem = ({ item }: { item: PrimeMenuModelItem }) => {
       const distance = getActiveDistanceForItem(item)
       const level = item.level ?? 0
       const indentClass = level <= 0 ? MENU_PANEL_INDENT_ROOT : MENU_PANEL_INDENT_CHILD
       const baseClasses = `${getMenuItemBase('sidebar')} group w-full no-underline box-border overflow-hidden ${MENU_TEXT_WEIGHT} ${indentClass}`
-      const stateClasses = getExpandedSidebarStateClasses(distance, level)
-
       const key = item.key
       if (typeof key !== 'string' || !key.length) {
         return null
       }
+      const hasChildren = Array.isArray(item.items) && item.items.length > 0
+      const isSubmenuOpen = hasChildren && layoutStore.getExpandedMenuKeys[key] === true
+      const stateClasses = getMenuStateClasses({
+        distance,
+        isSubmenuOpen,
+        level,
+      })
 
       const labelNode = (
         <span
           ref={el => setMenuLabelRef(key, el instanceof HTMLElement ? el : null)}
           data-menu-label-key={key}
-          class={`text-ellipsis-1 text-left! flex-1 min-w-0 text-current! ${MENU_TEXT_CLASS}`}
+          class={`text-ellipsis-1 text-left! flex-1 min-w-0 text-current! transition-[opacity,transform] duration-xs ease-out-expo ${isSidebarWidthAnimating.value ? 'opacity-0 translate-x--2px' : 'opacity-100 translate-x-0'} ${MENU_TEXT_CLASS}`}
         >
           {item.label}
         </span>
@@ -290,11 +308,11 @@ export default defineComponent({
             />
           ) : null}
           {labelContent}
-          {Array.isArray(item.items) && item.items.length > 0 ? (
+          {hasChildren ? (
             <Icons
               name="i-lucide-chevron-down"
               size={getIconSize('sidebar')}
-              class={`ml-auto text-current! shrink-0 ${MENU_ICON_COMMON_CLASS} ${layoutStore.getExpandedMenuKeys[key] ? 'rotate-180' : 'rotate-0'}`}
+              class={`ml-auto text-current! shrink-0 ${MENU_ICON_COMMON_CLASS} ${isSubmenuOpen ? 'rotate-180' : 'rotate-0'}`}
             />
           ) : null}
         </span>
@@ -427,7 +445,7 @@ export default defineComponent({
 
       const iconButton = (
         <div
-          class={`center group ${MENU_COLLAPSED_BUTTON_PADDING} rounded-md ${ROUNDED_NAV} cursor-pointer transition-[background-color,color,opacity,transform] duration-md aspect-square ${MENU_COLLAPSED_BUTTON_SIZE} border-none bg-transparent p-0 outline-none interactive-item ${stateClasses}`}
+          class={`center group ${MENU_COLLAPSED_BUTTON_PADDING} rounded-md cursor-pointer transition-[background-color,color,opacity,transform] duration-md aspect-square ${MENU_COLLAPSED_BUTTON_SIZE} border-none bg-transparent p-0 outline-none ${stateClasses}`}
           onClick={e => onCollapsedItemClick(e, item)}
         >
           {item.icon ? (
@@ -497,6 +515,9 @@ export default defineComponent({
               pt={{
                 item: {
                   class: 'mb-xs last:mb-0',
+                },
+                headerContent: {
+                  class: 'bg-transparent!',
                 },
                 submenu: {
                   class: 'mt-xs',

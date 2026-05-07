@@ -63,6 +63,18 @@ declare global {
     '--spacing-unit': string
     /** 容器内边距 */
     '--container-padding': string
+    /** PrimeVue / app form control visual height */
+    '--control-height': string
+    /** PrimeVue / app compact form control visual height */
+    '--control-height-sm': string
+    /** PrimeVue / app loose form control visual height */
+    '--control-height-lg': string
+    /** Compound control action/dropdown slot size */
+    '--control-action-size': string
+    /** Compound control small action/dropdown slot size */
+    '--control-action-size-sm': string
+    /** Compound control large action/dropdown slot size */
+    '--control-action-size-lg': string
 
     // --- 布局变量 ---
     /** 侧边栏展开宽度 */

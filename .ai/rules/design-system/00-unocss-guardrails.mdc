@@ -26,7 +26,7 @@ Shortcuts are a **closed set**. If a shortcut is not in this list, it does not e
 
 **Typography**: `text-no-wrap` · `text-ellipsis-1` · `text-ellipsis-2`
 
-**Interaction**: `motion-lift` · `interaction-shrink` · `ring-focus-focus` · `interactive-card` · `interactive-item`
+**Interaction**: `motion-lift` · `interaction-shrink` · `ring-focus-focus` · `interactive-card` · `interactive-item` · `sidebar-width-transition`
 
 **Z-Index**: `z-base` · `z-content` · `z-layout` · `z-overlay` · `z-popover` · `z-toast`
 
@@ -103,6 +103,25 @@ Flex shortcuts ALREADY contain `flex`. Prepending `flex`, `flex-row`, `flex-col`
 - Status: `bg-danger` · `bg-warn` · `bg-success` · `bg-info`
 - Sidebar: `bg-sidebar-background` · `text-sidebar-foreground` · `bg-sidebar-accent`
 
+## GUARDRAIL 4.1 — Border Contract: No Naked Border Utilities
+
+Drawing a border requires three explicit parts: width/direction, style, and semantic color.
+
+| FORBIDDEN | CORRECT |
+|-----------|---------|
+| `border` | `border border-solid border-border` |
+| `border border-border` | `border border-solid border-border` |
+| `border border-primary/30` | `border border-solid border-primary/30` |
+| `border-b border-border` | `border-b border-b-solid border-border` |
+| `border-r border-sidebar-border` | `border-r border-r-solid border-sidebar-border` |
+
+Approved reset / non-drawing forms:
+- `border-0`, `border-none`, `!border-0`, `!border-none`
+- `border-transparent` only when paired with `border-solid` or directional style
+- PrimeVue reset classes that explicitly zero a border, e.g. `!border-0`
+
+**Rule:** `border`, `border-t`, `border-r`, `border-b`, and `border-l` are forbidden unless the same class list contains the matching style utility (`border-solid` / `border-t-solid` / `border-r-solid` / `border-b-solid` / `border-l-solid`) and a semantic border color such as `border-border`, `border-input`, `border-sidebar-border`, or `border-primary/30`.
+
 ---
 
 ## GUARDRAIL 5 — Sizes: Token Scale ONLY
@@ -118,7 +137,8 @@ Flex shortcuts ALREADY contain `flex`. Prepending `flex`, `flex-row`, `flex-col`
 | `transition-duration: 300ms` | `duration-md` |
 | `duration-300`, `duration-200` | `duration-sm`, `duration-md` |
 
-- **ABSOLUTE BAN:** `rem` / `em` are forbidden for sizing and spacing.
+- **SOURCE-AUTHORING BAN:** `rem` / `em` are forbidden for source-authored sizing and spacing utilities, style blocks, and arbitrary values.
+- Build tooling may transform authored `px` to another runtime unit only when the source still follows this rule and generated CSS is not used as an authoring pattern.
 - **UNIT PRIORITY LADDER (NON-NEGOTIABLE):** `vw/vh > % > px`.
 - `px`, `%`, `vw`, `vh` are allowed when token classes cannot express the intent.
 - Prefer Design Engine tokens and layout classes first (`w-sidebarWidth`, `h-headerHeight`, `layout-*`, `p-*`, `gap-*`).
@@ -153,11 +173,11 @@ Count raw utility classes on any single element. If > 7, it is a strong signal t
 
 ```html
 <!-- WARNING: 8+ classes — check if a shortcut covers the layout portion -->
-<div class="flex flex-col flex-1 min-h-0 overflow-hidden gap-md p-md bg-card rounded-md shadow-sm border border-border text-foreground">
+<div class="flex flex-col flex-1 min-h-0 overflow-hidden gap-md p-md bg-card rounded-md shadow-sm border border-solid border-border text-foreground">
 <!-- Above: col-fill covers the first 5 classes -->
 
 <!-- BETTER: use shortcut for the structural part -->
-<div class="col-fill gap-md p-md bg-card rounded-md shadow-sm border border-border text-foreground">
+<div class="col-fill gap-md p-md bg-card rounded-md shadow-sm border border-solid border-border text-foreground">
 ```
 
 **Intent**: Normal UI elements regularly have 5–7 utility classes (padding + bg + radius + shadow + border + flex = natural). This rule triggers only when shortcut opportunities are clearly being ignored. Prefer layout macros (`col-fill`, `center`, `layout-container`) for structural concerns, then layer visual classes freely.
@@ -202,7 +222,7 @@ Before finalizing ANY template or style output:
 - [ ] No `flex` prefix before a flex shortcut (N-2, Guardrail 3)
 - [ ] No Tailwind palette color (`text-red-*`, `bg-blue-*`, `text-gray-*`)
 - [ ] No `bg-white`, `bg-black`, `text-white`, `text-black`
-- [ ] No `rem` / `em` in sizing classes, style blocks, or arbitrary values
+- [ ] No source-authored `rem` / `em` in sizing classes, style blocks, or arbitrary values
 - [ ] Unit priority respected for raw sizing: `vw/vh > % > px`
 - [ ] No raw z-index class — only 6 semantic tokens
 - [ ] No element has > 7 raw utility classes for a structural pattern (Rule of 7)
@@ -228,7 +248,7 @@ Before finalizing ANY template or style output:
   - ❌ legacy custom `borderRule`-driven border DSL forms (e.g., `border-sm-primary`)
 - ✅ **MUST** use native UnoCSS composition instead:
   - ✅ `shadow-sm shadow-primary` (or `shadow-primary/50`)
-  - ✅ `border border-primary/50`
+  - ✅ `border border-solid border-primary/50`
 
 ### Macro Containers (MUST for Structural Scaffolding)
 

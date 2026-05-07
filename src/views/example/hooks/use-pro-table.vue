@@ -135,8 +135,8 @@ const stateJson = computed<string>(() => {
                   </span>
                 </div>
                 <span class="text-sm text-muted-foreground text-ellipsis-1">
-                  不使用 &lt;ProTable&gt; 组件，直接通过 Hook
-                  控制排序、过滤、分页与选中状态，自行渲染表格。
+                  教育性 Hook 内部示例：刻意不使用 &lt;ProTable&gt; 组件，直接通过 Hook
+                  控制排序、过滤、分页与选中状态，自行渲染表格；生产业务表格必须使用 ProTable。
                 </span>
               </div>
             </div>
@@ -255,6 +255,7 @@ const stateJson = computed<string>(() => {
                 />
               </div>
 
+              <!-- Educational low-level renderer: production business tables must use ProTable. -->
               <div class="overflow-x-auto min-w-0">
                 <table class="w-full text-sm">
                   <thead>

@@ -7,6 +7,11 @@ import {
 } from '@/constants/theme'
 import { RUNTIME_STORAGE_KEYS } from '@/constants/runtime'
 import { generateThemeVars, applyTheme } from '@/utils/theme/engine'
+import {
+  applyThemeModeToRoot,
+  getSystemDarkModeQuery,
+  resolveThemeModeIsDark,
+} from '@/utils/theme/mode'
 import { isThemeLocked } from '@/utils/theme/transitions'
 
 // 模块级变量持有 handler 引用，确保 removeEventListener 可精确移除同一函数引用
@@ -34,10 +39,7 @@ export const useThemeStore = defineStore('theme', {
 
   getters: {
     isDark(state): boolean {
-      if (state.mode === 'auto' || state.mode === 'glass') {
-        return window.matchMedia('(prefers-color-scheme: dark)').matches
-      }
-      return state.mode === 'dark'
+      return resolveThemeModeIsDark(state.mode)
     },
     isGlassMode(state): boolean {
       return state.mode === 'glass'
@@ -89,14 +91,8 @@ export const useThemeStore = defineStore('theme', {
       }
 
       // 1. 获取当前系统/模式
-      const isDark =
-        this.mode === 'auto' || this.mode === 'glass'
-          ? window.matchMedia('(prefers-color-scheme: dark)').matches
-          : this.mode === 'dark'
-
-      document.documentElement.classList.toggle('dark', isDark)
-      document.documentElement.classList.toggle('glass', this.mode === 'glass')
-      document.documentElement.dataset.themeMode = this.mode
+      const isDark = resolveThemeModeIsDark(this.mode)
+      applyThemeModeToRoot(this.mode, isDark)
 
       // 2. 查找预设，如果失效则自动纠正 Store 状态
       let preset = THEME_PRESETS.find(p => p.name === this.themeName)
@@ -120,7 +116,11 @@ export const useThemeStore = defineStore('theme', {
 
     init() {
       // 监听系统主题变化：存储 handler 引用以便 dispose() 能精确移除（匿名函数无法移除）
-      const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)')
+      const mediaQuery = getSystemDarkModeQuery()
+      if (!mediaQuery) {
+        this.refreshTheme()
+        return
+      }
       _themeMediaQueryHandler = () => {
         if (this.mode === 'auto' || this.mode === 'glass') this.refreshTheme()
       }
@@ -134,9 +134,7 @@ export const useThemeStore = defineStore('theme', {
      */
     dispose() {
       if (_themeMediaQueryHandler) {
-        window
-          .matchMedia('(prefers-color-scheme: dark)')
-          .removeEventListener('change', _themeMediaQueryHandler)
+        getSystemDarkModeQuery()?.removeEventListener('change', _themeMediaQueryHandler)
         _themeMediaQueryHandler = null
       }
     },

@@ -2,7 +2,7 @@
 defineOptions({ name: 'ExampleProFormDagPage' })
 
 import type { FormSchema, FormState, ProFormExpose } from '@/components/ProForm'
-import { DateFormatEnum } from '@/constants/dateFormats'
+import { DateFormatEnum } from '@/utils/date/types'
 
 const formRef = ref<ProFormExpose | null>(null)
 const { formatDate, isInitialized } = useDateUtils()

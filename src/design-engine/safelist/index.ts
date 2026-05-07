@@ -3,8 +3,8 @@ import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { FileSystemIconLoader } from '@iconify/utils/lib/loader/node-loaders'
 import { globSync } from 'glob'
+import ts from 'typescript'
 
-import { LAYOUT_DIMENSION_KEYS, SIZE_BASE_VAR_KEYS } from '../../constants/size'
 import { SIZE_SCALE_KEYS, type SizeScaleKey } from '../../constants/sizeScale'
 import { COLOR_FAMILIES } from '../../utils/theme/metadata'
 import { semanticShortcuts } from '../shortcuts/semanticShortcuts'
@@ -45,93 +45,25 @@ export function invalidateIconCaches(target: IconCacheTarget | 'all' = 'all'): v
   if (target === 'custom' || target === 'all') customIconsCache = null
 }
 
-const invalidIcons = new Set<string>([
-  'return',
-  'if',
-  'else',
-  'switch',
-  'case',
-  'for',
-  'while',
-  'break',
-  'continue',
-  'function',
-  'const',
-  'let',
-  'var',
-  'import',
-  'export',
-  'default',
-  'new',
-  'this',
-  'Tab',
-  'Newline',
-  'Return',
-  'Space',
-  'Enter',
-  'Escape',
-  'Backspace',
-  'value',
-  'label',
-  'name',
-  'id',
-  'key',
-  'index',
-  'item',
-  'list',
-  'data',
-  'text',
-  '-',
-  '_',
-  '.',
-  ',',
-  ';',
-  ':',
-  '!',
-  '?',
-  '@',
-  '#',
-  '$',
-  ...'abcdefghijklmnopqrstuvwxyz'.split(''),
-])
-
-const iconPatterns: RegExp[] = [
-  /meta\s*:\s*\{[^}]*icon\s*:\s*['"]([^'"]+)['"]/g,
-  /meta\.icon\s*=\s*['"]([^'"]+)['"]/g,
-  /(?:^|\s|,)icon\s*:\s*['"]([^'"]+)['"]/g,
-]
-
 function isValidIconName(iconName: string): boolean {
   if (!iconName || iconName.length === 0 || iconName.length > 80) return false
-  if (invalidIcons.has(iconName)) return false
   if (/^\d+$/.test(iconName)) return false
   if (/\s/.test(iconName)) return false
-  if (!/^[a-zA-Z0-9\-_:]+$/.test(iconName)) return false
-  if (!/^[a-zA-Z]/.test(iconName)) return false
-  return true
+  return /^(i-[a-z0-9][a-z0-9:_-]*|custom:[a-z0-9][a-z0-9_-]*|[a-z]+:[a-z0-9][a-z0-9_-]*)$/i.test(
+    iconName
+  )
 }
 
-function getTsAndVueFiles(dir: string): string[] {
-  const files: string[] = []
+function getRouteIconSourceFiles(dir: string): string[] {
   const fullDir = path.join(projectRoot, dir)
-  if (!fs.existsSync(fullDir)) return files
+  if (!fs.existsSync(fullDir)) return []
 
-  function traverse(currentPath: string): void {
-    try {
-      const items = fs.readdirSync(currentPath, { withFileTypes: true })
-      for (const item of items) {
-        const fullPath = path.join(currentPath, item.name)
-        if (item.isDirectory()) traverse(fullPath)
-        else if (item.isFile() && (item.name.endsWith('.ts') || item.name.endsWith('.vue')))
-          files.push(fullPath)
-      }
-    } catch {
-      // ignore
-    }
-  }
-
-  traverse(fullDir)
-  return files
+  return globSync('**/*.{ts,tsx}', {
+    cwd: fullDir,
+    nodir: true,
+    absolute: true,
+    ignore: ['**/*.d.ts', '**/*.spec.ts', '**/*.test.ts'],
+  })
 }
 
 function createCacheKey(files: string[]): string {
@@ -148,13 +80,46 @@ function createCacheKey(files: string[]): string {
   return `${files.length}-${latest}`
 }
 
+function getPropertyName(name: ts.PropertyName): string | null {
+  if (ts.isIdentifier(name) || ts.isStringLiteral(name) || ts.isNumericLiteral(name)) {
+    return name.text
+  }
+  return null
+}
+
+function collectIconLiteralsFromSource(filePath: string, content: string): string[] {
+  const sourceFile = ts.createSourceFile(
+    filePath,
+    content,
+    ts.ScriptTarget.Latest,
+    true,
+    filePath.endsWith('.tsx') ? ts.ScriptKind.TSX : ts.ScriptKind.TS
+  )
+  const icons = new Set<string>()
+
+  const visit = (node: ts.Node): void => {
+    if (
+      ts.isPropertyAssignment(node) &&
+      getPropertyName(node.name) === 'icon' &&
+      (ts.isStringLiteral(node.initializer) || ts.isNoSubstitutionTemplateLiteral(node.initializer))
+    ) {
+      const name = node.initializer.text.trim()
+      if (isValidIconName(name)) icons.add(name)
+    }
+    ts.forEachChild(node, visit)
+  }
+
+  visit(sourceFile)
+  return Array.from(icons)
+}
+
 export function getRouteMetaIcons(): string[] {
   const routerDir = path.join(projectRoot, 'src/router')
   const apiDir = path.join(projectRoot, 'src/api')
   const files: string[] = []
 
-  if (fs.existsSync(routerDir)) files.push(...getTsAndVueFiles('src/router'))
-  if (fs.existsSync(apiDir)) files.push(...getTsAndVueFiles('src/api'))
+  if (fs.existsSync(routerDir)) files.push(...getRouteIconSourceFiles('src/router'))
+  if (fs.existsSync(apiDir)) files.push(...getRouteIconSourceFiles('src/api'))
 
   const cacheKey = createCacheKey(files)
   if (routeIconsCache && routeIconsCache.key === cacheKey) return routeIconsCache.value
@@ -163,15 +128,7 @@ export function getRouteMetaIcons(): string[] {
   for (const filePath of files) {
     try {
       const content = fs.readFileSync(filePath, 'utf-8')
-      const clean = content.replace(/\/\*[\s\S]*?\*\//g, '').replace(/\/\/.*$/gm, '')
-      for (const pattern of iconPatterns) {
-        pattern.lastIndex = 0
-        let m: RegExpExecArray | null
-        while ((m = pattern.exec(clean)) !== null) {
-          const name = m[1]?.trim()
-          if (name && isValidIconName(name)) icons.add(name)
-        }
-      }
+      collectIconLiteralsFromSource(filePath, content).forEach(icon => icons.add(icon))
     } catch {
       // ignore
     }
@@ -230,151 +187,18 @@ function createCustomIconLoader(): CustomIconLoader {
   }
 }
 
-function buildLayoutSafelistClasses(): string[] {
-  const layout = LAYOUT_DIMENSION_KEYS.flatMap(k => [
-    `w-${k}`,
-    `h-${k}`,
-    `min-w-${k}`,
-    `max-w-${k}`,
-    `min-h-${k}`,
-    `max-h-${k}`,
-    `md:w-${k}`,
-  ])
-
-  const padding = SIZE_SCALE_KEYS.flatMap(s => [
-    `p-${s}`,
-    `px-${s}`,
-    `py-${s}`,
-    `pt-${s}`,
-    `pb-${s}`,
-    `pl-${s}`,
-    `pr-${s}`,
-    `md:px-${s}`,
-  ])
-
-  const margin = SIZE_SCALE_KEYS.flatMap(s => [
-    `m-${s}`,
-    `mx-${s}`,
-    `my-${s}`,
-    `mt-${s}`,
-    `mb-${s}`,
-    `ml-${s}`,
-    `mr-${s}`,
-  ])
-
-  const scrollMarginGap = SIZE_SCALE_KEYS.flatMap(s => [
-    `scroll-m-${s}`,
-    `scroll-mx-${s}`,
-    `scroll-my-${s}`,
-    `scroll-mt-${s}`,
-    `scroll-mb-${s}`,
-    `scroll-ml-${s}`,
-    `scroll-mr-${s}`,
-  ])
-
-  const gap = SIZE_SCALE_KEYS.map(s => `gap-${s}`)
-  return Array.from(new Set([...layout, ...padding, ...margin, ...scrollMarginGap, ...gap]))
+/** Dynamic size demo helpers compose only `p-${key}` / `m-${key}` at runtime. */
+function buildDynamicSizeDemoSafelist(): string[] {
+  return ['p-0', 'm-0', ...SIZE_SCALE_KEYS.flatMap(k => [`p-${k}`, `m-${k}`])]
 }
 
-function buildScaleSafelistClasses(): string[] {
-  const classes = SIZE_SCALE_KEYS.flatMap(k => [
-    `text-${k}`,
-    `rounded-${k}`,
-    `rounded-t-${k}`,
-    `rounded-b-${k}`,
-    `rounded-l-${k}`,
-    `rounded-r-${k}`,
-    `rounded-tl-${k}`,
-    `rounded-tr-${k}`,
-    `rounded-bl-${k}`,
-    `rounded-br-${k}`,
-    `duration-${k}`,
-    `p-${k}`,
-    `px-${k}`,
-    `py-${k}`,
-    `pt-${k}`,
-    `pb-${k}`,
-    `pl-${k}`,
-    `pr-${k}`,
-    `m-${k}`,
-    `mx-${k}`,
-    `my-${k}`,
-    `mt-${k}`,
-    `mb-${k}`,
-    `ml-${k}`,
-    `mr-${k}`,
-    `gap-${k}`,
-    `gap-x-${k}`,
-    `gap-y-${k}`,
-  ])
-  return Array.from(new Set(classes))
+/** Theme docs bind `bg-${family}/10 text-${family}` from COLOR_FAMILIES.quadFamilies. */
+function buildDynamicThemeDemoSafelist(): string[] {
+  return COLOR_FAMILIES.quadFamilies.flatMap(family => [`bg-${family}/10`, `text-${family}`])
 }
 
-function buildBaseVarSafelistClasses(): string[] {
-  const list: string[] = []
-  for (const key of SIZE_BASE_VAR_KEYS) {
-    const kebab = key.replace(/([A-Z])/g, '-$1').toLowerCase()
-    list.push(
-      `p-${kebab}`,
-      `px-${kebab}`,
-      `py-${kebab}`,
-      `pt-${kebab}`,
-      `pb-${kebab}`,
-      `pl-${kebab}`,
-      `pr-${kebab}`
-    )
-  }
-  return list
-}
-
-function buildColorSafelistClasses(): string[] {
-  const list: string[] = []
-
-  for (const token of COLOR_FAMILIES.singleTokens) {
-    list.push(`bg-${token}`, `text-${token}`)
-    if (['border', 'input', 'ring'].includes(token)) list.push(`border-${token}`)
-  }
-
-  for (const family of COLOR_FAMILIES.pairFamilies) {
-    list.push(`bg-${family}`, `text-${family}-foreground`, `border-${family}`)
-  }
-
-  for (const family of COLOR_FAMILIES.quadFamilies) {
-    list.push(
-      `bg-${family}`,
-      `bg-${family}-hover`,
-      `bg-${family}-light`,
-      `text-${family}`,
-      `text-${family}-foreground`,
-      `text-${family}-hover-foreground`,
-      `text-${family}-light-foreground`,
-      `border-${family}`,
-      `border-${family}-hover`,
-      `border-${family}-light`
-    )
-  }
-
-  // Sidebar (keep aligned with theme generation / color mapping)
-  list.push(
-    'bg-sidebar',
-    'bg-sidebar-foreground',
-    'bg-sidebar-primary',
-    'bg-sidebar-primary-foreground'
-  )
-  list.push(
-    'bg-sidebar-accent',
-    'bg-sidebar-accent-foreground',
-    'border-sidebar-border',
-    'border-sidebar-ring'
-  )
-
-  return list
-}
-
-const LAYOUT_SAFELIST_CLASSES = buildLayoutSafelistClasses()
-const SCALE_SAFELIST_CLASSES = buildScaleSafelistClasses()
-const BASE_VAR_SAFELIST_CLASSES = buildBaseVarSafelistClasses()
-const COLOR_SAFELIST_CLASSES = buildColorSafelistClasses()
+const DYNAMIC_SIZE_DEMO_SAFELIST_CLASSES = buildDynamicSizeDemoSafelist()
+const DYNAMIC_THEME_DEMO_SAFELIST_CLASSES = buildDynamicThemeDemoSafelist()
 
 /** Semantic shortcut names from design-engine SSOT — prevents tree-shaking of macro classes. */
 function buildSemanticShortcutsSafelist(): string[] {
@@ -398,43 +222,13 @@ function getDynamicSafelist(): string[] {
   const routeIcons = getRouteMetaIcons().map(toUnoIconClass)
   const customIcons = getCustomIconClasses()
 
-  const menuVisualSafelist = [
-    'bg-primary!',
-    'text-primary-foreground!',
-    'bg-primary/30!',
-    'bg-primary/20!',
-    'bg-primary/10!',
-    'text-primary!',
-    'text-current!',
-    'dark:text-white!',
-    'border-danger/50',
-    'border-primary/20',
-    'border-primary/30',
-    'border-primary/50',
-    'dark:bg-primary-light',
-    'dark:border-primary/50',
-    'bg-info/10',
-    'hover:bg-sidebar-accent/50',
-    'hover:bg-danger-light',
-    'hover:bg-primary-light',
-    'hover:bg-success-light',
-    'hover:bg-info-light',
-    'hover:bg-warn-light',
-    'hover:bg-help-light',
-    'bg-danger/10',
-    'bg-primary/5',
-  ]
-
   return [
     ...routeIcons,
     ...customIcons,
     ...ENGINE_ICON_SAFELIST_CLASSES,
-    ...LAYOUT_SAFELIST_CLASSES,
-    ...SCALE_SAFELIST_CLASSES,
-    ...BASE_VAR_SAFELIST_CLASSES,
-    ...COLOR_SAFELIST_CLASSES,
+    ...DYNAMIC_SIZE_DEMO_SAFELIST_CLASSES,
+    ...DYNAMIC_THEME_DEMO_SAFELIST_CLASSES,
     ...SEMANTIC_SHORTCUTS_SAFELIST_CLASSES,
-    ...menuVisualSafelist,
   ]
 }
 

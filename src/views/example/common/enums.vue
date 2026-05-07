@@ -184,8 +184,8 @@ const valueOptions = computed(() =>
                   </span>
                 </div>
                 <span class="text-sm text-muted-foreground text-ellipsis-1">
-                  Enums 在运行期表现为对象。本页把枚举成员映射成 PrimeVue Tag 的
-                  severity，帮助理解语义层级。
+                  教育性枚举映射展示：使用 PrimeVue DataTable 观察枚举成员到 Tag severity
+                  的转换；生产业务表格必须使用 ProTable。
                 </span>
               </div>
             </div>

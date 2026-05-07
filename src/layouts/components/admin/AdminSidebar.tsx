@@ -49,11 +49,14 @@ export default defineComponent({
             props.sidebarFixed ? 'admin-sidebar--fixed' : '',
             layoutStore.enableTransition ? 'sidebar-width-transition' : '',
             props.sidebarCollapse ? 'gap-md' : '',
-            'h-full min-h-0 overflow-hidden shrink-0 transition-all duration-md ease-out flex flex-col select-none',
+            'h-full min-h-0 overflow-hidden shrink-0 flex flex-col select-none [contain:layout_paint]',
           ]}
         >
           <AdminSidebarLogo />
-          <CScrollbar class="col-fill px-sm">
+          <CScrollbar
+            native
+            class="col-fill px-sm"
+          >
             <AdminSidebarMenu sidebarCollapse={props.sidebarCollapse} />
           </CScrollbar>
         </aside>

@@ -5,6 +5,14 @@ import { COLOR_FAMILIES, THEME_ENGINE } from './metadata'
 
 export { COLOR_FAMILIES, THEME_ENGINE }
 
+const CONTRAST_ROLES = {
+  body: 4.5,
+  action: 4.5,
+  subtle: 3.0,
+} as const
+
+type ContrastRole = keyof typeof CONTRAST_ROLES
+
 /**
  * 生成语义化主题 CSS 变量 (Final v4.0 - Switch from color-mix to static JS calc)
  */
@@ -48,9 +56,14 @@ export function generateThemeVars(preset: ThemePreset, isDark: boolean): ThemeCs
     return (lighter + 0.05) / (darker + 0.05)
   }
 
-  const ensureReadableForeground = (background: string, preferredForeground: string): string => {
+  const ensureReadableForeground = (
+    background: string,
+    preferredForeground: string,
+    role: ContrastRole = 'body'
+  ): string => {
+    const minThreshold = CONTRAST_ROLES[role]
     const preferred = normalizeHex(preferredForeground)
-    if (contrastRatio(background, preferred) >= 4.6) {
+    if (contrastRatio(background, preferred) >= minThreshold) {
       return preferred
     }
 
@@ -148,7 +161,8 @@ export function generateThemeVars(preset: ThemePreset, isDark: boolean): ThemeCs
     mutedBase,
     resolveToken(modeConfig?.neutral?.mutedForeground, () =>
       isDark ? E.mutedFgDark : E.mutedFgLight
-    )
+    ),
+    'subtle'
   )
 
   // 6. Focus Ring

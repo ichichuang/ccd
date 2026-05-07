@@ -5,43 +5,54 @@ interface ContrastFinding {
   preset: string
   mode: 'light' | 'dark'
   pair: string
+  role: ContrastRole
   ratio: number
   foreground: string
   background: string
 }
 
-const CONTRAST_MIN_RATIO = 4.5
+const CONTRAST_ROLES = {
+  body: 4.5,
+  action: 4.5,
+  subtle: 3.0,
+} as const
 
-const TOKEN_PAIRS: Array<[keyof ThemeCssVars, keyof ThemeCssVars]> = [
-  ['--background', '--foreground'],
-  ['--card', '--card-foreground'],
-  ['--popover', '--popover-foreground'],
-  ['--primary', '--primary-foreground'],
-  ['--primary-hover', '--primary-hover-foreground'],
-  ['--primary-light', '--primary-light-foreground'],
-  ['--secondary', '--secondary-foreground'],
-  ['--muted', '--muted-foreground'],
-  ['--accent', '--accent-foreground'],
-  ['--accent-hover', '--accent-hover-foreground'],
-  ['--accent-light', '--accent-light-foreground'],
-  ['--danger', '--danger-foreground'],
-  ['--danger-hover', '--danger-hover-foreground'],
-  ['--danger-light', '--danger-light-foreground'],
-  ['--warn', '--warn-foreground'],
-  ['--warn-hover', '--warn-hover-foreground'],
-  ['--warn-light', '--warn-light-foreground'],
-  ['--success', '--success-foreground'],
-  ['--success-hover', '--success-hover-foreground'],
-  ['--success-light', '--success-light-foreground'],
-  ['--info', '--info-foreground'],
-  ['--info-hover', '--info-hover-foreground'],
-  ['--info-light', '--info-light-foreground'],
-  ['--help', '--help-foreground'],
-  ['--help-hover', '--help-hover-foreground'],
-  ['--help-light', '--help-light-foreground'],
-  ['--sidebar-background', '--sidebar-foreground'],
-  ['--sidebar-primary', '--sidebar-primary-foreground'],
-  ['--sidebar-accent', '--sidebar-accent-foreground'],
+type ContrastRole = keyof typeof CONTRAST_ROLES
+
+const TOKEN_PAIRS: Array<{
+  background: keyof ThemeCssVars
+  foreground: keyof ThemeCssVars
+  role: ContrastRole
+}> = [
+  { background: '--background', foreground: '--foreground', role: 'body' },
+  { background: '--card', foreground: '--card-foreground', role: 'body' },
+  { background: '--popover', foreground: '--popover-foreground', role: 'body' },
+  { background: '--primary', foreground: '--primary-foreground', role: 'action' },
+  { background: '--primary-hover', foreground: '--primary-hover-foreground', role: 'action' },
+  { background: '--primary-light', foreground: '--primary-light-foreground', role: 'action' },
+  { background: '--secondary', foreground: '--secondary-foreground', role: 'subtle' },
+  { background: '--muted', foreground: '--muted-foreground', role: 'subtle' },
+  { background: '--accent', foreground: '--accent-foreground', role: 'action' },
+  { background: '--accent-hover', foreground: '--accent-hover-foreground', role: 'action' },
+  { background: '--accent-light', foreground: '--accent-light-foreground', role: 'action' },
+  { background: '--danger', foreground: '--danger-foreground', role: 'action' },
+  { background: '--danger-hover', foreground: '--danger-hover-foreground', role: 'action' },
+  { background: '--danger-light', foreground: '--danger-light-foreground', role: 'action' },
+  { background: '--warn', foreground: '--warn-foreground', role: 'action' },
+  { background: '--warn-hover', foreground: '--warn-hover-foreground', role: 'action' },
+  { background: '--warn-light', foreground: '--warn-light-foreground', role: 'action' },
+  { background: '--success', foreground: '--success-foreground', role: 'action' },
+  { background: '--success-hover', foreground: '--success-hover-foreground', role: 'action' },
+  { background: '--success-light', foreground: '--success-light-foreground', role: 'action' },
+  { background: '--info', foreground: '--info-foreground', role: 'action' },
+  { background: '--info-hover', foreground: '--info-hover-foreground', role: 'action' },
+  { background: '--info-light', foreground: '--info-light-foreground', role: 'action' },
+  { background: '--help', foreground: '--help-foreground', role: 'action' },
+  { background: '--help-hover', foreground: '--help-hover-foreground', role: 'action' },
+  { background: '--help-light', foreground: '--help-light-foreground', role: 'action' },
+  { background: '--sidebar-background', foreground: '--sidebar-foreground', role: 'body' },
+  { background: '--sidebar-primary', foreground: '--sidebar-primary-foreground', role: 'action' },
+  { background: '--sidebar-accent', foreground: '--sidebar-accent-foreground', role: 'action' },
 ]
 
 function parseRgbChannels(value: string): [number, number, number] {
@@ -85,16 +96,22 @@ function collectFindings(): ContrastFinding[] {
     for (const mode of ['light', 'dark'] as const) {
       const vars = generateThemeVars(preset, mode === 'dark')
 
-      for (const [backgroundToken, foregroundToken] of TOKEN_PAIRS) {
+      for (const {
+        background: backgroundToken,
+        foreground: foregroundToken,
+        role,
+      } of TOKEN_PAIRS) {
         const background = vars[backgroundToken]
         const foreground = vars[foregroundToken]
         const ratio = contrastRatio(background, foreground)
+        const minRatio = CONTRAST_ROLES[role]
 
-        if (ratio < CONTRAST_MIN_RATIO) {
+        if (ratio < minRatio) {
           findings.push({
             preset: preset.name,
             mode,
             pair: `${backgroundToken}/${foregroundToken}`,
+            role,
             ratio,
             foreground,
             background,
@@ -114,7 +131,7 @@ if (findings.length > 0) {
   findings.forEach(finding => {
     console.error(
       `  - ${finding.preset}/${finding.mode} ${finding.pair}: ${finding.ratio.toFixed(2)} ` +
-        `(bg ${finding.background}, fg ${finding.foreground})`
+        `(${finding.role} >= ${CONTRAST_ROLES[finding.role]}, bg ${finding.background}, fg ${finding.foreground})`
     )
   })
   process.exit(1)

@@ -60,6 +60,7 @@
   "unocss.enableIntelliSense": true, // 启用智能提示
   "unocss.remToPxPreview": true, // Hover 显示 px 值
   "unocss.colorPreview": true, // 显示颜色块
+  "html.customData": [".vscode/unocss-semantic-shortcuts.html-data.json"],
   "unocss.languageIds": [
     "vue",
     "html",

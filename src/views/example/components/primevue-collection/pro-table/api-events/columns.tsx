@@ -1,5 +1,5 @@
 import type { ProTableColumn, ColumnRenderParams } from '@/components/ProTable'
-import { DateFormatEnum } from '@/constants/dateFormats'
+import { DateFormatEnum } from '@/utils/date/types'
 import { DateUtils } from '@/utils/date/dateUtils'
 
 export interface ApiEventsRow extends Record<string, unknown> {

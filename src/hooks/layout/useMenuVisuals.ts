@@ -12,6 +12,7 @@ import {
   MENU_ICON_SIZE,
   BREADCRUMB_ICON_SIZE,
   MENU_ACTIVE_UNIFIED,
+  MENU_OPEN_UNIFIED,
   MENU_INACTIVE_TEXT,
   MENU_INACTIVE_TEXT_ROOT,
 } from '@/constants/layout-menu'
@@ -48,7 +49,7 @@ export interface MenuStateOptions {
 /**
  * 统一菜单 stateClasses 计算逻辑：
  * - distance >= 0：使用 getMenuItemActive（激活路径统一样式）
- * - 其余按优先级：isFocused → isSubmenuOpen → 根级/子级 inactive 文案 + hover:bg-primary/12! dark:hover:bg-primary/30! hover:text-primary!
+ * - 其余按优先级：isFocused → isSubmenuOpen → 根级/子级 inactive 文案 + MENU_OPEN_UNIFIED hover
  */
 export function getMenuStateClasses(options: MenuStateOptions): string {
   const {
@@ -65,11 +66,11 @@ export function getMenuStateClasses(options: MenuStateOptions): string {
   }
 
   if (isFocused) {
-    return 'bg-primary/12! dark:bg-primary/30! text-primary!'
+    return MENU_OPEN_UNIFIED
   }
 
   if (isSubmenuOpen) {
-    return 'bg-primary/12! dark:bg-primary/30! text-primary!'
+    return MENU_OPEN_UNIFIED
   }
 
   const rootClass: string = inactiveRootClass ?? MENU_INACTIVE_TEXT_ROOT
@@ -77,7 +78,7 @@ export function getMenuStateClasses(options: MenuStateOptions): string {
   const isRoot: boolean = typeof level === 'number' ? level <= 0 : true
 
   const baseInactiveClass: string = isRoot ? rootClass : childClass
-  return `${baseInactiveClass} hover:bg-primary/12! dark:hover:bg-primary/30! hover:text-primary!`
+  return `${baseInactiveClass} hover:bg-primary/12! hover:text-primary! dark:hover:bg-primary-light/70! dark:hover:text-primary-light-foreground!`
 }
 
 /** 返回指定上下文的图标 size（Icons 组件用） */

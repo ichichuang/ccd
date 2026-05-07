@@ -18,8 +18,7 @@ import {
 } from '@/utils/theme/ptPresets/formControlsPt'
 import { menuPt } from '@/utils/theme/ptPresets/menuPt'
 
-const OVERLAY_GLASS_SHELL_CLASS =
-  'glass-base border border-solid border-border/5 dark:border-border/15 transform-gpu will-change-transform'
+const OVERLAY_GLASS_SHELL_CLASS = 'glass-shell transform-gpu will-change-transform'
 const BG_TRANSPARENT = 'bg-transparent'
 // Tabs 内部的默认样式使用 `background: ...`（而非 background-color）
 // 因此仅用 bg-transparent 可能会被 PrimeVue 的 background 覆盖。

@@ -43,8 +43,8 @@ CCD 面向“需要长期维护”的 Vue 3 产品项目，而不是一次性 De
 
 - CCD 架构主体、示例模块、规范文档、AI 治理配置都直接在 `main` 演进
 - Desktop / Tauri 运行时资产如果存在，也直接随仓库维护，不再通过派生分支同步脚本下发
-- 生成层与治理层变更统一通过 `pnpm ai:sync`、`pnpm ai:sync:codex`、`pnpm ai:doctor`、`pnpm codex:preflight` 收敛
-- CI 会重新执行生成同步并对 `AGENTS.md`、`.cursor/**`、`skills-lock.json` 做防漂移阻断
+- 生成层与治理层变更统一通过 `pnpm ai:sync`、`pnpm ai:sync:codex`、`pnpm ai:doctor` 收敛；Codex 本地启动前再运行 `pnpm codex:preflight`
+- CI 会运行 `pnpm ai:sync`、`pnpm ai:doctor`，并重新执行 `pnpm ai:sync && pnpm ai:sync:codex` 对 `AGENTS.md`、`.cursor/**`、`.ai/manifests/skills-lock.json` 做防漂移阻断
 
 如果你要做架构层优化，默认直接在当前主线完成，并让本地门禁和 CI 门禁验证结果。
 
@@ -111,6 +111,12 @@ pnpm install
 首次安装依赖后，先生成本地兼容适配文件：
 
 ```bash
+pnpm ai:setup:codex
+```
+
+等价展开：
+
+```bash
 pnpm ai:sync
 pnpm ai:sync:codex
 pnpm ai:doctor
@@ -121,8 +127,12 @@ pnpm codex:preflight
 
 - `pnpm ai:sync`：从 `.ai/**` 生成 `AGENTS.md` 与 `.cursor/**`
 - `pnpm ai:sync:codex`：把 `.ai/skills/core/** + .ai/skills/codex/**` 安装到本机 `~/.codex/skills/**`
+- `pnpm ai:setup:codex`：执行 `ai:sync + ai:sync:codex + ai:doctor + codex:preflight`
 - `pnpm ai:guard`：检查业务页面、路由模块、stores 是否违反架构生成约束
-- `pnpm ai:doctor`：检查 canonical 资产与适配器是否漂移
+- `pnpm ai:doctor`：检查 canonical 资产与适配器是否漂移，并自动运行 `ai:guard` 与 `validate:tokens`
+- `pnpm validate:tokens`：校验主题 token 对比度
+- `pnpm drift-check`：检查页面 archetype、样式 token、构建文档/配置漂移
+- `pnpm sync:desktop-config`：desktop/Tauri 相关改动时检查桌面配置面
 - `pnpm codex:preflight`：检查 Codex 工作所需规则、技能、依赖是否齐备
 
 ### 启动开发
@@ -188,12 +198,16 @@ pnpm test:run        # Vitest 单次运行
 pnpm check           # type-check + lint:check
 pnpm ai:sync         # 生成 AI 兼容适配层
 pnpm ai:sync:codex   # 安装本机 Codex skills
+pnpm ai:setup:codex # ai:sync + ai:sync:codex + ai:doctor + codex:preflight
 pnpm ai:clean        # 保守清理空会话目录与本地 AI/浏览器残留
 pnpm ai:clean -- --all # 激进清理 browser artifacts、tmp 与本机 Codex 浏览器缓存
 pnpm ai:route:skills "任务描述" # 低 token 选择最小 skill 集合
 pnpm ai:scaffold:view-route -- --segment system/user --title-key router.system.user.index --kind table # 生成页面/路由/Hook 骨架
 pnpm ai:guard        # 检查 AI 生成结果是否违反架构约束
-pnpm ai:doctor       # 检查 AI 工作区结构
+pnpm ai:doctor       # 检查 AI 工作区结构，并自动运行 ai:guard + validate:tokens
+pnpm validate:tokens # 校验主题 token 对比度
+pnpm drift-check     # 检查 archetype、样式 token、构建文档/配置漂移
+pnpm sync:desktop-config # desktop/Tauri 相关改动时检查桌面配置面
 pnpm codex:preflight # 检查 Codex 开发前置条件
 ```
 
@@ -205,26 +219,29 @@ pnpm codex:preflight # 检查 Codex 开发前置条件
 
 ```bash
 pnpm install
-pnpm ai:sync
-pnpm ai:doctor
-pnpm codex:preflight
+pnpm ai:setup:codex
 pnpm dev
 ```
 
 ### 提交前最少检查
 
 ```bash
-pnpm check
+pnpm ai:doctor    # includes ai:guard and validate:tokens
+pnpm type-check
+pnpm drift-check
 pnpm test:run
-pnpm ai:guard
-pnpm ai:doctor
+pnpm lint:check
 ```
+
+Husky pre-commit additionally runs `pnpm lint:staged:safe`; lint-staged reruns `pnpm ai:guard --staged` for staged Vue/TS surfaces.
 
 ### 当你修改了 `.ai/**`
 
 ```bash
 pnpm ai:sync
+pnpm ai:sync:codex
 pnpm ai:doctor
+pnpm codex:preflight
 ```
 
 不要直接改生成适配器，否则后续同步时一定会被覆盖。
@@ -294,11 +311,10 @@ pnpm ai:doctor
 提交前请至少保证：
 
 1. 遵守 [Conventional Commits](https://www.conventionalcommits.org/)
-2. 本地通过 `pnpm check`
-3. 本地通过 `pnpm ai:doctor`
-4. 如涉及 AI 配置更新，执行 `pnpm ai:sync`
+2. 本地通过 `pnpm ai:doctor`、`pnpm type-check`、`pnpm drift-check`、`pnpm test:run`、`pnpm lint:check`
+3. 如涉及 AI 配置更新，执行 `pnpm ai:sync`、`pnpm ai:sync:codex`、`pnpm codex:preflight`
 
-欢迎基于 `main` 提交通用架构优化，再由分支同步流程分发到派生交付线。
+欢迎基于 `main` 提交通用架构优化；`main` 是唯一架构主线，Desktop / Tauri 运行时资产也直接随仓库维护。
 
 ---
 

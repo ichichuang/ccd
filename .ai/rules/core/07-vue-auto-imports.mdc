@@ -29,6 +29,8 @@ The following packages are fully auto-imported in ALL `.vue` files and auto-impo
 | `@vueuse/core` | All VueUse composables (`useStorage`, `useDark`, `useEventListener`, etc.) |
 | `@/locales` | `$t` (the i18n translation function, aliased from `t`) |
 
+> **⚠️ `.ts` utility files outside `src/hooks/` and `src/stores/`** (e.g. `src/utils/http/*.ts`) are NOT covered by auto-import. In those files, `$t` is undefined at module load time due to race conditions with Vue app mount. Always use explicit `import { t } from '@/locales'` in plain `.ts` files.
+
 ### Auto-imported directories (composables & stores)
 
 All exports from these directories are globally available without an import statement:

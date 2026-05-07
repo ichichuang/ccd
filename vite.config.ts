@@ -28,11 +28,10 @@ const PX_TO_REM_SELECTOR_BLACKLIST: (string | RegExp)[] = [
   // 排除系统类
   /^html$/,
   /^:root$/,
-  // 排除第三方组件库 (防止破坏 UI 库样式)
+  // 排除第三方组件库 (node_modules CSS 已由 postcss-pxtorem.exclude 兜底)
   /^\.el-/,
   /^\.ant-/,
   /^\.van-/,
-  /^\.p-/, // PrimeVue v4 组件内部 class 前缀，必须排除（防止 pxtorem 破坏组件样式）
   // 排除明确标记的类
   /no-rem/,
 ]

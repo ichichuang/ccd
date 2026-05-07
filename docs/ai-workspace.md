@@ -174,7 +174,7 @@ Current rules are:
 - desktop / Tauri runtime assets, when present, are maintained directly in-repo
 - AI governance adapters must stay synced through `pnpm ai:sync` and `pnpm ai:sync:codex`
 - `pnpm ai:doctor` verifies both the generated adapters and whether Husky / CI still invoke the doctor gate
-- CI reruns sync and blocks drift if `AGENTS.md`, `.cursor/**`, or `skills-lock.json` would change
+- CI runs `pnpm drift-check` and reruns sync to block drift if `AGENTS.md`, `.cursor/**`, or `.ai/manifests/skills-lock.json` would change
 
 ---
 
@@ -185,7 +185,6 @@ For normal development:
 ```bash
 pnpm ai:sync
 pnpm ai:sync:codex
-pnpm ai:guard
 pnpm ai:doctor
 pnpm codex:preflight
 ```

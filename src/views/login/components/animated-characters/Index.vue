@@ -37,6 +37,7 @@ const TOTEM_REF_H = 400
 const containerRef = useTemplateRef<HTMLElement>('containerRef')
 const totemRef = useTemplateRef<HTMLElement>('totemRef')
 const rafIdRef = ref<number>(0)
+let isAnimationActive = false
 
 const { width: containerWidth, height: containerHeight } = useAppElementSize(containerRef)
 
@@ -170,8 +171,8 @@ function applyPupilPos(el: HTMLElement, x: number, y: number): void {
   }
 }
 
-/** 互看用的 gsap.to 与瞳孔 quickTo（overwrite:false）并存时会抢 transform；退出互看时必须清掉才能让眼珠恢复跟鼠标 */
-function killAllPupilTweens(): void {
+/** 仅在卸载时清掉瞳孔 quickTo；运行中不能 kill，否则旧 quickTo 函数会继续 resetTo 已失效 tween。 */
+function killAllPupilQuickToTweens(): void {
   for (const el of collectPupilEls()) {
     gsap.killTweensOf(el)
   }
@@ -198,7 +199,7 @@ function killAllGsapTweens(): void {
     if (el) gsap.killTweensOf(el)
   }
   // 复用已有的 pupil 清理
-  killAllPupilTweens()
+  killAllPupilQuickToTweens()
   // 清理 blink 层上的补间
   for (const { blinkLayerEl } of [...collectPurpleEyeballs(), ...collectSuccessEyeballs()]) {
     if (blinkLayerEl) gsap.killTweensOf(blinkLayerEl)
@@ -301,22 +302,10 @@ function applyLookAtEachOther(): void {
   }
   const { primaryPupil, successPupil } = ANIM.lookAtEachOther
   for (const { pupilEl } of collectPurpleEyeballs()) {
-    gsap.to(pupilEl, {
-      x: primaryPupil.x,
-      y: primaryPupil.y,
-      duration: ANIM.quickTo.body,
-      ease: 'power2.out',
-      overwrite: 'auto',
-    })
+    applyPupilPos(pupilEl, primaryPupil.x, primaryPupil.y)
   }
   for (const { pupilEl } of collectSuccessEyeballs()) {
-    gsap.to(pupilEl, {
-      x: successPupil.x,
-      y: successPupil.y,
-      duration: ANIM.quickTo.body,
-      ease: 'power2.out',
-      overwrite: 'auto',
-    })
+    applyPupilPos(pupilEl, successPupil.x, successPupil.y)
   }
 }
 
@@ -356,45 +345,25 @@ function applyShowPassword(): void {
   qt.mouthY(sp.accentMouth.y)
 
   for (const { pupilEl } of collectPurpleEyeballs()) {
-    gsap.to(pupilEl, {
-      ...sp.primaryPupil,
-      duration: ANIM.quickTo.body,
-      ease: 'power2.out',
-      overwrite: 'auto',
-    })
+    applyPupilPos(pupilEl, sp.primaryPupil.x, sp.primaryPupil.y)
   }
   for (const { pupilEl } of collectSuccessEyeballs()) {
-    gsap.to(pupilEl, {
-      ...sp.successPupil,
-      duration: ANIM.quickTo.body,
-      ease: 'power2.out',
-      overwrite: 'auto',
-    })
+    applyPupilPos(pupilEl, sp.successPupil.x, sp.successPupil.y)
   }
   for (const r of [warnLeftPupilRef, warnRightPupilRef]) {
     const el = r.value?.pupilEl
-    if (el)
-      gsap.to(el, {
-        ...sp.warnPupil,
-        duration: ANIM.quickTo.body,
-        ease: 'power2.out',
-        overwrite: 'auto',
-      })
+    if (el) applyPupilPos(el, sp.warnPupil.x, sp.warnPupil.y)
   }
   for (const r of [accentLeftPupilRef, accentRightPupilRef]) {
     const el = r.value?.pupilEl
-    if (el)
-      gsap.to(el, {
-        ...sp.accentPupil,
-        duration: ANIM.quickTo.body,
-        ease: 'power2.out',
-        overwrite: 'auto',
-      })
+    if (el) applyPupilPos(el, sp.accentPupil.x, sp.accentPupil.y)
   }
 }
 
 // ── Animation tick (RAF loop) ─────────────────────────────────
 function tick(): void {
+  if (!isAnimationActive) return
+
   const container = containerRef.value
   if (!container) return
 
@@ -502,11 +471,15 @@ function tick(): void {
 
 // ── Blink schedulers ──────────────────────────────────────────
 function schedulePurpleBlink(): void {
+  if (!isAnimationActive) return
+
   const eyes = collectPurpleEyeballs()
   if (!eyes.length) return
 
   purpleBlinkTimerRef.value = setTimeout(
     () => {
+      if (!isAnimationActive) return
+
       for (const { blinkLayerEl } of eyes) {
         if (!blinkLayerEl) continue
         gsap.to(blinkLayerEl, {
@@ -517,6 +490,8 @@ function schedulePurpleBlink(): void {
         })
       }
       setTimeout(() => {
+        if (!isAnimationActive) return
+
         for (const { blinkLayerEl } of eyes) {
           if (!blinkLayerEl) continue
           gsap.to(blinkLayerEl, {
@@ -534,11 +509,15 @@ function schedulePurpleBlink(): void {
 }
 
 function scheduleSuccessBlink(): void {
+  if (!isAnimationActive) return
+
   const eyes = collectSuccessEyeballs()
   if (!eyes.length) return
 
   blackBlinkTimerRef.value = setTimeout(
     () => {
+      if (!isAnimationActive) return
+
       for (const { blinkLayerEl } of eyes) {
         if (!blinkLayerEl) continue
         gsap.to(blinkLayerEl, {
@@ -549,6 +528,8 @@ function scheduleSuccessBlink(): void {
         })
       }
       setTimeout(() => {
+        if (!isAnimationActive) return
+
         for (const { blinkLayerEl } of eyes) {
           if (!blinkLayerEl) continue
           gsap.to(blinkLayerEl, {
@@ -567,6 +548,7 @@ function scheduleSuccessBlink(): void {
 
 // ── Lifecycle ─────────────────────────────────────────────────
 onMounted(() => {
+  isAnimationActive = true
   resetPupilTransforms()
 
   if (
@@ -580,8 +562,10 @@ onMounted(() => {
     !orangeFaceRef.value ||
     !yellowFaceRef.value ||
     !yellowMouthRef.value
-  )
+  ) {
+    isAnimationActive = false
     return
+  }
 
   const qt: QuickToMap = {
     totemX: gsap.quickTo(totemRef.value, 'x', { duration: ANIM.quickTo.totem, ease: 'power3.out' }),
@@ -662,6 +646,7 @@ onMounted(() => {
   seedMouseToViewportCenter()
   rafIdRef.value = requestAnimationFrame(tick)
   nextTick(() => {
+    if (!isAnimationActive) return
     seedMouseToViewportCenter()
   })
 
@@ -670,6 +655,8 @@ onMounted(() => {
 })
 
 onBeforeUnmount(() => {
+  isAnimationActive = false
+
   // 1. 先停止 RAF 循环 — 阻止新的 quickTo 调用
   cancelAnimationFrame(rafIdRef.value)
 
@@ -679,7 +666,7 @@ onBeforeUnmount(() => {
   clearTimeout(purplePeekTimerRef.value)
   clearTimeout(lookingTimerRef.value)
 
-  // 3. Kill 所有 GSAP 补间（quickTo + gsap.to），防止 "not eligible for reset" 警告
+  // 3. Kill 所有 GSAP 补间（quickTo + gsap.to）
   killAllGsapTweens()
 
   // 4. 清空引用，防止残留闭包调用
@@ -699,13 +686,10 @@ watch(
     const schedulePeek = () => {
       purplePeekTimerRef.value = setTimeout(
         () => {
+          if (!isAnimationActive) return
+
           for (const { pupilEl } of collectPurpleEyeballs()) {
-            gsap.to(pupilEl, {
-              ...ANIM.peek.to,
-              duration: ANIM.quickTo.body,
-              ease: 'power2.out',
-              overwrite: 'auto',
-            })
+            applyPupilPos(pupilEl, ANIM.peek.to.x, ANIM.peek.to.y)
           }
           const qt = quickToRef.value
           if (qt) {
@@ -714,13 +698,10 @@ watch(
           }
 
           setTimeout(() => {
+            if (!isAnimationActive) return
+
             for (const { pupilEl } of collectPurpleEyeballs()) {
-              gsap.to(pupilEl, {
-                ...ANIM.peek.back,
-                duration: ANIM.quickTo.body,
-                ease: 'power2.out',
-                overwrite: 'auto',
-              })
+              applyPupilPos(pupilEl, ANIM.peek.back.x, ANIM.peek.back.y)
             }
             schedulePeek()
           }, ANIM.peek.holdMs)
@@ -743,12 +724,10 @@ watch(
       clearTimeout(lookingTimerRef.value)
       lookingTimerRef.value = setTimeout(() => {
         isLookingRef.value = false
-        killAllPupilTweens()
       }, ANIM.lookDurationMs)
     } else {
       clearTimeout(lookingTimerRef.value)
       isLookingRef.value = false
-      killAllPupilTweens()
     }
   }
 )

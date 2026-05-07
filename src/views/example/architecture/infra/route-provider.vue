@@ -79,7 +79,7 @@ const isInitialized = computed<boolean>(() => flatRouteCount.value > 0 || menuTr
               </div>
               <div class="col-center gap-xs px-xs min-w-0">
                 <span class="text-xs text-muted-foreground font-mono text-ellipsis-1">
-                  setRouterCapabilities(caps)
+                  installRouterCapabilities(caps)
                 </span>
                 <div class="w-full border-t border-border" />
                 <Icons
@@ -129,7 +129,7 @@ const isInitialized = computed<boolean>(() => flatRouteCount.value > 0 || menuTr
             Store 通过
             <code class="code-inline">getRouterCapabilities()</code>
             查询路由数据，完全不依赖 vue-router。路由系统初始化完成后通过
-            <code class="code-inline">setRouterCapabilities()</code>
+            <code class="code-inline">installRouterCapabilities()</code>
             注入实际能力，满足 Store → Infra 单向依赖，防止循环引用。
           </p>
         </section>
@@ -139,12 +139,12 @@ const isInitialized = computed<boolean>(() => flatRouteCount.value > 0 || menuTr
           <div class="col-stretch gap-md min-w-0">
             <div class="col-stretch gap-xs min-w-0">
               <span class="text-xs font-semibold text-muted-foreground">
-                setRouterCapabilities(caps)
+                installRouterCapabilities(caps)
               </span>
               <pre class="code-block">
 // router/index.ts — 路由初始化完成后注入
-import { setRouterCapabilities } from '@/infra/router/routeProvider'
-setRouterCapabilities({
+import { installRouterCapabilities } from '@/infra/router/routeProvider'
+installRouterCapabilities({
   getAdminMenuTree: () => generateMenuTree(processedRoutes),
   getFlatRouteList: () => flattenRoutes(processedRoutes),
 })</pre

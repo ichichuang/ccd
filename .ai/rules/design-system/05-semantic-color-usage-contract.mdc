@@ -24,7 +24,7 @@ alwaysApply: false
   - `bg-{token}`, `text-{token}`, `border-{token}`
   - variant forms: `{family}-foreground`, `{family}-hover`, `{family}-hover-foreground`, `{family}-light`, `{family}-light-foreground`
 - Examples:
-  - `bg-warn`, `text-danger`, `border-primary/30`, `hover:bg-info-light`, `text-muted-foreground`
+  - `bg-warn`, `text-danger`, `border border-solid border-primary/30`, `hover:bg-info-light`, `text-muted-foreground`
 
 ## Cross-System Naming Rules (Critical)
 - Project semantic warning family MUST be `warn`, never `warning`.

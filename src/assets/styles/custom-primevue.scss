@@ -38,16 +38,57 @@
 
 /* Admin 侧栏 PanelMenu：多级菜单列表统一纵向间距（第三方组件覆盖，仅用变量） */
 .admin-sidebar--fixed {
-  // Panel 容器：grid 子项与 wrapper 统一锁定在侧栏宽度内，允许内容收缩
-  .p-panelmenu-content-container,
+  // ── 展开 / 折叠动画容器 ──────────────────────────────────────────────
+  // .p-panelmenu-content-container 必须保持 display:grid（PrimeVue 原生），
+  // 不可加 overflow:hidden，否则 grid-template-rows 0fr↔1fr 折叠动画失效。
+  .p-panelmenu-content-container {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+
+    // GPU 提升：让 grid-template-rows 动画在独立合成层运行，减少主线程 paint
+    will-change: grid-template-rows;
+
+    // 抑制 UnoCSS / PrimeVue 注入的 transition: all 0s，避免动画期间无效 style recalc
+    transition: none !important;
+  }
+
   .p-panelmenu-content-wrapper {
     width: 100%;
     max-width: 100%;
     min-width: 0;
     overflow: hidden;
     box-sizing: border-box;
+    transition: none !important;
+
+    // paint 隔离：wrapper 内的重绘不向上传播
+    contain: paint;
   }
 
+  // ── 自定义展开 / 折叠动画曲线 ────────────────────────────────────────
+  // PrimeVue 默认 0.2s ease-out 太短且起始段突变，替换为：
+  // - 展开 250ms ease-out-expo：前 20% 快速推开，后 80% 缓入到位
+  // - 折叠 200ms ease-in-out：收起略快于展开，节奏对称
+  .p-collapsible-enter-active {
+    animation-duration: 250ms !important;
+    animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1) !important;
+  }
+
+  .p-collapsible-leave-active {
+    animation-duration: 200ms !important;
+    animation-timing-function: cubic-bezier(0.5, 0, 0, 1) !important;
+  }
+
+  // ── 动画期间子元素过渡冻结 ──────────────────────────────────────────
+  // 展开时出现的子菜单项携带 transition-[background-color,color] duration-xs，
+  // 若不冻结会在动画首帧集中触发 N 个元素的 style 计算峰值。
+  .p-collapsible-enter-active *,
+  .p-collapsible-leave-active * {
+    transition: none !important;
+  }
+
+  // ── 列表布局 ───────────────────────────────────────────────────────
   .p-panelmenu-root-list,
   .p-panelmenu-submenu {
     display: flex;
@@ -84,11 +125,21 @@
     outline: none !important;
     box-shadow: none !important;
   }
+
+  .p-panelmenu-header,
+  .p-panelmenu-header-content,
+  .p-panelmenu-content,
+  .p-menuitem-content {
+    background: transparent !important;
+    color: inherit !important;
+  }
 }
 
 /* PrimeVue 菜单 .p-highlight：已移除 reset 覆盖，由 menu-nav-misc preset + getMenuItemActive 完全控制 */
 
-/* Trinity Menu 几何锁定：强制 PrimeVue 菜单容器严守边界 */
+/* Trinity Menu 几何锁定：强制 PrimeVue 菜单容器严守边界
+   注意：.p-panelmenu-content-container 必须保持 display:grid，
+         不可被此规则覆盖，否则 grid-template-rows 折叠动画失效。 */
 .p-panelmenu-header-content,
 .p-panelmenu-content,
 .p-menuitem-content {
@@ -97,12 +148,6 @@
   max-width: 100% !important;
   overflow: hidden !important;
   box-sizing: border-box !important;
-}
-
-/* Trinity 过渡同步：禁用 PrimeVue 原生过渡，由 Trinity 统一接管 */
-.p-menuitem-link,
-.p-panelmenu-header-content {
-  transition: none !important;
 }
 
 .p-datepicker {
@@ -114,27 +159,30 @@
 }
 
 /* --- PrimeVue Dark Mode Overrides --- */
+
 /* Fix: Raised Text Buttons lose contrast in dark mode */
 .dark .p-button-raised.p-button-text {
-  background-color: rgb(var(--primary) / 0.04) !important;
+  background-color: rgb(var(--primary) / 4%) !important;
   @apply shadow-sm shadow-md;
 }
 
 .dark .p-button-raised.p-button-text:hover {
-  background-color: rgb(var(--primary) / 0.08) !important;
+  background-color: rgb(var(--primary) / 8%) !important;
   @apply shadow-md shadow-lg -translate-y-0.2;
 }
 
 .dark .p-button-raised.p-button-text:active {
-  background-color: rgb(var(--primary) / 0.12) !important;
+  background-color: rgb(var(--primary) / 12%) !important;
   @apply shadow-sm shadow-md translate-y-0;
 }
 
 .p-tabs {
   width: 100%;
   height: 100%;
+
   .p-tabpanels {
     flex: 1;
+
     .p-tabpanel {
       width: 100%;
       height: 100%;
@@ -147,6 +195,7 @@
     background-color: color-mix(in srgb, rgb(var(--primary)) 16%, rgb(var(--card))) !important;
   }
 }
+
 .p-inputnumber-button-group {
   display: flex;
   align-items: center;

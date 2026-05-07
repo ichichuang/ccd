@@ -11,6 +11,11 @@ import { RUNTIME_STORAGE_KEYS } from '@/constants/runtime'
 import { RUNTIME_E2E_EVENTS } from '@/constants/runtime'
 import { generateThemeVars, applyTheme } from '@/utils/theme/engine'
 import { rgbToHex } from '@/utils/theme/colors'
+import {
+  applyThemeModeToRoot,
+  getSystemPrefersDark,
+  resolveThemeModeIsDark,
+} from '@/utils/theme/mode'
 import { dispatchRuntimeE2EEvent, isVisualE2EMode } from '@/utils/runtime/e2e'
 import {
   getTransitionConfig,
@@ -42,24 +47,6 @@ let pendingThemeTransitionRequest: ThemeTransitionRequest | null = null
 
 // 过渡锁已抽离至 @/utils/theme/transitions，避免 theme store ↔ useThemeSwitch 循环依赖
 export { isThemeLocked } from '@/utils/theme/transitions'
-
-// 缓存系统主题检测（性能优化）
-let systemDarkModeQuery: MediaQueryList | null = null
-function getSystemDarkModeQuery(): MediaQueryList {
-  if (!systemDarkModeQuery) {
-    systemDarkModeQuery = window.matchMedia('(prefers-color-scheme: dark)')
-  }
-  return systemDarkModeQuery
-}
-
-function resolveModeIsDark(mode: ThemeMode, systemPrefersDark: boolean): boolean {
-  return mode === 'dark' || ((mode === 'auto' || mode === 'glass') && systemPrefersDark)
-}
-
-function syncRootThemeClasses(mode: ThemeMode, isDark: boolean): void {
-  document.documentElement.classList.toggle('dark', isDark)
-  document.documentElement.classList.toggle('glass', mode === 'glass')
-}
 
 /**
  * 创建淡入淡出蒙层
@@ -205,9 +192,7 @@ export function useThemeSwitch(): UseThemeSwitchReturn {
 
   // 计算属性
   const mode = computed(() => themeStore.mode)
-  const isDark = computed(() =>
-    resolveModeIsDark(themeStore.mode, getSystemDarkModeQuery().matches)
-  )
+  const isDark = computed(() => resolveThemeModeIsDark(themeStore.mode))
   const transitionMode = computed(() => themeStore.transitionMode)
   const transitionDuration = computed(() => themeStore.transitionDuration)
 
@@ -233,7 +218,7 @@ export function useThemeSwitch(): UseThemeSwitchReturn {
   const applyModeSnapshot = (targetMode: ThemeMode, systemPrefersDark: boolean): void => {
     themeStore.mode = targetMode
 
-    const isDarkNow = resolveModeIsDark(targetMode, systemPrefersDark)
+    const isDarkNow = resolveThemeModeIsDark(targetMode, systemPrefersDark)
     const preset =
       THEME_PRESETS.find(p => p.name === themeStore.themeName) ||
       THEME_PRESETS.find(p => p.name === DEFAULT_THEME_NAME) ||
@@ -241,7 +226,7 @@ export function useThemeSwitch(): UseThemeSwitchReturn {
     const vars = generateThemeVars(preset, isDarkNow)
 
     applyTheme(vars)
-    syncRootThemeClasses(targetMode, isDarkNow)
+    applyThemeModeToRoot(targetMode, isDarkNow)
     void document.documentElement.offsetHeight
 
     try {
@@ -263,7 +248,7 @@ export function useThemeSwitch(): UseThemeSwitchReturn {
    */
   const getNextMode = (): ThemeMode => {
     const currentMode = activeTransitionTarget ?? mode.value
-    const currentIsDark = resolveModeIsDark(currentMode, getSystemDarkModeQuery().matches)
+    const currentIsDark = resolveThemeModeIsDark(currentMode)
     return currentIsDark ? 'light' : 'dark'
   }
 
@@ -301,7 +286,7 @@ export function useThemeSwitch(): UseThemeSwitchReturn {
     const transitionModeToUse = resolveTransitionMode(
       transitionModeOverride || transitionMode.value
     )
-    const systemPrefersDark = getSystemDarkModeQuery().matches
+    const systemPrefersDark = getSystemPrefersDark()
     const visualE2EMode = isVisualE2EMode()
 
     if (!document?.startViewTransition || visualE2EMode) {
@@ -352,7 +337,7 @@ export function useThemeSwitch(): UseThemeSwitchReturn {
       // 计算目标颜色用于蒙层（如果需要）
       let overlay: HTMLElement | null = null
       if (config.overlay && config.overlay.opacity > 0) {
-        const willBeDark = resolveModeIsDark(targetMode, systemPrefersDark)
+        const willBeDark = resolveThemeModeIsDark(targetMode, systemPrefersDark)
         const preset =
           THEME_PRESETS.find(p => p.name === themeStore.themeName) ||
           THEME_PRESETS.find(p => p.name === DEFAULT_THEME_NAME) ||

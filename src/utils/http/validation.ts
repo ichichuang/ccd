@@ -1,4 +1,3 @@
-import type { Schema as YupSchema, ValidationError as YupValidationError } from 'yup'
 import type { ZodIssue, ZodType } from 'zod'
 import { ErrorType, HttpRequestError } from './errors'
 
@@ -6,38 +5,23 @@ export interface HttpValidationIssue {
   path?: string
   message: string
   value?: unknown
+  expected?: string
+  received?: unknown
 }
 
-export type HttpResponseSchema<T> = YupSchema<T> | ZodType<T>
-
-function isYupValidationError(error: unknown): error is YupValidationError {
-  return (
-    typeof error === 'object' &&
-    error !== null &&
-    'name' in error &&
-    (error as { name?: unknown }).name === 'ValidationError'
-  )
-}
-
-function isZodSchema<T>(schema: HttpResponseSchema<T>): schema is ZodType<T> {
-  const candidate = schema as { safeParseAsync?: unknown }
-  return typeof candidate.safeParseAsync === 'function'
-}
-
-function normalizeYupValidationIssues(error: YupValidationError): HttpValidationIssue[] {
-  const inner = error.inner.length > 0 ? error.inner : [error]
-  return inner.map(issue => ({
-    path: issue.path,
-    message: issue.message,
-    value: issue.value,
-  }))
-}
+export type HttpResponseSchema<T> = ZodType<T>
 
 function normalizeZodValidationIssues(issues: readonly ZodIssue[]): HttpValidationIssue[] {
-  return issues.map(issue => ({
-    path: issue.path.length > 0 ? issue.path.join('.') : undefined,
-    message: issue.message,
-  }))
+  return issues.map(issue => {
+    const extra = issue as unknown as Record<string, unknown>
+    return {
+      path: issue.path.length > 0 ? issue.path.join('.') : undefined,
+      message: issue.message,
+      value: extra.received,
+      expected: typeof extra.expected === 'string' ? extra.expected : undefined,
+      received: extra.received,
+    }
+  })
 }
 
 function throwValidationError(issues: HttpValidationIssue[]): never {
@@ -53,30 +37,16 @@ function throwValidationError(issues: HttpValidationIssue[]): never {
 
 /**
  * Validate external HTTP payloads before they cross into stores/components.
- * Supports Yup for existing call sites and Zod for schema-first DTO boundaries.
+ * Zod is the single schema boundary for HTTP DTO validation.
  */
 export async function validateResponse<T>(
   schema: HttpResponseSchema<T>,
   data: unknown
 ): Promise<T> {
-  if (isZodSchema(schema)) {
-    const result = await schema.safeParseAsync(data)
-    if (result.success) {
-      return result.data
-    }
-
-    throwValidationError(normalizeZodValidationIssues(result.error.issues))
+  const result = await schema.safeParseAsync(data)
+  if (result.success) {
+    return result.data
   }
 
-  try {
-    return await schema.validate(data, {
-      abortEarly: false,
-      stripUnknown: true,
-    })
-  } catch (error) {
-    if (isYupValidationError(error)) {
-      throwValidationError(normalizeYupValidationIssues(error))
-    }
-    throw error
-  }
+  throwValidationError(normalizeZodValidationIssues(result.error.issues))
 }

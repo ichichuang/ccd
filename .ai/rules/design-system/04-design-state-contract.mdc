@@ -69,13 +69,13 @@ The `overflow-auto` classes in the examples below are illustrative ONLY. Per L2 
 ```html
 <!-- A1: toolbar + scrollable content -->
 <div class="col-fill">
-  <div class="row-between p-sm bg-card border-b-default"><!-- toolbar / actions --></div>
+  <div class="row-between p-sm bg-card border-b border-b-solid border-border"><!-- toolbar / actions --></div>
   <div class="col-fill overflow-auto p-md gap-md"><!-- main content --></div>
 </div>
 
 <!-- A2: master-detail split -->
 <div class="row-start col-fill">
-  <div class="col-fill w-72 border-r-default overflow-auto p-sm"><!-- master list --></div>
+  <div class="col-fill w-72 border-r border-r-solid border-border overflow-auto p-sm"><!-- master list --></div>
   <div class="col-fill overflow-auto p-md"><!-- inspector / detail panel --></div>
 </div>
 
@@ -87,7 +87,7 @@ The `overflow-auto` classes in the examples below are illustrative ONLY. Per L2 
 
 <!-- A4: toolbar + table (Drawer managed by PrimeVue Drawer component) -->
 <div class="col-fill">
-  <div class="row-between p-sm bg-card border-b-default"><!-- search / filters / CTA --></div>
+  <div class="row-between p-sm bg-card border-b border-b-solid border-border"><!-- search / filters / CTA --></div>
   <div class="col-fill overflow-hidden"><!-- <ProTable> fills remaining height --></div>
 </div>
 

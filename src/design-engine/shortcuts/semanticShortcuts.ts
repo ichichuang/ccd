@@ -119,4 +119,7 @@ export const semanticShortcuts = {
   'z-overlay': 'z-50', // 覆盖层
   'z-popover': 'z-60', // 弹窗层
   'z-toast': 'z-100', // 提示层
+
+  // Sidebar width transition hook: structural width snaps; LayoutAdmin animates visual shell with transform.
+  'sidebar-width-transition': 'transition-none',
 } as const

@@ -1,17 +1,14 @@
 import { describe, expect, it, vi } from 'vitest'
-import * as yup from 'yup'
 import { z } from 'zod'
 import { validateResponse } from './validation'
 import { ErrorType, isHttpRequestError } from './errors'
 
 describe('validateResponse', () => {
   it('returns stripped validated data for valid DTO payloads', async () => {
-    const schema = yup
-      .object({
-        id: yup.string().required(),
-        count: yup.number().required(),
-      })
-      .required()
+    const schema = z.object({
+      id: z.string(),
+      count: z.number(),
+    })
 
     await expect(validateResponse(schema, { id: 'a', count: 1, extra: true })).resolves.toEqual({
       id: 'a',
@@ -20,12 +17,10 @@ describe('validateResponse', () => {
   })
 
   it('throws structured HttpRequestError before invalid DTO reaches callers', async () => {
-    const schema = yup
-      .object({
-        id: yup.string().required(),
-        count: yup.number().required(),
-      })
-      .required()
+    const schema = z.object({
+      id: z.string(),
+      count: z.number(),
+    })
 
     await expect(validateResponse(schema, { id: 1 })).rejects.toSatisfy((error: unknown) => {
       if (!isHttpRequestError(error)) return false

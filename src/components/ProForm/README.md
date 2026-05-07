@@ -118,6 +118,12 @@ graph TD
 | Field Registry | 字段类型注册、Renderer 组件注册、value/props/event 映射         |
 | Component Map  | 将字段类型映射到 PrimeVue 包装组件（例如 `PrimeInputRenderer`） |
 
+### 2.3.3 未注册字段策略
+
+- Schema 中的 `component` 必须映射到 `FieldRegistry` 中已注册的 PrimeVue 渲染器，或由 `field-{name}` 自定义插槽接管。
+- 开发环境中，未注册字段会立即抛错，提示注册 PrimeVue renderer 或提供字段插槽。
+- 生产环境中，未注册字段只渲染语义化错误提示块，不回退到原生 `<input>`，避免把应急降级误认为业务 UI 模式。
+
 ### 2.4 Transaction Manager（事务管理器）
 
 #### 2.4.1 设计目标
@@ -764,15 +770,12 @@ max
 pattern
 Schema验证
 zod
-yup
 ajv
 joi
 
 FormEngine 就支持：
 
 Zod
-
-Yup
 
 AJV
 
@@ -2927,7 +2930,6 @@ logicEngine
 支持：
 
 zod
-yup
 custom
 async
 
@@ -3527,7 +3529,7 @@ validator:(value:any)=>boolean | Promise<boolean>
 }
 十七、ValidationResolver
 
-用于 Zod / Yup。
+用于 Zod。
 
 export type ValidationResolver<T> =
 (values:T)=>Promise<ValidationResult>
@@ -3779,7 +3781,7 @@ core/scheduler.ts 依赖图更新调度，保证依赖逻辑有序
 schema/ 定义字段、组、布局 schema；规范化 schema；提供类型推导
 state/ 字段状态管理，支持 field array，订阅 store，实现微渲染
 dependency/ 构建字段依赖图，计算动态字段/可见性/验证顺序
-validation/ 支持同步/异步验证，规则统一解析，兼容 Zod / Yup / 自定义
+validation/ 支持同步/异步验证，规则统一解析，兼容 Zod / 自定义
 renderer/ 根据 registry 渲染字段组件，支持虚拟渲染和 slot
 registry/ 字段/组件注册中心，提供 props 映射和 value/event 绑定
 hooks/ useForm、useField、useFieldArray、useFormContext，统一调用入口
