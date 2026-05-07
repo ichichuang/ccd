@@ -14,8 +14,10 @@ const writeText = (relPath, content) => {
   console.log(`[AI-PROTOCOL] ${relPath} <= .ai/protocol/adapter-manifest.json`)
 }
 
-const bulletList = items => items.map(item => `- ${item}`).join('\n')
-const numberedList = items => items.map((item, index) => `${index + 1}. ${item}`).join('\n')
+const escapeMarkdownText = value => value.replaceAll('*', '\\*')
+const bulletList = items => items.map(item => `- ${escapeMarkdownText(item)}`).join('\n')
+const numberedList = items =>
+  items.map((item, index) => `${index + 1}. ${escapeMarkdownText(item)}`).join('\n')
 
 function renderEntry() {
   return `# AI Entry (Unified)
