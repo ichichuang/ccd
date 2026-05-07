@@ -13,22 +13,15 @@ This repository uses `.ai/` as the single source of truth for all AI collaborati
 
 ## Compatibility Adapters
 
-The following are generated compatibility adapters for specific tools:
+The following are generated compatibility adapters for supported AI tools:
 
 - `AGENTS.md` <= `.ai/protocol/AI.entry.md`
-- `.cursor/settings.json` <= `.ai/config/cursor.settings.json`
-- `.cursor/rules/**` <= `.ai/rules/**`
-- `.cursor/skills/**` <= `.ai/skills/core/** + .ai/skills/cursor/**`
+- `CLAUDE.md` <= `.ai/protocol/adapter-manifest.json` (points to `AGENTS.md`)
 
 Local Codex materialization:
 
 - `~/.codex/skills/**` <= `.ai/skills/core/** + .ai/skills/codex/**`
 - Generate with `pnpm ai:sync:codex`
-
-Gemini AICC references:
-
-- Adapter: `.ai/protocol/adapters/gemini.md`
-- Skill index: `.ai/manifests/gemini-skill-index.json`
 
 Local runtime file:
 
@@ -38,13 +31,12 @@ Do not manually maintain generated adapters.
 
 ## Skill Topology
 
-CCD uses three skill layers:
+CCD uses two skill layers:
 
-| Layer  | Location               | Purpose                                                            |
-| ------ | ---------------------- | ------------------------------------------------------------------ |
-| Core   | `.ai/skills/core/**`   | Implementation skills for Vue, VueUse, UnoCSS, and Vite            |
-| Codex  | `.ai/skills/codex/**`  | Low-token orchestration, browser automation, and GitHub operations |
-| Cursor | `.ai/skills/cursor/**` | Compatibility-only Cursor skill surface                            |
+| Layer | Location              | Purpose                                                            |
+| ----- | --------------------- | ------------------------------------------------------------------ |
+| Core  | `.ai/skills/core/**`  | Implementation skills for Vue, VueUse, UnoCSS, and Vite            |
+| Codex | `.ai/skills/codex/**` | Low-token orchestration, browser automation, and GitHub operations |
 
 Repo-managed Codex operations currently center on:
 

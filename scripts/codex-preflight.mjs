@@ -7,7 +7,6 @@ const cwd = process.cwd()
 const home = os.homedir()
 
 const requiredPaths = [
-  '.ai/config/cursor.settings.json',
   '.ai/rules/architecture',
   '.ai/rules/components',
   '.ai/rules/core',
@@ -21,13 +20,9 @@ const requiredPaths = [
   '.ai/skills/codex/task-orchestrator/SKILL.md',
   '.ai/skills/codex/github-ops/SKILL.md',
   '.ai/skills/codex/desktop-tauri-guard/SKILL.md',
-  '.ai/skills/cursor/github/SKILL.md',
-  '.ai/skills/cursor/playwright-mcp/SKILL.md',
-  '.ai/protocol/adapters/gemini.md',
-  '.cursor/rules',
-  '.cursor/skills',
-  '.cursor/settings.json',
+  '.ai/protocol/adapters/claude.md',
   'AGENTS.md',
+  'CLAUDE.md',
   '.ai/rules/core/10-ai-generation-workflow.mdc',
   'scripts/skill-lock-utils.mjs',
   'scripts/ai-sync.mjs',
@@ -40,7 +35,6 @@ const requiredPaths = [
   '.ai/runtime/repair_list.template.txt',
   '.ai/runtime/repair_list.txt',
   '.ai/manifests/skill-routing.json',
-  '.ai/manifests/gemini-skill-index.json',
   '.ai/manifests/skills-lock.json',
   'uno.config.ts',
   'vite.config.ts',

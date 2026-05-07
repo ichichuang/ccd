@@ -5,13 +5,9 @@ import { spawnSync } from 'node:child_process'
 const cwd = process.cwd()
 const fileAdapters = [
   { source: '.ai/protocol/AI.entry.md', target: 'AGENTS.md' },
-  { source: '.ai/config/cursor.settings.json', target: '.cursor/settings.json' },
 ]
 
-const dirAdapters = [
-  { sources: ['.ai/rules'], target: '.cursor/rules' },
-  { sources: ['.ai/skills/core', '.ai/skills/cursor'], target: '.cursor/skills' },
-]
+const dirAdapters = []
 
 const localRuntimeFiles = [
   {
@@ -20,7 +16,7 @@ const localRuntimeFiles = [
   },
 ]
 
-const legacyPaths = ['CLAUDE.md', '.claude']
+const legacyPaths = ['.cursor']
 
 const ensureParentDir = relPath => fs.mkdirSync(path.dirname(path.join(cwd, relPath)), { recursive: true })
 

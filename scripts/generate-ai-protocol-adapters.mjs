@@ -38,17 +38,9 @@ ${Object.entries(manifest.adapterGuides)
   .map(([name, relPath]) => `- ${name}: ${relPath}`)
   .join('\n')}
 
-Gemini AICC routing assets:
-
-${bulletList(manifest.routingAssets)}
-
 Current repo defaults:
 
 ${bulletList(manifest.repoDefaults)}
-
-Cross-project full-stack defaults:
-
-${bulletList(manifest.crossProjectDefaults)}
 
 Core mandate:
 
@@ -106,28 +98,21 @@ Generated from:
 `
 }
 
-function renderCursor() {
-  const cursor = manifest.cursor
-  return `# Cursor Adapter Guide
+function renderClaude() {
+  const claude = manifest.claude
+  return `# Claude AI Adapter Guide
 
 ## Discovery Entry
 
-Cursor expects:
+${bulletList(claude.discovery)}
 
-${bulletList(cursor.expects)}
+## Canonical Entrypoint
 
-In this repo:
-
-${bulletList(cursor.generatedFrom)}
-
-## Canonical Policy
-
-- Edit only .ai/** as source-of-truth.
-- .cursor/** is generated compatibility output.
+- ${claude.entrypoint}
 
 ## Health Commands
 
-${bulletList(cursor.healthCommands)}
+${bulletList(claude.healthCommands)}
 
 Generated from:
 
@@ -135,54 +120,19 @@ Generated from:
 `
 }
 
-function renderGemini() {
-  const gemini = manifest.gemini
-  return `# Gemini Adapter Guide (CCD AICC)
+function renderClaudeEntry() {
+  return `# Claude AI Entry
 
-## Role
+Read the shared repository AI entrypoint:
 
-${bulletList(gemini.role)}
+- [AGENTS.md](./AGENTS.md)
 
-## 0) Mandatory Context Loading
-
-Before any reasoning:
-
-1. Load .ai/ as the only AI-native source of truth.
-2. Apply strict priority:
-${gemini.contextPriority.map(item => `   - ${item}`).join('\n')}
-3. Do not load everything blindly: map intent first, load only relevant rules/skills, and ignore unrelated modules.
-
-If conflicts occur: rules > skills > existing code.
-
-## 1) Mandatory Pre-Execution Protocol
-
-${numberedList(gemini.preExecution)}
-
-## 2) Execution Model
-
-${bulletList(gemini.executionPhases)}
-
-## 3) Output Contract (Strict)
-
-${numberedList(gemini.outputContract)}
-
-## 4) Forced Trigger Syntax
-
-- [USE SKILL]: <skill-id-or-path>
-- [USE RULE]: <rule-id-or-path>
-
-## 5) Hard Constraints
-
-${bulletList(gemini.hardConstraints)}
-
-Generated from:
-
-- .ai/protocol/adapter-manifest.json
+Do not duplicate AI protocol content here. AGENTS.md is generated from .ai/protocol/AI.entry.md, which is generated from .ai/protocol/adapter-manifest.json.
 `
 }
 
 writeText('.ai/protocol/AI.entry.md', renderEntry())
 writeText('.ai/protocol/adapters/README.md', renderAdapterReadme())
 writeText('.ai/protocol/adapters/codex.md', renderCodex())
-writeText('.ai/protocol/adapters/cursor.md', renderCursor())
-writeText('.ai/protocol/adapters/gemini.md', renderGemini())
+writeText('.ai/protocol/adapters/claude.md', renderClaude())
+writeText('CLAUDE.md', renderClaudeEntry())

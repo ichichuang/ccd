@@ -19,15 +19,6 @@
       ],
       "computedHash": "5a6474af81494d9eb2c7f3bd8b5c8ec975f3c4daf6b1ff716493d9ae96e50ba0"
     },
-    "github": {
-      "source": "repo:.ai/skills/cursor/github",
-      "sourceType": "local",
-      "layer": "cursor",
-      "syncTargets": [
-        "cursor"
-      ],
-      "computedHash": "496b3a45b0584f61060ed7667ea60227f9ab5d34cdc664730997fe7b7ea5eb2b"
-    },
     "github-ops": {
       "source": "repo:.ai/skills/codex/github-ops",
       "sourceType": "local",
@@ -37,20 +28,11 @@
       ],
       "computedHash": "1d8be046d9269b3f322c71641007e3112193fe6214147d997be776594eda4c12"
     },
-    "playwright-mcp": {
-      "source": "repo:.ai/skills/cursor/playwright-mcp",
-      "sourceType": "local",
-      "layer": "cursor",
-      "syncTargets": [
-        "cursor"
-      ],
-      "computedHash": "307653bd679c63d51fcc8d74938be969c9c917780580c153f241920029cf0250"
-    },
     "skill-routing": {
       "source": "repo:.ai/manifests/skill-routing.json",
       "sourceType": "local",
       "kind": "manifest",
-      "computedHash": "79ba086a9ed177287bc1b690593da8d0f68ca5262fed48c50fc5c9a636f856d6"
+      "computedHash": "9f2072b26ee005ed00b1541c61c83500ad0894ce4e29a9041a377eab78d0c511"
     },
     "task-orchestrator": {
       "source": "repo:.ai/skills/codex/task-orchestrator",
@@ -66,8 +48,7 @@
       "sourceType": "local",
       "layer": "core",
       "syncTargets": [
-        "codex",
-        "cursor"
+        "codex"
       ],
       "computedHash": "66c9ee74a59e2d2767379332bf701210d05e54fc2577f1f5cbc7b328c28ff51b"
     },
@@ -76,8 +57,7 @@
       "sourceType": "local",
       "layer": "core",
       "syncTargets": [
-        "codex",
-        "cursor"
+        "codex"
       ],
       "computedHash": "d1f166382979a51d7ed682046c55aef3c3a47fe834c60d3e29ba4ab93a968d1f"
     },
@@ -86,8 +66,7 @@
       "sourceType": "local",
       "layer": "core",
       "syncTargets": [
-        "codex",
-        "cursor"
+        "codex"
       ],
       "computedHash": "ccb554becddd5e72cc7e536d7319411e3ad8985fc7fac6aec55290f02ef86dd8"
     },
@@ -96,10 +75,9 @@
       "sourceType": "local",
       "layer": "core",
       "syncTargets": [
-        "codex",
-        "cursor"
+        "codex"
       ],
-      "computedHash": "cb2be45d9d432dcb64564a414a801a710ee2e7af029b719dc9565d3ab736c275"
+      "computedHash": "8a29721d0dc037d81395db69bd012a999bbad1623452344e97ecc78103f97875"
     }
   }
 }

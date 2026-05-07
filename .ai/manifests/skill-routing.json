@@ -218,29 +218,28 @@
       ]
     },
     {
-      "id": "ai-protocol-aicc",
-      "description": "AI protocol, Gemini Gems, context loading contracts, and .ai architecture orchestration config",
+      "id": "ai-protocol",
+      "description": "AI protocol, Claude/Codex entrypoints, context loading contracts, and .ai architecture orchestration config",
       "keywords": [
-        "gemini",
-        "gems",
-        "aicc",
+        "claude",
+        "codex",
+        "agent protocol",
+        "ai protocol",
         "prompt compiler",
         "architecture loader",
         "context loader",
-        "agent protocol",
-        "ai protocol",
         "skill index",
         "规则注入",
         "上下文加载",
         "协议升级",
         ".ai"
       ],
-      "path_globs": [".ai/protocol/**", ".ai/manifests/**", "AGENTS.md"],
+      "path_globs": [".ai/protocol/**", ".ai/manifests/**", "AGENTS.md", "CLAUDE.md"],
       "skills": [".ai/skills/codex/task-orchestrator"],
       "prechecks": ["pnpm codex:preflight"],
       "token_strategy": [
         "Load protocol adapter docs and manifests before opening unrelated implementation skills",
-        "Keep updates architecture-first and avoid introducing coding-agent-only assumptions into Gemini AICC flows"
+        "Keep updates architecture-first and avoid introducing coding-agent-only assumptions into supported AI entrypoints"
       ]
     },
     {

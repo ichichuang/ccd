@@ -64,9 +64,9 @@ jobs:
         run: |
           pnpm ai:sync
           pnpm ai:sync:codex
-          if ! git diff --quiet -- AGENTS.md .cursor .ai/manifests/skills-lock.json; then
+          if ! git diff --quiet -- AGENTS.md CLAUDE.md .ai/manifests/skills-lock.json; then
             echo "::error::Generated AI artifacts are stale. Run pnpm ai:sync && pnpm ai:sync:codex and commit the results."
-            git diff -- AGENTS.md .cursor .ai/manifests/skills-lock.json
+            git diff -- AGENTS.md CLAUDE.md .ai/manifests/skills-lock.json
             exit 1
           fi
 

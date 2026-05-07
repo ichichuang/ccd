@@ -3,9 +3,8 @@ import fs from 'node:fs'
 import path from 'node:path'
 
 export const SKILL_ROOTS = [
-  { root: '.ai/skills/core', layer: 'core', syncTargets: ['codex', 'cursor'] },
+  { root: '.ai/skills/core', layer: 'core', syncTargets: ['codex'] },
   { root: '.ai/skills/codex', layer: 'codex', syncTargets: ['codex'] },
-  { root: '.ai/skills/cursor', layer: 'cursor', syncTargets: ['cursor'] },
 ]
 
 export const SKILL_ROUTING_MANIFEST = '.ai/manifests/skill-routing.json'

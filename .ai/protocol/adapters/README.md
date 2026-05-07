@@ -3,8 +3,7 @@
 These adapter notes explain how each AI tool discovers configuration in this repository.
 
 - Codex: codex.md
-- Cursor: cursor.md
-- Gemini: gemini.md
+- Claude: claude.md
 
 Canonical policy:
 

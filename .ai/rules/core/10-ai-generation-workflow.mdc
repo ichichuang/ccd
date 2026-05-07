@@ -36,4 +36,4 @@ alwaysApply: true
 ## 5. Adapter Discipline
 
 - Edit `.ai/**` as the source of truth, then sync generated adapters with `pnpm ai:sync`.
-- **FORBIDDEN:** Directly hand-editing `AGENTS.md` or `.cursor/**` to introduce workflow changes.
+- **FORBIDDEN:** Directly hand-editing `AGENTS.md` or `CLAUDE.md` to introduce workflow changes.

@@ -83,9 +83,9 @@ CCD 面向“需要长期维护”的 Vue 3 产品项目，而不是一次性 De
 ### 5. AI 协作治理
 
 - `.ai/**` 是唯一规范源
-- `AGENTS.md`、`.cursor/**` 都只是兼容适配输出
+- `AGENTS.md`、`CLAUDE.md` 都只是兼容适配输出
 - Codex 通过仓库 canonical source 驱动，并把本机 `~/.codex/skills/**` 当作执行入口
-- Cursor 作为兼容层继续可用，但不再主导技能源目录结构
+- Claude AI 通过 `CLAUDE.md` 指向同一份 `AGENTS.md` 协议入口
 
 ---
 
@@ -125,7 +125,7 @@ pnpm codex:preflight
 
 说明：
 
-- `pnpm ai:sync`：从 `.ai/**` 生成 `AGENTS.md` 与 `.cursor/**`
+- `pnpm ai:sync`：从 `.ai/**` 生成 `AGENTS.md` 与 `CLAUDE.md`
 - `pnpm ai:sync:codex`：把 `.ai/skills/core/** + .ai/skills/codex/**` 安装到本机 `~/.codex/skills/**`
 - `pnpm ai:setup:codex`：执行 `ai:sync + ai:sync:codex + ai:doctor + codex:preflight`
 - `pnpm ai:guard`：检查业务页面、路由模块、stores 是否违反架构生成约束
@@ -168,12 +168,10 @@ pnpm preview
 
 ### 你不应该手动维护什么
 
-以下文件或目录属于生成出来的兼容适配层，不应作为源文件直接维护：
+以下文件属于生成出来的兼容适配层，不应作为源文件直接维护：
 
 - [AGENTS.md](./AGENTS.md)
-- [.cursor/settings.json](./.cursor/settings.json)
-- `.cursor/rules/**`
-- `.cursor/skills/**`
+- [CLAUDE.md](./CLAUDE.md)
 
 ### 本地运行态文件
 
@@ -268,7 +266,7 @@ pnpm ai:doctor
 | [docs/codex/quickstart.md](./docs/codex/quickstart.md)               | Codex 启动、技能路由、CRX 录制与回放        |
 | [.ai/README.md](./.ai/README.md)                                     | AI 工作区标准与生成适配规则                 |
 | [.ai/protocol/AI.entry.md](./.ai/protocol/AI.entry.md)               | AI 协议统一入口                             |
-| [.ai/protocol/adapters/README.md](./.ai/protocol/adapters/README.md) | Codex / Cursor 适配说明索引                 |
+| [.ai/protocol/adapters/README.md](./.ai/protocol/adapters/README.md) | Codex / Claude 适配说明索引                 |
 
 ---
 
@@ -281,7 +279,7 @@ pnpm ai:doctor
 - 优先复用现有抽象，不为单个需求破坏模块边界
 - 用规则约束生成质量，而不是依赖一次性 prompt 运气
 
-这样 Codex 与 Cursor 才能在你的项目里真正成为“遵守架构的工程执行者”，而不是随机生成器。
+这样 Codex 与 Claude AI 才能在你的项目里共享同一套架构协议，成为“遵守架构的工程执行者”，而不是随机生成器。
 
 ### 低 Token 浏览器自动化
 

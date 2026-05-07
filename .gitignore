@@ -93,9 +93,6 @@ Thumbs.db
 # Generated AI adapters
 AGENTS.md
 CLAUDE.md
-.cursor/settings.json
-.cursor/rules/
-.cursor/skills/
 .claude/settings.local.json
 .claude/skills/
 

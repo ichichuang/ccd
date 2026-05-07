@@ -37,9 +37,7 @@ CCD now uses a Codex-first AI workspace with `.ai/` as the single source of trut
 ### Generated Adapters
 
 - `AGENTS.md`
-- `.cursor/settings.json`
-- `.cursor/rules/**`
-- `.cursor/skills/**`
+- `CLAUDE.md`
 
 These are compatibility outputs only. They are regenerated from `.ai/**` and must not be treated as source files.
 
@@ -55,11 +53,10 @@ Codex discovers repo-managed skills through local installation, but those skills
 
 CCD intentionally separates skills by responsibility.
 
-| Tier                 | Location               | Role                                                                    |
-| -------------------- | ---------------------- | ----------------------------------------------------------------------- |
-| Core implementation  | `.ai/skills/core/**`   | Vue, VueUse, UnoCSS, Vite, and framework-adjacent implementation work   |
-| Codex operations     | `.ai/skills/codex/**`  | Routing, browser automation, GitHub automation, low-token orchestration |
-| Cursor compatibility | `.ai/skills/cursor/**` | Compatibility-only adapters for Cursor workflows                        |
+| Tier                | Location              | Role                                                                    |
+| ------------------- | --------------------- | ----------------------------------------------------------------------- |
+| Core implementation | `.ai/skills/core/**`  | Vue, VueUse, UnoCSS, Vite, and framework-adjacent implementation work   |
+| Codex operations    | `.ai/skills/codex/**` | Routing, browser automation, GitHub automation, low-token orchestration |
 
 Current high-leverage Codex skills:
 
@@ -110,7 +107,7 @@ python3 .ai/skills/codex/architecture-browser-master/scripts/browser_automator.p
 ### Generated Outputs
 
 - `AGENTS.md`
-- `.cursor/**`
+- `CLAUDE.md`
 - `~/.codex/skills/**`
 
 These are refreshed by:
@@ -174,7 +171,7 @@ Current rules are:
 - desktop / Tauri runtime assets, when present, are maintained directly in-repo
 - AI governance adapters must stay synced through `pnpm ai:sync` and `pnpm ai:sync:codex`
 - `pnpm ai:doctor` verifies both the generated adapters and whether Husky / CI still invoke the doctor gate
-- CI runs `pnpm drift-check` and reruns sync to block drift if `AGENTS.md`, `.cursor/**`, or `.ai/manifests/skills-lock.json` would change
+- CI runs `pnpm drift-check` and reruns sync to block drift if `AGENTS.md`, `CLAUDE.md`, or `.ai/manifests/skills-lock.json` would change
 
 ---
 

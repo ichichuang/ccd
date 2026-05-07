@@ -61,8 +61,6 @@ codex --profile yolo
   - `.ai/skills/codex/architecture-browser-master`
 - Vague or multi-surface task routing:
   - `.ai/skills/codex/task-orchestrator`
-- Cursor compatibility:
-  - `.ai/skills/cursor/{github,playwright-mcp}`
 
 ## 4) Low-Token Skill Routing
 
@@ -147,7 +145,7 @@ This keeps Codex at the orchestration layer while the browser work runs through 
 
 If your change touches canonical AI governance assets, expect CI to rerun `pnpm ai:sync` and `pnpm ai:sync:codex`.
 
-If those commands would modify `AGENTS.md`, `.cursor/**`, or `.ai/manifests/skills-lock.json`, CI will fail and require you to commit the synced artifacts first.
+If those commands would modify `AGENTS.md`, `CLAUDE.md`, or `.ai/manifests/skills-lock.json`, CI will fail and require you to commit the synced artifacts first.
 
 ## 6) Task Prompt Template (Copy and Fill)
 
@@ -172,8 +170,6 @@ Skill policy:
   .ai/skills/codex/task-orchestrator
   .ai/skills/codex/architecture-browser-master
   .ai/skills/codex/github-ops
-  .ai/skills/cursor/github
-  .ai/skills/cursor/playwright-mcp
 - Explain selection briefly before implementation.
 
 Output format:
@@ -189,7 +185,6 @@ Output format:
 Copy these files into the new repo root:
 
 - `.ai/README.md`
-- `.ai/config/cursor.settings.json`
 - `.ai/protocol/adapter-manifest.json`
 - `.ai/protocol/AI.entry.md`
 - `.ai/protocol/AGENTS.core.md`

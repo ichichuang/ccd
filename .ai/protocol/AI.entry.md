@@ -17,17 +17,12 @@ Load this entrypoint, then continue with:
 This file is the shared entrypoint target for:
 
 - AGENTS.md for Codex and other AGENTS-aware agent CLIs
+- CLAUDE.md for Claude AI, pointing to AGENTS.md
 
 Per-AI adapter guidance:
 
 - Codex: .ai/protocol/adapters/codex.md
-- Cursor: .ai/protocol/adapters/cursor.md
-- Gemini: .ai/protocol/adapters/gemini.md
-
-Gemini AICC routing assets:
-
-- .ai/manifests/skill-routing.json
-- .ai/manifests/gemini-skill-index.json
+- Claude: .ai/protocol/adapters/claude.md
 
 Current repo defaults:
 
@@ -35,20 +30,13 @@ Current repo defaults:
 - Treat desktop-runtime changes as Tauri v2 + guest bindings bridge work; route to .ai/skills/codex/desktop-tauri-guard.
 - Prefer Playwright CLI plus .ai/skills/codex/architecture-browser-master.
 - Prefer Playwright CRX for recording browser flows, then import the exported Python into .ai/skills/codex/architecture-browser-master flow assets.
-- Fall back to .ai/skills/cursor/playwright-mcp only when the CLI route cannot satisfy the task.
 - For desktop/Tauri-scoped changes on main, run pnpm sync:desktop-config, then pnpm drift-check.
 - Keep user-facing pages within Lighthouse 90+ budgets unless the task explicitly says otherwise.
-
-Cross-project full-stack defaults:
-
-- When a touched workspace uses React or Next.js, prefer TypeScript, Tailwind, React Server Components, Prisma, and tRPC.
-- Keep schema-first data design, unified error handling, unit tests, and Playwright E2E coverage.
-- Apply the same performance target of Lighthouse 90+ for user-facing routes.
 
 Core mandate:
 
 - .ai/\*\* is the only source of truth.
-- Adapter paths (AGENTS.md, .cursor/\*\*) are generated compatibility entrypoints only.
+- Adapter paths (AGENTS.md, CLAUDE.md) are generated compatibility entrypoints only.
 - Materialize repo adapters with pnpm ai:sync and local Codex skills with pnpm ai:sync:codex.
 - For new page/route work, scaffold first with pnpm ai:scaffold:view-route, then enforce pnpm ai:guard.
 

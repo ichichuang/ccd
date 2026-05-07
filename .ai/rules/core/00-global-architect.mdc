@@ -39,7 +39,7 @@ If rules conflict, MUST apply this order:
   - **Default:** If no prefix/colon is provided, it defaults to Lucide. Example: `home` -> `i-lucide-home`.
   - **Reference:** Always cross-check `package.json` for installed icon sets (`lucide`, `solar`, `ph`, `logos`) before introducing new names.
 - **Smart Abstractions:** For common UI patterns, intelligently leverage internal advanced components instead of raw HTML (e.g., use the internal `Dialog`, `Toast`, `CScrollbar` wrappers).
-- **Utility Maximization:** Prefer built-in `Utils` and `common` tools within the architecture. Combine them intelligently with `VueUse` composables.@.cursorignore @.cursorrules 
+- **Utility Maximization:** Prefer built-in `Utils` and `common` tools within the architecture. Combine them intelligently with `VueUse` composables.
 
 ## 🛑 The Execution Gate
 MANDATORY: Before outputting any code changes, you MUST trigger `01-global-preflight.mdc` and, when visual surfaces are touched, `02-ui-preflight.mdc`, then present the applicable filled-out checklist(s) to the user as a "Ready for Action" signal.

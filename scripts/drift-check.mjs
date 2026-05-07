@@ -278,7 +278,7 @@ function main() {
   const manualChunkErrors = checkManualChunksDrift()
   errors.push(...manualChunkErrors)
 
-  // ---------- 4. AutoImport / Components vs .cursor 规则 ----------
+  // ---------- 4. AutoImport / Components vs build plugin config ----------
   const buildPluginsErrors = checkBuildPluginsDrift()
   errors.push(...buildPluginsErrors)
 

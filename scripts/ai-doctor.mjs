@@ -18,14 +18,12 @@ const isDesktopBranch = currentBranch === 'feat/tauri-integration'
 
 const canonicalMustExist = [
   '.ai/README.md',
-  '.ai/config/cursor.settings.json',
   '.ai/protocol/AI.entry.md',
   '.ai/protocol/AGENTS.core.md',
   '.ai/protocol/adapter-manifest.json',
   '.ai/protocol/adapters/README.md',
   '.ai/protocol/adapters/codex.md',
-  '.ai/protocol/adapters/cursor.md',
-  '.ai/protocol/adapters/gemini.md',
+  '.ai/protocol/adapters/claude.md',
   '.ai/rules/core/00-global-architect.mdc',
   '.ai/rules/core/00-root-gatekeeper.mdc',
   '.ai/rules/core/01-global-preflight.mdc',
@@ -42,8 +40,6 @@ const canonicalMustExist = [
   '.ai/skills/codex/task-orchestrator/SKILL.md',
   '.ai/skills/codex/github-ops/SKILL.md',
   '.ai/skills/codex/desktop-tauri-guard/SKILL.md',
-  '.ai/skills/cursor/github/SKILL.md',
-  '.ai/skills/cursor/playwright-mcp/SKILL.md',
   'scripts/ai-sync.mjs',
   'scripts/generate-ai-protocol-adapters.mjs',
   'scripts/ai-doctor.mjs',
@@ -52,23 +48,32 @@ const canonicalMustExist = [
   'scripts/ai-sync-codex.mjs',
   '.ai/runtime/repair_list.template.txt',
   '.ai/manifests/skill-routing.json',
-  '.ai/manifests/gemini-skill-index.json',
   '.ai/manifests/skills-lock.json',
   '.ai/manifests/rule-index.json',
 ]
 
 const fileAdapters = [
   { target: 'AGENTS.md', source: '.ai/protocol/AI.entry.md' },
-  { target: '.cursor/settings.json', source: '.ai/config/cursor.settings.json' },
 ]
 
-const dirAdapters = [
-  { target: '.cursor/rules', sources: ['.ai/rules'] },
-  { target: '.cursor/skills', sources: ['.ai/skills/core', '.ai/skills/cursor'] },
+const generatedContentChecks = [
+  {
+    target: 'CLAUDE.md',
+    includes: ['[AGENTS.md](./AGENTS.md)', '.ai/protocol/adapter-manifest.json'],
+  },
 ]
+
+const dirAdapters = []
 
 const localRuntimeFiles = ['.ai/runtime/repair_list.txt', '.ai/runtime/repair-ledger.json']
-const legacyShouldBeAbsent = ['CLAUDE.md', '.claude', '.ai/config/claude.settings.local.json', '.ai/protocol/adapters/claude.md']
+const retiredShouldBeAbsent = [
+  '.cursor',
+  '.ai/config/cursor.settings.json',
+  '.ai/protocol/adapters/cursor.md',
+  '.ai/protocol/adapters/gemini.md',
+  '.ai/skills/cursor',
+  '.ai/manifests/gemini-skill-index.json',
+]
 const architectureGateChecks = [
   {
     rel: '.husky/pre-commit',
@@ -183,10 +188,10 @@ for (const rel of localRuntimeFiles) {
   else ok(`local runtime file: ${rel}`)
 }
 
-for (const rel of legacyShouldBeAbsent) {
+for (const rel of retiredShouldBeAbsent) {
   const abs = path.join(cwd, rel)
-  if (fs.existsSync(abs)) fail(`legacy Claude-era path should be removed: ${rel}`)
-  else ok(`legacy path removed: ${rel}`)
+  if (fs.existsSync(abs)) fail(`retired Cursor/Gemini path should be removed: ${rel}`)
+  else ok(`retired path removed: ${rel}`)
 }
 
 for (const { rel, label, acceptedCommands } of architectureGateChecks) {
@@ -214,6 +219,21 @@ for (const { target, source } of fileAdapters) {
     continue
   }
   if (!readBuffer(target).equals(readBuffer(source))) {
+    fail(`stale generated adapter: ${target} (run pnpm ai:sync)`)
+    continue
+  }
+  ok(`generated adapter: ${target}`)
+}
+
+for (const { target, includes } of generatedContentChecks) {
+  const absTarget = path.join(cwd, target)
+  if (!fs.existsSync(absTarget)) {
+    fail(`missing generated adapter: ${target}`)
+    continue
+  }
+  const content = readText(target)
+  const missing = includes.filter(snippet => !content.includes(snippet))
+  if (missing.length > 0) {
     fail(`stale generated adapter: ${target} (run pnpm ai:sync)`)
     continue
   }
