@@ -4,6 +4,7 @@ import { DraftStorage } from '../persistence/DraftStorage'
 import { FORM_CONTROLLER_KEY, PRO_FORM_STATE_KEY } from '../constants'
 import { PRO_FORM_LOGGER } from '../utils/logger'
 import { castValue } from '@/utils/typeCasters'
+import { syncFormState } from './syncFormState'
 
 /**
  * ProForm 表单入口 Hook
@@ -27,18 +28,6 @@ export function useForm<TValues extends Record<string, unknown> = Record<string,
   // 向渲染层暴露实时表单状态，支持 visibleIf 等逻辑读取
   provide(PRO_FORM_STATE_KEY, state)
 
-  /**
-   * 从 FormController 聚合最新的字段状态并同步到 reactive state
-   */
-  const syncFormState = (): void => {
-    const latest: FormState<TValues> = controller.getFormState()
-    state.values = latest.values
-    state.errors = latest.errors
-    state.touched = latest.touched
-    state.dirty = latest.dirty
-    state.valid = latest.valid
-  }
-
   const formContext: FormContext<TValues> = {
     state,
     setValue(field, value) {
@@ -46,7 +35,7 @@ export function useForm<TValues extends Record<string, unknown> = Record<string,
       controller.store.setFieldValue(field as string, value)
       controller.transactionManager.updateField(field as string)
       controller.transactionManager.commit(() => {
-        syncFormState()
+        syncFormState(controller, state)
       }, controller)
     },
     setValidateOn(validateOn) {
@@ -54,34 +43,30 @@ export function useForm<TValues extends Record<string, unknown> = Record<string,
     },
     async validate() {
       const result: boolean = await controller.validateForm(options.resolver)
-      syncFormState()
+      syncFormState(controller, state)
       return result
     },
     async submit() {
       await controller.submit()
     },
     reset: async () => {
-      controller.reset(options.initialValues)
-      syncFormState()
+      controller.reset()
+      syncFormState(controller, state)
     },
     setFieldsValue(values) {
       controller.setFieldsValue(values)
-      syncFormState()
+      syncFormState(controller, state)
     },
     resetFields(names) {
-      controller.resetFields(
-        (names as (keyof TValues)[] | undefined)?.map(name => name as keyof TValues & string)
-      )
-      syncFormState()
+      controller.resetFields(names?.map(name => name as keyof TValues & string))
+      syncFormState(controller, state)
     },
     clearValidate(names) {
-      controller.clearValidate(
-        (names as (keyof TValues)[] | undefined)?.map(name => name as keyof TValues & string)
-      )
-      syncFormState()
+      controller.clearValidate(names?.map(name => name as keyof TValues & string))
+      syncFormState(controller, state)
     },
     setFieldProps(name, props) {
-      controller.setFieldProps(name as string, props as Record<string, unknown>)
+      controller.setFieldProps(name, props)
     },
   }
 
@@ -91,7 +76,7 @@ export function useForm<TValues extends Record<string, unknown> = Record<string,
 
   const updateSchema: UseFormReturn<TValues>['updateSchema'] = schema => {
     controller.updateSchema(schema)
-    syncFormState()
+    syncFormState(controller, state)
   }
 
   const handleSubmit: UseFormReturn<TValues>['handleSubmit'] =
@@ -104,12 +89,12 @@ export function useForm<TValues extends Record<string, unknown> = Record<string,
 
       try {
         const isValid = await controller.validateForm(options.resolver)
-        syncFormState()
+        syncFormState(controller, state)
         if (!isValid) {
           return
         }
 
-        const transformedValues = controller.getSubmitValues() as TValues
+        const transformedValues = castValue<TValues>(controller.getSubmitValues())
         await onSubmit(transformedValues)
 
         if (options.persistKey && options.persistKey.length > 0) {

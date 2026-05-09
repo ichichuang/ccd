@@ -1,4 +1,6 @@
 <script setup lang="ts">
+defineOptions({ name: 'ProMultiSelect' })
+
 import type { FieldComponentProps, SelectOption } from '../../engine/types'
 import { PRO_FORM_COMPONENT_DEFAULTS } from '../../engine/config'
 

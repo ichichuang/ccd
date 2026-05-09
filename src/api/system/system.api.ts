@@ -16,6 +16,25 @@ import { parseZodHttpPayload } from '@/adapters/http.adapter'
 /** 动态路由 API 路径（对接后端时使用） */
 const SYSTEM_ASYNC_ROUTES_URL = '/system/menu/routes'
 
+/** 路由校验错误码 */
+export const SYSTEM_ERROR_CODES = {
+  invalidRoutes: 'SYSTEM_INVALID_ROUTES',
+  invalidResponse: 'SYSTEM_INVALID_RESPONSE',
+} as const
+
+export type SystemErrorCode = (typeof SYSTEM_ERROR_CODES)[keyof typeof SYSTEM_ERROR_CODES]
+
+export class SystemApiError extends Error {
+  constructor(
+    public readonly code: SystemErrorCode,
+    message: string,
+    public readonly details?: unknown
+  ) {
+    super(message)
+    this.name = 'SystemApiError'
+  }
+}
+
 /**
  * 从原始响应中提取路由数组
  */
@@ -42,42 +61,61 @@ export const requestSystemAsyncRoutes = async (): Promise<SystemAsyncRouteItem[]
  * 返回空数组，表示当前仅使用静态路由；对接后端时切换为 requestSystemAsyncRoutesReal
  */
 export const requestSystemAsyncRoutesMock = async (): Promise<SystemAsyncRouteItem[]> => {
+  if (!import.meta.env.DEV) {
+    throw new SystemApiError(SYSTEM_ERROR_CODES.invalidResponse, 'Mock routes are DEV-only')
+  }
+
   await new Promise(resolve => setTimeout(resolve, 100))
   const routes: SystemAsyncRouteItem[] = [
     {
       path: '/example/hooks/use-date-utils',
-      component: 'example/hooks/use-date-utils',
-      meta: { titleKey: 'router.example.hooks.composables.useDateUtils' },
+      name: 'ExampleHookUseDateUtilsLegacy',
+      redirect: '/example/hooks/composables/use-date-utils',
+      meta: { titleKey: 'router.example.hooks.composables.useDateUtils', showLink: false },
     },
     {
       path: '/example/hooks/use-theme-switch',
-      component: 'example/hooks/use-theme-switch',
-      meta: { titleKey: 'router.example.hooks.composables.useThemeSwitch' },
+      name: 'ExampleHookUseThemeSwitchLegacy',
+      redirect: '/example/hooks/composables/use-theme-switch',
+      meta: { titleKey: 'router.example.hooks.composables.useThemeSwitch', showLink: false },
     },
     {
       path: '/example/hooks/use-http-request',
-      component: 'example/hooks/use-http-request',
-      meta: { titleKey: 'router.example.hooks.composables.useHttpRequest' },
+      name: 'ExampleHookUseHttpRequestLegacy',
+      redirect: '/example/hooks/composables/use-http-request',
+      meta: { titleKey: 'router.example.hooks.composables.useHttpRequest', showLink: false },
     },
   ]
   return parseZodHttpPayload(systemAsyncRouteItemSchema.array(), routes)
 }
 
 /**
- * 基础路由数据校验：确保 path 和 component 为字符串
+ * 路由数据校验：确保 path 和 component 合法
+ * 无效路由项会抛出异常，防止静默丢失路由
  */
 function validateRouteItems(routes: SystemAsyncRouteItem[]): SystemAsyncRouteItem[] {
-  return routes.filter((route: SystemAsyncRouteItem) => {
+  const invalid: { index: number; route: SystemAsyncRouteItem; reason: string }[] = []
+
+  const valid = routes.filter((route: SystemAsyncRouteItem, index: number) => {
     if (typeof route.path !== 'string' || route.path.length === 0) {
-      console.warn('🪒 Router: 跳过无效路由（path 缺失或非字符串）:', route)
+      invalid.push({ index, route, reason: 'path missing or not a string' })
       return false
     }
     if (route.component !== undefined && typeof route.component !== 'string') {
-      console.warn(`🪒 Router: 跳过无效路由 ${route.path}（component 非字符串）:`, route)
+      invalid.push({ index, route, reason: `component is not a string on ${route.path}` })
       return false
     }
     return true
   })
+
+  if (invalid.length > 0) {
+    console.warn(
+      `[System API] ${invalid.length} invalid route(s) filtered:`,
+      invalid.map(i => `[${i.index}] ${i.reason}`)
+    )
+  }
+
+  return valid
 }
 
 /**
@@ -93,7 +131,10 @@ export const requestSystemAsyncRoutesReal = async (): Promise<SystemAsyncRouteIt
   })
   const routes: SystemAsyncRouteItem[] = extractRoutes(raw)
   if (!Array.isArray(routes)) {
-    throw new Error('动态路由数据格式不正确，预期为数组或包含 routes 字段的对象')
+    throw new SystemApiError(
+      SYSTEM_ERROR_CODES.invalidResponse,
+      'Expected routes array or { routes: [] } object'
+    )
   }
   return validateRouteItems(routes)
 }

@@ -55,7 +55,7 @@ export interface TableControllerOptions<T extends Record<string, unknown>> {
 }
 
 function getRowKey<T extends Record<string, unknown>>(row: T, keyField: string): string {
-  return String(row[keyField as keyof T] ?? JSON.stringify(row))
+  return String((row as Record<string, unknown>)[keyField] ?? JSON.stringify(row))
 }
 
 /** Stable fingerprint for column filters so watch deps stay scalar-comparable. */
@@ -94,7 +94,7 @@ export class TableController<T extends Record<string, unknown>> {
 
   constructor(options: TableControllerOptions<T>) {
     this._columns = options.columns
-    this._data = shallowRef(options.data ?? []) as ShallowRef<T[]>
+    this._data = shallowRef<T[]>(options.data ?? [])
     this._serverMode = options.serverMode ?? PRO_TABLE_PROPS_DEFAULTS.serverMode
     this._rowKey = String(options.rowKey ?? PRO_TABLE_PROPS_DEFAULTS.rowKey)
     this._paginationEnabled = options.paginationEnabled ?? PRO_TABLE_PROPS_DEFAULTS.pagination
@@ -211,6 +211,13 @@ export class TableController<T extends Record<string, unknown>> {
 
   setData(data: T[]): void {
     this._data.value = data
+  }
+
+  /**
+   * Replace the request function at runtime (e.g. when apiUrl prop changes).
+   */
+  setRequest(request: RequestFn<T> | undefined): void {
+    this._request = request
   }
 
   /**

@@ -2,6 +2,7 @@
  * PrimeVue Theme Configuration Engine
  * Ported and adapted for this template from AUDS-new reference
  */
+import { deepClone } from '@/utils/lodashes'
 
 /**
  * Deep merge styles with support for dot-notation paths and advanced options
@@ -114,7 +115,7 @@ function applyMergeToTarget<T = unknown>(
 ): T {
   const { deepMerge = true, override = true, matcher, transformer } = options
 
-  const work = inPlace ? target : (JSON.parse(JSON.stringify(target)) as T)
+  const work = inPlace ? target : deepClone(target)
 
   const processedStyles: Record<string, unknown> = {}
   const pathStyles: Record<string, unknown> = {}

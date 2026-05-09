@@ -1,7 +1,10 @@
 <script setup lang="tsx">
-import TieredMenu from 'primevue/tieredmenu'
 import { Icons } from '@/components/Icons'
 import User from '@/layouts/components/User/index.vue'
+import AdminMenuPopup, {
+  isAdminMenuPopupExpose,
+  type AdminMenuPopupExpose,
+} from '@/layouts/components/admin/AdminMenuPopup'
 import { brand } from '@/constants/brand'
 import { AUTH_ENABLED } from '@/constants/router'
 import { RouterLink, useRoute } from 'vue-router'
@@ -9,7 +12,6 @@ import { useI18n } from 'vue-i18n'
 import { useFullscreen } from '@vueuse/core'
 import { useAppElementSize } from '@/hooks/modules/useAppElementSize'
 import { useThemeSwitch } from '@/hooks/modules/useThemeSwitch'
-import { storeToRefs } from 'pinia'
 import {
   getAdminMenuTree,
   getAuthorizedMenuTree,
@@ -20,12 +22,9 @@ import {
 } from '@/router/utils/helper'
 import { MENU_TEXT_CLASS, MENU_TEXT_WEIGHT, MENU_ICON_COMMON_CLASS } from '@/constants/layout-menu'
 import { getMenuItemBase, getMenuStateClasses, getIconSize } from '@/hooks/layout/useMenuVisuals'
-import { createTieredMenuItemRenderer } from '@/hooks/layout/useMenuRenderer'
 import { useUserStore } from '@/stores/modules/session'
-import { useDeviceStore } from '@/stores/modules/system'
-import { useLayoutStore } from '@/stores/modules/system'
 
-import logoSrc from '@/assets/images/face.webp'
+import logoSrc from '@/assets/images/face.png'
 
 withDefaults(
   defineProps<{
@@ -39,6 +38,9 @@ withDefaults(
     showTopMenuEffective: boolean
     /** 是否显示抽屉触发按钮（仅 Mobile 设备） */
     showDrawerTrigger: boolean
+    showFullscreenAction: boolean
+    showHeaderThemeAction: boolean
+    showCompactThemeAction: boolean
     headerFixed: boolean
     isDark: boolean
     isAnimating: boolean
@@ -51,15 +53,13 @@ withDefaults(
 const emit = defineEmits<{
   toggleTheme: [event: MouseEvent]
   toggleCollapse: [event: MouseEvent]
+  toggleDrawer: [event: MouseEvent]
 }>()
 
 const { t } = useI18n()
 const route = useRoute()
 const userStore = useUserStore()
-const deviceStore = useDeviceStore()
-const layoutStore = useLayoutStore()
 const themeSwitch = useThemeSwitch()
-const { isMobileTerminal: isMobile } = storeToRefs(deviceStore)
 
 const { isFullscreen, toggle: toggleFullscreen } = useFullscreen()
 
@@ -81,11 +81,11 @@ const menuModel = computed(() => {
 })
 
 // --- TieredMenu Popup 状态管理（与 AdminSidebar 架构一致）---
-const tieredMenuRefs = ref<Map<string, InstanceType<typeof TieredMenu>>>(new Map())
+const tieredMenuRefs = ref<Map<string, AdminMenuPopupExpose>>(new Map())
 const openDropdownKey = ref<string | null>(null)
 
-const setMenuRef = (key: string, el: InstanceType<typeof TieredMenu> | null) => {
-  if (el) {
+const setMenuRef = (key: string, el: unknown) => {
+  if (isAdminMenuPopupExpose(el)) {
     tieredMenuRefs.value.set(key, el)
   } else {
     tieredMenuRefs.value.delete(key)
@@ -111,12 +111,6 @@ const onRootItemClick = (e: MouseEvent, item: PrimeMenuModelItem) => {
     goToRoute(item.route.name, undefined, undefined, false)
   }
 }
-
-// --- 渲染 TieredMenu 弹出子菜单项（与 Sidebar/Breadcrumb 统一激活态）---
-const renderTieredMenuItem = createTieredMenuItemRenderer({
-  context: 'header',
-  getDistance: (item: PrimeMenuModelItem): number => getActiveDistance(route, item),
-})
 
 // --- 渲染根菜单项（水平按钮 + TieredMenu popup）---
 const renderRootItem = (item: PrimeMenuModelItem) => {
@@ -207,19 +201,16 @@ const renderRootItem = (item: PrimeMenuModelItem) => {
     >
       {linkNode}
       {hasChildren && (
-        <TieredMenu
-          ref={(el: unknown) =>
-            setMenuRef(item.key ?? '', el as InstanceType<typeof TieredMenu> | null)
-          }
+        <AdminMenuPopup
+          ref={(el: unknown) => setMenuRef(item.key ?? '', el)}
           model={item.items ?? []}
-          popup
-          appendTo="body"
+          placement="bottom-start"
+          getDistance={(child: PrimeMenuModelItem): number => getActiveDistance(route, child)}
           {...{
             onHide: () => {
               openDropdownKey.value = null
             },
           }}
-          v-slots={{ item: renderTieredMenuItem }}
         />
       )}
     </div>
@@ -240,8 +231,9 @@ const renderRootItem = (item: PrimeMenuModelItem) => {
       <!-- State 1 only: 抽屉触发按钮（由 LayoutAdmin 传入 showDrawerTrigger） -->
       <div
         v-if="showDrawerTrigger"
+        v-bind="{ 'data-layout-drawer-trigger': 'true' }"
         class="interactive-card border-none outline-none p-xs sm:p-sm center"
-        @click="layoutStore.toggleMobileDrawer()"
+        @click="emit('toggleDrawer', $event)"
       >
         <Icons
           name="i-lucide-menu"
@@ -327,8 +319,8 @@ const renderRootItem = (item: PrimeMenuModelItem) => {
         />
       </div>
       <div
-        v-if="deviceStore.type === 'PC'"
-        class="max-lg:hidden cursor-pointer material-elevated border-none outline-none duration-sm center ring-1 ring-border p-sm"
+        v-if="showFullscreenAction"
+        class="cursor-pointer material-elevated border-none outline-none duration-sm center ring-1 ring-border p-sm"
         @click="toggleFullscreen()"
       >
         <Icons
@@ -341,7 +333,8 @@ const renderRootItem = (item: PrimeMenuModelItem) => {
         />
       </div>
       <div
-        class="max-md:hidden cursor-pointer material-elevated border-none outline-none duration-sm center ring-1 ring-border p-sm"
+        v-if="showHeaderThemeAction"
+        class="cursor-pointer material-elevated border-none outline-none duration-sm center ring-1 ring-border p-sm"
         @click="emit('toggleTheme', $event)"
       >
         <Icons
@@ -350,7 +343,7 @@ const renderRootItem = (item: PrimeMenuModelItem) => {
         />
       </div>
       <div
-        v-if="isMobile && showUserEntry"
+        v-if="showCompactThemeAction && showUserEntry"
         class="cursor-pointer material-elevated border-none outline-none duration-sm center ring-1 ring-border p-sm"
         @click="themeSwitch.toggleThemeWithAnimation($event)"
       >

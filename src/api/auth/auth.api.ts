@@ -15,6 +15,33 @@ import {
 } from '@/types/dto/auth.dto'
 import { parseZodHttpPayload } from '@/adapters/http.adapter'
 
+/** Mock 认证错误码，供调用方程序化判断 */
+export const AUTH_ERROR_CODES = {
+  invalidCredentials: 'AUTH_INVALID_CREDENTIALS',
+  unknownUser: 'AUTH_UNKNOWN_USER',
+  tokenMissing: 'AUTH_TOKEN_MISSING',
+  tokenInvalid: 'AUTH_TOKEN_INVALID',
+} as const
+
+export type AuthErrorCode = (typeof AUTH_ERROR_CODES)[keyof typeof AUTH_ERROR_CODES]
+
+/** 带错误码的认证异常，message 仅用于开发调试，i18n 由消费方根据 code 处理 */
+export class AuthApiError extends Error {
+  constructor(
+    public readonly code: AuthErrorCode,
+    message: string
+  ) {
+    super(message)
+    this.name = 'AuthApiError'
+  }
+}
+
+/** Mock 用户表（仅 DEV 使用） */
+const MOCK_USERS: Record<string, { userId: string; roles: string[]; permissions: string[] }> = {
+  admin: { userId: '1', roles: ['admin'], permissions: ['*:*:*'] },
+  user: { userId: '2', roles: ['user'], permissions: ['example:architecture:read'] },
+}
+
 /**
  * 登录 API
  * 当前为 mock 实现；对接后端时改为 post<ApiResponse<LoginResult>> 并返回 res.data
@@ -28,38 +55,34 @@ export const requestAuthLogin = async (data: LoginParams): Promise<LoginResult> 
  * 账号密码规则：admin/123456 → 管理员，user/123456 → 普通用户
  */
 export const requestAuthLoginMock = async (payload: LoginParams): Promise<LoginResult> => {
+  if (!import.meta.env.DEV) {
+    throw new AuthApiError(AUTH_ERROR_CODES.invalidCredentials, 'Mock auth is DEV-only')
+  }
+
   const { username, password } = payload
 
   await new Promise(resolve => setTimeout(resolve, 500))
 
   if (password !== '123456') {
-    throw new Error('用户名或密码错误')
+    throw new AuthApiError(AUTH_ERROR_CODES.invalidCredentials, 'Invalid credentials')
   }
 
-  let userInfo: UserInfo
+  const mockUser = MOCK_USERS[username]
 
-  if (username === 'admin') {
-    userInfo = {
-      userId: '1',
-      username: 'admin',
-      roles: ['admin'],
-      permissions: ['*:*:*'],
-      avatar: undefined,
-    }
-  } else if (username === 'user') {
-    userInfo = {
-      userId: '2',
-      username: 'user',
-      roles: ['user'],
-      permissions: ['example:architecture:read'],
-      avatar: undefined,
-    }
-  } else {
-    throw new Error('当前测试环境只支持 admin / user 两个账号')
+  if (!mockUser) {
+    throw new AuthApiError(AUTH_ERROR_CODES.unknownUser, `Unsupported test account: ${username}`)
+  }
+
+  const userInfo: UserInfo = {
+    userId: mockUser.userId,
+    username,
+    roles: mockUser.roles,
+    permissions: mockUser.permissions,
+    avatar: undefined,
   }
 
   return parseZodHttpPayload(loginResultSchema, {
-    token: `mock-token-${userInfo.userId}`,
+    token: `mock-token-${mockUser.userId}`,
     userInfo,
   })
 }
@@ -74,31 +97,38 @@ export const requestAuthCurrentUser = async (token: string): Promise<UserInfo> =
 
 /**
  * 模拟「根据 token 获取当前用户信息」
+ * Token 格式：`mock-token-{userId}`，从 token 中解析 userId 进行查找
  */
 export const requestAuthCurrentUserMock = async (token: string): Promise<UserInfo> => {
+  if (!import.meta.env.DEV) {
+    throw new AuthApiError(AUTH_ERROR_CODES.tokenInvalid, 'Mock auth is DEV-only')
+  }
+
   await new Promise(resolve => setTimeout(resolve, 300))
 
   if (!token) {
-    throw new Error('未提供 token')
+    throw new AuthApiError(AUTH_ERROR_CODES.tokenMissing, 'No token provided')
   }
 
-  if (token.includes('mock-token-1')) {
-    return parseZodHttpPayload(userInfoSchema, {
-      userId: '1',
-      username: 'admin',
-      roles: ['admin'],
-      permissions: ['*:*:*'],
-    })
+  const match = token.match(/^mock-token-(.+)$/)
+  const userId = match?.[1]
+
+  if (!userId) {
+    throw new AuthApiError(AUTH_ERROR_CODES.tokenInvalid, 'Invalid token format')
   }
 
-  if (token.includes('mock-token-2')) {
-    return parseZodHttpPayload(userInfoSchema, {
-      userId: '2',
-      username: 'user',
-      roles: ['user'],
-      permissions: ['example:architecture:read'],
-    })
+  const entry = Object.entries(MOCK_USERS).find(([, u]) => u.userId === userId)
+
+  if (!entry) {
+    throw new AuthApiError(AUTH_ERROR_CODES.tokenInvalid, 'Unknown user id in token')
   }
 
-  throw new Error('无效的登录状态，请重新登录')
+  const [username, mockUser] = entry
+
+  return parseZodHttpPayload(userInfoSchema, {
+    userId: mockUser.userId,
+    username,
+    roles: mockUser.roles,
+    permissions: mockUser.permissions,
+  })
 }

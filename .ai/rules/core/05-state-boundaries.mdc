@@ -51,7 +51,8 @@ Each piece of state has exactly ONE owner. Accessing the same data from two diff
 | Static/Dynamic routes | `usePermissionStore` | Via router system only |
 | Open tabs (admin menu) | `usePermissionStore` | `addTab/removeTab` actions |
 | Window metadata (once-opened) | `usePermissionStore` | `registerWindow/markWindowClosed` |
-| Layout mode, sidebar, header visibility | `useLayoutStore` | Via getters (`effectiveMode`, `activeVisibility`) |
+| Layout preferences and persisted shell settings | `useLayoutStore` | Store actions/getters for user configuration only |
+| Effective layout mode, drawer/sidebar mode, runtime shell visibility | `useLayoutRuntime()` | Finalized runtime state only |
 | Global loading state | `useLayoutStore` (counter, NOT boolean) | `useLoading()` hook ONLY |
 | Viewport width, breakpoint, device type | `useDeviceStore` | Read-only getters |
 | Theme mode, preset name | `useThemeStore` | `useThemeSwitch()` hook |
@@ -62,7 +63,8 @@ Each piece of state has exactly ONE owner. Accessing the same data from two diff
 ## CROSS-STORE INTERACTION RULES
 
 **Allowed reads:**
-- `useLayoutStore` → may read `useDeviceStore` (lazy, cached) for `effectiveMode` computation only
+- `useLayoutRuntime()` → may read `useLayoutStore` + `useDeviceStore` to resolve finalized layout runtime state.
+- `useLayoutStore` → must not be treated as the final responsive/layout-mode authority in renderers.
 
 **Allowed writes (logout cleanup ONLY):**
 - `useUserStore.logout()` → may call `useLayoutStore().resetSetting()` + `usePermissionStore().reset()`

@@ -1,6 +1,5 @@
 <script setup lang="ts" generic="T extends Record<string, unknown>">
 import { h, resolveComponent, type VNode } from 'vue'
-import type { LocationQueryRaw } from 'vue-router'
 import { objectGet } from '@/utils/lodashes'
 import ProTableCell from './components/ProTableCell'
 import { buildDataTablePt, type DataTablePtOptions } from './presets/dataTablePt'
@@ -12,7 +11,6 @@ import type {
   ProTableProps,
   ProTableSearchParams,
   RequestFn,
-  ProTableUrlSyncOptions,
 } from './engine/types/props'
 import {
   INFINITE_SCROLL_DEFAULTS,
@@ -30,6 +28,10 @@ import { getScopedContentSizeVars } from '@/utils/theme/sizeEngine'
 import { TableController } from './engine/core/TableController'
 import { resolveColumnIdOrder } from './engine/engines/columnVisibility'
 import { useProTableColumnSettingsStorage } from './engine/hooks/useProTableColumnSettingsStorage'
+import { useProTableInfiniteScroll } from './engine/hooks/useProTableInfiniteScroll'
+import { useProTableUrlSync } from './engine/hooks/useProTableUrlSync'
+
+defineOptions({ name: 'ProTable' })
 
 const props = withDefaults(defineProps<ProTableProps<T>>(), {
   data: () => [] as T[],
@@ -153,7 +155,7 @@ if (import.meta.env.DEV && props.apiUrl && !props.apiExecutor) {
 
 const pagConfig = computed<PaginationConfig>(() => {
   if (!props.pagination || props.pagination === true) return {}
-  return props.pagination as PaginationConfig
+  return props.pagination as unknown as PaginationConfig
 })
 
 /** Snapshot at init — merged into pageSizeOptions so switching away (e.g. 5→10) does not drop the initial size. */
@@ -214,56 +216,46 @@ const isLoading = computed<boolean>(() =>
 // ── Infinite scroll ──────────────────────────────────────────────────────────
 
 const tableContainerRef = useTemplateRef<HTMLDivElement>('tableContainerRef')
-let _scrollTarget: HTMLElement | null = null
-let _scrollHandler: (() => void) | null = null
-let _scrollTimeoutId: ReturnType<typeof setTimeout> | null = null
 
-function _setupInfiniteScroll(): void {
-  if (!props.infiniteScroll || !tableContainerRef.value) return
-  const wrapper =
-    tableContainerRef.value.querySelector<HTMLElement>('.p-datatable-table-container') ||
-    tableContainerRef.value.querySelector<HTMLElement>('.p-datatable-wrapper')
-  if (!wrapper) return
-  _scrollTarget = wrapper
-  _scrollHandler = () => {
-    if (!_scrollTarget || isLoading.value) return
-    const { scrollTop, scrollHeight, clientHeight } = _scrollTarget
-    if (scrollHeight - scrollTop - clientHeight < INFINITE_SCROLL_DEFAULTS.bottomDistancePx) {
-      if (ctrl.requestMode) {
-        ctrl.fetchMore()
-      } else {
-        emit('load-more')
-      }
+const infiniteScrollCtrl = useProTableInfiniteScroll({
+  enabled: !!props.infiniteScroll,
+  containerRef: tableContainerRef,
+  scrollTargetSelectors: ['.p-datatable-table-container', '.p-datatable-wrapper'],
+  isLoading,
+  setupDelayMs: INFINITE_SCROLL_DEFAULTS.setupDelayMs,
+  bottomDistancePx: INFINITE_SCROLL_DEFAULTS.bottomDistancePx,
+  onLoadMore: () => {
+    if (ctrl.requestMode) {
+      ctrl.fetchMore()
+    } else {
+      emit('load-more')
     }
-  }
-  wrapper.addEventListener('scroll', _scrollHandler, { passive: true })
-}
+  },
+})
 
 onMounted(() => {
   // Request mode: trigger initial fetch
   ctrl.fetchInitial()
 
-  if (props.infiniteScroll)
-    nextTick(() => {
-      _scrollTimeoutId = setTimeout(_setupInfiniteScroll, INFINITE_SCROLL_DEFAULTS.setupDelayMs)
-    })
+  if (props.infiniteScroll) nextTick(() => infiniteScrollCtrl.setup())
 })
 
 onUnmounted(() => {
   ctrl.destroy()
-  if (_scrollTimeoutId) {
-    clearTimeout(_scrollTimeoutId)
-    _scrollTimeoutId = null
-  }
-  if (_scrollTarget && _scrollHandler) {
-    _scrollTarget.removeEventListener('scroll', _scrollHandler)
-  }
+  infiniteScrollCtrl.cleanup()
 })
 
 // Column defs from parent (e.g. new render closures when Pinia config changes)
 watch(
   () => props.columns,
   cols => ctrl.setColumns(cols),
+  { deep: false }
+)
+
+// Sync request function when request/api/apiUrl/searchParams props change
+watch(
+  [() => props.request, () => props.api, () => props.apiUrl, () => props.searchParams],
+  () => ctrl.setRequest(createUnifiedRequest()),
   { deep: false }
 )
 
@@ -306,7 +298,7 @@ watch(
       rows = rows.slice(0, max)
     }
     const keyField = String(props.rowKey ?? PRO_TABLE_PROPS_DEFAULTS.rowKey)
-    const keys = rows.map(r => String(r[keyField as keyof T]))
+    const keys = rows.map(r => String((r as Record<string, unknown>)[keyField]))
     const current = ctrl.state.selection
     if (
       keys.length === current.selectedRowKeys.length &&
@@ -323,31 +315,27 @@ watch(
 )
 
 /**
- * VirtualGridRenderer 只更新 TableController，不经 DataTable 的 @update:selection，
- * 父级 v-model:selected 不会变。此处在虚拟滚动且可选中时把内部选中同步回父组件。
+ * VirtualGridRenderer bypasses PrimeVue's DataTable selection bridge.
+ * When virtual scroll is active and rows are selectable, sync internal
+ * selection changes back to the parent via the same emit path as DataTable.
  */
 watch(
   () => ctrl.state.selection.selectedRowKeys.join('\0'),
   () => {
-    if (!props.virtualScroll || !props.selectable) {
-      return
-    }
-    const keys = ctrl.state.selection.selectedRowKeys
+    if (!props.virtualScroll || !props.selectable) return
+    const rows = [...ctrl.state.selection.selectedRows]
     const keyField = String(props.rowKey ?? PRO_TABLE_PROPS_DEFAULTS.rowKey)
     const parentVal = props.selected
-    const parentRows: T[] =
-      parentVal === undefined
-        ? []
-        : Array.isArray(parentVal)
-          ? parentVal
-          : parentVal != null
-            ? [parentVal]
-            : []
-    const parentKeys = parentRows.map(r => String(r[keyField as keyof T]))
-    if (keys.length === parentKeys.length && keys.every((k, i) => k === parentKeys[i])) {
+    const parentRows: T[] = !parentVal ? [] : Array.isArray(parentVal) ? parentVal : [parentVal]
+    const parentKeys = parentRows.map(r => String((r as Record<string, unknown>)[keyField]))
+    const currentKeys = ctrl.state.selection.selectedRowKeys
+    if (
+      currentKeys.length === parentKeys.length &&
+      currentKeys.every((k, i) => k === parentKeys[i])
+    ) {
       return
     }
-    emit('update:selected', [...ctrl.state.selection.selectedRows])
+    emit('update:selected', rows)
   }
 )
 
@@ -363,162 +351,8 @@ const rowClassFn = computed<((data: T) => string) | undefined>(() => {
   const fn = props.rowClassName
   return (data: T): string => fn(data, ctrl.processedRows.value.indexOf(data))
 })
-const paginationEnabled = computed(
-  () => !!props.pagination && !props.infiniteScroll && !props.virtualScroll
-)
 
-const route = useRoute()
-const router = useRouter()
-const syncingFromRoute = ref(false)
-const syncingToRoute = ref(false)
-
-const resolvedUrlSync = computed<
-  Required<ProTableUrlSyncOptions> & {
-    keys: Required<NonNullable<ProTableUrlSyncOptions['keys']>>
-  }
->(() => {
-  const defaultKeys = {
-    page: 'page',
-    pageSize: 'pageSize',
-    sortField: 'sortField',
-    sortDirection: 'sortDirection',
-    keyword: 'keyword',
-  }
-
-  if (props.urlSync === true) {
-    return {
-      enabled: true,
-      mode: 'replace',
-      keys: defaultKeys,
-    }
-  }
-
-  if (!props.urlSync) {
-    return {
-      enabled: false,
-      mode: 'replace',
-      keys: defaultKeys,
-    }
-  }
-
-  return {
-    enabled: props.urlSync.enabled ?? true,
-    mode: props.urlSync.mode ?? 'replace',
-    keys: {
-      page: props.urlSync.keys?.page ?? defaultKeys.page,
-      pageSize: props.urlSync.keys?.pageSize ?? defaultKeys.pageSize,
-      sortField: props.urlSync.keys?.sortField ?? defaultKeys.sortField,
-      sortDirection: props.urlSync.keys?.sortDirection ?? defaultKeys.sortDirection,
-      keyword: props.urlSync.keys?.keyword ?? defaultKeys.keyword,
-    },
-  }
-})
-
-const pickQueryValue = (value: unknown): string | undefined => {
-  if (Array.isArray(value)) {
-    const first = value[0]
-    return typeof first === 'string' ? first : undefined
-  }
-  return typeof value === 'string' ? value : undefined
-}
-
-const applyQueryToTableState = (): void => {
-  if (!resolvedUrlSync.value.enabled || syncingToRoute.value) return
-
-  syncingFromRoute.value = true
-  try {
-    const keys = resolvedUrlSync.value.keys
-    const query = route.query
-
-    const pageRaw = pickQueryValue(query[keys.page])
-    if (pageRaw) {
-      const page = Number(pageRaw)
-      if (Number.isFinite(page) && page > 0) {
-        ctrl.setPage(page)
-      }
-    }
-
-    const pageSizeRaw = pickQueryValue(query[keys.pageSize])
-    if (pageSizeRaw) {
-      const pageSize = Number(pageSizeRaw)
-      if (Number.isFinite(pageSize) && pageSize > 0) {
-        ctrl.setPageSize(pageSize)
-      }
-    }
-
-    const sortField = pickQueryValue(query[keys.sortField]) ?? ''
-    const sortDirectionRaw = pickQueryValue(query[keys.sortDirection]) ?? ''
-    const sortDirection: 'asc' | 'desc' | null =
-      sortDirectionRaw === 'asc' || sortDirectionRaw === 'desc' ? sortDirectionRaw : null
-    if (sortField || ctrl.state.sort.field) {
-      ctrl.state.sort = { field: sortField || null, direction: sortDirection }
-    }
-
-    const keyword = pickQueryValue(query[keys.keyword]) ?? ''
-    if (keyword || ctrl.state.filter.global) {
-      ctrl.setGlobalFilter(keyword)
-    }
-  } finally {
-    syncingFromRoute.value = false
-  }
-}
-
-watch(
-  () => route.query,
-  () => {
-    applyQueryToTableState()
-  },
-  { immediate: true }
-)
-
-watch(
-  [
-    () => ctrl.state.pagination.page,
-    () => ctrl.state.pagination.pageSize,
-    () => ctrl.state.sort.field,
-    () => ctrl.state.sort.direction,
-    () => ctrl.state.filter.global,
-  ],
-  async () => {
-    if (!resolvedUrlSync.value.enabled || syncingFromRoute.value) return
-
-    const keys = resolvedUrlSync.value.keys
-    const nextQuery: LocationQueryRaw = {
-      ...route.query,
-      [keys.page]: ctrl.state.pagination.page,
-      [keys.pageSize]: ctrl.state.pagination.pageSize,
-    }
-
-    if (ctrl.state.sort.field) {
-      nextQuery[keys.sortField] = ctrl.state.sort.field
-    } else {
-      nextQuery[keys.sortField] = undefined
-    }
-
-    if (ctrl.state.sort.direction) {
-      nextQuery[keys.sortDirection] = ctrl.state.sort.direction
-    } else {
-      nextQuery[keys.sortDirection] = undefined
-    }
-
-    if (ctrl.state.filter.global.trim().length > 0) {
-      nextQuery[keys.keyword] = ctrl.state.filter.global.trim()
-    } else {
-      nextQuery[keys.keyword] = undefined
-    }
-
-    syncingToRoute.value = true
-    try {
-      if (resolvedUrlSync.value.mode === 'push') {
-        await router.push({ query: nextQuery })
-      } else {
-        await router.replace({ query: nextQuery })
-      }
-    } finally {
-      syncingToRoute.value = false
-    }
-  }
-)
+useProTableUrlSync({ urlSync: props.urlSync, ctrl })
 
 const pageSizeOptions = computed<number[]>(() => {
   const base: number[] = pagConfig.value.pageSizeOptions
@@ -676,14 +510,14 @@ function getBodyCellNode(
   col: ProTableColumn<T>,
   slotProps: { data: unknown; index: number }
 ): VNode | string | number | null {
-  return renderCell(col, slotProps.data as T, slotProps.index)
+  return renderCell(col, slotProps.data as unknown as T, slotProps.index)
 }
 
 function getBodyColumnClass(
   col: ProTableColumn<T>,
   slotProps: { data: unknown; index: number }
 ): string {
-  return getColumnClass(col, slotProps.data as T)
+  return getColumnClass(col, slotProps.data as unknown as T)
 }
 
 // --- API Exposure ---
@@ -949,7 +783,7 @@ defineExpose({
 
           <!-- 架构互斥：virtualScroll 模式下必须卸载分页 UI（避免“虚拟滚动 + 翻页”造成心智与性能冲突） -->
           <ProTablePagination
-            v-if="paginationEnabled && !virtualScroll"
+            v-if="enginePaginationEnabled && !virtualScroll"
             :page="ctrl.state.pagination.page"
             :page-size="ctrl.state.pagination.pageSize"
             :total="ctrl.totalCount.value"

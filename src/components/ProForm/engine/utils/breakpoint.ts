@@ -8,12 +8,9 @@ export type BreakpointKey = keyof typeof BREAKPOINTS
  * 根据容器宽度计算当前激活断点
  */
 export const getActiveBreakpoint = (width: number): BreakpointKey => {
-  const entries = Object.entries(BREAKPOINTS).sort((a, b) => b[1] - a[1]) as [
-    BreakpointKey,
-    number,
-  ][]
+  const entries = Object.entries(BREAKPOINTS).sort((a, b) => b[1] - a[1])
   for (const [key, value] of entries) {
-    if (width >= value) return key
+    if (width >= value) return key as BreakpointKey
   }
   return 'xs'
 }
@@ -35,8 +32,9 @@ export const resolveSpan = (
 
   for (let i = currentIndex; i >= 0; i--) {
     const key = bpOrder[i]
-    if (spanConfig[key] !== undefined) {
-      return spanConfig[key] as number
+    const val = spanConfig[key]
+    if (val !== undefined) {
+      return val
     }
   }
 

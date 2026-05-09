@@ -87,20 +87,20 @@ export const usePermissionStore = defineStore('permission', {
     },
     // 添加标签页（仅 admin 布局下的路由，且需在 admin 菜单树中）
     addTab(name: RouteConfig['name'] | RouteConfig['path']) {
+      if (this.tabs.some(tab => tab.name === name || tab.path === name)) return
+
       const { getAdminMenuTree, getFlatRouteList } = getRouterCapabilities()
       const route = getFlatRouteList().find(
         route => String(route.name || '') === String(name || '') || route.path === name
       )
       if (!route) return
       // 仅 admin 布局：fullscreen/ratio 不加入 tabs
-      const parent = route.meta?.parent as LayoutMode | undefined
+      const parent: LayoutMode | undefined = route.meta?.parent
       if (parent === 'fullscreen' || parent === 'ratio') return
       // hiddenTag: 隐藏标签，不加入 tabs
       if (route.meta?.hiddenTag) return
-      if (this.tabs.some(tab => tab.name === name || tab.path === name)) return
       // 只有 admin 菜单树中存在的路由才添加到标签页
-      const adminMenuTree = getAdminMenuTree()
-      const adminPaths = flattenMenuPaths(adminMenuTree)
+      const adminPaths = flattenMenuPaths(getAdminMenuTree())
       if (!adminPaths.includes(route.path)) return
       const tabItem: TabItem = {
         name: String(route.name || ''),
@@ -204,10 +204,7 @@ export const usePermissionStore = defineStore('permission', {
         isOpen: true,
       })
 
-      // 清理过期窗口记录
-      const now = Date.now()
-      const maxAge = 7 * 24 * 60 * 60 * 1000
-      this.windows = this.windows.filter(w => w.isOpen || now - w.openedAt < maxAge)
+      this.cleanupOldWindows()
 
       return key
     },

@@ -1,6 +1,6 @@
-import TieredMenu from 'primevue/tieredmenu'
 import PanelMenu from 'primevue/panelmenu'
 import Tooltip from 'primevue/tooltip'
+import type { ComponentPublicInstance, VNode, VNodeRef } from 'vue'
 import { withDirectives } from 'vue'
 import { RouterLink, useRoute } from 'vue-router'
 import { useI18n } from 'vue-i18n'
@@ -14,11 +14,7 @@ import {
   type PrimeMenuModelItem,
 } from '@/router/utils/helper'
 import {
-  MENU_COLLAPSED_BUTTON_PADDING,
-  MENU_COLLAPSED_BUTTON_SIZE,
-  MENU_COLLAPSED_FALLBACK_SIZE,
-  MENU_COLLAPSED_FALLBACK_TEXT,
-  MENU_ICON_SIZE_COLLAPSED,
+  MENU_FALLBACK_ICON,
   MENU_INACTIVE_TEXT,
   MENU_ITEM_GAP,
   MENU_TEXT_WEIGHT,
@@ -28,10 +24,14 @@ import {
   MENU_ICON_COMMON_CLASS,
 } from '@/constants/layout-menu'
 import { getMenuItemBase, getMenuStateClasses, getIconSize } from '@/hooks/layout/useMenuVisuals'
-import { createTieredMenuItemRenderer } from '@/hooks/layout/useMenuRenderer'
+import AdminMenuPopup, {
+  isAdminMenuPopupExpose,
+  type AdminMenuPopupExpose,
+} from '@/layouts/components/admin/AdminMenuPopup'
 import { useLayoutStore } from '@/stores/modules/system'
 import { useUserStore } from '@/stores/modules/session'
 import { useAppElementSize } from '@/hooks/modules/useAppElementSize'
+import type { SidebarAnimationPhase } from '@/layouts/runtime/layoutRuntime'
 
 /** Map/Record → Record，供 store 持久化 */
 function toRecord(
@@ -55,8 +55,25 @@ function applyUniqueRoot(
   return result
 }
 
+function resolveElementRef(el: Element | ComponentPublicInstance | null): HTMLElement | null {
+  return el instanceof HTMLElement ? el : null
+}
+
+function resolveMenuLabel(label: PrimeMenuModelItem['label']): string {
+  if (typeof label === 'string') return label
+  if (typeof label === 'function') {
+    const resolved = label()
+    return typeof resolved === 'string' ? resolved : ''
+  }
+  return ''
+}
+
 export interface AdminSidebarMenuProps {
   sidebarCollapse: boolean
+  sidebarVisualCollapse: boolean
+  sidebarAnimating: boolean
+  sidebarAnimationPhase: SidebarAnimationPhase
+  density: 'regular' | 'compact'
 }
 
 export default defineComponent({
@@ -65,6 +82,22 @@ export default defineComponent({
     sidebarCollapse: {
       type: Boolean,
       required: true,
+    },
+    sidebarVisualCollapse: {
+      type: Boolean,
+      default: false,
+    },
+    sidebarAnimating: {
+      type: Boolean,
+      default: false,
+    },
+    sidebarAnimationPhase: {
+      type: String as PropType<SidebarAnimationPhase>,
+      default: 'idle',
+    },
+    density: {
+      type: String as PropType<'regular' | 'compact'>,
+      default: 'regular',
     },
   },
   setup(props) {
@@ -83,8 +116,32 @@ export default defineComponent({
 
     const allowMultiple = computed(() => !layoutStore.sidebarUniqueOpened)
     const rootKeys = computed(() => panelMenuModel.value.map(item => item.key))
+    const isCollapsedInteraction = computed(() => props.sidebarCollapse)
+    const isMenuTextHidden = computed(
+      () =>
+        props.sidebarAnimationPhase === 'collapsing' ||
+        (props.sidebarAnimationPhase === 'idle' && props.sidebarVisualCollapse)
+    )
+    const isInlineSubmenuSuppressed = computed(() => isCollapsedInteraction.value)
+    const menuPhaseClass = computed(() => {
+      if (props.sidebarAnimationPhase === 'collapsing') {
+        return 'admin-sidebar-menu--collapsing'
+      }
+      if (props.sidebarAnimationPhase === 'expanding') {
+        return 'admin-sidebar-menu--expanding'
+      }
+      return props.sidebarVisualCollapse
+        ? 'admin-sidebar-menu--collapsed'
+        : 'admin-sidebar-menu--expanded'
+    })
+    const panelExpandedKeys = computed<Record<string, boolean>>(() =>
+      isInlineSubmenuSuppressed.value ? {} : layoutStore.getExpandedMenuKeys
+    )
+    const isCompactDensity = computed(() => props.density === 'compact')
 
     const onUpdateExpandedKeys = (val: Map<string, boolean> | Record<string, boolean>) => {
+      if (isInlineSubmenuSuppressed.value) return
+
       let nextKeys = toRecord(val)
 
       if (!allowMultiple.value) {
@@ -100,7 +157,7 @@ export default defineComponent({
 
       layoutStore.setExpandedMenuKeys(nextKeys)
 
-      if (!props.sidebarCollapse) {
+      if (!isMenuTextHidden.value) {
         nextTick(() => {
           // 延迟到展开动画完成后再测量（动画 250ms + 缓冲），
           // 避免在 grid-template-rows 动画期间读取 scrollWidth/clientWidth 导致 layout thrashing
@@ -163,7 +220,7 @@ export default defineComponent({
     let fontsReadyHooked = false
 
     function scheduleMeasureTruncation(delayMs: number): void {
-      if (props.sidebarCollapse) return
+      if (isMenuTextHidden.value) return
       if (isSidebarWidthAnimating.value) return
       if (measureTimeoutId !== null) {
         window.clearTimeout(measureTimeoutId)
@@ -171,7 +228,7 @@ export default defineComponent({
       }
 
       measureTimeoutId = window.setTimeout(() => {
-        if (props.sidebarCollapse) {
+        if (isMenuTextHidden.value) {
           measureTimeoutId = null
           return
         }
@@ -181,7 +238,7 @@ export default defineComponent({
     }
 
     function measureTruncation(): void {
-      if (props.sidebarCollapse) return
+      if (isMenuTextHidden.value) return
       if (isSidebarWidthAnimating.value) return
       const next: Set<string> = new Set<string>()
       menuLabelRefs.value.forEach((node, key) => {
@@ -207,7 +264,7 @@ export default defineComponent({
     watch(
       () => [panelMenuModel.value, menuContainerWidth.value],
       () => {
-        if (props.sidebarCollapse) return
+        if (isMenuTextHidden.value) return
         nextTick(() => {
           measureTruncation()
         })
@@ -227,8 +284,13 @@ export default defineComponent({
     )
 
     watch(
-      () => props.sidebarCollapse,
-      collapsed => {
+      () => [
+        props.sidebarCollapse,
+        props.sidebarVisualCollapse,
+        props.sidebarAnimating,
+        props.sidebarAnimationPhase,
+      ],
+      ([collapsed]) => {
         isSidebarWidthAnimating.value = true
         if (sidebarAnimationTimeoutId !== null) {
           window.clearTimeout(sidebarAnimationTimeoutId)
@@ -237,12 +299,12 @@ export default defineComponent({
         sidebarAnimationTimeoutId = window.setTimeout(() => {
           isSidebarWidthAnimating.value = false
           sidebarAnimationTimeoutId = null
-          if (!props.sidebarCollapse) {
+          if (!isMenuTextHidden.value) {
             scheduleMeasureTruncation(0)
           }
         }, 280)
 
-        if (collapsed) {
+        if (collapsed || isMenuTextHidden.value) {
           if (measureTimeoutId !== null) {
             window.clearTimeout(measureTimeoutId)
             measureTimeoutId = null
@@ -268,57 +330,92 @@ export default defineComponent({
       const distance = getActiveDistanceForItem(item)
       const level = item.level ?? 0
       const indentClass = level <= 0 ? MENU_PANEL_INDENT_ROOT : MENU_PANEL_INDENT_CHILD
-      const baseClasses = `${getMenuItemBase('sidebar')} group w-full no-underline box-border overflow-hidden ${MENU_TEXT_WEIGHT} ${indentClass}`
       const key = item.key
       if (typeof key !== 'string' || !key.length) {
         return null
       }
       const hasChildren = Array.isArray(item.items) && item.items.length > 0
       const isSubmenuOpen = hasChildren && layoutStore.getExpandedMenuKeys[key] === true
+      const isRootItem = level <= 0
+      const shouldUseCollapsedPopup = isCollapsedInteraction.value && isRootItem && hasChildren
+      const baseClasses = [
+        getMenuItemBase('sidebar'),
+        'admin-sidebar-menu__item',
+        isRootItem ? 'admin-sidebar-menu__item--root' : 'admin-sidebar-menu__item--child',
+        'group w-full no-underline box-border overflow-hidden',
+        MENU_TEXT_WEIGHT,
+        isCompactDensity.value ? '' : indentClass,
+      ]
+        .filter(Boolean)
+        .join(' ')
       const stateClasses = getMenuStateClasses({
         distance,
-        isSubmenuOpen,
+        isSubmenuOpen: shouldUseCollapsedPopup ? openDropdownKey.value === key : isSubmenuOpen,
         level,
       })
+      const bindAnchorRef: VNodeRef | undefined =
+        isRootItem && hasChildren
+          ? el => setCollapsedAnchorRef(key, resolveElementRef(el))
+          : undefined
 
       const labelNode = (
         <span
           ref={el => setMenuLabelRef(key, el instanceof HTMLElement ? el : null)}
           data-menu-label-key={key}
-          class={`text-ellipsis-1 text-left! flex-1 min-w-0 text-current! transition-[opacity,transform] duration-xs ease-out-expo ${isSidebarWidthAnimating.value ? 'opacity-0 translate-x--2px' : 'opacity-100 translate-x-0'} ${MENU_TEXT_CLASS}`}
+          class={`admin-sidebar-menu__label text-ellipsis-1 text-left! min-w-0 flex-1 text-current! ${MENU_TEXT_CLASS}`}
         >
           {item.label}
         </span>
       )
 
       const isTruncated = truncatedKeys.value.has(key)
-      const labelContent = isTruncated
-        ? withDirectives(labelNode, [[Tooltip, item.label, '', { right: true }]])
-        : labelNode
+      const tooltipLabel = resolveMenuLabel(item.label)
+      const shouldShowCollapsedTooltip =
+        isRootItem && props.sidebarVisualCollapse && props.sidebarAnimationPhase === 'idle'
+      const shouldShowExpandedTruncatedTooltip = !isMenuTextHidden.value && isTruncated
+      const withMenuTooltip = (node: VNode): VNode => {
+        if (!tooltipLabel) return node
+        if (!shouldShowCollapsedTooltip && !shouldShowExpandedTruncatedTooltip) return node
+        return withDirectives(node, [[Tooltip, tooltipLabel, '', { right: true }]])
+      }
 
       const content = (
         <span
-          class={`flex items-center ${MENU_ITEM_GAP} w-full min-w-0 overflow-hidden text-current! ${MENU_TEXT_CLASS}`}
+          class={`admin-sidebar-menu__item-content flex items-center ${MENU_ITEM_GAP} w-full min-w-0 overflow-hidden text-current! ${MENU_TEXT_CLASS}`}
         >
           {item.icon ? (
             <Icons
               name={item.icon}
               size={getIconSize('sidebar')}
-              class={`text-current! shrink-0 ${MENU_ICON_COMMON_CLASS}`}
+              class={`admin-sidebar-menu__icon text-current! shrink-0 ${MENU_ICON_COMMON_CLASS}`}
             />
-          ) : null}
-          {labelContent}
+          ) : (
+            <Icons
+              name={MENU_FALLBACK_ICON}
+              size={getIconSize('sidebar')}
+              class={`admin-sidebar-menu__icon admin-sidebar-menu__icon--fallback text-current! shrink-0 ${MENU_ICON_COMMON_CLASS}`}
+              aria-hidden="true"
+            />
+          )}
+          {labelNode}
           {hasChildren ? (
             <Icons
               name="i-lucide-chevron-down"
               size={getIconSize('sidebar')}
-              class={`ml-auto text-current! shrink-0 ${MENU_ICON_COMMON_CLASS} ${isSubmenuOpen ? 'rotate-180' : 'rotate-0'}`}
+              class={`admin-sidebar-menu__arrow text-current! shrink-0 text-center flex-shrink-0 center ml-auto w-5 ${isSubmenuOpen ? 'rotate-180' : 'rotate-0'}`}
             />
           ) : null}
         </span>
       )
 
       const linkClass = `${baseClasses} ${stateClasses}`
+      const onCollapsedRootClick = (e: MouseEvent): boolean => {
+        if (!shouldUseCollapsedPopup) return false
+        e.preventDefault()
+        e.stopPropagation()
+        onCollapsedItemClick(e, item)
+        return true
+      }
 
       if (item.route?.name) {
         const isExtLink = item.route.meta?.isLink === true
@@ -332,40 +429,47 @@ export default defineComponent({
             to={{ name: item.route.name }}
             custom
             v-slots={{
-              default: ({ href }: { href: string }) => (
-                <a
-                  href={isExtLink ? extUrl : href}
-                  role="link"
-                  class={linkClass}
-                  onClick={(e: MouseEvent) => {
-                    e.preventDefault()
-                    e.stopPropagation()
-                    goToRoute(routeName, undefined, undefined, false)
-                  }}
-                >
-                  {content}
-                </a>
-              ),
+              default: ({ href }: { href: string }) =>
+                withMenuTooltip(
+                  <a
+                    href={isExtLink ? extUrl : href}
+                    role="link"
+                    ref={bindAnchorRef}
+                    class={linkClass}
+                    onClick={(e: MouseEvent) => {
+                      if (onCollapsedRootClick(e)) return
+                      e.preventDefault()
+                      e.stopPropagation()
+                      goToRoute(routeName, undefined, undefined, false)
+                    }}
+                  >
+                    {content}
+                  </a>
+                ),
             }}
           />
         )
       }
-      return (
+      return withMenuTooltip(
         <div
+          ref={bindAnchorRef}
           class={linkClass}
-          onClick={(e: Event) => handleParentItemClick(e, item)}
+          onClick={(e: MouseEvent) => {
+            if (onCollapsedRootClick(e)) return
+            handleParentItemClick(e, item)
+          }}
         >
           {content}
         </div>
       )
     }
 
-    const tieredMenuRefs = ref<Map<string, InstanceType<typeof TieredMenu>>>(new Map())
+    const tieredMenuRefs = ref<Map<string, AdminMenuPopupExpose>>(new Map())
     const collapsedAnchorRefs = ref<Map<string, HTMLElement>>(new Map())
     const openDropdownKey = ref<string | null>(null)
 
-    const setMenuRef = (key: string, el: InstanceType<typeof TieredMenu> | null) => {
-      if (el) {
+    const setMenuRef = (key: string, el: unknown) => {
+      if (isAdminMenuPopupExpose(el)) {
         tieredMenuRefs.value.set(key, el)
       } else {
         tieredMenuRefs.value.delete(key)
@@ -407,7 +511,7 @@ export default defineComponent({
             writable: false,
           })
           Object.defineProperty(syntheticEvent, 'target', { value: anchorEl, writable: false })
-          menuRef.toggle(syntheticEvent)
+          menuRef.toggle(syntheticEvent, anchorEl)
           openDropdownKey.value = wasOpen ? null : key
         }
       } else if (item.route?.path) {
@@ -415,123 +519,90 @@ export default defineComponent({
       }
     }
 
-    const renderTieredMenuItem = createTieredMenuItemRenderer({
-      context: 'sidebar',
-      getDistance: (item: PrimeMenuModelItem) => getActiveDistanceForItem(item),
-      inactiveClasses: {
-        root: MENU_INACTIVE_TEXT,
-        child: MENU_INACTIVE_TEXT,
-      },
-    })
-
-    const renderCollapsedItem = (item: PrimeMenuModelItem) => {
+    const renderCollapsedPopup = (item: PrimeMenuModelItem) => {
       const key = item.key
       if (typeof key !== 'string' || !key.length) {
         return null
       }
-      const rawLabel = item.label
-      const label: string =
-        typeof rawLabel === 'string' ? rawLabel : typeof rawLabel === 'function' ? rawLabel() : ''
-      const distance = getActiveDistanceForItem(item)
-      const isSubmenuOpen = openDropdownKey.value === key
-
-      const stateClasses = getMenuStateClasses({
-        distance,
-        isSubmenuOpen,
-        level: 0,
-      })
-
       const hasChildren = Array.isArray(item.items) && item.items.length > 0
-
-      const iconButton = (
-        <div
-          class={`center group ${MENU_COLLAPSED_BUTTON_PADDING} rounded-md cursor-pointer transition-[background-color,color,opacity,transform] duration-md aspect-square ${MENU_COLLAPSED_BUTTON_SIZE} border-none bg-transparent p-0 outline-none ${stateClasses}`}
-          onClick={e => onCollapsedItemClick(e, item)}
-        >
-          {item.icon ? (
-            <Icons
-              name={item.icon}
-              size={MENU_ICON_SIZE_COLLAPSED}
-              class={`text-current! shrink-0 ${MENU_ICON_COMMON_CLASS}`}
-            />
-          ) : (
-            <div
-              class={`${MENU_COLLAPSED_FALLBACK_SIZE} rounded-full bg-card text-card-foreground center ${MENU_COLLAPSED_FALLBACK_TEXT} font-bold`}
-            >
-              {label.substring(0, 1)}
-            </div>
-          )}
-        </div>
-      )
-
-      const iconWithTooltip = withDirectives(iconButton, [[Tooltip, label, '', { right: true }]])
+      if (!hasChildren) return null
 
       return (
-        <div
+        <AdminMenuPopup
           key={key}
-          class="relative"
-        >
-          {iconWithTooltip}
-          {hasChildren && (
-            <span
-              ref={el => setCollapsedAnchorRef(key, el instanceof HTMLElement ? el : null)}
-              class="absolute top-0 right-0 w-0 h-0"
-            />
-          )}
-          {hasChildren && (
-            <TieredMenu
-              ref={el => setMenuRef(key, el as InstanceType<typeof TieredMenu> | null)}
-              model={item.items}
-              popup
-              appendTo="body"
-              {...{
-                onHide: () => {
-                  openDropdownKey.value = null
-                },
-              }}
-              v-slots={{ item: renderTieredMenuItem }}
-            />
-          )}
-        </div>
+          ref={(el: unknown) => setMenuRef(key, el)}
+          model={item.items}
+          placement="right-start"
+          getDistance={(child: PrimeMenuModelItem): number => getActiveDistanceForItem(child)}
+          inactiveClasses={{
+            root: MENU_INACTIVE_TEXT,
+            child: MENU_INACTIVE_TEXT,
+          }}
+          {...{
+            onHide: () => {
+              openDropdownKey.value = null
+            },
+          }}
+        />
       )
     }
 
+    watch(
+      () => [props.sidebarCollapse, props.sidebarVisualCollapse] as const,
+      ([actualCollapsed, visualCollapsed]) => {
+        if (actualCollapsed && visualCollapsed) return
+        tieredMenuRefs.value.forEach(ref => {
+          ref?.hide()
+        })
+        openDropdownKey.value = null
+      }
+    )
+
+    watch(isCollapsedInteraction, collapsed => {
+      if (collapsed) {
+        return
+      }
+      tieredMenuRefs.value.forEach(ref => {
+        ref?.hide()
+      })
+      openDropdownKey.value = null
+    })
+
     return () => {
       const panelMenuBind: Record<string, unknown> = {
-        expandedKeys: layoutStore.getExpandedMenuKeys,
+        expandedKeys: panelExpandedKeys.value,
         ['onUpdate:expandedKeys']: onUpdateExpandedKeys,
       }
       return (
         <div
           ref={menuContainerRef}
-          class="w-full overflow-hidden pt-xs"
+          class={[
+            'admin-sidebar-menu w-full overflow-hidden',
+            isCompactDensity.value ? 'admin-sidebar-menu--compact pt-0' : 'pt-xs',
+            menuPhaseClass.value,
+          ]}
         >
-          {!props.sidebarCollapse ? (
-            <PanelMenu
-              model={panelMenuModel.value}
-              multiple={allowMultiple.value}
-              {...panelMenuBind}
-              class={`w-full ${MENU_TEXT_CLASS}`}
-              pt={{
-                item: {
-                  class: 'mb-xs last:mb-0',
-                },
-                headerContent: {
-                  class: 'bg-transparent!',
-                },
-                submenu: {
-                  class: 'mt-xs',
-                },
-              }}
-              v-slots={{
-                item: renderPanelMenuItem,
-              }}
-            />
-          ) : (
-            <div class="flex flex-col gap-sm items-center">
-              {panelMenuModel.value.map(item => renderCollapsedItem(item))}
-            </div>
-          )}
+          <PanelMenu
+            model={panelMenuModel.value}
+            multiple={allowMultiple.value}
+            {...panelMenuBind}
+            class={`admin-sidebar-panelmenu w-full ${MENU_TEXT_CLASS}`}
+            pt={{
+              item: {
+                class: 'mb-xs last:mb-0',
+              },
+              headerContent: {
+                class: 'bg-transparent!',
+              },
+              submenu: {
+                class: 'mt-xs',
+              },
+            }}
+            v-slots={{
+              item: renderPanelMenuItem,
+            }}
+          />
+          {panelMenuModel.value.map(item => renderCollapsedPopup(item))}
         </div>
       )
     }

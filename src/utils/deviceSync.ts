@@ -7,7 +7,7 @@ import {
   TABLET_DETECTION_MIN_SHORT_SIDE,
   type BreakpointKey,
 } from '@/constants/breakpoints'
-import type { DeviceType } from '@/types/systems/device'
+import type { DeviceType, OsType } from '@/types/systems/device'
 
 /** 模块级缓存：断点按阈值降序排列，避免每次调用重复排序 */
 const SORTED_BREAKPOINTS: [string, number][] = [...Object.entries(BREAKPOINTS)].sort(
@@ -37,6 +37,19 @@ export function getDeviceTypeSync(): DeviceType {
   if (isTabletUA) return 'Tablet'
   if (isMobileUA) return 'Mobile'
   return 'PC'
+}
+
+export function getOsTypeSync(): OsType {
+  if (typeof navigator === 'undefined') return 'Unknown'
+  const ua: string = navigator.userAgent
+  const isIPadOS: boolean = /Macintosh/i.test(ua) && navigator.maxTouchPoints > 1
+
+  if (/Windows/i.test(ua)) return 'Windows'
+  if (/Android/i.test(ua)) return 'Android'
+  if (/iPhone|iPad|iPod/i.test(ua) || isIPadOS) return 'iOS'
+  if (/Mac OS|Macintosh/i.test(ua)) return 'MacOS'
+  if (/Linux/i.test(ua)) return 'Linux'
+  return 'Unknown'
 }
 
 /**

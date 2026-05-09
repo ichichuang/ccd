@@ -263,6 +263,7 @@ declare global {
   const useIntervalFn: typeof import('@vueuse/core').useIntervalFn
   const useKeyModifier: typeof import('@vueuse/core').useKeyModifier
   const useLastChanged: typeof import('@vueuse/core').useLastChanged
+  const useLayoutRuntime: typeof import('../hooks/layout/useLayoutRuntime').useLayoutRuntime
   const useLayoutStore: typeof import('../stores/modules/system/layout').useLayoutStore
   const useLayoutStoreWithOut: typeof import('../stores/modules/system/layout').useLayoutStoreWithOut
   const useLink: typeof import('vue-router').useLink
@@ -407,10 +408,22 @@ declare global {
   export type { ContextMenuAction, ContextMenuState, UseAdminTabsReturn } from '../hooks/layout/useAdminTabs'
   import('../hooks/layout/useAdminTabs')
   // @ts-ignore
+  export type { UseLayoutRuntimeReturn } from '../hooks/layout/useLayoutRuntime'
+  import('../hooks/layout/useLayoutRuntime')
+  // @ts-ignore
+  export type { UseLoadingReturn } from '../hooks/layout/useLoading'
+  import('../hooks/layout/useLoading')
+  // @ts-ignore
   export type { MenuVisualContext, MenuStateOptions } from '../hooks/layout/useMenuVisuals'
   import('../hooks/layout/useMenuVisuals')
   // @ts-ignore
-  export type { UseElementSizeOptions } from '../hooks/modules/useAppElementSize'
+  export type { UseNprogressReturn } from '../hooks/layout/useNprogress'
+  import('../hooks/layout/useNprogress')
+  // @ts-ignore
+  export type { UsePageTitleReturn } from '../hooks/layout/usePageTitle'
+  import('../hooks/layout/usePageTitle')
+  // @ts-ignore
+  export type { UseElementSizeOptions, UseAppElementSizeReturn } from '../hooks/modules/useAppElementSize'
   import('../hooks/modules/useAppElementSize')
   // @ts-ignore
   export type { UseAuthReturn } from '../hooks/modules/useAuth'

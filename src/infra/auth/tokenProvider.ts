@@ -6,7 +6,9 @@
  * typed bridge, without importing Pinia stores or vue-router directly.
  */
 
-export type AuthToken = string | undefined | null
+import { createCapabilityBridge } from '@/infra/shared/createCapabilityBridge'
+
+export type AuthToken = string | null
 export type AuthTokenReader = () => AuthToken
 export type UnauthorizedHandler = () => void | Promise<void>
 
@@ -17,43 +19,38 @@ export interface AuthBridge {
 
 const UNAUTHORIZED_NOTIFY_COOLDOWN_MS = 1000
 
-let authBridge: Readonly<AuthBridge> | null = null
+const bridge = createCapabilityBridge<AuthBridge>({
+  label: 'AuthBridge',
+  assert(candidate) {
+    if (typeof candidate.readToken !== 'function') {
+      throw new TypeError('[AuthBridge] readToken must be a function')
+    }
+    if (typeof candidate.onUnauthorized !== 'function') {
+      throw new TypeError('[AuthBridge] onUnauthorized must be a function')
+    }
+  },
+  onMissing: 'null',
+})
+
 let unauthorizedPromise: Promise<void> | null = null
 let lastUnauthorizedHandledAt: number | null = null
 
-function assertAuthBridge(candidate: AuthBridge): void {
-  if (typeof candidate.readToken !== 'function') {
-    throw new TypeError('[AuthBridge] readToken must be a function')
-  }
-  if (typeof candidate.onUnauthorized !== 'function') {
-    throw new TypeError('[AuthBridge] onUnauthorized must be a function')
-  }
-}
-
-function createMissingBridgeError(): Error {
-  return new Error('[AuthBridge] Unauthorized handler is not installed')
-}
-
-export function installAuthBridge(bridge: AuthBridge): void {
-  assertAuthBridge(bridge)
-  authBridge = Object.freeze({
-    readToken: bridge.readToken,
-    onUnauthorized: bridge.onUnauthorized,
-  })
+export function installAuthBridge(auth: AuthBridge): void {
+  bridge.install(auth)
 }
 
 export function isAuthBridgeInstalled(): boolean {
-  return authBridge !== null
+  return bridge.isInstalled()
 }
 
 export function readAuthToken(): AuthToken {
-  return authBridge?.readToken() ?? null
+  return bridge.get()?.readToken() ?? null
 }
 
 export function notifyUnauthorized(): Promise<void> {
-  const bridge = authBridge
-  if (!bridge) {
-    return Promise.reject(createMissingBridgeError())
+  const instance = bridge.get()
+  if (!instance) {
+    return Promise.reject(new Error('[AuthBridge] Unauthorized handler is not installed'))
   }
 
   if (unauthorizedPromise) {
@@ -70,7 +67,7 @@ export function notifyUnauthorized(): Promise<void> {
 
   lastUnauthorizedHandledAt = now
   unauthorizedPromise = Promise.resolve()
-    .then(() => bridge.onUnauthorized())
+    .then(() => instance.onUnauthorized())
     .finally(() => {
       unauthorizedPromise = null
     })
@@ -87,10 +84,7 @@ export function getToken(): AuthToken {
 }
 
 export function resetAuthBridgeForTest(): void {
-  if (import.meta.env.MODE !== 'test') {
-    throw new Error('[AuthBridge] resetAuthBridgeForTest is test-only')
-  }
-  authBridge = null
+  bridge.resetForTest()
   unauthorizedPromise = null
   lastUnauthorizedHandledAt = null
 }

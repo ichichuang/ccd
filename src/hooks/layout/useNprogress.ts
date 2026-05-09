@@ -33,6 +33,8 @@
  * ```
  */
 
+import type { Ref } from 'vue'
+
 // 配置只需在应用生命周期内执行一次，避免重复调用
 let nprogressConfigured = false
 let trickleTimer: ReturnType<typeof setInterval> | null = null
@@ -105,7 +107,19 @@ function removeProgressElement(): void {
   document.getElementById('nprogress')?.remove()
 }
 
-export function useNprogress() {
+export interface UseNprogressReturn {
+  configureNProgress: () => void
+  initNProgress: () => void
+  startProgress: () => void
+  doneProgress: () => void
+  setProgress: (progress: number) => void
+  incProgress: (amount?: number) => void
+  removeProgress: () => void
+  getCurrentProgress: () => number | null
+  isProgressRunning: Ref<boolean>
+}
+
+export function useNprogress(): UseNprogressReturn {
   /**
    * NProgress 配置
    * - 内部带一次性保护：多次调用也只会真正配置一次

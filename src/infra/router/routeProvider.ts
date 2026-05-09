@@ -1,45 +1,35 @@
+import { createCapabilityBridge } from '@/infra/shared/createCapabilityBridge'
+
 export interface RouterCapabilities {
   getAdminMenuTree: () => MenuItem[]
   getFlatRouteList: () => RouteConfig[]
 }
 
-let capabilities: Readonly<RouterCapabilities> | null = null
-
-function assertRouterCapabilities(candidate: RouterCapabilities): void {
-  if (typeof candidate.getAdminMenuTree !== 'function') {
-    throw new TypeError('[RouterCapabilities] getAdminMenuTree must be a function')
-  }
-  if (typeof candidate.getFlatRouteList !== 'function') {
-    throw new TypeError('[RouterCapabilities] getFlatRouteList must be a function')
-  }
-}
-
-function createMissingCapabilitiesError(): Error {
-  return new Error('[RouterCapabilities] Router capabilities are not installed')
-}
+const bridge = createCapabilityBridge<RouterCapabilities>({
+  label: 'RouterCapabilities',
+  assert(candidate) {
+    if (typeof candidate.getAdminMenuTree !== 'function') {
+      throw new TypeError('[RouterCapabilities] getAdminMenuTree must be a function')
+    }
+    if (typeof candidate.getFlatRouteList !== 'function') {
+      throw new TypeError('[RouterCapabilities] getFlatRouteList must be a function')
+    }
+  },
+  onMissing: 'throw',
+})
 
 export function installRouterCapabilities(caps: RouterCapabilities): void {
-  assertRouterCapabilities(caps)
-  capabilities = Object.freeze({
-    getAdminMenuTree: caps.getAdminMenuTree,
-    getFlatRouteList: caps.getFlatRouteList,
-  })
+  bridge.install(caps)
 }
 
 export function isRouterCapabilitiesInstalled(): boolean {
-  return capabilities !== null
+  return bridge.isInstalled()
 }
 
 export function getRouterCapabilities(): RouterCapabilities {
-  if (!capabilities) {
-    throw createMissingCapabilitiesError()
-  }
-  return capabilities
+  return bridge.getOrThrow()
 }
 
 export function resetRouterCapabilitiesForTest(): void {
-  if (import.meta.env.MODE !== 'test') {
-    throw new Error('[RouterCapabilities] resetRouterCapabilitiesForTest is test-only')
-  }
-  capabilities = null
+  bridge.resetForTest()
 }

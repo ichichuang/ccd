@@ -2,3 +2,14 @@
 # Format:
 # [⬜️] [Module] Task description
 # [✅] [Module] Task description
+
+[⬜️] [P0-SFC] Move `defineOptions()` below top-level imports in `src/components/ProForm/renderers/ProFormNode.vue`, `src/components/ProTable/ProTable.vue`, and `src/components/ProTable/VirtualGridRenderer.vue` so the SFC parser restores module scope and downstream imports resolve.
+[⬜️] [P0-Verify] Re-run `pnpm type-check` after the SFC fixes to confirm the error count collapses before touching secondary typing debt.
+
+[⬜️] [P1-CoreTypes] Tighten `FormController.ts`, `useField.ts`, `FieldRegistry.ts`, `SchemaNormalizer.ts`, and `ReactionEngine.ts` so deep-clone, registry, and async-reaction values stop widening to `unknown`/`Record<string, unknown>`.
+[⬜️] [P1-Bridge] Relax `createCapabilityBridge` generics so `AuthBridge`, `RouterCapabilities`, and the test bridge can satisfy the helper without fake index signatures.
+[⬜️] [P1-ProTable] Restore missing ProTable typings and helper availability (`useProTableInfiniteScroll`, `useProTableUrlSync`, props shape, and related imports) after the SFC parse fix.
+
+[⬜️] [P2-Tests] Update directive specs for Vue 3’s 4-argument directive hook signatures and clean up unused imports/expect-error noise in the focused test files.
+[⬜️] [P2-CaseSensitivity] Normalize `DateUtils`/`dateUtils` import casing across example views and shared date utilities.
+[⬜️] [P2-Verify] Run `pnpm check` and capture the final residual error surface once the targeted repairs land.

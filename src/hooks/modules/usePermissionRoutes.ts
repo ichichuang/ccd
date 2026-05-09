@@ -63,6 +63,8 @@ async function withRetry<T>(fn: () => Promise<T>, maxRetries: number): Promise<T
  * - 请求超时保护（默认 10s）
  * - 自动重试（最多 2 次，指数退避）
  * - 缓存 staleness 检查（5 分钟内的缓存视为有效）
+ *
+ * @see {@link BackendRouteConfig} 全局类型定义位于 src/types/modules/router.d.ts:96
  */
 export function usePermissionRoutes(): { fetchRoutes: () => Promise<BackendRouteConfig[]> } {
   /**

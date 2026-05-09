@@ -3,11 +3,12 @@ import { AUTH_ENABLED } from '@/constants/router'
 import { t } from '@/locales'
 import { parseZodHttpPayload } from '@/adapters/http.adapter'
 import { notifyUnauthorized, readAuthToken } from '@/infra/auth/tokenProvider'
-import { decompressAndDecryptSync, encryptAndCompressSync } from '@/utils/safeStorage'
+import { compressAndEncryptSync, decryptAndDecompressSync } from '@/utils/safeStorage'
 import { castValue } from '@/utils/typeCasters'
 import type { Method } from 'alova'
 import type { ZodType } from 'zod'
 import { ErrorType, HttpRequestError, getErrorTypeByStatus } from './errors'
+import { isWithSafeStorage } from './types'
 
 type RefreshTokenExecutor = () => Promise<string>
 
@@ -239,7 +240,7 @@ function sanitizeData(
  */
 export const processRequestData = <T extends Record<string, unknown>>(data: T): T => {
   // 检查是否存在 isSafeStorage 且为 true
-  if (data && typeof data === 'object' && data.isSafeStorage === true) {
+  if (isWithSafeStorage(data)) {
     try {
       // 创建新对象，保持原有key，只加密value
       const encryptedData: Record<string, unknown> = {
@@ -251,7 +252,7 @@ export const processRequestData = <T extends Record<string, unknown>>(data: T): 
         if (key !== 'isSafeStorage' && Object.prototype.hasOwnProperty.call(data, key)) {
           const value = data[key]
           // 加密每个字段的值
-          const encrypted = encryptAndCompressSync(value)
+          const encrypted = compressAndEncryptSync(value)
           if (encrypted) {
             encryptedData[key] = encrypted
           } else {
@@ -272,6 +273,28 @@ export const processRequestData = <T extends Record<string, unknown>>(data: T): 
 }
 
 /**
+ * Read CSRF token from cookie or meta tag.
+ * Tries cookie first (common pattern), then <meta name="csrf-token">.
+ * Returns null if no token found or not in browser environment.
+ */
+export function readCsrfToken(): string | null {
+  if (typeof document === 'undefined') return null
+
+  // Try cookie-based token (e.g. XSRF-TOKEN set by backend)
+  const cookieMatch = document.cookie.match(/(?:XSRF-TOKEN|csrf-token|_csrf)=([^;]+)/)
+  if (cookieMatch?.[1]) return decodeURIComponent(cookieMatch[1])
+
+  // Try meta tag token
+  const meta = document.querySelector('meta[name="csrf-token"]')
+  if (meta) {
+    const content = meta.getAttribute('content')
+    if (content) return content
+  }
+
+  return null
+}
+
+/**
  * 全局请求拦截器
  */
 export const beforeRequest = (method: Method) => {
@@ -281,9 +304,10 @@ export const beforeRequest = (method: Method) => {
   const enableCsrf = method.config.security?.enableCSRF ?? HTTP_CONFIG.enableCsrf
   const enableSignature = method.config.security?.enableSignature ?? HTTP_CONFIG.enableSignature
   if (enableCsrf) {
-    // 预留：CSRF 保护（HTTP_CONFIG.enableCsrf 默认关闭，对接后端时启用）
-    // 接入方式：从服务端 cookie 或 <meta name="csrf-token"> 读取 token 并注入请求头。
-    // 示例：method.config.headers['X-CSRF-Token'] = document.cookie.match(/csrf=([^;]+)/)?.[1]
+    const csrfToken = readCsrfToken()
+    if (csrfToken) {
+      method.config.headers['X-CSRF-Token'] = csrfToken
+    }
   }
   if (enableSignature) {
     // 预留：请求签名（HTTP_CONFIG.enableSignature 默认关闭，对接后端时启用）
@@ -302,7 +326,9 @@ export const beforeRequest = (method: Method) => {
 
   // 仅对完整 URL（视为外部请求）做请求体脱敏，避免敏感字段发往第三方；
   // 相对路径（/api/...）视为自有后端，不脱敏以保留真实请求体。
-  if (!method.url.startsWith('/')) {
+  // 协议相对 URL（//evil.com）也视为外部请求，需脱敏。
+  const isExternalUrl = !method.url.startsWith('/') || method.url.startsWith('//')
+  if (isExternalUrl) {
     if (method.config.security?.sensitiveFields) {
       // Alova Method.data 边界：sanitizeData 返回 unknown，需桥接
       method.data = sanitizeData(
@@ -330,7 +356,12 @@ function showHttpNotification(title: string, message: string): void {
     return
   }
 
-  window.$toast?.dangerIn?.('top-left', title, message)
+  if (window.$toast?.dangerIn) {
+    window.$toast.dangerIn('top-left', title, message)
+    return
+  }
+
+  console.error(`[HTTP] ${title}: ${message}`)
 }
 
 /**
@@ -463,11 +494,7 @@ export const responseHandler = async (response: Response, method: Method) => {
         let responseData = json.data !== undefined ? json.data : json
 
         // 检查响应数据是否需要解密
-        if (
-          responseData &&
-          typeof responseData === 'object' &&
-          (responseData as Record<string, unknown>).isSafeStorage === true
-        ) {
+        if (isWithSafeStorage(responseData)) {
           try {
             // 创建新对象，保持原有key，只解密value
             const decryptedData: Record<string, unknown> = {}
@@ -482,7 +509,7 @@ export const responseHandler = async (response: Response, method: Method) => {
                 const value = responseDataObj[key]
                 // 如果值是字符串，尝试解密
                 if (typeof value === 'string' && value) {
-                  const decrypted = decompressAndDecryptSync<unknown>(value)
+                  const decrypted = decryptAndDecompressSync<unknown>(value)
                   if (decrypted !== null) {
                     decryptedData[key] = decrypted
                   } else {
@@ -499,7 +526,7 @@ export const responseHandler = async (response: Response, method: Method) => {
             }
 
             // 使用解密后的数据替换原始数据
-            responseData = decryptedData as typeof responseData
+            responseData = castValue(decryptedData)
           } catch (error) {
             console.error('[ResponseHandler] 解密响应数据失败:', error)
             // 解密失败时返回原始数据
@@ -536,22 +563,20 @@ export const responseHandler = async (response: Response, method: Method) => {
     const errorName = (error as Error).name || ''
 
     // 处理网络错误 - 服务器未开启、无法连接等情况
-    // 检查常见的网络错误标识
+    // DOMException.name === 'NetworkError' is the most reliable cross-browser signal.
+    // TypeError with common fetch failure messages covers older browsers and Node.
     const isNetworkError =
-      error instanceof TypeError &&
-      (errorMessage.includes('Failed to fetch') ||
-        errorMessage.includes('fetch failed') ||
-        errorMessage.includes('NetworkError') ||
-        errorMessage.includes('Network request failed') ||
-        errorMessage.includes('ERR_NETWORK') ||
-        errorMessage.includes('ERR_CONNECTION_REFUSED') ||
-        errorMessage.includes('ERR_CONNECTION_RESET') ||
-        errorMessage.includes('ERR_CONNECTION_ABORTED') ||
-        errorMessage.includes('ERR_INTERNET_DISCONNECTED') ||
-        errorMessage.includes('ERR_NAME_NOT_RESOLVED') ||
-        errorMessage.includes('ERR_ADDRESS_UNREACHABLE') ||
-        errorName === 'NetworkError' ||
-        errorName === 'TypeError')
+      (error instanceof DOMException && errorName === 'NetworkError') ||
+      (error instanceof TypeError &&
+        (errorMessage.includes('Failed to fetch') ||
+          errorMessage.includes('fetch failed') ||
+          errorMessage.includes('NetworkError') ||
+          errorMessage.includes('Network request failed') ||
+          errorMessage.includes('ERR_NETWORK') ||
+          errorMessage.includes('ERR_CONNECTION') ||
+          errorMessage.includes('ERR_INTERNET_DISCONNECTED') ||
+          errorMessage.includes('ERR_NAME_NOT_RESOLVED') ||
+          errorMessage.includes('ERR_ADDRESS_UNREACHABLE')))
 
     if (isNetworkError) {
       console.error('❌ 网络连接错误:', errorMessage || errorName)

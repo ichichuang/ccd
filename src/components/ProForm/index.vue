@@ -159,17 +159,12 @@ const emitSubmit = (values: TValues): void => {
   emit('submit', values)
 }
 
-/**
- * 与根节点 `<form @submit="handleSubmit(emitSubmit)">` 同源：校验通过后 emit('submit')。
- * 禁止透传 `form.submit`（FormController.submit 在未设置 submitCallback 时不会 emit）。
- */
-const handleFooterSubmit = async (): Promise<void> => {
-  await handleSubmit(emitSubmit)()
-}
+/** 单一提交路径：form @submit 与 footer slot 共享同一绑定 */
+const boundSubmit = handleSubmit(emitSubmit)
 
 const exposed = {
   form,
-  submit: handleFooterSubmit,
+  submit: () => boundSubmit(),
   validate: form.validate,
   getValues,
   getFormState,
@@ -181,7 +176,7 @@ defineExpose(exposed)
 <template>
   <form
     ref="rootFormEl"
-    @submit="handleSubmit(emitSubmit)"
+    @submit="boundSubmit"
   >
     <div
       v-if="!hasVisibleFields"
@@ -220,7 +215,7 @@ defineExpose(exposed)
     <slot
       name="footer"
       :form-state="getFormState()"
-      :submit="handleFooterSubmit"
+      :submit="() => boundSubmit()"
     />
   </form>
 </template>

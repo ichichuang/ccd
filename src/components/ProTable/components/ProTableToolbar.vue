@@ -1,4 +1,6 @@
 <script setup lang="ts">
+defineOptions({ name: 'ProTableToolbar' })
+
 import { TOOLBAR_DEFAULTS } from '../engine/config'
 import type { ColumnSettingItem } from './ProTableColumnSettings.vue'
 import ProTableColumnSettings from './ProTableColumnSettings.vue'
@@ -26,9 +28,9 @@ const props = withDefaults(
 )
 
 const densityOptions = computed(() => [
-  { value: 'compact' as SizeMode, label: ($t('proTable.densityCompact') as string) || '' },
-  { value: 'comfortable' as SizeMode, label: ($t('proTable.densityComfortable') as string) || '' },
-  { value: 'loose' as SizeMode, label: ($t('proTable.densityLoose') as string) || '' },
+  { value: 'compact' as const, label: ($t('proTable.densityCompact') as string) || '' },
+  { value: 'comfortable' as const, label: ($t('proTable.densityComfortable') as string) || '' },
+  { value: 'loose' as const, label: ($t('proTable.densityLoose') as string) || '' },
 ])
 
 const densityPanel = ref<{ toggle: (e: Event) => void; hide: () => void } | null>(null)

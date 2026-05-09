@@ -2,6 +2,7 @@
 import { HTTP_CONFIG } from '@/constants/http'
 import { parseZodHttpPayload } from '@/adapters/http.adapter'
 import { readAuthToken } from '@/infra/auth/tokenProvider'
+import { readCsrfToken } from './interceptors'
 import { t } from '@/locales'
 import { alovaInstance } from './instance'
 import {
@@ -40,25 +41,48 @@ function stableStringify(value: unknown): string {
   const seen = new WeakSet<object>()
 
   const normalize = (input: unknown): unknown => {
-    if (input === null || typeof input !== 'object') {
+    if (input === null || input === undefined) {
+      return input
+    }
+    if (typeof input === 'number') {
+      // JSON.stringify already handles NaN/Infinity as null, but normalize explicitly
+      return Number.isFinite(input) ? input : null
+    }
+    if (typeof input === 'bigint') {
+      return input.toString()
+    }
+    if (typeof input === 'symbol' || typeof input === 'function') {
+      return undefined
+    }
+    if (typeof input !== 'object') {
       return input
     }
     if (input instanceof Date) {
       return input.toISOString()
     }
+    if (input instanceof Map) {
+      return normalize(Object.fromEntries(input))
+    }
+    if (input instanceof Set) {
+      return normalize([...input])
+    }
     if (Array.isArray(input)) {
       return input.map(item => normalize(item))
     }
-    if (seen.has(input as object)) {
+    if (seen.has(input)) {
       return '[Circular]'
     }
-    seen.add(input as object)
+    seen.add(input)
 
     const obj = input as Record<string, unknown>
     const sortedKeys = Object.keys(obj).sort()
     const out: Record<string, unknown> = {}
     sortedKeys.forEach(key => {
-      out[key] = normalize(obj[key])
+      const val = normalize(obj[key])
+      // Skip undefined values (same behavior as JSON.stringify)
+      if (val !== undefined) {
+        out[key] = val
+      }
     })
     return out
   }
@@ -144,15 +168,46 @@ class RequestManager {
 
   private async queueRequest<T>(requestFn: () => Promise<T>): Promise<T> {
     return new Promise((resolve, reject) => {
-      this.requestQueue.push(async () => {
+      let settled = false
+
+      const timeoutId = setTimeout(() => {
+        if (!settled) {
+          settled = true
+          // Remove this entry from the queue if it hasn't been picked up yet
+          const idx = this.requestQueue.indexOf(wrappedFn)
+          if (idx !== -1) this.requestQueue.splice(idx, 1)
+          reject(
+            new HttpRequestError(
+              t('http.error.requestTimeout'),
+              ErrorType.TIMEOUT,
+              undefined,
+              undefined,
+              undefined,
+              true
+            )
+          )
+        }
+      }, HTTP_CONFIG.timeout)
+
+      const wrappedFn = async () => {
+        if (settled) return
         try {
           const result = await requestFn()
-          resolve(result)
+          if (!settled) {
+            settled = true
+            clearTimeout(timeoutId)
+            resolve(result)
+          }
         } catch (error) {
-          reject(error)
+          if (!settled) {
+            settled = true
+            clearTimeout(timeoutId)
+            reject(error)
+          }
         }
-      })
+      }
 
+      this.requestQueue.push(wrappedFn)
       this.processQueue()
     })
   }
@@ -201,8 +256,11 @@ class EnhancedCache {
   private missCount = 0
 
   set(key: string, data: unknown, ttl: number = HTTP_CONFIG.defaultCacheTtl): void {
-    // 如果缓存已满，删除最旧的条目
-    if (this.cache.size >= this.maxSize) {
+    // 如果已有此 key，先删除再插入以更新 Map 迭代顺序（LRU）
+    if (this.cache.has(key)) {
+      this.cache.delete(key)
+    } else if (this.cache.size >= this.maxSize) {
+      // 缓存已满，驱逐最久未使用的条目（Map 迭代顺序中第一个）
       const oldestKey = this.cache.keys().next().value
       if (oldestKey) {
         this.cache.delete(oldestKey)
@@ -438,6 +496,15 @@ export const getRaw = async <T = unknown>(
   const token = readAuthToken()
   if (token && String(token).trim()) {
     headers.set('Authorization', `Bearer ${token}`)
+  }
+
+  // CSRF 保护：与拦截器行为一致
+  const enableCsrf = config?.security?.enableCSRF ?? HTTP_CONFIG.enableCsrf
+  if (enableCsrf) {
+    const csrfToken = readCsrfToken()
+    if (csrfToken) {
+      headers.set('X-CSRF-Token', csrfToken)
+    }
   }
 
   try {
@@ -697,13 +764,16 @@ export const downloadFile = async (
   }
 
   const downloadUrl = window.URL.createObjectURL(blob)
-  const link = document.createElement('a')
-  link.href = downloadUrl
-  link.download = filename || 'download'
-  document.body.appendChild(link)
-  link.click()
-  document.body.removeChild(link)
-  window.URL.revokeObjectURL(downloadUrl)
+  try {
+    const link = document.createElement('a')
+    link.href = downloadUrl
+    link.download = filename || 'download'
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+  } finally {
+    window.URL.revokeObjectURL(downloadUrl)
+  }
 }
 
 /**

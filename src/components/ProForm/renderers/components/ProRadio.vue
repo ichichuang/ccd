@@ -1,4 +1,6 @@
 <script setup lang="ts">
+defineOptions({ name: 'ProRadio' })
+
 import type { FieldComponentProps, SelectOption } from '../../engine/types'
 
 type Props = FieldComponentProps<unknown> & {

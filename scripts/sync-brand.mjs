@@ -3,7 +3,7 @@
  * Brand Sync Pipeline (metadata-first)
  * - SSOT: src/constants/brand.ts
  * - Sync targets: package.json, src-tauri/tauri.conf.json
- * - Asset check: public/face.png vs src/assets/images/face.webp
+ * - Asset check: public/face.png vs src/assets/images/face.png
  */
 
 import { createHash } from 'node:crypto'
@@ -27,7 +27,7 @@ const SOURCE_DIR = join(ROOT, 'src', 'assets', 'brand', 'source')
 const SOURCE_LOGO_PATH = join(SOURCE_DIR, 'logo-source.png')
 const SOURCE_LOGO_SQUARE_TEMP_PATH = join(SOURCE_DIR, 'logo-source.square-temp.png')
 const PUBLIC_FAVICON_PATH = join(ROOT, 'public', 'face.png')
-const APP_LOGO_PATH = join(ROOT, 'src', 'assets', 'images', 'face.webp')
+const APP_LOGO_PATH = join(ROOT, 'src', 'assets', 'images', 'face.png')
 const SHOULD_SKIP_TAURI_ICON =
   process.env.SKIP_TAURI_ICON === '1' || process.env.SKIP_TAURI_ICON === 'true'
 const HAS_TAURI_WORKSPACE = existsSync(TAURI_CONF_PATH) && existsSync(CARGO_TOML_PATH)
@@ -116,7 +116,7 @@ function checkAssets() {
 
   if (!existsSync(PUBLIC_FAVICON_PATH) || !existsSync(APP_LOGO_PATH)) {
     reports.push(
-      '[brand-sync] 警告: 资产检查跳过（public/face.png 或 src/assets/images/face.webp 不存在）。'
+      '[brand-sync] 警告: 资产检查跳过（public/face.png 或 src/assets/images/face.png 不存在）。'
     )
     return { hasMismatch: false, reports }
   }
@@ -127,25 +127,27 @@ function checkAssets() {
   if (faviconDigest !== appLogoDigest) {
     if (hasSourceLogo) {
       reports.push(
-        '[brand-sync] 警告: public/face.png 与 src/assets/images/face.webp 摘要不一致（可能由跨格式导致），已检测到 source/logo-source.png，按非阻塞处理。'
+        '[brand-sync] 警告: public/face.png 与 src/assets/images/face.png 摘要不一致（可能由跨格式导致），已检测到 source/logo-source.png，按非阻塞处理。'
       )
       return { hasMismatch: false, reports }
     }
 
     if (!HAS_TAURI_WORKSPACE) {
       reports.push(
-        '[brand-sync] 警告: 当前为无 Tauri workspace 的主分支环境，public/face.png 与 src/assets/images/face.webp 摘要不一致按非阻塞处理。'
+        '[brand-sync] 警告: 当前为无 Tauri workspace 的主分支环境，public/face.png 与 src/assets/images/face.png 摘要不一致按非阻塞处理。'
       )
       return { hasMismatch: false, reports }
     }
 
     reports.push(
-      '[brand-sync] 警告: public/face.png 与 src/assets/images/face.webp 文件摘要不一致，且 source/logo-source.png 缺失。'
+      '[brand-sync] 警告: public/face.png 与 src/assets/images/face.png 文件摘要不一致，且 source/logo-source.png 缺失。'
     )
     return { hasMismatch: true, reports }
   }
 
-  reports.push('[brand-sync] 资产检查通过: public/face.png 与 src/assets/images/face.webp 摘要一致。')
+  reports.push(
+    '[brand-sync] 资产检查通过: public/face.png 与 src/assets/images/face.png 摘要一致。'
+  )
   return { hasMismatch: false, reports }
 }
 
@@ -175,9 +177,7 @@ function prepareSquareLogoSource() {
   }
 
   if (process.platform !== 'darwin') {
-    console.warn(
-      '[brand-sync] 当前非 macOS 环境，跳过 sips 预处理，直接使用原图执行 tauri icon。'
-    )
+    console.warn('[brand-sync] 当前非 macOS 环境，跳过 sips 预处理，直接使用原图执行 tauri icon。')
     return SOURCE_LOGO_PATH
   }
 
@@ -213,9 +213,7 @@ function generateTauriIcons() {
   }
 
   if (!existsSync(SOURCE_LOGO_PATH)) {
-    console.warn(
-      '[brand-sync] 跳过图标工厂：未检测到 src/assets/brand/source/logo-source.png。'
-    )
+    console.warn('[brand-sync] 跳过图标工厂：未检测到 src/assets/brand/source/logo-source.png。')
     return
   }
 
@@ -285,13 +283,19 @@ function main() {
       `[brand-sync] 已同步 package.json <- ${brand.name}/${brand.description}/${brand.author}`,
     ]
     if (HAS_TAURI_WORKSPACE && existsSync(TAURI_CONF_PATH)) {
-      logs.push(`[brand-sync] 已同步 src-tauri/tauri.conf.json <- identifier=${brand.id}, productName=${brand.name}, window.title=${brand.displayName}`)
+      logs.push(
+        `[brand-sync] 已同步 src-tauri/tauri.conf.json <- identifier=${brand.id}, productName=${brand.name}, window.title=${brand.displayName}`
+      )
     }
     if (HAS_TAURI_WORKSPACE && existsSync(CARGO_TOML_PATH)) {
-      logs.push(`[brand-sync] 已同步 src-tauri/Cargo.toml <- description=${brand.description}, authors=[${brand.author}]`)
+      logs.push(
+        `[brand-sync] 已同步 src-tauri/Cargo.toml <- description=${brand.description}, authors=[${brand.author}]`
+      )
     }
     if (HAS_TAURI_WORKSPACE && existsSync(CAPABILITIES_PATH)) {
-      logs.push(`[brand-sync] 已同步 src-tauri/capabilities/default.json <- description for ${brand.name}`)
+      logs.push(
+        `[brand-sync] 已同步 src-tauri/capabilities/default.json <- description for ${brand.name}`
+      )
     }
     logs.push(...assetResult.reports)
     console.log(logs.join('\n'))

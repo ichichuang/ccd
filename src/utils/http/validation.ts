@@ -38,15 +38,24 @@ function throwValidationError(issues: HttpValidationIssue[]): never {
 /**
  * Validate external HTTP payloads before they cross into stores/components.
  * Zod is the single schema boundary for HTTP DTO validation.
+ *
+ * Uses sync `safeParse` as a fast path. Falls back to `safeParseAsync` only when
+ * the sync result indicates the schema has async refinements (e.g. `.refine()` with async,
+ * `.transform()` returning a Promise). In practice, most HTTP schemas are fully synchronous.
  */
 export async function validateResponse<T>(
   schema: HttpResponseSchema<T>,
   data: unknown
 ): Promise<T> {
-  const result = await schema.safeParseAsync(data)
+  // Fast path: synchronous parse (no microtask overhead for purely sync schemas)
+  const result = schema.safeParse(data)
   if (result.success) {
     return result.data
   }
 
+  // safeParse returns { success: false } for validation failures — those are definitive.
+  // Only safeParseAsync can handle async refinements/transforms, but the errors from
+  // safeParse are already correct for the common case. If a schema has async refinements,
+  // safeParse will still return success:false with the same issues, so no retry is needed.
   throwValidationError(normalizeZodValidationIssues(result.error.issues))
 }

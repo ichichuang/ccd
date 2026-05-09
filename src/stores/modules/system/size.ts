@@ -10,7 +10,7 @@ import { createPiniaEncryptedSerializer } from '@/utils/safeStorage/piniaSeriali
  */
 export const useSizeStore = defineStore('size', {
   state: (): SizeStoreState => ({
-    sizeName: DEFAULT_SIZE_NAME as SizeMode,
+    sizeName: DEFAULT_SIZE_NAME,
   }),
 
   getters: {
@@ -25,7 +25,7 @@ export const useSizeStore = defineStore('size', {
 
   actions: {
     resetState() {
-      this.setSize(DEFAULT_SIZE_NAME as SizeMode)
+      this.setSize(DEFAULT_SIZE_NAME)
     },
 
     setSize(name: SizeMode) {

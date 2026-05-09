@@ -14,7 +14,9 @@ describe('router capabilities provider', () => {
 
   it('fails fast before capabilities are installed', () => {
     expect(isRouterCapabilitiesInstalled()).toBe(false)
-    expect(() => getRouterCapabilities()).toThrow('Router capabilities are not installed')
+    expect(() => getRouterCapabilities()).toThrow(
+      '[RouterCapabilities] capabilities are not installed'
+    )
   })
 
   it('reads capabilities through the installed bridge', () => {

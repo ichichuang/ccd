@@ -1,8 +1,10 @@
 import { packDataSync, unpackDataSync } from '@/utils/safeStorage'
+import { castValue } from '@/utils/typeCasters'
 import { PRO_FORM_LOGGER } from '../utils/logger'
+import { PRO_FORM_STORAGE_PREFIXES } from '@/constants/runtime'
 
 export class DraftStorage {
-  private static PREFIX = 'pro-form-draft:'
+  private static PREFIX = PRO_FORM_STORAGE_PREFIXES.draft
 
   private static getStorageKey(key: string): string {
     return this.PREFIX + key
@@ -30,7 +32,7 @@ export class DraftStorage {
         return unpacked
       }
 
-      return JSON.parse(raw) as Record<string, unknown>
+      return castValue<Record<string, unknown>>(JSON.parse(raw))
     } catch (e) {
       PRO_FORM_LOGGER.warn('Failed to load draft', e)
       return null

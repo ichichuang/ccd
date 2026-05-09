@@ -1,5 +1,6 @@
-import { describe, expect, it, vi } from 'vitest'
+import { describe, expect, it } from 'vitest'
 import { parseEChartsOption } from './echarts.adapter'
+import { isHttpRequestError } from '@/utils/http/errors'
 
 describe('parseEChartsOption', () => {
   it('accepts known ECharts option object shapes', () => {
@@ -16,23 +17,61 @@ describe('parseEChartsOption', () => {
     })
   })
 
-  it('rejects non-object chart payloads', () => {
-    const warn = vi.spyOn(console, 'warn').mockImplementation(() => undefined)
-
-    expect(parseEChartsOption(null)).toEqual({})
-    expect(parseEChartsOption([])).toEqual({})
-    expect(warn).toHaveBeenCalled()
-
-    warn.mockRestore()
+  it('accepts objects with only unknown valid fields', () => {
+    const option = parseEChartsOption({
+      color: ['currentColor', 'inherit'],
+      backgroundColor: 'transparent',
+    })
+    expect(option).toMatchObject({
+      color: ['currentColor', 'inherit'],
+      backgroundColor: 'transparent',
+    })
   })
 
-  it('rejects invalid known option field structures', () => {
-    const warn = vi.spyOn(console, 'warn').mockImplementation(() => undefined)
+  it('accepts empty objects', () => {
+    const option = parseEChartsOption({})
+    expect(option).toEqual({})
+  })
 
-    expect(parseEChartsOption({ series: 'bar' })).toEqual({})
-    expect(parseEChartsOption({ xAxis: ['category'] })).toEqual({})
-    expect(warn).toHaveBeenCalled()
+  it('throws HttpRequestError for non-object inputs', () => {
+    let caught: unknown
+    try {
+      parseEChartsOption(null)
+    } catch (e) {
+      caught = e
+    }
+    expect(isHttpRequestError(caught)).toBe(true)
+  })
 
-    warn.mockRestore()
+  it('throws HttpRequestError for arrays', () => {
+    let caught: unknown
+    try {
+      parseEChartsOption([1, 2])
+    } catch (e) {
+      caught = e
+    }
+    expect(isHttpRequestError(caught)).toBe(true)
+  })
+
+  it('throws HttpRequestError for invalid known field structures', () => {
+    let caught: unknown
+    try {
+      parseEChartsOption({ series: 'bar' })
+    } catch (e) {
+      caught = e
+    }
+    expect(isHttpRequestError(caught)).toBe(true)
+  })
+
+  it('accepts valid known fields alongside unknown fields', () => {
+    const option = parseEChartsOption({
+      color: ['currentColor'],
+      xAxis: { type: 'category' },
+      series: [{ type: 'line' }],
+    })
+    expect(option).toMatchObject({
+      color: ['currentColor'],
+      xAxis: { type: 'category' },
+    })
   })
 })

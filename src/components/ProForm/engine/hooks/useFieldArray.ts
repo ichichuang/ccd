@@ -18,7 +18,7 @@ export function useFieldArray<
   const currentValues = computed<TItem[]>(() => {
     const values = globalState?.values ?? controller.getValues()
     const val = values[name as keyof TValues]
-    return Array.isArray(val) ? (val as TItem[]) : []
+    return Array.isArray(val) ? castValue<TItem[]>(val) : []
   })
 
   const syncKeyMapByLength = (length: number): void => {
@@ -69,8 +69,8 @@ export function useFieldArray<
 
     const arr = currentValues.value
     const keys = keyMap.value
-    const item = arr[from] as TItem
-    const keyItem = keys[from] as string
+    const item = arr[from]
+    const keyItem = keys[from]
 
     const withoutFrom = arr.filter((_, i) => i !== from)
     const newArray = [...withoutFrom.slice(0, to), item, ...withoutFrom.slice(to)]

@@ -271,7 +271,7 @@ async function handleLoginSubmit(): Promise<void> {
           class="glass-icon-box h-[var(--spacing-2xl)] w-[var(--spacing-2xl)] shrink-0 overflow-hidden"
         >
           <img
-            src="@/assets/images/face.webp"
+            src="@/assets/images/face.png"
             alt=""
             class="block h-full w-full object-cover"
           />
@@ -291,7 +291,7 @@ async function handleLoginSubmit(): Promise<void> {
               class="glass-icon-box h-[var(--spacing-2xl)] w-[var(--spacing-2xl)] shrink-0 overflow-hidden"
             >
               <img
-                src="@/assets/images/face.webp"
+                src="@/assets/images/face.png"
                 alt=""
                 class="block h-full w-full object-cover"
               />

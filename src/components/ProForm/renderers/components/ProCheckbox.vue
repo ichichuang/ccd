@@ -1,4 +1,6 @@
 <script setup lang="ts">
+defineOptions({ name: 'ProCheckbox' })
+
 import type { FieldComponentProps, SelectOption } from '../../engine/types'
 import { PRO_FORM_COMPONENT_DEFAULTS, PRO_FORM_TEXT_DEFAULTS } from '../../engine/config'
 

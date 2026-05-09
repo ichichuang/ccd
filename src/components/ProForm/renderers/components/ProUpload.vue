@@ -1,4 +1,6 @@
 <script setup lang="ts">
+defineOptions({ name: 'ProUpload' })
+
 import type { FieldComponentProps } from '../../engine/types'
 
 type UploadValue = File | File[] | string | null

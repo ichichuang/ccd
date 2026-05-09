@@ -1,6 +1,8 @@
 <script setup lang="ts">
 defineOptions({ name: 'ExampleKeepAlive' })
 
+import { DateUtils } from '@/utils/date/dateUtils'
+
 const router = useRouter()
 const route = useRoute()
 
@@ -15,14 +17,14 @@ const debugToken = ref(Math.random().toString(36).slice(2, 10))
 const logs = ref<string[]>([])
 
 const pushLog = (message: string) => {
-  logs.value.unshift(`${new Date().toLocaleTimeString()} · ${message}`)
+  logs.value.unshift(`${DateUtils.format(DateUtils.now(), 'HH:mm:ss')} · ${message}`)
   if (logs.value.length > 8) {
     logs.value = logs.value.slice(0, 8)
   }
 }
 
 onMounted(() => {
-  mountedAt.value = new Date().toLocaleString()
+  mountedAt.value = DateUtils.format(DateUtils.now(), 'YYYY-MM-DD HH:mm:ss')
   pushLog('onMounted: 组件首次创建')
 })
 

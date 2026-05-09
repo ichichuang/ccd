@@ -7,13 +7,9 @@ interface SchemaResolverOptions {
   formErrorKey?: string
 }
 
-interface ValidationIssuePayload {
-  issues?: HttpValidationIssue[]
-}
-
 function isValidationIssue(value: unknown): value is HttpValidationIssue {
   if (typeof value !== 'object' || value === null) return false
-  const candidate = value as { path?: unknown; message?: unknown }
+  const candidate = value as Record<string, unknown>
   return (
     (candidate.path === undefined || typeof candidate.path === 'string') &&
     typeof candidate.message === 'string'
@@ -22,9 +18,9 @@ function isValidationIssue(value: unknown): value is HttpValidationIssue {
 
 function getIssues(data: unknown): HttpValidationIssue[] {
   if (typeof data !== 'object' || data === null) return []
-  const payload = data as ValidationIssuePayload
+  const payload = data as Record<string, unknown>
   if (!Array.isArray(payload.issues)) return []
-  return payload.issues.filter(isValidationIssue)
+  return (payload.issues as unknown[]).filter(isValidationIssue)
 }
 
 function addFieldError(errors: Record<string, string[]>, fieldName: string, message: string): void {

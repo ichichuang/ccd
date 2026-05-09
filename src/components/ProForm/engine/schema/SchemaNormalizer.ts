@@ -1,23 +1,14 @@
-import type {
-  FieldSchema,
-  FormSchema,
-  FormSchemaNode,
-  GroupSchema,
-  NodeLayoutSchema,
-  ResponsiveSpan,
-} from '../types'
+import { castRecord } from '@/utils/typeCasters'
+import type { FieldSchema, FormSchema, FormSchemaNode, GroupSchema, ResponsiveSpan } from '../types'
 import { PRO_FORM_DEFAULTS } from '../config'
 
-type LayoutFieldSchema = FieldSchema<unknown> & {
-  span?: ResponsiveSpan
-  layout?: {
-    span?: ResponsiveSpan
-  } & Partial<NodeLayoutSchema>
-}
-
 function normalizeField(field: FieldSchema<unknown>): FieldSchema<unknown> {
-  const layoutField = field as LayoutFieldSchema
-  const span: ResponsiveSpan | undefined = layoutField.span ?? layoutField.layout?.span
+  const layoutField = castRecord(field)
+  const span: ResponsiveSpan | undefined =
+    (layoutField.span as ResponsiveSpan | undefined) ??
+    ((layoutField.layout as Record<string, unknown> | undefined)?.span as
+      | ResponsiveSpan
+      | undefined)
 
   return {
     ...field,
@@ -26,7 +17,7 @@ function normalizeField(field: FieldSchema<unknown>): FieldSchema<unknown> {
     // 保留 ResponsiveSpan 原始结构；在渲染层通过 resolveSpan 统一解析
     // 默认列数统一由 PRO_FORM_DEFAULTS.gridSpan 控制，避免魔法数
     span: span ?? PRO_FORM_DEFAULTS.gridSpan,
-  } as FieldSchema<unknown>
+  }
 }
 
 function normalizeGroup(
@@ -42,6 +33,10 @@ function normalizeGroup(
   }
 }
 
+function isGroupNode(node: FormSchemaNode): node is GroupSchema {
+  return 'children' in node && node.children !== undefined
+}
+
 function normalizeNodes(
   nodes: FormSchemaNode[],
   parentPath: number[],
@@ -49,10 +44,10 @@ function normalizeNodes(
 ): FormSchemaNode[] {
   return nodes.map((node, index) => {
     const currentPath = [...parentPath, index]
-    if ((node as GroupSchema).children) {
-      return normalizeGroup(node as GroupSchema, currentPath, counter)
+    if (isGroupNode(node)) {
+      return normalizeGroup(node, currentPath, counter)
     }
-    return normalizeField(node as FieldSchema<unknown>)
+    return normalizeField(node)
   })
 }
 

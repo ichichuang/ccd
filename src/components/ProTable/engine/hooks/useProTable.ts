@@ -3,7 +3,6 @@ import { TableController } from '../core/TableController'
 import type { TableControllerOptions } from '../core/TableController'
 import type { ColumnSettingsState, TableState } from '../types/tableState'
 import type { ProTableColumn } from '../types/column'
-import type { ProTableLoadParams } from '../types/props'
 import { useProTableColumnSettingsStorage } from './useProTableColumnSettingsStorage'
 
 export interface UseProTableOptions<
@@ -30,7 +29,6 @@ export interface UseProTableReturn<T extends Record<string, unknown>> {
   isColumnVisible: (id: string) => boolean
   setPage: (p: number) => void
   setPageSize: (s: number) => void
-  emitLoad: (params: ProTableLoadParams) => void
   destroy: () => void
   updateColumnSettings: (newOrder: string[], newHidden: string[]) => void
 }
@@ -66,10 +64,6 @@ export function useProTable<T extends Record<string, unknown>>(
 
   onUnmounted(() => ctrl.destroy())
 
-  function emitLoad(params: ProTableLoadParams): void {
-    options.onLoad?.(params)
-  }
-
   return {
     state: ctrl.state,
     processedRows: ctrl.processedRows,
@@ -86,7 +80,6 @@ export function useProTable<T extends Record<string, unknown>>(
     isColumnVisible: (id: string) => ctrl.isColumnVisible(id),
     setPage: (p: number) => ctrl.setPage(p),
     setPageSize: (s: number) => ctrl.setPageSize(s),
-    emitLoad,
     destroy: () => ctrl.destroy(),
     updateColumnSettings: (newOrder: string[], newHidden: string[]) =>
       ctrl.updateColumnSettings(newOrder, newHidden),

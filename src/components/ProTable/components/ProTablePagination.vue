@@ -1,4 +1,6 @@
 <script setup lang="ts">
+defineOptions({ name: 'ProTablePagination' })
+
 import { PAGINATION_DEFAULTS } from '../engine/config'
 
 const props = defineProps<{

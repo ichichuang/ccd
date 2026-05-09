@@ -31,9 +31,17 @@ const parseResult = computed<ParseResult>(() => {
       errorMsg: e instanceof Error ? e.message : 'JSON parse error',
     }
   }
-  const option: EChartsOption = parseEChartsOption(raw)
-  const isValid: boolean = Object.keys(option).length > 0
-  return { option, isValid, isJsonError: false, errorMsg: null }
+  try {
+    const option: EChartsOption = parseEChartsOption(raw)
+    return { option, isValid: true, isJsonError: false, errorMsg: null }
+  } catch (e) {
+    return {
+      option: {} as EChartsOption,
+      isValid: false,
+      isJsonError: false,
+      errorMsg: e instanceof Error ? e.message : 'Validation failed',
+    }
+  }
 })
 
 function resetToDefault(): void {
@@ -83,7 +91,7 @@ function resetToDefault(): void {
             <code class="code-inline">parseEChartsOption</code>
             校验。拒绝数组、null、原始类型；合法对象安全转型为
             <code class="code-inline">EChartsOption</code>
-            ； 非法输入返回空对象，图表渲染为空白。
+            ； 非法输入抛出 HttpRequestError。
           </p>
         </header>
 
@@ -138,7 +146,7 @@ function resetToDefault(): void {
             severity="warn"
             :closable="false"
           >
-            Input is not a plain object. parseEChartsOption() returns {} — chart renders empty.
+            {{ parseResult.errorMsg ?? 'Input rejected by adapter boundary.' }}
           </Message>
         </section>
 
@@ -172,9 +180,11 @@ function resetToDefault(): void {
 import type { EChartsOption } from 'echarts'
 
 export function parseEChartsOption(raw: unknown): EChartsOption {
-  if (!raw || typeof raw !== 'object' || Array.isArray(raw)) {
-    console.warn('[Boundary Error] Invalid ECharts option format:', raw)
-    return {} as EChartsOption
+  if (!isRecord(raw)) {
+    throw new HttpRequestError(
+      'ECharts adapter: input is not a plain object',
+      ErrorType.VALIDATION, ...
+    )
   }
   // Validation passed, safe to cast
   return raw as EChartsOption

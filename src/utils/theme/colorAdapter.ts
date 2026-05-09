@@ -145,6 +145,11 @@ export const initComponentButtonColorSchemeOptionsItems = (
 
     const getAlpha = (suffix: string, alpha: number) => {
       const val = get(suffix)
+      // getRgbVar 保证格式为 rgb(var(--xxx))，始终以 ) 结尾
+      if (!val.endsWith(')')) {
+        console.warn(`[colorAdapter] getAlpha: unexpected format "${val}", expected "rgb(...)"`)
+        return val
+      }
       return val.replace(/\)$/, ` / ${alpha})`)
     }
 

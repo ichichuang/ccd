@@ -11,7 +11,11 @@
  */
 
 import { Icons } from '@/components/Icons'
-import { MENU_ICON_COMMON_CLASS, MENU_TEXT_CLASS } from '@/constants/layout-menu'
+import {
+  MENU_ICON_COMMON_CLASS,
+  MENU_POPUP_ITEM_CLASS,
+  MENU_TEXT_CLASS,
+} from '@/constants/layout-menu'
 import type { VNode } from 'vue'
 import {
   getMenuItemBase,
@@ -40,7 +44,12 @@ export interface TieredMenuInactiveClasses {
 export interface TieredMenuItemRendererOptions {
   /** 菜单视觉上下文（header / sidebar / breadcrumb） */
   context: MenuVisualContext
-  /** 计算当前菜单项与激活路由的距离（由调用方根据场景提供） */
+  /**
+   * 计算当前菜单项与激活路由的距离（由调用方根据场景提供）。
+   * - 0 = 当前激活项
+   * - 正数 = 激活路径上的祖先（1=父级, 2=祖父级, ...）
+   * - 负数 = 不在激活路径上
+   */
   getDistance: (item: PrimeMenuModelItem) => number
   /** 非激活态文字样式覆写（默认使用 layout-menu.ts 中的语义类） */
   inactiveClasses?: TieredMenuInactiveClasses
@@ -109,7 +118,7 @@ export function createTieredMenuItemRenderer(
       getMenuItemBase(context),
       'w-full min-w-0 flex-1 self-stretch relative z-content',
       stateClasses,
-      'interactive-item',
+      MENU_POPUP_ITEM_CLASS,
       actionClassStr,
     ]
       .filter(Boolean)
@@ -136,8 +145,12 @@ export function createTieredMenuItemRenderer(
       }
     }
 
-    /** 同一手势内 pointerdown 已导航时跳过后续 click，避免重复；若无 click（个别环境），用 timeout 复位 */
+    /** 同一手势内 pointerdown 已导航时跳过后续 click，避免重复；若无 click（个别环境），用 queueMicrotask 复位 */
     let skipClickFromPointer = false
+
+    const resetSkipFlag = (): void => {
+      if (skipClickFromPointer) skipClickFromPointer = false
+    }
 
     const handlePointerDown = (ev: PointerEvent): void => {
       if (ev.pointerType === 'mouse' && ev.button !== 0) return
@@ -146,9 +159,11 @@ export function createTieredMenuItemRenderer(
     }
 
     const handlePointerUp = (): void => {
-      setTimeout(() => {
-        if (skipClickFromPointer) skipClickFromPointer = false
-      }, 0)
+      queueMicrotask(resetSkipFlag)
+    }
+
+    const handlePointerCancel = (): void => {
+      skipClickFromPointer = false
     }
 
     const handleClick = (ev: Event): void => {
@@ -165,6 +180,7 @@ export function createTieredMenuItemRenderer(
         class={mergedClass}
         onPointerdown={handlePointerDown}
         onPointerup={handlePointerUp}
+        onPointercancel={handlePointerCancel}
         onClick={handleClick}
       >
         {item.icon && (

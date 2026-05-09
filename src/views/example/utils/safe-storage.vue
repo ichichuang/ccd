@@ -1,7 +1,7 @@
 <script setup lang="ts">
 defineOptions({ name: 'UtilsSafeStorage' })
 
-import { decompressAndDecryptSync, encryptAndCompressSync } from '@/utils/safeStorage'
+import { compressAndEncryptSync, decryptAndDecompressSync } from '@/utils/safeStorage'
 
 function parseJsonOrString(input: string): unknown {
   const raw = input.trim()
@@ -41,7 +41,7 @@ const parsedPlain = computed<unknown>(() => parseJsonOrString(plainText.value))
 watchEffect(() => {
   try {
     const secret = effectiveSecret.value
-    const encrypted = encryptAndCompressSync(parsedPlain.value, secret)
+    const encrypted = compressAndEncryptSync(parsedPlain.value, secret)
     encryptedOutput.value = encrypted || '—'
 
     if (!encryptedOutput.value || encryptedOutput.value === '—') {
@@ -49,7 +49,7 @@ watchEffect(() => {
       return
     }
 
-    const decrypted = decompressAndDecryptSync<unknown>(encryptedOutput.value, secret)
+    const decrypted = decryptAndDecompressSync<unknown>(encryptedOutput.value, secret)
     decryptedOutput.value = decrypted === null ? '—' : formatUnknownForDisplay(decrypted)
   } catch {
     encryptedOutput.value = '—'

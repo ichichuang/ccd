@@ -1,28 +1,31 @@
-import { useLayoutStore } from '@/stores/modules/system'
 import AdminSidebarLogo from '@/layouts/components/admin/AdminSidebarLogo'
 import AdminSidebarMenu from '@/layouts/components/admin/AdminSidebarMenu'
 import { CScrollbar } from '@/components/CScrollbar'
+import type { SidebarAnimationPhase } from '@/layouts/runtime/layoutRuntime'
 
 export interface AdminSidebarProps {
-  mode: AdminLayoutMode
   showSidebar: boolean
   sidebarCollapse: boolean
+  sidebarVisualCollapse: boolean
   sidebarFixed: boolean
   sidebarWidthClass: string
+  enableTransition: boolean
+  isAnimating: boolean
+  sidebarAnimationPhase: SidebarAnimationPhase
 }
 
 export default defineComponent({
   name: 'AdminSidebar',
   props: {
-    mode: {
-      type: String as PropType<AdminLayoutMode>,
-      required: true,
-    },
     showSidebar: {
       type: Boolean,
       required: true,
     },
     sidebarCollapse: {
+      type: Boolean,
+      required: true,
+    },
+    sidebarVisualCollapse: {
       type: Boolean,
       required: true,
     },
@@ -34,21 +37,31 @@ export default defineComponent({
       type: String,
       required: true,
     },
+    enableTransition: {
+      type: Boolean,
+      required: true,
+    },
+    isAnimating: {
+      type: Boolean,
+      default: false,
+    },
+    sidebarAnimationPhase: {
+      type: String as PropType<SidebarAnimationPhase>,
+      default: 'idle',
+    },
   },
   setup(props) {
-    const layoutStore = useLayoutStore()
-    const isHorizontal = computed(() => props.mode === 'horizontal')
-
     return () => {
-      if (!props.showSidebar || isHorizontal.value) return null
+      if (!props.showSidebar) return null
 
       return (
         <aside
           class={[
             props.sidebarWidthClass,
             props.sidebarFixed ? 'admin-sidebar--fixed' : '',
-            layoutStore.enableTransition ? 'sidebar-width-transition' : '',
-            props.sidebarCollapse ? 'gap-md' : '',
+            props.isAnimating ? 'admin-sidebar--animating' : '',
+            props.sidebarVisualCollapse ? 'admin-sidebar--visual-collapsed' : '',
+            props.enableTransition ? 'sidebar-width-transition' : '',
             'h-full min-h-0 overflow-hidden shrink-0 flex flex-col select-none [contain:layout_paint]',
           ]}
         >
@@ -57,7 +70,12 @@ export default defineComponent({
             native
             class="col-fill px-sm"
           >
-            <AdminSidebarMenu sidebarCollapse={props.sidebarCollapse} />
+            <AdminSidebarMenu
+              sidebarCollapse={props.sidebarCollapse}
+              sidebarVisualCollapse={props.sidebarVisualCollapse}
+              sidebarAnimating={props.isAnimating}
+              sidebarAnimationPhase={props.sidebarAnimationPhase}
+            />
           </CScrollbar>
         </aside>
       )

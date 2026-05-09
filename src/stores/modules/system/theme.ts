@@ -13,6 +13,7 @@ import {
   resolveThemeModeIsDark,
 } from '@/utils/theme/mode'
 import { isThemeLocked } from '@/utils/theme/transitions'
+import { createPiniaEncryptedSerializer } from '@/utils/safeStorage/piniaSerializer'
 
 // 模块级变量持有 handler 引用，确保 removeEventListener 可精确移除同一函数引用
 let _themeMediaQueryHandler: (() => void) | null = null
@@ -65,6 +66,10 @@ export const useThemeStore = defineStore('theme', {
       if (THEME_PRESETS.find(p => p.name === name)) {
         this.themeName = name
         this.refreshTheme()
+      } else {
+        console.warn(
+          `[Theme Store] Unknown preset "${name}", keeping current theme "${this.themeName}"`
+        )
       }
     },
 
@@ -143,6 +148,6 @@ export const useThemeStore = defineStore('theme', {
   persist: {
     key: `${import.meta.env.VITE_PINIA_PERSIST_KEY_PREFIX}-theme`,
     storage: localStorage,
-    // serializer: createPiniaEncryptedSerializer(),
+    serializer: createPiniaEncryptedSerializer(),
   },
 })

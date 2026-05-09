@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { get, getCacheStats, getRequestStats, clearCache, clearRequests } from '@/utils/http'
 import type { CacheStats, RequestStats, RetryConfig } from '@/utils/http'
+import { DateUtils } from '@/utils/date/dateUtils'
 
 defineOptions({ name: 'ExampleUtilHttpAdvanced' })
 
@@ -11,7 +12,7 @@ const eventLog = ref<string[]>([])
 const MAX_LOG = 40
 
 function addLog(msg: string): void {
-  eventLog.value.unshift(`[${new Date().toLocaleTimeString()}] ${msg}`)
+  eventLog.value.unshift(`[${DateUtils.format(DateUtils.now(), 'HH:mm:ss')}] ${msg}`)
   if (eventLog.value.length > MAX_LOG) eventLog.value.length = MAX_LOG
 }
 

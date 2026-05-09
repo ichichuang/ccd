@@ -1,30 +1,21 @@
 /**
  * 系统 API DTO（Data Transfer Objects）
  * 动态路由、权限菜单等接口的单一类型来源
- * 与 src/types/modules/router.d.ts 中的 BackendRouteConfig 对齐
+ *
+ * @see {@link BackendRouteConfig} 全局类型定义位于 src/types/modules/router.d.ts:96
  */
 
 import type { RouteMeta } from 'vue-router'
 import { z } from 'zod'
 
 /**
- * 后端动态路由单项（与全局 BackendRouteConfig 结构一致）
- * 用于 System API 响应类型定义
+ * 后端动态路由单项 — 等价于全局 BackendRouteConfig。
+ *
+ * @remarks
+ * 保留此别名以维持 DTO 三元组（Req/Res/DTO）规约，
+ * 底层结构与 {@link BackendRouteConfig} 完全一致。
  */
-export interface SystemAsyncRouteItem {
-  /** 路由路径 */
-  path: string
-  /** 路由名称 */
-  name?: string
-  /** 组件路径（相对于 src/views） */
-  component?: string
-  /** 路由重定向 */
-  redirect?: string
-  /** 路由元信息 */
-  meta: RouteMeta
-  /** 子路由 */
-  children?: SystemAsyncRouteItem[]
-}
+export type SystemAsyncRouteItem = BackendRouteConfig
 
 /**
  * 获取动态路由 API 的原始响应格式

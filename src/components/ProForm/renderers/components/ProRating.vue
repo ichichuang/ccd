@@ -1,4 +1,6 @@
 <script setup lang="ts">
+defineOptions({ name: 'ProRating' })
+
 import type { FieldComponentProps } from '../../engine/types'
 
 type Props = FieldComponentProps<number | null>

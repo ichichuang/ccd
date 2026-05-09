@@ -18,8 +18,8 @@ vi.mock('@/infra/auth/tokenProvider', () => ({
     mockNotifyUnauthorized(...args),
 }))
 vi.mock('@/utils/safeStorage', () => ({
-  decompressAndDecryptSync: vi.fn((val: string) => (val === 'encrypted' ? 'decrypted' : null)),
-  encryptAndCompressSync: vi.fn((val: unknown) => (val ? 'encrypted' : null)),
+  decryptAndDecompressSync: vi.fn((val: string) => (val === 'encrypted' ? 'decrypted' : null)),
+  compressAndEncryptSync: vi.fn((val: unknown) => (val ? 'encrypted' : null)),
 }))
 
 beforeEach(() => {

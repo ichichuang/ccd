@@ -4,7 +4,9 @@
 export function normalizeHex(hex: string): string {
   // 基础校验：必须以 # 开头
   if (!hex || !hex.startsWith('#')) {
-    console.error(`[Theme Engine] 非法颜色值: ${hex}，已回退为 #000000`)
+    if (import.meta.env.DEV) {
+      console.error(`[Theme Engine] 非法颜色值: ${hex}，已回退为 #000000`)
+    }
     return '#000000'
   }
 
@@ -21,7 +23,9 @@ export function normalizeHex(hex: string): string {
   // 最终校验：必须是 6 位合法字符
   const hexRegex = /^[0-9a-fA-F]{6}$/
   if (!hexRegex.test(h)) {
-    console.error(`[Theme Engine] 颜色格式错误: #${h}`)
+    if (import.meta.env.DEV) {
+      console.error(`[Theme Engine] 颜色格式错误: #${h}`)
+    }
     return '#000000'
   }
 
@@ -97,7 +101,9 @@ export function isDarkColor(hex: string): boolean {
 export function rgbToHex(rgb: string): string {
   const parts = rgb.trim().split(/\s+/)
   if (parts.length !== 3) {
-    console.error(`[Theme Engine] 非法 RGB 格式: ${rgb}，已回退为 #000000`)
+    if (import.meta.env.DEV) {
+      console.error(`[Theme Engine] 非法 RGB 格式: ${rgb}，已回退为 #000000`)
+    }
     return '#000000'
   }
 
@@ -106,7 +112,9 @@ export function rgbToHex(rgb: string): string {
   const b = parseInt(parts[2], 10)
 
   if (isNaN(r) || isNaN(g) || isNaN(b)) {
-    console.error(`[Theme Engine] RGB 值解析失败: ${rgb}`)
+    if (import.meta.env.DEV) {
+      console.error(`[Theme Engine] RGB 值解析失败: ${rgb}`)
+    }
     return '#000000'
   }
 

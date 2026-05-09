@@ -10,7 +10,37 @@
  *   - 无 tabs: calc(100vh - var(--header-height) - var(--footer-height))
  */
 
+import { FONT_SCALE_RATIOS, SPACING_SCALE_RATIOS } from './sizeScale'
+import { MENU_SIDEBAR_ICON_SIZE } from './layout-menu'
+
 // 注意：类型 SizePreset 和 SizeMode 已经在 src/types/size.d.ts 中全局定义，无需导入
+
+interface SidebarCollapsedGeometrySource {
+  spacingBase: number
+  fontSizeBase: number
+}
+
+/**
+ * 侧栏收起宽度必须跟随图标锚点，而不是跟随布局宽度比例。
+ *
+ * 几何来源与 AdminSidebarMenu 保持一致：
+ * - CScrollbar: px-sm
+ * - PrimeVue PanelMenu panel: padding xs + 1px border（用 spacingBase / 4 表达）
+ * - root menu item: px-md
+ * - icon box: sidebar icon size token + spacing-xs
+ */
+export function deriveSidebarCollapsedWidth(source: SidebarCollapsedGeometrySource): number {
+  const spacingXs = source.spacingBase * SPACING_SCALE_RATIOS.xs
+  const spacingSm = source.spacingBase * SPACING_SCALE_RATIOS.sm
+  const spacingMd = source.spacingBase * SPACING_SCALE_RATIOS.md
+  const panelBorder = source.spacingBase / 4
+  const iconBoxWidth =
+    Math.round(source.fontSizeBase * FONT_SCALE_RATIOS[MENU_SIDEBAR_ICON_SIZE]) + spacingXs
+  const panelChromeInline = (spacingSm + spacingXs + panelBorder) * 2
+  const iconAnchorItemWidth = spacingMd * 2 + iconBoxWidth
+
+  return Math.round(panelChromeInline + iconAnchorItemWidth)
+}
 
 /** 尺寸预设数组 */
 export const SIZE_PRESETS: SizePreset[] = [
@@ -23,7 +53,7 @@ export const SIZE_PRESETS: SizePreset[] = [
     fontSizeBase: 14,
 
     sidebarWidth: 260,
-    sidebarCollapsedWidth: 56,
+    sidebarCollapsedWidth: deriveSidebarCollapsedWidth({ spacingBase: 3, fontSizeBase: 14 }),
     headerHeight: 48,
     breadcrumbHeight: 28,
     footerHeight: 28,
@@ -39,7 +69,7 @@ export const SIZE_PRESETS: SizePreset[] = [
     fontSizeBase: 16,
 
     sidebarWidth: 280,
-    sidebarCollapsedWidth: 60,
+    sidebarCollapsedWidth: deriveSidebarCollapsedWidth({ spacingBase: 4, fontSizeBase: 16 }),
     headerHeight: 60,
     breadcrumbHeight: 32,
     footerHeight: 32,
@@ -55,7 +85,7 @@ export const SIZE_PRESETS: SizePreset[] = [
     fontSizeBase: 18,
 
     sidebarWidth: 300,
-    sidebarCollapsedWidth: 80,
+    sidebarCollapsedWidth: deriveSidebarCollapsedWidth({ spacingBase: 5, fontSizeBase: 18 }),
     headerHeight: 66,
     breadcrumbHeight: 36,
     footerHeight: 38,

@@ -17,6 +17,22 @@ globs: ["src/**/*.{vue,tsx,ts,css,scss}"]
 - ❌ `dark:bg-gray-900`, `dark:text-white` — FORBIDDEN. Semantic tokens auto-respond to dark mode.
 - ✅ **DO:** Use semantic UnoCSS classes mapped to our theme: `text-primary`, `bg-background`, `text-muted-foreground`, `border border-solid border-border`, `bg-muted`, `text-danger`, `bg-primary-light`.
 
+## Theme Preset Source-Data Exception
+
+Raw `#RRGGBB` values are allowed only as canonical theme source data, not as UI implementation colors.
+
+Allowed files:
+- `src/constants/theme.ts` — explicit `THEME_PRESETS` source data.
+- `src/constants/theme.spec.ts` and token validation scripts — expected values and contrast checks.
+- `src/utils/theme/**` — color parsing, conversion, derivation, validation, and compiler internals.
+
+Rules for this exception:
+- Preset colors MUST remain valid full HEX values (`#RRGGBB`, no alpha, no shorthand).
+- `THEME_PRESETS` SHOULD use `CompleteThemePreset[]` and define both `light` and `dark` mode explicitly.
+- Preset edits MUST NOT modify Theme Engine runtime modules unless the task explicitly asks for engine behavior changes.
+- Every preset and mode MUST include complete semantic families: `primary`, `accent`, `success`, `warn`, `danger`, `info`, `help`, base scalar tokens, neutral tokens, and independent `sidebar` tokens.
+- After changing preset data, run `pnpm exec tsx scripts/upgrade-all-themes.mjs`, `pnpm exec vitest run src/constants/theme.spec.ts src/utils/theme`, and ESLint for the touched theme files.
+
 ## 📏 Size & Spacing System Anti-Patterns (FORBIDDEN)
 - ❌ `class="w-4"`, `class="p-10"`, `class="mt-2"` — Unitless numeric shorthands (defaulting to `rem`) are **ABSOLUTELY FORBIDDEN**.
 - ❌ `class="w-[16rem]"`, `class="h-[2em]"` — `rem/em` units are **ABSOLUTELY FORBIDDEN**.

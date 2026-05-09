@@ -15,7 +15,6 @@ import { beforeRequest, responseHandler } from './interceptors'
  */
 const validateAlovaConfig = () => {
   const errors: string[] = []
-  const warnings: string[] = []
 
   // 检查超时配置
   const timeout = HTTP_CONFIG.timeout
@@ -31,14 +30,9 @@ const validateAlovaConfig = () => {
     errors.push(t('http.config.invalidAppEnv', { env: import.meta.env.VITE_APP_ENV }))
   }
 
-  // 输出错误和警告
   if (errors.length > 0) {
     console.error('❌ Alova 配置错误:', errors)
     throw new Error(t('http.config.alovaConfigError', { errors: errors.join(', ') }))
-  }
-
-  if (warnings.length > 0) {
-    console.warn('⚠️ Alova 配置警告:', warnings)
   }
 }
 
@@ -86,9 +80,11 @@ validateAlovaConfig()
 
 // 监听连接状态变化
 addConnectionListener(state => {
-  // 当连接断开时，可以在这里做一些清理工作
   if (!state.isConnected && !state.isReconnecting) {
-    console.warn('⚠️ 网络连接已断开')
+    console.warn('⚠️ 网络连接已断开', state.disconnectReason ?? '')
+  }
+  if (state.isConnected && state.reconnectAttempts === 0 && state.lastConnectedAt) {
+    console.log('✅ 网络连接已恢复')
   }
 })
 

@@ -33,8 +33,9 @@ export interface UseHttpRequestResult<TData> {
   loading: Ref<boolean>
   data: Ref<TData | undefined>
   error: ComputedRef<HttpRequestError | null>
+  /** 原始错误：当非 HttpRequestError（如网络异常、TypeError）被捕获时暴露，避免静默丢失 */
+  rawError: ComputedRef<unknown>
   send: (...args: unknown[]) => Promise<TData>
-  // 可以根据需要暴露更多 alova 原生返回值，如 onSuccess 等
 }
 
 /**
@@ -95,10 +96,13 @@ export function useHttpRequest<TData = unknown>(
     return isHttpRequestError(raw) ? raw : null
   })
 
+  const rawError = computed<unknown>(() => base.error.value)
+
   return {
     loading: base.loading,
     data: base.data,
     error: typedError,
+    rawError,
     send: base.send,
   }
 }

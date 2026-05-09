@@ -3,8 +3,10 @@ import { useRoute } from 'vue-router'
 import AnimateRouterView from '@&/AnimateRouterView.vue'
 import Loading from '@&/Loading.vue'
 import { useLayoutStore } from '@/stores/modules/system'
+import { useLayoutRuntime } from '@/hooks/layout/useLayoutRuntime'
 
 const layoutStore = useLayoutStore()
+const runtime = useLayoutRuntime()
 const isPageLoading = computed(() => layoutStore.isPageLoading)
 
 const route = useRoute()
@@ -60,7 +62,10 @@ function parseRatioString(input?: unknown): RatioParsed {
 const aspectRatio = computed<RatioParsed>(() => parseRatioString(route.meta?.ratio))
 </script>
 <template>
-  <div class="layout-screen text-foreground center relative">
+  <div
+    class="layout-screen text-foreground center relative"
+    :style="runtime.shellSafeAreaStyle.value"
+  >
     <!-- 使用 CSS aspect-ratio + max-* 做 contain，严格按路由 meta.ratio 渲染 -->
     <div
       class="relative z-content w-full max-w-full max-h-full overflow-hidden bg-transparent"

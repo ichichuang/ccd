@@ -2,12 +2,11 @@
 defineOptions({ name: 'CommonEnums' })
 
 import { ErrorType } from '@/utils/http/errors'
-import { ConnectionStatus } from '@/utils/http/connection'
 import { DateFormatEnum } from '@/utils/date/types'
 
 type TagSeverity = 'primary' | 'secondary' | 'success' | 'info' | 'warn' | 'danger' | 'contrast'
 
-type EnumSourceId = 'ErrorType' | 'ConnectionStatus' | 'DateFormatEnum'
+type EnumSourceId = 'ErrorType' | 'DateFormatEnum'
 
 interface EnumRow {
   key: string
@@ -46,26 +45,6 @@ const enumSources: EnumSource[] = [
         CLIENT: 'secondary',
         SECURITY: 'danger',
         UNKNOWN: 'secondary',
-      }
-      return map[key] ?? 'secondary'
-    },
-  },
-  {
-    id: 'ConnectionStatus',
-    label: 'ConnectionStatus',
-    enumObj: ConnectionStatus,
-    sourceSnippet: `export enum ConnectionStatus {
-  CONNECTED = 'connected',
-  DISCONNECTED = 'disconnected',
-  RECONNECTING = 'reconnecting',
-  ERROR = 'error',
-}`,
-    mapSeverity: (key: string) => {
-      const map: Record<string, TagSeverity> = {
-        CONNECTED: 'success',
-        DISCONNECTED: 'warn',
-        RECONNECTING: 'info',
-        ERROR: 'danger',
       }
       return map[key] ?? 'secondary'
     },

@@ -6,19 +6,15 @@ import {
 } from '@/utils/theme/sizeEngine'
 import LayoutManager from '@/layouts/index.vue'
 import AppPrimeVueGlobals from '@/layouts/components/AppPrimeVueGlobals.vue'
-import { usePermissionStore } from '@/stores/modules/session'
 
 const sizeStore = useSizeStore()
 const deviceStore = useDeviceStore()
 const themeStore = useThemeStore()
 
+// 提前检测设备，确保 watchEffect 首帧使用正确断点，避免字体闪动
 let cleanupDeviceListener: (() => void) | undefined
-
-// 提前检测设备，确保 watchEffect 首帧使用正确断点，避免字体闪动
-// 提前检测设备，确保 watchEffect 首帧使用正确断点，避免字体闪动
 if (typeof window !== 'undefined') {
-  deviceStore.initHardwareInfo()
-  deviceStore.detectViewportInfo()
+  cleanupDeviceListener = deviceStore.init()
 }
 
 // 根字号与布局尺寸双轨自适应：根据设备类型 + 断点 + 尺寸预设动态计算
@@ -46,7 +42,6 @@ watch(
 
 onMounted(() => {
   sizeStore.init()
-  cleanupDeviceListener = deviceStore.init()
 
   const permissionStore = usePermissionStore()
   const key = new URLSearchParams(location.search).get('_windowKey')

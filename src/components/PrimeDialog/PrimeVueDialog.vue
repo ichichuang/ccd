@@ -246,7 +246,6 @@ function handleEscapeKeydown(e: KeyboardEvent) {
 }
 
 useEventListener(window, 'locale-changed', handleLocaleChange)
-useEventListener(window, 'locale-store-changed', handleLocaleChange)
 useEventListener(document, 'keydown', handleEscapeKeydown)
 onUnmounted(() => {
   vnodeCache.clear()

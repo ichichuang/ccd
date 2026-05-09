@@ -101,8 +101,7 @@ export function getErrorTypeByStatus(status: number): ErrorType {
   if (status >= 400 && status < 500) {
     return ErrorType.CLIENT
   }
-  if (status >= 300 && status < 400) {
-    return ErrorType.CLIENT
-  }
+  // 3xx redirects are not errors — the browser follows them automatically.
+  // If one reaches application code (e.g. 304 Not Modified), fall through to UNKNOWN.
   return ErrorType.UNKNOWN
 }

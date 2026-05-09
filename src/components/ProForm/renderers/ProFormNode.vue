@@ -15,6 +15,8 @@ import { resolveSpan } from '../engine/utils/breakpoint'
 import { PRO_FORM_DEFAULTS, PRO_FORM_LAYOUT_DEFAULTS } from '../engine/config'
 import { PRO_FORM_LAYOUT_KEY } from '../engine/constants'
 
+defineOptions({ name: 'ProFormNode' })
+
 const props = defineProps<ProFormNodeProps>()
 
 const injectedLayout = inject<{

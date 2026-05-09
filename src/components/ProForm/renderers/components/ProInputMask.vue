@@ -1,4 +1,6 @@
 <script setup lang="ts">
+defineOptions({ name: 'ProInputMask' })
+
 import type { FieldComponentProps } from '../../engine/types'
 
 type Props = FieldComponentProps<string | null | undefined>

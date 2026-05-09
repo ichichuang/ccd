@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { FieldComponentProps } from '../../engine/types'
 
-defineOptions({ inheritAttrs: false })
+defineOptions({ name: 'ProInputText', inheritAttrs: false })
 
 type Props = FieldComponentProps<string | null | undefined>
 type InputTextProps = Omit<Props, 'modelValue'> & {

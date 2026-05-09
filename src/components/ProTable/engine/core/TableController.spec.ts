@@ -16,10 +16,6 @@ const namedColumns: ProTableColumn<Row>[] = [
   { id: 'name', title: 'Name', field: 'name' },
 ]
 
-function flushMicrotasks(): Promise<void> {
-  return new Promise(resolve => setTimeout(resolve, 0))
-}
-
 describe('TableController request cancellation', () => {
   it('aborts stale requests and ignores stale results when reloading', async () => {
     const pending: PendingRequest[] = []
@@ -41,13 +37,13 @@ describe('TableController request cancellation', () => {
     expect(pending[1].signal?.aborted).toBe(false)
 
     pending[1].resolve({ data: [{ id: 'latest' }], total: 1 })
-    await flushMicrotasks()
+    await nextTick()
 
     expect(ctrl.processedRows.value).toEqual([{ id: 'latest' }])
     expect(ctrl.state.pagination.total).toBe(1)
 
     pending[0].resolve({ data: [{ id: 'stale' }], total: 1 })
-    await flushMicrotasks()
+    await nextTick()
 
     expect(ctrl.processedRows.value).toEqual([{ id: 'latest' }])
     ctrl.destroy()

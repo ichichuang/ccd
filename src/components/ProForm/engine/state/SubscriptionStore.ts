@@ -51,7 +51,7 @@ export class SubscriptionStore<TValues extends Record<string, unknown> = Record<
 
   getFieldValue(field: string): TValues[keyof TValues] | undefined {
     const state = this.getFieldState(field)
-    return state?.value as TValues[keyof TValues] | undefined
+    return state?.value as unknown as TValues[keyof TValues] | undefined
   }
 
   setFieldValue(field: string, value: TValues[keyof TValues]): void {
@@ -63,7 +63,7 @@ export class SubscriptionStore<TValues extends Record<string, unknown> = Record<
         ...existing,
         value,
         dirty,
-      } as FieldState<unknown>
+      }
       this.setFieldState(field, nextState)
       return
     }

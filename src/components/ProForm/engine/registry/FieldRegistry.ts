@@ -1,5 +1,10 @@
 import type { Component } from 'vue'
+import { castValue } from '@/utils/typeCasters'
 import type { FieldComponentProps, FieldRegistryItem, FieldComponent } from '../types'
+
+function isFieldRegistryItem(value: unknown): value is FieldRegistryItem {
+  return typeof value === 'object' && value !== null && 'component' in value
+}
 
 export class FieldRegistry {
   private readonly registry = new Map<string, FieldRegistryItem>()
@@ -16,12 +21,11 @@ export class FieldRegistry {
     name: string,
     componentOrItem: Component<FieldComponentProps<T>> | FieldRegistryItem
   ): void {
-    const item: FieldRegistryItem =
-      'component' in componentOrItem
-        ? (componentOrItem as FieldRegistryItem)
-        : ({
-            component: componentOrItem as FieldComponent<unknown>,
-          } as FieldRegistryItem)
+    const item: FieldRegistryItem = isFieldRegistryItem(componentOrItem)
+      ? componentOrItem
+      : {
+          component: castValue<FieldComponent<unknown>>(componentOrItem),
+        }
 
     this.registry.set(name, item)
   }

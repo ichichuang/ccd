@@ -8,6 +8,8 @@ import { rgbToHex } from './colors'
 import { getDeviceTypeSync } from '@/utils/deviceSync'
 
 // 主题过渡锁：防止 store.refreshTheme 在动画期间被外部触发（从 useThemeSwitch 抽离，避免循环依赖）
+// ⚠️ 模块级全局状态，按 05-state-boundaries.mdc 应迁入 Pinia，但此处刻意放在模块作用域以打破
+// useThemeSwitch ↔ themeStore 循环依赖。若未来依赖链解除，应迁移至 useThemeStore。
 let isThemeTransitionLocked = false
 export function isThemeLocked(): boolean {
   return isThemeTransitionLocked
@@ -19,6 +21,10 @@ export function setThemeLocked(value: boolean): void {
 export interface TransitionConfig {
   duration: number
   easing: string
+  /**
+   * 蒙层配置，当前所有模式均返回 { opacity: 0, blur: 0 }（即不创建蒙层）。
+   * 保留为预留扩展点：未来若需在 View Transition 中叠加颜色蒙层，可在此配置 opacity > 0。
+   */
   overlay?: {
     opacity: number
     blur?: number

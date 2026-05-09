@@ -170,130 +170,104 @@ export const createCustomPreset = (sizeStore: ReturnType<typeof useSizeStore>) =
     }
   }
 
-  const messageDarkSemantic = {
-    info: {
-      background: 'rgb(var(--info))',
-      borderColor: 'rgb(var(--info))',
-      color: 'rgb(var(--info-foreground))',
-      closeButton: {
-        hoverBackground: 'rgb(var(--muted-foreground) / 0.1)',
-        focusRing: { color: 'rgb(var(--info))' },
-      },
-    },
-    success: {
-      background: 'rgb(var(--success))',
-      borderColor: 'rgb(var(--success))',
-      color: 'rgb(var(--success-foreground))',
-      closeButton: {
-        hoverBackground: 'rgb(var(--muted-foreground) / 0.1)',
-        focusRing: { color: 'rgb(var(--success))' },
-      },
-    },
-    warn: {
-      background: 'rgb(var(--warn))',
-      borderColor: 'rgb(var(--warn))',
-      color: 'rgb(var(--warn-foreground))',
-      closeButton: {
-        hoverBackground: 'rgb(var(--muted-foreground) / 0.1)',
-        focusRing: { color: 'rgb(var(--warn))' },
-      },
-    },
-    error: {
-      background: 'rgb(var(--danger))',
-      borderColor: 'rgb(var(--danger))',
-      color: 'rgb(var(--danger-foreground))',
-      closeButton: {
-        hoverBackground: 'rgb(var(--muted-foreground) / 0.1)',
-        focusRing: { color: 'rgb(var(--danger))' },
-      },
-    },
-    secondary: {
-      background: 'rgb(var(--secondary))',
-      borderColor: 'rgb(var(--secondary))',
-      color: 'rgb(var(--secondary-foreground))',
-      closeButton: {
-        hoverBackground: 'rgb(var(--muted-foreground) / 0.1)',
-        focusRing: { color: 'rgb(var(--secondary))' },
-      },
-    },
-    contrast: {
-      background: 'rgb(var(--foreground))',
-      borderColor: 'rgb(var(--foreground))',
-      color: 'rgb(var(--background))',
-      closeButton: {
-        hoverBackground: 'rgb(var(--background) / 0.15)',
-        focusRing: { color: 'rgb(var(--foreground))' },
-      },
-    },
+  // 共享状态色构建器：message 和 toast 的 dark semantic 映射同构，
+  // 仅 toast 增加 detailColor 且 background/borderColor 带透明度后缀。
+  const CLOSE_BTN_MUTED = {
+    hoverBackground: 'rgb(var(--muted-foreground) / 0.1)',
   }
+  const CLOSE_BTN_CONTRAST = {
+    hoverBackground: 'rgb(var(--background) / 0.15)',
+  }
+
+  const buildStatusEntry = (
+    cssVar: string,
+    fgVar: string,
+    closeBtnHover: string,
+    focusColor: string,
+    bgSuffix = '',
+    borderSuffix = ''
+  ) => ({
+    background: `rgb(var(${cssVar})${bgSuffix})`,
+    borderColor: `rgb(var(${cssVar})${borderSuffix})`,
+    color: `rgb(var(${fgVar}))`,
+    closeButton: {
+      hoverBackground: closeBtnHover,
+      focusRing: { color: `rgb(var(${focusColor}))` },
+    },
+  })
+
+  const STATUS_KEYS = [
+    { key: 'info', cssVar: '--info', fgVar: '--info-foreground' },
+    { key: 'success', cssVar: '--success', fgVar: '--success-foreground' },
+    { key: 'warn', cssVar: '--warn', fgVar: '--warn-foreground' },
+    { key: 'error', cssVar: '--danger', fgVar: '--danger-foreground' },
+    { key: 'secondary', cssVar: '--secondary', fgVar: '--secondary-foreground' },
+  ] as const
+
+  const messageDarkSemantic: Record<string, ReturnType<typeof buildStatusEntry>> = {}
+  for (const { key, cssVar, fgVar } of STATUS_KEYS) {
+    messageDarkSemantic[key] = buildStatusEntry(
+      cssVar,
+      fgVar,
+      CLOSE_BTN_MUTED.hoverBackground,
+      cssVar
+    )
+  }
+  messageDarkSemantic.contrast = buildStatusEntry(
+    '--foreground',
+    '--background',
+    CLOSE_BTN_CONTRAST.hoverBackground,
+    '--foreground'
+  )
+
   if (components?.message) {
     deepMergeStylesAdvancedInPlace(components.message, {
       colorScheme: { dark: messageDarkSemantic },
     })
   }
 
-  const toastDarkSemantic = {
-    info: {
-      background: 'rgb(var(--info) / 0.6)',
-      borderColor: 'rgb(var(--info) / 0.8)',
-      color: 'rgb(var(--info-foreground))',
-      detailColor: 'rgb(var(--info-foreground))',
-      closeButton: {
-        hoverBackground: 'rgb(var(--muted-foreground) / 0.1)',
-        focusRing: { color: 'rgb(var(--info))' },
-      },
-    },
-    success: {
-      background: 'rgb(var(--success) / 0.6)',
-      borderColor: 'rgb(var(--success) / 0.8)',
-      color: 'rgb(var(--success-foreground))',
-      detailColor: 'rgb(var(--success-foreground))',
-      closeButton: {
-        hoverBackground: 'rgb(var(--muted-foreground) / 0.1)',
-        focusRing: { color: 'rgb(var(--success))' },
-      },
-    },
-    warn: {
-      background: 'rgb(var(--warn) / 0.6)',
-      borderColor: 'rgb(var(--warn) / 0.8)',
-      color: 'rgb(var(--warn-foreground))',
-      detailColor: 'rgb(var(--warn-foreground))',
-      closeButton: {
-        hoverBackground: 'rgb(var(--muted-foreground) / 0.1)',
-        focusRing: { color: 'rgb(var(--warn))' },
-      },
-    },
-    error: {
-      background: 'rgb(var(--danger) / 0.6)',
-      borderColor: 'rgb(var(--danger) / 0.8)',
-      color: 'rgb(var(--danger-foreground))',
-      detailColor: 'rgb(var(--danger-foreground))',
-      closeButton: {
-        hoverBackground: 'rgb(var(--muted-foreground) / 0.1)',
-        focusRing: { color: 'rgb(var(--danger))' },
-      },
-    },
-    secondary: {
-      background: 'rgb(var(--secondary) / 0.8)',
-      borderColor: 'rgb(var(--secondary))',
-      color: 'rgb(var(--secondary-foreground))',
-      detailColor: 'rgb(var(--secondary-foreground))',
-      closeButton: {
-        hoverBackground: 'rgb(var(--muted-foreground) / 0.1)',
-        focusRing: { color: 'rgb(var(--secondary))' },
-      },
-    },
-    contrast: {
-      background: 'rgb(var(--foreground) / 0.8)',
-      borderColor: 'rgb(var(--foreground))',
-      color: 'rgb(var(--background))',
-      detailColor: 'rgb(var(--background))',
-      closeButton: {
-        hoverBackground: 'rgb(var(--background) / 0.15)',
-        focusRing: { color: 'rgb(var(--foreground))' },
-      },
-    },
+  const buildToastStatusEntry = (
+    cssVar: string,
+    fgVar: string,
+    bgOpacity: string,
+    borderOpacity: string
+  ) => ({
+    ...buildStatusEntry(
+      cssVar,
+      fgVar,
+      CLOSE_BTN_MUTED.hoverBackground,
+      cssVar,
+      bgOpacity,
+      borderOpacity
+    ),
+    detailColor: `rgb(var(${fgVar}))`,
+  })
+
+  const toastDarkSemantic: Record<string, ReturnType<typeof buildToastStatusEntry>> = {}
+  for (const { key, cssVar, fgVar } of STATUS_KEYS) {
+    toastDarkSemantic[key] = buildToastStatusEntry(cssVar, fgVar, ' / 0.6', ' / 0.8')
   }
+  toastDarkSemantic.contrast = {
+    ...buildStatusEntry(
+      '--foreground',
+      '--background',
+      CLOSE_BTN_CONTRAST.hoverBackground,
+      '--foreground',
+      ' / 0.8'
+    ),
+    detailColor: 'rgb(var(--background))',
+  }
+  toastDarkSemantic.secondary = {
+    ...buildStatusEntry(
+      '--secondary',
+      '--secondary-foreground',
+      CLOSE_BTN_MUTED.hoverBackground,
+      '--secondary',
+      ' / 0.8'
+    ),
+    detailColor: 'rgb(var(--secondary-foreground))',
+  }
+
   if (components?.toast) {
     deepMergeStylesAdvancedInPlace(components.toast, {
       content: {

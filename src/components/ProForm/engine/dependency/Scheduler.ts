@@ -43,7 +43,7 @@ export class Scheduler {
     }
 
     while (queue.length > 0) {
-      const current = queue.shift() as string
+      const current = queue.shift()!
       const dependents = this.graph.getDependents(current)
 
       dependents.forEach(dep => {

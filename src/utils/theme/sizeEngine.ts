@@ -3,6 +3,7 @@ import {
   SIZE_PERSIST_KEY,
   SIZE_PRESETS,
   DEFAULT_SIZE_NAME,
+  deriveSidebarCollapsedWidth,
 } from '@/constants/size'
 import {
   FONT_SCALE_RATIOS,
@@ -23,7 +24,7 @@ const FONT_SIZE_VAR_PREFIX = '--font-size-'
 /**
  * 生成系统尺寸 CSS 变量 (仅阶梯与基础变量，不含布局尺寸)
  *
- * 布局变量（--sidebar-width、--header-height 等）由 decideLayoutDimensions + applyLayoutDimensions
+ * 布局变量（--sidebar-width、--header-height 等）由 decideLayoutDimensions + applyRuntimeSizeUpdate
  * 按 device + breakpoint 动态计算并注入。
  *
  * @param preset - 尺寸预设对象
@@ -83,7 +84,7 @@ export function generateSizeVars(preset: SizePreset): Partial<SizeCssVars> {
 }
 
 /**
- * 将尺寸 CSS 变量应用到文档根元素（不含布局变量，布局由 applyLayoutDimensions 负责）
+ * 将尺寸 CSS 变量应用到文档根元素（不含布局变量，布局由 applyRuntimeSizeUpdate 负责）
  *
  * 使用单次 cssText 更新替代多次 setProperty，与 engine.ts:applyTheme 保持一致，
  * 避免 ~30 次 style attribute mutation 导致的闪烁。
@@ -130,7 +131,7 @@ export function decideLayoutDimensions(ctx: RootFontSizeContext): Record<string,
 
   return {
     '--sidebar-width': `${preset.sidebarWidth * ratio}px`,
-    '--sidebar-collapsed-width': `${preset.sidebarCollapsedWidth * ratio}px`,
+    '--sidebar-collapsed-width': `${deriveSidebarCollapsedWidth(preset)}px`,
     '--header-height': `${preset.headerHeight * ratio}px`,
     '--breadcrumb-height': `${preset.breadcrumbHeight * ratio}px`,
     '--footer-height': `${preset.footerHeight * ratio}px`,
@@ -139,20 +140,9 @@ export function decideLayoutDimensions(ctx: RootFontSizeContext): Record<string,
 }
 
 /**
- * 将布局尺寸 CSS 变量应用到文档根元素
- * @deprecated 运行时路径请使用 applyRuntimeSizeUpdate 合并写入
- */
-export function applyLayoutDimensions(dimensions: Record<string, string>) {
-  const root = document.documentElement
-  Object.entries(dimensions).forEach(([key, value]) => {
-    root.style.setProperty(key, value)
-  })
-}
-
-/**
  * 运行时批量应用根字号 + 布局尺寸 CSS 变量（单次 cssText 写入）
  *
- * 替代 applyRootFontSize + applyLayoutDimensions 的分散调用，
+ * 替代 applyRootFontSize 的分散调用，
  * 将 ~16 次 setProperty 合并为单次 cssText 原子更新，
  * 避免 resize 跨越断点时触发多次 style recalc。
  */
@@ -166,10 +156,13 @@ export function applyRuntimeSizeUpdate(
   const newVars: Record<string, string> = {}
 
   // 字体阶梯变量
+  // decision.pixelValue 已经是 preset.fontSizeBase * FONT_SCALE_RATIOS[scaleKey]，
+  // 不能再乘 FONT_SCALE_RATIOS[key]，否则双重缩放。改用相对比例推导。
   const base: number = decision.pixelValue
+  const rootRatio: number = FONT_SCALE_RATIOS[decision.scaleKey]
   newVars['--font-size-root'] = `${base}px`
   SIZE_SCALE_KEYS.forEach(key => {
-    const size: number = base * FONT_SCALE_RATIOS[key]
+    const size: number = Math.round(base * (FONT_SCALE_RATIOS[key] / rootRatio))
     newVars[`--font-size-${key}`] = `${size}px`
   })
 
@@ -307,7 +300,7 @@ export function applyRootFontSize(decision: RootFontSizeDecision) {
 
 /**
  * 批量应用所有尺寸相关 CSS 变量（阶梯 + 字体 + 布局），单次 cssText 写入
- * 专为 preload() 路径设计，将 applySizeTheme + applyRootFontSize + applyLayoutDimensions
+ * 专为 preload() 路径设计，将 applySizeTheme + applyRootFontSize
  * 合并为单次 DOM mutation，消除首帧 FOUC。
  */
 export function applyAllSizeVars(
@@ -328,11 +321,12 @@ export function applyAllSizeVars(
     if (value != null) allVars[key] = value
   })
 
-  // 字体阶梯变量
+  // 字体阶梯变量（相对比例推导，避免双重缩放）
   const base: number = decision.pixelValue
+  const rootRatio: number = FONT_SCALE_RATIOS[decision.scaleKey]
   allVars['--font-size-root'] = `${base}px`
   SIZE_SCALE_KEYS.forEach(key => {
-    const size: number = Math.round(base * FONT_SCALE_RATIOS[key])
+    const size: number = Math.round(base * (FONT_SCALE_RATIOS[key] / rootRatio))
     allVars[`--font-size-${key}`] = `${size}px`
   })
 

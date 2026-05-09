@@ -18,16 +18,19 @@ export const MENU_INACTIVE_TEXT = 'text-foreground'
 /** 未激活项文字（根级） */
 export const MENU_INACTIVE_TEXT_ROOT = 'text-foreground'
 
-/** Icons 组件 size 规范：nav=lg、breadcrumb=sm、tab=xs */
+/** Icons 组件 size 规范：header=lg、sidebar=2xl、breadcrumb=sm、tab=xs */
 export const MENU_ICON_SIZE = 'lg' as const
+export const MENU_SIDEBAR_ICON_SIZE = '2xl' as const
 export const BREADCRUMB_ICON_SIZE = 'sm' as const
 export const TAB_ICON_SIZE = 'xs' as const
+/** 菜单项缺省图标：折叠态避免展示首字/文字 fallback，保持线性图标体系一致 */
+export const MENU_FALLBACK_ICON = 'i-lucide-circle-dot' as const
 
 /** 菜单项 base（仅结构与交互语义，不含过渡，避免与场景层重复叠加） */
 export const MENU_ITEM_BASE =
   'flex items-center gap-sm cursor-pointer select-none border-none bg-transparent'
-/** 菜单项统一过渡（单一真源，避免分散写 ease-*） */
-export const MENU_ITEM_TRANSITION = 'transition-[background-color,color] duration-xs ease-out-expo'
+/** 菜单项统一过渡（单一真源，与 sidebar 动画节奏对齐 duration-sm） */
+export const MENU_ITEM_TRANSITION = 'transition-[background-color,color] duration-sm ease-smooth'
 
 /** 菜单项间距 */
 export const MENU_ITEM_GAP = 'gap-sm'
@@ -41,6 +44,14 @@ export const MENU_TEXT_CLASS = 'text-md font-sans'
 export const MENU_ICON_COMMON_CLASS = 'w-5 text-center flex-shrink-0 center transition-none!'
 
 /**
+ * 菜单项交互语义类名，用于交互指令（v-tap/v-swipe 等）识别可交互菜单项。
+ * 与 @/rules/integrations/07-interaction-patterns.mdc 中的 shortcut registry 对齐。
+ */
+export const INTERACTIVE_ITEM_CLASS = 'interactive-item' as const
+/** TieredMenu 弹层菜单项专属 class：保留 hover 背景反馈，但不继承 interactive-item 的 hover 位移。 */
+export const MENU_POPUP_ITEM_CLASS = 'admin-menu-popup__item' as const
+
+/**
  * Panel 缩进常量
  * 当前侧栏层级缩进由 reset.scss 中 .admin-sidebar--fixed .p-panelmenu-submenu 控制，
  * 这里默认保持 pl-md，仅作为未来在 Header/Breadcrumb 等场景下需要额外缩进时的扩展点。
@@ -49,16 +60,3 @@ export const MENU_ICON_COMMON_CLASS = 'w-5 text-center flex-shrink-0 center tran
 export const MENU_PANEL_INDENT_ROOT = 'pl-md'
 /** Panel 子级缩进 */
 export const MENU_PANEL_INDENT_CHILD = 'pl-md'
-
-/** 收缩态按钮内边距（仅图标，适当放大点击热区） */
-export const MENU_COLLAPSED_BUTTON_PADDING = 'p-sm'
-/** 收缩态按钮尺寸（使用 spacing 变量） */
-export const MENU_COLLAPSED_BUTTON_SIZE =
-  'min-w-[var(--spacing-2xl)] min-h-[var(--spacing-2xl)] aspect-square'
-/** 收缩态无图标时的 fallback 圆圈尺寸（略小于按钮本身） */
-export const MENU_COLLAPSED_FALLBACK_SIZE = 'min-w-[var(--spacing-2xl)] min-h-[var(--spacing-2xl)]'
-/** 收缩态 fallback 文字（更大一档，让首字母不显得拥挤） */
-export const MENU_COLLAPSED_FALLBACK_TEXT = 'text-md'
-
-/** 收缩态侧栏一级菜单图标尺寸：比 TieredMenu 子项（lg）大 2 档，仅用于收缩态图标按钮 */
-export const MENU_ICON_SIZE_COLLAPSED = '2xl' as const

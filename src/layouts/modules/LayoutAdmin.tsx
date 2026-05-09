@@ -4,7 +4,6 @@ import Drawer from 'primevue/drawer'
 import { useRoute } from 'vue-router'
 import AppContainer from '@&/AppContainer.vue'
 import { useLayoutStore } from '@/stores/modules/system'
-import { useDeviceStore } from '@/stores/modules/system'
 import { useDateUtils } from '@/hooks/modules/useDateUtils'
 import { useThemeSwitch } from '@/hooks/modules/useThemeSwitch'
 import ContextMenuProvider from '@/layouts/components/ContextMenuProvider.vue'
@@ -18,9 +17,9 @@ import AdminTabsBar from '@&/admin/AdminTabsBar.tsx'
 import AdminFooterBar from '@&/admin/AdminFooterBar.tsx'
 import AdminSidebarLogo from '@/layouts/components/admin/AdminSidebarLogo'
 import AdminSidebarMenu from '@/layouts/components/admin/AdminSidebarMenu'
+import { useLayoutRuntime } from '@/hooks/layout/useLayoutRuntime'
 import { Icons } from '@/components/Icons'
 import { CScrollbar } from '@/components/CScrollbar'
-import { BREAKPOINTS } from '@/constants/breakpoints'
 
 /**
  * LayoutAdmin（Admin 壳）- TSX 版本
@@ -37,7 +36,7 @@ export default defineComponent({
   setup() {
     const { t } = useI18n()
     const layoutStore = useLayoutStore()
-    const deviceStore = useDeviceStore()
+    const runtime = useLayoutRuntime()
     const route = useRoute()
 
     const { getAvailableTimezones, isInitialized } = useDateUtils()
@@ -93,312 +92,66 @@ export default defineComponent({
     watch(
       () => route.path,
       () => {
-        if (layoutStore.mobileDrawerOpen) {
-          layoutStore.mobileDrawerOpen = false
-        }
+        runtime.closeTransientNavigation()
       }
     )
-
-    // 1. The Strict Drawer Matrix
-    const isDrawerMode = computed<boolean>(() => {
-      if (deviceStore.type === 'Mobile') return true
-      if (deviceStore.type === 'Tablet') return deviceStore.width < BREAKPOINTS.md
-      return false // PC never uses Drawer
-    })
-
-    // 2. Effective Mode：Drawer 时强制 horizontal
-    const effectiveMode = computed<AdminLayoutMode>(() => {
-      if (isDrawerMode.value) return 'horizontal'
-      return layoutStore.preferredMode
-    })
-
-    // --- Resize-safe key: 防止断点跨越时 key 变化导致整棵 VDOM 子树被销毁重建 ---
-    // 时序问题：isResizing 在 150ms 空闲后清除，但 detectViewportInfo 在 300ms 后才执行
-    // 需要额外 settle 窗口确保 width 已更新后再解冻 key
-    const isResizeSettled = ref(true)
-    let settleTimer: ReturnType<typeof setTimeout> | undefined
-
-    watch(
-      () => deviceStore.isResizing,
-      resizing => {
-        if (resizing) {
-          isResizeSettled.value = false
-          if (settleTimer !== undefined) {
-            clearTimeout(settleTimer)
-            settleTimer = undefined
-          }
-        } else {
-          // 150ms(idle) + 200ms(settle) = 350ms > 300ms(debounce)
-          settleTimer = setTimeout(() => {
-            isResizeSettled.value = true
-            settleTimer = undefined
-          }, 200)
-        }
-      }
-    )
-    onUnmounted(() => {
-      if (settleTimer !== undefined) clearTimeout(settleTimer)
-    })
-
-    // stableKey: resize 期间冻结旧值，防止 Transition key 变化触发 unmount
-    // 严禁在 computed 中产生副作用，使用 watch 监听状态变化
-    const stableKey = ref<AdminLayoutMode>(effectiveMode.value)
-
-    watch([effectiveMode, isResizeSettled], ([newMode, settled]) => {
-      // 只有在 resize 彻底平息后，才允许更新 key
-      if (settled) {
-        stableKey.value = newMode
-      }
-    })
-
-    const isHorizontal = computed(() => effectiveMode.value === 'horizontal')
-    const showDrawerTrigger = computed(() => isDrawerMode.value)
-
-    // --- 展示开关（store 仅由配置面板控制）---
-    const showHeader = computed(() => layoutStore.showHeader)
-    const showLogo = computed(() => layoutStore.showLogo)
-    const showMenu = computed(() => layoutStore.showMenu)
-    // 4. The Strict Logo Text Visibility
-    const showLogoText = computed<boolean>(() => {
-      // Show text ONLY on PC when width is large enough (>= lg).
-      // If PC is squeezed below lg, or if it's Tablet/Mobile, show ICON ONLY.
-      return deviceStore.type === 'PC' && deviceStore.width >= BREAKPOINTS.lg
-    })
-
-    // 5. 面包屑：仅物理 PC 且视口宽度 ≥ lg
-    const showBreadcrumbEffective = computed<boolean>(() => {
-      return (
-        layoutStore.showBreadcrumb &&
-        deviceStore.type === 'PC' &&
-        deviceStore.width >= BREAKPOINTS.lg
-      )
-    })
-
-    // 2. The Strict Top Menu Visibility
-    const showTopMenuEffective = computed<boolean>(() => {
-      return layoutStore.showMenu && !isDrawerMode.value
-    })
-
-    // 3. The Strict Sidebar Visibility
-    const showSidebarEffective = computed<boolean>(() => {
-      return layoutStore.showSidebar && !isDrawerMode.value
-    })
-    const showTabsEffective = computed(() => layoutStore.showTabs)
-    const showFooterEffective = computed(() => layoutStore.showFooter)
-
-    const showSidebarToggle = computed(
-      () =>
-        showSidebarEffective.value &&
-        (effectiveMode.value === 'vertical' || effectiveMode.value === 'mix')
-    )
-
-    // --- 固定行为（当前仅输出 class 占位，sticky/calc 由后续样式完善） ---
-    const headerFixed = computed(() => layoutStore.headerFixed)
-    const sidebarFixed = computed(() => layoutStore.sidebarFixed)
-
-    // --- 侧边栏宽度：只用尺寸系统变量类名 ---
-    const sidebarWidthClass = computed(() =>
-      layoutStore.sidebarCollapse ? 'w-sidebarCollapsedWidth' : 'w-sidebarWidth'
-    )
-    const sidebarShellRef = ref<HTMLElement | null>(null)
-    const sidebarMenuCollapse = ref(layoutStore.sidebarCollapse)
-    const sidebarMotionVisible = ref(false)
-    const sidebarMotionActive = ref(false)
-    const sidebarMotionWidth = ref('0px')
-    const sidebarMotionScale = ref(1)
-    const contentMotionOffset = ref('0px')
-    const contentMotionActive = ref(false)
-    const contentMotionTargetRef = ref<HTMLElement | null>(null)
-    let deferExpandedMenuRender = false
-    let sidebarMotionTimer: ReturnType<typeof setTimeout> | undefined
-    let sidebarMotionFrame: number | undefined
-    let contentMotionTimer: ReturnType<typeof setTimeout> | undefined
-    let contentMotionFrame: number | undefined
-
-    const clearSidebarMotion = () => {
-      if (sidebarMotionTimer !== undefined) {
-        clearTimeout(sidebarMotionTimer)
-        sidebarMotionTimer = undefined
-      }
-      if (sidebarMotionFrame !== undefined) {
-        cancelAnimationFrame(sidebarMotionFrame)
-        sidebarMotionFrame = undefined
-      }
-    }
-
-    const clearContentMotion = () => {
-      if (contentMotionTimer !== undefined) {
-        clearTimeout(contentMotionTimer)
-        contentMotionTimer = undefined
-      }
-      if (contentMotionFrame !== undefined) {
-        cancelAnimationFrame(contentMotionFrame)
-        contentMotionFrame = undefined
-      }
-    }
-
-    const syncSidebarMenuRender = () => {
-      deferExpandedMenuRender = false
-      sidebarMenuCollapse.value = layoutStore.sidebarCollapse
-    }
-
-    watch(
-      () => layoutStore.sidebarCollapse,
-      collapsed => {
-        if (deferExpandedMenuRender && !collapsed) return
-        sidebarMenuCollapse.value = collapsed
-      }
-    )
-
-    const runSidebarMotion = (beforeWidth: number, afterWidth: number): boolean => {
-      const maxWidth = Math.max(beforeWidth, afterWidth)
-      if (maxWidth < 1 || Math.abs(beforeWidth - afterWidth) < 1) return false
-
-      clearSidebarMotion()
-      sidebarMotionVisible.value = true
-      sidebarMotionActive.value = false
-      sidebarMotionWidth.value = `${maxWidth}px`
-      sidebarMotionScale.value = beforeWidth / maxWidth
-
-      sidebarMotionFrame = requestAnimationFrame(() => {
-        sidebarMotionFrame = undefined
-        sidebarMotionActive.value = true
-        sidebarMotionScale.value = afterWidth / maxWidth
-      })
-
-      sidebarMotionTimer = setTimeout(() => {
-        sidebarMotionVisible.value = false
-        sidebarMotionActive.value = false
-        sidebarMotionScale.value = 1
-        syncSidebarMenuRender()
-        sidebarMotionTimer = undefined
-      }, 320)
-
-      return true
-    }
-
-    const runContentMotion = (beforeLeft: number, afterLeft: number) => {
-      const offset = beforeLeft - afterLeft
-      if (Math.abs(offset) < 1) return
-
-      clearContentMotion()
-      contentMotionActive.value = false
-      contentMotionOffset.value = `${offset}px`
-
-      contentMotionFrame = requestAnimationFrame(() => {
-        contentMotionFrame = undefined
-        contentMotionActive.value = true
-        contentMotionOffset.value = '0px'
-      })
-
-      contentMotionTimer = setTimeout(() => {
-        contentMotionActive.value = false
-        contentMotionOffset.value = '0px'
-        contentMotionTimer = undefined
-      }, 320)
-    }
-
-    const runSidebarLayoutMotion = async (beforeLeft: number, beforeWidth: number) => {
-      await nextTick()
-      const afterLeft = contentMotionTargetRef.value?.getBoundingClientRect().left ?? beforeLeft
-      const afterWidth = sidebarShellRef.value?.getBoundingClientRect().width ?? beforeWidth
-
-      const didRunSidebarMotion = runSidebarMotion(beforeWidth, afterWidth)
-      runContentMotion(beforeLeft, afterLeft)
-      if (!didRunSidebarMotion) syncSidebarMenuRender()
-    }
-
-    const onToggleSidebarCollapse = () => {
-      const beforeLeft = contentMotionTargetRef.value?.getBoundingClientRect().left ?? 0
-      const beforeWidth = sidebarShellRef.value?.getBoundingClientRect().width ?? 0
-      const nextCollapsed = !layoutStore.sidebarCollapse
-      if (nextCollapsed) {
-        deferExpandedMenuRender = false
-        sidebarMenuCollapse.value = true
-      } else {
-        deferExpandedMenuRender = true
-        sidebarMenuCollapse.value = true
-      }
-      layoutStore.toggleCollapse()
-      void runSidebarLayoutMotion(beforeLeft, beforeWidth)
-    }
-
-    onUnmounted(() => {
-      clearSidebarMotion()
-      clearContentMotion()
-    })
-
-    // --- 布局模式切换过渡：与 AnimateRouterView / AnimateWrapper 一致使用 animate-lite ---
-    // Resize 拖拽期间必须保持 Transition 子树不被卸载重建（Transition Trap）
-    const transitionName = computed(() =>
-      layoutStore.enableTransition && isResizeSettled.value ? 'animate__animated' : 'no-transition'
-    )
-    const bodyTransitionDuration = 'var(--transition-md)'
 
     const renderContent = () => (
       <main
-        ref={contentMotionTargetRef}
+        data-layout-content="true"
         class={[
-          'flex-1 layout-full col-between min-w-0 min-h-0 overflow-hidden transform-gpu will-change-transform',
-          contentMotionActive.value ? 'transition-transform duration-md ease-smooth' : '',
+          'flex-1 layout-full col-between min-w-0 min-h-0 overflow-hidden transform-gpu',
+          runtime.isSidebarAnimating.value ? 'will-change-transform' : '',
         ]}
-        style={{
-          transform: `translate3d(${contentMotionOffset.value}, 0, 0)`,
-        }}
       >
         <div class="bg-sidebar/36! dark:bg-sidebar/40!">
-          <AdminBreadcrumbBar show={showBreadcrumbEffective.value} />
-          <AdminTabsBar show={showTabsEffective.value} />
+          <AdminBreadcrumbBar
+            show={runtime.showBreadcrumb.value}
+            showIcon={runtime.showBreadcrumbIcon.value}
+          />
+          <AdminTabsBar show={runtime.showTabs.value} />
         </div>
         <section class={['col-fill', 'min-w-0', 'relative', 'overflow-hidden']}>
           {/* Layer 3: 业务内容（透明以承接光晕与点阵） */}
           <AppContainer class="relative z-content min-w-0 overflow-hidden" />
         </section>
         <div class="bg-sidebar/36! dark:bg-sidebar/40!">
-          <AdminFooterBar show={showFooterEffective.value} />
+          <AdminFooterBar show={runtime.showFooter.value} />
         </div>
       </main>
     )
 
     const renderBody = () => {
       // horizontal：header 下方直接 content
-      if (isHorizontal.value) {
+      if (runtime.effectiveMode.value === 'horizontal') {
         return <div class="col-fill">{renderContent()}</div>
       }
 
       // vertical/mix：sidebar + content
       return (
         <div class="flex-1 min-h-0 row-start overflow-hidden relative">
-          <div
-            ref={sidebarShellRef}
-            class={[
-              'shrink-0 self-stretch overflow-hidden bg-sidebar/36! dark:bg-sidebar/40!',
-              sidebarMotionVisible.value
-                ? 'opacity-0'
-                : 'opacity-100 transition-opacity duration-xs ease-smooth',
-            ]}
-          >
-            {showSidebarEffective.value && (
-              <AdminSidebar
-                mode={effectiveMode.value}
-                showSidebar={showSidebarEffective.value}
-                sidebarCollapse={sidebarMenuCollapse.value}
-                sidebarFixed={sidebarFixed.value}
-                sidebarWidthClass={sidebarWidthClass.value}
-              />
-            )}
-          </div>
-          {sidebarMotionVisible.value && (
+          {runtime.sidebarVisible.value && (
             <div
+              data-layout-sidebar="true"
+              ref={runtime.sidebarShellRef}
               class={[
-                'absolute left-0 top-0 bottom-0 z-layout pointer-events-none bg-sidebar/36! dark:bg-sidebar/40! transform-gpu origin-left',
-                sidebarMotionActive.value ? 'transition-transform duration-md ease-smooth' : '',
+                runtime.visualSidebarCollapsed.value ? 'w-sidebarCollapsedWidth' : 'w-sidebarWidth',
+                'shrink-0 self-stretch overflow-hidden bg-sidebar/36! dark:bg-sidebar/40!',
+                runtime.enableTransition.value ? 'transition-[width] duration-md ease-smooth' : '',
               ]}
-              style={{
-                width: sidebarMotionWidth.value,
-                transform: `scaleX(${sidebarMotionScale.value})`,
-              }}
-            />
+              onTransitionend={runtime.onSidebarTransitionEnd}
+            >
+              <AdminSidebar
+                showSidebar={runtime.showSidebar.value}
+                sidebarCollapse={runtime.actualSidebarCollapsed.value}
+                sidebarVisualCollapse={runtime.visualSidebarCollapsed.value}
+                sidebarFixed={runtime.sidebarFixed.value}
+                sidebarWidthClass="w-full"
+                enableTransition={runtime.enableTransition.value}
+                isAnimating={runtime.isSidebarAnimating.value}
+                sidebarAnimationPhase={runtime.sidebarAnimationPhase.value}
+              />
+            </div>
           )}
           {renderContent()}
         </div>
@@ -406,25 +159,26 @@ export default defineComponent({
     }
 
     const renderLayout = () => {
-      const bodyTransitionStyle: Record<string, string> = {
-        '--animate-duration': bodyTransitionDuration,
-      }
       // vertical / horizontal / mix 三种模式都渲染 Header，Body 按 mode 切换并做过渡
       // 禁止通过 v-if/三元动态拆除 Transition：否则会导致内部路由组件 Unmount/Remount
       const bodyContent = (
         <Transition
           mode="out-in"
           enterActiveClass={
-            transitionName.value === 'animate__animated' ? 'animate__animated animate__fadeIn' : ''
+            runtime.bodyTransitionName.value === 'animate__animated'
+              ? 'animate__animated animate__fadeIn'
+              : ''
           }
           leaveActiveClass={
-            transitionName.value === 'animate__animated' ? 'animate__animated animate__fadeOut' : ''
+            runtime.bodyTransitionName.value === 'animate__animated'
+              ? 'animate__animated animate__fadeOut'
+              : ''
           }
         >
           <div
-            key={stableKey.value}
+            key={runtime.stableModeKey.value}
             class="col-fill"
-            style={bodyTransitionStyle}
+            style={runtime.bodyTransitionStyle.value}
           >
             {renderBody()}
           </div>
@@ -432,52 +186,74 @@ export default defineComponent({
       )
       const drawerUpdateVisibleProps: Record<string, unknown> = {
         ['onUpdate:visible']: (val: boolean) => {
-          layoutStore.mobileDrawerOpen = val
+          runtime.setDrawerOpen(val)
         },
       }
       return (
-        <div class="layout-screen flex flex-col relative overflow-hidden">
-          {showHeader.value && (
-            <div class="shrink-0 row-between h-headerHeight px-sm md:px-md border-b-solid border-sidebar border-px bg-sidebar/36! dark:bg-sidebar/40!">
+        <div
+          data-layout-shell="admin"
+          data-layout-mode={runtime.effectiveMode.value}
+          data-sidebar-mode={runtime.sidebarMode.value}
+          data-drawer-mode={runtime.useDrawer.value ? 'true' : 'false'}
+          class="layout-screen flex flex-col relative overflow-hidden"
+          style={runtime.shellSafeAreaStyle.value}
+        >
+          {runtime.showHeader.value && (
+            <div
+              data-layout-header="true"
+              class="shrink-0 row-between h-headerHeight px-sm md:px-md border-b-solid border-sidebar border-px bg-sidebar/36! dark:bg-sidebar/40!"
+            >
               <AdminHeader
-                mode={stableKey.value}
-                showHeader={showHeader.value}
-                showLogo={showLogo.value}
-                showLogoText={showLogoText.value}
-                showMenu={showMenu.value}
-                showTopMenuEffective={showTopMenuEffective.value}
-                showDrawerTrigger={showDrawerTrigger.value}
-                headerFixed={headerFixed.value}
+                mode={runtime.stableModeKey.value}
+                showHeader={runtime.showHeader.value}
+                showLogo={runtime.showLogo.value}
+                showLogoText={runtime.showLogoText.value}
+                showMenu={runtime.showMenu.value}
+                showTopMenuEffective={runtime.showTopMenu.value}
+                showDrawerTrigger={runtime.useDrawer.value}
+                showFullscreenAction={runtime.showFullscreenAction.value}
+                showHeaderThemeAction={runtime.showHeaderThemeAction.value}
+                showCompactThemeAction={runtime.showCompactThemeAction.value}
+                headerFixed={runtime.headerFixed.value}
                 isDark={isDark.value}
                 isAnimating={isAnimating.value}
+                onToggleDrawer={runtime.toggleDrawer}
                 onToggleTheme={(event: MouseEvent) => toggleThemeWithAnimation(event)}
-                showSidebarToggle={showSidebarToggle.value}
-                sidebarCollapse={layoutStore.sidebarCollapse}
-                onToggleCollapse={onToggleSidebarCollapse}
+                showSidebarToggle={runtime.showSidebarToggle.value}
+                sidebarCollapse={runtime.sidebarCollapsed.value}
+                onToggleCollapse={runtime.toggleSidebarCollapse}
               />
             </div>
           )}
           {bodyContent}
           {/* 移动端抽屉导航：仅在 Drawer 模式下挂载，避免桌面端无意义的 VNode 开销 */}
-          {isDrawerMode.value && !layoutStore.isLoading && (
+          {runtime.useDrawer.value && !runtime.isLoading.value && (
             <Drawer
-              visible={layoutStore.mobileDrawerOpen}
+              visible={runtime.drawerOpen.value}
               {...drawerUpdateVisibleProps}
               position="left"
               modal
               blockScroll
               dismissable
               showCloseIcon={false}
-              class="w-sidebarWidth max-w-[80vw]"
+              class="w-sidebarWidth max-w-[80vw] p-0!"
+              style={runtime.drawerRootStyle.value}
               v-slots={{
                 container: () => (
-                  <div class="admin-sidebar--fixed py-md layout-full flex flex-col select-none">
+                  <div
+                    data-layout-drawer="true"
+                    class="admin-sidebar--fixed layout-full flex flex-col select-none"
+                    style={runtime.drawerSafeAreaStyle.value}
+                  >
                     <AdminSidebarLogo />
                     <CScrollbar
                       native
-                      class="col-fill px-md"
+                      class="col-fill px-sm"
                     >
-                      <AdminSidebarMenu sidebarCollapse={false} />
+                      <AdminSidebarMenu
+                        sidebarCollapse={false}
+                        density="compact"
+                      />
                     </CScrollbar>
                   </div>
                 ),

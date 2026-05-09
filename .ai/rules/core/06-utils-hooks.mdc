@@ -249,6 +249,23 @@ const deviceStore = useDeviceStore()
 const isMobile = computed(() => deviceStore.type === 'Mobile')
 ```
 
+### Layout shell exception — use `useLayoutRuntime`
+
+Layout shell renderers MUST NOT read `useDeviceStore` directly. They consume finalized runtime state instead:
+
+```typescript
+// ✅ CORRECT inside layout renderers
+const runtime = useLayoutRuntime()
+const showSidebar = runtime.showSidebar
+```
+
+This exception applies to:
+- `src/layouts/modules/LayoutAdmin.tsx`
+- `src/layouts/modules/LayoutFullScreen.vue`
+- `src/layouts/modules/LayoutRatio.vue`
+
+The layout runtime may read `useDeviceStore` and `useLayoutStore`; renderers must not duplicate those derivations.
+
 **FORBIDDEN**: Calling `getDeviceTypeSync()` inside `<script setup>` or composables after mount — it bypasses reactive state and will not update on window resize.
 
 ---

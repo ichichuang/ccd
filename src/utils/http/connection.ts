@@ -3,16 +3,6 @@ import { t } from '@/locales'
 import type { ConnectionConfig, ConnectionState } from './types'
 
 /**
- * 连接状态枚举
- */
-export enum ConnectionStatus {
-  CONNECTED = 'connected',
-  DISCONNECTED = 'disconnected',
-  RECONNECTING = 'reconnecting',
-  ERROR = 'error',
-}
-
-/**
  * 连接管理器
  * 负责管理网络连接状态、自动重连和健康检查
  */
@@ -31,6 +21,7 @@ export class ConnectionManager {
       reconnectDelay: HTTP_CONFIG.reconnectDelay,
       healthCheckInterval: HTTP_CONFIG.healthCheckInterval,
       healthCheckUrl: HTTP_CONFIG.healthCheckUrl,
+      healthCheckTimeout: HTTP_CONFIG.healthCheckTimeout,
       ...config,
     }
 
@@ -118,13 +109,13 @@ export class ConnectionManager {
    */
   private async attemptReconnect(): Promise<boolean> {
     try {
-      // 等待重连延迟
-      await this.delay(this.config.reconnectDelay)
-
-      // 检查网络状态
+      // 检查网络状态，离线时跳过延迟直接返回
       if (!navigator.onLine) {
         return false
       }
+
+      // 等待重连延迟
+      await this.delay(this.config.reconnectDelay)
 
       // 执行健康检查
       const isHealthy = await this.performHealthCheck()
@@ -166,8 +157,11 @@ export class ConnectionManager {
 
     this.notifyListeners()
 
-    // 如果启用了自动重连，继续尝试
+    // 如果启用了自动重连，继续尝试（先清除已有定时器防止并发重连循环）
     if (this.config.autoReconnect) {
+      if (this.reconnectTimer) {
+        clearTimeout(this.reconnectTimer)
+      }
       this.reconnectTimer = setTimeout(() => {
         this.reconnect()
       }, this.config.reconnectDelay)
@@ -185,7 +179,10 @@ export class ConnectionManager {
 
     try {
       const controller = new AbortController()
-      const timeoutId: ReturnType<typeof setTimeout> = setTimeout(() => controller.abort(), 5000)
+      const timeoutId: ReturnType<typeof setTimeout> = setTimeout(
+        () => controller.abort(),
+        this.config.healthCheckTimeout
+      )
       await fetch(this.config.healthCheckUrl, {
         method: 'HEAD',
         cache: 'no-cache',

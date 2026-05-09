@@ -42,13 +42,13 @@ export class ValidationEngine<TValues extends Record<string, unknown> = Record<s
   }
 
   private isFieldSchema(node: FormSchemaNode): node is FieldSchema<unknown> {
-    return (node as FieldSchema<unknown>).component !== undefined
+    return 'component' in node && node.component !== undefined
   }
 
   private isGroupSchema(
     node: FormSchemaNode
   ): node is Extract<FormSchemaNode, { children: FormSchemaNode[] }> {
-    return (node as { children?: FormSchemaNode[] }).children !== undefined
+    return 'children' in node && node.children !== undefined
   }
 
   replaceSchema(schema: FormSchema): void {
@@ -102,7 +102,7 @@ export class ValidationEngine<TValues extends Record<string, unknown> = Record<s
     requestId: number
   ): Promise<boolean> {
     const resetValidatingBeforeAbort = (): void => {
-      const current = this.store.getFieldState(name) as FieldState<unknown> | undefined
+      const current = this.store.getFieldState(name)
       if (!current) return
       if (current.validating !== true) return
       this.store.setFieldState(name, {
@@ -114,27 +114,25 @@ export class ValidationEngine<TValues extends Record<string, unknown> = Record<s
     const currentState = this.store.getFieldState(name)
     const currentValue = this.store.getFieldValue(name)
 
-    const baseState: FieldState<unknown> =
-      currentState ??
-      ({
-        value: currentValue,
-        initialValue: currentValue,
-        visible: true,
-        disabled: false,
-        required: false,
-        loadingOptions: false,
-        touched: false,
-        dirty: false,
-        valid: true,
-        validating: false,
-        errors: [],
-      } as FieldState<unknown>)
+    const baseState: FieldState<unknown> = currentState ?? {
+      value: currentValue,
+      initialValue: currentValue,
+      visible: true,
+      disabled: false,
+      required: false,
+      loadingOptions: false,
+      touched: false,
+      dirty: false,
+      valid: true,
+      validating: false,
+      errors: [],
+    }
 
     this.store.setFieldState(name, {
       ...baseState,
       validating: true,
       errors: [],
-    } as FieldState<unknown>)
+    })
 
     const errors: string[] = []
     const value = this.store.getFieldValue(name)
@@ -159,8 +157,7 @@ export class ValidationEngine<TValues extends Record<string, unknown> = Record<s
       }
     }
 
-    const latestState =
-      (this.store.getFieldState(name) as FieldState<unknown> | undefined) ?? baseState
+    const latestState = this.store.getFieldState(name) ?? baseState
 
     // 在写回最终状态前再次检查 token，防止过期结果覆盖最新状态
     if (this.validationTokens.get(name) !== requestId) {
@@ -217,21 +214,19 @@ export class ValidationEngine<TValues extends Record<string, unknown> = Record<s
         Object.entries(result.errors).forEach(([fieldName, fieldErrors]) => {
           if (!fieldErrors || fieldErrors.length === 0) return
 
-          const currentState =
-            (this.store.getFieldState(fieldName) as FieldState<unknown> | undefined) ??
-            ({
-              value: this.store.getFieldValue(fieldName),
-              initialValue: this.store.getFieldValue(fieldName),
-              visible: true,
-              disabled: false,
-              required: false,
-              loadingOptions: false,
-              touched: false,
-              dirty: false,
-              valid: true,
-              validating: false,
-              errors: [],
-            } as FieldState<unknown>)
+          const currentState: FieldState<unknown> = this.store.getFieldState(fieldName) ?? {
+            value: this.store.getFieldValue(fieldName),
+            initialValue: this.store.getFieldValue(fieldName),
+            visible: true,
+            disabled: false,
+            required: false,
+            loadingOptions: false,
+            touched: false,
+            dirty: false,
+            valid: true,
+            validating: false,
+            errors: [],
+          }
 
           const mergedErrors = [...(currentState.errors ?? []), ...fieldErrors]
 

@@ -6,8 +6,40 @@
 import { AUTH_ENABLED, routeWhitePathList } from '@/constants/router'
 import { usePermissionStore } from '@/stores/modules/session'
 import { useUserStoreWithOut } from '@/stores/modules/session'
-import type { Router } from 'vue-router'
+import type { LocationQueryValue, RouteLocationNormalized, Router } from 'vue-router'
 import { checkRouteAccess, isWhiteListed, parseSafeRedirect } from './accessControl'
+
+function getFirstQueryValue(value: LocationQueryValue | LocationQueryValue[]): string | undefined {
+  if (Array.isArray(value)) {
+    return value.find((item): item is string => typeof item === 'string')
+  }
+  return typeof value === 'string' ? value : undefined
+}
+
+function getCatchAllRedirectedFullPath(to: RouteLocationNormalized): string | undefined {
+  if (to.path !== '/404') return undefined
+  const redirectedFrom = to.redirectedFrom
+  if (!redirectedFrom || redirectedFrom.path === '/404') return undefined
+  return redirectedFrom.fullPath
+}
+
+function getNavigationTargetAfterRouteInit(
+  to: RouteLocationNormalized,
+  from: RouteLocationNormalized
+): { path: string; query: Record<string, string> } {
+  const redirectResult = parseSafeRedirect(getFirstQueryValue(from.query.redirect))
+  if (redirectResult) {
+    return redirectResult
+  }
+
+  const requestedFullPath = getCatchAllRedirectedFullPath(to) ?? to.fullPath
+  const requestedResult = parseSafeRedirect(requestedFullPath)
+  if (requestedResult) {
+    return requestedResult
+  }
+
+  return { path: to.path, query: {} }
+}
 
 export const usePermissionGuard = ({
   router,
@@ -60,9 +92,7 @@ export const usePermissionGuard = ({
           })
           await routeInitializingPromise
 
-          const redirectResult = parseSafeRedirect(from.query.redirect as string | undefined)
-          const targetRedirect: string = redirectResult?.path ?? to.fullPath
-          const targetQuery: Record<string, string> = redirectResult?.query ?? {}
+          const target = getNavigationTargetAfterRouteInit(to, from)
 
           permissionStore.setDynamicRoutesLoaded(true)
 
@@ -82,16 +112,13 @@ export const usePermissionGuard = ({
           }
 
           // 避免多跳：如果是从登录页跳转，且目标一致，直接放行
-          if (
-            from.path === '/login' &&
-            (to.fullPath === targetRedirect || to.path === targetRedirect)
-          ) {
+          if (from.path === '/login' && (to.fullPath === target.path || to.path === target.path)) {
             next()
             return
           }
 
           // 其他场景（如 F5 刷新）：中断当前导航，重定向到完整目标路径
-          next({ path: targetRedirect, query: targetQuery, replace: true })
+          next({ path: target.path, query: target.query, replace: true })
           return
         } catch (error: unknown) {
           console.error('动态路由初始化失败', error)
@@ -108,7 +135,8 @@ export const usePermissionGuard = ({
       if (isWhiteListed(to.path, whiteList)) {
         next()
       } else {
-        next(`/login?redirect=${encodeURIComponent(to.fullPath)}`)
+        const requestedFullPath = getCatchAllRedirectedFullPath(to) ?? to.fullPath
+        next(`/login?redirect=${encodeURIComponent(requestedFullPath)}`)
       }
     }
   })

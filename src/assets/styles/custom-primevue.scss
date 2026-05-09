@@ -47,9 +47,6 @@
     min-width: 0;
     box-sizing: border-box;
 
-    // GPU 提升：让 grid-template-rows 动画在独立合成层运行，减少主线程 paint
-    will-change: grid-template-rows;
-
     // 抑制 UnoCSS / PrimeVue 注入的 transition: all 0s，避免动画期间无效 style recalc
     transition: none !important;
   }
@@ -58,34 +55,346 @@
     width: 100%;
     max-width: 100%;
     min-width: 0;
-    overflow: hidden;
+    overflow: clip;
     box-sizing: border-box;
     transition: none !important;
+    contain: layout paint;
+    transform: translateZ(0);
+  }
 
-    // paint 隔离：wrapper 内的重绘不向上传播
+  .admin-sidebar-menu {
+    --admin-sidebar-menu-label-duration: 160ms;
+    --admin-sidebar-menu-label-ease: cubic-bezier(0.4, 0, 0.2, 1);
+    --admin-sidebar-menu-enter-ease: cubic-bezier(0.22, 1, 0.36, 1);
+    --admin-sidebar-panel-border-width: calc(var(--spacing-xs) / 4);
+    --admin-sidebar-panel-inline-offset: calc(
+      var(--spacing-sm) + var(--spacing-xs) + var(--admin-sidebar-panel-border-width)
+    );
+    --admin-sidebar-icon-box-width: calc(var(--font-size-2xl) + var(--spacing-xs));
+    --admin-sidebar-collapsed-item-width: calc(
+      var(--sidebar-collapsed-width) - var(--admin-sidebar-panel-inline-offset) - var(
+          --admin-sidebar-panel-inline-offset
+        )
+    );
+  }
+
+  .admin-sidebar-menu--compact {
+    --admin-sidebar-icon-box-width: calc(var(--font-size-xl) + var(--spacing-xs));
+
+    .p-panelmenu-root-list,
+    .p-panelmenu-submenu {
+      gap: var(--spacing-xs);
+    }
+
+    .p-panelmenu-submenu {
+      padding-top: var(--spacing-xs);
+      padding-bottom: 0;
+      padding-left: var(--spacing-sm);
+    }
+
+    .admin-sidebar-menu__item {
+      min-height: var(--spacing-xl);
+      padding: var(--spacing-xs) var(--spacing-sm) !important;
+    }
+
+    .admin-sidebar-menu__item--child {
+      padding-left: var(--spacing-md) !important;
+    }
+
+    .admin-sidebar-menu__item-content {
+      gap: var(--spacing-xs) !important;
+    }
+
+    .admin-sidebar-menu__label,
+    .admin-sidebar-menu__item-content {
+      font-size: var(--font-size-sm) !important;
+      line-height: var(--spacing-lg);
+    }
+
+    .admin-sidebar-menu__arrow {
+      width: var(--spacing-lg) !important;
+    }
+  }
+
+  .admin-sidebar-menu__item {
+    min-width: 0;
+    min-height: var(--spacing-2xl);
+    transform: translateZ(0);
     contain: paint;
   }
 
+  .admin-sidebar-menu__item-content {
+    position: relative;
+    transform: translateZ(0);
+  }
+
+  .admin-sidebar-menu__icon {
+    width: var(--admin-sidebar-icon-box-width) !important;
+    min-width: var(--admin-sidebar-icon-box-width);
+    transform: translateZ(0);
+  }
+
+  .admin-sidebar-menu__icon--fallback {
+    opacity: 0;
+    transition:
+      opacity 140ms cubic-bezier(0.4, 0, 0.2, 1),
+      transform 160ms cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .admin-sidebar-menu__label {
+    opacity: 1;
+    visibility: visible;
+    transform: translate3d(0, 0, 0);
+    transition:
+      opacity var(--admin-sidebar-menu-label-duration) var(--admin-sidebar-menu-label-ease),
+      transform var(--admin-sidebar-menu-label-duration) var(--admin-sidebar-menu-label-ease),
+      visibility 0ms linear 0ms;
+    will-change: opacity, transform;
+  }
+
+  .admin-sidebar-menu__arrow {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+    transition:
+      opacity 140ms var(--admin-sidebar-menu-label-ease),
+      transform 180ms var(--admin-sidebar-menu-enter-ease);
+    will-change: opacity, transform;
+  }
+
+  @keyframes sidebar-label-expand {
+    from {
+      opacity: 0;
+      transform: translate3d(-4px, 0, 0);
+    }
+
+    to {
+      opacity: 1;
+      transform: translate3d(0, 0, 0);
+    }
+  }
+
+  @keyframes sidebar-arrow-expand {
+    from {
+      opacity: 0;
+      transform: translate3d(-2px, 0, 0);
+    }
+
+    to {
+      opacity: 1;
+      transform: translate3d(0, 0, 0);
+    }
+  }
+
+  @keyframes sidebar-label-collapse {
+    from {
+      opacity: 1;
+      visibility: visible;
+      transform: translate3d(0, 0, 0);
+    }
+
+    to {
+      opacity: 0;
+      visibility: hidden;
+      transform: translate3d(-4px, 0, 0);
+    }
+  }
+
+  @keyframes sidebar-arrow-collapse {
+    from {
+      opacity: 1;
+      visibility: visible;
+      transform: translate3d(0, 0, 0);
+    }
+
+    to {
+      opacity: 0;
+      visibility: hidden;
+      transform: translate3d(-2px, 0, 0);
+    }
+  }
+
+  .admin-sidebar-menu--collapsing {
+    .admin-sidebar-menu__label {
+      animation: sidebar-label-collapse 120ms var(--admin-sidebar-menu-label-ease) both;
+      pointer-events: none;
+    }
+
+    .admin-sidebar-menu__arrow {
+      animation: sidebar-arrow-collapse 100ms var(--admin-sidebar-menu-label-ease) both;
+      pointer-events: none;
+    }
+
+    .admin-sidebar-menu__icon--fallback {
+      opacity: 1;
+      transition-delay: 60ms, 60ms;
+    }
+  }
+
+  .admin-sidebar-menu--collapsed {
+    .admin-sidebar-menu__label {
+      opacity: 0;
+      visibility: hidden;
+      transform: translate3d(-4px, 0, 0);
+      transition:
+        opacity 140ms var(--admin-sidebar-menu-label-ease),
+        transform 160ms var(--admin-sidebar-menu-label-ease),
+        visibility 0ms linear 140ms;
+      pointer-events: none;
+    }
+
+    .admin-sidebar-menu__arrow {
+      opacity: 0;
+      visibility: hidden;
+      transform: translate3d(-2px, 0, 0);
+      pointer-events: none;
+    }
+  }
+
+  .admin-sidebar-menu--expanding {
+    .admin-sidebar-menu__label {
+      visibility: visible;
+      animation: sidebar-label-expand 180ms var(--admin-sidebar-menu-enter-ease) 70ms both;
+      pointer-events: none;
+    }
+
+    .admin-sidebar-menu__arrow {
+      visibility: visible;
+      animation: sidebar-arrow-expand 160ms var(--admin-sidebar-menu-enter-ease) 110ms both;
+      pointer-events: none;
+    }
+
+    .admin-sidebar-menu__icon--fallback {
+      opacity: 0;
+      transition-delay: 0ms, 0ms;
+    }
+  }
+
+  .admin-sidebar-menu--collapsed {
+    .admin-sidebar-menu__item--root {
+      width: var(--admin-sidebar-collapsed-item-width) !important;
+      max-width: var(--admin-sidebar-collapsed-item-width) !important;
+      padding-right: 0 !important;
+      padding-left: 0 !important;
+    }
+
+    .admin-sidebar-menu__item--root {
+      .admin-sidebar-menu__item-content {
+        justify-content: center;
+      }
+
+      .admin-sidebar-menu__label,
+      .admin-sidebar-menu__arrow {
+        position: absolute;
+        width: 0;
+        max-width: 0;
+        overflow: hidden;
+      }
+
+      .admin-sidebar-menu__arrow {
+        margin-left: 0 !important;
+      }
+    }
+
+    .admin-sidebar-menu__icon--fallback {
+      opacity: 1;
+    }
+  }
+
+  .admin-sidebar-menu--expanded {
+    .admin-sidebar-menu__label {
+      transition-delay: 45ms, 45ms, 0ms;
+    }
+  }
+
+  .admin-sidebar-menu--collapsed {
+    .p-panelmenu-content-container {
+      display: none !important;
+    }
+  }
+
+  .admin-sidebar-menu--collapsing,
+  .admin-sidebar-menu--expanding {
+    .p-panelmenu-content-container {
+      pointer-events: none;
+    }
+  }
+
   // ── 自定义展开 / 折叠动画曲线 ────────────────────────────────────────
-  // PrimeVue 默认 0.2s ease-out 太短且起始段突变，替换为：
-  // - 展开 250ms ease-out-expo：前 20% 快速推开，后 80% 缓入到位
-  // - 折叠 200ms ease-in-out：收起略快于展开，节奏对称
+  // 容器高度动画：展开/折叠保持相近节奏，避免收起时 snapped shut。
   .p-collapsible-enter-active {
-    animation-duration: 250ms !important;
-    animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1) !important;
+    animation-duration: 210ms !important;
+    animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1) !important;
   }
 
   .p-collapsible-leave-active {
     animation-duration: 200ms !important;
-    animation-timing-function: cubic-bezier(0.5, 0, 0, 1) !important;
+    animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1) !important;
   }
 
-  // ── 动画期间子元素过渡冻结 ──────────────────────────────────────────
-  // 展开时出现的子菜单项携带 transition-[background-color,color] duration-xs，
-  // 若不冻结会在动画首帧集中触发 N 个元素的 style 计算峰值。
-  .p-collapsible-enter-active *,
-  .p-collapsible-leave-active * {
-    transition: none !important;
+  .p-collapsible-enter-active,
+  .p-collapsible-leave-active {
+    contain: layout paint;
+    will-change: grid-template-rows;
+
+    > .p-panelmenu-content-wrapper {
+      contain: layout paint;
+      transform: translateZ(0);
+    }
+  }
+
+  // ── 动画期间菜单项状态过渡冻结 ──────────────────────────────────────
+  // 精准选择器替代通配 *，仅冻结携带 transition 的菜单元素，
+  // 减少动画期间样式匹配开销。
+  .p-collapsible-enter-active,
+  .p-collapsible-leave-active {
+    .p-panelmenu-header-content,
+    .p-panelmenu-content,
+    .p-menuitem-content,
+    .p-menuitem-link,
+    .p-panelmenu-header-icon,
+    .p-menuitem-icon,
+    .p-panelmenu-submenu-icon {
+      transition: none !important;
+    }
+  }
+
+  // ── 子菜单 wrapper 入场 / 离场动画 ────────────────────────────────
+  // 仅动画单个 wrapper，避免长菜单逐项 animation 形成 transition storm。
+  @keyframes submenu-wrapper-enter {
+    from {
+      opacity: 0;
+      transform: translate3d(0, -4px, 0);
+    }
+
+    to {
+      opacity: 1;
+      transform: translate3d(0, 0, 0);
+    }
+  }
+
+  @keyframes submenu-wrapper-leave {
+    from {
+      opacity: 1;
+      transform: translate3d(0, 0, 0);
+    }
+
+    to {
+      opacity: 0;
+      transform: translate3d(0, -4px, 0);
+    }
+  }
+
+  .p-collapsible-enter-active > .p-panelmenu-content-wrapper {
+    animation: submenu-wrapper-enter 160ms cubic-bezier(0.22, 1, 0.36, 1) both;
+    transform: translateZ(0);
+    will-change: opacity, transform;
+  }
+
+  .p-collapsible-leave-active > .p-panelmenu-content-wrapper {
+    animation: submenu-wrapper-leave 120ms cubic-bezier(0.4, 0, 0.2, 1) both;
+    pointer-events: none;
+    transform: translateZ(0);
+    will-change: opacity, transform;
   }
 
   // ── 列表布局 ───────────────────────────────────────────────────────
@@ -98,6 +407,7 @@
     max-width: 100%;
     min-width: 0;
     box-sizing: border-box;
+    contain: layout paint;
   }
 
   // 针对子菜单增加纵向 padding，使父级菜单项与子菜单之间产生间距
@@ -109,10 +419,18 @@
     padding-left: var(--spacing-md);
   }
 
+  // 动画期间冻结菜单项过渡，避免 sidebar 收缩/展开时 N 个菜单项同时触发 style 计算
+  &.admin-sidebar--animating {
+    .p-panelmenu-header-content,
+    .p-menuitem-content {
+      transition: none !important;
+    }
+  }
+
   // 防止侧边栏收缩动画过程中，PanelMenu 文字换行导致布局错乱；overflow-x 确保嵌套子项不超出
   .p-panelmenu-header-content,
   .p-panelmenu-content {
-    overflow: hidden;
+    overflow: clip;
     width: 100%;
     white-space: nowrap;
   }
@@ -146,8 +464,63 @@
   display: flex !important;
   width: 100% !important;
   max-width: 100% !important;
-  overflow: hidden !important;
+  overflow: clip !important;
   box-sizing: border-box !important;
+}
+
+/* Admin 顶栏 / 收缩侧栏共用 TieredMenu popup 面板 */
+.admin-menu-popup.p-tieredmenu,
+.admin-menu-popup .p-tieredmenu-submenu {
+  --admin-menu-popup-gutter: var(--spacing-xs);
+
+  min-width: min(72vw, calc(var(--spacing-3xl) * 2));
+  max-width: min(82vw, calc(var(--spacing-5xl) * 2));
+  padding: var(--spacing-xs);
+  border: calc(var(--spacing-xs) / 4) solid rgb(var(--border) / 22%);
+  border-radius: var(--radius-md);
+  background: rgb(var(--card) / 88%);
+  color: rgb(var(--card-foreground));
+  box-shadow:
+    0 var(--spacing-xs) var(--spacing-xl) rgb(var(--foreground) / 12%),
+    inset 0 calc(var(--spacing-xs) / 4) 0 rgb(var(--background) / 50%);
+}
+
+.dark .admin-menu-popup.p-tieredmenu,
+.dark .admin-menu-popup .p-tieredmenu-submenu {
+  border-color: rgb(var(--border) / 36%);
+  background: rgb(var(--card) / 78%);
+  box-shadow:
+    0 var(--spacing-xs) var(--spacing-xl) rgb(var(--background) / 34%),
+    inset 0 calc(var(--spacing-xs) / 4) 0 rgb(var(--foreground) / 8%);
+}
+
+.admin-menu-popup .p-tieredmenu-root-list,
+.admin-menu-popup .p-tieredmenu-submenu {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+  margin: 0;
+  list-style: none;
+}
+
+.admin-menu-popup .p-tieredmenu-item-content {
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+
+.admin-menu-popup__item {
+  min-height: var(--spacing-xl);
+  gap: var(--spacing-xs) !important;
+  padding-block: var(--spacing-xs) !important;
+  padding-inline: var(--spacing-sm) !important;
+  text-decoration: none;
+  transform: none !important;
+}
+
+.admin-menu-popup__item:hover,
+.admin-menu-popup__item:focus,
+.admin-menu-popup__item:active {
+  transform: none !important;
 }
 
 .p-datepicker {

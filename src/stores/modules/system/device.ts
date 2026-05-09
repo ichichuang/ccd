@@ -1,13 +1,12 @@
 // src/stores/modules/device.ts
 import { defineStore } from 'pinia'
-import {
-  BREAKPOINTS,
-  TABLET_DETECTION_MIN_SHORT_SIDE,
-  type BreakpointKey,
-} from '@/constants/breakpoints'
+import { BREAKPOINTS, type BreakpointKey } from '@/constants/breakpoints'
+import { useEventListener } from '@vueuse/core'
 import { debounceFn } from '@/utils/lodashes'
 import { useMitt } from '@/utils/mitt'
 import type { DeviceState } from '@/types/systems/device'
+import { getDeviceTypeSync, getOsTypeSync } from '@/utils/deviceSync'
+import { resolveLayoutDeviceFlags } from '@/layouts/runtime/layoutRuntime'
 
 // 防抖间隔，300ms 比较温和，适合 resize
 const RESIZE_INTERVAL = 300
@@ -23,6 +22,8 @@ const VIEWPORT_HEIGHT_NOISE_THRESHOLD_PX = 100
 /** 供 markResizing 与上一次原生 resize 比对（独立于 store，避免与 debounce 的 detectViewportInfo 竞态） */
 let lastResizeViewportWidth = typeof window === 'undefined' ? 0 : window.innerWidth
 let lastResizeViewportHeight = typeof window === 'undefined' ? 0 : window.innerHeight
+let cleanupDeviceRuntime: (() => void) | undefined
+let viewportRafId: number | undefined
 
 /** 模块级缓存：断点按阈值降序排列，避免每次 resize 重复排序 */
 const SORTED_BREAKPOINTS: [string, number][] = [...Object.entries(BREAKPOINTS)].sort(
@@ -32,25 +33,28 @@ const SORTED_BREAKPOINTS: [string, number][] = [...Object.entries(BREAKPOINTS)].
 /** 根据宽度同步计算断点（使用缓存的排序结果） */
 function resolveBreakpoint(width: number): BreakpointKey {
   const match = SORTED_BREAKPOINTS.find(([, val]) => width >= val)
-  return (match ? match[0] : 'xs') as BreakpointKey
+  return match ? (match[0] as BreakpointKey) : 'xs'
 }
 
 /** SSR 安全的初始视口宽度 */
 const INITIAL_WIDTH: number = typeof window === 'undefined' ? 0 : window.innerWidth
+const INITIAL_HEIGHT: number = typeof window === 'undefined' ? 0 : window.innerHeight
+const INITIAL_DEVICE_TYPE = getDeviceTypeSync()
+const INITIAL_OS_TYPE = getOsTypeSync()
 
 export const useDeviceStore = defineStore('device', {
   state: (): DeviceState => ({
     width: INITIAL_WIDTH,
-    height: typeof window === 'undefined' ? 0 : window.innerHeight,
+    height: INITIAL_HEIGHT,
     currentBreakpoint: resolveBreakpoint(INITIAL_WIDTH),
-    type: 'PC',
-    os: 'Unknown',
-    orientation: 'horizontal',
-    pixelRatio: 1,
-    screenWidth: 0,
-    screenHeight: 0,
-    screenShortSide: 0,
-    screenLongSide: 0,
+    type: INITIAL_DEVICE_TYPE,
+    os: INITIAL_OS_TYPE,
+    orientation: INITIAL_WIDTH >= INITIAL_HEIGHT ? 'horizontal' : 'vertical',
+    pixelRatio: typeof window === 'undefined' ? 1 : window.devicePixelRatio || 1,
+    screenWidth: typeof window === 'undefined' ? 0 : window.screen.width,
+    screenHeight: typeof window === 'undefined' ? 0 : window.screen.height,
+    screenShortSide: Math.min(INITIAL_WIDTH, INITIAL_HEIGHT),
+    screenLongSide: Math.max(INITIAL_WIDTH, INITIAL_HEIGHT),
     navHeight: 0,
     tabHeight: 0,
     isResizing: false,
@@ -60,10 +64,22 @@ export const useDeviceStore = defineStore('device', {
     /* ==============================================
      * v2.0 新版逻辑 Getters (推荐业务使用)
      * ============================================== */
-    // 布局判定：基于宽度断点
-    isMobileLayout: state => state.width < BREAKPOINTS.lg,
-    isTabletLayout: state => state.width >= BREAKPOINTS.md && state.width < BREAKPOINTS.lg,
-    isPCLayout: state => state.width >= BREAKPOINTS.lg,
+    // 布局判定：基于断点 + 设备类型，与 layout.effectiveMode 逻辑一致
+    isMobileLayout: state =>
+      resolveLayoutDeviceFlags({
+        deviceType: state.type,
+        breakpoint: state.currentBreakpoint,
+      }).isMobile,
+    isTabletLayout: state =>
+      resolveLayoutDeviceFlags({
+        deviceType: state.type,
+        breakpoint: state.currentBreakpoint,
+      }).isTablet,
+    isPCLayout: state =>
+      resolveLayoutDeviceFlags({
+        deviceType: state.type,
+        breakpoint: state.currentBreakpoint,
+      }).isDesktop,
 
     // 物理判定：基于 UA 和 触摸能力
     isTouchDevice: state =>
@@ -76,9 +92,21 @@ export const useDeviceStore = defineStore('device', {
     /* ==============================================
      * v1.0 兼容性 Getters (确保旧代码不报错)
      * ============================================== */
-    isMobile: state => state.width < BREAKPOINTS.lg,
-    isTablet: state => state.width >= BREAKPOINTS.md && state.width < BREAKPOINTS.lg,
-    isDesktop: state => state.width >= BREAKPOINTS.lg,
+    isMobile: state =>
+      resolveLayoutDeviceFlags({
+        deviceType: state.type,
+        breakpoint: state.currentBreakpoint,
+      }).isMobile,
+    isTablet: state =>
+      resolveLayoutDeviceFlags({
+        deviceType: state.type,
+        breakpoint: state.currentBreakpoint,
+      }).isTablet,
+    isDesktop: state =>
+      resolveLayoutDeviceFlags({
+        deviceType: state.type,
+        breakpoint: state.currentBreakpoint,
+      }).isDesktop,
     getCurrentBreakpoint: (state): BreakpointKey => state.currentBreakpoint,
     getWidth: (state): number => state.width,
     getHeight: (state): number => state.height,
@@ -93,26 +121,8 @@ export const useDeviceStore = defineStore('device', {
      * 解析 User Agent，确定操作系统和物理设备类型
      */
     initHardwareInfo() {
-      const ua = navigator.userAgent
-
-      // 系统类型判定
-      if (/Windows/i.test(ua)) this.os = 'Windows'
-      else if (/Mac OS/i.test(ua)) this.os = 'MacOS'
-      else if (/Android/i.test(ua)) this.os = 'Android'
-      else if (/iPhone|iPad|iPod/i.test(ua)) this.os = 'iOS'
-      else if (/Linux/i.test(ua)) this.os = 'Linux'
-      else this.os = 'Unknown'
-
-      // 物理设备类型判定
-      const isMobileUA = /Android|webOS|iPhone|iPod|BlackBerry|IEMobile|Opera Mini/i.test(ua)
-      // 注意：这里需要用到 screen.width，在现代浏览器中通常也是不变的
-      const screenShort = Math.min(window.screen.width, window.screen.height)
-      const isTabletUA =
-        /iPad/i.test(ua) || (isMobileUA && screenShort >= TABLET_DETECTION_MIN_SHORT_SIDE)
-
-      if (isTabletUA) this.type = 'Tablet'
-      else if (isMobileUA) this.type = 'Mobile'
-      else this.type = 'PC'
+      this.os = getOsTypeSync()
+      this.type = getDeviceTypeSync()
 
       // 移动端 UI 预估高度 (硬件决定，不会随视口变化)
       if (this.type !== 'PC') {
@@ -157,6 +167,13 @@ export const useDeviceStore = defineStore('device', {
      * 初始化监听 (带清理功能)
      */
     init() {
+      if (typeof window === 'undefined') {
+        return () => {}
+      }
+      if (cleanupDeviceRuntime) {
+        return cleanupDeviceRuntime
+      }
+
       // 首次加载：先测硬件，再测视口
       this.initHardwareInfo()
       this.detectViewportInfo()
@@ -191,42 +208,62 @@ export const useDeviceStore = defineStore('device', {
         }, RESIZE_IDLE_TIMEOUT)
       }
 
-      // 绑定的全都是纯净的视口计算函数
+      const detectInAnimationFrame = () => {
+        if (viewportRafId !== undefined) return
+        viewportRafId = window.requestAnimationFrame(() => {
+          viewportRafId = undefined
+          this.detectViewportInfo()
+        })
+      }
+
+      // 绑定的全都是纯净的视口计算函数：debounce 合并 resize storm，rAF 对齐渲染帧。
       const handleResize = debounceFn(() => {
-        this.detectViewportInfo()
+        detectInAnimationFrame()
       }, RESIZE_INTERVAL)
 
-      const handleOrientation = () => {
-        handleResize()
+      const handleVisualViewportResize = debounceFn(() => {
+        detectInAnimationFrame()
+      }, RESIZE_INTERVAL)
+
+      const handleImmediateViewportSync = () => {
+        detectInAnimationFrame()
       }
 
       const handleVisibility = () => {
         if (document.visibilityState === 'visible') {
-          handleResize()
+          handleImmediateViewportSync()
         }
       }
 
-      const handlers = {
-        resize: handleResize,
-        orientation: handleOrientation,
-        pageshow: handleResize,
-        visibility: handleVisibility,
+      const cleanupFns: Array<() => void> = [
+        useEventListener(window, 'resize', markResizing),
+        useEventListener(window, 'resize', handleResize),
+        useEventListener(window, 'orientationchange', handleImmediateViewportSync),
+        useEventListener(window, 'pageshow', handleImmediateViewportSync),
+        useEventListener(document, 'visibilitychange', handleVisibility),
+      ]
+
+      if (window.visualViewport) {
+        cleanupFns.push(
+          useEventListener(window.visualViewport, 'resize', handleVisualViewportResize)
+        )
+        cleanupFns.push(
+          useEventListener(window.visualViewport, 'scroll', handleVisualViewportResize)
+        )
       }
 
-      window.addEventListener('resize', markResizing)
-      window.addEventListener('resize', handlers.resize)
-      window.addEventListener('orientationchange', handlers.orientation)
-      window.addEventListener('pageshow', handlers.pageshow)
-      window.addEventListener('visibilitychange', handlers.visibility)
-
-      return () => {
-        window.removeEventListener('resize', markResizing)
+      cleanupDeviceRuntime = () => {
+        cleanupFns.forEach(cleanup => cleanup())
         if (resizeIdleTimer !== undefined) clearTimeout(resizeIdleTimer)
-        window.removeEventListener('resize', handlers.resize)
-        window.removeEventListener('orientationchange', handlers.orientation)
-        window.removeEventListener('pageshow', handlers.pageshow)
-        window.removeEventListener('visibilitychange', handlers.visibility)
+        if (viewportRafId !== undefined) {
+          window.cancelAnimationFrame(viewportRafId)
+          viewportRafId = undefined
+        }
+        this.isResizing = false
+        cleanupDeviceRuntime = undefined
       }
+
+      return cleanupDeviceRuntime
     },
   },
 })

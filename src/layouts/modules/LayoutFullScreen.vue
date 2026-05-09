@@ -5,8 +5,10 @@ import Loading from '@&/Loading.vue'
 import { useLayoutStore } from '@/stores/modules/system'
 import { CScrollbar } from '@/components/CScrollbar'
 import type CScrollbarComponent from '@/components/CScrollbar/CScrollbar.vue'
+import { useLayoutRuntime } from '@/hooks/layout/useLayoutRuntime'
 
 const layoutStore = useLayoutStore()
+const runtime = useLayoutRuntime()
 const route = useRoute()
 
 const scrollbarRef = ref<InstanceType<typeof CScrollbarComponent> | null>(null)
@@ -23,7 +25,10 @@ watch(
 </script>
 
 <template>
-  <div class="layout-screen text-foreground flex flex-col relative overflow-hidden">
+  <div
+    class="layout-screen text-foreground flex flex-col relative overflow-hidden"
+    :style="runtime.shellSafeAreaStyle.value"
+  >
     <CScrollbar
       ref="scrollbarRef"
       class="relative z-content col-fill bg-transparent shadow-sm dark:shadow-md"

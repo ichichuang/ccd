@@ -45,8 +45,18 @@ export function useAuth(): UseAuthReturn {
    * 检查用户是否拥有指定操作权限（支持 *:*:* 超级权限）
    * - 传入单个字符串：检查是否拥有该权限
    * - 传入数组：OR 逻辑，拥有其中任意一个即返回 true
+   *
+   * 使用 composable 内已有的 userStore，避免 hasAuthCodes 二次调用 useUserStoreWithOut()
    */
-  const hasAuth = (auth: string | string[]): boolean => hasAuthCodes(auth)
+  const hasAuth = (auth: string | string[]): boolean => {
+    if (!AUTH_ENABLED) return true
+    if (auth === '' || (Array.isArray(auth) && auth.length === 0)) return true
+
+    const perms: string[] = userStore.userInfo.permissions
+    if (perms.includes('*:*:*')) return true
+    const authList: string[] = Array.isArray(auth) ? auth : [auth]
+    return authList.some((a: string) => perms.includes(a))
+  }
 
   /**
    * 检查用户是否拥有所有指定操作权限（AND 逻辑，支持 *:*:* 超级权限）

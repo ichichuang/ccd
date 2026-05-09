@@ -29,31 +29,28 @@ function getCellValue<T extends Record<string, unknown>>(row: T, col: ProTableCo
 }
 
 /**
- * Export table data to a CSV file and trigger a browser download.
- *
- * @param columns - Visible columns (determines headers and field extraction)
- * @param data - Row data to export
- * @param filename - Download filename (default: 'export.csv')
+ * Build a CSV string from column definitions and row data.
+ * Returns the CSV content with a UTF-8 BOM prefix.
  */
-export function exportToCsv<T extends Record<string, unknown>>(
+export function buildCsvString<T extends Record<string, unknown>>(
   columns: ProTableColumn<T>[],
-  data: T[],
-  filename = 'export.csv'
-): void {
-  // Header row
+  data: T[]
+): string {
   const headers = columns.map(col => escapeCsvCell(getColumnHeader(col)))
   const headerLine = headers.join(',')
 
-  // Data rows
   const dataLines = data.map(row =>
     columns.map(col => escapeCsvCell(getCellValue(row, col))).join(',')
   )
 
-  // UTF-8 BOM + CSV content
-  const csvContent = '\uFEFF' + [headerLine, ...dataLines].join('\r\n')
-  const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' })
+  return '\uFEFF' + [headerLine, ...dataLines].join('\r\n')
+}
 
-  // Trigger download
+/**
+ * Trigger a browser file download from a string payload.
+ */
+export function triggerFileDownload(content: string, filename: string, mimeType: string): void {
+  const blob = new Blob([content], { type: mimeType })
   const url = URL.createObjectURL(blob)
   const link = document.createElement('a')
   link.href = url
@@ -63,4 +60,16 @@ export function exportToCsv<T extends Record<string, unknown>>(
   link.click()
   document.body.removeChild(link)
   URL.revokeObjectURL(url)
+}
+
+/**
+ * Export table data to a CSV file and trigger a browser download.
+ */
+export function exportToCsv<T extends Record<string, unknown>>(
+  columns: ProTableColumn<T>[],
+  data: T[],
+  filename = 'export.csv'
+): void {
+  const csvContent = buildCsvString(columns, data)
+  triggerFileDownload(csvContent, filename, 'text/csv;charset=utf-8;')
 }

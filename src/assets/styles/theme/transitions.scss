@@ -42,7 +42,7 @@ html.is-view-transitioning body {
   animation-iteration-count: 1 !important;
 }
 
-/* 窗口 Resize 期间：压制底层过渡，但豁免 PrimeVue 浮层（避免误触 app-resizing 时掐断弹层出入场动画） */
+/* 窗口 Resize 期间：压制底层过渡，但豁免 PrimeVue 浮层和 PanelMenu（避免误触 app-resizing 时掐断弹层出入场动画和菜单展开动画） */
 html.app-resizing
   *:not(
     .p-dialog,
@@ -52,7 +52,9 @@ html.app-resizing
     .p-popover,
     .p-popover *,
     .p-tieredmenu,
-    .p-tieredmenu *
+    .p-tieredmenu *,
+    .p-panelmenu,
+    .p-panelmenu *
   ),
 html.app-resizing
   *:not(
@@ -63,7 +65,9 @@ html.app-resizing
     .p-popover,
     .p-popover *,
     .p-tieredmenu,
-    .p-tieredmenu *
+    .p-tieredmenu *,
+    .p-panelmenu,
+    .p-panelmenu *
   )::before,
 html.app-resizing
   *:not(
@@ -74,7 +78,9 @@ html.app-resizing
     .p-popover,
     .p-popover *,
     .p-tieredmenu,
-    .p-tieredmenu *
+    .p-tieredmenu *,
+    .p-panelmenu,
+    .p-panelmenu *
   )::after {
   transition-duration: 0s !important;
 }

@@ -306,23 +306,33 @@ Dependency Graph 驱动以下逻辑：
 ### 4.1 Schema 相关类型
 
 ```typescript
-export type LogicFunction = (ctx: FormLogicContext<any>) => boolean
+export type LogicFunction<TValues extends Record<string, unknown> = Record<string, unknown>> = (
+  ctx: LogicContext<TValues>
+) => boolean
 
-export type ComputedFunction<T> = (ctx: ComputedContext<any>) => T
+export type ComputedFunction<
+  T,
+  TValues extends Record<string, unknown> = Record<string, unknown>,
+> = (ctx: LogicContext<TValues>) => T
 
 export interface SelectOption {
   label: string
   value: unknown
 }
 
-export type OptionsLoader = (ctx: OptionsLoaderContext<any>) => Promise<SelectOption[]>
+export type OptionsLoader<TValues extends Record<string, unknown> = Record<string, unknown>> = (
+  ctx: LogicContext<TValues>
+) => Promise<SelectOption[]>
 
-export interface FieldSchema<TValue = any> {
+export interface FieldSchema<TValue = unknown> {
   name: string
   component: string
   label?: string
+  required?: boolean
+  description?: string
   defaultValue?: TValue
-  props?: Record<string, any>
+  transform?: (value: TValue, formValues: Record<string, unknown>) => unknown
+  props?: Record<string, unknown>
   rules?: ValidationRule[]
   deps?: string[]
   visibleIf?: LogicFunction
@@ -330,11 +340,15 @@ export interface FieldSchema<TValue = any> {
   requiredIf?: LogicFunction
   computed?: ComputedFunction<TValue>
   options?: SelectOption[] | OptionsLoader
+  reactions?: FieldReaction[]
+  span?: ResponsiveSpan
 }
 
 export interface GroupSchema {
-  type: 'group' | 'section' | 'step'
+  type: 'group' | 'section' | 'card' | 'collapse' | 'tabs' | 'step'
+  name?: string
   label?: string
+  layout?: { type: 'grid'; gap?: string; span?: ResponsiveSpan }
   children: FormSchemaNode[]
 }
 
@@ -348,9 +362,15 @@ export interface FormSchema {
 ### 4.2 状态类型（FieldState / FormState）
 
 ```typescript
-export interface FieldState<T = any> {
+export interface FieldState<T = unknown> {
   value: T
   initialValue: T
+  visible: boolean
+  disabled: boolean
+  required: boolean
+  loadingOptions?: boolean
+  loadedOptions?: unknown[]
+  optionsError?: string
   touched: boolean
   dirty: boolean
   valid: boolean
@@ -358,20 +378,21 @@ export interface FieldState<T = any> {
   errors: string[]
 }
 
-export interface FormState<TValues = any> {
+export interface FormState<TValues extends Record<string, unknown> = Record<string, unknown>> {
   values: TValues
   errors: Partial<Record<keyof TValues, string[]>>
   touched: Partial<Record<keyof TValues, boolean>>
   dirty: boolean
   valid: boolean
   submitting: boolean
+  submitError?: Error | null
 }
 ```
 
 ### 4.3 上下文类型（Context）
 
 ```typescript
-export interface FieldContext<T = any> {
+export interface FieldContext<T = unknown> {
   name: string
   state: FieldState<T>
   setValue: (value: T) => void
@@ -379,25 +400,24 @@ export interface FieldContext<T = any> {
   reset: () => void
 }
 
-export interface FormContext<TValues> {
+export interface FormContext<TValues extends Record<string, unknown>> {
   state: FormState<TValues>
   setValue<K extends keyof TValues>(field: K, value: TValues[K]): void
+  setFieldsValue(values: Partial<TValues>): void
+  resetFields(names?: (keyof TValues)[]): void
+  clearValidate(names?: (keyof TValues)[]): void
+  setFieldProps(name: string, props: Record<string, unknown>): void
+  setValidateOn(validateOn?: 'change' | 'blur' | 'submit'): void
   validate(): Promise<boolean>
   submit(): Promise<void>
-  reset(): void
+  reset(): Promise<void> | void
 }
 
-export interface ComputedContext<TValues = any> {
-  form: TValues
-  field: string
-}
-
-export interface FormLogicContext<TValues = any> {
-  form: TValues
-  field: string
-}
-
-export interface OptionsLoaderContext<TValues = any> {
+/**
+ * 统一的逻辑上下文类型（actual type name: LogicContext）
+ * computed、visibleIf、disabledIf、requiredIf、OptionsLoader 共享此上下文
+ */
+export interface LogicContext<TValues extends Record<string, unknown> = Record<string, unknown>> {
   form: TValues
   field: string
 }
@@ -429,9 +449,13 @@ export interface UseFormOptions<TValues> {
   validateOn?: 'change' | 'blur' | 'submit'
 }
 
-export interface UseFormReturn<TValues> {
+export interface UseFormReturn<TValues extends Record<string, unknown>> {
   form: FormContext<TValues>
   handleSubmit: (fn: (values: TValues) => void | Promise<void>) => (e?: Event) => Promise<void>
+  getValues: () => TValues
+  getFormState: () => FormState<TValues>
+  updateSchema: (schema: FormSchema) => void
+  teardown: () => void
 }
 
 export interface UseFieldReturn<T> {
@@ -441,9 +465,15 @@ export interface UseFieldReturn<T> {
   validate: () => Promise<void>
 }
 
-export interface FieldArrayReturn<T> {
-  fields: Ref<T[]>
-  append: (value: T) => void
+export interface FieldArrayItem<TValue = unknown> {
+  id: string
+  value: TValue
+  index: number
+}
+
+export interface FieldArrayReturn<TValue = unknown> {
+  fields: ComputedRef<FieldArrayItem<TValue>[]>
+  append: (value: TValue) => void
   remove: (index: number) => void
   move: (from: number, to: number) => void
 }
@@ -452,18 +482,25 @@ export interface FieldArrayReturn<T> {
 ### 4.6 渲染与注册表类型
 
 ```typescript
-export interface FieldComponentProps<T = any> {
+export interface FieldComponentProps<T = unknown> {
   modelValue: T
   disabled?: boolean
   readonly?: boolean
   error?: string[]
+  loading?: boolean
   'onUpdate:modelValue': (v: T) => void
 }
 
-export interface FieldRegistry {
-  register<T>(name: string, component: Component<FieldComponentProps<T>>): void
-  get(name: string): Component<FieldComponentProps<any>> | undefined
-  has(name: string): boolean
+/**
+ * 字段注册表条目（actual type: FieldRegistryItem）
+ */
+export interface FieldRegistryItem {
+  component: Component<FieldComponentProps<unknown>>
+  defaultProps?: Record<string, unknown>
+  propsMapper?: (params: {
+    field: FieldSchema<unknown>
+    componentProps: FieldComponentProps<unknown>
+  }) => Record<string, unknown>
 }
 ```
 

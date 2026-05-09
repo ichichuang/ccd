@@ -89,7 +89,7 @@ export class DependencyGraph {
     const result: string[] = []
 
     while (queue.length > 0) {
-      const current = queue.shift() as string
+      const current = queue.shift()!
       result.push(current)
 
       const node = this.nodes.get(current)

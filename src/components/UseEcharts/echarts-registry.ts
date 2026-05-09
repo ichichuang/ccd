@@ -1,5 +1,6 @@
 import { use } from 'echarts/core'
 import { CanvasRenderer, SVGRenderer } from 'echarts/renderers'
+import { isRecord } from '@/utils/guards'
 import {
   LineChart,
   BarChart,
@@ -69,10 +70,6 @@ export function registerBaseEChartsModules(): void {
     ParallelComponent,
     LegacyGridContainLabel,
   ])
-}
-
-function isRecord(value: unknown): value is Record<string, unknown> {
-  return typeof value === 'object' && value !== null && !Array.isArray(value)
 }
 
 function collectSeriesTypes(value: unknown, out: Set<string>): void {

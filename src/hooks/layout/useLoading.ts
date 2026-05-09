@@ -93,7 +93,18 @@ export function fadeOutNativePreloader() {
   doFadeOut()
 }
 
-export function useLoading() {
+export interface UseLoadingReturn {
+  loadingStart: () => void
+  loadingDone: () => void
+  pageLoadingStart: () => void
+  pageLoadingDone: () => void
+  startLoading: () => () => void
+  startPageLoading: () => () => void
+  withLoading: <T>(fn: () => Promise<T>) => Promise<T>
+  withPageLoading: <T>(fn: () => Promise<T>) => Promise<T>
+}
+
+export function useLoading(): UseLoadingReturn {
   const layoutStore = useLayoutStoreWithOut()
 
   /**

@@ -7,6 +7,7 @@ import { useSizeStore } from '@/stores/modules/system/size'
 import { useLocaleStore } from '@/stores/modules/system/locale'
 import { usePermissionStore } from '@/stores/modules/session/permission'
 import { createPiniaEncryptedSerializer, removeLocalStorageKeysWhere } from '@/utils/safeStorage'
+import { PRO_FORM_STORAGE_PREFIXES } from '@/constants/runtime'
 import { defineStore } from 'pinia'
 import type { LoginResult, UserInfo } from '@/types/dto/auth.dto'
 
@@ -104,7 +105,11 @@ export const useUserStore = defineStore('user', {
       }
       this.clearUserInfo()
       const basePrefix = `${import.meta.env.VITE_PINIA_PERSIST_KEY_PREFIX}-`
-      const prefixKeys: string[] = [basePrefix, 'schemaform:', 'pro-form-draft:']
+      const prefixKeys: string[] = [
+        basePrefix,
+        PRO_FORM_STORAGE_PREFIXES.schemaForm,
+        PRO_FORM_STORAGE_PREFIXES.draft,
+      ]
       const exactKeys: readonly string[] = THEME_PRELOAD_STORAGE_KEYS
 
       const shouldRemove = (key: string): boolean => {

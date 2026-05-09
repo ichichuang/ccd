@@ -1,9 +1,9 @@
 import type { Ref } from 'vue'
 import type { FieldState, FormState, UseFieldReturn } from '../types'
-import { SubscriptionStore } from '../state/SubscriptionStore'
 import { PRO_FORM_STATE_KEY } from '../constants'
 import { useFormContext } from './useFormContext'
 import { castValue } from '@/utils/typeCasters'
+import { syncFormState } from './syncFormState'
 
 /**
  * 字段级 Hook：使用 SubscriptionStore 进行字段级订阅
@@ -16,15 +16,13 @@ export function useField<
   TValues extends Record<string, unknown> = Record<string, unknown>,
 >(name: string): UseFieldReturn<T> {
   const controller = useFormContext<TValues>()
-  const store = controller.store as SubscriptionStore<TValues>
+  const store = controller.store
   const globalState = inject(PRO_FORM_STATE_KEY, null) as FormState<TValues> | null
 
-  const initialStateFromStore = store.getFieldState(name as keyof TValues & string) as
-    | FieldState<T>
-    | undefined
+  const initialStateFromStore = store.getFieldState(name)
 
   const value = ref(
-    initialStateFromStore ? (initialStateFromStore.value as T) : castValue<T>(undefined)
+    initialStateFromStore ? castValue<T>(initialStateFromStore.value) : castValue<T>(undefined)
   ) as Ref<T>
 
   const state = castValue<FieldState<T>>(
@@ -47,12 +45,12 @@ export function useField<
   )
 
   const syncFromStore = (): void => {
-    const latest = store.getFieldState(name as keyof TValues & string) as FieldState<T> | undefined
+    const latest = store.getFieldState(name)
     if (!latest) return
 
-    value.value = latest.value
-    state.value = latest.value
-    state.initialValue = latest.initialValue
+    value.value = castValue<T>(latest.value)
+    state.value = castValue<T>(latest.value)
+    state.initialValue = castValue<T>(latest.initialValue)
     state.visible = latest.visible
     state.disabled = latest.disabled
     state.required = latest.required
@@ -70,44 +68,29 @@ export function useField<
   }
 
   onMounted(() => {
-    store.subscribe(name as string, subscriber)
-    // 确保挂载后与 Store 完全同步一次
+    store.subscribe(name, subscriber)
     syncFromStore()
-    if (typeof controller.onFieldMount === 'function') {
-      controller.onFieldMount(name as string)
-    }
+    controller.onFieldMount(name)
   })
 
   onUnmounted(() => {
-    store.unsubscribe(name as string, subscriber)
+    store.unsubscribe(name, subscriber)
   })
 
   const setValue = (newValue: T): void => {
     controller.transactionManager.begin()
-    store.setFieldValue(name as string, newValue as TValues[keyof TValues])
+    store.setFieldValue(name, newValue as TValues[keyof TValues])
     controller.transactionManager.updateField(name)
     controller.transactionManager.commit(() => {
       // 对字段级 Hook 而言，在 flush 时同步最新的字段状态即可
       syncFromStore()
       if (globalState) {
-        const latest = controller.getFormState()
-        globalState.values = latest.values
-        globalState.errors = latest.errors
-        globalState.touched = latest.touched
-        globalState.dirty = latest.dirty
-        globalState.valid = latest.valid
+        syncFormState(controller, globalState)
       }
       if (controller.validateOn === 'change') {
-        // 变更后按需自动校验
         void validate().then(() => {
-          // 校验完成后再次同步 globalState，确保 errors/valid 等状态反映到全局
           if (globalState) {
-            const postValidation = controller.getFormState()
-            globalState.values = postValidation.values
-            globalState.errors = postValidation.errors
-            globalState.touched = postValidation.touched
-            globalState.dirty = postValidation.dirty
-            globalState.valid = postValidation.valid
+            syncFormState(controller, globalState)
           }
         })
       }

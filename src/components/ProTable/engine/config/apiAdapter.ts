@@ -2,10 +2,7 @@ import type { ProTableLoadParams, ProTableRequestResult, SearchPathResolver } fr
 import { objectGet } from '@/utils/lodashes'
 import { castArray } from '@/utils/typeCasters'
 import type { RequestConfig as HttpRequestConfig } from '@/utils/http/types'
-
-function isRecord(value: unknown): value is Record<string, unknown> {
-  return typeof value === 'object' && value !== null && !Array.isArray(value)
-}
+import { isRecord } from '@/utils/guards'
 
 /**
  * ProTable 自治拉取：将表格标准参数转为通用 REST 风格 query。

@@ -42,7 +42,7 @@ export function applyFilter<T extends Record<string, unknown>>(
     if (searchableCols.length > 0) {
       result = result.filter(row =>
         searchableCols.some(col => {
-          const field: string = col.field as string
+          const field = col.field!
           const val: unknown = getFieldValue(row, field)
           return val !== null && val !== undefined && String(val).toLowerCase().includes(query)
         })
@@ -59,7 +59,7 @@ export function applyFilter<T extends Record<string, unknown>>(
       colFilters.every(([colId, filterVal]) => {
         const col: ProTableColumn<T> | undefined = colMap.get(colId)
         if (!col?.field) return true
-        const val: unknown = row[col.field as keyof T]
+        const val: unknown = (row as Record<string, unknown>)[col.field]
         if (col.filterType === 'select') {
           return val === filterVal
         }

@@ -43,11 +43,15 @@ async function calculateFileHash(file: File): Promise<string> {
       try {
         const arrayBuffer = e.target?.result as ArrayBuffer
         const uint8Array = new Uint8Array(arrayBuffer)
-        let hash = 0
+        // Use two independent 32-bit hashes to produce a 64-bit combined hash,
+        // reducing collision risk for breakpoint resume chunk checks.
+        let hash1 = 0
+        let hash2 = 0x9e3779b9 // golden ratio seed
         for (let i = 0; i < uint8Array.length; i++) {
-          hash = ((hash << 5) - hash + uint8Array[i]) & 0xffffffff
+          hash1 = ((hash1 << 5) - hash1 + uint8Array[i]) & 0xffffffff
+          hash2 = ((hash2 << 7) ^ (hash2 >>> 11) ^ uint8Array[i]) & 0xffffffff
         }
-        const hashString = hash.toString(16).padStart(8, '0')
+        const hashString = hash1.toString(16).padStart(8, '0') + hash2.toString(16).padStart(8, '0')
         resolve(`${file.name}_${file.size}_${hashString}`)
       } catch (_error) {
         reject(new Error(t('http.upload.hashCalculationFailed')))
@@ -366,7 +370,13 @@ export class UploadManager implements IUploadManager {
       })
 
       return response.uploadedChunks || []
-    } catch (_error) {
+    } catch (error) {
+      // Server errors (5xx) indicate a transient issue — log and return [] to trigger full re-upload.
+      // Client errors (4xx) likely mean the upload session is gone — also re-upload.
+      console.warn(
+        '[UploadManager] checkUploadedChunks failed, falling back to full upload:',
+        error
+      )
       return []
     }
   }
@@ -485,7 +495,10 @@ export class UploadManager implements IUploadManager {
    * 生成任务ID
    */
   private generateTaskId(): string {
-    return `${UPLOAD_TASK_PREFIX}${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
+    if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') {
+      return `${UPLOAD_TASK_PREFIX}${crypto.randomUUID()}`
+    }
+    return `${UPLOAD_TASK_PREFIX}${Date.now()}_${Math.random().toString(36).slice(2, 11)}`
   }
 }
 

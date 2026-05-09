@@ -6,7 +6,7 @@ defineOptions({ name: 'ArchitectureInfraTokenProvider' })
 const userStore = useUserStoreWithOut()
 
 // Re-read through the provider whenever the store token changes
-const tokenValue = computed<string | null | undefined>(() => {
+const tokenValue = computed<string | null>(() => {
   void userStore.token // reactive dependency
   return readAuthToken()
 })

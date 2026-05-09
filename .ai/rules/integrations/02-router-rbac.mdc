@@ -121,6 +121,46 @@ const vueRoutes = transformToVueRoutes(appRoutes)
 createDynamicRouteManager(router).registerRoutes(vueRoutes)
 ```
 
+### Dynamic Route Refresh and CatchAll Recovery
+
+When dynamic routes are lazy-injected after the router is created, a direct browser refresh on a dynamic-only path can be matched by the initial `/:pathMatch(.*)*` CatchAll before the dynamic route has been registered.
+
+**REQUIRED:**
+
+- Permission guards MUST preserve the originally requested path when CatchAll redirects to `/404`.
+- If `to.path === '/404'` and `to.redirectedFrom` exists, login redirects and post-initialization redirects MUST use `to.redirectedFrom.fullPath` instead of `to.fullPath`.
+- After dynamic routes are initialized, guards MUST re-resolve the preserved target and redirect with `replace: true`.
+- Login redirect parsing MUST still pass through the safe redirect parser.
+
+**FORBIDDEN:**
+
+- Do not use `/404` as the persisted login redirect when `to.redirectedFrom` contains the real requested route.
+- Do not rely on CatchAll to distinguish a real missing page from a dynamic route that has not been injected yet.
+
+### Legacy Route Compatibility
+
+When a route path is moved or grouped under a new canonical parent, old paths may be kept only as compatibility aliases.
+
+**REQUIRED:**
+
+- Legacy paths MUST redirect to the canonical route path.
+- Legacy compatibility routes MUST set `meta.showLink = false` so they do not create menu/sidebar entries.
+- Dynamic route mock data and backend route fixtures MUST be updated when static route paths move.
+- If a legacy dynamic route is retained, it SHOULD define an explicit stable `name` to avoid collisions with the canonical route.
+
+**FORBIDDEN:**
+
+- Do not attach the real page `component` to a stale legacy path when a canonical static route already exists.
+- Do not expose stale legacy paths in generated menus, breadcrumbs, tabs, or example route previews.
+
+**Validation:**
+
+For any change that touches CatchAll, permission guards, dynamic route loading, or route path migration, validate at least:
+
+- unauthenticated refresh of the legacy path
+- authenticated refresh of the legacy path
+- refresh of the canonical path
+
 ---
 
 ## Rule 8 — Complete `AppRouteMeta` Field Reference

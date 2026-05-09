@@ -3,8 +3,8 @@ import { useThemeSwitch } from '@/hooks/modules/useThemeSwitch'
 import { useThemeStore } from '@/stores/modules/system'
 import { useSizeStore } from '@/stores/modules/system'
 import { useLayoutStore } from '@/stores/modules/system'
-import { useDeviceStore } from '@/stores/modules/system'
 import { useLocale } from '@/hooks/modules/useLocale'
+import { useLayoutRuntime } from '@/hooks/layout/useLayoutRuntime'
 import {
   THEME_PRESETS,
   TRANSITION_DURATION_OPTIONS,
@@ -13,7 +13,6 @@ import {
 import { SIZE_PRESETS } from '@/constants/size'
 import type { SupportedLocale } from '@/locales'
 import { useI18n } from 'vue-i18n'
-import { storeToRefs } from 'pinia'
 import SelectButton from 'primevue/selectbutton'
 import Select from 'primevue/select'
 import Slider from 'primevue/slider'
@@ -25,12 +24,13 @@ defineEmits(['close'])
 const { t } = useI18n()
 const { mode, setThemeWithAnimation } = useThemeSwitch()
 const themeStore = useThemeStore()
-const deviceStore = useDeviceStore()
 const sizeStore = useSizeStore()
 const layoutStore = useLayoutStore()
+const runtime = useLayoutRuntime()
 const { locale, switchLocale, supportedLocales } = useLocale()
-const { isMobile, isMobileTerminal } = storeToRefs(deviceStore)
-const isPC = computed(() => !isMobile.value)
+const isMobile = computed(() => runtime.isMobile.value)
+const isMobileTerminal = computed(() => runtime.deviceType.value === 'Mobile')
+const isPC = computed(() => runtime.isDesktop.value)
 
 // 主题模式选项 (light | dark | auto)
 const themeModeOptions: { value: ThemeMode; labelKey: string }[] = [

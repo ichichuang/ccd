@@ -49,8 +49,14 @@ export const useLocaleStore = defineStore('locale', {
 
     // 切换语言
     async switchLocale(newLocale: SupportedLocale) {
-      if (this.locale === newLocale) {
+      const i18nCurrent = getCurrentLocale()
+      if (this.locale === newLocale && this.locale === i18nCurrent) {
         return
+      }
+      if (this.locale !== i18nCurrent) {
+        console.warn(
+          `[Locale Store] Store/i18n desync detected (store="${this.locale}", i18n="${i18nCurrent}"), forcing re-sync`
+        )
       }
 
       this.loading = true
@@ -80,12 +86,6 @@ export const useLocaleStore = defineStore('locale', {
         // 3. 保留原有的 window 事件，确保过渡期间旧逻辑仍然可用
         window.dispatchEvent(
           new CustomEvent('locale-changed', {
-            detail: { locale: newLocale },
-          })
-        )
-
-        window.dispatchEvent(
-          new CustomEvent('locale-store-changed', {
             detail: { locale: newLocale },
           })
         )

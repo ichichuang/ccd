@@ -160,6 +160,8 @@ export interface FieldState<T = unknown> {
   loadedOptions?: unknown[]
   /** 异步选项加载失败时的错误信息 */
   optionsError?: string
+  /** 运行时动态 props 覆盖（由 setFieldProps/reaction engine 写入） */
+  dynamicProps?: Record<string, unknown>
   touched: boolean
   dirty: boolean
   valid: boolean

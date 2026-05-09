@@ -82,8 +82,10 @@ export default defineConfig({
 
   rules: [
     ['group', {}],
-    ['safe-top', { 'padding-top': 'env(safe-area-inset-top)' }],
-    ['safe-bottom', { 'padding-bottom': 'env(safe-area-inset-bottom)' }],
+    ['safe-top', { 'padding-top': 'var(--safe-top)' }],
+    ['safe-bottom', { 'padding-bottom': 'var(--safe-bottom)' }],
+    ['safe-left', { 'padding-left': 'var(--safe-left)' }],
+    ['safe-right', { 'padding-right': 'var(--safe-right)' }],
   ],
 
   theme: themeResolved,

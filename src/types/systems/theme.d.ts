@@ -16,6 +16,9 @@ declare global {
   /** 主题切换过渡时长 (ms) */
   export type ThemeTransitionDuration = 400 | 600 | 800 | 1200 | 1600
 
+  /** Enables Theme Engine v5 diagnostics in non-production builds. */
+  var __THEME_DEVTOOLS__: boolean | undefined
+
   /**
    * 单个颜色 Token 的完整状态定义
    * 用于精确控制 Default / Light / Dark / Hover 等状态
@@ -48,12 +51,24 @@ declare global {
 
     /* 中性色系统 (Border, Input, Secondary, Muted) */
     neutral?: {
-      base?: string // 用于 border, input
-      bg?: string // 用于 card, popover, secondary, muted
+      base?: string // 用于 border, input 的默认回退
+      bg?: string // 用于 card, popover, secondary, muted 的默认回退
       foreground?: string // 用于 card-foreground, popover-foreground
       secondaryForeground?: string
       mutedForeground?: string
     }
+
+    /* 语义层：Secondary（卡片微变体，比 card 深/亮一点）*/
+    secondary?: string
+    secondaryForeground?: string
+
+    /* 语义层：Muted（最弱信息层，placeholder / hint）*/
+    muted?: string
+    mutedForeground?: string
+
+    /* 边框与输入（可从 neutral.base 拆分，独立调色）*/
+    border?: string // 默认 = neutral.base
+    input?: string // 默认 = neutral.base + slight contrast
 
     /* 聚焦环：默认回退到 primary，可按主题单独覆盖 */
     ring?: string
@@ -68,6 +83,58 @@ declare global {
       accentForeground?: string
       border?: string
       ring?: string
+    }
+  }
+
+  export interface CompleteColorTokenState {
+    default: string
+    foreground: string
+    hover: string
+    active?: string
+    light: string
+    lightForeground: string
+  }
+
+  export interface CompleteThemeModeConfig {
+    primary: CompleteColorTokenState
+    accent: CompleteColorTokenState
+    danger: CompleteColorTokenState
+    warn: CompleteColorTokenState
+    success: CompleteColorTokenState
+    info: CompleteColorTokenState
+    help: CompleteColorTokenState
+    background: string
+    foreground: string
+    neutral: {
+      base: string
+      bg: string
+      foreground: string
+      secondaryForeground: string
+      mutedForeground: string
+    }
+    secondary: string
+    secondaryForeground: string
+    muted: string
+    mutedForeground: string
+    border: string
+    input: string
+    ring: string
+    sidebar: {
+      background: string
+      foreground: string
+      primary: string
+      primaryForeground: string
+      accent: string
+      accentForeground: string
+      border: string
+      ring: string
+    }
+  }
+
+  export interface CompleteThemePreset extends Omit<ThemePreset, 'colors'> {
+    colors: {
+      light: CompleteThemeModeConfig
+      dark: CompleteThemeModeConfig
     }
   }
 

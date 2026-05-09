@@ -121,6 +121,8 @@ function applyTransitionVariables(event: MouseEvent | null, mode: ThemeTransitio
 /**
  * 原子化全局清理（Grand Unified Fix v5.0）：
  * 统一收尾：此时 recovery class 已在主流程中添加，仅需最终解锁
+ *
+ * 使用链式 rAF 替代嵌套，配合 generation 守卫避免跨代误删。
  */
 function cleanupTransitionState(generation?: number): Promise<void> {
   const root = document.documentElement
@@ -129,9 +131,6 @@ function cleanupTransitionState(generation?: number): Promise<void> {
   }
 
   return new Promise(resolve => {
-    // ═══════════════════════════════════════════════════════════════
-    // 仅清除 View Transition 临时变量（x/y/radius），保留尺寸系统 --transition-xs..5xl
-    // ═══════════════════════════════════════════════════════════════
     const VIEW_TRANSITION_VARS = ['--transition-x', '--transition-y', '--transition-radius']
     const currentCssText: string = root.style.cssText
     const cleanedCssText: string = currentCssText
@@ -144,26 +143,32 @@ function cleanupTransitionState(generation?: number): Promise<void> {
       .join('; ')
     root.style.cssText = cleanedCssText
 
-    // ═══════════════════════════════════════════════════════════════
-    // 多帧等待后最终解锁 - 确保所有样式计算完成
-    // ═══════════════════════════════════════════════════════════════
-    requestAnimationFrame(() => {
-      requestAnimationFrame(() => {
-        requestAnimationFrame(() => {
-          setTimeout(() => {
-            if (generation !== undefined && generation !== themeTransitionGeneration) {
-              resolve()
-              return
-            }
-            root.classList.remove('theme-transition-recovery')
-            root.classList.remove('theme-transition')
-            root.removeAttribute('data-transition')
-            setThemeLocked(false)
-            resolve()
-          }, 100)
-        })
-      })
-    })
+    let frameCount = 0
+
+    const onFrame = (): void => {
+      if (generation !== undefined && generation !== themeTransitionGeneration) {
+        resolve()
+        return
+      }
+      frameCount++
+      if (frameCount < 3) {
+        globalThis.requestAnimationFrame(onFrame)
+        return
+      }
+      globalThis.setTimeout(() => {
+        if (generation !== undefined && generation !== themeTransitionGeneration) {
+          resolve()
+          return
+        }
+        root.classList.remove('theme-transition-recovery')
+        root.classList.remove('theme-transition')
+        root.removeAttribute('data-transition')
+        setThemeLocked(false)
+        resolve()
+      }, 100)
+    }
+
+    globalThis.requestAnimationFrame(onFrame)
   })
 }
 
@@ -290,9 +295,19 @@ export function useThemeSwitch(): UseThemeSwitchReturn {
     const visualE2EMode = isVisualE2EMode()
 
     if (!document?.startViewTransition || visualE2EMode) {
-      beginThemeTransitionSignal(transitionModeToUse)
-      setMode(targetMode)
-      endThemeTransitionSignal(targetMode)
+      setThemeLocked(true)
+      sharedIsAnimating.value = true
+      activeTransitionTarget = targetMode
+      themeTransitionGeneration++
+      try {
+        beginThemeTransitionSignal(transitionModeToUse)
+        applyModeSnapshot(targetMode, systemPrefersDark)
+        endThemeTransitionSignal(targetMode)
+      } finally {
+        sharedIsAnimating.value = false
+        activeTransitionTarget = null
+        setThemeLocked(false)
+      }
       return
     }
 

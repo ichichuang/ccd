@@ -1,18 +1,18 @@
 <script setup lang="tsx">
 import { useDialog } from '@/hooks/modules/useDialog'
-import { useDeviceStore } from '@/stores/modules/system'
+import { useLayoutRuntime } from '@/hooks/layout/useLayoutRuntime'
 import { useI18n } from 'vue-i18n'
 import SettingsContent from './SettingsContent.vue'
 
 const { t } = useI18n()
 const { openDialog } = useDialog()
-const deviceStore = useDeviceStore()
+const runtime = useLayoutRuntime()
 
 const openSettings = () => {
   openDialog({
     header: t('layout.globalSettingsTitle'),
     class: 'w-[82vw]! sm:w-[60vw]! md:w-[40vw]! lg:w-[36vw]!',
-    position: deviceStore.isMobileLayout ? 'center' : 'right',
+    position: runtime.isMobile.value ? 'center' : 'right',
     contentRenderer: () => <SettingsContent />,
   })
 }

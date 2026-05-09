@@ -1,4 +1,6 @@
 <script setup lang="ts">
+defineOptions({ name: 'ProTableColumnSettings' })
+
 /**
  * 列设置面板：拖拽排序 + 显隐开关，变更通过 update 事件上抛。
  */

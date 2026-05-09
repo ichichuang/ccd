@@ -13,11 +13,16 @@ export interface UseElementSizeOptions {
  * - targetRef 为 `ref<HTMLElement | null>` / `ref<HTMLElement | undefined>` 时：监听该元素
  * - targetRef 为 `false` 时：默认监听 `document.documentElement` 尺寸（全局视口）
  */
+export interface UseAppElementSizeReturn {
+  width: Ref<number>
+  height: Ref<number>
+}
+
 export function useAppElementSize(
   targetRef: Ref<HTMLElement | null | undefined> | false,
   callback?: (entry: DOMRectReadOnly) => void,
   options: UseElementSizeOptions = {}
-) {
+): UseAppElementSizeReturn {
   const width: Ref<number> = ref(0)
   const height: Ref<number> = ref(0)
 

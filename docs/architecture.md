@@ -106,9 +106,32 @@ graph TD
 | **Tier 3** | PrimeVue Pass-Through  | 全局 PT（如 `formControlsPt`、`menuPt`），减少组件样板代码               |
 
 - **语义材质**：`glass-panel`、`glass-shell`、`glass-card`、`glass-icon-box`、`glass-capsule`、`material-solid`、`material-elevated`、`interactive-card`、`interactive-item`
+- **主题预设治理**：完整 palette source data 与维护流程见 [Theme Presets](./theme-presets.md)
 - **主题切换动画**：Curtain、Diamond、Fade、Circle、Glitch、Implosion
 - **明暗层次**：亮色偏外阴影，暗色偏内高光与清晰边框
 - **Z-Index**：`z-base` → `z-content` → `z-layout` → `z-overlay` → `z-popover` → `z-toast`
+
+### Layout Runtime SSOT
+
+后台布局适配采用单一运行时控制器，渲染层不再本地推导设备、断点、抽屉、侧栏或模式。
+
+```txt
+Device Runtime
+  -> Breakpoint Runtime
+  -> Adaptive Size Runtime
+  -> Layout Runtime Controller
+  -> Pure Layout Renderers
+```
+
+| 层级                                   | 职责                                                                            |
+| -------------------------------------- | ------------------------------------------------------------------------------- |
+| `src/stores/modules/system/device.ts`  | 原始设备、视口、断点、方向、像素比与 resize/orientation/visualViewport 生命周期 |
+| `src/utils/theme/sizeEngine.ts`        | 尺寸、字体、密度、断点缩放与 CSS 变量注入                                       |
+| `src/layouts/runtime/layoutRuntime.ts` | `effectiveMode`、`sidebarMode`、drawer/overlay、结构显隐、安全区样式的最终解析  |
+| `src/hooks/layout/useLayoutRuntime.ts` | 将 store 输入收敛为渲染层可消费的稳定运行时状态                                 |
+| `src/layouts/modules/*`                | 纯渲染，只消费 `useLayoutRuntime()`，不读取设备 store 或断点常量                |
+
+布局 shell 的约束以 [.ai/rules/integrations/03-layout-architecture.mdc](../.ai/rules/integrations/03-layout-architecture.mdc) 为准。涉及 iPhone/iPad/桌面适配时，需要用 Playwright 几何断言验证侧栏、内容偏移、header、安全区、drawer 和 phantom spacing。
 
 ### 安全与隔离
 

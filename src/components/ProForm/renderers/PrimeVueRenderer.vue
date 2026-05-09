@@ -1,4 +1,6 @@
 <script setup lang="ts">
+defineOptions({ name: 'PrimeVueRenderer' })
+
 import type {
   FieldComponentProps,
   FieldRegistryItem,
@@ -105,10 +107,12 @@ const mergedProps = computed<FieldComponentProps<unknown> & Record<string, unkno
 
   const defaultProps = (item?.defaultProps ?? {}) as Record<string, unknown>
   const fieldProps = (props.field.props ?? {}) as Record<string, unknown>
+  const dynamicProps = (stateExt.value.dynamicProps ?? {}) as Record<string, unknown>
 
   const merged: FieldComponentProps<unknown> & Record<string, unknown> = {
     ...defaultProps,
     ...fieldProps,
+    ...dynamicProps,
     ...baseComponentProps,
   }
 
@@ -121,14 +125,15 @@ const mergedProps = computed<FieldComponentProps<unknown> & Record<string, unkno
   }
 
   // Async options MUST come from store state (no Schema mutation).
-  // Priority: state.loadedOptions -> field.props.options -> field.options (static array only)
+  // Priority: state.loadedOptions -> dynamicProps.options -> field.props.options -> field.options (static array only)
   const stateLoadedOptions = stateExt.value.loadedOptions
+  const dynamicOptions = (dynamicProps as { options?: unknown }).options
   const propsOptions = (fieldProps as { options?: unknown }).options
   const schemaOptions = Array.isArray(fieldExt.value.options)
     ? (fieldExt.value.options as unknown[] | undefined)
     : undefined
 
-  const finalOptions = stateLoadedOptions ?? propsOptions ?? schemaOptions
+  const finalOptions = stateLoadedOptions ?? dynamicOptions ?? propsOptions ?? schemaOptions
   if (Array.isArray(finalOptions)) {
     merged.options = finalOptions
   }

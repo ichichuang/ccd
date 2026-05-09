@@ -9,6 +9,8 @@ import ProTableCell from './components/ProTableCell'
 import { VIRTUAL_GRID_DEFAULTS } from './engine/config'
 import { objectGet } from '@/utils/lodashes'
 
+defineOptions({ name: 'VirtualGridRenderer' })
+
 const props = withDefaults(
   defineProps<{
     controller: TableController<T>

@@ -1,4 +1,6 @@
 <script setup lang="ts">
+defineOptions({ name: 'ProSlider' })
+
 import type { FieldComponentProps } from '../../engine/types'
 import { PRO_FORM_COMPONENT_DEFAULTS } from '../../engine/config'
 

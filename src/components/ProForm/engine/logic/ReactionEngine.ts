@@ -1,8 +1,17 @@
-import type { FieldSchema, FieldReaction, ReactionContext, FieldState } from '../types'
+import type { FieldSchema, FieldReaction, ReactionContext } from '../types'
 import type { SubscriptionStore } from '../state/SubscriptionStore'
 import { PRO_FORM_LOGGER } from '../utils/logger'
 
 type ValuesRecord = Record<string, unknown>
+
+function isPromiseLike(value: unknown): value is Promise<void> {
+  return (
+    typeof value === 'object' &&
+    value !== null &&
+    'catch' in value &&
+    typeof value.catch === 'function'
+  )
+}
 
 /**
  * 声明式跨字段联动引擎 (Reaction Engine)
@@ -38,7 +47,7 @@ export class ReactionEngine<TValues extends ValuesRecord = ValuesRecord> {
 
     const ctx = this.buildContext(values, fieldName)
 
-    for (const reaction of field.reactions as FieldReaction<TValues>[]) {
+    for (const reaction of field.reactions) {
       const watchFields = Array.isArray(reaction.watch) ? reaction.watch : [reaction.watch]
 
       // 若提供了 changedFields，仅在 watch 的字段确实发生变化时才执行
@@ -53,8 +62,8 @@ export class ReactionEngine<TValues extends ValuesRecord = ValuesRecord> {
         if (typeof reaction.effect === 'function') {
           const result = reaction.effect(ctx)
           // 若 effect 返回 Promise，静默消费但不阻塞同步管线
-          if (result && typeof (result as Promise<void>).catch === 'function') {
-            ;(result as Promise<void>).catch((err: unknown) => {
+          if (isPromiseLike(result)) {
+            result.catch((err: unknown) => {
               PRO_FORM_LOGGER.error(`Reaction effect (async) error in field "${fieldName}"`, err)
             })
           }
@@ -68,11 +77,11 @@ export class ReactionEngine<TValues extends ValuesRecord = ValuesRecord> {
   private executeAction(reaction: FieldReaction<TValues>, fieldName: string): void {
     switch (reaction.action) {
       case 'clearValue':
-        this.store.setFieldValue(fieldName, undefined as TValues[keyof TValues])
+        this.store.setFieldValue(fieldName, undefined as unknown as TValues[keyof TValues])
         break
 
       case 'hide': {
-        const hideState = this.store.getFieldState(fieldName) as FieldState<unknown> | undefined
+        const hideState = this.store.getFieldState(fieldName)
         if (hideState) {
           this.store.setFieldState(fieldName, { ...hideState, visible: false })
         }
@@ -80,7 +89,7 @@ export class ReactionEngine<TValues extends ValuesRecord = ValuesRecord> {
       }
 
       case 'show': {
-        const showState = this.store.getFieldState(fieldName) as FieldState<unknown> | undefined
+        const showState = this.store.getFieldState(fieldName)
         if (showState) {
           this.store.setFieldState(fieldName, { ...showState, visible: true })
         }
@@ -88,7 +97,7 @@ export class ReactionEngine<TValues extends ValuesRecord = ValuesRecord> {
       }
 
       case 'disable': {
-        const disableState = this.store.getFieldState(fieldName) as FieldState<unknown> | undefined
+        const disableState = this.store.getFieldState(fieldName)
         if (disableState) {
           this.store.setFieldState(fieldName, { ...disableState, disabled: true })
         }
@@ -96,7 +105,7 @@ export class ReactionEngine<TValues extends ValuesRecord = ValuesRecord> {
       }
 
       case 'enable': {
-        const enableState = this.store.getFieldState(fieldName) as FieldState<unknown> | undefined
+        const enableState = this.store.getFieldState(fieldName)
         if (enableState) {
           this.store.setFieldState(fieldName, { ...enableState, disabled: false })
         }
@@ -117,10 +126,10 @@ export class ReactionEngine<TValues extends ValuesRecord = ValuesRecord> {
       form: values,
       field: fieldName,
       getFieldState: (name: string) => {
-        return this.store.getFieldState(name) as FieldState | undefined
+        return this.store.getFieldState(name)
       },
       setFieldValue: (name: string, value: unknown) => {
-        this.store.setFieldValue(name, value as TValues[keyof TValues])
+        this.store.setFieldValue(name, value as unknown as TValues[keyof TValues])
       },
       setFieldProps: (name: string, props: Record<string, unknown>) => {
         this.setFieldPropsCallback(name, props)

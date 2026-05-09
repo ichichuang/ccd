@@ -3,13 +3,10 @@ import type { EChartsOption } from 'echarts'
 import { useThemeStore } from '@/stores/modules/system'
 import { getChartSystemVariables } from '@/utils/theme/chartUtils'
 import { parseEChartsOption } from '@/adapters/echarts.adapter'
+import { isRecord } from '@/utils/guards'
 import type { SystemMetricsDTO } from '../page.state'
 
 const DASHBOARD_CHART_EASING = 'cubicOut'
-
-function isRecord(value: unknown): value is Record<string, unknown> {
-  return typeof value === 'object' && value !== null && !Array.isArray(value)
-}
 
 function firstOptionRecord(value: unknown): Record<string, unknown> {
   const first = Array.isArray(value) ? value[0] : value
@@ -140,23 +137,27 @@ export function useChartOptions(dataRef: Ref<SystemMetricsDTO[]>) {
     const cpuSeries = firstOptionRecord(seriesArr[0] ?? { type: 'line', name: 'CPU Usage' })
     const memSeries = firstOptionRecord(seriesArr[1] ?? { type: 'line', name: 'Memory Load' })
 
-    return parseEChartsOption({
-      ...base,
-      xAxis: {
-        ...firstOptionRecord(base.xAxis),
-        data: xData,
-      },
-      series: [
-        {
-          ...cpuSeries,
-          data: cpuData,
+    try {
+      return parseEChartsOption({
+        ...base,
+        xAxis: {
+          ...firstOptionRecord(base.xAxis),
+          data: xData,
         },
-        {
-          ...memSeries,
-          data: memoryData,
-        },
-      ],
-    })
+        series: [
+          {
+            ...cpuSeries,
+            data: cpuData,
+          },
+          {
+            ...memSeries,
+            data: memoryData,
+          },
+        ],
+      })
+    } catch {
+      return {} as EChartsOption
+    }
   })
 
   return {

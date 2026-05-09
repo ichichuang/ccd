@@ -29,6 +29,7 @@ export const HTTP_CONFIG = {
   reconnectDelay: 2000, // 重连延迟（毫秒）
   healthCheckInterval: 30000, // 健康检查间隔（毫秒）
   healthCheckUrl: '/api/health', // 健康检查端点
+  healthCheckTimeout: 5000, // 健康检查超时（毫秒）
 
   // 安全配置（可被 RequestConfig.security 覆盖）
   enableCsrf: false, // 是否启用 CSRF 保护（预留：拦截器逻辑已就位，对接后端时改为 true）

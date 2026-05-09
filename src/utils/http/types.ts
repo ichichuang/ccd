@@ -119,6 +119,7 @@ export interface ConnectionConfig {
   reconnectDelay: number
   healthCheckUrl?: string
   healthCheckInterval: number
+  healthCheckTimeout: number
 }
 
 // 缓存相关类型

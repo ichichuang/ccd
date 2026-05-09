@@ -10,6 +10,7 @@ import {
   MENU_ITEM_TRANSITION,
   MENU_PANEL_PADDING,
   MENU_ICON_SIZE,
+  MENU_SIDEBAR_ICON_SIZE,
   BREADCRUMB_ICON_SIZE,
   MENU_ACTIVE_UNIFIED,
   MENU_OPEN_UNIFIED,
@@ -82,6 +83,7 @@ export function getMenuStateClasses(options: MenuStateOptions): string {
 }
 
 /** 返回指定上下文的图标 size（Icons 组件用） */
-export function getIconSize(context: MenuVisualContext): 'lg' | 'sm' {
+export function getIconSize(context: MenuVisualContext): '2xl' | 'lg' | 'sm' {
+  if (context === 'sidebar') return MENU_SIDEBAR_ICON_SIZE
   return context === 'breadcrumb' ? BREADCRUMB_ICON_SIZE : MENU_ICON_SIZE
 }

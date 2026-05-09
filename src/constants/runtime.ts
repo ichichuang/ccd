@@ -18,6 +18,12 @@ export const THEME_PRELOAD_STORAGE_KEYS = [
   RUNTIME_STORAGE_KEYS.themeBackground,
 ] as const
 
+/** localStorage key prefixes used by ProForm persistence (shared between DraftStorage and logout cleanup) */
+export const PRO_FORM_STORAGE_PREFIXES = {
+  schemaForm: 'schemaform:',
+  draft: 'pro-form-draft:',
+} as const
+
 export const RUNTIME_QUERY_KEYS = {
   e2eMode: 'e2e',
   e2ePreloaderHold: 'e2eHoldPreloader',

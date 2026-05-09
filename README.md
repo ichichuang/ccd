@@ -77,6 +77,7 @@ CCD 面向“需要长期维护”的 Vue 3 产品项目，而不是一次性 De
 - Tier 1：CSS Variables 语义变量
 - Tier 2：UnoCSS 语义 token 与 shortcuts
 - Tier 3：PrimeVue Pass-Through 预设
+- 主题预设维护：[Theme Presets](./docs/theme-presets.md)
 
 目标不是“换皮”，而是让 UI 语言可审计、可约束、可复用。
 

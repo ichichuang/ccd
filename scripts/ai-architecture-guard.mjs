@@ -323,6 +323,60 @@ for (const relPath of vueUseBoundaryFiles) {
   }
 }
 
+// --- raw-date-constructor: new Date() without args is forbidden outside approved files ---
+const approvedRawDateFiles = new Set([
+  'src/utils/date/timezone.ts',
+  'src/utils/http/connection.ts',
+  'src/utils/http/uploadManager.ts',
+])
+
+const dateCheckFiles = scanFiles(['src/**/*.{ts,tsx,vue}'])
+for (const relPath of dateCheckFiles) {
+  if (/\.(spec|test)\.ts$/.test(relPath)) continue
+  if (relPath.includes('/example/')) continue
+  if (approvedRawDateFiles.has(relPath)) continue
+  const content = stripJsComments(readText(relPath))
+  if (/\bnew\s+Date\s*\(\s*\)/.test(content)) {
+    fail('raw-date-constructor', relPath, 'Use DateUtils.now() instead of raw new Date()')
+  }
+}
+
+// --- raw-timer: setTimeout/setInterval outside approved files ---
+const approvedRawTimerFiles = new Set([
+  'src/views/login/components/animated-characters/Index.vue',
+  'src/views/login/index.vue',
+  'src/components/ProForm/engine/core/FormController.ts',
+  'src/components/ProForm/engine/validation/ValidationEngine.ts',
+  'src/utils/http/connection.ts',
+  'src/utils/http/methods.ts',
+  'src/utils/http/interceptors.ts',
+  'src/utils/date/timezone.ts',
+  'src/hooks/modules/useThemeSwitch.ts',
+  'src/hooks/layout/useAdminTabs.ts',
+  'src/hooks/layout/useLoading.ts',
+  'src/hooks/layout/useNprogress.ts',
+  'src/hooks/modules/usePermissionRoutes.ts',
+  'src/layouts/components/admin/AdminSidebarMenu.tsx',
+  'src/layouts/modules/LayoutAdmin.tsx',
+  'src/router/utils/guardEffects.ts',
+  'src/components/PrimeDialog/useDialog.ts',
+  'src/components/UseEcharts/UseEcharts.vue',
+  'src/stores/modules/system/device.ts',
+  'src/api/auth/auth.api.ts',
+  'src/api/system/system.api.ts',
+])
+
+const timerCheckFiles = scanFiles(['src/**/*.{ts,tsx,vue}'])
+for (const relPath of timerCheckFiles) {
+  if (/\.(spec|test)\.ts$/.test(relPath)) continue
+  if (relPath.includes('/example/')) continue
+  if (approvedRawTimerFiles.has(relPath)) continue
+  const content = stripJsComments(readText(relPath))
+  if (/\b(setTimeout|setInterval)\s*\(/.test(content)) {
+    fail('raw-timer', relPath, 'Use useTimeoutFn/useIntervalFn from VueUse or approved timer patterns instead of raw setTimeout/setInterval')
+  }
+}
+
 const designSystemFiles = scanFiles(['index.html', 'src/**/*.{vue,ts,tsx,css,scss}'])
 for (const relPath of designSystemFiles) {
   const content = stripJsComments(readText(relPath))

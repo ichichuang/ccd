@@ -1,9 +1,12 @@
 /**
  * Type Boundary: HTTP & Storage Adapter
  * Validates raw parsed JSON or HTTP data and guarantees a safe object return.
+ *
+ * @see {@link BackendRouteConfig} 全局类型定义位于 src/types/modules/router.d.ts:96
  */
 import type { ZodIssue, ZodType } from 'zod'
 import { ErrorType, HttpRequestError } from '@/utils/http/errors'
+import { isRecord } from '@/utils/guards'
 
 interface AdapterValidationIssue {
   path?: string
@@ -24,6 +27,13 @@ export function parseSafeObject<T extends object>(raw: unknown, fallback: T): T 
   return raw as T
 }
 
+export function parseSafeArray<T>(raw: unknown, fallback: T[]): T[] {
+  if (!Array.isArray(raw)) {
+    return fallback
+  }
+  return raw as T[]
+}
+
 export function parseZodHttpPayload<T>(schema: ZodType<T>, raw: unknown): T {
   const result = schema.safeParse(raw)
   if (result.success) {
@@ -40,11 +50,15 @@ export function parseZodHttpPayload<T>(schema: ZodType<T>, raw: unknown): T {
   )
 }
 
-function isRecord(value: unknown): value is Record<string, unknown> {
-  return typeof value === 'object' && value !== null && !Array.isArray(value)
-}
+const MAX_ROUTE_DEPTH = 10
 
-function parseBackendRoute(raw: unknown, pathHint: string): BackendRouteConfig {
+function parseBackendRoute(raw: unknown, pathHint: string, depth = 0): BackendRouteConfig {
+  if (depth > MAX_ROUTE_DEPTH) {
+    throw new Error(
+      `Invalid backend route at ${pathHint}: max nesting depth (${MAX_ROUTE_DEPTH}) exceeded`
+    )
+  }
+
   if (!isRecord(raw)) {
     throw new Error(`Invalid backend route at ${pathHint}: expected object`)
   }
@@ -73,7 +87,7 @@ function parseBackendRoute(raw: unknown, pathHint: string): BackendRouteConfig {
   }
   if (Array.isArray(raw.children)) {
     route.children = raw.children.map((child, index) =>
-      parseBackendRoute(child, `${raw.path}.children[${index}]`)
+      parseBackendRoute(child, `${raw.path}.children[${index}]`, depth + 1)
     )
   }
 
