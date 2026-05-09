@@ -12,6 +12,7 @@ import {
   type SystemAsyncRoutesRawRes,
 } from '@/types/dto/system.dto'
 import { parseZodHttpPayload } from '@/adapters/http.adapter'
+import { DEMO_MOCK_ENABLED } from '@/constants/mock'
 
 /** 动态路由 API 路径（对接后端时使用） */
 const SYSTEM_ASYNC_ROUTES_URL = '/system/menu/routes'
@@ -58,11 +59,11 @@ export const requestSystemAsyncRoutes = async (): Promise<SystemAsyncRouteItem[]
 
 /**
  * 模拟「获取动态路由」
- * 返回空数组，表示当前仅使用静态路由；对接后端时切换为 requestSystemAsyncRoutesReal
+ * 返回兼容路由，表示当前主要使用静态路由；对接后端时切换为 requestSystemAsyncRoutesReal
  */
 export const requestSystemAsyncRoutesMock = async (): Promise<SystemAsyncRouteItem[]> => {
-  if (!import.meta.env.DEV) {
-    throw new SystemApiError(SYSTEM_ERROR_CODES.invalidResponse, 'Mock routes are DEV-only')
+  if (!DEMO_MOCK_ENABLED) {
+    throw new SystemApiError(SYSTEM_ERROR_CODES.invalidResponse, 'Mock routes are disabled')
   }
 
   await new Promise(resolve => setTimeout(resolve, 100))

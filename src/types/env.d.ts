@@ -93,6 +93,8 @@ declare interface ImportMetaEnv {
   readonly VITE_BUILD_SOURCEMAP: 'true' | 'false'
   readonly VITE_LEGACY: 'true' | 'false'
   readonly VITE_CDN: 'true' | 'false'
+  readonly VITE_AUTH_ENABLED?: 'true' | 'false'
+  readonly VITE_DEMO_MOCK_ENABLED?: 'true' | 'false'
 
   // ========== 主题相关调试 ==========
   readonly VITE_THEME_DEBUG?: 'true' | 'false'

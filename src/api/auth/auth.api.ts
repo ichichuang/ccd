@@ -14,6 +14,7 @@ import {
   type UserInfo,
 } from '@/types/dto/auth.dto'
 import { parseZodHttpPayload } from '@/adapters/http.adapter'
+import { DEMO_MOCK_ENABLED } from '@/constants/mock'
 
 /** Mock 认证错误码，供调用方程序化判断 */
 export const AUTH_ERROR_CODES = {
@@ -36,7 +37,7 @@ export class AuthApiError extends Error {
   }
 }
 
-/** Mock 用户表（仅 DEV 使用） */
+/** Mock 用户表（仅本地开发或线上演示使用） */
 const MOCK_USERS: Record<string, { userId: string; roles: string[]; permissions: string[] }> = {
   admin: { userId: '1', roles: ['admin'], permissions: ['*:*:*'] },
   user: { userId: '2', roles: ['user'], permissions: ['example:architecture:read'] },
@@ -51,12 +52,12 @@ export const requestAuthLogin = async (data: LoginParams): Promise<LoginResult> 
 }
 
 /**
- * 模拟登录：仅用于本地开发测试
+ * 模拟登录：仅用于本地开发测试与显式开启的线上演示
  * 账号密码规则：admin/123456 → 管理员，user/123456 → 普通用户
  */
 export const requestAuthLoginMock = async (payload: LoginParams): Promise<LoginResult> => {
-  if (!import.meta.env.DEV) {
-    throw new AuthApiError(AUTH_ERROR_CODES.invalidCredentials, 'Mock auth is DEV-only')
+  if (!DEMO_MOCK_ENABLED) {
+    throw new AuthApiError(AUTH_ERROR_CODES.invalidCredentials, 'Mock auth is disabled')
   }
 
   const { username, password } = payload
@@ -100,8 +101,8 @@ export const requestAuthCurrentUser = async (token: string): Promise<UserInfo> =
  * Token 格式：`mock-token-{userId}`，从 token 中解析 userId 进行查找
  */
 export const requestAuthCurrentUserMock = async (token: string): Promise<UserInfo> => {
-  if (!import.meta.env.DEV) {
-    throw new AuthApiError(AUTH_ERROR_CODES.tokenInvalid, 'Mock auth is DEV-only')
+  if (!DEMO_MOCK_ENABLED) {
+    throw new AuthApiError(AUTH_ERROR_CODES.tokenInvalid, 'Mock auth is disabled')
   }
 
   await new Promise(resolve => setTimeout(resolve, 300))
