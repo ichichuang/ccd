@@ -10,7 +10,8 @@ import { useLoading } from '@/hooks/layout/useLoading'
 import { useNprogress } from '@/hooks/layout/useNprogress'
 import type { RouteLocationNormalized, Router } from 'vue-router'
 
-const ROUTE_PAGE_LOADING_DELAY_MS = 180
+const ROUTE_PAGE_LOADING_DELAY_MS = 0
+const ROUTE_PAGE_LOADING_MIN_VISIBLE_MS = 140
 
 /**
  * 使用纯函数与全局 i18n 更新页面标题
@@ -29,8 +30,10 @@ function updatePageTitle(to: RouteLocationNormalized): void {
  * 必须在 usePermissionGuard 之前调用，确保 NProgress 在异步操作前启动
  */
 export function registerGuardEffects(router: Router): void {
-  let pendingRoutePageLoads = 0
   let routePageLoadingTimer: ReturnType<typeof setTimeout> | null = null
+  let routePageLoadingReleaseTimer: ReturnType<typeof setTimeout> | null = null
+  let routePageLoadingStartedAt = 0
+  let routePageLoadingActive = false
 
   const clearRoutePageLoadingTimer = (): void => {
     if (routePageLoadingTimer === null) return
@@ -38,25 +41,53 @@ export function registerGuardEffects(router: Router): void {
     routePageLoadingTimer = null
   }
 
+  const clearRoutePageLoadingReleaseTimer = (): void => {
+    if (routePageLoadingReleaseTimer === null) return
+    clearTimeout(routePageLoadingReleaseTimer)
+    routePageLoadingReleaseTimer = null
+  }
+
+  const activateRoutePageLoading = (): void => {
+    clearRoutePageLoadingTimer()
+    clearRoutePageLoadingReleaseTimer()
+
+    routePageLoadingStartedAt = Date.now()
+    if (routePageLoadingActive) return
+
+    const { pageLoadingStart } = useLoading()
+    routePageLoadingActive = true
+    pageLoadingStart()
+  }
+
   const scheduleRoutePageLoading = (): void => {
     clearRoutePageLoadingTimer()
-    routePageLoadingTimer = setTimeout(() => {
-      routePageLoadingTimer = null
-      const { pageLoadingStart } = useLoading()
-      pendingRoutePageLoads += 1
-      pageLoadingStart()
-    }, ROUTE_PAGE_LOADING_DELAY_MS)
+    clearRoutePageLoadingReleaseTimer()
+
+    if (ROUTE_PAGE_LOADING_DELAY_MS <= 0) {
+      activateRoutePageLoading()
+      return
+    }
+
+    routePageLoadingTimer = setTimeout(activateRoutePageLoading, ROUTE_PAGE_LOADING_DELAY_MS)
   }
 
   const clearOwnedPageLoading = (): void => {
     clearRoutePageLoadingTimer()
-    if (pendingRoutePageLoads === 0) return
-    const { pageLoadingDone } = useLoading()
+    if (!routePageLoadingActive) return
 
-    while (pendingRoutePageLoads > 0) {
+    const elapsed = Date.now() - routePageLoadingStartedAt
+    const remainingVisibleMs = Math.max(0, ROUTE_PAGE_LOADING_MIN_VISIBLE_MS - elapsed)
+
+    clearRoutePageLoadingReleaseTimer()
+    routePageLoadingReleaseTimer = setTimeout(() => {
+      routePageLoadingReleaseTimer = null
+      if (!routePageLoadingActive) return
+
+      const { pageLoadingDone } = useLoading()
+      routePageLoadingActive = false
+      routePageLoadingStartedAt = 0
       pageLoadingDone()
-      pendingRoutePageLoads -= 1
-    }
+    }, remainingVisibleMs)
   }
 
   router.beforeEach((to, _from) => {
