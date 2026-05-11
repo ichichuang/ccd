@@ -33,6 +33,29 @@ Rules for this exception:
 - Every preset and mode MUST include complete semantic families: `primary`, `accent`, `success`, `warn`, `danger`, `info`, `help`, base scalar tokens, neutral tokens, and independent `sidebar` tokens.
 - After changing preset data, run `pnpm exec tsx scripts/upgrade-all-themes.mjs`, `pnpm exec vitest run src/constants/theme.spec.ts src/utils/theme`, and ESLint for the touched theme files.
 
+## Semantic Contrast Validation Contract
+
+`pnpm validate:tokens` is the canonical theme-token gate. It is semantic-aware and MUST NOT be treated as a flat "all tokens require 4.5" checker.
+
+Classification and thresholds:
+
+- `action` → `>= 4.5`
+  - Interactive fills and their readable foreground pairs such as `primary.default`, `accent.default`, `success.default`, `danger.default`, `info.default`, `help.default`, `sidebar.primary`, and `sidebar.accent`
+- `text` → `>= 4.5`
+  - Primary readable text and content-surface pairs such as `background/foreground`, `card/card-foreground`, and other body-text-critical surfaces
+- `subtle` → `>= 3.0`
+  - Low-emphasis structural surfaces such as `muted`, `secondary`, `border`, and `input`
+- `decorative` → non-blocking by default
+  - Decorative pairs such as `*-light` and `*-light-foreground`
+  - These MAY emit advisories, but they MUST NOT block commits under the default validation mode
+
+Implications:
+
+- Do NOT weaken `action` or `text` thresholds to make soft palettes pass.
+- Do NOT "fix" decorative `*-light` variants by forcing them to satisfy text-grade WCAG thresholds unless the token is being repurposed as readable UI text.
+- If an `action` token fails and a dark readable foreground solves it, prefer correcting `*.foreground` / `sidebar.*Foreground` before redesigning the base hue.
+- If a token is intended for readable content, do not store it under a decorative `*.light` slot just to bypass validation.
+
 ## 📏 Size & Spacing System Anti-Patterns (FORBIDDEN)
 - ❌ `class="w-4"`, `class="p-10"`, `class="mt-2"` — Unitless numeric shorthands (defaulting to `rem`) are **ABSOLUTELY FORBIDDEN**.
 - ❌ `class="w-[16rem]"`, `class="h-[2em]"` — `rem/em` units are **ABSOLUTELY FORBIDDEN**.

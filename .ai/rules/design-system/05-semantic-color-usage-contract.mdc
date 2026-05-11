@@ -42,8 +42,35 @@ alwaysApply: false
   - `warning: generateColorScale('warn', { ... })`
 - Outside this adapter boundary, do not introduce `warning` as semantic family.
 
+## Semantic Validation Rules
+
+Theme token validation is meaning-aware. AI MUST preserve the intended semantic tier of each token instead of assuming a uniform contrast bar.
+
+Validation tiers:
+
+- `action`
+  - Examples: `primary.default`, `accent.default`, `success.default`, `danger.default`, `info.default`, `help.default`, `sidebar.primary`, `sidebar.accent`
+  - Contract: these pairs MUST remain readable at `>= 4.5`
+- `text`
+  - Examples: `foreground`, `card-foreground`, other body-text-critical pairs
+  - Contract: these pairs MUST remain readable at `>= 4.5`
+- `subtle`
+  - Examples: `muted`, `secondary`, `border`, `input`
+  - Contract: these pairs MUST remain readable at `>= 3.0`
+- `decorative`
+  - Examples: `*-light`, `*-light-foreground`
+  - Contract: these are non-blocking by default and may surface as warnings only
+
+AI behavior requirements:
+
+- Do NOT use `*-light` or `*-light-foreground` as the primary readable text/fill pair for CTAs, primary buttons, or body content.
+- Do NOT downgrade an `action` or `text` token into a decorative slot just to make validation pass.
+- When an `action` pair fails, prefer adjusting the foreground token first if that preserves the palette intent.
+- If a design intentionally needs decorative validation to block, that must be an explicit validator configuration decision, not an ad hoc rule change.
+
 ## Pre-Output Checklist (AI Must Pass)
 - [ ] All semantic color classes use canonical family names from this contract
 - [ ] No `warning`/`destructive` aliases in business code or design docs
 - [ ] `warn` and `danger` are used consistently for project-facing semantics
 - [ ] Any PrimeVue `warning` usage is limited to adapter boundary mapping only
+- [ ] No decorative `*-light` token is being treated as a text-grade action/content token

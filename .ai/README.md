@@ -72,7 +72,10 @@ Browser automation intentionally writes compact summaries and optional evidence 
 - Aggressive cleanup when needed: `pnpm ai:clean -- --all`
 - Validate structure: `pnpm ai:doctor` (runs `ai:guard` and `validate:tokens`)
 - Validate generated business surfaces: `pnpm ai:guard`
-- Validate theme token contrast: `pnpm validate:tokens`
+- Validate theme token semantics and contrast: `pnpm validate:tokens`
+  - `action` / `text` pairs must satisfy `>= 4.5`
+  - `subtle` pairs must satisfy `>= 3.0`
+  - decorative pairs such as `*-light` and `*-light-foreground` are non-blocking by default and surface as advisories
 - Check drift-sensitive docs/config/style contracts: `pnpm drift-check`
 - Check desktop/Tauri config surface when relevant: `pnpm sync:desktop-config`
 - Run Codex preflight: `pnpm codex:preflight`
