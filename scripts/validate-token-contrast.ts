@@ -1,59 +1,28 @@
 import { THEME_PRESETS } from '../src/constants/theme'
 import { generateThemeVars } from '../src/utils/theme/engine'
+import {
+  THEME_CONTRAST_PAIR_SPECS,
+  assessTokenContrast,
+  type DecorativeValidationMode,
+} from '../src/utils/theme/validate'
 
 interface ContrastFinding {
   preset: string
   mode: 'light' | 'dark'
   pair: string
-  role: ContrastRole
+  level: TokenSemanticLevel
   ratio: number
+  required: number | null
+  status: 'FAIL' | 'WARN' | 'SKIP'
   foreground: string
   background: string
 }
 
-const CONTRAST_ROLES = {
-  body: 4.5,
-  action: 4.5,
-  subtle: 3.0,
-} as const
+type TokenSemanticLevel = 'action' | 'text' | 'subtle' | 'decorative'
 
-type ContrastRole = keyof typeof CONTRAST_ROLES
-
-const TOKEN_PAIRS: Array<{
-  background: keyof ThemeCssVars
-  foreground: keyof ThemeCssVars
-  role: ContrastRole
-}> = [
-  { background: '--background', foreground: '--foreground', role: 'body' },
-  { background: '--card', foreground: '--card-foreground', role: 'body' },
-  { background: '--popover', foreground: '--popover-foreground', role: 'body' },
-  { background: '--primary', foreground: '--primary-foreground', role: 'action' },
-  { background: '--primary-hover', foreground: '--primary-hover-foreground', role: 'action' },
-  { background: '--primary-light', foreground: '--primary-light-foreground', role: 'action' },
-  { background: '--secondary', foreground: '--secondary-foreground', role: 'subtle' },
-  { background: '--muted', foreground: '--muted-foreground', role: 'subtle' },
-  { background: '--accent', foreground: '--accent-foreground', role: 'action' },
-  { background: '--accent-hover', foreground: '--accent-hover-foreground', role: 'action' },
-  { background: '--accent-light', foreground: '--accent-light-foreground', role: 'action' },
-  { background: '--danger', foreground: '--danger-foreground', role: 'action' },
-  { background: '--danger-hover', foreground: '--danger-hover-foreground', role: 'action' },
-  { background: '--danger-light', foreground: '--danger-light-foreground', role: 'action' },
-  { background: '--warn', foreground: '--warn-foreground', role: 'action' },
-  { background: '--warn-hover', foreground: '--warn-hover-foreground', role: 'action' },
-  { background: '--warn-light', foreground: '--warn-light-foreground', role: 'action' },
-  { background: '--success', foreground: '--success-foreground', role: 'action' },
-  { background: '--success-hover', foreground: '--success-hover-foreground', role: 'action' },
-  { background: '--success-light', foreground: '--success-light-foreground', role: 'action' },
-  { background: '--info', foreground: '--info-foreground', role: 'action' },
-  { background: '--info-hover', foreground: '--info-hover-foreground', role: 'action' },
-  { background: '--info-light', foreground: '--info-light-foreground', role: 'action' },
-  { background: '--help', foreground: '--help-foreground', role: 'action' },
-  { background: '--help-hover', foreground: '--help-hover-foreground', role: 'action' },
-  { background: '--help-light', foreground: '--help-light-foreground', role: 'action' },
-  { background: '--sidebar-background', foreground: '--sidebar-foreground', role: 'body' },
-  { background: '--sidebar-primary', foreground: '--sidebar-primary-foreground', role: 'action' },
-  { background: '--sidebar-accent', foreground: '--sidebar-accent-foreground', role: 'action' },
-]
+interface ValidationConfig {
+  decorativeMode: DecorativeValidationMode
+}
 
 function parseRgbChannels(value: string): [number, number, number] {
   const channels = value
@@ -89,30 +58,53 @@ function contrastRatio(a: string, b: string): number {
   return (lighter + 0.05) / (darker + 0.05)
 }
 
-function collectFindings(): ContrastFinding[] {
+function resolveDecorativeMode(args: string[]): DecorativeValidationMode {
+  const inlineArg = args.find(arg => arg.startsWith('--decorative-mode='))
+  const explicitArgIndex = args.findIndex(arg => arg === '--decorative-mode')
+  const rawMode =
+    inlineArg?.slice('--decorative-mode='.length) ??
+    (explicitArgIndex >= 0 ? args[explicitArgIndex + 1] : undefined) ??
+    process.env.TOKEN_DECORATIVE_MODE ??
+    'warn'
+
+  if (rawMode === 'ignore' || rawMode === 'warn' || rawMode === 'strict') {
+    return rawMode
+  }
+
+  throw new Error(`Invalid decorative mode "${rawMode}". Expected one of: ignore, warn, strict.`)
+}
+
+function collectFindings(config: ValidationConfig): ContrastFinding[] {
   const findings: ContrastFinding[] = []
 
   for (const preset of THEME_PRESETS) {
     for (const mode of ['light', 'dark'] as const) {
       const vars = generateThemeVars(preset, mode === 'dark')
 
-      for (const {
-        background: backgroundToken,
-        foreground: foregroundToken,
-        role,
-      } of TOKEN_PAIRS) {
-        const background = vars[backgroundToken]
-        const foreground = vars[foregroundToken]
+      for (const spec of THEME_CONTRAST_PAIR_SPECS) {
+        const background = vars[spec.backgroundVar]
+        const foreground = vars[spec.foregroundVar]
         const ratio = contrastRatio(background, foreground)
-        const minRatio = CONTRAST_ROLES[role]
+        const assessment = assessTokenContrast(spec.tokenPath, ratio, config)
 
-        if (ratio < minRatio) {
+        if (
+          assessment.severity === 'error' ||
+          assessment.severity === 'warn' ||
+          assessment.severity === 'skip'
+        ) {
           findings.push({
             preset: preset.name,
             mode,
-            pair: `${backgroundToken}/${foregroundToken}`,
-            role,
+            pair: spec.label,
+            level: assessment.level,
             ratio,
+            required: assessment.required,
+            status:
+              assessment.severity === 'error'
+                ? 'FAIL'
+                : assessment.severity === 'warn'
+                  ? 'WARN'
+                  : 'SKIP',
             foreground,
             background,
           })
@@ -124,19 +116,46 @@ function collectFindings(): ContrastFinding[] {
   return findings
 }
 
-const findings = collectFindings()
+function formatExpectation(finding: ContrastFinding): string {
+  if (finding.status === 'FAIL' && finding.required !== null) {
+    return `expected >= ${finding.required.toFixed(1)}`
+  }
 
-if (findings.length > 0) {
+  if (finding.status === 'WARN' && finding.required !== null) {
+    return `ignored; recommended >= ${finding.required.toFixed(1)}`
+  }
+
+  return 'ignored by strategy'
+}
+
+function formatFinding(finding: ContrastFinding): string {
+  return (
+    `[${finding.status}][${finding.level}] ${finding.preset}/${finding.mode} ` +
+    `${finding.pair} contrast: ${finding.ratio.toFixed(2)} ` +
+    `(${formatExpectation(finding)}, bg ${finding.background}, fg ${finding.foreground})`
+  )
+}
+
+const config: ValidationConfig = {
+  decorativeMode: resolveDecorativeMode(process.argv.slice(2)),
+}
+const findings = collectFindings(config)
+const failures = findings.filter(finding => finding.status === 'FAIL')
+const advisories = findings.filter(finding => finding.status !== 'FAIL')
+const totalPairs = THEME_PRESETS.length * 2 * THEME_CONTRAST_PAIR_SPECS.length
+
+if (failures.length > 0) {
   console.error('Token contrast validation failed:')
-  findings.forEach(finding => {
-    console.error(
-      `  - ${finding.preset}/${finding.mode} ${finding.pair}: ${finding.ratio.toFixed(2)} ` +
-        `(${finding.role} >= ${CONTRAST_ROLES[finding.role]}, bg ${finding.background}, fg ${finding.foreground})`
-    )
-  })
+  failures.forEach(finding => console.error(`  - ${formatFinding(finding)}`))
+  advisories.forEach(finding => console.error(`  - ${formatFinding(finding)}`))
   process.exit(1)
 }
 
+if (advisories.length > 0) {
+  console.warn('Token contrast validation passed with advisories:')
+  advisories.forEach(finding => console.warn(`  - ${formatFinding(finding)}`))
+}
+
 console.log(
-  `Token contrast validation passed: ${THEME_PRESETS.length} presets × 2 modes × ${TOKEN_PAIRS.length} pairs`
+  `Token contrast validation passed: ${THEME_PRESETS.length} presets × 2 modes × ${THEME_CONTRAST_PAIR_SPECS.length} pairs (${totalPairs} checks, decorativeMode=${config.decorativeMode})`
 )

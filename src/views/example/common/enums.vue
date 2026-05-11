@@ -33,6 +33,7 @@ const enumSources: EnumSource[] = [
   AUTH = 'AUTH',
   SERVER = 'SERVER',
   CLIENT = 'CLIENT',
+  VALIDATION = 'VALIDATION',
   SECURITY = 'SECURITY',
   UNKNOWN = 'UNKNOWN',
 }`,
@@ -43,6 +44,7 @@ const enumSources: EnumSource[] = [
         AUTH: 'danger',
         SERVER: 'danger',
         CLIENT: 'secondary',
+        VALIDATION: 'warn',
         SECURITY: 'danger',
         UNKNOWN: 'secondary',
       }

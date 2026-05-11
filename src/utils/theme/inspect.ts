@@ -17,7 +17,7 @@ export interface ThemeContrastMatrixEntry {
   background: string
   foreground: string
   ratio: number
-  required: number
+  required: number | null
   passes: boolean
 }
 
@@ -48,7 +48,7 @@ function inspectContrast(theme: ResolvedTheme): ThemeContrastMatrixEntry[] {
       foreground: pair.fg,
       ratio: roundRatio(ratio),
       required: pair.required,
-      passes: ratio >= pair.required,
+      passes: pair.required === null ? true : ratio >= pair.required,
     }
   })
 }

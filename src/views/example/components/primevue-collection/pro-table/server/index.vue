@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { serverTableColumns } from './columns'
+import { userListApiExecutor } from '../shared/apiExecutor'
 
 defineOptions({ name: 'ExampleProTableServerPage' })
 </script>
@@ -41,8 +42,9 @@ defineOptions({ name: 'ExampleProTableServerPage' })
       <ProTable
         state-key="example-pro-table-server"
         api-url="/api/v1/users"
-        data-key="data.list"
-        total-key="data.total"
+        data-key="list"
+        total-key="total"
+        :api-executor="userListApiExecutor"
         :columns="serverTableColumns"
         row-key="id"
         server-mode

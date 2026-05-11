@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { infiniteTableColumns } from './columns'
+import { userListApiExecutor } from '../shared/apiExecutor'
 
 defineOptions({ name: 'ExampleProTableInfinitePage' })
 </script>
@@ -39,8 +40,9 @@ defineOptions({ name: 'ExampleProTableInfinitePage' })
       <ProTable
         state-key="example-pro-table-infinite"
         api-url="/api/v1/users"
-        data-key="data.list"
-        total-key="data.total"
+        data-key="list"
+        total-key="total"
+        :api-executor="userListApiExecutor"
         :columns="infiniteTableColumns"
         :request-config="{ accumulate: true }"
         :pagination="false"

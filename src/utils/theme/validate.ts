@@ -18,8 +18,17 @@ export interface ValidationResult {
   token: string
   severity: 'error' | 'warn'
   message: string
+  level?: TokenSemanticLevel
   ratio?: number
   required?: number
+}
+
+export type TokenSemanticLevel = 'action' | 'text' | 'subtle' | 'decorative'
+
+export type DecorativeValidationMode = 'ignore' | 'warn' | 'strict'
+
+export interface ThemeValidationConfig {
+  decorativeMode?: DecorativeValidationMode
 }
 
 export interface StrictThemeRules {
@@ -37,124 +46,450 @@ export interface StrictValidationResult extends ValidationResult {
   deltaE?: number
 }
 
-// ---------------------------------------------------------------------------
-// Contrast thresholds
-// ---------------------------------------------------------------------------
+export interface ThemeContrastPairSpec {
+  tokenPath: string
+  label: string
+  backgroundVar: keyof ThemeCssVars
+  foregroundVar: keyof ThemeCssVars
+  getBackground: (resolved: ResolvedTheme) => string | undefined
+  getForeground: (resolved: ResolvedTheme) => string | undefined
+}
 
-const WCAG = {
-  body: 4.5,
-  action: 4.5,
-  subtle: 3.0,
-} as const
+export interface ThemeContrastPair {
+  bg: string
+  fg: string
+  tokenPath: string
+  label: string
+  level: TokenSemanticLevel
+  required: number | null
+}
 
-type ContrastRole = keyof typeof WCAG
+export interface ThemeContrastAssessment {
+  tokenPath: string
+  level: TokenSemanticLevel
+  ratio: number
+  required: number | null
+  severity: 'error' | 'warn' | 'skip' | null
+  message: string | null
+}
+
+const DEFAULT_THEME_VALIDATION_CONFIG: Required<ThemeValidationConfig> = {
+  decorativeMode: 'warn',
+}
+
+const DECORATIVE_MIN_CONTRAST = 2
+
+const ACTION_FAMILIES = ['primary', 'accent', 'success', 'warn', 'danger', 'info', 'help'] as const
+
+function resolveValidationConfig(config?: ThemeValidationConfig): Required<ThemeValidationConfig> {
+  return {
+    ...DEFAULT_THEME_VALIDATION_CONFIG,
+    ...config,
+  }
+}
+
+function formatThreshold(value: number): string {
+  return value.toFixed(1)
+}
+
+function isFamilyVariant(
+  tokenPath: string,
+  family: (typeof ACTION_FAMILIES)[number],
+  variant: 'default' | 'hover' | 'foreground' | 'hoverForeground'
+): boolean {
+  return tokenPath === `${family}.${variant}`
+}
+
+export function classifyToken(tokenPath: string): TokenSemanticLevel {
+  if (tokenPath.endsWith('.light') || tokenPath.endsWith('.lightForeground')) {
+    return 'decorative'
+  }
+
+  if (
+    tokenPath === 'background' ||
+    tokenPath === 'foreground' ||
+    tokenPath === 'card' ||
+    tokenPath === 'card.foreground' ||
+    tokenPath === 'neutral.foreground' ||
+    tokenPath === 'secondaryForeground' ||
+    tokenPath === 'neutral.secondaryForeground' ||
+    tokenPath === 'sidebar.background' ||
+    tokenPath === 'sidebar.foreground'
+  ) {
+    return 'text'
+  }
+
+  if (
+    tokenPath === 'secondary' ||
+    tokenPath === 'muted' ||
+    tokenPath === 'border' ||
+    tokenPath === 'input'
+  ) {
+    return 'subtle'
+  }
+
+  if (
+    tokenPath === 'sidebar.primary' ||
+    tokenPath === 'sidebar.primaryForeground' ||
+    tokenPath === 'sidebar.accent' ||
+    tokenPath === 'sidebar.accentForeground'
+  ) {
+    return 'action'
+  }
+
+  if (
+    ACTION_FAMILIES.some(
+      family =>
+        isFamilyVariant(tokenPath, family, 'default') ||
+        isFamilyVariant(tokenPath, family, 'hover') ||
+        isFamilyVariant(tokenPath, family, 'foreground') ||
+        isFamilyVariant(tokenPath, family, 'hoverForeground')
+    )
+  ) {
+    return 'action'
+  }
+
+  return 'text'
+}
+
+export function getContrastThreshold(
+  level: TokenSemanticLevel,
+  config?: ThemeValidationConfig
+): number | null {
+  const resolvedConfig = resolveValidationConfig(config)
+
+  switch (level) {
+    case 'action':
+    case 'text':
+      return 4.5
+    case 'subtle':
+      return 3.0
+    case 'decorative':
+      return resolvedConfig.decorativeMode === 'ignore' ? null : DECORATIVE_MIN_CONTRAST
+  }
+}
+
+export function assessTokenContrast(
+  tokenPath: string,
+  ratio: number,
+  config?: ThemeValidationConfig
+): ThemeContrastAssessment {
+  const resolvedConfig = resolveValidationConfig(config)
+  const level = classifyToken(tokenPath)
+  const required = getContrastThreshold(level, resolvedConfig)
+
+  if (required === null) {
+    return {
+      tokenPath,
+      level,
+      ratio,
+      required,
+      severity: 'skip',
+      message: null,
+    }
+  }
+
+  if (ratio >= required) {
+    return {
+      tokenPath,
+      level,
+      ratio,
+      required,
+      severity: null,
+      message: null,
+    }
+  }
+
+  if (level === 'decorative' && resolvedConfig.decorativeMode === 'warn') {
+    return {
+      tokenPath,
+      level,
+      ratio,
+      required,
+      severity: 'warn',
+      message: `Contrast ratio ${ratio.toFixed(2)}:1 below decorative recommendation ${formatThreshold(required)}:1 (ignored)`,
+    }
+  }
+
+  const scope = level === 'decorative' ? 'decorative strict' : level
+
+  return {
+    tokenPath,
+    level,
+    ratio,
+    required,
+    severity: 'error',
+    message: `Contrast ratio ${ratio.toFixed(2)}:1 below required ${formatThreshold(required)}:1 (${scope})`,
+  }
+}
 
 // ---------------------------------------------------------------------------
 // Pairs to validate
 // ---------------------------------------------------------------------------
 
-export function getThemeContrastPairs(
-  resolved: ResolvedTheme
-): Array<{ bg: string; fg: string; role: ContrastRole; label: string; required: number }> {
-  const pairs: Array<{ bg: string; fg: string; role: ContrastRole; label: string }> = [
-    {
-      bg: resolved.background,
-      fg: resolved.foreground,
-      role: 'body',
-      label: 'background/foreground',
-    },
-    { bg: resolved.card, fg: resolved.cardForeground, role: 'body', label: 'card/card-foreground' },
-    {
-      bg: resolved.primary.base,
-      fg: resolved.primary.foreground,
-      role: 'action',
-      label: 'primary/primary-fg',
-    },
-    {
-      bg: resolved.primary.hover,
-      fg: resolved.primary.hoverForeground,
-      role: 'action',
-      label: 'primary-hover/hover-fg',
-    },
-    {
-      bg: resolved.primary.light,
-      fg: resolved.primary.lightForeground,
-      role: 'action',
-      label: 'primary-light/light-fg',
-    },
-    {
-      bg: resolved.secondary.base,
-      fg: resolved.secondary.foreground,
-      role: 'subtle',
-      label: 'secondary/secondary-fg',
-    },
-    {
-      bg: resolved.muted.base,
-      fg: resolved.muted.foreground,
-      role: 'subtle',
-      label: 'muted/muted-fg',
-    },
-    {
-      bg: resolved.accent.base,
-      fg: resolved.accent.foreground,
-      role: 'action',
-      label: 'accent/accent-fg',
-    },
-    {
-      bg: resolved.accent.hover,
-      fg: resolved.accent.hoverForeground,
-      role: 'action',
-      label: 'accent-hover/hover-fg',
-    },
-    {
-      bg: resolved.accent.light,
-      fg: resolved.accent.lightForeground,
-      role: 'action',
-      label: 'accent-light/light-fg',
-    },
-    {
-      bg: resolved.danger.base,
-      fg: resolved.danger.foreground,
-      role: 'action',
-      label: 'danger/danger-fg',
-    },
-    { bg: resolved.warn.base, fg: resolved.warn.foreground, role: 'action', label: 'warn/warn-fg' },
-    {
-      bg: resolved.success.base,
-      fg: resolved.success.foreground,
-      role: 'action',
-      label: 'success/success-fg',
-    },
-    { bg: resolved.info.base, fg: resolved.info.foreground, role: 'action', label: 'info/info-fg' },
-    { bg: resolved.help.base, fg: resolved.help.foreground, role: 'action', label: 'help/help-fg' },
-    {
-      bg: resolved.sidebar.background,
-      fg: resolved.sidebar.foreground,
-      role: 'body',
-      label: 'sidebar-bg/sidebar-fg',
-    },
-    {
-      bg: resolved.sidebar.primary,
-      fg: resolved.sidebar.primaryForeground,
-      role: 'action',
-      label: 'sidebar-primary/primary-fg',
-    },
-    {
-      bg: resolved.sidebar.accent,
-      fg: resolved.sidebar.accentForeground,
-      role: 'action',
-      label: 'sidebar-accent/accent-fg',
-    },
-  ]
+export const THEME_CONTRAST_PAIR_SPECS: ThemeContrastPairSpec[] = [
+  {
+    tokenPath: 'background',
+    label: 'background/foreground',
+    backgroundVar: '--background',
+    foregroundVar: '--foreground',
+    getBackground: resolved => resolved.background,
+    getForeground: resolved => resolved.foreground,
+  },
+  {
+    tokenPath: 'card',
+    label: 'card/foreground',
+    backgroundVar: '--card',
+    foregroundVar: '--card-foreground',
+    getBackground: resolved => resolved.card,
+    getForeground: resolved => resolved.cardForeground,
+  },
+  {
+    tokenPath: 'primary.default',
+    label: 'primary/default',
+    backgroundVar: '--primary',
+    foregroundVar: '--primary-foreground',
+    getBackground: resolved => resolved.primary.base,
+    getForeground: resolved => resolved.primary.foreground,
+  },
+  {
+    tokenPath: 'primary.hover',
+    label: 'primary/hover',
+    backgroundVar: '--primary-hover',
+    foregroundVar: '--primary-hover-foreground',
+    getBackground: resolved => resolved.primary.hover,
+    getForeground: resolved => resolved.primary.hoverForeground,
+  },
+  {
+    tokenPath: 'primary.light',
+    label: 'primary/light',
+    backgroundVar: '--primary-light',
+    foregroundVar: '--primary-light-foreground',
+    getBackground: resolved => resolved.primary.light,
+    getForeground: resolved => resolved.primary.lightForeground,
+  },
+  {
+    tokenPath: 'secondary',
+    label: 'secondary',
+    backgroundVar: '--secondary',
+    foregroundVar: '--secondary-foreground',
+    getBackground: resolved => resolved.secondary.base,
+    getForeground: resolved => resolved.secondary.foreground,
+  },
+  {
+    tokenPath: 'muted',
+    label: 'muted',
+    backgroundVar: '--muted',
+    foregroundVar: '--muted-foreground',
+    getBackground: resolved => resolved.muted.base,
+    getForeground: resolved => resolved.muted.foreground,
+  },
+  {
+    tokenPath: 'accent.default',
+    label: 'accent/default',
+    backgroundVar: '--accent',
+    foregroundVar: '--accent-foreground',
+    getBackground: resolved => resolved.accent.base,
+    getForeground: resolved => resolved.accent.foreground,
+  },
+  {
+    tokenPath: 'accent.hover',
+    label: 'accent/hover',
+    backgroundVar: '--accent-hover',
+    foregroundVar: '--accent-hover-foreground',
+    getBackground: resolved => resolved.accent.hover,
+    getForeground: resolved => resolved.accent.hoverForeground,
+  },
+  {
+    tokenPath: 'accent.light',
+    label: 'accent/light',
+    backgroundVar: '--accent-light',
+    foregroundVar: '--accent-light-foreground',
+    getBackground: resolved => resolved.accent.light,
+    getForeground: resolved => resolved.accent.lightForeground,
+  },
+  {
+    tokenPath: 'danger.default',
+    label: 'danger/default',
+    backgroundVar: '--danger',
+    foregroundVar: '--danger-foreground',
+    getBackground: resolved => resolved.danger.base,
+    getForeground: resolved => resolved.danger.foreground,
+  },
+  {
+    tokenPath: 'danger.hover',
+    label: 'danger/hover',
+    backgroundVar: '--danger-hover',
+    foregroundVar: '--danger-hover-foreground',
+    getBackground: resolved => resolved.danger.hover,
+    getForeground: resolved => resolved.danger.hoverForeground,
+  },
+  {
+    tokenPath: 'danger.light',
+    label: 'danger/light',
+    backgroundVar: '--danger-light',
+    foregroundVar: '--danger-light-foreground',
+    getBackground: resolved => resolved.danger.light,
+    getForeground: resolved => resolved.danger.lightForeground,
+  },
+  {
+    tokenPath: 'warn.default',
+    label: 'warn/default',
+    backgroundVar: '--warn',
+    foregroundVar: '--warn-foreground',
+    getBackground: resolved => resolved.warn.base,
+    getForeground: resolved => resolved.warn.foreground,
+  },
+  {
+    tokenPath: 'warn.hover',
+    label: 'warn/hover',
+    backgroundVar: '--warn-hover',
+    foregroundVar: '--warn-hover-foreground',
+    getBackground: resolved => resolved.warn.hover,
+    getForeground: resolved => resolved.warn.hoverForeground,
+  },
+  {
+    tokenPath: 'warn.light',
+    label: 'warn/light',
+    backgroundVar: '--warn-light',
+    foregroundVar: '--warn-light-foreground',
+    getBackground: resolved => resolved.warn.light,
+    getForeground: resolved => resolved.warn.lightForeground,
+  },
+  {
+    tokenPath: 'success.default',
+    label: 'success/default',
+    backgroundVar: '--success',
+    foregroundVar: '--success-foreground',
+    getBackground: resolved => resolved.success.base,
+    getForeground: resolved => resolved.success.foreground,
+  },
+  {
+    tokenPath: 'success.hover',
+    label: 'success/hover',
+    backgroundVar: '--success-hover',
+    foregroundVar: '--success-hover-foreground',
+    getBackground: resolved => resolved.success.hover,
+    getForeground: resolved => resolved.success.hoverForeground,
+  },
+  {
+    tokenPath: 'success.light',
+    label: 'success/light',
+    backgroundVar: '--success-light',
+    foregroundVar: '--success-light-foreground',
+    getBackground: resolved => resolved.success.light,
+    getForeground: resolved => resolved.success.lightForeground,
+  },
+  {
+    tokenPath: 'info.default',
+    label: 'info/default',
+    backgroundVar: '--info',
+    foregroundVar: '--info-foreground',
+    getBackground: resolved => resolved.info.base,
+    getForeground: resolved => resolved.info.foreground,
+  },
+  {
+    tokenPath: 'info.hover',
+    label: 'info/hover',
+    backgroundVar: '--info-hover',
+    foregroundVar: '--info-hover-foreground',
+    getBackground: resolved => resolved.info.hover,
+    getForeground: resolved => resolved.info.hoverForeground,
+  },
+  {
+    tokenPath: 'info.light',
+    label: 'info/light',
+    backgroundVar: '--info-light',
+    foregroundVar: '--info-light-foreground',
+    getBackground: resolved => resolved.info.light,
+    getForeground: resolved => resolved.info.lightForeground,
+  },
+  {
+    tokenPath: 'help.default',
+    label: 'help/default',
+    backgroundVar: '--help',
+    foregroundVar: '--help-foreground',
+    getBackground: resolved => resolved.help.base,
+    getForeground: resolved => resolved.help.foreground,
+  },
+  {
+    tokenPath: 'help.hover',
+    label: 'help/hover',
+    backgroundVar: '--help-hover',
+    foregroundVar: '--help-hover-foreground',
+    getBackground: resolved => resolved.help.hover,
+    getForeground: resolved => resolved.help.hoverForeground,
+  },
+  {
+    tokenPath: 'help.light',
+    label: 'help/light',
+    backgroundVar: '--help-light',
+    foregroundVar: '--help-light-foreground',
+    getBackground: resolved => resolved.help.light,
+    getForeground: resolved => resolved.help.lightForeground,
+  },
+  {
+    tokenPath: 'sidebar.background',
+    label: 'sidebar/background',
+    backgroundVar: '--sidebar-background',
+    foregroundVar: '--sidebar-foreground',
+    getBackground: resolved => resolved.sidebar.background,
+    getForeground: resolved => resolved.sidebar.foreground,
+  },
+  {
+    tokenPath: 'sidebar.primary',
+    label: 'sidebar/primary',
+    backgroundVar: '--sidebar-primary',
+    foregroundVar: '--sidebar-primary-foreground',
+    getBackground: resolved => resolved.sidebar.primary,
+    getForeground: resolved => resolved.sidebar.primaryForeground,
+  },
+  {
+    tokenPath: 'sidebar.accent',
+    label: 'sidebar/accent',
+    backgroundVar: '--sidebar-accent',
+    foregroundVar: '--sidebar-accent-foreground',
+    getBackground: resolved => resolved.sidebar.accent,
+    getForeground: resolved => resolved.sidebar.accentForeground,
+  },
+]
 
-  return pairs.map(pair => ({ ...pair, required: WCAG[pair.role] }))
+export function getThemeContrastPairs(
+  resolved: ResolvedTheme,
+  config?: ThemeValidationConfig
+): ThemeContrastPair[] {
+  const resolvedConfig = resolveValidationConfig(config)
+
+  return THEME_CONTRAST_PAIR_SPECS.flatMap(spec => {
+    const bg = spec.getBackground(resolved)
+    const fg = spec.getForeground(resolved)
+
+    if (!bg || !fg) {
+      return []
+    }
+
+    const level = classifyToken(spec.tokenPath)
+    return [
+      {
+        bg,
+        fg,
+        tokenPath: spec.tokenPath,
+        label: spec.label,
+        level,
+        required: getContrastThreshold(level, resolvedConfig),
+      },
+    ]
+  })
 }
 
 // ---------------------------------------------------------------------------
 // Main validate
 // ---------------------------------------------------------------------------
 
-export function validateTheme(resolved: ResolvedTheme): ValidationResult[] {
+export function validateTheme(
+  resolved: ResolvedTheme,
+  config?: ThemeValidationConfig
+): ValidationResult[] {
   const results: ValidationResult[] = []
 
   // Check no undefined tokens
@@ -184,17 +519,20 @@ export function validateTheme(resolved: ResolvedTheme): ValidationResult[] {
   }
 
   // Contrast validation
-  const pairs = getThemeContrastPairs(resolved)
-  for (const { bg, fg, role, label, required } of pairs) {
+  const pairs = getThemeContrastPairs(resolved, config)
+  for (const { bg, fg, tokenPath, label } of pairs) {
     emitThemeEvent({ type: 'TOKEN_DERIVED', token: `validation.${label}`, source: 'semantic' })
     const ratio = contrastRatio(parseColor(bg), parseColor(fg))
-    if (ratio < required) {
+    const assessment = assessTokenContrast(tokenPath, ratio, config)
+
+    if (assessment.severity === 'error' || assessment.severity === 'warn') {
       results.push({
         token: label,
-        severity: 'error',
-        message: `Contrast ratio ${ratio.toFixed(2)}:1 below required ${required}:1 (${role})`,
+        severity: assessment.severity,
+        message: assessment.message ?? '',
+        level: assessment.level,
         ratio,
-        required,
+        required: assessment.required ?? undefined,
       })
     }
   }

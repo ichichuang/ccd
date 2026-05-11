@@ -1,7 +1,14 @@
 <script setup lang="ts">
-import { parseSafeObject } from '@/adapters/http.adapter'
+import { z } from 'zod'
+import { parseSafeObject, parseZodHttpPayload } from '@/adapters/http.adapter'
 
 defineOptions({ name: 'ArchitectureAdapterHttp' })
+
+const adapterUserSchema = z.object({
+  userId: z.number(),
+  username: z.string(),
+  roles: z.array(z.string()),
+})
 
 const playgroundInput = ref<string>(`{
   "userId": 42,
@@ -28,12 +35,29 @@ const playgroundResult = computed<PlaygroundResult>(() => {
       errorMsg: e instanceof Error ? e.message : 'JSON parse error',
     }
   }
-  const isAccepted: boolean = !!raw && typeof raw === 'object' && !Array.isArray(raw)
-  return {
-    isJsonError: false,
-    isAccepted,
-    result: parseSafeObject(raw, {}),
-    errorMsg: null,
+  try {
+    const result = parseZodHttpPayload(adapterUserSchema, raw)
+    return {
+      isJsonError: false,
+      isAccepted: true,
+      result,
+      errorMsg: null,
+    }
+  } catch (e) {
+    return {
+      isJsonError: false,
+      isAccepted: false,
+      result: parseSafeObject(raw, {}),
+      errorMsg: e instanceof Error ? e.message : 'Schema validation failed',
+    }
+  }
+})
+
+const safeObjectPreview = computed<unknown>(() => {
+  try {
+    return parseSafeObject(JSON.parse(playgroundInput.value), {})
+  } catch {
+    return {}
   }
 })
 
@@ -80,7 +104,7 @@ function isCaseAccepted(raw: unknown): boolean {
                   </span>
                 </div>
                 <span class="text-sm text-muted-foreground text-ellipsis-1">
-                  parseSafeObject&lt;T&gt;() — 校验 HTTP 响应原始 JSON，保证始终返回安全对象
+                  parseZodHttpPayload() — 使用 Zod 校验 HTTP 响应 DTO，失败抛出 HttpRequestError
                 </span>
               </div>
             </div>
@@ -92,9 +116,10 @@ function isCaseAccepted(raw: unknown): boolean {
           </div>
           <p class="text-sm text-muted-foreground m-0">
             HTTP 数据进入业务逻辑前必须经过边界校验。
+            <code class="code-inline">parseZodHttpPayload</code>
+            是当前 DTO schema 边界；
             <code class="code-inline">parseSafeObject</code>
-            拒绝数组、null、原始类型，仅接受非数组对象；拒绝时返回 fallback
-            默认值，确保下游始终拿到安全结构。
+            仅用于需要对象 fallback 的兼容场景。
           </p>
         </header>
 
@@ -114,14 +139,14 @@ function isCaseAccepted(raw: unknown): boolean {
             placeholder="Paste raw JSON here..."
           />
           <div class="row-between min-w-0">
-            <span class="text-sm text-muted-foreground">parseSafeObject(raw, {}) →</span>
+            <span class="text-sm text-muted-foreground">parseZodHttpPayload(schema, raw) →</span>
             <Tag
               :value="
                 playgroundResult.isJsonError
                   ? 'JSON Parse Error'
                   : playgroundResult.isAccepted
-                    ? 'Accepted — valid object ✓'
-                    : 'Rejected — not a plain object ✗'
+                    ? 'Accepted — schema valid'
+                    : 'Rejected — HttpRequestError(VALIDATION)'
               "
               :severity="playgroundResult.isAccepted ? 'success' : 'danger'"
             />
@@ -138,6 +163,13 @@ function isCaseAccepted(raw: unknown): boolean {
             class="code-block"
             >{{ JSON.stringify(playgroundResult.result, null, 2) }}</pre
           >
+          <Message
+            v-if="!playgroundResult.isJsonError && !playgroundResult.isAccepted"
+            severity="warn"
+            :closable="false"
+          >
+            {{ playgroundResult.errorMsg }}
+          </Message>
         </section>
 
         <section class="glass-card col-stretch gap-md min-w-0">
@@ -177,21 +209,31 @@ function isCaseAccepted(raw: unknown): boolean {
             <span class="text-sm font-semibold text-foreground text-no-wrap">Source</span>
           </div>
           <pre class="code-block">
-export function parseSafeObject&lt;T extends object&gt;(raw: unknown, fallback: T): T {
-  if (!raw || typeof raw !== 'object' || Array.isArray(raw)) {
-    return fallback
-  }
-  return raw as T
+const userSchema = z.object({
+  userId: z.number(),
+  username: z.string(),
+  roles: z.array(z.string()),
+})
+
+export function parseZodHttpPayload&lt;T&gt;(schema: ZodType&lt;T&gt;, raw: unknown): T {
+  const result = schema.safeParse(raw)
+  if (result.success) return result.data
+  throw new HttpRequestError(
+    'HTTP adapter schema validation failed',
+    ErrorType.VALIDATION,
+    undefined,
+    undefined,
+    { issues: normalizeZodIssues(result.error.issues) },
+    false
+  )
 }</pre
           >
           <p class="text-sm text-muted-foreground m-0">
-            泛型参数
-            <code class="code-inline">T</code>
-            让 TypeScript 自动推断返回类型。 在 API 边界处使用：
-            <code class="code-inline">
-              parseSafeObject&lt;UserInfo&gt;(res.data, defaultUserInfo)
-            </code>
-            。
+            当前 HTTP DTO 边界优先使用 Zod schema，并在失败时抛出
+            <code class="code-inline">HttpRequestError(ErrorType.VALIDATION)</code>
+            。对象兜底仍可通过
+            <code class="code-inline">parseSafeObject(raw, fallback)</code>
+            获取：{{ JSON.stringify(safeObjectPreview) }}
           </p>
         </section>
       </div>

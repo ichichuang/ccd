@@ -228,28 +228,25 @@ The column schema defines table structure.
 Example:
 
 ```ts
-export interface ProTableColumn<T = any> {
+import type { VNode } from 'vue'
+
+export interface ProTableColumn<T extends Record<string, unknown> = Record<string, unknown>> {
   id: string
-
-  title: string
-
-  width?: number
-
-  minWidth?: number
-
-  sortable?: boolean
-
+  title: string | (() => VNode)
+  field?: string
+  width?: string
+  minWidth?: string
+  maxWidth?: string
+  sortable?: boolean | 'custom'
   filterable?: boolean
-
-  resizable?: boolean
-
-  pinned?: 'left' | 'right'
-
-  renderer?: (row: T) => any
-
-  headerRenderer?: () => any
-
-  meta?: Record<string, any>
+  filterType?: 'text' | 'select' | 'date' | 'number'
+  pinned?: 'left' | 'right' | false
+  hidden?: boolean
+  headerAlign?: 'left' | 'center' | 'right'
+  align?: 'left' | 'center' | 'right'
+  render?: (params: ColumnRenderParams<T>) => VNode | string | number | null
+  headerRender?: () => VNode | string
+  meta?: Record<string, unknown>
 }
 ```
 
@@ -300,24 +297,32 @@ Main component:
 Example props:
 
 ```ts
-export interface ProTableProps<T> {
+export interface ProTableProps<T extends Record<string, unknown> = Record<string, unknown>> {
   columns: ProTableColumn<T>[]
-
-  data: T[]
-
+  data?: T[]
   loading?: boolean
-
-  pagination?: boolean
-
+  pagination?: boolean | PaginationConfig
+  total?: number
+  serverMode?: boolean
+  globalFilter?: boolean
   virtualScroll?: boolean
-
-  selectable?: boolean
-
+  infiniteScroll?: boolean
+  selectable?: false | 'single' | 'checkbox'
   rowKey?: string
-
   heightMode?: 'fill' | 'auto' | 'fixed'
-
   height?: string
+
+  request?: RequestFn<T>
+  api?: ProTableApiFn
+  apiUrl?: string
+  apiMethod?: 'GET' | 'POST'
+  apiExecutor?: ProTableApiExecutor
+  apiConfig?: HttpRequestConfig
+  dataKey?: string
+  totalKey?: string
+  requestConfig?: { immediate?: boolean; accumulate?: boolean }
+  searchParams?: Record<string, unknown>
+  urlSync?: boolean | ProTableUrlSyncOptions
 }
 ```
 
@@ -325,6 +330,30 @@ Example usage:
 
 ```vue
 <ProTable :columns="columns" :data="data" virtual-scroll selectable />
+```
+
+Config-driven API mode must inject an executor so the component stays
+decoupled from the HTTP implementation:
+
+```vue
+<script setup lang="ts">
+import { get } from '@/utils/http/methods'
+import type { ProTableApiExecutor } from '@/components/ProTable/engine/types/props'
+
+const apiExecutor: ProTableApiExecutor = ({ url, query, config }) =>
+  get(url, { ...config, params: query })
+</script>
+
+<template>
+  <ProTable
+    api-url="/api/v1/users"
+    data-key="list"
+    total-key="total"
+    :api-executor="apiExecutor"
+    :columns="columns"
+    server-mode
+  />
+</template>
 ```
 
 ---

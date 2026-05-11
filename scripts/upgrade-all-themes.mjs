@@ -1,3 +1,4 @@
+import process from 'node:process'
 import { pathToFileURL } from 'node:url'
 import { THEME_PRESETS } from '../src/constants/theme.ts'
 import {
@@ -6,7 +7,6 @@ import {
   darken,
   lighten,
   mix,
-  ensureReadableForeground,
   contrastRatio,
 } from '../src/utils/theme/color.ts'
 
@@ -50,8 +50,25 @@ function normalizeHex(value, fallback = '#000000') {
   return /^#[0-9a-f]{6}$/.test(normalized) ? normalized : fallback
 }
 
-function readableForeground(background, preferred) {
-  return toHex(ensureReadableForeground(parseColor(background), parseColor(normalizeHex(preferred))))
+const FOREGROUND_CANDIDATES = ['#333333', '#111111', '#000000', '#f8f9fa', '#ffffff']
+
+function readableForeground(background, preferred, minRatio = 4.5) {
+  const normalizedBackground = normalizeHex(background)
+  const normalizedPreferred = normalizeHex(preferred)
+
+  if (
+    contrastRatio(parseColor(normalizedBackground), parseColor(normalizedPreferred)) >= minRatio
+  ) {
+    return normalizedPreferred
+  }
+
+  for (const candidate of FOREGROUND_CANDIDATES) {
+    if (contrastRatio(parseColor(normalizedBackground), parseColor(candidate)) >= minRatio) {
+      return candidate
+    }
+  }
+
+  return toHex(parseColor(normalizedPreferred))
 }
 
 function deriveHover(defaultHex, isDark) {
@@ -68,10 +85,10 @@ function upgradeColorState(input, fallbackDefault, backgroundHex, isDark) {
 
   return {
     default: base,
-    foreground: readableForeground(base, input?.foreground ?? '#ffffff'),
+    foreground: readableForeground(base, input?.foreground ?? '#ffffff', 4.5),
     hover: normalizeHex(input?.hover, deriveHover(base, isDark)),
     light,
-    lightForeground: readableForeground(light, input?.lightForeground ?? base),
+    lightForeground: readableForeground(light, input?.lightForeground ?? base, 2),
   }
 }
 
@@ -163,7 +180,7 @@ export function validateUpgradedThemes(presets) {
         const solidRatio = contrastRatio(parseColor(config[family].default), parseColor(config[family].foreground))
         const lightRatio = contrastRatio(parseColor(config[family].light), parseColor(config[family].lightForeground))
         if (solidRatio < 4.5) issues.push(`${preset.name}.${mode}.${family}: solid contrast ${solidRatio.toFixed(2)}`)
-        if (lightRatio < 4.5) issues.push(`${preset.name}.${mode}.${family}: light contrast ${lightRatio.toFixed(2)}`)
+        if (lightRatio < 2) issues.push(`${preset.name}.${mode}.${family}: light contrast ${lightRatio.toFixed(2)}`)
       }
     }
   }

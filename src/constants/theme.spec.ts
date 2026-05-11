@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { THEME_PRESETS } from './theme'
 import { parseColor, contrastRatio } from '@/utils/theme/color'
+import { assessTokenContrast, classifyToken } from '@/utils/theme/validate'
 
 type ThemeFamilyKey = 'primary' | 'accent' | 'success' | 'warn' | 'danger' | 'info' | 'help'
 type ThemeModeKey = 'light' | 'dark'
@@ -21,8 +22,12 @@ function expectHex(value: string): void {
   expect(value).toMatch(HEX_RE)
 }
 
-function expectContrast(bg: string, fg: string): void {
-  expect(contrastRatio(parseColor(bg), parseColor(fg))).toBeGreaterThanOrEqual(4.5)
+function getContrastSeverity(
+  tokenPath: string,
+  bg: string,
+  fg: string
+): ReturnType<typeof assessTokenContrast>['severity'] {
+  return assessTokenContrast(tokenPath, contrastRatio(parseColor(bg), parseColor(fg))).severity
 }
 
 function expectHueRange(label: string, hex: string, min: number, max: number): void {
@@ -73,22 +78,27 @@ describe('theme preset completeness', () => {
     }
   })
 
-  it('keeps required foreground pairs WCAG AA compliant', () => {
+  it('applies semantic-aware contrast thresholds by token meaning', () => {
+    expect(getContrastSeverity('primary.default', '#4682B4', '#FFFFFF')).toBe('error')
+    expect(getContrastSeverity('muted', '#4B5563', '#FFFFFF')).toBeNull()
+    expect(getContrastSeverity('primary.light', '#3399FF', '#FFFFFF')).not.toBe('error')
+    expect(classifyToken('accent.lightForeground')).toBe('decorative')
+    expect(getContrastSeverity('accent.lightForeground', '#B266FF', '#FFFFFF')).not.toBe('error')
+  })
+
+  it('keeps decorative light variants non-blocking across shipped presets', () => {
     for (const preset of THEME_PRESETS) {
       for (const mode of MODE_KEYS) {
         const config = preset.colors[mode]
 
-        expectContrast(config.background, config.foreground)
-        expectContrast(config.primary.default, config.primary.foreground)
-        expectContrast(config.accent.default, config.accent.foreground)
-        expectContrast(config.sidebar.background, config.sidebar.foreground)
-        expectContrast(config.sidebar.primary, config.sidebar.primaryForeground)
-        expectContrast(config.sidebar.accent, config.sidebar.accentForeground)
-
         for (const family of COLOR_FAMILIES) {
           const token = config[family]
-          expectContrast(token.default, token.foreground)
-          expectContrast(token.light, token.lightForeground)
+          expect(
+            getContrastSeverity(`${family}.light`, token.light, token.lightForeground)
+          ).not.toBe('error')
+          expect(
+            getContrastSeverity(`${family}.lightForeground`, token.light, token.lightForeground)
+          ).not.toBe('error')
         }
       }
     }

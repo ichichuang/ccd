@@ -39,6 +39,7 @@ export interface RequestConfig<TResponse = unknown> {
   retry?: RetryConfig // 重试配置
   deduplicate?: boolean // 是否启用请求去重
   cancelStrategy?: 'none' | 'cancelPrevious' // 请求取消策略
+  globalError?: 'default' | 'silent' // 是否抑制全局错误提示
   signal?: AbortSignal // 请求取消信号
   security?: SecurityConfig // 安全配置
   responseSchema?: ZodType<TResponse> // Alova 响应边界 Zod DTO 校验

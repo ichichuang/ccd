@@ -27,7 +27,14 @@ export { resolveTheme } from './resolver'
 export { resolveThemeWithGraph } from './resolver'
 export { compileThemeVars } from './compiler'
 export { deriveTheme, completeTheme } from './derive'
-export { validateTheme, validateThemeStrict, getThemeContrastPairs } from './validate'
+export {
+  validateTheme,
+  validateThemeStrict,
+  getThemeContrastPairs,
+  classifyToken,
+  getContrastThreshold,
+  assessTokenContrast,
+} from './validate'
 export { diffThemes } from './diff'
 export { getOrResolveTheme, clearThemeCache } from './cache'
 export {
@@ -49,7 +56,14 @@ export type {
 } from './resolver'
 export type { ThemeDiff } from './diff'
 export type { DeriveOptions } from './derive'
-export type { ValidationResult, StrictThemeRules, StrictValidationResult } from './validate'
+export type {
+  ValidationResult,
+  StrictThemeRules,
+  StrictValidationResult,
+  TokenSemanticLevel,
+  DecorativeValidationMode,
+  ThemeValidationConfig,
+} from './validate'
 export type { ThemeEvent, ThemeObserver } from './observability'
 export type { TokenGraph, TokenNode } from './graph'
 export type { ThemeInspection } from './inspect'

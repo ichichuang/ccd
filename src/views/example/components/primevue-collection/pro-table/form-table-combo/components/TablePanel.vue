@@ -1,10 +1,15 @@
 <script setup lang="tsx">
-import type { V1UserListItemDTO } from '@/api/example/users'
+import {
+  requestUserCreate,
+  requestUserDelete,
+  requestUserUpdate,
+  type V1UserListItemDTO,
+} from '@/api/example/users'
 import type { ColumnRenderParams, ProTableExposed } from '@/components/ProTable'
 import { useRecordOverlay } from '@/components/ProTable'
-import { del, post, put } from '@/utils/http/methods'
 import Button from 'primevue/button'
 import { userColumns, userFormSchema, userViewFormSchema } from '../config'
+import { userListApiExecutor } from '../../shared/apiExecutor'
 
 defineOptions({ name: 'FormTableComboTablePanel' })
 
@@ -34,9 +39,13 @@ const {
     view: userViewFormSchema,
   },
   apis: {
-    create: values => post('/api/v1/users', values, { enableCache: false }),
-    update: (id, values) => put(`/api/v1/users/${id}`, values, { enableCache: false }),
-    remove: row => del(`/api/v1/users/${row.id}`, { enableCache: false }),
+    create: async values => {
+      await requestUserCreate(values)
+    },
+    update: async (id, values) => {
+      await requestUserUpdate(Number(id), values)
+    },
+    remove: row => requestUserDelete(row.id),
   },
   mappers: {
     rowToEditValues: row => ({
@@ -117,8 +126,9 @@ defineExpose({
       height-mode="fill"
       :columns="columns"
       api-url="/api/v1/users"
-      data-key="data.list"
-      total-key="data.total"
+      data-key="list"
+      total-key="total"
+      :api-executor="userListApiExecutor"
       :search-params="props.searchParams"
       row-key="id"
       server-mode

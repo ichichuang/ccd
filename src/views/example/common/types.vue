@@ -95,8 +95,10 @@ export interface LoginResult {
     id: 'HttpRequestTypes',
     title: 'Http Request Types (request layer)',
     boundaryMessage:
-      '这是 hooks/请求层的配置与响应"变体"：例如 `RequestConfig` 与请求层 `ApiResponse<T>`（与 global ApiResponse 的字段形态不同）。它决定了缓存、重试、去重与安全配置的可控边界。',
-    snippet: `export interface RequestConfig {
+      '这是请求层的配置与响应"变体"：src/types/api.ts 的 ApiResponse<T> 是后端通用包装，src/utils/http/types.ts 的 ApiResponse<T> 是 HTTP 拦截器可识别的 success/data/message 包装。RequestConfig 决定缓存、重试、去重、静默错误与 schema 校验边界。',
+    snippet: `import type { ZodType } from 'zod'
+
+export interface RequestConfig<TResponse = unknown> {
   headers?: Record<string, string>
   timeout?: number
   enableCache?: boolean
@@ -104,8 +106,21 @@ export interface LoginResult {
   retry?: RetryConfig
   deduplicate?: boolean
   cancelStrategy?: 'none' | 'cancelPrevious'
+  globalError?: 'default' | 'silent'
+  signal?: AbortSignal
   security?: SecurityConfig
+  responseSchema?: ZodType<TResponse>
   [key: string]: unknown
+}
+
+export interface ApiResponse<T = unknown> {
+  success: boolean
+  data?: T
+  message?: string
+  code?: number
+  total?: number
+  page?: number
+  pageSize?: number
 }
 
 export interface SecurityConfig {

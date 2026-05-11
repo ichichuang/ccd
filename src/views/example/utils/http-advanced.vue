@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { jsonPlaceholderPostSchema, type JsonPlaceholderPostDTO } from '@/api/example/httpAdvanced'
 import { get, getCacheStats, getRequestStats, clearCache, clearRequests } from '@/utils/http'
 import type { CacheStats, RequestStats, RetryConfig } from '@/utils/http'
 import { DateUtils } from '@/utils/date/dateUtils'
@@ -31,9 +32,10 @@ async function runCacheDemo(): Promise<void> {
   cacheResult.value = ''
   const start = performance.now()
   try {
-    const data = await get<unknown>(`${BASE_URL}/posts/1`, {
+    const data = await get<JsonPlaceholderPostDTO>(`${BASE_URL}/posts/1`, {
       enableCache: true,
       cacheTTL: 30000,
+      responseSchema: jsonPlaceholderPostSchema,
     })
     cacheElapsed.value = Math.round(performance.now() - start)
     cacheResult.value = JSON.stringify(data, null, 2)
@@ -62,7 +64,10 @@ async function runDedupDemo(): Promise<void> {
   addLog('Dedup: firing 5 identical requests concurrently...')
 
   const promises = Array.from({ length: 5 }, (_, i) =>
-    get<{ id: number; title: string }>(`${BASE_URL}/posts/2`, { deduplicate: true })
+    get<JsonPlaceholderPostDTO>(`${BASE_URL}/posts/2`, {
+      deduplicate: true,
+      responseSchema: jsonPlaceholderPostSchema,
+    })
       .then(d => `#${i + 1}: ${d.title?.slice(0, 30) ?? '—'}`)
       .catch(() => `#${i + 1}: error`)
   )
@@ -92,7 +97,11 @@ async function runRetryDemo(): Promise<void> {
 
   const start = performance.now()
   try {
-    await get<unknown>(`${BASE_URL}/posts/99999`, { retry: retryConfig })
+    await get<JsonPlaceholderPostDTO>(`${BASE_URL}/posts/99999`, {
+      retry: retryConfig,
+      responseSchema: jsonPlaceholderPostSchema,
+      globalError: 'silent',
+    })
     retryLog.value = '意外成功'
   } catch (err) {
     const elapsed = Math.round(performance.now() - start)
@@ -115,8 +124,9 @@ async function runCancelDemo(): Promise<void> {
   addLog('Cancel: request started (click abort to cancel)')
 
   try {
-    const data = await get<{ id: number; title: string }>(`${BASE_URL}/posts/3`, {
+    const data = await get<JsonPlaceholderPostDTO>(`${BASE_URL}/posts/3`, {
       signal: abortController.signal,
+      responseSchema: jsonPlaceholderPostSchema,
     })
     cancelResult.value = `成功: ${data.title}`
     addLog('Cancel: request completed before abort')
@@ -204,7 +214,8 @@ onMounted(() => {
                   </span>
                 </div>
                 <span class="text-sm text-muted-foreground text-ellipsis-1">
-                  演示缓存 / 去重 / 重试 / 中止 / 请求统计 — 全部基于 @/utils/http 模块。
+                  低层工具示例：演示缓存 / 去重 / 重试 / 中止 / 请求统计，并使用 DTO schema
+                  校验响应。
                 </span>
               </div>
             </div>

@@ -1,35 +1,27 @@
 <script setup lang="ts">
-import { alovaInstance } from '@/utils/http/instance'
+import { buildExampleTodoDetailMethod, todoSchema, type TodoDTO } from '@/api/example/todos'
 
 defineOptions({ name: 'UseHttpRequest' })
 
-interface TodoDTO {
-  userId: number
-  id: number
-  title: string
-  completed: boolean
-}
-
-const SUCCESS_URL = 'https://jsonplaceholder.typicode.com/todos/1'
-const ERROR_URL = 'https://jsonplaceholder.typicode.com/todos/invalid-id'
-
 // Card 1: Manual success trigger
-const successReq = useHttpRequest<TodoDTO>(
-  (client: typeof alovaInstance) => client.Get<TodoDTO>(SUCCESS_URL),
-  { immediate: false, globalLoading: false }
-)
+const successReq = useHttpRequest<TodoDTO>(client => buildExampleTodoDetailMethod(client, 1), {
+  immediate: false,
+  globalLoading: false,
+  responseSchema: todoSchema,
+})
 
 // Card 2: Manual error trigger
 const errorReq = useHttpRequest<TodoDTO>(
-  (client: typeof alovaInstance) => client.Get<TodoDTO>(ERROR_URL),
-  { immediate: false, globalLoading: false }
+  client => buildExampleTodoDetailMethod(client, 'invalid-id'),
+  { immediate: false, globalLoading: false, responseSchema: todoSchema }
 )
 
 // Card 3: Immediate fetch on mount (hook-level immediate)
-const immediateReq = useHttpRequest<TodoDTO>(
-  (client: typeof alovaInstance) => client.Get<TodoDTO>(SUCCESS_URL),
-  { immediate: true, globalLoading: false }
-)
+const immediateReq = useHttpRequest<TodoDTO>(client => buildExampleTodoDetailMethod(client, 1), {
+  immediate: true,
+  globalLoading: false,
+  responseSchema: todoSchema,
+})
 
 const successLoading = computed<boolean>(() => successReq.loading.value)
 const errorLoading = computed<boolean>(() => errorReq.loading.value)
@@ -43,6 +35,9 @@ const successErrorText = computed<string>(() => {
 
 const errorErrorText = computed<string>(() => {
   const err = errorReq.error.value
+  if (!err && errorReq.rawError.value instanceof Error) {
+    return `RAW:${errorReq.rawError.value.message}`
+  }
   if (!err) return '—'
   return `${err.type}:${err.message}`
 })
@@ -112,8 +107,8 @@ const runError = async (): Promise<void> => {
                   </span>
                 </div>
                 <span class="text-sm text-muted-foreground text-ellipsis-1">
-                  教育性 Hook 边界示例：使用绝对 URL 演示 useHttpRequest 行为，并禁用
-                  globalLoading；生产业务请求必须放在 API 模块与业务 Hook 中。
+                  教育性 Hook 边界示例：API 模块构建 Method，useHttpRequest 负责状态与 schema
+                  校验，并禁用 globalLoading。
                 </span>
               </div>
             </div>
@@ -129,6 +124,10 @@ const runError = async (): Promise<void> => {
               <Tag
                 value="globalLoading=false"
                 severity="info"
+              />
+              <Tag
+                value="responseSchema=todoSchema"
+                severity="success"
               />
             </div>
           </div>
