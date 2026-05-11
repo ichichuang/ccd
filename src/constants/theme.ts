@@ -1636,7 +1636,7 @@ export const THEME_PRESETS: CompleteThemePreset[] = [
   },
 ]
 
-export const DEFAULT_THEME_NAME = 'morandi-elegance'
+export const DEFAULT_THEME_NAME = 'soft-morandi-pastels'
 export const DEFAULT_THEME_MODE = 'auto' as const
 
 /**

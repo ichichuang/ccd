@@ -242,13 +242,17 @@ export default defineComponent({
                 container: () => (
                   <div
                     data-layout-drawer="true"
-                    class="admin-sidebar--fixed layout-full flex flex-col select-none"
+                    class="admin-sidebar--fixed layout-full min-h-0 flex flex-col select-none"
                     style={runtime.drawerSafeAreaStyle.value}
                   >
                     <AdminSidebarLogo />
                     <CScrollbar
-                      native
-                      class="col-fill px-sm"
+                      class="col-fill min-h-0 px-sm"
+                      options={{
+                        overflow: {
+                          x: 'hidden',
+                        },
+                      }}
                     >
                       <AdminSidebarMenu
                         sidebarCollapse={false}

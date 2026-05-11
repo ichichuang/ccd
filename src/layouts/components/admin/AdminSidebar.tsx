@@ -67,8 +67,12 @@ export default defineComponent({
         >
           <AdminSidebarLogo />
           <CScrollbar
-            native
-            class="col-fill px-sm"
+            class="col-fill min-h-0 px-sm"
+            options={{
+              overflow: {
+                x: 'hidden',
+              },
+            }}
           >
             <AdminSidebarMenu
               sidebarCollapse={props.sidebarCollapse}
