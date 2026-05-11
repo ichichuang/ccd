@@ -79,6 +79,7 @@ const stateByContext = computed(() => {
   return contextList.value.reduce<Record<MenuVisualContext, string>>(
     (acc, c) => {
       acc[c] = getMenuStateClasses({
+        context: c,
         distance: distance.value,
         isFocused: isFocused.value,
         isSubmenuOpen: isSubmenuOpen.value,

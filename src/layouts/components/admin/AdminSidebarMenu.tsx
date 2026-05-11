@@ -15,7 +15,6 @@ import {
 } from '@/router/utils/helper'
 import {
   MENU_FALLBACK_ICON,
-  MENU_INACTIVE_TEXT,
   MENU_ITEM_GAP,
   MENU_TEXT_WEIGHT,
   MENU_PANEL_INDENT_ROOT,
@@ -349,6 +348,7 @@ export default defineComponent({
         .filter(Boolean)
         .join(' ')
       const stateClasses = getMenuStateClasses({
+        context: 'sidebar',
         distance,
         isSubmenuOpen: shouldUseCollapsedPopup ? openDropdownKey.value === key : isSubmenuOpen,
         level,
@@ -532,12 +532,9 @@ export default defineComponent({
           key={key}
           ref={(el: unknown) => setMenuRef(key, el)}
           model={item.items}
+          context="sidebar"
           placement="right-start"
           getDistance={(child: PrimeMenuModelItem): number => getActiveDistanceForItem(child)}
-          inactiveClasses={{
-            root: MENU_INACTIVE_TEXT,
-            child: MENU_INACTIVE_TEXT,
-          }}
           {...{
             onHide: () => {
               openDropdownKey.value = null

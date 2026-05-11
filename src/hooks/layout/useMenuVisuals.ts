@@ -14,15 +14,19 @@ import {
   BREADCRUMB_ICON_SIZE,
   MENU_ACTIVE_UNIFIED,
   MENU_OPEN_UNIFIED,
+  MENU_SIDEBAR_ACTIVE_UNIFIED,
+  MENU_SIDEBAR_OPEN_UNIFIED,
   MENU_INACTIVE_TEXT,
   MENU_INACTIVE_TEXT_ROOT,
+  MENU_SIDEBAR_INACTIVE_TEXT,
 } from '@/constants/layout-menu'
 
 export type MenuVisualContext = 'header' | 'sidebar' | 'breadcrumb'
 
 /** 返回指定上下文的 base 类（使用 MENU_PANEL_PADDING 统一内边距；过渡统一 duration-md + ease-out-expo，与 layout-menu / uno.config 菜单交互语义一致） */
 export function getMenuItemBase(context: MenuVisualContext): string {
-  const base: string = `${MENU_ITEM_BASE} ${MENU_PANEL_PADDING} ${MENU_ITEM_TRANSITION} text-foreground text-current! group rounded-md`
+  const colorClass = context === 'sidebar' ? MENU_SIDEBAR_INACTIVE_TEXT : MENU_INACTIVE_TEXT_ROOT
+  const base: string = `${MENU_ITEM_BASE} ${MENU_PANEL_PADDING} ${MENU_ITEM_TRANSITION} ${colorClass} text-current! group rounded-md`
   return context === 'breadcrumb' ? `${base} text-sm` : base
 }
 
@@ -31,14 +35,15 @@ export function getMenuItemBase(context: MenuVisualContext): string {
  * - 激活项（distance 0）及所有父级（distance 1/2/3+）统一：primary 背景 + primary-foreground 文字/图标
  * - distance < 0 表示未激活，仅用于 getMenuStateClasses 的输入，此时应由调用方根据 inactive/hover 规则自行处理
  */
-export function getMenuItemActive(distance: number): string {
+export function getMenuItemActive(distance: number, context: MenuVisualContext = 'header'): string {
   if (distance >= 0) {
-    return MENU_ACTIVE_UNIFIED
+    return context === 'sidebar' ? MENU_SIDEBAR_ACTIVE_UNIFIED : MENU_ACTIVE_UNIFIED
   }
   return ''
 }
 
 export interface MenuStateOptions {
+  context?: MenuVisualContext
   distance: number
   isFocused?: boolean
   isSubmenuOpen?: boolean
@@ -54,6 +59,7 @@ export interface MenuStateOptions {
  */
 export function getMenuStateClasses(options: MenuStateOptions): string {
   const {
+    context = 'header',
     distance,
     isFocused,
     isSubmenuOpen,
@@ -63,22 +69,29 @@ export function getMenuStateClasses(options: MenuStateOptions): string {
   }: MenuStateOptions = options
 
   if (distance >= 0) {
-    return getMenuItemActive(distance)
+    return getMenuItemActive(distance, context)
   }
 
   if (isFocused) {
-    return MENU_OPEN_UNIFIED
+    return context === 'sidebar' ? MENU_SIDEBAR_OPEN_UNIFIED : MENU_OPEN_UNIFIED
   }
 
   if (isSubmenuOpen) {
-    return MENU_OPEN_UNIFIED
+    return context === 'sidebar' ? MENU_SIDEBAR_OPEN_UNIFIED : MENU_OPEN_UNIFIED
   }
 
-  const rootClass: string = inactiveRootClass ?? MENU_INACTIVE_TEXT_ROOT
-  const childClass: string = inactiveChildClass ?? MENU_INACTIVE_TEXT
+  const rootFallback: string =
+    context === 'sidebar' ? MENU_SIDEBAR_INACTIVE_TEXT : MENU_INACTIVE_TEXT_ROOT
+  const childFallback: string =
+    context === 'sidebar' ? MENU_SIDEBAR_INACTIVE_TEXT : MENU_INACTIVE_TEXT
+  const rootClass: string = inactiveRootClass ?? rootFallback
+  const childClass: string = inactiveChildClass ?? childFallback
   const isRoot: boolean = typeof level === 'number' ? level <= 0 : true
 
   const baseInactiveClass: string = isRoot ? rootClass : childClass
+  if (context === 'sidebar') {
+    return `${baseInactiveClass} hover:bg-sidebar-primary/12! hover:text-sidebar-primary!`
+  }
   return `${baseInactiveClass} hover:bg-primary/12! hover:text-primary! dark:hover:bg-primary-light/70! dark:hover:text-primary-light-foreground!`
 }
 

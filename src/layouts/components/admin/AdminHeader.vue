@@ -119,6 +119,7 @@ const renderRootItem = (item: PrimeMenuModelItem) => {
   const isSubmenuOpen = openDropdownKey.value === item.key
 
   const stateClasses: string = getMenuStateClasses({
+    context: 'header',
     distance,
     isSubmenuOpen,
     level: 0,

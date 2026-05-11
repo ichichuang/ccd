@@ -106,6 +106,7 @@ export function createTieredMenuItemRenderer(
     const distance: number = getDistance(item)
 
     const stateClasses: string = getMenuStateClasses({
+      context,
       distance,
       isFocused,
       level: context === 'sidebar' ? undefined : 0,

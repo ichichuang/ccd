@@ -13,10 +13,19 @@ export const MENU_ACTIVE_UNIFIED =
 export const MENU_OPEN_UNIFIED =
   'bg-primary/12! text-primary! dark:bg-primary-light/70! dark:text-primary-light-foreground!' as const
 
+/** 侧栏菜单激活态：使用独立 sidebar token，允许侧栏与内容区分离调色 */
+export const MENU_SIDEBAR_ACTIVE_UNIFIED =
+  'bg-sidebar-primary! text-sidebar-primary-foreground!' as const
+
+/** 侧栏菜单打开/聚焦/hover 态：保持轻量背景反馈，同时使用侧栏主色文案 */
+export const MENU_SIDEBAR_OPEN_UNIFIED = 'bg-sidebar-primary/12! text-sidebar-primary!' as const
+
 /** 未激活项文字（子级） */
 export const MENU_INACTIVE_TEXT = 'text-foreground'
 /** 未激活项文字（根级） */
 export const MENU_INACTIVE_TEXT_ROOT = 'text-foreground'
+/** 侧栏未激活项文字 */
+export const MENU_SIDEBAR_INACTIVE_TEXT = 'text-sidebar-foreground'
 
 /** Icons 组件 size 规范：header=lg、sidebar=2xl、breadcrumb=sm、tab=xs */
 export const MENU_ICON_SIZE = 'lg' as const
