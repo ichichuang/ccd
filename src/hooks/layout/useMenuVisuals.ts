@@ -6,15 +6,15 @@
  */
 
 import {
+  BREADCRUMB_ICON_SIZE,
+  MENU_ADMIN_CHROME_ACTIVE_UNIFIED,
+  MENU_ADMIN_CHROME_OPEN_UNIFIED,
+  MENU_SIDEBAR_ACTIVE_UNIFIED,
+  MENU_ICON_SIZE,
   MENU_ITEM_BASE,
   MENU_ITEM_TRANSITION,
   MENU_PANEL_PADDING,
-  MENU_ICON_SIZE,
   MENU_SIDEBAR_ICON_SIZE,
-  BREADCRUMB_ICON_SIZE,
-  MENU_ACTIVE_UNIFIED,
-  MENU_OPEN_UNIFIED,
-  MENU_SIDEBAR_ACTIVE_UNIFIED,
   MENU_SIDEBAR_OPEN_UNIFIED,
   MENU_INACTIVE_TEXT,
   MENU_INACTIVE_TEXT_ROOT,
@@ -22,6 +22,10 @@ import {
 } from '@/constants/layout-menu'
 
 export type MenuVisualContext = 'header' | 'sidebar' | 'breadcrumb'
+
+function isSidebarContext(context: MenuVisualContext): boolean {
+  return context === 'sidebar'
+}
 
 /** 返回指定上下文的 base 类（使用 MENU_PANEL_PADDING 统一内边距；过渡统一 duration-md + ease-out-expo，与 layout-menu / uno.config 菜单交互语义一致） */
 export function getMenuItemBase(context: MenuVisualContext): string {
@@ -31,13 +35,16 @@ export function getMenuItemBase(context: MenuVisualContext): string {
 }
 
 /**
- * 返回激活态类（bg + text），统一使用 MENU_ACTIVE_UNIFIED（bg-primary + text-primary-foreground）保证对比度。
- * - 激活项（distance 0）及所有父级（distance 1/2/3+）统一：primary 背景 + primary-foreground 文字/图标
+ * 返回激活态类（bg + text）。
+ * - sidebar：使用 sidebar-primary / sidebar-primary-foreground
+ * - header / breadcrumb：统一对齐 admin chrome 的 sidebar-primary 体系
  * - distance < 0 表示未激活，仅用于 getMenuStateClasses 的输入，此时应由调用方根据 inactive/hover 规则自行处理
  */
 export function getMenuItemActive(distance: number, context: MenuVisualContext = 'header'): string {
   if (distance >= 0) {
-    return context === 'sidebar' ? MENU_SIDEBAR_ACTIVE_UNIFIED : MENU_ACTIVE_UNIFIED
+    return isSidebarContext(context)
+      ? MENU_SIDEBAR_ACTIVE_UNIFIED
+      : MENU_ADMIN_CHROME_ACTIVE_UNIFIED
   }
   return ''
 }
@@ -55,7 +62,7 @@ export interface MenuStateOptions {
 /**
  * 统一菜单 stateClasses 计算逻辑：
  * - distance >= 0：使用 getMenuItemActive（激活路径统一样式）
- * - 其余按优先级：isFocused → isSubmenuOpen → 根级/子级 inactive 文案 + MENU_OPEN_UNIFIED hover
+ * - 其余按优先级：isFocused → isSubmenuOpen → 根级/子级 inactive 文案 + 对应上下文的 open/hover 语义
  */
 export function getMenuStateClasses(options: MenuStateOptions): string {
   const {
@@ -73,11 +80,11 @@ export function getMenuStateClasses(options: MenuStateOptions): string {
   }
 
   if (isFocused) {
-    return context === 'sidebar' ? MENU_SIDEBAR_OPEN_UNIFIED : MENU_OPEN_UNIFIED
+    return isSidebarContext(context) ? MENU_SIDEBAR_OPEN_UNIFIED : MENU_ADMIN_CHROME_OPEN_UNIFIED
   }
 
   if (isSubmenuOpen) {
-    return context === 'sidebar' ? MENU_SIDEBAR_OPEN_UNIFIED : MENU_OPEN_UNIFIED
+    return isSidebarContext(context) ? MENU_SIDEBAR_OPEN_UNIFIED : MENU_ADMIN_CHROME_OPEN_UNIFIED
   }
 
   const rootFallback: string =
@@ -89,10 +96,10 @@ export function getMenuStateClasses(options: MenuStateOptions): string {
   const isRoot: boolean = typeof level === 'number' ? level <= 0 : true
 
   const baseInactiveClass: string = isRoot ? rootClass : childClass
-  if (context === 'sidebar') {
+  if (isSidebarContext(context)) {
     return `${baseInactiveClass} hover:bg-sidebar-primary/12! hover:text-sidebar-primary!`
   }
-  return `${baseInactiveClass} hover:bg-primary/12! hover:text-primary! dark:hover:bg-primary-light/70! dark:hover:text-primary-light-foreground!`
+  return `${baseInactiveClass} hover:bg-sidebar-primary/12! hover:text-sidebar-primary!`
 }
 
 /** 返回指定上下文的图标 size（Icons 组件用） */

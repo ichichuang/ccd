@@ -159,6 +159,7 @@ export function buildMenuNavMiscComponents(): Record<string, unknown> {
         background: 'transparent',
         borderColor: 'transparent',
         borderWidth: '0',
+        padding: '0',
       },
       header: {
         background: 'transparent',

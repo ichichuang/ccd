@@ -689,8 +689,8 @@ useEventListener(centerBodyScrollRef, 'scroll', () => {
   background-color: color-mix(in srgb, rgb(var(--muted)) 60%, rgb(var(--card))) !important;
 }
 
-:global(html.dark) .pro-table-row-striped,
-:global(.dark) .pro-table-row-striped {
+:global(html.dark .pro-table-row-striped),
+:global(.dark .pro-table-row-striped) {
   background-color: color-mix(in srgb, rgb(var(--muted)) 12%, rgb(var(--card))) !important;
 }
 
@@ -703,8 +703,8 @@ useEventListener(centerBodyScrollRef, 'scroll', () => {
   background-color: color-mix(in srgb, rgb(var(--accent)) 16%, rgb(var(--card))) !important;
 }
 
-:global(html.dark) .pro-table-row-selected,
-:global(.dark) .pro-table-row-selected {
+:global(html.dark .pro-table-row-selected),
+:global(.dark .pro-table-row-selected) {
   background-color: color-mix(in srgb, rgb(var(--accent)) 100%, rgb(var(--card))) !important;
 }
 
@@ -712,8 +712,8 @@ useEventListener(centerBodyScrollRef, 'scroll', () => {
   background-color: color-mix(in srgb, rgb(var(--accent)) 18%, rgb(var(--card))) !important;
 }
 
-:global(html.dark) .pro-table-row-hoverable.pro-table-row-selected:hover,
-:global(.dark) .pro-table-row-hoverable.pro-table-row-selected:hover {
+:global(html.dark .pro-table-row-hoverable.pro-table-row-selected:hover),
+:global(.dark .pro-table-row-hoverable.pro-table-row-selected:hover) {
   background-color: color-mix(in srgb, rgb(var(--accent)) 100%, rgb(var(--card))) !important;
 }
 

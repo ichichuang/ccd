@@ -1,27 +1,22 @@
 import AdminSidebarLogo from '@/layouts/components/admin/AdminSidebarLogo'
 import AdminSidebarMenu from '@/layouts/components/admin/AdminSidebarMenu'
 import { CScrollbar } from '@/components/CScrollbar'
-import type { SidebarAnimationPhase } from '@/layouts/runtime/layoutRuntime'
+import type { SidebarState } from '@/layouts/runtime/layoutRuntime'
 
 export interface AdminSidebarProps {
   showSidebar: boolean
-  sidebarCollapse: boolean
   sidebarVisualCollapse: boolean
   sidebarFixed: boolean
   sidebarWidthClass: string
   enableTransition: boolean
   isAnimating: boolean
-  sidebarAnimationPhase: SidebarAnimationPhase
+  sidebarState: SidebarState
 }
 
 export default defineComponent({
   name: 'AdminSidebar',
   props: {
     showSidebar: {
-      type: Boolean,
-      required: true,
-    },
-    sidebarCollapse: {
       type: Boolean,
       required: true,
     },
@@ -45,9 +40,9 @@ export default defineComponent({
       type: Boolean,
       default: false,
     },
-    sidebarAnimationPhase: {
-      type: String as PropType<SidebarAnimationPhase>,
-      default: 'idle',
+    sidebarState: {
+      type: String as PropType<SidebarState>,
+      default: 'expanded',
     },
   },
   setup(props) {
@@ -61,6 +56,7 @@ export default defineComponent({
             props.sidebarFixed ? 'admin-sidebar--fixed' : '',
             props.isAnimating ? 'admin-sidebar--animating' : '',
             props.sidebarVisualCollapse ? 'admin-sidebar--visual-collapsed' : '',
+            `admin-sidebar--${props.sidebarState}`,
             props.enableTransition ? 'sidebar-width-transition' : '',
             'h-full min-h-0 overflow-hidden shrink-0 flex flex-col select-none [contain:layout_paint]',
           ]}
@@ -74,12 +70,7 @@ export default defineComponent({
               },
             }}
           >
-            <AdminSidebarMenu
-              sidebarCollapse={props.sidebarCollapse}
-              sidebarVisualCollapse={props.sidebarVisualCollapse}
-              sidebarAnimating={props.isAnimating}
-              sidebarAnimationPhase={props.sidebarAnimationPhase}
-            />
+            <AdminSidebarMenu sidebarState={props.sidebarState} />
           </CScrollbar>
         </aside>
       )

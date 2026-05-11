@@ -3,6 +3,7 @@ import type { DeviceType, Orientation } from '@/types/systems/device'
 
 export type LayoutSidebarMode = 'hidden' | 'drawer' | 'inline' | 'overlay'
 export type SidebarAnimationPhase = 'idle' | 'expanding' | 'collapsing'
+export type SidebarState = 'expanded' | 'collapsing' | 'collapsed' | 'expanding' | 'expanded-shell'
 
 export interface LayoutRuntimeDeviceInput {
   deviceType: DeviceType

@@ -1,7 +1,13 @@
 import { defineComponent, Teleport, Transition } from 'vue'
 import { CScrollbar } from '@/components/CScrollbar'
 import { Icons } from '@/components/Icons'
-import { TAB_ICON_SIZE } from '@/constants/layout-menu'
+import {
+  MENU_ADMIN_CONTEXT_ICON_UNIFIED,
+  MENU_ADMIN_CONTEXT_ITEM_UNIFIED,
+  MENU_ADMIN_TAB_ACTIVE_UNIFIED,
+  MENU_ADMIN_TAB_INACTIVE_UNIFIED,
+  TAB_ICON_SIZE,
+} from '@/constants/layout-menu'
 import { useAdminTabs } from '@/hooks/layout/useAdminTabs'
 import type { ContextMenuAction } from '@/hooks/layout/useAdminTabs'
 
@@ -114,7 +120,7 @@ export default defineComponent({
               >
                 {/* Smart sliding indicator */}
                 <div
-                  class="absolute bottom-0 bg-primary pointer-events-none rounded-b-sm z-content"
+                  class="absolute bottom-0 bg-sidebar-primary pointer-events-none rounded-b-sm z-content"
                   style={{
                     height: 'var(--spacing-xs)',
                     left: activeTabStyle.value.left,
@@ -134,9 +140,7 @@ export default defineComponent({
                       data-path={tab.path}
                       class={[
                         'h-full flex items-center px-sm rounded-t-lg cursor-pointer gap-sm shrink-0 duration-md',
-                        active
-                          ? 'bg-primary/20 dark:bg-primary/22 text-primary backdrop-blur-md transition-all'
-                          : 'bg-transparent hover:bg-muted/40 hover:text-primary transition-all',
+                        active ? MENU_ADMIN_TAB_ACTIVE_UNIFIED : MENU_ADMIN_TAB_INACTIVE_UNIFIED,
                       ]}
                       onClick={() => onTabClick(tab)}
                       onContextmenu={(e: MouseEvent) => onContextMenu(e, tab)}
@@ -201,7 +205,7 @@ export default defineComponent({
                     {contextMenuOptions.map(option => (
                       <div
                         key={option.label}
-                        class="flex items-center gap-sm cursor-pointer select-none transition-all duration-md ease-out-expo border-none bg-transparent px-sm py-xs rounded-sm text-sm text-popover-foreground hover:bg-primary/12! dark:hover:bg-primary/30! hover:text-primary! group"
+                        class={MENU_ADMIN_CONTEXT_ITEM_UNIFIED}
                         role="button"
                         tabindex="0"
                         onClick={e => {
@@ -217,7 +221,7 @@ export default defineComponent({
                       >
                         <Icons
                           name={option.icon}
-                          class="text-muted-foreground! transition-colors duration-md group-hover:text-primary!"
+                          class={MENU_ADMIN_CONTEXT_ICON_UNIFIED}
                           size={TAB_ICON_SIZE}
                         />
                         <span>{option.text}</span>

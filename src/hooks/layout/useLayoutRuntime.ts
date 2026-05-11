@@ -2,7 +2,7 @@ import type { ComputedRef, Ref } from 'vue'
 import {
   resolveLayoutRuntime,
   type LayoutRuntimeState,
-  type SidebarAnimationPhase,
+  type SidebarState,
 } from '@/layouts/runtime/layoutRuntime'
 import { useLayoutStore } from '@/stores/modules/system'
 import { useDeviceStore } from '@/stores/modules/system'
@@ -50,9 +50,8 @@ export interface UseLayoutRuntimeReturn {
   bodyTransitionName: ComputedRef<'animate__animated' | 'no-transition'>
   bodyTransitionStyle: ComputedRef<Record<string, string>>
   visualSidebarCollapsed: Ref<boolean>
-  actualSidebarCollapsed: Ref<boolean>
   isSidebarAnimating: Ref<boolean>
-  sidebarAnimationPhase: Ref<SidebarAnimationPhase>
+  sidebarState: Ref<SidebarState>
   sidebarShellRef: Ref<HTMLElement | null>
   setDrawerOpen: (open: boolean) => void
   toggleDrawer: () => void
@@ -86,13 +85,13 @@ export function useLayoutRuntime(): UseLayoutRuntimeReturn {
   )
 
   const visualSidebarCollapsed = ref(layoutStore.sidebarCollapse)
-  const actualSidebarCollapsed = ref(layoutStore.sidebarCollapse)
   const isSidebarAnimating = ref(false)
-  const sidebarAnimationPhase = ref<SidebarAnimationPhase>('idle')
+  const sidebarState = ref<SidebarState>(layoutStore.sidebarCollapse ? 'collapsed' : 'expanded')
   const sidebarShellRef = ref<HTMLElement | null>(null)
   const isResizeSettled = ref(true)
   const stableModeKey = ref<AdminLayoutMode>(state.value.effectiveMode)
-  let pendingSidebarCollapsed: boolean | null = null
+  let expandShellFrameId: number | null = null
+  let expandShellCommitFrameId: number | null = null
 
   const { start: startResizeSettleTimer, stop: stopResizeSettleTimer } = useTimeoutFn(
     () => {
@@ -102,23 +101,29 @@ export function useLayoutRuntime(): UseLayoutRuntimeReturn {
     { immediate: false }
   )
 
-  const commitSidebarMenuRender = (): void => {
-    const collapsed = pendingSidebarCollapsed ?? layoutStore.sidebarCollapse
+  const clearExpandShellFrames = (): void => {
+    if (expandShellFrameId !== null) {
+      window.cancelAnimationFrame(expandShellFrameId)
+      expandShellFrameId = null
+    }
+    if (expandShellCommitFrameId !== null) {
+      window.cancelAnimationFrame(expandShellCommitFrameId)
+      expandShellCommitFrameId = null
+    }
+  }
+
+  const syncSidebarRenderState = (collapsed: boolean): void => {
+    clearExpandShellFrames()
     visualSidebarCollapsed.value = collapsed
-    actualSidebarCollapsed.value = collapsed
     isSidebarAnimating.value = false
-    sidebarAnimationPhase.value = 'idle'
-    pendingSidebarCollapsed = null
+    sidebarState.value = collapsed ? 'collapsed' : 'expanded'
   }
 
   watch(
     () => layoutStore.sidebarCollapse,
     collapsed => {
-      visualSidebarCollapsed.value = collapsed
-      if (pendingSidebarCollapsed === null && !isSidebarAnimating.value) {
-        actualSidebarCollapsed.value = collapsed
-        sidebarAnimationPhase.value = 'idle'
-      }
+      if (isSidebarAnimating.value) return
+      syncSidebarRenderState(collapsed)
     }
   )
 
@@ -126,7 +131,7 @@ export function useLayoutRuntime(): UseLayoutRuntimeReturn {
     () => state.value.showSidebar,
     showSidebar => {
       if (showSidebar) return
-      commitSidebarMenuRender()
+      syncSidebarRenderState(layoutStore.sidebarCollapse)
     }
   )
 
@@ -175,29 +180,55 @@ export function useLayoutRuntime(): UseLayoutRuntimeReturn {
     const nextCollapsed = !layoutStore.sidebarCollapse
     const shouldAnimate = state.value.enableTransition && state.value.showSidebar
 
-    pendingSidebarCollapsed = shouldAnimate ? nextCollapsed : null
-    isSidebarAnimating.value = shouldAnimate
-    sidebarAnimationPhase.value = shouldAnimate
-      ? nextCollapsed
-        ? 'collapsing'
-        : 'expanding'
-      : 'idle'
     layoutStore.toggleCollapse()
-    visualSidebarCollapsed.value = nextCollapsed
 
     if (!shouldAnimate) {
-      commitSidebarMenuRender()
+      syncSidebarRenderState(nextCollapsed)
+      return
     }
+
+    isSidebarAnimating.value = true
+
+    if (nextCollapsed) {
+      sidebarState.value = 'collapsing'
+      nextTick(() => {
+        visualSidebarCollapsed.value = true
+      })
+      return
+    }
+
+    sidebarState.value = 'expanding'
+    visualSidebarCollapsed.value = false
   }
 
   const onSidebarTransitionEnd = (event: TransitionEvent): void => {
     if (event.target !== sidebarShellRef.value) return
     if (event.propertyName !== 'width' && event.propertyName !== 'inline-size') return
-    if (pendingSidebarCollapsed === null) return
-    commitSidebarMenuRender()
+    if (sidebarState.value === 'collapsing') {
+      visualSidebarCollapsed.value = true
+      isSidebarAnimating.value = false
+      sidebarState.value = 'collapsed'
+      return
+    }
+    if (sidebarState.value === 'expanding') {
+      visualSidebarCollapsed.value = false
+      isSidebarAnimating.value = false
+      sidebarState.value = 'expanded-shell'
+      clearExpandShellFrames()
+      expandShellFrameId = window.requestAnimationFrame(() => {
+        expandShellFrameId = null
+        if (sidebarState.value !== 'expanded-shell') return
+        expandShellCommitFrameId = window.requestAnimationFrame(() => {
+          expandShellCommitFrameId = null
+          if (sidebarState.value !== 'expanded-shell') return
+          sidebarState.value = 'expanded'
+        })
+      })
+    }
   }
 
   onUnmounted(() => {
+    clearExpandShellFrames()
     stopResizeSettleTimer()
   })
 
@@ -247,9 +278,8 @@ export function useLayoutRuntime(): UseLayoutRuntimeReturn {
       '--animate-duration': 'var(--transition-md)',
     })),
     visualSidebarCollapsed,
-    actualSidebarCollapsed,
     isSidebarAnimating,
-    sidebarAnimationPhase,
+    sidebarState,
     sidebarShellRef,
     setDrawerOpen,
     toggleDrawer,

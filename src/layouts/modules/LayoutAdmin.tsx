@@ -143,13 +143,12 @@ export default defineComponent({
             >
               <AdminSidebar
                 showSidebar={runtime.showSidebar.value}
-                sidebarCollapse={runtime.actualSidebarCollapsed.value}
                 sidebarVisualCollapse={runtime.visualSidebarCollapsed.value}
                 sidebarFixed={runtime.sidebarFixed.value}
                 sidebarWidthClass="w-full"
                 enableTransition={runtime.enableTransition.value}
                 isAnimating={runtime.isSidebarAnimating.value}
-                sidebarAnimationPhase={runtime.sidebarAnimationPhase.value}
+                sidebarState={runtime.sidebarState.value}
               />
             </div>
           )}
@@ -236,13 +235,13 @@ export default defineComponent({
               blockScroll
               dismissable
               showCloseIcon={false}
-              class="w-sidebarWidth max-w-[80vw] p-0!"
+              class="admin-mobile-drawer-shell w-sidebarWidth max-w-[80vw] p-0!"
               style={runtime.drawerRootStyle.value}
               v-slots={{
                 container: () => (
                   <div
                     data-layout-drawer="true"
-                    class="admin-sidebar--fixed layout-full min-h-0 flex flex-col select-none"
+                    class="admin-sidebar--fixed admin-sidebar-drawer layout-full min-h-0 flex flex-col select-none"
                     style={runtime.drawerSafeAreaStyle.value}
                   >
                     <AdminSidebarLogo />
@@ -255,7 +254,7 @@ export default defineComponent({
                       }}
                     >
                       <AdminSidebarMenu
-                        sidebarCollapse={false}
+                        sidebarState="expanded"
                         density="compact"
                       />
                     </CScrollbar>

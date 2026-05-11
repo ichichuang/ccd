@@ -4,7 +4,7 @@ import { Icons } from '@/components/Icons'
 import { useAdminBreadcrumbs } from '@/hooks/layout/useAdminBreadcrumbs'
 import type { PrimeMenuModelItem } from '@/router/utils/helper'
 import { goToRoute } from '@/router/utils/helper'
-import { MENU_ICON_COMMON_CLASS } from '@/constants/layout-menu'
+import { MENU_ADMIN_CHROME_TEXT_UNIFIED, MENU_ICON_COMMON_CLASS } from '@/constants/layout-menu'
 import { getIconSize } from '@/hooks/layout/useMenuVisuals'
 import {
   createTieredMenuItemRenderer,
@@ -54,7 +54,10 @@ function renderBreadcrumbMenuItem(slotProps: unknown) {
       <span
         role="button"
         tabindex="0"
-        class="transition-all duration-md flex items-center cursor-pointer hover:text-primary"
+        :class="[
+          'transition-all duration-md flex items-center cursor-pointer',
+          'hover:text-sidebar-primary',
+        ]"
         @click="goToRoute('/')"
         @keyup.enter="goToRoute('/')"
       >
@@ -81,9 +84,9 @@ function renderBreadcrumbMenuItem(slotProps: unknown) {
             :class="[
               'transition-all duration-md flex items-center gap-xs',
               index === breadcrumbs.length - 1
-                ? 'text-primary font-semibold cursor-default'
-                : 'cursor-pointer hover:text-primary',
-              openDropdownPath === item.path ? 'text-primary' : '',
+                ? `${MENU_ADMIN_CHROME_TEXT_UNIFIED} font-semibold cursor-default`
+                : 'cursor-pointer hover:text-sidebar-primary',
+              openDropdownPath === item.path ? MENU_ADMIN_CHROME_TEXT_UNIFIED : '',
             ]"
             :role="index === breadcrumbs.length - 1 ? undefined : 'button'"
             :tabindex="index === breadcrumbs.length - 1 ? undefined : '0'"

@@ -25,21 +25,20 @@ interface SidebarCollapsedGeometrySource {
  *
  * 几何来源与 AdminSidebarMenu 保持一致：
  * - CScrollbar: px-sm
- * - PrimeVue PanelMenu panel: padding xs + 1px border（用 spacingBase / 4 表达）
- * - root menu item: px-md
+ * - root menu item: px-md 基础上回收一个 xs，做图标光学校正
  * - icon box: sidebar icon size token + spacing-xs
  */
 export function deriveSidebarCollapsedWidth(source: SidebarCollapsedGeometrySource): number {
   const spacingXs = source.spacingBase * SPACING_SCALE_RATIOS.xs
   const spacingSm = source.spacingBase * SPACING_SCALE_RATIOS.sm
   const spacingMd = source.spacingBase * SPACING_SCALE_RATIOS.md
-  const panelBorder = source.spacingBase / 4
   const iconBoxWidth =
     Math.round(source.fontSizeBase * FONT_SCALE_RATIOS[MENU_SIDEBAR_ICON_SIZE]) + spacingXs
-  const panelChromeInline = (spacingSm + spacingXs + panelBorder) * 2
-  const iconAnchorItemWidth = spacingMd * 2 + iconBoxWidth
+  const rootItemPaddingInline = spacingMd - spacingXs
+  const scrollChromeInline = spacingSm * 2
+  const iconAnchorItemWidth = rootItemPaddingInline * 2 + iconBoxWidth
 
-  return Math.round(panelChromeInline + iconAnchorItemWidth)
+  return Math.round(scrollChromeInline + iconAnchorItemWidth)
 }
 
 /** 尺寸预设数组 */

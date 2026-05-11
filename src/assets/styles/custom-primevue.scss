@@ -66,25 +66,20 @@
     --admin-sidebar-menu-label-duration: 160ms;
     --admin-sidebar-menu-label-ease: cubic-bezier(0.4, 0, 0.2, 1);
     --admin-sidebar-menu-enter-ease: cubic-bezier(0.22, 1, 0.36, 1);
-    --admin-sidebar-panel-border-width: calc(var(--spacing-xs) / 4);
-    --admin-sidebar-panel-inline-offset: calc(
-      var(--spacing-sm) + var(--spacing-xs) + var(--admin-sidebar-panel-border-width)
-    );
+    --admin-sidebar-scroll-padding-inline: var(--spacing-sm);
+    --admin-sidebar-menu-stack-gap: var(--spacing-sm);
+    --admin-sidebar-root-item-padding-inline: calc(var(--spacing-md) - var(--spacing-xs));
     --admin-sidebar-icon-box-width: calc(var(--font-size-2xl) + var(--spacing-xs));
     --admin-sidebar-collapsed-item-width: calc(
-      var(--sidebar-collapsed-width) - var(--admin-sidebar-panel-inline-offset) - var(
-          --admin-sidebar-panel-inline-offset
+      var(--sidebar-collapsed-width) - var(--admin-sidebar-scroll-padding-inline) - var(
+          --admin-sidebar-scroll-padding-inline
         )
     );
   }
 
   .admin-sidebar-menu--compact {
+    --admin-sidebar-menu-stack-gap: var(--spacing-xs);
     --admin-sidebar-icon-box-width: calc(var(--font-size-xl) + var(--spacing-xs));
-
-    .p-panelmenu-root-list,
-    .p-panelmenu-submenu {
-      gap: var(--spacing-xs);
-    }
 
     .p-panelmenu-submenu {
       padding-top: var(--spacing-xs);
@@ -123,6 +118,11 @@
     contain: paint;
   }
 
+  .admin-sidebar-menu__item--root {
+    padding-right: var(--admin-sidebar-root-item-padding-inline) !important;
+    padding-left: var(--admin-sidebar-root-item-padding-inline) !important;
+  }
+
   .admin-sidebar-menu__item-content {
     position: relative;
     transform: translateZ(0);
@@ -135,141 +135,46 @@
   }
 
   .admin-sidebar-menu__icon--fallback {
-    opacity: 0;
-    transition:
-      opacity 140ms cubic-bezier(0.4, 0, 0.2, 1),
-      transform 160ms cubic-bezier(0.4, 0, 0.2, 1);
+    opacity: 1;
   }
 
   .admin-sidebar-menu__label {
-    opacity: 1;
-    visibility: visible;
-    transform: translate3d(0, 0, 0);
-    transition:
-      opacity var(--admin-sidebar-menu-label-duration) var(--admin-sidebar-menu-label-ease),
-      transform var(--admin-sidebar-menu-label-duration) var(--admin-sidebar-menu-label-ease),
-      visibility 0ms linear 0ms;
-    will-change: opacity, transform;
+    min-width: 0;
   }
 
   .admin-sidebar-menu__arrow {
-    opacity: 1;
-    transform: translate3d(0, 0, 0);
-    transition:
-      opacity 140ms var(--admin-sidebar-menu-label-ease),
-      transform 180ms var(--admin-sidebar-menu-enter-ease);
-    will-change: opacity, transform;
+    transition: transform 180ms var(--admin-sidebar-menu-enter-ease);
   }
 
-  @keyframes sidebar-label-expand {
-    from {
-      opacity: 0;
-      transform: translate3d(-4px, 0, 0);
-    }
-
-    to {
-      opacity: 1;
-      transform: translate3d(0, 0, 0);
-    }
+  .admin-sidebar-panelmenu .p-panelmenu-panel {
+    padding: 0 !important;
+    border: none !important;
+    box-shadow: none !important;
   }
 
-  @keyframes sidebar-arrow-expand {
-    from {
-      opacity: 0;
-      transform: translate3d(-2px, 0, 0);
-    }
-
-    to {
-      opacity: 1;
-      transform: translate3d(0, 0, 0);
-    }
+  .admin-sidebar-panelmenu .p-panelmenu-header,
+  .admin-sidebar-panelmenu .p-panelmenu-header-content {
+    width: 100% !important;
   }
 
-  @keyframes sidebar-label-collapse {
-    from {
-      opacity: 1;
-      visibility: visible;
-      transform: translate3d(0, 0, 0);
-    }
-
-    to {
-      opacity: 0;
-      visibility: hidden;
-      transform: translate3d(-4px, 0, 0);
-    }
-  }
-
-  @keyframes sidebar-arrow-collapse {
-    from {
-      opacity: 1;
-      visibility: visible;
-      transform: translate3d(0, 0, 0);
-    }
-
-    to {
-      opacity: 0;
-      visibility: hidden;
-      transform: translate3d(-2px, 0, 0);
-    }
-  }
-
-  .admin-sidebar-menu--collapsing {
-    .admin-sidebar-menu__label {
-      animation: sidebar-label-collapse 120ms var(--admin-sidebar-menu-label-ease) both;
-      pointer-events: none;
-    }
-
-    .admin-sidebar-menu__arrow {
-      animation: sidebar-arrow-collapse 100ms var(--admin-sidebar-menu-label-ease) both;
-      pointer-events: none;
-    }
-
-    .admin-sidebar-menu__icon--fallback {
-      opacity: 1;
-      transition-delay: 60ms, 60ms;
-    }
+  .admin-sidebar-panelmenu {
+    gap: var(--admin-sidebar-menu-stack-gap) !important;
   }
 
   .admin-sidebar-menu--collapsed {
-    .admin-sidebar-menu__label {
-      opacity: 0;
-      visibility: hidden;
-      transform: translate3d(-4px, 0, 0);
-      transition:
-        opacity 140ms var(--admin-sidebar-menu-label-ease),
-        transform 160ms var(--admin-sidebar-menu-label-ease),
-        visibility 0ms linear 140ms;
-      pointer-events: none;
+    .admin-sidebar-collapsed-menu {
+      display: flex;
+      flex-direction: column;
+      gap: var(--admin-sidebar-menu-stack-gap);
+      width: 100%;
+      margin: 0;
+      padding-top: 0;
+      padding-bottom: 0;
+      padding-inline: 0;
+      list-style: none;
+      box-sizing: border-box;
     }
 
-    .admin-sidebar-menu__arrow {
-      opacity: 0;
-      visibility: hidden;
-      transform: translate3d(-2px, 0, 0);
-      pointer-events: none;
-    }
-  }
-
-  .admin-sidebar-menu--expanding {
-    .admin-sidebar-menu__label {
-      visibility: visible;
-      animation: sidebar-label-expand 180ms var(--admin-sidebar-menu-enter-ease) 70ms both;
-      pointer-events: none;
-    }
-
-    .admin-sidebar-menu__arrow {
-      visibility: visible;
-      animation: sidebar-arrow-expand 160ms var(--admin-sidebar-menu-enter-ease) 110ms both;
-      pointer-events: none;
-    }
-
-    .admin-sidebar-menu__icon--fallback {
-      opacity: 0;
-      transition-delay: 0ms, 0ms;
-    }
-  }
-
-  .admin-sidebar-menu--collapsed {
     .admin-sidebar-menu__item--root {
       width: var(--admin-sidebar-collapsed-item-width) !important;
       max-width: var(--admin-sidebar-collapsed-item-width) !important;
@@ -281,18 +186,6 @@
       .admin-sidebar-menu__item-content {
         justify-content: center;
       }
-
-      .admin-sidebar-menu__label,
-      .admin-sidebar-menu__arrow {
-        position: absolute;
-        width: 0;
-        max-width: 0;
-        overflow: hidden;
-      }
-
-      .admin-sidebar-menu__arrow {
-        margin-left: 0 !important;
-      }
     }
 
     .admin-sidebar-menu__icon--fallback {
@@ -300,22 +193,20 @@
     }
   }
 
-  .admin-sidebar-menu--expanded {
-    .admin-sidebar-menu__label {
-      transition-delay: 45ms, 45ms, 0ms;
+  .admin-sidebar-menu--expanded-shell {
+    .p-collapsible-enter-active,
+    .p-collapsible-leave-active,
+    .p-panelmenu-content-container,
+    .p-panelmenu-content-wrapper {
+      transition: none !important;
+      animation: none !important;
     }
-  }
 
-  .admin-sidebar-menu--collapsed {
-    .p-panelmenu-content-container {
-      display: none !important;
-    }
-  }
-
-  .admin-sidebar-menu--collapsing,
-  .admin-sidebar-menu--expanding {
-    .p-panelmenu-content-container {
-      pointer-events: none;
+    .p-collapsible-enter-active > .p-panelmenu-content-wrapper,
+    .p-collapsible-leave-active > .p-panelmenu-content-wrapper {
+      transition: none !important;
+      animation: none !important;
+      will-change: auto !important;
     }
   }
 
@@ -402,7 +293,7 @@
   .p-panelmenu-submenu {
     display: flex;
     flex-direction: column;
-    gap: var(--spacing-sm);
+    gap: var(--admin-sidebar-menu-stack-gap);
     width: 100%;
     max-width: 100%;
     min-width: 0;
@@ -451,6 +342,82 @@
     background: transparent !important;
     color: inherit !important;
   }
+}
+
+/* 移动端抽屉侧栏：使用实体面板，避免页面内容透入造成“半透明脏底”。 */
+.admin-mobile-drawer-shell.p-drawer {
+  background: rgb(var(--sidebar-background)) !important;
+  border-right: 1px solid rgb(var(--sidebar-border) / 78%) !important;
+  border-radius: 0 !important;
+  box-shadow:
+    0 0 0 1px rgb(var(--foreground) / 4%),
+    var(--spacing-sm) 0 var(--spacing-2xl) rgb(var(--background) / 28%) !important;
+  backdrop-filter: none !important;
+}
+
+.admin-mobile-drawer-shell.p-drawer .p-drawer-header,
+.admin-mobile-drawer-shell.p-drawer .p-drawer-content {
+  background: rgb(var(--sidebar-background)) !important;
+}
+
+.admin-sidebar-drawer {
+  position: relative;
+  background: linear-gradient(180deg, rgb(var(--sidebar-background)) 0%, rgb(var(--card)) 100%);
+  isolation: isolate;
+}
+
+.admin-sidebar-drawer::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(180deg, rgb(var(--foreground) / 2%) 0%, transparent 18%, transparent 100%),
+    linear-gradient(90deg, rgb(var(--background) / 6%) 0%, transparent 22%);
+}
+
+.admin-sidebar-drawer > * {
+  position: relative;
+}
+
+.admin-sidebar-drawer .c-scrollbar,
+.admin-sidebar-drawer .c-scrollbar-native,
+.admin-sidebar-drawer .os-host {
+  background: transparent !important;
+}
+
+.admin-sidebar-drawer .c-scrollbar {
+  padding-bottom: var(--spacing-sm);
+}
+
+.admin-sidebar-drawer .admin-sidebar-menu {
+  padding-top: var(--spacing-xs);
+}
+
+.admin-sidebar-drawer .admin-sidebar-menu__item {
+  border-radius: var(--radius-md);
+}
+
+.admin-sidebar-drawer .admin-sidebar-menu__item-content {
+  box-shadow: inset 0 0 0 1px rgb(var(--foreground) / 2%);
+}
+
+.dark .admin-sidebar-drawer {
+  background: linear-gradient(180deg, rgb(var(--sidebar-background)) 0%, rgb(var(--card)) 100%);
+}
+
+.dark .admin-sidebar-drawer::before {
+  background:
+    linear-gradient(180deg, rgb(var(--foreground) / 3%) 0%, transparent 16%, transparent 100%),
+    linear-gradient(90deg, rgb(var(--background) / 10%) 0%, transparent 22%);
+}
+
+.dark .admin-mobile-drawer-shell.p-drawer {
+  background: rgb(var(--sidebar-background)) !important;
+  border-right-color: rgb(var(--sidebar-border) / 88%) !important;
+  box-shadow:
+    0 0 0 1px rgb(var(--foreground) / 3%),
+    var(--spacing-sm) 0 var(--spacing-2xl) rgb(var(--background) / 42%) !important;
 }
 
 /* PrimeVue 菜单 .p-highlight：已移除 reset 覆盖，由 menu-nav-misc preset + getMenuItemActive 完全控制 */
