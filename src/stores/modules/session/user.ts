@@ -27,6 +27,16 @@ const createEmptyUserInfo = (): UserInfo => ({
   phone: undefined,
 })
 
+function hasValidSessionShape(state: UserState): boolean {
+  return Boolean(
+    state.token &&
+    state.isLogin &&
+    state.userInfo.userId &&
+    state.userInfo.username &&
+    state.userInfo.roles.length > 0
+  )
+}
+
 export const useUserStore = defineStore('user', {
   state: (): UserState => ({
     token: '',
@@ -42,6 +52,7 @@ export const useUserStore = defineStore('user', {
     // 获取按钮权限
     getUserPermissions: (state: UserState) => state.userInfo.permissions,
     getIsLogin: (state: UserState) => state.isLogin,
+    hasValidSession: (state: UserState) => hasValidSessionShape(state),
   },
 
   actions: {
@@ -94,6 +105,16 @@ export const useUserStore = defineStore('user', {
       this.token = ''
       this.userInfo = createEmptyUserInfo()
       this.isLogin = false
+    },
+    invalidateIfSessionShapeInvalid(): boolean {
+      if (!AUTH_ENABLED) {
+        return false
+      }
+      if (hasValidSessionShape(this.$state)) {
+        return false
+      }
+      this.clearUserInfo()
+      return true
     },
     /**
      * 仅做状态清理，不包含 UI 副作用或导航。

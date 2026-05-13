@@ -359,20 +359,32 @@ export function createRouteUtils(routes: RouteConfig[]): RouteUtils {
   const normalizedRoutes = normalizeRatioMetaOnRoutes(routes)
   const sortedRoutes = sortRoutes([...normalizedRoutes])
   let currentRouteTree: RouteConfig[] = sortedRoutes
+  let keepAliveVersion = 0
 
   return {
     flatRoutes: flattenRoutes(sortedRoutes),
     menuTree: generateMenuTree(sortedRoutes),
     breadcrumbMap: generateBreadcrumbMap(sortedRoutes),
     keepAliveNames: getKeepAliveNames(sortedRoutes),
+    keepAliveVersion,
     updateRouteUtils(newRoutes: RouteConfig[]) {
       const normalized = normalizeRatioMetaOnRoutes(newRoutes)
       const newSortedRoutes = sortRoutes([...normalized])
+      const nextKeepAliveNames = getKeepAliveNames(newSortedRoutes)
+      const currentKeepAliveSet = new Set(this.keepAliveNames)
+      const keepAliveChanged =
+        nextKeepAliveNames.length !== this.keepAliveNames.length ||
+        nextKeepAliveNames.some(name => !currentKeepAliveSet.has(name))
+
       currentRouteTree = newSortedRoutes
       this.flatRoutes = flattenRoutes(newSortedRoutes)
       this.menuTree = generateMenuTree(newSortedRoutes)
       this.breadcrumbMap = generateBreadcrumbMap(newSortedRoutes)
-      this.keepAliveNames = getKeepAliveNames(newSortedRoutes)
+      this.keepAliveNames = nextKeepAliveNames
+      if (keepAliveChanged) {
+        keepAliveVersion += 1
+        this.keepAliveVersion = keepAliveVersion
+      }
     },
     getAdminMenuTree(): MenuItem[] {
       const filtered = filterTopLevelRoutesByParent(currentRouteTree, 'admin')

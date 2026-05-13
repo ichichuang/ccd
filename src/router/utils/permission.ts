@@ -6,6 +6,7 @@
 import { AUTH_ENABLED, routeWhitePathList } from '@/constants/router'
 import { usePermissionStore } from '@/stores/modules/session'
 import { useUserStoreWithOut } from '@/stores/modules/session'
+import { requestAuthCurrentUser } from '@/api/auth/auth.api'
 import type { LocationQueryValue, RouteLocationNormalized, Router } from 'vue-router'
 import { checkRouteAccess, isWhiteListed, parseSafeRedirect } from './accessControl'
 
@@ -50,6 +51,33 @@ export const usePermissionGuard = ({
 }) => {
   // 竞态保护：缓存进行中的路由初始化 Promise，防止并发导航触发多次 API 请求
   let routeInitializingPromise: Promise<void> | null = null
+  let sessionValidationPromise: Promise<boolean> | null = null
+  let validatedSessionToken: string | null = null
+
+  const validatePersistedSession = async (): Promise<boolean> => {
+    const userStore = useUserStoreWithOut()
+    if (!userStore.getIsLogin) return false
+    if (userStore.invalidateIfSessionShapeInvalid()) return false
+    if (validatedSessionToken === userStore.getToken) return true
+
+    sessionValidationPromise ??= requestAuthCurrentUser(userStore.getToken)
+      .then(userInfo => {
+        userStore.applyRestoredUserInfo(userInfo)
+        validatedSessionToken = userStore.getToken
+        return true
+      })
+      .catch(error => {
+        console.error('登录态恢复校验失败', error)
+        validatedSessionToken = null
+        userStore.clearUserInfo()
+        return false
+      })
+      .finally(() => {
+        sessionValidationPromise = null
+      })
+
+    return sessionValidationPromise
+  }
 
   // 全局前置守卫（纯访问控制，不包含 UI 副作用）
   router.beforeEach(async (to, from, next) => {
@@ -62,8 +90,12 @@ export const usePermissionGuard = ({
     const whiteList = routeWhitePathList
     const permissionStore = usePermissionStore()
     const userStore = useUserStoreWithOut()
-    const isLogin: boolean = userStore.isLogin
+    let isLogin: boolean = userStore.isLogin
     const isDynamicRoutesLoaded: boolean = permissionStore.isDynamicRoutesLoaded
+
+    if (isLogin && !isWhiteListed(to.path, whiteList)) {
+      isLogin = await validatePersistedSession()
+    }
 
     if (isLogin) {
       if (to.path === '/login') {
@@ -93,8 +125,6 @@ export const usePermissionGuard = ({
           await routeInitializingPromise
 
           const target = getNavigationTargetAfterRouteInit(to, from)
-
-          permissionStore.setDynamicRoutesLoaded(true)
 
           const toParent = to.meta?.parent as LayoutMode | undefined
           const fromParent = from.meta?.parent as LayoutMode | undefined

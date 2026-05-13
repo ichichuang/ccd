@@ -46,8 +46,8 @@ async function bootstrap() {
 
   const app = createApp(App)
 
-  // 设置插件（支持异步，含 Pinia）
-  await setupPlugins(app)
+  // 设置启动关键插件；非关键 hydration 在插件内部后台执行，避免阻塞 Vue shell 挂载。
+  setupPlugins(app)
 
   // 挂载应用
   app.mount('#app')

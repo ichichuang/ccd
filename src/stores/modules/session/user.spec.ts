@@ -104,6 +104,30 @@ describe('useUserStore', () => {
     })
   })
 
+  describe('invalidateIfSessionShapeInvalid', () => {
+    it('clears partial persisted sessions', () => {
+      const store = useUserStore()
+      store.token = 'mock-token-1'
+      store.isLogin = true
+      store.userInfo = baseUserInfo({ username: '', roles: ['admin'] })
+
+      expect(store.invalidateIfSessionShapeInvalid()).toBe(true)
+      expect(store.token).toBe('')
+      expect(store.isLogin).toBe(false)
+    })
+
+    it('keeps complete persisted sessions', () => {
+      const store = useUserStore()
+      store.token = 'mock-token-1'
+      store.isLogin = true
+      store.userInfo = baseUserInfo({ username: 'admin', roles: ['admin'] })
+
+      expect(store.invalidateIfSessionShapeInvalid()).toBe(false)
+      expect(store.token).toBe('mock-token-1')
+      expect(store.isLogin).toBe(true)
+    })
+  })
+
   describe('state transitions', () => {
     it('setUserInfo sets isLogin to true', () => {
       const store = useUserStore()

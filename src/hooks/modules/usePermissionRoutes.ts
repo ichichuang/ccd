@@ -8,6 +8,11 @@ const FETCH_TIMEOUT_MS: number = 10_000
 const MAX_RETRIES: number = 2
 const CACHE_MAX_AGE_MS: number = 5 * 60 * 1000
 
+interface FetchRoutesOptions {
+  timeoutMs?: number
+  maxRetries?: number
+}
+
 /** 缓存时间戳 */
 let lastFetchTimestamp: number = 0
 
@@ -66,14 +71,18 @@ async function withRetry<T>(fn: () => Promise<T>, maxRetries: number): Promise<T
  *
  * @see {@link BackendRouteConfig} 全局类型定义位于 src/types/modules/router.d.ts:96
  */
-export function usePermissionRoutes(): { fetchRoutes: () => Promise<BackendRouteConfig[]> } {
+export function usePermissionRoutes(): {
+  fetchRoutes: (options?: FetchRoutesOptions) => Promise<BackendRouteConfig[]>
+} {
   /**
    * 拉取动态路由并同步到 Store.dynamicRoutes。
    * 失败时若 Store 中有缓存则降级返回缓存，否则抛出错误供调用方处理。
    * 注意：不负责设置 `isDynamicRoutesLoaded`，由调用方在路由注册完成后统一标记。
    */
-  const fetchRoutes = async (): Promise<BackendRouteConfig[]> => {
+  const fetchRoutes = async (options: FetchRoutesOptions = {}): Promise<BackendRouteConfig[]> => {
     const permissionStore = usePermissionStore()
+    const timeoutMs = options.timeoutMs ?? FETCH_TIMEOUT_MS
+    const maxRetries = options.maxRetries ?? MAX_RETRIES
 
     // 缓存 staleness 检查：5 分钟内的缓存直接返回
     const now: number = Date.now()
@@ -87,8 +96,8 @@ export function usePermissionRoutes(): { fetchRoutes: () => Promise<BackendRoute
 
     try {
       const routes: unknown = await withRetry(
-        () => withTimeout(requestSystemAsyncRoutes(), FETCH_TIMEOUT_MS),
-        MAX_RETRIES
+        () => withTimeout(requestSystemAsyncRoutes(), timeoutMs),
+        maxRetries
       )
       const typedRoutes: BackendRouteConfig[] = parseBackendRoutes(routes)
       permissionStore.setDynamicRoutes(typedRoutes)

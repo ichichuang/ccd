@@ -17,7 +17,7 @@ import { vLongPress } from '@/directives/longPress'
  * 注意：loadingDone() 由 router.afterEach 在首次导航完成后调用，确保 Vue 挂载后无缝切换
  * @param app Vue 应用实例
  */
-export const setupPlugins = async (app: App) => {
+export const setupPlugins = (app: App) => {
   // 全局错误兜底：优先注册，确保后续插件中的异常也能被捕获
   setupErrorHandler(app)
 
@@ -29,10 +29,10 @@ export const setupPlugins = async (app: App) => {
   setupScrollbar(app)
   setupProForm()
 
-  await setupRouter(app)
+  setupRouter(app)
 
   // 在语言系统之后初始化 DateUtils，确保语言设置已就绪
-  await setupDateUtils(app)
+  void setupDateUtils(app)
 
   // 全局指令
   app.directive('auth', vAuth)

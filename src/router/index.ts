@@ -12,10 +12,11 @@ import { createRouter, createWebHashHistory, createWebHistory } from 'vue-router
 import { autoImportModules } from '@/router/utils/moduleLoader'
 import { registerRouterGuards } from './utils/guards'
 import { rootRedirect } from '@/constants/router'
+import coreRoutes from './modules/core'
 
 type RouteModuleFile = { default?: RouteModule; [key: string]: unknown }
 
-// 静态路由模块以 lazy manifest 暴露，由 setupRouter 在 app.use(router) 前加载。
+// 业务静态路由模块以 lazy manifest 暴露；core routes 保持启动关键路径同步注册。
 const routeModuleLoaders = import.meta.glob<RouteModuleFile>('./modules/**/*.ts')
 let normalizedStaticRoutes: RouteConfig[] = []
 let staticRoutesLoadPromise: Promise<RouteConfig[]> | null = null
@@ -67,8 +68,8 @@ function createInitialRoutes(routes: RouteConfig[]): RouteRecordRaw[] {
   return transformToVueRoutes(routes)
 }
 
-// 初始只保留错误页与 CatchAll；静态业务路由通过 lazy manifest 注册。
-const initialRoutes: RouteRecordRaw[] = createInitialRoutes(rootRedirect)
+// 初始保留登录/根路由与错误页；其他静态业务路由通过 lazy manifest 后台注册。
+const initialRoutes: RouteRecordRaw[] = createInitialRoutes([...coreRoutes, ...rootRedirect])
 
 // 创建路由实例
 const router = createRouter({
@@ -97,7 +98,8 @@ export async function ensureStaticRoutesLoaded(): Promise<RouteConfig[]> {
 
   staticRoutesLoadPromise = autoImportModules<RouteModule>(routeModuleLoaders, './modules/').then(
     importedRoutes => {
-      normalizedStaticRoutes = normalizeStaticRoutes(processRouteModules(importedRoutes))
+      const { core: _coreRoutes, ...businessRouteModules } = importedRoutes
+      normalizedStaticRoutes = normalizeStaticRoutes(processRouteModules(businessRouteModules))
       dynamicRouteManager.addRoutes(normalizedStaticRoutes)
       routeUtils.updateRouteUtils(normalizedStaticRoutes)
       return normalizedStaticRoutes

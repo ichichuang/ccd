@@ -168,6 +168,8 @@ declare global {
     breadcrumbMap: Map<string, string[]>
     /** 需要缓存的页面 name 列表 */
     keepAliveNames: string[]
+    /** keepAliveNames 变更版本号 */
+    keepAliveVersion: number
     /** 更新路由工具（用于动态路由加载后更新） */
     updateRouteUtils: (routes: RouteConfig[]) => void
     /** 仅 admin 布局下的菜单树（供侧边栏/顶栏使用） */
