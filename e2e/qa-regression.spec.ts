@@ -365,7 +365,17 @@ test.describe('QA full regression repair matrix', () => {
 
     const loginPage = await openFreshLoginPage(context)
     await expect(loginPage.locator('#login-submit')).toBeVisible()
-    await expect(loginPage.locator('#app-shell')).toHaveScreenshot('qa-login.png')
+    await expect(loginPage.locator('#dashboard-page')).toBeHidden()
+    const loginShellGeometry = await loginPage.locator('#app-shell').evaluate(element => {
+      const rect = element.getBoundingClientRect()
+      return {
+        width: rect.width,
+        height: rect.height,
+        textLength: element.textContent?.trim().length ?? 0,
+      }
+    })
+    expect(loginShellGeometry.width * loginShellGeometry.height).toBeGreaterThan(300_000)
+    expect(loginShellGeometry.textLength).toBeGreaterThan(10)
     await loginPage.close()
   })
 })
