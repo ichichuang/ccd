@@ -51,6 +51,25 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      # repair_list.txt is gitignored and created by ai:sync from the template; doctor requires it.
+      - name: Sync AI adapters (materialize local runtime)
+        run: pnpm ai:sync
+
+      - name: Run Architecture Doctor
+        run: pnpm ai:doctor
+
+      - name: Drift Check
+        run: pnpm drift-check
+
+      - name: Strict Type Check
+        run: pnpm type-check
+
+      - name: Unit Tests
+        run: pnpm test:run
+
+      - name: Strict Lint Check
+        run: pnpm lint:check
+
       - name: Build for GitHub Pages
         run: pnpm build:ci
         env:

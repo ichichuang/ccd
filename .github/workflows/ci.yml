@@ -79,5 +79,21 @@ jobs:
       - name: Strict Lint Check
         run: pnpm lint:check
 
+      - name: Install Playwright Browsers
+        run: pnpm exec playwright install --with-deps chromium
+
+      - name: QA Regression E2E
+        run: pnpm e2e:qa
+
+      - name: Ensure snapshots were not updated in CI
+        run: |
+          SNAPSHOT_CHANGES="$(git status --porcelain -- e2e/__snapshots__)"
+          if [ -n "$SNAPSHOT_CHANGES" ]; then
+            echo "::error::Playwright snapshots changed during CI. Generate baselines locally with pnpm e2e:update and commit them separately."
+            echo "$SNAPSHOT_CHANGES"
+            git diff -- e2e/__snapshots__
+            exit 1
+          fi
+
       - name: Production Build Test
         run: pnpm build:ci

@@ -21,6 +21,8 @@ jspm_packages/
 dist
 dist-ssr
 coverage
+coverage-final.json
+lcov.info
 *.local
 
 # Tauri/Rust generated outputs (main branch treats src-tauri artifacts as local build cache)
@@ -60,10 +62,21 @@ src-tauri/gen/
 *.tsbuildinfo
 __pycache__/
 *.pyc
+node_modules/.tmp/
 
 # Linter caches
 .eslintcache
 .stylelintcache
+
+# Build/dev caches
+.vite/
+.vitest/
+.cache/
+.turbo/
+.parcel-cache/
+.rollup.cache/
+node_modules/.cache/
+node_modules/.vite/
 
 # Auto-generated type declaration files
 # 这些 d.ts 作为工程类型契约需要提交到版本控制
@@ -76,8 +89,19 @@ yarn.lock
 /tests/e2e/videos/
 /tests/e2e/screenshots/
 /playwright-report/
+/html-report/
+/blob-report/
 /test-results/
+.nyc_output/
 .playwright-cli/
+.playwright/
+e2e/**/screenshots/
+e2e/**/videos/
+e2e/**/traces/
+e2e/**/test-results/
+e2e/**/*.actual.png
+e2e/**/*.diff.png
+e2e/**/*.received.png
 
 # Local Netlify folder
 .netlify
@@ -85,7 +109,10 @@ yarn.lock
 # Temporary folders
 tmp/
 temp/
+output/
+reports/
 artifacts/browser/
+.codex/browser-qa/
 
 # OS generated files
 Thumbs.db
