@@ -14,7 +14,6 @@ import { useAppElementSize } from '@/hooks/modules/useAppElementSize'
 import { getActiveBreakpoint, resolveSpan } from './engine/utils/breakpoint'
 import type { BreakpointKey } from './engine/utils/breakpoint'
 import type { ResponsiveSpan } from './engine/types'
-import { deepClone } from '@/utils/lodashes'
 import {
   PRO_FORM_DEFAULTS,
   PRO_FORM_LAYOUT_DEFAULTS,
@@ -96,7 +95,7 @@ const getRootGridWrapperStyle = (node: FormSchemaNode): Record<string, string> =
   return { gridColumn: `span ${span} / span ${span}` }
 }
 
-const internalSchema = shallowRef<FormSchema>(deepClone(props.schema))
+const internalSchema = shallowRef<FormSchema>(props.schema)
 
 if (import.meta.env.DEV) {
   if (!Array.isArray(props.schema.fields) || props.schema.fields.length === 0) {
@@ -107,9 +106,10 @@ if (import.meta.env.DEV) {
 watch(
   () => props.schema,
   nextSchema => {
-    internalSchema.value = deepClone(nextSchema)
-  },
-  { deep: true }
+    if (internalSchema.value !== nextSchema) {
+      internalSchema.value = nextSchema
+    }
+  }
 )
 
 const hasVisibleFields = computed(() => internalSchema.value.fields.length > 0)
@@ -147,13 +147,9 @@ watch(
   { immediate: true }
 )
 
-watch(
-  internalSchema,
-  schema => {
-    updateSchema(schema)
-  },
-  { deep: true }
-)
+watch(internalSchema, schema => {
+  updateSchema(schema)
+})
 
 const emitSubmit = (values: TValues): void => {
   emit('submit', values)

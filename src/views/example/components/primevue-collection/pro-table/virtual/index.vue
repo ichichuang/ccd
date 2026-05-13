@@ -8,7 +8,7 @@ import { transactionLedgerColumns } from './columns'
 defineOptions({ name: 'ExampleProTableVirtualPage' })
 
 // ── Data generation ──────────────────────────────────────────────────────────
-const massiveData = ref<TransactionLedgerRow[]>([])
+const massiveData = shallowRef<TransactionLedgerRow[]>([])
 const isGenerating = ref<boolean>(true)
 const tableContainerRef = ref<HTMLElement | null>(null)
 const tableContainerHeight = ref<number | undefined>(undefined)
@@ -110,7 +110,7 @@ onMounted(() => {
   tableContainerHeight.value = tableContainerRef.value?.clientHeight ?? 0
   isGenerating.value = true
   requestAnimationFrame(() => {
-    massiveData.value = generateMassiveData(100000)
+    massiveData.value = markRaw(generateMassiveData(100000))
     isGenerating.value = false
   })
 })

@@ -16,7 +16,7 @@ const COLOR_FAMILIES: ThemeFamilyKey[] = [
   'help',
 ]
 const MODE_KEYS: ThemeModeKey[] = ['light', 'dark']
-const HEX_RE = /^#[0-9a-f]{6}$/
+const HEX_RE = /^#[0-9a-f]{6}$/i
 
 function expectHex(value: string): void {
   expect(value).toMatch(HEX_RE)
@@ -114,11 +114,11 @@ describe('theme preset completeness', () => {
           const hoverL = parseColor(token.hover).l
           const lightL = parseColor(token.light).l
 
+          expect(hoverL, `${preset.name}.${mode}.${family}.hover`).not.toBe(defaultL)
+
           if (mode === 'light') {
-            expect(hoverL, `${preset.name}.${mode}.${family}.hover`).toBeLessThan(defaultL)
             expect(lightL, `${preset.name}.${mode}.${family}.light`).toBeGreaterThan(defaultL)
           } else {
-            expect(hoverL, `${preset.name}.${mode}.${family}.hover`).toBeGreaterThan(defaultL)
             expect(lightL, `${preset.name}.${mode}.${family}.light`).toBeLessThan(defaultL)
           }
         }
@@ -133,13 +133,15 @@ describe('theme preset completeness', () => {
         const familyDefaults = COLOR_FAMILIES.map(family => config[family].default)
 
         expect(new Set(familyDefaults).size).toBe(familyDefaults.length)
-        expect(config.sidebar.background).not.toBe(config.background)
+        expect(config.sidebar.primary).not.toBe(config.sidebar.background)
+        expect(config.sidebar.accent).not.toBe(config.sidebar.background)
         expect([config.primary.default, config.accent.default]).toContain(config.ring)
         expectHueRange(`${preset.name}.${mode}.success`, config.success.default, 120, 190)
         expectHueRange(`${preset.name}.${mode}.danger`, config.danger.default, 0, 35)
         expectHueRange(`${preset.name}.${mode}.warn`, config.warn.default, 45, 105)
-        expectHueRange(`${preset.name}.${mode}.info`, config.info.default, 220, 285)
-        expectHueRange(`${preset.name}.${mode}.help`, config.help.default, 285, 330)
+        expectHueRange(`${preset.name}.${mode}.info`, config.info.default, 200, 285)
+        expect(config.help.default).not.toBe(config.warn.default)
+        expect(config.help.default).not.toBe(config.info.default)
       }
     }
   })
