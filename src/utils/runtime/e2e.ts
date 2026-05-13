@@ -69,6 +69,10 @@ export function dispatchRuntimeE2EEvent(
     return
   }
 
+  if (typeof window.performance !== 'undefined') {
+    window.performance.mark(name)
+  }
+
   window.dispatchEvent(
     new CustomEvent(name, {
       detail,

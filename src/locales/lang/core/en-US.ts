@@ -273,6 +273,59 @@ const enUSCore = {
     buttonMedium: 'Medium',
     buttonLarge: 'Large',
     sampleText: 'This is a sample paragraph.',
+    hero: {
+      title: 'Tactical Command Console',
+      badge: 'Live Mock',
+      description:
+        'Full semantic shortcut demo: charts, alerts, topology, system health, activity timeline, and interactive dialogs.',
+    },
+    quickAction: {
+      title: 'Quick Action',
+      description: 'Fill in the fields below to simulate creating a tactical task.',
+      requiredHint: 'Required fields are marked with *',
+      submit: 'Create Task',
+    },
+    kpi: {
+      throughput: 'Throughput',
+      latency: 'Latency',
+      availability: 'Availability',
+      activeNodes: 'Active Nodes',
+    },
+    charts: {
+      throughputLatency: 'Throughput & Latency',
+      alarmDistribution: 'Alarm Distribution',
+      nodeDistribution: 'Node Distribution',
+    },
+    sections: {
+      nodeTopology: 'Node Topology',
+      systemHealth: 'System Health',
+      activity: 'Activity',
+      recentAlerts: 'Recent Alerts',
+      recentAlertsDescription: 'Live alert event stream. Click a row for details.',
+      demo: 'Demo',
+    },
+    health: {
+      cpu: 'CPU Usage',
+      memory: 'Memory Usage',
+      disk: 'Disk I/O',
+      network: 'Network Bandwidth',
+    },
+    badges: {
+      hourly: 'Hourly',
+      buckets: 'Buckets',
+      live: 'Live',
+      total: 'Total',
+      realtime: 'Real-time',
+      latest: 'Latest',
+      events: 'Events',
+    },
+    empty: {
+      alertsTitle: 'No alerts',
+      alertsDescription:
+        'The system is stable. Use Quick Action to create a mock task and observe the interaction flow.',
+      nodesTitle: 'Nodes are healthy',
+      nodesDescription: 'No abnormal nodes need attention. Switch back to alerts for mock data.',
+    },
   },
   schemaForm: {
     stepPrev: 'Previous',

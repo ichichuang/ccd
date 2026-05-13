@@ -94,6 +94,7 @@ const onLogout = async () => {
           />
         </GlobalSetting>
         <Button
+          id="user-logout"
           class="w-full"
           :label="t('user.logout')"
           severity="danger"

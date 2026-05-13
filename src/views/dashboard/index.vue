@@ -6,17 +6,39 @@ import { ID_PREFIX } from '@/constants/business'
 import { ALERT_LEVEL_VALUE_ENUM, NODE_STATE_VALUE_ENUM } from '@/constants/enums'
 import { formatSerialId } from '@/utils/business/idGenerator'
 import { useDialog } from '@/hooks/modules/useDialog'
-import ProForm from '@/components/ProForm/index.vue'
 import Button from 'primevue/button'
+import { useTimeoutFn } from '@vueuse/core'
+import { useI18n } from 'vue-i18n'
 
 defineOptions({ name: 'Dashboard' })
+
+const { t } = useI18n()
+const loadProForm = () => import('@/components/ProForm/index.vue')
+const ProForm = defineAsyncComponent(loadProForm)
+const { start: scheduleProFormPreload } = useTimeoutFn(
+  () => {
+    void loadProForm()
+  },
+  0,
+  { immediate: false }
+)
+
+if (typeof window !== 'undefined') {
+  if (window.requestIdleCallback) {
+    window.requestIdleCallback(() => {
+      void loadProForm()
+    })
+  } else {
+    scheduleProFormPreload()
+  }
+}
 
 // ──────────────────────────────────────────────────────────────────────────────
 // KPI data (static mock)
 // ──────────────────────────────────────────────────────────────────────────────
 const kpiCards = [
   {
-    label: '总吞吐',
+    labelKey: 'dashboard.kpi.throughput',
     value: '128.4',
     unit: 'Gbps',
     icon: 'i-solar-accumulator-outline',
@@ -26,7 +48,7 @@ const kpiCards = [
     trendUp: true,
   },
   {
-    label: '延迟',
+    labelKey: 'dashboard.kpi.latency',
     value: '23.6',
     unit: 'ms',
     icon: 'i-lucide-clock-alert',
@@ -36,7 +58,7 @@ const kpiCards = [
     trendUp: false,
   },
   {
-    label: '可用率',
+    labelKey: 'dashboard.kpi.availability',
     value: '99.97',
     unit: '%',
     icon: 'i-lucide-shield-check',
@@ -46,7 +68,7 @@ const kpiCards = [
     trendUp: true,
   },
   {
-    label: '活跃节点',
+    labelKey: 'dashboard.kpi.activeNodes',
     value: '312',
     unit: 'nodes',
     icon: 'i-lucide-users',
@@ -194,10 +216,10 @@ const nodeTopology = [
 // System health metrics (NEW — showcase progress bars + glass-card)
 // ──────────────────────────────────────────────────────────────────────────────
 const systemHealth = [
-  { label: 'CPU 利用率', value: 67, color: 'bg-primary' },
-  { label: '内存使用', value: 82, color: 'bg-warn' },
-  { label: '磁盘 I/O', value: 43, color: 'bg-success' },
-  { label: '网络带宽', value: 91, color: 'bg-danger' },
+  { labelKey: 'dashboard.health.cpu', value: 67, color: 'bg-primary' },
+  { labelKey: 'dashboard.health.memory', value: 82, color: 'bg-warn' },
+  { labelKey: 'dashboard.health.disk', value: 43, color: 'bg-success' },
+  { labelKey: 'dashboard.health.network', value: 91, color: 'bg-danger' },
 ] as const
 
 // ──────────────────────────────────────────────────────────────────────────────
@@ -371,15 +393,14 @@ const emptyStateConfig = computed(() => {
   if (activeEmptyMode.value === 'alerts') {
     return {
       icon: 'i-lucide-bell',
-      title: '暂无告警事件',
-      description:
-        '当前系统处于稳定态。你可以使用上方 Quick Action 创建一条模拟任务以观察联动效果。',
+      title: t('dashboard.empty.alertsTitle'),
+      description: t('dashboard.empty.alertsDescription'),
     }
   }
   return {
     icon: 'i-lucide-network',
-    title: '节点状态正常',
-    description: '没有异常节点需要处理。切换回告警视图查看模拟数据差异。',
+    title: t('dashboard.empty.nodesTitle'),
+    description: t('dashboard.empty.nodesDescription'),
   }
 })
 
@@ -480,14 +501,14 @@ const { openDialog, closeDialogByIndex } = useDialog()
 
 function handleQuickActionOpen(): void {
   openDialog({
-    header: 'Quick Action',
+    header: t('dashboard.quickAction.title'),
     modal: true,
     hideFooter: true,
     contentRenderer: ({ index }) => {
       return (
         <div class="layout-full col-stretch gap-sm min-w-0">
           <p class="text-xs text-muted-foreground leading-relaxed">
-            填写下方字段以模拟创建一条战术任务；提交后关闭弹窗。
+            {t('dashboard.quickAction.description')}
           </p>
           <ProForm
             schema={quickActionSchema}
@@ -503,11 +524,13 @@ function handleQuickActionOpen(): void {
                 submit: () => Promise<void>
               }) => (
                 <div class="row-between gap-sm pt-sm  border-border/15 mt-md">
-                  <span class="text-xs text-muted-foreground">必填项已标注 *</span>
+                  <span class="text-xs text-muted-foreground">
+                    {t('dashboard.quickAction.requiredHint')}
+                  </span>
                   <div class="row-end gap-sm shrink-0">
                     <Button
                       type="button"
-                      label="取消"
+                      label={t('common.cancel')}
                       severity="secondary"
                       outlined
                       size="small"
@@ -519,7 +542,7 @@ function handleQuickActionOpen(): void {
                     />
                     <Button
                       type="button"
-                      label="创建任务"
+                      label={t('dashboard.quickAction.submit')}
                       icon="i-lucide-send"
                       severity="primary"
                       size="small"
@@ -564,21 +587,22 @@ function handleQuickActionOpen(): void {
             <div class="col-stretch gap-xs min-w-0">
               <div class="row-start gap-xs min-w-0 flex-wrap">
                 <span class="text-lg font-bold text-foreground text-no-wrap">
-                  Tactical Command Console
+                  {{ t('dashboard.hero.title') }}
                 </span>
                 <span class="surface-info rounded-md px-sm py-xs text-xs font-semibold uppercase">
-                  Live Mock
+                  {{ t('dashboard.hero.badge') }}
                 </span>
               </div>
               <span class="text-sm text-muted-foreground text-ellipsis-1">
-                语义快捷类全量演示：图表、告警列表、节点拓扑、系统健康、活动时间线与交互弹窗。
+                {{ t('dashboard.hero.description') }}
               </span>
             </div>
           </div>
 
           <Button
+            id="dashboard-quick-action"
             v-auth="['example:architecture:write']"
-            label="Quick Action"
+            :label="t('dashboard.quickAction.title')"
             severity="primary"
             size="small"
             class="shrink-0 interaction-shrink"
@@ -603,7 +627,9 @@ function handleQuickActionOpen(): void {
                 />
               </div>
               <div class="col-stretch gap-xs min-w-0 flex-1">
-                <span class="text-xs text-muted-foreground text-no-wrap">{{ kpi.label }}</span>
+                <span class="text-xs text-muted-foreground text-no-wrap">
+                  {{ t(kpi.labelKey) }}
+                </span>
                 <div class="row-start gap-xs min-w-0">
                   <span class="text-2xl font-bold text-foreground leading-none">
                     {{ kpi.value }}
@@ -638,11 +664,11 @@ function handleQuickActionOpen(): void {
                 class="text-primary"
               />
               <span class="text-sm font-semibold text-foreground text-no-wrap">
-                Throughput & Latency
+                {{ t('dashboard.charts.throughputLatency') }}
               </span>
             </div>
             <span class="surface-info rounded-md px-sm py-xs text-xs font-semibold uppercase">
-              Hourly
+              {{ t('dashboard.badges.hourly') }}
             </span>
           </div>
           <div class="col-fill min-w-0 !overflow-visible">
@@ -667,11 +693,11 @@ function handleQuickActionOpen(): void {
                   class="text-accent!"
                 />
                 <span class="text-sm font-semibold text-foreground text-no-wrap">
-                  Alarm Distribution
+                  {{ t('dashboard.charts.alarmDistribution') }}
                 </span>
               </div>
               <span class="surface-warn rounded-md px-sm py-xs text-xs font-semibold uppercase">
-                Buckets
+                {{ t('dashboard.badges.buckets') }}
               </span>
             </div>
             <div class="col-fill min-w-0 !overflow-visible">
@@ -692,11 +718,11 @@ function handleQuickActionOpen(): void {
                   class="text-success"
                 />
                 <span class="text-sm font-semibold text-foreground text-no-wrap">
-                  Node Distribution
+                  {{ t('dashboard.charts.nodeDistribution') }}
                 </span>
               </div>
               <span class="surface-success rounded-md px-sm py-xs text-xs font-semibold uppercase">
-                Live
+                {{ t('dashboard.badges.live') }}
               </span>
             </div>
             <div class="col-fill min-w-0 !overflow-visible">
@@ -725,11 +751,12 @@ function handleQuickActionOpen(): void {
                   class="text-primary"
                 />
                 <span class="text-sm font-semibold text-foreground text-no-wrap">
-                  Node Topology
+                  {{ t('dashboard.sections.nodeTopology') }}
                 </span>
               </div>
               <span class="surface-primary rounded-md px-sm py-xs text-xs font-semibold uppercase">
-                {{ nodeTopology.reduce((s, n) => s + n.count, 0) }} Total
+                {{ nodeTopology.reduce((s, n) => s + n.count, 0) }}
+                {{ t('dashboard.badges.total') }}
               </span>
             </div>
             <div class="grid grid-cols-12 gap-md min-w-0">
@@ -776,11 +803,11 @@ function handleQuickActionOpen(): void {
                   class="text-danger"
                 />
                 <span class="text-sm font-semibold text-foreground text-no-wrap">
-                  System Health
+                  {{ t('dashboard.sections.systemHealth') }}
                 </span>
               </div>
               <span class="surface-danger rounded-md px-sm py-xs text-xs font-semibold uppercase">
-                Real-time
+                {{ t('dashboard.badges.realtime') }}
               </span>
             </div>
             <div class="col-stretch gap-sm min-w-0">
@@ -790,7 +817,7 @@ function handleQuickActionOpen(): void {
                 class="col-stretch gap-xs min-w-0"
               >
                 <div class="row-between min-w-0">
-                  <span class="text-xs text-muted-foreground">{{ metric.label }}</span>
+                  <span class="text-xs text-muted-foreground">{{ t(metric.labelKey) }}</span>
                   <span class="text-xs font-semibold text-foreground">{{ metric.value }}%</span>
                 </div>
                 <div class="h-1.5 rounded-full bg-muted overflow-hidden">
@@ -813,10 +840,12 @@ function handleQuickActionOpen(): void {
                   size="sm"
                   class="text-info"
                 />
-                <span class="text-sm font-semibold text-foreground text-no-wrap">Activity</span>
+                <span class="text-sm font-semibold text-foreground text-no-wrap">
+                  {{ t('dashboard.sections.activity') }}
+                </span>
               </div>
               <span class="surface-info rounded-md px-sm py-xs text-xs font-semibold uppercase">
-                Latest
+                {{ t('dashboard.badges.latest') }}
               </span>
             </div>
             <CScrollbar class="col-fill min-w-0">
@@ -863,12 +892,16 @@ function handleQuickActionOpen(): void {
               />
             </div>
             <div class="col-stretch gap-xs min-w-0">
-              <span class="text-sm font-semibold text-foreground text-no-wrap">Recent Alerts</span>
-              <span class="text-xs text-muted-foreground">实时告警事件流，点击行查看详情</span>
+              <span class="text-sm font-semibold text-foreground text-no-wrap">
+                {{ t('dashboard.sections.recentAlerts') }}
+              </span>
+              <span class="text-xs text-muted-foreground">
+                {{ t('dashboard.sections.recentAlertsDescription') }}
+              </span>
             </div>
           </div>
           <span class="surface-warn rounded-md px-sm py-xs text-xs font-semibold uppercase">
-            {{ mockRows.length }} Events
+            {{ mockRows.length }} {{ t('dashboard.badges.events') }}
           </span>
         </div>
 
@@ -896,7 +929,9 @@ function handleQuickActionOpen(): void {
               size="sm"
               class="text-accent!"
             />
-            <span class="text-sm font-semibold text-foreground">演示区</span>
+            <span class="text-sm font-semibold text-foreground">
+              {{ t('dashboard.sections.demo') }}
+            </span>
           </div>
 
           <div class="row-start gap-xs flex-wrap min-w-0">

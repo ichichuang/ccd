@@ -5,6 +5,7 @@ import { routeWhitePathList } from '@/router/utils/helper'
 import { routeUtils } from '@/router'
 import { useRoute } from 'vue-router'
 import { useLayoutStore } from '@/stores/modules/system'
+import AsyncErrorFallback from '@/layouts/components/AsyncErrorFallback.vue'
 import type { CssTime, PhaseValue, RouteTransition } from '@/types/modules/router'
 import type { ComponentPublicInstance } from 'vue'
 
@@ -24,8 +25,23 @@ const isWhiteListRoute = computed(() =>
 // 为避免两者不一致导致“配置了 keepAlive 但未命中缓存”，维护一份组件名别名集做并集匹配。
 const keepAliveRouteNamesRef = ref<string[]>(routeUtils.keepAliveNames)
 const keepAliveAliasNamesRef = ref<string[]>([])
+const keepAliveVersionRef = ref<number>(routeUtils.keepAliveVersion)
 const routeComponentRef = ref<ComponentPublicInstance | null>(null)
 const keepAliveMismatchWarned = new Set<string>()
+const routeRenderError = shallowRef<unknown>(null)
+
+onErrorCaptured(error => {
+  routeRenderError.value = error
+  console.error('[AnimateRouterView] route render failed', error)
+  return false
+})
+
+watch(
+  () => route.fullPath,
+  () => {
+    routeRenderError.value = null
+  }
+)
 
 // 只有在非白名单路由时才计算 keepAliveNames
 const keepAliveNames = computed(() => {
@@ -39,11 +55,9 @@ const keepAliveNames = computed(() => {
 watch(
   () => route.name,
   () => {
-    const newKeepAliveNames = [...routeUtils.keepAliveNames]
-    const sortedNew = [...newKeepAliveNames].sort((a, b) => a.localeCompare(b))
-    const sortedPrev = [...keepAliveRouteNamesRef.value].sort((a, b) => a.localeCompare(b))
-    if (JSON.stringify(sortedNew) !== JSON.stringify(sortedPrev)) {
-      keepAliveRouteNamesRef.value = newKeepAliveNames
+    if (keepAliveVersionRef.value !== routeUtils.keepAliveVersion) {
+      keepAliveVersionRef.value = routeUtils.keepAliveVersion
+      keepAliveRouteNamesRef.value = [...routeUtils.keepAliveNames]
     }
   },
   { immediate: true }
@@ -88,9 +102,9 @@ watch(
     const renderedName = resolveRenderedComponentName()
     warnKeepAliveNameMismatch(renderedName)
     if (!renderedName) return
-    const exists =
-      keepAliveRouteNamesRef.value.includes(renderedName) ||
-      keepAliveAliasNamesRef.value.includes(renderedName)
+    const keepAliveRouteNames = new Set(keepAliveRouteNamesRef.value)
+    const keepAliveAliasNames = new Set(keepAliveAliasNamesRef.value)
+    const exists = keepAliveRouteNames.has(renderedName) || keepAliveAliasNames.has(renderedName)
     if (!exists) {
       keepAliveAliasNamesRef.value = [...keepAliveAliasNamesRef.value, renderedName]
     }
@@ -208,6 +222,7 @@ const handleBeforeLeave = (el: Element) => applyPhaseVars(el, 'leave')
     :style="styleVars"
   >
     <router-view
+      v-if="!routeRenderError"
       v-slot="{ Component, route: currentRoute }"
       class="layout-full min-h-0"
     >
@@ -243,5 +258,10 @@ const handleBeforeLeave = (el: Element) => applyPhaseVars(el, 'leave')
         />
       </Transition>
     </router-view>
+    <AsyncErrorFallback
+      v-else
+      title="页面渲染失败"
+      description="当前页面资源或组件初始化失败，请刷新页面重试。"
+    />
   </div>
 </template>

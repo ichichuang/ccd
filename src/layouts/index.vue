@@ -7,18 +7,43 @@ import type { AnimateName } from '@/components/AnimateWrapper/utils/types'
 import { AnimateWrapper } from '@/components/AnimateWrapper'
 import { RUNTIME_E2E_EVENTS } from '@/constants/runtime'
 import AmbientBackground from '@/layouts/components/AmbientBackground.vue'
+import AsyncErrorFallback from '@/layouts/components/AsyncErrorFallback.vue'
+import LoadingFallback from '@/layouts/components/LoadingFallback.vue'
 import { useLayoutStore } from '@/stores/modules/system'
 import { dispatchRuntimeE2EEvent } from '@/utils/runtime/e2e'
+import type { Component } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 
 defineOptions({ name: 'LayoutIndex' })
 
+const ASYNC_LAYOUT_TIMEOUT_MS = 15_000
+const ASYNC_LAYOUT_MAX_RETRIES = 1
+
+const createAsyncLayout = (loader: () => Promise<Component>) =>
+  defineAsyncComponent({
+    loader,
+    loadingComponent: LoadingFallback,
+    errorComponent: AsyncErrorFallback,
+    delay: 120,
+    timeout: ASYNC_LAYOUT_TIMEOUT_MS,
+    onError(error, retry, fail, attempts) {
+      const message = error instanceof Error ? error.message : String(error)
+      const isChunkError =
+        /fetch dynamically imported module|Failed to fetch dynamically imported module|Loading chunk|Importing a module script failed/i.test(
+          message
+        )
+      if (isChunkError && attempts <= ASYNC_LAYOUT_MAX_RETRIES) {
+        retry()
+        return
+      }
+      fail()
+    },
+  })
+
 // 异步布局边界：将大体量布局模块切分为独立 chunk，避免首帧主线程长任务
-const AdminLayout = defineAsyncComponent(() => import('@/layouts/modules/LayoutAdmin.tsx'))
-const FullScreenLayout = defineAsyncComponent(
-  () => import('@/layouts/modules/LayoutFullScreen.vue')
-)
-const RatioLayout = defineAsyncComponent(() => import('@/layouts/modules/LayoutRatio.vue'))
+const AdminLayout = createAsyncLayout(() => import('@/layouts/modules/LayoutAdmin.tsx'))
+const FullScreenLayout = createAsyncLayout(() => import('@/layouts/modules/LayoutFullScreen.vue'))
+const RatioLayout = createAsyncLayout(() => import('@/layouts/modules/LayoutRatio.vue'))
 
 const layoutStore = useLayoutStore()
 const isLoading = computed(() => layoutStore.isLoading)

@@ -272,6 +272,58 @@ const zhCNCore = {
     buttonMedium: '中按钮',
     buttonLarge: '大按钮',
     sampleText: '这是一段文字，一段普通文本',
+    hero: {
+      title: '战术指挥台',
+      badge: '实时模拟',
+      description: '语义快捷类全量演示：图表、告警列表、节点拓扑、系统健康、活动时间线与交互弹窗。',
+    },
+    quickAction: {
+      title: '快速操作',
+      description: '填写下方字段以模拟创建一条战术任务；提交后关闭弹窗。',
+      requiredHint: '必填项已标注 *',
+      submit: '创建任务',
+    },
+    kpi: {
+      throughput: '总吞吐',
+      latency: '延迟',
+      availability: '可用率',
+      activeNodes: '活跃节点',
+    },
+    charts: {
+      throughputLatency: '吞吐与延迟',
+      alarmDistribution: '告警分布',
+      nodeDistribution: '节点分布',
+    },
+    sections: {
+      nodeTopology: '节点拓扑',
+      systemHealth: '系统健康',
+      activity: '活动时间线',
+      recentAlerts: '最近告警',
+      recentAlertsDescription: '实时告警事件流，点击行查看详情',
+      demo: '演示区',
+    },
+    health: {
+      cpu: 'CPU 利用率',
+      memory: '内存使用',
+      disk: '磁盘 I/O',
+      network: '网络带宽',
+    },
+    badges: {
+      hourly: '每小时',
+      buckets: '分组',
+      live: '实时',
+      total: '总计',
+      realtime: '实时',
+      latest: '最新',
+      events: '事件',
+    },
+    empty: {
+      alertsTitle: '暂无告警事件',
+      alertsDescription:
+        '当前系统处于稳定态。你可以使用上方快速操作创建一条模拟任务以观察联动效果。',
+      nodesTitle: '节点状态正常',
+      nodesDescription: '没有异常节点需要处理。切换回告警视图查看模拟数据差异。',
+    },
   },
   schemaForm: {
     stepPrev: '上一步',
