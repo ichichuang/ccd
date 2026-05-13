@@ -1,4 +1,5 @@
 // @vitest-environment jsdom
+// @vitest-environment-options {"url":"http://localhost/"}
 
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
@@ -6,6 +7,33 @@ interface Deferred<T> {
   promise: Promise<T>
   resolve: (value: T | PromiseLike<T>) => void
   reject: (reason?: unknown) => void
+}
+
+function ensureStorage(): Storage {
+  if (globalThis.localStorage) return globalThis.localStorage
+
+  const values = new Map<string, string>()
+  const storage: Storage = {
+    get length() {
+      return values.size
+    },
+    clear: () => values.clear(),
+    getItem: (key: string) => values.get(key) ?? null,
+    key: (index: number) => Array.from(values.keys())[index] ?? null,
+    removeItem: (key: string) => {
+      values.delete(key)
+    },
+    setItem: (key: string, value: string) => {
+      values.set(key, value)
+    },
+  }
+
+  Object.defineProperty(globalThis, 'localStorage', {
+    configurable: true,
+    value: storage,
+  })
+
+  return storage
 }
 
 function createDeferred<T>(): Deferred<T> {
@@ -20,7 +48,7 @@ function createDeferred<T>(): Deferred<T> {
 
 async function setupLoading() {
   vi.resetModules()
-  localStorage.clear()
+  ensureStorage().clear()
   document.body.innerHTML = ''
   document.documentElement.removeAttribute('data-preloader-state')
   document.documentElement.removeAttribute('data-app-ready')

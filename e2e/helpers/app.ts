@@ -18,7 +18,7 @@ function normalizeHashPath(hashPath: string): string {
 export async function gotoVisual(page: Page, hashPath: string): Promise<void> {
   await page.goto(withVisualMode(hashPath))
   await page.waitForFunction(
-    path => window.location.hash === `#${path}`,
+    path => window.location.hash === `#${path}` || window.location.hash === '#/404',
     normalizeHashPath(hashPath)
   )
 }

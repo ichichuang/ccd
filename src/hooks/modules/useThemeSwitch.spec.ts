@@ -1,4 +1,5 @@
 // @vitest-environment jsdom
+// @vitest-environment-options {"url":"http://localhost/"}
 
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { createPinia, setActivePinia } from 'pinia'
@@ -14,6 +15,33 @@ function createDeferred<T>(): Deferred<T> {
     resolve = res
   })
   return { promise, resolve }
+}
+
+function ensureStorage(): Storage {
+  if (globalThis.localStorage) return globalThis.localStorage
+
+  const values = new Map<string, string>()
+  const storage: Storage = {
+    get length() {
+      return values.size
+    },
+    clear: () => values.clear(),
+    getItem: (key: string) => values.get(key) ?? null,
+    key: (index: number) => Array.from(values.keys())[index] ?? null,
+    removeItem: (key: string) => {
+      values.delete(key)
+    },
+    setItem: (key: string, value: string) => {
+      values.set(key, value)
+    },
+  }
+
+  Object.defineProperty(globalThis, 'localStorage', {
+    configurable: true,
+    value: storage,
+  })
+
+  return storage
 }
 
 describe('useThemeSwitch', () => {
@@ -51,7 +79,7 @@ describe('useThemeSwitch', () => {
       value: vi.fn(),
     })
 
-    localStorage.clear()
+    ensureStorage().clear()
     document.documentElement.className = ''
     document.documentElement.style.cssText = ''
     document.documentElement.dataset.themeTransitioning = 'false'
