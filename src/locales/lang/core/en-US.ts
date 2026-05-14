@@ -39,6 +39,8 @@ const enUSCore = {
     footerText: 'Enterprise Vue Admin v{version} © {year}',
     helpCenter: 'Help center',
     privacyPolicy: 'Privacy policy',
+    themeToggle: 'Toggle theme',
+    localeSelect: 'Switch language',
   },
   router: {
     core: {

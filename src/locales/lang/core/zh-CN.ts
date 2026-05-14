@@ -38,6 +38,8 @@ const zhCNCore = {
     footerText: 'Enterprise Vue Admin v{version} © {year}',
     helpCenter: '帮助中心',
     privacyPolicy: '隐私政策',
+    themeToggle: '切换主题',
+    localeSelect: '切换语言',
   },
   router: {
     core: {

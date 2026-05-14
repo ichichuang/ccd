@@ -60,31 +60,49 @@ const localeOptions = computed<Array<{ value: SupportedLocale; label: string }>>
   supportedLocales.map(l => ({ value: l.key, label: `${l.flag} ${l.name}` }))
 )
 
+function readObjectProperty(source: unknown, key: string): unknown {
+  if (typeof source !== 'object' || source === null) return undefined
+  if (!Reflect.has(source, key)) return undefined
+  return Reflect.get(source, key)
+}
+
+function readTrimmedStringProperty(source: unknown, key: string): string {
+  const value = readObjectProperty(source, key)
+  return typeof value === 'string' && value.trim().length > 0 ? value : ''
+}
+
 function isSupportedLocale(value: unknown): value is SupportedLocale {
   return value === 'zh-CN' || value === 'en-US'
 }
 
 function onLocaleChange(event: unknown): void {
-  if (typeof event !== 'object' || event === null) return
-  const nextValue = (event as { value?: unknown }).value
+  const nextValue = readObjectProperty(event, 'value')
   if (!isSupportedLocale(nextValue)) return
   void switchLocale(nextValue)
 }
 
 function getErrorMessage(error: unknown): string {
-  if (typeof error !== 'object' || error === null) return ''
+  const maybeMessage = readTrimmedStringProperty(error, 'message')
+  if (maybeMessage) return maybeMessage
 
-  const maybeMessage = (error as { message?: unknown }).message
-  if (typeof maybeMessage === 'string' && maybeMessage.trim().length > 0) return maybeMessage
+  const maybeData = readObjectProperty(error, 'data')
+  return readTrimmedStringProperty(maybeData, 'message')
+}
 
-  const maybeData = (error as { data?: unknown }).data
-  if (typeof maybeData === 'object' && maybeData !== null) {
-    const maybeDataMessage = (maybeData as { message?: unknown }).message
-    if (typeof maybeDataMessage === 'string' && maybeDataMessage.trim().length > 0)
-      return maybeDataMessage
-  }
+function getInputValue(value: unknown): string {
+  return typeof value === 'string' ? value : ''
+}
 
-  return ''
+function commitInputValue(onUpdate: (value: unknown) => void, value: unknown): void {
+  onUpdate(typeof value === 'string' ? value : '')
+}
+
+function handleUsernameFocus(): void {
+  isUsernameFocused.value = true
+}
+
+function handleUsernameBlur(): void {
+  isUsernameFocused.value = false
 }
 
 type ParsedAppInfo = {
@@ -93,13 +111,26 @@ type ParsedAppInfo = {
 }
 
 function parseAppInfo(): ParsedAppInfo {
-  if (typeof __APP_INFO__ === 'object' && __APP_INFO__ !== null) {
-    return __APP_INFO__ as ParsedAppInfo
+  const appInfo: unknown = __APP_INFO__
+  if (typeof appInfo === 'object' && appInfo !== null) {
+    return {
+      pkg: {
+        version: readTrimmedStringProperty(readObjectProperty(appInfo, 'pkg'), 'version'),
+      },
+      lastBuildTime: readTrimmedStringProperty(appInfo, 'lastBuildTime'),
+    }
   }
 
+  if (typeof appInfo !== 'string') return {}
+
   try {
-    const parsed = JSON.parse(__APP_INFO__ as string) as ParsedAppInfo
-    return parsed
+    const parsed: unknown = JSON.parse(appInfo)
+    return {
+      pkg: {
+        version: readTrimmedStringProperty(readObjectProperty(parsed, 'pkg'), 'version'),
+      },
+      lastBuildTime: readTrimmedStringProperty(parsed, 'lastBuildTime'),
+    }
   } catch {
     return {}
   }
@@ -147,12 +178,7 @@ const loginSchema = computed<FormSchema>(() => ({
       props: {
         placeholder: t('login.usernamePlaceholder'),
         size: 'large',
-        onFocus: () => {
-          isUsernameFocused.value = true
-        },
-        onBlur: () => {
-          isUsernameFocused.value = false
-        },
+        autocomplete: 'username',
       },
     },
     {
@@ -174,6 +200,7 @@ const loginSchema = computed<FormSchema>(() => ({
         type: 'password',
         placeholder: t('login.passwordPlaceholder'),
         size: 'large',
+        autocomplete: 'current-password',
       },
     },
   ],
@@ -221,7 +248,8 @@ async function login(values: Record<string, unknown>): Promise<void> {
 
     await doLogin(payload)
 
-    const redirectPath = route.query.redirect as string | undefined
+    const redirectQuery = route.query.redirect
+    const redirectPath = typeof redirectQuery === 'string' ? redirectQuery : undefined
     const fallbackPath = import.meta.env.VITE_ROOT_REDIRECT || '/'
     const stopGlobalLoading = startLoading()
 
@@ -261,96 +289,124 @@ async function handleLoginSubmit(): Promise<void> {
 </script>
 
 <template>
-  <!-- 背景由根布局 AmbientBackground（fullscreen）提供；此处保持透明叠层 -->
-  <div class="relative z-content layout-full center">
-    <div class="command-center-container-gradient absolute top-0 left-0 right-0 bottom-0 z-0"></div>
-    <!-- <lg：单栏≈90vw；≥lg：版心随断点放宽，大屏两列间距由 gap-x 与版心宽度共同放大（避免 row-between 吃满空隙导致 gap 无效） -->
-    <div class="layout-full col-center gap-md">
-      <div class="row-center shrink-0 gap-sm lg:hidden">
-        <div
-          class="glass-icon-box h-[var(--spacing-2xl)] w-[var(--spacing-2xl)] shrink-0 overflow-hidden"
-        >
+  <div class="login-page relative layout-full col-stretch">
+    <div class="login-grid-bg absolute z-base"></div>
+
+    <header class="login-toolbar z-content row-between">
+      <div class="row-center min-w-0 gap-sm lg:hidden">
+        <div class="login-logo center shrink-0 overflow-hidden">
           <img
             src="@/assets/images/face.png"
             alt=""
             class="block h-full w-full object-cover"
           />
         </div>
-        <span class="text-xl font-bold tracking-wide text-foreground">
+        <span class="text-lg font-bold text-foreground">
           {{ brand.displayName }}
         </span>
       </div>
 
-      <div class="col-stretch lg:row-center lg:min-h-[min(58vh,560px)] xl:gap-3xl 2xl:gap-5xl">
-        <!-- ≥lg：左侧小人；相对父级 % + px 上限；与表单列用 gap-x 控距（居中成组） -->
-        <div
-          class="center relative max-lg:hidden min-h-0 min-w-0 w-full lg:flex-1 lg:max-w-[min(58vw,560px)] lg:w-auto lg:self-stretch lg:min-h-[min(58vh,560px)] lg:overflow-visible lg:px-sm lg:py-md"
+      <div class="row-end gap-sm">
+        <span
+          id="login-locale-label"
+          class="sr-only"
         >
-          <div class="fixed z-content top-xl left-xl row-center max-lg:hidden shrink-0 gap-sm">
-            <div
-              class="glass-icon-box h-[var(--spacing-2xl)] w-[var(--spacing-2xl)] shrink-0 overflow-hidden"
-            >
-              <img
-                src="@/assets/images/face.png"
-                alt=""
-                class="block h-full w-full object-cover"
+          {{ t('login.localeSelect') }}
+        </span>
+        <Button
+          icon="i-lucide-sun dark:i-lucide-moon"
+          variant="text"
+          rounded
+          severity="secondary"
+          :aria-label="t('login.themeToggle')"
+          @click="toggleThemeWithAnimation"
+        />
+        <Select
+          :model-value="locale"
+          :options="localeOptions"
+          option-label="label"
+          option-value="value"
+          :size="isMobileLayout ? 'large' : 'small'"
+          class="login-locale-select"
+          label-id="login-locale-label"
+          @change="onLocaleChange"
+        />
+      </div>
+    </header>
+
+    <CScrollbar
+      class="col-fill"
+      visibility="hidden"
+    >
+      <main class="login-main relative z-content col-center">
+        <div class="login-shell">
+          <section class="login-visual-panel glass-card">
+            <div class="row-center gap-sm">
+              <div class="login-logo center shrink-0 overflow-hidden">
+                <img
+                  src="@/assets/images/face.png"
+                  alt=""
+                  class="block h-full w-full object-cover"
+                />
+              </div>
+              <div class="col-stretch min-w-0">
+                <span class="text-lg font-bold text-foreground">{{ brand.displayName }}</span>
+                <span class="text-sm text-muted-foreground">{{ t('login.brandQuoteAuthor') }}</span>
+              </div>
+            </div>
+
+            <div class="login-hero-copy col-stretch">
+              <h1 class="text-3xl font-bold text-foreground">
+                {{ t('login.brandTitle') }}
+              </h1>
+              <p class="text-md leading-relaxed text-muted-foreground">
+                {{ t('login.brandSloganLine1') }}
+              </p>
+              <p class="text-sm leading-relaxed text-muted-foreground">
+                {{ t('login.brandSloganLine2') }}
+              </p>
+            </div>
+
+            <div class="login-characters center">
+              <AnimatedCharacters
+                :is-typing="isUsernameFocused"
+                :show-password="false"
+                :password-length="passwordLength"
               />
             </div>
-            <span class="text-xl font-bold tracking-wide text-foreground">
-              {{ brand.displayName }}
-            </span>
-          </div>
-          <AnimatedCharacters
-            :is-typing="isUsernameFocused"
-            :show-password="false"
-            :password-length="passwordLength"
-          />
-        </div>
 
-        <!-- 右侧：≥lg 顶对齐品牌 + glass-card；<lg 整列仅表单区品牌用顶部 lg:hidden 行 -->
-        <div
-          class="col-stretch mx-auto w-[max(320px,min(92vw,440px))] shrink-0 gap-md md:w-[max(340px,min(88vw,440px))] lg:mx-0 lg:w-[max(360px,min(45vw,520px))] lg:gap-lg"
-        >
-          <div
-            class="fixed z-content top-xl right-xl row-end w-full shrink-0 gap-sm sm:w-auto sm:justify-self-end sm:gap-md"
-          >
-            <Button
-              icon="i-lucide-sun dark:i-lucide-moon"
-              text
-              rounded
-              severity="secondary"
-              class="text-lg!"
-              @click="toggleThemeWithAnimation"
-            />
-            <Select
-              :model-value="locale"
-              :options="localeOptions"
-              option-label="label"
-              option-value="value"
-              :size="isMobileLayout ? 'large' : 'small'"
-              class="max-w-[min(70vw,220px)] min-w-0 shrink-0 sm:max-w-[200px]"
-              @change="onLocaleChange"
-            />
-          </div>
-          <section class="glass-card z-content w-full text-card-foreground">
-            <div class="col-stretch gap-lg px-sm py-lg lg:gap-xl">
-              <!-- Grid：避免 flex-1+min-w-0 在 row-between 下被工具列压成极窄（标题竖排） -->
-              <div
-                class="grid w-full min-w-0 shrink-0 grid-cols-1 gap-y-md gap-x-md sm:grid-cols-[minmax(0,1fr)_auto] sm:items-start"
-              >
-                <div class="col-stretch min-w-0 gap-sm text-left">
-                  <h2
-                    class="text-pretty text-2xl font-bold tracking-tight text-foreground sm:text-3xl"
-                  >
-                    {{ t('login.heading') }}
-                  </h2>
-                  <p class="text-sm leading-relaxed text-muted-foreground">
-                    {{ t('login.description') }}
-                  </p>
-                </div>
+            <div class="login-pills row-start">
+              <span class="surface-primary rounded-md px-sm py-xs text-xs">
+                {{ t('login.quickAdmin') }}
+              </span>
+              <span class="surface-info rounded-md px-sm py-xs text-xs">
+                {{ t('login.quickUser') }}
+              </span>
+            </div>
+          </section>
+
+          <section class="login-card material-elevated">
+            <div class="login-card-content col-stretch">
+              <div class="col-stretch gap-sm">
+                <span class="text-sm font-medium text-primary">{{ t('login.title') }}</span>
+                <h2 class="text-2xl font-bold text-foreground sm:text-3xl">
+                  {{ t('login.heading') }}
+                </h2>
+                <p class="text-sm leading-relaxed text-muted-foreground">
+                  {{ t('login.description') }}
+                </p>
               </div>
 
               <div class="col-stretch gap-sm">
+                <div class="row-between gap-sm">
+                  <span class="text-sm font-medium text-secondary-foreground">
+                    {{ t('login.quickFillTips') }}
+                  </span>
+                  <span class="text-xs text-muted-foreground">
+                    {{ t('login.placeholderPassword') }}
+                  </span>
+                </div>
+
                 <div class="grid grid-cols-2 gap-sm">
                   <Button
                     id="login-fill-admin"
@@ -358,7 +414,7 @@ async function handleLoginSubmit(): Promise<void> {
                     icon="i-lucide-shield-check"
                     :label="t('login.quickAdmin')"
                     severity="secondary"
-                    outlined
+                    variant="outlined"
                     class="w-full"
                     @click="fillAdminPreset"
                   />
@@ -368,38 +424,77 @@ async function handleLoginSubmit(): Promise<void> {
                     icon="i-lucide-user-round"
                     :label="t('login.quickUser')"
                     severity="success"
-                    outlined
+                    variant="outlined"
                     class="w-full"
                     @click="fillUserPreset"
                   />
                 </div>
               </div>
 
-              <div class="col-stretch mt-sm">
-                <ProForm
-                  :key="locale"
-                  ref="formRef"
-                  :schema="loginSchema"
-                  validate-on="submit"
-                  :disabled="loading"
-                  gap="var(--spacing-sm)"
-                  @submit="login"
-                >
-                  <template #footer="{ formState }">
-                    <div class="col-stretch gap-md pt-md border-t border-t-solid border-border/60">
-                      <Button
-                        id="login-submit"
-                        class="w-full"
-                        icon="i-lucide-log-in"
-                        :label="t('login.submit')"
-                        :loading="formState.submitting || loading"
-                        size="large"
-                        @click="handleLoginSubmit"
+              <ProForm
+                :key="locale"
+                ref="formRef"
+                :schema="loginSchema"
+                validate-on="submit"
+                :disabled="loading"
+                gap="var(--spacing-sm)"
+                @submit="login"
+              >
+                <template #field-username="{ state, onUpdate }">
+                  <IconField class="w-full">
+                    <InputIcon class="text-muted-foreground">
+                      <Icons
+                        name="i-lucide-user-round"
+                        size="md"
+                        color="text-muted-foreground"
                       />
-                    </div>
-                  </template>
-                </ProForm>
-              </div>
+                    </InputIcon>
+                    <InputText
+                      id="username"
+                      :model-value="getInputValue(state.value)"
+                      :placeholder="t('login.usernamePlaceholder')"
+                      autocomplete="username"
+                      size="large"
+                      :disabled="loading || state.disabled"
+                      :invalid="state.errors.length > 0"
+                      fluid
+                      @focus="handleUsernameFocus"
+                      @blur="handleUsernameBlur"
+                      @update:model-value="value => commitInputValue(onUpdate, value)"
+                    />
+                  </IconField>
+                </template>
+
+                <template #field-password="{ state, onUpdate }">
+                  <Password
+                    input-id="password"
+                    :model-value="getInputValue(state.value)"
+                    :placeholder="t('login.passwordPlaceholder')"
+                    autocomplete="current-password"
+                    size="large"
+                    :feedback="false"
+                    toggle-mask
+                    fluid
+                    :disabled="loading || state.disabled"
+                    :invalid="state.errors.length > 0"
+                    @update:model-value="value => commitInputValue(onUpdate, value)"
+                  />
+                </template>
+
+                <template #footer="{ formState }">
+                  <div class="login-submit-area col-stretch">
+                    <Button
+                      id="login-submit"
+                      class="w-full"
+                      icon="i-lucide-log-in"
+                      :label="t('login.submit')"
+                      :loading="formState.submitting || loading"
+                      size="large"
+                      @click="handleLoginSubmit"
+                    />
+                  </div>
+                </template>
+              </ProForm>
 
               <div class="col-center gap-md text-center">
                 <div class="text-sm text-muted-foreground">
@@ -411,46 +506,170 @@ async function handleLoginSubmit(): Promise<void> {
                     {{ t('login.register') }}
                   </a>
                 </div>
-                <p class="mt-[var(--spacing-2xl)] text-xs text-muted-foreground/50">
+                <p class="text-xs text-muted-foreground/60">
                   {{ loginFooterText }}
                 </p>
               </div>
             </div>
           </section>
-
-          <div class="row-center gap-lg text-sm">
-            <a
-              href="#"
-              class="text-muted-foreground transition-colors duration-sm ease-out hover:text-foreground"
-            >
-              {{ t('login.helpCenter') }}
-            </a>
-            <a
-              href="#"
-              class="text-muted-foreground transition-colors duration-sm ease-out hover:text-foreground"
-            >
-              {{ t('login.privacyPolicy') }}
-            </a>
-          </div>
         </div>
-      </div>
-    </div>
+
+        <nav
+          class="login-links row-center gap-lg"
+          aria-label="login links"
+        >
+          <a
+            href="#"
+            class="text-sm text-muted-foreground transition-colors duration-sm ease-out hover:text-foreground"
+          >
+            {{ t('login.helpCenter') }}
+          </a>
+          <a
+            href="#"
+            class="text-sm text-muted-foreground transition-colors duration-sm ease-out hover:text-foreground"
+          >
+            {{ t('login.privacyPolicy') }}
+          </a>
+        </nav>
+      </main>
+    </CScrollbar>
   </div>
 </template>
 <style scoped lang="scss">
-.command-center-container-gradient {
+.login-page {
+  overflow: hidden;
+}
+
+.login-grid-bg {
+  inset: 0;
   background:
     linear-gradient(rgb(var(--primary) / 28%) 1px, transparent 1px),
     linear-gradient(90deg, rgb(var(--primary) / 12%) 1px, transparent 1px);
   background-size: var(--spacing-2xl) var(--spacing-2xl);
+  mask-image: linear-gradient(to bottom, rgb(var(--foreground) / 75%), transparent);
+}
+
+.login-toolbar {
+  position: absolute;
+  top: var(--spacing-md);
+  right: var(--spacing-md);
+  left: var(--spacing-md);
+  justify-content: flex-end;
+}
+
+.login-logo {
+  width: var(--spacing-2xl);
+  height: var(--spacing-2xl);
+  border: 1px solid rgb(var(--border) / 65%);
+  border-radius: var(--radius-lg);
+  background: rgb(var(--card) / 70%);
+}
+
+.login-locale-select {
+  width: min(46vw, 220px);
+}
+
+.login-main {
+  min-height: 100%;
+  padding: var(--spacing-5xl) var(--spacing-md) var(--spacing-lg);
+}
+
+.login-shell {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(360px, 440px);
+  align-items: stretch;
+  width: min(94vw, 1180px);
+  min-height: min(78vh, 720px);
+  gap: var(--spacing-xl);
+}
+
+.login-visual-panel {
+  display: grid;
+  grid-template-rows: auto auto minmax(0, 1fr) auto;
+  gap: var(--spacing-xl);
+  overflow: hidden;
+}
+
+.login-hero-copy {
+  gap: var(--spacing-sm);
+  max-width: 76%;
+}
+
+.login-characters {
+  min-height: 0;
+}
+
+.login-pills {
+  gap: var(--spacing-sm);
+}
+
+.login-card {
+  align-self: center;
+}
+
+.login-card-content {
+  gap: var(--spacing-lg);
+  padding: var(--spacing-sm);
+}
+
+.login-submit-area {
+  gap: var(--spacing-md);
+  padding-top: var(--spacing-md);
+  border-top: 1px solid rgb(var(--border) / 60%);
+}
+
+.login-links {
+  margin-top: var(--spacing-md);
 }
 
 .dark {
-  .command-center-container-gradient {
+  .login-grid-bg {
     background:
       linear-gradient(rgb(var(--foreground) / 8%) 1px, transparent 1px),
       linear-gradient(90deg, rgb(var(--foreground) / 8%) 1px, transparent 1px);
     background-size: var(--spacing-2xl) var(--spacing-2xl);
+  }
+}
+
+@media (width <= 1023px) {
+  .login-toolbar {
+    align-items: flex-start;
+    justify-content: space-between;
+  }
+
+  .login-main {
+    align-items: flex-start;
+    padding-top: var(--spacing-5xl);
+  }
+
+  .login-shell {
+    grid-template-columns: minmax(0, 1fr);
+    width: min(94vw, 460px);
+    min-height: auto;
+  }
+
+  .login-visual-panel {
+    display: none;
+  }
+}
+
+@media (width <= 640px) {
+  .login-toolbar {
+    right: var(--spacing-sm);
+    left: var(--spacing-sm);
+  }
+
+  .login-main {
+    padding-right: var(--spacing-sm);
+    padding-left: var(--spacing-sm);
+  }
+
+  .login-shell {
+    width: 100%;
+  }
+
+  .login-card-content {
+    padding: 0;
   }
 }
 </style>
