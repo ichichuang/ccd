@@ -26,6 +26,8 @@ import {
 } from '@/layouts/components/admin/adminSidebarMenu.shared'
 import type { SidebarState } from '@/layouts/runtime/layoutRuntime'
 
+const COLLAPSING_SUBMENU_VISUAL_HOLD_MS = 240
+
 export default defineComponent({
   name: 'AdminSidebarMenuInline',
   props: {
@@ -60,6 +62,7 @@ export default defineComponent({
       delay: 100,
     })
     const truncatedKeys = shallowRef<Set<string>>(new Set())
+    const collapsingVisualKeys = shallowRef<Set<string>>(new Set())
     const menuLabelRefs = shallowRef<Map<string, HTMLElement>>(new Map())
     let fontsReadyHooked = false
     const shouldMeasureTruncation = computed(() => !isCompactDensity.value)
@@ -69,6 +72,15 @@ export default defineComponent({
         measureTruncation()
       },
       measureDelayMs,
+      { immediate: false }
+    )
+    const { start: startCollapseVisualTimer, stop: stopCollapseVisualTimer } = useTimeoutFn(
+      () => {
+        if (collapsingVisualKeys.value.size > 0) {
+          collapsingVisualKeys.value = new Set()
+        }
+      },
+      COLLAPSING_SUBMENU_VISUAL_HOLD_MS,
       { immediate: false }
     )
     const controlledExpandedKeys = computed<Record<string, boolean>>(() =>
@@ -120,6 +132,33 @@ export default defineComponent({
       startMeasureTimer()
     }
 
+    const retainCollapsingVisualKeys = (
+      prevKeys: Record<string, boolean>,
+      nextKeys: Record<string, boolean>
+    ): void => {
+      const nextVisualKeys = new Set(collapsingVisualKeys.value)
+      let hasNewCollapsingKey = false
+
+      Object.keys(nextKeys).forEach(key => {
+        if (!nextKeys[key]) return
+        nextVisualKeys.delete(key)
+      })
+
+      Object.keys(prevKeys).forEach(key => {
+        if (!prevKeys[key] || nextKeys[key]) return
+        nextVisualKeys.add(key)
+        hasNewCollapsingKey = true
+      })
+
+      collapsingVisualKeys.value = nextVisualKeys
+      if (nextVisualKeys.size === 0) {
+        stopCollapseVisualTimer()
+      } else if (hasNewCollapsingKey) {
+        stopCollapseVisualTimer()
+        startCollapseVisualTimer()
+      }
+    }
+
     watch(
       () => [props.model, menuContainerWidth.value],
       () => {
@@ -145,19 +184,21 @@ export default defineComponent({
 
     onBeforeUnmount(() => {
       stopMeasureTimer()
+      stopCollapseVisualTimer()
     })
 
     const onUpdateExpandedKeys = (val: Map<string, boolean> | Record<string, boolean>) => {
       let nextKeys = toRecord(val)
+      const prevKeys = layoutStore.getExpandedMenuKeys
 
       if (!props.allowMultiple) {
-        const prevKeys = layoutStore.getExpandedMenuKeys
         const newlyExpandedRoot = props.rootKeys.find(key => nextKeys[key] && !prevKeys[key])
         if (newlyExpandedRoot) {
           nextKeys = applyUniqueRoot(nextKeys, props.rootKeys, newlyExpandedRoot)
         }
       }
 
+      retainCollapsingVisualKeys(prevKeys, nextKeys)
       layoutStore.setExpandedMenuKeys(nextKeys)
       nextTick(() => {
         scheduleMeasureTruncation(220)
@@ -173,6 +214,7 @@ export default defineComponent({
 
       const hasChildren = Array.isArray(item.items) && item.items.length > 0
       const isSubmenuOpen = hasChildren && controlledExpandedKeys.value[key] === true
+      const isSubmenuVisuallyOpen = isSubmenuOpen || collapsingVisualKeys.value.has(key)
       const baseClasses = [
         getMenuItemBase('sidebar'),
         'admin-sidebar-menu__item',
@@ -186,7 +228,7 @@ export default defineComponent({
       const stateClasses = getMenuStateClasses({
         context: 'sidebar',
         distance,
-        isSubmenuOpen,
+        isSubmenuOpen: isSubmenuVisuallyOpen,
         level,
       })
 
@@ -231,7 +273,7 @@ export default defineComponent({
             <Icons
               name="i-lucide-chevron-down"
               size={getIconSize('sidebar')}
-              class={`admin-sidebar-menu__arrow text-current! shrink-0 text-center flex-shrink-0 center ml-auto w-5 ${isSubmenuOpen ? 'rotate-180' : 'rotate-0'}`}
+              class={`admin-sidebar-menu__arrow text-current! shrink-0 text-center flex-shrink-0 center ml-auto w-5 ${isSubmenuVisuallyOpen ? 'rotate-180' : 'rotate-0'}`}
             />
           ) : null}
         </span>
