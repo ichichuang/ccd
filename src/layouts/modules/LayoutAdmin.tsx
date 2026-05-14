@@ -7,8 +7,7 @@ import { useLayoutStore } from '@/stores/modules/system'
 import { useDateUtils } from '@/hooks/modules/useDateUtils'
 import { useThemeSwitch } from '@/hooks/modules/useThemeSwitch'
 import ContextMenuProvider from '@/layouts/components/ContextMenuProvider.vue'
-import SettingsContent from '@/layouts/components/GlobalSetting/SettingsContent.vue'
-import { useDialog } from '@/hooks/modules/useDialog'
+import { useGlobalSettingsDialog } from '@/layouts/components/GlobalSetting/useGlobalSettingsDialog'
 import { refreshCurrentRoute } from '@/router/utils/helper'
 import AdminHeader from '@&/admin/AdminHeader.vue'
 import AdminSidebar from '@&/admin/AdminSidebar.tsx'
@@ -41,7 +40,7 @@ export default defineComponent({
 
     const { getAvailableTimezones, isInitialized } = useDateUtils()
     const { isDark, isAnimating, toggleThemeWithAnimation } = useThemeSwitch()
-    const { openDialog } = useDialog()
+    const { openGlobalSettings } = useGlobalSettingsDialog()
 
     // ===== 管理布局右键菜单逻辑 =====
     const contextThemeToggleLabel = computed(() =>
@@ -50,15 +49,6 @@ export default defineComponent({
 
     const onContextReload = () => {
       refreshCurrentRoute()
-    }
-
-    const openGlobalSettings = () => {
-      openDialog({
-        header: t('layout.globalSettingsTitle'),
-        position: 'right',
-        class: 'w-[82vw]! sm:w-[60vw]! md:w-[40vw]! lg:w-[36vw]!',
-        contentRenderer: () => <SettingsContent />,
-      })
     }
 
     const onContextToggleTheme = (event: MouseEvent) => {
