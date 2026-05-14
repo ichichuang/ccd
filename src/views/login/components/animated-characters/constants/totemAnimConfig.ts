@@ -25,25 +25,26 @@ export const ANIM = {
     primaryFace: { left: 55, top: 65 },
   },
 
-  /** Deltas for show-password pose (faces use transform x/y on Warn/Accent vs rest positions) */
+  /** Privacy pose for visible password: faces turn away and foreground characters close their eyes. */
   showPassword: {
-    primaryFace: { left: 20, top: 35 },
-    successFace: { left: 10, top: 28 },
-    warnFace: { x: -32, y: -5 },
-    accentFace: { x: -32, y: -5 },
-    accentMouth: { x: -30, y: 0 },
-    primaryPupil: { x: -4, y: -4 },
-    successPupil: { x: -4, y: -4 },
-    warnPupil: { x: -5, y: -4 },
-    accentPupil: { x: -5, y: -4 },
+    primaryFace: { left: 18, top: 70 },
+    successFace: { left: 10, top: 54 },
+    warnFace: { x: -42, y: 12 },
+    accentFace: { x: -36, y: 16 },
+    accentMouth: { x: -36, y: 8 },
+    primaryPupil: { x: -5, y: 4 },
+    successPupil: { x: -5, y: 4 },
+    warnPupil: { x: -6, y: 3 },
+    accentPupil: { x: -6, y: 3 },
+    closedEyeScaleY: 0.08,
   },
 
   peek: {
-    to: { x: 4, y: 5 },
-    back: { x: -4, y: -4 },
-    holdMs: 800,
-    delayMin: 2000,
-    delayRange: 3000,
+    to: { x: -2, y: 2 },
+    back: { x: -5, y: 4 },
+    holdMs: 220,
+    delayMin: 3600,
+    delayRange: 4200,
   },
 
   /** 眨眼：对内层 blinkLayer 做 scaleY，避免与 Vue 绑定根节点 height 争抢 */
@@ -54,6 +55,17 @@ export const ANIM = {
     closedPauseMs: 200,
     delayMin: 3000,
     delayRange: 4000,
+  },
+
+  /** Tall primary character: slower and softer blink so the hero does not feel twitchy. */
+  primaryBlink: {
+    closedScaleY: 0.16,
+    closeDuration: 0.12,
+    openDuration: 0.24,
+    closedPauseMs: 90,
+    delayMin: 7500,
+    delayRange: 5500,
+    resumeDelayMs: 2600,
   },
 
   quickTo: { totem: 0.45, body: 0.3, face: 0.2, pupil: 0.14 },

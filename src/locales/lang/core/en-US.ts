@@ -41,6 +41,8 @@ const enUSCore = {
     privacyPolicy: 'Privacy policy',
     themeToggle: 'Toggle theme',
     localeSelect: 'Switch language',
+    passwordShow: 'Show password',
+    passwordHide: 'Hide password',
   },
   router: {
     core: {

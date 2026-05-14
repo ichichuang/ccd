@@ -41,6 +41,7 @@ type LoginFormValues = LoginParams
 const formRef = ref<ProFormExpose | null>(null)
 
 const isUsernameFocused = ref<boolean>(false)
+const isPasswordVisible = ref<boolean>(false)
 
 const passwordLength = computed<number>(() => {
   const inst = formRef.value
@@ -103,6 +104,11 @@ function handleUsernameFocus(): void {
 
 function handleUsernameBlur(): void {
   isUsernameFocused.value = false
+}
+
+function togglePasswordVisibility(toggleCallback: () => void): void {
+  isPasswordVisible.value = !isPasswordVisible.value
+  toggleCallback()
 }
 
 type ParsedAppInfo = {
@@ -370,7 +376,7 @@ async function handleLoginSubmit(): Promise<void> {
             <div class="login-characters center">
               <AnimatedCharacters
                 :is-typing="isUsernameFocused"
-                :show-password="false"
+                :show-password="isPasswordVisible"
                 :password-length="passwordLength"
               />
             </div>
@@ -478,7 +484,36 @@ async function handleLoginSubmit(): Promise<void> {
                     :disabled="loading || state.disabled"
                     :invalid="state.errors.length > 0"
                     @update:model-value="value => commitInputValue(onUpdate, value)"
-                  />
+                  >
+                    <template #maskicon="{ toggleCallback }">
+                      <button
+                        type="button"
+                        class="login-password-toggle center"
+                        :aria-label="t('login.passwordHide')"
+                        @click="togglePasswordVisibility(toggleCallback)"
+                      >
+                        <Icons
+                          name="i-lucide-eye-off"
+                          size="md"
+                          color="text-muted-foreground"
+                        />
+                      </button>
+                    </template>
+                    <template #unmaskicon="{ toggleCallback }">
+                      <button
+                        type="button"
+                        class="login-password-toggle center"
+                        :aria-label="t('login.passwordShow')"
+                        @click="togglePasswordVisibility(toggleCallback)"
+                      >
+                        <Icons
+                          name="i-lucide-eye"
+                          size="md"
+                          color="text-muted-foreground"
+                        />
+                      </button>
+                    </template>
+                  </Password>
                 </template>
 
                 <template #footer="{ formState }">
@@ -616,6 +651,14 @@ async function handleLoginSubmit(): Promise<void> {
   gap: var(--spacing-md);
   padding-top: var(--spacing-md);
   border-top: 1px solid rgb(var(--border) / 60%);
+}
+
+.login-password-toggle {
+  border: 0;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+  padding: 0;
 }
 
 .login-links {

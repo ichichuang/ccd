@@ -40,6 +40,8 @@ const zhCNCore = {
     privacyPolicy: '隐私政策',
     themeToggle: '切换主题',
     localeSelect: '切换语言',
+    passwordShow: '显示密码',
+    passwordHide: '隐藏密码',
   },
   router: {
     core: {

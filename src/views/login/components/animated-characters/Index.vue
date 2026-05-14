@@ -141,6 +141,15 @@ interface EyeBallTargets {
   blinkLayerEl: HTMLElement | null
 }
 
+interface BlinkProfile {
+  closedScaleY: number
+  closeDuration: number
+  openDuration: number
+  closedPauseMs: number
+  delayMin: number
+  delayRange: number
+}
+
 function buildPupilQuickToMap(): Map<HTMLElement, PupilQuickToPair> {
   const map = new Map<HTMLElement, PupilQuickToPair>()
   const dur = ANIM.quickTo.pupil
@@ -168,6 +177,35 @@ function applyPupilPos(el: HTMLElement, x: number, y: number): void {
     pair.y(y)
   } else {
     gsap.set(el, { x, y })
+  }
+}
+
+function setEyeballClosed(eyes: EyeBallTargets[], closed: boolean): void {
+  const scaleY = closed ? ANIM.showPassword.closedEyeScaleY : 1
+  for (const { eyeballEl, pupilEl } of eyes) {
+    gsap.to(eyeballEl, {
+      scaleY,
+      duration: closed ? ANIM.blink.closeDuration : ANIM.blink.openDuration,
+      ease: closed ? 'power2.in' : 'power2.out',
+      transformOrigin: '50% 50%',
+    })
+    gsap.to(pupilEl, {
+      autoAlpha: closed ? 0 : 1,
+      duration: closed ? ANIM.blink.closeDuration : ANIM.blink.openDuration,
+      ease: closed ? 'power2.in' : 'power2.out',
+    })
+  }
+}
+
+function setPupilClosed(els: HTMLElement[], closed: boolean): void {
+  for (const el of els) {
+    gsap.to(el, {
+      scaleX: closed ? 1.6 : 1,
+      scaleY: closed ? ANIM.showPassword.closedEyeScaleY : 1,
+      duration: closed ? ANIM.blink.closeDuration : ANIM.blink.openDuration,
+      ease: closed ? 'power2.in' : 'power2.out',
+      transformOrigin: '50% 50%',
+    })
   }
 }
 
@@ -350,6 +388,7 @@ function applyShowPassword(): void {
   for (const { pupilEl } of collectSuccessEyeballs()) {
     applyPupilPos(pupilEl, sp.successPupil.x, sp.successPupil.y)
   }
+  setEyeballClosed([...collectPurpleEyeballs(), ...collectSuccessEyeballs()], true)
   for (const r of [warnLeftPupilRef, warnRightPupilRef]) {
     const el = r.value?.pupilEl
     if (el) applyPupilPos(el, sp.warnPupil.x, sp.warnPupil.y)
@@ -358,6 +397,12 @@ function applyShowPassword(): void {
     const el = r.value?.pupilEl
     if (el) applyPupilPos(el, sp.accentPupil.x, sp.accentPupil.y)
   }
+  setPupilClosed(collectPupilEls(), true)
+}
+
+function releaseShowPasswordPose(): void {
+  setEyeballClosed([...collectPurpleEyeballs(), ...collectSuccessEyeballs()], false)
+  setPupilClosed(collectPupilEls(), false)
 }
 
 // ── Animation tick (RAF loop) ─────────────────────────────────
@@ -470,42 +515,58 @@ function tick(): void {
 }
 
 // ── Blink schedulers ──────────────────────────────────────────
-function schedulePurpleBlink(): void {
+function animateEyeballBlink(
+  eyes: EyeBallTargets[],
+  profile: BlinkProfile,
+  onDone: () => void
+): void {
+  for (const { blinkLayerEl } of eyes) {
+    if (!blinkLayerEl) continue
+    gsap.to(blinkLayerEl, {
+      scaleY: profile.closedScaleY,
+      duration: profile.closeDuration,
+      ease: 'power2.in',
+      transformOrigin: '50% 50%',
+    })
+  }
+
+  setTimeout(() => {
+    if (!isAnimationActive) return
+
+    for (const { blinkLayerEl } of eyes) {
+      if (!blinkLayerEl) continue
+      gsap.to(blinkLayerEl, {
+        scaleY: 1,
+        duration: profile.openDuration,
+        ease: 'power2.out',
+        transformOrigin: '50% 50%',
+      })
+    }
+    onDone()
+  }, profile.closedPauseMs)
+}
+
+function getBlinkDelay(profile: BlinkProfile): number {
+  return Math.random() * profile.delayRange + profile.delayMin
+}
+
+function schedulePurpleBlink(delayMs = getBlinkDelay(ANIM.primaryBlink)): void {
   if (!isAnimationActive) return
 
-  const eyes = collectPurpleEyeballs()
-  if (!eyes.length) return
+  clearTimeout(purpleBlinkTimerRef.value)
 
-  purpleBlinkTimerRef.value = setTimeout(
-    () => {
-      if (!isAnimationActive) return
+  purpleBlinkTimerRef.value = setTimeout(() => {
+    if (!isAnimationActive) return
+    if (isShowingPassword.value) return
 
-      for (const { blinkLayerEl } of eyes) {
-        if (!blinkLayerEl) continue
-        gsap.to(blinkLayerEl, {
-          scaleY: ANIM.blink.closedScaleY,
-          duration: ANIM.blink.closeDuration,
-          ease: 'power2.in',
-          transformOrigin: '50% 50%',
-        })
-      }
-      setTimeout(() => {
-        if (!isAnimationActive) return
+    const eyes = collectPurpleEyeballs()
+    if (!eyes.length) {
+      schedulePurpleBlink()
+      return
+    }
 
-        for (const { blinkLayerEl } of eyes) {
-          if (!blinkLayerEl) continue
-          gsap.to(blinkLayerEl, {
-            scaleY: 1,
-            duration: ANIM.blink.openDuration,
-            ease: 'power2.out',
-            transformOrigin: '50% 50%',
-          })
-        }
-        schedulePurpleBlink()
-      }, ANIM.blink.closedPauseMs)
-    },
-    Math.random() * ANIM.blink.delayRange + ANIM.blink.delayMin
-  )
+    animateEyeballBlink(eyes, ANIM.primaryBlink, () => schedulePurpleBlink())
+  }, delayMs)
 }
 
 function scheduleSuccessBlink(): void {
@@ -518,29 +579,7 @@ function scheduleSuccessBlink(): void {
     () => {
       if (!isAnimationActive) return
 
-      for (const { blinkLayerEl } of eyes) {
-        if (!blinkLayerEl) continue
-        gsap.to(blinkLayerEl, {
-          scaleY: ANIM.blink.closedScaleY,
-          duration: ANIM.blink.closeDuration,
-          ease: 'power2.in',
-          transformOrigin: '50% 50%',
-        })
-      }
-      setTimeout(() => {
-        if (!isAnimationActive) return
-
-        for (const { blinkLayerEl } of eyes) {
-          if (!blinkLayerEl) continue
-          gsap.to(blinkLayerEl, {
-            scaleY: 1,
-            duration: ANIM.blink.openDuration,
-            ease: 'power2.out',
-            transformOrigin: '50% 50%',
-          })
-        }
-        scheduleSuccessBlink()
-      }, ANIM.blink.closedPauseMs)
+      animateEyeballBlink(eyes, ANIM.blink, () => scheduleSuccessBlink())
     },
     Math.random() * ANIM.blink.delayRange + ANIM.blink.delayMin
   )
@@ -687,6 +726,7 @@ watch(
       purplePeekTimerRef.value = setTimeout(
         () => {
           if (!isAnimationActive) return
+          setEyeballClosed(collectPurpleEyeballs(), false)
 
           for (const { pupilEl } of collectPurpleEyeballs()) {
             applyPupilPos(pupilEl, ANIM.peek.to.x, ANIM.peek.to.y)
@@ -703,6 +743,7 @@ watch(
             for (const { pupilEl } of collectPurpleEyeballs()) {
               applyPupilPos(pupilEl, ANIM.peek.back.x, ANIM.peek.back.y)
             }
+            setEyeballClosed(collectPurpleEyeballs(), true)
             schedulePeek()
           }, ANIM.peek.holdMs)
         },
@@ -736,9 +777,15 @@ watch(
   () => [isShowingPassword.value, isHidingPassword.value] as const,
   ([showing, hiding]) => {
     if (showing) {
+      clearTimeout(purpleBlinkTimerRef.value)
       applyShowPassword()
     } else if (hiding) {
+      releaseShowPasswordPose()
       applyHidingPassword()
+      schedulePurpleBlink(ANIM.primaryBlink.resumeDelayMs)
+    } else {
+      releaseShowPasswordPose()
+      schedulePurpleBlink(ANIM.primaryBlink.resumeDelayMs)
     }
   }
 )
