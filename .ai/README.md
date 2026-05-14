@@ -50,6 +50,42 @@ Generation guardrails for business routes/pages:
 - `pnpm ai:scaffold:view-route -- --segment <segment> --title-key <i18n.key> --kind <table|form|detail>`
 - `pnpm ai:guard`
 
+## State Synchronization Contract
+
+CCD uses an explicit client-side synchronization boundary for cross-tab and cross-device state.
+Treat synchronization as an opt-in capability, not a default store behavior.
+
+Canonical implementation:
+
+- `src/sync/syncAction.ts`
+- `src/sync/registry.ts`
+- `src/sync/middleware.ts`
+- `src/sync/runtime.ts`
+- domain sync modules under `src/sync/**`
+
+AI agents and human contributors MUST follow these rules:
+
+- Cross-tab / cross-device state changes go through `syncAction(type, payload)`.
+- Every sync type must be registered before use.
+- Sync handlers patch only the owner store and run required side effects.
+- Payloads include `updatedAt` and exclude runtime-only fields.
+- Business stores are not automatically syncable; each domain sync type requires intentional design.
+- Do not add `store.$subscribe()` based automatic synchronization.
+- Do not send state sync frames directly through `BroadcastChannel` or `WebSocket` outside `src/sync/**`.
+- Non-state transport exceptions require an explicit `scripts/ai-architecture-guard.mjs` allowlist entry.
+
+State classification:
+
+| State class                                    | Sync policy                                       |
+| ---------------------------------------------- | ------------------------------------------------- |
+| User preferences                               | Sync explicitly                                   |
+| User-authored drafts / presets                 | Sync explicitly when product requires it          |
+| List/dashboard server data                     | Usually re-fetch; sync only user-authored changes |
+| Loading, modal, drawer, hover, animation       | Never sync                                        |
+| Device, breakpoint, layout runtime derivations | Never sync                                        |
+
+Architecture reference: [docs/architecture.md](../docs/architecture.md#explicit-sync-boundary).
+
 ## Runtime Residue
 
 Generated adapters are expected.

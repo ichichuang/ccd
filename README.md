@@ -31,9 +31,40 @@ CCD 面向“需要长期维护”的 Vue 3 产品项目，而不是一次性 De
 
 - 明确的分层与依赖方向：`HTTP -> Adapters -> API -> Hooks -> Stores -> Views`
 - 可复用的中后台能力：`ProForm`、`ProTable`、RBAC、主题系统、图表主题管线
+- 受治理的状态同步能力：`syncAction -> registry -> middleware -> transport -> owner store`
 - 严格的 TypeScript 与工程化校验
 - 面向多 AI 工具统一治理的协作协议
 - 可审计、可阻断的生成层与架构治理链路
+
+---
+
+## 架构亮点
+
+| 能力                        | 解决的问题                                                   | CCD 的做法                                                           |
+| --------------------------- | ------------------------------------------------------------ | -------------------------------------------------------------------- |
+| **State Governance System** | 多 Tab / 多设备同步容易失控、隐式广播、难追踪                | 通过 `syncAction(type, payload)` 和 registry 白名单显式声明同步能力  |
+| **Owner Store Boundary**    | 同一状态被多个 store 同步或互相覆盖                          | handler 只能 patch owner store，副作用在 domain handler 中集中执行   |
+| **Transport Isolation**     | 业务代码直接写 `BroadcastChannel` / `WebSocket` 导致旁路同步 | 状态同步传输收敛到 `src/sync/**`，非状态通道必须进入 guard allowlist |
+| **AI-Readable Governance**  | 人能理解但 AI 容易误用架构边界                               | `.ai/rules/**`、`.ai/README.md`、`pnpm ai:guard` 共同约束生成行为    |
+
+这套同步能力不是“自动同步所有 store”，而是把跨端一致性建模为一种显式能力：
+
+```text
+User Intent
+  -> syncAction(type, payload)
+  -> registry allowlist
+  -> middleware pipeline
+  -> BroadcastChannel / WebSocket / Cloud
+  -> owner store handler
+```
+
+因此 CCD 可以清楚回答三个问题：
+
+- 哪些状态会同步
+- 谁拥有这些状态
+- 哪些传输通道被允许参与同步
+
+完整设计见 [Explicit Sync Boundary](./docs/architecture.md#explicit-sync-boundary) 与 [.ai State Synchronization Contract](./.ai/README.md#state-synchronization-contract)。
 
 ---
 
@@ -81,7 +112,17 @@ CCD 面向“需要长期维护”的 Vue 3 产品项目，而不是一次性 De
 
 目标不是“换皮”，而是让 UI 语言可审计、可约束、可复用。
 
-### 5. AI 协作治理
+### 5. 显式状态同步治理
+
+- 同步入口统一为 `syncAction(type, payload)`
+- 同步类型必须在 `src/sync/registry.ts` 或 domain registration 中注册
+- middleware 统一处理本地持久化、传输和云端保存
+- `BroadcastChannel` / `WebSocket` 不允许在业务层直接发送状态同步帧
+- `theme`、`layout`、`size`、`locale` 等系统偏好已按 owner store 模式接入
+
+这让状态同步从“store 变化监听”升级为“可审计、可扩展、可阻断的系统能力”。
+
+### 6. AI 协作治理
 
 - `.ai/**` 是唯一规范源
 - `AGENTS.md`、`CLAUDE.md` 都只是兼容适配输出
@@ -262,10 +303,10 @@ pnpm ai:doctor
 | 文档                                                                 | 说明                                        |
 | -------------------------------------------------------------------- | ------------------------------------------- |
 | [README.md](./README.md)                                             | 仓库入口、分支模型、启动方式、AI 统一规范   |
-| [docs/architecture.md](./docs/architecture.md)                       | 架构拓扑、目录规约、核心能力细节            |
+| [docs/architecture.md](./docs/architecture.md)                       | 架构拓扑、显式状态同步边界、核心能力细节    |
 | [docs/ai-workspace.md](./docs/ai-workspace.md)                       | AI 工作区、技能拓扑、浏览器自动化、清理策略 |
 | [docs/codex/quickstart.md](./docs/codex/quickstart.md)               | Codex 启动、技能路由、CRX 录制与回放        |
-| [.ai/README.md](./.ai/README.md)                                     | AI 工作区标准与生成适配规则                 |
+| [.ai/README.md](./.ai/README.md)                                     | AI 工作区标准、同步契约与生成适配规则       |
 | [.ai/protocol/AI.entry.md](./.ai/protocol/AI.entry.md)               | AI 协议统一入口                             |
 | [.ai/protocol/adapters/README.md](./.ai/protocol/adapters/README.md) | Codex / Claude 适配说明索引                 |
 

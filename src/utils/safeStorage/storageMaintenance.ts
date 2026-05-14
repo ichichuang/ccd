@@ -23,3 +23,13 @@ export function removeLocalStorageKeysWhere(shouldRemove: StorageKeyPredicate): 
 
   return [...keysToRemove]
 }
+
+export function writeLocalStorageValue(key: string, value: string): void {
+  if (typeof localStorage === 'undefined') return
+  localStorage.setItem(key, value)
+}
+
+export function readLocalStorageValue(key: string): string | null {
+  if (typeof localStorage === 'undefined') return null
+  return localStorage.getItem(key)
+}

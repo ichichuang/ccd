@@ -133,6 +133,99 @@ Device Runtime
 
 布局 shell 的约束以 [.ai/rules/integrations/03-layout-architecture.mdc](../.ai/rules/integrations/03-layout-architecture.mdc) 为准。涉及 iPhone/iPad/桌面适配时，需要用 Playwright 几何断言验证侧栏、内容偏移、header、安全区、drawer 和 phantom spacing。
 
+### Explicit Sync Boundary
+
+系统偏好同步已经从“隐式监听 store 变化”升级为“显式同步入口 + 白名单注册”。
+
+这是 CCD 的核心架构亮点之一：同步不是 Pinia 的默认副作用，而是一种需要声明、注册、校验和审计的系统能力。它把“跨 Tab / 跨设备一致性”拆成四个可控制面：
+
+| 控制面    | 约束                                                      |
+| --------- | --------------------------------------------------------- |
+| Intent    | 只有明确用户意图触发的变化才能调用 `syncAction`           |
+| Type      | 同步类型必须注册，未注册类型会被阻断                      |
+| Payload   | 只携带可共享字段和 `updatedAt`，不广播完整 store snapshot |
+| Ownership | handler 只写 owner store，并集中执行必要副作用            |
+
+```mermaid
+flowchart LR
+    User["User Intent"] --> Action["syncAction(type, payload)"]
+    Action --> Pipeline["Sync Middleware Pipeline"]
+    Pipeline --> Local["Local Persist"]
+    Pipeline --> Transport["BroadcastChannel / WebSocket"]
+    Pipeline --> Cloud["Cloud Save (domain opt-in)"]
+    Transport --> Remote["handleRemoteMessage(message)"]
+    Remote --> Registry["registerSync(type, handler)"]
+    Registry --> Store["Owner Store Patch"]
+    Registry --> Effects["Side Effects"]
+```
+
+当前同步栈：
+
+| 层级            | 位置                                     | 职责                                         |
+| --------------- | ---------------------------------------- | -------------------------------------------- |
+| Entry           | `src/sync/syncAction.ts`                 | 显式同步入口，只允许已注册类型进入链路       |
+| Registry        | `src/sync/registry.ts`                   | 维护同步白名单与类型处理器                   |
+| Middleware      | `src/sync/middleware.ts`                 | 统一执行本地持久化、传输、云端保存等中间环节 |
+| Transport       | `src/sync/runtime.ts`                    | 收敛 BroadcastChannel / WebSocket 通道       |
+| Domain Handlers | `src/sync/systemPreferences/register.ts` | patch owner store 并执行副作用               |
+| Domain Model    | `src/sync/systemPreferences/*`           | payload 清洗、归一化、本地持久化、版本控制   |
+
+硬约束：
+
+- 只有通过 `syncAction(type, payload)` 的数据才会跨 Tab / 跨设备传播
+- 所有同步类型必须先在 registry 中注册
+- 禁止使用 `store.$subscribe()` 做自动同步
+- 禁止在业务层直接操作 `BroadcastChannel`、`WebSocket` 或手写 state sync transport frame
+- 非状态同步的基础设施通道必须进入 `scripts/ai-architecture-guard.mjs` allowlist
+- payload 必须只包含“可持久化且需要一致性”的字段，并携带 `updatedAt`
+- handler 必须只写 owner store，并在需要时补齐副作用（如 `refreshTheme()`、`initLocale()`）
+
+这套设计的目标不是“自动同步所有状态”，而是“只同步被显式声明为跨端一致的数据”。
+换句话说，CCD 把状态同步定义为 capability，而不是 default behavior。
+
+#### 适合同步的数据
+
+- 用户偏好：theme、size、layout、locale
+- 用户主动编辑的草稿或偏好型筛选条件
+- 需要在多 Tab / 多设备保持一致的轻量业务状态
+
+#### 不应同步的数据
+
+- loading、skeleton、pending flags
+- drawer / modal / hover / focus / animation 等运行时 UI 状态
+- 设备断点、viewport、layout runtime 推导态
+- 服务端实时推流、瞬时缓存、纯展示型派生态
+
+#### 新业务 store 的接入方式
+
+1. 定义同步类型，例如 `list:update`
+2. 在 `src/sync/registry.ts` 注册 handler
+3. 仅在“用户意图明确的修改点”调用 `syncAction`
+
+示例：
+
+```ts
+registerSync('list:update', payload => {
+  const listStore = useListStore()
+  listStore.$patch(payload)
+})
+
+syncAction('list:update', {
+  items,
+  updatedAt: Date.now(),
+})
+```
+
+错误示例：
+
+```ts
+listStore.$subscribe(() => {
+  syncAction('list:update', listStore.$state)
+})
+```
+
+上面的写法会把同步边界退化回“隐式观察 + 全量广播”，这是当前架构明确禁止的。
+
 ### 安全与隔离
 
 - **RBAC**：模板侧 `v-auth`（含 `.disable`），脚本侧 `useAuth()`
@@ -205,6 +298,7 @@ src/
 ├── locales/           # 语言包与 PrimeVue 本地化
 ├── plugins/           # Vue 插件装配
 ├── router/            # 路由模块、动态路由、守卫
+├── sync/              # 显式状态同步入口、registry、middleware、transport 与 domain handlers
 ├── stores/            # Pinia 模块
 ├── types/             # dto、systems、modules 等类型分层
 ├── utils/             # http、date、safeStorage、theme 等

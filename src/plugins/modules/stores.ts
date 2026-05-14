@@ -2,6 +2,7 @@ import store from '@/stores'
 import { useThemeStore } from '@/stores/modules/system'
 import { useSizeStore } from '@/stores/modules/system'
 import { useLocaleStore } from '@/stores/modules/system'
+import { useSystemPreferencesSync } from '@/hooks/modules/useSystemPreferencesSync'
 
 export const setupStores = (app: App) => {
   app.use(store)
@@ -12,4 +13,5 @@ export const setupStores = (app: App) => {
   themeStore.init()
   sizeStore.init()
   localeStore.initLocale()
+  useSystemPreferencesSync().setupSync()
 }

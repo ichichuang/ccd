@@ -336,6 +336,7 @@ declare global {
   const useSupported: typeof import('@vueuse/core').useSupported
   const useSwipe: typeof import('@vueuse/core').useSwipe
   const useSwipeAction: typeof import('../hooks/modules/useInteraction/useSwipeAction').useSwipeAction
+  const useSystemPreferencesSync: typeof import('../hooks/modules/useSystemPreferencesSync').useSystemPreferencesSync
   const useTableDrawerStore: typeof import('../stores/modules/ui/tableDrawer').useTableDrawerStore
   const useTap: typeof import('../hooks/modules/useInteraction/useTap').useTap
   const useTemplateRef: typeof import('vue').useTemplateRef
@@ -443,6 +444,9 @@ declare global {
   // @ts-ignore
   export type { UseLocaleReturn } from '../hooks/modules/useLocale'
   import('../hooks/modules/useLocale')
+  // @ts-ignore
+  export type { UseSystemPreferencesSyncReturn } from '../hooks/modules/useSystemPreferencesSync'
+  import('../hooks/modules/useSystemPreferencesSync')
   // @ts-ignore
   export type { UseThemeSwitchReturn } from '../hooks/modules/useThemeSwitch'
   import('../hooks/modules/useThemeSwitch')

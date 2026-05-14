@@ -21,6 +21,8 @@ const routeWindowRefMap = new Map<string, Window>()
 
 /**
  * 仅用于通知窗口关闭
+ * NON-STATE CHANNEL: explicitly excluded from syncAction / registry.
+ * Do NOT use this channel for state synchronization.
  */
 let windowChannel: BroadcastChannel | null = null
 

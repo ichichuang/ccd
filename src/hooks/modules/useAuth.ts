@@ -2,6 +2,7 @@ import { useUserStore, useUserStoreWithOut } from '@/stores/modules/session'
 import { AUTH_ENABLED } from '@/constants/router'
 import { requestAuthLogin, requestAuthCurrentUser } from '@/api/auth/auth.api'
 import type { LoginParams, LoginResult, UserInfo } from '@/types/dto/auth.dto'
+import { useSystemPreferencesSync } from '@/hooks/modules/useSystemPreferencesSync'
 
 /**
  * 指令 / 非 setup 上下文可用的权限校验（与 composable `hasAuth` 逻辑一致，读 userStore SSOT）
@@ -34,6 +35,14 @@ export interface UseAuthReturn {
 
 export function useAuth(): UseAuthReturn {
   const userStore = useUserStore()
+
+  const syncUserPreferencesAfterAuth = (): void => {
+    void useSystemPreferencesSync()
+      .loadUserPreferences()
+      .catch(error => {
+        console.warn('[SystemPreferencesSync] Failed to load user preferences:', error)
+      })
+  }
 
   /** 检查用户是否拥有指定角色之一 */
   const hasRole = (roles: string[]): boolean => {
@@ -75,6 +84,7 @@ export function useAuth(): UseAuthReturn {
   const login = async (payload: LoginParams): Promise<LoginResult> => {
     const result: LoginResult = await requestAuthLogin(payload)
     await userStore.applyLoginResult(result)
+    syncUserPreferencesAfterAuth()
     return result
   }
 
@@ -88,6 +98,7 @@ export function useAuth(): UseAuthReturn {
     try {
       const userInfo: UserInfo = await requestAuthCurrentUser(userStore.token)
       userStore.applyRestoredUserInfo(userInfo)
+      syncUserPreferencesAfterAuth()
       return userInfo
     } catch (error) {
       console.error('根据 token 恢复用户信息失败:', error)

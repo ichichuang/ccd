@@ -9,6 +9,7 @@ import { createPiniaEncryptedSerializer } from '@/utils/safeStorage/piniaSeriali
 import { castValue } from '@/utils/typeCasters'
 import store from '@/stores'
 import { resolveLayoutEffectiveMode } from '@/layouts/runtime/layoutRuntime'
+import { syncAction } from '@/sync/syncAction'
 /**
  * 缓存 deviceStore，避免 effectiveMode getter 每次求值都调用 useDeviceStore()。
  * 安全性：Pinia 单例模式下 module-level 缓存不会跨实例泄露；
@@ -156,6 +157,15 @@ export const useLayoutStore = defineStore('layout', {
   },
 
   actions: {
+    syncLayoutPreference() {
+      syncAction('layout:update', {
+        layout: {
+          layout: this.preferredMode,
+          collapsed: this.sidebarCollapse,
+        },
+        updatedAt: Date.now(),
+      })
+    },
     setExpandedMenuKeys(keys: Record<string, boolean>) {
       this.expandedMenuKeys = keys || {}
     },
@@ -293,6 +303,7 @@ export const useLayoutStore = defineStore('layout', {
     toggleCollapse() {
       this.sidebarCollapse = !this.sidebarCollapse
       this.userAdjusted = true // 标记为用户手动调整
+      this.syncLayoutPreference()
     },
     /**
      * 移动端抽屉导航开关
@@ -306,10 +317,18 @@ export const useLayoutStore = defineStore('layout', {
     setMobileDrawerOpen(open: boolean) {
       this.mobileDrawerOpen = open
     },
-    updateSetting<K extends keyof LayoutSetting>(key: K, value: LayoutSetting[K]) {
+    updateSetting<K extends keyof LayoutSetting>(
+      key: K,
+      value: LayoutSetting[K],
+      options: { sync?: boolean } = {}
+    ) {
       castValue<Record<string, unknown>>(this.$state)[key] = value
+      if (options.sync === false) return
+      if (key === 'preferredMode' || key === 'sidebarCollapse') {
+        this.syncLayoutPreference()
+      }
     },
-    resetSetting() {
+    resetSetting(options: { sync?: boolean } = {}) {
       // resetSetting 不触碰运行时 loading 计数器
       const { loadingCount, pageLoadingCount } = this
       Object.assign(this, {
@@ -327,9 +346,12 @@ export const useLayoutStore = defineStore('layout', {
         isPageLoading: pageLoadingCount > 0,
         userAdjusted: false,
       })
+      if (options.sync !== false) {
+        this.syncLayoutPreference()
+      }
     },
     resetState() {
-      this.resetSetting()
+      this.resetSetting({ sync: false })
     },
     /**
      * @deprecated 请优先使用 beginGlobalLoading / endGlobalLoading（并发安全）

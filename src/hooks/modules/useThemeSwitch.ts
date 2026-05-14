@@ -414,6 +414,7 @@ export function useThemeSwitch(): UseThemeSwitchReturn {
     if (mode.value === targetMode) return
 
     await runThemeTransition(targetMode, event, transitionModeOverride)
+    themeStore.syncThemePreference()
   }
 
   /**

@@ -4,6 +4,7 @@ import { DEFAULT_LOCALE, LOCALE_TO_TIMEZONE_MAP } from '@/constants/locale'
 import store from '@/stores'
 import { defineStore } from 'pinia'
 import { useMitt } from '@/utils/mitt'
+import { syncAction } from '@/sync/syncAction'
 
 interface LocaleState {
   locale: SupportedLocale
@@ -89,6 +90,11 @@ export const useLocaleStore = defineStore('locale', {
             detail: { locale: newLocale },
           })
         )
+
+        syncAction('locale:update', {
+          locale: this.locale,
+          updatedAt: Date.now(),
+        })
       } catch (error) {
         console.error('Failed to switch locale:', error)
         throw error

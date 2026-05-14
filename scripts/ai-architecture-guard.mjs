@@ -120,6 +120,13 @@ const approvedRawZIndexFiles = new Set([
   'src/assets/styles/theme/modes/implosion.scss',
 ])
 
+const approvedDirectTransportFiles = new Set([
+  'src/sync/runtime.ts',
+  'src/sync/socket.ts',
+  // Route window lifecycle coordination is infrastructure, not state synchronization.
+  'src/router/utils/helper.ts',
+])
+
 const isGlobAllowed = (relPath, patterns) =>
   patterns.some(pattern => {
     if (pattern.endsWith('/**')) {
@@ -320,6 +327,39 @@ for (const relPath of vueUseBoundaryFiles) {
   }
   if (/\b(useLocalStorage|useSessionStorage|useStorage|useStorageAsync)\b/.test(content)) {
     fail('vueuse-storage-restricted', relPath, 'business persistence must use safeStorage or approved Pinia persistence instead of VueUse storage composables')
+  }
+}
+
+const syncBoundaryFiles = scanFiles(['src/**/*.{ts,tsx,vue}'])
+for (const relPath of syncBoundaryFiles) {
+  if (/\.(spec|test)\.ts$/.test(relPath)) continue
+  if (relPath.includes('/example/')) continue
+  const content = stripJsComments(readText(relPath))
+
+  if (/\.\$subscribe\s*\(/.test(content) && /\bsyncAction\s*\(/.test(content)) {
+    fail(
+      'sync-no-subscribe-autosync',
+      relPath,
+      'cross-tab/device sync must be explicit user-intent syncAction calls, not store.$subscribe auto-sync'
+    )
+  }
+
+  if (approvedDirectTransportFiles.has(relPath)) continue
+
+  if (/\bnew\s+BroadcastChannel\s*\(/.test(content)) {
+    fail(
+      'sync-transport-boundary',
+      relPath,
+      'BroadcastChannel transport must stay in src/sync/** or an approved infrastructure allowlist'
+    )
+  }
+
+  if (/\bnew\s+WebSocket\s*\(|\buseWebSocket\s*\(/.test(content)) {
+    fail(
+      'sync-transport-boundary',
+      relPath,
+      'WebSocket transport must stay in src/sync/** or an approved infrastructure allowlist'
+    )
   }
 }
 

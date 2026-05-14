@@ -90,6 +90,75 @@ Each piece of state has exactly ONE owner. Accessing the same data from two diff
 - Transient UI state (hover, focus, dropdown open/closed)
 - Pagination state not shared across routes
 
+## EXPLICIT SYNC BOUNDARY LAW
+
+Cross-tab or cross-device consistency MUST be explicit. The only allowed synchronization entry is:
+
+```typescript
+syncAction(type, payload)
+```
+
+paired with a registered handler in:
+
+- `src/sync/registry.ts`
+- domain-specific registration such as `src/sync/systemPreferences/register.ts`
+
+### REQUIRED
+
+- Every syncable state change MUST use a registered sync type.
+- Sync payloads MUST include `updatedAt`.
+- Sync payloads MUST contain only fields that are intentionally shared across tabs/devices.
+- Registered handlers MUST patch the owner store and run required side effects.
+- State-sync transport access MUST stay inside `src/sync/runtime.ts` and domain sync modules under `src/sync/**`.
+- Non-state infrastructure transport exceptions MUST be listed in `scripts/ai-architecture-guard.mjs`.
+
+### FORBIDDEN
+
+- `store.$subscribe(() => syncAction(...))`
+- generic auto-sync of whole store snapshots
+- direct `BroadcastChannel` / `WebSocket` sends from views, hooks, or ordinary stores
+- syncing loading flags, drawer/modal open state, hover/focus state, animation state, breakpoint/device/runtime shell state
+- patching non-owner stores from a sync handler
+
+FORBIDDEN — implicit store observation:
+```typescript
+listStore.$subscribe(() => {
+  syncAction('list:update', listStore.$state)
+})
+```
+
+REQUIRED — explicit user-intent sync:
+```typescript
+syncAction('list:update', {
+  items,
+  updatedAt: Date.now(),
+})
+```
+
+```typescript
+registerSync('list:update', payload => {
+  const listStore = useListStore()
+  listStore.$patch(payload)
+})
+```
+
+### CLASSIFICATION RULE
+
+**Usually syncable:**
+- user preferences
+- drafts
+- user-authored filter/query presets
+- lightweight cross-tab business state with a clear owner
+
+**Usually NOT syncable:**
+- runtime-only UI state
+- device/layout derived state
+- transient request state
+- server-pushed live feeds
+- pure caches that can be re-fetched
+
+When in doubt, default to **not synchronized** until a concrete cross-tab or cross-device requirement exists.
+
 ## LOADING COUNTER LAW — NEVER A BOOLEAN TOGGLE
 
 `loadingCount` is a counter (starts at `1` for app startup). It MUST NOT be treated as a boolean.

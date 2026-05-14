@@ -95,6 +95,7 @@ declare interface ImportMetaEnv {
   readonly VITE_CDN: 'true' | 'false'
   readonly VITE_AUTH_ENABLED?: 'true' | 'false'
   readonly VITE_DEMO_MOCK_ENABLED?: 'true' | 'false'
+  readonly VITE_SYNC_WS_URL?: string
 
   // ========== 主题相关调试 ==========
   readonly VITE_THEME_DEBUG?: 'true' | 'false'

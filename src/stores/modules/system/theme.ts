@@ -14,6 +14,7 @@ import {
 } from '@/utils/theme/mode'
 import { isThemeLocked } from '@/utils/theme/transitions'
 import { createPiniaEncryptedSerializer } from '@/utils/safeStorage/piniaSerializer'
+import { syncAction } from '@/sync/syncAction'
 
 // 模块级变量持有 handler 引用，确保 removeEventListener 可精确移除同一函数引用
 let _themeMediaQueryHandler: (() => void) | null = null
@@ -57,15 +58,28 @@ export const useThemeStore = defineStore('theme', {
       this.refreshTheme()
     },
 
+    syncThemePreference() {
+      syncAction('theme:update', {
+        theme: {
+          mode: this.mode,
+          theme: this.themeName,
+          accentColor: this.accentColor,
+        },
+        updatedAt: Date.now(),
+      })
+    },
+
     setMode(mode: ThemeMode) {
       this.mode = mode
       this.refreshTheme()
+      this.syncThemePreference()
     },
 
     setTheme(name: string) {
       if (THEME_PRESETS.find(p => p.name === name)) {
         this.themeName = name
         this.refreshTheme()
+        this.syncThemePreference()
       } else {
         console.warn(
           `[Theme Store] Unknown preset "${name}", keeping current theme "${this.themeName}"`
@@ -76,6 +90,7 @@ export const useThemeStore = defineStore('theme', {
     setAccentColor(color: string | null) {
       this.accentColor = color
       this.refreshTheme()
+      this.syncThemePreference()
     },
 
     setTransitionMode(mode: ThemeTransitionMode) {

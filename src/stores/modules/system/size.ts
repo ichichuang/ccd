@@ -2,6 +2,7 @@ import { defineStore } from 'pinia'
 import { SIZE_PRESETS, DEFAULT_SIZE_NAME, SIZE_PERSIST_KEY } from '@/constants/size'
 import { generateSizeVars, applySizeTheme } from '@/utils/theme/sizeEngine'
 import { createPiniaEncryptedSerializer } from '@/utils/safeStorage/piniaSerializer'
+import { syncAction } from '@/sync/syncAction'
 /**
  * 全局尺寸模式（compact / comfortable / loose）
  *
@@ -28,7 +29,7 @@ export const useSizeStore = defineStore('size', {
       this.setSize(DEFAULT_SIZE_NAME)
     },
 
-    setSize(name: SizeMode) {
+    setSize(name: SizeMode, options: { sync?: boolean } = {}) {
       let preset = SIZE_PRESETS.find(p => p.name === name)
 
       if (!preset) {
@@ -41,6 +42,14 @@ export const useSizeStore = defineStore('size', {
 
       const vars = generateSizeVars(preset)
       applySizeTheme(vars)
+      if (options.sync !== false) {
+        syncAction('size:update', {
+          size: {
+            size: this.sizeName,
+          },
+          updatedAt: Date.now(),
+        })
+      }
     },
 
     init() {

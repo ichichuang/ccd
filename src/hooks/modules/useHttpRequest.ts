@@ -46,7 +46,7 @@ export interface UseHttpRequestResult<TData> {
  * @param options Alova 的配置项；globalLoading=true 时与全局 loading 联动
  */
 export function useHttpRequest<TData = unknown>(
-  buildMethod: (client: typeof alovaInstance) => Method<HttpAG<TData>>,
+  buildMethod: (client: typeof alovaInstance, ...args: HttpArgs) => Method<HttpAG<TData>>,
   options?: UseHttpRequestOptions<TData>
 ): UseHttpRequestResult<TData> {
   const {
@@ -84,11 +84,11 @@ export function useHttpRequest<TData = unknown>(
     ...(mergedMiddleware ? { middleware: mergedMiddleware } : {}),
   }
 
-  // 1. 构建请求实例
-  const method = buildMethod(alovaInstance)
+  // 1. 构建请求实例或参数化 method handler
+  const methodHandler = (...args: HttpArgs) => buildMethod(alovaInstance, ...args)
 
   // 2. 调用 alova hook
-  const base = useRequest(method, mergedOptions)
+  const base = useRequest(methodHandler, mergedOptions)
 
   // 3. 类型收窄：将 unknown 的 error 转换为强类型的 HttpRequestError
   const typedError = computed<HttpRequestError | null>(() => {
