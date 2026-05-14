@@ -96,26 +96,20 @@ function applyTransitionDurationVariable(durationMs: number) {
  * 注入用于 CSS 动画的动态坐标变量
  * 支持 circle 和 diamond 两种模式
  */
-function applyTransitionVariables(event: MouseEvent | null, mode: ThemeTransitionMode) {
+function applyTransitionVariables(_event: MouseEvent | null, mode: ThemeTransitionMode) {
   // fade 专用短路：不做任何几何半径计算，也不注入 --transition-x/y/radius
   if (mode === 'fade') return
-  if (event) {
-    const { clientX, clientY } = event
-    // 根据模式选择不同的半径计算方式
-    const radius =
-      mode === 'diamond'
-        ? calculateDiamondRadius(clientX, clientY)
-        : calculateCircleRadius(clientX, clientY)
 
-    document.documentElement.style.setProperty('--transition-x', `${clientX}px`)
-    document.documentElement.style.setProperty('--transition-y', `${clientY}px`)
-    document.documentElement.style.setProperty('--transition-radius', `${radius}px`)
-  } else {
-    // 默认从中心开始，使用足够大的半径确保覆盖
-    document.documentElement.style.setProperty('--transition-x', '50%')
-    document.documentElement.style.setProperty('--transition-y', '50%')
-    document.documentElement.style.setProperty('--transition-radius', '150%')
-  }
+  const centerX = window.innerWidth / 2
+  const centerY = window.innerHeight / 2
+  const radius =
+    mode === 'diamond'
+      ? calculateDiamondRadius(centerX, centerY)
+      : calculateCircleRadius(centerX, centerY)
+
+  document.documentElement.style.setProperty('--transition-x', `${centerX}px`)
+  document.documentElement.style.setProperty('--transition-y', `${centerY}px`)
+  document.documentElement.style.setProperty('--transition-radius', `${radius}px`)
 }
 
 /**

@@ -168,4 +168,63 @@ describe('useThemeSwitch', () => {
     expect(themeStore.mode).toBe('light')
     expect(document.documentElement.dataset.themeTransitioning).toBe('false')
   })
+
+  it('uses the viewport center for transition variables even when a mouse event is provided', async () => {
+    setActivePinia(createPinia())
+
+    const { useThemeStore } = await import('@/stores/modules/system/theme')
+    const { useThemeSwitch } = await import('./useThemeSwitch')
+
+    const themeStore = useThemeStore()
+    themeStore.setMode('light')
+
+    const themeSwitch = useThemeSwitch()
+    const transition = {
+      ready: createDeferred<void>(),
+      finished: createDeferred<void>(),
+    }
+
+    Object.defineProperty(window, 'innerWidth', {
+      configurable: true,
+      value: 1200,
+    })
+    Object.defineProperty(window, 'innerHeight', {
+      configurable: true,
+      value: 800,
+    })
+    Object.defineProperty(document, 'startViewTransition', {
+      configurable: true,
+      value: vi.fn((callback: () => Promise<void> | void) => {
+        void Promise.resolve(callback()).then(() => {
+          transition.ready.resolve(undefined)
+        })
+
+        return {
+          ready: transition.ready.promise,
+          finished: transition.finished.promise,
+        }
+      }),
+    })
+
+    const run = themeSwitch.setThemeWithAnimation(
+      'dark',
+      new MouseEvent('click', { clientX: 12, clientY: 34 }),
+      'circle'
+    )
+    await transition.ready.promise
+    await nextTick()
+
+    expect(document.documentElement.style.getPropertyValue('--transition-x')).toBe('600px')
+    expect(document.documentElement.style.getPropertyValue('--transition-y')).toBe('400px')
+    expect(document.documentElement.style.getPropertyValue('--transition-radius')).toBe(
+      '721.1102550927978px'
+    )
+
+    transition.finished.resolve(undefined)
+    await Promise.resolve()
+    await nextTick()
+    vi.advanceTimersByTime(100)
+    await Promise.resolve()
+    await run
+  })
 })
