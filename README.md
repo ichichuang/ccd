@@ -197,6 +197,7 @@ pnpm codex:preflight
 - `pnpm drift-check`：检查页面 archetype、样式 token、构建文档/配置漂移
 - `pnpm sync:desktop-config`：`desktop-version` 中 desktop/Tauri 相关改动时检查桌面配置面
 - `pnpm codex:preflight`：检查 Codex 工作所需规则、技能、依赖是否齐备
+- `pnpm arch:check`：一键执行 `ai:sync + ai:sync:codex + ai:doctor + drift-check + codex:preflight + git diff --check`
 
 ### 启动开发
 
@@ -257,6 +258,7 @@ pnpm type-check      # vue-tsc
 pnpm lint:check      # ESLint 检查
 pnpm test:run        # Vitest 单次运行
 pnpm check           # type-check + lint:check
+pnpm arch:check      # 一键架构全量检查与生成物同步
 pnpm ai:sync         # 生成 AI 兼容适配层
 pnpm ai:sync:codex   # 安装本机 Codex skills
 pnpm ai:setup:codex # ai:sync + ai:sync:codex + ai:doctor + codex:preflight
@@ -287,9 +289,8 @@ pnpm dev
 ### 提交前最少检查
 
 ```bash
-pnpm ai:doctor    # includes ai:guard and validate:tokens
+pnpm arch:check   # sync adapters/skills + doctor + drift + codex preflight + diff check
 pnpm type-check
-pnpm drift-check
 pnpm test:run
 pnpm lint:check
 ```
@@ -299,10 +300,7 @@ Husky pre-commit additionally runs `pnpm lint:staged:safe`; lint-staged reruns `
 ### 当你修改了 `.ai/**`
 
 ```bash
-pnpm ai:sync
-pnpm ai:sync:codex
-pnpm ai:doctor
-pnpm codex:preflight
+pnpm arch:check
 ```
 
 不要直接改生成适配器，否则后续同步时一定会被覆盖。
@@ -374,8 +372,8 @@ pnpm ai:doctor
 提交前请至少保证：
 
 1. 遵守 [Conventional Commits](https://www.conventionalcommits.org/)
-2. 本地通过 `pnpm ai:doctor`、`pnpm type-check`、`pnpm drift-check`、`pnpm test:run`、`pnpm lint:check`
-3. 如涉及 AI 配置更新，执行 `pnpm ai:sync`、`pnpm ai:sync:codex`、`pnpm codex:preflight`
+2. 本地通过 `pnpm arch:check`、`pnpm type-check`、`pnpm test:run`、`pnpm lint:check`
+3. 如涉及 AI 配置更新，确认 `pnpm arch:check` 后生成物无未审查漂移
 
 欢迎基于 `main` 提交通用架构优化；Desktop / Tauri 运行时资产请进入 `desktop-version`，便携底座清理请进入 `main-portable-version`。
 

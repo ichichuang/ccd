@@ -39,6 +39,7 @@
 - pnpm ai:doctor
 - pnpm ai:guard
 - pnpm ai:scaffold:view-route -- --segment <segment> --title-key <i18n.key> --kind <table|form|detail>
+- pnpm arch:check
 - pnpm ai:sync
 - pnpm ai:sync:codex
 - pnpm codex:preflight

@@ -53,6 +53,7 @@
     "format": "prettier --write src/",
     "fix": "pnpm format && pnpm lint:fix",
     "check": "pnpm type-check && pnpm lint:check",
+    "arch:check": "pnpm ai:sync && pnpm ai:sync:codex && pnpm ai:doctor && pnpm drift-check && pnpm codex:preflight && git diff --check",
     "release:check": "pnpm ai:doctor && pnpm drift-check && pnpm type-check && pnpm test:run && pnpm lint:check && pnpm build:ci",
     "ai:guard": "node scripts/ai-architecture-guard.mjs",
     "ai:scaffold:view-route": "node scripts/ai-route-view-scaffold.mjs",

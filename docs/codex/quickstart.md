@@ -32,6 +32,12 @@ pnpm ai:doctor
 pnpm codex:preflight
 ```
 
+For day-to-day architecture validation, use the one-shot command:
+
+```bash
+pnpm arch:check
+```
+
 ## 2) Recommended Codex Run Modes
 
 Default for daily development:
@@ -211,7 +217,7 @@ Then add the AI governance scripts to `package.json` and run:
 
 ```bash
 pnpm ai:setup:codex
-pnpm drift-check
+pnpm arch:check
 ```
 
 If the target branch has desktop/Tauri runtime assets, also add and run:

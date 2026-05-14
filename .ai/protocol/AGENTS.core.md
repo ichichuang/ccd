@@ -104,6 +104,7 @@ Run when relevant:
 - `pnpm ai:guard`
 - `pnpm ai:doctor`
 - `pnpm codex:preflight`
+- `pnpm arch:check` for one-shot architecture sync and validation
 - `pnpm type-check`
 - `pnpm lint:check`
 - `pnpm test:run`

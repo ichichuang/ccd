@@ -173,6 +173,7 @@ The old `feat/tauri-integration` branch is retired. The current branch model is:
 Current governance rules are:
 
 - AI governance adapters must stay synced through `pnpm ai:sync` and `pnpm ai:sync:codex`.
+- `pnpm arch:check` is the one-shot local command for adapter sync, Codex skill sync, architecture doctor, drift check, Codex preflight, and `git diff --check`.
 - `pnpm ai:doctor` verifies generated adapters and whether Husky / CI still invoke the doctor gate.
 - CI runs `pnpm drift-check` and reruns sync to block drift if `AGENTS.md`, `CLAUDE.md`, or `.ai/manifests/skills-lock.json` would change.
 - Desktop / Tauri runtime assets belong to `desktop-version`; desktop bridge and capability changes still require `pnpm sync:desktop-config` and `pnpm check:drift`.
@@ -185,10 +186,7 @@ Current governance rules are:
 For normal development:
 
 ```bash
-pnpm ai:sync
-pnpm ai:sync:codex
-pnpm ai:doctor
-pnpm codex:preflight
+pnpm arch:check
 ```
 
 For new business routes/pages:
