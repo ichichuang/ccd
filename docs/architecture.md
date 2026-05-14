@@ -392,8 +392,9 @@ CCD 的浏览器链路已经升级为：
 
 ### Runtime Delivery Governance
 
-- `main` 是能力源
-- Desktop / Tauri 运行时资产在仓库内直接维护
+- `main` 是 Web 架构能力源，保留完整示例、演示站、AI 治理与通用工程门禁
+- `desktop-version` 是 Tauri v2 桌面应用重建线，桌面运行时、桥接层、capabilities 与桌面交付配置只在此线推进
+- `main-portable-version` 是新项目便携纯净底座，移除不必要示例、演示目录和冗余配置
 - 生成层与治理层通过本地门禁和 CI 门禁统一校验
 
 当前交付治理机制具备：
@@ -405,7 +406,7 @@ CCD 的浏览器链路已经升级为：
 - `AGENTS.md`、`CLAUDE.md`、`.ai/manifests/skills-lock.json` 自动同步一致性检查
 - 运行时与治理层漂移分离审计
 
-这意味着交付链路不再依赖派生桌面分支，而是围绕同一条主线和同一套可审计门禁持续收敛。
+这意味着交付链路不再依赖旧 `feat/tauri-integration` 分支，而是把 Web 主线、桌面重建线和便携底座线分开治理。
 
 ---
 
@@ -416,6 +417,7 @@ CCD 的文档现在也按架构层次组织，而不是只有一个 README。
 | 文档                                              | 定位                                    |
 | ------------------------------------------------- | --------------------------------------- |
 | [README.md](../README.md)                         | 对外入口与项目导航                      |
+| [docs/branch-model.md](./branch-model.md)         | 三分支交付模型与验证矩阵                |
 | [docs/architecture.md](./architecture.md)         | 运行时架构与引擎设计                    |
 | [docs/ai-workspace.md](./ai-workspace.md)         | AI 工作区、浏览器自动化、清理和交付同步 |
 | [docs/codex/quickstart.md](./codex/quickstart.md) | Codex 日常操作与低 token 工作流         |

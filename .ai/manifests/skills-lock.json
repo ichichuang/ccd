@@ -32,7 +32,7 @@
       "source": "repo:.ai/manifests/skill-routing.json",
       "sourceType": "local",
       "kind": "manifest",
-      "computedHash": "9f2072b26ee005ed00b1541c61c83500ad0894ce4e29a9041a377eab78d0c511"
+      "computedHash": "87648d1985d058ea857a9b8c53410fb9e990131b775805c7e60ec8897f7157b4"
     },
     "task-orchestrator": {
       "source": "repo:.ai/skills/codex/task-orchestrator",

@@ -22,7 +22,8 @@
     "Treat desktop-runtime changes as Tauri v2 + guest bindings bridge work; route to .ai/skills/codex/desktop-tauri-guard.",
     "Prefer Playwright CLI plus .ai/skills/codex/architecture-browser-master.",
     "Prefer Playwright CRX for recording browser flows, then import the exported Python into .ai/skills/codex/architecture-browser-master flow assets.",
-    "For desktop/Tauri-scoped changes on main, run pnpm sync:desktop-config, then pnpm drift-check.",
+    "Branch roles: main is the full Web architecture source, desktop-version is the Tauri v2 desktop rebuild line, and main-portable-version is the clean portable starter.",
+    "For desktop/Tauri-scoped changes on desktop-version or direct desktop bridge paths, run pnpm sync:desktop-config, then pnpm drift-check.",
     "Keep user-facing pages within Lighthouse 90+ budgets unless the task explicitly says otherwise."
   ],
   "coreMandate": [

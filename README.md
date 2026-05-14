@@ -17,7 +17,7 @@
 **CCD** 不是模板堆砌，而是一套可持续演进的中后台前端架构。
 它把分层边界、设计系统、低代码表单表格引擎、AI 协作规范和交付治理收敛到一个统一仓库中。
 
-[在线演示](https://ichichuang.github.io/ccd/) · [架构文档](./docs/architecture.md) · [AI 工作区总览](./docs/ai-workspace.md) · [AI 工作区规范](./.ai/README.md)
+[在线演示](https://ichichuang.github.io/ccd/) · [架构文档](./docs/architecture.md) · [分支模型](./docs/branch-model.md) · [AI 工作区总览](./docs/ai-workspace.md) · [AI 工作区规范](./.ai/README.md)
 
 </div>
 
@@ -69,16 +69,27 @@ User Intent
 
 ---
 
-## 交付模型
+## 分支与交付模型
 
-仓库以 `main` 作为唯一架构主线：
+当前仓库采用三条同级交付线，均从已优化完成的 `main` 基线派生：
 
-- CCD 架构主体、示例模块、规范文档、AI 治理配置都直接在 `main` 演进
-- Desktop / Tauri 运行时资产如果存在，也直接随仓库维护，不再通过派生分支同步脚本下发
+| 分支                    | 定位                                                             | 维护边界                                                                   |
+| ----------------------- | ---------------------------------------------------------------- | -------------------------------------------------------------------------- |
+| `main`                  | CCD Web 架构主线，保留完整示例、架构文档、AI 治理与演示站能力    | 通用 Web 架构能力、设计系统、Pro 组件、AI 协议和工程门禁优先在这里演进     |
+| `desktop-version`       | 基于最终 `main` 重新构建的 Tauri v2 桌面应用系统                 | Desktop/Tauri 运行时、桥接层、权限能力、桌面交付与桌面专项验证只在此线推进 |
+| `main-portable-version` | 面向新项目拉取的纯净便携底座，移除不必要示例、演示目录和冗余配置 | 只保留可复用架构骨架、AI 治理最小集、基础工程命令与必要文档                |
+
+`feat/tauri-integration` 已停止作为桌面开发目标，只保留为历史分支；不要再把它作为合并来源或冲突修复对象。
+
+交付原则：
+
+- 通用架构优化进入 `main`，再按需显式同步到 `desktop-version` 或 `main-portable-version`
+- 桌面运行时能力只在 `desktop-version` 重建，不再把 Tauri 资产直接维护在 `main`
+- 便携版清理只在 `main-portable-version` 进行，避免把示例删除反向带回 `main`
 - 生成层与治理层变更统一通过 `pnpm ai:sync`、`pnpm ai:sync:codex`、`pnpm ai:doctor` 收敛；Codex 本地启动前再运行 `pnpm codex:preflight`
-- CI 会运行 `pnpm ai:sync`、`pnpm ai:doctor`，并重新执行 `pnpm ai:sync && pnpm ai:sync:codex` 对 `AGENTS.md`、`.cursor/**`、`.ai/manifests/skills-lock.json` 做防漂移阻断
+- CI 会运行 `pnpm ai:sync`、`pnpm ai:doctor`，并重新执行 `pnpm ai:sync && pnpm ai:sync:codex` 对 `AGENTS.md`、`CLAUDE.md`、`.ai/manifests/skills-lock.json` 做防漂移阻断
 
-如果你要做架构层优化，默认直接在当前主线完成，并让本地门禁和 CI 门禁验证结果。
+完整分支契约见 [Branch Model](./docs/branch-model.md)。
 
 ---
 
@@ -184,7 +195,7 @@ pnpm codex:preflight
 - `pnpm ai:doctor`：检查 canonical 资产与适配器是否漂移，并自动运行 `ai:guard` 与 `validate:tokens`
 - `pnpm validate:tokens`：校验主题 token 对比度
 - `pnpm drift-check`：检查页面 archetype、样式 token、构建文档/配置漂移
-- `pnpm sync:desktop-config`：desktop/Tauri 相关改动时检查桌面配置面
+- `pnpm sync:desktop-config`：`desktop-version` 中 desktop/Tauri 相关改动时检查桌面配置面
 - `pnpm codex:preflight`：检查 Codex 工作所需规则、技能、依赖是否齐备
 
 ### 启动开发
@@ -257,7 +268,7 @@ pnpm ai:guard        # 检查 AI 生成结果是否违反架构约束
 pnpm ai:doctor       # 检查 AI 工作区结构，并自动运行 ai:guard + validate:tokens
 pnpm validate:tokens # 校验主题 token 对比度
 pnpm drift-check     # 检查 archetype、样式 token、构建文档/配置漂移
-pnpm sync:desktop-config # desktop/Tauri 相关改动时检查桌面配置面
+pnpm sync:desktop-config # desktop-version 中 desktop/Tauri 相关改动时检查桌面配置面
 pnpm codex:preflight # 检查 Codex 开发前置条件
 ```
 
@@ -313,6 +324,7 @@ pnpm ai:doctor
 | 文档                                                                 | 说明                                        |
 | -------------------------------------------------------------------- | ------------------------------------------- |
 | [README.md](./README.md)                                             | 仓库入口、分支模型、启动方式、AI 统一规范   |
+| [docs/branch-model.md](./docs/branch-model.md)                       | main / desktop-version / portable 分支契约  |
 | [docs/architecture.md](./docs/architecture.md)                       | 架构拓扑、显式状态同步边界、核心能力细节    |
 | [docs/ai-workspace.md](./docs/ai-workspace.md)                       | AI 工作区、技能拓扑、浏览器自动化、清理策略 |
 | [docs/codex/quickstart.md](./docs/codex/quickstart.md)               | Codex 启动、技能路由、CRX 录制与回放        |
@@ -326,7 +338,8 @@ pnpm ai:doctor
 
 如果你是基于 CCD 孵化业务项目，建议遵循以下原则：
 
-- 把 `main` 视为架构能力源，不在业务分支里反向定义核心规范
+- 新项目优先从 `main-portable-version` 拉取纯净架构底座
+- 通用能力回补到 `main`，桌面运行时能力进入 `desktop-version`
 - 保持 `.ai/**` 为单一事实来源，让不同 AI 工具共享同一套边界
 - 优先复用现有抽象，不为单个需求破坏模块边界
 - 用规则约束生成质量，而不是依赖一次性 prompt 运气
@@ -364,7 +377,7 @@ pnpm ai:doctor
 2. 本地通过 `pnpm ai:doctor`、`pnpm type-check`、`pnpm drift-check`、`pnpm test:run`、`pnpm lint:check`
 3. 如涉及 AI 配置更新，执行 `pnpm ai:sync`、`pnpm ai:sync:codex`、`pnpm codex:preflight`
 
-欢迎基于 `main` 提交通用架构优化；`main` 是唯一架构主线，Desktop / Tauri 运行时资产也直接随仓库维护。
+欢迎基于 `main` 提交通用架构优化；Desktop / Tauri 运行时资产请进入 `desktop-version`，便携底座清理请进入 `main-portable-version`。
 
 ---
 

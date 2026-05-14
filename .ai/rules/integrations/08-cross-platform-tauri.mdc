@@ -32,7 +32,7 @@ triggerKeywords:
 本规则仅在 Tauri / desktop / OS bridge 能力被触发时适用。
 
 主线 `main` 分支默认按纯前端 Vite 应用处理；不得把 Tauri 能力当作所有任务的默认前提。
-`feat/tauri-integration` 或显式触碰 `src-tauri/**` / desktop bridge 代码时，才进入 Web/Desktop 双栖架构语境：
+`desktop-version` 或显式触碰 `src-tauri/**` / desktop bridge 代码时，才进入 Web/Desktop 双栖架构语境：
 
 - 同一套前端代码在浏览器与桌面 WebView 两端运行。
 - 任何涉及 OS 级能力的实现都必须遵循“桥接而非分裂”的双轨设计。

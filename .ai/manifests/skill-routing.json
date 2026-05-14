@@ -181,7 +181,7 @@
       "description": "Tauri v2 desktop bridge, capabilities, config sync, and desktop drift/snapshot cleanup",
       "branch_modes": {
         "default": "opt-in",
-        "active_branches": ["feat/tauri-integration"],
+        "active_branches": ["desktop-version"],
         "path_forced": true
       },
       "keywords": [

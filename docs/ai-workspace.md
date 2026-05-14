@@ -12,6 +12,7 @@ If you only need Codex startup commands, read [docs/codex/quickstart.md](./codex
 | Document                                          | Purpose                                                                           |
 | ------------------------------------------------- | --------------------------------------------------------------------------------- |
 | [README.md](../README.md)                         | Product-facing entrypoint, branch model, setup, command map                       |
+| [docs/branch-model.md](./branch-model.md)         | Branch roles for `main`, `desktop-version`, and `main-portable-version`           |
 | [docs/architecture.md](./architecture.md)         | Runtime architecture, engine design, performance strategy, directory contracts    |
 | [docs/ai-workspace.md](./ai-workspace.md)         | AI workspace topology, browser automation, generated artifacts, cleanup lifecycle |
 | [docs/codex/quickstart.md](./codex/quickstart.md) | Codex-first workflow, skill routing, browser recorder usage                       |
@@ -161,17 +162,21 @@ Use aggressive cleanup only when you intentionally want to discard local evidenc
 
 ---
 
-## Desktop Runtime Governance
+## Branch And Desktop Governance
 
-The old derived desktop branch sync path has been retired.
+The old `feat/tauri-integration` branch is retired. The current branch model is:
 
-Current rules are:
+- `main`: optimized Web architecture source with complete examples, docs, AI governance, and demo delivery.
+- `desktop-version`: new sibling branch for rebuilding the Tauri v2 desktop application system from the final `main` baseline.
+- `main-portable-version`: new sibling branch for a clean portable starter without unnecessary examples, demo directories, or redundant config.
 
-- `main` is the only architecture source line
-- desktop / Tauri runtime assets, when present, are maintained directly in-repo
-- AI governance adapters must stay synced through `pnpm ai:sync` and `pnpm ai:sync:codex`
-- `pnpm ai:doctor` verifies both the generated adapters and whether Husky / CI still invoke the doctor gate
-- CI runs `pnpm drift-check` and reruns sync to block drift if `AGENTS.md`, `CLAUDE.md`, or `.ai/manifests/skills-lock.json` would change
+Current governance rules are:
+
+- AI governance adapters must stay synced through `pnpm ai:sync` and `pnpm ai:sync:codex`.
+- `pnpm ai:doctor` verifies generated adapters and whether Husky / CI still invoke the doctor gate.
+- CI runs `pnpm drift-check` and reruns sync to block drift if `AGENTS.md`, `CLAUDE.md`, or `.ai/manifests/skills-lock.json` would change.
+- Desktop / Tauri runtime assets belong to `desktop-version`; desktop bridge and capability changes still require `pnpm sync:desktop-config` and `pnpm check:drift`.
+- Portable cleanup belongs to `main-portable-version`; it must preserve `.ai/**` and generated adapter usability while pruning example-specific residue.
 
 ---
 
@@ -208,6 +213,7 @@ For architecture releases:
 1. update canonical docs and skills
 2. run local validation
 3. commit to `main`
-4. confirm CI drift defense stays clean after re-running sync in automation
+4. explicitly propagate applicable changes to `desktop-version` or `main-portable-version`
+5. confirm CI drift defense stays clean after re-running sync in automation
 
 This keeps documentation, automation, and generated adapters aligned around the same source of truth.

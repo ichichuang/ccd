@@ -14,7 +14,7 @@ const currentBranch = spawnSync('git', ['branch', '--show-current'], {
   encoding: 'utf8',
   stdio: 'pipe',
 }).stdout.trim() || 'unknown'
-const isDesktopBranch = currentBranch === 'feat/tauri-integration'
+const isDesktopBranch = currentBranch === 'desktop-version'
 
 const canonicalMustExist = [
   '.ai/README.md',

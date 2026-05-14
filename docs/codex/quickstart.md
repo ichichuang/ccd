@@ -5,6 +5,7 @@ This guide is for CCD architecture projects only.
 Read this together with:
 
 - `README.md`
+- `docs/branch-model.md`
 - `docs/architecture.md`
 - `docs/ai-workspace.md`
 - `.ai/README.md`
@@ -61,6 +62,13 @@ codex --profile yolo
   - `.ai/skills/codex/architecture-browser-master`
 - Vague or multi-surface task routing:
   - `.ai/skills/codex/task-orchestrator`
+
+## 3.5) Branch Routing
+
+- Work on `main` for shared Web architecture, examples, AI governance, and demo delivery.
+- Work on `desktop-version` for Tauri v2 runtime, desktop bridge, capabilities, release metadata, and desktop validation.
+- Work on `main-portable-version` for portable starter cleanup and removal of example/demo residue.
+- Do not use `feat/tauri-integration` as a merge target or desktop rebuild baseline.
 
 ## 4) Low-Token Skill Routing
 
@@ -206,7 +214,7 @@ pnpm ai:setup:codex
 pnpm drift-check
 ```
 
-If the product repo has desktop/Tauri runtime assets, also add and run:
+If the target branch has desktop/Tauri runtime assets, also add and run:
 
 ```bash
 pnpm sync:desktop-config

@@ -2,6 +2,18 @@
 
 This repository uses `.ai/` as the single source of truth for all AI collaboration assets.
 
+## Branch Governance
+
+CCD currently uses three sibling delivery branches:
+
+| Branch                  | AI Governance Contract                                      |
+| ----------------------- | ----------------------------------------------------------- |
+| `main`                  | Full Web architecture source with examples, docs, and gates |
+| `desktop-version`       | Tauri v2 desktop rebuild line; desktop guardrails active    |
+| `main-portable-version` | Clean portable starter; preserve `.ai/**` minimal contract  |
+
+`feat/tauri-integration` is retired and must not be used as the active desktop baseline.
+
 ## Canonical Paths
 
 - Config: `.ai/config/**`
