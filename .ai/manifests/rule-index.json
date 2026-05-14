@@ -57,7 +57,11 @@
     {
       "path": ".ai/rules/components/03-echarts-theming.mdc",
       "description": "Enforces the useChartTheme wrapper for ECharts to ensure dark mode and theme color reactivity.",
-      "globs": ["src/components/**/*.vue", "src/views/**/*.vue"],
+      "globs": [
+        "src/components/**/*.vue",
+        "src/components/UseEcharts/**/*.ts",
+        "src/views/**/*.vue"
+      ],
       "alwaysApply": true
     },
     {
@@ -215,7 +219,7 @@
     },
     {
       "path": ".ai/rules/integrations/03-layout-architecture.mdc",
-      "description": "Unified layout architecture and responsive matrix state-machine rules. Merged from core layout rule and responsive-matrix skill.",
+      "description": "Unified layout runtime SSOT and responsive shell rendering rules.",
       "globs": ["src/layouts/**/*.{vue,tsx}", "src/App.vue"],
       "alwaysApply": true
     },
@@ -398,6 +402,7 @@
     ],
     "src/components/ProForm/**": [".ai/rules/components/02-pro-components.mdc"],
     "src/components/ProTable/**": [".ai/rules/components/02-pro-components.mdc"],
+    "src/components/UseEcharts/**/*.ts": [".ai/rules/components/03-echarts-theming.mdc"],
     "src/constants/**/*.ts": [".ai/rules/architecture/05-runtime-bootstrap.mdc"],
     "src/hooks/**/*.ts": [
       ".ai/rules/integrations/00-network-routing-guardrails.mdc",

@@ -1,5 +1,5 @@
 {
-  "extends": "@tsconfig/node22/tsconfig.json",
+  "extends": "@tsconfig/node24/tsconfig.json",
   "include": [
     // ✅ Node 侧仅负责工具链与构建脚本
     "vite.config.ts",
