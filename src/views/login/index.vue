@@ -481,6 +481,7 @@ async function handleLoginSubmit(): Promise<void> {
                     :feedback="false"
                     toggle-mask
                     fluid
+                    input-class="login-password-input"
                     :disabled="loading || state.disabled"
                     :invalid="state.errors.length > 0"
                     @update:model-value="value => commitInputValue(onUpdate, value)"
@@ -488,8 +489,11 @@ async function handleLoginSubmit(): Promise<void> {
                     <template #maskicon="{ toggleCallback }">
                       <button
                         type="button"
-                        class="login-password-toggle center"
+                        class="p-password-toggle-mask-icon p-password-mask-icon login-password-toggle center"
                         :aria-label="t('login.passwordHide')"
+                        :aria-pressed="isPasswordVisible"
+                        :disabled="loading || state.disabled"
+                        @mousedown.prevent
                         @click="togglePasswordVisibility(toggleCallback)"
                       >
                         <Icons
@@ -502,8 +506,11 @@ async function handleLoginSubmit(): Promise<void> {
                     <template #unmaskicon="{ toggleCallback }">
                       <button
                         type="button"
-                        class="login-password-toggle center"
+                        class="p-password-toggle-mask-icon p-password-unmask-icon login-password-toggle center"
                         :aria-label="t('login.passwordShow')"
+                        :aria-pressed="isPasswordVisible"
+                        :disabled="loading || state.disabled"
+                        @mousedown.prevent
                         @click="togglePasswordVisibility(toggleCallback)"
                       >
                         <Icons
@@ -654,11 +661,42 @@ async function handleLoginSubmit(): Promise<void> {
 }
 
 .login-password-toggle {
+  appearance: none;
   border: 0;
-  background: transparent;
-  color: inherit;
+  border-radius: var(--radius-md);
+  background: rgb(var(--muted) / 36%);
+  color: rgb(var(--muted-foreground));
   cursor: pointer;
+  height: var(--spacing-xl);
+  inset-inline-end: var(--spacing-md);
+  line-height: 1;
+  margin-top: 0;
   padding: 0;
+  transform: translateY(-50%);
+  transition:
+    background-color var(--transition-sm) ease,
+    color var(--transition-sm) ease,
+    box-shadow var(--transition-sm) ease;
+  width: var(--spacing-xl);
+}
+
+.login-password-toggle:hover {
+  background: rgb(var(--primary) / 12%);
+  color: rgb(var(--primary));
+}
+
+.login-password-toggle:focus-visible {
+  box-shadow: 0 0 0 var(--spacing-xs) rgb(var(--ring) / 24%);
+  outline: none;
+}
+
+.login-password-toggle:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+:deep(.login-password-input) {
+  padding-inline-end: calc(var(--spacing-xl) + var(--spacing-md) + var(--spacing-sm)) !important;
 }
 
 .login-links {
