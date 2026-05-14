@@ -1,10 +1,56 @@
 import type { EChartsOption } from 'echarts'
 import type { Ref } from 'vue'
 import { useIntervalFn, useTimeoutFn } from '@vueuse/core'
-import DateUtils from '@/utils/date'
 
 type SeriesWithData = {
   data?: unknown
+}
+
+const POLLING_WINDOW_SIZE = 12
+const POLLING_SERIES_ID = 'polling-smooth-line'
+const INITIAL_POLLING_DATA = [18, 19, 21, 22, 24, 23, 25, 27, 28, 30, 29, 31]
+
+function createPollingLabels(step: number): string[] {
+  return Array.from({ length: POLLING_WINDOW_SIZE }, (_, index) => {
+    const offset = step - (POLLING_WINDOW_SIZE - 1) + index
+    if (offset < 0) return `T${offset}`
+    if (offset === 0) return 'T'
+    return `T+${offset}`
+  })
+}
+
+function createPollingOption(labels: string[], data: number[]): EChartsOption {
+  return {
+    animation: true,
+    animationDurationUpdate: 900,
+    animationEasingUpdate: 'linear',
+    tooltip: { trigger: 'axis' },
+    xAxis: { type: 'category', boundaryGap: false, data: labels },
+    yAxis: { type: 'value', min: 0, max: 50 },
+    series: [
+      {
+        id: POLLING_SERIES_ID,
+        name: '实时数值',
+        type: 'line',
+        data,
+        smooth: true,
+        showSymbol: false,
+        areaStyle: {},
+        animationDurationUpdate: 900,
+        animationEasingUpdate: 'linear',
+      },
+    ],
+  }
+}
+
+function clampPollingValue(value: number): number {
+  return Math.min(48, Math.max(8, value))
+}
+
+function createNextPollingValue(previousValue: number, step: number): number {
+  const waveDelta = Math.sin(step / 2) * 2.4
+  const trendDelta = step % 4 === 0 ? 1.2 : -0.35
+  return Math.round(clampPollingValue(previousValue + waveDelta + trendDelta))
 }
 
 export function useDynamicChartOption(): {
@@ -60,32 +106,16 @@ export function usePollingChartOption(): {
   start: () => void
   stop: () => void
 } {
-  const option = ref<EChartsOption>({
-    xAxis: { type: 'category', data: ['T-4', 'T-3', 'T-2', 'T-1', 'T'] },
-    yAxis: { type: 'value' },
-    series: [
-      {
-        name: '数值',
-        type: 'line',
-        data: [10, 12, 8, 15, 9],
-        smooth: true,
-        areaStyle: {},
-      },
-    ],
-  } as EChartsOption)
+  const option = ref<EChartsOption>(
+    createPollingOption(createPollingLabels(0), INITIAL_POLLING_DATA)
+  )
 
   const isRunning = ref(false)
+  const pollingStep = ref(0)
   const { pause, resume } = useIntervalFn(tick, 5000, { immediate: false })
 
   function tick() {
-    const cur = option.value as EChartsOption
-    // 使用类型守卫确保类型安全
-    const xAxis = Array.isArray(cur.xAxis) ? cur.xAxis[0] : cur.xAxis
-    if (!xAxis || xAxis.type !== 'category') {
-      return
-    }
-    const xData = (xAxis.data as string[]) || []
-    const seriesSource = cur.series
+    const seriesSource = option.value.series
     const seriesArr = Array.isArray(seriesSource)
       ? seriesSource
       : seriesSource
@@ -95,34 +125,23 @@ export function usePollingChartOption(): {
     if (!firstSeries || !Array.isArray(firstSeries.data)) {
       return
     }
-    const dataArr = firstSeries.data as number[]
 
-    if (!xData.length || !dataArr.length) {
-      return
-    }
+    const currentData = firstSeries.data.filter((item): item is number => typeof item === 'number')
+    const previousValue = currentData.at(-1) ?? INITIAL_POLLING_DATA.at(-1) ?? 30
+    const nextStep = pollingStep.value + 1
+    const nextData = [
+      ...currentData.slice(-(POLLING_WINDOW_SIZE - 1)),
+      createNextPollingValue(previousValue, nextStep),
+    ]
 
-    const nowLabel = DateUtils.format(DateUtils.now(), 'HH:mm').slice(0, 5)
-    const nextX = [...xData.slice(1), nowLabel]
-    const nextData = [...dataArr.slice(1), Math.round(Math.random() * 30)]
-
-    option.value = {
-      ...cur,
-      xAxis: {
-        ...xAxis,
-        data: nextX,
-      },
-      series: [
-        {
-          ...firstSeries,
-          data: nextData,
-        },
-      ],
-    } as EChartsOption
+    pollingStep.value = nextStep
+    option.value = createPollingOption(createPollingLabels(nextStep), nextData)
   }
 
   const start = () => {
     if (isRunning.value) return
     isRunning.value = true
+    tick()
     resume()
   }
 

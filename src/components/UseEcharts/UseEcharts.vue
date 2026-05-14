@@ -3,14 +3,26 @@ import { getChartSystemVariables } from '@/utils/theme/chartUtils'
 import { withAlpha } from '@/hooks/modules/useChartTheme/utils'
 import { useChartTheme } from '@/hooks/modules/useChartTheme/index'
 import { useAppElementSize } from '@/hooks/modules/useAppElementSize'
-import type { EChartsType } from 'echarts'
+import { useIntersectionObserver } from '@vueuse/core'
+import type { EChartsType, SetOptionOpts } from 'echarts'
 import { storeToRefs } from 'pinia'
 import { useThemeStore } from '@/stores/modules/system'
 import { useSizeStore } from '@/stores/modules/system'
 import { createDefaultUseEchartsProps } from './utils/constants'
+import { createEChartsRenderCore } from './echarts-render-core'
+import {
+  ensureEChartsModulesForOption,
+  getEChartsSeriesTypes,
+  getMissingEChartsLazySeriesTypes,
+} from './echarts-registry'
 import type { EChartsOption } from 'echarts'
 import type { ChartAdvancedConfig } from '@/hooks/modules/useChartTheme/types'
-import type { ChartConnectState, ChartEventParams, UseEchartsProps } from './utils/types'
+import type {
+  ChartConnectState,
+  ChartEventParams,
+  ChartSetOptionOptions,
+  UseEchartsProps,
+} from './utils/types'
 
 const VEChartsAsync = defineAsyncComponent(async () => {
   await import('./echarts-setup')
@@ -36,8 +48,8 @@ type VEChartsExpose = {
 const chartContainerRef = useTemplateRef<HTMLElement>('chartContainerRef')
 const chartRef = shallowRef<VEChartsExpose | null>(null)
 const chartReadyTimer = ref<ReturnType<typeof globalThis.setTimeout> | null>(null)
-const resizeRafId = ref(0)
 const isUnmounting = ref(false)
+let stopVisibilityObserver: (() => void) | null = null
 
 // 联动相关状态：传 group 或 connectConfig.enabled 即视为开启
 const connectState = shallowRef<ChartConnectState>({})
@@ -48,27 +60,17 @@ const connectGroupId = computed(() => {
 })
 
 // 监听容器尺寸变化，自动 resize 图表（根据 autoResize prop）
-const { width, height } = useAppElementSize(
-  chartContainerRef,
-  () => {
-    if (props.autoResize === false) return
-    if (!chartRef.value) return
-    if (isUnmounting.value) return
-    // 取消上一帧未执行的 resize，防止积压
-    cancelAnimationFrame(resizeRafId.value)
-    resizeRafId.value = requestAnimationFrame(() => {
-      if (isUnmounting.value) return
-      const instance = getEchartsInstance()
-      if (instance && !instance.isDisposed()) {
-        instance.resize()
-      }
-    })
-  },
-  { mode: 'debounce', delay: 150 }
-)
+const { width, height } = useAppElementSize(chartContainerRef, () => scheduleChartResize(), {
+  mode: 'debounce',
+  delay: 150,
+})
 
 // 容器尺寸就绪（避免 0×0 初始化导致“首次不出图/无报错”）
 const isContainerReady = computed<boolean>(() => width.value > 0 && height.value > 0)
+
+function scheduleChartResize(): void {
+  renderCore.schedule('resize')
+}
 
 // 一旦初始化成功后，后续 resize 即使容器短暂 0×0，也不卸载图表（避免“闪屏/图表消失”）
 const hasChartMounted = ref(false)
@@ -83,15 +85,22 @@ watch(
 // 使用主题合并后的配置
 const optionRef = computed(() => props.option)
 const chartModulesReady = ref(false)
+const optionModuleSignature = computed(() =>
+  [...getEChartsSeriesTypes(optionRef.value)].sort().join('|')
+)
 let chartModuleRequestId = 0
 
 watch(
-  () => optionRef.value,
-  async option => {
+  () => optionModuleSignature.value,
+  async () => {
     const requestId = ++chartModuleRequestId
-    chartModulesReady.value = false
-    const { ensureEChartsModulesForOption } = await import('./echarts-registry')
-    await ensureEChartsModulesForOption(option)
+    const hasMissingLazyModules = getMissingEChartsLazySeriesTypes(optionRef.value).length > 0
+
+    if (!chartModulesReady.value || hasMissingLazyModules) {
+      chartModulesReady.value = false
+    }
+
+    await ensureEChartsModulesForOption(optionRef.value)
     if (requestId === chartModuleRequestId) {
       chartModulesReady.value = true
     }
@@ -193,10 +202,7 @@ watch(
   newOption => {
     if (isUnmounting.value) return
     if (props.manualUpdate && chartRef.value) {
-      const instance = getEchartsInstance()
-      if (instance && !instance.isDisposed()) {
-        instance.setOption(newOption, true)
-      }
+      renderCore.setOption(newOption, true)
     }
   }
 )
@@ -302,6 +308,27 @@ const getEchartsInstance = () => {
   return null
 }
 
+const renderCore = createEChartsRenderCore({
+  getElement: () => chartContainerRef.value,
+  getInstance: () => {
+    const instance = getEchartsInstance()
+    if (!instance) return null
+    return {
+      resize: () => instance.resize(),
+      setOption: (option, opts) => {
+        if (typeof opts === 'boolean' || opts === undefined) {
+          instance.setOption(option, opts)
+        } else {
+          instance.setOption(option, opts)
+        }
+      },
+      isDisposed: () => instance.isDisposed(),
+    }
+  },
+  canRender: () => !isUnmounting.value && isContainerReady.value,
+  autoResize: () => props.autoResize !== false,
+})
+
 // 图表初始化标志
 const isChartInitialized = ref(false)
 
@@ -336,16 +363,39 @@ watch(
       isChartInitialized.value = false
     }
     scheduleChartReadyEmit()
+    scheduleChartResize()
   },
   { flush: 'post' }
 )
 
+watch(
+  chartContainerRef,
+  el => {
+    stopVisibilityObserver?.()
+    stopVisibilityObserver = null
+
+    if (!el) return
+
+    const { stop } = useIntersectionObserver(el, entries => {
+      const entry = entries[0]
+      if (entry?.isIntersecting) scheduleChartResize()
+    })
+    stopVisibilityObserver = stop
+  },
+  { immediate: true, flush: 'post' }
+)
+
+onActivated(() => {
+  renderCore.schedule('visible')
+})
+
 // 组件卸载时清理
 onBeforeUnmount(() => {
   isUnmounting.value = true
-  // 取消待执行的 resize rAF，防止 dispose 后调用
-  cancelAnimationFrame(resizeRafId.value)
+  renderCore.dispose()
   clearChartReadyTimer()
+  stopVisibilityObserver?.()
+  stopVisibilityObserver = null
   // 不再手动 dispose — vue-echarts 子组件会在自身 onBeforeUnmount 中调用 dispose()
   // 父组件重复调用会触发 "[ECharts] Instance has been disposed" 警告
   isChartInitialized.value = false
@@ -358,6 +408,20 @@ const getChartInstance = () => chartRef.value
 const getConnectState = () => connectState.value
 const setConnectState = (state: Partial<ChartConnectState>) => {
   connectState.value = { ...connectState.value, ...state }
+}
+const normalizeSetOptionOptions = (
+  opts?: boolean | ChartSetOptionOptions
+): boolean | SetOptionOpts | undefined => {
+  if (typeof opts === 'boolean' || opts === undefined) {
+    return opts
+  }
+
+  return {
+    notMerge: opts.notMerge ?? false,
+    lazyUpdate: opts.lazyUpdate ?? true,
+    ...(opts.replaceMerge !== undefined ? { replaceMerge: opts.replaceMerge } : {}),
+    ...(opts.silent !== undefined ? { silent: opts.silent } : {}),
+  }
 }
 const triggerConnect = (eventType: string, params: Record<string, unknown>) => {
   if (isConnectEnabled.value) {
@@ -374,17 +438,11 @@ const triggerConnect = (eventType: string, params: Record<string, unknown>) => {
 defineExpose({
   getChartInstance,
   getEchartsInstance,
-  setOption: (option: EChartsOption, notMerge = false) => {
-    const instance = getEchartsInstance()
-    if (instance && !instance.isDisposed()) {
-      instance.setOption(option, notMerge)
-    }
+  setOption: (option: EChartsOption, opts?: boolean | ChartSetOptionOptions) => {
+    renderCore.setOption(option, normalizeSetOptionOptions(opts))
   },
   resize: () => {
-    const instance = getEchartsInstance()
-    if (instance && !instance.isDisposed()) {
-      instance.resize()
-    }
+    renderCore.schedule('resize')
   },
   clear: () => {
     const instance = getEchartsInstance()

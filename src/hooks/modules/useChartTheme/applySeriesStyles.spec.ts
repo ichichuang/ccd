@@ -1,3 +1,5 @@
+// @vitest-environment jsdom
+
 import { describe, it, expect } from 'vitest'
 import { createPinia, setActivePinia } from 'pinia'
 import type { ThemeConfig } from './types'
@@ -219,5 +221,63 @@ describe('useChartTheme — fusion helpers', () => {
     const { mergeAdvancedConfigs } = await import('./mergeAdvancedConfigs')
     const out = mergeAdvancedConfigs(option, advancedConfig as any, undefined, config)
     expect(out.toolbox?.itemSize).toBe(9)
+  })
+
+  it('applyThemeToOption should not mutate nested input option objects', async () => {
+    setActivePinia(createPinia())
+    ;(globalThis as any).localStorage = {
+      getItem: () => null,
+      setItem: () => {},
+      removeItem: () => {},
+      clear: () => {},
+    }
+
+    document.documentElement.style.setProperty('--foreground', '17 17 17')
+    document.documentElement.style.setProperty('--muted-foreground', '102 102 102')
+    document.documentElement.style.setProperty('--background', '255 255 255')
+    document.documentElement.style.setProperty('--card', '255 255 255')
+    document.documentElement.style.setProperty('--border', '238 238 238')
+    document.documentElement.style.setProperty('--primary', '20 184 166')
+    document.documentElement.style.setProperty('--primary-foreground', '255 255 255')
+    document.documentElement.style.setProperty('--accent', '20 184 166')
+    document.documentElement.style.setProperty('--secondary', '102 102 102')
+    document.documentElement.style.setProperty('--success', '34 197 94')
+    document.documentElement.style.setProperty('--warn', '245 158 11')
+    document.documentElement.style.setProperty('--danger', '239 68 68')
+    document.documentElement.style.setProperty('--info', '59 130 246')
+    document.documentElement.style.setProperty('--help', '168 85 247')
+
+    const formatter = () => 'kept'
+    const option = {
+      tooltip: { formatter },
+      polar: {
+        angleAxis: { axisLabel: { color: 'user-angle' } },
+        radiusAxis: {},
+      },
+      radar: {
+        splitArea: {},
+      },
+      series: [
+        {
+          type: 'bar',
+          data: [1, 2, 3],
+          itemStyle: { color: 'currentColor' },
+        },
+      ],
+    }
+    const original = JSON.parse(JSON.stringify(option))
+
+    const { applyThemeToOption } = await import('./index')
+    const out = applyThemeToOption(option, undefined, undefined, key => key) as any
+
+    expect(option).toEqual({
+      ...original,
+      tooltip: { formatter },
+    })
+    expect(out).not.toBe(option)
+    expect(out.tooltip.formatter).toBe(formatter)
+    expect(out.series[0]).not.toBe(option.series[0])
+    expect(out.polar).not.toBe(option.polar)
+    expect(out.radar).not.toBe(option.radar)
   })
 })

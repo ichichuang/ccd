@@ -1,11 +1,13 @@
 import { expect, test, type BrowserContext, type Page } from '@playwright/test'
 import {
+  createNetworkFailureCollector,
   gotoVisual,
   loginAsAdmin,
   waitForAppReady,
   waitForRuntimeLoadingIdle,
   withVisualMode,
 } from './helpers/app'
+import type { NetworkFailureRecord } from './helpers/app'
 
 const viewportMatrix = [
   { name: 'desktop', width: 1280, height: 720 },
@@ -27,6 +29,12 @@ type LayoutContract = {
   blankSamples: number
   consoleErrors: string[]
   longTasks: number[]
+}
+
+function expectNoNetworkFailures(failures: NetworkFailureRecord[], scope: string): void {
+  expect(failures, `${scope} should not produce failed requests or HTTP >= 400 responses`).toEqual(
+    []
+  )
 }
 
 async function expectNonBlankRoute(page: Page): Promise<void> {
@@ -144,6 +152,7 @@ async function markDashboardVisible(page: Page): Promise<void> {
 test.describe('QA full regression repair matrix', () => {
   for (const viewport of viewportMatrix) {
     test(`${viewport.name} dashboard keeps a visible layout tree`, async ({ page }) => {
+      const networkCollector = createNetworkFailureCollector(page)
       await installBlankScreenProbe(page)
       await page.setViewportSize({ width: viewport.width, height: viewport.height })
       await loginAsAdmin(page)
@@ -176,10 +185,14 @@ test.describe('QA full regression repair matrix', () => {
       expect(contract.routerOutletDepth).toBeGreaterThan(3)
       expect(contract.blankSamples).toBe(0)
       expect(contract.consoleErrors).toEqual([])
+      const failures = networkCollector.getFailures()
+      networkCollector.dispose()
+      expectNoNetworkFailures(failures, `${viewport.name} dashboard route`)
     })
   }
 
   test('login route and logout redirect chain are stable', async ({ page }) => {
+    const networkCollector = createNetworkFailureCollector(page)
     await page.setViewportSize({ width: 1280, height: 720 })
     await gotoVisual(page, '/login')
     await waitForAppReady(page)
@@ -193,9 +206,13 @@ test.describe('QA full regression repair matrix', () => {
     await expect(page).toHaveURL(/#\/login\?redirect=/)
     await waitForRuntimeLoadingIdle(page)
     await expect(page.locator('#login-submit')).toBeVisible()
+    const failures = networkCollector.getFailures()
+    networkCollector.dispose()
+    expectNoNetworkFailures(failures, 'login and logout redirect chain')
   })
 
   test('hard refresh preserves dashboard through auth store rehydration', async ({ page }) => {
+    const networkCollector = createNetworkFailureCollector(page)
     await installBlankScreenProbe(page)
     await page.setViewportSize({ width: 390, height: 844 })
     await loginAsAdmin(page)
@@ -210,9 +227,13 @@ test.describe('QA full regression repair matrix', () => {
     expect(contract.blankSamples).toBe(0)
     expect(contract.consoleErrors).toEqual([])
     expect(contract.routerOutletDepth).toBeGreaterThan(3)
+    const failures = networkCollector.getFailures()
+    networkCollector.dispose()
+    expectNoNetworkFailures(failures, 'hard refresh dashboard rehydration')
   })
 
   test('delayed storage reads do not collapse authenticated dashboard reload', async ({ page }) => {
+    const networkCollector = createNetworkFailureCollector(page)
     await page.addInitScript(() => {
       window.localStorage.setItem('ccd-e2e-mode', 'visual')
     })
@@ -241,9 +262,13 @@ test.describe('QA full regression repair matrix', () => {
     expect(contract.blankSamples).toBe(0)
     expect(contract.consoleErrors).toEqual([])
     expect(contract.routerOutletDepth).toBeGreaterThan(3)
+    const failures = networkCollector.getFailures()
+    networkCollector.dispose()
+    expectNoNetworkFailures(failures, 'delayed storage dashboard reload')
   })
 
   test('invalid mid-session token refresh redirects without blank shell', async ({ page }) => {
+    const networkCollector = createNetworkFailureCollector(page)
     await installBlankScreenProbe(page)
     await page.setViewportSize({ width: 390, height: 844 })
     await loginAsAdmin(page)
@@ -277,18 +302,23 @@ test.describe('QA full regression repair matrix', () => {
     const contract = await readLayoutContract(page)
     expect(contract.blankSamples).toBe(0)
     expect(contract.routerOutletDepth).toBe(0)
+    const failures = networkCollector.getFailures()
+    networkCollector.dispose()
+    expectNoNetworkFailures(failures, 'invalid token refresh redirect')
   })
 
   test('multi-tab logout conflict converges to login without stale dashboard', async ({
     page,
     context,
   }) => {
+    const primaryCollector = createNetworkFailureCollector(page)
     await installBlankScreenProbe(page)
     await page.setViewportSize({ width: 1280, height: 720 })
     await loginAsAdmin(page)
     await expectNonBlankRoute(page)
 
     const secondTab = await context.newPage()
+    const secondaryCollector = createNetworkFailureCollector(secondTab)
     await installBlankScreenProbe(secondTab)
     await secondTab.goto(withVisualMode('/dashboard'), { waitUntil: 'domcontentloaded' })
     await expect(secondTab).toHaveURL(/#\/dashboard$/)
@@ -307,10 +337,17 @@ test.describe('QA full regression repair matrix', () => {
 
     const contract = await readLayoutContract(secondTab)
     expect(contract.blankSamples).toBe(0)
+    const primaryFailures = primaryCollector.getFailures()
+    const secondaryFailures = secondaryCollector.getFailures()
+    primaryCollector.dispose()
+    secondaryCollector.dispose()
+    expectNoNetworkFailures(primaryFailures, 'multi-tab primary page')
+    expectNoNetworkFailures(secondaryFailures, 'multi-tab secondary page')
     await secondTab.close()
   })
 
   test('authenticated dashboard first render stays within budget', async ({ page }) => {
+    const networkCollector = createNetworkFailureCollector(page)
     await page.setViewportSize({ width: 1280, height: 720 })
     await loginAsAdmin(page)
     await page.evaluate(() => performance.mark('ccd:dashboard-direct-start'))
@@ -327,9 +364,13 @@ test.describe('QA full regression repair matrix', () => {
       return visible - start
     })
     expect(renderTime).toBeLessThan(DASHBOARD_RENDER_BUDGET_MS)
+    const failures = networkCollector.getFailures()
+    networkCollector.dispose()
+    expectNoNetworkFailures(failures, 'dashboard first render budget')
   })
 
   test('dashboard long tasks stay below worst-case freeze budget', async ({ page }) => {
+    const networkCollector = createNetworkFailureCollector(page)
     await installBlankScreenProbe(page)
     await page.setViewportSize({ width: 1280, height: 720 })
     await loginAsAdmin(page)
@@ -338,9 +379,13 @@ test.describe('QA full regression repair matrix', () => {
     const contract = await readLayoutContract(page)
     const worstLongTask = Math.max(0, ...contract.longTasks)
     expect(worstLongTask).toBeLessThan(LONG_TASK_WORST_CASE_BUDGET_MS)
+    const failures = networkCollector.getFailures()
+    networkCollector.dispose()
+    expectNoNetworkFailures(failures, 'dashboard long-task budget')
   })
 
   test('visual baselines catch silent layout collapse', async ({ page, context }) => {
+    const networkCollector = createNetworkFailureCollector(page)
     await page.setViewportSize({ width: 1280, height: 720 })
     await loginAsAdmin(page)
     await expectNonBlankRoute(page)
@@ -363,7 +408,7 @@ test.describe('QA full regression repair matrix', () => {
     expect(mobileGeometry.height).toBeGreaterThan(600)
     expect(mobileGeometry.textLength).toBeGreaterThan(100)
 
-    const loginPage = await openFreshLoginPage(context)
+    const { page: loginPage, networkCollector: loginCollector } = await openFreshLoginPage(context)
     await expect(loginPage.locator('#login-submit')).toBeVisible()
     await expect(loginPage.locator('#dashboard-page')).toBeHidden()
     const loginShellGeometry = await loginPage.locator('#app-shell').evaluate(element => {
@@ -376,12 +421,22 @@ test.describe('QA full regression repair matrix', () => {
     })
     expect(loginShellGeometry.width * loginShellGeometry.height).toBeGreaterThan(300_000)
     expect(loginShellGeometry.textLength).toBeGreaterThan(10)
+    const failures = networkCollector.getFailures()
+    const loginFailures = loginCollector.getFailures()
+    networkCollector.dispose()
+    loginCollector.dispose()
+    expectNoNetworkFailures(failures, 'visual baseline dashboard route')
+    expectNoNetworkFailures(loginFailures, 'visual baseline login route')
     await loginPage.close()
   })
 })
 
-async function openFreshLoginPage(context: BrowserContext): Promise<Page> {
+async function openFreshLoginPage(context: BrowserContext): Promise<{
+  page: Page
+  networkCollector: ReturnType<typeof createNetworkFailureCollector>
+}> {
   const loginPage = await context.newPage()
+  const networkCollector = createNetworkFailureCollector(loginPage)
   await loginPage.addInitScript(() => {
     window.localStorage.clear()
     window.localStorage.setItem('ccd-e2e-mode', 'visual')
@@ -389,5 +444,5 @@ async function openFreshLoginPage(context: BrowserContext): Promise<Page> {
   await gotoVisual(loginPage, '/login')
   await waitForAppReady(loginPage)
   await waitForRuntimeLoadingIdle(loginPage)
-  return loginPage
+  return { page: loginPage, networkCollector }
 }

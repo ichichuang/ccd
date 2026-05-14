@@ -259,6 +259,15 @@ const { option } = useChartTheme(rawOption)
 
 常见图表类型（柱/线/饼/雷达/树/矩形树图/关系/K 线/旭日等）均走同一主题管线。
 
+`UseEcharts` 是唯一业务渲染入口。它保留 `vue-echarts` 作为组件集成层，并用 `echarts-render-core` 收敛渲染时序：
+
+- `ResizeObserver`：父容器、flex/grid、侧栏折叠、局部容器尺寸变化
+- `IntersectionObserver`：懒可见、Tab/容器重新进入视口
+- `onActivated()`：KeepAlive 恢复
+- 单一 `requestAnimationFrame` 调度：合并 resize 与 pending option flush
+
+这条链路用于规避 ECharts 常见 blank-rendering 来源：0 尺寸初始化、`display:none -> block`、Tabs 切换、父容器 resize、DOM 复用或移动后的 option 更新。组件细节见 [`src/components/UseEcharts/README.md`](../src/components/UseEcharts/README.md)。
+
 ### 工程化
 
 - **AI / Architecture Gates**：`ai:doctor`、`ai:guard`、`validate:tokens`、`drift-check`

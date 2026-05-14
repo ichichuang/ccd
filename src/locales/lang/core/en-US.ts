@@ -273,6 +273,12 @@ const enUSCore = {
     buttonMedium: 'Medium',
     buttonLarge: 'Large',
     sampleText: 'This is a sample paragraph.',
+    units: {
+      gbps: 'Gbps',
+      ms: 'ms',
+      percent: '%',
+      nodes: 'nodes',
+    },
     hero: {
       title: 'Tactical Command Console',
       badge: 'Live Mock',
@@ -284,6 +290,29 @@ const enUSCore = {
       description: 'Fill in the fields below to simulate creating a tactical task.',
       requiredHint: 'Required fields are marked with *',
       submit: 'Create Task',
+      fields: {
+        sectionLabel: 'Task Information',
+        taskTitle: 'Task Title',
+        taskTitleRequired: 'Please enter a task title',
+        taskTitlePlaceholder: 'Example: Recovery drill',
+        owner: 'Owner',
+        ownerPlaceholder: 'Example: Ops Team',
+        priority: 'Priority',
+        priorityPlaceholder: 'Select priority',
+        priorityP1: 'P1',
+        priorityP2: 'P2',
+        priorityP3: 'P3',
+        dueDate: 'Due Date',
+        dueDatePlaceholder: 'Select date',
+        enableSla: 'Enable SLA Alerts',
+        notes: 'Notes',
+        notesPlaceholder: 'Add context (optional)',
+      },
+      defaults: {
+        taskTitle: 'Simulation: Create tactical task',
+        owner: 'Tactical Ops',
+        notes: 'Used to demonstrate dashboard interaction flow: chart, alerts, and dialog form.',
+      },
     },
     kpi: {
       throughput: 'Throughput',
@@ -295,6 +324,17 @@ const enUSCore = {
       throughputLatency: 'Throughput & Latency',
       alarmDistribution: 'Alarm Distribution',
       nodeDistribution: 'Node Distribution',
+      series: {
+        throughput: 'Throughput (Gbps)',
+        latency: 'Latency (ms)',
+        alertCount: 'Alert Count',
+      },
+      buckets: {
+        core: 'Core',
+        edge: 'Edge',
+        region: 'Region',
+        tenant: 'Tenant',
+      },
     },
     sections: {
       nodeTopology: 'Node Topology',
@@ -309,6 +349,57 @@ const enUSCore = {
       memory: 'Memory Usage',
       disk: 'Disk I/O',
       network: 'Network Bandwidth',
+    },
+    topology: {
+      nodes: {
+        coreCluster: 'Core Cluster',
+        edgeGateway: 'Edge Gateway',
+        regionRelay: 'Region Relay',
+        tenantPortal: 'Tenant Portal',
+      },
+      status: {
+        healthy: 'Healthy',
+        degraded: 'Degraded',
+      },
+    },
+    activity: {
+      events: {
+        queueBacklogTriggered: 'RZ-Edge-01 request queue backlog alert triggered',
+        completionRateRecovered: 'Core-Scheduler-03 completion rate returned to normal',
+        topologyCheckPassed: 'Region-NY-02 topology health check passed',
+        autoScaleExpanded: 'Auto-scale policy expanded Edge nodes to 89',
+        heartbeatRecovered: 'Edge-Gateway-09 heartbeat recovered and network isolation cleared',
+      },
+    },
+    alerts: {
+      columns: {
+        nodeName: 'Node',
+        level: 'Level',
+        state: 'Status',
+        lastSeenAt: 'Last Updated',
+        message: 'Alert Description',
+      },
+      levelValues: {
+        critical: 'Critical',
+        warning: 'Warning',
+        info: 'Info',
+      },
+      stateValues: {
+        online: 'Online',
+        degraded: 'Degraded',
+        offline: 'Offline',
+      },
+      messages: {
+        queueBacklog: 'Request queue backlog detected. Check upstream congestion.',
+        completionRateDrop: 'Task completion rate dropped. Observe retry policy.',
+        topologyCheckPassed: 'Topology health check passed.',
+        cacheHitFluctuation: 'Cache hit rate fluctuated. Monitor hot key behavior.',
+        heartbeatLost: 'Heartbeat lost. Possible network isolation.',
+        latencyWithinThreshold: 'API latency remains within threshold.',
+        configAppliedPendingValidation:
+          'Configuration changes applied. Waiting for secondary validation.',
+        writeThroughputDrop: 'Write throughput dropped. Check disk I/O pressure.',
+      },
     },
     badges: {
       hourly: 'Hourly',
@@ -325,6 +416,8 @@ const enUSCore = {
         'The system is stable. Use Quick Action to create a mock task and observe the interaction flow.',
       nodesTitle: 'Nodes are healthy',
       nodesDescription: 'No abnormal nodes need attention. Switch back to alerts for mock data.',
+      toggleAlerts: 'Alerts',
+      toggleNodes: 'Nodes',
     },
   },
   schemaForm: {

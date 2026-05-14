@@ -1,14 +1,21 @@
 <script setup lang="tsx">
 import type { EChartsOption } from 'echarts'
-import type { ProTableColumn } from '@/components/ProTable'
-import type { FormSchema, FormState } from '@/components/ProForm'
-import { ID_PREFIX } from '@/constants/business'
-import { ALERT_LEVEL_VALUE_ENUM, NODE_STATE_VALUE_ENUM } from '@/constants/enums'
-import { formatSerialId } from '@/utils/business/idGenerator'
+import type { FormState } from '@/components/ProForm'
 import { useDialog } from '@/hooks/modules/useDialog'
 import Button from 'primevue/button'
 import { useTimeoutFn } from '@vueuse/core'
 import { useI18n } from 'vue-i18n'
+import {
+  createAlertColumns,
+  createAlertLevelValueEnum,
+  createMockAlertRows,
+  createNodeStateValueEnum,
+} from './configs/alerts'
+import {
+  createQuickActionInitialValues,
+  createQuickActionSchema,
+  type QuickActionValues,
+} from './configs/quickAction'
 
 defineOptions({ name: 'Dashboard' })
 
@@ -40,7 +47,7 @@ const kpiCards = [
   {
     labelKey: 'dashboard.kpi.throughput',
     value: '128.4',
-    unit: 'Gbps',
+    unitKey: 'dashboard.units.gbps',
     icon: 'i-solar-accumulator-outline',
     surface: 'surface-primary',
     iconColor: 'text-primary',
@@ -50,7 +57,7 @@ const kpiCards = [
   {
     labelKey: 'dashboard.kpi.latency',
     value: '23.6',
-    unit: 'ms',
+    unitKey: 'dashboard.units.ms',
     icon: 'i-lucide-clock-alert',
     surface: 'surface-warn',
     iconColor: 'text-warn',
@@ -60,7 +67,7 @@ const kpiCards = [
   {
     labelKey: 'dashboard.kpi.availability',
     value: '99.97',
-    unit: '%',
+    unitKey: 'dashboard.units.percent',
     icon: 'i-lucide-shield-check',
     surface: 'surface-success',
     iconColor: 'text-success',
@@ -70,7 +77,7 @@ const kpiCards = [
   {
     labelKey: 'dashboard.kpi.activeNodes',
     value: '312',
-    unit: 'nodes',
+    unitKey: 'dashboard.units.nodes',
     icon: 'i-lucide-users',
     surface: 'surface-danger',
     iconColor: 'text-danger',
@@ -87,7 +94,7 @@ const { formatI18n, isInitialized } = useDateUtils()
 // ──────────────────────────────────────────────────────────────────────────────
 // ECharts options (static mock; theme injected inside <UseEcharts>)
 // ──────────────────────────────────────────────────────────────────────────────
-const CHART_LABELS = [
+const chartLabels = [
   '00:00',
   '01:00',
   '02:00',
@@ -101,7 +108,6 @@ const CHART_LABELS = [
 const throughputSeries = [92, 96, 88, 105, 118, 126, 121, 128] as const
 const latencySeries = [35, 32, 41, 29, 24, 22, 26, 23] as const
 
-const alarmBuckets = ['Core', 'Edge', 'Region', 'Tenant'] as const
 const alarmCounts = [18, 42, 26, 9] as const
 
 const chartsThroughputLatencyOption = computed<EChartsOption>(() => ({
@@ -117,7 +123,7 @@ const chartsThroughputLatencyOption = computed<EChartsOption>(() => ({
     itemGap: 20,
     padding: [0, 0, 14, 0],
   },
-  xAxis: { type: 'category', data: [...CHART_LABELS], boundaryGap: false },
+  xAxis: { type: 'category', data: [...chartLabels], boundaryGap: false },
   yAxis: { type: 'value' },
   grid: {
     left: 12,
@@ -128,7 +134,7 @@ const chartsThroughputLatencyOption = computed<EChartsOption>(() => ({
   },
   series: [
     {
-      name: '吞吐(Gbps)',
+      name: t('dashboard.charts.series.throughput'),
       type: 'line',
       smooth: true,
       data: [...throughputSeries],
@@ -138,7 +144,7 @@ const chartsThroughputLatencyOption = computed<EChartsOption>(() => ({
       emphasis: { focus: 'series' },
     },
     {
-      name: '延迟(ms)',
+      name: t('dashboard.charts.series.latency'),
       type: 'line',
       smooth: true,
       data: [...latencySeries],
@@ -153,10 +159,18 @@ const chartsThroughputLatencyOption = computed<EChartsOption>(() => ({
 const chartsAlarmDistributionOption = computed<EChartsOption>(() => ({
   tooltip: { trigger: 'axis' },
   legend: { show: false },
-  xAxis: { type: 'category', data: [...alarmBuckets] },
+  xAxis: {
+    type: 'category',
+    data: [
+      t('dashboard.charts.buckets.core'),
+      t('dashboard.charts.buckets.edge'),
+      t('dashboard.charts.buckets.region'),
+      t('dashboard.charts.buckets.tenant'),
+    ],
+  },
   yAxis: { type: 'value' },
   grid: { left: 10, right: 10, top: 24, bottom: 10 },
-  series: [{ name: '告警数', type: 'bar', data: [...alarmCounts] }],
+  series: [{ name: t('dashboard.charts.series.alertCount'), type: 'bar', data: [...alarmCounts] }],
 }))
 
 // Pie chart for node distribution
@@ -169,10 +183,10 @@ const chartsNodeDistributionOption = computed<EChartsOption>(() => ({
       radius: ['40%', '70%'],
       label: { show: false },
       data: [
-        { value: 156, name: 'Core' },
-        { value: 89, name: 'Edge' },
-        { value: 42, name: 'Region' },
-        { value: 25, name: 'Tenant' },
+        { value: 156, name: t('dashboard.charts.buckets.core') },
+        { value: 89, name: t('dashboard.charts.buckets.edge') },
+        { value: 42, name: t('dashboard.charts.buckets.region') },
+        { value: 25, name: t('dashboard.charts.buckets.tenant') },
       ],
     },
   ],
@@ -181,36 +195,40 @@ const chartsNodeDistributionOption = computed<EChartsOption>(() => ({
 // ──────────────────────────────────────────────────────────────────────────────
 // Node topology cards (NEW — showcase interactive-card + motion-lift)
 // ──────────────────────────────────────────────────────────────────────────────
-const nodeTopology = [
+const nodeTopology = computed(() => [
   {
-    name: 'Core Cluster',
+    name: t('dashboard.topology.nodes.coreCluster'),
     count: 156,
-    status: 'healthy',
+    statusKey: 'dashboard.topology.status.healthy',
+    statusSurface: 'surface-success',
     icon: 'i-lucide-server',
     color: 'text-primary',
   },
   {
-    name: 'Edge Gateway',
+    name: t('dashboard.topology.nodes.edgeGateway'),
     count: 89,
-    status: 'healthy',
+    statusKey: 'dashboard.topology.status.healthy',
+    statusSurface: 'surface-success',
     icon: 'i-lucide-globe',
     color: 'text-success',
   },
   {
-    name: 'Region Relay',
+    name: t('dashboard.topology.nodes.regionRelay'),
     count: 42,
-    status: 'degraded',
+    statusKey: 'dashboard.topology.status.degraded',
+    statusSurface: 'surface-warn',
     icon: 'i-lucide-map-pin',
     color: 'text-warn',
   },
   {
-    name: 'Tenant Portal',
+    name: t('dashboard.topology.nodes.tenantPortal'),
     count: 25,
-    status: 'healthy',
+    statusKey: 'dashboard.topology.status.healthy',
+    statusSurface: 'surface-success',
     icon: 'i-lucide-building',
     color: 'text-info',
   },
-] as const
+])
 
 // ──────────────────────────────────────────────────────────────────────────────
 // System health metrics (NEW — showcase progress bars + glass-card)
@@ -225,163 +243,56 @@ const systemHealth = [
 // ──────────────────────────────────────────────────────────────────────────────
 // Activity timeline (NEW — showcase interactive-item)
 // ──────────────────────────────────────────────────────────────────────────────
-const activityTimeline = [
+const activityTimeline = computed(() => [
   {
     time: '17:21',
-    event: 'RZ-Edge-01 请求队列积压告警触发',
+    event: t('dashboard.activity.events.queueBacklogTriggered'),
     level: 'critical',
     icon: 'i-lucide-alert-triangle',
   },
   {
     time: '17:18',
-    event: 'Core-Scheduler-03 任务完成率恢复正常',
+    event: t('dashboard.activity.events.completionRateRecovered'),
     level: 'success',
     icon: 'i-lucide-check-circle',
   },
-  { time: '17:15', event: 'Region-NY-02 拓扑健康检查通过', level: 'info', icon: 'i-lucide-info' },
+  {
+    time: '17:15',
+    event: t('dashboard.activity.events.topologyCheckPassed'),
+    level: 'info',
+    icon: 'i-lucide-info',
+  },
   {
     time: '17:13',
-    event: '自动扩缩策略将 Edge 节点增至 89',
+    event: t('dashboard.activity.events.autoScaleExpanded'),
     level: 'info',
     icon: 'i-lucide-trending-up',
   },
   {
     time: '17:09',
-    event: 'Edge-Gateway-09 心跳恢复，网络隔离已解除',
+    event: t('dashboard.activity.events.heartbeatRecovered'),
     level: 'success',
     icon: 'i-lucide-wifi',
   },
-] as const
+])
 
 // ──────────────────────────────────────────────────────────────────────────────
 // ProTable mock (recent alerts / node status)
 // ──────────────────────────────────────────────────────────────────────────────
-interface AlertRow extends Record<string, unknown> {
-  id: string
-  nodeName: string
-  level: 'critical' | 'warning' | 'info'
-  state: 'online' | 'degraded' | 'offline'
-  lastSeenAt: string
-  message: string
-}
+const alertLevelValueEnum = computed(() => createAlertLevelValueEnum(t))
+const nodeStateValueEnum = computed(() => createNodeStateValueEnum(t))
 
-const mockRows = ref<AlertRow[]>([
-  {
-    id: formatSerialId(ID_PREFIX.ALERT, 1, 3),
-    nodeName: 'RZ-Edge-01',
-    level: 'critical',
-    state: 'degraded',
-    lastSeenAt: '2026-04-02T03:21:10Z',
-    message: '请求队列积压，建议检查上游拥塞。',
-  },
-  {
-    id: formatSerialId(ID_PREFIX.ALERT, 2, 3),
-    nodeName: 'Core-Scheduler-03',
-    level: 'warning',
-    state: 'online',
-    lastSeenAt: '2026-04-02T03:18:02Z',
-    message: '任务完成率下降，监控重试策略。',
-  },
-  {
-    id: formatSerialId(ID_PREFIX.ALERT, 3, 3),
-    nodeName: 'Region-NY-02',
-    level: 'info',
-    state: 'online',
-    lastSeenAt: '2026-04-02T03:15:44Z',
-    message: '拓扑健康检查通过。',
-  },
-  {
-    id: formatSerialId(ID_PREFIX.ALERT, 4, 3),
-    nodeName: 'Tenant-Portal-07',
-    level: 'warning',
-    state: 'degraded',
-    lastSeenAt: '2026-04-02T03:13:20Z',
-    message: '缓存命中率波动，建议观察热 key。',
-  },
-  {
-    id: formatSerialId(ID_PREFIX.ALERT, 5, 3),
-    nodeName: 'Edge-Gateway-09',
-    level: 'critical',
-    state: 'offline',
-    lastSeenAt: '2026-04-02T03:09:59Z',
-    message: '心跳丢失，可能存在网络隔离。',
-  },
-  {
-    id: formatSerialId(ID_PREFIX.ALERT, 6, 3),
-    nodeName: 'Core-API-01',
-    level: 'info',
-    state: 'online',
-    lastSeenAt: '2026-04-02T03:06:41Z',
-    message: '接口延迟稳定在阈值内。',
-  },
-  {
-    id: formatSerialId(ID_PREFIX.ALERT, 7, 3),
-    nodeName: 'Region-SG-04',
-    level: 'warning',
-    state: 'online',
-    lastSeenAt: '2026-04-02T03:04:03Z',
-    message: '配置变更已生效，等待二次验证。',
-  },
-  {
-    id: formatSerialId(ID_PREFIX.ALERT, 8, 3),
-    nodeName: 'Tenant-Data-11',
-    level: 'info',
-    state: 'degraded',
-    lastSeenAt: '2026-04-02T03:01:25Z',
-    message: '写入吞吐下降，建议检查磁盘 I/O。',
-  },
-])
+const mockRows = computed(() => createMockAlertRows(t))
 
-const alertColumns = computed<ProTableColumn<AlertRow>[]>(() => {
-  return [
-    {
-      id: 'nodeName',
-      title: '节点',
-      field: 'nodeName',
-      sortable: true,
-      minWidth: '140px',
-      headerAlign: 'left',
-      align: 'left',
-    },
-    {
-      id: 'level',
-      title: '级别',
-      field: 'level',
-      sortable: true,
-      width: '120px',
-      valueEnum: ALERT_LEVEL_VALUE_ENUM,
-    },
-    {
-      id: 'state',
-      title: '状态',
-      field: 'state',
-      sortable: true,
-      width: '140px',
-      valueEnum: NODE_STATE_VALUE_ENUM,
-    },
-    {
-      id: 'lastSeenAt',
-      title: '最后更新',
-      field: 'lastSeenAt',
-      sortable: true,
-      width: '260px',
-      minWidth: '220px',
-      render: ({ row }) => {
-        if (!isInitialized.value) return '—'
-        return formatI18n(String(row.lastSeenAt), 'datetime') || '—'
-      },
-    },
-    {
-      id: 'message',
-      title: '告警描述',
-      field: 'message',
-      minWidth: '180px',
-      headerAlign: 'left',
-      align: 'left',
-      className: () => 'min-w-0',
-    },
-  ]
-})
+const alertColumns = computed(() =>
+  createAlertColumns({
+    t,
+    isDateReady: isInitialized.value,
+    formatDate: value => formatI18n(value, 'datetime') || '—',
+    alertLevelValueEnum: alertLevelValueEnum.value,
+    nodeStateValueEnum: nodeStateValueEnum.value,
+  })
+)
 
 // ──────────────────────────────────────────────────────────────────────────────
 // Empty state region state (switchable)
@@ -407,95 +318,8 @@ const emptyStateConfig = computed(() => {
 // ──────────────────────────────────────────────────────────────────────────────
 // Quick Action dialog (ProForm inside PrimeDialog)
 // ──────────────────────────────────────────────────────────────────────────────
-interface QuickActionValues extends Record<string, unknown> {
-  taskTitle: string
-  owner: string
-  priority: 'P1' | 'P2' | 'P3'
-  dueDate: string
-  notes: string
-  enableSla: boolean
-}
-
-const quickActionSchema = reactive<FormSchema>({
-  layout: { type: 'grid', gap: 'var(--spacing-md)' },
-  fields: [
-    {
-      type: 'section',
-      name: 'task_meta',
-      label: '任务信息',
-      layout: { type: 'grid', gap: 'var(--spacing-md)', span: { xs: 12, sm: 12 } },
-      children: [
-        {
-          name: 'taskTitle',
-          component: 'input',
-          label: '任务标题',
-          required: true,
-          span: { xs: 12, sm: 12 },
-          rules: [
-            {
-              message: '请输入任务标题',
-              validator: v => typeof v === 'string' && v.trim().length > 0,
-            },
-          ],
-          props: { placeholder: '例如：故障恢复演练' },
-        },
-        {
-          name: 'owner',
-          component: 'input',
-          label: '负责人',
-          required: true,
-          span: { xs: 12, sm: 6 },
-          props: { placeholder: '例如：Ops Team' },
-        },
-        {
-          name: 'priority',
-          component: 'select',
-          label: '优先级',
-          span: { xs: 12, sm: 6 },
-          props: {
-            placeholder: '请选择优先级',
-            options: [
-              { label: 'P1', value: 'P1' },
-              { label: 'P2', value: 'P2' },
-              { label: 'P3', value: 'P3' },
-            ],
-          },
-          defaultValue: 'P2',
-        },
-        {
-          name: 'dueDate',
-          component: 'date',
-          label: '截止日期',
-          span: { xs: 12, sm: 6 },
-          props: { showIcon: true, placeholder: '选择日期' },
-        },
-        {
-          name: 'enableSla',
-          component: 'switch',
-          label: '启用 SLA 告警',
-          span: { xs: 12, sm: 6 },
-          defaultValue: true,
-        },
-        {
-          name: 'notes',
-          component: 'textarea',
-          label: '备注',
-          span: { xs: 12, sm: 12 },
-          props: { rows: 4, placeholder: '补充上下文（可选）' },
-        },
-      ],
-    },
-  ],
-})
-
-const quickActionInitialValues = reactive<QuickActionValues>({
-  taskTitle: '模拟：创建战术任务',
-  owner: 'Tactical-Ops',
-  priority: 'P1',
-  dueDate: '2026-04-20',
-  notes: '用于展示 dashboard 的交互闭环：图表、告警列表、弹窗表单。',
-  enableSla: true,
-})
+const quickActionSchema = computed(() => createQuickActionSchema(t))
+const quickActionInitialValues = computed(() => createQuickActionInitialValues(t))
 
 const { openDialog, closeDialogByIndex } = useDialog()
 
@@ -511,8 +335,8 @@ function handleQuickActionOpen(): void {
             {t('dashboard.quickAction.description')}
           </p>
           <ProForm
-            schema={quickActionSchema}
-            initialValues={quickActionInitialValues}
+            schema={quickActionSchema.value}
+            initialValues={quickActionInitialValues.value}
             validateOn="submit"
             onSubmit={(values: QuickActionValues) => {
               void values
@@ -641,7 +465,7 @@ function handleQuickActionOpen(): void {
                     {{ kpi.trend }}
                   </span>
                 </div>
-                <span class="text-xs text-muted-foreground">{{ kpi.unit }}</span>
+                <span class="text-xs text-muted-foreground">{{ t(kpi.unitKey) }}</span>
               </div>
             </div>
           </div>
@@ -781,9 +605,9 @@ function handleQuickActionOpen(): void {
                   </span>
                   <span
                     class="rounded-md px-sm py-xs text-xs font-semibold uppercase"
-                    :class="node.status === 'healthy' ? 'surface-success' : 'surface-warn'"
+                    :class="node.statusSurface"
                   >
-                    {{ node.status }}
+                    {{ t(node.statusKey) }}
                   </span>
                 </div>
               </div>
@@ -940,7 +764,7 @@ function handleQuickActionOpen(): void {
               class="interaction-shrink"
               :severity="activeEmptyMode === 'alerts' ? 'primary' : 'secondary'"
               outlined
-              label="Alerts"
+              :label="t('dashboard.empty.toggleAlerts')"
               @click="activeEmptyMode = 'alerts'"
             />
             <Button
@@ -948,7 +772,7 @@ function handleQuickActionOpen(): void {
               class="interaction-shrink"
               :severity="activeEmptyMode === 'nodes' ? 'primary' : 'secondary'"
               outlined
-              label="Nodes"
+              :label="t('dashboard.empty.toggleNodes')"
               @click="activeEmptyMode = 'nodes'"
             />
           </div>

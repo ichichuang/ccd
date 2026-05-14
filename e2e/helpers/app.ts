@@ -1,4 +1,4 @@
-import type { Page } from '@playwright/test'
+import type { Page, Request, Response } from '@playwright/test'
 import { expect } from '@playwright/test'
 
 const E2E_VISUAL_QUERY = 'e2e=visual'
@@ -64,4 +64,69 @@ export async function loginAsAdmin(page: Page): Promise<void> {
   await waitForAppReady(page)
   await waitForRuntimeLoadingIdle(page)
   await expect(page.locator('#dashboard-page')).toBeVisible({ timeout: 15000 })
+}
+
+export interface NetworkFailureRecord {
+  kind: 'requestfailed' | 'response'
+  method: string
+  status: number | null
+  url: string
+  failureText: string | null
+}
+
+export interface NetworkFailureCollector {
+  getFailures: () => NetworkFailureRecord[]
+  dispose: () => void
+}
+
+function shouldIgnoreNetworkUrl(url: string): boolean {
+  return url.startsWith('data:') || url.startsWith('blob:')
+}
+
+export function createNetworkFailureCollector(page: Page): NetworkFailureCollector {
+  const failures: NetworkFailureRecord[] = []
+  const seen = new Set<string>()
+
+  const pushFailure = (entry: NetworkFailureRecord): void => {
+    const key = `${entry.kind}|${entry.method}|${entry.status ?? 'x'}|${entry.url}|${entry.failureText ?? ''}`
+    if (seen.has(key)) return
+    seen.add(key)
+    failures.push(entry)
+  }
+
+  const onRequestFailed = (request: Request): void => {
+    const url = request.url()
+    if (shouldIgnoreNetworkUrl(url)) return
+    pushFailure({
+      kind: 'requestfailed',
+      method: request.method(),
+      status: null,
+      url,
+      failureText: request.failure()?.errorText ?? null,
+    })
+  }
+
+  const onResponse = (response: Response): void => {
+    const status = response.status()
+    const url = response.url()
+    if (status < 400 || shouldIgnoreNetworkUrl(url)) return
+    pushFailure({
+      kind: 'response',
+      method: response.request().method(),
+      status,
+      url,
+      failureText: null,
+    })
+  }
+
+  page.on('requestfailed', onRequestFailed)
+  page.on('response', onResponse)
+
+  return {
+    getFailures: () => [...failures],
+    dispose: () => {
+      page.off('requestfailed', onRequestFailed)
+      page.off('response', onResponse)
+    },
+  }
 }

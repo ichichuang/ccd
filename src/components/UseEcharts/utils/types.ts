@@ -232,6 +232,13 @@ export interface ChartAxisPointerConfig {
   animationEasing?: string
 }
 
+export interface ChartSetOptionOptions {
+  notMerge?: boolean
+  replaceMerge?: string | string[]
+  lazyUpdate?: boolean
+  silent?: boolean
+}
+
 /**
  * UseEcharts 组件 Props 接口
  *
@@ -493,7 +500,7 @@ export interface ChartInstance {
   /** 获取原生 ECharts 实例（用于 setOption、resize、dispatchAction 等） */
   getEchartsInstance: () => EChartsType | null
   /** 设置图表配置 */
-  setOption: (option: EChartsOption, notMerge?: boolean) => void
+  setOption: (option: EChartsOption, opts?: boolean | ChartSetOptionOptions) => void
   /** 调整图表大小 */
   resize: () => void
   /** 清空图表 */

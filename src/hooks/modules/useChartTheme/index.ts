@@ -45,7 +45,7 @@ import { applyTreemapStyles } from './applyTreemapStyles'
 import { applyParallelStyles } from './applyParallelStyles'
 import { applyPictorialBarStyles } from './applyPictorialBarStyles'
 import { applyLinesStyles } from './applyLinesStyles'
-import { applyStylesToArray, withAlpha } from './utils'
+import { applyStylesToArray, deepCloneWithFunctions, withAlpha } from './utils'
 import { mergeAdvancedConfigs } from './mergeAdvancedConfigs'
 
 /**
@@ -130,7 +130,7 @@ function buildThemeConfig(): ThemeConfig {
  * 边界约定：外部可以传入任意符合 EChartsOption 结构的对象，这里在入口处使用 any，
  * 立即通过类型断言收窄为 EChartsOption，防止 any 向外泄漏。
  */
-function applyThemeToOption(
+export function applyThemeToOption(
   rawOption: any,
   opacityConfig?: ChartOpacityConfig,
   advancedConfig?: ChartAdvancedConfig,
@@ -140,9 +140,8 @@ function applyThemeToOption(
     return rawOption as EChartsOption | undefined
   }
 
-  // 轻量拷贝：主题化过程通过重新构建子结构的方式注入样式，
-  // 避免每次都对整棵 option 做深度递归克隆（显著降低 CPU/GC）。
-  const mergedOption = { ...(rawOption as Record<string, unknown>) } as EChartsOption
+  // 深拷贝 option，保留 formatter 等函数引用，避免主题化过程污染调用方的响应式数据。
+  const mergedOption = deepCloneWithFunctions(rawOption) as EChartsOption
 
   // 合并透明度配置
   const finalOpacityConfig = { ...DEFAULT_OPACITY_VALUES, ...opacityConfig }

@@ -1,10 +1,10 @@
 ---
 description: Enforces the useChartTheme wrapper for ECharts to ensure dark mode and theme color reactivity.
-globs: ["src/components/**/*.vue", "src/views/**/*.vue"]
+globs: ["src/components/**/*.vue", "src/components/UseEcharts/**/*.ts", "src/views/**/*.vue"]
 alwaysApply: true
 ---
 
-# The ECharts Theme Law
+# The ECharts Theme and Rendering Law
 
 ## Architecture
 
@@ -19,6 +19,8 @@ All ECharts charts in this project are rendered through the `<UseEcharts>` compo
 - **FORBIDDEN:** Raw `vue-echarts` initialization (`echarts.init(...)`, direct `VChart` mounting in business code).
 - **FORBIDDEN:** Hardcoded theme colors in option (`#hex`, fixed `rgb(...)`, hardcoded dark/light palette overrides).
 - **FORBIDDEN:** Building a parallel chart theming layer outside `useChartTheme`.
+- **FORBIDDEN:** Ad-hoc chart resize logic in business views. Resize, visibility, and KeepAlive recovery belong in `UseEcharts` / `echarts-render-core`.
+- **FORBIDDEN:** Replacing `vue-echarts` integration with raw `echarts.init(...)` inside `UseEcharts.vue` without an explicit architecture decision.
 
 ---
 
@@ -31,6 +33,37 @@ All business charts MUST follow this path only:
 3. Render with `<UseEcharts :option="themedOptionOrOption" />`.
 
 Any deviation from this path is an architecture violation.
+
+---
+
+## Rendering Robustness Contract
+
+`UseEcharts` owns ECharts rendering timing. The current rendering model is:
+
+1. `vue-echarts` owns actual ECharts component initialization and disposal.
+2. `echarts-render-core.ts` owns DOM-size gating, RAF scheduling, guarded resize, and pending `setOption` flushes.
+3. `useAppElementSize()` provides `ResizeObserver` driven container size changes.
+4. `useIntersectionObserver()` provides visible-state recovery.
+5. `onActivated()` provides KeepAlive recovery.
+
+All resize-like events MUST route through the shared scheduler. Do not add direct `instance.resize()` calls in views or local business wrappers.
+
+### Required Coverage For Rendering Changes
+
+When touching `src/components/UseEcharts/**`, run targeted validation:
+
+```bash
+pnpm vitest run src/components/UseEcharts/echarts-render-core.spec.ts src/components/UseEcharts/UseEcharts.spec.ts
+pnpm exec playwright test e2e/use-echarts-render.spec.ts --project=chromium
+```
+
+The Playwright coverage must preserve these scenarios:
+
+- visible canvas has non-zero dimensions and painted pixels
+- Tabs activation renders a painted chart
+- parent container resize repaints the chart
+- `display:none -> block` repaints the chart
+- moved/reused container plus option update remains painted
 
 ---
 

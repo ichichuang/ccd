@@ -45,6 +45,7 @@ CCD 面向“需要长期维护”的 Vue 3 产品项目，而不是一次性 De
 | **State Governance System** | 多 Tab / 多设备同步容易失控、隐式广播、难追踪                | 通过 `syncAction(type, payload)` 和 registry 白名单显式声明同步能力  |
 | **Owner Store Boundary**    | 同一状态被多个 store 同步或互相覆盖                          | handler 只能 patch owner store，副作用在 domain handler 中集中执行   |
 | **Transport Isolation**     | 业务代码直接写 `BroadcastChannel` / `WebSocket` 导致旁路同步 | 状态同步传输收敛到 `src/sync/**`，非状态通道必须进入 guard allowlist |
+| **Robust Chart Runtime**    | ECharts 在 Tabs、KeepAlive、隐藏容器、父容器 resize 下易空白 | `UseEcharts` 通过 ResizeObserver、IntersectionObserver、RAF 调度闭环 |
 | **AI-Readable Governance**  | 人能理解但 AI 容易误用架构边界                               | `.ai/rules/**`、`.ai/README.md`、`pnpm ai:guard` 共同约束生成行为    |
 
 这套同步能力不是“自动同步所有 store”，而是把跨端一致性建模为一种显式能力：
@@ -112,7 +113,16 @@ User Intent
 
 目标不是“换皮”，而是让 UI 语言可审计、可约束、可复用。
 
-### 5. 显式状态同步治理
+### 5. 图表渲染基础设施
+
+- 业务图表统一使用 `UseEcharts`，主题合并统一走 `useChartTheme`
+- 渲染调度由 `echarts-render-core` 管理，覆盖尺寸变化、可见性变化与 KeepAlive 恢复
+- `setOption` 支持 ECharts options 对象，并在容器未就绪时进入 pending flush
+- 回归验证覆盖真实 canvas paint、Tabs、父容器 resize、`display:none -> block`、容器复用与 option 更新
+
+更多细节见 [UseEcharts README](./src/components/UseEcharts/README.md) 与 [ECharts 与主题](./docs/architecture.md#echarts-与主题)。
+
+### 6. 显式状态同步治理
 
 - 同步入口统一为 `syncAction(type, payload)`
 - 同步类型必须在 `src/sync/registry.ts` 或 domain registration 中注册
@@ -122,7 +132,7 @@ User Intent
 
 这让状态同步从“store 变化监听”升级为“可审计、可扩展、可阻断的系统能力”。
 
-### 6. AI 协作治理
+### 7. AI 协作治理
 
 - `.ai/**` 是唯一规范源
 - `AGENTS.md`、`CLAUDE.md` 都只是兼容适配输出

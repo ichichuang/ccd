@@ -1,6 +1,10 @@
 import { describe, expect, it, vi } from 'vitest'
 import { use } from 'echarts/core'
-import { ensureEChartsModulesForOption, getEChartsSeriesTypes } from './echarts-registry'
+import {
+  ensureEChartsModulesForOption,
+  getEChartsSeriesTypes,
+  getMissingEChartsLazySeriesTypes,
+} from './echarts-registry'
 
 vi.mock('echarts/core', () => ({
   use: vi.fn(),
@@ -14,13 +18,24 @@ vi.mock('echarts/renderers', () => ({
 vi.mock('echarts/charts', () => ({
   LineChart: { id: 'LineChart' },
   BarChart: { id: 'BarChart' },
+  BoxplotChart: { id: 'BoxplotChart' },
+  CandlestickChart: { id: 'CandlestickChart' },
   PieChart: { id: 'PieChart' },
   ScatterChart: { id: 'ScatterChart' },
   EffectScatterChart: { id: 'EffectScatterChart' },
   RadarChart: { id: 'RadarChart' },
   GaugeChart: { id: 'GaugeChart' },
+  GraphChart: { id: 'GraphChart' },
   HeatmapChart: { id: 'HeatmapChart' },
   FunnelChart: { id: 'FunnelChart' },
+  LinesChart: { id: 'LinesChart' },
+  ParallelChart: { id: 'ParallelChart' },
+  PictorialBarChart: { id: 'PictorialBarChart' },
+  SankeyChart: { id: 'SankeyChart' },
+  SunburstChart: { id: 'SunburstChart' },
+  ThemeRiverChart: { id: 'ThemeRiverChart' },
+  TreeChart: { id: 'TreeChart' },
+  TreemapChart: { id: 'TreemapChart' },
 }))
 
 vi.mock('echarts/components', () => ({
@@ -36,6 +51,8 @@ vi.mock('echarts/components', () => ({
   VisualMapComponent: { id: 'VisualMapComponent' },
   DataZoomComponent: { id: 'DataZoomComponent' },
   BrushComponent: { id: 'BrushComponent' },
+  AxisPointerComponent: { id: 'AxisPointerComponent' },
+  CalendarComponent: { id: 'CalendarComponent' },
   GeoComponent: { id: 'GeoComponent' },
   MarkPointComponent: { id: 'MarkPointComponent' },
   MarkLineComponent: { id: 'MarkLineComponent' },
@@ -43,6 +60,7 @@ vi.mock('echarts/components', () => ({
   PolarComponent: { id: 'PolarComponent' },
   RadarComponent: { id: 'RadarComponent' },
   ParallelComponent: { id: 'ParallelComponent' },
+  TimelineComponent: { id: 'TimelineComponent' },
 }))
 
 vi.mock('echarts/features', () => ({
@@ -76,5 +94,39 @@ describe('echarts-registry', () => {
 
     expect(mockedUse).toHaveBeenCalledTimes(2)
     expect(mockedUse.mock.calls[1][0]).toEqual([{ id: 'GaugeChart' }])
+  })
+
+  it('reports only lazy chart types that still need registration', () => {
+    expect(getMissingEChartsLazySeriesTypes({ series: [{ type: 'line' }] })).toEqual([])
+    expect(getMissingEChartsLazySeriesTypes({ series: [{ type: 'heatmap' }] })).toEqual(['heatmap'])
+  })
+
+  it('registers every lazy chart type covered by the theme layer', async () => {
+    const callsBefore = mockedUse.mock.calls.length
+
+    await ensureEChartsModulesForOption({
+      series: [
+        { type: 'boxplot' },
+        { type: 'candlestick' },
+        { type: 'funnel' },
+        { type: 'graph' },
+        { type: 'heatmap' },
+        { type: 'lines' },
+        { type: 'parallel' },
+        { type: 'pictorialBar' },
+        { type: 'sankey' },
+        { type: 'sunburst' },
+        { type: 'themeRiver' },
+        { type: 'tree' },
+        { type: 'treemap' },
+      ],
+    })
+
+    const lazyRegistrations = mockedUse.mock.calls.slice(callsBefore)
+    expect(lazyRegistrations).toHaveLength(13)
+    lazyRegistrations.forEach(([modules]) => {
+      expect(Array.isArray(modules)).toBe(true)
+      expect(modules).toHaveLength(1)
+    })
   })
 })

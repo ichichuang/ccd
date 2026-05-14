@@ -272,6 +272,12 @@ const zhCNCore = {
     buttonMedium: '中按钮',
     buttonLarge: '大按钮',
     sampleText: '这是一段文字，一段普通文本',
+    units: {
+      gbps: 'Gbps',
+      ms: 'ms',
+      percent: '%',
+      nodes: '节点',
+    },
     hero: {
       title: '战术指挥台',
       badge: '实时模拟',
@@ -282,6 +288,29 @@ const zhCNCore = {
       description: '填写下方字段以模拟创建一条战术任务；提交后关闭弹窗。',
       requiredHint: '必填项已标注 *',
       submit: '创建任务',
+      fields: {
+        sectionLabel: '任务信息',
+        taskTitle: '任务标题',
+        taskTitleRequired: '请输入任务标题',
+        taskTitlePlaceholder: '例如：故障恢复演练',
+        owner: '负责人',
+        ownerPlaceholder: '例如：Ops Team',
+        priority: '优先级',
+        priorityPlaceholder: '请选择优先级',
+        priorityP1: 'P1',
+        priorityP2: 'P2',
+        priorityP3: 'P3',
+        dueDate: '截止日期',
+        dueDatePlaceholder: '选择日期',
+        enableSla: '启用 SLA 告警',
+        notes: '备注',
+        notesPlaceholder: '补充上下文（可选）',
+      },
+      defaults: {
+        taskTitle: '模拟：创建战术任务',
+        owner: '战术运营组',
+        notes: '用于展示 dashboard 的交互闭环：图表、告警列表、弹窗表单。',
+      },
     },
     kpi: {
       throughput: '总吞吐',
@@ -293,6 +322,17 @@ const zhCNCore = {
       throughputLatency: '吞吐与延迟',
       alarmDistribution: '告警分布',
       nodeDistribution: '节点分布',
+      series: {
+        throughput: '吞吐 (Gbps)',
+        latency: '延迟 (ms)',
+        alertCount: '告警数',
+      },
+      buckets: {
+        core: '核心',
+        edge: '边缘',
+        region: '区域',
+        tenant: '租户',
+      },
     },
     sections: {
       nodeTopology: '节点拓扑',
@@ -307,6 +347,56 @@ const zhCNCore = {
       memory: '内存使用',
       disk: '磁盘 I/O',
       network: '网络带宽',
+    },
+    topology: {
+      nodes: {
+        coreCluster: '核心集群',
+        edgeGateway: '边缘网关',
+        regionRelay: '区域中继',
+        tenantPortal: '租户门户',
+      },
+      status: {
+        healthy: '健康',
+        degraded: '降级',
+      },
+    },
+    activity: {
+      events: {
+        queueBacklogTriggered: 'RZ-Edge-01 请求队列积压告警触发',
+        completionRateRecovered: 'Core-Scheduler-03 任务完成率恢复正常',
+        topologyCheckPassed: 'Region-NY-02 拓扑健康检查通过',
+        autoScaleExpanded: '自动扩缩策略将 Edge 节点增至 89',
+        heartbeatRecovered: 'Edge-Gateway-09 心跳恢复，网络隔离已解除',
+      },
+    },
+    alerts: {
+      columns: {
+        nodeName: '节点',
+        level: '级别',
+        state: '状态',
+        lastSeenAt: '最后更新',
+        message: '告警描述',
+      },
+      levelValues: {
+        critical: '严重',
+        warning: '警告',
+        info: '提示',
+      },
+      stateValues: {
+        online: '在线',
+        degraded: '降级',
+        offline: '离线',
+      },
+      messages: {
+        queueBacklog: '请求队列积压，建议检查上游拥塞。',
+        completionRateDrop: '任务完成率下降，监控重试策略。',
+        topologyCheckPassed: '拓扑健康检查通过。',
+        cacheHitFluctuation: '缓存命中率波动，建议观察热 key。',
+        heartbeatLost: '心跳丢失，可能存在网络隔离。',
+        latencyWithinThreshold: '接口延迟稳定在阈值内。',
+        configAppliedPendingValidation: '配置变更已生效，等待二次验证。',
+        writeThroughputDrop: '写入吞吐下降，建议检查磁盘 I/O。',
+      },
     },
     badges: {
       hourly: '每小时',
@@ -323,6 +413,8 @@ const zhCNCore = {
         '当前系统处于稳定态。你可以使用上方快速操作创建一条模拟任务以观察联动效果。',
       nodesTitle: '节点状态正常',
       nodesDescription: '没有异常节点需要处理。切换回告警视图查看模拟数据差异。',
+      toggleAlerts: '告警',
+      toggleNodes: '节点',
     },
   },
   schemaForm: {
