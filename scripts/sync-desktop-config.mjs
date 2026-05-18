@@ -7,8 +7,8 @@ import process from 'node:process'
 const cwd = process.cwd()
 const desktopPathPrefixes = [
   'src-tauri/',
-  'src/utils/desktopWindow.ts',
-  'src/router/utils/helper.ts',
+  'apps/web-demo/src/utils/desktopWindow.ts',
+  'apps/web-demo/src/router/utils/helper.ts',
 ]
 const requiredDesktopFiles = [
   'src-tauri/capabilities/default.json',

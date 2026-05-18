@@ -1,9 +1,9 @@
 #!/usr/bin/env node
 /**
  * Brand Sync Pipeline (metadata-first)
- * - SSOT: src/constants/brand.ts
+ * - SSOT: apps/web-demo/src/constants/brand.ts
  * - Sync targets: package.json, src-tauri/tauri.conf.json
- * - Asset check: public/face.png vs src/assets/images/face.png
+ * - Asset check: public/face.png vs apps/web-demo/src/assets/images/face.png
  */
 
 import { createHash } from 'node:crypto'
@@ -110,13 +110,13 @@ function checkAssets() {
 
   if (!hasSourceLogo) {
     reports.push(
-      '[brand-sync] 提示: 未检测到 src/assets/brand/source/logo-source.png，建议先建立品牌母版源头文件。'
+      '[brand-sync] 提示: 未检测到 apps/web-demo/src/assets/brand/source/logo-source.png，建议先建立品牌母版源头文件。'
     )
   }
 
   if (!existsSync(PUBLIC_FAVICON_PATH) || !existsSync(APP_LOGO_PATH)) {
     reports.push(
-      '[brand-sync] 警告: 资产检查跳过（public/face.png 或 src/assets/images/face.png 不存在）。'
+      '[brand-sync] 警告: 资产检查跳过（public/face.png 或 apps/web-demo/src/assets/images/face.png 不存在）。'
     )
     return { hasMismatch: false, reports }
   }
@@ -127,26 +127,26 @@ function checkAssets() {
   if (faviconDigest !== appLogoDigest) {
     if (hasSourceLogo) {
       reports.push(
-        '[brand-sync] 警告: public/face.png 与 src/assets/images/face.png 摘要不一致（可能由跨格式导致），已检测到 source/logo-source.png，按非阻塞处理。'
+        '[brand-sync] 警告: public/face.png 与 apps/web-demo/src/assets/images/face.png 摘要不一致（可能由跨格式导致），已检测到 source/logo-source.png，按非阻塞处理。'
       )
       return { hasMismatch: false, reports }
     }
 
     if (!HAS_TAURI_WORKSPACE) {
       reports.push(
-        '[brand-sync] 警告: 当前为无 Tauri workspace 的主分支环境，public/face.png 与 src/assets/images/face.png 摘要不一致按非阻塞处理。'
+        '[brand-sync] 警告: 当前为无 Tauri workspace 的主分支环境，public/face.png 与 apps/web-demo/src/assets/images/face.png 摘要不一致按非阻塞处理。'
       )
       return { hasMismatch: false, reports }
     }
 
     reports.push(
-      '[brand-sync] 警告: public/face.png 与 src/assets/images/face.png 文件摘要不一致，且 source/logo-source.png 缺失。'
+      '[brand-sync] 警告: public/face.png 与 apps/web-demo/src/assets/images/face.png 文件摘要不一致，且 source/logo-source.png 缺失。'
     )
     return { hasMismatch: true, reports }
   }
 
   reports.push(
-    '[brand-sync] 资产检查通过: public/face.png 与 src/assets/images/face.png 摘要一致。'
+    '[brand-sync] 资产检查通过: public/face.png 与 apps/web-demo/src/assets/images/face.png 摘要一致。'
   )
   return { hasMismatch: false, reports }
 }
@@ -172,7 +172,7 @@ function readImageSizeBySips(imagePath) {
 function prepareSquareLogoSource() {
   if (!existsSync(SOURCE_LOGO_PATH)) {
     throw new Error(
-      '[brand-sync] 未检测到 src/assets/brand/source/logo-source.png，无法执行 tauri icon。'
+      '[brand-sync] 未检测到 apps/web-demo/src/assets/brand/source/logo-source.png，无法执行 tauri icon。'
     )
   }
 
@@ -213,7 +213,7 @@ function generateTauriIcons() {
   }
 
   if (!existsSync(SOURCE_LOGO_PATH)) {
-    console.warn('[brand-sync] 跳过图标工厂：未检测到 src/assets/brand/source/logo-source.png。')
+    console.warn('[brand-sync] 跳过图标工厂：未检测到 apps/web-demo/src/assets/brand/source/logo-source.png。')
     return
   }
 

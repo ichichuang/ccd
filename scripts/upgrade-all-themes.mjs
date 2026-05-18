@@ -1,6 +1,6 @@
 import process from 'node:process'
 import { pathToFileURL } from 'node:url'
-import { THEME_PRESETS } from '../src/constants/theme.ts'
+import { THEME_PRESETS } from '../apps/web-demo/src/constants/theme.ts'
 import {
   parseColor,
   toHex,
@@ -8,7 +8,7 @@ import {
   lighten,
   mix,
   contrastRatio,
-} from '../src/utils/theme/color.ts'
+} from '../apps/web-demo/src/utils/theme/color.ts'
 
 const COLOR_FAMILIES = ['primary', 'accent', 'success', 'warn', 'danger', 'info', 'help']
 const COLOR_STATE_KEYS = ['default', 'foreground', 'hover', 'light', 'lightForeground']

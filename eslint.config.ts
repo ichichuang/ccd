@@ -95,10 +95,10 @@ export default tseslint.config(
       '**/public',
       'docs/**',
       // [NEW] 忽略自动生成的类型定义文件
-      'src/types/components.d.ts',
-      'src/types/auto-imports.d.ts',
-      'src/components.d.ts', // 视具体生成位置而定，看你的配置是生成在 src 下还是 src/types 下
-      'src/auto-imports.d.ts',
+      'apps/web-demo/src/types/components.d.ts',
+      'apps/web-demo/src/types/auto-imports.d.ts',
+      'apps/web-demo/src/components.d.ts', // 视具体生成位置而定，看你的配置是生成在 src 下还是 src/types 下
+      'apps/web-demo/src/auto-imports.d.ts',
     ],
   },
 
@@ -141,7 +141,7 @@ export default tseslint.config(
   // ----------------------------------------------------------------------
   {
     name: 'app/node-scripts',
-    files: ['build/**', '*.config.ts', '*.config.js'],
+    files: ['apps/*/build/**', 'build/**', '*.config.ts', '*.config.js', 'apps/*/*.config.ts'],
     languageOptions: {
       globals: {
         ...globals.node,
@@ -397,7 +397,7 @@ export default tseslint.config(
   },
   {
     name: 'app/design-token-color-guard',
-    files: ['src/**/*.{vue,ts,tsx,js,jsx}'],
+    files: ['apps/web-demo/src/**/*.{vue,ts,tsx,js,jsx}'],
     plugins: {
       'app-architecture': localArchitectureRules,
     },
@@ -428,18 +428,18 @@ export default tseslint.config(
   {
     name: 'app/no-explicit-any-infra-overrides',
     files: [
-      'src/utils/typeCasters.ts',
-      'src/adapters/**/*.{ts,tsx}',
-      'src/utils/http/**/*.{ts,tsx}',
+      'apps/web-demo/src/utils/typeCasters.ts',
+      'apps/web-demo/src/adapters/**/*.{ts,tsx}',
+      'apps/web-demo/src/utils/http/**/*.{ts,tsx}',
       // 以下为临时保留，待迁移为 unknown 后从白名单移除
-      'src/hooks/modules/useChartTheme/**/*.{ts,tsx}',
-      'build/**/*.ts',
+      'apps/web-demo/src/hooks/modules/useChartTheme/**/*.{ts,tsx}',
+      'apps/web-demo/build/**/*.ts',
       '**/*.config.ts',
       '**/*.d.ts',
-      'src/hooks/modules/useLocale.ts',
-      'src/components/CScrollbar/**/*.ts',
-      'src/constants/**/*.ts',
-      'src/views/**/useChartOptions.ts',
+      'apps/web-demo/src/hooks/modules/useLocale.ts',
+      'apps/web-demo/src/components/CScrollbar/**/*.ts',
+      'apps/web-demo/src/constants/**/*.ts',
+      'apps/web-demo/src/views/**/useChartOptions.ts',
     ],
     rules: {
       '@typescript-eslint/no-explicit-any': 'off',

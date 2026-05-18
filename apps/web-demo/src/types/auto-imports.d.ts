@@ -397,16 +397,41 @@ declare global {
 // for type re-export
 declare global {
   // @ts-ignore
-  export type { Component, Slot, Slots, ComponentPublicInstance, ComputedRef, DirectiveBinding, ExtractDefaultPropTypes, ExtractPropTypes, ExtractPublicPropTypes, InjectionKey, PropType, Ref, ShallowRef, MaybeRef, MaybeRefOrGetter, VNode, WritableComputedRef } from 'vue'
+  export type {
+    Component,
+    Slot,
+    Slots,
+    ComponentPublicInstance,
+    ComputedRef,
+    DirectiveBinding,
+    ExtractDefaultPropTypes,
+    ExtractPropTypes,
+    ExtractPublicPropTypes,
+    InjectionKey,
+    PropType,
+    Ref,
+    ShallowRef,
+    MaybeRef,
+    MaybeRefOrGetter,
+    VNode,
+    WritableComputedRef,
+  } from 'vue'
   import('vue')
   // @ts-ignore
   export type { TableDrawerState } from '../stores/modules/ui/tableDrawer'
   import('../stores/modules/ui/tableDrawer')
   // @ts-ignore
-  export type { BreadcrumbChildItem, AdminBreadcrumbItem } from '../hooks/layout/useAdminBreadcrumbs'
+  export type {
+    BreadcrumbChildItem,
+    AdminBreadcrumbItem,
+  } from '../hooks/layout/useAdminBreadcrumbs'
   import('../hooks/layout/useAdminBreadcrumbs')
   // @ts-ignore
-  export type { ContextMenuAction, ContextMenuState, UseAdminTabsReturn } from '../hooks/layout/useAdminTabs'
+  export type {
+    ContextMenuAction,
+    ContextMenuState,
+    UseAdminTabsReturn,
+  } from '../hooks/layout/useAdminTabs'
   import('../hooks/layout/useAdminTabs')
   // @ts-ignore
   export type { UseLayoutRuntimeReturn } from '../hooks/layout/useLayoutRuntime'
@@ -424,13 +449,31 @@ declare global {
   export type { UsePageTitleReturn } from '../hooks/layout/usePageTitle'
   import('../hooks/layout/usePageTitle')
   // @ts-ignore
-  export type { UseElementSizeOptions, UseAppElementSizeReturn } from '../hooks/modules/useAppElementSize'
+  export type {
+    UseElementSizeOptions,
+    UseAppElementSizeReturn,
+  } from '../hooks/modules/useAppElementSize'
   import('../hooks/modules/useAppElementSize')
   // @ts-ignore
   export type { UseAuthReturn } from '../hooks/modules/useAuth'
   import('../hooks/modules/useAuth')
   // @ts-ignore
-  export type { ChartOpacityConfig, ChartThemeConfig, ChartAnimationConfig, ChartToolboxConfig, ChartMarkPointConfig, ChartMarkLineConfig, ChartVisualMapConfig, ChartBrushConfig, ChartAxisPointerConfig, ChartAdvancedConfig, DefaultOpacityValues, FontConfig, ColorConfig, ThemeConfig } from '../hooks/modules/useChartTheme/types'
+  export type {
+    ChartOpacityConfig,
+    ChartThemeConfig,
+    ChartAnimationConfig,
+    ChartToolboxConfig,
+    ChartMarkPointConfig,
+    ChartMarkLineConfig,
+    ChartVisualMapConfig,
+    ChartBrushConfig,
+    ChartAxisPointerConfig,
+    ChartAdvancedConfig,
+    DefaultOpacityValues,
+    FontConfig,
+    ColorConfig,
+    ThemeConfig,
+  } from '../hooks/modules/useChartTheme/types'
   import('../hooks/modules/useChartTheme/types')
   // @ts-ignore
   export type { UseDateUtilsReturn } from '../hooks/modules/useDateUtils'
@@ -439,7 +482,19 @@ declare global {
   export type { UseHttpRequestOptions, UseHttpRequestResult } from '../hooks/modules/useHttpRequest'
   import('../hooks/modules/useHttpRequest')
   // @ts-ignore
-  export type { InteractionTarget, SwipeDirection, UseTapOptions, UseTapReturn, UseSwipeActionOptions, UseSwipeActionReturn, UseDragActionOptions, UseDragActionReturn, UseLongPressActionOptions, UseLongPressActionReturn, UseInteractionReturn } from '../hooks/modules/useInteraction/types'
+  export type {
+    InteractionTarget,
+    SwipeDirection,
+    UseTapOptions,
+    UseTapReturn,
+    UseSwipeActionOptions,
+    UseSwipeActionReturn,
+    UseDragActionOptions,
+    UseDragActionReturn,
+    UseLongPressActionOptions,
+    UseLongPressActionReturn,
+    UseInteractionReturn,
+  } from '../hooks/modules/useInteraction/types'
   import('../hooks/modules/useInteraction/types')
   // @ts-ignore
   export type { UseLocaleReturn } from '../hooks/modules/useLocale'

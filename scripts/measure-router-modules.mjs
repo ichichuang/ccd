@@ -2,7 +2,7 @@ import fs from 'node:fs'
 import { performance } from 'node:perf_hooks'
 import fg from 'fast-glob'
 
-const MODULE_GLOB = 'src/router/modules/**/*.ts'
+const MODULE_GLOB = 'apps/web-demo/src/router/modules/**/*.ts'
 const ITERATIONS = 1000
 const MANIFEST_REVIEW_THRESHOLD_MS = 5
 

@@ -1,10 +1,10 @@
-import { THEME_PRESETS } from '../src/constants/theme'
-import { generateThemeVars } from '../src/utils/theme/engine'
+import { THEME_PRESETS } from '../apps/web-demo/src/constants/theme'
+import { generateThemeVars } from '../apps/web-demo/src/utils/theme/engine'
 import {
   THEME_CONTRAST_PAIR_SPECS,
   assessTokenContrast,
   type DecorativeValidationMode,
-} from '../src/utils/theme/validate'
+} from '../apps/web-demo/src/utils/theme/validate'
 
 interface ContrastFinding {
   preset: string

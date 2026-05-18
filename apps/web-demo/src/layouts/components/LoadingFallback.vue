@@ -34,14 +34,14 @@
 }
 
 .loading-fallback-spinner::before {
-  border: 4px solid rgb(var(--primary) / 0.2);
+  border: 4px solid rgb(var(--primary) / 20%);
   border-top-color: rgb(var(--primary));
   animation: loading-fallback-spin 0.9s linear infinite;
 }
 
 .loading-fallback-spinner::after {
   border: 4px solid transparent;
-  border-right-color: rgb(var(--primary) / 0.65);
+  border-right-color: rgb(var(--primary) / 65%);
   transform: scale(0.72);
   animation: loading-fallback-spin-reverse 1.2s linear infinite;
   opacity: 0.9;
