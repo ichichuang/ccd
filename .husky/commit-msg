@@ -1,1 +1,7 @@
-pnpm exec commitlint --edit "$1"
+#!/usr/bin/env sh
+set -e
+
+ROOT_DIR="$(cd "$(dirname "$0")/.." && pwd)"
+RUNTIME="$ROOT_DIR/scripts/exec.sh"
+
+bash "$RUNTIME" pnpm exec commitlint --edit "$1"

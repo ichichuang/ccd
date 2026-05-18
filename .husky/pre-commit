@@ -1,15 +1,22 @@
 #!/usr/bin/env sh
 set -e
 
+ROOT_DIR="$(cd "$(dirname "$0")/.." && pwd)"
+RUNTIME="$ROOT_DIR/scripts/exec.sh"
+
+run_pnpm() {
+  bash "$RUNTIME" pnpm "$@"
+}
+
 echo "🏛️  Running Enterprise Guardian: Architecture Doctor..."
-pnpm ai:doctor
+run_pnpm ai:doctor
 
 echo "🛡️  Running Enterprise Guardian: TypeScript Check..."
-pnpm type-check
+run_pnpm type-check
 
 echo "🔍 Running Enterprise Guardian: Drift Check..."
-pnpm drift-check
+run_pnpm drift-check
 
-pnpm lint:staged:safe
+run_pnpm lint:staged:safe
 
 echo "✅ 本地检查通过，准备提交..."

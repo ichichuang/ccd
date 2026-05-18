@@ -43,7 +43,7 @@ CCD enforces runtime isolation across three product lines:
 
 Pinned runtime:
 
-- `mise.toml` pins Node `26.1.0` and pnpm `10.28.2`.
+- `mise.toml` pins Node `24.11.1` and pnpm `10.28.2` to match the Vercel production runtime lane.
 - `scripts/env.sh` activates `mise`; no legacy Node version-file fallback is allowed.
 - `mise` now owns the Node runtime source locally; pnpm continues to resolve from the existing pinned binary path until the package-manager lane is migrated.
 - Machine-level runtime invariants live in `/Users/cc/AI-Research-OS/RUNTIME_FREEZE.md`.
