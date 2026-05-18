@@ -1,7 +1,200 @@
 {
   "schemaVersion": 1,
   "generatedBy": "scripts/generate-unocss-ide-data.mjs",
-  "source": "src/design-engine/shortcuts/semanticShortcuts.ts",
-  "count": 0,
-  "shortcuts": []
+  "source": "apps/web-demo/src/design-engine/shortcuts/semanticShortcuts.ts",
+  "count": 48,
+  "shortcuts": [
+    {
+      "name": "absolute-center",
+      "description": "UnoCSS semantic shortcut generated from apps/web-demo/src/design-engine/shortcuts/semanticShortcuts.ts: absolute-center"
+    },
+    {
+      "name": "center",
+      "description": "UnoCSS semantic shortcut generated from apps/web-demo/src/design-engine/shortcuts/semanticShortcuts.ts: center"
+    },
+    {
+      "name": "code-block",
+      "description": "UnoCSS semantic shortcut generated from apps/web-demo/src/design-engine/shortcuts/semanticShortcuts.ts: code-block"
+    },
+    {
+      "name": "code-inline",
+      "description": "UnoCSS semantic shortcut generated from apps/web-demo/src/design-engine/shortcuts/semanticShortcuts.ts: code-inline"
+    },
+    {
+      "name": "code-preview",
+      "description": "UnoCSS semantic shortcut generated from apps/web-demo/src/design-engine/shortcuts/semanticShortcuts.ts: code-preview"
+    },
+    {
+      "name": "col-between",
+      "description": "UnoCSS semantic shortcut generated from apps/web-demo/src/design-engine/shortcuts/semanticShortcuts.ts: col-between"
+    },
+    {
+      "name": "col-center",
+      "description": "UnoCSS semantic shortcut generated from apps/web-demo/src/design-engine/shortcuts/semanticShortcuts.ts: col-center"
+    },
+    {
+      "name": "col-fill",
+      "description": "UnoCSS semantic shortcut generated from apps/web-demo/src/design-engine/shortcuts/semanticShortcuts.ts: col-fill"
+    },
+    {
+      "name": "col-stretch",
+      "description": "UnoCSS semantic shortcut generated from apps/web-demo/src/design-engine/shortcuts/semanticShortcuts.ts: col-stretch"
+    },
+    {
+      "name": "demo-stage",
+      "description": "UnoCSS semantic shortcut generated from apps/web-demo/src/design-engine/shortcuts/semanticShortcuts.ts: demo-stage"
+    },
+    {
+      "name": "demo-well",
+      "description": "UnoCSS semantic shortcut generated from apps/web-demo/src/design-engine/shortcuts/semanticShortcuts.ts: demo-well"
+    },
+    {
+      "name": "glass-base",
+      "description": "INTERNAL shortcut from apps/web-demo/src/design-engine/shortcuts/semanticShortcuts.ts: glass-base. Do not use directly in templates; use public glass-* wrappers."
+    },
+    {
+      "name": "glass-capsule",
+      "description": "UnoCSS semantic shortcut generated from apps/web-demo/src/design-engine/shortcuts/semanticShortcuts.ts: glass-capsule"
+    },
+    {
+      "name": "glass-card",
+      "description": "UnoCSS semantic shortcut generated from apps/web-demo/src/design-engine/shortcuts/semanticShortcuts.ts: glass-card"
+    },
+    {
+      "name": "glass-icon-box",
+      "description": "UnoCSS semantic shortcut generated from apps/web-demo/src/design-engine/shortcuts/semanticShortcuts.ts: glass-icon-box"
+    },
+    {
+      "name": "glass-panel",
+      "description": "UnoCSS semantic shortcut generated from apps/web-demo/src/design-engine/shortcuts/semanticShortcuts.ts: glass-panel"
+    },
+    {
+      "name": "glass-shell",
+      "description": "UnoCSS semantic shortcut generated from apps/web-demo/src/design-engine/shortcuts/semanticShortcuts.ts: glass-shell"
+    },
+    {
+      "name": "interaction-shrink",
+      "description": "UnoCSS semantic shortcut generated from apps/web-demo/src/design-engine/shortcuts/semanticShortcuts.ts: interaction-shrink"
+    },
+    {
+      "name": "interactive-card",
+      "description": "UnoCSS semantic shortcut generated from apps/web-demo/src/design-engine/shortcuts/semanticShortcuts.ts: interactive-card"
+    },
+    {
+      "name": "interactive-item",
+      "description": "UnoCSS semantic shortcut generated from apps/web-demo/src/design-engine/shortcuts/semanticShortcuts.ts: interactive-item"
+    },
+    {
+      "name": "layout-container",
+      "description": "UnoCSS semantic shortcut generated from apps/web-demo/src/design-engine/shortcuts/semanticShortcuts.ts: layout-container"
+    },
+    {
+      "name": "layout-full",
+      "description": "UnoCSS semantic shortcut generated from apps/web-demo/src/design-engine/shortcuts/semanticShortcuts.ts: layout-full"
+    },
+    {
+      "name": "layout-narrow",
+      "description": "UnoCSS semantic shortcut generated from apps/web-demo/src/design-engine/shortcuts/semanticShortcuts.ts: layout-narrow"
+    },
+    {
+      "name": "layout-screen",
+      "description": "UnoCSS semantic shortcut generated from apps/web-demo/src/design-engine/shortcuts/semanticShortcuts.ts: layout-screen"
+    },
+    {
+      "name": "material-elevated",
+      "description": "UnoCSS semantic shortcut generated from apps/web-demo/src/design-engine/shortcuts/semanticShortcuts.ts: material-elevated"
+    },
+    {
+      "name": "material-solid",
+      "description": "UnoCSS semantic shortcut generated from apps/web-demo/src/design-engine/shortcuts/semanticShortcuts.ts: material-solid"
+    },
+    {
+      "name": "motion-lift",
+      "description": "UnoCSS semantic shortcut generated from apps/web-demo/src/design-engine/shortcuts/semanticShortcuts.ts: motion-lift"
+    },
+    {
+      "name": "ring-focus-focus",
+      "description": "UnoCSS semantic shortcut generated from apps/web-demo/src/design-engine/shortcuts/semanticShortcuts.ts: ring-focus-focus"
+    },
+    {
+      "name": "row-between",
+      "description": "UnoCSS semantic shortcut generated from apps/web-demo/src/design-engine/shortcuts/semanticShortcuts.ts: row-between"
+    },
+    {
+      "name": "row-center",
+      "description": "UnoCSS semantic shortcut generated from apps/web-demo/src/design-engine/shortcuts/semanticShortcuts.ts: row-center"
+    },
+    {
+      "name": "row-end",
+      "description": "UnoCSS semantic shortcut generated from apps/web-demo/src/design-engine/shortcuts/semanticShortcuts.ts: row-end"
+    },
+    {
+      "name": "row-start",
+      "description": "UnoCSS semantic shortcut generated from apps/web-demo/src/design-engine/shortcuts/semanticShortcuts.ts: row-start"
+    },
+    {
+      "name": "scrollbar-none",
+      "description": "UnoCSS semantic shortcut generated from apps/web-demo/src/design-engine/shortcuts/semanticShortcuts.ts: scrollbar-none"
+    },
+    {
+      "name": "sidebar-width-transition",
+      "description": "UnoCSS semantic shortcut generated from apps/web-demo/src/design-engine/shortcuts/semanticShortcuts.ts: sidebar-width-transition"
+    },
+    {
+      "name": "surface-danger",
+      "description": "UnoCSS semantic shortcut generated from apps/web-demo/src/design-engine/shortcuts/semanticShortcuts.ts: surface-danger"
+    },
+    {
+      "name": "surface-info",
+      "description": "UnoCSS semantic shortcut generated from apps/web-demo/src/design-engine/shortcuts/semanticShortcuts.ts: surface-info"
+    },
+    {
+      "name": "surface-primary",
+      "description": "UnoCSS semantic shortcut generated from apps/web-demo/src/design-engine/shortcuts/semanticShortcuts.ts: surface-primary"
+    },
+    {
+      "name": "surface-success",
+      "description": "UnoCSS semantic shortcut generated from apps/web-demo/src/design-engine/shortcuts/semanticShortcuts.ts: surface-success"
+    },
+    {
+      "name": "surface-warn",
+      "description": "UnoCSS semantic shortcut generated from apps/web-demo/src/design-engine/shortcuts/semanticShortcuts.ts: surface-warn"
+    },
+    {
+      "name": "text-ellipsis-1",
+      "description": "UnoCSS semantic shortcut generated from apps/web-demo/src/design-engine/shortcuts/semanticShortcuts.ts: text-ellipsis-1"
+    },
+    {
+      "name": "text-ellipsis-2",
+      "description": "UnoCSS semantic shortcut generated from apps/web-demo/src/design-engine/shortcuts/semanticShortcuts.ts: text-ellipsis-2"
+    },
+    {
+      "name": "text-no-wrap",
+      "description": "UnoCSS semantic shortcut generated from apps/web-demo/src/design-engine/shortcuts/semanticShortcuts.ts: text-no-wrap"
+    },
+    {
+      "name": "z-base",
+      "description": "UnoCSS semantic shortcut generated from apps/web-demo/src/design-engine/shortcuts/semanticShortcuts.ts: z-base"
+    },
+    {
+      "name": "z-content",
+      "description": "UnoCSS semantic shortcut generated from apps/web-demo/src/design-engine/shortcuts/semanticShortcuts.ts: z-content"
+    },
+    {
+      "name": "z-layout",
+      "description": "UnoCSS semantic shortcut generated from apps/web-demo/src/design-engine/shortcuts/semanticShortcuts.ts: z-layout"
+    },
+    {
+      "name": "z-overlay",
+      "description": "UnoCSS semantic shortcut generated from apps/web-demo/src/design-engine/shortcuts/semanticShortcuts.ts: z-overlay"
+    },
+    {
+      "name": "z-popover",
+      "description": "UnoCSS semantic shortcut generated from apps/web-demo/src/design-engine/shortcuts/semanticShortcuts.ts: z-popover"
+    },
+    {
+      "name": "z-toast",
+      "description": "UnoCSS semantic shortcut generated from apps/web-demo/src/design-engine/shortcuts/semanticShortcuts.ts: z-toast"
+    }
+  ]
 }

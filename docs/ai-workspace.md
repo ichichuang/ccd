@@ -42,16 +42,16 @@ pnpm governance:gate
 
 Command tiers:
 
-| Command                   | Scope                                                             |
-| ------------------------- | ----------------------------------------------------------------- |
-| `pnpm governance:gate`    | single CI-grade governance gate for architecture protection       |
-| `pnpm governance:github-workflows` | GitHub Actions registry hygiene and orphan workflow detection |
-| `pnpm env:doctor`         | node/pnpm runtime and shell wrapper validation                    |
-| `pnpm runtime:env`        | deterministic runtime wrapper verification                        |
-| `pnpm runtime:env:strict` | strict Node `mise` migration gate                                 |
-| `pnpm arch:check:fast`    | `env:doctor + ai:doctor + drift-check`                            |
-| `pnpm arch:check`         | env, sync, Codex sync, doctor, drift, Codex preflight, diff check |
-| `pnpm arch:check:full`    | `arch:check + lint + type-check + test:run`                       |
+| Command                            | Scope                                                             |
+| ---------------------------------- | ----------------------------------------------------------------- |
+| `pnpm governance:gate`             | single CI-grade governance gate for architecture protection       |
+| `pnpm governance:github-workflows` | GitHub Actions registry hygiene and orphan workflow detection     |
+| `pnpm env:doctor`                  | node/pnpm runtime and shell wrapper validation                    |
+| `pnpm runtime:env`                 | deterministic runtime wrapper verification                        |
+| `pnpm runtime:env:strict`          | strict Node `mise` migration gate                                 |
+| `pnpm arch:check:fast`             | `env:doctor + ai:doctor + drift-check`                            |
+| `pnpm arch:check`                  | env, sync, Codex sync, doctor, drift, Codex preflight, diff check |
+| `pnpm arch:check:full`             | `arch:check + lint + type-check + test:run`                       |
 
 ---
 
@@ -159,6 +159,7 @@ Aggressive cleanup can remove browser artifacts, `tmp/`, and Codex browser sessi
 - `packages/core`: runtime-neutral platform logic.
 - `apps/web-demo`: browser runtime adapters.
 - `apps/desktop`: Tauri runtime adapters.
+- `root`: orchestration-only shell.
 - `legacy/root-app`: read-only historical archive; never imported by active graphs.
 
 For architecture releases:

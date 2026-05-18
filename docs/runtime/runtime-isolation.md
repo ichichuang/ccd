@@ -7,8 +7,9 @@ CCD enforces runtime isolation through workspace package boundaries and adapter 
 ```text
 packages/contracts  -> no runtime access
 packages/core       -> no runtime access
-apps/web-demo       -> browser runtime in adapters only
+apps/web-demo       -> single browser runtime source of truth; browser runtime in adapters only
 apps/desktop        -> Tauri runtime in adapters only
+root                -> orchestration-only shell
 legacy/root-app     -> archived; excluded from active graphs
 ```
 

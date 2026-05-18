@@ -1,6 +1,6 @@
 # Web Runtime
 
-`apps/web-demo` is the browser runtime surface for CCD.
+`apps/web-demo` is the browser runtime surface for CCD and the single browser runtime source of truth.
 
 ## Runtime Contract
 
@@ -22,6 +22,10 @@ Current adapter responsibilities:
 - browser storage adapter
 - browser network adapter
 - browser logger adapter
+
+## Root Boundary
+
+The repository root is orchestration-only. It may hold workspace, governance, and tooling configuration, but it must not own browser runtime source files or production browser entrypoints.
 
 ## Validation
 

@@ -1,6 +1,6 @@
 {
   "name": "@ccd/core",
-  "version": "0.1.0",
+  "version": "1.0.36",
   "private": true,
   "type": "module",
   "sideEffects": false,

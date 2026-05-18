@@ -35,8 +35,9 @@ The repository has moved beyond monorepo restructuring into a self-protecting pl
 ```text
 packages/contracts  -> public ABI: interfaces and shared types only
 packages/core       -> runtime-neutral platform logic
-apps/web-demo       -> browser runtime shell and browser adapters
+apps/web-demo       -> single browser runtime source of truth
 apps/desktop        -> Tauri runtime shell and desktop adapters
+root                -> orchestration-only shell
 legacy/root-app     -> read-only historical archive
 ```
 
@@ -58,17 +59,17 @@ pnpm governance:gate
 
 The gate must pass before CI continues to typecheck, tests, lint, and production builds.
 
-| Protection | Enforced By |
-| --- | --- |
-| Policy asset presence | `.ai/governance/policies/**` + `pnpm governance:validate` |
-| AI-safe code generation | `.ai/governance/policies/ai.json` + `pnpm ai:guard` |
-| Dependency boundaries | dependency-cruiser + `scripts/architecture/validate-boundaries.mjs` |
-| Runtime neutrality | `scripts/architecture/check-runtime-leaks.mjs` |
-| Public API immutability | `.ai/governance/api-snapshots/**` + `pnpm api:report` |
-| Supply-chain baseline | `.ai/governance/policies/supply-chain.json` + `pnpm supply:check` |
-| Release order | `.ai/governance/policies/release.json` + `pnpm release:governance` |
+| Protection                | Enforced By                                                                 |
+| ------------------------- | --------------------------------------------------------------------------- |
+| Policy asset presence     | `.ai/governance/policies/**` + `pnpm governance:validate`                   |
+| AI-safe code generation   | `.ai/governance/policies/ai.json` + `pnpm ai:guard`                         |
+| Dependency boundaries     | dependency-cruiser + `scripts/architecture/validate-boundaries.mjs`         |
+| Runtime neutrality        | `scripts/architecture/check-runtime-leaks.mjs`                              |
+| Public API immutability   | `.ai/governance/api-snapshots/**` + `pnpm api:report`                       |
+| Supply-chain baseline     | `.ai/governance/policies/supply-chain.json` + `pnpm supply:check`           |
+| Release order             | `.ai/governance/policies/release.json` + `pnpm release:governance`          |
 | Workflow registry hygiene | `.ai/governance/policies/release.json` + `pnpm governance:github-workflows` |
-| Governance observability | generated reports under `docs/generated/**` and `.ai/generated/**` |
+| Governance observability  | generated reports under `docs/generated/**` and `.ai/generated/**`          |
 
 The repository also governs GitHub's remote workflow registry. Historical desktop workflow records remain visible for audit, but they are disabled and are no longer execution surfaces.
 
@@ -78,15 +79,15 @@ The repository also governs GitHub's remote workflow registry. Historical deskto
 git clone git@github.com:ichichuang/ccd.git
 cd ccd
 pnpm install --frozen-lockfile
-pnpm dev:web-demo
+pnpm dev:web
 ```
 
 Requirements:
 
-| Tool | Version |
-| --- | --- |
-| Node.js | `24.x` |
-| pnpm | `>= 10.0.0` |
+| Tool    | Version     |
+| ------- | ----------- |
+| Node.js | `24.x`      |
+| pnpm    | `>= 10.0.0` |
 
 ## Core Commands
 

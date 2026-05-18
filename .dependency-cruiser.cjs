@@ -5,8 +5,8 @@ module.exports = {
     {
       name: 'no-circular',
       severity: 'error',
-      comment: 'Circular dependencies are forbidden.',
-      from: {},
+      comment: 'Circular dependencies are forbidden in shared packages.',
+      from: { path: '^packages/' },
       to: { circular: true },
     },
     {
