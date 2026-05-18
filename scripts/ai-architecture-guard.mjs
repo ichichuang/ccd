@@ -4,8 +4,10 @@ import process from 'node:process'
 import { spawnSync } from 'node:child_process'
 import fg from 'fast-glob'
 import ts from 'typescript'
+import { readPolicy } from './governance/policy-utils.mjs'
 
 const cwd = process.cwd()
+const aiPolicy = readPolicy('ai')
 const outputFormat = process.argv.includes('--format=json') ? 'json' : 'text'
 const stagedOnly = process.argv.includes('--staged')
 const outputLogPath = path.join(cwd, '.ai', 'runtime', 'architecture-guard-report.json')
@@ -61,6 +63,9 @@ const scanFiles = (patterns, options = {}) =>
   }).filter(shouldScanFile)
 const businessViews = scanFiles(businessViewPatterns, {
   ignore: businessViewIgnore,
+})
+const governedGeneratedCodeFiles = scanFiles(['apps/**/*.{ts,tsx,vue,js,mjs}', 'packages/**/*.{ts,tsx,vue,js,mjs}'], {
+  ignore: ['**/dist/**', '**/node_modules/**'],
 })
 
 const shouldRunSingletonCheck = relPath => {
@@ -127,6 +132,12 @@ const approvedDirectTransportFiles = new Set([
   'src/router/utils/helper.ts',
 ])
 
+const blockedGeneratedCodePatterns = aiPolicy.blockedGeneratedCodePatterns.map(rule => ({
+  ...rule,
+  regex: new RegExp(rule.pattern),
+}))
+const aiAllowedRuntimeAccessPaths = aiPolicy.allowedRuntimeAccessPaths ?? []
+
 const isGlobAllowed = (relPath, patterns) =>
   patterns.some(pattern => {
     if (pattern.endsWith('/**')) {
@@ -141,6 +152,16 @@ const hasHardcodedColor = content =>
 
 const stripJsComments = content =>
   content.replace(/\/\*[\s\S]*?\*\//g, '').replace(/(^|[^:])\/\/.*$/gm, '$1')
+
+for (const relPath of governedGeneratedCodeFiles) {
+  if (isGlobAllowed(relPath, aiAllowedRuntimeAccessPaths)) continue
+  const content = stripJsComments(readText(relPath))
+  for (const rule of blockedGeneratedCodePatterns) {
+    if (rule.regex.test(content)) {
+      fail('ai-generated-code-policy', relPath, rule.reason)
+    }
+  }
+}
 
 const COLOR_SINGLE_TOKENS = ['border', 'input', 'ring', 'background', 'foreground']
 const COLOR_PAIR_FAMILIES = ['card', 'popover', 'secondary', 'muted']

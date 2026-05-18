@@ -1,0 +1,16 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "composite": true,
+    "rootDir": "src",
+    "tsBuildInfoFile": "../../node_modules/.tmp/packages-core.tsbuildinfo",
+    "lib": ["ES2022"],
+    "types": [],
+    "outDir": "dist",
+    "declaration": true,
+    "declarationMap": true
+  },
+  "include": ["src/**/*.ts"],
+  "exclude": ["legacy/**"],
+  "references": [{ "path": "../contracts" }]
+}
