@@ -62,6 +62,9 @@ jobs:
       - name: Sync AI adapters (materialize local runtime)
         run: pnpm ai:sync
 
+      - name: AI Architecture Doctor
+        run: pnpm ai:doctor
+
       - name: Unified Governance Gate
         run: pnpm governance:gate
 

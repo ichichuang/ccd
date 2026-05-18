@@ -252,6 +252,7 @@ export default tseslint.config(
       boundaries,
     },
     settings: {
+      // eslint-disable-next-line @typescript-eslint/naming-convention
       'boundaries/elements': [
         { type: 'core', pattern: 'packages/core/src/**' },
         { type: 'web-demo', pattern: 'apps/web-demo/src/**' },
@@ -260,13 +261,20 @@ export default tseslint.config(
       ],
     },
     rules: {
+      // eslint-disable-next-line @typescript-eslint/naming-convention
       'boundaries/dependencies': [
         'error',
         {
           default: 'allow',
           rules: [
-            { from: { type: 'core' }, disallow: { to: { type: ['web-demo', 'desktop', 'desktop-adapters'] } } },
-            { from: { type: 'web-demo' }, disallow: { to: { type: ['desktop', 'desktop-adapters'] } } },
+            {
+              from: { type: 'core' },
+              disallow: { to: { type: ['web-demo', 'desktop', 'desktop-adapters'] } },
+            },
+            {
+              from: { type: 'web-demo' },
+              disallow: { to: { type: ['desktop', 'desktop-adapters'] } },
+            },
             { from: { type: 'desktop' }, disallow: { to: { type: 'web-demo' } } },
             { from: { type: 'desktop-adapters' }, disallow: { to: { type: 'web-demo' } } },
           ],
