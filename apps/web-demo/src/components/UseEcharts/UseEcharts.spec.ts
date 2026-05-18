@@ -3,6 +3,7 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { flushPromises, mount } from '@vue/test-utils'
 import { createPinia, setActivePinia } from 'pinia'
+import { nextTick } from 'vue'
 import type { EChartsOption } from 'echarts'
 import UseEcharts from './UseEcharts.vue'
 import { ensureEChartsModulesForOption } from './echarts-registry'
@@ -33,6 +34,7 @@ const controls = vi.hoisted(() => ({
 vi.mock('./echarts-setup', () => ({}))
 
 vi.mock('./echarts-registry', () => ({
+  registerBaseEChartsModules: vi.fn(),
   ensureEChartsModulesForOption: vi.fn(() => Promise.resolve()),
   getEChartsSeriesTypes: vi.fn((option: EChartsOption | undefined) => {
     const series = option?.series

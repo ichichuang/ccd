@@ -1,5 +1,11 @@
+import vue from '@vitejs/plugin-vue'
+import { fileURLToPath } from 'node:url'
+import { dirname, resolve } from 'node:path'
 import type { UserConfig } from 'vite'
+
+const rootDir = dirname(fileURLToPath(import.meta.url))
 export default {
+  plugins: [vue()],
   test: {
     globals: true,
     environment: 'node',
@@ -16,6 +22,11 @@ export default {
       provider: 'v8',
       include: ['apps/**/src/**', 'packages/**/src/**'],
       exclude: ['**/*.d.ts'],
+    },
+  },
+  resolve: {
+    alias: {
+      '@': resolve(rootDir, 'apps/web-demo/src'),
     },
   },
 } satisfies UserConfig

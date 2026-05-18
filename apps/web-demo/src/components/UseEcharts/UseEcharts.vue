@@ -1,4 +1,15 @@
 <script setup lang="ts">
+import {
+  computed,
+  defineAsyncComponent,
+  onActivated,
+  onBeforeUnmount,
+  ref,
+  shallowRef,
+  toRaw,
+  useTemplateRef,
+  watch,
+} from 'vue'
 import { getChartSystemVariables } from '@/utils/theme/chartUtils'
 import { withAlpha } from '@/hooks/modules/useChartTheme/utils'
 import { useChartTheme } from '@/hooks/modules/useChartTheme/index'

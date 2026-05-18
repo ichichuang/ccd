@@ -2,6 +2,7 @@
 /* eslint-disable vue/one-component-per-file */
 
 import { afterEach, describe, expect, it, vi } from 'vitest'
+import { createApp } from 'vue'
 import { setupErrorHandler } from './errorHandler'
 
 describe('setupErrorHandler', () => {

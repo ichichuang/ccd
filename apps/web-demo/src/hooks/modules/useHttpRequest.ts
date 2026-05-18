@@ -1,4 +1,4 @@
-import type { ComputedRef, Ref } from 'vue'
+import { computed, type ComputedRef, type Ref } from 'vue'
 import { useRequest } from 'alova/client'
 import type { Alova, AlovaGenerics, Method, RespondedAlovaGenerics } from 'alova'
 import type { RequestHookConfig } from 'alova/client'
