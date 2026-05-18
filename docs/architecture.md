@@ -1,10 +1,65 @@
-# CCD 架构与特性
+# Multi-Runtime Architecture
 
-面向希望理解分层、数据流与工程能力的读者。若你只想跑起来项目，请先看仓库根目录的 [README](../README.md)。
+CCD 是 AI-governed frontend architecture platform。它的核心已经从单一前端模板升级为多运行时产品体系：`main` 承载 Web Runtime，`desktop-version` 承载 Tauri Desktop Runtime，`main-portable-version` 承载 Clean Portable Architecture Template。
+
+若你只想跑起来项目，请先看仓库根目录的 [README](../README.md)。分支边界见 [Product Line Strategy](./branch-model.md)，治理系统见 [Governance](./governance.md)。
 
 ---
 
-## 架构拓扑
+## Runtime Isolation Principles
+
+| Runtime               | Isolation Law                                                                 |
+| --------------------- | ----------------------------------------------------------------------------- |
+| Web Runtime           | Desktop runtime must never directly contaminate Web runtime abstractions.     |
+| Desktop Runtime       | Tauri capabilities must stay behind bridge helpers and permission governance. |
+| Portable Runtime      | Portable architecture must remain business-agnostic.                          |
+| AI Governance Runtime | `.ai/**` is a first-class architecture layer, not prompt residue.             |
+
+Hard rules:
+
+- `main` remains browser-first and deployable as a Web application.
+- `desktop-version` owns Tauri shell, IPC, capabilities, and desktop release metadata.
+- `main-portable-version` owns scaffold cleanup and must not carry demo-only assumptions.
+- Shared abstractions must be portable unless their branch contract says otherwise.
+- Runtime-specific code must not weaken `.ai/**` governance or generated adapter validation.
+
+Runtime contracts:
+
+- [Runtime Isolation](./runtime/runtime-isolation.md)
+- [Web Runtime](./runtime/web-runtime.md)
+- [Desktop Runtime](./runtime/desktop-runtime.md)
+- [Portable Runtime](./runtime/portable-runtime.md)
+
+---
+
+## Governance Architecture
+
+CCD governance is an AI-native control plane:
+
+```text
+.ai/
+├── protocol/   -> agent entrypoints and adapter manifest
+├── manifests/  -> generated routing, rule, and skill locks
+├── adapters/   -> generated adapter guides
+└── rules/      -> architecture laws and implementation constraints
+```
+
+The governance flow is:
+
+```text
+authoring
+  -> pnpm arch:check
+  -> adapter generation
+  -> doctor validation
+  -> drift validation
+  -> preflight validation
+```
+
+This makes `pnpm arch:check` an architecture governance command, not a convenience script.
+
+---
+
+## Web Runtime Topology
 
 ```mermaid
 graph TD
@@ -270,7 +325,7 @@ const { option } = useChartTheme(rawOption)
 
 ### 工程化
 
-- **AI / Architecture Gates**：`ai:doctor`、`ai:guard`、`validate:tokens`、`drift-check`
+- **AI / Architecture Gates**：`arch:check`、`arch:check:fast`、`arch:check:full`、`ai:doctor`、`ai:guard`、`validate:tokens`、`drift-check`
 - **CI**：AI adapter sync、Architecture Doctor、Drift Check、`vue-tsc`、Vitest、ESLint、生产构建
 - **Git**：Husky、CommitLint、lint-staged
 - **i18n**：vue-i18n（zh-CN / en-US）与 PrimeVue 本地化
@@ -282,6 +337,8 @@ const { option } = useChartTheme(rawOption)
 pnpm type-check       # vue-tsc
 pnpm lint             # ESLint
 pnpm lint:fix         # ESLint 自动修复
+pnpm arch:check       # 架构治理一键检查
+pnpm arch:check:full  # PR / release 全量本地门禁
 pnpm test             # Vitest 交互
 pnpm test:run         # Vitest 单次
 pnpm build:analyze    # 构建 + 体积分析
@@ -414,12 +471,16 @@ CCD 的浏览器链路已经升级为：
 
 CCD 的文档现在也按架构层次组织，而不是只有一个 README。
 
-| 文档                                              | 定位                                    |
-| ------------------------------------------------- | --------------------------------------- |
-| [README.md](../README.md)                         | 对外入口与项目导航                      |
-| [docs/branch-model.md](./branch-model.md)         | 三分支交付模型与验证矩阵                |
-| [docs/architecture.md](./architecture.md)         | 运行时架构与引擎设计                    |
-| [docs/ai-workspace.md](./ai-workspace.md)         | AI 工作区、浏览器自动化、清理和交付同步 |
-| [docs/codex/quickstart.md](./codex/quickstart.md) | Codex 日常操作与低 token 工作流         |
+| 文档                                                              | 定位                                 |
+| ----------------------------------------------------------------- | ------------------------------------ |
+| [README.md](../README.md)                                         | 对外入口与项目导航                   |
+| [docs/branch-model.md](./branch-model.md)                         | 产品线策略、废弃策略与验证矩阵       |
+| [docs/governance.md](./governance.md)                             | AI-native governance control plane   |
+| [docs/architecture.md](./architecture.md)                         | 多运行时架构、隔离原则与 Web runtime |
+| [docs/ai-workspace.md](./ai-workspace.md)                         | AI workspace governance 和编排流     |
+| [docs/runtime/web-runtime.md](./runtime/web-runtime.md)           | Web runtime contract                 |
+| [docs/runtime/desktop-runtime.md](./runtime/desktop-runtime.md)   | Desktop runtime contract             |
+| [docs/runtime/portable-runtime.md](./runtime/portable-runtime.md) | Portable runtime contract            |
+| [docs/codex/quickstart.md](./codex/quickstart.md)                 | Codex 日常操作与低 token 工作流      |
 
 这样产品架构、AI 治理和交付系统都能被单独阅读，又能拼成完整系统。

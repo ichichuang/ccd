@@ -26,6 +26,31 @@
     "For desktop/Tauri-scoped changes on desktop-version or direct desktop bridge paths, run pnpm sync:desktop-config, then pnpm drift-check.",
     "Keep user-facing pages within Lighthouse 90+ budgets unless the task explicitly says otherwise."
   ],
+  "protocolVersions": {
+    "protocolVersion": "1.0.0",
+    "manifestVersion": "1.0.0",
+    "adapterVersion": "1.0.0",
+    "governanceVersion": "1.0.0",
+    "governanceBaselineVersion": "2026.05-main-governance.1",
+    "runtimeProfileSchemaVersion": "1.0.0",
+    "routerSchemaVersion": "1.0.0"
+  },
+  "adapterMetadata": {
+    "Codex": {
+      "capabilityMatrix": ["implementation", "routing", "browser", "github", "desktop"],
+      "compatibleProtocolVersion": "1.0.0",
+      "compatibleAdapterVersion": "1.0.0",
+      "projectionRules": ["AGENTS-first", "skill-routing-enabled"],
+      "validationHooks": ["pnpm ai:sync", "pnpm adapters:validate"]
+    },
+    "Claude": {
+      "capabilityMatrix": ["implementation", "architecture", "planning", "governance"],
+      "compatibleProtocolVersion": "1.0.0",
+      "compatibleAdapterVersion": "1.0.0",
+      "projectionRules": ["CLAUDE-pointer-to-AGENTS", "shared-entrypoint"],
+      "validationHooks": ["pnpm ai:sync", "pnpm adapters:validate"]
+    }
+  },
   "coreMandate": [
     ".ai/** is the only source of truth.",
     "Adapter paths (AGENTS.md, CLAUDE.md) are generated compatibility entrypoints only.",
@@ -56,9 +81,16 @@
     ],
     "healthCommands": [
       "pnpm ai:doctor",
+      "pnpm env:doctor",
+      "pnpm runtime:env",
+      "pnpm runtime:env:strict",
+      "pnpm runtime:exec",
+      "pnpm runtime:exec:strict",
       "pnpm ai:guard",
       "pnpm ai:scaffold:view-route -- --segment <segment> --title-key <i18n.key> --kind <table|form|detail>",
+      "pnpm arch:check:fast",
       "pnpm arch:check",
+      "pnpm arch:check:full",
       "pnpm ai:sync",
       "pnpm ai:sync:codex",
       "pnpm codex:preflight"
@@ -71,6 +103,15 @@
       "AGENTS.md remains the shared generated entrypoint from .ai/protocol/AI.entry.md."
     ],
     "entrypoint": "AGENTS.md",
-    "healthCommands": ["pnpm ai:sync", "pnpm ai:doctor"]
+    "healthCommands": [
+      "pnpm arch:check",
+      "pnpm ai:sync",
+      "pnpm ai:doctor",
+      "pnpm env:doctor",
+      "pnpm runtime:env",
+      "pnpm runtime:env:strict",
+      "pnpm runtime:exec",
+      "pnpm runtime:exec:strict"
+    ]
   }
 }

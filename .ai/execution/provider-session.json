@@ -1,0 +1,7 @@
+{
+  "provider": "remote-moacode",
+  "configProvider": "apirouter",
+  "expectedTransport": "apirouter",
+  "canonicalSource": "/Users/cc/AI-Research-OS/AI_CONTEXT.md",
+  "timestamp": "2026-05-18T02:16:00.225Z"
+}

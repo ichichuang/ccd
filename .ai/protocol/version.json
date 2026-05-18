@@ -1,0 +1,9 @@
+{
+  "protocolVersion": "1.0.0",
+  "manifestVersion": "1.0.0",
+  "adapterVersion": "1.0.0",
+  "governanceVersion": "1.0.0",
+  "governanceBaselineVersion": "2026.05-main-governance.1",
+  "runtimeProfileSchemaVersion": "1.0.0",
+  "routerSchemaVersion": "1.0.0"
+}

@@ -86,6 +86,21 @@ Policy:
 - Prefer machine-readable summaries and route manifests before opening large reference trees.
 - Apply in sequence: rules -> implementation skills -> delivery/testing skills.
 
+## 3.5) Protocol Versioning
+
+Canonical version contract:
+
+- `.ai/protocol/version.json`
+- adapters must declare compatible protocol and adapter versions
+- incompatible protocol projections must fail validation before execution
+- migrations live under `.ai/migrations/**`
+
+Validation commands:
+
+- `pnpm protocol:migrate`
+- `pnpm adapters:validate`
+- `pnpm governance:validate`
+
 ## 4) Mandatory Workflow
 
 1. Understand requirement and map touched modules.
@@ -103,8 +118,15 @@ Run when relevant:
 
 - `pnpm ai:guard`
 - `pnpm ai:doctor`
+- `pnpm env:doctor`
+- `pnpm runtime:env`
+- `pnpm runtime:env:strict`
+- `pnpm runtime:exec`
+- `pnpm runtime:exec:strict`
 - `pnpm codex:preflight`
+- `pnpm arch:check:fast` for quick architecture feedback
 - `pnpm arch:check` for one-shot architecture sync and validation
+- `pnpm arch:check:full` for PR/release local gates
 - `pnpm type-check`
 - `pnpm lint:check`
 - `pnpm test:run`

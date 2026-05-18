@@ -23,7 +23,14 @@ CCD currently uses three sibling delivery branches:
 - Runtime templates: `.ai/runtime/*.template.txt`
 - Manifests/locks: `.ai/manifests/**`
 
-## Compatibility Adapters
+## Governance Generation
+
+Generated governance outputs:
+
+- `.ai/generated/**` -> machine-readable governance, compatibility, and drift outputs
+- `docs/generated/**` -> generated reports and Mermaid diagrams
+- `.ai/orchestration/**` -> declarative agent roles, scopes, permissions, and routing constraints
+- `.ai/migrations/**` -> protocol evolution assets
 
 The following are generated compatibility adapters for supported AI tools:
 
@@ -116,7 +123,12 @@ Browser automation intentionally writes compact summaries and optional evidence 
 - Generate adapters: `pnpm ai:sync`
 - Install local Codex skills: `pnpm ai:sync:codex`
 - One-shot Codex setup: `pnpm ai:setup:codex`
+- Validate command runtime: `pnpm env:doctor`
+- Verify deterministic runtime wrapper: `pnpm runtime:env`
+- Strict runtime migration gate: `pnpm runtime:env:strict`
+- Quick architecture check: `pnpm arch:check:fast`
 - One-shot architecture check: `pnpm arch:check`
+- Full architecture gate: `pnpm arch:check:full`
 - Clean local AI/browser runtime residue: `pnpm ai:clean`
 - Aggressive cleanup when needed: `pnpm ai:clean -- --all`
 - Validate structure: `pnpm ai:doctor` (runs `ai:guard` and `validate:tokens`)
@@ -134,3 +146,5 @@ Recommended maintenance order:
 ```bash
 pnpm arch:check
 ```
+
+Governance reference: [docs/governance.md](../docs/governance.md).

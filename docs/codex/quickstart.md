@@ -38,6 +38,23 @@ For day-to-day architecture validation, use the one-shot command:
 pnpm arch:check
 ```
 
+Use `pnpm arch:check:fast` for quick local feedback and `pnpm arch:check:full` before PR or release gates.
+
+Extended governance commands:
+
+```bash
+pnpm arch:snapshot
+pnpm arch:report
+pnpm arch:visualize
+pnpm env:doctor
+pnpm runtime:env
+pnpm runtime:env:strict
+pnpm governance:validate
+pnpm protocol:migrate
+pnpm adapters:validate
+pnpm orchestration:validate
+```
+
 ## 2) Recommended Codex Run Modes
 
 Default for daily development:
@@ -75,6 +92,12 @@ codex --profile yolo
 - Work on `desktop-version` for Tauri v2 runtime, desktop bridge, capabilities, release metadata, and desktop validation.
 - Work on `main-portable-version` for portable starter cleanup and removal of example/demo residue.
 - Do not use `feat/tauri-integration` as a merge target or desktop rebuild baseline.
+
+Runtime references:
+
+- `docs/runtime/web-runtime.md`
+- `docs/runtime/desktop-runtime.md`
+- `docs/runtime/portable-runtime.md`
 
 ## 4) Low-Token Skill Routing
 
