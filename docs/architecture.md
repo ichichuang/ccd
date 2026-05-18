@@ -1,8 +1,27 @@
 # Multi-Runtime Architecture
 
-CCD 是 AI-governed frontend architecture platform。它的核心已经从单一前端模板升级为多运行时产品体系：`main` 承载 Web Runtime，`desktop-version` 承载 Tauri Desktop Runtime，`main-portable-version` 承载 Clean Portable Architecture Template。
+CCD 是 AI-governed frontend architecture platform。它的核心已经从单一前端模板升级为 core-first 多运行时产品体系：`main` 承载共享 core/Web governance baseline，`desktop-version` 承载 Tauri Desktop Runtime，`main-portable-version` 承载 Clean Portable Runtime。
 
-若你只想跑起来项目，请先看仓库根目录的 [README](../README.md)。分支边界见 [Product Line Strategy](./branch-model.md)，治理系统见 [Governance](./governance.md)。
+若你只想跑起来项目，请先看仓库根目录的 [README](../README.md)。分支边界见 [Product Line Strategy](./governance/product-lines.md)，治理系统见 [Governance](./governance.md)。
+
+---
+
+## Core-First Repository Topology
+
+CCD 的目标拓扑是 core-first，而不是 main-centric：
+
+```text
+core contracts
+  -> Web runtime on main
+  -> desktop-version composition
+  -> main-portable-version composition
+```
+
+Core owns system contracts only: runtime governance, provider contracts, routing contracts, transport contracts, execution pipeline contracts, token/cache contracts, UI-system base contracts, and adapter interfaces.
+
+Runtime lanes may depend on shared core contracts; core must not depend on examples, desktop APIs, or portable host state.
+
+Branch topology is documented in [Branch Model](./governance/branch-model.md).
 
 ---
 
@@ -463,7 +482,7 @@ CCD 的浏览器链路已经升级为：
 - `AGENTS.md`、`CLAUDE.md`、`.ai/manifests/skills-lock.json` 自动同步一致性检查
 - 运行时与治理层漂移分离审计
 
-这意味着交付链路不再依赖旧 `feat/tauri-integration` 分支，而是把 Web 主线、桌面重建线和便携底座线分开治理。
+这意味着交付链路按 Web 主线、桌面重建线和便携底座线分开治理。
 
 ---
 
@@ -474,7 +493,7 @@ CCD 的文档现在也按架构层次组织，而不是只有一个 README。
 | 文档                                                              | 定位                                 |
 | ----------------------------------------------------------------- | ------------------------------------ |
 | [README.md](../README.md)                                         | 对外入口与项目导航                   |
-| [docs/branch-model.md](./branch-model.md)                         | 产品线策略、废弃策略与验证矩阵       |
+| [docs/governance/product-lines.md](./governance/product-lines.md) | 产品线策略、分支边界与验证矩阵       |
 | [docs/governance.md](./governance.md)                             | AI-native governance control plane   |
 | [docs/architecture.md](./architecture.md)                         | 多运行时架构、隔离原则与 Web runtime |
 | [docs/ai-workspace.md](./ai-workspace.md)                         | AI workspace governance 和编排流     |

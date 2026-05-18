@@ -13,7 +13,7 @@
 [![pnpm](https://img.shields.io/badge/pnpm-10-f69220?style=flat-square&logo=pnpm&logoColor=white)](https://pnpm.io/)
 [![License: GPL v3](https://img.shields.io/badge/License-GPL_v3-blue?style=flat-square)](./LICENSE)
 
-[Architecture](./docs/architecture.md) · [Product Lines](./docs/branch-model.md) · [Governance](./docs/governance.md) · [Runtime Isolation](./docs/runtime/runtime-isolation.md) · [AI Workspace](./docs/ai-workspace.md) · [Codex](./docs/codex/quickstart.md)
+[Docs](./docs/README.md) · [Architecture](./docs/architecture.md) · [Branch Model](./docs/governance/branch-model.md) · [Product Lines](./docs/governance/product-lines.md) · [Governance](./docs/governance.md) · [Runtime Isolation](./docs/runtime/runtime-isolation.md) · [Codex](./docs/codex/quickstart.md)
 
 </div>
 
@@ -21,20 +21,16 @@
 
 ## Project Positioning
 
-CCD is an AI-first frontend architecture platform for long-lived Vue 3 product systems. It is no longer a single template repository with an experimental desktop branch; it is a three-line product architecture:
+CCD is an AI-first frontend architecture platform for long-lived Vue 3 product systems. It is no longer a single template repository with an experimental desktop branch; it is a core-first, three-line product architecture:
 
 ```text
 CCD
-├── main                  -> Web Application Runtime
+├── main                  -> Core/Web governance baseline
 ├── desktop-version       -> Tauri Desktop Runtime
-└── main-portable-version -> Clean Portable Architecture Template
+└── main-portable-version -> Clean Portable Runtime
 ```
 
-The `main` branch is the stable Web runtime and architecture source. `desktop-version` rebuilds the desktop runtime from the optimized `main` baseline with Tauri v2. `main-portable-version` is the clean scaffold for new products, stripped of demo pollution and unnecessary runtime residue.
-
-The previous experimental branch `feat/tauri-integration` has been deprecated. Desktop architecture is now rebuilt from scratch on the dedicated `desktop-version` branch.
-
----
+The `main` branch is the protected core/Web governance baseline. `desktop-version` rebuilds the desktop runtime from the optimized `main` baseline with Tauri v2. `main-portable-version` is the clean scaffold for new products, stripped of demo pollution and unnecessary runtime residue.
 
 ## Branch Matrix
 
@@ -49,9 +45,8 @@ Hard boundaries:
 - Web runtime changes and shared architecture work land on `main`.
 - Tauri shell, IPC, capabilities, desktop release metadata, and desktop validation land on `desktop-version`.
 - Template cleanup, demo removal, and portable scaffold defaults land on `main-portable-version`.
-- `feat/tauri-integration` is historical only and must not be used as a merge target or rebuild baseline.
 
-Details: [Product Line Strategy](./docs/branch-model.md).
+Details: [Core Branch Model](./docs/governance/product-lines.md).
 
 ---
 
@@ -149,7 +144,7 @@ pnpm test:run
 | Document                                                               | Role                                                  |
 | ---------------------------------------------------------------------- | ----------------------------------------------------- |
 | [docs/architecture.md](./docs/architecture.md)                         | Multi-runtime architecture and runtime isolation laws |
-| [docs/branch-model.md](./docs/branch-model.md)                         | Product line strategy and deprecation policy          |
+| [docs/governance/product-lines.md](./docs/governance/product-lines.md) | Core branch model and obsolete branch cleanup         |
 | [docs/governance.md](./docs/governance.md)                             | AI-native governance system and command tiers         |
 | [docs/ai-workspace.md](./docs/ai-workspace.md)                         | AI workspace governance and orchestration flow        |
 | [docs/runtime/web-runtime.md](./docs/runtime/web-runtime.md)           | `main` Web runtime contract                           |

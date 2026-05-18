@@ -1,6 +1,6 @@
 # Stable Governance Baseline
 
-`main` is the canonical governance baseline for CCD multi-runtime migration.
+`main` is the canonical governance baseline for CCD multi-runtime migration. It is the default core/Web branch, not the source of runtime-specific desktop or portable policy.
 
 ## Baseline Versions
 
@@ -58,7 +58,7 @@
 
 | Branch                  | Contract                                                |
 | ----------------------- | ------------------------------------------------------- |
-| `main`                  | frozen canonical governance baseline                    |
+| `main`                  | frozen canonical core/Web governance baseline           |
 | `desktop-version`       | profile-driven desktop migration, no governance fork    |
 | `main-portable-version` | isolated portable migration, no machine-runtime leakage |
 
