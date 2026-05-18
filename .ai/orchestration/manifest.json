@@ -4,21 +4,27 @@
     {
       "id": "architect-governance",
       "name": "Architecture Governance Agent",
-      "scope": [".ai/**", "docs/**", "scripts/**", "package.json"],
+      "scope": [".ai/**", "docs/**", "scripts/**", "package.json", "packages/ccd-core/**"],
       "permissions": ["generate", "validate", "report", "repair"],
       "routes": ["ai-protocol", "runtime-isolation", "governance-automation"]
     },
     {
       "id": "frontend-runtime",
       "name": "Frontend Runtime Agent",
-      "scope": ["src/**", "build/**", "e2e/**"],
+      "scope": ["src/**", "build/**", "e2e/**", "apps/**"],
       "permissions": ["implement", "validate"],
       "routes": ["core-vue", "core-unocss", "core-vueuse", "browser-validation"]
     },
     {
       "id": "desktop-runtime",
       "name": "Desktop Runtime Agent",
-      "scope": ["src-tauri/**", "scripts/sync-desktop-config.mjs", "docs/runtime/**"],
+      "scope": [
+        "src-tauri/**",
+        "packages/runtime-desktop/**",
+        "packages/runtime-portable/**",
+        "scripts/sync-desktop-config.mjs",
+        "docs/runtime/**"
+      ],
       "permissions": ["implement", "validate", "repair"],
       "routes": ["desktop-tauri"]
     }

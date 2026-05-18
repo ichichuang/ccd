@@ -127,6 +127,19 @@ const approvedDirectTransportFiles = new Set([
   'src/router/utils/helper.ts',
 ])
 
+const approvedCoreFirstGovernanceFiles = new Set([
+  'docs/architecture/stable-baseline.md',
+  'docs/governance.md',
+  'docs/branch-model.md',
+  'docs/runtime/runtime-isolation.md',
+  '.ai/protocol/AGENTS.core.md',
+  '.ai/protocol/AI.entry.md',
+  '.ai/rules/core/00-global-architect.mdc',
+  '.ai/rules/core/00-root-gatekeeper.mdc',
+  '.ai/rules/core/01-global-preflight.mdc',
+  '.ai/rules/core/10-ai-generation-workflow.mdc',
+])
+
 const isGlobAllowed = (relPath, patterns) =>
   patterns.some(pattern => {
     if (pattern.endsWith('/**')) {
@@ -428,6 +441,18 @@ for (const relPath of designSystemFiles) {
   }
   if (!approvedRawZIndexFiles.has(relPath) && /\bz-index\s*:|\bz-\[(?:\d+)/.test(content)) {
     fail('unocss-raw-z-index', relPath, 'raw z-index values are forbidden outside documented infrastructure exceptions')
+  }
+}
+
+const governanceDocFiles = scanFiles(['docs/**/*.md', '.ai/**/*.md', '.ai/**/*.mdc'], { dot: true })
+for (const relPath of governanceDocFiles) {
+  if (!approvedCoreFirstGovernanceFiles.has(relPath)) continue
+  const content = stripJsComments(readText(relPath))
+  if (/core-first optimization/i.test(content) && !/main/.test(content)) {
+    fail('core-first-governance-missing-main', relPath, 'core-first optimization docs must anchor the shared freeze on main')
+  }
+  if (/profile-driven desktop migration/i.test(content) && !/runtime profile/i.test(content)) {
+    fail('core-first-governance-missing-profile', relPath, 'desktop migration docs must reference runtime profile gating')
   }
 }
 

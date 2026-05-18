@@ -4,6 +4,7 @@ CCD treats AI governance as a first-class architecture layer. The governance sys
 
 Canonical baseline contracts are frozen in `docs/architecture/stable-baseline.md`.
 Codex execute-path reliability contracts are defined in `docs/runtime/execute-reliability.md`.
+Core-first optimization rule: stabilize and validate shared governance on `main` before expanding desktop or portable runtime deltas.
 
 ## Governance Stack
 
@@ -84,6 +85,8 @@ git diff --check
 - Keep generated adapter changes reviewable and committed when canonical sources change.
 - Do not manually maintain `AGENTS.md`, `CLAUDE.md`, or `~/.codex/skills/**`.
 - Do not weaken architecture rules to pass a local change; fix the violating surface or record an explicit architecture decision.
+- Prefer core-first optimization: governance, baseline, and runtime contract updates must land before feature-surface refactors.
+- Keep governance boundary changes minimal: only widen shared rules when a runtime contract cannot express the constraint.
 
 ## Product Line Integration
 
@@ -92,3 +95,10 @@ git diff --check
 | `main`                  | full governance system, full examples, full architecture docs                     |
 | `desktop-version`       | full governance plus desktop branch guardrails and Tauri drift checks             |
 | `main-portable-version` | minimal but functional governance, no example-specific residue unless intentional |
+
+## Core-First Optimization Gate
+
+- Freeze shared governance on `main` first.
+- Allow `desktop-version` only for runtime-profile-gated desktop deltas.
+- Allow `main-portable-version` only for portable cleanup that preserves the governance contract.
+- Do not introduce branch-specific governance logic without explicit runtime profile metadata.

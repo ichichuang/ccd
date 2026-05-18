@@ -111,7 +111,11 @@
     "codex:cache:purge": "node scripts/runtime/cache-governance.mjs purge",
     "codex:cache:fingerprint": "node scripts/runtime/cache-governance.mjs fingerprint",
     "codex:transport:validate": "node scripts/runtime/provider-transport-validate.mjs",
-    "codex:exec": "node scripts/runtime/codex-exec-wrapper.mjs"
+    "codex:exec": "node scripts/runtime/codex-exec-wrapper.mjs",
+    "worktree:init": "node scripts/worktree/init.mjs",
+    "governance:snapshot": "node scripts/governance/snapshot.mjs",
+    "governance:verify": "node scripts/governance/verify.mjs",
+    "governance:ci": "node scripts/governance/ci.mjs"
   },
   "config": {
     "commitizen": {

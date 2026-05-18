@@ -1,6 +1,7 @@
 # Stable Governance Baseline
 
 `main` is the canonical governance baseline for CCD multi-runtime migration.
+This is the core-first optimization SSOT: shared governance freezes on `main` first, then branch-specific runtime profiles diverge only where explicitly allowed.
 
 ## Baseline Versions
 

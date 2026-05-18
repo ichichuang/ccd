@@ -1,15 +1,25 @@
 #!/usr/bin/env sh
 set -e
 
-echo "🏛️  Running Enterprise Guardian: Architecture Doctor..."
+repair_hint='Run: pnpm worktree:init'
+
+require_path() {
+  if [ ! -e "$1" ]; then
+    echo "[hook] missing required generated/runtime asset: $1"
+    echo "[hook] $repair_hint"
+    exit 1
+  fi
+}
+
+require_path AGENTS.md
+require_path CLAUDE.md
+require_path .ai/runtime/repair_list.txt
+require_path .ai/governance-snapshot.json
+
+echo "Running governance gate..."
+pnpm governance:verify
 pnpm ai:doctor
-
-echo "🛡️  Running Enterprise Guardian: TypeScript Check..."
-pnpm type-check
-
-echo "🔍 Running Enterprise Guardian: Drift Check..."
 pnpm drift-check
-
 pnpm lint:staged:safe
 
-echo "✅ 本地检查通过，准备提交..."
+echo "Local governance checks passed."

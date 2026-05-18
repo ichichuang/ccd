@@ -23,6 +23,17 @@ Hard rules:
 - Shared abstractions must be portable unless their branch contract says otherwise.
 - Runtime-specific code must not weaken `.ai/**` governance or generated adapter validation.
 
+## Core-First Optimization Plan
+
+Repository architecture changes must follow a core-first order:
+
+1. Update canonical governance and baseline sources first: `.ai/**`, `docs/architecture/stable-baseline.md`, `docs/governance.md`.
+2. Align runtime contracts next: `docs/runtime/**`, then shared runtime modules under `src/sync/**`, `src/router/**`, `src/hooks/**`, and `src/stores/**`.
+3. Apply product-surface changes last: layouts, components, and views.
+4. Treat `AGENTS.md`, `CLAUDE.md`, and `docs/generated/**` as mirrors only.
+5. Keep branch-specific runtime deltas inside the owning branch contract instead of widening shared governance boundaries.
+6. Validate the result with `pnpm governance:validate` before `pnpm arch:check`.
+
 Runtime contracts:
 
 - [Runtime Isolation](./runtime/runtime-isolation.md)

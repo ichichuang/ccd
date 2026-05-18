@@ -23,6 +23,7 @@
     "commitlint.config.ts",
     "build/**/*",
     "scripts/**/*.ts",
+    "packages/ccd-core/src/**/*.ts",
 
     // ✅ Node 侧需要的全局类型声明
     "src/types/**/*.d.ts",
