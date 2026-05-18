@@ -11,7 +11,7 @@ If you only need the product entrypoint, read [README.md](../README.md). If you 
 | Document                                                          | Purpose                                                          |
 | ----------------------------------------------------------------- | ---------------------------------------------------------------- |
 | [README.md](../README.md)                                         | Product matrix and architecture entrypoint                       |
-| [docs/branch-model.md](./branch-model.md)                         | Product line strategy and runtime separation                     |
+| [docs/governance/product-lines.md](./governance/product-lines.md) | Product line strategy and runtime separation                     |
 | [docs/architecture.md](./architecture.md)                         | Multi-runtime architecture and isolation principles              |
 | [docs/governance.md](./governance.md)                             | AI-native governance system and command tiers                    |
 | [docs/ai-workspace.md](./ai-workspace.md)                         | AI workspace governance, generated artifacts, browser automation |

@@ -5,7 +5,7 @@ This guide is for CCD architecture projects only.
 Read this together with:
 
 - `README.md`
-- `docs/branch-model.md`
+- `docs/governance/product-lines.md`
 - `docs/architecture.md`
 - `docs/ai-workspace.md`
 - `.ai/README.md`
