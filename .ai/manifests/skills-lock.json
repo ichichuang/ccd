@@ -26,7 +26,7 @@
       "syncTargets": [
         "codex"
       ],
-      "computedHash": "1d8be046d9269b3f322c71641007e3112193fe6214147d997be776594eda4c12"
+      "computedHash": "643fe0ed8a40e64fef4cbf7ff5ea7b9b9a54d62dd52b8b042274ada263aefc4c"
     },
     "skill-routing": {
       "source": "repo:.ai/manifests/skill-routing.json",
