@@ -88,10 +88,10 @@ codex --profile yolo
 
 ## 3.5) Branch Routing
 
-- Work on `main` for shared Web architecture, examples, AI governance, and demo delivery.
+- Work on `main` for shared core/Web architecture, governance, and browser-first delivery.
 - Work on `desktop-version` for Tauri v2 runtime, desktop bridge, capabilities, release metadata, and desktop validation.
 - Work on `main-portable-version` for portable starter cleanup and removal of example/demo residue.
-- Do not use `feat/tauri-integration` as a merge target or desktop rebuild baseline.
+- Use only `main`, `desktop-version`, and `main-portable-version` as active branch lanes.
 
 Runtime references:
 

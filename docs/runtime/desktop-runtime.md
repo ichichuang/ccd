@@ -12,7 +12,7 @@ The `desktop-version` branch is CCD's Tauri v2 desktop product line.
 
 ## Boundaries
 
-- Do not continue development on `feat/tauri-integration`.
+- Use `desktop-version` as the only active desktop runtime lane.
 - Do not move desktop-only runtime assumptions back into `main`.
 - Do not call Tauri APIs directly from business modules when a bridge helper exists.
 - Keep `isTauri()` branching and Web fallback behavior together for shared features.

@@ -1,12 +1,12 @@
 # CCD Documentation Index
 
-CCD documentation is organized around the core-first architecture model. Start here, then follow the runtime or governance lane that matches the work.
+CCD documentation is organized around the core-first architecture model.
 
 ## Canonical Reading Order
 
-1. [Architecture](./architecture.md) — core-first topology, runtime boundaries, and Web runtime architecture.
+1. [Architecture](./architecture.md) — system-level topology and runtime boundaries.
 2. [Governance](./governance.md) — governance kernel, validation gates, and generated artifacts.
-3. [Core Branch Model](./governance/product-lines.md) — default core branch, runtime lanes, and cleanup policy.
+3. [Core Branch Policy](./governance/product-lines.md) — default core branch, runtime lanes, and strict minimal branch policy.
 4. [Stable Baseline](./architecture/stable-baseline.md) — frozen governance baseline and snapshot contract.
 5. Runtime contract for the target surface:
    - [Web Runtime](./runtime/web-runtime.md)
@@ -15,13 +15,12 @@ CCD documentation is organized around the core-first architecture model. Start h
 
 ## Documentation Map
 
-| Area         | Documents                                                                                                                                                                                                        | Source of Truth                                    |
-| ------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------- |
-| Architecture | [architecture.md](./architecture.md), [stable-baseline.md](./architecture/stable-baseline.md)                                                                                                                    | `.ai/**`, runtime contracts                        |
-| Governance   | [governance.md](./governance.md), [adapter architecture](./governance/adapter-architecture.md), [AI orchestration](./governance/ai-orchestration.md), [protocol versioning](./governance/protocol-versioning.md) | `.ai/**`, `scripts/governance/**`                  |
-| Branching    | [product-lines.md](./governance/product-lines.md), [branch-model.md](./governance/branch-model.md)                                                                                                               | GitHub default branch plus active runtime branches |
-| Runtime      | [runtime isolation](./runtime/runtime-isolation.md), [web](./runtime/web-runtime.md), [desktop](./runtime/desktop-runtime.md), [portable](./runtime/portable-runtime.md)                                         | runtime branches + app/runtime contracts           |
-| Operations   | [Codex quickstart](./codex/quickstart.md), [DX contracts](./codex/dx-contracts.md), [AI workspace](./ai-workspace.md)                                                                                            | local workspace + `.ai/protocol/**`                |
+| Area         | Documents                                                                                                                                                                                                                                                             | Source of Truth                          |
+| ------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------- |
+| Architecture | [architecture.md](./architecture.md), [stable-baseline.md](./architecture/stable-baseline.md)                                                                                                                                                                         | `.ai/**`, runtime contracts              |
+| Governance   | [governance.md](./governance.md), [adapter architecture](./governance/adapter-architecture.md), [AI orchestration](./governance/ai-orchestration.md), [protocol versioning](./governance/protocol-versioning.md), [core branch policy](./governance/product-lines.md) | `.ai/**`, `scripts/governance/**`        |
+| Runtime      | [runtime isolation](./runtime/runtime-isolation.md), [web](./runtime/web-runtime.md), [desktop](./runtime/desktop-runtime.md), [portable](./runtime/portable-runtime.md)                                                                                              | runtime branches + app/runtime contracts |
+| Operations   | [Codex quickstart](./codex/quickstart.md), [DX contracts](./codex/dx-contracts.md), [AI workspace](./ai-workspace.md)                                                                                                                                                 | local workspace + `.ai/protocol/**`      |
 
 ## Generated Outputs
 

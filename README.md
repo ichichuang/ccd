@@ -13,7 +13,7 @@
 [![pnpm](https://img.shields.io/badge/pnpm-10-f69220?style=flat-square&logo=pnpm&logoColor=white)](https://pnpm.io/)
 [![License: GPL v3](https://img.shields.io/badge/License-GPL_v3-blue?style=flat-square)](./LICENSE)
 
-[Docs](./docs/README.md) · [Architecture](./docs/architecture.md) · [Branch Model](./docs/governance/branch-model.md) · [Product Lines](./docs/governance/product-lines.md) · [Governance](./docs/governance.md) · [Runtime Isolation](./docs/runtime/runtime-isolation.md) · [Codex](./docs/codex/quickstart.md)
+[Docs](./docs/README.md)
 
 </div>
 
@@ -21,7 +21,7 @@
 
 ## Project Positioning
 
-CCD is an AI-first frontend architecture platform for long-lived Vue 3 product systems. It is no longer a single template repository with an experimental desktop branch; it is a core-first, three-line product architecture:
+CCD is an AI-first frontend architecture platform for long-lived Vue 3 product systems. It uses a core-first documentation and governance model with three active runtime branches:
 
 ```text
 CCD
@@ -30,23 +30,9 @@ CCD
 └── main-portable-version -> Clean Portable Runtime
 ```
 
-The `main` branch is the protected core/Web governance baseline. `desktop-version` rebuilds the desktop runtime from the optimized `main` baseline with Tauri v2. `main-portable-version` is the clean scaffold for new products, stripped of demo pollution and unnecessary runtime residue.
+The `main` branch is the protected core/Web governance baseline. `desktop-version` and `main-portable-version` are the only active runtime lanes. Historical experimental branches are not active policy inputs.
 
-## Branch Matrix
-
-| Branch                  | Purpose                                | Stability       | Primary Runtime                         |
-| ----------------------- | -------------------------------------- | --------------- | --------------------------------------- |
-| `main`                  | Production web architecture            | Stable          | Browser-first Vue 3 application runtime |
-| `desktop-version`       | Tauri desktop runtime                  | Active          | Native shell + WebView + Tauri IPC      |
-| `main-portable-version` | Minimal reusable architecture scaffold | Stable Template | Clean project bootstrap                 |
-
-Hard boundaries:
-
-- Web runtime changes and shared architecture work land on `main`.
-- Tauri shell, IPC, capabilities, desktop release metadata, and desktop validation land on `desktop-version`.
-- Template cleanup, demo removal, and portable scaffold defaults land on `main-portable-version`.
-
-Details: [Core Branch Model](./docs/governance/product-lines.md).
+Details: [Docs](./docs/README.md)
 
 ---
 
@@ -135,48 +121,6 @@ pnpm arch:check
 pnpm type-check
 pnpm lint:check
 pnpm test:run
-```
-
----
-
-## Documentation System
-
-| Document                                                               | Role                                                  |
-| ---------------------------------------------------------------------- | ----------------------------------------------------- |
-| [docs/architecture.md](./docs/architecture.md)                         | Multi-runtime architecture and runtime isolation laws |
-| [docs/governance/product-lines.md](./docs/governance/product-lines.md) | Core branch model and obsolete branch cleanup         |
-| [docs/governance.md](./docs/governance.md)                             | AI-native governance system and command tiers         |
-| [docs/ai-workspace.md](./docs/ai-workspace.md)                         | AI workspace governance and orchestration flow        |
-| [docs/runtime/web-runtime.md](./docs/runtime/web-runtime.md)           | `main` Web runtime contract                           |
-| [docs/runtime/desktop-runtime.md](./docs/runtime/desktop-runtime.md)   | `desktop-version` desktop runtime contract            |
-| [docs/runtime/portable-runtime.md](./docs/runtime/portable-runtime.md) | `main-portable-version` portable scaffold             |
-| [docs/codex/quickstart.md](./docs/codex/quickstart.md)                 | Codex collaboration entrypoint                        |
-| [.ai/README.md](./.ai/README.md)                                       | Canonical AI workspace standard                       |
-
----
-
-## Contribution Gate
-
-Before opening a PR, run:
-
-```bash
-pnpm arch:check
-pnpm type-check
-pnpm lint:check
-pnpm test:run
-```
-
-For release or CI-grade local verification:
-
-```bash
-pnpm arch:check:full
-```
-
-Desktop/Tauri changes on `desktop-version` additionally require:
-
-```bash
-pnpm sync:desktop-config
-pnpm check:drift
 ```
 
 ---

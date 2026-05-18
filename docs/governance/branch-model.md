@@ -1,7 +1,5 @@
 # Branch Model
 
-Compatibility alias for the active branch model.
+Compatibility alias removed.
 
-- Canonical document: [docs/governance/product-lines.md](./product-lines.md)
-- Default core branch: `main`
-- Active runtime lanes: `desktop-version`, `main-portable-version`
+The canonical branch policy lives in [Core Branch Policy](./product-lines.md).

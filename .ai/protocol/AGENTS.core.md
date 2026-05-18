@@ -138,7 +138,7 @@ For UI-critical changes, prefer Playwright CLI plus `.ai/skills/codex/architectu
 
 - Current repo truth: Vue 3, TypeScript, Vite, UnoCSS, PrimeVue, Pinia, Alova, Vitest, and Playwright.
 - Branch truth: `main` is the full Web architecture source, `desktop-version` is the Tauri v2 desktop rebuild line, and `main-portable-version` is the clean portable starter.
-- `feat/tauri-integration` is retired and must not be used as a merge baseline.
+- Only `main`, `desktop-version`, and `main-portable-version` are active governance branches.
 - Preserve existing repository patterns before introducing React or Tailwind-specific abstractions.
 - Keep performance work measurable and bias toward Lighthouse 90+ for user-facing routes.
 

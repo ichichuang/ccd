@@ -21,7 +21,7 @@ Core owns system contracts only: runtime governance, provider contracts, routing
 
 Runtime lanes may depend on shared core contracts; core must not depend on examples, desktop APIs, or portable host state.
 
-Branch topology is documented in [Branch Model](./governance/branch-model.md).
+Branch topology is documented in [Core Branch Policy](./governance/product-lines.md).
 
 ---
 

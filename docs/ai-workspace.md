@@ -156,7 +156,6 @@ Aggressive cleanup can remove browser artifacts, `tmp/`, and Codex browser sessi
 - `main`: full Web architecture source with examples, docs, AI governance, and demo delivery.
 - `desktop-version`: Tauri v2 desktop rebuild line; desktop bridge and capability changes require desktop drift checks.
 - `main-portable-version`: clean portable starter; preserve `.ai/**` while pruning example-specific residue.
-- `feat/tauri-integration`: deprecated historical branch; do not use as a merge target or rebuild baseline.
 
 For architecture releases:
 
