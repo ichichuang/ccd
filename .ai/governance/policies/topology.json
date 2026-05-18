@@ -1,0 +1,64 @@
+{
+  "schemaVersion": 1,
+  "layers": ["contracts", "core", "apps"],
+  "releaseOrder": ["@ccd/contracts", "@ccd/core", "@ccd/web-demo", "@ccd/desktop"],
+  "packages": [
+    {
+      "name": "@ccd/contracts",
+      "path": "packages/contracts",
+      "layer": "contracts",
+      "criticality": "critical",
+      "allowedWorkspaceDependencies": [],
+      "publicApi": true
+    },
+    {
+      "name": "@ccd/core",
+      "path": "packages/core",
+      "layer": "core",
+      "criticality": "critical",
+      "allowedWorkspaceDependencies": ["@ccd/contracts"],
+      "publicApi": true,
+      "runtimeNeutral": true
+    },
+    {
+      "name": "@ccd/web-demo",
+      "path": "apps/web-demo",
+      "layer": "apps",
+      "criticality": "flexible",
+      "allowedWorkspaceDependencies": ["@ccd/contracts", "@ccd/core"],
+      "publicApi": true,
+      "runtime": "web"
+    },
+    {
+      "name": "@ccd/desktop",
+      "path": "apps/desktop",
+      "layer": "apps",
+      "criticality": "protected",
+      "allowedWorkspaceDependencies": ["@ccd/contracts", "@ccd/core"],
+      "publicApi": true,
+      "runtime": "desktop",
+      "adapterBoundary": "apps/desktop/src/adapters"
+    }
+  ],
+  "forbiddenRelationships": [
+    {
+      "from": "packages/**",
+      "to": "apps/**",
+      "reason": "Packages must not depend on runtime applications."
+    },
+    {
+      "from": "apps/**",
+      "to": "apps/**",
+      "reason": "Applications must not import one another."
+    },
+    {
+      "from": "**",
+      "to": "legacy/**",
+      "reason": "Legacy archive is read-only and outside active dependency graphs."
+    }
+  ],
+  "exportPolicy": {
+    "requireExplicitRootExport": true,
+    "forbidWorkspaceDeepImports": ["@ccd/core", "@ccd/contracts", "@ccd/web-demo", "@ccd/desktop"]
+  }
+}

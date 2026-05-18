@@ -1,0 +1,22 @@
+{
+  "package": "@ccd/core",
+  "path": "packages/core",
+  "exports": [
+    "."
+  ],
+  "rootSymbols": [
+    "CoreAdapters",
+    "CoreRuntime",
+    "createCoreRuntime",
+    "CryptoProvider",
+    "EnvironmentProvider",
+    "FileSystemAdapter",
+    "Logger",
+    "NetworkClient",
+    "NetworkRequest",
+    "NetworkResponse",
+    "ScheduledTask",
+    "Scheduler",
+    "StorageAdapter"
+  ]
+}
