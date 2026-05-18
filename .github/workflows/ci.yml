@@ -85,7 +85,7 @@ jobs:
         run: pnpm lint:check
 
       - name: Production Build Test
-        run: turbo run build
+        run: pnpm exec turbo run build
 
       - name: Desktop Bundle Guard
         run: |
