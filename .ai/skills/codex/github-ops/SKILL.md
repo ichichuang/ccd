@@ -9,7 +9,7 @@ Use the `gh` CLI to interact with GitHub, but start by reading the local repo co
 
 ## Workflow
 
-1. Run `python3 scripts/github_context.py` from the repo root.
+1. Run `python3 .ai/skills/codex/github-ops/scripts/github_context.py` from the repo root.
 2. Inspect `.github/**`, git remotes, and the current branch before acting.
 3. Use `gh` for PRs, issues, runs, releases, and API queries.
 4. Prefer structured output with `--json` and `--jq`.
@@ -55,7 +55,7 @@ gh run view <run-id> --repo owner/repo --log-failed
 Read local repo GitHub context first:
 
 ```bash
-python3 scripts/github_context.py
+python3 .ai/skills/codex/github-ops/scripts/github_context.py
 ```
 
 Typical files to inspect:
@@ -65,6 +65,13 @@ Typical files to inspect:
 - `.github/ISSUE_TEMPLATE/**`
 - `.github/PULL_REQUEST_TEMPLATE*`
 - `.github/dependabot.yml`
+
+Current CCD governance notes:
+
+- CI architecture enforcement enters through `pnpm governance:gate`.
+- GitHub Pages deployment should build `@ccd/web-demo` and upload `apps/web-demo/dist`.
+- Critical governance ownership is declared in `.github/CODEOWNERS`.
+- Remote workflow metadata may include stale deleted workflow names until GitHub prunes historical workflow records.
 
 ## API for Advanced Queries
 

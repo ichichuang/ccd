@@ -1,63 +1,70 @@
 # Runtime Isolation
 
-CCD enforces runtime isolation across three product lines:
+CCD enforces runtime isolation through workspace package boundaries and adapter injection.
 
-- `main` -> web runtime
-- `desktop-version` -> desktop runtime
-- `main-portable-version` -> portable runtime
+## Active Runtime Surfaces
 
-## Isolation boundaries
+```text
+packages/contracts  -> no runtime access
+packages/core       -> no runtime access
+apps/web-demo       -> browser runtime in adapters only
+apps/desktop        -> Tauri runtime in adapters only
+legacy/root-app     -> archived; excluded from active graphs
+```
 
-### IPC boundaries
+## Core Runtime-Neutrality
 
-- Desktop IPC stays behind Tauri bridge helpers.
-- Web runtime must not import or invoke native IPC contracts.
+`packages/contracts` and `packages/core` must not access:
 
-### Native capability boundaries
+- browser globals: `window`, `document`, `navigator`, `localStorage`, `sessionStorage`, `fetch`, `XMLHttpRequest`
+- Node globals/builtins: `process`, `fs`, `path`
+- runtime side effects: `console`, timers, direct `crypto`
+- Tauri APIs or `invoke()`
 
-- Native shell capabilities belong only to desktop runtime surfaces.
-- Shared abstractions must expose runtime-safe fallbacks.
+Validation:
 
-### Filesystem access boundaries
+```bash
+pnpm arch:runtime
+```
 
-- Filesystem access is desktop-only unless mediated by a portable adapter.
-- Web runtime code must remain browser-deployable.
+## Adapter Boundaries
 
-### Shared package constraints
+Runtime access is allowed only in app adapter layers:
 
-- Shared packages must not depend on desktop-only modules.
-- Runtime-specific dependencies must stay inside their product-line boundary.
+```text
+apps/web-demo/src/adapters/**
+apps/desktop/src/adapters/**
+```
 
-### Command runtime isolation
+Rules:
 
-- Repo commands must resolve `node` and `pnpm` as binaries in non-interactive shells.
-- Shell function wrappers around `node` or `pnpm` are not allowed; command entrypoints must resolve binary bindings.
-- Architecture and governance commands start with `pnpm env:doctor` to catch missing binaries, version drift, and orphan shell wrappers.
-- Use `bash scripts/env.sh` to verify the project runtime without relying on interactive shell startup.
-- Use `bash scripts/exec.sh <command>` when a command must run through the deterministic project runtime.
-- `bash scripts/bootstrap-runtime.sh <command>` remains a compatibility alias for the same runtime path.
-- Use `pnpm runtime:env:strict` or `pnpm env:doctor:strict-runtime` when you want to fail fast if `mise` is not available.
-- Use `pnpm ai-os:doctor` for project-scoped governance plus an opt-in local machine layer.
-- Use `pnpm ai-os:doctor:strict-local` only on this AI OS machine; CI must not depend on `/Users/cc/.ai-os`.
-- Use `pnpm codex:execute:doctor` and `pnpm codex:transport:validate` before portable runtime isolation work.
+- Browser storage/network/logger implementations stay in web adapters.
+- Tauri imports and `invoke()` stay in desktop adapters.
+- Adapters translate runtime capability to contracts; they do not own business workflows.
 
-Pinned runtime:
+## Import Boundaries
 
-- `mise.toml` pins Node `24.11.1` and pnpm `10.28.2` to match the Vercel production runtime lane.
-- `scripts/env.sh` activates `mise`; no legacy Node version-file fallback is allowed.
-- `mise` now owns the Node runtime source locally; pnpm continues to resolve from the existing pinned binary path until the package-manager lane is migrated.
-- Machine-level runtime invariants live in `/Users/cc/AI-Research-OS/RUNTIME_FREEZE.md`.
+Validation:
 
-### Runtime-safe abstraction rules
+```bash
+pnpm arch:boundaries
+```
 
-- Runtime checks and fallback behavior must live in a bridge or adapter layer.
-- Business modules must consume runtime-safe abstractions, not raw runtime APIs.
+This blocks:
 
-## Validation
+- circular dependencies
+- app-to-app imports
+- core-to-app imports
+- deep package imports
+- legacy archive imports
+- Tauri imports outside desktop adapters
 
-- `pnpm env:doctor`
-- `pnpm runtime:env`
-- `pnpm governance:validate`
-- `pnpm arch:snapshot`
-- `pnpm arch:visualize`
-- `pnpm arch:check`
+## Deterministic Runtime Commands
+
+```bash
+pnpm install --frozen-lockfile
+pnpm governance:gate
+pnpm typecheck
+pnpm test
+pnpm build
+```

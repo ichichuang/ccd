@@ -1,5 +1,6 @@
 import js from '@eslint/js'
 import eslintConfigPrettier from 'eslint-config-prettier'
+import boundaries from 'eslint-plugin-boundaries'
 import pluginVue from 'eslint-plugin-vue'
 import globals from 'globals'
 import fs from 'node:fs'
@@ -83,7 +84,7 @@ export default tseslint.config(
   // 全局忽略
   {
     name: 'app/global-ignores',
-    ignores: ['**/dist/**', '**/dist-ssr/**', '**/coverage/**', 'public/**', '*.d.ts'],
+    ignores: ['**/dist/**', '**/dist-ssr/**', '**/coverage/**', 'public/**', 'legacy/**', '*.d.ts'],
   },
   {
     // ... 其他配置
@@ -240,6 +241,123 @@ export default tseslint.config(
                 'Auto-Import Shield: Vue 组合式 API 由 unplugin-auto-import 全局提供，请删除该手动导入。',
             },
           ],
+        },
+      ],
+    },
+  },
+  {
+    name: 'app/monorepo-boundaries',
+    files: ['apps/**/*.{ts,tsx,vue,js,jsx,mjs}', 'packages/**/*.{ts,tsx,vue,js,jsx,mjs}'],
+    plugins: {
+      boundaries,
+    },
+    settings: {
+      'boundaries/elements': [
+        { type: 'core', pattern: 'packages/core/src/**' },
+        { type: 'web-demo', pattern: 'apps/web-demo/src/**' },
+        { type: 'desktop-adapters', pattern: 'apps/desktop/src/adapters/**' },
+        { type: 'desktop', pattern: 'apps/desktop/src/**' },
+      ],
+    },
+    rules: {
+      'boundaries/dependencies': [
+        'error',
+        {
+          default: 'allow',
+          rules: [
+            { from: { type: 'core' }, disallow: { to: { type: ['web-demo', 'desktop', 'desktop-adapters'] } } },
+            { from: { type: 'web-demo' }, disallow: { to: { type: ['desktop', 'desktop-adapters'] } } },
+            { from: { type: 'desktop' }, disallow: { to: { type: 'web-demo' } } },
+            { from: { type: 'desktop-adapters' }, disallow: { to: { type: 'web-demo' } } },
+          ],
+        },
+      ],
+      '@typescript-eslint/no-restricted-imports': [
+        'error',
+        {
+          paths: [
+            {
+              name: '@ccd/web-demo',
+              message: 'Cross-app package imports are forbidden.',
+            },
+            {
+              name: '@ccd/desktop',
+              message: 'Cross-app package imports are forbidden.',
+            },
+          ],
+          patterns: [
+            {
+              group: ['@ccd/core/*', '**/packages/core/src/**', '**/apps/**'],
+              message: 'Use the @ccd/core public export entry only; deep imports are forbidden.',
+            },
+            {
+              group: ['../apps/**', '../../apps/**', '../../../apps/**'],
+              message: 'Cross-app imports are forbidden.',
+            },
+          ],
+        },
+      ],
+    },
+  },
+  {
+    name: 'app/core-runtime-isolation',
+    files: ['packages/core/**/*.{ts,tsx,js,jsx,mjs}'],
+    rules: {
+      '@typescript-eslint/no-restricted-imports': [
+        'error',
+        {
+          paths: [
+            { name: 'fs', message: 'Core must not import Node runtime APIs.' },
+            { name: 'path', message: 'Core must not import Node runtime APIs.' },
+            { name: 'process', message: 'Core must not import Node runtime APIs.' },
+            { name: '@tauri-apps/api', message: 'Core must not import Tauri runtime APIs.' },
+          ],
+          patterns: [
+            {
+              group: ['node:*', '@tauri-apps/*', '../apps/**', '../../apps/**', '../../../apps/**'],
+              message: 'Core must stay framework and runtime agnostic.',
+            },
+          ],
+        },
+      ],
+      'no-restricted-globals': [
+        'error',
+        'window',
+        'document',
+        'process',
+        'localStorage',
+        'sessionStorage',
+        'navigator',
+        'fetch',
+        'XMLHttpRequest',
+        'console',
+        'crypto',
+        'setTimeout',
+        'setInterval',
+      ],
+    },
+  },
+  {
+    name: 'app/desktop-tauri-adapter-boundary',
+    files: ['apps/desktop/src/**/*.{ts,tsx,vue,js,jsx,mjs}'],
+    ignores: ['apps/desktop/src/adapters/**/*.{ts,tsx,vue,js,jsx,mjs}'],
+    rules: {
+      '@typescript-eslint/no-restricted-imports': [
+        'error',
+        {
+          patterns: [
+            {
+              group: ['@tauri-apps/*'],
+              message: 'Tauri APIs must be encapsulated by apps/desktop/src/adapters.',
+            },
+          ],
+        },
+      ],
+      'no-restricted-syntax': [
+        'error',
+        {
+          selector: 'CallExpression[callee.name="invoke"]',
+          message: 'invoke() calls must stay inside apps/desktop/src/adapters.',
         },
       ],
     },

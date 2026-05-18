@@ -1,27 +1,20 @@
 # Portable Runtime
 
-The `main-portable-version` branch is CCD's clean reusable architecture scaffold.
+Portable runtime is now represented by workspace portability, not by a separate active delivery lane.
 
-## Runtime Contract
+Portable guarantees live in:
 
-- zero-business template
-- minimal reusable Web architecture
-- no demo pollution
-- no obsolete visual baselines
-- functional AI governance contract
+- `packages/contracts`: implementation-free contract layer
+- `packages/core`: runtime-neutral platform logic
+- app adapter boundaries: runtime-specific capability injection
+- governance checks: `pnpm governance:gate`
 
-## Boundaries
-
-- Remove example routes, demo pages, generated demo assets, and obsolete snapshots.
-- Keep `.ai/**`, generated adapter flow, and governance commands usable.
-- Do not remove architecture contracts that future projects need to stay governable.
-- Do not introduce project-specific business assumptions.
+Historical portable scaffold material belongs in `legacy/**` or documentation only. Active package code must not import it.
 
 ## Validation
 
 ```bash
-pnpm arch:check
-pnpm type-check
+pnpm install --frozen-lockfile
+pnpm governance:gate
+pnpm build
 ```
-
-Add targeted tests when portable cleanup changes runtime bootstrap, routing, stores, or build configuration.

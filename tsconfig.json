@@ -1,12 +1,24 @@
 {
   "compilerOptions": {
-    "baseUrl": ".",
-    "paths": {
-      "@/*": ["src/*"]
-    },
     "noUnusedLocals": true,
     "noUnusedParameters": true
   },
   "files": [],
-  "references": [{ "path": "./tsconfig.app.json" }, { "path": "./tsconfig.node.json" }]
+  "references": [
+    {
+      "path": "./packages/contracts"
+    },
+    {
+      "path": "./packages/core"
+    },
+    {
+      "path": "./apps/web-demo"
+    },
+    {
+      "path": "./apps/desktop"
+    }
+  ],
+  "exclude": [
+    "legacy/**"
+  ]
 }

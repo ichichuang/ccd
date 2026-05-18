@@ -1,5 +1,3 @@
-# Branch Model
+# Workspace Graph Alias
 
-Compatibility alias removed.
-
-The canonical branch policy lives in [Core Branch Policy](./product-lines.md).
+The previous branch model has been retired. The canonical runtime ownership policy is now [Workspace Runtime Policy](./product-lines.md).

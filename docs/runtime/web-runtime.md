@@ -1,29 +1,33 @@
 # Web Runtime
 
-The `main` branch is CCD's production Web application runtime.
+`apps/web-demo` is the browser runtime surface for CCD.
 
 ## Runtime Contract
 
-- Browser-first Vue 3 runtime
-- Vite build and preview pipeline
-- PrimeVue, UnoCSS, Pinia, Alova, ProForm, ProTable, and ECharts integration
-- full examples and demo surfaces retained for architecture reference
-- AI governance and generated adapters fully enabled
+- Vue 3 + Vite browser application.
+- Depends on `@ccd/contracts` and `@ccd/core` through public exports.
+- Injects browser runtime capabilities through `apps/web-demo/src/adapters/**`.
+- Does not import desktop/Tauri runtime code.
 
-## Boundaries
+## Adapter Ownership
 
-- Do not add Tauri shell or desktop-only configuration to `main`.
-- Do not introduce desktop-only assumptions into Web runtime abstractions.
-- Shared bridge helpers must keep Web fallback behavior intact.
-- Web runtime features must remain valid in browser deployment.
+Browser-only APIs are allowed in:
+
+```text
+apps/web-demo/src/adapters/**
+```
+
+Current adapter responsibilities:
+
+- browser storage adapter
+- browser network adapter
+- browser logger adapter
 
 ## Validation
 
 ```bash
-pnpm arch:check
-pnpm type-check
-pnpm lint:check
-pnpm test:run
+pnpm --filter @ccd/web-demo typecheck
+pnpm --filter @ccd/web-demo test
+pnpm --filter @ccd/web-demo build
+pnpm arch:boundaries
 ```
-
-Use targeted Playwright checks for UI, layout, or interaction-sensitive changes.

@@ -51,15 +51,15 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      - name: Authorize GitHub CLI
+        run: echo "${{ github.token }}" | gh auth login --with-token
+
       # repair_list.txt is gitignored and created by ai:sync from the template; doctor requires it.
       - name: Sync AI adapters (materialize local runtime)
         run: pnpm ai:sync
 
-      - name: Run Architecture Doctor
-        run: pnpm ai:doctor
-
-      - name: Drift Check
-        run: pnpm drift-check
+      - name: Unified Governance Gate
+        run: pnpm governance:gate
 
       - name: Strict Type Check
         run: pnpm type-check
@@ -71,11 +71,10 @@ jobs:
         run: pnpm lint:check
 
       - name: Build for GitHub Pages
-        run: pnpm build:ci
+        run: pnpm build:web-demo
         env:
           # 注入 base 路径：仓库名为 ccd，GitHub Pages URL 为
           # https://ichichuang.github.io/ccd/
-          # vite.config.ts 第 78 行 base: VITE_PUBLIC_PATH 会读取此变量
           VITE_PUBLIC_PATH: /ccd/
 
       - name: Setup Pages
@@ -84,7 +83,7 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v5
         with:
-          path: ./dist
+          path: ./apps/web-demo/dist
 
   # ──────────────────────────────────────────────
   # Job 2: 部署到 GitHub Pages

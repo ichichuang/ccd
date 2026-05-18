@@ -26,20 +26,22 @@ Per-AI adapter guidance:
 
 Current repo defaults:
 
-- Treat this repository as Vue 3 + TypeScript + Vite + UnoCSS + PrimeVue + Playwright.
-- Treat desktop-runtime changes as Tauri v2 + guest bindings bridge work; route to .ai/skills/codex/desktop-tauri-guard.
-- Prefer Playwright CLI plus .ai/skills/codex/architecture-browser-master.
-- Prefer Playwright CRX for recording browser flows, then import the exported Python into .ai/skills/codex/architecture-browser-master flow assets.
-- Branch roles: main is the full Web architecture source, desktop-version is the Tauri v2 desktop rebuild line, and main-portable-version is the clean portable starter.
-- For desktop/Tauri-scoped changes on desktop-version or direct desktop bridge paths, run pnpm sync:desktop-config, then pnpm drift-check.
-- Keep user-facing pages within Lighthouse 90+ budgets unless the task explicitly says otherwise.
+- Treat this repository as a governed deterministic pnpm + Turbo monorepo.
+- Active topology is packages/contracts -> packages/core -> apps/\*.
+- packages/contracts contains interfaces and shared types only.
+- packages/core must remain runtime-neutral and may depend only on @ccd/contracts.
+- Runtime APIs must be adapter-injected from apps/web-demo/src/adapters/\*\* or apps/desktop/src/adapters/\*\*.
+- legacy/\*\* is a read-only archive and must never re-enter active dependency graphs.
+- For desktop/Tauri work, keep @tauri-apps imports and invoke() inside apps/desktop/src/adapters/\*\*.
+- Use governance commands: pnpm governance:full, pnpm arch:runtime, pnpm api:report, and pnpm supply:check.
 
 Core mandate:
 
-- .ai/\*\* is the only source of truth.
+- .ai/\*\* is the only source of truth for AI governance.
 - Adapter paths (AGENTS.md, CLAUDE.md) are generated compatibility entrypoints only.
 - Materialize repo adapters with pnpm ai:sync and local Codex skills with pnpm ai:sync:codex.
-- For new page/route work, scaffold first with pnpm ai:scaffold:view-route, then enforce pnpm ai:guard.
+- Keep package imports on public exports only; no deep imports, cross-app imports, or legacy imports.
+- For new runtime capabilities, add contracts first, implement core logic runtime-neutrally, then inject app adapters.
 
 Generated from:
 

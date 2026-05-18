@@ -1,150 +1,129 @@
-# AI Workspace Standard
+# AI Governance Workspace
 
-This repository uses `.ai/` as the single source of truth for all AI collaboration assets.
+`.ai/**` is the canonical control plane for AI execution, architecture policy, generated adapters, and machine-enforced repository governance.
 
-## Branch Governance
+## Current Platform State
 
-CCD currently uses three sibling delivery branches:
+CCD is a self-protecting deterministic multi-runtime platform repository.
 
-| Branch                  | AI Governance Contract                                      |
-| ----------------------- | ----------------------------------------------------------- |
-| `main`                  | Full Web architecture source with examples, docs, and gates |
-| `desktop-version`       | Tauri v2 desktop rebuild line; desktop guardrails active    |
-| `main-portable-version` | Clean portable starter; preserve `.ai/**` minimal contract  |
-
-Only `main`, `desktop-version`, and `main-portable-version` are active governance branches.
-
-## Canonical Paths
-
-- Config: `.ai/config/**`
-- Rules: `.ai/rules/**`
-- Skills: `.ai/skills/**`
-- Protocol: `.ai/protocol/**`
-- Runtime templates: `.ai/runtime/*.template.txt`
-- Manifests/locks: `.ai/manifests/**`
-
-## Governance Generation
-
-Generated governance outputs:
-
-- `.ai/generated/**` -> machine-readable governance, compatibility, and drift outputs
-- `docs/generated/**` -> generated reports and Mermaid diagrams
-- `.ai/orchestration/**` -> declarative agent roles, scopes, permissions, and routing constraints
-- `.ai/migrations/**` -> protocol evolution assets
-
-The following are generated compatibility adapters for supported AI tools:
-
-- `AGENTS.md` <= `.ai/protocol/AI.entry.md`
-- `CLAUDE.md` <= `.ai/protocol/adapter-manifest.json` (points to `AGENTS.md`)
-
-Local Codex materialization:
-
-- `~/.codex/skills/**` <= `.ai/skills/core/** + .ai/skills/codex/**`
-- Generate with `pnpm ai:sync:codex`
-
-Local runtime file:
-
-- `.ai/runtime/repair_list.txt` is local working state generated from `.ai/runtime/repair_list.template.txt`.
-
-Do not manually maintain generated adapters.
-
-## Skill Topology
-
-CCD uses two skill layers:
-
-| Layer | Location              | Purpose                                                            |
-| ----- | --------------------- | ------------------------------------------------------------------ |
-| Core  | `.ai/skills/core/**`  | Implementation skills for Vue, VueUse, UnoCSS, and Vite            |
-| Codex | `.ai/skills/codex/**` | Low-token orchestration, browser automation, and GitHub operations |
-
-Repo-managed Codex operations currently center on:
-
-- `task-orchestrator`
-- `architecture-browser-master`
-- `github-ops`
-- `desktop-tauri-guard`
-
-Generation guardrails for business routes/pages:
-
-- `pnpm ai:scaffold:view-route -- --segment <segment> --title-key <i18n.key> --kind <table|form|detail>`
-- `pnpm ai:guard`
-
-## State Synchronization Contract
-
-CCD uses an explicit client-side synchronization boundary for cross-tab and cross-device state.
-Treat synchronization as an opt-in capability, not a default store behavior.
-
-Canonical implementation:
-
-- `src/sync/syncAction.ts`
-- `src/sync/registry.ts`
-- `src/sync/middleware.ts`
-- `src/sync/runtime.ts`
-- domain sync modules under `src/sync/**`
-
-AI agents and human contributors MUST follow these rules:
-
-- Cross-tab / cross-device state changes go through `syncAction(type, payload)`.
-- Every sync type must be registered before use.
-- Sync handlers patch only the owner store and run required side effects.
-- Payloads include `updatedAt` and exclude runtime-only fields.
-- Business stores are not automatically syncable; each domain sync type requires intentional design.
-- Do not add `store.$subscribe()` based automatic synchronization.
-- Do not send state sync frames directly through `BroadcastChannel` or `WebSocket` outside `src/sync/**`.
-- Non-state transport exceptions require an explicit `scripts/ai-architecture-guard.mjs` allowlist entry.
-
-State classification:
-
-| State class                                    | Sync policy                                       |
-| ---------------------------------------------- | ------------------------------------------------- |
-| User preferences                               | Sync explicitly                                   |
-| User-authored drafts / presets                 | Sync explicitly when product requires it          |
-| List/dashboard server data                     | Usually re-fetch; sync only user-authored changes |
-| Loading, modal, drawer, hover, animation       | Never sync                                        |
-| Device, breakpoint, layout runtime derivations | Never sync                                        |
-
-Architecture reference: [docs/architecture.md](../docs/architecture.md#explicit-sync-boundary).
-
-## Runtime Residue
-
-Generated adapters are expected.
-Local runtime residue is also expected, but it is not source of truth.
-
-Common local runtime paths:
-
-- `.ai/runtime/repair_list.txt`
-- `artifacts/browser/**`
-- `~/.codex/tmp/architecture-browser-master/**`
-
-Browser automation intentionally writes compact summaries and optional evidence under `artifacts/browser/**`.
-
-## Maintenance
-
-- Generate adapters: `pnpm ai:sync`
-- Install local Codex skills: `pnpm ai:sync:codex`
-- One-shot Codex setup: `pnpm ai:setup:codex`
-- Validate command runtime: `pnpm env:doctor`
-- Verify deterministic runtime wrapper: `pnpm runtime:env`
-- Strict runtime migration gate: `pnpm runtime:env:strict`
-- Quick architecture check: `pnpm arch:check:fast`
-- One-shot architecture check: `pnpm arch:check`
-- Full architecture gate: `pnpm arch:check:full`
-- Clean local AI/browser runtime residue: `pnpm ai:clean`
-- Aggressive cleanup when needed: `pnpm ai:clean -- --all`
-- Validate structure: `pnpm ai:doctor` (runs `ai:guard` and `validate:tokens`)
-- Validate generated business surfaces: `pnpm ai:guard`
-- Validate theme token semantics and contrast: `pnpm validate:tokens`
-  - `action` / `text` pairs must satisfy `>= 4.5`
-  - `subtle` pairs must satisfy `>= 3.0`
-  - decorative pairs such as `*-light` and `*-light-foreground` are non-blocking by default and surface as advisories
-- Check drift-sensitive docs/config/style contracts: `pnpm drift-check`
-- Check desktop/Tauri config surface when relevant: `pnpm sync:desktop-config`
-- Run Codex preflight: `pnpm codex:preflight`
-
-Recommended maintenance order:
-
-```bash
-pnpm arch:check
+```text
+@ccd/contracts -> @ccd/core -> apps/*
 ```
 
-Governance reference: [docs/governance.md](../docs/governance.md).
+- `packages/contracts`: public ABI, interfaces, and shared types only.
+- `packages/core`: runtime-neutral platform logic.
+- `apps/web-demo`: browser runtime adapters.
+- `apps/desktop`: Tauri runtime adapters.
+- `legacy/root-app`: read-only archive; never imported by active graphs.
+
+## Canonical AI Paths
+
+| Path | Role |
+| --- | --- |
+| `.ai/protocol/**` | agent entrypoints, adapter contracts, protocol versioning |
+| `.ai/rules/**` | architecture and implementation laws |
+| `.ai/skills/**` | local AI execution skills |
+| `.ai/manifests/**` | generated routing, rule, and skill locks |
+| `.ai/governance/policies/**` | machine-readable architecture policy engine |
+| `.ai/governance/api-snapshots/**` | public API immutability baselines |
+| `.ai/generated/**` | generated governance reports |
+| `.ai/runtime/**` | local runtime ledger and execution state |
+| `.ai/orchestration/**` | agent and role orchestration manifests |
+
+## Single Governance Gate
+
+The authoritative architecture gate is:
+
+```bash
+pnpm governance:gate
+```
+
+It executes:
+
+1. `pnpm governance:validate`
+2. `pnpm ai:guard -- --format=json`
+3. `pnpm arch:boundaries`
+4. `pnpm arch:runtime`
+5. `pnpm api:report`
+6. `pnpm supply:check`
+7. `pnpm release:governance`
+8. `pnpm governance:github-workflows`
+9. `pnpm arch:report`
+10. generated governance artifact drift check
+
+CI calls this gate directly before typecheck, tests, lint, and production builds.
+
+## Policy Engine
+
+Policy files under `.ai/governance/policies/**` define repository constraints:
+
+- `topology.json`: package layers, dependency direction, criticality, export rules
+- `runtime.json`: runtime-neutral denylist and adapter boundaries
+- `ai.json`: AI-safe code generation constraints and allowed adapter exceptions
+- `api.json`: API snapshot baseline and breaking-change rules
+- `supply-chain.json`: dependency allowlists, lifecycle script policy, license policy
+- `release.json`: Changesets config, release order, protected paths, single gate contract
+- `version.json`: policy version baseline
+
+Validation scripts must consume these manifests instead of duplicating hardcoded rules.
+
+## Generated Adapter Contract
+
+Generated compatibility adapters:
+
+- `AGENTS.md` <= `.ai/protocol/AI.entry.md`
+- `CLAUDE.md` <= `.ai/protocol/adapter-manifest.json`
+- `.ai/protocol/adapters/*.md` <= `.ai/protocol/adapter-manifest.json`
+- local Codex skills <= `.ai/skills/**`
+
+Do not manually maintain generated adapters. Edit canonical `.ai/**` sources and run:
+
+```bash
+pnpm ai:sync
+pnpm ai:sync:codex
+```
+
+## AI Agent Rules
+
+- Load `.ai/protocol/AGENTS.core.md` before implementation.
+- Use the minimum applicable skill set for the touched surface.
+- Treat `pnpm governance:gate` as the required final architecture gate.
+- Never deep import workspace packages.
+- Never revive `legacy/**` into active dependency graphs.
+- Keep runtime APIs inside app adapter directories.
+- Commit generated reports and API snapshot changes with the source change that produced them.
+
+## GitHub Enforcement
+
+GitHub CI enforces:
+
+```text
+pnpm install --frozen-lockfile
+pnpm ai:sync
+pnpm governance:gate
+pnpm ai:sync && pnpm ai:sync:codex drift check
+pnpm type-check
+pnpm test:run
+pnpm lint:check
+turbo run build
+pnpm build:desktop && pnpm budget:desktop
+pnpm e2e:qa
+```
+
+Ownership starts at `.github/CODEOWNERS`; branch protection should require the CI workflow before merge.
+
+Remote workflow registry state is part of governance:
+
+- active repo workflows: `ci.yml`, `deploy.yml`
+- active remote-managed workflow: `dynamic/dependabot/dependabot-updates`
+- disabled historical workflows: `Build Desktop (Windows)`, `Release Desktop`, `Smoke Desktop`
+
+`pnpm governance:github-workflows` fails if any undeclared workflow becomes active again.
+
+## Reference Docs
+
+- [Platform README](../README.md)
+- [Documentation Index](../docs/README.md)
+- [Governance](../docs/governance.md)
+- [AI Workspace](../docs/ai-workspace.md)
+- [Codex Quickstart](../docs/codex/quickstart.md)

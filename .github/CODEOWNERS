@@ -1,0 +1,11 @@
+packages/contracts/ @platform-architecture
+packages/core/ @platform-architecture
+apps/desktop/src/adapters/ @platform-architecture
+apps/desktop/src-tauri/ @platform-architecture
+.ai/governance/policies/ @platform-architecture
+.ai/governance/api-snapshots/ @platform-architecture
+.github/workflows/ @platform-architecture
+.github/CODEOWNERS @platform-architecture
+.changeset/ @platform-architecture
+scripts/architecture/ @platform-architecture
+scripts/governance/ @platform-architecture

@@ -38,11 +38,12 @@ For day-to-day architecture validation, use the one-shot command:
 pnpm arch:check
 ```
 
-Use `pnpm arch:check:fast` for quick local feedback and `pnpm arch:check:full` before PR or release gates.
+Use `pnpm governance:gate` before PRs or architecture changes. Use `pnpm arch:check:fast` for quick local AI adapter feedback and `pnpm arch:check:full` for broader local validation when needed.
 
 Extended governance commands:
 
 ```bash
+pnpm governance:gate
 pnpm arch:snapshot
 pnpm arch:report
 pnpm arch:visualize
@@ -50,6 +51,7 @@ pnpm env:doctor
 pnpm runtime:env
 pnpm runtime:env:strict
 pnpm governance:validate
+pnpm release:governance
 pnpm protocol:migrate
 pnpm adapters:validate
 pnpm orchestration:validate
@@ -89,9 +91,9 @@ codex --profile yolo
 ## 3.5) Branch Routing
 
 - Work on `main` for shared core/Web architecture, governance, and browser-first delivery.
-- Work on `desktop-version` for Tauri v2 runtime, desktop bridge, capabilities, release metadata, and desktop validation.
-- Work on `main-portable-version` for portable starter cleanup and removal of example/demo residue.
-- Use only `main`, `desktop-version`, and `main-portable-version` as active branch lanes.
+- Work in `apps/desktop` for Tauri v2 runtime, desktop bridge, capabilities, release metadata, and desktop validation.
+- Treat portable starter branch guidance as historical; cleanup now happens in workspace packages and apps.
+- Use the workspace package graph as the runtime SSOT.
 
 Runtime references:
 
@@ -132,6 +134,7 @@ Rules enforced by `pnpm ai:guard` include:
 - no native `<form>` in business views
 - no sync `@/views/**` imports inside route modules
 - no route records missing `name` or `meta.titleKey/title`
+- no generated-code policy violations under governed apps/packages
 
 ## 4.5) Cleanup And Residue
 
@@ -183,6 +186,14 @@ This keeps Codex at the orchestration layer while the browser work runs through 
 If your change touches canonical AI governance assets, expect CI to rerun `pnpm ai:sync` and `pnpm ai:sync:codex`.
 
 If those commands would modify `AGENTS.md`, `CLAUDE.md`, or `.ai/manifests/skills-lock.json`, CI will fail and require you to commit the synced artifacts first.
+
+If your change touches topology, governance policies, public exports, or release rules, run:
+
+```bash
+pnpm governance:gate
+```
+
+Commit any resulting changes under `docs/generated/**`, `.ai/generated/**`, or `.ai/governance/api-snapshots/**`.
 
 ## 6) Task Prompt Template (Copy and Fill)
 

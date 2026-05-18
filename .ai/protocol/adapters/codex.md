@@ -38,15 +38,13 @@
 
 - pnpm ai:doctor
 - pnpm env:doctor
-- pnpm runtime:env
-- pnpm runtime:env:strict
-- pnpm runtime:exec
-- pnpm runtime:exec:strict
-- pnpm ai:guard
-- pnpm ai:scaffold:view-route -- --segment <segment> --title-key <i18n.key> --kind <table|form|detail>
-- pnpm arch:check:fast
-- pnpm arch:check
-- pnpm arch:check:full
+- pnpm governance:full
+- pnpm arch:boundaries
+- pnpm arch:runtime
+- pnpm api:report
+- pnpm supply:check
+- pnpm arch:report
+- pnpm arch:visualize
 - pnpm ai:sync
 - pnpm ai:sync:codex
 - pnpm codex:preflight

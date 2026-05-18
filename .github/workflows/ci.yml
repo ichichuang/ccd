@@ -52,18 +52,18 @@ jobs:
           node-version: 24.x
           cache: 'pnpm'
 
-      - name: Install dependencies
+      - name: Deterministic Frozen Install
         run: pnpm install --frozen-lockfile
+
+      - name: Authorize GitHub CLI
+        run: echo "${{ github.token }}" | gh auth login --with-token
 
       # repair_list.txt is gitignored and created by ai:sync from the template; doctor requires it.
       - name: Sync AI adapters (materialize local runtime)
         run: pnpm ai:sync
 
-      - name: Run Architecture Doctor
-        run: pnpm ai:doctor
-
-      - name: Drift Check
-        run: pnpm drift-check
+      - name: Unified Governance Gate
+        run: pnpm governance:gate
 
       - name: Verify Generated AI Artifacts Are Synced
         run: |
@@ -85,7 +85,12 @@ jobs:
         run: pnpm lint:check
 
       - name: Production Build Test
-        run: pnpm build:ci
+        run: turbo run build
+
+      - name: Desktop Bundle Guard
+        run: |
+          pnpm build:desktop
+          pnpm budget:desktop
 
   e2e:
     name: E2E QA
