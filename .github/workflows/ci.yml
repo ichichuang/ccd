@@ -94,3 +94,45 @@ jobs:
         run: |
           pnpm build:desktop
           pnpm budget:desktop
+
+  e2e-qa:
+    name: E2E QA
+    runs-on: ubuntu-latest
+    env:
+      NODE_OPTIONS: '--max-old-space-size=4096'
+      VITE_APP_SECRET: ${{ secrets.VITE_APP_SECRET }}
+
+    steps:
+      - name: Checkout codebase
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+        env:
+          GIT_CONFIG_COUNT: '1'
+          GIT_CONFIG_KEY_0: init.defaultBranch
+          GIT_CONFIG_VALUE_0: main
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v5
+        with:
+          version: 10.28.2
+        env:
+          NODE_NO_WARNINGS: '1'
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: 24.x
+          cache: 'pnpm'
+
+      - name: Deterministic Frozen Install
+        run: pnpm install --frozen-lockfile
+
+      - name: Install Playwright Chromium
+        run: pnpm exec playwright install --with-deps chromium
+
+      - name: Build core packages
+        run: pnpm build:core
+
+      - name: Run Playwright QA suite
+        run: pnpm e2e:qa
