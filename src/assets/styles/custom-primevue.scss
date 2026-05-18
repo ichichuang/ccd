@@ -1,0 +1,543 @@
+/* ============================================
+ * CScrollbar 主题样式
+ * 完美融合项目主题系统 CSS 变量
+ * ============================================ */
+
+/* .pv-input-fluid: PrimeVue 专属上下文类，强制输入组件宽度 100%。
+   仅用于包裹 InputText / Select 等 PrimeVue 输入组件。
+   禁止用于通用容器（通用全宽请用 w-full 或 layout-full）。 */
+.pv-input-fluid {
+  .p-inputtext {
+    width: 100% !important;
+  }
+}
+
+.c-scrollbar-native {
+  /* 原生滚动条样式 */
+  &::-webkit-scrollbar {
+    width: var(--spacing-sm);
+    height: var(--spacing-sm);
+  }
+
+  &::-webkit-scrollbar-track {
+    background: transparent !important;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: rgb(var(--muted) / 50%) !important;
+    border-radius: var(--radius-md) !important;
+    border: calc(var(--spacing-xs) / 2) solid transparent !important;
+    background-clip: content-box !important;
+
+    &:hover {
+      background: rgb(var(--muted) / 80%) !important;
+      background-clip: content-box !important;
+    }
+  }
+}
+
+/* Admin 侧栏 PanelMenu：多级菜单列表统一纵向间距（第三方组件覆盖，仅用变量） */
+.admin-sidebar--fixed {
+  // ── 展开 / 折叠动画容器 ──────────────────────────────────────────────
+  // .p-panelmenu-content-container 必须保持 display:grid（PrimeVue 原生），
+  // 不可加 overflow:hidden，否则 grid-template-rows 0fr↔1fr 折叠动画失效。
+  .p-panelmenu-content-container {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+
+    // 抑制 UnoCSS / PrimeVue 注入的 transition: all 0s，避免动画期间无效 style recalc
+    transition: none !important;
+  }
+
+  .p-panelmenu-content-wrapper {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    overflow: clip;
+    box-sizing: border-box;
+    transition: none !important;
+    contain: layout paint;
+    transform: translateZ(0);
+  }
+
+  .admin-sidebar-menu {
+    --admin-sidebar-menu-label-duration: 160ms;
+    --admin-sidebar-menu-label-ease: cubic-bezier(0.4, 0, 0.2, 1);
+    --admin-sidebar-menu-enter-ease: cubic-bezier(0.22, 1, 0.36, 1);
+    --admin-sidebar-scroll-padding-inline: var(--spacing-sm);
+    --admin-sidebar-menu-stack-gap: var(--spacing-sm);
+    --admin-sidebar-root-item-padding-inline: calc(var(--spacing-md) - var(--spacing-xs));
+    --admin-sidebar-icon-box-width: calc(var(--font-size-2xl) + var(--spacing-xs));
+    --admin-sidebar-collapsed-item-width: calc(
+      var(--sidebar-collapsed-width) - var(--admin-sidebar-scroll-padding-inline) - var(
+          --admin-sidebar-scroll-padding-inline
+        )
+    );
+  }
+
+  .admin-sidebar-menu--compact {
+    --admin-sidebar-menu-stack-gap: var(--spacing-xs);
+    --admin-sidebar-icon-box-width: calc(var(--font-size-xl) + var(--spacing-xs));
+
+    .p-panelmenu-submenu {
+      padding-top: var(--spacing-xs);
+      padding-bottom: 0;
+      padding-left: var(--spacing-sm);
+    }
+
+    .admin-sidebar-menu__item {
+      min-height: var(--spacing-xl);
+      padding: var(--spacing-xs) var(--spacing-sm) !important;
+    }
+
+    .admin-sidebar-menu__item--child {
+      padding-left: var(--spacing-md) !important;
+    }
+
+    .admin-sidebar-menu__item-content {
+      gap: var(--spacing-xs) !important;
+    }
+
+    .admin-sidebar-menu__label,
+    .admin-sidebar-menu__item-content {
+      font-size: var(--font-size-sm) !important;
+      line-height: var(--spacing-lg);
+    }
+
+    .admin-sidebar-menu__arrow {
+      width: var(--spacing-lg) !important;
+    }
+  }
+
+  .admin-sidebar-menu__item {
+    min-width: 0;
+    min-height: var(--spacing-2xl);
+    transform: translateZ(0);
+    contain: paint;
+  }
+
+  .admin-sidebar-menu__item--root {
+    padding-right: var(--admin-sidebar-root-item-padding-inline) !important;
+    padding-left: var(--admin-sidebar-root-item-padding-inline) !important;
+  }
+
+  .admin-sidebar-menu__item-content {
+    position: relative;
+    transform: translateZ(0);
+  }
+
+  .admin-sidebar-menu__icon {
+    width: var(--admin-sidebar-icon-box-width) !important;
+    min-width: var(--admin-sidebar-icon-box-width);
+    transform: translateZ(0);
+  }
+
+  .admin-sidebar-menu__icon--fallback {
+    opacity: 1;
+  }
+
+  .admin-sidebar-menu__label {
+    min-width: 0;
+  }
+
+  .admin-sidebar-menu__arrow {
+    transition: transform 180ms var(--admin-sidebar-menu-enter-ease);
+  }
+
+  .admin-sidebar-panelmenu .p-panelmenu-panel {
+    padding: 0 !important;
+    border: none !important;
+    box-shadow: none !important;
+  }
+
+  .admin-sidebar-panelmenu .p-panelmenu-header,
+  .admin-sidebar-panelmenu .p-panelmenu-header-content {
+    width: 100% !important;
+  }
+
+  .admin-sidebar-panelmenu {
+    gap: var(--admin-sidebar-menu-stack-gap) !important;
+  }
+
+  .admin-sidebar-menu--collapsed {
+    .admin-sidebar-collapsed-menu {
+      display: flex;
+      flex-direction: column;
+      gap: var(--admin-sidebar-menu-stack-gap);
+      width: 100%;
+      margin: 0;
+      padding-top: 0;
+      padding-bottom: 0;
+      padding-inline: 0;
+      list-style: none;
+      box-sizing: border-box;
+    }
+
+    .admin-sidebar-menu__item--root {
+      width: var(--admin-sidebar-collapsed-item-width) !important;
+      max-width: var(--admin-sidebar-collapsed-item-width) !important;
+      padding-right: 0 !important;
+      padding-left: 0 !important;
+    }
+
+    .admin-sidebar-menu__item--root {
+      .admin-sidebar-menu__item-content {
+        justify-content: center;
+      }
+    }
+
+    .admin-sidebar-menu__icon--fallback {
+      opacity: 1;
+    }
+  }
+
+  .admin-sidebar-menu--expanded-shell {
+    .p-collapsible-enter-active,
+    .p-collapsible-leave-active,
+    .p-panelmenu-content-container,
+    .p-panelmenu-content-wrapper {
+      transition: none !important;
+      animation: none !important;
+    }
+
+    .p-collapsible-enter-active > .p-panelmenu-content-wrapper,
+    .p-collapsible-leave-active > .p-panelmenu-content-wrapper {
+      transition: none !important;
+      animation: none !important;
+      will-change: auto !important;
+    }
+  }
+
+  // ── 自定义展开 / 折叠动画曲线 ────────────────────────────────────────
+  // 容器高度动画：展开/折叠保持相近节奏，避免收起时 snapped shut。
+  .p-collapsible-enter-active {
+    animation-duration: 210ms !important;
+    animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1) !important;
+  }
+
+  .p-collapsible-leave-active {
+    animation-duration: 200ms !important;
+    animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1) !important;
+  }
+
+  .p-collapsible-enter-active,
+  .p-collapsible-leave-active {
+    contain: layout paint;
+    will-change: grid-template-rows;
+
+    > .p-panelmenu-content-wrapper {
+      contain: layout paint;
+      transform: translateZ(0);
+    }
+  }
+
+  // ── 动画期间菜单项状态过渡冻结 ──────────────────────────────────────
+  // 精准选择器替代通配 *，仅冻结携带 transition 的菜单元素，
+  // 减少动画期间样式匹配开销。
+  .p-collapsible-enter-active,
+  .p-collapsible-leave-active {
+    .p-panelmenu-header-content,
+    .p-panelmenu-content,
+    .p-menuitem-content,
+    .p-menuitem-link,
+    .p-panelmenu-header-icon,
+    .p-menuitem-icon,
+    .p-panelmenu-submenu-icon {
+      transition: none !important;
+    }
+  }
+
+  // ── 子菜单 wrapper 入场 / 离场动画 ────────────────────────────────
+  // 仅动画单个 wrapper，避免长菜单逐项 animation 形成 transition storm。
+  @keyframes submenu-wrapper-enter {
+    from {
+      opacity: 0;
+      transform: translate3d(0, -4px, 0);
+    }
+
+    to {
+      opacity: 1;
+      transform: translate3d(0, 0, 0);
+    }
+  }
+
+  @keyframes submenu-wrapper-leave {
+    from {
+      opacity: 1;
+      transform: translate3d(0, 0, 0);
+    }
+
+    to {
+      opacity: 0;
+      transform: translate3d(0, -4px, 0);
+    }
+  }
+
+  .p-collapsible-enter-active > .p-panelmenu-content-wrapper {
+    animation: submenu-wrapper-enter 160ms cubic-bezier(0.22, 1, 0.36, 1) both;
+    transform: translateZ(0);
+    will-change: opacity, transform;
+  }
+
+  .p-collapsible-leave-active > .p-panelmenu-content-wrapper {
+    animation: submenu-wrapper-leave 120ms cubic-bezier(0.4, 0, 0.2, 1) both;
+    pointer-events: none;
+    transform: translateZ(0);
+    will-change: opacity, transform;
+  }
+
+  // ── 列表布局 ───────────────────────────────────────────────────────
+  .p-panelmenu-root-list,
+  .p-panelmenu-submenu {
+    display: flex;
+    flex-direction: column;
+    gap: var(--admin-sidebar-menu-stack-gap);
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+    contain: layout paint;
+  }
+
+  // 针对子菜单增加纵向 padding，使父级菜单项与子菜单之间产生间距
+  .p-panelmenu-submenu {
+    padding-top: var(--spacing-xs);
+    padding-bottom: var(--spacing-xs);
+
+    // 子菜单整体缩进：让整块高亮背景随层级右移，而不是只挪动文字
+    padding-left: var(--spacing-md);
+  }
+
+  // 动画期间冻结菜单项过渡，避免 sidebar 收缩/展开时 N 个菜单项同时触发 style 计算
+  &.admin-sidebar--animating {
+    .p-panelmenu-header-content,
+    .p-menuitem-content {
+      transition: none !important;
+    }
+  }
+
+  // 防止侧边栏收缩动画过程中，PanelMenu 文字换行导致布局错乱；overflow-x 确保嵌套子项不超出
+  .p-panelmenu-header-content,
+  .p-panelmenu-content {
+    overflow: clip;
+    width: 100%;
+    white-space: nowrap;
+  }
+
+  // 展开侧边栏菜单项：移除边框与 focus outline，避免与自定义 slot 样式冲突
+  .p-panelmenu-header,
+  .p-panelmenu-header-content,
+  .p-panelmenu-content .p-menuitem-link {
+    border: none !important;
+    outline: none !important;
+    box-shadow: none !important;
+  }
+
+  .p-panelmenu-header,
+  .p-panelmenu-header-content,
+  .p-panelmenu-content,
+  .p-menuitem-content {
+    background: transparent !important;
+    color: inherit !important;
+  }
+}
+
+/* 移动端抽屉侧栏：使用实体面板，避免页面内容透入造成“半透明脏底”。 */
+.admin-mobile-drawer-shell.p-drawer {
+  background: rgb(var(--sidebar-background)) !important;
+  border-right: 1px solid rgb(var(--sidebar-border) / 78%) !important;
+  border-radius: 0 !important;
+  box-shadow:
+    0 0 0 1px rgb(var(--foreground) / 4%),
+    var(--spacing-sm) 0 var(--spacing-2xl) rgb(var(--background) / 28%) !important;
+  backdrop-filter: none !important;
+}
+
+.admin-mobile-drawer-shell.p-drawer .p-drawer-header,
+.admin-mobile-drawer-shell.p-drawer .p-drawer-content {
+  background: rgb(var(--sidebar-background)) !important;
+}
+
+.admin-sidebar-drawer {
+  position: relative;
+  background: linear-gradient(180deg, rgb(var(--sidebar-background)) 0%, rgb(var(--card)) 100%);
+  isolation: isolate;
+}
+
+.admin-sidebar-drawer::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(180deg, rgb(var(--foreground) / 2%) 0%, transparent 18%, transparent 100%),
+    linear-gradient(90deg, rgb(var(--background) / 6%) 0%, transparent 22%);
+}
+
+.admin-sidebar-drawer > * {
+  position: relative;
+}
+
+.admin-sidebar-drawer .c-scrollbar,
+.admin-sidebar-drawer .c-scrollbar-native,
+.admin-sidebar-drawer .os-host {
+  background: transparent !important;
+}
+
+.admin-sidebar-drawer .c-scrollbar {
+  padding-bottom: var(--spacing-sm);
+}
+
+.admin-sidebar-drawer .admin-sidebar-menu {
+  padding-top: var(--spacing-xs);
+}
+
+.admin-sidebar-drawer .admin-sidebar-menu__item {
+  border-radius: var(--radius-md);
+}
+
+.admin-sidebar-drawer .admin-sidebar-menu__item-content {
+  box-shadow: inset 0 0 0 1px rgb(var(--foreground) / 2%);
+}
+
+.dark .admin-sidebar-drawer {
+  background: linear-gradient(180deg, rgb(var(--sidebar-background)) 0%, rgb(var(--card)) 100%);
+}
+
+.dark .admin-sidebar-drawer::before {
+  background:
+    linear-gradient(180deg, rgb(var(--foreground) / 3%) 0%, transparent 16%, transparent 100%),
+    linear-gradient(90deg, rgb(var(--background) / 10%) 0%, transparent 22%);
+}
+
+.dark .admin-mobile-drawer-shell.p-drawer {
+  background: rgb(var(--sidebar-background)) !important;
+  border-right-color: rgb(var(--sidebar-border) / 88%) !important;
+  box-shadow:
+    0 0 0 1px rgb(var(--foreground) / 3%),
+    var(--spacing-sm) 0 var(--spacing-2xl) rgb(var(--background) / 42%) !important;
+}
+
+/* PrimeVue 菜单 .p-highlight：已移除 reset 覆盖，由 menu-nav-misc preset + getMenuItemActive 完全控制 */
+
+/* Trinity Menu 几何锁定：强制 PrimeVue 菜单容器严守边界
+   注意：.p-panelmenu-content-container 必须保持 display:grid，
+         不可被此规则覆盖，否则 grid-template-rows 折叠动画失效。 */
+.p-panelmenu-header-content,
+.p-panelmenu-content,
+.p-menuitem-content {
+  display: flex !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  overflow: clip !important;
+  box-sizing: border-box !important;
+}
+
+/* Admin 顶栏 / 收缩侧栏共用 TieredMenu popup 面板 */
+.admin-menu-popup.p-tieredmenu,
+.admin-menu-popup .p-tieredmenu-submenu {
+  --admin-menu-popup-gutter: var(--spacing-xs);
+
+  min-width: min(72vw, calc(var(--spacing-3xl) * 2));
+  max-width: min(82vw, calc(var(--spacing-5xl) * 2));
+  padding: var(--spacing-xs);
+  border: calc(var(--spacing-xs) / 4) solid rgb(var(--border) / 22%);
+  border-radius: var(--radius-md);
+  background: rgb(var(--card) / 88%);
+  color: rgb(var(--card-foreground));
+  box-shadow:
+    0 var(--spacing-xs) var(--spacing-xl) rgb(var(--foreground) / 12%),
+    inset 0 calc(var(--spacing-xs) / 4) 0 rgb(var(--background) / 50%);
+}
+
+.dark .admin-menu-popup.p-tieredmenu,
+.dark .admin-menu-popup .p-tieredmenu-submenu {
+  border-color: rgb(var(--border) / 36%);
+  background: rgb(var(--card) / 78%);
+  box-shadow:
+    0 var(--spacing-xs) var(--spacing-xl) rgb(var(--background) / 34%),
+    inset 0 calc(var(--spacing-xs) / 4) 0 rgb(var(--foreground) / 8%);
+}
+
+.admin-menu-popup .p-tieredmenu-root-list,
+.admin-menu-popup .p-tieredmenu-submenu {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+  margin: 0;
+  list-style: none;
+}
+
+.admin-menu-popup .p-tieredmenu-item-content {
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+
+.admin-menu-popup__item {
+  min-height: var(--spacing-xl);
+  gap: var(--spacing-xs) !important;
+  padding-block: var(--spacing-xs) !important;
+  padding-inline: var(--spacing-sm) !important;
+  text-decoration: none;
+  transform: none !important;
+}
+
+.admin-menu-popup__item:hover,
+.admin-menu-popup__item:focus,
+.admin-menu-popup__item:active {
+  transform: none !important;
+}
+
+.p-datepicker {
+  .p-datepicker-dropdown {
+    background: rgb(var(--card)) !important;
+    border-color: rgb(var(--border)) !important;
+    color: rgb(var(--card-foreground)) !important;
+  }
+}
+
+/* --- PrimeVue Dark Mode Overrides --- */
+
+/* Fix: Raised Text Buttons lose contrast in dark mode */
+.dark .p-button-raised.p-button-text {
+  background-color: rgb(var(--primary) / 4%) !important;
+  @apply shadow-sm shadow-md;
+}
+
+.dark .p-button-raised.p-button-text:hover {
+  background-color: rgb(var(--primary) / 8%) !important;
+  @apply shadow-md shadow-lg -translate-y-0.2;
+}
+
+.dark .p-button-raised.p-button-text:active {
+  background-color: rgb(var(--primary) / 12%) !important;
+  @apply shadow-sm shadow-md translate-y-0;
+}
+
+.p-tabs {
+  width: 100%;
+  height: 100%;
+
+  .p-tabpanels {
+    flex: 1;
+
+    .p-tabpanel {
+      width: 100%;
+      height: 100%;
+    }
+  }
+}
+
+.p-datatable-selectable-row[data-p-selected='true'] {
+  td {
+    background-color: color-mix(in srgb, rgb(var(--primary)) 16%, rgb(var(--card))) !important;
+  }
+}
+
+.p-inputnumber-button-group {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
