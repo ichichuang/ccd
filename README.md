@@ -2,128 +2,162 @@
 
 # CCD
 
-### AI-governed frontend architecture platform
+### Self-protecting deterministic multi-runtime platform architecture
 
 [![Vue 3.5](https://img.shields.io/badge/Vue-3.5+-42b883?style=flat-square&logo=vuedotjs&logoColor=white)](https://vuejs.org/)
 [![Vite 7](https://img.shields.io/badge/Vite-7-646cff?style=flat-square&logo=vite&logoColor=white)](https://vite.dev/)
-[![PrimeVue 4](https://img.shields.io/badge/PrimeVue-4-41B883?style=flat-square)](https://primevue.org/)
-[![UnoCSS](https://img.shields.io/badge/UnoCSS-66-333?style=flat-square&logo=unocss&logoColor=white)](https://unocss.dev/)
 [![TypeScript 5.8](https://img.shields.io/badge/TypeScript-5.8-3178c6?style=flat-square&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
-[![Node.js 24.x](https://img.shields.io/badge/Node.js-24.x-339933?style=flat-square&logo=nodedotjs&logoColor=white)](https://nodejs.org/)
+[![Turborepo](https://img.shields.io/badge/Turborepo-2-black?style=flat-square&logo=turborepo)](https://turbo.build/repo)
 [![pnpm](https://img.shields.io/badge/pnpm-10-f69220?style=flat-square&logo=pnpm&logoColor=white)](https://pnpm.io/)
 [![License: GPL v3](https://img.shields.io/badge/License-GPL_v3-blue?style=flat-square)](./LICENSE)
 
-[Docs](./docs/README.md)
+[Docs](./docs/README.md) · [Governance](./docs/governance.md) · [API Surface](./docs/generated/api-surface-report.md) · [Governance Report](./docs/generated/governance-report.md)
 
 </div>
 
 ---
 
-## Project Positioning
+## Platform Position
 
-CCD is an AI-first frontend architecture platform for long-lived Vue 3 product systems. It uses a core-first documentation and governance model with three active runtime branches:
+CCD is an enterprise-grade governed platform repository for deterministic, AI-safe, multi-runtime product systems.
 
-```text
-CCD
-├── main                  -> Core/Web governance baseline
-├── desktop-version       -> Tauri Desktop Runtime
-└── main-portable-version -> Clean Portable Runtime
-```
+The repository has moved beyond monorepo restructuring into a self-protecting platform architecture:
 
-The `main` branch is the protected core/Web governance baseline. `desktop-version` and `main-portable-version` are the only active runtime lanes. Historical experimental branches are not active policy inputs.
-
-Details: [Docs](./docs/README.md)
-
----
-
-## Architecture Layers
-
-CCD treats governance assets as first-class architecture, not auxiliary prompt files.
+- machine-readable architecture policies
+- runtime-neutral contracts and core
+- isolated app runtime adapters
+- public API snapshot governance
+- supply-chain governance
+- release topology validation
+- AI-generated code guardrails
+- GitHub CI-enforced unified governance gate
 
 ```text
-AI Governance Layer
-  -> Protocol Layer
-  -> Workspace Layer
-  -> Application Runtime Layer
+packages/contracts  -> public ABI: interfaces and shared types only
+packages/core       -> runtime-neutral platform logic
+apps/web-demo       -> browser runtime shell and browser adapters
+apps/desktop        -> Tauri runtime shell and desktop adapters
+legacy/root-app     -> read-only historical archive
 ```
 
-| Layer                     | Ownership                                        | Responsibility                                                              |
-| ------------------------- | ------------------------------------------------ | --------------------------------------------------------------------------- |
-| AI Governance Layer       | `.ai/rules/**`, `.ai/manifests/**`               | Architecture laws, routing manifests, generated locks, validation contracts |
-| Protocol Layer            | `.ai/protocol/**`, `AGENTS.md`, `CLAUDE.md`      | Cross-agent entrypoints and generated adapter contracts                     |
-| Workspace Layer           | `docs/**`, `scripts/**`, `.ai/skills/**`         | Documentation, orchestration commands, Codex skills, browser automation     |
-| Application Runtime Layer | `src/**`, future `apps/**`, future `packages/**` | Vue runtime, domain modules, reusable packages, product surfaces            |
+Canonical dependency direction:
 
-Current runtime architecture includes:
+```text
+@ccd/contracts -> @ccd/core -> apps/*
+```
 
-- `HTTP -> Adapters -> API -> Hooks -> Stores -> Views` data flow
-- PrimeVue, ProForm, ProTable, Pinia, Alova, UnoCSS, and ECharts runtime systems
-- explicit state synchronization through `syncAction(type, payload)`
-- generated AI adapters and architecture validation gates
+Runtime APIs are allowed only in app adapter layers. `packages/contracts` and `packages/core` must remain free of browser, Node, Tauri, timer, crypto, storage, network, and console globals.
 
-Details: [Multi-Runtime Architecture](./docs/architecture.md).
+## Self-Protection Model
 
----
-
-## Unified Governance Commands
-
-The main architecture command is:
+CCD does not rely on contributor discipline for architecture safety. The active merge gate is:
 
 ```bash
-pnpm arch:check
+pnpm governance:gate
 ```
 
-It is the one-shot governance entrypoint for:
+The gate must pass before CI continues to typecheck, tests, lint, and production builds.
 
-- AI protocol sync
-- Codex skill sync
-- architecture doctor validation
-- drift validation
-- Codex preflight validation
-- git whitespace validation
+| Protection | Enforced By |
+| --- | --- |
+| Policy asset presence | `.ai/governance/policies/**` + `pnpm governance:validate` |
+| AI-safe code generation | `.ai/governance/policies/ai.json` + `pnpm ai:guard` |
+| Dependency boundaries | dependency-cruiser + `scripts/architecture/validate-boundaries.mjs` |
+| Runtime neutrality | `scripts/architecture/check-runtime-leaks.mjs` |
+| Public API immutability | `.ai/governance/api-snapshots/**` + `pnpm api:report` |
+| Supply-chain baseline | `.ai/governance/policies/supply-chain.json` + `pnpm supply:check` |
+| Release order | `.ai/governance/policies/release.json` + `pnpm release:governance` |
+| Workflow registry hygiene | `.ai/governance/policies/release.json` + `pnpm governance:github-workflows` |
+| Governance observability | generated reports under `docs/generated/**` and `.ai/generated/**` |
 
-Command tiers:
-
-```bash
-pnpm arch:check:fast # ai:doctor + drift-check
-pnpm arch:check      # sync + doctor + drift + preflight + git diff --check
-pnpm arch:check:full # arch:check + lint + type-check + test:run
-```
-
-Use `arch:check` after documentation, `.ai/**`, scripts, manifests, adapter, or architecture-rule changes. Use `arch:check:full` for release and PR gates.
-
----
+The repository also governs GitHub's remote workflow registry. Historical desktop workflow records remain visible for audit, but they are disabled and are no longer execution surfaces.
 
 ## Quick Start
 
 ```bash
 git clone git@github.com:ichichuang/ccd.git
 cd ccd
-pnpm install
-pnpm ai:setup:codex
-pnpm dev
+pnpm install --frozen-lockfile
+pnpm dev:web-demo
 ```
 
 Requirements:
 
-| Tool    | Version     |
-| ------- | ----------- |
-| Node.js | `24.x`      |
-| pnpm    | `>= 10.0.0` |
+| Tool | Version |
+| --- | --- |
+| Node.js | `24.x` |
+| pnpm | `>= 10.0.0` |
 
-Daily commands:
+## Core Commands
 
 ```bash
-pnpm dev
-pnpm build
-pnpm preview
-pnpm arch:check
-pnpm type-check
-pnpm lint:check
-pnpm test:run
+pnpm governance:gate      # single mandatory architecture governance gate
+pnpm build:ci             # governance gate + Turbo build
+pnpm arch:boundaries      # dependency topology and import boundary validation
+pnpm arch:runtime         # runtime leak scanner for contracts/core
+pnpm api:report           # API snapshot compatibility and API reports
+pnpm supply:check         # dependency policy and SBOM generation
+pnpm release:governance   # Changesets/release topology validation
+pnpm governance:github-workflows # GitHub Actions registry hygiene
+pnpm ai:guard             # AI-safe generated-code and architecture guard
 ```
 
----
+Affected-only commands:
+
+```bash
+pnpm affected:lint
+pnpm affected:test
+pnpm affected:typecheck
+pnpm affected:build
+```
+
+## GitHub CI Contract
+
+Active GitHub workflows:
+
+```text
+CI Guardian            -> .github/workflows/ci.yml
+Deploy to GitHub Pages -> .github/workflows/deploy.yml
+Dependabot Updates     -> dynamic/dependabot/dependabot-updates
+```
+
+Disabled historical workflow records:
+
+```text
+Build Desktop (Windows) -> disabled_manually
+Release Desktop         -> disabled_manually
+Smoke Desktop           -> disabled_manually
+```
+
+The primary CI workflow runs:
+
+```text
+frozen install
+-> AI adapter materialization
+-> pnpm governance:gate
+-> generated AI adapter sync check
+-> typecheck
+-> tests
+-> lint
+-> production build
+-> desktop bundle guard
+-> e2e QA
+```
+
+`pnpm governance:gate` is the single entrypoint for architecture regression blocking. Individual checks remain available for local debugging, but CI treats the unified gate as the authoritative platform protection layer.
+
+## Documentation
+
+- [Documentation Index](./docs/README.md)
+- [Architecture](./docs/architecture.md)
+- [Governance](./docs/governance.md)
+- [AI Workspace](./docs/ai-workspace.md)
+- [Runtime Isolation](./docs/runtime/runtime-isolation.md)
+- [Codex Quickstart](./docs/codex/quickstart.md)
+- [Generated Governance Report](./docs/generated/governance-report.md)
+- [Generated API Surface Report](./docs/generated/api-surface-report.md)
+
+Generated outputs under `docs/generated/**` and `.ai/generated/**` are produced by governance scripts. Do not edit generated reports manually.
 
 ## License
 

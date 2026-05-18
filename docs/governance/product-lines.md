@@ -1,75 +1,37 @@
-# Core Branch Policy
+# Workspace Runtime Policy
 
-CCD branch policy keeps one shared core governance system with two runtime lanes:
-
-- `main` is the default core branch and shared governance baseline.
-- `desktop-version` is the only active desktop runtime lane.
-- `main-portable-version` is the only active portable runtime lane.
-- No other local or remote branches are governance sources.
+CCD no longer models runtime ownership through old delivery branches. Runtime ownership is expressed by workspace packages and apps.
 
 ## Current Model
 
 ```text
-main
-  -> shared governance and Web runtime baseline
-  -> desktop-version composition
-  -> main-portable-version composition
+packages/contracts  -> implementation-free type and interface contracts
+packages/core       -> runtime-neutral platform logic
+apps/web-demo       -> browser runtime adapter shell
+apps/desktop        -> Tauri runtime adapter shell
+legacy/root-app     -> read-only historical archive
 ```
 
-## Product Line Matrix
+## Dependency Policy
 
-| Branch                  | Runtime Role       | Purpose                                                                  | Stability                 |
-| ----------------------- | ------------------ | ------------------------------------------------------------------------ | ------------------------- |
-| `main`                  | Core + Web runtime | Shared governance, architecture, docs, and browser-first product runtime | Stable protected baseline |
-| `desktop-version`       | Desktop runtime    | Tauri v2 shell, IPC, native capabilities, updater, desktop transport     | Active runtime lane       |
-| `main-portable-version` | Portable runtime   | Clean portable scaffold with isolated provider/cache/governance state    | Active template lane      |
+- `packages/contracts` imports no active package code.
+- `packages/core` may depend on `@ccd/contracts` only.
+- `apps/*` may depend on `@ccd/contracts` and `@ccd/core` through public exports only.
+- Apps may not import sibling apps.
+- Active packages may not import `legacy/**`.
 
-## Strict Minimal Branch Policy
+## Runtime Policy
 
-Keep only the default core branch plus active runtime lanes:
+- Browser APIs belong in `apps/web-demo/src/adapters/**`.
+- Tauri APIs and `invoke()` belong in `apps/desktop/src/adapters/**`.
+- Shared runtime capabilities must be represented as contracts and injected.
+- Adapter modules must remain thin runtime translation layers.
 
-- `main`
-- `desktop-version`
-- `main-portable-version`
+## Validation
 
-Do not recreate retired experiment branches or use them as merge baselines. Branch-specific work must either land on its owning runtime lane or be promoted into `main` only when it is runtime-neutral core policy.
-
-## Core-First Rule
-
-Runtime-neutral contracts land in core first; runtime branches compose those contracts.
-
-Allowed on `main`:
-
-- shared `.ai/**` governance
-- shared docs and governance scripts
-- Web runtime/app composition
-- contracts used by desktop and portable runtimes
-
-Not allowed on `main`:
-
-- direct Tauri shell logic
-- portable host-state assumptions
-- branch-specific governance forks
-- demo code masquerading as core runtime policy
-
-## Cleanup Policy
-
-- Keep documentation and governance aligned to the three active branches only.
-- Remove references to inactive branches unless they are explicitly marked historical.
-- Prefer shared core contracts over branch-local policy duplication.
-
-## Runtime Lane Rules
-
-### `desktop-version`
-
-Owns Tauri adapters, native filesystem/shell bridges, desktop IPC, updater metadata, and desktop capability drift checks.
-
-### `main-portable-version`
-
-Owns host-independent portable runtime topology, portable provider state, portable cache/governance/fingerprint state, and demo/business cleanup.
-
-## Related Documents
-
-- [Runtime Isolation](../runtime/runtime-isolation.md)
-- [Desktop Runtime](../runtime/desktop-runtime.md)
-- [Portable Runtime](../runtime/portable-runtime.md)
+```bash
+pnpm arch:boundaries
+pnpm arch:runtime
+pnpm api:report
+pnpm supply:check
+```

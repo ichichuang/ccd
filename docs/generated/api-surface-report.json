@@ -1,0 +1,63 @@
+{
+  "schemaVersion": 1,
+  "generatedBy": "scripts/architecture/check-api-surface.mjs",
+  "packages": [
+    {
+      "package": "@ccd/contracts",
+      "path": "packages/contracts",
+      "exports": [
+        "."
+      ],
+      "rootSymbols": [
+        "CryptoProvider",
+        "EnvironmentProvider",
+        "FileSystemAdapter",
+        "Logger",
+        "NetworkClient",
+        "NetworkRequest",
+        "NetworkResponse",
+        "ScheduledTask",
+        "Scheduler",
+        "StorageAdapter"
+      ]
+    },
+    {
+      "package": "@ccd/core",
+      "path": "packages/core",
+      "exports": [
+        "."
+      ],
+      "rootSymbols": [
+        "CoreAdapters",
+        "CoreRuntime",
+        "createCoreRuntime",
+        "CryptoProvider",
+        "EnvironmentProvider",
+        "FileSystemAdapter",
+        "Logger",
+        "NetworkClient",
+        "NetworkRequest",
+        "NetworkResponse",
+        "ScheduledTask",
+        "Scheduler",
+        "StorageAdapter"
+      ]
+    },
+    {
+      "package": "@ccd/web-demo",
+      "path": "apps/web-demo",
+      "exports": [
+        "."
+      ],
+      "rootSymbols": []
+    },
+    {
+      "package": "@ccd/desktop",
+      "path": "apps/desktop",
+      "exports": [
+        "."
+      ],
+      "rootSymbols": []
+    }
+  ]
+}

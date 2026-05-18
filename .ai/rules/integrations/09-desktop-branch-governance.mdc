@@ -1,9 +1,9 @@
 ---
-description: Desktop branch governance for Vue 3 + Tauri v2 bridge, capability drift control, and snapshot hygiene.
+description: Desktop workspace governance for Vue 3 + Tauri v2 adapter containment, capability drift control, and snapshot hygiene.
 globs:
-  - "src/**/*.ts"
-  - "src/**/*.vue"
-  - "src-tauri/**"
+  - "apps/desktop/src/**/*.ts"
+  - "apps/desktop/src/**/*.vue"
+  - "apps/desktop/src-tauri/**"
   - "scripts/drift-check.mjs"
   - "scripts/sync-desktop-config.mjs"
   - "e2e/**"
@@ -11,26 +11,24 @@ globs:
 alwaysApply: false
 ---
 
-# Desktop Branch Governance Law
+# Desktop Workspace Governance Law
 
-This rule is branch/path aware:
+This rule is workspace/path aware:
 
-- `main`: pure frontend governance by default. Do not require desktop/Tauri drift checks unless a task explicitly touches desktop bridge files.
-- `desktop-version`: desktop runtime governance is active for Tauri bridge/capability/config changes.
-- `main-portable-version`: portable starter governance is active; desktop runtime assets are not expected unless deliberately reintroduced.
-- Any direct edit under `src-tauri/**`, `src/utils/desktopWindow.ts`, `scripts/sync-desktop-config.mjs`, or desktop visual snapshots activates this rule regardless of branch.
+- Desktop runtime governance is active for changes under `apps/desktop/**`.
+- Any direct edit under `apps/desktop/src-tauri/**`, `apps/desktop/src/adapters/**`, `scripts/sync-desktop-config.mjs`, or desktop visual snapshots activates this rule.
 
 ## [LAW] Bridge SSOT
 
-- Desktop window/open-external behavior MUST be routed through `src/utils/desktopWindow.ts` or approved bridge wrappers.
+- Desktop window/open-external behavior MUST be routed through `apps/desktop/src/adapters/**` or approved bridge wrappers.
 - Business modules MUST NOT reintroduce desktop-only raw calls when a bridge helper already exists.
 - Cross-platform behavior MUST keep `isTauri()` + Web fallback paths together.
 
 ## [LAW] Capability & Config Pairing
 
 - Any Tauri capability or desktop runtime behavior change MUST review both:
-  - `src-tauri/capabilities/default.json`
-  - `src-tauri/tauri.conf.json`
+  - `apps/desktop/src-tauri/capabilities/default.json`
+  - `apps/desktop/src-tauri/tauri.conf.json`
 - Desktop config drift-sensitive tasks MUST run:
   - `pnpm sync:desktop-config`
   - `pnpm check:drift`

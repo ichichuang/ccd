@@ -1,12 +1,36 @@
 {
   "compilerOptions": {
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
     "baseUrl": ".",
     "paths": {
-      "@/*": ["src/*"]
-    },
-    "noUnusedLocals": true,
-    "noUnusedParameters": true
+      "@/*": [
+        "src/*"
+      ]
+    }
   },
   "files": [],
-  "references": [{ "path": "./tsconfig.app.json" }, { "path": "./tsconfig.node.json" }]
+  "references": [
+    {
+      "path": "./tsconfig.app.json"
+    },
+    {
+      "path": "./tsconfig.node.json"
+    },
+    {
+      "path": "./packages/contracts"
+    },
+    {
+      "path": "./packages/core"
+    },
+    {
+      "path": "./apps/web-demo"
+    },
+    {
+      "path": "./apps/desktop"
+    }
+  ],
+  "exclude": [
+    "legacy/**"
+  ]
 }

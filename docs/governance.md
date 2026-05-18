@@ -1,94 +1,226 @@
-# AI-Native Governance System
+# Platform Governance System
 
-CCD treats AI governance as a first-class architecture layer. The governance system is not a collection of helper prompts; it is the control plane that keeps agents, generated adapters, runtime rules, and validation commands aligned.
-
-Canonical baseline contracts are frozen in `docs/architecture/stable-baseline.md`.
-Codex execute-path reliability contracts are defined in `docs/runtime/execute-reliability.md`.
+CCD treats architecture governance as executable platform infrastructure. Governance is not advisory documentation; it is a machine-enforced gate wired into GitHub CI.
 
 ## Governance Stack
 
 ```text
-.ai/
-├── protocol/   -> agent entrypoints and adapter manifest
-├── rules/      -> architecture laws and implementation constraints
-├── skills/     -> local Codex execution capabilities
-├── manifests/  -> generated routing, rule, and skill locks
-└── runtime/    -> local repair ledgers and runtime state templates
+.ai/governance/policies/**       -> machine-readable policy engine
+.ai/governance/api-snapshots/**  -> public API baselines
+scripts/architecture/**          -> boundary, runtime, API, supply-chain, release checks
+scripts/governance/**            -> unified gate, reports, diagrams, protocol validation
+.github/workflows/ci.yml         -> merge-blocking CI execution
+.github/CODEOWNERS               -> ownership entrypoint
+package.json scripts             -> stable command surface
+turbo.json                       -> graph-aware orchestration
 ```
 
-Generated adapters:
+## Single Governance Gate
 
-- `AGENTS.md`
-- `CLAUDE.md`
-- `~/.codex/skills/**`
+The authoritative platform gate is:
 
-These are materialized from `.ai/**`; they are not the source of truth.
+```bash
+pnpm governance:gate
+```
 
-## Governance Flow
+It is the only architecture gate CI needs to call directly. Individual commands remain available for local debugging, but they are subordinate to the unified gate.
+
+| Gate Stage | Command | Blocks |
+| --- | --- | --- |
+| Governance assets | `pnpm governance:validate` | missing protocol, policy, runtime, or CI governance assets |
+| AI guard | `pnpm ai:guard -- --format=json` | unsafe generated code, raw runtime access outside adapters, deep imports |
+| Boundaries | `pnpm arch:boundaries` | dependency direction, cross-app imports, legacy imports, Tauri leakage |
+| Runtime neutrality | `pnpm arch:runtime` | browser/Node/Tauri/timer/storage/network globals in contracts/core |
+| API compatibility | `pnpm api:report` | public export removals, internal export leakage, API snapshot drift |
+| Supply chain | `pnpm supply:check` | lifecycle scripts, unapproved runtime dependencies, SBOM drift |
+| Release topology | `pnpm release:governance` | invalid Changesets config, release order drift, public export gaps |
+| Workflow registry | `pnpm governance:github-workflows` | active remote workflows not declared in policy |
+| Observability | `pnpm arch:report` | stale generated governance state |
+| Generated drift | internal git snapshot check | gate-generated report/API snapshot changes not committed |
+
+## GitHub CI Contract
+
+GitHub Actions enforce the following path:
 
 ```text
-authoring
-  -> sync
-  -> adapter generation
-  -> environment validation
-  -> doctor validation
-  -> drift validation
-  -> governance validation
-  -> protocol/adapters/orchestration validation
-  -> preflight validation
+frozen install
+-> AI adapter materialization
+-> pnpm governance:gate
+-> AI adapter sync drift check
+-> typecheck
+-> tests
+-> lint
+-> production build
+-> desktop bundle guard
+-> e2e QA
 ```
 
-The command entrypoint is:
+Merge protection should require the `CI Guardian / Core Quality` and `CI Guardian / E2E QA` jobs.
 
-```bash
-pnpm arch:check
+Current workflow topology:
+
+| Workflow | Path | State | Purpose |
+| --- | --- | --- | --- |
+| `CI Guardian` | `.github/workflows/ci.yml` | active | single governance gate, quality checks, build verification |
+| `Deploy to GitHub Pages` | `.github/workflows/deploy.yml` | active | web demo build and GitHub Pages deployment |
+| `Dependabot Updates` | `dynamic/dependabot/dependabot-updates` | active | GitHub-managed dependency updates |
+| `Build Desktop (Windows)` | `.github/workflows/build-desktop-windows.yml` | disabled | historical desktop lane |
+| `Release Desktop` | `.github/workflows/release-desktop.yml` | disabled | historical desktop release lane |
+| `Smoke Desktop` | `.github/workflows/smoke-desktop.yml` | disabled | historical desktop smoke lane |
+
+## Policy Engine
+
+Policy manifests live in `.ai/governance/policies/**`.
+
+| Policy | Purpose |
+| --- | --- |
+| `version.json` | policy baseline and governance phase |
+| `topology.json` | layers, package criticality, dependency direction, export rules |
+| `runtime.json` | runtime-neutral denylist and adapter boundaries |
+| `ai.json` | AI-safe code generation patterns and allowed adapter exceptions |
+| `api.json` | API snapshot directory and breaking-change rules |
+| `supply-chain.json` | dependency allowlists, lifecycle policy, license policy |
+| `release.json` | Changesets config, release order, protected paths, single-gate contract |
+
+Validation scripts should consume policy manifests through `scripts/governance/policy-utils.mjs`.
+
+## Public API Governance
+
+Public API state is version-governed through snapshots:
+
+```text
+.ai/governance/api-snapshots/ccd__contracts.json
+.ai/governance/api-snapshots/ccd__core.json
+.ai/governance/api-snapshots/ccd__web-demo.json
+.ai/governance/api-snapshots/ccd__desktop.json
 ```
 
-It runs:
+Run:
 
 ```bash
-pnpm ai:sync
-pnpm ai:sync:codex
-pnpm env:doctor
-pnpm ai:doctor
-pnpm drift-check
+pnpm api:report
+```
+
+Outputs:
+
+- `docs/generated/api-surface-report.json`
+- `docs/generated/api-surface-report.md`
+
+The check fails on removed public root symbols, removed export subpaths, or internal subpath leakage according to `.ai/governance/policies/api.json`.
+
+## Runtime Leak Governance
+
+`pnpm arch:runtime` fails if `packages/contracts` or `packages/core` use forbidden runtime APIs:
+
+- browser globals
+- Node builtins
+- Tauri imports
+- `invoke()`
+- timers
+- `fetch`
+- `console`
+- `crypto`
+- storage globals
+
+Runtime access belongs in:
+
+```text
+apps/web-demo/src/adapters/**
+apps/desktop/src/adapters/**
+```
+
+## Supply Chain Governance
+
+`pnpm supply:check` enforces:
+
+- no install lifecycle scripts
+- runtime dependency allowlists
+- singleton runtime dependency tracking
+- generated SBOM at `docs/generated/sbom.json`
+
+## Release Governance
+
+Release governance is defined by:
+
+- `.changeset/config.json`
+- `.ai/governance/policies/release.json`
+
+Release order is fixed:
+
+```text
+@ccd/contracts -> @ccd/core -> @ccd/web-demo -> @ccd/desktop
+```
+
+Critical packages:
+
+- `@ccd/contracts`
+- `@ccd/core`
+
+## GitHub Workflow Registry Hygiene
+
+GitHub Actions keeps workflow records after workflow files are deleted. CCD treats the remote registry as governed state.
+
+Policy:
+
+```text
+active remote workflows must correspond to declared files in .github/workflows
+orphaned historical workflows must be disabled, not reintroduced
+```
+
+Declared active workflow files:
+
+- `.github/workflows/ci.yml`
+- `.github/workflows/deploy.yml`
+
+Allowed remote-managed workflow paths:
+
+- `dynamic/dependabot/dependabot-updates`
+
+Check:
+
+```bash
+pnpm governance:github-workflows
+```
+
+If stale workflows are reported, disable them through the GitHub API while preserving run history:
+
+```bash
+gh api -X PUT repos/ichichuang/ccd/actions/workflows/<workflow-id>/disable
+```
+
+Current disabled historical workflow IDs:
+
+```text
+258463452 -> Build Desktop (Windows)
+261585932 -> Release Desktop
+261585911 -> Smoke Desktop
+```
+
+## Generated Artifacts
+
+Do not manually edit generated outputs. Regenerate through:
+
+```bash
+pnpm governance:gate
+```
+
+Generated architecture state is reviewable and should be committed with the source change:
+
+- `docs/generated/**`
+- `.ai/generated/**`
+- `.ai/governance/api-snapshots/**`
+
+## Local Debugging
+
+Use targeted checks only to isolate a failing gate:
+
+```bash
 pnpm governance:validate
-pnpm adapters:validate
-pnpm orchestration:validate
-pnpm codex:preflight
-git diff --check
+pnpm ai:guard -- --format=json
+pnpm arch:boundaries
+pnpm arch:runtime
+pnpm api:report
+pnpm supply:check
+pnpm release:governance
+pnpm arch:report
 ```
-
-## Command Tiers
-
-| Command                          | Purpose                                                                                                | Use Case                            |
-| -------------------------------- | ------------------------------------------------------------------------------------------------------ | ----------------------------------- |
-| `pnpm env:doctor`                | node/pnpm version, binary resolution, shell wrapper leakage                                            | runtime preflight                   |
-| `pnpm ai-os:doctor`              | project governance plus optional machine runtime checks when `STRICT_LOCAL_RUNTIME=1` is set           | local AI OS preflight               |
-| `pnpm ai-os:doctor:strict-local` | project governance plus `/Users/cc/.ai-os` runtime freeze audit                                        | user-machine gate, not CI           |
-| `pnpm runtime:env`               | deterministic runtime bootstrap with `mise` for Node and pinned pnpm binary path                       | local runtime verification          |
-| `pnpm runtime:env:strict`        | fail fast when `mise` is unavailable                                                                   | Node migration gate                 |
-| `pnpm runtime:exec`              | run one command through the deterministic runtime wrapper                                              | shell-independent command execution |
-| `pnpm runtime:exec:strict`       | shell-independent command execution with strict `mise` requirement                                     | Node migration gate                 |
-| `pnpm arch:check:fast`           | `env:doctor + ai:doctor + drift-check + governance:validate`                                           | quick local feedback                |
-| `pnpm arch:check`                | env, sync, generated adapter, doctor, drift, governance, adapter, orchestration, preflight, whitespace | normal architecture gate            |
-| `pnpm arch:check:full`           | `arch:check + arch:snapshot + arch:report + arch:visualize + lint + type-check + test:run`             | PR, release, CI-grade local gate    |
-| `pnpm arch:snapshot`             | generate machine-readable architecture snapshot                                                        | deterministic governance inventory  |
-| `pnpm arch:report`               | generate governance report outputs                                                                     | governance state reporting          |
-| `pnpm arch:visualize`            | generate Mermaid architecture diagrams                                                                 | synchronized visualization          |
-
-## Governance Boundaries
-
-- Edit `.ai/**` canonical sources first.
-- Regenerate adapters with `pnpm arch:check` or `pnpm ai:sync`.
-- Keep generated adapter changes reviewable and committed when canonical sources change.
-- Do not manually maintain `AGENTS.md`, `CLAUDE.md`, or `~/.codex/skills/**`.
-- Do not weaken architecture rules to pass a local change; fix the violating surface or record an explicit architecture decision.
-
-## Product Line Integration
-
-| Product Line            | Governance Expectation                                                            |
-| ----------------------- | --------------------------------------------------------------------------------- |
-| `main`                  | full governance system, full examples, full architecture docs                     |
-| `desktop-version`       | full governance plus desktop branch guardrails and Tauri drift checks             |
-| `main-portable-version` | minimal but functional governance, no example-specific residue unless intentional |

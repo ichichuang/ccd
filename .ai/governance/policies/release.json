@@ -1,0 +1,41 @@
+{
+  "schemaVersion": 1,
+  "versionGovernance": "changesets",
+  "changesetConfig": ".changeset/config.json",
+  "releaseOrder": ["@ccd/contracts", "@ccd/core", "@ccd/web-demo", "@ccd/desktop"],
+  "criticalPackages": ["@ccd/contracts", "@ccd/core"],
+  "singleGate": {
+    "command": "pnpm governance:gate",
+    "requiredChecks": [
+      "governance assets",
+      "AI architecture guard",
+      "architecture boundaries",
+      "runtime leak detection",
+      "API snapshot compatibility",
+      "supply-chain policy",
+      "release topology",
+      "GitHub workflow registry hygiene",
+      "governance report sync"
+    ]
+  },
+  "githubWorkflowRegistry": {
+    "required": true,
+    "mode": "warn-without-token",
+    "allowedActiveWorkflowFiles": [
+      ".github/workflows/ci.yml",
+      ".github/workflows/deploy.yml"
+    ],
+    "allowedRemoteWorkflowPaths": [
+      "dynamic/dependabot/dependabot-updates"
+    ],
+    "orphanPolicy": "disabled"
+  },
+  "protectedPaths": [
+    "packages/contracts/**",
+    "packages/core/**",
+    ".ai/governance/policies/**",
+    ".github/workflows/**",
+    "scripts/architecture/**",
+    "scripts/governance/**"
+  ]
+}

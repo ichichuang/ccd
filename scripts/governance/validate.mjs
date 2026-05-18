@@ -6,7 +6,16 @@ import process from 'node:process'
 const cwd = process.cwd()
 const required = [
   '.ai/protocol/version.json',
+  '.ai/governance/policies/version.json',
+  '.ai/governance/policies/topology.json',
+  '.ai/governance/policies/runtime.json',
+  '.ai/governance/policies/ai.json',
+  '.ai/governance/policies/api.json',
+  '.ai/governance/policies/supply-chain.json',
+  '.ai/governance/policies/release.json',
   '.ai/orchestration/manifest.json',
+  '.changeset/config.json',
+  '.github/CODEOWNERS',
   'mise.toml',
   'scripts/env.sh',
   'scripts/exec.sh',

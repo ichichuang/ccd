@@ -1,0 +1,30 @@
+{
+  "name": "@ccd/web-demo",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite --host 0.0.0.0",
+    "build": "vue-tsc -p tsconfig.json --noEmit && vite build",
+    "preview": "vite preview",
+    "type-check": "vue-tsc -p tsconfig.json --noEmit",
+    "typecheck": "pnpm type-check",
+    "test": "vitest run --passWithNoTests"
+  },
+  "dependencies": {
+    "@ccd/contracts": "workspace:*",
+    "@ccd/core": "workspace:*",
+    "@vitejs/plugin-vue": "^6.0.3",
+    "typescript": "^5.8.3",
+    "vite": "^7.3.1",
+    "vue": "^3.5.12",
+    "vue-tsc": "^2.2.10"
+  },
+  "devDependencies": {},
+  "exports": {
+    ".": {
+      "types": "./dist/main.d.ts",
+      "import": "./dist/assets/index.js"
+    }
+  }
+}

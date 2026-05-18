@@ -1,6 +1,6 @@
 ---
 description: Vite + Tauri v2 双端桥接规则，强制 OS 能力采用 isTauri 双分支与 Web fallback。
-globs: ["src/**/*.vue", "src/**/*.ts", "src/**/*.tsx"]
+globs: ["apps/desktop/src/**/*.vue", "apps/desktop/src/**/*.ts", "apps/desktop/src/**/*.tsx", "apps/desktop/src-tauri/**"]
 alwaysApply: false
 ---
 
@@ -10,9 +10,10 @@ alwaysApply: false
 name: cross-platform-tauri
 description: Enforce universal bridge patterns for Web/Desktop dual-runtime with Vite + Tauri v2.
 globs:
-  - "src/**/*.vue"
-  - "src/**/*.ts"
-  - "src/**/*.tsx"
+  - "apps/desktop/src/**/*.vue"
+  - "apps/desktop/src/**/*.ts"
+  - "apps/desktop/src/**/*.tsx"
+  - "apps/desktop/src-tauri/**"
 triggerKeywords:
   - "tauri"
   - "desktop"
@@ -31,12 +32,12 @@ triggerKeywords:
 
 本规则仅在 Tauri / desktop / OS bridge 能力被触发时适用。
 
-主线 `main` 分支默认按纯前端 Vite 应用处理；不得把 Tauri 能力当作所有任务的默认前提。
-`desktop-version` 或显式触碰 `src-tauri/**` / desktop bridge 代码时，才进入 Web/Desktop 双栖架构语境：
+`apps/web-demo` 按纯浏览器 Vite 应用处理；不得把 Tauri 能力当作所有任务的默认前提。
+显式触碰 `apps/desktop/**`、`apps/desktop/src-tauri/**` 或 desktop adapter 代码时，才进入 Web/Desktop 双运行时架构语境：
 
 - 同一套前端代码在浏览器与桌面 WebView 两端运行。
 - 任何涉及 OS 级能力的实现都必须遵循“桥接而非分裂”的双轨设计。
-- 平台探针 SSOT 为 `@/utils/env` 中的 `isTauri()`。
+- 平台能力必须通过 `apps/desktop/src/adapters/**` 注入，不得泄漏到 `packages/core`。
 
 ---
 
@@ -85,7 +86,7 @@ if (isTauri()) {
 
 ## 4. 禁止污染（No Node API in Frontend）
 
-在前端 `src/` 目录中，绝对禁止混入 Node.js 原生 API：
+在 active app/package 前端代码中，绝对禁止混入 Node.js 原生 API：
 
 - `fs`
 - `path`

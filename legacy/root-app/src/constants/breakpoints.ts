@@ -1,0 +1,33 @@
+/* eslint-disable @typescript-eslint/naming-convention */
+
+import type { SizeScaleKey } from './sizeScale'
+
+/**
+ * 全站响应式断点定义 (v2.0 Standard · Single Source of Truth)
+ * 覆盖：移动端 -> 平板 -> 笔记本 -> 桌面 -> 2K -> 4K
+ * 键与 SIZE_SCALE_KEYS 强一致，类型贯通尺寸系统
+ */
+export const BREAKPOINTS: Record<SizeScaleKey, number> = {
+  // --- 移动端细分 ---
+  xs: 480, // 超小屏 / 折叠屏外屏
+  sm: 640, // 大屏手机横屏 / 小平板
+
+  // --- 平板与桌面过渡 ---
+  md: 768, // iPad Mini 竖屏 (平板分界线)
+  lg: 1024, // iPad Pro 横屏 / 桌面端起点 (Sidebar 展开点)
+
+  // --- 桌面端主流 ---
+  xl: 1280, // 主流笔记本 (13/14 寸)
+  '2xl': 1536, // 大屏笔记本 (15/16 寸) / 办公显示器
+
+  // --- 高清大屏 ---
+  '3xl': 1920, // 1080P 全高清
+  '4xl': 2560, // 2K QHD
+  '5xl': 3840, // 4K UHD
+} as const
+
+/** 断点键名，与尺寸阶梯键统一 (SizeScaleKey) */
+export type BreakpointKey = SizeScaleKey
+
+/** 基于物理屏幕短边的平板设备检测阈值（非布局响应断点，仅用于 UA + 屏幕尺寸的设备类型判定） */
+export const TABLET_DETECTION_MIN_SHORT_SIDE = 600

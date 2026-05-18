@@ -25,7 +25,7 @@ assignees: ''
 
 - 操作系统 (OS): [e.g. macOS 14, Windows 11]
 - 浏览器 (Browser): [e.g. Chrome, Safari]
-- Node.js 版本: [e.g. v26.1.0]
+- Node.js 版本: [e.g. v24.x]
 - pnpm 版本: [e.g. v10.x]
 
 ## 📎 附加截图或日志 (Additional context)

@@ -59,8 +59,6 @@
 | Branch                  | Contract                                                |
 | ----------------------- | ------------------------------------------------------- |
 | `main`                  | frozen canonical core/Web governance baseline           |
-| `desktop-version`       | profile-driven desktop migration, no governance fork    |
-| `main-portable-version` | isolated portable migration, no machine-runtime leakage |
 
 ## Validation Contract
 

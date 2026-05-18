@@ -1,29 +1,35 @@
 # Desktop Runtime
 
-The `desktop-version` branch is CCD's Tauri v2 desktop product line.
+`apps/desktop` is the Tauri v2 runtime surface for CCD.
 
 ## Runtime Contract
 
-- Native shell runtime
-- Tauri v2 IPC boundary
-- desktop capability abstraction
-- desktop release metadata and configuration
-- bridge helpers for window, external-link, file, notification, and OS-level behavior
+- Vue 3 + Vite application running inside Tauri WebView.
+- Depends on `@ccd/contracts` and `@ccd/core` through public exports.
+- Encapsulates all Tauri APIs in `apps/desktop/src/adapters/**`.
+- Exposes desktop capabilities to core through injected contracts.
 
-## Boundaries
+## Adapter Ownership
 
-- Use `desktop-version` as the only active desktop runtime lane.
-- Do not move desktop-only runtime assumptions back into `main`.
-- Do not call Tauri APIs directly from business modules when a bridge helper exists.
-- Keep `isTauri()` branching and Web fallback behavior together for shared features.
+Tauri APIs and `invoke()` are allowed only in:
+
+```text
+apps/desktop/src/adapters/**
+```
+
+Current adapter responsibilities:
+
+- desktop storage adapter
+- desktop filesystem adapter
+- desktop network adapter
+- desktop logger adapter
 
 ## Validation
 
 ```bash
-pnpm arch:check
-pnpm sync:desktop-config
-pnpm check:drift
-pnpm type-check
+pnpm --filter @ccd/desktop typecheck
+pnpm --filter @ccd/desktop test
+pnpm --filter @ccd/desktop build
+pnpm arch:boundaries
+pnpm arch:runtime
 ```
-
-Run targeted Playwright or desktop smoke checks when routes, layout, shell behavior, or visual baselines change.

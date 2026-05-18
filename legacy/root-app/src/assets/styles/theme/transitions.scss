@@ -1,0 +1,221 @@
+/**
+ * 主题切换动画样式入口
+ * v3.0 - 统一 z-index + fallback 值
+ */
+
+@use './modes/circle';
+@use './modes/curtain';
+@use './modes/diamond';
+@use './modes/implosion';
+@use './modes/glitch';
+@use './modes/fade';
+
+/* ═══════════════════════════════════════════════════════════════
+   Color Scheme 基础设置 - 稳定浏览器原生渲染
+   ═══════════════════════════════════════════════════════════════ */
+:root {
+  color-scheme: light;
+}
+
+:root.dark {
+  color-scheme: dark;
+}
+
+html[data-e2e-mode='visual'],
+html[data-e2e-mode='visual'] *,
+html[data-e2e-mode='visual'] *::before,
+html[data-e2e-mode='visual'] *::after {
+  transition: none !important;
+  animation: none !important;
+  scroll-behavior: auto !important;
+}
+
+/* 防御：View Transition 期间禁用所有原生 CSS 过渡 */
+html.is-view-transitioning,
+html.is-view-transitioning *,
+html.is-view-transitioning *::before,
+html.is-view-transitioning *::after,
+html.is-view-transitioning body {
+  transition: none !important;
+  animation-delay: -1ms !important;
+  animation-duration: 1ms !important;
+  animation-iteration-count: 1 !important;
+}
+
+/* 窗口 Resize 期间：压制底层过渡，但豁免 PrimeVue 浮层和 PanelMenu（避免误触 app-resizing 时掐断弹层出入场动画和菜单展开动画） */
+html.app-resizing
+  *:not(
+    .p-dialog,
+    .p-dialog *,
+    .p-drawer,
+    .p-drawer *,
+    .p-popover,
+    .p-popover *,
+    .p-tieredmenu,
+    .p-tieredmenu *,
+    .p-panelmenu,
+    .p-panelmenu *
+  ),
+html.app-resizing
+  *:not(
+    .p-dialog,
+    .p-dialog *,
+    .p-drawer,
+    .p-drawer *,
+    .p-popover,
+    .p-popover *,
+    .p-tieredmenu,
+    .p-tieredmenu *,
+    .p-panelmenu,
+    .p-panelmenu *
+  )::before,
+html.app-resizing
+  *:not(
+    .p-dialog,
+    .p-dialog *,
+    .p-drawer,
+    .p-drawer *,
+    .p-popover,
+    .p-popover *,
+    .p-tieredmenu,
+    .p-tieredmenu *,
+    .p-panelmenu,
+    .p-panelmenu *
+  )::after {
+  transition-duration: 0s !important;
+}
+
+/* 过渡恢复期：防止动画结束后元素跳变 */
+html.theme-transition-recovery,
+html.theme-transition-recovery *,
+html.theme-transition-recovery *::before,
+html.theme-transition-recovery *::after {
+  transition: none !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   View Transitions API 基础样式 - 统一分层 + fallback
+   z-index: old=1, new=9999（与各模式保持一致）
+   animation-fill-mode: forwards 确保动画结束状态保持
+   ═══════════════════════════════════════════════════════════════ */
+
+::view-transition-old(root) {
+  animation: none;
+  animation-fill-mode: forwards;
+  will-change: clip-path, opacity;
+  mix-blend-mode: normal;
+  z-index: 1;
+}
+
+::view-transition-new(root) {
+  animation: none;
+  animation-fill-mode: forwards;
+  will-change: clip-path, opacity;
+  mix-blend-mode: normal;
+  z-index: 9999;
+}
+
+/* 主题切换渐隐渐现蒙层样式 */
+.theme-fade-overlay {
+  pointer-events: none;
+  position: fixed;
+  inset: 0;
+  z-index: 2000;
+  opacity: 0;
+  transition: opacity var(--route-transition-duration, 0.4s) ease;
+}
+
+/* 浏览器兼容性处理 */
+@supports not (view-transition-name: root) {
+  .theme-transition {
+    transition:
+      opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1),
+      transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+}
+
+/* 根节点永久禁用 CSS 过渡 */
+html,
+body {
+  transition: none !important;
+}
+
+/* 路由级过渡（全局 SSOT，与 AnimateRouterView 的 --route-transition-duration 联动） */
+
+/* 🎬 影视级空间阻尼过渡 (Cinematic Fade) */
+.cinematic-fade-enter-active {
+  /* 如果用户没有配置 meta.transition.duration，则默认使用 0.5s 的充裕入场时间 */
+  transition:
+    opacity var(--route-transition-duration, 0.5s) cubic-bezier(0.16, 1, 0.3, 1),
+    transform var(--route-transition-duration, 0.5s) cubic-bezier(0.16, 1, 0.3, 1),
+    filter var(--route-transition-duration, 0.5s) cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: transform, opacity, filter;
+}
+
+.cinematic-fade-leave-active {
+  /* 出场默认压缩到 0.3s，快速让出舞台 */
+  transition:
+    opacity var(--route-transition-duration, 0.3s) cubic-bezier(0.5, 0, 0, 1),
+    transform var(--route-transition-duration, 0.3s) cubic-bezier(0.5, 0, 0, 1),
+    filter var(--route-transition-duration, 0.3s) cubic-bezier(0.5, 0, 0, 1);
+  will-change: transform, opacity, filter;
+}
+
+/* 离场终点：极轻微的上浮缩小与高斯模糊 */
+.cinematic-fade-leave-to {
+  opacity: 0;
+  transform: translateY(-12px) scale(0.98);
+  filter: blur(6px);
+}
+
+/* 入场起点：深水区下沉与高斯模糊 */
+.cinematic-fade-enter-from {
+  opacity: 0;
+  transform: translateY(16px) scale(0.97);
+  filter: blur(6px);
+}
+
+/* 横向滑入：无 absolute，避免高度塌陷与滚动闪烁 */
+.fade-slide-enter-active {
+  transition:
+    opacity var(--route-transition-duration, 0.5s) cubic-bezier(0.16, 1, 0.3, 1),
+    transform var(--route-transition-duration, 0.5s) cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.fade-slide-leave-active {
+  transition:
+    opacity var(--route-transition-duration, 0.3s) cubic-bezier(0.5, 0, 0, 1),
+    transform var(--route-transition-duration, 0.3s) cubic-bezier(0.5, 0, 0, 1);
+}
+
+.fade-slide-enter-from {
+  opacity: 0;
+  transform: translateX(-36px);
+}
+
+.fade-slide-leave-to {
+  opacity: 0;
+  transform: translateX(24px);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   Page Loading Overlay - 内容区淡入淡出
+   duration: 0.3s, cubic-bezier(0.4, 0, 0.2, 1) ease
+   ═══════════════════════════════════════════════════════════════ */
+.fade-enter-active {
+  transition: opacity var(--route-transition-duration, 0.5s) cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.fade-leave-active {
+  transition: opacity var(--route-transition-duration, 0.3s) cubic-bezier(0.5, 0, 0, 1);
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}
+
+.fade-enter-to,
+.fade-leave-from {
+  opacity: 1;
+}

@@ -136,9 +136,9 @@ For UI-critical changes, prefer Playwright CLI plus `.ai/skills/codex/architectu
 
 ## 6) Stack Defaults
 
-- Current repo truth: Vue 3, TypeScript, Vite, UnoCSS, PrimeVue, Pinia, Alova, Vitest, and Playwright.
-- Branch truth: `main` is the full Web architecture source, `desktop-version` is the Tauri v2 desktop rebuild line, and `main-portable-version` is the clean portable starter.
-- Only `main`, `desktop-version`, and `main-portable-version` are active governance branches.
+- Current repo truth: pnpm + Turbo monorepo with Vue 3, TypeScript, Vite, UnoCSS, PrimeVue, Vitest, and Playwright.
+- Workspace truth: `packages/contracts -> packages/core -> apps/*` is the active runtime topology.
+- Branch-based runtime lanes are retired; runtime ownership lives in workspace packages and app adapters.
 - Preserve existing repository patterns before introducing React or Tailwind-specific abstractions.
 - Keep performance work measurable and bias toward Lighthouse 90+ for user-facing routes.
 

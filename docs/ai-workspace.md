@@ -29,21 +29,23 @@ If you only need the product entrypoint, read [README.md](../README.md). If you 
 authoring
   -> sync
   -> adapter generation
-  -> doctor validation
-  -> drift validation
-  -> preflight validation
+  -> governance gate
+  -> remote workflow registry hygiene
+  -> generated artifact drift validation
 ```
 
-Use the unified entrypoint:
+Use the architecture entrypoint:
 
 ```bash
-pnpm arch:check
+pnpm governance:gate
 ```
 
 Command tiers:
 
 | Command                   | Scope                                                             |
 | ------------------------- | ----------------------------------------------------------------- |
+| `pnpm governance:gate`    | single CI-grade governance gate for architecture protection       |
+| `pnpm governance:github-workflows` | GitHub Actions registry hygiene and orphan workflow detection |
 | `pnpm env:doctor`         | node/pnpm runtime and shell wrapper validation                    |
 | `pnpm runtime:env`        | deterministic runtime wrapper verification                        |
 | `pnpm runtime:env:strict` | strict Node `mise` migration gate                                 |
@@ -151,15 +153,17 @@ Aggressive cleanup can remove browser artifacts, `tmp/`, and Codex browser sessi
 
 ---
 
-## Product Line Governance
+## Workspace Runtime Governance
 
-- `main`: full Web architecture source with examples, docs, AI governance, and demo delivery.
-- `desktop-version`: Tauri v2 desktop rebuild line; desktop bridge and capability changes require desktop drift checks.
-- `main-portable-version`: clean portable starter; preserve `.ai/**` while pruning example-specific residue.
+- `packages/contracts`: implementation-free interfaces and shared types.
+- `packages/core`: runtime-neutral platform logic.
+- `apps/web-demo`: browser runtime adapters.
+- `apps/desktop`: Tauri runtime adapters.
+- `legacy/root-app`: read-only historical archive; never imported by active graphs.
 
 For architecture releases:
 
 1. update canonical docs, rules, scripts, or skills
-2. run `pnpm arch:check`
+2. run `pnpm governance:gate`
 3. run targeted runtime checks when needed
-4. propagate applicable changes to sibling product lines only after reviewing their branch contracts
+4. keep generated reports, API snapshots, and adapters committed with their source changes

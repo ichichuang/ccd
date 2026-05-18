@@ -19,7 +19,6 @@ export const include = [
   // 工具库 (强烈建议保留)
   'dayjs',
   'lodash-es', // 关键：lodash-es 文件极多，预构建能显著减少 dev 请求数
-  'yup',
   'crypto-es', // AES/SHA/PBKDF2 等子模块较多，预构建减少 dev 模式 ESM 请求数
 
   // PrimeVue 表单库

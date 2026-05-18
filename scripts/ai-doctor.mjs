@@ -14,7 +14,6 @@ const currentBranch = spawnSync('git', ['branch', '--show-current'], {
   encoding: 'utf8',
   stdio: 'pipe',
 }).stdout.trim() || 'unknown'
-const isDesktopBranch = currentBranch === 'desktop-version'
 
 const canonicalMustExist = [
   '.ai/README.md',
@@ -172,9 +171,7 @@ const listMergedFiles = relDirs => {
 
 console.log('AI workspace doctor')
 console.log('===================')
-ok(
-  `branch governance: ${currentBranch} (${isDesktopBranch ? 'desktop/Tauri checks active' : 'pure frontend checks active'})`
-)
+ok(`workspace governance: ${currentBranch}`)
 
 for (const rel of canonicalMustExist) {
   const abs = path.join(cwd, rel)

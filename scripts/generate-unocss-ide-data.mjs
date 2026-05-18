@@ -14,7 +14,12 @@ function ensureParent(relPath) {
 }
 
 function readShortcutNames() {
-  const source = fs.readFileSync(path.join(cwd, sourcePath), 'utf8')
+  const absoluteSource = path.join(cwd, sourcePath)
+  if (!fs.existsSync(absoluteSource)) {
+    console.log(`[UNOCSS] skipped: ${sourcePath} not present in workspace root`)
+    return []
+  }
+  const source = fs.readFileSync(absoluteSource, 'utf8')
   const names = []
   const keyPattern = /^\s*(?:\[['"]([^'"]+)['"]\]|['"]([^'"]+)['"]|([A-Za-z][\w-]*))\s*:/gm
   let match

@@ -28,6 +28,8 @@ lcov.info
 # Tauri/Rust generated outputs (main branch treats src-tauri artifacts as local build cache)
 src-tauri/target/
 src-tauri/gen/
+apps/*/src-tauri/target/
+apps/*/src-tauri/gen/
 
 # Environment variables
 # 忽略包含敏感信息的环境变量文件
@@ -126,3 +128,7 @@ CLAUDE.md
 # Local AI runtime state
 .ai/runtime/repair_list.txt
 .ai/runtime/*.json
+
+# Workspace build outputs
+apps/*/dist/
+packages/*/dist/

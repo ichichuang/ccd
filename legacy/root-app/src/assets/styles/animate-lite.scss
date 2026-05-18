@@ -1,0 +1,361 @@
+/*
+ * Local subset of the animate__ class contract used by AnimateWrapper,
+ * AnimateRouterView, and layout transitions. Keep this list deliberately
+ * small; do not restore a full third-party animation runtime.
+ */
+.animate__animated {
+  animation-duration: var(--animate-duration, 1s);
+  animation-delay: var(--animate-delay, 0s);
+  animation-fill-mode: both;
+}
+
+.animate__animated.animate__faster {
+  animation-duration: calc(var(--animate-duration, 1s) / 2);
+}
+
+.animate__animated.animate__fast {
+  animation-duration: calc(var(--animate-duration, 1s) * 0.8);
+}
+
+.animate__animated.animate__slow {
+  animation-duration: calc(var(--animate-duration, 1s) * 2);
+}
+
+.animate__animated.animate__slower {
+  animation-duration: calc(var(--animate-duration, 1s) * 3);
+}
+
+.animate__repeat-2 {
+  animation-iteration-count: 2;
+}
+
+.animate__repeat-3 {
+  animation-iteration-count: 3;
+}
+
+.animate__infinite {
+  animation-iteration-count: infinite;
+}
+
+.animate__fadeIn {
+  animation-name: animate-lite-fade-in;
+}
+
+.animate__fadeOut {
+  animation-name: animate-lite-fade-out;
+}
+
+.animate__fadeInUp {
+  animation-name: animate-lite-fade-in-up;
+}
+
+.animate__fadeOutUp {
+  animation-name: animate-lite-fade-out-up;
+}
+
+.animate__fadeOutDown {
+  animation-name: animate-lite-fade-out-down;
+}
+
+.animate__zoomIn {
+  animation-name: animate-lite-zoom-in;
+}
+
+.animate__zoomOut {
+  animation-name: animate-lite-zoom-out;
+}
+
+.animate__slideInDown {
+  animation-name: animate-lite-slide-in-down;
+}
+
+.animate__slideInLeft {
+  animation-name: animate-lite-slide-in-left;
+}
+
+.animate__slideOutUp {
+  animation-name: animate-lite-slide-out-up;
+}
+
+.animate__slideOutRight {
+  animation-name: animate-lite-slide-out-right;
+}
+
+.animate__bounceIn {
+  animation-name: animate-lite-bounce-in;
+}
+
+.animate__bounceOut {
+  animation-name: animate-lite-bounce-out;
+}
+
+.animate__flipInX {
+  backface-visibility: visible;
+  animation-name: animate-lite-flip-in-x;
+}
+
+.animate__flipOutX {
+  backface-visibility: visible;
+  animation-name: animate-lite-flip-out-x;
+}
+
+.animate__rotateIn {
+  transform-origin: center;
+  animation-name: animate-lite-rotate-in;
+}
+
+.animate__rotateOut {
+  transform-origin: center;
+  animation-name: animate-lite-rotate-out;
+}
+
+@keyframes animate-lite-fade-in {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes animate-lite-fade-out {
+  from {
+    opacity: 1;
+  }
+
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes animate-lite-fade-in-up {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 100%, 0);
+  }
+
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+@keyframes animate-lite-fade-out-up {
+  from {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+
+  to {
+    opacity: 0;
+    transform: translate3d(0, -100%, 0);
+  }
+}
+
+@keyframes animate-lite-fade-out-down {
+  from {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+
+  to {
+    opacity: 0;
+    transform: translate3d(0, 100%, 0);
+  }
+}
+
+@keyframes animate-lite-zoom-in {
+  0% {
+    opacity: 0;
+    transform: scale3d(0.82, 0.82, 0.82);
+  }
+
+  50% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 1;
+    transform: scale3d(1, 1, 1);
+  }
+}
+
+@keyframes animate-lite-zoom-out {
+  0% {
+    opacity: 1;
+    transform: scale3d(1, 1, 1);
+  }
+
+  50% {
+    opacity: 0;
+    transform: scale3d(0.82, 0.82, 0.82);
+  }
+
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes animate-lite-slide-in-down {
+  from {
+    visibility: visible;
+    transform: translate3d(0, -100%, 0);
+  }
+
+  to {
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+@keyframes animate-lite-slide-in-left {
+  from {
+    visibility: visible;
+    transform: translate3d(-100%, 0, 0);
+  }
+
+  to {
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+@keyframes animate-lite-slide-out-up {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+
+  to {
+    visibility: hidden;
+    transform: translate3d(0, -100%, 0);
+  }
+}
+
+@keyframes animate-lite-slide-out-right {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+
+  to {
+    visibility: hidden;
+    transform: translate3d(100%, 0, 0);
+  }
+}
+
+@keyframes animate-lite-bounce-in {
+  0% {
+    opacity: 0;
+    transform: scale3d(0.3, 0.3, 0.3);
+  }
+
+  20% {
+    transform: scale3d(1.08, 1.08, 1.08);
+  }
+
+  40% {
+    transform: scale3d(0.94, 0.94, 0.94);
+  }
+
+  60% {
+    opacity: 1;
+    transform: scale3d(1.03, 1.03, 1.03);
+  }
+
+  80% {
+    transform: scale3d(0.98, 0.98, 0.98);
+  }
+
+  100% {
+    opacity: 1;
+    transform: scale3d(1, 1, 1);
+  }
+}
+
+@keyframes animate-lite-bounce-out {
+  20% {
+    transform: scale3d(0.9, 0.9, 0.9);
+  }
+
+  50%,
+  55% {
+    opacity: 1;
+    transform: scale3d(1.08, 1.08, 1.08);
+  }
+
+  100% {
+    opacity: 0;
+    transform: scale3d(0.3, 0.3, 0.3);
+  }
+}
+
+@keyframes animate-lite-flip-in-x {
+  0% {
+    opacity: 0;
+    transform: perspective(400px) rotate3d(1, 0, 0, 90deg);
+    animation-timing-function: ease-in;
+  }
+
+  40% {
+    transform: perspective(400px) rotate3d(1, 0, 0, -20deg);
+    animation-timing-function: ease-in;
+  }
+
+  60% {
+    opacity: 1;
+    transform: perspective(400px) rotate3d(1, 0, 0, 10deg);
+  }
+
+  80% {
+    transform: perspective(400px) rotate3d(1, 0, 0, -5deg);
+  }
+
+  100% {
+    transform: perspective(400px);
+  }
+}
+
+@keyframes animate-lite-flip-out-x {
+  0% {
+    transform: perspective(400px);
+  }
+
+  30% {
+    opacity: 1;
+    transform: perspective(400px) rotate3d(1, 0, 0, -20deg);
+  }
+
+  100% {
+    opacity: 0;
+    transform: perspective(400px) rotate3d(1, 0, 0, 90deg);
+  }
+}
+
+@keyframes animate-lite-rotate-in {
+  from {
+    opacity: 0;
+    transform: rotate3d(0, 0, 1, -200deg);
+  }
+
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+@keyframes animate-lite-rotate-out {
+  from {
+    opacity: 1;
+  }
+
+  to {
+    opacity: 0;
+    transform: rotate3d(0, 0, 1, 200deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate__animated {
+    animation-duration: 1ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 1ms !important;
+  }
+}

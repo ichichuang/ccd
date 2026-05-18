@@ -1,0 +1,10 @@
+{
+  "schemaVersion": 1,
+  "snapshotDir": ".ai/governance/api-snapshots",
+  "packages": ["@ccd/contracts", "@ccd/core", "@ccd/web-demo", "@ccd/desktop"],
+  "breakingChangeRules": {
+    "failOnExportRemoval": true,
+    "failOnSubpathRemoval": true,
+    "failOnInternalSubpathExport": true
+  }
+}

@@ -1,5 +1,7 @@
 graph TD
-  Web[Web Runtime\nmain] --> Shared[Shared Governance]
-  Desktop[Desktop Runtime\ndesktop-version] --> Shared
-  Portable[Portable Runtime\nmain-portable-version] --> Shared
-  Shared --> Protocol[Protocol 1.0.0]
+  Contracts[packages/contracts\ninterfaces only] --> Core[packages/core\nruntime-neutral logic]
+  Core --> Web[apps/web-demo\nbrowser adapters]
+  Core --> Desktop[apps/desktop\nTauri adapters]
+  AI[.ai/**\nSSOT governance] --> Protocol[Protocol 1.0.0]
+  Protocol --> Contracts
+  Protocol --> Core
