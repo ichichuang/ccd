@@ -23,6 +23,7 @@ const packageRelationships = Object.fromEntries(
 const packageCriticality = Object.fromEntries(
   topology.packages.map(item => [item.name, item.criticality])
 )
+const legacyArchive = topology.legacyArchive ?? null
 
 const boundaryStatus = {
   dependencyDirection: 'contracts -> core -> apps',
@@ -55,6 +56,7 @@ const report = {
     failOnSubpathRemoval: api.breakingChangeRules.failOnSubpathRemoval,
   },
   boundaryStatus,
+  legacyArchive,
 }
 
 writeJson('.ai/generated/governance-report.json', report)

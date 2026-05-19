@@ -7,6 +7,7 @@ CCD treats architecture governance as executable platform infrastructure. Govern
 ```text
 .ai/governance/policies/**       -> machine-readable policy engine
 .ai/governance/api-snapshots/**  -> public API baselines
+.ai/runtime-profile/**          -> governed Codex execution runtime profiles
 scripts/architecture/**          -> boundary, runtime, API, supply-chain, release checks
 scripts/governance/**            -> unified gate, reports, diagrams, protocol validation
 .github/workflows/ci.yml         -> merge-blocking CI execution
@@ -27,7 +28,7 @@ It is the only architecture gate CI needs to call directly. Individual commands 
 
 | Gate Stage         | Command                            | Blocks                                                                   |
 | ------------------ | ---------------------------------- | ------------------------------------------------------------------------ |
-| Governance assets  | `pnpm governance:validate`         | missing protocol, policy, runtime, or CI governance assets               |
+| Governance assets  | `pnpm governance:validate`         | missing protocol, policy, runtime profile, or CI governance assets       |
 | AI guard           | `pnpm ai:guard -- --format=json`   | unsafe generated code, raw runtime access outside adapters, deep imports |
 | Boundaries         | `pnpm arch:boundaries`             | dependency direction, cross-app imports, legacy imports, Tauri leakage   |
 | Runtime neutrality | `pnpm arch:runtime`                | browser/Node/Tauri/timer/storage/network globals in contracts/core       |
@@ -150,6 +151,19 @@ Release order is fixed:
 ```text
 @ccd/contracts -> @ccd/core -> @ccd/web-demo -> @ccd/desktop
 ```
+
+## Legacy Archive Governance
+
+`legacy/root-app` is an immutable historical snapshot. It is governed by `.ai/governance/policies/topology.json` and validated by `pnpm governance:validate`.
+
+Enforced invariants:
+
+- `legacy/root-app` must not participate in `pnpm-workspace.yaml`.
+- root `tsconfig.json` must exclude `legacy/**`.
+- active graph entry from `legacy/**` is forbidden.
+- deletion remains blocked until functional equivalence review, stable production release, and regression snapshot coverage are complete.
+
+Audit guidance lives in `docs/architecture/legacy-web-demo-cleanup.md`.
 
 ## Root Orchestration Policy
 

@@ -1,11 +1,23 @@
-packages/contracts/ @platform-architecture
-packages/core/ @platform-architecture
-apps/desktop/src/adapters/ @platform-architecture
-apps/desktop/src-tauri/ @platform-architecture
-.ai/governance/policies/ @platform-architecture
-.ai/governance/api-snapshots/ @platform-architecture
-.github/workflows/ @platform-architecture
-.github/CODEOWNERS @platform-architecture
-.changeset/ @platform-architecture
-scripts/architecture/ @platform-architecture
-scripts/governance/ @platform-architecture
+# CCD ownership authority
+
+# Active runtime boundaries
+/apps/web-demo/ @web-runtime
+/apps/desktop/ @desktop-runtime @platform-architecture
+
+# Runtime-neutral packages
+/packages/contracts/ @platform-architecture
+/packages/core/ @platform-architecture
+
+# AI and governance authority
+/.ai/ @platform-architecture
+/docs/architecture.md @platform-architecture
+/docs/architecture/ @platform-architecture
+/docs/adr/ @platform-architecture
+/docs/governance/ @platform-architecture
+/scripts/architecture/ @platform-architecture
+/scripts/governance/ @platform-architecture
+
+# CI and release governance
+/.github/workflows/ @platform-architecture
+/.github/CODEOWNERS @platform-architecture
+/.changeset/ @platform-architecture

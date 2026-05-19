@@ -60,5 +60,17 @@
   "exportPolicy": {
     "requireExplicitRootExport": true,
     "forbidWorkspaceDeepImports": ["@ccd/core", "@ccd/contracts", "@ccd/web-demo", "@ccd/desktop"]
+  },
+  "legacyArchive": {
+    "path": "legacy/root-app",
+    "state": "immutable-historical-snapshot",
+    "activeGraphEntryForbidden": true,
+    "workspaceParticipationForbidden": true,
+    "activeEditTargets": ["apps/web-demo", "apps/desktop", "packages/contracts", "packages/core"],
+    "deletionGates": [
+      "functional-equivalence-review",
+      "stable-production-release",
+      "regression-snapshot-coverage"
+    ]
   }
 }

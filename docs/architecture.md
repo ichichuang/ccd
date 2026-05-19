@@ -109,6 +109,24 @@ Generated outputs:
 
 These reports expose dependency graph summary, runtime leak scan state, API surface, supply-chain baseline, and build topology.
 
+## Architecture Decision Records
+
+- [ADR-001: Monorepo Runtime Boundary](./adr/ADR-001-monorepo-runtime-boundary.md)
+- [ADR-002: Legacy Freeze Policy](./adr/ADR-002-legacy-freeze-policy.md)
+- [ADR-003: Governance Pipeline](./adr/ADR-003-governance-pipeline.md)
+- [ADR-004: Runtime Environment Policy](./adr/ADR-004-runtime-environment-policy.md)
+
+## Ownership and Replacement Readiness
+
+- [Ownership and Boundary Authority](./architecture/ownership-boundaries.md)
+- [Legacy Replacement Equivalence Checklist](./architecture/legacy-equivalence-checklist.md)
+
+## Legacy Archive Cleanup
+
+Legacy/browser duplicate audit and cleanup guidance lives in:
+
+- `docs/architecture/legacy-web-demo-cleanup.md`
+
 ## Self-Protection Layer
 
 The architecture is protected by the unified governance gate:

@@ -692,7 +692,6 @@ async function handleLoginSubmit(): Promise<void> {
 .login-password-leading-icon {
   position: absolute;
   top: 50%;
-  z-index: 2;
   width: var(--spacing-lg);
   height: var(--spacing-lg);
   inset-inline-start: var(--spacing-md);
@@ -703,7 +702,6 @@ async function handleLoginSubmit(): Promise<void> {
 .login-password-toggle {
   position: absolute;
   top: 50%;
-  z-index: 1;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -746,8 +744,8 @@ async function handleLoginSubmit(): Promise<void> {
   border-radius: var(--radius-md) !important;
   background: rgb(var(--background)) !important;
   box-shadow: 0 1px 2px 0 rgb(var(--foreground) / 10%) !important;
-  padding-inline-start: calc(var(--spacing-md) + var(--spacing-lg) + var(--spacing-xs)) !important;
-  padding-inline-end: calc(var(--spacing-xl) + var(--spacing-md) + var(--spacing-sm)) !important;
+  padding-inline: calc(var(--spacing-md) + var(--spacing-lg) + var(--spacing-xs))
+    calc(var(--spacing-xl) + var(--spacing-md) + var(--spacing-sm)) !important;
 }
 
 .login-links {

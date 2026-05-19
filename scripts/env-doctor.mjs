@@ -202,6 +202,51 @@ const checkCorepackAvailability = () => {
   warn('corepack binary unavailable; pnpm stays on the existing pinned binary path')
 }
 
+const commandPath = name => {
+  const result = run('bash', ['-lc', `command -v ${name}`])
+  return result.status === 0 ? outputOf(result).split('\n')[0] : null
+}
+
+const checkPathPrecedence = (name, expectedPathFragment) => {
+  const resolved = commandPath(name)
+  if (!resolved) {
+    fail(`${name} is not resolvable on PATH`)
+    return
+  }
+
+  if (expectedPathFragment && !resolved.includes(expectedPathFragment)) {
+    warn(`${name} PATH precedence resolves to ${resolved}, expected path containing ${expectedPathFragment}`)
+    return
+  }
+
+  ok(`${name} PATH precedence: ${resolved}`)
+}
+
+const checkMiseActivationDrift = () => {
+  if (!expectedMiseNodeBin) return
+  const directNode = commandPath('node')
+  const execNode = outputOf(run('bash', ['scripts/exec.sh', 'bash', '-lc', 'command -v node']))
+  if (directNode && execNode && directNode !== execNode) {
+    warn(`mise/runtime activation drift: direct node ${directNode}; deterministic node ${execNode}`)
+    return
+  }
+  ok('mise/runtime activation drift not detected for node')
+}
+
+const checkShellWrapperLeakageThroughExec = () => {
+  const result = run('bash', ['scripts/exec.sh', 'bash', '-lc', 'type node && type pnpm'])
+  if (result.status !== 0) {
+    fail(`deterministic wrapper binding inspection failed: ${summarize(result)}`)
+    return
+  }
+  const output = outputOf(result)
+  if (/node is a function|pnpm is a function/.test(output)) {
+    fail('deterministic wrapper leaked node/pnpm shell functions')
+    return
+  }
+  ok('deterministic wrapper clears node/pnpm shell function leakage')
+}
+
 console.log('CCD Environment Doctor')
 console.log('======================')
 
@@ -219,6 +264,10 @@ if (expectedMiseNodeBin && process.env.PATH?.split(path.delimiter).includes(expe
 
 checkMiseAvailability()
 checkCorepackAvailability()
+checkPathPrecedence('node', expectedMiseNodeBin)
+checkPathPrecedence('pnpm', null)
+checkMiseActivationDrift()
+checkShellWrapperLeakageThroughExec()
 checkSpawnedTool('node', ['-v'], expectedNodeVersion)
 checkSpawnedTool('pnpm', ['-v'], expectedPnpmVersion)
 checkShellTool('node', expectedNodeVersion)

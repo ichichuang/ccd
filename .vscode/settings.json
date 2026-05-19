@@ -107,7 +107,10 @@
   "typescript.suggest.autoImports": true,
 
   // === i18n Ally (国际化插件) ===
-  "i18n-ally.localesPaths": ["src/locales/lang/core", "src/locales/lang/example"],
+  "i18n-ally.localesPaths": [
+    "apps/web-demo/src/locales/lang/core",
+    "apps/web-demo/src/locales/lang/example"
+  ],
   "i18n-ally.keystyle": "nested",
   "i18n-ally.sortKeys": true,
   "i18n-ally.namespace": false,
@@ -120,18 +123,28 @@
     "ts": { "strictObjectKeyAsString": false }
   },
   "i18n-ally.extract.keyPrefix": "",
-  "i18n-ally.usage.scanningDirs": ["src"],
+  "i18n-ally.usage.scanningDirs": ["apps/web-demo/src"],
 
   // === 其他优化 ===
   "search.exclude": {
     "**/node_modules": true,
-    "**/dist": true,
+    "**/dist/**": true,
     "**/.git": true,
-    "**/pnpm-lock.yaml": true
+    "**/pnpm-lock.yaml": true,
+    "legacy/**": true,
+    "dist/**": true,
+    "apps/*/dist/**": true,
+    "packages/*/dist/**": true,
+    ".turbo/**": true,
+    "playwright-report/**": true,
+    "test-results/**": true
   },
   "files.watcherExclude": {
     "**/node_modules/**": true,
-    "**/dist/**": true
+    "**/dist/**": true,
+    "**/.turbo/**": true,
+    "**/playwright-report/**": true,
+    "**/test-results/**": true
   },
   "files.associations": {
     "*.css": "postcss",

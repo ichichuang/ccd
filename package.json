@@ -70,7 +70,7 @@
     "runtime:exec:strict": "CCD_RUNTIME_REQUIRE_MISE=1 bash scripts/exec.sh",
     "runtime:bootstrap": "bash scripts/bootstrap-runtime.sh",
     "governance:validate": "node scripts/governance/validate.mjs",
-    "governance:gate": "node scripts/governance/gate.mjs",
+    "governance:gate": "bash scripts/exec.sh node scripts/governance/gate.mjs",
     "governance:github-workflows": "node scripts/governance/check-github-workflow-registry.mjs",
     "drift:repair": "node scripts/governance/drift-repair.mjs",
     "protocol:migrate": "node scripts/governance/protocol-migrate.mjs",
@@ -132,7 +132,9 @@
     "affected:test": "turbo run test --affected",
     "affected:typecheck": "turbo run type-check --affected",
     "affected:build": "turbo run build --affected",
-    "dev:web": "pnpm --filter @ccd/web-demo dev"
+    "dev:web": "pnpm --filter @ccd/web-demo dev",
+    "doctor": "pnpm env:doctor && pnpm ai:doctor",
+    "arch:graphs": "node scripts/architecture/generate-dependency-graphs.mjs"
   },
   "config": {
     "commitizen": {

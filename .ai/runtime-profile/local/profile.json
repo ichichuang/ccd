@@ -1,0 +1,14 @@
+{
+  "schemaVersion": "1.0.0",
+  "profile": "local",
+  "runtimeOwner": "workspace",
+  "entrypoints": {
+    "web": "apps/web-demo",
+    "desktop": "apps/desktop"
+  },
+  "providerPolicy": {
+    "source": "ACTIVE_CODEX_PROVIDER",
+    "transportValidated": true
+  },
+  "cacheNamespace": "provider+runtimeProfile+protocol+orchestration"
+}

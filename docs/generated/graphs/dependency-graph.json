@@ -1,0 +1,60 @@
+{
+  "schemaVersion": 1,
+  "generatedBy": "scripts/architecture/generate-dependency-graphs.mjs",
+  "root": {
+    "name": "app-template",
+    "role": "orchestration-only",
+    "packageManager": "pnpm@10.28.2"
+  },
+  "packages": [
+    {
+      "name": "@ccd/contracts",
+      "path": "packages/contracts",
+      "layer": "contracts",
+      "runtime": "none",
+      "criticality": "critical",
+      "allowedWorkspaceDependencies": []
+    },
+    {
+      "name": "@ccd/core",
+      "path": "packages/core",
+      "layer": "core",
+      "runtime": "none",
+      "criticality": "critical",
+      "allowedWorkspaceDependencies": ["@ccd/contracts"]
+    },
+    {
+      "name": "@ccd/web-demo",
+      "path": "apps/web-demo",
+      "layer": "apps",
+      "runtime": "web",
+      "criticality": "flexible",
+      "allowedWorkspaceDependencies": ["@ccd/contracts", "@ccd/core"]
+    },
+    {
+      "name": "@ccd/desktop",
+      "path": "apps/desktop",
+      "layer": "apps",
+      "runtime": "desktop",
+      "criticality": "protected",
+      "allowedWorkspaceDependencies": ["@ccd/contracts", "@ccd/core"]
+    }
+  ],
+  "forbiddenRelationships": [
+    {
+      "from": "packages/**",
+      "to": "apps/**",
+      "reason": "Packages must not depend on runtime applications."
+    },
+    {
+      "from": "apps/**",
+      "to": "apps/**",
+      "reason": "Applications must not import one another."
+    },
+    {
+      "from": "**",
+      "to": "legacy/**",
+      "reason": "Legacy archive is read-only and outside active dependency graphs."
+    }
+  ]
+}

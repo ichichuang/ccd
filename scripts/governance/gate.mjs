@@ -39,6 +39,10 @@ const checks = [
     name: 'governance report generation',
     command: ['pnpm', 'arch:report'],
   },
+  {
+    name: 'dependency graph generation',
+    command: ['pnpm', 'arch:graphs'],
+  },
 ]
 
 const generatedArtifactPaths = ['docs/generated', '.ai/generated', '.ai/governance/api-snapshots']

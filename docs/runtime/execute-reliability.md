@@ -22,6 +22,7 @@ CCD treats Codex execution as a governed runtime boundary between project govern
 - Current `remote-moacode` transport is `apirouter` in `/Users/cc/.codex/config.toml`.
 - `packy-local` transport is `packyapi`.
 - Runtime profile must come from `ACTIVE_RUNTIME_PROFILE` or `STRICT_RUNTIME_PROFILE`.
+- Runtime profile manifests must exist under `.ai/runtime-profile/<profile>/profile.json`.
 - Orchestration state must come from `.ai/orchestration/manifest.json`.
 - Cache fingerprints must include provider and runtime profile namespace.
 
@@ -30,5 +31,6 @@ CCD treats Codex execution as a governed runtime boundary between project govern
 - Provider mismatch.
 - Transport mismatch.
 - Missing runtime profile in strict mode.
+- Missing governed runtime profile manifest.
 - Stale result cache reuse across provider/profile namespaces.
 - Missing orchestration manifest.

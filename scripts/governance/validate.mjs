@@ -14,6 +14,8 @@ const required = [
   '.ai/governance/policies/supply-chain.json',
   '.ai/governance/policies/release.json',
   '.ai/orchestration/manifest.json',
+  '.ai/runtime-profile/local/profile.json',
+  '.ai/runtime-profile/desktop/profile.json',
   '.changeset/config.json',
   '.github/CODEOWNERS',
   'mise.toml',
@@ -23,6 +25,8 @@ const required = [
   'scripts/ai-os-doctor.mjs',
   'scripts/bootstrap-runtime.sh',
   'docs/architecture/stable-baseline.md',
+  'docs/architecture/legacy-web-demo-cleanup.md',
+  'legacy/README.md',
   'docs/runtime/execute-reliability.md',
   'docs/runtime/runtime-isolation.md',
   'docs/governance/protocol-versioning.md',
@@ -41,6 +45,21 @@ const required = [
 ]
 
 let failed = false
+
+function readJsonIfExists(rel) {
+  const absolute = path.join(cwd, rel)
+  if (!fs.existsSync(absolute)) return null
+  return JSON.parse(fs.readFileSync(absolute, 'utf8'))
+}
+
+function requireCondition(condition, okMessage, failMessage) {
+  if (condition) {
+    console.log(`[OK] ${okMessage}`)
+    return
+  }
+  console.error(`[FAIL] ${failMessage}`)
+  failed = true
+}
 for (const rel of required) {
   if (!fs.existsSync(path.join(cwd, rel))) {
     console.error(`[FAIL] missing governance asset: ${rel}`)
@@ -70,6 +89,46 @@ if (fs.existsSync(versionPath)) {
     } else {
       console.log(`[OK] protocol version field: ${field}=${version[field]}`)
     }
+  }
+}
+
+
+const topology = readJsonIfExists('.ai/governance/policies/topology.json')
+if (topology?.legacyArchive) {
+  const legacy = topology.legacyArchive
+  requireCondition(
+    legacy.path === 'legacy/root-app' && fs.existsSync(path.join(cwd, legacy.path)),
+    `legacy archive path governed: ${legacy.path}`,
+    'legacy archive path must be legacy/root-app and exist'
+  )
+  requireCondition(
+    legacy.activeGraphEntryForbidden === true && legacy.workspaceParticipationForbidden === true,
+    'legacy archive is blocked from active graph and workspace participation',
+    'legacy archive policy must forbid active graph entry and workspace participation'
+  )
+
+  const workspace = fs.existsSync(path.join(cwd, 'pnpm-workspace.yaml'))
+    ? fs.readFileSync(path.join(cwd, 'pnpm-workspace.yaml'), 'utf8')
+    : ''
+  requireCondition(
+    !workspace.includes('legacy'),
+    'pnpm workspace excludes legacy archive',
+    'pnpm workspace must not include legacy archive paths'
+  )
+
+  const tsconfig = readJsonIfExists('tsconfig.json')
+  requireCondition(
+    Array.isArray(tsconfig?.exclude) && tsconfig.exclude.includes('legacy/**'),
+    'root tsconfig excludes legacy archive',
+    'root tsconfig must exclude legacy/**'
+  )
+
+  for (const target of legacy.activeEditTargets ?? []) {
+    requireCondition(
+      fs.existsSync(path.join(cwd, target)),
+      `active edit target exists: ${target}`,
+      `active edit target missing: ${target}`
+    )
   }
 }
 
