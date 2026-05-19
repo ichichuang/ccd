@@ -6,7 +6,10 @@ import type { UserConfig } from 'vite'
 
 const rootDir = dirname(fileURLToPath(import.meta.url))
 export default {
-  plugins: [vue(), AutoImport({ imports: ['vue', 'vue-router', 'pinia', '@vueuse/core'] })],
+  plugins: [
+    vue(),
+    AutoImport({ imports: ['vue', 'vue-router', 'pinia', '@vueuse/core'], dts: false }),
+  ],
   test: {
     globals: true,
     environment: 'node',
