@@ -38,11 +38,13 @@ type FieldStateWithOptions = FieldState<unknown> & {
 const fieldExt = computed<ExtendedFieldSchema>(() => props.field as ExtendedFieldSchema)
 const stateExt = computed<FieldStateWithOptions>(() => castValue<FieldStateWithOptions>(state))
 
-const globalState = inject(PRO_FORM_GLOBAL_STATE_KEY, null)
+const provides = getCurrentInstance()?.appContext.provides ?? {}
 
-const layoutState = inject(PRO_FORM_LAYOUT_KEY, null)
+const globalState = provides[PRO_FORM_GLOBAL_STATE_KEY as unknown as symbol] ?? null
 
-const formSlots = inject(PRO_FORM_SLOTS_KEY, null)
+const layoutState = provides[PRO_FORM_LAYOUT_KEY as unknown as symbol] ?? null
+
+const formSlots = provides[PRO_FORM_SLOTS_KEY as unknown as symbol] ?? null
 
 const layoutMode = computed(() => layoutState?.layout.value ?? PRO_FORM_DEFAULTS.layout)
 

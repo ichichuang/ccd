@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest'
+import { nextTick } from 'vue'
 import { TableController } from './TableController'
 import type { ProTableColumn } from '../types/column'
 import type { ProTableRequestResult } from '../types/props'

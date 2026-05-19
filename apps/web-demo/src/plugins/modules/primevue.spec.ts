@@ -1,6 +1,7 @@
 // @vitest-environment jsdom
 
 import type { App, Plugin } from 'vue'
+import { createApp } from 'vue'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 interface UseCall {

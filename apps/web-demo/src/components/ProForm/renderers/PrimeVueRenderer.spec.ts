@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
 import { mount } from '@vue/test-utils'
 import { describe, expect, it } from 'vitest'
-import { defineComponent, h } from 'vue'
+import { defineComponent, h, provide } from 'vue'
 import { FormController } from '../engine/core/FormController'
 import { FORM_CONTROLLER_KEY } from '../engine/constants'
 import type { FieldSchema, FormSchema } from '../engine/types'

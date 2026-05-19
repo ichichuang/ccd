@@ -1,11 +1,12 @@
 import vue from '@vitejs/plugin-vue'
+import AutoImport from 'unplugin-auto-import/vite'
 import { fileURLToPath } from 'node:url'
 import { dirname, resolve } from 'node:path'
 import type { UserConfig } from 'vite'
 
 const rootDir = dirname(fileURLToPath(import.meta.url))
 export default {
-  plugins: [vue()],
+  plugins: [vue(), AutoImport({ imports: ['vue', 'vue-router', 'pinia', '@vueuse/core'] })],
   test: {
     globals: true,
     environment: 'node',
@@ -16,7 +17,7 @@ export default {
       'packages/**/*.test.ts',
       'scripts/**/*.spec.ts',
     ],
-    exclude: ['node_modules', 'dist', 'legacy'],
+    exclude: ['node_modules', '**/node_modules/**', 'dist', 'legacy'],
     passWithNoTests: true,
     coverage: {
       provider: 'v8',
