@@ -49,32 +49,35 @@ jobs:
           cache: pnpm
 
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+        run: bash scripts/exec.sh pnpm install --frozen-lockfile
 
       - name: Authorize GitHub CLI
         run: echo "${{ github.token }}" | gh auth login --with-token
 
       # repair_list.txt is gitignored and created by ai:sync from the template; doctor requires it.
+      - name: CI runtime summary
+        run: bash scripts/exec.sh pnpm runtime:summary
+
       - name: Sync AI adapters (materialize local runtime)
-        run: pnpm ai:sync
+        run: bash scripts/exec.sh pnpm ai:sync
 
       - name: AI Architecture Doctor
-        run: pnpm ai:doctor
+        run: bash scripts/exec.sh pnpm ai:doctor
 
       - name: Unified Governance Gate
-        run: pnpm governance:gate
+        run: bash scripts/exec.sh pnpm validate:governance
 
       - name: Strict Type Check
-        run: pnpm type-check
+        run: bash scripts/exec.sh pnpm type-check
 
       - name: Unit Tests
-        run: pnpm test:run
+        run: bash scripts/exec.sh pnpm test:run
 
       - name: Strict Lint Check
-        run: pnpm lint:check
+        run: bash scripts/exec.sh pnpm lint:check
 
       - name: Build for GitHub Pages
-        run: pnpm build:web-demo
+        run: bash scripts/exec.sh pnpm build:web-demo
         env:
           # 注入 base 路径：仓库名为 ccd，GitHub Pages URL 为
           # https://ichichuang.github.io/ccd/

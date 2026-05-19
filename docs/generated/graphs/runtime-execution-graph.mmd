@@ -1,0 +1,8 @@
+graph TD
+  Shell["shell"] --> Exec["scripts/exec.sh"]
+  Exec --> Env["scripts/env.sh"]
+  Env --> Mise["mise activation when available"]
+  Env --> Corepack["corepack/pnpm resolution"]
+  Env --> Pnpm["pnpm command"]
+  Pnpm --> Turbo["Turbo workspace tasks"]
+  Turbo --> WebBuild["apps/web-demo build output"]

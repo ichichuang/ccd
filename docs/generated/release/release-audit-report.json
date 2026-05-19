@@ -1,0 +1,19 @@
+{
+  "schemaVersion": 1,
+  "generatedBy": "scripts/architecture/release-audit.mjs",
+  "releaseSource": "apps/web-demo",
+  "rootRuntimeSourceForbidden": true,
+  "artifactPath": "apps/web-demo/dist",
+  "artifactCount": 397,
+  "artifactChecksum": "67e3857a03a2fcb61a54dfe69ae19ff5603452bc377d552c0b41868eb70fd918",
+  "checks": [
+    {
+      "command": "pnpm validate:runtime",
+      "status": 0
+    },
+    {
+      "command": "pnpm release:governance",
+      "status": 0
+    }
+  ]
+}

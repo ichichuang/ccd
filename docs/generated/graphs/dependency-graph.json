@@ -1,6 +1,11 @@
 {
-  "schemaVersion": 1,
-  "generatedBy": "scripts/architecture/generate-dependency-graphs.mjs",
+  "schemaVersion": 2,
+  "provenance": {
+    "generatedBy": "scripts/architecture/generate-dependency-graphs.mjs",
+    "sourceTimestamp": "2026-05-19T13:40:22+08:00",
+    "sourceRevision": "b562bf66fdfc357902c1d84854a60578a8ec906b",
+    "deterministic": true
+  },
   "root": {
     "name": "app-template",
     "role": "orchestration-only",
@@ -40,6 +45,51 @@
       "allowedWorkspaceDependencies": ["@ccd/contracts", "@ccd/core"]
     }
   ],
+  "turbo": {
+    "build": {
+      "dependsOn": ["^build"],
+      "outputs": ["dist/**"]
+    },
+    "type-check": {
+      "dependsOn": ["^build"],
+      "outputs": []
+    },
+    "typecheck": {
+      "dependsOn": ["type-check"],
+      "outputs": []
+    },
+    "test": {
+      "dependsOn": ["^build"],
+      "outputs": []
+    },
+    "lint": {
+      "outputs": []
+    }
+  },
+  "runtimeExecution": {
+    "entrypoint": "scripts/exec.sh",
+    "environment": "scripts/env.sh",
+    "workspaceRoot": ".",
+    "browserRuntimeSource": "apps/web-demo"
+  },
+  "ownership": {
+    "web": "apps/web-demo",
+    "desktop": "apps/desktop",
+    "platform": [
+      "packages/contracts",
+      "packages/core",
+      ".ai",
+      "scripts/architecture",
+      "scripts/governance"
+    ]
+  },
+  "environmentDependencies": [
+    "mise.toml",
+    "package.json#packageManager",
+    "pnpm-lock.yaml",
+    "pnpm-workspace.yaml",
+    "turbo.json"
+  ],
   "forbiddenRelationships": [
     {
       "from": "packages/**",
@@ -56,5 +106,6 @@
       "to": "legacy/**",
       "reason": "Legacy archive is read-only and outside active dependency graphs."
     }
-  ]
+  ],
+  "validationChecksum": "e2b9a6ca15200918cd1c4f14dd5671d6e66951ca2fabf2e1cbe1978dc5f23ab0"
 }

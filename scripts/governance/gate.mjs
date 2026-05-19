@@ -5,31 +5,31 @@ import process from 'node:process'
 const checks = [
   {
     name: 'governance assets',
-    command: ['pnpm', 'governance:validate'],
+    command: ['bash', 'scripts/exec.sh', 'pnpm', 'governance:validate'],
   },
   {
     name: 'AI architecture guard',
-    command: ['pnpm', 'ai:guard', '--', '--format=json'],
+    command: ['bash', 'scripts/exec.sh', 'pnpm', 'ai:guard', '--', '--format=json'],
   },
   {
     name: 'architecture boundaries',
-    command: ['pnpm', 'arch:boundaries'],
+    command: ['bash', 'scripts/exec.sh', 'pnpm', 'arch:boundaries'],
   },
   {
     name: 'runtime leak detection',
-    command: ['pnpm', 'arch:runtime'],
+    command: ['bash', 'scripts/exec.sh', 'pnpm', 'arch:runtime'],
   },
   {
     name: 'API snapshot compatibility',
-    command: ['pnpm', 'api:report'],
+    command: ['bash', 'scripts/exec.sh', 'pnpm', 'api:report'],
   },
   {
     name: 'supply-chain policy',
-    command: ['pnpm', 'supply:check'],
+    command: ['bash', 'scripts/exec.sh', 'pnpm', 'supply:check'],
   },
   {
     name: 'release topology',
-    command: ['pnpm', 'release:governance'],
+    command: ['bash', 'scripts/exec.sh', 'pnpm', 'release:governance'],
   },
   {
     name: 'GitHub workflow registry hygiene',
@@ -37,11 +37,11 @@ const checks = [
   },
   {
     name: 'governance report generation',
-    command: ['pnpm', 'arch:report'],
+    command: ['bash', 'scripts/exec.sh', 'pnpm', 'arch:report'],
   },
   {
     name: 'dependency graph generation',
-    command: ['pnpm', 'arch:graphs'],
+    command: ['bash', 'scripts/exec.sh', 'pnpm', 'arch:graphs'],
   },
 ]
 

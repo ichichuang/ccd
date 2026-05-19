@@ -38,5 +38,36 @@ if (fs.existsSync(workflowDir)) {
   }
 }
 
+
+const legacyArchive = path.join(root, 'legacy', 'root-app')
+if (!fs.existsSync(path.join(legacyArchive, 'ARCHIVE.md'))) {
+  fail('legacy/root-app must include ARCHIVE.md archive metadata')
+}
+const workspacePath = path.join(root, 'pnpm-workspace.yaml')
+if (fs.existsSync(workspacePath) && fs.readFileSync(workspacePath, 'utf8').includes('legacy')) {
+  fail('pnpm workspace must not include legacy archive paths')
+}
+const packageFiles = []
+function collectPackageFiles(dir) {
+  if (!fs.existsSync(dir)) return
+  for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+    const absolute = path.join(dir, entry.name)
+    if (entry.isDirectory()) {
+      if (['node_modules', 'dist', 'legacy'].includes(entry.name)) continue
+      collectPackageFiles(absolute)
+    } else if (entry.name === 'package.json') {
+      packageFiles.push(absolute)
+    }
+  }
+}
+collectPackageFiles(path.join(root, 'apps'))
+collectPackageFiles(path.join(root, 'packages'))
+for (const file of packageFiles) {
+  const content = fs.readFileSync(file, 'utf8')
+  if (content.includes('legacy/root-app') || content.includes('legacy/')) {
+    fail(`${path.relative(root, file)} must not reference legacy archive`)
+  }
+}
+
 if (process.exitCode) process.exit(process.exitCode)
 console.log('[root-runtime] root runtime decommission guard passed')

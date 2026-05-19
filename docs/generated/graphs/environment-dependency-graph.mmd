@@ -1,0 +1,6 @@
+graph TD
+  Mise["mise.toml"] --> Node["Node runtime"]
+  PackageManager["packageManager pnpm@10.28.2"] --> Pnpm["pnpm"]
+  Lockfile["pnpm-lock.yaml"] --> Install["frozen install"]
+  Workspace["pnpm-workspace.yaml"] --> Turbo["Turbo"]
+  TurboJson["turbo.json"] --> Turbo

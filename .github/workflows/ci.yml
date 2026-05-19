@@ -53,25 +53,28 @@ jobs:
           cache: 'pnpm'
 
       - name: Deterministic Frozen Install
-        run: pnpm install --frozen-lockfile
+        run: bash scripts/exec.sh pnpm install --frozen-lockfile
 
       - name: Authorize GitHub CLI
         run: echo "${{ github.token }}" | gh auth login --with-token
 
       # repair_list.txt is gitignored and created by ai:sync from the template; doctor requires it.
+      - name: CI runtime summary
+        run: bash scripts/exec.sh pnpm runtime:summary
+
       - name: Sync AI adapters (materialize local runtime)
-        run: pnpm ai:sync
+        run: bash scripts/exec.sh pnpm ai:sync
 
       - name: AI Architecture Doctor
-        run: pnpm ai:doctor
+        run: bash scripts/exec.sh pnpm ai:doctor
 
       - name: Unified Governance Gate
-        run: pnpm governance:gate
+        run: bash scripts/exec.sh pnpm validate:governance
 
       - name: Verify Generated AI Artifacts Are Synced
         run: |
-          pnpm ai:sync
-          pnpm ai:sync:codex
+          bash scripts/exec.sh pnpm ai:sync
+          bash scripts/exec.sh pnpm ai:sync:codex
           if ! git diff --quiet -- AGENTS.md CLAUDE.md .ai/manifests/skills-lock.json; then
             echo "::error::Generated AI artifacts are stale. Run pnpm ai:sync && pnpm ai:sync:codex and commit the results."
             git diff -- AGENTS.md CLAUDE.md .ai/manifests/skills-lock.json
@@ -79,21 +82,21 @@ jobs:
           fi
 
       - name: Strict Type Check
-        run: pnpm type-check
+        run: bash scripts/exec.sh pnpm type-check
 
       - name: Unit Tests
-        run: pnpm test:run
+        run: bash scripts/exec.sh pnpm test:run
 
       - name: Strict Lint Check
-        run: pnpm lint:check
+        run: bash scripts/exec.sh pnpm lint:check
 
       - name: Production Build Test
-        run: pnpm exec turbo run build
+        run: bash scripts/exec.sh pnpm exec turbo run build
 
       - name: Desktop Bundle Guard
         run: |
-          pnpm build:desktop
-          pnpm budget:desktop
+          bash scripts/exec.sh pnpm build:desktop
+          bash scripts/exec.sh pnpm budget:desktop
 
   e2e-qa:
     name: E2E QA
@@ -126,13 +129,13 @@ jobs:
           cache: 'pnpm'
 
       - name: Deterministic Frozen Install
-        run: pnpm install --frozen-lockfile
+        run: bash scripts/exec.sh pnpm install --frozen-lockfile
 
       - name: Install Playwright Chromium
-        run: pnpm exec playwright install --with-deps chromium
+        run: bash scripts/exec.sh pnpm exec playwright install --with-deps chromium
 
       - name: Build core packages
-        run: pnpm build:core
+        run: bash scripts/exec.sh pnpm build:core
 
       - name: Run Playwright QA suite
-        run: pnpm e2e:qa
+        run: bash scripts/exec.sh pnpm e2e:qa

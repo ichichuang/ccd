@@ -13,3 +13,90 @@
 [⬜️] [P2-Tests] Update directive specs for Vue 3’s 4-argument directive hook signatures and clean up unused imports/expect-error noise in the focused test files.
 [⬜️] [P2-CaseSensitivity] Normalize `DateUtils`/`dateUtils` import casing across example views and shared date utilities.
 [⬜️] [P2-Verify] Run `pnpm check` and capture the final residual error surface once the targeted repairs land.
+
+## Login Diorama Refactor Plan — Card Breakout & Diorama
+
+Target state:
+
+- `apps/web-demo/src/views/login/index.vue` becomes a single integrated diorama panel instead of two independent left/right cards.
+- Brand identity floats above the panel center; theme and locale controls remain in the viewport top-right.
+- The login form occupies the left 55%–60% of the desktop panel and keeps `ProForm` as the only multi-field form boundary.
+- `AnimatedCharacters` occupies the right 40%–45% as a physical scene object, aligned to the panel floor and breaking above the panel top by 15%–20%.
+- Password field visual structure is repaired so prefix icon, input body, and mask toggle stay inside one aligned control shell.
+- Light/dark theme, size density, semantic tokens, responsive breakpoints, and design-engine UnoCSS laws remain authoritative.
+
+Preflight and rules:
+
+- [⬜️] [Login-P0-Rules] Re-read `.ai/protocol/AGENTS.core.md`, `.ai/rules/core/01-global-preflight.mdc`, `.ai/rules/core/02-ui-preflight.mdc`, `.ai/rules/components/00-primevue-ecosystem.mdc`, `.ai/rules/components/02-pro-components.mdc`, and `.ai/rules/design-system/00-unocss-guardrails.mdc` before editing.
+- [⬜️] [Login-P0-Ledger] Mirror this plan into `.ai/runtime/repair_list.txt` before implementation if the refactor starts.
+- [⬜️] [Login-P0-Context] Build top-K context from `apps/web-demo/src/views/login/index.vue`, `apps/web-demo/src/views/login/components/animated-characters/Index.vue`, `apps/web-demo/src/views/login/components/animated-characters/EyeBall.vue`, `apps/web-demo/src/design-engine/shortcuts/semanticShortcuts.ts`, and relevant ProForm/Password renderer typings.
+- [⬜️] [Login-P0-PrimeVue] Verify PrimeVue v4 `Password`, `Button`, `Select`, `IconField`, and `InputText` APIs if adding or changing non-trivial props, slots, or pass-through configuration.
+- [⬜️] [Login-P0-Constraints] Confirm no native `<form>`, `<input>`, `<button>`, raw `overflow-auto`, raw hex colors, `rem`/`em`, raw z-index classes, invented shortcuts, or direct `glass-base` usage enter the login view.
+
+Current defects to fix:
+
+- [⬜️] [Login-P1-Layout] Replace the current independent `login-visual-panel` and `login-card` split with one `login-diorama-panel` that owns both form and character stage.
+- [⬜️] [Login-P1-Composition] Remove duplicate brand placement inside the old visual panel and move brand/logo/title into a centered floating block above the diorama panel.
+- [⬜️] [Login-P1-Password] Fix password icon misalignment caused by the separate absolute leading icon plus PrimeVue `Password` internal structure.
+- [⬜️] [Login-P1-Depth] Improve dark-mode elevation using border plus inset-highlight semantics instead of relying on outer shadows alone.
+- [⬜️] [Login-P1-VisualNoise] Reduce decorative copy/pills inside the main panel so the form and breakout character are the dominant hierarchy.
+
+Desktop structure:
+
+- [⬜️] [Login-P2-Shell] Create a centered horizontal panel with `width: min(92vw, 960px)` baseline, max expansion capped near `1200px`, and height governed by viewport-safe min/max values.
+- [⬜️] [Login-P2-Grid] Define panel internal grid as `minmax(0, 58%) minmax(0, 42%)` on desktop and keep it non-nested with existing layout shortcut laws.
+- [⬜️] [Login-P2-FormZone] Place login heading, subtitle, presets, fields, submit button, register link, and version footer in the left zone with consistent token gaps.
+- [⬜️] [Login-P2-StageZone] Place the character stage in the right zone with `overflow: visible`, floor alignment, and no extra textual content.
+- [⬜️] [Login-P2-Breakout] Position `AnimatedCharacters` so the body baseline aligns to the panel lower visual floor and the top breaks out above the panel by 15%–20%.
+- [⬜️] [Login-P2-TopControls] Keep theme switch and locale select in a compact top-right toolbar with safe-area offsets.
+- [⬜️] [Login-P2-BottomLinks] Keep help/privacy links centered below the panel and visually separated from the panel bottom.
+
+Form and interaction:
+
+- [⬜️] [Login-P3-ProForm] Preserve `ProForm` schema, validation, submit flow, demo account filling, locale re-keying, and `ProFormExpose` usage.
+- [⬜️] [Login-P3-Presets] Convert demo accounts to a segmented-control-like pair using PrimeVue `Button` or approved component structure, keeping clear active/quick-fill affordance.
+- [⬜️] [Login-P3-Username] Keep username focus state wired to `AnimatedCharacters` through `isUsernameFocused`.
+- [⬜️] [Login-P3-PasswordState] Keep `passwordValue`, `passwordLength`, and `isPasswordVisible` synchronized so character password reactions remain deterministic.
+- [⬜️] [Login-P3-PasswordShell] Rebuild the password field wrapper as one aligned control shell with prefix icon, input, and toggle inside the same visual boundary.
+- [⬜️] [Login-P3-Submit] Keep one primary submit button, full-width within the form column, with loading state and existing redirect/global loading behavior unchanged.
+- [⬜️] [Login-P3-Feedback] Keep failed login feedback routed through `window.$toast?.dangerIn` and clear only the password field after failure.
+
+Animated character stage:
+
+- [⬜️] [Login-P4-Reuse] Reuse `AnimatedCharacters` rather than replacing GSAP animation logic.
+- [⬜️] [Login-P4-Scaling] Adjust only the parent stage sizing/position first; modify `TOTEM_REF_W`, `TOTEM_REF_H`, or internal CSS vars only if browser evidence proves scaling cannot satisfy the design.
+- [⬜️] [Login-P4-Floor] Add a subtle tokenized stage floor or shadow under the characters if needed, without adding text or unrelated ornamentation.
+- [⬜️] [Login-P4-Overflow] Ensure the parent diorama panel allows character breakout while preserving panel clipping for internal form/material effects where needed.
+- [⬜️] [Login-P4-ReducedMotion] Preserve current interaction behavior and verify no new infinite motion is added beyond existing GSAP loops.
+
+Design-engine compliance:
+
+- [⬜️] [Login-P5-Tokens] Use semantic color tokens only: `background`, `card`, `foreground`, `muted`, `border`, `primary`, `info`, `success`, `warn`, and related foreground/light variants.
+- [⬜️] [Login-P5-Sizing] Use CSS variables, `%`, `vw`, and `vh` for authored sizing; avoid `rem`/`em` and avoid unnecessary raw px outside existing animation geometry.
+- [⬜️] [Login-P5-Shortcuts] Use only registered shortcuts from `semanticShortcuts.ts`; do not invent login-specific UnoCSS shortcuts unless the design engine registry is intentionally extended.
+- [⬜️] [Login-P5-Borders] Pair every border utility with explicit style and semantic color if authored in template classes.
+- [⬜️] [Login-P5-ZIndex] Use `z-base`, `z-content`, `z-layout`, `z-overlay`, `z-popover`, or DOM stacking context restructuring only.
+- [⬜️] [Login-P5-RuleOf7] Move complex layout and decorative geometry into scoped CSS classes when template utility count would exceed the Rule of 7.
+- [⬜️] [Login-P5-Deep] Avoid adding new `:deep(.p-*)` selectors beyond the existing documented login exception unless a focused architectural justification is added.
+
+Responsive strategy:
+
+- [⬜️] [Login-P6-Desktop] For `>= 1024px`, render the full horizontal diorama panel and breakout character stage.
+- [⬜️] [Login-P6-Tablet] For `768px–1023px`, reduce panel width to viewport-safe bounds, shift form/stage ratio toward `65%/35%`, and scale characters down while preserving breakout.
+- [⬜️] [Login-P6-Mobile] For `< 768px`, switch to single-column composition with brand, compact character overlap, form, and footer links stacked vertically.
+- [⬜️] [Login-P6-MobileGrid] Hide or further weaken background grid on mobile if it competes with form legibility.
+- [⬜️] [Login-P6-SafeArea] Preserve top and bottom `env(safe-area-inset-*)` spacing for mobile and desktop shells.
+
+Validation:
+
+- [⬜️] [Login-P7-Static] Run `pnpm exec eslint apps/web-demo/src/views/login/index.vue apps/web-demo/src/views/login/components/animated-characters/Index.vue` after code changes.
+- [⬜️] [Login-P7-Type] Run `pnpm --filter @ccd/web-demo type-check` after the focused refactor.
+- [⬜️] [Login-P7-Governance] Run `pnpm arch:runtime`, `pnpm api:report`, and `pnpm supply:check` if imports, package boundaries, or runtime adapters are touched.
+- [⬜️] [Login-P7-Browser] Use the Browser plugin or Playwright fallback to capture `/login` in light and dark modes at desktop width.
+- [⬜️] [Login-P7-Responsive] Capture or inspect tablet and mobile breakpoints for panel wrapping, character breakout, safe-area spacing, and footer position.
+- [⬜️] [Login-P7-Interaction] Verify username focus makes characters look/react, password typing triggers privacy behavior, password visibility toggle updates state, presets fill both fields, failed login clears password only, and successful login redirects.
+- [⬜️] [Login-P7-Regression] Verify the password prefix icon and visibility toggle remain inside the input shell in both light and dark screenshots.
+
+Completion gate:
+
+- [⬜️] [Login-P8-Done] Mark all completed login tasks in `.ai/runtime/repair_list.txt` only after implementation, static checks, browser screenshots, and interaction smoke tests pass.
