@@ -1,47 +1,67 @@
 <script setup lang="ts">
-import { createCoreRuntime } from '@ccd/core'
-import { ref } from 'vue'
-import { webAdapters } from './adapters'
+import {
+  decideRootFontSize,
+  decideLayoutDimensions,
+  applyRuntimeSizeUpdate,
+} from '@/utils/theme/sizeEngine'
+import LayoutManager from '@/layouts/index.vue'
+import AppPrimeVueGlobals from '@/layouts/components/AppPrimeVueGlobals.vue'
 
-const runtime = createCoreRuntime(webAdapters)
-const savedMessage = ref('')
+const sizeStore = useSizeStore()
+const deviceStore = useDeviceStore()
+const themeStore = useThemeStore()
 
-async function saveMessage() {
-  await runtime.saveJson('ccd:web-demo:message', { value: savedMessage.value })
+// 提前检测设备，确保 watchEffect 首帧使用正确断点，避免字体闪动
+let cleanupDeviceListener: (() => void) | undefined
+if (typeof window !== 'undefined') {
+  cleanupDeviceListener = deviceStore.init()
 }
 
-async function loadMessage() {
-  const result = await runtime.loadJson('ccd:web-demo:message', { value: '' })
-  savedMessage.value = result.value
-}
+// 根字号与布局尺寸双轨自适应：根据设备类型 + 断点 + 尺寸预设动态计算
+// 使用 applyRuntimeSizeUpdate 合并字体 + 布局变量为单次 cssText 写入，
+// 避免 ~16 次独立 setProperty 导致的多次 style recalc
+watchEffect(() => {
+  const ctx = {
+    deviceType: deviceStore.type,
+    breakpoint: deviceStore.currentBreakpoint,
+    preset: sizeStore.currentPreset,
+    pixelRatio: deviceStore.pixelRatio,
+  }
+  const decision = decideRootFontSize(ctx)
+  const layoutDimensions = decideLayoutDimensions(ctx)
+  applyRuntimeSizeUpdate(decision, layoutDimensions)
+})
 
-void loadMessage()
+// Resize 期间在 <html> 上挂 class，供 CSS 压制过渡
+watch(
+  () => deviceStore.isResizing,
+  resizing => {
+    document.documentElement.classList.toggle('app-resizing', resizing)
+  }
+)
+
+onMounted(() => {
+  sizeStore.init()
+
+  const permissionStore = usePermissionStore()
+  const key = new URLSearchParams(location.search).get('_windowKey')
+  if (key) {
+    const meta = permissionStore.getWindowByKey(key)
+    if (meta) meta.isOpen = true
+  }
+  permissionStore.cleanupOldWindows()
+})
+
+onUnmounted(() => {
+  if (cleanupDeviceListener) cleanupDeviceListener()
+  document.documentElement.classList.remove('app-resizing')
+  themeStore.dispose()
+})
 </script>
 
 <template>
-  <main class="shell">
-    <h1>CCD Web Demo</h1>
-    <p>Web runtime injects browser adapters into <code>@ccd/core</code>.</p>
-    <label>
-      Demo message
-      <input v-model="savedMessage" />
-    </label>
-    <button type="button" @click="saveMessage">Save via Core Runtime</button>
-  </main>
+  <div class="layout-screen text-foreground font-sans antialiased">
+    <LayoutManager />
+    <AppPrimeVueGlobals />
+  </div>
 </template>
-
-<style scoped>
-.shell {
-  max-width: 720px;
-  margin: 48px auto;
-  display: grid;
-  gap: 16px;
-  font-family: system-ui, sans-serif;
-}
-
-input,
-button {
-  font: inherit;
-  padding: 8px 12px;
-}
-</style>

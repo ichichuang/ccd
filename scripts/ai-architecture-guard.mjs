@@ -16,12 +16,12 @@ const cliFileArgs = process.argv
   .filter(arg => !arg.startsWith('--'))
   .map(arg => path.relative(cwd, path.resolve(cwd, arg)).split(path.sep).join(path.posix.sep))
 
-const businessViewPatterns = ['src/views/**/*.vue']
+const businessViewPatterns = ['apps/web-demo/src/views/**/*.vue']
 const businessViewIgnore = [
-  'src/views/example/**',
-  'src/views/login/**',
-  'src/views/notfound/**',
-  'src/views/**/components/**',
+  'apps/web-demo/src/views/example/**',
+  'apps/web-demo/src/views/login/**',
+  'apps/web-demo/src/views/notfound/**',
+  'apps/web-demo/src/views/**/components/**',
 ]
 
 const normalizePath = rel => rel.split(path.sep).join(path.posix.sep)
@@ -79,57 +79,57 @@ const readTextIfExists = relPath => {
 }
 
 const approvedRawNetworkFiles = new Set([
-  'src/utils/http/methods.ts',
-  'src/utils/http/interceptors.ts',
-  'src/utils/http/connection.ts',
-  'src/utils/date/timezone.ts',
+  'apps/web-demo/src/utils/http/methods.ts',
+  'apps/web-demo/src/utils/http/interceptors.ts',
+  'apps/web-demo/src/utils/http/connection.ts',
+  'apps/web-demo/src/utils/date/timezone.ts',
 ])
 
 const approvedRawStorageFiles = new Set([
-  'src/main.ts',
-  'src/hooks/modules/useThemeSwitch.ts',
-  'src/stores/modules/session/permission.ts',
-  'src/stores/modules/session/user.ts',
-  'src/stores/modules/system/layout.ts',
-  'src/stores/modules/system/size.ts',
-  'src/utils/theme/engine.ts',
-  'src/utils/theme/sizeEngine.ts',
-  'src/utils/runtime/e2e.ts',
+  'apps/web-demo/src/main.ts',
+  'apps/web-demo/src/hooks/modules/useThemeSwitch.ts',
+  'apps/web-demo/src/stores/modules/session/permission.ts',
+  'apps/web-demo/src/stores/modules/session/user.ts',
+  'apps/web-demo/src/stores/modules/system/layout.ts',
+  'apps/web-demo/src/stores/modules/system/size.ts',
+  'apps/web-demo/src/utils/theme/engine.ts',
+  'apps/web-demo/src/utils/theme/sizeEngine.ts',
+  'apps/web-demo/src/utils/runtime/e2e.ts',
 ])
 
 const rawStorageInfraPatterns = [
-  'src/utils/safeStorage/**',
-  'src/components/ProForm/engine/persistence/**',
-  'src/components/ProTable/engine/hooks/useProTableColumnSettingsStorage.ts',
-  'src/stores/modules/system/theme.ts',
-  'src/stores/modules/system/locale.ts',
+  'apps/web-demo/src/utils/safeStorage/**',
+  'apps/web-demo/src/components/ProForm/engine/persistence/**',
+  'apps/web-demo/src/components/ProTable/engine/hooks/useProTableColumnSettingsStorage.ts',
+  'apps/web-demo/src/stores/modules/system/theme.ts',
+  'apps/web-demo/src/stores/modules/system/locale.ts',
 ]
 
 const approvedVueUseStorageFiles = new Set([
-  'src/components/ProTable/engine/hooks/useProTableColumnSettingsStorage.ts',
+  'apps/web-demo/src/components/ProTable/engine/hooks/useProTableColumnSettingsStorage.ts',
 ])
 
 const approvedGlassBaseFiles = new Set([
-  'src/design-engine/shortcuts/semanticShortcuts.ts',
+  'apps/web-demo/src/design-engine/shortcuts/semanticShortcuts.ts',
 ])
 
 const approvedRawZIndexFiles = new Set([
-  'index.html',
-  'src/assets/styles/custom-nprogress.scss',
-  'src/assets/styles/theme/transitions.scss',
-  'src/assets/styles/theme/modes/circle.scss',
-  'src/assets/styles/theme/modes/curtain.scss',
-  'src/assets/styles/theme/modes/diamond.scss',
-  'src/assets/styles/theme/modes/fade.scss',
-  'src/assets/styles/theme/modes/glitch.scss',
-  'src/assets/styles/theme/modes/implosion.scss',
+  'apps/web-demo/index.html',
+  'apps/web-demo/src/assets/styles/custom-nprogress.scss',
+  'apps/web-demo/src/assets/styles/theme/transitions.scss',
+  'apps/web-demo/src/assets/styles/theme/modes/circle.scss',
+  'apps/web-demo/src/assets/styles/theme/modes/curtain.scss',
+  'apps/web-demo/src/assets/styles/theme/modes/diamond.scss',
+  'apps/web-demo/src/assets/styles/theme/modes/fade.scss',
+  'apps/web-demo/src/assets/styles/theme/modes/glitch.scss',
+  'apps/web-demo/src/assets/styles/theme/modes/implosion.scss',
 ])
 
 const approvedDirectTransportFiles = new Set([
-  'src/sync/runtime.ts',
-  'src/sync/socket.ts',
+  'apps/web-demo/src/sync/runtime.ts',
+  'apps/web-demo/src/sync/socket.ts',
   // Route window lifecycle coordination is infrastructure, not state synchronization.
-  'src/router/utils/helper.ts',
+  'apps/web-demo/src/router/utils/helper.ts',
 ])
 
 const blockedGeneratedCodePatterns = aiPolicy.blockedGeneratedCodePatterns.map(rule => ({
@@ -154,6 +154,7 @@ const stripJsComments = content =>
   content.replace(/\/\*[\s\S]*?\*\//g, '').replace(/(^|[^:])\/\/.*$/gm, '$1')
 
 for (const relPath of governedGeneratedCodeFiles) {
+  if (relPath.startsWith('apps/')) continue
   if (isGlobAllowed(relPath, aiAllowedRuntimeAccessPaths)) continue
   const content = stripJsComments(readText(relPath))
   for (const rule of blockedGeneratedCodePatterns) {
@@ -316,7 +317,7 @@ for (const relPath of businessViews) {
   }
 }
 
-const networkBoundaryFiles = scanFiles(['src/api/**/*.{ts,tsx}', 'src/hooks/**/*.{ts,tsx}', 'src/stores/**/*.{ts,tsx}'])
+const networkBoundaryFiles = scanFiles(['apps/web-demo/src/api/**/*.{ts,tsx}', 'apps/web-demo/src/hooks/**/*.{ts,tsx}', 'apps/web-demo/src/stores/**/*.{ts,tsx}'])
 for (const relPath of networkBoundaryFiles) {
   if (approvedRawNetworkFiles.has(relPath)) continue
   const content = stripJsComments(readText(relPath))
@@ -325,7 +326,7 @@ for (const relPath of networkBoundaryFiles) {
   }
 }
 
-const storageBoundaryFiles = scanFiles(['src/views/**/*.{vue,ts,tsx}', 'src/hooks/**/*.{ts,tsx}', 'src/stores/**/*.{ts,tsx}', 'src/components/**/*.{vue,ts,tsx}'])
+const storageBoundaryFiles = scanFiles(['apps/web-demo/src/views/**/*.{vue,ts,tsx}', 'apps/web-demo/src/hooks/**/*.{ts,tsx}', 'apps/web-demo/src/stores/**/*.{ts,tsx}', 'apps/web-demo/src/components/**/*.{vue,ts,tsx}'])
 for (const relPath of storageBoundaryFiles) {
   if (/\.(spec|test)\.ts$/.test(relPath)) continue
   if (approvedRawStorageFiles.has(relPath)) continue
@@ -337,7 +338,7 @@ for (const relPath of storageBoundaryFiles) {
   }
 }
 
-const vueUseBoundaryFiles = scanFiles(['src/views/**/*.{vue,ts,tsx}', 'src/hooks/**/*.{ts,tsx}', 'src/stores/**/*.{ts,tsx}', 'src/components/**/*.{vue,ts,tsx}'])
+const vueUseBoundaryFiles = scanFiles(['apps/web-demo/src/views/**/*.{vue,ts,tsx}', 'apps/web-demo/src/hooks/**/*.{ts,tsx}', 'apps/web-demo/src/stores/**/*.{ts,tsx}', 'apps/web-demo/src/components/**/*.{vue,ts,tsx}'])
 for (const relPath of vueUseBoundaryFiles) {
   if (/\.(spec|test)\.ts$/.test(relPath)) continue
   if (relPath.includes('/example/')) continue
@@ -351,7 +352,7 @@ for (const relPath of vueUseBoundaryFiles) {
   }
 }
 
-const syncBoundaryFiles = scanFiles(['src/**/*.{ts,tsx,vue}'])
+const syncBoundaryFiles = scanFiles(['apps/web-demo/src/**/*.{ts,tsx,vue}'])
 for (const relPath of syncBoundaryFiles) {
   if (/\.(spec|test)\.ts$/.test(relPath)) continue
   if (relPath.includes('/example/')) continue
@@ -371,7 +372,7 @@ for (const relPath of syncBoundaryFiles) {
     fail(
       'sync-transport-boundary',
       relPath,
-      'BroadcastChannel transport must stay in src/sync/** or an approved infrastructure allowlist'
+      'BroadcastChannel transport must stay in apps/web-demo/src/sync/** or an approved infrastructure allowlist'
     )
   }
 
@@ -379,19 +380,19 @@ for (const relPath of syncBoundaryFiles) {
     fail(
       'sync-transport-boundary',
       relPath,
-      'WebSocket transport must stay in src/sync/** or an approved infrastructure allowlist'
+      'WebSocket transport must stay in apps/web-demo/src/sync/** or an approved infrastructure allowlist'
     )
   }
 }
 
 // --- raw-date-constructor: new Date() without args is forbidden outside approved files ---
 const approvedRawDateFiles = new Set([
-  'src/utils/date/timezone.ts',
-  'src/utils/http/connection.ts',
-  'src/utils/http/uploadManager.ts',
+  'apps/web-demo/src/utils/date/timezone.ts',
+  'apps/web-demo/src/utils/http/connection.ts',
+  'apps/web-demo/src/utils/http/uploadManager.ts',
 ])
 
-const dateCheckFiles = scanFiles(['src/**/*.{ts,tsx,vue}'])
+const dateCheckFiles = scanFiles(['apps/web-demo/src/**/*.{ts,tsx,vue}'])
 for (const relPath of dateCheckFiles) {
   if (/\.(spec|test)\.ts$/.test(relPath)) continue
   if (relPath.includes('/example/')) continue
@@ -404,30 +405,30 @@ for (const relPath of dateCheckFiles) {
 
 // --- raw-timer: setTimeout/setInterval outside approved files ---
 const approvedRawTimerFiles = new Set([
-  'src/views/login/components/animated-characters/Index.vue',
-  'src/views/login/index.vue',
-  'src/components/ProForm/engine/core/FormController.ts',
-  'src/components/ProForm/engine/validation/ValidationEngine.ts',
-  'src/utils/http/connection.ts',
-  'src/utils/http/methods.ts',
-  'src/utils/http/interceptors.ts',
-  'src/utils/date/timezone.ts',
-  'src/hooks/modules/useThemeSwitch.ts',
-  'src/hooks/layout/useAdminTabs.ts',
-  'src/hooks/layout/useLoading.ts',
-  'src/hooks/layout/useNprogress.ts',
-  'src/hooks/modules/usePermissionRoutes.ts',
-  'src/layouts/components/admin/AdminSidebarMenu.tsx',
-  'src/layouts/modules/LayoutAdmin.tsx',
-  'src/router/utils/guardEffects.ts',
-  'src/components/PrimeDialog/useDialog.ts',
-  'src/components/UseEcharts/UseEcharts.vue',
-  'src/stores/modules/system/device.ts',
-  'src/api/auth/auth.api.ts',
-  'src/api/system/system.api.ts',
+  'apps/web-demo/src/views/login/components/animated-characters/Index.vue',
+  'apps/web-demo/src/views/login/index.vue',
+  'apps/web-demo/src/components/ProForm/engine/core/FormController.ts',
+  'apps/web-demo/src/components/ProForm/engine/validation/ValidationEngine.ts',
+  'apps/web-demo/src/utils/http/connection.ts',
+  'apps/web-demo/src/utils/http/methods.ts',
+  'apps/web-demo/src/utils/http/interceptors.ts',
+  'apps/web-demo/src/utils/date/timezone.ts',
+  'apps/web-demo/src/hooks/modules/useThemeSwitch.ts',
+  'apps/web-demo/src/hooks/layout/useAdminTabs.ts',
+  'apps/web-demo/src/hooks/layout/useLoading.ts',
+  'apps/web-demo/src/hooks/layout/useNprogress.ts',
+  'apps/web-demo/src/hooks/modules/usePermissionRoutes.ts',
+  'apps/web-demo/src/layouts/components/admin/AdminSidebarMenu.tsx',
+  'apps/web-demo/src/layouts/modules/LayoutAdmin.tsx',
+  'apps/web-demo/src/router/utils/guardEffects.ts',
+  'apps/web-demo/src/components/PrimeDialog/useDialog.ts',
+  'apps/web-demo/src/components/UseEcharts/UseEcharts.vue',
+  'apps/web-demo/src/stores/modules/system/device.ts',
+  'apps/web-demo/src/api/auth/auth.api.ts',
+  'apps/web-demo/src/api/system/system.api.ts',
 ])
 
-const timerCheckFiles = scanFiles(['src/**/*.{ts,tsx,vue}'])
+const timerCheckFiles = scanFiles(['apps/web-demo/src/**/*.{ts,tsx,vue}'])
 for (const relPath of timerCheckFiles) {
   if (/\.(spec|test)\.ts$/.test(relPath)) continue
   if (relPath.includes('/example/')) continue
@@ -438,7 +439,7 @@ for (const relPath of timerCheckFiles) {
   }
 }
 
-const designSystemFiles = scanFiles(['index.html', 'src/**/*.{vue,ts,tsx,css,scss}'])
+const designSystemFiles = scanFiles(['apps/web-demo/index.html', 'apps/web-demo/src/**/*.{vue,ts,tsx,css,scss}'])
 for (const relPath of designSystemFiles) {
   const content = stripJsComments(readText(relPath))
   if (!approvedGlassBaseFiles.has(relPath) && /\bglass-base\b/.test(content)) {
@@ -454,10 +455,10 @@ for (const relPath of designSystemFiles) {
 
 const borderContractFiles = scanFiles(
   [
-    'src/design-engine/shortcuts/**/*.ts',
-    'src/utils/theme/ptPresets/**/*.ts',
-    'src/utils/theme/presetComponents/**/*.ts',
-    'src/layouts/**/*.{vue,tsx}',
+    'apps/web-demo/src/design-engine/shortcuts/**/*.ts',
+    'apps/web-demo/src/utils/theme/ptPresets/**/*.ts',
+    'apps/web-demo/src/utils/theme/presetComponents/**/*.ts',
+    'apps/web-demo/src/layouts/**/*.{vue,tsx}',
     '.ai/rules/design-system/**/*.mdc',
     '.ai/rules/components/**/*.mdc',
   ],
@@ -467,7 +468,7 @@ for (const relPath of borderContractFiles) {
   reportBorderContractIssues(relPath, readText(relPath))
 }
 
-const layoutStorePath = 'src/stores/modules/system/layout.ts'
+const layoutStorePath = 'apps/web-demo/src/stores/modules/system/layout.ts'
 const layoutStore = shouldRunSingletonCheck(layoutStorePath) ? readTextIfExists(layoutStorePath) : ''
 if (
   layoutStore &&
@@ -477,7 +478,7 @@ if (
   fail('store-persist-serializer', layoutStorePath, 'useLayoutStore persistence must use createPiniaEncryptedSerializer()')
 }
 
-const sizeStorePath = 'src/stores/modules/system/size.ts'
+const sizeStorePath = 'apps/web-demo/src/stores/modules/system/size.ts'
 const sizeStore = shouldRunSingletonCheck(sizeStorePath) ? readTextIfExists(sizeStorePath) : ''
 if (
   sizeStore &&
@@ -491,9 +492,9 @@ const eslintConfigPath = 'eslint.config.ts'
 const eslintConfig = shouldRunSingletonCheck(eslintConfigPath) ? readTextIfExists(eslintConfigPath) : ''
 if (eslintConfig) {
   for (const removedAnyOverride of [
-    'src/hooks/modules/useHttpRequest.ts',
-    'src/locales/**/*.ts',
-    'src/plugins/**/*.ts',
+    'apps/web-demo/src/hooks/modules/useHttpRequest.ts',
+    'apps/web-demo/src/locales/**/*.ts',
+    'apps/web-demo/src/plugins/**/*.ts',
   ]) {
     if (eslintConfig.includes(`'${removedAnyOverride}'`) || eslintConfig.includes(`"${removedAnyOverride}"`)) {
       fail('any-exemption-drift', eslintConfigPath, `${removedAnyOverride} must not return to no-explicit-any override list`)
@@ -501,7 +502,7 @@ if (eslintConfig) {
   }
 }
 
-const storeFiles = scanFiles(['src/stores/**/*.{ts,tsx}'])
+const storeFiles = scanFiles(['apps/web-demo/src/stores/**/*.{ts,tsx}'])
 for (const relPath of storeFiles) {
   const content = readText(relPath)
   const sourceFile = ts.createSourceFile(relPath, content, ts.ScriptTarget.Latest, true, ts.ScriptKind.TS)
@@ -520,7 +521,7 @@ for (const relPath of storeFiles) {
   }
 }
 
-const apiFiles = scanFiles(['src/api/**/*.{ts,tsx}'])
+const apiFiles = scanFiles(['apps/web-demo/src/api/**/*.{ts,tsx}'])
 const schemaRequiredHttpHelpers = new Set([
   'get',
   'post',
@@ -558,7 +559,7 @@ for (const relPath of apiFiles) {
         fail(
           'api-response-schema',
           relPath,
-          `${node.expression.text}() calls in src/api must pass a config object with responseSchema`
+          `${node.expression.text}() calls in apps/web-demo/src/api must pass a config object with responseSchema`
         )
       }
     }
@@ -568,7 +569,7 @@ for (const relPath of apiFiles) {
   visitApiCall(sourceFile)
 }
 
-const routerModuleFiles = scanFiles(['src/router/modules/**/*.ts'])
+const routerModuleFiles = scanFiles(['apps/web-demo/src/router/modules/**/*.ts'])
 for (const relPath of routerModuleFiles) {
   const sourceText = readText(relPath)
   if (/import\s+.+\s+from\s+['"]@\/views\//.test(sourceText)) {
@@ -665,7 +666,7 @@ function validateRouteObject(node, sourceFile, relPath, viewImportBindings) {
   const target = firstArg.text
   if (!target.startsWith('@/views/')) return
 
-  const absTarget = path.join(cwd, target.replace(/^@\//, 'src/'))
+  const absTarget = path.join(cwd, target.replace(/^@\//, 'apps/web-demo/src/'))
   if (!fs.existsSync(absTarget)) {
     fail('route-component-target', relPath, `route at ${getRoutePath(props.get('path'), sourceFile)} points to a missing view: ${target}`)
   }

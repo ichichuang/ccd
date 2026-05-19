@@ -4,8 +4,46 @@
   "allowedRuntimeDependencies": {
     "@ccd/contracts": [],
     "@ccd/core": ["@ccd/contracts"],
-    "@ccd/web-demo": ["@ccd/contracts", "@ccd/core", "@vitejs/plugin-vue", "typescript", "vite", "vue", "vue-tsc"],
-    "@ccd/desktop": ["@ccd/contracts", "@ccd/core", "@tauri-apps/api", "@vitejs/plugin-vue", "typescript", "vite", "vue", "vue-tsc"]
+    "@ccd/web-demo": [
+      "@ccd/contracts",
+      "@ccd/core",
+      "@primeuix/themes",
+      "@primevue/core",
+      "@primevue/forms",
+      "@primevue/icons",
+      "@tanstack/vue-virtual",
+      "@vueuse/core",
+      "alova",
+      "crypto-es",
+      "dayjs",
+      "echarts",
+      "gsap",
+      "lodash-es",
+      "lz-string",
+      "mitt",
+      "overlayscrollbars",
+      "overlayscrollbars-vue",
+      "pinia",
+      "pinia-plugin-persistedstate",
+      "primevue",
+      "uuid",
+      "vue",
+      "vue-echarts",
+      "vue-i18n",
+      "vue-router",
+      "vue3-lottie",
+      "zod"
+    ],
+    "@ccd/desktop": [
+      "@ccd/contracts",
+      "@ccd/core",
+      "@tauri-apps/api",
+      "@vitejs/plugin-vue",
+      "typescript",
+      "vite",
+      "vue",
+      "vue-tsc"
+    ]
   },
   "singletonRuntimeDependencies": ["vue", "vite", "typescript", "vue-tsc"],
   "licensePolicy": {

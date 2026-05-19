@@ -40,7 +40,7 @@ export default defineConfig({
     },
   ],
   webServer: {
-    command: `pnpm exec vite --host 127.0.0.1 --port ${PORT} --strictPort`,
+    command: `cd apps/web-demo && VITE_PORT=${PORT} VITE_ROUTER_MODE=hash VITE_PUBLIC_PATH=/ VITE_ROOT_REDIRECT=/dashboard VITE_APP_ENV=development VITE_API_BASE_URL=http://localhost:3003 VITE_API_TIMEOUT=10000 VITE_PROXY_TIMEOUT=15000 VITE_PINIA_PERSIST_KEY_PREFIX=app-template-storage-e2e VITE_APP_SECRET=__E2E_OBFUSCATION_KEY__ VITE_DEMO_MOCK_ENABLED=true pnpm exec vite --host 127.0.0.1 --port ${PORT} --strictPort`,
     url: baseURL,
     reuseExistingServer: true,
     timeout: 120000,

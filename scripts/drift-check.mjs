@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /**
  * Drift Checker — 漂移检测器 (v0.5.1)
- * 1. 扫描 src/views 下所有含 data-archetype 的 .vue，若同目录有 page.state.ts 则比对
+ * 1. 扫描 apps/web-demo/src/views 下所有含 data-archetype 的 .vue，若同目录有 page.state.ts 则比对
  * 2. Style Guard：扫描 src 下所有 .vue 的 <style> 块，禁止 hex/rgb/rgba/hsl/hsla（排除注释）
  */
 
@@ -11,11 +11,11 @@ import { fileURLToPath } from 'node:url'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 const ROOT = join(__dirname, '..')
-const SRC_DIR = join(ROOT, 'src')
-const VIEWS_DIR = join(ROOT, 'src', 'views')
+const SRC_DIR = join(ROOT, 'apps', 'web-demo', 'src')
+const VIEWS_DIR = join(ROOT, 'apps', 'web-demo', 'src', 'views')
 const BUILD_SYSTEM_MD = join(ROOT, 'docs', 'ai-specs', 'BUILD_SYSTEM.md')
-const VITE_CONFIG = join(ROOT, 'vite.config.ts')
-const BUILD_PLUGINS = join(ROOT, 'build', 'plugins.ts')
+const VITE_CONFIG = join(ROOT, 'apps', 'web-demo', 'vite.config.ts')
+const BUILD_PLUGINS = join(ROOT, 'apps', 'web-demo', 'build', 'plugins.ts')
 
 /** 禁止：十六进制颜色 #fff, #ff0000, #ff0000ff */
 const HEX_REGEX = /#([0-9a-fA-F]{3}|[0-9a-fA-F]{6}|[0-9a-fA-F]{8})\b/g
@@ -202,14 +202,14 @@ function checkBuildPluginsDrift() {
 
     if (!hasStoreGroups) {
       errors.push(
-        'build/plugins.ts: AutoImport.dirs 需显式包含 "src/stores/modules/system"、"src/stores/modules/session"、"src/stores/modules/ui" 与 "src/hooks/**/*"。'
+        'apps/web-demo/build/plugins.ts: AutoImport.dirs 需显式包含 "src/stores/modules/system"、"src/stores/modules/session"、"src/stores/modules/ui" 与 "src/hooks/**/*"。'
       )
     }
   }
 
   if (content.includes('Components({')) {
     if (!content.includes("dirs: ['src/components']")) {
-      errors.push('build/plugins.ts: Components.dirs 应为 ["src/components"]。')
+      errors.push('apps/web-demo/build/plugins.ts: Components.dirs 应为 ["src/components"]。')
     }
     if (
       !content.includes(
@@ -217,12 +217,12 @@ function checkBuildPluginsDrift() {
       )
     ) {
       errors.push(
-        'build/plugins.ts: Components.exclude 需包含 src/layouts 目录，防止布局组件被自动导入。'
+        'apps/web-demo/build/plugins.ts: Components.exclude 需包含 src/layouts 目录，防止布局组件被自动导入。'
       )
     }
     if (!content.includes('PrimeVueResolver()')) {
       errors.push(
-        'build/plugins.ts: Components.resolvers 需包含 PrimeVueResolver() 以保持 PrimeVue 组件按需引入。'
+        'apps/web-demo/build/plugins.ts: Components.resolvers 需包含 PrimeVueResolver() 以保持 PrimeVue 组件按需引入。'
       )
     }
   }
@@ -248,12 +248,12 @@ function main() {
     const stateContent = readFileSync(statePath, 'utf-8')
     const stateArchetype = extractArchetypeFromState(stateContent)
     if (!stateArchetype) {
-      errors.push(`[src/views/${rel}]: 同目录 page.state.ts 中未找到 archetype`)
+      errors.push(`[apps/web-demo/src/views/${rel}]: 同目录 page.state.ts 中未找到 archetype`)
       continue
     }
     if (stateArchetype !== uiArchetype) {
       errors.push(
-        `[src/views/${rel}]: 结构漂移 — page.state.ts archetype="${stateArchetype}" vs data-archetype="${uiArchetype}"`
+        `[apps/web-demo/src/views/${rel}]: 结构漂移 — page.state.ts archetype="${stateArchetype}" vs data-archetype="${uiArchetype}"`
       )
     }
   }
@@ -263,15 +263,15 @@ function main() {
   for (const rel of srcVueFiles) {
     const absPath = join(SRC_DIR, rel)
     const content = readFileSync(absPath, 'utf-8')
-    const styleErrors = checkStyleDrift(`src/${rel}`, content)
+    const styleErrors = checkStyleDrift(`apps/web-demo/src/${rel}`, content)
     errors.push(...styleErrors)
-    errors.push(...checkClassColorDrift(`src/${rel}`, content))
+    errors.push(...checkClassColorDrift(`apps/web-demo/src/${rel}`, content))
   }
 
   for (const rel of walkFilesByExtension(SRC_DIR, ['.tsx'])) {
     const absPath = join(SRC_DIR, rel)
     const content = readFileSync(absPath, 'utf-8')
-    errors.push(...checkClassColorDrift(`src/${rel}`, content))
+    errors.push(...checkClassColorDrift(`apps/web-demo/src/${rel}`, content))
   }
 
   // ---------- 3. Build System vs vite.config.ts (manualChunks) ----------

@@ -13,20 +13,21 @@ apps/web-demo
 apps/desktop
 ```
 
-| Workspace | Role | Allowed Dependencies | Runtime Access |
-| --- | --- | --- | --- |
-| `packages/contracts` | Public ABI: interfaces and shared types | none | forbidden |
-| `packages/core` | Runtime-neutral platform logic | `@ccd/contracts` | forbidden |
-| `apps/web-demo` | Browser runtime shell | `@ccd/contracts`, `@ccd/core` | adapters only |
-| `apps/desktop` | Tauri runtime shell | `@ccd/contracts`, `@ccd/core`, Tauri packages | `src/adapters/**` only |
-| `legacy/root-app` | Historical archive | none | not active |
+| Workspace            | Role                                                           | Allowed Dependencies                          | Runtime Access         |
+| -------------------- | -------------------------------------------------------------- | --------------------------------------------- | ---------------------- |
+| `packages/contracts` | Public ABI: interfaces and shared types                        | none                                          | forbidden              |
+| `packages/core`      | Runtime-neutral platform logic                                 | `@ccd/contracts`                              | forbidden              |
+| `apps/web-demo`      | Browser runtime shell and sole browser runtime source of truth | `@ccd/contracts`, `@ccd/core`                 | adapters only          |
+| `apps/desktop`       | Tauri runtime shell                                            | `@ccd/contracts`, `@ccd/core`, Tauri packages | `src/adapters/**` only |
+| `root`               | Orchestration-only shell                                       | none                                          | no runtime code        |
+| `legacy/root-app`    | Historical archive                                             | none                                          | not active             |
 
 ## Dependency Direction
 
 ```mermaid
 graph TD
   Contracts["@ccd/contracts\ninterfaces only"] --> Core["@ccd/core\nruntime-neutral logic"]
-  Core --> Web["@ccd/web-demo\nbrowser adapters"]
+  Core --> Web["@ccd/web-demo\nsingle browser runtime"]
   Core --> Desktop["@ccd/desktop\nTauri adapters"]
   Contracts --> Web
   Contracts --> Desktop
@@ -39,6 +40,7 @@ Hard rules:
 - `packages/core` never imports apps, legacy, browser APIs, Node APIs, Tauri APIs, timers, console, crypto, fetch, or storage globals.
 - Apps never import sibling apps.
 - All package imports use public package exports only.
+- Root contains orchestration/configuration only and must not host runtime source code.
 - `legacy/**` never re-enters active dependency graphs.
 
 ## Runtime Adapter Architecture

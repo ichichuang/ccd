@@ -7,9 +7,12 @@ import {
   transformerDirectives,
   transformerVariantGroup,
 } from 'unocss'
-import { semanticShortcuts } from './src/design-engine/shortcuts/semanticShortcuts'
-import { getEngineSafelist, getPresetIconsCollections } from './src/design-engine/safelist'
-import { theme } from './src/design-engine/theme'
+import { semanticShortcuts } from './apps/web-demo/src/design-engine/shortcuts/semanticShortcuts'
+import {
+  getEngineSafelist,
+  getPresetIconsCollections,
+} from './apps/web-demo/src/design-engine/safelist'
+import { theme } from './apps/web-demo/src/design-engine/theme'
 
 /** Uno easing utilities resolve from `theme.easing`; keep it aligned with the design engine motion map. */
 const transitionTimingFunction = theme.transitionTimingFunction as Record<string, string>
@@ -23,9 +26,9 @@ const themeResolved = {
 // 约束：上述 src 下被引用的文件必须为纯数据（仅导出常量/类型），禁止 import .vue 或使用 window/document 等浏览器 API，否则 Node 构建会报错。
 //
 // Runtime SSOT:
-// - 颜色、尺寸、布局 token 映射：src/design-engine/theme/index.ts
-// - 语义 shortcuts：src/design-engine/shortcuts/semanticShortcuts.ts
-// - safelist：src/design-engine/safelist/index.ts
+// - 颜色、尺寸、布局 token 映射：apps/web-demo/src/design-engine/theme/index.ts
+// - 语义 shortcuts：apps/web-demo/src/design-engine/shortcuts/semanticShortcuts.ts
+// - safelist：apps/web-demo/src/design-engine/safelist/index.ts
 //
 // 说明：
 // - `p-*` / `m-*` / `gap-*` / `rounded-*` / `duration-*` 等阶梯能力由 `themeResolved` 提供
@@ -38,7 +41,7 @@ const iconCollections = getPresetIconsCollections()
 // Keep TS/JS extraction project-local. Broad `[jt]s` pipeline scans dependency
 // internals such as Zod's `$constructor(...)` helpers, which Attributify can
 // misread as attribute utilities and emit invalid CSS in `/__uno.css`.
-const PROJECT_TS_JS_GLOB = 'src/**/*.{js,ts}'
+const PROJECT_TS_JS_GLOB = 'apps/web-demo/src/**/*.{js,ts}'
 const PIPELINE_INCLUDE = [
   /\.(vue|svelte|[jt]sx|vine\.ts|mdx?|astro|elm|php|phtml|marko|html)($|\?)/,
   PROJECT_TS_JS_GLOB,

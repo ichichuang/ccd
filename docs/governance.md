@@ -25,18 +25,18 @@ pnpm governance:gate
 
 It is the only architecture gate CI needs to call directly. Individual commands remain available for local debugging, but they are subordinate to the unified gate.
 
-| Gate Stage | Command | Blocks |
-| --- | --- | --- |
-| Governance assets | `pnpm governance:validate` | missing protocol, policy, runtime, or CI governance assets |
-| AI guard | `pnpm ai:guard -- --format=json` | unsafe generated code, raw runtime access outside adapters, deep imports |
-| Boundaries | `pnpm arch:boundaries` | dependency direction, cross-app imports, legacy imports, Tauri leakage |
-| Runtime neutrality | `pnpm arch:runtime` | browser/Node/Tauri/timer/storage/network globals in contracts/core |
-| API compatibility | `pnpm api:report` | public export removals, internal export leakage, API snapshot drift |
-| Supply chain | `pnpm supply:check` | lifecycle scripts, unapproved runtime dependencies, SBOM drift |
-| Release topology | `pnpm release:governance` | invalid Changesets config, release order drift, public export gaps |
-| Workflow registry | `pnpm governance:github-workflows` | active remote workflows not declared in policy |
-| Observability | `pnpm arch:report` | stale generated governance state |
-| Generated drift | internal git snapshot check | gate-generated report/API snapshot changes not committed |
+| Gate Stage         | Command                            | Blocks                                                                   |
+| ------------------ | ---------------------------------- | ------------------------------------------------------------------------ |
+| Governance assets  | `pnpm governance:validate`         | missing protocol, policy, runtime, or CI governance assets               |
+| AI guard           | `pnpm ai:guard -- --format=json`   | unsafe generated code, raw runtime access outside adapters, deep imports |
+| Boundaries         | `pnpm arch:boundaries`             | dependency direction, cross-app imports, legacy imports, Tauri leakage   |
+| Runtime neutrality | `pnpm arch:runtime`                | browser/Node/Tauri/timer/storage/network globals in contracts/core       |
+| API compatibility  | `pnpm api:report`                  | public export removals, internal export leakage, API snapshot drift      |
+| Supply chain       | `pnpm supply:check`                | lifecycle scripts, unapproved runtime dependencies, SBOM drift           |
+| Release topology   | `pnpm release:governance`          | invalid Changesets config, release order drift, public export gaps       |
+| Workflow registry  | `pnpm governance:github-workflows` | active remote workflows not declared in policy                           |
+| Observability      | `pnpm arch:report`                 | stale generated governance state                                         |
+| Generated drift    | internal git snapshot check        | gate-generated report/API snapshot changes not committed                 |
 
 ## GitHub CI Contract
 
@@ -59,28 +59,28 @@ Merge protection should require the `CI Guardian / Core Quality` and `CI Guardia
 
 Current workflow topology:
 
-| Workflow | Path | State | Purpose |
-| --- | --- | --- | --- |
-| `CI Guardian` | `.github/workflows/ci.yml` | active | single governance gate, quality checks, build verification |
-| `Deploy to GitHub Pages` | `.github/workflows/deploy.yml` | active | web demo build and GitHub Pages deployment |
-| `Dependabot Updates` | `dynamic/dependabot/dependabot-updates` | active | GitHub-managed dependency updates |
-| `Build Desktop (Windows)` | `.github/workflows/build-desktop-windows.yml` | disabled | historical desktop lane |
-| `Release Desktop` | `.github/workflows/release-desktop.yml` | disabled | historical desktop release lane |
-| `Smoke Desktop` | `.github/workflows/smoke-desktop.yml` | disabled | historical desktop smoke lane |
+| Workflow                  | Path                                          | State    | Purpose                                                    |
+| ------------------------- | --------------------------------------------- | -------- | ---------------------------------------------------------- |
+| `CI Guardian`             | `.github/workflows/ci.yml`                    | active   | single governance gate, quality checks, build verification |
+| `Deploy to GitHub Pages`  | `.github/workflows/deploy.yml`                | active   | web demo build and GitHub Pages deployment                 |
+| `Dependabot Updates`      | `dynamic/dependabot/dependabot-updates`       | active   | GitHub-managed dependency updates                          |
+| `Build Desktop (Windows)` | `.github/workflows/build-desktop-windows.yml` | disabled | historical desktop lane                                    |
+| `Release Desktop`         | `.github/workflows/release-desktop.yml`       | disabled | historical desktop release lane                            |
+| `Smoke Desktop`           | `.github/workflows/smoke-desktop.yml`         | disabled | historical desktop smoke lane                              |
 
 ## Policy Engine
 
 Policy manifests live in `.ai/governance/policies/**`.
 
-| Policy | Purpose |
-| --- | --- |
-| `version.json` | policy baseline and governance phase |
-| `topology.json` | layers, package criticality, dependency direction, export rules |
-| `runtime.json` | runtime-neutral denylist and adapter boundaries |
-| `ai.json` | AI-safe code generation patterns and allowed adapter exceptions |
-| `api.json` | API snapshot directory and breaking-change rules |
-| `supply-chain.json` | dependency allowlists, lifecycle policy, license policy |
-| `release.json` | Changesets config, release order, protected paths, single-gate contract |
+| Policy              | Purpose                                                                 |
+| ------------------- | ----------------------------------------------------------------------- |
+| `version.json`      | policy baseline and governance phase                                    |
+| `topology.json`     | layers, package criticality, dependency direction, export rules         |
+| `runtime.json`      | runtime-neutral denylist and adapter boundaries                         |
+| `ai.json`           | AI-safe code generation patterns and allowed adapter exceptions         |
+| `api.json`          | API snapshot directory and breaking-change rules                        |
+| `supply-chain.json` | dependency allowlists, lifecycle policy, license policy                 |
+| `release.json`      | Changesets config, release order, protected paths, single-gate contract |
 
 Validation scripts should consume policy manifests through `scripts/governance/policy-utils.mjs`.
 
@@ -150,6 +150,17 @@ Release order is fixed:
 ```text
 @ccd/contracts -> @ccd/core -> @ccd/web-demo -> @ccd/desktop
 ```
+
+## Root Orchestration Policy
+
+The repository root is orchestration-only. It may host:
+
+- workspace definitions
+- governance policies
+- scripts
+- generated adapters and reports
+
+It must not own active browser runtime source code or production web entrypoints. Browser runtime ownership belongs to `apps/web-demo`.
 
 Critical packages:
 

@@ -10,8 +10,9 @@ packages/contracts -> packages/core -> apps/*
 
 - `packages/contracts`: public interfaces and shared types.
 - `packages/core`: runtime-neutral platform logic.
-- `apps/web-demo`: browser runtime adapters.
+- `apps/web-demo`: single browser runtime source of truth and browser adapters.
 - `apps/desktop`: Tauri runtime adapters.
+- `root`: orchestration-only shell.
 - `legacy/root-app`: archived historical archived application, excluded from active graphs.
 
 ## Validation

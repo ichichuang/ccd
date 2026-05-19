@@ -1,12 +1,175 @@
 <!doctype html>
-<html lang="en">
+<html lang="zh-CN">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>CCD Web Demo</title>
+    <link
+      rel="icon"
+      href="%BRAND_FAVICON%"
+    />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"
+    />
+    <meta
+      name="description"
+      content="%BRAND_SLOGAN%"
+    />
+    <meta
+      name="author"
+      content="%BRAND_AUTHOR%"
+    />
+    <title>%BRAND_NAME%</title>
+
+    <script>
+      ;(function () {
+        try {
+          var params = new URLSearchParams(window.location.search)
+          var e2eMode =
+            params.get('%E2E_MODE_QUERY_KEY%') ||
+            localStorage.getItem('%E2E_MODE_STORAGE_KEY%') ||
+            ''
+          var mode = localStorage.getItem('%THEME_MODE_STORAGE_KEY%') || '%DEFAULT_THEME_MODE%'
+          var html = document.documentElement
+          if (e2eMode) {
+            html.dataset.e2eMode = e2eMode
+          }
+          if (params.get('%E2E_PRELOADER_HOLD_QUERY_KEY%') === '1') {
+            html.dataset.e2ePreloaderHold = 'true'
+          }
+          html.dataset.appReady = 'false'
+          html.dataset.preloaderState = 'visible'
+          var isDark =
+            mode === 'dark' ||
+            (mode === 'auto' && window.matchMedia('(prefers-color-scheme: dark)').matches) ||
+            mode === 'glass'
+          if (isDark) {
+            html.classList.add('dark')
+          } else {
+            html.classList.remove('dark')
+          }
+        } catch (e) {}
+      })()
+    </script>
+
+    <style>
+      html,
+      body {
+        margin: 0;
+        padding: 0;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        /* Theme fallback vars are injected by Vite HTML plugin; inline fallbacks only cover catastrophic injection failure. */
+        background-color: rgb(var(--background, 3 7 18));
+        color: rgb(var(--foreground, 243 244 246));
+      }
+
+      #preloader-bg {
+        position: fixed;
+        top: 0;
+        left: 0;
+        z-index: 9999999;
+        display: flex;
+        height: 100vh;
+        height: 100dvh;
+        width: 100vw;
+        justify-content: center;
+        align-items: center;
+        background-color: rgb(var(--background));
+        transition:
+          opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+          visibility 0.4s ease;
+      }
+
+      #preloader-bg.preloader-fade-out {
+        opacity: 0;
+        visibility: hidden;
+        pointer-events: none;
+      }
+
+      html[data-e2e-mode='visual'] #preloader-bg,
+      html[data-e2e-mode='visual'] #preloader-bg * {
+        transition: none !important;
+        animation: none !important;
+      }
+
+      .pure-css-loader {
+        position: relative;
+        width: 48px;
+        height: 48px;
+        border-radius: 50%;
+      }
+
+      .pure-css-loader::before,
+      .pure-css-loader::after {
+        content: '';
+        position: absolute;
+        inset: 0;
+        border-radius: 50%;
+        box-sizing: border-box;
+      }
+
+      .pure-css-loader::before {
+        border: 4px solid rgb(var(--primary) / 0.2);
+        border-top-color: rgb(var(--primary));
+        animation: pure-spin 0.9s linear infinite;
+      }
+
+      .pure-css-loader::after {
+        border: 4px solid transparent;
+        border-right-color: rgb(var(--primary) / 0.65);
+        transform: scale(0.72);
+        animation: pure-spin-reverse 1.2s linear infinite;
+        opacity: 0.9;
+      }
+
+      @keyframes pure-spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+
+      @keyframes pure-spin-reverse {
+        to {
+          transform: scale(0.72) rotate(-360deg);
+        }
+      }
+    </style>
+
+    <script>
+      ;(function () {
+        try {
+          var savedPrimary = localStorage.getItem('%THEME_PRIMARY_STORAGE_KEY%')
+          if (savedPrimary) {
+            document.documentElement.style.setProperty('--primary', savedPrimary)
+          }
+          var savedBg = localStorage.getItem('%THEME_BACKGROUND_STORAGE_KEY%')
+          if (savedBg) {
+            document.documentElement.style.setProperty('--background', savedBg)
+          }
+        } catch (e) {}
+      })()
+    </script>
   </head>
+
   <body>
+    <!-- 101 Handoff: 预加载层置于 #app 外，避免 Vue mount 时被销毁，由 loadingDone 淡出后移除 -->
+    <div
+      id="preloader-bg"
+      data-testid="native-preloader"
+    >
+      <div
+        class="pure-css-loader"
+        role="status"
+        aria-label="Loading"
+      ></div>
+    </div>
+
     <div id="app"></div>
-    <script type="module" src="/src/main.ts"></script>
+
+    <script
+      type="module"
+      src="/src/main.ts"
+    ></script>
   </body>
 </html>

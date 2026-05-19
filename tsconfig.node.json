@@ -2,70 +2,69 @@
   "extends": "@tsconfig/node24/tsconfig.json",
   "include": [
     // ✅ Node 侧仅负责工具链与构建脚本
-    "vite.config.ts",
     "uno.config.ts",
-    "src/design-engine/theme/index.ts",
-    "src/design-engine/theme/colors.ts",
-    "src/design-engine/safelist/index.ts",
+    "apps/web-demo/src/design-engine/theme/index.ts",
+    "apps/web-demo/src/design-engine/theme/colors.ts",
+    "apps/web-demo/src/design-engine/safelist/index.ts",
     // Design Engine: pure parser/validator/resolver for UnoCSS
-    "src/design-engine/index.ts",
-    "src/design-engine/tokens/colorTokens.ts",
-    "src/design-engine/validators/colorValidator.ts",
-    "src/design-engine/validators/sizeValidator.ts",
-    "src/design-engine/parser/parseBorder.ts",
-    "src/design-engine/resolvers/borderResolver.ts",
-    "src/design-engine/shortcuts/semanticShortcuts.ts",
+    "apps/web-demo/src/design-engine/index.ts",
+    "apps/web-demo/src/design-engine/tokens/colorTokens.ts",
+    "apps/web-demo/src/design-engine/validators/colorValidator.ts",
+    "apps/web-demo/src/design-engine/validators/sizeValidator.ts",
+    "apps/web-demo/src/design-engine/parser/parseBorder.ts",
+    "apps/web-demo/src/design-engine/resolvers/borderResolver.ts",
+    "apps/web-demo/src/design-engine/shortcuts/semanticShortcuts.ts",
     "eslint.config.ts",
     "vitest.config.ts",
     "cypress.config.ts",
     "playwright.config.ts",
     "e2e/**/*.ts",
     "commitlint.config.ts",
-    "build/**/*",
+    "apps/web-demo/build/**/*",
     "scripts/**/*.ts",
 
     // ✅ Node 侧需要的全局类型声明
-    "src/types/**/*.d.ts",
+    "apps/web-demo/src/types/**/*.d.ts",
 
     // ✅ 供 uno.config.ts 等工具链引用的浏览器常量与类型
-    "src/constants/**/*.ts",
+    "apps/web-demo/src/constants/**/*.ts",
     // dateFormats 再导出 DateFormatEnum（与 app 共用，无运行时代码）
-    "src/utils/date/types.ts",
-    "src/utils/theme/metadata.ts",
+    "apps/web-demo/src/utils/date/types.ts",
+    "apps/web-demo/src/utils/theme/metadata.ts",
     // ⚠️ engine.ts 的 applyTheme() 使用 document（DOM API），但 generateThemeVars() 被 build/html.ts 在 Node 侧引用
     // 因此必须保留在 Node file list 中；DOM 类型由文件级 triple-slash directive 自行声明
-    "src/utils/theme/engine.ts",
-    "src/utils/theme/colors.ts",
-    "src/utils/theme/color.ts",
-    "src/utils/theme/resolver.ts",
-    "src/utils/theme/compiler.ts",
-    "src/utils/theme/cache.ts",
-    "src/utils/theme/derive.ts",
-    "src/utils/theme/validate.ts",
-    "src/utils/theme/diff.ts",
-    "src/utils/theme/inspect.ts",
-    "src/utils/theme/fingerprint.ts",
-    "src/utils/theme/patch.ts",
-    "src/utils/theme/graph.ts",
-    "src/utils/theme/observability.ts",
-    "src/utils/theme/metrics.ts",
-    "src/utils/theme/tokens.ts",
-    "src/views/system-configuration/configs/shortcutGroups.ts",
+    "apps/web-demo/src/utils/theme/engine.ts",
+    "apps/web-demo/src/utils/theme/colors.ts",
+    "apps/web-demo/src/utils/theme/color.ts",
+    "apps/web-demo/src/utils/theme/resolver.ts",
+    "apps/web-demo/src/utils/theme/compiler.ts",
+    "apps/web-demo/src/utils/theme/cache.ts",
+    "apps/web-demo/src/utils/theme/derive.ts",
+    "apps/web-demo/src/utils/theme/validate.ts",
+    "apps/web-demo/src/utils/theme/diff.ts",
+    "apps/web-demo/src/utils/theme/inspect.ts",
+    "apps/web-demo/src/utils/theme/fingerprint.ts",
+    "apps/web-demo/src/utils/theme/patch.ts",
+    "apps/web-demo/src/utils/theme/graph.ts",
+    "apps/web-demo/src/utils/theme/observability.ts",
+    "apps/web-demo/src/utils/theme/metrics.ts",
+    "apps/web-demo/src/utils/theme/tokens.ts",
+    "apps/web-demo/src/views/system-configuration/configs/shortcutGroups.ts",
     // ⚠️ locales 模块使用 document（DOM API），但 src/constants/locale.ts 通过 type import 依赖 @/locales
     // 因此必须保留在 Node file list 中；DOM 类型由文件级 triple-slash directive 自行声明
-    "src/locales/**/*"
+    "apps/web-demo/src/locales/**/*"
   ],
   "exclude": [
     // 自动生成的类型声明文件，不参与 Node 编译（避免 DOM/browser 类型污染）
-    "src/types/auto-imports.d.ts",
-    "src/types/components.d.ts",
+    "apps/web-demo/src/types/auto-imports.d.ts",
+    "apps/web-demo/src/types/components.d.ts",
     // Node 侧只编译工具链依赖的生产模块，测试文件由 Vitest 接管
-    "src/**/*.spec.ts",
-    "src/**/*.test.ts",
+    "apps/web-demo/src/**/*.spec.ts",
+    "apps/web-demo/src/**/*.test.ts",
     // router.ts 使用了 import.meta.env（Vite 浏览器专属 API），
     // 在 Node 上下文中没有此 API，必须排除以防止类型冲突。
     // 根本原因：src/constants/**/*.ts 通配包含了此文件，故需显式排除。
-    "src/constants/router.ts"
+    "apps/web-demo/src/constants/router.ts"
   ],
   "compilerOptions": {
     "composite": true,
@@ -76,7 +75,7 @@
 
     "baseUrl": ".",
     "paths": {
-      "@/*": ["src/*"]
+      "@/*": ["apps/web-demo/src/*"]
     },
 
     "module": "ESNext",

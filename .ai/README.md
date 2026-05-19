@@ -12,23 +12,24 @@ CCD is a self-protecting deterministic multi-runtime platform repository.
 
 - `packages/contracts`: public ABI, interfaces, and shared types only.
 - `packages/core`: runtime-neutral platform logic.
-- `apps/web-demo`: browser runtime adapters.
+- `apps/web-demo`: single browser runtime source of truth and browser adapters.
 - `apps/desktop`: Tauri runtime adapters.
+- `root`: orchestration-only shell.
 - `legacy/root-app`: read-only archive; never imported by active graphs.
 
 ## Canonical AI Paths
 
-| Path | Role |
-| --- | --- |
-| `.ai/protocol/**` | agent entrypoints, adapter contracts, protocol versioning |
-| `.ai/rules/**` | architecture and implementation laws |
-| `.ai/skills/**` | local AI execution skills |
-| `.ai/manifests/**` | generated routing, rule, and skill locks |
-| `.ai/governance/policies/**` | machine-readable architecture policy engine |
-| `.ai/governance/api-snapshots/**` | public API immutability baselines |
-| `.ai/generated/**` | generated governance reports |
-| `.ai/runtime/**` | local runtime ledger and execution state |
-| `.ai/orchestration/**` | agent and role orchestration manifests |
+| Path                              | Role                                                      |
+| --------------------------------- | --------------------------------------------------------- |
+| `.ai/protocol/**`                 | agent entrypoints, adapter contracts, protocol versioning |
+| `.ai/rules/**`                    | architecture and implementation laws                      |
+| `.ai/skills/**`                   | local AI execution skills                                 |
+| `.ai/manifests/**`                | generated routing, rule, and skill locks                  |
+| `.ai/governance/policies/**`      | machine-readable architecture policy engine               |
+| `.ai/governance/api-snapshots/**` | public API immutability baselines                         |
+| `.ai/generated/**`                | generated governance reports                              |
+| `.ai/runtime/**`                  | local runtime ledger and execution state                  |
+| `.ai/orchestration/**`            | agent and role orchestration manifests                    |
 
 ## Single Governance Gate
 
