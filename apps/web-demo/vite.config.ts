@@ -38,7 +38,10 @@ const PX_TO_REM_SELECTOR_BLACKLIST: (string | RegExp)[] = [
 
 export default ({ mode, command }: ConfigEnv): UserConfigExport => {
   // 1. 加载环境变量
-  const env = wrapperEnv(loadEnv(mode, root))
+  const env = wrapperEnv({
+    ...loadEnv(mode, pathResolve('../../..')),
+    ...loadEnv(mode, root),
+  })
   const {
     VITE_PORT,
     VITE_PUBLIC_PATH,

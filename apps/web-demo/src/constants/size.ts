@@ -111,11 +111,7 @@ function resolveSizePersistKey(): string {
     return 'ccd-test-storage-size'
   }
 
-  if (import.meta.env?.DEV) {
-    throw new Error('VITE_PINIA_PERSIST_KEY_PREFIX is required for size persistence in dev.')
-  }
-
-  return 'ccd-storage-size'
+  return import.meta.env?.DEV ? 'app-template-storage-dev-size' : 'ccd-storage-size'
 }
 
 /** Size Store 持久化 key（与 stores/modules/size.ts persist.key 一致，供 preload 等 mount 前逻辑使用） */

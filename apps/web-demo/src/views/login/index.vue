@@ -42,8 +42,10 @@ const formRef = ref<ProFormExpose | null>(null)
 
 const isUsernameFocused = ref<boolean>(false)
 const isPasswordVisible = ref<boolean>(false)
+const passwordValue = ref<string>('')
 
 const passwordLength = computed<number>(() => {
+  if (passwordValue.value.length > 0) return passwordValue.value.length
   const inst = formRef.value
   if (!inst) return 0
   const raw = inst.getFormState().values.password
@@ -94,8 +96,14 @@ function getInputValue(value: unknown): string {
   return typeof value === 'string' ? value : ''
 }
 
-function commitInputValue(onUpdate: (value: unknown) => void, value: unknown): void {
-  onUpdate(typeof value === 'string' ? value : '')
+function commitInputValue(onUpdate: (value: unknown) => void, value: unknown): string {
+  const nextValue = typeof value === 'string' ? value : ''
+  onUpdate(nextValue)
+  return nextValue
+}
+
+function handlePasswordUpdate(onUpdate: (value: unknown) => void, value: unknown): void {
+  passwordValue.value = commitInputValue(onUpdate, value)
 }
 
 function handleUsernameFocus(): void {
@@ -106,8 +114,8 @@ function handleUsernameBlur(): void {
   isUsernameFocused.value = false
 }
 
-function togglePasswordVisibility(toggleCallback: () => void): void {
-  isPasswordVisible.value = !isPasswordVisible.value
+function setPasswordVisibility(visible: boolean, toggleCallback: () => void): void {
+  isPasswordVisible.value = visible
   toggleCallback()
 }
 
@@ -203,7 +211,6 @@ const loginSchema = computed<FormSchema>(() => ({
         },
       ],
       props: {
-        type: 'password',
         placeholder: t('login.passwordPlaceholder'),
         size: 'large',
         autocomplete: 'current-password',
@@ -223,6 +230,7 @@ const USER_PRESET: LoginFormValues = {
 }
 
 function fillAdminPreset(): void {
+  passwordValue.value = ADMIN_PRESET.password
   formRef.value?.form.setFieldsValue({
     username: ADMIN_PRESET.username,
     password: ADMIN_PRESET.password,
@@ -230,6 +238,7 @@ function fillAdminPreset(): void {
 }
 
 function fillUserPreset(): void {
+  passwordValue.value = USER_PRESET.password
   formRef.value?.form.setFieldsValue({
     username: USER_PRESET.username,
     password: USER_PRESET.password,
@@ -272,6 +281,7 @@ async function login(values: Record<string, unknown>): Promise<void> {
       window.$toast.dangerIn('top-center', t('login.errorTitle'), message)
     }
 
+    passwordValue.value = ''
     formRef.value?.form.setFieldsValue({
       password: '',
     })
@@ -472,55 +482,65 @@ async function handleLoginSubmit(): Promise<void> {
                 </template>
 
                 <template #field-password="{ state, onUpdate }">
-                  <Password
-                    input-id="password"
-                    :model-value="getInputValue(state.value)"
-                    :placeholder="t('login.passwordPlaceholder')"
-                    autocomplete="current-password"
-                    size="large"
-                    :feedback="false"
-                    toggle-mask
-                    fluid
-                    input-class="login-password-input"
-                    :disabled="loading || state.disabled"
-                    :invalid="state.errors.length > 0"
-                    @update:model-value="value => commitInputValue(onUpdate, value)"
-                  >
-                    <template #maskicon="{ toggleCallback }">
-                      <button
-                        type="button"
-                        class="p-password-toggle-mask-icon p-password-mask-icon login-password-toggle center"
-                        :aria-label="t('login.passwordHide')"
-                        :aria-pressed="isPasswordVisible"
-                        :disabled="loading || state.disabled"
-                        @mousedown.prevent
-                        @click="togglePasswordVisibility(toggleCallback)"
-                      >
-                        <Icons
-                          name="i-lucide-eye-off"
-                          size="md"
-                          color="text-muted-foreground"
-                        />
-                      </button>
-                    </template>
-                    <template #unmaskicon="{ toggleCallback }">
-                      <button
-                        type="button"
-                        class="p-password-toggle-mask-icon p-password-unmask-icon login-password-toggle center"
-                        :aria-label="t('login.passwordShow')"
-                        :aria-pressed="isPasswordVisible"
-                        :disabled="loading || state.disabled"
-                        @mousedown.prevent
-                        @click="togglePasswordVisibility(toggleCallback)"
-                      >
-                        <Icons
-                          name="i-lucide-eye"
-                          size="md"
-                          color="text-muted-foreground"
-                        />
-                      </button>
-                    </template>
-                  </Password>
+                  <div class="login-password-control">
+                    <span class="login-password-leading-icon center text-muted-foreground">
+                      <Icons
+                        name="i-lucide-lock-keyhole"
+                        size="md"
+                        color="text-muted-foreground"
+                      />
+                    </span>
+                    <Password
+                      input-id="password"
+                      class="login-password-field"
+                      :model-value="getInputValue(state.value)"
+                      :placeholder="t('login.passwordPlaceholder')"
+                      autocomplete="current-password"
+                      size="large"
+                      :feedback="false"
+                      toggle-mask
+                      fluid
+                      input-class="login-password-input"
+                      :disabled="loading || state.disabled"
+                      :invalid="state.errors.length > 0"
+                      @update:model-value="value => handlePasswordUpdate(onUpdate, value)"
+                    >
+                      <template #maskicon="{ toggleCallback }">
+                        <button
+                          type="button"
+                          class="p-password-toggle-mask-icon p-password-mask-icon login-password-toggle center"
+                          :aria-label="t('login.passwordHide')"
+                          :aria-pressed="isPasswordVisible"
+                          :disabled="loading || state.disabled"
+                          @mousedown.prevent
+                          @click="setPasswordVisibility(false, toggleCallback)"
+                        >
+                          <Icons
+                            name="i-lucide-eye-off"
+                            size="md"
+                            color="text-muted-foreground"
+                          />
+                        </button>
+                      </template>
+                      <template #unmaskicon="{ toggleCallback }">
+                        <button
+                          type="button"
+                          class="p-password-toggle-mask-icon p-password-unmask-icon login-password-toggle center"
+                          :aria-label="t('login.passwordShow')"
+                          :aria-pressed="isPasswordVisible"
+                          :disabled="loading || state.disabled"
+                          @mousedown.prevent
+                          @click="setPasswordVisibility(true, toggleCallback)"
+                        >
+                          <Icons
+                            name="i-lucide-eye"
+                            size="md"
+                            color="text-muted-foreground"
+                          />
+                        </button>
+                      </template>
+                    </Password>
+                  </div>
                 </template>
 
                 <template #footer="{ formState }">
@@ -660,7 +680,33 @@ async function handleLoginSubmit(): Promise<void> {
   border-top: 1px solid rgb(var(--border) / 60%);
 }
 
+.login-password-control {
+  position: relative;
+  width: 100%;
+}
+
+.login-password-field {
+  display: block;
+}
+
+.login-password-leading-icon {
+  position: absolute;
+  top: 50%;
+  z-index: 2;
+  width: var(--spacing-lg);
+  height: var(--spacing-lg);
+  inset-inline-start: var(--spacing-md);
+  pointer-events: none;
+  transform: translateY(-50%);
+}
+
 .login-password-toggle {
+  position: absolute;
+  top: 50%;
+  z-index: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   appearance: none;
   border: 0;
   border-radius: var(--radius-md);
@@ -696,6 +742,11 @@ async function handleLoginSubmit(): Promise<void> {
 }
 
 :deep(.login-password-input) {
+  border: 1px solid rgb(var(--border)) !important;
+  border-radius: var(--radius-md) !important;
+  background: rgb(var(--background)) !important;
+  box-shadow: 0 1px 2px 0 rgb(var(--foreground) / 10%) !important;
+  padding-inline-start: calc(var(--spacing-md) + var(--spacing-lg) + var(--spacing-xs)) !important;
   padding-inline-end: calc(var(--spacing-xl) + var(--spacing-md) + var(--spacing-sm)) !important;
 }
 
@@ -730,7 +781,7 @@ async function handleLoginSubmit(): Promise<void> {
   }
 
   .login-visual-panel {
-    display: none;
+    display: grid;
   }
 }
 
