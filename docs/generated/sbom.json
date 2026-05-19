@@ -5,7 +5,7 @@
   "packages": [
     {
       "name": "@ccd/contracts",
-      "version": "1.0.36",
+      "version": "1.0.37",
       "private": true,
       "type": "module",
       "sideEffects": false,
@@ -24,7 +24,7 @@
     },
     {
       "name": "@ccd/core",
-      "version": "1.0.36",
+      "version": "1.0.37",
       "private": true,
       "type": "module",
       "sideEffects": false,
@@ -46,7 +46,7 @@
     },
     {
       "name": "@ccd/web-demo",
-      "version": "1.0.36",
+      "version": "1.0.37",
       "private": true,
       "type": "module",
       "scripts": {
@@ -112,7 +112,7 @@
     },
     {
       "name": "@ccd/desktop",
-      "version": "1.0.36",
+      "version": "1.0.37",
       "private": true,
       "type": "module",
       "scripts": {
