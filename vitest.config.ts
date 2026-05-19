@@ -31,6 +31,12 @@ export default {
   resolve: {
     alias: {
       '@': resolve(rootDir, 'apps/web-demo/src'),
+      '@!': resolve(rootDir, 'apps/web-demo/src/api'),
+      '@&': resolve(rootDir, 'apps/web-demo/src/layouts/components'),
     },
+  },
+  esbuild: {
+    jsxFactory: 'h',
+    jsxFragment: 'Fragment',
   },
 } satisfies UserConfig

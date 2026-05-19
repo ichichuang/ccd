@@ -65,6 +65,12 @@ vi.mock('vue-router', async () => {
 
 vi.mock('primevue/drawer', async () => {
   const vue = await vi.importActual<typeof import('vue')>('vue')
+  const extractSlots = (slots: Record<string, unknown>): Record<string, () => unknown> => {
+    const jsxSlots = slots['v-slots']
+    return jsxSlots && typeof jsxSlots === 'object'
+      ? (jsxSlots as Record<string, () => unknown>)
+      : {}
+  }
   return {
     default: vue.defineComponent({
       name: 'MockDrawer',
@@ -72,8 +78,18 @@ vi.mock('primevue/drawer', async () => {
         visible: { type: Boolean, default: false },
       },
       setup(props, { slots }) {
-        return () =>
-          props.visible ? vue.h('aside', { class: 'mock-drawer' }, slots.container?.()) : null
+        return () => {
+          const drawerSlots = extractSlots(slots)
+          return props.visible
+            ? vue.h(
+                'aside',
+                { class: 'mock-drawer' },
+                (drawerSlots.container?.() ??
+                  slots.default?.() ??
+                  vue.h('div', { 'data-layout-drawer': 'true' })) as ReturnType<typeof vue.h>
+              )
+            : null
+        }
       },
     }),
   }
