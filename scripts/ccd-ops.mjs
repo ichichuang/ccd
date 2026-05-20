@@ -152,12 +152,45 @@ function parseShipArgs(args) {
   return { allowEmpty, message: sanitized }
 }
 
-function hasStagedChanges() {
-  const result = spawnSync('git', ['diff', '--cached', '--quiet'], {
+function hasCommittableChanges() {
+  const staged = spawnSync('git', ['diff', '--cached', '--quiet'], {
     cwd: process.cwd(),
-    stdio: 'ignore',
+    encoding: 'utf-8',
+    stdio: 'pipe',
   })
-  return result.status === 1
+  if (staged.status === 1) return true
+
+  const unstaged = spawnSync('git', ['diff', '--quiet'], {
+    cwd: process.cwd(),
+    encoding: 'utf-8',
+    stdio: 'pipe',
+  })
+  if (unstaged.status === 1) return true
+
+  const untracked = spawnSync('git', ['ls-files', '--others', '--exclude-standard'], {
+    cwd: process.cwd(),
+    encoding: 'utf-8',
+    stdio: 'pipe',
+  })
+  return (untracked.stdout ?? '').trim().length > 0
+}
+
+function isNoCommitOutput(output) {
+  return /nothing to commit|working tree clean|no changes added to commit/i.test(output)
+}
+
+function printNoOpShipSummary(message) {
+  console.log('\nCCD ship completed: no changes to commit')
+  console.log('- Working tree: clean')
+  console.log('- Branch status:')
+  const branchStatus = getStatusLines(['status', '--short', '--branch'])
+  if (branchStatus.length === 0) {
+    console.log('  clean')
+  } else {
+    for (const line of branchStatus) console.log(`  ${line}`)
+  }
+  console.log(`- Commit message requested: ${message}`)
+  console.log('- Result: no-op success')
 }
 
 function runDoctor() {
@@ -329,11 +362,18 @@ function runShip(args) {
   runFix()
   runRequired('git', ['add', '-A'], 'git staging failed.', 'git add -A')
 
-  if (hasCommittableChanges()) {
+  let hasChanges = hasCommittableChanges()
+  if (!allowEmpty && !hasChanges) {
+    printNoOpShipSummary(message)
+    return
+  }
+
+  if (hasChanges) {
     runLintStagedWithRetry()
     runRequired('git', ['add', '-A'], 'git staging failed.', 'git add -A')
 
-    if (!allowEmpty && !hasCommittableChanges()) {
+    hasChanges = hasCommittableChanges()
+    if (!allowEmpty && !hasChanges) {
       printNoOpShipSummary(message)
       return
     }
