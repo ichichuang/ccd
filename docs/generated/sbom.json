@@ -17,8 +17,8 @@
         }
       },
       "scripts": {
-        "build": "tsc -p tsconfig.json",
-        "type-check": "tsc -p tsconfig.json --noEmit",
+        "build": "tsc -b tsconfig.json",
+        "type-check": "tsc -b tsconfig.json --noEmit",
         "typecheck": "pnpm type-check",
         "test": "vitest run --passWithNoTests"
       }
@@ -37,8 +37,8 @@
         }
       },
       "scripts": {
-        "build": "tsc -p tsconfig.json",
-        "type-check": "tsc -p tsconfig.json --noEmit",
+        "build": "tsc -b tsconfig.json",
+        "type-check": "tsc -b tsconfig.json --noEmit",
         "typecheck": "pnpm type-check",
         "test": "vitest run --passWithNoTests"
       },
