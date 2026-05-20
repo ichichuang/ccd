@@ -103,12 +103,26 @@ function printList(title, items, emptyText) {
   for (const item of items) console.log(`- ${item}`)
 }
 
-function parseCommitMessage(args) {
+function parseShipArgs(args) {
   const messageArgs = args[0] === '--' ? args.slice(1) : args
-  const message =
-    messageArgs[0] === '--message' || messageArgs[0] === '-m'
-      ? messageArgs.slice(1).join(' ')
-      : messageArgs.join(' ')
+  const remaining = []
+  let allowEmpty = false
+  let explicitMessage = null
+
+  for (let index = 0; index < messageArgs.length; index += 1) {
+    const arg = messageArgs[index]
+    if (arg === '--allow-empty') {
+      allowEmpty = true
+      continue
+    }
+    if (arg === '--message' || arg === '-m') {
+      explicitMessage = messageArgs.slice(index + 1).join(' ')
+      break
+    }
+    remaining.push(arg)
+  }
+
+  const message = explicitMessage ?? remaining.join(' ')
   const trimmed = message.trim().replace(/[ \t]+/g, ' ')
   if (!trimmed) {
     throw new Error('Commit message is empty. Example: feat: improve project automation')
@@ -135,7 +149,15 @@ function parseCommitMessage(args) {
     )
   }
 
-  return sanitized
+  return { allowEmpty, message: sanitized }
+}
+
+function hasStagedChanges() {
+  const result = spawnSync('git', ['diff', '--cached', '--quiet'], {
+    cwd: process.cwd(),
+    stdio: 'ignore',
+  })
+  return result.status === 1
 }
 
 function runDoctor() {
@@ -303,11 +325,20 @@ function runLintStagedWithRetry() {
 }
 
 function runShip(args) {
-  const message = parseCommitMessage(args)
+  const { allowEmpty, message } = parseShipArgs(args)
   runFix()
   runRequired('git', ['add', '-A'], 'git staging failed.', 'git add -A')
-  runLintStagedWithRetry()
-  runRequired('git', ['add', '-A'], 'git staging failed.', 'git add -A')
+
+  if (hasCommittableChanges()) {
+    runLintStagedWithRetry()
+    runRequired('git', ['add', '-A'], 'git staging failed.', 'git add -A')
+
+    if (!allowEmpty && !hasCommittableChanges()) {
+      printNoOpShipSummary(message)
+      return
+    }
+  }
+
   runRequired(
     'pnpm',
     ['exec', 'commitlint'],
@@ -315,11 +346,12 @@ function runShip(args) {
     `pnpm ccd:ship -- "${message}"`,
     { input: `${message}\n` }
   )
+
   runRequired(
     'git',
-    ['commit', '-m', message],
+    ['commit', ...(allowEmpty ? ['--allow-empty'] : []), '-m', message],
     'git commit failed. Husky or commitlint may have rejected the commit.',
-    `git commit -m "${message}"`
+    `git commit ${allowEmpty ? '--allow-empty ' : ''}-m "${message}"`
   )
 
   const hash = run('git', ['rev-parse', '--short', 'HEAD'], { capture: true }).stdout.trim()
@@ -327,6 +359,7 @@ function runShip(args) {
   console.log('\nShip complete')
   console.log(`- Commit hash: ${hash}`)
   console.log(`- Commit message used: ${message}`)
+  console.log(`- Empty commit: ${allowEmpty && !stagedChanges ? 'yes' : 'no'}`)
   console.log(`- Working tree: ${status.length === 0 ? 'clean' : 'dirty'}`)
   if (status.length > 0) printList('Remaining files', status, 'none')
 }

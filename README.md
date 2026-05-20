@@ -111,8 +111,10 @@ Daily automation:
 ```bash
 pnpm ccd:doctor                         # check config, metadata, and git status
 pnpm ccd:fix                            # repair, refresh generated outputs, and validate
-pnpm ccd:ship -- "feat: describe change" # repair, validate, stage, and commit through Husky
+pnpm ccd:ship -- "feat: describe change" # repair, validate, stage, and commit through Husky; clean no-op exits 0
 ```
+
+`ccd:ship` is idempotent: if the working tree is already clean after validation, it exits successfully without creating an empty commit. Use `--allow-empty` only for intentional empty commits.
 
 Affected-only commands:
 

@@ -46,7 +46,8 @@ pnpm ccd:ship -- "feat: describe change"
 
 - `ccd:doctor` only checks project config, metadata alignment, and git status.
 - `ccd:fix` repairs metadata, refreshes generated governance outputs, formats, normalizes generated whitespace, and validates without committing.
-- `ccd:ship` runs the full repair pipeline, stages all current changes, runs staged linting, checks commitlint, and commits through Husky.
+- `pnpm ccd:ship -- "message"` is idempotent: it runs the full repair pipeline, stages all current changes, runs staged linting only when there are committable changes, checks commitlint, and commits through Husky. If everything is already committed and the working tree is clean, it exits successfully without creating a new commit.
+- Use `pnpm ccd:ship -- --allow-empty "chore: trigger automation"` or `pnpm ccd:ship -- --allow-empty --message "chore: trigger automation"` only when an intentional empty commit is needed. Normal users should not need `--allow-empty`.
 - Commit messages are sanitized to avoid trailing full stop failures such as `feat: AI.` becoming `feat: AI`.
 - Husky and commitlint remain active. `ccd:ship` does not use `--no-verify`.
 - Generated files are refreshed by governance scripts and normalized deterministically; do not edit `docs/generated/**` or `.ai/generated/**` manually.
