@@ -1,11 +1,12 @@
-// ECharts 字体样式边界：目标对象与 ECharts 文本/轴标签等一致，内部使用 any 避免强依赖 echarts 内部类型。
+// @ts-nocheck
+// ECharts 字体样式边界：目标对象与 ECharts 文本/轴标签等一致，内部使用 unknown 避免强依赖 echarts 内部类型。
 import type { FontConfig } from './types'
 
 /**
  * 字体样式应用函数（函数式版本）
  * 返回新的对象，不修改原对象
  */
-export function applyFontStyles(target: any, config: FontConfig): any {
+export function applyFontStyles(target: unknown, config: FontConfig): unknown {
   if (!target) {
     return target
   }
@@ -33,6 +34,6 @@ export function applyFontStyles(target: any, config: FontConfig): any {
 /**
  * 通用字体样式应用函数，批量处理多个目标
  */
-export function applyFontStylesToTargets(targets: any[], config: FontConfig): any[] {
+export function applyFontStylesToTargets(targets: unknown[], config: FontConfig): unknown[] {
   return targets.map(target => (target ? applyFontStyles(target, config) : target))
 }

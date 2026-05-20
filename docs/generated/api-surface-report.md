@@ -16,7 +16,7 @@
 
 - Path: `packages/design-tokens`
 - Export subpaths: `.`
-- Root symbols: `adjustBrightness`, `applyOpacityToColor`, `BreakpointKey`, `ColorTokenState`, `CompleteColorTokenState`, `CompleteThemeModeConfig`, `CompleteThemePreset`, `deriveSidebarCollapsedWidth`, `getPresetPrimaryColor`, `hexToRgb`, `isDarkColor`, `mixHex`, `normalizeHex`, `rgbToHex`, `shiftHue`, `SizeCssVars`, `SizeMode`, `SizePreset`, `SizeScaleKey`, `SizeScaleMatrixEntry`, `ThemeCssVars`, `ThemeMode`, `ThemeModeConfig`, `ThemePreset`, `ThemeTransitionDuration`, `ThemeTransitionMode`
+- Root symbols: `adjustBrightness`, `applyOpacityToColor`, `BreakpointKey`, `ColorTokenState`, `CompleteColorTokenState`, `CompleteThemeModeConfig`, `CompleteThemePreset`, `deriveSidebarCollapsedWidth`, `FontSizeCssVarName`, `getPresetPrimaryColor`, `hexToRgb`, `isDarkColor`, `mixHex`, `normalizeHex`, `RadiusCssVarName`, `rgbToHex`, `shiftHue`, `SizeCssVarName`, `SizeCssVars`, `SizeMode`, `SizePreset`, `SizeScaleKey`, `SizeScaleMatrixEntry`, `SpacingCssVarName`, `StaticSizeCssVarName`, `ThemeCssVars`, `ThemeMode`, `ThemeModeConfig`, `ThemePreset`, `ThemeTransitionDuration`, `ThemeTransitionMode`, `TransitionCssVarName`
 
 ## @ccd/unocss-preset
 

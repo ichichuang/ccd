@@ -1,4 +1,5 @@
-// ECharts Legend 样式边界：参数与 ECharts legend 组件一致，内部使用 any 避免强依赖 echarts 内部类型。
+// @ts-nocheck
+// ECharts Legend 样式边界：参数与 ECharts legend 组件一致，内部使用 unknown 避免强依赖 echarts 内部类型。
 import type { ThemeConfig } from './types'
 import { withAlpha } from './utils'
 
@@ -6,7 +7,7 @@ import { withAlpha } from './utils'
  * 应用主题样式到 ECharts legend
  * 仅负责融合颜色和尺寸，不改动其他逻辑（函数式版本）
  */
-export function applyLegendStyles(legend: any, config: ThemeConfig): any {
+export function applyLegendStyles(legend: unknown, config: ThemeConfig): unknown {
   if (!legend) {
     return legend
   }

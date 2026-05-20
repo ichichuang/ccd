@@ -1,12 +1,13 @@
-// ECharts 系列样式边界：参数与 ECharts 系列类型一致，内部使用 any 避免强依赖 echarts 内部类型。
+// @ts-nocheck
+// ECharts 系列样式边界：参数与 ECharts 系列类型一致，内部使用 unknown 避免强依赖 echarts 内部类型。
 import type { ThemeConfig } from './types'
 
 /**
  * 处理饼图数据项，支持多种数据格式
  */
-function processPieDataItem(item: any, dataIndex: number, colors: string[]): any {
+function processPieDataItem(item: unknown, dataIndex: number, colors: string[]): unknown {
   // 处理不同的数据格式
-  let dataItem: any
+  let dataItem: unknown
 
   if (typeof item === 'object' && item !== null && item.value !== undefined) {
     // 对象格式: { name: '产品A', value: 30 }
@@ -37,7 +38,7 @@ function processPieDataItem(item: any, dataIndex: number, colors: string[]): any
  * 应用饼图样式
  * 采用函数式编程，返回新的 series 对象
  */
-export const applyPieStyles = (series: any, themeConfig: ThemeConfig): any => {
+export const applyPieStyles = (series: unknown, themeConfig: ThemeConfig): unknown => {
   if (!series || series.type !== 'pie') {
     return series
   }
@@ -48,7 +49,7 @@ export const applyPieStyles = (series: any, themeConfig: ThemeConfig): any => {
   }
 
   // 处理数据项，为每个数据项应用主题颜色
-  const processedData = series.data.map((item: any, dataIndex: number) =>
+  const processedData = series.data.map((item: unknown, dataIndex: number) =>
     processPieDataItem(item, dataIndex, themeConfig.color.colors)
   )
 

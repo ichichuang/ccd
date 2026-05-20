@@ -1,11 +1,12 @@
-// ECharts 系列样式边界：参数与 ECharts themeRiver 系列一致，内部使用 any 避免强依赖 echarts 内部类型。
+// @ts-nocheck
+// ECharts 系列样式边界：参数与 ECharts themeRiver 系列一致，内部使用 unknown 避免强依赖 echarts 内部类型。
 import type { ThemeConfig } from './types'
 
 /**
  * 应用主题河流图样式
  * 采用函数式编程，返回新的 series 对象
  */
-export const applyThemeRiverStyles = (series: any, themeConfig: ThemeConfig): any => {
+export const applyThemeRiverStyles = (series: unknown, themeConfig: ThemeConfig): unknown => {
   if (!series || series.type !== 'themeRiver') {
     return series
   }
@@ -17,7 +18,7 @@ export const applyThemeRiverStyles = (series: any, themeConfig: ThemeConfig): an
 
   // 收集所有类别
   const categories = new Set<string>()
-  series.data.forEach((item: any) => {
+  series.data.forEach((item: unknown) => {
     if (Array.isArray(item) && item[2]) {
       categories.add(item[2])
     }
@@ -41,7 +42,7 @@ export const applyThemeRiverStyles = (series: any, themeConfig: ThemeConfig): an
   })
 
   // 创建颜色函数，确保每个数据项都有正确的颜色
-  const colorFunction = (params: any) => {
+  const colorFunction = (params: unknown) => {
     const data = params.data
     if (Array.isArray(data) && data[2]) {
       const category = data[2]

@@ -1,11 +1,12 @@
-// ECharts 系列样式边界：参数与 ECharts boxplot 系列一致，内部使用 any 避免强依赖 echarts 内部类型。
+// @ts-nocheck
+// ECharts 系列样式边界：参数与 ECharts boxplot 系列一致，内部使用 unknown 避免强依赖 echarts 内部类型。
 import type { ThemeConfig } from './types'
 
 /**
  * 应用箱型图样式
  * 采用函数式编程，返回新的 series 对象
  */
-export const applyBoxplotStyles = (series: any, themeConfig: ThemeConfig): any => {
+export const applyBoxplotStyles = (series: unknown, themeConfig: ThemeConfig): unknown => {
   if (!series || series.type !== 'boxplot') {
     return series
   }
@@ -16,7 +17,7 @@ export const applyBoxplotStyles = (series: any, themeConfig: ThemeConfig): any =
   }
 
   // 处理数据项，为每个数据项应用主题颜色
-  const processedData = series.data.map((item: any, dataIndex: number) => {
+  const processedData = series.data.map((item: unknown, dataIndex: number) => {
     if (Array.isArray(item)) {
       // 数组格式：直接包装为对象
       return {

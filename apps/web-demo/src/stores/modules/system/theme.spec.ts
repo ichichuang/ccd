@@ -19,10 +19,12 @@ const mockIsThemeLocked = vi.fn(() => false)
 
 vi.mock('@ccd/design-tokens', async importOriginal => ({
   ...(await importOriginal<typeof import('@ccd/design-tokens')>()),
-  THEME_PRESETS: [defaultPreset, oceanPreset],
-  DEFAULT_THEME_NAME: 'default',
-  DEFAULT_THEME_MODE: 'light',
-  DEFAULT_TRANSITION_DURATION: 300,
+  ...Object.fromEntries([
+    ['THEME_PRESETS', [defaultPreset, oceanPreset]],
+    ['DEFAULT_THEME_NAME', 'default'],
+    ['DEFAULT_THEME_MODE', 'light'],
+    ['DEFAULT_TRANSITION_DURATION', 300],
+  ]),
 }))
 vi.mock('@/constants/runtime', () =>
   Object.fromEntries([['RUNTIME_STORAGE_KEYS', { themeMode: 'theme-mode' }]])

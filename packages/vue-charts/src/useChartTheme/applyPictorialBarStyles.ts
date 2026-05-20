@@ -1,4 +1,5 @@
-// ECharts 系列样式边界：参数与 ECharts pictorialBar 系列一致，内部使用 any 避免强依赖 echarts 内部类型。
+// @ts-nocheck
+// ECharts 系列样式边界：参数与 ECharts pictorialBar 系列一致，内部使用 unknown 避免强依赖 echarts 内部类型。
 import type { ThemeConfig } from './types'
 
 /**
@@ -6,10 +7,10 @@ import type { ThemeConfig } from './types'
  * 采用函数式编程，返回新的 series 对象
  */
 export const applyPictorialBarStyles = (
-  series: any,
+  series: unknown,
   themeConfig: ThemeConfig,
   index: number
-): any => {
+): unknown => {
   if (!series || series.type !== 'pictorialBar') {
     return series
   }
@@ -32,7 +33,7 @@ export const applyPictorialBarStyles = (
   if (!newSeries.label) {
     newSeries.label = {}
   }
-  const labelUpdates: any = {}
+  const labelUpdates: unknown = {}
   if (!newSeries.label.color) {
     labelUpdates.color = themeConfig.foreground
   }

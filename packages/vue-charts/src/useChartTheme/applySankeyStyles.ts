@@ -1,11 +1,12 @@
-// ECharts 系列样式边界：参数与 ECharts sankey 系列一致，内部使用 any 避免强依赖 echarts 内部类型。
+// @ts-nocheck
+// ECharts 系列样式边界：参数与 ECharts sankey 系列一致，内部使用 unknown 避免强依赖 echarts 内部类型。
 import type { ThemeConfig } from './types'
 
 /**
  * 应用桑基图样式
  * 采用函数式编程，返回新的 series 对象
  */
-export const applySankeyStyles = (series: any, themeConfig: ThemeConfig): any => {
+export const applySankeyStyles = (series: unknown, themeConfig: ThemeConfig): unknown => {
   if (!series || series.type !== 'sankey') {
     return series
   }

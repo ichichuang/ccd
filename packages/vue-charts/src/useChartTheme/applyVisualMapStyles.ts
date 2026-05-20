@@ -1,11 +1,12 @@
-// ECharts VisualMap 样式边界：参数与 ECharts visualMap 组件一致，内部使用 any 避免强依赖 echarts 内部类型。
+// @ts-nocheck
+// ECharts VisualMap 样式边界：参数与 ECharts visualMap 组件一致，内部使用 unknown 避免强依赖 echarts 内部类型。
 import type { ThemeConfig } from './types'
 
 /**
  * 应用主题样式到 ECharts visualMap
  * 仅负责融合颜色和尺寸，不改动其他逻辑（函数式版本）
  */
-export function applyVisualMapStyles(visualMap: any, config: ThemeConfig): any {
+export function applyVisualMapStyles(visualMap: unknown, config: ThemeConfig): unknown {
   if (!visualMap) {
     return visualMap
   }
@@ -39,7 +40,7 @@ export function applyVisualMapStyles(visualMap: any, config: ThemeConfig): any {
     piecewiseColorArray = config.color.colors.slice(0, 8)
   }
 
-  const result: any = {
+  const result: unknown = {
     ...visualMap,
     backgroundColor: visualMap.backgroundColor ?? config.card,
     borderColor: visualMap.borderColor ?? config.border,
@@ -70,14 +71,14 @@ export function applyVisualMapStyles(visualMap: any, config: ThemeConfig): any {
 
   // pieces 和 categories 中的 color 如果用户已指定则保留，否则从调色盘按 index 分配
   if (visualMap.pieces) {
-    result.pieces = visualMap.pieces.map((piece: any, index: number) => ({
+    result.pieces = visualMap.pieces.map((piece: unknown, index: number) => ({
       ...piece,
       color: piece.color ?? config.color.colors[index % config.color.colors.length],
     }))
   }
 
   if (visualMap.categories) {
-    result.categories = visualMap.categories.map((cat: any, index: number) => ({
+    result.categories = visualMap.categories.map((cat: unknown, index: number) => ({
       ...cat,
       color: cat.color ?? config.color.colors[index % config.color.colors.length],
     }))

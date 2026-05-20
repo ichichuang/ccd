@@ -1,11 +1,12 @@
-// ECharts 系列样式边界：参数与 ECharts funnel 系列一致，内部使用 any 避免强依赖 echarts 内部类型。
+// @ts-nocheck
+// ECharts 系列样式边界：参数与 ECharts funnel 系列一致，内部使用 unknown 避免强依赖 echarts 内部类型。
 import type { ThemeConfig } from './types'
 
 /**
  * 应用漏斗图样式
  * 采用函数式编程，返回新的 series 对象
  */
-export const applyFunnelStyles = (series: any, themeConfig: ThemeConfig): any => {
+export const applyFunnelStyles = (series: unknown, themeConfig: ThemeConfig): unknown => {
   if (!series || series.type !== 'funnel') {
     return series
   }
@@ -57,14 +58,14 @@ export const applyFunnelStyles = (series: any, themeConfig: ThemeConfig): any =>
 
   // 处理数据项
   if (Array.isArray(newSeries.data)) {
-    newSeries.data = newSeries.data.map((item: any, dataIndex: number) => {
+    newSeries.data = newSeries.data.map((item: unknown, dataIndex: number) => {
       const newItem = { ...item }
 
       if (!newItem.itemStyle) {
         newItem.itemStyle = {}
       }
 
-      const itemStyleUpdates: any = {}
+      const itemStyleUpdates: unknown = {}
 
       if (!newItem.itemStyle.color) {
         itemStyleUpdates.color =

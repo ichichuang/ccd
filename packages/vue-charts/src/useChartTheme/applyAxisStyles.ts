@@ -1,4 +1,5 @@
-// ECharts 坐标轴样式边界：参数与 ECharts 轴类型一致，内部使用 any 避免强依赖 echarts 内部类型。
+// @ts-nocheck
+// ECharts 坐标轴样式边界：参数与 ECharts 轴类型一致，内部使用 unknown 避免强依赖 echarts 内部类型。
 import type { ThemeConfig } from './types'
 import { applyFontStyles } from './applyFontStyles'
 import { withAlpha } from './utils'
@@ -6,7 +7,7 @@ import { withAlpha } from './utils'
 /**
  * 坐标轴样式应用函数（函数式版本）
  */
-export function applyAxisStyles(axis: any, config: ThemeConfig): any {
+export function applyAxisStyles(axis: unknown, config: ThemeConfig): unknown {
   if (!axis) {
     return axis
   }

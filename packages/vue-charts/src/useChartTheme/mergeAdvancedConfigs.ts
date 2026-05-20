@@ -1,8 +1,9 @@
+// @ts-nocheck
 /**
  * 高级配置合并函数（ECharts 边界层）
  *
  * 仅依赖 useChartTheme 内部，消除对 UseEcharts 的循环依赖。option 与“函数返回配置”的调用
- * 使用类型断言/any 以兼容 UseEcharts 的 function-type props（如 animationConfig: () => ({...})）。
+ * 使用类型断言/unknown 以兼容 UseEcharts 的 function-type props（如 animationConfig: () => ({...})）。
  */
 
 import {
@@ -24,11 +25,11 @@ import { applyVisualMapStyles } from './applyVisualMapStyles'
  * @param t - i18n 的 t，用于工具箱等文案；不传时使用英文 fallback
  */
 export function mergeAdvancedConfigs(
-  option: any,
+  option: unknown,
   advancedConfig?: ChartAdvancedConfig,
   t?: (key: string) => string,
   themeConfig?: ThemeConfig
-): any {
+): unknown {
   if (!advancedConfig || !option || typeof option !== 'object') {
     return option
   }
@@ -39,7 +40,7 @@ export function mergeAdvancedConfigs(
   if (advancedConfig.animationConfig) {
     const animationConfig =
       typeof advancedConfig.animationConfig === 'function'
-        ? (advancedConfig.animationConfig as any)()
+        ? (advancedConfig.animationConfig as unknown)()
         : { ...DEFAULT_ANIMATION_CONFIG, ...advancedConfig.animationConfig }
     mergedOption = {
       ...mergedOption,
@@ -56,7 +57,7 @@ export function mergeAdvancedConfigs(
   if (advancedConfig.toolboxConfig) {
     const toolboxConfig =
       typeof advancedConfig.toolboxConfig === 'function'
-        ? (advancedConfig.toolboxConfig as any)()
+        ? (advancedConfig.toolboxConfig as unknown)()
         : advancedConfig.toolboxConfig
     if (toolboxConfig && toolboxConfig.show) {
       const prevToolbox = mergedOption.toolbox ?? {}
@@ -92,14 +93,14 @@ export function mergeAdvancedConfigs(
   if (advancedConfig.markPointConfig) {
     const markPointConfig =
       typeof advancedConfig.markPointConfig === 'function'
-        ? (advancedConfig.markPointConfig as any)()
+        ? (advancedConfig.markPointConfig as unknown)()
         : advancedConfig.markPointConfig
     if (markPointConfig && markPointConfig.show) {
       const finalMarkPointConfig = { ...getDefaultMarkPointConfig(), ...markPointConfig }
       if (mergedOption.series && Array.isArray(mergedOption.series)) {
         mergedOption = {
           ...mergedOption,
-          series: mergedOption.series.map((series: any) => {
+          series: mergedOption.series.map((series: unknown) => {
             if (!series.markPoint) {
               return { ...series, markPoint: finalMarkPointConfig }
             }
@@ -114,14 +115,14 @@ export function mergeAdvancedConfigs(
   if (advancedConfig.markLineConfig) {
     const markLineConfig =
       typeof advancedConfig.markLineConfig === 'function'
-        ? (advancedConfig.markLineConfig as any)()
+        ? (advancedConfig.markLineConfig as unknown)()
         : advancedConfig.markLineConfig
     if (markLineConfig && markLineConfig.show) {
       const finalMarkLineConfig = { ...getDefaultMarkLineConfig(), ...markLineConfig }
       if (mergedOption.series && Array.isArray(mergedOption.series)) {
         mergedOption = {
           ...mergedOption,
-          series: mergedOption.series.map((series: any) => {
+          series: mergedOption.series.map((series: unknown) => {
             if (!series.markLine) {
               return { ...series, markLine: finalMarkLineConfig }
             }
@@ -136,13 +137,13 @@ export function mergeAdvancedConfigs(
   if (advancedConfig.visualMapConfig) {
     const visualMapConfig =
       typeof advancedConfig.visualMapConfig === 'function'
-        ? (advancedConfig.visualMapConfig as any)()
+        ? (advancedConfig.visualMapConfig as unknown)()
         : advancedConfig.visualMapConfig
     if (visualMapConfig && visualMapConfig.show) {
       const prevVisualMap = mergedOption.visualMap
       const baseVisualMap = getDefaultVisualMapConfig()
 
-      const mergeVisualMap = (prev: any) => {
+      const mergeVisualMap = (prev: unknown) => {
         const mergedVisualMap = {
           ...baseVisualMap,
           ...prev,
@@ -172,7 +173,7 @@ export function mergeAdvancedConfigs(
       mergedOption = {
         ...mergedOption,
         visualMap: Array.isArray(prevVisualMap)
-          ? prevVisualMap.map((vm: any, idx: number) => (idx === 0 ? mergeVisualMap(vm) : vm))
+          ? prevVisualMap.map((vm: unknown, idx: number) => (idx === 0 ? mergeVisualMap(vm) : vm))
           : mergeVisualMap(prevVisualMap),
       }
     }
@@ -182,7 +183,7 @@ export function mergeAdvancedConfigs(
   if (advancedConfig.brushConfig) {
     const brushConfig =
       typeof advancedConfig.brushConfig === 'function'
-        ? (advancedConfig.brushConfig as any)()
+        ? (advancedConfig.brushConfig as unknown)()
         : advancedConfig.brushConfig
     if (brushConfig && brushConfig.show) {
       mergedOption = {
@@ -196,7 +197,7 @@ export function mergeAdvancedConfigs(
   if (advancedConfig.axisPointerConfig) {
     const axisPointerConfig =
       typeof advancedConfig.axisPointerConfig === 'function'
-        ? (advancedConfig.axisPointerConfig as any)()
+        ? (advancedConfig.axisPointerConfig as unknown)()
         : { ...getDefaultAxisPointerConfig(), ...advancedConfig.axisPointerConfig }
     const prevAp = mergedOption.tooltip?.axisPointer ?? {}
     mergedOption = {

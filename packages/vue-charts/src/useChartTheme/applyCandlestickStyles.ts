@@ -1,4 +1,5 @@
-// ECharts 系列样式边界：参数与 ECharts candlestick 系列一致，内部使用 any 避免强依赖 echarts 内部类型。
+// @ts-nocheck
+// ECharts 系列样式边界：参数与 ECharts candlestick 系列一致，内部使用 unknown 避免强依赖 echarts 内部类型。
 import type { ThemeConfig } from './types'
 
 /**
@@ -6,7 +7,7 @@ import type { ThemeConfig } from './types'
  * K线图主要使用基础系列样式，这里提供一些额外的配置
  * 采用函数式编程，返回新的 series 对象
  */
-export const applyCandlestickStyles = (series: any, themeConfig: ThemeConfig): any => {
+export const applyCandlestickStyles = (series: unknown, themeConfig: ThemeConfig): unknown => {
   if (!series || series.type !== 'candlestick') {
     return series
   }

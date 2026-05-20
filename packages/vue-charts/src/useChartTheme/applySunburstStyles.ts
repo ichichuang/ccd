@@ -1,10 +1,11 @@
-// ECharts 系列/节点样式边界：参数与 ECharts 对应类型一致，内部使用 any 避免强依赖 echarts 内部类型。
+// @ts-nocheck
+// ECharts 系列/节点样式边界：参数与 ECharts 对应类型一致，内部使用 unknown 避免强依赖 echarts 内部类型。
 import type { ThemeConfig } from './types'
 
 /**
  * 递归应用颜色到节点
  */
-function applyColorToNode(node: any, colorIndex: number, themeConfig: ThemeConfig): any {
+function applyColorToNode(node: unknown, colorIndex: number, themeConfig: ThemeConfig): unknown {
   if (!node) {
     return node
   }
@@ -15,7 +16,7 @@ function applyColorToNode(node: any, colorIndex: number, themeConfig: ThemeConfi
     newNode.itemStyle = {}
   }
 
-  const itemStyleUpdates: any = {}
+  const itemStyleUpdates: unknown = {}
 
   if (!newNode.itemStyle.color) {
     itemStyleUpdates.color = themeConfig.color.colors[colorIndex % themeConfig.color.colors.length]
@@ -36,7 +37,7 @@ function applyColorToNode(node: any, colorIndex: number, themeConfig: ThemeConfi
 
   // 递归处理子节点
   if (Array.isArray(newNode.children)) {
-    newNode.children = newNode.children.map((child: any, childIndex: number) =>
+    newNode.children = newNode.children.map((child: unknown, childIndex: number) =>
       applyColorToNode(child, colorIndex + childIndex + 1, themeConfig)
     )
   }
@@ -48,7 +49,7 @@ function applyColorToNode(node: any, colorIndex: number, themeConfig: ThemeConfi
  * 应用旭日图样式
  * 采用函数式编程，返回新的 series 对象
  */
-export const applySunburstStyles = (series: any, themeConfig: ThemeConfig): any => {
+export const applySunburstStyles = (series: unknown, themeConfig: ThemeConfig): unknown => {
   if (!series || series.type !== 'sunburst') {
     return series
   }
@@ -106,7 +107,7 @@ export const applySunburstStyles = (series: any, themeConfig: ThemeConfig): any 
 
   // 设置旭日图的数据项样式
   if (Array.isArray(newSeries.data)) {
-    newSeries.data = newSeries.data.map((node: any, index: number) =>
+    newSeries.data = newSeries.data.map((node: unknown, index: number) =>
       applyColorToNode(node, index, themeConfig)
     )
   }

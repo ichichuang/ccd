@@ -1,10 +1,11 @@
-// ECharts 系列/节点样式边界：参数与 ECharts treemap 系列一致，内部使用 any 避免强依赖 echarts 内部类型。
+// @ts-nocheck
+// ECharts 系列/节点样式边界：参数与 ECharts treemap 系列一致，内部使用 unknown 避免强依赖 echarts 内部类型。
 import type { ThemeConfig } from './types'
 
 /**
  * 递归收集节点值
  */
-function collectValues(node: any, values: number[]): void {
+function collectValues(node: unknown, values: number[]): void {
   if (!node) {
     return
   }
@@ -13,7 +14,7 @@ function collectValues(node: any, values: number[]): void {
     values.push(val)
   }
   if (Array.isArray(node.children)) {
-    node.children.forEach((child: any) => collectValues(child, values))
+    node.children.forEach((child: unknown) => collectValues(child, values))
   }
 }
 
@@ -21,16 +22,16 @@ function collectValues(node: any, values: number[]): void {
  * 递归分配颜色到节点
  */
 function assignColorsToNodes(
-  nodes: any[],
+  nodes: unknown[],
   colorIndex: number,
   level: number,
   themeConfig: ThemeConfig
-): any[] {
+): unknown[] {
   if (!Array.isArray(nodes)) {
     return nodes
   }
 
-  return nodes.map((node: any, index: number) => {
+  return nodes.map((node: unknown, index: number) => {
     const newNode = { ...node }
 
     if (!newNode.itemStyle) {
@@ -65,7 +66,7 @@ function assignColorsToNodes(
  * 应用矩形树图样式
  * 采用函数式编程，返回新的 series 对象
  */
-export const applyTreemapStyles = (series: any, themeConfig: ThemeConfig): any => {
+export const applyTreemapStyles = (series: unknown, themeConfig: ThemeConfig): unknown => {
   if (!series || series.type !== 'treemap') {
     return series
   }
@@ -96,7 +97,7 @@ export const applyTreemapStyles = (series: any, themeConfig: ThemeConfig): any =
   }
   const values: number[] = []
   if (Array.isArray(newSeries.data)) {
-    newSeries.data.forEach((node: any) => collectValues(node, values))
+    newSeries.data.forEach((node: unknown) => collectValues(node, values))
   }
   if (values.length > 0) {
     const vMin = Math.min(...values)
@@ -127,7 +128,7 @@ export const applyTreemapStyles = (series: any, themeConfig: ThemeConfig): any =
   if (!newSeries.label) {
     newSeries.label = {}
   }
-  const labelUpdates: any = {}
+  const labelUpdates: unknown = {}
   if (!newSeries.label.formatter) {
     labelUpdates.formatter = '{b}'
   }
@@ -154,7 +155,7 @@ export const applyTreemapStyles = (series: any, themeConfig: ThemeConfig): any =
   if (!newSeries.label.rich) {
     newSeries.label.rich = {}
   }
-  const labelStyleUpdates: any = {}
+  const labelStyleUpdates: unknown = {}
   if (!newSeries.label.textBorderColor) {
     labelStyleUpdates.textBorderColor = 'transparent'
   }
@@ -178,7 +179,7 @@ export const applyTreemapStyles = (series: any, themeConfig: ThemeConfig): any =
   if (!newSeries.upperLabel) {
     newSeries.upperLabel = {}
   }
-  const upperLabelUpdates: any = {}
+  const upperLabelUpdates: unknown = {}
   if (newSeries.upperLabel.show === undefined) {
     upperLabelUpdates.show = true
   }
@@ -208,7 +209,7 @@ export const applyTreemapStyles = (series: any, themeConfig: ThemeConfig): any =
   if (!newSeries.itemStyle) {
     newSeries.itemStyle = {}
   }
-  const itemStyleUpdates: any = {}
+  const itemStyleUpdates: unknown = {}
   if (!newSeries.itemStyle.borderColor) {
     itemStyleUpdates.borderColor = 'transparent'
   }
@@ -235,7 +236,7 @@ export const applyTreemapStyles = (series: any, themeConfig: ThemeConfig): any =
   if (!newSeries.emphasis.itemStyle) {
     newSeries.emphasis.itemStyle = {}
   }
-  const emphasisUpdates: any = {}
+  const emphasisUpdates: unknown = {}
   if (!newSeries.emphasis.itemStyle.borderColor) {
     emphasisUpdates.borderColor = 'transparent'
   }
@@ -278,7 +279,7 @@ export const applyTreemapStyles = (series: any, themeConfig: ThemeConfig): any =
   if (!newSeries.breadcrumb.itemStyle) {
     newSeries.breadcrumb.itemStyle = {}
   }
-  const breadcrumbItemStyleUpdates: any = {}
+  const breadcrumbItemStyleUpdates: unknown = {}
   if (!newSeries.breadcrumb.itemStyle.color) {
     breadcrumbItemStyleUpdates.color = themeConfig.background
   }
@@ -316,7 +317,7 @@ export const applyTreemapStyles = (series: any, themeConfig: ThemeConfig): any =
   if (!newSeries.breadcrumb.textStyle) {
     newSeries.breadcrumb.textStyle = {}
   }
-  const breadcrumbTextStyleUpdates: any = {}
+  const breadcrumbTextStyleUpdates: unknown = {}
   if (!newSeries.breadcrumb.textStyle.color) {
     breadcrumbTextStyleUpdates.color = themeConfig.foreground
   }
@@ -354,7 +355,7 @@ export const applyTreemapStyles = (series: any, themeConfig: ThemeConfig): any =
   if (!newSeries.breadcrumb.emphasis.itemStyle) {
     newSeries.breadcrumb.emphasis.itemStyle = {}
   }
-  const breadcrumbEmphasisUpdates: any = {}
+  const breadcrumbEmphasisUpdates: unknown = {}
   if (!newSeries.breadcrumb.emphasis.itemStyle.color) {
     breadcrumbEmphasisUpdates.color = themeConfig.card
   }

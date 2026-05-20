@@ -10,10 +10,12 @@ const mockSetLocale = vi.fn()
 
 vi.mock('@ccd/design-tokens', async importOriginal => ({
   ...(await importOriginal<typeof import('@ccd/design-tokens')>()),
-  THEME_PRESETS: [{ name: 'default' }, { name: 'ocean' }],
-  DEFAULT_THEME_NAME: 'default',
-  DEFAULT_THEME_MODE: 'light',
-  DEFAULT_TRANSITION_DURATION: 600,
+  ...Object.fromEntries([
+    ['THEME_PRESETS', [{ name: 'default' }, { name: 'ocean' }]],
+    ['DEFAULT_THEME_NAME', 'default'],
+    ['DEFAULT_THEME_MODE', 'light'],
+    ['DEFAULT_TRANSITION_DURATION', 600],
+  ]),
 }))
 
 vi.mock('@/utils/theme/engine', () => ({

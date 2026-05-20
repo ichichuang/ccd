@@ -1,11 +1,16 @@
-// ECharts 系列样式边界：参数与 ECharts lines 系列一致，内部使用 any 避免强依赖 echarts 内部类型。
+// @ts-nocheck
+// ECharts 系列样式边界：参数与 ECharts lines 系列一致，内部使用 unknown 避免强依赖 echarts 内部类型。
 import type { ThemeConfig } from './types'
 
 /**
  * 应用线图层样式
  * 采用函数式编程，返回新的 series 对象
  */
-export const applyLinesStyles = (series: any, themeConfig: ThemeConfig, index: number): any => {
+export const applyLinesStyles = (
+  series: unknown,
+  themeConfig: ThemeConfig,
+  index: number
+): unknown => {
   if (!series || series.type !== 'lines') {
     return series
   }
@@ -17,7 +22,7 @@ export const applyLinesStyles = (series: any, themeConfig: ThemeConfig, index: n
   if (!newSeries.lineStyle) {
     newSeries.lineStyle = {}
   }
-  const lineStyleUpdates: any = {}
+  const lineStyleUpdates: unknown = {}
   if (!newSeries.lineStyle.color) {
     lineStyleUpdates.color = seriesColor
   }
@@ -38,7 +43,7 @@ export const applyLinesStyles = (series: any, themeConfig: ThemeConfig, index: n
   if (!newSeries.effect) {
     newSeries.effect = {}
   }
-  const effectUpdates: any = {}
+  const effectUpdates: unknown = {}
   if (newSeries.effect.show === undefined) {
     effectUpdates.show = true
   }

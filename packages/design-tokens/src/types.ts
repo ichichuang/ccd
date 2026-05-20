@@ -1,12 +1,6 @@
 export type ThemeMode = 'light' | 'dark' | 'auto' | 'glass'
 
-export type ThemeTransitionMode =
-  | 'circle'
-  | 'curtain'
-  | 'diamond'
-  | 'implosion'
-  | 'glitch'
-  | 'fade'
+export type ThemeTransitionMode = 'circle' | 'curtain' | 'diamond' | 'implosion' | 'glitch' | 'fade'
 
 export type ThemeTransitionDuration = 400 | 600 | 800 | 1200 | 1600
 
@@ -206,55 +200,32 @@ export interface SizePreset {
   tabsHeight: number
 }
 
-export interface SizeCssVars {
-  '--spacing-unit': string
-  '--container-padding': string
-  '--control-height': string
-  '--control-height-sm': string
-  '--control-height-lg': string
-  '--control-action-size': string
-  '--control-action-size-sm': string
-  '--control-action-size-lg': string
-  '--sidebar-width': string
-  '--sidebar-collapsed-width': string
-  '--header-height': string
-  '--breadcrumb-height': string
-  '--footer-height': string
-  '--tabs-height': string
-  '--font-size-xs': string
-  '--font-size-sm': string
-  '--font-size-md': string
-  '--font-size-lg': string
-  '--font-size-xl': string
-  '--font-size-2xl': string
-  '--font-size-3xl': string
-  '--font-size-4xl': string
-  '--font-size-5xl': string
-  '--spacing-xs': string
-  '--spacing-sm': string
-  '--spacing-md': string
-  '--spacing-lg': string
-  '--spacing-xl': string
-  '--spacing-2xl': string
-  '--spacing-3xl': string
-  '--spacing-4xl': string
-  '--spacing-5xl': string
-  '--radius-xs': string
-  '--radius-sm': string
-  '--radius-md': string
-  '--radius-lg': string
-  '--radius-xl': string
-  '--radius-2xl': string
-  '--radius-3xl': string
-  '--radius-4xl': string
-  '--radius-5xl': string
-  '--transition-xs': string
-  '--transition-sm': string
-  '--transition-md': string
-  '--transition-lg': string
-  '--transition-xl': string
-  '--transition-2xl': string
-  '--transition-3xl': string
-  '--transition-4xl': string
-  '--transition-5xl': string
-}
+export type StaticSizeCssVarName =
+  | '--spacing-unit'
+  | '--container-padding'
+  | '--control-height'
+  | '--control-height-sm'
+  | '--control-height-lg'
+  | '--control-action-size'
+  | '--control-action-size-sm'
+  | '--control-action-size-lg'
+  | '--sidebar-width'
+  | '--sidebar-collapsed-width'
+  | '--header-height'
+  | '--breadcrumb-height'
+  | '--footer-height'
+  | '--tabs-height'
+
+export type SizeScaleKey = 'xs' | 'sm' | 'md' | 'lg' | 'xl' | '2xl' | '3xl' | '4xl' | '5xl'
+export type FontSizeCssVarName = `--font-size-${SizeScaleKey}`
+export type SpacingCssVarName = `--spacing-${SizeScaleKey}`
+export type RadiusCssVarName = `--radius-${SizeScaleKey}`
+export type TransitionCssVarName = `--transition-${SizeScaleKey}`
+export type SizeCssVarName =
+  | StaticSizeCssVarName
+  | FontSizeCssVarName
+  | SpacingCssVarName
+  | RadiusCssVarName
+  | TransitionCssVarName
+
+export type SizeCssVars = Record<SizeCssVarName, string>

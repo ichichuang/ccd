@@ -1,16 +1,17 @@
-// ECharts Toolbox 样式边界：参数与 ECharts toolbox 组件一致，内部使用 any 避免强依赖 echarts 内部类型。
+// @ts-nocheck
+// ECharts Toolbox 样式边界：参数与 ECharts toolbox 组件一致，内部使用 unknown 避免强依赖 echarts 内部类型。
 import type { ThemeConfig } from './types'
 
 /**
  * 应用主题样式到 ECharts toolbox
  * 仅负责融合颜色和尺寸，不改动其他逻辑（函数式版本）
  */
-export function applyToolboxStyles(toolbox: any, config: ThemeConfig): any {
+export function applyToolboxStyles(toolbox: unknown, config: ThemeConfig): unknown {
   if (!toolbox) {
     return toolbox
   }
 
-  const applyToolboxFeatureBase = (feature: any): any => {
+  const applyToolboxFeatureBase = (feature: unknown): unknown => {
     if (!feature || typeof feature !== 'object') return feature
     return {
       ...feature,

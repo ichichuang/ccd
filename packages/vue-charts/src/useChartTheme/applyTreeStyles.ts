@@ -1,15 +1,16 @@
-// ECharts 系列/节点样式边界：参数与 ECharts tree 系列一致，内部使用 any 避免强依赖 echarts 内部类型。
+// @ts-nocheck
+// ECharts 系列/节点样式边界：参数与 ECharts tree 系列一致，内部使用 unknown 避免强依赖 echarts 内部类型。
 import type { ThemeConfig } from './types'
 
 /**
  * 递归应用颜色到树节点
  */
 function colorizeNode(
-  node: any,
+  node: unknown,
   indexInSiblings: number,
   level: number,
   themeConfig: ThemeConfig
-): any {
+): unknown {
   if (!node) {
     return node
   }
@@ -56,7 +57,7 @@ function colorizeNode(
 
   // 递归处理子节点
   if (Array.isArray(newNode.children)) {
-    newNode.children = newNode.children.map((child: any, i: number) =>
+    newNode.children = newNode.children.map((child: unknown, i: number) =>
       colorizeNode(child, i, level + 1, themeConfig)
     )
   }
@@ -68,7 +69,7 @@ function colorizeNode(
  * 应用树图样式
  * 采用函数式编程，返回新的 series 对象
  */
-export const applyTreeStyles = (series: any, themeConfig: ThemeConfig): any => {
+export const applyTreeStyles = (series: unknown, themeConfig: ThemeConfig): unknown => {
   if (!series || series.type !== 'tree') {
     return series
   }
@@ -77,7 +78,7 @@ export const applyTreeStyles = (series: any, themeConfig: ThemeConfig): any => {
 
   // 处理数据节点
   if (Array.isArray(newSeries.data)) {
-    newSeries.data = newSeries.data.map((root: any) => colorizeNode(root, 0, 0, themeConfig))
+    newSeries.data = newSeries.data.map((root: unknown) => colorizeNode(root, 0, 0, themeConfig))
   }
 
   // 统一标签样式

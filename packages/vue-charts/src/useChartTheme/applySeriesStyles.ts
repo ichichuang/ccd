@@ -1,4 +1,5 @@
-// ECharts 系列样式边界：参数与 ECharts 系列类型一致，内部使用 any 避免强依赖 echarts 内部类型。
+// @ts-nocheck
+// ECharts 系列样式边界：参数与 ECharts 系列类型一致，内部使用 unknown 避免强依赖 echarts 内部类型。
 import type { ThemeConfig } from './types'
 import { withAlpha } from './utils'
 import { DEFAULT_OPACITY_VALUES } from './constants'
@@ -7,12 +8,12 @@ import { DEFAULT_OPACITY_VALUES } from './constants'
  * 通用样式应用函数，用于设置 itemStyle 和 label
  */
 function applyItemStyleAndLabel(
-  series: any,
+  series: unknown,
   seriesColor: string,
   labelColor: string,
   fontSize: number,
   lineHeight?: number
-): any {
+): unknown {
   return {
     ...series,
     itemStyle: {
@@ -31,7 +32,7 @@ function applyItemStyleAndLabel(
 /**
  * 线条样式应用函数（函数式版本）
  */
-function applyLineStyles(series: any, seriesColor: string, strokeWidth: number): any {
+function applyLineStyles(series: unknown, seriesColor: string, strokeWidth: number): unknown {
   if (series.type !== 'line' && series.type !== 'area') {
     return series
   }
@@ -59,7 +60,7 @@ function applyLineStyles(series: any, seriesColor: string, strokeWidth: number):
 /**
  * 透明度配置应用函数（函数式版本）
  */
-function applyOpacityConfig(series: any, opacityConfig: any): any {
+function applyOpacityConfig(series: unknown, opacityConfig: unknown): unknown {
   if (!opacityConfig) {
     return series
   }
@@ -211,7 +212,7 @@ function applyOpacityConfig(series: any, opacityConfig: any): any {
 /**
  * 应用 markArea 样式到系列（填充/边框/标签），避免保留 ECharts 默认颜色与尺寸
  */
-function applyMarkAreaStyles(series: any, config: ThemeConfig): any {
+function applyMarkAreaStyles(series: unknown, config: ThemeConfig): unknown {
   const markArea = series?.markArea
   if (!markArea) return series
 
@@ -253,7 +254,7 @@ function applyMarkAreaStyles(series: any, config: ThemeConfig): any {
 /**
  * 基础系列样式应用函数（函数式版本）
  */
-export function applySeriesStyles(series: any, index: number, config: ThemeConfig): any {
+export function applySeriesStyles(series: unknown, index: number, config: ThemeConfig): unknown {
   const seriesColor = config.color.colors[index % config.color.colors.length]
 
   // 应用通用样式

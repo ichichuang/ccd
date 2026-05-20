@@ -1,6 +1,6 @@
 {
   "name": "app-template",
-  "version": "1.0.38",
+  "version": "2.0.0",
   "private": true,
   "type": "module",
   "sideEffects": [
@@ -94,7 +94,7 @@
     "drift-check": "node scripts/drift-check.mjs",
     "check:drift": "node scripts/drift-check.mjs",
     "test": "vitest",
-    "test:run": "vitest run",
+    "test:run": "pnpm build:shared-config && vitest run",
     "test:coverage": "vitest run --coverage",
     "e2e": "playwright test",
     "e2e:qa": "pnpm build:shared-config && playwright test e2e/qa-regression.spec.ts e2e/views-route-smoke.spec.ts e2e/layout-runtime-geometry.spec.ts",

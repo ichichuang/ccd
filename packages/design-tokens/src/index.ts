@@ -1,12 +1,6 @@
 export type ThemeMode = 'light' | 'dark' | 'auto' | 'glass'
 
-export type ThemeTransitionMode =
-  | 'circle'
-  | 'curtain'
-  | 'diamond'
-  | 'implosion'
-  | 'glitch'
-  | 'fade'
+export type ThemeTransitionMode = 'circle' | 'curtain' | 'diamond' | 'implosion' | 'glitch' | 'fade'
 
 export type ThemeTransitionDuration = 400 | 600 | 800 | 1200 | 1600
 
@@ -206,67 +200,41 @@ export interface SizePreset {
   tabsHeight: number
 }
 
-export interface SizeCssVars {
-  '--spacing-unit': string
-  '--container-padding': string
-  '--control-height': string
-  '--control-height-sm': string
-  '--control-height-lg': string
-  '--control-action-size': string
-  '--control-action-size-sm': string
-  '--control-action-size-lg': string
-  '--sidebar-width': string
-  '--sidebar-collapsed-width': string
-  '--header-height': string
-  '--breadcrumb-height': string
-  '--footer-height': string
-  '--tabs-height': string
-  '--font-size-xs': string
-  '--font-size-sm': string
-  '--font-size-md': string
-  '--font-size-lg': string
-  '--font-size-xl': string
-  '--font-size-2xl': string
-  '--font-size-3xl': string
-  '--font-size-4xl': string
-  '--font-size-5xl': string
-  '--spacing-xs': string
-  '--spacing-sm': string
-  '--spacing-md': string
-  '--spacing-lg': string
-  '--spacing-xl': string
-  '--spacing-2xl': string
-  '--spacing-3xl': string
-  '--spacing-4xl': string
-  '--spacing-5xl': string
-  '--radius-xs': string
-  '--radius-sm': string
-  '--radius-md': string
-  '--radius-lg': string
-  '--radius-xl': string
-  '--radius-2xl': string
-  '--radius-3xl': string
-  '--radius-4xl': string
-  '--radius-5xl': string
-  '--transition-xs': string
-  '--transition-sm': string
-  '--transition-md': string
-  '--transition-lg': string
-  '--transition-xl': string
-  '--transition-2xl': string
-  '--transition-3xl': string
-  '--transition-4xl': string
-  '--transition-5xl': string
-}
+export type StaticSizeCssVarName =
+  | '--spacing-unit'
+  | '--container-padding'
+  | '--control-height'
+  | '--control-height-sm'
+  | '--control-height-lg'
+  | '--control-action-size'
+  | '--control-action-size-sm'
+  | '--control-action-size-lg'
+  | '--sidebar-width'
+  | '--sidebar-collapsed-width'
+  | '--header-height'
+  | '--breadcrumb-height'
+  | '--footer-height'
+  | '--tabs-height'
 
+export type SizeScaleKey = (typeof SIZE_SCALE_KEYS)[number]
+export type FontSizeCssVarName = `--font-size-${SizeScaleKey}`
+export type SpacingCssVarName = `--spacing-${SizeScaleKey}`
+export type RadiusCssVarName = `--radius-${SizeScaleKey}`
+export type TransitionCssVarName = `--transition-${SizeScaleKey}`
+export type SizeCssVarName =
+  | StaticSizeCssVarName
+  | FontSizeCssVarName
+  | SpacingCssVarName
+  | RadiusCssVarName
+  | TransitionCssVarName
+
+export type SizeCssVars = Record<SizeCssVarName, string>
 
 /**
  * 尺寸阶梯键名定义 (xs -> 5xl)
  * 保持与 Breakpoints 命名一致，降低心智负担
  */
 export const SIZE_SCALE_KEYS = ['xs', 'sm', 'md', 'lg', 'xl', '2xl', '3xl', '4xl', '5xl'] as const
-export type SizeScaleKey = (typeof SIZE_SCALE_KEYS)[number]
-
 export interface SizeScaleMatrixEntry {
   key: SizeScaleKey
   fontRatio: number
@@ -412,7 +380,6 @@ export const LOADING_SIZE_CSS = deriveSizeScaleRecord('loadingSizeCss')
  */
 export const TRANSITION_SCALE_MS = deriveSizeScaleRecord('transitionMs')
 
-
 /* eslint-disable @typescript-eslint/naming-convention */
 
 /**
@@ -444,7 +411,6 @@ export type BreakpointKey = SizeScaleKey
 
 /** 基于物理屏幕短边的平板设备检测阈值（非布局响应断点，仅用于 UA + 屏幕尺寸的设备类型判定） */
 export const TABLET_DETECTION_MIN_SHORT_SIDE = 600
-
 
 /**
  * 尺寸系统预设常量 (Size System Presets)
@@ -540,7 +506,6 @@ export const SIZE_PRESETS: SizePreset[] = [
 /** 默认尺寸模式 */
 export const DEFAULT_SIZE_NAME: SizeMode = 'comfortable'
 
-
 /**
  * 布局尺寸字段名（与 SizePreset / SizeCssVars 一一对应，SSOT for UnoCSS）
  * 禁止加入 presetUno 已占用的类名片段（如 full / screen / min / max），否则会覆盖默认 w-full、w-screen 等，导致布局异常。
@@ -559,7 +524,6 @@ export const SIZE_BASE_VAR_KEYS = ['containerPadding'] as const
 
 /** 全局设置弹窗宽度（px），SSOT；由 sizeEngine 注入为 --dialog-settings-width */
 export const DIALOG_SETTINGS_WIDTH_PX = 400
-
 
 /**
  * 核心主题预设池 (全状态极致定制版 - The Ultimate 11)
@@ -2250,7 +2214,6 @@ export const TRANSITION_DURATION_OPTIONS: {
   },
 ]
 
-
 /**
  * Color Usage Contract - 语义 → Token 映射规则
  *
@@ -2306,7 +2269,6 @@ export const PRIMARY_USAGE = [
 
 /** accent 的推荐场景（独立互补高亮色，非 hover；Tab 激活指示线仅在需要强对比主题时可选用） */
 export const ACCENT_USAGE = ['special-badge', 'navlink-highlight', 'feature-callout'] as const
-
 
 /**
  * 主题颜色家族元数据
@@ -2405,7 +2367,6 @@ export const THEME_ENGINE = {
   /** 亮色模式 light 变体前景色计算的黑色混合目标 */
   darkForeground: '#000000',
 }
-
 
 /**
  * 标准化 Hex 颜色值 (修复 3 位 hex 并进行非法校验)

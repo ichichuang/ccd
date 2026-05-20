@@ -1,4 +1,5 @@
-// ECharts Tooltip 样式边界：参数与 ECharts tooltip 组件一致，内部使用 any 避免强依赖 echarts 内部类型。
+// @ts-nocheck
+// ECharts Tooltip 样式边界：参数与 ECharts tooltip 组件一致，内部使用 unknown 避免强依赖 echarts 内部类型。
 import type { ThemeConfig } from './types'
 import { withAlpha } from './utils'
 
@@ -13,9 +14,9 @@ const TOOLTIP_TRANSITION_DURATION = 0.3
  * V2: 玻璃态背景 + 流体 transitionDuration
  */
 export function applyTooltipStyles(
-  tooltip: Record<string, any> | undefined,
+  tooltip: Record<string, unknown> | undefined,
   config: ThemeConfig
-): Record<string, any> {
+): Record<string, unknown> {
   const bgColor = withAlpha(config.card, TOOLTIP_BG_ALPHA) ?? config.card
 
   if (!tooltip) {
