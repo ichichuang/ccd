@@ -41,7 +41,7 @@
     "dev": "pnpm dev:web",
     "dev:demo": "NODE_OPTIONS='--max-old-space-size=8192' UNO_DEMO=true pnpm --filter @ccd/web-demo dev",
     "build": "pnpm build:web-demo",
-    "build:ci": "bash scripts/exec.sh pnpm validate:governance && bash scripts/exec.sh pnpm ci:prepare-internal && bash scripts/exec.sh pnpm exec turbo run build",
+    "build:ci": "bash scripts/exec.sh pnpm ci:prepare-internal && bash scripts/exec.sh pnpm validate:governance && bash scripts/exec.sh pnpm exec turbo run build",
     "build:analyze": "pnpm build",
     "budget:bundles": "node scripts/check-bundle-budgets.mjs",
     "preview": "pnpm --filter @ccd/web-demo preview",
