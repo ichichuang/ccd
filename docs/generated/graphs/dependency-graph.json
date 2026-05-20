@@ -23,7 +23,9 @@
       "layer": "contracts",
       "runtime": "none",
       "criticality": "critical",
-      "allowedWorkspaceDependencies": ["@ccd/design-tokens"]
+      "allowedWorkspaceDependencies": [
+        "@ccd/design-tokens"
+      ]
     },
     {
       "name": "@ccd/core",
@@ -31,7 +33,9 @@
       "layer": "core",
       "runtime": "none",
       "criticality": "critical",
-      "allowedWorkspaceDependencies": ["@ccd/contracts"]
+      "allowedWorkspaceDependencies": [
+        "@ccd/contracts"
+      ]
     },
     {
       "name": "@ccd/design-tokens",
@@ -47,7 +51,9 @@
       "layer": "frontend-platform",
       "runtime": "node-build",
       "criticality": "protected",
-      "allowedWorkspaceDependencies": ["@ccd/design-tokens"]
+      "allowedWorkspaceDependencies": [
+        "@ccd/design-tokens"
+      ]
     },
     {
       "name": "@ccd/shared-utils",
@@ -79,7 +85,9 @@
       "layer": "frontend-platform",
       "runtime": "web-library",
       "criticality": "protected",
-      "allowedWorkspaceDependencies": ["@ccd/design-tokens"]
+      "allowedWorkspaceDependencies": [
+        "@ccd/design-tokens"
+      ]
     },
     {
       "name": "@ccd/vue-charts",
@@ -120,19 +128,29 @@
   ],
   "turbo": {
     "build": {
-      "dependsOn": ["^build"],
-      "outputs": ["dist/**"]
+      "dependsOn": [
+        "^build"
+      ],
+      "outputs": [
+        "dist/**"
+      ]
     },
     "type-check": {
-      "dependsOn": ["^build"],
+      "dependsOn": [
+        "^build"
+      ],
       "outputs": []
     },
     "typecheck": {
-      "dependsOn": ["type-check"],
+      "dependsOn": [
+        "type-check"
+      ],
       "outputs": []
     },
     "test": {
-      "dependsOn": ["^build"],
+      "dependsOn": [
+        "^build"
+      ],
       "outputs": []
     },
     "lint": {
