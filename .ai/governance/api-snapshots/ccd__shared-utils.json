@@ -1,8 +1,6 @@
 {
   "package": "@ccd/shared-utils",
   "path": "packages/shared-utils",
-  "exports": [
-    "."
-  ],
+  "exports": ["."],
   "rootSymbols": []
 }

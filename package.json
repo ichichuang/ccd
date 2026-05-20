@@ -41,7 +41,7 @@
     "dev": "pnpm dev:web",
     "dev:demo": "NODE_OPTIONS='--max-old-space-size=8192' UNO_DEMO=true pnpm --filter @ccd/web-demo dev",
     "build": "pnpm build:web-demo",
-    "build:ci": "bash scripts/exec.sh pnpm validate:governance && bash scripts/exec.sh pnpm build:shared-config && bash scripts/exec.sh pnpm exec turbo run build",
+    "build:ci": "bash scripts/exec.sh pnpm validate:governance && bash scripts/exec.sh pnpm ci:prepare-internal && bash scripts/exec.sh pnpm exec turbo run build",
     "build:analyze": "pnpm build",
     "budget:bundles": "node scripts/check-bundle-budgets.mjs",
     "preview": "pnpm --filter @ccd/web-demo preview",
@@ -104,7 +104,7 @@
     "test:run": "pnpm build:shared-config && vitest run",
     "test:coverage": "vitest run --coverage",
     "e2e": "playwright test",
-    "e2e:qa": "pnpm build:shared-config && playwright test e2e/qa-regression.spec.ts e2e/views-route-smoke.spec.ts e2e/layout-runtime-geometry.spec.ts",
+    "e2e:qa": "pnpm ci:prepare-internal && playwright test e2e/qa-regression.spec.ts e2e/views-route-smoke.spec.ts e2e/layout-runtime-geometry.spec.ts",
     "e2e:update": "playwright test --update-snapshots",
     "e2e:headed": "playwright test --headed",
     "e2e:ui": "playwright test --ui",
@@ -124,7 +124,7 @@
     "arch:boundaries": "depcruise --config .dependency-cruiser.cjs apps packages && node scripts/architecture/validate-boundaries.mjs",
     "budget:desktop": "node scripts/architecture/check-desktop-size.mjs",
     "build:core": "pnpm --filter @ccd/contracts build && pnpm --filter @ccd/core build",
-    "build:shared-config": "pnpm --filter @ccd/design-tokens build && pnpm --filter @ccd/shared-utils build && pnpm --filter @ccd/unocss-preset build && pnpm --filter @ccd/vue-hooks build && pnpm --filter @ccd/vue-primevue-adapter build",
+    "build:shared-config": "pnpm --filter @ccd/design-tokens build && pnpm --filter @ccd/shared-utils build && pnpm --filter @ccd/unocss-preset build && pnpm --filter @ccd/vue-hooks build && pnpm --filter @ccd/vue-ui build && pnpm --filter @ccd/vue-primevue-adapter build && pnpm --filter @ccd/vue-charts build",
     "arch:runtime": "node scripts/architecture/check-runtime-leaks.mjs && node scripts/architecture/check-root-runtime-decommissioned.mjs",
     "api:report": "node scripts/architecture/check-api-surface.mjs",
     "supply:check": "node scripts/architecture/check-supply-chain.mjs",
@@ -137,7 +137,10 @@
     "validate:governance": "pnpm governance:gate",
     "validate:release": "pnpm validate && node scripts/architecture/check-release-governance.mjs && node scripts/architecture/release-audit.mjs",
     "release:audit": "node scripts/architecture/release-audit.mjs",
-    "runtime:summary": "node scripts/runtime/summary.mjs"
+    "runtime:summary": "node scripts/runtime/summary.mjs",
+    "ccd:ci": "node scripts/ccd-ops.mjs ci",
+    "ci:prepare-internal": "pnpm build:shared-config && pnpm build:core",
+    "ccd:verify": "node scripts/ccd-ops.mjs ci"
   },
   "config": {
     "commitizen": {
@@ -187,6 +190,8 @@
   },
   "devDependencies": {
     "@commitlint/cli": "^19.6.0",
+    "@ccd/design-tokens": "workspace:*",
+    "@ccd/unocss-preset": "workspace:*",
     "@commitlint/config-conventional": "^19.6.0",
     "@eslint/js": "^9.39.2",
     "@faker-js/faker": "^9.9.0",

@@ -38,8 +38,9 @@
   },
   "exports": {
     ".": {
-      "types": "./dist/main.d.ts",
-      "import": "./dist/assets/index.js"
+      "types": "./src/main.ts",
+      "import": "./src/main.ts",
+      "default": "./src/main.ts"
     }
   }
 }

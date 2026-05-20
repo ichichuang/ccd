@@ -1,9 +1,7 @@
 {
   "package": "@ccd/unocss-preset",
   "path": "packages/unocss-preset",
-  "exports": [
-    "."
-  ],
+  "exports": ["."],
   "rootSymbols": [
     "createCcdUnoEngineConfig",
     "getEngineSafelist",

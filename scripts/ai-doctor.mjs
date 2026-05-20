@@ -2,18 +2,16 @@ import { spawnSync } from 'node:child_process'
 import fs from 'node:fs'
 import path from 'node:path'
 import process from 'node:process'
-import {
-  generateSkillsLock,
-  validateSkillRoutingTargets,
-} from './skill-lock-utils.mjs'
+import { generateSkillsLock, validateSkillRoutingTargets } from './skill-lock-utils.mjs'
 
 const cwd = process.cwd()
 const openOnly = process.argv.includes('--open')
-const currentBranch = spawnSync('git', ['branch', '--show-current'], {
-  cwd,
-  encoding: 'utf8',
-  stdio: 'pipe',
-}).stdout.trim() || 'unknown'
+const currentBranch =
+  spawnSync('git', ['branch', '--show-current'], {
+    cwd,
+    encoding: 'utf8',
+    stdio: 'pipe',
+  }).stdout.trim() || 'unknown'
 
 const canonicalMustExist = [
   '.ai/README.md',
@@ -51,9 +49,7 @@ const canonicalMustExist = [
   '.ai/manifests/rule-index.json',
 ]
 
-const fileAdapters = [
-  { target: 'AGENTS.md', source: '.ai/protocol/AI.entry.md' },
-]
+const fileAdapters = [{ target: 'AGENTS.md', source: '.ai/protocol/AI.entry.md' }]
 
 const generatedContentChecks = [
   {
@@ -95,6 +91,20 @@ const fail = msg => {
 
 const ok = msg => console.log(`[OK] ${msg}`)
 
+const prepareInternalPackages = () => {
+  console.log('[PREP] internal packages for doctor')
+  const result = spawnSync('pnpm', ['ci:prepare-internal'], {
+    cwd,
+    encoding: 'utf8',
+    stdio: 'pipe',
+  })
+  if (result.stdout) process.stdout.write(result.stdout)
+  if (result.stderr) process.stderr.write(result.stderr)
+  if (result.status !== 0) {
+    throw new Error('pnpm ci:prepare-internal failed')
+  }
+}
+
 const readBuffer = rel => fs.readFileSync(path.join(cwd, rel))
 const readText = rel => fs.readFileSync(path.join(cwd, rel), 'utf8')
 
@@ -124,7 +134,9 @@ const printOpenLedgerTasks = () => {
     console.log(`\n${group}`)
     items.forEach(item => console.log(`  - ${item}`))
   }
-  console.log(`\n${[...groups.values()].reduce((total, items) => total + items.length, 0)} open tasks`)
+  console.log(
+    `\n${[...groups.values()].reduce((total, items) => total + items.length, 0)} open tasks`
+  )
 }
 
 if (openOnly) {
@@ -289,7 +301,9 @@ try {
     ok('skill routing targets: .ai/manifests/skill-routing.json')
   }
 } catch (error) {
-  fail(`unable to validate skill routing manifest: ${error instanceof Error ? error.message : String(error)}`)
+  fail(
+    `unable to validate skill routing manifest: ${error instanceof Error ? error.message : String(error)}`
+  )
 }
 
 try {
@@ -304,21 +318,34 @@ try {
   if (guardResult.status !== 0) fail('architecture guard failed: pnpm ai:guard')
   else ok('architecture guard: pnpm ai:guard')
 } catch (error) {
-  fail(`unable to run architecture guard: ${error instanceof Error ? error.message : String(error)}`)
+  fail(
+    `unable to run architecture guard: ${error instanceof Error ? error.message : String(error)}`
+  )
 }
 
 try {
-  const tokenContrastResult = spawnSync('pnpm', ['validate:tokens'], {
-    cwd,
-    encoding: 'utf8',
-    stdio: 'pipe',
-  })
-  if (tokenContrastResult.stdout) process.stdout.write(tokenContrastResult.stdout)
-  if (tokenContrastResult.stderr) process.stderr.write(tokenContrastResult.stderr)
-  if (tokenContrastResult.status !== 0) fail('token contrast validation failed: pnpm validate:tokens')
-  else ok('token contrast validation: pnpm validate:tokens')
-} catch (error) {
-  fail(`unable to run token contrast validation: ${error instanceof Error ? error.message : String(error)}`)
+  prepareInternalPackages()
+} catch {
+  fail('internal package preparation failed before token validation')
+}
+
+if (!hasError) {
+  try {
+    const tokenContrastResult = spawnSync('pnpm', ['validate:tokens'], {
+      cwd,
+      encoding: 'utf8',
+      stdio: 'pipe',
+    })
+    if (tokenContrastResult.stdout) process.stdout.write(tokenContrastResult.stdout)
+    if (tokenContrastResult.stderr) process.stderr.write(tokenContrastResult.stderr)
+    if (tokenContrastResult.status !== 0)
+      fail('token contrast validation failed: pnpm validate:tokens')
+    else ok('token contrast validation: pnpm validate:tokens')
+  } catch (error) {
+    fail(
+      `unable to run token contrast validation: ${error instanceof Error ? error.message : String(error)}`
+    )
+  }
 }
 
 process.exit(hasError ? 1 : 0)

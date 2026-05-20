@@ -1,11 +1,6 @@
 {
   "package": "@ccd/design-tokens",
   "path": "packages/design-tokens",
-  "exports": [
-    "."
-  ],
-  "rootSymbols": [
-    "BreakpointKey",
-    "SizeScaleKey"
-  ]
+  "exports": ["."],
+  "rootSymbols": ["BreakpointKey", "SizeScaleKey"]
 }

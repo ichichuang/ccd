@@ -62,7 +62,7 @@ function runCheck(check) {
 }
 
 function gitSnapshot() {
-  const result = spawnSync('git', ['status', '--porcelain', '--', ...generatedArtifactPaths], {
+  const result = spawnSync('git', ['diff', '--', ...generatedArtifactPaths], {
     cwd: process.cwd(),
     encoding: 'utf8',
     stdio: 'pipe',

@@ -65,6 +65,9 @@ jobs:
       - name: Sync AI adapters (materialize local runtime)
         run: bash scripts/exec.sh pnpm ai:sync
 
+      - name: Prepare internal workspace packages
+        run: bash scripts/exec.sh pnpm ci:prepare-internal
+
       - name: AI Architecture Doctor
         run: bash scripts/exec.sh pnpm ai:doctor
 
@@ -134,8 +137,8 @@ jobs:
       - name: Install Playwright Chromium
         run: bash scripts/exec.sh pnpm exec playwright install --with-deps chromium
 
-      - name: Build core packages
-        run: bash scripts/exec.sh pnpm build:core
+      - name: Prepare internal workspace packages
+        run: bash scripts/exec.sh pnpm ci:prepare-internal
 
       - name: Run Playwright QA suite
         run: bash scripts/exec.sh pnpm e2e:qa

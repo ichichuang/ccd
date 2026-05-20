@@ -1,9 +1,7 @@
 {
   "package": "@ccd/core",
   "path": "packages/core",
-  "exports": [
-    "."
-  ],
+  "exports": ["."],
   "rootSymbols": [
     "CoreAdapters",
     "CoreRuntime",

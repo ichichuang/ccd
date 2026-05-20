@@ -90,6 +90,12 @@ importers:
         specifier: ^4.3.6
         version: 4.3.6
     devDependencies:
+      '@ccd/design-tokens':
+        specifier: workspace:*
+        version: link:packages/design-tokens
+      '@ccd/unocss-preset':
+        specifier: workspace:*
+        version: link:packages/unocss-preset
       '@commitlint/cli':
         specifier: ^19.6.0
         version: 19.8.1(@types/node@25.7.0)(typescript@5.9.3)

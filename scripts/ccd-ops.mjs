@@ -3,7 +3,7 @@
 import { spawnSync } from 'node:child_process'
 import process from 'node:process'
 
-const COMMANDS = new Set(['doctor', 'fix', 'ship'])
+const COMMANDS = new Set(['doctor', 'fix', 'ship', 'ci'])
 const GENERATED_PREFIXES = ['docs/generated/', '.ai/generated/', '.ai/governance/api-snapshots/']
 const GENERATED_EXACT = new Set(['docs/generated/sbom.json'])
 const MANAGED_FORMAT_FILES = [
@@ -175,10 +175,6 @@ function hasCommittableChanges() {
   return (untracked.stdout ?? '').trim().length > 0
 }
 
-function isNoCommitOutput(output) {
-  return /nothing to commit|working tree clean|no changes added to commit/i.test(output)
-}
-
 function printNoOpShipSummary(message) {
   console.log('\nCCD ship completed: no changes to commit')
   console.log('- Working tree: clean')
@@ -315,6 +311,12 @@ function runFix() {
   )
   runRequired('pnpm', ['project:sync'], 'project metadata sync failed.', 'pnpm project:sync')
   formatManaged()
+  runRequired(
+    'pnpm',
+    ['ci:prepare-internal'],
+    'internal workspace package preparation failed.',
+    'pnpm ci:prepare-internal'
+  )
   runGovernanceGateWithGeneratedRetry()
   formatGenerated()
   normalizeGenerated()
@@ -337,6 +339,44 @@ function runFix() {
   console.log('- drift-check')
   console.log('- git diff --check')
   console.log('\nNext command suggestion: pnpm ccd:ship -- "feat: describe change"')
+}
+
+function runCi() {
+  runRequired(
+    'pnpm',
+    ['install', '--frozen-lockfile'],
+    'dependencies are not locked or installable.',
+    'pnpm install --frozen-lockfile'
+  )
+  runRequired(
+    'pnpm',
+    ['ci:prepare-internal'],
+    'internal workspace package preparation failed.',
+    'pnpm ci:prepare-internal'
+  )
+  runRequired('pnpm', ['ai:doctor'], 'AI workspace doctor failed.', 'pnpm ai:doctor')
+  runRequired(
+    'pnpm',
+    ['validate:governance'],
+    'governance validation failed.',
+    'pnpm validate:governance'
+  )
+  runRequired('pnpm', ['type-check'], 'TypeScript validation failed.', 'pnpm type-check')
+  runRequired('pnpm', ['test:run'], 'unit tests failed.', 'pnpm test:run')
+  runRequired('pnpm', ['lint:check'], 'lint validation failed.', 'pnpm lint:check')
+  runRequired('pnpm', ['build:ci'], 'CI build failed.', 'pnpm build:ci')
+  runRequired('pnpm', ['e2e:qa'], 'Playwright QA failed.', 'pnpm e2e:qa')
+
+  console.log('\nCCD CI parity completed')
+  console.log('- install --frozen-lockfile')
+  console.log('- ci:prepare-internal')
+  console.log('- ai:doctor')
+  console.log('- validate:governance')
+  console.log('- type-check')
+  console.log('- test:run')
+  console.log('- lint:check')
+  console.log('- build:ci')
+  console.log('- e2e:qa')
 }
 
 function runLintStagedWithRetry() {
@@ -396,10 +436,11 @@ function runShip(args) {
 
   const hash = run('git', ['rev-parse', '--short', 'HEAD'], { capture: true }).stdout.trim()
   const status = getStatusLines()
+  const emptyCommit = allowEmpty && !hasChanges
   console.log('\nShip complete')
   console.log(`- Commit hash: ${hash}`)
   console.log(`- Commit message used: ${message}`)
-  console.log(`- Empty commit: ${allowEmpty && !stagedChanges ? 'yes' : 'no'}`)
+  console.log(`- Empty commit: ${emptyCommit ? 'yes' : 'no'}`)
   console.log(`- Working tree: ${status.length === 0 ? 'clean' : 'dirty'}`)
   if (status.length > 0) printList('Remaining files', status, 'none')
 }
@@ -423,7 +464,7 @@ function reportFailure(error) {
 function main() {
   const [command, ...args] = process.argv.slice(2)
   if (!COMMANDS.has(command)) {
-    console.error('Usage: node scripts/ccd-ops.mjs <doctor|fix|ship> [message]')
+    console.error('Usage: node scripts/ccd-ops.mjs <doctor|fix|ship|ci> [message]')
     process.exit(1)
   }
 
@@ -431,6 +472,7 @@ function main() {
     if (command === 'doctor') runDoctor()
     if (command === 'fix') runFix()
     if (command === 'ship') runShip(args)
+    if (command === 'ci') runCi()
   } catch (error) {
     reportFailure(error)
   }

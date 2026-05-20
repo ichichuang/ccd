@@ -12,7 +12,8 @@
       "exports": {
         ".": {
           "types": "./dist/index.d.ts",
-          "import": "./dist/index.js"
+          "import": "./dist/index.js",
+          "default": "./dist/index.js"
         }
       },
       "scripts": {
@@ -31,7 +32,8 @@
       "exports": {
         ".": {
           "types": "./dist/index.d.ts",
-          "import": "./dist/index.js"
+          "import": "./dist/index.js",
+          "default": "./dist/index.js"
         }
       },
       "scripts": {
@@ -56,7 +58,8 @@
       "exports": {
         ".": {
           "types": "./dist/index.d.ts",
-          "import": "./dist/index.js"
+          "import": "./dist/index.js",
+          "default": "./dist/index.js"
         }
       },
       "scripts": {
@@ -79,23 +82,27 @@
         ".": {
           "types": "./dist/index.d.ts",
           "browser": "./dist/browser.js",
-          "import": "./dist/index.js"
+          "import": "./dist/index.js",
+          "default": "./dist/index.js"
         },
         "./browser": {
           "types": "./dist/browser.d.ts",
-          "import": "./dist/browser.js"
+          "import": "./dist/browser.js",
+          "default": "./dist/browser.js"
         },
         "./safelist": {
           "types": "./dist/safelist/index.d.ts",
-          "import": "./dist/safelist/index.js"
+          "import": "./dist/safelist/index.js",
+          "default": "./dist/safelist/index.js"
         },
         "./theme": {
           "types": "./dist/theme/index.d.ts",
-          "import": "./dist/theme/index.js"
+          "import": "./dist/theme/index.js",
+          "default": "./dist/theme/index.js"
         }
       },
       "scripts": {
-        "build": "rm -f ../../node_modules/.tmp/packages-unocss-preset.tsbuildinfo && tsc -p tsconfig.json",
+        "build": "rm -rf dist && rm -f ../../node_modules/.tmp/packages-unocss-preset.tsbuildinfo && tsc -p tsconfig.json",
         "type-check": "tsc -p tsconfig.json --noEmit",
         "typecheck": "pnpm type-check",
         "test": "vitest run --passWithNoTests"
@@ -116,7 +123,8 @@
       "exports": {
         ".": {
           "types": "./dist/index.d.ts",
-          "import": "./dist/index.js"
+          "import": "./dist/index.js",
+          "default": "./dist/index.js"
         }
       },
       "scripts": {
@@ -139,7 +147,8 @@
       "exports": {
         ".": {
           "types": "./dist/index.d.ts",
-          "import": "./dist/index.js"
+          "import": "./dist/index.js",
+          "default": "./dist/index.js"
         }
       },
       "scripts": {
@@ -163,7 +172,8 @@
       "exports": {
         ".": {
           "types": "./src/index.ts",
-          "import": "./src/index.ts"
+          "import": "./src/index.ts",
+          "default": "./src/index.ts"
         }
       },
       "scripts": {
@@ -184,7 +194,10 @@
         "@vue/tsconfig": "^0.7.0",
         "typescript": "^5.8.3",
         "vue-tsc": "^2.2.10"
-      }
+      },
+      "main": "./src/index.ts",
+      "module": "./src/index.ts",
+      "types": "./src/index.ts"
     },
     {
       "name": "@ccd/vue-primevue-adapter",
@@ -195,7 +208,8 @@
       "exports": {
         ".": {
           "types": "./dist/index.d.ts",
-          "import": "./dist/index.js"
+          "import": "./dist/index.js",
+          "default": "./dist/index.js"
         }
       },
       "scripts": {
@@ -219,7 +233,8 @@
       "exports": {
         ".": {
           "types": "./src/index.ts",
-          "import": "./src/index.ts"
+          "import": "./src/index.ts",
+          "default": "./src/index.ts"
         }
       },
       "scripts": {
@@ -240,7 +255,10 @@
         "@vue/tsconfig": "^0.7.0",
         "typescript": "^5.8.3",
         "vue-tsc": "^2.2.10"
-      }
+      },
+      "main": "./src/index.ts",
+      "module": "./src/index.ts",
+      "types": "./src/index.ts"
     },
     {
       "name": "@ccd/web-demo",
@@ -311,8 +329,9 @@
       },
       "exports": {
         ".": {
-          "types": "./dist/main.d.ts",
-          "import": "./dist/assets/index.js"
+          "types": "./src/main.ts",
+          "import": "./src/main.ts",
+          "default": "./src/main.ts"
         }
       }
     },
@@ -356,8 +375,9 @@
       },
       "exports": {
         ".": {
-          "types": "./dist/main.d.ts",
-          "import": "./dist/assets/index.js"
+          "types": "./src/main.ts",
+          "import": "./src/main.ts",
+          "default": "./src/main.ts"
         }
       }
     }

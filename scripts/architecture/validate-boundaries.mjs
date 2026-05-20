@@ -9,8 +9,10 @@ const { runtime, topology } = readPolicies('runtime', 'topology')
 const sourceRoots = ['packages', 'apps']
 const coreDir = join(root, 'packages/core/src')
 const forbiddenCoreImports = patterns(runtime.forbiddenImports)
-const forbiddenCoreBuiltinImports = /^(node:)?(fs|path|os|process|child_process|worker_threads|http|https|stream|crypto)$/
-const importPattern = /(?:import|export)\s+(?:[^'";]+?\s+from\s+)?['"]([^'"]+)['"]|import\(['"]([^'"]+)['"]\)/g
+const forbiddenCoreBuiltinImports =
+  /^(node:)?(fs|path|os|process|child_process|worker_threads|http|https|stream|crypto)$/
+const importPattern =
+  /(?:import|export)\s+(?:[^'";]+?\s+from\s+)?['"]([^'"]+)['"]|import\(['"]([^'"]+)['"]\)/g
 const forbiddenCoreGlobalPatterns = patterns(runtime.forbiddenSourcePatterns)
 const adapterBoundaries = runtime.adapterBoundaries.map(boundary => ({
   ...boundary,
@@ -19,6 +21,12 @@ const adapterBoundaries = runtime.adapterBoundaries.map(boundary => ({
   forbiddenCallPattern: new RegExp(boundary.forbiddenCallPattern),
 }))
 const findings = []
+const packageExportSubpaths = new Map(
+  workspacePackages(topology).map(item => {
+    const manifest = JSON.parse(readFileSync(join(root, item.path, 'package.json'), 'utf8'))
+    return [item.name, new Set(Object.keys(manifest.exports ?? {}))]
+  })
+)
 
 function walk(dir) {
   if (!existsSync(dir)) return []
@@ -71,7 +79,10 @@ for (const sourceRoot of sourceRoots) {
       }
       for (const packageName of topology.exportPolicy.forbidWorkspaceDeepImports) {
         if (specifier.startsWith(`${packageName}/`)) {
-          report(file, `deep import from ${packageName} is forbidden: "${specifier}"`)
+          const subpath = `.${specifier.slice(packageName.length)}`
+          if (!packageExportSubpaths.get(packageName)?.has(subpath)) {
+            report(file, `deep import from ${packageName} is forbidden: "${specifier}"`)
+          }
         }
       }
       if (specifier.includes('/packages/core/src/') || specifier.includes('packages/core/src/')) {
@@ -81,15 +92,24 @@ for (const sourceRoot of sourceRoots) {
         report(file, `cross-app filesystem import is forbidden: "${specifier}"`)
       }
       for (const boundary of adapterBoundaries) {
-        if (boundary.forbiddenImportPattern.test(specifier) && !isInside(file, boundary.allowedPath)) {
-          report(file, `${boundary.name} import is allowed only in ${relative(root, boundary.allowedPath)}: "${specifier}"`)
+        if (
+          boundary.forbiddenImportPattern.test(specifier) &&
+          !isInside(file, boundary.allowedPath)
+        ) {
+          report(
+            file,
+            `${boundary.name} import is allowed only in ${relative(root, boundary.allowedPath)}: "${specifier}"`
+          )
         }
       }
     }
 
     for (const boundary of adapterBoundaries) {
       if (!isInside(file, boundary.allowedPath) && boundary.forbiddenCallPattern.test(content)) {
-        report(file, `direct ${boundary.name} calls are allowed only in ${relative(root, boundary.allowedPath)}`)
+        report(
+          file,
+          `direct ${boundary.name} calls are allowed only in ${relative(root, boundary.allowedPath)}`
+        )
       }
     }
   }
@@ -101,7 +121,9 @@ for (const packageDir of workspacePackages(topology).map(item => join(root, item
   if (!existsSync(manifestPath)) continue
   const manifest = JSON.parse(readFileSync(manifestPath, 'utf8'))
   if (topology.exportPolicy.requireExplicitRootExport && !manifest.exports?.['.']) {
-    findings.push(`${relative(root, manifestPath)}: package must expose only an explicit root export entry`)
+    findings.push(
+      `${relative(root, manifestPath)}: package must expose only an explicit root export entry`
+    )
   }
 }
 

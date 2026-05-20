@@ -1,8 +1,6 @@
 {
   "package": "@ccd/vue-charts",
   "path": "packages/vue-charts",
-  "exports": [
-    "."
-  ],
+  "exports": ["."],
   "rootSymbols": []
 }

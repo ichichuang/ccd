@@ -79,7 +79,7 @@ writeFileSync(
   markdownPath,
   `# API Surface Report\n\n${report
     .map(item => `## ${item.package}\n\n- Path: \`${item.path}\`\n- Export subpaths: ${item.exports.map(name => `\`${name}\``).join(', ') || 'none'}\n- Root symbols: ${item.rootSymbols.map(name => `\`${name}\``).join(', ') || 'none'}\n`)
-    .join('\n')}\n`
+    .join('\n')}`.replace(/\n*$/u, '\n')
 )
 
 if (findings.length > 0) {

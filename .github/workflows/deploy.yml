@@ -61,6 +61,9 @@ jobs:
       - name: Sync AI adapters (materialize local runtime)
         run: bash scripts/exec.sh pnpm ai:sync
 
+      - name: Prepare internal workspace packages
+        run: bash scripts/exec.sh pnpm ci:prepare-internal
+
       - name: AI Architecture Doctor
         run: bash scripts/exec.sh pnpm ai:doctor
 
