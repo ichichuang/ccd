@@ -2,8 +2,13 @@
   "schemaVersion": 2,
   "provenance": {
     "generatedBy": "scripts/architecture/generate-dependency-graphs.mjs",
-    "sourceTimestamp": "2026-05-19T15:33:27+08:00",
-    "sourceRevision": "0a3dbec715e0fd746d5ca162a32098b337d366e4",
+    "sourceInputs": [
+      ".ai/governance/policies/topology.json",
+      "package.json",
+      "pnpm-lock.yaml",
+      "pnpm-workspace.yaml",
+      "turbo.json"
+    ],
     "deterministic": true
   },
   "root": {
@@ -18,9 +23,7 @@
       "layer": "contracts",
       "runtime": "none",
       "criticality": "critical",
-      "allowedWorkspaceDependencies": [
-        "@ccd/design-tokens"
-      ]
+      "allowedWorkspaceDependencies": ["@ccd/design-tokens"]
     },
     {
       "name": "@ccd/core",
@@ -28,9 +31,7 @@
       "layer": "core",
       "runtime": "none",
       "criticality": "critical",
-      "allowedWorkspaceDependencies": [
-        "@ccd/contracts"
-      ]
+      "allowedWorkspaceDependencies": ["@ccd/contracts"]
     },
     {
       "name": "@ccd/design-tokens",
@@ -46,9 +47,7 @@
       "layer": "frontend-platform",
       "runtime": "node-build",
       "criticality": "protected",
-      "allowedWorkspaceDependencies": [
-        "@ccd/design-tokens"
-      ]
+      "allowedWorkspaceDependencies": ["@ccd/design-tokens"]
     },
     {
       "name": "@ccd/shared-utils",
@@ -80,9 +79,7 @@
       "layer": "frontend-platform",
       "runtime": "web-library",
       "criticality": "protected",
-      "allowedWorkspaceDependencies": [
-        "@ccd/design-tokens"
-      ]
+      "allowedWorkspaceDependencies": ["@ccd/design-tokens"]
     },
     {
       "name": "@ccd/vue-charts",
@@ -123,29 +120,19 @@
   ],
   "turbo": {
     "build": {
-      "dependsOn": [
-        "^build"
-      ],
-      "outputs": [
-        "dist/**"
-      ]
+      "dependsOn": ["^build"],
+      "outputs": ["dist/**"]
     },
     "type-check": {
-      "dependsOn": [
-        "^build"
-      ],
+      "dependsOn": ["^build"],
       "outputs": []
     },
     "typecheck": {
-      "dependsOn": [
-        "type-check"
-      ],
+      "dependsOn": ["type-check"],
       "outputs": []
     },
     "test": {
-      "dependsOn": [
-        "^build"
-      ],
+      "dependsOn": ["^build"],
       "outputs": []
     },
     "lint": {
@@ -188,5 +175,5 @@
       "reason": "Applications must not import one another."
     }
   ],
-  "validationChecksum": "b9719fd6ff977be52bd523fb48ed621aa3c21f61de8508cd039dbb5a6d58a89c"
+  "validationChecksum": "2ff9d2525f7a387a1240e3abd9d226c5c3da0fa5602bde6ea9c606d820c675e5"
 }

@@ -49,6 +49,9 @@
       "version": "1.0.37",
       "private": true,
       "type": "module",
+      "main": "./dist/index.js",
+      "module": "./dist/index.js",
+      "types": "./dist/index.d.ts",
       "sideEffects": false,
       "exports": {
         ".": {
@@ -57,7 +60,7 @@
         }
       },
       "scripts": {
-        "build": "tsc -p tsconfig.json",
+        "build": "rm -f ../../node_modules/.tmp/packages-design-tokens.tsbuildinfo && tsc -p tsconfig.json",
         "type-check": "tsc -p tsconfig.json --noEmit",
         "typecheck": "pnpm type-check",
         "test": "vitest run --passWithNoTests"
@@ -68,16 +71,31 @@
       "version": "1.0.37",
       "private": true,
       "type": "module",
+      "main": "./dist/index.js",
+      "module": "./dist/index.js",
+      "types": "./dist/index.d.ts",
       "sideEffects": false,
       "exports": {
         ".": {
           "types": "./dist/index.d.ts",
           "browser": "./dist/browser.js",
           "import": "./dist/index.js"
+        },
+        "./browser": {
+          "types": "./dist/browser.d.ts",
+          "import": "./dist/browser.js"
+        },
+        "./safelist": {
+          "types": "./dist/safelist/index.d.ts",
+          "import": "./dist/safelist/index.js"
+        },
+        "./theme": {
+          "types": "./dist/theme/index.d.ts",
+          "import": "./dist/theme/index.js"
         }
       },
       "scripts": {
-        "build": "tsc -p tsconfig.json",
+        "build": "rm -f ../../node_modules/.tmp/packages-unocss-preset.tsbuildinfo && tsc -p tsconfig.json",
         "type-check": "tsc -p tsconfig.json --noEmit",
         "typecheck": "pnpm type-check",
         "test": "vitest run --passWithNoTests"
@@ -102,7 +120,7 @@
         }
       },
       "scripts": {
-        "build": "tsc -p tsconfig.json",
+        "build": "rm -f ../../node_modules/.tmp/packages-shared-utils.tsbuildinfo && tsc -p tsconfig.json",
         "type-check": "tsc -p tsconfig.json --noEmit",
         "typecheck": "pnpm type-check",
         "test": "vitest run --passWithNoTests"
@@ -125,7 +143,7 @@
         }
       },
       "scripts": {
-        "build": "tsc -p tsconfig.json",
+        "build": "rm -f ../../node_modules/.tmp/packages-vue-hooks.tsbuildinfo && tsc -p tsconfig.json",
         "type-check": "tsc -p tsconfig.json --noEmit",
         "typecheck": "pnpm type-check",
         "test": "vitest run --passWithNoTests"
@@ -181,7 +199,7 @@
         }
       },
       "scripts": {
-        "build": "tsc -p tsconfig.json",
+        "build": "rm -f ../../node_modules/.tmp/packages-vue-primevue-adapter.tsbuildinfo && tsc -p tsconfig.json",
         "type-check": "tsc -p tsconfig.json --noEmit",
         "typecheck": "pnpm type-check",
         "test": "vitest run --passWithNoTests"
@@ -230,6 +248,7 @@
       "private": true,
       "type": "module",
       "scripts": {
+        "prebuild": "pnpm --workspace-root build:shared-config",
         "dev": "vite --host 0.0.0.0",
         "build": "vue-tsc -p tsconfig.json --noEmit && vite build",
         "preview": "vite preview",
@@ -303,6 +322,7 @@
       "private": true,
       "type": "module",
       "scripts": {
+        "prebuild": "pnpm --workspace-root build:shared-config",
         "dev": "vite --host 0.0.0.0",
         "build": "vue-tsc -p tsconfig.json --noEmit && vite build",
         "preview": "vite preview",

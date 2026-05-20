@@ -5,9 +5,7 @@
     {
       "package": "@ccd/contracts",
       "path": "packages/contracts",
-      "exports": [
-        "."
-      ],
+      "exports": ["."],
       "rootSymbols": [
         "CryptoProvider",
         "EnvironmentProvider",
@@ -24,9 +22,7 @@
     {
       "package": "@ccd/core",
       "path": "packages/core",
-      "exports": [
-        "."
-      ],
+      "exports": ["."],
       "rootSymbols": [
         "CoreAdapters",
         "CoreRuntime",
@@ -46,9 +42,7 @@
     {
       "package": "@ccd/design-tokens",
       "path": "packages/design-tokens",
-      "exports": [
-        "."
-      ],
+      "exports": ["."],
       "rootSymbols": [
         "adjustBrightness",
         "applyOpacityToColor",
@@ -81,9 +75,7 @@
     {
       "package": "@ccd/unocss-preset",
       "path": "packages/unocss-preset",
-      "exports": [
-        "."
-      ],
+      "exports": [".", "./browser", "./safelist", "./theme"],
       "rootSymbols": [
         "CcdUnoConfigOptions",
         "configureCcdUnoPresetProject",
@@ -100,9 +92,7 @@
     {
       "package": "@ccd/shared-utils",
       "path": "packages/shared-utils",
-      "exports": [
-        "."
-      ],
+      "exports": ["."],
       "rootSymbols": [
         "castArray",
         "castRecord",
@@ -122,9 +112,7 @@
     {
       "package": "@ccd/vue-hooks",
       "path": "packages/vue-hooks",
-      "exports": [
-        "."
-      ],
+      "exports": ["."],
       "rootSymbols": [
         "InteractionTarget",
         "SwipeDirection",
@@ -150,9 +138,7 @@
     {
       "package": "@ccd/vue-ui",
       "path": "packages/vue-ui",
-      "exports": [
-        "."
-      ],
+      "exports": ["."],
       "rootSymbols": [
         "AnimateWrapper",
         "CScrollbar",
@@ -168,9 +154,7 @@
     {
       "package": "@ccd/vue-primevue-adapter",
       "path": "packages/vue-primevue-adapter",
-      "exports": [
-        "."
-      ],
+      "exports": ["."],
       "rootSymbols": [
         "createCustomPreset",
         "createPrimeVueAdapterConfig",
@@ -183,28 +167,19 @@
     {
       "package": "@ccd/vue-charts",
       "path": "packages/vue-charts",
-      "exports": [
-        "."
-      ],
-      "rootSymbols": [
-        "ChartThemeRuntimeState",
-        "UseEcharts"
-      ]
+      "exports": ["."],
+      "rootSymbols": ["ChartThemeRuntimeState", "UseEcharts"]
     },
     {
       "package": "@ccd/web-demo",
       "path": "apps/web-demo",
-      "exports": [
-        "."
-      ],
+      "exports": ["."],
       "rootSymbols": []
     },
     {
       "package": "@ccd/desktop",
       "path": "apps/desktop",
-      "exports": [
-        "."
-      ],
+      "exports": ["."],
       "rootSymbols": []
     }
   ]

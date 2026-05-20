@@ -21,7 +21,7 @@
 ## @ccd/unocss-preset
 
 - Path: `packages/unocss-preset`
-- Export subpaths: `.`
+- Export subpaths: `.`, `./browser`, `./safelist`, `./theme`
 - Root symbols: `CcdUnoConfigOptions`, `configureCcdUnoPresetProject`, `createCcdUnoConfig`, `createCcdUnoEngineConfig`, `getCustomIconClasses`, `getEngineSafelist`, `getPresetIconsCollections`, `invalidateIconCaches`, `semanticShortcuts`, `theme`
 
 ## @ccd/shared-utils
@@ -65,4 +65,3 @@
 - Path: `apps/desktop`
 - Export subpaths: `.`
 - Root symbols: none
-
