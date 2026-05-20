@@ -1,6 +1,6 @@
 import AdminSidebarLogo from '@/layouts/components/admin/AdminSidebarLogo'
 import AdminSidebarMenu from '@/layouts/components/admin/AdminSidebarMenu'
-import { CScrollbar } from '@/components/CScrollbar'
+import { CScrollbar } from '@ccd/vue-ui'
 import type { SidebarState } from '@/layouts/runtime/layoutRuntime'
 
 export interface AdminSidebarProps {

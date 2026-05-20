@@ -1,5 +1,5 @@
 import { useTimeoutFn } from '@vueuse/core'
-import { castValue } from '@/utils/typeCasters'
+import { castValue } from '@ccd/shared-utils'
 import type { SyncTransportMessage } from './middleware'
 
 export type SyncSocketMessage = SyncTransportMessage

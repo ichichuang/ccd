@@ -1,4 +1,4 @@
-import { castRecord } from '@/utils/typeCasters'
+import { castRecord } from '@ccd/shared-utils'
 import type { FieldSchema, FormSchema, FormSchemaNode, GroupSchema, ResponsiveSpan } from '../types'
 import { PRO_FORM_DEFAULTS } from '../config'
 

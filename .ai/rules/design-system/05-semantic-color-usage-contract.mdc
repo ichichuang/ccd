@@ -10,8 +10,8 @@ alwaysApply: false
 - Source of truth:
   - `src/types/systems/theme.d.ts`
   - `src/utils/theme/metadata.ts`
-  - `src/design-engine/tokens/colorTokens.ts`
-  - `src/design-engine/shortcuts/semanticShortcuts.ts`
+  - `packages/design-tokens/src/metadata.ts`
+  - `packages/unocss-preset/src/shortcuts/semanticShortcuts.ts`
 
 ## Canonical Color Families
 - Quad families (status + brand): `primary`, `accent`, `danger`, `warn`, `success`, `info`, `help`

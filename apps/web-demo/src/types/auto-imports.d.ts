@@ -424,23 +424,14 @@ declare global {
   export type { UsePageTitleReturn } from '../hooks/layout/usePageTitle'
   import('../hooks/layout/usePageTitle')
   // @ts-ignore
-  export type { UseElementSizeOptions, UseAppElementSizeReturn } from '../hooks/modules/useAppElementSize'
-  import('../hooks/modules/useAppElementSize')
-  // @ts-ignore
   export type { UseAuthReturn } from '../hooks/modules/useAuth'
   import('../hooks/modules/useAuth')
-  // @ts-ignore
-  export type { ChartOpacityConfig, ChartThemeConfig, ChartAnimationConfig, ChartToolboxConfig, ChartMarkPointConfig, ChartMarkLineConfig, ChartVisualMapConfig, ChartBrushConfig, ChartAxisPointerConfig, ChartAdvancedConfig, DefaultOpacityValues, FontConfig, ColorConfig, ThemeConfig } from '../hooks/modules/useChartTheme/types'
-  import('../hooks/modules/useChartTheme/types')
   // @ts-ignore
   export type { UseDateUtilsReturn } from '../hooks/modules/useDateUtils'
   import('../hooks/modules/useDateUtils')
   // @ts-ignore
   export type { UseHttpRequestOptions, UseHttpRequestResult } from '../hooks/modules/useHttpRequest'
   import('../hooks/modules/useHttpRequest')
-  // @ts-ignore
-  export type { InteractionTarget, SwipeDirection, UseTapOptions, UseTapReturn, UseSwipeActionOptions, UseSwipeActionReturn, UseDragActionOptions, UseDragActionReturn, UseLongPressActionOptions, UseLongPressActionReturn, UseInteractionReturn } from '../hooks/modules/useInteraction/types'
-  import('../hooks/modules/useInteraction/types')
   // @ts-ignore
   export type { UseLocaleReturn } from '../hooks/modules/useLocale'
   import('../hooks/modules/useLocale')

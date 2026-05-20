@@ -3,8 +3,8 @@ import { useRoute } from 'vue-router'
 import AnimateRouterView from '@&/AnimateRouterView.vue'
 import Loading from '@&/Loading.vue'
 import { useLayoutStore } from '@/stores/modules/system'
-import { CScrollbar } from '@/components/CScrollbar'
-import type CScrollbarComponent from '@/components/CScrollbar/CScrollbar.vue'
+import { CScrollbar } from '@ccd/vue-ui'
+import type { CScrollbar as CScrollbarComponent } from '@ccd/vue-ui'
 import { useLayoutRuntime } from '@/hooks/layout/useLayoutRuntime'
 
 const layoutStore = useLayoutStore()

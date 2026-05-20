@@ -1,14 +1,33 @@
 {
   "schemaVersion": 1,
-  "layers": ["contracts", "core", "apps"],
-  "releaseOrder": ["@ccd/contracts", "@ccd/core", "@ccd/web-demo", "@ccd/desktop"],
+  "layers": [
+    "contracts",
+    "core",
+    "frontend-platform",
+    "apps"
+  ],
+  "releaseOrder": [
+    "@ccd/contracts",
+    "@ccd/core",
+    "@ccd/design-tokens",
+    "@ccd/unocss-preset",
+    "@ccd/shared-utils",
+    "@ccd/vue-hooks",
+    "@ccd/vue-ui",
+    "@ccd/vue-primevue-adapter",
+    "@ccd/vue-charts",
+    "@ccd/web-demo",
+    "@ccd/desktop"
+  ],
   "packages": [
     {
       "name": "@ccd/contracts",
       "path": "packages/contracts",
       "layer": "contracts",
       "criticality": "critical",
-      "allowedWorkspaceDependencies": [],
+      "allowedWorkspaceDependencies": [
+        "@ccd/design-tokens"
+      ],
       "publicApi": true
     },
     {
@@ -16,16 +35,92 @@
       "path": "packages/core",
       "layer": "core",
       "criticality": "critical",
-      "allowedWorkspaceDependencies": ["@ccd/contracts"],
+      "allowedWorkspaceDependencies": [
+        "@ccd/contracts"
+      ],
       "publicApi": true,
       "runtimeNeutral": true
+    },
+    {
+      "name": "@ccd/design-tokens",
+      "path": "packages/design-tokens",
+      "layer": "frontend-platform",
+      "criticality": "protected",
+      "allowedWorkspaceDependencies": [],
+      "publicApi": true,
+      "runtimeNeutral": true
+    },
+    {
+      "name": "@ccd/unocss-preset",
+      "path": "packages/unocss-preset",
+      "layer": "frontend-platform",
+      "criticality": "protected",
+      "allowedWorkspaceDependencies": [
+        "@ccd/design-tokens"
+      ],
+      "publicApi": true,
+      "runtime": "node-build"
+    },
+    {
+      "name": "@ccd/shared-utils",
+      "path": "packages/shared-utils",
+      "layer": "frontend-platform",
+      "criticality": "protected",
+      "allowedWorkspaceDependencies": [],
+      "publicApi": true,
+      "runtimeNeutral": true
+    },
+    {
+      "name": "@ccd/vue-hooks",
+      "path": "packages/vue-hooks",
+      "layer": "frontend-platform",
+      "criticality": "protected",
+      "allowedWorkspaceDependencies": [],
+      "publicApi": true,
+      "runtime": "web-library"
+    },
+    {
+      "name": "@ccd/vue-ui",
+      "path": "packages/vue-ui",
+      "layer": "frontend-platform",
+      "criticality": "protected",
+      "allowedWorkspaceDependencies": [],
+      "publicApi": true,
+      "runtime": "web-library"
+    },
+    {
+      "name": "@ccd/vue-primevue-adapter",
+      "path": "packages/vue-primevue-adapter",
+      "layer": "frontend-platform",
+      "criticality": "protected",
+      "allowedWorkspaceDependencies": [
+        "@ccd/design-tokens"
+      ],
+      "publicApi": true,
+      "runtime": "web-library"
+    },
+    {
+      "name": "@ccd/vue-charts",
+      "path": "packages/vue-charts",
+      "layer": "frontend-platform",
+      "criticality": "protected",
+      "allowedWorkspaceDependencies": [],
+      "publicApi": true,
+      "runtime": "web-library"
     },
     {
       "name": "@ccd/web-demo",
       "path": "apps/web-demo",
       "layer": "apps",
       "criticality": "flexible",
-      "allowedWorkspaceDependencies": ["@ccd/contracts", "@ccd/core"],
+      "allowedWorkspaceDependencies": [
+        "@ccd/contracts",
+        "@ccd/core",
+        "@ccd/design-tokens",
+        "@ccd/unocss-preset",
+        "@ccd/vue-ui",
+        "@ccd/vue-primevue-adapter"
+      ],
       "publicApi": true,
       "runtime": "web"
     },
@@ -34,7 +129,12 @@
       "path": "apps/desktop",
       "layer": "apps",
       "criticality": "protected",
-      "allowedWorkspaceDependencies": ["@ccd/contracts", "@ccd/core"],
+      "allowedWorkspaceDependencies": [
+        "@ccd/contracts",
+        "@ccd/core",
+        "@ccd/design-tokens",
+        "@ccd/unocss-preset"
+      ],
       "publicApi": true,
       "runtime": "desktop",
       "adapterBoundary": "apps/desktop/src/adapters"
@@ -50,27 +150,22 @@
       "from": "apps/**",
       "to": "apps/**",
       "reason": "Applications must not import one another."
-    },
-    {
-      "from": "**",
-      "to": "legacy/**",
-      "reason": "Legacy archive is read-only and outside active dependency graphs."
     }
   ],
   "exportPolicy": {
     "requireExplicitRootExport": true,
-    "forbidWorkspaceDeepImports": ["@ccd/core", "@ccd/contracts", "@ccd/web-demo", "@ccd/desktop"]
-  },
-  "legacyArchive": {
-    "path": "legacy/root-app",
-    "state": "immutable-historical-snapshot",
-    "activeGraphEntryForbidden": true,
-    "workspaceParticipationForbidden": true,
-    "activeEditTargets": ["apps/web-demo", "apps/desktop", "packages/contracts", "packages/core"],
-    "deletionGates": [
-      "functional-equivalence-review",
-      "stable-production-release",
-      "regression-snapshot-coverage"
+    "forbidWorkspaceDeepImports": [
+      "@ccd/contracts",
+      "@ccd/core",
+      "@ccd/design-tokens",
+      "@ccd/unocss-preset",
+      "@ccd/shared-utils",
+      "@ccd/vue-hooks",
+      "@ccd/vue-ui",
+      "@ccd/vue-primevue-adapter",
+      "@ccd/vue-charts",
+      "@ccd/web-demo",
+      "@ccd/desktop"
     ]
   }
 }

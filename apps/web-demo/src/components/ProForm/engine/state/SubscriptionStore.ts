@@ -1,5 +1,5 @@
 import type { FieldState } from '../types'
-import { deepEqual } from '@/utils/lodashes'
+import { deepEqual } from '@ccd/shared-utils'
 
 export type FieldSubscriber = () => void
 

@@ -2,7 +2,7 @@
 
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import type { ObjectDirective, DirectiveBinding, VNode } from 'vue'
-import { castValue } from '@/utils/typeCasters'
+import { castValue } from '@ccd/shared-utils'
 
 const { mockHasAuthCodes } = vi.hoisted(() => ({
   mockHasAuthCodes: vi.fn(),

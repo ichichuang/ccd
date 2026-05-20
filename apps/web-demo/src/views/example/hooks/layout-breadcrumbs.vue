@@ -1,6 +1,6 @@
 <script setup lang="tsx">
 import TieredMenu from 'primevue/tieredmenu'
-import { Icons } from '@/components/Icons'
+import { Icons } from '@ccd/vue-ui'
 import { useAdminBreadcrumbs } from '@/hooks/layout/useAdminBreadcrumbs'
 import {
   createTieredMenuItemRenderer,

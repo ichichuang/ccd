@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { ScrollbarInstance, ScrollbarVisibility } from '@/components/CScrollbar/utils/types'
+import type { ScrollbarInstance, ScrollbarVisibility } from '@ccd/vue-ui'
 
 defineOptions({ name: 'ScrollbarSystemPage' })
 

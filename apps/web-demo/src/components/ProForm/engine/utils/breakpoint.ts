@@ -1,4 +1,4 @@
-import { BREAKPOINTS } from '@/constants/breakpoints'
+import { BREAKPOINTS } from '@ccd/design-tokens'
 import type { ResponsiveSpan } from '../types'
 import { PRO_FORM_LAYOUT_DEFAULTS } from '../config'
 

@@ -1,10 +1,10 @@
 import {
   DIALOG_SETTINGS_WIDTH_PX,
-  SIZE_PERSIST_KEY,
   SIZE_PRESETS,
   DEFAULT_SIZE_NAME,
   deriveSidebarCollapsedWidth,
-} from '@/constants/size'
+} from '@ccd/design-tokens'
+import { SIZE_PERSIST_KEY } from '@/constants/size'
 import {
   FONT_SCALE_RATIOS,
   LAYOUT_SCALE_RATIOS,
@@ -12,7 +12,7 @@ import {
   RADIUS_SCALE_RATIOS,
   SIZE_SCALE_KEYS,
   TRANSITION_SCALE_MS,
-} from '@/constants/sizeScale'
+} from '@ccd/design-tokens'
 import { unpackDataSync } from '@/utils/safeStorage/core'
 import { getDeviceTypeSync, getBreakpointSync } from '@/utils/deviceSync'
 

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 defineOptions({ name: 'UtilsLodash' })
 
-import { debounceFn, deepClone, deepEqual } from '@/utils/lodashes'
+import { debounceFn, deepClone, deepEqual } from '@ccd/shared-utils'
 
 function parseJsonOrString(input: string): unknown {
   const raw = input.trim()

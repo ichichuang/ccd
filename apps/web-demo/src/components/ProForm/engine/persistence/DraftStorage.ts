@@ -1,5 +1,5 @@
 import { packDataSync, unpackDataSync } from '@/utils/safeStorage'
-import { castValue } from '@/utils/typeCasters'
+import { castValue } from '@ccd/shared-utils'
 import { PRO_FORM_LOGGER } from '../utils/logger'
 import { PRO_FORM_STORAGE_PREFIXES } from '@/constants/runtime'
 

@@ -3,7 +3,7 @@ import type { PropType } from 'vue'
 import type { FormSchema } from '@/components/ProForm'
 import type { ProFormExpose } from '@/components/ProForm'
 import ProForm from '@/components/ProForm/index.vue'
-import CScrollbar from '@/components/CScrollbar/CScrollbar.vue'
+import { CScrollbar } from '@ccd/vue-ui'
 import { t } from '@/locales'
 import Button from 'primevue/button'
 

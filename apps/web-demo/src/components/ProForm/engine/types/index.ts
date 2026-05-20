@@ -1,5 +1,5 @@
 import type { Component, ComputedRef, Ref } from 'vue'
-import type { BreakpointKey } from '@/constants/breakpoints'
+import type { BreakpointKey } from '@ccd/design-tokens'
 
 export type FormLayoutMode = 'vertical' | 'horizontal'
 

@@ -1,0 +1,24 @@
+{
+  "name": "@ccd/vue-primevue-adapter",
+  "version": "1.0.37",
+  "private": true,
+  "type": "module",
+  "sideEffects": false,
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "type-check": "tsc -p tsconfig.json --noEmit",
+    "typecheck": "pnpm type-check",
+    "test": "vitest run --passWithNoTests"
+  },
+  "dependencies": {
+    "@ccd/design-tokens": "workspace:*",
+    "@primeuix/themes": "^2.0.3",
+    "@primevue/core": "^4.5.4"
+  }
+}

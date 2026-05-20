@@ -8,7 +8,7 @@ const rootDir = dirname(fileURLToPath(import.meta.url))
 export default {
   plugins: [
     vue(),
-    AutoImport({ imports: ['vue', 'vue-router', 'pinia', '@vueuse/core'], dts: false }),
+    AutoImport({ imports: ['vue', 'vue-router', 'pinia', '@vueuse/core'], dts: false })
   ],
   test: {
     globals: true,
@@ -18,9 +18,9 @@ export default {
       'apps/**/*.test.ts',
       'packages/**/*.spec.ts',
       'packages/**/*.test.ts',
-      'scripts/**/*.spec.ts',
+      'scripts/**/*.spec.ts'
     ],
-    exclude: ['node_modules', '**/node_modules/**', 'dist', 'legacy'],
+    exclude: ['node_modules', '**/node_modules/**', 'dist'],
     passWithNoTests: true,
     coverage: {
       provider: 'v8',

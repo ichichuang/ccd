@@ -1,7 +1,7 @@
 <script setup lang="ts">
 defineOptions({ name: 'UtilsTypeCasters' })
 
-import { castValue } from '@/utils/typeCasters'
+import { castValue } from '@ccd/shared-utils'
 
 const casterInput = ref<string | undefined>('type-narrowing-demo')
 const casterOutput = ref<string>('—')

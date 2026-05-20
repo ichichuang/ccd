@@ -1,7 +1,7 @@
 <script setup lang="tsx">
 import type { ProTableColumn } from '@/components/ProTable'
 import { ID_PREFIX } from '@/constants/business'
-import { formatSerialId } from '@/utils/business/idGenerator'
+import { formatSerialId } from '@ccd/shared-utils'
 import type { TransactionLedgerRow } from './columns'
 import { transactionLedgerColumns } from './columns'
 

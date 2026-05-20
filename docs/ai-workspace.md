@@ -160,7 +160,7 @@ Aggressive cleanup can remove browser artifacts, `tmp/`, and Codex browser sessi
 - `apps/web-demo`: browser runtime adapters.
 - `apps/desktop`: Tauri runtime adapters.
 - `root`: orchestration-only shell.
-- `legacy/root-app`: read-only historical archive; never imported by active graphs.
+- Removed browser runtime archives are available only through Git history; active graphs use workspace packages and app adapters.
 
 For architecture releases:
 

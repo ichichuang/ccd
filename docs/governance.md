@@ -30,7 +30,7 @@ It is the only architecture gate CI needs to call directly. Individual commands 
 | ------------------ | ---------------------------------- | ------------------------------------------------------------------------ |
 | Governance assets  | `pnpm governance:validate`         | missing protocol, policy, runtime profile, or CI governance assets       |
 | AI guard           | `pnpm ai:guard -- --format=json`   | unsafe generated code, raw runtime access outside adapters, deep imports |
-| Boundaries         | `pnpm arch:boundaries`             | dependency direction, cross-app imports, legacy imports, Tauri leakage   |
+| Boundaries         | `pnpm arch:boundaries`             | dependency direction, cross-app imports, removed archive imports, Tauri leakage   |
 | Runtime neutrality | `pnpm arch:runtime`                | browser/Node/Tauri/timer/storage/network globals in contracts/core       |
 | API compatibility  | `pnpm api:report`                  | public export removals, internal export leakage, API snapshot drift      |
 | Supply chain       | `pnpm supply:check`                | lifecycle scripts, unapproved runtime dependencies, SBOM drift           |
@@ -152,18 +152,15 @@ Release order is fixed:
 @ccd/contracts -> @ccd/core -> @ccd/web-demo -> @ccd/desktop
 ```
 
-## Legacy Archive Governance
+## Removed Archive Governance
 
-`legacy/root-app` is an immutable historical snapshot. It is governed by `.ai/governance/policies/topology.json` and validated by `pnpm governance:validate`.
+The former browser runtime archive has been removed from the working tree. Governance now requires active architecture to rely on workspace packages, app adapters, generated reports, release artifacts, and Git history rather than a checked-in archive.
 
 Enforced invariants:
 
-- `legacy/root-app` must not participate in `pnpm-workspace.yaml`.
-- root `tsconfig.json` must exclude `legacy/**`.
-- active graph entry from `legacy/**` is forbidden.
-- deletion remains blocked until functional equivalence review, stable production release, and regression snapshot coverage are complete.
-
-Audit guidance lives in `docs/architecture/legacy-web-demo-cleanup.md`.
+- removed archive directories must not be recreated;
+- pnpm workspaces, package manifests, scripts, CI, and generated graphs must not require removed archive paths;
+- active graphs remain limited to `packages/**` and `apps/**` according to topology policy.
 
 ## Root Orchestration Policy
 

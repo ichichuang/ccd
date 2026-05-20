@@ -4,7 +4,7 @@ import type { PropType, VNode } from 'vue'
 import { withDirectives } from 'vue'
 import { RouterLink, useRoute } from 'vue-router'
 import { useTimeoutFn } from '@vueuse/core'
-import { Icons } from '@/components/Icons'
+import { Icons } from '@ccd/vue-ui'
 import { getActiveDistance, goToRoute, type PrimeMenuModelItem } from '@/router/utils/helper'
 import {
   MENU_FALLBACK_ICON,
@@ -17,7 +17,7 @@ import {
 } from '@/constants/layout-menu'
 import { getIconSize, getMenuItemBase, getMenuStateClasses } from '@/hooks/layout/useMenuVisuals'
 import { useLayoutStore } from '@/stores/modules/system'
-import { useAppElementSize } from '@/hooks/modules/useAppElementSize'
+import { useAppElementSize } from '@ccd/vue-hooks'
 import {
   applyUniqueRoot,
   resolveMenuLabel,

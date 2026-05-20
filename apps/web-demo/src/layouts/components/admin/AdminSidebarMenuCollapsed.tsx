@@ -2,7 +2,7 @@ import Tooltip from 'primevue/tooltip'
 import type { PropType, VNodeRef } from 'vue'
 import { withDirectives } from 'vue'
 import { useRoute } from 'vue-router'
-import { Icons } from '@/components/Icons'
+import { Icons } from '@ccd/vue-ui'
 import { getActiveDistance, goToRoute, type PrimeMenuModelItem } from '@/router/utils/helper'
 import {
   MENU_FALLBACK_ICON,

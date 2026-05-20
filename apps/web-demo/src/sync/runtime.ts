@@ -7,7 +7,7 @@ import {
   type SyncMiddleware,
   type SyncTransportMessage,
 } from './middleware'
-import { castValue } from '@/utils/typeCasters'
+import { castValue } from '@ccd/shared-utils'
 
 export interface SyncTransportOptions {
   websocketUrl?: string

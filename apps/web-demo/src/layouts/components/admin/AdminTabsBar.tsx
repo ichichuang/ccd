@@ -1,6 +1,6 @@
 import { defineComponent, Teleport, Transition } from 'vue'
-import { CScrollbar } from '@/components/CScrollbar'
-import { Icons } from '@/components/Icons'
+import { CScrollbar } from '@ccd/vue-ui'
+import { Icons } from '@ccd/vue-ui'
 import {
   MENU_ADMIN_CONTEXT_ICON_UNIFIED,
   MENU_ADMIN_CONTEXT_ITEM_UNIFIED,

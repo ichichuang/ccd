@@ -1,8 +1,7 @@
 import type { Ref } from 'vue'
 import type { EChartsOption } from 'echarts'
-import { useThemeStore } from '@/stores/modules/system'
-import { getChartSystemVariables } from '@/utils/theme/chartUtils'
-import { parseEChartsOption } from '@/adapters/echarts.adapter'
+import { useThemeStore, useSizeStore } from '@/stores/modules/system'
+import { getChartSystemVariables, parseEChartsOption } from '@ccd/vue-charts'
 import { isRecord } from '@/utils/guards'
 import type { SystemMetricsDTO } from '../page.state'
 
@@ -20,13 +19,15 @@ function firstOptionRecord(value: unknown): Record<string, unknown> {
  */
 export function useChartOptions(dataRef: Ref<SystemMetricsDTO[]>) {
   const themeStore = useThemeStore()
+  const sizeStore = useSizeStore()
 
   // 只在主题切换时重新计算图表系统变量，避免每次 metrics tick 都触发 getComputedStyle 读取
   const chartVars = computed(() => {
     void themeStore.themeName
     void themeStore.mode
     void themeStore.isDark
-    return getChartSystemVariables()
+    void sizeStore.sizeName
+    return getChartSystemVariables(sizeStore.sizeName)
   })
 
   // 静态 option：grid/tooltip/axis/渐变/动画 等不依赖 metrics 数据

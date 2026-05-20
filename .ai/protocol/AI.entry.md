@@ -31,7 +31,6 @@ Current repo defaults:
 - packages/contracts contains interfaces and shared types only.
 - packages/core must remain runtime-neutral and may depend only on @ccd/contracts.
 - Runtime APIs must be adapter-injected from apps/web-demo/src/adapters/\*\* or apps/desktop/src/adapters/\*\*.
-- legacy/\*\* is a read-only archive and must never re-enter active dependency graphs.
 - For desktop/Tauri work, keep @tauri-apps imports and invoke() inside apps/desktop/src/adapters/\*\*.
 - Use governance commands: pnpm governance:full, pnpm arch:runtime, pnpm api:report, and pnpm supply:check.
 
@@ -40,7 +39,6 @@ Core mandate:
 - .ai/\*\* is the only source of truth for AI governance.
 - Adapter paths (AGENTS.md, CLAUDE.md) are generated compatibility entrypoints only.
 - Materialize repo adapters with pnpm ai:sync and local Codex skills with pnpm ai:sync:codex.
-- Keep package imports on public exports only; no deep imports, cross-app imports, or legacy imports.
 - For new runtime capabilities, add contracts first, implement core logic runtime-neutrally, then inject app adapters.
 
 Generated from:

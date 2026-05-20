@@ -5,8 +5,8 @@
  * 视觉缩放由内部 LOADING_SCALE_MAP 按 type 自动决定。
  * 颜色随 --primary 主题同步（Lottie Theming Engine）。
  */
-import type { SizeScaleKey } from '@/constants/sizeScale'
-import { LOADING_SIZE_CSS } from '@/constants/sizeScale'
+import type { SizeScaleKey } from '@ccd/design-tokens'
+import { LOADING_SIZE_CSS } from '@ccd/design-tokens'
 import { BaseLottieLoader } from './BaseLottieLoader'
 import { applyThemeToLottieJson } from '@/utils/theme/lottieThemeUtils'
 import { useThemeStore } from '@/stores/modules/system'

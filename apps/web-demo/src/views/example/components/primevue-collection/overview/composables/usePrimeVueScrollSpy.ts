@@ -3,7 +3,7 @@
  * 抽取自 prime-vue-page.vue，减少主文件体积
  */
 import { useThrottleFn } from '@vueuse/core'
-import type { ScrollbarInstance } from '@/components/CScrollbar'
+import type { ScrollbarInstance } from '@ccd/vue-ui'
 
 export interface SectionMeta {
   id: string

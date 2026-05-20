@@ -10,7 +10,6 @@ packages/core       -> no runtime access
 apps/web-demo       -> single browser runtime source of truth; browser runtime in adapters only
 apps/desktop        -> Tauri runtime in adapters only
 root                -> orchestration-only shell
-legacy/root-app     -> archived; excluded from active graphs
 ```
 
 ## Core Runtime-Neutrality
@@ -57,7 +56,7 @@ This blocks:
 - app-to-app imports
 - core-to-app imports
 - deep package imports
-- legacy archive imports
+- imports from removed runtime archive paths
 - Tauri imports outside desktop adapters
 
 ## Deterministic Runtime Commands

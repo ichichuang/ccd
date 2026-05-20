@@ -7,8 +7,8 @@ import {
   shiftHue,
   isDarkColor,
   applyOpacityToColor,
-} from '@/utils/theme/colors'
-import { generateChartPalette } from '@/utils/theme/chartUtils'
+} from '@ccd/design-tokens'
+import { generateChartPalette } from '@ccd/vue-charts'
 
 defineOptions({ name: 'ExampleUtilColorUtils' })
 

@@ -1,5 +1,5 @@
 import { requestSystemAsyncRoutes } from '@/api/system/system.api'
-import { deepClone } from '@/utils/lodashes'
+import { deepClone } from '@ccd/shared-utils'
 import { usePermissionStore } from '@/stores/modules/session'
 import { parseBackendRoutes } from '@/adapters/http.adapter'
 

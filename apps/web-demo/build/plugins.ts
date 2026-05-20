@@ -8,7 +8,7 @@ import AutoImport from 'unplugin-auto-import/vite'
 import Components from 'unplugin-vue-components/vite'
 import { PrimeVueResolver } from '@primevue/auto-import-resolver'
 import type { PluginOption, ViteDevServer } from 'vite'
-import { getCustomIconClasses, invalidateIconCaches } from '../src/design-engine/safelist'
+import { getCustomIconClasses, invalidateIconCaches } from '@ccd/unocss-preset'
 import type { ViteEnv } from './utils'
 
 // ✅ 引入模块化的构建插件
@@ -124,7 +124,7 @@ export function getPluginsList(env: ViteEnv, command: 'build' | 'serve'): Plugin
       version: 3,
       include: [/\.vue$/, /\.vue\?vue/, /\.tsx$/],
       // PrimeVue 按需解析：模板中用到的组件自动 import，支持 Tree-shaking
-      resolvers: [PrimeVueResolver()],
+      resolvers: [sharedArchitectureComponentResolver(), PrimeVueResolver()],
     }),
   ]
 
@@ -143,6 +143,22 @@ export function getPluginsList(env: ViteEnv, command: 'build' | 'serve'): Plugin
   }
 
   return plugins.filter(Boolean) as PluginOption[]
+}
+
+function sharedArchitectureComponentResolver() {
+  const packageComponents: Record<string, string> = {
+    AnimateWrapper: '@ccd/vue-ui',
+    CScrollbar: '@ccd/vue-ui',
+    EmptyState: '@ccd/vue-ui',
+    Icons: '@ccd/vue-ui',
+  }
+
+  return (name: string) => {
+    const from = packageComponents[name]
+    if (from) return { name, from }
+    if (name === 'UseEcharts') return { name: 'default', from: '@/adapters/charts/UseEcharts.vue' }
+    return undefined
+  }
 }
 
 /**

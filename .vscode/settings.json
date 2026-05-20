@@ -131,7 +131,6 @@
     "**/dist/**": true,
     "**/.git": true,
     "**/pnpm-lock.yaml": true,
-    "legacy/**": true,
     "dist/**": true,
     "apps/*/dist/**": true,
     "packages/*/dist/**": true,

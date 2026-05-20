@@ -4,7 +4,7 @@ import path from 'node:path'
 import process from 'node:process'
 
 const cwd = process.cwd()
-const sourcePath = 'apps/web-demo/src/design-engine/shortcuts/semanticShortcuts.ts'
+const sourcePath = 'packages/unocss-preset/src/shortcuts/semanticShortcuts.ts'
 const manifestPath = '.ai/manifests/unocss-semantic-shortcuts.json'
 const htmlDataPath = '.vscode/unocss-semantic-shortcuts.html-data.json'
 const snippetsPath = '.vscode/unocss-semantic-shortcuts.code-snippets'

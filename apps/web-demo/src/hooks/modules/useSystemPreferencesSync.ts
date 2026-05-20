@@ -15,7 +15,7 @@ import {
   setupSystemPreferencesSync,
 } from '@/sync/systemPreferences'
 import type { SystemPreferences } from '@/types/systems/preferences'
-import { castValue } from '@/utils/typeCasters'
+import { castValue } from '@ccd/shared-utils'
 
 export interface UseSystemPreferencesSyncReturn {
   loadUserPreferences: () => Promise<SystemPreferences | null>

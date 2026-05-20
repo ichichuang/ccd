@@ -10,7 +10,7 @@ import type {
 } from './engine/types'
 import { useForm } from './engine/hooks/useForm'
 import ProFormNode from './renderers/ProFormNode.vue'
-import { useAppElementSize } from '@/hooks/modules/useAppElementSize'
+import { useAppElementSize } from '@ccd/vue-hooks'
 import { getActiveBreakpoint, resolveSpan } from './engine/utils/breakpoint'
 import type { BreakpointKey } from './engine/utils/breakpoint'
 import type { ResponsiveSpan } from './engine/types'

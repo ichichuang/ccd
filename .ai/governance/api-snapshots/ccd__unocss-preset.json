@@ -1,0 +1,14 @@
+{
+  "package": "@ccd/unocss-preset",
+  "path": "packages/unocss-preset",
+  "exports": [
+    "."
+  ],
+  "rootSymbols": [
+    "createCcdUnoEngineConfig",
+    "getEngineSafelist",
+    "getPresetIconsCollections",
+    "semanticShortcuts",
+    "theme"
+  ]
+}

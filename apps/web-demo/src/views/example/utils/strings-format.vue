@@ -1,7 +1,7 @@
 <script setup lang="ts">
 defineOptions({ name: 'UtilsStringsFormat' })
 
-import { toKebabCase } from '@/utils/strings'
+import { toKebabCase } from '@ccd/shared-utils'
 
 const strInput = ref<string | undefined>('HelloWorld')
 const startInput = ref<string | undefined>('')

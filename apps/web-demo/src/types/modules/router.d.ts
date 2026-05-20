@@ -1,5 +1,5 @@
 import 'vue-router'
-import type { AnimateName } from '@/components/AnimateWrapper/utils/types'
+import type { AnimateName } from '@ccd/vue-ui'
 
 export type CssTime = `${number}ms` | `${number}s`
 export type PhaseValue<T> = T | { enter?: T; leave?: T }

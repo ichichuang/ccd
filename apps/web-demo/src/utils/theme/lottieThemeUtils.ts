@@ -4,7 +4,7 @@
  * 将 Lottie JSON 中的主色类颜色同步为系统主题，遵循 colorUsage 与数据不可变性。
  * 使用 HSL 色相迁移算法：保留原始明度以维持 3D 阴影/高光层次，仅替换色相和饱和度。
  */
-import { deepClone } from '@/utils/lodashes'
+import { deepClone } from '@ccd/shared-utils'
 
 /** HSL 格式，H/S/L 均为 0–1 */
 export interface HslTuple {

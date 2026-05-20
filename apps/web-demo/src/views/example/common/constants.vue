@@ -3,7 +3,7 @@ defineOptions({ name: 'CommonConstants' })
 
 import { HTTP_CONFIG } from '@/constants/http'
 import { DEFAULT_LAYOUT_SETTING } from '@/constants/layout'
-import { SIZE_PRESETS } from '@/constants/size'
+import { SIZE_PRESETS } from '@ccd/design-tokens'
 
 type ConstSourceId = 'HTTP_CONFIG' | 'DEFAULT_LAYOUT_SETTING' | 'SIZE_PRESETS'
 

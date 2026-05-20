@@ -45,6 +45,186 @@
       }
     },
     {
+      "name": "@ccd/design-tokens",
+      "version": "1.0.37",
+      "private": true,
+      "type": "module",
+      "sideEffects": false,
+      "exports": {
+        ".": {
+          "types": "./dist/index.d.ts",
+          "import": "./dist/index.js"
+        }
+      },
+      "scripts": {
+        "build": "tsc -p tsconfig.json",
+        "type-check": "tsc -p tsconfig.json --noEmit",
+        "typecheck": "pnpm type-check",
+        "test": "vitest run --passWithNoTests"
+      }
+    },
+    {
+      "name": "@ccd/unocss-preset",
+      "version": "1.0.37",
+      "private": true,
+      "type": "module",
+      "sideEffects": false,
+      "exports": {
+        ".": {
+          "types": "./dist/index.d.ts",
+          "browser": "./dist/browser.js",
+          "import": "./dist/index.js"
+        }
+      },
+      "scripts": {
+        "build": "tsc -p tsconfig.json",
+        "type-check": "tsc -p tsconfig.json --noEmit",
+        "typecheck": "pnpm type-check",
+        "test": "vitest run --passWithNoTests"
+      },
+      "dependencies": {
+        "@ccd/design-tokens": "workspace:*",
+        "glob": "^11.1.0",
+        "typescript": "^5.8.3",
+        "unocss": "^66.6.0"
+      }
+    },
+    {
+      "name": "@ccd/shared-utils",
+      "version": "1.0.37",
+      "private": true,
+      "type": "module",
+      "sideEffects": false,
+      "exports": {
+        ".": {
+          "types": "./dist/index.d.ts",
+          "import": "./dist/index.js"
+        }
+      },
+      "scripts": {
+        "build": "tsc -p tsconfig.json",
+        "type-check": "tsc -p tsconfig.json --noEmit",
+        "typecheck": "pnpm type-check",
+        "test": "vitest run --passWithNoTests"
+      },
+      "dependencies": {
+        "lodash-es": "^4.17.21",
+        "uuid": "^13.0.0"
+      }
+    },
+    {
+      "name": "@ccd/vue-hooks",
+      "version": "1.0.37",
+      "private": true,
+      "type": "module",
+      "sideEffects": false,
+      "exports": {
+        ".": {
+          "types": "./dist/index.d.ts",
+          "import": "./dist/index.js"
+        }
+      },
+      "scripts": {
+        "build": "tsc -p tsconfig.json",
+        "type-check": "tsc -p tsconfig.json --noEmit",
+        "typecheck": "pnpm type-check",
+        "test": "vitest run --passWithNoTests"
+      },
+      "dependencies": {
+        "@ccd/shared-utils": "workspace:*",
+        "@vueuse/core": "^13.9.0",
+        "vue": "^3.5.12"
+      }
+    },
+    {
+      "name": "@ccd/vue-ui",
+      "version": "1.0.37",
+      "private": true,
+      "type": "module",
+      "sideEffects": false,
+      "exports": {
+        ".": {
+          "types": "./src/index.ts",
+          "import": "./src/index.ts"
+        }
+      },
+      "scripts": {
+        "build": "vue-tsc -p tsconfig.json --noEmit",
+        "type-check": "vue-tsc -p tsconfig.json --noEmit",
+        "typecheck": "pnpm type-check",
+        "test": "vitest run --passWithNoTests"
+      },
+      "dependencies": {
+        "@ccd/design-tokens": "workspace:*",
+        "overlayscrollbars": "^2.14.0",
+        "overlayscrollbars-vue": "^0.5.9",
+        "primevue": "^4.5.4",
+        "vue": "^3.5.12",
+        "vue-i18n": "^10.0.8"
+      },
+      "devDependencies": {
+        "@vue/tsconfig": "^0.7.0",
+        "typescript": "^5.8.3",
+        "vue-tsc": "^2.2.10"
+      }
+    },
+    {
+      "name": "@ccd/vue-primevue-adapter",
+      "version": "1.0.37",
+      "private": true,
+      "type": "module",
+      "sideEffects": false,
+      "exports": {
+        ".": {
+          "types": "./dist/index.d.ts",
+          "import": "./dist/index.js"
+        }
+      },
+      "scripts": {
+        "build": "tsc -p tsconfig.json",
+        "type-check": "tsc -p tsconfig.json --noEmit",
+        "typecheck": "pnpm type-check",
+        "test": "vitest run --passWithNoTests"
+      },
+      "dependencies": {
+        "@ccd/design-tokens": "workspace:*",
+        "@primeuix/themes": "^2.0.3",
+        "@primevue/core": "^4.5.4"
+      }
+    },
+    {
+      "name": "@ccd/vue-charts",
+      "version": "1.0.37",
+      "private": true,
+      "type": "module",
+      "sideEffects": false,
+      "exports": {
+        ".": {
+          "types": "./src/index.ts",
+          "import": "./src/index.ts"
+        }
+      },
+      "scripts": {
+        "build": "vue-tsc -p tsconfig.json --noEmit",
+        "type-check": "vue-tsc -p tsconfig.json --noEmit",
+        "typecheck": "pnpm type-check",
+        "test": "vitest run --passWithNoTests"
+      },
+      "dependencies": {
+        "@ccd/design-tokens": "workspace:*",
+        "@vueuse/core": "^13.9.0",
+        "echarts": "^6.0.0",
+        "vue": "^3.5.12",
+        "vue-echarts": "^8.0.0",
+        "vue-i18n": "^10.0.8"
+      },
+      "devDependencies": {
+        "@vue/tsconfig": "^0.7.0",
+        "typescript": "^5.8.3",
+        "vue-tsc": "^2.2.10"
+      }
+    },
+    {
       "name": "@ccd/web-demo",
       "version": "1.0.37",
       "private": true,
@@ -60,6 +240,8 @@
       "dependencies": {
         "@ccd/contracts": "workspace:*",
         "@ccd/core": "workspace:*",
+        "@ccd/shared-utils": "workspace:*",
+        "@ccd/vue-hooks": "workspace:*",
         "@primeuix/themes": "^2.0.3",
         "@primevue/core": "^4.5.4",
         "@primevue/forms": "^4.5.4",
@@ -85,7 +267,12 @@
         "vue-i18n": "^10.0.8",
         "vue-router": "^4.4.5",
         "vue3-lottie": "^3.3.1",
-        "zod": "^4.3.6"
+        "zod": "^4.3.6",
+        "@ccd/design-tokens": "workspace:*",
+        "@ccd/unocss-preset": "workspace:*",
+        "@ccd/vue-ui": "workspace:*",
+        "@ccd/vue-primevue-adapter": "workspace:*",
+        "@ccd/vue-charts": "workspace:*"
       },
       "devDependencies": {
         "@vitejs/plugin-vue": "^6.0.3",
@@ -127,14 +314,24 @@
       "dependencies": {
         "@ccd/contracts": "workspace:*",
         "@ccd/core": "workspace:*",
+        "@ccd/design-tokens": "workspace:*",
+        "@ccd/shared-utils": "workspace:*",
+        "@ccd/unocss-preset": "workspace:*",
+        "@ccd/vue-hooks": "workspace:*",
+        "@ccd/vue-primevue-adapter": "workspace:*",
+        "@ccd/vue-ui": "workspace:*",
+        "@primeuix/themes": "^2.0.3",
+        "@primevue/core": "^4.5.4",
         "@tauri-apps/api": "^2.9.1",
-        "@vitejs/plugin-vue": "^6.0.3",
+        "primevue": "^4.5.4",
         "typescript": "^5.8.3",
         "vite": "^7.3.1",
         "vue": "^3.5.12",
         "vue-tsc": "^2.2.10"
       },
       "devDependencies": {
+        "@vitejs/plugin-vue": "^6.0.3",
+        "unocss": "^66.6.0",
         "@tauri-apps/cli": "^2.9.1"
       },
       "exports": {

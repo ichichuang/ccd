@@ -3,7 +3,7 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { createPinia, setActivePinia } from 'pinia'
 
-vi.mock('@/utils/lodashes', () => ({
+vi.mock('@ccd/shared-utils', () => ({
   debounceFn: <T extends (...args: never[]) => unknown>(fn: T, _ms: number): T => fn,
 }))
 vi.mock('@/utils/mitt', () => ({

@@ -1,4 +1,4 @@
-import Icons from '@/components/Icons/Icons.vue'
+import { Icons } from '@ccd/vue-ui'
 import type { ProTableColumn, ColumnRenderParams } from '@/components/ProTable'
 import {
   PRODUCT_CATEGORY_CLASS,

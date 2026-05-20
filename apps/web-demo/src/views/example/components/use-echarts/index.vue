@@ -4,16 +4,16 @@
  * 基础、动态、高级、多图表联动、自定义配色、事件与 Ref
  */
 import type { EChartsOption } from 'echarts'
-import type { ChartInstance } from '@/components/UseEcharts'
+import type { ChartInstance } from '@ccd/vue-charts'
 import type { WritableComputedRef } from 'vue'
-import { castValue } from '@/utils/typeCasters'
+import { castValue } from '@ccd/shared-utils'
 import {
   getDefaultToolboxConfig,
   getDefaultMarkPointConfig,
   getDefaultMarkLineConfig,
   getDefaultVisualMapConfig,
   getDefaultBrushConfig,
-} from '@/hooks/modules/useChartTheme/defaults'
+} from '@ccd/vue-charts'
 import {
   lineOption as basicLineOption,
   lineWithAreaOption as basicLineWithAreaOption,

@@ -2,8 +2,8 @@
  * PrimeDialog 底层 Composable
  * 提供对话框状态管理与 addDialog/closeDialog 等核心方法
  */
-import { generateUniqueId } from '@/utils/ids'
-import { deepClone } from '@/utils/lodashes'
+import { generateUniqueId } from '@ccd/shared-utils'
+import { deepClone } from '@ccd/shared-utils'
 import type { Ref } from 'vue'
 import { defaultContentRenderer } from './defaultContentRenderer'
 import { defaultDialogProps } from './utils/constants'

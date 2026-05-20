@@ -1,6 +1,6 @@
 import type { FormController } from '../core/FormController'
 import { FORM_CONTROLLER_KEY } from '../constants'
-import { castValue } from '@/utils/typeCasters'
+import { castValue } from '@ccd/shared-utils'
 
 export function useFormContext<
   TValues extends Record<string, unknown> = Record<string, unknown>,

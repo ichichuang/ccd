@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ID_PREFIX } from '@/constants/business'
-import { formatSerialId } from '@/utils/business/idGenerator'
+import { formatSerialId } from '@ccd/shared-utils'
 import { basicColumns } from './columns'
 import type { OrderRow } from './columns'
 

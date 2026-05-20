@@ -7,7 +7,7 @@ import type { ProTableColumn } from './engine/types/column'
 import type { SortState } from './engine/types/tableState'
 import ProTableCell from './components/ProTableCell'
 import { VIRTUAL_GRID_DEFAULTS } from './engine/config'
-import { objectGet } from '@/utils/lodashes'
+import { objectGet } from '@ccd/shared-utils'
 
 defineOptions({ name: 'VirtualGridRenderer' })
 

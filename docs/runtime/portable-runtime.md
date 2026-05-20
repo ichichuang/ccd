@@ -9,7 +9,7 @@ Portable guarantees live in:
 - app adapter boundaries: runtime-specific capability injection
 - governance checks: `pnpm governance:gate`
 
-Historical portable scaffold material belongs in `legacy/**` or documentation only. Active package code must not import it.
+Historical portable scaffold material belongs in documentation or Git history only. Active package code must not import removed archive paths.
 
 ## Validation
 

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { castRecord, castValue } from '@/utils/typeCasters'
+import { castRecord, castValue } from '@ccd/shared-utils'
 
 defineOptions({ name: 'ArchitectureStoreTableDrawer' })
 

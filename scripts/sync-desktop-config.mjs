@@ -6,13 +6,12 @@ import process from 'node:process'
 
 const cwd = process.cwd()
 const desktopPathPrefixes = [
-  'src-tauri/',
-  'apps/web-demo/src/utils/desktopWindow.ts',
-  'apps/web-demo/src/router/utils/helper.ts',
+  'apps/desktop/src-tauri/',
+  'apps/desktop/src/adapters/index.ts',
 ]
 const requiredDesktopFiles = [
-  'src-tauri/capabilities/default.json',
-  'src-tauri/tauri.conf.json',
+  'apps/desktop/src-tauri/capabilities/default.json',
+  'apps/desktop/src-tauri/tauri.conf.json',
 ]
 
 function runGit(args) {
@@ -44,7 +43,7 @@ function isDesktopScoped(relPath) {
 const touchedDesktopFiles = [...new Set(changedFiles())].filter(isDesktopScoped)
 
 if (touchedDesktopFiles.length === 0) {
-  console.log('[desktop-config] skipped: no desktop bridge or src-tauri changes detected.')
+  console.log('[desktop-config] skipped: no desktop bridge or apps/desktop/src-tauri changes detected.')
   process.exit(0)
 }
 

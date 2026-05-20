@@ -17,7 +17,7 @@ Decision: keep this scope. Do not add `src/utils/**`, `src/api/**`, root store b
 
 ## Semantic Shortcuts
 
-Source of truth: `src/design-engine/shortcuts/semanticShortcuts.ts`.
+Source of truth: `packages/unocss-preset/src/shortcuts/semanticShortcuts.ts`.
 
 Use semantic shortcuts for repeated layout/material patterns such as `layout-narrow`, `col-fill`, `material-elevated`, `glass-panel`, `surface-info`, and `code-block`. Do not invent new shortcut names in templates; add them to the SSOT first.
 

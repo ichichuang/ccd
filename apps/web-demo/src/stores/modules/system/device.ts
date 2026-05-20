@@ -1,8 +1,8 @@
 // src/stores/modules/device.ts
 import { defineStore } from 'pinia'
-import { BREAKPOINTS, type BreakpointKey } from '@/constants/breakpoints'
+import { BREAKPOINTS, type BreakpointKey } from '@ccd/design-tokens'
 import { useEventListener } from '@vueuse/core'
-import { debounceFn } from '@/utils/lodashes'
+import { debounceFn } from '@ccd/shared-utils'
 import { useMitt } from '@/utils/mitt'
 import type { DeviceState } from '@/types/systems/device'
 import { getDeviceTypeSync, getOsTypeSync } from '@/utils/deviceSync'

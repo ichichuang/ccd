@@ -20,7 +20,6 @@ apps/desktop
 | `apps/web-demo`      | Browser runtime shell and sole browser runtime source of truth | `@ccd/contracts`, `@ccd/core`                 | adapters only          |
 | `apps/desktop`       | Tauri runtime shell                                            | `@ccd/contracts`, `@ccd/core`, Tauri packages | `src/adapters/**` only |
 | `root`               | Orchestration-only shell                                       | none                                          | no runtime code        |
-| `legacy/root-app`    | Historical archive                                             | none                                          | not active             |
 
 ## Dependency Direction
 
@@ -31,17 +30,16 @@ graph TD
   Core --> Desktop["@ccd/desktop\nTauri adapters"]
   Contracts --> Web
   Contracts --> Desktop
-  Legacy["legacy/root-app\nread-only archive"] -. forbidden .-> Core
 ```
 
 Hard rules:
 
 - `packages/contracts` contains types/interfaces only.
-- `packages/core` never imports apps, legacy, browser APIs, Node APIs, Tauri APIs, timers, console, crypto, fetch, or storage globals.
+- `packages/core` never imports apps, browser APIs, Node APIs, Tauri APIs, timers, console, crypto, fetch, or storage globals.
 - Apps never import sibling apps.
 - All package imports use public package exports only.
 - Root contains orchestration/configuration only and must not host runtime source code.
-- `legacy/**` never re-enters active dependency graphs.
+- Removed runtime archive directories must not be recreated or imported.
 
 ## Runtime Adapter Architecture
 
@@ -112,18 +110,18 @@ These reports expose dependency graph summary, runtime leak scan state, API surf
 ## Architecture Decision Records
 
 - [ADR-001: Monorepo Runtime Boundary](./adr/ADR-001-monorepo-runtime-boundary.md)
-- [ADR-002: Legacy Freeze Policy](./adr/ADR-002-legacy-freeze-policy.md)
+- [ADR-002: Removed Browser Runtime Archive](./adr/ADR-002-legacy-freeze-policy.md)
 - [ADR-003: Governance Pipeline](./adr/ADR-003-governance-pipeline.md)
 - [ADR-004: Runtime Environment Policy](./adr/ADR-004-runtime-environment-policy.md)
 
 ## Ownership and Replacement Readiness
 
 - [Ownership and Boundary Authority](./architecture/ownership-boundaries.md)
-- [Legacy Replacement Equivalence Checklist](./architecture/legacy-equivalence-checklist.md)
+- [Removed Browser Runtime Archive Checklist](./architecture/legacy-equivalence-checklist.md)
 
-## Legacy Archive Cleanup
+## Removed Archive Cleanup
 
-Legacy/browser duplicate audit and cleanup guidance lives in:
+Browser duplicate archive cleanup guidance lives in:
 
 - `docs/architecture/legacy-web-demo-cleanup.md`
 

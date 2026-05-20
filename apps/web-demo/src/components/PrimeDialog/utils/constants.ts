@@ -1,4 +1,4 @@
-import { BREAKPOINTS } from '@/constants/breakpoints'
+import { BREAKPOINTS } from '@ccd/design-tokens'
 import type { DialogOptions } from './types'
 
 const DEFAULT_DIALOG_CLOSE_DELAY_MS = 320

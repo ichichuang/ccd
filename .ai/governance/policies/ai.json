@@ -7,10 +7,6 @@
       "reason": "AI-generated code must not introduce workspace deep imports."
     },
     {
-      "pattern": "from ['\"].*legacy/",
-      "reason": "AI-generated code must not re-enter legacy archives."
-    },
-    {
       "pattern": "\\b(fetch|XMLHttpRequest)\\s*\\(",
       "reason": "AI-generated runtime access must use approved adapters."
     },

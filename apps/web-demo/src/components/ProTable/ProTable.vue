@@ -1,6 +1,6 @@
 <script setup lang="ts" generic="T extends Record<string, unknown>">
 import { h, resolveComponent, type VNode } from 'vue'
-import { objectGet } from '@/utils/lodashes'
+import { objectGet } from '@ccd/shared-utils'
 import ProTableCell from './components/ProTableCell'
 import { buildDataTablePt, type DataTablePtOptions } from './presets/dataTablePt'
 import type { ProTableColumn } from './engine/types/column'

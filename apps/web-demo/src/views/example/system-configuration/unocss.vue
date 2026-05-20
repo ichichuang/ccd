@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { semanticShortcuts } from '@/design-engine/shortcuts/semanticShortcuts'
+import { semanticShortcuts } from '@ccd/unocss-preset'
 import { goToRoute } from '@/router/utils/helper'
 
 defineOptions({ name: 'UnoCssSystemPage' })
@@ -1534,7 +1534,7 @@ semanticShortcuts.center = 'flex justify-center items-center'
               @click="goToRoute('ExampleSystemConfigurationSize')"
             />
             与
-            <code class="code-inline">src/design-engine</code>
+            <code class="code-inline">packages/unocss-preset</code>
           </p>
         </div>
       </div>

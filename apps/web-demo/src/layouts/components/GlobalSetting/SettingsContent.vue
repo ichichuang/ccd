@@ -9,16 +9,16 @@ import {
   THEME_PRESETS,
   TRANSITION_DURATION_OPTIONS,
   getPresetPrimaryColor,
-} from '@/constants/theme'
-import { SIZE_PRESETS } from '@/constants/size'
+} from '@ccd/design-tokens'
+import { SIZE_PRESETS } from '@ccd/design-tokens'
 import type { SupportedLocale } from '@/locales'
 import { useI18n } from 'vue-i18n'
 import Button from 'primevue/button'
 import SelectButton from 'primevue/selectbutton'
 import Select from 'primevue/select'
 import ToggleSwitch from 'primevue/toggleswitch'
-import { CScrollbar } from '@/components/CScrollbar'
-import { Icons } from '@/components/Icons'
+import { CScrollbar } from '@ccd/vue-ui'
+import { Icons } from '@ccd/vue-ui'
 
 defineEmits(['close'])
 

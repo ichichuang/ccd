@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { SIZE_PRESETS } from '@/constants/size'
+import { SIZE_PRESETS } from '@ccd/design-tokens'
 
 defineOptions({ name: 'ArchitectureStoreSize' })
 

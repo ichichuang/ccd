@@ -1,5 +1,5 @@
 import type { EChartsOption } from 'echarts'
-import type { ChartThemeConfig } from '@/hooks/modules/useChartTheme/types'
+import type { ChartThemeConfig } from '@ccd/vue-charts'
 
 export const customThemeOption: EChartsOption = {
   color: ['#ef4444', '#f97316', '#eab308', '#22c55e'], // 红, 橙, 黄, 绿

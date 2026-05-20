@@ -2,7 +2,7 @@
 import type { DialogPosition } from '@/components/PrimeDialog/utils/types'
 import { useDialog } from '@/hooks/modules/useDialog'
 import Button from 'primevue/button'
-import Icons from '@/components/Icons/Icons.vue'
+import { Icons } from '@ccd/vue-ui'
 
 const {
   info,

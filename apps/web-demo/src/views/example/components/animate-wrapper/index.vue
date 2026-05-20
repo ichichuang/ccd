@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { AnimateName, AnimateSpeed } from '@/components/AnimateWrapper/utils/types'
+import type { AnimateName, AnimateSpeed } from '@ccd/vue-ui'
 
 defineOptions({ name: 'ViewsAnimateWrapper' })
 

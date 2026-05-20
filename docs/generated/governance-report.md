@@ -12,15 +12,29 @@
 
 ## Dependency Graph
 
-- @ccd/contracts: implementation-free public contract package
+- @ccd/contracts -> @ccd/design-tokens
 - @ccd/core -> @ccd/contracts
-- @ccd/web-demo -> @ccd/contracts, @ccd/core
-- @ccd/desktop -> @ccd/contracts, @ccd/core
+- @ccd/design-tokens: implementation-free public contract package
+- @ccd/unocss-preset -> @ccd/design-tokens
+- @ccd/shared-utils: implementation-free public contract package
+- @ccd/vue-hooks: implementation-free public contract package
+- @ccd/vue-ui: implementation-free public contract package
+- @ccd/vue-primevue-adapter -> @ccd/design-tokens
+- @ccd/vue-charts: implementation-free public contract package
+- @ccd/web-demo -> @ccd/contracts, @ccd/core, @ccd/design-tokens, @ccd/unocss-preset, @ccd/vue-ui, @ccd/vue-primevue-adapter
+- @ccd/desktop -> @ccd/contracts, @ccd/core, @ccd/design-tokens, @ccd/unocss-preset
 
 ## Package Criticality
 
 - @ccd/contracts: critical
 - @ccd/core: critical
+- @ccd/design-tokens: protected
+- @ccd/unocss-preset: protected
+- @ccd/shared-utils: protected
+- @ccd/vue-hooks: protected
+- @ccd/vue-ui: protected
+- @ccd/vue-primevue-adapter: protected
+- @ccd/vue-charts: protected
 - @ccd/web-demo: flexible
 - @ccd/desktop: protected
 
@@ -30,7 +44,7 @@
 - Runtime neutrality: validated by pnpm arch:runtime and pnpm arch:boundaries
 - Deep imports: validated by dependency-cruiser and scripts/architecture/validate-boundaries.mjs
 - Cross-app imports: forbidden
-- Legacy imports: forbidden
+- Removed runtime imports: validated by dependency and runtime boundary checks
 
 ## Public API Governance
 
@@ -43,13 +57,13 @@
 ## Release Governance
 
 - Version governance: changesets
-- Release order: @ccd/contracts -> @ccd/core -> @ccd/web-demo -> @ccd/desktop
+- Release order: @ccd/contracts -> @ccd/core -> @ccd/design-tokens -> @ccd/unocss-preset -> @ccd/shared-utils -> @ccd/vue-hooks -> @ccd/vue-ui -> @ccd/vue-primevue-adapter -> @ccd/vue-charts -> @ccd/web-demo -> @ccd/desktop
 - Release gate: pnpm release:governance
 
 ## Build Graph Topology
 
 - Orchestrator: Turbo
-- Topological order: @ccd/contracts -> @ccd/core -> @ccd/web-demo -> @ccd/desktop
+- Topological order: @ccd/contracts -> @ccd/core -> @ccd/design-tokens -> @ccd/unocss-preset -> @ccd/shared-utils -> @ccd/vue-hooks -> @ccd/vue-ui -> @ccd/vue-primevue-adapter -> @ccd/vue-charts -> @ccd/web-demo -> @ccd/desktop
 - Affected commands: pnpm affected:lint, pnpm affected:test, pnpm affected:typecheck, pnpm affected:build
 
 ## Supply Chain Governance

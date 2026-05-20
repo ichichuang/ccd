@@ -1,6 +1,6 @@
 import type { ProTableColumn, ProTableValueEnum } from '@/components/ProTable'
 import { ID_PREFIX } from '@/constants/business'
-import { formatSerialId } from '@/utils/business/idGenerator'
+import { formatSerialId } from '@ccd/shared-utils'
 
 type DashboardTranslate = (key: string) => string
 

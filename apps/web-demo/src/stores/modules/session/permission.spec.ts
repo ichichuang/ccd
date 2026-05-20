@@ -21,10 +21,8 @@ vi.mock('@/infra/router/routeProvider', () => ({
     ]),
   }),
 }))
-vi.mock('@/utils/ids', () => ({
+vi.mock('@ccd/shared-utils', () => ({
   generateIdFromKey: (key: string) => `id-${key}`,
-}))
-vi.mock('@/utils/lodashes', () => ({
   deepClone: (v: unknown) => JSON.parse(JSON.stringify(v)),
 }))
 vi.mock('@/utils/safeStorage/piniaSerializer', () => ({

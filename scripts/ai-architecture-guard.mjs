@@ -110,7 +110,7 @@ const approvedVueUseStorageFiles = new Set([
 ])
 
 const approvedGlassBaseFiles = new Set([
-  'apps/web-demo/src/design-engine/shortcuts/semanticShortcuts.ts',
+  'packages/unocss-preset/src/shortcuts/semanticShortcuts.ts',
 ])
 
 const approvedRawZIndexFiles = new Set([
@@ -421,7 +421,7 @@ const approvedRawTimerFiles = new Set([
   'apps/web-demo/src/layouts/modules/LayoutAdmin.tsx',
   'apps/web-demo/src/router/utils/guardEffects.ts',
   'apps/web-demo/src/components/PrimeDialog/useDialog.ts',
-  'apps/web-demo/src/components/UseEcharts/UseEcharts.vue',
+  'apps/web-demo/src/adapters/charts/UseEcharts.vue',
   'apps/web-demo/src/stores/modules/system/device.ts',
   'apps/web-demo/src/api/auth/auth.api.ts',
   'apps/web-demo/src/api/system/system.api.ts',
@@ -454,7 +454,7 @@ for (const relPath of designSystemFiles) {
 
 const borderContractFiles = scanFiles(
   [
-    'apps/web-demo/src/design-engine/shortcuts/**/*.ts',
+    'packages/unocss-preset/src/shortcuts/**/*.ts',
     'apps/web-demo/src/utils/theme/ptPresets/**/*.ts',
     'apps/web-demo/src/utils/theme/presetComponents/**/*.ts',
     'apps/web-demo/src/layouts/**/*.{vue,tsx}',

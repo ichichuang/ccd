@@ -13,7 +13,7 @@ packages/contracts -> packages/core -> apps/*
 - `apps/web-demo`: single browser runtime source of truth and browser adapters.
 - `apps/desktop`: Tauri runtime adapters.
 - `root`: orchestration-only shell.
-- `legacy/root-app`: archived historical archived application, excluded from active graphs.
+- Historical browser runtime snapshots are retained in Git history only; active branches must not recreate archive runtime directories.
 
 ## Validation
 

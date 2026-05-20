@@ -10,7 +10,7 @@
  * - 场景化差异通过 context / inactiveClasses / onItemClick / emphasizeActiveLabel 参数传入
  */
 
-import { Icons } from '@/components/Icons'
+import { Icons } from '@ccd/vue-ui'
 import {
   MENU_ICON_COMMON_CLASS,
   MENU_POPUP_ITEM_CLASS,

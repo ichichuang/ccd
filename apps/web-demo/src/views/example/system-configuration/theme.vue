@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { DEFAULT_THEME_NAME, THEME_PRESETS, getPresetPrimaryColor } from '@/constants/theme'
-import { ACCENT_USAGE, COLOR_USAGE, PRIMARY_USAGE } from '@/constants/theme/colorUsage'
-import { COLOR_FAMILIES, THEME_ENGINE } from '@/utils/theme/metadata'
+import { DEFAULT_THEME_NAME, THEME_PRESETS, getPresetPrimaryColor } from '@ccd/design-tokens'
+import { ACCENT_USAGE, COLOR_USAGE, PRIMARY_USAGE } from '@ccd/design-tokens'
+import { COLOR_FAMILIES, THEME_ENGINE } from '@ccd/design-tokens'
 import { goToRoute } from '@/router/utils/helper'
 
 defineOptions({ name: 'ThemeSystemPage' })

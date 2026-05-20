@@ -2,7 +2,7 @@ import type { Ref } from 'vue'
 import type { FieldState, FormState, UseFieldReturn } from '../types'
 import { PRO_FORM_STATE_KEY } from '../constants'
 import { useFormContext } from './useFormContext'
-import { castValue } from '@/utils/typeCasters'
+import { castValue } from '@ccd/shared-utils'
 import { syncFormState } from './syncFormState'
 
 /**

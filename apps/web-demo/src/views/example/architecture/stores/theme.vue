@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { THEME_PRESETS } from '@/constants/theme'
+import { THEME_PRESETS } from '@ccd/design-tokens'
 
 defineOptions({ name: 'ArchitectureStoreTheme' })
 

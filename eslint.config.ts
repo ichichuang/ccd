@@ -84,7 +84,7 @@ export default tseslint.config(
   // 全局忽略
   {
     name: 'app/global-ignores',
-    ignores: ['**/dist/**', '**/dist-ssr/**', '**/coverage/**', 'public/**', 'legacy/**', '*.d.ts'],
+    ignores: ['**/dist/**', '**/dist-ssr/**', '**/coverage/**', 'public/**', '*.d.ts'],
   },
   {
     // ... 其他配置

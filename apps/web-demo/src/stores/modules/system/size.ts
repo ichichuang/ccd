@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia'
-import { SIZE_PRESETS, DEFAULT_SIZE_NAME, SIZE_PERSIST_KEY } from '@/constants/size'
+import { SIZE_PRESETS, DEFAULT_SIZE_NAME } from '@ccd/design-tokens'
+import { SIZE_PERSIST_KEY } from '@/constants/size'
 import { generateSizeVars, applySizeTheme } from '@/utils/theme/sizeEngine'
 import { createPiniaEncryptedSerializer } from '@/utils/safeStorage/piniaSerializer'
 import { syncAction } from '@/sync/syncAction'

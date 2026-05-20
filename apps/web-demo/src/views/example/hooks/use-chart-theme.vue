@@ -1,7 +1,10 @@
 <script setup lang="ts">
 import type { EChartsOption } from 'echarts'
-import type { ChartOpacityConfig } from '@/hooks/modules/useChartTheme/types'
-import { useChartTheme } from '@/hooks/modules/useChartTheme'
+import type { ChartOpacityConfig, ChartThemeRuntimeState } from '@ccd/vue-charts'
+import { useChartTheme } from '@ccd/vue-charts'
+import { storeToRefs } from 'pinia'
+import { useI18n } from 'vue-i18n'
+import { useThemeStore, useSizeStore } from '@/stores/modules/system'
 
 defineOptions({ name: 'UseChartTheme' })
 
@@ -9,6 +12,19 @@ type ChartType = 'line' | 'bar' | 'pie' | 'radar' | 'gauge' | 'heatmap'
 
 const chartType = ref<ChartType>('line')
 const opacityEnabled = ref<boolean>(true)
+const { t, locale } = useI18n()
+const themeStore = useThemeStore()
+const sizeStore = useSizeStore()
+const { themeName, mode } = storeToRefs(themeStore)
+const { sizeName } = storeToRefs(sizeStore)
+const themeRuntime = computed<ChartThemeRuntimeState>(() => ({
+  themeName: themeName.value,
+  mode: mode.value,
+  isDark: themeStore.isDark,
+  sizeName: sizeName.value,
+  localeKey: String(locale.value),
+  translate: t,
+}))
 
 const xLabels = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri']
 const lineData = [120, 200, 150, 80, 230]
@@ -135,7 +151,7 @@ const opacityConfig = computed<ChartOpacityConfig | undefined>(() => {
   }
 })
 
-const { themedOption } = useChartTheme(rawOption, opacityConfig)
+const { themedOption } = useChartTheme(rawOption, opacityConfig, undefined, themeRuntime)
 
 const seriesCount = computed(() => {
   const s = themedOption.value?.series

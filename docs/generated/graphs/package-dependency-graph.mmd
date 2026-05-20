@@ -1,10 +1,26 @@
 graph TD
   ccd_contracts["@ccd/contracts<br/>contracts"]
+  ccd_design_tokens --> ccd_contracts
   ccd_core["@ccd/core<br/>core"]
   ccd_contracts --> ccd_core
+  ccd_design_tokens["@ccd/design-tokens<br/>frontend-platform"]
+  ccd_unocss_preset["@ccd/unocss-preset<br/>frontend-platform"]
+  ccd_design_tokens --> ccd_unocss_preset
+  ccd_shared_utils["@ccd/shared-utils<br/>frontend-platform"]
+  ccd_vue_hooks["@ccd/vue-hooks<br/>frontend-platform"]
+  ccd_vue_ui["@ccd/vue-ui<br/>frontend-platform"]
+  ccd_vue_primevue_adapter["@ccd/vue-primevue-adapter<br/>frontend-platform"]
+  ccd_design_tokens --> ccd_vue_primevue_adapter
+  ccd_vue_charts["@ccd/vue-charts<br/>frontend-platform"]
   ccd_web_demo["@ccd/web-demo<br/>apps"]
   ccd_contracts --> ccd_web_demo
   ccd_core --> ccd_web_demo
+  ccd_design_tokens --> ccd_web_demo
+  ccd_unocss_preset --> ccd_web_demo
+  ccd_vue_ui --> ccd_web_demo
+  ccd_vue_primevue_adapter --> ccd_web_demo
   ccd_desktop["@ccd/desktop<br/>apps"]
   ccd_contracts --> ccd_desktop
   ccd_core --> ccd_desktop
+  ccd_design_tokens --> ccd_desktop
+  ccd_unocss_preset --> ccd_desktop

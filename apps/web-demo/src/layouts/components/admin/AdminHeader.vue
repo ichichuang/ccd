@@ -1,5 +1,5 @@
 <script setup lang="tsx">
-import { Icons } from '@/components/Icons'
+import { Icons } from '@ccd/vue-ui'
 import User from '@/layouts/components/User/index.vue'
 import AdminMenuPopup, {
   isAdminMenuPopupExpose,
@@ -10,7 +10,7 @@ import { AUTH_ENABLED } from '@/constants/router'
 import { RouterLink, useRoute } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { useFullscreen } from '@vueuse/core'
-import { useAppElementSize } from '@/hooks/modules/useAppElementSize'
+import { useAppElementSize } from '@ccd/vue-hooks'
 import { useThemeSwitch } from '@/hooks/modules/useThemeSwitch'
 import {
   getAdminMenuTree,

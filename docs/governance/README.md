@@ -28,7 +28,7 @@ pnpm governance:gate
 
 ### Architecture enforcement
 
-`pnpm arch:boundaries` combines dependency-cruiser and custom boundary validation. It blocks package-to-app imports, cross-app imports, workspace deep imports, legacy imports, and Tauri access outside desktop adapters.
+`pnpm arch:boundaries` combines dependency-cruiser and custom boundary validation. It blocks package-to-app imports, cross-app imports, workspace deep imports, removed archive imports, and Tauri access outside desktop adapters.
 
 ### Dependency enforcement
 
@@ -79,6 +79,6 @@ Governance-sensitive changes require the owners in `.github/CODEOWNERS`. Cross-b
 ## ADR Index
 
 - [ADR-001 Monorepo Runtime Boundary](../adr/ADR-001-monorepo-runtime-boundary.md)
-- [ADR-002 Legacy Freeze Policy](../adr/ADR-002-legacy-freeze-policy.md)
+- [ADR-002: Removed Browser Runtime Archive](../adr/ADR-002-legacy-freeze-policy.md)
 - [ADR-003 Governance Pipeline](../adr/ADR-003-governance-pipeline.md)
 - [ADR-004 Runtime Environment Policy](../adr/ADR-004-runtime-environment-policy.md)

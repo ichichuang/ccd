@@ -21,7 +21,7 @@ import {
   normalizeColumnSettingsKeys,
 } from '../engines/columnVisibility'
 import { exportToCsv } from '../engines/export'
-import { objectGet } from '@/utils/lodashes'
+import { objectGet } from '@ccd/shared-utils'
 
 export interface TableControllerOptions<T extends Record<string, unknown>> {
   columns: ProTableColumn<T>[]

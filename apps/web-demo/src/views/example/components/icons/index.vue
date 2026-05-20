@@ -5,7 +5,7 @@
  */
 defineOptions({ name: 'ExampleIcons' })
 
-import type { IconSize, IconAnimation, FlipDirection } from '@/components/Icons/utils/types'
+import type { IconSize, IconAnimation, FlipDirection } from '@ccd/vue-ui'
 import {
   LUCIDE_ICONS,
   SOLAR_ICONS,
@@ -15,7 +15,7 @@ import {
   IS_LITE_MODE,
 } from './configs/iconLists.generated'
 import IconControls from './components/IconControls.vue'
-import { useAppElementSize } from '@/hooks/modules/useAppElementSize'
+import { useAppElementSize } from '@ccd/vue-hooks'
 
 type TabKey = 'lucide' | 'solar' | 'ph' | 'logos' | 'custom'
 

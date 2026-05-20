@@ -12,7 +12,7 @@ A release candidate must pass:
 4. `pnpm arch:graphs`
 5. artifact review for `apps/web-demo/dist`
 
-The root `src/` directory and `legacy/root-app` must not produce release artifacts.
+The root `src/` directory and removed runtime archive paths must not produce release artifacts.
 
 ## Runtime verification
 
@@ -30,7 +30,7 @@ Use `pnpm runtime:summary` and `pnpm arch:graphs` for the canonical evidence.
 
 ## Rollback rules
 
-Rollback uses the last known-good release artifact and graph checksum. Do not rebuild from `legacy/root-app`; it is an archive-only audit reference.
+Rollback uses the last known-good release artifact and graph checksum. Do not rebuild from removed archive paths; use the last known-good release artifact and Git history for audit.
 
 ## Artifact retention
 

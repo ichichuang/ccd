@@ -2,8 +2,23 @@
   "schemaVersion": 1,
   "versionGovernance": "changesets",
   "changesetConfig": ".changeset/config.json",
-  "releaseOrder": ["@ccd/contracts", "@ccd/core", "@ccd/web-demo", "@ccd/desktop"],
-  "criticalPackages": ["@ccd/contracts", "@ccd/core"],
+  "releaseOrder": [
+    "@ccd/contracts",
+    "@ccd/core",
+    "@ccd/design-tokens",
+    "@ccd/unocss-preset",
+    "@ccd/shared-utils",
+    "@ccd/vue-hooks",
+    "@ccd/vue-ui",
+    "@ccd/vue-primevue-adapter",
+    "@ccd/vue-charts",
+    "@ccd/web-demo",
+    "@ccd/desktop"
+  ],
+  "criticalPackages": [
+    "@ccd/contracts",
+    "@ccd/core"
+  ],
   "singleGate": {
     "command": "pnpm governance:gate",
     "requiredChecks": [

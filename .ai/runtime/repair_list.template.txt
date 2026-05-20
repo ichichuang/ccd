@@ -29,7 +29,7 @@ Preflight and rules:
 
 - [⬜️] [Login-P0-Rules] Re-read `.ai/protocol/AGENTS.core.md`, `.ai/rules/core/01-global-preflight.mdc`, `.ai/rules/core/02-ui-preflight.mdc`, `.ai/rules/components/00-primevue-ecosystem.mdc`, `.ai/rules/components/02-pro-components.mdc`, and `.ai/rules/design-system/00-unocss-guardrails.mdc` before editing.
 - [⬜️] [Login-P0-Ledger] Mirror this plan into `.ai/runtime/repair_list.txt` before implementation if the refactor starts.
-- [⬜️] [Login-P0-Context] Build top-K context from `apps/web-demo/src/views/login/index.vue`, login components, `apps/web-demo/src/views/login/composables/useLoginSubmit.ts`, `apps/web-demo/src/design-engine/shortcuts/semanticShortcuts.ts`, and relevant ProForm renderer typings.
+- [⬜️] [Login-P0-Context] Build top-K context from `apps/web-demo/src/views/login/index.vue`, login components, `apps/web-demo/src/views/login/composables/useLoginSubmit.ts`, `packages/unocss-preset/src/shortcuts/semanticShortcuts.ts`, and relevant ProForm renderer typings.
 - [⬜️] [Login-P0-PrimeVue] Verify PrimeVue v4 `Password`, `Button`, `Select`, `IconField`, and `InputText` APIs if adding or changing non-trivial props, slots, or pass-through configuration.
 - [⬜️] [Login-P0-Constraints] Confirm no native `<form>`, `<input>`, `<button>`, raw `overflow-auto`, raw hex colors, `rem`/`em`, raw z-index classes, invented shortcuts, or direct `glass-base` usage enter the login view.
 

@@ -1,6 +1,6 @@
 import type { ProTableLoadParams, ProTableRequestResult, SearchPathResolver } from '../types/props'
-import { objectGet } from '@/utils/lodashes'
-import { castArray } from '@/utils/typeCasters'
+import { objectGet } from '@ccd/shared-utils'
+import { castArray } from '@ccd/shared-utils'
 import type { RequestConfig as HttpRequestConfig } from '@/utils/http/types'
 import { isRecord } from '@/utils/guards'
 

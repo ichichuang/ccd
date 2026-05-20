@@ -12,8 +12,8 @@ import { SchemaNormalizer } from '../schema/SchemaNormalizer'
 import { LifecycleManager } from './LifecycleManager'
 import { DraftStorage } from '../persistence/DraftStorage'
 import { PRO_FORM_TIMING_DEFAULTS } from '../config'
-import { deepClone } from '@/utils/lodashes'
-import { castValue, castRecord } from '@/utils/typeCasters'
+import { deepClone } from '@ccd/shared-utils'
+import { castValue, castRecord } from '@ccd/shared-utils'
 import { PRO_FORM_LOGGER } from '../utils/logger'
 import type {
   FieldSchema,

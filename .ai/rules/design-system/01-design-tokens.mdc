@@ -65,7 +65,7 @@ Implications:
   - Explicit units when token classes cannot express intent, with strict order: `vw/vh > % > px`.
 - ✅ **DO:** Use the established scale: `p-sm`, `m-md`, `gap-lg`, `text-sm`, `rounded-md`.
 
-> **ABSOLUTE RULE**: `rem/em` are forbidden for sizing and spacing. If a size cannot be expressed by token scale, use explicit units with priority `vw/vh > % > px`, or request token extension from the design engine (`src/design-engine/theme/index.ts`).
+> **ABSOLUTE RULE**: `rem/em` are forbidden for sizing and spacing. If a size cannot be expressed by token scale, use explicit units with priority `vw/vh > % > px`, or request token extension from the design engine (`packages/unocss-preset/src/theme/index.ts`).
 
 ## Integration Enforcement
 If you need a color or spacing that does not exist in the semantic token list, **STOP**. Do not hardcode it. Query the existing design engine constants or request a token extension.

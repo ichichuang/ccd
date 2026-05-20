@@ -1,4 +1,4 @@
-import { deepClone } from '@/utils/lodashes'
+import { deepClone } from '@ccd/shared-utils'
 import { getRouterCapabilities } from '@/infra/router/routeProvider'
 import store from '@/stores'
 
@@ -14,7 +14,7 @@ import { defineStore } from 'pinia'
 // 单例序列化器：避免每次持久化时重复实例化加密上下文（成本较高）
 const _permissionSerializer = createPiniaEncryptedSerializer()
 import type { LocationQueryRaw } from 'vue-router'
-import { generateIdFromKey } from '@/utils/ids'
+import { generateIdFromKey } from '@ccd/shared-utils'
 
 /**
  * 窗口元数据接口

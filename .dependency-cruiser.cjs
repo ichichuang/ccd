@@ -44,18 +44,11 @@ module.exports = {
       from: { path: '^apps/desktop/src/(?!adapters/)' },
       to: { dependencyTypes: ['npm'], path: '^@tauri-apps/' },
     },
-    {
-      name: 'no-legacy-imports',
-      severity: 'error',
-      comment: 'Legacy archive is historical only and cannot re-enter active graphs.',
-      from: { path: '^(apps|packages)/' },
-      to: { path: '^legacy/' },
-    },
   ],
   options: {
     doNotFollow: { path: 'node_modules' },
     exclude: {
-      path: '(^|/)(dist|node_modules|legacy|src-tauri/target)/',
+      path: '(^|/)(dist|node_modules|src-tauri/target)/',
     },
     tsPreCompilationDeps: true,
     tsConfig: { fileName: 'tsconfig.json' },

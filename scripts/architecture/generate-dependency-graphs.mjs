@@ -72,7 +72,6 @@ const runtimeGraph = [
   '  Web --> WebAdapters["apps/web-demo/src/adapters/**<br/>browser capabilities"]',
   '  Desktop --> DesktopAdapters["apps/desktop/src/adapters/**<br/>desktop capabilities"]',
   '  Root["root /src<br/>decommissioned"] -. blocked .-> Web',
-  '  Legacy["legacy/root-app<br/>frozen archive"] -. blocked .-> Core',
 ].join('\n')
 
 const turboLines = ['graph TD']

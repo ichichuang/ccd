@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { SIZE_SCALE_KEYS, type SizeScaleKey } from '@/constants/sizeScale'
+import { SIZE_SCALE_KEYS, type SizeScaleKey } from '@ccd/design-tokens'
 import { useLoading } from '@/hooks/layout/useLoading'
 import Loading from '@/layouts/components/Loading.vue'
 import { goToRoute } from '@/router/utils/helper'

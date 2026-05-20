@@ -1,0 +1,32 @@
+{
+  "name": "@ccd/vue-charts",
+  "version": "1.0.37",
+  "private": true,
+  "type": "module",
+  "sideEffects": false,
+  "exports": {
+    ".": {
+      "types": "./src/index.ts",
+      "import": "./src/index.ts"
+    }
+  },
+  "scripts": {
+    "build": "vue-tsc -p tsconfig.json --noEmit",
+    "type-check": "vue-tsc -p tsconfig.json --noEmit",
+    "typecheck": "pnpm type-check",
+    "test": "vitest run --passWithNoTests"
+  },
+  "dependencies": {
+    "@ccd/design-tokens": "workspace:*",
+    "@vueuse/core": "^13.9.0",
+    "echarts": "^6.0.0",
+    "vue": "^3.5.12",
+    "vue-echarts": "^8.0.0",
+    "vue-i18n": "^10.0.8"
+  },
+  "devDependencies": {
+    "@vue/tsconfig": "^0.7.0",
+    "typescript": "^5.8.3",
+    "vue-tsc": "^2.2.10"
+  }
+}

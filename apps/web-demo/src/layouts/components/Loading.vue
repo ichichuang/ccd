@@ -7,7 +7,7 @@
  *
  * 外部 API 不变：接受 type (1|2|3) 和 size (SizeScaleKey)。
  */
-import type { SizeScaleKey } from '@/constants/sizeScale'
+import type { SizeScaleKey } from '@ccd/design-tokens'
 import LoadingFallback from './LoadingFallback.vue'
 
 /** 加载动画样式：1 | 2 | 3 对应 loading-001 / 002 / 003.json */

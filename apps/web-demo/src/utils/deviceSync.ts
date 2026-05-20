@@ -6,7 +6,7 @@ import {
   BREAKPOINTS,
   TABLET_DETECTION_MIN_SHORT_SIDE,
   type BreakpointKey,
-} from '@/constants/breakpoints'
+} from '@ccd/design-tokens'
 import type { DeviceType, OsType } from '@/types/systems/device'
 
 /** 模块级缓存：断点按阈值降序排列，避免每次调用重复排序 */

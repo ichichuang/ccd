@@ -4,7 +4,7 @@ defineOptions({ name: 'ExampleProFormPluginsPage' })
 import type { FormSchema, ProFormExpose, ProFormPlugin } from '@/components/ProForm'
 import { ProFormPlugins } from '@/components/ProForm'
 import type { FieldRegistryItem } from '@/components/ProForm/engine/types'
-import { DEMO_COLOR_PICKER_DEFAULT_HEX } from '@/constants/theme'
+import { DEMO_COLOR_PICKER_DEFAULT_HEX } from '@ccd/design-tokens'
 import ColorPickerFieldAdapter from './components/ColorPickerFieldAdapter'
 import MyColorCustomInput from './components/MyColorCustomInput'
 

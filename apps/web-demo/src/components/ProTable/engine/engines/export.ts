@@ -1,5 +1,5 @@
 import type { ProTableColumn } from '../types/column'
-import { objectGet } from '@/utils/lodashes'
+import { objectGet } from '@ccd/shared-utils'
 
 /**
  * Escape a CSV cell value: wrap in quotes if it contains commas, quotes, or newlines.

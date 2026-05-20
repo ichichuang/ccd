@@ -1,4 +1,4 @@
-import { THEME_PRESETS } from '../apps/web-demo/src/constants/theme'
+import { THEME_PRESETS } from '@ccd/design-tokens'
 import { generateThemeVars } from '../apps/web-demo/src/utils/theme/engine'
 import {
   THEME_CONTRAST_PAIR_SPECS,

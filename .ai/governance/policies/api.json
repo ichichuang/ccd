@@ -1,7 +1,19 @@
 {
   "schemaVersion": 1,
   "snapshotDir": ".ai/governance/api-snapshots",
-  "packages": ["@ccd/contracts", "@ccd/core", "@ccd/web-demo", "@ccd/desktop"],
+  "packages": [
+    "@ccd/contracts",
+    "@ccd/core",
+    "@ccd/design-tokens",
+    "@ccd/unocss-preset",
+    "@ccd/shared-utils",
+    "@ccd/vue-hooks",
+    "@ccd/vue-ui",
+    "@ccd/vue-primevue-adapter",
+    "@ccd/vue-charts",
+    "@ccd/web-demo",
+    "@ccd/desktop"
+  ],
   "breakingChangeRules": {
     "failOnExportRemoval": true,
     "failOnSubpathRemoval": true,

@@ -3,7 +3,7 @@ import { useRoute } from 'vue-router'
 import AnimateRouterView from '@&/AnimateRouterView.vue'
 import Loading from '@&/Loading.vue'
 import { useLayoutStore } from '@/stores/modules/system'
-import type CScrollbar from '@/components/CScrollbar/CScrollbar.vue'
+import type { CScrollbar } from '@ccd/vue-ui'
 
 const layoutStore = useLayoutStore()
 const scrollbarRef = ref<InstanceType<typeof CScrollbar> | null>(null)

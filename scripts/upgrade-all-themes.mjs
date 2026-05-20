@@ -1,6 +1,6 @@
 import process from 'node:process'
 import { pathToFileURL } from 'node:url'
-import { THEME_PRESETS } from '../apps/web-demo/src/constants/theme.ts'
+import { THEME_PRESETS } from '@ccd/design-tokens'
 import {
   parseColor,
   toHex,

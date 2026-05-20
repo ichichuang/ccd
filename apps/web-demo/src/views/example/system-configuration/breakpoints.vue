@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { BREAKPOINTS, type BreakpointKey } from '@/constants/breakpoints'
-import { SIZE_SCALE_KEYS } from '@/constants/sizeScale'
-import { useAppElementSize } from '@/hooks/modules/useAppElementSize'
+import { BREAKPOINTS, type BreakpointKey } from '@ccd/design-tokens'
+import { SIZE_SCALE_KEYS } from '@ccd/design-tokens'
+import { useAppElementSize } from '@ccd/vue-hooks'
 import { goToRoute } from '@/router/utils/helper'
 
 defineOptions({ name: 'BreakpointsSystemPage' })

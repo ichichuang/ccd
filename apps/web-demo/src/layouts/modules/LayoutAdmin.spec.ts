@@ -124,8 +124,10 @@ vi.mock('@/layouts/components/admin/AdminSidebarLogo', () => ({
 vi.mock('@/layouts/components/admin/AdminSidebarMenu', () => ({
   default: stubComponent('AdminSidebarMenu'),
 }))
-vi.mock('@/components/Icons', () => ({ Icons: stubComponent('Icons') }))
-vi.mock('@/components/CScrollbar', () => ({ CScrollbar: stubComponent('CScrollbar') }))
+vi.mock('@ccd/vue-ui', () => ({
+  CScrollbar: stubComponent('CScrollbar'),
+  Icons: stubComponent('Icons'),
+}))
 
 vi.mock('@/stores/modules/system', () => ({
   useLayoutStore: () => ({

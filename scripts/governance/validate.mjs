@@ -25,8 +25,6 @@ const required = [
   'scripts/ai-os-doctor.mjs',
   'scripts/bootstrap-runtime.sh',
   'docs/architecture/stable-baseline.md',
-  'docs/architecture/legacy-web-demo-cleanup.md',
-  'legacy/README.md',
   'docs/runtime/execute-reliability.md',
   'docs/runtime/runtime-isolation.md',
   'docs/governance/protocol-versioning.md',
@@ -34,7 +32,6 @@ const required = [
   'docs/governance/ai-orchestration.md',
   'docs/release/release-policy.md',
   'docs/release/runtime-promotion-checklist.md',
-  'legacy/root-app/ARCHIVE.md',
   'scripts/diagnostics/codex-execute-doctor.mjs',
   'scripts/diagnostics/codex-cache-inspect.mjs',
   'scripts/diagnostics/codex-provider-inspect.mjs',
@@ -96,43 +93,13 @@ if (fs.existsSync(versionPath)) {
 }
 
 
-const topology = readJsonIfExists('.ai/governance/policies/topology.json')
-if (topology?.legacyArchive) {
-  const legacy = topology.legacyArchive
-  requireCondition(
-    legacy.path === 'legacy/root-app' && fs.existsSync(path.join(cwd, legacy.path)),
-    `legacy archive path governed: ${legacy.path}`,
-    'legacy archive path must be legacy/root-app and exist'
-  )
-  requireCondition(
-    legacy.activeGraphEntryForbidden === true && legacy.workspaceParticipationForbidden === true,
-    'legacy archive is blocked from active graph and workspace participation',
-    'legacy archive policy must forbid active graph entry and workspace participation'
-  )
-
-  const workspace = fs.existsSync(path.join(cwd, 'pnpm-workspace.yaml'))
-    ? fs.readFileSync(path.join(cwd, 'pnpm-workspace.yaml'), 'utf8')
-    : ''
-  requireCondition(
-    !workspace.includes('legacy'),
-    'pnpm workspace excludes legacy archive',
-    'pnpm workspace must not include legacy archive paths'
-  )
-
-  const tsconfig = readJsonIfExists('tsconfig.json')
-  requireCondition(
-    Array.isArray(tsconfig?.exclude) && tsconfig.exclude.includes('legacy/**'),
-    'root tsconfig excludes legacy archive',
-    'root tsconfig must exclude legacy/**'
-  )
-
-  for (const target of legacy.activeEditTargets ?? []) {
-    requireCondition(
-      fs.existsSync(path.join(cwd, target)),
-      `active edit target exists: ${target}`,
-      `active edit target missing: ${target}`
-    )
-  }
-}
+const workspace = fs.existsSync(path.join(cwd, 'pnpm-workspace.yaml'))
+  ? fs.readFileSync(path.join(cwd, 'pnpm-workspace.yaml'), 'utf8')
+  : ''
+requireCondition(
+  !workspace.includes('removed-archive'),
+  'pnpm workspace has no removed archive package paths',
+  'pnpm workspace must not include removed archive package paths'
+)
 
 process.exit(failed ? 1 : 0)

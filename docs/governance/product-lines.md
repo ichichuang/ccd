@@ -10,7 +10,6 @@ packages/core       -> runtime-neutral platform logic
 apps/web-demo       -> browser runtime adapter shell
 apps/desktop        -> Tauri runtime adapter shell
 root                -> orchestration-only shell
-legacy/root-app     -> read-only historical archive
 ```
 
 ## Dependency Policy
@@ -19,7 +18,7 @@ legacy/root-app     -> read-only historical archive
 - `packages/core` may depend on `@ccd/contracts` only.
 - `apps/*` may depend on `@ccd/contracts` and `@ccd/core` through public exports only.
 - Apps may not import sibling apps.
-- Active packages may not import `legacy/**`.
+- Active packages may not import removed runtime archive paths.
 
 ## Runtime Policy
 

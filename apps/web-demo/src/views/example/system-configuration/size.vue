@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import { LAYOUT_DIMENSION_KEYS, SIZE_PRESETS } from '@/constants/size'
-import { SIZE_SCALE_KEYS, type SizeScaleKey } from '@/constants/sizeScale'
+import { LAYOUT_DIMENSION_KEYS, SIZE_PRESETS } from '@ccd/design-tokens'
+import { SIZE_SCALE_KEYS, type SizeScaleKey } from '@ccd/design-tokens'
 import { goToRoute } from '@/router/utils/helper'
-import { radiusPx, spacingPx } from '@/utils/theme/sizeMetrics'
+import { radiusPx, spacingPx } from '@ccd/vue-charts'
 
 defineOptions({ name: 'SizeSystemPage' })
 

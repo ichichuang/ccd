@@ -1,4 +1,4 @@
-import { BREAKPOINTS, type BreakpointKey } from '@/constants/breakpoints'
+import { BREAKPOINTS, type BreakpointKey } from '@ccd/design-tokens'
 import type { DeviceType, Orientation } from '@/types/systems/device'
 
 export type LayoutSidebarMode = 'hidden' | 'drawer' | 'inline' | 'overlay'

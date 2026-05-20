@@ -4,9 +4,9 @@ import {
   LAYOUT_PERSIST_PICK,
 } from '@/constants/layout'
 import { useDeviceStore } from '@/stores/modules/system/device'
-import { deepClone } from '@/utils/lodashes'
+import { deepClone } from '@ccd/shared-utils'
 import { createPiniaEncryptedSerializer } from '@/utils/safeStorage/piniaSerializer'
-import { castValue } from '@/utils/typeCasters'
+import { castValue } from '@ccd/shared-utils'
 import store from '@/stores'
 import { resolveLayoutEffectiveMode } from '@/layouts/runtime/layoutRuntime'
 import { syncAction } from '@/sync/syncAction'

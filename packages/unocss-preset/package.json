@@ -1,0 +1,26 @@
+{
+  "name": "@ccd/unocss-preset",
+  "version": "1.0.37",
+  "private": true,
+  "type": "module",
+  "sideEffects": false,
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "browser": "./dist/browser.js",
+      "import": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "type-check": "tsc -p tsconfig.json --noEmit",
+    "typecheck": "pnpm type-check",
+    "test": "vitest run --passWithNoTests"
+  },
+  "dependencies": {
+    "@ccd/design-tokens": "workspace:*",
+    "glob": "^11.1.0",
+    "typescript": "^5.8.3",
+    "unocss": "^66.6.0"
+  }
+}

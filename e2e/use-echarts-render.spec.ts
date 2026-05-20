@@ -95,13 +95,15 @@ test.describe('UseEcharts render smoke', () => {
     })
 
     await page.waitForFunction(previousWidth => {
-      const canvas = Array.from(document.querySelectorAll('canvas')).find(item => {
-        const rect = item.getBoundingClientRect()
-        return rect.width > 0 && rect.height > 0 && item.offsetParent !== null
+      const charts = Array.from(document.querySelectorAll('.echarts'))
+      return charts.some(chart => {
+        const chartRect = chart.getBoundingClientRect()
+        const canvas = chart.querySelector('canvas')
+        if (!canvas || chartRect.width <= 0 || chartRect.height <= 0 || canvas.offsetParent === null) {
+          return false
+        }
+        return Math.abs(chartRect.width - previousWidth) > 20 && canvas.width > 0
       })
-      if (!canvas) return false
-      const cssWidth = canvas.getBoundingClientRect().width
-      return cssWidth > 0 && Math.abs(cssWidth - previousWidth) > 20 && canvas.width > 0
     }, before.cssWidth)
     await expectVisibleCanvasHasPaint(page)
   })

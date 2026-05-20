@@ -3,17 +3,6 @@
   "include": [
     // ✅ Node 侧仅负责工具链与构建脚本
     "uno.config.ts",
-    "apps/web-demo/src/design-engine/theme/index.ts",
-    "apps/web-demo/src/design-engine/theme/colors.ts",
-    "apps/web-demo/src/design-engine/safelist/index.ts",
-    // Design Engine: pure parser/validator/resolver for UnoCSS
-    "apps/web-demo/src/design-engine/index.ts",
-    "apps/web-demo/src/design-engine/tokens/colorTokens.ts",
-    "apps/web-demo/src/design-engine/validators/colorValidator.ts",
-    "apps/web-demo/src/design-engine/validators/sizeValidator.ts",
-    "apps/web-demo/src/design-engine/parser/parseBorder.ts",
-    "apps/web-demo/src/design-engine/resolvers/borderResolver.ts",
-    "apps/web-demo/src/design-engine/shortcuts/semanticShortcuts.ts",
     "eslint.config.ts",
     "vitest.config.ts",
     "cypress.config.ts",
@@ -30,11 +19,9 @@
     "apps/web-demo/src/constants/**/*.ts",
     // dateFormats 再导出 DateFormatEnum（与 app 共用，无运行时代码）
     "apps/web-demo/src/utils/date/types.ts",
-    "apps/web-demo/src/utils/theme/metadata.ts",
     // ⚠️ engine.ts 的 applyTheme() 使用 document（DOM API），但 generateThemeVars() 被 build/html.ts 在 Node 侧引用
     // 因此必须保留在 Node file list 中；DOM 类型由文件级 triple-slash directive 自行声明
     "apps/web-demo/src/utils/theme/engine.ts",
-    "apps/web-demo/src/utils/theme/colors.ts",
     "apps/web-demo/src/utils/theme/color.ts",
     "apps/web-demo/src/utils/theme/resolver.ts",
     "apps/web-demo/src/utils/theme/compiler.ts",

@@ -6,7 +6,7 @@ const { mockUseTap } = vi.hoisted(() => ({
   mockUseTap: vi.fn(),
 }))
 
-vi.mock('@/hooks/modules/useInteraction', () => ({
+vi.mock('@ccd/vue-hooks', () => ({
   useTap: mockUseTap,
 }))
 
@@ -16,7 +16,7 @@ vi.stubGlobal('effectScope', () => ({
 }))
 
 import type { ObjectDirective, DirectiveBinding, VNode } from 'vue'
-import { castValue } from '@/utils/typeCasters'
+import { castValue } from '@ccd/shared-utils'
 
 type TapDirective = ObjectDirective<HTMLElement, (event: PointerEvent) => void>
 type DirectiveVNode = VNode<unknown, HTMLElement, Record<string, unknown>>

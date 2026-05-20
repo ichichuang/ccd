@@ -43,20 +43,21 @@ vi.mock('@/stores/modules/system', () => ({
   useSizeStore: () => ({ mode: 'comfortable' }),
 }))
 
-vi.mock('@/utils/theme/primevuePreset', () => ({
-  createCustomPreset: () => ({ semantic: { primary: { 500: '{primary.500}' } } }),
-}))
-
-vi.mock('@/utils/theme/ptPresets/formControlsPt', () => ({
-  ...Object.fromEntries([
-    ['OVERLAY_GLASS_CLASS', 'glass-panel'],
-    ['OVERLAY_GLASS_COMPACT_CLASS', 'glass-card'],
-  ]),
-  formControlsPt: { inputtext: { root: { class: 'text-foreground' } } },
-}))
-
-vi.mock('@/utils/theme/ptPresets/menuPt', () => ({
-  menuPt: { menu: { root: { class: 'text-foreground' } } },
+vi.mock('@ccd/vue-primevue-adapter', () => ({
+  createPrimeVueAdapterConfig: ({ locale }: { locale: unknown }) => ({
+    theme: {
+      preset: { semantic: { primary: { 500: '{primary.500}' } } },
+      options: { prefix: 'p', darkModeSelector: '.dark' },
+    },
+    pt: {
+      drawer: { root: { class: 'glass-panel' } },
+      inputtext: { root: { class: 'text-foreground' } },
+      menu: { root: { class: 'text-foreground' } },
+    },
+    ptOptions: { mergeSections: true, mergeProps: true },
+    ripple: true,
+    locale,
+  }),
 }))
 
 function createInstrumentedApp(): App {

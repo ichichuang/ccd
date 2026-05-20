@@ -6,11 +6,11 @@
 
 import type { Ref, ComputedRef } from 'vue'
 import { useThemeStore } from '@/stores/modules/system'
-import { THEME_PRESETS, DEFAULT_THEME_NAME } from '@/constants/theme'
+import { THEME_PRESETS, DEFAULT_THEME_NAME } from '@ccd/design-tokens'
 import { RUNTIME_STORAGE_KEYS } from '@/constants/runtime'
 import { RUNTIME_E2E_EVENTS } from '@/constants/runtime'
 import { generateThemeVars, applyTheme } from '@/utils/theme/engine'
-import { rgbToHex } from '@/utils/theme/colors'
+import { rgbToHex } from '@ccd/design-tokens'
 import {
   applyThemeModeToRoot,
   getSystemPrefersDark,

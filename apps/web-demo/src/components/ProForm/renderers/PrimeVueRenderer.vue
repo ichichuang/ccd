@@ -16,7 +16,7 @@ import {
   PRO_FORM_LAYOUT_KEY,
   PRO_FORM_SLOTS_KEY,
 } from '../engine/constants'
-import { castValue } from '@/utils/typeCasters'
+import { castValue } from '@ccd/shared-utils'
 
 const props = defineProps<ProFormPrimeVueRendererProps>()
 

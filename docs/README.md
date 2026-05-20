@@ -31,7 +31,6 @@ packages/core       -> runtime-neutral platform logic
 apps/web-demo       -> browser runtime and browser adapters
 apps/desktop        -> Tauri runtime and desktop adapters
 root                -> orchestration-only shell
-legacy/root-app     -> read-only historical archive, excluded from active graphs
 ```
 
 ## Mandatory Gate

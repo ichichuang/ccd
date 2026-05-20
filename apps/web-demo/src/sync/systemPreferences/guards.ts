@@ -1,5 +1,5 @@
 import type { SystemPreferencePayload } from '@/types/systems/preferences'
-import { castValue } from '@/utils/typeCasters'
+import { castValue } from '@ccd/shared-utils'
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return !!value && typeof value === 'object'

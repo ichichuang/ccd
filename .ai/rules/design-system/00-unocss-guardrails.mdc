@@ -270,4 +270,4 @@ Before finalizing ANY template or style output:
 
 ### Shortcut Closed Set Contract
 
-The shortcuts in `src/design-engine/shortcuts/semanticShortcuts.ts` are a closed, audited set. Nonexistent shortcuts must never be invented.
+The shortcuts in `packages/unocss-preset/src/shortcuts/semanticShortcuts.ts` are a closed, audited set. Nonexistent shortcuts must never be invented.

@@ -160,7 +160,12 @@
         "设计令牌",
         "快捷类"
       ],
-      "path_globs": ["uno.config.ts", "src/design-engine/**", "src/**/*.css", "src/**/*.scss"],
+      "path_globs": [
+        "uno.config.ts",
+        "packages/unocss-preset/**",
+        "src/**/*.css",
+        "src/**/*.scss"
+      ],
       "skills": [".ai/skills/core/unocss"],
       "prechecks": ["pnpm codex:preflight"],
       "token_strategy": ["Load UnoCSS references only for token, shortcut, utility, or theme work"]

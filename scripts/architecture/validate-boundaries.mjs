@@ -27,7 +27,7 @@ function walk(dir) {
   for (const entry of entries) {
     const absolute = join(dir, entry.name)
     if (entry.isDirectory()) {
-      if (['node_modules', 'dist', 'target', 'legacy'].includes(entry.name)) continue
+      if (['node_modules', 'dist', 'target'].includes(entry.name)) continue
       files.push(...walk(absolute))
     } else if (/\.(ts|tsx|vue|js|mjs)$/.test(entry.name)) {
       files.push(absolute)
@@ -79,9 +79,6 @@ for (const sourceRoot of sourceRoots) {
       }
       if (file.includes(`${sep}apps${sep}`) && specifier.includes(`${sep}apps${sep}`)) {
         report(file, `cross-app filesystem import is forbidden: "${specifier}"`)
-      }
-      if (specifier.includes('/legacy/') || specifier.startsWith('legacy/') || specifier.startsWith('../legacy')) {
-        report(file, `legacy archive imports are forbidden: "${specifier}"`)
       }
       for (const boundary of adapterBoundaries) {
         if (boundary.forbiddenImportPattern.test(specifier) && !isInside(file, boundary.allowedPath)) {

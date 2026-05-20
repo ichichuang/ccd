@@ -1,5 +1,5 @@
 import { defineComponent, type PropType } from 'vue'
-import { castValue } from '@/utils/typeCasters'
+import { castValue } from '@ccd/shared-utils'
 import ColorPickerField from './ColorPickerField'
 
 const colorPickerFieldAdapter = defineComponent({

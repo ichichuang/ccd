@@ -38,7 +38,6 @@ packages/core       -> runtime-neutral platform logic
 apps/web-demo       -> single browser runtime source of truth
 apps/desktop        -> Tauri runtime shell and desktop adapters
 root                -> orchestration-only shell
-legacy/root-app     -> read-only historical archive
 ```
 
 Canonical dependency direction:

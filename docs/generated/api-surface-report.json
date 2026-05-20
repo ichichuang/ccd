@@ -44,6 +44,154 @@
       ]
     },
     {
+      "package": "@ccd/design-tokens",
+      "path": "packages/design-tokens",
+      "exports": [
+        "."
+      ],
+      "rootSymbols": [
+        "adjustBrightness",
+        "applyOpacityToColor",
+        "BreakpointKey",
+        "ColorTokenState",
+        "CompleteColorTokenState",
+        "CompleteThemeModeConfig",
+        "CompleteThemePreset",
+        "deriveSidebarCollapsedWidth",
+        "getPresetPrimaryColor",
+        "hexToRgb",
+        "isDarkColor",
+        "mixHex",
+        "normalizeHex",
+        "rgbToHex",
+        "shiftHue",
+        "SizeCssVars",
+        "SizeMode",
+        "SizePreset",
+        "SizeScaleKey",
+        "SizeScaleMatrixEntry",
+        "ThemeCssVars",
+        "ThemeMode",
+        "ThemeModeConfig",
+        "ThemePreset",
+        "ThemeTransitionDuration",
+        "ThemeTransitionMode"
+      ]
+    },
+    {
+      "package": "@ccd/unocss-preset",
+      "path": "packages/unocss-preset",
+      "exports": [
+        "."
+      ],
+      "rootSymbols": [
+        "CcdUnoConfigOptions",
+        "configureCcdUnoPresetProject",
+        "createCcdUnoConfig",
+        "createCcdUnoEngineConfig",
+        "getCustomIconClasses",
+        "getEngineSafelist",
+        "getPresetIconsCollections",
+        "invalidateIconCaches",
+        "semanticShortcuts",
+        "theme"
+      ]
+    },
+    {
+      "package": "@ccd/shared-utils",
+      "path": "packages/shared-utils",
+      "exports": [
+        "."
+      ],
+      "rootSymbols": [
+        "castArray",
+        "castRecord",
+        "castValue",
+        "debounceFn",
+        "deepClone",
+        "deepEqual",
+        "deepMerge",
+        "formatSerialId",
+        "generateIdFromKey",
+        "generateUniqueId",
+        "objectGet",
+        "throttleFn",
+        "toKebabCase"
+      ]
+    },
+    {
+      "package": "@ccd/vue-hooks",
+      "path": "packages/vue-hooks",
+      "exports": [
+        "."
+      ],
+      "rootSymbols": [
+        "InteractionTarget",
+        "SwipeDirection",
+        "useAppElementSize",
+        "UseAppElementSizeReturn",
+        "useDragAction",
+        "UseDragActionOptions",
+        "UseDragActionReturn",
+        "UseElementSizeOptions",
+        "useInteraction",
+        "UseInteractionReturn",
+        "useLongPressAction",
+        "UseLongPressActionOptions",
+        "UseLongPressActionReturn",
+        "useSwipeAction",
+        "UseSwipeActionOptions",
+        "UseSwipeActionReturn",
+        "useTap",
+        "UseTapOptions",
+        "UseTapReturn"
+      ]
+    },
+    {
+      "package": "@ccd/vue-ui",
+      "path": "packages/vue-ui",
+      "exports": [
+        "."
+      ],
+      "rootSymbols": [
+        "AnimateWrapper",
+        "CScrollbar",
+        "DEFAULT_BACK_TO_TOP_OFFSET_PX",
+        "DEFAULT_BACK_TO_TOP_THRESHOLD",
+        "DEFAULT_SCROLLBAR_AUTO_HIDE_DELAY_MS",
+        "defaultScrollbarProps",
+        "EmptyState",
+        "Icons",
+        "resolveScrollbarAutoHide"
+      ]
+    },
+    {
+      "package": "@ccd/vue-primevue-adapter",
+      "path": "packages/vue-primevue-adapter",
+      "exports": [
+        "."
+      ],
+      "rootSymbols": [
+        "createCustomPreset",
+        "createPrimeVueAdapterConfig",
+        "CreatePrimeVueAdapterConfigOptions",
+        "formControlsPt",
+        "menuPt",
+        "PrimeVueSizeSource"
+      ]
+    },
+    {
+      "package": "@ccd/vue-charts",
+      "path": "packages/vue-charts",
+      "exports": [
+        "."
+      ],
+      "rootSymbols": [
+        "ChartThemeRuntimeState",
+        "UseEcharts"
+      ]
+    },
+    {
       "package": "@ccd/web-demo",
       "path": "apps/web-demo",
       "exports": [

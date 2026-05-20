@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import type { IconSize, IconAnimation, FlipDirection } from '@/components/Icons/utils/types'
-import { SIZE_SCALE_KEYS, type SizeScaleKey } from '@/constants/sizeScale'
+import type { IconSize, IconAnimation, FlipDirection } from '@ccd/vue-ui'
+import { SIZE_SCALE_KEYS, type SizeScaleKey } from '@ccd/design-tokens'
 
 type EmitFn = {
   (e: 'update:size', value: IconSize): void

@@ -1,7 +1,7 @@
 import type { PluginOption } from 'vite'
 import { brand } from '../src/constants/brand'
 import { RUNTIME_QUERY_KEYS, RUNTIME_STORAGE_KEYS } from '../src/constants/runtime'
-import { THEME_PRESETS, DEFAULT_THEME_MODE, DEFAULT_THEME_NAME } from '../src/constants/theme'
+import { THEME_PRESETS, DEFAULT_THEME_MODE, DEFAULT_THEME_NAME } from '@ccd/design-tokens'
 import { generateThemeVars } from '../src/utils/theme/engine'
 import type { ViteEnv } from './utils'
 

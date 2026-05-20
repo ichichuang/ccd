@@ -4,7 +4,7 @@ import {
   DEFAULT_THEME_NAME,
   DEFAULT_THEME_MODE,
   DEFAULT_TRANSITION_DURATION,
-} from '@/constants/theme'
+} from '@ccd/design-tokens'
 import { RUNTIME_STORAGE_KEYS } from '@/constants/runtime'
 import { generateThemeVars, applyTheme } from '@/utils/theme/engine'
 import {

@@ -1,5 +1,5 @@
 import type { Component } from 'vue'
-import { castValue } from '@/utils/typeCasters'
+import { castValue } from '@ccd/shared-utils'
 import type { FieldComponentProps, FieldRegistryItem, FieldComponent } from '../types'
 
 function isFieldRegistryItem(value: unknown): value is FieldRegistryItem {

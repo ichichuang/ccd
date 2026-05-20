@@ -1,5 +1,5 @@
 import type { EffectScope, ObjectDirective } from 'vue'
-import { useTap } from '@/hooks/modules/useInteraction'
+import { useTap } from '@ccd/vue-hooks'
 
 /**
  * v-tap 指令：统一 tap 事件（抹平 click/touch/pen 差异）

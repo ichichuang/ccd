@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { BREAKPOINTS } from '@/constants/breakpoints'
+import { BREAKPOINTS } from '@ccd/design-tokens'
 import { useDeviceStore } from '@/stores/modules/system'
 import HeaderActions from './components/HeaderActions.vue'
 import BrandPanel from './components/BrandPanel.vue'

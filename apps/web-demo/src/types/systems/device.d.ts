@@ -1,5 +1,5 @@
 // src/types/systems/device.d.ts
-import type { BreakpointKey } from '@/constants/breakpoints'
+import type { BreakpointKey } from '@ccd/design-tokens'
 
 export type DeviceType = 'Mobile' | 'Tablet' | 'PC'
 export type OsType = 'Windows' | 'MacOS' | 'Android' | 'iOS' | 'Linux' | 'Unknown'

@@ -3,7 +3,7 @@
   "provenance": {
     "generatedBy": "scripts/architecture/generate-dependency-graphs.mjs",
     "sourceTimestamp": "2026-05-19T15:33:27+08:00",
-    "sourceRevision": "0e29445b825a140e94feb9cf672bd9fea963e4be",
+    "sourceRevision": "0a3dbec715e0fd746d5ca162a32098b337d366e4",
     "deterministic": true
   },
   "root": {
@@ -18,7 +18,9 @@
       "layer": "contracts",
       "runtime": "none",
       "criticality": "critical",
-      "allowedWorkspaceDependencies": []
+      "allowedWorkspaceDependencies": [
+        "@ccd/design-tokens"
+      ]
     },
     {
       "name": "@ccd/core",
@@ -26,7 +28,69 @@
       "layer": "core",
       "runtime": "none",
       "criticality": "critical",
-      "allowedWorkspaceDependencies": ["@ccd/contracts"]
+      "allowedWorkspaceDependencies": [
+        "@ccd/contracts"
+      ]
+    },
+    {
+      "name": "@ccd/design-tokens",
+      "path": "packages/design-tokens",
+      "layer": "frontend-platform",
+      "runtime": "none",
+      "criticality": "protected",
+      "allowedWorkspaceDependencies": []
+    },
+    {
+      "name": "@ccd/unocss-preset",
+      "path": "packages/unocss-preset",
+      "layer": "frontend-platform",
+      "runtime": "node-build",
+      "criticality": "protected",
+      "allowedWorkspaceDependencies": [
+        "@ccd/design-tokens"
+      ]
+    },
+    {
+      "name": "@ccd/shared-utils",
+      "path": "packages/shared-utils",
+      "layer": "frontend-platform",
+      "runtime": "none",
+      "criticality": "protected",
+      "allowedWorkspaceDependencies": []
+    },
+    {
+      "name": "@ccd/vue-hooks",
+      "path": "packages/vue-hooks",
+      "layer": "frontend-platform",
+      "runtime": "web-library",
+      "criticality": "protected",
+      "allowedWorkspaceDependencies": []
+    },
+    {
+      "name": "@ccd/vue-ui",
+      "path": "packages/vue-ui",
+      "layer": "frontend-platform",
+      "runtime": "web-library",
+      "criticality": "protected",
+      "allowedWorkspaceDependencies": []
+    },
+    {
+      "name": "@ccd/vue-primevue-adapter",
+      "path": "packages/vue-primevue-adapter",
+      "layer": "frontend-platform",
+      "runtime": "web-library",
+      "criticality": "protected",
+      "allowedWorkspaceDependencies": [
+        "@ccd/design-tokens"
+      ]
+    },
+    {
+      "name": "@ccd/vue-charts",
+      "path": "packages/vue-charts",
+      "layer": "frontend-platform",
+      "runtime": "web-library",
+      "criticality": "protected",
+      "allowedWorkspaceDependencies": []
     },
     {
       "name": "@ccd/web-demo",
@@ -34,7 +98,14 @@
       "layer": "apps",
       "runtime": "web",
       "criticality": "flexible",
-      "allowedWorkspaceDependencies": ["@ccd/contracts", "@ccd/core"]
+      "allowedWorkspaceDependencies": [
+        "@ccd/contracts",
+        "@ccd/core",
+        "@ccd/design-tokens",
+        "@ccd/unocss-preset",
+        "@ccd/vue-ui",
+        "@ccd/vue-primevue-adapter"
+      ]
     },
     {
       "name": "@ccd/desktop",
@@ -42,24 +113,39 @@
       "layer": "apps",
       "runtime": "desktop",
       "criticality": "protected",
-      "allowedWorkspaceDependencies": ["@ccd/contracts", "@ccd/core"]
+      "allowedWorkspaceDependencies": [
+        "@ccd/contracts",
+        "@ccd/core",
+        "@ccd/design-tokens",
+        "@ccd/unocss-preset"
+      ]
     }
   ],
   "turbo": {
     "build": {
-      "dependsOn": ["^build"],
-      "outputs": ["dist/**"]
+      "dependsOn": [
+        "^build"
+      ],
+      "outputs": [
+        "dist/**"
+      ]
     },
     "type-check": {
-      "dependsOn": ["^build"],
+      "dependsOn": [
+        "^build"
+      ],
       "outputs": []
     },
     "typecheck": {
-      "dependsOn": ["type-check"],
+      "dependsOn": [
+        "type-check"
+      ],
       "outputs": []
     },
     "test": {
-      "dependsOn": ["^build"],
+      "dependsOn": [
+        "^build"
+      ],
       "outputs": []
     },
     "lint": {
@@ -100,12 +186,7 @@
       "from": "apps/**",
       "to": "apps/**",
       "reason": "Applications must not import one another."
-    },
-    {
-      "from": "**",
-      "to": "legacy/**",
-      "reason": "Legacy archive is read-only and outside active dependency graphs."
     }
   ],
-  "validationChecksum": "23e9a59ef971fd4ce44e14afdcfde9c9f768977ec98c98827ac7a45f0ce24528"
+  "validationChecksum": "b9719fd6ff977be52bd523fb48ed621aa3c21f61de8508cd039dbb5a6d58a89c"
 }

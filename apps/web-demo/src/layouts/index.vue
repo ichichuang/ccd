@@ -3,8 +3,8 @@
  * 核心布局入口：根据路由 meta.parent 在 Admin / FullScreen / Ratio 间切换
  * 页面布局模式仅由路由决定，不再写入 store
  */
-import type { AnimateName } from '@/components/AnimateWrapper/utils/types'
-import { AnimateWrapper } from '@/components/AnimateWrapper'
+import type { AnimateName } from '@ccd/vue-ui'
+import { AnimateWrapper } from '@ccd/vue-ui'
 import { RUNTIME_E2E_EVENTS } from '@/constants/runtime'
 import AmbientBackground from '@/layouts/components/AmbientBackground.vue'
 import AsyncErrorFallback from '@/layouts/components/AsyncErrorFallback.vue'

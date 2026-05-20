@@ -17,8 +17,8 @@ import AdminFooterBar from '@&/admin/AdminFooterBar.tsx'
 import AdminSidebarLogo from '@/layouts/components/admin/AdminSidebarLogo'
 import AdminSidebarMenu from '@/layouts/components/admin/AdminSidebarMenu'
 import { useLayoutRuntime } from '@/hooks/layout/useLayoutRuntime'
-import { Icons } from '@/components/Icons'
-import { CScrollbar } from '@/components/CScrollbar'
+import { Icons } from '@ccd/vue-ui'
+import { CScrollbar } from '@ccd/vue-ui'
 
 /**
  * LayoutAdmin（Admin 壳）- TSX 版本

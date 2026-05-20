@@ -6,7 +6,7 @@ const { mockUseLongPressAction } = vi.hoisted(() => ({
   mockUseLongPressAction: vi.fn(),
 }))
 
-vi.mock('@/hooks/modules/useInteraction', () => ({
+vi.mock('@ccd/vue-hooks', () => ({
   useLongPressAction: mockUseLongPressAction,
 }))
 
@@ -16,7 +16,7 @@ vi.stubGlobal('effectScope', () => ({
 }))
 
 import type { ObjectDirective, DirectiveBinding, VNode } from 'vue'
-import { castValue } from '@/utils/typeCasters'
+import { castValue } from '@ccd/shared-utils'
 
 type LongPressDirective = ObjectDirective<HTMLElement, (event: PointerEvent) => void>
 type DirectiveVNode = VNode<unknown, HTMLElement, Record<string, unknown>>

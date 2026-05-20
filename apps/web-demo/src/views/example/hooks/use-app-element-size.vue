@@ -1,5 +1,6 @@
 <script setup lang="tsx">
-import type { UseElementSizeOptions } from '@/hooks/modules/useAppElementSize'
+import { useAppElementSize } from '@ccd/vue-hooks'
+import type { UseElementSizeOptions } from '@ccd/vue-hooks'
 import Tag from 'primevue/tag'
 
 defineOptions({ name: 'UseAppElementSize' })

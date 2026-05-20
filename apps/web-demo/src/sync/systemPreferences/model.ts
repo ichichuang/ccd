@@ -1,6 +1,6 @@
 import { DEFAULT_LAYOUT_SETTING, DEFAULT_LAYOUT_VISIBILITY_SETTINGS } from '@/constants/layout'
-import { DEFAULT_SIZE_NAME, SIZE_PRESETS } from '@/constants/size'
-import { DEFAULT_THEME_MODE, DEFAULT_THEME_NAME, THEME_PRESETS } from '@/constants/theme'
+import { DEFAULT_SIZE_NAME, SIZE_PRESETS } from '@ccd/design-tokens'
+import { DEFAULT_THEME_MODE, DEFAULT_THEME_NAME, THEME_PRESETS } from '@ccd/design-tokens'
 import { supportedLocales, type SupportedLocale } from '@/locales'
 import {
   useLayoutStore,
@@ -13,7 +13,7 @@ import type {
   SystemPreferencePayload,
   SystemPreferences,
 } from '@/types/systems/preferences'
-import { deepClone } from '@/utils/lodashes'
+import { deepClone } from '@ccd/shared-utils'
 
 const LAYOUT_MODES: readonly AdminLayoutMode[] = ['vertical', 'horizontal', 'mix']
 const THEME_MODES: readonly ThemeMode[] = ['light', 'dark', 'auto', 'glass']

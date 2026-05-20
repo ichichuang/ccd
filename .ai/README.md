@@ -15,7 +15,7 @@ CCD is a self-protecting deterministic multi-runtime platform repository.
 - `apps/web-demo`: single browser runtime source of truth and browser adapters.
 - `apps/desktop`: Tauri runtime adapters.
 - `root`: orchestration-only shell.
-- `legacy/root-app`: read-only archive; never imported by active graphs.
+- Removed runtime archives are retained in Git history only; active graphs use workspace packages and app adapters.
 
 ## Canonical AI Paths
 
@@ -90,7 +90,7 @@ pnpm ai:sync:codex
 - Use the minimum applicable skill set for the touched surface.
 - Treat `pnpm governance:gate` as the required final architecture gate.
 - Never deep import workspace packages.
-- Never revive `legacy/**` into active dependency graphs.
+- Never revive removed runtime archive directories into active dependency graphs.
 - Keep runtime APIs inside app adapter directories.
 - Commit generated reports and API snapshot changes with the source change that produced them.
 

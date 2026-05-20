@@ -1,7 +1,7 @@
 <script setup lang="ts">
 defineOptions({ name: 'UtilsIds' })
 
-import { generateIdFromKey, generateUniqueId } from '@/utils/ids'
+import { generateIdFromKey, generateUniqueId } from '@ccd/shared-utils'
 
 const stableKey = ref<string | undefined>('demo-key')
 const stableIdOutput = ref<string>('')

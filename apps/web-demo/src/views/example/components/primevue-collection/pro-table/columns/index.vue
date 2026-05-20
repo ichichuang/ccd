@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import { ID_PREFIX } from '@/constants/business'
 import { PRODUCT_CATEGORIES } from '@/constants/enums'
-import { formatSerialId } from '@/utils/business/idGenerator'
+import { formatSerialId } from '@ccd/shared-utils'
+import { useAppElementSize } from '@ccd/vue-hooks'
 import { productColumns } from './columns'
 import type { ProductRow } from './columns'
 

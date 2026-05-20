@@ -3,7 +3,7 @@ import { FormController } from '../core/FormController'
 import { DraftStorage } from '../persistence/DraftStorage'
 import { FORM_CONTROLLER_KEY, PRO_FORM_STATE_KEY } from '../constants'
 import { PRO_FORM_LOGGER } from '../utils/logger'
-import { castValue } from '@/utils/typeCasters'
+import { castValue } from '@ccd/shared-utils'
 import { syncFormState } from './syncFormState'
 
 /**

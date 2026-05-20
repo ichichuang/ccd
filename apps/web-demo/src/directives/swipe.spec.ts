@@ -6,7 +6,7 @@ const { mockUseSwipeAction } = vi.hoisted(() => ({
   mockUseSwipeAction: vi.fn(),
 }))
 
-vi.mock('@/hooks/modules/useInteraction', () => ({
+vi.mock('@ccd/vue-hooks', () => ({
   useSwipeAction: mockUseSwipeAction,
 }))
 
@@ -16,8 +16,8 @@ vi.stubGlobal('effectScope', () => ({
 }))
 
 import type { ObjectDirective, DirectiveBinding, VNode } from 'vue'
-import { castValue } from '@/utils/typeCasters'
-import type { SwipeDirection } from '@/hooks/modules/useInteraction'
+import { castValue } from '@ccd/shared-utils'
+import type { SwipeDirection } from '@ccd/vue-hooks'
 
 type SwipeDirective = ObjectDirective<HTMLElement, (direction: SwipeDirection) => void>
 type DirectiveVNode = VNode<unknown, HTMLElement, Record<string, unknown>>

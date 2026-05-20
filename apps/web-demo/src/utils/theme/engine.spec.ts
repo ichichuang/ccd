@@ -20,7 +20,7 @@ import {
   getThemeMetrics,
   clearThemeMetrics,
 } from './engine'
-import { THEME_PRESETS } from '../../constants/theme'
+import { THEME_PRESETS } from '@ccd/design-tokens'
 
 describe('generateThemeVars (v4 — backward compat)', () => {
   const mockPreset: ThemePreset = {

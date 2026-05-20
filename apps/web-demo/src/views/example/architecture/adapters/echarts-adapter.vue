@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { parseEChartsOption } from '@/adapters/echarts.adapter'
+import { parseEChartsOption } from '@ccd/vue-charts'
 import type { EChartsOption } from 'echarts'
 
 defineOptions({ name: 'ArchitectureAdapterEcharts' })
@@ -81,7 +81,7 @@ function resetToDefault(): void {
               </div>
             </div>
             <Tag
-              value="@/adapters/echarts.adapter"
+              value="@ccd/vue-charts"
               severity="secondary"
               class="shrink-0"
             />

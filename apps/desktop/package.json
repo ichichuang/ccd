@@ -15,14 +15,24 @@
   "dependencies": {
     "@ccd/contracts": "workspace:*",
     "@ccd/core": "workspace:*",
+    "@ccd/design-tokens": "workspace:*",
+    "@ccd/shared-utils": "workspace:*",
+    "@ccd/unocss-preset": "workspace:*",
+    "@ccd/vue-hooks": "workspace:*",
+    "@ccd/vue-primevue-adapter": "workspace:*",
+    "@ccd/vue-ui": "workspace:*",
+    "@primeuix/themes": "^2.0.3",
+    "@primevue/core": "^4.5.4",
     "@tauri-apps/api": "^2.9.1",
-    "@vitejs/plugin-vue": "^6.0.3",
+    "primevue": "^4.5.4",
     "typescript": "^5.8.3",
     "vite": "^7.3.1",
     "vue": "^3.5.12",
     "vue-tsc": "^2.2.10"
   },
   "devDependencies": {
+    "@vitejs/plugin-vue": "^6.0.3",
+    "unocss": "^66.6.0",
     "@tauri-apps/cli": "^2.9.1"
   },
   "exports": {
