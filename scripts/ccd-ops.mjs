@@ -317,6 +317,14 @@ function runFix() {
     'internal workspace package preparation failed.',
     'pnpm ci:prepare-internal'
   )
+  runRequired(
+    'pnpm',
+    ['governance:refresh'],
+    'governance refresh failed.',
+    'pnpm governance:refresh'
+  )
+  formatGenerated()
+  normalizeGenerated()
   runGovernanceGateWithGeneratedRetry()
   formatGenerated()
   normalizeGenerated()

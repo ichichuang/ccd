@@ -1,8 +1,6 @@
-import { createRequire } from "node:module";
 import { existsSync } from "node:fs";
 import { resolve } from "node:path";
 
-const require = createRequire(import.meta.url);
 const root = resolve(import.meta.dirname, "../..");
 
 const packages = [
@@ -16,8 +14,13 @@ let failed = false;
 
 for (const pkg of packages) {
   try {
-    require.resolve(pkg);
-    console.log(`[smoke] ${pkg} resolved OK`);
+    const resolved = import.meta.resolve(pkg);
+    if (resolved) {
+      console.log(`[smoke] ${pkg} resolved OK`);
+    } else {
+      console.error(`[smoke] FAIL: cannot resolve ${pkg} from root`);
+      failed = true;
+    }
   } catch (err) {
     console.error(`[smoke] FAIL: cannot resolve ${pkg} from root`);
     failed = true;
@@ -27,6 +30,8 @@ for (const pkg of packages) {
 const distChecks = [
   "packages/contracts/dist/index.d.ts",
   "packages/core/dist/index.d.ts",
+  "packages/design-tokens/dist/index.d.ts",
+  "packages/unocss-preset/dist/index.d.ts",
 ];
 
 for (const rel of distChecks) {

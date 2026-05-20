@@ -12,8 +12,8 @@
     }
   },
   "scripts": {
-    "build": "tsc -b tsconfig.json",
-    "type-check": "tsc -b tsconfig.json --noEmit",
+    "build": "rm -rf dist && rm -f ../../node_modules/.tmp/packages-core.tsbuildinfo && tsc -b tsconfig.json --force",
+    "type-check": "tsc -p tsconfig.json --noEmit",
     "typecheck": "pnpm type-check",
     "test": "vitest run --passWithNoTests"
   },

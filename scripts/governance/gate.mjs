@@ -47,6 +47,27 @@ const checks = [
 
 const generatedArtifactPaths = ['docs/generated', '.ai/generated', '.ai/governance/api-snapshots']
 
+const generatedFormatGlobs = [
+  'docs/generated/**/*.json',
+  'docs/generated/**/*.md',
+  '.ai/generated/**/*.json',
+  '.ai/generated/**/*.md',
+  '.ai/governance/api-snapshots/**/*.json',
+]
+
+function normalizeGeneratedArtifacts() {
+  spawnSync('pnpm', ['exec', 'prettier', '--write', '--no-error-on-unmatched-pattern', ...generatedFormatGlobs], {
+    cwd: process.cwd(),
+    encoding: 'utf8',
+    stdio: 'pipe',
+  })
+  spawnSync('pnpm', ['generated:normalize'], {
+    cwd: process.cwd(),
+    encoding: 'utf8',
+    stdio: 'pipe',
+  })
+}
+
 function runCheck(check) {
   console.log(`\n[gate] ${check.name}`)
   const result = spawnSync(check.command[0], check.command.slice(1), {
@@ -79,6 +100,8 @@ for (const check of checks) {
 }
 
 if (ok) {
+  console.log('\n[gate] normalizing generated artifacts before sync check')
+  normalizeGeneratedArtifacts()
   console.log('\n[gate] governance artifact sync')
   const generatedAfter = gitSnapshot()
   if (generatedBefore !== generatedAfter) {
@@ -86,6 +109,24 @@ if (ok) {
     console.error(
       'Generated governance artifacts changed during the gate. Run pnpm governance:gate locally and commit updated docs/generated, .ai/generated, and .ai/governance/api-snapshots outputs.'
     )
+    const nameOnly = spawnSync('git', ['diff', '--name-only', '--', ...generatedArtifactPaths], {
+      cwd: process.cwd(),
+      encoding: 'utf8',
+      stdio: 'pipe',
+    })
+    if (nameOnly.stdout?.trim()) {
+      console.error('\n[gate] changed generated files:')
+      console.error(nameOnly.stdout.trim())
+    }
+    const stat = spawnSync('git', ['diff', '--stat', '--', ...generatedArtifactPaths], {
+      cwd: process.cwd(),
+      encoding: 'utf8',
+      stdio: 'pipe',
+    })
+    if (stat.stdout?.trim()) {
+      console.error('\n[gate] change summary:')
+      console.error(stat.stdout.trim())
+    }
     ok = false
   }
 }
