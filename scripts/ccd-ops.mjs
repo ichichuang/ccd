@@ -344,38 +344,14 @@ function runFix() {
 function runCi() {
   runRequired(
     'pnpm',
-    ['install', '--frozen-lockfile'],
-    'dependencies are not locked or installable.',
-    'pnpm install --frozen-lockfile'
+    ['ci:verify:fresh'],
+    'fresh CI parity build failed.',
+    'pnpm ci:verify:fresh'
   )
-  runRequired(
-    'pnpm',
-    ['ci:prepare-internal'],
-    'internal workspace package preparation failed.',
-    'pnpm ci:prepare-internal'
-  )
-  runRequired('pnpm', ['ai:doctor'], 'AI workspace doctor failed.', 'pnpm ai:doctor')
-  runRequired(
-    'pnpm',
-    ['validate:governance'],
-    'governance validation failed.',
-    'pnpm validate:governance'
-  )
-  runRequired('pnpm', ['type-check'], 'TypeScript validation failed.', 'pnpm type-check')
-  runRequired('pnpm', ['test:run'], 'unit tests failed.', 'pnpm test:run')
-  runRequired('pnpm', ['lint:check'], 'lint validation failed.', 'pnpm lint:check')
-  runRequired('pnpm', ['build:ci'], 'CI build failed.', 'pnpm build:ci')
   runRequired('pnpm', ['e2e:qa'], 'Playwright QA failed.', 'pnpm e2e:qa')
 
   console.log('\nCCD CI parity completed')
-  console.log('- install --frozen-lockfile')
-  console.log('- ci:prepare-internal')
-  console.log('- ai:doctor')
-  console.log('- validate:governance')
-  console.log('- type-check')
-  console.log('- test:run')
-  console.log('- lint:check')
-  console.log('- build:ci')
+  console.log('- ci:verify:fresh')
   console.log('- e2e:qa')
 }
 
