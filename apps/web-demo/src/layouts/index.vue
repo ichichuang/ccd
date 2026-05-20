@@ -50,6 +50,7 @@ const isLoading = computed(() => layoutStore.isLoading)
 const route = useRoute()
 const router = useRouter()
 const currentLayoutMode = computed<LayoutMode>(() => (route.meta?.parent as LayoutMode) || 'admin')
+const shouldShowAmbientBackground = computed<boolean>(() => route.path !== '/login')
 const previousLayout = ref<LayoutMode>(currentLayoutMode.value)
 
 // Use beforeResolve to capture the 'from' route just before the transition
@@ -145,7 +146,10 @@ const currentLayoutComponent = computed(() => {
     id="app-shell"
     class="relative flex flex-col layout-full overflow-hidden"
   >
-    <AmbientBackground :variant="currentLayoutMode" />
+    <AmbientBackground
+      v-if="shouldShowAmbientBackground"
+      :variant="currentLayoutMode"
+    />
     <!-- 单所有者预加载：启动阶段仅保留 index.html 原生 loader -->
     <AnimateWrapper
       :show="!isLoadingRef"

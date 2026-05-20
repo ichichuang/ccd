@@ -142,7 +142,7 @@ Use semantic token classes via `:pt` instead.
 New `:deep(.p-*)` usage is forbidden except the following three files:
 
 1. `src/components/ProTable/ProTable.vue`
-2. `src/views/login/login.vue`
+2. `apps/web-demo/src/views/login/index.vue`
 3. `src/layouts/components/AnimateRouterView.vue`
 
 Outside these files, targeting PrimeVue internal `.p-*` selectors is prohibited.

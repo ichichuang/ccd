@@ -144,7 +144,7 @@ All visual customization of PrimeVue components MUST use the Pass-Through (`pt`)
 `:deep(.p-*)` targeting PrimeVue internal classes is **FORBIDDEN** in business code. Exactly three files have documented exceptions:
 
 1. **`src/components/ProTable/ProTable.vue`** — DataTable frozen column z-index management, row selection coloring, and grid line control. These are CSS-variable overrides that cannot be expressed via PT.
-2. **`src/views/login/login.vue`** — Card transparency for glassmorphism effect.
+2. **`apps/web-demo/src/views/login/index.vue`** — Card transparency for glassmorphism effect.
 3. **`src/layouts/components/AnimateRouterView.vue`** — Animation library class positioning.
 
 Any NEW `:deep(.p-*)` usage requires explicit architectural justification and MUST be added to this exception list.

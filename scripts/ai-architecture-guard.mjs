@@ -405,7 +405,6 @@ for (const relPath of dateCheckFiles) {
 
 // --- raw-timer: setTimeout/setInterval outside approved files ---
 const approvedRawTimerFiles = new Set([
-  'apps/web-demo/src/views/login/components/animated-characters/Index.vue',
   'apps/web-demo/src/views/login/index.vue',
   'apps/web-demo/src/components/ProForm/engine/core/FormController.ts',
   'apps/web-demo/src/components/ProForm/engine/validation/ValidationEngine.ts',

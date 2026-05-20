@@ -7,9 +7,39 @@
  */
 import enUSCore from '@/locales/lang/core/en-US'
 import enUSExample from '@/locales/lang/example/en-US'
-import { mergeLocale } from '@/locales/lang/utils/mergeLocale'
+import { mergeLocale, type LocaleRecord } from '@/locales/lang/utils/mergeLocale'
 
 const enUS = mergeLocale(enUSCore, enUSExample)
+
+function isLocaleRecord(value: unknown): value is LocaleRecord {
+  return typeof value === 'object' && value !== null
+}
+
+const unusedLoginKeys = [
+  'title',
+  'subtitle',
+  'username',
+  'password',
+  'placeholderUsername',
+  'placeholderPassword',
+  'authDisabled',
+  'required',
+  'failed',
+  'brandTitle',
+  'brandSloganLine2',
+  'brandQuoteAuthor',
+  'footerText',
+  'helpCenter',
+  'privacyPolicy',
+  'portalEyebrow',
+  'quickPasswordHint',
+] as const
+
+if (isLocaleRecord(enUS.login)) {
+  for (const key of unusedLoginKeys) {
+    Reflect.deleteProperty(enUS.login, key)
+  }
+}
 
 export { enUS }
 export default enUS

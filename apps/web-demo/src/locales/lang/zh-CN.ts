@@ -7,9 +7,39 @@
  */
 import zhCNCore from '@/locales/lang/core/zh-CN'
 import zhCNExample from '@/locales/lang/example/zh-CN'
-import { mergeLocale } from '@/locales/lang/utils/mergeLocale'
+import { mergeLocale, type LocaleRecord } from '@/locales/lang/utils/mergeLocale'
 
 const zhCN = mergeLocale(zhCNCore, zhCNExample)
+
+function isLocaleRecord(value: unknown): value is LocaleRecord {
+  return typeof value === 'object' && value !== null
+}
+
+const unusedLoginKeys = [
+  'title',
+  'subtitle',
+  'username',
+  'password',
+  'placeholderUsername',
+  'placeholderPassword',
+  'authDisabled',
+  'required',
+  'failed',
+  'brandTitle',
+  'brandSloganLine2',
+  'brandQuoteAuthor',
+  'footerText',
+  'helpCenter',
+  'privacyPolicy',
+  'portalEyebrow',
+  'quickPasswordHint',
+] as const
+
+if (isLocaleRecord(zhCN.login)) {
+  for (const key of unusedLoginKeys) {
+    Reflect.deleteProperty(zhCN.login, key)
+  }
+}
 
 export { zhCN }
 export default zhCN
