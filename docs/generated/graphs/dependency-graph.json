@@ -12,7 +12,7 @@
     "deterministic": true
   },
   "root": {
-    "name": "app-template",
+    "name": "ccd",
     "role": "orchestration-only",
     "packageManager": "pnpm@10.28.2"
   },
@@ -175,5 +175,5 @@
       "reason": "Applications must not import one another."
     }
   ],
-  "validationChecksum": "2ff9d2525f7a387a1240e3abd9d226c5c3da0fa5602bde6ea9c606d820c675e5"
+  "validationChecksum": "751bbf6b226a960f4cbae64c344c1a8580f6cb4d53e3f47330c2ebcc760e8a3c"
 }

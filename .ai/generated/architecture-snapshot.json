@@ -1,11 +1,7 @@
 {
   "schemaVersion": 1,
   "generatedBy": "scripts/governance/snapshot.mjs",
-  "runtimeFamilies": [
-    "web",
-    "desktop",
-    "portable"
-  ],
+  "runtimeFamilies": ["web", "desktop", "portable"],
   "rootEntries": [
     ".DS_Store",
     ".ai",

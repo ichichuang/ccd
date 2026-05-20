@@ -1,6 +1,6 @@
 {
-  "name": "app-template",
-  "version": "2.0.0",
+  "name": "ccd",
+  "version": "1.0.38",
   "private": true,
   "type": "module",
   "sideEffects": [
@@ -10,17 +10,16 @@
     "uno.css",
     "virtual:*"
   ],
-  "author": "AppTemplate Team",
-  "description": "企业级 Vue 3 后台管理模板",
+  "author": "Chi Chuang",
+  "description": "Self-protecting deterministic multi-runtime platform architecture.",
   "keywords": [
     "vue3",
     "typescript",
     "vite",
-    "pinia",
-    "alova",
-    "admin",
-    "framework",
-    "enterprise-vue-admin"
+    "tauri",
+    "monorepo",
+    "governance",
+    "architecture"
   ],
   "engines": {
     "node": "24.x",
@@ -28,6 +27,14 @@
   },
   "packageManager": "pnpm@10.28.2",
   "scripts": {
+    "ccd:doctor": "node scripts/ccd-ops.mjs doctor",
+    "ccd:fix": "node scripts/ccd-ops.mjs fix",
+    "ccd:ship": "node scripts/ccd-ops.mjs ship",
+    "generated:normalize": "node scripts/normalize-generated-output.mjs",
+    "project:print": "node scripts/project-config.mjs print",
+    "project:validate": "node scripts/project-config.mjs validate",
+    "project:sync": "node scripts/project-config.mjs sync",
+    "project:doctor": "node scripts/project-config.mjs doctor",
     "sync:brand": "node scripts/sync-brand.mjs",
     "sync:version": "node scripts/sync-version.mjs",
     "prebuild": "pnpm build:shared-config && pnpm build:core",
@@ -251,5 +258,7 @@
     "vue-eslint-parser": "^10.2.0",
     "vue-tsc": "^2.2.10",
     "turbo": "^2.6.3"
-  }
+  },
+  "license": "GPL-3.0",
+  "homepage": "https://www.ccd.wzdxcc.cloudns.org/"
 }

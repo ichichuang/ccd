@@ -102,6 +102,18 @@ pnpm governance:github-workflows # GitHub Actions registry hygiene
 pnpm ai:guard             # AI-safe generated-code and architecture guard
 ```
 
+## Project Control Center
+
+CCD project metadata is managed from [`project.config.json`](./project.config.json). See [Project Control Center](./docs/project-control-center.md) before changing product names, versions, descriptions, desktop identifiers, or governance phase metadata.
+
+Daily automation:
+
+```bash
+pnpm ccd:doctor                         # check config, metadata, and git status
+pnpm ccd:fix                            # repair, refresh generated outputs, and validate
+pnpm ccd:ship -- "feat: describe change" # repair, validate, stage, and commit through Husky
+```
+
 Affected-only commands:
 
 ```bash

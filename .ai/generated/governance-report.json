@@ -16,10 +16,7 @@
     "governancePhase": "phase-4-self-protecting-platform",
     "description": "Machine-readable architecture governance policy baseline."
   },
-  "adapters": [
-    "Codex",
-    "Claude"
-  ],
+  "adapters": ["Codex", "Claude"],
   "repoDefaults": [
     "Treat this repository as a governed deterministic pnpm + Turbo monorepo.",
     "Active topology is packages/contracts -> packages/core -> apps/*.",
@@ -29,11 +26,7 @@
     "For desktop/Tauri work, keep @tauri-apps imports and invoke() inside apps/desktop/src/adapters/**.",
     "Use governance commands: pnpm governance:full, pnpm arch:runtime, pnpm api:report, and pnpm supply:check."
   ],
-  "orchestrationRoles": [
-    "architect-governance",
-    "frontend-runtime",
-    "desktop-runtime"
-  ],
+  "orchestrationRoles": ["architect-governance", "frontend-runtime", "desktop-runtime"],
   "ruleCount": 38,
   "routedSkillCount": 10,
   "orphanChecks": {
@@ -42,22 +35,14 @@
     "protocolVersionExists": true
   },
   "packageRelationships": {
-    "@ccd/contracts": [
-      "@ccd/design-tokens"
-    ],
-    "@ccd/core": [
-      "@ccd/contracts"
-    ],
+    "@ccd/contracts": ["@ccd/design-tokens"],
+    "@ccd/core": ["@ccd/contracts"],
     "@ccd/design-tokens": [],
-    "@ccd/unocss-preset": [
-      "@ccd/design-tokens"
-    ],
+    "@ccd/unocss-preset": ["@ccd/design-tokens"],
     "@ccd/shared-utils": [],
     "@ccd/vue-hooks": [],
     "@ccd/vue-ui": [],
-    "@ccd/vue-primevue-adapter": [
-      "@ccd/design-tokens"
-    ],
+    "@ccd/vue-primevue-adapter": ["@ccd/design-tokens"],
     "@ccd/vue-charts": [],
     "@ccd/web-demo": [
       "@ccd/contracts",
@@ -67,12 +52,7 @@
       "@ccd/vue-ui",
       "@ccd/vue-primevue-adapter"
     ],
-    "@ccd/desktop": [
-      "@ccd/contracts",
-      "@ccd/core",
-      "@ccd/design-tokens",
-      "@ccd/unocss-preset"
-    ]
+    "@ccd/desktop": ["@ccd/contracts", "@ccd/core", "@ccd/design-tokens", "@ccd/unocss-preset"]
   },
   "packageCriticality": {
     "@ccd/contracts": "critical",

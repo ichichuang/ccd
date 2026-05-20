@@ -1,22 +1,20 @@
 /**
- * 项目品牌配置 - 单一数据源
- * 用于：HTML meta、布局 Header、usePageTitle、permission 路由守卫、构建信息
- *
- * 同步说明：修改品牌后，需手动同步 package.json 的 name / description / author 与 brand 一致
+ * Project brand metadata.
+ * Source of truth: project.config.json. Run pnpm project:sync after edits.
  */
 export const brand = {
-  /** 项目标识（小写，用于 package、URL、浏览器标题、og:title） */
-  name: 'app-template',
-  /** Header 展示主标题 */
-  displayName: 'Enterprise Vue Admin',
-  /** Header 展示副标题 */
-  subtitle: 'Boilerplate',
-  /** 简短描述（package.json description、meta description） */
-  description: '企业级 Vue 3 后台管理模板',
-  /** 分享用 slogan（og:description） */
-  slogan: '先进的架构，优雅的代码，高效的开发体验',
-  /** 作者（og:author、meta author） */
-  author: 'AppTemplate Team',
+  /** Package, URL, browser-title, and og:title identifier. */
+  name: 'ccd',
+  /** Header display title. */
+  displayName: 'CCD',
+  /** Header display subtitle. */
+  subtitle: 'Platform',
+  /** package.json description and meta description. */
+  description: 'Self-protecting deterministic multi-runtime platform architecture.',
+  /** og:description slogan. */
+  slogan: 'Self-protecting deterministic multi-runtime platform architecture',
+  /** og:author and meta author. */
+  author: 'Chi Chuang',
 } as const
 
 export type Brand = typeof brand

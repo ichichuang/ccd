@@ -5,7 +5,7 @@
   "packages": [
     {
       "name": "@ccd/contracts",
-      "version": "1.0.37",
+      "version": "1.0.38",
       "private": true,
       "type": "module",
       "sideEffects": false,
@@ -24,7 +24,7 @@
     },
     {
       "name": "@ccd/core",
-      "version": "1.0.37",
+      "version": "1.0.38",
       "private": true,
       "type": "module",
       "sideEffects": false,
@@ -46,7 +46,7 @@
     },
     {
       "name": "@ccd/design-tokens",
-      "version": "1.0.37",
+      "version": "1.0.38",
       "private": true,
       "type": "module",
       "main": "./dist/index.js",
@@ -68,7 +68,7 @@
     },
     {
       "name": "@ccd/unocss-preset",
-      "version": "1.0.37",
+      "version": "1.0.38",
       "private": true,
       "type": "module",
       "main": "./dist/index.js",
@@ -109,7 +109,7 @@
     },
     {
       "name": "@ccd/shared-utils",
-      "version": "1.0.37",
+      "version": "1.0.38",
       "private": true,
       "type": "module",
       "sideEffects": false,
@@ -132,7 +132,7 @@
     },
     {
       "name": "@ccd/vue-hooks",
-      "version": "1.0.37",
+      "version": "1.0.38",
       "private": true,
       "type": "module",
       "sideEffects": false,
@@ -156,7 +156,7 @@
     },
     {
       "name": "@ccd/vue-ui",
-      "version": "1.0.37",
+      "version": "1.0.38",
       "private": true,
       "type": "module",
       "sideEffects": false,
@@ -188,7 +188,7 @@
     },
     {
       "name": "@ccd/vue-primevue-adapter",
-      "version": "1.0.37",
+      "version": "1.0.38",
       "private": true,
       "type": "module",
       "sideEffects": false,
@@ -212,7 +212,7 @@
     },
     {
       "name": "@ccd/vue-charts",
-      "version": "1.0.37",
+      "version": "1.0.38",
       "private": true,
       "type": "module",
       "sideEffects": false,
@@ -244,7 +244,7 @@
     },
     {
       "name": "@ccd/web-demo",
-      "version": "1.0.37",
+      "version": "1.0.38",
       "private": true,
       "type": "module",
       "scripts": {
@@ -318,7 +318,7 @@
     },
     {
       "name": "@ccd/desktop",
-      "version": "1.0.37",
+      "version": "1.0.38",
       "private": true,
       "type": "module",
       "scripts": {

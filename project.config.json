@@ -1,0 +1,21 @@
+{
+  "schemaVersion": 1,
+  "product": {
+    "packageName": "ccd",
+    "displayName": "CCD",
+    "desktopProductName": "CCD Desktop",
+    "description": "Self-protecting deterministic multi-runtime platform architecture.",
+    "author": "Chi Chuang",
+    "homepage": "https://www.ccd.wzdxcc.cloudns.org/",
+    "license": "GPL-3.0",
+    "identifier": "com.ccd.desktop",
+    "keywords": ["vue3", "typescript", "vite", "tauri", "monorepo", "governance", "architecture"]
+  },
+  "release": {
+    "version": "1.0.38"
+  },
+  "governance": {
+    "policyVersion": "2026.05.18",
+    "phase": "phase-4-self-protecting-platform"
+  }
+}
