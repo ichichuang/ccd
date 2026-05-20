@@ -2,7 +2,7 @@
 
 # CCD
 
-### Self-protecting deterministic multi-runtime platform architecture
+### 自保护确定性多运行时平台架构
 
 [![Vue 3.5](https://img.shields.io/badge/Vue-3.5+-42b883?style=flat-square&logo=vuedotjs&logoColor=white)](https://vuejs.org/)
 [![Vite 7](https://img.shields.io/badge/Vite-7-646cff?style=flat-square&logo=vite&logoColor=white)](https://vite.dev/)
@@ -11,68 +11,58 @@
 [![pnpm](https://img.shields.io/badge/pnpm-10-f69220?style=flat-square&logo=pnpm&logoColor=white)](https://pnpm.io/)
 [![License: GPL v3](https://img.shields.io/badge/License-GPL_v3-blue?style=flat-square)](./LICENSE)
 
-[Docs](./docs/README.md) · [Governance](./docs/governance.md) · [API Surface](./docs/generated/api-surface-report.md) · [Governance Report](./docs/generated/governance-report.md)
+[中文文档](./docs/README.md) · [English AI Docs](./README.en.md) · [治理总览](./docs/governance.md) · [API Surface](./docs/generated/api-surface-report.md) · [治理报告](./docs/generated/governance-report.md)
 
 </div>
 
 ---
 
-## Platform Position
+## CCD 是什么
 
-CCD is an enterprise-grade governed platform repository for deterministic, AI-safe, multi-runtime product systems.
+CCD 是一个面向确定性、AI 安全、多运行时产品体系的企业级受控平台仓库。
 
-The repository has moved beyond monorepo restructuring into a self-protecting platform architecture:
+它不只是一个 monorepo，而是一套自保护平台架构：
 
-- machine-readable architecture policies
-- runtime-neutral contracts and core
-- isolated app runtime adapters
-- public API snapshot governance
-- supply-chain governance
-- release topology validation
-- AI-generated code guardrails
-- GitHub CI-enforced unified governance gate
+- 机器可读的架构策略
+- 运行时无关的 `contracts` 与 `core`
+- 隔离的应用运行时适配层
+- 公共 API 快照治理
+- 供应链治理
+- 发布拓扑校验
+- AI 生成代码护栏
+- GitHub CI 统一治理门禁
+
+## 架构定位
+
+本仓库的核心目标不是“前端重构”，而是建立一个可长期维护、可自动守护、可跨运行时演进的平台骨架。
+
+关键设计决策：
+
+- `packages/contracts` 只放接口与共享类型
+- `packages/core` 必须保持运行时无关
+- 浏览器能力只在 `apps/web-demo` 的适配层出现
+- 桌面能力只在 `apps/desktop` 的适配层出现
+- 根目录只负责编排，不承载业务运行时代码
+
+## 核心拓扑
 
 ```text
-packages/contracts  -> public ABI: interfaces and shared types only
-packages/core       -> runtime-neutral platform logic
-apps/web-demo       -> single browser runtime source of truth
-apps/desktop        -> Tauri runtime shell and desktop adapters
-root                -> orchestration-only shell
+packages/contracts  -> 公共 ABI：仅接口与共享类型
+packages/core       -> 运行时无关平台逻辑
+apps/web-demo       -> 单一浏览器运行时真相源
+apps/desktop        -> Tauri 运行时外壳与桌面适配层
+root                -> 仅编排外壳
 ```
 
-Canonical dependency direction:
+规范依赖方向：
 
 ```text
 @ccd/contracts -> @ccd/core -> apps/*
 ```
 
-Runtime APIs are allowed only in app adapter layers. `packages/contracts` and `packages/core` must remain free of browser, Node, Tauri, timer, crypto, storage, network, and console globals.
+`packages/contracts` 和 `packages/core` 不得出现浏览器、Node、Tauri、定时器、crypto、storage、network、console 等运行时全局对象。
 
-## Self-Protection Model
-
-CCD does not rely on contributor discipline for architecture safety. The active merge gate is:
-
-```bash
-pnpm governance:gate
-```
-
-The gate must pass before CI continues to typecheck, tests, lint, and production builds.
-
-| Protection                | Enforced By                                                                 |
-| ------------------------- | --------------------------------------------------------------------------- |
-| Policy asset presence     | `.ai/governance/policies/**` + `pnpm governance:validate`                   |
-| AI-safe code generation   | `.ai/governance/policies/ai.json` + `pnpm ai:guard`                         |
-| Dependency boundaries     | dependency-cruiser + `scripts/architecture/validate-boundaries.mjs`         |
-| Runtime neutrality        | `scripts/architecture/check-runtime-leaks.mjs`                              |
-| Public API immutability   | `.ai/governance/api-snapshots/**` + `pnpm api:report`                       |
-| Supply-chain baseline     | `.ai/governance/policies/supply-chain.json` + `pnpm supply:check`           |
-| Release order             | `.ai/governance/policies/release.json` + `pnpm release:governance`          |
-| Workflow registry hygiene | `.ai/governance/policies/release.json` + `pnpm governance:github-workflows` |
-| Governance observability  | generated reports under `docs/generated/**` and `.ai/generated/**`          |
-
-The repository also governs GitHub's remote workflow registry. Historical desktop workflow records remain visible for audit, but they are disabled and are no longer execution surfaces.
-
-## Quick Start
+## 快速开始
 
 ```bash
 git clone git@github.com:ichichuang/ccd.git
@@ -81,97 +71,80 @@ pnpm install --frozen-lockfile
 pnpm dev:web
 ```
 
-Requirements:
+环境要求：
 
-| Tool    | Version     |
+| 工具    | 版本        |
 | ------- | ----------- |
 | Node.js | `24.x`      |
 | pnpm    | `>= 10.0.0` |
 
-## Core Commands
+## 日常开发命令
 
 ```bash
-pnpm governance:gate      # single mandatory architecture governance gate
-pnpm build:ci             # governance gate + Turbo build
-pnpm arch:boundaries      # dependency topology and import boundary validation
-pnpm arch:runtime         # runtime leak scanner for contracts/core
-pnpm api:report           # API snapshot compatibility and API reports
-pnpm supply:check         # dependency policy and SBOM generation
-pnpm release:governance   # Changesets/release topology validation
-pnpm governance:github-workflows # GitHub Actions registry hygiene
-pnpm ai:guard             # AI-safe generated-code and architecture guard
+pnpm project:doctor          # 检查配置、元数据、git 状态
+pnpm ccd:doctor              # 校验项目主控信息
+pnpm ccd:fix                 # 修复元数据、刷新生成产物并校验
+pnpm ccd:ship -- "feat: 描述变更" # 修复、校验、暂存、提交并通过 Husky
 ```
 
-## Project Control Center
-
-CCD project metadata is managed from [`project.config.json`](./project.config.json). See [Project Control Center](./docs/project-control-center.md) before changing product names, versions, descriptions, desktop identifiers, or governance phase metadata.
-
-Daily automation:
+规范命令：
 
 ```bash
-pnpm ccd:doctor                         # check config, metadata, and git status
-pnpm ccd:fix                            # repair, refresh generated outputs, and validate
-pnpm ccd:ship -- "feat: describe change" # repair, validate, stage, and commit through Husky; clean no-op exits 0
+pnpm governance:gate
+pnpm build:ci
+pnpm ci:prepare-internal
+pnpm ci:smoke:packages
+pnpm vercel:build
+pnpm e2e:qa
 ```
 
-`ccd:ship` is idempotent: if the working tree is already clean after validation, it exits successfully without creating an empty commit. Use `--allow-empty` only for intentional empty commits.
+## 一键自动化工作流
 
-Affected-only commands:
+日常最常用的闭环是：
 
 ```bash
-pnpm affected:lint
-pnpm affected:test
-pnpm affected:typecheck
-pnpm affected:build
+pnpm ccd:doctor
+pnpm ccd:fix
+pnpm ccd:ship -- "feat: describe change"
 ```
 
-## GitHub CI Contract
+`ccd:ship` 是幂等的：如果校验后工作区已经干净，它会成功退出，不会创建空提交。
 
-Active GitHub workflows:
+## GitHub Actions / Vercel / GitHub Pages 分工
 
 ```text
-CI Guardian            -> .github/workflows/ci.yml
-Deploy to GitHub Pages -> .github/workflows/deploy.yml
-Dependabot Updates     -> dynamic/dependabot/dependabot-updates
+GitHub Actions  -> 质量门禁与验证构建
+Vercel          -> 部署构建
+GitHub Pages    -> web-demo 静态部署
 ```
 
-Disabled historical workflow records:
+注意区分：
 
-```text
-Build Desktop (Windows) -> disabled_manually
-Release Desktop         -> disabled_manually
-Smoke Desktop           -> disabled_manually
+- `pnpm build:ci`：面向 CI 的完整验证链路
+- `pnpm vercel:build`：面向 Vercel 的部署链路
+
+如果 Vercel 错误地执行了 `build:ci`，应优先修复部署配置，而不是削弱治理。
+
+## 文档入口
+
+- 中文文档入口：[docs/README.md](./docs/README.md)
+- 英文 AI 文档入口：[README.en.md](./README.en.md)
+- 架构文档：[docs/zh/02-architecture.md](./docs/zh/02-architecture.md)
+- 治理文档：[docs/zh/03-governance.md](./docs/zh/03-governance.md)
+- 项目主控中心：[docs/zh/04-project-control-center.md](./docs/zh/04-project-control-center.md)
+- CI / 部署：[docs/zh/05-ci-deploy.md](./docs/zh/05-ci-deploy.md)
+- AI 工作流：[docs/zh/06-ai-workflow.md](./docs/zh/06-ai-workflow.md)
+
+## 生成物不可手改规则
+
+`docs/generated/**`、`.ai/generated/**`、`.ai/governance/api-snapshots/**` 均为生成产物。
+
+不要手动编辑这些文件。刷新方式：
+
+```bash
+pnpm governance:refresh
+pnpm governance:gate
 ```
-
-The primary CI workflow runs:
-
-```text
-frozen install
--> AI adapter materialization
--> pnpm governance:gate
--> generated AI adapter sync check
--> typecheck
--> tests
--> lint
--> production build
--> desktop bundle guard
--> e2e QA
-```
-
-`pnpm governance:gate` is the single entrypoint for architecture regression blocking. Individual checks remain available for local debugging, but CI treats the unified gate as the authoritative platform protection layer.
-
-## Documentation
-
-- [Documentation Index](./docs/README.md)
-- [Architecture](./docs/architecture.md)
-- [Governance](./docs/governance.md)
-- [AI Workspace](./docs/ai-workspace.md)
-- [Runtime Isolation](./docs/runtime/runtime-isolation.md)
-- [Codex Quickstart](./docs/codex/quickstart.md)
-- [Generated Governance Report](./docs/generated/governance-report.md)
-- [Generated API Surface Report](./docs/generated/api-surface-report.md)
-
-Generated outputs under `docs/generated/**` and `.ai/generated/**` are produced by governance scripts. Do not edit generated reports manually.
 
 ## License
 
