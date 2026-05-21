@@ -64,7 +64,7 @@ This blocks:
 ```bash
 pnpm install --frozen-lockfile
 pnpm governance:gate
-pnpm typecheck
+pnpm type-check
 pnpm test
 pnpm build
 ```

@@ -124,9 +124,9 @@ Run when relevant:
 - `pnpm runtime:exec`
 - `pnpm runtime:exec:strict`
 - `pnpm codex:preflight`
-- `pnpm arch:check:fast` for quick architecture feedback
-- `pnpm arch:check` for one-shot architecture sync and validation
-- `pnpm arch:check:full` for PR/release local gates
+- `pnpm arch:runtime` for quick runtime leak detection
+- `pnpm governance:gate` for one-shot architecture sync and validation
+- `pnpm validate:governance` for PR/release local gates
 - `pnpm type-check`
 - `pnpm lint:check`
 - `pnpm test:run`

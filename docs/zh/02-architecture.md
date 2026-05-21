@@ -2,21 +2,51 @@
 
 ## 包角色
 
-| 目录                 | 角色                         |
-| -------------------- | ---------------------------- |
-| `packages/contracts` | 公共 ABI：仅接口与共享类型   |
-| `packages/core`      | 运行时无关平台逻辑           |
-| `apps/web-demo`      | 浏览器运行时真相源           |
-| `apps/desktop`       | Tauri 桌面运行时外壳与适配层 |
-| `root`               | 编排外壳                     |
+### 核心架构不变量
 
-## 依赖方向
+简化的核心依赖方向仍然是：
 
 ```text
 @ccd/contracts -> @ccd/core -> apps/*
 ```
 
 这是硬约束，不能反向依赖，也不能跨层穿透。
+
+实际工作区还包含一组受治理保护的前端共享包。
+
+### 核心层
+
+| 目录                 | 角色                       |
+| -------------------- | -------------------------- |
+| `packages/contracts` | 公共 ABI：仅接口与共享类型 |
+| `packages/core`      | 运行时无关平台逻辑         |
+
+### 前端共享包（受治理保护的工作区包）
+
+| 目录                            | 角色                  |
+| ------------------------------- | --------------------- |
+| `packages/design-tokens`        | 设计 token 源         |
+| `packages/shared-utils`         | 共享运行时安全工具    |
+| `packages/unocss-preset`        | 共享 UnoCSS 预设      |
+| `packages/vue-hooks`            | 可复用 Vue 组合式函数 |
+| `packages/vue-ui`               | 共享 Vue UI 基础组件  |
+| `packages/vue-primevue-adapter` | PrimeVue 集成适配器   |
+| `packages/vue-charts`           | 图表集成层            |
+
+### 应用层
+
+| 目录            | 角色                         |
+| --------------- | ---------------------------- |
+| `apps/web-demo` | 浏览器运行时真相源           |
+| `apps/desktop`  | Tauri 桌面运行时外壳与适配层 |
+
+### 根
+
+| 目录   | 角色     |
+| ------ | -------- |
+| `root` | 编排外壳 |
+
+这些前端共享包仍然必须遵守各自的治理角色、包导出边界和运行时边界规则。
 
 ## 运行时无关规则
 

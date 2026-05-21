@@ -98,6 +98,44 @@ Do not:
 - force push
 - invent package.json commands that do not exist
 
+## AI Preflight Rules
+
+### Documentation Preflight
+
+Before editing any documentation:
+
+1. Read `package.json`.
+2. Confirm every documented command exists in `scripts`.
+3. Run `pnpm docs:commands` when available.
+4. Do not invent command names.
+
+### Generated Output Preflight
+
+Before editing any generated output:
+
+1. Stop.
+2. Find the source generator or policy file.
+3. Run the approved generation command.
+4. Do not manually edit `docs/generated/**`, `.ai/generated/**`, or `.ai/governance/api-snapshots/**`.
+
+### Architecture Preflight
+
+Before changing architecture:
+
+1. Read `docs/en/architecture-contract.md`.
+2. Read `.ai/protocol/AGENTS.core.md`.
+3. Confirm the change does not violate runtime neutrality.
+4. Do not add global `@ccd/*` aliases to `tsconfig.base.json`.
+
+### CI / Deploy Preflight
+
+Before changing Vercel or CI:
+
+1. Read `docs/en/ci-deploy-contract.md`.
+2. Keep Vercel on `pnpm vercel:build`.
+3. Keep GitHub Actions as the quality gate.
+4. Do not use `pnpm build:ci` as the Vercel deployment build.
+
 ## Required Validation
 
 Before returning a result, prefer checking the exact failing command first.
@@ -108,6 +146,7 @@ Typical validation:
 - `pnpm ccd:fix`
 - `pnpm lint:check`
 - `pnpm type-check`
+- `pnpm docs:commands`
 - `pnpm governance:gate`
 
 ## Report Format

@@ -30,7 +30,7 @@ The repository root is orchestration-only. It may hold workspace, governance, an
 ## Validation
 
 ```bash
-pnpm --filter @ccd/web-demo typecheck
+pnpm --filter @ccd/web-demo type-check
 pnpm --filter @ccd/web-demo test
 pnpm --filter @ccd/web-demo build
 pnpm arch:boundaries

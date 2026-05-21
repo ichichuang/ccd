@@ -29,6 +29,7 @@ Preferred canonical commands:
 - `pnpm build:ci`
 - `pnpm ci:prepare-internal`
 - `pnpm ci:smoke:packages`
+- `pnpm docs:commands`
 - `pnpm governance:gate`
 
 ## Deployment Commands
@@ -40,6 +41,8 @@ Preferred canonical commands:
 
 Do not document or recommend commands that do not exist in `package.json`.
 
+<!-- doc-commands: ignore-start -->
+
 Examples to avoid unless they actually exist:
 
 - `pnpm affected:lint`
@@ -49,6 +52,7 @@ Examples to avoid unless they actually exist:
 - `pnpm arch:check`
 - `pnpm arch:check:fast`
 - `pnpm arch:check:full`
+<!-- doc-commands: ignore-end -->
 
 Only use these if they are present in the current `package.json`.
 
@@ -57,3 +61,20 @@ Only use these if they are present in the current `package.json`.
 AI agents must check `package.json` before claiming a command exists.
 
 If a command is missing, do not recommend it.
+
+## Documentation Preflight
+
+Before editing any documentation that references commands:
+
+1. Read `package.json` and confirm every documented command exists in `scripts`.
+2. Run `pnpm docs:commands` to scan for broken references.
+3. Do not invent command names.
+4. Do not document commands that do not exist in the current `package.json`.
+
+## Automated Command Validation
+
+`pnpm docs:commands` scans all Markdown documentation for `pnpm` command references and fails when a referenced root package script does not exist in `package.json`.
+
+This guard prevents invented command drift. It runs automatically as part of `pnpm governance:gate`.
+
+Always run `pnpm docs:commands` after editing documentation that contains `pnpm` command references.

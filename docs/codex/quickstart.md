@@ -35,10 +35,10 @@ pnpm codex:preflight
 For day-to-day architecture validation, use the one-shot command:
 
 ```bash
-pnpm arch:check
+pnpm governance:gate
 ```
 
-Use `pnpm governance:gate` before PRs or architecture changes. Use `pnpm arch:check:fast` for quick local AI adapter feedback and `pnpm arch:check:full` for broader local validation when needed.
+Use `pnpm governance:gate` before PRs or architecture changes. Use `pnpm arch:runtime` for quick local runtime leak detection and `pnpm validate:governance` for broader local validation when needed.
 
 Extended governance commands:
 
@@ -251,7 +251,7 @@ Then add the AI governance scripts to `package.json` and run:
 
 ```bash
 pnpm ai:setup:codex
-pnpm arch:check
+pnpm governance:gate
 ```
 
 If the target branch has desktop/Tauri runtime assets, also add and run:

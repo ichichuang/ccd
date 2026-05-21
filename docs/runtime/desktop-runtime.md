@@ -27,7 +27,7 @@ Current adapter responsibilities:
 ## Validation
 
 ```bash
-pnpm --filter @ccd/desktop typecheck
+pnpm --filter @ccd/desktop type-check
 pnpm --filter @ccd/desktop test
 pnpm --filter @ccd/desktop build
 pnpm arch:boundaries
