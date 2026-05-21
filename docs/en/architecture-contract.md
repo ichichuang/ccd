@@ -3,12 +3,23 @@
 ## Package Topology
 
 ```text
-packages/contracts  -> interfaces and shared types only
-packages/core       -> runtime-neutral platform logic
-apps/web-demo       -> single browser runtime source of truth
-apps/desktop        -> Tauri runtime shell and adapters
-root                -> orchestration-only shell
+packages/contracts          -> interfaces and shared types only
+packages/core               -> runtime-neutral platform logic
+packages/design-tokens      -> design token source
+packages/shared-utils       -> shared runtime-safe utilities
+packages/unocss-preset      -> shared UnoCSS preset
+packages/vue-hooks          -> reusable Vue composables
+packages/vue-ui             -> shared Vue UI primitives
+packages/vue-primevue-adapter -> PrimeVue integration adapter
+packages/vue-charts         -> chart integration layer
+apps/web-demo               -> single browser runtime source of truth
+apps/desktop                -> Tauri desktop runtime shell and adapters
+root                        -> orchestration-only shell
 ```
+
+The core architecture invariant remains `@ccd/contracts -> @ccd/core -> apps/*`.
+
+Frontend shared packages are protected workspace packages. They must still obey their governance role, package exports, and runtime boundary rules. Runtime capabilities belong only in app adapter layers. Root must remain orchestration-only.
 
 ## Dependency Direction
 

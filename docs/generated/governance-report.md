@@ -64,7 +64,7 @@
 
 - Orchestrator: Turbo
 - Topological order: @ccd/contracts -> @ccd/core -> @ccd/design-tokens -> @ccd/unocss-preset -> @ccd/shared-utils -> @ccd/vue-hooks -> @ccd/vue-ui -> @ccd/vue-primevue-adapter -> @ccd/vue-charts -> @ccd/web-demo -> @ccd/desktop
-- Affected commands: pnpm affected:lint, pnpm affected:test, pnpm affected:typecheck, pnpm affected:build
+- Recommended validation commands: pnpm lint:check, pnpm test:run, pnpm type-check, pnpm build:ci, pnpm governance:gate, pnpm ci:prepare-internal, pnpm ci:smoke:packages, pnpm vercel:build
 
 ## Supply Chain Governance
 

@@ -43,6 +43,12 @@ const checks = [
     name: 'dependency graph generation',
     command: ['bash', 'scripts/exec.sh', 'pnpm', 'arch:graphs'],
   },
+  {
+    name: 'documentation command validation',
+    command: ['node', 'scripts/governance/check-doc-commands.mjs'],
+    failure:
+      'Documentation references nonexistent package.json scripts. Fix the source documentation, generator source, or policy source — do NOT manually edit generated files.',
+  },
 ]
 
 const generatedArtifactPaths = ['docs/generated', '.ai/generated', '.ai/governance/api-snapshots']

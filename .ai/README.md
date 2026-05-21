@@ -94,6 +94,26 @@ pnpm ai:sync:codex
 - Keep runtime APIs inside app adapter directories.
 - Commit generated reports and API snapshot changes with the source change that produced them.
 
+## Documentation Maintenance Protocol
+
+Before editing any documentation:
+
+1. Read `package.json` and confirm every documented command exists in `scripts`.
+2. Run `pnpm docs:commands` to validate command references.
+3. Do not invent command names.
+4. Do not manually edit `docs/generated/**`, `.ai/generated/**`, or `.ai/governance/api-snapshots/**`.
+
+Before changing architecture:
+
+1. Read `docs/en/architecture-contract.md`.
+2. Read `.ai/protocol/AGENTS.core.md`.
+3. Confirm runtime neutrality is preserved.
+
+Before returning a result:
+
+1. Report touched files, commands executed, validation results, and unresolved risks.
+2. Report exact follow-up commands for the human operator.
+
 ## GitHub Enforcement
 
 GitHub CI enforces:

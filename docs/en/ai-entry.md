@@ -66,6 +66,54 @@ Do not:
 - force push
 - invent missing package.json scripts
 
+## AI Preflight Rules
+
+### Documentation Preflight
+
+Before editing any documentation:
+
+1. Read `package.json`.
+2. Confirm every documented command exists in `scripts`.
+3. Run `pnpm docs:commands` when available.
+4. Do not invent command names.
+
+### Generated Output Preflight
+
+Before editing any generated output:
+
+1. Stop.
+2. Find the source generator or policy file.
+3. Run the approved generation command.
+4. Do not manually edit `docs/generated/**`, `.ai/generated/**`, or `.ai/governance/api-snapshots/**`.
+
+### Architecture Preflight
+
+Before changing architecture:
+
+1. Read `docs/en/architecture-contract.md`.
+2. Read `.ai/protocol/AGENTS.core.md`.
+3. Confirm the change does not violate runtime neutrality.
+4. Do not add global `@ccd/*` aliases to `tsconfig.base.json`.
+
+### CI / Deploy Preflight
+
+Before changing Vercel or CI:
+
+1. Read `docs/en/ci-deploy-contract.md`.
+2. Keep Vercel on `pnpm vercel:build`.
+3. Keep GitHub Actions as the quality gate.
+4. Do not use `pnpm build:ci` as the Vercel deployment build.
+
+### Final Response Checklist
+
+Before returning a result:
+
+1. Report touched files.
+2. Report commands executed.
+3. Report validation results.
+4. Report unresolved risks.
+5. Report exact follow-up commands for the human operator.
+
 ## Validation Requirements
 
 Before returning a result, identify the first failing command and validate after the fix.
@@ -76,7 +124,15 @@ Typical validation sequence:
 2. `pnpm ccd:fix`
 3. `pnpm lint:check`
 4. `pnpm type-check`
-5. `pnpm governance:gate`
+5. `pnpm docs:commands`
+6. `pnpm governance:gate`
+
+## Documentation Language Rule
+
+- Use Chinese docs for human developers.
+- Use English docs for AI contracts.
+- Keep `README.md` as the human entry point.
+- Keep `README.en.md` and `docs/en/**` as AI entry points.
 
 ## Report Format
 
