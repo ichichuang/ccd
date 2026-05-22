@@ -1,3 +1,5 @@
+import './types/vue-data-attributes'
+
 export { default as AnimateWrapper } from './AnimateWrapper/AnimateWrapper.vue'
 export type * from './AnimateWrapper/utils/types'
 
