@@ -156,17 +156,22 @@ const style = computed(() => {
   return css
 })
 
-// 4b. 父级传入 text-current 时不追加 text-foreground，避免颜色冲突
 const attrs = useAttrs()
-function hasTextCurrent(cls: unknown): boolean {
-  if (typeof cls === 'string') return cls.includes('text-current')
-  if (Array.isArray(cls)) return cls.some(c => hasTextCurrent(c))
-  if (cls && typeof cls === 'object') return Object.keys(cls).some(k => k.includes('text-current'))
+const PARENT_TEXT_COLOR_CLASS_PATTERN =
+  /^!?text-(?:primary|foreground|muted-foreground|info|success|warn|danger)(?:\/\d+)?$/
+
+function hasTextColorClass(cls: unknown): boolean {
+  if (typeof cls === 'string') {
+    return cls.split(/\s+/).some(token => PARENT_TEXT_COLOR_CLASS_PATTERN.test(token))
+  }
+  if (Array.isArray(cls)) return cls.some(c => hasTextColorClass(c))
+  if (cls && typeof cls === 'object')
+    return Object.keys(cls).some(key => PARENT_TEXT_COLOR_CLASS_PATTERN.test(key))
   return false
 }
 const defaultColorClass = computed(() => {
   if (colorClass.value || colorStyle.value.color) return ''
-  if (hasTextCurrent(attrs.class)) return ''
+  if (hasTextColorClass(attrs.class)) return ''
   return 'text-foreground'
 })
 
