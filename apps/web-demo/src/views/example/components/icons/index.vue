@@ -220,12 +220,16 @@ watch(activeTab, () => {
 
         <div class="row-start gap-sm min-w-0">
           <span class="i-lucide-search text-lg text-muted-foreground shrink-0" />
-          <InputText
-            v-model="searchKeyword"
-            placeholder="搜索图标..."
+          <div
             class="flex-1 min-w-0"
             data-testid="icons-search-input"
-          />
+          >
+            <InputText
+              v-model="searchKeyword"
+              placeholder="搜索图标..."
+              class="w-full min-w-0"
+            />
+          </div>
           <span
             class="text-muted-foreground text-sm shrink-0"
             data-testid="icons-count"
@@ -245,11 +249,11 @@ watch(activeTab, () => {
       <div class="col-fill row-start gap-md items-stretch min-w-0 overflow-hidden">
         <div
           class="col-fill bg-muted/20 border border-border/40 rounded-lg min-w-0 overflow-hidden"
+          data-testid="icons-grid-scroll"
         >
           <CScrollbar
             native
             class="col-fill"
-            data-testid="icons-grid-scroll"
           >
             <div class="p-md col-stretch gap-md min-w-0">
               <div
@@ -267,7 +271,10 @@ watch(activeTab, () => {
                   data-testid="icon-card"
                   @click="selectIcon(icon)"
                 >
-                  <span class="center w-[var(--spacing-3xl)] h-[var(--spacing-3xl)]">
+                  <span
+                    class="center w-[var(--spacing-3xl)] h-[var(--spacing-3xl)]"
+                    data-testid="grid-icon"
+                  >
                     <Icons
                       :name="icon"
                       :size="iconSize"
@@ -276,7 +283,6 @@ watch(activeTab, () => {
                       :flip="iconFlip"
                       :rotate="iconRotate"
                       :scale="iconScale"
-                      data-testid="grid-icon"
                     />
                   </span>
                   <span class="text-xs font-mono break-all line-clamp-2 text-center">
@@ -289,14 +295,15 @@ watch(activeTab, () => {
                 v-if="displayedIcons.length"
                 class="center pt-sm"
               >
-                <Button
-                  v-if="hasMoreIcons"
-                  label="加载更多"
-                  variant="outlined"
-                  size="small"
-                  data-testid="icons-load-more"
-                  @click="loadMore"
-                />
+                <span data-testid="icons-load-more">
+                  <Button
+                    v-if="hasMoreIcons"
+                    label="加载更多"
+                    variant="outlined"
+                    size="small"
+                    @click="loadMore"
+                  />
+                </span>
               </div>
 
               <div
@@ -316,28 +323,31 @@ watch(activeTab, () => {
 
         <aside
           class="w-[35vw] max-w-[520px] min-w-[360px] shrink-0 bg-muted/20 border border-border/40 rounded-lg overflow-hidden"
+          data-testid="icons-settings-scroll"
         >
           <CScrollbar
             native
             class="col-fill"
-            data-testid="icons-settings-scroll"
           >
             <div class="p-md col-stretch gap-lg min-w-0">
               <section
                 class="icons-preview col-center gap-md p-xl bg-muted rounded-md border border-border/50 min-h-[var(--spacing-5xl)] min-w-0"
                 data-testid="icons-preview"
               >
-                <Icons
+                <span
                   v-if="selectedIcon"
-                  :name="selectedIcon"
-                  :size="iconSize"
-                  :color="effectiveIconColor"
-                  :animation="iconAnimation"
-                  :flip="iconFlip"
-                  :rotate="iconRotate"
-                  :scale="iconScale"
                   data-testid="preview-icon"
-                />
+                >
+                  <Icons
+                    :name="selectedIcon"
+                    :size="iconSize"
+                    :color="effectiveIconColor"
+                    :animation="iconAnimation"
+                    :flip="iconFlip"
+                    :rotate="iconRotate"
+                    :scale="iconScale"
+                  />
+                </span>
                 <Icons
                   v-else
                   name="i-lucide-mouse-pointer-click"

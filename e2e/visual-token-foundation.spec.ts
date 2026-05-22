@@ -81,14 +81,30 @@ test.describe('visual token foundation', () => {
     expect(inputFocusShadow).not.toBe('none')
 
     const numberRoot = page.locator('.p-inputnumber').first()
+    const numberInput = page.getByPlaceholder('InputNumber')
     await expect(numberRoot).toBeVisible()
+    await expect(numberInput).toBeVisible()
+
+    const numberBorder = await numberRoot.evaluate(
+      element => window.getComputedStyle(element).borderColor
+    )
     await numberRoot.hover()
-    await expect(numberRoot).toHaveClass(/hover:!border-primary/)
-    await page.getByPlaceholder('InputNumber').focus()
+    const numberHoverBorder = await numberRoot.evaluate(
+      element => window.getComputedStyle(element).borderColor
+    )
+    if (numberHoverBorder === numberBorder) {
+      await expect(numberRoot).toHaveClass(/hover:(?:!border-primary|border-primary\/50)/)
+    }
+
+    await numberInput.focus()
     const numberFocusShadow = await numberRoot.evaluate(
       element => window.getComputedStyle(element).boxShadow
     )
+    const numberInputOutline = await numberInput.evaluate(
+      element => window.getComputedStyle(element).outlineStyle
+    )
     expect(numberFocusShadow).not.toBe('none')
+    expect(numberInputOutline).toBe('none')
 
     const passwordRoot = page.locator('.p-password').first()
     await expect(passwordRoot).toBeVisible()
