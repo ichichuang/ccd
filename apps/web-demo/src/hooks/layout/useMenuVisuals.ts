@@ -9,7 +9,6 @@ import {
   BREADCRUMB_ICON_SIZE,
   MENU_ADMIN_CHROME_ACTIVE_UNIFIED,
   MENU_ADMIN_CHROME_ANCESTOR_UNIFIED,
-  MENU_ADMIN_CHROME_HOVER_UNIFIED,
   MENU_ADMIN_CHROME_OPEN_UNIFIED,
   MENU_SIDEBAR_ACTIVE_UNIFIED,
   MENU_SIDEBAR_ANCESTOR_UNIFIED,
@@ -32,7 +31,8 @@ function isSidebarContext(context: MenuVisualContext): boolean {
 
 /** 返回指定上下文的 base 类（使用 MENU_PANEL_PADDING 统一内边距；过渡统一 duration-md + ease-out-expo，与 layout-menu / uno.config 菜单交互语义一致） */
 export function getMenuItemBase(context: MenuVisualContext): string {
-  const base: string = `${MENU_ITEM_BASE} ${MENU_PANEL_PADDING} ${MENU_ITEM_TRANSITION} group rounded-md`
+  const colorClass = context === 'sidebar' ? MENU_SIDEBAR_INACTIVE_TEXT : MENU_INACTIVE_TEXT_ROOT
+  const base: string = `${MENU_ITEM_BASE} ${MENU_PANEL_PADDING} ${MENU_ITEM_TRANSITION} ${colorClass} text-current! group rounded-md`
   return context === 'breadcrumb' ? `${base} text-sm` : base
 }
 
@@ -99,7 +99,7 @@ export function getMenuStateClasses(options: MenuStateOptions): string {
   const isRoot: boolean = typeof level === 'number' ? level <= 0 : true
 
   const baseInactiveClass: string = isRoot ? rootClass : childClass
-  return `${baseInactiveClass} ${MENU_ADMIN_CHROME_HOVER_UNIFIED}`
+  return `${baseInactiveClass} hover:bg-sidebar-primary/12! hover:text-sidebar-primary!`
 }
 
 /** 返回指定上下文的图标 size（Icons 组件用） */

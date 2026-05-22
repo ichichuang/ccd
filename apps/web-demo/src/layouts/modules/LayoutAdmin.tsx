@@ -20,6 +20,11 @@ import { useLayoutRuntime } from '@/hooks/layout/useLayoutRuntime'
 import { Icons } from '@ccd/vue-ui'
 import { CScrollbar } from '@ccd/vue-ui'
 
+const ADMIN_CHROME_SURFACE_CLASS =
+  'bg-sidebar/36! dark:bg-sidebar/40! shadow-[inset_0_-1px_0_rgb(var(--sidebar-border)/0.72),inset_0_1px_0_rgb(var(--foreground)/0.03)]'
+const ADMIN_SIDEBAR_SURFACE_CLASS =
+  'bg-sidebar/36! dark:bg-sidebar/40! shadow-[inset_-1px_0_0_rgb(var(--sidebar-border)/0.78),inset_1px_0_0_rgb(var(--foreground)/0.03)]'
+
 /**
  * LayoutAdmin（Admin 壳）- TSX 版本
  *
@@ -94,7 +99,7 @@ export default defineComponent({
           runtime.isSidebarAnimating.value ? 'will-change-transform' : '',
         ]}
       >
-        <div class="bg-sidebar/36! dark:bg-sidebar/40!">
+        <div class={ADMIN_CHROME_SURFACE_CLASS}>
           <AdminBreadcrumbBar
             show={runtime.showBreadcrumb.value}
             showIcon={runtime.showBreadcrumbIcon.value}
@@ -105,7 +110,7 @@ export default defineComponent({
           {/* Layer 3: 业务内容（透明以承接光晕与点阵） */}
           <AppContainer class="relative z-content min-w-0 overflow-hidden" />
         </section>
-        <div class="bg-sidebar/36! dark:bg-sidebar/40!">
+        <div class={ADMIN_CHROME_SURFACE_CLASS}>
           <AdminFooterBar show={runtime.showFooter.value} />
         </div>
       </main>
@@ -126,7 +131,8 @@ export default defineComponent({
               ref={runtime.sidebarShellRef}
               class={[
                 runtime.visualSidebarCollapsed.value ? 'w-sidebarCollapsedWidth' : 'w-sidebarWidth',
-                'shrink-0 self-stretch overflow-hidden bg-sidebar/36! dark:bg-sidebar/40!',
+                'shrink-0 self-stretch overflow-hidden',
+                ADMIN_SIDEBAR_SURFACE_CLASS,
                 runtime.enableTransition.value ? 'transition-[width] duration-md ease-smooth' : '',
               ]}
               onTransitionend={runtime.onSidebarTransitionEnd}
@@ -190,7 +196,10 @@ export default defineComponent({
           {runtime.showHeader.value && (
             <div
               data-layout-header="true"
-              class="shrink-0 row-between h-headerHeight px-sm md:px-md border-b-solid border-sidebar border-px bg-sidebar/36! dark:bg-sidebar/40!"
+              class={[
+                'shrink-0 row-between h-headerHeight px-sm md:px-md border-b-solid border-sidebar border-px',
+                ADMIN_CHROME_SURFACE_CLASS,
+              ]}
             >
               <AdminHeader
                 mode={runtime.stableModeKey.value}
@@ -231,7 +240,7 @@ export default defineComponent({
                 container: () => (
                   <div
                     data-layout-drawer="true"
-                    class="admin-sidebar--fixed admin-sidebar-drawer layout-full min-h-0 flex flex-col select-none"
+                    class="admin-sidebar--fixed admin-sidebar-drawer layout-full min-h-0 flex flex-col select-none bg-sidebar!"
                     style={runtime.drawerSafeAreaStyle.value}
                   >
                     <AdminSidebarLogo />

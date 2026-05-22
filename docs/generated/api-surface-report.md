@@ -40,7 +40,7 @@
 
 - Path: `packages/vue-ui`
 - Export subpaths: `.`
-- Root symbols: `AnimateWrapper`, `CScrollbar`, `DEFAULT_BACK_TO_TOP_OFFSET_PX`, `DEFAULT_BACK_TO_TOP_THRESHOLD`, `DEFAULT_SCROLLBAR_AUTO_HIDE_DELAY_MS`, `defaultScrollbarProps`, `EmptyState`, `Icons`, `resolveScrollbarAutoHide`
+- Root symbols: `AnimateWrapper`, `CScrollbar`, `DEFAULT_BACK_TO_TOP_OFFSET_PX`, `DEFAULT_BACK_TO_TOP_THRESHOLD`, `DEFAULT_SCROLLBAR_AUTO_HIDE_DELAY_MS`, `DEFAULT_SCROLLBAR_MEMORY_THROTTLE_MS`, `defaultScrollbarProps`, `EmptyState`, `Icons`, `resolveScrollbarAutoHide`, `scrollbarMemoryProviderKey`
 
 ## @ccd/vue-primevue-adapter
 

@@ -151,10 +151,12 @@
         "DEFAULT_BACK_TO_TOP_OFFSET_PX",
         "DEFAULT_BACK_TO_TOP_THRESHOLD",
         "DEFAULT_SCROLLBAR_AUTO_HIDE_DELAY_MS",
+        "DEFAULT_SCROLLBAR_MEMORY_THROTTLE_MS",
         "defaultScrollbarProps",
         "EmptyState",
         "Icons",
-        "resolveScrollbarAutoHide"
+        "resolveScrollbarAutoHide",
+        "scrollbarMemoryProviderKey"
       ]
     },
     {
