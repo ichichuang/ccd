@@ -10,6 +10,7 @@ import {
   TRANSITION_DURATION_OPTIONS,
   getPresetPrimaryColor,
 } from '@ccd/design-tokens'
+import type { ThemeMode, ThemeTransitionDuration, ThemeTransitionMode } from '@ccd/design-tokens'
 import { SIZE_PRESETS } from '@ccd/design-tokens'
 import type { SupportedLocale } from '@/locales'
 import { useI18n } from 'vue-i18n'

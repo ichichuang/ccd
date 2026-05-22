@@ -2,6 +2,7 @@
 
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { createPinia, setActivePinia } from 'pinia'
+import type { ThemePreset } from '@ccd/design-tokens'
 
 const mockGenerateThemeVars = vi.fn(() => ({}))
 const defaultPreset: ThemePreset = { name: 'default', primary: 'var(--primary)' }

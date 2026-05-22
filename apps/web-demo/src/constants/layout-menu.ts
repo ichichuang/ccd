@@ -14,23 +14,32 @@ export const MENU_OPEN_UNIFIED =
   'bg-primary/12! text-primary! dark:bg-primary-light/70! dark:text-primary-light-foreground!' as const
 
 /** 侧栏菜单激活态：使用独立 sidebar token，允许侧栏与内容区分离调色 */
-export const MENU_SIDEBAR_ACTIVE_UNIFIED =
-  'bg-sidebar-primary! text-sidebar-primary-foreground!' as const
+export const MENU_SIDEBAR_ACTIVE_UNIFIED = 'admin-state-leaf-active' as const
 
-/** 侧栏菜单打开/聚焦/hover 态：保持轻量背景反馈，同时使用侧栏主色文案 */
-export const MENU_SIDEBAR_OPEN_UNIFIED = 'bg-sidebar-primary/12! text-sidebar-primary!' as const
+/** 侧栏菜单打开/聚焦态：弱于激活态，强于 hover 态 */
+export const MENU_SIDEBAR_OPEN_UNIFIED = 'admin-state-open' as const
+/** 侧栏菜单祖先态（展开的父级，非当前叶节点）：比叶节点激活态更轻 */
+export const MENU_SIDEBAR_ANCESTOR_UNIFIED = 'admin-state-sidebar-ancestor' as const
 /** Admin 顶栏 / 面包屑 / 标签栏共用高亮文字色：统一对齐侧栏主色 */
-export const MENU_ADMIN_CHROME_TEXT_UNIFIED = 'text-sidebar-primary!' as const
-/** Admin 顶部 chrome 区域激活态：沿用侧栏主色体系，避免 header/breadcrumb/tabs 分叉 */
-export const MENU_ADMIN_CHROME_ACTIVE_UNIFIED = MENU_SIDEBAR_ACTIVE_UNIFIED
+export const MENU_ADMIN_CHROME_TEXT_UNIFIED = 'admin-state-text-primary' as const
+/** Admin 顶部 chrome 区域激活叶节点：强底色 + 高对比前景色，图标通过 text-current 继承 */
+export const MENU_ADMIN_CHROME_ACTIVE_UNIFIED = 'admin-state-leaf-active' as const
 /** Admin 顶部 chrome 区域打开/聚焦态：沿用侧栏轻量高亮反馈 */
 export const MENU_ADMIN_CHROME_OPEN_UNIFIED = MENU_SIDEBAR_OPEN_UNIFIED
-/** Admin 顶部 chrome 区域 hover 态：统一对齐侧栏 hover 高亮 */
-export const MENU_ADMIN_CHROME_HOVER_UNIFIED =
-  'hover:bg-sidebar-primary/12! hover:text-sidebar-primary!' as const
-/** Admin 标签栏激活态：保留轻量底色 + 下划线，但统一使用侧栏主色 */
+/** Admin 顶部 chrome 区域 hover 态：明显弱于激活/聚焦态 */
+export const MENU_ADMIN_CHROME_HOVER_UNIFIED = 'admin-state-hover' as const
+/** Admin 顶部 chrome 区域祖先态：中等底色 + 主色文字，区别于叶节点强激活态 */
+export const MENU_ADMIN_CHROME_ANCESTOR_UNIFIED = 'admin-state-ancestor-active' as const
+/** Admin 标签栏激活态：比 hover/focus 更强的底色 + 主色文字 */
 export const MENU_ADMIN_TAB_ACTIVE_UNIFIED =
-  'bg-sidebar-primary/12! text-sidebar-primary! backdrop-blur-md transition-all' as const
+  'admin-state-tab-active backdrop-blur-md transition-all' as const
+/** Admin 标签栏关闭按钮：激活时保持可读，hover 时提供独立危险色反馈 */
+export const MENU_ADMIN_TAB_CLOSE_UNIFIED =
+  'center duration-md text-current opacity-70 hover:opacity-100 hover:text-danger' as const
+/** 面包屑当前项：轻量底色 + 主色文字，不使用完整按钮外观 */
+export const MENU_BREADCRUMB_CURRENT_UNIFIED = 'admin-state-breadcrumb-current' as const
+/** 面包屑 hover 态：比当前项更轻的反馈 */
+export const MENU_BREADCRUMB_HOVER_UNIFIED = 'admin-state-breadcrumb-hover' as const
 /** Admin 标签栏未激活 hover 态：使用与侧栏一致的弱高亮反馈 */
 export const MENU_ADMIN_TAB_INACTIVE_UNIFIED =
   `bg-transparent ${MENU_ADMIN_CHROME_HOVER_UNIFIED} transition-all` as const
@@ -39,7 +48,7 @@ export const MENU_ADMIN_CONTEXT_ITEM_UNIFIED =
   `flex items-center gap-sm cursor-pointer select-none transition-all duration-md ease-out-expo border-none bg-transparent px-sm py-xs rounded-sm text-sm text-popover-foreground ${MENU_ADMIN_CHROME_HOVER_UNIFIED} group` as const
 /** Admin tabs 右键菜单图标 hover 色：统一对齐侧栏主色 */
 export const MENU_ADMIN_CONTEXT_ICON_UNIFIED =
-  'text-muted-foreground! transition-colors duration-md group-hover:text-sidebar-primary!' as const
+  'text-muted-foreground transition-colors duration-md group-hover:text-sidebar-primary!' as const
 
 /** 未激活项文字（子级） */
 export const MENU_INACTIVE_TEXT = 'text-foreground'
@@ -57,8 +66,7 @@ export const TAB_ICON_SIZE = 'xs' as const
 export const MENU_FALLBACK_ICON = 'i-lucide-circle-dot' as const
 
 /** 菜单项 base（仅结构与交互语义，不含过渡，避免与场景层重复叠加） */
-export const MENU_ITEM_BASE =
-  'flex items-center gap-sm cursor-pointer select-none border-none bg-transparent'
+export const MENU_ITEM_BASE = 'flex items-center gap-sm cursor-pointer select-none border-none'
 /** 菜单项统一过渡（单一真源，与 sidebar 动画节奏对齐 duration-sm） */
 export const MENU_ITEM_TRANSITION = 'transition-[background-color,color] duration-sm ease-smooth'
 

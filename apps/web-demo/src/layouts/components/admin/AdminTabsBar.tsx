@@ -5,6 +5,7 @@ import {
   MENU_ADMIN_CONTEXT_ICON_UNIFIED,
   MENU_ADMIN_CONTEXT_ITEM_UNIFIED,
   MENU_ADMIN_TAB_ACTIVE_UNIFIED,
+  MENU_ADMIN_TAB_CLOSE_UNIFIED,
   MENU_ADMIN_TAB_INACTIVE_UNIFIED,
   TAB_ICON_SIZE,
 } from '@/constants/layout-menu'
@@ -152,7 +153,7 @@ export default defineComponent({
                           size={TAB_ICON_SIZE}
                           class={[
                             active ? 'scale-120' : 'scale-100',
-                            'transition-transform duration-md',
+                            'text-current transition-transform duration-md',
                           ]}
                         />
                       )}
@@ -163,12 +164,13 @@ export default defineComponent({
                       {/* Close Button */}
                       {!tab.fixed && tab.deletable && (
                         <div
-                          class="center duration-md text-muted-foreground hover:text-danger"
+                          class={MENU_ADMIN_TAB_CLOSE_UNIFIED}
                           onClick={e => onCloseTab(e, tab)}
                         >
                           <Icons
                             name="i-lucide-x"
                             size={TAB_ICON_SIZE}
+                            class="text-current"
                           />
                         </div>
                       )}

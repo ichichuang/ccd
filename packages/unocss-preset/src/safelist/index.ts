@@ -222,6 +222,33 @@ function buildDynamicThemeDemoSafelist(): string[] {
 const DYNAMIC_SIZE_DEMO_SAFELIST_CLASSES = buildDynamicSizeDemoSafelist()
 const DYNAMIC_THEME_DEMO_SAFELIST_CLASSES = buildDynamicThemeDemoSafelist()
 
+const SHELL_CHROME_COLOR_SAFELIST_CLASSES: readonly string[] = [
+  'bg-sidebar-primary',
+  'bg-sidebar-primary/15',
+  'bg-sidebar-primary/12',
+  'bg-sidebar-primary/10',
+  'bg-sidebar-primary/8',
+  'bg-sidebar-primary/5',
+  'hover:bg-sidebar-primary/12',
+  'hover:bg-sidebar-primary/5',
+  'text-sidebar-primary',
+  'hover:text-sidebar-primary',
+  'text-sidebar-primary-foreground',
+  'text-white',
+  'border-sidebar-primary',
+]
+
+const PRIMEVUE_FORM_COLOR_SAFELIST_CLASSES: readonly string[] = [
+  'bg-background',
+  'text-foreground',
+  'border-border',
+  'hover:border-primary-hover',
+  'focus-within:border-primary',
+  'bg-popover',
+  'text-popover-foreground',
+  'text-muted-foreground',
+]
+
 /** Semantic shortcut names from design-engine SSOT — prevents tree-shaking of macro classes. */
 function buildSemanticShortcutsSafelist(): string[] {
   const out = new Set<string>(Object.keys(semanticShortcuts))
@@ -250,6 +277,8 @@ function getDynamicSafelist(): string[] {
     ...ENGINE_ICON_SAFELIST_CLASSES,
     ...DYNAMIC_SIZE_DEMO_SAFELIST_CLASSES,
     ...DYNAMIC_THEME_DEMO_SAFELIST_CLASSES,
+    ...SHELL_CHROME_COLOR_SAFELIST_CLASSES,
+    ...PRIMEVUE_FORM_COLOR_SAFELIST_CLASSES,
     ...SEMANTIC_SHORTCUTS_SAFELIST_CLASSES,
   ]
 }

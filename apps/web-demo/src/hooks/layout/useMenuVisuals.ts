@@ -8,8 +8,11 @@
 import {
   BREADCRUMB_ICON_SIZE,
   MENU_ADMIN_CHROME_ACTIVE_UNIFIED,
+  MENU_ADMIN_CHROME_ANCESTOR_UNIFIED,
+  MENU_ADMIN_CHROME_HOVER_UNIFIED,
   MENU_ADMIN_CHROME_OPEN_UNIFIED,
   MENU_SIDEBAR_ACTIVE_UNIFIED,
+  MENU_SIDEBAR_ANCESTOR_UNIFIED,
   MENU_ICON_SIZE,
   MENU_ITEM_BASE,
   MENU_ITEM_TRANSITION,
@@ -29,22 +32,22 @@ function isSidebarContext(context: MenuVisualContext): boolean {
 
 /** 返回指定上下文的 base 类（使用 MENU_PANEL_PADDING 统一内边距；过渡统一 duration-md + ease-out-expo，与 layout-menu / uno.config 菜单交互语义一致） */
 export function getMenuItemBase(context: MenuVisualContext): string {
-  const colorClass = context === 'sidebar' ? MENU_SIDEBAR_INACTIVE_TEXT : MENU_INACTIVE_TEXT_ROOT
-  const base: string = `${MENU_ITEM_BASE} ${MENU_PANEL_PADDING} ${MENU_ITEM_TRANSITION} ${colorClass} text-current! group rounded-md`
+  const base: string = `${MENU_ITEM_BASE} ${MENU_PANEL_PADDING} ${MENU_ITEM_TRANSITION} group rounded-md`
   return context === 'breadcrumb' ? `${base} text-sm` : base
 }
 
 /**
  * 返回激活态类（bg + text）。
- * - sidebar：使用 sidebar-primary / sidebar-primary-foreground
- * - header / breadcrumb：统一对齐 admin chrome 的 sidebar-primary 体系
- * - distance < 0 表示未激活，仅用于 getMenuStateClasses 的输入，此时应由调用方根据 inactive/hover 规则自行处理
+ * - sidebar 区分叶节点（distance===0，最强）和祖先（distance>0，轻量）
+ * - header/breadcrumb 不区分层级：所有命中激活路径的项使用统一强激活态
+ * - distance < 0：未激活
  */
 export function getMenuItemActive(distance: number, context: MenuVisualContext = 'header'): string {
   if (distance >= 0) {
-    return isSidebarContext(context)
-      ? MENU_SIDEBAR_ACTIVE_UNIFIED
-      : MENU_ADMIN_CHROME_ACTIVE_UNIFIED
+    if (isSidebarContext(context)) {
+      return distance === 0 ? MENU_SIDEBAR_ACTIVE_UNIFIED : MENU_SIDEBAR_ANCESTOR_UNIFIED
+    }
+    return distance === 0 ? MENU_ADMIN_CHROME_ACTIVE_UNIFIED : MENU_ADMIN_CHROME_ANCESTOR_UNIFIED
   }
   return ''
 }
@@ -96,10 +99,7 @@ export function getMenuStateClasses(options: MenuStateOptions): string {
   const isRoot: boolean = typeof level === 'number' ? level <= 0 : true
 
   const baseInactiveClass: string = isRoot ? rootClass : childClass
-  if (isSidebarContext(context)) {
-    return `${baseInactiveClass} hover:bg-sidebar-primary/12! hover:text-sidebar-primary!`
-  }
-  return `${baseInactiveClass} hover:bg-sidebar-primary/12! hover:text-sidebar-primary!`
+  return `${baseInactiveClass} ${MENU_ADMIN_CHROME_HOVER_UNIFIED}`
 }
 
 /** 返回指定上下文的图标 size（Icons 组件用） */

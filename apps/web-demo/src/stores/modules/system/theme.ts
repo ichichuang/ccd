@@ -5,6 +5,7 @@ import {
   DEFAULT_THEME_MODE,
   DEFAULT_TRANSITION_DURATION,
 } from '@ccd/design-tokens'
+import type { ThemeMode, ThemeTransitionDuration, ThemeTransitionMode } from '@ccd/design-tokens'
 import { RUNTIME_STORAGE_KEYS } from '@/constants/runtime'
 import { generateThemeVars, applyTheme } from '@/utils/theme/engine'
 import {

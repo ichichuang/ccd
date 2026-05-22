@@ -60,7 +60,7 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <div class="layout-screen text-foreground font-sans antialiased">
+  <div class="layout-screen layout-full text-foreground font-sans antialiased">
     <LayoutManager />
     <AppPrimeVueGlobals />
   </div>

@@ -4,7 +4,12 @@ import { Icons } from '@ccd/vue-ui'
 import { useAdminBreadcrumbs } from '@/hooks/layout/useAdminBreadcrumbs'
 import type { PrimeMenuModelItem } from '@/router/utils/helper'
 import { goToRoute } from '@/router/utils/helper'
-import { MENU_ADMIN_CHROME_TEXT_UNIFIED, MENU_ICON_COMMON_CLASS } from '@/constants/layout-menu'
+import {
+  MENU_ADMIN_CHROME_TEXT_UNIFIED,
+  MENU_BREADCRUMB_CURRENT_UNIFIED,
+  MENU_BREADCRUMB_HOVER_UNIFIED,
+  MENU_ICON_COMMON_CLASS,
+} from '@/constants/layout-menu'
 import { getIconSize } from '@/hooks/layout/useMenuVisuals'
 import {
   createTieredMenuItemRenderer,
@@ -56,7 +61,7 @@ function renderBreadcrumbMenuItem(slotProps: unknown) {
         tabindex="0"
         :class="[
           'transition-all duration-md flex items-center cursor-pointer',
-          'hover:text-sidebar-primary',
+          MENU_BREADCRUMB_HOVER_UNIFIED,
         ]"
         @click="goToRoute('/')"
         @keyup.enter="goToRoute('/')"
@@ -82,10 +87,10 @@ function renderBreadcrumbMenuItem(slotProps: unknown) {
           <!-- Breadcrumb Item -->
           <span
             :class="[
-              'transition-all duration-md flex items-center gap-xs',
+              'transition-all duration-md flex items-center gap-xs px-xs',
               index === breadcrumbs.length - 1
-                ? `${MENU_ADMIN_CHROME_TEXT_UNIFIED} font-semibold cursor-default`
-                : 'cursor-pointer hover:text-sidebar-primary',
+                ? `${MENU_BREADCRUMB_CURRENT_UNIFIED} font-semibold cursor-default`
+                : `cursor-pointer ${MENU_BREADCRUMB_HOVER_UNIFIED}`,
               openDropdownPath === item.path ? MENU_ADMIN_CHROME_TEXT_UNIFIED : '',
             ]"
             :role="index === breadcrumbs.length - 1 ? undefined : 'button'"
