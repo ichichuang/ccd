@@ -1,6 +1,7 @@
 import vue from '@vitejs/plugin-vue'
 import vueJsx from '@vitejs/plugin-vue-jsx'
 import fs from 'node:fs'
+import { createRequire } from 'node:module'
 import path from 'node:path'
 import UnoCSS from 'unocss/vite'
 import progress from 'vite-plugin-progress'
@@ -16,6 +17,8 @@ import { configCompressPlugin } from './compress'
 import { configHtmlPlugin } from './html'
 import { viteBuildInfo } from './info'
 import { viteBuildPerformancePlugin } from './performance'
+
+const require = createRequire(import.meta.url)
 
 export function getPluginsList(env: ViteEnv, command: 'build' | 'serve'): PluginOption[] {
   const { VITE_COMPRESSION, VITE_BUILD_ANALYZE } = env
@@ -184,7 +187,10 @@ function generateIconListsPlugin(): PluginOption {
    */
   const readIconifyCollectionNames = (collection: string, limit: number): string[] => {
     try {
-      const filePath = path.resolve(cwd, `node_modules/@iconify-json/${collection}/icons.json`)
+      const packagePath = require.resolve(`@iconify-json/${collection}/icons.json`, {
+        paths: [cwd, path.resolve(cwd, '../..')],
+      })
+      const filePath = fs.realpathSync(packagePath)
       if (!fs.existsSync(filePath)) return []
 
       const fd = fs.openSync(filePath, 'r')
@@ -291,7 +297,7 @@ function generateIconListsPlugin(): PluginOption {
       const isDemo = process.env.UNO_DEMO === 'true'
 
       // Lite 模式只取少量子集；Demo 模式尽可能完整（仍保留上限避免极端 OOM）
-      const liteLimit = 32
+      const liteLimit = 120
       // ⚠️ 注意：demo 模式下图标类会被 UnoCSS 扫描并触发 preset-icons 生成 SVG/CSS。
       // 若每库数量过大（例如 800×4），dev 启动期容易出现内存爆炸（OOM）。
       // 因此按集合分级限制数量：Lucide 相对轻；Solar/Logos 更重。

@@ -191,12 +191,14 @@ function handleSetScale(value: string): void {
         <Button
           label="标准尺寸"
           size="small"
+          data-testid="icon-size-scale-mode"
           :severity="sizeMode === 'scale' ? 'primary' : 'secondary'"
           @click="sizeMode = 'scale'"
         />
         <Button
           label="自定义"
           size="small"
+          data-testid="icon-size-custom-mode"
           :severity="sizeMode === 'custom' ? 'primary' : 'secondary'"
           @click="sizeMode = 'custom'"
         />
@@ -208,6 +210,7 @@ function handleSetScale(value: string): void {
             :key="key"
             :label="key"
             size="small"
+            :data-testid="`icon-size-${key}`"
             :severity="sizeScale === key ? 'primary' : 'secondary'"
             @click="handleSizeScaleClick(key)"
           />
@@ -230,6 +233,7 @@ function handleSetScale(value: string): void {
           placeholder="例如: var(--primary) 或 text-primary"
           size="small"
           class="flex-1"
+          data-testid="icon-color-input"
         />
       </div>
       <InlineMessage
@@ -243,6 +247,7 @@ function handleSetScale(value: string): void {
           label="主色"
           size="small"
           severity="secondary"
+          data-testid="icon-color-primary"
           @click="handleSetColor('var(--primary)')"
         />
         <Button
@@ -326,6 +331,7 @@ function handleSetScale(value: string): void {
           placeholder="角度 (deg)，例如: 90"
           size="small"
           class="flex-1 min-w-0"
+          data-testid="icon-rotate-input"
         />
         <div class="row-start gap-xs shrink-0">
           <Button
@@ -364,6 +370,7 @@ function handleSetScale(value: string): void {
           placeholder="缩放比例，例如: 1.5"
           size="small"
           class="flex-1 min-w-0"
+          data-testid="icon-scale-input"
         />
         <div class="row-start gap-xs shrink-0">
           <Button

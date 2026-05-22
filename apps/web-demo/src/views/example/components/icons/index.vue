@@ -1,149 +1,116 @@
 <script setup lang="ts">
-/**
- * Icons 组件示例页面
- * 展示所有图标库的图标，并提供功能控制面板
- */
 defineOptions({ name: 'ExampleIcons' })
 
-import type { IconSize, IconAnimation, FlipDirection } from '@ccd/vue-ui'
+import type { FlipDirection, IconAnimation, IconSize } from '@ccd/vue-ui'
+import { computed, nextTick, ref, watch } from 'vue'
+import IconControls from './components/IconControls.vue'
 import {
-  LUCIDE_ICONS,
-  SOLAR_ICONS,
-  PH_ICONS,
-  LOGOS_ICONS,
   CUSTOM_ICONS,
   IS_LITE_MODE,
+  LOGOS_ICONS,
+  LUCIDE_ICONS,
+  PH_ICONS,
+  SOLAR_ICONS,
 } from './configs/iconLists.generated'
-import IconControls from './components/IconControls.vue'
-import { useAppElementSize } from '@ccd/vue-hooks'
 
 type TabKey = 'lucide' | 'solar' | 'ph' | 'logos' | 'custom'
 
-const INITIAL_DISPLAY_COUNT = 50
-const LOAD_MORE_STEP = 50
+const INITIAL_DISPLAY_COUNT = 80
+const LOAD_MORE_STEP = 80
+
+const FALLBACK_ICONS: Record<TabKey, string[]> = {
+  lucide: [
+    'i-lucide-house',
+    'i-lucide-search',
+    'i-lucide-settings',
+    'i-lucide-user',
+    'i-lucide-bell',
+    'i-lucide-heart',
+    'i-lucide-star',
+    'i-lucide-check',
+    'i-lucide-x',
+    'i-lucide-plus',
+    'i-lucide-minus',
+    'i-lucide-arrow-right',
+  ],
+  solar: [
+    'i-solar-home-2-linear',
+    'i-solar-magnifer-linear',
+    'i-solar-settings-linear',
+    'i-solar-user-linear',
+    'i-solar-bell-linear',
+    'i-solar-heart-linear',
+  ],
+  ph: ['i-ph-house', 'i-ph-magnifying-glass', 'i-ph-gear', 'i-ph-user', 'i-ph-bell', 'i-ph-heart'],
+  logos: ['i-logos-vue', 'i-logos-vitejs', 'i-logos-typescript-icon', 'i-logos-playwright'],
+  custom: ['i-custom:custom-juejin'],
+}
+
+const ICON_COLLECTIONS: Record<TabKey, string[]> = {
+  lucide: LUCIDE_ICONS.length ? LUCIDE_ICONS : FALLBACK_ICONS.lucide,
+  solar: SOLAR_ICONS.length ? SOLAR_ICONS : FALLBACK_ICONS.solar,
+  ph: PH_ICONS.length ? PH_ICONS : FALLBACK_ICONS.ph,
+  logos: LOGOS_ICONS.length ? LOGOS_ICONS : FALLBACK_ICONS.logos,
+  custom: CUSTOM_ICONS.length ? CUSTOM_ICONS : FALLBACK_ICONS.custom,
+}
 
 const activeTab = ref<TabKey>('lucide')
 const activeTabModel = computed({
   get: () => activeTab.value,
-  set: (v: string | number) => {
-    activeTab.value = v as TabKey
+  set: (value: string | number) => {
+    activeTab.value = value as TabKey
   },
-}) as import('vue').Ref<string | number>
-
-const displayCount = ref<number>(INITIAL_DISPLAY_COUNT)
-const selectedIcon = ref<string>('')
+})
+const displayCount = ref(INITIAL_DISPLAY_COUNT)
+const selectedIcon = ref('')
 const iconSize = ref<IconSize>('md')
 const iconColor = ref<string | undefined>(undefined)
 const iconAnimation = ref<IconAnimation | undefined>(undefined)
 const iconFlip = ref<FlipDirection | undefined>(undefined)
 const iconRotate = ref<string | number>('')
 const iconScale = ref<number | undefined>(undefined)
-const searchKeyword = ref<string | undefined>('')
-
-const searchBarRef = useTemplateRef<HTMLElement>('searchBarRef')
-const { height: searchBarHeight } = useAppElementSize(searchBarRef)
-
-const leftContentStyle = computed(() => {
-  if (searchBarHeight.value === 0) return { flex: '1', minHeight: 0 }
-  return { height: `calc(100% - ${searchBarHeight.value}px)`, minHeight: 0 }
-})
-
-const codeAreaRef = useTemplateRef<HTMLElement>('codeAreaRef')
-const previewAreaRef = useTemplateRef<HTMLElement>('previewAreaRef')
-const { height: codeAreaHeight } = useAppElementSize(codeAreaRef)
-const { height: previewAreaHeight } = useAppElementSize(previewAreaRef)
-
-const middleContentStyle = computed(() => {
-  const totalFixedHeight = codeAreaHeight.value + previewAreaHeight.value
-  if (totalFixedHeight === 0) return { flex: '1', minHeight: 0 }
-  return { height: `calc(100% - ${totalFixedHeight}px)`, minHeight: 0 }
-})
+const searchKeyword = ref('')
 
 const CSS_VAR_PATTERN = /^var\(--[a-zA-Z0-9-_]+\)$/
 const UNO_TEXT_COLOR_CLASS_PATTERN = /^!?text-[a-zA-Z0-9_:/.[\]-]+$/
-const normalizedIconColor = computed<string>(() => (iconColor.value ?? '').trim())
-const isIconColorValid = computed<boolean>(() => {
+const normalizedIconColor = computed(() => (iconColor.value ?? '').trim())
+const isIconColorValid = computed(() => {
   if (!normalizedIconColor.value) return true
   return (
     CSS_VAR_PATTERN.test(normalizedIconColor.value) ||
     UNO_TEXT_COLOR_CLASS_PATTERN.test(normalizedIconColor.value)
   )
 })
-const effectiveIconColor = computed<string | undefined>(() =>
+const effectiveIconColor = computed(() =>
   normalizedIconColor.value && isIconColorValid.value ? normalizedIconColor.value : undefined
 )
-const iconColorHint = computed<string>(() => {
+const iconColorHint = computed(() => {
   if (!normalizedIconColor.value || isIconColorValid.value) return ''
   return '当前 color 输入不符合 Icons 约束，预览与代码示例已自动忽略该值。'
 })
 
-const codeExampleText = computed<string>(() => {
-  if (!selectedIcon.value || selectedIcon.value === '未选择') return ''
-  return `<Icons
-  name="${selectedIcon.value}"
-${iconSize.value ? `  size="${iconSize.value}"` : ''}${effectiveIconColor.value ? `\n  color="${effectiveIconColor.value}"` : ''}${iconAnimation.value ? `\n  animation="${iconAnimation.value}"` : ''}${iconFlip.value ? `\n  flip="${iconFlip.value}"` : ''}${iconRotate.value !== undefined && iconRotate.value !== '' ? `\n  rotate="${iconRotate.value}"` : ''}${iconScale.value !== undefined ? `\n  scale="${iconScale.value}"` : ''}
-/>`
-})
-
-async function copyCodeExample() {
-  const text = codeExampleText.value
-  if (!text) return
-  try {
-    await navigator.clipboard.writeText(text)
-    window.$message?.success?.('已复制到剪贴板')
-  } catch {
-    window.$message?.danger?.('复制失败，请检查浏览器剪贴板权限')
-  }
-}
-
 const currentIcons = computed(() => {
-  let icons: readonly string[] = []
-  switch (activeTab.value) {
-    case 'lucide':
-      icons = LUCIDE_ICONS
-      break
-    case 'solar':
-      icons = SOLAR_ICONS
-      break
-    case 'ph':
-      icons = PH_ICONS
-      break
-    case 'logos':
-      icons = LOGOS_ICONS
-      break
-    case 'custom':
-      icons = CUSTOM_ICONS
-      break
-  }
-  if (searchKeyword.value) {
-    const keyword = searchKeyword.value.toLowerCase()
-    icons = icons.filter(icon => icon.toLowerCase().includes(keyword))
-  }
-  return icons
+  const icons = ICON_COLLECTIONS[activeTab.value]
+  const keyword = searchKeyword.value.trim().toLowerCase()
+  if (!keyword) return icons
+  return icons.filter(icon => icon.toLowerCase().includes(keyword))
 })
-
 const displayedIcons = computed(() => currentIcons.value.slice(0, displayCount.value))
 const hasMoreIcons = computed(() => displayCount.value < currentIcons.value.length)
+const selectedIconCountText = computed(() => {
+  if (hasMoreIcons.value)
+    return `已显示 ${displayedIcons.value.length} / 共 ${currentIcons.value.length} 个`
+  return `共 ${currentIcons.value.length} 个图标`
+})
+
+const codeExampleText = computed(() => {
+  if (!selectedIcon.value) return ''
+  return `<Icons\n  name="${selectedIcon.value}"\n  size="${iconSize.value}"${effectiveIconColor.value ? `\n  color="${effectiveIconColor.value}"` : ''}${iconAnimation.value ? `\n  animation="${iconAnimation.value}"` : ''}${iconFlip.value ? `\n  flip="${iconFlip.value}"` : ''}${iconRotate.value !== '' ? `\n  rotate="${iconRotate.value}"` : ''}${iconScale.value !== undefined ? `\n  scale="${iconScale.value}"` : ''}\n/>`
+})
 
 function loadMore() {
   displayCount.value = Math.min(displayCount.value + LOAD_MORE_STEP, currentIcons.value.length)
 }
-
-watch(
-  [() => activeTab.value, () => searchKeyword.value],
-  () => {
-    displayCount.value = INITIAL_DISPLAY_COUNT
-    nextTick(() => {
-      const icons = currentIcons.value
-      if (icons.length > 0) {
-        if (!icons.includes(selectedIcon.value)) selectedIcon.value = icons[0]
-      } else {
-        selectedIcon.value = ''
-      }
-    })
-  },
-  { immediate: true }
-)
 
 function resetControls() {
   iconSize.value = 'md'
@@ -154,299 +121,273 @@ function resetControls() {
   iconScale.value = undefined
 }
 
+function selectIcon(icon: string) {
+  selectedIcon.value = icon
+}
+
+async function copyCodeExample() {
+  if (!codeExampleText.value) return
+  try {
+    await navigator.clipboard.writeText(codeExampleText.value)
+    window.$message?.success?.('已复制到剪贴板')
+  } catch {
+    window.$message?.danger?.('复制失败，请检查浏览器剪贴板权限')
+  }
+}
+
+watch(
+  [() => activeTab.value, () => searchKeyword.value],
+  () => {
+    displayCount.value = INITIAL_DISPLAY_COUNT
+    nextTick(() => {
+      const icons = currentIcons.value
+      selectedIcon.value = icons.includes(selectedIcon.value)
+        ? selectedIcon.value
+        : (icons[0] ?? '')
+    })
+  },
+  { immediate: true }
+)
+
 watch(activeTab, () => {
   resetControls()
   searchKeyword.value = ''
 })
-
-function openExternalLink(url: string) {
-  window.open(url, '_blank')
-}
 </script>
 
 <template>
   <div
-    class="col-stretch"
-    data-archetype="A1-toolbar-content"
+    id="icons-explorer-page"
+    class="layout-full p-md col-stretch gap-md overflow-hidden min-w-0"
+    data-testid="icons-explorer-page"
   >
-    <div class="col-stretch gap-md min-h-0 min-w-0">
-      <div class="layout-narrow col-stretch gap-md min-w-0">
-        <header class="shrink-0 glass-panel col-stretch gap-md min-w-0">
-          <div class="row-between gap-md min-w-0">
-            <div class="row-start gap-sm min-w-0 flex-wrap">
-              <div class="glass-icon-box shrink-0">
-                <Icons
-                  name="i-lucide-grid-2x2"
-                  size="xl"
-                  class="text-primary"
+    <header class="shrink-0 glass-panel col-stretch gap-md min-w-0">
+      <div class="row-between gap-md min-w-0">
+        <div class="row-start gap-sm min-w-0 flex-wrap">
+          <div class="glass-icon-box shrink-0">
+            <Icons
+              name="i-lucide-grid-2x2"
+              size="xl"
+              class="text-primary"
+            />
+          </div>
+          <div class="col-stretch gap-xs min-w-0">
+            <div class="row-start gap-xs min-w-0 flex-wrap">
+              <span class="text-lg font-bold text-foreground text-no-wrap">Icon Explorer</span>
+              <span class="surface-primary rounded-md px-sm py-xs text-xs font-semibold uppercase">
+                COMPONENT
+              </span>
+            </div>
+            <span class="text-sm text-muted-foreground text-ellipsis-1">
+              展示所有图标库的图标，并提供功能控制面板
+            </span>
+          </div>
+        </div>
+        <span
+          v-if="IS_LITE_MODE"
+          class="surface-muted rounded-md px-sm py-xs text-xs text-muted-foreground shrink-0"
+          data-testid="icons-lite-mode"
+        >
+          Lite 模式
+        </span>
+      </div>
+    </header>
+
+    <section class="material-elevated col-fill gap-md min-w-0 overflow-hidden">
+      <div class="shrink-0 col-stretch gap-md min-w-0">
+        <Tabs v-model:value="activeTabModel">
+          <TabList class="border-0!">
+            <Tab value="lucide">Lucide</Tab>
+            <Tab value="solar">Solar</Tab>
+            <Tab value="ph">Phosphor</Tab>
+            <Tab value="logos">Logos</Tab>
+            <Tab value="custom">Custom</Tab>
+          </TabList>
+        </Tabs>
+
+        <div class="row-start gap-sm min-w-0">
+          <span class="i-lucide-search text-lg text-muted-foreground shrink-0" />
+          <InputText
+            v-model="searchKeyword"
+            placeholder="搜索图标..."
+            class="flex-1 min-w-0"
+            data-testid="icons-search-input"
+          />
+          <span
+            class="text-muted-foreground text-sm shrink-0"
+            data-testid="icons-count"
+          >
+            {{ selectedIconCountText }}
+          </span>
+        </div>
+
+        <InlineMessage
+          v-if="IS_LITE_MODE"
+          severity="warn"
+        >
+          当前处于构建优化模式（Lite），仅展示常用示例图标。运行 pnpm dev:demo 可查看完整库。
+        </InlineMessage>
+      </div>
+
+      <div class="col-fill row-start gap-md items-stretch min-w-0 overflow-hidden">
+        <div
+          class="col-fill bg-muted/20 border border-border/40 rounded-lg min-w-0 overflow-hidden"
+        >
+          <CScrollbar
+            native
+            class="col-fill"
+            data-testid="icons-grid-scroll"
+          >
+            <div class="p-md col-stretch gap-md min-w-0">
+              <div
+                v-if="displayedIcons.length"
+                class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 gap-md"
+                data-testid="icons-grid"
+              >
+                <button
+                  v-for="icon in displayedIcons"
+                  :key="icon"
+                  type="button"
+                  class="col-center gap-sm p-md cursor-pointer transition-all duration-md hover:border-accent hover:shadow-md bg-transparent border border-border/50 rounded-lg text-foreground"
+                  :class="{ 'border-accent shadow-md': selectedIcon === icon }"
+                  :data-icon-name="icon"
+                  data-testid="icon-card"
+                  @click="selectIcon(icon)"
+                >
+                  <span class="center w-[var(--spacing-3xl)] h-[var(--spacing-3xl)]">
+                    <Icons
+                      :name="icon"
+                      :size="iconSize"
+                      :color="effectiveIconColor"
+                      :animation="iconAnimation"
+                      :flip="iconFlip"
+                      :rotate="iconRotate"
+                      :scale="iconScale"
+                      data-testid="grid-icon"
+                    />
+                  </span>
+                  <span class="text-xs font-mono break-all line-clamp-2 text-center">
+                    {{ icon }}
+                  </span>
+                </button>
+              </div>
+
+              <div
+                v-if="displayedIcons.length"
+                class="center pt-sm"
+              >
+                <Button
+                  v-if="hasMoreIcons"
+                  label="加载更多"
+                  variant="outlined"
+                  size="small"
+                  data-testid="icons-load-more"
+                  @click="loadMore"
                 />
               </div>
-              <div class="col-stretch gap-xs min-w-0">
-                <div class="row-start gap-xs min-w-0 flex-wrap">
-                  <span class="text-lg font-bold text-foreground text-no-wrap">Icon Explorer</span>
-                  <span
-                    class="surface-primary rounded-md px-sm py-xs text-xs font-semibold uppercase"
-                  >
-                    COMPONENT
-                  </span>
-                </div>
-                <span class="text-sm text-muted-foreground text-ellipsis-1">
-                  展示所有图标库的图标，并提供功能控制面板
-                </span>
+
+              <div
+                v-else
+                class="col-center py-2xl gap-md text-muted-foreground min-w-0"
+                data-testid="icons-empty"
+              >
+                <Icons
+                  name="i-lucide-search-x"
+                  size="3xl"
+                />
+                <span class="text-lg">未找到匹配的图标</span>
               </div>
             </div>
-          </div>
-        </header>
+          </CScrollbar>
+        </div>
 
-        <section class="material-elevated col-stretch gap-md min-w-0">
-          <Tabs
-            v-model:value="activeTabModel"
+        <aside
+          class="w-[35vw] max-w-[520px] min-w-[360px] shrink-0 bg-muted/20 border border-border/40 rounded-lg overflow-hidden"
+        >
+          <CScrollbar
+            native
             class="col-fill"
+            data-testid="icons-settings-scroll"
           >
-            <div class="shrink-0 row-between pr-md min-w-0">
-              <TabList class="border-0!">
-                <Tab value="lucide">Lucide</Tab>
-                <Tab value="solar">Solar</Tab>
-                <Tab value="ph">Phosphor</Tab>
-                <Tab value="logos">Logos</Tab>
-                <Tab value="custom">Custom</Tab>
-              </TabList>
-            </div>
-
-            <TabPanels class="col-fill overflow-hidden p-0">
-              <TabPanel
-                :value="activeTab"
-                class="col-fill p-md col-stretch gap-md"
+            <div class="p-md col-stretch gap-lg min-w-0">
+              <section
+                class="col-center gap-md p-xl bg-muted rounded-md border border-border/50 min-h-[var(--spacing-5xl)] min-w-0"
+                data-testid="icons-preview"
               >
-                <!-- Lite 模式提示 -->
-                <div
-                  v-if="IS_LITE_MODE"
-                  class="shrink-0 p-md bg-warn/10 border border-warn/30 rounded-md row-start gap-md min-w-0"
-                >
-                  <Icons
-                    name="i-lucide-alert-circle"
-                    class="text-warn"
-                  />
-                  <div class="flex-1 min-w-0">
-                    <span class="text-sm font-medium text-warn">
-                      当前处于构建优化模式（Lite），仅展示常用示例图标。
-                    </span>
-                    <span class="text-xs text-muted-foreground ml-sm">
-                      运行
-                      <code class="code-inline">pnpm dev:demo</code>
-                      可查看完整库（Lucide / Solar / Phosphor 等多套图标库）。
-                    </span>
-                  </div>
+                <Icons
+                  v-if="selectedIcon"
+                  :name="selectedIcon"
+                  :size="iconSize"
+                  :color="effectiveIconColor"
+                  :animation="iconAnimation"
+                  :flip="iconFlip"
+                  :rotate="iconRotate"
+                  :scale="iconScale"
+                  data-testid="preview-icon"
+                />
+                <Icons
+                  v-else
+                  name="i-lucide-mouse-pointer-click"
+                  size="2xl"
+                />
+                <span class="text-sm font-mono text-muted-foreground break-all text-center">
+                  {{ selectedIcon || '请从左侧选择一个图标' }}
+                </span>
+              </section>
+
+              <section
+                v-if="selectedIcon"
+                class="col-stretch gap-md min-w-0"
+              >
+                <div class="row-between gap-sm min-w-0">
+                  <label class="text-sm font-medium text-foreground">代码示例</label>
                   <Button
-                    label="了解更多"
+                    type="button"
                     size="small"
-                    text
-                    class="text-xs"
-                    @click="openExternalLink('https://antigravity.dev')"
-                  />
+                    severity="secondary"
+                    aria-label="复制代码"
+                    title="复制代码"
+                    @click="copyCodeExample"
+                  >
+                    <Icons
+                      name="i-lucide-copy"
+                      size="sm"
+                    />
+                  </Button>
                 </div>
-
-                <div class="flex-1 min-h-0 row-start gap-md items-stretch overflow-hidden min-w-0">
-                  <!-- 左侧：图标列表 -->
-                  <div class="col-fill min-w-0">
-                    <div
-                      ref="searchBarRef"
-                      class="shrink-0 p-md"
-                    >
-                      <div class="row-start gap-sm min-w-0">
-                        <span class="i-lucide-search text-lg text-muted-foreground" />
-                        <InputText
-                          v-model="searchKeyword"
-                          placeholder="搜索图标..."
-                          class="flex-1"
-                        />
-                        <span class="text-muted-foreground text-sm">
-                          <template v-if="hasMoreIcons">
-                            已显示 {{ displayedIcons.length }} / 共 {{ currentIcons.length }} 个
-                          </template>
-                          <template v-else>共 {{ currentIcons.length }} 个图标</template>
-                        </span>
-                      </div>
-                    </div>
-
-                    <div
-                      :style="leftContentStyle"
-                      class="min-h-0 overflow-hidden"
-                    >
-                      <!-- 局部滚动：图标列表为高密度区域，保留独立滚动以避免挤压右侧控制面板 -->
-                      <CScrollbar class="layout-full">
-                        <div class="p-md col-stretch gap-md min-w-0">
-                          <div
-                            v-if="currentIcons.length > 0"
-                            class="col-stretch gap-md min-w-0"
-                          >
-                            <div
-                              class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-md"
-                            >
-                              <div
-                                v-for="icon in displayedIcons"
-                                :key="icon"
-                                class="col-center gap-sm p-md cursor-pointer transition-all duration-md hover:border-accent hover:shadow-md"
-                                :class="{ 'border-accent': selectedIcon === icon }"
-                                @click="selectedIcon = icon"
-                              >
-                                <div class="center w-[var(--spacing-3xl)] h-[var(--spacing-3xl)]">
-                                  <Icons
-                                    :name="icon"
-                                    :size="iconSize"
-                                    :color="effectiveIconColor"
-                                    :animation="iconAnimation"
-                                    :flip="iconFlip"
-                                    :rotate="iconRotate"
-                                    :scale="iconScale"
-                                  />
-                                </div>
-                                <div class="text-center w-full">
-                                  <div
-                                    class="text-xs font-mono text-foreground break-all line-clamp-2"
-                                  >
-                                    {{ icon }}
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-                            <div
-                              v-if="hasMoreIcons"
-                              class="center pt-sm"
-                            >
-                              <Button
-                                label="加载更多"
-                                variant="outlined"
-                                size="small"
-                                @click="loadMore"
-                              />
-                            </div>
-                          </div>
-
-                          <div
-                            v-if="currentIcons.length === 0"
-                            class="col-center py-2xl gap-md text-muted-foreground min-w-0"
-                          >
-                            <Icons
-                              name="i-lucide-search-x"
-                              size="3xl"
-                            />
-                            <span class="text-lg">未找到匹配的图标</span>
-                          </div>
-                        </div>
-                      </CScrollbar>
-                    </div>
-                  </div>
-
-                  <!-- 右侧：控制面板 -->
-                  <div class="w-[30%] shrink-0 min-h-0 col-stretch gap-lg hidden xl:flex min-w-0">
-                    <div
-                      ref="codeAreaRef"
-                      class="shrink-0"
-                    >
-                      <div
-                        v-if="selectedIcon && selectedIcon !== '未选择'"
-                        class="col-stretch gap-md min-w-0"
-                      >
-                        <div class="row-between gap-sm min-w-0">
-                          <label class="text-sm font-medium text-foreground">代码示例</label>
-                          <Button
-                            type="button"
-                            size="small"
-                            severity="secondary"
-                            aria-label="复制代码"
-                            title="复制代码"
-                            @click="copyCodeExample"
-                          >
-                            <Icons
-                              name="i-lucide-copy"
-                              size="sm"
-                            />
-                          </Button>
-                        </div>
-                        <div class="p-md bg-muted rounded-md border border-border/50">
-                          <pre
-                            class="text-xs font-mono text-foreground whitespace-pre-wrap break-all m-0"
-                            >{{ codeExampleText }}</pre
-                          >
-                        </div>
-                        <InlineMessage
-                          v-if="iconColorHint"
-                          severity="warn"
-                        >
-                          {{ iconColorHint }}
-                        </InlineMessage>
-                      </div>
-                    </div>
-
-                    <div
-                      :style="middleContentStyle"
-                      class="min-h-0 overflow-hidden"
-                    >
-                      <!-- 局部滚动：控制面板字段较多，保留独立滚动以维持三栏并行可读性 -->
-                      <CScrollbar class="layout-full">
-                        <div class="p-md">
-                          <IconControls
-                            :icon-name="selectedIcon || '未选择'"
-                            :size="iconSize"
-                            :color="iconColor"
-                            :animation="iconAnimation"
-                            :flip="iconFlip"
-                            :rotate="iconRotate"
-                            :scale="iconScale"
-                            @update:size="iconSize = $event"
-                            @update:color="iconColor = $event"
-                            @update:animation="iconAnimation = $event"
-                            @update:flip="iconFlip = $event"
-                            @update:rotate="iconRotate = $event"
-                            @update:scale="iconScale = $event"
-                          />
-                        </div>
-                      </CScrollbar>
-                    </div>
-
-                    <div
-                      ref="previewAreaRef"
-                      class="shrink-0 col-stretch gap-md min-w-0"
-                    >
-                      <h3 class="text-md font-semibold text-foreground">预览</h3>
-                      <div
-                        v-if="selectedIcon"
-                        class="col-center gap-md p-xl bg-muted rounded-md border border-border/50 min-h-[var(--spacing-5xl)] min-w-0"
-                      >
-                        <Icons
-                          :name="selectedIcon"
-                          :size="iconSize"
-                          :color="effectiveIconColor"
-                          :animation="iconAnimation"
-                          :flip="iconFlip"
-                          :rotate="iconRotate"
-                          :scale="iconScale"
-                        />
-                        <div class="text-center">
-                          <div class="text-sm font-mono text-muted-foreground break-all">
-                            {{ selectedIcon }}
-                          </div>
-                        </div>
-                      </div>
-                      <div
-                        v-else
-                        class="col-center gap-md p-xl bg-muted rounded-md border border-border/50 min-h-[var(--spacing-5xl)] text-muted-foreground min-w-0"
-                      >
-                        <Icons
-                          name="i-lucide-mouse-pointer-click"
-                          size="2xl"
-                        />
-                        <span class="text-sm">请从左侧选择一个图标</span>
-                      </div>
-                    </div>
-                  </div>
+                <div class="p-md bg-muted rounded-md border border-border/50">
+                  <pre
+                    class="text-xs font-mono text-foreground whitespace-pre-wrap break-all m-0"
+                    >{{ codeExampleText }}</pre
+                  >
                 </div>
-              </TabPanel>
-            </TabPanels>
-          </Tabs>
-        </section>
+                <InlineMessage
+                  v-if="iconColorHint"
+                  severity="warn"
+                >
+                  {{ iconColorHint }}
+                </InlineMessage>
+              </section>
+
+              <IconControls
+                :icon-name="selectedIcon || '未选择'"
+                :size="iconSize"
+                :color="iconColor"
+                :animation="iconAnimation"
+                :flip="iconFlip"
+                :rotate="iconRotate"
+                :scale="iconScale"
+                @update:size="iconSize = $event"
+                @update:color="iconColor = $event"
+                @update:animation="iconAnimation = $event"
+                @update:flip="iconFlip = $event"
+                @update:rotate="iconRotate = $event"
+                @update:scale="iconScale = $event"
+              />
+            </div>
+          </CScrollbar>
+        </aside>
       </div>
-    </div>
+    </section>
   </div>
 </template>
