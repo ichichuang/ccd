@@ -101,8 +101,8 @@ function buildToastApi() {
 }
 
 /**
- * $message：居中纯提示（正中央展示、无关闭按钮、纯提示）
- * 使用 position="center" + group="center" + closable: false
+ * $message：顶部居中纯提示（无关闭按钮、纯提示）
+ * 使用 top-center group，与位置化 $toast API 共享全局 Toast 实例。
  */
 function buildMessageApi() {
   const show = (
@@ -115,7 +115,7 @@ function buildMessageApi() {
       summary: title ?? message,
       detail: title ? message : undefined,
       life: DEFAULT_LIFE,
-      group: 'center',
+      group: POSITION_TO_GROUP['top-center'],
       closable: false,
     })
   }
@@ -145,19 +145,6 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <!-- 居中纯提示 Toast，供 $message 使用（正中央、无关闭按钮） -->
-  <Toast
-    position="center"
-    group="center"
-  >
-    <template #message="{ message }">
-      <ToastMessageContent
-        :message="message"
-        :icon-map="TOAST_ICON_MAP"
-        :fallback-icon="InfoCircleIcon"
-      />
-    </template>
-  </Toast>
   <Toast
     position="top-left"
     group="tl"
@@ -240,21 +227,9 @@ onUnmounted(() => {
 </template>
 <style lang="scss">
 /*
- * EXCEPTION: Toast 定位覆盖 — 无法迁移到 PT (PassThrough)
- *
- * 原因：
- * 1. .p-toast-center 需要 inset + transform 覆盖实现居中，PT 作用于所有实例无法条件化
- * 2. :not(.p-toast-center) 选择器在 PT 中不可表达
- * 3. !important 是覆盖 PrimeVue 内置定位的必要手段
- *
- * 所有间距值已使用语义 CSS 变量 (--spacing-*)，仅定位属性为结构性例外。
+ * EXCEPTION: Toast close-button positioning — cannot migrate to PT (PassThrough)
+ * because :not() exclusions are structural global selectors.
  */
-
-/* Message 居中 Toast：强制正中央（top/left 50% + transform 居中对齐） */
-.p-toast.p-toast-center {
-  inset: 50% auto auto 50% !important;
-  transform: translate(-50%, -50%) !important;
-}
 
 /* Toast 消息基础：相对定位 + 全宽 */
 .p-toast-message {

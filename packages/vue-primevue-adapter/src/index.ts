@@ -6,6 +6,7 @@ import {
   OVERLAY_GLASS_COMPACT_CLASS,
 } from './theme/ptPresets/formControlsPt'
 import { menuPt } from './theme/ptPresets/menuPt'
+import { buttonPt } from './theme/ptPresets/buttonPt'
 
 export type { PrimeVueSizeSource }
 export { createCustomPreset, formControlsPt, menuPt }
@@ -69,6 +70,7 @@ export const splitterPt = {
 } as const
 
 export const primeVueAdapterPt = {
+  ...buttonPt,
   ...menuPt,
   ...formControlsPt,
   ...overlayPt,
