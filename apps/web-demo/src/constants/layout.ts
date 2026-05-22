@@ -66,6 +66,7 @@ export const LAYOUT_PERSIST_PICK: (keyof LayoutStoreState)[] = [
   'enableKeepAlive',
   'visibilitySettings',
   'expandedMenuKeys',
+  'contentScrollMemory',
   'userAdjusted',
 ] as (keyof LayoutStoreState)[]
 

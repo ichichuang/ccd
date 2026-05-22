@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { useRoute } from 'vue-router'
+import { scrollbarMemoryProviderKey } from '@ccd/vue-ui'
 import AnimateRouterView from '@&/AnimateRouterView.vue'
 import Loading from '@&/Loading.vue'
 import { useLayoutStore } from '@/stores/modules/system'
@@ -8,16 +9,17 @@ import type { CScrollbar } from '@ccd/vue-ui'
 const layoutStore = useLayoutStore()
 const scrollbarRef = ref<InstanceType<typeof CScrollbar> | null>(null)
 
+provide(scrollbarMemoryProviderKey, {
+  get: key => layoutStore.getContentScrollMemory(key),
+  set: (key, position) => layoutStore.setContentScrollMemory(key, position),
+})
+
 const isPageLoading = computed(() => layoutStore.isPageLoading)
 
 const route = useRoute()
 const isFullscreen = computed(() => route.meta?.parent === 'fullscreen')
-watch(
-  () => route.fullPath,
-  () => {
-    // 路由切换时滚动到顶部
-    scrollbarRef.value?.scrollTo({ top: 0, behavior: 'auto' })
-  }
+const routeScrollMemoryKey = computed(
+  () => `layout-admin-content:${route.fullPath || String(route.name ?? '')}`
 )
 </script>
 
@@ -27,6 +29,7 @@ watch(
       ref="scrollbarRef"
       back-to-top
       :back-to-top-threshold="400"
+      :memory-key="routeScrollMemoryKey"
     >
       <AnimateRouterView class="layout-full flex-1 min-h-0" />
     </CScrollbar>

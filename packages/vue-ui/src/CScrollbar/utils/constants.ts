@@ -8,6 +8,8 @@ import type { ScrollbarProps, ScrollbarVisibility } from './types'
 /** 与 PrimeVue ScrollTop 默认 threshold 一致 */
 export const DEFAULT_BACK_TO_TOP_THRESHOLD = 400
 
+export const DEFAULT_SCROLLBAR_MEMORY_THROTTLE_MS = 200
+
 /** 返回顶部浮动按钮默认边距（px），与 bottom/right 一致 */
 export const DEFAULT_BACK_TO_TOP_OFFSET_PX = 40
 
@@ -22,6 +24,7 @@ export const defaultScrollbarProps: Required<
     | 'backToTopThreshold'
     | 'backToTopOffsetBottom'
     | 'backToTopOffsetRight'
+    | 'memoryThrottle'
   >
 > = {
   visibility: 'auto',
@@ -31,6 +34,7 @@ export const defaultScrollbarProps: Required<
   backToTopThreshold: DEFAULT_BACK_TO_TOP_THRESHOLD,
   backToTopOffsetBottom: DEFAULT_BACK_TO_TOP_OFFSET_PX,
   backToTopOffsetRight: DEFAULT_BACK_TO_TOP_OFFSET_PX,
+  memoryThrottle: DEFAULT_SCROLLBAR_MEMORY_THROTTLE_MS,
 }
 
 /**

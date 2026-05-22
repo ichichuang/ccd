@@ -102,6 +102,7 @@ export const useLayoutStore = defineStore('layout', {
     mobileDrawerOpen: false,
     /** 表单记忆指针（formId -> storageKey） */
     formMemoryPointers: {} as Record<string, string>,
+    contentScrollMemory: {},
   }),
 
   getters: {
@@ -171,6 +172,12 @@ export const useLayoutStore = defineStore('layout', {
     },
     setFormMemoryPointer(formId: string, storageKey: string) {
       this.formMemoryPointers[formId] = storageKey
+    },
+    getContentScrollMemory(key: string) {
+      return this.contentScrollMemory[key]
+    },
+    setContentScrollMemory(key: string, position: { scrollTop: number; scrollLeft: number }) {
+      this.contentScrollMemory[key] = position
     },
     /**
      * 旧版持久化迁移：

@@ -103,6 +103,9 @@ declare global {
 
     /** 表单记忆指针（formId -> storageKey），运行时不持久化 */
     formMemoryPointers: Record<string, string>
+
+    /** 内容区滚动记忆（memoryKey -> position），持久化 */
+    contentScrollMemory: Record<string, { scrollTop: number; scrollLeft: number }>
   }
 }
 

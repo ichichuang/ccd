@@ -13,16 +13,18 @@
  *   <div>滚动内容</div>
  * </CScrollbar>
  */
-import { computed, nextTick, onMounted, onUnmounted, ref, useTemplateRef, watch } from 'vue'
+import { computed, inject, nextTick, onMounted, onUnmounted, ref, useTemplateRef, watch } from 'vue'
 import type { ComputedRef } from 'vue'
 import { usePrimeVue } from 'primevue/config'
 import { type Elements, type OverlayScrollbars, type State } from 'overlayscrollbars'
 import { OverlayScrollbarsComponent } from 'overlayscrollbars-vue'
 import {
   DEFAULT_SCROLLBAR_AUTO_HIDE_DELAY_MS,
+  DEFAULT_SCROLLBAR_MEMORY_THROTTLE_MS,
   defaultScrollbarProps,
   resolveScrollbarAutoHide,
 } from './utils/constants'
+import { scrollbarMemoryProviderKey } from './utils/memory'
 import type { ScrollbarProps, OnUpdatedEventListenerArgs } from './utils/types'
 import AnimateWrapper from '../AnimateWrapper/AnimateWrapper.vue'
 import Icons from '../Icons/Icons.vue'
@@ -41,6 +43,7 @@ const emit = defineEmits<{
 }>()
 
 const primevue = usePrimeVue()
+const memoryProvider = inject(scrollbarMemoryProviderKey, undefined)
 const backToTopAriaLabel = computed(() => primevue.config.locale?.aria?.scrollTop ?? 'Scroll Top')
 
 const backToTopFabStyle = computed(() => ({
@@ -54,6 +57,11 @@ const documentDark = ref(false)
 
 const scrollbarRef = useTemplateRef<InstanceType<typeof OverlayScrollbarsComponent>>('scrollbarRef')
 const isDark = computed(() => props.dark ?? documentDark.value)
+const memoryEnabled = computed(() => Boolean(props.memoryKey && memoryProvider))
+let memoryThrottleTimer: ReturnType<typeof setTimeout> | undefined
+let pendingMemoryElement: HTMLElement | undefined
+let restoredMemoryKey: string | undefined
+let isApplyingMemory = false
 
 /** 根据当前主题模式返回配置 */
 const osOptions: ComputedRef<Record<string, unknown>> = computed(() => {
@@ -89,46 +97,100 @@ function syncBackToTopVisibility(scrollEl: HTMLElement) {
   backToTopVisible.value = scrollEl.scrollTop > props.backToTopThreshold
 }
 
+function restoreMemory(scrollEl: HTMLElement) {
+  if (!memoryEnabled.value || !props.memoryKey || restoredMemoryKey === props.memoryKey) return
+  const position = memoryProvider?.get(props.memoryKey)
+  if (!position) {
+    restoredMemoryKey = props.memoryKey
+    return
+  }
+  const maxScrollTop = Math.max(0, scrollEl.scrollHeight - scrollEl.clientHeight)
+  const maxScrollLeft = Math.max(0, scrollEl.scrollWidth - scrollEl.clientWidth)
+  const canRestore = position.scrollTop <= maxScrollTop && position.scrollLeft <= maxScrollLeft
+  if (!canRestore && (position.scrollTop > 0 || position.scrollLeft > 0)) return
+
+  restoredMemoryKey = props.memoryKey
+  isApplyingMemory = true
+  scrollEl.scrollTo({
+    top: position.scrollTop,
+    left: position.scrollLeft,
+    behavior: 'auto',
+  })
+  syncBackToTopVisibility(scrollEl)
+  nextTick(() => {
+    isApplyingMemory = false
+  })
+}
+
+function flushMemory() {
+  if (memoryThrottleTimer) {
+    clearTimeout(memoryThrottleTimer)
+    memoryThrottleTimer = undefined
+  }
+  const scrollEl = pendingMemoryElement
+  pendingMemoryElement = undefined
+  if (!memoryEnabled.value || !props.memoryKey || !scrollEl) return
+  memoryProvider?.set(props.memoryKey, {
+    scrollTop: scrollEl.scrollTop,
+    scrollLeft: scrollEl.scrollLeft,
+  })
+}
+
+function scheduleMemorySave(scrollEl: HTMLElement) {
+  if (!memoryEnabled.value || isApplyingMemory) return
+  pendingMemoryElement = scrollEl
+  if (memoryThrottleTimer) return
+  memoryThrottleTimer = setTimeout(
+    flushMemory,
+    props.memoryThrottle ?? DEFAULT_SCROLLBAR_MEMORY_THROTTLE_MS
+  )
+}
+
+function syncScrollState(scrollEl: HTMLElement) {
+  syncBackToTopVisibility(scrollEl)
+  scheduleMemorySave(scrollEl)
+}
+
 function handleOsScroll(instance: OverlayScrollbars, event: Event) {
   emit('scroll', instance, event)
-  if (props.backToTop) {
-    syncBackToTopVisibility(instance.elements().scrollOffsetElement)
-  }
+  syncScrollState(instance.elements().scrollOffsetElement)
 }
 
 function handleNativeScroll() {
   const el = nativeScrollRef.value
   if (el) {
-    syncBackToTopVisibility(el)
+    syncScrollState(el)
   }
 }
 
 function onOsInitialized(instance: OverlayScrollbars) {
   emit('initialized', instance)
-  if (props.backToTop) {
-    nextTick(() => {
-      syncBackToTopVisibility(instance.elements().scrollOffsetElement)
-    })
-  }
+  nextTick(() => {
+    const scrollEl = instance.elements().scrollOffsetElement
+    restoreMemory(scrollEl)
+    syncBackToTopVisibility(scrollEl)
+  })
 }
 
 function onOsUpdated(instance: OverlayScrollbars, args: OnUpdatedEventListenerArgs) {
   emit('updated', instance, args)
-  if (props.backToTop) {
-    syncBackToTopVisibility(instance.elements().scrollOffsetElement)
-  }
+  const scrollEl = instance.elements().scrollOffsetElement
+  restoreMemory(scrollEl)
+  syncBackToTopVisibility(scrollEl)
 }
 
 /** 暴露 scrollTo 方法供外部调用 */
 function scrollTo(options: ScrollToOptions) {
   if (props.native) {
     nativeScrollRef.value?.scrollTo(options)
+    if (nativeScrollRef.value) scheduleMemorySave(nativeScrollRef.value)
     return
   }
   const instance = scrollbarRef.value?.osInstance()
   if (instance) {
     const { scrollOffsetElement } = instance.elements()
     scrollOffsetElement.scrollTo(options)
+    scheduleMemorySave(scrollOffsetElement)
   }
 }
 
@@ -162,18 +224,28 @@ function elements(): Elements | undefined {
 
 // 监听主题变化，更新滚动条主题
 watch(
-  isDark,
-  dark => {
-    const instance = scrollbarRef.value?.osInstance()
-    if (instance) {
-      instance.options({
-        scrollbars: {
-          theme: dark ? 'os-theme-dark' : 'os-theme-light',
-        },
-      })
+  () => props.memoryKey,
+  () => {
+    restoredMemoryKey = undefined
+    const el = props.native
+      ? nativeScrollRef.value
+      : scrollbarRef.value?.osInstance()?.elements().scrollOffsetElement
+    if (el) {
+      nextTick(() => restoreMemory(el))
     }
   }
 )
+
+watch(isDark, dark => {
+  const instance = scrollbarRef.value?.osInstance()
+  if (instance) {
+    instance.options({
+      scrollbars: {
+        theme: dark ? 'os-theme-dark' : 'os-theme-light',
+      },
+    })
+  }
+})
 
 watch(
   () => [props.backToTop, props.backToTopThreshold] as const,
@@ -209,6 +281,9 @@ onMounted(() => {
     })
   }
   nextTick(() => {
+    if (props.native && nativeScrollRef.value) {
+      restoreMemory(nativeScrollRef.value)
+    }
     if (!props.backToTop) return
     if (props.native && nativeScrollRef.value) {
       syncBackToTopVisibility(nativeScrollRef.value)
@@ -217,6 +292,7 @@ onMounted(() => {
 })
 
 onUnmounted(() => {
+  flushMemory()
   darkObserver?.disconnect()
 })
 

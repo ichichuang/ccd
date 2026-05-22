@@ -7,9 +7,11 @@ export {
   DEFAULT_BACK_TO_TOP_OFFSET_PX,
   DEFAULT_BACK_TO_TOP_THRESHOLD,
   DEFAULT_SCROLLBAR_AUTO_HIDE_DELAY_MS,
+  DEFAULT_SCROLLBAR_MEMORY_THROTTLE_MS,
   defaultScrollbarProps,
   resolveScrollbarAutoHide,
 } from './CScrollbar/utils/constants'
+export { scrollbarMemoryProviderKey } from './CScrollbar/utils/memory'
 
 export { default as EmptyState } from './EmptyState/EmptyState.vue'
 export type * from './EmptyState/types'

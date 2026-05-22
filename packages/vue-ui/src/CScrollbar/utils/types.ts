@@ -11,6 +11,16 @@ import type {
 
 export type { OnUpdatedEventListenerArgs }
 
+export interface ScrollbarMemoryPosition {
+  scrollTop: number
+  scrollLeft: number
+}
+
+export interface ScrollbarMemoryProvider {
+  get: (key: string) => ScrollbarMemoryPosition | undefined
+  set: (key: string, position: ScrollbarMemoryPosition) => void
+}
+
 /**
  * CScrollbar visibility options
  * - 'auto': Automatically hide when not scrolling
@@ -75,6 +85,18 @@ export interface ScrollbarProps {
    * @default 40
    */
   backToTopOffsetRight?: number
+
+  /**
+   * Opt-in key used to restore and persist scroll position through the injected memory provider.
+   * Omit to keep scroll memory disabled.
+   */
+  memoryKey?: string
+
+  /**
+   * Scroll position persistence throttle interval in milliseconds.
+   * @default 200
+   */
+  memoryThrottle?: number
 
   /**
    * OverlayScrollbars options
