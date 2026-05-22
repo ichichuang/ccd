@@ -19,7 +19,17 @@ const SIZE_CLASS_MAP: Record<SizeScaleKey, string> = {
 
 const ALLOWED_SIZE_UNIT_PATTERN = /^-?\d+(\.\d+)?(px|%|vw|vh)$/
 const CSS_VAR_PATTERN = /^var\(--[a-zA-Z0-9-_]+\)$/
-const UNO_TEXT_COLOR_CLASS_PATTERN = /^!?text-[a-zA-Z0-9_:/.[\]-]+$/
+const RGB_CHANNEL_CSS_VAR_PATTERN =
+  /^var\(--(?:primary|primary-foreground|foreground|muted-foreground|info|success|warn|danger)\)$/
+const SEMANTIC_TEXT_COLOR_CLASSES = new Set([
+  'text-primary',
+  'text-foreground',
+  'text-muted-foreground',
+  'text-info',
+  'text-success',
+  'text-warn',
+  'text-danger',
+])
 const HARDCODED_COLOR_PATTERN = /^#|^rgb\(|^rgba\(|^hsl\(|^hsla\(/i
 const warnedMessages = new Set<string>()
 
@@ -105,7 +115,10 @@ const sizeStyle = computed(() => {
 const colorClass = computed(() => {
   if (!props.color) return ''
   const colorValue = props.color.trim()
-  if (UNO_TEXT_COLOR_CLASS_PATTERN.test(colorValue)) return colorValue
+  if (SEMANTIC_TEXT_COLOR_CLASSES.has(colorValue)) return colorValue
+  if (colorValue.startsWith('text-')) {
+    warnDev(`Unsupported color class "${colorValue}". Use a generated semantic text-* class.`)
+  }
   return ''
 })
 
@@ -117,7 +130,7 @@ const colorStyle = computed(() => {
   if (colorClass.value) return css
 
   if (CSS_VAR_PATTERN.test(colorValue)) {
-    css.color = colorValue
+    css.color = RGB_CHANNEL_CSS_VAR_PATTERN.test(colorValue) ? `rgb(${colorValue})` : colorValue
     return css
   }
 
@@ -126,7 +139,7 @@ const colorStyle = computed(() => {
     return css
   }
 
-  warnDev(`Invalid color "${colorValue}". Use var(--*) or UnoCSS text-* color class.`)
+  warnDev(`Invalid color "${colorValue}". Use var(--*) or a generated semantic text-* color class.`)
   return css
 })
 
@@ -176,7 +189,7 @@ const functionalClasses = computed(() => {
   <span
     :class="[iconClass, functionalClasses, sizeClass, colorClass, defaultColorClass]"
     :style="{ ...style, ...sizeStyle }"
-    class="inline-block align-middle text-inherit"
+    class="inline-block align-middle"
     :role="accessibleLabel ? 'img' : undefined"
     :aria-label="accessibleLabel"
     :title="props.title"

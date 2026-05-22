@@ -10,9 +10,9 @@
  */
 
 const GOLDEN_SINGLE_INPUT_ROOT =
-  'border border-solid border-border bg-background text-foreground shadow-sm shadow-foreground/10 dark:shadow-foreground/20 transition-[background-color,border-color,box-shadow,color] duration-md ease-smooth hover:border-primary/50 focus:outline-none focus:border-primary/50 ring-focus-focus'
+  'border border-solid border-input bg-background text-foreground shadow-sm shadow-foreground/10 dark:shadow-foreground/20 transition-[background-color,border-color,box-shadow,color] duration-md ease-smooth hover:border-primary focus:outline-none focus:border-primary focus:shadow-[0_0_0_var(--spacing-xs)_rgb(var(--primary)/0.16)] ring-focus-focus'
 const GOLDEN_COMPOUND_INPUT_ROOT =
-  '!rounded-md !border !border-solid !border-border !bg-background text-foreground transition-[background-color,border-color,box-shadow,color] duration-md ease-smooth hover:!border-primary-hover focus-within:!outline-none focus-within:!border-primary focus-within:hover:!border-primary focus-within:[box-shadow:var(--p-form-field-focus-ring-shadow)] overflow-hidden'
+  '!rounded-md !border !border-solid !border-input !bg-background text-foreground shadow-none transition-[background-color,border-color,box-shadow,color] duration-md ease-smooth hover:!border-primary focus-within:!outline-none focus-within:!border-primary focus-within:hover:!border-primary focus-within:![box-shadow:0_0_0_var(--spacing-xs)_rgb(var(--primary)/0.16)] overflow-hidden'
 const GOLDEN_COMPOUND_INPUT_TEXT_RESET =
   'w-full !border-0 !shadow-none !rounded-none !bg-transparent !ring-0 !outline-none focus:!border-0 focus:!ring-0 focus:!outline-none focus-visible:!ring-0 focus-visible:!ring-offset-0'
 const GOLDEN_COMPOUND_ACTION_RESET =
@@ -56,7 +56,7 @@ export const formControlsPt = {
       root: { class: GOLDEN_COMPOUND_INPUT_TEXT_RESET },
     },
     dropdown: {
-      class: GOLDEN_COMPOUND_ACTION_RESET,
+      class: `${GOLDEN_COMPOUND_ACTION_RESET} hover:!bg-muted/20 !border-l !border-l-input`,
     },
     panel: { class: OVERLAY_GLASS_CLASS },
   },

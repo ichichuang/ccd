@@ -22,6 +22,12 @@ type TabKey = 'lucide' | 'solar' | 'ph' | 'logos' | 'custom'
 const INITIAL_DISPLAY_COUNT = 50
 const LOAD_MORE_STEP = 50
 
+const FALLBACK_LUCIDE_ICONS = [
+  'i-lucide-grid-2x2',
+  'i-lucide-search',
+  'i-lucide-alert-circle',
+] as const
+
 const activeTab = ref<TabKey>('lucide')
 const activeTabModel = computed({
   get: () => activeTab.value,
@@ -60,13 +66,21 @@ const middleContentStyle = computed(() => {
 })
 
 const CSS_VAR_PATTERN = /^var\(--[a-zA-Z0-9-_]+\)$/
-const UNO_TEXT_COLOR_CLASS_PATTERN = /^!?text-[a-zA-Z0-9_:/.[\]-]+$/
+const SEMANTIC_ICON_COLOR_CLASSES = new Set([
+  'text-primary',
+  'text-foreground',
+  'text-muted-foreground',
+  'text-info',
+  'text-success',
+  'text-warn',
+  'text-danger',
+])
 const normalizedIconColor = computed<string>(() => (iconColor.value ?? '').trim())
 const isIconColorValid = computed<boolean>(() => {
   if (!normalizedIconColor.value) return true
   return (
     CSS_VAR_PATTERN.test(normalizedIconColor.value) ||
-    UNO_TEXT_COLOR_CLASS_PATTERN.test(normalizedIconColor.value)
+    SEMANTIC_ICON_COLOR_CLASSES.has(normalizedIconColor.value)
   )
 })
 const effectiveIconColor = computed<string | undefined>(() =>
@@ -100,7 +114,7 @@ const currentIcons = computed(() => {
   let icons: readonly string[] = []
   switch (activeTab.value) {
     case 'lucide':
-      icons = LUCIDE_ICONS
+      icons = LUCIDE_ICONS.length > 0 ? LUCIDE_ICONS : FALLBACK_LUCIDE_ICONS
       break
     case 'solar':
       icons = SOLAR_ICONS
@@ -412,7 +426,7 @@ function openExternalLink(url: string) {
                       <h3 class="text-md font-semibold text-foreground">预览</h3>
                       <div
                         v-if="selectedIcon"
-                        class="col-center gap-md p-xl bg-muted rounded-md border border-border/50 min-h-[var(--spacing-5xl)] min-w-0"
+                        class="icons-preview col-center gap-md p-xl bg-muted rounded-md border border-border/50 min-h-[var(--spacing-5xl)] min-w-0"
                       >
                         <Icons
                           :name="selectedIcon"

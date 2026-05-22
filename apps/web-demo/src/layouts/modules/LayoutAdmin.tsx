@@ -94,7 +94,7 @@ export default defineComponent({
           runtime.isSidebarAnimating.value ? 'will-change-transform' : '',
         ]}
       >
-        <div class="bg-sidebar/36! dark:bg-sidebar/40!">
+        <div class="bg-sidebar text-sidebar-foreground">
           <AdminBreadcrumbBar
             show={runtime.showBreadcrumb.value}
             showIcon={runtime.showBreadcrumbIcon.value}
@@ -105,7 +105,7 @@ export default defineComponent({
           {/* Layer 3: 业务内容（透明以承接光晕与点阵） */}
           <AppContainer class="relative z-content min-w-0 overflow-hidden" />
         </section>
-        <div class="bg-sidebar/36! dark:bg-sidebar/40!">
+        <div class="bg-sidebar text-sidebar-foreground">
           <AdminFooterBar show={runtime.showFooter.value} />
         </div>
       </main>
@@ -126,7 +126,7 @@ export default defineComponent({
               ref={runtime.sidebarShellRef}
               class={[
                 runtime.visualSidebarCollapsed.value ? 'w-sidebarCollapsedWidth' : 'w-sidebarWidth',
-                'shrink-0 self-stretch overflow-hidden bg-sidebar/36! dark:bg-sidebar/40!',
+                'shrink-0 self-stretch overflow-hidden bg-sidebar text-sidebar-foreground border-r border-r-solid border-sidebar-border',
                 runtime.enableTransition.value ? 'transition-[width] duration-md ease-smooth' : '',
               ]}
               onTransitionend={runtime.onSidebarTransitionEnd}
@@ -190,7 +190,7 @@ export default defineComponent({
           {runtime.showHeader.value && (
             <div
               data-layout-header="true"
-              class="shrink-0 row-between h-headerHeight px-sm md:px-md border-b-solid border-sidebar border-px bg-sidebar/36! dark:bg-sidebar/40!"
+              class="shrink-0 row-between h-headerHeight px-sm md:px-md border-b-solid border-sidebar-border border-px bg-sidebar text-sidebar-foreground"
             >
               <AdminHeader
                 mode={runtime.stableModeKey.value}

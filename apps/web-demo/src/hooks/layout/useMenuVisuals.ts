@@ -97,9 +97,9 @@ export function getMenuStateClasses(options: MenuStateOptions): string {
 
   const baseInactiveClass: string = isRoot ? rootClass : childClass
   if (isSidebarContext(context)) {
-    return `${baseInactiveClass} hover:bg-sidebar-primary/12! hover:text-sidebar-primary!`
+    return `${baseInactiveClass} hover:bg-sidebar-accent/18! hover:text-sidebar-primary! hover:shadow-[inset_0_0_0_1px_rgb(var(--sidebar-primary)/0.22)]`
   }
-  return `${baseInactiveClass} hover:bg-sidebar-primary/12! hover:text-sidebar-primary!`
+  return `${baseInactiveClass} hover:bg-sidebar-accent/18! hover:text-sidebar-primary! hover:shadow-[inset_0_0_0_1px_rgb(var(--sidebar-primary)/0.22)]`
 }
 
 /** 返回指定上下文的图标 size（Icons 组件用） */

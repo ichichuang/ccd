@@ -15,10 +15,11 @@ export const MENU_OPEN_UNIFIED =
 
 /** 侧栏菜单激活态：使用独立 sidebar token，允许侧栏与内容区分离调色 */
 export const MENU_SIDEBAR_ACTIVE_UNIFIED =
-  'bg-sidebar-primary! text-sidebar-primary-foreground!' as const
+  'bg-sidebar-primary! text-sidebar-primary-foreground! shadow-[inset_0_0_0_1px_rgb(var(--sidebar-primary)/0.58)]' as const
 
 /** 侧栏菜单打开/聚焦/hover 态：保持轻量背景反馈，同时使用侧栏主色文案 */
-export const MENU_SIDEBAR_OPEN_UNIFIED = 'bg-sidebar-primary/12! text-sidebar-primary!' as const
+export const MENU_SIDEBAR_OPEN_UNIFIED =
+  'bg-sidebar-accent/18! text-sidebar-primary! shadow-[inset_0_0_0_1px_rgb(var(--sidebar-primary)/0.24)]' as const
 /** Admin 顶栏 / 面包屑 / 标签栏共用高亮文字色：统一对齐侧栏主色 */
 export const MENU_ADMIN_CHROME_TEXT_UNIFIED = 'text-sidebar-primary!' as const
 /** Admin 顶部 chrome 区域激活态：沿用侧栏主色体系，避免 header/breadcrumb/tabs 分叉 */
@@ -27,7 +28,7 @@ export const MENU_ADMIN_CHROME_ACTIVE_UNIFIED = MENU_SIDEBAR_ACTIVE_UNIFIED
 export const MENU_ADMIN_CHROME_OPEN_UNIFIED = MENU_SIDEBAR_OPEN_UNIFIED
 /** Admin 顶部 chrome 区域 hover 态：统一对齐侧栏 hover 高亮 */
 export const MENU_ADMIN_CHROME_HOVER_UNIFIED =
-  'hover:bg-sidebar-primary/12! hover:text-sidebar-primary!' as const
+  'hover:bg-sidebar-accent/18! hover:text-sidebar-primary!' as const
 /** Admin 标签栏激活态：保留轻量底色 + 下划线，但统一使用侧栏主色 */
 export const MENU_ADMIN_TAB_ACTIVE_UNIFIED =
   'bg-sidebar-primary/12! text-sidebar-primary! backdrop-blur-md transition-all' as const

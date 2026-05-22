@@ -29,18 +29,29 @@ const sizeCustom = ref<string | undefined>('')
 
 const colorInput = ref<string | undefined>('')
 const CSS_VAR_PATTERN = /^var\(--[a-zA-Z0-9-_]+\)$/
-const UNO_TEXT_COLOR_CLASS_PATTERN = /^!?text-[a-zA-Z0-9_:/.[\]-]+$/
+
+const SEMANTIC_ICON_COLOR_CLASSES = [
+  'text-primary',
+  'text-foreground',
+  'text-muted-foreground',
+  'text-info',
+  'text-success',
+  'text-warn',
+  'text-danger',
+] as const
 
 const normalizedColorInput = computed<string>(() => (colorInput.value ?? '').trim())
 const isColorInputValid = computed<boolean>(() => {
   if (!normalizedColorInput.value) return true
   return (
     CSS_VAR_PATTERN.test(normalizedColorInput.value) ||
-    UNO_TEXT_COLOR_CLASS_PATTERN.test(normalizedColorInput.value)
+    (SEMANTIC_ICON_COLOR_CLASSES as readonly string[]).includes(normalizedColorInput.value)
   )
 })
 const colorInputError = computed<string>(() =>
-  isColorInputValid.value ? '' : '仅支持 var(--*) 或 text-*（例如 var(--primary)、text-primary）'
+  isColorInputValid.value
+    ? ''
+    : '仅支持 var(--*) 或已生成的语义 text-*（例如 text-primary、text-danger）'
 )
 
 watch(
@@ -227,7 +238,7 @@ function handleSetScale(value: string): void {
       <div class="row-center gap-sm">
         <InputText
           v-model="colorInput"
-          placeholder="例如: var(--primary) 或 text-primary"
+          placeholder="例如: text-primary 或 var(--primary)"
           size="small"
           class="flex-1"
         />
@@ -240,46 +251,12 @@ function handleSetScale(value: string): void {
       </InlineMessage>
       <div class="row-start flex-wrap gap-sm">
         <Button
-          label="主色"
+          v-for="colorClass in SEMANTIC_ICON_COLOR_CLASSES"
+          :key="colorClass"
+          :label="colorClass.replace('text-', '')"
           size="small"
           severity="secondary"
-          @click="handleSetColor('var(--primary)')"
-        />
-        <Button
-          label="前景色"
-          size="small"
-          severity="secondary"
-          @click="handleSetColor('var(--foreground)')"
-        />
-        <Button
-          label="信息色"
-          size="small"
-          severity="secondary"
-          @click="handleSetColor('var(--info)')"
-        />
-        <Button
-          label="成功色"
-          size="small"
-          severity="secondary"
-          @click="handleSetColor('var(--success)')"
-        />
-        <Button
-          label="警告色"
-          size="small"
-          severity="secondary"
-          @click="handleSetColor('var(--warn)')"
-        />
-        <Button
-          label="危险色"
-          size="small"
-          severity="secondary"
-          @click="handleSetColor('var(--danger)')"
-        />
-        <Button
-          label="语义类"
-          size="small"
-          severity="secondary"
-          @click="handleSetColor('text-primary')"
+          @click="handleSetColor(colorClass)"
         />
         <Button
           label="清除"
