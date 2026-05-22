@@ -1,5 +1,4 @@
-import 'vue'
-import 'vue'
+import type {} from 'vue'
 
 type VueDataAttributeValue = string | number | boolean | null | undefined
 
