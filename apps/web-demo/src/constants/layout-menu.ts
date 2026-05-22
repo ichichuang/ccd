@@ -20,7 +20,7 @@ export const MENU_SIDEBAR_ACTIVE_UNIFIED =
 /** 侧栏菜单打开/聚焦态：弱于激活态，强于 hover 态 */
 export const MENU_SIDEBAR_OPEN_UNIFIED = 'bg-sidebar-primary/12! text-sidebar-primary!' as const
 /** 侧栏菜单祖先态（展开的父级，非当前叶节点）：比叶节点激活态更轻 */
-export const MENU_SIDEBAR_ANCESTOR_UNIFIED = 'bg-sidebar-primary/12! text-sidebar-primary!' as const
+export const MENU_SIDEBAR_ANCESTOR_UNIFIED = 'bg-sidebar-accent/18! text-sidebar-primary!' as const
 /** Admin 顶栏 / 面包屑 / 标签栏共用高亮文字色：统一对齐侧栏主色 */
 export const MENU_ADMIN_CHROME_TEXT_UNIFIED = 'text-sidebar-primary!' as const
 /** Admin 顶部 chrome 区域激活叶节点：强底色 + 高对比前景色，图标通过 text-current 继承 */
@@ -32,7 +32,7 @@ export const MENU_ADMIN_CHROME_HOVER_UNIFIED =
   'hover:bg-sidebar-primary/12! hover:text-sidebar-primary!' as const
 /** Admin 顶部 chrome 区域祖先态：中等底色 + 主色文字，区别于叶节点强激活态 */
 export const MENU_ADMIN_CHROME_ANCESTOR_UNIFIED =
-  'bg-sidebar-primary/12! text-sidebar-primary!' as const
+  'bg-sidebar-accent/18! text-sidebar-primary!' as const
 /** Admin 标签栏激活态：比 hover/focus 更强的底色 + 主色文字 */
 export const MENU_ADMIN_TAB_ACTIVE_UNIFIED =
   'bg-sidebar-primary/12! text-sidebar-primary! backdrop-blur-md transition-all' as const

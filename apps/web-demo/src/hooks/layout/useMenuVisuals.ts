@@ -8,8 +8,8 @@
 import {
   BREADCRUMB_ICON_SIZE,
   MENU_ADMIN_CHROME_ACTIVE_UNIFIED,
-  MENU_ADMIN_CHROME_ANCESTOR_UNIFIED,
   MENU_ADMIN_CHROME_OPEN_UNIFIED,
+  MENU_ADMIN_CHROME_ANCESTOR_UNIFIED,
   MENU_SIDEBAR_ACTIVE_UNIFIED,
   MENU_SIDEBAR_ANCESTOR_UNIFIED,
   MENU_ICON_SIZE,
@@ -99,7 +99,7 @@ export function getMenuStateClasses(options: MenuStateOptions): string {
   const isRoot: boolean = typeof level === 'number' ? level <= 0 : true
 
   const baseInactiveClass: string = isRoot ? rootClass : childClass
-  return `${baseInactiveClass} hover:bg-sidebar-primary/12! hover:text-sidebar-primary!`
+  return `${baseInactiveClass} hover:bg-sidebar-accent/18! hover:text-sidebar-primary!`
 }
 
 /** 返回指定上下文的图标 size（Icons 组件用） */

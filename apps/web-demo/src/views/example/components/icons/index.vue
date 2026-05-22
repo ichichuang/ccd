@@ -62,7 +62,7 @@ const activeTabModel = computed({
   },
 })
 const displayCount = ref(INITIAL_DISPLAY_COUNT)
-const selectedIcon = ref('')
+const selectedIcon = ref('i-lucide-grid-2x2')
 const iconSize = ref<IconSize>('md')
 const iconColor = ref<string | undefined>(undefined)
 const iconAnimation = ref<IconAnimation | undefined>(undefined)
@@ -72,13 +72,21 @@ const iconScale = ref<number | undefined>(undefined)
 const searchKeyword = ref('')
 
 const CSS_VAR_PATTERN = /^var\(--[a-zA-Z0-9-_]+\)$/
-const UNO_TEXT_COLOR_CLASS_PATTERN = /^!?text-[a-zA-Z0-9_:/.[\]-]+$/
+const SEMANTIC_ICON_COLOR_CLASSES = new Set([
+  'text-primary',
+  'text-foreground',
+  'text-muted-foreground',
+  'text-info',
+  'text-success',
+  'text-warn',
+  'text-danger',
+])
 const normalizedIconColor = computed(() => (iconColor.value ?? '').trim())
 const isIconColorValid = computed(() => {
   if (!normalizedIconColor.value) return true
   return (
     CSS_VAR_PATTERN.test(normalizedIconColor.value) ||
-    UNO_TEXT_COLOR_CLASS_PATTERN.test(normalizedIconColor.value)
+    SEMANTIC_ICON_COLOR_CLASSES.has(normalizedIconColor.value)
   )
 })
 const effectiveIconColor = computed(() =>
@@ -104,7 +112,7 @@ const selectedIconCountText = computed(() => {
 })
 
 const codeExampleText = computed(() => {
-  if (!selectedIcon.value) return ''
+  if (!selectedIcon.value || selectedIcon.value === '未选择') return ''
   return `<Icons\n  name="${selectedIcon.value}"\n  size="${iconSize.value}"${effectiveIconColor.value ? `\n  color="${effectiveIconColor.value}"` : ''}${iconAnimation.value ? `\n  animation="${iconAnimation.value}"` : ''}${iconFlip.value ? `\n  flip="${iconFlip.value}"` : ''}${iconRotate.value !== '' ? `\n  rotate="${iconRotate.value}"` : ''}${iconScale.value !== undefined ? `\n  scale="${iconScale.value}"` : ''}\n/>`
 })
 
@@ -141,9 +149,14 @@ watch(
     displayCount.value = INITIAL_DISPLAY_COUNT
     nextTick(() => {
       const icons = currentIcons.value
-      selectedIcon.value = icons.includes(selectedIcon.value)
-        ? selectedIcon.value
-        : (icons[0] ?? '')
+      if (icons.length > 0) {
+        if (!icons.includes(selectedIcon.value)) {
+          selectedIcon.value =
+            icons.find(icon => FALLBACK_ICONS.lucide.includes(icon)) ?? icons[0] ?? ''
+        }
+      } else {
+        selectedIcon.value = ''
+      }
     })
   },
   { immediate: true }
@@ -311,7 +324,7 @@ watch(activeTab, () => {
           >
             <div class="p-md col-stretch gap-lg min-w-0">
               <section
-                class="col-center gap-md p-xl bg-muted rounded-md border border-border/50 min-h-[var(--spacing-5xl)] min-w-0"
+                class="icons-preview col-center gap-md p-xl bg-muted rounded-md border border-border/50 min-h-[var(--spacing-5xl)] min-w-0"
                 data-testid="icons-preview"
               >
                 <Icons

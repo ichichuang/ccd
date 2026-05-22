@@ -492,9 +492,16 @@
 
 .p-datepicker {
   .p-datepicker-dropdown {
-    background: rgb(var(--card)) !important;
-    border-color: rgb(var(--border)) !important;
-    color: rgb(var(--card-foreground)) !important;
+    background: rgb(var(--background)) !important;
+    border-color: rgb(var(--input)) !important;
+    color: rgb(var(--foreground)) !important;
+
+    &:hover,
+    &:focus-visible {
+      background: rgb(var(--muted) / 20%) !important;
+      border-color: rgb(var(--primary)) !important;
+      color: rgb(var(--primary)) !important;
+    }
   }
 }
 
@@ -502,18 +509,23 @@
 
 /* Fix: Raised Text Buttons lose contrast in dark mode */
 .dark .p-button-raised.p-button-text {
-  background-color: rgb(var(--primary) / 4%) !important;
-  @apply shadow-sm shadow-md;
+  background-color: rgb(var(--primary) / 8%) !important;
+  color: rgb(var(--primary)) !important;
+  box-shadow: 0 var(--spacing-xs) var(--spacing-md) rgb(var(--background) / 32%) !important;
 }
 
 .dark .p-button-raised.p-button-text:hover {
-  background-color: rgb(var(--primary) / 8%) !important;
-  @apply shadow-md shadow-lg -translate-y-0.2;
+  background-color: rgb(var(--primary) / 14%) !important;
+  color: rgb(var(--primary-hover)) !important;
+  box-shadow: 0 var(--spacing-sm) var(--spacing-lg) rgb(var(--background) / 38%) !important;
+  transform: translateY(calc(var(--spacing-xs) / -4));
 }
 
 .dark .p-button-raised.p-button-text:active {
-  background-color: rgb(var(--primary) / 12%) !important;
-  @apply shadow-sm shadow-md translate-y-0;
+  background-color: rgb(var(--primary) / 18%) !important;
+  color: rgb(var(--primary-hover)) !important;
+  box-shadow: 0 var(--spacing-xs) var(--spacing-sm) rgb(var(--background) / 30%) !important;
+  transform: translateY(0);
 }
 
 .p-tabs {
