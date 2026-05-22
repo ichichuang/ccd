@@ -5,9 +5,10 @@
  */
 import { brand } from '@/constants/brand'
 import { t } from '@/locales'
-import { calculatePageTitle } from '@/hooks/layout/usePageTitle'
+import { calculatePageTitle, shouldDeferRouteTitle } from '@/hooks/layout/usePageTitle'
 import { useLoading } from '@/hooks/layout/useLoading'
 import { useNprogress } from '@/hooks/layout/useNprogress'
+import { usePermissionStore } from '@/stores/modules/session'
 import type { RouteLocationNormalized, Router } from 'vue-router'
 
 const ROUTE_PAGE_LOADING_DELAY_MS = 0
@@ -17,11 +18,25 @@ const ROUTE_PAGE_LOADING_MIN_VISIBLE_MS = 140
  * 使用纯函数与全局 i18n 更新页面标题
  * 避免在守卫中调用 useI18n/useRoute 等 Composition API
  */
-function updatePageTitle(to: RouteLocationNormalized): void {
-  const appTitle: string = brand.name
-  const finalTitle: string = calculatePageTitle(to, appTitle, t)
-  if (typeof document !== 'undefined') {
-    document.title = finalTitle
+function createPageTitleUpdater(): (to: RouteLocationNormalized) => void {
+  let stableTitle: string = brand.name
+
+  return (to: RouteLocationNormalized): void => {
+    const appTitle: string = brand.name
+    const permissionStore = usePermissionStore()
+
+    if (shouldDeferRouteTitle(to, permissionStore.isDynamicRoutesLoaded)) {
+      if (typeof document !== 'undefined' && document.title.trim().length === 0) {
+        document.title = stableTitle || appTitle
+      }
+      return
+    }
+
+    const finalTitle: string = calculatePageTitle(to, appTitle, t)
+    stableTitle = finalTitle || appTitle
+    if (typeof document !== 'undefined') {
+      document.title = stableTitle
+    }
   }
 }
 
@@ -34,6 +49,7 @@ export function registerGuardEffects(router: Router): void {
   let routePageLoadingReleaseTimer: ReturnType<typeof setTimeout> | null = null
   let routePageLoadingStartedAt = 0
   let routePageLoadingActive = false
+  const updatePageTitle = createPageTitleUpdater()
 
   const clearRoutePageLoadingTimer = (): void => {
     if (routePageLoadingTimer === null) return

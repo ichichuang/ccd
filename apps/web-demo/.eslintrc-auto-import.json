@@ -143,6 +143,7 @@
     "shallowReactive": "readonly",
     "shallowReadonly": "readonly",
     "shallowRef": "readonly",
+    "shouldDeferRouteTitle": "readonly",
     "storeToRefs": "readonly",
     "syncRef": "readonly",
     "syncRefs": "readonly",

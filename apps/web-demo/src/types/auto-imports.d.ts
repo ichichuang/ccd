@@ -153,6 +153,7 @@ declare global {
   const shallowReactive: typeof import('vue').shallowReactive
   const shallowReadonly: typeof import('vue').shallowReadonly
   const shallowRef: typeof import('vue').shallowRef
+  const shouldDeferRouteTitle: typeof import('../hooks/layout/usePageTitle').shouldDeferRouteTitle
   const storeToRefs: typeof import('pinia').storeToRefs
   const syncRef: typeof import('@vueuse/core').syncRef
   const syncRefs: typeof import('@vueuse/core').syncRefs
@@ -397,16 +398,41 @@ declare global {
 // for type re-export
 declare global {
   // @ts-ignore
-  export type { Component, Slot, Slots, ComponentPublicInstance, ComputedRef, DirectiveBinding, ExtractDefaultPropTypes, ExtractPropTypes, ExtractPublicPropTypes, InjectionKey, PropType, Ref, ShallowRef, MaybeRef, MaybeRefOrGetter, VNode, WritableComputedRef } from 'vue'
+  export type {
+    Component,
+    Slot,
+    Slots,
+    ComponentPublicInstance,
+    ComputedRef,
+    DirectiveBinding,
+    ExtractDefaultPropTypes,
+    ExtractPropTypes,
+    ExtractPublicPropTypes,
+    InjectionKey,
+    PropType,
+    Ref,
+    ShallowRef,
+    MaybeRef,
+    MaybeRefOrGetter,
+    VNode,
+    WritableComputedRef,
+  } from 'vue'
   import('vue')
   // @ts-ignore
   export type { TableDrawerState } from '../stores/modules/ui/tableDrawer'
   import('../stores/modules/ui/tableDrawer')
   // @ts-ignore
-  export type { BreadcrumbChildItem, AdminBreadcrumbItem } from '../hooks/layout/useAdminBreadcrumbs'
+  export type {
+    BreadcrumbChildItem,
+    AdminBreadcrumbItem,
+  } from '../hooks/layout/useAdminBreadcrumbs'
   import('../hooks/layout/useAdminBreadcrumbs')
   // @ts-ignore
-  export type { ContextMenuAction, ContextMenuState, UseAdminTabsReturn } from '../hooks/layout/useAdminTabs'
+  export type {
+    ContextMenuAction,
+    ContextMenuState,
+    UseAdminTabsReturn,
+  } from '../hooks/layout/useAdminTabs'
   import('../hooks/layout/useAdminTabs')
   // @ts-ignore
   export type { UseLayoutRuntimeReturn } from '../hooks/layout/useLayoutRuntime'

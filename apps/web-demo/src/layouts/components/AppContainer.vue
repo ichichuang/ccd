@@ -31,11 +31,11 @@ watch(
       <AnimateRouterView class="layout-full flex-1 min-h-0" />
     </CScrollbar>
 
-    <!-- 内容区 Loading 遮罩：路由切换时显示 -->
+    <!-- 内容区 Loading 遮罩：覆盖 AppContainer 内容视口；整壳阻塞由 layouts/index.vue 全局遮罩负责。 -->
     <Transition name="fade">
       <div
         v-show="isPageLoading && !isFullscreen"
-        class="layout-full absolute-center z-content backdrop-blur-sm pointer-events-auto"
+        class="page-loading-overlay-content absolute inset-0 center min-w-0 min-h-0 z-content backdrop-blur-sm pointer-events-auto"
       >
         <Loading size="xl" />
       </div>

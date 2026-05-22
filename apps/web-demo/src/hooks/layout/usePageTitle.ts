@@ -7,7 +7,7 @@
  * - 提取标题计算逻辑，便于复用
  */
 import type { Ref } from 'vue'
-import type { Router, RouteLocationNormalizedLoaded } from 'vue-router'
+import type { Router, RouteLocationNormalized, RouteLocationNormalizedLoaded } from 'vue-router'
 import { useRoute } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { useTitle } from '@vueuse/core'
@@ -21,6 +21,19 @@ import { brand } from '@/constants/brand'
  * @param t - i18n 翻译函数
  * @returns 完整的页面标题
  */
+export function shouldDeferRouteTitle(
+  route: RouteLocationNormalized,
+  isDynamicRoutesLoaded: boolean
+): boolean {
+  return (
+    route.path === '/404' &&
+    !isDynamicRoutesLoaded &&
+    Boolean(route.redirectedFrom) &&
+    !route.meta?.titleKey &&
+    !route.meta?.title
+  )
+}
+
 export function calculatePageTitle(
   route: RouteLocationNormalizedLoaded,
   appTitle: string,
