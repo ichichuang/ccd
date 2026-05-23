@@ -188,12 +188,12 @@ const currentLayoutComponent = computed(() => {
 .runtime-loading-overlay {
   position: fixed;
   inset: 0;
-  display: flex;
-  width: 100vw;
+  display: grid;
+  width: 100%;
+  min-width: 100vw;
   height: 100vh;
-  height: 100dvh;
-  align-items: center;
-  justify-content: center;
+  min-height: 100dvh;
+  place-items: center;
   background-color: rgb(var(--background));
 }
 

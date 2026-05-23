@@ -1,5 +1,11 @@
 import { expect, test, type Page } from '@playwright/test'
-import { loginAsAdmin, waitForAppReady, waitForRuntimeLoadingIdle } from './helpers/app'
+import {
+  loginAsAdmin,
+  releasePreloader,
+  waitForAppReady,
+  waitForRuntimeLoadingIdle,
+  withVisualMode,
+} from './helpers/app'
 
 declare global {
   interface Window {
@@ -16,6 +22,8 @@ declare global {
               {
                 beginPageLoading: () => void
                 endPageLoading: () => void
+                beginGlobalLoading: () => void
+                endGlobalLoading: () => void
               }
             >
           }
@@ -40,6 +48,12 @@ interface PageLoadingOverlayGeometry {
   overlay: DOMRectJSON
   container: DOMRectJSON
   spinner: DOMRectJSON
+}
+
+interface OverlaySpinnerGeometry {
+  overlay: DOMRectJSON
+  spinner: DOMRectJSON
+  viewport: { width: number; height: number }
 }
 
 interface LayoutGeometry {
@@ -162,6 +176,172 @@ async function expectPageLoadingOverlayCentered(page: Page): Promise<void> {
     await stopLoading.dispose()
     await expect(page.locator('.page-loading-overlay-content')).toBeHidden()
   }
+}
+
+async function expectNativePreloaderCentered(page: Page): Promise<void> {
+  await page.goto(withVisualMode('/dashboard', { holdPreloader: true }), {
+    waitUntil: 'domcontentloaded',
+  })
+  await page.waitForFunction(() => document.documentElement.dataset.preloaderState === 'held')
+  await expect(page.locator('#preloader-bg')).toBeVisible()
+
+  const geometry = await page.evaluate((): OverlaySpinnerGeometry => {
+    const roundRect = (rect: DOMRect): DOMRectJSON => ({
+      x: Math.round(rect.x),
+      y: Math.round(rect.y),
+      width: Math.round(rect.width),
+      height: Math.round(rect.height),
+      top: Math.round(rect.top),
+      right: Math.round(rect.right),
+      bottom: Math.round(rect.bottom),
+      left: Math.round(rect.left),
+    })
+    const overlay = document.querySelector('#preloader-bg')
+    const spinner = overlay?.querySelector('.pure-css-loader')
+    if (!overlay || !spinner) throw new Error('Expected native preloader and spinner.')
+    return {
+      overlay: roundRect(overlay.getBoundingClientRect()),
+      spinner: roundRect(spinner.getBoundingClientRect()),
+      viewport: { width: window.innerWidth, height: window.innerHeight },
+    }
+  })
+
+  expect(geometry.overlay.left).toBeLessThanOrEqual(1)
+  expect(geometry.overlay.top).toBeLessThanOrEqual(1)
+  expect(geometry.overlay.width).toBeGreaterThanOrEqual(geometry.viewport.width - 1)
+  expect(geometry.overlay.height).toBeGreaterThanOrEqual(geometry.viewport.height - 1)
+
+  const spinnerCenterX = geometry.spinner.left + geometry.spinner.width / 2
+  const spinnerCenterY = geometry.spinner.top + geometry.spinner.height / 2
+  expect(Math.abs(spinnerCenterX - geometry.viewport.width / 2)).toBeLessThanOrEqual(2)
+  expect(Math.abs(spinnerCenterY - geometry.viewport.height / 2)).toBeLessThanOrEqual(2)
+  expect(geometry.spinner.top).toBeGreaterThan(geometry.viewport.height * 0.25)
+}
+
+async function expectRuntimeOverlayCentered(page: Page): Promise<void> {
+  const stopLoading = await page.evaluateHandle(() => {
+    const app = document.querySelector('#app')
+    const pinia = app?.__vue_app__?.config.globalProperties.$pinia
+    const layoutStore = pinia?._s.get('layout')
+    if (!layoutStore) throw new Error('Layout store was not found.')
+    layoutStore.beginGlobalLoading()
+    return () => layoutStore.endGlobalLoading()
+  })
+
+  try {
+    await expect(page.locator('#runtime-loading-overlay')).toBeVisible()
+    const geometry = await page.evaluate((): OverlaySpinnerGeometry => {
+      const roundRect = (rect: DOMRect): DOMRectJSON => ({
+        x: Math.round(rect.x),
+        y: Math.round(rect.y),
+        width: Math.round(rect.width),
+        height: Math.round(rect.height),
+        top: Math.round(rect.top),
+        right: Math.round(rect.right),
+        bottom: Math.round(rect.bottom),
+        left: Math.round(rect.left),
+      })
+      const overlay = document.querySelector('#runtime-loading-overlay')
+      const spinner = overlay?.querySelector('.pure-css-loader')
+      if (!overlay || !spinner) throw new Error('Expected runtime overlay and spinner.')
+      return {
+        overlay: roundRect(overlay.getBoundingClientRect()),
+        spinner: roundRect(spinner.getBoundingClientRect()),
+        viewport: { width: window.innerWidth, height: window.innerHeight },
+      }
+    })
+
+    expect(geometry.overlay.left).toBeLessThanOrEqual(1)
+    expect(geometry.overlay.top).toBeLessThanOrEqual(1)
+    expect(geometry.overlay.width).toBeGreaterThanOrEqual(geometry.viewport.width - 1)
+    expect(geometry.overlay.height).toBeGreaterThanOrEqual(geometry.viewport.height - 1)
+
+    const overlayCenterX = geometry.overlay.left + geometry.overlay.width / 2
+    const overlayCenterY = geometry.overlay.top + geometry.overlay.height / 2
+    const spinnerCenterX = geometry.spinner.left + geometry.spinner.width / 2
+    const spinnerCenterY = geometry.spinner.top + geometry.spinner.height / 2
+    expect(Math.abs(spinnerCenterX - overlayCenterX)).toBeLessThanOrEqual(2)
+    expect(Math.abs(spinnerCenterY - overlayCenterY)).toBeLessThanOrEqual(2)
+    expect(geometry.spinner.top).toBeGreaterThan(geometry.viewport.height * 0.25)
+  } finally {
+    await stopLoading.evaluate(stop => stop())
+    await stopLoading.dispose()
+    await waitForRuntimeLoadingIdle(page)
+  }
+}
+
+async function sampleVisibleLoadingCenters(page: Page): Promise<OverlaySpinnerGeometry[]> {
+  return page.evaluate(() => {
+    const roundRect = (rect: DOMRect): DOMRectJSON => ({
+      x: Math.round(rect.x),
+      y: Math.round(rect.y),
+      width: Math.round(rect.width),
+      height: Math.round(rect.height),
+      top: Math.round(rect.top),
+      right: Math.round(rect.right),
+      bottom: Math.round(rect.bottom),
+      left: Math.round(rect.left),
+    })
+    const viewport = { width: window.innerWidth, height: window.innerHeight }
+    return Array.from(
+      document.querySelectorAll(
+        '#preloader-bg .pure-css-loader, #runtime-loading-overlay .pure-css-loader, .page-loading-overlay-content [role="status"], .page-loading-overlay-content .base-lottie-loader'
+      )
+    )
+      .filter(node => {
+        const rect = node.getBoundingClientRect()
+        const style = window.getComputedStyle(node)
+        return rect.width > 0 && rect.height > 0 && style.visibility !== 'hidden'
+      })
+      .map(node => {
+        const overlay = node.closest(
+          '#preloader-bg, #runtime-loading-overlay, .page-loading-overlay-content'
+        )
+        if (!overlay) throw new Error('Loading spinner overlay owner was not found.')
+        return {
+          overlay: roundRect(overlay.getBoundingClientRect()),
+          spinner: roundRect(node.getBoundingClientRect()),
+          viewport,
+        }
+      })
+  })
+}
+
+async function expectBootHandoffNeverShowsTopStripSpinner(page: Page): Promise<void> {
+  await page.goto(withVisualMode('/dashboard', { holdPreloader: true }), {
+    waitUntil: 'domcontentloaded',
+  })
+  await page.waitForFunction(() => document.documentElement.dataset.preloaderState === 'held')
+
+  const samplesBeforeRelease = await sampleVisibleLoadingCenters(page)
+  await releasePreloader(page)
+  const samplesAfterOneFrame = await page
+    .evaluate(async () => {
+      await new Promise<void>(resolve => requestAnimationFrame(() => resolve()))
+    })
+    .then(() => sampleVisibleLoadingCenters(page))
+  const samplesAfterTwoFrames = await page
+    .evaluate(async () => {
+      await new Promise<void>(resolve => requestAnimationFrame(() => resolve()))
+    })
+    .then(() => sampleVisibleLoadingCenters(page))
+
+  for (const sample of [
+    ...samplesBeforeRelease,
+    ...samplesAfterOneFrame,
+    ...samplesAfterTwoFrames,
+  ]) {
+    const overlayCenterX = sample.overlay.left + sample.overlay.width / 2
+    const overlayCenterY = sample.overlay.top + sample.overlay.height / 2
+    const spinnerCenterX = sample.spinner.left + sample.spinner.width / 2
+    const spinnerCenterY = sample.spinner.top + sample.spinner.height / 2
+    expect(Math.abs(spinnerCenterX - overlayCenterX)).toBeLessThanOrEqual(2)
+    expect(Math.abs(spinnerCenterY - overlayCenterY)).toBeLessThanOrEqual(2)
+    expect(sample.spinner.top).toBeGreaterThan(sample.viewport.height * 0.25)
+  }
+
+  await waitForAppReady(page)
+  await waitForRuntimeLoadingIdle(page)
 }
 
 async function readGeometry(page: Page): Promise<LayoutGeometry> {
@@ -334,6 +514,24 @@ async function expectOpenDrawerGeometry(page: Page): Promise<void> {
 }
 
 test.describe('layout loading and route title stabilization', () => {
+  test('native preloader covers the viewport and centers its spinner', async ({ page }) => {
+    await page.setViewportSize({ width: 1280, height: 900 })
+    await expectNativePreloaderCentered(page)
+  })
+
+  test('runtime global loading overlay covers the viewport and centers the spinner', async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width: 1280, height: 900 })
+    await loginAsAdmin(page)
+    await expectRuntimeOverlayCentered(page)
+  })
+
+  test('boot handoff never exposes a top-strip spinner frame', async ({ page }) => {
+    await page.setViewportSize({ width: 1280, height: 900 })
+    await expectBootHandoffNeverShowsTopStripSpinner(page)
+  })
+
   test('deep business route refresh does not expose not-found title during stabilization', async ({
     page,
   }) => {
@@ -350,6 +548,20 @@ test.describe('layout loading and route title stabilization', () => {
     expect(titles).not.toContain('页面未找到 - CCD')
     expect(titles).not.toContain('页面未找到')
     expect(await page.title()).toMatch(/ccd/i)
+  })
+
+  test('actual unknown route resolves to the not-found title', async ({ page }) => {
+    await installTitleProbe(page)
+    await loginAsAdmin(page)
+
+    await page.goto(withVisualMode('/definitely-missing-route'), { waitUntil: 'domcontentloaded' })
+    await expect(page).toHaveURL(/#\/404$/)
+    await waitForAppReady(page)
+    await waitForRuntimeLoadingIdle(page)
+
+    expect(await page.title()).toMatch(/^页面未找到 - ccd$/i)
+    const titles = await page.evaluate(() => window.ccdTitleProbe)
+    expect(titles.at(-1)).toMatch(/^页面未找到 - ccd$/i)
   })
 
   test('content route loading overlay covers its container and centers the spinner', async ({

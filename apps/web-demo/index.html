@@ -66,15 +66,14 @@
 
       #preloader-bg {
         position: fixed;
-        top: 0;
-        left: 0;
+        inset: 0;
         z-index: 9999999;
-        display: flex;
+        display: grid;
+        width: 100%;
+        min-width: 100vw;
         height: 100vh;
-        height: 100dvh;
-        width: 100vw;
-        justify-content: center;
-        align-items: center;
+        min-height: 100dvh;
+        place-items: center;
         background-color: rgb(var(--background));
         transition:
           opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1),
