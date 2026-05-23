@@ -2,7 +2,7 @@ import type {} from 'vue'
 
 type VueDataAttributeValue = string | number | boolean | null | undefined
 
-declare module '@vue/runtime-dom' {
+declare module 'vue' {
   interface HTMLAttributes {
     [key: `data-${string}`]: VueDataAttributeValue
   }
@@ -10,9 +10,7 @@ declare module '@vue/runtime-dom' {
   interface SVGAttributes {
     [key: `data-${string}`]: VueDataAttributeValue
   }
-}
 
-declare module 'vue' {
   interface ComponentCustomProps {
     [key: `data-${string}`]: VueDataAttributeValue
   }
