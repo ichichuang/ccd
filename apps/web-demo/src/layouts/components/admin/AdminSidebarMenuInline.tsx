@@ -28,6 +28,16 @@ import type { SidebarState } from '@/layouts/runtime/layoutRuntime'
 
 const COLLAPSING_SUBMENU_VISUAL_HOLD_MS = 240
 
+interface PanelMenuItemSlot {
+  item: PrimeMenuModelItem
+  active?: boolean
+  props?: {
+    action?: {
+      class?: unknown
+    }
+  }
+}
+
 export default defineComponent({
   name: 'AdminSidebarMenuInline',
   props: {
@@ -205,7 +215,7 @@ export default defineComponent({
       })
     }
 
-    const renderPanelMenuItem = ({ item }: { item: PrimeMenuModelItem }) => {
+    const renderPanelMenuItem = ({ item, active, props: slotProps }: PanelMenuItemSlot) => {
       const distance = getActiveDistance(route, item)
       const level = item.level ?? 0
       const indentClass = level <= 0 ? MENU_PANEL_INDENT_ROOT : MENU_PANEL_INDENT_CHILD
@@ -213,7 +223,14 @@ export default defineComponent({
       if (typeof key !== 'string' || !key.length) return null
 
       const hasChildren = Array.isArray(item.items) && item.items.length > 0
-      const isSubmenuOpen = hasChildren && controlledExpandedKeys.value[key] === true
+      const actionClass = slotProps?.action?.class
+      const actionClassStr = typeof actionClass === 'string' ? actionClass : ''
+      const isFocused =
+        actionClassStr.includes('p-focus') ||
+        actionClassStr.includes('p-active') ||
+        actionClassStr.includes('p-highlight')
+      const isSubmenuOpen =
+        hasChildren && (active === true || controlledExpandedKeys.value[key] === true)
       const isSubmenuVisuallyOpen = isSubmenuOpen || collapsingVisualKeys.value.has(key)
       const baseClasses = [
         getMenuItemBase('sidebar'),
@@ -228,6 +245,7 @@ export default defineComponent({
       const stateClasses = getMenuStateClasses({
         context: 'sidebar',
         distance,
+        isFocused,
         isSubmenuOpen: isSubmenuVisuallyOpen,
         level,
       })
