@@ -24,9 +24,10 @@ const routeScrollMemoryKey = computed(
 </script>
 
 <template>
-  <div class="layout-full relative">
+  <div class="col-fill relative min-w-0">
     <CScrollbar
       ref="scrollbarRef"
+      class="col-fill"
       back-to-top
       :back-to-top-threshold="400"
       :memory-key="routeScrollMemoryKey"
@@ -38,7 +39,7 @@ const routeScrollMemoryKey = computed(
     <Transition name="fade">
       <div
         v-show="isPageLoading && !isFullscreen"
-        class="page-loading-overlay-content absolute inset-0 center min-w-0 min-h-0 z-content backdrop-blur-sm pointer-events-auto"
+        class="page-loading-overlay-content absolute inset-0 grid place-items-center min-w-0 min-h-0 z-content backdrop-blur-sm pointer-events-auto"
       >
         <Loading size="xl" />
       </div>

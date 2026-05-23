@@ -7,7 +7,12 @@
  * - 提取标题计算逻辑，便于复用
  */
 import type { Ref } from 'vue'
-import type { Router, RouteLocationNormalized, RouteLocationNormalizedLoaded } from 'vue-router'
+import type {
+  RouteLocationGeneric,
+  RouteLocationNormalized,
+  RouteLocationNormalizedLoaded,
+  Router,
+} from 'vue-router'
 import { useRoute } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { useTitle } from '@vueuse/core'
@@ -25,17 +30,18 @@ export function shouldDeferRouteTitle(
   route: RouteLocationNormalized,
   isDynamicRoutesLoaded: boolean
 ): boolean {
-  return (
-    route.path === '/404' &&
-    !isDynamicRoutesLoaded &&
-    Boolean(route.redirectedFrom) &&
-    !route.meta?.titleKey &&
-    !route.meta?.title
-  )
+  return route.path === '/404' && !isDynamicRoutesLoaded && Boolean(route.redirectedFrom)
+}
+
+export function getDeferredRouteTitleSource(
+  route: RouteLocationNormalized
+): RouteLocationGeneric | RouteLocationNormalized | undefined {
+  if (route.path !== '/404') return undefined
+  return route.redirectedFrom
 }
 
 export function calculatePageTitle(
-  route: RouteLocationNormalizedLoaded,
+  route: RouteLocationGeneric | RouteLocationNormalizedLoaded | RouteLocationNormalized,
   appTitle: string,
   t: (key: string) => string
 ): string {
@@ -71,7 +77,10 @@ export interface UsePageTitleReturn {
   title: Ref<string>
   currentPageTitle: Ref<string>
   updatePageTitle: () => void
-  getRouteTitle: (route: RouteLocationNormalizedLoaded, appTitle?: string) => string
+  getRouteTitle: (
+    route: RouteLocationGeneric | RouteLocationNormalizedLoaded | RouteLocationNormalized,
+    appTitle?: string
+  ) => string
 }
 
 export function usePageTitle(_router?: Router): UsePageTitleReturn {
@@ -127,7 +136,10 @@ export function usePageTitle(_router?: Router): UsePageTitleReturn {
     // 手动更新方法
     updatePageTitle,
     // 标题计算函数（供外部复用）
-    getRouteTitle: (route: RouteLocationNormalizedLoaded, appTitle?: string) =>
+    getRouteTitle: (
+      route: RouteLocationGeneric | RouteLocationNormalizedLoaded | RouteLocationNormalized,
+      appTitle?: string
+    ) =>
       calculatePageTitle(
         route,
         // 若未传入则使用 brand.name；若显式传入空字符串则按“无应用标题”处理

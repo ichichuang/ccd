@@ -7,7 +7,7 @@
 </script>
 
 <template>
-  <div class="layout-full flex items-center justify-center">
+  <div class="loading-shell">
     <div
       class="loading-fallback-spinner"
       role="status"
@@ -17,6 +17,15 @@
 </template>
 
 <style scoped>
+.loading-shell {
+  display: grid;
+  width: 100%;
+  min-width: 0;
+  height: 100%;
+  min-height: 100%;
+  place-items: center;
+}
+
 .loading-fallback-spinner {
   position: relative;
   width: 48px;

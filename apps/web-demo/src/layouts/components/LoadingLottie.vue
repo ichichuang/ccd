@@ -8,6 +8,7 @@
 import type { SizeScaleKey } from '@ccd/design-tokens'
 import { LOADING_SIZE_CSS } from '@ccd/design-tokens'
 import { BaseLottieLoader } from './BaseLottieLoader'
+import LoadingFallback from './LoadingFallback.vue'
 import { applyThemeToLottieJson } from '@/utils/theme/lottieThemeUtils'
 import { useThemeStore } from '@/stores/modules/system'
 
@@ -72,7 +73,7 @@ const resolvedAnimationData = computed(() => {
 </script>
 
 <template>
-  <div class="layout-full flex items-center justify-center">
+  <div class="loading-shell">
     <BaseLottieLoader
       v-if="resolvedAnimationData"
       :width="resolvedSize"
@@ -81,5 +82,17 @@ const resolvedAnimationData = computed(() => {
       :loop="true"
       :speed="1"
     />
+    <LoadingFallback v-else />
   </div>
 </template>
+
+<style scoped>
+.loading-shell {
+  display: grid;
+  width: 100%;
+  min-width: 0;
+  height: 100%;
+  min-height: 100%;
+  place-items: center;
+}
+</style>

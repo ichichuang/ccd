@@ -152,9 +152,13 @@ const currentLayoutComponent = computed(() => {
     />
     <!-- 单所有者预加载：启动阶段仅保留 index.html 原生 loader -->
     <AnimateWrapper
-      :show="!isLoadingRef"
+      :show="!isLoadingRef || isAppBooted"
       :enter="getLayoutEnterAnimation(currentLayoutMode)"
-      :leave="isLoadingRef ? 'fadeOut' : getLayoutLeaveAnimation(previousLayout, currentLayoutMode)"
+      :leave="
+        isLoadingRef && !isAppBooted
+          ? 'fadeOut'
+          : getLayoutLeaveAnimation(previousLayout, currentLayoutMode)
+      "
       :duration="getAnimationDuration()"
       delay="0s"
     >

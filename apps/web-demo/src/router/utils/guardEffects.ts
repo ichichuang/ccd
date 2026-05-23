@@ -5,7 +5,11 @@
  */
 import { brand } from '@/constants/brand'
 import { t } from '@/locales'
-import { calculatePageTitle, shouldDeferRouteTitle } from '@/hooks/layout/usePageTitle'
+import {
+  calculatePageTitle,
+  getDeferredRouteTitleSource,
+  shouldDeferRouteTitle,
+} from '@/hooks/layout/usePageTitle'
 import { useLoading } from '@/hooks/layout/useLoading'
 import { useNprogress } from '@/hooks/layout/useNprogress'
 import { usePermissionStore } from '@/stores/modules/session'
@@ -25,15 +29,18 @@ function createPageTitleUpdater(): (to: RouteLocationNormalized) => void {
     const appTitle: string = brand.name
     const permissionStore = usePermissionStore()
 
-    if (shouldDeferRouteTitle(to, permissionStore.isDynamicRoutesLoaded)) {
-      if (typeof document !== 'undefined' && document.title.trim().length === 0) {
-        document.title = stableTitle || appTitle
-      }
-      return
+    const shouldDeferTitle = shouldDeferRouteTitle(to, permissionStore.isDynamicRoutesLoaded)
+    const deferredTitleSource = shouldDeferTitle ? getDeferredRouteTitleSource(to) : undefined
+    let finalTitle: string
+    if (deferredTitleSource) {
+      finalTitle = calculatePageTitle(deferredTitleSource, appTitle, t)
+    } else if (shouldDeferTitle) {
+      finalTitle = stableTitle
+    } else {
+      finalTitle = calculatePageTitle(to, appTitle, t)
     }
 
-    const finalTitle: string = calculatePageTitle(to, appTitle, t)
-    stableTitle = finalTitle || appTitle
+    stableTitle = finalTitle || stableTitle || appTitle
     if (typeof document !== 'undefined') {
       document.title = stableTitle
     }
