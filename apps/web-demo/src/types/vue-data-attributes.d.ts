@@ -1,6 +1,6 @@
-import type {} from '@vue/runtime-dom'
+import type {} from 'vue'
 
-declare module '@vue/runtime-dom' {
+declare module 'vue' {
   interface HTMLAttributes {
     [key: `data-${string}`]: string | number | boolean | undefined
   }
