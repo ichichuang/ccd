@@ -52,7 +52,7 @@ test.describe('visual token foundation', () => {
       .filter({ hasText: 'Toast' })
       .first()
     await expect(hoverItem).toBeVisible()
-    await expect(hoverItem).toHaveClass(/hover:bg-sidebar-accent\/18!/, { timeout: 5000 })
+    await expect(hoverItem).toHaveClass(/hover:bg-sidebar-primary\/8!/, { timeout: 5000 })
     await expect(hoverItem).toHaveClass(/hover:text-sidebar-primary!/, { timeout: 5000 })
   })
 

@@ -17,8 +17,11 @@ export const MENU_OPEN_UNIFIED =
 export const MENU_SIDEBAR_ACTIVE_UNIFIED =
   'bg-sidebar-primary! text-sidebar-primary-foreground!' as const
 
-/** 侧栏菜单打开/聚焦态：弱于激活态，强于 hover 态 */
+/** 侧栏菜单打开/聚焦/选中态：弱于激活态，强于 hover 态 */
 export const MENU_SIDEBAR_OPEN_UNIFIED = 'bg-sidebar-primary/12! text-sidebar-primary!' as const
+/** 侧栏菜单 hover 态：低于打开/聚焦态 */
+export const MENU_SIDEBAR_HOVER_UNIFIED =
+  'hover:bg-sidebar-primary/8! hover:text-sidebar-primary!' as const
 /** 侧栏菜单祖先态（展开的父级，非当前叶节点）：比叶节点激活态更轻 */
 export const MENU_SIDEBAR_ANCESTOR_UNIFIED = 'bg-sidebar-accent/18! text-sidebar-primary!' as const
 /** Admin 顶栏 / 面包屑 / 标签栏共用高亮文字色：统一对齐侧栏主色 */
@@ -28,8 +31,7 @@ export const MENU_ADMIN_CHROME_ACTIVE_UNIFIED = MENU_SIDEBAR_ACTIVE_UNIFIED
 /** Admin 顶部 chrome 区域打开/聚焦态：沿用侧栏轻量高亮反馈 */
 export const MENU_ADMIN_CHROME_OPEN_UNIFIED = MENU_SIDEBAR_OPEN_UNIFIED
 /** Admin 顶部 chrome 区域 hover 态：明显弱于激活/聚焦态 */
-export const MENU_ADMIN_CHROME_HOVER_UNIFIED =
-  'hover:bg-sidebar-primary/12! hover:text-sidebar-primary!' as const
+export const MENU_ADMIN_CHROME_HOVER_UNIFIED = MENU_SIDEBAR_HOVER_UNIFIED
 /** Admin 顶部 chrome 区域祖先态：中等底色 + 主色文字，区别于叶节点强激活态 */
 export const MENU_ADMIN_CHROME_ANCESTOR_UNIFIED =
   'bg-sidebar-accent/18! text-sidebar-primary!' as const

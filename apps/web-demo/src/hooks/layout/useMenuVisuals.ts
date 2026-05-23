@@ -9,6 +9,7 @@ import {
   BREADCRUMB_ICON_SIZE,
   MENU_ADMIN_CHROME_ACTIVE_UNIFIED,
   MENU_ADMIN_CHROME_OPEN_UNIFIED,
+  MENU_ADMIN_CHROME_HOVER_UNIFIED,
   MENU_ADMIN_CHROME_ANCESTOR_UNIFIED,
   MENU_SIDEBAR_ACTIVE_UNIFIED,
   MENU_SIDEBAR_ANCESTOR_UNIFIED,
@@ -18,6 +19,7 @@ import {
   MENU_PANEL_PADDING,
   MENU_SIDEBAR_ICON_SIZE,
   MENU_SIDEBAR_OPEN_UNIFIED,
+  MENU_SIDEBAR_HOVER_UNIFIED,
   MENU_INACTIVE_TEXT,
   MENU_INACTIVE_TEXT_ROOT,
   MENU_SIDEBAR_INACTIVE_TEXT,
@@ -99,7 +101,11 @@ export function getMenuStateClasses(options: MenuStateOptions): string {
   const isRoot: boolean = typeof level === 'number' ? level <= 0 : true
 
   const baseInactiveClass: string = isRoot ? rootClass : childClass
-  return `${baseInactiveClass} hover:bg-sidebar-accent/18! hover:text-sidebar-primary!`
+  const hoverClass: string = isSidebarContext(context)
+    ? MENU_SIDEBAR_HOVER_UNIFIED
+    : MENU_ADMIN_CHROME_HOVER_UNIFIED
+
+  return `${baseInactiveClass} ${hoverClass}`
 }
 
 /** 返回指定上下文的图标 size（Icons 组件用） */
