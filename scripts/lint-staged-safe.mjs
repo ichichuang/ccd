@@ -1,6 +1,13 @@
 import { spawnSync } from 'node:child_process'
 
-const LINT_STAGED_SYMLINK_ERR = /beyond a symbolic link/i
+const GENERATED_FILES = new Set([
+  'apps/web-demo/src/types/auto-imports.d.ts',
+  'apps/web-demo/src/types/components.d.ts',
+  'src/types/auto-imports.d.ts',
+  'src/types/components.d.ts',
+  'src/views/example/components/icons/configs/iconLists.generated.ts',
+  'apps/web-demo/src/views/example/components/icons/configs/iconLists.generated.ts',
+])
 
 function run(cmd, args, options = {}) {
   const result = spawnSync(cmd, args, {
@@ -16,39 +23,62 @@ function run(cmd, args, options = {}) {
 }
 
 function readLines(args) {
-  const res = run('git', args)
-  if (res.status !== 0) return []
-  return (res.stdout ?? '')
+  const result = spawnSync('git', args, {
+    stdio: 'pipe',
+    encoding: 'utf8',
+  })
+  if (result.status !== 0) {
+    if (result.stdout) process.stdout.write(result.stdout)
+    if (result.stderr) process.stderr.write(result.stderr)
+    process.exit(result.status ?? 1)
+  }
+  return (result.stdout ?? '')
     .split('\n')
     .map(line => line.trim())
     .filter(Boolean)
 }
 
-function hasPartiallyStagedFiles() {
-  const staged = new Set(readLines(['diff', '--name-only', '--cached', '--diff-filter=ACMR']))
-  const unstaged = readLines(['diff', '--name-only'])
-  return unstaged.some(file => staged.has(file))
+function printList(files) {
+  for (const file of files) console.error(`  - ${file}`)
 }
 
-function runLintStaged(args = []) {
-  return run('pnpm', ['exec', 'lint-staged', ...args])
-}
+function assertNoPartiallyStagedFiles(staged) {
+  const unstaged = new Set(readLines(['diff', '--name-only']))
+  const conflicts = staged.filter(file => unstaged.has(file))
+  if (conflicts.length === 0) return
 
-console.log('🧹 Running Enterprise Guardian: Lint Staged...')
-
-const firstRun = runLintStaged()
-if (firstRun.status === 0) process.exit(0)
-
-const output = `${firstRun.stdout ?? ''}\n${firstRun.stderr ?? ''}`
-const isSymlinkError = LINT_STAGED_SYMLINK_ERR.test(output)
-if (!isSymlinkError) process.exit(firstRun.status ?? 1)
-
-if (hasPartiallyStagedFiles()) {
-  console.error('❌ lint-staged stash fallback blocked: partially staged files detected.')
-  console.error('请先处理部分暂存文件（全部 add 或拆分提交），然后重试。')
+  console.error('Partially staged files detected. lint-staged was not run.')
+  printList(conflicts)
+  console.error('Fully stage these files or split them into a separate commit before retrying.')
+  console.error('No stash or automatic rollback was performed.')
   process.exit(1)
 }
 
-console.warn('⚠️ Detected symbolic-link stash issue, retrying lint-staged with --no-stash...')
-const fallback = runLintStaged(['--no-stash'])
-process.exit(fallback.status ?? 1)
+function assertNoGeneratedFiles(staged) {
+  const generated = staged.filter(file => GENERATED_FILES.has(file))
+  if (generated.length === 0) return
+
+  console.error('Generated files are staged. lint-staged was not run.')
+  printList(generated)
+  console.error('Unstage these generated files if they are unrelated to this commit.')
+  console.error('No stash or automatic rollback was performed.')
+  process.exit(1)
+}
+
+function runLintStagedNoStash() {
+  return run('pnpm', ['exec', 'lint-staged', '--no-stash'])
+}
+
+console.log('Running Enterprise Guardian: lint-staged --no-stash...')
+
+const staged = readLines(['diff', '--name-only', '--cached', '--diff-filter=ACMR'])
+assertNoPartiallyStagedFiles(staged)
+assertNoGeneratedFiles(staged)
+
+const result = runLintStagedNoStash()
+if (result.status !== 0) {
+  console.error(
+    'lint-staged failed. No automatic stash or rollback was performed. Your working tree was left unchanged except for tool fixes already applied by lint-staged --no-stash.'
+  )
+}
+process.exit(result.status ?? 1)

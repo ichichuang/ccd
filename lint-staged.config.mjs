@@ -1,17 +1,17 @@
 export default {
-  "*.{vue,ts,tsx}": [
-    "pnpm ai:guard --staged",
-    "eslint --fix",
-    "prettier --write"
+  '*.{vue,ts,tsx}': [
+    'pnpm ai:guard --staged',
+    'eslint --fix --no-warn-ignored',
+    'prettier --write'
   ],
-  "*.{css,scss}": [
-    "stylelint --fix",
-    "prettier --write"
+  '*.{css,scss}': [
+    'stylelint --fix',
+    'prettier --write'
   ],
-  "*.vue": [
-    "stylelint --fix"
+  '*.vue': [
+    'stylelint --fix'
   ],
-  "*.{html,md,json}": [
-    "prettier --write"
+  '*.{html,md,json}': [
+    'prettier --write'
   ],
 };

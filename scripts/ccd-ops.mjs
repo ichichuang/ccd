@@ -363,18 +363,13 @@ function runCi() {
   console.log('- e2e:qa')
 }
 
-function runLintStagedWithRetry() {
-  const first = run('pnpm', ['lint:staged:safe'])
-  if (first.status === 0) return
-
-  console.log('\nlint-staged failed; staging modifications and retrying once.')
-  runRequired('git', ['add', '-A'], 'git staging failed.', 'git add -A')
-  const second = run('pnpm', ['lint:staged:safe'])
-  if (second.status !== 0) {
+function runLintStagedOnce() {
+  const result = run('pnpm', ['lint:staged:safe'])
+  if (result.status !== 0) {
     throw new CommandFailure(
-      second.label,
-      second,
-      'lint-staged failed after one retry.',
+      result.label,
+      result,
+      'lint-staged failed. No automatic retry, stash, or rollback was performed.',
       'pnpm lint:staged:safe',
       true
     )
@@ -393,7 +388,7 @@ function runShip(args) {
   }
 
   if (hasChanges) {
-    runLintStagedWithRetry()
+    runLintStagedOnce()
     runRequired('git', ['add', '-A'], 'git staging failed.', 'git add -A')
 
     hasChanges = hasCommittableChanges()
