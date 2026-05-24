@@ -47,7 +47,7 @@ ${themeFallback}
 
       // 2. 品牌配置占位符替换
       return html
-        .replace(/%BRAND_NAME%/g, brand.name)
+        .replace(/%BRAND_NAME%/g, brand.displayName)
         .replace(/%BRAND_SLOGAN%/g, brand.slogan)
         .replace(/%BRAND_AUTHOR%/g, brand.author)
         .replace(/%BRAND_FAVICON%/g, `${env.BASE_URL ?? '/'}face.png`)

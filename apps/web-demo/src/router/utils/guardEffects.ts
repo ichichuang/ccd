@@ -23,10 +23,10 @@ const ROUTE_PAGE_LOADING_MIN_VISIBLE_MS = 140
  * 避免在守卫中调用 useI18n/useRoute 等 Composition API
  */
 function createPageTitleUpdater(): (to: RouteLocationNormalized) => void {
-  let stableTitle: string = brand.name
+  let stableTitle: string = brand.displayName
 
   return (to: RouteLocationNormalized): void => {
-    const appTitle: string = brand.name
+    const appTitle: string = brand.displayName
     const permissionStore = usePermissionStore()
 
     const shouldDeferTitle = shouldDeferRouteTitle(to, permissionStore.isDynamicRoutesLoaded)

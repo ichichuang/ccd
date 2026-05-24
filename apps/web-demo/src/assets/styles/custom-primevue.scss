@@ -477,19 +477,77 @@
   transform: none !important;
 }
 
-.p-datepicker {
-  .p-datepicker-dropdown {
-    background: rgb(var(--background)) !important;
-    border-color: rgb(var(--input)) !important;
-    color: rgb(var(--foreground)) !important;
+/* PrimeVue form-control interaction family: wrapper/open states not reachable through PT variants. */
+.p-inputnumber.p-inputwrapper-focus,
+.p-password.p-inputwrapper-focus,
+.p-autocomplete.p-inputwrapper-focus,
+.p-autocomplete.p-focus,
+.p-autocomplete.p-autocomplete-open,
+.p-datepicker.p-inputwrapper-focus,
+.p-datepicker.p-focus,
+.p-select.p-inputwrapper-focus,
+.p-select.p-focus,
+.p-select.p-select-open,
+.p-multiselect.p-inputwrapper-focus,
+.p-multiselect.p-focus,
+.p-multiselect.p-multiselect-open {
+  border-color: rgb(var(--primary)) !important;
+  box-shadow: var(--p-form-field-focus-ring-shadow) !important;
+}
 
-    &:hover,
-    &:focus-visible {
-      background: rgb(var(--muted) / 20%) !important;
-      border-color: rgb(var(--primary)) !important;
-      color: rgb(var(--primary)) !important;
-    }
-  }
+.p-inputnumber:not(.p-disabled):hover .p-inputnumber-button,
+.p-password:not(.p-disabled):hover .p-password-toggle-mask-icon,
+.p-autocomplete:not(.p-disabled):hover .p-autocomplete-dropdown,
+.p-datepicker:not(.p-disabled):hover .p-datepicker-dropdown,
+.p-select:not(.p-disabled):hover .p-select-dropdown,
+.p-multiselect:not(.p-disabled):hover .p-multiselect-dropdown,
+.p-iconfield:hover .p-inputicon {
+  color: rgb(var(--primary)) !important;
+}
+
+.p-inputnumber.p-inputwrapper-focus .p-inputnumber-button,
+.p-password.p-inputwrapper-focus .p-password-toggle-mask-icon,
+.p-autocomplete.p-inputwrapper-focus .p-autocomplete-dropdown,
+.p-autocomplete.p-focus .p-autocomplete-dropdown,
+.p-autocomplete.p-autocomplete-open .p-autocomplete-dropdown,
+.p-datepicker.p-inputwrapper-focus .p-datepicker-dropdown,
+.p-datepicker.p-focus .p-datepicker-dropdown,
+.p-select.p-inputwrapper-focus .p-select-dropdown,
+.p-select.p-focus .p-select-dropdown,
+.p-select.p-select-open .p-select-dropdown,
+.p-multiselect.p-inputwrapper-focus .p-multiselect-dropdown,
+.p-multiselect.p-focus .p-multiselect-dropdown,
+.p-multiselect.p-multiselect-open .p-multiselect-dropdown,
+.p-iconfield:focus-within .p-inputicon {
+  color: rgb(var(--primary)) !important;
+}
+
+.p-inputnumber.p-disabled,
+.p-password.p-disabled,
+.p-autocomplete.p-disabled,
+.p-datepicker.p-disabled,
+.p-select.p-disabled,
+.p-multiselect.p-disabled {
+  box-shadow: none !important;
+}
+
+.p-inputnumber.p-invalid,
+.p-password.p-invalid,
+.p-autocomplete.p-invalid,
+.p-datepicker.p-invalid,
+.p-select.p-invalid,
+.p-multiselect.p-invalid {
+  border-color: rgb(var(--danger)) !important;
+}
+
+.p-inputnumber.p-invalid.p-inputwrapper-focus,
+.p-password.p-invalid.p-inputwrapper-focus,
+.p-autocomplete.p-invalid.p-inputwrapper-focus,
+.p-datepicker.p-invalid.p-inputwrapper-focus,
+.p-select.p-invalid.p-inputwrapper-focus,
+.p-multiselect.p-invalid.p-inputwrapper-focus {
+  border-color: rgb(var(--danger)) !important;
+  box-shadow: 0 0 0 2px rgb(var(--danger) / 36%) !important;
 }
 
 /* --- PrimeVue Dark Mode Overrides --- */
@@ -539,4 +597,76 @@
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+/* PrimeVue form control chrome state tokens.
+   Visible border owners differ by component: simple inputs own their input border,
+   compound controls own the wrapper/root border. Keep state colors centralized here. */
+:root {
+  --ccd-form-control-border-idle: rgb(var(--input));
+  --ccd-form-control-border-hover: rgb(var(--primary-hover));
+  --ccd-form-control-border-focus: rgb(var(--ring));
+  --ccd-form-control-focus-shadow: var(--p-form-field-focus-ring-shadow);
+}
+
+.p-inputtext:not(.p-disabled, .p-invalid),
+.p-inputmask:not(.p-disabled, .p-invalid),
+.p-textarea:not(.p-disabled, .p-invalid),
+.p-inputnumber:not(.p-disabled, .p-invalid),
+.p-password:not(.p-disabled, .p-invalid),
+.p-autocomplete:not(.p-disabled, .p-invalid),
+.p-datepicker:not(.p-disabled, .p-invalid),
+.p-select:not(.p-disabled, .p-invalid),
+.p-multiselect:not(.p-disabled, .p-invalid) {
+  border-color: var(--ccd-form-control-border-idle) !important;
+}
+
+.p-inputtext:enabled:not(.p-invalid):hover,
+.p-inputmask:enabled:not(.p-invalid):hover,
+.p-textarea:enabled:not(.p-invalid):hover,
+.p-inputnumber:not(.p-disabled, .p-invalid, .p-inputwrapper-focus):hover,
+.p-password:not(.p-disabled, .p-invalid, .p-inputwrapper-focus):hover,
+.p-autocomplete:not(.p-disabled, .p-invalid, .p-inputwrapper-focus):hover,
+.p-datepicker:not(.p-disabled, .p-invalid, .p-inputwrapper-focus):hover,
+.p-select:not(.p-disabled, .p-invalid, .p-focus):hover,
+.p-multiselect:not(.p-disabled, .p-invalid, .p-focus):hover {
+  border-color: var(--ccd-form-control-border-hover) !important;
+  box-shadow: none !important;
+}
+
+.p-inputtext:enabled:not(.p-invalid):focus,
+.p-inputtext:enabled:not(.p-invalid):focus-visible,
+.p-inputmask:enabled:not(.p-invalid):focus,
+.p-inputmask:enabled:not(.p-invalid):focus-visible,
+.p-textarea:enabled:not(.p-invalid):focus,
+.p-textarea:enabled:not(.p-invalid):focus-visible,
+.p-inputnumber:not(.p-disabled, .p-invalid).p-inputwrapper-focus,
+.p-password:not(.p-disabled, .p-invalid).p-inputwrapper-focus,
+.p-autocomplete:not(.p-disabled, .p-invalid).p-inputwrapper-focus,
+.p-autocomplete:not(.p-disabled, .p-invalid).p-focus,
+.p-autocomplete:not(.p-disabled, .p-invalid).p-autocomplete-open,
+.p-datepicker:not(.p-disabled, .p-invalid).p-inputwrapper-focus,
+.p-datepicker:not(.p-disabled, .p-invalid).p-focus,
+.p-select:not(.p-disabled, .p-invalid).p-focus,
+.p-select:not(.p-disabled, .p-invalid).p-select-open,
+.p-multiselect:not(.p-disabled, .p-invalid).p-focus,
+.p-multiselect:not(.p-disabled, .p-invalid).p-multiselect-open {
+  border-color: var(--ccd-form-control-border-focus) !important;
+  box-shadow: var(--ccd-form-control-focus-shadow) !important;
+}
+
+.p-inputtext.p-disabled,
+.p-inputtext:disabled,
+.p-inputmask.p-disabled,
+.p-inputmask:disabled,
+.p-textarea.p-disabled,
+.p-textarea:disabled,
+.p-inputnumber.p-disabled,
+.p-password.p-disabled,
+.p-autocomplete.p-disabled,
+.p-datepicker.p-disabled,
+.p-select.p-disabled,
+.p-multiselect.p-disabled {
+  border-color: rgb(var(--input)) !important;
+  box-shadow: none !important;
 }

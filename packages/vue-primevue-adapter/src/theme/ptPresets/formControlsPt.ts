@@ -10,7 +10,7 @@
  */
 
 const FORM_CONTROL_SHELL =
-  'border border-solid border-border bg-background text-foreground rounded-md shadow-sm shadow-foreground/10 dark:shadow-foreground/20 transition-[background-color,border-color,box-shadow,color] duration-md ease-smooth hover:border-primary/50'
+  'border border-solid border-input bg-background text-foreground rounded-md shadow-sm shadow-foreground/10 dark:shadow-foreground/20 transition-[background-color,border-color,box-shadow,color] duration-md ease-smooth'
 const FORM_CONTROL_FOCUS_VISIBLE =
   'focus-visible:!outline-none focus-visible:!border-primary focus-visible:[box-shadow:var(--p-form-field-focus-ring-shadow)]'
 const FORM_CONTROL_FOCUS_WITHIN =
@@ -20,12 +20,13 @@ const FORM_CONTROL_INNER_FOCUS_RESET =
 const FORM_CONTROL_SINGLE_ROOT = `${FORM_CONTROL_SHELL} ${FORM_CONTROL_FOCUS_VISIBLE}`
 const FORM_CONTROL_COMPOUND_ROOT = `${FORM_CONTROL_SHELL} ${FORM_CONTROL_FOCUS_WITHIN} overflow-hidden`
 const FORM_CONTROL_INNER_INPUT = `w-full !border-0 !shadow-none !rounded-none !bg-transparent !ring-0 !outline-none ${FORM_CONTROL_INNER_FOCUS_RESET}`
-const FORM_CONTROL_ACTION = `!border-0 !rounded-none !bg-transparent !text-muted-foreground !shadow-none !ring-0 !outline-none transition-[background-color,color] duration-md ease-smooth hover:!bg-muted/60 hover:!text-foreground ${FORM_CONTROL_INNER_FOCUS_RESET}`
-const FORM_CONTROL_ACTION_ICON = '!text-muted-foreground group-hover:!text-foreground'
+const FORM_CONTROL_ACTION = `!border-0 !rounded-none !bg-transparent !text-muted-foreground !shadow-none !ring-0 !outline-none transition-[background-color,color] duration-md ease-smooth hover:!bg-muted/60 hover:!text-primary ${FORM_CONTROL_INNER_FOCUS_RESET}`
+const FORM_CONTROL_ACTION_ICON = '!text-muted-foreground group-hover:!text-primary'
 const FORM_CONTROL_OVERLAY = 'transform-gpu will-change-transform'
 const FORM_CONTROL_OPTION = 'transition-[background-color,color] duration-md ease-smooth'
 const FORM_CONTROL_INVALID = 'border-danger focus:border-danger focus-visible:ring-danger/30'
-const FORM_CONTROL_DISABLED = 'opacity-100 bg-muted text-muted-foreground cursor-not-allowed'
+const FORM_CONTROL_DISABLED =
+  'opacity-100 bg-muted text-muted-foreground cursor-not-allowed pointer-events-none'
 const FORM_CONTROL_INNER_INPUT_STYLE = {
   border: '0',
   background: 'transparent',

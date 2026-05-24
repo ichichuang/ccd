@@ -440,13 +440,11 @@ const pulseProgress = (): void => {
               v-model="numberValue"
               show-buttons
               placeholder="InputNumber"
-              class="focus-within:![box-shadow:0_0_0_var(--spacing-xs)_rgb(var(--primary)/0.16)]"
             />
             <Password
               v-model="passwordValue"
               toggle-mask
               placeholder="Password"
-              class="focus-within:![box-shadow:0_0_0_var(--spacing-xs)_rgb(var(--primary)/0.16)]"
             />
             <Textarea
               v-model="textareaValue"
@@ -515,7 +513,6 @@ const pulseProgress = (): void => {
               v-model="pickedDate"
               show-icon
               placeholder="DatePicker"
-              class="focus-within:![box-shadow:0_0_0_var(--spacing-xs)_rgb(var(--primary)/0.16)] [&_.p-datepicker-input]:!border-0"
             />
             <SelectButton
               v-model="selectButtonValue"

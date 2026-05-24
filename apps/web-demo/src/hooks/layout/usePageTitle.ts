@@ -18,6 +18,38 @@ import { useI18n } from 'vue-i18n'
 import { useTitle } from '@vueuse/core'
 import { brand } from '@/constants/brand'
 
+const APP_TITLE = brand.displayName
+const INTERNAL_TITLE_VALUES = new Set(['CatchAll', 'NotFound', 'Redirect', 'Layout', 'LayoutAdmin'])
+const TITLE_SLUG_PATTERN = /^[a-z0-9]+(?:[-_/][a-z0-9]+)+$/i
+
+function normalizeTitlePart(value: unknown): string {
+  if (typeof value !== 'string' && typeof value !== 'number') return ''
+  return String(value).trim().replace(/\s+/g, ' ')
+}
+
+function normalizeAppTitle(value: unknown): string {
+  const title = normalizeTitlePart(value)
+  if (!title || title.toLowerCase() === brand.name.toLowerCase()) return APP_TITLE
+  return title
+}
+
+function isInternalTitleValue(title: string): boolean {
+  if (!title) return true
+  if (INTERNAL_TITLE_VALUES.has(title)) return true
+  if (title.toLowerCase() === brand.name.toLowerCase()) return true
+  if (TITLE_SLUG_PATTERN.test(title)) return true
+  return false
+}
+
+export function formatPageTitle(pageTitle: unknown, appTitle: string = APP_TITLE): string {
+  const cleanAppTitle = normalizeAppTitle(appTitle)
+  const cleanPageTitle = normalizeTitlePart(pageTitle)
+
+  if (isInternalTitleValue(cleanPageTitle)) return cleanAppTitle
+  if (!cleanAppTitle || cleanPageTitle === cleanAppTitle) return cleanPageTitle
+  return `${cleanPageTitle} - ${cleanAppTitle}`
+}
+
 /**
  * 计算路由页面标题（支持多语言）
  *
@@ -30,14 +62,16 @@ export function shouldDeferRouteTitle(
   route: RouteLocationNormalized,
   isDynamicRoutesLoaded: boolean
 ): boolean {
-  return route.path === '/404' && !isDynamicRoutesLoaded && Boolean(route.redirectedFrom)
+  return route.path === '/404' && !isDynamicRoutesLoaded
 }
 
 export function getDeferredRouteTitleSource(
   route: RouteLocationNormalized
 ): RouteLocationGeneric | RouteLocationNormalized | undefined {
   if (route.path !== '/404') return undefined
-  return route.redirectedFrom
+  const redirectedFrom = route.redirectedFrom
+  if (!redirectedFrom || redirectedFrom.path === '/404') return undefined
+  return redirectedFrom
 }
 
 export function calculatePageTitle(
@@ -45,32 +79,24 @@ export function calculatePageTitle(
   appTitle: string,
   t: (key: string) => string
 ): string {
-  // 认为“空标题”是空字符串/全空白，而非历史遗留的 '/' 判定
-  const isNoAppTitle = String(appTitle ?? '').trim().length === 0
-  const appendAppTitle = (base: string) => (isNoAppTitle ? base : `${base} - ${appTitle}`)
+  const cleanAppTitle = normalizeAppTitle(appTitle)
 
   // 优先 titleKey（多语言）
   if (route.meta?.titleKey) {
     const key = route.meta.titleKey
     const translated = t(key)
     const isMissingTranslation = translated === key
-    const baseTitle = isMissingTranslation
-      ? route.meta?.title || route?.name || appTitle
-      : translated
+    const baseTitle = isMissingTranslation ? route.meta?.title : translated
 
-    if (!baseTitle) return appTitle
-    return appendAppTitle(String(baseTitle))
+    return formatPageTitle(baseTitle, cleanAppTitle)
   }
 
   // 兼容仅使用 title（不翻译的极少数页面）
   if (route.meta?.title) {
-    return appendAppTitle(route.meta.title)
+    return formatPageTitle(route.meta.title, cleanAppTitle)
   }
 
-  // 兜底：尝试使用路由 name，否则回退应用标题
-  const fallbackTitle = route?.name || appTitle
-  if (!fallbackTitle) return appTitle
-  return appendAppTitle(String(fallbackTitle))
+  return cleanAppTitle
 }
 
 export interface UsePageTitleReturn {
@@ -86,7 +112,7 @@ export interface UsePageTitleReturn {
 export function usePageTitle(_router?: Router): UsePageTitleReturn {
   const route = useRoute()
   const { t } = useI18n()
-  const appTitle = brand.name
+  const appTitle = brand.displayName
 
   /**
    * 当前页面标题（响应式计算）
@@ -143,7 +169,7 @@ export function usePageTitle(_router?: Router): UsePageTitleReturn {
       calculatePageTitle(
         route,
         // 若未传入则使用 brand.name；若显式传入空字符串则按“无应用标题”处理
-        appTitle === undefined ? brand.name : appTitle,
+        appTitle === undefined ? brand.displayName : appTitle,
         t
       ),
   }

@@ -72,6 +72,40 @@ async function borderWeight(locator: ReturnType<Page['locator']>): Promise<numbe
   })
 }
 
+interface FormControlSnapshot {
+  borderColor: string
+  boxShadow: string
+  iconColor: string | null
+}
+
+async function formControlSnapshot(
+  locator: ReturnType<Page['locator']>,
+  iconSelector?: string
+): Promise<FormControlSnapshot> {
+  return locator.first().evaluate((element, selector) => {
+    const style = window.getComputedStyle(element)
+    const icon = selector
+      ? document.querySelector(selector)
+      : element.querySelector(
+          '.p-inputicon,.p-password-toggle-mask-icon,.p-select-dropdown,.p-multiselect-dropdown,.p-autocomplete-dropdown,.p-datepicker-dropdown,.p-inputnumber-button'
+        )
+    const iconStyle = icon ? window.getComputedStyle(icon) : null
+    return {
+      borderColor: style.borderColor,
+      boxShadow: style.boxShadow,
+      iconColor: iconStyle?.color ?? null,
+    }
+  }, iconSelector)
+}
+
+function expectUnifiedFocusSnapshot(
+  actual: FormControlSnapshot,
+  expected: FormControlSnapshot
+): void {
+  expect(actual.borderColor).toBe(expected.borderColor)
+  expect(actual.boxShadow).toBe(expected.boxShadow)
+}
+
 function expectDistinctStyle(actual: string, baseline: string): void {
   expect(actual.trim()).not.toBe('')
   expect(actual).not.toBe(baseline)
@@ -160,71 +194,85 @@ test.describe('visual token foundation', () => {
     await page.setViewportSize({ width: 1440, height: 960 })
     await openRoute(page, '/example/primevue-collection/overview')
 
-    const inputText = page.getByPlaceholder('InputText').first()
-    await expect(inputText).toBeVisible()
-    const inputSelector = 'input[placeholder="InputText"]'
-    const inputBorder = await inputText.evaluate(
-      element => window.getComputedStyle(element).borderColor
-    )
-    await inputText.hover()
+    const controls = [
+      {
+        locator: page.getByPlaceholder('InputText').first(),
+        focus: async (): Promise<void> => {
+          await page.getByPlaceholder('InputText').first().focus()
+        },
+      },
+      {
+        locator: page.locator('.p-inputnumber').first(),
+        focus: async (): Promise<void> => {
+          await page.getByPlaceholder('InputNumber').focus()
+        },
+      },
+      {
+        locator: page.locator('.p-password').first(),
+        focus: async (): Promise<void> => {
+          await page.getByPlaceholder('Password').focus()
+        },
+      },
+      {
+        locator: page.locator('.p-select').first(),
+        focus: async (): Promise<void> => {
+          await page.locator('.p-select').first().click()
+        },
+      },
+      {
+        locator: page.locator('.p-autocomplete').first(),
+        focus: async (): Promise<void> => {
+          await page.getByPlaceholder('AutoComplete').fill('A')
+        },
+      },
+      {
+        locator: page.locator('.p-datepicker').first(),
+        focus: async (): Promise<void> => {
+          await page.getByPlaceholder('DatePicker').click()
+        },
+      },
+    ]
+
+    const [inputControl, ...compoundControls] = controls
+    await expect(inputControl.locator).toBeVisible()
+    const inputIdle = await formControlSnapshot(inputControl.locator)
+    await inputControl.locator.hover()
     const inputHoverBorder = await waitForStyleChange(
       page,
-      inputSelector,
+      'input[placeholder="InputText"]',
       'border-color',
-      inputBorder
+      inputIdle.borderColor
     )
-    await inputText.focus()
-    const inputFocusShadow = await inputText.evaluate(
-      element => window.getComputedStyle(element).boxShadow
-    )
-    expect(inputHoverBorder).not.toBe(inputBorder)
-    expect(inputFocusShadow).not.toBe('none')
+    await inputControl.focus()
+    const inputFocus = await formControlSnapshot(inputControl.locator)
+    expect(inputHoverBorder).not.toBe(inputIdle.borderColor)
+    expect(inputFocus.boxShadow).not.toBe('none')
+    await page.keyboard.press('Escape')
 
-    const numberRoot = page.locator('.p-inputnumber').first()
-    const numberInput = page.getByPlaceholder('InputNumber')
-    await expect(numberRoot).toBeVisible()
-    await expect(numberInput).toBeVisible()
-
-    const numberBorder = await numberRoot.evaluate(
-      element => window.getComputedStyle(element).borderColor
-    )
-    await numberRoot.hover()
-    const numberHoverBorder = await numberRoot.evaluate(
-      element => window.getComputedStyle(element).borderColor
-    )
-    if (numberHoverBorder === numberBorder) {
-      await expect(numberRoot).toHaveClass(/hover:(?:!border-primary|border-primary\/50)/)
+    for (const control of compoundControls) {
+      await expect(control.locator).toBeVisible()
+      const idle = await formControlSnapshot(control.locator)
+      expect(idle.borderColor).toBe(inputIdle.borderColor)
+      await control.locator.hover()
+      await page.waitForTimeout(300)
+      const hover = await formControlSnapshot(control.locator)
+      expect(hover.borderColor).toBe(inputHoverBorder)
+      expect(hover.boxShadow).toBe('none')
+      await control.focus()
+      await page.waitForTimeout(300)
+      const focus = await formControlSnapshot(control.locator)
+      expectUnifiedFocusSnapshot(focus, inputFocus)
+      await page.keyboard.press('Escape')
     }
 
-    await numberInput.focus()
-    const numberFocusShadow = await numberRoot.evaluate(
-      element => window.getComputedStyle(element).boxShadow
-    )
-    const numberInputOutline = await numberInput.evaluate(
-      element => window.getComputedStyle(element).outlineStyle
-    )
-    expect(numberFocusShadow).not.toBe('none')
+    const numberInputOutline = await page
+      .getByPlaceholder('InputNumber')
+      .evaluate(element => window.getComputedStyle(element).outlineStyle)
     expect(numberInputOutline).toBe('none')
 
-    const passwordRoot = page.locator('.p-password').first()
-    await expect(passwordRoot).toBeVisible()
-    await page.getByPlaceholder('Password').focus()
-    const passwordFocusShadow = await passwordRoot.evaluate(
-      element => window.getComputedStyle(element).boxShadow
-    )
-    expect(passwordFocusShadow).not.toBe('none')
-
-    const dateRoot = page.locator('.p-datepicker').first()
-    const dateInput = page.getByPlaceholder('DatePicker')
-    await expect(dateRoot).toBeVisible()
-    await dateInput.focus()
-    const dateFocusShadow = await dateRoot.evaluate(
-      element => window.getComputedStyle(element).boxShadow
-    )
-    const dateInputBorder = await dateInput.evaluate(
-      element => window.getComputedStyle(element).borderWidth
-    )
-    expect(dateFocusShadow).not.toBe('none')
+    const dateInputBorder = await page
+      .getByPlaceholder('DatePicker')
+      .evaluate(element => window.getComputedStyle(element).borderWidth)
     expect(dateInputBorder).toBe('0px')
   })
 
