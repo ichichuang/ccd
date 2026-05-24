@@ -46,6 +46,11 @@ const normalizedType = computed((): LoadingType => {
   if (t === 1 || t === 2 || t === 3) return t
   return 1
 })
+const resolvedAnimationName = computed(() =>
+  normalizedType.value === 1
+    ? 'paper-airplane'
+    : `loading-${String(normalizedType.value).padStart(3, '0')}`
+)
 
 watchEffect(async () => {
   const type = normalizedType.value
@@ -73,7 +78,10 @@ const resolvedAnimationData = computed(() => {
 </script>
 
 <template>
-  <div class="loading-shell">
+  <div
+    class="loading-shell"
+    v-bind="{ 'data-loading-animation': resolvedAnimationName }"
+  >
     <BaseLottieLoader
       v-if="resolvedAnimationData"
       :width="resolvedSize"

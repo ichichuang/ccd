@@ -10,13 +10,13 @@ import {
   getDeferredRouteTitleSource,
   shouldDeferRouteTitle,
 } from '@/hooks/layout/usePageTitle'
-import { useLoading } from '@/hooks/layout/useLoading'
 import { useNprogress } from '@/hooks/layout/useNprogress'
 import { usePermissionStore } from '@/stores/modules/session'
+import { useLayoutStoreWithOut } from '@/stores/modules/system'
 import type { RouteLocationNormalized, Router } from 'vue-router'
 
 const ROUTE_PAGE_LOADING_DELAY_MS = 0
-const ROUTE_PAGE_LOADING_MIN_VISIBLE_MS = 140
+const ROUTE_PAGE_LOADING_MIN_VISIBLE_MS = 500
 
 /**
  * 使用纯函数与全局 i18n 更新页面标题
@@ -70,6 +70,16 @@ export function registerGuardEffects(router: Router): void {
     routePageLoadingReleaseTimer = null
   }
 
+  const isInitialNavigation = (from: RouteLocationNormalized): boolean => from.matched.length === 0
+
+  const shouldSuppressRoutePageLoadingForBoot = (from: RouteLocationNormalized): boolean => {
+    const layoutStore = useLayoutStoreWithOut()
+    const nativePreloaderExists =
+      typeof document !== 'undefined' && document.getElementById('preloader-bg') !== null
+
+    return isInitialNavigation(from) && (layoutStore.isLoading || nativePreloaderExists)
+  }
+
   const activateRoutePageLoading = (): void => {
     clearRoutePageLoadingTimer()
     clearRoutePageLoadingReleaseTimer()
@@ -77,9 +87,8 @@ export function registerGuardEffects(router: Router): void {
     routePageLoadingStartedAt = Date.now()
     if (routePageLoadingActive) return
 
-    const { pageLoadingStart } = useLoading()
     routePageLoadingActive = true
-    pageLoadingStart()
+    useLayoutStoreWithOut().beginPageLoading()
   }
 
   const scheduleRoutePageLoading = (): void => {
@@ -106,18 +115,22 @@ export function registerGuardEffects(router: Router): void {
       routePageLoadingReleaseTimer = null
       if (!routePageLoadingActive) return
 
-      const { pageLoadingDone } = useLoading()
       routePageLoadingActive = false
       routePageLoadingStartedAt = 0
-      pageLoadingDone()
+      useLayoutStoreWithOut().endPageLoading()
     }, remainingVisibleMs)
   }
 
-  router.beforeEach((to, _from) => {
+  router.beforeEach((to, from) => {
     const { startProgress } = useNprogress()
 
     startProgress()
     updatePageTitle(to)
+    if (shouldSuppressRoutePageLoadingForBoot(from)) {
+      clearRoutePageLoadingTimer()
+      clearRoutePageLoadingReleaseTimer()
+      return
+    }
     scheduleRoutePageLoading()
   })
 

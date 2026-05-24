@@ -134,7 +134,16 @@ async function expectPageLoadingOverlayCentered(page: Page): Promise<void> {
   })
 
   try {
-    await expect(page.locator('.page-loading-overlay-content')).toBeVisible()
+    const overlayLocator = page.locator('.page-loading-overlay-content')
+    await expect(overlayLocator).toBeVisible()
+    await expect(page.locator('#runtime-loading-overlay')).toBeHidden()
+    await expect(overlayLocator.locator('.pure-css-loader')).toBeHidden()
+    await expect(
+      overlayLocator.locator('.loading-fallback-spinner, [data-loading-animation="paper-airplane"]')
+    ).toBeVisible()
+    await expect(overlayLocator.locator('.base-lottie-loader').first()).toBeVisible({
+      timeout: 10000,
+    })
 
     const geometry = await page.evaluate((): PageLoadingOverlayGeometry => {
       const roundRect = (rect: DOMRect): DOMRectJSON => ({
@@ -149,7 +158,10 @@ async function expectPageLoadingOverlayCentered(page: Page): Promise<void> {
       })
       const overlay = document.querySelector('.page-loading-overlay-content')
       const container = overlay?.parentElement
-      const spinner = overlay?.querySelector('[role="status"]') ?? overlay?.firstElementChild
+      const spinner =
+        overlay?.querySelector('.base-lottie-loader') ??
+        overlay?.querySelector('[role="status"]') ??
+        overlay?.firstElementChild
       if (!overlay || !container || !spinner) {
         throw new Error('Expected page loading overlay, container, and spinner.')
       }
@@ -304,6 +316,73 @@ async function sampleVisibleLoadingCenters(page: Page): Promise<OverlaySpinnerGe
           viewport,
         }
       })
+  })
+}
+
+async function getAppContainerScrollMetrics(
+  page: Page
+): Promise<{ scrollTop: number; maxScrollTop: number }> {
+  return page.evaluate(() => {
+    const hosts = Array.from(
+      document.querySelectorAll<HTMLElement>('[data-overlayscrollbars="host"]')
+    )
+    const scrollEl = hosts
+      .flatMap(host => Array.from(host.querySelectorAll<HTMLElement>('div')))
+      .filter(
+        element =>
+          !element.classList.contains('os-scrollbar') &&
+          !element.classList.contains('os-scrollbar-track') &&
+          !element.classList.contains('os-scrollbar-handle')
+      )
+      .sort((a, b) => b.scrollHeight - b.clientHeight - (a.scrollHeight - a.clientHeight))[0]
+    if (!scrollEl || scrollEl.scrollHeight <= scrollEl.clientHeight) {
+      throw new Error('AppContainer CScrollbar scroll element was not found.')
+    }
+    return {
+      scrollTop: scrollEl.scrollTop,
+      maxScrollTop: Math.max(0, scrollEl.scrollHeight - scrollEl.clientHeight),
+    }
+  })
+}
+
+async function scrollAppContainerTo(page: Page, requestedScrollTop: number): Promise<number> {
+  return page.evaluate(scrollTop => {
+    const hosts = Array.from(
+      document.querySelectorAll<HTMLElement>('[data-overlayscrollbars="host"]')
+    )
+    const scrollEl = hosts
+      .flatMap(host => Array.from(host.querySelectorAll<HTMLElement>('div')))
+      .filter(
+        element =>
+          !element.classList.contains('os-scrollbar') &&
+          !element.classList.contains('os-scrollbar-track') &&
+          !element.classList.contains('os-scrollbar-handle')
+      )
+      .sort((a, b) => b.scrollHeight - b.clientHeight - (a.scrollHeight - a.clientHeight))[0]
+    if (!scrollEl || scrollEl.scrollHeight <= scrollEl.clientHeight) {
+      throw new Error('AppContainer CScrollbar scroll element was not found.')
+    }
+    const target = Math.min(scrollTop, Math.max(0, scrollEl.scrollHeight - scrollEl.clientHeight))
+    scrollEl.scrollTo({ top: target, behavior: 'auto' })
+    scrollEl.dispatchEvent(new Event('scroll', { bubbles: true }))
+    return target
+  }, requestedScrollTop)
+}
+
+async function waitForAppContainerScrollElement(page: Page): Promise<void> {
+  await page.waitForFunction(() => {
+    const hosts = Array.from(
+      document.querySelectorAll<HTMLElement>('[data-overlayscrollbars="host"]')
+    )
+    return hosts
+      .flatMap(host => Array.from(host.querySelectorAll<HTMLElement>('div')))
+      .some(
+        element =>
+          !element.classList.contains('os-scrollbar') &&
+          !element.classList.contains('os-scrollbar-track') &&
+          !element.classList.contains('os-scrollbar-handle') &&
+          element.scrollHeight > element.clientHeight
+      )
   })
 }
 
@@ -532,6 +611,28 @@ test.describe('layout loading and route title stabilization', () => {
     await expectBootHandoffNeverShowsTopStripSpinner(page)
   })
 
+  test('refresh boot handoff does not show local page loading immediately after native loading', async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width: 1280, height: 900 })
+    await loginAsAdmin(page)
+
+    await page.goto(withVisualMode('/dashboard', { holdPreloader: true }), {
+      waitUntil: 'domcontentloaded',
+    })
+    await page.waitForFunction(() => document.documentElement.dataset.preloaderState === 'held')
+    await expect(page.locator('.page-loading-overlay-content')).toBeHidden()
+
+    await releasePreloader(page)
+    await page.waitForTimeout(180)
+    await expect(page.locator('.page-loading-overlay-content')).toBeHidden()
+
+    await waitForAppReady(page)
+    await waitForRuntimeLoadingIdle(page)
+    await expect(page.locator('#dashboard-page')).toBeVisible()
+    await expect(page.locator('.page-loading-overlay-content')).toBeHidden()
+  })
+
   test('deep business route refresh does not expose not-found title during stabilization', async ({
     page,
   }) => {
@@ -564,12 +665,130 @@ test.describe('layout loading and route title stabilization', () => {
     expect(titles.at(-1)).toMatch(/^页面未找到 - ccd$/i)
   })
 
-  test('content route loading overlay covers its container and centers the spinner', async ({
+  test('AppContainer CScrollbar restores persisted scroll memory smoothly after refresh', async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width: 1280, height: 700 })
+    await loginAsAdmin(page)
+    await waitForAppReady(page)
+    await waitForRuntimeLoadingIdle(page)
+    await expect(page.locator('#dashboard-page')).toBeVisible()
+    await page.evaluate(() => {
+      const scroller = document.createElement('div')
+      scroller.setAttribute('data-testid', 'scroll-memory-e2e-spacer')
+      scroller.style.height = '1200px'
+      document.querySelector('#dashboard-page')?.append(scroller)
+    })
+    await waitForAppContainerScrollElement(page)
+
+    const initialMetrics = await getAppContainerScrollMetrics(page)
+    const savedScrollTop = await scrollAppContainerTo(
+      page,
+      Math.min(600, Math.max(600, initialMetrics.maxScrollTop))
+    )
+    expect(savedScrollTop).toBeGreaterThan(0)
+    await page.waitForTimeout(300)
+
+    await page.reload({ waitUntil: 'domcontentloaded' })
+    await waitForAppReady(page)
+    await waitForAppContainerScrollElement(page)
+
+    const immediate = (await getAppContainerScrollMetrics(page)).scrollTop
+    await page.waitForTimeout(120)
+    const after120Ms = (await getAppContainerScrollMetrics(page)).scrollTop
+    await page.waitForTimeout(780)
+    const after900Ms = (await getAppContainerScrollMetrics(page)).scrollTop
+    await waitForRuntimeLoadingIdle(page)
+
+    expect(after900Ms).toBeGreaterThan(0)
+    expect(Math.abs(after900Ms - savedScrollTop)).toBeLessThanOrEqual(8)
+
+    const immediateDistance = Math.abs(savedScrollTop - immediate)
+    const after120Distance = Math.abs(savedScrollTop - after120Ms)
+    const finalDistance = Math.abs(savedScrollTop - after900Ms)
+    expect(finalDistance).toBeLessThanOrEqual(after120Distance + 2)
+    expect(after120Distance).toBeLessThanOrEqual(immediateDistance + 2)
+
+    test.info().annotations.push({
+      type: 'scroll-memory-samples',
+      description: JSON.stringify({ immediate, after120Ms, after900Ms, savedScrollTop }),
+    })
+
+    if (immediateDistance > 20 && after120Distance > 2) {
+      expect(after120Ms).toBeGreaterThanOrEqual(immediate)
+      expect(after120Ms).toBeLessThan(savedScrollTop + 2)
+      expect(after120Ms).toBeLessThan(after900Ms + 2)
+    }
+  })
+
+  test('AppContainer renders the paper-airplane local page loading outlet', async ({ page }) => {
+    await page.setViewportSize({ width: 1280, height: 900 })
+    await loginAsAdmin(page)
+    await waitForAppReady(page)
+    await waitForRuntimeLoadingIdle(page)
+    await expectPageLoadingOverlayCentered(page)
+    await expect(page.getByTestId('app-container-page-loading').locator('svg')).toBeAttached()
+  })
+
+  test('runtime route navigation shows the AppContainer local page loading outlet', async ({
     page,
   }) => {
     await page.setViewportSize({ width: 1280, height: 900 })
     await loginAsAdmin(page)
-    await expectPageLoadingOverlayCentered(page)
+    await waitForAppReady(page)
+    await waitForRuntimeLoadingIdle(page)
+
+    const overlayLocator = page.locator('.page-loading-overlay-content')
+    await page.evaluate(() => {
+      window.location.hash = '#/example/system-states'
+    })
+    await expect(overlayLocator).toBeVisible({ timeout: 5000 })
+    await expect(page.locator('#runtime-loading-overlay')).toBeHidden()
+    await expect(overlayLocator.locator('.pure-css-loader')).toBeHidden()
+    await expect(
+      overlayLocator.locator('.loading-fallback-spinner, [data-loading-animation="paper-airplane"]')
+    ).toBeVisible()
+    await waitForRuntimeLoadingIdle(page)
+    await expect(overlayLocator).toBeHidden({ timeout: 5000 })
+  })
+
+  test('AppContainer page loading is controlled only by layout page-loading state', async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width: 1280, height: 900 })
+    await loginAsAdmin(page)
+    await waitForAppReady(page)
+    await waitForRuntimeLoadingIdle(page)
+
+    const overlayLocator = page.getByTestId('app-container-page-loading')
+    await page.evaluate(() => {
+      const app = document.querySelector('#app')
+      const pinia = app?.__vue_app__?.config.globalProperties.$pinia
+      const layoutStore = pinia?._s.get('layout')
+      if (!layoutStore) throw new Error('Layout store was not found.')
+      layoutStore.beginGlobalLoading()
+    })
+    await expect(overlayLocator).toBeHidden()
+
+    await page.evaluate(() => {
+      const app = document.querySelector('#app')
+      const pinia = app?.__vue_app__?.config.globalProperties.$pinia
+      const layoutStore = pinia?._s.get('layout')
+      if (!layoutStore) throw new Error('Layout store was not found.')
+      layoutStore.beginPageLoading()
+      layoutStore.endGlobalLoading()
+    })
+    await expect(overlayLocator).toBeVisible()
+    await expect(overlayLocator.locator('svg')).toBeAttached()
+
+    await page.evaluate(() => {
+      const app = document.querySelector('#app')
+      const pinia = app?.__vue_app__?.config.globalProperties.$pinia
+      const layoutStore = pinia?._s.get('layout')
+      if (!layoutStore) throw new Error('Layout store was not found.')
+      layoutStore.endPageLoading()
+    })
+    await expect(overlayLocator).toBeHidden()
   })
 })
 

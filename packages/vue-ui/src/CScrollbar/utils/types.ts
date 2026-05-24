@@ -99,6 +99,30 @@ export interface ScrollbarProps {
   memoryThrottle?: number
 
   /**
+   * Scroll behavior used when restoring memory.
+   * @default 'smooth'
+   */
+  memoryRestoreBehavior?: ScrollBehavior
+
+  /**
+   * Delay before restoring memory in milliseconds.
+   * @default 120
+   */
+  memoryRestoreDelay?: number
+
+  /**
+   * Duration for the internal memory restoration animation, in milliseconds.
+   * @default 720
+   */
+  memoryRestoreDuration?: number
+
+  /**
+   * Easing used by the internal memory restoration animation.
+   * @default 'easeOutCubic'
+   */
+  memoryRestoreEasing?: 'easeOutCubic' | 'linear'
+
+  /**
    * OverlayScrollbars options
    */
   options?: PartialOptions

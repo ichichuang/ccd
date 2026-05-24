@@ -9,6 +9,10 @@ import type { ScrollbarProps, ScrollbarVisibility } from './types'
 export const DEFAULT_BACK_TO_TOP_THRESHOLD = 400
 
 export const DEFAULT_SCROLLBAR_MEMORY_THROTTLE_MS = 200
+export const DEFAULT_SCROLLBAR_MEMORY_RESTORE_BEHAVIOR: ScrollBehavior = 'smooth'
+export const DEFAULT_SCROLLBAR_MEMORY_RESTORE_DELAY_MS = 120
+export const DEFAULT_SCROLLBAR_MEMORY_RESTORE_DURATION_MS = 720
+export const DEFAULT_SCROLLBAR_MEMORY_RESTORE_EASING = 'easeOutCubic'
 
 /** 返回顶部浮动按钮默认边距（px），与 bottom/right 一致 */
 export const DEFAULT_BACK_TO_TOP_OFFSET_PX = 40
@@ -25,6 +29,10 @@ export const defaultScrollbarProps: Required<
     | 'backToTopOffsetBottom'
     | 'backToTopOffsetRight'
     | 'memoryThrottle'
+    | 'memoryRestoreBehavior'
+    | 'memoryRestoreDelay'
+    | 'memoryRestoreDuration'
+    | 'memoryRestoreEasing'
   >
 > = {
   visibility: 'auto',
@@ -35,6 +43,10 @@ export const defaultScrollbarProps: Required<
   backToTopOffsetBottom: DEFAULT_BACK_TO_TOP_OFFSET_PX,
   backToTopOffsetRight: DEFAULT_BACK_TO_TOP_OFFSET_PX,
   memoryThrottle: DEFAULT_SCROLLBAR_MEMORY_THROTTLE_MS,
+  memoryRestoreBehavior: DEFAULT_SCROLLBAR_MEMORY_RESTORE_BEHAVIOR,
+  memoryRestoreDelay: DEFAULT_SCROLLBAR_MEMORY_RESTORE_DELAY_MS,
+  memoryRestoreDuration: DEFAULT_SCROLLBAR_MEMORY_RESTORE_DURATION_MS,
+  memoryRestoreEasing: DEFAULT_SCROLLBAR_MEMORY_RESTORE_EASING,
 }
 
 /**

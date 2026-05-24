@@ -20,6 +20,8 @@ import { type Elements, type OverlayScrollbars, type State } from 'overlayscroll
 import { OverlayScrollbarsComponent } from 'overlayscrollbars-vue'
 import {
   DEFAULT_SCROLLBAR_AUTO_HIDE_DELAY_MS,
+  DEFAULT_SCROLLBAR_MEMORY_RESTORE_DURATION_MS,
+  DEFAULT_SCROLLBAR_MEMORY_RESTORE_DELAY_MS,
   DEFAULT_SCROLLBAR_MEMORY_THROTTLE_MS,
   defaultScrollbarProps,
   resolveScrollbarAutoHide,
@@ -59,9 +61,15 @@ const scrollbarRef = useTemplateRef<InstanceType<typeof OverlayScrollbarsCompone
 const isDark = computed(() => props.dark ?? documentDark.value)
 const memoryEnabled = computed(() => Boolean(props.memoryKey && memoryProvider))
 let memoryThrottleTimer: ReturnType<typeof setTimeout> | undefined
+let memoryRestoreTimer: ReturnType<typeof setTimeout> | undefined
+let memoryRestoreRaf = 0
+let memoryRestoreReleaseTimer: ReturnType<typeof setTimeout> | undefined
 let pendingMemoryElement: HTMLElement | undefined
 let restoredMemoryKey: string | undefined
+let memoryRestoreElement: HTMLElement | undefined
 let isApplyingMemory = false
+let isMemoryRestoreAnimating = false
+let memoryRestoreCancelToken = 0
 
 /** 根据当前主题模式返回配置 */
 const osOptions: ComputedRef<Record<string, unknown>> = computed(() => {
@@ -97,28 +105,151 @@ function syncBackToTopVisibility(scrollEl: HTMLElement) {
   backToTopVisible.value = scrollEl.scrollTop > props.backToTopThreshold
 }
 
-function restoreMemory(scrollEl: HTMLElement) {
-  if (!memoryEnabled.value || !props.memoryKey || restoredMemoryKey === props.memoryKey) return
-  const position = memoryProvider?.get(props.memoryKey)
-  if (!position) {
-    restoredMemoryKey = props.memoryKey
+function removeMemoryRestoreInterruptionListeners() {
+  if (!memoryRestoreElement) return
+  memoryRestoreElement.removeEventListener('wheel', handleMemoryRestoreUserInterruption)
+  memoryRestoreElement.removeEventListener('touchstart', handleMemoryRestoreUserInterruption)
+  memoryRestoreElement.removeEventListener('pointerdown', handleMemoryRestoreUserInterruption)
+  memoryRestoreElement = undefined
+}
+
+function addMemoryRestoreInterruptionListeners(scrollEl: HTMLElement) {
+  if (memoryRestoreElement === scrollEl) return
+  removeMemoryRestoreInterruptionListeners()
+  memoryRestoreElement = scrollEl
+  scrollEl.addEventListener('wheel', handleMemoryRestoreUserInterruption, { passive: true })
+  scrollEl.addEventListener('touchstart', handleMemoryRestoreUserInterruption, { passive: true })
+  scrollEl.addEventListener('pointerdown', handleMemoryRestoreUserInterruption, { passive: true })
+}
+
+function cancelMemoryRestore() {
+  memoryRestoreCancelToken += 1
+  if (memoryRestoreTimer) clearTimeout(memoryRestoreTimer)
+  if (memoryRestoreReleaseTimer) clearTimeout(memoryRestoreReleaseTimer)
+  if (memoryRestoreRaf) cancelAnimationFrame(memoryRestoreRaf)
+  memoryRestoreTimer = undefined
+  memoryRestoreReleaseTimer = undefined
+  memoryRestoreRaf = 0
+  isMemoryRestoreAnimating = false
+  isApplyingMemory = false
+}
+
+function handleMemoryRestoreUserInterruption() {
+  if (isMemoryRestoreAnimating) cancelMemoryRestore()
+}
+
+function easeOutCubic(t: number) {
+  return 1 - Math.pow(1 - t, 3)
+}
+
+function animateMemoryRestore(scrollEl: HTMLElement, top: number, left: number) {
+  cancelMemoryRestore()
+
+  const token = memoryRestoreCancelToken
+  const startTop = scrollEl.scrollTop
+  const startLeft = scrollEl.scrollLeft
+  const deltaTop = top - startTop
+  const deltaLeft = left - startLeft
+  const duration = Math.max(
+    0,
+    props.memoryRestoreDuration ?? DEFAULT_SCROLLBAR_MEMORY_RESTORE_DURATION_MS
+  )
+
+  if (duration <= 0 || (Math.abs(deltaTop) < 1 && Math.abs(deltaLeft) < 1)) {
+    isApplyingMemory = true
+    scrollEl.scrollTo({ top, left, behavior: 'auto' })
+    syncBackToTopVisibility(scrollEl)
+    nextTick(() => {
+      if (token === memoryRestoreCancelToken) {
+        isApplyingMemory = false
+        isMemoryRestoreAnimating = false
+      }
+    })
     return
   }
+
+  isApplyingMemory = true
+  isMemoryRestoreAnimating = true
+
+  const startedAt = performance.now()
+
+  const step = (now: number) => {
+    if (token !== memoryRestoreCancelToken) return
+
+    memoryRestoreRaf = 0
+    const rawProgress = Math.min(1, (now - startedAt) / duration)
+    const progress =
+      props.memoryRestoreEasing === 'linear' ? rawProgress : easeOutCubic(rawProgress)
+
+    scrollEl.scrollTop = startTop + deltaTop * progress
+    scrollEl.scrollLeft = startLeft + deltaLeft * progress
+    syncBackToTopVisibility(scrollEl)
+
+    if (rawProgress < 1) {
+      memoryRestoreRaf = requestAnimationFrame(step)
+      return
+    }
+
+    scrollEl.scrollTop = top
+    scrollEl.scrollLeft = left
+    syncBackToTopVisibility(scrollEl)
+
+    isApplyingMemory = false
+    isMemoryRestoreAnimating = false
+    memoryRestoreRaf = 0
+  }
+
+  memoryRestoreRaf = requestAnimationFrame(step)
+}
+
+function restoreMemory(scrollEl: HTMLElement) {
+  if (!memoryEnabled.value || !props.memoryKey || restoredMemoryKey === props.memoryKey) return
+  const memoryKey = props.memoryKey
+  const position = memoryProvider?.get(memoryKey)
+  if (!position) {
+    restoredMemoryKey = memoryKey
+    return
+  }
+
   const maxScrollTop = Math.max(0, scrollEl.scrollHeight - scrollEl.clientHeight)
   const maxScrollLeft = Math.max(0, scrollEl.scrollWidth - scrollEl.clientWidth)
-  const canRestore = position.scrollTop <= maxScrollTop && position.scrollLeft <= maxScrollLeft
-  if (!canRestore && (position.scrollTop > 0 || position.scrollLeft > 0)) return
+  const targetScrollTop = Math.min(Math.max(0, position.scrollTop), maxScrollTop)
+  const targetScrollLeft = Math.min(Math.max(0, position.scrollLeft), maxScrollLeft)
+  const needsVerticalRestore = position.scrollTop > 0
+  const needsHorizontalRestore = position.scrollLeft > 0
 
-  restoredMemoryKey = props.memoryKey
+  if (
+    (needsVerticalRestore && position.scrollTop > maxScrollTop) ||
+    (needsHorizontalRestore && position.scrollLeft > maxScrollLeft)
+  ) {
+    return
+  }
+
+  cancelMemoryRestore()
   isApplyingMemory = true
-  scrollEl.scrollTo({
-    top: position.scrollTop,
-    left: position.scrollLeft,
-    behavior: 'auto',
-  })
-  syncBackToTopVisibility(scrollEl)
+  restoredMemoryKey = memoryKey
+
   nextTick(() => {
-    isApplyingMemory = false
+    if (!memoryEnabled.value || props.memoryKey !== memoryKey) {
+      cancelMemoryRestore()
+      restoredMemoryKey = undefined
+      return
+    }
+
+    memoryRestoreRaf = requestAnimationFrame(() => {
+      memoryRestoreRaf = requestAnimationFrame(() => {
+        memoryRestoreRaf = 0
+        memoryRestoreTimer = setTimeout(() => {
+          memoryRestoreTimer = undefined
+          if (!memoryEnabled.value || props.memoryKey !== memoryKey) {
+            cancelMemoryRestore()
+            restoredMemoryKey = undefined
+            return
+          }
+          animateMemoryRestore(scrollEl, targetScrollTop, targetScrollLeft)
+        }, props.memoryRestoreDelay ?? DEFAULT_SCROLLBAR_MEMORY_RESTORE_DELAY_MS)
+      })
+    })
   })
 }
 
@@ -129,7 +260,14 @@ function flushMemory() {
   }
   const scrollEl = pendingMemoryElement
   pendingMemoryElement = undefined
-  if (!memoryEnabled.value || !props.memoryKey || !scrollEl) return
+  if (
+    !memoryEnabled.value ||
+    !props.memoryKey ||
+    !scrollEl ||
+    isApplyingMemory ||
+    isMemoryRestoreAnimating
+  )
+    return
   memoryProvider?.set(props.memoryKey, {
     scrollTop: scrollEl.scrollTop,
     scrollLeft: scrollEl.scrollLeft,
@@ -137,7 +275,7 @@ function flushMemory() {
 }
 
 function scheduleMemorySave(scrollEl: HTMLElement) {
-  if (!memoryEnabled.value || isApplyingMemory) return
+  if (!memoryEnabled.value || isApplyingMemory || isMemoryRestoreAnimating) return
   pendingMemoryElement = scrollEl
   if (memoryThrottleTimer) return
   memoryThrottleTimer = setTimeout(
@@ -167,6 +305,7 @@ function onOsInitialized(instance: OverlayScrollbars) {
   emit('initialized', instance)
   nextTick(() => {
     const scrollEl = instance.elements().scrollOffsetElement
+    addMemoryRestoreInterruptionListeners(scrollEl)
     restoreMemory(scrollEl)
     syncBackToTopVisibility(scrollEl)
   })
@@ -175,6 +314,7 @@ function onOsInitialized(instance: OverlayScrollbars) {
 function onOsUpdated(instance: OverlayScrollbars, args: OnUpdatedEventListenerArgs) {
   emit('updated', instance, args)
   const scrollEl = instance.elements().scrollOffsetElement
+  addMemoryRestoreInterruptionListeners(scrollEl)
   restoreMemory(scrollEl)
   syncBackToTopVisibility(scrollEl)
 }
@@ -227,6 +367,7 @@ watch(
   () => props.memoryKey,
   () => {
     restoredMemoryKey = undefined
+    cancelMemoryRestore()
     const el = props.native
       ? nativeScrollRef.value
       : scrollbarRef.value?.osInstance()?.elements().scrollOffsetElement
@@ -282,6 +423,7 @@ onMounted(() => {
   }
   nextTick(() => {
     if (props.native && nativeScrollRef.value) {
+      addMemoryRestoreInterruptionListeners(nativeScrollRef.value)
       restoreMemory(nativeScrollRef.value)
     }
     if (!props.backToTop) return
@@ -292,6 +434,8 @@ onMounted(() => {
 })
 
 onUnmounted(() => {
+  cancelMemoryRestore()
+  removeMemoryRestoreInterruptionListeners()
   flushMemory()
   darkObserver?.disconnect()
 })
