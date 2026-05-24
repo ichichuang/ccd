@@ -175,6 +175,7 @@ export const usePermissionGuard = ({
   router.afterEach((to, _from) => {
     const permissionStore = usePermissionStore()
     const parent = to.meta?.parent as LayoutMode | undefined
+    permissionStore.ensureFixedTabsIfAvailable()
     if (parent !== 'fullscreen' && parent !== 'ratio') {
       if (to.name) {
         permissionStore.addTab(to.name as string)

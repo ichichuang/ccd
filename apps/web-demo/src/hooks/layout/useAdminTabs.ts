@@ -1,7 +1,7 @@
 import { useRoute, useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { storeToRefs } from 'pinia'
-import { usePermissionStore } from '@/stores/modules/session'
+import { usePermissionStore } from '@/stores/modules/session/permission'
 import { useAppElementSize } from '@ccd/vue-hooks'
 import type { CScrollbar } from '@ccd/vue-ui'
 import type { Ref } from 'vue'
@@ -131,12 +131,22 @@ export function useAdminTabs(): UseAdminTabsReturn {
     }
   }
 
+  const isProtectedTab = (tab: TabItem): boolean => tab.fixed || tab.deletable === false
+
+  const getPreferredFixedTabPath = (): string => {
+    permissionStore.ensureFixedTabsIfAvailable()
+    const dashboard = tabs.value.find(tab => tab.path === '/dashboard' && tab.fixed)
+    if (dashboard) return dashboard.path
+    const fixedTab = tabs.value.find(isProtectedTab)
+    return fixedTab?.path ?? (import.meta.env.VITE_ROOT_REDIRECT || '/dashboard')
+  }
+
   const onCloseTab = (e: Event | undefined, tab: TabItem) => {
     if (e) {
       e.preventDefault()
       e.stopPropagation()
     }
-    if (tab.fixed || !tab.deletable) return
+    if (isProtectedTab(tab)) return
 
     const wasCurrent = isActive(tab)
     tabRefs.value.delete(tab.path)
@@ -144,12 +154,8 @@ export function useAdminTabs(): UseAdminTabsReturn {
 
     if (wasCurrent) {
       const remaining = tabs.value
-      if (remaining.length > 0) {
-        const nextTab = remaining[remaining.length - 1]
-        router.push(nextTab.path)
-      } else {
-        router.push(import.meta.env.VITE_ROOT_REDIRECT || '/dashboard')
-      }
+      const nextTab = remaining[remaining.length - 1]
+      router.push(nextTab?.path ?? getPreferredFixedTabPath())
     }
   }
 
@@ -194,24 +200,17 @@ export function useAdminTabs(): UseAdminTabsReturn {
         break
       }
       case 'closeOthers': {
-        const tabsToKeep = tabs.value
-          .filter(tab => tab.fixed || tab.path === targetPath)
-          .map(tab => tab.path)
-
-        permissionStore.removeTabsExcept(tabsToKeep)
-        if (!tabsToKeep.includes(route.path)) {
+        permissionStore.removeTabsExcept([targetPath])
+        if (route.path !== targetPath && !tabs.value.some(tab => tab.path === route.path)) {
           router.push(targetPath)
         }
         break
       }
       case 'closeAll': {
-        const fixedTabs = tabs.value.filter(tab => tab.fixed).map(t => t.path)
-        permissionStore.removeTabsExcept(fixedTabs)
+        permissionStore.clearTabs()
 
-        if (fixedTabs.length > 0) {
-          router.push(fixedTabs[fixedTabs.length - 1])
-        } else {
-          router.push('/')
+        if (!tabs.value.some(tab => tab.path === route.path)) {
+          router.push(getPreferredFixedTabPath())
         }
         break
       }

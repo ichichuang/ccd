@@ -84,9 +84,13 @@ export default defineComponent({
       const tabList = tabs.value
       if (tabList.length === 0) return null
 
+      const targetTab = tabList.find(tab => tab.path === contextMenu.value.targetPath)
+      const targetIsClosable = targetTab ? !targetTab.fixed && targetTab.deletable !== false : false
       const contextMenuOptions: { label: ContextMenuAction; icon: string; text: string }[] = [
         { label: 'reload', icon: 'i-lucide-refresh-cw', text: t('common.reload') || 'Reload' },
-        { label: 'close', icon: 'i-lucide-x', text: t('common.close') || 'Close' },
+        ...(targetIsClosable
+          ? [{ label: 'close' as const, icon: 'i-lucide-x', text: t('common.close') || 'Close' }]
+          : []),
         {
           label: 'closeOthers',
           icon: 'i-lucide-copy-x',

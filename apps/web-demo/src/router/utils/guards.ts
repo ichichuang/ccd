@@ -33,6 +33,7 @@ export const registerRouterGuards = ({
     const staticRoutes = await loadStaticRoutes()
     permissionStore.setStaticRoutes([...staticRoutes, ...rootRedirect])
     syncRouteRegistry(staticRoutes)
+    permissionStore.ensureFixedTabsIfAvailable()
     return staticRoutes
   }
 
@@ -57,6 +58,7 @@ export const registerRouterGuards = ({
 
     const completeRoutes = [...staticRoutes, ...asyncRoutes]
     syncRouteRegistry(completeRoutes)
+    permissionStore.ensureFixedTabs()
     permissionStore.setDynamicRoutesLoaded(true)
     return completeRoutes
   }
@@ -84,6 +86,7 @@ export const registerRouterGuards = ({
       await hydrateDynamicRoutes(staticRoutes, { initial: true })
     } catch (error) {
       console.warn('初始动态路由加载超时或失败，使用静态路由继续首屏:', error)
+      permissionStore.ensureFixedTabs()
       permissionStore.setDynamicRoutesLoaded(true)
       scheduleBackgroundDynamicRouteHydration(staticRoutes)
     }

@@ -6,6 +6,7 @@ import {
   sortRoutes,
   transformToVueRoutes,
 } from '@/router/utils/transform'
+import { usePermissionStoreWithOut } from '@/stores/modules/session/permission'
 import { createDynamicRouteManager } from '@/router/utils/dynamic'
 import type { RouteRecordRaw } from 'vue-router'
 import { createRouter, createWebHashHistory, createWebHistory } from 'vue-router'
@@ -102,6 +103,7 @@ export async function ensureStaticRoutesLoaded(): Promise<RouteConfig[]> {
       normalizedStaticRoutes = normalizeStaticRoutes(processRouteModules(businessRouteModules))
       dynamicRouteManager.addRoutes(normalizedStaticRoutes)
       routeUtils.updateRouteUtils(normalizedStaticRoutes)
+      usePermissionStoreWithOut().ensureFixedTabsIfAvailable()
       return normalizedStaticRoutes
     }
   )

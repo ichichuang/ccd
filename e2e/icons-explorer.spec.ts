@@ -15,12 +15,16 @@ test.describe('icons explorer', () => {
     const pageRoot = page.getByTestId('icons-explorer-page')
     const iconCards = page.getByTestId('icon-card')
     const previewIcon = page.getByTestId('preview-icon')
+    const previewIconRendered = page.getByTestId('preview-icon-rendered')
     const gridIcon = page.getByTestId('grid-icon').first()
+    const gridIconRendered = page.getByTestId('grid-icon-rendered').first()
     const count = page.getByTestId('icons-count')
 
     await expect(pageRoot).toBeVisible()
     await expect(count).not.toContainText('共 0 个图标')
     await expect(iconCards.first()).toBeVisible()
+    await expect(previewIcon).toBeVisible()
+    await expect(gridIcon).toBeVisible()
     expect(await iconCards.count()).toBeGreaterThan(0)
 
     const secondIconName = await iconCards.nth(1).getAttribute('data-icon-name')
@@ -28,20 +32,20 @@ test.describe('icons explorer', () => {
     await expect(page.getByTestId('icons-preview')).toContainText(secondIconName ?? '')
 
     await page.getByTestId('icon-size-5xl').click()
-    await expect(previewIcon).toHaveClass(/text-5xl/)
-    await expect(gridIcon).toHaveClass(/text-5xl/)
+    await expect(previewIconRendered).toHaveClass(/text-5xl/)
+    await expect(gridIconRendered).toHaveClass(/text-5xl/)
 
     await page.getByTestId('icon-color-primary').click()
-    await expect(previewIcon).toHaveCSS('color', /rgb\(/)
-    await expect(gridIcon).toHaveCSS('color', /rgb\(/)
+    await expect(previewIconRendered).toHaveCSS('color', /rgb\(/)
+    await expect(gridIconRendered).toHaveCSS('color', /rgb\(/)
 
     await page.getByTestId('icon-rotate-input').fill('90')
-    await expect(previewIcon).toHaveCSS('transform', /matrix/)
-    await expect(gridIcon).toHaveCSS('transform', /matrix/)
+    await expect(previewIconRendered).toHaveCSS('transform', /matrix/)
+    await expect(gridIconRendered).toHaveCSS('transform', /matrix/)
 
     await page.getByTestId('icon-scale-input').fill('1.5')
-    await expect(previewIcon).toHaveCSS('transform', /matrix/)
-    await expect(gridIcon).toHaveCSS('transform', /matrix/)
+    await expect(previewIconRendered).toHaveCSS('transform', /matrix/)
+    await expect(gridIconRendered).toHaveCSS('transform', /matrix/)
 
     const bodyScrollBefore = await page.evaluate(() => document.scrollingElement?.scrollTop ?? 0)
     await expect(pageRoot).toHaveCSS('overflow', 'hidden')

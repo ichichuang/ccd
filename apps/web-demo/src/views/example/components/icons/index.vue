@@ -283,6 +283,7 @@ watch(activeTab, () => {
                       :flip="iconFlip"
                       :rotate="iconRotate"
                       :scale="iconScale"
+                      data-testid="grid-icon-rendered"
                     />
                   </span>
                   <span class="text-xs font-mono break-all line-clamp-2 text-center">
@@ -346,6 +347,7 @@ watch(activeTab, () => {
                     :flip="iconFlip"
                     :rotate="iconRotate"
                     :scale="iconScale"
+                    data-testid="preview-icon-rendered"
                   />
                 </span>
                 <Icons

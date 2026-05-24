@@ -69,10 +69,14 @@ declare module 'vue-router' {
     activeMenu?: string
     /** 是否为后端动态路由 */
     backstage?: boolean
-    /** 当前菜单名称或自定义信息禁止添加到标签页（默认false） */
+    /** 当前路由禁止添加到管理后台标签页（优先级高于 fixedTag，默认 false） */
     hiddenTag?: boolean
-    /** 当前菜单名称是否固定显示在标签页且不可关闭（默认false） */
+    /** 当前路由固定显示在管理后台标签页；固定标签不可关闭且不依赖访问历史（默认 false） */
     fixedTag?: boolean
+    /** 当前路由解析失败后使用兜底组件；此类路由不进入标签页 */
+    useFallbackComponent?: boolean
+    /** 当前路由标签页是否允许关闭；fixedTag=true 时运行时强制为 false（默认 true） */
+    deletable?: boolean
     /**
      * 打开新窗口时是否复用已存在窗口（默认 false）
      * - true：存在相同路由窗口时聚焦

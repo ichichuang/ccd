@@ -260,6 +260,7 @@ function handleSetScale(value: string): void {
           :label="colorClass.replace('text-', '')"
           size="small"
           severity="secondary"
+          :data-testid="`icon-color-${colorClass.replace('text-', '')}`"
           @click="handleSetColor(colorClass)"
         />
         <Button

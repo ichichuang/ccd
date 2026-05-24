@@ -211,6 +211,66 @@ test.describe('QA full regression repair matrix', () => {
     expectNoNetworkFailures(failures, 'login and logout redirect chain')
   })
 
+  test('dashboard fixed tab survives non-dashboard redirect and destructive actions', async ({
+    page,
+  }) => {
+    const networkCollector = createNetworkFailureCollector(page)
+    await page.setViewportSize({ width: 1280, height: 720 })
+    await gotoVisual(page, '/login?redirect=/example/hooks/layout/admin-tabs')
+    await waitForAppReady(page)
+    await waitForRuntimeLoadingIdle(page)
+    await expect(page.locator('#username')).toBeVisible({ timeout: 15000 })
+    await page.locator('#username').fill('admin')
+    await page.locator('#password').fill('123456')
+    await page.locator('#login-submit').click()
+    await expect(page).toHaveURL(/#\/example\/hooks\/layout\/admin-tabs$/)
+    await waitForAppReady(page)
+    await waitForRuntimeLoadingIdle(page)
+
+    const dashboardTab = page.locator('[data-admin-tabs-bar="true"] [data-path="/dashboard"]')
+    await expect(dashboardTab).toBeVisible()
+    await expect(dashboardTab.locator('[data-admin-tab-close="true"]')).toHaveCount(0)
+
+    await dashboardTab.click({ button: 'right' })
+    await expect(page.locator('[data-admin-tabs-context-menu="true"]')).toBeVisible()
+    await expect(
+      page.locator('[data-admin-tabs-context-menu="true"]', { hasText: /Close$/ })
+    ).toHaveCount(0)
+    await page.mouse.click(1, 1)
+    await expect(page.locator('[data-admin-tabs-context-menu="true"]')).toHaveCount(0)
+
+    const activeTab = page.locator(
+      '[data-admin-tabs-bar="true"] [data-path="/example/hooks/layout/admin-tabs"]'
+    )
+    await activeTab.dispatchEvent('contextmenu', {
+      button: 2,
+      buttons: 2,
+      clientX: 320,
+      clientY: 120,
+      bubbles: true,
+      cancelable: true,
+    })
+    await expect(page.locator('[data-admin-tabs-context-menu="true"]')).toBeVisible()
+    await page
+      .locator('[data-admin-tabs-context-menu="true"] div[role="button"]', {
+        hasText: /Close All|关闭全部/,
+      })
+      .click()
+    await expect(dashboardTab).toBeVisible()
+    await expect(page).toHaveURL(/#\/dashboard$/)
+
+    await page.goto(withVisualMode('/example/hooks/layout/admin-tabs'), {
+      waitUntil: 'domcontentloaded',
+    })
+    await waitForAppReady(page)
+    await waitForRuntimeLoadingIdle(page)
+    await expect(dashboardTab).toBeVisible()
+
+    const failures = networkCollector.getFailures()
+    networkCollector.dispose()
+    expectNoNetworkFailures(failures, 'admin fixed dashboard tab')
+  })
+
   test('hard refresh preserves dashboard through auth store rehydration', async ({ page }) => {
     const networkCollector = createNetworkFailureCollector(page)
     await installBlankScreenProbe(page)

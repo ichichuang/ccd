@@ -1,6 +1,11 @@
-import { deepClone } from '@ccd/shared-utils'
-import { getRouterCapabilities } from '@/infra/router/routeProvider'
+import { deepClone, generateIdFromKey } from '@ccd/shared-utils'
+import { getRouterCapabilities, isRouterCapabilitiesInstalled } from '@/infra/router/routeProvider'
+import { checkRouteAccess } from '@/router/utils/accessControl'
+import { useUserStoreWithOut } from '@/stores/modules/session/user'
 import store from '@/stores'
+import { createPiniaEncryptedSerializer } from '@/utils/safeStorage/piniaSerializer'
+import { defineStore } from 'pinia'
+import type { LocationQueryRaw } from 'vue-router'
 
 function flattenMenuPaths(items: MenuItem[]): string[] {
   return items.flatMap(item => [
@@ -8,13 +13,109 @@ function flattenMenuPaths(items: MenuItem[]): string[] {
     ...(item.children && item.children.length > 0 ? flattenMenuPaths(item.children) : []),
   ])
 }
-import { createPiniaEncryptedSerializer } from '@/utils/safeStorage/piniaSerializer'
-import { defineStore } from 'pinia'
+
+function hasUsableRouteIdentity(route: RouteConfig): boolean {
+  return typeof route.path === 'string' && route.path.length > 0 && Boolean(route.name)
+}
+
+function isRouteExcludedFromAdminTabs(route: RouteConfig): boolean {
+  const parent: LayoutMode | undefined = route.meta?.parent
+  if (parent === 'fullscreen' || parent === 'ratio' || route.meta?.hiddenTag === true) return true
+  if (route.meta?.useFallbackComponent === true) return true
+  if (route.redirect && !route.component && (!route.children || route.children.length === 0))
+    return true
+  if (!route.component && (!route.children || route.children.length === 0)) return true
+  return false
+}
+
+function canAccessRoute(route: RouteConfig): boolean {
+  const userStore = useUserStoreWithOut()
+  return checkRouteAccess(route.meta, userStore.userInfo.roles, userStore.userInfo.permissions)
+}
+
+function isProtectedTab(tab: TabItem): boolean {
+  return tab.fixed || tab.deletable === false
+}
+
+function matchesTab(tab: TabItem, name: RouteConfig['name'] | RouteConfig['path']): boolean {
+  return tab.name === String(name || '') || tab.path === name
+}
+
+function getRouteByNameOrPath(
+  name: RouteConfig['name'] | RouteConfig['path']
+): RouteConfig | undefined {
+  const { getFlatRouteList } = getRouterCapabilities()
+  return getFlatRouteList().find(
+    route => String(route.name || '') === String(name || '') || route.path === name
+  )
+}
+
+function getRouteByTabIdentity(tab: Pick<TabItem, 'name' | 'path'>): RouteConfig | undefined {
+  if (!isRouterCapabilitiesInstalled()) return undefined
+  const { getFlatRouteList } = getRouterCapabilities()
+  return getFlatRouteList().find(
+    route => route.path === tab.path || String(route.name || '') === tab.name
+  )
+}
+
+function normalizeTabProtection(tab: TabItem): TabItem {
+  const route = getRouteByTabIdentity(tab)
+  const fixed = route?.meta?.fixedTag === true
+  return {
+    ...tab,
+    name: route?.name ? String(route.name) : tab.name,
+    titleKey: route?.meta?.titleKey ?? tab.titleKey,
+    title: route?.meta?.title ?? tab.title,
+    icon: route?.meta?.icon ?? tab.icon,
+    fixed,
+    deletable: fixed ? false : route?.meta?.deletable !== false,
+  }
+}
+
+function isTabValidForCurrentRouteRegistry(tab: TabItem): boolean {
+  const route = getRouteByTabIdentity(tab)
+  if (!route) return false
+  if (!canCreateAdminTab(route, flattenMenuPaths(getRouterCapabilities().getAdminMenuTree())))
+    return false
+  return canAccessRoute(route)
+}
+
+function dedupeTabsByRouteIdentity(tabs: TabItem[]): TabItem[] {
+  const seen = new Set<string>()
+  return tabs.filter(tab => {
+    const key = `${tab.path}::${tab.name}`
+    if (seen.has(key)) return false
+    seen.add(key)
+    return true
+  })
+}
+
+export function routeConfigToTabItem(route: RouteConfig): TabItem | null {
+  if (!hasUsableRouteIdentity(route)) return null
+
+  const fixed = route.meta?.fixedTag === true
+  return {
+    name: String(route.name),
+    path: route.path,
+    titleKey: route.meta?.titleKey,
+    title: route.meta?.title,
+    label: '',
+    active: false,
+    icon: route.meta?.icon,
+    fixed,
+    deletable: fixed ? false : route.meta?.deletable !== false,
+  }
+}
+
+function canCreateAdminTab(route: RouteConfig, adminPaths: string[]): boolean {
+  if (!hasUsableRouteIdentity(route) || isRouteExcludedFromAdminTabs(route)) return false
+  if (!canAccessRoute(route)) return false
+  if (route.meta?.fixedTag === true) return true
+  return adminPaths.includes(route.path)
+}
 
 // 单例序列化器：避免每次持久化时重复实例化加密上下文（成本较高）
 const _permissionSerializer = createPiniaEncryptedSerializer()
-import type { LocationQueryRaw } from 'vue-router'
-import { generateIdFromKey } from '@ccd/shared-utils'
 
 /**
  * 窗口元数据接口
@@ -76,92 +177,136 @@ export const usePermissionStore = defineStore('permission', {
     // 设置静态路由
     setStaticRoutes(routes: RouteConfig[]) {
       this.staticRoutes = markRaw([...routes])
+      this.ensureFixedTabsIfAvailable()
     },
     // 设置动态路由
     setDynamicRoutes(routes: BackendRouteConfig[]) {
       this.dynamicRoutes = markRaw([...routes])
+      this.ensureFixedTabsIfAvailable()
     },
     // 设置动态路由加载状态
     setDynamicRoutesLoaded(loaded: boolean) {
       this.isDynamicRoutesLoaded = loaded
+      this.ensureFixedTabsIfAvailable()
     },
-    // 添加标签页（仅 admin 布局下的路由，且需在 admin 菜单树中）
-    addTab(name: RouteConfig['name'] | RouteConfig['path']) {
-      if (this.tabs.some(tab => tab.name === name || tab.path === name)) return
-
-      const { getAdminMenuTree, getFlatRouteList } = getRouterCapabilities()
-      const route = getFlatRouteList().find(
-        route => String(route.name || '') === String(name || '') || route.path === name
+    sanitizeTabs() {
+      if (!isRouterCapabilitiesInstalled()) return
+      this.tabs = dedupeTabsByRouteIdentity(
+        this.tabs.filter(isTabValidForCurrentRouteRegistry).map(normalizeTabProtection)
       )
+    },
+    // 同步固定标签页（固定标签由 route.meta.fixedTag 声明，不依赖访问历史）
+    ensureFixedTabs() {
+      if (!isRouterCapabilitiesInstalled()) return
+      const { getFlatRouteList } = getRouterCapabilities()
+      const fixedTabs = getFlatRouteList()
+        .filter(route => route.meta?.fixedTag === true)
+        .filter(route => canCreateAdminTab(route, []))
+        .map(routeConfigToTabItem)
+        .filter((tab): tab is TabItem => tab !== null)
+
+      if (fixedTabs.length === 0) return
+
+      const fixedIdentity = (tab: TabItem): boolean =>
+        fixedTabs.some(fixedTab => fixedTab.path === tab.path || fixedTab.name === tab.name)
+
+      const normalizedFixedTabs = fixedTabs.map(fixedTab => {
+        const existing = this.tabs.find(
+          tab => tab.path === fixedTab.path || tab.name === fixedTab.name
+        )
+        return {
+          ...fixedTab,
+          label: existing?.label ?? fixedTab.label,
+          active: existing?.active ?? fixedTab.active,
+        }
+      })
+      const regularTabs = this.tabs
+        .filter(tab => !fixedIdentity(tab))
+        .filter(isTabValidForCurrentRouteRegistry)
+        .map(normalizeTabProtection)
+
+      this.tabs = dedupeTabsByRouteIdentity([...normalizedFixedTabs, ...regularTabs])
+    },
+    ensureFixedTabsIfAvailable() {
+      if (!isRouterCapabilitiesInstalled()) return
+      this.ensureFixedTabs()
+    },
+    // 添加标签页（仅 admin 布局下的路由；fixedTag 为固定标签唯一来源）
+    addTab(name: RouteConfig['name'] | RouteConfig['path']) {
+      this.ensureFixedTabsIfAvailable()
+      if (this.tabs.some(tab => matchesTab(tab, name))) return
+      if (!isRouterCapabilitiesInstalled()) return
+
+      const { getAdminMenuTree } = getRouterCapabilities()
+      const route = getRouteByNameOrPath(name)
       if (!route) return
-      // 仅 admin 布局：fullscreen/ratio 不加入 tabs
-      const parent: LayoutMode | undefined = route.meta?.parent
-      if (parent === 'fullscreen' || parent === 'ratio') return
-      // hiddenTag: 隐藏标签，不加入 tabs
-      if (route.meta?.hiddenTag) return
-      // 只有 admin 菜单树中存在的路由才添加到标签页
+
       const adminPaths = flattenMenuPaths(getAdminMenuTree())
-      if (!adminPaths.includes(route.path)) return
-      const tabItem: TabItem = {
-        name: String(route.name || ''),
-        path: route.path || '',
-        titleKey: route.meta?.titleKey,
-        title: route.meta?.title,
-        label: '',
-        active: false,
-        icon: route.meta?.icon,
-        fixed: route.meta?.fixedTag || false,
-        deletable: route.meta?.deletable !== false,
-      }
+      if (!canCreateAdminTab(route, adminPaths)) return
+
+      const tabItem = routeConfigToTabItem(route)
+      if (!tabItem) return
       this.tabs.push(tabItem)
     },
     // 移除标签页
     removeTab(name: RouteConfig['name'] | RouteConfig['path']) {
-      // 如果标签页不存在，则不移除
-      if (!this.tabs.some(tab => tab.name === name || tab.path === name)) {
-        return
-      }
-      this.tabs = this.tabs.filter(tab => tab.name !== name && tab.path !== name)
+      const target = this.tabs.find(tab => matchesTab(tab, name))
+      if (!target || isProtectedTab(target)) return
+      this.tabs = this.tabs.filter(tab => !matchesTab(tab, name))
     },
-    // 批量移除标签页（保留指定的标签页）
+    // 批量移除标签页（保留指定的标签页 + 固定/不可删除标签页）
     removeTabsExcept(names: (RouteConfig['name'] | RouteConfig['path'])[]) {
-      this.tabs = this.tabs.filter(tab =>
-        names.some(name => tab.name === name || tab.path === name)
+      this.ensureFixedTabsIfAvailable()
+      this.tabs = this.tabs.filter(
+        tab => isProtectedTab(tab) || names.some(name => matchesTab(tab, name))
       )
+      this.ensureFixedTabsIfAvailable()
     },
     // 移除指定索引范围的标签页
     removeTabsByIndexRange(startIndex: number, endIndex: number) {
-      this.tabs = this.tabs.filter((_, index) => index < startIndex || index > endIndex)
+      this.ensureFixedTabsIfAvailable()
+      this.tabs = this.tabs.filter(
+        (tab, index) => isProtectedTab(tab) || index < startIndex || index > endIndex
+      )
+      this.ensureFixedTabsIfAvailable()
     },
     // 修改标签页某一项的属性 传入 name|path 和 {property: value}
     updateTabProperty(
       name: RouteConfig['name'] | RouteConfig['path'],
       property: { property: keyof TabItem; value: TabItem[keyof TabItem] }
     ) {
-      const tab = this.tabs.find(tab => tab.name === name || tab.path === name)
-      if (tab) {
-        tab[property.property as keyof TabItem] = property.value as never
-      }
+      const tabIndex = this.tabs.findIndex(tab => matchesTab(tab, name))
+      if (tabIndex < 0) return
+
+      this.tabs[tabIndex] = normalizeTabProtection({
+        ...this.tabs[tabIndex],
+        [property.property]: property.value,
+      })
+      this.ensureFixedTabsIfAvailable()
     },
-    // 清空标签页
+    // 清空标签页（固定/不可删除标签页保留）
     clearTabs() {
-      this.tabs = []
+      this.ensureFixedTabsIfAvailable()
+      this.tabs = this.tabs.filter(isProtectedTab)
+      this.ensureFixedTabsIfAvailable()
     },
     // 更新标签页的属性
     updateTabMeta(name: RouteConfig['name'] | RouteConfig['path'], meta: Partial<TabItem>) {
-      const tab = this.tabs.find(tab => tab.name === name || tab.path === name)
-      if (tab) {
-        Object.assign(tab, meta)
-      }
+      const tabIndex = this.tabs.findIndex(tab => matchesTab(tab, name))
+      if (tabIndex < 0) return
+
+      this.tabs[tabIndex] = normalizeTabProtection({
+        ...this.tabs[tabIndex],
+        ...meta,
+      })
+      this.ensureFixedTabsIfAvailable()
     },
     // 更新标签页的激活状态
     updateTabActive(name: RouteConfig['name'] | RouteConfig['path']) {
-      // 先将所有标签页设置为非激活状态
       this.tabs.forEach(tab => {
         tab.active = false
       })
-      // 将指定的标签页设置为激活状态
-      const targetTab = this.tabs.find(tab => tab.name === name || tab.path === name)
+      const targetTab = this.tabs.find(tab => matchesTab(tab, name))
       if (targetTab) {
         targetTab.active = true
       }
@@ -172,6 +317,7 @@ export const usePermissionStore = defineStore('permission', {
       const [movedTab] = newTabs.splice(fromIndex, 1)
       newTabs.splice(toIndex, 0, movedTab)
       this.tabs = newTabs
+      this.ensureFixedTabsIfAvailable()
     },
     // 重置
     reset() {
