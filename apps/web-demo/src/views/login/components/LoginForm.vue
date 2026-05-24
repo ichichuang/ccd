@@ -26,6 +26,11 @@ const loginSchema = computed<FormSchema>(() => ({
       component: 'input',
       label: t('login.usernameLabel'),
       required: true,
+      props: {
+        placeholder: t('login.usernamePlaceholder'),
+        size: 'large',
+        autocomplete: 'username',
+      },
       rules: [
         {
           message: t('login.usernameRequired'),
@@ -37,17 +42,17 @@ const loginSchema = computed<FormSchema>(() => ({
             typeof value === 'string' && value.trim().length >= 3 && value.trim().length <= 20,
         },
       ],
-      props: {
-        placeholder: t('login.usernamePlaceholder'),
-        size: 'large',
-        autocomplete: 'username',
-      },
     },
     {
       name: 'password',
       component: 'input',
       label: t('login.passwordLabel'),
       required: true,
+      props: {
+        placeholder: t('login.passwordPlaceholder'),
+        size: 'large',
+        autocomplete: 'current-password',
+      },
       rules: [
         {
           message: t('login.passwordRequired'),
@@ -58,24 +63,12 @@ const loginSchema = computed<FormSchema>(() => ({
           validator: value => typeof value === 'string' && value.trim().length >= 6,
         },
       ],
-      props: {
-        placeholder: t('login.passwordPlaceholder'),
-        size: 'large',
-        autocomplete: 'current-password',
-      },
     },
   ],
 }))
 
-const ADMIN_PRESET: LoginFormValues = {
-  username: 'admin',
-  password: '123456',
-}
-
-const USER_PRESET: LoginFormValues = {
-  username: 'user',
-  password: '123456',
-}
+const ADMIN_PRESET: LoginFormValues = { username: 'admin', password: '123456' }
+const USER_PRESET: LoginFormValues = { username: 'user', password: '123456' }
 
 function getInputValue(value: unknown): string {
   return typeof value === 'string' ? value : ''
@@ -83,11 +76,6 @@ function getInputValue(value: unknown): string {
 
 function commitInputValue(onUpdate: (value: unknown) => void, value: unknown): void {
   onUpdate(typeof value === 'string' ? value : '')
-}
-
-function commitPasswordValue(onUpdate: (value: unknown) => void, value: unknown): void {
-  const nextValue = typeof value === 'string' ? value : ''
-  onUpdate(nextValue)
 }
 
 function togglePasswordVisibility(): void {
@@ -100,59 +88,35 @@ function fillPreset(values: LoginFormValues): void {
 
 async function handleLoginSubmit(): Promise<void> {
   if (loading.value) return
-
   const instance = formRef.value
   if (!instance) return
+  if (!(await instance.validate())) return
 
-  const isValid = await instance.validate()
-  if (!isValid) return
-
-  const formState = instance.getFormState()
-  await submitLogin(formState.values, () => {
+  await submitLogin(instance.getFormState().values, () => {
     instance.form.setFieldsValue({ password: '' })
   })
 }
 
-const formShellClass = computed(() =>
-  props.responsive.compactForm ? 'gap-sm p-sm sm:p-md' : 'gap-md p-lg'
+const formGap = computed(() =>
+  props.responsive.isCompact ? 'var(--spacing-2xs)' : 'var(--spacing-xs)'
 )
-
-const footerClass = computed(() => (props.responsive.compactForm ? 'gap-xs pt-0' : 'gap-sm pt-xs'))
 </script>
 
 <template>
-  <section
-    class="relative z-content w-full min-w-0 justify-self-end rounded-xl bg-background/80 col-stretch"
-    :class="formShellClass"
-  >
-    <div class="col-center min-w-0 gap-xs text-center">
-      <h2
-        class="m-0 text-foreground font-bold leading-tight"
-        :class="responsive.compactForm ? 'text-xl' : 'text-2xl md:text-3xl'"
-      >
-        {{ t('login.heading') }}
-      </h2>
-      <p
-        v-if="!responsive.compactHeight"
-        class="m-0 text-sm text-muted-foreground leading-normal"
-      >
-        {{ t('login.description') }}
-      </p>
-    </div>
-
+  <section class="col-stretch gap-sm">
     <ProForm
       :key="locale"
       ref="formRef"
       :schema="loginSchema"
       validate-on="submit"
       :disabled="loading"
-      :gap="responsive.compactForm ? 'var(--spacing-xs)' : 'var(--spacing-sm)'"
-      @submit="values => submitLogin(values)"
+      :gap="formGap"
+      @submit="handleLoginSubmit"
     >
       <template #field-username="{ state, onUpdate }">
         <div class="relative w-full">
           <span
-            class="pointer-events-none absolute inset-y-0 left-0 z-content center h-full w-[var(--spacing-2xl)] text-muted-foreground"
+            class="pointer-events-none absolute inset-y-0 left-0 z-content center h-full w-[var(--spacing-2xl)] text-primary/75"
           >
             <Icons
               name="i-lucide-user"
@@ -167,7 +131,7 @@ const footerClass = computed(() => (props.responsive.compactForm ? 'gap-xs pt-0'
             size="large"
             :disabled="loading || state.disabled"
             :invalid="state.errors.length > 0"
-            class="h-[var(--spacing-2xl)]! w-full pl-[var(--spacing-2xl)]!"
+            class="h-[var(--spacing-2xl)]! w-full rounded-lg! border border-solid border-input! bg-background/88! pl-[var(--spacing-2xl)]! text-foreground! shadow-none! transition-colors duration-sm hover:!border-primary/45 focus-visible:!border-primary focus-visible:!bg-background focus-visible:[box-shadow:var(--p-form-field-focus-ring-shadow)]"
             fluid
             @update:model-value="value => commitInputValue(onUpdate, value)"
           />
@@ -177,7 +141,7 @@ const footerClass = computed(() => (props.responsive.compactForm ? 'gap-xs pt-0'
       <template #field-password="{ state, onUpdate }">
         <div class="relative w-full">
           <span
-            class="pointer-events-none absolute inset-y-0 left-0 z-content center h-full w-[var(--spacing-2xl)] text-muted-foreground"
+            class="pointer-events-none absolute inset-y-0 left-0 z-content center h-full w-[var(--spacing-2xl)] text-primary/75"
           >
             <Icons
               name="i-lucide-lock"
@@ -193,14 +157,14 @@ const footerClass = computed(() => (props.responsive.compactForm ? 'gap-xs pt-0'
             size="large"
             :disabled="loading || state.disabled"
             :invalid="state.errors.length > 0"
-            class="h-[var(--spacing-2xl)]! w-full pl-[var(--spacing-2xl)]! pr-[var(--spacing-2xl)]!"
+            class="h-[var(--spacing-2xl)]! w-full rounded-lg! border border-solid border-input! bg-background/88! pl-[var(--spacing-2xl)]! pr-[var(--spacing-2xl)]! text-foreground! shadow-none! transition-colors duration-sm hover:!border-primary/45 focus-visible:!border-primary focus-visible:!bg-background focus-visible:[box-shadow:var(--p-form-field-focus-ring-shadow)]"
             fluid
-            @update:model-value="value => commitPasswordValue(onUpdate, value)"
+            @update:model-value="value => commitInputValue(onUpdate, value)"
           />
           <span
             role="button"
             tabindex="0"
-            class="absolute inset-y-0 right-0 z-content center h-full w-[var(--spacing-2xl)] cursor-pointer text-muted-foreground duration-md hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+            class="absolute inset-y-0 right-0 z-content center h-full w-[var(--spacing-2xl)] cursor-pointer text-muted-foreground transition-colors duration-sm hover:text-primary ring-focus-focus"
             :aria-label="isPasswordVisible ? t('login.passwordHide') : t('login.passwordShow')"
             :aria-pressed="isPasswordVisible"
             :aria-disabled="loading || state.disabled"
@@ -217,22 +181,23 @@ const footerClass = computed(() => (props.responsive.compactForm ? 'gap-xs pt-0'
       </template>
 
       <template #footer="{ formState }">
-        <div
-          class="col-stretch"
-          :class="footerClass"
-        >
-          <div class="row-between min-w-0 gap-sm">
-            <label class="inline-flex cursor-pointer items-center gap-xs text-sm text-foreground">
+        <div class="col-stretch gap-xs pt-xs">
+          <div class="row-between h-[var(--spacing-2xl)] gap-sm px-xs">
+            <label
+              class="row-center cursor-pointer gap-xs text-sm font-medium text-muted-foreground"
+            >
               <Checkbox
                 v-model="rememberMe"
                 binary
                 input-id="login-remember"
+                class="shrink-0 leading-none"
+                :pt="{ root: { class: 'center' }, box: { class: 'shrink-0' } }"
               />
               <span class="leading-none">{{ t('login.rememberMe') }}</span>
             </label>
             <a
               href="#"
-              class="text-sm text-primary leading-none decoration-none hover:underline"
+              class="text-sm font-medium text-primary leading-none decoration-none hover:underline"
             >
               {{ t('login.forgotPassword') }}
             </a>
@@ -240,7 +205,7 @@ const footerClass = computed(() => (props.responsive.compactForm ? 'gap-xs pt-0'
 
           <Button
             id="login-submit"
-            class="w-full justify-center"
+            class="w-full justify-center rounded-lg! bg-primary! [color:rgb(var(--primary-foreground))]! shadow-sm transition-colors duration-sm hover:bg-primary-hover! ring-focus-focus disabled:opacity-70"
             :label="t('login.submit')"
             :loading="formState.submitting || loading"
             size="large"
@@ -248,89 +213,25 @@ const footerClass = computed(() => (props.responsive.compactForm ? 'gap-xs pt-0'
           />
 
           <div
-            v-if="responsive.showQuickRoles"
-            class="grid grid-cols-[1fr_auto_1fr] items-center gap-sm"
-            :class="responsive.compactForm ? 'pt-0' : 'pt-xs'"
+            class="grid grid-cols-2 gap-0 overflow-hidden rounded-lg border border-solid border-border/45 bg-muted/30 p-2xs"
           >
-            <span class="h-px bg-border/60" />
-            <p class="m-0 text-sm text-muted-foreground leading-none text-no-wrap">
-              {{ t('login.quickFillTips') }}
-            </p>
-            <span class="h-px bg-border/60" />
-          </div>
-
-          <div
-            v-if="responsive.showQuickRoles"
-            class="grid grid-cols-2 gap-sm"
-          >
-            <Button
+            <button
               id="login-fill-admin"
-              class="w-full justify-center"
-              :label="t('login.quickAdmin')"
-              severity="secondary"
-              variant="text"
-              size="large"
+              type="button"
+              class="cursor-pointer rounded-md border-0 bg-transparent px-sm py-xs text-sm font-medium text-muted-foreground transition-colors duration-sm hover:bg-background/75 hover:text-foreground ring-focus-focus"
               @click="fillPreset(ADMIN_PRESET)"
             >
-              <template #icon>
-                <Icons
-                  name="i-lucide-shield-check"
-                  size="sm"
-                />
-              </template>
-            </Button>
-            <Button
+              {{ t('login.quickAdmin') }}
+            </button>
+            <button
               id="login-fill-user"
-              class="w-full justify-center"
-              :label="t('login.quickUser')"
-              severity="secondary"
-              variant="text"
-              size="large"
+              type="button"
+              class="cursor-pointer rounded-md border-0 bg-transparent px-sm py-xs text-sm font-medium text-muted-foreground transition-colors duration-sm hover:bg-background/75 hover:text-foreground ring-focus-focus"
               @click="fillPreset(USER_PRESET)"
             >
-              <template #icon>
-                <Icons
-                  name="i-lucide-user"
-                  size="sm"
-                />
-              </template>
-            </Button>
+              {{ t('login.quickUser') }}
+            </button>
           </div>
-
-          <div
-            v-if="!responsive.compactHeight && responsive.mode !== 'mobile'"
-            class="row-between gap-sm rounded-lg border border-solid border-success/20 bg-success/10 px-sm py-xs text-sm text-success"
-          >
-            <span class="inline-flex min-w-0 items-center gap-xs leading-none">
-              <Icons
-                name="i-lucide-shield-check"
-                size="sm"
-                class="shrink-0"
-              />
-              <span class="truncate">{{ t('login.governanceProtected') }}</span>
-            </span>
-            <span class="inline-flex min-w-0 items-center gap-xs leading-none">
-              <Icons
-                name="i-lucide-circle-check"
-                size="xs"
-                class="shrink-0"
-              />
-              <span class="truncate">{{ t('login.runtimeSynchronized') }}</span>
-            </span>
-          </div>
-
-          <p
-            v-if="!responsive.compactHeight"
-            class="m-0 text-center text-sm text-muted-foreground leading-normal"
-          >
-            {{ t('login.noAccount') }}
-            <a
-              href="#"
-              class="text-primary decoration-none hover:underline"
-            >
-              {{ t('login.register') }}
-            </a>
-          </p>
         </div>
       </template>
     </ProForm>

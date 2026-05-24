@@ -5,46 +5,17 @@ import HeaderActions from './components/HeaderActions.vue'
 import BrandPanel from './components/BrandPanel.vue'
 import LoginForm from './components/LoginForm.vue'
 import LoginShell from './components/LoginShell.vue'
-import type { LoginLayoutMode, LoginResponsiveState } from './types'
+import type { LoginResponsiveState } from './types'
 
 const deviceStore = useDeviceStore()
 
 const viewportWidth = computed(() => deviceStore.width)
 const viewportHeight = computed(() => deviceStore.height)
-const isLandscape = computed(() => viewportWidth.value >= viewportHeight.value)
-const isCompactHeight = computed(() => viewportHeight.value <= 760)
 
-const layoutMode = computed<LoginLayoutMode>(() => {
-  if (viewportWidth.value < BREAKPOINTS.md) return 'mobile'
-  if (viewportWidth.value < BREAKPOINTS.lg)
-    return isLandscape.value ? 'tabletLandscape' : 'tabletPortrait'
-  if (!isLandscape.value || viewportHeight.value < 820) return 'desktopPortrait'
-  return 'desktopLandscape'
-})
-
-const responsiveState = computed<LoginResponsiveState>(() => {
-  const mode = layoutMode.value
-  const compactHeight = isCompactHeight.value
-  const compactColumn = mode === 'tabletPortrait' || mode === 'mobile'
-  const compactTwoColumn = mode === 'desktopPortrait' || mode === 'tabletLandscape'
-  const fullBrand = mode === 'desktopLandscape' && !compactHeight
-
-  return {
-    mode,
-    compactHeight,
-    showFullBrand: fullBrand,
-    showCompactBrand: compactTwoColumn,
-    showBrandSummary: compactColumn,
-    showFeatureCards: fullBrand && viewportHeight.value >= 780,
-    showArchitectureStrip: fullBrand && viewportHeight.value >= 860,
-    showQuickRoles: viewportHeight.value >= 720 && mode !== 'mobile',
-    compactForm: compactHeight || compactColumn || compactTwoColumn,
-  }
-})
-
-const pageChromeClass = computed(() =>
-  responsiveState.value.compactForm ? 'px-sm pb-sm pt-3xl sm:px-md' : 'px-lg pb-lg pt-3xl'
-)
+const responsiveState = computed<LoginResponsiveState>(() => ({
+  isMobile: viewportWidth.value < BREAKPOINTS.md,
+  isCompact: viewportWidth.value < BREAKPOINTS.lg || viewportHeight.value <= 740,
+}))
 
 function preventDecorativeSelection(event: Event): void {
   const target = event.target
@@ -58,25 +29,29 @@ defineOptions({ name: 'LoginPage' })
 
 <template>
   <main
-    class="relative h-100dvh max-h-100dvh w-full select-none overflow-hidden bg-muted/30 text-foreground"
+    class="layout-screen relative isolate select-none bg-background text-foreground"
     @selectstart="preventDecorativeSelection"
   >
-    <div class="absolute inset-0 pointer-events-none">
-      <div class="absolute left-0 top-0 h-1/2 w-1/2 rounded-full bg-primary/6 blur-3xl" />
-      <div class="absolute bottom-0 right-0 h-1/2 w-1/2 rounded-full bg-info/6 blur-3xl" />
-      <div class="absolute-center h-2/3 w-2/3 rounded-full bg-card/50 blur-3xl" />
+    <div class="absolute inset-0 z-base pointer-events-none overflow-hidden">
+      <div
+        class="absolute inset-0 bg-[radial-gradient(circle_at_50%_46%,rgb(var(--primary)/0.18),transparent_32%),linear-gradient(145deg,rgb(var(--background)/1),rgb(var(--muted)/0.34)_55%,rgb(var(--background)/1))]"
+      />
+      <div
+        class="absolute left-[32vw] top-[20vh] h-[46vh] w-[36vw] rounded-full bg-primary/8 blur-2xl"
+      />
+      <div
+        class="absolute bottom-[-12vh] right-[-8vw] h-[34vh] w-[28vw] rounded-full bg-info/10 blur-2xl"
+      />
     </div>
 
-    <HeaderActions :compact="responsiveState.compactForm" />
-
-    <div
-      class="relative z-content h-100dvh max-h-100dvh min-w-0 col-center"
-      :class="pageChromeClass"
-    >
-      <LoginShell :responsive="responsiveState">
-        <BrandPanel :responsive="responsiveState" />
-        <LoginForm :responsive="responsiveState" />
-      </LoginShell>
+    <div class="relative z-content layout-full center px-md py-lg sm:px-lg">
+      <div class="col-center gap-sm">
+        <LoginShell :responsive="responsiveState">
+          <BrandPanel :responsive="responsiveState" />
+          <LoginForm :responsive="responsiveState" />
+        </LoginShell>
+        <HeaderActions />
+      </div>
     </div>
   </main>
 </template>

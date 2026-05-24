@@ -3,39 +3,26 @@ import type { LoginResponsiveState } from '../types'
 
 defineOptions({ name: 'LoginShell' })
 
-const props = defineProps<{
+defineProps<{
   responsive: LoginResponsiveState
 }>()
-
-const shellClass = computed(() => {
-  const mode = props.responsive.mode
-
-  if (mode === 'desktopLandscape') {
-    return 'h-auto max-h-[calc(100dvh-var(--spacing-4xl))] w-[min(92vw,1180px)] grid-cols-[minmax(0,1fr)_minmax(390px,440px)] gap-lg p-lg'
-  }
-
-  if (mode === 'desktopPortrait') {
-    return 'h-auto max-h-[calc(100dvh-var(--spacing-3xl))] w-[min(94vw,900px)] grid-cols-[minmax(0,0.72fr)_minmax(360px,410px)] gap-md p-md'
-  }
-
-  if (mode === 'tabletLandscape') {
-    return 'h-auto max-h-[calc(100dvh-var(--spacing-3xl))] w-[min(94vw,960px)] grid-cols-[minmax(0,0.7fr)_minmax(340px,390px)] gap-md p-md'
-  }
-
-  if (mode === 'tabletPortrait') {
-    return 'h-auto max-h-[calc(100dvh-var(--spacing-3xl))] w-[min(92vw,560px)] grid-cols-1 gap-sm p-md'
-  }
-
-  return 'h-auto max-h-[calc(100dvh-var(--spacing-3xl))] w-full max-w-[430px] grid-cols-1 gap-xs p-sm'
-})
 </script>
 
 <template>
   <section
-    class="grid min-w-0 items-center overflow-hidden rounded-2xl border border-solid border-border/70 bg-card/75 shadow-md"
-    :class="shellClass"
+    id="login-shell"
+    class="relative w-[min(92vw,420px)] max-h-[88vh] overflow-hidden rounded-2xl border border-solid border-border/60 bg-card/96 p-lg shadow-lg backdrop-blur-md"
+    :class="responsive.isMobile ? 'p-md' : ''"
     aria-labelledby="login-brand-title"
   >
-    <slot />
+    <div
+      class="absolute inset-x-[18%] top-[-14%] z-base h-[20%] rounded-full bg-primary/12 blur-2xl"
+    />
+    <div
+      class="absolute inset-0 z-base pointer-events-none bg-[linear-gradient(180deg,rgb(var(--foreground)/0.05),transparent_30%,rgb(var(--primary)/0.025))]"
+    />
+    <div class="relative z-content col-stretch gap-md">
+      <slot />
+    </div>
   </section>
 </template>
