@@ -152,11 +152,22 @@ export default defineComponent({
       const anchorRef: VNodeRef | undefined = hasChildren
         ? el => setCollapsedAnchorRef(key, resolveElementRef(el))
         : undefined
+      const stateData = {
+        'data-menu-state':
+          distance === 0
+            ? 'active'
+            : distance > 0
+              ? 'ancestor'
+              : hasChildren && openDropdownKey.value === key
+                ? 'open'
+                : 'idle',
+      }
       const itemNode = (
         <button
           type="button"
           ref={anchorRef}
           aria-label={tooltipLabel || undefined}
+          {...stateData}
           class={[
             getMenuItemBase('sidebar'),
             'admin-sidebar-menu__item admin-sidebar-menu__item--root group w-full no-underline box-border overflow-hidden appearance-none border-none bg-transparent p-0 cursor-pointer',

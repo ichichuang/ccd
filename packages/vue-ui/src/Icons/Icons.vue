@@ -22,9 +22,12 @@ const CSS_VAR_PATTERN = /^var\(--[a-zA-Z0-9-_]+\)$/
 const RGB_CHANNEL_CSS_VAR_PATTERN =
   /^var\(--(?:primary|primary-foreground|foreground|muted-foreground|info|success|warn|danger)\)$/
 const SEMANTIC_TEXT_COLOR_CLASSES = new Set([
+  'text-current',
   'text-primary',
+  'text-primary-foreground',
   'text-foreground',
   'text-muted-foreground',
+  'text-popover-foreground',
   'text-info',
   'text-success',
   'text-warn',
@@ -158,7 +161,7 @@ const style = computed(() => {
 
 const attrs = useAttrs()
 const PARENT_TEXT_COLOR_CLASS_PATTERN =
-  /^!?text-(?:primary|foreground|muted-foreground|info|success|warn|danger)(?:\/\d+)?$/
+  /^(?:(?:group-)?hover|focus|focus-visible|active|data-\[state=(?:active|open|highlighted)\]):!?text-(?:current|primary|primary-foreground|foreground|muted-foreground|popover-foreground|info|success|warn|danger)(?:\/\d+)?!?$|^!?text-(?:current|primary|primary-foreground|foreground|muted-foreground|popover-foreground|info|success|warn|danger)(?:\/\d+)?!?$/
 
 function hasTextColorClass(cls: unknown): boolean {
   if (typeof cls === 'string') {

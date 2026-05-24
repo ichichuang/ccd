@@ -205,7 +205,7 @@ const slotCtx = computed<ContextMenuSlotContext | null>(() => {
         >
           <div
             ref="menuRef"
-            class="fixed z-overlay min-w-[var(--spacing-3xl)] rounded-md bg-popover shadow-sm shadow-primary!"
+            class="global-context-menu-panel fixed z-overlay rounded-md bg-popover/95 border border-solid border-border shadow-lg p-xs"
             :style="menuStyle"
             role="menu"
           >
@@ -238,5 +238,12 @@ const slotCtx = computed<ContextMenuSlotContext | null>(() => {
 .ctx-menu-leave-to {
   opacity: 0;
   transform: scale(0.95);
+}
+
+.global-context-menu-panel {
+  width: max-content;
+  max-width: calc(100vw - var(--spacing-lg));
+  min-width: 0;
+  white-space: nowrap;
 }
 </style>

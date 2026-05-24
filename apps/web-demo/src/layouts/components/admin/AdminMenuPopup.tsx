@@ -1,6 +1,7 @@
 import TieredMenu from 'primevue/tieredmenu'
 import type { PropType, VNodeRef } from 'vue'
 import type { MenuVisualContext } from '@/hooks/layout/useMenuVisuals'
+import { MENU_ADMIN_POPUP_PANEL_UNIFIED, MENU_TEXT_CLASS } from '@/constants/layout-menu'
 import {
   createTieredMenuItemRenderer,
   type TieredMenuInactiveClasses,
@@ -205,7 +206,7 @@ export default defineComponent({
         model={props.model}
         popup
         appendTo="body"
-        class={`admin-menu-popup admin-menu-popup--${props.placement}`}
+        class={`admin-menu-popup admin-menu-popup--${props.placement} ${MENU_ADMIN_POPUP_PANEL_UNIFIED} ${MENU_TEXT_CLASS}`}
         {...{
           onShow: handleShow,
           onHide: handleHide,

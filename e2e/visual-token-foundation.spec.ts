@@ -8,6 +8,30 @@ async function openRoute(page: Page, hashPath: string): Promise<void> {
   await waitForRuntimeLoadingIdle(page)
 }
 
+async function openRouteWithMixLayout(page: Page, hashPath: string): Promise<void> {
+  await loginAsAdmin(page)
+  await gotoVisual(page, hashPath)
+  await waitForAppReady(page)
+  await waitForRuntimeLoadingIdle(page)
+  await page.evaluate(() => {
+    const app = document.querySelector('#app') as HTMLElement & { __vue_app__?: unknown }
+    const vueApp = app?.__vue_app__ as {
+      config?: { globalProperties?: Record<string, unknown> }
+    }
+    const pinia = vueApp?.config?.globalProperties?.$pinia as
+      | { _s?: Map<string, { setPreferredMode?: (mode: 'mix') => void }> }
+      | undefined
+    pinia?._s?.get('layout')?.setPreferredMode?.('mix')
+  })
+  await waitForRuntimeLoadingIdle(page)
+  await page.waitForFunction(
+    () =>
+      document.querySelector(
+        '[data-layout-sidebar="true"] .admin-sidebar-menu__item[data-menu-state="active"]'
+      ) != null
+  )
+}
+
 async function waitForStyleChange(
   page: Page,
   selector: string,
@@ -29,31 +53,107 @@ async function waitForStyleChange(
       return window.getComputedStyle(element).getPropertyValue(cssProperty)
     }, property)
 }
+async function visualSignature(locator: ReturnType<Page['locator']>): Promise<string> {
+  return locator.first().evaluate(element => {
+    const style = window.getComputedStyle(element)
+    return [style.backgroundColor, style.color, style.boxShadow].join('|')
+  })
+}
+
+async function borderWeight(locator: ReturnType<Page['locator']>): Promise<number> {
+  return locator.first().evaluate(element => {
+    const style = window.getComputedStyle(element)
+    return [
+      style.borderTopWidth,
+      style.borderRightWidth,
+      style.borderBottomWidth,
+      style.borderLeftWidth,
+    ].reduce((total, value) => total + Number.parseFloat(value || '0'), 0)
+  })
+}
+
+function expectDistinctStyle(actual: string, baseline: string): void {
+  expect(actual.trim()).not.toBe('')
+  expect(actual).not.toBe(baseline)
+}
+
+function expectQuietNavigationBorder(weight: number): void {
+  expect(weight).toBeLessThanOrEqual(2)
+}
 
 test.describe('visual token foundation', () => {
   test('LayoutAdmin active and hover states are visually distinct', async ({ page }) => {
     await page.setViewportSize({ width: 1440, height: 960 })
-    await openRoute(page, '/example/primevue-collection/overview')
+    await openRouteWithMixLayout(page, '/example/primevue-collection/overview')
 
     const sidebar = page.locator('[data-layout-sidebar="true"]')
     await expect(sidebar).toBeVisible()
 
-    const activeItem = sidebar
-      .locator('.admin-sidebar-menu__item')
-      .filter({ hasText: 'PrimeVue' })
+    const sidebarIdleItem = sidebar
+      .locator('.admin-sidebar-menu__item[data-menu-state="idle"]')
       .first()
-    await expect(activeItem).toBeVisible()
-    await expect(activeItem).toHaveClass(/bg-sidebar-primary!|bg-sidebar-accent\/18!/, {
-      timeout: 5000,
-    })
+    await expect(sidebarIdleItem).toBeVisible()
+    const idleSignature = await visualSignature(sidebarIdleItem)
 
-    const hoverItem = sidebar
-      .locator('.admin-sidebar-menu__item')
-      .filter({ hasText: 'Toast' })
+    const sidebarOpenParent = sidebar
+      .locator('.admin-sidebar-menu__item[data-menu-state="ancestor"]')
+      .filter({ hasText: /PrimeVue|组件合集/ })
       .first()
+    await expect(sidebarOpenParent).toBeVisible()
+    const parentSignature = await visualSignature(sidebarOpenParent)
+    expectDistinctStyle(parentSignature, idleSignature)
+    expectQuietNavigationBorder(await borderWeight(sidebarOpenParent))
+
+    const sidebarActiveChild = sidebar
+      .locator('.admin-sidebar-menu__item[data-menu-state="active"]')
+      .filter({ hasText: 'PrimeVue 概览' })
+      .first()
+    await expect(sidebarActiveChild).toBeVisible()
+    const childSignature = await visualSignature(sidebarActiveChild)
+    expectDistinctStyle(childSignature, parentSignature)
+    expectQuietNavigationBorder(await borderWeight(sidebarActiveChild))
+
+    const hoverItem = sidebar.locator('.admin-sidebar-menu__item[data-menu-state="idle"]').nth(1)
     await expect(hoverItem).toBeVisible()
-    await expect(hoverItem).toHaveClass(/hover:bg-sidebar-primary\/8!/, { timeout: 5000 })
-    await expect(hoverItem).toHaveClass(/hover:text-sidebar-primary!/, { timeout: 5000 })
+    const hoverSignatureBefore = await visualSignature(hoverItem)
+    await hoverItem.hover()
+    await page.waitForTimeout(250)
+    const hoverSignatureAfter = await visualSignature(hoverItem)
+    expectDistinctStyle(hoverSignatureAfter, hoverSignatureBefore)
+
+    const topbarParent = page
+      .locator('[data-layout-header="true"] [data-menu-state="ancestor"]')
+      .first()
+    if ((await topbarParent.count()) > 0) {
+      await topbarParent.click()
+      const popupIdleItem = page.locator('.admin-menu-popup__item[data-menu-state="idle"]').first()
+      const popupActiveItem = page
+        .locator('.admin-menu-popup__item[data-menu-state="ancestor"]')
+        .first()
+      await expect(popupIdleItem).toBeVisible()
+      await expect(popupActiveItem).toBeVisible()
+      expectDistinctStyle(
+        await visualSignature(popupActiveItem),
+        await visualSignature(popupIdleItem)
+      )
+    }
+
+    const activeTab = page
+      .locator('[data-admin-tabs-bar="true"] [data-menu-state="active"]')
+      .first()
+    const idleTab = page.locator('[data-admin-tabs-bar="true"] [data-menu-state="idle"]').first()
+    await expect(activeTab).toBeVisible()
+    await expect(idleTab).toBeVisible()
+    expectDistinctStyle(await visualSignature(activeTab), await visualSignature(idleTab))
+    expectQuietNavigationBorder(await borderWeight(activeTab))
+
+    const breadcrumbCurrent = page
+      .locator('main [data-menu-state="active"]')
+      .filter({ hasText: 'PrimeVue 概览' })
+      .first()
+    await expect(breadcrumbCurrent).toBeVisible()
+    expectDistinctStyle(await visualSignature(breadcrumbCurrent), idleSignature)
+    expectQuietNavigationBorder(await borderWeight(breadcrumbCurrent))
   })
 
   test('PrimeVue form controls expose hover and focus feedback', async ({ page }) => {

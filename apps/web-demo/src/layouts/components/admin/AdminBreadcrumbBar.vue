@@ -5,6 +5,7 @@ import { useAdminBreadcrumbs } from '@/hooks/layout/useAdminBreadcrumbs'
 import type { PrimeMenuModelItem } from '@/router/utils/helper'
 import { goToRoute } from '@/router/utils/helper'
 import {
+  MENU_ADMIN_POPUP_PANEL_UNIFIED,
   MENU_ADMIN_CHROME_TEXT_UNIFIED,
   MENU_BREADCRUMB_CURRENT_UNIFIED,
   MENU_BREADCRUMB_HOVER_UNIFIED,
@@ -60,7 +61,7 @@ function renderBreadcrumbMenuItem(slotProps: unknown) {
         role="button"
         tabindex="0"
         :class="[
-          'transition-all duration-md flex items-center cursor-pointer',
+          'transition-all duration-md flex items-center cursor-pointer rounded-sm px-xs py-xs text-sidebar-foreground',
           MENU_BREADCRUMB_HOVER_UNIFIED,
         ]"
         @click="goToRoute('/')"
@@ -75,7 +76,7 @@ function renderBreadcrumbMenuItem(slotProps: unknown) {
       <Icons
         v-if="breadcrumbs.length > 0"
         name="i-lucide-chevron-right"
-        class="mx-sm text-muted-foreground/30"
+        class="mx-sm text-muted-foreground/70"
         :size="getIconSize('breadcrumb')"
       />
       <TransitionGroup name="breadcrumb">
@@ -87,7 +88,7 @@ function renderBreadcrumbMenuItem(slotProps: unknown) {
           <!-- Breadcrumb Item -->
           <span
             :class="[
-              'transition-all duration-md flex items-center gap-xs px-xs',
+              'transition-all duration-md flex items-center gap-xs px-xs py-xs rounded-sm text-sidebar-foreground',
               index === breadcrumbs.length - 1
                 ? `${MENU_BREADCRUMB_CURRENT_UNIFIED} font-semibold cursor-default`
                 : `cursor-pointer ${MENU_BREADCRUMB_HOVER_UNIFIED}`,
@@ -95,6 +96,7 @@ function renderBreadcrumbMenuItem(slotProps: unknown) {
             ]"
             :role="index === breadcrumbs.length - 1 ? undefined : 'button'"
             :tabindex="index === breadcrumbs.length - 1 ? undefined : '0'"
+            v-bind="{ 'data-menu-state': index === breadcrumbs.length - 1 ? 'active' : 'idle' }"
             @click="e => onBreadcrumbClick(item, index === breadcrumbs.length - 1, e)"
             @keyup.enter="e => onBreadcrumbClick(item, index === breadcrumbs.length - 1, e)"
           >
@@ -121,7 +123,7 @@ function renderBreadcrumbMenuItem(slotProps: unknown) {
           <Icons
             v-if="index !== breadcrumbs.length - 1"
             name="i-lucide-chevron-right"
-            class="mx-xs"
+            class="mx-xs text-muted-foreground/70"
             :size="getIconSize('breadcrumb')"
           />
 
@@ -130,6 +132,7 @@ function renderBreadcrumbMenuItem(slotProps: unknown) {
             v-if="item.childItems?.length"
             :ref="bindBreadcrumbMenuRef(item.path)"
             :model="childItemsToPrimeModel(item.childItems)"
+            :class="['admin-menu-popup', MENU_ADMIN_POPUP_PANEL_UNIFIED]"
             append-to="body"
             popup
             @hide="onMenuHide(item.path)"

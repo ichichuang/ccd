@@ -4,6 +4,7 @@ import { Icons } from '@ccd/vue-ui'
 import {
   MENU_ADMIN_CONTEXT_ICON_UNIFIED,
   MENU_ADMIN_CONTEXT_ITEM_UNIFIED,
+  MENU_ADMIN_CONTEXT_PANEL_UNIFIED,
   MENU_ADMIN_TAB_ACTIVE_UNIFIED,
   MENU_ADMIN_TAB_CLOSE_UNIFIED,
   MENU_ADMIN_TAB_INACTIVE_UNIFIED,
@@ -121,7 +122,7 @@ export default defineComponent({
               >
                 {/* Smart sliding indicator */}
                 <div
-                  class="absolute bottom-0 bg-sidebar-primary pointer-events-none rounded-b-sm z-content"
+                  class="absolute bottom-0 bg-primary pointer-events-none rounded-b-sm z-content"
                   style={{
                     height: 'var(--spacing-xs)',
                     left: activeTabStyle.value.left,
@@ -139,6 +140,7 @@ export default defineComponent({
                       key={tab.path}
                       ref={el => setTabRef(el instanceof HTMLElement ? el : null, tab.path)}
                       data-path={tab.path}
+                      data-menu-state={active ? 'active' : 'idle'}
                       class={[
                         'h-full flex items-center px-sm rounded-t-lg cursor-pointer gap-sm shrink-0 duration-md',
                         active ? MENU_ADMIN_TAB_ACTIVE_UNIFIED : MENU_ADMIN_TAB_INACTIVE_UNIFIED,
@@ -164,6 +166,7 @@ export default defineComponent({
                       {/* Close Button */}
                       {!tab.fixed && tab.deletable && (
                         <div
+                          data-admin-tab-close="true"
                           class={MENU_ADMIN_TAB_CLOSE_UNIFIED}
                           onClick={e => onCloseTab(e, tab)}
                         >
@@ -199,7 +202,7 @@ export default defineComponent({
                 >
                   <div
                     ref={contextMenuPanelRef}
-                    class="fixed z-popover min-w-[var(--spacing-3xl)] bg-popover/95 backdrop-blur-md shadow-xl rounded-md p-xs flex flex-col gap-xs origin-top-left outline-none!"
+                    class={`fixed z-popover flex flex-col gap-xs origin-top-left outline-none! ${MENU_ADMIN_CONTEXT_PANEL_UNIFIED}`}
                     style={{ top: `${contextMenu.value.y}px`, left: `${contextMenu.value.x}px` }}
                     onMousedown={(e: MouseEvent) => e.stopPropagation()}
                     onClick={(e: MouseEvent) => e.stopPropagation()}

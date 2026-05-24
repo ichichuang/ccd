@@ -19,6 +19,10 @@ import AdminSidebarMenu from '@/layouts/components/admin/AdminSidebarMenu'
 import { useLayoutRuntime } from '@/hooks/layout/useLayoutRuntime'
 import { Icons } from '@ccd/vue-ui'
 import { CScrollbar } from '@ccd/vue-ui'
+import {
+  MENU_ADMIN_CONTEXT_ICON_UNIFIED,
+  MENU_ADMIN_CONTEXT_ITEM_UNIFIED,
+} from '@/constants/layout-menu'
 
 const ADMIN_CHROME_SURFACE_CLASS =
   'bg-sidebar/36! dark:bg-sidebar/40! shadow-[inset_0_-1px_0_rgb(var(--sidebar-border)/0.72),inset_0_1px_0_rgb(var(--foreground)/0.03)]'
@@ -51,6 +55,7 @@ export default defineComponent({
     const contextThemeToggleLabel = computed(() =>
       isDark.value ? t('layout.switchToLight') : t('layout.switchToDark')
     )
+    const contextThemeToggleIcon = computed(() => (isDark.value ? 'i-lucide-sun' : 'i-lucide-moon'))
 
     const onContextReload = () => {
       refreshCurrentRoute()
@@ -276,10 +281,10 @@ export default defineComponent({
         }}
         v-slots={{
           menu: ({ close, event }: { close: () => void; event: MouseEvent }) => (
-            <div class="min-w-[var(--spacing-4xl)] rounded-md p-xs flex flex-col gap-xs select-none">
+            <div class="flex flex-col gap-xs select-none">
               {/* 重新载入 */}
               <div
-                class="flex items-center gap-sm px-sm py-xs rounded-md text-sm hover:bg-primary hover:text-primary-foreground cursor-pointer transition-colors duration-md"
+                class={MENU_ADMIN_CONTEXT_ITEM_UNIFIED}
                 onClick={() => {
                   onContextReload()
                   close()
@@ -288,13 +293,14 @@ export default defineComponent({
                 <Icons
                   name="i-lucide-rotate-cw"
                   size="sm"
+                  class={MENU_ADMIN_CONTEXT_ICON_UNIFIED}
                 />
                 <span>{t('layout.reload')}</span>
               </div>
 
               {/* 设置 */}
               <div
-                class="flex items-center gap-sm px-sm py-xs rounded-md text-sm hover:bg-primary hover:text-primary-foreground cursor-pointer transition-colors duration-md"
+                class={MENU_ADMIN_CONTEXT_ITEM_UNIFIED}
                 onClick={() => {
                   openGlobalSettings()
                   close()
@@ -303,21 +309,24 @@ export default defineComponent({
                 <Icons
                   name="i-lucide-settings-2"
                   size="sm"
+                  class={MENU_ADMIN_CONTEXT_ICON_UNIFIED}
                 />
                 <span>{t('layout.globalSettings')}</span>
               </div>
 
               {/* 动态切换深/浅色模式 */}
               <div
-                class="flex items-center gap-sm px-sm py-xs rounded-md text-sm hover:bg-primary hover:text-primary-foreground cursor-pointer transition-colors duration-md"
+                class={`${MENU_ADMIN_CONTEXT_ITEM_UNIFIED} global-context-menu__theme-toggle`}
                 onClick={() => {
                   onContextToggleTheme(event)
                   close()
                 }}
               >
                 <Icons
-                  name={isDark.value ? 'i-lucide-sun' : 'i-lucide-moon'}
+                  name={contextThemeToggleIcon.value}
                   size="sm"
+                  class={MENU_ADMIN_CONTEXT_ICON_UNIFIED}
+                  data-context-theme-icon={isDark.value ? 'sun' : 'moon'}
                 />
                 <span>{contextThemeToggleLabel.value}</span>
               </div>

@@ -125,7 +125,16 @@ const renderRootItem = (item: PrimeMenuModelItem) => {
     level: 0,
   })
 
-  const linkClass = [getMenuItemBase('header'), MENU_TEXT_WEIGHT, 'mx-xs', stateClasses]
+  const linkState =
+    distance === 0 ? 'active' : distance > 0 ? 'ancestor' : isSubmenuOpen ? 'open' : 'idle'
+
+  const linkClass = [
+    getMenuItemBase('header'),
+    'admin-header-menu__item no-underline box-border overflow-hidden',
+    MENU_TEXT_WEIGHT,
+    'mx-xs',
+    stateClasses,
+  ]
     .filter(Boolean)
     .join(' ')
 
@@ -159,6 +168,7 @@ const renderRootItem = (item: PrimeMenuModelItem) => {
         role="menuitem"
         aria-haspopup={hasChildren ? 'true' : undefined}
         aria-expanded={hasChildren ? isSubmenuOpen : undefined}
+        data-menu-state={linkState}
       >
         {content}
       </a>
@@ -182,6 +192,7 @@ const renderRootItem = (item: PrimeMenuModelItem) => {
                 role="menuitem"
                 aria-haspopup={undefined}
                 aria-expanded={undefined}
+                data-menu-state={linkState}
                 onClick={(e: MouseEvent) => {
                   e.preventDefault()
                   goToRoute(routeNameStr, undefined, undefined, false)

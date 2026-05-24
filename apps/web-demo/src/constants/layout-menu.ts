@@ -13,49 +13,57 @@ export const MENU_ACTIVE_UNIFIED =
 export const MENU_OPEN_UNIFIED =
   'bg-primary/12! text-primary! dark:bg-primary-light/70! dark:text-primary-light-foreground!' as const
 
-/** 侧栏菜单激活态：使用独立 sidebar token，允许侧栏与内容区分离调色 */
+/** 侧栏菜单激活态：使用 solid primary + primary foreground，作为侧栏最强选中态 */
 export const MENU_SIDEBAR_ACTIVE_UNIFIED =
-  'bg-sidebar-primary! text-sidebar-primary-foreground!' as const
+  '!bg-primary !text-primary-foreground hover:!bg-primary hover:!text-primary-foreground focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:ring-offset-1 focus-visible:ring-offset-background' as const
 
 /** 侧栏菜单打开/聚焦/选中态：弱于激活态，强于 hover 态 */
-export const MENU_SIDEBAR_OPEN_UNIFIED = 'bg-sidebar-primary/12! text-sidebar-primary!' as const
+export const MENU_SIDEBAR_OPEN_UNIFIED =
+  '!bg-primary/10 !text-primary hover:!bg-primary/14 hover:!text-primary' as const
 /** 侧栏菜单 hover 态：低于打开/聚焦态 */
-export const MENU_SIDEBAR_HOVER_UNIFIED =
-  'hover:bg-sidebar-primary/8! hover:text-sidebar-primary!' as const
+export const MENU_SIDEBAR_HOVER_UNIFIED = 'hover:bg-primary/10 hover:text-primary' as const
 /** 侧栏菜单祖先态（展开的父级，非当前叶节点）：比叶节点激活态更轻 */
-export const MENU_SIDEBAR_ANCESTOR_UNIFIED = 'bg-sidebar-accent/18! text-sidebar-primary!' as const
-/** Admin 顶栏 / 面包屑 / 标签栏共用高亮文字色：统一对齐侧栏主色 */
-export const MENU_ADMIN_CHROME_TEXT_UNIFIED = 'text-sidebar-primary!' as const
-/** Admin 顶部 chrome 区域激活叶节点：强底色 + 高对比前景色，图标通过 text-current 继承 */
+export const MENU_SIDEBAR_ANCESTOR_UNIFIED = MENU_SIDEBAR_OPEN_UNIFIED
+/** Admin 顶栏 / 面包屑 / 标签栏共用高亮文字色：统一对齐 primary 主色 */
+export const MENU_ADMIN_CHROME_TEXT_UNIFIED = 'text-primary!' as const
+/** Admin 顶部 chrome 区域激活叶节点：复用侧栏最强选中态，图标通过 text-current 继承 */
 export const MENU_ADMIN_CHROME_ACTIVE_UNIFIED = MENU_SIDEBAR_ACTIVE_UNIFIED
-/** Admin 顶部 chrome 区域打开/聚焦态：沿用侧栏轻量高亮反馈 */
+/** Admin 顶部 chrome 区域打开/聚焦态：复用侧栏轻量高亮反馈 */
 export const MENU_ADMIN_CHROME_OPEN_UNIFIED = MENU_SIDEBAR_OPEN_UNIFIED
-/** Admin 顶部 chrome 区域 hover 态：明显弱于激活/聚焦态 */
+/** Admin 顶部 chrome 区域 hover 态：复用侧栏弱高亮反馈 */
 export const MENU_ADMIN_CHROME_HOVER_UNIFIED = MENU_SIDEBAR_HOVER_UNIFIED
-/** Admin 顶部 chrome 区域祖先态：中等底色 + 主色文字，区别于叶节点强激活态 */
-export const MENU_ADMIN_CHROME_ANCESTOR_UNIFIED =
-  'bg-sidebar-accent/18! text-sidebar-primary!' as const
+/** Admin 顶部 chrome 区域祖先态：复用侧栏祖先态，弱于叶节点激活态 */
+export const MENU_ADMIN_CHROME_ANCESTOR_UNIFIED = MENU_SIDEBAR_ANCESTOR_UNIFIED
+/** Admin chrome popup 可读表面：仅承载颜色、边框、阴影、圆角与内边距，不绑定几何宽度 */
+export const MENU_ADMIN_POPUP_SURFACE_UNIFIED =
+  'bg-popover/95 border border-solid border-border shadow-lg rounded-md p-xs' as const
+/** Admin chrome popup 面板：顶栏、面包屑等普通下拉菜单沿用原有几何 */
+export const MENU_ADMIN_POPUP_PANEL_UNIFIED =
+  `${MENU_ADMIN_POPUP_SURFACE_UNIFIED} min-w-4xl max-w-5xl` as const
+/** Admin tabs 右键菜单面板：仅供 tabs 右键菜单使用；全局右键菜单几何在 ContextMenuProvider 中隔离 */
+export const MENU_ADMIN_CONTEXT_PANEL_UNIFIED =
+  `${MENU_ADMIN_POPUP_SURFACE_UNIFIED} w-max max-w-[calc(100vw-var(--spacing-lg))]` as const
+/** Admin chrome popup 菜单项：顶栏、面包屑、tabs 右键菜单共用 */
+export const MENU_ADMIN_POPUP_ITEM_UNIFIED =
+  'focus:bg-primary/10 focus:text-primary focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:ring-offset-1 focus-visible:ring-offset-popover' as const
 /** Admin 标签栏激活态：比 hover/focus 更强的底色 + 主色文字 */
 export const MENU_ADMIN_TAB_ACTIVE_UNIFIED =
-  'bg-sidebar-primary/12! text-sidebar-primary! backdrop-blur-md transition-all' as const
+  '!bg-primary/10 !text-primary transition-colors' as const
 /** Admin 标签栏关闭按钮：激活时保持可读，hover 时提供独立危险色反馈 */
 export const MENU_ADMIN_TAB_CLOSE_UNIFIED =
-  'center duration-md text-current opacity-70 hover:opacity-100 hover:text-danger' as const
+  'center rounded-sm p-0.5 duration-md text-current opacity-70 hover:opacity-100 hover:bg-danger/12 hover:text-danger' as const
 /** 面包屑当前项：轻量底色 + 主色文字，不使用完整按钮外观 */
-export const MENU_BREADCRUMB_CURRENT_UNIFIED =
-  'bg-sidebar-primary/12! text-sidebar-primary!' as const
+export const MENU_BREADCRUMB_CURRENT_UNIFIED = '!bg-primary/12 !text-primary' as const
 /** 面包屑 hover 态：比当前项更轻的反馈 */
-export const MENU_BREADCRUMB_HOVER_UNIFIED =
-  'hover:bg-sidebar-primary/12! hover:text-sidebar-primary!' as const
-/** Admin 标签栏未激活 hover 态：使用与侧栏一致的弱高亮反馈 */
+export const MENU_BREADCRUMB_HOVER_UNIFIED = 'hover:bg-primary/10 hover:text-primary' as const
+/** Admin 标签栏未激活 hover 态：仅高亮文字/图标，不引入 hover 背景 */
 export const MENU_ADMIN_TAB_INACTIVE_UNIFIED =
-  `bg-transparent ${MENU_ADMIN_CHROME_HOVER_UNIFIED} transition-all` as const
-/** Admin tabs 右键菜单项：统一 hover/active 高亮色到侧栏主色体系 */
+  'bg-transparent hover:text-primary transition-colors' as const
+/** Admin tabs 右键菜单项：统一 hover/active 高亮色到 primary 体系 */
 export const MENU_ADMIN_CONTEXT_ITEM_UNIFIED =
-  `flex items-center gap-sm cursor-pointer select-none transition-all duration-md ease-out-expo border-none bg-transparent px-sm py-xs rounded-sm text-sm text-popover-foreground ${MENU_ADMIN_CHROME_HOVER_UNIFIED} group` as const
-/** Admin tabs 右键菜单图标 hover 色：统一对齐侧栏主色 */
-export const MENU_ADMIN_CONTEXT_ICON_UNIFIED =
-  'text-muted-foreground transition-colors duration-md group-hover:text-sidebar-primary!' as const
+  `flex items-center gap-sm whitespace-nowrap cursor-pointer select-none transition-colors duration-md ease-out-expo border-none bg-transparent px-sm py-xs rounded-sm text-sm text-popover-foreground hover:bg-primary/10 hover:text-primary focus:bg-primary/10 focus:text-primary focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:ring-offset-1 focus-visible:ring-offset-popover group` as const
+/** Admin tabs 右键菜单图标 hover 色：统一对齐 primary */
+export const MENU_ADMIN_CONTEXT_ICON_UNIFIED = 'text-current transition-none!' as const
 
 /** 未激活项文字（子级） */
 export const MENU_INACTIVE_TEXT = 'text-foreground'

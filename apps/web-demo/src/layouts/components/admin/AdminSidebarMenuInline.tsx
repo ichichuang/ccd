@@ -297,6 +297,16 @@ export default defineComponent({
         </span>
       )
 
+      const stateData = {
+        'data-menu-state':
+          distance === 0
+            ? 'active'
+            : distance > 0
+              ? 'ancestor'
+              : isSubmenuVisuallyOpen
+                ? 'open'
+                : 'idle',
+      }
       const linkClass = `${baseClasses} ${stateClasses}`
       const routeTarget = item.route?.name || item.route?.path
 
@@ -315,6 +325,7 @@ export default defineComponent({
                   <a
                     href={isExtLink ? extUrl : href}
                     role="link"
+                    {...stateData}
                     class={linkClass}
                     onClick={(event: MouseEvent) => {
                       event.preventDefault()
@@ -332,6 +343,7 @@ export default defineComponent({
 
       return withMenuTooltip(
         <div
+          {...stateData}
           class={linkClass}
           onClick={(event: MouseEvent) => {
             if (routeTarget) {

@@ -12,6 +12,7 @@
 
 import { Icons } from '@ccd/vue-ui'
 import {
+  MENU_ADMIN_POPUP_ITEM_UNIFIED,
   MENU_ICON_COMMON_CLASS,
   MENU_POPUP_ITEM_CLASS,
   MENU_TEXT_CLASS,
@@ -120,6 +121,7 @@ export function createTieredMenuItemRenderer(
       'w-full min-w-0 flex-1 self-stretch relative z-content',
       stateClasses,
       MENU_POPUP_ITEM_CLASS,
+      MENU_ADMIN_POPUP_ITEM_UNIFIED,
       actionClassStr,
     ]
       .filter(Boolean)
@@ -127,6 +129,10 @@ export function createTieredMenuItemRenderer(
       .trim()
 
     const isActive: boolean = distance === 0
+    const stateData = {
+      'data-menu-state':
+        distance === 0 ? 'active' : distance > 0 ? 'ancestor' : isFocused ? 'open' : 'idle',
+    }
     const finalLabelClass: string =
       emphasizeActiveLabel && isActive ? `${labelClassBase} font-bold` : labelClassBase
 
@@ -178,6 +184,7 @@ export function createTieredMenuItemRenderer(
     return (
       <a
         {...action}
+        {...stateData}
         class={mergedClass}
         onPointerdown={handlePointerDown}
         onPointerup={handlePointerUp}

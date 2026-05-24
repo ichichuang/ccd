@@ -440,25 +440,12 @@
 .admin-menu-popup .p-tieredmenu-submenu {
   --admin-menu-popup-gutter: var(--spacing-xs);
 
-  min-width: min(72vw, calc(var(--spacing-3xl) * 2));
-  max-width: min(82vw, calc(var(--spacing-5xl) * 2));
-  padding: var(--spacing-xs);
-  border: calc(var(--spacing-xs) / 4) solid rgb(var(--border) / 22%);
-  border-radius: var(--radius-md);
-  background: rgb(var(--card) / 88%);
-  color: rgb(var(--card-foreground));
-  box-shadow:
-    0 var(--spacing-xs) var(--spacing-xl) rgb(var(--foreground) / 12%),
-    inset 0 calc(var(--spacing-xs) / 4) 0 rgb(var(--background) / 50%);
+  color: rgb(var(--popover-foreground));
 }
 
 .dark .admin-menu-popup.p-tieredmenu,
 .dark .admin-menu-popup .p-tieredmenu-submenu {
-  border-color: rgb(var(--border) / 36%);
-  background: rgb(var(--card) / 78%);
-  box-shadow:
-    0 var(--spacing-xs) var(--spacing-xl) rgb(var(--background) / 34%),
-    inset 0 calc(var(--spacing-xs) / 4) 0 rgb(var(--foreground) / 8%);
+  color: rgb(var(--popover-foreground));
 }
 
 .admin-menu-popup .p-tieredmenu-root-list,
