@@ -52,6 +52,15 @@ export function parseZodHttpPayload<T>(schema: ZodType<T>, raw: unknown): T {
 
 const MAX_ROUTE_DEPTH = 10
 
+type BackendRouteInput = {
+  path: string
+  meta: Record<string, unknown>
+  name?: string
+  component?: string
+  redirect?: string
+  children?: unknown[]
+}
+
 function parseBackendRoute(raw: unknown, pathHint: string, depth = 0): BackendRouteConfig {
   if (depth > MAX_ROUTE_DEPTH) {
     throw new Error(
@@ -71,23 +80,32 @@ function parseBackendRoute(raw: unknown, pathHint: string, depth = 0): BackendRo
     throw new Error(`Invalid backend route at ${raw.path}: meta object is required`)
   }
 
-  const route: BackendRouteConfig = {
+  const routeInput: BackendRouteInput = {
     path: raw.path,
     meta: raw.meta,
+    name: typeof raw.name === 'string' ? raw.name : undefined,
+    component: typeof raw.component === 'string' ? raw.component : undefined,
+    redirect: typeof raw.redirect === 'string' ? raw.redirect : undefined,
+    children: Array.isArray(raw.children) ? raw.children : undefined,
   }
 
-  if (typeof raw.name === 'string' && raw.name.trim()) {
-    route.name = raw.name
+  const route: BackendRouteConfig = {
+    path: routeInput.path,
+    meta: routeInput.meta,
   }
-  if (typeof raw.component === 'string' && raw.component.trim()) {
-    route.component = raw.component
+
+  if (routeInput.name?.trim()) {
+    route.name = routeInput.name
   }
-  if (typeof raw.redirect === 'string' && raw.redirect.trim()) {
-    route.redirect = raw.redirect
+  if (routeInput.component?.trim()) {
+    route.component = routeInput.component
   }
-  if (Array.isArray(raw.children)) {
-    route.children = raw.children.map((child, index) =>
-      parseBackendRoute(child, `${raw.path}.children[${index}]`, depth + 1)
+  if (routeInput.redirect?.trim()) {
+    route.redirect = routeInput.redirect
+  }
+  if (routeInput.children) {
+    route.children = routeInput.children.map((child, index) =>
+      parseBackendRoute(child, `${routeInput.path}.children[${index}]`, depth + 1)
     )
   }
 

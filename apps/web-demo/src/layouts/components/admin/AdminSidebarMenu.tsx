@@ -1,3 +1,4 @@
+import { areExpandedKeyRecordsEqual } from '@ccd/shared-utils'
 import { h, type PropType } from 'vue'
 import { useRoute } from 'vue-router'
 import { useI18n } from 'vue-i18n'
@@ -12,7 +13,6 @@ import type { SidebarState } from '@/layouts/runtime/layoutRuntime'
 import inlineSidebarMenu from '@/layouts/components/admin/AdminSidebarMenuInline'
 import collapsedSidebarMenu from '@/layouts/components/admin/AdminSidebarMenuCollapsed'
 import {
-  areExpandedKeyRecordsEqual,
   buildSidebarRouteSyncStamp,
   buildExpandedKeysForRoute,
   type SidebarMenuDensity,

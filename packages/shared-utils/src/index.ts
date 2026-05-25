@@ -3,6 +3,7 @@ export { generateIdFromKey, generateUniqueId } from './ids'
 export { formatSerialId } from './idGenerator'
 export { toKebabCase } from './strings'
 export { castArray, castRecord, castValue } from './typeCasters'
+export { applyUniqueRoot, areExpandedKeyRecordsEqual, isRecord, toRecord } from './recordGuards'
 export {
   createCapabilityBridge,
   type CapabilityBridge,

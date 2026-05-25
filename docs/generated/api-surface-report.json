@@ -100,6 +100,8 @@
       "path": "packages/shared-utils",
       "exports": ["."],
       "rootSymbols": [
+        "applyUniqueRoot",
+        "areExpandedKeyRecordsEqual",
         "CapabilityBridge",
         "CapabilityBridgeOptions",
         "castArray",
@@ -113,9 +115,11 @@
         "formatSerialId",
         "generateIdFromKey",
         "generateUniqueId",
+        "isRecord",
         "objectGet",
         "throttleFn",
-        "toKebabCase"
+        "toKebabCase",
+        "toRecord"
       ]
     },
     {

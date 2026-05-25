@@ -1,3 +1,4 @@
+import { applyUniqueRoot, toRecord } from '@ccd/shared-utils'
 import PanelMenu from 'primevue/panelmenu'
 import Tooltip from 'primevue/tooltip'
 import type { PropType, VNode } from 'vue'
@@ -19,9 +20,7 @@ import { getIconSize, getMenuItemBase, getMenuStateClasses } from '@/hooks/layou
 import { useLayoutStore } from '@/stores/modules/system'
 import { useAppElementSize } from '@ccd/vue-hooks'
 import {
-  applyUniqueRoot,
   resolveMenuLabel,
-  toRecord,
   type SidebarMenuDensity,
 } from '@/layouts/components/admin/adminSidebarMenu.shared'
 import type { SidebarState } from '@/layouts/runtime/layoutRuntime'
