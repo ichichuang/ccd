@@ -6,7 +6,7 @@
  * typed bridge, without importing Pinia stores or vue-router directly.
  */
 
-import { createCapabilityBridge } from '@/infra/shared/createCapabilityBridge'
+import { createCapabilityBridge } from '@ccd/shared-utils'
 
 export type AuthToken = string | null
 export type AuthTokenReader = () => AuthToken

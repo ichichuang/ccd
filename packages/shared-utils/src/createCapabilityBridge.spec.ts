@@ -100,8 +100,8 @@ describe('createCapabilityBridge', () => {
           getValue: 'bad' as unknown as () => string,
           getCount: () => 1,
         })
-      } catch {
-        // expected
+      } catch (error) {
+        expect(error).toBeInstanceOf(TypeError)
       }
       expect(bridge.isInstalled()).toBe(false)
     })
@@ -118,13 +118,14 @@ describe('createCapabilityBridge', () => {
     })
 
     it('throws outside test mode', () => {
-      const originalMode = import.meta.env.MODE
+      const mutableEnv = import.meta.env as { MODE?: string }
+      const originalMode = mutableEnv.MODE
       try {
-        import.meta.env.MODE = 'production'
+        mutableEnv.MODE = 'production'
         bridge.install({ getValue: () => 'a', getCount: () => 1 })
         expect(() => bridge.resetForTest()).toThrow('resetForTest is test-only')
       } finally {
-        import.meta.env.MODE = originalMode
+        mutableEnv.MODE = originalMode
       }
     })
   })

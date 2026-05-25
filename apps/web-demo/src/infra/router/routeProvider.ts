@@ -1,4 +1,4 @@
-import { createCapabilityBridge } from '@/infra/shared/createCapabilityBridge'
+import { createCapabilityBridge } from '@ccd/shared-utils'
 
 export interface RouterCapabilities {
   getAdminMenuTree: () => MenuItem[]

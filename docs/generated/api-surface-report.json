@@ -100,9 +100,12 @@
       "path": "packages/shared-utils",
       "exports": ["."],
       "rootSymbols": [
+        "CapabilityBridge",
+        "CapabilityBridgeOptions",
         "castArray",
         "castRecord",
         "castValue",
+        "createCapabilityBridge",
         "debounceFn",
         "deepClone",
         "deepEqual",
