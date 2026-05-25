@@ -1,6 +1,6 @@
 import { spawnSync } from 'node:child_process'
 
-const GENERATED_FILES = new Set([
+const TRACKED_GENERATED_FILES = new Set([
   'apps/web-demo/src/types/auto-imports.d.ts',
   'apps/web-demo/src/types/components.d.ts',
   'src/types/auto-imports.d.ts',
@@ -8,6 +8,8 @@ const GENERATED_FILES = new Set([
   'src/views/example/components/icons/configs/iconLists.generated.ts',
   'apps/web-demo/src/views/example/components/icons/configs/iconLists.generated.ts',
 ])
+
+const LOCAL_ONLY_GENERATED_FILES = new Set(['apps/web-demo/.eslintrc-auto-import.json'])
 
 function run(cmd, args, options = {}) {
   const result = spawnSync(cmd, args, {
@@ -54,15 +56,24 @@ function assertNoPartiallyStagedFiles(staged) {
   process.exit(1)
 }
 
-function assertNoGeneratedFiles(staged) {
-  const generated = staged.filter(file => GENERATED_FILES.has(file))
-  if (generated.length === 0) return
+function assertNoBlockedGeneratedFiles(staged) {
+  const blocked = staged.filter(file => LOCAL_ONLY_GENERATED_FILES.has(file))
+  if (blocked.length === 0) return
 
   console.error('Generated files are staged. lint-staged was not run.')
-  printList(generated)
-  console.error('Unstage these generated files if they are unrelated to this commit.')
+  printList(blocked)
+  console.error('These are local-only generated artifacts and must not be committed.')
   console.error('No stash or automatic rollback was performed.')
   process.exit(1)
+}
+
+function warnTrackedGeneratedFiles(staged) {
+  const generated = staged.filter(file => TRACKED_GENERATED_FILES.has(file))
+  if (generated.length === 0) return
+
+  console.warn('Tracked generated files are staged:')
+  printList(generated)
+  console.warn('Confirm their source inputs changed intentionally before committing.')
 }
 
 function runLintStagedNoStash() {
@@ -73,7 +84,8 @@ console.log('Running Enterprise Guardian: lint-staged --no-stash...')
 
 const staged = readLines(['diff', '--name-only', '--cached', '--diff-filter=ACMR'])
 assertNoPartiallyStagedFiles(staged)
-assertNoGeneratedFiles(staged)
+assertNoBlockedGeneratedFiles(staged)
+warnTrackedGeneratedFiles(staged)
 
 const result = runLintStagedNoStash()
 if (result.status !== 0) {

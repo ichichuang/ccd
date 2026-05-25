@@ -73,6 +73,7 @@ declare global {
   const effectScope: typeof import('vue').effectScope
   const extendRef: typeof import('@vueuse/core').extendRef
   const fadeOutNativePreloader: typeof import('../hooks/layout/useLoading').fadeOutNativePreloader
+  const formatPageTitle: typeof import('../hooks/layout/usePageTitle').formatPageTitle
   const getActivePinia: typeof import('pinia').getActivePinia
   const getCurrentInstance: typeof import('vue').getCurrentInstance
   const getCurrentScope: typeof import('vue').getCurrentScope
@@ -83,6 +84,7 @@ declare global {
   const getDefaultMarkPointConfig: typeof import('../hooks/modules/useChartTheme/defaults').getDefaultMarkPointConfig
   const getDefaultToolboxConfig: typeof import('../hooks/modules/useChartTheme/defaults').getDefaultToolboxConfig
   const getDefaultVisualMapConfig: typeof import('../hooks/modules/useChartTheme/defaults').getDefaultVisualMapConfig
+  const getDeferredRouteTitleSource: typeof import('../hooks/layout/usePageTitle').getDeferredRouteTitleSource
   const getIconSize: typeof import('../hooks/layout/useMenuVisuals').getIconSize
   const getMenuItemActive: typeof import('../hooks/layout/useMenuVisuals').getMenuItemActive
   const getMenuItemBase: typeof import('../hooks/layout/useMenuVisuals').getMenuItemBase
@@ -148,6 +150,7 @@ declare global {
   const resolveComponent: typeof import('vue').resolveComponent
   const resolveRef: typeof import('@vueuse/core').resolveRef
   const resolveUnref: typeof import('@vueuse/core').resolveUnref
+  const routeConfigToTabItem: typeof import('../stores/modules/session/permission').routeConfigToTabItem
   const setActivePinia: typeof import('pinia').setActivePinia
   const setMapStoreSuffix: typeof import('pinia').setMapStoreSuffix
   const shallowReactive: typeof import('vue').shallowReactive
