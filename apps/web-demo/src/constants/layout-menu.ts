@@ -15,7 +15,7 @@ export const MENU_OPEN_UNIFIED =
 
 /** 侧栏菜单激活态：使用 solid primary + primary foreground，作为侧栏最强选中态 */
 export const MENU_SIDEBAR_ACTIVE_UNIFIED =
-  '!bg-primary !text-primary-foreground hover:!bg-primary hover:!text-primary-foreground focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:ring-offset-1 focus-visible:ring-offset-background' as const
+  'bg-primary! [color:rgb(var(--primary-foreground))]! hover:bg-primary! hover:[color:rgb(var(--primary-foreground))]! focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:ring-offset-1 focus-visible:ring-offset-background' as const
 
 /** 侧栏菜单打开/聚焦/选中态：弱于激活态，强于 hover 态 */
 export const MENU_SIDEBAR_OPEN_UNIFIED =
