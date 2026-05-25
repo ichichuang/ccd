@@ -22,6 +22,38 @@ export interface EChartsPendingOption {
   opts?: boolean | SetOptionOpts
 }
 
+function normalizePositiveSize(value: unknown): number {
+  if (typeof value !== 'number' || !Number.isFinite(value) || value <= 0) return 0
+  return value
+}
+
+export function getStableElementSize(
+  element: HTMLElement | null | undefined
+): { width: number; height: number } | null {
+  if (!element) return null
+
+  const clientWidth = normalizePositiveSize(element.clientWidth)
+  const clientHeight = normalizePositiveSize(element.clientHeight)
+  if (clientWidth > 0 && clientHeight > 0) {
+    return { width: clientWidth, height: clientHeight }
+  }
+
+  const offsetWidth = normalizePositiveSize(element.offsetWidth)
+  const offsetHeight = normalizePositiveSize(element.offsetHeight)
+  if (offsetWidth > 0 && offsetHeight > 0) {
+    return { width: offsetWidth, height: offsetHeight }
+  }
+
+  const rect = element.getBoundingClientRect()
+  const rectWidth = normalizePositiveSize(rect.width)
+  const rectHeight = normalizePositiveSize(rect.height)
+  if (rectWidth > 0 && rectHeight > 0) {
+    return { width: rectWidth, height: rectHeight }
+  }
+
+  return null
+}
+
 export function createEChartsRenderCore(options: EChartsRenderCoreOptions) {
   const requestFrame = options.requestAnimationFrame ?? globalThis.requestAnimationFrame
   const cancelFrame = options.cancelAnimationFrame ?? globalThis.cancelAnimationFrame
@@ -30,11 +62,7 @@ export function createEChartsRenderCore(options: EChartsRenderCoreOptions) {
   let disposed = false
 
   function getElementSize(): { width: number; height: number } | null {
-    const element = options.getElement()
-    if (!element) return null
-    const rect = element.getBoundingClientRect()
-    if (rect.width <= 0 || rect.height <= 0) return null
-    return { width: rect.width, height: rect.height }
+    return getStableElementSize(options.getElement())
   }
 
   function getSizeOK(): boolean {

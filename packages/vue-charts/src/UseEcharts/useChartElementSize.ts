@@ -1,9 +1,59 @@
 import { onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import type { Ref } from 'vue'
+import { getStableElementSize } from './echarts-render-core'
 
 export interface UseChartElementSizeReturn {
   width: Ref<number>
   height: Ref<number>
+}
+
+export function normalizeChartSizeValue(value: unknown): number {
+  if (typeof value !== 'number' || !Number.isFinite(value) || value <= 0) return 0
+  return value
+}
+
+export function toNormalizedContentRect(
+  rect: Pick<DOMRectReadOnly, 'width' | 'height'>
+): DOMRectReadOnly {
+  return {
+    width: normalizeChartSizeValue(rect.width),
+    height: normalizeChartSizeValue(rect.height),
+  } as DOMRectReadOnly
+}
+
+export function createRafCoalescer(
+  run: (entry: DOMRectReadOnly) => void,
+  requestAnimationFrameImpl: typeof globalThis.requestAnimationFrame = globalThis.requestAnimationFrame,
+  cancelAnimationFrameImpl: typeof globalThis.cancelAnimationFrame = globalThis.cancelAnimationFrame
+): {
+  schedule: (entry: DOMRectReadOnly) => void
+  cancel: () => void
+} {
+  let rafId: number | null = null
+  let pendingEntry: DOMRectReadOnly | null = null
+
+  const cancel = () => {
+    if (rafId !== null) {
+      cancelAnimationFrameImpl(rafId)
+      rafId = null
+    }
+    pendingEntry = null
+  }
+
+  const schedule = (entry: DOMRectReadOnly) => {
+    pendingEntry = entry
+    if (rafId !== null) return
+
+    rafId = requestAnimationFrameImpl(() => {
+      rafId = null
+      const nextEntry = pendingEntry
+      pendingEntry = null
+      if (!nextEntry) return
+      run(nextEntry)
+    })
+  }
+
+  return { schedule, cancel }
 }
 
 export function useChartElementSize(
@@ -13,39 +63,26 @@ export function useChartElementSize(
   const width = ref(0)
   const height = ref(0)
   let observer: ResizeObserver | null = null
-  let timeoutId: ReturnType<typeof globalThis.setTimeout> | null = null
-
-  const clearPending = () => {
-    if (timeoutId !== null) {
-      globalThis.clearTimeout(timeoutId)
-      timeoutId = null
-    }
-  }
+  const { schedule, cancel } = createRafCoalescer(entry => run(entry))
 
   const run = (entry: DOMRectReadOnly) => {
-    width.value = entry.width
-    height.value = entry.height
-    callback?.(entry)
-  }
+    const normalized = toNormalizedContentRect(entry)
 
-  const schedule = (entry: DOMRectReadOnly) => {
-    clearPending()
-    timeoutId = globalThis.setTimeout(() => {
-      timeoutId = null
-      run(entry)
-    }, 150)
+    width.value = normalized.width
+    height.value = normalized.height
+    callback?.(normalized)
   }
 
   const teardownObserver = () => {
     observer?.disconnect()
     observer = null
-    clearPending()
+    cancel()
   }
 
   const setupObserver = (el: HTMLElement) => {
-    const rect = el.getBoundingClientRect()
-    width.value = rect.width
-    height.value = rect.height
+    const stableSize = getStableElementSize(el)
+    width.value = stableSize?.width ?? 0
+    height.value = stableSize?.height ?? 0
 
     if (typeof ResizeObserver === 'undefined') return
 
