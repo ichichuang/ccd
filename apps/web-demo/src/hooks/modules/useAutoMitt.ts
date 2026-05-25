@@ -1,5 +1,6 @@
 import emitter, { type Events } from '@/utils/mitt'
 import type { Handler } from 'mitt'
+import { createAutoMittHook } from '@ccd/vue-hooks'
 
 /**
  * useAutoMitt — 带生命周期自动清理的事件总线 hook（推荐在组件内使用）
@@ -10,27 +11,18 @@ import type { Handler } from 'mitt'
  * ⚠️ 必须在组件 setup 上下文中调用（auto-import 环境下 onUnmounted 可用）。
  * 在非组件上下文（router guards、utils 等）中请使用 useMitt()。
  */
+const useAutoMittBase = createAutoMittHook<Events>(emitter)
+
 export const useAutoMitt = (): {
   on: <T extends keyof Events>(type: T, handler: Handler<Events[T]>) => void
   off: <T extends keyof Events>(type: T, handler?: Handler<Events[T]>) => void
   emit: <T extends keyof Events>(type: T, event: Events[T]) => void
 } => {
-  type Subscription = { type: keyof Events; handler: Handler<Events[keyof Events]> }
-  const subscriptions: Subscription[] = []
-
-  onUnmounted(() => {
-    subscriptions.forEach(({ type, handler }) => emitter.off(type, handler))
-    subscriptions.length = 0
-  })
+  const { on, off } = useAutoMittBase()
 
   return {
-    on: <T extends keyof Events>(type: T, handler: Handler<Events[T]>) => {
-      emitter.on(type, handler)
-      subscriptions.push({ type, handler: handler as Handler<Events[keyof Events]> })
-    },
-    off: <T extends keyof Events>(type: T, handler?: Handler<Events[T]>) => {
-      emitter.off(type, handler)
-    },
+    on,
+    off,
     emit: <T extends keyof Events>(type: T, event: Events[T]) => {
       emitter.emit(type, event)
     },

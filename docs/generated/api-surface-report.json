@@ -123,6 +123,7 @@
       "path": "packages/vue-hooks",
       "exports": ["."],
       "rootSymbols": [
+        "createAutoMittHook",
         "InteractionTarget",
         "SwipeDirection",
         "useAppElementSize",

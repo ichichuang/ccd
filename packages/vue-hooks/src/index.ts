@@ -1,5 +1,6 @@
 export { useAppElementSize } from './useAppElementSize'
 export type { UseAppElementSizeReturn, UseElementSizeOptions } from './useAppElementSize'
+export { createAutoMittHook } from './createAutoMittHook'
 export {
   useDragAction,
   useInteraction,
