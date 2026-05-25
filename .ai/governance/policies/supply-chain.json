@@ -79,6 +79,7 @@
       "typescript",
       "vite",
       "vue",
+      "vue-router",
       "vue-tsc"
     ]
   },
