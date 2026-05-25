@@ -13,6 +13,7 @@ import inlineSidebarMenu from '@/layouts/components/admin/AdminSidebarMenuInline
 import collapsedSidebarMenu from '@/layouts/components/admin/AdminSidebarMenuCollapsed'
 import {
   areExpandedKeyRecordsEqual,
+  buildSidebarRouteSyncStamp,
   buildExpandedKeysForRoute,
   type SidebarMenuDensity,
 } from '@/layouts/components/admin/adminSidebarMenu.shared'
@@ -78,11 +79,12 @@ export default defineComponent({
     )
 
     watch(
-      () => route.fullPath,
+      () => buildSidebarRouteSyncStamp(route),
       () => {
         if (props.sidebarState !== 'expanded' && props.sidebarState !== 'expanded-shell') return
         syncExpandedKeysToRoute()
-      }
+      },
+      { immediate: true }
     )
 
     watch([allowMultiple, rootKeys], () => {

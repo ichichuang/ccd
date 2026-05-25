@@ -67,3 +67,14 @@ export function buildExpandedKeysForRoute(
 
   return nextKeys
 }
+
+export function buildSidebarRouteSyncStamp(route: RouteLocationNormalizedLoadedGeneric): string {
+  const path = typeof route.path === 'string' ? route.path : ''
+  const fullPath = typeof route.fullPath === 'string' ? route.fullPath : ''
+  const activeMenu = typeof route.meta?.activeMenu === 'string' ? route.meta.activeMenu : ''
+  const parentPaths = Array.isArray(route.meta?.parentPaths)
+    ? route.meta.parentPaths.filter((item): item is string => typeof item === 'string')
+    : []
+
+  return `${activeMenu}|${path}|${fullPath}|${parentPaths.join('>')}`
+}
