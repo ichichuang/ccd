@@ -14,8 +14,10 @@ project.config.json
 - 描述、作者、主页、协议
 - 桌面标识符
 - 关键词
-- 版本
+- 版本（`release.version` 是唯一手工版本来源）
 - 治理策略版本与治理阶段
+
+`apps/*` 与 `packages/*` 下的 `package.json` 仅是工作区包清单，不是手工版本真源。
 
 ## 需要同步的文件
 
@@ -25,7 +27,17 @@ project.config.json
 pnpm project:sync
 ```
 
-该命令会将元数据同步到下游受控文件。
+该命令会将元数据同步到下游受控文件，包括：
+
+- 根 `package.json`
+- `apps/*` 与 `packages/*` 下的工作区包清单
+- `apps/web-demo/src/constants/brand.ts`
+- `apps/desktop/src-tauri/tauri.conf.json`
+- `apps/desktop/src-tauri/Cargo.toml`
+- `.release-please-manifest.json`
+- `.ai/governance/policies/version.json`
+
+不要手工修改这些由 `project.config.json` 派生的字段。
 
 ## project:doctor
 
@@ -40,6 +52,8 @@ pnpm project:doctor
 - 修改 `project.config.json` 之后
 - 准备提交之前
 - 准备发布之前
+
+`pnpm governance:gate` 也会执行 `pnpm project:doctor`，因此元数据漂移会直接阻止进入主分支。
 
 ## ccd:fix
 

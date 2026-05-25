@@ -4,6 +4,12 @@ import process from 'node:process'
 
 const checks = [
   {
+    name: 'project metadata drift',
+    command: ['bash', 'scripts/exec.sh', 'pnpm', 'project:doctor'],
+    failure:
+      'Project metadata drift detected. Update project.config.json first, then run pnpm project:sync and re-run pnpm project:doctor. Do NOT manually edit derived metadata files.',
+  },
+  {
     name: 'governance assets',
     command: ['bash', 'scripts/exec.sh', 'pnpm', 'governance:validate'],
   },

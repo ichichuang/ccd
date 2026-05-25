@@ -8,7 +8,9 @@ CCD 的版本主控入口是：
 project.config.json
 ```
 
-其中 `release.version` 为当前版本来源之一。
+其中 `release.version` 是唯一手工版本来源。
+
+`apps/*` 与 `packages/*` 下的 `package.json` 仅承担工作区包清单职责，不应作为版本修改入口。
 
 相关元数据通过以下命令同步：
 
@@ -46,12 +48,13 @@ pnpm build:ci
 ## 发布检查清单
 
 1. 确认 `project.config.json` 版本与目标版本一致
-2. 确认 `pnpm project:doctor` 正常
-3. 确认 `pnpm ccd:fix` 已执行
-4. 确认 `pnpm lint:check` 通过
-5. 确认 `pnpm type-check` 通过
-6. 确认 `pnpm governance:gate` 通过
-7. 确认未手工编辑 `docs/generated/**`、`.ai/generated/**`、`.ai/governance/api-snapshots/**`
+2. 运行 `pnpm project:sync` 同步派生元数据
+3. 确认 `pnpm project:doctor` 正常
+4. 确认 `pnpm ccd:fix` 已执行
+5. 确认 `pnpm lint:check` 通过
+6. 确认 `pnpm type-check` 通过
+7. 确认 `pnpm governance:gate` 通过
+8. 确认未手工编辑 `docs/generated/**`、`.ai/generated/**`、`.ai/governance/api-snapshots/**`
 
 ## 推荐阅读
 
