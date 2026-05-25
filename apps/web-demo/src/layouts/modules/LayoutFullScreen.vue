@@ -27,6 +27,10 @@ watch(
 <template>
   <div
     class="layout-screen text-foreground flex flex-col relative overflow-hidden"
+    v-bind="{
+      'data-layout-shell': 'fullscreen',
+      'data-layout-mode': 'fullscreen',
+    }"
     :style="runtime.shellSafeAreaStyle.value"
   >
     <CScrollbar

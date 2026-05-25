@@ -611,6 +611,57 @@ test.describe('layout loading and route title stabilization', () => {
     await expectBootHandoffNeverShowsTopStripSpinner(page)
   })
 
+  test('layout animate boundary remains fullscreen on login route', async ({ page }) => {
+    await page.setViewportSize({ width: 1280, height: 900 })
+    await page.goto(withVisualMode('/login?redirect=/'), { waitUntil: 'domcontentloaded' })
+    await waitForAppReady(page)
+    await waitForRuntimeLoadingIdle(page)
+
+    const boundary = page.getByTestId('layout-animate-boundary')
+    const fullscreenShell = page.locator('[data-layout-shell="fullscreen"]')
+
+    await expect(boundary).toBeVisible()
+    await expect(fullscreenShell).toBeVisible()
+
+    const geometry = await page.evaluate(() => {
+      const roundRect = (rect: DOMRect): DOMRectJSON => ({
+        x: Math.round(rect.x),
+        y: Math.round(rect.y),
+        width: Math.round(rect.width),
+        height: Math.round(rect.height),
+        top: Math.round(rect.top),
+        right: Math.round(rect.right),
+        bottom: Math.round(rect.bottom),
+        left: Math.round(rect.left),
+      })
+
+      const boundaryNode = document.querySelector('[data-testid="layout-animate-boundary"]')
+      const fullscreenShellNode = document.querySelector('[data-layout-shell="fullscreen"]')
+      if (!boundaryNode || !fullscreenShellNode) {
+        throw new Error('Expected layout animate boundary and fullscreen shell nodes.')
+      }
+
+      return {
+        boundary: roundRect(boundaryNode.getBoundingClientRect()),
+        shell: roundRect(fullscreenShellNode.getBoundingClientRect()),
+        viewport: { width: window.innerWidth, height: window.innerHeight },
+      }
+    })
+
+    expect(geometry.boundary.height).toBeGreaterThanOrEqual(geometry.viewport.height - 2)
+    expect(geometry.boundary.width).toBeGreaterThanOrEqual(geometry.viewport.width - 2)
+    expect(geometry.shell.height).toBeGreaterThanOrEqual(geometry.viewport.height - 2)
+    expect(geometry.shell.width).toBeGreaterThanOrEqual(geometry.viewport.width - 2)
+
+    expect(geometry.shell.left).toBeGreaterThanOrEqual(geometry.boundary.left - 2)
+    expect(geometry.shell.top).toBeGreaterThanOrEqual(geometry.boundary.top - 2)
+    expect(geometry.shell.right).toBeLessThanOrEqual(geometry.boundary.right + 2)
+    expect(geometry.shell.bottom).toBeLessThanOrEqual(geometry.boundary.bottom + 2)
+
+    await expect(page.locator('.page-loading-overlay-content')).toBeHidden()
+    await expect(page.locator('#runtime-loading-overlay')).toBeHidden()
+  })
+
   test('refresh boot handoff does not show local page loading immediately after native loading', async ({
     page,
   }) => {

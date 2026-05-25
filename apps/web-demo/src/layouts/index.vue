@@ -161,10 +161,13 @@ const currentLayoutComponent = computed(() => {
       "
       :duration="getAnimationDuration()"
       delay="0s"
+      :omit-layout-full="false"
+      class="layout-full flex-1 min-h-0"
+      data-testid="layout-animate-boundary"
     >
       <component
         :is="currentLayoutComponent"
-        class="relative z-content min-h-0"
+        class="relative z-content layout-full min-h-0"
       />
     </AnimateWrapper>
 
