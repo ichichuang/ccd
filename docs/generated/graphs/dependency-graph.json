@@ -23,6 +23,7 @@
       "layer": "contracts",
       "runtime": "none",
       "criticality": "critical",
+      "responsibility": "Cross-runtime interfaces and DTO contracts only.",
       "allowedWorkspaceDependencies": ["@ccd/design-tokens"]
     },
     {
@@ -31,6 +32,7 @@
       "layer": "core",
       "runtime": "none",
       "criticality": "critical",
+      "responsibility": "Minimal runtime-neutral adapter facade; not a shared frontend bucket.",
       "allowedWorkspaceDependencies": ["@ccd/contracts"]
     },
     {
@@ -39,6 +41,7 @@
       "layer": "frontend-platform",
       "runtime": "none",
       "criticality": "protected",
+      "responsibility": "Shared design token source and theme/size/breakpoint primitives.",
       "allowedWorkspaceDependencies": []
     },
     {
@@ -47,6 +50,7 @@
       "layer": "frontend-platform",
       "runtime": "node-build",
       "criticality": "protected",
+      "responsibility": "Shared UnoCSS preset, safelist, and build-time styling helpers.",
       "allowedWorkspaceDependencies": ["@ccd/design-tokens"]
     },
     {
@@ -55,6 +59,7 @@
       "layer": "frontend-platform",
       "runtime": "none",
       "criticality": "protected",
+      "responsibility": "Pure shared utilities.",
       "allowedWorkspaceDependencies": []
     },
     {
@@ -63,6 +68,7 @@
       "layer": "frontend-platform",
       "runtime": "web-library",
       "criticality": "protected",
+      "responsibility": "Shared Vue/browser composables.",
       "allowedWorkspaceDependencies": []
     },
     {
@@ -71,6 +77,7 @@
       "layer": "frontend-platform",
       "runtime": "web-library",
       "criticality": "protected",
+      "responsibility": "Shared Vue UI primitives.",
       "allowedWorkspaceDependencies": []
     },
     {
@@ -79,6 +86,7 @@
       "layer": "frontend-platform",
       "runtime": "web-library",
       "criticality": "protected",
+      "responsibility": "PrimeVue-specific theme and adaptation layer.",
       "allowedWorkspaceDependencies": ["@ccd/design-tokens"]
     },
     {
@@ -87,6 +95,7 @@
       "layer": "frontend-platform",
       "runtime": "web-library",
       "criticality": "protected",
+      "responsibility": "Shared chart runtime and helpers.",
       "allowedWorkspaceDependencies": []
     },
     {
@@ -95,13 +104,17 @@
       "layer": "apps",
       "runtime": "web",
       "criticality": "flexible",
+      "responsibility": "Browser app shell, routes, pages, stores, app adapters, and temporary app-local shared candidates.",
       "allowedWorkspaceDependencies": [
         "@ccd/contracts",
         "@ccd/core",
         "@ccd/design-tokens",
+        "@ccd/shared-utils",
         "@ccd/unocss-preset",
+        "@ccd/vue-hooks",
         "@ccd/vue-ui",
-        "@ccd/vue-primevue-adapter"
+        "@ccd/vue-primevue-adapter",
+        "@ccd/vue-charts"
       ]
     },
     {
@@ -110,6 +123,7 @@
       "layer": "apps",
       "runtime": "desktop",
       "criticality": "protected",
+      "responsibility": "Tauri shell and desktop adapter.",
       "allowedWorkspaceDependencies": [
         "@ccd/contracts",
         "@ccd/core",
@@ -175,5 +189,5 @@
       "reason": "Applications must not import one another."
     }
   ],
-  "validationChecksum": "751bbf6b226a960f4cbae64c344c1a8580f6cb4d53e3f47330c2ebcc760e8a3c"
+  "validationChecksum": "b3759532db6a274df00b2cbce95a3a509203514f13486647443cc79ffaa2ef62"
 }

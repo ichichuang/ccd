@@ -5,9 +5,31 @@
 ## Runtime Contract
 
 - Vue 3 + Vite browser application.
-- Depends on `@ccd/contracts` and `@ccd/core` through public exports.
+- Depends on governed workspace packages through public exports only.
+- Current workspace dependencies include `@ccd/contracts`, `@ccd/core`, `@ccd/design-tokens`, `@ccd/shared-utils`, `@ccd/unocss-preset`, `@ccd/vue-hooks`, `@ccd/vue-ui`, `@ccd/vue-primevue-adapter`, and `@ccd/vue-charts`.
 - Injects browser runtime capabilities through `apps/web-demo/src/adapters/**`.
 - Does not import desktop/Tauri runtime code.
+
+## Current Ownership Scope
+
+`apps/web-demo` owns:
+
+- app shell and bootstrap
+- routes and views
+- stores
+- browser adapters
+- temporary app-local shared candidates that are not yet extracted into workspace packages
+
+Current app-local shared candidates include:
+
+- `apps/web-demo/src/components/PrimeDialog`
+- `apps/web-demo/src/components/ProForm`
+- `apps/web-demo/src/components/ProTable`
+- `apps/web-demo/src/layouts/runtime/layoutRuntime.ts`
+- `apps/web-demo/src/infra/shared/createCapabilityBridge.ts`
+- `apps/web-demo/src/hooks/modules/useAutoMitt.ts`
+- `apps/web-demo/src/utils/theme/engine.ts`
+- `apps/web-demo/src/utils/safeStorage`
 
 ## Adapter Ownership
 

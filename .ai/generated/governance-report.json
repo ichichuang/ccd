@@ -48,11 +48,27 @@
       "@ccd/contracts",
       "@ccd/core",
       "@ccd/design-tokens",
+      "@ccd/shared-utils",
       "@ccd/unocss-preset",
+      "@ccd/vue-hooks",
       "@ccd/vue-ui",
-      "@ccd/vue-primevue-adapter"
+      "@ccd/vue-primevue-adapter",
+      "@ccd/vue-charts"
     ],
     "@ccd/desktop": ["@ccd/contracts", "@ccd/core", "@ccd/design-tokens", "@ccd/unocss-preset"]
+  },
+  "packageResponsibilities": {
+    "@ccd/contracts": "Cross-runtime interfaces and DTO contracts only.",
+    "@ccd/core": "Minimal runtime-neutral adapter facade; not a shared frontend bucket.",
+    "@ccd/design-tokens": "Shared design token source and theme/size/breakpoint primitives.",
+    "@ccd/unocss-preset": "Shared UnoCSS preset, safelist, and build-time styling helpers.",
+    "@ccd/shared-utils": "Pure shared utilities.",
+    "@ccd/vue-hooks": "Shared Vue/browser composables.",
+    "@ccd/vue-ui": "Shared Vue UI primitives.",
+    "@ccd/vue-primevue-adapter": "PrimeVue-specific theme and adaptation layer.",
+    "@ccd/vue-charts": "Shared chart runtime and helpers.",
+    "@ccd/web-demo": "Browser app shell, routes, pages, stores, app adapters, and temporary app-local shared candidates.",
+    "@ccd/desktop": "Tauri shell and desktop adapter."
   },
   "packageCriticality": {
     "@ccd/contracts": "critical",

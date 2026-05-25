@@ -1,11 +1,6 @@
 {
   "schemaVersion": 1,
-  "layers": [
-    "contracts",
-    "core",
-    "frontend-platform",
-    "apps"
-  ],
+  "layers": ["contracts", "core", "frontend-platform", "apps"],
   "releaseOrder": [
     "@ccd/contracts",
     "@ccd/core",
@@ -25,9 +20,8 @@
       "path": "packages/contracts",
       "layer": "contracts",
       "criticality": "critical",
-      "allowedWorkspaceDependencies": [
-        "@ccd/design-tokens"
-      ],
+      "responsibility": "Cross-runtime interfaces and DTO contracts only.",
+      "allowedWorkspaceDependencies": ["@ccd/design-tokens"],
       "publicApi": true
     },
     {
@@ -35,9 +29,8 @@
       "path": "packages/core",
       "layer": "core",
       "criticality": "critical",
-      "allowedWorkspaceDependencies": [
-        "@ccd/contracts"
-      ],
+      "responsibility": "Minimal runtime-neutral adapter facade; not a shared frontend bucket.",
+      "allowedWorkspaceDependencies": ["@ccd/contracts"],
       "publicApi": true,
       "runtimeNeutral": true
     },
@@ -46,6 +39,7 @@
       "path": "packages/design-tokens",
       "layer": "frontend-platform",
       "criticality": "protected",
+      "responsibility": "Shared design token source and theme/size/breakpoint primitives.",
       "allowedWorkspaceDependencies": [],
       "publicApi": true,
       "runtimeNeutral": true
@@ -55,9 +49,8 @@
       "path": "packages/unocss-preset",
       "layer": "frontend-platform",
       "criticality": "protected",
-      "allowedWorkspaceDependencies": [
-        "@ccd/design-tokens"
-      ],
+      "responsibility": "Shared UnoCSS preset, safelist, and build-time styling helpers.",
+      "allowedWorkspaceDependencies": ["@ccd/design-tokens"],
       "publicApi": true,
       "runtime": "node-build"
     },
@@ -66,6 +59,7 @@
       "path": "packages/shared-utils",
       "layer": "frontend-platform",
       "criticality": "protected",
+      "responsibility": "Pure shared utilities.",
       "allowedWorkspaceDependencies": [],
       "publicApi": true,
       "runtimeNeutral": true
@@ -75,6 +69,7 @@
       "path": "packages/vue-hooks",
       "layer": "frontend-platform",
       "criticality": "protected",
+      "responsibility": "Shared Vue/browser composables.",
       "allowedWorkspaceDependencies": [],
       "publicApi": true,
       "runtime": "web-library"
@@ -84,6 +79,7 @@
       "path": "packages/vue-ui",
       "layer": "frontend-platform",
       "criticality": "protected",
+      "responsibility": "Shared Vue UI primitives.",
       "allowedWorkspaceDependencies": [],
       "publicApi": true,
       "runtime": "web-library"
@@ -93,9 +89,8 @@
       "path": "packages/vue-primevue-adapter",
       "layer": "frontend-platform",
       "criticality": "protected",
-      "allowedWorkspaceDependencies": [
-        "@ccd/design-tokens"
-      ],
+      "responsibility": "PrimeVue-specific theme and adaptation layer.",
+      "allowedWorkspaceDependencies": ["@ccd/design-tokens"],
       "publicApi": true,
       "runtime": "web-library"
     },
@@ -104,6 +99,7 @@
       "path": "packages/vue-charts",
       "layer": "frontend-platform",
       "criticality": "protected",
+      "responsibility": "Shared chart runtime and helpers.",
       "allowedWorkspaceDependencies": [],
       "publicApi": true,
       "runtime": "web-library"
@@ -113,13 +109,17 @@
       "path": "apps/web-demo",
       "layer": "apps",
       "criticality": "flexible",
+      "responsibility": "Browser app shell, routes, pages, stores, app adapters, and temporary app-local shared candidates.",
       "allowedWorkspaceDependencies": [
         "@ccd/contracts",
         "@ccd/core",
         "@ccd/design-tokens",
+        "@ccd/shared-utils",
         "@ccd/unocss-preset",
+        "@ccd/vue-hooks",
         "@ccd/vue-ui",
-        "@ccd/vue-primevue-adapter"
+        "@ccd/vue-primevue-adapter",
+        "@ccd/vue-charts"
       ],
       "publicApi": true,
       "runtime": "web"
@@ -129,6 +129,7 @@
       "path": "apps/desktop",
       "layer": "apps",
       "criticality": "protected",
+      "responsibility": "Tauri shell and desktop adapter.",
       "allowedWorkspaceDependencies": [
         "@ccd/contracts",
         "@ccd/core",

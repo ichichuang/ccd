@@ -55,7 +55,9 @@ const workspaceGraph = [
 const packageGraphLines = ['graph TD']
 for (const item of packageManifests) {
   const id = sanitizeNode(item.name)
-  packageGraphLines.push(`  ${id}["${item.name}<br/>${item.layer}"]`)
+  packageGraphLines.push(
+    `  ${id}["${item.name}<br/>${item.layer}<br/>${item.responsibility ?? 'governed workspace package'}"]`
+  )
   for (const dependency of item.allowedWorkspaceDependencies) {
     packageGraphLines.push(`  ${sanitizeNode(dependency)} --> ${id}`)
   }
@@ -125,6 +127,7 @@ const graphJson = {
     layer: item.layer,
     runtime: item.runtime ?? 'none',
     criticality: item.criticality,
+    responsibility: item.responsibility ?? null,
     allowedWorkspaceDependencies: item.allowedWorkspaceDependencies,
   })),
   turbo: turbo.tasks,

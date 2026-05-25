@@ -12,6 +12,14 @@ Version changes must start in `project.config.json`, specifically `release.versi
 
 Workspace `package.json` files under `apps/*` and `packages/*` are package manifests, not the manual version source of truth.
 
+## Workspace Responsibility Reminder
+
+Metadata governance does not override architecture ownership:
+
+- `packages/contracts` contains cross-runtime interfaces and DTO contracts only.
+- `packages/core` is a minimal runtime-neutral adapter facade, not a shared frontend bucket.
+- `apps/web-demo` owns the browser app shell, routes, pages, stores, app adapters, and some temporary app-local shared candidates until later staged extraction work is approved.
+
 ## Derived Metadata Targets
 
 `pnpm project:sync` updates derived metadata, including:

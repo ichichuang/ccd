@@ -19,6 +19,39 @@ project.config.json
 
 `apps/*` 与 `packages/*` 下的 `package.json` 仅是工作区包清单，不是手工版本真源。
 
+## 工作区职责提醒
+
+项目元数据主控不等于架构职责主控，当前职责边界应保持清晰：
+
+- `packages/contracts`：跨运行时接口与 DTO 契约
+- `packages/core`：最小运行时无关适配门面，不是前端共享能力收纳桶
+- `apps/web-demo`：应用外壳、路由、页面、stores、应用适配层，以及暂时仍留在应用内的共享候选模块
+- `apps/desktop`：Tauri 桌面外壳与桌面适配层
+
+当前 `apps/web-demo` 中的以下路径应视为“应用内共享候选模块”，仅用于后续分阶段治理，不是当前主控中心阶段立即迁移目标：
+
+- `apps/web-demo/src/components/PrimeDialog`
+- `apps/web-demo/src/components/ProForm`
+- `apps/web-demo/src/components/ProTable`
+- `apps/web-demo/src/layouts/runtime/layoutRuntime.ts`
+- `apps/web-demo/src/infra/shared/createCapabilityBridge.ts`
+- `apps/web-demo/src/hooks/modules/useAutoMitt.ts`
+- `apps/web-demo/src/utils/theme/engine.ts`
+- `apps/web-demo/src/utils/safeStorage`
+
+以下区域当前不要移动：
+
+- `packages/core/src/index.ts`
+- `apps/web-demo/src/main.ts`
+- `apps/web-demo/src/plugins/**`
+- `apps/web-demo/src/router/**`
+- `apps/web-demo/src/stores/**`
+- `apps/web-demo/src/views/**`
+- `apps/web-demo/src/utils/date/dateUtils.ts`
+- `apps/web-demo/src/utils/theme/engine.ts`
+- `apps/web-demo/src/components/ProForm/**`
+- `apps/web-demo/src/components/ProTable/**`
+
 ## 需要同步的文件
 
 当你修改 `project.config.json` 后，应执行：

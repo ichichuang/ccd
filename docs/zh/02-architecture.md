@@ -19,26 +19,26 @@
 | 目录                 | 角色                       |
 | -------------------- | -------------------------- |
 | `packages/contracts` | 公共 ABI：仅接口与共享类型 |
-| `packages/core`      | 运行时无关平台逻辑         |
+| `packages/core`      | 最小运行时无关适配门面     |
 
 ### 前端共享包（受治理保护的工作区包）
 
-| 目录                            | 角色                  |
-| ------------------------------- | --------------------- |
-| `packages/design-tokens`        | 设计 token 源         |
-| `packages/shared-utils`         | 共享运行时安全工具    |
-| `packages/unocss-preset`        | 共享 UnoCSS 预设      |
-| `packages/vue-hooks`            | 可复用 Vue 组合式函数 |
-| `packages/vue-ui`               | 共享 Vue UI 基础组件  |
-| `packages/vue-primevue-adapter` | PrimeVue 集成适配器   |
-| `packages/vue-charts`           | 图表集成层            |
+| 目录                            | 角色                        |
+| ------------------------------- | --------------------------- |
+| `packages/design-tokens`        | 设计 token 源               |
+| `packages/shared-utils`         | 纯共享工具函数              |
+| `packages/unocss-preset`        | 共享 UnoCSS 预设            |
+| `packages/vue-hooks`            | 共享 Vue / 浏览器组合式函数 |
+| `packages/vue-ui`               | 共享 Vue UI 基础组件        |
+| `packages/vue-primevue-adapter` | PrimeVue 专用主题与适配层   |
+| `packages/vue-charts`           | 共享图表运行时与辅助函数    |
 
 ### 应用层
 
-| 目录            | 角色                         |
-| --------------- | ---------------------------- |
-| `apps/web-demo` | 浏览器运行时真相源           |
-| `apps/desktop`  | Tauri 桌面运行时外壳与适配层 |
+| 目录            | 角色                                                                         |
+| --------------- | ---------------------------------------------------------------------------- |
+| `apps/web-demo` | 应用外壳、路由、页面、stores、应用适配层，以及暂时仍留在应用内的共享候选模块 |
+| `apps/desktop`  | Tauri 桌面外壳与桌面适配层                                                   |
 
 ### 根
 
@@ -47,6 +47,50 @@
 | `root` | 编排外壳 |
 
 这些前端共享包仍然必须遵守各自的治理角色、包导出边界和运行时边界规则。
+
+`packages/core` 不是前端共享能力的大桶；它只承担最小运行时无关适配门面职责。
+
+## 工作区职责矩阵
+
+| 工作区                          | 当前职责                                                                     |
+| ------------------------------- | ---------------------------------------------------------------------------- |
+| `packages/contracts`            | 跨运行时接口与 DTO 契约，仅承担契约边界职责                                  |
+| `packages/core`                 | 最小运行时无关适配门面，不承担前端共享平台收纳职责                           |
+| `packages/shared-utils`         | 纯共享工具函数                                                               |
+| `packages/vue-hooks`            | 共享 Vue / 浏览器组合式函数                                                  |
+| `packages/vue-ui`               | 共享 Vue UI 基础组件                                                         |
+| `packages/vue-primevue-adapter` | PrimeVue 专用主题与适配层                                                    |
+| `packages/vue-charts`           | 共享图表运行时与辅助函数                                                     |
+| `apps/web-demo`                 | 应用外壳、路由、页面、stores、应用适配层，以及暂时仍留在应用内的共享候选模块 |
+| `apps/desktop`                  | Tauri 桌面外壳与桌面适配层                                                   |
+
+## App-local shared candidates
+
+以下路径目前仍归 `apps/web-demo` 所有，但应被视为“应用内共享候选模块”，不是立即迁移目标：
+
+- `apps/web-demo/src/components/PrimeDialog`
+- `apps/web-demo/src/components/ProForm`
+- `apps/web-demo/src/components/ProTable`
+- `apps/web-demo/src/layouts/runtime/layoutRuntime.ts`
+- `apps/web-demo/src/infra/shared/createCapabilityBridge.ts`
+- `apps/web-demo/src/hooks/modules/useAutoMitt.ts`
+- `apps/web-demo/src/utils/theme/engine.ts`
+- `apps/web-demo/src/utils/safeStorage`
+
+## Do not move yet
+
+以下区域当前不应作为 Phase 1 的迁移对象：
+
+- `packages/core/src/index.ts`
+- `apps/web-demo/src/main.ts`
+- `apps/web-demo/src/plugins/**`
+- `apps/web-demo/src/router/**`
+- `apps/web-demo/src/stores/**`
+- `apps/web-demo/src/views/**`
+- `apps/web-demo/src/utils/date/dateUtils.ts`
+- `apps/web-demo/src/utils/theme/engine.ts`
+- `apps/web-demo/src/components/ProForm/**`
+- `apps/web-demo/src/components/ProTable/**`
 
 ## 运行时无关规则
 

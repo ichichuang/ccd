@@ -1,25 +1,28 @@
 graph TD
-  ccd_contracts["@ccd/contracts<br/>contracts"]
+  ccd_contracts["@ccd/contracts<br/>contracts<br/>Cross-runtime interfaces and DTO contracts only."]
   ccd_design_tokens --> ccd_contracts
-  ccd_core["@ccd/core<br/>core"]
+  ccd_core["@ccd/core<br/>core<br/>Minimal runtime-neutral adapter facade; not a shared frontend bucket."]
   ccd_contracts --> ccd_core
-  ccd_design_tokens["@ccd/design-tokens<br/>frontend-platform"]
-  ccd_unocss_preset["@ccd/unocss-preset<br/>frontend-platform"]
+  ccd_design_tokens["@ccd/design-tokens<br/>frontend-platform<br/>Shared design token source and theme/size/breakpoint primitives."]
+  ccd_unocss_preset["@ccd/unocss-preset<br/>frontend-platform<br/>Shared UnoCSS preset, safelist, and build-time styling helpers."]
   ccd_design_tokens --> ccd_unocss_preset
-  ccd_shared_utils["@ccd/shared-utils<br/>frontend-platform"]
-  ccd_vue_hooks["@ccd/vue-hooks<br/>frontend-platform"]
-  ccd_vue_ui["@ccd/vue-ui<br/>frontend-platform"]
-  ccd_vue_primevue_adapter["@ccd/vue-primevue-adapter<br/>frontend-platform"]
+  ccd_shared_utils["@ccd/shared-utils<br/>frontend-platform<br/>Pure shared utilities."]
+  ccd_vue_hooks["@ccd/vue-hooks<br/>frontend-platform<br/>Shared Vue/browser composables."]
+  ccd_vue_ui["@ccd/vue-ui<br/>frontend-platform<br/>Shared Vue UI primitives."]
+  ccd_vue_primevue_adapter["@ccd/vue-primevue-adapter<br/>frontend-platform<br/>PrimeVue-specific theme and adaptation layer."]
   ccd_design_tokens --> ccd_vue_primevue_adapter
-  ccd_vue_charts["@ccd/vue-charts<br/>frontend-platform"]
-  ccd_web_demo["@ccd/web-demo<br/>apps"]
+  ccd_vue_charts["@ccd/vue-charts<br/>frontend-platform<br/>Shared chart runtime and helpers."]
+  ccd_web_demo["@ccd/web-demo<br/>apps<br/>Browser app shell, routes, pages, stores, app adapters, and temporary app-local shared candidates."]
   ccd_contracts --> ccd_web_demo
   ccd_core --> ccd_web_demo
   ccd_design_tokens --> ccd_web_demo
+  ccd_shared_utils --> ccd_web_demo
   ccd_unocss_preset --> ccd_web_demo
+  ccd_vue_hooks --> ccd_web_demo
   ccd_vue_ui --> ccd_web_demo
   ccd_vue_primevue_adapter --> ccd_web_demo
-  ccd_desktop["@ccd/desktop<br/>apps"]
+  ccd_vue_charts --> ccd_web_demo
+  ccd_desktop["@ccd/desktop<br/>apps<br/>Tauri shell and desktop adapter."]
   ccd_contracts --> ccd_desktop
   ccd_core --> ccd_desktop
   ccd_design_tokens --> ccd_desktop

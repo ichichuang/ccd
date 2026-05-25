@@ -14,15 +14,29 @@
 
 - @ccd/contracts -> @ccd/design-tokens
 - @ccd/core -> @ccd/contracts
-- @ccd/design-tokens: implementation-free public contract package
+- @ccd/design-tokens: no declared workspace dependencies
 - @ccd/unocss-preset -> @ccd/design-tokens
-- @ccd/shared-utils: implementation-free public contract package
-- @ccd/vue-hooks: implementation-free public contract package
-- @ccd/vue-ui: implementation-free public contract package
+- @ccd/shared-utils: no declared workspace dependencies
+- @ccd/vue-hooks: no declared workspace dependencies
+- @ccd/vue-ui: no declared workspace dependencies
 - @ccd/vue-primevue-adapter -> @ccd/design-tokens
-- @ccd/vue-charts: implementation-free public contract package
-- @ccd/web-demo -> @ccd/contracts, @ccd/core, @ccd/design-tokens, @ccd/unocss-preset, @ccd/vue-ui, @ccd/vue-primevue-adapter
+- @ccd/vue-charts: no declared workspace dependencies
+- @ccd/web-demo -> @ccd/contracts, @ccd/core, @ccd/design-tokens, @ccd/shared-utils, @ccd/unocss-preset, @ccd/vue-hooks, @ccd/vue-ui, @ccd/vue-primevue-adapter, @ccd/vue-charts
 - @ccd/desktop -> @ccd/contracts, @ccd/core, @ccd/design-tokens, @ccd/unocss-preset
+
+## Package Responsibilities
+
+- @ccd/contracts: Cross-runtime interfaces and DTO contracts only.
+- @ccd/core: Minimal runtime-neutral adapter facade; not a shared frontend bucket.
+- @ccd/design-tokens: Shared design token source and theme/size/breakpoint primitives.
+- @ccd/unocss-preset: Shared UnoCSS preset, safelist, and build-time styling helpers.
+- @ccd/shared-utils: Pure shared utilities.
+- @ccd/vue-hooks: Shared Vue/browser composables.
+- @ccd/vue-ui: Shared Vue UI primitives.
+- @ccd/vue-primevue-adapter: PrimeVue-specific theme and adaptation layer.
+- @ccd/vue-charts: Shared chart runtime and helpers.
+- @ccd/web-demo: Browser app shell, routes, pages, stores, app adapters, and temporary app-local shared candidates.
+- @ccd/desktop: Tauri shell and desktop adapter.
 
 ## Package Criticality
 
