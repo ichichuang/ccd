@@ -28,7 +28,7 @@
 
 - Path: `packages/shared-utils`
 - Export subpaths: `.`
-- Root symbols: `applyUniqueRoot`, `areExpandedKeyRecordsEqual`, `CapabilityBridge`, `CapabilityBridgeOptions`, `castArray`, `castRecord`, `castValue`, `createCapabilityBridge`, `debounceFn`, `deepClone`, `deepEqual`, `deepMerge`, `formatSerialId`, `generateIdFromKey`, `generateUniqueId`, `isRecord`, `objectGet`, `throttleFn`, `toKebabCase`, `toRecord`
+- Root symbols: `applyUniqueRoot`, `areExpandedKeyRecordsEqual`, `CapabilityBridge`, `CapabilityBridgeOptions`, `castArray`, `castRecord`, `castValue`, `createCapabilityBridge`, `debounceFn`, `deepClone`, `deepEqual`, `deepMerge`, `fnv1a`, `formatSerialId`, `generateIdFromKey`, `generateUniqueId`, `isRecord`, `objectGet`, `stableSerializeRecord`, `throttleFn`, `toKebabCase`, `toRecord`
 
 ## @ccd/vue-hooks
 

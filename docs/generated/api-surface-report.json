@@ -112,11 +112,13 @@
         "deepClone",
         "deepEqual",
         "deepMerge",
+        "fnv1a",
         "formatSerialId",
         "generateIdFromKey",
         "generateUniqueId",
         "isRecord",
         "objectGet",
+        "stableSerializeRecord",
         "throttleFn",
         "toKebabCase",
         "toRecord"
