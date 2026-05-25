@@ -31,6 +31,16 @@ export interface ChartConnectConfig {
 
 // 图表联动状态类型
 export interface ChartConnectState {
+  /** 是否启用联动（来自 group/connectConfig） */
+  enabled?: boolean
+  /** 当前联动组 ID */
+  groupId?: string
+  /** 是否已完成 echarts.connect 注册 */
+  connected?: boolean
+  /** 当前实例是否已注册到联动组 */
+  registered?: boolean
+  /** 当前联动组成员数量（wrapper registry 视角） */
+  groupMembers?: number
   /** 当前高亮的数据索引 */
   highlightedDataIndex?: number
   /** 当前选中的数据索引 */

@@ -6,6 +6,8 @@
 import type { EChartsOption } from 'echarts'
 import type { ChartInstance } from '@ccd/vue-charts'
 import type { WritableComputedRef } from 'vue'
+import { nextTick } from 'vue'
+import { onUpdated } from 'vue'
 import { castValue } from '@ccd/shared-utils'
 import {
   getDefaultToolboxConfig,
@@ -31,7 +33,8 @@ import {
   barWithMarkOption as advancedBarWithMarkOption,
 } from './configs/advancedChartConfig'
 import {
-  CONNECT_GROUP_ID,
+  CONNECT_CARTESIAN_GROUP_ID,
+  CONNECT_MIXED_GROUP_ID,
   connectLineOption,
   connectBarOption,
   connectAreaOption,
@@ -144,93 +147,69 @@ const pieLineRef = ref<ChartInstance | ChartInstance[] | null>(null)
 const pieBarRef = ref<ChartInstance | ChartInstance[] | null>(null)
 const pieRef = ref<ChartInstance | ChartInstance[] | null>(null)
 const connectLog = ref<string[]>([])
-let cleanupConnectHandlers: (() => void) | null = null
 let cleanupPieConnectHandlers: (() => void) | null = null
-let isConnectSyncing = false
-let isPieGroupSyncing = false
+let mixedPointerInside = false
+let mixedClearTimer: ReturnType<typeof globalThis.setTimeout> | null = null
 
-// 联动 tab 图表就绪计数 — 替代 waitFor(200) 时序 hack
-// 每当一个图表实例触发 @chart-ready，计数 +1；达到目标数时运行联动绑定
-let connectReadyCount = 0
+// 联动 tab 图表就绪计数 — 每当图表实例触发 @chart-ready，计数 +1；达到目标数时运行联动绑定
 let pieGroupReadyCount = 0
 
 function onConnectChartReady() {
-  connectReadyCount++
-  if (connectReadyCount >= 3) {
-    setupConnectHoverSync()
-  }
+  // 共享 UseEcharts 已负责 group + echarts.connect 生命周期，此处仅记录可观测日志。
+  const state = unwrapChartRef(chartRef.value)?.getConnectState?.()
+  appendConnectLog(`chartReady(connect): ${JSON.stringify(state ?? {}).slice(0, 80)}...`)
 }
 
 function onPieChartReady() {
   pieGroupReadyCount++
-  if (pieGroupReadyCount >= 3) {
-    setupLineBarPieSync()
-  }
+  if (pieGroupReadyCount < 3) return
+  void nextTick(() => {
+    ensureLineBarPieSyncReady()
+  })
 }
 
 function appendConnectLog(line: string) {
   connectLog.value = [line, ...connectLog.value].slice(0, 20)
 }
 
-function setupConnectHoverSync() {
-  type EChartsLike = {
-    dispatchAction: (payload: Record<string, unknown>) => void
-    on: (event: string, handler: (params: unknown) => void) => void
-    off: (event: string, handler: (params: unknown) => void) => void
-  }
-  const inst1 = unwrapChartRef(chartRef.value)?.getEchartsInstance?.() as EChartsLike | undefined
-  const inst2 = unwrapChartRef(chartRef2.value)?.getEchartsInstance?.() as EChartsLike | undefined
-  const inst3 = unwrapChartRef(chartRef3.value)?.getEchartsInstance?.() as EChartsLike | undefined
+function markMixedPointerInside() {
+  mixedPointerInside = true
+}
 
-  const instances = [inst1, inst2, inst3].filter(Boolean) as EChartsLike[]
-  if (instances.length < 2) {
-    console.warn(
-      '[UseEcharts] setupConnectHoverSync: expected 3 instances, got',
-      instances.length,
-      '— sync aborted'
-    )
-    return
-  }
+function markMixedPointerLeave() {
+  mixedPointerInside = false
+}
 
-  const handlers: Array<{ inst: EChartsLike; event: string; handler: (params: unknown) => void }> =
-    []
+function handleMixedPointerActivity() {
+  markMixedPointerInside()
+  ensureLineBarPieSyncReady()
+}
 
-  instances.forEach((sourceInst, idx) => {
-    const targets = instances.filter((_, i) => i !== idx)
-    const handler = (params: unknown) => {
-      if (isConnectSyncing) return
-      isConnectSyncing = true
-      const p = params as { dataIndex?: number; axesInfo?: Array<{ dataIndex?: number }> }
-      const dataIndex = p.dataIndex ?? p.axesInfo?.[0]?.dataIndex
-      if (dataIndex !== undefined) {
-        targets.forEach(target =>
-          target.dispatchAction({ type: 'updateAxisPointer', seriesIndex: 0, dataIndex })
-        )
-      }
-      isConnectSyncing = false
-    }
-    sourceInst.on('updateAxisPointer', handler)
-    handlers.push({ inst: sourceInst, event: 'updateAxisPointer', handler })
-
-    // 添加 globalout 事件监听，清除所有图表的高亮
-    const globaloutHandler = () => {
-      if (isConnectSyncing) return
-      isConnectSyncing = true
-      instances.forEach(inst => {
-        inst.dispatchAction({ type: 'downplay', seriesIndex: 0 })
-        inst.dispatchAction({ type: 'hideTip' })
+function resolveMixedChartInstance(testId: string): unknown | null {
+  const selector = `[data-testid="${testId}"] .echarts`
+  const host = document.querySelector(selector) as
+    | (HTMLElement & {
+        __vueParentComponent?: {
+          exposed?: {
+            chart?: {
+              value?: unknown
+            }
+          }
+        }
       })
-      isConnectSyncing = false
-    }
-    sourceInst.on('globalout', globaloutHandler)
-    handlers.push({ inst: sourceInst, event: 'globalout', handler: globaloutHandler })
-  })
+    | null
+  return host?.__vueParentComponent?.exposed?.chart?.value ?? null
+}
 
-  cleanupConnectHandlers = () => {
-    handlers.forEach(({ inst, event, handler }) => {
-      inst.off(event, handler)
-    })
-  }
+function ensureLineBarPieSyncReady() {
+  mixedPointerInside = true
+  if (activeTab.value !== 'connect') return
+  if (cleanupPieConnectHandlers) return
+  const instLine = resolveMixedChartInstance('connect-mixed-chart-line')
+  const instBar = resolveMixedChartInstance('connect-mixed-chart-bar')
+  const instPie = resolveMixedChartInstance('connect-mixed-chart-pie')
+  if (!instLine || !instBar || !instPie) return
+  setupLineBarPieSync()
 }
 
 function setupLineBarPieSync() {
@@ -240,100 +219,235 @@ function setupLineBarPieSync() {
     off: (event: string, handler: (params: unknown) => void) => void
   }
 
-  const instLine = unwrapChartRef(pieLineRef.value)?.getEchartsInstance?.() as
-    | EChartsLike
-    | undefined
-  const instBar = unwrapChartRef(pieBarRef.value)?.getEchartsInstance?.() as EChartsLike | undefined
-  const instPie = unwrapChartRef(pieRef.value)?.getEchartsInstance?.() as EChartsLike | undefined
+  const instLine = resolveMixedChartInstance('connect-mixed-chart-line') as EChartsLike | null
+  const instBar = resolveMixedChartInstance('connect-mixed-chart-bar') as EChartsLike | null
+  const instPie = resolveMixedChartInstance('connect-mixed-chart-pie') as EChartsLike | null
 
   if (!instLine || !instBar || !instPie) return
+  if (cleanupPieConnectHandlers) {
+    cleanupPieConnectHandlers()
+    cleanupPieConnectHandlers = null
+  }
 
   const handlers: Array<{ inst: EChartsLike; event: string; handler: (params: unknown) => void }> =
     []
-  const allInstances = [instLine, instBar, instPie]
+  const lineXAxis = Array.isArray(connectLineOption.xAxis)
+    ? connectLineOption.xAxis[0]
+    : connectLineOption.xAxis
+  const mixedCategoryNames = (lineXAxis as { data?: string[] } | undefined)?.data
+  const pieSeries = Array.isArray(connectPieOption.series)
+    ? connectPieOption.series[0]
+    : connectPieOption.series
+  const pieData = (pieSeries as { data?: Array<{ name?: string }> } | undefined)?.data
+  const pieDataSize = pieData?.length ?? 0
 
-  const makeAxisHandler = (self: EChartsLike, others: EChartsLike[], pieInst: EChartsLike) => {
-    const handler = (params: unknown) => {
-      if (isPieGroupSyncing) return
-      isPieGroupSyncing = true
-      const p = params as { dataIndex?: number; axesInfo?: Array<{ dataIndex?: number }> }
-      const dataIndex = p.dataIndex ?? p.axesInfo?.[0]?.dataIndex
-      if (dataIndex !== undefined) {
-        others.forEach(target =>
-          target.dispatchAction({ type: 'updateAxisPointer', seriesIndex: 0, dataIndex })
-        )
-        pieInst.dispatchAction({ type: 'downplay', seriesIndex: 0 })
-        pieInst.dispatchAction({ type: 'highlight', seriesIndex: 0, dataIndex })
-        pieInst.dispatchAction({ type: 'showTip', seriesIndex: 0, dataIndex })
+  let dispatchDepth = 0
+  let activeDataIndex: number | null = null
+  let activeFromPie = false
+
+  const cancelQueuedClear = () => {
+    if (mixedClearTimer === null) return
+    globalThis.clearTimeout(mixedClearTimer)
+    mixedClearTimer = null
+  }
+
+  const withBridgeGuard = (task: () => void) => {
+    dispatchDepth += 1
+    try {
+      task()
+    } finally {
+      dispatchDepth -= 1
+    }
+  }
+
+  const isDispatching = () => dispatchDepth > 0
+
+  const normalizeDataIndex = (raw: unknown): number | undefined => {
+    if (typeof raw !== 'number' || !Number.isInteger(raw) || raw < 0) {
+      return undefined
+    }
+    if (pieDataSize > 0 && raw >= pieDataSize) {
+      return undefined
+    }
+    return raw
+  }
+
+  const resolveNameToDataIndex = (name: unknown): number | undefined => {
+    if (typeof name !== 'string') return undefined
+    if (pieData?.length) {
+      const fromPie = pieData.findIndex(item => item?.name === name)
+      if (fromPie >= 0) return fromPie
+    }
+    if (mixedCategoryNames?.length) {
+      const fromAxis = mixedCategoryNames.findIndex(item => item === name)
+      if (fromAxis >= 0) return fromAxis
+    }
+    return undefined
+  }
+
+  const extractAxisInfoIndex = (params: unknown): number | undefined => {
+    const p = params as {
+      axesInfo?: Array<{
+        value?: number | string
+        dataIndex?: number
+      }>
+      dataIndex?: number
+      batch?: Array<{ dataIndex?: number }>
+      name?: string
+    }
+    const axisInfo = p.axesInfo?.[0]
+    const axisDataIndex = normalizeDataIndex(axisInfo?.dataIndex)
+    if (axisDataIndex !== undefined) return axisDataIndex
+
+    const axisValue = axisInfo?.value
+    if (typeof axisValue === 'number') {
+      const normalized = normalizeDataIndex(axisValue)
+      if (normalized !== undefined) return normalized
+    }
+    if (typeof axisValue === 'string') {
+      const byName = resolveNameToDataIndex(axisValue)
+      if (byName !== undefined) return byName
+    }
+
+    const byDataIndex = normalizeDataIndex(p.dataIndex)
+    if (byDataIndex !== undefined) return byDataIndex
+
+    const byBatch = normalizeDataIndex(p.batch?.[0]?.dataIndex)
+    if (byBatch !== undefined) return byBatch
+
+    return resolveNameToDataIndex(p.name)
+  }
+
+  const extractItemIndex = (params: unknown): number | undefined => {
+    const p = params as {
+      dataIndex?: number
+      batch?: Array<{ dataIndex?: number }>
+      name?: string
+    }
+    const byDataIndex = normalizeDataIndex(p.dataIndex)
+    if (byDataIndex !== undefined) return byDataIndex
+
+    const byBatch = normalizeDataIndex(p.batch?.[0]?.dataIndex)
+    if (byBatch !== undefined) return byBatch
+
+    return resolveNameToDataIndex(p.name)
+  }
+
+  const clearMixedState = (hideTip: boolean) => {
+    cancelQueuedClear()
+    withBridgeGuard(() => {
+      instLine.dispatchAction({ type: 'downplay', seriesIndex: 0 })
+      instBar.dispatchAction({ type: 'downplay', seriesIndex: 0 })
+      instPie.dispatchAction({ type: 'downplay', seriesIndex: 0 })
+
+      if (hideTip) {
+        instLine.dispatchAction({ type: 'hideTip' })
+        instBar.dispatchAction({ type: 'hideTip' })
+        instPie.dispatchAction({ type: 'hideTip' })
       }
-      isPieGroupSyncing = false
-    }
-    self.on('updateAxisPointer', handler)
-    handlers.push({ inst: self, event: 'updateAxisPointer', handler })
+    })
+    activeDataIndex = null
+    activeFromPie = false
+  }
 
-    // 添加 globalout 事件监听，清除所有图表的高亮
-    const globaloutHandler = () => {
-      if (isPieGroupSyncing) return
-      isPieGroupSyncing = true
-      allInstances.forEach(inst => {
-        inst.dispatchAction({ type: 'downplay', seriesIndex: 0 })
-        inst.dispatchAction({ type: 'hideTip' })
-      })
-      isPieGroupSyncing = false
+  const queueClearMixedState = () => {
+    cancelQueuedClear()
+    mixedClearTimer = globalThis.setTimeout(() => {
+      mixedClearTimer = null
+      if (mixedPointerInside) return
+      clearMixedState(true)
+    }, 0)
+  }
+
+  const syncFromCartesian = (dataIndex: number) => {
+    cancelQueuedClear()
+    if (activeDataIndex === dataIndex && !activeFromPie) return
+
+    withBridgeGuard(() => {
+      instPie.dispatchAction({ type: 'downplay', seriesIndex: 0 })
+      instPie.dispatchAction({ type: 'highlight', seriesIndex: 0, dataIndex })
+      instPie.dispatchAction({ type: 'showTip', seriesIndex: 0, dataIndex })
+      instLine.dispatchAction({ type: 'highlight', seriesIndex: 0, dataIndex })
+      instBar.dispatchAction({ type: 'highlight', seriesIndex: 0, dataIndex })
+    })
+
+    activeDataIndex = dataIndex
+    activeFromPie = false
+  }
+
+  const syncFromPie = (dataIndex: number) => {
+    cancelQueuedClear()
+    if (activeDataIndex === dataIndex && activeFromPie) return
+
+    withBridgeGuard(() => {
+      instPie.dispatchAction({ type: 'downplay', seriesIndex: 0 })
+      instPie.dispatchAction({ type: 'highlight', seriesIndex: 0, dataIndex })
+      instPie.dispatchAction({ type: 'showTip', seriesIndex: 0, dataIndex })
+
+      instLine.dispatchAction({ type: 'highlight', seriesIndex: 0, dataIndex })
+      instLine.dispatchAction({ type: 'updateAxisPointer', seriesIndex: 0, dataIndex })
+      instLine.dispatchAction({ type: 'showTip', seriesIndex: 0, dataIndex })
+
+      instBar.dispatchAction({ type: 'highlight', seriesIndex: 0, dataIndex })
+      instBar.dispatchAction({ type: 'updateAxisPointer', seriesIndex: 0, dataIndex })
+      instBar.dispatchAction({ type: 'showTip', seriesIndex: 0, dataIndex })
+    })
+
+    activeDataIndex = dataIndex
+    activeFromPie = true
+  }
+
+  const bindCartesianBridge = (self: EChartsLike) => {
+    const pointerHandler = (params: unknown) => {
+      if (isDispatching()) return
+      const dataIndex = extractAxisInfoIndex(params)
+      if (dataIndex === undefined) return
+      syncFromCartesian(dataIndex)
     }
+
+    const hoverHandler = (params: unknown) => {
+      if (isDispatching()) return
+      const dataIndex = extractItemIndex(params)
+      if (dataIndex === undefined) return
+      syncFromCartesian(dataIndex)
+    }
+
+    const globaloutHandler = () => {
+      if (isDispatching()) return
+      queueClearMixedState()
+    }
+
+    self.on('updateAxisPointer', pointerHandler)
+    handlers.push({ inst: self, event: 'updateAxisPointer', handler: pointerHandler })
+
+    self.on('mouseover', hoverHandler)
+    handlers.push({ inst: self, event: 'mouseover', handler: hoverHandler })
+
     self.on('globalout', globaloutHandler)
     handlers.push({ inst: self, event: 'globalout', handler: globaloutHandler })
   }
 
-  makeAxisHandler(instLine, [instBar], instPie)
-  makeAxisHandler(instBar, [instLine], instPie)
+  bindCartesianBridge(instLine)
+  bindCartesianBridge(instBar)
 
-  // 监听饼图的 mouseover 事件，同步高亮到折线图和柱状图
-  const pieMouseoverHandler = (params: unknown) => {
-    if (isPieGroupSyncing) return
-    isPieGroupSyncing = true
-    const p = params as { dataIndex?: number }
-    const dataIndex = p.dataIndex
-    if (dataIndex !== undefined) {
-      instLine.dispatchAction({ type: 'highlight', seriesIndex: 0, dataIndex })
-      instLine.dispatchAction({ type: 'updateAxisPointer', seriesIndex: 0, dataIndex })
-      instBar.dispatchAction({ type: 'highlight', seriesIndex: 0, dataIndex })
-      instBar.dispatchAction({ type: 'updateAxisPointer', seriesIndex: 0, dataIndex })
-    }
-    isPieGroupSyncing = false
+  const pieHoverHandler = (params: unknown) => {
+    if (isDispatching()) return
+    const dataIndex = extractItemIndex(params)
+    if (dataIndex === undefined) return
+    syncFromPie(dataIndex)
   }
 
-  instPie.on('mouseover', pieMouseoverHandler)
-  handlers.push({ inst: instPie, event: 'mouseover', handler: pieMouseoverHandler })
-
-  // 保持原有的 highlight 事件监听，以防其他非鼠标事件触发高亮需要同步
-  const pieHighlightHandler = (params: unknown) => {
-    if (isPieGroupSyncing) return
-    isPieGroupSyncing = true
-    const p = params as { dataIndex?: number }
-    const dataIndex = p.dataIndex
-    if (dataIndex !== undefined) {
-      instLine.dispatchAction({ type: 'highlight', seriesIndex: 0, dataIndex })
-      instLine.dispatchAction({ type: 'updateAxisPointer', seriesIndex: 0, dataIndex })
-      instBar.dispatchAction({ type: 'highlight', seriesIndex: 0, dataIndex })
-      instBar.dispatchAction({ type: 'updateAxisPointer', seriesIndex: 0, dataIndex })
-    }
-    isPieGroupSyncing = false
-  }
-
-  instPie.on('highlight', pieHighlightHandler)
-  handlers.push({ inst: instPie, event: 'highlight', handler: pieHighlightHandler })
-
-  // 饼图也需要 globalout 事件监听
   const pieGlobaloutHandler = () => {
-    if (isPieGroupSyncing) return
-    isPieGroupSyncing = true
-    allInstances.forEach(inst => {
-      inst.dispatchAction({ type: 'downplay', seriesIndex: 0 })
-      inst.dispatchAction({ type: 'hideTip' })
-    })
-    isPieGroupSyncing = false
+    if (isDispatching()) return
+    queueClearMixedState()
   }
+
+  instPie.on('mouseover', pieHoverHandler)
+  handlers.push({ inst: instPie, event: 'mouseover', handler: pieHoverHandler })
+
+  instPie.on('highlight', pieHoverHandler)
+  handlers.push({ inst: instPie, event: 'highlight', handler: pieHoverHandler })
+
   instPie.on('globalout', pieGlobaloutHandler)
   handlers.push({ inst: instPie, event: 'globalout', handler: pieGlobaloutHandler })
 
@@ -341,6 +455,7 @@ function setupLineBarPieSync() {
     handlers.forEach(({ inst, event, handler }) => {
       inst.off(event, handler)
     })
+    clearMixedState(true)
   }
 }
 
@@ -448,11 +563,9 @@ function handleTriggerConnectPieGroup() {
   type EChartsLike = {
     dispatchAction?: (payload: Record<string, unknown>) => void
   }
-  const instLine = unwrapChartRef(pieLineRef.value)?.getEchartsInstance?.() as
-    | EChartsLike
-    | undefined
-  const instBar = unwrapChartRef(pieBarRef.value)?.getEchartsInstance?.() as EChartsLike | undefined
-  const instPie = unwrapChartRef(pieRef.value)?.getEchartsInstance?.() as EChartsLike | undefined
+  const instLine = resolveMixedChartInstance('connect-mixed-chart-line') as EChartsLike | null
+  const instBar = resolveMixedChartInstance('connect-mixed-chart-bar') as EChartsLike | null
+  const instPie = resolveMixedChartInstance('connect-mixed-chart-pie') as EChartsLike | null
 
   if (!instLine || !instBar || !instPie) return
 
@@ -472,23 +585,42 @@ function handleTriggerConnectPieGroup() {
 }
 
 watch(activeTab, tab => {
-  if (cleanupConnectHandlers) {
-    cleanupConnectHandlers()
-    cleanupConnectHandlers = null
-  }
   if (cleanupPieConnectHandlers) {
     cleanupPieConnectHandlers()
     cleanupPieConnectHandlers = null
   }
   if (tab === 'connect') {
-    // Reset readiness counters — setup is triggered by @chart-ready events on each chart
-    connectReadyCount = 0
+    // Reset readiness counters — setup is triggered by @chart-ready events
     pieGroupReadyCount = 0
+    mixedPointerInside = false
+    void nextTick(() => {
+      ensureLineBarPieSyncReady()
+    })
   }
 })
 
+watch([pieLineRef, pieBarRef, pieRef], () => {
+  void nextTick(() => {
+    ensureLineBarPieSyncReady()
+  })
+})
+
+onMounted(() => {
+  if (activeTab.value !== 'connect') return
+  void nextTick(() => {
+    ensureLineBarPieSyncReady()
+  })
+})
+
+onUpdated(() => {
+  ensureLineBarPieSyncReady()
+})
+
 onBeforeUnmount(() => {
-  if (cleanupConnectHandlers) cleanupConnectHandlers()
+  if (mixedClearTimer !== null) {
+    globalThis.clearTimeout(mixedClearTimer)
+    mixedClearTimer = null
+  }
   if (cleanupPieConnectHandlers) cleanupPieConnectHandlers()
 })
 </script>
@@ -742,37 +874,49 @@ onBeforeUnmount(() => {
                             @click="handleGetConnectState"
                           />
                         </template>
-                        <div class="layout-full grid grid-cols-1 md:grid-cols-3 gap-md">
-                          <div class="layout-full">
+                        <div
+                          class="layout-full grid grid-cols-1 md:grid-cols-3 gap-md"
+                          data-testid="connect-cartesian-group"
+                        >
+                          <div
+                            class="layout-full"
+                            data-testid="connect-cartesian-chart-0"
+                          >
                             <UseEcharts
                               ref="chartRef"
                               :option="connectLineOption"
                               :theme-config="themeConfig"
                               :renderer="renderer"
                               :loading="chartLoading"
-                              :group="CONNECT_GROUP_ID"
+                              :group="CONNECT_CARTESIAN_GROUP_ID"
                               @chart-ready="onConnectChartReady"
                             />
                           </div>
-                          <div class="layout-full">
+                          <div
+                            class="layout-full"
+                            data-testid="connect-cartesian-chart-1"
+                          >
                             <UseEcharts
                               ref="chartRef2"
                               :option="connectBarOption"
                               :theme-config="themeConfig"
                               :renderer="renderer"
                               :loading="chartLoading"
-                              :group="CONNECT_GROUP_ID"
+                              :group="CONNECT_CARTESIAN_GROUP_ID"
                               @chart-ready="onConnectChartReady"
                             />
                           </div>
-                          <div class="layout-full">
+                          <div
+                            class="layout-full"
+                            data-testid="connect-cartesian-chart-2"
+                          >
                             <UseEcharts
                               ref="chartRef3"
                               :option="connectAreaOption"
                               :theme-config="themeConfig"
                               :renderer="renderer"
                               :loading="chartLoading"
-                              :group="CONNECT_GROUP_ID"
+                              :group="CONNECT_CARTESIAN_GROUP_ID"
                               @chart-ready="onConnectChartReady"
                             />
                           </div>
@@ -791,38 +935,62 @@ onBeforeUnmount(() => {
                             @click="handleTriggerConnectPieGroup"
                           />
                         </template>
-                        <div class="layout-full grid grid-cols-1 md:grid-cols-3 gap-md">
-                          <div class="layout-full">
+                        <div
+                          class="layout-full grid grid-cols-1 md:grid-cols-3 gap-md"
+                          data-testid="connect-mixed-group"
+                        >
+                          <div
+                            class="layout-full"
+                            data-testid="connect-mixed-chart-line"
+                            @mouseenter.capture="handleMixedPointerActivity"
+                            @mousemove.capture="handleMixedPointerActivity"
+                            @mouseleave.capture="markMixedPointerLeave"
+                          >
                             <UseEcharts
                               ref="pieLineRef"
                               :option="connectLineOption"
                               :theme-config="themeConfig"
                               :renderer="renderer"
                               :loading="chartLoading"
-                              :group="CONNECT_GROUP_ID"
+                              :group="CONNECT_MIXED_GROUP_ID"
                               @chart-ready="onPieChartReady"
+                              @finished="onPieChartReady"
                             />
                           </div>
-                          <div class="layout-full">
+                          <div
+                            class="layout-full"
+                            data-testid="connect-mixed-chart-bar"
+                            @mouseenter.capture="handleMixedPointerActivity"
+                            @mousemove.capture="handleMixedPointerActivity"
+                            @mouseleave.capture="markMixedPointerLeave"
+                          >
                             <UseEcharts
                               ref="pieBarRef"
                               :option="connectBarOption"
                               :theme-config="themeConfig"
                               :renderer="renderer"
                               :loading="chartLoading"
-                              :group="CONNECT_GROUP_ID"
+                              :group="CONNECT_MIXED_GROUP_ID"
                               @chart-ready="onPieChartReady"
+                              @finished="onPieChartReady"
                             />
                           </div>
-                          <div class="layout-full">
+                          <div
+                            class="layout-full"
+                            data-testid="connect-mixed-chart-pie"
+                            @mouseenter.capture="handleMixedPointerActivity"
+                            @mousemove.capture="handleMixedPointerActivity"
+                            @mouseleave.capture="markMixedPointerLeave"
+                          >
                             <UseEcharts
                               ref="pieRef"
                               :option="connectPieOption"
                               :theme-config="themeConfig"
                               :renderer="renderer"
                               :loading="chartLoading"
-                              :group="CONNECT_GROUP_ID"
+                              :group="CONNECT_MIXED_GROUP_ID"
                               @chart-ready="onPieChartReady"
+                              @finished="onPieChartReady"
                             />
                           </div>
                         </div>

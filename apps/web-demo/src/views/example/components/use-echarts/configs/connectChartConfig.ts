@@ -1,6 +1,7 @@
 import type { EChartsOption } from 'echarts'
 
-export const CONNECT_GROUP_ID = 'use-echarts-connect-demo'
+export const CONNECT_CARTESIAN_GROUP_ID = 'use-echarts-connect-cartesian-demo'
+export const CONNECT_MIXED_GROUP_ID = 'use-echarts-connect-mixed-demo'
 
 const sharedCategories = ['1', '2', '3', '4', '5', '6', '7']
 const sharedValues = [12, 22, 18, 9, 30, 15, 24]

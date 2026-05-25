@@ -21,6 +21,11 @@ import { createDefaultUseEchartsProps } from './utils/constants'
 import { createEChartsRenderCore } from './echarts-render-core'
 import { useChartElementSize } from './useChartElementSize'
 import {
+  getConnectGroupMemberCount,
+  registerConnectGroup,
+  unregisterConnectGroup,
+} from './connectGroupRegistry'
+import {
   ensureEChartsModulesForOption,
   getEChartsSeriesTypes,
   getMissingEChartsLazySeriesTypes,
@@ -60,14 +65,71 @@ const chartRef = shallowRef<VEChartsExpose | null>(null)
 const chartReadyTimer = ref<ReturnType<typeof globalThis.setTimeout> | null>(null)
 const isUnmounting = ref(false)
 let stopVisibilityObserver: (() => void) | null = null
+const connectToken = Symbol('use-echarts-connect-token')
+let registeredConnectGroupId: string | null = null
 
 // 联动相关状态：传 group 或 connectConfig.enabled 即视为开启
-const connectState = shallowRef<ChartConnectState>({})
+const connectState = shallowRef<ChartConnectState>({
+  enabled: false,
+  connected: false,
+})
 const isConnectEnabled = computed(() => props.connectConfig?.enabled === true || !!props.group)
 const connectGroupId = computed(() => {
   const groupId = props.group || props.connectConfig?.groupId || 'default'
   return groupId
 })
+
+function syncConnectState(partial?: Partial<ChartConnectState>) {
+  connectState.value = {
+    ...connectState.value,
+    enabled: isConnectEnabled.value,
+    groupId: isConnectEnabled.value ? connectGroupId.value : undefined,
+    connected: !!registeredConnectGroupId,
+    registered: !!registeredConnectGroupId,
+    ...partial,
+  }
+}
+
+function unregisterCurrentConnectGroup() {
+  if (!registeredConnectGroupId) {
+    syncConnectState()
+    return
+  }
+  unregisterConnectGroup(registeredConnectGroupId, connectToken)
+  registeredConnectGroupId = null
+  syncConnectState()
+}
+
+function registerCurrentConnectGroup() {
+  const instance = getEchartsInstance()
+  if (!instance || instance.isDisposed()) {
+    unregisterCurrentConnectGroup()
+    return
+  }
+
+  if (!isConnectEnabled.value) {
+    unregisterCurrentConnectGroup()
+    return
+  }
+
+  const groupId = connectGroupId.value
+  if (!groupId) {
+    unregisterCurrentConnectGroup()
+    return
+  }
+
+  if (registeredConnectGroupId === groupId) {
+    syncConnectState()
+    return
+  }
+
+  unregisterCurrentConnectGroup()
+  registerConnectGroup(groupId, connectToken)
+  registeredConnectGroupId = groupId
+  syncConnectState({
+    groupMembers: getConnectGroupMemberCount(groupId),
+  })
+}
 
 // 监听容器尺寸变化，自动 resize 图表（根据 autoResize prop）
 const { width, height } = useChartElementSize(chartContainerRef, () => scheduleChartResize())
@@ -188,7 +250,12 @@ const effectiveLoadingOptions = computed((): Record<string, unknown> => {
 })
 
 // 使用响应式 Hook
-const { themedOption } = useChartTheme(optionRef, opacityConfigRef, advancedConfigRef, themeRuntimeState)
+const { themedOption } = useChartTheme(
+  optionRef,
+  opacityConfigRef,
+  advancedConfigRef,
+  themeRuntimeState
+)
 
 // 如果未启用主题，直接返回原始配置
 const mergedOption = computed((): EChartsOption => {
@@ -360,6 +427,7 @@ function scheduleChartReadyEmit(): void {
     const chartInstance = getEchartsInstance()
     if (chartInstance && !chartInstance.isDisposed()) {
       isChartInitialized.value = true
+      registerCurrentConnectGroup()
       emit('chartReady', chartInstance, props.group || props.connectConfig?.groupId)
     }
   }, 0)
@@ -371,11 +439,24 @@ watch(
     if (!mounted || !chartInstance) return
     if (chartInstance !== previousChartInstance || props.renderer !== previousRenderer) {
       isChartInitialized.value = false
+      unregisterCurrentConnectGroup()
     }
     scheduleChartReadyEmit()
     scheduleChartResize()
   },
   { flush: 'post' }
+)
+
+watch(
+  () => [isConnectEnabled.value, connectGroupId.value] as const,
+  () => {
+    if (!hasChartMounted.value || isUnmounting.value) {
+      syncConnectState()
+      return
+    }
+    registerCurrentConnectGroup()
+  },
+  { immediate: true }
 )
 
 watch(
@@ -401,11 +482,13 @@ onMounted(() => {
 
 onActivated(() => {
   renderCore.schedule('visible')
+  registerCurrentConnectGroup()
 })
 
 // 组件卸载时清理
 onBeforeUnmount(() => {
   isUnmounting.value = true
+  unregisterCurrentConnectGroup()
   renderCore.dispose()
   clearChartReadyTimer()
   stopVisibilityObserver?.()
@@ -421,7 +504,7 @@ const getChartInstance = () => chartRef.value
 // 联动相关方法
 const getConnectState = () => connectState.value
 const setConnectState = (state: Partial<ChartConnectState>) => {
-  connectState.value = { ...connectState.value, ...state }
+  syncConnectState(state)
 }
 const normalizeSetOptionOptions = (
   opts?: boolean | ChartSetOptionOptions
