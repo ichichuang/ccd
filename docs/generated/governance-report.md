@@ -18,11 +18,12 @@
 - @ccd/unocss-preset -> @ccd/design-tokens
 - @ccd/shared-utils: no declared workspace dependencies
 - @ccd/vue-hooks: no declared workspace dependencies
+- @ccd/vue-app-platform: no declared workspace dependencies
 - @ccd/vue-ui: no declared workspace dependencies
 - @ccd/vue-primevue-adapter -> @ccd/design-tokens
 - @ccd/vue-charts: no declared workspace dependencies
-- @ccd/web-demo -> @ccd/contracts, @ccd/core, @ccd/design-tokens, @ccd/shared-utils, @ccd/unocss-preset, @ccd/vue-hooks, @ccd/vue-ui, @ccd/vue-primevue-adapter, @ccd/vue-charts
-- @ccd/desktop -> @ccd/contracts, @ccd/core, @ccd/design-tokens, @ccd/unocss-preset
+- @ccd/web-demo -> @ccd/contracts, @ccd/core, @ccd/design-tokens, @ccd/shared-utils, @ccd/unocss-preset, @ccd/vue-hooks, @ccd/vue-app-platform, @ccd/vue-ui, @ccd/vue-primevue-adapter, @ccd/vue-charts
+- @ccd/desktop -> @ccd/contracts, @ccd/core, @ccd/design-tokens, @ccd/unocss-preset, @ccd/vue-app-platform
 
 ## Package Responsibilities
 
@@ -32,6 +33,7 @@
 - @ccd/unocss-preset: Shared UnoCSS preset, safelist, and build-time styling helpers.
 - @ccd/shared-utils: Pure shared utilities.
 - @ccd/vue-hooks: Shared Vue/browser composables.
+- @ccd/vue-app-platform: Shared frontend app bootstrap lifecycle and platform orchestration primitives.
 - @ccd/vue-ui: Shared Vue UI primitives.
 - @ccd/vue-primevue-adapter: PrimeVue-specific theme and adaptation layer.
 - @ccd/vue-charts: Shared chart runtime and helpers.
@@ -46,6 +48,7 @@
 - @ccd/unocss-preset: protected
 - @ccd/shared-utils: protected
 - @ccd/vue-hooks: protected
+- @ccd/vue-app-platform: protected
 - @ccd/vue-ui: protected
 - @ccd/vue-primevue-adapter: protected
 - @ccd/vue-charts: protected
@@ -71,13 +74,13 @@
 ## Release Governance
 
 - Version governance: changesets
-- Release order: @ccd/contracts -> @ccd/core -> @ccd/design-tokens -> @ccd/unocss-preset -> @ccd/shared-utils -> @ccd/vue-hooks -> @ccd/vue-ui -> @ccd/vue-primevue-adapter -> @ccd/vue-charts -> @ccd/web-demo -> @ccd/desktop
+- Release order: @ccd/contracts -> @ccd/core -> @ccd/design-tokens -> @ccd/unocss-preset -> @ccd/shared-utils -> @ccd/vue-hooks -> @ccd/vue-app-platform -> @ccd/vue-ui -> @ccd/vue-primevue-adapter -> @ccd/vue-charts -> @ccd/web-demo -> @ccd/desktop
 - Release gate: pnpm release:governance
 
 ## Build Graph Topology
 
 - Orchestrator: Turbo
-- Topological order: @ccd/contracts -> @ccd/core -> @ccd/design-tokens -> @ccd/unocss-preset -> @ccd/shared-utils -> @ccd/vue-hooks -> @ccd/vue-ui -> @ccd/vue-primevue-adapter -> @ccd/vue-charts -> @ccd/web-demo -> @ccd/desktop
+- Topological order: @ccd/contracts -> @ccd/core -> @ccd/design-tokens -> @ccd/unocss-preset -> @ccd/shared-utils -> @ccd/vue-hooks -> @ccd/vue-app-platform -> @ccd/vue-ui -> @ccd/vue-primevue-adapter -> @ccd/vue-charts -> @ccd/web-demo -> @ccd/desktop
 - Recommended validation commands: pnpm lint:check, pnpm test:run, pnpm type-check, pnpm build:ci, pnpm governance:gate, pnpm ci:prepare-internal, pnpm ci:smoke:packages, pnpm vercel:build
 
 ## Supply Chain Governance

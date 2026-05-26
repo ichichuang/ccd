@@ -17,7 +17,8 @@
   ],
   "allowedRuntimeAccessPaths": [
     "apps/web-demo/src/adapters/**",
-    "apps/desktop/src/adapters/**"
+    "apps/desktop/src/adapters/**",
+    "packages/vue-app-platform/src/preloadError.ts"
   ],
   "requiredEntrypoints": [
     ".ai/protocol/AGENTS.core.md",

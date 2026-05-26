@@ -75,6 +75,12 @@ Constraints:
 This key is a transient runtime coordination flag used to avoid infinite reload loops after stale chunk preload failures.
 It is not user, auth, route, or business payload data.
 
+`packages/vue-app-platform/src/preloadError.ts` may own the same transient reload-guard logic when bootstrap recovery is extracted into a shared frontend platform package.
+Constraints:
+- The stored value remains a one-shot boolean-like reload flag only.
+- No user, auth, route, or business payload data may be stored under this exception.
+- Each consuming app remains responsible for the concrete storage key it passes into the helper.
+
 ### Exception 4 — Size First-Paint Preload
 `src/utils/theme/sizeEngine.ts` may synchronously read `SIZE_PERSIST_KEY` before Vue/Pinia mounts to avoid first-frame layout/size flash.
 The persisted value MUST still be written by `useSizeStore` through `createPiniaEncryptedSerializer()`.

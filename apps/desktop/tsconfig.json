@@ -32,6 +32,9 @@
       "path": "../../packages/unocss-preset"
     },
     {
+      "path": "../../packages/vue-app-platform"
+    },
+    {
       "path": "../../packages/vue-hooks"
     },
     {

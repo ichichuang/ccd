@@ -41,6 +41,7 @@
     "@ccd/unocss-preset": ["@ccd/design-tokens"],
     "@ccd/shared-utils": [],
     "@ccd/vue-hooks": [],
+    "@ccd/vue-app-platform": [],
     "@ccd/vue-ui": [],
     "@ccd/vue-primevue-adapter": ["@ccd/design-tokens"],
     "@ccd/vue-charts": [],
@@ -51,11 +52,18 @@
       "@ccd/shared-utils",
       "@ccd/unocss-preset",
       "@ccd/vue-hooks",
+      "@ccd/vue-app-platform",
       "@ccd/vue-ui",
       "@ccd/vue-primevue-adapter",
       "@ccd/vue-charts"
     ],
-    "@ccd/desktop": ["@ccd/contracts", "@ccd/core", "@ccd/design-tokens", "@ccd/unocss-preset"]
+    "@ccd/desktop": [
+      "@ccd/contracts",
+      "@ccd/core",
+      "@ccd/design-tokens",
+      "@ccd/unocss-preset",
+      "@ccd/vue-app-platform"
+    ]
   },
   "packageResponsibilities": {
     "@ccd/contracts": "Cross-runtime interfaces and DTO contracts only.",
@@ -64,6 +72,7 @@
     "@ccd/unocss-preset": "Shared UnoCSS preset, safelist, and build-time styling helpers.",
     "@ccd/shared-utils": "Pure shared utilities.",
     "@ccd/vue-hooks": "Shared Vue/browser composables.",
+    "@ccd/vue-app-platform": "Shared frontend app bootstrap lifecycle and platform orchestration primitives.",
     "@ccd/vue-ui": "Shared Vue UI primitives.",
     "@ccd/vue-primevue-adapter": "PrimeVue-specific theme and adaptation layer.",
     "@ccd/vue-charts": "Shared chart runtime and helpers.",
@@ -77,6 +86,7 @@
     "@ccd/unocss-preset": "protected",
     "@ccd/shared-utils": "protected",
     "@ccd/vue-hooks": "protected",
+    "@ccd/vue-app-platform": "protected",
     "@ccd/vue-ui": "protected",
     "@ccd/vue-primevue-adapter": "protected",
     "@ccd/vue-charts": "protected",
@@ -90,6 +100,7 @@
     "@ccd/unocss-preset",
     "@ccd/shared-utils",
     "@ccd/vue-hooks",
+    "@ccd/vue-app-platform",
     "@ccd/vue-ui",
     "@ccd/vue-primevue-adapter",
     "@ccd/vue-charts",

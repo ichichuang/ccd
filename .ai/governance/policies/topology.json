@@ -8,6 +8,7 @@
     "@ccd/unocss-preset",
     "@ccd/shared-utils",
     "@ccd/vue-hooks",
+    "@ccd/vue-app-platform",
     "@ccd/vue-ui",
     "@ccd/vue-primevue-adapter",
     "@ccd/vue-charts",
@@ -75,6 +76,16 @@
       "runtime": "web-library"
     },
     {
+      "name": "@ccd/vue-app-platform",
+      "path": "packages/vue-app-platform",
+      "layer": "frontend-platform",
+      "criticality": "protected",
+      "responsibility": "Shared frontend app bootstrap lifecycle and platform orchestration primitives.",
+      "allowedWorkspaceDependencies": [],
+      "publicApi": true,
+      "runtime": "web-library"
+    },
+    {
       "name": "@ccd/vue-ui",
       "path": "packages/vue-ui",
       "layer": "frontend-platform",
@@ -117,6 +128,7 @@
         "@ccd/shared-utils",
         "@ccd/unocss-preset",
         "@ccd/vue-hooks",
+        "@ccd/vue-app-platform",
         "@ccd/vue-ui",
         "@ccd/vue-primevue-adapter",
         "@ccd/vue-charts"
@@ -134,7 +146,8 @@
         "@ccd/contracts",
         "@ccd/core",
         "@ccd/design-tokens",
-        "@ccd/unocss-preset"
+        "@ccd/unocss-preset",
+        "@ccd/vue-app-platform"
       ],
       "publicApi": true,
       "runtime": "desktop",
@@ -162,6 +175,7 @@
       "@ccd/unocss-preset",
       "@ccd/shared-utils",
       "@ccd/vue-hooks",
+      "@ccd/vue-app-platform",
       "@ccd/vue-ui",
       "@ccd/vue-primevue-adapter",
       "@ccd/vue-charts",

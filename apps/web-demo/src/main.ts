@@ -5,6 +5,11 @@ import '@/assets/styles/animate-lite.scss'
 import 'uno.css'
 
 // 导入应用
+import {
+  markAppBootstrapping,
+  setupVitePreloadErrorRecovery,
+  waitForStablePaint,
+} from '@ccd/vue-app-platform'
 import App from '@/App.vue'
 import { RUNTIME_STORAGE_KEYS } from '@/constants/runtime'
 import { setupPlugins } from '@/plugins'
@@ -13,35 +18,12 @@ import { useLayoutStoreWithOut } from '@/stores/modules/system'
 import { fadeOutNativePreloader } from '@/hooks/layout/useLoading'
 import { preload } from '@/utils/theme/sizeEngine'
 
-/**
- * Wait two paints to ensure mounted DOM + CSS var updates
- * are fully committed before visual handoff.
- */
-const nextFrame = () =>
-  new Promise<void>(resolve => {
-    requestAnimationFrame(() => {
-      requestAnimationFrame(() => resolve())
-    })
-  })
-
-// Handle Vite module preload failures gracefully (e.g., stale cache, transient network)
-window.addEventListener('vite:preloadError', event => {
-  event.preventDefault()
-  const reloadedFlag = sessionStorage.getItem(RUNTIME_STORAGE_KEYS.vitePreloadReload)
-  if (!reloadedFlag) {
-    sessionStorage.setItem(RUNTIME_STORAGE_KEYS.vitePreloadReload, 'true')
-    window.location.reload()
-    return
-  }
-  console.error('Vite chunk preload failed permanently.')
-  sessionStorage.removeItem(RUNTIME_STORAGE_KEYS.vitePreloadReload)
+setupVitePreloadErrorRecovery({
+  storageKey: RUNTIME_STORAGE_KEYS.vitePreloadReload,
 })
 
 async function bootstrap() {
-  if (typeof document !== 'undefined') {
-    document.documentElement.dataset.appReady = 'false'
-    document.documentElement.dataset.runtimeLoading = 'true'
-  }
+  markAppBootstrapping()
   if (typeof document !== 'undefined') preload()
 
   const app = createApp(App)
@@ -54,7 +36,7 @@ async function bootstrap() {
   // Single-Owner Handoff: 首跳路由就绪后结束启动期默认 loading，并移除原生 preloader。
   // Double rAF ensures theme/size CSS vars are applied and first paint is stable.
   await router.isReady()
-  await nextFrame()
+  await waitForStablePaint()
   const layoutStore = useLayoutStoreWithOut()
   if (layoutStore.loadingCount > 0) {
     layoutStore.endGlobalLoading()

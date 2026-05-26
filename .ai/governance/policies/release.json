@@ -9,16 +9,14 @@
     "@ccd/unocss-preset",
     "@ccd/shared-utils",
     "@ccd/vue-hooks",
+    "@ccd/vue-app-platform",
     "@ccd/vue-ui",
     "@ccd/vue-primevue-adapter",
     "@ccd/vue-charts",
     "@ccd/web-demo",
     "@ccd/desktop"
   ],
-  "criticalPackages": [
-    "@ccd/contracts",
-    "@ccd/core"
-  ],
+  "criticalPackages": ["@ccd/contracts", "@ccd/core"],
   "singleGate": {
     "command": "pnpm governance:gate",
     "requiredChecks": [
@@ -36,13 +34,8 @@
   "githubWorkflowRegistry": {
     "required": true,
     "mode": "warn-without-token",
-    "allowedActiveWorkflowFiles": [
-      ".github/workflows/ci.yml",
-      ".github/workflows/deploy.yml"
-    ],
-    "allowedRemoteWorkflowPaths": [
-      "dynamic/dependabot/dependabot-updates"
-    ],
+    "allowedActiveWorkflowFiles": [".github/workflows/ci.yml", ".github/workflows/deploy.yml"],
+    "allowedRemoteWorkflowPaths": ["dynamic/dependabot/dependabot-updates"],
     "orphanPolicy": "disabled"
   },
   "protectedPaths": [

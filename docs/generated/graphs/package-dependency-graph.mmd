@@ -8,6 +8,7 @@ graph TD
   ccd_design_tokens --> ccd_unocss_preset
   ccd_shared_utils["@ccd/shared-utils<br/>frontend-platform<br/>Pure shared utilities."]
   ccd_vue_hooks["@ccd/vue-hooks<br/>frontend-platform<br/>Shared Vue/browser composables."]
+  ccd_vue_app_platform["@ccd/vue-app-platform<br/>frontend-platform<br/>Shared frontend app bootstrap lifecycle and platform orchestration primitives."]
   ccd_vue_ui["@ccd/vue-ui<br/>frontend-platform<br/>Shared Vue UI primitives."]
   ccd_vue_primevue_adapter["@ccd/vue-primevue-adapter<br/>frontend-platform<br/>PrimeVue-specific theme and adaptation layer."]
   ccd_design_tokens --> ccd_vue_primevue_adapter
@@ -19,6 +20,7 @@ graph TD
   ccd_shared_utils --> ccd_web_demo
   ccd_unocss_preset --> ccd_web_demo
   ccd_vue_hooks --> ccd_web_demo
+  ccd_vue_app_platform --> ccd_web_demo
   ccd_vue_ui --> ccd_web_demo
   ccd_vue_primevue_adapter --> ccd_web_demo
   ccd_vue_charts --> ccd_web_demo
@@ -27,3 +29,4 @@ graph TD
   ccd_core --> ccd_desktop
   ccd_design_tokens --> ccd_desktop
   ccd_unocss_preset --> ccd_desktop
+  ccd_vue_app_platform --> ccd_desktop

@@ -19,6 +19,7 @@
     "@ccd/design-tokens": "workspace:*",
     "@ccd/shared-utils": "workspace:*",
     "@ccd/unocss-preset": "workspace:*",
+    "@ccd/vue-app-platform": "workspace:*",
     "@ccd/vue-hooks": "workspace:*",
     "@ccd/vue-primevue-adapter": "workspace:*",
     "@ccd/vue-ui": "workspace:*",

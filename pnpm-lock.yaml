@@ -105,6 +105,9 @@ importers:
       '@ccd/unocss-preset':
         specifier: workspace:*
         version: link:packages/unocss-preset
+      '@ccd/vue-app-platform':
+        specifier: workspace:*
+        version: link:packages/vue-app-platform
       '@ccd/vue-charts':
         specifier: workspace:*
         version: link:packages/vue-charts
@@ -351,6 +354,9 @@ importers:
       '@ccd/unocss-preset':
         specifier: workspace:*
         version: link:../../packages/unocss-preset
+      '@ccd/vue-app-platform':
+        specifier: workspace:*
+        version: link:../../packages/vue-app-platform
       '@ccd/vue-hooks':
         specifier: workspace:*
         version: link:../../packages/vue-hooks
@@ -415,6 +421,9 @@ importers:
       '@ccd/unocss-preset':
         specifier: workspace:*
         version: link:../../packages/unocss-preset
+      '@ccd/vue-app-platform':
+        specifier: workspace:*
+        version: link:../../packages/vue-app-platform
       '@ccd/vue-charts':
         specifier: workspace:*
         version: link:../../packages/vue-charts
@@ -582,6 +591,8 @@ importers:
       unocss:
         specifier: ^66.6.0
         version: 66.6.0(postcss@8.5.6)(vite@7.3.1(@types/node@25.7.0)(jiti@2.6.1)(sass@1.97.3)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.2))
+
+  packages/vue-app-platform: {}
 
   packages/vue-charts:
     dependencies:

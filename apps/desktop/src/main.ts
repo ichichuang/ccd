@@ -1,38 +1,27 @@
 import 'uno.css'
 
 import { createApp } from 'vue'
+import {
+  fadeOutNativePreloader,
+  markAppBootstrapping,
+  setupVitePreloadErrorRecovery,
+  waitForStablePaint,
+} from '@ccd/vue-app-platform'
 import App from './App.vue'
-import { fadeOutNativePreloader } from './bootstrap/preloader'
 import { setupPlugins } from './plugins'
 import router from './router'
 import { setupDesktopDesignSystem } from './theme'
 
-const VITE_PRELOAD_RELOAD_KEY = 'ccd:desktop:vite-preload-reload'
+const DESKTOP_PRELOAD_RELOAD_KEY = 'ccd:desktop:vite-preload-reload'
 
-const nextFrame = () =>
-  new Promise<void>(resolve => {
-    requestAnimationFrame(() => {
-      requestAnimationFrame(() => resolve())
-    })
-  })
-
-window.addEventListener('vite:preloadError', event => {
-  event.preventDefault()
-  const reloadedFlag = sessionStorage.getItem(VITE_PRELOAD_RELOAD_KEY)
-  if (!reloadedFlag) {
-    sessionStorage.setItem(VITE_PRELOAD_RELOAD_KEY, 'true')
-    window.location.reload()
-    return
-  }
-  console.error('Vite chunk preload failed permanently.')
-  sessionStorage.removeItem(VITE_PRELOAD_RELOAD_KEY)
+setupVitePreloadErrorRecovery({
+  storageKey: DESKTOP_PRELOAD_RELOAD_KEY,
 })
 
 async function bootstrap() {
+  markAppBootstrapping()
   if (typeof document !== 'undefined') {
-    document.documentElement.dataset.appReady = 'false'
     document.documentElement.dataset.preloaderState = 'visible'
-    document.documentElement.dataset.runtimeLoading = 'true'
   }
 
   setupDesktopDesignSystem()
@@ -42,8 +31,8 @@ async function bootstrap() {
   app.mount('#app')
 
   await router.isReady()
-  await nextFrame()
-  fadeOutNativePreloader()
+  await waitForStablePaint()
+  fadeOutNativePreloader({ removeDelayMs: 400 })
 }
 
 bootstrap().catch(error => {
