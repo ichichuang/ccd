@@ -36,6 +36,10 @@ const dashboardHeaderItemSelector =
   '[data-layout-header="true"] a[href$="#/dashboard"][data-menu-state]'
 const primeVueOverviewSidebarItemSelector =
   '[data-layout-sidebar="true"] a.admin-sidebar-menu__item[href*="/example/primevue-collection/overview"]'
+const primeVueOverviewRowSelector =
+  '[data-layout-sidebar="true"] .admin-sidebar-menu__visual-row[data-route-exact-active="true"][data-menu-row-state="active"]'
+const systemConfigurationHeaderSelector =
+  '[data-layout-sidebar="true"] .p-panelmenu-header:has-text("系统配置")'
 const TRANSPARENT_BACKGROUND = 'rgba(0, 0, 0, 0)'
 const INACTIVE_TEXT_COLOR = 'rgb(51, 51, 51)'
 
@@ -193,11 +197,17 @@ test.describe('sidebar route/menu first-paint synchronization', () => {
     await expect(sidebar).toBeVisible()
 
     const overviewItem = directPage.locator(primeVueOverviewSidebarItemSelector)
+    const overviewRow = directPage.locator(primeVueOverviewRowSelector)
     await expect(overviewItem).toBeVisible()
+    await expect(overviewRow).toBeVisible()
     await expect(overviewItem).toHaveAttribute('aria-current', 'page')
     await expect(overviewItem).toHaveAttribute('data-route-active', 'true')
     await expect(overviewItem).toHaveAttribute('data-route-exact-active', 'true')
     await expect(overviewItem).toHaveAttribute('data-menu-state', 'active')
+    await expect(overviewRow).toHaveAttribute('data-route-active', 'true')
+    await expect(overviewRow).toHaveAttribute('data-route-exact-active', 'true')
+    await expect(overviewRow).toHaveAttribute('data-menu-row-state', 'active')
+    await expect(overviewRow).not.toHaveCSS('background-color', TRANSPARENT_BACKGROUND)
 
     const collectionAncestor = sidebar
       .locator('.admin-sidebar-menu__item[data-menu-state="ancestor"]')
@@ -211,11 +221,21 @@ test.describe('sidebar route/menu first-paint synchronization', () => {
     await expect(collectionAncestor).toBeVisible()
     await expect(primeVueAncestor).toBeVisible()
 
-    await directPage.mouse.move(8, 8)
+    const systemConfigurationHeader = directPage.locator(systemConfigurationHeaderSelector).first()
+    await expect(systemConfigurationHeader).toBeVisible()
+    await systemConfigurationHeader.hover()
+    await expect(overviewRow).toHaveAttribute('data-menu-row-state', 'active')
+    await expect(overviewRow).not.toHaveCSS('background-color', TRANSPARENT_BACKGROUND)
+
+    await directPage.locator('[data-layout-content="true"]').hover()
     await expect(overviewItem).toBeVisible()
+    await expect(overviewRow).toBeVisible()
     await expect(overviewItem).toHaveAttribute('aria-current', 'page')
     await expect(overviewItem).toHaveAttribute('data-route-exact-active', 'true')
     await expect(overviewItem).toHaveAttribute('data-menu-state', 'active')
+    await expect(overviewRow).toHaveAttribute('data-route-exact-active', 'true')
+    await expect(overviewRow).toHaveAttribute('data-menu-row-state', 'active')
+    await expect(overviewRow).not.toHaveCSS('background-color', TRANSPARENT_BACKGROUND)
 
     await directContext.close()
   })

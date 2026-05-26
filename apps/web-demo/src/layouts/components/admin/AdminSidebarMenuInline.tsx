@@ -44,6 +44,23 @@ interface SidebarRouterLinkSlotProps {
   isExactActive: boolean
 }
 
+interface SidebarPanelVisualState {
+  distance: number
+  isSubmenuVisuallyOpen: boolean
+  routeActive: boolean
+  routeExactActive: boolean
+  menuState: 'active' | 'ancestor' | 'open' | 'idle'
+}
+
+interface PanelMenuPtOptionsLike {
+  context?: {
+    item?: PrimeMenuModelItem
+    active?: boolean
+  }
+  item?: PrimeMenuModelItem
+  active?: boolean
+}
+
 export default defineComponent({
   name: 'AdminSidebarMenuInline',
   props: {
@@ -221,8 +238,76 @@ export default defineComponent({
       })
     }
 
-    const renderPanelMenuItem = ({ item, active, props: slotProps }: PanelMenuItemSlot) => {
+    const resolvePanelVisualState = (
+      item: PrimeMenuModelItem,
+      active?: boolean
+    ): SidebarPanelVisualState => {
       const distance = getActiveDistance(route, item)
+      const key = item.key
+      const hasChildren = Array.isArray(item.items) && item.items.length > 0
+      const isSubmenuOpen =
+        typeof key === 'string' &&
+        hasChildren &&
+        (active === true || controlledExpandedKeys.value[key] === true)
+      const isSubmenuVisuallyOpen =
+        typeof key === 'string' && hasChildren
+          ? isSubmenuOpen || collapsingVisualKeys.value.has(key)
+          : false
+      const routeActive = distance >= 0
+      const routeExactActive = distance === 0
+      const menuState =
+        distance === 0
+          ? 'active'
+          : distance > 0
+            ? 'ancestor'
+            : isSubmenuVisuallyOpen
+              ? 'open'
+              : 'idle'
+
+      return {
+        distance,
+        isSubmenuVisuallyOpen,
+        routeActive,
+        routeExactActive,
+        menuState,
+      }
+    }
+
+    const buildPanelRowAttrs = (
+      options?: PanelMenuPtOptionsLike
+    ): Record<string, string | undefined> => {
+      const item = options?.context?.item ?? options?.item
+      const active = options?.context?.active ?? options?.active
+      if (!item) return {}
+      const level = item.level ?? 0
+      const visualState = resolvePanelVisualState(item, active)
+      const wrapperStateClass =
+        visualState.menuState === 'idle'
+          ? ''
+          : getMenuStateClasses({
+              context: 'sidebar',
+              distance: visualState.distance,
+              isSubmenuOpen: visualState.isSubmenuVisuallyOpen,
+              level,
+            })
+
+      return {
+        class: [
+          'admin-sidebar-menu__visual-row',
+          level <= 0
+            ? 'admin-sidebar-menu__visual-row--root'
+            : 'admin-sidebar-menu__visual-row--child',
+          wrapperStateClass,
+        ]
+          .filter(Boolean)
+          .join(' '),
+        'data-menu-row-state': visualState.menuState,
+        'data-route-active': visualState.routeActive ? 'true' : undefined,
+        'data-route-exact-active': visualState.routeExactActive ? 'true' : undefined,
+      }
+    }
+
+    const renderPanelMenuItem = ({ item, active, props: slotProps }: PanelMenuItemSlot) => {
       const level = item.level ?? 0
       const indentClass = level <= 0 ? MENU_PANEL_INDENT_ROOT : MENU_PANEL_INDENT_CHILD
       const key = item.key
@@ -235,9 +320,9 @@ export default defineComponent({
         actionClassStr.includes('p-focus') ||
         actionClassStr.includes('p-active') ||
         actionClassStr.includes('p-highlight')
-      const isSubmenuOpen =
-        hasChildren && (active === true || controlledExpandedKeys.value[key] === true)
-      const isSubmenuVisuallyOpen = isSubmenuOpen || collapsingVisualKeys.value.has(key)
+      const visualState = resolvePanelVisualState(item, active)
+      const { distance, isSubmenuVisuallyOpen, routeActive, routeExactActive, menuState } =
+        visualState
       const baseClasses = [
         getMenuItemBase('sidebar'),
         'admin-sidebar-menu__item',
@@ -304,16 +389,8 @@ export default defineComponent({
       )
 
       const stateData = {
-        'data-menu-state':
-          distance === 0
-            ? 'active'
-            : distance > 0
-              ? 'ancestor'
-              : isSubmenuVisuallyOpen
-                ? 'open'
-                : 'idle',
+        'data-menu-state': menuState,
       }
-      const isRouteCurrent = distance === 0
       const linkClass = `${baseClasses} ${stateClasses}`
       const routeTarget = item.route?.name || item.route?.path
 
@@ -333,11 +410,13 @@ export default defineComponent({
                 isActive,
                 isExactActive,
               }: SidebarRouterLinkSlotProps) => {
-                const routeActive = isActive || isRouteCurrent
-                const routeExactActive = isExactActive || isRouteCurrent
+                const routeLinkActive = isActive || routeActive
+                const routeLinkExactActive = isExactActive || routeExactActive
                 const routeStateClasses = [
-                  routeActive ? 'router-link-active c-admin-sidebar-menu__link--route-active' : '',
-                  routeExactActive
+                  routeLinkActive
+                    ? 'router-link-active c-admin-sidebar-menu__link--route-active'
+                    : '',
+                  routeLinkExactActive
                     ? 'router-link-exact-active c-admin-sidebar-menu__link--route-exact-active'
                     : '',
                 ]
@@ -348,9 +427,9 @@ export default defineComponent({
                   <a
                     href={isExtLink ? extUrl : href}
                     role="link"
-                    aria-current={routeExactActive ? 'page' : undefined}
-                    data-route-active={routeActive ? 'true' : undefined}
-                    data-route-exact-active={routeExactActive ? 'true' : undefined}
+                    aria-current={routeLinkExactActive ? 'page' : undefined}
+                    data-route-active={routeLinkActive ? 'true' : undefined}
+                    data-route-exact-active={routeLinkExactActive ? 'true' : undefined}
                     {...stateData}
                     class={[linkClass, routeStateClasses].filter(Boolean).join(' ')}
                     onClick={(event: MouseEvent) => {
@@ -414,9 +493,11 @@ export default defineComponent({
             item: {
               class: 'mb-xs last:mb-0',
             },
-            headerContent: {
+            headerContent: (options: PanelMenuPtOptionsLike) => ({
               class: 'bg-transparent!',
-            },
+              ...buildPanelRowAttrs(options),
+            }),
+            itemContent: (options: PanelMenuPtOptionsLike) => buildPanelRowAttrs(options),
             submenu: {
               class: 'mt-xs',
             },
