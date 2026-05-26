@@ -501,6 +501,7 @@ defineExpose({
         <Icons
           name="i-lucide-circle-arrow-up"
           size="xl"
+          color="text-primary-foreground"
         />
       </div>
     </AnimateWrapper>

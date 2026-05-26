@@ -26,6 +26,25 @@ const sizeStore = useSizeStore()
 const { themeName, mode } = storeToRefs(themeStore)
 const { sizeName } = storeToRefs(sizeStore)
 
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return Boolean(value) && typeof value === 'object'
+}
+
+const effectiveLoadingOptions = computed<Record<string, unknown>>(() => {
+  const raw: unknown = props.loadingOptions
+  const base = typeof raw === 'function' ? raw() : isRecord(raw) ? raw : {}
+  const currentText = base.text
+
+  if (typeof currentText === 'string' && currentText.trim().length > 0) {
+    return base
+  }
+
+  return {
+    ...base,
+    text: t('common.loading'),
+  }
+})
+
 const themeRuntime = computed<ChartThemeRuntimeState>(() => ({
   themeName: themeName.value,
   mode: mode.value,
@@ -65,6 +84,7 @@ defineExpose<ChartInstance>({
     ref="chartRef"
     v-bind="props"
     :theme-runtime="themeRuntime"
+    :loading-options="effectiveLoadingOptions"
     v-on="$attrs"
   />
 </template>

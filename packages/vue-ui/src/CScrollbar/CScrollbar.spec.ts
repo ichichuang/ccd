@@ -22,8 +22,17 @@ vi.mock('../AnimateWrapper/AnimateWrapper.vue', () => ({
 vi.mock('../Icons/Icons.vue', () => ({
   default: defineComponent({
     name: 'IconsStub',
+    props: {
+      color: {
+        type: String,
+        default: '',
+      },
+    },
     render() {
-      return h('span')
+      return h('span', {
+        'data-testid': 'icons-stub',
+        'data-color': this.$props.color,
+      })
     },
   }),
 }))
@@ -153,5 +162,21 @@ describe('CScrollbar memory restoration', () => {
     wrapper.unmount()
     vi.useRealTimers()
     vi.unstubAllGlobals()
+  })
+})
+
+describe('CScrollbar back-to-top', () => {
+  it('passes primary foreground token to back-to-top icon', async () => {
+    const wrapper = mount(CScrollbar, {
+      props: {
+        backToTop: true,
+      },
+    })
+
+    await nextTick()
+
+    expect(wrapper.get('[data-testid="icons-stub"]').attributes('data-color')).toBe(
+      'text-primary-foreground'
+    )
   })
 })

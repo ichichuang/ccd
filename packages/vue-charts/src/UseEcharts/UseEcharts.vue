@@ -217,6 +217,10 @@ const effectiveLoadingOptions = computed((): Record<string, unknown> => {
   const base: Record<string, unknown> =
     typeof raw === 'function' ? (raw as () => Record<string, unknown>)() : (raw ?? {})
   const textStyle = base.textStyle as Record<string, unknown> | undefined
+  const explicitTextColor =
+    typeof base.textColor === 'string' && base.textColor.trim().length > 0
+      ? base.textColor
+      : undefined
   try {
     const vars = getChartSystemVariables(runtime.sizeName)
 
@@ -228,19 +232,22 @@ const effectiveLoadingOptions = computed((): Record<string, unknown> => {
     const maskColor =
       (base.maskColor as string | undefined) ?? buildMaskColor(vars.background || vars.card)
 
-    // 3) 文字颜色：若用户已显式设置则尊重，否则使用 primaryForeground → foreground
+    // 3) 文字颜色：优先 textColor；否则使用 mutedForeground / foreground，保证深浅主题可读性
+    const defaultTextColor = vars.mutedForeground || vars.foreground || vars.primaryForeground
+    const finalTextColor = explicitTextColor ?? defaultTextColor
     const finalTextStyle =
       textStyle && typeof textStyle === 'object' && textStyle.color
         ? textStyle
         : {
             ...(textStyle && typeof textStyle === 'object' ? textStyle : {}),
-            color: vars.primaryForeground || vars.primary || vars.foreground,
+            ...(finalTextColor ? { color: finalTextColor } : {}),
           }
 
     return {
       ...base,
       ...(iconColor ? { color: iconColor } : {}),
       ...(maskColor ? { maskColor } : {}),
+      ...(finalTextColor ? { textColor: finalTextColor } : {}),
       ...(finalTextStyle ? { textStyle: finalTextStyle } : {}),
     }
   } catch {
