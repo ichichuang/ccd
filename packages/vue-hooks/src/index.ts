@@ -1,13 +1,13 @@
-export { useAppElementSize } from './useAppElementSize'
-export type { UseAppElementSizeReturn, UseElementSizeOptions } from './useAppElementSize'
-export { createAutoMittHook } from './createAutoMittHook'
+export { useAppElementSize } from './useAppElementSize.js'
+export type { UseAppElementSizeReturn, UseElementSizeOptions } from './useAppElementSize.js'
+export { createAutoMittHook } from './createAutoMittHook.js'
 export {
   useDragAction,
   useInteraction,
   useLongPressAction,
   useSwipeAction,
   useTap,
-} from './useInteraction'
+} from './useInteraction/index.js'
 export type {
   InteractionTarget,
   SwipeDirection,
@@ -20,4 +20,6 @@ export type {
   UseSwipeActionReturn,
   UseTapOptions,
   UseTapReturn,
-} from './useInteraction'
+} from './useInteraction/index.js'
+export { installInteractionDirectives, vLongPress, vSwipe, vTap } from './directives/index.js'
+export type { InteractionDirectiveInstallOptions } from './directives/index.js'

@@ -50,9 +50,13 @@ vi.mock('@/plugins/modules/date', () => ({
 }))
 
 vi.mock('@/directives/auth', () => ({ vAuth: { mounted: vi.fn() } }))
-vi.mock('@/directives/tap', () => ({ vTap: { mounted: vi.fn() } }))
-vi.mock('@/directives/swipe', () => ({ vSwipe: { mounted: vi.fn() } }))
-vi.mock('@/directives/longPress', () => ({ vLongPress: { mounted: vi.fn() } }))
+vi.mock('@ccd/vue-hooks', () => ({
+  installInteractionDirectives: (app: { directive: (name: string, value: unknown) => void }) => {
+    app.directive('tap', { mounted: vi.fn() })
+    app.directive('swipe', { mounted: vi.fn() })
+    app.directive('long-press', { mounted: vi.fn() })
+  },
+}))
 
 describe('setupPlugins bootstrap order', () => {
   beforeEach(() => {

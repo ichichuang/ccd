@@ -34,7 +34,7 @@
 
 - Path: `packages/vue-hooks`
 - Export subpaths: `.`
-- Root symbols: `createAutoMittHook`, `InteractionTarget`, `SwipeDirection`, `useAppElementSize`, `UseAppElementSizeReturn`, `useDragAction`, `UseDragActionOptions`, `UseDragActionReturn`, `UseElementSizeOptions`, `useInteraction`, `UseInteractionReturn`, `useLongPressAction`, `UseLongPressActionOptions`, `UseLongPressActionReturn`, `useSwipeAction`, `UseSwipeActionOptions`, `UseSwipeActionReturn`, `useTap`, `UseTapOptions`, `UseTapReturn`
+- Root symbols: `createAutoMittHook`, `installInteractionDirectives`, `InteractionDirectiveInstallOptions`, `InteractionTarget`, `SwipeDirection`, `useAppElementSize`, `UseAppElementSizeReturn`, `useDragAction`, `UseDragActionOptions`, `UseDragActionReturn`, `UseElementSizeOptions`, `useInteraction`, `UseInteractionReturn`, `useLongPressAction`, `UseLongPressActionOptions`, `UseLongPressActionReturn`, `useSwipeAction`, `UseSwipeActionOptions`, `UseSwipeActionReturn`, `useTap`, `UseTapOptions`, `UseTapReturn`, `vLongPress`, `vSwipe`, `vTap`
 
 ## @ccd/vue-ui
 

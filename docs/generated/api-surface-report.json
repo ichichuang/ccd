@@ -130,6 +130,8 @@
       "exports": ["."],
       "rootSymbols": [
         "createAutoMittHook",
+        "installInteractionDirectives",
+        "InteractionDirectiveInstallOptions",
         "InteractionTarget",
         "SwipeDirection",
         "useAppElementSize",
@@ -148,7 +150,10 @@
         "UseSwipeActionReturn",
         "useTap",
         "UseTapOptions",
-        "UseTapReturn"
+        "UseTapReturn",
+        "vLongPress",
+        "vSwipe",
+        "vTap"
       ]
     },
     {
