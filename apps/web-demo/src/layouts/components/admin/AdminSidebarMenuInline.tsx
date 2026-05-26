@@ -61,6 +61,13 @@ interface PanelMenuPtOptionsLike {
   active?: boolean
 }
 
+interface PanelRowAttrs {
+  class: string
+  'data-menu-row-state': string
+  'data-route-active'?: string
+  'data-route-exact-active'?: string
+}
+
 export default defineComponent({
   name: 'AdminSidebarMenuInline',
   props: {
@@ -273,16 +280,15 @@ export default defineComponent({
       }
     }
 
-    const buildPanelRowAttrs = (
-      options?: PanelMenuPtOptionsLike
-    ): Record<string, string | undefined> => {
+    const buildPanelRowAttrs = (options?: PanelMenuPtOptionsLike): PanelRowAttrs | null => {
       const item = options?.context?.item ?? options?.item
       const active = options?.context?.active ?? options?.active
-      if (!item) return {}
+      if (!item) return null
       const level = item.level ?? 0
+      const isRootRow = level <= 0
       const visualState = resolvePanelVisualState(item, active)
       const wrapperStateClass =
-        visualState.menuState === 'idle'
+        !isRootRow && visualState.menuState === 'idle'
           ? ''
           : getMenuStateClasses({
               context: 'sidebar',
@@ -290,13 +296,24 @@ export default defineComponent({
               isSubmenuOpen: visualState.isSubmenuVisuallyOpen,
               level,
             })
+      const wrapperModifierClass =
+        visualState.menuState === 'active'
+          ? 'admin-sidebar-menu__visual-row--active'
+          : visualState.menuState === 'ancestor'
+            ? 'admin-sidebar-menu__visual-row--ancestor'
+            : visualState.menuState === 'open'
+              ? 'admin-sidebar-menu__visual-row--open'
+              : ''
 
       return {
         class: [
           'admin-sidebar-menu__visual-row',
-          level <= 0
+          isRootRow
             ? 'admin-sidebar-menu__visual-row--root'
             : 'admin-sidebar-menu__visual-row--child',
+          'w-full min-w-0 box-border',
+          isRootRow ? 'flex items-stretch' : '',
+          wrapperModifierClass,
           wrapperStateClass,
         ]
           .filter(Boolean)
@@ -391,8 +408,17 @@ export default defineComponent({
       const stateData = {
         'data-menu-state': menuState,
       }
-      const linkClass = `${baseClasses} ${stateClasses}`
+      const isRootRow = level <= 0
+      const resolvedStateClasses = isRootRow ? '' : stateClasses
+      const linkClass = [
+        baseClasses,
+        isRootRow ? 'min-w-0 flex-1 bg-transparent! text-current!' : '',
+        resolvedStateClasses,
+      ]
+        .filter(Boolean)
+        .join(' ')
       const routeTarget = item.route?.name || item.route?.path
+      const rootRowAttrs = isRootRow ? buildPanelRowAttrs({ item, active }) : null
 
       if (item.route?.name) {
         const isExtLink = item.route.meta?.isLink === true
@@ -419,11 +445,12 @@ export default defineComponent({
                   routeLinkExactActive
                     ? 'router-link-exact-active c-admin-sidebar-menu__link--route-exact-active'
                     : '',
+                  isRootRow && routeLinkActive ? 'bg-transparent! hover:bg-transparent!' : '',
                 ]
                   .filter(Boolean)
                   .join(' ')
 
-                return withMenuTooltip(
+                const anchorNode = (
                   <a
                     href={isExtLink ? extUrl : href}
                     role="link"
@@ -439,19 +466,37 @@ export default defineComponent({
                         goToRoute(routeTarget, undefined, undefined, false)
                         return
                       }
+                      if (isRootRow) {
+                        event.preventDefault()
+                        goToRoute(routeTarget, undefined, undefined, false)
+                        return
+                      }
                       void navigate(event)
                     }}
                   >
                     {content}
                   </a>
                 )
+
+                if (rootRowAttrs) {
+                  return withMenuTooltip(
+                    <div
+                      {...rootRowAttrs}
+                      class={rootRowAttrs.class}
+                    >
+                      {anchorNode}
+                    </div>
+                  )
+                }
+
+                return withMenuTooltip(anchorNode)
               },
             }}
           />
         )
       }
 
-      return withMenuTooltip(
+      const itemNode = (
         <div
           {...stateData}
           class={linkClass}
@@ -468,6 +513,19 @@ export default defineComponent({
           {content}
         </div>
       )
+
+      if (rootRowAttrs) {
+        return withMenuTooltip(
+          <div
+            {...rootRowAttrs}
+            class={rootRowAttrs.class}
+          >
+            {itemNode}
+          </div>
+        )
+      }
+
+      return withMenuTooltip(itemNode)
     }
 
     return () => (

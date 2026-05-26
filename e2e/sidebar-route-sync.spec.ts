@@ -1,4 +1,4 @@
-import { expect, test, type BrowserContext, type Page } from '@playwright/test'
+import { expect, test, type BrowserContext, type Locator, type Page } from '@playwright/test'
 import { loginAsAdmin, waitForAppReady, waitForRuntimeLoadingIdle } from './helpers/app'
 
 interface SidebarDashboardDiagnostics {
@@ -21,6 +21,13 @@ interface SidebarDashboardDiagnostics {
     backgroundColor: string
     color: string
   } | null
+  dashboardRowDom: {
+    state: string | null
+    className: string
+    backgroundColor: string
+    color: string
+    width: number
+  } | null
   headerDashboardDom: {
     state: string | null
     className: string
@@ -32,16 +39,27 @@ interface SidebarDashboardDiagnostics {
 
 const dashboardSidebarItemSelector =
   '[data-layout-sidebar="true"] a.admin-sidebar-menu__item[href$="#/dashboard"]'
+const dashboardSidebarRowSelector =
+  '[data-layout-sidebar="true"] .admin-sidebar-menu__visual-row:has(a.admin-sidebar-menu__item[href$="#/dashboard"])'
+const dashboardHeaderContentSelector =
+  '[data-layout-sidebar="true"] .p-panelmenu-header-content:has(a.admin-sidebar-menu__item[href$="#/dashboard"])'
 const dashboardHeaderItemSelector =
   '[data-layout-header="true"] a[href$="#/dashboard"][data-menu-state]'
 const primeVueOverviewSidebarItemSelector =
   '[data-layout-sidebar="true"] a.admin-sidebar-menu__item[href*="/example/primevue-collection/overview"]'
 const primeVueOverviewRowSelector =
-  '[data-layout-sidebar="true"] .admin-sidebar-menu__visual-row[data-route-exact-active="true"][data-menu-row-state="active"]'
+  '[data-layout-sidebar="true"] .admin-sidebar-menu__visual-row:has(a.admin-sidebar-menu__item[href*="/example/primevue-collection/overview"])'
+const primeVueOverviewContentSelector =
+  '[data-layout-sidebar="true"] .p-panelmenu-item-content:has(a.admin-sidebar-menu__item[href*="/example/primevue-collection/overview"])'
 const systemConfigurationHeaderSelector =
-  '[data-layout-sidebar="true"] .p-panelmenu-header:has-text("系统配置")'
+  '[data-layout-sidebar="true"] .p-panelmenu-header-content:has-text("系统配置")'
+const systemConfigurationRowSelector =
+  '[data-layout-sidebar="true"] .admin-sidebar-menu__visual-row--root:has-text("系统配置")'
+const collectionRootRowSelector =
+  '[data-layout-sidebar="true"] .admin-sidebar-menu__visual-row--root:has-text("组件合集")'
 const TRANSPARENT_BACKGROUND = 'rgba(0, 0, 0, 0)'
 const INACTIVE_TEXT_COLOR = 'rgb(51, 51, 51)'
+const WIDTH_EPSILON = 3
 
 async function snapshotDashboardDiagnostics(page: Page): Promise<SidebarDashboardDiagnostics> {
   return page.evaluate(async () => {
@@ -103,6 +121,9 @@ async function snapshotDashboardDiagnostics(page: Page): Promise<SidebarDashboar
     const dashboardNode = document.querySelector(
       '[data-layout-sidebar="true"] a.admin-sidebar-menu__item[href$="#/dashboard"]'
     )
+    const dashboardRowNode = document.querySelector(
+      '[data-layout-sidebar="true"] .admin-sidebar-menu__visual-row:has(a.admin-sidebar-menu__item[href$="#/dashboard"])'
+    )
     const headerDashboardNode = document.querySelector(
       '[data-layout-header="true"] a[href$="#/dashboard"][data-menu-state]'
     )
@@ -148,6 +169,15 @@ async function snapshotDashboardDiagnostics(page: Page): Promise<SidebarDashboar
             color: getComputedStyle(dashboardNode).color,
           }
         : null,
+      dashboardRowDom: dashboardRowNode
+        ? {
+            state: dashboardRowNode.getAttribute('data-menu-row-state'),
+            className: dashboardRowNode.className,
+            backgroundColor: getComputedStyle(dashboardRowNode).backgroundColor,
+            color: getComputedStyle(dashboardRowNode).color,
+            width: dashboardRowNode.getBoundingClientRect().width,
+          }
+        : null,
       headerDashboardDom: headerDashboardNode
         ? {
             state: headerDashboardNode.getAttribute('data-menu-state'),
@@ -175,6 +205,60 @@ async function loginAndExtractStorageState(page: Page): Promise<{
 }> {
   await loginAsAdmin(page)
   return page.context().storageState()
+}
+
+async function expectRowWidthAligned(
+  page: Page,
+  rowSelector: string,
+  containerSelector: string,
+  anchorSelector?: string
+): Promise<void> {
+  const row = page.locator(rowSelector)
+  const container = page.locator(containerSelector)
+  const anchor = anchorSelector
+    ? page.locator(anchorSelector)
+    : row.locator('a.admin-sidebar-menu__item')
+
+  const [rowBox, containerBox, anchorBox] = await Promise.all([
+    row.boundingBox(),
+    container.boundingBox(),
+    anchor.boundingBox(),
+  ])
+
+  expect(rowBox).not.toBeNull()
+  expect(containerBox).not.toBeNull()
+  expect(anchorBox).not.toBeNull()
+  if (!rowBox || !containerBox || !anchorBox) return
+
+  expect(Math.abs(containerBox.width - rowBox.width)).toBeLessThanOrEqual(WIDTH_EPSILON)
+  expect(Math.abs(anchorBox.width - rowBox.width)).toBeLessThanOrEqual(WIDTH_EPSILON)
+}
+
+async function getBackgroundColor(locator: Locator): Promise<string> {
+  return locator.evaluate(node => getComputedStyle(node).backgroundColor)
+}
+
+async function expectHoverSurface(
+  visualRow: Locator,
+  headerContent: Locator,
+  initialRowBackground: string,
+  initialHeaderBackground: string
+): Promise<void> {
+  await expect
+    .poll(async () => {
+      const [rowBackground, headerBackground] = await Promise.all([
+        getBackgroundColor(visualRow),
+        getBackgroundColor(headerContent),
+      ])
+
+      return (
+        rowBackground !== TRANSPARENT_BACKGROUND ||
+        headerBackground !== TRANSPARENT_BACKGROUND ||
+        rowBackground !== initialRowBackground ||
+        headerBackground !== initialHeaderBackground
+      )
+    })
+    .toBe(true)
 }
 
 test.describe('sidebar route/menu first-paint synchronization', () => {
@@ -208,6 +292,16 @@ test.describe('sidebar route/menu first-paint synchronization', () => {
     await expect(overviewRow).toHaveAttribute('data-route-exact-active', 'true')
     await expect(overviewRow).toHaveAttribute('data-menu-row-state', 'active')
     await expect(overviewRow).not.toHaveCSS('background-color', TRANSPARENT_BACKGROUND)
+    await expectRowWidthAligned(
+      directPage,
+      primeVueOverviewRowSelector,
+      primeVueOverviewContentSelector,
+      primeVueOverviewSidebarItemSelector
+    )
+
+    const collectionRootRow = directPage.locator(collectionRootRowSelector)
+    await expect(collectionRootRow).toHaveAttribute('data-menu-row-state', 'ancestor')
+    await expect(collectionRootRow).not.toHaveCSS('background-color', TRANSPARENT_BACKGROUND)
 
     const collectionAncestor = sidebar
       .locator('.admin-sidebar-menu__item[data-menu-state="ancestor"]')
@@ -221,9 +315,9 @@ test.describe('sidebar route/menu first-paint synchronization', () => {
     await expect(collectionAncestor).toBeVisible()
     await expect(primeVueAncestor).toBeVisible()
 
-    const systemConfigurationHeader = directPage.locator(systemConfigurationHeaderSelector).first()
-    await expect(systemConfigurationHeader).toBeVisible()
-    await systemConfigurationHeader.hover()
+    const systemConfigurationRow = directPage.locator(systemConfigurationRowSelector)
+    await expect(systemConfigurationRow).toBeVisible()
+    await systemConfigurationRow.hover()
     await expect(overviewRow).toHaveAttribute('data-menu-row-state', 'active')
     await expect(overviewRow).not.toHaveCSS('background-color', TRANSPARENT_BACKGROUND)
 
@@ -254,10 +348,24 @@ test.describe('sidebar route/menu first-paint synchronization', () => {
     await expect(directPage.locator('#dashboard-page')).toBeVisible()
 
     const dashboardItem = directPage.locator(dashboardSidebarItemSelector)
+    const dashboardRow = directPage.locator(dashboardSidebarRowSelector)
     await expect(dashboardItem).toBeVisible()
+    await expect(dashboardRow).toBeVisible()
+    await expect(dashboardItem).toHaveAttribute('aria-current', 'page')
+    await expect(dashboardItem).toHaveAttribute('data-route-active', 'true')
+    await expect(dashboardItem).toHaveAttribute('data-route-exact-active', 'true')
     await expect(dashboardItem).toHaveAttribute('data-menu-state', 'active')
-    await expect(dashboardItem).not.toHaveCSS('background-color', TRANSPARENT_BACKGROUND)
+    await expect(dashboardRow).toHaveAttribute('data-route-active', 'true')
+    await expect(dashboardRow).toHaveAttribute('data-route-exact-active', 'true')
+    await expect(dashboardRow).toHaveAttribute('data-menu-row-state', 'active')
+    await expect(dashboardRow).not.toHaveCSS('background-color', TRANSPARENT_BACKGROUND)
     await expect(dashboardItem).not.toHaveCSS('color', INACTIVE_TEXT_COLOR)
+    await expectRowWidthAligned(
+      directPage,
+      dashboardSidebarRowSelector,
+      dashboardHeaderContentSelector,
+      dashboardSidebarItemSelector
+    )
 
     const diagnostics = await snapshotDashboardDiagnostics(directPage)
     expect(diagnostics.route).toMatchObject({
@@ -272,8 +380,35 @@ test.describe('sidebar route/menu first-paint synchronization', () => {
     })
     expect(diagnostics.dashboardDistance).toBe(0)
     expect(diagnostics.dashboardDom?.state).toBe('active')
-    expect(diagnostics.dashboardDom?.backgroundColor).not.toBe(TRANSPARENT_BACKGROUND)
     expect(diagnostics.dashboardDom?.color).not.toBe(INACTIVE_TEXT_COLOR)
+    expect(diagnostics.dashboardRowDom?.state).toBe('active')
+    expect(diagnostics.dashboardRowDom?.backgroundColor).not.toBe(TRANSPARENT_BACKGROUND)
+
+    const systemConfigurationHeader = directPage.locator(systemConfigurationHeaderSelector)
+    const systemConfigurationRow = directPage.locator(systemConfigurationRowSelector)
+    await expect(systemConfigurationHeader).toBeVisible()
+    await expect(systemConfigurationRow).toBeVisible()
+    await expect(systemConfigurationRow).toHaveAttribute('data-menu-row-state', 'idle')
+    const [systemInitialRowBackground, systemInitialHeaderBackground] = await Promise.all([
+      getBackgroundColor(systemConfigurationRow),
+      getBackgroundColor(systemConfigurationHeader),
+    ])
+    await systemConfigurationHeader.hover()
+    await expectHoverSurface(
+      systemConfigurationRow,
+      systemConfigurationHeader,
+      systemInitialRowBackground,
+      systemInitialHeaderBackground
+    )
+    await expect(dashboardRow).toHaveAttribute('data-menu-row-state', 'active')
+    await expect(dashboardRow).not.toHaveCSS('background-color', TRANSPARENT_BACKGROUND)
+
+    await directPage.locator('[data-layout-content="true"]').hover()
+    await expect(dashboardItem).toHaveAttribute('data-route-exact-active', 'true')
+    await expect(dashboardItem).toHaveAttribute('data-menu-state', 'active')
+    await expect(dashboardRow).toHaveAttribute('data-route-exact-active', 'true')
+    await expect(dashboardRow).toHaveAttribute('data-menu-row-state', 'active')
+    await expect(dashboardRow).not.toHaveCSS('background-color', TRANSPARENT_BACKGROUND)
 
     const headerDashboardItem = directPage.locator(dashboardHeaderItemSelector)
     if ((await headerDashboardItem.count()) > 0) {
@@ -306,13 +441,13 @@ test.describe('sidebar route/menu first-paint synchronization', () => {
     await waitForRuntimeLoadingIdle(page)
     await expect(page.locator('#dashboard-page')).toBeVisible()
     await expect(dashboardItem).toHaveAttribute('data-menu-state', 'active')
-    await expect(dashboardItem).not.toHaveCSS('background-color', TRANSPARENT_BACKGROUND)
     await expect(dashboardItem).not.toHaveCSS('color', INACTIVE_TEXT_COLOR)
 
     const diagnostics = await snapshotDashboardDiagnostics(page)
     expect(diagnostics.dashboardDistance).toBe(0)
     expect(diagnostics.dashboardDom?.state).toBe('active')
-    expect(diagnostics.dashboardDom?.backgroundColor).not.toBe(TRANSPARENT_BACKGROUND)
     expect(diagnostics.dashboardDom?.color).not.toBe(INACTIVE_TEXT_COLOR)
+    expect(diagnostics.dashboardRowDom?.state).toBe('active')
+    expect(diagnostics.dashboardRowDom?.backgroundColor).not.toBe(TRANSPARENT_BACKGROUND)
   })
 })
