@@ -34,6 +34,8 @@ const dashboardSidebarItemSelector =
   '[data-layout-sidebar="true"] a.admin-sidebar-menu__item[href$="#/dashboard"]'
 const dashboardHeaderItemSelector =
   '[data-layout-header="true"] a[href$="#/dashboard"][data-menu-state]'
+const primeVueOverviewSidebarItemSelector =
+  '[data-layout-sidebar="true"] a.admin-sidebar-menu__item[href*="/example/primevue-collection/overview"]'
 const TRANSPARENT_BACKGROUND = 'rgba(0, 0, 0, 0)'
 const INACTIVE_TEXT_COLOR = 'rgb(51, 51, 51)'
 
@@ -172,6 +174,52 @@ async function loginAndExtractStorageState(page: Page): Promise<{
 }
 
 test.describe('sidebar route/menu first-paint synchronization', () => {
+  test('direct first load /#/example/primevue-collection/overview keeps route-owned and project active markers aligned', async ({
+    browser,
+    page,
+  }) => {
+    const storageState = await loginAndExtractStorageState(page)
+
+    const directContext = await browser.newContext({ storageState })
+    const directPage = await directContext.newPage()
+    await directPage.goto('/?e2e=visual#/example/primevue-collection/overview', {
+      waitUntil: 'domcontentloaded',
+    })
+    await waitForAppReady(directPage)
+    await waitForRuntimeLoadingIdle(directPage)
+    await expect(directPage).toHaveURL(/#\/example\/primevue-collection\/overview$/)
+
+    const sidebar = directPage.locator('[data-layout-sidebar="true"]')
+    await expect(sidebar).toBeVisible()
+
+    const overviewItem = directPage.locator(primeVueOverviewSidebarItemSelector)
+    await expect(overviewItem).toBeVisible()
+    await expect(overviewItem).toHaveAttribute('aria-current', 'page')
+    await expect(overviewItem).toHaveAttribute('data-route-active', 'true')
+    await expect(overviewItem).toHaveAttribute('data-route-exact-active', 'true')
+    await expect(overviewItem).toHaveAttribute('data-menu-state', 'active')
+
+    const collectionAncestor = sidebar
+      .locator('.admin-sidebar-menu__item[data-menu-state="ancestor"]')
+      .filter({ hasText: '组件合集' })
+      .first()
+    const primeVueAncestor = sidebar
+      .locator('.admin-sidebar-menu__item[data-menu-state="ancestor"]')
+      .filter({ hasText: 'PrimeVue' })
+      .first()
+
+    await expect(collectionAncestor).toBeVisible()
+    await expect(primeVueAncestor).toBeVisible()
+
+    await directPage.mouse.move(8, 8)
+    await expect(overviewItem).toBeVisible()
+    await expect(overviewItem).toHaveAttribute('aria-current', 'page')
+    await expect(overviewItem).toHaveAttribute('data-route-exact-active', 'true')
+    await expect(overviewItem).toHaveAttribute('data-menu-state', 'active')
+
+    await directContext.close()
+  })
+
   test('direct first load /#/dashboard resolves sidebar dashboard item active', async ({
     browser,
     page,

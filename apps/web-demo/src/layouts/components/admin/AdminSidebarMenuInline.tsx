@@ -37,6 +37,13 @@ interface PanelMenuItemSlot {
   }
 }
 
+interface SidebarRouterLinkSlotProps {
+  href: string
+  navigate: (event?: MouseEvent) => Promise<void>
+  isActive: boolean
+  isExactActive: boolean
+}
+
 export default defineComponent({
   name: 'AdminSidebarMenuInline',
   props: {
@@ -306,6 +313,7 @@ export default defineComponent({
                 ? 'open'
                 : 'idle',
       }
+      const isRouteCurrent = distance === 0
       const linkClass = `${baseClasses} ${stateClasses}`
       const routeTarget = item.route?.name || item.route?.path
 
@@ -319,22 +327,46 @@ export default defineComponent({
             to={{ name: item.route.name }}
             custom
             v-slots={{
-              default: ({ href }: { href: string }) =>
-                withMenuTooltip(
+              default: ({
+                href,
+                navigate,
+                isActive,
+                isExactActive,
+              }: SidebarRouterLinkSlotProps) => {
+                const routeActive = isActive || isRouteCurrent
+                const routeExactActive = isExactActive || isRouteCurrent
+                const routeStateClasses = [
+                  routeActive ? 'router-link-active c-admin-sidebar-menu__link--route-active' : '',
+                  routeExactActive
+                    ? 'router-link-exact-active c-admin-sidebar-menu__link--route-exact-active'
+                    : '',
+                ]
+                  .filter(Boolean)
+                  .join(' ')
+
+                return withMenuTooltip(
                   <a
                     href={isExtLink ? extUrl : href}
                     role="link"
+                    aria-current={routeExactActive ? 'page' : undefined}
+                    data-route-active={routeActive ? 'true' : undefined}
+                    data-route-exact-active={routeExactActive ? 'true' : undefined}
                     {...stateData}
-                    class={linkClass}
+                    class={[linkClass, routeStateClasses].filter(Boolean).join(' ')}
                     onClick={(event: MouseEvent) => {
-                      event.preventDefault()
                       event.stopPropagation()
-                      goToRoute(routeTarget, undefined, undefined, false)
+                      if (isExtLink) {
+                        event.preventDefault()
+                        goToRoute(routeTarget, undefined, undefined, false)
+                        return
+                      }
+                      void navigate(event)
                     }}
                   >
                     {content}
                   </a>
-                ),
+                )
+              },
             }}
           />
         )
