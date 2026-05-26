@@ -15,11 +15,12 @@
     "build": "rm -f ../../node_modules/.tmp/packages-vue-primevue-adapter.tsbuildinfo && tsc -p tsconfig.json",
     "type-check": "tsc -p tsconfig.json --noEmit",
     "typecheck": "pnpm type-check",
-    "test": "vitest run --passWithNoTests"
+    "test": "pnpm --workspace-root vitest run packages/vue-primevue-adapter/src/services.spec.ts --passWithNoTests"
   },
   "dependencies": {
     "@ccd/design-tokens": "workspace:*",
     "@primeuix/themes": "^2.0.3",
-    "@primevue/core": "^4.5.4"
+    "@primevue/core": "^4.5.4",
+    "primevue": "^4.5.4"
   }
 }

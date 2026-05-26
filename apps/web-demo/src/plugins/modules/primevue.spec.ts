@@ -58,6 +58,12 @@ vi.mock('@ccd/vue-primevue-adapter', () => ({
     ripple: true,
     locale,
   }),
+  installPrimeVueServices: (app: App) => {
+    app.use({ install: vi.fn() })
+    app.use({ install: vi.fn() })
+    app.use({ install: vi.fn() })
+    app.directive('tooltip', { mounted: vi.fn() })
+  },
 }))
 
 function createInstrumentedApp(): App {

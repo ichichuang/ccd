@@ -17,7 +17,12 @@
       "vue",
       "vue-i18n"
     ],
-    "@ccd/vue-primevue-adapter": ["@ccd/design-tokens", "@primeuix/themes", "@primevue/core"],
+    "@ccd/vue-primevue-adapter": [
+      "@ccd/design-tokens",
+      "@primeuix/themes",
+      "@primevue/core",
+      "primevue"
+    ],
     "@ccd/vue-charts": [
       "@ccd/design-tokens",
       "@vueuse/core",

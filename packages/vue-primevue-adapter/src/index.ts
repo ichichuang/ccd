@@ -7,9 +7,11 @@ import {
 } from './theme/ptPresets/formControlsPt'
 import { menuPt } from './theme/ptPresets/menuPt'
 import { buttonPt } from './theme/ptPresets/buttonPt'
+import { installPrimeVueServices, type PrimeVueServiceInstallOptions } from './services.js'
 
 export type { PrimeVueSizeSource }
-export { createCustomPreset, formControlsPt, menuPt }
+export { createCustomPreset, formControlsPt, installPrimeVueServices, menuPt }
+export type { PrimeVueServiceInstallOptions }
 
 const OVERLAY_GLASS_SHELL_CLASS = 'glass-shell transform-gpu will-change-transform'
 const BG_TRANSPARENT = 'bg-transparent'

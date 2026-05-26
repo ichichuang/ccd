@@ -46,7 +46,7 @@
 
 - Path: `packages/vue-primevue-adapter`
 - Export subpaths: `.`
-- Root symbols: `createCustomPreset`, `createPrimeVueAdapterConfig`, `CreatePrimeVueAdapterConfigOptions`, `formControlsPt`, `menuPt`, `PrimeVueSizeSource`
+- Root symbols: `createCustomPreset`, `createPrimeVueAdapterConfig`, `CreatePrimeVueAdapterConfigOptions`, `formControlsPt`, `installPrimeVueServices`, `menuPt`, `PrimeVueServiceInstallOptions`, `PrimeVueSizeSource`
 
 ## @ccd/vue-charts
 

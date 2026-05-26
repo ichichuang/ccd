@@ -178,7 +178,9 @@
         "createPrimeVueAdapterConfig",
         "CreatePrimeVueAdapterConfigOptions",
         "formControlsPt",
+        "installPrimeVueServices",
         "menuPt",
+        "PrimeVueServiceInstallOptions",
         "PrimeVueSizeSource"
       ]
     },
