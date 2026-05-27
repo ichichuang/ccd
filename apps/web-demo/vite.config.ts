@@ -88,7 +88,7 @@ export default ({ mode, command }: ConfigEnv): UserConfigExport => {
 
     server: {
       port: VITE_PORT,
-      host: '0.0.0.0',
+      host: '127.0.0.1',
       open: true,
       cors: true,
       strictPort: false,

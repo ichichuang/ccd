@@ -38,7 +38,7 @@ apps/*/src-tauri/gen/
 .env.test.local
 .env.production.local
 
-# 本地密钥覆盖文件（开发者可创建此文件覆盖 VITE_APP_SECRET）
+# 本地混淆材料覆盖文件（开发者可创建此文件覆盖 VITE_PUBLIC_STORAGE_OBFUSCATION_KEY；该值对客户端可见）
 .env.secret
 
 # 注意：.env、.env.development 和 .env.production 不被忽略

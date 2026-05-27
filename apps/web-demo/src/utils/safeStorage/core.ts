@@ -4,18 +4,18 @@ import * as LZ from './lzstring'
 
 /**
  * 混淆密钥策略（三级降级）：
- * 1. 优先使用构建时注入的 VITE_APP_SECRET（CI/CD 环境变量）
+ * 1. 优先使用构建时注入的 VITE_PUBLIC_STORAGE_OBFUSCATION_KEY（客户端可见的 public 值）
  * 2. 若为空，使用基于部署环境的运行时指纹（origin + app name + version）
- * 3. 兜底硬编码值（仅保证不崩溃，安全性最低）
+ * 3. 兜底硬编码值（仅保证不崩溃，混淆强度最低）
  *
- * ⚠️ 前端加密本质是混淆，非真正安全。此设计仅防止 localStorage 裸奔。
+ * ⚠️ 前端“加密”本质仍是客户端可见混淆，不是真正的 secret 管理。此设计仅防止 localStorage 裸奔。
  */
 
 const STORAGE_KEY_VERSION = 'v2'
 
 function resolveObfuscationKey(): string {
-  const injected = import.meta.env.VITE_APP_SECRET?.trim()
-  if (injected && injected !== '${VITE_APP_SECRET:-}') return injected
+  const injected = import.meta.env.VITE_PUBLIC_STORAGE_OBFUSCATION_KEY?.trim()
+  if (injected && injected !== '${VITE_PUBLIC_STORAGE_OBFUSCATION_KEY:-}') return injected
 
   if (typeof window !== 'undefined') {
     // Include app name as a per-application discriminator so that same-origin
@@ -28,7 +28,7 @@ function resolveObfuscationKey(): string {
   // SSR / Node fallback — lowest security, prevents crash only
   if (!import.meta.env.PROD) {
     console.warn(
-      '[SafeStorage] Using hardcoded fallback key. Set VITE_APP_SECRET in your .env for real encryption.'
+      '[SafeStorage] Using hardcoded fallback key. Set VITE_PUBLIC_STORAGE_OBFUSCATION_KEY in your .env for client-visible storage obfuscation.'
     )
   }
   return 'app-template-fallback-key'
@@ -39,13 +39,13 @@ function normalizeSecret(secret?: string): string | undefined {
   return normalized ? normalized : undefined
 }
 
-// Warn once at module load when VITE_APP_SECRET is missing in production builds
+// Warn once at module load when VITE_PUBLIC_STORAGE_OBFUSCATION_KEY is missing in production builds
 if (import.meta.env.PROD && typeof window !== 'undefined') {
-  const injected = import.meta.env.VITE_APP_SECRET?.trim()
-  if (!injected || injected === '${VITE_APP_SECRET:-}') {
+  const injected = import.meta.env.VITE_PUBLIC_STORAGE_OBFUSCATION_KEY?.trim()
+  if (!injected || injected === '${VITE_PUBLIC_STORAGE_OBFUSCATION_KEY:-}') {
     console.warn(
-      '[SafeStorage] VITE_APP_SECRET is not set. Encryption uses a browser-derived key. ' +
-        'Set VITE_APP_SECRET in your CI/CD environment for production deployments.'
+      '[SafeStorage] VITE_PUBLIC_STORAGE_OBFUSCATION_KEY is not set. Storage obfuscation uses a browser-derived key. ' +
+        'Set VITE_PUBLIC_STORAGE_OBFUSCATION_KEY to a client-visible public value if you need stable obfuscation across deployments.'
     )
   }
 }
@@ -54,12 +54,12 @@ const DEFAULT_SECRET: string = resolveObfuscationKey()
 
 /**
  * Previous keys for key rotation support.
- * Set VITE_APP_SECRET_PREVIOUS (comma-separated) to decrypt data encrypted with older keys.
+ * Set VITE_PUBLIC_STORAGE_OBFUSCATION_KEY_PREVIOUS (comma-separated) to decrypt data obfuscated with older client-visible keys.
  * New data is always encrypted with DEFAULT_SECRET.
  */
 const PREVIOUS_SECRETS: string[] = (() => {
-  const prev = import.meta.env.VITE_APP_SECRET_PREVIOUS?.trim()
-  if (prev && prev !== '${VITE_APP_SECRET_PREVIOUS:-}') {
+  const prev = import.meta.env.VITE_PUBLIC_STORAGE_OBFUSCATION_KEY_PREVIOUS?.trim()
+  if (prev && prev !== '${VITE_PUBLIC_STORAGE_OBFUSCATION_KEY_PREVIOUS:-}') {
     return prev
       .split(',')
       .map((s: string) => s.trim())

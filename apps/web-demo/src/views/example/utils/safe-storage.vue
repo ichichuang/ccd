@@ -104,15 +104,15 @@ watchEffect(() => {
               </div>
 
               <div class="col-stretch gap-xs min-w-0">
-                <label class="text-xs text-muted-foreground">Secret Key (可选)</label>
+                <label class="text-xs text-muted-foreground">Obfuscation Key (可选)</label>
                 <InputText
                   v-model="secretInput"
-                  placeholder="留空则使用默认密钥（来自 VITE_APP_SECRET）"
+                  placeholder="留空则使用默认混淆 key（来自 VITE_PUBLIC_STORAGE_OBFUSCATION_KEY）"
                 />
               </div>
 
               <div class="text-xs text-muted-foreground">
-                提示：空 secret 将被视为不传（使用默认密钥）。
+                提示：空 obfuscation key 将被视为不传（使用默认混淆 key）。
               </div>
             </div>
 
@@ -138,7 +138,7 @@ watchEffect(() => {
               </div>
 
               <div class="text-xs text-muted-foreground">
-                输出不一致（显示为空/—）通常表示 secret 错误或数据损坏。
+                输出不一致（显示为空/—）通常表示 obfuscation key 错误或数据损坏。
               </div>
             </div>
           </div>

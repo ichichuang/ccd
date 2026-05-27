@@ -78,8 +78,8 @@ declare interface ImportMetaEnv {
   readonly VITE_ROUTER_MODE: 'history' | 'hash'
   readonly VITE_PUBLIC_PATH?: string
   readonly VITE_PINIA_PERSIST_KEY_PREFIX?: string
-  readonly VITE_APP_SECRET: string
-  readonly VITE_APP_SECRET_PREVIOUS?: string
+  readonly VITE_PUBLIC_STORAGE_OBFUSCATION_KEY: string
+  readonly VITE_PUBLIC_STORAGE_OBFUSCATION_KEY_PREVIOUS?: string
   readonly VITE_ROOT_REDIRECT: string
 
   // ========== API 超时（字符串形式） ==========

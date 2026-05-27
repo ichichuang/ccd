@@ -13,7 +13,7 @@ export class DraftStorage {
   static save(key: string, data: Record<string, unknown>): void {
     if (typeof window === 'undefined') return
     try {
-      const packed = packDataSync(data, import.meta.env.VITE_APP_SECRET)
+      const packed = packDataSync(data, import.meta.env.VITE_PUBLIC_STORAGE_OBFUSCATION_KEY)
       if (!packed) return
       window.localStorage.setItem(this.getStorageKey(key), packed)
     } catch (e) {
@@ -27,7 +27,10 @@ export class DraftStorage {
       const raw = window.localStorage.getItem(this.getStorageKey(key)) ?? ''
       if (!raw) return null
 
-      const unpacked = unpackDataSync<Record<string, unknown>>(raw, import.meta.env.VITE_APP_SECRET)
+      const unpacked = unpackDataSync<Record<string, unknown>>(
+        raw,
+        import.meta.env.VITE_PUBLIC_STORAGE_OBFUSCATION_KEY
+      )
       if (unpacked !== null) {
         return unpacked
       }
