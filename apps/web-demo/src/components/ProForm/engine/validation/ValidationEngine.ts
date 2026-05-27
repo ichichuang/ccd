@@ -2,6 +2,7 @@ import type { DependencyGraph } from '../dependency/DependencyGraph'
 import type { SubscriptionStore } from '../state/SubscriptionStore'
 import type {
   FieldSchema,
+  FormFieldValue,
   FieldState,
   FormSchema,
   FormSchemaNode,
@@ -114,7 +115,7 @@ export class ValidationEngine<TValues extends Record<string, unknown> = Record<s
     const currentState = this.store.getFieldState(name)
     const currentValue = this.store.getFieldValue(name)
 
-    const baseState: FieldState<unknown> = currentState ?? {
+    const baseState: FieldState<FormFieldValue<TValues>> = currentState ?? {
       value: currentValue,
       initialValue: currentValue,
       visible: true,
@@ -166,7 +167,7 @@ export class ValidationEngine<TValues extends Record<string, unknown> = Record<s
       return true
     }
 
-    const finalState: FieldState<unknown> = {
+    const finalState: FieldState<FormFieldValue<TValues>> = {
       ...latestState,
       validating: false,
       valid: errors.length === 0,
@@ -214,7 +215,9 @@ export class ValidationEngine<TValues extends Record<string, unknown> = Record<s
         Object.entries(result.errors).forEach(([fieldName, fieldErrors]) => {
           if (!fieldErrors || fieldErrors.length === 0) return
 
-          const currentState: FieldState<unknown> = this.store.getFieldState(fieldName) ?? {
+          const currentState: FieldState<FormFieldValue<TValues>> = this.store.getFieldState(
+            fieldName
+          ) ?? {
             value: this.store.getFieldValue(fieldName),
             initialValue: this.store.getFieldValue(fieldName),
             visible: true,
@@ -230,7 +233,7 @@ export class ValidationEngine<TValues extends Record<string, unknown> = Record<s
 
           const mergedErrors = [...(currentState.errors ?? []), ...fieldErrors]
 
-          const finalState: FieldState<unknown> = {
+          const finalState: FieldState<FormFieldValue<TValues>> = {
             ...currentState,
             valid: mergedErrors.length === 0,
             errors: mergedErrors,

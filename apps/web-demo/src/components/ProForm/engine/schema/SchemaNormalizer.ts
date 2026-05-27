@@ -1,14 +1,8 @@
-import { castRecord } from '@ccd/shared-utils'
 import type { FieldSchema, FormSchema, FormSchemaNode, GroupSchema, ResponsiveSpan } from '../types'
 import { PRO_FORM_DEFAULTS } from '../config'
 
 function normalizeField(field: FieldSchema<unknown>): FieldSchema<unknown> {
-  const layoutField = castRecord(field)
-  const span: ResponsiveSpan | undefined =
-    (layoutField.span as ResponsiveSpan | undefined) ??
-    ((layoutField.layout as Record<string, unknown> | undefined)?.span as
-      | ResponsiveSpan
-      | undefined)
+  const span: ResponsiveSpan | undefined = field.span ?? field.layout?.span
 
   return {
     ...field,

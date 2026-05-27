@@ -79,7 +79,7 @@ export function useField<
 
   const setValue = (newValue: T): void => {
     controller.transactionManager.begin()
-    store.setFieldValue(name, newValue as TValues[keyof TValues])
+    store.setFieldValue(name, castValue<TValues[keyof TValues] | undefined>(newValue))
     controller.transactionManager.updateField(name)
     controller.transactionManager.commit(() => {
       // 对字段级 Hook 而言，在 flush 时同步最新的字段状态即可

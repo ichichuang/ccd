@@ -1,4 +1,4 @@
-import type { FieldState } from '../types'
+import type { FieldState, FormFieldValue } from '../types'
 import { deepEqual } from '@ccd/shared-utils'
 
 export type FieldSubscriber = () => void
@@ -11,7 +11,7 @@ export type FieldSubscriber = () => void
  * - 后续可与 DependencyGraph / TransactionManager 集成
  */
 export class SubscriptionStore<TValues extends Record<string, unknown> = Record<string, unknown>> {
-  private readonly fieldStates = new Map<string, FieldState<unknown>>()
+  private readonly fieldStates = new Map<string, FieldState<FormFieldValue<TValues>>>()
   private readonly subscribers = new Map<string, Set<FieldSubscriber>>()
 
   subscribe(field: string, callback: FieldSubscriber): void {
@@ -35,7 +35,7 @@ export class SubscriptionStore<TValues extends Record<string, unknown> = Record<
     set.forEach(subscriber => subscriber())
   }
 
-  getFieldState(field: string): FieldState<unknown> | undefined {
+  getFieldState(field: string): FieldState<FormFieldValue<TValues>> | undefined {
     return this.fieldStates.get(field)
   }
 
@@ -44,22 +44,22 @@ export class SubscriptionStore<TValues extends Record<string, unknown> = Record<
     this.notify(field)
   }
 
-  setFieldState(field: string, state: FieldState<unknown>): void {
+  setFieldState(field: string, state: FieldState<FormFieldValue<TValues>>): void {
     this.fieldStates.set(field, state)
     this.notify(field)
   }
 
-  getFieldValue(field: string): TValues[keyof TValues] | undefined {
+  getFieldValue(field: string): FormFieldValue<TValues> {
     const state = this.getFieldState(field)
-    return state?.value as unknown as TValues[keyof TValues] | undefined
+    return state?.value
   }
 
-  setFieldValue(field: string, value: TValues[keyof TValues]): void {
+  setFieldValue(field: string, value: FormFieldValue<TValues>): void {
     const existing = this.getFieldState(field)
 
     if (existing) {
       const dirty = !deepEqual(existing.initialValue, value)
-      const nextState: FieldState<unknown> = {
+      const nextState: FieldState<FormFieldValue<TValues>> = {
         ...existing,
         value,
         dirty,
@@ -68,7 +68,7 @@ export class SubscriptionStore<TValues extends Record<string, unknown> = Record<
       return
     }
 
-    const initialState: FieldState<unknown> = {
+    const initialState: FieldState<FormFieldValue<TValues>> = {
       value,
       initialValue: value,
       visible: true,

@@ -1,6 +1,7 @@
-import type { FieldSchema, FieldReaction, ReactionContext } from '../types'
+import type { FieldSchema, FieldReaction, FormFieldValue, ReactionContext } from '../types'
 import type { SubscriptionStore } from '../state/SubscriptionStore'
 import { PRO_FORM_LOGGER } from '../utils/logger'
+import { castValue } from '@ccd/shared-utils'
 
 type ValuesRecord = Record<string, unknown>
 
@@ -40,7 +41,7 @@ export class ReactionEngine<TValues extends ValuesRecord = ValuesRecord> {
   evaluate(
     field: FieldSchema<unknown>,
     values: TValues,
-    fieldName: string,
+    fieldName: keyof TValues & string,
     changedFields?: Set<string>
   ): void {
     if (!field.reactions || field.reactions.length === 0) return
@@ -48,7 +49,11 @@ export class ReactionEngine<TValues extends ValuesRecord = ValuesRecord> {
     const ctx = this.buildContext(values, fieldName)
 
     for (const reaction of field.reactions) {
-      const watchFields = Array.isArray(reaction.watch) ? reaction.watch : [reaction.watch]
+      // Schema at this boundary is still FieldSchema<unknown>; bridge reaction typing locally.
+      const typedReaction = reaction as FieldReaction<TValues>
+      const watchFields = Array.isArray(typedReaction.watch)
+        ? typedReaction.watch
+        : [typedReaction.watch]
 
       // 若提供了 changedFields，仅在 watch 的字段确实发生变化时才执行
       if (changedFields && changedFields.size > 0) {
@@ -57,10 +62,10 @@ export class ReactionEngine<TValues extends ValuesRecord = ValuesRecord> {
       }
 
       try {
-        this.executeAction(reaction, fieldName)
+        this.executeAction(typedReaction, fieldName)
 
-        if (typeof reaction.effect === 'function') {
-          const result = reaction.effect(ctx)
+        if (typeof typedReaction.effect === 'function') {
+          const result = typedReaction.effect(ctx)
           // 若 effect 返回 Promise，静默消费但不阻塞同步管线
           if (isPromiseLike(result)) {
             result.catch((err: unknown) => {
@@ -74,10 +79,10 @@ export class ReactionEngine<TValues extends ValuesRecord = ValuesRecord> {
     }
   }
 
-  private executeAction(reaction: FieldReaction<TValues>, fieldName: string): void {
+  private executeAction(reaction: FieldReaction<TValues>, fieldName: keyof TValues & string): void {
     switch (reaction.action) {
       case 'clearValue':
-        this.store.setFieldValue(fieldName, undefined as unknown as TValues[keyof TValues])
+        this.store.setFieldValue(fieldName, undefined)
         break
 
       case 'hide': {
@@ -121,7 +126,10 @@ export class ReactionEngine<TValues extends ValuesRecord = ValuesRecord> {
     }
   }
 
-  private buildContext(values: TValues, fieldName: string): ReactionContext<TValues> {
+  private buildContext(
+    values: TValues,
+    fieldName: keyof TValues & string
+  ): ReactionContext<TValues> {
     return {
       form: values,
       field: fieldName,
@@ -129,7 +137,7 @@ export class ReactionEngine<TValues extends ValuesRecord = ValuesRecord> {
         return this.store.getFieldState(name)
       },
       setFieldValue: (name: string, value: unknown) => {
-        this.store.setFieldValue(name, value as unknown as TValues[keyof TValues])
+        this.store.setFieldValue(name, castValue<FormFieldValue<TValues>>(value))
       },
       setFieldProps: (name: string, props: Record<string, unknown>) => {
         this.setFieldPropsCallback(name, props)

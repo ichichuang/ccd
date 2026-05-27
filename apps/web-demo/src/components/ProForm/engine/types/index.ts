@@ -14,6 +14,10 @@ export interface GridLayoutSchema {
 
 export type NodeLayoutSchema = GridLayoutSchema
 
+export type FormFieldValue<TValues extends Record<string, unknown> = Record<string, unknown>> =
+  | TValues[keyof TValues]
+  | undefined
+
 /**
  * 逻辑与计算相关的上下文类型
  */
@@ -54,9 +58,9 @@ export interface ReactionContext<
   /** 当前表单所有字段值的快照 */
   form: TValues
   /** 当前拥有 reactions 的字段名 */
-  field: string
+  field: keyof TValues & string
   /** 读取任意字段的 FieldState */
-  getFieldState: (name: string) => FieldState | undefined
+  getFieldState: (name: string) => FieldState<FormFieldValue<TValues>> | undefined
   /** 设置任意字段的值（在同一事务内，不会触发额外调度） */
   setFieldValue: (name: string, value: unknown) => void
   /** 设置任意字段的 props（浅层合并） */
@@ -69,7 +73,7 @@ export type ReactionAction = 'clearValue' | 'hide' | 'show' | 'disable' | 'enabl
 /** 声明式联动规则 */
 export interface FieldReaction<TValues extends Record<string, unknown> = Record<string, unknown>> {
   /** 监听的上游字段名（必须已声明在 deps 中） */
-  watch: string | string[]
+  watch: (keyof TValues & string) | (keyof TValues & string)[]
   /** 内置动作或 'custom' */
   action: ReactionAction
   /**
@@ -117,6 +121,12 @@ export interface FieldSchema<TValue = unknown> {
    * @default 参考 PRO_FORM_DEFAULTS.gridSpan
    */
   span?: ResponsiveSpan
+  /**
+   * 字段级布局扩展（用于承接历史 schema 的 layout.span 写法）
+   */
+  layout?: {
+    span?: ResponsiveSpan
+  }
 }
 
 export interface GroupSchema {
@@ -331,12 +341,12 @@ export type FieldComponent<T = unknown> = Component<FieldComponentProps<T>>
  * - defaultProps: 该字段类型的默认 UI 配置
  * - propsMapper: 将标准 FieldComponentProps + FieldSchema 映射为组件特定 props
  */
-export interface FieldRegistryItem {
-  component: FieldComponent<unknown>
+export interface FieldRegistryItem<TValue = unknown> {
+  component: FieldComponent<TValue>
   defaultProps?: Record<string, unknown>
   propsMapper?: (params: {
-    field: FieldSchema<unknown>
-    componentProps: FieldComponentProps<unknown>
+    field: FieldSchema<TValue>
+    componentProps: FieldComponentProps<TValue>
   }) => Record<string, unknown>
 }
 
