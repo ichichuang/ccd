@@ -2,31 +2,60 @@ import vue from '@vitejs/plugin-vue'
 import AutoImport from 'unplugin-auto-import/vite'
 import { fileURLToPath } from 'node:url'
 import { dirname, resolve } from 'node:path'
-import type { UserConfig } from 'vite'
+import { defineConfig, defineProject } from 'vitest/config'
 
 const rootDir = dirname(fileURLToPath(import.meta.url))
-export default {
+
+const sharedInclude = [
+  'apps/**/*.spec.ts',
+  'apps/**/*.test.ts',
+  'packages/**/*.spec.ts',
+  'packages/**/*.test.ts',
+  'scripts/**/*.spec.ts',
+]
+
+const domInclude = [
+  'apps/**/*.dom.spec.ts',
+  'apps/**/*.dom.test.ts',
+  'packages/**/*.dom.spec.ts',
+  'packages/**/*.dom.test.ts',
+]
+
+const sharedExclude = ['node_modules', '**/node_modules/**', 'dist']
+
+export default defineConfig({
   plugins: [
     vue(),
-    AutoImport({ imports: ['vue', 'vue-router', 'pinia', '@vueuse/core'], dts: false })
+    AutoImport({ imports: ['vue', 'vue-router', 'pinia', '@vueuse/core'], dts: false }),
   ],
   test: {
     globals: true,
-    environment: 'node',
-    include: [
-      'apps/**/*.spec.ts',
-      'apps/**/*.test.ts',
-      'packages/**/*.spec.ts',
-      'packages/**/*.test.ts',
-      'scripts/**/*.spec.ts'
-    ],
-    exclude: ['node_modules', '**/node_modules/**', 'dist'],
-    passWithNoTests: true,
     coverage: {
       provider: 'v8',
       include: ['apps/**/src/**', 'packages/**/src/**'],
       exclude: ['**/*.d.ts'],
     },
+    projects: [
+      defineProject({
+        extends: true,
+        test: {
+          name: 'node',
+          environment: 'node',
+          include: sharedInclude,
+          exclude: [...sharedExclude, '**/*.dom.spec.ts', '**/*.dom.test.ts'],
+          passWithNoTests: true,
+        },
+      }),
+      defineProject({
+        extends: true,
+        test: {
+          name: 'jsdom',
+          environment: 'jsdom',
+          include: domInclude,
+          exclude: sharedExclude,
+        },
+      }),
+    ],
   },
   resolve: {
     alias: {
@@ -39,4 +68,4 @@ export default {
     jsxFactory: 'h',
     jsxFragment: 'Fragment',
   },
-} satisfies UserConfig
+})
