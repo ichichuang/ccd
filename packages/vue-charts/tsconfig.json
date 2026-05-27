@@ -2,13 +2,9 @@
   "extends": "@vue/tsconfig/tsconfig.dom.json",
   "compilerOptions": {
     "composite": true,
-    "rootDir": "src",
+    "rootDir": ".",
     "tsBuildInfoFile": "../../node_modules/.tmp/packages-vue-charts.tsbuildinfo",
-    "lib": [
-      "ES2022",
-      "DOM",
-      "DOM.Iterable"
-    ],
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
     "types": [],
     "strict": true,
     "noUnusedLocals": true,
@@ -19,8 +15,5 @@
     "noEmit": true,
     "allowImportingTsExtensions": true
   },
-  "include": [
-    "src/**/*.ts",
-    "src/**/*.vue"
-  ]
+  "include": ["src/**/*.ts", "src/**/*.vue", "vite.config.ts"]
 }

@@ -188,16 +188,16 @@
       "version": "1.0.38",
       "private": true,
       "type": "module",
-      "sideEffects": false,
+      "sideEffects": ["**/*.css", "**/*.scss", "**/*.sass", "**/*.vue"],
       "exports": {
         ".": {
-          "types": "./src/index.ts",
-          "import": "./src/index.ts",
-          "default": "./src/index.ts"
+          "types": "./dist/index.d.ts",
+          "import": "./dist/index.js",
+          "default": "./dist/index.js"
         }
       },
       "scripts": {
-        "build": "vue-tsc -p tsconfig.json --noEmit",
+        "build": "rm -rf dist && rm -f ../../node_modules/.tmp/packages-vue-ui.tsbuildinfo && vite build --config vite.config.ts && vue-tsc -p tsconfig.build.json",
         "type-check": "vue-tsc -p tsconfig.json --noEmit",
         "typecheck": "pnpm type-check",
         "test": "vitest run --passWithNoTests"
@@ -215,9 +215,9 @@
         "typescript": "^5.8.3",
         "vue-tsc": "^2.2.10"
       },
-      "main": "./src/index.ts",
-      "module": "./src/index.ts",
-      "types": "./src/index.ts"
+      "main": "./dist/index.js",
+      "module": "./dist/index.js",
+      "types": "./dist/index.d.ts"
     },
     {
       "name": "@ccd/vue-primevue-adapter",
@@ -253,13 +253,13 @@
       "sideEffects": false,
       "exports": {
         ".": {
-          "types": "./src/index.ts",
-          "import": "./src/index.ts",
-          "default": "./src/index.ts"
+          "types": "./dist/index.d.ts",
+          "import": "./dist/index.js",
+          "default": "./dist/index.js"
         }
       },
       "scripts": {
-        "build": "vue-tsc -p tsconfig.json --noEmit",
+        "build": "rm -rf dist && rm -f ../../node_modules/.tmp/packages-vue-charts.tsbuildinfo && vite build --config vite.config.ts && vue-tsc -p tsconfig.build.json",
         "type-check": "vue-tsc -p tsconfig.json --noEmit",
         "typecheck": "pnpm type-check",
         "test": "vitest run --passWithNoTests"
@@ -277,9 +277,9 @@
         "typescript": "^5.8.3",
         "vue-tsc": "^2.2.10"
       },
-      "main": "./src/index.ts",
-      "module": "./src/index.ts",
-      "types": "./src/index.ts"
+      "main": "./dist/index.js",
+      "module": "./dist/index.js",
+      "types": "./dist/index.d.ts"
     },
     {
       "name": "@ccd/web-demo",
