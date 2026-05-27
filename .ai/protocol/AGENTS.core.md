@@ -10,7 +10,7 @@ All AI governance assets live under `.ai/`:
 - `.ai/rules/**` -> architecture and implementation rules
 - `.ai/skills/**` -> skill catalogs and references
 - `.ai/protocol/**` -> execution protocol and adapters
-- `.ai/runtime/*.template.txt` -> versioned runtime templates
+- `.ai/runtime/*.template.md` -> versioned runtime templates
 - `.ai/manifests/**` -> lock/manifests
 
 Compatibility paths (`AGENTS.md`, `CLAUDE.md`) are generated adapters only. Do not treat them as source-of-truth.
@@ -26,7 +26,7 @@ Compatibility paths (`AGENTS.md`, `CLAUDE.md`) are generated adapters only. Do n
 - Preserve type safety:
   - No `any` in business code
   - No assertion-driven business logic shortcuts
-- For large refactors, keep the local runtime ledger synchronized via `.ai/runtime/repair_list.txt`.
+- For large refactors, keep the local runtime ledger synchronized via `.ai/runtime/repair_list.md`.
 
 ## 2) Rule Priority
 

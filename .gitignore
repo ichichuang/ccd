@@ -129,6 +129,8 @@ CLAUDE.md
 .claude/skills/
 
 # Local AI runtime state
+.ai/runtime/repair_list.md
+# Legacy local ledger ignored during Markdown migration compatibility.
 .ai/runtime/repair_list.txt
 .ai/runtime/*.json
 

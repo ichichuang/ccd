@@ -49,7 +49,7 @@ Routing rules:
 
 | State                  | Location                                | Rule                                                      |
 | ---------------------- | --------------------------------------- | --------------------------------------------------------- |
-| runtime repair ledger  | `.ai/runtime/repair_list.txt`           | update when adding or resolving tracked architecture work |
+| runtime repair ledger  | `.ai/runtime/repair_list.md`            | update when adding or resolving tracked architecture work |
 | execution fingerprints | `.ai/execution/**`                      | governed runtime/provider state                           |
 | browser artifacts      | `artifacts/browser/**`                  | local evidence, not canonical architecture source         |
 | generated reports      | `.ai/generated/**`, `docs/generated/**` | commit when governance commands update them               |

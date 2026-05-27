@@ -4,7 +4,7 @@ import { dirname, join, relative } from 'node:path'
 import process from 'node:process'
 
 const cwd = process.cwd()
-const inputPath = join(cwd, '.ai', 'runtime', 'repair_list.txt')
+const inputPath = join(cwd, '.ai', 'runtime', 'repair_list.md')
 const outputPath = join(cwd, '.ai', 'runtime', 'repair-ledger.json')
 
 function slugify(value) {
@@ -33,16 +33,19 @@ function parseLedger(content) {
   for (const rawLine of content.split('\n')) {
     const line = rawLine.trim()
     if (!line) continue
-    if (line.startsWith('# Sequence ')) {
-      sequence = line.replace(/^#\s*/, '').replace(/\.$/, '')
+    if (line.startsWith('#')) {
+      sequence = line.replace(/^#+\s*/, '').replace(/\.$/, '')
       continue
     }
 
-    const match = line.match(/^\[(⬜️|✅)\]\s+\[([^\]]+)\]\s+(.+)$/)
+    const markdownMatch = line.match(/^-\s+\[([ xX])\]\s+\[([^\]]+)\]\s+(.+)$/)
+    const legacyMatch = line.match(/^\[(⬜️|✅)\]\s+\[([^\]]+)\]\s+(.+)$/)
+    const match = markdownMatch ?? legacyMatch
     if (!match) continue
 
-    const [, statusIcon, module, title] = match
-    const status = statusIcon === '✅' ? 'done' : 'open'
+    const [, statusMarker, module, title] = match
+    const status =
+      statusMarker === '✅' || statusMarker.toLowerCase() === 'x' ? 'done' : 'open'
     const priority = extractPriority(module)
     const baseId = slugify(`${priority}-${module}-${title}`)
 

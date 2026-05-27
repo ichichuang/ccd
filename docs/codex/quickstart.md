@@ -236,7 +236,7 @@ Copy these files into the new repo root:
 - `.ai/protocol/adapter-manifest.json`
 - `.ai/protocol/AI.entry.md`
 - `.ai/protocol/AGENTS.core.md`
-- `.ai/runtime/repair_list.template.txt`
+- `.ai/runtime/repair_list.template.md`
 - `docs/codex/quickstart.md`
 - `scripts/ai-doctor.mjs`
 - `scripts/ai-architecture-guard.mjs`

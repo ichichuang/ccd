@@ -32,12 +32,13 @@ const requiredPaths = [
   'scripts/ai-sync-codex.mjs',
   'scripts/ai-route-view-scaffold.mjs',
   'scripts/codex-preflight.mjs',
-  '.ai/runtime/repair_list.template.txt',
-  '.ai/runtime/repair_list.txt',
+  '.ai/runtime/repair_list.template.md',
+  '.ai/runtime/repair_list.md',
   '.ai/manifests/skill-routing.json',
   '.ai/manifests/skills-lock.json',
   'uno.config.ts',
-  'vite.config.ts',
+  'apps/web-demo/vite.config.ts',
+  'apps/desktop/vite.config.ts',
 ]
 
 const requiredLocalCodexSkills = [

@@ -11,8 +11,8 @@ const dirAdapters = []
 
 const localRuntimeFiles = [
   {
-    source: '.ai/runtime/repair_list.template.txt',
-    target: '.ai/runtime/repair_list.txt',
+    source: '.ai/runtime/repair_list.template.md',
+    target: '.ai/runtime/repair_list.md',
   },
 ]
 

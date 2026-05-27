@@ -43,7 +43,7 @@ const canonicalMustExist = [
   'scripts/codex-preflight.mjs',
   'scripts/ai-clean.mjs',
   'scripts/ai-sync-codex.mjs',
-  '.ai/runtime/repair_list.template.txt',
+  '.ai/runtime/repair_list.template.md',
   '.ai/manifests/skill-routing.json',
   '.ai/manifests/skills-lock.json',
   '.ai/manifests/rule-index.json',
@@ -60,7 +60,7 @@ const generatedContentChecks = [
 
 const dirAdapters = []
 
-const localRuntimeFiles = ['.ai/runtime/repair_list.txt', '.ai/runtime/repair-ledger.json']
+const localRuntimeFiles = ['.ai/runtime/repair_list.md', '.ai/runtime/repair-ledger.json']
 const retiredShouldBeAbsent = [
   '.cursor',
   '.ai/config/cursor.settings.json',
@@ -109,7 +109,7 @@ const readBuffer = rel => fs.readFileSync(path.join(cwd, rel))
 const readText = rel => fs.readFileSync(path.join(cwd, rel), 'utf8')
 
 const printOpenLedgerTasks = () => {
-  const ledgerPath = '.ai/runtime/repair_list.txt'
+  const ledgerPath = '.ai/runtime/repair_list.md'
   const absLedger = path.join(cwd, ledgerPath)
   if (!fs.existsSync(absLedger)) {
     console.error(`[FAIL] missing local runtime file: ${ledgerPath}`)
@@ -118,7 +118,9 @@ const printOpenLedgerTasks = () => {
 
   const groups = new Map()
   for (const line of readText(ledgerPath).split('\n')) {
-    const match = line.match(/^\[⬜️\]\s+\[([^\]]+)\]\s+(.+)$/)
+    const markdownMatch = line.match(/^-\s+\[ \]\s+\[([^\]]+)\]\s+(.+)$/)
+    const legacyMatch = line.match(/^\[⬜️\]\s+\[([^\]]+)\]\s+(.+)$/)
+    const match = markdownMatch ?? legacyMatch
     if (!match) continue
     const [, module, task] = match
     const priority = module.match(/^P\d+/)?.[0] ?? 'PX'

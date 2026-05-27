@@ -4,7 +4,7 @@ Pending decisions requiring explicit sign-off from project owner/architect.
 
 ## Decision 1: restoreLoginFromToken retry strategy
 
-**Item:** `repair_list.txt` — `[hooks/modules/useAuth] restoreLoginFromToken 无重试/超时逻辑`
+**Item:** `repair_list.md` — `[hooks/modules/useAuth] restoreLoginFromToken 无重试/超时逻辑`
 
 **Context:** Current implementation calls `requestAuthCurrentUser(token)` once. On any failure, the user is silently logged out via `userStore.clearUserInfo()`. No distinction between "server temporarily down" vs "token genuinely expired."
 
@@ -21,7 +21,7 @@ Pending decisions requiring explicit sign-off from project owner/architect.
 
 ## Decision 2: Guard enforcement scope
 
-**Item:** `repair_list.txt` — `[guard/coverage] ai-architecture-guard.mjs 未覆盖以下规则`
+**Item:** `repair_list.md` — `[guard/coverage] ai-architecture-guard.mjs 未覆盖以下规则`
 
 **Context:** The guard script now enforces `raw-date-constructor` and `raw-timer` rules (added in this round). The following rules remain unautomated:
 
@@ -39,7 +39,7 @@ Pending decisions requiring explicit sign-off from project owner/architect.
 
 ## Decision 3: Rule contradiction resolution
 
-**Item:** `repair_list.txt` — `[guard/contradiction] 规则矩阵中 5 项矛盾未解决`
+**Item:** `repair_list.md` — `[guard/contradiction] 规则矩阵中 5 项矛盾未解决`
 
 **Context:** Remaining contradictions documented in `rule_coverage_matrix.md`:
 
@@ -58,7 +58,7 @@ Pending decisions requiring explicit sign-off from project owner/architect.
 
 ## Decision 4: Design-token rule consolidation
 
-**Item:** `repair_list.txt` — `[guard/owner-decisions] 待决策项`
+**Item:** `repair_list.md` — `[guard/owner-decisions] 待决策项`
 
 **Context:** Color, border, z-index, and semantic-family rules are duplicated across `00-unocss-guardrails.mdc`, `01-design-tokens.mdc`, `05-semantic-color-usage-contract.mdc`.
 
@@ -70,7 +70,7 @@ Pending decisions requiring explicit sign-off from project owner/architect.
 
 ## Decision 5: Desktop drift CI integration
 
-**Item:** `repair_list.txt` — `[guard/owner-decisions] 待决策项`
+**Item:** `repair_list.md` — `[guard/owner-decisions] 待决策项`
 
 **Context:** Desktop branch governance rules (`09-desktop-branch-governance.mdc`) exist but are not enforced in CI. Drift detection between desktop and web branches is manual.
 

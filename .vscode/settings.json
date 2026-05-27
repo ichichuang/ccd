@@ -3,7 +3,7 @@
   "explorer.fileNesting.enabled": true,
   "explorer.fileNesting.expand": false,
   "explorer.fileNesting.patterns": {
-    "AGENTS.md": "CLAUDE.md,.ai/README.md,.ai/config/cursor.settings.json,.ai/config/claude.settings.local.json,.ai/protocol/AI.entry.md,.ai/protocol/AGENTS.core.md,.ai/protocol/adapters/README.md,.ai/protocol/adapters/codex.md,.ai/protocol/adapters/claude.md,.ai/protocol/adapters/cursor.md,.ai/runtime/repair_list.template.txt,.ai/runtime/repair_list.txt,.ai/manifests/skills-lock.json",
+    "AGENTS.md": "CLAUDE.md,.ai/README.md,.ai/config/cursor.settings.json,.ai/config/claude.settings.local.json,.ai/protocol/AI.entry.md,.ai/protocol/AGENTS.core.md,.ai/protocol/adapters/README.md,.ai/protocol/adapters/codex.md,.ai/protocol/adapters/claude.md,.ai/protocol/adapters/cursor.md,.ai/runtime/repair_list.template.md,.ai/runtime/repair_list.md,.ai/manifests/skills-lock.json",
     "package.json": "pnpm-lock.yaml,.npmrc,pnpm-workspace.yaml,.editorconfig,.gitattributes,.gitignore,.prettierrc.json,commitlint.config.ts,README.md,LICENSE,CHANGELOG.md,lint-staged.config.mjs,stylelint.config.mjs",
     "ai-doctor.mjs": "ai-sync.mjs,codex-preflight.mjs,lint-staged-safe.mjs,drift-check.mjs,sync-brand.mjs,sync-version.mjs",
     "vite.config.ts": "vite.config.*.ts,vitest.config.ts,index.html",

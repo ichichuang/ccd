@@ -8,7 +8,7 @@ alwaysApply: true
 > **AI MANDATE:** Before providing ANY implementation or refactoring plan, you MUST confirm this global checklist against the current workspace. **Any `[❌]` means you MUST NOT proceed.**
 
 ## 1. Rule Sync & Context
-- [ ] **Ledger:** Read `.ai/runtime/repair_list.txt`. Current task is tracked.
+- [ ] **Ledger:** Read `.ai/runtime/repair_list.md`. Current task is tracked.
 
 ## 2. Architecture & State Boundaries
 - [ ] **Data Flow:** Strictly `api -> hooks -> stores -> views`. No cross-layer import violations.

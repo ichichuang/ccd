@@ -58,7 +58,7 @@ jobs:
       - name: Authorize GitHub CLI
         run: echo "${{ github.token }}" | gh auth login --with-token
 
-      # repair_list.txt is gitignored and created by ai:sync from the template; doctor requires it.
+      # repair_list.md is local runtime state and created by ai:sync from the Markdown template; doctor requires it.
       - name: CI runtime summary
         run: bash scripts/exec.sh pnpm runtime:summary
 
