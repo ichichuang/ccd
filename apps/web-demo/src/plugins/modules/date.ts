@@ -2,6 +2,7 @@
  * DateUtils 插件配置
  * 初始化日期工具并与框架语言系统集成
  */
+import { appLogger } from '@/adapters/logger.adapter'
 import DateUtils, { type Locale, initDayjs } from '@/utils/date'
 import type { SupportedLocale } from '@/locales'
 import { getCurrentLocale } from '@/locales'
@@ -29,7 +30,7 @@ export const setupDateUtils = async (app: App) => {
 
     app.config.globalProperties.$dateUtils = DateUtils
   } catch (error) {
-    console.error('❌ DateUtils 初始化失败:', error)
+    appLogger.error('❌ DateUtils 初始化失败:', error)
   }
 }
 

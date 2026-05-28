@@ -7,6 +7,8 @@
  * - 在开发环境输出详细日志，在生产环境进行“模拟”上报并给出友好提示
  */
 
+import { appLogger } from '@/adapters/logger.adapter'
+
 export function setupErrorHandler(app: App) {
   const isProd = import.meta.env.PROD
 
@@ -18,12 +20,12 @@ export function setupErrorHandler(app: App) {
     if (!isProd) return
     try {
       // 模拟：仅在控制台打印“已上报”的结构化信息
-      console.info('[GlobalErrorHandler] 模拟上报错误:', {
+      appLogger.info('[GlobalErrorHandler] 模拟上报错误:', {
         error,
         context,
       })
     } catch (e) {
-      console.error('[GlobalErrorHandler] 上报错误失败:', e)
+      appLogger.error('[GlobalErrorHandler] 上报错误失败:', e)
     }
   }
 
@@ -46,9 +48,9 @@ export function setupErrorHandler(app: App) {
       }
 
       // 若无全局消息组件，则退化为控制台警告
-      console.warn('系统遇到问题，请刷新页面重试。')
+      appLogger.warn('系统遇到问题，请刷新页面重试。')
     } catch (e) {
-      console.error('[GlobalErrorHandler] 显示用户提示失败:', e)
+      appLogger.error('[GlobalErrorHandler] 显示用户提示失败:', e)
     }
   }
 
@@ -58,13 +60,13 @@ export function setupErrorHandler(app: App) {
   app.config.errorHandler = (err, instance, info) => {
     if (!isProd) {
       // 开发环境：输出包含组件与信息的详细日志
-      console.error('[GlobalErrorHandler][VueError]', {
+      appLogger.error('[GlobalErrorHandler][VueError]', {
         err,
         info,
         instance,
       })
     } else {
-      console.error('[GlobalErrorHandler] 捕获到 Vue 错误:', err, 'info:', info)
+      appLogger.error('[GlobalErrorHandler] 捕获到 Vue 错误:', { err, info })
       const inst = instance as { type?: { name?: string } } | null
       const componentName = inst?.type?.name ?? (inst?.type != null ? String(inst.type) : 'unknown')
       reportErrorToServer(err, {
@@ -99,7 +101,7 @@ export function setupErrorHandler(app: App) {
 
       // 默认行为仍然保留（让控制台能显示原生错误）
       if (!isProd) {
-        console.error('[GlobalErrorHandler][WindowError]', event.error || event)
+        appLogger.error('[GlobalErrorHandler][WindowError]', event.error || event)
       } else {
         // 区分资源加载错误与脚本错误
         const isResourceError = event.target && event.target !== window
@@ -132,7 +134,7 @@ export function setupErrorHandler(app: App) {
     if (msg.includes('ResizeObserver loop')) return
 
     if (!isProd) {
-      console.error('[GlobalErrorHandler][UnhandledRejection]', event.reason)
+      appLogger.error('[GlobalErrorHandler][UnhandledRejection]', event.reason)
     } else {
       reportErrorToServer(event.reason || 'Unhandled promise rejection')
       showUserFriendlyToast()

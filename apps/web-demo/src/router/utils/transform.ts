@@ -4,6 +4,7 @@
  */
 
 import type { RouteRecordRaw } from 'vue-router'
+import { appLogger } from '@/adapters/logger.adapter'
 import { loadView, generateNameByPath, isUsingFallbackComponent } from './resolver'
 import { filterTopLevelRoutesByParent, generateMenuTree, generateBreadcrumbMap } from './menu'
 import { checkRouteAccess } from './accessControl'
@@ -92,7 +93,7 @@ export function processAsyncRoutes(backendRoutes: BackendRouteConfig[]): RouteCo
       const component = loadView(route.component as string)
       processedRoute.component = component
       if (isUsingFallbackComponent(component)) {
-        console.warn(
+        appLogger.warn(
           `🪒-Router: 路由 ${route.path} 的组件 ${route.component} 未找到，已使用 404 页面替代`
         )
         if (processedRoute.meta) {
@@ -435,5 +436,5 @@ export function getBackendRoutes(routes: RouteConfig[]): RouteConfig[] {
  * 记录未授权访问
  */
 export function recordUnauthorizedAccess(path: string, userRoles: string[]) {
-  console.warn(`🪒-Router: 未授权访问记录 - 路径: ${path}, 用户角色: ${userRoles.join(', ')}`)
+  appLogger.warn(`🪒-Router: 未授权访问记录 - 路径: ${path}, 用户角色: ${userRoles.join(', ')}`)
 }

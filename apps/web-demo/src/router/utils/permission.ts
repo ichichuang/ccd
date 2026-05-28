@@ -3,6 +3,7 @@
  * 职责：登录状态检查、白名单放行、角色+权限守门、动态路由初始化。
  * UI 副作用（NProgress、Loading、标题更新）已解耦至 guardEffects.ts。
  */
+import { appLogger } from '@/adapters/logger.adapter'
 import { AUTH_ENABLED, routeWhitePathList } from '@/constants/router'
 import { usePermissionStore } from '@/stores/modules/session'
 import { useUserStoreWithOut } from '@/stores/modules/session'
@@ -67,7 +68,7 @@ export const usePermissionGuard = ({
         return true
       })
       .catch(error => {
-        console.error('登录态恢复校验失败', error)
+        appLogger.error('登录态恢复校验失败', error)
         validatedSessionToken = null
         userStore.clearUserInfo()
         return false
@@ -151,7 +152,7 @@ export const usePermissionGuard = ({
           next({ path: target.path, query: target.query, replace: true })
           return
         } catch (error: unknown) {
-          console.error('动态路由初始化失败', error)
+          appLogger.error('动态路由初始化失败', error)
           next({
             path: '/login',
             query: to.fullPath !== '/login' ? { redirect: to.fullPath } : {},

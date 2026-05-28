@@ -3,6 +3,7 @@
  * 职责：将所有 UI 副作用从权限守卫中解耦，独立注册 beforeEach / afterEach / onError 钩子。
  * 必须在权限守卫之前注册，确保 NProgress 在异步权限检查前启动。
  */
+import { appLogger } from '@/adapters/logger.adapter'
 import { brand } from '@/constants/brand'
 import { t } from '@/locales'
 import {
@@ -148,6 +149,6 @@ export function registerGuardEffects(router: Router): void {
 
     clearOwnedPageLoading()
     doneProgress()
-    console.error('🪒 Router: navigation error', error)
+    appLogger.error('🪒 Router: navigation error', error)
   })
 }

@@ -1,4 +1,5 @@
 import { parseSafeObject } from '@/adapters/http.adapter'
+import { appLogger } from '@/adapters/logger.adapter'
 import { packDataSync, unpackDataSync } from './core'
 
 /**
@@ -28,7 +29,7 @@ export const createPiniaEncryptedSerializer = (secret?: string) => {
     deserialize: (value: string): any => {
       if (!value || typeof value !== 'string' || value.trim() === '') {
         if (import.meta.env.DEV) {
-          console.warn('[PiniaSerializer] 反序列化收到空值或非法字符串，视为无数据:', value)
+          appLogger.warn('[PiniaSerializer] 反序列化收到空值或非法字符串，视为无数据:', value)
         }
         return undefined
       }
@@ -40,7 +41,7 @@ export const createPiniaEncryptedSerializer = (secret?: string) => {
       }
 
       if (import.meta.env.DEV) {
-        console.warn(
+        appLogger.warn(
           '[PiniaSerializer] 解密/解压失败，尝试直接 JSON.parse。原始值预览:',
           value.slice(0, 120)
         )

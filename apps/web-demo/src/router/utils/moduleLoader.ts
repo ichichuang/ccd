@@ -1,3 +1,5 @@
+import { appLogger } from '@/adapters/logger.adapter'
+
 /**
  * 自动导入模块的通用函数
  * @param modules - import.meta.glob 返回的模块对象
@@ -17,7 +19,7 @@ export async function autoImportModules<T = unknown>(
       const moduleContent = (moduleExports.default ?? moduleExports) as T
       importedModules[moduleName] = moduleContent
     } catch (error) {
-      console.warn(`[ModuleLoader] Failed to load module from ${path}:`, error)
+      appLogger.warn(`[ModuleLoader] Failed to load module from ${path}:`, error)
     }
   }
 
@@ -50,7 +52,7 @@ export function autoImportModulesSync<T = unknown>(
       const moduleContent = (moduleExports.default ?? moduleExports) as T
       importedModules[moduleName] = moduleContent
     } catch (error) {
-      console.warn(`[ModuleLoader] Failed to process module from ${path}:`, error)
+      appLogger.warn(`[ModuleLoader] Failed to process module from ${path}:`, error)
     }
   }
 

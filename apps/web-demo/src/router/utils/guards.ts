@@ -1,4 +1,5 @@
 /* 注册路由 */
+import { appLogger } from '@/adapters/logger.adapter'
 import { rootRedirect } from '@/constants/router'
 import { usePermissionStore } from '@/stores/modules/session'
 import { usePermissionRoutes } from '@/hooks/modules/usePermissionRoutes'
@@ -69,7 +70,7 @@ export const registerRouterGuards = ({
     backgroundDynamicRouteHydrationPromise = hydrateDynamicRoutes(staticRoutes)
       .then(() => undefined)
       .catch(error => {
-        console.error('后台动态路由刷新失败:', error)
+        appLogger.error('后台动态路由刷新失败:', error)
       })
       .finally(() => {
         backgroundDynamicRouteHydrationPromise = null
@@ -85,7 +86,7 @@ export const registerRouterGuards = ({
     try {
       await hydrateDynamicRoutes(staticRoutes, { initial: true })
     } catch (error) {
-      console.warn('初始动态路由加载超时或失败，使用静态路由继续首屏:', error)
+      appLogger.warn('初始动态路由加载超时或失败，使用静态路由继续首屏:', error)
       permissionStore.ensureFixedTabs()
       permissionStore.setDynamicRoutesLoaded(true)
       scheduleBackgroundDynamicRouteHydration(staticRoutes)

@@ -11,6 +11,7 @@ import {
   waitForStablePaint,
 } from '@ccd/vue-app-platform'
 import App from '@/App.vue'
+import { appLogger } from '@/adapters/logger.adapter'
 import { RUNTIME_STORAGE_KEYS } from '@/constants/runtime'
 import { setupPlugins } from '@/plugins'
 import router from '@/router'
@@ -46,7 +47,7 @@ async function bootstrap() {
 
 // 启动应用
 bootstrap().catch(error => {
-  console.error('应用启动失败:', error)
+  appLogger.error('应用启动失败:', error)
   // Visual fallback: show error in preloader (which is still visible at this point)
   const preloader = document.getElementById('preloader-bg')
   if (preloader) {

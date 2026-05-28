@@ -3,6 +3,7 @@
  * 职责：仅负责与 Vue Router 实例交互的增删动态路由，不包含菜单或转换逻辑。
  */
 
+import { appLogger } from '@/adapters/logger.adapter'
 import type { Router } from 'vue-router'
 import { transformToVueRoutes } from './transform'
 
@@ -15,7 +16,7 @@ export function createDynamicRouteManager(router: Router) {
   return {
     addRoute(route: RouteConfig) {
       if (!route.name) {
-        console.error(
+        appLogger.error(
           '🪒-Router: 动态路由缺少 name，已忽略当前路由。请为该路由配置唯一的 name。',
           route
         )

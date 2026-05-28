@@ -1,3 +1,4 @@
+import { appLogger } from '@/adapters/logger.adapter'
 import * as Crypto from './crypto'
 import { ENCRYPTION_FAILED } from './crypto'
 import * as LZ from './lzstring'
@@ -27,7 +28,7 @@ function resolveObfuscationKey(): string {
 
   // SSR / Node fallback — lowest security, prevents crash only
   if (!import.meta.env.PROD) {
-    console.warn(
+    appLogger.warn(
       '[SafeStorage] Using hardcoded fallback key. Set VITE_PUBLIC_STORAGE_OBFUSCATION_KEY in your .env for client-visible storage obfuscation.'
     )
   }
@@ -43,7 +44,7 @@ function normalizeSecret(secret?: string): string | undefined {
 if (import.meta.env.PROD && typeof window !== 'undefined') {
   const injected = import.meta.env.VITE_PUBLIC_STORAGE_OBFUSCATION_KEY?.trim()
   if (!injected || injected === '${VITE_PUBLIC_STORAGE_OBFUSCATION_KEY:-}') {
-    console.warn(
+    appLogger.warn(
       '[SafeStorage] VITE_PUBLIC_STORAGE_OBFUSCATION_KEY is not set. Storage obfuscation uses a browser-derived key. ' +
         'Set VITE_PUBLIC_STORAGE_OBFUSCATION_KEY to a client-visible public value if you need stable obfuscation across deployments.'
     )
@@ -84,7 +85,7 @@ export function packDataSync(value: unknown, secret?: string): string {
     const encrypted = Crypto.encryptSync(compressed, actualSecret)
     return encrypted === ENCRYPTION_FAILED ? '' : encrypted
   } catch (e) {
-    console.warn('[SafeStorage] Pack failed:', e)
+    appLogger.warn('[SafeStorage] Pack failed:', e)
     return ''
   }
 }
@@ -110,7 +111,7 @@ export function unpackDataSync<T>(value: string, secret?: string): T | null {
   }
 
   // All keys exhausted — log diagnostic in all environments
-  console.warn(
+  appLogger.warn(
     `[SafeStorage] Failed to unpack data (length=${value.length}). ` +
       'Data may be corrupted or encrypted with an unknown key.'
   )
@@ -147,7 +148,7 @@ export async function packData(value: unknown, secret?: string): Promise<string>
     const encrypted = await Crypto.encrypt(compressed, actualSecret)
     return encrypted === ENCRYPTION_FAILED ? '' : encrypted
   } catch (e) {
-    console.warn('[SafeStorage] Async Pack failed:', e)
+    appLogger.warn('[SafeStorage] Async Pack failed:', e)
     return ''
   }
 }
@@ -167,7 +168,7 @@ export async function unpackData<T>(value: string, secret?: string): Promise<T |
   }
 
   // All keys exhausted — log diagnostic in all environments
-  console.warn(
+  appLogger.warn(
     `[SafeStorage] Failed to unpack data (length=${value.length}). ` +
       'Data may be corrupted or encrypted with an unknown key.'
   )

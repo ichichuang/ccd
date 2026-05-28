@@ -1,4 +1,10 @@
-import type { CoreAdapters, FileSystemAdapter, Logger, NetworkClient, StorageAdapter } from '@ccd/core'
+import type {
+  CoreAdapters,
+  FileSystemAdapter,
+  Logger,
+  NetworkClient,
+  StorageAdapter,
+} from '@ccd/core'
 import { invoke } from '@tauri-apps/api/core'
 
 const storage: StorageAdapter = {
@@ -28,7 +34,7 @@ const network: NetworkClient = {
   },
 }
 
-const logger: Logger = {
+export const desktopLogger: Logger = {
   debug(message, context) {
     globalThis.console.debug(message, context)
   },
@@ -47,5 +53,5 @@ export const desktopAdapters: CoreAdapters = {
   storage,
   filesystem,
   network,
-  logger,
+  logger: desktopLogger,
 }

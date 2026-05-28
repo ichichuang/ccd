@@ -1,3 +1,4 @@
+import { appLogger } from '@/adapters/logger.adapter'
 import router, { ensureStaticRoutesLoaded, routeUtils } from '@/router'
 import { installRouterCapabilities } from '@/infra/router/routeProvider'
 
@@ -11,6 +12,6 @@ export const setupRouter = (app: App) => {
   })
 
   void ensureStaticRoutesLoaded().catch(error => {
-    console.error('静态路由后台加载失败:', error)
+    appLogger.error('静态路由后台加载失败:', error)
   })
 }

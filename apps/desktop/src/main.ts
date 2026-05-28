@@ -8,6 +8,7 @@ import {
   waitForStablePaint,
 } from '@ccd/vue-app-platform'
 import App from './App.vue'
+import { desktopLogger } from './adapters'
 import { setupPlugins } from './plugins'
 import router from './router'
 import { setupDesktopDesignSystem } from './theme'
@@ -36,7 +37,7 @@ async function bootstrap() {
 }
 
 bootstrap().catch(error => {
-  console.error('Desktop bootstrap failed:', error)
+  desktopLogger.error('Desktop bootstrap failed:', error)
 
   const preloader = document.getElementById('preloader-bg')
   if (!preloader) return

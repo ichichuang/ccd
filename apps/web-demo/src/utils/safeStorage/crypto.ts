@@ -1,3 +1,4 @@
+import { appLogger } from '@/adapters/logger.adapter'
 import { AES, HmacSHA256, Utf8 } from 'crypto-es'
 
 const HMAC_SEPARATOR = '|__hmac__:'
@@ -59,7 +60,7 @@ export async function encrypt(
     const hmac = await computeHmac(ciphertext, secret)
     return ciphertext + HMAC_SEPARATOR + hmac
   } catch (e) {
-    console.error('[Crypto] Encrypt failed:', e)
+    appLogger.error('[Crypto] Encrypt failed:', e)
     return ENCRYPTION_FAILED
   }
 }
@@ -80,7 +81,7 @@ export async function decrypt(encrypted: string, secret: string): Promise<string
       const storedHmac = encrypted.slice(separatorIndex + HMAC_SEPARATOR.length)
       const computedHmac = await computeHmac(ciphertext, secret)
       if (storedHmac !== computedHmac) {
-        console.warn('[Crypto] HMAC verification failed — ciphertext may have been tampered with')
+        appLogger.warn('[Crypto] HMAC verification failed — ciphertext may have been tampered with')
         return null
       }
       const bytes = AES.decrypt(ciphertext, secret)
@@ -109,7 +110,7 @@ export function encryptSync(plain: string, secret: string): string | typeof ENCR
     const hmac = computeHmacSync(ciphertext, secret)
     return ciphertext + HMAC_SEPARATOR + hmac
   } catch (e) {
-    console.error('[Crypto] EncryptSync failed:', e)
+    appLogger.error('[Crypto] EncryptSync failed:', e)
     return ENCRYPTION_FAILED
   }
 }
@@ -128,7 +129,7 @@ export function decryptSync(encrypted: string, secret: string): string | null {
       const storedHmac = encrypted.slice(separatorIndex + HMAC_SEPARATOR.length)
       const computedHmac = computeHmacSync(ciphertext, secret)
       if (storedHmac !== computedHmac) {
-        console.warn('[Crypto] HMAC verification failed — ciphertext may have been tampered with')
+        appLogger.warn('[Crypto] HMAC verification failed — ciphertext may have been tampered with')
         return null
       }
       const bytes = AES.decrypt(ciphertext, secret)

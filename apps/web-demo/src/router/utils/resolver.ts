@@ -3,6 +3,8 @@
  * 职责：根据后端 component 字符串解析并加载实际组件，不涉及路由树或菜单逻辑。
  */
 
+import { appLogger } from '@/adapters/logger.adapter'
+
 const modules = import.meta.glob<() => Promise<unknown>>('@/views/**/*.{vue,tsx}')
 
 /** 404 落页组件路径（与 import.meta.glob 的 key 一致：Vite 解析 @ 为 /src） */
@@ -50,11 +52,11 @@ export function loadView(componentName: string): () => Promise<unknown> {
       return matchedComponent
     }
 
-    console.error(`🪒-Router: ❌ 组件未找到: ${componentName}`)
-    console.error(`🪒-Router: 🔍 尝试的路径: ${componentPath.join(', ')}`)
-    console.error(`🪒-Router: 📁 可用的模块:`, Object.keys(modules))
+    appLogger.error(`🪒-Router: ❌ 组件未找到: ${componentName}`)
+    appLogger.error(`🪒-Router: 🔍 尝试的路径: ${componentPath.join(', ')}`)
+    appLogger.error(`🪒-Router: 📁 可用的模块:`, Object.keys(modules))
   } catch (_e) {
-    console.error(`🪒-Router: loadView 解析异常，使用 404 落页: ${componentName}`)
+    appLogger.error(`🪒-Router: loadView 解析异常，使用 404 落页: ${componentName}`)
   }
 
   return getFallbackLoader()

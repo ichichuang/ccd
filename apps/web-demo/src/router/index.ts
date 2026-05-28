@@ -6,6 +6,7 @@ import {
   sortRoutes,
   transformToVueRoutes,
 } from '@/router/utils/transform'
+import { appLogger } from '@/adapters/logger.adapter'
 import { usePermissionStoreWithOut } from '@/stores/modules/session/permission'
 import { createDynamicRouteManager } from '@/router/utils/dynamic'
 import type { RouteRecordRaw } from 'vue-router'
@@ -34,12 +35,12 @@ function processRouteModules(modules: Record<string, RouteModule>): RouteConfig[
       // 类型检查和过滤
       const validRoutes = moduleRoutes.filter((route): route is RouteConfig => {
         if (!route || typeof route !== 'object') {
-          console.warn(`⚠️ 路由模块 ${moduleName} 导出的不是有效的路由对象`)
+          appLogger.warn(`⚠️ 路由模块 ${moduleName} 导出的不是有效的路由对象`)
           return false
         }
 
         if (typeof route.path !== 'string' || !route.path) {
-          console.warn(`⚠️ 路由模块 ${moduleName} 缺少有效的 path 属性`)
+          appLogger.warn(`⚠️ 路由模块 ${moduleName} 缺少有效的 path 属性`)
           return false
         }
 
@@ -48,7 +49,7 @@ function processRouteModules(modules: Record<string, RouteModule>): RouteConfig[
 
       routes.push(...validRoutes)
     } catch (error) {
-      console.error(`❌ 处理路由模块 ${moduleName} 时发生错误:`, error)
+      appLogger.error(`❌ 处理路由模块 ${moduleName} 时发生错误:`, error)
     }
   }
 

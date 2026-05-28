@@ -4,6 +4,7 @@ import {
   routeWhiteNameList,
   routeWhitePathList,
 } from '@/constants/router'
+import { appLogger } from '@/adapters/logger.adapter'
 import router, { routeUtils } from '@/router'
 import { generateIdFromKey } from '@ccd/shared-utils'
 import { usePermissionStore } from '@/stores/modules/session'
@@ -245,7 +246,7 @@ export const goToRoute = (
       }
       return
     } catch {
-      console.warn(`路由 "${name}" 未找到`)
+      appLogger.warn(`路由 "${name}" 未找到`)
       return
     }
   }
@@ -262,7 +263,7 @@ export const goToRoute = (
     try {
       window.open(url, '_blank')
     } catch {
-      console.warn('外链打开失败：', url)
+      appLogger.warn('外链打开失败：', url)
     }
     return
   }
@@ -311,7 +312,7 @@ export const goToRoute = (
       setRouteWindowRef(windowKey, win)
       permissionStore.registerWindow(String(targetRoute.name), query, url)
     } else {
-      console.warn('新窗口打开失败，可能被浏览器阻止')
+      appLogger.warn('新窗口打开失败，可能被浏览器阻止')
     }
   } else {
     router.push({ path: targetRoute.path, query })
@@ -325,7 +326,7 @@ export const updateRoute = (name: string, keyPath: string, value: unknown): void
   const targetRoutes = getRouteByName(name)
   const index = targetRoutes.findIndex(item => item.name === name)
   if (index === -1) {
-    console.warn(`路由 "${name}" 未找到，无法更新`)
+    appLogger.warn(`路由 "${name}" 未找到，无法更新`)
     return
   }
   const targetRoute = targetRoutes[index]
@@ -382,7 +383,7 @@ export function menuItemToPrimeModel(
   const hasChildren = !!(item.children && item.children.length > 0)
 
   if (!hasChildren && !item.name && item.path && import.meta.env.DEV) {
-    console.warn(
+    appLogger.warn(
       `[Router] 菜单叶子项缺失 name，可能导致高级路由功能失效: path=${item.path}, title=${
         item.titleKey || item.title
       }`
