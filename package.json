@@ -219,7 +219,7 @@
     "@primevue/auto-import-resolver": "^4.5.4",
     "@tsconfig/node24": "^24.0.4",
     "@types/lodash-es": "^4.17.12",
-    "@types/node": "^25.7.0",
+    "@types/node": "^24.12.4",
     "@types/postcss-pxtorem": "^6.1.0",
     "@unocss/preset-attributify": "^66.6.0",
     "@unocss/preset-icons": "^66.6.0",

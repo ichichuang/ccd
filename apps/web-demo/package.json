@@ -51,6 +51,7 @@
     "@ccd/vue-charts": "workspace:*"
   },
   "devDependencies": {
+    "@types/node": "^24.12.4",
     "@vitejs/plugin-vue": "^6.0.3",
     "@vitejs/plugin-vue-jsx": "^5.1.3",
     "typescript": "^5.8.3",
