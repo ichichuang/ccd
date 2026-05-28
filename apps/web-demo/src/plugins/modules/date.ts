@@ -13,13 +13,20 @@ const localeMapping: Record<SupportedLocale, Locale> = {
 }
 
 /**
- * 设置 DateUtils 插件
+ * 设置 DateUtils 前置依赖。
+ * dayjs 插件需要在首屏渲染前同步注册，避免依赖模块导入时序的隐式副作用。
+ */
+export const setupDateUtilsPrerequisites = () => {
+  initDayjs()
+}
+
+/**
+ * 设置 DateUtils 插件 hydration
  * @param app Vue 应用实例
  */
 export const setupDateUtils = async (app: App) => {
   try {
-    // 显式初始化 dayjs 插件，不再依赖模块导入时序的隐式副作用
-    initDayjs()
+    setupDateUtilsPrerequisites()
 
     // 获取当前框架语言
     const currentFrameworkLocale = getCurrentLocale()

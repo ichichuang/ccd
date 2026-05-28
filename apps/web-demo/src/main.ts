@@ -13,7 +13,7 @@ import {
 import App from '@/App.vue'
 import { appLogger } from '@/adapters/logger.adapter'
 import { RUNTIME_STORAGE_KEYS } from '@/constants/runtime'
-import { setupPlugins } from '@/plugins'
+import { setupDeferredPlugins, setupPlugins } from '@/plugins'
 import router from '@/router'
 import { useLayoutStoreWithOut } from '@/stores/modules/system'
 import { fadeOutNativePreloader } from '@/hooks/layout/useLoading'
@@ -29,7 +29,7 @@ async function bootstrap() {
 
   const app = createApp(App)
 
-  // 设置启动关键插件；非关键 hydration 在插件内部后台执行，避免阻塞 Vue shell 挂载。
+  // 设置启动关键插件，保持 Vue shell 挂载所需基础设施同步就绪。
   setupPlugins(app)
 
   // 挂载应用
@@ -43,6 +43,7 @@ async function bootstrap() {
     layoutStore.endGlobalLoading()
   }
   fadeOutNativePreloader()
+  setupDeferredPlugins(app)
 }
 
 // 启动应用

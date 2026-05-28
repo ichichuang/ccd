@@ -43,6 +43,7 @@ vi.mock('@/plugins/modules/router', () => ({
 }))
 
 vi.mock('@/plugins/modules/date', () => ({
+  setupDateUtilsPrerequisites: () => calls.order.push('date:prerequisites'),
   setupDateUtils: () => {
     calls.order.push('date:start')
     return Promise.resolve().then(() => calls.order.push('date:end'))
@@ -63,8 +64,8 @@ describe('setupPlugins bootstrap order', () => {
     calls.order = []
   })
 
-  it('initializes infrastructure before non-blocking router/date handoff and directives', async () => {
-    const { setupPlugins } = await import('./index')
+  it('initializes critical plugins before mount and keeps DateUtils hydration explicit', async () => {
+    const { setupDeferredPlugins, setupPlugins } = await import('./index')
     const app = createApp({ render: () => null })
     const directiveSpy = vi.spyOn(app, 'directive')
 
@@ -79,7 +80,7 @@ describe('setupPlugins bootstrap order', () => {
       'scrollbar',
       'proform',
       'router:start',
-      'date:start',
+      'date:prerequisites',
     ])
     expect(directiveSpy.mock.calls.map(call => call[0])).toEqual([
       'auth',
@@ -98,8 +99,38 @@ describe('setupPlugins bootstrap order', () => {
       'scrollbar',
       'proform',
       'router:start',
-      'date:start',
+      'date:prerequisites',
       'router:end',
+    ])
+
+    setupDeferredPlugins(app)
+    expect(calls.order).toEqual([
+      'errorHandler',
+      'locales',
+      'stores',
+      'authBridge',
+      'primevue',
+      'scrollbar',
+      'proform',
+      'router:start',
+      'date:prerequisites',
+      'router:end',
+      'date:start',
+    ])
+
+    await Promise.resolve()
+    expect(calls.order).toEqual([
+      'errorHandler',
+      'locales',
+      'stores',
+      'authBridge',
+      'primevue',
+      'scrollbar',
+      'proform',
+      'router:start',
+      'date:prerequisites',
+      'router:end',
+      'date:start',
       'date:end',
     ])
   })

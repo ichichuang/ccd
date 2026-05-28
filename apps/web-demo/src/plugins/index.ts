@@ -1,4 +1,4 @@
-import { setupDateUtils } from '@/plugins/modules/date'
+import { setupDateUtils, setupDateUtilsPrerequisites } from '@/plugins/modules/date'
 import { setupLocales } from '@/plugins/modules/locales'
 import { setupProForm } from '@/plugins/modules/proform'
 import { setupRouter } from '@/plugins/modules/router'
@@ -29,10 +29,18 @@ export const setupPlugins = (app: App) => {
 
   setupRouter(app)
 
-  // 在语言系统之后初始化 DateUtils，确保语言设置已就绪
-  void setupDateUtils(app)
+  // DateUtils dayjs 插件仍保持首屏前同步注册，framework hydration 延后到稳定首屏后执行。
+  setupDateUtilsPrerequisites()
 
   // 全局指令
   app.directive('auth', vAuth)
   installInteractionDirectives(app)
+}
+
+/**
+ * 设置首屏后可延迟执行的插件 hydration。
+ * @param app Vue 应用实例
+ */
+export const setupDeferredPlugins = (app: App) => {
+  void setupDateUtils(app)
 }
