@@ -2,6 +2,7 @@ import { HTTP_CONFIG } from '@/constants/http'
 import { AUTH_ENABLED } from '@/constants/router'
 import { t } from '@/locales'
 import { parseZodHttpPayload } from '@/adapters/http.adapter'
+import { appLogger } from '@/adapters/logger.adapter'
 import { notifyUnauthorized, readAuthToken } from '@/infra/auth/tokenProvider'
 import { compressAndEncryptSync, decryptAndDecompressSync } from '@/utils/safeStorage'
 import { castValue } from '@ccd/shared-utils'
@@ -101,7 +102,7 @@ class TokenRefreshCoordinator {
     this.unauthorizedNotified = true
     try {
       void notifyUnauthorized().catch(error => {
-        console.error('[HTTP] Unauthorized handler failed:', error)
+        appLogger.error('[HTTP] Unauthorized handler failed:', error)
       })
     } finally {
       // Use setTimeout(,0) instead of queueMicrotask: ensures the flag resets
@@ -172,7 +173,7 @@ function validateResponsePayload(method: Method, payload: unknown): unknown {
 async function handle401WithRefresh(method: Method): Promise<unknown> {
   if (isRefreshEndpoint(method.url)) {
     void notifyUnauthorized().catch(error => {
-      console.error('[HTTP] Unauthorized handler failed:', error)
+      appLogger.error('[HTTP] Unauthorized handler failed:', error)
     })
     throw new HttpRequestError(
       t('http.error.unauthorized'),
@@ -186,7 +187,7 @@ async function handle401WithRefresh(method: Method): Promise<unknown> {
 
   if (isRetriedAfterRefresh(method)) {
     void notifyUnauthorized().catch(error => {
-      console.error('[HTTP] Unauthorized handler failed:', error)
+      appLogger.error('[HTTP] Unauthorized handler failed:', error)
     })
     throw new HttpRequestError(
       t('http.error.unauthorized'),
@@ -264,7 +265,7 @@ export const processRequestData = <T extends Record<string, unknown>>(data: T): 
 
       return castValue<T>(encryptedData)
     } catch (error) {
-      console.error('[RequestEncrypt] 加密请求数据失败:', error)
+      appLogger.error('[RequestEncrypt] 加密请求数据失败:', error)
     }
   }
 
@@ -361,7 +362,7 @@ function showHttpNotification(title: string, message: string): void {
     return
   }
 
-  console.error(`[HTTP] ${title}: ${message}`)
+  appLogger.error(`[HTTP] ${title}: ${message}`)
 }
 
 /**
@@ -513,7 +514,7 @@ export const responseHandler = async (response: Response, method: Method) => {
                   if (decrypted !== null) {
                     decryptedData[key] = decrypted
                   } else {
-                    console.warn(
+                    appLogger.warn(
                       `[ResponseDecrypt] Failed to decrypt field "${key}", using raw value`
                     )
                     decryptedData[key] = value
@@ -528,7 +529,7 @@ export const responseHandler = async (response: Response, method: Method) => {
             // 使用解密后的数据替换原始数据
             responseData = castValue(decryptedData)
           } catch (error) {
-            console.error('[ResponseHandler] 解密响应数据失败:', error)
+            appLogger.error('[ResponseHandler] 解密响应数据失败:', error)
             // 解密失败时返回原始数据
           }
         }
@@ -579,7 +580,7 @@ export const responseHandler = async (response: Response, method: Method) => {
           errorMessage.includes('ERR_ADDRESS_UNREACHABLE')))
 
     if (isNetworkError) {
-      console.error('❌ 网络连接错误:', errorMessage || errorName)
+      appLogger.error('❌ 网络连接错误:', errorMessage || errorName)
       const statusMessage = t('http.error.networkConnectionFailed')
       const _networkErrorMessage = errorMessage || t('http.error.networkConnectionFailed')
 
@@ -597,7 +598,7 @@ export const responseHandler = async (response: Response, method: Method) => {
 
     // 处理 CORS 错误
     if (error instanceof TypeError && errorMessage.includes('CORS')) {
-      console.error('❌ CORS 错误:', errorMessage)
+      appLogger.error('❌ CORS 错误:', errorMessage)
       throw new HttpRequestError(
         t('http.error.corsBlocked'),
         ErrorType.CLIENT,
@@ -655,7 +656,7 @@ const handleHttpError = (status: number, data: { message?: string } | undefined)
     case 400:
       // 处理请求错误
       statusMessage = t('http.error.badRequest')
-      console.warn('请求错误')
+      appLogger.warn('请求错误')
       break
     case 401:
       // 401 刷新与未授权处理由 TokenRefreshCoordinator 统一负责
@@ -664,27 +665,27 @@ const handleHttpError = (status: number, data: { message?: string } | undefined)
     case 403:
       // 处理权限不足错误
       statusMessage = t('http.error.forbidden')
-      console.warn('权限不足')
+      appLogger.warn('权限不足')
       break
     case 404:
       // 处理资源不存在错误
       statusMessage = t('http.error.notFound')
-      console.warn('请求的资源不存在')
+      appLogger.warn('请求的资源不存在')
       break
     case 500:
       // 处理服务器内部错误
       statusMessage = t('http.error.internalServerError')
-      console.error('服务器内部错误')
+      appLogger.error('服务器内部错误')
       break
     case 502:
     case 503:
     case 504:
       statusMessage = t('http.error.serviceUnavailable')
-      console.error('服务器暂时不可用')
+      appLogger.error('服务器暂时不可用')
       break
     default:
       statusMessage = t('http.error.httpError', { status })
-      console.error(`HTTP ${status} 错误`)
+      appLogger.error(`HTTP ${status} 错误`)
   }
 
   showHttpNotification(statusMessage, errorMessage)
@@ -696,10 +697,10 @@ const handleHttpError = (status: number, data: { message?: string } | undefined)
 const handleRequestError = (error: Error) => {
   // 根据错误类型进行不同处理
   if (error.message.includes('timeout')) {
-    console.warn('请求超时')
+    appLogger.warn('请求超时')
   } else if (error.message.includes('Network')) {
-    console.warn('网络错误')
+    appLogger.warn('网络错误')
   } else if (error.message.includes('Failed to fetch')) {
-    console.warn('网络连接失败')
+    appLogger.warn('网络连接失败')
   }
 }

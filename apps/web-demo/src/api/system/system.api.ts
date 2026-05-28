@@ -12,6 +12,7 @@ import {
   type SystemAsyncRoutesRawRes,
 } from '@/types/dto/system.dto'
 import { parseZodHttpPayload } from '@/adapters/http.adapter'
+import { appLogger } from '@/adapters/logger.adapter'
 import { DEMO_MOCK_ENABLED } from '@/constants/mock'
 
 /** 动态路由 API 路径（对接后端时使用） */
@@ -110,7 +111,7 @@ function validateRouteItems(routes: SystemAsyncRouteItem[]): SystemAsyncRouteIte
   })
 
   if (invalid.length > 0) {
-    console.warn(
+    appLogger.warn(
       `[System API] ${invalid.length} invalid route(s) filtered:`,
       invalid.map(i => `[${i.index}] ${i.reason}`)
     )

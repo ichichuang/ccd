@@ -1,4 +1,5 @@
 // src/utils/http/instance.ts
+import { appLogger } from '@/adapters/logger.adapter'
 import { HTTP_CONFIG } from '@/constants/http'
 import { t } from '@/locales'
 import { createAlova } from 'alova'
@@ -31,7 +32,7 @@ const validateAlovaConfig = () => {
   }
 
   if (errors.length > 0) {
-    console.error('❌ Alova 配置错误:', errors)
+    appLogger.error('❌ Alova 配置错误:', errors)
     throw new Error(t('http.config.alovaConfigError', { errors: errors.join(', ') }))
   }
 }
@@ -81,10 +82,10 @@ validateAlovaConfig()
 // 监听连接状态变化
 addConnectionListener(state => {
   if (!state.isConnected && !state.isReconnecting) {
-    console.warn('⚠️ 网络连接已断开', state.disconnectReason ?? '')
+    appLogger.warn('⚠️ 网络连接已断开', state.disconnectReason ?? '')
   }
   if (state.isConnected && state.reconnectAttempts === 0 && state.lastConnectedAt) {
-    console.log('✅ 网络连接已恢复')
+    appLogger.info('✅ 网络连接已恢复')
   }
 })
 

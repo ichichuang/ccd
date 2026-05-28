@@ -3,6 +3,7 @@
  * 业务层当前无引用；属基础设施，供未来上传功能使用。
  * 若无上传需求可考虑懒加载引入以减小首包。
  */
+import { appLogger } from '@/adapters/logger.adapter'
 import { UPLOAD_TASK_PREFIX } from '@/constants/business'
 import { HTTP_CONFIG } from '@/constants/http'
 import { t } from '@/locales'
@@ -373,7 +374,7 @@ export class UploadManager implements IUploadManager {
     } catch (error) {
       // Server errors (5xx) indicate a transient issue — log and return [] to trigger full re-upload.
       // Client errors (4xx) likely mean the upload session is gone — also re-upload.
-      console.warn(
+      appLogger.warn(
         '[UploadManager] checkUploadedChunks failed, falling back to full upload:',
         error
       )

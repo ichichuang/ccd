@@ -1,3 +1,4 @@
+import { appLogger } from '@/adapters/logger.adapter'
 import { HTTP_CONFIG } from '@/constants/http'
 import { t } from '@/locales'
 import type { ConnectionConfig, ConnectionState } from './types'
@@ -127,7 +128,7 @@ export class ConnectionManager {
       await this.delay(1000)
       return await this.performHealthCheck()
     } catch (error) {
-      console.error('重连失败:', error)
+      appLogger.error('重连失败:', error)
       return false
     }
   }
@@ -145,7 +146,7 @@ export class ConnectionManager {
     this.startHealthCheck()
     this.notifyListeners()
 
-    console.log('✅ 网络连接已恢复')
+    appLogger.info('✅ 网络连接已恢复')
   }
 
   /**
@@ -250,7 +251,7 @@ export class ConnectionManager {
       this.startHealthCheck()
       this.notifyListeners()
 
-      console.log('✅ 网络已连接')
+      appLogger.info('✅ 网络已连接')
     }
 
     const handleOffline = () => {
@@ -265,7 +266,7 @@ export class ConnectionManager {
       this.stopHealthCheck()
       this.notifyListeners()
 
-      console.log('⚠️ 网络已断开')
+      appLogger.info('⚠️ 网络已断开')
 
       // 如果启用了自动重连，尝试重连
       if (this.config.autoReconnect) {
@@ -298,7 +299,7 @@ export class ConnectionManager {
       try {
         listener(this.getConnectionState())
       } catch (error) {
-        console.error('监听器执行错误:', error)
+        appLogger.error('监听器执行错误:', error)
       }
     })
   }

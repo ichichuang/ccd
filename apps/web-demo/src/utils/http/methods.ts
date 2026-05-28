@@ -1,4 +1,5 @@
 // src/utils/http/methods.ts
+import { appLogger } from '@/adapters/logger.adapter'
 import { HTTP_CONFIG } from '@/constants/http'
 import { parseZodHttpPayload } from '@/adapters/http.adapter'
 import { readAuthToken } from '@/infra/auth/tokenProvider'
@@ -115,10 +116,10 @@ function showRawGlobalError(status: number, message: string, config?: RequestCon
     } else if (window.$toast?.dangerIn) {
       window.$toast.dangerIn('top-left', statusTitle, message)
     } else {
-      console.error(`[HTTP ${status}] ${message}`)
+      appLogger.error(`[HTTP ${status}] ${message}`)
     }
   } catch (_error) {
-    console.error(`[HTTP ${status}] ${message}`)
+    appLogger.error(`[HTTP ${status}] ${message}`)
   }
 }
 
