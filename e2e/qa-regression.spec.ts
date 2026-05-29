@@ -406,7 +406,7 @@ test.describe('QA full regression repair matrix', () => {
     await secondTab.close()
   })
 
-  test('authenticated dashboard first render stays within budget', async ({ page }) => {
+  test('authenticated dashboard first render stays within budget @perf', async ({ page }) => {
     const networkCollector = createNetworkFailureCollector(page)
     await page.setViewportSize({ width: 1280, height: 720 })
     await loginAsAdmin(page)
