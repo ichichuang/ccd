@@ -103,6 +103,7 @@ jobs:
   e2e-qa:
     name: E2E QA
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     env:
       NODE_OPTIONS: '--max-old-space-size=4096'
 
@@ -132,8 +133,9 @@ jobs:
       - name: Deterministic Frozen Install
         run: bash scripts/exec.sh pnpm install --frozen-lockfile
 
-      - name: Install Playwright Chromium
-        run: bash scripts/exec.sh pnpm exec playwright install --with-deps chromium
+      - name: Install Playwright Chromium Headless Shell
+        timeout-minutes: 10
+        run: bash scripts/exec.sh pnpm exec playwright install --with-deps --only-shell chromium
 
       - name: Prepare internal workspace packages
         run: bash scripts/exec.sh pnpm ci:prepare-internal
