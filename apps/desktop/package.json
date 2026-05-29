@@ -38,12 +38,5 @@
     "@vitejs/plugin-vue": "^6.0.3",
     "unocss": "^66.6.0",
     "@tauri-apps/cli": "^2.9.1"
-  },
-  "exports": {
-    ".": {
-      "types": "./src/main.ts",
-      "import": "./src/main.ts",
-      "default": "./src/main.ts"
-    }
   }
 }

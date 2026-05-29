@@ -1,5 +1,5 @@
 import { Icons } from '@ccd/vue-ui'
-import type { ProTableColumn, ColumnRenderParams } from '@/components/ProTable'
+import type { ColumnRenderParams, ProTableColumn } from '@ccd/vue-ui'
 import {
   PRODUCT_CATEGORY_CLASS,
   PRODUCT_CATEGORY_FILTER_OPTIONS,

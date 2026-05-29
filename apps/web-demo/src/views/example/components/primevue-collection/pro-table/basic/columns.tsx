@@ -1,4 +1,4 @@
-import type { ProTableColumn, ColumnRenderParams } from '@/components/ProTable'
+import type { ColumnRenderParams, ProTableColumn } from '@ccd/vue-ui'
 import { ORDER_STATUS_VALUE_ENUM } from '@/constants/enums'
 
 export interface OrderRow extends Record<string, unknown> {

@@ -133,7 +133,7 @@
         "@ccd/vue-primevue-adapter",
         "@ccd/vue-charts"
       ],
-      "publicApi": true,
+      "publicApi": false,
       "runtime": "web"
     },
     {
@@ -149,7 +149,7 @@
         "@ccd/unocss-preset",
         "@ccd/vue-app-platform"
       ],
-      "publicApi": true,
+      "publicApi": false,
       "runtime": "desktop",
       "adapterBoundary": "apps/desktop/src/adapters"
     }

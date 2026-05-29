@@ -1,5 +1,6 @@
-import { expect, test, type BrowserContext, type Locator, type Page } from '@playwright/test'
-import { loginAsAdmin, waitForAppReady, waitForRuntimeLoadingIdle } from './helpers/app'
+import { expect, test, type Locator, type Page } from '@playwright/test'
+import { gotoVisual, waitForAppReady, waitForRuntimeLoadingIdle } from './helpers/app'
+import { AUTH_STORAGE_STATE_PATH } from './helpers/authState'
 
 interface SidebarDashboardDiagnostics {
   route: {
@@ -191,22 +192,6 @@ async function snapshotDashboardDiagnostics(page: Page): Promise<SidebarDashboar
   })
 }
 
-async function loginAndExtractStorageState(page: Page): Promise<{
-  cookies: BrowserContext['storageState'] extends () => Promise<infer R>
-    ? R extends { cookies: infer C }
-      ? C
-      : never
-    : never
-  origins: BrowserContext['storageState'] extends () => Promise<infer R>
-    ? R extends { origins: infer O }
-      ? O
-      : never
-    : never
-}> {
-  await loginAsAdmin(page)
-  return page.context().storageState()
-}
-
 async function expectRowWidthAligned(
   page: Page,
   rowSelector: string,
@@ -262,13 +247,12 @@ async function expectHoverSurface(
 }
 
 test.describe('sidebar route/menu first-paint synchronization', () => {
+  test.use({ storageState: AUTH_STORAGE_STATE_PATH })
+
   test('direct first load /#/example/primevue-collection/overview keeps route-owned and project active markers aligned', async ({
     browser,
-    page,
   }) => {
-    const storageState = await loginAndExtractStorageState(page)
-
-    const directContext = await browser.newContext({ storageState })
+    const directContext = await browser.newContext({ storageState: AUTH_STORAGE_STATE_PATH })
     const directPage = await directContext.newPage()
     await directPage.goto('/?e2e=visual#/example/primevue-collection/overview', {
       waitUntil: 'domcontentloaded',
@@ -336,11 +320,8 @@ test.describe('sidebar route/menu first-paint synchronization', () => {
 
   test('direct first load /#/dashboard resolves sidebar dashboard item active', async ({
     browser,
-    page,
   }) => {
-    const storageState = await loginAndExtractStorageState(page)
-
-    const directContext = await browser.newContext({ storageState })
+    const directContext = await browser.newContext({ storageState: AUTH_STORAGE_STATE_PATH })
     const directPage = await directContext.newPage()
     await directPage.goto('/?e2e=visual#/dashboard', { waitUntil: 'domcontentloaded' })
     await waitForAppReady(directPage)
@@ -426,7 +407,10 @@ test.describe('sidebar route/menu first-paint synchronization', () => {
   test('navigate away and back keeps dashboard sidebar active and synchronized', async ({
     page,
   }) => {
-    await loginAsAdmin(page)
+    await gotoVisual(page, '/dashboard')
+    await waitForAppReady(page)
+    await waitForRuntimeLoadingIdle(page)
+    await expect(page.locator('#dashboard-page')).toBeVisible()
 
     await page.goto('/?e2e=visual#/example/system-states', { waitUntil: 'domcontentloaded' })
     await waitForAppReady(page)

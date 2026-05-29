@@ -1,11 +1,10 @@
 import { applyUniqueRoot, toRecord } from '@ccd/shared-utils'
-import PanelMenu from 'primevue/panelmenu'
 import Tooltip from 'primevue/tooltip'
 import type { PropType, VNode } from 'vue'
 import { withDirectives } from 'vue'
 import { RouterLink, useRoute } from 'vue-router'
 import { useTimeoutFn } from '@vueuse/core'
-import { Icons } from '@ccd/vue-ui'
+import { CcdPanelMenu as PanelMenu, Icons } from '@ccd/vue-ui'
 import { getActiveDistance, goToRoute, type PrimeMenuModelItem } from '@/router/utils/helper'
 import {
   MENU_FALLBACK_ICON,
@@ -23,7 +22,7 @@ import {
   resolveMenuLabel,
   type SidebarMenuDensity,
 } from '@/layouts/components/admin/adminSidebarMenu.shared'
-import type { SidebarState } from '@/layouts/runtime/layoutRuntime'
+import type { SidebarState } from '@ccd/vue-app-platform'
 
 const COLLAPSING_SUBMENU_VISUAL_HOLD_MS = 240
 

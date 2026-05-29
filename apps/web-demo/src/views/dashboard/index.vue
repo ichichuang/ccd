@@ -1,6 +1,6 @@
 <script setup lang="tsx">
 import type { EChartsOption } from 'echarts'
-import type { FormState } from '@/components/ProForm'
+import type { FormState } from '@ccd/vue-ui'
 import { useDialog } from '@/hooks/modules/useDialog'
 import Button from 'primevue/button'
 import { useTimeoutFn } from '@vueuse/core'
@@ -20,7 +20,7 @@ import {
 defineOptions({ name: 'Dashboard' })
 
 const { t } = useI18n()
-const loadProForm = () => import('@/components/ProForm/index.vue')
+const loadProForm = () => import('@ccd/vue-ui').then(module => module.ProForm)
 const ProForm = defineAsyncComponent(loadProForm)
 const { start: scheduleProFormPreload } = useTimeoutFn(
   () => {

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 defineOptions({ name: 'ExampleProFormBasicPage' })
 
-import type { FormSchema, FormState, ProFormExpose } from '@/components/ProForm'
+import type { FormSchema, FormState, ProFormExpose } from '@ccd/vue-ui'
 
 const isReadonly = ref<boolean>(false)
 const isDisabled = ref<boolean>(false)

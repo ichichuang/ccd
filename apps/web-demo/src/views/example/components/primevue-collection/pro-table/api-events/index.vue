@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { ProTableLoadParams, SortState, FilterState } from '@/components/ProTable'
+import type { FilterState, ProTableLoadParams, SortState } from '@ccd/vue-ui'
 import { apiEventsColumns, makeApiMockData } from './columns'
 import type { ApiEventsRow } from './columns'
 

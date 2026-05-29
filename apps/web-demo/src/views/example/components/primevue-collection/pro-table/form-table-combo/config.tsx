@@ -1,5 +1,5 @@
-import type { FormSchema } from '@/components/ProForm'
-import type { ProTableColumn, ColumnRenderParams } from '@/components/ProTable'
+import type { FormSchema } from '@ccd/vue-ui'
+import type { ColumnRenderParams, ProTableColumn } from '@ccd/vue-ui'
 import type { V1UserListItemDTO } from '@/api/example/users'
 import {
   GENDER_BADGE,

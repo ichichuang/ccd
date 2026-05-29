@@ -1,9 +1,10 @@
 import { resolve } from 'node:path'
 import vue from '@vitejs/plugin-vue'
+import vueJsx from '@vitejs/plugin-vue-jsx'
 import { defineConfig } from 'vite'
 
 export default defineConfig({
-  plugins: [vue()],
+  plugins: [vue(), vueJsx()],
   build: {
     lib: {
       entry: resolve(__dirname, 'src/index.ts'),
@@ -12,14 +13,15 @@ export default defineConfig({
     },
     rollupOptions: {
       external: [
+        '@ccd/design-tokens',
+        '@ccd/shared-utils',
+        '@ccd/vue-hooks',
         'vue',
         'vue-i18n',
         'primevue',
-        'primevue/button',
-        'primevue/config',
         'overlayscrollbars',
         'overlayscrollbars-vue',
-        '@ccd/design-tokens',
+        /^primevue\/.+/,
       ],
     },
   },

@@ -1,6 +1,6 @@
 import { defineComponent, Transition } from 'vue'
 import { useI18n } from 'vue-i18n'
-import Drawer from 'primevue/drawer'
+import { CcdDrawer as Drawer } from '@ccd/vue-ui'
 import { useRoute } from 'vue-router'
 import AppContainer from '@&/AppContainer.vue'
 import { useLayoutStore } from '@/stores/modules/system'

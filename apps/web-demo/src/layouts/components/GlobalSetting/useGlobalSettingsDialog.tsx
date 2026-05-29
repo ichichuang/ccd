@@ -1,4 +1,4 @@
-import type { DialogOptions } from '@/components/PrimeDialog'
+import type { DialogOptions } from '@ccd/vue-ui'
 import { useDialog } from '@/hooks/modules/useDialog'
 import { useLayoutRuntime } from '@/hooks/layout/useLayoutRuntime'
 import { useI18n } from 'vue-i18n'

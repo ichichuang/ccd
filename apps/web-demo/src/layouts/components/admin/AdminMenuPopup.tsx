@@ -1,4 +1,4 @@
-import TieredMenu from 'primevue/tieredmenu'
+import { CcdTieredMenu as TieredMenu } from '@ccd/vue-ui'
 import type { PropType, VNodeRef } from 'vue'
 import type { MenuVisualContext } from '@/hooks/layout/useMenuVisuals'
 import { MENU_ADMIN_POPUP_PANEL_UNIFIED, MENU_TEXT_CLASS } from '@/constants/layout-menu'

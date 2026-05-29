@@ -1,5 +1,5 @@
 <script setup lang="tsx">
-import type { ProTableColumn } from '@/components/ProTable'
+import type { ProTableColumn } from '@ccd/vue-ui'
 import { ID_PREFIX } from '@/constants/business'
 import { formatSerialId } from '@ccd/shared-utils'
 import type { TransactionLedgerRow } from './columns'

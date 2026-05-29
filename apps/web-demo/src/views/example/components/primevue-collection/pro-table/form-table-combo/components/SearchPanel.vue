@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { ProFormExpose } from '@/components/ProForm'
+import type { ProFormExpose } from '@ccd/vue-ui'
 import { searchFormSchema } from '../config'
 
 defineOptions({ name: 'FormTableComboSearchPanel' })

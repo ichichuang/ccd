@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { useI18n } from 'vue-i18n'
 import type { LoginParams } from '@/types/dto/auth.dto'
-import type { FormSchema, ProFormExpose } from '@/components/ProForm'
+import type { FormSchema, ProFormExpose } from '@ccd/vue-ui'
 import { useLoginSubmit } from '../composables/useLoginSubmit'
 import type { LoginResponsiveState } from '../types'
 

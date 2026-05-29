@@ -2,8 +2,7 @@
 import { createCoreRuntime } from '@ccd/core'
 import { generateIdFromKey } from '@ccd/shared-utils'
 import { useAppElementSize } from '@ccd/vue-hooks'
-import { Icons } from '@ccd/vue-ui'
-import Button from 'primevue/button'
+import { CcdButton as Button, Icons } from '@ccd/vue-ui'
 import { ref, useTemplateRef } from 'vue'
 import { desktopAdapters } from '../adapters'
 

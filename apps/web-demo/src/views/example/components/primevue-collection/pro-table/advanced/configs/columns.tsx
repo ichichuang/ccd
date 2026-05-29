@@ -1,5 +1,5 @@
 import Button from 'primevue/button'
-import type { ProTableColumn, ColumnRenderParams } from '@/components/ProTable'
+import type { ColumnRenderParams, ProTableColumn } from '@ccd/vue-ui'
 import {
   EMPLOYEE_DEPARTMENTS,
   EMPLOYEE_STATUS_LABELS,

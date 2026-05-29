@@ -1,4 +1,4 @@
-import type { ProTableApiExecutor } from '@/components/ProTable'
+import type { ProTableApiExecutor } from '@ccd/vue-ui'
 import { requestUserList } from '@/api/example/users'
 
 export const userListApiExecutor: ProTableApiExecutor = ({ method, query, config }) => {

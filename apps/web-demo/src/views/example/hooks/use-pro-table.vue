@@ -1,6 +1,6 @@
 <script setup lang="tsx">
-import type { ProTableColumn, ColumnRenderParams } from '@/components/ProTable'
-import { useProTable } from '@/components/ProTable'
+import type { ColumnRenderParams, ProTableColumn } from '@ccd/vue-ui'
+import { useProTable } from '@ccd/vue-ui'
 import { TASK_BOARD_STATUS_DISPLAY, TASK_PRIORITY_CLASS } from '@/constants/enums'
 
 defineOptions({ name: 'ExampleHookUseProTable' })

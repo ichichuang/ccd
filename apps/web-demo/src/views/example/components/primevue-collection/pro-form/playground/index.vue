@@ -1,7 +1,7 @@
 <script setup lang="ts">
 defineOptions({ name: 'ExampleProFormPlaygroundPage' })
 
-import type { FormSchema, FormState, ProFormExpose } from '@/components/ProForm'
+import type { FormSchema, FormState, ProFormExpose } from '@ccd/vue-ui'
 import { goToRoute } from '@/router/utils/helper'
 
 const quickLinks: { label: string; routeName: string; desc: string }[] = [

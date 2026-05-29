@@ -5,8 +5,13 @@ import {
   requestUserUpdate,
   type V1UserListItemDTO,
 } from '@/api/example/users'
-import type { ColumnRenderParams, ProTableExposed } from '@/components/ProTable'
-import { useRecordOverlay } from '@/components/ProTable'
+import {
+  ProTableCrudFormModalBody,
+  ProTableCrudViewModalBody,
+  type ColumnRenderParams,
+  type ProTableExposed,
+} from '@ccd/vue-ui'
+import { useRecordOverlay } from '@/hooks/modules/useRecordOverlay'
 import Button from 'primevue/button'
 import { userColumns, userFormSchema, userViewFormSchema } from '../config'
 import { userListApiExecutor } from '../../shared/apiExecutor'

@@ -14,10 +14,12 @@ import type { ThemeMode, ThemeTransitionDuration, ThemeTransitionMode } from '@c
 import { SIZE_PRESETS } from '@ccd/design-tokens'
 import type { SupportedLocale } from '@/locales'
 import { useI18n } from 'vue-i18n'
-import Button from 'primevue/button'
-import SelectButton from 'primevue/selectbutton'
-import Select from 'primevue/select'
-import ToggleSwitch from 'primevue/toggleswitch'
+import {
+  CcdButton as Button,
+  CcdSelect as Select,
+  CcdSelectButton as SelectButton,
+  CcdToggleSwitch as ToggleSwitch,
+} from '@ccd/vue-ui'
 import { CScrollbar } from '@ccd/vue-ui'
 import { Icons } from '@ccd/vue-ui'
 

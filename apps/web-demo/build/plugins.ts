@@ -154,6 +154,8 @@ function sharedArchitectureComponentResolver() {
     CScrollbar: '@ccd/vue-ui',
     EmptyState: '@ccd/vue-ui',
     Icons: '@ccd/vue-ui',
+    ProForm: '@ccd/vue-ui',
+    ProTable: '@ccd/vue-ui',
   }
 
   return (name: string) => {

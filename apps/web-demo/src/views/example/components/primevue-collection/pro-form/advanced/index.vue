@@ -2,9 +2,8 @@
 defineOptions({ name: 'ExampleProFormAdvancedPage' })
 
 import type { PropType, VNode } from 'vue'
-import type { FormSchema, ProFormExpose } from '@/components/ProForm'
-import { DraftStorage } from '@/components/ProForm/engine/persistence/DraftStorage'
-import { useFieldArray, useFormContext } from '@/components/ProForm'
+import type { FormSchema, ProFormExpose } from '@ccd/vue-ui'
+import { DraftStorage, useFieldArray, useFormContext } from '@ccd/vue-ui'
 import { DateFormatEnum } from '@/utils/date/types'
 import { castValue } from '@ccd/shared-utils'
 import Button from 'primevue/button'

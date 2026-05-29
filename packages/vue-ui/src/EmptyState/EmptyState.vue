@@ -4,9 +4,9 @@
   Props: icon, title/titleKey, description/descriptionKey, actionLabel.
 -->
 <script setup lang="ts">
-import Button from 'primevue/button'
 import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
+import { CcdButton } from '../CcdPrimeControls'
 import Icons from '../Icons/Icons.vue'
 import type { EmptyStateProps } from './types'
 
@@ -77,7 +77,7 @@ const resolvedDescription = computed<string>(() => {
     </slot>
     <!-- Optional action button -->
     <slot name="action">
-      <Button
+      <CcdButton
         v-if="props.actionLabel"
         :label="props.actionLabel"
         severity="secondary"

@@ -4,9 +4,13 @@
  * 动态弹窗请使用 PrimeVue useDialog().open()；确认弹窗请使用 useConfirm().require()
  * 使用 TSX 语法 + UnoCSS 语义类（text-primary、text-success、text-warn、text-danger、text-foreground）
  */
-import { MessageContent } from '@/components/PrimeDialog/MessageContent'
-import { useDialogCore } from '@/components/PrimeDialog'
-import type { ArgsType, ButtonProps, DialogOptions } from '@/components/PrimeDialog'
+import {
+  PrimeDialogMessageContent as MessageContent,
+  useDialogCore,
+  type ArgsType,
+  type ButtonProps,
+  type DialogOptions,
+} from '@ccd/vue-ui'
 import { t } from '@/locales'
 
 export interface UseDialogReturn {

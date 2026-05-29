@@ -66,12 +66,5 @@
     "postcss-pxtorem": "^6.1.0",
     "rollup-plugin-visualizer": "^6.0.3",
     "sass": "^1.97.3"
-  },
-  "exports": {
-    ".": {
-      "types": "./src/main.ts",
-      "import": "./src/main.ts",
-      "default": "./src/main.ts"
-    }
   }
 }

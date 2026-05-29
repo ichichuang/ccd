@@ -1,7 +1,7 @@
 <script setup lang="ts">
 defineOptions({ name: 'ExampleProFormApiEventsPage' })
 
-import type { FormSchema, FormState, ProFormExpose } from '@/components/ProForm'
+import type { FormSchema, FormState, ProFormExpose } from '@ccd/vue-ui'
 
 const formRef = ref<ProFormExpose | null>(null)
 const eventLogs = ref<string[]>([])

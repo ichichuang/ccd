@@ -1,7 +1,7 @@
 <script setup lang="ts">
 defineOptions({ name: 'ExampleProFormReactionsPage' })
 
-import type { FormSchema, FormState, ProFormExpose, ReactionContext } from '@/components/ProForm'
+import type { FormSchema, FormState, ProFormExpose, ReactionContext } from '@ccd/vue-ui'
 
 const formRef = ref<ProFormExpose | null>(null)
 

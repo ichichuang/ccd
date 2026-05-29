@@ -1,9 +1,8 @@
 <script setup lang="ts">
 defineOptions({ name: 'ExampleProFormPluginsPage' })
 
-import type { FormSchema, ProFormExpose, ProFormPlugin } from '@/components/ProForm'
-import { ProFormPlugins } from '@/components/ProForm'
-import type { FieldRegistryItem } from '@/components/ProForm/engine/types'
+import type { FieldRegistryItem, FormSchema, ProFormExpose, ProFormPlugin } from '@ccd/vue-ui'
+import { ProFormPlugins } from '@ccd/vue-ui'
 import { DEMO_COLOR_PICKER_DEFAULT_HEX } from '@ccd/design-tokens'
 import ColorPickerFieldAdapter from './components/ColorPickerFieldAdapter'
 import MyColorCustomInput from './components/MyColorCustomInput'

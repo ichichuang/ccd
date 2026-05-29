@@ -315,6 +315,7 @@ declare global {
   const usePreferredReducedMotion: typeof import('@vueuse/core').usePreferredReducedMotion
   const usePreferredReducedTransparency: typeof import('@vueuse/core').usePreferredReducedTransparency
   const usePrevious: typeof import('@vueuse/core').usePrevious
+  const useProTableUrlSync: typeof import('../hooks/modules/useProTableUrlSync').useProTableUrlSync
   const useRafFn: typeof import('@vueuse/core').useRafFn
   const useRefHistory: typeof import('@vueuse/core').useRefHistory
   const useResizeObserver: typeof import('@vueuse/core').useResizeObserver
@@ -401,16 +402,41 @@ declare global {
 // for type re-export
 declare global {
   // @ts-ignore
-  export type { Component, Slot, Slots, ComponentPublicInstance, ComputedRef, DirectiveBinding, ExtractDefaultPropTypes, ExtractPropTypes, ExtractPublicPropTypes, InjectionKey, PropType, Ref, ShallowRef, MaybeRef, MaybeRefOrGetter, VNode, WritableComputedRef } from 'vue'
+  export type {
+    Component,
+    Slot,
+    Slots,
+    ComponentPublicInstance,
+    ComputedRef,
+    DirectiveBinding,
+    ExtractDefaultPropTypes,
+    ExtractPropTypes,
+    ExtractPublicPropTypes,
+    InjectionKey,
+    PropType,
+    Ref,
+    ShallowRef,
+    MaybeRef,
+    MaybeRefOrGetter,
+    VNode,
+    WritableComputedRef,
+  } from 'vue'
   import('vue')
   // @ts-ignore
   export type { TableDrawerState } from '../stores/modules/ui/tableDrawer'
   import('../stores/modules/ui/tableDrawer')
   // @ts-ignore
-  export type { BreadcrumbChildItem, AdminBreadcrumbItem } from '../hooks/layout/useAdminBreadcrumbs'
+  export type {
+    BreadcrumbChildItem,
+    AdminBreadcrumbItem,
+  } from '../hooks/layout/useAdminBreadcrumbs'
   import('../hooks/layout/useAdminBreadcrumbs')
   // @ts-ignore
-  export type { ContextMenuAction, ContextMenuState, UseAdminTabsReturn } from '../hooks/layout/useAdminTabs'
+  export type {
+    ContextMenuAction,
+    ContextMenuState,
+    UseAdminTabsReturn,
+  } from '../hooks/layout/useAdminTabs'
   import('../hooks/layout/useAdminTabs')
   // @ts-ignore
   export type { UseLayoutRuntimeReturn } from '../hooks/layout/useLayoutRuntime'

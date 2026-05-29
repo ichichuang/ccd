@@ -1,12 +1,7 @@
 <script setup lang="ts">
 defineOptions({ name: 'ExampleProFormValidationPage' })
 
-import type {
-  FormSchema,
-  ProFormExpose,
-  UseFormOptions,
-  ValidationResolver,
-} from '@/components/ProForm'
+import type { FormSchema, ProFormExpose, UseFormOptions, ValidationResolver } from '@ccd/vue-ui'
 import {
   REGEX_EMAIL,
   REGEX_HAS_DIGIT,
@@ -17,7 +12,7 @@ import {
   RESERVED_USERNAMES,
   validationMessage,
 } from '@/constants/validation'
-import { DraftStorage } from '@/components/ProForm/engine/persistence/DraftStorage'
+import { DraftStorage } from '@ccd/vue-ui'
 
 // ── 验证触发模式 ──────────────────────────────────────────────────
 const validateOnMode = ref<UseFormOptions['validateOn']>('blur')

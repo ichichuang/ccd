@@ -1,5 +1,5 @@
 <script setup lang="tsx">
-import type { DialogPosition } from '@/components/PrimeDialog/utils/types'
+import type { DialogPosition } from '@ccd/vue-ui'
 import { useDialog } from '@/hooks/modules/useDialog'
 import Button from 'primevue/button'
 import { Icons } from '@ccd/vue-ui'

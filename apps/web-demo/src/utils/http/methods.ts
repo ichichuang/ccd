@@ -1,11 +1,11 @@
 // src/utils/http/methods.ts
-import { appLogger } from '@/adapters/logger.adapter'
 import { HTTP_CONFIG } from '@/constants/http'
 import { parseZodHttpPayload } from '@/adapters/http.adapter'
 import { readAuthToken } from '@/infra/auth/tokenProvider'
 import { readCsrfToken } from './interceptors'
 import { t } from '@/locales'
 import { alovaInstance } from './instance'
+import { showRawGlobalError } from './policies/notificationPolicy'
 import {
   HttpRequestError,
   isRetryableError,
@@ -97,30 +97,6 @@ function buildRequestKey(method: string, url: string, payload?: unknown): string
   }
   const body = payload === undefined ? '' : stableStringify(payload)
   return `${method}:${url}:${body}`
-}
-
-function shouldShowRawGlobalError(config?: RequestConfig): boolean {
-  const globalError = config?.globalError
-  return globalError !== 'silent'
-}
-
-function showRawGlobalError(status: number, message: string, config?: RequestConfig): void {
-  if (!shouldShowRawGlobalError(config)) {
-    return
-  }
-
-  const statusTitle = t('http.error.httpError', { status })
-  try {
-    if (window.$message?.danger) {
-      window.$message.danger(message, statusTitle)
-    } else if (window.$toast?.dangerIn) {
-      window.$toast.dangerIn('top-left', statusTitle, message)
-    } else {
-      appLogger.error(`[HTTP ${status}] ${message}`)
-    }
-  } catch (_error) {
-    appLogger.error(`[HTTP ${status}] ${message}`)
-  }
 }
 
 /**

@@ -1,4 +1,4 @@
-import type { ProTableColumn, ProTableValueEnum } from '@/components/ProTable'
+import type { ProTableColumn, ProTableValueEnum } from '@ccd/vue-ui'
 import { ID_PREFIX } from '@/constants/business'
 import { formatSerialId } from '@ccd/shared-utils'
 

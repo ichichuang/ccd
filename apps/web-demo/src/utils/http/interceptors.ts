@@ -1,205 +1,44 @@
 import { HTTP_CONFIG } from '@/constants/http'
 import { AUTH_ENABLED } from '@/constants/router'
 import { t } from '@/locales'
-import { parseZodHttpPayload } from '@/adapters/http.adapter'
 import { appLogger } from '@/adapters/logger.adapter'
-import { notifyUnauthorized, readAuthToken } from '@/infra/auth/tokenProvider'
+import { readAuthToken } from '@/infra/auth/tokenProvider'
 import { compressAndEncryptSync, decryptAndDecompressSync } from '@/utils/safeStorage'
 import { castValue } from '@ccd/shared-utils'
 import type { Method } from 'alova'
-import type { ZodType } from 'zod'
-import { ErrorType, HttpRequestError, getErrorTypeByStatus } from './errors'
+import { ErrorType, HttpRequestError } from './errors'
+import {
+  acquireFreshToken,
+  createUnauthorizedHttpError,
+  isRefreshEndpoint,
+  isRetriedAfterRefresh,
+  markRetriedAfterRefresh,
+  notifyUnauthorizedForHttp,
+} from './policies/authRefreshPolicy'
+import { logHttpStatus, resolveHttpErrorPolicy } from './policies/errorMappingPolicy'
+import { showHttpNotification } from './policies/notificationPolicy'
+import {
+  isBlobHttpResponse,
+  readHttpErrorData,
+  readResponseTextAndJson,
+} from './policies/responseDecodePolicy'
+import { validateResponsePayload } from './policies/schemaValidationPolicy'
 import { isWithSafeStorage } from './types'
 
-type RefreshTokenExecutor = () => Promise<string>
-
-interface RefreshQueueItem {
-  resolve: (token: string) => void
-  reject: (error: Error) => void
-}
-
-let refreshTokenExecutor: RefreshTokenExecutor | null = null
-
-const REFRESH_ENDPOINT = '/auth/refresh'
-const RETRIED_AFTER_REFRESH_FLAG = '__retriedAfterRefresh'
-
-export function setRefreshTokenExecutor(executor: RefreshTokenExecutor): void {
-  refreshTokenExecutor = executor
-}
-
-function isRefreshEndpoint(url: string): boolean {
-  return url.includes(REFRESH_ENDPOINT)
-}
-
-/**
- * Fallback token refresh executor using raw `fetch`.
- *
- * ⚠️ INFRASTRUCTURE EXCEPTION — intentionally bypasses all interceptor protections:
- * - CSRF / signature injection (N/A for refresh endpoint)
- * - request body encryption (refresh token must be plaintext)
- * - response body decryption (refresh response is plaintext)
- * - request body sanitization (no sensitive fields in refresh request)
- * - rate limiting (refresh is triggered by 401, not user action)
- * - deduplication (handled by TokenRefreshCoordinator instead)
- *
- * DO NOT replace with `alovaInstance.Post()` — it would recurse through this
- * same 401 refresh pipeline, causing infinite recursion.
- */
-async function defaultRefreshTokenExecutor(): Promise<string> {
-  const response = await fetch(REFRESH_ENDPOINT, {
-    method: 'POST',
-    credentials: 'include',
-    headers: { 'Content-Type': 'application/json' },
-  })
-
-  if (!response.ok) {
-    throw new Error(`refresh failed: HTTP ${response.status}`)
-  }
-
-  const payload = (await response.json()) as {
-    token?: string
-    data?: { token?: string }
-    message?: string
-  } | null
-  const token = payload?.data?.token ?? payload?.token
-
-  if (!token || !String(token).trim()) {
-    throw new Error(payload?.message || 'refresh token missing in response')
-  }
-
-  return token
-}
-
-class TokenRefreshCoordinator {
-  private isRefreshing = false
-  private refreshPromise: Promise<string> | null = null
-  private requestsQueue: RefreshQueueItem[] = []
-  private unauthorizedNotified = false
-
-  private enqueue(): Promise<string> {
-    return new Promise<string>((resolve, reject) => {
-      this.requestsQueue.push({ resolve, reject })
-    })
-  }
-
-  private flushSuccess(token: string): void {
-    const queue = [...this.requestsQueue]
-    this.requestsQueue = []
-    queue.forEach(({ resolve }) => resolve(token))
-  }
-
-  private flushFailure(error: Error): void {
-    const queue = [...this.requestsQueue]
-    this.requestsQueue = []
-    queue.forEach(({ reject }) => reject(error))
-  }
-
-  private notifyUnauthorizedOnce(): void {
-    if (this.unauthorizedNotified) {
-      return
-    }
-
-    this.unauthorizedNotified = true
-    try {
-      void notifyUnauthorized().catch(error => {
-        appLogger.error('[HTTP] Unauthorized handler failed:', error)
-      })
-    } finally {
-      // Use setTimeout(,0) instead of queueMicrotask: ensures the flag resets
-      // after the current macro-task batch, preventing rapid-fire 401 notifications
-      // from the same event loop turn while still allowing new batches to notify.
-      setTimeout(() => {
-        this.unauthorizedNotified = false
-      }, 0)
-    }
-  }
-
-  private async runRefresh(): Promise<string> {
-    const executor = refreshTokenExecutor ?? defaultRefreshTokenExecutor
-    return executor()
-  }
-
-  async acquireFreshToken(): Promise<string> {
-    if (this.isRefreshing && this.refreshPromise) {
-      return this.enqueue()
-    }
-
-    this.isRefreshing = true
-    this.refreshPromise = this.runRefresh()
-
-    try {
-      const token = await this.refreshPromise
-      this.flushSuccess(token)
-      return token
-    } catch (error) {
-      const normalizedError = error instanceof Error ? error : new Error('refresh failed')
-      this.flushFailure(normalizedError)
-      this.notifyUnauthorizedOnce()
-      throw normalizedError
-    } finally {
-      this.isRefreshing = false
-      this.refreshPromise = null
-    }
-  }
-}
-
-const tokenRefreshCoordinator = new TokenRefreshCoordinator()
-
-function getMethodConfigRecord(method: Method): Record<string, unknown> {
-  return method.config as Record<string, unknown>
-}
-
-function isRetriedAfterRefresh(method: Method): boolean {
-  return Boolean(getMethodConfigRecord(method)[RETRIED_AFTER_REFRESH_FLAG])
-}
-
-function markRetriedAfterRefresh(method: Method): void {
-  getMethodConfigRecord(method)[RETRIED_AFTER_REFRESH_FLAG] = true
-}
-
-function getResponseSchema(method: Method): ZodType<unknown> | undefined {
-  const schema = getMethodConfigRecord(method).responseSchema
-  if (schema && typeof schema === 'object' && 'safeParse' in schema) {
-    return schema as ZodType<unknown>
-  }
-  return undefined
-}
-
-function validateResponsePayload(method: Method, payload: unknown): unknown {
-  const schema = getResponseSchema(method)
-  return schema ? parseZodHttpPayload(schema, payload) : payload
-}
+export { setRefreshTokenExecutor } from './policies/authRefreshPolicy'
 
 async function handle401WithRefresh(method: Method): Promise<unknown> {
   if (isRefreshEndpoint(method.url)) {
-    void notifyUnauthorized().catch(error => {
-      appLogger.error('[HTTP] Unauthorized handler failed:', error)
-    })
-    throw new HttpRequestError(
-      t('http.error.unauthorized'),
-      ErrorType.AUTH,
-      401,
-      'Unauthorized',
-      undefined,
-      false
-    )
+    notifyUnauthorizedForHttp()
+    throw createUnauthorizedHttpError()
   }
 
   if (isRetriedAfterRefresh(method)) {
-    void notifyUnauthorized().catch(error => {
-      appLogger.error('[HTTP] Unauthorized handler failed:', error)
-    })
-    throw new HttpRequestError(
-      t('http.error.unauthorized'),
-      ErrorType.AUTH,
-      401,
-      'Unauthorized',
-      undefined,
-      false
-    )
+    notifyUnauthorizedForHttp()
+    throw createUnauthorizedHttpError()
   }
 
-  await tokenRefreshCoordinator.acquireFreshToken()
+  await acquireFreshToken()
   markRetriedAfterRefresh(method)
   return method.send(true)
 }
@@ -349,22 +188,6 @@ export const beforeRequest = (method: Method) => {
   }
 }
 
-function showHttpNotification(title: string, message: string): void {
-  if (typeof window === 'undefined') return
-
-  if (window.$message?.danger) {
-    window.$message.danger(message, title)
-    return
-  }
-
-  if (window.$toast?.dangerIn) {
-    window.$toast.dangerIn('top-left', title, message)
-    return
-  }
-
-  appLogger.error(`[HTTP] ${title}: ${message}`)
-}
-
 /**
  * 全局响应拦截器 - 适配 server 的响应格式
  */
@@ -378,17 +201,14 @@ export const responseHandler = async (response: Response, method: Method) => {
         if (response.status === 401 && AUTH_ENABLED) {
           return await handle401WithRefresh(method)
         }
-        const errorType = getErrorTypeByStatus(response.status)
-        const retryable = response.status >= 500
-
-        handleHttpError(response.status, { message: response.statusText })
+        const policy = handleHttpError(response.status, { message: response.statusText })
         throw new HttpRequestError(
-          response.statusText || `HTTP ${response.status}`,
-          errorType,
+          response.statusText || policy.errorMessage,
+          policy.errorType,
           response.status,
           response.statusText,
           undefined,
-          retryable
+          policy.retryable
         )
       }
 
@@ -396,16 +216,9 @@ export const responseHandler = async (response: Response, method: Method) => {
       return { headers: response.headers }
     }
 
-    // 检查响应类型
-    const contentType = response.headers.get('content-type')
-
     // 检查是否是 blob 响应（文件下载）
     // 通过 Content-Type 或配置中的 responseType 判断
-    const isBlobResponse =
-      method.config?.responseType === 'blob' ||
-      contentType?.includes('application/octet-stream') ||
-      contentType?.includes('application/force-download') ||
-      (method.config as Record<string, unknown>)?.['responseType'] === 'blob' // 兼容不同的配置方式
+    const isBlobResponse = isBlobHttpResponse(response, method)
 
     // 如果是 blob 响应，直接返回 blob
     if (isBlobResponse) {
@@ -415,29 +228,16 @@ export const responseHandler = async (response: Response, method: Method) => {
           return await handle401WithRefresh(method)
         }
         // 尝试读取错误信息（可能是 JSON）
-        let errorData: { message?: string }
-        try {
-          const text = await response.text()
-          try {
-            errorData = JSON.parse(text)
-          } catch {
-            errorData = { message: text || response.statusText }
-          }
-        } catch {
-          errorData = { message: response.statusText }
-        }
+        const errorData = await readHttpErrorData(response)
 
-        const errorType = getErrorTypeByStatus(response.status)
-        const retryable = response.status >= 500
-
-        handleHttpError(response.status, errorData)
+        const policy = handleHttpError(response.status, errorData)
         throw new HttpRequestError(
-          errorData?.message || `HTTP ${response.status}`,
-          errorType,
+          errorData?.message || policy.errorMessage,
+          policy.errorType,
           response.status,
           response.statusText,
           errorData,
-          retryable
+          policy.retryable
         )
       }
 
@@ -446,15 +246,7 @@ export const responseHandler = async (response: Response, method: Method) => {
     }
 
     // 文本优先策略：优先获取文本，然后尝试解析 JSON
-    const text = await response.text()
-    let json: Record<string, unknown> | null = null
-
-    // 尝试解析 JSON
-    try {
-      json = JSON.parse(text) as Record<string, unknown>
-    } catch {
-      json = null
-    }
+    const { json, text } = await readResponseTextAndJson(response)
 
     // 判定逻辑：如果解析成功且是对象，走标准的 JSON 处理流程
     if (json && typeof json === 'object') {
@@ -463,17 +255,14 @@ export const responseHandler = async (response: Response, method: Method) => {
         if (response.status === 401 && AUTH_ENABLED) {
           return await handle401WithRefresh(method)
         }
-        const errorType = getErrorTypeByStatus(response.status)
-        const retryable = response.status >= 500
-
-        handleHttpError(response.status, json)
+        const policy = handleHttpError(response.status, json)
         throw new HttpRequestError(
-          String(json?.message ?? `HTTP ${response.status}`),
-          errorType,
+          String(json?.message ?? policy.errorMessage),
+          policy.errorType,
           response.status,
           response.statusText,
           json,
-          retryable
+          policy.retryable
         )
       }
 
@@ -649,46 +438,10 @@ export const responseHandler = async (response: Response, method: Method) => {
  * 处理 HTTP 状态码错误
  */
 const handleHttpError = (status: number, data: { message?: string } | undefined) => {
-  const errorMessage = data?.message || t('http.error.httpError', { status })
-  let statusMessage = `HTTP ${status}`
-
-  switch (status) {
-    case 400:
-      // 处理请求错误
-      statusMessage = t('http.error.badRequest')
-      appLogger.warn('请求错误')
-      break
-    case 401:
-      // 401 刷新与未授权处理由 TokenRefreshCoordinator 统一负责
-      statusMessage = t('http.error.unauthorized')
-      break
-    case 403:
-      // 处理权限不足错误
-      statusMessage = t('http.error.forbidden')
-      appLogger.warn('权限不足')
-      break
-    case 404:
-      // 处理资源不存在错误
-      statusMessage = t('http.error.notFound')
-      appLogger.warn('请求的资源不存在')
-      break
-    case 500:
-      // 处理服务器内部错误
-      statusMessage = t('http.error.internalServerError')
-      appLogger.error('服务器内部错误')
-      break
-    case 502:
-    case 503:
-    case 504:
-      statusMessage = t('http.error.serviceUnavailable')
-      appLogger.error('服务器暂时不可用')
-      break
-    default:
-      statusMessage = t('http.error.httpError', { status })
-      appLogger.error(`HTTP ${status} 错误`)
-  }
-
-  showHttpNotification(statusMessage, errorMessage)
+  const policy = resolveHttpErrorPolicy(status, data)
+  logHttpStatus(status)
+  showHttpNotification(policy.statusMessage, policy.errorMessage)
+  return policy
 }
 
 /**

@@ -9,7 +9,7 @@ import {
 } from '@/router/utils/helper'
 import { useLayoutStore } from '@/stores/modules/system'
 import { useUserStore } from '@/stores/modules/session'
-import type { SidebarState } from '@/layouts/runtime/layoutRuntime'
+import type { SidebarState } from '@ccd/vue-app-platform'
 import inlineSidebarMenu from '@/layouts/components/admin/AdminSidebarMenuInline'
 import collapsedSidebarMenu from '@/layouts/components/admin/AdminSidebarMenuCollapsed'
 import {

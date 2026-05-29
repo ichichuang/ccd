@@ -6,33 +6,15 @@ import { __APP_INFO__, alias, pathResolve, root, wrapperEnv } from './build/util
 
 // ----------------------------------------------------------------------
 // PostCSS PxToRem 忽略选择器配置
-// 策略：排除 UnoCSS 生成的原子类，仅转换手写的 CSS/SCSS 中的 px
+// 策略：UnoCSS/generated CSS 由 file-level exclude 保护；selector blacklist 只保留
+// 无法通过文件路径稳定区分的 root / third-party / explicit opt-out 例外。
 // ----------------------------------------------------------------------
 const PX_TO_REM_SELECTOR_BLACKLIST: (string | RegExp)[] = [
-  // 排除 UnoCSS 常用工具类
-  /^\.w-(full|auto|screen|min|max|fit)/,
-  /^\.h-(full|auto|screen|min|max|fit)/,
-  /^\.text-(xs|sm|base|lg|xl|2xl|3xl|4xl|5xl|6xl|7xl|8xl|9xl)/,
-  /^\.p-(auto|px|py)/,
-  /^\.m-(auto|px|py)/,
-  /^\.bg-/,
-  /^\.border-(?![\d])/,
-  /^\.rounded-(?![\d])/,
-  /^\.flex/,
-  /^\.grid/,
-  /^\.absolute|\.relative|\.fixed|\.sticky/,
-  /^\.justify-|\.items-|\.content-/,
-  /^\.overflow-|\.cursor-|\.select-/,
-  // 排除响应式前缀
-  /^\.([0-9]+|xs|sm|md|lg|xl|2xl|3xl|4xl|5xl|6xl|7xl|8xl|9xl):/,
-  // 排除系统类
   /^html$/,
   /^:root$/,
-  // 排除第三方组件库 (node_modules CSS 已由 postcss-pxtorem.exclude 兜底)
   /^\.el-/,
   /^\.ant-/,
   /^\.van-/,
-  // 排除明确标记的类
   /no-rem/,
 ]
 

@@ -3,7 +3,7 @@ import {
   resolveLayoutRuntime,
   type LayoutRuntimeState,
   type SidebarState,
-} from '@/layouts/runtime/layoutRuntime'
+} from '@ccd/vue-app-platform'
 import { useLayoutStore } from '@/stores/modules/system'
 import { useDeviceStore } from '@/stores/modules/system'
 import { useTimeoutFn } from '@vueuse/core'

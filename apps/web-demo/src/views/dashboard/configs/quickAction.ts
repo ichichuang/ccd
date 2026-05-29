@@ -1,4 +1,4 @@
-import type { FormSchema } from '@/components/ProForm'
+import type { FormSchema } from '@ccd/vue-ui'
 
 type DashboardTranslate = (key: string) => string
 

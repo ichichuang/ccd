@@ -2,11 +2,12 @@ import type { App } from 'vue'
 import PrimeVue from 'primevue/config'
 import { primevueZhCN } from '@/locales/primevue-zh-CN'
 import { PRIMEVUE_LOCALE_MAP } from '@/locales/primevue-locales'
-import type { SupportedLocale } from '@/locales'
+import { t, type SupportedLocale } from '@/locales'
 import store from '@/stores'
-import { useLocaleStore } from '@/stores/modules/system'
+import { useDeviceStore, useLocaleStore } from '@/stores/modules/system'
 import { useSizeStore } from '@/stores/modules/system'
 import { createPrimeVueAdapterConfig, installPrimeVueServices } from '@ccd/vue-primevue-adapter'
+import { PRIME_DIALOG_RUNTIME_CONFIG_KEY } from '@ccd/vue-ui'
 
 /**
  * Register PrimeVue v4 (Styled Mode)
@@ -15,6 +16,7 @@ import { createPrimeVueAdapterConfig, installPrimeVueServices } from '@ccd/vue-p
  */
 export function setupPrimeVue(app: App) {
   const sizeStore = useSizeStore()
+  const deviceStore = useDeviceStore(store)
   const localeStore = useLocaleStore(store)
   const initialLocale: SupportedLocale = localeStore.locale
   const initialPrimeLocale = PRIMEVUE_LOCALE_MAP[initialLocale] ?? primevueZhCN
@@ -28,4 +30,8 @@ export function setupPrimeVue(app: App) {
   )
 
   installPrimeVueServices(app)
+  app.provide(PRIME_DIALOG_RUNTIME_CONFIG_KEY, {
+    translate: t,
+    isDialogDraggable: () => deviceStore.isPCLayout || deviceStore.isTabletLayout,
+  })
 }

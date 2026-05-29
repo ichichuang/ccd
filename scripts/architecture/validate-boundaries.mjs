@@ -115,7 +115,9 @@ for (const sourceRoot of sourceRoots) {
   }
 }
 
-for (const packageDir of workspacePackages(topology).map(item => join(root, item.path))) {
+for (const packageInfo of workspacePackages(topology)) {
+  if (packageInfo.publicApi === false) continue
+  const packageDir = join(root, packageInfo.path)
   if (!statSync(packageDir).isDirectory()) continue
   const manifestPath = join(packageDir, 'package.json')
   if (!existsSync(manifestPath)) continue

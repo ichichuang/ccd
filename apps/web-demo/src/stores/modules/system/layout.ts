@@ -8,7 +8,7 @@ import { deepClone } from '@ccd/shared-utils'
 import { createPiniaEncryptedSerializer } from '@/utils/safeStorage/piniaSerializer'
 import { castValue } from '@ccd/shared-utils'
 import store from '@/stores'
-import { resolveLayoutEffectiveMode } from '@/layouts/runtime/layoutRuntime'
+import { resolveLayoutEffectiveMode } from '@ccd/vue-app-platform'
 import { syncAction } from '@/sync/syncAction'
 /**
  * 缓存 deviceStore，避免 effectiveMode getter 每次求值都调用 useDeviceStore()。

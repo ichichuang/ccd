@@ -5,7 +5,7 @@ import {
   resolveLayoutEffectiveMode,
   resolveLayoutRuntime,
   resolveLayoutUseDrawer,
-} from '@/layouts/runtime/layoutRuntime'
+} from '@ccd/vue-app-platform'
 
 const baseInput = {
   deviceType: 'PC',

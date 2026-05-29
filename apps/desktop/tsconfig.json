@@ -13,6 +13,7 @@
     "src/**/*.vue",
     "vite.config.ts",
     "../../packages/vue-ui/src/**/*.ts",
+    "../../packages/vue-ui/src/**/*.tsx",
     "../../packages/vue-ui/src/**/*.vue"
   ],
   "references": [

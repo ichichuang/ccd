@@ -1,9 +1,11 @@
 import { expect, test } from '@playwright/test'
-import { gotoVisual, loginAsAdmin, waitForAppReady, waitForRuntimeLoadingIdle } from './helpers/app'
+import { gotoVisual, waitForAppReady, waitForRuntimeLoadingIdle } from './helpers/app'
+import { AUTH_STORAGE_STATE_PATH } from './helpers/authState'
 
 test.describe('icons explorer', () => {
+  test.use({ storageState: AUTH_STORAGE_STATE_PATH })
+
   test.beforeEach(async ({ page }) => {
-    await loginAsAdmin(page)
     await gotoVisual(page, '/example/components/icons')
     await waitForAppReady(page)
     await waitForRuntimeLoadingIdle(page)

@@ -10,7 +10,9 @@ const { api: apiPolicy, topology } = readPolicies('api', 'topology')
 const reportPath = join(root, 'docs/generated/api-surface-report.json')
 const markdownPath = join(root, 'docs/generated/api-surface-report.md')
 const snapshotDir = join(root, apiPolicy.snapshotDir)
-const governedPackages = workspacePackages(topology).filter(item => apiPolicy.packages.includes(item.name))
+const governedPackages = workspacePackages(topology).filter(
+  item => apiPolicy.packages.includes(item.name) && item.publicApi !== false
+)
 const findings = []
 
 function ensureParent(file) {

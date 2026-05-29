@@ -125,6 +125,22 @@ vi.mock('@/layouts/components/admin/AdminSidebarMenu', () => ({
   default: stubComponent('AdminSidebarMenu'),
 }))
 vi.mock('@ccd/vue-ui', () => ({
+  CcdDrawer: defineComponent({
+    name: 'CcdDrawer',
+    props: {
+      visible: { type: Boolean, default: false },
+    },
+    setup(props, { slots }) {
+      return () =>
+        props.visible
+          ? h(
+              'aside',
+              { class: 'mock-drawer' },
+              slots.container?.() ?? slots.default?.() ?? h('div', { 'data-layout-drawer': 'true' })
+            )
+          : null
+    },
+  }),
   CScrollbar: stubComponent('CScrollbar'),
   Icons: stubComponent('Icons'),
 }))

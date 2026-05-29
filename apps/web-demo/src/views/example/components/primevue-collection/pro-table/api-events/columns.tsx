@@ -1,4 +1,4 @@
-import type { ProTableColumn, ColumnRenderParams } from '@/components/ProTable'
+import type { ColumnRenderParams, ProTableColumn } from '@ccd/vue-ui'
 import { DateFormatEnum } from '@/utils/date/types'
 import { DateUtils } from '@/utils/date/dateUtils'
 

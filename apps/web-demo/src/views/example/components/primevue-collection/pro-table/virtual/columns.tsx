@@ -1,4 +1,4 @@
-import type { ProTableColumn } from '@/components/ProTable'
+import type { ProTableColumn } from '@ccd/vue-ui'
 import {
   TRANSACTION_LEDGER_STATUS_CLASS,
   TRANSACTION_LEDGER_STATUS_LABEL,

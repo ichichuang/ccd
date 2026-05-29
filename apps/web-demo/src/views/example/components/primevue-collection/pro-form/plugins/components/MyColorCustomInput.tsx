@@ -1,6 +1,6 @@
 import type { VNode } from 'vue'
 import InputText from 'primevue/inputtext'
-import { useField, useFormContext } from '@/components/ProForm'
+import { useField, useFormContext } from '@ccd/vue-ui'
 
 const myColorCustomInput = defineComponent({
   name: 'MyColorCustomInput',

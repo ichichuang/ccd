@@ -602,7 +602,11 @@ importers:
         specifier: ^24.12.4
         version: 24.12.4
 
-  packages/vue-app-platform: {}
+  packages/vue-app-platform:
+    dependencies:
+      '@ccd/design-tokens':
+        specifier: workspace:*
+        version: link:../design-tokens
 
   packages/vue-charts:
     dependencies:
@@ -667,6 +671,18 @@ importers:
       '@ccd/design-tokens':
         specifier: workspace:*
         version: link:../design-tokens
+      '@ccd/shared-utils':
+        specifier: workspace:*
+        version: link:../shared-utils
+      '@ccd/vue-hooks':
+        specifier: workspace:*
+        version: link:../vue-hooks
+      '@tanstack/vue-virtual':
+        specifier: ^3.13.23
+        version: 3.13.23(vue@3.5.25(typescript@5.9.3))
+      '@vueuse/core':
+        specifier: ^13.9.0
+        version: 13.9.0(vue@3.5.25(typescript@5.9.3))
       overlayscrollbars:
         specifier: ^2.14.0
         version: 2.14.0
@@ -683,6 +699,9 @@ importers:
         specifier: ^10.0.8
         version: 10.0.8(vue@3.5.25(typescript@5.9.3))
     devDependencies:
+      '@vitejs/plugin-vue-jsx':
+        specifier: ^5.1.3
+        version: 5.1.3(vite@7.3.3(@types/node@24.12.4)(jiti@2.6.1)(sass@1.97.3)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.2))(vue@3.5.25(typescript@5.9.3))
       '@vue/tsconfig':
         specifier: ^0.7.0
         version: 0.7.0(typescript@5.9.3)(vue@3.5.25(typescript@5.9.3))

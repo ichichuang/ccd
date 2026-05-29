@@ -7,6 +7,7 @@ import { setupErrorHandler } from '@/plugins/modules/errorHandler'
 import { setupPrimeVue } from '@/plugins/modules/primevue'
 import { setupScrollbar } from '@/plugins/modules/scrollbar'
 import { setupAuthBridge } from '@/plugins/modules/authBridge'
+import { setupProTable } from '@/plugins/modules/protable'
 import { vAuth } from '@/directives/auth'
 import { installInteractionDirectives } from '@ccd/vue-hooks'
 
@@ -25,7 +26,8 @@ export const setupPlugins = (app: App) => {
   setupAuthBridge()
   setupPrimeVue(app)
   setupScrollbar(app)
-  setupProForm()
+  setupProForm(app)
+  setupProTable(app)
 
   setupRouter(app)
 

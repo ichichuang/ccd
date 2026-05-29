@@ -1,7 +1,7 @@
 <script setup lang="ts">
 defineOptions({ name: 'ExampleProFormLayoutGroupPage' })
 
-import type { FormSchema } from '@/components/ProForm'
+import type { FormSchema } from '@ccd/vue-ui'
 
 // ── Card 分组 Schema ──────────────────────────────────────────────
 const cardSchema = reactive<FormSchema>({

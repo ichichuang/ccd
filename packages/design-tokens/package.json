@@ -12,6 +12,11 @@
       "types": "./dist/index.d.ts",
       "import": "./dist/index.js",
       "default": "./dist/index.js"
+    },
+    "./theme-engine": {
+      "types": "./dist/theme-engine/index.d.ts",
+      "import": "./dist/theme-engine/index.js",
+      "default": "./dist/theme-engine/index.js"
     }
   },
   "scripts": {

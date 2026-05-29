@@ -6,7 +6,7 @@ import { debounceFn } from '@ccd/shared-utils'
 import { useMitt } from '@/utils/mitt'
 import type { DeviceState } from '@/types/systems/device'
 import { getDeviceTypeSync, getOsTypeSync } from '@/utils/deviceSync'
-import { resolveLayoutDeviceFlags } from '@/layouts/runtime/layoutRuntime'
+import { resolveLayoutDeviceFlags } from '@ccd/vue-app-platform'
 
 // 防抖间隔，300ms 比较温和，适合 resize
 const RESIZE_INTERVAL = 300

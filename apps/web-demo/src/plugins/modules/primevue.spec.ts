@@ -40,6 +40,7 @@ vi.mock('@/stores', () => ({
 
 vi.mock('@/stores/modules/system', () => ({
   useLocaleStore: () => ({ locale: 'zh-CN' }),
+  useDeviceStore: () => ({ isPCLayout: true, isTabletLayout: false }),
   useSizeStore: () => ({ mode: 'comfortable' }),
 }))
 

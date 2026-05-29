@@ -1,5 +1,11 @@
 import { expect, test, type Page } from '@playwright/test'
-import { loginAsAdmin, waitForRuntimeLoadingIdle, waitForThemeTransitionEnd } from './helpers/app'
+import {
+  gotoVisual,
+  waitForAppReady,
+  waitForRuntimeLoadingIdle,
+  waitForThemeTransitionEnd,
+} from './helpers/app'
+import { AUTH_STORAGE_STATE_PATH } from './helpers/authState'
 
 async function getThemeContextMenuIconClass(page: Page): Promise<string> {
   await waitForRuntimeLoadingIdle(page)
@@ -21,12 +27,15 @@ async function getThemeContextMenuIconClass(page: Page): Promise<string> {
   return (await icon.getAttribute('class')) ?? ''
 }
 
+test.use({ storageState: AUTH_STORAGE_STATE_PATH })
+
 test('global context menu theme toggle icon follows light and dark DOM state', async ({ page }) => {
   await page.addInitScript(() => {
     window.localStorage.setItem('ccd-e2e-mode', 'visual')
   })
 
-  await loginAsAdmin(page)
+  await gotoVisual(page, '/dashboard')
+  await waitForAppReady(page)
   await expect.poll(() => getThemeContextMenuIconClass(page)).toContain('i-lucide-moon')
 
   await page.getByRole('menu').locator('.global-context-menu__theme-toggle').click()

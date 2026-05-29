@@ -5,6 +5,7 @@
     "vite.config.ts",
     "build/**/*.ts",
     "../../packages/vue-ui/src/**/*.ts",
+    "../../packages/vue-ui/src/**/*.tsx",
     "../../packages/vue-ui/src/**/*.vue",
     "../../packages/vue-charts/src/**/*.ts",
     "../../packages/vue-charts/src/**/*.vue"

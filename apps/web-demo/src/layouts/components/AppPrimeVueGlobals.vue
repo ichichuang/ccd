@@ -1,8 +1,8 @@
 <script setup lang="ts">
 /**
  * 布局层：PrimeVue 全局 UI 与 window.$toast / window.$message 挂载
- * 职责：Toast、ConfirmPopup、DynamicDialog、PrimeVueDialog；
- *       useToast 封装并挂到 window；PrimeVue locale 同步；useDialog + PrimeVueDialog
+ * 职责：Toast、ConfirmPopup、DynamicDialog、PrimeDialog；
+ *       useToast 封装并挂到 window；PrimeVue locale 同步；useDialog + PrimeDialog
  */
 import Toast from 'primevue/toast'
 import CheckIcon from '@primevue/icons/check'
@@ -16,7 +16,7 @@ import { useToast } from 'primevue/usetoast'
 import { usePrimeVue } from 'primevue/config'
 import { PRIMEVUE_LOCALE_MAP } from '@/locales/primevue-locales'
 import { useLocaleStore } from '@/stores/modules/system'
-import { PrimeVueDialog } from '@/components/PrimeDialog'
+import { PrimeDialog } from '@ccd/vue-ui'
 import { useDialog } from '@/hooks/modules/useDialog'
 import ToastMessageContent from '@/layouts/components/ToastMessageContent.vue'
 
@@ -219,7 +219,7 @@ onUnmounted(() => {
   </Toast>
   <ConfirmPopup />
   <DynamicDialog />
-  <PrimeVueDialog
+  <PrimeDialog
     :dialog-store="dialogStore"
     @close="(_options, index, args) => closeDialog(index, args)"
     @after-hide="instanceId => removeDialog(instanceId)"

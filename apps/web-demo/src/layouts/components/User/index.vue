@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { useI18n } from 'vue-i18n'
-import Popover from 'primevue/popover'
-import Button from 'primevue/button'
+import { CcdButton as Button, CcdPopover as Popover } from '@ccd/vue-ui'
 import { AUTH_ENABLED } from '@/constants/router'
 import { useUserStore } from '@/stores/modules/session'
 import defaultAvatar from '@/assets/images/default-avatar.png'

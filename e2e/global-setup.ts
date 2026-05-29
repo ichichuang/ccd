@@ -1,4 +1,7 @@
+import { mkdir } from 'node:fs/promises'
+import { dirname } from 'node:path'
 import { chromium, type FullConfig, type Page } from '@playwright/test'
+import { AUTH_STORAGE_STATE_PATH } from './helpers/authState'
 
 function getBaseURL(config: FullConfig): string {
   const project = config.projects.find(candidate => candidate.name === 'chromium')
@@ -39,6 +42,8 @@ export default async function globalSetup(config: FullConfig): Promise<void> {
     await page.waitForURL(/#\/dashboard$/, { timeout: 30000 })
     await waitForAppIdle(page)
     await page.locator('#dashboard-page').waitFor({ state: 'visible', timeout: 30000 })
+    await mkdir(dirname(AUTH_STORAGE_STATE_PATH), { recursive: true })
+    await page.context().storageState({ path: AUTH_STORAGE_STATE_PATH })
     await page.locator('#dashboard-quick-action').click()
     await page.locator('.p-dialog').waitFor({ state: 'visible', timeout: 30000 })
   } finally {

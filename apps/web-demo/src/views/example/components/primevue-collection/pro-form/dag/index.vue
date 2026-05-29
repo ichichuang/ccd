@@ -1,7 +1,7 @@
 <script setup lang="ts">
 defineOptions({ name: 'ExampleProFormDagPage' })
 
-import type { FormSchema, FormState, ProFormExpose } from '@/components/ProForm'
+import type { FormSchema, FormState, ProFormExpose } from '@ccd/vue-ui'
 import { DateFormatEnum } from '@/utils/date/types'
 
 const formRef = ref<ProFormExpose | null>(null)
