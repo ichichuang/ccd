@@ -2,6 +2,7 @@
 import '@/assets/styles/reset.scss'
 import '@/assets/styles/ambient-orb-animations.scss'
 import '@/assets/styles/animate-lite.scss'
+import '@ccd/vue-ui/style.css'
 import 'uno.css'
 
 // 导入应用

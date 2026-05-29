@@ -429,7 +429,7 @@ test.describe('QA full regression repair matrix', () => {
     expectNoNetworkFailures(failures, 'dashboard first render budget')
   })
 
-  test('dashboard long tasks stay below worst-case freeze budget', async ({ page }) => {
+  test('dashboard long tasks stay below worst-case freeze budget @perf', async ({ page }) => {
     const networkCollector = createNetworkFailureCollector(page)
     await installBlankScreenProbe(page)
     await page.setViewportSize({ width: 1280, height: 720 })
@@ -444,7 +444,7 @@ test.describe('QA full regression repair matrix', () => {
     expectNoNetworkFailures(failures, 'dashboard long-task budget')
   })
 
-  test('visual baselines catch silent layout collapse', async ({ page, context }) => {
+  test('visual baselines catch silent layout collapse @visual', async ({ page, context }) => {
     const networkCollector = createNetworkFailureCollector(page)
     await page.setViewportSize({ width: 1280, height: 720 })
     await loginAsAdmin(page)

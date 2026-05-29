@@ -1,3 +1,4 @@
+import '@ccd/vue-ui/style.css'
 import 'uno.css'
 
 import { createApp } from 'vue'

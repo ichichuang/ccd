@@ -81,6 +81,9 @@ const IPHONE_USER_AGENT =
 const IPAD_OS_USER_AGENT =
   'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Safari/605.1.15'
 
+const APP_CONTAINER_SCROLL_VIEWPORT_SELECTOR =
+  '.c-scrollbar.col-fill [data-overlayscrollbars-viewport]'
+
 async function openDashboard(page: Page): Promise<void> {
   await page.addInitScript(() => {
     window.localStorage.setItem('ccd-e2e-mode', 'visual')
@@ -322,18 +325,9 @@ async function sampleVisibleLoadingCenters(page: Page): Promise<OverlaySpinnerGe
 async function getAppContainerScrollMetrics(
   page: Page
 ): Promise<{ scrollTop: number; maxScrollTop: number }> {
-  return page.evaluate(() => {
-    const hosts = Array.from(
-      document.querySelectorAll<HTMLElement>('[data-overlayscrollbars="host"]')
-    )
-    const scrollEl = hosts
-      .flatMap(host => Array.from(host.querySelectorAll<HTMLElement>('div')))
-      .filter(
-        element =>
-          !element.classList.contains('os-scrollbar') &&
-          !element.classList.contains('os-scrollbar-track') &&
-          !element.classList.contains('os-scrollbar-handle')
-      )
+  return page.evaluate(selector => {
+    const scrollEl = Array.from(document.querySelectorAll<HTMLElement>(selector))
+      .filter(element => element.scrollHeight > element.clientHeight)
       .sort((a, b) => b.scrollHeight - b.clientHeight - (a.scrollHeight - a.clientHeight))[0]
     if (!scrollEl || scrollEl.scrollHeight <= scrollEl.clientHeight) {
       throw new Error('AppContainer CScrollbar scroll element was not found.')
@@ -342,48 +336,33 @@ async function getAppContainerScrollMetrics(
       scrollTop: scrollEl.scrollTop,
       maxScrollTop: Math.max(0, scrollEl.scrollHeight - scrollEl.clientHeight),
     }
-  })
+  }, APP_CONTAINER_SCROLL_VIEWPORT_SELECTOR)
 }
 
 async function scrollAppContainerTo(page: Page, requestedScrollTop: number): Promise<number> {
-  return page.evaluate(scrollTop => {
-    const hosts = Array.from(
-      document.querySelectorAll<HTMLElement>('[data-overlayscrollbars="host"]')
-    )
-    const scrollEl = hosts
-      .flatMap(host => Array.from(host.querySelectorAll<HTMLElement>('div')))
-      .filter(
-        element =>
-          !element.classList.contains('os-scrollbar') &&
-          !element.classList.contains('os-scrollbar-track') &&
-          !element.classList.contains('os-scrollbar-handle')
-      )
-      .sort((a, b) => b.scrollHeight - b.clientHeight - (a.scrollHeight - a.clientHeight))[0]
-    if (!scrollEl || scrollEl.scrollHeight <= scrollEl.clientHeight) {
-      throw new Error('AppContainer CScrollbar scroll element was not found.')
-    }
-    const target = Math.min(scrollTop, Math.max(0, scrollEl.scrollHeight - scrollEl.clientHeight))
-    scrollEl.scrollTo({ top: target, behavior: 'auto' })
-    scrollEl.dispatchEvent(new Event('scroll', { bubbles: true }))
-    return target
-  }, requestedScrollTop)
+  return page.evaluate(
+    ({ selector, scrollTop }) => {
+      const scrollEl = Array.from(document.querySelectorAll<HTMLElement>(selector))
+        .filter(element => element.scrollHeight > element.clientHeight)
+        .sort((a, b) => b.scrollHeight - b.clientHeight - (a.scrollHeight - a.clientHeight))[0]
+      if (!scrollEl || scrollEl.scrollHeight <= scrollEl.clientHeight) {
+        throw new Error('AppContainer CScrollbar scroll element was not found.')
+      }
+      const target = Math.min(scrollTop, Math.max(0, scrollEl.scrollHeight - scrollEl.clientHeight))
+      scrollEl.scrollTo({ top: target, behavior: 'auto' })
+      scrollEl.dispatchEvent(new Event('scroll', { bubbles: true }))
+      return target
+    },
+    { selector: APP_CONTAINER_SCROLL_VIEWPORT_SELECTOR, scrollTop: requestedScrollTop }
+  )
 }
 
 async function waitForAppContainerScrollElement(page: Page): Promise<void> {
-  await page.waitForFunction(() => {
-    const hosts = Array.from(
-      document.querySelectorAll<HTMLElement>('[data-overlayscrollbars="host"]')
+  await page.waitForFunction(selector => {
+    return Array.from(document.querySelectorAll<HTMLElement>(selector)).some(
+      element => element.scrollHeight > element.clientHeight
     )
-    return hosts
-      .flatMap(host => Array.from(host.querySelectorAll<HTMLElement>('div')))
-      .some(
-        element =>
-          !element.classList.contains('os-scrollbar') &&
-          !element.classList.contains('os-scrollbar-track') &&
-          !element.classList.contains('os-scrollbar-handle') &&
-          element.scrollHeight > element.clientHeight
-      )
-  })
+  }, APP_CONTAINER_SCROLL_VIEWPORT_SELECTOR)
 }
 
 async function expectBootHandoffNeverShowsTopStripSpinner(page: Page): Promise<void> {
@@ -770,6 +749,41 @@ test.describe('layout loading and route title stabilization', () => {
       expect(after120Ms).toBeLessThan(savedScrollTop + 2)
       expect(after120Ms).toBeLessThan(after900Ms + 2)
     }
+  })
+
+  test('ProTable basic route keeps a non-zero table geometry', async ({ page }) => {
+    await page.setViewportSize({ width: 1280, height: 720 })
+    await loginAsAdmin(page)
+    await page.goto(withVisualMode('/example/primevue-collection/pro-table/basic'), {
+      waitUntil: 'domcontentloaded',
+    })
+    await waitForAppReady(page)
+    await waitForRuntimeLoadingIdle(page)
+    await expect(page.locator('.p-datatable')).toBeVisible({ timeout: 15000 })
+
+    const geometry = await page.evaluate(() => {
+      const measure = (selector: string) => {
+        const rect = document.querySelector(selector)?.getBoundingClientRect()
+        return {
+          height: Math.round(rect?.height ?? 0),
+          width: Math.round(rect?.width ?? 0),
+        }
+      }
+
+      return {
+        datatable: measure('.p-datatable'),
+        tableContainer: measure('.p-datatable-table-container'),
+        tbody: measure('.p-datatable-tbody'),
+        rowCount: document.querySelectorAll('.p-datatable-tbody > tr').length,
+      }
+    })
+
+    expect(geometry.datatable.width).toBeGreaterThan(0)
+    expect(geometry.datatable.height).toBeGreaterThan(0)
+    expect(geometry.tableContainer.width).toBeGreaterThan(0)
+    expect(geometry.tableContainer.height).toBeGreaterThan(0)
+    expect(geometry.tbody.height).toBeGreaterThan(0)
+    expect(geometry.rowCount).toBeGreaterThan(0)
   })
 
   test('AppContainer renders the paper-airplane local page loading outlet', async ({ page }) => {

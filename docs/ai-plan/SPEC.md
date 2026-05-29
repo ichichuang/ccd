@@ -68,7 +68,8 @@ CCD has completed several P0 stabilization items but still has unresolved P1 arc
 ## Technical constraints
 
 - `packages/contracts` may contain only interfaces, DTOs, and cross-runtime contracts.
-- `packages/core` must remain runtime-neutral.
+- `packages/core` must remain runtime-neutral and is not a catch-all common layer.
+- `common platform layer` means the governed `packages/*` package set; each extraction must target the specific owning package, not default to `packages/core`.
 - App runtime APIs must stay in app adapter layers or explicitly allowed app/runtime surfaces.
 - Root remains orchestration-only.
 - Internal workspace packages must be consumed through build outputs.

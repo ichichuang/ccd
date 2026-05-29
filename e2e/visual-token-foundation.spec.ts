@@ -116,7 +116,7 @@ function expectQuietNavigationBorder(weight: number): void {
 }
 
 test.describe('visual token foundation', () => {
-  test('LayoutAdmin active and hover states are visually distinct', async ({ page }) => {
+  test('LayoutAdmin active and hover states are visually distinct @visual', async ({ page }) => {
     await page.setViewportSize({ width: 1440, height: 960 })
     await openRouteWithMixLayout(page, '/example/primevue-collection/overview')
 
@@ -190,7 +190,7 @@ test.describe('visual token foundation', () => {
     expectQuietNavigationBorder(await borderWeight(breadcrumbCurrent))
   })
 
-  test('PrimeVue form controls expose hover and focus feedback', async ({ page }) => {
+  test('PrimeVue form controls expose hover and focus feedback @visual', async ({ page }) => {
     await page.setViewportSize({ width: 1440, height: 960 })
     await openRoute(page, '/example/primevue-collection/overview')
 
@@ -276,7 +276,7 @@ test.describe('visual token foundation', () => {
     expect(dateInputBorder).toBe('0px')
   })
 
-  test('Icons color controls use generated semantic classes', async ({ page }) => {
+  test('Icons color controls use generated semantic classes @visual', async ({ page }) => {
     await page.setViewportSize({ width: 1440, height: 960 })
     await openRoute(page, '/example/components/icons')
 

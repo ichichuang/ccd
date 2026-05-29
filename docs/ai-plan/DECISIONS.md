@@ -17,6 +17,15 @@
 
 ---
 
+## ADR mapping
+
+| Topic                                                   | ADR                                                            | Status     |
+| ------------------------------------------------------- | -------------------------------------------------------------- | ---------- |
+| Common platform layer terminology and extraction matrix | [ADR-005](../adr/ADR-005-common-platform-layer-terminology.md) | `PROPOSED` |
+| Approval-gated architecture lanes                       | [ADR-006](../adr/ADR-006-approval-gated-architecture-lanes.md) | `PROPOSED` |
+
+---
+
 ## D-001 — Planning docs location
 
 - Status: `PROPOSED`
@@ -268,3 +277,39 @@ Local governance evidence is strong enough to document, but remote branch protec
 
 - `docs/ai-runs/20260529-070550-ccd-architecture-repair/command-logs/M7-T1-20260529-075728-governance-github-inventory.log`
 - `docs/ai-runs/20260529-070550-ccd-architecture-repair/reports/M7-governance-github.md`
+
+---
+
+## D-009 — Common platform layer terminology
+
+- Status: `PROPOSED`
+- Date: 2026-05-29
+- ADR: [ADR-005](../adr/ADR-005-common-platform-layer-terminology.md)
+
+### Decision
+
+Use `common platform layer` for the governed `packages/*` package set. Do not use `common core layer` to imply that shared code belongs in `packages/core`.
+
+`packages/core` remains a minimal runtime-neutral orchestration/facade package and may depend only on `@ccd/contracts`.
+
+### Follow-up validation
+
+`pnpm docs:commands`, `pnpm arch:runtime`, `pnpm arch:boundaries`, and `pnpm api:report`.
+
+---
+
+## D-010 — Approval-gated architecture lanes
+
+- Status: `PROPOSED`
+- Date: 2026-05-29
+- ADR: [ADR-006](../adr/ADR-006-approval-gated-architecture-lanes.md)
+
+### Decision
+
+UI boundary enforcement, HTTP contracts/core paths, guard strictness expansion, GitHub remote governance, Vite major migration, and dependency modernization require explicit owner/operator approval before implementation.
+
+Without approval, the default action is audit/document only and keep implementation blocked/deferred.
+
+### Follow-up validation
+
+`pnpm docs:commands`, `pnpm ai:doctor`, and the lane-specific validation listed in the approval record.

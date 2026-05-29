@@ -21,6 +21,25 @@ The core architecture invariant remains `@ccd/contracts -> @ccd/core -> apps/*`.
 
 Frontend shared packages are protected workspace packages. They must still obey their governance role, package exports, and runtime boundary rules. Runtime capabilities belong only in app adapter layers. Root must remain orchestration-only.
 
+## Common Platform Layer Terminology
+
+`common platform layer` means the governed platform package set under `packages/*`; it does not mean that shared code should move into `packages/core`.
+
+Current platform package set:
+
+- `packages/contracts`
+- `packages/core`
+- `packages/design-tokens`
+- `packages/shared-utils`
+- `packages/unocss-preset`
+- `packages/vue-hooks`
+- `packages/vue-app-platform`
+- `packages/vue-ui`
+- `packages/vue-primevue-adapter`
+- `packages/vue-charts`
+
+`packages/core` is only the minimal runtime-neutral orchestration/facade package in that platform layer. It is not a frontend shared bucket, UI package, HTTP implementation package, browser utility package, or app runtime package.
+
 ## Responsibility Matrix
 
 | Workspace                       | Current responsibility                                                                     |
@@ -35,6 +54,20 @@ Frontend shared packages are protected workspace packages. They must still obey 
 | `apps/web-demo`                 | App shell, routes, pages, stores, app adapters, and temporary app-local shared candidates. |
 | `apps/desktop`                  | Tauri shell and desktop adapter.                                                           |
 
+## Extraction Decision Matrix
+
+| Candidate kind                                                              | Destination                                             | Required constraints                                                                                                                     |
+| --------------------------------------------------------------------------- | ------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
+| Pure DTO, interface, event shape, or cross-runtime contract                 | `packages/contracts`                                    | Type-only/runtime-neutral; no Vue, browser, Node, Tauri, fetch, storage, timers, or implementation policy.                               |
+| Runtime-neutral orchestration over injected adapters                        | `packages/core`                                         | Depends only on `@ccd/contracts`; no UI, browser, Node, Tauri, fetch, storage, timers, console, or framework imports.                    |
+| Pure synchronous utility or generic helper                                  | `packages/shared-utils`                                 | No app imports, no runtime globals, no Vue lifecycle, no implicit storage/network side effects.                                          |
+| Vue/browser composable                                                      | `packages/vue-hooks`                                    | Vue-owned API; browser capability must be injected or guarded; no app store/router coupling.                                             |
+| App bootstrap, preloader, route-loading, or shell lifecycle primitive       | `packages/vue-app-platform`                             | Framework-level Vue runtime only; app-specific router/store/DOM decisions stay in app integration code.                                  |
+| CCD-owned UI primitive or component style surface                           | `packages/vue-ui`                                       | Public API must be CCD-owned props/types; may internally compose PrimeVue; must not raw re-export PrimeVue components as a loose bucket. |
+| PrimeVue theme/config/service adaptation                                    | `packages/vue-primevue-adapter`                         | Owns PrimeVue configuration and service helpers; app bootstrap installs it.                                                              |
+| Chart runtime/helper surface                                                | `packages/vue-charts`                                   | Chart-specific Vue runtime only; app data/query behavior stays outside.                                                                  |
+| App-specific runtime capability, auth, router, store, Tauri, or browser API | `apps/*/src/adapters/**` or approved app infrastructure | Must not move into `contracts`/`core`; inject contracts into shared packages when cross-runtime reuse is required.                       |
+
 ## App-local Shared Candidates
 
 The following paths still belong to `apps/web-demo`, but should be understood as app-local shared candidates rather than immediate migration targets:
@@ -43,10 +76,11 @@ The following paths still belong to `apps/web-demo`, but should be understood as
 - `apps/web-demo/src/components/ProForm`
 - `apps/web-demo/src/components/ProTable`
 - `apps/web-demo/src/layouts/runtime/layoutRuntime.ts`
-- `apps/web-demo/src/infra/shared/createCapabilityBridge.ts`
 - `apps/web-demo/src/hooks/modules/useAutoMitt.ts`
 - `apps/web-demo/src/utils/theme/engine.ts`
 - `apps/web-demo/src/utils/safeStorage`
+
+`createCapabilityBridge` is already a pure shared utility owned by `packages/shared-utils`; app auth/router capability providers remain app-local adapter/infrastructure code.
 
 ## Do Not Move Yet
 

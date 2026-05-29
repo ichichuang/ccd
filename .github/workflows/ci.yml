@@ -139,4 +139,4 @@ jobs:
         run: bash scripts/exec.sh pnpm ci:prepare-internal
 
       - name: Run Playwright QA suite
-        run: bash scripts/exec.sh pnpm e2e:qa
+        run: bash scripts/exec.sh pnpm e2e:qa:prepared

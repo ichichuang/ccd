@@ -197,7 +197,8 @@
           "types": "./dist/index.d.ts",
           "import": "./dist/index.js",
           "default": "./dist/index.js"
-        }
+        },
+        "./style.css": "./dist/vue-ui.css"
       },
       "scripts": {
         "build": "rm -rf dist && rm -f ../../node_modules/.tmp/packages-vue-ui.tsbuildinfo && vite build --config vite.config.ts && vue-tsc -p tsconfig.build.json",

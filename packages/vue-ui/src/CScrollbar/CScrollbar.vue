@@ -18,6 +18,7 @@ import type { ComputedRef } from 'vue'
 import { usePrimeVue } from 'primevue/config'
 import { type Elements, type OverlayScrollbars, type State } from 'overlayscrollbars'
 import { OverlayScrollbarsComponent } from 'overlayscrollbars-vue'
+import 'overlayscrollbars/overlayscrollbars.css'
 import {
   DEFAULT_SCROLLBAR_AUTO_HIDE_DELAY_MS,
   DEFAULT_SCROLLBAR_MEMORY_RESTORE_DURATION_MS,
@@ -509,8 +510,6 @@ defineExpose({
 </template>
 
 <style lang="scss">
-@use 'overlayscrollbars/overlayscrollbars.css';
-
 /* ============================================
  * OverlayScrollbars 主题覆盖
  * ============================================ */

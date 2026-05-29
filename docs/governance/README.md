@@ -82,3 +82,5 @@ Governance-sensitive changes require the owners in `.github/CODEOWNERS`. Cross-b
 - [ADR-002: Removed Browser Runtime Archive](../adr/ADR-002-legacy-freeze-policy.md)
 - [ADR-003 Governance Pipeline](../adr/ADR-003-governance-pipeline.md)
 - [ADR-004 Runtime Environment Policy](../adr/ADR-004-runtime-environment-policy.md)
+- [ADR-005 Common Platform Layer Terminology](../adr/ADR-005-common-platform-layer-terminology.md)
+- [ADR-006 Approval-Gated Architecture Lanes](../adr/ADR-006-approval-gated-architecture-lanes.md)
