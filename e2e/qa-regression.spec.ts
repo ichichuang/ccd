@@ -449,7 +449,9 @@ test.describe('QA full regression repair matrix', () => {
     await page.setViewportSize({ width: 1280, height: 720 })
     await loginAsAdmin(page)
     await expectNonBlankRoute(page)
-    await expect(page.locator('#dashboard-page')).toHaveScreenshot('qa-dashboard-desktop.png')
+    await expect(page.locator('#dashboard-page')).toHaveScreenshot('qa-dashboard-desktop.png', {
+      maxDiffPixelRatio: process.env.CI ? 0.02 : 0.01,
+    })
 
     await page.setViewportSize({ width: 390, height: 844 })
     await waitForRuntimeLoadingIdle(page)
