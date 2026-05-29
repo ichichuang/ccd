@@ -17,7 +17,7 @@ export default defineConfig({
     baseURL,
     trace: 'retain-on-failure',
     screenshot: 'only-on-failure',
-    video: 'retain-on-failure',
+    video: process.env.CI ? 'off' : 'retain-on-failure',
     viewport: { width: 1440, height: 960 },
     colorScheme: 'light',
     locale: 'zh-CN',
