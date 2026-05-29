@@ -6,6 +6,7 @@ const chromiumChannel = process.env.PLAYWRIGHT_CHROMIUM_CHANNEL
 
 export default defineConfig({
   testDir: './e2e',
+  globalSetup: './e2e/global-setup.ts',
   timeout: 60000,
   fullyParallel: true,
   workers: process.env.CI ? 2 : undefined,
