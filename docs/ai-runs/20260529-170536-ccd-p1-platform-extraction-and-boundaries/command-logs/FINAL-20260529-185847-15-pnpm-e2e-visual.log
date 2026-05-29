@@ -1,0 +1,74 @@
+
+> ccd@1.0.38 e2e:visual /Users/cc/MyPorject/ccd
+> playwright test e2e/qa-regression.spec.ts e2e/visual-token-foundation.spec.ts --grep @visual --workers=1 --retries=0
+
+[2m[WebServer] [22m(node:27884) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[2m[WebServer] [22m(Use `node --trace-warnings ...` to show where the warning was created)
+[2m[WebServer] [22m(node:27885) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[2m[WebServer] [22m(Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 4 tests using 1 worker
+
+(node:28040) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:28040) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  1 [chromium] › e2e/qa-regression.spec.ts:447:3 › QA full regression repair matrix › visual baselines catch silent layout collapse @visual (4.1s)
+  ✘  2 [chromium] › e2e/visual-token-foundation.spec.ts:119:3 › visual token foundation › LayoutAdmin active and hover states are visually distinct @visual (9.1s)
+(node:28314) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:28314) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+[2m[WebServer] [22m6:59:11 PM [vite] http proxy error: /health
+[2m[WebServer] [22mAggregateError [ECONNREFUSED]:
+[2m[WebServer] [22m    at internalConnectMultiple (node:net:1134:18)
+[2m[WebServer] [22m    at afterConnectMultiple (node:net:1715:7)
+  ✓  3 [chromium] › e2e/visual-token-foundation.spec.ts:193:3 › visual token foundation › PrimeVue form controls expose hover and focus feedback @visual (7.4s)
+  ✓  4 [chromium] › e2e/visual-token-foundation.spec.ts:279:3 › visual token foundation › Icons color controls use generated semantic classes @visual (3.5s)
+
+
+  1) [chromium] › e2e/visual-token-foundation.spec.ts:119:3 › visual token foundation › LayoutAdmin active and hover states are visually distinct @visual
+
+    Error: [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
+
+    Locator: locator('.admin-menu-popup__item[data-menu-state="idle"]').first()
+    Expected: visible
+    Timeout: 5000ms
+    Error: element(s) not found
+
+    Call log:
+    [2m  - Expect "toBeVisible" with timeout 5000ms[22m
+    [2m  - waiting for locator('.admin-menu-popup__item[data-menu-state="idle"]').first()[22m
+
+
+      165 |         .locator('.admin-menu-popup__item[data-menu-state="ancestor"]')
+      166 |         .first()
+    > 167 |       await expect(popupIdleItem).toBeVisible()
+          |                                   ^
+      168 |       await expect(popupActiveItem).toBeVisible()
+      169 |       expectDistinctStyle(
+      170 |         await visualSignature(popupActiveItem),
+        at /Users/cc/MyPorject/ccd/e2e/visual-token-foundation.spec.ts:167:35
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/visual-token-foundation-vi-b33d9-re-visually-distinct-visual-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/visual-token-foundation-vi-b33d9-re-visually-distinct-visual-chromium/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/visual-token-foundation-vi-b33d9-re-visually-distinct-visual-chromium/error-context.md
+
+    attachment #4: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/visual-token-foundation-vi-b33d9-re-visually-distinct-visual-chromium/trace.zip
+    Usage:
+
+        pnpm exec playwright show-trace test-results/visual-token-foundation-vi-b33d9-re-visually-distinct-visual-chromium/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  1 failed
+    [chromium] › e2e/visual-token-foundation.spec.ts:119:3 › visual token foundation › LayoutAdmin active and hover states are visually distinct @visual
+  3 passed (30.1s)
+ ELIFECYCLE  Command failed with exit code 1.

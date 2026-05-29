@@ -1,0 +1,11 @@
+
+ RUN  v4.0.18 /Users/cc/MyPorject/ccd
+
+ ✓ |node| apps/web-demo/src/utils/theme/validate.spec.ts (4 tests) 12ms
+ ✓ |node| apps/web-demo/src/constants/theme.spec.ts (5 tests) 16ms
+ ✓ |node| apps/web-demo/src/utils/theme/engine.spec.ts (59 tests) 42ms
+
+ Test Files  3 passed (3)
+      Tests  68 passed (68)
+   Start at  18:14:49
+   Duration  511ms (transform 308ms, setup 0ms, import 399ms, tests 70ms, environment 278ms)

@@ -1,0 +1,13 @@
+Fri May 29 17:26:27 CST 2026
+
+> @ccd/vue-ui@1.0.38 build /Users/cc/MyPorject/ccd/packages/vue-ui
+> rm -rf dist && rm -f ../../node_modules/.tmp/packages-vue-ui.tsbuildinfo && vite build --config vite.config.ts && vue-tsc -p tsconfig.build.json
+
+vite v7.3.3 building client environment for production...
+transforming...
+✓ 76 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/vue-ui.css   16.98 kB │ gzip:  2.95 kB
+dist/index.js    107.75 kB │ gzip: 27.47 kB
+✓ built in 348ms

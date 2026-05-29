@@ -1,0 +1,140 @@
+
+> ccd@1.0.38 type-check /Users/cc/MyPorject/ccd
+> turbo run type-check
+
+• turbo 2.9.14
+
+   • Packages in scope: @ccd/contracts, @ccd/core, @ccd/design-tokens, @ccd/desktop, @ccd/shared-utils, @ccd/unocss-preset, @ccd/vue-app-platform, @ccd/vue-charts, @ccd/vue-hooks, @ccd/vue-primevue-adapter, @ccd/vue-ui, @ccd/web-demo
+   • Running type-check in 12 packages
+   • Remote caching disabled
+
+@ccd/shared-utils:type-check: cache miss, executing 1a09e0b9fa612259
+@ccd/design-tokens:type-check: cache miss, executing a9d44c8a4d0c5817
+@ccd/contracts:build: cache miss, executing 201a66765774cf81
+@ccd/shared-utils:build: cache miss, executing dd4d12b84afe00ce
+@ccd/contracts:type-check: cache miss, executing 1fec95ec2013d3b4
+@ccd/design-tokens:build: cache miss, executing a285d07764ad9123
+@ccd/shared-utils:build:
+@ccd/shared-utils:build: > @ccd/shared-utils@1.0.38 build /Users/cc/MyPorject/ccd/packages/shared-utils
+@ccd/shared-utils:build: > rm -f ../../node_modules/.tmp/packages-shared-utils.tsbuildinfo && tsc -p tsconfig.json
+@ccd/shared-utils:build:
+@ccd/shared-utils:type-check:
+@ccd/shared-utils:type-check: > @ccd/shared-utils@1.0.38 type-check /Users/cc/MyPorject/ccd/packages/shared-utils
+@ccd/shared-utils:type-check: > tsc -p tsconfig.json --noEmit
+@ccd/shared-utils:type-check:
+@ccd/contracts:build:
+@ccd/contracts:build: > @ccd/contracts@1.0.38 build /Users/cc/MyPorject/ccd/packages/contracts
+@ccd/contracts:build: > rm -rf dist && rm -f ../../node_modules/.tmp/packages-contracts.tsbuildinfo && tsc -b tsconfig.json --force
+@ccd/contracts:build:
+@ccd/contracts:type-check:
+@ccd/contracts:type-check: > @ccd/contracts@1.0.38 type-check /Users/cc/MyPorject/ccd/packages/contracts
+@ccd/contracts:type-check: > tsc -p tsconfig.json --noEmit
+@ccd/contracts:type-check:
+@ccd/design-tokens:type-check:
+@ccd/design-tokens:type-check: > @ccd/design-tokens@1.0.38 type-check /Users/cc/MyPorject/ccd/packages/design-tokens
+@ccd/design-tokens:type-check: > tsc -p tsconfig.json --noEmit
+@ccd/design-tokens:type-check:
+@ccd/design-tokens:build:
+@ccd/design-tokens:build: > @ccd/design-tokens@1.0.38 build /Users/cc/MyPorject/ccd/packages/design-tokens
+@ccd/design-tokens:build: > rm -f ../../node_modules/.tmp/packages-design-tokens.tsbuildinfo && tsc -p tsconfig.json
+@ccd/design-tokens:build:
+@ccd/core:build: cache miss, executing 7ec6b5dcbde0e650
+@ccd/core:type-check: cache miss, executing 4af038732aec40f0
+@ccd/core:type-check:
+@ccd/core:type-check: > @ccd/core@1.0.38 type-check /Users/cc/MyPorject/ccd/packages/core
+@ccd/core:type-check: > tsc -p tsconfig.json --noEmit
+@ccd/core:type-check:
+@ccd/core:build:
+@ccd/core:build: > @ccd/core@1.0.38 build /Users/cc/MyPorject/ccd/packages/core
+@ccd/core:build: > rm -rf dist && rm -f ../../node_modules/.tmp/packages-core.tsbuildinfo && tsc -b tsconfig.json --force
+@ccd/core:build:
+@ccd/vue-hooks:type-check: cache miss, executing 823ced42051df2ae
+@ccd/vue-hooks:build: cache miss, executing 71bcdd797c9361da
+@ccd/vue-app-platform:type-check: cache miss, executing d38b098113d19755
+@ccd/vue-app-platform:build: cache miss, executing 1cf5f71935b7c9c3
+@ccd/vue-primevue-adapter:build: cache miss, executing b9d5e52fa11429b6
+@ccd/vue-charts:build: cache miss, executing 8ce43fc36c7821ce
+@ccd/vue-primevue-adapter:type-check: cache miss, executing 64818801e72c946b
+@ccd/vue-charts:type-check: cache miss, executing dd561ff0b316a78d
+@ccd/unocss-preset:type-check: cache miss, executing f9c7b2c46d4500cf
+@ccd/unocss-preset:build: cache miss, executing f1b3f1ee5a17cdc4
+@ccd/vue-hooks:type-check:
+@ccd/vue-hooks:type-check: > @ccd/vue-hooks@1.0.38 type-check /Users/cc/MyPorject/ccd/packages/vue-hooks
+@ccd/vue-hooks:type-check: > tsc -p tsconfig.json --noEmit
+@ccd/vue-hooks:type-check:
+@ccd/vue-hooks:build:
+@ccd/vue-hooks:build: > @ccd/vue-hooks@1.0.38 build /Users/cc/MyPorject/ccd/packages/vue-hooks
+@ccd/vue-hooks:build: > rm -f ../../node_modules/.tmp/packages-vue-hooks.tsbuildinfo && tsc -p tsconfig.json
+@ccd/vue-hooks:build:
+@ccd/vue-primevue-adapter:build:
+@ccd/vue-primevue-adapter:build: > @ccd/vue-primevue-adapter@1.0.38 build /Users/cc/MyPorject/ccd/packages/vue-primevue-adapter
+@ccd/vue-primevue-adapter:build: > rm -f ../../node_modules/.tmp/packages-vue-primevue-adapter.tsbuildinfo && tsc -p tsconfig.json
+@ccd/vue-primevue-adapter:build:
+@ccd/vue-app-platform:build:
+@ccd/vue-app-platform:build: > @ccd/vue-app-platform@1.0.38 build /Users/cc/MyPorject/ccd/packages/vue-app-platform
+@ccd/vue-app-platform:build: > rm -f ../../node_modules/.tmp/packages-vue-app-platform.tsbuildinfo && tsc -p tsconfig.json
+@ccd/vue-app-platform:build:
+@ccd/vue-charts:type-check:
+@ccd/vue-charts:type-check: > @ccd/vue-charts@1.0.38 type-check /Users/cc/MyPorject/ccd/packages/vue-charts
+@ccd/vue-charts:type-check: > vue-tsc -p tsconfig.json --noEmit
+@ccd/vue-charts:type-check:
+@ccd/vue-app-platform:type-check:
+@ccd/vue-app-platform:type-check: > @ccd/vue-app-platform@1.0.38 type-check /Users/cc/MyPorject/ccd/packages/vue-app-platform
+@ccd/vue-app-platform:type-check: > tsc -p tsconfig.json --noEmit
+@ccd/vue-app-platform:type-check:
+@ccd/vue-charts:build:
+@ccd/vue-charts:build: > @ccd/vue-charts@1.0.38 build /Users/cc/MyPorject/ccd/packages/vue-charts
+@ccd/vue-charts:build: > rm -rf dist && rm -f ../../node_modules/.tmp/packages-vue-charts.tsbuildinfo && vite build --config vite.config.ts && vue-tsc -p tsconfig.build.json
+@ccd/vue-charts:build:
+@ccd/vue-primevue-adapter:type-check:
+@ccd/vue-primevue-adapter:type-check: > @ccd/vue-primevue-adapter@1.0.38 type-check /Users/cc/MyPorject/ccd/packages/vue-primevue-adapter
+@ccd/vue-primevue-adapter:type-check: > tsc -p tsconfig.json --noEmit
+@ccd/vue-primevue-adapter:type-check:
+@ccd/unocss-preset:type-check:
+@ccd/unocss-preset:type-check: > @ccd/unocss-preset@1.0.38 type-check /Users/cc/MyPorject/ccd/packages/unocss-preset
+@ccd/unocss-preset:type-check: > tsc -p tsconfig.json --noEmit
+@ccd/unocss-preset:type-check:
+@ccd/unocss-preset:build:
+@ccd/unocss-preset:build: > @ccd/unocss-preset@1.0.38 build /Users/cc/MyPorject/ccd/packages/unocss-preset
+@ccd/unocss-preset:build: > rm -rf dist && rm -f ../../node_modules/.tmp/packages-unocss-preset.tsbuildinfo && tsc -p tsconfig.json
+@ccd/unocss-preset:build:
+@ccd/vue-charts:build: vite v7.3.3 building client environment for production...
+@ccd/vue-charts:build: transforming...
+@ccd/vue-charts:build: ✓ 46 modules transformed.
+@ccd/vue-charts:build: rendering chunks...
+@ccd/vue-charts:build: computing gzip size...
+@ccd/vue-charts:build: dist/echarts-setup.js   0.07 kB │ gzip:  0.09 kB
+@ccd/vue-charts:build: dist/index.js          89.94 kB │ gzip: 21.36 kB
+@ccd/vue-charts:build: ✓ built in 640ms
+@ccd/vue-ui:build: cache miss, executing defa036f462fb5ac
+@ccd/vue-ui:type-check: cache miss, executing 84da16bc5a1ae7c7
+@ccd/vue-ui:build:
+@ccd/vue-ui:build: > @ccd/vue-ui@1.0.38 build /Users/cc/MyPorject/ccd/packages/vue-ui
+@ccd/vue-ui:build: > rm -rf dist && rm -f ../../node_modules/.tmp/packages-vue-ui.tsbuildinfo && vite build --config vite.config.ts && vue-tsc -p tsconfig.build.json
+@ccd/vue-ui:build:
+@ccd/vue-ui:type-check:
+@ccd/vue-ui:type-check: > @ccd/vue-ui@1.0.38 type-check /Users/cc/MyPorject/ccd/packages/vue-ui
+@ccd/vue-ui:type-check: > vue-tsc -p tsconfig.json --noEmit
+@ccd/vue-ui:type-check:
+@ccd/vue-ui:build: vite v7.3.3 building client environment for production...
+@ccd/vue-ui:build: transforming...
+@ccd/vue-ui:build: ✓ 126 modules transformed.
+@ccd/vue-ui:build: rendering chunks...
+@ccd/vue-ui:build: computing gzip size...
+@ccd/vue-ui:build: dist/vue-ui.css   19.53 kB │ gzip:  3.33 kB
+@ccd/vue-ui:build: dist/index.js    231.44 kB │ gzip: 58.66 kB
+@ccd/vue-ui:build: ✓ built in 608ms
+@ccd/web-demo:type-check: cache miss, executing 5943e08dedb119f1
+@ccd/desktop:type-check: cache miss, executing 4c737cf4618563b4
+@ccd/web-demo:type-check:
+@ccd/web-demo:type-check: > @ccd/web-demo@1.0.38 type-check /Users/cc/MyPorject/ccd/apps/web-demo
+@ccd/web-demo:type-check: > vue-tsc -p tsconfig.json --noEmit
+@ccd/desktop:type-check:
+@ccd/desktop:type-check: > @ccd/desktop@1.0.38 type-check /Users/cc/MyPorject/ccd/apps/desktop
+@ccd/desktop:type-check: > vue-tsc -p tsconfig.json --noEmit
+@ccd/desktop:type-check:
+@ccd/web-demo:type-check:
+
+ Tasks:    22 successful, 22 total
+Cached:    0 cached, 22 total
+  Time:    8.145s

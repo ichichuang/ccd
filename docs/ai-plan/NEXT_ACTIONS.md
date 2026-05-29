@@ -2,9 +2,13 @@
 
 ## Immediate action
 
-Current next action is owner/operator resolution of the final `NO_GO` blockers.
+Current next action is completing the active P1 platform extraction run:
 
-Final validation passes, but the ledger still contains explicit BLOCKED/DEFERRED items. Do not push, stage, commit, or mutate approval-gated lanes unless the operator gives exact approval.
+- finish HTTP policy classification without creating unapproved contracts/core HTTP paths;
+- keep HTTP-001, HTTP-007, UI-001, and GOV-003 blocked unless owner/operator approvals change;
+- run the final validation matrix and record evidence in the active run directory.
+
+Do not push, stage, commit, or mutate approval-gated lanes unless the operator gives exact approval.
 
 ## After M0
 

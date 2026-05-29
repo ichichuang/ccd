@@ -1,0 +1,11 @@
+
+ RUN  v4.0.18 /Users/cc/MyPorject/ccd
+
+ ✓ |node| apps/web-demo/src/utils/http/validation.spec.ts (3 tests) 4ms
+ ✓ |node| apps/web-demo/src/utils/http/policies/httpPolicies.spec.ts (6 tests) 12ms
+ ✓ |node| apps/web-demo/src/utils/http/interceptors.spec.ts (15 tests) 16ms
+
+ Test Files  3 passed (3)
+      Tests  24 passed (24)
+   Start at  18:34:32
+   Duration  397ms (transform 254ms, setup 0ms, import 679ms, tests 32ms, environment 1ms)

@@ -1,0 +1,130 @@
+
+> @ccd/web-demo@1.0.38 type-check /Users/cc/MyPorject/ccd/apps/web-demo
+> vue-tsc -p tsconfig.json --noEmit
+
+src/hooks/layout/useAdminTabs.ts(6,33): error TS2307: Cannot find module '@ccd/vue-ui' or its corresponding type declarations.
+src/hooks/layout/useMenuRenderer.tsx(13,23): error TS2307: Cannot find module '@ccd/vue-ui' or its corresponding type declarations.
+src/hooks/modules/useProTableUrlSync.ts(6,8): error TS2307: Cannot find module '@ccd/vue-ui' or its corresponding type declarations.
+src/hooks/modules/useRecordOverlay.tsx(7,8): error TS2307: Cannot find module '@ccd/vue-ui' or its corresponding type declarations.
+src/layouts/components/admin/AdminBreadcrumbBar.vue(2,45): error TS2307: Cannot find module '@ccd/vue-ui' or its corresponding type declarations.
+src/layouts/components/admin/AdminBreadcrumbBar.vue(3,23): error TS2307: Cannot find module '@ccd/vue-ui' or its corresponding type declarations.
+src/layouts/components/admin/AdminHeader.vue(2,23): error TS2307: Cannot find module '@ccd/vue-ui' or its corresponding type declarations.
+src/layouts/components/admin/AdminMenuPopup.tsx(1,45): error TS2307: Cannot find module '@ccd/vue-ui' or its corresponding type declarations.
+src/layouts/components/admin/AdminSidebar.tsx(3,28): error TS2307: Cannot find module '@ccd/vue-ui' or its corresponding type declarations.
+src/layouts/components/admin/AdminSidebarMenuCollapsed.tsx(5,23): error TS2307: Cannot find module '@ccd/vue-ui' or its corresponding type declarations.
+src/layouts/components/admin/AdminSidebarMenuInline.tsx(7,50): error TS2307: Cannot find module '@ccd/vue-ui' or its corresponding type declarations.
+src/layouts/components/admin/AdminTabsBar.tsx(2,28): error TS2307: Cannot find module '@ccd/vue-ui' or its corresponding type declarations.
+src/layouts/components/admin/AdminTabsBar.tsx(3,23): error TS2307: Cannot find module '@ccd/vue-ui' or its corresponding type declarations.
+src/layouts/components/AppContainer.vue(3,44): error TS2307: Cannot find module '@ccd/vue-ui' or its corresponding type declarations.
+src/layouts/components/AppContainer.vue(7,33): error TS2307: Cannot find module '@ccd/vue-ui' or its corresponding type declarations.
+src/layouts/components/AppContainer.vue(13,8): error TS7006: Parameter 'key' implicitly has an 'any' type.
+src/layouts/components/AppContainer.vue(14,9): error TS7006: Parameter 'key' implicitly has an 'any' type.
+src/layouts/components/AppContainer.vue(14,14): error TS7006: Parameter 'position' implicitly has an 'any' type.
+src/layouts/components/GlobalSetting/SettingsContent.vue(22,8): error TS2307: Cannot find module '@ccd/vue-ui' or its corresponding type declarations.
+src/layouts/components/GlobalSetting/SettingsContent.vue(23,28): error TS2307: Cannot find module '@ccd/vue-ui' or its corresponding type declarations.
+src/layouts/components/GlobalSetting/SettingsContent.vue(24,23): error TS2307: Cannot find module '@ccd/vue-ui' or its corresponding type declarations.
+src/layouts/components/User/index.vue(3,60): error TS2307: Cannot find module '@ccd/vue-ui' or its corresponding type declarations.
+src/layouts/index.vue(6,34): error TS2307: Cannot find module '@ccd/vue-ui' or its corresponding type declarations.
+src/layouts/index.vue(7,32): error TS2307: Cannot find module '@ccd/vue-ui' or its corresponding type declarations.
+src/layouts/modules/LayoutAdmin.tsx(3,37): error TS2307: Cannot find module '@ccd/vue-ui' or its corresponding type declarations.
+src/layouts/modules/LayoutAdmin.tsx(20,23): error TS2307: Cannot find module '@ccd/vue-ui' or its corresponding type declarations.
+src/layouts/modules/LayoutAdmin.tsx(21,28): error TS2307: Cannot find module '@ccd/vue-ui' or its corresponding type declarations.
+src/layouts/modules/LayoutFullScreen.vue(6,28): error TS2307: Cannot find module '@ccd/vue-ui' or its corresponding type declarations.
+src/layouts/modules/LayoutFullScreen.vue(7,56): error TS2307: Cannot find module '@ccd/vue-ui' or its corresponding type declarations.
+src/plugins/modules/proform.ts(2,43): error TS2307: Cannot find module '@ccd/vue-ui' or its corresponding type declarations.
+src/plugins/modules/proform.ts(7,8): error TS2307: Cannot find module '@ccd/vue-ui' or its corresponding type declarations.
+src/plugins/modules/proform.ts(12,50): error TS7006: Parameter 'value' implicitly has an 'any' type.
+src/plugins/modules/proform.ts(12,57): error TS7006: Parameter 'format' implicitly has an 'any' type.
+src/plugins/modules/proform.ts(35,11): error TS7006: Parameter 'data' implicitly has an 'any' type.
+src/plugins/modules/protable.ts(2,48): error TS2307: Cannot find module '@ccd/vue-ui' or its corresponding type declarations.
+src/plugins/modules/scrollbar.ts(1,28): error TS2307: Cannot find module '@ccd/vue-ui' or its corresponding type declarations.
+src/views/dashboard/configs/alerts.ts(1,56): error TS2307: Cannot find module '@ccd/vue-ui' or its corresponding type declarations.
+src/views/dashboard/configs/alerts.ts(149,18): error TS7031: Binding element 'row' implicitly has an 'any' type.
+src/views/dashboard/configs/quickAction.ts(1,33): error TS2307: Cannot find module '@ccd/vue-ui' or its corresponding type declarations.
+src/views/dashboard/configs/quickAction.ts(33,28): error TS7006: Parameter 'v' implicitly has an 'any' type.
+src/views/dashboard/index.vue(3,32): error TS2307: Cannot find module '@ccd/vue-ui' or its corresponding type declarations.
+src/views/dashboard/index.vue(23,34): error TS2307: Cannot find module '@ccd/vue-ui' or its corresponding type declarations.
+src/views/example/components/animate-wrapper/index.vue(2,48): error TS2307: Cannot find module '@ccd/vue-ui' or its corresponding type declarations.
+src/views/example/components/c-scrollbar/index.vue(2,61): error TS2307: Cannot find module '@ccd/vue-ui' or its corresponding type declarations.
+src/views/example/components/icons/components/IconControls.vue(2,61): error TS2307: Cannot find module '@ccd/vue-ui' or its corresponding type declarations.
+src/views/example/components/icons/index.vue(4,61): error TS2307: Cannot find module '@ccd/vue-ui' or its corresponding type declarations.
+src/views/example/components/primevue-collection/overview/composables/usePrimeVueScrollSpy.ts(6,40): error TS2307: Cannot find module '@ccd/vue-ui' or its corresponding type declarations.
+src/views/example/components/primevue-collection/prime-dialog/index.vue(5,23): error TS2307: Cannot find module '@ccd/vue-ui' or its corresponding type declarations.
+src/views/example/components/primevue-collection/pro-form/advanced/index.vue(5,48): error TS2307: Cannot find module '@ccd/vue-ui' or its corresponding type declarations.
+src/views/example/components/primevue-collection/pro-form/advanced/index.vue(6,61): error TS2307: Cannot find module '@ccd/vue-ui' or its corresponding type declarations.
+src/views/example/components/primevue-collection/pro-form/advanced/index.vue(12,23): error TS2307: Cannot find module '@ccd/vue-ui' or its corresponding type declarations.
+src/views/example/components/primevue-collection/pro-form/api-events/index.vue(4,59): error TS2307: Cannot find module '@ccd/vue-ui' or its corresponding type declarations.
+src/views/example/components/primevue-collection/pro-form/basic/index.vue(4,59): error TS2307: Cannot find module '@ccd/vue-ui' or its corresponding type declarations.
+src/views/example/components/primevue-collection/pro-form/basic/index.vue(25,26): error TS7006: Parameter 'v' implicitly has an 'any' type.
+src/views/example/components/primevue-collection/pro-form/dag/index.vue(4,59): error TS2307: Cannot find module '@ccd/vue-ui' or its corresponding type declarations.
+src/views/example/components/primevue-collection/pro-form/group/index.vue(4,33): error TS2307: Cannot find module '@ccd/vue-ui' or its corresponding type declarations.
+src/views/example/components/primevue-collection/pro-form/group/index.vue(101,25): error TS7031: Binding element 'form' implicitly has an 'any' type.
+src/views/example/components/primevue-collection/pro-form/group/index.vue(411,24): error TS7006: Parameter 'v' implicitly has an 'any' type.
+src/views/example/components/primevue-collection/pro-form/group/index.vue(445,24): error TS7006: Parameter 'v' implicitly has an 'any' type.
+src/views/example/components/primevue-collection/pro-form/group/index.vue(479,24): error TS7006: Parameter 'v' implicitly has an 'any' type.
+src/views/example/components/primevue-collection/pro-form/group/index.vue(513,24): error TS7006: Parameter 'v' implicitly has an 'any' type.
+src/views/example/components/primevue-collection/pro-form/group/index.vue(548,26): error TS7006: Parameter 'v' implicitly has an 'any' type.
+src/views/example/components/primevue-collection/pro-form/group/index.vue(581,26): error TS7006: Parameter 'v' implicitly has an 'any' type.
+src/views/example/components/primevue-collection/pro-form/playground/index.vue(4,59): error TS2307: Cannot find module '@ccd/vue-ui' or its corresponding type declarations.
+src/views/example/components/primevue-collection/pro-form/playground/index.vue(82,21): error TS7031: Binding element 'form' implicitly has an 'any' type.
+src/views/example/components/primevue-collection/pro-form/playground/index.vue(83,22): error TS7031: Binding element 'form' implicitly has an 'any' type.
+src/views/example/components/primevue-collection/pro-form/plugins/components/MyColorCustomInput.tsx(3,42): error TS2307: Cannot find module '@ccd/vue-ui' or its corresponding type declarations.
+src/views/example/components/primevue-collection/pro-form/plugins/index.vue(4,82): error TS2307: Cannot find module '@ccd/vue-ui' or its corresponding type declarations.
+src/views/example/components/primevue-collection/pro-form/plugins/index.vue(5,32): error TS2307: Cannot find module '@ccd/vue-ui' or its corresponding type declarations.
+src/views/example/components/primevue-collection/pro-form/plugins/index.vue(23,11): error TS7006: Parameter 'ctx' implicitly has an 'any' type.
+src/views/example/components/primevue-collection/pro-form/reactions/index.vue(4,76): error TS2307: Cannot find module '@ccd/vue-ui' or its corresponding type declarations.
+src/views/example/components/primevue-collection/pro-form/validation/index.vue(9,8): error TS2307: Cannot find module '@ccd/vue-ui' or its corresponding type declarations.
+src/views/example/components/primevue-collection/pro-form/validation/index.vue(20,30): error TS2307: Cannot find module '@ccd/vue-ui' or its corresponding type declarations.
+src/views/example/components/primevue-collection/pro-form/validation/index.vue(42,22): error TS7006: Parameter 'v' implicitly has an 'any' type.
+src/views/example/components/primevue-collection/pro-form/validation/index.vue(46,22): error TS7006: Parameter 'v' implicitly has an 'any' type.
+src/views/example/components/primevue-collection/pro-form/validation/index.vue(50,22): error TS7006: Parameter 'v' implicitly has an 'any' type.
+src/views/example/components/primevue-collection/pro-form/validation/index.vue(63,22): error TS7006: Parameter 'v' implicitly has an 'any' type.
+src/views/example/components/primevue-collection/pro-form/validation/index.vue(67,22): error TS7006: Parameter 'v' implicitly has an 'any' type.
+src/views/example/components/primevue-collection/pro-form/validation/index.vue(80,22): error TS7006: Parameter 'v' implicitly has an 'any' type.
+src/views/example/components/primevue-collection/pro-form/validation/index.vue(84,22): error TS7006: Parameter 'v' implicitly has an 'any' type.
+src/views/example/components/primevue-collection/pro-form/validation/index.vue(88,22): error TS7006: Parameter 'v' implicitly has an 'any' type.
+src/views/example/components/primevue-collection/pro-form/validation/index.vue(106,22): error TS7006: Parameter 'v' implicitly has an 'any' type.
+src/views/example/components/primevue-collection/pro-form/validation/index.vue(109,21): error TS7031: Binding element 'form' implicitly has an 'any' type.
+src/views/example/components/primevue-collection/pro-form/validation/index.vue(119,73): error TS7006: Parameter 'values' implicitly has an 'any' type.
+src/views/example/components/primevue-collection/pro-form/validation/index.vue(156,22): error TS7006: Parameter 'v' implicitly has an 'any' type.
+src/views/example/components/primevue-collection/pro-form/validation/index.vue(160,29): error TS7006: Parameter 'v' implicitly has an 'any' type.
+src/views/example/components/primevue-collection/pro-form/validation/index.vue(176,22): error TS7006: Parameter 'v' implicitly has an 'any' type.
+src/views/example/components/primevue-collection/pro-form/validation/index.vue(180,29): error TS7006: Parameter 'v' implicitly has an 'any' type.
+src/views/example/components/primevue-collection/pro-form/validation/index.vue(216,22): error TS7006: Parameter 'v' implicitly has an 'any' type.
+src/views/example/components/primevue-collection/pro-form/validation/index.vue(229,22): error TS7006: Parameter 'v' implicitly has an 'any' type.
+src/views/example/components/primevue-collection/pro-table/advanced/configs/columns.tsx(2,57): error TS2307: Cannot find module '@ccd/vue-ui' or its corresponding type declarations.
+src/views/example/components/primevue-collection/pro-table/advanced/configs/columns.tsx(60,18): error TS7031: Binding element 'row' implicitly has an 'any' type.
+src/views/example/components/primevue-collection/pro-table/advanced/configs/columns.tsx(93,18): error TS7031: Binding element 'row' implicitly has an 'any' type.
+src/views/example/components/primevue-collection/pro-table/api-events/columns.tsx(1,57): error TS2307: Cannot find module '@ccd/vue-ui' or its corresponding type declarations.
+src/views/example/components/primevue-collection/pro-table/api-events/index.vue(2,65): error TS2307: Cannot find module '@ccd/vue-ui' or its corresponding type declarations.
+src/views/example/components/primevue-collection/pro-table/basic/columns.tsx(1,57): error TS2307: Cannot find module '@ccd/vue-ui' or its corresponding type declarations.
+src/views/example/components/primevue-collection/pro-table/columns/columns.tsx(1,23): error TS2307: Cannot find module '@ccd/vue-ui' or its corresponding type declarations.
+src/views/example/components/primevue-collection/pro-table/columns/columns.tsx(2,57): error TS2307: Cannot find module '@ccd/vue-ui' or its corresponding type declarations.
+src/views/example/components/primevue-collection/pro-table/columns/columns.tsx(117,19): error TS7053: Element implicitly has an 'any' type because expression of type 'any' can't be used to index type 'Record<ProductStatus, { label: string; cls: string; }>'.
+src/views/example/components/primevue-collection/pro-table/form-table-combo/components/SearchPanel.vue(2,36): error TS2307: Cannot find module '@ccd/vue-ui' or its corresponding type declarations.
+src/views/example/components/primevue-collection/pro-table/form-table-combo/components/TablePanel.vue(13,8): error TS2307: Cannot find module '@ccd/vue-ui' or its corresponding type declarations.
+src/views/example/components/primevue-collection/pro-table/form-table-combo/config.tsx(1,33): error TS2307: Cannot find module '@ccd/vue-ui' or its corresponding type declarations.
+src/views/example/components/primevue-collection/pro-table/form-table-combo/config.tsx(2,57): error TS2307: Cannot find module '@ccd/vue-ui' or its corresponding type declarations.
+src/views/example/components/primevue-collection/pro-table/form-table-combo/config.tsx(51,22): error TS7006: Parameter 'v' implicitly has an 'any' type.
+src/views/example/components/primevue-collection/pro-table/server/columns.tsx(2,57): error TS2307: Cannot find module '@ccd/vue-ui' or its corresponding type declarations.
+src/views/example/components/primevue-collection/pro-table/shared/apiExecutor.ts(1,42): error TS2307: Cannot find module '@ccd/vue-ui' or its corresponding type declarations.
+src/views/example/components/primevue-collection/pro-table/shared/apiExecutor.ts(4,60): error TS7031: Binding element 'method' implicitly has an 'any' type.
+src/views/example/components/primevue-collection/pro-table/shared/apiExecutor.ts(4,68): error TS7031: Binding element 'query' implicitly has an 'any' type.
+src/views/example/components/primevue-collection/pro-table/shared/apiExecutor.ts(4,75): error TS7031: Binding element 'config' implicitly has an 'any' type.
+src/views/example/components/primevue-collection/pro-table/virtual/columns.tsx(1,37): error TS2307: Cannot find module '@ccd/vue-ui' or its corresponding type declarations.
+src/views/example/components/primevue-collection/pro-table/virtual/columns.tsx(118,16): error TS7031: Binding element 'row' implicitly has an 'any' type.
+src/views/example/components/primevue-collection/pro-table/virtual/columns.tsx(128,16): error TS7031: Binding element 'row' implicitly has an 'any' type.
+src/views/example/components/primevue-collection/pro-table/virtual/index.vue(2,37): error TS2307: Cannot find module '@ccd/vue-ui' or its corresponding type declarations.
+src/views/example/hooks/layout-breadcrumbs.vue(3,23): error TS2307: Cannot find module '@ccd/vue-ui' or its corresponding type declarations.
+src/views/example/hooks/use-pro-table.vue(2,57): error TS2307: Cannot find module '@ccd/vue-ui' or its corresponding type declarations.
+src/views/example/hooks/use-pro-table.vue(3,29): error TS2307: Cannot find module '@ccd/vue-ui' or its corresponding type declarations.
+src/views/example/hooks/use-pro-table.vue(29,20): error TS7053: Element implicitly has an 'any' type because expression of type 'any' can't be used to index type 'Record<TaskPriority, string>'.
+src/views/example/hooks/use-pro-table.vue(38,19): error TS7053: Element implicitly has an 'any' type because expression of type 'any' can't be used to index type 'Record<TaskBoardStatus, { label: string; cls: string; }>'.
+src/views/login/components/LoginForm.vue(4,48): error TS2307: Cannot find module '@ccd/vue-ui' or its corresponding type declarations.
+src/views/login/components/LoginForm.vue(37,22): error TS7006: Parameter 'value' implicitly has an 'any' type.
+src/views/login/components/LoginForm.vue(41,22): error TS7006: Parameter 'value' implicitly has an 'any' type.
+src/views/login/components/LoginForm.vue(59,22): error TS7006: Parameter 'value' implicitly has an 'any' type.
+src/views/login/components/LoginForm.vue(63,22): error TS7006: Parameter 'value' implicitly has an 'any' type.
+/Users/cc/MyPorject/ccd/apps/web-demo:
+ ERR_PNPM_RECURSIVE_RUN_FIRST_FAIL  @ccd/web-demo@1.0.38 type-check: `vue-tsc -p tsconfig.json --noEmit`
+Exit status 2

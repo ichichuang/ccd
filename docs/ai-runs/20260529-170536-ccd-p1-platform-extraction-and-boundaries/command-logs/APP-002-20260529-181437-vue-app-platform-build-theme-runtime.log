@@ -1,0 +1,3 @@
+
+> @ccd/vue-app-platform@1.0.38 build /Users/cc/MyPorject/ccd/packages/vue-app-platform
+> rm -f ../../node_modules/.tmp/packages-vue-app-platform.tsbuildinfo && tsc -p tsconfig.json

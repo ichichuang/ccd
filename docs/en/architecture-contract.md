@@ -72,12 +72,10 @@ Current platform package set:
 
 The following paths still belong to `apps/web-demo`, but should be understood as app-local shared candidates rather than immediate migration targets:
 
-- `apps/web-demo/src/components/PrimeDialog`
-- `apps/web-demo/src/components/ProForm`
-- `apps/web-demo/src/components/ProTable`
-- `apps/web-demo/src/layouts/runtime/layoutRuntime.ts`
 - `apps/web-demo/src/hooks/modules/useAutoMitt.ts`
-- `apps/web-demo/src/utils/theme/engine.ts`
+- `apps/web-demo/src/hooks/modules/useDialog.tsx`
+- `apps/web-demo/src/utils/theme/engine.ts` (compatibility facade only)
+- `apps/web-demo/src/utils/theme/sizeEngine.ts`
 - `apps/web-demo/src/utils/safeStorage`
 
 `createCapabilityBridge` is already a pure shared utility owned by `packages/shared-utils`; app auth/router capability providers remain app-local adapter/infrastructure code.
@@ -93,9 +91,7 @@ These areas should remain untouched by the Phase 1 clarity pass:
 - `apps/web-demo/src/stores/**`
 - `apps/web-demo/src/views/**`
 - `apps/web-demo/src/utils/date/dateUtils.ts`
-- `apps/web-demo/src/utils/theme/engine.ts`
-- `apps/web-demo/src/components/ProForm/**`
-- `apps/web-demo/src/components/ProTable/**`
+- app-local compatibility facades and runtime adapters that inject browser/storage/router/store capabilities
 
 ## Dependency Direction
 

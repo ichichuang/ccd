@@ -1,0 +1,33 @@
+Fri May 29 17:44:49 CST 2026
+
+> @ccd/vue-ui@1.0.38 build /Users/cc/MyPorject/ccd/packages/vue-ui
+> rm -rf dist && rm -f ../../node_modules/.tmp/packages-vue-ui.tsbuildinfo && vite build --config vite.config.ts && vue-tsc -p tsconfig.build.json
+
+vite v7.3.3 building client environment for production...
+transforming...
+✓ 8 modules transformed.
+✗ Build failed in 104ms
+error during build:
+[vite:vue] [@vue/compiler-sfc] Unresolvable type reference or unsupported built-in utility type
+
+/Users/cc/MyPorject/ccd/packages/vue-ui/src/CcdPrimeControls/CcdDrawer.vue
+3  |
+4  |  defineOptions({ name: 'CcdDrawer', inheritAttrs: false })
+5  |  const props = defineProps<Record<string, unknown>>()
+   |                            ^^^^^^^^^^^^^^^^^^^^^^^
+6  |  </script>
+7  |
+file: /Users/cc/MyPorject/ccd/packages/vue-ui/src/CcdPrimeControls/CcdDrawer.vue
+    at ScriptCompileContext.error (/Users/cc/MyPorject/ccd/node_modules/.pnpm/@vue+compiler-sfc@3.5.25/node_modules/@vue/compiler-sfc/dist/compiler-sfc.cjs.js:19762:11)
+    at innerResolveTypeElements (/Users/cc/MyPorject/ccd/node_modules/.pnpm/@vue+compiler-sfc@3.5.25/node_modules/@vue/compiler-sfc/dist/compiler-sfc.cjs.js:22119:20)
+    at resolveTypeElements (/Users/cc/MyPorject/ccd/node_modules/.pnpm/@vue+compiler-sfc@3.5.25/node_modules/@vue/compiler-sfc/dist/compiler-sfc.cjs.js:22010:20)
+    at resolveRuntimePropsFromType (/Users/cc/MyPorject/ccd/node_modules/.pnpm/@vue+compiler-sfc@3.5.25/node_modules/@vue/compiler-sfc/dist/compiler-sfc.cjs.js:23734:20)
+    at extractRuntimeProps (/Users/cc/MyPorject/ccd/node_modules/.pnpm/@vue+compiler-sfc@3.5.25/node_modules/@vue/compiler-sfc/dist/compiler-sfc.cjs.js:23710:17)
+    at genRuntimeProps (/Users/cc/MyPorject/ccd/node_modules/.pnpm/@vue+compiler-sfc@3.5.25/node_modules/@vue/compiler-sfc/dist/compiler-sfc.cjs.js:23698:18)
+    at Object.compileScript (/Users/cc/MyPorject/ccd/node_modules/.pnpm/@vue+compiler-sfc@3.5.25/node_modules/@vue/compiler-sfc/dist/compiler-sfc.cjs.js:24712:21)
+    at resolveScript (file:///Users/cc/MyPorject/ccd/node_modules/.pnpm/@vitejs+plugin-vue@6.0.3_vite@7.3.3_@types+node@24.12.4_jiti@2.6.1_sass@1.97.3_terser@5_8e548e20d33d38ea58bcf6758cc6d8be/node_modules/@vitejs/plugin-vue/dist/index.mjs:283:36)
+    at genScriptCode (file:///Users/cc/MyPorject/ccd/node_modules/.pnpm/@vitejs+plugin-vue@6.0.3_vite@7.3.3_@types+node@24.12.4_jiti@2.6.1_sass@1.97.3_terser@5_8e548e20d33d38ea58bcf6758cc6d8be/node_modules/@vitejs/plugin-vue/dist/index.mjs:1436:17)
+    at transformMain (file:///Users/cc/MyPorject/ccd/node_modules/.pnpm/@vitejs+plugin-vue@6.0.3_vite@7.3.3_@types+node@24.12.4_jiti@2.6.1_sass@1.97.3_terser@5_8e548e20d33d38ea58bcf6758cc6d8be/node_modules/@vitejs/plugin-vue/dist/index.mjs:1327:53)
+/Users/cc/MyPorject/ccd/packages/vue-ui:
+ ERR_PNPM_RECURSIVE_RUN_FIRST_FAIL  @ccd/vue-ui@1.0.38 build: `rm -rf dist && rm -f ../../node_modules/.tmp/packages-vue-ui.tsbuildinfo && vite build --config vite.config.ts && vue-tsc -p tsconfig.build.json`
+Exit status 1

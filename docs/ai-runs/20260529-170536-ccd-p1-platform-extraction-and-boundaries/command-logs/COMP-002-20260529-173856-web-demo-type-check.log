@@ -1,0 +1,16 @@
+Fri May 29 17:38:56 CST 2026
+
+> @ccd/web-demo@1.0.38 type-check /Users/cc/MyPorject/ccd/apps/web-demo
+> vue-tsc -p tsconfig.json --noEmit
+
+src/views/example/components/primevue-collection/pro-table/form-table-combo/components/TablePanel.vue(157,12): error TS2339: Property 'ProTableCrudFormModalBody' does not exist on type '{}'.
+src/views/example/components/primevue-collection/pro-table/form-table-combo/components/TablePanel.vue(165,12): error TS2339: Property 'ProTableCrudViewModalBody' does not exist on type '{}'.
+../../packages/vue-ui/src/ProTable/index.ts(2,54): error TS6307: File '/Users/cc/MyPorject/ccd/packages/vue-ui/src/ProTable/components/ProTableCrudFormModalBody.tsx' is not listed within the file list of project '/Users/cc/MyPorject/ccd/apps/web-demo/tsconfig.json'. Projects must list all files or use an 'include' pattern.
+../../packages/vue-ui/src/ProTable/index.ts(3,54): error TS6307: File '/Users/cc/MyPorject/ccd/packages/vue-ui/src/ProTable/components/ProTableCrudViewModalBody.tsx' is not listed within the file list of project '/Users/cc/MyPorject/ccd/apps/web-demo/tsconfig.json'. Projects must list all files or use an 'include' pattern.
+../../packages/vue-ui/src/ProTable/ProTable.vue(900,26): error TS6307: File '/Users/cc/MyPorject/ccd/packages/vue-ui/src/ProTable/components/ProTableCell.tsx' is not listed within the file list of project '/Users/cc/MyPorject/ccd/apps/web-demo/tsconfig.json'. Projects must list all files or use an 'include' pattern.
+  The file is in the program because:
+    Imported via './components/ProTableCell' from file '/Users/cc/MyPorject/ccd/packages/vue-ui/src/ProTable/ProTable.vue'
+    Imported via './components/ProTableCell' from file '/Users/cc/MyPorject/ccd/packages/vue-ui/src/ProTable/VirtualGridRenderer.vue'
+/Users/cc/MyPorject/ccd/apps/web-demo:
+ ERR_PNPM_RECURSIVE_RUN_FIRST_FAIL  @ccd/web-demo@1.0.38 type-check: `vue-tsc -p tsconfig.json --noEmit`
+Exit status 2

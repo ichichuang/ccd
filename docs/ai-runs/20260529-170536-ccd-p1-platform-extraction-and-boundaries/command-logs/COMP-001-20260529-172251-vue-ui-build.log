@@ -1,0 +1,21 @@
+Fri May 29 17:22:51 CST 2026
+
+> @ccd/vue-ui@1.0.38 build /Users/cc/MyPorject/ccd/packages/vue-ui
+> rm -rf dist && rm -f ../../node_modules/.tmp/packages-vue-ui.tsbuildinfo && vite build --config vite.config.ts && vue-tsc -p tsconfig.build.json
+
+vite v7.3.3 building client environment for production...
+transforming...
+✓ 76 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/vue-ui.css   16.98 kB │ gzip:  2.95 kB
+dist/index.js    107.41 kB │ gzip: 27.38 kB
+✓ built in 356ms
+src/ProForm/engine/hooks/useFormContext.ts(8,22): error TS2304: Cannot find name 'inject'.
+src/ProForm/index.vue(104,17): error TS2339: Property 'env' does not exist on type 'ImportMeta'.
+src/ProForm/renderers/components/ProCheckbox.vue(38,57): error TS2304: Cannot find name '$t'.
+src/ProForm/renderers/components/ProCheckbox.vue(40,58): error TS2304: Cannot find name '$t'.
+src/ProForm/renderers/PrimeVueRenderer.vue(81,19): error TS2339: Property 'env' does not exist on type 'ImportMeta'.
+/Users/cc/MyPorject/ccd/packages/vue-ui:
+ ERR_PNPM_RECURSIVE_RUN_FIRST_FAIL  @ccd/vue-ui@1.0.38 build: `rm -rf dist && rm -f ../../node_modules/.tmp/packages-vue-ui.tsbuildinfo && vite build --config vite.config.ts && vue-tsc -p tsconfig.build.json`
+Exit status 2

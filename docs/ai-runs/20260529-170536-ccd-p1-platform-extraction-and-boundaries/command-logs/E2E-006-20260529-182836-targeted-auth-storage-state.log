@@ -1,0 +1,22 @@
+[2m[WebServer] [22m(node:78075) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[2m[WebServer] [22m(Use `node --trace-warnings ...` to show where the warning was created)
+[2m[WebServer] [22m(node:78077) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[2m[WebServer] [22m(Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 5 tests using 2 workers
+
+(node:78233) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:78244) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:78244) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:78233) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  2 [chromium] › e2e/icons-explorer.spec.ts:14:3 › icons explorer › renders icons, applies controls, and keeps panes independently scrollable (2.0s)
+  ✓  1 [chromium] › e2e/global-context-menu-theme-icon.spec.ts:32:1 › global context menu theme toggle icon follows light and dark DOM state (2.0s)
+  ✓  3 [chromium] › e2e/sidebar-route-sync.spec.ts:252:3 › sidebar route/menu first-paint synchronization › direct first load /#/example/primevue-collection/overview keeps route-owned and project active markers aligned (2.0s)
+  ✓  4 [chromium] › e2e/sidebar-route-sync.spec.ts:321:3 › sidebar route/menu first-paint synchronization › direct first load /#/dashboard resolves sidebar dashboard item active (2.1s)
+  ✓  5 [chromium] › e2e/sidebar-route-sync.spec.ts:407:3 › sidebar route/menu first-paint synchronization › navigate away and back keeps dashboard sidebar active and synchronized (1.9s)
+
+  5 passed (12.0s)

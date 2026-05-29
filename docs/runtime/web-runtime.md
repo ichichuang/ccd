@@ -22,13 +22,10 @@
 
 Current app-local shared candidates include:
 
-- `apps/web-demo/src/components/PrimeDialog`
-- `apps/web-demo/src/components/ProForm`
-- `apps/web-demo/src/components/ProTable`
-- `apps/web-demo/src/layouts/runtime/layoutRuntime.ts`
-- `apps/web-demo/src/infra/shared/createCapabilityBridge.ts`
 - `apps/web-demo/src/hooks/modules/useAutoMitt.ts`
-- `apps/web-demo/src/utils/theme/engine.ts`
+- `apps/web-demo/src/hooks/modules/useDialog.tsx`
+- `apps/web-demo/src/utils/theme/engine.ts` (compatibility facade only)
+- `apps/web-demo/src/utils/theme/sizeEngine.ts`
 - `apps/web-demo/src/utils/safeStorage`
 
 ## Adapter Ownership

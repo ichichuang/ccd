@@ -1,0 +1,8 @@
+
+> ccd@1.0.38 api:report /Users/cc/MyPorject/ccd
+> node scripts/architecture/check-api-surface.mjs
+
+API surface validation failed:
+- apps/web-demo: public export subpath removed: .
+- apps/desktop: public export subpath removed: .
+ ELIFECYCLE  Command failed with exit code 1.

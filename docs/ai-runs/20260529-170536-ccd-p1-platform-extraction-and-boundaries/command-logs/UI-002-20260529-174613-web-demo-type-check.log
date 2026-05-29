@@ -1,0 +1,27 @@
+Fri May 29 17:46:13 CST 2026
+
+> @ccd/web-demo@1.0.38 type-check /Users/cc/MyPorject/ccd/apps/web-demo
+> vue-tsc -p tsconfig.json --noEmit
+
+src/layouts/components/admin/AdminBreadcrumbBar.vue(136,13): error TS2353: Object literal may only specify known properties, and 'appendTo' does not exist in type '{} & VNodeProps & AllowedComponentProps & ComponentCustomProps'.
+src/layouts/components/admin/AdminMenuPopup.tsx(206,9): error TS2322: Type '{ "v-slots": { item: (slotProps: TieredMenuItemSlotProps) => VNode<RendererNode, RendererElement, { [key: string]: any; }>; }; ... 6 more ...; class: string; }' is not assignable to type 'IntrinsicAttributes & {} & VNodeProps & AllowedComponentProps & ComponentCustomProps'.
+  Property 'model' does not exist on type 'IntrinsicAttributes & {} & VNodeProps & AllowedComponentProps & ComponentCustomProps'.
+src/layouts/components/admin/AdminSidebarMenuInline.tsx(549,11): error TS2322: Type '{ class: string; pt: { item: { class: string; }; headerContent: (options: PanelMenuPtOptionsLike) => { class: string; 'data-menu-row-state'?: string | undefined; 'data-route-active'?: string | undefined; 'data-route-exact-active'?: string | undefined; }; itemContent: (options: PanelMenuPtOptionsLike) => PanelRowAttr...' is not assignable to type 'IntrinsicAttributes & {} & VNodeProps & AllowedComponentProps & ComponentCustomProps'.
+  Property 'pt' does not exist on type 'IntrinsicAttributes & {} & VNodeProps & AllowedComponentProps & ComponentCustomProps'.
+src/layouts/components/GlobalSetting/SettingsContent.vue(219,16): error TS2353: Object literal may only specify known properties, and 'modelValue' does not exist in type '{} & VNodeProps & AllowedComponentProps & ComponentCustomProps'.
+src/layouts/components/GlobalSetting/SettingsContent.vue(237,18): error TS2353: Object literal may only specify known properties, and 'id' does not exist in type '{} & VNodeProps & AllowedComponentProps & ComponentCustomProps'.
+src/layouts/components/GlobalSetting/SettingsContent.vue(290,20): error TS2353: Object literal may only specify known properties, and 'modelValue' does not exist in type '{} & VNodeProps & AllowedComponentProps & ComponentCustomProps'.
+src/layouts/components/GlobalSetting/SettingsContent.vue(314,20): error TS2353: Object literal may only specify known properties, and 'modelValue' does not exist in type '{} & VNodeProps & AllowedComponentProps & ComponentCustomProps'.
+src/layouts/components/GlobalSetting/SettingsContent.vue(357,18): error TS2353: Object literal may only specify known properties, and 'modelValue' does not exist in type '{} & VNodeProps & AllowedComponentProps & ComponentCustomProps'.
+src/layouts/components/GlobalSetting/SettingsContent.vue(388,22): error TS2353: Object literal may only specify known properties, and 'modelValue' does not exist in type '{} & VNodeProps & AllowedComponentProps & ComponentCustomProps'.
+src/layouts/components/GlobalSetting/SettingsContent.vue(399,22): error TS2353: Object literal may only specify known properties, and 'modelValue' does not exist in type '{} & VNodeProps & AllowedComponentProps & ComponentCustomProps'.
+src/layouts/components/GlobalSetting/SettingsContent.vue(435,20): error TS2353: Object literal may only specify known properties, and 'id' does not exist in type '{} & VNodeProps & AllowedComponentProps & ComponentCustomProps'.
+src/layouts/components/GlobalSetting/SettingsContent.vue(472,20): error TS2353: Object literal may only specify known properties, and 'modelValue' does not exist in type '{} & VNodeProps & AllowedComponentProps & ComponentCustomProps'.
+src/layouts/components/User/index.vue(66,8): error TS2353: Object literal may only specify known properties, and 'dismissable' does not exist in type '{} & VNodeProps & AllowedComponentProps & ComponentCustomProps'.
+src/layouts/components/User/index.vue(92,14): error TS2353: Object literal may only specify known properties, and 'label' does not exist in type '{} & VNodeProps & AllowedComponentProps & ComponentCustomProps'.
+src/layouts/components/User/index.vue(98,12): error TS2353: Object literal may only specify known properties, and 'label' does not exist in type '{} & VNodeProps & AllowedComponentProps & ComponentCustomProps'.
+src/layouts/modules/LayoutAdmin.tsx(237,15): error TS2322: Type '{ position: string; modal: true; blockScroll: true; dismissable: true; showCloseIcon: boolean; class: string; style: Record<string, string>; "v-slots": { container: () => Element; }; visible: boolean; }' is not assignable to type 'IntrinsicAttributes & {} & VNodeProps & AllowedComponentProps & ComponentCustomProps'.
+  Property 'position' does not exist on type 'IntrinsicAttributes & {} & VNodeProps & AllowedComponentProps & ComponentCustomProps'.
+/Users/cc/MyPorject/ccd/apps/web-demo:
+ ERR_PNPM_RECURSIVE_RUN_FIRST_FAIL  @ccd/web-demo@1.0.38 type-check: `vue-tsc -p tsconfig.json --noEmit`
+Exit status 2

@@ -1,0 +1,148 @@
+
+> ccd@1.0.38 e2e:smoke /Users/cc/MyPorject/ccd
+> playwright test e2e/qa-regression.spec.ts e2e/views-route-smoke.spec.ts --grep-invert "@visual|@perf" --workers=4
+
+[2m[WebServer] [22m(node:9869) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[2m[WebServer] [22m(Use `node --trace-warnings ...` to show where the warning was created)
+[2m[WebServer] [22m(node:9881) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[2m[WebServer] [22m(Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 10 tests using 4 workers
+
+(node:10041) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:10053) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:10054) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:10055) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:10055) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:10041) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:10053) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:10054) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   2 [chromium] › e2e/qa-regression.spec.ts:154:5 › QA full regression repair matrix › mobile dashboard keeps a visible layout tree (4.0s)
+  ✓   4 [chromium] › e2e/qa-regression.spec.ts:154:5 › QA full regression repair matrix › tablet dashboard keeps a visible layout tree (4.5s)
+  ✓   3 [chromium] › e2e/qa-regression.spec.ts:154:5 › QA full regression repair matrix › desktop dashboard keeps a visible layout tree (4.4s)
+  ✓   5 [chromium] › e2e/qa-regression.spec.ts:214:3 › QA full regression repair matrix › dashboard fixed tab survives non-dashboard redirect and destructive actions (4.3s)
+  ✓   7 [chromium] › e2e/qa-regression.spec.ts:295:3 › QA full regression repair matrix › delayed storage reads do not collapse authenticated dashboard reload (3.8s)
+  ✓   6 [chromium] › e2e/qa-regression.spec.ts:274:3 › QA full regression repair matrix › hard refresh preserves dashboard through auth store rehydration (4.7s)
+  ✓   8 [chromium] › e2e/qa-regression.spec.ts:330:3 › QA full regression repair matrix › invalid mid-session token refresh redirects without blank shell (4.1s)
+  ✓  10 [chromium] › e2e/views-route-smoke.spec.ts:5:3 › view route smoke coverage › renders login, dashboard, and not-found views through the router (4.0s)
+[2m[WebServer] [22m6:49:00 PM [vite] http proxy error: /health
+[2m[WebServer] [22mAggregateError [ECONNREFUSED]:
+[2m[WebServer] [22m    at internalConnectMultiple (node:net:1134:18)
+[2m[WebServer] [22m    at afterConnectMultiple (node:net:1715:7)
+[2m[WebServer] [22m6:49:08 PM [vite] http proxy error: /health
+[2m[WebServer] [22mAggregateError [ECONNREFUSED]:
+[2m[WebServer] [22m    at internalConnectMultiple (node:net:1134:18)
+[2m[WebServer] [22m    at afterConnectMultiple (node:net:1715:7)
+[2m[WebServer] [22m6:49:11 PM [vite] http proxy error: /health
+[2m[WebServer] [22mAggregateError [ECONNREFUSED]:
+[2m[WebServer] [22m    at internalConnectMultiple (node:net:1134:18)
+[2m[WebServer] [22m    at afterConnectMultiple (node:net:1715:7)
+[2m[WebServer] [22m6:49:11 PM [vite] http proxy error: /health
+[2m[WebServer] [22mAggregateError [ECONNREFUSED]:
+[2m[WebServer] [22m    at internalConnectMultiple (node:net:1134:18)
+[2m[WebServer] [22m    at afterConnectMultiple (node:net:1715:7)
+[2m[WebServer] [22m6:49:30 PM [vite] http proxy error: /health
+[2m[WebServer] [22mAggregateError [ECONNREFUSED]:
+[2m[WebServer] [22m    at internalConnectMultiple (node:net:1134:18)
+[2m[WebServer] [22m    at afterConnectMultiple (node:net:1715:7)
+  ✘   1 [chromium] › e2e/qa-regression.spec.ts:194:3 › QA full regression repair matrix › login route and logout redirect chain are stable (1.0m)
+[2m[WebServer] [22m6:49:38 PM [vite] http proxy error: /health
+[2m[WebServer] [22mAggregateError [ECONNREFUSED]:
+[2m[WebServer] [22m    at internalConnectMultiple (node:net:1134:18)
+[2m[WebServer] [22m    at afterConnectMultiple (node:net:1715:7)
+  ✘   9 [chromium] › e2e/qa-regression.spec.ts:370:3 › QA full regression repair matrix › multi-tab logout conflict converges to login without stale dashboard (1.0m)
+
+
+  1) [chromium] › e2e/qa-regression.spec.ts:194:3 › QA full regression repair matrix › login route and logout redirect chain are stable
+
+    [31mTest timeout of 60000ms exceeded.[39m
+
+    Error: locator.click: Test timeout of 60000ms exceeded.
+    Call log:
+    [2m  - waiting for locator('#user-logout')[22m
+
+
+      203 |     await expectNonBlankRoute(page)
+      204 |     await page.locator('#user-entry-trigger').click()
+    > 205 |     await page.locator('#user-logout').click()
+          |                                        ^
+      206 |     await expect(page).toHaveURL(/#\/login\?redirect=/)
+      207 |     await waitForRuntimeLoadingIdle(page)
+      208 |     await expect(page.locator('#login-submit')).toBeVisible()
+        at /Users/cc/MyPorject/ccd/e2e/qa-regression.spec.ts:205:40
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/qa-regression-QA-full-regr-4d480-t-redirect-chain-are-stable-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/qa-regression-QA-full-regr-4d480-t-redirect-chain-are-stable-chromium/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/qa-regression-QA-full-regr-4d480-t-redirect-chain-are-stable-chromium/error-context.md
+
+    attachment #4: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/qa-regression-QA-full-regr-4d480-t-redirect-chain-are-stable-chromium/trace.zip
+    Usage:
+
+        pnpm exec playwright show-trace test-results/qa-regression-QA-full-regr-4d480-t-redirect-chain-are-stable-chromium/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  2) [chromium] › e2e/qa-regression.spec.ts:370:3 › QA full regression repair matrix › multi-tab logout conflict converges to login without stale dashboard
+
+    [31mTest timeout of 60000ms exceeded.[39m
+
+    Error: locator.click: Test timeout of 60000ms exceeded.
+    Call log:
+    [2m  - waiting for locator('#user-logout')[22m
+
+
+      386 |
+      387 |     await page.locator('#user-entry-trigger').click()
+    > 388 |     await page.locator('#user-logout').click()
+          |                                        ^
+      389 |     await expect(page).toHaveURL(/#\/login\?redirect=/)
+      390 |
+      391 |     await secondTab.reload({ waitUntil: 'domcontentloaded' })
+        at /Users/cc/MyPorject/ccd/e2e/qa-regression.spec.ts:388:40
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/qa-regression-QA-full-regr-df923-gin-without-stale-dashboard-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/qa-regression-QA-full-regr-df923-gin-without-stale-dashboard-chromium/test-failed-2.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #3: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/qa-regression-QA-full-regr-df923-gin-without-stale-dashboard-chromium/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #4: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/qa-regression-QA-full-regr-df923-gin-without-stale-dashboard-chromium/video-1.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/qa-regression-QA-full-regr-df923-gin-without-stale-dashboard-chromium/error-context.md
+
+    attachment #6: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/qa-regression-QA-full-regr-df923-gin-without-stale-dashboard-chromium/trace.zip
+    Usage:
+
+        pnpm exec playwright show-trace test-results/qa-regression-QA-full-regr-df923-gin-without-stale-dashboard-chromium/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  2 failed
+    [chromium] › e2e/qa-regression.spec.ts:194:3 › QA full regression repair matrix › login route and logout redirect chain are stable
+    [chromium] › e2e/qa-regression.spec.ts:370:3 › QA full regression repair matrix › multi-tab logout conflict converges to login without stale dashboard
+  8 passed (1.3m)
+ ELIFECYCLE  Command failed with exit code 1.

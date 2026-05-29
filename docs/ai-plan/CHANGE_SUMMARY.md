@@ -1,19 +1,50 @@
 # CCD Change Summary
 
+## 2026-05-29 P1 Platform Extraction Update
+
+Active evidence directory: `docs/ai-runs/20260529-170536-ccd-p1-platform-extraction-and-boundaries/`.
+
+Implemented P1 lanes:
+
+- `APP-001`: extracted layout runtime calculation into `packages/vue-app-platform`.
+- `APP-002`: moved pure theme derivation to `@ccd/design-tokens/theme-engine` and DOM/storage theme application to `@ccd/vue-app-platform`.
+- `ARCH-003`: removed app package public exports and excluded private apps from public API snapshot enforcement.
+- `ARCH-004`: verified `createCapabilityBridge` ownership and documentation alignment.
+- `ARCH-005`: audited dependency ownership and updated package-local dependency policy without upgrades.
+- `BUILD-001`: reduced global px-to-rem selector blacklist reliance.
+- `COMP-001`: moved ProForm engine/renderers/tests into `packages/vue-ui`; app now injects storage/date runtime adapters.
+- `COMP-002`: moved ProTable engine/renderers/tests into `packages/vue-ui`; app now provides URL sync and record overlay wiring.
+- `COMP-003`: moved PrimeDialog into `packages/vue-ui`; app now injects runtime config.
+- `COMP-004`: verified examples consume public package/app entries.
+- `DOC-002`: synced P1 docs, status, risk, and evidence records.
+- `E2E-006`: centralized Playwright auth `storageState`.
+- `E2E-007`: added CI Playwright artifact upload using `actions/upload-artifact@v7`.
+- `E2E-008`: verified retry policy remains deterministic.
+- `GOV-002`: synced blocker matrix.
+- `GOV-004`: refreshed generated governance outputs through official commands.
+- `HTTP-002` / `HTTP-003`: kept HTTP contracts/core paths unimplemented and app-local HTTP infrastructure in place.
+- `HTTP-004`: split app-local HTTP policies from interceptors without moving runtime code into contracts/core.
+- `UI-002` / `UI-003`: added CCD-owned PrimeVue wrappers and documented public API policy.
+
+Approval-gated P1 lanes remain blocked unless owner/operator approval is recorded in `.ai/runtime/owner_decisions.md` or `docs/ai-plan/DECISIONS.md`.
+
+Final validation for the implementable P1 scope passed on 2026-05-29. The final state is `CONDITIONAL_GO_FOR_IMPLEMENTABLE_P1`: all implementable P1 tasks are complete; HTTP-001, HTTP-007, UI-001, and GOV-003 remain blocked by explicit approval gates.
+
 ## Summary
 
-This run converted the repair ledger into evidence-backed implementation, blocker, and deferral records. Minimal source changes were limited to ProTable typing/helper boundary repair, web-demo pxtorem file exclusions, and DateUtils import casing cleanup. No dependency upgrades, Vite migration, auth-flow rewrite, remote GitHub configuration, branch switch, commit, stage, push, reset, clean, or generated governance manual edit was performed.
+This run executed the P1 platform extraction and boundary plan with evidence-backed implementation, blocker, and deferral records. Source changes moved app-owned reusable UI/platform logic into the approved packages while preserving the `packages/contracts -> packages/core -> apps/*` topology. No dependency upgrades, Vite migration, auth-flow rewrite, remote GitHub configuration, branch switch, commit, stage, push, reset, clean, or generated governance manual edit was performed.
 
 ## Changed areas
 
-| Area | Files | Reason | Milestone |
-|---|---|---|---|
-| ProTable helper boundary | `apps/web-demo/src/components/ProTable/**`, `apps/web-demo/src/views/example/components/primevue-collection/pro-table/shared/apiExecutor.ts` | Remove helper boundary/type debt while preserving runtime behavior. | M3 |
-| CSS pxtorem exclusion | `apps/web-demo/vite.config.ts` | Exclude UnoCSS virtual/generated styles from global px-to-rem conversion while preserving `node_modules` exclusion. | M8 |
-| DateUtils casing/import cleanup | `apps/web-demo/src/utils/date/index.ts`, `apps/web-demo/src/views/example/utils/http-advanced.vue`, `apps/web-demo/src/views/example/architecture/router-meta/keep-alive.vue` | Route imports through the stable date barrel and avoid direct casing-sensitive path usage. | M12 |
-| Owner/blocker ledger | `.ai/runtime/owner_decisions.md`, `.ai/runtime/repair_list.md`, `.ai/runtime/repair-ledger.json` | Classify open tasks as validated, BLOCKED, or DEFERRED with evidence. | M4-M14 |
-| Planning and evidence docs | `docs/ai-plan/**`, `docs/ai-runs/20260529-070550-ccd-architecture-repair/**` | Record plan, status, validation, reports, screenshots, logs, decisions, risks, and final go/no-go. | M0-M14 |
-| Generated governance outputs | `docs/generated/**`, `.ai/generated/**`, `.ai/governance/api-snapshots/**` | Official governance/API commands regenerated outputs; no manual generated edits. | M3/M4/M5/M7/M14 |
+| Area                         | Files                                                                                                                                   | Reason                                                                                 | Milestone                                |
+| ---------------------------- | --------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------- | ---------------------------------------- |
+| Platform packages            | `packages/vue-app-platform/**`, `packages/design-tokens/src/theme-engine/**`                                                            | Own layout/runtime and pure theme derivation outside app entrypoints.                  | APP-001/APP-002                          |
+| UI package                   | `packages/vue-ui/**`                                                                                                                    | Own ProForm, ProTable, PrimeDialog, and CCD PrimeVue façade components.                | COMP-001/COMP-002/COMP-003/UI-002/UI-003 |
+| App wiring                   | `apps/web-demo/src/plugins/**`, `apps/web-demo/src/hooks/modules/**`, layout/view imports                                               | Keep runtime adapters, routes, stores, and app-specific wiring in the app.             | COMP/UI/HTTP                             |
+| HTTP app policies            | `apps/web-demo/src/utils/http/policies/**`                                                                                              | Split app-local HTTP policies without moving browser/runtime code into contracts/core. | HTTP-004                                 |
+| E2E/CI                       | `e2e/**`, `.github/workflows/ci.yml`                                                                                                    | Reuse auth storage state and upload local Playwright artifacts.                        | E2E-006/E2E-007                          |
+| Planning and evidence docs   | `docs/ai-plan/**`, `ccd-architecture-optimization-plan/**`, `docs/ai-runs/20260529-170536-ccd-p1-platform-extraction-and-boundaries/**` | Record P1 statuses, blockers, validations, reports, and risks.                         | DOC/GOV                                  |
+| Generated governance outputs | `docs/generated/**`, `.ai/generated/**`                                                                                                 | Official governance/API commands regenerated outputs; no manual generated edits.       | GOV-004                                  |
 
 ## Architecture impact
 
@@ -21,11 +52,11 @@ The approved topology remains `packages/contracts -> packages/core -> apps/*`. N
 
 ## Runtime behavior impact
 
-No intentional runtime behavior change was introduced outside the ProTable helper path and web-demo build CSS conversion config. Login/auth, alova request architecture, PrimeVue service wiring, Vite major version, and dependency versions were not changed.
+Runtime behavior is intended to stay equivalent. The only deliberate wiring changes are package extraction boundaries, app-local adapter injection, HTTP policy factoring, Playwright auth-state reuse, and CI artifact upload. Login/auth semantics, alova request architecture location, PrimeVue service installation, Vite major version, and dependency versions were not changed.
 
 ## Type-safety impact
 
-ProTable types and DateUtils exports/imports were tightened. Final `pnpm type-check`, focused tests, and full `pnpm test:run` pass.
+Final `pnpm type-check`, focused lane tests, and full `pnpm test:run` pass.
 
 ## Governance impact
 
@@ -37,30 +68,30 @@ No secrets, auth files, token providers, production deploy config, or auth-flow 
 
 ## Performance impact
 
-Desktop budget passes at 495207 bytes against a 2500000 byte limit. Web build passes at 4.71 MB. Vite 8 and dependency modernization were not performed.
+Desktop budget passes at 515302 bytes against a 2500000 byte limit. Web build passes. Vite 8 and dependency modernization were not performed.
 
 ## UI/accessibility impact
 
-M8 captured login/dashboard/chart production screenshots. Table-heavy production validation remains blocked because the ProTable route renders `.p-datatable` height `0`; A/B evidence shows this predates and is unrelated to the pxtorem exclusion patch.
+Final Playwright `e2e:smoke`, `e2e:layout`, `e2e:perf`, `e2e:visual`, and `e2e:qa:prepared` pass for the implementable P1 scope.
 
 ## Validation evidence
 
-| Validation | Result | Evidence |
-|---|---|---|
-| Final install | PASS | `docs/ai-runs/20260529-070550-ccd-architecture-repair/command-logs/M14-final-20260529-101210-pnpm-install-frozen-lockfile.log` |
-| Final type/lint/test | PASS, lint has 2 existing warnings | `M14-final-20260529-101300-pnpm-type-check.log`, `M14-final-20260529-101310-pnpm-lint-check.log`, `M14-final-20260529-101320-pnpm-test-run.log` |
-| Final builds | PASS | `M14-final-20260529-101330-pnpm-build-web-demo.log`, `M14-final-20260529-101340-pnpm-build-desktop.log`, `M14-final-20260529-101410-pnpm-build-ci.log` |
-| Governance | PASS after generated-sync rerun | `M14-final-20260529-101409-pnpm-validate-governance-generated-sync-rerun.log` |
-| Ledger open audit | PASS, all open items BLOCKED/DEFERRED | `M14-final-20260529-101440-pnpm-ai-doctor-open.log`, `M14-final-20260529-101442-open-actionable-unblocked-scan.log` |
+| Validation           | Result                             | Evidence                                                                                                                                                                                                                         |
+| -------------------- | ---------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Final install        | PASS                               | `docs/ai-runs/20260529-170536-ccd-p1-platform-extraction-and-boundaries/command-logs/FINAL-20260529-184310-01-pnpm-install-frozen-lockfile.log`                                                                                  |
+| Final type/lint/test | PASS, lint has 2 existing warnings | `FINAL-20260529-190032-06-pnpm-type-check-after-tieredmenu-forwarding.log`, `FINAL-20260529-190145-08-pnpm-lint-check-after-tieredmenu-forwarding.log`, `FINAL-20260529-190127-07-pnpm-test-run-after-tieredmenu-forwarding.log` |
+| Final builds         | PASS                               | `FINAL-20260529-190159-09-pnpm-build-web-demo-after-tieredmenu-forwarding.log`, `FINAL-20260529-190234-10-pnpm-build-desktop-after-tieredmenu-forwarding.log`, `FINAL-20260529-190615-17-pnpm-build-ci.log`                      |
+| Final E2E            | PASS                               | `FINAL-20260529-190429-16-pnpm-e2e-qa-prepared.log`                                                                                                                                                                              |
+| Governance           | PASS                               | `FINAL-20260529-190615-17-pnpm-build-ci.log`                                                                                                                                                                                     |
 
 ## Known risks
 
-The final decision remains `NO_GO` until owner/operator blockers are resolved or accepted. Highest residual risks are Vite 8 migration, dependency modernization, and M8 table-heavy/e2e layout debt.
+The final decision is `CONDITIONAL_GO_FOR_IMPLEMENTABLE_P1`. Residual risks are approval-gated P1 items and broader non-P1 work: Vite 8 migration, dependency modernization, Login Diorama, and remote GitHub governance.
 
 ## Rollback summary
 
-Rollback should be targeted by lane. Source rollback surfaces are the ProTable files, `apps/web-demo/vite.config.ts`, and the three DateUtils import files. Planning/evidence docs can be reverted as documentation if the operator rejects this ledger sweep. Do not use broad reset/clean without explicit approval.
+Rollback should be targeted by lane. Source rollback surfaces are the extracted package directories, app compatibility wiring, HTTP policy modules, E2E auth-state helper, CI artifact upload step, and package/governance policy files. Do not use broad reset/clean without explicit approval.
 
 ## Next action
 
-Resolve B-007 first if UI validation must be clean, or approve exactly one blocked lane: UI guard policy, HTTP contracts, Vite 8 isolated migration, dependency modernization, Login Diorama, `.github/**` governance, or P4 strategic work.
+Resolve or explicitly approve exactly one blocked lane next: HTTP contracts, auth/offline behavior, UI guard enforcement policy, remote GitHub governance, Vite 8 isolated migration, dependency modernization, Login Diorama, or later P2+ strategic work.

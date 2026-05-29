@@ -1,0 +1,17 @@
+
+> @ccd/vue-app-platform@1.0.38 test /Users/cc/MyPorject/ccd/packages/vue-app-platform
+> vitest --root ../.. run packages/vue-app-platform/src/bootstrap.spec.ts packages/vue-app-platform/src/layoutRuntime.spec.ts packages/vue-app-platform/src/preloader.spec.ts packages/vue-app-platform/src/preloadError.spec.ts packages/vue-app-platform/src/themeRuntime.spec.ts --passWithNoTests
+
+
+ RUN  v4.0.18 /Users/cc/MyPorject/ccd
+
+ ✓ |node| packages/vue-app-platform/src/preloader.spec.ts (2 tests) 3ms
+ ✓ |node| packages/vue-app-platform/src/preloadError.spec.ts (2 tests) 4ms
+ ✓ |node| packages/vue-app-platform/src/bootstrap.spec.ts (3 tests) 4ms
+ ✓ |node| packages/vue-app-platform/src/layoutRuntime.spec.ts (8 tests) 3ms
+ ✓ |node| packages/vue-app-platform/src/themeRuntime.spec.ts (2 tests) 4ms
+
+ Test Files  5 passed (5)
+      Tests  17 passed (17)
+   Start at  18:14:48
+   Duration  617ms (transform 238ms, setup 0ms, import 314ms, tests 17ms, environment 475ms)

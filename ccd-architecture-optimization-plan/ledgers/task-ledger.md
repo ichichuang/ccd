@@ -277,7 +277,7 @@ pnpm ai:doctor && pnpm ai:guard && pnpm docs:commands
 
 - Priority: `P1`
 - Severity: `High`
-- Status: `OPEN`
+- Status: `DONE`
 - Module: `Layout Runtime 与 App Platform`
 - Paths:
   - `apps/web-demo/src/layouts/runtime/layoutRuntime.ts`
@@ -306,7 +306,7 @@ pnpm --filter @ccd/vue-app-platform build && pnpm --filter @ccd/web-demo type-ch
 
 - Priority: `P1`
 - Severity: `High`
-- Status: `OPEN`
+- Status: `DONE`
 - Module: `ProForm / ProTable / 通用组件迁移`
 - Paths:
   - `apps/web-demo/src/components/ProForm/**`
@@ -334,7 +334,7 @@ pnpm --filter @ccd/web-demo type-check && focused ProForm vitest && pnpm api:rep
 
 - Priority: `P1`
 - Severity: `High`
-- Status: `OPEN`
+- Status: `DONE`
 - Module: `ProForm / ProTable / 通用组件迁移`
 - Paths:
   - `apps/web-demo/src/components/ProTable/**`
@@ -362,7 +362,7 @@ pnpm exec vitest run ProTable && pnpm --filter @ccd/web-demo type-check && pnpm 
 
 - Priority: `P1`
 - Severity: `High`
-- Status: `OPEN`
+- Status: `DONE`
 - Module: `Governance / Guard / GitHub 治理`
 - Paths:
   - `docs/ai-plan/FINAL_GO_NO_GO.md`
@@ -482,7 +482,7 @@ pnpm docs:commands && pnpm arch:boundaries
 
 - Priority: `P1`
 - Severity: `High`
-- Status: `OPEN`
+- Status: `DONE`
 - Module: `UI 与 PrimeVue 边界治理`
 - Paths:
   - `apps/web-demo/src/layouts/**`
@@ -512,7 +512,7 @@ pnpm --filter @ccd/vue-ui build && pnpm --filter @ccd/web-demo type-check && e2e
 
 - Priority: `P1`
 - Severity: `Medium`
-- Status: `OPEN`
+- Status: `DONE`
 - Module: `Layout Runtime 与 App Platform`
 - Paths:
   - `apps/web-demo/src/utils/theme/engine.ts`
@@ -542,7 +542,7 @@ pnpm validate:tokens && pnpm --filter @ccd/web-demo type-check && visual-token t
 
 - Priority: `P1`
 - Severity: `Medium`
-- Status: `OPEN`
+- Status: `DONE`
 - Module: `架构核心层与平台抽取`
 - Paths:
   - `apps/web-demo/package.json`
@@ -571,7 +571,7 @@ pnpm api:report && pnpm arch:boundaries && pnpm ci:smoke:packages
 
 - Priority: `P1`
 - Severity: `Medium`
-- Status: `OPEN`
+- Status: `DONE`
 - Module: `架构核心层与平台抽取`
 - Paths:
   - `docs/en/architecture-contract.md`
@@ -601,7 +601,7 @@ pnpm docs:commands && pnpm api:report
 
 - Priority: `P1`
 - Severity: `Medium`
-- Status: `OPEN`
+- Status: `DONE`
 - Module: `架构核心层与平台抽取`
 - Paths:
   - `package.json`
@@ -632,7 +632,7 @@ pnpm ci:prepare-internal && pnpm type-check && pnpm build:ci
 
 - Priority: `P1`
 - Severity: `Medium`
-- Status: `OPEN`
+- Status: `DONE`
 - Module: `CSS / Tokens / Vite Build`
 - Paths:
   - `apps/web-demo/vite.config.ts`
@@ -660,7 +660,7 @@ pnpm build:web-demo && visual screenshots login/dashboard/table/chart
 
 - Priority: `P1`
 - Severity: `Medium`
-- Status: `OPEN`
+- Status: `DONE`
 - Module: `ProForm / ProTable / 通用组件迁移`
 - Paths:
   - `apps/web-demo/src/components/PrimeDialog/**`
@@ -688,7 +688,7 @@ pnpm --filter @ccd/vue-ui build && pnpm --filter @ccd/web-demo type-check && foc
 
 - Priority: `P1`
 - Severity: `Medium`
-- Status: `OPEN`
+- Status: `DONE`
 - Module: `ProForm / ProTable / 通用组件迁移`
 - Paths:
   - `apps/web-demo/src/views/example/components/primevue-collection/**`
@@ -716,7 +716,7 @@ pnpm arch:boundaries && pnpm api:report && pnpm type-check
 
 - Priority: `P1`
 - Severity: `Medium`
-- Status: `OPEN`
+- Status: `DONE`
 - Module: `文档、风险与审批闭环`
 - Paths:
   - `docs/ai-plan/RISK_REGISTER.md`
@@ -746,7 +746,7 @@ pnpm ai:doctor --open && docs consistency check
 
 - Priority: `P1`
 - Severity: `Medium`
-- Status: `OPEN`
+- Status: `DONE`
 - Module: `E2E QA 与 CI 反馈链路`
 - Paths:
   - `e2e/helpers/app.ts`
@@ -775,7 +775,7 @@ pnpm e2e:smoke
 
 - Priority: `P1`
 - Severity: `Medium`
-- Status: `OPEN`
+- Status: `DONE`
 - Module: `E2E QA 与 CI 反馈链路`
 - Paths:
   - `.github/workflows/ci.yml`
@@ -803,7 +803,7 @@ GitHub Actions dry run / PR check
 
 - Priority: `P1`
 - Severity: `Medium`
-- Status: `OPEN`
+- Status: `DONE`
 - Module: `E2E QA 与 CI 反馈链路`
 - Paths:
   - `playwright.config.ts`
@@ -862,7 +862,7 @@ GitHub branch protection review + PR dry run
 
 - Priority: `P1`
 - Severity: `Medium`
-- Status: `OPEN`
+- Status: `DONE`
 - Module: `Governance / Guard / GitHub 治理`
 - Paths:
   - `docs/generated/**`
@@ -893,7 +893,7 @@ pnpm governance:refresh && pnpm governance:gate && git diff --check
 
 - Priority: `P1`
 - Severity: `Medium`
-- Status: `OPEN`
+- Status: `DONE`
 - Module: `HTTP / alova / contracts 边界`
 - Paths:
   - `packages/core/src/index.ts`
@@ -922,7 +922,7 @@ pnpm --filter @ccd/core build && pnpm arch:runtime
 
 - Priority: `P1`
 - Severity: `Medium`
-- Status: `OPEN`
+- Status: `DONE`
 - Module: `HTTP / alova / contracts 边界`
 - Paths:
   - `apps/web-demo/src/utils/http/**`
@@ -951,7 +951,7 @@ pnpm arch:runtime && pnpm --filter @ccd/web-demo type-check && request-layer tes
 
 - Priority: `P1`
 - Severity: `Medium`
-- Status: `OPEN`
+- Status: `DONE`
 - Module: `HTTP / alova / contracts 边界`
 - Paths:
   - `apps/web-demo/src/utils/http/interceptors.ts`
@@ -982,7 +982,7 @@ pnpm exec vitest run apps/web-demo/src/utils/http
 
 - Priority: `P1`
 - Severity: `Medium`
-- Status: `OPEN`
+- Status: `DONE`
 - Module: `UI 与 PrimeVue 边界治理`
 - Paths:
   - `packages/vue-ui/src/CScrollbar/CScrollbar.vue`
