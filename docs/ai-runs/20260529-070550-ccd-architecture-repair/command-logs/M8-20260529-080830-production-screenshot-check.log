@@ -1,0 +1,15 @@
+captured M8-login-desktop.png
+captured M8-dashboard.png #/dashboard 986x2193 text=1212
+captured M8-table.png #/example/primevue-collection/pro-table/basic 1280x720 text=1285
+captured M8-chart.png #/example/charts 1280x720 text=661
+node:internal/modules/run_main:107
+    triggerUncaughtException(
+    ^
+
+page.waitForFunction: Timeout 30000ms exceeded.
+    at gotoHash (/Users/cc/MyPorject/ccd/[eval1]:30:14)
+    at async file:///Users/cc/MyPorject/ccd/[eval1]:51:3 {
+  name: 'TimeoutError'
+}
+
+Node.js v24.11.1

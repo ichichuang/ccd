@@ -1,7 +1,11 @@
-import type { ProTableLoadParams, ProTableRequestResult, SearchPathResolver } from '../types/props'
+import type {
+  ProTableApiConfig,
+  ProTableLoadParams,
+  ProTableRequestResult,
+  SearchPathResolver,
+} from '../types/props'
 import { objectGet } from '@ccd/shared-utils'
 import { castArray } from '@ccd/shared-utils'
-import type { RequestConfig as HttpRequestConfig } from '@/utils/http/types'
 import { isRecord } from '@/utils/guards'
 
 /**
@@ -72,9 +76,9 @@ export function resolveApiUrl(
 }
 
 export function buildApiExecutorConfig(
-  apiConfig: HttpRequestConfig | undefined,
+  apiConfig: ProTableApiConfig | undefined,
   signal?: AbortSignal
-): HttpRequestConfig {
+): ProTableApiConfig {
   return {
     ...apiConfig,
     enableCache: apiConfig?.enableCache ?? false,

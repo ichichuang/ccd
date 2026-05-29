@@ -1,0 +1,91 @@
+# M9 Vite inventory
+
+./apps/desktop/vite.config.ts
+./apps/web-demo/vite.config.ts
+./packages/vue-charts/vite.config.ts
+./packages/vue-ui/vite.config.ts
+
+# Config references
+apps/web-demo/vite.config.ts:2:import { defineConfig, loadEnv, type ConfigEnv, type UserConfigExport } from 'vite'
+apps/web-demo/vite.config.ts:71:  // 2. 动态控制 esbuild 的 drop / pure 选项
+apps/web-demo/vite.config.ts:73:  const esbuildDrop: Array<'debugger'> = []
+apps/web-demo/vite.config.ts:74:  if (VITE_DROP_DEBUGGER) esbuildDrop.push('debugger')
+apps/web-demo/vite.config.ts:75:  const esbuildPure: string[] = []
+apps/web-demo/vite.config.ts:77:    esbuildPure.push(
+apps/web-demo/vite.config.ts:92:  return defineConfig({
+apps/web-demo/vite.config.ts:160:    optimizeDeps: {
+apps/web-demo/vite.config.ts:164:      esbuildOptions: {
+apps/web-demo/vite.config.ts:170:    esbuild: {
+apps/web-demo/vite.config.ts:171:      drop: esbuildDrop.length ? esbuildDrop : undefined,
+apps/web-demo/vite.config.ts:172:      pure: esbuildPure.length ? esbuildPure : undefined,
+apps/web-demo/vite.config.ts:176:    build: {
+apps/web-demo/vite.config.ts:185:      rollupOptions: {
+apps/web-demo/vite.config.ts:186:        treeshake: {
+apps/web-demo/vite.config.ts:205:          manualChunks(id: string) {
+apps/web-demo/vite.config.ts:244:      minify: 'esbuild' as const, // 使用 esbuild 默认压缩器（速度快，产物质量与 terser 接近）
+package.json:18:    "vite",
+package.json:40:    "prebuild": "pnpm build:shared-config && pnpm build:core",
+package.json:43:    "build": "pnpm build:web-demo",
+package.json:46:    "build:ci": "bash scripts/exec.sh pnpm ci:prepare-internal && bash scripts/exec.sh pnpm ci:smoke:packages && bash scripts/exec.sh pnpm validate:governance && bash scripts/exec.sh pnpm exec turbo run build",
+package.json:49:    "build:analyze": "pnpm build",
+package.json:52:    "preview:dist": "pnpm build:web-demo && pnpm dlx serve apps/web-demo/dist",
+package.json:56:    "deps:update:major:plan": "echo \"Major updates must use isolated branches: codex/deps-vite8-runtime-lane, codex/deps-vue-tooling-lane, codex/deps-eslint10-lane. Do not run pnpm up --latest on main.\"",
+package.json:108:    "test": "vitest",
+package.json:109:    "test:run": "pnpm build:shared-config && vitest run",
+package.json:110:    "test:coverage": "vitest run --coverage",
+package.json:127:    "build:web-demo": "pnpm build:shared-config && pnpm build:core && pnpm --filter @ccd/web-demo build",
+package.json:128:    "build:desktop": "pnpm build:shared-config && pnpm build:core && pnpm --filter @ccd/desktop build",
+package.json:131:    "build:core": "pnpm --filter @ccd/contracts build && pnpm --filter @ccd/core build",
+package.json:132:    "build:shared-config": "pnpm --filter @ccd/design-tokens build && pnpm --filter @ccd/shared-utils build && pnpm --filter @ccd/unocss-preset build && pnpm --filter @ccd/vue-hooks build && pnpm --filter @ccd/vue-app-platform build && pnpm --filter @ccd/vue-ui build && pnpm --filter @ccd/vue-primevue-adapter build && pnpm --filter @ccd/vue-charts build",
+package.json:135:    "ci:verify:fresh": "pnpm ci:clean-artifacts && pnpm install --frozen-lockfile && pnpm build:ci",
+package.json:164:      "esbuild"
+package.json:231:    "@vitejs/plugin-vue": "^6.0.3",
+package.json:232:    "@vitejs/plugin-vue-jsx": "^5.1.3",
+package.json:261:    "rollup-plugin-visualizer": "^6.0.3",
+package.json:274:    "vite": "^7.3.3",
+package.json:275:    "vite-plugin-compression": "^0.5.1",
+package.json:276:    "vite-plugin-progress": "^0.0.7",
+package.json:277:    "vitest": "^4.0.18",
+apps/desktop/vite.config.ts:1:import vue from '@vitejs/plugin-vue'
+apps/desktop/vite.config.ts:2:import UnoCSS from 'unocss/vite'
+apps/desktop/vite.config.ts:3:import { defineConfig } from 'vite'
+apps/desktop/vite.config.ts:6:export default defineConfig({
+packages/vue-ui/vite.config.ts:2:import vue from '@vitejs/plugin-vue'
+packages/vue-ui/vite.config.ts:3:import { defineConfig } from 'vite'
+packages/vue-ui/vite.config.ts:5:export default defineConfig({
+packages/vue-ui/vite.config.ts:7:  build: {
+packages/vue-ui/vite.config.ts:13:    rollupOptions: {
+packages/vue-charts/vite.config.ts:2:import vue from '@vitejs/plugin-vue'
+packages/vue-charts/vite.config.ts:3:import { defineConfig } from 'vite'
+packages/vue-charts/vite.config.ts:19:export default defineConfig({
+packages/vue-charts/vite.config.ts:21:  build: {
+packages/vue-charts/vite.config.ts:27:    rollupOptions: {
+apps/web-demo/build/optimize.ts:4: * Vite 启动时会将 include 里的模块预编译为 ESM 并缓存到 node_modules/.vite
+apps/web-demo/build/optimize.ts:42:  'primevue/progressspinner',
+apps/web-demo/build/plugins.ts:1:import vue from '@vitejs/plugin-vue'
+apps/web-demo/build/plugins.ts:2:import vueJsx from '@vitejs/plugin-vue-jsx'
+apps/web-demo/build/plugins.ts:6:import UnoCSS from 'unocss/vite'
+apps/web-demo/build/plugins.ts:7:import progress from 'vite-plugin-progress'
+apps/web-demo/build/plugins.ts:8:import AutoImport from 'unplugin-auto-import/vite'
+apps/web-demo/build/plugins.ts:9:import Components from 'unplugin-vue-components/vite'
+apps/web-demo/build/plugins.ts:11:import type { PluginOption, ViteDevServer } from 'vite'
+apps/web-demo/build/plugins.ts:18:import { viteBuildInfo } from './info'
+apps/web-demo/build/plugins.ts:19:import { viteBuildPerformancePlugin } from './performance'
+apps/web-demo/build/plugins.ts:33:        name: 'echarts-treeshake-enhance',
+apps/web-demo/build/plugins.ts:56:    viteBuildInfo(),
+apps/web-demo/build/plugins.ts:60:      progress({
+apps/web-demo/build/plugins.ts:145:    plugins.push(viteBuildPerformancePlugin(true))
+apps/web-demo/build/html.ts:1:import type { PluginOption } from 'vite'
+apps/web-demo/build/html.ts:35:    name: 'vite:html-inject',
+apps/web-demo/build/compress.ts:1:import type { PluginOption } from 'vite'
+apps/web-demo/build/compress.ts:2:import compression from 'vite-plugin-compression'
+apps/web-demo/build/compress.ts:27:      compression({
+apps/web-demo/build/compress.ts:34:        compressionOptions: {
+apps/web-demo/build/compress.ts:44:      compression({
+apps/web-demo/build/compress.ts:50:        compressionOptions: {
+apps/web-demo/build/performance.ts:1:import { visualizer } from 'rollup-plugin-visualizer'
+apps/web-demo/build/performance.ts:2:import type { PluginOption } from 'vite'
+apps/web-demo/build/performance.ts:8:export function viteBuildPerformancePlugin(open = false): PluginOption {
+apps/web-demo/build/info.ts:2:import type { Plugin } from 'vite'
+apps/web-demo/build/info.ts:6:export function viteBuildInfo(): Plugin {
+apps/web-demo/build/info.ts:13:    name: 'vite:buildInfo',

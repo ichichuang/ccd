@@ -1,0 +1,16 @@
+command: pnpm exec vitest run packages/shared-utils/src/createCapabilityBridge.spec.ts apps/web-demo/src/infra/auth/tokenProvider.spec.ts apps/web-demo/src/infra/router/routeProvider.spec.ts
+timestamp_start: 2026-05-29T07:39:50+0800
+
+ RUN  v4.0.18 /Users/cc/MyPorject/ccd
+
+ ✓ |node| packages/shared-utils/src/createCapabilityBridge.spec.ts (11 tests) 2ms
+ ✓ |node| apps/web-demo/src/infra/router/routeProvider.spec.ts (3 tests) 2ms
+ ✓ |node| apps/web-demo/src/infra/auth/tokenProvider.spec.ts (5 tests) 2ms
+
+ Test Files  3 passed (3)
+      Tests  19 passed (19)
+   Start at  07:39:51
+   Duration  194ms (transform 103ms, setup 0ms, import 295ms, tests 6ms, environment 1ms)
+
+timestamp_end: 2026-05-29T07:39:51+0800
+exit_code: 0

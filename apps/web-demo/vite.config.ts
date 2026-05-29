@@ -36,6 +36,18 @@ const PX_TO_REM_SELECTOR_BLACKLIST: (string | RegExp)[] = [
   /no-rem/,
 ]
 
+const PX_TO_REM_FILE_EXCLUDES: RegExp[] = [
+  /node_modules/i,
+  /(?:^|[/\\])uno\.css(?:\?|$)/i,
+  /(?:^|[/\\])__uno(?:\.css)?(?:\?|$)/i,
+  /virtual:uno/i,
+  /@unocss/i,
+]
+
+function shouldExcludePxToRemFile(file: string): boolean {
+  return PX_TO_REM_FILE_EXCLUDES.some(pattern => pattern.test(file))
+}
+
 export default ({ mode, command }: ConfigEnv): UserConfigExport => {
   // 1. 加载环境变量
   const env = wrapperEnv({
@@ -272,7 +284,7 @@ export default ({ mode, command }: ConfigEnv): UserConfigExport => {
                   mediaQuery: true,
                   minPixelValue: 1,
                   unitPrecision: 4,
-                  exclude: /node_modules/i,
+                  exclude: shouldExcludePxToRemFile,
                 }),
               ]
             : []),

@@ -1,0 +1,257 @@
+M7-T1 governance and GitHub inventory
+timestamp=20260529-075728
+
+## Ledger tasks
+## 17. P2 — Generated Artifacts and Governance Discipline
+
+Rationale: generated files must be regenerated, not hand-edited.
+
+### Tasks
+
+- [ ] [P2-Governance-Generated] Do not manually edit `docs/generated/**`, `.ai/generated/**`, or `.ai/governance/api-snapshots/**`.
+- [ ] [P2-Governance-Refresh] Run `pnpm governance:refresh` after dependency graph, API surface, supply-chain, or generated report changes.
+- [ ] [P2-Governance-Gate] Run `pnpm governance:gate` before merging architecture changes.
+- [ ] [P2-Governance-DocsCommands] Run `pnpm docs:commands` if command documentation is touched.
+- [ ] [P2-Governance-ProjectDoctor] Run `pnpm project:doctor` if `project.config.json`, package metadata, version, branding, or generated project metadata is touched.
+
+## 18. P2 — GitHub Repository Governance
+
+Rationale: a new GitHub organization is deferred. The current repository should first gain stronger governance.
+
+### Tasks
+
+- [ ] [P2-GitHub-BranchProtection] Configure or document main branch protection: required PR, required checks, conversation resolution, and linear history if appropriate.
+- [ ] [P2-GitHub-RequiredChecks] Ensure required checks include `governance:gate`, `type-check`, `lint:check`, `build:ci`, and UI/E2E checks when practical.
+- [ ] [P2-GitHub-Codeowners] Add or update `CODEOWNERS` for architecture, AI rules, packages, apps, and workflows.
+- [ ] [P2-GitHub-Templates] Add or refine PR and issue templates for architecture changes, UI changes, dependency upgrades, and bug reports.
+- [ ] [P2-GitHub-Release] Keep release automation aligned with `project.config.json` and release governance scripts.
+- [ ] [P2-GitHub-Dependencies] Add or refine dependency update policy; avoid blind `pnpm up --latest` on `main`.
+
+## 19. P3 — Login Diorama Refactor Plan
+
+Rationale: the legacy repair template contains a detailed login diorama plan. Keep it, but execute only after P0/P1 stabilization.
+
+
+## Governance scripts
+project:doctor: node scripts/project-config.mjs doctor
+build:ci: bash scripts/exec.sh pnpm ci:prepare-internal && bash scripts/exec.sh pnpm ci:smoke:packages && bash scripts/exec.sh pnpm validate:governance && bash scripts/exec.sh pnpm exec turbo run build
+governance:refresh: pnpm api:report && pnpm supply:check && pnpm arch:report && pnpm arch:graphs && pnpm generated:normalize
+type-check: turbo run type-check
+lint:check: eslint "apps/**/*.{vue,ts,tsx,js,jsx}" "packages/**/*.{vue,ts,tsx,js,jsx}" "scripts/architecture/**/*.mjs" "*.{ts,js,mjs,cjs}"
+governance:validate: node scripts/governance/validate.mjs
+governance:gate: bash scripts/exec.sh node scripts/governance/gate.mjs
+docs:commands: node scripts/governance/check-doc-commands.mjs
+governance:github-workflows: node scripts/governance/check-github-workflow-registry.mjs
+governance:full: pnpm validate:governance
+validate:governance: pnpm governance:gate
+
+## GitHub files
+.github/CODEOWNERS
+.github/ISSUE_TEMPLATE/bug_report.md
+.github/ISSUE_TEMPLATE/feature_request.md
+.github/PULL_REQUEST_TEMPLATE.md
+.github/workflows/ci.yml
+.github/workflows/deploy.yml
+
+## CODEOWNERS
+# CCD ownership authority
+
+# Active runtime boundaries
+/apps/web-demo/ @web-runtime
+/apps/desktop/ @desktop-runtime @platform-architecture
+
+# Runtime-neutral packages
+/packages/contracts/ @platform-architecture
+/packages/core/ @platform-architecture
+
+# AI and governance authority
+/.ai/ @platform-architecture
+/docs/architecture.md @platform-architecture
+/docs/architecture/ @platform-architecture
+/docs/adr/ @platform-architecture
+/docs/governance/ @platform-architecture
+/scripts/architecture/ @platform-architecture
+/scripts/governance/ @platform-architecture
+
+# CI and release governance
+/.github/workflows/ @platform-architecture
+/.github/CODEOWNERS @platform-architecture
+/.changeset/ @platform-architecture
+
+## PR template
+## 📝 PR 描述 (Description)
+
+请简要描述此 PR 解决的问题或新增的功能。如果关联了具体的 Issue，请使用 `Fixes #Issue号` 的格式。
+
+## 🛠️ 变更类型 (Type of change)
+
+- [ ] 🐛 Bug 修复 (Bug fix)
+- [ ] ✨ 新功能 (New feature)
+- [ ] ♻️ 代码重构 (Refactoring)
+- [ ] 🚀 性能优化 (Performance improvement)
+- [ ] 📚 文档更新 (Documentation update)
+
+## 🛡️ 自检清单 (Checklist)
+
+提交 PR 前，请确保你已经完成了以下自检：
+
+- [ ] 我已经阅读并遵循了项目的架构与编码规范。
+- [ ] 我在本地成功运行了 `pnpm governance:gate`。
+- [ ] 我在本地成功运行了 `pnpm type-check` 且零报错。
+- [ ] 我在本地成功运行了 `pnpm lint:check`。
+- [ ] 如更新 `.ai/governance/**`、`docs/generated/**` 或公共 exports，我已提交同步后的生成物。
+- [ ] 如更新视觉快照，我已用 `pnpm e2e:update` 单独生成并审查 baseline，CI 仅运行验证不会自动更新快照。
+- [ ] 我的代码变更没有引入新的警告（Console warnings）。
+
+## 📎 补充说明 (Additional context)
+
+如果有需要评审者特别注意的代码逻辑或视觉 UI 变更截图，请补充在这里。
+
+## CI workflow
+name: CI Guardian
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main]
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: 'true'
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  quality:
+    name: Core Quality
+    runs-on: ubuntu-latest
+    env:
+      NODE_OPTIONS: '--max-old-space-size=4096'
+
+    steps:
+      - name: Checkout codebase
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+        env:
+          GIT_CONFIG_COUNT: '1'
+          GIT_CONFIG_KEY_0: init.defaultBranch
+          GIT_CONFIG_VALUE_0: main
+
+      - name: Block WIP commits on main
+        if: github.event_name == 'pull_request'
+        run: |
+          if git log --format='%s' origin/main..HEAD | grep -qiE '^wip(\(.*\))?:'; then
+            echo "::error::❌ WIP commits detected! Please squash or reword before merging to main."
+            exit 1
+          fi
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v5
+        with:
+          version: 10.28.2
+        env:
+          NODE_NO_WARNINGS: '1'
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: 24.x
+          cache: 'pnpm'
+
+      - name: Deterministic Frozen Install
+        run: bash scripts/exec.sh pnpm install --frozen-lockfile
+
+      - name: Authorize GitHub CLI
+        run: echo "${{ github.token }}" | gh auth login --with-token
+
+      # repair_list.md is local runtime state and created by ai:sync from the Markdown template; doctor requires it.
+      - name: CI runtime summary
+        run: bash scripts/exec.sh pnpm runtime:summary
+
+      - name: Sync AI adapters (materialize local runtime)
+        run: bash scripts/exec.sh pnpm ai:sync
+
+      - name: Prepare internal workspace packages
+        run: bash scripts/exec.sh pnpm ci:prepare-internal
+
+      - name: AI Architecture Doctor
+        run: bash scripts/exec.sh pnpm ai:doctor
+
+      - name: Unified Governance Gate
+        run: bash scripts/exec.sh pnpm validate:governance
+
+      - name: Verify Generated AI Artifacts Are Synced
+        run: |
+          bash scripts/exec.sh pnpm ai:sync
+          bash scripts/exec.sh pnpm ai:sync:codex
+          if ! git diff --quiet -- AGENTS.md CLAUDE.md .ai/manifests/skills-lock.json; then
+            echo "::error::Generated AI artifacts are stale. Run pnpm ai:sync && pnpm ai:sync:codex and commit the results."
+            git diff -- AGENTS.md CLAUDE.md .ai/manifests/skills-lock.json
+            exit 1
+          fi
+
+      - name: Strict Type Check
+        run: bash scripts/exec.sh pnpm type-check
+
+      - name: Unit Tests
+        run: bash scripts/exec.sh pnpm test:run
+
+      - name: Strict Lint Check
+        run: bash scripts/exec.sh pnpm lint:check
+
+      - name: Production Build Test
+        run: bash scripts/exec.sh pnpm exec turbo run build
+
+      - name: Desktop Bundle Guard
+        run: |
+          bash scripts/exec.sh pnpm build:desktop
+          bash scripts/exec.sh pnpm budget:desktop
+
+  e2e-qa:
+    name: E2E QA
+    runs-on: ubuntu-latest
+    env:
+      NODE_OPTIONS: '--max-old-space-size=4096'
+
+    steps:
+      - name: Checkout codebase
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+        env:
+          GIT_CONFIG_COUNT: '1'
+          GIT_CONFIG_KEY_0: init.defaultBranch
+          GIT_CONFIG_VALUE_0: main
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v5
+        with:
+          version: 10.28.2
+        env:
+          NODE_NO_WARNINGS: '1'
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: 24.x
+          cache: 'pnpm'
+
+      - name: Deterministic Frozen Install
+        run: bash scripts/exec.sh pnpm install --frozen-lockfile
+
+      - name: Install Playwright Chromium
+        run: bash scripts/exec.sh pnpm exec playwright install --with-deps chromium
+
+      - name: Prepare internal workspace packages
+        run: bash scripts/exec.sh pnpm ci:prepare-internal
+
+      - name: Run Playwright QA suite
+        run: bash scripts/exec.sh pnpm e2e:qa
+
+## Generated drift status
+ M apps/web-demo/src/types/auto-imports.d.ts
+ M apps/web-demo/src/views/example/components/icons/configs/iconLists.generated.ts
+ M docs/generated/api-surface-report.json

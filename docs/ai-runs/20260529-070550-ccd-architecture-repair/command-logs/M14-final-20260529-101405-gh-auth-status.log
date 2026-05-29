@@ -1,0 +1,6 @@
+github.com
+  ✓ Logged in to github.com account ichichuang (keyring)
+  - Active account: true
+  - Git operations protocol: https
+  - Token: gho_************************************
+  - Token scopes: 'admin:org', 'delete_repo', 'gist', 'repo', 'workflow'

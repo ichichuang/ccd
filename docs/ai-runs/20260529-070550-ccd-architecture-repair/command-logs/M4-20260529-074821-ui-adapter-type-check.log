@@ -1,0 +1,22 @@
+
+> @ccd/vue-ui@1.0.38 type-check /Users/cc/MyPorject/ccd/packages/vue-ui
+> vue-tsc -p tsconfig.json --noEmit
+
+
+## @ccd/vue-primevue-adapter
+
+> @ccd/vue-primevue-adapter@1.0.38 type-check /Users/cc/MyPorject/ccd/packages/vue-primevue-adapter
+> tsc -p tsconfig.json --noEmit
+
+
+## @ccd/web-demo
+
+> @ccd/web-demo@1.0.38 type-check /Users/cc/MyPorject/ccd/apps/web-demo
+> vue-tsc -p tsconfig.json --noEmit
+
+
+## @ccd/desktop
+
+> @ccd/desktop@1.0.38 type-check /Users/cc/MyPorject/ccd/apps/desktop
+> vue-tsc -p tsconfig.json --noEmit
+

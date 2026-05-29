@@ -1,0 +1,31 @@
+command: pnpm docs:commands
+timestamp_start: 2026-05-29T07:31:46+0800
+
+> ccd@1.0.38 docs:commands /Users/cc/MyPorject/ccd
+> node scripts/governance/check-doc-commands.mjs
+
+
+[doc-commands] Found 4 reference(s) to nonexistent package.json scripts:
+
+  docs/ai-plan/STATUS.md:26
+    command: pnpm up --latest
+    missing script: up
+
+  docs/ai-plan/STATUS.md:78
+    command: pnpm up --latest
+    missing script: up
+
+  docs/ai-runs/20260529-070550-ccd-architecture-repair/reports/M0-T3-blocked.md:18
+    command: pnpm up --latest
+    missing script: up
+
+  docs/ai-runs/20260529-070550-ccd-architecture-repair/reports/M0-T3-blocked.md:56
+    command: pnpm up --latest
+    missing script: up
+
+[doc-commands] Fix the source documentation, generator source, or policy source.
+[doc-commands] Do NOT manually edit generated files — regenerate them instead.
+
+ ELIFECYCLE  Command failed with exit code 1.
+timestamp_end: 2026-05-29T07:31:46+0800
+exit_code: 1

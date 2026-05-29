@@ -317,7 +317,7 @@ export interface ProTableProps<T extends Record<string, unknown> = Record<string
   apiUrl?: string
   apiMethod?: 'GET' | 'POST'
   apiExecutor?: ProTableApiExecutor
-  apiConfig?: HttpRequestConfig
+  apiConfig?: ProTableApiConfig
   dataKey?: string
   totalKey?: string
   requestConfig?: { immediate?: boolean; accumulate?: boolean }
@@ -338,7 +338,7 @@ decoupled from the HTTP implementation:
 ```vue
 <script setup lang="ts">
 import { get } from '@/utils/http/methods'
-import type { ProTableApiExecutor } from '@/components/ProTable/engine/types/props'
+import type { ProTableApiExecutor } from '@/components/ProTable'
 
 const apiExecutor: ProTableApiExecutor = ({ url, query, config }) =>
   get(url, { ...config, params: query })

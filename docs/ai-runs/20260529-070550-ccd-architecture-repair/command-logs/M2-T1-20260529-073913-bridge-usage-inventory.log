@@ -1,0 +1,22 @@
+command: createCapabilityBridge usage inventory
+timestamp_start: 2026-05-29T07:39:13+0800
+
+## createCapabilityBridge usages
+apps/web-demo/src/infra/router/routeProvider.ts:1:import { createCapabilityBridge } from '@ccd/shared-utils'
+apps/web-demo/src/infra/router/routeProvider.ts:3:export interface RouterCapabilities {
+apps/web-demo/src/infra/router/routeProvider.ts:8:const bridge = createCapabilityBridge<RouterCapabilities>({
+packages/shared-utils/src/index.ts:9:  createCapabilityBridge,
+packages/shared-utils/src/index.ts:12:} from './createCapabilityBridge.js'
+packages/shared-utils/src/createCapabilityBridge.spec.ts:2:import { createCapabilityBridge } from './createCapabilityBridge'
+packages/shared-utils/src/createCapabilityBridge.spec.ts:4:interface TestCapabilities {
+packages/shared-utils/src/createCapabilityBridge.spec.ts:10:  return createCapabilityBridge<TestCapabilities>({
+packages/shared-utils/src/createCapabilityBridge.spec.ts:24:describe('createCapabilityBridge', () => {
+packages/shared-utils/src/createCapabilityBridge.ts:15:export function createCapabilityBridge<T extends object>(
+apps/web-demo/src/infra/auth/tokenProvider.ts:9:import { createCapabilityBridge } from '@ccd/shared-utils'
+apps/web-demo/src/infra/auth/tokenProvider.ts:15:export interface AuthBridge {
+apps/web-demo/src/infra/auth/tokenProvider.ts:22:const bridge = createCapabilityBridge<AuthBridge>({
+
+## fake index signature scan in bridge surfaces
+
+timestamp_end: 2026-05-29T07:39:13+0800
+exit_code: 0

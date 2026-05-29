@@ -1,0 +1,10 @@
+8b34bd0e refactor(startup): 延后 DateUtils 框架水合路径
+b0bc7f5e refactor(logging): 收敛 HTTP 与 API 日志调用
+fd590047 refactor(logging): 收敛应用日志边界调用
+31bbde82 fix(toolchain): 对齐 Node 24 类型工具链解析
+525f1d2a test(vitest): 拆分 Node 与 jsdom 测试基线
+19e05d8c fix(security): 升级 Vite 7 安全补丁版本
+956ad5cf fix(security): 收缩开发主机与本地存储安全边界
+8e89fd20 types(proform): 收紧表单引擎核心类型边界
+4cbde08a workflow(ai): 迁移运行时修复台账为 Markdown 格式
+552b5702 fix(architecture): 修复共享包构建产物导出契约

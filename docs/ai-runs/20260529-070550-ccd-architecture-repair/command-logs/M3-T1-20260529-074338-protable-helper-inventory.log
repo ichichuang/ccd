@@ -1,0 +1,131 @@
+M3-T1 ProTable helper inventory
+timestamp=20260529-074338
+
+## Ledger tasks
+docs/ai-plan/PLAN.md:323:## M3 — ProTable typings and helper boundary
+docs/ai-plan/PLAN.md:355:#### M3-T1 — ProTable helper inventory
+docs/ai-plan/PLAN.md:368:#### M3-T2 — ProTable exports correction
+docs/ai-plan/PLAN.md:372:- Preconditions: M3-T1 complete.
+docs/ai-plan/PLAN.md:383:#### M3-T3 — ProTable props shape stabilization
+docs/ai-plan/PLAN.md:387:- Preconditions: M3-T2 complete or not applicable.
+docs/ai-plan/PLAN.md:419:- M3 complete or not blocking.
+docs/ai-plan/PLAN.md:444:- Prefer M3.
+docs/ai-plan/STATUS.md:5:- Current milestone: M3 — ProTable typings and helper boundary
+docs/ai-plan/STATUS.md:6:- Current task: M3-T1 — ProTable helper inventory
+docs/ai-plan/STATUS.md:10:- Final completion state: M2_COMPLETE_PENDING_M3
+docs/ai-plan/STATUS.md:85:- M3 must stay limited to ProTable helper inventory, exports, props shape, and focused validation. Do not fold HTTP contract work into M3.
+docs/ai-plan/STATUS.md:93:Run M3-T1 ProTable helper inventory and type baseline before editing exports or props.
+.ai/runtime/repair_list.md:175:- [ ] [P1-ProTable] Restore missing ProTable typings and helper availability, including `useProTableInfiniteScroll`, `useProTableUrlSync`, props shape, and related imports after the SFC parse fix.
+.ai/runtime/repair_list.md:176:- [ ] [P1-ProTable-Exports] Ensure helpers are exported from the correct local or package boundary.
+.ai/runtime/repair_list.md:177:- [ ] [P1-ProTable-Validation] Run targeted type-check and smoke tests for ProTable views.
+
+## Public ProTable entry
+export { default as ProTable } from './ProTable.vue'
+export { useProTable } from './engine/hooks/useProTable'
+export { useRecordOverlay } from './hooks/useRecordOverlay'
+
+export type { UseRecordOverlayOptions, UseRecordOverlayReturn } from './hooks/useRecordOverlay'
+export type {
+  ProTableColumn,
+  ColumnRenderParams,
+  ProTableValueEnumItem,
+  ProTableValueEnum,
+} from './engine/types/column'
+export type {
+  TableState,
+  SortState,
+  FilterState,
+  PaginationState,
+  SelectionState,
+  ColumnSettingsState,
+} from './engine/types/tableState'
+
+/** @deprecated 使用 ColumnSettingsState */
+export type { ColumnSettingsState as ColumnVisibilityState } from './engine/types/tableState'
+export type {
+  ProTableProps,
+  PaginationConfig,
+  ProTableLoadParams,
+  StandardTableParams,
+  ProTableApiQueryParams,
+  ProTableSearchParams,
+  ProTableApiFn,
+  ProTableRequestResult,
+  ProTableExposed,
+  RequestFn,
+  RequestConfig,
+  HeightMode,
+  ProTableApiMethod,
+  SearchPathResolver,
+} from './engine/types/props'
+export { formatRequestParams, formatResponseData, resolveApiUrl } from './engine/config/apiAdapter'
+export type { FetchState } from './engine/types/tableState'
+
+## Helper definitions and imports
+apps/web-demo/src/components/ProTable/engine/hooks/useProTableInfiniteScroll.ts:23:export function useProTableInfiniteScroll(
+apps/web-demo/src/components/ProTable/engine/hooks/useProTable.ts:36:export function useProTable<T extends Record<string, unknown>>(
+apps/web-demo/src/components/ProTable/engine/hooks/useProTableUrlSync.ts:67:export function useProTableUrlSync<T extends Record<string, unknown>>(
+apps/web-demo/src/views/example/hooks/use-pro-table.vue:3:import { useProTable } from '@/components/ProTable'
+apps/web-demo/src/views/example/hooks/use-pro-table.vue:61:// ── useProTable Hook ──────────────────────────────────────────────
+apps/web-demo/src/views/example/hooks/use-pro-table.vue:76:} = useProTable<TaskRow>({
+apps/web-demo/src/views/example/hooks/use-pro-table.vue:130:                  <span class="text-lg font-bold text-foreground text-no-wrap">useProTable</span>
+apps/web-demo/src/views/example/hooks/use-pro-table.vue:145:            覆盖能力：useProTable · processedRows · visibleColumns · toggleSort · setGlobalFilter ·
+apps/web-demo/src/components/ProTable/ProTable.vue:31:import { useProTableInfiniteScroll } from './engine/hooks/useProTableInfiniteScroll'
+apps/web-demo/src/components/ProTable/ProTable.vue:32:import { useProTableUrlSync } from './engine/hooks/useProTableUrlSync'
+apps/web-demo/src/components/ProTable/ProTable.vue:220:const infiniteScrollCtrl = useProTableInfiniteScroll({
+apps/web-demo/src/components/ProTable/ProTable.vue:355:useProTableUrlSync({ urlSync: props.urlSync, ctrl })
+apps/web-demo/src/components/ProTable/hooks/useRecordOverlay.tsx:33:// 运行时逻辑已改为 useRecordOverlay 的本地 drawerState 引擎
+apps/web-demo/src/components/ProTable/hooks/useRecordOverlay.tsx:101:  throw new Error('[useRecordOverlay] Pass mappers.getRowId when row.id is not string | number')
+apps/web-demo/src/components/ProTable/hooks/useRecordOverlay.tsx:104:export function useRecordOverlay<TRow extends Record<string, unknown>>(
+apps/web-demo/src/components/ProTable/index.ts:2:export { useProTable } from './engine/hooks/useProTable'
+apps/web-demo/src/components/ProTable/index.ts:3:export { useRecordOverlay } from './hooks/useRecordOverlay'
+apps/web-demo/src/components/ProTable/index.ts:5:export type { UseRecordOverlayOptions, UseRecordOverlayReturn } from './hooks/useRecordOverlay'
+apps/web-demo/src/views/example/components/primevue-collection/pro-table/form-table-combo/config.tsx:88:/** 用户详情侧栏（只读展示，由 useRecordOverlay.openView/openViewDrawer + ProForm readonly 打开） */
+apps/web-demo/src/views/example/components/primevue-collection/pro-table/form-table-combo/components/TablePanel.vue:9:import { useRecordOverlay } from '@/components/ProTable'
+apps/web-demo/src/views/example/components/primevue-collection/pro-table/form-table-combo/components/TablePanel.vue:33:} = useRecordOverlay<V1UserListItemDTO>({
+
+## Public/internal ProTable imports outside component tree
+apps/web-demo/src/views/dashboard/configs/alerts.ts:1:import type { ProTableColumn, ProTableValueEnum } from '@/components/ProTable'
+apps/web-demo/src/views/example/hooks/use-pro-table.vue:2:import type { ProTableColumn, ColumnRenderParams } from '@/components/ProTable'
+apps/web-demo/src/views/example/hooks/use-pro-table.vue:3:import { useProTable } from '@/components/ProTable'
+apps/web-demo/src/views/example/components/primevue-collection/pro-table/shared/apiExecutor.ts:1:import type { ProTableApiExecutor } from '@/components/ProTable/engine/types/props'
+apps/web-demo/src/views/example/components/primevue-collection/pro-table/api-events/columns.tsx:1:import type { ProTableColumn, ColumnRenderParams } from '@/components/ProTable'
+apps/web-demo/src/views/example/components/primevue-collection/pro-table/columns/columns.tsx:2:import type { ProTableColumn, ColumnRenderParams } from '@/components/ProTable'
+apps/web-demo/src/views/example/components/primevue-collection/pro-table/api-events/index.vue:2:import type { ProTableLoadParams, SortState, FilterState } from '@/components/ProTable'
+apps/web-demo/src/views/example/components/primevue-collection/pro-table/server/columns.tsx:2:import type { ProTableColumn, ColumnRenderParams } from '@/components/ProTable'
+apps/web-demo/src/views/example/components/primevue-collection/pro-table/virtual/index.vue:2:import type { ProTableColumn } from '@/components/ProTable'
+apps/web-demo/src/views/example/components/primevue-collection/pro-table/basic/columns.tsx:1:import type { ProTableColumn, ColumnRenderParams } from '@/components/ProTable'
+apps/web-demo/src/views/example/components/primevue-collection/pro-table/virtual/columns.tsx:1:import type { ProTableColumn } from '@/components/ProTable'
+apps/web-demo/src/views/example/components/primevue-collection/pro-table/form-table-combo/components/TablePanel.vue:8:import type { ColumnRenderParams, ProTableExposed } from '@/components/ProTable'
+apps/web-demo/src/views/example/components/primevue-collection/pro-table/form-table-combo/components/TablePanel.vue:9:import { useRecordOverlay } from '@/components/ProTable'
+apps/web-demo/src/views/example/components/primevue-collection/pro-table/form-table-combo/config.tsx:2:import type { ProTableColumn, ColumnRenderParams } from '@/components/ProTable'
+apps/web-demo/src/views/example/components/primevue-collection/pro-table/advanced/configs/columns.tsx:2:import type { ProTableColumn, ColumnRenderParams } from '@/components/ProTable'
+
+## HTTP coupling in ProTable props/config
+apps/web-demo/src/views/example/components/primevue-collection/pro-table/infinite/index.vue:3:import { userListApiExecutor } from '../shared/apiExecutor'
+apps/web-demo/src/components/ProTable/engine/config/apiAdapter.ts:4:import type { RequestConfig as HttpRequestConfig } from '@/utils/http/types'
+apps/web-demo/src/components/ProTable/engine/config/apiAdapter.ts:75:  apiConfig: HttpRequestConfig | undefined,
+apps/web-demo/src/components/ProTable/engine/config/apiAdapter.ts:77:): HttpRequestConfig {
+apps/web-demo/src/components/ProTable/engine/config/apiAdapter.ts:79:    ...apiConfig,
+apps/web-demo/src/components/ProTable/engine/config/apiAdapter.ts:80:    enableCache: apiConfig?.enableCache ?? false,
+apps/web-demo/src/components/ProTable/engine/config/apiAdapter.ts:81:    cancelStrategy: apiConfig?.cancelStrategy ?? 'cancelPrevious',
+apps/web-demo/src/views/example/components/primevue-collection/pro-table/form-table-combo/components/TablePanel.vue:12:import { userListApiExecutor } from '../../shared/apiExecutor'
+apps/web-demo/src/components/ProTable/engine/types/props.ts:3:import type { RequestConfig as HttpRequestConfig } from '@/utils/http/types'
+apps/web-demo/src/components/ProTable/engine/types/props.ts:42:export interface ProTableApiExecutorContext {
+apps/web-demo/src/components/ProTable/engine/types/props.ts:46:  config?: HttpRequestConfig
+apps/web-demo/src/components/ProTable/engine/types/props.ts:52:export type ProTableApiExecutor = (ctx: ProTableApiExecutorContext) => Promise<unknown>
+apps/web-demo/src/components/ProTable/engine/types/props.ts:175:   * 当设置该字段时，ProTable 会通过 `apiExecutor` 执行请求。
+apps/web-demo/src/components/ProTable/engine/types/props.ts:181:  /** Extra HTTP config passed to external apiExecutor (headers, timeout, enableCache, retry, etc.) */
+apps/web-demo/src/components/ProTable/engine/types/props.ts:182:  apiConfig?: HttpRequestConfig
+apps/web-demo/src/components/ProTable/engine/types/props.ts:187:  apiExecutor?: ProTableApiExecutor
+apps/web-demo/src/views/example/components/primevue-collection/pro-table/shared/apiExecutor.ts:1:import type { ProTableApiExecutor } from '@/components/ProTable/engine/types/props'
+apps/web-demo/src/views/example/components/primevue-collection/pro-table/shared/apiExecutor.ts:4:export const userListApiExecutor: ProTableApiExecutor = ({ method, query, config }) => {
+apps/web-demo/src/views/example/components/primevue-collection/pro-table/server/index.vue:3:import { userListApiExecutor } from '../shared/apiExecutor'
+apps/web-demo/src/components/ProTable/ProTable.vue:73:  apiConfig: undefined,
+apps/web-demo/src/components/ProTable/ProTable.vue:74:  apiExecutor: undefined,
+apps/web-demo/src/components/ProTable/ProTable.vue:117:      const httpConfig = buildApiExecutorConfig(props.apiConfig, params.signal)
+apps/web-demo/src/components/ProTable/ProTable.vue:119:      if (!props.apiExecutor) {
+apps/web-demo/src/components/ProTable/ProTable.vue:121:          '[ProTable] apiUrl mode requires `apiExecutor` to decouple component from concrete HTTP client.'
+apps/web-demo/src/components/ProTable/ProTable.vue:124:      const raw = await props.apiExecutor({
+apps/web-demo/src/components/ProTable/ProTable.vue:149:if (import.meta.env.DEV && props.apiUrl && !props.apiExecutor) {
+apps/web-demo/src/components/ProTable/ProTable.vue:151:    '[ProTable] apiUrl mode requires `apiExecutor` prop. ' +

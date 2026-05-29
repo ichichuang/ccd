@@ -1,0 +1,8 @@
+command: pnpm --filter @ccd/shared-utils type-check
+timestamp_start: 2026-05-29T07:39:24+0800
+
+> @ccd/shared-utils@1.0.38 type-check /Users/cc/MyPorject/ccd/packages/shared-utils
+> tsc -p tsconfig.json --noEmit
+
+timestamp_end: 2026-05-29T07:39:25+0800
+exit_code: 0

@@ -1,4 +1,4 @@
-import type { ProTableApiExecutor } from '@/components/ProTable/engine/types/props'
+import type { ProTableApiExecutor } from '@/components/ProTable'
 import { requestUserList } from '@/api/example/users'
 
 export const userListApiExecutor: ProTableApiExecutor = ({ method, query, config }) => {

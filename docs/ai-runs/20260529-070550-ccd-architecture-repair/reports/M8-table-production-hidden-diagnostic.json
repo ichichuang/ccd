@@ -1,0 +1,178 @@
+{
+  "consoleMessages": [
+    {
+      "type": "warning",
+      "text": "[SafeStorage] VITE_PUBLIC_STORAGE_OBFUSCATION_KEY is not set. Storage obfuscation uses a browser-derived key. Set VITE_PUBLIC_STORAGE_OBFUSCATION_KEY to a client-visible public value if you need stable obfuscation across deployments."
+    },
+    {
+      "type": "info",
+      "text": "✅ 网络连接已恢复"
+    }
+  ],
+  "diagnostic": {
+    "hash": "#/example/primevue-collection/pro-table/basic",
+    "appReady": "true",
+    "runtimeLoading": "false",
+    "bodyText": "CCD\nPlatform\n仪表盘\n系统配置\n组件合集\nPrimeVue 合集\nPrimeVue 概览\n消息提示 (Toast)\n二次封装弹窗\nProForm 超级表单\nProTable 超级表格\n基础用法\n列配置全集\n服务端用法\n无限加载模式\n虚拟网格 Playground\n高级功能与拖拽\nAPI 与事件\n表单表格组合\n图标大全 (Icons)\nECharts 图表\n自定义滚动条\n空状态提示\n动画包装器\nHooks 引擎\nUtils 工具链\nCommon 规范\n架构级演示\n组件合集\nPrimeVue 合集\nProTable 超级表格\n基础用法\n仪表盘\n基础用法\nProTable 基础用法\nPRO-TABLE\n最小可用表格：列定义、本地 :data 数据源、客户端分页、排序与行悬停；已绑定 stateKey 以演示列显隐与顺序持久化。覆盖能力：columns / data（本地数组）/ rowKey / pagination / sortable / render / heightMode:fill / rowHover。\n订单编号\n\t\n客户\n\t\n商品\n\t\n数量\n\t\n单价\n\t\n合计\n\t\n状态\n\t\n创建时间\n\n\nORD-0001\n\t\n张伟\n\t\n无线耳机\n\t\n1\n\t\n¥99.00\n\t\n¥99.00\n\t\n已完成\n\t\n2026-01-01\n\n\nORD-0002\n\t\n王芳\n\t\n机械键盘\n\t\n2\n\t\n¥249.00\n\t\n¥498.00\n\t\n处理中\n\t\n2026-02-02\n\n\nORD-0003\n\t\n李娜\n\t\n4K 显示器\n\t\n3\n\t\n¥399.00\n\t\n¥1,197.00\n\t\n已取消\n\t\n2026-03-03\n\n\nORD-0004\n\t\n刘洋\n\t\n智能手表\n\t\n4\n\t\n¥549.00\n\t\n¥2,196.00\n\t\n已完成\n\t\n2026-04-04\n\n\nORD-0005\n\t\n陈静\n\t\n便携充电宝\n\t\n5\n\t\n¥699.00\n\t\n¥3,495.00\n\t\n处理中\n\t\n2026-05-05\n\n\nORD-0006\n\t\n杨帆\n\t\n人体工学椅\n\t\n1\n\t\n¥849.00\n\t\n¥849.00\n\t\n已取消\n\t\n2026-06-06\n\n\nORD-0007\n\t\n赵磊\n\t\n无线耳机\n\t\n2\n\t\n¥999.00\n\t\n¥1,998.00\n\t\n已完成\n\t\n2026-07-07\n\n\nORD-0008\n\t\n黄梅\n\t\n机械键盘\n\t\n3\n\t\n¥99.00\n\t\n¥297.00\n\t\n处理中\n\t\n2026-08-08\n\n\nORD-0009\n\t\n张伟\n\t\n4K 显示器\n\t\n4\n\t\n¥249.00\n\t\n¥996.00\n\t\n已取消\n\t\n2026-09-09\n\n\nORD-0010\n\t\n王芳\n\t\n智能手表\n\t\n5\n\t\n¥399.00\n\t\n¥1,995.00\n\t\n已完成\n\t\n2026-10-10\n共 48 条\n1\n2\n3\n4\n5\n",
+    "datatableCount": 1,
+    "progressbarCount": 0,
+    "chain": [
+      {
+        "tag": "DIV",
+        "id": "",
+        "className": "p-datatable p-component p-datatable-hoverable p-datatable-scrollable p-datatable-flex-scrollable pro-table-h-lines layout-full",
+        "width": 910,
+        "height": 0,
+        "display": "flex",
+        "visibility": "visible",
+        "opacity": "1",
+        "overflow": "visible/visible/visible",
+        "position": "relative",
+        "transform": "none"
+      },
+      {
+        "tag": "DIV",
+        "id": "",
+        "className": "col-fill relative",
+        "width": 910,
+        "height": 0,
+        "display": "flex",
+        "visibility": "visible",
+        "opacity": "1",
+        "overflow": "hidden/hidden/hidden",
+        "position": "relative",
+        "transform": "none"
+      },
+      {
+        "tag": "DIV",
+        "id": "",
+        "className": "col-fill",
+        "width": 910,
+        "height": 0,
+        "display": "flex",
+        "visibility": "visible",
+        "opacity": "1",
+        "overflow": "hidden/hidden/hidden",
+        "position": "static",
+        "transform": "none"
+      },
+      {
+        "tag": "DIV",
+        "id": "",
+        "className": "col-fill",
+        "width": 910,
+        "height": 0,
+        "display": "flex",
+        "visibility": "visible",
+        "opacity": "1",
+        "overflow": "hidden/hidden/hidden",
+        "position": "static",
+        "transform": "none"
+      },
+      {
+        "tag": "DIV",
+        "id": "",
+        "className": "layout-full flex flex-col gap-sm overflow-hidden bg-card rounded-md overflow-hidden border border-solid border-border px-xs",
+        "width": 920,
+        "height": 2,
+        "display": "flex",
+        "visibility": "visible",
+        "opacity": "1",
+        "overflow": "hidden/hidden/hidden",
+        "position": "static",
+        "transform": "none"
+      },
+      {
+        "tag": "DIV",
+        "id": "",
+        "className": "material-elevated",
+        "width": 954,
+        "height": 34,
+        "display": "block",
+        "visibility": "visible",
+        "opacity": "1",
+        "overflow": "visible/visible/visible",
+        "position": "static",
+        "transform": "none"
+      },
+      {
+        "tag": "SECTION",
+        "id": "",
+        "className": "flex-1 min-h-0 px-md pb-md",
+        "width": 986,
+        "height": 50,
+        "display": "block",
+        "visibility": "visible",
+        "opacity": "1",
+        "overflow": "visible/visible/visible",
+        "position": "static",
+        "transform": "none"
+      },
+      {
+        "tag": "DIV",
+        "id": "",
+        "className": "flex flex-col layout-full min-h-0",
+        "width": 986,
+        "height": 183.25,
+        "display": "flex",
+        "visibility": "visible",
+        "opacity": "1",
+        "overflow": "visible/visible/visible",
+        "position": "static",
+        "transform": "none"
+      },
+      {
+        "tag": "DIV",
+        "id": "",
+        "className": "layout-full min-h-0 layout-full flex-1 min-h-0",
+        "width": 986,
+        "height": 183.25,
+        "display": "block",
+        "visibility": "visible",
+        "opacity": "1",
+        "overflow": "visible/visible/visible",
+        "position": "static",
+        "transform": "none"
+      },
+      {
+        "tag": "DIV",
+        "id": "",
+        "className": "",
+        "width": 986,
+        "height": 183.25,
+        "display": "block",
+        "visibility": "visible",
+        "opacity": "1",
+        "overflow": "visible/visible/visible",
+        "position": "static",
+        "transform": "none"
+      },
+      {
+        "tag": "DIV",
+        "id": "",
+        "className": "c-scrollbar layout-full !bg-transparent col-fill",
+        "width": 986,
+        "height": 547.8125,
+        "display": "flex",
+        "visibility": "visible",
+        "opacity": "1",
+        "overflow": "hidden/hidden/hidden",
+        "position": "static",
+        "transform": "none"
+      },
+      {
+        "tag": "DIV",
+        "id": "",
+        "className": "relative layout-full min-h-0",
+        "width": 986,
+        "height": 547.8125,
+        "display": "block",
+        "visibility": "visible",
+        "opacity": "1",
+        "overflow": "visible/visible/visible",
+        "position": "relative",
+        "transform": "none"
+      }
+    ]
+  }
+}

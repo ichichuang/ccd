@@ -1,0 +1,64 @@
+command: git status --short --untracked-files=all
+timestamp_start: 2026-05-29T07:30:54+0800
+ M .ai/generated/governance-report.json
+ M apps/web-demo/src/types/auto-imports.d.ts
+ M apps/web-demo/src/views/example/components/icons/configs/iconLists.generated.ts
+ M docs/generated/api-surface-report.json
+ M docs/generated/graphs/dependency-graph.json
+ M docs/generated/sbom.json
+?? docs/ai-plan/00_INDEX.md
+?? docs/ai-plan/AGENTS_DRAFT.md
+?? docs/ai-plan/CHANGE_SUMMARY.md
+?? docs/ai-plan/DECISIONS.md
+?? docs/ai-plan/EVIDENCE_POLICY.md
+?? docs/ai-plan/EXECUTION_MODE_MATRIX.md
+?? docs/ai-plan/FINAL_ARTIFACTS_REQUIRED.md
+?? docs/ai-plan/FINAL_GO_NO_GO.md
+?? docs/ai-plan/FINAL_VALIDATION_MATRIX.md
+?? docs/ai-plan/NEXT_ACTIONS.md
+?? docs/ai-plan/OPERATOR_SOP.md
+?? docs/ai-plan/OUTPUT_QUALITY_REQUIREMENTS.md
+?? docs/ai-plan/PLAN.md
+?? docs/ai-plan/PROPOSED_FILE_STRUCTURE.md
+?? docs/ai-plan/REVIEW_CHECKLIST.md
+?? docs/ai-plan/RISK_REGISTER.md
+?? docs/ai-plan/ROLLBACK.md
+?? docs/ai-plan/SECURITY_AND_APPROVALS.md
+?? docs/ai-plan/SPEC.md
+?? docs/ai-plan/STATUS.md
+?? docs/ai-plan/VALIDATION.md
+?? docs/ai-runs/.gitignore
+?? docs/ai-runs/20260529-070550-ccd-architecture-repair/command-logs/.gitkeep
+?? docs/ai-runs/20260529-070550-ccd-architecture-repair/command-logs/M0-T3-20260529-072550-pnpm-install-frozen-lockfile.log
+?? docs/ai-runs/20260529-070550-ccd-architecture-repair/command-logs/M0-T3-20260529-072610-pnpm-ci-prepare-internal.log
+?? docs/ai-runs/20260529-070550-ccd-architecture-repair/command-logs/M0-T3-20260529-072631-pnpm-ci-smoke-packages.log
+?? docs/ai-runs/20260529-070550-ccd-architecture-repair/command-logs/M0-T3-20260529-072642-pnpm-ai-doctor.log
+?? docs/ai-runs/20260529-070550-ccd-architecture-repair/command-logs/M0-T3-20260529-072658-pnpm-codex-preflight.log
+?? docs/ai-runs/20260529-070550-ccd-architecture-repair/command-logs/M0-T3-20260529-072713-pnpm-type-check.log
+?? docs/ai-runs/20260529-070550-ccd-architecture-repair/command-logs/M0-T3-20260529-072723-pnpm-lint-check.log
+?? docs/ai-runs/20260529-070550-ccd-architecture-repair/command-logs/M0-T3-20260529-072743-pnpm-test-run.log
+?? docs/ai-runs/20260529-070550-ccd-architecture-repair/command-logs/M0-T3-20260529-072802-pnpm-build-web-demo.log
+?? docs/ai-runs/20260529-070550-ccd-architecture-repair/command-logs/M0-T3-20260529-072842-pnpm-build-desktop.log
+?? docs/ai-runs/20260529-070550-ccd-architecture-repair/command-logs/M0-T3-20260529-072907-pnpm-budget-desktop.log
+?? docs/ai-runs/20260529-070550-ccd-architecture-repair/command-logs/M0-T3-20260529-072915-pnpm-validate-governance.log
+?? docs/ai-runs/20260529-070550-ccd-architecture-repair/command-logs/M0-T3-20260529-073049-post-blocker-git-diff-check.log
+?? docs/ai-runs/20260529-070550-ccd-architecture-repair/command-logs/M0-T3-20260529-073054-post-blocker-git-status.log
+?? docs/ai-runs/20260529-070550-ccd-architecture-repair/command-logs/git-branch-show-current.log
+?? docs/ai-runs/20260529-070550-ccd-architecture-repair/command-logs/git-diff-check.log
+?? docs/ai-runs/20260529-070550-ccd-architecture-repair/command-logs/git-log-10-oneline.log
+?? docs/ai-runs/20260529-070550-ccd-architecture-repair/command-logs/git-status-short-untracked.log
+?? docs/ai-runs/20260529-070550-ccd-architecture-repair/diffs/.gitkeep
+?? docs/ai-runs/20260529-070550-ccd-architecture-repair/reports/.gitkeep
+?? docs/ai-runs/20260529-070550-ccd-architecture-repair/reports/M0-T3-blocked.md
+?? docs/ai-runs/20260529-070550-ccd-architecture-repair/reports/baseline.md
+?? docs/ai-runs/20260529-070550-ccd-architecture-repair/screenshots/.gitkeep
+?? docs/ai-runs/20260529-070550-ccd-architecture-repair/sources/.gitkeep
+?? docs/ai-runs/README.md
+?? docs/ai-runs/_template-YYYYMMDD-HHMMSS-ccd-architecture-repair/command-logs/.gitkeep
+?? docs/ai-runs/_template-YYYYMMDD-HHMMSS-ccd-architecture-repair/diffs/.gitkeep
+?? docs/ai-runs/_template-YYYYMMDD-HHMMSS-ccd-architecture-repair/reports/.gitkeep
+?? docs/ai-runs/_template-YYYYMMDD-HHMMSS-ccd-architecture-repair/reports/baseline.md
+?? docs/ai-runs/_template-YYYYMMDD-HHMMSS-ccd-architecture-repair/screenshots/.gitkeep
+?? docs/ai-runs/_template-YYYYMMDD-HHMMSS-ccd-architecture-repair/sources/.gitkeep
+timestamp_end: 2026-05-29T07:30:54+0800
+exit_code: 0

@@ -1,0 +1,371 @@
+M5-T1 HTTP boundary inventory
+timestamp=20260529-075115
+
+## Ledger tasks
+- Keep alova as the high-level request toolkit.
+- Do not switch to Axios.
+- Ky may be used only as a low-level transport inside an approved adapter if there is a measurable reason.
+- TanStack Query should remain deferred until server-state complexity justifies it.
+- Zod should be used at API boundaries where runtime validation is needed.
+
+### Tasks
+
+- [ ] [P1-HttpContract-Contracts] Add or refine HTTP contracts under `packages/contracts/src/http/**`: request shape, response shape, error shape, transport client, retry policy, timeout policy, auth policy.
+- [ ] [P1-HttpContract-Core] Add runtime-neutral HTTP orchestration under `packages/core/src/http/**` if needed, without importing browser APIs, fetch, timers, storage, router, or Pinia.
+- [ ] [P1-HttpContract-Adapter] Keep alova implementation under `apps/web-demo/src/adapters/http/**` or another approved app adapter path.
+- [ ] [P1-HttpContract-Zod] Add Zod response validation only at boundary points where schemas are stable and validation cost is acceptable.
+- [ ] [P1-HttpContract-NoCoupling] Ensure HTTP code does not directly couple router/store/session behavior except through approved bridges.
+- [ ] [P1-HttpContract-Validation] Run `pnpm arch:runtime`, `pnpm api:report`, `pnpm type-check`, and request-layer tests.
+
+## 13. P1 — Architecture Guard Coverage and Owner Decisions
+
+Rationale: owner decision log records pending decisions about guard coverage, rule contradictions, design-token consolidation, and desktop drift CI.
+
+### Tasks
+
+## Relevant files
+apps/web-demo/src/adapters/charts/UseEcharts.vue
+apps/web-demo/src/adapters/http.adapter.spec.ts
+apps/web-demo/src/adapters/http.adapter.ts
+apps/web-demo/src/adapters/logger.adapter.ts
+apps/web-demo/src/api/README.md
+apps/web-demo/src/api/auth/auth.api.ts
+apps/web-demo/src/api/example/httpAdvanced.ts
+apps/web-demo/src/api/example/todos.ts
+apps/web-demo/src/api/example/users.spec.ts
+apps/web-demo/src/api/example/users.ts
+apps/web-demo/src/api/system/preferences.api.ts
+apps/web-demo/src/api/system/system.api.ts
+apps/web-demo/src/utils/http/connection.ts
+apps/web-demo/src/utils/http/errors.ts
+apps/web-demo/src/utils/http/index.ts
+apps/web-demo/src/utils/http/instance.ts
+apps/web-demo/src/utils/http/interceptors.spec.ts
+apps/web-demo/src/utils/http/interceptors.ts
+apps/web-demo/src/utils/http/methods.ts
+apps/web-demo/src/utils/http/types.ts
+apps/web-demo/src/utils/http/uploadManager.ts
+apps/web-demo/src/utils/http/validation.spec.ts
+apps/web-demo/src/utils/http/validation.ts
+packages/contracts/src/crypto.ts
+packages/contracts/src/environment.ts
+packages/contracts/src/filesystem.ts
+packages/contracts/src/index.ts
+packages/contracts/src/logger.ts
+packages/contracts/src/network.ts
+packages/contracts/src/scheduler.ts
+packages/contracts/src/storage.ts
+packages/core/src/index.ts
+
+## HTTP rule references
+.ai/rules/integrations/00-network-routing-guardrails.mdc:10:> - `01-http-alova.mdc` — HTTP client rules (Alova ONLY, builder patterns, useHttpRequest)
+.ai/rules/integrations/00-network-routing-guardrails.mdc:24:`src/infra/auth/tokenProvider.ts` 提供一个显式 typed bridge：
+.ai/rules/integrations/00-network-routing-guardrails.mdc:28:import { installAuthBridge } from '@/infra/auth/tokenProvider'
+.ai/rules/integrations/00-network-routing-guardrails.mdc:54:| `import { useUserStore } from '...'` inside `interceptors.ts` | HTTP 层不得依赖 Pinia | `readAuthToken()` / `notifyUnauthorized()` from `@/infra/auth/tokenProvider` |
+.ai/rules/integrations/00-network-routing-guardrails.mdc:110:在 `RequestConfig` 中设置 `globalError: 'silent'` 可抑制拦截器的全局错误通知。
+.ai/rules/integrations/00-network-routing-guardrails.mdc:214:使用 `ConnectionManager` (`src/utils/http/connection.ts`) 提供的单例 API 感知网络状态。
+.ai/rules/integrations/00-network-routing-guardrails.mdc:217:import { getConnectionState, addConnectionListener } from '@/utils/http/connection'
+.ai/rules/integrations/00-network-routing-guardrails.mdc:277:import { uploadFile, uploadFiles, downloadFile } from '@/utils/http/methods'
+.ai/rules/integrations/00-network-routing-guardrails.mdc:298:const res = await fetch('/api/export')
+.ai/rules/integrations/00-network-routing-guardrails.mdc:311:> 合并本文件与 `01-http-alova` / `02-router-rbac` / `core/05-state-boundaries` 的全部网络/路由反模式。AI 单次扫描即可获得完整禁令列表。
+.ai/rules/integrations/00-network-routing-guardrails.mdc:315:| 1 | HTTP Client | `axios` / `fetch` / `XMLHttpRequest` | `@/utils/http/methods` 或 `useHttpRequest` | `01-http-alova` |
+.ai/rules/integrations/00-network-routing-guardrails.mdc:316:| 2 | HTTP Client | 组件中直接 `alovaInstance.Get()` | `useHttpRequest(() => buildXxxMethod(...))` | `01-http-alova` R3 |
+.ai/rules/integrations/00-network-routing-guardrails.mdc:319:| 5 | 401 Auth | `if (res.status === 401) { logout() }` | `TokenRefreshCoordinator` 自动处理 | `01-http-alova` R4 |
+.ai/rules/integrations/00-network-routing-guardrails.mdc:320:| 6 | Auth DI | HTTP 层 `import { useUserStore }` | `readAuthToken()` / `notifyUnauthorized()` from tokenProvider | §1 |
+.ai/rules/integrations/00-network-routing-guardrails.mdc:333:| 19 | Download | `fetch().then(r => r.blob())` | `downloadFile()` | §8 |
+.ai/rules/integrations/00-network-routing-guardrails.mdc:343:- [ ] No `axios` / `fetch` / `XMLHttpRequest` — 仅 `@/utils/http/methods` 或 `useHttpRequest`
+.ai/rules/integrations/01-http-alova.mdc:18:// ❌ FORBIDDEN: raw fetch
+.ai/rules/integrations/01-http-alova.mdc:19:fetch('/api/user').then(res => res.json())
+.ai/rules/integrations/01-http-alova.mdc:33:All HTTP traffic MUST flow through `alovaInstance` from `@/utils/http/instance`. This instance is pre-configured with:
+.ai/rules/integrations/01-http-alova.mdc:40:Raw `fetch` is still forbidden in API, store, hook, and view business code. The only approved infrastructure exceptions are:
+.ai/rules/integrations/01-http-alova.mdc:42:- `src/utils/http/interceptors.ts#defaultRefreshTokenExecutor`: refresh-token bootstrap fallback. It cannot call `alovaInstance` from inside the response interceptor without risking recursive 401 handling. The normal path should inject `setRefreshTokenExecutor()` when an app-specific refresh method is available.
+.ai/rules/integrations/01-http-alova.mdc:43:- `src/utils/http/methods.ts#getRaw`: header-preserving GET for endpoints where callers must inspect `Headers`. It must manually preserve auth token injection, unified `HttpRequestError`, abort handling, cache policy, and global error behavior.
+.ai/rules/integrations/01-http-alova.mdc:53:import type { alovaInstance } from '@/utils/http/instance'
+.ai/rules/integrations/01-http-alova.mdc:83:  client: typeof alovaInstance,
+.ai/rules/integrations/01-http-alova.mdc:88:  client: typeof alovaInstance,
+.ai/rules/integrations/01-http-alova.mdc:93:  client: typeof alovaInstance,
+.ai/rules/integrations/01-http-alova.mdc:100:NEVER call `alovaInstance.Get()` directly in a component. Route all consumption through the `useHttpRequest` composable.
+.ai/rules/integrations/01-http-alova.mdc:107:    () => buildSystemUserListMethod(alovaInstance, params),
+.ai/rules/integrations/01-http-alova.mdc:120:`TokenRefreshCoordinator` inside `@/utils/http/interceptors.ts` exclusively owns 401 handling. **You MUST NOT:**
+.ai/rules/integrations/01-http-alova.mdc:136:import type { HttpRequestError } from '@/utils/http/types'
+.ai/rules/integrations/01-http-alova.mdc:137:import { ErrorType, isHttpRequestError } from '@/utils/http/errors'
+.ai/rules/integrations/01-http-alova.mdc:158:| `immediate` | `boolean` | `true` | Auto-fetch on composable init |
+.ai/runtime/rule_coverage_matrix.md:12:| Business HTTP uses Alova/API modules/project hooks, not raw network clients                          | `.ai/rules/integrations/01-http-alova.mdc`, `.ai/rules/integrations/00-network-routing-guardrails.mdc`, `.ai/protocol/AGENTS.core.md`                                                                                |         No |     Yes |                  Yes |                   Yes | Strong                                 |
+.ai/runtime/rule_coverage_matrix.md:13:| API modules own response schema and DTO boundaries                                                   | `.ai/rules/integrations/01-http-alova.mdc`, `.ai/rules/core/04-type-safety-mutations.mdc`                                                                                                                            |         No | Partial |              Partial |               Partial | Partial                                |
+docs/ai-plan/PLAN.md:256:- `apps/web-demo/src/infra/auth/tokenProvider.ts`
+docs/ai-plan/PLAN.md:402:- ProTable becomes a concrete alova wrapper.
+docs/ai-plan/PLAN.md:526:Make HTTP boundaries explicit while preserving alova and runtime-neutral core/contracts.
+docs/ai-plan/PLAN.md:536:- Keep alova implementation in app adapter/infrastructure.
+docs/ai-plan/PLAN.md:541:- Replacing alova.
+docs/ai-plan/PLAN.md:548:- `apps/web-demo/src/utils/http/**`
+docs/ai-plan/PLAN.md:549:- `apps/web-demo/src/adapters/http/**`
+docs/ai-plan/PLAN.md:562:- Objective: Map request methods, interceptors, auth bridge, errors, Zod, raw fetch exceptions, and storage coupling.
+docs/ai-plan/PLAN.md:579:- Acceptance criteria: Contracts contain no browser APIs, fetch, timers, storage, router, Pinia, or alova.
+docs/ai-plan/PLAN.md:590:- Objective: Keep alova implementation behind app adapter boundary.
+docs/ai-plan/PLAN.md:593:- Expected files or modules: `apps/web-demo/src/adapters/http/**` or approved app path.
+docs/ai-plan/SECURITY_AND_APPROVALS.md:51:- replacing PrimeVue/alova as a shortcut
+docs/ai-plan/SPEC.md:22:- Replace alova with Axios.
+docs/ai-plan/SPEC.md:83:- Keep alova request toolkit.
+
+## App HTTP inventory
+apps/web-demo/src/adapters/http.adapter.ts:5: * @see {@link BackendRouteConfig} 全局类型定义位于 src/types/modules/router.d.ts:96
+apps/web-demo/src/adapters/http.adapter.ts:7:import type { ZodIssue, ZodType } from 'zod'
+apps/web-demo/src/adapters/http.adapter.ts:16:function normalizeZodIssues(issues: readonly ZodIssue[]): AdapterValidationIssue[] {
+apps/web-demo/src/adapters/http.adapter.ts:37:export function parseZodHttpPayload<T>(schema: ZodType<T>, raw: unknown): T {
+apps/web-demo/src/adapters/http.adapter.ts:48:    { issues: normalizeZodIssues(result.error.issues) },
+packages/core/src/index.ts:52:        adapters.logger.warn('Failed to parse stored JSON value.', { key, error })
+apps/web-demo/src/utils/http/instance.ts:5:import { createAlova } from 'alova'
+apps/web-demo/src/utils/http/instance.ts:6:import type { AlovaDefaultCacheAdapter } from 'alova'
+apps/web-demo/src/utils/http/instance.ts:7:import adapterFetch from 'alova/fetch'
+apps/web-demo/src/utils/http/instance.ts:8:import type { FetchRequestInit } from 'alova/fetch'
+apps/web-demo/src/utils/http/instance.ts:9:import VueHook from 'alova/vue'
+apps/web-demo/src/utils/http/instance.ts:10:import type { VueHookExportType } from 'alova/vue'
+apps/web-demo/src/utils/http/instance.ts:36:    throw new Error(t('http.config.alovaConfigError', { errors: errors.join(', ') }))
+apps/web-demo/src/utils/http/instance.ts:43:export const alovaInstance = createAlova<
+apps/web-demo/src/utils/http/instance.ts:95:export default alovaInstance
+apps/web-demo/src/adapters/charts/UseEcharts.vue:3:import { storeToRefs } from 'pinia'
+apps/web-demo/src/adapters/charts/UseEcharts.vue:13:import { useThemeStore, useSizeStore } from '@/stores/modules/system'
+apps/web-demo/src/adapters/charts/UseEcharts.vue:26:const { themeName, mode } = storeToRefs(themeStore)
+apps/web-demo/src/adapters/charts/UseEcharts.vue:27:const { sizeName } = storeToRefs(sizeStore)
+apps/web-demo/src/utils/http/validation.spec.ts:2:import { z } from 'zod'
+apps/web-demo/src/utils/http/validation.spec.ts:35:  it('uses zod to stop invalid JSON DTO payloads before store or component writes', async () => {
+apps/web-demo/src/utils/http/validation.spec.ts:40:    const storeWrite = vi.fn<(value: z.infer<typeof schema>) => void>()
+apps/web-demo/src/utils/http/validation.spec.ts:46:        storeWrite(value)
+apps/web-demo/src/utils/http/validation.spec.ts:59:    expect(storeWrite).not.toHaveBeenCalled()
+apps/web-demo/src/utils/http/types.ts:2:import type { ZodType } from 'zod'
+apps/web-demo/src/utils/http/types.ts:34:export interface RequestConfig<TResponse = unknown> {
+apps/web-demo/src/utils/http/types.ts:45:  responseSchema?: ZodType<TResponse> // Alova 响应边界 Zod DTO 校验
+apps/web-demo/src/utils/http/types.ts:51:export interface AlovaRequestConfig<TResponse = unknown> {
+apps/web-demo/src/utils/http/types.ts:55:  responseSchema?: ZodType<TResponse>
+apps/web-demo/src/utils/http/types.ts:68:export interface UploadConfig<TResponse = unknown> extends RequestConfig<TResponse> {
+apps/web-demo/src/utils/http/types.ts:84:export interface HeadConfig extends RequestConfig {
+apps/web-demo/src/utils/http/connection.ts:187:      await fetch(this.config.healthCheckUrl, {
+apps/web-demo/src/api/auth/auth.api.ts:4: * 禁止导入 Pinia stores，避免循环依赖
+apps/web-demo/src/api/auth/auth.api.ts:15:} from '@/types/dto/auth.dto'
+apps/web-demo/src/api/auth/auth.api.ts:16:import { parseZodHttpPayload } from '@/adapters/http.adapter'
+apps/web-demo/src/api/auth/auth.api.ts:23:  tokenMissing: 'AUTH_TOKEN_MISSING',
+apps/web-demo/src/api/auth/auth.api.ts:24:  tokenInvalid: 'AUTH_TOKEN_INVALID',
+apps/web-demo/src/api/auth/auth.api.ts:51:  return requestAuthLoginMock(parseZodHttpPayload(loginParamsSchema, data))
+apps/web-demo/src/api/auth/auth.api.ts:60:    throw new AuthApiError(AUTH_ERROR_CODES.invalidCredentials, 'Mock auth is disabled')
+apps/web-demo/src/api/auth/auth.api.ts:85:  return parseZodHttpPayload(loginResultSchema, {
+apps/web-demo/src/api/auth/auth.api.ts:86:    token: `mock-token-${mockUser.userId}`,
+apps/web-demo/src/api/auth/auth.api.ts:95:export const requestAuthCurrentUser = async (token: string): Promise<UserInfo> => {
+apps/web-demo/src/api/auth/auth.api.ts:96:  return requestAuthCurrentUserMock(token)
+apps/web-demo/src/api/auth/auth.api.ts:100: * 模拟「根据 token 获取当前用户信息」
+apps/web-demo/src/api/auth/auth.api.ts:101: * Token 格式：`mock-token-{userId}`，从 token 中解析 userId 进行查找
+apps/web-demo/src/api/auth/auth.api.ts:103:export const requestAuthCurrentUserMock = async (token: string): Promise<UserInfo> => {
+apps/web-demo/src/api/auth/auth.api.ts:105:    throw new AuthApiError(AUTH_ERROR_CODES.tokenInvalid, 'Mock auth is disabled')
+apps/web-demo/src/api/auth/auth.api.ts:110:  if (!token) {
+apps/web-demo/src/api/auth/auth.api.ts:111:    throw new AuthApiError(AUTH_ERROR_CODES.tokenMissing, 'No token provided')
+apps/web-demo/src/api/auth/auth.api.ts:114:  const match = token.match(/^mock-token-(.+)$/)
+apps/web-demo/src/api/auth/auth.api.ts:118:    throw new AuthApiError(AUTH_ERROR_CODES.tokenInvalid, 'Invalid token format')
+apps/web-demo/src/api/auth/auth.api.ts:124:    throw new AuthApiError(AUTH_ERROR_CODES.tokenInvalid, 'Unknown user id in token')
+apps/web-demo/src/api/auth/auth.api.ts:129:  return parseZodHttpPayload(userInfoSchema, {
+apps/web-demo/src/api/system/system.api.ts:4: * 禁止导入 Pinia stores，避免循环依赖
+apps/web-demo/src/api/system/system.api.ts:14:import { parseZodHttpPayload } from '@/adapters/http.adapter'
+apps/web-demo/src/api/system/system.api.ts:76:      meta: { titleKey: 'router.example.hooks.composables.useDateUtils', showLink: false },
+apps/web-demo/src/api/system/system.api.ts:82:      meta: { titleKey: 'router.example.hooks.composables.useThemeSwitch', showLink: false },
+apps/web-demo/src/api/system/system.api.ts:88:      meta: { titleKey: 'router.example.hooks.composables.useHttpRequest', showLink: false },
+apps/web-demo/src/api/system/system.api.ts:91:  return parseZodHttpPayload(systemAsyncRouteItemSchema.array(), routes)
+apps/web-demo/src/api/system/system.api.ts:132:    responseSchema: systemAsyncRoutesRawSchema,
+apps/web-demo/src/utils/http/methods.ts:4:import { parseZodHttpPayload } from '@/adapters/http.adapter'
+apps/web-demo/src/utils/http/methods.ts:5:import { readAuthToken } from '@/infra/auth/tokenProvider'
+apps/web-demo/src/utils/http/methods.ts:8:import { alovaInstance } from './instance'
+apps/web-demo/src/utils/http/methods.ts:17:  AlovaRequestConfig,
+apps/web-demo/src/utils/http/methods.ts:19:  RequestConfig,
+apps/web-demo/src/utils/http/methods.ts:102:function shouldShowRawGlobalError(config?: RequestConfig): boolean {
+apps/web-demo/src/utils/http/methods.ts:107:function showRawGlobalError(status: number, message: string, config?: RequestConfig): void {
+apps/web-demo/src/utils/http/methods.ts:353: * - 剥离 RequestConfig 中仅供本模块使用的字段（enableCache/cacheTTL/retry）
+apps/web-demo/src/utils/http/methods.ts:354: * - 其余字段透传给 alova 作为 AlovaRequestConfig
+apps/web-demo/src/utils/http/methods.ts:356:function convertRequestConfig<TResponse = unknown>(
+apps/web-demo/src/utils/http/methods.ts:357:  config?: RequestConfig<TResponse>
+apps/web-demo/src/utils/http/methods.ts:358:): AlovaRequestConfig<TResponse> {
+apps/web-demo/src/utils/http/methods.ts:368:    ...alovaConfig
+apps/web-demo/src/utils/http/methods.ts:370:  return alovaConfig
+apps/web-demo/src/utils/http/methods.ts:424:export const get = async <T = unknown>(url: string, config?: RequestConfig<T>): Promise<T> => {
+apps/web-demo/src/utils/http/methods.ts:437:  const alovaConfig = convertRequestConfig(config)
+apps/web-demo/src/utils/http/methods.ts:439:    alovaInstance.Get<T>(url, { ...alovaConfig, ...(signal ? { signal } : {}) }).send(true)
+apps/web-demo/src/utils/http/methods.ts:465: * Applied protections: auth header, AbortController, Zod schema validation,
+apps/web-demo/src/utils/http/methods.ts:472:  config?: RequestConfig<T>
+apps/web-demo/src/utils/http/methods.ts:487:  const baseURL = alovaInstance.options.baseURL || ''
+apps/web-demo/src/utils/http/methods.ts:497:  const token = readAuthToken()
+apps/web-demo/src/utils/http/methods.ts:498:  if (token && String(token).trim()) {
+apps/web-demo/src/utils/http/methods.ts:499:    headers.set('Authorization', `Bearer ${token}`)
+apps/web-demo/src/utils/http/methods.ts:512:    const response = await fetch(`${fullUrl}${queryString}`, {
+apps/web-demo/src/utils/http/methods.ts:550:    const data = config?.responseSchema
+apps/web-demo/src/utils/http/methods.ts:551:      ? parseZodHttpPayload(config.responseSchema, rawData)
+apps/web-demo/src/utils/http/methods.ts:588:  config?: RequestConfig<T>
+apps/web-demo/src/utils/http/methods.ts:591:  const alovaConfig = convertRequestConfig(config)
+apps/web-demo/src/utils/http/methods.ts:594:    alovaInstance
+apps/web-demo/src/utils/http/methods.ts:595:      .Post<T>(url, data as BodyInit, { ...alovaConfig, ...(signal ? { signal } : {}) })
+apps/web-demo/src/utils/http/methods.ts:612:  config?: RequestConfig<T>
+apps/web-demo/src/utils/http/methods.ts:615:  const alovaConfig = convertRequestConfig(config)
+apps/web-demo/src/utils/http/methods.ts:617:    alovaInstance
+apps/web-demo/src/utils/http/methods.ts:618:      .Put<T>(url, data as BodyInit, { ...alovaConfig, ...(signal ? { signal } : {}) })
+apps/web-demo/src/utils/http/methods.ts:632:export const del = <T = unknown>(url: string, config?: RequestConfig<T>): Promise<T> => {
+apps/web-demo/src/utils/http/methods.ts:634:  const alovaConfig = convertRequestConfig(config)
+apps/web-demo/src/utils/http/methods.ts:636:    alovaInstance.Delete<T>(url, { ...alovaConfig, ...(signal ? { signal } : {}) }).send(true)
+apps/web-demo/src/utils/http/methods.ts:652:  config?: RequestConfig<T>
+apps/web-demo/src/utils/http/methods.ts:655:  const alovaConfig = convertRequestConfig(config)
+apps/web-demo/src/utils/http/methods.ts:657:    alovaInstance
+apps/web-demo/src/utils/http/methods.ts:658:      .Patch<T>(url, data as BodyInit, { ...alovaConfig, ...(signal ? { signal } : {}) })
+apps/web-demo/src/utils/http/methods.ts:673:export const head = (url: string, config?: RequestConfig<void>): Promise<{ headers: Headers }> => {
+apps/web-demo/src/utils/http/methods.ts:675:  const alovaConfig = convertRequestConfig(config)
+apps/web-demo/src/utils/http/methods.ts:677:    return alovaInstance
+apps/web-demo/src/utils/http/methods.ts:678:      .Head(url, { ...alovaConfig, ...(signal ? { signal } : {}) })
+apps/web-demo/src/utils/http/methods.ts:744:  config?: RequestConfig<Blob>
+apps/web-demo/src/utils/http/methods.ts:746:  const alovaConfig = convertRequestConfig({
+apps/web-demo/src/utils/http/methods.ts:753:    alovaInstance.Get<Blob>(url, { ...alovaConfig, ...(signal ? { signal } : {}) }).send(true)
+apps/web-demo/src/adapters/http.adapter.spec.ts:2:import { z } from 'zod'
+apps/web-demo/src/adapters/http.adapter.spec.ts:7:  parseZodHttpPayload,
+apps/web-demo/src/adapters/http.adapter.spec.ts:72:  it('rejects invalid dynamic route payloads before router processing', () => {
+apps/web-demo/src/adapters/http.adapter.spec.ts:103:describe('parseZodHttpPayload', () => {
+apps/web-demo/src/adapters/http.adapter.spec.ts:104:  it('stops invalid JSON DTO payloads before store or component writes', () => {
+apps/web-demo/src/adapters/http.adapter.spec.ts:109:    const storeWrite = vi.fn<(value: z.infer<typeof schema>) => void>()
+apps/web-demo/src/adapters/http.adapter.spec.ts:116:      const parsed = parseZodHttpPayload(schema, invalidJsonPayload)
+apps/web-demo/src/adapters/http.adapter.spec.ts:117:      storeWrite(parsed)
+apps/web-demo/src/adapters/http.adapter.spec.ts:131:    expect(storeWrite).not.toHaveBeenCalled()
+apps/web-demo/src/adapters/http.adapter.spec.ts:137:    expect(parseZodHttpPayload(schema, { id: 'abc' })).toEqual({ id: 'abc' })
+apps/web-demo/src/utils/http/errors.ts:26:  [ErrorType.AUTH]: 'authError',
+apps/web-demo/src/utils/http/validation.ts:1:import type { ZodIssue, ZodType } from 'zod'
+apps/web-demo/src/utils/http/validation.ts:12:export type HttpResponseSchema<T> = ZodType<T>
+apps/web-demo/src/utils/http/validation.ts:14:function normalizeZodValidationIssues(issues: readonly ZodIssue[]): HttpValidationIssue[] {
+apps/web-demo/src/utils/http/validation.ts:39: * Validate external HTTP payloads before they cross into stores/components.
+apps/web-demo/src/utils/http/validation.ts:40: * Zod is the single schema boundary for HTTP DTO validation.
+apps/web-demo/src/utils/http/validation.ts:60:  throwValidationError(normalizeZodValidationIssues(result.error.issues))
+apps/web-demo/src/utils/http/uploadManager.ts:376:      // Client errors (4xx) likely mean the upload session is gone — also re-upload.
+apps/web-demo/src/utils/http/interceptors.ts:2:import { AUTH_ENABLED } from '@/constants/router'
+apps/web-demo/src/utils/http/interceptors.ts:4:import { parseZodHttpPayload } from '@/adapters/http.adapter'
+apps/web-demo/src/utils/http/interceptors.ts:6:import { notifyUnauthorized, readAuthToken } from '@/infra/auth/tokenProvider'
+apps/web-demo/src/utils/http/interceptors.ts:9:import type { Method } from 'alova'
+apps/web-demo/src/utils/http/interceptors.ts:10:import type { ZodType } from 'zod'
+apps/web-demo/src/utils/http/interceptors.ts:17:  resolve: (token: string) => void
+apps/web-demo/src/utils/http/interceptors.ts:23:const REFRESH_ENDPOINT = '/auth/refresh'
+apps/web-demo/src/utils/http/interceptors.ts:35: * Fallback token refresh executor using raw `fetch`.
+apps/web-demo/src/utils/http/interceptors.ts:39: * - request body encryption (refresh token must be plaintext)
+apps/web-demo/src/utils/http/interceptors.ts:45: * DO NOT replace with `alovaInstance.Post()` — it would recurse through this
+apps/web-demo/src/utils/http/interceptors.ts:49:  const response = await fetch(REFRESH_ENDPOINT, {
+apps/web-demo/src/utils/http/interceptors.ts:60:    token?: string
+apps/web-demo/src/utils/http/interceptors.ts:61:    data?: { token?: string }
+apps/web-demo/src/utils/http/interceptors.ts:64:  const token = payload?.data?.token ?? payload?.token
+apps/web-demo/src/utils/http/interceptors.ts:66:  if (!token || !String(token).trim()) {
+apps/web-demo/src/utils/http/interceptors.ts:67:    throw new Error(payload?.message || 'refresh token missing in response')
+apps/web-demo/src/utils/http/interceptors.ts:70:  return token
+apps/web-demo/src/utils/http/interceptors.ts:77:  private unauthorizedNotified = false
+apps/web-demo/src/utils/http/interceptors.ts:85:  private flushSuccess(token: string): void {
+apps/web-demo/src/utils/http/interceptors.ts:88:    queue.forEach(({ resolve }) => resolve(token))
+apps/web-demo/src/utils/http/interceptors.ts:97:  private notifyUnauthorizedOnce(): void {
+apps/web-demo/src/utils/http/interceptors.ts:98:    if (this.unauthorizedNotified) {
+apps/web-demo/src/utils/http/interceptors.ts:102:    this.unauthorizedNotified = true
+apps/web-demo/src/utils/http/interceptors.ts:104:      void notifyUnauthorized().catch(error => {
+apps/web-demo/src/utils/http/interceptors.ts:105:        appLogger.error('[HTTP] Unauthorized handler failed:', error)
+apps/web-demo/src/utils/http/interceptors.ts:112:        this.unauthorizedNotified = false
+apps/web-demo/src/utils/http/interceptors.ts:131:      const token = await this.refreshPromise
+apps/web-demo/src/utils/http/interceptors.ts:132:      this.flushSuccess(token)
+apps/web-demo/src/utils/http/interceptors.ts:133:      return token
+apps/web-demo/src/utils/http/interceptors.ts:137:      this.notifyUnauthorizedOnce()
+apps/web-demo/src/utils/http/interceptors.ts:146:const tokenRefreshCoordinator = new TokenRefreshCoordinator()
+apps/web-demo/src/utils/http/interceptors.ts:160:function getResponseSchema(method: Method): ZodType<unknown> | undefined {
+apps/web-demo/src/utils/http/interceptors.ts:161:  const schema = getMethodConfigRecord(method).responseSchema
+apps/web-demo/src/utils/http/interceptors.ts:163:    return schema as ZodType<unknown>
+apps/web-demo/src/utils/http/interceptors.ts:170:  return schema ? parseZodHttpPayload(schema, payload) : payload
+apps/web-demo/src/utils/http/interceptors.ts:175:    void notifyUnauthorized().catch(error => {
+apps/web-demo/src/utils/http/interceptors.ts:176:      appLogger.error('[HTTP] Unauthorized handler failed:', error)
+apps/web-demo/src/utils/http/interceptors.ts:179:      t('http.error.unauthorized'),
+apps/web-demo/src/utils/http/interceptors.ts:182:      'Unauthorized',
+apps/web-demo/src/utils/http/interceptors.ts:189:    void notifyUnauthorized().catch(error => {
+apps/web-demo/src/utils/http/interceptors.ts:190:      appLogger.error('[HTTP] Unauthorized handler failed:', error)
+apps/web-demo/src/utils/http/interceptors.ts:193:      t('http.error.unauthorized'),
+apps/web-demo/src/utils/http/interceptors.ts:196:      'Unauthorized',
+apps/web-demo/src/utils/http/interceptors.ts:202:  await tokenRefreshCoordinator.acquireFreshToken()
+apps/web-demo/src/utils/http/interceptors.ts:277: * Read CSRF token from cookie or meta tag.
+apps/web-demo/src/utils/http/interceptors.ts:278: * Tries cookie first (common pattern), then <meta name="csrf-token">.
+apps/web-demo/src/utils/http/interceptors.ts:279: * Returns null if no token found or not in browser environment.
+apps/web-demo/src/utils/http/interceptors.ts:284:  // Try cookie-based token (e.g. XSRF-TOKEN set by backend)
+apps/web-demo/src/utils/http/interceptors.ts:285:  const cookieMatch = document.cookie.match(/(?:XSRF-TOKEN|csrf-token|_csrf)=([^;]+)/)
+apps/web-demo/src/utils/http/interceptors.ts:288:  // Try meta tag token
+apps/web-demo/src/utils/http/interceptors.ts:289:  const meta = document.querySelector('meta[name="csrf-token"]')
+apps/web-demo/src/utils/http/interceptors.ts:320:  const token = readAuthToken()
+apps/web-demo/src/utils/http/interceptors.ts:322:  if (AUTH_ENABLED && token && String(token).trim()) {
+apps/web-demo/src/utils/http/interceptors.ts:323:    method.config.headers['Authorization'] = `Bearer ${token}`
+apps/web-demo/src/utils/http/interceptors.ts:663:      statusMessage = t('http.error.unauthorized')
+apps/web-demo/src/utils/http/interceptors.spec.ts:2:import type { Method } from 'alova'
+apps/web-demo/src/utils/http/interceptors.spec.ts:3:import { z } from 'zod'
+apps/web-demo/src/utils/http/interceptors.spec.ts:12:const mockNotifyUnauthorized = vi.fn(() => Promise.resolve())
+apps/web-demo/src/utils/http/interceptors.spec.ts:14:vi.mock('@/constants/router', () => Object.fromEntries([['AUTH_ENABLED', true]]))
+apps/web-demo/src/utils/http/interceptors.spec.ts:15:vi.mock('@/infra/auth/tokenProvider', () => ({
+apps/web-demo/src/utils/http/interceptors.spec.ts:16:  readAuthToken: () => 'test-token',
+apps/web-demo/src/utils/http/interceptors.spec.ts:17:  notifyUnauthorized: (...args: Parameters<typeof mockNotifyUnauthorized>) =>
+apps/web-demo/src/utils/http/interceptors.spec.ts:18:    mockNotifyUnauthorized(...args),
+apps/web-demo/src/utils/http/interceptors.spec.ts:28:  mockNotifyUnauthorized.mockClear()
+apps/web-demo/src/utils/http/interceptors.spec.ts:30:  setRefreshTokenExecutor(() => Promise.resolve('refreshed-token'))
+apps/web-demo/src/utils/http/interceptors.spec.ts:34:  vi.restoreAllMocks()
+apps/web-demo/src/utils/http/interceptors.spec.ts:37:function createMethod(responseSchema?: z.ZodType<unknown>, overrides?: Partial<Method>): Method {
+apps/web-demo/src/utils/http/interceptors.spec.ts:41:    config: responseSchema ? { responseSchema } : {},
+apps/web-demo/src/utils/http/interceptors.spec.ts:95:      Promise.reject(new HRE('Unauthorized', ET.AUTH, 401, 'Unauthorized'))
+apps/web-demo/src/utils/http/interceptors.spec.ts:99:      { message: 'Unauthorized' },
+apps/web-demo/src/utils/http/interceptors.spec.ts:100:      { status: 401, statusText: 'Unauthorized' }
+apps/web-demo/src/utils/http/interceptors.spec.ts:107:    expect(mockNotifyUnauthorized).toHaveBeenCalled()
+apps/web-demo/src/utils/http/interceptors.spec.ts:203:describe('beforeRequest auth header', () => {
+apps/web-demo/src/utils/http/interceptors.spec.ts:204:  it('injects Authorization header when token is present', () => {
+apps/web-demo/src/api/example/httpAdvanced.ts:1:import { z } from 'zod'
+apps/web-demo/src/api/example/users.ts:6:import { z } from 'zod'
+apps/web-demo/src/api/example/users.ts:8:import { parseZodHttpPayload } from '@/adapters/http.adapter'
+apps/web-demo/src/api/example/users.ts:10:import type { RequestConfig } from '@/utils/http/types'
+apps/web-demo/src/api/example/users.ts:93:  config?: RequestConfig
+apps/web-demo/src/api/example/users.ts:98:    responseSchema: v1UserListApiResponseSchema,
+apps/web-demo/src/api/example/users.ts:103:  post<V1UserItemApiResponse>(USERS_API_URL, parseZodHttpPayload(v1UserCreateSchema, data), {
+apps/web-demo/src/api/example/users.ts:105:    responseSchema: v1UserItemApiResponseSchema,
+apps/web-demo/src/api/example/users.ts:112:    parseZodHttpPayload(v1UserUpdateSchema, data),
+apps/web-demo/src/api/example/users.ts:115:      responseSchema: v1UserItemApiResponseSchema,
+apps/web-demo/src/api/example/users.ts:123:    responseSchema: v1UserDeleteApiResponseSchema,
+apps/web-demo/src/api/example/todos.ts:1:import { z } from 'zod'
+apps/web-demo/src/api/example/todos.ts:2:import type { alovaInstance } from '@/utils/http/instance'
+apps/web-demo/src/api/example/todos.ts:15:export const buildExampleTodoDetailMethod = (client: typeof alovaInstance, id: number | string) =>
+apps/web-demo/src/api/system/preferences.api.ts:1:import type { alovaInstance } from '@/utils/http/instance'
+apps/web-demo/src/api/system/preferences.api.ts:4:import { z } from 'zod'
+apps/web-demo/src/api/system/preferences.api.ts:36:export const buildSystemPreferencesGetMethod = (client: typeof alovaInstance) =>
+apps/web-demo/src/api/system/preferences.api.ts:40:  client: typeof alovaInstance,
+apps/web-demo/src/api/example/users.spec.ts:2:import type { ZodType } from 'zod'
+apps/web-demo/src/api/example/users.spec.ts:66:    const responseSchema = config?.responseSchema as ZodType<unknown>
+apps/web-demo/src/api/example/users.spec.ts:68:    expect(responseSchema.safeParse(apiResponse).success).toBe(true)
+apps/web-demo/src/api/example/users.spec.ts:69:    expect(responseSchema.safeParse(apiResponse.data).success).toBe(false)
+
+## Coupling scan: stores/router/storage in HTTP/API surfaces
+
+## Raw network client scan
+apps/web-demo/src/components/ProTable/hooks/useRecordOverlay.tsx:166:        // Sticky Footer 强制：Dialog 自带 footer 必须隐藏
+apps/web-demo/src/components/ProTable/hooks/useRecordOverlay.tsx:202:        // Sticky Footer 强制：Dialog 自带 footer 必须隐藏
+apps/web-demo/src/components/ProTable/VirtualGridRenderer.vue:353:        class="sticky top-0 z-layout"
+apps/web-demo/src/components/ProTable/engine/types/props.ts:228:   * （如 `fetch(url, { signal })` 或 `axios.get(url, { signal })`）
+apps/web-demo/src/views/example/hooks/use-date-utils.vue:7:type TimezoneId = 'Asia/Shanghai' | 'America/New_York' | 'Europe/London' | 'Asia/Tokyo'
+apps/web-demo/src/views/example/hooks/use-date-utils.vue:127:  { tz: 'Asia/Tokyo', label: '东京' },
+apps/web-demo/src/views/example/hooks/use-date-utils.vue:135:    'Asia/Tokyo': '—',
+apps/web-demo/src/views/example/hooks/use-date-utils.vue:150:    'Asia/Tokyo': build('Asia/Tokyo'),
+apps/web-demo/src/utils/http/methods.ts:512:    const response = await fetch(`${fullUrl}${queryString}`, {
+apps/web-demo/src/utils/http/interceptors.ts:49:  const response = await fetch(REFRESH_ENDPOINT, {
+apps/web-demo/src/utils/http/connection.ts:187:      await fetch(this.config.healthCheckUrl, {
+apps/web-demo/src/layouts/components/LoadingLottie.vue:62:    const res = await fetch(LOADING_JSON_URL[type])
+apps/web-demo/src/views/example/components/primevue-collection/pro-form/basic/index.vue:276:                class="material-elevated col-stretch gap-lg sticky top-0 z-layout bg-muted/80 backdrop-blur-md border-primary/20"
+apps/web-demo/src/views/example/system-configuration/unocss.vue:273:    uiRole: 'Sticky 顶栏',
+apps/web-demo/src/utils/date/timezone.ts:11:  { name: 'Asia/Tokyo', countryCode: 'JP', currentTimeOffsetInMinutes: 540 },
+apps/web-demo/src/utils/date/timezone.ts:36:      const response = await fetch(url, {
+apps/web-demo/src/views/example/components/primevue-collection/pro-form/plugins/index.vue:150:            <div class="sticky top-4">
+
+## Existing contracts
+export interface NetworkRequest {
+  method: 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE'
+  url: string
+  headers?: Readonly<Record<string, string>>
+  body?: unknown
+}
+
+export interface NetworkResponse<T = unknown> {
+  status: number
+  data: T
+  headers: Readonly<Record<string, string>>
+}
+
+export interface NetworkClient {
+  request<T = unknown>(request: NetworkRequest): Promise<NetworkResponse<T>>
+}

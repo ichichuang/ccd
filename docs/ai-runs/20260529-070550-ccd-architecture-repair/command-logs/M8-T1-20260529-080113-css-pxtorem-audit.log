@@ -1,0 +1,261 @@
+M8-T1 CSS px-to-rem audit
+timestamp=20260529-080113
+
+## Ledger tasks
+
+## 16. P2 — CSS, Tokens, and Responsive Engine
+
+Rationale: the current PostCSS px-to-rem setup works by excluding UnoCSS classes through a selector blacklist. This is functional but fragile.
+
+### Tasks
+
+- [ ] [P2-CSS-PxToRemAudit] Audit `postcss-pxtorem` usage in `apps/web-demo/vite.config.ts` and confirm which authored CSS still needs conversion.
+- [ ] [P2-CSS-TokenFirst] Prefer design tokens, CSS variables, `%`, viewport units, container queries, and UnoCSS rules over global px-to-rem conversion.
+- [ ] [P2-CSS-BlacklistRisk] Reduce dependence on long selector blacklists where possible.
+- [ ] [P2-CSS-PrimeVue] Ensure PrimeVue and third-party CSS remain excluded from accidental rem conversion.
+- [ ] [P2-CSS-Mobile] Validate mobile layout and safe-area behavior after CSS changes.
+- [ ] [P2-CSS-Validation] Run visual regression or screenshot checks for `/login`, dashboard, table-heavy views, and chart-heavy views.
+
+## 17. P2 — Generated Artifacts and Governance Discipline
+
+## Vite px-to-rem config
+import postcssPxToRem from 'postcss-pxtorem'
+import { defineConfig, loadEnv, type ConfigEnv, type UserConfigExport } from 'vite'
+import { exclude, include } from './build/optimize'
+import { getPluginsList } from './build/plugins'
+import { __APP_INFO__, alias, pathResolve, root, wrapperEnv } from './build/utils'
+
+// ----------------------------------------------------------------------
+// PostCSS PxToRem 忽略选择器配置
+// 策略：排除 UnoCSS 生成的原子类，仅转换手写的 CSS/SCSS 中的 px
+// ----------------------------------------------------------------------
+const PX_TO_REM_SELECTOR_BLACKLIST: (string | RegExp)[] = [
+  // 排除 UnoCSS 常用工具类
+  /^\.w-(full|auto|screen|min|max|fit)/,
+  /^\.h-(full|auto|screen|min|max|fit)/,
+  /^\.text-(xs|sm|base|lg|xl|2xl|3xl|4xl|5xl|6xl|7xl|8xl|9xl)/,
+  /^\.p-(auto|px|py)/,
+  /^\.m-(auto|px|py)/,
+  /^\.bg-/,
+  /^\.border-(?![\d])/,
+  /^\.rounded-(?![\d])/,
+  /^\.flex/,
+  /^\.grid/,
+  /^\.absolute|\.relative|\.fixed|\.sticky/,
+  /^\.justify-|\.items-|\.content-/,
+  /^\.overflow-|\.cursor-|\.select-/,
+  // 排除响应式前缀
+  /^\.([0-9]+|xs|sm|md|lg|xl|2xl|3xl|4xl|5xl|6xl|7xl|8xl|9xl):/,
+  // 排除系统类
+  /^html$/,
+  /^:root$/,
+  // 排除第三方组件库 (node_modules CSS 已由 postcss-pxtorem.exclude 兜底)
+  /^\.el-/,
+  /^\.ant-/,
+  /^\.van-/,
+  // 排除明确标记的类
+  /no-rem/,
+]
+
+export default ({ mode, command }: ConfigEnv): UserConfigExport => {
+  // 1. 加载环境变量
+  const env = wrapperEnv({
+    ...loadEnv(mode, pathResolve('../../..')),
+    ...loadEnv(mode, root),
+  })
+  const {
+                  atRule.remove()
+                }
+              },
+            },
+          },
+          ...(isBuild
+            ? [
+                postcssPxToRem({
+                  rootValue: 16,
+                  propList: [
+                    '*',
+                    '!border',
+                    '!border-width',
+                    '!border-top-width',
+                    '!border-right-width',
+                    '!border-bottom-width',
+                    '!border-left-width',
+                  ],
+                  selectorBlackList: PX_TO_REM_SELECTOR_BLACKLIST,
+                  replace: true,
+                  mediaQuery: true,
+                  minPixelValue: 1,
+                  unitPrecision: 4,
+                  exclude: /node_modules/i,
+                }),
+              ]
+            : []),
+        ],
+      },
+      preprocessorOptions: {
+        scss: {
+          // 消除 Sass 现代编译器警告
+          api: 'modern-compiler',
+          charset: false,
+        } as any,
+      },
+    },
+  })
+}
+
+## pxtorem package support for function exclude
+6.1.0
+node_modules/postcss-pxtorem/README.md:71:    exclude: /node_modules/i
+node_modules/postcss-pxtorem/README.md:91:- `exclude` (String, Regexp, Function) The file path to ignore and leave as px.
+node_modules/postcss-pxtorem/README.md:93:        - `'exclude'` will match `\project\postcss-pxtorem\exclude\path`
+node_modules/postcss-pxtorem/README.md:95:        - `/exclude/i` will match `\project\postcss-pxtorem\exclude\path`
+node_modules/postcss-pxtorem/README.md:96:    - If value is function, you can use exclude function to return a true and the file will be ignored.
+node_modules/postcss-pxtorem/README.md:98:        - `function (file) { return file.indexOf('exclude') !== -1; }`
+node_modules/postcss-pxtorem/index.js:13:  exclude: null,
+node_modules/postcss-pxtorem/index.js:124:  const exclude = opts.exclude;
+node_modules/postcss-pxtorem/index.js:132:        exclude &&
+node_modules/postcss-pxtorem/index.js:133:        ((type.isFunction(exclude) && exclude(filePath)) ||
+node_modules/postcss-pxtorem/index.js:134:          (type.isString(exclude) && filePath.indexOf(exclude) !== -1) ||
+node_modules/postcss-pxtorem/index.js:135:          filePath.match(exclude) !== null)
+
+## Authored css/scss files
+apps/web-demo/src/assets/styles/ambient-orb-animations.scss
+apps/web-demo/src/assets/styles/animate-lite.scss
+apps/web-demo/src/assets/styles/custom-nprogress.scss
+apps/web-demo/src/assets/styles/custom-primevue.scss
+apps/web-demo/src/assets/styles/interaction.scss
+apps/web-demo/src/assets/styles/reset.scss
+apps/web-demo/src/assets/styles/theme/data-region-transitions.scss
+apps/web-demo/src/assets/styles/theme/modes/circle.scss
+apps/web-demo/src/assets/styles/theme/modes/curtain.scss
+apps/web-demo/src/assets/styles/theme/modes/diamond.scss
+apps/web-demo/src/assets/styles/theme/modes/fade.scss
+apps/web-demo/src/assets/styles/theme/modes/glitch.scss
+apps/web-demo/src/assets/styles/theme/modes/implosion.scss
+apps/web-demo/src/assets/styles/theme/transitions.scss
+
+## px usages in config/style/token surfaces
+apps/web-demo/vite.config.ts:1:import postcssPxToRem from 'postcss-pxtorem'
+apps/web-demo/vite.config.ts:3:import { exclude, include } from './build/optimize'
+apps/web-demo/vite.config.ts:9:// 策略：排除 UnoCSS 生成的原子类，仅转换手写的 CSS/SCSS 中的 px
+apps/web-demo/vite.config.ts:16:  /^\.p-(auto|px|py)/,
+apps/web-demo/vite.config.ts:17:  /^\.m-(auto|px|py)/,
+apps/web-demo/vite.config.ts:31:  // 排除第三方组件库 (node_modules CSS 已由 postcss-pxtorem.exclude 兜底)
+apps/web-demo/vite.config.ts:150:      exclude,
+apps/web-demo/vite.config.ts:260:                  rootValue: 16,
+apps/web-demo/vite.config.ts:261:                  propList: [
+apps/web-demo/vite.config.ts:270:                  selectorBlackList: PX_TO_REM_SELECTOR_BLACKLIST,
+apps/web-demo/vite.config.ts:275:                  exclude: /node_modules/i,
+apps/web-demo/src/assets/styles/animate-lite.scss:293:    transform: perspective(400px) rotate3d(1, 0, 0, 90deg);
+apps/web-demo/src/assets/styles/animate-lite.scss:298:    transform: perspective(400px) rotate3d(1, 0, 0, -20deg);
+apps/web-demo/src/assets/styles/animate-lite.scss:304:    transform: perspective(400px) rotate3d(1, 0, 0, 10deg);
+apps/web-demo/src/assets/styles/animate-lite.scss:308:    transform: perspective(400px) rotate3d(1, 0, 0, -5deg);
+apps/web-demo/src/assets/styles/animate-lite.scss:312:    transform: perspective(400px);
+apps/web-demo/src/assets/styles/animate-lite.scss:318:    transform: perspective(400px);
+apps/web-demo/src/assets/styles/animate-lite.scss:323:    transform: perspective(400px) rotate3d(1, 0, 0, -20deg);
+apps/web-demo/src/assets/styles/animate-lite.scss:328:    transform: perspective(400px) rotate3d(1, 0, 0, 90deg);
+packages/vue-charts/src/chartUtils.ts:7: * - 尺寸：`getChartSizeTokens` / `getChartSystemVariables` 中的 px 一律由
+packages/vue-charts/src/chartUtils.ts:16: * - 线宽：ECharts 1px/2px 惯例常量，不经间距阶梯
+packages/vue-charts/src/chartUtils.ts:17: * - px 阶梯：`./sizeMetrics`（与 `generateSizeVars` 同源）
+packages/vue-charts/src/chartUtils.ts:79:/** `gap-*` 全阶梯 px（与 `gapPx` / `--spacing-*` 同源） */
+packages/vue-charts/src/chartUtils.ts:92:/** `padding-*` 全阶梯 px */
+packages/vue-charts/src/chartUtils.ts:105:/** `margin-*` 全阶梯 px */
+packages/vue-charts/src/chartUtils.ts:118:/** `--font-size-*` 全阶梯 px */
+packages/vue-charts/src/chartUtils.ts:131:/** `--radius-*` 全阶梯 px */
+packages/vue-charts/src/chartUtils.ts:163: * - ECharts 大多接收 number(px) 的尺寸，本 tokens 层输出统一的 px number（或数组）。
+packages/vue-charts/src/chartUtils.ts:235: * 生成图表尺寸 Tokens（px）
+packages/vue-charts/src/chartUtils.ts:238: * - 其余 px 均通过 `spacingPx` / `radiusPx` / `fontPx` + `SizeScaleKey` 推导，与 `generateSizeVars` 同源
+packages/vue-charts/src/sizeMetrics.ts:5: * `--spacing-*` / `--container-padding` / `--radius-*` / `--font-size-*` 同源的 px 数值。
+packages/vue-charts/src/sizeMetrics.ts:29: * 内边距 px（与 `--spacing-{key}` 同源，对应 Uno `p-*` / 语义 padding）
+packages/vue-charts/src/sizeMetrics.ts:36: * 外边距 px（与 `--spacing-{key}` 同源，对应 `m-*` / 语义 margin）
+packages/vue-charts/src/sizeMetrics.ts:43: * 布局 gap px（flex/grid，与 `--spacing-{key}` 同源，对应 `gap-*`）
+packages/design-tokens/src/index.ts:238: * - CScrollbar: px-sm
+packages/design-tokens/src/index.ts:239: * - root menu item: px-md 基础上回收一个 xs，做图标光学校正
+packages/design-tokens/src/index.ts:325:/** 全局设置弹窗宽度（px），SSOT；由 sizeEngine 注入为 --dialog-settings-width */
+packages/design-tokens/src/size.ts:27: * - CScrollbar: px-sm
+packages/design-tokens/src/size.ts:28: * - root menu item: px-md 基础上回收一个 xs，做图标光学校正
+packages/design-tokens/src/size.ts:115:/** 全局设置弹窗宽度（px），SSOT；由 sizeEngine 注入为 --dialog-settings-width */
+apps/web-demo/src/assets/styles/theme/transitions.scss:167:  transform: translateY(-12px) scale(0.98);
+apps/web-demo/src/assets/styles/theme/transitions.scss:168:  filter: blur(6px);
+apps/web-demo/src/assets/styles/theme/transitions.scss:174:  transform: translateY(16px) scale(0.97);
+apps/web-demo/src/assets/styles/theme/transitions.scss:175:  filter: blur(6px);
+apps/web-demo/src/assets/styles/theme/transitions.scss:193:  transform: translateX(-36px);
+apps/web-demo/src/assets/styles/theme/transitions.scss:198:  transform: translateX(24px);
+apps/web-demo/src/assets/styles/custom-nprogress.scss:18:    height: 3px;
+apps/web-demo/src/assets/styles/custom-nprogress.scss:22:      0 0 10px rgb(var(--primary) / 45%),
+apps/web-demo/src/assets/styles/custom-nprogress.scss:23:      0 0 20px rgb(var(--accent) / 35%);
+apps/web-demo/src/assets/styles/custom-nprogress.scss:34:    width: 100px;
+apps/web-demo/src/assets/styles/custom-nprogress.scss:37:      0 0 10px rgb(var(--accent) / 35%),
+apps/web-demo/src/assets/styles/custom-nprogress.scss:38:      0 0 5px rgb(var(--accent) / 25%);
+apps/web-demo/src/assets/styles/custom-nprogress.scss:40:    transform: rotate(3deg) translate(0, -4px);
+apps/web-demo/src/assets/styles/custom-nprogress.scss:52:      0 0 8px rgb(var(--primary) / 35%),
+apps/web-demo/src/assets/styles/custom-nprogress.scss:53:      0 0 16px rgb(var(--accent) / 25%);
+apps/web-demo/src/assets/styles/custom-nprogress.scss:58:      0 0 16px rgb(var(--accent) / 40%),
+apps/web-demo/src/assets/styles/custom-nprogress.scss:59:      0 0 32px rgb(var(--primary) / 30%);
+apps/web-demo/src/assets/styles/custom-nprogress.scss:64:      0 0 8px rgb(var(--primary) / 35%),
+apps/web-demo/src/assets/styles/custom-nprogress.scss:65:      0 0 16px rgb(var(--accent) / 25%);
+packages/vue-primevue-adapter/src/theme/presetSemantic.ts:14:      shadow: '0 0 0 2px rgb(var(--ring) / 0.5)',
+packages/vue-primevue-adapter/src/theme/presetSemantic.ts:30:        shadow: '0 0 0 2px rgb(var(--ring) / 0.5)',
+apps/web-demo/src/assets/styles/interaction.scss:65:      transform: translateY(-1px);
+apps/web-demo/src/assets/styles/ambient-orb-animations.scss:12:    transform: translate3d(28px, -20px, 0) scale(1.04);
+apps/web-demo/src/assets/styles/ambient-orb-animations.scss:16:    transform: translate3d(16px, -56px, 0) scale(1.08);
+apps/web-demo/src/assets/styles/ambient-orb-animations.scss:20:    transform: translate3d(42px, -68px, 0) scale(1.12);
+apps/web-demo/src/assets/styles/ambient-orb-animations.scss:30:    transform: translate3d(-34px, 18px, 0) scale(0.98);
+apps/web-demo/src/assets/styles/ambient-orb-animations.scss:34:    transform: translate3d(-58px, 42px, 0) scale(0.95);
+apps/web-demo/src/assets/styles/ambient-orb-animations.scss:38:    transform: translate3d(-78px, 56px, 0) scale(0.9);
+apps/web-demo/src/assets/styles/ambient-orb-animations.scss:49:    transform: translate3d(8px, -10px, 0) scale(1.08);
+packages/vue-charts/src/UseEcharts/utils/types.ts:345:   * - :style="{ padding: '16px', borderRadius: '8px' }"
+packages/vue-primevue-adapter/src/theme/primevuePreset.ts:46://      仅负责视觉材质与动效（glass/motion/transition），禁止密度类覆盖（p-*/px-*/py-*）。
+apps/web-demo/src/assets/styles/custom-primevue.scss:257:      transform: translate3d(0, -4px, 0);
+apps/web-demo/src/assets/styles/custom-primevue.scss:274:      transform: translate3d(0, -4px, 0);
+apps/web-demo/src/assets/styles/custom-primevue.scss:350:  border-right: 1px solid rgb(var(--sidebar-border) / 78%) !important;
+apps/web-demo/src/assets/styles/custom-primevue.scss:353:    0 0 0 1px rgb(var(--foreground) / 4%),
+apps/web-demo/src/assets/styles/custom-primevue.scss:402:  box-shadow: inset 0 0 0 1px rgb(var(--foreground) / 2%);
+apps/web-demo/src/assets/styles/custom-primevue.scss:419:    0 0 0 1px rgb(var(--foreground) / 3%),
+apps/web-demo/src/assets/styles/custom-primevue.scss:550:  box-shadow: 0 0 0 2px rgb(var(--danger) / 36%) !important;
+apps/web-demo/src/assets/styles/reset.scss:31:  --safe-top: env(safe-area-inset-top, 0px);
+apps/web-demo/src/assets/styles/reset.scss:32:  --safe-bottom: env(safe-area-inset-bottom, 0px);
+apps/web-demo/src/assets/styles/reset.scss:33:  --safe-left: env(safe-area-inset-left, 0px);
+apps/web-demo/src/assets/styles/reset.scss:34:  --safe-right: env(safe-area-inset-right, 0px);
+apps/web-demo/src/assets/styles/reset.scss:112:  box-shadow: 0 0 0 1px rgb(var(--primary) / 32%);
+apps/web-demo/src/assets/styles/reset.scss:130:  box-shadow: 0 0 0 1px rgb(var(--primary) / 36%);
+packages/vue-ui/src/Icons/Icons.vue:20:const ALLOWED_SIZE_UNIT_PATTERN = /^-?\d+(\.\d+)?(px|%|vw|vh)$/
+packages/vue-ui/src/Icons/Icons.vue:100:  // 数字或纯数字字符串统一按 px 处理，避免 rem/em 心智负担
+packages/vue-ui/src/Icons/Icons.vue:102:    const px = Math.round(s)
+packages/vue-ui/src/Icons/Icons.vue:103:    return { fontSize: `${px}px` }
+packages/vue-ui/src/Icons/Icons.vue:107:    const px = Math.round(numeric)
+packages/vue-ui/src/Icons/Icons.vue:108:    return { fontSize: `${px}px` }
+packages/vue-ui/src/Icons/Icons.vue:112:    warnDev(`Invalid size "${s}". Allowed units: px, %, vw, vh, var(--*).`)
+packages/vue-ui/src/CScrollbar/CScrollbar.vue:52:  bottom: `${props.backToTopOffsetBottom}px`,
+packages/vue-ui/src/CScrollbar/CScrollbar.vue:53:  right: `${props.backToTopOffsetRight}px`,
+packages/vue-ui/src/CScrollbar/CScrollbar.vue:572:  box-shadow: 0 0 0 1px rgb(var(--foreground) / 22%);
+packages/vue-ui/src/CScrollbar/CScrollbar.vue:617:  box-shadow: 0 0 0 1px rgb(var(--foreground) / 22%);
+packages/vue-ui/src/CScrollbar/CScrollbar.vue:638:  box-shadow: 0 0 0 1px rgb(var(--foreground) / 24%);
+packages/vue-ui/src/EmptyState/EmptyState.vue:51:  <div class="col-center gap-md py-2xl px-lg text-center">
+packages/vue-charts/src/useChartTheme/defaults.ts:48:    top: `${systemVars.gapSm}px`,
+packages/vue-primevue-adapter/src/theme/presetComponents/menuNavMisc.ts:56:        borderWidth: '1px',
+packages/vue-primevue-adapter/src/theme/presetComponents/menuNavMisc.ts:59:          '0 10px 15px -3px rgb(var(--foreground) / 0.08), 0 4px 6px -4px rgb(var(--foreground) / 0.06)',
+packages/vue-primevue-adapter/src/theme/presetComponents/menuNavMisc.ts:236:        borderWidth: '0 0 1px 0',
+packages/vue-primevue-adapter/src/theme/presetComponents/menuNavMisc.ts:244:        borderWidth: '0 0 1px 0',
+packages/vue-primevue-adapter/src/theme/presetComponents/menuNavMisc.ts:253:        margin: '0 0 -1px 0',
+packages/vue-primevue-adapter/src/theme/presetComponents/menuNavMisc.ts:256:          offset: '-1px',
+packages/vue-primevue-adapter/src/theme/presetComponents/menuNavMisc.ts:270:          offset: '-1px',
+packages/vue-primevue-adapter/src/theme/presetComponents/menuNavMisc.ts:274:        height: '1px',
+packages/vue-primevue-adapter/src/theme/presetComponents/menuNavMisc.ts:275:        bottom: '-1px',
+packages/vue-primevue-adapter/src/theme/presetComponents/base.ts:191:        borderWidth: '1px',
+packages/vue-primevue-adapter/src/theme/presetComponents/base.ts:204:          width: '1px',
+packages/vue-primevue-adapter/src/theme/presetComponents/base.ts:219:        size: '2px',
+packages/vue-ui/src/Icons/utils/types.ts:10: * - number: 数字，单位为 px
+packages/vue-ui/src/Icons/utils/types.ts:11: * - string: 字符串，支持 px、%、vw、vh 等单位
+packages/vue-ui/src/Icons/utils/types.ts:60:   * - 数字：单位为 px
+packages/vue-ui/src/Icons/utils/types.ts:61:   * - 字符串：支持 px、%、vw、vh 等单位
+packages/vue-ui/src/CScrollbar/utils/types.ts:72:   * 从内容顶部向下滚动的距离（px）超过该值时显示返回顶部按钮；语义为 scrollTop，非距底部剩余距离
+packages/vue-ui/src/CScrollbar/utils/types.ts:78:   * 返回顶部按钮距定位容器底部（px）；按钮位于滚动视口外层的定位层，不随内容滚动
+packages/vue-ui/src/CScrollbar/utils/types.ts:84:   * 返回顶部按钮距定位容器右侧（px）
+packages/vue-ui/src/CScrollbar/utils/constants.ts:17:/** 返回顶部浮动按钮默认边距（px），与 bottom/right 一致 */
+packages/vue-charts/src/useChartTheme/types.ts:175:  /** 图表尺寸 tokens（px），与 SizeMode 对齐，用于默认值补齐 */
+packages/vue-primevue-adapter/src/theme/presetComponents/data.ts:10:    'var(--spacing-sm) calc(var(--spacing-sm) + var(--spacing-xs)) 0px calc(var(--spacing-sm) + var(--spacing-xs))'
+packages/vue-primevue-adapter/src/theme/presetComponents/data.ts:58:            '0 4px 6px -1px rgb(var(--foreground)/0.08), 0 2px 4px -2px rgb(var(--foreground)/0.06)',
+packages/vue-primevue-adapter/src/theme/presetComponents/data.ts:66:            '0 4px 6px -1px rgb(var(--foreground)/0.08), 0 2px 4px -2px rgb(var(--foreground)/0.06)',
+packages/vue-primevue-adapter/src/theme/presetComponents/data.ts:225:          offset: '-1px',

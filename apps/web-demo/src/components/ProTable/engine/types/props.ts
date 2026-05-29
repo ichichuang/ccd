@@ -1,6 +1,5 @@
 import type { FilterState, SortState } from './tableState'
 import type { ProTableColumn } from './column'
-import type { RequestConfig as HttpRequestConfig } from '@/utils/http/types'
 
 export interface PaginationConfig {
   pageSize?: number
@@ -37,13 +36,29 @@ export interface RequestConfig {
 export type ProTableApiMethod = 'GET' | 'POST'
 
 /**
+ * apiUrl 模式下透传给外部请求执行器的配置。
+ * 保持为本地结构类型，避免 ProTable 组件 API 绑定具体 HTTP 客户端。
+ */
+export interface ProTableApiConfig {
+  headers?: Record<string, string>
+  timeout?: number
+  enableCache?: boolean
+  cacheTTL?: number
+  deduplicate?: boolean
+  cancelStrategy?: 'none' | 'cancelPrevious'
+  globalError?: 'default' | 'silent'
+  signal?: AbortSignal
+  [key: string]: unknown
+}
+
+/**
  * apiUrl 模式下的外部请求执行器上下文（防腐层注入）
  */
 export interface ProTableApiExecutorContext {
   url: string
   method: ProTableApiMethod
   query: ProTableApiQueryParams
-  config?: HttpRequestConfig
+  config?: ProTableApiConfig
 }
 
 /**
@@ -179,7 +194,7 @@ export interface ProTableProps<T extends Record<string, unknown> = Record<string
   /** HTTP method for config-driven mode. @default 'GET' */
   apiMethod?: ProTableApiMethod
   /** Extra HTTP config passed to external apiExecutor (headers, timeout, enableCache, retry, etc.) */
-  apiConfig?: HttpRequestConfig
+  apiConfig?: ProTableApiConfig
   /**
    * apiUrl 模式的请求执行器（防腐层）
    * 未提供时，apiUrl 模式将抛错，避免组件直接绑定底层请求库

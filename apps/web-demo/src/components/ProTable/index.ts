@@ -26,6 +26,9 @@ export type {
   ProTableLoadParams,
   StandardTableParams,
   ProTableApiQueryParams,
+  ProTableApiConfig,
+  ProTableApiExecutor,
+  ProTableApiExecutorContext,
   ProTableSearchParams,
   ProTableApiFn,
   ProTableRequestResult,
@@ -34,6 +37,7 @@ export type {
   RequestConfig,
   HeightMode,
   ProTableApiMethod,
+  ProTableUrlSyncOptions,
   SearchPathResolver,
 } from './engine/types/props'
 export { formatRequestParams, formatResponseData, resolveApiUrl } from './engine/config/apiAdapter'

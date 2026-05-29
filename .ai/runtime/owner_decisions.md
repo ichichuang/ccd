@@ -77,3 +77,20 @@ Pending decisions requiring explicit sign-off from project owner/architect.
 **Proposed default:** Add `ai:guard --staged` to pre-commit hook and `ai:guard` to CI pipeline.
 
 **Status:** PENDING — requires CI pipeline access and team agreement.
+
+---
+
+## Decision 6: HTTP contract package scope
+
+**Item:** `repair_list.md` — `[P1-HttpContract-Contracts]` and `[P1-HttpContract-Core]`
+
+**Context:** M5 inventory found an existing runtime-neutral `packages/contracts/src/network.ts` contract and app HTTP infrastructure under `apps/web-demo/src/utils/http/**`. Creating `packages/contracts/src/http/**` or `packages/core/src/http/**` would be new architecture surface.
+
+**Proposed default:**
+
+- Keep `packages/contracts/src/network.ts` as the current low-level runtime-neutral contract.
+- Do not add `packages/contracts/src/http/**` until request/error/retry/timeout/auth policy shapes are approved.
+- Do not add `packages/core/src/http/**` unless a runtime-neutral orchestration need is proven.
+- Keep alova implementation in the approved app infrastructure path `apps/web-demo/src/utils/http/**` unless owner approves a broad move to `apps/web-demo/src/adapters/http/**`.
+
+**Status:** PENDING — requires owner approval before new contracts/core HTTP package paths or broad HTTP import-path migration.

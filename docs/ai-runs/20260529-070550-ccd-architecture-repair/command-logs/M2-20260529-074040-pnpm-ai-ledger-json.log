@@ -1,0 +1,9 @@
+command: pnpm ai:ledger:json
+timestamp_start: 2026-05-29T07:40:40+0800
+
+> ccd@1.0.38 ai:ledger:json /Users/cc/MyPorject/ccd
+> node scripts/migrate-ledger.mjs
+
+[LEDGER] .ai/runtime/repair-ledger.json (145 tasks)
+timestamp_end: 2026-05-29T07:40:40+0800
+exit_code: 0

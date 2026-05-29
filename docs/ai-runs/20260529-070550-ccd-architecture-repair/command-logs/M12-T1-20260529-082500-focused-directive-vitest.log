@@ -1,0 +1,17 @@
+
+ RUN  v4.0.18 /Users/cc/MyPorject/ccd
+
+ ✓ |node| apps/web-demo/src/directives/longPress.spec.ts (1 test) 1ms
+ ✓ |node| apps/web-demo/src/directives/tap.spec.ts (1 test) 1ms
+ ✓ |node| apps/web-demo/src/directives/swipe.spec.ts (1 test) 1ms
+ ✓ |node| packages/vue-hooks/src/directives/install.spec.ts (2 tests) 2ms
+ ✓ |node| apps/web-demo/src/directives/auth.spec.ts (9 tests) 8ms
+ ✓ |node| packages/vue-hooks/src/directives/swipe.spec.ts (4 tests) 3ms
+ ✓ |node| packages/vue-hooks/src/directives/tap.spec.ts (3 tests) 2ms
+ ✓ |node| packages/vue-hooks/src/directives/longPress.spec.ts (4 tests) 3ms
+
+ Test Files  8 passed (8)
+      Tests  25 passed (25)
+   Start at  10:09:15
+   Duration  629ms (transform 302ms, setup 0ms, import 1.42s, tests 20ms, environment 1.93s)
+

@@ -1,0 +1,37 @@
+{
+  "wrote": "docs/ai-runs/20260529-070550-ccd-architecture-repair/reports/M8-ab-baseline-table-diagnostic.json",
+  "datatableCount": 1,
+  "firstChain": [
+    {
+      "tag": "DIV",
+      "id": "",
+      "className": "p-datatable p-component p-datatable-hoverable p-datatable-scrollable p-datatable-flex-scrollable pro-table-h-lines layout-full",
+      "width": 910,
+      "height": 0,
+      "display": "flex",
+      "visibility": "visible",
+      "overflow": "visible/visible/visible"
+    },
+    {
+      "tag": "DIV",
+      "id": "",
+      "className": "col-fill relative",
+      "width": 910,
+      "height": 0,
+      "display": "flex",
+      "visibility": "visible",
+      "overflow": "hidden/hidden/hidden"
+    },
+    {
+      "tag": "DIV",
+      "id": "",
+      "className": "col-fill",
+      "width": 910,
+      "height": 0,
+      "display": "flex",
+      "visibility": "visible",
+      "overflow": "hidden/hidden/hidden"
+    }
+  ],
+  "consoleErrors": 0
+}

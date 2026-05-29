@@ -2,7 +2,7 @@
 import { jsonPlaceholderPostSchema, type JsonPlaceholderPostDTO } from '@/api/example/httpAdvanced'
 import { get, getCacheStats, getRequestStats, clearCache, clearRequests } from '@/utils/http'
 import type { CacheStats, RequestStats, RetryConfig } from '@/utils/http'
-import { DateUtils } from '@/utils/date/dateUtils'
+import { DateUtils } from '@/utils/date'
 
 defineOptions({ name: 'ExampleUtilHttpAdvanced' })
 

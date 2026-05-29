@@ -1,7 +1,7 @@
 <script setup lang="ts">
 defineOptions({ name: 'ExampleKeepAlive' })
 
-import { DateUtils } from '@/utils/date/dateUtils'
+import { DateUtils } from '@/utils/date'
 
 const router = useRouter()
 const route = useRoute()

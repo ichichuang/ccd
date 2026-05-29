@@ -1,0 +1,4 @@
+command: rg warning/no-output scan over M1-T3 build logs
+timestamp_start: 2026-05-29T07:36:48+0800
+timestamp_end: 2026-05-29T07:36:48+0800
+exit_code: 0

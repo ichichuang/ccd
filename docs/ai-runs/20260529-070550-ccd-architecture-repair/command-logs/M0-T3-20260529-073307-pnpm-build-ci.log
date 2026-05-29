@@ -1,0 +1,487 @@
+command: pnpm build:ci
+timestamp_start: 2026-05-29T07:33:07+0800
+
+> ccd@1.0.38 build:ci /Users/cc/MyPorject/ccd
+> bash scripts/exec.sh pnpm ci:prepare-internal && bash scripts/exec.sh pnpm ci:smoke:packages && bash scripts/exec.sh pnpm validate:governance && bash scripts/exec.sh pnpm exec turbo run build
+
+
+> ccd@1.0.38 ci:prepare-internal /Users/cc/MyPorject/ccd
+> pnpm ci:clean-artifacts && pnpm --filter @ccd/contracts build && pnpm --filter @ccd/design-tokens build && pnpm --filter @ccd/shared-utils build && pnpm --filter @ccd/core build && pnpm --filter @ccd/unocss-preset build && pnpm --filter @ccd/vue-hooks build && pnpm --filter @ccd/vue-app-platform build && pnpm --filter @ccd/vue-ui build && pnpm --filter @ccd/vue-primevue-adapter build && pnpm --filter @ccd/vue-charts build
+
+
+> ccd@1.0.38 ci:clean-artifacts /Users/cc/MyPorject/ccd
+> rm -rf packages/*/dist apps/*/dist node_modules/.tmp
+
+
+> @ccd/contracts@1.0.38 build /Users/cc/MyPorject/ccd/packages/contracts
+> rm -rf dist && rm -f ../../node_modules/.tmp/packages-contracts.tsbuildinfo && tsc -b tsconfig.json --force
+
+
+> @ccd/design-tokens@1.0.38 build /Users/cc/MyPorject/ccd/packages/design-tokens
+> rm -f ../../node_modules/.tmp/packages-design-tokens.tsbuildinfo && tsc -p tsconfig.json
+
+
+> @ccd/shared-utils@1.0.38 build /Users/cc/MyPorject/ccd/packages/shared-utils
+> rm -f ../../node_modules/.tmp/packages-shared-utils.tsbuildinfo && tsc -p tsconfig.json
+
+
+> @ccd/core@1.0.38 build /Users/cc/MyPorject/ccd/packages/core
+> rm -rf dist && rm -f ../../node_modules/.tmp/packages-core.tsbuildinfo && tsc -b tsconfig.json --force
+
+
+> @ccd/unocss-preset@1.0.38 build /Users/cc/MyPorject/ccd/packages/unocss-preset
+> rm -rf dist && rm -f ../../node_modules/.tmp/packages-unocss-preset.tsbuildinfo && tsc -p tsconfig.json
+
+
+> @ccd/vue-hooks@1.0.38 build /Users/cc/MyPorject/ccd/packages/vue-hooks
+> rm -f ../../node_modules/.tmp/packages-vue-hooks.tsbuildinfo && tsc -p tsconfig.json
+
+
+> @ccd/vue-app-platform@1.0.38 build /Users/cc/MyPorject/ccd/packages/vue-app-platform
+> rm -f ../../node_modules/.tmp/packages-vue-app-platform.tsbuildinfo && tsc -p tsconfig.json
+
+
+> @ccd/vue-ui@1.0.38 build /Users/cc/MyPorject/ccd/packages/vue-ui
+> rm -rf dist && rm -f ../../node_modules/.tmp/packages-vue-ui.tsbuildinfo && vite build --config vite.config.ts && vue-tsc -p tsconfig.build.json
+
+vite v7.3.3 building client environment for production...
+transforming...
+✓ 15 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/vue-ui.css  16.98 kB │ gzip: 2.95 kB
+dist/index.js    20.66 kB │ gzip: 6.63 kB
+✓ built in 206ms
+
+> @ccd/vue-primevue-adapter@1.0.38 build /Users/cc/MyPorject/ccd/packages/vue-primevue-adapter
+> rm -f ../../node_modules/.tmp/packages-vue-primevue-adapter.tsbuildinfo && tsc -p tsconfig.json
+
+
+> @ccd/vue-charts@1.0.38 build /Users/cc/MyPorject/ccd/packages/vue-charts
+> rm -rf dist && rm -f ../../node_modules/.tmp/packages-vue-charts.tsbuildinfo && vite build --config vite.config.ts && vue-tsc -p tsconfig.build.json
+
+vite v7.3.3 building client environment for production...
+transforming...
+✓ 46 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/echarts-setup.js   0.07 kB │ gzip:  0.09 kB
+dist/index.js          89.94 kB │ gzip: 21.36 kB
+✓ built in 166ms
+
+> ccd@1.0.38 ci:smoke:packages /Users/cc/MyPorject/ccd
+> node scripts/ci/package-resolution-smoke.mjs
+
+[smoke] @ccd/contracts resolved OK
+[smoke] @ccd/core resolved OK
+[smoke] @ccd/design-tokens resolved OK
+[smoke] @ccd/unocss-preset resolved OK
+[smoke] packages/contracts/dist/index.d.ts exists
+[smoke] packages/core/dist/index.d.ts exists
+[smoke] packages/design-tokens/dist/index.d.ts exists
+[smoke] packages/unocss-preset/dist/index.d.ts exists
+[smoke] All package resolution checks passed
+
+> ccd@1.0.38 validate:governance /Users/cc/MyPorject/ccd
+> pnpm governance:gate
+
+
+> ccd@1.0.38 governance:gate /Users/cc/MyPorject/ccd
+> bash scripts/exec.sh node scripts/governance/gate.mjs
+
+
+[gate] project metadata drift
+
+> ccd@1.0.38 project:doctor /Users/cc/MyPorject/ccd
+> node scripts/project-config.mjs doctor
+
+file                                       | field                | expected                                                                    | actual                                                                      | status
+-------------------------------------------|----------------------|-----------------------------------------------------------------------------|-----------------------------------------------------------------------------|-------
+package.json                               | name                 | ccd                                                                         | ccd                                                                         | ok    
+package.json                               | version              | 1.0.38                                                                      | 1.0.38                                                                      | ok    
+package.json                               | description          | Self-protecting deterministic multi-runtime platform architecture.          | Self-protecting deterministic multi-runtime platform architecture.          | ok    
+package.json                               | author               | Chi Chuang                                                                  | Chi Chuang                                                                  | ok    
+package.json                               | license              | GPL-3.0                                                                     | GPL-3.0                                                                     | ok    
+package.json                               | homepage             | https://www.ccd.wzdxcc.cloudns.org/                                         | https://www.ccd.wzdxcc.cloudns.org/                                         | ok    
+package.json                               | keywords             | ["vue3","typescript","vite","tauri","monorepo","governance","architecture"] | ["vue3","typescript","vite","tauri","monorepo","governance","architecture"] | ok    
+apps/web-demo/src/constants/brand.ts       | name                 | ccd                                                                         | ccd                                                                         | ok    
+apps/web-demo/src/constants/brand.ts       | displayName          | CCD                                                                         | CCD                                                                         | ok    
+apps/web-demo/src/constants/brand.ts       | subtitle             | Platform                                                                    | Platform                                                                    | ok    
+apps/web-demo/src/constants/brand.ts       | description          | Self-protecting deterministic multi-runtime platform architecture.          | Self-protecting deterministic multi-runtime platform architecture.          | ok    
+apps/web-demo/src/constants/brand.ts       | slogan               | Self-protecting deterministic multi-runtime platform architecture           | Self-protecting deterministic multi-runtime platform architecture           | ok    
+apps/web-demo/src/constants/brand.ts       | author               | Chi Chuang                                                                  | Chi Chuang                                                                  | ok    
+apps/desktop/package.json                  | version              | 1.0.38                                                                      | 1.0.38                                                                      | ok    
+apps/web-demo/package.json                 | version              | 1.0.38                                                                      | 1.0.38                                                                      | ok    
+packages/contracts/package.json            | version              | 1.0.38                                                                      | 1.0.38                                                                      | ok    
+packages/core/package.json                 | version              | 1.0.38                                                                      | 1.0.38                                                                      | ok    
+packages/design-tokens/package.json        | version              | 1.0.38                                                                      | 1.0.38                                                                      | ok    
+packages/shared-utils/package.json         | version              | 1.0.38                                                                      | 1.0.38                                                                      | ok    
+packages/unocss-preset/package.json        | version              | 1.0.38                                                                      | 1.0.38                                                                      | ok    
+packages/vue-app-platform/package.json     | version              | 1.0.38                                                                      | 1.0.38                                                                      | ok    
+packages/vue-charts/package.json           | version              | 1.0.38                                                                      | 1.0.38                                                                      | ok    
+packages/vue-hooks/package.json            | version              | 1.0.38                                                                      | 1.0.38                                                                      | ok    
+packages/vue-primevue-adapter/package.json | version              | 1.0.38                                                                      | 1.0.38                                                                      | ok    
+packages/vue-ui/package.json               | version              | 1.0.38                                                                      | 1.0.38                                                                      | ok    
+apps/desktop/src-tauri/tauri.conf.json     | productName          | CCD Desktop                                                                 | CCD Desktop                                                                 | ok    
+apps/desktop/src-tauri/tauri.conf.json     | version              | 1.0.38                                                                      | 1.0.38                                                                      | ok    
+apps/desktop/src-tauri/tauri.conf.json     | identifier           | com.ccd.desktop                                                             | com.ccd.desktop                                                             | ok    
+apps/desktop/src-tauri/tauri.conf.json     | app.windows[0].title | CCD Desktop                                                                 | CCD Desktop                                                                 | ok    
+.ai/governance/policies/version.json       | policyVersion        | 2026.05.18                                                                  | 2026.05.18                                                                  | ok    
+.ai/governance/policies/version.json       | governancePhase      | phase-4-self-protecting-platform                                            | phase-4-self-protecting-platform                                            | ok    
+
+[gate] governance assets
+
+> ccd@1.0.38 governance:validate /Users/cc/MyPorject/ccd
+> node scripts/governance/validate.mjs
+
+[OK] governance asset: .ai/protocol/version.json
+[OK] governance asset: .ai/governance/policies/version.json
+[OK] governance asset: .ai/governance/policies/topology.json
+[OK] governance asset: .ai/governance/policies/runtime.json
+[OK] governance asset: .ai/governance/policies/ai.json
+[OK] governance asset: .ai/governance/policies/api.json
+[OK] governance asset: .ai/governance/policies/supply-chain.json
+[OK] governance asset: .ai/governance/policies/release.json
+[OK] governance asset: .ai/orchestration/manifest.json
+[OK] governance asset: .ai/runtime-profile/local/profile.json
+[OK] governance asset: .ai/runtime-profile/desktop/profile.json
+[OK] governance asset: .changeset/config.json
+[OK] governance asset: .github/CODEOWNERS
+[OK] governance asset: mise.toml
+[OK] governance asset: scripts/env.sh
+[OK] governance asset: scripts/exec.sh
+[OK] governance asset: scripts/env-doctor.mjs
+[OK] governance asset: scripts/ai-os-doctor.mjs
+[OK] governance asset: scripts/bootstrap-runtime.sh
+[OK] governance asset: docs/architecture/stable-baseline.md
+[OK] governance asset: docs/runtime/execute-reliability.md
+[OK] governance asset: docs/runtime/runtime-isolation.md
+[OK] governance asset: docs/governance/protocol-versioning.md
+[OK] governance asset: docs/governance/adapter-architecture.md
+[OK] governance asset: docs/governance/ai-orchestration.md
+[OK] governance asset: docs/release/release-policy.md
+[OK] governance asset: docs/release/runtime-promotion-checklist.md
+[OK] governance asset: scripts/diagnostics/codex-execute-doctor.mjs
+[OK] governance asset: scripts/diagnostics/codex-cache-inspect.mjs
+[OK] governance asset: scripts/diagnostics/codex-provider-inspect.mjs
+[OK] governance asset: scripts/diagnostics/codex-routing-inspect.mjs
+[OK] governance asset: scripts/runtime/codex-exec-wrapper.mjs
+[OK] governance asset: scripts/runtime/cache-governance.mjs
+[OK] governance asset: scripts/runtime/provider-transport-validate.mjs
+[OK] governance asset: .ai/execution/execution-fingerprint.json
+[OK] governance asset: .ai/execution/provider-session.json
+[OK] governance asset: .ai/execution/runtime-session.json
+[OK] protocol version field: protocolVersion=1.0.0
+[OK] protocol version field: manifestVersion=1.0.0
+[OK] protocol version field: adapterVersion=1.0.0
+[OK] protocol version field: governanceVersion=1.0.0
+[OK] protocol version field: governanceBaselineVersion=2026.05-main-governance.1
+[OK] protocol version field: runtimeProfileSchemaVersion=1.0.0
+[OK] protocol version field: routerSchemaVersion=1.0.0
+[OK] pnpm workspace has no removed archive package paths
+
+[gate] AI architecture guard
+
+> ccd@1.0.38 ai:guard /Users/cc/MyPorject/ccd
+> node scripts/ai-architecture-guard.mjs -- --format=json
+
+{
+  "ok": true,
+  "mode": "full",
+  "scannedFiles": null,
+  "findings": []
+}
+
+[gate] architecture boundaries
+
+> ccd@1.0.38 arch:boundaries /Users/cc/MyPorject/ccd
+> depcruise --config .dependency-cruiser.cjs apps packages && node scripts/architecture/validate-boundaries.mjs
+
+
+✔ no dependency violations found (721 modules, 1582 dependencies cruised)
+
+Architecture boundary validation passed.
+
+[gate] runtime leak detection
+
+> ccd@1.0.38 arch:runtime /Users/cc/MyPorject/ccd
+> node scripts/architecture/check-runtime-leaks.mjs && node scripts/architecture/check-root-runtime-decommissioned.mjs
+
+Runtime leak validation passed.
+[root-runtime] root runtime decommission guard passed
+
+[gate] API snapshot compatibility
+
+> ccd@1.0.38 api:report /Users/cc/MyPorject/ccd
+> node scripts/architecture/check-api-surface.mjs
+
+API surface report generated: docs/generated/api-surface-report.json
+
+[gate] supply-chain policy
+
+> ccd@1.0.38 supply:check /Users/cc/MyPorject/ccd
+> node scripts/architecture/check-supply-chain.mjs
+
+Supply chain validation passed.
+
+[gate] release topology
+
+> ccd@1.0.38 release:governance /Users/cc/MyPorject/ccd
+> node scripts/architecture/check-release-governance.mjs
+
+Release governance validation passed.
+
+[gate] GitHub workflow registry hygiene
+GitHub workflow registry hygiene passed.
+
+[gate] governance report generation
+
+> ccd@1.0.38 arch:report /Users/cc/MyPorject/ccd
+> node scripts/governance/report.mjs
+
+[GENERATED] .ai/generated/governance-report.json
+[GENERATED] docs/generated/governance-report.md
+
+[gate] dependency graph generation
+
+> ccd@1.0.38 arch:graphs /Users/cc/MyPorject/ccd
+> node scripts/architecture/generate-dependency-graphs.mjs
+
+Generated dependency graphs in docs/generated/graphs
+
+[gate] documentation command validation
+[doc-commands] All pnpm command references in documentation are valid. (88 files scanned)
+
+[gate] normalizing generated artifacts before sync check
+
+[gate] governance artifact sync
+
+[gate:pass] unified governance gate passed
+• turbo 2.9.14
+
+   • Packages in scope: @ccd/contracts, @ccd/core, @ccd/design-tokens, @ccd/desktop, @ccd/shared-utils, @ccd/unocss-preset, @ccd/vue-app-platform, @ccd/vue-charts, @ccd/vue-hooks, @ccd/vue-primevue-adapter, @ccd/vue-ui, @ccd/web-demo
+   • Running build in 12 packages
+   • Remote caching disabled
+
+@ccd/contracts:build: cache hit, replaying logs 28ee272df9bf1f66
+@ccd/contracts:build: 
+@ccd/contracts:build: > @ccd/contracts@1.0.38 build /Users/cc/MyPorject/ccd/packages/contracts
+@ccd/contracts:build: > rm -rf dist && rm -f ../../node_modules/.tmp/packages-contracts.tsbuildinfo && tsc -b tsconfig.json --force
+@ccd/contracts:build: 
+@ccd/vue-app-platform:build: cache hit, replaying logs b7eb386a0080ef2d
+@ccd/vue-app-platform:build: 
+@ccd/vue-app-platform:build: > @ccd/vue-app-platform@1.0.38 build /Users/cc/MyPorject/ccd/packages/vue-app-platform
+@ccd/vue-app-platform:build: > rm -f ../../node_modules/.tmp/packages-vue-app-platform.tsbuildinfo && tsc -p tsconfig.json
+@ccd/vue-app-platform:build: 
+@ccd/core:build: cache hit, replaying logs a75b26b76429d138
+@ccd/core:build: 
+@ccd/core:build: > @ccd/core@1.0.38 build /Users/cc/MyPorject/ccd/packages/core
+@ccd/core:build: > rm -rf dist && rm -f ../../node_modules/.tmp/packages-core.tsbuildinfo && tsc -b tsconfig.json --force
+@ccd/core:build: 
+@ccd/design-tokens:build: cache hit, replaying logs 6feb35df98204071
+@ccd/design-tokens:build: 
+@ccd/design-tokens:build: > @ccd/design-tokens@1.0.38 build /Users/cc/MyPorject/ccd/packages/design-tokens
+@ccd/design-tokens:build: > rm -f ../../node_modules/.tmp/packages-design-tokens.tsbuildinfo && tsc -p tsconfig.json
+@ccd/design-tokens:build: 
+@ccd/shared-utils:build: cache hit, replaying logs 8980547338755885
+@ccd/shared-utils:build: 
+@ccd/shared-utils:build: > @ccd/shared-utils@1.0.38 build /Users/cc/MyPorject/ccd/packages/shared-utils
+@ccd/shared-utils:build: > rm -f ../../node_modules/.tmp/packages-shared-utils.tsbuildinfo && tsc -p tsconfig.json
+@ccd/shared-utils:build: 
+@ccd/unocss-preset:build: cache hit, replaying logs f3dfe5ee22f02bf8
+@ccd/unocss-preset:build: 
+@ccd/unocss-preset:build: > @ccd/unocss-preset@1.0.38 build /Users/cc/MyPorject/ccd/packages/unocss-preset
+@ccd/unocss-preset:build: > rm -rf dist && rm -f ../../node_modules/.tmp/packages-unocss-preset.tsbuildinfo && tsc -p tsconfig.json
+@ccd/unocss-preset:build: 
+@ccd/vue-ui:build: cache hit, replaying logs 2cf8ac2e201e4f7e
+@ccd/vue-ui:build: 
+@ccd/vue-ui:build: > @ccd/vue-ui@1.0.38 build /Users/cc/MyPorject/ccd/packages/vue-ui
+@ccd/vue-ui:build: > rm -rf dist && rm -f ../../node_modules/.tmp/packages-vue-ui.tsbuildinfo && vite build --config vite.config.ts && vue-tsc -p tsconfig.build.json
+@ccd/vue-ui:build: 
+@ccd/vue-ui:build: vite v7.3.3 building client environment for production...
+@ccd/vue-ui:build: transforming...
+@ccd/vue-ui:build: ✓ 15 modules transformed.
+@ccd/vue-ui:build: rendering chunks...
+@ccd/vue-ui:build: computing gzip size...
+@ccd/vue-ui:build: dist/vue-ui.css  16.98 kB │ gzip: 2.95 kB
+@ccd/vue-ui:build: dist/index.js    20.66 kB │ gzip: 6.63 kB
+@ccd/vue-ui:build: ✓ built in 1.19s
+@ccd/vue-charts:build: cache hit, replaying logs 1c8cc85bae36d423
+@ccd/vue-charts:build: 
+@ccd/vue-charts:build: > @ccd/vue-charts@1.0.38 build /Users/cc/MyPorject/ccd/packages/vue-charts
+@ccd/vue-charts:build: > rm -rf dist && rm -f ../../node_modules/.tmp/packages-vue-charts.tsbuildinfo && vite build --config vite.config.ts && vue-tsc -p tsconfig.build.json
+@ccd/vue-charts:build: 
+@ccd/vue-charts:build: vite v7.3.3 building client environment for production...
+@ccd/vue-charts:build: transforming...
+@ccd/vue-charts:build: ✓ 46 modules transformed.
+@ccd/vue-charts:build: rendering chunks...
+@ccd/vue-charts:build: computing gzip size...
+@ccd/vue-charts:build: dist/echarts-setup.js   0.07 kB │ gzip:  0.09 kB
+@ccd/vue-charts:build: dist/index.js          89.94 kB │ gzip: 21.36 kB
+@ccd/vue-charts:build: ✓ built in 891ms
+@ccd/vue-primevue-adapter:build: cache hit, replaying logs 3706a620b55d0f43
+@ccd/vue-primevue-adapter:build: 
+@ccd/vue-primevue-adapter:build: > @ccd/vue-primevue-adapter@1.0.38 build /Users/cc/MyPorject/ccd/packages/vue-primevue-adapter
+@ccd/vue-primevue-adapter:build: > rm -f ../../node_modules/.tmp/packages-vue-primevue-adapter.tsbuildinfo && tsc -p tsconfig.json
+@ccd/vue-primevue-adapter:build: 
+@ccd/vue-hooks:build: cache hit, replaying logs 79e217797cac96f7
+@ccd/vue-hooks:build: 
+@ccd/vue-hooks:build: > @ccd/vue-hooks@1.0.38 build /Users/cc/MyPorject/ccd/packages/vue-hooks
+@ccd/vue-hooks:build: > rm -f ../../node_modules/.tmp/packages-vue-hooks.tsbuildinfo && tsc -p tsconfig.json
+@ccd/vue-hooks:build: 
+@ccd/desktop:build: cache hit, replaying logs c2c70c3d86c5e8e6
+@ccd/desktop:build: 
+@ccd/desktop:build: > @ccd/desktop@1.0.38 prebuild /Users/cc/MyPorject/ccd/apps/desktop
+@ccd/desktop:build: > pnpm --workspace-root build:shared-config
+@ccd/desktop:build: 
+@ccd/desktop:build: 
+@ccd/desktop:build: > ccd@1.0.38 build:shared-config /Users/cc/MyPorject/ccd
+@ccd/desktop:build: > pnpm --filter @ccd/design-tokens build && pnpm --filter @ccd/shared-utils build && pnpm --filter @ccd/unocss-preset build && pnpm --filter @ccd/vue-hooks build && pnpm --filter @ccd/vue-app-platform build && pnpm --filter @ccd/vue-ui build && pnpm --filter @ccd/vue-primevue-adapter build && pnpm --filter @ccd/vue-charts build
+@ccd/desktop:build: 
+@ccd/desktop:build: 
+@ccd/desktop:build: > @ccd/design-tokens@1.0.38 build /Users/cc/MyPorject/ccd/packages/design-tokens
+@ccd/desktop:build: > rm -f ../../node_modules/.tmp/packages-design-tokens.tsbuildinfo && tsc -p tsconfig.json
+@ccd/desktop:build: 
+@ccd/desktop:build: 
+@ccd/desktop:build: > @ccd/shared-utils@1.0.38 build /Users/cc/MyPorject/ccd/packages/shared-utils
+@ccd/desktop:build: > rm -f ../../node_modules/.tmp/packages-shared-utils.tsbuildinfo && tsc -p tsconfig.json
+@ccd/desktop:build: 
+@ccd/desktop:build: 
+@ccd/desktop:build: > @ccd/unocss-preset@1.0.38 build /Users/cc/MyPorject/ccd/packages/unocss-preset
+@ccd/desktop:build: > rm -rf dist && rm -f ../../node_modules/.tmp/packages-unocss-preset.tsbuildinfo && tsc -p tsconfig.json
+@ccd/desktop:build: 
+@ccd/desktop:build: 
+@ccd/desktop:build: > @ccd/vue-hooks@1.0.38 build /Users/cc/MyPorject/ccd/packages/vue-hooks
+@ccd/desktop:build: > rm -f ../../node_modules/.tmp/packages-vue-hooks.tsbuildinfo && tsc -p tsconfig.json
+@ccd/desktop:build: 
+@ccd/desktop:build: 
+@ccd/desktop:build: > @ccd/vue-app-platform@1.0.38 build /Users/cc/MyPorject/ccd/packages/vue-app-platform
+@ccd/desktop:build: > rm -f ../../node_modules/.tmp/packages-vue-app-platform.tsbuildinfo && tsc -p tsconfig.json
+@ccd/desktop:build: 
+@ccd/desktop:build: 
+@ccd/desktop:build: > @ccd/vue-ui@1.0.38 build /Users/cc/MyPorject/ccd/packages/vue-ui
+@ccd/desktop:build: > rm -rf dist && rm -f ../../node_modules/.tmp/packages-vue-ui.tsbuildinfo && vite build --config vite.config.ts && vue-tsc -p tsconfig.build.json
+@ccd/desktop:build: 
+@ccd/desktop:build: vite v7.3.3 building client environment for production...
+@ccd/desktop:build: transforming...
+@ccd/desktop:build: ✓ 15 modules transformed.
+@ccd/desktop:build: rendering chunks...
+@ccd/desktop:build: computing gzip size...
+@ccd/desktop:build: dist/vue-ui.css  16.98 kB │ gzip: 2.95 kB
+@ccd/desktop:build: dist/index.js    20.66 kB │ gzip: 6.63 kB
+@ccd/desktop:build: ✓ built in 244ms
+@ccd/desktop:build: 
+@ccd/desktop:build: > @ccd/vue-primevue-adapter@1.0.38 build /Users/cc/MyPorject/ccd/packages/vue-primevue-adapter
+@ccd/desktop:build: > rm -f ../../node_modules/.tmp/packages-vue-primevue-adapter.tsbuildinfo && tsc -p tsconfig.json
+@ccd/desktop:build: 
+@ccd/desktop:build: 
+@ccd/desktop:build: > @ccd/vue-charts@1.0.38 build /Users/cc/MyPorject/ccd/packages/vue-charts
+@ccd/desktop:build: > rm -rf dist && rm -f ../../node_modules/.tmp/packages-vue-charts.tsbuildinfo && vite build --config vite.config.ts && vue-tsc -p tsconfig.build.json
+@ccd/desktop:build: 
+@ccd/desktop:build: vite v7.3.3 building client environment for production...
+@ccd/desktop:build: transforming...
+@ccd/desktop:build: ✓ 46 modules transformed.
+@ccd/desktop:build: rendering chunks...
+@ccd/desktop:build: computing gzip size...
+@ccd/desktop:build: dist/echarts-setup.js   0.07 kB │ gzip:  0.09 kB
+@ccd/desktop:build: dist/index.js          89.94 kB │ gzip: 21.36 kB
+@ccd/desktop:build: ✓ built in 192ms
+@ccd/desktop:build: 
+@ccd/desktop:build: > @ccd/desktop@1.0.38 build /Users/cc/MyPorject/ccd/apps/desktop
+@ccd/desktop:build: > vue-tsc -p tsconfig.json --noEmit && vite build
+@ccd/desktop:build: 
+@ccd/desktop:build: vite v7.3.3 building client environment for production...
+@ccd/desktop:build: transforming...
+@ccd/desktop:build: ✓ 890 modules transformed.
+@ccd/desktop:build: rendering chunks...
+@ccd/desktop:build: computing gzip size...
+@ccd/desktop:build: dist/index.html                        3.22 kB │ gzip:  1.20 kB
+@ccd/desktop:build: dist/assets/index-CeHzdeTh.css        73.61 kB │ gzip:  8.35 kB
+@ccd/desktop:build: dist/assets/DesktopHome-uwZ3bEjc.js   66.65 kB │ gzip: 15.53 kB
+@ccd/desktop:build: dist/assets/index-DMGfink8.js        351.72 kB │ gzip: 83.70 kB
+@ccd/desktop:build: ✓ built in 986ms
+@ccd/web-demo:build: cache hit, replaying logs 6d02b22c406c8bd7
+@ccd/web-demo:build: 
+@ccd/web-demo:build: > @ccd/web-demo@1.0.38 prebuild /Users/cc/MyPorject/ccd/apps/web-demo
+@ccd/web-demo:build: > pnpm --workspace-root build:shared-config
+@ccd/web-demo:build: 
+@ccd/web-demo:build: 
+@ccd/web-demo:build: > ccd@1.0.38 build:shared-config /Users/cc/MyPorject/ccd
+@ccd/web-demo:build: > pnpm --filter @ccd/design-tokens build && pnpm --filter @ccd/shared-utils build && pnpm --filter @ccd/unocss-preset build && pnpm --filter @ccd/vue-hooks build && pnpm --filter @ccd/vue-app-platform build && pnpm --filter @ccd/vue-ui build && pnpm --filter @ccd/vue-primevue-adapter build && pnpm --filter @ccd/vue-charts build
+@ccd/web-demo:build: 
+@ccd/web-demo:build: 
+@ccd/web-demo:build: > @ccd/design-tokens@1.0.38 build /Users/cc/MyPorject/ccd/packages/design-tokens
+@ccd/web-demo:build: > rm -f ../../node_modules/.tmp/packages-design-tokens.tsbuildinfo && tsc -p tsconfig.json
+@ccd/web-demo:build: 
+@ccd/web-demo:build: 
+@ccd/web-demo:build: > @ccd/shared-utils@1.0.38 build /Users/cc/MyPorject/ccd/packages/shared-utils
+@ccd/web-demo:build: > rm -f ../../node_modules/.tmp/packages-shared-utils.tsbuildinfo && tsc -p tsconfig.json
+@ccd/web-demo:build: 
+@ccd/web-demo:build: 
+@ccd/web-demo:build: > @ccd/unocss-preset@1.0.38 build /Users/cc/MyPorject/ccd/packages/unocss-preset
+@ccd/web-demo:build: > rm -rf dist && rm -f ../../node_modules/.tmp/packages-unocss-preset.tsbuildinfo && tsc -p tsconfig.json
+@ccd/web-demo:build: 
+@ccd/web-demo:build: 
+@ccd/web-demo:build: > @ccd/vue-hooks@1.0.38 build /Users/cc/MyPorject/ccd/packages/vue-hooks
+@ccd/web-demo:build: > rm -f ../../node_modules/.tmp/packages-vue-hooks.tsbuildinfo && tsc -p tsconfig.json
+@ccd/web-demo:build: 
+@ccd/web-demo:build: 
+@ccd/web-demo:build: > @ccd/vue-app-platform@1.0.38 build /Users/cc/MyPorject/ccd/packages/vue-app-platform
+@ccd/web-demo:build: > rm -f ../../node_modules/.tmp/packages-vue-app-platform.tsbuildinfo && tsc -p tsconfig.json
+@ccd/web-demo:build: 
+@ccd/web-demo:build: 
+@ccd/web-demo:build: > @ccd/vue-ui@1.0.38 build /Users/cc/MyPorject/ccd/packages/vue-ui
+@ccd/web-demo:build: > rm -rf dist && rm -f ../../node_modules/.tmp/packages-vue-ui.tsbuildinfo && vite build --config vite.config.ts && vue-tsc -p tsconfig.build.json
+@ccd/web-demo:build: 
+@ccd/web-demo:build: vite v7.3.3 building client environment for production...
+@ccd/web-demo:build: transforming...
+@ccd/web-demo:build: ✓ 15 modules transformed.
+@ccd/web-demo:build: rendering chunks...
+@ccd/web-demo:build: computing gzip size...
+@ccd/web-demo:build: dist/vue-ui.css  16.98 kB │ gzip: 2.95 kB
+@ccd/web-demo:build: dist/index.js    20.66 kB │ gzip: 6.63 kB
+@ccd/web-demo:build: ✓ built in 244ms
+@ccd/web-demo:build: 
+@ccd/web-demo:build: > @ccd/vue-primevue-adapter@1.0.38 build /Users/cc/MyPorject/ccd/packages/vue-primevue-adapter
+@ccd/web-demo:build: > rm -f ../../node_modules/.tmp/packages-vue-primevue-adapter.tsbuildinfo && tsc -p tsconfig.json
+@ccd/web-demo:build: 
+@ccd/web-demo:build: 
+@ccd/web-demo:build: > @ccd/vue-charts@1.0.38 build /Users/cc/MyPorject/ccd/packages/vue-charts
+@ccd/web-demo:build: > rm -rf dist && rm -f ../../node_modules/.tmp/packages-vue-charts.tsbuildinfo && vite build --config vite.config.ts && vue-tsc -p tsconfig.build.json
+@ccd/web-demo:build: 
+@ccd/web-demo:build: vite v7.3.3 building client environment for production...
+@ccd/web-demo:build: transforming...
+@ccd/web-demo:build: ✓ 46 modules transformed.
+@ccd/web-demo:build: rendering chunks...
+@ccd/web-demo:build: computing gzip size...
+@ccd/web-demo:build: dist/echarts-setup.js   0.07 kB │ gzip:  0.09 kB
+@ccd/web-demo:build: dist/index.js          89.94 kB │ gzip: 21.36 kB
+@ccd/web-demo:build: ✓ built in 215ms
+@ccd/web-demo:build: 
+@ccd/web-demo:build: > @ccd/web-demo@1.0.38 build /Users/cc/MyPorject/ccd/apps/web-demo
+@ccd/web-demo:build: > vue-tsc -p tsconfig.json --noEmit && vite build
+@ccd/web-demo:build: 
+@ccd/web-demo:build: 🎉 欢迎使用 ccd
+@ccd/web-demo:build: 📦 版本: 1.0.38
+@ccd/web-demo:build: ⚡ 基于 Vue ^3.5.12 + Vite 构建
+@ccd/web-demo:build: 🛠️ UI 架构: PrimeVue + UnoCSS
+@ccd/web-demo:build: 🎨 UnoCSS: ^66.6.0
+@ccd/web-demo:build: 🕒 构建时间: 5/28/2026, 5:36:51 PM
+@ccd/web-demo:build: 
+@ccd/web-demo:build: 
+@ccd/web-demo:build: 
+@ccd/web-demo:build: 
+@ccd/web-demo:build: Build successful. Please see dist directory
+@ccd/web-demo:build: 
+@ccd/web-demo:build: 🎉 构建完成！
+@ccd/web-demo:build: 📦 打包大小: 4.71 MB
+@ccd/web-demo:build: ⏰ 构建耗时: 10.36s
+@ccd/web-demo:build: 📁 输出目录: dist
+@ccd/web-demo:build: 
+
+ Tasks:    12 successful, 12 total
+Cached:    12 cached, 12 total
+  Time:    77ms >>> FULL TURBO
+
+timestamp_end: 2026-05-29T07:33:22+0800
+exit_code: 0

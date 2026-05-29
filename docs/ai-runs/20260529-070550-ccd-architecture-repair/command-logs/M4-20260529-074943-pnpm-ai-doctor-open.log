@@ -1,0 +1,326 @@
+
+> ccd@1.0.38 ai:doctor /Users/cc/MyPorject/ccd
+> node scripts/ai-doctor.mjs --open
+
+Open repair ledger
+==================
+
+P1 P1-Guard-AutoMitt
+  - Add guard coverage for `useAutoMitt` enforcement where event bus patterns are expected.
+
+P1 P1-Guard-ComposableReturnTypes
+  - Add guard coverage for composable return type annotations where architecture requires them.
+
+P1 P1-Guard-DesignTokenCanonical
+  - Choose a canonical design-token rule file and update duplicate references.
+
+P1 P1-Guard-DynamicUnoCSS
+  - Add guard coverage for dynamic UnoCSS class detection and approved safelist usage.
+
+P1 P1-Guard-OwnerSignoff
+  - Update `.ai/runtime/owner_decisions.md` after owner decisions are made.
+
+P1 P1-Guard-RuleContradictions
+  - Resolve documented rule contradictions before adding stricter checks.
+
+P1 P1-Guard-SFCMacroOrder
+  - Add guard coverage for Vue SFC macro define order if the team accepts strict enforcement.
+
+P1 P1-Guard-TypeAssertions
+  - Add guard coverage for banned business-code `as Type` assertion patterns, with explicit approved exceptions.
+
+P1 P1-HttpContract-Adapter
+  - Keep alova implementation under `apps/web-demo/src/adapters/http/**` or another approved app adapter path.
+
+P1 P1-HttpContract-Contracts
+  - Add or refine HTTP contracts under `packages/contracts/src/http/**`: request shape, response shape, error shape, transport client, retry policy, timeout policy, auth policy.
+
+P1 P1-HttpContract-Core
+  - Add runtime-neutral HTTP orchestration under `packages/core/src/http/**` if needed, without importing browser APIs, fetch, timers, storage, router, or Pinia.
+
+P1 P1-HttpContract-NoCoupling
+  - Ensure HTTP code does not directly couple router/store/session behavior except through approved bridges.
+
+P1 P1-HttpContract-Validation
+  - Run `pnpm arch:runtime`, `pnpm api:report`, `pnpm type-check`, and request-layer tests.
+
+P1 P1-HttpContract-Zod
+  - Add Zod response validation only at boundary points where schemas are stable and validation cost is acceptable.
+
+P1 P1-UIBoundary-Guard
+  - BLOCKED pending operator approval of the proposed D-003 boundary policy and explicit exception list; no guard was added because current app/example/layout import surface would create broad false positives.
+
+P2 P2-CSS-BlacklistRisk
+  - Reduce dependence on long selector blacklists where possible.
+
+P2 P2-CSS-Mobile
+  - Validate mobile layout and safe-area behavior after CSS changes.
+
+P2 P2-CSS-PrimeVue
+  - Ensure PrimeVue and third-party CSS remain excluded from accidental rem conversion.
+
+P2 P2-CSS-PxToRemAudit
+  - Audit `postcss-pxtorem` usage in `apps/web-demo/vite.config.ts` and confirm which authored CSS still needs conversion.
+
+P2 P2-CSS-TokenFirst
+  - Prefer design tokens, CSS variables, `%`, viewport units, container queries, and UnoCSS rules over global px-to-rem conversion.
+
+P2 P2-CSS-Validation
+  - Run visual regression or screenshot checks for `/login`, dashboard, table-heavy views, and chart-heavy views.
+
+P2 P2-Deps-Alova
+  - Upgrade alova only after request tests and adapter contracts exist.
+
+P2 P2-Deps-ESLint
+  - Upgrade ESLint ecosystem only if `lint:check` remains deterministic.
+
+P2 P2-Deps-Outdated
+  - Run `pnpm deps:outdated` and record results in a branch-local note before upgrading.
+
+P2 P2-Deps-Playwright
+  - Upgrade Playwright only after confirming browser install/cache behavior in CI.
+
+P2 P2-Deps-PrimeVue
+  - Upgrade PrimeVue only after checking v4 API changes for used components and adapter behavior.
+
+P2 P2-Deps-Validation
+  - For each lane run targeted checks first, then `pnpm validate`.
+
+P2 P2-Deps-VueTooling
+  - Upgrade Vue compiler, `vue-tsc`, and TypeScript as a tooling lane; do not mix with Vite 8.
+
+P2 P2-Deps-Vueuse
+  - Upgrade `@vueuse/core` in an isolated lane after checking compatibility with existing hooks and auto-imports.
+
+P2 P2-GitHub-BranchProtection
+  - Configure or document main branch protection: required PR, required checks, conversation resolution, and linear history if appropriate.
+
+P2 P2-GitHub-Codeowners
+  - Add or update `CODEOWNERS` for architecture, AI rules, packages, apps, and workflows.
+
+P2 P2-GitHub-Dependencies
+  - Add or refine dependency update policy; avoid blind `pnpm up --latest` on `main`.
+
+P2 P2-GitHub-Release
+  - Keep release automation aligned with `project.config.json` and release governance scripts.
+
+P2 P2-GitHub-RequiredChecks
+  - Ensure required checks include `governance:gate`, `type-check`, `lint:check`, `build:ci`, and UI/E2E checks when practical.
+
+P2 P2-GitHub-Templates
+  - Add or refine PR and issue templates for architecture changes, UI changes, dependency upgrades, and bug reports.
+
+P2 P2-Governance-DocsCommands
+  - Run `pnpm docs:commands` if command documentation is touched.
+
+P2 P2-Governance-Gate
+  - Run `pnpm governance:gate` before merging architecture changes.
+
+P2 P2-Governance-Generated
+  - Do not manually edit `docs/generated/**`, `.ai/generated/**`, or `.ai/governance/api-snapshots/**`.
+
+P2 P2-Governance-ProjectDoctor
+  - Run `pnpm project:doctor` if `project.config.json`, package metadata, version, branding, or generated project metadata is touched.
+
+P2 P2-Governance-Refresh
+  - Run `pnpm governance:refresh` after dependency graph, API surface, supply-chain, or generated report changes.
+
+P2 P2-Vite8-Branch
+  - Create an isolated branch such as `modernize/vite8-compat`; do not mix this work with UI or HTTP refactors.
+
+P2 P2-Vite8-Chunks
+  - Re-test `manualChunks` and small chunk merging under Rolldown; avoid assuming Rollup behavior remains identical.
+
+P2 P2-Vite8-Compression
+  - Decide whether `vite-plugin-compression` remains a build concern or should move to deployment/server/CDN configuration.
+
+P2 P2-Vite8-ECharts
+  - Revalidate the custom `echarts-treeshake-enhance` plugin under Vite 8/Rolldown before keeping it.
+
+P2 P2-Vite8-Inventory
+  - Inventory every Vite/Rollup/esbuild-specific option in `apps/web-demo/vite.config.ts`, `apps/web-demo/build/**`, root `vite.config.ts`, and package-level Vite config files if present.
+
+P2 P2-Vite8-Minify
+  - Re-evaluate `build.minify: 'esbuild'` and console/drop behavior under Oxc minification.
+
+P2 P2-Vite8-OptimizeDeps
+  - Replace or prepare migration from `optimizeDeps.esbuildOptions` to `optimizeDeps.rolldownOptions` where appropriate.
+
+P2 P2-Vite8-Oxc
+  - Replace or prepare migration from top-level `esbuild` config to `oxc`/Rolldown minifier equivalents where appropriate.
+
+P2 P2-Vite8-Progress
+  - Remove or replace `vite-plugin-progress` if it adds no measurable value or blocks Vite 8 compatibility.
+
+P2 P2-Vite8-Validation
+  - Run `pnpm build:ci`, `pnpm vercel:build`, `pnpm e2e:qa`, and bundle budget checks on the isolated branch.
+
+P3 P3-CaseSensitivity
+  - Normalize `DateUtils` / `dateUtils` import casing across example views and shared date utilities.
+
+P3 P3-Login-Borders
+  - Pair every border utility with explicit style and semantic color if authored in template classes.
+
+P3 P3-Login-BottomLinks
+  - Keep help/privacy links centered below the panel and visually separated from the panel bottom.
+
+P3 P3-Login-Breakout
+  - Position `AnimatedCharacters` so the body baseline aligns to the panel lower visual floor and the top breaks out above the panel by 15%–20%.
+
+P3 P3-Login-Browser
+  - Use Browser plugin or Playwright fallback to capture `/login` in light and dark modes at desktop width.
+
+P3 P3-Login-Composition
+  - Remove duplicate brand placement inside the old visual panel and move brand/logo/title into a centered floating block above the diorama panel.
+
+P3 P3-Login-Constraints
+  - Confirm no native `<form>`, `<input>`, `<button>`, raw `overflow-auto`, raw hex colors, `rem`/`em`, raw z-index classes, invented shortcuts, or direct `glass-base` usage enter the login view.
+
+P3 P3-Login-Context
+  - Build top-K context from `apps/web-demo/src/views/login/index.vue`, login components, `apps/web-demo/src/views/login/composables/useLoginSubmit.ts`, `packages/unocss-preset/src/shortcuts/semanticShortcuts.ts`, and relevant ProForm renderer typings.
+
+P3 P3-Login-Deep
+  - Avoid adding new `:deep(.p-*)` selectors beyond existing documented login exception unless a focused architectural justification is added.
+
+P3 P3-Login-Depth
+  - Improve dark-mode elevation using border plus inset-highlight semantics instead of relying on outer shadows alone.
+
+P3 P3-Login-Desktop
+  - For `>= 1024px`, render the full horizontal diorama panel and breakout character stage.
+
+P3 P3-Login-Feedback
+  - Keep failed login feedback routed through `window.$toast?.dangerIn` and clear only the password field after failure.
+
+P3 P3-Login-Floor
+  - Add a subtle tokenized stage floor or shadow under the characters if needed, without adding text or unrelated ornamentation.
+
+P3 P3-Login-FormZone
+  - Place login heading, subtitle, presets, fields, submit button, register link, and version footer in the left zone with consistent token gaps.
+
+P3 P3-Login-Governance
+  - Run `pnpm arch:runtime`, `pnpm api:report`, and `pnpm supply:check` if imports, package boundaries, or runtime adapters are touched.
+
+P3 P3-Login-Grid
+  - Define panel internal grid as `minmax(0, 58%) minmax(0, 42%)` on desktop and keep it non-nested with existing layout shortcut laws.
+
+P3 P3-Login-Interaction
+  - Verify username focus makes characters react, password typing triggers privacy behavior, password visibility toggle updates state, presets fill both fields, failed login clears password only, and successful login redirects.
+
+P3 P3-Login-Layout
+  - Replace the current independent `login-visual-panel` and `login-card` split with one `login-diorama-panel` that owns both form and character stage.
+
+P3 P3-Login-Mobile
+  - For `< 768px`, switch to single-column composition with brand, compact character overlap, form, and footer links stacked vertically.
+
+P3 P3-Login-MobileGrid
+  - Hide or further weaken background grid on mobile if it competes with form legibility.
+
+P3 P3-Login-Overflow
+  - Ensure the parent diorama panel allows character breakout while preserving panel clipping for internal form/material effects where needed.
+
+P3 P3-Login-Password
+  - Fix password icon misalignment caused by the separate absolute leading icon plus PrimeVue `Password` internal structure.
+
+P3 P3-Login-PasswordShell
+  - Rebuild the password field wrapper as one aligned control shell with prefix icon, input, and toggle inside the same visual boundary.
+
+P3 P3-Login-PasswordState
+  - Keep `passwordValue`, `passwordLength`, and `isPasswordVisible` synchronized so character password reactions remain deterministic.
+
+P3 P3-Login-Presets
+  - Convert demo accounts to a segmented-control-like pair using PrimeVue `Button` or approved component structure, keeping clear active/quick-fill affordance.
+
+P3 P3-Login-PrimeVue
+  - Verify PrimeVue v4 `Password`, `Button`, `Select`, `IconField`, and `InputText` APIs before changing props, slots, or PassThrough configuration.
+
+P3 P3-Login-ProForm
+  - Preserve `ProForm` schema, validation, submit flow, demo account filling, locale re-keying, and `ProFormExpose` usage.
+
+P3 P3-Login-ReducedMotion
+  - Preserve current interaction behavior and verify no new infinite motion is added beyond existing GSAP loops.
+
+P3 P3-Login-Regression
+  - Verify the password prefix icon and visibility toggle remain inside the input shell in both light and dark screenshots.
+
+P3 P3-Login-Responsive
+  - Capture or inspect tablet and mobile breakpoints for panel wrapping, character breakout, safe-area spacing, and footer position.
+
+P3 P3-Login-Reuse
+  - Reuse `AnimatedCharacters` rather than replacing GSAP animation logic.
+
+P3 P3-Login-RuleOf7
+  - Move complex layout and decorative geometry into scoped CSS classes when template utility count would exceed the Rule of 7.
+
+P3 P3-Login-Rules
+  - Re-read `.ai/protocol/AGENTS.core.md`, `.ai/rules/core/01-global-preflight.mdc`, `.ai/rules/core/02-ui-preflight.mdc`, `.ai/rules/components/00-primevue-ecosystem.mdc`, `.ai/rules/components/02-pro-components.mdc`, and `.ai/rules/design-system/00-unocss-guardrails.mdc` before editing login files.
+
+P3 P3-Login-SafeArea
+  - Preserve top and bottom `env(safe-area-inset-*)` spacing for mobile and desktop shells.
+
+P3 P3-Login-Scaling
+  - Adjust only the parent stage sizing and position first; modify `TOTEM_REF_W`, `TOTEM_REF_H`, or internal CSS vars only if browser evidence proves parent scaling cannot satisfy the design.
+
+P3 P3-Login-Shell
+  - Create a centered horizontal panel with `width: min(92vw, 960px)` baseline, max expansion capped near `1200px`, and height governed by viewport-safe min/max values.
+
+P3 P3-Login-Shortcuts
+  - Use only registered shortcuts from `semanticShortcuts.ts`; do not invent login-specific UnoCSS shortcuts unless the design engine registry is intentionally extended.
+
+P3 P3-Login-Sizing
+  - Use CSS variables, `%`, `vw`, and `vh` for authored sizing; avoid `rem`/`em` and avoid unnecessary raw px outside existing animation geometry.
+
+P3 P3-Login-StageZone
+  - Place the character stage in the right zone with `overflow: visible`, floor alignment, and no extra textual content.
+
+P3 P3-Login-Static
+  - Run `pnpm exec eslint apps/web-demo/src/views/login/index.vue apps/web-demo/src/views/login/components/*.vue apps/web-demo/src/views/login/composables/useLoginSubmit.ts` after code changes.
+
+P3 P3-Login-Submit
+  - Keep one primary submit button, full-width within the form column, with loading state and existing redirect/global loading behavior unchanged.
+
+P3 P3-Login-Tablet
+  - For `768px–1023px`, reduce panel width to viewport-safe bounds, shift form/stage ratio toward `65%/35%`, and scale characters down while preserving breakout.
+
+P3 P3-Login-Tokens
+  - Use semantic color tokens only: `background`, `card`, `foreground`, `muted`, `border`, `primary`, `info`, `success`, `warn`, and related foreground/light variants.
+
+P3 P3-Login-TopControls
+  - Keep theme switch and locale select in a compact top-right toolbar with safe-area offsets.
+
+P3 P3-Login-Type
+  - Run `pnpm --filter @ccd/web-demo type-check` after the focused refactor.
+
+P3 P3-Login-Username
+  - Keep username focus state wired to `AnimatedCharacters` through `isUsernameFocused`.
+
+P3 P3-Login-VisualNoise
+  - Reduce decorative copy and pills inside the main panel so the form and breakout character dominate the hierarchy.
+
+P3 P3-Login-ZIndex
+  - Use `z-base`, `z-content`, `z-layout`, `z-overlay`, `z-popover`, or DOM stacking context restructuring only.
+
+P3 P3-Tests
+  - Update directive specs for Vue 3 four-argument directive hook signatures and clean up unused imports / `expect-error` noise in focused test files.
+
+P3 P3-Verify
+  - Run `pnpm check` and capture the final residual error surface once targeted repairs land.
+
+P4 P4-DesignSystem-Deferred
+  - Split a standalone design-system repository only after UI primitives and adapter boundaries are stable.
+
+P4 P4-DesktopDriftCI
+  - Add desktop drift CI only after owner sign-off on enforcement scope.
+
+P4 P4-NewOrganization-Deferred
+  - Do not create a new GitHub organization or new repository now; first stabilize current repository governance and architecture.
+
+P4 P4-RekaUI-Deferred
+  - Evaluate Reka UI only for specific headless primitive gaps after PrimeVue adapter boundaries are stable.
+
+P4 P4-Starter-Deferred
+  - Create `ccd-vue-starter` only after `@ccd/contracts`, `@ccd/core`, `@ccd/vue-ui`, and `@ccd/vue-primevue-adapter` are stable.
+
+P4 P4-TanStackQuery-Deferred
+  - Evaluate TanStack Query Vue only if server-state complexity exceeds what alova + explicit adapters can cleanly handle.
+
+106 open tasks

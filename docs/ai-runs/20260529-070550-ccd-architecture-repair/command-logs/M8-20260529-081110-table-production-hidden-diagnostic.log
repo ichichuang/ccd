@@ -1,0 +1,47 @@
+{
+  "wrote": "docs/ai-runs/20260529-070550-ccd-architecture-repair/reports/M8-table-production-hidden-diagnostic.json",
+  "datatableCount": 1,
+  "progressbarCount": 0,
+  "consoleErrors": 0,
+  "firstChain": [
+    {
+      "tag": "DIV",
+      "id": "",
+      "className": "p-datatable p-component p-datatable-hoverable p-datatable-scrollable p-datatable-flex-scrollable pro-table-h-lines layout-full",
+      "width": 910,
+      "height": 0,
+      "display": "flex",
+      "visibility": "visible",
+      "opacity": "1",
+      "overflow": "visible/visible/visible",
+      "position": "relative",
+      "transform": "none"
+    },
+    {
+      "tag": "DIV",
+      "id": "",
+      "className": "col-fill relative",
+      "width": 910,
+      "height": 0,
+      "display": "flex",
+      "visibility": "visible",
+      "opacity": "1",
+      "overflow": "hidden/hidden/hidden",
+      "position": "relative",
+      "transform": "none"
+    },
+    {
+      "tag": "DIV",
+      "id": "",
+      "className": "col-fill",
+      "width": 910,
+      "height": 0,
+      "display": "flex",
+      "visibility": "visible",
+      "opacity": "1",
+      "overflow": "hidden/hidden/hidden",
+      "position": "static",
+      "transform": "none"
+    }
+  ]
+}

@@ -1,0 +1,8 @@
+command: pnpm --filter @ccd/web-demo type-check
+timestamp_start: 2026-05-29T07:39:30+0800
+
+> @ccd/web-demo@1.0.38 type-check /Users/cc/MyPorject/ccd/apps/web-demo
+> vue-tsc -p tsconfig.json --noEmit
+
+timestamp_end: 2026-05-29T07:39:36+0800
+exit_code: 0
