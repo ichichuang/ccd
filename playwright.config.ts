@@ -2,6 +2,7 @@ import { defineConfig, devices } from '@playwright/test'
 
 const PORT = 8088
 const baseURL = `http://127.0.0.1:${PORT}`
+const chromiumChannel = process.env.PLAYWRIGHT_CHROMIUM_CHANNEL
 
 export default defineConfig({
   testDir: './e2e',
@@ -35,6 +36,7 @@ export default defineConfig({
       name: 'chromium',
       use: {
         ...devices['Desktop Chrome'],
+        ...(chromiumChannel ? { channel: chromiumChannel } : {}),
         viewport: { width: 1440, height: 960 },
       },
     },

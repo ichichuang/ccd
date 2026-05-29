@@ -106,6 +106,7 @@ jobs:
     timeout-minutes: 30
     env:
       NODE_OPTIONS: '--max-old-space-size=4096'
+      PLAYWRIGHT_CHROMIUM_CHANNEL: chrome
 
     steps:
       - name: Checkout codebase
@@ -133,9 +134,8 @@ jobs:
       - name: Deterministic Frozen Install
         run: bash scripts/exec.sh pnpm install --frozen-lockfile
 
-      - name: Install Playwright Chromium Headless Shell
-        timeout-minutes: 10
-        run: bash scripts/exec.sh pnpm exec playwright install --with-deps --only-shell chromium
+      - name: Verify system Chrome for Playwright
+        run: google-chrome --version
 
       - name: Prepare internal workspace packages
         run: bash scripts/exec.sh pnpm ci:prepare-internal
