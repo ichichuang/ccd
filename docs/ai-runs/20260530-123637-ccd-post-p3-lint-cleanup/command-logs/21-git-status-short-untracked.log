@@ -1,0 +1,31 @@
+ M .ai/manifests/skills-lock.json
+ M .ai/rules/components/02-pro-components.mdc
+ M .ai/rules/core/02-core-engineering.mdc
+ M .ai/rules/core/02-ui-preflight.mdc
+ M .ai/rules/core/07-vue-auto-imports.mdc
+ M .ai/skills/core/vue/SKILL.md
+ M .ai/skills/core/vueuse-functions/references/createTemplatePromise.md
+MM docs/ai-plan/STATUS.md
+A  docs/ai-runs/20260530-123637-ccd-post-p3-lint-cleanup/command-logs/01-pnpm-filter-vue-hooks-build.log
+A  docs/ai-runs/20260530-123637-ccd-post-p3-lint-cleanup/command-logs/02-pnpm-lint-check.log
+A  docs/ai-runs/20260530-123637-ccd-post-p3-lint-cleanup/command-logs/03-pnpm-test-run.log
+A  docs/ai-runs/20260530-123637-ccd-post-p3-lint-cleanup/command-logs/04-pnpm-type-check.log
+A  docs/ai-runs/20260530-123637-ccd-post-p3-lint-cleanup/command-logs/05-pnpm-validate-governance.log
+A  docs/ai-runs/20260530-123637-ccd-post-p3-lint-cleanup/command-logs/06-git-diff-check.log
+A  docs/ai-runs/20260530-123637-ccd-post-p3-lint-cleanup/command-logs/07-git-status-short-untracked.log
+A  docs/ai-runs/20260530-123637-ccd-post-p3-lint-cleanup/command-logs/08-final-git-diff-check.log
+A  docs/ai-runs/20260530-123637-ccd-post-p3-lint-cleanup/command-logs/09-final-git-status-short-untracked.log
+AM docs/ai-runs/20260530-123637-ccd-post-p3-lint-cleanup/reports/post-p3-lint-cleanup-summary.md
+MM packages/vue-hooks/src/createAutoMittHook.spec.ts
+?? docs/ai-runs/20260530-123637-ccd-post-p3-lint-cleanup/command-logs/10-pnpm-ai-sync-codex.log
+?? docs/ai-runs/20260530-123637-ccd-post-p3-lint-cleanup/command-logs/11-pnpm-filter-vue-hooks-build.log
+?? docs/ai-runs/20260530-123637-ccd-post-p3-lint-cleanup/command-logs/12-pnpm-lint-check.log
+?? docs/ai-runs/20260530-123637-ccd-post-p3-lint-cleanup/command-logs/13-pnpm-test-run.log
+?? docs/ai-runs/20260530-123637-ccd-post-p3-lint-cleanup/command-logs/14-pnpm-type-check.log
+?? docs/ai-runs/20260530-123637-ccd-post-p3-lint-cleanup/command-logs/15-pnpm-docs-commands.log
+?? docs/ai-runs/20260530-123637-ccd-post-p3-lint-cleanup/command-logs/16-pnpm-ai-doctor.log
+?? docs/ai-runs/20260530-123637-ccd-post-p3-lint-cleanup/command-logs/17-pnpm-codex-preflight.log
+?? docs/ai-runs/20260530-123637-ccd-post-p3-lint-cleanup/command-logs/18-pnpm-validate-governance.log
+?? docs/ai-runs/20260530-123637-ccd-post-p3-lint-cleanup/command-logs/19-rg-no-h-vue.log
+?? docs/ai-runs/20260530-123637-ccd-post-p3-lint-cleanup/command-logs/20-git-diff-check.log
+?? docs/ai-runs/20260530-123637-ccd-post-p3-lint-cleanup/command-logs/21-git-status-short-untracked.log

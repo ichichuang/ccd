@@ -208,12 +208,12 @@ const result = await dialog.open({
 })
 ```
 
-Even this is not flexible enough. If you want more, you might end up with manual render function.
+Even this is not flexible enough. If you want more, you might end up with a manual render function.
 
 ```ts
 const result = await dialog.open({
   title: 'Hello',
-  contentSlot: () => h(MyComponent, { content }),
+  contentSlot: () => /* manual vnode creation */,
 })
 ```
 

@@ -29,7 +29,7 @@ globs: ["**/*.vue", "**/*.ts", "**/*.tsx", "**/*.js"]
 
 ## Rendering Rules (MUST)
 - If code must construct/return VNodes dynamically: use **TSX**.
-- ❌ **NEVER** use legacy programmatic rendering helpers (`h()` / `resolveComponent()` in business code).
+- ❌ **NEVER** use legacy programmatic rendering helpers such as the Vue `h` helper or `resolveComponent()` in business code, test harnesses, or lint-cleanup patches.
 
 ## Build-Time vs Run-Time Boundary
 
@@ -45,4 +45,3 @@ globs: ["**/*.vue", "**/*.ts", "**/*.tsx", "**/*.js"]
 **ALLOWED in build-time configs:** shared **constants**, **ambient / type-only** contracts, and **tiny, dependency-free utilities** that do not drag the runtime Vue graph.
 
 **Rule of thumb:** If a file is executed to configure Vite or Uno, it may only import what could run in a **Node-only, non-Vue** context without loading the application.
-

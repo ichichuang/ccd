@@ -20,3 +20,8 @@ alwaysApply: true
 
 ## 3. View Assembly Boundaries
 - [ ] **Form Boundary:** Inside `src/views/**`, `<form>` is NOT used. Use `<ProForm>` for 2+ fields.
+
+## 4. Vue / TSX Rendering Boundaries
+- [ ] **Auto-Imports:** In CCD auto-import-aware Vue/TS/TSX surfaces, auto-imported Vue APIs are used as globals; manual value imports from `vue` are forbidden unless the surface is explicitly outside the auto-import contract. Type-only imports remain allowed.
+- [ ] **No Hyperscript Helper:** The Vue `h` helper is forbidden in CCD coding surfaces. Do not import it from `vue`, and do not call it for render output.
+- [ ] **Harness Rendering:** Test and harness components use one reusable component per file. Inline render output must be a Vue template in SFC/template-backed surfaces or a TSX return/render body in TSX-enabled surfaces, never the Vue `h` helper used to bypass `vue/one-component-per-file`. When a lane explicitly requires TSX, do not substitute template-backed rendering; verify existing `.tsx` tooling support or stop with a tooling-scope blocker.

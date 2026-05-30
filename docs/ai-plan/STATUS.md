@@ -2,12 +2,25 @@
 
 ## Current execution state
 
-- Current milestone: P3 — Feature and runtime refactors
-- Current task: execute all implementable OPEN P3 items from `ccd-architecture-optimization-plan/plans/03-P3-feature-and-runtime-refactors.md`
-- Last completed task: P3 actionable-scope audit
-- Validation status: ACTIVE_P3_FINAL_PASS
-- Evidence directory: `docs/ai-runs/20260530-114939-ccd-p3-feature-and-runtime-refactors/`
-- Final completion state: DONE_WITH_APPROVAL_GATED_BLOCKERS
+- Current milestone: Post-P3 lint cleanup
+- Current task: fix the post-P3 lint cleanup implementation and encode CCD Vue/TSX rules
+- Last completed task: confirmed the staged cleanup's Vue `h` regression and the current TSX tooling-scope blocker
+- Validation status: POST_P3_LINT_CLEANUP_TSX_BLOCKED
+- Evidence directory: `docs/ai-runs/20260530-123637-ccd-post-p3-lint-cleanup/`
+- Final completion state: NOT_DONE_BLOCKED_BY_TSX_TOOLING_SCOPE
+
+Current post-P3 lint cleanup state:
+
+- Fixed `packages/vue-hooks/src/createAutoMittHook.spec.ts` so the one-component harness no longer imports or calls the Vue `h` helper.
+- The current `.spec.ts` surface remains template-backed, which removes the `h` regression but does not satisfy the strict TSX render/return requirement.
+- TSX conversion is blocked within the current scope because `packages/vue-hooks` lacks existing `.spec.tsx` test inclusion and JSX compiler settings, while the task forbids Vite, Vitest, tsconfig, and dependency changes.
+- Codified CCD auto-import and no-hyperscript rendering rules in canonical `.ai/rules/**` and `.ai/skills/**` files.
+- Ran official `pnpm ai:sync:codex`; generated drift is limited to `.ai/manifests/skills-lock.json` plus local Codex skill materialization.
+- Verified `pnpm lint:check` now exits 0 without the previous `vue/one-component-per-file` warnings.
+- Verified the forbidden Vue helper scan has no matches across the requested paths.
+- Preserved package boundaries and left dependencies, Vite/Vitest config, generated adapters, remotes, HTTP contracts, P4, app runtime behavior, and Login Diorama untouched.
+
+Previous P3 run summary:
 
 Implemented in the active P3 run:
 
@@ -283,7 +296,7 @@ M13 P4 deferred evidence update:
 - Login Diorama remains blocked pending operator approval and P1/P2 prerequisite stability.
 - Final go/no-go remains `NO_GO` until blockers are resolved or explicitly accepted.
 - Generated adapter drift may occur if root `AGENTS.md` is edited directly.
-- `packages/vue-hooks/src/createAutoMittHook.spec.ts` still has two existing `vue/one-component-per-file` warnings.
+- Post-P3 lint cleanup resolved the two existing `vue/one-component-per-file` warnings in `packages/vue-hooks/src/createAutoMittHook.spec.ts`; evidence is in `docs/ai-runs/20260530-123637-ccd-post-p3-lint-cleanup/`.
 - P4 strategic work remains deferred or blocked pending owner approval.
 
 ## Next action

@@ -1,0 +1,7 @@
+$ pnpm lint:check
+
+> ccd@1.0.38 lint:check /Users/cc/MyPorject/ccd
+> eslint "apps/**/*.{vue,ts,tsx,js,jsx}" "packages/**/*.{vue,ts,tsx,js,jsx}" "scripts/architecture/**/*.mjs" "*.{ts,js,mjs,cjs}"
+
+
+[exit_code=0]

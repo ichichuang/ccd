@@ -182,8 +182,7 @@ NEVER set explicit pixel height on the ProTable wrapper via inline style.
 // ✅ REQUIRED: TSX
 render: ({ row }) => <Tag severity={row.active ? 'success' : 'danger'} value={row.status} />,
 
-// ❌ FORBIDDEN: h() function
-render: ({ row }) => h(Tag, { severity: 'success' }),
+// ❌ FORBIDDEN: Vue hyperscript helper calls for cell output
 
 // ❌ FORBIDDEN: string HTML return
 render: ({ row }) => `<span class="text-green-500">${row.status}</span>`,

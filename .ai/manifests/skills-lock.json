@@ -68,7 +68,7 @@
       "syncTargets": [
         "codex"
       ],
-      "computedHash": "ccb554becddd5e72cc7e536d7319411e3ad8985fc7fac6aec55290f02ef86dd8"
+      "computedHash": "9097a44b2612d3c9e85ffe4bebbf0ec1d833aa3eaeb40bf87151749cf3fa61c1"
     },
     "vueuse-functions": {
       "source": "repo:.ai/skills/core/vueuse-functions",
@@ -77,7 +77,7 @@
       "syncTargets": [
         "codex"
       ],
-      "computedHash": "8a29721d0dc037d81395db69bd012a999bbad1623452344e97ecc78103f97875"
+      "computedHash": "8c2a30a428edadc224304d9654f906bcf27047ad48f68a72a3b9b4a6378846cc"
     }
   }
 }
