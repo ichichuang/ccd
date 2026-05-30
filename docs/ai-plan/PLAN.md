@@ -22,17 +22,19 @@ Do not mark generated tasks as `DONE` initially.
 - Do not implement P4 strategic work without owner approval.
 - Stop when validation fails, evidence is missing, or scope expands.
 
-## Current P2 execution overlay
+## Current P3 execution overlay
 
-The active 2026-05-30 lane is `ccd-architecture-optimization-plan/plans/02-P2-governance-css-build-modernization.md`.
+The active 2026-05-30 lane is `ccd-architecture-optimization-plan/plans/03-P3-feature-and-runtime-refactors.md`.
 
-Execute only implementable P2 items that do not require approval. Keep dependency upgrades, Vite 8, GitHub remote governance, `.github/**` edits, desktop drift CI enforcement, and broad package splits blocked unless owner/operator approval is explicitly recorded.
+Execute only implementable P3 items that do not require approval. Current P3 evidence shows no actionable `OPEN` P3 task: `DEPS-004` remains `BLOCKED_BY_REVIEW`, `DEPS-005` remains `BLOCKED_BY_HTTP_CONTRACT`, `DOC-003` remains `DEFERRED`, and runtime-ledger Login Diorama tasks remain blocked pending M11 approval/prerequisite stability.
+
+Do not upgrade dependencies, start PrimeVue/alova modernization, edit login UI/auth flow, start Vite 8 work, mutate GitHub remote settings, or execute P4 work unless approval is explicitly recorded.
 
 Current evidence directory:
 
-- `docs/ai-runs/20260530-104228-ccd-p2-governance-css-build-modernization/`
+- `docs/ai-runs/20260530-114939-ccd-p3-feature-and-runtime-refactors/`
 
-Authoritative next-action status is `docs/ai-plan/NEXT_ACTIONS.md`; historical M2/M8/M9/M10 guidance in this plan is archived context, not the current lane selector.
+Authoritative next-action status is `docs/ai-plan/NEXT_ACTIONS.md`; historical M2/M8/M9/M10/P2 guidance in this plan is archived context, not the current lane selector.
 
 ---
 

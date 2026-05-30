@@ -1,0 +1,10 @@
+$ pnpm install --frozen-lockfile
+started_at=2026-05-30T03:54:23.704Z
+ended_at=2026-05-30T03:54:24.256Z
+exit_code=0
+
+Scope: all 13 workspace projects
+Lockfile is up to date, resolution step is skipped
+Already up to date
+
+Done in 512ms using pnpm v10.28.2

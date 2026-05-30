@@ -2,35 +2,24 @@
 
 ## Current Priority
 
-Active lane: P2 governance, CSS, build, HTTP, storage, and PrimeVue boundary modernization.
+Active lane: P3 feature and runtime refactors.
 
 Evidence directory:
 
-- `docs/ai-runs/20260530-104228-ccd-p2-governance-css-build-modernization/`
+- `docs/ai-runs/20260530-114939-ccd-p3-feature-and-runtime-refactors/`
 
-Implementable P2 items in the active lane are:
+Implementable P3 items in the active lane:
 
-- APP-003 safeStorage contract/codec extraction.
-- BUILD-003 build plugin compatibility notes and progress plugin removal.
-- GOV-005 current-priority docs refresh.
-- HTTP-005 Method builder guidance for server-state APIs.
-- HTTP-006 raw transport exception policy.
-- UI-004 PrimeVue global service helper extraction.
-- BUILD-004 typed Sass preprocessor config.
-- BUILD-005 CI/e2e-safe Vite server open behavior.
-- UI-005 scoped PrimeVue showcase exception.
+- None. The P3 plan and ledgers currently contain no actionable `OPEN` P3 item.
 
-## Blocked or Deferred P2 Items
+## Blocked or Deferred P3 Items
 
 Keep these blocked unless explicit owner/operator approval is added to `.ai/runtime/owner_decisions.md` or `docs/ai-plan/DECISIONS.md`:
 
-- APP-004 desktop drift CI enforcement scope.
-- BUILD-002 Vite 8 migration.
-- COMP-005 new `packages/vue-pro-components` package split.
-- DEPS-001 Vite dependency lane.
-- DEPS-002 Vue tooling dependency lane.
-- DEPS-003 Playwright dependency lane.
-- GitHub remote governance and `.github/**` refinements.
+- DEPS-004 PrimeVue upgrade remains `BLOCKED_BY_REVIEW`; no dependency or lockfile mutation.
+- DEPS-005 alova upgrade remains `BLOCKED_BY_HTTP_CONTRACT`; no dependency or request-stack mutation.
+- DOC-003 Login Diorama remains `DEFERRED`; no login UI or auth-flow mutation.
+- Runtime-ledger `P3-Login-*` tasks remain blocked pending M11 operator approval and prerequisite stability.
 
 ## Required Validation
 
@@ -60,14 +49,14 @@ git status --short --untracked-files=all
 
 Do not push, stage, commit, switch branches, rewrite history, upgrade dependencies, start Vite 8 migration, or mutate GitHub remote settings in this lane.
 
-## Recommended Next Lane After P2
+## Recommended Next Lane After P3
 
 If final validation passes, the next useful owner action is deciding one blocked lane:
 
-- approve or reject APP-004 desktop drift CI enforcement;
-- approve or reject COMP-005 package split;
-- approve one isolated dependency/toolchain lane;
-- accept remaining blocked items as governance exceptions.
+- approve or reject Login Diorama M11 product/owner lane;
+- approve or reject PrimeVue dependency review lane;
+- approve or reject alova lane after HTTP contract prerequisites;
+- accept remaining blocked P3/P4 items as governance exceptions.
 
 ## Archived P1 Notes
 

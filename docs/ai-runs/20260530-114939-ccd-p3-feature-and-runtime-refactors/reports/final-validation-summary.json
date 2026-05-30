@@ -1,0 +1,135 @@
+[
+  {
+    "command": "pnpm install --frozen-lockfile",
+    "log": "docs/ai-runs/20260530-114939-ccd-p3-feature-and-runtime-refactors/command-logs/final-01-pnpm-install-frozen-lockfile.log",
+    "exitCode": 0,
+    "startedAt": "2026-05-30T03:54:23.704Z",
+    "endedAt": "2026-05-30T03:54:24.256Z"
+  },
+  {
+    "command": "pnpm ci:prepare-internal",
+    "log": "docs/ai-runs/20260530-114939-ccd-p3-feature-and-runtime-refactors/command-logs/final-02-pnpm-ci-prepare-internal.log",
+    "exitCode": 0,
+    "startedAt": "2026-05-30T03:54:24.256Z",
+    "endedAt": "2026-05-30T03:54:31.971Z"
+  },
+  {
+    "command": "pnpm ai:doctor",
+    "log": "docs/ai-runs/20260530-114939-ccd-p3-feature-and-runtime-refactors/command-logs/final-03-pnpm-ai-doctor.log",
+    "exitCode": 0,
+    "startedAt": "2026-05-30T03:54:31.972Z",
+    "endedAt": "2026-05-30T03:54:39.784Z"
+  },
+  {
+    "command": "pnpm codex:preflight",
+    "log": "docs/ai-runs/20260530-114939-ccd-p3-feature-and-runtime-refactors/command-logs/final-04-pnpm-codex-preflight.log",
+    "exitCode": 0,
+    "startedAt": "2026-05-30T03:54:39.784Z",
+    "endedAt": "2026-05-30T03:54:47.455Z"
+  },
+  {
+    "command": "pnpm validate:governance",
+    "log": "docs/ai-runs/20260530-114939-ccd-p3-feature-and-runtime-refactors/command-logs/final-05-pnpm-validate-governance.log",
+    "exitCode": 0,
+    "startedAt": "2026-05-30T03:54:47.456Z",
+    "endedAt": "2026-05-30T03:54:56.409Z"
+  },
+  {
+    "command": "pnpm type-check",
+    "log": "docs/ai-runs/20260530-114939-ccd-p3-feature-and-runtime-refactors/command-logs/final-06-pnpm-type-check.log",
+    "exitCode": 0,
+    "startedAt": "2026-05-30T03:54:56.409Z",
+    "endedAt": "2026-05-30T03:54:56.792Z"
+  },
+  {
+    "command": "pnpm test:run",
+    "log": "docs/ai-runs/20260530-114939-ccd-p3-feature-and-runtime-refactors/command-logs/final-07-pnpm-test-run.log",
+    "exitCode": 0,
+    "startedAt": "2026-05-30T03:54:56.792Z",
+    "endedAt": "2026-05-30T03:55:07.534Z"
+  },
+  {
+    "command": "pnpm lint:check",
+    "log": "docs/ai-runs/20260530-114939-ccd-p3-feature-and-runtime-refactors/command-logs/final-08-pnpm-lint-check.log",
+    "exitCode": 0,
+    "startedAt": "2026-05-30T03:55:07.534Z",
+    "endedAt": "2026-05-30T03:55:16.385Z"
+  },
+  {
+    "command": "pnpm build:web-demo",
+    "log": "docs/ai-runs/20260530-114939-ccd-p3-feature-and-runtime-refactors/command-logs/final-09-pnpm-build-web-demo.log",
+    "exitCode": 0,
+    "startedAt": "2026-05-30T03:55:16.385Z",
+    "endedAt": "2026-05-30T03:55:46.665Z"
+  },
+  {
+    "command": "pnpm build:desktop",
+    "log": "docs/ai-runs/20260530-114939-ccd-p3-feature-and-runtime-refactors/command-logs/final-10-pnpm-build-desktop.log",
+    "exitCode": 0,
+    "startedAt": "2026-05-30T03:55:46.665Z",
+    "endedAt": "2026-05-30T03:56:04.355Z"
+  },
+  {
+    "command": "pnpm budget:desktop",
+    "log": "docs/ai-runs/20260530-114939-ccd-p3-feature-and-runtime-refactors/command-logs/final-11-pnpm-budget-desktop.log",
+    "exitCode": 0,
+    "startedAt": "2026-05-30T03:56:04.355Z",
+    "endedAt": "2026-05-30T03:56:04.502Z"
+  },
+  {
+    "command": "pnpm e2e:smoke",
+    "log": "docs/ai-runs/20260530-114939-ccd-p3-feature-and-runtime-refactors/command-logs/final-12-pnpm-e2e-smoke.log",
+    "exitCode": 0,
+    "startedAt": "2026-05-30T03:56:04.502Z",
+    "endedAt": "2026-05-30T03:56:20.633Z"
+  },
+  {
+    "command": "pnpm e2e:layout",
+    "log": "docs/ai-runs/20260530-114939-ccd-p3-feature-and-runtime-refactors/command-logs/final-13-pnpm-e2e-layout.log",
+    "exitCode": 0,
+    "startedAt": "2026-05-30T03:56:20.633Z",
+    "endedAt": "2026-05-30T03:56:58.540Z"
+  },
+  {
+    "command": "pnpm e2e:perf",
+    "log": "docs/ai-runs/20260530-114939-ccd-p3-feature-and-runtime-refactors/command-logs/final-14-pnpm-e2e-perf.log",
+    "exitCode": 0,
+    "startedAt": "2026-05-30T03:56:58.541Z",
+    "endedAt": "2026-05-30T03:57:10.080Z"
+  },
+  {
+    "command": "pnpm e2e:visual",
+    "log": "docs/ai-runs/20260530-114939-ccd-p3-feature-and-runtime-refactors/command-logs/final-15-pnpm-e2e-visual.log",
+    "exitCode": 0,
+    "startedAt": "2026-05-30T03:57:10.081Z",
+    "endedAt": "2026-05-30T03:57:34.897Z"
+  },
+  {
+    "command": "pnpm e2e:qa:prepared",
+    "log": "docs/ai-runs/20260530-114939-ccd-p3-feature-and-runtime-refactors/command-logs/final-16-pnpm-e2e-qa-prepared.log",
+    "exitCode": 0,
+    "startedAt": "2026-05-30T03:57:34.897Z",
+    "endedAt": "2026-05-30T03:59:06.511Z"
+  },
+  {
+    "command": "pnpm build:ci",
+    "log": "docs/ai-runs/20260530-114939-ccd-p3-feature-and-runtime-refactors/command-logs/final-17-pnpm-build-ci.log",
+    "exitCode": 0,
+    "startedAt": "2026-05-30T03:59:06.511Z",
+    "endedAt": "2026-05-30T03:59:49.742Z"
+  },
+  {
+    "command": "git diff --check",
+    "log": "docs/ai-runs/20260530-114939-ccd-p3-feature-and-runtime-refactors/command-logs/final-18-git-diff-check.log",
+    "exitCode": 0,
+    "startedAt": "2026-05-30T03:59:49.743Z",
+    "endedAt": "2026-05-30T03:59:49.773Z"
+  },
+  {
+    "command": "git status --short --untracked-files=all",
+    "log": "docs/ai-runs/20260530-114939-ccd-p3-feature-and-runtime-refactors/command-logs/final-19-git-status-short-untracked.log",
+    "exitCode": 0,
+    "startedAt": "2026-05-30T03:59:49.773Z",
+    "endedAt": "2026-05-30T03:59:49.803Z"
+  }
+]

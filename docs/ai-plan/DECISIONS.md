@@ -403,3 +403,31 @@ When approved: `pnpm ci:prepare-internal`, `pnpm arch:graphs`, `pnpm api:report`
 
 - `ccd-architecture-optimization-plan/plans/02-P2-governance-css-build-modernization.md`
 - `.ai/runtime/owner_decisions.md`
+
+---
+
+## D-013 — P3 execution boundary
+
+- Status: `ACTIVE`
+- Date: 2026-05-30
+
+### Context
+
+The active P3 request asked Codex to execute every implementable P3 item while keeping dependency upgrades, auth/product decisions, Vite 8, GitHub remote governance, broad rewrites, and P4 work blocked unless explicit approval exists.
+
+### Decision
+
+No P3 source lane is currently implementable without approval. Keep these statuses:
+
+- `DEPS-004` remains `BLOCKED_BY_REVIEW`; do not upgrade PrimeVue or mutate package manifests/lockfile.
+- `DEPS-005` remains `BLOCKED_BY_HTTP_CONTRACT`; do not upgrade alova or restructure HTTP contracts.
+- `DOC-003` and runtime-ledger `P3-Login-*` remain deferred/blocked pending M11 product/owner approval and prerequisite stability.
+
+### Follow-up validation
+
+Run the P3 final validation matrix and preserve the active run evidence directory.
+
+### Evidence
+
+- `docs/ai-runs/20260530-114939-ccd-p3-feature-and-runtime-refactors/command-logs/M0-20260530-114939-pnpm-ai-doctor-open.log`
+- `docs/ai-runs/20260530-114939-ccd-p3-feature-and-runtime-refactors/command-logs/M0-20260530-114939-p3-actionable-scan.log`

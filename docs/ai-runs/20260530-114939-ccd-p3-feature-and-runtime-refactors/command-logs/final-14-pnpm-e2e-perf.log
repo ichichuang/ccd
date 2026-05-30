@@ -1,0 +1,25 @@
+$ pnpm e2e:perf
+started_at=2026-05-30T03:56:58.541Z
+ended_at=2026-05-30T03:57:10.080Z
+exit_code=0
+
+
+> ccd@1.0.38 e2e:perf /Users/cc/MyPorject/ccd
+> playwright test e2e/qa-regression.spec.ts --grep @perf --workers=1 --retries=0
+
+
+Running 2 tests using 1 worker
+
+  ✓  1 [chromium] › e2e/qa-regression.spec.ts:409:3 › QA full regression repair matrix › authenticated dashboard first render stays within budget @perf (3.0s)
+  ✓  2 [chromium] › e2e/qa-regression.spec.ts:432:3 › QA full regression repair matrix › dashboard long tasks stay below worst-case freeze budget @perf (2.9s)
+
+  2 passed (11.1s)
+
+[2m[WebServer] [22m(node:65668) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[2m[WebServer] [22m(Use `node --trace-warnings ...` to show where the warning was created)
+[2m[WebServer] [22m(node:65669) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[2m[WebServer] [22m(Use `node --trace-warnings ...` to show where the warning was created)
+(node:65680) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:65680) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)

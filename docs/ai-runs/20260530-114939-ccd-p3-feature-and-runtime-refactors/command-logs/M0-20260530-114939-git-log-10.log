@@ -1,0 +1,10 @@
+5cb4fd8c docs(architecture): 记录 P2 治理构建优化证据
+8cbbf064 feat(governance): 收紧 P2 HTTP PrimeVue 与构建边界
+8c85318c feat(storage): 抽取安全存储编解码契约
+3d8a22df feat(governance): 启用 PrimeVue 边界精确白名单守卫
+20ed764a fix(ci): 遵循 Playwright CI worker 配置
+7b6f3092 docs(architecture): 记录 P1 平台抽取证据与剩余门禁
+7af970dd feat(architecture): 完成 P1 可实现平台层抽取
+2211471d fix(ci): 收敛 dashboard 视觉基线漂移
+50a7caf0 fix(ci): 将首屏预算归入 E2E perf lane
+8dc880af fix(ci): 预热 E2E Vite 冷启动依赖

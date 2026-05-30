@@ -2,55 +2,48 @@
 
 ## Current execution state
 
-- Current milestone: P2 — Governance, CSS, build, HTTP, storage, and PrimeVue boundary modernization
-- Current task: execute all implementable OPEN P2 items from `ccd-architecture-optimization-plan/plans/02-P2-governance-css-build-modernization.md`
-- Last completed task: final P2 validation sweep
-- Validation status: ACTIVE_P2_FINAL_PASS
-- Evidence directory: `docs/ai-runs/20260530-104228-ccd-p2-governance-css-build-modernization/`
+- Current milestone: P3 — Feature and runtime refactors
+- Current task: execute all implementable OPEN P3 items from `ccd-architecture-optimization-plan/plans/03-P3-feature-and-runtime-refactors.md`
+- Last completed task: P3 actionable-scope audit
+- Validation status: ACTIVE_P3_FINAL_PASS
+- Evidence directory: `docs/ai-runs/20260530-114939-ccd-p3-feature-and-runtime-refactors/`
 - Final completion state: DONE_WITH_APPROVAL_GATED_BLOCKERS
 
-Implemented in the active P2 run:
+Implemented in the active P3 run:
 
-- APP-003: `SafeStoragePolicy`, `StorageCodec`, pure storage codec helpers, and web-demo browser storage adapter policy.
-- BUILD-003: build plugin compatibility notes and removal of active `vite-plugin-progress` usage.
-- GOV-005: current P2 next-action docs and architecture-contract guidance refreshed.
-- HTTP-005: example API Method builders and calling model documentation.
-- HTTP-006: raw transport allowlist documented and enforced for HTTP infra, timezone probe, and Lottie asset loader.
-- UI-004: PrimeVue toast/message/locale helpers moved into `@ccd/vue-primevue-adapter`.
-- BUILD-004: Vite Sass preprocessor config no longer uses `as any`.
-- BUILD-005: Vite server/preview auto-open is disabled for CI/e2e through explicit env handling.
-- UI-005: PrimeVue showcase examples are scoped by `primevue-collection` path exception; non-showcase app files remain exact allowlist.
+- No source implementation was performed because no P3 item is currently actionable without approval.
+- Created the P3 evidence directory and captured baseline/status logs.
+- Verified `pnpm ai:doctor --open` reports 80 open tasks, all blocked/deferred categories.
+- Verified the P3 actionable scan returned no unblocked P3 task from the P3 plan, issue ledger, task ledger, or runtime repair ledger.
 
-P2 items intentionally left blocked or deferred:
+P3 items intentionally left blocked or deferred:
 
-- APP-004 (`BLOCKED_BY_OWNER`) — desktop drift CI enforcement scope remains owner/operator gated.
-- BUILD-002 (`BLOCKED_BY_APPROVAL`) — Vite 8 migration requires isolated approval.
-- COMP-005 (`BLOCKED_BY_OWNER`) — `packages/vue-pro-components` is a broad package split and was not approved.
-- DEPS-001, DEPS-002, DEPS-003 (`BLOCKED_BY_APPROVAL`) — no dependency or lockfile changes in this run.
-- GitHub remote governance and `.github/**` refinements remain approval-gated.
+- DEPS-004 (`BLOCKED_BY_REVIEW`) — PrimeVue upgrade requires dependency-review approval and adapter/visual validation lane.
+- DEPS-005 (`BLOCKED_BY_HTTP_CONTRACT`) — alova upgrade requires HTTP contract/request-test prerequisite resolution and approval.
+- DOC-003 (`DEFERRED`) — Login Diorama remains deferred pending product/owner approval and prerequisite stability.
+- Runtime-ledger `P3-Login-*` tasks remain blocked pending M11 operator approval and prerequisite stability.
+- P4 strategic work remains deferred and was not executed.
 
-Focused validation already captured in the active P2 run:
+Focused validation already captured in the active P3 run:
 
-- `pnpm exec vitest run packages/shared-utils/src/storageCodec.spec.ts` — PASS
-- `pnpm exec vitest run packages/vue-primevue-adapter/src/services.spec.ts` — PASS
-- `pnpm exec vitest run apps/web-demo/src/api/example/users.spec.ts` — PASS
-- `pnpm --filter @ccd/contracts build` — PASS
-- `pnpm --filter @ccd/shared-utils build` — PASS
-- `pnpm --filter @ccd/vue-primevue-adapter build` — PASS after locale generic fix
-- `pnpm --filter @ccd/web-demo type-check` — PASS after alova Method config and Vite Sass type fixes
+- `git status --short --untracked-files=all` — PASS, showing only the newly created P3 run logs at capture time.
+- `git log -10 --oneline` — PASS, baseline head is `5cb4fd8c`.
+- `git branch --show-current` — PASS, branch `main`.
+- `git diff --check` — PASS.
+- `pnpm ai:doctor --open` — PASS, 80 open tasks.
+- P3 actionable scan — PASS, zero unblocked P3 tasks found.
 
-Final validation for this P2 run:
+Final validation for this P3 run:
 
 - `pnpm install --frozen-lockfile` — PASS
 - `pnpm ci:prepare-internal` — PASS
 - `pnpm ai:doctor` — PASS
 - `pnpm codex:preflight` — PASS
-- `pnpm validate:governance` — PASS; rerun after final docs/repair updates also PASS
+- `pnpm validate:governance` — PASS
 - `pnpm type-check` — PASS
 - `pnpm test:run` — PASS
 - `pnpm lint:check` — PASS with two existing warnings in `packages/vue-hooks/src/createAutoMittHook.spec.ts`
 - `pnpm build:web-demo` — PASS
-- `pnpm budget:bundles` — PASS after correcting entry asset classification to use `index.html`
 - `pnpm build:desktop` — PASS
 - `pnpm budget:desktop` — PASS
 - `pnpm e2e:smoke` — PASS
@@ -60,16 +53,16 @@ Final validation for this P2 run:
 - `pnpm e2e:qa:prepared` — PASS
 - `pnpm build:ci` — PASS
 - `git diff --check` — PASS
-- `git status --short --untracked-files=all` — PASS, dirty worktree contains only this run's implementation, docs/evidence, official generated API report outputs, and untracked run logs/new source test files
+- `git status --short --untracked-files=all` — PASS; dirty state recorded in the active P3 final status log.
 
 ## Current baseline
 
 - Branch: `main`
-- Baseline commit: `3d8a22df1fc978352d68297c7e9eda76586f8334`
+- Baseline commit: `5cb4fd8c`
 - Local ahead/behind: NOT_CAPTURED by the required command set
-- Dirty files: active P2 implementation, planning/evidence docs, run logs, and any official generated outputs created by validation commands; final status must be read from the active P2 run.
-- Last 10 commits captured: YES in `docs/ai-runs/20260530-104228-ccd-p2-governance-css-build-modernization/command-logs/M0-20260530-104405-git-log-10.log`
-- P2 baseline doctor open scan: PASS in `docs/ai-runs/20260530-104228-ccd-p2-governance-css-build-modernization/command-logs/M0-20260530-104432-baseline-ai-doctor-open.log`
+- Dirty files: active P3 planning/evidence docs, run logs, and official generated `apps/web-demo/src/types/auto-imports.d.ts` formatting drift from validation; final status is recorded in the active P3 final status log.
+- Last 10 commits captured: YES in `docs/ai-runs/20260530-114939-ccd-p3-feature-and-runtime-refactors/command-logs/M0-20260530-114939-git-log-10.log`
+- P3 baseline doctor open scan: PASS in `docs/ai-runs/20260530-114939-ccd-p3-feature-and-runtime-refactors/command-logs/M0-20260530-114939-pnpm-ai-doctor-open.log`
 - Latest known assumption: no dependency, Vite 8, auth-flow, `.github/**`, remote GitHub, commit, stage, push, reset, clean, branch switch, or force operation was performed.
 
 ## Blockers
@@ -99,6 +92,7 @@ Final validation for this P2 run:
 | D-004       | HTTP boundary proposal keeps alova and current app infrastructure path; contracts/core HTTP paths require owner approval                                                | M5                  | 2026-05-29 | PROPOSED |
 | D-006       | Dependency modernization policy remains lane-based; no blind latest upgrades on main                                                                                    | M7                  | 2026-05-29 | PROPOSED |
 | D-008       | GitHub repository governance posture documented; remote/.github changes approval-gated                                                                                  | M7                  | 2026-05-29 | PROPOSED |
+| D-013       | P3 source lanes remain blocked/deferred without dependency, HTTP contract, product, or owner approval                                                                   | P3 audit            | 2026-05-30 | ACTIVE   |
 
 ## Files changed summary
 
@@ -294,7 +288,7 @@ M13 P4 deferred evidence update:
 
 ## Next action
 
-Choose one blocked lane to approve or resolve. Recommended first lane is B-007 ProTable/AppContainer layout validation debt because it blocks M8 table-heavy/e2e confidence without requiring dependency, Vite, auth, or remote governance mutation.
+Choose one blocked P3 lane to approve or keep deferred: Login Diorama M11 product/owner lane, PrimeVue dependency review lane, or alova lane after HTTP contract prerequisites.
 
 ## Update requirements
 

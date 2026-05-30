@@ -1510,6 +1510,10 @@ pnpm ai:guard && pnpm arch:boundaries
 
 先完成 UI boundary policy 和 wrapper 迁移，再升级 PrimeVue；adapter tests + visual-token tests 必跑。
 
+### Current execution note
+
+2026-05-30 P3 audit kept this task `BLOCKED_BY_REVIEW`. No dependency, package manifest, lockfile, PrimeVue adapter, or UI package change was made. Evidence: `docs/ai-runs/20260530-114939-ccd-p3-feature-and-runtime-refactors/`.
+
 ### Implementation steps
 
 1. Inspect only the listed paths and direct imports/consumers.
@@ -1539,6 +1543,10 @@ pnpm --filter @ccd/vue-primevue-adapter build && pnpm e2e:visual
 
 先完成 HTTP policy 和 request focused tests，再升级 alova；不要与 Vite/PrimeVue 同 lane。
 
+### Current execution note
+
+2026-05-30 P3 audit kept this task `BLOCKED_BY_HTTP_CONTRACT`. No dependency, package manifest, lockfile, HTTP contract, or request-stack change was made. Evidence: `docs/ai-runs/20260530-114939-ccd-p3-feature-and-runtime-refactors/`.
+
 ### Implementation steps
 
 1. Inspect only the listed paths and direct imports/consumers.
@@ -1567,6 +1575,10 @@ request-layer tests && pnpm type-check && pnpm e2e:smoke
 ### Best solution
 
 维持 blocked/deferred；待 E2E、UI boundary、HTTP/auth retry policy 稳定后再开单独 feature lane。
+
+### Current execution note
+
+2026-05-30 P3 audit kept this task `DEFERRED`. No login UI, auth-flow, product behavior, or route/view change was made. Evidence: `docs/ai-runs/20260530-114939-ccd-p3-feature-and-runtime-refactors/`.
 
 ### Implementation steps
 

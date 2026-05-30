@@ -1,0 +1,44 @@
+[
+  {
+    "command": "pnpm docs:commands",
+    "log": "docs/ai-runs/20260530-114939-ccd-p3-feature-and-runtime-refactors/command-logs/post-report-01-pnpm-docs-commands.log",
+    "exitCode": 0,
+    "startedAt": "2026-05-30T04:01:13.085Z",
+    "endedAt": "2026-05-30T04:01:13.264Z"
+  },
+  {
+    "command": "pnpm ai:doctor",
+    "log": "docs/ai-runs/20260530-114939-ccd-p3-feature-and-runtime-refactors/command-logs/post-report-02-pnpm-ai-doctor.log",
+    "exitCode": 0,
+    "startedAt": "2026-05-30T04:01:13.265Z",
+    "endedAt": "2026-05-30T04:01:21.988Z"
+  },
+  {
+    "command": "pnpm codex:preflight",
+    "log": "docs/ai-runs/20260530-114939-ccd-p3-feature-and-runtime-refactors/command-logs/post-report-03-pnpm-codex-preflight.log",
+    "exitCode": 0,
+    "startedAt": "2026-05-30T04:01:21.988Z",
+    "endedAt": "2026-05-30T04:01:30.190Z"
+  },
+  {
+    "command": "pnpm validate:governance",
+    "log": "docs/ai-runs/20260530-114939-ccd-p3-feature-and-runtime-refactors/command-logs/post-report-04-pnpm-validate-governance.log",
+    "exitCode": 0,
+    "startedAt": "2026-05-30T04:01:30.190Z",
+    "endedAt": "2026-05-30T04:01:39.075Z"
+  },
+  {
+    "command": "git diff --check",
+    "log": "docs/ai-runs/20260530-114939-ccd-p3-feature-and-runtime-refactors/command-logs/post-report-05-git-diff-check.log",
+    "exitCode": 0,
+    "startedAt": "2026-05-30T04:01:39.075Z",
+    "endedAt": "2026-05-30T04:01:39.091Z"
+  },
+  {
+    "command": "git status --short --untracked-files=all",
+    "log": "docs/ai-runs/20260530-114939-ccd-p3-feature-and-runtime-refactors/command-logs/post-report-06-git-status-short-untracked.log",
+    "exitCode": 0,
+    "startedAt": "2026-05-30T04:01:39.091Z",
+    "endedAt": "2026-05-30T04:01:39.109Z"
+  }
+]

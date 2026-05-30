@@ -20,6 +20,13 @@
 | DEPS-005 | 依赖与工具链现代化   | Medium   | BLOCKED_BY_HTTP_CONTRACT | package.json<br>apps/web-demo/src/utils/http/\*\*                                            | 先完成 HTTP policy 和 request focused tests，再升级 alova；不要与 Vite/PrimeVue 同 lane。             | request-layer tests && pnpm type-check && pnpm e2e:smoke         |
 | DOC-003  | 文档、风险与审批闭环 | Medium   | DEFERRED                 | apps/web-demo/src/views/login/\*\*<br>docs/ai-plan/PLAN.md                                   | 维持 blocked/deferred；待 E2E、UI boundary、HTTP/auth retry policy 稳定后再开单独 feature lane。      | owner approval + auth/e2e regression                             |
 
+## 2026-05-30 执行记录
+
+- Evidence directory: `docs/ai-runs/20260530-114939-ccd-p3-feature-and-runtime-refactors/`
+- `pnpm ai:doctor --open` reported 80 open runtime-ledger tasks; P3 open tasks are Login Diorama tasks blocked pending M11 approval/prerequisite stability.
+- P3 actionable scan across this plan, `ledgers/issue-ledger.md`, `ledgers/task-ledger.md`, and `.ai/runtime/repair_list.md` found zero unblocked P3 items.
+- No source, dependency, lockfile, auth-flow, login UI, GitHub remote, Vite 8, or P4 change was made in this lane.
+
 ## 完成标准
 
 - 本计划内所有 `OPEN` 项完成并通过验证；或明确 `BLOCKED/DEFERRED` 并记录证据。
