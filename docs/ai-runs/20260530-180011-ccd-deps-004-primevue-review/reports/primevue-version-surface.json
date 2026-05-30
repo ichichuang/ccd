@@ -1,0 +1,148 @@
+{
+  "generatedAt": "2026-05-30T10:02:30.900Z",
+  "installed": {
+    "primevue": "4.5.4",
+    "@primevue/core": "4.5.4",
+    "@primevue/forms": "4.5.4",
+    "@primevue/icons": "4.5.4",
+    "@primevue/auto-import-resolver": "4.5.4",
+    "@primeuix/themes": "2.0.3"
+  },
+  "manifests": [
+    {
+      "path": "package.json",
+      "name": "ccd",
+      "version": "1.0.38",
+      "packageManager": "pnpm@10.28.2",
+      "prime_surface": {
+        "@primeuix/themes": {
+          "range": "^2.0.3",
+          "section": "dependencies",
+          "installed": "2.0.3"
+        },
+        "@primevue/core": {
+          "range": "^4.5.4",
+          "section": "dependencies",
+          "installed": "4.5.4"
+        },
+        "@primevue/forms": {
+          "range": "^4.5.4",
+          "section": "dependencies",
+          "installed": "4.5.4"
+        },
+        "@primevue/icons": {
+          "range": "^4.5.4",
+          "section": "dependencies",
+          "installed": "4.5.4"
+        },
+        "primevue": {
+          "range": "^4.5.4",
+          "section": "dependencies",
+          "installed": "4.5.4"
+        },
+        "@primevue/auto-import-resolver": {
+          "range": "^4.5.4",
+          "section": "devDependencies",
+          "installed": "4.5.4"
+        }
+      }
+    },
+    {
+      "path": "packages/vue-primevue-adapter/package.json",
+      "name": "@ccd/vue-primevue-adapter",
+      "version": "1.0.38",
+      "packageManager": null,
+      "prime_surface": {
+        "@primeuix/themes": {
+          "range": "^2.0.3",
+          "section": "dependencies",
+          "installed": "2.0.3"
+        },
+        "@primevue/core": {
+          "range": "^4.5.4",
+          "section": "dependencies",
+          "installed": "4.5.4"
+        },
+        "primevue": {
+          "range": "^4.5.4",
+          "section": "dependencies",
+          "installed": "4.5.4"
+        }
+      }
+    },
+    {
+      "path": "packages/vue-ui/package.json",
+      "name": "@ccd/vue-ui",
+      "version": "1.0.38",
+      "packageManager": null,
+      "prime_surface": {
+        "primevue": {
+          "range": "^4.5.4",
+          "section": "dependencies",
+          "installed": "4.5.4"
+        }
+      }
+    },
+    {
+      "path": "apps/web-demo/package.json",
+      "name": "@ccd/web-demo",
+      "version": "1.0.38",
+      "packageManager": null,
+      "prime_surface": {
+        "@primeuix/themes": {
+          "range": "^2.0.3",
+          "section": "dependencies",
+          "installed": "2.0.3"
+        },
+        "@primevue/core": {
+          "range": "^4.5.4",
+          "section": "dependencies",
+          "installed": "4.5.4"
+        },
+        "@primevue/forms": {
+          "range": "^4.5.4",
+          "section": "dependencies",
+          "installed": "4.5.4"
+        },
+        "@primevue/icons": {
+          "range": "^4.5.4",
+          "section": "dependencies",
+          "installed": "4.5.4"
+        },
+        "primevue": {
+          "range": "^4.5.4",
+          "section": "dependencies",
+          "installed": "4.5.4"
+        },
+        "@primevue/auto-import-resolver": {
+          "range": "^4.5.4",
+          "section": "devDependencies",
+          "installed": "4.5.4"
+        }
+      }
+    },
+    {
+      "path": "apps/desktop/package.json",
+      "name": "@ccd/desktop",
+      "version": "1.0.38",
+      "packageManager": null,
+      "prime_surface": {
+        "@primeuix/themes": {
+          "range": "^2.0.3",
+          "section": "dependencies",
+          "installed": "2.0.3"
+        },
+        "@primevue/core": {
+          "range": "^4.5.4",
+          "section": "dependencies",
+          "installed": "4.5.4"
+        },
+        "primevue": {
+          "range": "^4.5.4",
+          "section": "dependencies",
+          "installed": "4.5.4"
+        }
+      }
+    }
+  ]
+}

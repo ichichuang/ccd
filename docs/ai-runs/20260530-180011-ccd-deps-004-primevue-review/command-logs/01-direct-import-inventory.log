@@ -1,0 +1,167 @@
+packages/vue-primevue-adapter/src/services.ts:2:import ConfirmationService from 'primevue/confirmationservice'
+packages/vue-primevue-adapter/src/services.ts:3:import DialogService from 'primevue/dialogservice'
+packages/vue-primevue-adapter/src/services.ts:4:import ToastService from 'primevue/toastservice'
+packages/vue-primevue-adapter/src/services.ts:5:import Tooltip from 'primevue/tooltip'
+packages/vue-primevue-adapter/src/index.ts:1:import type { PrimeVueConfiguration } from '@primevue/core/config'
+packages/vue-primevue-adapter/src/theme/primevuePreset.ts:1:import { definePreset } from '@primeuix/themes'
+packages/vue-primevue-adapter/src/theme/primevuePreset.ts:2:import type { ComponentsDesignTokens } from '@primeuix/themes/types'
+packages/vue-primevue-adapter/src/theme/primevuePreset.ts:3:import Aura from '@primeuix/themes/aura'
+packages/vue-ui/src/ProTable/VirtualGridRenderer.vue:5:import Tag from 'primevue/tag'
+apps/desktop/src/plugins/index.ts:2:import PrimeVue from 'primevue/config'
+packages/vue-ui/src/ProTable/components/ProTableCrudViewModalBody.tsx:7:import Button from 'primevue/button'
+packages/vue-ui/src/ProTable/components/ProTableToolbar.vue:6:import Button from 'primevue/button'
+packages/vue-ui/src/ProTable/components/ProTableToolbar.vue:7:import InputText from 'primevue/inputtext'
+packages/vue-ui/src/ProTable/components/ProTableToolbar.vue:8:import Menu from 'primevue/menu'
+packages/vue-ui/src/ProTable/components/ProTableToolbar.vue:9:import Popover from 'primevue/popover'
+apps/web-demo/src/router/utils/helper.ts:12:import type { MenuItem as PrimeMenuItem } from 'primevue/menuitem'
+packages/vue-ui/src/ProTable/components/ProTablePagination.vue:4:import Paginator from 'primevue/paginator'
+packages/vue-ui/src/ProTable/components/ProTablePagination.vue:5:import Select from 'primevue/select'
+packages/vue-ui/src/ProTable/components/ProTableColumnSettings.vue:4:import ToggleSwitch from 'primevue/toggleswitch'
+packages/vue-ui/src/CScrollbar/CScrollbar.vue:18:import { usePrimeVue } from 'primevue/config'
+apps/web-demo/build/plugins.ts:9:import { PrimeVueResolver } from '@primevue/auto-import-resolver'
+packages/vue-ui/src/ProTable/components/ProTableCrudFormModalBody.tsx:8:import Button from 'primevue/button'
+packages/vue-ui/src/ProTable/ProTable.vue:4:import Button from 'primevue/button'
+packages/vue-ui/src/ProTable/ProTable.vue:5:import Column from 'primevue/column'
+packages/vue-ui/src/ProTable/ProTable.vue:6:import DataTable from 'primevue/datatable'
+packages/vue-ui/src/ProTable/ProTable.vue:7:import ProgressSpinner from 'primevue/progressspinner'
+packages/vue-ui/src/ProTable/ProTable.vue:8:import Tag from 'primevue/tag'
+apps/web-demo/src/types/components.d.ts:11:    Accordion: typeof import('primevue/accordion')['default']
+apps/web-demo/src/types/components.d.ts:12:    AccordionContent: typeof import('primevue/accordioncontent')['default']
+apps/web-demo/src/types/components.d.ts:13:    AccordionHeader: typeof import('primevue/accordionheader')['default']
+apps/web-demo/src/types/components.d.ts:14:    AccordionPanel: typeof import('primevue/accordionpanel')['default']
+apps/web-demo/src/types/components.d.ts:16:    AutoComplete: typeof import('primevue/autocomplete')['default']
+apps/web-demo/src/types/components.d.ts:17:    Avatar: typeof import('primevue/avatar')['default']
+apps/web-demo/src/types/components.d.ts:18:    Badge: typeof import('primevue/badge')['default']
+apps/web-demo/src/types/components.d.ts:19:    Breadcrumb: typeof import('primevue/breadcrumb')['default']
+apps/web-demo/src/types/components.d.ts:20:    Button: typeof import('primevue/button')['default']
+apps/web-demo/src/types/components.d.ts:21:    ButtonGroup: typeof import('primevue/buttongroup')['default']
+apps/web-demo/src/types/components.d.ts:22:    Card: typeof import('primevue/card')['default']
+apps/web-demo/src/types/components.d.ts:23:    Checkbox: typeof import('primevue/checkbox')['default']
+apps/web-demo/src/types/components.d.ts:24:    Chip: typeof import('primevue/chip')['default']
+apps/web-demo/src/types/components.d.ts:25:    Column: typeof import('primevue/column')['default']
+apps/web-demo/src/types/components.d.ts:26:    ConfirmPopup: typeof import('primevue/confirmpopup')['default']
+apps/web-demo/src/types/components.d.ts:28:    DataTable: typeof import('primevue/datatable')['default']
+apps/web-demo/src/types/components.d.ts:29:    DatePicker: typeof import('primevue/datepicker')['default']
+apps/web-demo/src/types/components.d.ts:30:    Divider: typeof import('primevue/divider')['default']
+apps/web-demo/src/types/components.d.ts:31:    Drawer: typeof import('primevue/drawer')['default']
+apps/web-demo/src/types/components.d.ts:33:    Fieldset: typeof import('primevue/fieldset')['default']
+apps/web-demo/src/types/components.d.ts:34:    FileUpload: typeof import('primevue/fileupload')['default']
+apps/web-demo/src/types/components.d.ts:35:    FloatLabel: typeof import('primevue/floatlabel')['default']
+apps/web-demo/src/types/components.d.ts:36:    IconField: typeof import('primevue/iconfield')['default']
+apps/web-demo/src/types/components.d.ts:38:    Image: typeof import('primevue/image')['default']
+apps/web-demo/src/types/components.d.ts:39:    InlineMessage: typeof import('primevue/inlinemessage')['default']
+apps/web-demo/src/types/components.d.ts:40:    InputIcon: typeof import('primevue/inputicon')['default']
+apps/web-demo/src/types/components.d.ts:41:    InputMask: typeof import('primevue/inputmask')['default']
+apps/web-demo/src/types/components.d.ts:42:    InputNumber: typeof import('primevue/inputnumber')['default']
+apps/web-demo/src/types/components.d.ts:43:    InputText: typeof import('primevue/inputtext')['default']
+apps/web-demo/src/types/components.d.ts:44:    Knob: typeof import('primevue/knob')['default']
+apps/web-demo/src/types/components.d.ts:45:    Listbox: typeof import('primevue/listbox')['default']
+apps/web-demo/src/types/components.d.ts:46:    Menu: typeof import('primevue/menu')['default']
+apps/web-demo/src/types/components.d.ts:47:    Message: typeof import('primevue/message')['default']
+apps/web-demo/src/types/components.d.ts:48:    MultiSelect: typeof import('primevue/multiselect')['default']
+apps/web-demo/src/types/components.d.ts:49:    Panel: typeof import('primevue/panel')['default']
+apps/web-demo/src/types/components.d.ts:50:    Password: typeof import('primevue/password')['default']
+apps/web-demo/src/types/components.d.ts:51:    Popover: typeof import('primevue/popover')['default']
+apps/web-demo/src/types/components.d.ts:53:    ProgressBar: typeof import('primevue/progressbar')['default']
+apps/web-demo/src/types/components.d.ts:54:    ProgressSpinner: typeof import('primevue/progressspinner')['default']
+apps/web-demo/src/types/components.d.ts:56:    RadioButton: typeof import('primevue/radiobutton')['default']
+apps/web-demo/src/types/components.d.ts:57:    Rating: typeof import('primevue/rating')['default']
+apps/web-demo/src/types/components.d.ts:60:    Select: typeof import('primevue/select')['default']
+apps/web-demo/src/types/components.d.ts:61:    SelectButton: typeof import('primevue/selectbutton')['default']
+apps/web-demo/src/types/components.d.ts:62:    Skeleton: typeof import('primevue/skeleton')['default']
+apps/web-demo/src/types/components.d.ts:63:    Slider: typeof import('primevue/slider')['default']
+apps/web-demo/src/types/components.d.ts:64:    SplitButton: typeof import('primevue/splitbutton')['default']
+apps/web-demo/src/types/components.d.ts:65:    Splitter: typeof import('primevue/splitter')['default']
+apps/web-demo/src/types/components.d.ts:66:    SplitterPanel: typeof import('primevue/splitterpanel')['default']
+apps/web-demo/src/types/components.d.ts:67:    Step: typeof import('primevue/step')['default']
+apps/web-demo/src/types/components.d.ts:68:    StepList: typeof import('primevue/steplist')['default']
+apps/web-demo/src/types/components.d.ts:69:    StepPanel: typeof import('primevue/steppanel')['default']
+apps/web-demo/src/types/components.d.ts:70:    StepPanels: typeof import('primevue/steppanels')['default']
+apps/web-demo/src/types/components.d.ts:71:    Stepper: typeof import('primevue/stepper')['default']
+apps/web-demo/src/types/components.d.ts:72:    Tab: typeof import('primevue/tab')['default']
+apps/web-demo/src/types/components.d.ts:73:    TabList: typeof import('primevue/tablist')['default']
+apps/web-demo/src/types/components.d.ts:74:    TabPanel: typeof import('primevue/tabpanel')['default']
+apps/web-demo/src/types/components.d.ts:75:    TabPanels: typeof import('primevue/tabpanels')['default']
+apps/web-demo/src/types/components.d.ts:76:    Tabs: typeof import('primevue/tabs')['default']
+apps/web-demo/src/types/components.d.ts:77:    Tag: typeof import('primevue/tag')['default']
+apps/web-demo/src/types/components.d.ts:78:    Textarea: typeof import('primevue/textarea')['default']
+apps/web-demo/src/types/components.d.ts:79:    ToggleSwitch: typeof import('primevue/toggleswitch')['default']
+apps/web-demo/src/types/components.d.ts:83:    Tooltip: typeof import('primevue/tooltip')['default']
+.ai/rules/core/07-vue-auto-imports.mdc:96:import Button from 'primevue/button'
+.ai/rules/core/07-vue-auto-imports.mdc:97:import Select from 'primevue/select'
+.ai/rules/core/07-vue-auto-imports.mdc:98:import Card from 'primevue/card'
+.ai/rules/core/07-vue-auto-imports.mdc:99:import DataTable from 'primevue/datatable'
+apps/web-demo/src/plugins/modules/primevue.ts:2:import PrimeVue from 'primevue/config'
+packages/vue-ui/src/ProForm/renderers/components/ProMultiSelect.vue:4:import Chip from 'primevue/chip'
+packages/vue-ui/src/ProForm/renderers/components/ProMultiSelect.vue:5:import MultiSelect from 'primevue/multiselect'
+packages/vue-ui/src/ProForm/renderers/components/ProMultiSelect.vue:6:import ProgressSpinner from 'primevue/progressspinner'
+packages/vue-ui/src/ProForm/renderers/components/ProSlider.vue:4:import Slider from 'primevue/slider'
+packages/vue-ui/src/ProForm/renderers/components/ProInputMask.vue:4:import InputMask from 'primevue/inputmask'
+packages/vue-ui/src/ProForm/renderers/components/ProRadio.vue:4:import RadioButton from 'primevue/radiobutton'
+packages/vue-ui/src/PrimeDialog/utils/types.ts:1:import type { PassThrough } from '@primevue/core'
+packages/vue-ui/src/PrimeDialog/utils/types.ts:2:import type { ButtonProps as PrimeButtonProps } from 'primevue/button'
+packages/vue-ui/src/PrimeDialog/utils/types.ts:3:import type { DialogPassThroughOptions } from 'primevue/dialog'
+packages/vue-ui/src/ProForm/renderers/components/ProSelect.vue:4:import ProgressSpinner from 'primevue/progressspinner'
+packages/vue-ui/src/ProForm/renderers/components/ProSelect.vue:5:import Select from 'primevue/select'
+packages/vue-ui/src/ProForm/renderers/components/ProCheckbox.vue:4:import Checkbox from 'primevue/checkbox'
+packages/vue-ui/src/ProForm/renderers/components/ProInputText.vue:2:import InputText from 'primevue/inputtext'
+packages/vue-ui/src/ProForm/renderers/components/ProTextarea.vue:4:import Textarea from 'primevue/textarea'
+packages/vue-ui/src/ProForm/renderers/components/ProSwitch.vue:4:import ToggleSwitch from 'primevue/toggleswitch'
+packages/vue-ui/src/ProForm/renderers/ProFormNode.vue:2:import Button from 'primevue/button'
+packages/vue-ui/src/ProForm/renderers/ProFormNode.vue:3:import Card from 'primevue/card'
+packages/vue-ui/src/ProForm/renderers/ProFormNode.vue:4:import Panel from 'primevue/panel'
+packages/vue-ui/src/ProForm/renderers/ProFormNode.vue:5:import Step from 'primevue/step'
+packages/vue-ui/src/ProForm/renderers/ProFormNode.vue:6:import StepList from 'primevue/steplist'
+packages/vue-ui/src/ProForm/renderers/ProFormNode.vue:7:import StepPanel from 'primevue/steppanel'
+packages/vue-ui/src/ProForm/renderers/ProFormNode.vue:8:import StepPanels from 'primevue/steppanels'
+packages/vue-ui/src/ProForm/renderers/ProFormNode.vue:9:import Stepper from 'primevue/stepper'
+packages/vue-ui/src/ProForm/renderers/ProFormNode.vue:10:import Tab from 'primevue/tab'
+packages/vue-ui/src/ProForm/renderers/ProFormNode.vue:11:import TabList from 'primevue/tablist'
+packages/vue-ui/src/ProForm/renderers/ProFormNode.vue:12:import TabPanel from 'primevue/tabpanel'
+packages/vue-ui/src/ProForm/renderers/ProFormNode.vue:13:import TabPanels from 'primevue/tabpanels'
+packages/vue-ui/src/ProForm/renderers/ProFormNode.vue:14:import Tabs from 'primevue/tabs'
+packages/vue-ui/src/ProForm/renderers/components/ProUpload.vue:4:import FileUpload from 'primevue/fileupload'
+packages/vue-ui/src/ProForm/renderers/components/ProRating.vue:4:import Rating from 'primevue/rating'
+packages/vue-ui/src/ProForm/renderers/components/ProInputNumber.vue:4:import InputNumber from 'primevue/inputnumber'
+packages/vue-ui/src/ProForm/renderers/components/ProDatePicker.vue:4:import DatePicker from 'primevue/datepicker'
+apps/web-demo/src/hooks/layout/useAdminBreadcrumbs.ts:6:import type TieredMenu from 'primevue/tieredmenu'
+packages/vue-ui/src/PrimeDialog/PrimeDialog.vue:7:import type { PassThrough } from '@primevue/core'
+packages/vue-ui/src/PrimeDialog/PrimeDialog.vue:8:import Button from 'primevue/button'
+packages/vue-ui/src/PrimeDialog/PrimeDialog.vue:9:import Dialog from 'primevue/dialog'
+packages/vue-ui/src/PrimeDialog/PrimeDialog.vue:10:import type { DialogPassThroughOptions } from 'primevue/dialog'
+apps/web-demo/src/views/dashboard/index.vue:5:import Button from 'primevue/button'
+packages/vue-ui/src/CcdPrimeControls/index.ts:1:import PrimeButton from 'primevue/button'
+packages/vue-ui/src/CcdPrimeControls/index.ts:2:import PrimeDrawer from 'primevue/drawer'
+packages/vue-ui/src/CcdPrimeControls/index.ts:3:import PrimePanelMenu from 'primevue/panelmenu'
+packages/vue-ui/src/CcdPrimeControls/index.ts:4:import PrimePopover from 'primevue/popover'
+packages/vue-ui/src/CcdPrimeControls/index.ts:5:import PrimeSelect from 'primevue/select'
+packages/vue-ui/src/CcdPrimeControls/index.ts:6:import PrimeSelectButton from 'primevue/selectbutton'
+packages/vue-ui/src/CcdPrimeControls/index.ts:7:import PrimeTieredMenu from 'primevue/tieredmenu'
+packages/vue-ui/src/CcdPrimeControls/index.ts:8:import PrimeToggleSwitch from 'primevue/toggleswitch'
+apps/web-demo/src/views/example/hooks/use-app-element-size.vue:4:import Tag from 'primevue/tag'
+apps/web-demo/src/views/example/system-configuration/layout.vue:4:import type Popover from 'primevue/popover'
+apps/web-demo/src/layouts/components/AppPrimeVueGlobals.vue:7:import Toast from 'primevue/toast'
+apps/web-demo/src/layouts/components/AppPrimeVueGlobals.vue:8:import CheckIcon from '@primevue/icons/check'
+apps/web-demo/src/layouts/components/AppPrimeVueGlobals.vue:9:import InfoCircleIcon from '@primevue/icons/infocircle'
+apps/web-demo/src/layouts/components/AppPrimeVueGlobals.vue:10:import ExclamationTriangleIcon from '@primevue/icons/exclamationtriangle'
+apps/web-demo/src/layouts/components/AppPrimeVueGlobals.vue:11:import TimesCircleIcon from '@primevue/icons/timescircle'
+apps/web-demo/src/layouts/components/AppPrimeVueGlobals.vue:12:import MinusIcon from '@primevue/icons/minus'
+apps/web-demo/src/layouts/components/AppPrimeVueGlobals.vue:13:import ConfirmPopup from 'primevue/confirmpopup'
+apps/web-demo/src/layouts/components/AppPrimeVueGlobals.vue:14:import DynamicDialog from 'primevue/dynamicdialog'
+apps/web-demo/src/layouts/components/AppPrimeVueGlobals.vue:15:import { useToast } from 'primevue/usetoast'
+apps/web-demo/src/layouts/components/AppPrimeVueGlobals.vue:16:import { usePrimeVue } from 'primevue/config'
+apps/web-demo/src/views/example/hooks/layout-breadcrumbs.vue:2:import TieredMenu from 'primevue/tieredmenu'
+apps/web-demo/src/layouts/components/admin/AdminSidebarMenuInline.tsx:2:import Tooltip from 'primevue/tooltip'
+apps/web-demo/src/layouts/components/admin/AdminSidebarMenuCollapsed.tsx:1:import Tooltip from 'primevue/tooltip'
+apps/web-demo/src/views/example/components/primevue-collection/prime-dialog/index.vue:4:import Button from 'primevue/button'
+apps/web-demo/src/views/example/components/primevue-collection/overview/index.vue:3:import { useConfirm } from 'primevue/useconfirm'
+apps/web-demo/src/views/example/components/primevue-collection/pro-table/advanced/configs/columns.tsx:1:import Button from 'primevue/button'
+apps/web-demo/src/views/example/components/primevue-collection/pro-table/columns/columns.tsx:8:import Button from 'primevue/button'
+apps/web-demo/src/views/example/components/primevue-collection/pro-table/form-table-combo/components/TablePanel.vue:15:import Button from 'primevue/button'
+apps/web-demo/src/views/example/components/primevue-collection/pro-table/server/columns.tsx:5:import Tag from 'primevue/tag'
+apps/web-demo/src/views/example/components/primevue-collection/pro-table/advanced/index.vue:2:import { useConfirm } from 'primevue/useconfirm'
+apps/web-demo/src/views/example/components/primevue-collection/pro-form/plugins/components/ColorPickerField.tsx:3:import InputText from 'primevue/inputtext'
+apps/web-demo/src/views/example/components/primevue-collection/pro-form/plugins/components/MyColorCustomInput.tsx:2:import InputText from 'primevue/inputtext'
+apps/web-demo/src/views/example/components/primevue-collection/pro-form/advanced/index.vue:9:import Button from 'primevue/button'
+apps/web-demo/src/views/example/components/primevue-collection/pro-form/advanced/index.vue:10:import InputText from 'primevue/inputtext'
+apps/web-demo/src/views/example/components/primevue-collection/pro-form/advanced/index.vue:11:import Select from 'primevue/select'
