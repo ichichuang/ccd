@@ -17,6 +17,11 @@ import { usePrimeVue } from 'primevue/config'
 import { PRIMEVUE_LOCALE_MAP } from '@/locales/primevue-locales'
 import { useLocaleStore } from '@/stores/modules/system'
 import { PrimeDialog } from '@ccd/vue-ui'
+import {
+  applyPrimeVueLocale,
+  createPrimeVueMessageApi,
+  createPrimeVueToastApi,
+} from '@ccd/vue-primevue-adapter'
 import { useDialog } from '@/hooks/modules/useDialog'
 import ToastMessageContent from '@/layouts/components/ToastMessageContent.vue'
 
@@ -29,7 +34,7 @@ const route = useRoute()
 watch(
   () => localeStore.locale,
   locale => {
-    primevue.config.locale = PRIMEVUE_LOCALE_MAP[locale] ?? PRIMEVUE_LOCALE_MAP['zh-CN']
+    applyPrimeVueLocale(primevue, locale, PRIMEVUE_LOCALE_MAP, 'zh-CN')
   },
   { immediate: true }
 )
@@ -43,8 +48,6 @@ watch(
   }
 )
 
-const DEFAULT_LIFE = 3000
-
 /** Toast 各 severity 对应图标（PrimeVue 未为 secondary/contrast 定义，此处补充） */
 const TOAST_ICON_MAP: Record<string, object> = {
   success: CheckIcon,
@@ -55,82 +58,10 @@ const TOAST_ICON_MAP: Record<string, object> = {
   contrast: MinusIcon,
 }
 
-const POSITION_TO_GROUP: Record<ToastPosition, string> = {
-  'top-left': 'tl',
-  'top-center': 'tc',
-  'top-right': 'tr',
-  'bottom-left': 'bl',
-  'bottom-center': 'bc',
-  'bottom-right': 'br',
-}
-
-function buildToastApi() {
-  const severityIn = (
-    severity: 'success' | 'info' | 'warn' | 'error' | 'secondary' | 'contrast',
-    position: ToastPosition,
-    summary: string,
-    detail?: string
-  ) => {
-    toast.add({
-      severity,
-      summary,
-      detail: detail ?? '',
-      life: DEFAULT_LIFE,
-      group: POSITION_TO_GROUP[position],
-    })
-  }
-  const t = toast as { removeAllGroups?: () => void }
-  const addWithMapping = (opts: Parameters<typeof toast.add>[0]) => {
-    const mapped = opts?.severity === 'danger' ? { ...opts, severity: 'error' as const } : opts
-    toast.add(mapped)
-  }
-  return {
-    add: addWithMapping,
-    dangerIn: (pos: ToastPosition, s: string, d?: string) => severityIn('error', pos, s, d),
-    successIn: (pos: ToastPosition, s: string, d?: string) => severityIn('success', pos, s, d),
-    infoIn: (pos: ToastPosition, s: string, d?: string) => severityIn('info', pos, s, d),
-    warnIn: (pos: ToastPosition, s: string, d?: string) => severityIn('warn', pos, s, d),
-    secondaryIn: (pos: ToastPosition, s: string, d?: string) => severityIn('secondary', pos, s, d),
-    contrastIn: (pos: ToastPosition, s: string, d?: string) => severityIn('contrast', pos, s, d),
-    remove: toast.remove.bind(toast),
-    removeGroup: toast.removeGroup.bind(toast),
-    clear: () => {
-      t.removeAllGroups?.()
-    },
-  }
-}
-
-/**
- * $message：顶部居中纯提示（无关闭按钮、纯提示）
- * 使用 top-center group，与位置化 $toast API 共享全局 Toast 实例。
- */
-function buildMessageApi() {
-  const show = (
-    severity: 'success' | 'info' | 'warn' | 'error', // PrimeVue 使用 error，内部映射
-    message: string,
-    title?: string
-  ) => {
-    toast.add({
-      severity,
-      summary: title ?? message,
-      detail: title ? message : undefined,
-      life: DEFAULT_LIFE,
-      group: POSITION_TO_GROUP['top-center'],
-      closable: false,
-    })
-  }
-  return {
-    success: (msg: string, title?: string) => show('success', msg, title),
-    danger: (msg: string, title?: string) => show('error', msg, title),
-    info: (msg: string, title?: string) => show('info', msg, title),
-    warn: (msg: string, title?: string) => show('warn', msg, title),
-  }
-}
-
 onMounted(() => {
   if (typeof window !== 'undefined') {
-    window.$toast = buildToastApi() as typeof window.$toast
-    window.$message = buildMessageApi()
+    window.$toast = createPrimeVueToastApi(toast) as typeof window.$toast
+    window.$message = createPrimeVueMessageApi(toast)
   }
 })
 

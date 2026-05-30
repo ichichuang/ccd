@@ -7,11 +7,45 @@ import {
 } from './theme/ptPresets/formControlsPt'
 import { menuPt } from './theme/ptPresets/menuPt'
 import { buttonPt } from './theme/ptPresets/buttonPt'
-import { installPrimeVueServices, type PrimeVueServiceInstallOptions } from './services.js'
+import {
+  DEFAULT_PRIMEVUE_TOAST_LIFE_MS,
+  PRIMEVUE_TOAST_GROUP_BY_POSITION,
+  applyPrimeVueLocale,
+  createPrimeVueMessageApi,
+  createPrimeVueToastApi,
+  installPrimeVueServices,
+  resolvePrimeVueLocale,
+  type PrimeVueMessageApi,
+  type PrimeVueServiceInstallOptions,
+  type PrimeVueToastApi,
+  type PrimeVueToastMessageOptions,
+  type PrimeVueToastPosition,
+  type PrimeVueToastServiceLike,
+  type PrimeVueToastSeverity,
+} from './services.js'
 
 export type { PrimeVueSizeSource }
-export { createCustomPreset, formControlsPt, installPrimeVueServices, menuPt }
-export type { PrimeVueServiceInstallOptions }
+export {
+  DEFAULT_PRIMEVUE_TOAST_LIFE_MS,
+  PRIMEVUE_TOAST_GROUP_BY_POSITION,
+  applyPrimeVueLocale,
+  createCustomPreset,
+  createPrimeVueMessageApi,
+  createPrimeVueToastApi,
+  formControlsPt,
+  installPrimeVueServices,
+  menuPt,
+  resolvePrimeVueLocale,
+}
+export type {
+  PrimeVueMessageApi,
+  PrimeVueServiceInstallOptions,
+  PrimeVueToastApi,
+  PrimeVueToastMessageOptions,
+  PrimeVueToastPosition,
+  PrimeVueToastServiceLike,
+  PrimeVueToastSeverity,
+}
 
 const OVERLAY_GLASS_SHELL_CLASS = 'glass-shell transform-gpu will-change-transform'
 const BG_TRANSPARENT = 'bg-transparent'

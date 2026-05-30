@@ -89,3 +89,62 @@ describe('installPrimeVueServices', () => {
     expect(serviceState.directives).toHaveLength(0)
   })
 })
+
+describe('PrimeVue global shell helpers', () => {
+  it('maps toast positions and danger severity through the adapter API', async () => {
+    const { createPrimeVueToastApi } = await import('./services.js')
+    const calls: unknown[] = []
+    const toast = {
+      add: vi.fn(options => calls.push(options)),
+      remove: vi.fn(),
+      removeGroup: vi.fn(),
+      removeAllGroups: vi.fn(),
+    }
+
+    const api = createPrimeVueToastApi(toast)
+    api.add({ severity: 'danger', summary: 'Danger' })
+    api.successIn('top-right', 'Saved')
+    api.clear()
+
+    expect(calls).toEqual([
+      { severity: 'error', summary: 'Danger' },
+      {
+        severity: 'success',
+        summary: 'Saved',
+        detail: '',
+        life: 3000,
+        group: 'tr',
+      },
+    ])
+    expect(toast.removeAllGroups).toHaveBeenCalledOnce()
+  })
+
+  it('creates Element-style message helpers on the top-center toast group', async () => {
+    const { createPrimeVueMessageApi } = await import('./services.js')
+    const toast = {
+      add: vi.fn(),
+      remove: vi.fn(),
+      removeGroup: vi.fn(),
+    }
+
+    createPrimeVueMessageApi(toast).danger('Failed', 'Upload')
+
+    expect(toast.add).toHaveBeenCalledWith({
+      severity: 'error',
+      summary: 'Upload',
+      detail: 'Failed',
+      life: 3000,
+      group: 'tc',
+      closable: false,
+    })
+  })
+
+  it('applies locale with a fallback', async () => {
+    const { applyPrimeVueLocale } = await import('./services.js')
+    const primevue: { config: { locale?: { ok: boolean } } } = { config: {} }
+
+    applyPrimeVueLocale(primevue, 'en-US', { 'zh-CN': { ok: true } }, 'zh-CN')
+
+    expect(primevue.config.locale).toEqual({ ok: true })
+  })
+})

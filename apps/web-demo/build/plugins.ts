@@ -4,7 +4,6 @@ import fs from 'node:fs'
 import { createRequire } from 'node:module'
 import path from 'node:path'
 import UnoCSS from 'unocss/vite'
-import progress from 'vite-plugin-progress'
 import AutoImport from 'unplugin-auto-import/vite'
 import Components from 'unplugin-vue-components/vite'
 import { PrimeVueResolver } from '@primevue/auto-import-resolver'
@@ -19,6 +18,62 @@ import { viteBuildInfo } from './info'
 import { viteBuildPerformancePlugin } from './performance'
 
 const require = createRequire(import.meta.url)
+
+export const BUILD_PLUGIN_COMPATIBILITY_NOTES = [
+  {
+    id: 'echarts-treeshake-enhance',
+    keep: true,
+    owner: 'web-demo build',
+    value:
+      'Marks unused ECharts chart/component modules as side-effect free during production builds.',
+    vite8Risk:
+      'Revalidate resolveId moduleSideEffects behavior under Rolldown before any Vite major lane.',
+  },
+  {
+    id: 'viteBuildInfo',
+    keep: true,
+    owner: 'web-demo build',
+    value: 'Injects deterministic build metadata used by the generated index shell.',
+    vite8Risk: 'Low; HTML/build metadata hook should be rechecked with Vite plugin API changes.',
+  },
+  {
+    id: 'vite-plugin-progress',
+    keep: false,
+    owner: 'removed from active plugin list',
+    value: 'Terminal cosmetics only; no bundle, runtime, or CI artifact value.',
+    vite8Risk: 'Avoid carrying cosmetic plugin compatibility into the future Vite 8 lane.',
+  },
+  {
+    id: 'configHtmlPlugin',
+    keep: true,
+    owner: 'web-demo build',
+    value: 'Owns HTML brand injection and API origin resource hints.',
+    vite8Risk: 'Medium; revalidate transformIndexHtml behavior during Vite major migration.',
+  },
+  {
+    id: 'generateIconListsPlugin',
+    keep: true,
+    owner: 'web-demo examples',
+    value:
+      'Generates icon showcase inventory without parsing large Iconify JSON files into memory.',
+    vite8Risk: 'Low; filesystem-only config hook, but generated output discipline still applies.',
+  },
+  {
+    id: 'configCompressPlugin',
+    keep: true,
+    owner: 'deploy/build',
+    value: 'Optional gzip/brotli artifacts when VITE_COMPRESSION requests precompression.',
+    vite8Risk:
+      'Medium; serving strategy should decide whether this stays in build or moves to CDN/CD.',
+  },
+  {
+    id: 'viteBuildPerformancePlugin',
+    keep: true,
+    owner: 'bundle analysis',
+    value: 'Opt-in visualizer artifact for bundle budget investigations.',
+    vite8Risk: 'Low; remains disabled unless VITE_BUILD_ANALYZE=true.',
+  },
+] as const
 
 export function getPluginsList(env: ViteEnv, command: 'build' | 'serve'): PluginOption[] {
   const { VITE_COMPRESSION, VITE_BUILD_ANALYZE } = env
@@ -54,13 +109,6 @@ export function getPluginsList(env: ViteEnv, command: 'build' | 'serve'): Plugin
 
     // ✅ 构建信息看板
     viteBuildInfo(),
-
-    // ✅ 构建阶段进度条（终端输出，仅 build）
-    isBuild &&
-      progress({
-        format: 'Building [:bar] :percent',
-        width: 60,
-      }),
 
     // ✅ HTML 注入品牌配置 + API 域名资源提示（VITE_API_BASE_URL）
     configHtmlPlugin(env),

@@ -41,6 +41,9 @@ Raw `fetch` is still forbidden in API, store, hook, and view business code. The 
 
 - `src/utils/http/interceptors.ts#defaultRefreshTokenExecutor`: refresh-token bootstrap fallback. It cannot call `alovaInstance` from inside the response interceptor without risking recursive 401 handling. The normal path should inject `setRefreshTokenExecutor()` when an app-specific refresh method is available.
 - `src/utils/http/methods.ts#getRaw`: header-preserving GET for endpoints where callers must inspect `Headers`. It must manually preserve auth token injection, unified `HttpRequestError`, abort handling, cache policy, and global error behavior.
+- `src/utils/http/connection.ts#performHealthCheck`: connection probe infrastructure below the Alova instance.
+- `src/utils/date/timezone.ts`: timezone detection probe, not application data fetching.
+- `src/layouts/components/LoadingLottie.vue`: static same-origin Lottie asset loader. It must only fetch files under the app public asset base.
 
 Do not create new raw transports outside the approved infrastructure boundary. Extend the approved helper or add a documented rule/guard exception before introducing a new case.
 

@@ -1,5 +1,11 @@
 import postcssPxToRem from 'postcss-pxtorem'
-import { defineConfig, loadEnv, type ConfigEnv, type UserConfigExport } from 'vite'
+import {
+  defineConfig,
+  loadEnv,
+  type ConfigEnv,
+  type SassPreprocessorOptions,
+  type UserConfigExport,
+} from 'vite'
 import { exclude, include } from './build/optimize'
 import { getPluginsList } from './build/plugins'
 import { __APP_INFO__, alias, pathResolve, root, wrapperEnv } from './build/utils'
@@ -30,6 +36,16 @@ function shouldExcludePxToRemFile(file: string): boolean {
   return PX_TO_REM_FILE_EXCLUDES.some(pattern => pattern.test(file))
 }
 
+type ModernScssPreprocessorOptions = SassPreprocessorOptions & {
+  api?: 'modern' | 'modern-compiler' | 'legacy'
+  charset?: boolean
+}
+
+const scssPreprocessorOptions: ModernScssPreprocessorOptions = {
+  api: 'modern-compiler',
+  charset: false,
+}
+
 export default ({ mode, command }: ConfigEnv): UserConfigExport => {
   // 1. 加载环境变量
   const env = wrapperEnv({
@@ -45,10 +61,19 @@ export default ({ mode, command }: ConfigEnv): UserConfigExport => {
     VITE_DROP_CONSOLE,
     VITE_COMPRESSION,
     VITE_PROXY_TIMEOUT,
+    VITE_SERVER_OPEN,
   } = env
 
   const isDev = mode === 'development'
   const isBuild = command === 'build'
+  const lifecycleEvent = process.env.npm_lifecycle_event ?? ''
+  const isAutomatedServer =
+    process.env.CI === 'true' ||
+    process.env.CI === '1' ||
+    lifecycleEvent.startsWith('e2e') ||
+    VITE_SERVER_OPEN === 'false'
+  const shouldOpenDevServer = isDev && !isAutomatedServer
+  const shouldOpenPreview = VITE_SERVER_OPEN === 'true' && !isAutomatedServer
 
   // 2. 动态控制 esbuild 的 drop / pure 选项
   //    保留 console.error 和 console.warn 用于生产环境错误可见性
@@ -83,7 +108,7 @@ export default ({ mode, command }: ConfigEnv): UserConfigExport => {
     server: {
       port: VITE_PORT,
       host: '127.0.0.1',
-      open: true,
+      open: shouldOpenDevServer,
       cors: true,
       strictPort: false,
       warmup: {
@@ -123,7 +148,7 @@ export default ({ mode, command }: ConfigEnv): UserConfigExport => {
     preview: {
       port: 4173,
       host: 'localhost',
-      open: true,
+      open: shouldOpenPreview,
       cors: true,
     },
 
@@ -273,11 +298,7 @@ export default ({ mode, command }: ConfigEnv): UserConfigExport => {
         ],
       },
       preprocessorOptions: {
-        scss: {
-          // 消除 Sass 现代编译器警告
-          api: 'modern-compiler',
-          charset: false,
-        } as any,
+        scss: scssPreprocessorOptions,
       },
     },
   })

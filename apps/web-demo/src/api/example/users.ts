@@ -8,6 +8,7 @@ import { get, post, put, del } from '@/utils/http/methods'
 import { parseZodHttpPayload } from '@/adapters/http.adapter'
 import type { ApiResponse } from '@/types/api'
 import type { RequestConfig } from '@/utils/http/types'
+import type { alovaInstance } from '@/utils/http/instance'
 
 // --- DTO Triple: Schema (SSOT) → Type → API functions ---
 
@@ -87,7 +88,46 @@ interface V1UserDeleteApiResponse {
 
 const USERS_API_URL = '/api/v1/users'
 
-/** 获取用户分页列表 */
+export const buildExampleUserListMethod = (
+  client: typeof alovaInstance,
+  params: V1UserListReq,
+  config?: RequestConfig
+) =>
+  client.Get<V1UserListApiResponse>(USERS_API_URL, {
+    ...config,
+    params,
+  })
+
+export const buildExampleUserCreateMethod = (
+  client: typeof alovaInstance,
+  data: unknown,
+  config?: RequestConfig
+) =>
+  client.Post<V1UserItemApiResponse>(
+    USERS_API_URL,
+    parseZodHttpPayload(v1UserCreateSchema, data),
+    config
+  )
+
+export const buildExampleUserUpdateMethod = (
+  client: typeof alovaInstance,
+  id: number,
+  data: unknown,
+  config?: RequestConfig
+) =>
+  client.Put<V1UserItemApiResponse>(
+    `${USERS_API_URL}/${id}`,
+    parseZodHttpPayload(v1UserUpdateSchema, data),
+    config
+  )
+
+export const buildExampleUserDeleteMethod = (
+  client: typeof alovaInstance,
+  id: number,
+  config?: RequestConfig
+) => client.Delete<V1UserDeleteApiResponse>(`${USERS_API_URL}/${id}`, config)
+
+/** Imperative ProTable executor compatibility wrapper. Prefer buildExampleUserListMethod with useHttpRequest for server-state UIs. */
 export const requestUserList = (
   params: V1UserListReq,
   config?: RequestConfig
@@ -98,14 +138,14 @@ export const requestUserList = (
     responseSchema: v1UserListApiResponseSchema,
   }).then(response => response.data)
 
-/** 创建用户 */
+/** Imperative one-shot mutation wrapper for the example CRUD table. */
 export const requestUserCreate = (data: unknown): Promise<V1UserListItemDTO> =>
   post<V1UserItemApiResponse>(USERS_API_URL, parseZodHttpPayload(v1UserCreateSchema, data), {
     enableCache: false,
     responseSchema: v1UserItemApiResponseSchema,
   }).then(response => response.data)
 
-/** 更新用户 */
+/** Imperative one-shot mutation wrapper for the example CRUD table. */
 export const requestUserUpdate = (id: number, data: unknown): Promise<V1UserListItemDTO> =>
   put<V1UserItemApiResponse>(
     `${USERS_API_URL}/${id}`,
@@ -116,7 +156,7 @@ export const requestUserUpdate = (id: number, data: unknown): Promise<V1UserList
     }
   ).then(response => response.data)
 
-/** 删除用户 */
+/** Imperative one-shot mutation wrapper for the example CRUD table. */
 export const requestUserDelete = (id: number): Promise<void> =>
   del<V1UserDeleteApiResponse>(`${USERS_API_URL}/${id}`, {
     enableCache: false,

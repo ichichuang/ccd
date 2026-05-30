@@ -83,6 +83,7 @@ const approvedRawNetworkFiles = new Set([
   'apps/web-demo/src/utils/http/interceptors.ts',
   'apps/web-demo/src/utils/http/connection.ts',
   'apps/web-demo/src/utils/date/timezone.ts',
+  'apps/web-demo/src/layouts/components/LoadingLottie.vue',
 ])
 
 const approvedRawStorageFiles = new Set([
@@ -146,20 +147,13 @@ const approvedPrimeVueAppImportFiles = new Set([
   'apps/web-demo/src/router/utils/helper.ts',
   'apps/web-demo/src/types/components.d.ts',
   'apps/web-demo/src/views/dashboard/index.vue',
-  'apps/web-demo/src/views/example/components/primevue-collection/overview/index.vue',
-  'apps/web-demo/src/views/example/components/primevue-collection/prime-dialog/index.vue',
-  'apps/web-demo/src/views/example/components/primevue-collection/pro-form/advanced/index.vue',
-  'apps/web-demo/src/views/example/components/primevue-collection/pro-form/plugins/components/ColorPickerField.tsx',
-  'apps/web-demo/src/views/example/components/primevue-collection/pro-form/plugins/components/MyColorCustomInput.tsx',
-  'apps/web-demo/src/views/example/components/primevue-collection/pro-table/advanced/configs/columns.tsx',
-  'apps/web-demo/src/views/example/components/primevue-collection/pro-table/advanced/index.vue',
-  'apps/web-demo/src/views/example/components/primevue-collection/pro-table/columns/columns.tsx',
-  'apps/web-demo/src/views/example/components/primevue-collection/pro-table/form-table-combo/components/TablePanel.vue',
-  'apps/web-demo/src/views/example/components/primevue-collection/pro-table/server/columns.tsx',
   'apps/web-demo/src/views/example/hooks/layout-breadcrumbs.vue',
   'apps/web-demo/src/views/example/hooks/use-app-element-size.vue',
   'apps/web-demo/src/views/example/system-configuration/layout.vue',
 ])
+
+const isPrimeVueCollectionExampleFile = relPath =>
+  relPath.startsWith('apps/web-demo/src/views/example/components/primevue-collection/')
 
 const isPrimeVueModule = specifier =>
   specifier === 'primevue' || specifier.startsWith('primevue/') || specifier.startsWith('@primevue/')
@@ -215,6 +209,7 @@ for (const relPath of primeVueBoundaryFiles) {
   }
 
   if (isPrimeVueAdapterFile(relPath) || isTestFile(relPath)) continue
+  if (isPrimeVueCollectionExampleFile(relPath)) continue
   if (approvedPrimeVueAppImportFiles.has(relPath)) continue
 
   const [reference] = references
@@ -407,7 +402,12 @@ for (const relPath of businessViews) {
   }
 }
 
-const networkBoundaryFiles = scanFiles(['apps/web-demo/src/api/**/*.{ts,tsx}', 'apps/web-demo/src/hooks/**/*.{ts,tsx}', 'apps/web-demo/src/stores/**/*.{ts,tsx}'])
+const networkBoundaryFiles = scanFiles([
+  'apps/web-demo/src/api/**/*.{ts,tsx}',
+  'apps/web-demo/src/hooks/**/*.{ts,tsx}',
+  'apps/web-demo/src/stores/**/*.{ts,tsx}',
+  'apps/web-demo/src/layouts/components/LoadingLottie.vue',
+])
 for (const relPath of networkBoundaryFiles) {
   if (approvedRawNetworkFiles.has(relPath)) continue
   const content = stripJsComments(readText(relPath))

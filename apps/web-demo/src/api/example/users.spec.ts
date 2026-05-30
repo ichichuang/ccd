@@ -1,6 +1,15 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import type { ZodType } from 'zod'
-import { requestUserCreate, requestUserDelete, requestUserList, requestUserUpdate } from './users'
+import {
+  buildExampleUserCreateMethod,
+  buildExampleUserDeleteMethod,
+  buildExampleUserListMethod,
+  buildExampleUserUpdateMethod,
+  requestUserCreate,
+  requestUserDelete,
+  requestUserList,
+  requestUserUpdate,
+} from './users'
 
 type MockGet = (url: string, config?: Record<string, unknown>) => Promise<unknown>
 type MockMutation = (
@@ -79,6 +88,31 @@ describe('requestUserList', () => {
         params: { page: 2, limit: 24 },
       })
     )
+  })
+})
+
+describe('example user Method builders', () => {
+  const client = {
+    Get: vi.fn((_url: string, config: unknown) => ({ type: 'GET', config })),
+    Post: vi.fn((_url: string, _data: unknown, config: unknown) => ({ type: 'POST', config })),
+    Put: vi.fn((_url: string, _data: unknown, config: unknown) => ({ type: 'PUT', config })),
+    Delete: vi.fn((_url: string, config: unknown) => ({ type: 'DELETE', config })),
+  } as never
+
+  it('keeps server-state APIs available as Alova Method builders', () => {
+    expect(buildExampleUserListMethod(client, { page: 1, limit: 10 })).toMatchObject({
+      type: 'GET',
+    })
+    expect(
+      buildExampleUserCreateMethod(client, {
+        name: 'Alice',
+        status: 'active',
+      })
+    ).toMatchObject({ type: 'POST' })
+    expect(buildExampleUserUpdateMethod(client, 1, { name: 'Alice' })).toMatchObject({
+      type: 'PUT',
+    })
+    expect(buildExampleUserDeleteMethod(client, 1)).toMatchObject({ type: 'DELETE' })
   })
 })
 

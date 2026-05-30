@@ -5,7 +5,12 @@ import { join, relative } from 'node:path'
 import process from 'node:process'
 
 const cwd = process.cwd()
-const distDir = join(cwd, 'dist')
+const distDirCandidates = [
+  process.env.CCD_BUNDLE_DIST,
+  join(cwd, 'dist'),
+  join(cwd, 'apps/web-demo/dist'),
+].filter(Boolean)
+const distDir = distDirCandidates.find(candidate => existsSync(candidate))
 
 const KiB = 1024
 
@@ -55,25 +60,60 @@ function formatKiB(bytes) {
   return `${(bytes / KiB).toFixed(1)} KiB`
 }
 
-if (!existsSync(distDir)) {
-  console.error('Bundle budget check failed: dist/ does not exist. Run pnpm build:ci first.')
+function resolveHtmlAssetReferences(html, pattern) {
+  const refs = new Set()
+  for (const match of html.matchAll(pattern)) {
+    const assetPath = match[1]
+    if (/^(?:https?:)?\/\//.test(assetPath)) continue
+    const normalizedPath = assetPath.replace(/^\//, '')
+    refs.add(join(distDir, normalizedPath))
+  }
+  return refs
+}
+
+if (!distDir) {
+  console.error(
+    `Bundle budget check failed: no dist directory found. Checked: ${distDirCandidates
+      .map(candidate => relative(cwd, candidate) || '.')
+      .join(', ')}. Run pnpm build:web-demo first or set CCD_BUNDLE_DIST.`
+  )
   process.exit(1)
 }
 
 const allFiles = walkFiles(distDir).filter(file => statSync(file).isFile())
 const jsFiles = allFiles.filter(file => file.endsWith('.js'))
 const cssFiles = allFiles.filter(file => file.endsWith('.css'))
+const indexHtmlPath = join(distDir, 'index.html')
+const indexHtml = existsSync(indexHtmlPath) ? readFileSync(indexHtmlPath, 'utf8') : ''
+const htmlEntryJsFiles = resolveHtmlAssetReferences(
+  indexHtml,
+  /<script\b[^>]*\btype=["']module["'][^>]*\bsrc=["']([^"']+\.js)["'][^>]*>/g
+)
+const htmlEntryCssFiles = resolveHtmlAssetReferences(
+  indexHtml,
+  /<link\b[^>]*\brel=["']stylesheet["'][^>]*\bhref=["']([^"']+\.css)["'][^>]*>/g
+)
+
+if (htmlEntryJsFiles.size === 0 || htmlEntryCssFiles.size === 0) {
+  console.error(
+    `Bundle budget check failed: index.html entry assets were not found in ${relative(
+      cwd,
+      indexHtmlPath
+    )}. Run pnpm build:web-demo first.`
+  )
+  process.exit(1)
+}
 
 const groups = [
   {
     id: 'entry-js',
     budgetKey: 'entryJsGzipKiB',
-    assets: sumAssets(jsFiles, file => /dist\/static\/js\/index-.*\.js$/.test(file)),
+    assets: sumAssets(jsFiles, file => htmlEntryJsFiles.has(file)),
   },
   {
     id: 'entry-css',
     budgetKey: 'entryCssGzipKiB',
-    assets: sumAssets(cssFiles, file => /dist\/static\/css\/index-.*\.css$/.test(file)),
+    assets: sumAssets(cssFiles, file => htmlEntryCssFiles.has(file)),
   },
   {
     id: 'vendor-core',
