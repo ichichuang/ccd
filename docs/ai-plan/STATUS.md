@@ -2,19 +2,29 @@
 
 ## Current execution state
 
-- Current milestone: S1 HTTP-001 decision-only lane
-- Current task: record owner decision for HTTP contract shape without implementation.
-- Last completed task: owner-supplied Vue-hooks TSX tooling seal at `8b958c8a`.
-- Validation status: HTTP_001_DECISION_VALIDATED
-- Evidence directory: `docs/ai-runs/20260530-162440-ccd-http-001-decision/`
+- Current milestone: S1 HTTP-007 product decision-only lane
+- Current task: record product decision for `restoreLoginFromToken()` retry, timeout, exhaustion, messaging, and offline behavior without implementation.
+- Last completed task: HTTP-001 owner decision sealed at `de55e2e0`.
+- Validation status: HTTP_007_PRODUCT_DECISION_VALIDATED
+- Evidence directory: `docs/ai-runs/20260530-173553-ccd-http-007-product-decision/`
 - Final completion state: DECISION_ONLY_DONE
+
+Current HTTP-007 decision state:
+
+- 401/token-expired/invalid-token restore failures are terminal: no retry, immediate logout/clear through the existing auth boundary, and router-guard login redirect.
+- 403 permission failures do not retry and preserve existing business/route error handling.
+- 5xx/network/timeout restore failures are transient: future implementation may retry the idempotent current-user restore request three times with 1000/2000/4000 ms exponential backoff and 5000 ms per-attempt timeout.
+- Retry exhaustion fails closed: clear the untrusted session, redirect to login, and do not expose protected route, store, or cached-data access.
+- Offline read-only mode remains blocked and is not approved by HTTP-007.
+- User messaging must be single-shot and non-sensitive; no per-retry toast spam or duplicate interceptor messages.
+- No runtime auth behavior, dependencies, Vite, GitHub remote, Login Diorama, P4, generated governance files, or HTTP migration code were changed.
 
 Current HTTP-001 decision state:
 
 - `packages/contracts/src/http/**` is approved only for a future type-only, runtime-neutral contracts implementation lane.
 - `packages/core/src/http/**` remains blocked pending a proven multi-runtime orchestration need.
 - `apps/web-demo/src/utils/http/**` remains canonical app HTTP infrastructure for now.
-- No HTTP files were moved, no runtime behavior was changed, and no dependency/Vite/GitHub remote/Login Diorama/P4 work was performed.
+- HTTP-001 remains sealed at `de55e2e0`.
 
 Sealed Vue-hooks TSX baseline supplied by owner:
 
@@ -75,11 +85,11 @@ Final validation for this P3 run:
 ## Current baseline
 
 - Branch: `main`
-- Baseline commit: `8b958c8a`
+- Baseline commit: `de55e2e0`
 - Local ahead/behind: `main...origin/main` with no ahead/behind marker in local status output.
-- Dirty files: HTTP-001 decision docs and evidence files from `docs/ai-runs/20260530-162440-ccd-http-001-decision/`.
-- Last commit captured: `8b958c8a test(vue-hooks): 启用 createAutoMittHook TSX 测试 harness`
-- Decision-lane validation: PASS in `docs/ai-runs/20260530-162440-ccd-http-001-decision/command-logs/`.
+- Dirty files: HTTP-007 decision docs and evidence files from `docs/ai-runs/20260530-173553-ccd-http-007-product-decision/`.
+- Last commit captured: `de55e2e0 docs(http): 批准 HTTP-001 合同类型边界`
+- Decision-lane validation: PASS in `docs/ai-runs/20260530-173553-ccd-http-007-product-decision/command-logs/`.
 - Latest known assumption: no dependency, Vite 8, auth-flow, `.github/**`, remote GitHub, commit, stage, push, reset, clean, branch switch, or force operation was performed.
 
 ## Blockers
@@ -111,6 +121,7 @@ Final validation for this P3 run:
 | D-008       | GitHub repository governance posture documented; remote/.github changes approval-gated                                                                                  | M7                  | 2026-05-29 | PROPOSED |
 | D-013       | P3 source lanes remain blocked/deferred without dependency, HTTP contract implementation, product, or owner approval                                                    | P3 audit            | 2026-05-30 | ACTIVE   |
 | D-014       | HTTP-001 approves future `packages/contracts/src/http/**` type-only contracts; `packages/core/src/http/**` remains blocked and app `utils/http/**` remains canonical    | HTTP-001 decision   | 2026-05-30 | APPROVED |
+| D-015       | HTTP-007 approves fail-closed restore-login retry/timeout/messaging policy; 403 stays business-handled; offline read-only mode remains blocked                          | HTTP-007 decision   | 2026-05-30 | APPROVED |
 
 ## Files changed summary
 
@@ -143,6 +154,13 @@ M5 HTTP boundary evidence update:
 - `docs/ai-plan/DECISIONS.md`
 - `docs/ai-runs/20260529-070550-ccd-architecture-repair/reports/M5-T1-http-boundary-inventory.md`
 - `docs/ai-runs/20260529-070550-ccd-architecture-repair/reports/M5-complete.md`
+
+HTTP-007 product decision update:
+
+- `.ai/runtime/owner_decisions.md`
+- `docs/ai-plan/DECISIONS.md`
+- `docs/ai-plan/STATUS.md`
+- `docs/ai-runs/20260530-173553-ccd-http-007-product-decision/**`
 
 M6 guard/owner evidence update:
 

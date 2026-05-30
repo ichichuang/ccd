@@ -234,7 +234,7 @@ Future `packages/contracts/src/http/**` files must not import or encode:
 - concrete token refresh behavior, 401/logout UX, offline-session policy, default retry timers, cache implementations, upload/download helpers, or UI error presentation;
 - classes, executable helpers, side effects, default runtime instances, or dependency additions.
 
-HTTP-007 remains separate and product-blocked. Auth policy contracts may define type shape only; they must not decide retry/offline/401 product behavior.
+HTTP-007 remains separate and was product-blocked before D-015. Auth policy contracts may define type shape only and must follow the D-015 product decision without adding runtime behavior in contracts.
 
 ### Follow-up validation
 
@@ -260,6 +260,79 @@ If any app code consumes the new contracts, also run:
 
 - `docs/ai-runs/20260529-070550-ccd-architecture-repair/reports/M5-T1-http-boundary-inventory.md`
 - `docs/ai-runs/20260530-162440-ccd-http-001-decision/reports/HTTP-001-owner-decision.md`
+
+---
+
+## D-015 — HTTP-007 restore login retry and offline policy
+
+- Status: `APPROVED`
+- Date: 2026-05-30
+
+### Context
+
+HTTP-007 was blocked because `restoreLoginFromToken()` did not have a product-approved failure policy for invalid tokens, transient server/network failures, timeouts, retry exhaustion, and offline behavior.
+
+Current evidence shows:
+
+- `apps/web-demo/src/hooks/modules/useAuth.ts` currently calls `requestAuthCurrentUser(userStore.token)` and clears user info for any thrown error.
+- `apps/web-demo/src/router/utils/permission.ts` also validates persisted sessions through `requestAuthCurrentUser()` and clears user info for any validation failure.
+- `apps/web-demo/src/utils/http/**` already classifies 401/403 as `AUTH`, 5xx as retryable server errors, and network/timeout errors as retryable HTTP errors.
+- Existing E2E coverage verifies hard refresh rehydration, invalid persisted token redirect, delayed storage reads, logout redirect, and multi-tab logout convergence.
+- There is no approved offline read-only product mode, and no E2E coverage for offline restore behavior.
+
+### Decision
+
+HTTP-007 is approved for a future implementation lane with this product policy:
+
+- 401, token-expired, invalid-token, missing-token, and other explicit token-authentication failures are terminal. Do not retry. Immediately clear the authenticated session through the existing auth/logout boundary and let the router guard redirect to `/login?redirect=...`.
+- 403 permission failures are not retryable and are not treated as token-expired logout events. Preserve existing business/route error handling for insufficient permission.
+- 5xx, network, and timeout failures during the current-user restore request are transient. Retry only the idempotent current-user restore request, not login mutations or other non-idempotent requests.
+- Retry budget is three retries after the initial restore attempt. Retry delays use exponential backoff: 1000 ms, 2000 ms, and 4000 ms. Retrying must stop immediately if a later error becomes a terminal token-authentication failure or a 403 permission failure.
+- Each restore attempt has a 5000 ms timeout. The future implementation may use the existing HTTP timeout surface, but this decision does not change `HTTP_CONFIG.timeout`.
+- Retry exhaustion fails closed. Clear the untrusted session, redirect to login, and show the approved session-verification failure message. The app must not enter protected routes or show protected data when the session cannot be verified.
+- Offline read-only mode is not approved. Offline startup with a persisted token must not grant dashboard, route, store, or cached-data access unless a separate future product/security decision approves a constrained read-only model.
+- User messaging must be single-shot and non-sensitive: auth failures show a session-expired/sign-in-again message; retry exhaustion shows a connection/server validation failure message with a sign-in-again or retry action. Do not show one toast per retry attempt and do not duplicate interceptor-level notifications.
+- This decision does not approve runtime auth behavior changes, dependency changes, Vite changes, Login Diorama work, P4 work, generated governance edits, or HTTP migration code changes.
+
+### Required Future Tests
+
+Minimum unit coverage for the future implementation lane:
+
+- `restoreLoginFromToken()` returns `null` without API calls when auth is disabled or no token exists.
+- invalid token, token-expired, missing-token, and 401 errors clear the session immediately, do not retry, and emit only the approved terminal user message.
+- 403 permission errors do not retry and continue through the existing business/route error handling path instead of the token-expired logout path.
+- 5xx, network, and timeout errors retry according to the three-retry budget and stop on success.
+- A retry sequence that changes from transient failure to 401 stops retrying and performs the terminal auth failure path.
+- A retry sequence that changes from transient failure to 403 stops retrying and performs the existing permission/business error path.
+- Retry exhaustion fails closed and does not leave protected route/store state active.
+- Non-retryable client, validation, security, and abort errors do not use the transient retry policy.
+- User messaging is single-shot across retry attempts.
+
+Minimum E2E coverage for the future implementation lane:
+
+- Existing invalid persisted token redirect remains covered and passing.
+- Persisted valid token plus transient current-user 5xx failure that succeeds on retry restores the dashboard without a blank shell.
+- Persisted valid token plus network retry exhaustion clears the untrusted session, redirects to login, shows the approved single-shot message, and shows no protected content.
+- Persisted valid token plus current-user timeout uses the approved 5000 ms per-attempt timeout policy.
+- User messaging remains single-shot for invalid token, retry success after transient failure, retry exhaustion, and timeout scenarios.
+- Browser offline at startup with a persisted token does not enter dashboard or expose protected route data.
+- After transient recovery, manual sign-in or approved retry action can restore normal authenticated navigation.
+
+### Evidence
+
+- `.ai/runtime/owner_decisions.md`
+- `docs/ai-plan/STATUS.md`
+- `ccd-architecture-optimization-plan/ledgers/issue-ledger.md`
+- `ccd-architecture-optimization-plan/ledgers/task-ledger.md`
+- `ccd-architecture-optimization-plan/modules/04-http-contract-boundary/README.md`
+- `ccd-architecture-optimization-plan/modules/04-http-contract-boundary/issues.md`
+- `apps/web-demo/src/hooks/modules/useAuth.ts`
+- `apps/web-demo/src/router/utils/permission.ts`
+- `apps/web-demo/src/api/auth/auth.api.ts`
+- `apps/web-demo/src/infra/auth/tokenProvider.ts`
+- `apps/web-demo/src/utils/http/**`
+- `e2e/qa-regression.spec.ts`
+- `docs/ai-runs/20260530-173553-ccd-http-007-product-decision/reports/HTTP-007-product-decision.md`
 
 ---
 
