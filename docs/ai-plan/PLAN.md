@@ -22,19 +22,19 @@ Do not mark generated tasks as `DONE` initially.
 - Do not implement P4 strategic work without owner approval.
 - Stop when validation fails, evidence is missing, or scope expands.
 
-## Current P3 execution overlay
+## Current P4 planning-only overlay
 
-The active 2026-05-30 lane is `ccd-architecture-optimization-plan/plans/03-P3-feature-and-runtime-refactors.md`.
+The active 2026-05-30 lane is `ccd-architecture-optimization-plan/plans/04-P4-strategic-deferred-work.md`.
 
-Execute only implementable P3 items that do not require approval. Current P3 evidence shows no actionable `OPEN` P3 task: `DEPS-004` remains `BLOCKED_BY_REVIEW`, `DEPS-005` remains `BLOCKED_BY_HTTP_CONTRACT`, `DOC-003` remains `DEFERRED`, and runtime-ledger Login Diorama tasks remain blocked pending M11 approval/prerequisite stability.
+Execute P4 only as planning. Do not implement strategic work, create packages, move source code, upgrade dependencies, start Vite 8, mutate GitHub remote settings, edit `.github/**`, alter auth flow, touch HTTP runtime, change runtime UI, modify package manifests, or manually edit generated files.
 
-Do not upgrade dependencies, start PrimeVue/alova modernization, edit login UI/auth flow, start Vite 8 work, mutate GitHub remote settings, or execute P4 work unless approval is explicitly recorded.
+Current P4 classifications are recorded in `ccd-architecture-optimization-plan/plans/04-P4-strategic-deferred-work.md` and the active run report. `DOC-004` remains `DEFERRED`; P4 new organization/repository is `OUT_OF_SCOPE`; starter and standalone design-system work are `APPROVAL_REQUIRED`; Reka UI is `BLOCKED_BY_OWNER`; TanStack Query is `BLOCKED_BY_PRODUCT`; desktop drift CI is `BLOCKED_BY_OPERATOR`.
 
 Current evidence directory:
 
-- `docs/ai-runs/20260530-114939-ccd-p3-feature-and-runtime-refactors/`
+- `docs/ai-runs/20260530-192455-ccd-p4-planning-only/`
 
-Authoritative next-action status is `docs/ai-plan/NEXT_ACTIONS.md`; historical M2/M8/M9/M10/P2 guidance in this plan is archived context, not the current lane selector.
+Authoritative next-action status is `docs/ai-plan/NEXT_ACTIONS.md`; previous P3, GitHub governance, HTTP decision, and dependency-review lanes remain historical evidence unless reopened by explicit approval.
 
 ---
 
@@ -1349,8 +1349,8 @@ Dependencies:
 - Status: `DONE`
 - Objective: Record why P4 items remain deferred.
 - Acceptance criteria: Each P4 item has rationale and trigger to revisit.
-- Validation method: human review.
-- Evidence: decision log.
+- Validation method: human review plus docs/governance validation for planning docs.
+- Evidence: `docs/ai-runs/20260530-192455-ccd-p4-planning-only/`.
 - Rollback note: revert docs.
 - Risk level: Low.
 

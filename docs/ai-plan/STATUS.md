@@ -2,12 +2,13 @@
 
 ## Current execution state
 
-- Current milestone: S1 HTTP-007 product decision-only lane
-- Current task: record product decision for `restoreLoginFromToken()` retry, timeout, exhaustion, messaging, and offline behavior without implementation.
-- Last completed task: HTTP-001 owner decision sealed at `de55e2e0`.
-- Validation status: HTTP_007_PRODUCT_DECISION_VALIDATED
-- Evidence directory: `docs/ai-runs/20260530-173553-ccd-http-007-product-decision/`
-- Final completion state: DECISION_ONLY_DONE
+- Current milestone: P4 planning-only lane
+- Current task: classify P4 strategic deferred work without implementation.
+- Baseline: `main` at `0cc9d3835c77f554782ee9d80fde2684bf178596`.
+- Governance context: GitHub governance planning sealed; CI Guardian `26682295113` PASS per operator baseline.
+- Validation status: P4_PLANNING_ONLY_VALIDATED
+- Evidence directory: `docs/ai-runs/20260530-192455-ccd-p4-planning-only/`
+- Final completion state: PLANNING_ONLY_DONE
 
 Current HTTP-007 decision state:
 
@@ -18,6 +19,31 @@ Current HTTP-007 decision state:
 - Offline read-only mode remains blocked and is not approved by HTTP-007.
 - User messaging must be single-shot and non-sensitive; no per-retry toast spam or duplicate interceptor messages.
 - No runtime auth behavior, dependencies, Vite, GitHub remote, Login Diorama, P4, generated governance files, or HTTP migration code were changed.
+
+Current P4 planning-only classification:
+
+| P4 item                     | Classification        | Owner                      | Evidence                                                                    |
+| --------------------------- | --------------------- | -------------------------- | --------------------------------------------------------------------------- |
+| DOC-004 P4 umbrella         | `DEFERRED`            | Owner / Architect          | `ccd-architecture-optimization-plan/plans/04-P4-strategic-deferred-work.md` |
+| P4-NewOrganization-Deferred | `OUT_OF_SCOPE`        | Owner / Operator           | `docs/ai-plan/SPEC.md`; active P4 report                                    |
+| P4-Starter-Deferred         | `APPROVAL_REQUIRED`   | Owner / Architect          | active P4 report                                                            |
+| P4-DesignSystem-Deferred    | `APPROVAL_REQUIRED`   | Owner / Architect          | active P4 report                                                            |
+| P4-RekaUI-Deferred          | `BLOCKED_BY_OWNER`    | Owner / Architect          | active P4 report                                                            |
+| P4-TanStackQuery-Deferred   | `BLOCKED_BY_PRODUCT`  | Product / Owner / Security | active P4 report                                                            |
+| P4-DesktopDriftCI           | `BLOCKED_BY_OPERATOR` | Operator / Desktop owner   | `.ai/runtime/owner_decisions.md`; active P4 report                          |
+
+No P4 source, dependency, package, remote GitHub, `.github/**`, auth, HTTP runtime, runtime UI, package manifest, or generated governance implementation was performed in this planning lane.
+
+Current P4 planning-only validation:
+
+| Command                                    | Result                                                   | Evidence                                                                                               |
+| ------------------------------------------ | -------------------------------------------------------- | ------------------------------------------------------------------------------------------------------ |
+| `pnpm docs:commands`                       | PASS                                                     | `docs/ai-runs/20260530-192455-ccd-p4-planning-only/command-logs/01-pnpm-docs-commands.log`             |
+| `pnpm ai:doctor --open`                    | PASS, 80 open tasks                                      | `docs/ai-runs/20260530-192455-ccd-p4-planning-only/command-logs/02-pnpm-ai-doctor-open.log`            |
+| `pnpm codex:preflight`                     | PASS                                                     | `docs/ai-runs/20260530-192455-ccd-p4-planning-only/command-logs/03-pnpm-codex-preflight.log`           |
+| `pnpm validate:governance`                 | PASS                                                     | `docs/ai-runs/20260530-192455-ccd-p4-planning-only/command-logs/04-pnpm-validate-governance.log`       |
+| `git diff --check`                         | PASS                                                     | `docs/ai-runs/20260530-192455-ccd-p4-planning-only/command-logs/05-git-diff-check.log`                 |
+| `git status --short --untracked-files=all` | PASS, expected planning docs and active P4 evidence only | `docs/ai-runs/20260530-192455-ccd-p4-planning-only/command-logs/06-git-status-short-untracked-all.log` |
 
 Current HTTP-001 decision state:
 

@@ -1609,6 +1609,10 @@ owner approval + auth/e2e regression
 
 保持 P4 deferred；必须有独立 business case、owner approval、branch strategy。
 
+### Current execution note
+
+2026-05-30 P4 planning-only lane kept strategic implementation out of scope and classified child items without code changes. `DOC-004` remains `DEFERRED`; new org/repo is `OUT_OF_SCOPE`; starter and standalone design-system work are `APPROVAL_REQUIRED`; Reka UI is `BLOCKED_BY_OWNER`; TanStack Query is `BLOCKED_BY_PRODUCT`; desktop drift CI is `BLOCKED_BY_OPERATOR`. Evidence: `docs/ai-runs/20260530-192455-ccd-p4-planning-only/`.
+
 ### Implementation steps
 
 1. Inspect only the listed paths and direct imports/consumers.

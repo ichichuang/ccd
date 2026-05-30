@@ -36,6 +36,18 @@ Stop and ask before:
 - broad architectural rewrite;
 - editing `.ai/protocol/AI.entry.md` to alter generated `AGENTS.md`;
 - force-adding `.ai/runtime/repair_list.md`.
+- implementing any P4 strategic item, including new org/repo creation, starter extraction, standalone design-system split, Reka UI evaluation, TanStack Query introduction, or desktop drift CI.
+
+## P4 approval routing
+
+| P4 item                               | Required approval                                          | Default without approval |
+| ------------------------------------- | ---------------------------------------------------------- | ------------------------ |
+| New GitHub organization or repository | Owner + Operator                                           | `OUT_OF_SCOPE`           |
+| `ccd-vue-starter`                     | Owner / Architect                                          | `APPROVAL_REQUIRED`      |
+| Standalone design-system split        | Owner / Architect                                          | `APPROVAL_REQUIRED`      |
+| Reka UI evaluation                    | Owner / Architect + dependency approval if package changes | `BLOCKED_BY_OWNER`       |
+| TanStack Query Vue                    | Product + Owner + Security + dependency approval           | `BLOCKED_BY_PRODUCT`     |
+| Desktop drift CI                      | Operator + Desktop owner                                   | `BLOCKED_BY_OPERATOR`    |
 
 ## Forbidden operations
 

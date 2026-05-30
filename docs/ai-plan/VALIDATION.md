@@ -139,6 +139,17 @@ Only after explicit approval:
 - human review
 - `git diff --check` if docs changed
 
+### 2026-05-30 P4 planning-only lane
+
+- `pnpm docs:commands`
+- `pnpm ai:doctor --open`
+- `pnpm codex:preflight`
+- `pnpm validate:governance`
+- `git diff --check`
+- `git status --short --untracked-files=all`
+
+Scope note: this lane validates planning/status/risk/decision docs, plan ledgers, and active run evidence only. Source, package, dependency, GitHub remote, `.github/**`, auth, HTTP runtime, runtime UI, package manifest, and generated governance changes are not in scope.
+
 ### M14
 
 - full post-7/final validation baseline

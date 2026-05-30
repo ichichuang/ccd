@@ -380,20 +380,42 @@ Targeted checks, then full baseline or `pnpm validate`.
 
 ## D-007 — P4 strategic deferral
 
-- Status: `PROPOSED`
-- Date: TBD
+- Status: `ACTIVE`
+- Date: 2026-05-30
 
 ### Context
 
-New organization, starter extraction, standalone design-system split, Reka UI, TanStack Query, and desktop drift CI are strategic work items.
+New organization, starter extraction, standalone design-system split, Reka UI, TanStack Query, and desktop drift CI are strategic work items. The 2026-05-30 P4 lane is planning-only and does not approve implementation.
 
 ### Decision
 
-Keep P4 items deferred unless prerequisites are stable and operator explicitly approves.
+Keep P4 items deferred or blocked unless prerequisites are stable and the appropriate owner explicitly approves a separate lane:
+
+- `DOC-004` P4 umbrella: `DEFERRED`.
+- New GitHub organization or repository: `OUT_OF_SCOPE` for the current repair program.
+- `ccd-vue-starter`: `APPROVAL_REQUIRED`.
+- Standalone design-system repository/package split: `APPROVAL_REQUIRED`.
+- Reka UI evaluation: `BLOCKED_BY_OWNER`.
+- TanStack Query Vue evaluation: `BLOCKED_BY_PRODUCT`.
+- Desktop drift CI: `BLOCKED_BY_OPERATOR`.
+
+This decision does not approve package creation, source moves, dependency upgrades, Vite 8, GitHub remote mutation, `.github/**` edits, auth-flow changes, HTTP runtime changes, runtime UI changes, package manifest edits, or manual generated-file edits.
 
 ### Follow-up validation
 
-Human review and updated `NEXT_ACTIONS.md`.
+Human review plus the P4 planning-only validation set:
+
+- `pnpm docs:commands`
+- `pnpm ai:doctor --open`
+- `pnpm codex:preflight`
+- `pnpm validate:governance`
+- `git diff --check`
+- `git status --short --untracked-files=all`
+
+### Evidence
+
+- `ccd-architecture-optimization-plan/plans/04-P4-strategic-deferred-work.md`
+- `docs/ai-runs/20260530-192455-ccd-p4-planning-only/`
 
 ---
 

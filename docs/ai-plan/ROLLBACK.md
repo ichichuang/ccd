@@ -73,6 +73,15 @@ If generated files changed:
 - do not manually edit generated governance outputs;
 - if unexpected, stop and report.
 
+## P4 planning-only rollback
+
+Rollback for the 2026-05-30 P4 planning-only lane is documentation/evidence-only:
+
+- revert the P4 planning/status/risk/decision doc edits from the active lane;
+- preserve command logs and reports unless the operator explicitly requests removal;
+- do not use rollback to create/delete repositories, mutate GitHub remote settings, edit `.github/**`, change packages, change dependencies, touch auth/HTTP/runtime UI, or manually edit generated files;
+- rerun `pnpm docs:commands`, `pnpm ai:doctor --open`, `pnpm codex:preflight`, `pnpm validate:governance`, `git diff --check`, and `git status --short --untracked-files=all`.
+
 ## Preserve evidence before rollback
 
 Always keep:
