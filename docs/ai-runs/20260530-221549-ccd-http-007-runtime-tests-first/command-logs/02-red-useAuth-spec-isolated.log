@@ -1,0 +1,212 @@
+
+ RUN  v4.0.18 /Users/cc/MyPorject/ccd
+
+stderr | apps/web-demo/src/hooks/modules/useAuth.spec.ts > useAuth restoreLoginFromToken HTTP-007 policy > does not retry invalid token failures and clears the session immediately
+根据 token 恢复用户信息失败: AuthApiError: invalid token
+    at /Users/cc/MyPorject/ccd/apps/web-demo/src/hooks/modules/useAuth.spec.ts:148:7
+    at processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at file:///Users/cc/MyPorject/ccd/node_modules/.pnpm/@vitest+runner@4.0.18/node_modules/@vitest/runner/dist/index.js:915:20 {
+  code: 'AUTH_TOKEN_INVALID'
+}
+
+stderr | apps/web-demo/src/hooks/modules/useAuth.spec.ts > useAuth restoreLoginFromToken HTTP-007 policy > does not retry 403 permission failures or treat them as token-expired logout
+根据 token 恢复用户信息失败: HttpRequestError: forbidden
+    at /Users/cc/MyPorject/ccd/apps/web-demo/src/hooks/modules/useAuth.spec.ts:167:23
+    at processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at file:///Users/cc/MyPorject/ccd/node_modules/.pnpm/@vitest+runner@4.0.18/node_modules/@vitest/runner/dist/index.js:915:20 {
+  type: 'AUTH',
+  code: 'AUTH_ERROR',
+  status: 403,
+  statusText: 'Forbidden',
+  data: undefined,
+  retryable: false
+}
+
+stderr | apps/web-demo/src/hooks/modules/useAuth.spec.ts > useAuth restoreLoginFromToken HTTP-007 policy > retries transient 5xx restore failures and stops after a successful retry
+根据 token 恢复用户信息失败: HttpRequestError: service unavailable
+    at serverError (/Users/cc/MyPorject/ccd/apps/web-demo/src/hooks/modules/useAuth.spec.ts:88:3)
+    at /Users/cc/MyPorject/ccd/apps/web-demo/src/hooks/modules/useAuth.spec.ts:188:30
+    at processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at file:///Users/cc/MyPorject/ccd/node_modules/.pnpm/@vitest+runner@4.0.18/node_modules/@vitest/runner/dist/index.js:915:20 {
+  type: 'SERVER',
+  code: 'SERVER_ERROR',
+  status: 503,
+  statusText: 'Service Unavailable',
+  data: undefined,
+  retryable: false
+}
+
+stderr | apps/web-demo/src/hooks/modules/useAuth.spec.ts > useAuth restoreLoginFromToken HTTP-007 policy > stops a transient retry sequence when a later failure becomes 401 terminal auth
+根据 token 恢复用户信息失败: HttpRequestError: network unavailable
+    at networkError (/Users/cc/MyPorject/ccd/apps/web-demo/src/hooks/modules/useAuth.spec.ts:91:3)
+    at /Users/cc/MyPorject/ccd/apps/web-demo/src/hooks/modules/useAuth.spec.ts:211:30
+    at file:///Users/cc/MyPorject/ccd/node_modules/.pnpm/@vitest+runner@4.0.18/node_modules/@vitest/runner/dist/index.js:915:20 {
+  type: 'NETWORK',
+  code: 'NETWORK_ERROR',
+  status: undefined,
+  statusText: undefined,
+  data: undefined,
+  retryable: true
+}
+
+stderr | apps/web-demo/src/hooks/modules/useAuth.spec.ts > useAuth restoreLoginFromToken HTTP-007 policy > fails closed after network retry exhaustion and emits one non-sensitive message
+根据 token 恢复用户信息失败: HttpRequestError: network unavailable
+    at networkError (/Users/cc/MyPorject/ccd/apps/web-demo/src/hooks/modules/useAuth.spec.ts:91:3)
+    at /Users/cc/MyPorject/ccd/apps/web-demo/src/hooks/modules/useAuth.spec.ts:232:58
+    at file:///Users/cc/MyPorject/ccd/node_modules/.pnpm/@vitest+runner@4.0.18/node_modules/@vitest/runner/dist/index.js:915:20 {
+  type: 'NETWORK',
+  code: 'NETWORK_ERROR',
+  status: undefined,
+  statusText: undefined,
+  data: undefined,
+  retryable: true
+}
+
+stderr | apps/web-demo/src/hooks/modules/useAuth.spec.ts > useAuth restoreLoginFromToken HTTP-007 policy > keeps offline read-only startup blocked by clearing unverified protected state
+根据 token 恢复用户信息失败: HttpRequestError: network unavailable
+    at networkError (/Users/cc/MyPorject/ccd/apps/web-demo/src/hooks/modules/useAuth.spec.ts:91:3)
+    at /Users/cc/MyPorject/ccd/apps/web-demo/src/hooks/modules/useAuth.spec.ts:278:58
+    at file:///Users/cc/MyPorject/ccd/node_modules/.pnpm/@vitest+runner@4.0.18/node_modules/@vitest/runner/dist/index.js:915:20 {
+  type: 'NETWORK',
+  code: 'NETWORK_ERROR',
+  status: undefined,
+  statusText: undefined,
+  data: undefined,
+  retryable: true
+}
+
+ ❯ |node| apps/web-demo/src/hooks/modules/useAuth.spec.ts (8 tests | 7 failed) 76ms
+     × clears stale login state without API calls when the token is missing 69ms
+     × does not retry invalid token failures and clears the session immediately 1ms
+     × does not retry 403 permission failures or treat them as token-expired logout 1ms
+     × retries transient 5xx restore failures and stops after a successful retry 1ms
+     × stops a transient retry sequence when a later failure becomes 401 terminal auth 1ms
+     × fails closed after network retry exhaustion and emits one non-sensitive message 1ms
+     × uses a 5000ms per-attempt timeout and fails closed when all attempts time out 0ms
+     ✓ keeps offline read-only startup blocked by clearing unverified protected state 1ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 7 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  |node| apps/web-demo/src/hooks/modules/useAuth.spec.ts > useAuth restoreLoginFromToken HTTP-007 policy > clears stale login state without API calls when the token is missing
+AssertionError: expected true to be false // Object.is equality
+
+- Expected
++ Received
+
+- false
++ true
+
+ ❯ apps/web-demo/src/hooks/modules/useAuth.spec.ts:134:31
+    132|
+    133|     expect(authApiMock.requestAuthCurrentUser).not.toHaveBeenCalled()
+    134|     expect(userStore.isLogin).toBe(false)
+       |                               ^
+    135|     expect(userStore.token).toBe('')
+    136|     expect(userStore.userInfo.permissions).toEqual([])
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/7]⎯
+
+ FAIL  |node| apps/web-demo/src/hooks/modules/useAuth.spec.ts > useAuth restoreLoginFromToken HTTP-007 policy > does not retry invalid token failures and clears the session immediately
+AssertionError: expected "vi.fn()" to be called 1 times, but got 0 times
+ ❯ apps/web-demo/src/hooks/modules/useAuth.spec.ts:156:18
+    154|     expect(userStore.isLogin).toBe(false)
+    155|     expect(userStore.token).toBe('')
+    156|     expect(warn).toHaveBeenCalledTimes(1)
+       |                  ^
+    157|     expect(warn.mock.calls[0].join(' ')).not.toContain('invalid-token')
+    158|   })
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/7]⎯
+
+ FAIL  |node| apps/web-demo/src/hooks/modules/useAuth.spec.ts > useAuth restoreLoginFromToken HTTP-007 policy > does not retry 403 permission failures or treat them as token-expired logout
+AssertionError: promise resolved "null" instead of rejecting
+
+- Expected:
+Error {
+  "message": "rejected promise",
+}
+
++ Received:
+null
+
+ ❯ apps/web-demo/src/hooks/modules/useAuth.spec.ts:170:51
+    168|     authApiMock.requestAuthCurrentUser.mockRejectedValue(forbidden)
+    169|
+    170|     await expect(useAuth().restoreLoginFromToken()).rejects.toBe(forbi…
+       |                                                   ^
+    171|
+    172|     expect(authApiMock.requestAuthCurrentUser).toHaveBeenCalledTimes(1)
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/7]⎯
+
+ FAIL  |node| apps/web-demo/src/hooks/modules/useAuth.spec.ts > useAuth restoreLoginFromToken HTTP-007 policy > retries transient 5xx restore failures and stops after a successful retry
+AssertionError: expected null to deeply equal { userId: '1', …(6) }
+
+- Expected:
+{
+  "avatar": undefined,
+  "email": undefined,
+  "permissions": [
+    "*:*:*",
+  ],
+  "phone": undefined,
+  "roles": [
+    "admin",
+  ],
+  "userId": "1",
+  "username": "restored-admin",
+}
+
++ Received:
+null
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/7]⎯
+
+ FAIL  |node| apps/web-demo/src/hooks/modules/useAuth.spec.ts > useAuth restoreLoginFromToken HTTP-007 policy > stops a transient retry sequence when a later failure becomes 401 terminal auth
+AssertionError: expected "vi.fn()" to be called 2 times, but got 1 times
+ ❯ apps/web-demo/src/hooks/modules/useAuth.spec.ts:218:48
+    216|
+    217|     await expect(restorePromise).resolves.toBeNull()
+    218|     expect(authApiMock.requestAuthCurrentUser).toHaveBeenCalledTimes(2)
+       |                                                ^
+    219|     expect(userStore.isLogin).toBe(false)
+    220|     expect(userStore.token).toBe('')
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/7]⎯
+
+ FAIL  |node| apps/web-demo/src/hooks/modules/useAuth.spec.ts > useAuth restoreLoginFromToken HTTP-007 policy > fails closed after network retry exhaustion and emits one non-sensitive message
+AssertionError: expected "vi.fn()" to be called 4 times, but got 1 times
+ ❯ apps/web-demo/src/hooks/modules/useAuth.spec.ts:238:48
+    236|
+    237|     await expect(restorePromise).resolves.toBeNull()
+    238|     expect(authApiMock.requestAuthCurrentUser).toHaveBeenCalledTimes(4)
+       |                                                ^
+    239|     expect(userStore.isLogin).toBe(false)
+    240|     expect(userStore.token).toBe('')
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/7]⎯
+
+ FAIL  |node| apps/web-demo/src/hooks/modules/useAuth.spec.ts > useAuth restoreLoginFromToken HTTP-007 policy > uses a 5000ms per-attempt timeout and fails closed when all attempts time out
+AssertionError: expected 'pending' to be null
+
+- Expected:
+null
+
++ Received:
+"pending"
+
+ ❯ apps/web-demo/src/hooks/modules/useAuth.spec.ts:264:22
+    262|     await vi.advanceTimersByTimeAsync(26_000)
+    263|
+    264|     expect(resolved).toBeNull()
+       |                      ^
+    265|     expect(authApiMock.requestAuthCurrentUser).toHaveBeenCalledTimes(4)
+    266|     expect(userStore.isLogin).toBe(false)
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/7]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  7 failed | 1 passed (8)
+   Start at  22:20:32
+   Duration  411ms (transform 94ms, setup 0ms, import 68ms, tests 76ms, environment 201ms)

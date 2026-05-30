@@ -24,6 +24,13 @@ const zhCNCore = {
     passwordHide: '隐藏密码',
     rememberMe: '记住我',
   },
+  auth: {
+    restore: {
+      title: '登录态校验',
+      sessionExpired: '登录态已失效，请重新登录。',
+      verificationFailed: '当前服务或网络不可用，无法校验登录态。请重新登录或稍后重试。',
+    },
+  },
   router: {
     core: {
       root: '首页',

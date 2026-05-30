@@ -1,0 +1,133 @@
+
+> ccd@1.0.38 e2e:qa:prepared /Users/cc/MyPorject/ccd
+> pnpm e2e:smoke && pnpm e2e:perf && pnpm e2e:layout && pnpm e2e:visual
+
+
+> ccd@1.0.38 e2e:smoke /Users/cc/MyPorject/ccd
+> playwright test e2e/qa-regression.spec.ts e2e/views-route-smoke.spec.ts --grep-invert "@visual|@perf"
+
+[2m[WebServer] [22m(node:90931) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[2m[WebServer] [22m(Use `node --trace-warnings ...` to show where the warning was created)
+[2m[WebServer] [22m(node:90932) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[2m[WebServer] [22m(Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 10 tests using 6 workers
+
+(node:91029) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:91028) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:91016) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:91031) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:91032) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:91030) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:91032) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:91016) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:91031) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:91030) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:91029) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:91028) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   2 [chromium] › e2e/qa-regression.spec.ts:154:5 › QA full regression repair matrix › mobile dashboard keeps a visible layout tree (4.0s)
+  ✓   4 [chromium] › e2e/qa-regression.spec.ts:154:5 › QA full regression repair matrix › tablet dashboard keeps a visible layout tree (4.0s)
+  ✓   1 [chromium] › e2e/qa-regression.spec.ts:154:5 › QA full regression repair matrix › desktop dashboard keeps a visible layout tree (4.3s)
+  ✓   5 [chromium] › e2e/qa-regression.spec.ts:214:3 › QA full regression repair matrix › dashboard fixed tab survives non-dashboard redirect and destructive actions (5.1s)
+  ✓   6 [chromium] › e2e/qa-regression.spec.ts:194:3 › QA full regression repair matrix › login route and logout redirect chain are stable (5.2s)
+  ✓   3 [chromium] › e2e/qa-regression.spec.ts:274:3 › QA full regression repair matrix › hard refresh preserves dashboard through auth store rehydration (5.3s)
+  ✓   7 [chromium] › e2e/qa-regression.spec.ts:295:3 › QA full regression repair matrix › delayed storage reads do not collapse authenticated dashboard reload (3.8s)
+  ✓   8 [chromium] › e2e/qa-regression.spec.ts:330:3 › QA full regression repair matrix › invalid mid-session token refresh redirects without blank shell (4.5s)
+  ✓  10 [chromium] › e2e/views-route-smoke.spec.ts:5:3 › view route smoke coverage › renders login, dashboard, and not-found views through the router (4.0s)
+  ✓   9 [chromium] › e2e/qa-regression.spec.ts:370:3 › QA full regression repair matrix › multi-tab logout conflict converges to login without stale dashboard (5.7s)
+
+  10 passed (15.7s)
+
+> ccd@1.0.38 e2e:perf /Users/cc/MyPorject/ccd
+> playwright test e2e/qa-regression.spec.ts --grep @perf --workers=1 --retries=0
+
+[2m[WebServer] [22m(node:92104) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[2m[WebServer] [22m(Use `node --trace-warnings ...` to show where the warning was created)
+[2m[WebServer] [22m(node:92105) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[2m[WebServer] [22m(Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 2 tests using 1 worker
+
+(node:92140) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:92140) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  1 [chromium] › e2e/qa-regression.spec.ts:409:3 › QA full regression repair matrix › authenticated dashboard first render stays within budget @perf (3.0s)
+  ✓  2 [chromium] › e2e/qa-regression.spec.ts:432:3 › QA full regression repair matrix › dashboard long tasks stay below worst-case freeze budget @perf (3.0s)
+
+  2 passed (11.2s)
+
+> ccd@1.0.38 e2e:layout /Users/cc/MyPorject/ccd
+> playwright test e2e/layout-runtime-geometry.spec.ts --workers=2
+
+[2m[WebServer] [22m(node:92200) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[2m[WebServer] [22m(Use `node --trace-warnings ...` to show where the warning was created)
+[2m[WebServer] [22m(node:92201) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[2m[WebServer] [22m(Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 21 tests using 2 workers
+
+(node:92324) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:92336) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:92336) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:92324) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   2 [chromium] › e2e/layout-runtime-geometry.spec.ts:575:3 › layout loading and route title stabilization › native preloader covers the viewport and centers its spinner (692ms)
+  ✓   3 [chromium] › e2e/layout-runtime-geometry.spec.ts:588:3 › layout loading and route title stabilization › boot handoff never exposes a top-strip spinner frame (935ms)
+  ✓   4 [chromium] › e2e/layout-runtime-geometry.spec.ts:593:3 › layout loading and route title stabilization › layout animate boundary remains fullscreen on login route (896ms)
+  ✓   1 [chromium] › e2e/layout-runtime-geometry.spec.ts:580:3 › layout loading and route title stabilization › runtime global loading overlay covers the viewport and centers the spinner (3.3s)
+  ✓   5 [chromium] › e2e/layout-runtime-geometry.spec.ts:644:3 › layout loading and route title stabilization › refresh boot handoff does not show local page loading immediately after native loading (4.4s)
+  ✓   6 [chromium] › e2e/layout-runtime-geometry.spec.ts:666:3 › layout loading and route title stabilization › deep business route refresh does not expose not-found title during stabilization (4.1s)
+  ✓   7 [chromium] › e2e/layout-runtime-geometry.spec.ts:684:3 › layout loading and route title stabilization › actual unknown route resolves to the not-found title (3.0s)
+  ✓   8 [chromium] › e2e/layout-runtime-geometry.spec.ts:698:3 › layout loading and route title stabilization › AppContainer CScrollbar restores persisted scroll memory smoothly after refresh (5.4s)
+  ✓   9 [chromium] › e2e/layout-runtime-geometry.spec.ts:754:3 › layout loading and route title stabilization › ProTable basic route keeps a non-zero table geometry (3.1s)
+  ✓  10 [chromium] › e2e/layout-runtime-geometry.spec.ts:789:3 › layout loading and route title stabilization › AppContainer renders the paper-airplane local page loading outlet (3.2s)
+  ✓  11 [chromium] › e2e/layout-runtime-geometry.spec.ts:798:3 › layout loading and route title stabilization › runtime route navigation shows the AppContainer local page loading outlet (4.0s)
+  ✓  12 [chromium] › e2e/layout-runtime-geometry.spec.ts:820:3 › layout loading and route title stabilization › AppContainer page loading is controlled only by layout page-loading state (3.1s)
+  ✓  13 [chromium] › e2e/layout-runtime-geometry.spec.ts:866:5 › layout runtime geometry — desktop › inline shell is stable at desktop-1280 (3.0s)
+  ✓  14 [chromium] › e2e/layout-runtime-geometry.spec.ts:866:5 › layout runtime geometry — desktop › inline shell is stable at desktop-1440 (3.0s)
+  ✓  15 [chromium] › e2e/layout-runtime-geometry.spec.ts:866:5 › layout runtime geometry — desktop › inline shell is stable at desktop-ultrawide (3.1s)
+  ✓  16 [chromium] › e2e/layout-runtime-geometry.spec.ts:893:5 › layout runtime geometry — iPhone › drawer shell has no phantom sidebar spacing in iphone-portrait (3.3s)
+  ✓  17 [chromium] › e2e/layout-runtime-geometry.spec.ts:893:5 › layout runtime geometry — iPhone › drawer shell has no phantom sidebar spacing in iphone-landscape (3.3s)
+  ✓  18 [chromium] › e2e/layout-runtime-geometry.spec.ts:910:3 › layout runtime geometry — iPhone › portrait and landscape transitions remain reversible (3.3s)
+  ✓  19 [chromium] › e2e/layout-runtime-geometry.spec.ts:943:5 › layout runtime geometry — iPadOS › runtime state is coherent in ipad-portrait (3.2s)
+  ✓  20 [chromium] › e2e/layout-runtime-geometry.spec.ts:943:5 › layout runtime geometry — iPadOS › runtime state is coherent in ipad-landscape (3.3s)
+  ✓  21 [chromium] › e2e/layout-runtime-geometry.spec.ts:943:5 › layout runtime geometry — iPadOS › runtime state is coherent in ipad-split-view (3.2s)
+
+  21 passed (38.0s)
+
+> ccd@1.0.38 e2e:visual /Users/cc/MyPorject/ccd
+> playwright test e2e/qa-regression.spec.ts e2e/visual-token-foundation.spec.ts --grep @visual --workers=1 --retries=0
+
+[2m[WebServer] [22m(node:92774) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[2m[WebServer] [22m(Use `node --trace-warnings ...` to show where the warning was created)
+[2m[WebServer] [22m(node:92775) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[2m[WebServer] [22m(Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 4 tests using 1 worker
+
+(node:92786) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:92786) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  1 [chromium] › e2e/qa-regression.spec.ts:447:3 › QA full regression repair matrix › visual baselines catch silent layout collapse @visual (4.0s)
+  ✓  2 [chromium] › e2e/visual-token-foundation.spec.ts:119:3 › visual token foundation › LayoutAdmin active and hover states are visually distinct @visual (4.0s)
+  ✓  3 [chromium] › e2e/visual-token-foundation.spec.ts:193:3 › visual token foundation › PrimeVue form controls expose hover and focus feedback @visual (7.5s)
+  ✓  4 [chromium] › e2e/visual-token-foundation.spec.ts:279:3 › visual token foundation › Icons color controls use generated semantic classes @visual (3.5s)
+
+  4 passed (24.5s)

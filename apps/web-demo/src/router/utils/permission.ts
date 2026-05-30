@@ -7,9 +7,12 @@ import { appLogger } from '@/adapters/logger.adapter'
 import { AUTH_ENABLED, routeWhitePathList } from '@/constants/router'
 import { usePermissionStore } from '@/stores/modules/session'
 import { useUserStoreWithOut } from '@/stores/modules/session'
-import { requestAuthCurrentUser } from '@/api/auth/auth.api'
+import { useAuth } from '@/hooks/modules/useAuth'
+import { isHttpRequestError } from '@/utils/http/errors'
 import type { LocationQueryValue, RouteLocationNormalized, Router } from 'vue-router'
 import { checkRouteAccess, isWhiteListed, parseSafeRedirect } from './accessControl'
+
+type SessionValidationResult = 'valid' | 'invalid' | 'forbidden'
 
 function getFirstQueryValue(value: LocationQueryValue | LocationQueryValue[]): string | undefined {
   if (Array.isArray(value)) {
@@ -52,26 +55,33 @@ export const usePermissionGuard = ({
 }) => {
   // 竞态保护：缓存进行中的路由初始化 Promise，防止并发导航触发多次 API 请求
   let routeInitializingPromise: Promise<void> | null = null
-  let sessionValidationPromise: Promise<boolean> | null = null
+  let sessionValidationPromise: Promise<SessionValidationResult> | null = null
   let validatedSessionToken: string | null = null
 
-  const validatePersistedSession = async (): Promise<boolean> => {
+  const validatePersistedSession = async (): Promise<SessionValidationResult> => {
     const userStore = useUserStoreWithOut()
-    if (!userStore.getIsLogin) return false
-    if (userStore.invalidateIfSessionShapeInvalid()) return false
-    if (validatedSessionToken === userStore.getToken) return true
+    if (!userStore.getIsLogin) return 'invalid'
+    if (userStore.invalidateIfSessionShapeInvalid()) return 'invalid'
+    if (validatedSessionToken === userStore.getToken) return 'valid'
 
-    sessionValidationPromise ??= requestAuthCurrentUser(userStore.getToken)
+    sessionValidationPromise ??= useAuth()
+      .restoreLoginFromToken()
       .then(userInfo => {
-        userStore.applyRestoredUserInfo(userInfo)
+        if (!userInfo) {
+          validatedSessionToken = null
+          return 'invalid'
+        }
         validatedSessionToken = userStore.getToken
-        return true
+        return 'valid'
       })
       .catch(error => {
+        if (isHttpRequestError(error) && error.status === 403) {
+          return 'forbidden'
+        }
         appLogger.error('登录态恢复校验失败', error)
         validatedSessionToken = null
         userStore.clearUserInfo()
-        return false
+        return 'invalid'
       })
       .finally(() => {
         sessionValidationPromise = null
@@ -95,7 +105,12 @@ export const usePermissionGuard = ({
     const isDynamicRoutesLoaded: boolean = permissionStore.isDynamicRoutesLoaded
 
     if (isLogin && !isWhiteListed(to.path, whiteList)) {
-      isLogin = await validatePersistedSession()
+      const validationResult = await validatePersistedSession()
+      if (validationResult === 'forbidden') {
+        next('/403')
+        return
+      }
+      isLogin = validationResult === 'valid'
     }
 
     if (isLogin) {

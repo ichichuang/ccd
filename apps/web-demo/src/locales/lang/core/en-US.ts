@@ -24,6 +24,14 @@ const enUSCore = {
     passwordHide: 'Hide password',
     rememberMe: 'Remember me',
   },
+  auth: {
+    restore: {
+      title: 'Session verification',
+      sessionExpired: 'Your session has expired. Please sign in again.',
+      verificationFailed:
+        'Unable to verify your session while the service or network is unavailable. Please sign in again or retry later.',
+    },
+  },
   router: {
     core: {
       root: 'Home',
