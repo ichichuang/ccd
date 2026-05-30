@@ -14,9 +14,15 @@
         "NetworkClient",
         "NetworkRequest",
         "NetworkResponse",
+        "SafeStorageAdapter",
+        "SafeStorageObfuscation",
+        "SafeStoragePolicy",
         "ScheduledTask",
         "Scheduler",
-        "StorageAdapter"
+        "StorageAdapter",
+        "StorageCodec",
+        "StorageScope",
+        "SyncStorageCodec"
       ]
     },
     {
@@ -117,8 +123,12 @@
         "generateIdFromKey",
         "generateUniqueId",
         "isRecord",
+        "JsonStorageParseResult",
+        "JsonStorageStringifyResult",
         "objectGet",
+        "parseJsonStorageValue",
         "stableSerializeRecord",
+        "stringifyJsonStorageValue",
         "throttleFn",
         "toKebabCase",
         "toRecord"
@@ -270,14 +280,26 @@
       "path": "packages/vue-primevue-adapter",
       "exports": ["."],
       "rootSymbols": [
+        "applyPrimeVueLocale",
         "createCustomPreset",
         "createPrimeVueAdapterConfig",
         "CreatePrimeVueAdapterConfigOptions",
+        "createPrimeVueMessageApi",
+        "createPrimeVueToastApi",
+        "DEFAULT_PRIMEVUE_TOAST_LIFE_MS",
         "formControlsPt",
         "installPrimeVueServices",
         "menuPt",
+        "PRIMEVUE_TOAST_GROUP_BY_POSITION",
+        "PrimeVueMessageApi",
         "PrimeVueServiceInstallOptions",
-        "PrimeVueSizeSource"
+        "PrimeVueSizeSource",
+        "PrimeVueToastApi",
+        "PrimeVueToastMessageOptions",
+        "PrimeVueToastPosition",
+        "PrimeVueToastServiceLike",
+        "PrimeVueToastSeverity",
+        "resolvePrimeVueLocale"
       ]
     },
     {

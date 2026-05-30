@@ -4,7 +4,7 @@
 
 - Path: `packages/contracts`
 - Export subpaths: `.`
-- Root symbols: `CryptoProvider`, `EnvironmentProvider`, `FileSystemAdapter`, `Logger`, `NetworkClient`, `NetworkRequest`, `NetworkResponse`, `ScheduledTask`, `Scheduler`, `StorageAdapter`
+- Root symbols: `CryptoProvider`, `EnvironmentProvider`, `FileSystemAdapter`, `Logger`, `NetworkClient`, `NetworkRequest`, `NetworkResponse`, `SafeStorageAdapter`, `SafeStorageObfuscation`, `SafeStoragePolicy`, `ScheduledTask`, `Scheduler`, `StorageAdapter`, `StorageCodec`, `StorageScope`, `SyncStorageCodec`
 
 ## @ccd/core
 
@@ -28,7 +28,7 @@
 
 - Path: `packages/shared-utils`
 - Export subpaths: `.`
-- Root symbols: `applyUniqueRoot`, `areExpandedKeyRecordsEqual`, `CapabilityBridge`, `CapabilityBridgeOptions`, `castArray`, `castRecord`, `castValue`, `createCapabilityBridge`, `debounceFn`, `deepClone`, `deepEqual`, `deepMerge`, `fnv1a`, `formatSerialId`, `generateIdFromKey`, `generateUniqueId`, `isRecord`, `objectGet`, `stableSerializeRecord`, `throttleFn`, `toKebabCase`, `toRecord`
+- Root symbols: `applyUniqueRoot`, `areExpandedKeyRecordsEqual`, `CapabilityBridge`, `CapabilityBridgeOptions`, `castArray`, `castRecord`, `castValue`, `createCapabilityBridge`, `debounceFn`, `deepClone`, `deepEqual`, `deepMerge`, `fnv1a`, `formatSerialId`, `generateIdFromKey`, `generateUniqueId`, `isRecord`, `JsonStorageParseResult`, `JsonStorageStringifyResult`, `objectGet`, `parseJsonStorageValue`, `stableSerializeRecord`, `stringifyJsonStorageValue`, `throttleFn`, `toKebabCase`, `toRecord`
 
 ## @ccd/vue-hooks
 
@@ -46,7 +46,7 @@
 
 - Path: `packages/vue-primevue-adapter`
 - Export subpaths: `.`
-- Root symbols: `createCustomPreset`, `createPrimeVueAdapterConfig`, `CreatePrimeVueAdapterConfigOptions`, `formControlsPt`, `installPrimeVueServices`, `menuPt`, `PrimeVueServiceInstallOptions`, `PrimeVueSizeSource`
+- Root symbols: `applyPrimeVueLocale`, `createCustomPreset`, `createPrimeVueAdapterConfig`, `CreatePrimeVueAdapterConfigOptions`, `createPrimeVueMessageApi`, `createPrimeVueToastApi`, `DEFAULT_PRIMEVUE_TOAST_LIFE_MS`, `formControlsPt`, `installPrimeVueServices`, `menuPt`, `PRIMEVUE_TOAST_GROUP_BY_POSITION`, `PrimeVueMessageApi`, `PrimeVueServiceInstallOptions`, `PrimeVueSizeSource`, `PrimeVueToastApi`, `PrimeVueToastMessageOptions`, `PrimeVueToastPosition`, `PrimeVueToastServiceLike`, `PrimeVueToastSeverity`, `resolvePrimeVueLocale`
 
 ## @ccd/vue-charts
 

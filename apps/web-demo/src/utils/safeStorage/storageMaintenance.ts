@@ -1,4 +1,38 @@
+import type { SafeStorageAdapter, SafeStoragePolicy, StorageScope } from '@ccd/contracts'
+
 export type StorageKeyPredicate = (key: string) => boolean
+
+const localSafeStoragePolicy: SafeStoragePolicy = {
+  scope: 'local',
+  compression: true,
+  obfuscation: 'client-visible',
+  integrity: 'hmac',
+  keyVersion: 'v2',
+}
+
+function getBrowserStorage(scope: StorageScope): Storage | undefined {
+  if (typeof window === 'undefined') return undefined
+  if (scope === 'local') return window.localStorage
+  if (scope === 'session') return window.sessionStorage
+  return undefined
+}
+
+export function createBrowserStorageAdapter(policy: SafeStoragePolicy): SafeStorageAdapter {
+  return {
+    policy,
+    async get(key) {
+      return getBrowserStorage(policy.scope)?.getItem(key) ?? null
+    },
+    async set(key, value) {
+      getBrowserStorage(policy.scope)?.setItem(key, value)
+    },
+    async remove(key) {
+      getBrowserStorage(policy.scope)?.removeItem(key)
+    },
+  }
+}
+
+export const browserLocalSafeStorageAdapter = createBrowserStorageAdapter(localSafeStoragePolicy)
 
 /**
  * Safe-storage infrastructure boundary for bulk localStorage maintenance.

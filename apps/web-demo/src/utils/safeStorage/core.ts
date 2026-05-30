@@ -1,4 +1,6 @@
 import { appLogger } from '@/adapters/logger.adapter'
+import { parseJsonStorageValue, stringifyJsonStorageValue } from '@ccd/shared-utils'
+import type { SyncStorageCodec, StorageCodec } from '@ccd/contracts'
 import * as Crypto from './crypto'
 import { ENCRYPTION_FAILED } from './crypto'
 import * as LZ from './lzstring'
@@ -78,9 +80,9 @@ const PREVIOUS_SECRETS: string[] = (() => {
 export function packDataSync(value: unknown, secret?: string): string {
   const actualSecret = normalizeSecret(secret) ?? DEFAULT_SECRET
   try {
-    const json = JSON.stringify(value)
-    if (!json) return ''
-    const compressed = LZ.compress(json)
+    const json = stringifyJsonStorageValue(value)
+    if (!json.ok) return ''
+    const compressed = LZ.compress(json.value)
     if (!compressed) return ''
     const encrypted = Crypto.encryptSync(compressed, actualSecret)
     return encrypted === ENCRYPTION_FAILED ? '' : encrypted
@@ -129,7 +131,8 @@ function tryUnpackSync<T>(value: string, secret: string): T | null | undefined {
     if (decrypted === '') return null // empty string was encrypted as empty — valid round-trip
     const decompressed = LZ.decompress(decrypted)
     if (decompressed === null) return undefined
-    return JSON.parse(decompressed) as T
+    const parsed = parseJsonStorageValue<T>(decompressed)
+    return parsed.ok ? parsed.value : undefined
   } catch {
     return undefined
   }
@@ -141,9 +144,9 @@ function tryUnpackSync<T>(value: string, secret: string): T | null | undefined {
 export async function packData(value: unknown, secret?: string): Promise<string> {
   const actualSecret = normalizeSecret(secret) ?? DEFAULT_SECRET
   try {
-    const json = JSON.stringify(value)
-    if (!json) return ''
-    const compressed = LZ.compress(json)
+    const json = stringifyJsonStorageValue(value)
+    if (!json.ok) return ''
+    const compressed = LZ.compress(json.value)
     if (!compressed) return ''
     const encrypted = await Crypto.encrypt(compressed, actualSecret)
     return encrypted === ENCRYPTION_FAILED ? '' : encrypted
@@ -186,8 +189,19 @@ async function tryUnpack<T>(value: string, secret: string): Promise<T | null | u
     if (decrypted === '') return null
     const decompressed = LZ.decompress(decrypted)
     if (decompressed === null) return undefined
-    return JSON.parse(decompressed) as T
+    const parsed = parseJsonStorageValue<T>(decompressed)
+    return parsed.ok ? parsed.value : undefined
   } catch {
     return undefined
   }
+}
+
+export const safeStorageSyncCodec: SyncStorageCodec<unknown> = {
+  encode: packDataSync,
+  decode: unpackDataSync,
+}
+
+export const safeStorageCodec: StorageCodec<unknown> = {
+  encode: packData,
+  decode: unpackData,
 }
