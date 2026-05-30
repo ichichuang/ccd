@@ -1,0 +1,14 @@
+
+/Users/cc/MyPorject/ccd/apps/web-demo/src/utils/http/requestLayer.spec.ts
+  55:9  error  Variable name `Get` must match one of the following formats: camelCase, UPPER_CASE                                      @typescript-eslint/naming-convention
+  56:9  error  Variable name `Post` must match one of the following formats: camelCase, UPPER_CASE                                     @typescript-eslint/naming-convention
+  57:9  error  Variable name `Put` must match one of the following formats: camelCase, UPPER_CASE                                      @typescript-eslint/naming-convention
+  58:9  error  Variable name `Patch` must match one of the following formats: camelCase, UPPER_CASE                                    @typescript-eslint/naming-convention
+  59:9  error  Variable name `Delete` must match one of the following formats: camelCase, UPPER_CASE                                   @typescript-eslint/naming-convention
+  60:9  error  Variable name `Head` must match one of the following formats: camelCase, UPPER_CASE                                     @typescript-eslint/naming-convention
+  97:3  error  Object Literal Property name `AUTH_ENABLED` must match one of the following formats: camelCase, snake_case, PascalCase  @typescript-eslint/naming-convention
+
+✖ 7 problems (7 errors, 0 warnings)
+
+
+[exit:1]

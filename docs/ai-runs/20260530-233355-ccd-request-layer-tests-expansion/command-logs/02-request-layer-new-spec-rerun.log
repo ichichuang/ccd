@@ -1,0 +1,12 @@
+
+ RUN  v4.0.18 /Users/cc/MyPorject/ccd
+
+ ✓ |node| apps/web-demo/src/utils/http/requestLayer.spec.ts (10 tests) 68ms
+
+ Test Files  1 passed (1)
+      Tests  10 passed (10)
+   Start at  23:37:31
+   Duration  259ms (transform 93ms, setup 0ms, import 134ms, tests 68ms, environment 0ms)
+
+
+[exit:0]

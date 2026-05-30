@@ -1,0 +1,37 @@
+?? apps/web-demo/src/utils/http/requestLayer.spec.ts
+?? docs/ai-runs/20260530-233355-ccd-request-layer-tests-expansion/command-logs/00-baseline-git-status.log
+?? docs/ai-runs/20260530-233355-ccd-request-layer-tests-expansion/command-logs/00-baseline-request-layer-vitest.log
+?? docs/ai-runs/20260530-233355-ccd-request-layer-tests-expansion/command-logs/01-request-layer-new-spec.log
+?? docs/ai-runs/20260530-233355-ccd-request-layer-tests-expansion/command-logs/02-request-layer-new-spec-rerun.log
+?? docs/ai-runs/20260530-233355-ccd-request-layer-tests-expansion/command-logs/03-request-layer-focused-vitest.log
+?? docs/ai-runs/20260530-233355-ccd-request-layer-tests-expansion/command-logs/04-web-demo-type-check.log
+?? docs/ai-runs/20260530-233355-ccd-request-layer-tests-expansion/command-logs/05-pnpm-test-run.log
+?? docs/ai-runs/20260530-233355-ccd-request-layer-tests-expansion/command-logs/06-pnpm-validate-governance.log
+?? docs/ai-runs/20260530-233355-ccd-request-layer-tests-expansion/command-logs/07-pnpm-type-check.log
+?? docs/ai-runs/20260530-233355-ccd-request-layer-tests-expansion/command-logs/08-pnpm-docs-commands.log
+?? docs/ai-runs/20260530-233355-ccd-request-layer-tests-expansion/command-logs/09-pnpm-ai-doctor.log
+?? docs/ai-runs/20260530-233355-ccd-request-layer-tests-expansion/command-logs/10-pnpm-codex-preflight.log
+?? docs/ai-runs/20260530-233355-ccd-request-layer-tests-expansion/command-logs/11-git-diff-check.log
+?? docs/ai-runs/20260530-233355-ccd-request-layer-tests-expansion/command-logs/12-git-status-short-untracked.log
+?? docs/ai-runs/20260530-233355-ccd-request-layer-tests-expansion/command-logs/13-eslint-request-layer-new-spec.log
+?? docs/ai-runs/20260530-233355-ccd-request-layer-tests-expansion/command-logs/14-eslint-request-layer-new-spec-rerun.log
+?? docs/ai-runs/20260530-233355-ccd-request-layer-tests-expansion/command-logs/15-request-layer-focused-vitest-final.log
+?? docs/ai-runs/20260530-233355-ccd-request-layer-tests-expansion/command-logs/16-web-demo-type-check-final.log
+?? docs/ai-runs/20260530-233355-ccd-request-layer-tests-expansion/command-logs/17-pnpm-test-run-final.log
+?? docs/ai-runs/20260530-233355-ccd-request-layer-tests-expansion/command-logs/18-pnpm-validate-governance-final.log
+?? docs/ai-runs/20260530-233355-ccd-request-layer-tests-expansion/command-logs/19-pnpm-type-check-final.log
+?? docs/ai-runs/20260530-233355-ccd-request-layer-tests-expansion/command-logs/20-pnpm-docs-commands-final.log
+?? docs/ai-runs/20260530-233355-ccd-request-layer-tests-expansion/command-logs/21-pnpm-ai-doctor-final.log
+?? docs/ai-runs/20260530-233355-ccd-request-layer-tests-expansion/command-logs/22-pnpm-codex-preflight-final.log
+?? docs/ai-runs/20260530-233355-ccd-request-layer-tests-expansion/command-logs/23-pnpm-docs-commands-after-report.log
+?? docs/ai-runs/20260530-233355-ccd-request-layer-tests-expansion/command-logs/24-pnpm-validate-governance-after-report.log
+?? docs/ai-runs/20260530-233355-ccd-request-layer-tests-expansion/command-logs/25-pnpm-ai-doctor-after-report.log
+?? docs/ai-runs/20260530-233355-ccd-request-layer-tests-expansion/command-logs/26-pnpm-codex-preflight-after-report.log
+?? docs/ai-runs/20260530-233355-ccd-request-layer-tests-expansion/command-logs/27-git-diff-check-final.log
+?? docs/ai-runs/20260530-233355-ccd-request-layer-tests-expansion/command-logs/28-git-status-short-untracked-final.log
+?? docs/ai-runs/20260530-233355-ccd-request-layer-tests-expansion/command-logs/29-pnpm-docs-commands-final-report.log
+?? docs/ai-runs/20260530-233355-ccd-request-layer-tests-expansion/command-logs/30-git-diff-check-final-report.log
+?? docs/ai-runs/20260530-233355-ccd-request-layer-tests-expansion/command-logs/31-git-status-short-untracked-final-report.log
+?? docs/ai-runs/20260530-233355-ccd-request-layer-tests-expansion/reports/request-layer-tests-expansion.md
+
+[exit:0]
