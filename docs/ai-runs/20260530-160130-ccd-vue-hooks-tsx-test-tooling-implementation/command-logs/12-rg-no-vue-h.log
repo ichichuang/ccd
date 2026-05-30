@@ -1,0 +1,2 @@
+$ rg import\s+.*\bh\b.*from ['"']vue['"']|\bh\( packages/vue-hooks/src .ai/rules .ai/skills docs/ai-plan ccd-architecture-optimization-plan
+rg_exit=1

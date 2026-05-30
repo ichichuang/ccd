@@ -4,6 +4,8 @@
     "composite": true,
     "rootDir": "src",
     "tsBuildInfoFile": "../../node_modules/.tmp/packages-vue-hooks.tsbuildinfo",
+    "jsx": "preserve",
+    "jsxImportSource": "vue",
     "lib": ["ES2022", "DOM", "DOM.Iterable"],
     "types": [],
     "outDir": "dist",
