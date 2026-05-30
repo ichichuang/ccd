@@ -2,23 +2,27 @@
 
 ## Current execution state
 
-- Current milestone: Post-P3 lint cleanup
-- Current task: fix the post-P3 lint cleanup implementation and encode CCD Vue/TSX rules
-- Last completed task: confirmed the staged cleanup's Vue `h` regression and the current TSX tooling-scope blocker
-- Validation status: POST_P3_LINT_CLEANUP_TSX_BLOCKED
-- Evidence directory: `docs/ai-runs/20260530-123637-ccd-post-p3-lint-cleanup/`
-- Final completion state: NOT_DONE_BLOCKED_BY_TSX_TOOLING_SCOPE
+- Current milestone: S1 HTTP-001 decision-only lane
+- Current task: record owner decision for HTTP contract shape without implementation.
+- Last completed task: owner-supplied Vue-hooks TSX tooling seal at `8b958c8a`.
+- Validation status: HTTP_001_DECISION_VALIDATED
+- Evidence directory: `docs/ai-runs/20260530-162440-ccd-http-001-decision/`
+- Final completion state: DECISION_ONLY_DONE
 
-Current post-P3 lint cleanup state:
+Current HTTP-001 decision state:
 
-- Fixed `packages/vue-hooks/src/createAutoMittHook.spec.ts` so the one-component harness no longer imports or calls the Vue `h` helper.
-- The current `.spec.ts` surface remains template-backed, which removes the `h` regression but does not satisfy the strict TSX render/return requirement.
-- TSX conversion is blocked within the current scope because `packages/vue-hooks` lacks existing `.spec.tsx` test inclusion and JSX compiler settings, while the task forbids Vite, Vitest, tsconfig, and dependency changes.
-- Codified CCD auto-import and no-hyperscript rendering rules in canonical `.ai/rules/**` and `.ai/skills/**` files.
-- Ran official `pnpm ai:sync:codex`; generated drift is limited to `.ai/manifests/skills-lock.json` plus local Codex skill materialization.
-- Verified `pnpm lint:check` now exits 0 without the previous `vue/one-component-per-file` warnings.
-- Verified the forbidden Vue helper scan has no matches across the requested paths.
-- Preserved package boundaries and left dependencies, Vite/Vitest config, generated adapters, remotes, HTTP contracts, P4, app runtime behavior, and Login Diorama untouched.
+- `packages/contracts/src/http/**` is approved only for a future type-only, runtime-neutral contracts implementation lane.
+- `packages/core/src/http/**` remains blocked pending a proven multi-runtime orchestration need.
+- `apps/web-demo/src/utils/http/**` remains canonical app HTTP infrastructure for now.
+- No HTTP files were moved, no runtime behavior was changed, and no dependency/Vite/GitHub remote/Login Diorama/P4 work was performed.
+
+Sealed Vue-hooks TSX baseline supplied by owner:
+
+- Commit: `8b958c8a test(vue-hooks): 启用 createAutoMittHook TSX 测试 harness`
+- Branch: `main`
+- Remote validation: CI Guardian `26678951041` PASS; Core Quality PASS; E2E QA PASS.
+- Final status: clean at seal point.
+- CCD Vue constraints remain active: no manual Vue API imports covered by auto-imports, no `import { h } from 'vue'`, no `h()`, and TSX files must use TSX render/return.
 
 Previous P3 run summary:
 
@@ -71,11 +75,11 @@ Final validation for this P3 run:
 ## Current baseline
 
 - Branch: `main`
-- Baseline commit: `5cb4fd8c`
-- Local ahead/behind: NOT_CAPTURED by the required command set
-- Dirty files: active P3 planning/evidence docs, run logs, and official generated `apps/web-demo/src/types/auto-imports.d.ts` formatting drift from validation; final status is recorded in the active P3 final status log.
-- Last 10 commits captured: YES in `docs/ai-runs/20260530-114939-ccd-p3-feature-and-runtime-refactors/command-logs/M0-20260530-114939-git-log-10.log`
-- P3 baseline doctor open scan: PASS in `docs/ai-runs/20260530-114939-ccd-p3-feature-and-runtime-refactors/command-logs/M0-20260530-114939-pnpm-ai-doctor-open.log`
+- Baseline commit: `8b958c8a`
+- Local ahead/behind: `main...origin/main` with no ahead/behind marker in local status output.
+- Dirty files: HTTP-001 decision docs and evidence files from `docs/ai-runs/20260530-162440-ccd-http-001-decision/`.
+- Last commit captured: `8b958c8a test(vue-hooks): 启用 createAutoMittHook TSX 测试 harness`
+- Decision-lane validation: PASS in `docs/ai-runs/20260530-162440-ccd-http-001-decision/command-logs/`.
 - Latest known assumption: no dependency, Vite 8, auth-flow, `.github/**`, remote GitHub, commit, stage, push, reset, clean, branch switch, or force operation was performed.
 
 ## Blockers
@@ -85,7 +89,7 @@ Final validation for this P3 run:
 | B-001 | Current local status not captured in active run evidence                                                                                            | M0-T1                   | Run baseline inspection                                                                                          | DONE    |
 | B-002 | Post-7 checkpoint initially failed at `pnpm validate:governance`; the planning doc command reference was rephrased and governance was rerun cleanly | M0-T3                   | No action required                                                                                               | DONE    |
 | B-003 | UI boundary guard would create broad false positives without approved D-003 policy and exception list                                               | M4-T4                   | Operator review/approval before guard implementation                                                             | BLOCKED |
-| B-004 | HTTP contract package/core path creation requires owner approval                                                                                    | M5-T2                   | Resolve `.ai/runtime/owner_decisions.md` Decision 6                                                              | BLOCKED |
+| B-004 | HTTP-001 contract package shape required owner approval                                                                                             | M5-T2                   | Resolved by `.ai/runtime/owner_decisions.md` and `docs/ai-plan/DECISIONS.md` D-014; implementation not started.  | DONE    |
 | B-005 | Guard enforcement scope, rule contradictions, and design-token canonical file require owner/architect decisions                                     | M6-T2/M6-T3             | Resolve `.ai/runtime/owner_decisions.md` Decisions 2, 3, 4, and 5                                                | BLOCKED |
 | B-006 | `.github/**` CODEOWNERS/template edits and remote branch-protection changes require operator approval                                               | M7-T2                   | Operator approval before local `.github/**` mutation or remote configuration                                     | BLOCKED |
 | B-007 | M8 table-heavy production screenshot and two e2e checks fail independently of the pxtorem patch                                                     | M8-T2                   | Separate ProTable/AppContainer layout validation lane for `.p-datatable` height `0` and scroll-memory regression | BLOCKED |
@@ -105,7 +109,8 @@ Final validation for this P3 run:
 | D-004       | HTTP boundary proposal keeps alova and current app infrastructure path; contracts/core HTTP paths require owner approval                                                | M5                  | 2026-05-29 | PROPOSED |
 | D-006       | Dependency modernization policy remains lane-based; no blind latest upgrades on main                                                                                    | M7                  | 2026-05-29 | PROPOSED |
 | D-008       | GitHub repository governance posture documented; remote/.github changes approval-gated                                                                                  | M7                  | 2026-05-29 | PROPOSED |
-| D-013       | P3 source lanes remain blocked/deferred without dependency, HTTP contract, product, or owner approval                                                                   | P3 audit            | 2026-05-30 | ACTIVE   |
+| D-013       | P3 source lanes remain blocked/deferred without dependency, HTTP contract implementation, product, or owner approval                                                    | P3 audit            | 2026-05-30 | ACTIVE   |
+| D-014       | HTTP-001 approves future `packages/contracts/src/http/**` type-only contracts; `packages/core/src/http/**` remains blocked and app `utils/http/**` remains canonical    | HTTP-001 decision   | 2026-05-30 | APPROVED |
 
 ## Files changed summary
 
@@ -301,7 +306,7 @@ M13 P4 deferred evidence update:
 
 ## Next action
 
-Choose one blocked P3 lane to approve or keep deferred: Login Diorama M11 product/owner lane, PrimeVue dependency review lane, or alova lane after HTTP contract prerequisites.
+Choose one bounded follow-up lane: HTTP-001 contracts-only implementation, Login Diorama M11 product/owner lane, PrimeVue dependency review lane, or alova lane after HTTP contract implementation prerequisites.
 
 ## Update requirements
 

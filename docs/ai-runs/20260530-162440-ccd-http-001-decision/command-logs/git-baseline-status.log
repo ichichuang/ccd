@@ -1,0 +1,14 @@
+main
+8b958c8adeaca0c6554077eec4150a4145148fb6
+## main...origin/main
+ M .ai/runtime/owner_decisions.md
+ M docs/ai-plan/DECISIONS.md
+ M docs/ai-plan/STATUS.md
+?? docs/ai-runs/20260530-162440-ccd-http-001-decision/command-logs/git-baseline-status.log
+?? docs/ai-runs/20260530-162440-ccd-http-001-decision/command-logs/git-diff-check.log
+?? docs/ai-runs/20260530-162440-ccd-http-001-decision/command-logs/git-status-short-untracked.log
+?? docs/ai-runs/20260530-162440-ccd-http-001-decision/command-logs/pnpm-ai-doctor.log
+?? docs/ai-runs/20260530-162440-ccd-http-001-decision/command-logs/pnpm-codex-preflight.log
+?? docs/ai-runs/20260530-162440-ccd-http-001-decision/command-logs/pnpm-docs-commands.log
+?? docs/ai-runs/20260530-162440-ccd-http-001-decision/command-logs/pnpm-validate-governance.log
+?? docs/ai-runs/20260530-162440-ccd-http-001-decision/reports/HTTP-001-owner-decision.md

@@ -200,6 +200,69 @@ Proposed HTTP boundary:
 
 ---
 
+## D-014 — HTTP-001 contract shape owner decision
+
+- Status: `APPROVED`
+- Date: 2026-05-30
+
+### Context
+
+HTTP-001 was blocked because `packages/contracts/src/http/**` needed an owner-approved shape before any contract files could be added. Current evidence shows:
+
+- `packages/contracts/src/network.ts` already provides a low-level runtime-neutral `NetworkClient`, `NetworkRequest`, and `NetworkResponse`.
+- `packages/core/src/index.ts` only proxies the injected network adapter and has no proven need for HTTP orchestration.
+- `apps/web-demo/src/utils/http/**` owns the current alova implementation, retry/cache/deduplication/timeout behavior, raw transport exceptions, and auth bridge wiring.
+- `apps/web-demo/src/adapters/http.adapter.ts` owns Zod payload parsing and backend route payload validation.
+
+### Decision
+
+HTTP-001 is approved for a future implementation lane with strict type-only scope:
+
+- `packages/contracts/src/http/**` may be created only for runtime-neutral TypeScript types and interfaces.
+- Allowed shapes: request method/headers/query/body contracts, request config, response envelope, error shape, retry policy, timeout policy, auth policy, and transport client/request/response interfaces.
+- `packages/contracts/src/network.ts` remains the low-level network contract; future HTTP contracts may reference it through type-only imports if that keeps the public surface smaller.
+- `packages/core/src/http/**` remains blocked. Core must not gain HTTP orchestration until multiple runtimes need shared retry/timeout/auth behavior and the behavior can be expressed without runtime APIs.
+- `apps/web-demo/src/utils/http/**` remains the canonical app HTTP infrastructure path for now. No move to `apps/web-demo/src/adapters/http/**` is approved in this decision.
+- This decision does not approve HTTP runtime migration, alova replacement/upgrade, auth-flow changes, request behavior changes, dependency changes, or generated governance edits.
+
+### Forbidden
+
+Future `packages/contracts/src/http/**` files must not import or encode:
+
+- browser/runtime APIs such as `fetch`, `Request`, `Response`, `Headers`, `AbortSignal`, `Blob`, `File`, `FormData`, `DOMException`, `window`, `document`, timers, or storage;
+- app/runtime libraries such as alova, Vue, Pinia, Vue Router, Zod type/runtime imports, i18n, notification, logger adapters, or `@/` app aliases;
+- concrete token refresh behavior, 401/logout UX, offline-session policy, default retry timers, cache implementations, upload/download helpers, or UI error presentation;
+- classes, executable helpers, side effects, default runtime instances, or dependency additions.
+
+HTTP-007 remains separate and product-blocked. Auth policy contracts may define type shape only; they must not decide retry/offline/401 product behavior.
+
+### Follow-up validation
+
+For the future contracts-only implementation lane, minimum validation is:
+
+- `pnpm --filter @ccd/contracts build`
+- `pnpm build:core`
+- `pnpm api:report`
+- `pnpm arch:runtime`
+- `pnpm ai:doctor`
+- `pnpm codex:preflight`
+- `pnpm validate:governance`
+- `git diff --check`
+- `git status --short --untracked-files=all`
+
+If any app code consumes the new contracts, also run:
+
+- `pnpm --filter @ccd/web-demo type-check`
+- `pnpm exec vitest run apps/web-demo/src/adapters/http.adapter.spec.ts apps/web-demo/src/utils/http`
+- `pnpm test:run` if runtime behavior changes.
+
+### Evidence
+
+- `docs/ai-runs/20260529-070550-ccd-architecture-repair/reports/M5-T1-http-boundary-inventory.md`
+- `docs/ai-runs/20260530-162440-ccd-http-001-decision/reports/HTTP-001-owner-decision.md`
+
+---
+
 ## D-005 — Vite 8 lane isolation
 
 - Status: `PROPOSED`
