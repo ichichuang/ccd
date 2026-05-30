@@ -1,0 +1,93 @@
+COMMAND: git status --short --untracked-files=all
+ M .ai/rules/integrations/01-http-alova.mdc
+ M apps/web-demo/build/plugins.ts
+ M apps/web-demo/src/api/README.md
+ M apps/web-demo/src/api/example/users.spec.ts
+ M apps/web-demo/src/api/example/users.ts
+ M apps/web-demo/src/layouts/components/AppPrimeVueGlobals.vue
+ M apps/web-demo/src/types/auto-imports.d.ts
+ M apps/web-demo/src/utils/safeStorage/core.ts
+ M apps/web-demo/src/utils/safeStorage/storageMaintenance.ts
+ M apps/web-demo/vite.config.ts
+ M ccd-architecture-optimization-plan/ledgers/issue-ledger.md
+ M ccd-architecture-optimization-plan/ledgers/task-ledger.md
+ M ccd-architecture-optimization-plan/plans/02-P2-governance-css-build-modernization.md
+ M docs/ai-plan/DECISIONS.md
+ M docs/ai-plan/NEXT_ACTIONS.md
+ M docs/ai-plan/PLAN.md
+ M docs/ai-plan/RISK_REGISTER.md
+ M docs/ai-plan/STATUS.md
+ M docs/en/architecture-contract.md
+ M docs/generated/api-surface-report.json
+ M docs/generated/api-surface-report.md
+ M packages/contracts/src/index.ts
+ M packages/contracts/src/storage.ts
+ M packages/shared-utils/src/index.ts
+ M packages/vue-primevue-adapter/src/index.ts
+ M packages/vue-primevue-adapter/src/services.spec.ts
+ M packages/vue-primevue-adapter/src/services.ts
+ M playwright.config.ts
+ M scripts/ai-architecture-guard.mjs
+ M scripts/check-bundle-budgets.mjs
+?? docs/ai-runs/20260530-104228-ccd-p2-governance-css-build-modernization/command-logs/FINAL-20260530-git-diff-check.log
+?? docs/ai-runs/20260530-104228-ccd-p2-governance-css-build-modernization/command-logs/FINAL-20260530-git-status-short-untracked.log
+?? docs/ai-runs/20260530-104228-ccd-p2-governance-css-build-modernization/command-logs/FINAL-20260530-node-check-bundle-budgets.log
+?? docs/ai-runs/20260530-104228-ccd-p2-governance-css-build-modernization/command-logs/FINAL-20260530-pnpm-ai-doctor-open.log
+?? docs/ai-runs/20260530-104228-ccd-p2-governance-css-build-modernization/command-logs/FINAL-20260530-pnpm-ai-doctor.log
+?? docs/ai-runs/20260530-104228-ccd-p2-governance-css-build-modernization/command-logs/FINAL-20260530-pnpm-budget-bundles.log
+?? docs/ai-runs/20260530-104228-ccd-p2-governance-css-build-modernization/command-logs/FINAL-20260530-pnpm-budget-desktop.log
+?? docs/ai-runs/20260530-104228-ccd-p2-governance-css-build-modernization/command-logs/FINAL-20260530-pnpm-build-ci.log
+?? docs/ai-runs/20260530-104228-ccd-p2-governance-css-build-modernization/command-logs/FINAL-20260530-pnpm-build-desktop.log
+?? docs/ai-runs/20260530-104228-ccd-p2-governance-css-build-modernization/command-logs/FINAL-20260530-pnpm-build-web-demo.log
+?? docs/ai-runs/20260530-104228-ccd-p2-governance-css-build-modernization/command-logs/FINAL-20260530-pnpm-ci-prepare-internal.log
+?? docs/ai-runs/20260530-104228-ccd-p2-governance-css-build-modernization/command-logs/FINAL-20260530-pnpm-codex-preflight.log
+?? docs/ai-runs/20260530-104228-ccd-p2-governance-css-build-modernization/command-logs/FINAL-20260530-pnpm-e2e-layout.log
+?? docs/ai-runs/20260530-104228-ccd-p2-governance-css-build-modernization/command-logs/FINAL-20260530-pnpm-e2e-perf.log
+?? docs/ai-runs/20260530-104228-ccd-p2-governance-css-build-modernization/command-logs/FINAL-20260530-pnpm-e2e-qa-prepared.log
+?? docs/ai-runs/20260530-104228-ccd-p2-governance-css-build-modernization/command-logs/FINAL-20260530-pnpm-e2e-smoke.log
+?? docs/ai-runs/20260530-104228-ccd-p2-governance-css-build-modernization/command-logs/FINAL-20260530-pnpm-e2e-visual.log
+?? docs/ai-runs/20260530-104228-ccd-p2-governance-css-build-modernization/command-logs/FINAL-20260530-pnpm-install-frozen-lockfile.log
+?? docs/ai-runs/20260530-104228-ccd-p2-governance-css-build-modernization/command-logs/FINAL-20260530-pnpm-lint-check.log
+?? docs/ai-runs/20260530-104228-ccd-p2-governance-css-build-modernization/command-logs/FINAL-20260530-pnpm-test-run.log
+?? docs/ai-runs/20260530-104228-ccd-p2-governance-css-build-modernization/command-logs/FINAL-20260530-pnpm-type-check.log
+?? docs/ai-runs/20260530-104228-ccd-p2-governance-css-build-modernization/command-logs/FINAL-20260530-pnpm-validate-governance.log
+?? docs/ai-runs/20260530-104228-ccd-p2-governance-css-build-modernization/command-logs/FINAL-last-20260530-git-diff-check.log
+?? docs/ai-runs/20260530-104228-ccd-p2-governance-css-build-modernization/command-logs/FINAL-last-20260530-git-status-short-untracked.log
+?? docs/ai-runs/20260530-104228-ccd-p2-governance-css-build-modernization/command-logs/FINAL-last-20260530-pnpm-validate-governance.log
+?? docs/ai-runs/20260530-104228-ccd-p2-governance-css-build-modernization/command-logs/FINAL-rerun-20260530-pnpm-ai-doctor-after-css-validation.log
+?? docs/ai-runs/20260530-104228-ccd-p2-governance-css-build-modernization/command-logs/FINAL-rerun-20260530-pnpm-ai-ledger-json-after-css-validation.log
+?? docs/ai-runs/20260530-104228-ccd-p2-governance-css-build-modernization/command-logs/FINAL-rerun-20260530-pnpm-budget-bundles.log
+?? docs/ai-runs/20260530-104228-ccd-p2-governance-css-build-modernization/command-logs/FINAL-rerun-20260530-pnpm-docs-commands-after-final-report.log
+?? docs/ai-runs/20260530-104228-ccd-p2-governance-css-build-modernization/command-logs/FINAL-rerun-20260530-pnpm-validate-governance-after-docs.log
+?? docs/ai-runs/20260530-104228-ccd-p2-governance-css-build-modernization/command-logs/FINAL-rerun-20260530-pnpm-validate-governance-after-final-report.log
+?? docs/ai-runs/20260530-104228-ccd-p2-governance-css-build-modernization/command-logs/L1-20260530-105200-shared-utils-storage-vitest.log
+?? docs/ai-runs/20260530-104228-ccd-p2-governance-css-build-modernization/command-logs/L1-20260530-105202-vue-primevue-adapter-services-vitest.log
+?? docs/ai-runs/20260530-104228-ccd-p2-governance-css-build-modernization/command-logs/L1-20260530-105203-users-api-vitest.log
+?? docs/ai-runs/20260530-104228-ccd-p2-governance-css-build-modernization/command-logs/L1-20260530-105205-contracts-build.log
+?? docs/ai-runs/20260530-104228-ccd-p2-governance-css-build-modernization/command-logs/L1-20260530-105205-shared-utils-build.log
+?? docs/ai-runs/20260530-104228-ccd-p2-governance-css-build-modernization/command-logs/L1-20260530-105205-vue-primevue-adapter-build.log
+?? docs/ai-runs/20260530-104228-ccd-p2-governance-css-build-modernization/command-logs/L1-20260530-105206-web-demo-type-check.log
+?? docs/ai-runs/20260530-104228-ccd-p2-governance-css-build-modernization/command-logs/L1-rerun-20260530-105314-vue-primevue-adapter-build.log
+?? docs/ai-runs/20260530-104228-ccd-p2-governance-css-build-modernization/command-logs/L1-rerun-20260530-105315-web-demo-type-check.log
+?? docs/ai-runs/20260530-104228-ccd-p2-governance-css-build-modernization/command-logs/L2-20260530-ai-guard.log
+?? docs/ai-runs/20260530-104228-ccd-p2-governance-css-build-modernization/command-logs/L2-20260530-ai-ledger-json.log
+?? docs/ai-runs/20260530-104228-ccd-p2-governance-css-build-modernization/command-logs/L2-20260530-api-report.log
+?? docs/ai-runs/20260530-104228-ccd-p2-governance-css-build-modernization/command-logs/L2-20260530-arch-boundaries.log
+?? docs/ai-runs/20260530-104228-ccd-p2-governance-css-build-modernization/command-logs/L2-20260530-arch-runtime.log
+?? docs/ai-runs/20260530-104228-ccd-p2-governance-css-build-modernization/command-logs/L2-20260530-docs-commands.log
+?? docs/ai-runs/20260530-104228-ccd-p2-governance-css-build-modernization/command-logs/L2-20260530-governance-gate.log
+?? docs/ai-runs/20260530-104228-ccd-p2-governance-css-build-modernization/command-logs/L2-20260530-governance-refresh.log
+?? docs/ai-runs/20260530-104228-ccd-p2-governance-css-build-modernization/command-logs/L2-rerun-20260530-ai-ledger-json.log
+?? docs/ai-runs/20260530-104228-ccd-p2-governance-css-build-modernization/command-logs/L2-rerun-20260530-governance-gate.log
+?? docs/ai-runs/20260530-104228-ccd-p2-governance-css-build-modernization/command-logs/M0-20260530-104343-baseline-git-status.log
+?? docs/ai-runs/20260530-104228-ccd-p2-governance-css-build-modernization/command-logs/M0-20260530-104355-git-log-10.log
+?? docs/ai-runs/20260530-104228-ccd-p2-governance-css-build-modernization/command-logs/M0-20260530-104405-git-log-10.log
+?? docs/ai-runs/20260530-104228-ccd-p2-governance-css-build-modernization/command-logs/M0-20260530-104417-ai-route-skills.log
+?? docs/ai-runs/20260530-104228-ccd-p2-governance-css-build-modernization/command-logs/M0-20260530-104417-git-branch.log
+?? docs/ai-runs/20260530-104228-ccd-p2-governance-css-build-modernization/command-logs/M0-20260530-104417-git-diff-check.log
+?? docs/ai-runs/20260530-104228-ccd-p2-governance-css-build-modernization/command-logs/M0-20260530-104432-baseline-ai-doctor-open.log
+?? docs/ai-runs/20260530-104228-ccd-p2-governance-css-build-modernization/reports/p2-governance-css-build-modernization.md
+?? packages/shared-utils/src/storageCodec.spec.ts
+?? packages/shared-utils/src/storageCodec.ts
+
+EXIT_STATUS: 0

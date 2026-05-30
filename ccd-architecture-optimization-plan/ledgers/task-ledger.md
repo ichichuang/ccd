@@ -1011,7 +1011,7 @@ pnpm api:report && pnpm --filter @ccd/vue-ui build
 
 - Priority: `P2`
 - Severity: `Medium`
-- Status: `OPEN`
+- Status: `DONE`
 - Module: `Layout Runtime 与 App Platform`
 - Paths:
   - `apps/web-demo/src/utils/safeStorage/**`
@@ -1021,6 +1021,10 @@ pnpm api:report && pnpm --filter @ccd/vue-ui build
 ### Best solution
 
 contracts 定义 SafeStoragePolicy/StorageCodec；app adapter 实现 browser storage；shared-utils 提供 pure codec helpers；core 只消费 StorageAdapter。
+
+### 2026-05-30 execution note
+
+Implemented runtime-neutral storage contracts and pure JSON codec helpers in `@ccd/contracts` and `@ccd/shared-utils`; `apps/web-demo` now owns browser storage adapter policy and keeps storage globals out of `packages/core`.
 
 ### Implementation steps
 
@@ -1041,7 +1045,7 @@ pnpm arch:runtime && storage focused tests
 
 - Priority: `P2`
 - Severity: `Medium`
-- Status: `OPEN`
+- Status: `BLOCKED_BY_OWNER`
 - Module: `Layout Runtime 与 App Platform`
 - Paths:
   - `apps/desktop/**`
@@ -1051,6 +1055,10 @@ pnpm arch:runtime && storage focused tests
 ### Best solution
 
 审批后将 desktop drift summary 纳入 CI；web/desktop 共享 platform package，app 只保留 runtime adapter 差异。
+
+### 2026-05-30 execution note
+
+Blocked: desktop drift CI enforcement scope is still owner/operator gated. No CI, `.github/**`, desktop app, or drift policy mutation was performed.
 
 ### Implementation steps
 
@@ -1102,7 +1110,7 @@ pnpm build:ci && pnpm e2e:qa && bundle budgets on isolated lane
 
 - Priority: `P2`
 - Severity: `Medium`
-- Status: `OPEN`
+- Status: `DONE`
 - Module: `CSS / Tokens / Vite Build`
 - Paths:
   - `apps/web-demo/build/plugins.ts`
@@ -1112,6 +1120,10 @@ pnpm build:ci && pnpm e2e:qa && bundle budgets on isolated lane
 ### Best solution
 
 为每个 plugin 写 compatibility note：是否必须保留、是否迁到 deploy/CDN、是否有 measurable value；移除无价值 progress plugin。
+
+### 2026-05-30 execution note
+
+Added build plugin compatibility notes and removed active `vite-plugin-progress` usage from the web-demo plugin chain. Vite 8 migration remains blocked separately.
 
 ### Implementation steps
 
@@ -1132,7 +1144,7 @@ pnpm build:web-demo && pnpm budget:bundles
 
 - Priority: `P2`
 - Severity: `Medium`
-- Status: `OPEN`
+- Status: `BLOCKED_BY_OWNER`
 - Module: `ProForm / ProTable / 通用组件迁移`
 - Paths:
   - `packages/vue-ui/package.json`
@@ -1142,6 +1154,10 @@ pnpm build:web-demo && pnpm budget:bundles
 ### Best solution
 
 如果 ProForm/ProTable 体量继续增长，新增 packages/vue-pro-components，依赖 vue-ui/vue-hooks/shared-utils/contracts；避免 vue-ui 基础 primitive 包膨胀。
+
+### 2026-05-30 execution note
+
+Blocked: creating `packages/vue-pro-components` is a broad package split and has no explicit owner approval in this run. Existing package topology was preserved.
 
 ### Implementation steps
 
@@ -1253,7 +1269,7 @@ pnpm e2e:smoke && pnpm e2e:layout && pnpm e2e:visual
 
 - Priority: `P2`
 - Severity: `Medium`
-- Status: `OPEN`
+- Status: `DONE`
 - Module: `Governance / Guard / GitHub 治理`
 - Paths:
   - `docs/ai-plan/NEXT_ACTIONS.md`
@@ -1263,6 +1279,10 @@ pnpm e2e:smoke && pnpm e2e:layout && pnpm e2e:visual
 ### Best solution
 
 重写 Next Actions 为当前优先级版本；保留历史内容到 archived section，避免 AI/人误执行旧 M2 建议。
+
+### 2026-05-30 execution note
+
+Updated current P2 execution state, next actions, and architecture contract language so stale P1/M2 guidance is archived rather than presented as the current lane.
 
 ### Implementation steps
 
@@ -1283,7 +1303,7 @@ pnpm docs:commands
 
 - Priority: `P2`
 - Severity: `Medium`
-- Status: `OPEN`
+- Status: `DONE`
 - Module: `HTTP / alova / contracts 边界`
 - Paths:
   - `apps/web-demo/src/api/**`
@@ -1291,6 +1311,10 @@ pnpm docs:commands
 ### Best solution
 
 统一规范：server-state 或需要 loading/cache/dedupe 的接口优先返回 Method builder 并经 useHttpRequest；简单 one-shot wrapper 明确标为 imperative API。
+
+### 2026-05-30 execution note
+
+Added example Method builders and API README guidance while keeping existing imperative wrappers only for the ProTable/example CRUD compatibility surface.
 
 ### Implementation steps
 
@@ -1311,7 +1335,7 @@ pnpm --filter @ccd/web-demo type-check && request focused tests
 
 - Priority: `P2`
 - Severity: `Medium`
-- Status: `OPEN`
+- Status: `DONE`
 - Module: `HTTP / alova / contracts 边界`
 - Paths:
   - `apps/web-demo/src/components/LoadingLottie.vue`
@@ -1321,6 +1345,10 @@ pnpm --filter @ccd/web-demo type-check && request focused tests
 ### Best solution
 
 定义 raw fetch allowlist：HTTP infra、asset loader、timezone probe；长期把非 HTTP raw fetch 包装为 adapter 或 platform utility。
+
+### 2026-05-30 execution note
+
+Documented and enforced raw transport exceptions for HTTP infrastructure, timezone probe, and the app-local Lottie asset loader.
 
 ### Implementation steps
 
@@ -1341,7 +1369,7 @@ pnpm ai:guard && pnpm arch:runtime
 
 - Priority: `P2`
 - Severity: `Medium`
-- Status: `OPEN`
+- Status: `DONE`
 - Module: `UI 与 PrimeVue 边界治理`
 - Paths:
   - `apps/web-demo/src/layouts/components/AppPrimeVueGlobals.vue`
@@ -1350,6 +1378,10 @@ pnpm ai:guard && pnpm arch:runtime
 ### Best solution
 
 保留 app shell 装配，但将服务注册/locale sync/overlay outlet 约定抽到 adapter helper；AppPrimeVueGlobals 只做安装点。
+
+### 2026-05-30 execution note
+
+Moved toast/message and locale helper logic into `@ccd/vue-primevue-adapter`; `AppPrimeVueGlobals.vue` now remains the app shell outlet/install point.
 
 ### Implementation steps
 
@@ -1370,7 +1402,7 @@ pnpm --filter @ccd/vue-primevue-adapter build && e2e:smoke
 
 - Priority: `P2`
 - Severity: `Low`
-- Status: `OPEN`
+- Status: `DONE`
 - Module: `CSS / Tokens / Vite Build`
 - Paths:
   - `apps/web-demo/vite.config.ts`
@@ -1378,6 +1410,10 @@ pnpm --filter @ccd/vue-primevue-adapter build && e2e:smoke
 ### Best solution
 
 查看 Vite/Sass 类型定义，替换为 satisfies/明确类型或局部 typed helper；避免扩大 any。
+
+### 2026-05-30 execution note
+
+Replaced the local `as any` Sass preprocessor config escape hatch with a typed helper shape that preserves the modern compiler option.
 
 ### Implementation steps
 
@@ -1398,7 +1434,7 @@ pnpm --filter @ccd/web-demo type-check && pnpm build:web-demo
 
 - Priority: `P2`
 - Severity: `Low`
-- Status: `OPEN`
+- Status: `DONE`
 - Module: `CSS / Tokens / Vite Build`
 - Paths:
   - `apps/web-demo/vite.config.ts`
@@ -1406,6 +1442,10 @@ pnpm --filter @ccd/web-demo type-check && pnpm build:web-demo
 ### Best solution
 
 按 env/CI 判断 open:false；本地 dev 可保留自动打开，Playwright/CI 禁止。
+
+### 2026-05-30 execution note
+
+Added CI/e2e-aware `server.open` and `preview.open` control, and made Playwright set `VITE_SERVER_OPEN=false`.
 
 ### Implementation steps
 
@@ -1426,7 +1466,7 @@ pnpm e2e:smoke && pnpm --filter @ccd/web-demo dev smoke
 
 - Priority: `P2`
 - Severity: `Low`
-- Status: `OPEN`
+- Status: `DONE`
 - Module: `UI 与 PrimeVue 边界治理`
 - Paths:
   - `apps/web-demo/src/views/example/components/primevue-collection/**`
@@ -1434,6 +1474,10 @@ pnpm e2e:smoke && pnpm --filter @ccd/web-demo dev smoke
 ### Best solution
 
 建立 examples exception allowlist：showcase 可直接 import PrimeVue，但必须限定在 primevue-collection examples；其他 app routes 不允许。
+
+### 2026-05-30 execution note
+
+Changed the PrimeVue direct-import guard from an expanding exact list for showcase files to a scoped `primevue-collection` example-path exception; non-showcase app files remain exact allowlist only.
 
 ### Implementation steps
 

@@ -1,0 +1,16 @@
+2026-05-30 10:52:06 CST
+COMMAND=pnpm --filter @ccd/web-demo type-check
+
+
+> @ccd/web-demo@1.0.38 type-check /Users/cc/MyPorject/ccd/apps/web-demo
+> vue-tsc -p tsconfig.json --noEmit
+
+src/api/example/users.ts(99,5): error TS2353: Object literal may only specify known properties, and 'responseSchema' does not exist in type 'AlovaMethodCreateConfig<AlovaGenerics<any, any, FetchRequestInit, Response, Headers, AlovaDefaultCacheAdapter, AlovaDefaultCacheAdapter, VueHookExportType<...>>, V1UserListApiResponse, unknown>'.
+src/api/example/users.ts(112,7): error TS2353: Object literal may only specify known properties, and 'enableCache' does not exist in type 'AlovaMethodCreateConfig<AlovaGenerics<any, any, FetchRequestInit, Response, Headers, AlovaDefaultCacheAdapter, AlovaDefaultCacheAdapter, VueHookExportType<...>>, V1UserItemApiResponse, unknown>'.
+src/api/example/users.ts(128,7): error TS2353: Object literal may only specify known properties, and 'enableCache' does not exist in type 'AlovaMethodCreateConfig<AlovaGenerics<any, any, FetchRequestInit, Response, Headers, AlovaDefaultCacheAdapter, AlovaDefaultCacheAdapter, VueHookExportType<...>>, V1UserItemApiResponse, unknown>'.
+vite.config.ts(40,3): error TS2353: Object literal may only specify known properties, and 'api' does not exist in type 'SassPreprocessorOptions'.
+/Users/cc/MyPorject/ccd/apps/web-demo:
+ ERR_PNPM_RECURSIVE_RUN_FIRST_FAIL  @ccd/web-demo@1.0.38 type-check: `vue-tsc -p tsconfig.json --noEmit`
+Exit status 2
+
+EXIT_CODE=2

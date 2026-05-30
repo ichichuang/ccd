@@ -1,0 +1,53 @@
+COMMAND: pnpm budget:bundles
+
+> ccd@1.0.38 budget:bundles /Users/cc/MyPorject/ccd
+> node scripts/check-bundle-budgets.mjs
+
+Bundle budget report
+====================
+[FAIL] entry-js: gzip=312.5 KiB, brotli=261.3 KiB, raw=988.2 KiB / budget=260 KiB
+  - apps/web-demo/dist/static/js/index-B5QgjuUx.js
+  - apps/web-demo/dist/static/js/index-B7J66h-v.js
+  - apps/web-demo/dist/static/js/index-BDhK0MKh.js
+  - apps/web-demo/dist/static/js/index-BJdLYcq9.js
+  - apps/web-demo/dist/static/js/index-BXJQpw32.js
+  - apps/web-demo/dist/static/js/index-B_vm9Xhy.js
+  - apps/web-demo/dist/static/js/index-BjGxyG09.js
+  - apps/web-demo/dist/static/js/index-C5qT3Oz_.js
+  - apps/web-demo/dist/static/js/index-CBuW5Y0W.js
+  - apps/web-demo/dist/static/js/index-CI67AcMD.js
+  - apps/web-demo/dist/static/js/index-CKWH96za.js
+  - apps/web-demo/dist/static/js/index-CKe9wDMh.js
+  - apps/web-demo/dist/static/js/index-CLbGrZOy.js
+  - apps/web-demo/dist/static/js/index-Czf5Z54Y.js
+  - apps/web-demo/dist/static/js/index-D3a2PDGh.js
+  - apps/web-demo/dist/static/js/index-DUmc2HWE.js
+  - apps/web-demo/dist/static/js/index-Da03iNso.js
+  - apps/web-demo/dist/static/js/index-DlIPUf0w.js
+  - apps/web-demo/dist/static/js/index-DleSjZlU.js
+  - apps/web-demo/dist/static/js/index-Dr4Lew36.js
+  - apps/web-demo/dist/static/js/index-DrCM0xFT.js
+  - apps/web-demo/dist/static/js/index-Ds-bA-dU.js
+  - apps/web-demo/dist/static/js/index-DtfvlGWJ.js
+  - apps/web-demo/dist/static/js/index-FqkA1YZA.js
+  - apps/web-demo/dist/static/js/index-I_eZzqBV.js
+  - apps/web-demo/dist/static/js/index-PYXXUwHX.js
+  - apps/web-demo/dist/static/js/index-Z-6OamYq.js
+  - apps/web-demo/dist/static/js/index-fUBla48s.js
+  - apps/web-demo/dist/static/js/index-rxBvGqgw.js
+  - apps/web-demo/dist/static/js/index-sVpF-SBp.js
+[OK] entry-css: gzip=39.3 KiB, brotli=32.3 KiB, raw=292.6 KiB / budget=120 KiB
+  - apps/web-demo/dist/static/css/index-BCTNc_DL.css
+  - apps/web-demo/dist/static/css/index-CqtkDNw6.css
+[OK] vendor-core: gzip=42.0 KiB, brotli=37.8 KiB, raw=107.4 KiB / budget=220 KiB
+  - apps/web-demo/dist/static/js/vendor-core-DDfI1M23.js
+[OK] vendor-ui: gzip=263.8 KiB, brotli=176.8 KiB, raw=1273.5 KiB / budget=460 KiB
+  - apps/web-demo/dist/static/js/vendor-ui-Cn9zByeM.js
+[OK] vendor-heavy: gzip=380.9 KiB, brotli=311.0 KiB, raw=1175.0 KiB / budget=620 KiB
+  - apps/web-demo/dist/static/js/vendor-heavy-CCNfzu1D.js
+
+Bundle budgets exceeded:
+  - entry-js: 312.5 KiB > 260 KiB
+ ELIFECYCLE  Command failed with exit code 1.
+
+EXIT_STATUS: 1

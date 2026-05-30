@@ -1,93 +1,78 @@
 # CCD Next Actions
 
-## Immediate action
+## Current Priority
 
-Current next action is completing the active P1 platform extraction run:
+Active lane: P2 governance, CSS, build, HTTP, storage, and PrimeVue boundary modernization.
 
-- finish HTTP policy classification without creating unapproved contracts/core HTTP paths;
-- keep HTTP-001, HTTP-007, UI-001, and GOV-003 blocked unless owner/operator approvals change;
-- run the final validation matrix and record evidence in the active run directory.
+Evidence directory:
 
-Do not push, stage, commit, or mutate approval-gated lanes unless the operator gives exact approval.
+- `docs/ai-runs/20260530-104228-ccd-p2-governance-css-build-modernization/`
 
-## After M0
+Implementable P2 items in the active lane are:
 
-Run post-7 validation checkpoint:
+- APP-003 safeStorage contract/codec extraction.
+- BUILD-003 build plugin compatibility notes and progress plugin removal.
+- GOV-005 current-priority docs refresh.
+- HTTP-005 Method builder guidance for server-state APIs.
+- HTTP-006 raw transport exception policy.
+- UI-004 PrimeVue global service helper extraction.
+- BUILD-004 typed Sass preprocessor config.
+- BUILD-005 CI/e2e-safe Vite server open behavior.
+- UI-005 scoped PrimeVue showcase exception.
+
+## Blocked or Deferred P2 Items
+
+Keep these blocked unless explicit owner/operator approval is added to `.ai/runtime/owner_decisions.md` or `docs/ai-plan/DECISIONS.md`:
+
+- APP-004 desktop drift CI enforcement scope.
+- BUILD-002 Vite 8 migration.
+- COMP-005 new `packages/vue-pro-components` package split.
+- DEPS-001 Vite dependency lane.
+- DEPS-002 Vue tooling dependency lane.
+- DEPS-003 Playwright dependency lane.
+- GitHub remote governance and `.github/**` refinements.
+
+## Required Validation
+
+Run narrow validation first, then the final matrix:
 
 ```bash
 pnpm install --frozen-lockfile
 pnpm ci:prepare-internal
-pnpm ci:smoke:packages
 pnpm ai:doctor
 pnpm codex:preflight
+pnpm validate:governance
 pnpm type-check
-pnpm lint:check
 pnpm test:run
+pnpm lint:check
 pnpm build:web-demo
 pnpm build:desktop
 pnpm budget:desktop
-pnpm validate:governance
+pnpm e2e:smoke
+pnpm e2e:layout
+pnpm e2e:perf
+pnpm e2e:visual
+pnpm e2e:qa:prepared
 pnpm build:ci
 git diff --check
 git status --short --untracked-files=all
 ```
 
-## Recommended first implementation lane
+Do not push, stage, commit, switch branches, rewrite history, upgrade dependencies, start Vite 8 migration, or mutate GitHub remote settings in this lane.
 
-M2 — Capability Bridge generics.
+## Recommended Next Lane After P2
 
-Reasons:
+If final validation passes, the next useful owner action is deciding one blocked lane:
 
-- smallest P1 blast radius;
-- clear acceptance criteria;
-- unlikely to touch `packages/contracts` or `packages/core`;
-- good testability;
-- does not require UI/HTTP/Vite/dependency changes.
+- approve or reject APP-004 desktop drift CI enforcement;
+- approve or reject COMP-005 package split;
+- approve one isolated dependency/toolchain lane;
+- accept remaining blocked items as governance exceptions.
 
-## Do not start yet
+## Archived P1 Notes
 
-Do not start these until prerequisites are satisfied and operator explicitly chooses the lane:
+The previous current action was the P1 platform extraction run. It completed with approval-gated blockers and final validation evidence under:
 
-- M4 UI boundary guard enforcement;
-- M5 HTTP contract implementation;
-- M9 Vite 8 compatibility;
-- M10 dependency modernization;
-- M11 Login Diorama;
-- M13 strategic P4 work.
+- `docs/ai-runs/20260529-170536-ccd-p1-platform-extraction-and-boundaries/`
 
-M8 `P2-CSS-Validation` remains blocked by table-heavy ProTable/AppContainer layout debt unrelated to the pxtorem patch.
-M9 Vite 8 migration remains blocked pending isolated branch/worktree approval.
-M10 dependency upgrades remain blocked pending per-lane approval.
-M11 Login Diorama remains blocked pending operator approval and prerequisite stability.
-M12 directive/date casing cleanup is complete; `pnpm check` passes with two existing lint warnings.
-M13 P4 strategic work is deferred or blocked with evidence.
-M14 final validation is complete; final decision is `NO_GO` until blockers are resolved or accepted.
-
-## Open owner decisions
-
-- UI boundary policy for direct PrimeVue imports.
-- HTTP contract shape and whether `packages/contracts/src/http/**` should be edited.
-- Guard enforcement strictness.
-- Design-token canonical rule file.
-- Desktop drift CI enforcement scope.
-- GitHub branch protection / CODEOWNERS / template updates.
-
-## Recommended milestone order
-
-1. M0 — Planning system and baseline.
-2. M1 — Residual type/Turbo output validation.
-3. M2 — Capability Bridge generics.
-4. M3 — ProTable typings/helper boundary.
-5. M4 — UI boundary audit and policy.
-6. M5 — HTTP boundary inventory and contract proposal.
-7. M6 — Guard coverage and owner decisions.
-8. M7 — Governance docs.
-9. M8 — CSS/token audit.
-10. M12 — Secondary test/casing cleanup.
-11. M14 — Final validation for selected milestones.
-
-M9, M10, and M11 should remain separate approved lanes.
-
-## Recommended next lane
-
-B-007 is the least approval-heavy blocker to resolve next: open a focused ProTable/AppContainer layout validation lane for `.p-datatable` height `0` and the two existing e2e failures. Keep Vite 8, dependency upgrades, Login Diorama, `.github/**`, and P4 strategic work blocked until separately approved.
+Historical P1 recommendations are no longer the active next action. They included M2 Capability Bridge generics, UI boundary audit, HTTP boundary inventory, CSS pxtorem validation, and final P1 validation. Use the sealed P1 reports for evidence, not this file, before reopening any P1 lane.

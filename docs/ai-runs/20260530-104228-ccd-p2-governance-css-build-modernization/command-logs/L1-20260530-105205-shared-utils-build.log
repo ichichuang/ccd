@@ -1,0 +1,9 @@
+2026-05-30 10:52:05 CST
+COMMAND=pnpm --filter @ccd/shared-utils build
+
+
+> @ccd/shared-utils@1.0.38 build /Users/cc/MyPorject/ccd/packages/shared-utils
+> rm -f ../../node_modules/.tmp/packages-shared-utils.tsbuildinfo && tsc -p tsconfig.json
+
+
+EXIT_CODE=0

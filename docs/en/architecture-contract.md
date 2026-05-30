@@ -68,6 +68,8 @@ Current platform package set:
 | Chart runtime/helper surface                                                | `packages/vue-charts`                                   | Chart-specific Vue runtime only; app data/query behavior stays outside.                                                                  |
 | App-specific runtime capability, auth, router, store, Tauri, or browser API | `apps/*/src/adapters/**` or approved app infrastructure | Must not move into `contracts`/`core`; inject contracts into shared packages when cross-runtime reuse is required.                       |
 
+Storage policy follows the same split: cross-runtime storage interfaces live in `packages/contracts`, pure serialization helpers live in `packages/shared-utils`, and browser `localStorage` / `sessionStorage` access stays in app-owned adapters or approved app infrastructure.
+
 ## App-local Shared Candidates
 
 The following paths still belong to `apps/web-demo`, but should be understood as app-local shared candidates rather than immediate migration targets:
@@ -76,7 +78,7 @@ The following paths still belong to `apps/web-demo`, but should be understood as
 - `apps/web-demo/src/hooks/modules/useDialog.tsx`
 - `apps/web-demo/src/utils/theme/engine.ts` (compatibility facade only)
 - `apps/web-demo/src/utils/theme/sizeEngine.ts`
-- `apps/web-demo/src/utils/safeStorage`
+- `apps/web-demo/src/utils/safeStorage` (browser adapter and compatibility helpers only; pure codec helpers belong in `packages/shared-utils`)
 
 `createCapabilityBridge` is already a pure shared utility owned by `packages/shared-utils`; app auth/router capability providers remain app-local adapter/infrastructure code.
 
@@ -92,6 +94,13 @@ These areas should remain untouched by the Phase 1 clarity pass:
 - `apps/web-demo/src/views/**`
 - `apps/web-demo/src/utils/date/dateUtils.ts`
 - app-local compatibility facades and runtime adapters that inject browser/storage/router/store capabilities
+- new package topology such as `packages/vue-pro-components` unless an owner approves the package split, export policy, migration scope, and validation budget
+
+## PrimeVue Boundary
+
+`packages/vue-primevue-adapter` owns PrimeVue theme, PT, locale, and service helpers. `packages/vue-ui` may internally compose PrimeVue through CCD-owned primitives, but must not expose raw PrimeVue components as a loose public bucket.
+
+`apps/web-demo/src/views/example/components/primevue-collection/**` is the only path-scoped showcase exception for direct PrimeVue imports. Other app direct PrimeVue imports must remain exact allowlist entries or migrate behind `@ccd/vue-ui` / `@ccd/vue-primevue-adapter`.
 
 ## Dependency Direction
 

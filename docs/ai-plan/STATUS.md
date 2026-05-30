@@ -2,60 +2,74 @@
 
 ## Current execution state
 
-- Current milestone: P1 — Platform extraction and boundaries
-- Current task: execute all implementable OPEN P1 items from `ccd-architecture-optimization-plan/plans/01-P1-platform-extraction-and-boundaries.md`
-- Last completed task: final P1 validation sweep
-- Validation status: ACTIVE_P1_FINAL_PASS
-- Evidence directory: `docs/ai-runs/20260529-170536-ccd-p1-platform-extraction-and-boundaries/`
+- Current milestone: P2 — Governance, CSS, build, HTTP, storage, and PrimeVue boundary modernization
+- Current task: execute all implementable OPEN P2 items from `ccd-architecture-optimization-plan/plans/02-P2-governance-css-build-modernization.md`
+- Last completed task: final P2 validation sweep
+- Validation status: ACTIVE_P2_FINAL_PASS
+- Evidence directory: `docs/ai-runs/20260530-104228-ccd-p2-governance-css-build-modernization/`
 - Final completion state: DONE_WITH_APPROVAL_GATED_BLOCKERS
 
-Completed in the active P1 run:
+Implemented in the active P2 run:
 
-- APP-001, APP-002, ARCH-003, ARCH-004, ARCH-005, BUILD-001
-- COMP-001, COMP-002, COMP-003, COMP-004
-- DOC-002, E2E-006, E2E-007, E2E-008
-- GOV-002, GOV-004
-- HTTP-002, HTTP-003, HTTP-004
-- UI-002, UI-003
-- APP-002 pure theme derivation moved to `@ccd/design-tokens/theme-engine`; DOM/storage theme application moved to `@ccd/vue-app-platform`
-- ARCH-003 app package exports removed and private app packages excluded from public API snapshot enforcement
-- ARCH-004 verified; `createCapabilityBridge` remains owned by `packages/shared-utils`
-- BUILD-001 reduced px-to-rem selector blacklist reliance and validated `pnpm build:web-demo`
+- APP-003: `SafeStoragePolicy`, `StorageCodec`, pure storage codec helpers, and web-demo browser storage adapter policy.
+- BUILD-003: build plugin compatibility notes and removal of active `vite-plugin-progress` usage.
+- GOV-005: current P2 next-action docs and architecture-contract guidance refreshed.
+- HTTP-005: example API Method builders and calling model documentation.
+- HTTP-006: raw transport allowlist documented and enforced for HTTP infra, timezone probe, and Lottie asset loader.
+- UI-004: PrimeVue toast/message/locale helpers moved into `@ccd/vue-primevue-adapter`.
+- BUILD-004: Vite Sass preprocessor config no longer uses `as any`.
+- BUILD-005: Vite server/preview auto-open is disabled for CI/e2e through explicit env handling.
+- UI-005: PrimeVue showcase examples are scoped by `primevue-collection` path exception; non-showcase app files remain exact allowlist.
 
-Approval-gated P1 items intentionally left blocked:
+P2 items intentionally left blocked or deferred:
 
-- HTTP-001 (`BLOCKED_BY_OWNER`)
-- HTTP-007 (`BLOCKED_BY_PRODUCT`)
-- UI-001 (`BLOCKED_BY_POLICY`)
-- GOV-003 (`BLOCKED_BY_OPERATOR`)
+- APP-004 (`BLOCKED_BY_OWNER`) — desktop drift CI enforcement scope remains owner/operator gated.
+- BUILD-002 (`BLOCKED_BY_APPROVAL`) — Vite 8 migration requires isolated approval.
+- COMP-005 (`BLOCKED_BY_OWNER`) — `packages/vue-pro-components` is a broad package split and was not approved.
+- DEPS-001, DEPS-002, DEPS-003 (`BLOCKED_BY_APPROVAL`) — no dependency or lockfile changes in this run.
+- GitHub remote governance and `.github/**` refinements remain approval-gated.
 
-Final validation for this P1 run:
+Focused validation already captured in the active P2 run:
+
+- `pnpm exec vitest run packages/shared-utils/src/storageCodec.spec.ts` — PASS
+- `pnpm exec vitest run packages/vue-primevue-adapter/src/services.spec.ts` — PASS
+- `pnpm exec vitest run apps/web-demo/src/api/example/users.spec.ts` — PASS
+- `pnpm --filter @ccd/contracts build` — PASS
+- `pnpm --filter @ccd/shared-utils build` — PASS
+- `pnpm --filter @ccd/vue-primevue-adapter build` — PASS after locale generic fix
+- `pnpm --filter @ccd/web-demo type-check` — PASS after alova Method config and Vite Sass type fixes
+
+Final validation for this P2 run:
 
 - `pnpm install --frozen-lockfile` — PASS
 - `pnpm ci:prepare-internal` — PASS
 - `pnpm ai:doctor` — PASS
 - `pnpm codex:preflight` — PASS
-- `pnpm validate:governance` — PASS
+- `pnpm validate:governance` — PASS; rerun after final docs/repair updates also PASS
 - `pnpm type-check` — PASS
-- `pnpm test:run` — PASS, 71 files / 404 tests
-- `pnpm lint:check` — PASS with 2 existing warnings in `packages/vue-hooks/src/createAutoMittHook.spec.ts`
+- `pnpm test:run` — PASS
+- `pnpm lint:check` — PASS with two existing warnings in `packages/vue-hooks/src/createAutoMittHook.spec.ts`
 - `pnpm build:web-demo` — PASS
+- `pnpm budget:bundles` — PASS after correcting entry asset classification to use `index.html`
 - `pnpm build:desktop` — PASS
-- `pnpm budget:desktop` — PASS, 515302 bytes <= 2500000 bytes
-- `pnpm e2e:smoke` — PASS, 10 tests
-- `pnpm e2e:layout` — PASS, 21 tests
-- `pnpm e2e:perf` — PASS, 2 tests
-- `pnpm e2e:visual` — PASS, 4 tests
+- `pnpm budget:desktop` — PASS
+- `pnpm e2e:smoke` — PASS
+- `pnpm e2e:layout` — PASS
+- `pnpm e2e:perf` — PASS
+- `pnpm e2e:visual` — PASS
 - `pnpm e2e:qa:prepared` — PASS
 - `pnpm build:ci` — PASS
+- `git diff --check` — PASS
+- `git status --short --untracked-files=all` — PASS, dirty worktree contains only this run's implementation, docs/evidence, official generated API report outputs, and untracked run logs/new source test files
 
 ## Current baseline
 
 - Branch: `main`
+- Baseline commit: `3d8a22df1fc978352d68297c7e9eda76586f8334`
 - Local ahead/behind: NOT_CAPTURED by the required command set
-- Dirty files: final status captured in `docs/ai-runs/20260529-070550-ccd-architecture-repair/command-logs/M14-final-20260529-101430-git-status-short-untracked.log`; ignored AI runtime ledger status captured in `docs/ai-runs/20260529-070550-ccd-architecture-repair/command-logs/M14-final-20260529-101457-git-status-ai-runtime-ignored.log`; expected dirty surfaces are planning/evidence files, approved source changes from M3/M8/M12, official generated outputs, ignored `.ai/runtime/repair_list.md` and `.ai/runtime/repair-ledger.json`, and known generated drift in `apps/web-demo/src/types/auto-imports.d.ts` and `apps/web-demo/src/views/example/components/icons/configs/iconLists.generated.ts`
-- Last 10 commits captured: YES
-- Post-7 validation checkpoint: PASS
+- Dirty files: active P2 implementation, planning/evidence docs, run logs, and any official generated outputs created by validation commands; final status must be read from the active P2 run.
+- Last 10 commits captured: YES in `docs/ai-runs/20260530-104228-ccd-p2-governance-css-build-modernization/command-logs/M0-20260530-104405-git-log-10.log`
+- P2 baseline doctor open scan: PASS in `docs/ai-runs/20260530-104228-ccd-p2-governance-css-build-modernization/command-logs/M0-20260530-104432-baseline-ai-doctor-open.log`
 - Latest known assumption: no dependency, Vite 8, auth-flow, `.github/**`, remote GitHub, commit, stage, push, reset, clean, branch switch, or force operation was performed.
 
 ## Blockers

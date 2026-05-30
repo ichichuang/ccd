@@ -1,0 +1,15 @@
+2026-05-30 10:44:05 CST
+COMMAND=git log -10 --oneline
+
+3d8a22df feat(governance): 启用 PrimeVue 边界精确白名单守卫
+20ed764a fix(ci): 遵循 Playwright CI worker 配置
+7b6f3092 docs(architecture): 记录 P1 平台抽取证据与剩余门禁
+7af970dd feat(architecture): 完成 P1 可实现平台层抽取
+2211471d fix(ci): 收敛 dashboard 视觉基线漂移
+50a7caf0 fix(ci): 将首屏预算归入 E2E perf lane
+8dc880af fix(ci): 预热 E2E Vite 冷启动依赖
+086478b5 fix(ci): CI E2E 关闭 Playwright video
+4ee8d001 fix(ci): 使用系统 Chrome 跑 E2E QA
+86341e84 fix(ci): 避免 Playwright Chromium 安装挂起
+
+EXIT_CODE=0

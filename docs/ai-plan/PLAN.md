@@ -22,6 +22,18 @@ Do not mark generated tasks as `DONE` initially.
 - Do not implement P4 strategic work without owner approval.
 - Stop when validation fails, evidence is missing, or scope expands.
 
+## Current P2 execution overlay
+
+The active 2026-05-30 lane is `ccd-architecture-optimization-plan/plans/02-P2-governance-css-build-modernization.md`.
+
+Execute only implementable P2 items that do not require approval. Keep dependency upgrades, Vite 8, GitHub remote governance, `.github/**` edits, desktop drift CI enforcement, and broad package splits blocked unless owner/operator approval is explicitly recorded.
+
+Current evidence directory:
+
+- `docs/ai-runs/20260530-104228-ccd-p2-governance-css-build-modernization/`
+
+Authoritative next-action status is `docs/ai-plan/NEXT_ACTIONS.md`; historical M2/M8/M9/M10 guidance in this plan is archived context, not the current lane selector.
+
 ---
 
 ## M0 — Baseline, run directory, and plan materialization
@@ -30,26 +42,31 @@ Purpose:
 Create the planning system and verify current local state before implementation.
 
 Preconditions:
+
 - Operator has provided repository checkout.
 - Codex Desktop is running inside CCD repository.
 
 Scope:
+
 - Inspect current branch/status/log.
 - Create `docs/ai-plan/**`.
 - Create active `docs/ai-runs/**`.
 - No source implementation.
 
 Out-of-scope:
+
 - Code changes.
 - Dependency changes.
 - Commits.
 - Pushes.
 
 Files or areas likely affected:
+
 - `docs/ai-plan/**`
 - `docs/ai-runs/**`
 
 Dependencies:
+
 - None.
 
 ### Tasks
@@ -114,21 +131,25 @@ Dependencies:
 - Risk level: Medium.
 
 Acceptance criteria:
+
 - Planning files exist.
 - Active evidence directory exists.
 - Baseline logs exist.
 - `STATUS.md` reflects the current checkpoint state.
 
 Required evidence:
+
 - Baseline report.
 - Command logs.
 - Diff summary.
 
 Rollback strategy:
+
 - Remove only planning files if operator rejects them.
 - Do not use destructive git rollback without approval.
 
 Stop conditions:
+
 - Dirty state contains unexpected files.
 - Post-7 checkpoint fails.
 - Generated governance outputs change unexpectedly.
@@ -137,6 +158,7 @@ Stop conditions:
 Risk level: Medium.
 Estimated complexity: Medium.
 Notes for coding agent:
+
 - Stop after M0 unless operator explicitly asks to continue.
 
 ---
@@ -147,26 +169,31 @@ Purpose:
 Close residual type-hardening validation and reduce validation noise from Turbo output warnings.
 
 Preconditions:
+
 - M0 complete.
 - No unresolved post-7 validation blocker.
 
 Scope:
+
 - Inspect ProForm/CoreTypes changes already made.
 - Confirm no `any` or assertion-driven business logic was introduced.
 - Add or verify Turbo outputs for `@ccd/vue-charts#build` and `@ccd/vue-ui#build` if needed.
 - Validate focused ProForm and build output behavior.
 
 Out-of-scope:
+
 - ProTable functional refactor.
 - HTTP contract changes.
 - Dependency upgrades.
 
 Files or areas likely affected:
+
 - `apps/web-demo/src/components/ProForm/**`
 - `turbo.json`
 - package metadata only if inspection proves required.
 
 Dependencies:
+
 - M0.
 
 ### Tasks
@@ -218,6 +245,7 @@ Dependencies:
 - Risk level: Medium.
 
 Stop conditions:
+
 - Need to edit package scripts beyond output declarations.
 - Build artifacts or generated governance outputs drift unexpectedly.
 - Any unrelated package export change becomes necessary.
@@ -225,6 +253,7 @@ Stop conditions:
 Risk level: Medium.
 Estimated complexity: Low-Medium.
 Notes for coding agent:
+
 - Keep M1 narrow. Do not touch Bridge, ProTable, HTTP, or UI boundary work.
 
 ---
@@ -235,28 +264,33 @@ Purpose:
 Relax bridge generics so explicit capability interfaces work without fake index signatures while preserving strict capability contracts.
 
 Preconditions:
+
 - M0 complete.
 - M1 complete or explicitly deferred.
 
 Scope:
+
 - Inspect actual helper path. Current expected location is `packages/shared-utils/src/createCapabilityBridge.ts`; verify locally.
 - Adjust generics only if necessary.
 - Add/update targeted tests.
 - Validate auth/router bridge behavior.
 
 Out-of-scope:
+
 - HTTP refactor.
 - Router/store redesign.
 - Broad shared-utils changes.
 - `packages/contracts/**` or `packages/core/**` changes unless explicitly approved.
 
 Files or areas likely affected:
+
 - `packages/shared-utils/src/createCapabilityBridge.ts`
 - `packages/shared-utils/src/createCapabilityBridge.spec.ts`
 - `apps/web-demo/src/infra/auth/tokenProvider.ts`
 - `apps/web-demo/src/infra/router/routeProvider.ts`
 
 Dependencies:
+
 - M0.
 - Prefer M1.
 
@@ -308,6 +342,7 @@ Dependencies:
 - Risk level: Medium.
 
 Stop conditions:
+
 - Change requires modifying `packages/contracts` or `packages/core`.
 - Helper becomes permissive catch-all.
 - Runtime semantics change.
@@ -316,6 +351,7 @@ Stop conditions:
 Risk level: Medium.
 Estimated complexity: Low-Medium.
 Notes for coding agent:
+
 - This is the recommended first implementation lane after checkpoint.
 
 ---
@@ -326,10 +362,12 @@ Purpose:
 Stabilize ProTable typings, helper availability, and public/local boundary.
 
 Preconditions:
+
 - M0 complete.
 - M2 complete or not relevant.
 
 Scope:
+
 - Inspect `apps/web-demo/src/components/ProTable/**`.
 - Verify `useProTableInfiniteScroll` and `useProTableUrlSync` existence.
 - Decide whether helpers should be exported from local component index or remain internal.
@@ -337,16 +375,19 @@ Scope:
 - Validate table examples/views.
 
 Out-of-scope:
+
 - Full table redesign.
 - HTTP contract implementation.
 - PrimeVue replacement.
 
 Files or areas likely affected:
+
 - `apps/web-demo/src/components/ProTable/**`
 - local ProTable index/types files.
 - tests/examples only if needed.
 
 Dependencies:
+
 - M0.
 - Prefer M2.
 
@@ -397,6 +438,7 @@ Dependencies:
 - Risk level: Medium.
 
 Stop conditions:
+
 - Work requires HTTP contract migration.
 - Work changes table runtime behavior unexpectedly.
 - ProTable becomes a concrete alova wrapper.
@@ -405,6 +447,7 @@ Stop conditions:
 Risk level: Medium.
 Estimated complexity: Medium.
 Notes for coding agent:
+
 - Do not fold M5 HTTP boundary into this milestone.
 
 ---
@@ -415,10 +458,12 @@ Purpose:
 Define and enforce where PrimeVue can appear.
 
 Preconditions:
+
 - M0 complete.
 - M3 complete or not blocking.
 
 Scope:
+
 - Audit direct `primevue/*` imports in apps and packages.
 - Write policy before enforcement.
 - Keep theme, PassThrough, services, and global config inside adapter.
@@ -426,12 +471,14 @@ Scope:
 - Add guard only after policy approval.
 
 Out-of-scope:
+
 - Replacing PrimeVue.
 - Adopting Reka UI.
 - Large component rewrites.
 - Login Diorama.
 
 Files or areas likely affected:
+
 - `docs/ai-plan/DECISIONS.md`
 - `packages/vue-primevue-adapter/**`
 - `packages/vue-ui/**`
@@ -440,6 +487,7 @@ Files or areas likely affected:
 - `scripts/ai-architecture-guard.mjs` only after policy approval.
 
 Dependencies:
+
 - M0.
 - Prefer M3.
 
@@ -508,6 +556,7 @@ Dependencies:
 - Risk level: High.
 
 Stop conditions:
+
 - Policy is not approved.
 - Guard creates large failure surface.
 - Work requires broad component replacement.
@@ -516,6 +565,7 @@ Stop conditions:
 Risk level: High.
 Estimated complexity: Medium-High.
 Notes for coding agent:
+
 - Policy before guard. Do not invert this order.
 
 ---
@@ -526,11 +576,13 @@ Purpose:
 Make HTTP boundaries explicit while preserving alova and runtime-neutral core/contracts.
 
 Preconditions:
+
 - M0 complete.
 - M2 bridge stable.
 - Owner agrees whether `packages/contracts/src/http/**` may be edited.
 
 Scope:
+
 - Audit existing app HTTP code.
 - Define contract shapes only where runtime-neutral.
 - Keep alova implementation in app adapter/infrastructure.
@@ -538,12 +590,14 @@ Scope:
 - Prevent router/store/session direct coupling except via approved bridges.
 
 Out-of-scope:
+
 - Replacing alova.
 - Introducing Axios/Ky/TanStack Query.
 - Full API rewrite.
 - Auth flow redesign unless required by boundary fix and approved.
 
 Files or areas likely affected:
+
 - `docs/ai-plan/DECISIONS.md`
 - `apps/web-demo/src/utils/http/**`
 - `apps/web-demo/src/adapters/http/**`
@@ -551,6 +605,7 @@ Files or areas likely affected:
 - `packages/core/src/http/**` only if runtime-neutral orchestration is proven.
 
 Dependencies:
+
 - M0.
 - M2.
 
@@ -614,6 +669,7 @@ Dependencies:
 - Risk level: Medium.
 
 Stop conditions:
+
 - Need to touch auth flow deeply.
 - Contracts would import runtime/app code.
 - API behavior changes without tests.
@@ -623,6 +679,7 @@ Stop conditions:
 Risk level: High.
 Estimated complexity: High.
 Notes for coding agent:
+
 - Inventory first. Do not start by moving files.
 
 ---
@@ -633,28 +690,33 @@ Purpose:
 Resolve pending governance decisions and add guard rules only after contradictions are closed.
 
 Preconditions:
+
 - M0 complete.
 - Owner decisions inspected.
 - UI/HTTP policies sufficiently clear for guard scope.
 
 Scope:
+
 - Resolve rule contradictions.
 - Select canonical design-token rule file.
 - Add guard rules one at a time.
 - Update owner decision log if approved.
 
 Out-of-scope:
+
 - Broad rule rewrite.
 - Weakening gates.
 - Generated governance hand edits.
 
 Files or areas likely affected:
+
 - `.ai/runtime/owner_decisions.md` if local runtime docs are approved for update.
 - `.ai/runtime/rule_coverage_matrix.md`
 - `docs/ai-plan/DECISIONS.md`
 - `scripts/ai-architecture-guard.mjs`
 
 Dependencies:
+
 - M0.
 - Prefer M4 policy and M5 inventory.
 
@@ -704,6 +766,7 @@ Dependencies:
 - Risk level: High.
 
 Stop conditions:
+
 - Owner signoff missing.
 - Guard failure surface is broad.
 - Rules contradict existing approved patterns.
@@ -712,6 +775,7 @@ Stop conditions:
 Risk level: High.
 Estimated complexity: Medium-High.
 Notes for coding agent:
+
 - Guard enforcement must follow policy and owner decisions.
 
 ---
@@ -722,25 +786,30 @@ Purpose:
 Document and improve repository governance without changing external GitHub settings unless explicitly approved.
 
 Preconditions:
+
 - M0 complete.
 - P1 decisions stable enough to document.
 
 Scope:
+
 - Document generated artifact policy.
 - Run governance refresh only when official commands require it.
 - Add/refine CODEOWNERS/templates only if approved.
 - Document branch protection required checks.
 
 Out-of-scope:
+
 - Directly changing remote branch protection without approval.
 - Pushes.
 - Release automation rewrites.
 
 Files or areas likely affected:
+
 - `docs/ai-plan/**`
 - `.github/**` only if approved.
 
 Dependencies:
+
 - M0.
 - Prefer P1 policy work.
 
@@ -777,6 +846,7 @@ Dependencies:
 - Risk level: Medium.
 
 Stop conditions:
+
 - Need to alter remote GitHub settings.
 - Need to push.
 - Need to edit release automation beyond docs.
@@ -784,6 +854,7 @@ Stop conditions:
 Risk level: Medium.
 Estimated complexity: Medium.
 Notes for coding agent:
+
 - Do not configure remote branch protection unless the operator explicitly approves.
 
 ---
@@ -794,10 +865,12 @@ Purpose:
 Reduce fragility of global px-to-rem and strengthen token-first responsive behavior.
 
 Preconditions:
+
 - P1 UI boundary policy stable.
 - M0 complete.
 
 Scope:
+
 - Audit `postcss-pxtorem` usage.
 - Identify authored CSS requiring conversion.
 - Prefer tokens, CSS variables, viewport/container units, and UnoCSS rules.
@@ -805,15 +878,18 @@ Scope:
 - Validate mobile/safe-area behavior.
 
 Out-of-scope:
+
 - Full design-system rewrite.
 - Login Diorama unless M11 active.
 - UnoCSS major upgrade.
 
 Files or areas likely affected:
+
 - `apps/web-demo/vite.config.ts`
 - selected CSS/token files only after audit.
 
 Dependencies:
+
 - M0.
 - Prefer M4.
 
@@ -852,6 +928,7 @@ Dependencies:
 - Blocker: table-heavy production screenshot remains blocked by existing ProTable/AppContainer layout debt; `/example/primevue-collection/pro-table/basic` renders `.p-datatable` with height `0` in both patched and original pxtorem exclusion A/B runs.
 
 Stop conditions:
+
 - Visual regressions.
 - Broad style rewrite required.
 - Need to change PrimeVue theme internals before UI policy.
@@ -859,6 +936,7 @@ Stop conditions:
 Risk level: High.
 Estimated complexity: Medium-High.
 Notes for coding agent:
+
 - This is not a Login Diorama milestone. Keep it systemic and narrow.
 
 ---
@@ -869,12 +947,14 @@ Purpose:
 Test Vite 8 compatibility in isolation.
 
 Preconditions:
+
 - P1 stable.
 - M0 final checkpoint clean.
 - Operator approves isolated branch/worktree.
 - Current official Vite migration docs reviewed.
 
 Scope:
+
 - Create isolated worktree/branch only after approval.
 - Inventory Vite/Rollup/esbuild config.
 - Migrate deprecated options cautiously.
@@ -882,12 +962,14 @@ Scope:
 - Compare bundle behavior.
 
 Out-of-scope:
+
 - UI refactor.
 - HTTP refactor.
 - Dependency modernization except approved Vite lane dependencies.
 - Main branch changes without review.
 
 Files or areas likely affected:
+
 - `package.json`
 - `pnpm-lock.yaml`
 - `apps/web-demo/vite.config.ts`
@@ -895,6 +977,7 @@ Files or areas likely affected:
 - package-level Vite configs if present.
 
 Dependencies:
+
 - M0.
 - P1 stabilization.
 - Explicit approval.
@@ -933,6 +1016,7 @@ Dependencies:
 - Blocker: operator approval for isolated branch/worktree and dependency/toolchain changes was not provided; no Vite 8 migration or validation was attempted.
 
 Stop conditions:
+
 - Requires broad dependency upgrades.
 - Vite plugin incompatibility unclear.
 - ManualChunks/Oxc changes break bundle/runtime.
@@ -941,6 +1025,7 @@ Stop conditions:
 Risk level: High.
 Estimated complexity: High.
 Notes for coding agent:
+
 - Do not start this lane from the planning prompt.
 
 ---
@@ -951,26 +1036,31 @@ Purpose:
 Upgrade dependencies by isolated lane, never by blind global latest.
 
 Preconditions:
+
 - P1 stable.
 - Operator approves each dependency lane.
 - Current official/changelog sources reviewed for target dependency.
 
 Scope:
+
 - Run outdated inventory.
 - Choose one lane at a time.
 - Validate targeted and full checks.
 
 Out-of-scope:
+
 - Blind global latest upgrades on main.
 - Multiple ecosystem upgrades in one lane.
 - Production dependency changes without approval.
 
 Files or areas likely affected:
+
 - `package.json`
 - `pnpm-lock.yaml`
 - package manifests only for approved lane.
 
 Dependencies:
+
 - M0.
 - P1 stabilization.
 - Explicit approval.
@@ -1005,6 +1095,7 @@ Dependencies:
 - Blocker: no operator approval was provided for any dependency upgrade lane; no package or lockfile mutation was performed.
 
 Stop conditions:
+
 - Multiple major upgrades become entangled.
 - Peer dependency conflict unclear.
 - CI/browser install behavior changes unexpectedly.
@@ -1013,6 +1104,7 @@ Stop conditions:
 Risk level: High.
 Estimated complexity: High.
 Notes for coding agent:
+
 - Do not run dependency upgrades from the planning prompt.
 
 ---
@@ -1023,12 +1115,14 @@ Purpose:
 Refactor login view into the target diorama composition after P1/P2 foundations stabilize.
 
 Preconditions:
+
 - P1 UI boundary stable.
 - P1 ProTable/HTTP/guard does not block app build.
 - M8 token/responsive policy stable or explicitly deferred.
 - Operator approves UI refactor lane.
 
 Scope:
+
 - Re-read relevant rules.
 - Build top-K context.
 - Preserve ProForm and submit flow.
@@ -1038,6 +1132,7 @@ Scope:
 - Validate responsive, visual, interaction, accessibility.
 
 Out-of-scope:
+
 - Replacing AnimatedCharacters.
 - Replacing PrimeVue.
 - Native form/input/button introduction.
@@ -1045,10 +1140,12 @@ Out-of-scope:
 - Broad theme rewrite.
 
 Files or areas likely affected:
+
 - `apps/web-demo/src/views/login/**`
 - targeted style files if needed.
 
 Dependencies:
+
 - M0.
 - M4.
 - M8 preferred.
@@ -1111,6 +1208,7 @@ Dependencies:
 - Blocker: M11 requires operator approval and prerequisite stability; no login UI or auth-flow files were edited in this run.
 
 Stop conditions:
+
 - P1 UI policy unresolved.
 - ProForm behavior breaks.
 - Login auth flow changes unexpectedly.
@@ -1120,6 +1218,7 @@ Stop conditions:
 Risk level: High.
 Estimated complexity: High.
 Notes for coding agent:
+
 - Do not start M11 until explicitly selected.
 
 ---
@@ -1130,25 +1229,30 @@ Purpose:
 Clean secondary test and import-casing debt after architecture foundations.
 
 Preconditions:
+
 - P1 stable.
 - No pending broad UI or dependency lane.
 
 Scope:
+
 - Update directive specs for Vue 3 hook signatures.
 - Clean unused imports / expect-error noise.
 - Normalize `DateUtils`/`dateUtils` import casing.
 - Run focused and broader checks.
 
 Out-of-scope:
+
 - DateUtils behavior changes.
 - Test framework reconfiguration.
 - Broad example cleanup.
 
 Files or areas likely affected:
+
 - focused directive specs.
 - date utility import sites.
 
 Dependencies:
+
 - M0.
 - P1 stability.
 
@@ -1189,6 +1293,7 @@ Dependencies:
 - Risk level: Medium.
 
 Stop conditions:
+
 - Changes expand beyond tests/import casing.
 - Need to alter tsconfig/module resolution.
 - Hidden platform-specific failures emerge.
@@ -1196,6 +1301,7 @@ Stop conditions:
 Risk level: Medium.
 Estimated complexity: Medium.
 Notes for coding agent:
+
 - This is cleanup; do not combine with Vite/dependency work.
 
 ---
@@ -1206,15 +1312,18 @@ Purpose:
 Keep strategic work explicitly deferred until prerequisites are stable.
 
 Preconditions:
+
 - P1/P2/P3 status reviewed.
 - Owner explicitly decides whether any P4 item moves forward.
 
 Scope:
+
 - Record deferred decisions.
 - Define future prerequisites.
 - Do not implement.
 
 Out-of-scope:
+
 - New organization.
 - New repository.
 - New starter package.
@@ -1223,10 +1332,12 @@ Out-of-scope:
 - TanStack Query introduction.
 
 Files or areas likely affected:
+
 - `docs/ai-plan/DECISIONS.md`
 - `docs/ai-plan/NEXT_ACTIONS.md`
 
 Dependencies:
+
 - M0.
 
 ### Tasks
@@ -1242,12 +1353,14 @@ Dependencies:
 - Risk level: Low.
 
 Stop conditions:
+
 - Operator asks to implement P4 without prerequisite review.
 - Work would create new repo/org or introduce new architecture prematurely.
 
 Risk level: Low.
 Estimated complexity: Low.
 Notes for coding agent:
+
 - This milestone is documentation-only unless operator approves strategic implementation.
 
 ---
@@ -1258,10 +1371,12 @@ Purpose:
 Complete the execution program with full validation and human-reviewable final artifacts.
 
 Preconditions:
+
 - Active milestones are `DONE`, `DEFERRED`, or `BLOCKED` with evidence.
 - No hidden dirty state.
 
 Scope:
+
 - Full validation baseline.
 - Final validation matrix.
 - Final risk register update.
@@ -1271,10 +1386,12 @@ Scope:
 - Go/no-go decision.
 
 Out-of-scope:
+
 - New repairs.
 - Pushes unless explicitly approved.
 
 Files or areas likely affected:
+
 - `docs/ai-plan/FINAL_GO_NO_GO.md`
 - `docs/ai-plan/FINAL_VALIDATION_MATRIX.md`
 - `docs/ai-plan/OPERATOR_SOP.md`
@@ -1284,6 +1401,7 @@ Files or areas likely affected:
 - final `STATUS.md`
 
 Dependencies:
+
 - All selected milestones.
 
 ### Tasks
@@ -1329,6 +1447,7 @@ Dependencies:
 - Risk level: Low.
 
 Stop conditions:
+
 - Any final validation failure.
 - Missing evidence.
 - Dirty state unexplained.
@@ -1337,4 +1456,5 @@ Stop conditions:
 Risk level: Medium.
 Estimated complexity: Medium.
 Notes for coding agent:
+
 - Final go/no-go must be honest. Do not invent passing validation.

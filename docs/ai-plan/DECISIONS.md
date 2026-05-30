@@ -346,3 +346,60 @@ Without approval, the default action is audit/document only and keep implementat
 ### Follow-up validation
 
 `pnpm docs:commands`, `pnpm ai:doctor`, and the lane-specific validation listed in the approval record.
+
+---
+
+## D-011 — P2 PrimeVue showcase exception scope
+
+- Status: `APPROVED`
+- Date: 2026-05-30
+
+### Context
+
+P1 approved exact allowlisting for existing app direct PrimeVue imports. P2 UI-005 found the `apps/web-demo/src/views/example/components/primevue-collection/**` showcase area is intentionally PrimeVue-facing and should not require one-off exact allowlist edits for every example file.
+
+### Decision
+
+`apps/web-demo/src/views/example/components/primevue-collection/**` is an approved showcase exception for direct `primevue/*` and `@primevue/*` imports.
+
+All other app files remain governed by the exact allowlist in `scripts/ai-architecture-guard.mjs`. New non-showcase app direct PrimeVue imports must either migrate behind `@ccd/vue-ui` / `@ccd/vue-primevue-adapter` or receive a future owner-approved allowlist update.
+
+### Rationale
+
+This keeps the example collection inspectable as a PrimeVue showcase while preventing the exception from becoming a general app-domain escape hatch.
+
+### Follow-up validation
+
+`pnpm ai:guard`, `pnpm arch:boundaries`, and focused UI smoke.
+
+### Evidence
+
+- `docs/ai-runs/20260530-104228-ccd-p2-governance-css-build-modernization/`
+
+---
+
+## D-012 — P2 broad package split remains blocked
+
+- Status: `DEFERRED`
+- Date: 2026-05-30
+
+### Context
+
+COMP-005 proposes a future `packages/vue-pro-components` split if ProForm/ProTable growth would overload `packages/vue-ui`. The current task explicitly forbids broad rewrites without approval.
+
+### Decision
+
+Do not create `packages/vue-pro-components` in the P2 governance/css/build modernization lane. Treat COMP-005 as `BLOCKED_BY_OWNER` until an owner approves package topology, migration scope, export policy, and validation budget.
+
+### Rationale
+
+Adding a new workspace package would alter package topology, API reporting, internal prepare order, and migration scope. That is a separate package-boundary lane, not a low-risk P2 cleanup.
+
+### Follow-up validation
+
+When approved: `pnpm ci:prepare-internal`, `pnpm arch:graphs`, `pnpm api:report`, package build, web-demo type-check, and relevant ProForm/ProTable tests.
+
+### Evidence
+
+- `ccd-architecture-optimization-plan/plans/02-P2-governance-css-build-modernization.md`
+- `.ai/runtime/owner_decisions.md`

@@ -1,0 +1,9 @@
+2026-05-30 10:52:05 CST
+COMMAND=pnpm --filter @ccd/contracts build
+
+
+> @ccd/contracts@1.0.38 build /Users/cc/MyPorject/ccd/packages/contracts
+> rm -rf dist && rm -f ../../node_modules/.tmp/packages-contracts.tsbuildinfo && tsc -b tsconfig.json --force
+
+
+EXIT_CODE=0

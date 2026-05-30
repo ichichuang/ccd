@@ -1,0 +1,3 @@
+COMMAND: node --check scripts/check-bundle-budgets.mjs
+
+EXIT_STATUS: 0
