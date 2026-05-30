@@ -96,16 +96,16 @@ Focused shared-utils tests, type-check, and affected bridge tests.
 
 ## D-003 — UI boundary enforcement order
 
-- Status: `PROPOSED`
+- Status: `APPROVED`
 - Date: 2026-05-29
 
 ### Context
 
-Direct PrimeVue imports exist across apps/packages. Guard enforcement before policy may create false positives.
+Direct PrimeVue imports exist across apps/packages. Guard enforcement before policy may create false positives. The approved enforcement model is an exact app allowlist: existing app import debt is grandfathered by file path, but new app direct PrimeVue imports must fail guard.
 
 ### Decision
 
-Proposed PrimeVue boundary:
+Approved PrimeVue boundary:
 
 - `packages/vue-primevue-adapter/**` may import PrimeVue theme/config/service/PT APIs and owns global adapter configuration helpers.
 - App bootstrap files may import `primevue/config` only to install PrimeVue with `createPrimeVueAdapterConfig()` and `installPrimeVueServices()`.
@@ -114,17 +114,50 @@ Proposed PrimeVue boundary:
 - `packages/vue-ui/**` may compose PrimeVue inside CCD-owned primitives, but must not re-export raw PrimeVue components as a loose bucket.
 - App feature/example components may continue direct PrimeVue imports until wrappers or migration tasks exist; these are candidate migration surfaces, not current violations.
 - Tests may mock PrimeVue modules used by the files under test.
-- Guard enforcement must wait for operator approval and an explicit exception list.
+- `scripts/ai-architecture-guard.mjs` enforces this with `primevue-direct-import-boundary` and `primevue-public-api-leak`.
 
-Current decision: audit and proposed policy first; guard only after approval.
+Approved exact app allowlist:
+
+- `apps/desktop/src/plugins/index.ts`
+- `apps/web-demo/build/plugins.ts`
+- `apps/web-demo/src/hooks/layout/useAdminBreadcrumbs.ts`
+- `apps/web-demo/src/layouts/components/AppPrimeVueGlobals.vue`
+- `apps/web-demo/src/layouts/components/admin/AdminSidebarMenuCollapsed.tsx`
+- `apps/web-demo/src/layouts/components/admin/AdminSidebarMenuInline.tsx`
+- `apps/web-demo/src/plugins/modules/primevue.ts`
+- `apps/web-demo/src/router/utils/helper.ts`
+- `apps/web-demo/src/types/components.d.ts`
+- `apps/web-demo/src/views/dashboard/index.vue`
+- `apps/web-demo/src/views/example/components/primevue-collection/overview/index.vue`
+- `apps/web-demo/src/views/example/components/primevue-collection/prime-dialog/index.vue`
+- `apps/web-demo/src/views/example/components/primevue-collection/pro-form/advanced/index.vue`
+- `apps/web-demo/src/views/example/components/primevue-collection/pro-form/plugins/components/ColorPickerField.tsx`
+- `apps/web-demo/src/views/example/components/primevue-collection/pro-form/plugins/components/MyColorCustomInput.tsx`
+- `apps/web-demo/src/views/example/components/primevue-collection/pro-table/advanced/configs/columns.tsx`
+- `apps/web-demo/src/views/example/components/primevue-collection/pro-table/advanced/index.vue`
+- `apps/web-demo/src/views/example/components/primevue-collection/pro-table/columns/columns.tsx`
+- `apps/web-demo/src/views/example/components/primevue-collection/pro-table/form-table-combo/components/TablePanel.vue`
+- `apps/web-demo/src/views/example/components/primevue-collection/pro-table/server/columns.tsx`
+- `apps/web-demo/src/views/example/hooks/layout-breadcrumbs.vue`
+- `apps/web-demo/src/views/example/hooks/use-app-element-size.vue`
+- `apps/web-demo/src/views/example/system-configuration/layout.vue`
+
+Current decision: exact allowlist guard is approved and enabled. New app direct imports from `primevue/*` or `@primevue/*` must either migrate behind `@ccd/vue-ui` / `@ccd/vue-primevue-adapter` or receive a future owner-approved allowlist update.
 
 ### Rationale
 
-The current direct import surface is broad and includes valid bootstrap, adapter, generated typing, global shell, package primitive, demo, and test cases. A guard before policy approval would create large false-positive surface.
+The current direct import surface is broad and includes valid bootstrap, adapter, generated typing, global shell, package primitive, demo, and test cases. Exact allowlisting prevents new PrimeVue leakage without requiring a same-lane component migration.
 
 ### Follow-up validation
 
-Import audit, policy review, `pnpm arch:boundaries`, `pnpm type-check`, and later `pnpm ai:guard` only after approval.
+Guard validation, governance gate, API report, and focused package builds:
+
+- `pnpm ai:guard -- --format=json`
+- `pnpm governance:gate`
+- `pnpm ai:doctor`
+- `pnpm api:report`
+- `pnpm --filter @ccd/vue-ui build`
+- `pnpm --filter @ccd/vue-primevue-adapter build`
 
 ### Evidence
 

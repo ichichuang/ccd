@@ -132,6 +132,99 @@ const approvedDirectTransportFiles = new Set([
   'apps/web-demo/src/router/utils/helper.ts',
 ])
 
+const stripJsComments = content =>
+  content.replace(/\/\*[\s\S]*?\*\//g, '').replace(/(^|[^:])\/\/.*$/gm, '$1')
+
+const approvedPrimeVueAppImportFiles = new Set([
+  'apps/desktop/src/plugins/index.ts',
+  'apps/web-demo/build/plugins.ts',
+  'apps/web-demo/src/hooks/layout/useAdminBreadcrumbs.ts',
+  'apps/web-demo/src/layouts/components/AppPrimeVueGlobals.vue',
+  'apps/web-demo/src/layouts/components/admin/AdminSidebarMenuCollapsed.tsx',
+  'apps/web-demo/src/layouts/components/admin/AdminSidebarMenuInline.tsx',
+  'apps/web-demo/src/plugins/modules/primevue.ts',
+  'apps/web-demo/src/router/utils/helper.ts',
+  'apps/web-demo/src/types/components.d.ts',
+  'apps/web-demo/src/views/dashboard/index.vue',
+  'apps/web-demo/src/views/example/components/primevue-collection/overview/index.vue',
+  'apps/web-demo/src/views/example/components/primevue-collection/prime-dialog/index.vue',
+  'apps/web-demo/src/views/example/components/primevue-collection/pro-form/advanced/index.vue',
+  'apps/web-demo/src/views/example/components/primevue-collection/pro-form/plugins/components/ColorPickerField.tsx',
+  'apps/web-demo/src/views/example/components/primevue-collection/pro-form/plugins/components/MyColorCustomInput.tsx',
+  'apps/web-demo/src/views/example/components/primevue-collection/pro-table/advanced/configs/columns.tsx',
+  'apps/web-demo/src/views/example/components/primevue-collection/pro-table/advanced/index.vue',
+  'apps/web-demo/src/views/example/components/primevue-collection/pro-table/columns/columns.tsx',
+  'apps/web-demo/src/views/example/components/primevue-collection/pro-table/form-table-combo/components/TablePanel.vue',
+  'apps/web-demo/src/views/example/components/primevue-collection/pro-table/server/columns.tsx',
+  'apps/web-demo/src/views/example/hooks/layout-breadcrumbs.vue',
+  'apps/web-demo/src/views/example/hooks/use-app-element-size.vue',
+  'apps/web-demo/src/views/example/system-configuration/layout.vue',
+])
+
+const isPrimeVueModule = specifier =>
+  specifier === 'primevue' || specifier.startsWith('primevue/') || specifier.startsWith('@primevue/')
+
+const isTestFile = relPath => /\.(?:spec|test)\.(?:ts|tsx|js|jsx|mjs|cjs)$/.test(relPath)
+const isVueUiInternalFile = relPath => relPath.startsWith('packages/vue-ui/src/')
+const isPrimeVueAdapterFile = relPath => relPath.startsWith('packages/vue-primevue-adapter/src/')
+
+const extractPrimeVueReferences = content => {
+  const references = []
+  const staticImportExportPattern =
+    /^\s*(import|export)\s+(?!['"])(?:type\s+)?[\s\S]*?\sfrom\s*['"]([^'"]+)['"]/gm
+  let staticMatch
+  while ((staticMatch = staticImportExportPattern.exec(content)) !== null) {
+    const specifier = staticMatch[2]
+    if (isPrimeVueModule(specifier)) {
+      references.push({
+        kind: staticMatch[1] === 'export' ? 'export-from' : 'import-from',
+        specifier,
+      })
+    }
+  }
+
+  const dynamicImportPattern = /\bimport\s*\(\s*['"]([^'"]+)['"]\s*\)/g
+  let dynamicMatch
+  while ((dynamicMatch = dynamicImportPattern.exec(content)) !== null) {
+    const specifier = dynamicMatch[1]
+    if (isPrimeVueModule(specifier)) {
+      references.push({ kind: 'import-call', specifier })
+    }
+  }
+
+  return references
+}
+
+const primeVueBoundaryFiles = scanFiles(['apps/**/*.{ts,tsx,vue,js,mjs}', 'packages/**/*.{ts,tsx,vue,js,mjs}'], {
+  ignore: ['**/dist/**', '**/node_modules/**'],
+})
+for (const relPath of primeVueBoundaryFiles) {
+  const references = extractPrimeVueReferences(stripJsComments(readText(relPath)))
+  if (references.length === 0) continue
+
+  if (isVueUiInternalFile(relPath)) {
+    const publicExports = references.filter(reference => reference.kind === 'export-from')
+    for (const reference of publicExports) {
+      fail(
+        'primevue-public-api-leak',
+        relPath,
+        `@ccd/vue-ui must not publicly re-export raw PrimeVue modules such as "${reference.specifier}"`
+      )
+    }
+    continue
+  }
+
+  if (isPrimeVueAdapterFile(relPath) || isTestFile(relPath)) continue
+  if (approvedPrimeVueAppImportFiles.has(relPath)) continue
+
+  const [reference] = references
+  fail(
+    'primevue-direct-import-boundary',
+    relPath,
+    `Direct PrimeVue module "${reference.specifier}" is allowed only inside @ccd/vue-ui internals, @ccd/vue-primevue-adapter, tests, or the approved app exact allowlist`
+  )
+}
+
 const blockedGeneratedCodePatterns = aiPolicy.blockedGeneratedCodePatterns.map(rule => ({
   ...rule,
   regex: new RegExp(rule.pattern),
@@ -149,9 +242,6 @@ const isGlobAllowed = (relPath, patterns) =>
 const hasHardcodedColor = content =>
   /#(?:[0-9a-fA-F]{3}|[0-9a-fA-F]{6}|[0-9a-fA-F]{8})\b/.test(content) ||
   /\b(?:text|bg|border|ring|from|via|to|decoration|accent|outline|divide|placeholder|caret)-(?:slate|gray|zinc|neutral|stone|red|orange|amber|yellow|lime|green|emerald|teal|cyan|sky|blue|indigo|violet|purple|fuchsia|pink|rose|white|black)(?:-|\/|\b)/.test(content)
-
-const stripJsComments = content =>
-  content.replace(/\/\*[\s\S]*?\*\//g, '').replace(/(^|[^:])\/\/.*$/gm, '$1')
 
 for (const relPath of governedGeneratedCodeFiles) {
   if (relPath.startsWith('apps/')) continue
