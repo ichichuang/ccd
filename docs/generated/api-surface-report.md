@@ -4,7 +4,7 @@
 
 - Path: `packages/contracts`
 - Export subpaths: `.`
-- Root symbols: `CryptoProvider`, `EnvironmentProvider`, `FileSystemAdapter`, `Logger`, `NetworkClient`, `NetworkRequest`, `NetworkResponse`, `SafeStorageAdapter`, `SafeStorageObfuscation`, `SafeStoragePolicy`, `ScheduledTask`, `Scheduler`, `StorageAdapter`, `StorageCodec`, `StorageScope`, `SyncStorageCodec`
+- Root symbols: `CryptoProvider`, `EnvironmentProvider`, `FileSystemAdapter`, `HttpAuthCredentialPlacement`, `HttpAuthPolicy`, `HttpAuthRefreshMode`, `HttpAuthScheme`, `HttpErrorKind`, `HttpHeaders`, `HttpHeaderValue`, `HttpQuery`, `HttpQueryPrimitive`, `HttpQueryValue`, `HttpRequestBody`, `HttpRequestConfig`, `HttpRequestErrorShape`, `HttpRequestMethod`, `HttpResponseEnvelope`, `HttpResponseMetadata`, `HttpRetryBackoffStrategy`, `HttpRetryJitterStrategy`, `HttpRetryPolicy`, `HttpRetryTrigger`, `HttpTimeoutPhase`, `HttpTimeoutPolicy`, `HttpTransportClient`, `HttpTransportRequest`, `HttpTransportResponse`, `Logger`, `NetworkClient`, `NetworkRequest`, `NetworkResponse`, `SafeStorageAdapter`, `SafeStorageObfuscation`, `SafeStoragePolicy`, `ScheduledTask`, `Scheduler`, `StorageAdapter`, `StorageCodec`, `StorageScope`, `SyncStorageCodec`
 
 ## @ccd/core
 

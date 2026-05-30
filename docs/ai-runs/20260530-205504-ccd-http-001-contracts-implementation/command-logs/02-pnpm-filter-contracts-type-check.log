@@ -1,0 +1,3 @@
+
+> @ccd/contracts@1.0.38 type-check /Users/cc/MyPorject/ccd/packages/contracts
+> tsc -p tsconfig.json --noEmit
