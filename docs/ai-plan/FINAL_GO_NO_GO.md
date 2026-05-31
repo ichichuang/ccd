@@ -3,14 +3,18 @@
 ## Current Decision
 
 - Final decision: `CONDITIONAL_GO`
-- Current program: `CCD post-M16 blocker-resolution program` (P0–P16)
+- Current program: `CCD post-M16 blocker-resolution program` (P0–P16a)
+- P16a reconciliation status: `P16A_CONDITIONAL_GO_CONSISTENCY_REPAIRED`
 - P16 reconciliation status: `P16_FINAL_CONDITIONAL_GO`
 - Current accepted baseline: `M14_STATUS_LEDGER_RECONCILED_NO_GO`
 - Latest lanes: P0–P16 (2026-06-01)
 - Last remote-state reconciliation: P11, evidence directory `docs/ai-runs/20260601-140000-ccd-p11-remote-state-surface-reconciliation/`, reconciled P10g push state; subsequent status-only commits may exist and should be verified by git history.
 - P10g push status: completed manually to `origin/main` (2026-06-01)
-- Evidence directory: `docs/ai-runs/20260601-160000-ccd-p16-final-go-no-go-reconciliation/`
+- P16 evidence directory: `docs/ai-runs/20260601-160000-ccd-p16-final-go-no-go-reconciliation/`
+- P16a evidence directory: `docs/ai-runs/20260601-161000-ccd-p16a-conditional-go-consistency-repair/`
 - Full GO authorized: no
+
+P16a (2026-06-01) repaired internal contradictions between top-level `CONDITIONAL_GO` and ledger body entries that still stated `NO_GO` after P10f. Formalized owner-accepted residual debt for C-06 (8 exact allowlist + showcase) and G-02 (80 deferred ledger tasks). `CONDITIONAL_GO` is based on owner-accepted residual debt, not full resolution. Full GO remains unauthorized.
 
 P1–P3 resolved owner decisions for safeStorage crypto (D-016 Option A), compression (D-019/B-08 Option A), and PrimeVue guard posture (D-017 Options A+D). P4 confirmed non-crypto safeStorage boundaries. P7 classified all 80 repair-ledger open tasks. P10 local commits (G1–G6) and supplemental evidence (P10c/P10f) were pushed manually to `origin/main`; P11 reconciled status surfaces to that push state. P12 replaced volatile latest-remote-head wording with stable last-reconciled-event references. P13 owner-approved Option E staged PrimeVue reduction (M12 unlocked for P14). P14 completed E1/E2 allowlist reduction slices and E4 boundary review; E3 showcase remains long-lived per D-017 Option D. P15 recorded owner acceptance of 80 deferred ledger tasks (G-02). P16 full validation matrix passed and declared **CONDITIONAL_GO** with explicit owner-accepted residual debt for C-06 allowlist remainder and G-02 open ledger count.
 

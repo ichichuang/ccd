@@ -566,6 +566,49 @@ Minimum validation for any future reduction lane:
 - Authorization effect: `M12-primevue-allowlist-reduction` is **APPROVED** and unlocked for P14 implementation; `C-06` remains `OPEN` until reduction completes or owner accepts residual debt; Options A+D guard posture remains in force for new non-showcase imports.
 - Recommended first slice: **E1** — adapter-only global PrimeVue service/config/directive reduction (`AdminSidebarMenuCollapsed.tsx`, `AdminSidebarMenuInline.tsx`, narrow `AppPrimeVueGlobals.vue`).
 
+### P14 post-P13 implementation note (2026-06-01)
+
+- Review runs: `docs/ai-runs/20260601-152000-ccd-p14-e1-adapter-primevue-reduction/`, `docs/ai-runs/20260601-153000-ccd-p14-e2-vue-ui-menu-type-reduction/`, `docs/ai-runs/20260601-154000-ccd-p14-e4-generated-typing-resolver-review/`
+- Implementation result: exact allowlist reduced 13→8 rows via E1/E2 adapter and vue-ui facades; E4 boundary review only; E3 showcase remains deferred per Option D.
+- Issue status: `C-06` remains `OPEN` (residual); `M12` is `PARTIAL`. This is **reduction progress**, not full resolution of `C-06`.
+
+### P16 post-P15 owner acceptance — C-06 residual debt (2026-06-01)
+
+- Review run: `docs/ai-runs/20260601-160000-ccd-p16-final-go-no-go-reconciliation/`
+- Owner acceptance status: `ACCEPTED_RESIDUAL_DEBT`
+- Accepted scope: 8 exact PrimeVue allowlist rows plus showcase exception remain as documented architecture debt; E3 showcase long-lived per Option D; further reduction requires separate owner authorization.
+- Distinction: **accepted residual debt** (basis for `CONDITIONAL_GO`) is not the same as **resolved issue** (`C-06` remains `OPEN`) or **full GO** (not authorized while this debt persists).
+
+---
+
+## G-02 — Repair ledger deferred debt owner acceptance
+
+- Status: `ACCEPTED_DEFERRED_DEBT`
+- Date: 2026-06-01
+- Lane: P15 repair-ledger-closure
+
+### Context
+
+P7 classified all 80 open tasks in `.ai/runtime/repair_list.md`. P8 validation passed except inherited `codex:preflight` failure. Code closure of ledger tasks is blocked by hard rules (manifest/Vite/Login Diorama/guard-strictness lanes require separate owner-approved implementation lanes).
+
+### Owner decision (2026-06-01, P15)
+
+- Review run: `docs/ai-runs/20260601-155000-ccd-p15-repair-ledger-closure/`
+- Owner acceptance status: `ACCEPTED_DEFERRED_DEBT`
+- Accepted scope: all 80 repair-ledger open tasks remain classified as deferred debt; `.ai/runtime/repair_list.md` open count is unchanged; `pnpm ai:doctor --open` continues to report 80 open tasks.
+- Distinction: **accepted deferred debt** (basis for `CONDITIONAL_GO` completion gate G-03) is not the same as **resolved issue** (ledger tasks not closed) or **full GO** (not authorized while open count persists).
+
+### Authorization effect
+
+- `G-02` is `ACCEPTED_DEFERRED_DEBT`; not `DONE`.
+- Further ledger closure requires separate owner-approved lanes per task group.
+- Full GO remains unauthorized until debt is code-closed or separately re-approved.
+
+### Evidence
+
+- `docs/ai-runs/20260601-155000-ccd-p15-repair-ledger-closure/reports/summary.md`
+- `docs/ai-runs/20260601-155000-ccd-p15-repair-ledger-closure/reports/repair-ledger-classification-summary.md`
+
 ---
 
 ## D-019 — B-08 safeStorage compression owner decision

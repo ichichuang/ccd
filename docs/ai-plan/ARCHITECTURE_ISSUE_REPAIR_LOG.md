@@ -3,13 +3,13 @@
 ## 0. Machine-Readable Summary
 
 ```yaml
-document_version: 2026-06-01.p16
+document_version: 2026-06-01.p16a
 last_updated: 2026-06-01
 repository: /Users/cc/MyPorject/ccd
 baseline_branch: main
 baseline_commit: cc255d1a
 last_remote_state_reconciliation: P11 reconciled P10g push state; evidence snapshot only — verify current HEAD via git history
-current_lane: P16 final GO/NO-GO reconciliation
+current_lane: P16a conditional-go consistency repair
 source_of_truth_files:
   - README.md
   - docs/en/architecture-contract.md
@@ -37,7 +37,7 @@ previous_issue_count: 45
 open_issue_count: 22
 p0_count: 22
 p1_count: 22
-blocked_count: 1
+blocked_count: 0
 new_issue_ids: [B-11, B-12, D-11, E-07, F-04]
 status_markers:
   needs_review: [A-03, D-06]
@@ -45,6 +45,7 @@ status_markers:
   superseded: []
   duplicate: []
   blocked: []
+  accepted_residual_debt: [C-06, G-02]
   done:
     [
       C-01,
@@ -1831,6 +1832,58 @@ M6b owner decision review:
 - vue-charts: `BUILD_OUTPUT_PREPARATION_REQUIRED` — `dist/index.d.ts` from `pnpm --filter @ccd/vue-charts build`; no manifest/config change
 - validation: full P10f matrix PASS including `build:web-demo`, `build:desktop`
 - final status: `P10F_PUSH_READINESS_RESTORED`; architecture remains **NO_GO**; push not authorized
+
+### P11 remote-state-surface-reconciliation (2026-06-01)
+
+- evidence: `docs/ai-runs/20260601-140000-ccd-p11-remote-state-surface-reconciliation/`
+- objective: Reconcile status surfaces after manual P10g push to `origin/main`.
+- implementation result: `FINAL_GO_NO_GO.md`, `STATUS.md`, `DECISIONS.md` historical notes, and ledger §0 aligned to remote post-push state; no runtime source, manifest, lockfile, or generated manual edits.
+- issue status result: top-level remains `NO_GO`; C-06, G-02, G-03, M12 unchanged in blocking effect.
+- final status: `P11_REMOTE_STATE_RECONCILED_NO_GO`.
+
+### P12 status-surface-anti-drift-repair (2026-06-01)
+
+- evidence: `docs/ai-runs/20260601-150000-ccd-p12-status-surface-anti-drift-repair/`
+- objective: Replace volatile latest-remote-head wording with stable last-reconciled-event references.
+- implementation result: status surfaces no longer self-stale on remote HEAD; no runtime source changes.
+- final status: `P12_STATUS_SURFACE_ANTI_DRIFT_REPAIRED`.
+
+### P13 primevue-m12-owner-decision (2026-06-01)
+
+- evidence: `docs/ai-runs/20260601-151000-ccd-p13-primevue-m12-owner-decision/`
+- objective: Owner approval for D-017 Option E staged PrimeVue reduction.
+- implementation result: `M12-primevue-allowlist-reduction` unlocked for P14; Options A+D guard posture preserved.
+- final status: `P13_M12_APPROVED`.
+
+### P14 primevue allowlist reduction slices (2026-06-01)
+
+- evidence: `docs/ai-runs/20260601-152000-ccd-p14-e1-adapter-primevue-reduction/`, `docs/ai-runs/20260601-153000-ccd-p14-e2-vue-ui-menu-type-reduction/`, `docs/ai-runs/20260601-154000-ccd-p14-e4-generated-typing-resolver-review/`
+- objective: E1/E2 adapter and vue-ui facades; E4 generated typing/resolver boundary review.
+- implementation result: exact allowlist reduced 13→8 rows; E3 showcase deferred per D-017 Option D.
+- issue status result: `C-06` remains `OPEN` (residual); `M12` is `PARTIAL`.
+- final status: `P14_M12_SLICE_DONE`.
+
+### P15 repair-ledger-closure (2026-06-01)
+
+- evidence: `docs/ai-runs/20260601-155000-ccd-p15-repair-ledger-closure/`
+- objective: Owner acceptance of 80 repair-ledger open tasks as deferred debt.
+- implementation result: `G-02` recorded as `ACCEPTED_DEFERRED_DEBT`; `.ai/runtime/repair_list.md` open count unchanged (80).
+- final status: `P15_REPAIR_LEDGER_ACCEPTED_DEBT`.
+
+### P16 final-go-no-go-reconciliation (2026-06-01)
+
+- evidence: `docs/ai-runs/20260601-160000-ccd-p16-final-go-no-go-reconciliation/`
+- objective: Full validation matrix and final GO/NO-GO reconciliation after P12–P15.
+- validation result: full matrix pass including `pnpm codex:preflight`.
+- issue status result: `G-03` `DONE` (conditional completion gate); top-level `CONDITIONAL_GO`; C-06/G-02 owner-accepted residual debt; full GO not authorized.
+- final status: `P16_FINAL_CONDITIONAL_GO`.
+
+### P16a conditional-go-consistency-repair (2026-06-01)
+
+- evidence: `docs/ai-runs/20260601-161000-ccd-p16a-conditional-go-consistency-repair/`
+- objective: Eliminate internal CONDITIONAL_GO vs NO_GO contradictions across status surfaces; normalize auto-imports drift; document accepted residual debt.
+- implementation result: ledger §0 `blocked_count` aligned; `accepted_residual_debt` bucket added; P11–P16 implementation log appended; `DECISIONS.md` G-02/C-06 acceptance formalized; no runtime source, manifest, lockfile, or generated manual edits.
+- final status: `P16A_CONDITIONAL_GO_CONSISTENCY_REPAIRED`; full GO remains unauthorized; push not performed.
 
 ## 12. Validation Matrix
 
