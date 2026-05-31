@@ -10,8 +10,8 @@
  *   - 无 tabs: calc(100vh - var(--header-height) - var(--footer-height))
  */
 
-import { FONT_SCALE_RATIOS, SPACING_SCALE_RATIOS } from './sizeScale'
-import type { SizeMode, SizePreset } from './types'
+import { FONT_SCALE_RATIOS, SPACING_SCALE_RATIOS } from './sizeScale.js'
+import type { SizeMode, SizePreset } from './types.js'
 
 export const SIDEBAR_COLLAPSED_ICON_SIZE = '2xl' as const
 
@@ -94,7 +94,6 @@ export const SIZE_PRESETS: SizePreset[] = [
 
 /** 默认尺寸模式 */
 export const DEFAULT_SIZE_NAME: SizeMode = 'comfortable'
-
 
 /**
  * 布局尺寸字段名（与 SizePreset / SizeCssVars 一一对应，SSOT for UnoCSS）

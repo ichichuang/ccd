@@ -6,11 +6,28 @@ import { resolveTheme } from './resolver.js'
 export { COLOR_FAMILIES, THEME_ENGINE } from './metadata.js'
 export { resolveTheme, resolveThemeWithGraph } from './resolver.js'
 export { compileThemeVars } from './compiler.js'
+export {
+  adjustChroma,
+  adjustHue,
+  contrastRatio,
+  darken,
+  deltaE,
+  ensureReadableForeground,
+  hexToOklch,
+  lighten,
+  mix,
+  oklchToHex,
+  parseColor,
+  relativeLuminance,
+  toHex,
+  toRgbChannels,
+} from './color.js'
 export { deriveTheme, completeTheme } from './derive.js'
 export {
   validateTheme,
   validateThemeStrict,
   getThemeContrastPairs,
+  THEME_CONTRAST_PAIR_SPECS,
   classifyToken,
   getContrastThreshold,
   assessTokenContrast,

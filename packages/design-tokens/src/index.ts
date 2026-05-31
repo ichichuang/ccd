@@ -30,6 +30,42 @@ export type {
   TransitionCssVarName,
 } from './types'
 
+export {
+  createSortedBreakpoints,
+  resolveBreakpointFromWidth,
+  resolveDeviceTypeFromInputs,
+  resolveOrientationFromViewport,
+  resolveOsTypeFromUserAgent,
+  resolveViewportMetrics,
+  SORTED_BREAKPOINTS,
+} from './deviceResolver.js'
+export type {
+  BreakpointResolverSource,
+  BreakpointThresholdMap,
+  DeviceResolverDeviceType,
+  DeviceResolverOrientation,
+  DeviceResolverOsType,
+  DeviceTypeResolverInput,
+  SortedBreakpointEntry,
+  ViewportMetrics,
+  ViewportMetricsInput,
+} from './deviceResolver.js'
+
+export {
+  SIZE_FONT_VAR_PREFIX,
+  decideLayoutDimensions,
+  decideRootFontSize,
+  deriveRuntimeFontSizeVars,
+  generateSizeVars,
+  getScopedContentSizeVars,
+  resolveSizePreset,
+} from './sizeResolver.js'
+export type {
+  RootFontSizeContext,
+  RootFontSizeDecision,
+  SizeResolverDeviceType,
+} from './sizeResolver.js'
+
 /**
  * 尺寸阶梯键名定义 (xs -> 5xl)
  * 保持与 Breakpoints 命名一致，降低心智负担

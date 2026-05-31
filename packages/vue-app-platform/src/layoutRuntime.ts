@@ -18,6 +18,59 @@ export interface LayoutVisibilitySetting {
   showLogo: boolean
 }
 
+export const LAYOUT_MODULE_VISIBILITY_KEYS = [
+  'showHeader',
+  'showMenu',
+  'showSidebar',
+  'showBreadcrumb',
+  'showBreadcrumbIcon',
+  'showTabs',
+  'showFooter',
+  'showLogo',
+] as const satisfies readonly (keyof LayoutVisibilitySetting)[]
+
+export type LayoutModuleVisibilityKey = (typeof LAYOUT_MODULE_VISIBILITY_KEYS)[number]
+export type LayoutModuleRestoreCache = Partial<
+  Record<LayoutModuleVisibilityKey, Partial<LayoutVisibilitySetting>>
+>
+
+export interface LayoutModuleVisibilityChangeInput {
+  mode: AdminLayoutMode
+  key: LayoutModuleVisibilityKey
+  visible: boolean
+  visibility: LayoutVisibilitySetting
+  restoreCache?: LayoutModuleRestoreCache
+}
+
+export interface LayoutModuleVisibilityChangeResult {
+  visibility: LayoutVisibilitySetting
+  restoreCache: LayoutModuleRestoreCache
+}
+
+export const LAYOUT_MODULE_DEPENDENCIES: Partial<
+  Record<LayoutModuleVisibilityKey, readonly LayoutModuleVisibilityKey[]>
+> = {
+  showHeader: ['showLogo', 'showMenu'],
+  showBreadcrumb: ['showBreadcrumbIcon'],
+}
+
+export const LAYOUT_MODULE_PARENT_REQUIREMENTS: Partial<
+  Record<LayoutModuleVisibilityKey, LayoutModuleVisibilityKey>
+> = {
+  showLogo: 'showHeader',
+  showMenu: 'showHeader',
+  showBreadcrumbIcon: 'showBreadcrumb',
+}
+
+export const LAYOUT_MODE_HIDDEN_MODULES: Record<
+  AdminLayoutMode,
+  readonly LayoutModuleVisibilityKey[]
+> = {
+  vertical: ['showMenu'],
+  horizontal: ['showSidebar'],
+  mix: [],
+}
+
 export interface LayoutRuntimeDeviceInput {
   deviceType: DeviceType
   breakpoint: BreakpointKey
@@ -157,6 +210,102 @@ export function resolveLayoutUseDrawer(
   if (input.deviceType === 'Mobile') return true
   if (input.deviceType === 'Tablet') return input.width < BREAKPOINTS.md
   return false
+}
+
+export function enforceLayoutVisibilityParentRequirements(
+  visibility: LayoutVisibilitySetting
+): LayoutVisibilitySetting {
+  const next: LayoutVisibilitySetting = { ...visibility }
+
+  LAYOUT_MODULE_VISIBILITY_KEYS.forEach(key => {
+    const parentKey = LAYOUT_MODULE_PARENT_REQUIREMENTS[key]
+    if (parentKey && !next[parentKey]) {
+      next[key] = false
+    }
+  })
+
+  return next
+}
+
+export function enforceLayoutModeVisibilityConstraints(
+  mode: AdminLayoutMode,
+  visibility: LayoutVisibilitySetting
+): LayoutVisibilitySetting {
+  const next = enforceLayoutVisibilityParentRequirements(visibility)
+
+  LAYOUT_MODE_HIDDEN_MODULES[mode].forEach(key => {
+    next[key] = false
+  })
+
+  return next
+}
+
+function cloneLayoutModuleRestoreCache(
+  restoreCache: LayoutModuleRestoreCache | undefined
+): LayoutModuleRestoreCache {
+  const next: LayoutModuleRestoreCache = {}
+
+  LAYOUT_MODULE_VISIBILITY_KEYS.forEach(key => {
+    const cached = restoreCache?.[key]
+    if (cached) {
+      next[key] = { ...cached }
+    }
+  })
+
+  return next
+}
+
+export function resolveLayoutModuleVisibilityChange(
+  input: LayoutModuleVisibilityChangeInput
+): LayoutModuleVisibilityChangeResult {
+  const next: LayoutVisibilitySetting = { ...input.visibility }
+  const restoreCache = cloneLayoutModuleRestoreCache(input.restoreCache)
+  const parentKey = LAYOUT_MODULE_PARENT_REQUIREMENTS[input.key]
+
+  if (input.visible && parentKey && !next[parentKey]) {
+    next[parentKey] = true
+  }
+
+  if (LAYOUT_MODE_HIDDEN_MODULES[input.mode].includes(input.key)) {
+    next[input.key] = false
+    return {
+      visibility: next,
+      restoreCache,
+    }
+  }
+
+  const children = LAYOUT_MODULE_DEPENDENCIES[input.key]
+  if (children && children.length > 0) {
+    if (!input.visible) {
+      const cachedChildren: Partial<LayoutVisibilitySetting> = {}
+
+      children.forEach(childKey => {
+        cachedChildren[childKey] = next[childKey]
+        next[childKey] = false
+      })
+
+      restoreCache[input.key] = cachedChildren
+    } else {
+      const cachedChildren = restoreCache[input.key]
+
+      if (cachedChildren) {
+        children.forEach(childKey => {
+          const cached = cachedChildren[childKey]
+          if (typeof cached === 'boolean') {
+            next[childKey] = cached
+          }
+        })
+        delete restoreCache[input.key]
+      }
+    }
+  }
+
+  next[input.key] = input.visible
+
+  return {
+    visibility: enforceLayoutModeVisibilityConstraints(input.mode, next),
+    restoreCache,
+  }
 }
 
 export function resolveLayoutRuntime(input: LayoutRuntimeInput): LayoutRuntimeState {

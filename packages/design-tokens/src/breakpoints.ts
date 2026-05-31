@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 
-import type { SizeScaleKey } from './sizeScale'
+import type { SizeScaleKey } from './sizeScale.js'
 
 /**
  * 全站响应式断点定义 (v2.0 Standard · Single Source of Truth)

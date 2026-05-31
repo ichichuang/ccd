@@ -1,10 +1,13 @@
 import { describe, expect, it } from 'vitest'
 import {
+  enforceLayoutModeVisibilityConstraints,
   LAYOUT_SAFE_AREA_INSETS,
+  resolveLayoutModuleVisibilityChange,
   resolveLayoutEffectiveMode,
   resolveLayoutRuntime,
   resolveLayoutUseDrawer,
   type AdminLayoutMode,
+  type LayoutModuleRestoreCache,
   type LayoutRuntimeInput,
   type LayoutVisibilitySetting,
 } from './layoutRuntime'
@@ -190,5 +193,98 @@ describe('layout runtime resolver', () => {
         preferredMode: 'mix',
       })
     ).toBe('mix')
+  })
+})
+
+describe('layout visibility reducer', () => {
+  it('closes a parent module by caching and hiding child visibility', () => {
+    const visibility: LayoutVisibilitySetting = {
+      ...DEFAULT_LAYOUT_VISIBILITY_SETTINGS.vertical,
+      showHeader: true,
+      showLogo: true,
+      showMenu: true,
+    }
+
+    const result = resolveLayoutModuleVisibilityChange({
+      mode: 'vertical',
+      key: 'showHeader',
+      visible: false,
+      visibility,
+      restoreCache: {},
+    })
+
+    expect(result.visibility).toMatchObject({
+      showHeader: false,
+      showLogo: false,
+      showMenu: false,
+    })
+    expect(result.restoreCache.showHeader).toEqual({
+      showLogo: true,
+      showMenu: true,
+    })
+    expect(visibility.showHeader).toBe(true)
+    expect(visibility.showLogo).toBe(true)
+  })
+
+  it('reopens a parent module by restoring cached child visibility before mode constraints', () => {
+    const restoreCache: LayoutModuleRestoreCache = {
+      showHeader: {
+        showLogo: true,
+        showMenu: true,
+      },
+    }
+
+    const result = resolveLayoutModuleVisibilityChange({
+      mode: 'vertical',
+      key: 'showHeader',
+      visible: true,
+      visibility: {
+        ...DEFAULT_LAYOUT_VISIBILITY_SETTINGS.vertical,
+        showHeader: false,
+        showLogo: false,
+        showMenu: false,
+      },
+      restoreCache,
+    })
+
+    expect(result.visibility.showHeader).toBe(true)
+    expect(result.visibility.showLogo).toBe(true)
+    expect(result.visibility.showMenu).toBe(false)
+    expect(result.restoreCache.showHeader).toBeUndefined()
+    expect(restoreCache.showHeader).toEqual({
+      showLogo: true,
+      showMenu: true,
+    })
+  })
+
+  it('keeps hidden modules disabled for modes that never render them', () => {
+    const result = resolveLayoutModuleVisibilityChange({
+      mode: 'horizontal',
+      key: 'showSidebar',
+      visible: true,
+      visibility: {
+        ...DEFAULT_LAYOUT_VISIBILITY_SETTINGS.horizontal,
+        showSidebar: false,
+      },
+      restoreCache: {},
+    })
+
+    expect(result.visibility.showSidebar).toBe(false)
+  })
+
+  it('enforces parent requirements without mutating the input visibility object', () => {
+    const visibility: LayoutVisibilitySetting = {
+      ...DEFAULT_LAYOUT_VISIBILITY_SETTINGS.mix,
+      showHeader: false,
+      showLogo: true,
+      showMenu: true,
+    }
+
+    const result = enforceLayoutModeVisibilityConstraints('mix', visibility)
+
+    expect(result.showLogo).toBe(false)
+    expect(result.showMenu).toBe(false)
+    expect(visibility.showLogo).toBe(true)
+    expect(visibility.showMenu).toBe(true)
   })
 })
