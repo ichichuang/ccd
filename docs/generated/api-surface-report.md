@@ -16,7 +16,7 @@
 
 - Path: `packages/design-tokens`
 - Export subpaths: `.`, `./theme-engine`
-- Root symbols: `adjustBrightness`, `applyOpacityToColor`, `BreakpointKey`, `ColorTokenState`, `CompleteColorTokenState`, `CompleteThemeModeConfig`, `CompleteThemePreset`, `deriveSidebarCollapsedWidth`, `FontSizeCssVarName`, `getPresetPrimaryColor`, `hexToRgb`, `isDarkColor`, `mixHex`, `normalizeHex`, `RadiusCssVarName`, `rgbToHex`, `shiftHue`, `SizeCssVarName`, `SizeCssVars`, `SizeMode`, `SizePreset`, `SizeScaleKey`, `SizeScaleMatrixEntry`, `SpacingCssVarName`, `StaticSizeCssVarName`, `ThemeCssVars`, `ThemeMode`, `ThemeModeConfig`, `ThemePreset`, `ThemeTransitionDuration`, `ThemeTransitionMode`, `TransitionCssVarName`
+- Root symbols: `adjustBrightness`, `applyOpacityToColor`, `BreakpointKey`, `BreakpointResolverSource`, `BreakpointThresholdMap`, `ColorTokenState`, `CompleteColorTokenState`, `CompleteThemeModeConfig`, `CompleteThemePreset`, `createSortedBreakpoints`, `decideLayoutDimensions`, `decideRootFontSize`, `deriveRuntimeFontSizeVars`, `deriveSidebarCollapsedWidth`, `DeviceResolverDeviceType`, `DeviceResolverOrientation`, `DeviceResolverOsType`, `DeviceTypeResolverInput`, `FontSizeCssVarName`, `generateSizeVars`, `getPresetPrimaryColor`, `getScopedContentSizeVars`, `hexToRgb`, `isDarkColor`, `mixHex`, `normalizeHex`, `RadiusCssVarName`, `resolveBreakpointFromWidth`, `resolveDeviceTypeFromInputs`, `resolveOrientationFromViewport`, `resolveOsTypeFromUserAgent`, `resolveSizePreset`, `resolveViewportMetrics`, `rgbToHex`, `RootFontSizeContext`, `RootFontSizeDecision`, `shiftHue`, `SIZE_FONT_VAR_PREFIX`, `SizeCssVarName`, `SizeCssVars`, `SizeMode`, `SizePreset`, `SizeResolverDeviceType`, `SizeScaleKey`, `SizeScaleMatrixEntry`, `SORTED_BREAKPOINTS`, `SortedBreakpointEntry`, `SpacingCssVarName`, `StaticSizeCssVarName`, `ThemeCssVars`, `ThemeMode`, `ThemeModeConfig`, `ThemePreset`, `ThemeTransitionDuration`, `ThemeTransitionMode`, `TransitionCssVarName`, `ViewportMetrics`, `ViewportMetricsInput`
 
 ## @ccd/unocss-preset
 
@@ -35,6 +35,12 @@
 - Path: `packages/vue-hooks`
 - Export subpaths: `.`
 - Root symbols: `createAutoMittHook`, `installInteractionDirectives`, `InteractionDirectiveInstallOptions`, `InteractionTarget`, `SwipeDirection`, `useAppElementSize`, `UseAppElementSizeReturn`, `useDragAction`, `UseDragActionOptions`, `UseDragActionReturn`, `UseElementSizeOptions`, `useInteraction`, `UseInteractionReturn`, `useLongPressAction`, `UseLongPressActionOptions`, `UseLongPressActionReturn`, `useSwipeAction`, `UseSwipeActionOptions`, `UseSwipeActionReturn`, `useTap`, `UseTapOptions`, `UseTapReturn`, `vLongPress`, `vSwipe`, `vTap`
+
+## @ccd/vue-app-platform
+
+- Path: `packages/vue-app-platform`
+- Export subpaths: `.`
+- Root symbols: `AdminLayoutMode`, `applyThemeVars`, `ApplyThemeVarsOptions`, `DeviceType`, `enforceLayoutModeVisibilityConstraints`, `enforceLayoutVisibilityParentRequirements`, `fadeOutNativePreloader`, `FadeOutNativePreloaderOptions`, `isNarrowLayoutBreakpoint`, `LAYOUT_DRAWER_ROOT_STYLE`, `LAYOUT_DRAWER_SAFE_AREA_STYLE`, `LAYOUT_MODE_HIDDEN_MODULES`, `LAYOUT_MODULE_DEPENDENCIES`, `LAYOUT_MODULE_PARENT_REQUIREMENTS`, `LAYOUT_MODULE_VISIBILITY_KEYS`, `LAYOUT_SAFE_AREA_INSETS`, `LAYOUT_SHELL_SAFE_AREA_STYLE`, `LayoutModuleRestoreCache`, `LayoutModuleVisibilityChangeInput`, `LayoutModuleVisibilityChangeResult`, `LayoutModuleVisibilityKey`, `LayoutRuntimeDeviceFlags`, `LayoutRuntimeDeviceInput`, `LayoutRuntimeEffectiveModeInput`, `LayoutRuntimeInput`, `LayoutRuntimeSafeAreaInsets`, `LayoutRuntimeState`, `LayoutSidebarMode`, `LayoutVisibilitySetting`, `markAppBootstrapping`, `markAppReady`, `Orientation`, `resolveLayoutDeviceFlags`, `resolveLayoutEffectiveMode`, `resolveLayoutModuleVisibilityChange`, `resolveLayoutRuntime`, `resolveLayoutUseDrawer`, `setupVitePreloadErrorRecovery`, `SidebarAnimationPhase`, `SidebarState`, `ThemeRuntimeStorage`, `ThemeRuntimeStorageKeys`, `ThemeRuntimeTarget`, `VitePreloadErrorRecoveryOptions`, `waitForStablePaint`
 
 ## @ccd/vue-ui
 

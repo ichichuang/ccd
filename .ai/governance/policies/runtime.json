@@ -1,7 +1,17 @@
 {
-  "schemaVersion": 1,
-  "runtimeNeutralScanRoots": ["packages/core/src", "packages/contracts/src"],
-  "runtimeNeutralPackagePaths": ["packages/core/src", "packages/contracts/src"],
+  "schemaVersion": 2,
+  "runtimeNeutralScanRoots": [
+    "packages/contracts/src",
+    "packages/core/src",
+    "packages/design-tokens/src",
+    "packages/shared-utils/src"
+  ],
+  "runtimeNeutralPackagePaths": [
+    "packages/contracts/src",
+    "packages/core/src",
+    "packages/design-tokens/src",
+    "packages/shared-utils/src"
+  ],
   "forbiddenImports": [
     "^node:",
     "^(fs|path|os|process|child_process|worker_threads|http|https|stream|crypto)$",
@@ -41,6 +51,1430 @@
       "allowedPath": "apps/desktop/src/adapters",
       "forbiddenImportPattern": "^@tauri-apps/",
       "forbiddenCallPattern": "\\binvoke\\s*\\("
+    }
+  ],
+  "runtimeSurfaces": [
+    "window",
+    "document",
+    "navigator",
+    "screen",
+    "localStorage",
+    "sessionStorage",
+    "fetch",
+    "XMLHttpRequest",
+    "crypto",
+    "crypto.subtle",
+    "setTimeout",
+    "setInterval",
+    "clearTimeout",
+    "clearInterval",
+    "requestAnimationFrame",
+    "cancelAnimationFrame",
+    "console",
+    "import.meta.env",
+    "@tauri-apps/*",
+    "invoke",
+    "visualViewport",
+    "documentElement",
+    "location",
+    "history",
+    "addEventListener",
+    "removeEventListener",
+    "ResizeObserver",
+    "MutationObserver",
+    "IntersectionObserver",
+    "matchMedia",
+    "indexedDB",
+    "caches"
+  ],
+  "runtimeSurfaceScanRoots": [
+    "apps/web-demo/src",
+    "apps/desktop/src",
+    "packages/contracts/src",
+    "packages/core/src",
+    "packages/design-tokens/src",
+    "packages/shared-utils/src",
+    "packages/unocss-preset/src",
+    "packages/vue-hooks/src",
+    "packages/vue-app-platform/src",
+    "packages/vue-ui/src",
+    "packages/vue-primevue-adapter/src",
+    "packages/vue-charts/src"
+  ],
+  "strictRuntimeNeutralPaths": ["packages/contracts/src", "packages/core/src"],
+  "runtimeClassifications": [
+    {
+      "path": "packages/contracts/src",
+      "packageOrApp": "@ccd/contracts",
+      "ownerLayer": "contracts",
+      "classification": "runtime-neutral-package"
+    },
+    {
+      "path": "packages/core/src",
+      "packageOrApp": "@ccd/core",
+      "ownerLayer": "core",
+      "classification": "runtime-neutral-package"
+    },
+    {
+      "path": "packages/design-tokens/src",
+      "packageOrApp": "@ccd/design-tokens",
+      "ownerLayer": "frontend-platform",
+      "classification": "runtime-neutral-package"
+    },
+    {
+      "path": "packages/shared-utils/src",
+      "packageOrApp": "@ccd/shared-utils",
+      "ownerLayer": "frontend-platform",
+      "classification": "runtime-neutral-package"
+    },
+    {
+      "path": "packages/unocss-preset/src",
+      "packageOrApp": "@ccd/unocss-preset",
+      "ownerLayer": "frontend-platform",
+      "classification": "node-build-package"
+    },
+    {
+      "path": "packages/vue-hooks/src",
+      "packageOrApp": "@ccd/vue-hooks",
+      "ownerLayer": "frontend-platform",
+      "classification": "web-library-package"
+    },
+    {
+      "path": "packages/vue-app-platform/src",
+      "packageOrApp": "@ccd/vue-app-platform",
+      "ownerLayer": "frontend-platform",
+      "classification": "web-library-package"
+    },
+    {
+      "path": "packages/vue-ui/src",
+      "packageOrApp": "@ccd/vue-ui",
+      "ownerLayer": "frontend-platform",
+      "classification": "web-library-package"
+    },
+    {
+      "path": "packages/vue-primevue-adapter/src",
+      "packageOrApp": "@ccd/vue-primevue-adapter",
+      "ownerLayer": "frontend-platform",
+      "classification": "web-library-package"
+    },
+    {
+      "path": "packages/vue-charts/src",
+      "packageOrApp": "@ccd/vue-charts",
+      "ownerLayer": "frontend-platform",
+      "classification": "web-library-package"
+    },
+    {
+      "path": "apps/web-demo/src",
+      "packageOrApp": "@ccd/web-demo",
+      "ownerLayer": "apps/web-demo",
+      "classification": "app-runtime-integration"
+    },
+    {
+      "path": "apps/desktop/src",
+      "packageOrApp": "@ccd/desktop",
+      "ownerLayer": "apps/desktop",
+      "classification": "app-runtime-integration"
+    }
+  ],
+  "runtimePathAllowances": [
+    {
+      "path": "apps/web-demo/src/adapters",
+      "packageOrApp": "@ccd/web-demo",
+      "ownerLayer": "apps/web-demo",
+      "classification": "web-app-adapter",
+      "surfaces": "*",
+      "relatedIssueIds": ["C-02", "C-05"],
+      "targetOwnerOrFutureLane": "web adapter owner; keep app-local",
+      "policyAction": "allow-owned-runtime-boundary",
+      "notes": "Browser runtime access is allowed in web app adapters."
+    },
+    {
+      "path": "apps/desktop/src/adapters",
+      "packageOrApp": "@ccd/desktop",
+      "ownerLayer": "apps/desktop",
+      "classification": "desktop-adapter",
+      "surfaces": "*",
+      "relatedIssueIds": ["D-07", "E-05"],
+      "targetOwnerOrFutureLane": "desktop adapter owner; keep app-local",
+      "policyAction": "allow-owned-runtime-boundary",
+      "notes": "Tauri and desktop runtime access is allowed in desktop adapters only."
+    }
+  ],
+  "runtimeSurfaceExceptions": [
+    {
+      "path": "apps/desktop/src/main.ts",
+      "surfaces": ["addEventListener", "document", "documentElement", "location", "window"],
+      "classification": "app-runtime-integration",
+      "relatedIssueIds": ["D-07", "E-05"],
+      "migrationTarget": "desktop app shell may own browser WebView bootstrap; Tauri APIs remain restricted to desktop adapters",
+      "revisitLane": "M6",
+      "reason": "Existing desktop WebView DOM/bootstrap access is classified separately from Tauri adapter access.",
+      "policyAction": "allow-exact-classified-exception"
+    },
+    {
+      "path": "apps/desktop/src/theme/index.ts",
+      "surfaces": ["document", "documentElement"],
+      "classification": "app-runtime-integration",
+      "relatedIssueIds": ["D-07", "E-05"],
+      "migrationTarget": "desktop app shell may own browser WebView bootstrap; Tauri APIs remain restricted to desktop adapters",
+      "revisitLane": "M6",
+      "reason": "Existing desktop WebView DOM/bootstrap access is classified separately from Tauri adapter access.",
+      "policyAction": "allow-exact-classified-exception"
+    },
+    {
+      "path": "apps/web-demo/src/api/auth/auth.api.ts",
+      "surfaces": ["setTimeout"],
+      "classification": "app-runtime-integration",
+      "relatedIssueIds": ["C-02", "C-05", "D-10"],
+      "migrationTarget": "keep mock/API timing behavior app-owned; do not move runtime into contracts/core",
+      "revisitLane": "M5/M7",
+      "reason": "Existing app API runtime access is classified as app integration.",
+      "policyAction": "allow-exact-classified-exception"
+    },
+    {
+      "path": "apps/web-demo/src/api/system/system.api.ts",
+      "surfaces": ["setTimeout"],
+      "classification": "app-runtime-integration",
+      "relatedIssueIds": ["C-02", "C-05", "D-10"],
+      "migrationTarget": "keep mock/API timing behavior app-owned; do not move runtime into contracts/core",
+      "revisitLane": "M5/M7",
+      "reason": "Existing app API runtime access is classified as app integration.",
+      "policyAction": "allow-exact-classified-exception"
+    },
+    {
+      "path": "apps/web-demo/src/App.vue",
+      "surfaces": ["document", "documentElement", "location", "window"],
+      "classification": "web-app-bootstrap",
+      "relatedIssueIds": ["C-02", "C-05"],
+      "migrationTarget": "keep app bootstrap/router/env integration app-owned; move reusable primitives only in approved lanes",
+      "revisitLane": "M4/M5",
+      "reason": "Existing app bootstrap/router runtime access is classified as app shell behavior.",
+      "policyAction": "allow-exact-classified-exception"
+    },
+    {
+      "path": "apps/web-demo/src/constants/http.ts",
+      "surfaces": ["import.meta.env"],
+      "classification": "web-app-bootstrap",
+      "relatedIssueIds": ["C-02", "C-05"],
+      "migrationTarget": "keep app bootstrap/router/env integration app-owned; move reusable primitives only in approved lanes",
+      "revisitLane": "M4/M5",
+      "reason": "Existing app bootstrap/router runtime access is classified as app shell behavior.",
+      "policyAction": "allow-exact-classified-exception"
+    },
+    {
+      "path": "apps/web-demo/src/constants/mock.ts",
+      "surfaces": ["import.meta.env"],
+      "classification": "web-app-bootstrap",
+      "relatedIssueIds": ["C-02", "C-05"],
+      "migrationTarget": "keep app bootstrap/router/env integration app-owned; move reusable primitives only in approved lanes",
+      "revisitLane": "M4/M5",
+      "reason": "Existing app bootstrap/router runtime access is classified as app shell behavior.",
+      "policyAction": "allow-exact-classified-exception"
+    },
+    {
+      "path": "apps/web-demo/src/constants/router.ts",
+      "surfaces": ["import.meta.env"],
+      "classification": "web-app-bootstrap",
+      "relatedIssueIds": ["C-02", "C-05"],
+      "migrationTarget": "keep app bootstrap/router/env integration app-owned; move reusable primitives only in approved lanes",
+      "revisitLane": "M4/M5",
+      "reason": "Existing app bootstrap/router runtime access is classified as app shell behavior.",
+      "policyAction": "allow-exact-classified-exception"
+    },
+    {
+      "path": "apps/web-demo/src/constants/size.ts",
+      "surfaces": ["import.meta.env"],
+      "classification": "web-app-bootstrap",
+      "relatedIssueIds": ["C-02", "C-05"],
+      "migrationTarget": "keep app bootstrap/router/env integration app-owned; move reusable primitives only in approved lanes",
+      "revisitLane": "M4/M5",
+      "reason": "Existing app bootstrap/router runtime access is classified as app shell behavior.",
+      "policyAction": "allow-exact-classified-exception"
+    },
+    {
+      "path": "apps/web-demo/src/hooks/layout/useAdminTabs.ts",
+      "surfaces": [
+        "addEventListener",
+        "document",
+        "import.meta.env",
+        "removeEventListener",
+        "setTimeout"
+      ],
+      "classification": "web-app-layout",
+      "relatedIssueIds": ["C-02", "C-05"],
+      "migrationTarget": "keep layout integration app-owned; extract reusable platform primitive only with owner approval",
+      "revisitLane": "M4/M5",
+      "reason": "Existing layout/browser integration is app-local runtime behavior.",
+      "policyAction": "allow-exact-classified-exception"
+    },
+    {
+      "path": "apps/web-demo/src/hooks/layout/useLayoutRuntime.ts",
+      "surfaces": ["cancelAnimationFrame", "requestAnimationFrame", "window"],
+      "classification": "web-app-layout",
+      "relatedIssueIds": ["C-02", "C-05"],
+      "migrationTarget": "keep layout integration app-owned; extract reusable platform primitive only with owner approval",
+      "revisitLane": "M4/M5",
+      "reason": "Existing layout/browser integration is app-local runtime behavior.",
+      "policyAction": "allow-exact-classified-exception"
+    },
+    {
+      "path": "apps/web-demo/src/hooks/layout/useLoading.ts",
+      "surfaces": ["addEventListener", "document", "documentElement", "setTimeout", "window"],
+      "classification": "web-app-layout",
+      "relatedIssueIds": ["C-02", "C-05"],
+      "migrationTarget": "keep layout integration app-owned; extract reusable platform primitive only with owner approval",
+      "revisitLane": "M4/M5",
+      "reason": "Existing layout/browser integration is app-local runtime behavior.",
+      "policyAction": "allow-exact-classified-exception"
+    },
+    {
+      "path": "apps/web-demo/src/hooks/layout/useNprogress.ts",
+      "surfaces": ["clearInterval", "clearTimeout", "document", "setInterval", "setTimeout"],
+      "classification": "web-app-layout",
+      "relatedIssueIds": ["C-02", "C-05"],
+      "migrationTarget": "keep layout integration app-owned; extract reusable platform primitive only with owner approval",
+      "revisitLane": "M4/M5",
+      "reason": "Existing layout/browser integration is app-local runtime behavior.",
+      "policyAction": "allow-exact-classified-exception"
+    },
+    {
+      "path": "apps/web-demo/src/hooks/modules/useAuth.ts",
+      "surfaces": ["console", "window"],
+      "classification": "app-runtime-integration",
+      "relatedIssueIds": ["C-02", "C-05"],
+      "migrationTarget": "keep app-specific hook integration local unless M4 approves package extraction",
+      "revisitLane": "M4",
+      "reason": "Existing app hook runtime access is classified as app integration.",
+      "policyAction": "allow-exact-classified-exception"
+    },
+    {
+      "path": "apps/web-demo/src/hooks/modules/useDateUtils.ts",
+      "surfaces": ["console"],
+      "classification": "app-runtime-integration",
+      "relatedIssueIds": ["C-02", "C-05"],
+      "migrationTarget": "keep app-specific hook integration local unless M4 approves package extraction",
+      "revisitLane": "M4",
+      "reason": "Existing app hook runtime access is classified as app integration.",
+      "policyAction": "allow-exact-classified-exception"
+    },
+    {
+      "path": "apps/web-demo/src/hooks/modules/useLocale.ts",
+      "surfaces": ["console"],
+      "classification": "app-runtime-integration",
+      "relatedIssueIds": ["C-02", "C-05"],
+      "migrationTarget": "keep app-specific hook integration local unless M4 approves package extraction",
+      "revisitLane": "M4",
+      "reason": "Existing app hook runtime access is classified as app integration.",
+      "policyAction": "allow-exact-classified-exception"
+    },
+    {
+      "path": "apps/web-demo/src/hooks/modules/usePermissionRoutes.ts",
+      "surfaces": ["clearTimeout", "console", "setTimeout"],
+      "classification": "app-runtime-integration",
+      "relatedIssueIds": ["C-02", "C-05"],
+      "migrationTarget": "keep app-specific hook integration local unless M4 approves package extraction",
+      "revisitLane": "M4",
+      "reason": "Existing app hook runtime access is classified as app integration.",
+      "policyAction": "allow-exact-classified-exception"
+    },
+    {
+      "path": "apps/web-demo/src/hooks/modules/useThemeSwitch.ts",
+      "surfaces": [
+        "addEventListener",
+        "clearTimeout",
+        "console",
+        "document",
+        "documentElement",
+        "localStorage",
+        "requestAnimationFrame",
+        "setTimeout",
+        "window"
+      ],
+      "classification": "app-local-shared-candidate",
+      "relatedIssueIds": ["B-11", "C-02", "C-05"],
+      "migrationTarget": "split theme transition primitives into vue-app-platform and keep app UI integration local",
+      "revisitLane": "M5",
+      "reason": "Existing theme transition runtime access is classified for future extraction planning.",
+      "policyAction": "allow-exact-classified-exception"
+    },
+    {
+      "path": "apps/web-demo/src/layouts/components/admin/AdminMenuPopup.tsx",
+      "surfaces": [
+        "cancelAnimationFrame",
+        "document",
+        "documentElement",
+        "requestAnimationFrame",
+        "window"
+      ],
+      "classification": "web-app-layout",
+      "relatedIssueIds": ["C-02", "C-05"],
+      "migrationTarget": "keep layout integration app-owned; extract reusable platform primitive only with owner approval",
+      "revisitLane": "M4/M5",
+      "reason": "Existing layout/browser integration is app-local runtime behavior.",
+      "policyAction": "allow-exact-classified-exception"
+    },
+    {
+      "path": "apps/web-demo/src/layouts/components/admin/AdminSidebarMenuInline.tsx",
+      "surfaces": ["document"],
+      "classification": "web-app-layout",
+      "relatedIssueIds": ["C-02", "C-05"],
+      "migrationTarget": "keep layout integration app-owned; extract reusable platform primitive only with owner approval",
+      "revisitLane": "M4/M5",
+      "reason": "Existing layout/browser integration is app-local runtime behavior.",
+      "policyAction": "allow-exact-classified-exception"
+    },
+    {
+      "path": "apps/web-demo/src/layouts/components/admin/AdminTabsBar.tsx",
+      "surfaces": ["window"],
+      "classification": "web-app-layout",
+      "relatedIssueIds": ["C-02", "C-05"],
+      "migrationTarget": "keep layout integration app-owned; extract reusable platform primitive only with owner approval",
+      "revisitLane": "M4/M5",
+      "reason": "Existing layout/browser integration is app-local runtime behavior.",
+      "policyAction": "allow-exact-classified-exception"
+    },
+    {
+      "path": "apps/web-demo/src/layouts/components/AnimateRouterView.vue",
+      "surfaces": ["console", "import.meta.env"],
+      "classification": "web-app-layout",
+      "relatedIssueIds": ["C-02", "C-05"],
+      "migrationTarget": "keep layout integration app-owned; extract reusable platform primitive only with owner approval",
+      "revisitLane": "M4/M5",
+      "reason": "Existing layout/browser integration is app-local runtime behavior.",
+      "policyAction": "allow-exact-classified-exception"
+    },
+    {
+      "path": "apps/web-demo/src/layouts/components/AppPrimeVueGlobals.vue",
+      "surfaces": ["window"],
+      "classification": "web-app-layout",
+      "relatedIssueIds": ["C-02", "C-05"],
+      "migrationTarget": "keep layout integration app-owned; extract reusable platform primitive only with owner approval",
+      "revisitLane": "M4/M5",
+      "reason": "Existing layout/browser integration is app-local runtime behavior.",
+      "policyAction": "allow-exact-classified-exception"
+    },
+    {
+      "path": "apps/web-demo/src/layouts/components/AsyncErrorFallback.vue",
+      "surfaces": ["location", "window"],
+      "classification": "web-app-layout",
+      "relatedIssueIds": ["C-02", "C-05"],
+      "migrationTarget": "keep layout integration app-owned; extract reusable platform primitive only with owner approval",
+      "revisitLane": "M4/M5",
+      "reason": "Existing layout/browser integration is app-local runtime behavior.",
+      "policyAction": "allow-exact-classified-exception"
+    },
+    {
+      "path": "apps/web-demo/src/layouts/components/ContextMenuProvider.vue",
+      "surfaces": ["addEventListener", "document", "removeEventListener", "window"],
+      "classification": "web-app-layout",
+      "relatedIssueIds": ["C-02", "C-05"],
+      "migrationTarget": "keep layout integration app-owned; extract reusable platform primitive only with owner approval",
+      "revisitLane": "M4/M5",
+      "reason": "Existing layout/browser integration is app-local runtime behavior.",
+      "policyAction": "allow-exact-classified-exception"
+    },
+    {
+      "path": "apps/web-demo/src/layouts/components/LoadingLottie.vue",
+      "surfaces": ["console", "fetch", "import.meta.env"],
+      "classification": "web-app-layout",
+      "relatedIssueIds": ["C-02", "C-05"],
+      "migrationTarget": "keep layout integration app-owned; extract reusable platform primitive only with owner approval",
+      "revisitLane": "M4/M5",
+      "reason": "Existing layout/browser integration is app-local runtime behavior.",
+      "policyAction": "allow-exact-classified-exception"
+    },
+    {
+      "path": "apps/web-demo/src/layouts/index.vue",
+      "surfaces": ["document", "documentElement"],
+      "classification": "web-app-layout",
+      "relatedIssueIds": ["C-02", "C-05"],
+      "migrationTarget": "keep layout integration app-owned; extract reusable platform primitive only with owner approval",
+      "revisitLane": "M4/M5",
+      "reason": "Existing layout/browser integration is app-local runtime behavior.",
+      "policyAction": "allow-exact-classified-exception"
+    },
+    {
+      "path": "apps/web-demo/src/locales/index.ts",
+      "surfaces": ["document", "documentElement", "import.meta.env"],
+      "classification": "web-app-bootstrap",
+      "relatedIssueIds": ["C-02", "C-05"],
+      "migrationTarget": "keep app bootstrap/router/env integration app-owned; move reusable primitives only in approved lanes",
+      "revisitLane": "M4/M5",
+      "reason": "Existing app bootstrap/router runtime access is classified as app shell behavior.",
+      "policyAction": "allow-exact-classified-exception"
+    },
+    {
+      "path": "apps/web-demo/src/main.ts",
+      "surfaces": ["addEventListener", "document", "location", "window"],
+      "classification": "web-app-bootstrap",
+      "relatedIssueIds": ["C-02", "C-05"],
+      "migrationTarget": "keep app bootstrap/router/env integration app-owned; move reusable primitives only in approved lanes",
+      "revisitLane": "M4/M5",
+      "reason": "Existing app bootstrap/router runtime access is classified as app shell behavior.",
+      "policyAction": "allow-exact-classified-exception"
+    },
+    {
+      "path": "apps/web-demo/src/plugins/modules/errorHandler.ts",
+      "surfaces": ["addEventListener", "import.meta.env", "window"],
+      "classification": "web-app-plugin",
+      "relatedIssueIds": ["C-02", "C-05", "C-06"],
+      "migrationTarget": "keep plugin wiring app-owned unless a package adapter is approved",
+      "revisitLane": "M4",
+      "reason": "Existing browser runtime use is app plugin/bootstrap integration debt.",
+      "policyAction": "allow-exact-classified-exception"
+    },
+    {
+      "path": "apps/web-demo/src/plugins/modules/proform.ts",
+      "surfaces": ["import.meta.env", "window"],
+      "classification": "web-app-plugin",
+      "relatedIssueIds": ["C-02", "C-05", "C-06"],
+      "migrationTarget": "keep plugin wiring app-owned unless a package adapter is approved",
+      "revisitLane": "M4",
+      "reason": "Existing browser runtime use is app plugin/bootstrap integration debt.",
+      "policyAction": "allow-exact-classified-exception"
+    },
+    {
+      "path": "apps/web-demo/src/router/index.ts",
+      "surfaces": ["import.meta.env"],
+      "classification": "web-app-bootstrap",
+      "relatedIssueIds": ["C-02", "C-05"],
+      "migrationTarget": "keep app bootstrap/router/env integration app-owned; move reusable primitives only in approved lanes",
+      "revisitLane": "M4/M5",
+      "reason": "Existing app bootstrap/router runtime access is classified as app shell behavior.",
+      "policyAction": "allow-exact-classified-exception"
+    },
+    {
+      "path": "apps/web-demo/src/router/modules/core.ts",
+      "surfaces": ["import.meta.env"],
+      "classification": "web-app-bootstrap",
+      "relatedIssueIds": ["C-02", "C-05"],
+      "migrationTarget": "keep app bootstrap/router/env integration app-owned; move reusable primitives only in approved lanes",
+      "revisitLane": "M4/M5",
+      "reason": "Existing app bootstrap/router runtime access is classified as app shell behavior.",
+      "policyAction": "allow-exact-classified-exception"
+    },
+    {
+      "path": "apps/web-demo/src/router/utils/guardEffects.ts",
+      "surfaces": ["clearTimeout", "document", "setTimeout"],
+      "classification": "web-app-bootstrap",
+      "relatedIssueIds": ["C-02", "C-05"],
+      "migrationTarget": "keep app bootstrap/router/env integration app-owned; move reusable primitives only in approved lanes",
+      "revisitLane": "M4/M5",
+      "reason": "Existing app bootstrap/router runtime access is classified as app shell behavior.",
+      "policyAction": "allow-exact-classified-exception"
+    },
+    {
+      "path": "apps/web-demo/src/router/utils/helper.ts",
+      "surfaces": ["addEventListener", "history", "import.meta.env", "location", "window"],
+      "classification": "web-app-bootstrap",
+      "relatedIssueIds": ["C-02", "C-05"],
+      "migrationTarget": "keep app bootstrap/router/env integration app-owned; move reusable primitives only in approved lanes",
+      "revisitLane": "M4/M5",
+      "reason": "Existing app bootstrap/router runtime access is classified as app shell behavior.",
+      "policyAction": "allow-exact-classified-exception"
+    },
+    {
+      "path": "apps/web-demo/src/stores/modules/session/permission.ts",
+      "surfaces": ["import.meta.env", "localStorage"],
+      "classification": "web-app-store",
+      "relatedIssueIds": ["C-02", "C-05", "D-10"],
+      "migrationTarget": "keep concrete app state in store; extract pure/runtime primitives only in M5",
+      "revisitLane": "M5",
+      "reason": "Existing store runtime access is exact-classified debt, not a new package allowance.",
+      "policyAction": "allow-exact-classified-exception"
+    },
+    {
+      "path": "apps/web-demo/src/stores/modules/session/user.ts",
+      "surfaces": ["import.meta.env", "localStorage"],
+      "classification": "web-app-store",
+      "relatedIssueIds": ["C-02", "C-05", "D-10"],
+      "migrationTarget": "keep concrete app state in store; extract pure/runtime primitives only in M5",
+      "revisitLane": "M5",
+      "reason": "Existing store runtime access is exact-classified debt, not a new package allowance.",
+      "policyAction": "allow-exact-classified-exception"
+    },
+    {
+      "path": "apps/web-demo/src/stores/modules/system/device.ts",
+      "surfaces": [
+        "cancelAnimationFrame",
+        "clearTimeout",
+        "document",
+        "requestAnimationFrame",
+        "setTimeout",
+        "visualViewport",
+        "window"
+      ],
+      "classification": "web-app-store",
+      "relatedIssueIds": ["B-10", "C-02", "C-05"],
+      "migrationTarget": "keep concrete app state in store; extract pure/runtime primitives only in M5",
+      "revisitLane": "M5",
+      "reason": "Existing store runtime access is exact-classified debt, not a new package allowance.",
+      "policyAction": "allow-exact-classified-exception"
+    },
+    {
+      "path": "apps/web-demo/src/stores/modules/system/layout.ts",
+      "surfaces": ["console", "import.meta.env", "localStorage"],
+      "classification": "web-app-store",
+      "relatedIssueIds": ["C-02", "C-05"],
+      "migrationTarget": "keep concrete app state in store; extract pure/runtime primitives only in M5",
+      "revisitLane": "M5",
+      "reason": "Existing store runtime access is exact-classified debt, not a new package allowance.",
+      "policyAction": "allow-exact-classified-exception"
+    },
+    {
+      "path": "apps/web-demo/src/stores/modules/system/locale.ts",
+      "surfaces": ["console", "import.meta.env", "localStorage", "window"],
+      "classification": "web-app-store",
+      "relatedIssueIds": ["C-02", "C-05"],
+      "migrationTarget": "keep concrete app state in store; extract pure/runtime primitives only in M5",
+      "revisitLane": "M5",
+      "reason": "Existing store runtime access is exact-classified debt, not a new package allowance.",
+      "policyAction": "allow-exact-classified-exception"
+    },
+    {
+      "path": "apps/web-demo/src/stores/modules/system/size.ts",
+      "surfaces": ["console", "localStorage"],
+      "classification": "web-app-store",
+      "relatedIssueIds": ["B-09", "C-02", "C-05"],
+      "migrationTarget": "keep concrete app state in store; extract pure/runtime primitives only in M5",
+      "revisitLane": "M5",
+      "reason": "Existing store runtime access is exact-classified debt, not a new package allowance.",
+      "policyAction": "allow-exact-classified-exception"
+    },
+    {
+      "path": "apps/web-demo/src/stores/modules/system/theme.ts",
+      "surfaces": [
+        "addEventListener",
+        "console",
+        "import.meta.env",
+        "localStorage",
+        "removeEventListener"
+      ],
+      "classification": "web-app-store",
+      "relatedIssueIds": ["B-11", "C-02", "C-05"],
+      "migrationTarget": "keep concrete app state in store; extract pure/runtime primitives only in M5",
+      "revisitLane": "M5",
+      "reason": "Existing store runtime access is exact-classified debt, not a new package allowance.",
+      "policyAction": "allow-exact-classified-exception"
+    },
+    {
+      "path": "apps/web-demo/src/sync/runtime.ts",
+      "surfaces": ["import.meta.env"],
+      "classification": "app-runtime-integration",
+      "relatedIssueIds": ["C-02", "C-05"],
+      "migrationTarget": "keep sync/browser transport integration app-owned",
+      "revisitLane": "M5",
+      "reason": "Existing sync runtime access is classified as app infrastructure.",
+      "policyAction": "allow-exact-classified-exception"
+    },
+    {
+      "path": "apps/web-demo/src/sync/socket.ts",
+      "surfaces": ["addEventListener", "crypto"],
+      "classification": "app-runtime-integration",
+      "relatedIssueIds": ["C-02", "C-05"],
+      "migrationTarget": "keep sync/browser transport integration app-owned",
+      "revisitLane": "M5",
+      "reason": "Existing sync runtime access is classified as app infrastructure.",
+      "policyAction": "allow-exact-classified-exception"
+    },
+    {
+      "path": "apps/web-demo/src/sync/systemPreferences/runtime.ts",
+      "surfaces": ["console"],
+      "classification": "app-runtime-integration",
+      "relatedIssueIds": ["C-02", "C-05"],
+      "migrationTarget": "keep sync/browser transport integration app-owned",
+      "revisitLane": "M5",
+      "reason": "Existing sync runtime access is classified as app infrastructure.",
+      "policyAction": "allow-exact-classified-exception"
+    },
+    {
+      "path": "apps/web-demo/src/utils/date/dateUtils.ts",
+      "surfaces": ["console", "window"],
+      "classification": "app-runtime-integration",
+      "relatedIssueIds": ["C-02", "C-05"],
+      "migrationTarget": "keep app date/time runtime integration local; avoid browser globals in packages/core",
+      "revisitLane": "M5",
+      "reason": "Existing date/time browser access is classified as app runtime integration.",
+      "policyAction": "allow-exact-classified-exception"
+    },
+    {
+      "path": "apps/web-demo/src/utils/date/timezone.ts",
+      "surfaces": ["clearTimeout", "console", "fetch", "setTimeout", "window"],
+      "classification": "app-runtime-integration",
+      "relatedIssueIds": ["C-02", "C-05"],
+      "migrationTarget": "keep app date/time runtime integration local; avoid browser globals in packages/core",
+      "revisitLane": "M5",
+      "reason": "Existing date/time browser access is classified as app runtime integration.",
+      "policyAction": "allow-exact-classified-exception"
+    },
+    {
+      "path": "apps/web-demo/src/utils/deviceSync.ts",
+      "surfaces": ["navigator", "window"],
+      "classification": "app-local-shared-candidate",
+      "relatedIssueIds": ["B-10", "C-02", "C-05"],
+      "migrationTarget": "split pure breakpoint resolver from app browser listener in M5",
+      "revisitLane": "M5",
+      "reason": "Existing device sync browser access is classified for future extraction planning.",
+      "policyAction": "allow-exact-classified-exception"
+    },
+    {
+      "path": "apps/web-demo/src/utils/http/connection.ts",
+      "surfaces": [
+        "addEventListener",
+        "clearInterval",
+        "clearTimeout",
+        "fetch",
+        "navigator",
+        "removeEventListener",
+        "setInterval",
+        "setTimeout",
+        "window"
+      ],
+      "classification": "app-runtime-integration",
+      "relatedIssueIds": ["C-02", "C-05", "D-10"],
+      "migrationTarget": "keep HTTP runtime in app infrastructure/adapters; contracts stay type-only",
+      "revisitLane": "M5/M7",
+      "reason": "Existing HTTP/browser runtime access is classified as app infrastructure.",
+      "policyAction": "allow-exact-classified-exception"
+    },
+    {
+      "path": "apps/web-demo/src/utils/http/instance.ts",
+      "surfaces": ["import.meta.env"],
+      "classification": "app-runtime-integration",
+      "relatedIssueIds": ["C-02", "C-05", "D-10"],
+      "migrationTarget": "keep HTTP runtime in app infrastructure/adapters; contracts stay type-only",
+      "revisitLane": "M5/M7",
+      "reason": "Existing HTTP/browser runtime access is classified as app infrastructure.",
+      "policyAction": "allow-exact-classified-exception"
+    },
+    {
+      "path": "apps/web-demo/src/utils/http/interceptors.ts",
+      "surfaces": ["document"],
+      "classification": "app-runtime-integration",
+      "relatedIssueIds": ["C-02", "C-05", "D-10"],
+      "migrationTarget": "keep HTTP runtime in app infrastructure/adapters; contracts stay type-only",
+      "revisitLane": "M5/M7",
+      "reason": "Existing HTTP/browser runtime access is classified as app infrastructure.",
+      "policyAction": "allow-exact-classified-exception"
+    },
+    {
+      "path": "apps/web-demo/src/utils/http/methods.ts",
+      "surfaces": ["clearTimeout", "crypto", "document", "fetch", "setTimeout", "window"],
+      "classification": "app-runtime-integration",
+      "relatedIssueIds": ["C-02", "C-05", "D-10"],
+      "migrationTarget": "keep HTTP runtime in app infrastructure/adapters; contracts stay type-only",
+      "revisitLane": "M5/M7",
+      "reason": "Existing HTTP/browser runtime access is classified as app infrastructure.",
+      "policyAction": "allow-exact-classified-exception"
+    },
+    {
+      "path": "apps/web-demo/src/utils/http/policies/authRefreshPolicy.ts",
+      "surfaces": ["fetch"],
+      "classification": "app-runtime-integration",
+      "relatedIssueIds": ["C-02", "C-05", "D-10"],
+      "migrationTarget": "keep HTTP runtime in app infrastructure/adapters; contracts stay type-only",
+      "revisitLane": "M5/M7",
+      "reason": "Existing HTTP/browser runtime access is classified as app infrastructure.",
+      "policyAction": "allow-exact-classified-exception"
+    },
+    {
+      "path": "apps/web-demo/src/utils/http/policies/notificationPolicy.ts",
+      "surfaces": ["window"],
+      "classification": "app-runtime-integration",
+      "relatedIssueIds": ["C-02", "C-05", "D-10"],
+      "migrationTarget": "keep HTTP runtime in app infrastructure/adapters; contracts stay type-only",
+      "revisitLane": "M5/M7",
+      "reason": "Existing HTTP/browser runtime access is classified as app infrastructure.",
+      "policyAction": "allow-exact-classified-exception"
+    },
+    {
+      "path": "apps/web-demo/src/utils/http/uploadManager.ts",
+      "surfaces": ["addEventListener", "crypto", "crypto.subtle", "removeEventListener", "window"],
+      "classification": "app-runtime-integration",
+      "relatedIssueIds": ["C-02", "C-05", "D-10"],
+      "migrationTarget": "keep HTTP runtime in app infrastructure/adapters; contracts stay type-only",
+      "revisitLane": "M5/M7",
+      "reason": "Existing HTTP/browser runtime access is classified as app infrastructure.",
+      "policyAction": "allow-exact-classified-exception"
+    },
+    {
+      "path": "apps/web-demo/src/utils/runtime/e2e.ts",
+      "surfaces": ["document", "documentElement", "location", "window"],
+      "classification": "app-runtime-integration",
+      "relatedIssueIds": ["C-02", "C-05"],
+      "migrationTarget": "keep app runtime/e2e bridge local",
+      "revisitLane": "M4",
+      "reason": "Existing app runtime utility access is classified as app integration.",
+      "policyAction": "allow-exact-classified-exception"
+    },
+    {
+      "path": "apps/web-demo/src/utils/safeStorage/core.ts",
+      "surfaces": ["document", "import.meta.env", "location", "window"],
+      "classification": "app-local-compat-facade",
+      "relatedIssueIds": ["B-05", "B-06", "C-02", "C-05"],
+      "migrationTarget": "split pure codecs/shared helpers from app storage adapter in M5",
+      "revisitLane": "M5",
+      "reason": "Existing storage runtime access remains app-local compatibility debt.",
+      "policyAction": "allow-exact-classified-exception"
+    },
+    {
+      "path": "apps/web-demo/src/utils/safeStorage/crypto.ts",
+      "surfaces": ["crypto", "crypto.subtle"],
+      "classification": "app-local-compat-facade",
+      "relatedIssueIds": ["B-05", "B-06", "B-07", "C-02", "C-05"],
+      "migrationTarget": "split pure codecs/shared helpers from app storage adapter in M5",
+      "revisitLane": "M5",
+      "reason": "Existing storage runtime access remains app-local compatibility debt.",
+      "policyAction": "allow-exact-classified-exception"
+    },
+    {
+      "path": "apps/web-demo/src/utils/safeStorage/piniaSerializer.ts",
+      "surfaces": ["import.meta.env"],
+      "classification": "app-local-compat-facade",
+      "relatedIssueIds": ["B-05", "B-06", "C-02", "C-05"],
+      "migrationTarget": "split pure codecs/shared helpers from app storage adapter in M5",
+      "revisitLane": "M5",
+      "reason": "Existing storage runtime access remains app-local compatibility debt.",
+      "policyAction": "allow-exact-classified-exception"
+    },
+    {
+      "path": "apps/web-demo/src/utils/safeStorage/storageMaintenance.ts",
+      "surfaces": ["localStorage", "window"],
+      "classification": "app-local-compat-facade",
+      "relatedIssueIds": ["B-05", "B-06", "C-02", "C-05"],
+      "migrationTarget": "split pure codecs/shared helpers from app storage adapter in M5",
+      "revisitLane": "M5",
+      "reason": "Existing storage runtime access remains app-local compatibility debt.",
+      "policyAction": "allow-exact-classified-exception"
+    },
+    {
+      "path": "apps/web-demo/src/utils/theme/engine.ts",
+      "surfaces": ["document", "documentElement", "localStorage"],
+      "classification": "app-local-compat-facade",
+      "relatedIssueIds": ["B-03", "C-02", "C-05"],
+      "migrationTarget": "split pure theme/size/runtime primitives into design-tokens/vue-app-platform in M5",
+      "revisitLane": "M5",
+      "reason": "Existing theme runtime access is classified as app-local debt.",
+      "policyAction": "allow-exact-classified-exception"
+    },
+    {
+      "path": "apps/web-demo/src/utils/theme/lottieThemeUtils.ts",
+      "surfaces": ["document", "documentElement", "window"],
+      "classification": "app-local-shared-candidate",
+      "relatedIssueIds": ["C-02", "C-05"],
+      "migrationTarget": "split pure theme/size/runtime primitives into design-tokens/vue-app-platform in M5",
+      "revisitLane": "M5",
+      "reason": "Existing theme runtime access is classified as app-local debt.",
+      "policyAction": "allow-exact-classified-exception"
+    },
+    {
+      "path": "apps/web-demo/src/utils/theme/mode.ts",
+      "surfaces": ["document", "documentElement", "matchMedia", "window"],
+      "classification": "app-local-shared-candidate",
+      "relatedIssueIds": ["B-11", "C-02", "C-05"],
+      "migrationTarget": "split pure theme/size/runtime primitives into design-tokens/vue-app-platform in M5",
+      "revisitLane": "M5",
+      "reason": "Existing theme runtime access is classified as app-local debt.",
+      "policyAction": "allow-exact-classified-exception"
+    },
+    {
+      "path": "apps/web-demo/src/utils/theme/observability.ts",
+      "surfaces": ["console", "import.meta.env"],
+      "classification": "app-local-shared-candidate",
+      "relatedIssueIds": ["C-02", "C-05"],
+      "migrationTarget": "split pure theme/size/runtime primitives into design-tokens/vue-app-platform in M5",
+      "revisitLane": "M5",
+      "reason": "Existing theme runtime access is classified as app-local debt.",
+      "policyAction": "allow-exact-classified-exception"
+    },
+    {
+      "path": "apps/web-demo/src/utils/theme/sizeEngine.ts",
+      "surfaces": ["document", "documentElement", "localStorage", "window"],
+      "classification": "app-local-shared-candidate",
+      "relatedIssueIds": ["B-04", "C-02", "C-05"],
+      "migrationTarget": "split pure theme/size/runtime primitives into design-tokens/vue-app-platform in M5",
+      "revisitLane": "M5",
+      "reason": "Existing theme runtime access is classified as app-local debt.",
+      "policyAction": "allow-exact-classified-exception"
+    },
+    {
+      "path": "apps/web-demo/src/utils/theme/transitions.ts",
+      "surfaces": ["document", "documentElement", "matchMedia", "window"],
+      "classification": "app-local-shared-candidate",
+      "relatedIssueIds": ["B-11", "C-02", "C-05"],
+      "migrationTarget": "split pure theme/size/runtime primitives into design-tokens/vue-app-platform in M5",
+      "revisitLane": "M5",
+      "reason": "Existing theme runtime access is classified as app-local debt.",
+      "policyAction": "allow-exact-classified-exception"
+    },
+    {
+      "path": "apps/web-demo/src/views/dashboard/index.vue",
+      "surfaces": ["window"],
+      "classification": "web-app-view",
+      "relatedIssueIds": ["C-02", "C-05"],
+      "migrationTarget": "keep example/view-specific runtime access app-only; promote reusable logic through future source lane",
+      "revisitLane": "M4",
+      "reason": "Existing view/example runtime access is classified as app view behavior.",
+      "policyAction": "allow-exact-classified-exception"
+    },
+    {
+      "path": "apps/web-demo/src/views/example/architecture/router-meta/external-link.vue",
+      "surfaces": ["window"],
+      "classification": "web-app-view",
+      "relatedIssueIds": ["C-02", "C-05"],
+      "migrationTarget": "keep example/view-specific runtime access app-only; promote reusable logic through future source lane",
+      "revisitLane": "M4",
+      "reason": "Existing view/example runtime access is classified as app view behavior.",
+      "policyAction": "allow-exact-classified-exception"
+    },
+    {
+      "path": "apps/web-demo/src/views/example/common/constants.vue",
+      "surfaces": ["navigator", "window"],
+      "classification": "web-app-view",
+      "relatedIssueIds": ["C-02", "C-05"],
+      "migrationTarget": "keep example/view-specific runtime access app-only; promote reusable logic through future source lane",
+      "revisitLane": "M4",
+      "reason": "Existing view/example runtime access is classified as app view behavior.",
+      "policyAction": "allow-exact-classified-exception"
+    },
+    {
+      "path": "apps/web-demo/src/views/example/components/c-scrollbar/index.vue",
+      "surfaces": ["navigator", "window"],
+      "classification": "web-app-view",
+      "relatedIssueIds": ["C-02", "C-05"],
+      "migrationTarget": "keep example/view-specific runtime access app-only; promote reusable logic through future source lane",
+      "revisitLane": "M4",
+      "reason": "Existing view/example runtime access is classified as app view behavior.",
+      "policyAction": "allow-exact-classified-exception"
+    },
+    {
+      "path": "apps/web-demo/src/views/example/components/icons/index.vue",
+      "surfaces": ["navigator", "window"],
+      "classification": "web-app-view",
+      "relatedIssueIds": ["C-02", "C-05"],
+      "migrationTarget": "keep example/view-specific runtime access app-only; promote reusable logic through future source lane",
+      "revisitLane": "M4",
+      "reason": "Existing view/example runtime access is classified as app view behavior.",
+      "policyAction": "allow-exact-classified-exception"
+    },
+    {
+      "path": "apps/web-demo/src/views/example/components/primevue-collection/overview/composables/usePrimeVueScrollSpy.ts",
+      "surfaces": ["document", "IntersectionObserver"],
+      "classification": "web-app-view",
+      "relatedIssueIds": ["C-02", "C-05", "C-06"],
+      "migrationTarget": "keep example/view-specific runtime access app-only; promote reusable logic through future source lane",
+      "revisitLane": "M4",
+      "reason": "Existing view/example runtime access is classified as app view behavior.",
+      "policyAction": "allow-exact-classified-exception"
+    },
+    {
+      "path": "apps/web-demo/src/views/example/components/primevue-collection/prime-dialog/index.vue",
+      "surfaces": ["console"],
+      "classification": "web-app-view",
+      "relatedIssueIds": ["C-02", "C-05", "C-06"],
+      "migrationTarget": "keep example/view-specific runtime access app-only; promote reusable logic through future source lane",
+      "revisitLane": "M4",
+      "reason": "Existing view/example runtime access is classified as app view behavior.",
+      "policyAction": "allow-exact-classified-exception"
+    },
+    {
+      "path": "apps/web-demo/src/views/example/components/primevue-collection/pro-form/advanced/index.vue",
+      "surfaces": ["console", "window"],
+      "classification": "web-app-view",
+      "relatedIssueIds": ["C-02", "C-05", "C-06"],
+      "migrationTarget": "keep example/view-specific runtime access app-only; promote reusable logic through future source lane",
+      "revisitLane": "M4",
+      "reason": "Existing view/example runtime access is classified as app view behavior.",
+      "policyAction": "allow-exact-classified-exception"
+    },
+    {
+      "path": "apps/web-demo/src/views/example/components/primevue-collection/pro-form/api-events/index.vue",
+      "surfaces": ["window"],
+      "classification": "web-app-view",
+      "relatedIssueIds": ["C-02", "C-05", "C-06"],
+      "migrationTarget": "keep example/view-specific runtime access app-only; promote reusable logic through future source lane",
+      "revisitLane": "M4",
+      "reason": "Existing view/example runtime access is classified as app view behavior.",
+      "policyAction": "allow-exact-classified-exception"
+    },
+    {
+      "path": "apps/web-demo/src/views/example/components/primevue-collection/pro-form/basic/index.vue",
+      "surfaces": ["console", "window"],
+      "classification": "web-app-view",
+      "relatedIssueIds": ["C-02", "C-05", "C-06"],
+      "migrationTarget": "keep example/view-specific runtime access app-only; promote reusable logic through future source lane",
+      "revisitLane": "M4",
+      "reason": "Existing view/example runtime access is classified as app view behavior.",
+      "policyAction": "allow-exact-classified-exception"
+    },
+    {
+      "path": "apps/web-demo/src/views/example/components/primevue-collection/pro-form/dag/index.vue",
+      "surfaces": ["console", "window"],
+      "classification": "web-app-view",
+      "relatedIssueIds": ["C-02", "C-05", "C-06"],
+      "migrationTarget": "keep example/view-specific runtime access app-only; promote reusable logic through future source lane",
+      "revisitLane": "M4",
+      "reason": "Existing view/example runtime access is classified as app view behavior.",
+      "policyAction": "allow-exact-classified-exception"
+    },
+    {
+      "path": "apps/web-demo/src/views/example/components/primevue-collection/pro-form/group/index.vue",
+      "surfaces": ["console", "window"],
+      "classification": "web-app-view",
+      "relatedIssueIds": ["C-02", "C-05", "C-06"],
+      "migrationTarget": "keep example/view-specific runtime access app-only; promote reusable logic through future source lane",
+      "revisitLane": "M4",
+      "reason": "Existing view/example runtime access is classified as app view behavior.",
+      "policyAction": "allow-exact-classified-exception"
+    },
+    {
+      "path": "apps/web-demo/src/views/example/components/primevue-collection/pro-form/playground/index.vue",
+      "surfaces": ["console", "window"],
+      "classification": "web-app-view",
+      "relatedIssueIds": ["C-02", "C-05", "C-06"],
+      "migrationTarget": "keep example/view-specific runtime access app-only; promote reusable logic through future source lane",
+      "revisitLane": "M4",
+      "reason": "Existing view/example runtime access is classified as app view behavior.",
+      "policyAction": "allow-exact-classified-exception"
+    },
+    {
+      "path": "apps/web-demo/src/views/example/components/primevue-collection/pro-form/plugins/index.vue",
+      "surfaces": ["console", "window"],
+      "classification": "web-app-view",
+      "relatedIssueIds": ["C-02", "C-05", "C-06"],
+      "migrationTarget": "keep example/view-specific runtime access app-only; promote reusable logic through future source lane",
+      "revisitLane": "M4",
+      "reason": "Existing view/example runtime access is classified as app view behavior.",
+      "policyAction": "allow-exact-classified-exception"
+    },
+    {
+      "path": "apps/web-demo/src/views/example/components/primevue-collection/pro-form/reactions/index.vue",
+      "surfaces": ["console", "window"],
+      "classification": "web-app-view",
+      "relatedIssueIds": ["C-02", "C-05", "C-06"],
+      "migrationTarget": "keep example/view-specific runtime access app-only; promote reusable logic through future source lane",
+      "revisitLane": "M4",
+      "reason": "Existing view/example runtime access is classified as app view behavior.",
+      "policyAction": "allow-exact-classified-exception"
+    },
+    {
+      "path": "apps/web-demo/src/views/example/components/primevue-collection/pro-form/validation/index.vue",
+      "surfaces": ["window"],
+      "classification": "web-app-view",
+      "relatedIssueIds": ["C-02", "C-05", "C-06"],
+      "migrationTarget": "keep example/view-specific runtime access app-only; promote reusable logic through future source lane",
+      "revisitLane": "M4",
+      "reason": "Existing view/example runtime access is classified as app view behavior.",
+      "policyAction": "allow-exact-classified-exception"
+    },
+    {
+      "path": "apps/web-demo/src/views/example/components/primevue-collection/pro-table/advanced/index.vue",
+      "surfaces": ["window"],
+      "classification": "web-app-view",
+      "relatedIssueIds": ["C-02", "C-05", "C-06"],
+      "migrationTarget": "keep example/view-specific runtime access app-only; promote reusable logic through future source lane",
+      "revisitLane": "M4",
+      "reason": "Existing view/example runtime access is classified as app view behavior.",
+      "policyAction": "allow-exact-classified-exception"
+    },
+    {
+      "path": "apps/web-demo/src/views/example/components/primevue-collection/pro-table/columns/columns.tsx",
+      "surfaces": ["window"],
+      "classification": "web-app-view",
+      "relatedIssueIds": ["C-02", "C-05", "C-06"],
+      "migrationTarget": "keep example/view-specific runtime access app-only; promote reusable logic through future source lane",
+      "revisitLane": "M4",
+      "reason": "Existing view/example runtime access is classified as app view behavior.",
+      "policyAction": "allow-exact-classified-exception"
+    },
+    {
+      "path": "apps/web-demo/src/views/example/components/primevue-collection/pro-table/virtual/index.vue",
+      "surfaces": ["requestAnimationFrame"],
+      "classification": "web-app-view",
+      "relatedIssueIds": ["C-02", "C-05", "C-06"],
+      "migrationTarget": "keep example/view-specific runtime access app-only; promote reusable logic through future source lane",
+      "revisitLane": "M4",
+      "reason": "Existing view/example runtime access is classified as app view behavior.",
+      "policyAction": "allow-exact-classified-exception"
+    },
+    {
+      "path": "apps/web-demo/src/views/example/components/primevue-collection/toast/index.vue",
+      "surfaces": ["window"],
+      "classification": "web-app-view",
+      "relatedIssueIds": ["C-02", "C-05", "C-06"],
+      "migrationTarget": "keep example/view-specific runtime access app-only; promote reusable logic through future source lane",
+      "revisitLane": "M4",
+      "reason": "Existing view/example runtime access is classified as app view behavior.",
+      "policyAction": "allow-exact-classified-exception"
+    },
+    {
+      "path": "apps/web-demo/src/views/example/components/use-echarts/configs/dynamicChartConfig.ts",
+      "surfaces": ["console"],
+      "classification": "web-app-view",
+      "relatedIssueIds": ["C-02", "C-05"],
+      "migrationTarget": "keep example/view-specific runtime access app-only; promote reusable logic through future source lane",
+      "revisitLane": "M4",
+      "reason": "Existing view/example runtime access is classified as app view behavior.",
+      "policyAction": "allow-exact-classified-exception"
+    },
+    {
+      "path": "apps/web-demo/src/views/example/components/use-echarts/index.vue",
+      "surfaces": ["clearTimeout", "document", "setTimeout"],
+      "classification": "web-app-view",
+      "relatedIssueIds": ["C-02", "C-05"],
+      "migrationTarget": "keep example/view-specific runtime access app-only; promote reusable logic through future source lane",
+      "revisitLane": "M4",
+      "reason": "Existing view/example runtime access is classified as app view behavior.",
+      "policyAction": "allow-exact-classified-exception"
+    },
+    {
+      "path": "apps/web-demo/src/views/example/hooks/use-auth.vue",
+      "surfaces": ["window"],
+      "classification": "web-app-view",
+      "relatedIssueIds": ["C-02", "C-05"],
+      "migrationTarget": "keep example/view-specific runtime access app-only; promote reusable logic through future source lane",
+      "revisitLane": "M4",
+      "reason": "Existing view/example runtime access is classified as app view behavior.",
+      "policyAction": "allow-exact-classified-exception"
+    },
+    {
+      "path": "apps/web-demo/src/views/example/system-configuration/layout.vue",
+      "surfaces": ["window"],
+      "classification": "web-app-view",
+      "relatedIssueIds": ["C-02", "C-05"],
+      "migrationTarget": "keep example/view-specific runtime access app-only; promote reusable logic through future source lane",
+      "revisitLane": "M4",
+      "reason": "Existing view/example runtime access is classified as app view behavior.",
+      "policyAction": "allow-exact-classified-exception"
+    },
+    {
+      "path": "apps/web-demo/src/views/example/system-configuration/size.vue",
+      "surfaces": ["document", "documentElement", "window"],
+      "classification": "web-app-view",
+      "relatedIssueIds": ["C-02", "C-05"],
+      "migrationTarget": "keep example/view-specific runtime access app-only; promote reusable logic through future source lane",
+      "revisitLane": "M4",
+      "reason": "Existing view/example runtime access is classified as app view behavior.",
+      "policyAction": "allow-exact-classified-exception"
+    },
+    {
+      "path": "apps/web-demo/src/views/example/system-configuration/theme.vue",
+      "surfaces": ["document", "documentElement", "window"],
+      "classification": "web-app-view",
+      "relatedIssueIds": ["C-02", "C-05"],
+      "migrationTarget": "keep example/view-specific runtime access app-only; promote reusable logic through future source lane",
+      "revisitLane": "M4",
+      "reason": "Existing view/example runtime access is classified as app view behavior.",
+      "policyAction": "allow-exact-classified-exception"
+    },
+    {
+      "path": "apps/web-demo/src/views/example/system-configuration/unocss.vue",
+      "surfaces": ["window"],
+      "classification": "web-app-view",
+      "relatedIssueIds": ["C-02", "C-05"],
+      "migrationTarget": "keep example/view-specific runtime access app-only; promote reusable logic through future source lane",
+      "revisitLane": "M4",
+      "reason": "Existing view/example runtime access is classified as app view behavior.",
+      "policyAction": "allow-exact-classified-exception"
+    },
+    {
+      "path": "apps/web-demo/src/views/example/utils/device-sync.vue",
+      "surfaces": ["window"],
+      "classification": "web-app-view",
+      "relatedIssueIds": ["C-02", "C-05"],
+      "migrationTarget": "keep example/view-specific runtime access app-only; promote reusable logic through future source lane",
+      "revisitLane": "M4",
+      "reason": "Existing view/example runtime access is classified as app view behavior.",
+      "policyAction": "allow-exact-classified-exception"
+    },
+    {
+      "path": "apps/web-demo/src/views/login/components/HeaderActions.vue",
+      "surfaces": ["addEventListener", "document", "removeEventListener", "window"],
+      "classification": "web-app-view",
+      "relatedIssueIds": ["C-02", "C-05"],
+      "migrationTarget": "keep example/view-specific runtime access app-only; promote reusable logic through future source lane",
+      "revisitLane": "M4",
+      "reason": "Existing view/example runtime access is classified as app view behavior.",
+      "policyAction": "allow-exact-classified-exception"
+    },
+    {
+      "path": "apps/web-demo/src/views/login/composables/useLoginSubmit.ts",
+      "surfaces": ["import.meta.env", "window"],
+      "classification": "web-app-view",
+      "relatedIssueIds": ["C-02", "C-05"],
+      "migrationTarget": "keep example/view-specific runtime access app-only; promote reusable logic through future source lane",
+      "revisitLane": "M4",
+      "reason": "Existing view/example runtime access is classified as app view behavior.",
+      "policyAction": "allow-exact-classified-exception"
+    },
+    {
+      "path": "apps/web-demo/src/views/notfound/403.vue",
+      "surfaces": ["history"],
+      "classification": "web-app-view",
+      "relatedIssueIds": ["C-02", "C-05"],
+      "migrationTarget": "keep example/view-specific runtime access app-only; promote reusable logic through future source lane",
+      "revisitLane": "M4",
+      "reason": "Existing view/example runtime access is classified as app view behavior.",
+      "policyAction": "allow-exact-classified-exception"
+    },
+    {
+      "path": "apps/web-demo/src/views/notfound/404.vue",
+      "surfaces": ["history"],
+      "classification": "web-app-view",
+      "relatedIssueIds": ["C-02", "C-05"],
+      "migrationTarget": "keep example/view-specific runtime access app-only; promote reusable logic through future source lane",
+      "revisitLane": "M4",
+      "reason": "Existing view/example runtime access is classified as app view behavior.",
+      "policyAction": "allow-exact-classified-exception"
+    },
+    {
+      "path": "apps/web-demo/src/views/notfound/500.vue",
+      "surfaces": ["history"],
+      "classification": "web-app-view",
+      "relatedIssueIds": ["C-02", "C-05"],
+      "migrationTarget": "keep example/view-specific runtime access app-only; promote reusable logic through future source lane",
+      "revisitLane": "M4",
+      "reason": "Existing view/example runtime access is classified as app view behavior.",
+      "policyAction": "allow-exact-classified-exception"
+    },
+    {
+      "path": "packages/design-tokens/src/theme-engine/observability.ts",
+      "surfaces": ["console"],
+      "classification": "violation-candidate",
+      "relatedIssueIds": ["C-01", "F-04"],
+      "migrationTarget": "keep tokens runtime-neutral; move diagnostics behind injected logger or remove runtime global",
+      "revisitLane": "M5/M6",
+      "reason": "Existing diagnostics runtime access is classified debt in a runtime-neutral token package.",
+      "policyAction": "allow-exact-classified-exception"
+    },
+    {
+      "path": "packages/shared-utils/src/createCapabilityBridge.ts",
+      "surfaces": ["import.meta.env"],
+      "classification": "violation-candidate",
+      "relatedIssueIds": ["C-01"],
+      "migrationTarget": "replace import.meta.env test gate with injected or build-neutral test reset policy",
+      "revisitLane": "M5/M6",
+      "reason": "Existing runtime env access is classified debt in a pure shared utility package.",
+      "policyAction": "allow-exact-classified-exception"
+    },
+    {
+      "path": "packages/vue-app-platform/src/bootstrap.ts",
+      "surfaces": ["document", "documentElement", "requestAnimationFrame", "setTimeout"],
+      "classification": "web-library-package",
+      "relatedIssueIds": ["C-01", "C-02", "C-05"],
+      "migrationTarget": "keep platform bootstrap primitives guarded or injected; app-specific runtime decisions stay in apps",
+      "revisitLane": "M5",
+      "reason": "Existing frontend platform bootstrap/preloader runtime access is classified as web-library behavior.",
+      "policyAction": "allow-exact-classified-exception"
+    },
+    {
+      "path": "packages/vue-app-platform/src/preloader.ts",
+      "surfaces": ["document", "documentElement", "setTimeout"],
+      "classification": "web-library-package",
+      "relatedIssueIds": ["C-01", "C-02", "C-05"],
+      "migrationTarget": "keep platform bootstrap primitives guarded or injected; app-specific runtime decisions stay in apps",
+      "revisitLane": "M5",
+      "reason": "Existing frontend platform bootstrap/preloader runtime access is classified as web-library behavior.",
+      "policyAction": "allow-exact-classified-exception"
+    },
+    {
+      "path": "packages/vue-app-platform/src/preloadError.ts",
+      "surfaces": ["addEventListener", "console", "location", "removeEventListener", "window"],
+      "classification": "web-library-package",
+      "relatedIssueIds": ["C-01", "C-02", "C-05"],
+      "migrationTarget": "keep platform bootstrap primitives guarded or injected; app-specific runtime decisions stay in apps",
+      "revisitLane": "M5",
+      "reason": "Existing frontend platform bootstrap/preloader runtime access is classified as web-library behavior.",
+      "policyAction": "allow-exact-classified-exception"
+    },
+    {
+      "path": "packages/vue-charts/src/chartUtils.ts",
+      "surfaces": ["document", "documentElement", "window"],
+      "classification": "web-library-package",
+      "relatedIssueIds": ["C-01"],
+      "migrationTarget": "keep chart rendering runtime package-owned; app data/query behavior remains outside package",
+      "revisitLane": "M4",
+      "reason": "Existing chart rendering browser access is classified as web-library behavior.",
+      "policyAction": "allow-exact-classified-exception"
+    },
+    {
+      "path": "packages/vue-charts/src/UseEcharts/echarts-render-core.ts",
+      "surfaces": ["cancelAnimationFrame", "requestAnimationFrame"],
+      "classification": "web-library-package",
+      "relatedIssueIds": ["C-01"],
+      "migrationTarget": "keep chart rendering runtime package-owned; app data/query behavior remains outside package",
+      "revisitLane": "M4",
+      "reason": "Existing chart rendering browser access is classified as web-library behavior.",
+      "policyAction": "allow-exact-classified-exception"
+    },
+    {
+      "path": "packages/vue-charts/src/UseEcharts/useChartElementSize.ts",
+      "surfaces": ["cancelAnimationFrame", "requestAnimationFrame", "ResizeObserver"],
+      "classification": "web-library-package",
+      "relatedIssueIds": ["C-01"],
+      "migrationTarget": "keep chart rendering runtime package-owned; app data/query behavior remains outside package",
+      "revisitLane": "M4",
+      "reason": "Existing chart rendering browser access is classified as web-library behavior.",
+      "policyAction": "allow-exact-classified-exception"
+    },
+    {
+      "path": "packages/vue-charts/src/UseEcharts/UseEcharts.vue",
+      "surfaces": ["clearTimeout", "setTimeout"],
+      "classification": "web-library-package",
+      "relatedIssueIds": ["C-01"],
+      "migrationTarget": "keep chart rendering runtime package-owned; app data/query behavior remains outside package",
+      "revisitLane": "M4",
+      "reason": "Existing chart rendering browser access is classified as web-library behavior.",
+      "policyAction": "allow-exact-classified-exception"
+    },
+    {
+      "path": "packages/vue-hooks/src/useAppElementSize.ts",
+      "surfaces": ["document", "documentElement", "ResizeObserver"],
+      "classification": "web-library-package",
+      "relatedIssueIds": ["C-01", "C-02"],
+      "migrationTarget": "keep guarded composable runtime access package-owned; app store/router coupling remains forbidden",
+      "revisitLane": "M4",
+      "reason": "Existing composable browser observer access is classified as web-library behavior.",
+      "policyAction": "allow-exact-classified-exception"
+    },
+    {
+      "path": "packages/vue-primevue-adapter/src/theme/colorAdapter.ts",
+      "surfaces": ["console"],
+      "classification": "web-library-package",
+      "relatedIssueIds": ["C-01", "C-06"],
+      "migrationTarget": "PrimeVue adapter diagnostics remain package-owned; prefer injected logger if expanded",
+      "revisitLane": "M4",
+      "reason": "PrimeVue adapter package owns this web-library runtime diagnostic surface.",
+      "policyAction": "allow-exact-classified-exception"
+    },
+    {
+      "path": "packages/vue-ui/src/CScrollbar/CScrollbar.vue",
+      "surfaces": [
+        "addEventListener",
+        "cancelAnimationFrame",
+        "clearTimeout",
+        "documentElement",
+        "MutationObserver",
+        "removeEventListener",
+        "requestAnimationFrame",
+        "setTimeout"
+      ],
+      "classification": "web-library-package",
+      "relatedIssueIds": ["C-01", "C-06"],
+      "migrationTarget": "keep as CCD UI primitive runtime; do not move app-specific capability ownership into package",
+      "revisitLane": "M4",
+      "reason": "Existing UI primitive runtime access is classified as package-owned web-library behavior.",
+      "policyAction": "allow-exact-classified-exception"
+    },
+    {
+      "path": "packages/vue-ui/src/Icons/Icons.vue",
+      "surfaces": ["console"],
+      "classification": "web-library-package",
+      "relatedIssueIds": ["C-01", "C-06"],
+      "migrationTarget": "keep as CCD UI primitive runtime; do not move app-specific capability ownership into package",
+      "revisitLane": "M4",
+      "reason": "Existing UI primitive runtime access is classified as package-owned web-library behavior.",
+      "policyAction": "allow-exact-classified-exception"
+    },
+    {
+      "path": "packages/vue-ui/src/PrimeDialog/PrimeDialog.vue",
+      "surfaces": ["document", "window"],
+      "classification": "web-library-package",
+      "relatedIssueIds": ["C-01", "C-06"],
+      "migrationTarget": "keep as CCD UI primitive runtime; do not move app-specific capability ownership into package",
+      "revisitLane": "M4",
+      "reason": "Existing UI primitive runtime access is classified as package-owned web-library behavior.",
+      "policyAction": "allow-exact-classified-exception"
+    },
+    {
+      "path": "packages/vue-ui/src/PrimeDialog/useDialog.ts",
+      "surfaces": ["clearTimeout", "setTimeout"],
+      "classification": "web-library-package",
+      "relatedIssueIds": ["C-01", "C-06"],
+      "migrationTarget": "keep as CCD UI primitive runtime; do not move app-specific capability ownership into package",
+      "revisitLane": "M4",
+      "reason": "Existing UI primitive runtime access is classified as package-owned web-library behavior.",
+      "policyAction": "allow-exact-classified-exception"
+    },
+    {
+      "path": "packages/vue-ui/src/ProForm/engine/core/FormController.ts",
+      "surfaces": ["clearTimeout", "setTimeout"],
+      "classification": "web-library-package",
+      "relatedIssueIds": ["C-01", "C-06"],
+      "migrationTarget": "keep as CCD UI primitive runtime; do not move app-specific capability ownership into package",
+      "revisitLane": "M4",
+      "reason": "Existing UI primitive runtime access is classified as package-owned web-library behavior.",
+      "policyAction": "allow-exact-classified-exception"
+    },
+    {
+      "path": "packages/vue-ui/src/ProForm/engine/utils/logger.ts",
+      "surfaces": ["console"],
+      "classification": "web-library-package",
+      "relatedIssueIds": ["C-01", "C-06"],
+      "migrationTarget": "keep as CCD UI primitive runtime; do not move app-specific capability ownership into package",
+      "revisitLane": "M4",
+      "reason": "Existing UI primitive runtime access is classified as package-owned web-library behavior.",
+      "policyAction": "allow-exact-classified-exception"
+    },
+    {
+      "path": "packages/vue-ui/src/ProForm/engine/validation/ValidationEngine.ts",
+      "surfaces": ["clearTimeout", "setTimeout"],
+      "classification": "web-library-package",
+      "relatedIssueIds": ["C-01", "C-06"],
+      "migrationTarget": "keep as CCD UI primitive runtime; do not move app-specific capability ownership into package",
+      "revisitLane": "M4",
+      "reason": "Existing UI primitive runtime access is classified as package-owned web-library behavior.",
+      "policyAction": "allow-exact-classified-exception"
+    },
+    {
+      "path": "packages/vue-ui/src/ProForm/index.vue",
+      "surfaces": ["console"],
+      "classification": "web-library-package",
+      "relatedIssueIds": ["C-01", "C-06"],
+      "migrationTarget": "keep as CCD UI primitive runtime; do not move app-specific capability ownership into package",
+      "revisitLane": "M4",
+      "reason": "Existing UI primitive runtime access is classified as package-owned web-library behavior.",
+      "policyAction": "allow-exact-classified-exception"
+    },
+    {
+      "path": "packages/vue-ui/src/ProTable/engine/engines/export.ts",
+      "surfaces": ["document"],
+      "classification": "web-library-package",
+      "relatedIssueIds": ["C-01", "C-06"],
+      "migrationTarget": "keep as CCD UI primitive runtime; do not move app-specific capability ownership into package",
+      "revisitLane": "M4",
+      "reason": "Existing UI primitive runtime access is classified as package-owned web-library behavior.",
+      "policyAction": "allow-exact-classified-exception"
+    },
+    {
+      "path": "packages/vue-ui/src/ProTable/engine/hooks/useProTableInfiniteScroll.ts",
+      "surfaces": ["addEventListener", "removeEventListener"],
+      "classification": "web-library-package",
+      "relatedIssueIds": ["C-01", "C-06"],
+      "migrationTarget": "keep as CCD UI primitive runtime; do not move app-specific capability ownership into package",
+      "revisitLane": "M4",
+      "reason": "Existing UI primitive runtime access is classified as package-owned web-library behavior.",
+      "policyAction": "allow-exact-classified-exception"
+    },
+    {
+      "path": "packages/vue-ui/src/ProTable/ProTable.vue",
+      "surfaces": ["console", "document"],
+      "classification": "web-library-package",
+      "relatedIssueIds": ["C-01", "C-06"],
+      "migrationTarget": "keep as CCD UI primitive runtime; do not move app-specific capability ownership into package",
+      "revisitLane": "M4",
+      "reason": "Existing UI primitive runtime access is classified as package-owned web-library behavior.",
+      "policyAction": "allow-exact-classified-exception"
+    },
+    {
+      "path": "packages/vue-ui/src/ProTable/VirtualGridRenderer.vue",
+      "surfaces": ["console", "requestAnimationFrame"],
+      "classification": "web-library-package",
+      "relatedIssueIds": ["C-01", "C-06"],
+      "migrationTarget": "keep as CCD UI primitive runtime; do not move app-specific capability ownership into package",
+      "revisitLane": "M4",
+      "reason": "Existing UI primitive runtime access is classified as package-owned web-library behavior.",
+      "policyAction": "allow-exact-classified-exception"
     }
   ]
 }

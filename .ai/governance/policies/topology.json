@@ -22,7 +22,7 @@
       "layer": "contracts",
       "criticality": "critical",
       "responsibility": "Cross-runtime interfaces and DTO contracts only.",
-      "allowedWorkspaceDependencies": ["@ccd/design-tokens"],
+      "allowedWorkspaceDependencies": [],
       "publicApi": true
     },
     {
@@ -71,7 +71,7 @@
       "layer": "frontend-platform",
       "criticality": "protected",
       "responsibility": "Shared Vue/browser composables.",
-      "allowedWorkspaceDependencies": [],
+      "allowedWorkspaceDependencies": ["@ccd/shared-utils"],
       "publicApi": true,
       "runtime": "web-library"
     },
@@ -81,7 +81,7 @@
       "layer": "frontend-platform",
       "criticality": "protected",
       "responsibility": "Shared frontend app bootstrap lifecycle and platform orchestration primitives.",
-      "allowedWorkspaceDependencies": [],
+      "allowedWorkspaceDependencies": ["@ccd/design-tokens"],
       "publicApi": true,
       "runtime": "web-library"
     },
@@ -91,7 +91,7 @@
       "layer": "frontend-platform",
       "criticality": "protected",
       "responsibility": "Shared Vue UI primitives.",
-      "allowedWorkspaceDependencies": [],
+      "allowedWorkspaceDependencies": ["@ccd/design-tokens", "@ccd/shared-utils", "@ccd/vue-hooks"],
       "publicApi": true,
       "runtime": "web-library"
     },
@@ -111,7 +111,7 @@
       "layer": "frontend-platform",
       "criticality": "protected",
       "responsibility": "Shared chart runtime and helpers.",
-      "allowedWorkspaceDependencies": [],
+      "allowedWorkspaceDependencies": ["@ccd/design-tokens"],
       "publicApi": true,
       "runtime": "web-library"
     },
@@ -146,8 +146,12 @@
         "@ccd/contracts",
         "@ccd/core",
         "@ccd/design-tokens",
+        "@ccd/shared-utils",
         "@ccd/unocss-preset",
-        "@ccd/vue-app-platform"
+        "@ccd/vue-app-platform",
+        "@ccd/vue-hooks",
+        "@ccd/vue-primevue-adapter",
+        "@ccd/vue-ui"
       ],
       "publicApi": false,
       "runtime": "desktop",

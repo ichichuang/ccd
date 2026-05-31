@@ -12,18 +12,18 @@
 
 ## Dependency Graph
 
-- @ccd/contracts -> @ccd/design-tokens
+- @ccd/contracts: no declared workspace dependencies
 - @ccd/core -> @ccd/contracts
 - @ccd/design-tokens: no declared workspace dependencies
 - @ccd/unocss-preset -> @ccd/design-tokens
 - @ccd/shared-utils: no declared workspace dependencies
-- @ccd/vue-hooks: no declared workspace dependencies
-- @ccd/vue-app-platform: no declared workspace dependencies
-- @ccd/vue-ui: no declared workspace dependencies
+- @ccd/vue-hooks -> @ccd/shared-utils
+- @ccd/vue-app-platform -> @ccd/design-tokens
+- @ccd/vue-ui -> @ccd/design-tokens, @ccd/shared-utils, @ccd/vue-hooks
 - @ccd/vue-primevue-adapter -> @ccd/design-tokens
-- @ccd/vue-charts: no declared workspace dependencies
+- @ccd/vue-charts -> @ccd/design-tokens
 - @ccd/web-demo -> @ccd/contracts, @ccd/core, @ccd/design-tokens, @ccd/shared-utils, @ccd/unocss-preset, @ccd/vue-hooks, @ccd/vue-app-platform, @ccd/vue-ui, @ccd/vue-primevue-adapter, @ccd/vue-charts
-- @ccd/desktop -> @ccd/contracts, @ccd/core, @ccd/design-tokens, @ccd/unocss-preset, @ccd/vue-app-platform
+- @ccd/desktop -> @ccd/contracts, @ccd/core, @ccd/design-tokens, @ccd/shared-utils, @ccd/unocss-preset, @ccd/vue-app-platform, @ccd/vue-hooks, @ccd/vue-primevue-adapter, @ccd/vue-ui
 
 ## Package Responsibilities
 

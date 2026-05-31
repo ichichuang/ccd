@@ -35,16 +35,16 @@
     "protocolVersionExists": true
   },
   "packageRelationships": {
-    "@ccd/contracts": ["@ccd/design-tokens"],
+    "@ccd/contracts": [],
     "@ccd/core": ["@ccd/contracts"],
     "@ccd/design-tokens": [],
     "@ccd/unocss-preset": ["@ccd/design-tokens"],
     "@ccd/shared-utils": [],
-    "@ccd/vue-hooks": [],
-    "@ccd/vue-app-platform": [],
-    "@ccd/vue-ui": [],
+    "@ccd/vue-hooks": ["@ccd/shared-utils"],
+    "@ccd/vue-app-platform": ["@ccd/design-tokens"],
+    "@ccd/vue-ui": ["@ccd/design-tokens", "@ccd/shared-utils", "@ccd/vue-hooks"],
     "@ccd/vue-primevue-adapter": ["@ccd/design-tokens"],
-    "@ccd/vue-charts": [],
+    "@ccd/vue-charts": ["@ccd/design-tokens"],
     "@ccd/web-demo": [
       "@ccd/contracts",
       "@ccd/core",
@@ -61,8 +61,12 @@
       "@ccd/contracts",
       "@ccd/core",
       "@ccd/design-tokens",
+      "@ccd/shared-utils",
       "@ccd/unocss-preset",
-      "@ccd/vue-app-platform"
+      "@ccd/vue-app-platform",
+      "@ccd/vue-hooks",
+      "@ccd/vue-primevue-adapter",
+      "@ccd/vue-ui"
     ]
   },
   "packageResponsibilities": {

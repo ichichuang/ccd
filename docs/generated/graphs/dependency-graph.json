@@ -24,7 +24,7 @@
       "runtime": "none",
       "criticality": "critical",
       "responsibility": "Cross-runtime interfaces and DTO contracts only.",
-      "allowedWorkspaceDependencies": ["@ccd/design-tokens"]
+      "allowedWorkspaceDependencies": []
     },
     {
       "name": "@ccd/core",
@@ -69,7 +69,7 @@
       "runtime": "web-library",
       "criticality": "protected",
       "responsibility": "Shared Vue/browser composables.",
-      "allowedWorkspaceDependencies": []
+      "allowedWorkspaceDependencies": ["@ccd/shared-utils"]
     },
     {
       "name": "@ccd/vue-app-platform",
@@ -78,7 +78,7 @@
       "runtime": "web-library",
       "criticality": "protected",
       "responsibility": "Shared frontend app bootstrap lifecycle and platform orchestration primitives.",
-      "allowedWorkspaceDependencies": []
+      "allowedWorkspaceDependencies": ["@ccd/design-tokens"]
     },
     {
       "name": "@ccd/vue-ui",
@@ -87,7 +87,7 @@
       "runtime": "web-library",
       "criticality": "protected",
       "responsibility": "Shared Vue UI primitives.",
-      "allowedWorkspaceDependencies": []
+      "allowedWorkspaceDependencies": ["@ccd/design-tokens", "@ccd/shared-utils", "@ccd/vue-hooks"]
     },
     {
       "name": "@ccd/vue-primevue-adapter",
@@ -105,7 +105,7 @@
       "runtime": "web-library",
       "criticality": "protected",
       "responsibility": "Shared chart runtime and helpers.",
-      "allowedWorkspaceDependencies": []
+      "allowedWorkspaceDependencies": ["@ccd/design-tokens"]
     },
     {
       "name": "@ccd/web-demo",
@@ -138,8 +138,12 @@
         "@ccd/contracts",
         "@ccd/core",
         "@ccd/design-tokens",
+        "@ccd/shared-utils",
         "@ccd/unocss-preset",
-        "@ccd/vue-app-platform"
+        "@ccd/vue-app-platform",
+        "@ccd/vue-hooks",
+        "@ccd/vue-primevue-adapter",
+        "@ccd/vue-ui"
       ]
     }
   ],
@@ -200,5 +204,5 @@
       "reason": "Applications must not import one another."
     }
   ],
-  "validationChecksum": "414afcd2b3ca0a1a7d4c33fb67c0fd490f95f0b1cab81939f4f217a0dc70ecd6"
+  "validationChecksum": "cefbe8c63f6deb66b02fa9715c3970573b9251bcee3e4f13776401fe089a4f50"
 }
