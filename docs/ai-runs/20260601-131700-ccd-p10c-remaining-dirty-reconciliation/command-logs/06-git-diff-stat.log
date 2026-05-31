@@ -1,0 +1,7 @@
+ .ai/rules/components/00-primevue-ecosystem.mdc     |  4 +-
+ .ai/rules/components/01-primevue-pt-styling.mdc    |  2 +-
+ .ai/rules/components/02-pro-components.mdc         |  4 +-
+ apps/web-demo/src/types/auto-imports.d.ts          | 31 +--------
+ docs/ai-plan/STATUS.md                             | 13 ++--
+ .../reports/summary.md                             | 81 +++++++---------------
+ 6 files changed, 41 insertions(+), 94 deletions(-)

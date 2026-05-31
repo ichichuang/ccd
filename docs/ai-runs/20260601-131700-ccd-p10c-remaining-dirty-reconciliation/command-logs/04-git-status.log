@@ -1,0 +1,12 @@
+ M .ai/rules/components/00-primevue-ecosystem.mdc
+ M .ai/rules/components/01-primevue-pt-styling.mdc
+ M .ai/rules/components/02-pro-components.mdc
+ M apps/web-demo/src/types/auto-imports.d.ts
+ M docs/ai-plan/STATUS.md
+ M docs/ai-runs/20260601-121000-ccd-p10-local-commits/reports/summary.md
+?? CCD_ARCHITECTURE_ISSUE_REPAIR_LOG.md
+?? docs/ai-runs/20260601-121000-ccd-p10-local-commits/command-logs/19-post-commit-validation.log
+?? docs/ai-runs/20260601-131700-ccd-p10c-remaining-dirty-reconciliation/command-logs/01-git-branch.log
+?? docs/ai-runs/20260601-131700-ccd-p10c-remaining-dirty-reconciliation/command-logs/02-git-head.log
+?? docs/ai-runs/20260601-131700-ccd-p10c-remaining-dirty-reconciliation/command-logs/03-git-log.log
+?? docs/ai-runs/20260601-131700-ccd-p10c-remaining-dirty-reconciliation/command-logs/04-git-status.log

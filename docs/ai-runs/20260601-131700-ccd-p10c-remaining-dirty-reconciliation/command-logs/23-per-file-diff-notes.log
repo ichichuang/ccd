@@ -1,0 +1,28 @@
+# P10c per-file diff inspection notes
+
+## .ai/rules/components/*.mdc
+See git diff in P10c classification report.
+Hunks: path rewrites src/components -> packages/vue-ui (ProForm, ProTable, globs).
+
+## apps/web-demo/src/types/auto-imports.d.ts
+git diff: formatting-only export type blocks (~25 lines removed, collapsed to single lines).
+grep /Users/: no matches in file.
+Generator: apps/web-demo/build/plugins.ts AutoImport dts: src/types/auto-imports.d.ts
+
+## docs/ai-plan/STATUS.md
+git diff: P10 milestone, P10a row, HEAD cd4cdccc, review/commit DONE, workspace note.
+
+## docs/ai-runs/20260601-121000-ccd-p10-local-commits/reports/summary.md
+git diff: P10_HOOK_BLOCKED -> P10_LOCAL_COMMITS_CREATED; commit table added.
+
+## CCD_ARCHITECTURE_ISSUE_REPAIR_LOG.md (untracked)
+wc -l: 652
+file: UTF-8 text
+head: Chinese ledger; states canonical path docs/ai-plan/ARCHITECTURE_ISSUE_REPAIR_LOG.md
+diff -q vs canonical: differ (canonical 1878 lines)
+
+## 19-post-commit-validation.log (untracked)
+wc -l: 1036
+sed 1-80: validate:governance chain, project:doctor table pass
+tail: build:desktop success
+contains /Users/cc/MyPorject/ccd in pnpm log prefixes

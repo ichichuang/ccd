@@ -1,0 +1,8 @@
+cd4cdccc docs(architecture): 同步 NO_GO 状态、问题台账与修复证据
+9a91e1bc chore(governance): 同步架构治理策略与生成产物
+68bc8acd chore(desktop): 收敛桌面应用 TypeScript 构建边界
+1ddf1d5f refactor(web-demo): 收敛应用兼容门面与测试路径边界
+c59c0727 refactor(platform): 抽取主题尺寸设备与布局纯能力到公共平台包
+b12652c1 chore(tooling): 强化架构边界、API 报告与主题工具校验
+cc255d1a chore(repo): remove architecture optimization plan
+67ec6cf5 test(http): expand request layer coverage
