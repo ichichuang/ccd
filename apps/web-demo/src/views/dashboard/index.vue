@@ -2,7 +2,7 @@
 import type { EChartsOption } from 'echarts'
 import type { FormState } from '@ccd/vue-ui'
 import { useDialog } from '@/hooks/modules/useDialog'
-import Button from 'primevue/button'
+import { CcdButton as Button } from '@ccd/vue-ui'
 import { useTimeoutFn } from '@vueuse/core'
 import { useI18n } from 'vue-i18n'
 import {

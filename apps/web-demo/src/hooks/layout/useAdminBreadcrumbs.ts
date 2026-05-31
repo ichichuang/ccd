@@ -3,7 +3,7 @@ import { useRoute, useRouter } from 'vue-router'
 import type { RouteRecordName, RouteLocationNormalizedLoaded } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import type { Composer } from 'vue-i18n'
-import type TieredMenu from 'primevue/tieredmenu'
+import type { PrimeVueTieredMenuInstance } from '@ccd/vue-primevue-adapter'
 import { getActiveDistance, goToRoute, type PrimeMenuModelItem } from '@/router/utils/helper'
 
 /** 面包屑一级子项（弹层内展示） */
@@ -46,7 +46,7 @@ export function useAdminBreadcrumbs(): {
   const { t } = useI18n()
 
   /** 每个带子项的面包屑节点对应一个独立的 TieredMenu 实例，key 使用该节点 path */
-  const breadcrumbMenuRefs = ref<Map<string, InstanceType<typeof TieredMenu>>>(new Map())
+  const breadcrumbMenuRefs = ref<Map<string, PrimeVueTieredMenuInstance>>(new Map())
   /** 当前展开的下拉对应面包屑项 path，用于展开/收起不同图标 */
   const openDropdownPath = ref<string | null>(null)
 
@@ -58,7 +58,7 @@ export function useAdminBreadcrumbs(): {
 
   const getActiveDistanceForItem = (item: PrimeMenuModelItem) => getActiveDistance(route, item)
 
-  const setBreadcrumbMenuRef = (key: string, el: InstanceType<typeof TieredMenu> | null) => {
+  const setBreadcrumbMenuRef = (key: string, el: PrimeVueTieredMenuInstance | null) => {
     if (el) {
       breadcrumbMenuRefs.value.set(key, el)
     } else {
@@ -67,7 +67,7 @@ export function useAdminBreadcrumbs(): {
   }
 
   const bindBreadcrumbMenuRef = (path: string) => (el: unknown) => {
-    setBreadcrumbMenuRef(path, el as InstanceType<typeof TieredMenu> | null)
+    setBreadcrumbMenuRef(path, el as PrimeVueTieredMenuInstance | null)
   }
 
   // 路由变化时关闭下拉并清空 model

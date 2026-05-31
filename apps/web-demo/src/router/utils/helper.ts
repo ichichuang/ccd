@@ -9,7 +9,7 @@ import router, { routeUtils } from '@/router'
 import { generateIdFromKey } from '@ccd/shared-utils'
 import { usePermissionStore } from '@/stores/modules/session'
 import type { LocationQueryRaw, RouteLocationNormalized, RouteMeta } from 'vue-router'
-import type { MenuItem as PrimeMenuItem } from 'primevue/menuitem'
+import type { PrimeVueMenuItem } from '@ccd/vue-primevue-adapter'
 import { filterMenuByAccess } from './accessControl'
 
 // ================= 窗口管理 =================
@@ -364,7 +364,7 @@ export const getAdminMenuTree = (): MenuItem[] => {
 }
 
 /** PrimeVue Menu/PanelMenu 单条 model 项（与项目 MenuItem 适配） */
-export interface PrimeMenuModelItem extends PrimeMenuItem {
+export interface PrimeMenuModelItem extends PrimeVueMenuItem {
   route?: { path: string; name?: string; meta?: RouteMeta }
   /** 层级（顶层为 0） */
   level?: number
